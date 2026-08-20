@@ -582,7 +582,7 @@ function hydraHead(id, name, palette, lore, behaviour) {
     onDeath(c) {
       const body = hydraBody(c);
       if (body) {
-        c.damage(body, 10, { pure: true, fromHead: id });
+        c.damage(body, 10, { skipModifiers: true, cause: 'hydra-head:' + id });
         (body.mem ||= {});
         // Below half Courage the Hydra stops replacing what it loses.
         if ((body.hp || 0) > (body.maxHp || 1) * 0.5) {

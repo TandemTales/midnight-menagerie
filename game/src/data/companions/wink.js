@@ -130,21 +130,21 @@ function spendWeb(c, e, n) {
 const anchored = (c, e, pos) => (c.isAnchored ? !!c.isAnchored(e, pos) : false);
 function swapIntents(c, e, a, b) {
   if (!e || anchored(c, e, a) || anchored(c, e, b)) return false;
-  c.swapIntents?.(e, a, b);
+  c.swapIntents(e, a, b);
   U.bump(c, 'reordered');
   U.fire(c, 'reorder', { enemy: e });
   return true;
 }
 function postpone(c, e) {
   if (!e || anchored(c, e, 0)) return false;
-  c.postponeIntent?.(e);
+  c.postponeIntent(e);
   U.bump(c, 'reordered');
   U.fire(c, 'reorder', { enemy: e });
   return true;
 }
 function deleteIntent(c, e) {
   if (!e || anchored(c, e, 0)) return false;
-  c.deleteIntent?.(e);
+  c.deleteIntent(e);
   U.bump(c, 'reordered');
   U.fire(c, 'reorder', { enemy: e });
   return true;
@@ -176,7 +176,7 @@ function checkSets(c, ev) {
     try { s.fire(c, ev); } catch (_) {}
     U.bump(c, 'setTriggered');
     U.fire(c, 'setTriggered', { set: s });
-    if (s.vanish) c.exhaust?.(s.card); else U.moveCard(c, s.card, 'discard');
+    if (s.vanish) c.exhaust(s.card); else U.moveCard(c, s.card, 'discard');
   }
 }
 function power(c, id, n, install) {
@@ -194,8 +194,8 @@ U.onTracker(SLUG, (e, s) => {
   // an Intent becoming current resolves the Read on that position and fires Sets
   e.on('intent', (ev) => {
     const c = fake();
-    const en = ev && ev.enemy;
-    const fam = ev && (ev.family || currentFamily(c, en));
+    const en = e.actor(ev.enemyId);
+    const fam = (ev.intent && ev.intent.family) || currentFamily(c, en);
     if (en) {
       const rs = s.reads.filter(r => r.enemyId === eid(en) && !r.resolved && r.pos === 1);
       for (const r of rs) resolveRead(c, r, fam, en);
@@ -208,7 +208,7 @@ U.onTracker(SLUG, (e, s) => {
   e.on('death', (ev) => {
     // a Set whose enemy dies returns to the discard pile without triggering
     const c = fake();
-    const dead = ev && ev.enemy ? eid(ev.enemy) : null;
+    const dead = ev.actorId || null;
     for (let i = s.sets.length - 1; i >= 0; i--) if (s.sets[i].enemyId && s.sets[i].enemyId === dead) { U.moveCard(c, s.sets[i].card, 'discard'); s.sets.splice(i, 1); }
   });
   e.on('turn:start', () => { s.played = 0; });
@@ -807,7 +807,7 @@ const uncommons = [
     flavor: 'Watching is not a passive activity for a spider.',
     nums: { b: 6, n: 2 },
     effect: eff(c => power(c, 'wink/observe-and-interfere', 1, (x) => {
-      x.e?.on?.('intent', (ev) => { if (!ev || !ev.enemy) return; if (ev.family === FAMILY.ATTACK) U.guard(x, 6); else web(x, ev.enemy, 2); });
+      x.e.on('intent', (ev) => { const en = x.e.actor(ev.enemyId); if (!en) return; if (ev.intent && ev.intent.family === FAMILY.ATTACK) U.guard(x, 6); else web(x, en, 2); });
     })),
     upgrade: { nums: { b: 9, n: 3 } },
   },
@@ -1003,7 +1003,7 @@ const rares = [
     text: 'Choose an enemy with at least {n} [Preview]ed future Intents. After its current Intent finishes, you choose which of the two becomes current next. The other stays queued.',
     flavor: 'Both futures exist. She simply picks.',
     nums: { n: 2 },
-    effect: eff(c => { const t = c.target; c.forkFuture?.(t); U.tf(c).forked = t; U.bump(c, 'reordered'); U.fire(c, 'reorder', { enemy: t }); }),
+    effect: eff(async (c) => { const t = c.target; U.tf(c).forked = t; U.bump(c, 'reordered'); U.fire(c, 'reorder', { enemy: t }); await c.forkFuture(t); }),
     playable: (c) => previewDepth(c, c.target) >= 2,
     upgrade: { cost: 0, nums: { n: 2 } },
   },
@@ -1022,7 +1022,7 @@ const rares = [
     text: 'For the rest of combat, whenever the target’s AI would choose randomly among legal Intents, you choose instead. This cannot alter scripted or [Anchored] actions. [Preview] {n} immediately.',
     flavor: 'There is a pattern. There is always a pattern.',
     nums: { n: 1 },
-    effect: eff(c => { c.controlEnemyChoice?.(c.target, true); if (c.target) c.target.playerChoosesIntent = true; preview(c, c.target, N(c).n); }),
+    effect: eff(c => { if (c.target) c.controlEnemyChoice(c.target, true); preview(c, c.target, N(c).n); }),
     upgrade: { cost: 2, nums: { n: 1 } },
   },
 
@@ -1052,7 +1052,13 @@ const rares = [
     flavor: 'When it changes its mind, the wallpaper tells her.',
     nums: { n: 1 },
     effect: eff(c => power(c, 'wink/the-house-has-tells', 1, (x) => {
-      x.e?.on?.('intent', (ev) => { if (ev && ev.changed && U.once(x, 'tells:' + eid(ev.enemy))) { preview(x, ev.enemy, 1); openEye(x, 1); } });
+      // "changed" is not a field on the event — it is `previous` differing
+      // from the new intent.
+      x.e.on('intent', (ev) => {
+        const en = x.e.actor(ev.enemyId);
+        const changed = !!(en && ev.previous && ev.intent && ev.previous.moveId !== ev.intent.moveId);
+        if (changed && U.once(x, 'tells:' + eid(en))) { preview(x, en, 1); openEye(x, 1); }
+      });
     })),
     upgrade: { nums: { n: 2 } },
   },

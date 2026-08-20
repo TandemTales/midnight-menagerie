@@ -16,7 +16,47 @@
  *
  * Hook names beyond the StatusDef set documented in schema.js are marked EXTRA.
  * They are listed in ENGINE_HOOKS_REQUIRED at the bottom of this file.
+ *
+ * ── Writing a hook here ─────────────────────────────────────────────────────
+ * The payload a hook receives is built by `combat/hooks.js _payload()` and its
+ * exact contents are listed at the top of that file. Call those methods
+ * DIRECTLY — never `h.something?.()`. Every one of the statuses below used to
+ * reach for a helper the payload did not have (`loseHp`, `fire`, `count`,
+ * `spend`, `survive`) or read a field it did not carry (`isAttack`,
+ * `fromAttack`, `slowDissipation`); the optional chains turned all of it into
+ * silence and Haunt dealt zero damage for the whole build. See CONTRACTS rule 8.
+ *
+ * Two payload shapes appear here and they are NOT interchangeable:
+ *   value reducers  (amt, h) => number     modifyDamageDealt / Taken, modifyBlockGain
+ *   void hooks      (h) => void            everything else, including onIncomingHit
+ * `onIncomingHit` is a VOID hook with a mutable payload: read `h.amount`, then
+ * call `h.setAmount(n)` or `h.prevent()`. Writing it as `(amt, h)` — which
+ * Play Dead did — makes `h` undefined and the hook throws on its first line.
+ *
+ * Anything that has to touch a Companion RESOURCE (Lives, Loose Bones…) goes
+ * through the same `_util.js` helpers the cards use, so a resource behaves
+ * identically whether an engine counter track or a status is backing it.
  */
+
+import { trackerCtx, fire as fireCompanionHook, res, addRes, spendRes } from './_util.js';
+
+/** A card-shaped ctx for a hook, so the `_util` resource helpers work in here. */
+function uctx(h) { return trackerCtx(h.e); }
+
+/** Does this runtime card carry a keyword? */
+function hasKw(card, id) {
+  const k = card && (card.keywords || card.def?.keywords);
+  return Array.isArray(k) && k.includes(id);
+}
+
+/** Hooks for a "your next matching Trick costs {n} less" status. */
+function discountHooks(applies) {
+  return {
+    modifyCardCost: (cost, h) => (h.card && applies(h.card, h.e)
+      ? Math.max(0, cost - (h.stacks || 0)) : cost),
+    onCardPlayed: (h) => { if (h.card && applies(h.card, h.e)) h.remove(); },
+  };
+}
 
 // ── keyword tooltips ────────────────────────────────────────────────────────
 const K = (id, name, desc, extra) => ({ id, name, desc, ...(extra || {}) });
@@ -104,8 +144,8 @@ export const COMPANION_STATUSES = [
     desc: 'Your next Attack this turn deals {n} additional damage.',
     hooks: {
       // EXTRA: onAttackDealt — fired once per Attack card, after its damage resolves.
-      modifyDamageDealt: (amt, ctx) => (ctx?.isAttack ? amt + (ctx.stacks || 0) : amt),
-      onAttackDealt: (ctx) => ctx?.remove?.(),
+      modifyDamageDealt: (amt, ctx) => (ctx.kind === 'attack' ? amt + (ctx.stacks || 0) : amt),
+      onAttackDealt: (ctx) => ctx.remove(),
     },
   },
 
@@ -114,13 +154,31 @@ export const COMPANION_STATUSES = [
     desc: 'You cannot gain Guard for the rest of this turn.',
     hooks: { modifyBlockGain: () => 0 },
   },
+  // ── "your next Trick costs less" family ───────────────────────────────────
+  // All four were applied by cards and read by nobody: a status with no hook and
+  // no reader is a no-op with a tooltip. `discountHooks()` supplies the one hook
+  // that makes them mean something plus the consumption rule from their own card
+  // text. `modifyCardCost` must stay PURE — the engine re-runs it on every repaint
+  // of the hand — so the stack is spent in onCardPlayed instead.
   {
     id: 'next-trick-discount', name: 'Loosened', kind: 'buff', icon: 'energy', decay: 'turnEnd', stacks: true,
     desc: 'The next Trick you play this turn costs {n} less.',
+    hooks: discountHooks(() => true),
   },
   {
     id: 'next-attack-discount', name: 'Opening', kind: 'buff', icon: 'energy', decay: 'turnEnd', stacks: true,
     desc: 'The next Attack you play this turn costs {n} less.',
+    hooks: discountHooks((card) => card.type === 'attack'),
+  },
+  {
+    id: 'land-discount', name: 'Springloaded', kind: 'buff', icon: 'height', decay: 'turnEnd', stacks: true,
+    desc: 'Your next Trick containing Land this turn costs {n} less.',
+    hooks: discountHooks((card) => hasKw(card, 'land')),
+  },
+  {
+    id: 'zoomies-discount', name: 'Midnight Zoomies', kind: 'buff', icon: 'energy', decay: 'turnEnd', stacks: true,
+    desc: 'The first Trick each turn that activates Zoomies costs {n} less.',
+    hooks: discountHooks((card, e) => hasKw(card, 'zoomies') && e.stats.cardsPlayedThisTurn >= 2),
   },
 
   // ── Marmalade ─────────────────────────────────────────────────────────────
@@ -128,11 +186,18 @@ export const COMPANION_STATUSES = [
     id: 'ghoststep', name: 'Ghoststep', kind: 'buff', icon: 'ghoststep', decay: 'enemyTurnEnd', stacks: true, max: 9,
     desc: 'Prevents the next {n} hits of enemy Attack damage entirely. Expires at the end of the enemy turn.',
     hooks: {
-      modifyDamageTaken: (amt, ctx) => {
-        if (!ctx?.fromAttack || amt <= 0) return amt;
-        ctx.consume?.(1);
-        ctx.fire?.('ghoststepConsumed');
-        return 0;
+      // EXTRA: onIncomingHit. Ghoststep is "the hit does not happen", not "the
+      // hit does 0" — damage.js step 6b is exactly this shape. It must NOT be a
+      // modifyDamageTaken reducer: that one also runs inside computeDamage() for
+      // intent previews, so every re-render of an enemy intent would silently
+      // eat a stack.
+      onIncomingHit: (ctx) => {
+        if (ctx.kind !== 'attack' || ctx.amount <= 0) return;
+        if (!ctx.attacker || ctx.attacker.side !== 'enemy') return;
+        ctx.prevent();
+        ctx.consume(1);
+        const c = uctx(ctx);
+        if (c) fireCompanionHook(c, 'ghoststepConsumed', { attacker: ctx.attacker });
       },
     },
   },
@@ -140,12 +205,15 @@ export const COMPANION_STATUSES = [
     id: 'haunt', name: 'Haunt', kind: 'debuff', icon: 'haunt', decay: 'never', stacks: true,
     desc: 'When this enemy takes a damaging action it loses {n} Courage, then loses half its Haunt, rounded up.',
     hooks: {
-      // EXTRA: onAttack — fired on the acting enemy just after its damaging move resolves.
+      // EXTRA: onAttack — fired on the acting enemy just after its damaging move
+      // resolves. `ctx.actor` is that enemy (the status owner).
       onAttack: (ctx) => {
-        const n = ctx?.stacks || 0;
+        const n = ctx.stacks || 0;
         if (n <= 0) return;
-        ctx.loseHp?.(ctx.actor, n);
-        ctx.consume?.(ctx.slowDissipation ? 1 : Math.ceil(n / 2));
+        ctx.loseHp(ctx.actor, n);
+        // Permanent Haunting is a buff on the PLAYER, not a field on the payload.
+        const slow = !!(ctx.player && ctx.player.hasStatus('slow-haunting'));
+        ctx.consume(slow ? 1 : Math.ceil(n / 2));
       },
     },
   },
@@ -158,18 +226,40 @@ export const COMPANION_STATUSES = [
   {
     id: 'predators-patience', name: 'Predator’s Patience', kind: 'buff', icon: 'strength', decay: 'never', stacks: true,
     desc: 'Your Attacks deal {n} additional damage for the rest of this combat.',
-    hooks: { modifyDamageDealt: (amt, ctx) => (ctx?.isAttack ? amt + (ctx.stacks || 0) : amt) },
+    hooks: { modifyDamageDealt: (amt, ctx) => (ctx.kind === 'attack' ? amt + (ctx.stacks || 0) : amt) },
   },
   {
     id: 'slow-haunting', name: 'Permanent Haunting', kind: 'buff', icon: 'haunt', decay: 'never', stacks: false,
     desc: 'Haunt loses only 1 stack when it triggers instead of half.',
   },
   {
+    id: 'tripwire-tail', name: 'Tripwire Tail', kind: 'buff', icon: 'haunt', decay: 'turnEnd', stacks: true,
+    desc: 'The next enemy to attack you this turn gains {n} Haunt.',
+    hooks: {
+      onAttacked: (ctx) => {
+        const src = ctx.attacker;
+        if (!src || src.side !== 'enemy' || !src.alive) return;
+        ctx.applyStatus(src, 'haunt', ctx.stacks || 0);
+        ctx.remove();
+      },
+    },
+  },
+  {
     id: 'not-dead-yet', name: 'Not Dead Yet', kind: 'buff', icon: 'lives', decay: 'turnStart', stacks: false,
     desc: 'The next time your Courage would reach 0 this turn, spend 3 Lives instead and survive at 1 Courage.',
     hooks: {
       // EXTRA: onLethal — fired before a hit would reduce the player to 0 Courage.
-      onLethal: (ctx) => { if ((ctx.count?.('lives') || 0) >= 3) { ctx.spend?.('lives', 3); ctx.survive?.(1); ctx.remove?.(); return true; } return false; },
+      // The payload's survival control is `setHp`; Lives is a Companion resource,
+      // so it is spent through the same helper the cards use.
+      onLethal: (ctx) => {
+        const c = uctx(ctx);
+        if (!c || res(c, 'lives') < 3) return false;
+        spendRes(c, 'lives', 3);
+        fireCompanionHook(c, 'lifeSpent', { n: 3 });
+        ctx.setHp(1);
+        ctx.remove();
+        return true;
+      },
     },
   },
   {
@@ -177,7 +267,8 @@ export const COMPANION_STATUSES = [
     desc: 'Prevents the next {n} debuffs an enemy would apply to you.',
     hooks: {
       // EXTRA: onDebuffIncoming — fired before a debuff lands on the player.
-      onDebuffIncoming: (ctx) => { ctx.consume?.(1); return false; },
+      // The veto is `prevent()`; a truthy return value is not read here.
+      onDebuffIncoming: (ctx) => { ctx.consume(1); ctx.prevent(); return true; },
     },
   },
 
@@ -192,7 +283,15 @@ export const COMPANION_STATUSES = [
     desc: 'Until your next turn, you may Shed 1 Bone before any hit to reduce that hit’s damage by half. Once per hit.',
     hooks: {
       // EXTRA: onIncomingHit — fired per individual attack hit, before mitigation.
-      onIncomingHit: (amt, ctx) => { if ((ctx.count?.('loose-bones') || 0) >= 6) return amt; ctx.shed?.(1); return Math.ceil(amt / 2); },
+      // VOID hook with a mutable payload: it is `(ctx)`, never `(amt, ctx)`.
+      onIncomingHit: (ctx) => {
+        if (ctx.amount <= 0) return;
+        const c = uctx(ctx);
+        if (!c || res(c, 'loose-bones') >= 6) return;
+        addRes(c, 'loose-bones', 1, 0, 6);
+        fireCompanionHook(c, 'rattle', { n: 1, reason: 'play-dead' });
+        ctx.setAmount(Math.ceil(ctx.amount / 2));
+      },
     },
   },
 
@@ -210,6 +309,17 @@ export const COMPANION_STATUSES = [
   {
     id: 'double-land', name: 'Double Landing', kind: 'buff', icon: 'height', decay: 'turnEnd', stacks: false,
     desc: 'Your next Land effect this turn resolves its Land clause twice.',
+  },
+  // Both of these are read by pipkin.js's cost helpers (`hopCost`, `heavyFeet`)
+  // but were never registered, so they applied as anonymous placeholder statuses
+  // with no name, no icon and no tooltip.
+  {
+    id: 'elastic-legs', name: 'Elastic Legs', kind: 'buff', icon: 'height', decay: 'turnEnd', stacks: false,
+    desc: 'The first Trick containing Hop you play this turn costs 1 less.',
+  },
+  {
+    id: 'ignore-heavy-feet', name: 'Light on Her Feet', kind: 'buff', icon: 'plump', decay: 'turnEnd', stacks: true,
+    desc: 'Your next Hop Trick this turn ignores Heavy Feet.',
   },
 
   // ── Taffy ─────────────────────────────────────────────────────────────────

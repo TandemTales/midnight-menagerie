@@ -134,7 +134,7 @@ U.onHook('harvest', 'pipkin/heirloom-seeds', (c, p) => { const t = U.bump(c, 'he
 U.onHook('plump', 'pipkin/bigger-than-the-doorway', (c, p) => { if (p.above3) U.guard(c, 8 + (U.stacks(c, c.self, 'pipkin/bigger-than-the-doorway') - 1) * 3); });
 U.onHook('harvest', 'pipkin/the-patch-fights-back', (c) => {
   if (!U.once(c, 'patchFightsBack')) return;
-  const t = c.target || c.randomEnemy?.();
+  const t = c.target || c.randomEnemy();
   U.tf(c).patchTarget = t;
   U.tf(c).patchDamage = 20 + (U.stacks(c, c.self, 'pipkin/the-patch-fights-back') - 1) * 6;
 });
@@ -598,7 +598,7 @@ const uncommons = [
     text: '[Harvest] up to {n}: draw {m0} Trick for each Pumpkin taken, then discard {m1} Trick if you took any.',
     flavor: 'In and out. Mostly out. Some of it rolled.',
     nums: { n: 2, m0: 1, m1: 1 },
-    effect: eff(c => { const t = harvest(c, N(c).n); U.draw(c, t * N(c).m0); if (t) c.discard?.(N(c).m1, { choose: true }); }),
+    effect: eff(c => { const t = harvest(c, N(c).n); U.draw(c, t * N(c).m0); if (t) c.discard(N(c).m1, { choose: true }); }),
     upgrade: { nums: { n: 3, m0: 1, m1: 1 } },
   },
   {

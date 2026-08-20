@@ -15,6 +15,14 @@
 import { Rarity, CardType } from './schema.js';
 import { NEUTRAL_CARDS, STATUS_CARDS, CURSE_CARDS, SHARED_CARDS } from './neutral.js';
 
+// Registers COMPANION_STATUSES with the combat status registry on import. This
+// has to be eager and it has to live here: nothing else in the companion graph
+// imports it, so any consumer that did not separately call
+// `loadContentRegistries()` — the balance sim, any headless harness — got the
+// placeholder StatusDef for `haunt`, `ghoststep` and the rest. A placeholder has
+// no `hooks`, so every Companion signature status silently did nothing.
+import './companions/keywords.js';
+
 import marmalade from './companions/marmalade.js';
 import bones from './companions/bones.js';
 import pipkin from './companions/pipkin.js';

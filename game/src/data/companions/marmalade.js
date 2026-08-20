@@ -78,7 +78,7 @@ function gone(c) {
 // ── Power hooks ─────────────────────────────────────────────────────────────
 U.onHook('ghoststepGained', 'marmalade/haunted-housecat', (c) => {
   const n = U.stacks(c, c.self, 'marmalade/haunted-housecat');
-  const t = c.randomEnemy?.(); if (t) U.apply(c, t, HAUNT, 2 + n - 1);
+  const t = c.randomEnemy(); if (t) U.apply(c, t, HAUNT, 2 + n - 1);
 });
 U.onHook('lifeSpent', 'marmalade/nine-lives', (c) => {
   U.draw(c, 1); U.guard(c, 6 + (U.stacks(c, c.self, 'marmalade/nine-lives') - 1) * 4);
@@ -224,7 +224,7 @@ const commons = [
     cost: 1, target: NONE, text: 'Draw {n} Tricks, then discard {m0} Trick.',
     flavor: 'Two lamps in the dark at the top of the stairs.',
     nums: { n: 3, m0: 1 },
-    effect: eff(c => { U.draw(c, N(c).n); c.discard?.(N(c).m0, { choose: true }); }),
+    effect: eff(c => { U.draw(c, N(c).n); c.discard(N(c).m0, { choose: true }); }),
     upgrade: { nums: { n: 4, m0: 1 } },
   },
   {
@@ -241,7 +241,7 @@ const commons = [
     text: 'Draw {n} Tricks. Discard {m0} Trick. [Vanish].',
     flavor: 'What is this? What is this? What is this?',
     nums: { n: 1, m0: 1 },
-    effect: eff(c => { U.draw(c, N(c).n); c.discard?.(N(c).m0, { choose: true }); }),
+    effect: eff(c => { U.draw(c, N(c).n); c.discard(N(c).m0, { choose: true }); }),
     upgrade: { nums: { n: 2, m0: 1 } },
   },
   {
@@ -310,7 +310,7 @@ const uncommons = [
     cost: 1, target: ENEMY, text: 'Deal {d} damage. Ignores Guard.',
     flavor: 'The wall is not an argument she recognises.',
     nums: { d: 9 },
-    effect: eff(c => U.hit(c, N(c).d, { pierceBlock: true })),
+    effect: eff(c => U.hit(c, N(c).d, { pierce: true })),
     upgrade: { nums: { d: 12 } },
   },
   {
@@ -377,7 +377,7 @@ const uncommons = [
     text: 'Deal {d} damage. The target loses Courage equal to half its [Haunt], rounded up. Its Haunt does not dissipate.',
     flavor: 'A reminder, not a resolution.',
     nums: { d: 7 },
-    effect: eff(c => { const t = c.target; U.hit(c, N(c).d); const h = U.stacks(c, t, HAUNT); if (h > 0) c.loseHp?.(t, Math.ceil(h / 2)); }),
+    effect: eff(c => { const t = c.target; U.hit(c, N(c).d); const h = U.stacks(c, t, HAUNT); if (h > 0) c.loseHp(t, Math.ceil(h / 2)); }),
     upgrade: { nums: { d: 10 } },
   },
   {
@@ -480,7 +480,7 @@ const uncommons = [
     text: 'The next enemy to attack you this turn gains {n} [Haunt].',
     flavor: 'She leaves it lying across the doorway like she forgot it there.',
     nums: { n: 10 },
-    effect: eff(c => { const n = N(c).n; const off = c.e?.on?.('damage', (ev) => { if (ev?.source && ev?.targetIsPlayer) { U.apply(c, ev.source, HAUNT, n); if (typeof off === 'function') off(); } }); U.applySelf(c, 'tripwire-tail', n); }),
+    effect: eff(c => U.applySelf(c, 'tripwire-tail', N(c).n)),
     upgrade: { nums: { n: 14 } },
   },
   {
@@ -541,7 +541,7 @@ const uncommons = [
     text: '[Vanish] another Trick in your hand. Draw {n} Trick.',
     flavor: 'The gap is four centimetres. The cat is not.',
     nums: { n: 1 },
-    effect: eff(async c => { const [k] = await U.pickCards(c, { pile: 'hand', count: 1, prompt: 'Vanish a Trick' }); if (k) { c.exhaust?.(k); U.draw(c, N(c).n); } }),
+    effect: eff(async c => { const [k] = await U.pickCards(c, { pile: 'hand', count: 1, prompt: 'Vanish a Trick' }); if (k) { c.exhaust(k); U.draw(c, N(c).n); } }),
     upgrade: { nums: { n: 2 } },
   },
   {
@@ -594,9 +594,13 @@ const uncommons = [
     flavor: 'Confidence is a provocation.',
     nums: { n: 4 },
     effect: eff(c => power(c, 'marmalade/poltercat', N(c).n, (x) => {
-      x.e?.on?.('status', (ev) => {
-        if (!ev || ev.kind !== 'buff' || ev.targetIsPlayer) return;
-        U.apply(x, ev.target, HAUNT, 4 + (U.stacks(x, x.self, 'marmalade/poltercat') - 1) * 2);
+      // The `status` event carries actorId / delta — never a live actor and
+      // never `targetIsPlayer`. Resolve the actor and check the side here.
+      x.e.on('status', (ev) => {
+        if (ev.kind !== 'buff' || (ev.delta || 0) <= 0) return;
+        const a = x.e.actor(ev.actorId);
+        if (!a || a.side !== 'enemy' || !a.alive) return;
+        U.apply(x, a, HAUNT, 4 + (U.stacks(x, x.self, 'marmalade/poltercat') - 1) * 2);
       });
     })),
     upgrade: { nums: { n: 6 } },
@@ -675,7 +679,7 @@ const rares = [
     text: 'Spend all your [Ghoststep]. Deal {d} damage for each one spent, ignoring Guard.',
     flavor: 'She reaches through from the other side of the wallpaper, and leaves nothing behind to hide in.',
     nums: { d: 11, hits: 2 },
-    effect: eff(c => { const g = ghost(c); if (!g) return; U.addRes(c, GHOST, -g, 0, 9); U.hitN(c, N(c).d, g, { pierceBlock: true }); }),
+    effect: eff(c => { const g = ghost(c); if (!g) return; U.addRes(c, GHOST, -g, 0, 9); U.hitN(c, N(c).d, g, { pierce: true }); }),
     playable: (c) => U.res(c, GHOST) >= 1,
     upgrade: { nums: { d: 14, hits: 2 } },
   },
@@ -715,7 +719,7 @@ const rares = [
     effect: eff(c => {
       const t = c.target;
       U.hit(c, N(c).d);
-      if (t && t.alive !== false && t.tier !== 'boss' && (t.hp ?? 999) > 0 && t.hp <= N(c).n) c.loseHp?.(t, t.hp);
+      if (t && t.alive !== false && t.tier !== 'boss' && (t.hp ?? 999) > 0 && t.hp <= N(c).n) c.loseHp(t, t.hp);
     }),
     upgrade: { nums: { d: 20, n: 20 } },
   },
@@ -773,7 +777,7 @@ const rares = [
     text: 'Discard your hand, then draw that many Tricks. Gain {n} [Ghoststep].',
     flavor: 'She goes in the study door and comes out of the pantry.',
     nums: { n: 1 },
-    effect: eff(c => { const k = U.handOthers(c).length; c.discard?.(k, { all: true }); U.draw(c, k); gainGhost(c, N(c).n); }),
+    effect: eff(c => { const k = U.handOthers(c).length; c.discard(k, { all: true }); U.draw(c, k); gainGhost(c, N(c).n); }),
     upgrade: { nums: { n: 2 } },
   },
   {
@@ -809,7 +813,7 @@ const rares = [
     text: 'Cancel the target’s current action. Apply {n} [Haunt]. [Vanish].',
     flavor: 'It was going to do something. Now it is thinking about a cat instead.',
     nums: { n: 6 },
-    effect: eff(c => { c.cancelIntent?.(c.target); haunt(c, c.target, N(c).n); }),
+    effect: eff(c => { c.cancelIntent(c.target); haunt(c, c.target, N(c).n); }),
     upgrade: { cost: 2, nums: { n: 6 } },
   },
   {
@@ -834,7 +838,7 @@ const rares = [
     text: '[Vanish] your hand. Draw that many Tricks plus {m0}. Gain {n} [Ghoststep].',
     flavor: 'A whole cat, gone, in a room with one door and no windows.',
     nums: { n: 2, m0: 1 },
-    effect: eff(c => { const h = U.handOthers(c); for (const k of h) c.exhaust?.(k); U.draw(c, h.length + N(c).m0); gainGhost(c, N(c).n); }),
+    effect: eff(c => { const h = U.handOthers(c); for (const k of h) c.exhaust(k); U.draw(c, h.length + N(c).m0); gainGhost(c, N(c).n); }),
     upgrade: { nums: { n: 3, m0: 2 } },
   },
   {

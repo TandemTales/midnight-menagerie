@@ -813,22 +813,44 @@ export const ALIASES = {
   coin: 'world:coin', treasure: 'world:treasure', chime: 'world:rescue-chime',
   door: 'world:door-open', candle: 'world:candle-light', roar: 'world:boss-roar',
   heartbeat: 'world:heartbeat', blueprint: 'world:blueprint-unfold',
+
+  // ── ids the scenes ask for that have no cue of their own ──────────────────
+  // These were all silent: the scene asked for a sound nobody had synthesised,
+  // `resolveId` returned null and `play()` warned once and did nothing. Rather
+  // than delete the call sites (the moments genuinely want a sound) each one is
+  // pointed at the nearest cue that exists. Give any of them a bespoke cue later
+  // and only this table has to change.
+  'ui:begin': 'world:door-open',       // "Begin the expedition" on the select screen
+  'ui:denied': 'ui:deny',              // clicking a locked Companion tile
+  'ui:tick': 'ui:click',               // ticking a reward card as chosen
+  'ui:snuff': 'world:candle-light',    // the gameover candle going out
+  'card:pick': 'card:pickUp',          // taking a card reward
+  'map:step': 'world:door-open',       // walking onto a map node
 };
 
 export const SFX_IDS = Object.keys(CUES);
 
 /**
- * Cue ids are `family:name`, but callers reasonably write `family/name` too
- * (scenes/title.js already does), and short aliases exist for the common ones.
- * All three forms resolve; anything else returns null and warns once.
+ * Resolve any spelling a caller might reasonably use to a real cue key.
+ *
+ * The bank is keyed `family:name`. Eight scenes wrote `family/name` instead and
+ * every one of them was silent, so `/` is normalised to `:` here rather than
+ * being treated as a typo — a separator is not worth losing a sound over. The
+ * canonical spelling is still `family:name`, and `tests/seams/check.py` reports
+ * every `/` call site so they get cleaned up instead of quietly relying on this.
+ *
+ * Order: exact cue → alias → slash-normalised cue → slash-normalised alias →
+ * bare name across families ('crit', 'door-open'). Anything else is null.
  */
 export function resolveId(id) {
   if (typeof id !== 'string') return null;
   if (CUES[id]) return id;
   if (ALIASES[id]) return ALIASES[id];
-  const slash = id.replace(/\//g, ':');
-  if (CUES[slash]) return slash;
-  if (ALIASES[slash]) return ALIASES[slash];
+  const slash = id.indexOf('/') >= 0 ? id.replace(/\//g, ':') : id;
+  if (slash !== id) {
+    if (CUES[slash]) return slash;
+    if (ALIASES[slash]) return ALIASES[slash];
+  }
   // last resort: match on the bare name across families ('crit', 'door-open')
   const bare = slash.includes(':') ? slash.slice(slash.indexOf(':') + 1) : slash;
   for (const k of SFX_IDS) if (k.slice(k.indexOf(':') + 1) === bare) return k;

@@ -356,45 +356,11 @@
 .map-node.is-refused { animation: mm-refuse .3s var(--ease-out); }
 .map-node.is-stamping .mn-tick { animation: mm-tick .34s var(--ease-out) backwards; }
 
-/* ── HUD placeholder strip (ui-chrome replaces this wholesale) ──────────── */
-.map-hud {
-  position: absolute; top: 0; left: 0; right: 0; height: 56px;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 var(--s-5);
-  background: linear-gradient(180deg,
-    color-mix(in srgb, var(--ink-900) 94%, transparent),
-    color-mix(in srgb, var(--ink-800) 78%, transparent) 70%, transparent);
-  border-bottom: 1px solid color-mix(in srgb, var(--ink-500) 70%, transparent);
-  backdrop-filter: blur(6px);
-  z-index: 6;
-}
-.hud-l, .hud-r { display: flex; align-items: center; gap: var(--s-4); }
-.hud-chip {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-family: var(--font-num); font-size: var(--fs-md); color: var(--text-hi);
-}
-.hud-chip svg { fill: none; stroke: currentColor; stroke-width: 1.8; }
-.hud-hp { color: var(--courage-300); }
-.hud-hp i { color: var(--text-lo); font-style: normal; font-size: var(--fs-sm); }
-.hud-bar {
-  display: inline-block; width: 88px; height: 6px; margin-left: 4px;
-  background: color-mix(in srgb, var(--courage-500) 45%, var(--ink-900));
-  border-radius: 3px; overflow: hidden;
-}
-.hud-bar > span { display: block; height: 100%; background: var(--courage-300); }
-.hud-gold { color: var(--pluck-300); }
-.hud-gold svg { fill: none; stroke: currentColor; stroke-width: 1.6; }
-.hud-keeps { display: inline-flex; gap: 5px; }
-.hud-keeps .keep {
-  width: 20px; height: 20px; border-radius: 50%;
-  background: radial-gradient(circle at 34% 30%, var(--flame-200), var(--flame-500) 70%, var(--ink-700));
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--flame-500) 60%, transparent);
-}
-.hud-haunt {
-  font-family: var(--font-display); font-size: var(--fs-sm);
-  letter-spacing: .14em; text-transform: uppercase; color: var(--spectre-300);
-}
-.hud-cog { color: var(--text-lo); font-size: 18px; }
+/* ── the shared run HUD (ui/hud.js) ─────────────────────────────────────
+   The strip itself is `.mm-hud--fixed`, owned by ui-chrome. All this host
+   does is reserve the layer it sits on. Everything the map used to draw here
+   by hand — heart, pink bar, amber spheres, a dead cog — is gone. */
+.map-hudhost { position: absolute; top: 0; left: 0; right: 0; z-index: 6; }
 
 /* ── region banner ──────────────────────────────────────────────────────── */
 .map-banner {
@@ -616,7 +582,7 @@
 .map-screen.is-drawing .map-wet   { animation: mm-wet  .70s var(--ease-soft) .10s backwards; }
 .map-screen.is-drawing .map-banner,
 .map-screen.is-drawing .map-bar,
-.map-screen.is-drawing .map-hud {
+.map-screen.is-drawing .map-hudhost {
   animation: mm-rise .42s var(--ease-out) .18s backwards;
 }
 
@@ -650,7 +616,7 @@
   .map-screen.is-drawing .map-paper,
   .map-screen.is-drawing .map-banner,
   .map-screen.is-drawing .map-bar,
-  .map-screen.is-drawing .map-hud {
+  .map-screen.is-drawing .map-hudhost {
     animation: none !important; opacity: 1; clip-path: none !important;
   }
   .map-wet { display: none; }

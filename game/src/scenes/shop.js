@@ -24,6 +24,8 @@ import { cardById } from '../data/cards.js';
 import { relicById, relicSigil } from '../data/relics.js';
 import { RoomScene, esc } from './reward.js';
 import { el, ensureCss, rovingFocus } from '../ui/portrait.js';
+import { iconSvg } from '../ui/icons.js';
+import { fitCardToSlot } from './_cardfit.js';
 
 const CSS_SHOP = new URL('./shop.css', import.meta.url).href;
 
@@ -124,7 +126,9 @@ export class ShopScene extends RoomScene {
             <p class="sh-moth__name">Mr. Moth</p>
             <p class="sh-moth__line">&ldquo;${esc(this._greeting)}&rdquo;</p>
             <dl class="sh-moth__you">
-              <div><dt>${esc(TERMS.deck)}</dt><dd>${this.run.deck.length}</dd></div>
+              <div><dt>${esc(TERMS.deck)}</dt><dd><button type="button" class="sh-deck"
+                data-tip-title="Your ${esc(TERMS.deck)}"
+                data-tip="Look through every ${esc(TERMS.card)} you own before you spend anything.">${this.run.deck.length}</button></dd></div>
               <div><dt>${esc(TERMS.relic)}s</dt><dd>${this.run.keepsakes.length}</dd></div>
               <div><dt>${esc(TERMS.potion)}s</dt><dd>${this.run.snacks.length}/${this.run.snackCap}</dd></div>
               <div><dt>Clues</dt><dd>${this.run.cluesFound}</dd></div>
@@ -210,7 +214,8 @@ export class ShopScene extends RoomScene {
       row.dataset.key = key;
       row.innerHTML = `
         <span class="sh-row__sig sh-row__sig--snack" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><path d="M8 4h8v3l2 3v8a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-8l2-3Z"/></svg>
+          <!-- the shared res.snack drawing, so a Snack looks the same here and in the HUD -->
+          ${iconSvg('res.snack')}
         </span>
         <span class="sh-row__txt"><b>${esc(item.name)}</b><em>${esc(item.desc)}</em></span>`;
       const full = this.run.snacks.length >= this.run.snackCap;
@@ -220,6 +225,9 @@ export class ShopScene extends RoomScene {
       }, full ? 'Your pockets are full.' : ''));
       this.$snacks.appendChild(row);
     }
+
+    // You are buying Tricks. You can see the deck you are buying them for.
+    this._on(wrap.querySelector('.sh-deck'), 'click', () => this.hud?.openDeck());
 
     this._renderRemoval();
     this._own(rovingFocus(wrap, '.sh-buy', { cols: 0 }));
@@ -283,7 +291,7 @@ export class ShopScene extends RoomScene {
       if (!msg) { this._bump(b); return; }
       if (!repeatable) this.sold.add(key);
       this.run.save?.();
-      this.ctx.audio?.play?.('ui/confirm');
+      this.ctx.audio?.play?.('ui:confirm');
       const g = this.run.fork(`shopbuy:${key}`);
       this._say(`${msg} <i>&ldquo;${esc(ON_BUY[g.int(ON_BUY.length)])}&rdquo;</i>`, 'good');
       this._syncAffordable();
@@ -330,10 +338,7 @@ export class ShopScene extends RoomScene {
 
   _layout() {
     for (const { slot, view } of this._cardSlots || []) {
-      const face = slot.querySelector('.sh-card__face');
-      const w = face?.clientWidth, h = face?.clientHeight;
-      if (!w || !h) continue;
-      try { view.setTransform({ x: w / 2, y: h, scale: w / 224 }); } catch { /* pre-layout */ }
+      fitCardToSlot(view, slot.querySelector('.sh-card__face'));
     }
   }
 
@@ -350,14 +355,18 @@ export class ShopScene extends RoomScene {
 
   _buildFoot() {
     this._say('&nbsp;');
-    this._primary('Back to the blueprint', () => this._leave(), { key: 'Esc' });
+    // Escape belongs to Settings now, everywhere in a run — the HUD owns it.
+    this._primary('Back to the blueprint', () => this._leave(), { key: 'Enter' });
     this.$go.classList.add('is-ready');
   }
 
   _bindKeys() {
     this._on(window, 'keydown', (e) => {
       if (e.defaultPrevented || this.root.querySelector('.rm-picker')) return;
-      if (e.key === 'Escape') { e.preventDefault(); this._leave(); }
+      // Enter leaves, unless something that answers to Enter itself has focus.
+      if (e.key === 'Enter' && !document.activeElement?.closest?.('.sh-buy, .sh-deck, .rm-go, .mm-hud')) {
+        e.preventDefault(); this._leave();
+      }
     });
   }
 }

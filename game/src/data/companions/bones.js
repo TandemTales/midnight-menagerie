@@ -248,7 +248,7 @@ const commons = [
     text: 'Deal {d} damage. If you have [Rattle]d this turn, draw {n} Trick, then discard {m0} Trick.',
     flavor: 'Nine laps of the parlour, minimum.',
     nums: { d: 4, n: 1, m0: 1 },
-    effect: eff(c => { U.hit(c, N(c).d); if (U.got(c, 'rattles') > 0) { U.draw(c, N(c).n); c.discard?.(N(c).m0, { choose: true }); } }),
+    effect: eff(c => { U.hit(c, N(c).d); if (U.got(c, 'rattles') > 0) { U.draw(c, N(c).n); c.discard(N(c).m0, { choose: true }); } }),
     upgrade: { nums: { d: 6, n: 1, m0: 1 } },
   },
   {
@@ -523,7 +523,7 @@ const uncommons = [
     text: '[Dig Up] up to {n} Tricks, then discard {m0} Trick.',
     flavor: 'Soil everywhere. Regret nowhere.',
     nums: { n: 2, m0: 1 },
-    effect: eff(async c => { const ks = await U.pickCards(c, { pile: 'stash', count: N(c).n, prompt: 'Dig Up', filter: (x) => U.counter(x, 'buried') > 0 }); for (const k of ks) digUp(c, k); c.discard?.(N(c).m0, { choose: true }); }),
+    effect: eff(async c => { const ks = await U.pickCards(c, { pile: 'stash', count: N(c).n, prompt: 'Dig Up', filter: (x) => U.counter(x, 'buried') > 0 }); for (const k of ks) digUp(c, k); c.discard(N(c).m0, { choose: true }); }),
     upgrade: { nums: { n: 3, m0: 1 } },
   },
   {

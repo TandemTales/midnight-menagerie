@@ -24,6 +24,8 @@ import {
   el, svg, rovingFocus, setReduceMotion, reduceMotion, formatSeed,
   REGION_NAMES, COMPANION_BY_SLUG, heroSrc, cobweb, candle,
 } from '../ui/portrait.js';
+import { pauseStageFor } from './_stage.js';
+import { fitCardToSlot } from './_cardfit.js';
 
 const CSS_KIT  = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_SEL  = new URL('./select.css', import.meta.url).href;
@@ -508,6 +510,9 @@ export class SelectScene extends Scene {
     document.documentElement.classList.toggle('mm-large-text', !!settings.largeText);
     try { ctx.atmosphere?.setMood?.('foyer'); } catch {}
 
+    // The canvas measures 0.00% visible behind this screen — stop drawing it.
+    this._unpauseStage = pauseStageFor(ctx);
+
     // unlocked set: saved rescues, plus the starters, plus ?all=1 for review
     const revealAll = params.all === '1' || params.all === true;
     const saved = Save?.data?.companionsRescued ?? [];
@@ -877,7 +882,7 @@ export class SelectScene extends Scene {
     tile.classList.remove('is-nudging');
     void tile.offsetWidth;              // one forced reflow, only on a locked click
     tile.classList.add('is-nudging');
-    try { this.ctx.audio?.play?.('ui/denied'); } catch {}
+    try { this.ctx.audio?.play?.('ui:denied'); } catch {}
   }
 
   /* ── selection ──────────────────────────────────────────────────────────── */
@@ -998,11 +1003,9 @@ export class SelectScene extends Scene {
 
   /** Scale each CardView to the slot CSS gave it. Called on render and resize. */
   _layoutDeck() {
-    for (const { view, slot } of this._deckCards) {
-      const w = slot.clientWidth, h = slot.clientHeight;
-      if (!w || !h) continue;
-      try { view.setTransform({ x: w / 2, y: h, scale: w / 224 }); } catch {}
-    }
+    // Measured, not hard-coded at 224 — `--card-w` is responsive now, and the
+    // stale constant left the "x2" count pill floating off the card. _cardfit.js.
+    for (const { view, slot } of this._deckCards) fitCardToSlot(view, slot);
   }
 
   _killDeckCards() {
@@ -1135,7 +1138,7 @@ export class SelectScene extends Scene {
     if (!companion || !kid) return;
     const backpack = (KID_CODEX[kid]?.pack ?? []).map(([name, slots]) => ({ name, slots }));
     const payload = { companion, kid, seed, haunt, backpack };
-    try { this.ctx.audio?.play?.('ui/begin'); } catch {}
+    try { this.ctx.audio?.play?.('ui:begin'); } catch {}
     bus.emit('run:start', payload);
     this.root.classList.add('is-leaving');
     const go = () => this.ctx.scenes?.go?.('map', payload);
@@ -1148,6 +1151,8 @@ export class SelectScene extends Scene {
   }
 
   async exit() {
+    this._unpauseStage?.();
+    this._unpauseStage = null;
     for (const off of this._offs) { try { off(); } catch {} }
     this._offs.length = 0;
     for (const p of this._portraits) { try { p.destroy(); } catch {} }

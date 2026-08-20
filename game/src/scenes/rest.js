@@ -228,7 +228,7 @@ export class RestScene extends RoomScene {
     this._syncHud();
     this.$go?.classList.add('is-ready');
     this.$go?.focus();
-    this.ctx.audio?.play?.('ui/confirm');
+    this.ctx.audio?.play?.('ui:confirm');
   }
 
   _lock(on = true) {
@@ -373,7 +373,13 @@ export class RestScene extends RoomScene {
   _bindKeys() {
     this._on(window, 'keydown', (e) => {
       if (e.defaultPrevented || this.root.querySelector('.rm-picker')) return;
-      if (e.key === 'Escape') { e.preventDefault(); this._leave(); return; }
+      // Escape belongs to Settings now, everywhere in a run — the HUD owns it.
+      // Enter leaves. While an unused option has focus Enter belongs to that
+      // option; once the fort has been used there is nothing left to do here.
+      if (e.key === 'Enter'
+          && (this.used || !document.activeElement?.closest?.('[data-opt], .rm-go, .mm-hud'))) {
+        e.preventDefault(); this._leave(); return;
+      }
       if (e.key >= '1' && e.key <= '4') {
         const o = this._options?.[Number(e.key) - 1];
         if (o) { e.preventDefault(); this.root.querySelector(`[data-opt="${o.id}"]`)?.focus(); }

@@ -163,7 +163,8 @@
 .sh-row__sig[data-rarity="rare"] { border-color: var(--rarity-rare); }
 .sh-row__sig[data-rarity="uncommon"] { border-color: var(--rarity-uncommon); }
 .sh-row__sig[data-rarity="shop"] { border-color: var(--arcane-300); }
-.sh-row__sig--snack svg { stroke: var(--spectre-200); }
+/* res.snack is a filled drawing (see ui/icons.js), not a stroked one. */
+.sh-row__sig--snack svg { fill: var(--flame-200); stroke: none; }
 .sh-row__txt { min-width: 0; }
 .sh-row__txt b { display: block; font-family: var(--font-display); font-size: var(--fs-sm); color: var(--text-hi); }
 .sh-row__txt em { display: block; font-style: normal; font-size: var(--fs-xs); color: var(--text-mid); line-height: 1.35; }

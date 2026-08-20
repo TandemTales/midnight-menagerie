@@ -26,6 +26,9 @@ import { relicById, relicSigil } from '../data/relics.js';
 import { Run } from '../state/run.js';
 import { regionMeta } from '../state/mapgen.js';
 import { el, ensureCss, rovingFocus, reduceMotion as prefersReduced } from '../ui/portrait.js';
+import { HUD } from '../ui/hud.js';
+import { pauseStageFor } from './_stage.js';
+import { fitCardToSlot } from './_cardfit.js';
 
 const CSS_KIT  = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_CARD = new URL('../ui/card.css', import.meta.url).href;
@@ -88,6 +91,12 @@ export class RoomScene extends Scene {
   }
 
   async _boot(params, mockNodeType) {
+    /* Reward, Event, Shop and Rest all paint an opaque room screen over the
+       canvas — every one of them measures 0.00% of canvas pixels visible. One
+       pause here covers all four; RoomScene.exit() below is the matching
+       unpause, and none of the four overrides it. */
+    this._unpauseStage = pauseStageFor(this.ctx);
+
     this._readSettings();
     await Promise.all([ensureCss(CSS_KIT), ensureCss(CSS_ROOM), ensureCss(CSS_CARD)]);
     this.run = this._resolveRun(params, mockNodeType);
@@ -111,6 +120,8 @@ export class RoomScene extends Scene {
         <div class="rm-vig" aria-hidden="true"></div>
         <div class="rm-motes" aria-hidden="true"></div>
 
+        <div class="rm-hudhost" data-hud></div>
+
         <header class="rm-head">
           <div class="rm-where">
             <span class="rm-eyebrow">${esc(eyebrow || region.name)}</span>
@@ -118,7 +129,6 @@ export class RoomScene extends Scene {
             ${sub ? `<p class="rm-sub">${esc(sub)}</p>` : ''}
             ${node?.roomName ? `<p class="rm-room">${esc(node.roomName)} &middot; ${esc(region.name)}</p>` : ''}
           </div>
-          <div class="rm-hud" data-hud></div>
         </header>
 
         <main class="rm-body" data-body></main>
@@ -131,31 +141,25 @@ export class RoomScene extends Scene {
     this._syncHud();
   }
 
+  /**
+   * The four node rooms all show the same thing the map and the Scuffle show,
+   * so they show it with the same component: `ui/hud.js`, pinned to the top
+   * edge. This used to be a hand-rolled Courage chip, a hand-rolled purse and
+   * a torch glyph that appeared nowhere else in the game.
+   *
+   * The HUD is event-driven; `_syncHud()` stays as the explicit poke the room
+   * scenes already call after a purchase or a heal.
+   */
   _syncHud() {
     if (!this.$hud) return;
-    const r = this.run;
-    const pct = Math.max(0, Math.min(100, Math.round((r.courage / Math.max(1, r.maxCourage)) * 100)));
-    this.$hud.innerHTML = `
-      <div class="rm-chip rm-chip--hp" tabindex="0"
-           aria-label="${esc(TERMS.hp)} ${r.courage} of ${r.maxCourage}">
-        <span class="rm-chip__k">${esc(TERMS.hp)}</span>
-        <b>${r.courage}</b><i>/${r.maxCourage}</i>
-        <span class="rm-bar"><span style="width:${pct}%"></span></span>
-      </div>
-      <div class="rm-chip rm-chip--gold" tabindex="0"
-           aria-label="${r.lostThings} ${esc(TERMS.gold)}">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.2"/></svg>
-        <b>${r.lostThings}</b><span class="rm-chip__k">${esc(TERMS.gold)}</span>
-      </div>
-      <div class="rm-keeps" role="list" aria-label="${esc(TERMS.relic)}s">
-        ${r.keepsakes.length
-          ? r.keepsakes.map(k => `
-            <span class="rm-keep${k.forged ? ' is-forged' : ''}" role="listitem" tabindex="0"
-                  data-rarity="${esc(k.rarity)}" title="${esc(k.name)} — ${esc(k.desc)}">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="${relicSigil(k.id)}"/></svg>
-            </span>`).join('')
-          : `<span class="rm-keep is-empty" role="listitem">No ${esc(TERMS.relic)}s</span>`}
-      </div>`;
+    if (!this.hud) {
+      // In flow, not pinned: these screens are a grid and the strip is its
+      // first row, so a wrapped HUD under largeText pushes the room down
+      // instead of sitting on top of the title.
+      this.hud = new HUD(this.ctx, { mount: this.$hud, run: this.run, fixed: false, useSnacks: false });
+      this._own(() => { this.hud?.destroy(); this.hud = null; });
+    }
+    this.hud.refresh();
   }
 
   /** The one large action at the bottom right. */
@@ -163,7 +167,7 @@ export class RoomScene extends Scene {
     const b = el('button', 'rm-go');
     b.type = 'button';
     b.innerHTML = `<span>${esc(label)}</span>${hint ? `<em>${esc(hint)}</em>` : ''}<kbd>${esc(key)}</kbd>`;
-    b.addEventListener('click', () => { this.ctx.audio?.play?.('ui/confirm'); onGo(); });
+    b.addEventListener('click', () => { this.ctx.audio?.play?.('ui:confirm'); onGo(); });
     this.$foot.appendChild(b);
     this.$go = b;
     return b;
@@ -210,11 +214,7 @@ export class RoomScene extends Scene {
       let chosen = null;
 
       const layout = () => {
-        for (const { slot, view } of views) {
-          const w = slot.clientWidth, h = slot.clientHeight;
-          if (!w || !h) continue;
-          try { view.setTransform({ x: w / 2, y: h, scale: w / 224 }); } catch { /* pre-layout */ }
-        }
+        for (const { slot, view } of views) fitCardToSlot(view, slot);
       };
 
       for (const c of o.cards) {
@@ -246,7 +246,7 @@ export class RoomScene extends Scene {
           for (const v of views) v.slot.setAttribute('aria-selected', String(v.c.uid === chosen));
           showAfter(true);
           ok.disabled = false;
-          this.ctx.audio?.play?.('ui/tick');
+          this.ctx.audio?.play?.('ui:tick');
         };
         slot.addEventListener('click', choose);
         slot.addEventListener('keydown', (e) => {
@@ -285,6 +285,8 @@ export class RoomScene extends Scene {
 
   async exit() {
     this._dead = true;
+    this._unpauseStage?.();
+    this._unpauseStage = null;
     for (const off of this._off.splice(0)) { try { off(); } catch { /* teardown */ } }
     for (const v of this._views.splice(0)) { try { v.destroy?.(); } catch { /* teardown */ } }
     this.$body = this.$foot = this.$hud = this.$go = null;
@@ -425,11 +427,7 @@ export class RewardScene extends RoomScene {
   }
 
   _layout() {
-    for (const { slot, view } of this._slots || []) {
-      const w = slot.clientWidth, h = slot.clientHeight;
-      if (!w || !h) continue;
-      try { view.setTransform({ x: w / 2, y: h, scale: w / 224 }); } catch { /* pre-layout */ }
-    }
+    for (const { slot, view } of this._slots || []) fitCardToSlot(view, slot);
   }
 
   /* ── footer: skip, and the way out ────────────────────────────────────── */
@@ -467,7 +465,7 @@ export class RewardScene extends RoomScene {
     this.run.takeRewardCard?.(cardId);
     this.picked = cardId;
     this.resolved = true;
-    this.ctx.audio?.play?.('card/pick');
+    this.ctx.audio?.play?.('card:pick');
     this._markTaken(cardId, true);
     this._syncFoot();
     this._syncHud();
@@ -493,7 +491,7 @@ export class RewardScene extends RoomScene {
     if (this.resolved) return;
     this.run.skipRewardCards?.();
     this.resolved = true;
-    this.ctx.audio?.play?.('ui/back');
+    this.ctx.audio?.play?.('ui:back');
     for (const { slot, view } of this._slots || []) {
       slot.classList.add('is-gone');
       slot.tabIndex = -1;

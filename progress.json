@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T10:05:53",
+ "updated": "2026-08-20T10:58:28",
  "wave": 3,
  "waveLabel": "Closing the seams",
  "headline": "A full playthrough found that every module passes its own tests and silently no-ops at the join. Fixing that class of bug.",
@@ -82,8 +82,8 @@
    "name": "Companion decks",
    "desc": "Card pools + keyword systems for the 16 Companions",
    "status": "reviewing",
-   "round": 3,
-   "verdict": "445 cards, 0 errors, 0 warnings. Nine rarity-ladder duplicates re-authored as changes in kind; the distinctness detector rewritten to catch the class.",
+   "round": 4,
+   "verdict": "Haunt now deals damage (0 ticks in 300 fights, now 261 ticks / 424 Courage). Ignores Guard now pierces.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -330,6 +330,14 @@
   {
    "t": "2026-08-20T10:05:53",
    "msg": "Root cause was my own instruction: I told every agent to guard cross-system calls with '?.', which turned missing implementations into silent no-ops. CONTRACTS.md rewritten."
+  },
+  {
+   "t": "2026-08-20T10:58:28",
+   "msg": "Seam checker found 103 problems, not the 3 reported. Fixed 96. Empowered added zero damage; play-dead threw on its first line; five statuses were never registered."
+  },
+  {
+   "t": "2026-08-20T10:58:28",
+   "msg": "Critical: Companion statuses were never registered in the balance simulation, so every prior Marmalade balance number is suspect. Re-measuring."
   }
  ]
 }

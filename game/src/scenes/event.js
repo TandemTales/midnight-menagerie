@@ -190,7 +190,7 @@ export class EventScene extends RoomScene {
     const res = this.run.chooseEventOption(o.id);
     if (!res) return;
     this._answered = true;
-    this.ctx.audio?.play?.('ui/confirm');
+    this.ctx.audio?.play?.('ui:confirm');
     this._showOutcome({ option: o.id, ...res.outcome }, res.pending, true);
     this._syncHud();
   }

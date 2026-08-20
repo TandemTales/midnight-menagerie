@@ -31,69 +31,14 @@
 .cb.is-enemy-turn::after { opacity: 1; }
 
 /* ───────────────────────────────────────────── top bar ─────────────────── */
+/* The shared run HUD (`ui/hud.js`, `variant:"combat"`) mounts here. Relics
+   left, Courage / Lost Things / Snacks / cog right, per STS2-REFERENCE §1.
+   This screen used to draw its own; it does not any more. */
 .cb-top {
   position: absolute; top: 0; left: 0; right: 0;
-  display: flex; align-items: flex-start; justify-content: space-between;
-  gap: var(--s-4);
-  padding: var(--s-3) var(--s-5);
   z-index: 330;
   pointer-events: none;
 }
-.cb-top > * { pointer-events: auto; }
-
-.cb-keeps {
-  display: flex; flex-wrap: wrap; gap: var(--s-2);
-  max-width: 46vw;
-}
-.cb-keep {
-  display: flex; align-items: center; gap: var(--s-1);
-  height: 38px; padding: 0 var(--s-2);
-  border-radius: var(--radius-md);
-  background: linear-gradient(180deg,
-    color-mix(in srgb, var(--ink-600) 92%, transparent),
-    color-mix(in srgb, var(--ink-800) 96%, transparent));
-  border: 1px solid var(--ink-400);
-  box-shadow: var(--shadow-2), inset 0 1px 0 color-mix(in srgb, var(--flame-200) 14%, transparent);
-  color: var(--flame-300);
-  transition: transform var(--t-quick) var(--ease-snap), border-color var(--t-quick);
-}
-.cb-keep:hover, .cb-keep:focus-visible { transform: translateY(-2px); border-color: var(--flame-400); }
-.cb-keep svg { width: 20px; height: 20px; fill: currentColor; }
-.cb-keep b {
-  font-family: var(--font-num); font-size: var(--fs-sm); color: var(--text-hi);
-}
-.cb-keep.is-empty { color: var(--text-lo); border-style: dashed; border-color: var(--ink-500); }
-.cb-keep.is-empty span {
-  font-size: var(--fs-xs); letter-spacing: .12em; text-transform: uppercase;
-}
-
-.cb-vitals { display: flex; align-items: center; gap: var(--s-3); }
-.cb-turn {
-  display: flex; align-items: baseline; gap: var(--s-1);
-  font-family: var(--font-display);
-  color: var(--text-lo);
-}
-.cb-turn__k { font-size: var(--fs-xs); letter-spacing: .22em; text-transform: uppercase; }
-.cb-turn__n { font-size: var(--fs-lg); color: var(--text-mid); }
-
-.cb-chip {
-  display: flex; align-items: center; gap: var(--s-2);
-  height: 40px; padding: 0 var(--s-3);
-  border-radius: 999px;
-  background: linear-gradient(180deg,
-    color-mix(in srgb, var(--ink-700) 94%, transparent), var(--ink-800));
-  border: 1px solid var(--ink-400);
-  box-shadow: var(--shadow-2), inset 0 1px 0 color-mix(in srgb, var(--text-hi) 8%, transparent);
-  font-family: var(--font-num);
-}
-.cb-chip svg { width: 19px; height: 19px; }
-.cb-chip__n { font-size: var(--fs-md); }
-.cb-chip__m { font-size: var(--fs-sm); color: var(--text-lo); }
-.cb-chip--hp svg { fill: var(--courage-300); }
-.cb-chip--hp .cb-chip__n { color: var(--courage-300); }
-.cb-chip--gold svg { fill: var(--flame-300); }
-.cb-chip--gold svg .hole { fill: var(--ink-800); }
-.cb-chip--gold .cb-chip__n { color: var(--flame-200); }
 
 /* ───────────────────────────────────────────── the field ───────────────── */
 .cb-field {
@@ -1006,24 +951,9 @@
 .cb-num[data-kind="status"] { color: var(--text-hi); font-size: 16px; }
 .cb-num.is-big { -webkit-text-stroke: 3px var(--ink-900); }
 
-/* ───────────────────────────────────────────── tooltip ─────────────────── */
-.cb-tip {
-  position: absolute; left: 0; top: 0;
-  max-width: 320px;
-  padding: var(--s-2) var(--s-3);
-  border-radius: var(--radius-md);
-  background: linear-gradient(180deg,
-    color-mix(in srgb, var(--ink-700) 97%, transparent), var(--ink-900));
-  border: 1px solid var(--ink-400);
-  box-shadow: var(--shadow-4);
-  color: var(--text-mid);
-  font-size: var(--fs-sm);
-  line-height: 1.42;
-  opacity: 0; pointer-events: none;
-  transition: opacity var(--t-quick) var(--ease-soft);
-  z-index: var(--z-tooltip);
-}
-.cb-tip.is-on { opacity: 1; }
+/* ── tooltip content ──────────────────────────────────────────────────────
+   The PANEL is `ui/tooltip.js`'s (one tooltip, whole game). These are the
+   blocks this scene puts inside it for intents and enemies. */
 .cb-tip__title {
   font-family: var(--font-display); font-size: var(--fs-sm);
   letter-spacing: .14em; text-transform: uppercase;
@@ -1038,43 +968,6 @@
 }
 .cb-tip__note { margin-top: 4px; font-size: var(--fs-xs); color: var(--spectre-300); }
 
-/* ───────────────────────────────────────────── pile viewer ─────────────── */
-.cb-pileview {
-  position: absolute; inset: 0; z-index: 500;
-  display: grid; place-items: center;
-  background: color-mix(in srgb, var(--ink-900) 82%, transparent);
-  backdrop-filter: blur(6px);
-}
-.cb-pileview[hidden] { display: none; }
-.cb-pileview__panel {
-  width: min(1180px, 88vw); max-height: 80vh;
-  display: flex; flex-direction: column;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(180deg, var(--ink-700), var(--ink-900));
-  border: 1px solid var(--ink-400);
-  box-shadow: var(--shadow-4);
-  overflow: hidden;
-}
-.cb-pileview__panel header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: var(--s-3) var(--s-5);
-  border-bottom: 1px solid var(--ink-500);
-}
-.cb-pileview__panel h2 {
-  margin: 0; font-family: var(--font-display); font-size: var(--fs-lg);
-  letter-spacing: .1em; color: var(--flame-200); font-weight: 600;
-}
-.cb-pileview__x { font-size: var(--fs-xl); color: var(--text-lo); line-height: 1; padding: 0 var(--s-2); }
-.cb-pileview__x:hover { color: var(--flame-200); }
-.cb-pileview__grid {
-  display: flex; flex-wrap: wrap; gap: var(--s-4);
-  padding: var(--s-5);
-  overflow-y: auto;
-  justify-content: center;
-}
-.cb-pilecard { position: relative; }
-.cb-pileview__none { color: var(--text-lo); font-size: var(--fs-lg); padding: var(--s-7); }
-
 /* ───────────────────────────────────────────── a11y / settings ─────────── */
 .cb-root.is-large { font-size: 118%; }
 .cb-root.is-large .cb-enemy__name,
@@ -1082,7 +975,7 @@
 .cb-root.is-large .cb-intent__d { font-size: var(--fs-lg); }
 
 .cb-enemy:focus-visible, .cb-status:focus-visible,
-.cb-pile:focus-visible, .cb-endturn:focus-visible, .cb-keep:focus-visible {
+.cb-pile:focus-visible, .cb-endturn:focus-visible {
   outline: 2px solid var(--flame-300); outline-offset: 3px;
 }
 

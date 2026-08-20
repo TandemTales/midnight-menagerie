@@ -729,7 +729,7 @@ const rares = [
     text: 'Deal {d} damage. At 2 [Stretch] deal {m0} instead. At 3 Stretch deal {m1} instead, then [Vanish] this Trick.',
     flavor: 'Four turns of patience compressed into one sphere.',
     nums: { d: 18, m0: 32, m1: 52 },
-    effect: eff(c => { const s = stretchOf(c.card); U.hit(c, s >= 3 ? N(c).m1 : s >= 2 ? N(c).m0 : N(c).d); if (s >= 3) { U.makeVanish(c, c.card); c.exhaust?.(c.card); } clearStretch(c, c.card); }),
+    effect: eff(c => { const s = stretchOf(c.card); U.hit(c, s >= 3 ? N(c).m1 : s >= 2 ? N(c).m0 : N(c).d); if (s >= 3) { U.makeVanish(c, c.card); c.exhaust(c.card); } clearStretch(c, c.card); }),
     upgrade: { nums: { d: 23, m0: 40, m1: 64 } },
   },
   {
@@ -890,7 +890,7 @@ const rares = [
     text: 'Choose a [Gummy] copy in your hand. It does not [Vanish] on its next play. Afterwards it behaves as a temporary Trick in your discard pile and is [Chewed].',
     flavor: 'She keeps the wrapper. She always keeps the wrapper.',
     nums: {},
-    effect: eff(async c => { const [k] = await U.pickCards(c, { pile: 'hand', count: 1, prompt: 'Keep a Gummy copy', filter: (x) => U.flag(x, 'gummy') }); if (k) { U.setFlag(k, 'survivesOnce', true); U.setFlag(k, 'chewed', true); c.setVanish?.(k, false); } }),
+    effect: eff(async c => { const [k] = await U.pickCards(c, { pile: 'hand', count: 1, prompt: 'Keep a Gummy copy', filter: (x) => U.flag(x, 'gummy') }); if (k) { U.setFlag(k, 'survivesOnce', true); U.setFlag(k, 'chewed', true); c.setVanish(k, false); } }),
     upgrade: { nums: { n: 1 }, text: 'Choose a [Gummy] copy in your hand. It does not [Vanish] on its next play. Afterwards it behaves as a temporary Trick in your discard pile and is [Chewed]. Draw {n} Trick.' },
   },
   {
@@ -902,7 +902,7 @@ const rares = [
     effect: eff(async c => {
       const [sac] = await U.pickCards(c, { pile: 'hand', count: 1, prompt: 'Melt a Trick', filter: (x) => !U.flag(x, 'gummy') });
       if (!sac) return;
-      c.exhaust?.(sac);
+      c.exhaust(sac);
       const ks = await U.pickCards(c, { pile: 'hand', count: N(c).n, prompt: 'Remake as Gummy', filter: (x) => copyable(x) && x !== sac });
       for (const k of ks) gummy(c, k, 'hand');
     }),

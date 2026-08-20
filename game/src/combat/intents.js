@@ -104,6 +104,56 @@ export function consumePlan(enemy) {
   enemy.plan.push(null);
   enemy.planLocked = Math.max(0, enemy.planLocked - 1);
   enemy.previewDepth = Math.max(0, enemy.previewDepth - 1);
+  // "No Such Thing as Random": this enemy's plan stays revealed and stays put.
+  if (enemy.intentControlled) {
+    enemy.previewDepth = MAX_PLAN - 1;
+    enemy.planLocked = MAX_PLAN;
+  }
+}
+
+/**
+ * Wink's `No Such Thing as Random`. The card promises the player picks whenever
+ * the AI would roll; the engine has no player-facing prompt inside the (sync)
+ * planning path, so what it does instead is take the roll away entirely: the
+ * enemy's whole plan is revealed to Wink's maximum depth and LOCKED, so every
+ * future position stops being re-derived and what she sees is exactly what she
+ * gets. See docs/NOTES.md — a true "you pick the branch" prompt needs an
+ * enemy-turn choice UI that does not exist yet.
+ */
+export function setIntentControl(engine, enemy, on = true) {
+  if (!enemy) return false;
+  enemy.intentControlled = !!on;
+  if (!on) return true;
+  rebuildPlan(engine, enemy);
+  enemy.previewDepth = MAX_PLAN - 1;
+  enemy.planLocked = MAX_PLAN;
+  afterQueueEdit(engine, enemy, 'control');
+  return true;
+}
+
+/**
+ * Wink's `Forked Future`. Both branches are already Previewed, so the choice is
+ * made with full information: whichever the player picks becomes the next
+ * action and the other stays queued behind it. Resolves to the chosen position.
+ */
+export async function forkFuture(engine, enemy) {
+  if (!enemy || !enemy.alive) return -1;
+  rebuildPlan(engine, enemy);
+  if (!enemy.plan[1] || !enemy.plan[2]) return -1;
+  if (isAnchored(enemy, 1) || isAnchored(enemy, 2)) return -1;
+  const opts = [1, 2].map(k => {
+    const i = buildIntent(engine, enemy, moveAt(enemy, k), { position: k });
+    return { label: `${i.name || enemy.name}${i.damage ? ` — ${i.damage}${i.hits > 1 ? `x${i.hits}` : ''}` : ''}` };
+  });
+  const picked = await engine.choices.ask({
+    kind: 'option', pool: opts, count: 1,
+    prompt: `Which does ${enemy.name} do next?`,
+    meta: { enemyId: enemy.id, fork: true },
+  });
+  const which = Array.isArray(picked) ? (picked[0] ?? 0) : 0;
+  if (which === 1) swapIntents(engine, enemy, 1, 2);
+  else { lock(enemy, 2); afterQueueEdit(engine, enemy, 'fork'); }
+  return which + 1;
 }
 
 function lock(enemy, upTo) { enemy.planLocked = Math.max(enemy.planLocked, upTo + 1); }

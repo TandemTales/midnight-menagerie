@@ -1,0 +1,96 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>seam probe — does the balance sim ever touch the fixed mechanics?</title>
+<body><pre id="out">running…</pre></body>
+<script type="module">
+/**
+ * tests/critic-design/sim.py reported the SAME numbers before and after the
+ * Haunt / Ignores-Guard fixes. This probe answers why, without editing that
+ * agent's files: it replicates sim.html's deck and greedy AI exactly and counts
+ * how often the fixed mechanics are actually reachable from that deck.
+ */
+import { CombatEngine } from '/game/src/combat/engine.js';
+import { RNG } from '/game/src/core/rng.js';
+import { startingDeckFor } from '/game/src/data/cards.js';
+import { ENEMIES, getEnemy, ENEMY_STATUSES } from '/game/src/data/enemies/index.js';
+import * as enc from '/game/src/data/encounters.js';
+import * as statuses from '/game/src/data/statuses.js';
+
+try { statuses.registerStatuses(ENEMY_STATUSES); } catch {}
+
+const DECK = startingDeckFor('marmalade');
+const R = { deck: DECK.map(c => c.id), booPlays: 0, hauntApplied: 0, hauntTicks: 0,
+            hauntDamage: 0, pierceCards: 0, fights: 0, turns: 0 };
+
+function makeEngine(encId, seed) {
+  const rng = new RNG(seed);
+  const members = enc.buildEncounter(encId, rng, 0);
+  return new CombatEngine({
+    rng, strictCtx: false,
+    player: { name: 'Kid', companion: 'marmalade', maxHp: 68, hp: 68, energyMax: 3, drawPerTurn: 5, deck: DECK },
+    enemies: members.map((m, i) => ({ def: getEnemy(m.enemyId), hp: m.hp || undefined, id: `e${i}` })),
+  });
+}
+
+const shownIncoming = (e) => e.enemies.reduce((t, en) =>
+  t + (en.alive && en.intent ? (en.intent.totalDamage || 0) : 0), 0);
+
+// verbatim from tests/critic-design/sim.html
+async function greedyTurn(e) {
+  for (let step = 0; step < 40; step++) {
+    if (e.over || e.phase !== 'player') break;
+    const st = e.state;
+    const hand = st.piles.hand.filter(c => c.playable);
+    if (!hand.length) break;
+    const need = Math.max(0, shownIncoming(e) - st.player.block);
+    const enemy = e.livingEnemies()[0];
+    const tid = enemy ? enemy.id : null;
+    let pick = null;
+    for (const c of hand) {
+      if (c.type !== 'attack') continue;
+      const en = e.livingEnemies().find(x => (c.display?.d?.value ?? 0) >= x.hp + x.block);
+      if (en) { pick = { c, t: en.id }; break; }
+    }
+    if (!pick && need > 0) {
+      const blocks = hand.filter(c => (c.display?.b?.value ?? 0) > 0)
+        .sort((a, b) => (b.display.b.value) - (a.display.b.value));
+      if (blocks.length) pick = { c: blocks[0], t: null };
+    }
+    if (!pick) {
+      const atks = hand.filter(c => c.type === 'attack')
+        .sort((a, b) => (b.display?.d?.value ?? 0) - (a.display?.d?.value ?? 0));
+      if (atks.length) pick = { c: atks[0], t: tid };
+    }
+    if (!pick) {
+      const rest = hand.filter(c => c.type !== 'attack');
+      if (rest.length) pick = { c: rest[0], t: tid };
+    }
+    if (!pick) break;
+    if (pick.c.id === 'marmalade/boo') R.booPlays++;
+    await e.playCard(pick.c.uid, pick.t);
+  }
+}
+
+async function fight(encId, seed) {
+  const e = makeEngine(encId, seed);
+  R.fights++;
+  e.on('status', (ev) => { if (ev.id === 'haunt' && ev.delta > 0) R.hauntApplied += ev.delta; });
+  e.on('damage', (ev) => {
+    if (ev.cause === 'haunt') { R.hauntTicks++; R.hauntDamage += ev.hpLoss; }
+    if (ev.pierce) R.pierceCards++;
+  });
+  await e.startCombat();
+  let t = 0;
+  while (!e.over && t < 60) { t++; await greedyTurn(e); if (e.over) break; await e.endTurn(); }
+  R.turns += t;
+  return e.victory;
+}
+
+(async () => {
+  const encs = ['foyer-1', 'foyer-2', 'foyer-14', 'foyer-scare-coatcheck', 'foyer-boss'];
+  for (const id of encs) for (let s = 1000; s < 1060; s++) await fight(id, s);
+  document.getElementById('out').textContent = JSON.stringify(R, null, 1);
+  console.log('PROBE ' + JSON.stringify(R));
+  window.__PROBE__ = R;
+})();
+</script>

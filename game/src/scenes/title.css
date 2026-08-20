@@ -103,12 +103,38 @@
 @keyframes ti-flicker {
   0%,100% { opacity: .82; } 21% { opacity: 1; } 44% { opacity: .68; } 63% { opacity: .95; } 81% { opacity: .76; }
 }
-.ms-win-bloom ellipse {
-  fill: color-mix(in srgb, var(--flame-glow) 17%, transparent);
-  filter: blur(13px);
+/* ── the warm glow ────────────────────────────────────────────────────────────
+   PERF, and it is worth the paragraph. The window bloom and the door halo used
+   to be blurred children *inside* the mansion SVG whose opacity animated:
+
+       .ms-win-bloom ellipse { filter: blur(13px); animation: ti-flicker ... }
+
+   An SVG child is not a CSS box, so Chromium cannot promote it to its own
+   compositor layer. Animating its opacity therefore re-runs the blur — over
+   sixteen ellipses and a door path, at full layer size — on the main thread on
+   every frame. Profiled at a 3.3 s long task on title entry; blanking the two
+   filters alone took it to ~0.4 s.
+
+   They are now sibling <svg> elements of .mansion inside .ti-house. An <svg>
+   root IS a CSS box: `will-change: opacity` gives each one a texture, the blur
+   bakes into that texture once, and the flicker becomes a compositor-side
+   opacity animation that costs the main thread nothing. Same viewBox and same
+   preserveAspectRatio as .mansion, so they register pixel-for-pixel, and they
+   are ordered to keep the original paint order (glow under the door, bloom over
+   the window bars). */
+.ti-glow {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  will-change: opacity;
   animation: ti-flicker 4.1s ease-in-out infinite;
 }
-.ms-doorglow { fill: color-mix(in srgb, var(--flame-glow) 34%, transparent); filter: blur(15px); animation: ti-flicker 3.1s ease-in-out infinite; }
+.ti-glow--bloom { filter: blur(13px); }
+.ti-glow--bloom ellipse { fill: color-mix(in srgb, var(--flame-glow) 17%, transparent); }
+.ti-glow--b1 { animation-delay: -1.4s; }   /* three phases so the halos de-sync */
+.ti-glow--b2 { animation-delay: -2.7s; }
+.ti-glow--door { filter: blur(15px); animation-duration: 3.1s; }
+
+.ms-doorglow { fill: color-mix(in srgb, var(--flame-glow) 34%, transparent); }
 .ms-door     { fill: color-mix(in oklab, var(--flame-300) 74%, var(--flame-500)); }
 .ms-doorsplit{ stroke: color-mix(in oklab, var(--flame-500) 70%, var(--ink-900)); stroke-width: 2.5; }
 

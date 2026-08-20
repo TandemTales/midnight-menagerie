@@ -13,6 +13,8 @@ import {
   ensureCss, fontsReady, logoLockup, candle, cobweb, bat,
   el, svg, rovingFocus, setReduceMotion, reduceMotion,
 } from '../ui/portrait.js';
+import { pauseStageFor } from './_stage.js';
+import { openSettings } from '../ui/settings.js';
 
 const CSS_KIT   = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_TITLE = new URL('./title.css', import.meta.url).href;
@@ -130,9 +132,17 @@ function mansionSVG() {
   s += `<g class="ms-win-lit">${wins.map((w) =>
     `<path d="${w.d}" style="--fl:${w.s};animation-delay:-${w.delay}s"/>`).join('')}</g>`;
   s += `<path class="ms-win-bar" d="${frames}"/>`;
-  // warm bloom pooling out of the lit windows
-  s += `<g class="ms-win-bloom">${wins.map((w) =>
-    `<ellipse cx="${w.x}" cy="${w.y}" rx="52" ry="46" style="animation-delay:-${w.delay}s"/>`).join('')}</g>`;
+
+  /* Warm bloom pooling out of the lit windows. Split across three promoted layers
+     rather than one so the halos still flicker out of phase with each other — the
+     per-ellipse animation-delay that used to do that is gone, because the whole
+     point is that opacity now animates on the layer, not on its children. Three
+     phases reads the same as sixteen; one would read as the house blinking. */
+  const BLOOM_LAYERS = 3;
+  const bloomGroups = Array.from({ length: BLOOM_LAYERS }, () => '');
+  wins.forEach((w, i) => {
+    bloomGroups[i % BLOOM_LAYERS] += `<ellipse cx="${w.x}" cy="${w.y}" rx="52" ry="46"/>`;
+  });
 
   // --- fence ----------------------------------------------------------------
   let pickets = '';
@@ -155,9 +165,14 @@ function mansionSVG() {
   // --- ground ---------------------------------------------------------------
   const ground = `<path class="ms-ground" d="M0 700c180-26 320 10 480 4s300-32 470-22 300 40 470 26 180-8 180-8v100H-40Z"/>`;
 
-  return `<svg class="mansion" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
-    <g transform="translate(0 ${DROP})">${ground}${s}</g>
-  </svg>`;
+  return [
+    layer('mansion', ground + s),
+    layer('ti-glow ti-glow--door', doorGlow),
+    layer('mansion mansion--door', door),
+    ...bloomGroups
+      .filter(Boolean)
+      .map((g, i) => layer(`ti-glow ti-glow--bloom ti-glow--b${i}`, g)),
+  ];
 }
 
 /* ── menu definition ───────────────────────────────────────────────────────── */
@@ -182,11 +197,30 @@ export class TitleScene extends Scene {
     const { ctx } = this;
     await Promise.all([ensureCss(CSS_KIT), ensureCss(CSS_TITLE)]);
 
-    const settings = Save?.settings ?? {};
-    setReduceMotion(!!settings.reduceMotion);
-    document.documentElement.classList.toggle('mm-large-text', !!settings.largeText);
+    const applyLocal = () => {
+      const s = Save?.settings ?? {};
+      setReduceMotion(!!s.reduceMotion);
+      document.documentElement.classList.toggle('mm-large-text', !!s.largeText);
+    };
+    applyLocal();
+    // The shared Settings panel writes straight to Save and announces it; this
+    // screen's two local mirrors follow, so a change is visible behind the modal.
+    this._offs.push(bus.on('settings:changed', applyLocal));
 
-    try { ctx.atmosphere?.setMood?.('foyer'); } catch {}
+    /* The authored exterior-night region, not the Foyer. Nothing on this screen
+       shows it: `.ti-sky` is an opaque gradient and the canvas measures 0.00%
+       visible, and the previous owner already rendered the transparent-sky
+       version (shots/ti_fix.png) and rejected it — the WebGL gold horizon fights
+       the purple SVG night and you get two moons. So the SVG art stays the
+       visible layer and the stage is paused below. The region is still set
+       correctly rather than left on 'foyer', because 'foyer' is a lie: it is the
+       colour the CSS custom properties get published from (`_publishCss`), it is
+       what the stage holds if anything ever un-pauses it mid-title, and leaving a
+       screen pointing at the wrong room is how the next person inherits a bug. */
+    try { ctx.atmosphere?.setMood?.('title'); } catch {}
+
+    // Nothing of the canvas reaches the screen here — stop drawing it.
+    this._unpauseStage = pauseStageFor(ctx);
 
     const root = this.root;
     root.innerHTML = '';
@@ -200,7 +234,7 @@ export class TitleScene extends Scene {
     root.appendChild(sky);
 
     const house = el('div', 'ti-house');
-    house.appendChild(svg(mansionSVG()));
+    for (const markup of mansionSVG()) house.appendChild(svg(markup));
     root.appendChild(house);
 
     root.appendChild(el('div', 'ti-fog'));
@@ -293,7 +327,7 @@ export class TitleScene extends Scene {
 
     const onHover = (e) => {
       const b = e.target.closest?.('.ti-item');
-      if (b && b !== this._hovered) { this._hovered = b; try { this.ctx.audio?.play?.('ui/hover'); } catch {} }
+      if (b && b !== this._hovered) { this._hovered = b; try { this.ctx.audio?.play?.('ui:hover'); } catch {} }
     };
     nav.addEventListener('pointerover', onHover);
     this._offs.push(() => nav.removeEventListener('pointerover', onHover));
@@ -325,7 +359,7 @@ export class TitleScene extends Scene {
 
   _activate(id) {
     const { ctx } = this;
-    try { ctx.audio?.play?.('ui/confirm'); } catch {}
+    try { ctx.audio?.play?.('ui:confirm'); } catch {}
     switch (id) {
       case 'continue': {
         const run = Save?.loadRun?.();
@@ -335,12 +369,21 @@ export class TitleScene extends Scene {
       }
       case 'new':       ctx.scenes?.go?.('select', {}); break;
       case 'menagerie': ctx.scenes?.go?.('clubhouse', { panel: 'menagerie' }); break;
-      case 'settings':  this._openOverlay('settings'); break;
+      case 'settings':  this._openSettings(); break;
       case 'credits':   this._openOverlay('credits'); break;
     }
   }
 
-  /* ── settings / credits overlay ─────────────────────────────────────────── */
+  /**
+   * Settings is `ui/settings.js` — the same panel the run HUD's cog opens, on
+   * the same modal primitive, driving the same `Save.settings`. The title
+   * screen used to carry its own overlay with a different subset of controls
+   * and no colourblind palette at all, so the game had two answers to
+   * "what are my settings".
+   */
+  _openSettings() { return openSettings(this.ctx); }
+
+  /* ── credits overlay ────────────────────────────────────────────────────── */
   _openOverlay(kind) {
     if (this._overlay) this._closeOverlay();
     this._lastFocus = document.activeElement;
@@ -348,56 +391,12 @@ export class TitleScene extends Scene {
     const ov = el('div', 'ti-ov');
     ov.setAttribute('role', 'dialog');
     ov.setAttribute('aria-modal', 'true');
-    ov.setAttribute('aria-label', kind === 'settings' ? 'Settings' : 'Credits');
+    ov.setAttribute('aria-label', 'Credits');
 
     const panel = el('div', 'ti-ov__panel');
-    panel.innerHTML = `<h2 class="ti-ov__title">${kind === 'settings' ? 'Settings' : 'Credits'}</h2>`;
+    panel.innerHTML = '<h2 class="ti-ov__title">Credits</h2>';
 
-    if (kind === 'settings') {
-      const s = Save?.settings ?? {};
-      const sliders = [
-        ['master', 'Master volume'], ['music', 'Music'], ['sfx', 'Effects'],
-      ];
-      const toggles = [
-        ['reduceMotion', 'Reduce motion', 'Stills the drifting particles and screen motion'],
-        ['largeText', 'Larger text', 'Increases body text across every screen'],
-        ['flashes', 'Screen flashes', 'Bright impact flashes during combat'],
-        ['screenShake', 'Screen shake', 'Camera kick scaled to damage'],
-        ['showDamageNumbers', 'Damage numbers', 'Floating numbers on every hit'],
-      ];
-      const body = el('div', 'ti-ov__body');
-      for (const [key, label] of sliders) {
-        const row = el('label', 'ti-set');
-        row.innerHTML =
-          `<span class="ti-set__label">${label}</span>` +
-          `<input class="ti-set__range" type="range" min="0" max="1" step="0.05" value="${Number(s[key] ?? 0.8)}">` +
-          `<output class="ti-set__out">${Math.round(Number(s[key] ?? 0.8) * 100)}</output>`;
-        const input = row.querySelector('input');
-        const out = row.querySelector('output');
-        input.addEventListener('input', () => {
-          out.textContent = Math.round(input.value * 100);
-          Save?.setSetting?.(key, Number(input.value));
-          try { this.ctx.audio?.applySettings?.(); } catch {}
-        });
-        body.appendChild(row);
-      }
-      for (const [key, label, hint] of toggles) {
-        const row = el('label', 'ti-set ti-set--toggle');
-        const on = !!s[key];
-        row.innerHTML =
-          `<span class="ti-set__label">${label}<em>${hint}</em></span>` +
-          `<input class="ti-set__check" type="checkbox" ${on ? 'checked' : ''}>` +
-          `<span class="ti-set__sw" aria-hidden="true"></span>`;
-        const input = row.querySelector('input');
-        input.addEventListener('change', () => {
-          Save?.setSetting?.(key, input.checked);
-          if (key === 'reduceMotion') setReduceMotion(input.checked);
-          if (key === 'largeText') document.documentElement.classList.toggle('mm-large-text', input.checked);
-        });
-        body.appendChild(row);
-      }
-      panel.appendChild(body);
-    } else {
+    {
       panel.appendChild(el('div', 'ti-ov__body ti-credits', `
         <p class="ti-credits__lead">A cute-spooky deckbuilding roguelike about eight kids,
         sixteen transformed pets, and a house that confused protecting someone with keeping them.</p>
@@ -449,6 +448,8 @@ export class TitleScene extends Scene {
   }
 
   async exit() {
+    this._unpauseStage?.();
+    this._unpauseStage = null;
     clearTimeout(this._entTimer);
     this._closeOverlay();
     for (const off of this._offs) { try { off(); } catch {} }

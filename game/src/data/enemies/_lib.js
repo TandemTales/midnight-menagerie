@@ -131,7 +131,7 @@ export function hpFrac(a) { return (a && a.maxHp) ? (a.hp || 0) / a.maxHp : 1; }
  * The intent number is the contract; this function is the only place enemies can break it.
  */
 export function hitPlayer(c, n, hits = 1) {
-  c.damage?.(c.player, n, { hits });
+  c.damage(c.player, n, { hits });
 }
 
 /** Shared per-combat scratch (Darkness, Bed Positions, House Rules…). */

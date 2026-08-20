@@ -74,6 +74,6 @@ window.MM = {
   ctx, bus, clock, Save,
   version: '0.1.0',
   goto: (s, p) => ctx.scenes.go(s, p || {}),
-  state: () => ({ scene: ctx.scenes.currentName, run: ctx.run?.snapshot?.() ?? null }),
+  state: () => ({ scene: ctx.scenes.currentName, run: ctx.run ? ctx.run.snapshot() : null }),
 };
 bus.emit('boot');

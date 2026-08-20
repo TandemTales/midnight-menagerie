@@ -146,7 +146,7 @@ export const SHARED_CARDS = [
     text: '[Vanish] every Skill in your hand. Gain {b} Guard for each.',
     flavor: 'Trade the plan for the breath.',
     nums: { b: 5 },
-    effect: (c) => { const sk = handOthers(c).filter(k => (k.def?.type || k.type) === SKILL); for (const k of sk) { c.exhaust?.(k); guard(c, N(c).b); } },
+    effect: (c) => { const sk = handOthers(c).filter(k => (k.def?.type || k.type) === SKILL); for (const k of sk) { c.exhaust(k); guard(c, N(c).b); } },
     upgrade: { nums: { b: 7 } },
   },
   {

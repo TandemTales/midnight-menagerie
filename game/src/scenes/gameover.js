@@ -30,6 +30,8 @@ import {
   el, svg, rovingFocus, setReduceMotion, reduceMotion, formatSeed,
   REGION_NAMES, COMPANION_BY_SLUG, KID_BY_SLUG, blueprintSrc,
 } from '../ui/portrait.js';
+import { pauseStageFor } from './_stage.js';
+import { fitCardToSlot } from './_cardfit.js';
 
 const CSS_KIT  = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_OVER = new URL('./gameover.css', import.meta.url).href;
@@ -93,6 +95,11 @@ export class GameOverScene extends Scene {
 
     const s = this.summary = this._summarise(params);
     this.won = s.result === 'victory';
+
+    // The canvas measures 0.00% visible behind this screen — stop drawing it.
+    // The mood and the dread grade are still set: they publish the CSS colour
+    // custom properties this screen reads, and combat inherits neither.
+    this._unpauseStage = pauseStageFor(ctx);
 
     try { ctx.atmosphere?.setMood?.(this.won ? 'clubhouse' : 'crypt'); } catch {}
     try { ctx.atmosphere?.dread?.(this.won ? 0 : 0.85, 1.2); } catch {}
@@ -528,13 +535,18 @@ export class GameOverScene extends Scene {
         reduceMotion: reduceMotion(),
       });
       this._cards.push(view);
+      /* The slot's height comes off `--card-w`, NOT off `--card-h`. `--card-w`
+         is responsive now (`clamp(150px, min(13.5vw, 27vh), 224px)`) while
+         `--card-h` is still a flat 312px, so the pair no longer describes one
+         rectangle: at 1280x720 the old maths reserved a 187px-tall box for a
+         144px-tall card and the MVP sat in a hole. `--card-aspect` is the
+         authored ratio, so deriving the height from the width keeps the box on
+         the card at every viewport. */
       const S = 0.6;
       this._mvpSlot.style.width  = `calc(var(--card-w) * ${S})`;
-      this._mvpSlot.style.height = `calc(var(--card-h) * ${S})`;
+      this._mvpSlot.style.height = `calc(var(--card-w) / var(--card-aspect) * ${S})`;
       this._mvpSlot.appendChild(view.el);
-      // CardView positions from its bottom centre inside the parent's box
-      const box = this._mvpSlot.getBoundingClientRect();
-      view.setTransform({ x: box.width / 2, y: box.height, scale: S });
+      fitCardToSlot(view, this._mvpSlot);
 
       const plays = 4 + new RNG(hashSeed(`${s.seed}:mvp`)).int(38);
       if (this._mvpN) this._mvpN.textContent = `played ${plays}×`;
@@ -642,7 +654,7 @@ export class GameOverScene extends Scene {
   }
 
   _activate(act) {
-    try { this.ctx.audio?.play?.('ui/confirm'); } catch {}
+    try { this.ctx.audio?.play?.('ui:confirm'); } catch {}
     // the run is finished either way — never let a dead run be resumed
     try { Save?.clearRun?.(); } catch {}
     try { this.ctx.run = null; } catch {}
@@ -659,7 +671,7 @@ export class GameOverScene extends Scene {
     if (!cand || cand.classList.contains('is-out')) return;
     cand.classList.add('is-out');
     this.root.classList.add('is-dark');
-    try { this.ctx.audio?.play?.('ui/snuff'); } catch {}
+    try { this.ctx.audio?.play?.('ui:snuff'); } catch {}
   }
 
   update() { /* every animation here is CSS-composited; nothing runs per frame */ }
@@ -667,6 +679,8 @@ export class GameOverScene extends Scene {
   /* ═══ teardown ═══════════════════════════════════════════════════════════ */
   async exit() {
     this._dead = true;
+    this._unpauseStage?.();
+    this._unpauseStage = null;
     for (const t of this._timers) clearTimeout(t);
     this._timers.length = 0;
     for (const off of this._offs) { try { off(); } catch {} }

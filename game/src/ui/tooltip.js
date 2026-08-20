@@ -337,11 +337,14 @@ export class Tooltip {
     if (!anchorEl || this._destroyed) return;
     const desc = this._normalise(content, anchorEl);
     if (!desc) return;
+    // Re-showing the SAME anchor (see `refresh()`) must not blink the panel
+    // back through opacity 0 — it is an update, not a new tooltip.
+    const same = this._anchor === anchorEl && !this.el.hidden;
     this._anchor = anchorEl;
     this._render(this.inner, desc);
     this.el.dataset.kind = desc.kind || 'text';
     this.el.hidden = false;
-    this.el.classList.remove('is-in');
+    if (!same) this.el.classList.remove('is-in');
     this._place(this.el, anchorEl, {
       placement: opts.placement || anchorEl.dataset?.tipPlacement || 'auto',
       avoid: opts.avoid ?? anchorEl.dataset?.tipAvoid,
@@ -359,6 +362,38 @@ export class Tooltip {
     if (this._anchor) { this._anchor.removeAttribute('aria-describedby'); this._anchor = null; }
     if (!this.el.hidden) { this.el.hidden = true; this.el.classList.remove('is-in'); this._lastHidden = performance.now(); }
     this.live.textContent = '';
+  }
+
+  /**
+   * Re-read the anchor of the panel that is currently open.
+   *
+   * Call this whenever the thing being described changes underneath its own
+   * tooltip. Two real faults it fixes, both seen on combat's End Turn button:
+   *
+   *   • **Stale text.** The panel is rendered once, at hover. If the scene then
+   *     rewrites `data-tip` — "you still have Tricks you can play" becoming
+   *     "nothing left you can play" — the open panel keeps the old sentence and
+   *     lies about the current turn.
+   *   • **A stuck panel.** A `disabled` control stops dispatching pointer
+   *     events entirely, so the `pointerout` that would dismiss its tooltip
+   *     never arrives. Same for an anchor that is removed or hidden while
+   *     described. The panel then sits at full opacity over the board.
+   *
+   * Cheap: it does nothing at all unless a panel is open, and at most one
+   * re-render plus the usual single rAF placement.
+   *
+   * @param {Element} [el] only act if this is the open anchor.
+   */
+  refresh(el = null) {
+    const a = this._anchor;
+    if (!a || this.el.hidden || this._destroyed) return;
+    if (el && el !== a) return;
+    if (!a.isConnected || a.disabled || a.getAttribute?.('aria-disabled') === 'true'
+        || !a.getClientRects().length) { this.hide(); return; }
+    if (this._cardMode) return;             // driven by the Hand, not by attributes
+    const desc = this._descFor(a);
+    if (!desc) { this.hide(); return; }
+    this.show(a, desc);
   }
 
   /** Bind a descriptor (or a function returning one) to an element. */
@@ -430,7 +465,16 @@ export class Tooltip {
     if (d.tipEnemy) return this._enemyDesc(d.tipEnemy, el);
     if (d.tipKeepsake) return this._keepsakeDesc(d.tipKeepsake, el);
     if (d.tipNode) return this._nodeDesc(d.tipNode, el);
-    if (d.tip) return { kind: 'text', title: d.tipTitle || '', body: d.tip };
+    if (d.tip) {
+      // `Title|body|footer` is the combat scene's long-standing shorthand.
+      // Understanding it here means no scene needs a tooltip renderer of its
+      // own. `data-tip-title` still wins when both are present.
+      if (d.tip.includes('|')) {
+        const [a, b, c] = d.tip.split('|');
+        return { kind: 'text', title: d.tipTitle || a || '', body: b || '', footer: c || '' };
+      }
+      return { kind: 'text', title: d.tipTitle || '', body: d.tip };
+    }
     return null;
   }
 

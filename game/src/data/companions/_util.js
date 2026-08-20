@@ -106,27 +106,27 @@ export function rpick(c, arr) { if (!arr || !arr.length) return undefined; retur
 export function rshuffle(c, arr) { return c?.e?.rng?.shuffle ? c.e.rng.shuffle(arr) : (arr || []).slice(); }
 
 // ── damage / guard / courage ────────────────────────────────────────────────
-export function hit(c, amt, opts) { const t = c.target || c.randomEnemy?.(); if (t) c.damage?.(t, amt, opts); return t; }
+export function hit(c, amt, opts) { const t = c.target || c.randomEnemy(); if (t) c.damage(t, amt, opts); return t; }
 export function hitN(c, amt, n, opts) { for (let i = 0; i < n; i++) hit(c, amt, opts); }
-export function hitAt(c, t, amt, opts) { if (t) c.damage?.(t, amt, opts); }
-export function hitAll(c, amt, opts) { c.damageAll?.(amt, opts); }
+export function hitAt(c, t, amt, opts) { if (t) c.damage(t, amt, opts); }
+export function hitAll(c, amt, opts) { c.damageAll(amt, opts); }
 export function hitAllN(c, amt, n, opts) { for (let i = 0; i < n; i++) hitAll(c, amt, opts); }
-export function hitRandom(c, amt, opts) { const t = c.randomEnemy?.(); if (t) c.damage?.(t, amt, opts); return t; }
+export function hitRandom(c, amt, opts) { const t = c.randomEnemy(); if (t) c.damage(t, amt, opts); return t; }
 export function hitRandomN(c, amt, n, opts) { for (let i = 0; i < n; i++) hitRandom(c, amt, opts); }
-export function guard(c, amt) { if (amt > 0) c.block?.(c.self, amt); }
-export function guardOn(c, actor, amt) { if (amt > 0) c.block?.(actor, amt); }
-export function mend(c, amt) { if (amt > 0) c.heal?.(c.self, amt); }
-export function bleed(c, amt) { if (amt > 0) c.loseHp?.(c.self, amt); }
-export function enemies(c) { return c.livingEnemies?.() || []; }
+export function guard(c, amt) { if (amt > 0) c.block(c.self, amt); }
+export function guardOn(c, actor, amt) { if (amt > 0) c.block(actor, amt); }
+export function mend(c, amt) { if (amt > 0) c.heal(c.self, amt); }
+export function bleed(c, amt) { if (amt > 0) c.loseHp(c.self, amt); }
+export function enemies(c) { return c.livingEnemies() || []; }
 export function others(c) { const t = c.target; return enemies(c).filter(e => e !== t); }
 
 // ── statuses ────────────────────────────────────────────────────────────────
-export function stacks(c, actor, id) { return (c.count?.(id, actor) ?? 0) | 0; }
-export function apply(c, actor, id, n) { if (actor && n) c.applyStatus?.(actor, id, n); }
+export function stacks(c, actor, id) { return (c.count(id, actor) ?? 0) | 0; }
+export function apply(c, actor, id, n) { if (actor && n) c.applyStatus(actor, id, n); }
 export function applySelf(c, id, n) { apply(c, c.self, id, n); }
 export function applyAll(c, id, n) { for (const e of enemies(c)) apply(c, e, id, n); }
 /** Remove stacks.  Engine convention: negative stacks subtract. */
-export function unapply(c, actor, id, n) { if (actor && n > 0) c.applyStatus?.(actor, id, -n); }
+export function unapply(c, actor, id, n) { if (actor && n > 0) c.applyStatus(actor, id, -n); }
 export function debuffCount(c, actor) {
   const n = c.debuffCount?.(actor);
   if (typeof n === 'number') return n;
@@ -147,7 +147,7 @@ export function addRes(c, id, n, min = 0, max = 99) {
   if (hasCounter(c, id)) return c.addCounter(id, n) | 0;
   const cur = res(c, id);
   const delta = Math.max(min, Math.min(max, cur + n)) - cur;
-  if (delta) c.applyStatus?.(c.self, id, delta);
+  if (delta) c.applyStatus(c.self, id, delta);
   return delta;
 }
 /** Set a resource to an exact value.  Returns the change. */
@@ -174,21 +174,21 @@ export function defineCounters(engine, defs) {
 /** Runtime cards in a pile.  Piles: 'draw' | 'hand' | 'discard' | 'exhaust' | 'limbo' | 'stash'. */
 const PILE_PROP = { draw: 'drawPile', hand: 'hand', discard: 'discardPile', exhaust: 'exhaustPile', limbo: 'limbo', stash: 'stash' };
 export function cardsIn(c, pile) {
-  const v = c?.[PILE_PROP[pile] || pile] ?? c?.e?.piles?.[pile] ?? c.cardsIn?.(pile) ?? c?.e?.[pile];
+  const v = c?.[PILE_PROP[pile] || pile] ?? c?.e?.piles?.[pile] ?? c.cardsIn(pile) ?? c?.e?.[pile];
   return Array.isArray(v) ? v : [];
 }
 /** Other cards in hand (never the card currently resolving). */
 export function handOthers(c) { return cardsIn(c, 'hand').filter(k => k && k !== c.card); }
 /** Move a runtime card to a pile.  opts: { top:true } for the top of the draw pile. */
-export function moveCard(c, card, pile, opts) { if (card) c.moveCard?.(card, pile, opts || {}); }
+export function moveCard(c, card, pile, opts) { if (card) c.moveCard(card, pile, opts || {}); }
 /** Put a card on top of the draw pile. */
 export function toDrawTop(c, card) { moveCard(c, card, 'draw', { top: true }); }
 export function toDrawBottom(c, card) { moveCard(c, card, 'draw', { bottom: true }); }
 export function toHand(c, card) { moveCard(c, card, 'hand', {}); }
 /** Return the card currently resolving to hand after it finishes. */
-export function returnSelf(c) { if (!c.card) return; if (c.returnToHand) c.returnToHand(c.card); else c.moveCard?.(c.card, 'hand', { returned: true }); }
+export function returnSelf(c) { if (!c.card) return; if (c.returnToHand) c.returnToHand(c.card); else c.moveCard(c.card, 'hand', { returned: true }); }
 /** Shuffle the draw pile. */
-export function reshuffle(c) { c.shuffleDraw?.(); }
+export function reshuffle(c) { c.shuffleDraw(); }
 
 /** Arbitrary per-card boolean/string markers (Slobbered, Dug Up, Gummy, Chewed…). */
 export function flag(card, k) {
@@ -227,8 +227,8 @@ export function printedCost(card) { return card?.def?.cost ?? card?.baseCost ?? 
 /** Current cost, after temporary modifications. */
 export function nowCost(card) { return card?.cost ?? printedCost(card); }
 /** Change a card's current cost. dur: 'turn' | 'combat' | 'untilPlayed'. */
-export function costMod(c, card, delta, dur = 'turn') { if (card && delta) c.modifyCost?.(card, delta, dur); }
-export function costSet(c, card, n, dur = 'turn') { if (card) c.setCost?.(card, n, dur); }
+export function costMod(c, card, delta, dur = 'turn') { if (card && delta) c.modifyCost(card, delta, dur); }
+export function costSet(c, card, n, dur = 'turn') { if (card) c.setCost(card, n, dur); }
 /** Give a card Retain. dur: 'turn' | 'combat'. */
 export function retain(c, card, dur = 'turn') {
   if (!card) return;
@@ -236,10 +236,10 @@ export function retain(c, card, dur = 'turn') {
   if (dur === 'combat') setFlag(card, 'retainCombat', true);
 }
 /** Give a card Vanish (Exhaust) the next time it is played. */
-export function makeVanish(c, card) { if (card) { setFlag(card, 'vanish', true); c.setVanish?.(card, true); } }
+export function makeVanish(c, card) { if (card) { setFlag(card, 'vanish', true); c.setVanish(card, true); } }
 
 /** Add a fresh card built from a CardDef into a pile. */
-export function spawn(c, def, pile = 'hand', opts) { if (def) c.addCard?.(def, pile, opts || {}); }
+export function spawn(c, def, pile = 'hand', opts) { if (def) c.addCard(def, pile, opts || {}); }
 
 // ── player choice (falls back to a deterministic auto-pick) ─────────────────
 /**
@@ -279,7 +279,7 @@ export function nextTurn(c, fn) {
   if (c.schedule) return c.schedule({ turns: 1, when: 'playerTurnStart', label: 'next turn', run: () => { try { fn(c); } catch (_) {} } });
   const e = c.e; if (!e?.on) return;
   let done = false;
-  const h = () => { if (done) return; done = true; try { fn(c); } catch (_) {} e.off?.('turn:start', h); };
+  const h = () => { if (done) return; done = true; try { fn(c); } catch (_) {} e.off('turn:start', h); };
   e.on('turn:start', h);
 }
 /** Run `fn` at the end of the current player turn. */
@@ -287,14 +287,14 @@ export function atTurnEnd(c, fn) {
   if (c.schedule) return c.schedule({ turns: 1, when: 'playerTurnEnd', label: 'end of turn', run: () => { try { fn(c); } catch (_) {} } });
   const e = c.e; if (!e?.on) return;
   let done = false;
-  const h = () => { if (done) return; done = true; try { fn(c); } catch (_) {} e.off?.('turn:end', h); };
+  const h = () => { if (done) return; done = true; try { fn(c); } catch (_) {} e.off('turn:end', h); };
   e.on('turn:end', h);
 }
 
 // ── generic keyword shorthands used across companions ───────────────────────
-export function draw(c, n) { if (n > 0) c.draw?.(n); }
-export function energy(c, n) { if (n > 0) c.gainEnergy?.(n); else if (n < 0) c.loseEnergy?.(-n); }
-export function discardRandom(c, n) { if (n > 0) c.discard?.(n, { random: true }); }
+export function draw(c, n) { if (n > 0) c.draw(n); }
+export function energy(c, n) { if (n > 0) c.gainEnergy(n); else if (n < 0) c.loseEnergy(-n); }
+export function discardRandom(c, n) { if (n > 0) c.discard(n, { random: true }); }
 /** Empower the next attack this turn by `n` (a temporary damage bonus). */
 export function empower(c, n) { applySelf(c, 'empowered', n); }
 
@@ -328,7 +328,7 @@ export function removeOneDebuff(c, actor) {
   const ids = m && typeof m.keys === 'function' ? [...m.keys()] : Object.keys(m || {});
   for (const id of ids) {
     if (!COMMON_DEBUFFS.includes(id)) continue;
-    if (c.removeStatus) c.removeStatus(a, id); else c.applyStatus?.(a, id, -stacks(c, a, id));
+    if (c.removeStatus) c.removeStatus(a, id); else c.applyStatus(a, id, -stacks(c, a, id));
     return id;
   }
   return null;

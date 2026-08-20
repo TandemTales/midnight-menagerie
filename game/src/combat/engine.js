@@ -66,13 +66,15 @@ import {
   buildIntent, chooseMove, refreshIntents, intentFamily, FAMILY_LABEL,
   queueSnapshot, consumePlan, rebuildPlan, moveAt, isAnchored,
   previewIntent, previewDepthOf, previewedFamilies,
-  swapIntents, postponeIntent, deleteIntent, MAX_PLAN,
+  swapIntents, postponeIntent, deleteIntent, forkFuture, setIntentControl, MAX_PLAN,
 } from './intents.js';
 import { previewCard, previewCardAsync } from './preview.js';
 import { ChoiceBroker } from './choice.js';
 import { Pile, CardType, Target } from '../data/schema.js';
+import { detectStrict, guardFactory } from './strict.js';
 
 const MAX_LOG = 400;
+
 
 export class CombatEngine {
   /**
@@ -91,6 +93,12 @@ export class CombatEngine {
     this.relics = (cfg.relics || []).slice();
     this.bus = cfg.bus || null;
     this.isPreview = !!cfg.isPreview;
+
+    // The dev seam guard (combat/strict.js). Resolved ONCE here, so the hot
+    // path is a single already-bound function reference and a shipped build
+    // pays nothing at all.
+    this.strictCtx = detectStrict(cfg);
+    this._guardCtx = guardFactory(this.strictCtx);
 
     this.hooks = new Hooks(this);
     for (const h of (cfg.hooks || [])) this.hooks.add(h.name, h.fn, h);
@@ -470,6 +478,10 @@ export class CombatEngine {
   deleteIntent(enemy) { return deleteIntent(this, enemy); }
   /** Cancel the current action outright. Alias of deleteIntent, named for cards. */
   cancelIntent(enemy) { return deleteIntent(this, enemy); }
+  /** Wink: the player picks which of the two Previewed futures comes next. */
+  forkFuture(enemy) { return forkFuture(this, enemy); }
+  /** Wink: reveal and lock an enemy's whole plan — no more re-derivation. */
+  controlEnemyChoice(enemy, on = true) { return setIntentControl(this, enemy, on); }
 
   // ── player choice ─────────────────────────────────────────────────────────
   /** The renderer registers `fn(req) -> Promise<number[]>` (indices into req.pool). */
@@ -1057,7 +1069,7 @@ export class CombatEngine {
   enemyCtx(enemy, move, extra = {}) {
     const e = this;
     const target = () => e.intentTargetFor(enemy);
-    return {
+    return this._guardCtx({
       e, engine: e, self: enemy, enemy, move,
       rng: extra.rng || e.rng,
       turn: e.turn,
@@ -1156,7 +1168,7 @@ export class CombatEngine {
       rules: () => e.rules.slice(),
 
       say: (text, tone) => e.say(text, tone),
-    };
+    }, 'enemyCtx');
   }
 
   // ── card helpers ──────────────────────────────────────────────────────────
@@ -1231,7 +1243,7 @@ export class CombatEngine {
   ctxFor(card, target, x = 0) {
     const e = this;
     const self = this.player;
-    return {
+    return this._guardCtx({
       e, engine: e, self, player: self, target, card, x,
       rng: e.rng, turn: e.turn,
 
@@ -1356,6 +1368,8 @@ export class CombatEngine {
       previewedFamilies: (en) => previewedFamilies(e, en),
       isAnchored: (en, pos) => isAnchored(en, pos ?? 0),
       swapIntents: (en, a, b) => e.swapIntents(en, a, b),
+      forkFuture: (en) => e.forkFuture(en),
+      controlEnemyChoice: (en, on) => e.controlEnemyChoice(en, on !== false),
       postponeIntent: (en) => e.postponeIntent(en),
       deleteIntent: (en) => e.deleteIntent(en),
       /** Cancel what this enemy is about to do; the next planned action steps up. */
@@ -1401,7 +1415,7 @@ export class CombatEngine {
       n: (key) => card?.nums?.[key] ?? 0,
       upgraded: !!card?.upgraded,
       say: (text, tone) => e.say(text, tone),
-    };
+    }, 'cardCtx');
   }
 
   // ── the public API ────────────────────────────────────────────────────────

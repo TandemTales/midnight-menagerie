@@ -177,6 +177,21 @@ export class Audio {
     this.musicPlayer.duckBy(amount, ms);
   }
 
+  /**
+   * Re-read every volume from Save.settings and apply it.
+   * `scenes/title.js` has always called `ctx.audio?.applySettings?.()` after the
+   * settings panel closes; the method did not exist, so the optional chain ate
+   * it and a volume change from the title screen did nothing until something
+   * else emitted `settings:changed`.
+   */
+  applySettings() {
+    const s = this.Save?.settings;
+    if (!s) return;
+    this.setVolume('master', s.master ?? this.volumes.master);
+    this.setVolume('music', s.music ?? this.volumes.music);
+    this.setVolume('sfx', s.sfx ?? this.volumes.sfx);
+  }
+
   setVolume(which, v) {
     const val = clamp(Number(v) || 0, 0, 1);
     this.volumes[which] = val;

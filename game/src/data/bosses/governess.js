@@ -137,7 +137,7 @@ export const governess = {
     if (take > 0) {
       mem(c).redirectedThisTurn = used + take;
       const d = governess.doll(c);
-      c.damage(d, take, { redirected: true });
+      c.damage(d, take, { cause: 'redirected' });
       // Button Patch: she profits from being protected. Capped at 6 Guard per turn.
       if (d && d.mem?.patches?.includes('button-patch')) {
         const gained = mem(c).buttonGuardThisTurn || 0;

@@ -13,12 +13,14 @@ import { Scene } from '../core/scenes.js';
 import { bus } from '../core/bus.js';
 import { clock, Clock } from '../core/clock.js';
 import { RNG, hashSeed } from '../core/rng.js';
-import { NodeType, TERMS } from '../data/schema.js';
+import { NodeType } from '../data/schema.js';
 import {
   generateRegionMap, regionMeta, blueprintPlan,
   NODE_INFO, sceneForNode, legalNextIds, reachableFrom, hazardById,
 } from '../state/mapgen.js';
 import { createMapNode, nodeSymbol, hazardSymbol, inkLine, seedOf, escapeHtml } from '../ui/mapnode.js';
+import { HUD } from '../ui/hud.js';
+import { pauseStageFor } from './_stage.js';
 
 /* The sheet is always the same height; its width follows the region's blueprint
    section, so a broad glass complex gets a broad sheet and a vertical shaft gets
@@ -55,6 +57,11 @@ export class MapScene extends Scene {
   async enter(params = {}) {
     const ctx = this.ctx;
     this.still = !!ctx.Save?.settings?.reduceMotion;
+
+    // The blueprint sheet is opaque: the canvas measures 0.00% visible here.
+    // Stop drawing it (the pause waits for the stage warm-up; see _stage.js).
+    this._unpauseStage = pauseStageFor(ctx);
+
     await this._css();
 
     this._buildModel(params);
@@ -138,13 +145,7 @@ export class MapScene extends Scene {
       // Without it `path` holds one id, `walkedPairs` needs two, and the trail
       // stays invisible until the second room.
       path: (run?.pathIds?.length ? run.pathIds.slice() : [ENTRY]),
-      hp: run?.hp ?? 68, maxHp: run?.maxHp ?? 80,
-      gold: run?.gold ?? 137,
-      relics: run?.relics ?? [
-        { id: 'lucky-button', name: 'Lucky Button' },
-        { id: 'chalk-stub', name: 'Chalk Stub' },
-        { id: 'torch', name: 'Half a Torch' },
-      ],
+      // Courage / Lost Things / Keepsakes are the shared HUD's business now.
       floor: run?.floor ?? (regionMeta(regionId).index),
       mock: !run,
     };
@@ -182,28 +183,8 @@ export class MapScene extends Scene {
         <div class="map-lamp map-lamp--warm" aria-hidden="true"></div>
         <div class="map-grain" aria-hidden="true"></div>
 
-        <!-- placeholder HUD strip: ui-chrome owns the real one -->
-        <div class="map-hud" data-placeholder="hud">
-          <div class="hud-l">
-            <span class="hud-chip hud-hp" title="${TERMS.hp}">
-              <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path
-                d="M12 21C7 17.2 3 14 3 9.6A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 9 2.6C21 14 17 17.2 12 21Z"/></svg>
-              <b class="hud-hp-num">${m.hp}</b><i>/${m.maxHp}</i>
-              <span class="hud-bar"><span style="width:${Math.round(m.hp / m.maxHp * 100)}%"></span></span>
-            </span>
-            <span class="hud-chip hud-gold" title="${TERMS.gold}">
-              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.4"/></svg>
-              <b>${m.gold}</b>
-            </span>
-            <span class="hud-keeps" title="${TERMS.relic}s">
-              ${m.relics.map(r => `<i class="keep" title="${escapeHtml(r.name)}"></i>`).join('')}
-            </span>
-          </div>
-          <div class="hud-r">
-            <span class="hud-haunt">${TERMS.ascension} ${m.hauntLevel}</span>
-            <span class="hud-cog" aria-hidden="true">⚙</span>
-          </div>
-        </div>
+        <!-- the shared run HUD (ui/hud.js) mounts here -->
+        <div class="map-hudhost"></div>
 
         <header class="map-banner">
           <span class="tape tape-l" aria-hidden="true"></span>
@@ -238,8 +219,12 @@ export class MapScene extends Scene {
       paper: q('.map-paper'), ink: q('.map-ink'), nodes: q('.map-nodes'),
       lamp: q('.map-lamp'), lampWarm: q('.map-lamp--warm'), grain: q('.map-grain'),
       tip: q('.map-tip'), notes: q('.map-notes'), legend: q('.map-legend'),
-      hpNum: q('.hud-hp-num'), rowNum: q('.bn-row'),
+      hudHost: q('.map-hudhost'), rowNum: q('.bn-row'),
     };
+    // One HUD, one position: the shared strip along the top edge. Everything it
+    // used to duplicate here — Courage, Lost Things, Keepsakes, Haunt, the cog
+    // that did nothing — is that component's job now.
+    this.hud = new HUD(this.ctx, { mount: this.el.hudHost, useSnacks: false });
     this.el.sheet.style.width = this.SW + 'px';
     this.el.sheet.style.height = this.SH + 'px';
     this.el.sheet.style.setProperty('--sw', this.SW + 'px');   // the wet edge's run
@@ -1096,7 +1081,7 @@ export class MapScene extends Scene {
     }
 
     // standalone: stay on the map, mark it up, keep playing
-    this.ctx.audio?.play?.('map/step');
+    this.ctx.audio?.play?.('map:step');
     this._syncStates();
     this._stampVisit(id);
     this._lookAt(node);
@@ -1150,8 +1135,11 @@ export class MapScene extends Scene {
 
   // ──────────────────────────────────────────────────────────────── exit ───
   async exit() {
+    this._unpauseStage?.();
+    this._unpauseStage = null;
     for (const off of this._off) { try { off(); } catch {} }
     this._off.length = 0;
+    this.hud?.destroy(); this.hud = null;
     this._nodeEls?.clear();
     this._edges = null;
     if (this.el?.paper) { this.el.paper.width = this.el.paper.height = 0; }

@@ -27,6 +27,8 @@ import { Hand } from '../ui/hand.js';
 import { CardView } from '../ui/card.js';
 import { EnemyView } from '../ui/enemy.js';
 import { CombatFX } from '../fx/combatfx.js';
+import { HUD } from '../ui/hud.js';
+import { openPile } from '../ui/deckview.js';
 
 const CSS = new URL('./combat.css', import.meta.url).href;
 const CARD_CSS = new URL('../ui/card.css', import.meta.url).href;
@@ -52,9 +54,6 @@ const SG = {
 };
 const SG_STROKE = new Set(['entangle']);
 
-/* ── keepsake glyph fallback ───────────────────────────────────────────────── */
-const RELIC_G = 'M12 3 L14.6 9.4 L21.5 9.9 L16.2 14.3 L17.9 21 L12 17.3 L6.1 21 L7.8 14.3 L2.5 9.9 L9.4 9.4 Z';
-
 export class CombatScene extends Scene {
   constructor(ctx) {
     super(ctx);
@@ -63,7 +62,6 @@ export class CombatScene extends Scene {
     this._offs = [];
     this._engineOffs = [];
     this._shake = { mag: 0, ph: 0 };
-    this._tipEl = null;
     this._pt = { x: 0, y: 0 };
     this._rules = new Map();       // ruleId -> { id, name, text, sourceId }
   }
@@ -79,10 +77,16 @@ export class CombatScene extends Scene {
 
     this.fx = new CombatFX(ctx, this.root);
     this.engine = await this._makeEngine(params);
+    this._buildHud();
     this._wireEngine();
     this._buildEnemies();
     this._buildHand();
     this._bindUi();
+
+    /* Combat is the ONE scene where the canvas is really on screen (measured
+       at 57% of pixels), so it never pauses the stage — and it says so out loud
+       rather than trusting that whatever came before unpaused on its way out. */
+    try { ctx.stage?.setPaused?.(false); } catch { /* no stage */ }
 
     ctx.atmosphere?.setMood?.(this.region || 'foyer');
     ctx.audio?.music?.('combat');
@@ -121,7 +125,12 @@ export class CombatScene extends Scene {
     this.companion = params.companion || ctx.run?.companion || 'marmalade';
     this.region = params.region || ctx.run?.region || 'foyer';
 
-    let deck = null, enemies = null, hp = null, energyMax = 3, relics = [];
+    // A run that exists but has not built its own engine (deep link into a
+    // Scuffle mid-expedition) still carries Keepsakes. Hand them over, or the
+    // HUD's Keepsake bar goes empty for a fight the player is genuinely
+    // carrying them into — and the relic hooks silently stop firing.
+    let deck = null, enemies = null, hp = null, energyMax = 3;
+    let relics = Array.isArray(ctx.run?.keepsakes) ? ctx.run.keepsakes : [];
 
     // real content, imported defensively — the scene still boots without any of it
     try {
@@ -211,20 +220,7 @@ export class CombatScene extends Scene {
     const T = TERMS;
     this.root.innerHTML = `
       <div class="cb">
-        <header class="cb-top">
-          <div class="cb-keeps" role="list" aria-label="${T.relic}s"></div>
-          <div class="cb-vitals">
-            <div class="cb-turn"><span class="cb-turn__k">Turn</span><b class="cb-turn__n">1</b></div>
-            <div class="cb-chip cb-chip--hp" data-tip="${T.hp}|How much fright you can take before the night ends.|Guard soaks damage first." tabindex="0">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21 C5 15.5 2.5 12 2.5 8.4 A5 5 0 0 1 12 6.2 A5 5 0 0 1 21.5 8.4 C21.5 12 19 15.5 12 21 Z"/></svg>
-              <b class="cb-chip__n">0</b><span class="cb-chip__m">/0</span>
-            </div>
-            <div class="cb-chip cb-chip--gold" data-tip="${T.gold}|Spent at ${T.shop}." tabindex="0">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.6" class="hole"/></svg>
-              <b class="cb-chip__n">0</b>
-            </div>
-          </div>
-        </header>
+        <header class="cb-top"></header>
 
         <div class="cb-field">
           <div class="cb-enemies" role="group" aria-label="Enemies"></div>
@@ -298,23 +294,13 @@ export class CombatScene extends Scene {
             </div>
           </div>
         </div>
-        <div class="cb-pileview" hidden>
-          <div class="cb-pileview__panel" role="dialog" aria-modal="true" aria-label="Pile">
-            <header><h2></h2><button class="cb-pileview__x" type="button" aria-label="Close">&times;</button></header>
-            <div class="cb-pileview__grid"></div>
-          </div>
-        </div>
       </div>`;
 
     const $ = (s) => this.root.querySelector(s);
     this.$cb = $('.cb');
     this.$field = $('.cb-field');
     this.$enemies = $('.cb-enemies');
-    this.$keeps = $('.cb-keeps');
-    this.$turnN = $('.cb-turn__n');
-    this.$hpN = $('.cb-chip--hp .cb-chip__n');
-    this.$hpM = $('.cb-chip--hp .cb-chip__m');
-    this.$gold = $('.cb-chip--gold .cb-chip__n');
+    this.$top = $('.cb-top');
     this.$pl = $('.cb-player');
     this.$plArt = $('.cb-player__art');
     this.$plName = $('.cb-player__name');
@@ -344,9 +330,6 @@ export class CombatScene extends Scene {
     this.$chPool = $('.cb-chooser__pool');
     this.$chOk = $('.cb-chooser__ok');
     this.$chSkip = $('.cb-chooser__skip');
-    this.$pileview = $('.cb-pileview');
-    this.$pileTitle = $('.cb-pileview h2');
-    this.$pileGrid = $('.cb-pileview__grid');
 
     this.root.classList.toggle('is-large', this.largeText);
     const slug = String(params.companion || this.ctx.run?.companion || 'marmalade');
@@ -362,6 +345,37 @@ export class CombatScene extends Scene {
     // arc length for the Nerve ring
     this._arcLen = 2 * Math.PI * 42;
     this.$nerveArc.style.strokeDasharray = String(this._arcLen);
+  }
+
+  /* ══ the shared HUD ═════════════════════════════════════════════════════
+   * STS2-REFERENCE §1: relics left, HP / gold / cog right, along the top edge.
+   * That is exactly `ui/hud.js`, so the Scuffle uses it rather than a fourth
+   * hand-rolled copy. It is the `combat` variant — same markup, same order,
+   * same icons, denser, plus the one chip only this screen has: Turn.
+   *
+   * Two things the run cannot answer mid-fight are passed in: Courage (the
+   * engine's player is authoritative until the fight ends) and the Keepsake
+   * counters (the engine mutates them live).
+   */
+  _buildHud() {
+    this.hud = new HUD(this.ctx, {
+      mount: this.$top,
+      variant: 'combat',
+      useSnacks: true,                       // §6: Snacks are a tactical layer
+      escape: false,                         // this scene owns Escape (see _bindUi)
+      courage: () => [this.engine?.player?.hp ?? 0, this.engine?.player?.maxHp ?? 1],
+      relics: () => this.engine?.relics || [],
+      onUseSnack: (i, s) => this._useSnack(i, s),
+    });
+
+    const turn = document.createElement('div');
+    turn.className = 'mm-hud__chip mm-hud__turn';
+    turn.tabIndex = 0;
+    turn.dataset.tipTitle = 'Turn';
+    turn.dataset.tip = 'Which round of the Scuffle this is. Some Tricks and some enemies count turns.';
+    turn.innerHTML = '<span class="mm-hud__t">Turn 1</span>';
+    this.$turnN = turn.querySelector('.mm-hud__t');
+    this.hud.addChip(turn);
   }
 
   /* ══ enemies ════════════════════════════════════════════════════════════ */
@@ -469,6 +483,87 @@ export class CombatScene extends Scene {
     if (!c) return null;
     if (c.target === 'enemy') return this.engine.firstLivingEnemy()?.id || null;
     return null;
+  }
+
+  /* ══ Snacks ═══════════════════════════════════════════════════════════════
+   * STS2-REFERENCE §6: "Potions: 3 slots, usable any time in combat, they are a
+   * real tactical layer." Until now you could buy a Snack for 74 Lost Things
+   * and there was no code path anywhere that could ever consume one.
+   *
+   * A Snack costs no Nerve, does not end anything, and resolves through the
+   * engine's ordinary public API — so Guard, Strength, Frail, Vulnerable, every
+   * relic hook and every animation behave exactly as they do for a card.
+   *
+   * OWNERSHIP, HONESTLY: the effect table below decides rules, and by
+   * CONTRACTS.md §5 rules belong in `src/combat/`. It is here because
+   * `src/combat/**` and `src/state/run.js` belong to other agents. The engine
+   * needs `engine.useSnack(snack, targetId)` plus an `onSnackUsed` hook (no
+   * Keepsake can react to a Snack today — Slay the Spire has several that do),
+   * and `Run` needs `useSnack(index)` so the scene stops splicing the array.
+   * Both asks are written up in docs/NOTES.md. Move this table wholesale.
+   */
+  async _useSnack(index, snack) {
+    if (!this.engine || this.engine.over || this._resolving || this._snacking) return;
+    if (this.engine.phase !== 'player') { this._deny('Wait for your turn.'); return; }
+    const fx = snack?.effect;
+    if (!fx) return;
+
+    const E = this.engine;
+    const me = E.player;
+
+    // One target question, asked before anything is consumed.
+    let target = null;
+    if (fx.target === 'enemy') {
+      const living = E.livingEnemies();
+      if (!living.length) { this._deny('Nothing to aim it at.'); return; }
+      if (living.length === 1) target = living[0];
+      else {
+        this._snacking = true;
+        const picked = await this._resolveChoice({
+          kind: 'enemy', count: 1, optional: true,
+          prompt: `Who gets the ${snack.name}?`,
+          pool: living.map(e => ({ id: e.id, name: e.name, hp: e.hp, maxHp: e.maxHp })),
+        });
+        this._snacking = false;
+        if (!picked.length) return;
+        target = living[picked[0]];
+        if (!target?.alive) return;
+      }
+    }
+
+    // Consume first: a Snack is spent the moment you eat it, win or lose.
+    this._consumeSnack(index, snack);
+    this.ctx.audio?.play?.('ui:confirm');
+    this._banner(snack.name, 'good', 0.8);
+
+    if (fx.heal)      E.heal(me, fx.heal, 'snack');
+    if (fx.block)     E.gainBlock(me, fx.block, { source: 'snack', fromCard: false, reason: 'snack' });
+    if (fx.energy)    E.gainEnergy(fx.energy, 'snack');
+    if (fx.cleanse)   E.cleanse(me, 'snack');
+    if (fx.damageAll) {
+      for (const en of E.livingEnemies()) {
+        E.dealDamage({ attacker: me, defender: en, amount: fx.damageAll, kind: 'snack', cause: snack.name });
+      }
+    }
+    if (Array.isArray(fx.status)) {
+      const [id, n] = fx.status;
+      E.applyStatus(target || me, id, n, { source: 'snack' });
+    }
+
+    await this._settle();
+    this._syncEndTurn();
+  }
+
+  /** Take the Snack off the run and tell the HUD. */
+  _consumeSnack(index, snack) {
+    const run = this.ctx.run;
+    const list = run?.snacks;
+    if (!Array.isArray(list)) return;
+    const at = list[index] === snack ? index : list.indexOf(snack);
+    if (at < 0) return;
+    list.splice(at, 1);
+    run.save?.();
+    this.ctx.bus.emit('run:potion', { used: snack });
   }
 
   /* ══ player choice ══════════════════════════════════════════════════════ */
@@ -1124,12 +1219,12 @@ export class CombatScene extends Scene {
   _syncAll() {
     if (!this.engine) return;
     const st = this.engine.state;
-    this.$turnN.textContent = String(st.turn);
+    this.$turnN.textContent = `Turn ${st.turn}`;
     this._syncPlayer();
     for (const e of st.enemies) { this.views.get(e.id)?.setState(e); this._syncEnemyExtras(e.id); }
     this._syncPiles();
     this._syncNerve(this.engine.energy, this.engine.player.energyMax);
-    this._syncKeeps(st);
+    this.hud?.refresh();
     this._syncHandPlayability();
     this._renderIncoming(0);
     this._syncEndTurn();
@@ -1203,9 +1298,6 @@ export class CombatScene extends Scene {
     this.$hpFill.style.transform = `scaleX(${pct.toFixed(4)})`;
     this.$hpTxtN.textContent = String(Math.max(0, p.hp));
     this.$hpTxtM.textContent = '/' + p.maxHp;
-    this.$hpN.textContent = String(Math.max(0, p.hp));
-    this.$hpM.textContent = '/' + p.maxHp;
-    this.$gold.textContent = String(this.ctx.run?.gold ?? 0);
     this.$plName.textContent = p.name || 'You';
     this.$pl.classList.toggle('is-low', pct <= 0.3);
     this._hpTarget = pct;
@@ -1263,33 +1355,6 @@ export class CombatScene extends Scene {
     this._syncEndTurn();
   }
 
-  _syncKeeps(st) {
-    const relics = st.relics || [];
-    const key = relics.map(r => r.id + ':' + r.counter).join('|') || 'none';
-    if (key === this._keepKey) return;
-    this._keepKey = key;
-    this.$keeps.textContent = '';
-    if (!relics.length) {
-      const d = document.createElement('div');
-      d.className = 'cb-keep is-empty';
-      d.dataset.tip = `${TERMS.relic}s|You are carrying none yet.|Find them in treasure rooms, Big Scares and Lost Things.`;
-      d.tabIndex = 0;
-      d.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${RELIC_G}"/></svg><span>No ${TERMS.relic}s</span>`;
-      this.$keeps.appendChild(d);
-      return;
-    }
-    for (const r of relics) {
-      const d = document.createElement('div');
-      d.className = 'cb-keep';
-      d.setAttribute('role', 'listitem');
-      d.tabIndex = 0;
-      d.dataset.tip = `${r.name}|${r.desc || ''}|`;
-      d.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${RELIC_G}"/></svg>`
-        + (r.counter != null ? `<b>${r.counter}</b>` : '');
-      this.$keeps.appendChild(d);
-    }
-  }
-
   _syncHandPlayability() {
     if (!this.hand) return;
     this.hand.setPlayable((card) => {
@@ -1311,7 +1376,11 @@ export class CombatScene extends Scene {
     this.$endTurn.dataset.tip = playerTurn
       ? (any ? 'End Turn|You still have Tricks you can play.|Shortcut: E'
         : 'End Turn|Nothing left you can play.|Shortcut: E')
-      : 'End Turn|Not your turn.||';
+      : 'End Turn|Not your turn. The house is taking its go.|';
+    // The sentence above just changed, and the button may have just gone
+    // `disabled` — which stops it dispatching the `pointerout` that would
+    // otherwise dismiss its own tooltip. Tell the tooltip to re-read itself.
+    this.ctx.tooltip?.refresh?.(this.$endTurn);
   }
 
   /** Place a CardView statically inside `wrap` at `scale`. */
@@ -1348,22 +1417,13 @@ export class CombatScene extends Scene {
     on(this.$endTurn, 'click', () => this._endTurn());
     on(this.$drawPile, 'click', () => this._openPile('draw'));
     on(this.$discardPile, 'click', () => this._openPile('discard'));
-    on(this.root.querySelector('.cb-pileview__x'), 'click', () => this._closePile());
     on(this.$chOk, 'click', () => this._commitChoice());
     on(this.$chSkip, 'click', () => this._commitChoice(true));
-    on(this.$pileview, 'click', (e) => { if (e.target === this.$pileview) this._closePile(); });
 
-    // tooltips for anything carrying data-tip
-    this._onOver = (e) => {
-      const t = e.target.closest?.('[data-tip]');
-      if (!t) return;
-      this._showTip(t, tipHTML(t.dataset.tip));
-    };
-    this._onOut = (e) => { if (e.target.closest?.('[data-tip]')) this._hideTip(); };
-    on(this.root, 'pointerover', this._onOver);
-    on(this.root, 'pointerout', this._onOut);
-    on(this.root, 'focusin', this._onOver);
-    on(this.root, 'focusout', this._onOut);
+    // Tooltips for `[data-tip]` are the shared Tooltip's own delegated job —
+    // it understands this scene's `Title|body|footer` shorthand. This screen
+    // used to run a second, competing delegation over the same attribute,
+    // which is how a panel could end up with nobody responsible for hiding it.
     this._onPointer = (e) => { this._pt.x = e.clientX; this._pt.y = e.clientY; };
     window.addEventListener('pointermove', this._onPointer, { passive: true });
     this._offs.push(() => window.removeEventListener('pointermove', this._onPointer));
@@ -1385,11 +1445,17 @@ export class CombatScene extends Scene {
         e.stopPropagation();
         return;
       }
+      if (e.shiftKey && e.code && /^Digit[1-3]$/.test(e.code)) return;   // Snacks — the HUD owns these
       const k = e.key.toLowerCase();
       if (k === 'e') { e.preventDefault(); this._endTurn(); }
       else if (k === 'q') { e.preventDefault(); this._openPile('draw'); }
       else if (k === 'w') { e.preventDefault(); this._openPile('discard'); }
-      else if (e.key === 'Escape' && !this.$pileview.hidden) { e.preventDefault(); this._closePile(); }
+      else if (k === 'd') { e.preventDefault(); this.hud?.openDeck(); }
+      // Escape reaches Settings from inside a Scuffle, the same as everywhere
+      // else in a run. The Modal owns Escape whenever one is already open.
+      else if (e.key === 'Escape' && !document.querySelector('.mm-modal')) {
+        e.preventDefault(); this.hud?.openSettings();
+      }
     };
     window.addEventListener('keydown', this._onKey);
     this._offs.push(() => window.removeEventListener('keydown', this._onKey));
@@ -1455,86 +1521,41 @@ export class CombatScene extends Scene {
 
   _wait(s) { return this.ctx.clock.wait(Math.max(0.001, s)); }
 
-  /* ── pile viewer ─────────────────────────────────────────────────────── */
-  _openPile(which) {
-    if (!this.engine) return;
+  /* ── pile viewer ─────────────────────────────────────────────────────────
+   * `ui/deckview.js` is the one viewer for every pile in the game — search,
+   * filters, sort, real keyboard grid, and it force-sorts the draw pile itself
+   * so looking is information and never an oracle. This screen used to carry a
+   * private copy of a worse one; it does not any more.
+   */
+  async _openPile(which) {
+    if (!this.engine || this._pileOpen) return;
     const st = this.engine.state;
-    // The draw pile's ORDER is secret; sort it so looking is information, not an oracle.
-    const cards = which === 'draw'
-      ? st.piles.draw.slice().sort((a, b) => a.name.localeCompare(b.name))
-      : st.piles.discard.slice().reverse();
-    this.$pileTitle.textContent = which === 'draw'
-      ? `Draw pile — ${cards.length} ${cards.length === 1 ? 'Trick' : 'Tricks'} (order hidden)`
-      : `Discard pile — ${cards.length} ${cards.length === 1 ? 'Trick' : 'Tricks'}`;
-    this.$pileGrid.textContent = '';
-    this._pileViews?.forEach(v => v.destroy());
-    this._pileViews = [];
-    for (const c of cards) {
-      const def = this.engine.card(c.uid)?.def || c;
-      const v = new CardView(def, { uid: c.uid, upgraded: c.upgraded, cost: c.cost, largeText: this.largeText, reduceMotion: true });
-      const wrap = document.createElement('div');
-      wrap.className = 'cb-pilecard';
-      wrap.appendChild(v.el);
-      this._placeCard(v, wrap, 0.72);
-      this.$pileGrid.appendChild(wrap);
-      this._pileViews.push(v);
-    }
-    if (!cards.length) {
-      const d = document.createElement('p');
-      d.className = 'cb-pileview__none';
-      d.textContent = 'Nothing here.';
-      this.$pileGrid.appendChild(d);
-    }
-    this.$pileview.hidden = false;
+    const raw = which === 'draw' ? st.piles.draw : st.piles.discard.slice().reverse();
+    const cards = raw.map(c => ({
+      uid: c.uid, def: this.engine.card(c.uid)?.def || c, upgraded: c.upgraded, cost: c.cost,
+    }));
+    this._pileOpen = true;
     this.ctx.audio?.play?.('ui:open-panel');
-    this.root.querySelector('.cb-pileview__x')?.focus();
+    try {
+      await openPile({ mode: which, cards, ctx: this.ctx, host: this.ctx.dom });
+    } finally {
+      this._pileOpen = false;
+      this.ctx.audio?.play?.('ui:close-panel');
+    }
   }
 
-  _closePile() {
-    this.$pileview.hidden = true;
-    this._pileViews?.forEach(v => v.destroy());
-    this._pileViews = [];
-    this.$pileGrid.textContent = '';
-    this.ctx.audio?.play?.('ui:close-panel');
-  }
-
-  /* ── tooltips ────────────────────────────────────────────────────────── */
+  /* ── tooltips ─────────────────────────────────────────────────────────────
+   * There is one tooltip in this game and it lives in `ui/tooltip.js`. It owns
+   * every `[data-tip]` anchor on this screen by its own document delegation;
+   * these two exist only for the intent / enemy panels, whose content is built
+   * HTML rather than an attribute.
+   */
   _showTip(anchor, html) {
     if (!html) return;
-    // Prefer the shared tooltip if ui-chrome has shipped a real one.
-    if (!this._tipProbed) {
-      this._tipProbed = true;
-      this._tipShared = false;
-      try {
-        const before = this.ctx.tipLayer?.childElementCount ?? 0;
-        this.ctx.tooltip?.show?.(anchor, html);
-        this._tipShared = (this.ctx.tipLayer?.childElementCount ?? 0) > before;
-        if (this._tipShared) return;
-        this.ctx.tooltip?.hide?.();
-      } catch { /* fall through to our own */ }
-    }
-    if (this._tipShared) { this.ctx.tooltip?.show?.(anchor, html); return; }
-
-    if (!this._tipEl) {
-      this._tipEl = document.createElement('div');
-      this._tipEl.className = 'cb-tip';
-      (this.ctx.tipLayer || document.body).appendChild(this._tipEl);
-    }
-    this._tipEl.innerHTML = html;
-    this._tipEl.classList.add('is-on');
-    const r = anchor.getBoundingClientRect();
-    const t = this._tipEl.getBoundingClientRect();
-    let x = r.left + r.width / 2 - t.width / 2;
-    let y = r.top - t.height - 12;
-    if (y < 8) y = r.bottom + 12;
-    x = Math.max(8, Math.min(window.innerWidth - t.width - 8, x));
-    this._tipEl.style.transform = `translate3d(${Math.round(x)}px,${Math.round(y)}px,0)`;
+    this.ctx.tooltip?.show?.(anchor, html);
   }
 
-  _hideTip() {
-    if (this._tipShared) { this.ctx.tooltip?.hide?.(); return; }
-    this._tipEl?.classList.remove('is-on');
-  }
+  _hideTip() { this.ctx.tooltip?.hide?.(); }
 
   /* ══ frame ══════════════════════════════════════════════════════════════ */
   _frame(dt, t) {
@@ -1590,9 +1611,8 @@ export class CombatScene extends Scene {
     this.hand?.destroy();
     for (const v of this.views.values()) v.destroy();
     this.views.clear();
-    this._pileViews?.forEach(v => v.destroy());
+    this.hud?.destroy(); this.hud = null;
     this.fx?.destroy();
-    this._tipEl?.remove(); this._tipEl = null;
     this.ctx.tooltip?.hide?.();
     this.ctx.atmosphere?.dread?.(0, 0.3);
     this.engine = null;
@@ -1676,15 +1696,6 @@ function decayLine(decay) {
   if (decay === 'turnEnd') return 'One stack wears off at the end of the turn.';
   if (decay === 'turnStart') return 'It ticks at the start of the turn.';
   return 'It lasts the whole Scuffle.';
-}
-
-/** `Title|body|note` -> tooltip HTML. */
-function tipHTML(raw) {
-  if (!raw) return '';
-  const [title, body, note] = String(raw).split('|');
-  return `${title ? `<div class="cb-tip__title">${esc(title)}</div>` : ''}`
-    + `${body ? `<div class="cb-tip__body">${esc(body)}</div>` : ''}`
-    + `${note ? `<div class="cb-tip__note">${esc(note)}</div>` : ''}`;
 }
 
 function esc(s) { return String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }

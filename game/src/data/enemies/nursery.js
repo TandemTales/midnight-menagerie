@@ -389,7 +389,7 @@ export const blanketBlob = {
       if (!c.has('covered', a)) continue;
       const owed = a._coverPending || 0;
       a._coverPending = 0;
-      if (owed > 0) c.damage(c.self, owed, { redirected: true, cause: 'cover' });
+      if (owed > 0) c.damage(c.self, owed, { cause: 'cover' });
     }
   },
 

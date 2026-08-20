@@ -115,7 +115,7 @@ export const butler = {
    * silently accumulate all four and enforce them simultaneously from turn four onward.
    */
   announceNext(c) {
-    if (c.has?.('discomposed', c.self)) return;          // he cannot enforce while Discomposed
+    if (c.has('discomposed', c.self)) return;          // he cannot enforce while Discomposed
     const hist = mem(c).ruleHistory || (mem(c).ruleHistory = []);
     const p2 = butler.phase(c) >= 2;
     const count = p2 ? 2 : 1;
@@ -132,7 +132,7 @@ export const butler = {
     }
 
     hist.push(p2 ? picked.slice() : picked[0]);
-    c.clearRules?.();                                     // drop the standing set first
+    c.clearRules();                                     // drop the standing set first
     for (const id of picked) announce(c, HOUSE_RULES[id](p2));
   },
 
@@ -145,14 +145,14 @@ export const butler = {
     if (n >= butler.flusterThreshold(c)) {
       setCnt(c, 'flustered', 0);
       c.applyStatus(c.self, 'discomposed', 1);
-      c.clearRules?.(c.self.uid ?? c.self.id);
+      c.clearRules(c.self.uid ?? c.self.id);
       mem(c).collectHimself = true;      // his next action is wasted collecting himself
     }
   },
 
   /** Announced at the beginning of each player turn once he is in phase two. */
   onPlayerTurnStart(c) {
-    if (butler.phase(c) >= 2 && !c.has?.('discomposed', c.self)) butler.announceNext(c);
+    if (butler.phase(c) >= 2 && !c.has('discomposed', c.self)) butler.announceNext(c);
   },
 
   /** Apply and clear the No Roughhousing retaliation rider. */
@@ -242,7 +242,7 @@ export const butler = {
         // Removes one ordinary negative effect. Never a Companion signature resource —
         // Haunt and the like are the Companion's central mechanic and must survive.
         if (typeof c.removeWorstStatus === 'function') c.removeWorstStatus(c.self, { protectSignature: true });
-        else c.removeStatus?.(c.self, 'weak');
+        else c.removeStatus(c.self, 'weak');
       },
     },
   },

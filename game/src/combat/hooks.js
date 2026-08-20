@@ -54,9 +54,23 @@
  *   h.e / h.engine   the engine        h.stacks   the provider's stack count
  *   h.owner          the actor/relic that owns the hook
  *   h.actor          alias of h.owner when the owner is an actor
+ *   h.player         the player actor
  *   h.remove()       strip this status from its owner (self-consuming statuses)
+ *   h.consume(n)     spend n stacks of this status
  *   h.block(a, n)    grant Guard without going through a card
+ *   h.damage(t,n,o)  deal attack damage from the owner
+ *   h.loseHp(a, n)   direct Courage loss — ignores Guard and every modifier
+ *   h.heal(a, n)
+ *   h.applyStatus(a, id, n, opts)   h.removeStatus(a, id)
+ *   h.count(id, a)   h.has(id, a)    stack queries, default actor = the owner
  *   h.card           the card in play, when there is one
+ *
+ * This list is the CONTRACT. A status that needs something not on it must get it
+ * added here — reaching for `h.something?.()` and hoping is what made Haunt deal
+ * zero damage for an entire build (CONTRACTS.md rule 8). `assertApi()` below is
+ * exported so a module can fail at load instead of at the moment it matters, and
+ * in dev the payload is Proxy-guarded (combat/strict.js) so reading a field no
+ * dispatch has ever carried — `isAttack`, `fromAttack` — throws on the spot.
  *
  * Value reducers (must return a number):
  *   modifyDamageDealt(amount, h)   h.attacker, h.defender, h.card, h.kind, h.stacks
@@ -69,7 +83,32 @@
  *   modifyHandCap(n, h)
  */
 
+import { guardFactory, HOOK_SOFT_FIELDS } from './strict.js';
+
 const NOOP_LIST = Object.freeze([]);
+
+/**
+ * Every key `_payload()` promises. Kept next to the builder so the two cannot
+ * drift, and exported so `assertApi()` can be called at module load by anything
+ * that writes hooks (CONTRACTS.md rule 8: "fail at boot, not at the moment it
+ * matters").
+ */
+export const HOOK_PAYLOAD_API = Object.freeze([
+  'e', 'engine', 'owner', 'actor', 'player', 'stacks',
+  'remove', 'consume', 'block', 'damage', 'loseHp', 'heal',
+  'applyStatus', 'removeStatus', 'count', 'has',
+]);
+
+/**
+ * Throw if `obj` is missing any of `names`. Use it at module load rather than
+ * guarding each call with `?.` — a missing method should be a loud TypeError in
+ * a test, never a silent no-op in someone's run.
+ */
+export function assertApi(obj, names, label = 'api') {
+  const missing = names.filter(n => typeof obj?.[n] !== 'function' && obj?.[n] === undefined);
+  if (missing.length) throw new TypeError(`[${label}] missing: ${missing.join(', ')}`);
+  return obj;
+}
 
 export class Hooks {
   constructor(engine) {
@@ -77,6 +116,11 @@ export class Hooks {
     /** @type {{name:string, fn:Function, owner:any, source:string, id:string}[]} */
     this.extra = [];
     this._uid = 0;
+    // Dev seam guard. A hook reading a field its OWN dispatch does not carry is
+    // legal and gets undefined (`if (h.card)`); a field no dispatch has ever
+    // carried throws. `isAttack`, `fromAttack` and `slowDissipation` were all
+    // that second thing, and all three silently broke a Marmalade mechanic.
+    this._guard = guardFactory(engine && engine.strictCtx, HOOK_SOFT_FIELDS);
   }
 
   /** Register an ad-hoc hook (used by cards that install one-combat behaviour). */
@@ -179,7 +223,7 @@ export class Hooks {
   _payload(p, payload) {
     const e = this.e;
     const owner = p.owner;
-    return {
+    return this._guard({
       ...payload,
       e, engine: e,
       stacks: p.stacks, owner, hookId: p.id, source: p.source, def: p.def,
@@ -193,7 +237,18 @@ export class Hooks {
       },
       block: (a, n) => e.gainBlock(a || owner, n, { fromCard: false, reason: p.id }),
       damage: (target, n, opts) => e.dealDamage({ attacker: owner, defender: target, amount: n, kind: 'attack', ...(opts || {}) }),
-    };
+
+      // Statuses legitimately need to move Courage and stacks around. Haunt is
+      // the whole reason these are here: it called `loseHp` on a payload that
+      // did not have it and the optional chain ate the damage silently.
+      player: e.player,
+      loseHp: (a, n) => e.loseHp(a || owner, n, p.id),
+      heal: (a, n) => e.heal(a || owner, n, p.id),
+      applyStatus: (a, id, n, opts) => e.applyStatus(a || owner, id, n, { reason: p.id, ...(opts || {}) }),
+      removeStatus: (a, id) => e.removeStatus(a || owner, id, p.id),
+      count: (id, a) => ((a || owner) && (a || owner).status ? (a || owner).status(id) : 0),
+      has: (id, a) => ((a || owner) && (a || owner).hasStatus ? (a || owner).hasStatus(id) : false),
+    }, 'hook payload (' + p.source + ':' + p.id + ')');
   }
 
   /** Chain a number through every modifier. Always returns a finite number. */

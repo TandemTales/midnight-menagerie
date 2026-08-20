@@ -8,7 +8,7 @@
 .rm {
   position: absolute; inset: 0;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto auto 1fr auto;
   overflow: hidden;
   --rm-key: var(--flame-300);
   --rm-key-lo: var(--flame-500);
@@ -80,54 +80,11 @@
 .rm-room { margin: 3px 0 0; font-size: var(--fs-xs); letter-spacing: .12em;
            text-transform: uppercase; color: var(--text-lo); }
 
-/* ── HUD ──────────────────────────────────────────────────────────────────── */
-.rm-hud { display: flex; align-items: center; gap: var(--s-3); flex-wrap: wrap; justify-content: flex-end; }
-.rm-chip {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 6px 12px;
-  border: 1px solid var(--ink-500); border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--ink-800) 82%, transparent);
-  font-family: var(--font-num); font-size: var(--fs-sm); color: var(--text-hi);
-  box-shadow: var(--shadow-2);
-}
-.rm-chip__k { font-family: var(--font-body); font-size: var(--fs-xs);
-              letter-spacing: .14em; text-transform: uppercase; color: var(--text-lo); }
-.rm-chip i { color: var(--text-lo); font-style: normal; }
-.rm-chip svg { width: 15px; height: 15px; fill: none; stroke: var(--brass-200); stroke-width: 1.6; }
-.rm-chip--hp b { color: var(--courage-300); }
-.rm-chip--gold b { color: var(--brass-200); }
-.rm-bar {
-  display: block; width: clamp(52px, 5vw, 88px); height: 5px; margin-left: 4px;
-  border-radius: 3px; background: color-mix(in srgb, var(--courage-500) 40%, var(--ink-900));
-  overflow: hidden;
-}
-.rm-bar > span {
-  display: block; height: 100%; border-radius: 3px;
-  background: linear-gradient(90deg, var(--courage-500), var(--courage-300));
-  transition: width var(--t-base) var(--ease-out);
-}
-
-.rm-keeps { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; max-width: 34vw; justify-content: flex-end; }
-.rm-keep {
-  display: grid; place-items: center;
-  width: 32px; height: 32px; border-radius: 50%;
-  border: 1px solid var(--brass-500);
-  background: radial-gradient(circle at 34% 28%,
-    color-mix(in srgb, var(--brass-300) 26%, var(--ink-700)), var(--ink-800));
-  box-shadow: var(--shadow-1);
-}
-.rm-keep svg { width: 19px; height: 19px; fill: none; stroke: var(--brass-100); stroke-width: 1.5;
-               stroke-linecap: round; stroke-linejoin: round; }
-.rm-keep[data-rarity="rare"]  { border-color: var(--rarity-rare); }
-.rm-keep[data-rarity="boss"]  { border-color: var(--threat-300); }
-.rm-keep[data-rarity="shop"]  { border-color: var(--arcane-300); }
-.rm-keep[data-rarity="uncommon"] { border-color: var(--rarity-uncommon); }
-.rm-keep.is-forged { box-shadow: 0 0 0 2px color-mix(in srgb, var(--flame-300) 46%, transparent), var(--shadow-1); }
-.rm-keep.is-empty {
-  width: auto; height: auto; border-radius: var(--radius-sm); padding: 4px 10px;
-  font-size: var(--fs-xs); letter-spacing: .12em; text-transform: uppercase;
-  color: var(--text-lo); background: none; border-style: dashed; border-color: var(--ink-500);
-}
+/* ── HUD ──────────────────────────────────────────────────────────────────
+   The four node rooms show the shared run HUD (`ui/hud.js`), pinned to the top
+   edge exactly as the map and the Scuffle do. This host is the grid row it
+   occupies; the strip itself is `.mm-hud--fixed` and owned by ui-chrome. */
+.rm-hudhost { position: relative; z-index: 4; }
 
 /* ── body + footer ────────────────────────────────────────────────────────── */
 .rm-body {
@@ -358,7 +315,7 @@
 .scene--shop.is-large   .rm-btn,
 .scene--rest.is-large   .rm-btn,
 .scene--event.is-large  .rm-btn { font-size: var(--fs-md); }
-.is-large .rm-spoil span, .is-large .rm-chip__k { font-size: var(--fs-sm); }
+.is-large .rm-spoil span { font-size: var(--fs-sm); }
 .is-large .rm-sub, .is-large .rm-live { font-size: var(--fs-md); }
 
 @media (max-width: 1200px) {

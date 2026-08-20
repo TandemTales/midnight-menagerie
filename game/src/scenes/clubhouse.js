@@ -21,6 +21,7 @@ import {
   el, svg, rovingFocus, setReduceMotion, REGION_NAMES,
 } from '../ui/portrait.js';
 import { KID_CODEX, STARTER_COMPANIONS } from './select.js';
+import { pauseStageFor } from './_stage.js';
 
 const CSS_KIT  = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_CLUB = new URL('./clubhouse.css', import.meta.url).href;
@@ -83,6 +84,9 @@ export class ClubhouseScene extends Scene {
     setReduceMotion(!!settings.reduceMotion);
     document.documentElement.classList.toggle('mm-large-text', !!settings.largeText);
     try { ctx.atmosphere?.setMood?.('clubhouse'); } catch {}
+
+    // The canvas measures 0.00% visible behind this screen — stop drawing it.
+    this._unpauseStage = pauseStageFor(ctx);
 
     const data = Save?.data ?? {};
     this.rescued = new Set([...STARTER_COMPANIONS, ...(data.companionsRescued ?? [])]);
@@ -542,6 +546,8 @@ export class ClubhouseScene extends Scene {
   }
 
   async exit() {
+    this._unpauseStage?.();
+    this._unpauseStage = null;
     for (const off of this._offs) { try { off(); } catch {} }
     this._offs.length = 0;
     for (const p of this._portraits) { try { p.destroy(); } catch {} }
