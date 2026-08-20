@@ -201,10 +201,10 @@ export class CombatScene extends Scene {
         const [cards, lib] = await Promise.all([
           import('../data/cards.js'), import('../data/enemies/_lib.js'),
         ]);
-        engine.registerCards?.(cards.allCards());
-        engine.registerCards?.(lib.STATUS_TRICK_DEFS || []);
+        engine.registerCards(cards.allCards());
+        engine.registerCards(lib.STATUS_TRICK_DEFS || []);
       } catch { /* nothing to register */ }
-      try { engine.registerEnemies?.(this._enemyDefs || []); } catch { /* none */ }
+      try { engine.registerEnemies(this._enemyDefs || []); } catch { /* none */ }
 
       this.usingRealContent = true;
       return engine;
@@ -562,7 +562,7 @@ export class CombatScene extends Scene {
     const at = list[index] === snack ? index : list.indexOf(snack);
     if (at < 0) return;
     list.splice(at, 1);
-    run.save?.();
+    run.save();
     this.ctx.bus.emit('run:potion', { used: snack });
   }
 

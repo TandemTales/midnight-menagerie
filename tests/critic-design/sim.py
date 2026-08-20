@@ -84,6 +84,13 @@ for key, S in res["cells"].items():
     if e.get("n"):
         print(f"  first 3 Scuffles: turns {e['turns']['mean']}  "
               f"Courage cost {e['courageCost']['mean']}  free fights {e['freeFights']}%")
+    lg = S.get("ledger", {})
+    print(f"  Courage ledger/run: scuffles -{lg.get('scuffle')}  elites -{lg.get('elite')}  "
+          f"boss -{lg.get('boss')}  events -{lg.get('event')}  hazards -{lg.get('hazard')}  "
+          f"| rests +{lg.get('rested')} ({lg.get('rests')}x)  other heals +{lg.get('healed')}")
+    print(f"  rooms/run: {S.get('visited')}")
+    print(line("Courage at boss door", S.get("courageAtBoss")))
+    print(line("  ... as % of max", S.get("courageAtBossPct")))
     print(line("deck size at end", S["deckEnd"]))
     print(line("upgrades at end", S["upgradesEnd"]))
     print(line("keepsakes at end", S["keepsakesEnd"]))

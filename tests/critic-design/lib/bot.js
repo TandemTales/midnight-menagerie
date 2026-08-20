@@ -110,34 +110,45 @@ async function step(e, uid, targetId) {
 // ─────────────────────────────────────────────────────────────────────────────
 // evaluation
 //
-// The only opinion in here is the exchange rate: one point of enemy Courage is
-// worth 1.15 of the player's, because every point of enemy Courage has to come
-// off eventually while damage taken never comes back, and a shorter fight
-// deletes whole enemy turns. A kill is worth much more than the Courage it
-// costs, for the same reason. Guard beyond the telegraphed number is nearly
-// worthless — that is the single correction the naive bot most needs.
+// The first version of this used a fixed damage-versus-Guard exchange rate, and
+// it was wrong in a way worth writing down, because it is the naive bot's own
+// mistake seen from the other side. A fixed rate says "6 damage beats 5 Guard",
+// which is true in a three-turn Scuffle and false in a thirteen-turn boss fight
+// where the Courage pool is too deep to race and the only question is whether
+// you out-live it. With the fixed rate the "competent" bot LOST to the naive one
+// against the Butler — the instrument reporting that the instrument was broken.
+//
+// So a terminal state is scored by projecting the rest of the fight from the
+// rates the candidate turn itself demonstrates:
+//
+//     turnsLeft   = enemy Courage remaining / damage this plan dealt
+//     lossPerTurn = the threat they keep showing − Guard this plan raised
+//     value       = Courage now − turnsLeft × lossPerTurn
+//
+// A plan that deals 18 and blocks nothing buys a short fight and a big bill; a
+// plan that deals 6 and blocks 10 buys a long fight and no bill at all. The bot
+// finds the crossover itself, per fight — which is the decision a competent
+// player is actually making, and the reason it can be beaten by a boss that is
+// genuinely too big rather than merely arithmetically unfavourable.
 // ─────────────────────────────────────────────────────────────────────────────
-function boardScore(s, before, { blockAgainst = 0 } = {}) {
-  if (!s.player.alive) return -1e6;
-  let v = 1.0 * s.player.hp;
-  const useful = Math.min(s.player.block, blockAgainst);
-  v += 1.0 * useful + 0.08 * (s.player.block - useful);
-  let enemyHp = 0, enemyBlock = 0, haunt = 0, weak = 0, vuln = 0, living = 0;
+function enemyPool(s) {
+  let hp = 0, block = 0, living = 0, haunt = 0, weak = 0, vuln = 0;
   for (const en of s.enemies) {
     if (!en.alive) continue;
     living++;
-    enemyHp += Math.max(0, en.hp);
-    enemyBlock += en.block;
+    hp += Math.max(0, en.hp);
+    block += en.block;
     haunt += stacksOf(en, 'haunt');
     weak += stacksOf(en, 'weak');
     vuln += stacksOf(en, 'vulnerable');
   }
-  v -= 1.15 * enemyHp;
-  v -= 0.5 * enemyBlock;
-  v += 32 * Math.max(0, before.living - living);
-  if (living === 0) v += 400;
-  // residual board value a one-turn horizon cannot otherwise see
-  v += 0.55 * haunt + 1.1 * weak + 1.4 * vuln;
+  return { hp, block, living, haunt, weak, vuln };
+}
+
+/** Board value that does not depend on the projection. */
+function residual(s, before, pool) {
+  let v = 34 * Math.max(0, before.living - pool.living);
+  v += 0.55 * pool.haunt + 1.2 * pool.weak + 1.5 * pool.vuln;
   v += 1.4 * stacksOf(s.player, 'ghoststep');
   v += 4.0 * stacksOf(s.player, 'strength');
   v += 2.0 * stacksOf(s.player, 'dexterity');
@@ -145,19 +156,49 @@ function boardScore(s, before, { blockAgainst = 0 } = {}) {
   return v;
 }
 
-/** Cheap score used to shape the beam. No enemy turn simulated. */
+/**
+ * @param {object} t       board AFTER the simulated enemy turn
+ * @param {object} before  {living, enemyHp} at the start of this player turn
+ * @param {number} guarded Guard standing when the player ended the turn
+ * @param {object} fc      per-fight running estimates {dps, threat, turns}
+ */
+function projectedValue(t, before, guarded, fc) {
+  if (!t.player.alive) return -1e6;
+  const pool = enemyPool(t);
+  if (pool.living === 0) return 1e4 + t.player.hp;
+
+  const dealt = Math.max(0, before.enemyHp - pool.hp);
+  // Floored so a pure-defence turn does not project an infinite fight, and
+  // blended with what this fight has actually managed so far.
+  const dps = Math.max(2.5, 0.65 * dealt + 0.35 * fc.dps);
+  const turnsLeft = Math.min(28, (pool.hp + pool.block * 0.6) / dps);
+  const lossPerTurn = Math.max(0, Math.max(1, fc.threat) - guarded);
+
+  let v = t.player.hp - turnsLeft * lossPerTurn;
+  v -= turnsLeft * 0.35;                        // a long fight is its own risk
+  v += residual(t, before, pool);
+  return v;
+}
+
+/** Cheap score used only to shape the beam — no enemy turn simulated. */
 function staticScore(s, before) {
-  return boardScore(s, before, { blockAgainst: shownIncoming(s) })
-       + 0.9 * s.player.energy            // do not dump for the sake of dumping
-       + 0.7 * s.piles.hand.length;       // cards in hand are options
+  const pool = enemyPool(s);
+  const useful = Math.min(s.player.block, shownIncoming(s));
+  return s.player.hp
+       + 1.0 * useful + 0.06 * (s.player.block - useful)
+       - 0.9 * pool.hp - 0.4 * pool.block
+       + residual(s, before, pool)
+       + 0.9 * s.player.energy              // do not dump for the sake of dumping
+       + 0.7 * s.piles.hand.length;         // cards in hand are options
 }
 
 /** Simulate "stop here, end the turn" and score what the enemies leave behind. */
-async function endTurnValue(e, before) {
+async function endTurnValue(e, before, fc) {
+  const guarded = e.player.block;
   let t;
   try { t = e.clone(); await t.endTurn(); }
   catch { return -1e5; }
-  return boardScore(t, before, { blockAgainst: shownIncoming(t) });
+  return projectedValue(t, before, guarded, fc);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -206,10 +247,14 @@ export async function naiveTurn(e) {
 // COMPETENT
 // ─────────────────────────────────────────────────────────────────────────────
 export async function competentTurn(e, opts = {}) {
-  const { snacks = null, onSnack = null, beam = 3, depth = 6, cap = 12 } = opts;
-  const before = { living: e.livingEnemies().length };
+  const { snacks = null, onSnack = null, beam = 3, depth = 6, cap = 12, fc = null, debug = null } = opts;
+  const pool0 = enemyPool(e);
+  const before = { living: pool0.living, enemyHp: pool0.hp };
+  const F = fc || { dps: 10, threat: 8, turns: 0 };
+  F.threat = F.turns === 0 ? Math.max(4, shownIncoming(e))
+    : (F.threat * F.turns + shownIncoming(e)) / (F.turns + 1);
 
-  const baseline = await planTurn(e, before, { beam, depth, cap });
+  const baseline = await planTurn(e, before, { beam, depth, cap, fc: F, debug });
 
   // A Snack is a limited resource: eat one only when it is worth ~12 Courage of
   // board value, or when the snackless plan gets us killed.
@@ -220,7 +265,7 @@ export async function competentTurn(e, opts = {}) {
       let trial;
       try { trial = e.clone(); applySnack(trial, snacks[i], e.livingEnemies()[0]?.id || null); }
       catch { continue; }
-      const plan = await planTurn(trial, before, { beam, depth, cap });
+      const plan = await planTurn(trial, before, { beam, depth, cap, fc: F });
       if (plan.score > baseline.score + (desperate ? 0 : 12)
           && (!bestSnack || plan.score > bestSnack.score)) {
         bestSnack = { index: i, snack: snacks[i], score: plan.score, seq: plan.seq };
@@ -229,17 +274,46 @@ export async function competentTurn(e, opts = {}) {
     if (bestSnack) {
       applySnack(e, bestSnack.snack, e.livingEnemies()[0]?.id || null);
       onSnack?.(bestSnack.index, bestSnack.snack);
-      return replay(e, bestSnack.seq);
+      await replay(e, bestSnack.seq);
+      return bookkeep(e, before, F);
     }
   }
-  return replay(e, baseline.seq);
+  await replay(e, baseline.seq);
+  return bookkeep(e, before, F);
 }
 
+/** Fold what the turn actually achieved back into the running estimates. */
+function bookkeep(e, before, F) {
+  const dealt = Math.max(0, before.enemyHp - enemyPool(e).hp);
+  F.dps = F.turns === 0 ? Math.max(4, dealt) : (F.dps * F.turns + dealt) / (F.turns + 1);
+  F.turns++;
+  return F;
+}
+
+/**
+ * Replay a plan found on clones onto the real engine.
+ *
+ * This used to `break` the moment a step was illegal, and that quietly ruined
+ * the bot: cards that return themselves to hand (Frenzied Zoomies) can make one
+ * mid-plan step unplayable, and the abort threw away everything after it — which
+ * was, reliably, the Curl Up the plan had put LAST. The bot looked like it had
+ * decided not to block. It had decided to block and then dropped the card.
+ *
+ * So: skip a step that no longer applies, keep the rest, and accept an
+ * equivalent copy of the same Trick if the specific uid has moved on.
+ */
 async function replay(e, seq) {
   for (const mv of seq) {
     if (e.over || e.phase !== 'player') break;
-    if (!e.canPlay(mv.uid, mv.targetId).ok) break;
-    await e.playCard(mv.uid, mv.targetId);
+    let uid = mv.uid;
+    if (!e.canPlay(uid, mv.targetId).ok) {
+      const want = e.card(uid);
+      const alt = want && e.piles.hand.find(c => c.id === want.id && c.upgraded === want.upgraded
+        && e.canPlay(c.uid, mv.targetId).ok);
+      if (!alt) continue;
+      uid = alt.uid;
+    }
+    await e.playCard(uid, mv.targetId);
   }
 }
 
@@ -247,9 +321,10 @@ async function replay(e, seq) {
  * Beam search over one player turn. Returns the best `[{uid,targetId}]`
  * sequence and the score of the board after the enemies have answered it.
  */
-async function planTurn(e0, before, { beam, depth, cap }) {
+async function planTurn(e0, before, { beam, depth, cap, fc, debug = null }) {
   let frontier = [{ e: e0, seq: [] }];
-  let best = { seq: [], score: await endTurnValue(e0, before) };
+  let best = { seq: [], score: await endTurnValue(e0, before, fc) };
+  if (debug) debug.push({ d: -1, names: ['(pass)'], score: +best.score.toFixed(1), guarded: e0.player.block });
 
   for (let d = 0; d < depth; d++) {
     const next = [];
@@ -260,7 +335,7 @@ async function planTurn(e0, before, { beam, depth, cap }) {
         if (!sim) continue;
         const seq = st.seq.concat([opt]);
         if (sim.over) {
-          const s = boardScore(sim, before, { blockAgainst: 0 }) + (sim.victory ? 250 : 0);
+          const s = sim.victory ? 1e4 + sim.player.hp + 200 : -1e6;
           if (s > best.score) best = { seq, score: s };
           continue;
         }
@@ -272,7 +347,12 @@ async function planTurn(e0, before, { beam, depth, cap }) {
     frontier = next.slice(0, beam);
     // Only the surviving frontier pays for a full enemy-turn simulation.
     for (const st of frontier) {
-      const score = await endTurnValue(st.e, before);
+      const score = await endTurnValue(st.e, before, fc);
+      if (debug) {
+        debug.push({ d, names: st.seq.map(x => e0.card(x.uid)?.name || x.uid),
+                     score: +score.toFixed(1), guarded: st.e.player.block,
+                     ehp: enemyPool(st.e).hp });
+      }
       if (score > best.score) best = { seq: st.seq, score };
     }
   }

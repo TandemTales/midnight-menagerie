@@ -48,20 +48,37 @@ export const HOUSE_RULES = {
     },
     onBreak: (c) => c.block(c.self, p2 ? 10 : 8),
   }),
+  /**
+   * BALANCE 2026-08-20 — thresholds lowered from 18 Guard and 20 damage.
+   *
+   * Both were *unreachable* by the deck that actually fights him. Measured over
+   * 24 boss fights with real drafted Foyer decks: `keep-the-hall-clear` broke
+   * 0 times and `no-roughhousing` broke 0 times. With 3 Pluck and a starter
+   * Guard card worth 5, ending a turn on 18 needs four of them; and 20 damage
+   * sits one point above three Scratches, which is the whole turn. Two of the
+   * boss's four House Rules were therefore dead content, and Flustered — the
+   * resource the entire fight is built to let you farm — averaged 1.4 breaks
+   * and 0.46 Discomposed per fight.
+   *
+   * 12 Guard is two Guard cards. 15 damage is two Scratches and a cheap one.
+   * Both are now lines an ordinary turn crosses, which is the point: the rule
+   * has to cost you something real to respect, or respecting it is not a
+   * decision.
+   */
   'keep-the-hall-clear': (p2) => ({
     id: 'keep-the-hall-clear',
     name: 'GUESTS DO NOT CLUTTER THE HALL',
-    text: `Ending your turn with 18 or more Guard breaks the rule. Reprimand: The Butler gains ${p2 ? 12 : 10} Guard.`,
+    text: `Ending your turn with 12 or more Guard breaks the rule. Reprimand: The Butler gains ${p2 ? 12 : 10} Guard.`,
     when: 'turnEnd', once: true,
-    broken: (rc) => (rc.playerBlock || 0) >= 18,
+    broken: (rc) => (rc.playerBlock || 0) >= 12,
     onBreak: (c) => c.block(c.self, p2 ? 12 : 10),
   }),
   'no-roughhousing': (p2) => ({
     id: 'no-roughhousing',
     name: 'GUESTS DO NOT ROUGHHOUSE',
-    text: `Dealing 20 or more damage this turn breaks the rule. Reprimand: his next damaging attack deals ${p2 ? 7 : 5} more.`,
+    text: `Dealing 15 or more damage this turn breaks the rule. Reprimand: his next damaging attack deals ${p2 ? 7 : 5} more.`,
     when: 'turnEnd', once: true,
-    broken: (rc) => (rc.damageDealtThisTurn || 0) >= 20,
+    broken: (rc) => (rc.damageDealtThisTurn || 0) >= 15,
     onBreak: (c) => { mem(c).retaliation = (mem(c).retaliation || 0) + (p2 ? 7 : 5); },
   }),
 };
@@ -155,6 +172,26 @@ export const butler = {
     if (butler.phase(c) >= 2 && !c.has('discomposed', c.self)) butler.announceNext(c);
   },
 
+  /**
+   * Close the Discomposed window.
+   *
+   * `discomposed` is `decay: 'never'` so it can span a player turn — the status
+   * decay buckets all fire inside the enemy phase, so any of them would have
+   * expired it before the player ever got to swing (and did: it was measurably
+   * worth zero). He clears it himself on the first of his own turns AFTER the
+   * one he wasted collecting himself, which makes the window exactly one full
+   * player turn: break the third rule, watch him tidy his cuffs, then hit him
+   * for 25% more.
+   */
+  onTurnEnd(c) {
+    const m = mem(c);
+    if (!c.has('discomposed', c.self)) return;
+    if (m.windowTurn != null && c.turn > m.windowTurn) {
+      c.removeStatus(c.self, 'discomposed');
+      m.windowTurn = null;
+    }
+  },
+
   /** Apply and clear the No Roughhousing retaliation rider. */
   strike(c, dmg, hits = 1) {
     const bonus = mem(c).retaliation || 0;
@@ -202,9 +239,17 @@ export const butler = {
       },
     },
     'collect-himself': {
-      id: 'collect-himself', name: 'Collect Himself', intent: Intent.DEFEND, block: 12,
+      // BALANCE 2026-08-20: 12 Guard -> 6, and the Discomposed window is opened
+      // here rather than expiring unseen. The turn he spends putting himself
+      // back together is advertised to the player as their opening; handing him
+      // 12 Guard on it made the window worth roughly nothing.
+      id: 'collect-himself', name: 'Collect Himself', intent: Intent.DEFEND, block: 6,
       tell: 'He straightens his cuffs with slightly unsteady hands. This is your window.',
-      effect(c) { c.block(c.self, 12); mem(c).collectHimself = false; },
+      effect(c) {
+        c.block(c.self, 6);
+        mem(c).collectHimself = false;
+        mem(c).windowTurn = c.turn;      // Discomposed survives into the NEXT player turn
+      },
     },
 
     // ── transition ───────────────────────────────────────────────────────────

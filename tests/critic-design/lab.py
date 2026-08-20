@@ -70,7 +70,10 @@ if a.trace and R.get("trace"):
                         for e in t["enemies"])
         print(f"  T{t['turn']:>2} dealt {t['dealt']:>3}  took {t.get('took', 0):>3}  "
               f"me {t['php']}hp+{t['blk']}  [{es}]")
-        print(f"       played: {', '.join(t['played'])}")
+        print(f"       hand:   {', '.join(t.get('hand') or [])}")
+        print(f"       played: {', '.join(t['played'])}   fc={t.get('fc')}")
+        for c in (t.get('dbg') or []):
+            print(f"         cand {c['score']:>9}  g{c['guarded']:>3} ehp{c['ehp'] if 'ehp' in c else '-':>5}  {', '.join(c['names'])}")
 if R.get("errors"):
     print("\nERRORS:", len(R["errors"]))
     for e in R["errors"][:6]:

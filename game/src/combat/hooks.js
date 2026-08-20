@@ -46,6 +46,8 @@
  *   onDebuffIncoming(h) a debuff is about to land. h.id, h.stacks, h.actor.
  *                     Call h.prevent() to refuse it.
  *   onBoardEvent(h)   a generic broadcast: h.event, h.data
+ *   onSnackUsed(h)    a Snack has just resolved. h.snack, h.snackId, h.target,
+ *                     h.potency (the numbers actually applied), h.results.
  *   onEnemyPhaseEnd(h) every enemy has acted and the decay buckets have run, but
  *                     intents have NOT been redrawn yet. Arm ally buffs here so
  *                     the intent the player reads afterwards is the true number.
@@ -81,6 +83,8 @@
  *   modifyEnergyGain(n, h)
  *   modifyCounterGain(n, h)        h.id, h.owner
  *   modifyHandCap(n, h)
+ *   modifySnackPotency(n, h)       h.snack, h.field ('heal'|'block'|'energy'|
+ *                                  'damageAll'|'status'). Sacred-Bark shape.
  */
 
 import { guardFactory, HOOK_SOFT_FIELDS } from './strict.js';

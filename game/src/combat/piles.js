@@ -75,13 +75,21 @@ export class Card {
 
   get isX() { return this.baseCost === -1; }
 
-  /** Cost before engine hooks. Engine.costOf() applies hooks on top. */
-  rawCost() {
+  /**
+   * Cost before engine hooks. `engine.costOf()` applies `dynamicCost` and the
+   * `modifyCardCost` hooks on top — see the composition order documented there.
+   * @param {number|null} printed  the printed cost to compose from. Pass the
+   *   result of `CardDef.dynamicCost(ctx)` to have it stand in for `baseCost`.
+   */
+  rawCost(printed = null) {
     if (this.unplayable) return -2;
-    if (this.baseCost === -1) return -1;
+    const base = (printed === null || printed === undefined) ? this.baseCost : printed;
+    if (base === -1) return -1;
+    // A hard override is a statement about the whole card ("this costs 0 this
+    // turn") and outranks both the printed and the dynamic cost.
     if (this.costOverrideTurn !== null) return Math.max(0, this.costOverrideTurn);
     if (this.costOverrideCombat !== null) return Math.max(0, this.costOverrideCombat);
-    return Math.max(0, this.baseCost + this.costCombatDelta + this.costTurnDelta);
+    return Math.max(0, base + this.costCombatDelta + this.costTurnDelta);
   }
 
   clone() {

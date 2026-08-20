@@ -60,6 +60,8 @@ export const HOOK_SOFT_FIELDS = new Set([
   'amount', 'base', 'blocked', 'hpLoss', 'delta', 'value', 'index',
   'hits', 'hitIndex', 'id', 'pile', 'count', 'move', 'enemy', 'killerId',
   'focusable', 'fromCard', 'prevented',
+  // Snack dispatch
+  'snack', 'snackId', 'potency', 'results', 'field',
   // mutators a specific hook adds
   'prevent', 'setAmount', 'setHp', 'setStacks',
 ]);

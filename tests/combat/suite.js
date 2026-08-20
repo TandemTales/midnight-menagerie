@@ -1657,6 +1657,240 @@ export async function run() {
     eq(mismatches, 0, `every attack intent delivered exactly what it promised (${turns} checked)`);
   });
 
+
+  // ══ ROUND 4 ═════════════════════════════════════════════════════════════
+
+  await atest('snacks: every real SNACK def resolves through engine.useSnack', async () => {
+    // CONTRACTS rule 9 — across the seam, against the REAL definitions, not a mock.
+    let SNACKS = null;
+    try { ({ SNACKS } = await import('../../game/src/state/run.js')); }
+    catch (err) { ok(false, 'could not import the real SNACKS: ' + (err?.message || err)); }
+    if (!SNACKS) return;
+    ok(SNACKS.length >= 7, `loaded the real Snack table (${SNACKS.length} Snacks)`);
+
+    for (const snack of SNACKS) {
+      const e = mk({ enemies: [dummyEnemy({ hp: 40, move: 'nothing' })] });
+      await e.startCombat();
+      e.player.hp = 40;
+      e.applyStatus(e.player, 'weak', 2);
+      const en = e.enemies[0];
+      const before = {
+        hp: e.player.hp, block: e.player.block, energy: e.player.energy,
+        weak: e.player.status('weak'), enemyHp: en.hp,
+      };
+      const evs = await e.useSnack(snack, snack.effect.target === 'enemy' ? en.id : null);
+      ok(evs.some(x => x.type === 'snack:used'), `${snack.name}: emitted snack:used`);
+
+      const fx = snack.effect;
+      if (fx.heal)      eq(e.player.hp, before.hp + fx.heal, `${snack.name}: healed`);
+      if (fx.block)     eq(e.player.block, before.block + fx.block, `${snack.name}: gained Guard`);
+      if (fx.energy)    eq(e.player.energy, before.energy + fx.energy, `${snack.name}: gained Nerve`);
+      if (fx.cleanse)   eq(e.player.status('weak'), 0, `${snack.name}: cleansed debuffs`);
+      if (fx.damageAll) ok(en.hp < before.enemyHp, `${snack.name}: hit every enemy`);
+      if (Array.isArray(fx.status)) {
+        const who = fx.target === 'enemy' ? en : e.player;
+        eq(who.status(fx.status[0]), fx.status[1], `${snack.name}: applied ${fx.status[0]}`);
+      }
+    }
+  });
+
+  await atest('snacks: the snack:used event lands BEFORE the numbers, and carries them', async () => {
+    const snack = { id: 'test/bat', name: 'Gummy Bat', desc: 'Recover 12.', effect: { heal: 12 } };
+    const e = mk();
+    await e.startCombat();
+    e.player.hp = 30;
+    let hpAtAnnounce = null;
+    const order = [];
+    e.on('snack:used', (ev) => { hpAtAnnounce = e.player.hp; order.push('snack'); });
+    e.on('heal', () => order.push('heal'));
+    const evs = await e.useSnack(snack);
+    eq(hpAtAnnounce, 30, 'the announcement fires before the Courage moves, so the eat can animate first');
+    deepEq(order, ['snack', 'heal'], 'and in that order');
+    const ev = evs.find(x => x.type === 'snack:used');
+    eq(ev.snackId, 'test/bat', 'the event names the Snack');
+    eq(ev.potency.heal, 12, 'and carries the final numbers');
+    eq(e.player.hp, 42, 'the heal landed');
+  });
+
+  await atest('snacks: canUseSnack refuses cleanly, and the engine never touches the inventory', async () => {
+    const bat = { id: 'test/bat', name: 'Bat', effect: { heal: 5 } };
+    const jaw = { id: 'test/jaw', name: 'Jaw', effect: { status: ['vulnerable', 3], target: 'enemy' } };
+    const e = mk({ enemies: [dummyEnemy({ move: 'nothing' })] });
+    await e.startCombat();
+    eq(e.canUseSnack(bat).ok, true, 'a plain Snack is usable on your turn');
+    eq(e.canUseSnack(null).ok, false, 'null is refused');
+    eq(e.canUseSnack({ id: 'x', name: 'x' }).ok, false, 'a Snack with no effect is refused');
+
+    e.dealDamage({ attacker: e.player, defender: e.enemies[0], amount: 999 });
+    eq(e.over, true, 'combat is over');
+    const r = e.canUseSnack(jaw);
+    eq(r.ok, false, 'a targeted Snack is refused with nothing to aim at');
+    ok(r.reason.length > 0, `and says why: "${r.reason}"`);
+    const evs = await e.useSnack(jaw);
+    eq(evs.some(x => x.type === 'card:invalid'), true, 'a refused Snack emits card:invalid and changes nothing');
+
+    // the run inventory is not the engine's business
+    eq(typeof e.snacks, 'undefined', 'the engine holds no Snack inventory');
+  });
+
+  await atest('snacks: a targeted Snack asks through the ordinary chooser; cancelling spends nothing', async () => {
+    const jaw = { id: 'test/jaw', name: 'Jawbreaker', effect: { status: ['vulnerable', 3], target: 'enemy' } };
+    const e = mk({ enemies: [dummyEnemy({ hp: 30, move: 'nothing' }), dummyEnemy({ hp: 30, move: 'nothing' })] });
+    await e.startCombat();
+    let asked = null;
+    e.on('choice', ev => { asked = ev; });
+    e.setChoiceResolver(async (req) => [1]);           // pick the second enemy
+    await e.useSnack(jaw);
+    ok(asked, 'the engine raised a choice request');
+    eq(asked.kind, 'enemy', 'of kind enemy');
+    ok(/Jawbreaker/.test(asked.prompt), `with a readable prompt: "${asked.prompt}"`);
+    eq(e.enemies[1].status('vulnerable'), 3, 'the chosen enemy got it');
+    eq(e.enemies[0].status('vulnerable'), 0, 'the other did not');
+
+    // cancelling
+    const e2 = mk({ enemies: [dummyEnemy({ hp: 30, move: 'nothing' }), dummyEnemy({ hp: 30, move: 'nothing' })] });
+    await e2.startCombat();
+    e2.setChoiceResolver(async () => []);              // player backed out
+    const evs = await e2.useSnack(jaw);
+    eq(evs.some(x => x.type === 'snack:used'), false, 'backing out never announces the Snack');
+    eq(e2.enemies[0].status('vulnerable'), 0, 'and nothing was applied');
+
+    // a single living enemy needs no question
+    const e3 = mk({ enemies: [dummyEnemy({ hp: 30, move: 'nothing' })] });
+    await e3.startCombat();
+    let asked3 = false;
+    e3.on('choice', () => { asked3 = true; });
+    await e3.useSnack(jaw);
+    eq(asked3, false, 'one enemy means no question');
+    eq(e3.enemies[0].status('vulnerable'), 3, 'and it just lands');
+  });
+
+  await atest('snacks: onSnackUsed lets a Keepsake react, modifySnackPotency lets one scale', async () => {
+    const seen = [];
+    const ornithopter = {
+      id: 'test/ornithopter', name: 'Tin Bird', hooks: {
+        onSnackUsed: (h) => {
+          seen.push({ id: h.snackId, target: h.target ? h.target.id : null, potency: h.potency, results: h.results });
+          h.e.heal(h.e.player, 3, 'keepsake');
+        },
+      },
+    };
+    const bark = {
+      id: 'test/bark', name: 'Sacred Bark', hooks: {
+        modifySnackPotency: (v, h) => v * 2,
+      },
+    };
+    const bat = { id: 'test/bat', name: 'Gummy Bat', effect: { heal: 10 } };
+
+    const e = mk({ relics: [ornithopter] });
+    await e.startCombat();
+    e.player.hp = 20;
+    await e.useSnack(bat);
+    eq(seen.length, 1, 'onSnackUsed fired exactly once');
+    eq(seen[0].id, 'test/bat', 'with the Snack id');
+    eq(seen[0].potency.heal, 10, 'and the numbers that were applied');
+    eq(seen[0].results.healed, 10, 'and what actually happened');
+    eq(e.player.hp, 33, 'the Keepsake\'s own reaction landed too (20 + 10 + 3)');
+
+    const e2 = mk({ relics: [bark] });
+    await e2.startCombat();
+    e2.player.hp = 20;
+    eq(e2.snackPotency(bat).heal, 20, 'modifySnackPotency doubled the Snack before it resolved');
+    await e2.useSnack(bat);
+    eq(e2.player.hp, 40, 'and the doubled amount is what landed');
+  });
+
+  // ── state cache invalidation ─────────────────────────────────────────────
+  await atest('state: the snapshot is never stale on turn rollover', async () => {
+    const e = mk({ enemies: [dummyEnemy({ move: 'nothing' })] });
+    await e.startCombat();
+    const mismatches = [];
+    e.on('turn:start', (ev) => {
+      if (ev.side !== 'player') return;
+      // this is exactly what the HUD does
+      if (e.state.turn !== ev.turn) mismatches.push({ state: e.state.turn, ev: ev.turn });
+      if (e.state.phase !== 'player') mismatches.push({ phase: e.state.phase });
+    });
+    for (let i = 0; i < 6; i++) {
+      e.state;                                   // warm the cache every turn, like a frame loop
+      await e.endTurn();
+    }
+    eq(mismatches.length, 0, `engine.state.turn matched the turn:start event every time (${JSON.stringify(mismatches)})`);
+    eq(e.state.turn, e.turn, 'and matches the live value afterwards');
+  });
+
+  await atest('state: a mutation DURING a snapshot is not swallowed', async () => {
+    const e = mk();
+    await e.startCombat();
+    e.defineCounter({ id: 'sneaky', name: 'Sneaky', max: 9, start: 0 });
+    const NOSY2 = {
+      id: 'test/nosy2', name: 'Nosy2', companion: 'neutral', type: CardType.SKILL,
+      rarity: Rarity.COMMON, cost: 1, target: Target.NONE, text: 'x',
+      // a dynamicCost that mutates is bad content, but it must not corrupt the cache
+      dynamicCost: (c) => { c.e.addCounter('sneaky', 1); return 1; },
+      effect: () => {},
+    };
+    plant(e, NOSY2);
+    const first = e.state;
+    const v1 = first.counters.find(c => c.id === 'sneaky').value;
+    const second = e.state;
+    ok(second !== first, 'the cache was invalidated by the mutation that happened mid-snapshot');
+    const v2 = second.counters.find(c => c.id === 'sneaky').value;
+    ok(v2 > v1, `and the fresh snapshot shows the newer value (${v1} → ${v2})`);
+  });
+
+  // ── cost composition ─────────────────────────────────────────────────────
+  await atest('costOf: discounts compose on top of dynamicCost instead of being skipped', async () => {
+    registerStatus({
+      id: 'test/discount', name: 'Discount', kind: 'buff', decay: 'never',
+      desc: 'Tricks cost {n} less.',
+      hooks: { modifyCardCost: (cost, h) => cost - h.stacks },
+    });
+    const DYN = {
+      id: 'test/dyn2', name: 'Dyn', companion: 'neutral', type: CardType.SKILL,
+      rarity: Rarity.COMMON, cost: 3, target: Target.NONE, text: 'x',
+      dynamicCost: () => 3,
+      effect: () => {},
+    };
+    const e = mk();
+    await e.startCombat();
+    const c = plant(e, DYN);
+    eq(e.costOf(c), 3, 'step 1: dynamicCost supplies the printed cost');
+
+    e.applyStatus(e.player, 'test/discount', 1);
+    eq(e.costOf(c), 2, 'step 4: a discount status now REACHES a dynamic-cost card');
+
+    e.modifyCardCost(c, -1, 'turn');
+    eq(e.costOf(c), 1, 'step 3: modifyCost deltas apply to the dynamic cost too');
+
+    e.setCardCost(c, 0, 'turn');
+    eq(e.costOf(c), 0, 'step 2: a hard override outranks the dynamic cost, and clamps at 0');
+
+    // and a plain card is unchanged by all of this
+    const plain = plant(e, RATTLE);              // printed 2
+    eq(e.costOf(plain), 1, 'a non-dynamic card still gets the discount');
+    e.removeStatus(e.player, 'test/discount');
+    eq(e.costOf(plain), 2, 'and loses it again');
+
+    // X-cost survives a dynamicCost that returns -1
+    const XC = { ...DYN, id: 'test/xc', cost: -1, dynamicCost: () => -1 };
+    const x = plant(e, XC);
+    eq(e.costOf(x), -1, 'an X cost stays an X cost');
+  });
+
+  test('contract: registerCards / registerEnemies exist and are correctly named', () => {
+    const e = mk();
+    eq(typeof e.registerCards, 'function', 'engine.registerCards(defs) exists');
+    eq(typeof e.registerEnemies, 'function', 'engine.registerEnemies(defs) exists');
+    eq(typeof e.useSnack, 'function', 'engine.useSnack(snack, targetId) exists');
+    eq(typeof e.canUseSnack, 'function', 'engine.canUseSnack(snack, targetId) exists');
+    eq(typeof e.snackPotency, 'function', 'engine.snackPotency(snack) exists');
+    ok(e.registerCards([SCRATCH]) >= 1, 'registerCards accepts an array and returns the registry size');
+    ok(e.registerEnemies([DUST_BUNNY]) >= 1, 'registerEnemies does too');
+    ok(e.resolveCardDef('neutral/scratch'), 'and the id resolves afterwards');
+    ok(e.resolveCardDef('scratch'), 'including by the last path segment');
+  });
+
   // ── report ---------------------------------------------------------------
   let passed = 0, failed = 0;
   for (const r of results) {

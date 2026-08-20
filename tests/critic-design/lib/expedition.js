@@ -62,11 +62,16 @@ export async function fight(engine, bot, { run = null, maxTurns = MAX_TURNS, tra
   };
 
   let turns = 0;
+  // Per-fight running estimates the competent bot projects the rest of the
+  // fight from. One object per fight, never shared between fights.
+  const fc = { dps: 10, threat: 8, turns: 0 };
+  let dbg = null;
   while (!engine.over && turns < maxTurns) {
     turns++;
     const d0 = dmgDealt, t0hp = engine.player.hp;
+    const handAtStart = trace ? engine.piles.hand.map(c => c.name) : null;
     if (bot === 'naive') await naiveTurn(engine);
-    else await competentTurn(engine, { snacks: run ? run.snacks : null, onSnack });
+    else await competentTurn(engine, { snacks: run ? run.snacks : null, onSnack, fc, debug: trace ? (dbg = []) : null });
     if (trace) {
       trace.push({
         turn: turns, dealt: dmgDealt - d0,
@@ -75,6 +80,9 @@ export async function fight(engine, bot, { run = null, maxTurns = MAX_TURNS, tra
         })),
         php: engine.player.hp, blk: engine.player.block,
         played: engine.playedThisTurn.map(x => x.name),
+        hand: handAtStart,
+        dbg: dbg ? dbg.sort((a, b) => b.score - a.score).slice(0, 6) : null,
+        fc: { ...fc },
       });
     }
     if (engine.over) break;
@@ -122,8 +130,12 @@ export async function expedition({
     loadoutAtBoss: null, loadoutAtFirstElite: null,
     endCourage: 0, maxCourage: run.maxCourage,
     deckEnd: null, keepsakesEnd: null,
+    // The Courage ledger. Where a region's whole health budget actually goes.
+    ledger: { scuffle: 0, elite: 0, boss: 0, event: 0, hazard: 0, rested: 0, healed: 0, rests: 0 },
+    visited: {},
     ms: 0,
   };
+  const courageWatch = () => run.courage;
   const t0 = performance.now();
 
   // Start: the region's first row. Pick the start with the best onward options.
@@ -131,9 +143,12 @@ export async function expedition({
 
   for (let step = 0; step < maxNodes; step++) {
     if (!nodeId) break;
+    const cBeforeNode = run.courage;
     await run.enterNode(nodeId);
     const node = run.currentNode;
     const type = run.effectiveType(node);
+    out.visited[type] = (out.visited[type] || 0) + 1;
+    if (node.payload && node.payload.hazard === 'sagging') out.ledger.hazard += 3;
     const rec = { id: nodeId, row: node.row, type };
 
     if (run.combat) {
@@ -143,6 +158,7 @@ export async function expedition({
       const r = await fight(engine, bot, { run });
       rec.fight = { ...meta, ...r };
       out.fights.push(rec.fight);
+      out.ledger[type === NodeType.BOSS ? 'boss' : type === NodeType.BIG_SCARE ? 'elite' : 'scuffle'] += r.dmgTaken;
       if (type === NodeType.BIG_SCARE) { out.elites++; if (r.win) out.eliteWins++; }
       if (type === NodeType.SCUFFLE) out.scuffles++;
       if (type === NodeType.BOSS) { out.reachedBoss = true; out.bossWin = r.win; }
@@ -167,10 +183,11 @@ export async function expedition({
       if (wasBoss) { out.result = 'victory'; rec.done = true; out.nodes.push(rec); break; }
     } else if (type === NodeType.SAFE) {
       const c = P.restChoice(run);
-      if (c.kind === 'rest') { rec.rest = run.rest(); }
+      if (c.kind === 'rest') { rec.rest = run.rest(); out.ledger.rested += rec.rest; out.ledger.rests++; }
       else {
         const uid = P.pickUpgrade(run, policy);
-        if (uid) { run.upgradeCard(uid); rec.upgrade = uid; } else rec.rest = run.rest();
+        if (uid) { run.upgradeCard(uid); rec.upgrade = uid; }
+        else { rec.rest = run.rest(); out.ledger.rested += rec.rest; out.ledger.rests++; }
       }
       run.leaveNode();
     } else if (type === NodeType.SHOP) {
@@ -237,6 +254,10 @@ export async function expedition({
     }
 
     if (run.result === 'defeat') { out.result = 'defeat'; break; }
+    if (type !== NodeType.SAFE && !rec.fight) {
+      const d = run.courage - cBeforeNode;
+      if (d > 0) out.ledger.healed += d; else out.ledger.event += -d;
+    }
     out.nodes.push(rec);
 
     // ── choose the next room ────────────────────────────────────────────────

@@ -2,9 +2,10 @@
  "config": {
   "TIER": "boss",
   "ENC": null,
-  "N": 24,
-  "GEN": 8,
+  "N": 20,
+  "GEN": 6,
   "BOTS": [
+   "naive",
    "competent"
   ],
   "POL": "balanced",
@@ -99,7 +100,7 @@
      "price": 62
     }
    ],
-   "courage": 16,
+   "courage": 23,
    "maxCourage": 68,
    "lostThings": 106
   },
@@ -158,7 +159,7 @@
      "upgraded": false
     },
     {
-     "id": "marmalade/nine-lives",
+     "id": "marmalade/phantom-flurry",
      "upgraded": false
     }
    ],
@@ -166,9 +167,7 @@
     "pocket-flashlight",
     "lucky-button",
     "black-cats-shadow",
-    "thermos-of-cocoa",
-    "welcome-mat",
-    "brass-service-bell"
+    "thermos-of-cocoa"
    ],
    "snacks": [
     {
@@ -184,7 +183,7 @@
    ],
    "courage": 47,
    "maxCourage": 76,
-   "lostThings": 136
+   "lostThings": 118
   },
   {
    "deck": [
@@ -194,7 +193,7 @@
     },
     {
      "id": "marmalade/scratch",
-     "upgraded": false
+     "upgraded": true
     },
     {
      "id": "marmalade/scratch",
@@ -258,105 +257,9 @@
     "knotted-handkerchief"
    ],
    "snacks": [],
-   "courage": 18,
+   "courage": 15,
    "maxCourage": 68,
    "lostThings": 301
-  },
-  {
-   "deck": [
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/boo",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/zoomies-at-midnight",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/graveyard-pounce",
-     "upgraded": false
-    },
-    {
-     "id": "curse/clingy-shadow",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/leave-a-life-behind",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/double-pounce",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/paw-through",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/quick-pounce",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/sneak-attack",
-     "upgraded": false
-    }
-   ],
-   "keepsakes": [
-    "pocket-flashlight",
-    "photograph-of-a-cat",
-    "tin-of-sardines"
-   ],
-   "snacks": [
-    {
-     "id": "cold-milk",
-     "name": "Cold Milk",
-     "base": 60,
-     "desc": "Remove all debuffs.",
-     "effect": {
-      "cleanse": true
-     },
-     "price": 67
-    }
-   ],
-   "courage": 45,
-   "maxCourage": 68,
-   "lostThings": 32
   },
   {
    "deck": [
@@ -421,7 +324,7 @@
      "upgraded": false
     },
     {
-     "id": "marmalade/slip-away",
+     "id": "marmalade/soft-landing",
      "upgraded": false
     }
    ],
@@ -430,8 +333,7 @@
     "spare-key",
     "moth-eaten-monocle",
     "jar-of-fireflies",
-    "coatcheck-ticket",
-    "porcupine-slipper"
+    "coatcheck-ticket"
    ],
    "snacks": [
     {
@@ -443,388 +345,213 @@
       "cleanse": true
      },
      "price": 61
-    },
-    {
-     "id": "liquorice",
-     "name": "Liquorice Rope",
-     "base": 60,
-     "desc": "Gain 12 Guard.",
-     "effect": {
-      "block": 12
-     },
-     "price": 61
     }
    ],
-   "courage": 56,
+   "courage": 67,
    "maxCourage": 68,
-   "lostThings": 186
-  },
-  {
-   "deck": [
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/boo",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/sneak-attack",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/soft-landing",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/graveyard-pounce",
-     "upgraded": true
-    },
-    {
-     "id": "marmalade/come-back-wrong",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/graveyard-pounce",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/quick-pounce",
-     "upgraded": false
-    }
-   ],
-   "keepsakes": [
-    "pocket-flashlight",
-    "wind-up-mouse",
-    "tin-of-sardines",
-    "bag-of-preparation"
-   ],
-   "snacks": [],
-   "courage": 73,
-   "maxCourage": 73,
-   "lostThings": 251
-  },
-  {
-   "deck": [
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/boo",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/ambush-from-nowhere",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/paw-through",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/double-pounce",
-     "upgraded": true
-    },
-    {
-     "id": "marmalade/phantom-flurry",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/across-the-veil",
-     "upgraded": false
-    }
-   ],
-   "keepsakes": [
-    "pocket-flashlight",
-    "moth-eaten-monocle",
-    "wind-up-mouse",
-    "spare-key",
-    "hollow-birdcage",
-    "tin-of-sardines"
-   ],
-   "snacks": [
-    {
-     "id": "cold-milk",
-     "name": "Cold Milk",
-     "base": 60,
-     "desc": "Remove all debuffs.",
-     "effect": {
-      "cleanse": true
-     },
-     "price": 59
-    },
-    {
-     "id": "liquorice",
-     "name": "Liquorice Rope",
-     "base": 60,
-     "desc": "Gain 12 Guard.",
-     "effect": {
-      "block": 12
-     },
-     "price": 59
-    }
-   ],
-   "courage": 68,
-   "maxCourage": 76,
-   "lostThings": 55
-  },
-  {
-   "deck": [
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/boo",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/final-pounce",
-     "upgraded": true
-    },
-    {
-     "id": "marmalade/steal-their-shadow",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/back-arched-swipe",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/ninefold-scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/final-pounce",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/ghost-in-the-rafters",
-     "upgraded": false
-    }
-   ],
-   "keepsakes": [
-    "pocket-flashlight",
-    "thermos-of-cocoa",
-    "knotted-handkerchief",
-    "butterfly-net"
-   ],
-   "snacks": [
-    {
-     "id": "liquorice",
-     "name": "Liquorice Rope",
-     "base": 60,
-     "desc": "Gain 12 Guard.",
-     "effect": {
-      "block": 12
-     },
-     "price": 59
-    }
-   ],
-   "courage": 53,
-   "maxCourage": 62,
-   "lostThings": 102
+   "lostThings": 166
   }
  ],
  "rows": {
-  "competent": {
-   "n": 24,
-   "winRate": 8.3,
+  "naive": {
+   "n": 20,
+   "winRate": 20,
    "turns": {
-    "n": 24,
-    "mean": 12.04,
-    "min": 3,
-    "med": 12,
-    "max": 20
+    "n": 20,
+    "mean": 10.1,
+    "min": 6,
+    "med": 9,
+    "max": 22
    },
    "courageBefore": {
-    "n": 24,
-    "mean": 47,
-    "min": 16,
-    "med": 53,
-    "max": 73
+    "n": 20,
+    "mean": 38,
+    "min": 15,
+    "med": 47,
+    "max": 67
    },
    "dmgTaken": {
-    "n": 24,
-    "mean": 52.79,
-    "min": 20,
-    "med": 56,
-    "max": 83
+    "n": 20,
+    "mean": 35.35,
+    "min": 2,
+    "med": 31,
+    "max": 70
    },
    "dmgDealt": {
-    "n": 24,
-    "mean": 179.29,
-    "min": 59,
-    "med": 192,
-    "max": 282
+    "n": 20,
+    "mean": 150.45,
+    "min": 94,
+    "med": 115,
+    "max": 300
    },
    "dealtPerTurn": {
-    "n": 24,
-    "mean": 15.25,
-    "min": 11.2,
-    "med": 15.5,
-    "max": 19.7
+    "n": 20,
+    "mean": 15.11,
+    "min": 10.3,
+    "med": 14.4,
+    "max": 25.6
    },
    "takenPerTurn": {
-    "n": 24,
-    "mean": 4.45,
-    "min": 2.4,
-    "med": 4.8,
-    "max": 6.7
+    "n": 20,
+    "mean": 3.78,
+    "min": 0.2,
+    "med": 4.2,
+    "max": 6
    },
    "enemyGuard": {
-    "n": 24,
-    "mean": 64.08,
-    "min": 12,
-    "med": 68,
-    "max": 121
+    "n": 20,
+    "mean": 58.15,
+    "min": 17,
+    "med": 52,
+    "max": 146
    },
    "blockedByEnemy": {
-    "n": 24,
-    "mean": 37.79,
-    "min": 5,
-    "med": 40,
+    "n": 20,
+    "mean": 32.75,
+    "min": 9,
+    "med": 26,
     "max": 94
    },
    "enemyHpLeftOnLoss": {
-    "n": 22,
-    "mean": 91.82,
-    "min": 27,
-    "med": 86,
-    "max": 191
+    "n": 16,
+    "mean": 141.56,
+    "min": 32,
+    "med": 154,
+    "max": 168
    },
    "hpAfterOnWin": {
-    "n": 2,
-    "mean": 23,
+    "n": 4,
+    "mean": 39.75,
     "min": 10,
-    "med": 36,
-    "max": 36
+    "med": 52,
+    "max": 68
    },
    "haunt": {
-    "n": 24,
-    "mean": 3.71,
+    "n": 20,
+    "mean": 0.75,
     "min": 0,
-    "med": 3,
-    "max": 19
+    "med": 0,
+    "max": 6
    },
    "pierce": 0,
-   "snacks": 12,
+   "snacks": 0,
    "timeouts": 0,
    "byEncounter": {
     "foyer-boss": {
-     "n": 24,
-     "w": 2
+     "n": 20,
+     "w": 4
     }
    },
    "rulesBrokenPerFight": {
-    "one-at-a-time": 1.17,
-    "no-running": 0.21
+    "one-at-a-time": 1.7,
+    "no-running": 0.25,
+    "keep-the-hall-clear": 0.15
    },
    "enemyStatusPerFight": {
     "weak": 1,
-    "haunt": 2.67,
-    "discomposed": 0.46,
+    "haunt": 0.6,
+    "discomposed": 0.5,
     "vulnerable": 0.25
    },
-   "summonsPerFight": 1.21
+   "summonsPerFight": 1.2
+  },
+  "competent": {
+   "n": 20,
+   "winRate": 0,
+   "turns": {
+    "n": 20,
+    "mean": 11.6,
+    "min": 6,
+    "med": 13,
+    "max": 18
+   },
+   "courageBefore": {
+    "n": 20,
+    "mean": 38,
+    "min": 15,
+    "med": 47,
+    "max": 67
+   },
+   "dmgTaken": {
+    "n": 20,
+    "mean": 46.4,
+    "min": 19,
+    "med": 64,
+    "max": 77
+   },
+   "dmgDealt": {
+    "n": 20,
+    "mean": 146.4,
+    "min": 63,
+    "med": 160,
+    "max": 235
+   },
+   "dealtPerTurn": {
+    "n": 20,
+    "mean": 12.7,
+    "min": 10.4,
+    "med": 12.9,
+    "max": 14.8
+   },
+   "takenPerTurn": {
+    "n": 20,
+    "mean": 3.9,
+    "min": 1.9,
+    "med": 4.2,
+    "max": 5.1
+   },
+   "enemyGuard": {
+    "n": 20,
+    "mean": 43.35,
+    "min": 12,
+    "med": 56,
+    "max": 94
+   },
+   "blockedByEnemy": {
+    "n": 20,
+    "mean": 17.6,
+    "min": 0,
+    "med": 12,
+    "max": 52
+   },
+   "enemyHpLeftOnLoss": {
+    "n": 20,
+    "mean": 126.7,
+    "min": 41,
+    "med": 120,
+    "max": 199
+   },
+   "hpAfterOnWin": {
+    "n": 0
+   },
+   "haunt": {
+    "n": 20,
+    "mean": 1.95,
+    "min": 0,
+    "med": 3,
+    "max": 6
+   },
+   "pierce": 0,
+   "snacks": 10,
+   "timeouts": 0,
+   "byEncounter": {
+    "foyer-boss": {
+     "n": 20,
+     "w": 0
+    }
+   },
+   "rulesBrokenPerFight": {
+    "one-at-a-time": 0.75,
+    "no-running": 0.05,
+    "keep-the-hall-clear": 0.05
+   },
+   "enemyStatusPerFight": {
+    "weak": 1,
+    "haunt": 1.4,
+    "discomposed": 0.2,
+    "vulnerable": 0.25
+   },
+   "summonsPerFight": 1.8
   }
  },
  "trace": [
@@ -840,12 +567,84 @@
      "d": 0
     }
    ],
-   "php": 16,
-   "blk": 0,
+   "php": 23,
+   "blk": 12,
    "played": [
     "Ninefold Scratch",
     "Back-Arched Swipe"
    ],
+   "hand": [
+    "Hide and Seek",
+    "Curl Up",
+    "Back-Arched Swipe",
+    "Zoomies at Midnight",
+    "Curl Up",
+    "Ninefold Scratch",
+    "Curl Up"
+   ],
+   "dbg": [
+    {
+     "d": 1,
+     "names": [
+      "Ninefold Scratch",
+      "Back-Arched Swipe"
+     ],
+     "score": -30.1,
+     "guarded": 0,
+     "ehp": 226
+    },
+    {
+     "d": 1,
+     "names": [
+      "Back-Arched Swipe",
+      "Ninefold Scratch"
+     ],
+     "score": -30.1,
+     "guarded": 0,
+     "ehp": 226
+    },
+    {
+     "d": 0,
+     "names": [
+      "Ninefold Scratch"
+     ],
+     "score": -45.5,
+     "guarded": 0,
+     "ehp": 232
+    },
+    {
+     "d": 1,
+     "names": [
+      "Ninefold Scratch",
+      "Hide and Seek"
+     ],
+     "score": -45.5,
+     "guarded": 0,
+     "ehp": 232
+    },
+    {
+     "d": -1,
+     "names": [
+      "(pass)"
+     ],
+     "score": -98.8,
+     "guarded": 0
+    },
+    {
+     "d": 0,
+     "names": [
+      "Back-Arched Swipe"
+     ],
+     "score": -98.8,
+     "guarded": 0,
+     "ehp": 244
+    }
+   ],
+   "fc": {
+    "dps": 24,
+    "threat": 4,
+    "turns": 1
+   },
    "took": 0
   },
   {
@@ -860,13 +659,86 @@
      "d": 10
     }
    ],
-   "php": 16,
+   "php": 23,
    "blk": 0,
    "played": [
     "Scratch",
     "Wall Bounce",
     "Scratch"
    ],
+   "hand": [
+    "Scratch",
+    "Wall Bounce",
+    "Scratch",
+    "Scratch",
+    "Queen of the Rafters"
+   ],
+   "dbg": [
+    {
+     "d": 2,
+     "names": [
+      "Scratch",
+      "Wall Bounce",
+      "Scratch"
+     ],
+     "score": -98.9,
+     "guarded": 0,
+     "ehp": 220
+    },
+    {
+     "d": 2,
+     "names": [
+      "Scratch",
+      "Scratch",
+      "Wall Bounce"
+     ],
+     "score": -98.9,
+     "guarded": 0,
+     "ehp": 220
+    },
+    {
+     "d": 2,
+     "names": [
+      "Scratch",
+      "Scratch",
+      "Scratch"
+     ],
+     "score": -98.9,
+     "guarded": 0,
+     "ehp": 220
+    },
+    {
+     "d": -1,
+     "names": [
+      "(pass)"
+     ],
+     "score": -145.4,
+     "guarded": 0
+    },
+    {
+     "d": 0,
+     "names": [
+      "Scratch"
+     ],
+     "score": -145.4,
+     "guarded": 0,
+     "ehp": 226
+    },
+    {
+     "d": 0,
+     "names": [
+      "Wall Bounce"
+     ],
+     "score": -145.4,
+     "guarded": 0,
+     "ehp": 226
+    }
+   ],
+   "fc": {
+    "dps": 15,
+    "threat": 7,
+    "turns": 2
+   },
    "took": 10
   },
   {
@@ -881,15 +753,397 @@
      "d": 10
     }
    ],
-   "php": 6,
-   "blk": 0,
+   "php": 13,
+   "blk": 5,
    "played": [
     "Scratch",
     "Scratch",
     "Frenzied Zoomies",
-    "Frenzied Zoomies"
+    "Frenzied Zoomies",
+    "Curl Up"
    ],
-   "took": 6
+   "hand": [
+    "Curl Up",
+    "Frenzied Zoomies",
+    "Boo!",
+    "Scratch",
+    "Scratch"
+   ],
+   "dbg": [
+    {
+     "d": 5,
+     "names": [
+      "Scratch",
+      "Scratch",
+      "Frenzied Zoomies",
+      "Frenzied Zoomies",
+      "Frenzied Zoomies",
+      "Curl Up"
+     ],
+     "score": -17.3,
+     "guarded": 5,
+     "ehp": 193
+    },
+    {
+     "d": 5,
+     "names": [
+      "Scratch",
+      "Scratch",
+      "Frenzied Zoomies",
+      "Frenzied Zoomies",
+      "Curl Up",
+      "Frenzied Zoomies"
+     ],
+     "score": -17.3,
+     "guarded": 5,
+     "ehp": 193
+    },
+    {
+     "d": 4,
+     "names": [
+      "Scratch",
+      "Scratch",
+      "Frenzied Zoomies",
+      "Frenzied Zoomies",
+      "Curl Up"
+     ],
+     "score": -20.9,
+     "guarded": 5,
+     "ehp": 197
+    },
+    {
+     "d": 4,
+     "names": [
+      "Scratch",
+      "Scratch",
+      "Frenzied Zoomies",
+      "Curl Up",
+      "Frenzied Zoomies"
+     ],
+     "score": -20.9,
+     "guarded": 5,
+     "ehp": 197
+    },
+    {
+     "d": 3,
+     "names": [
+      "Scratch",
+      "Scratch",
+      "Frenzied Zoomies",
+      "Curl Up"
+     ],
+     "score": -25.4,
+     "guarded": 5,
+     "ehp": 201
+    },
+    {
+     "d": 3,
+     "names": [
+      "Scratch",
+      "Scratch",
+      "Curl Up",
+      "Frenzied Zoomies"
+     ],
+     "score": -25.4,
+     "guarded": 5,
+     "ehp": 201
+    }
+   ],
+   "fc": {
+    "dps": 16.666666666666668,
+    "threat": 8,
+    "turns": 3
+   },
+   "took": 5
+  },
+  {
+   "turn": 4,
+   "dealt": 12,
+   "enemies": [
+    {
+     "n": "The Butler",
+     "hp": 179,
+     "blk": 0,
+     "i": "service-please",
+     "d": 0
+    }
+   ],
+   "php": 8,
+   "blk": 5,
+   "played": [
+    "Scratch",
+    "Scratch",
+    "Frenzied Zoomies",
+    "Frenzied Zoomies",
+    "Curl Up"
+   ],
+   "hand": [
+    "Scratch",
+    "Curl Up",
+    "Frenzied Zoomies",
+    "Scratch",
+    "Curl Up"
+   ],
+   "dbg": [
+    {
+     "d": 5,
+     "names": [
+      "Scratch",
+      "Scratch",
+      "Frenzied Zoomies",
+      "Frenzied Zoomies",
+      "Frenzied Zoomies",
+      "Curl Up"
+     ],
+     "score": -21.9,
+     "guarded": 5,
+     "ehp": 175
+    },
+    {
+     "d": 5,
+     "names": [
+      "Scratch",
+      "Scratch",
+      "Frenzied Zoomies",
+      "Frenzied Zoomies",
+      "Curl Up",
+      "Frenzied Zoomies"
+     ],
+     "score": -21.9,
+     "guarded": 5,
+     "ehp": 175
+    },
+    {
+     "d": 0,
+     "names": [
+      "Curl Up"
+     ],
+     "score": -29.8,
+     "guarded": 5,
+     "ehp": 191
+    },
+    {
+     "d": 3,
+     "names": [
+      "Scratch",
+      "Scratch",
+      "Frenzied Zoomies",
+      "Curl Up"
+     ],
+     "score": -29.8,
+     "guarded": 5,
+     "ehp": 179
+    },
+    {
+     "d": 3,
+     "names": [
+      "Scratch",
+      "Frenzied Zoomies",
+      "Scratch",
+      "Curl Up"
+     ],
+     "score": -29.8,
+     "guarded": 5,
+     "ehp": 181
+    },
+    {
+     "d": 4,
+     "names": [
+      "Scratch",
+      "Scratch",
+      "Frenzied Zoomies",
+      "Frenzied Zoomies",
+      "Curl Up"
+     ],
+     "score": -29.8,
+     "guarded": 5,
+     "ehp": 179
+    }
+   ],
+   "fc": {
+    "dps": 15.5,
+    "threat": 6,
+    "turns": 4
+   },
+   "took": 0
+  },
+  {
+   "turn": 5,
+   "dealt": 12,
+   "enemies": [
+    {
+     "n": "The Butler",
+     "hp": 179,
+     "blk": 0,
+     "i": "walking-stick",
+     "d": 10
+    }
+   ],
+   "php": 8,
+   "blk": 5,
+   "played": [
+    "Scratch",
+    "Wall Bounce",
+    "Curl Up"
+   ],
+   "hand": [
+    "Hide and Seek",
+    "Scratch",
+    "Wall Bounce",
+    "Curl Up",
+    "Boo!"
+   ],
+   "dbg": [
+    {
+     "d": 2,
+     "names": [
+      "Scratch",
+      "Wall Bounce",
+      "Curl Up"
+     ],
+     "score": 12.1,
+     "guarded": 5,
+     "ehp": 179
+    },
+    {
+     "d": 2,
+     "names": [
+      "Scratch",
+      "Wall Bounce",
+      "Hide and Seek"
+     ],
+     "score": -54.8,
+     "guarded": 0,
+     "ehp": 179
+    },
+    {
+     "d": -1,
+     "names": [
+      "(pass)"
+     ],
+     "score": -1000000,
+     "guarded": 0
+    },
+    {
+     "d": 0,
+     "names": [
+      "Scratch"
+     ],
+     "score": -1000000,
+     "guarded": 0,
+     "ehp": 185
+    },
+    {
+     "d": 0,
+     "names": [
+      "Scratch"
+     ],
+     "score": -1000000,
+     "guarded": 0,
+     "ehp": 185
+    },
+    {
+     "d": 0,
+     "names": [
+      "Wall Bounce"
+     ],
+     "score": -1000000,
+     "guarded": 0,
+     "ehp": 185
+    }
+   ],
+   "fc": {
+    "dps": 14.8,
+    "threat": 6.8,
+    "turns": 5
+   },
+   "took": 5
+  },
+  {
+   "turn": 6,
+   "dealt": 0,
+   "enemies": [
+    {
+     "n": "The Butler",
+     "hp": 176,
+     "blk": 0,
+     "i": "dust-them-off",
+     "d": 10
+    }
+   ],
+   "php": 3,
+   "blk": 0,
+   "played": [],
+   "hand": [
+    "Scratch",
+    "Ninefold Scratch",
+    "Curl Up",
+    "Zoomies at Midnight",
+    "Queen of the Rafters"
+   ],
+   "dbg": [
+    {
+     "d": -1,
+     "names": [
+      "(pass)"
+     ],
+     "score": -1000000,
+     "guarded": 0
+    },
+    {
+     "d": 0,
+     "names": [
+      "Ninefold Scratch"
+     ],
+     "score": -1000000,
+     "guarded": 0,
+     "ehp": 158
+    },
+    {
+     "d": 0,
+     "names": [
+      "Scratch"
+     ],
+     "score": -1000000,
+     "guarded": 0,
+     "ehp": 170
+    },
+    {
+     "d": 0,
+     "names": [
+      "Curl Up"
+     ],
+     "score": -1000000,
+     "guarded": 5,
+     "ehp": 176
+    },
+    {
+     "d": 1,
+     "names": [
+      "Ninefold Scratch",
+      "Curl Up"
+     ],
+     "score": -1000000,
+     "guarded": 5,
+     "ehp": 158
+    },
+    {
+     "d": 1,
+     "names": [
+      "Curl Up",
+      "Ninefold Scratch"
+     ],
+     "score": -1000000,
+     "guarded": 5,
+     "ehp": 158
+    }
+   ],
+   "fc": {
+    "dps": 12.333333333333334,
+    "threat": 7.333333333333333,
+    "turns": 6
+   },
+   "took": 3
   }
  ],
  "errors": [],
@@ -899,64 +1153,32 @@
    "up": 0,
    "keeps": 3,
    "snacks": 1,
-   "courage": 16,
+   "courage": 23,
    "max": 68
   },
   {
    "deck": 14,
    "up": 2,
-   "keeps": 6,
+   "keeps": 4,
    "snacks": 1,
    "courage": 47,
    "max": 76
   },
   {
    "deck": 15,
-   "up": 3,
+   "up": 4,
    "keeps": 6,
    "snacks": 0,
-   "courage": 18,
+   "courage": 15,
    "max": 68
   },
   {
-   "deck": 18,
-   "up": 0,
-   "keeps": 3,
+   "deck": 16,
+   "up": 1,
+   "keeps": 5,
    "snacks": 1,
-   "courage": 45,
+   "courage": 67,
    "max": 68
-  },
-  {
-   "deck": 16,
-   "up": 1,
-   "keeps": 6,
-   "snacks": 2,
-   "courage": 56,
-   "max": 68
-  },
-  {
-   "deck": 16,
-   "up": 1,
-   "keeps": 4,
-   "snacks": 0,
-   "courage": 73,
-   "max": 73
-  },
-  {
-   "deck": 15,
-   "up": 1,
-   "keeps": 6,
-   "snacks": 2,
-   "courage": 68,
-   "max": 76
-  },
-  {
-   "deck": 16,
-   "up": 1,
-   "keeps": 4,
-   "snacks": 1,
-   "courage": 53,
-   "max": 62
   }
  ]
 }

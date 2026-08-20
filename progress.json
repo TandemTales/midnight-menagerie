@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T10:59:20",
+ "updated": "2026-08-20T11:32:50",
  "wave": 3,
  "waveLabel": "Closing the seams",
  "headline": "A full playthrough found that every module passes its own tests and silently no-ops at the join. Fixing that class of bug.",
@@ -22,8 +22,8 @@
    "name": "Combat engine",
    "desc": "Turn rules, damage pipeline, statuses, intents, deterministic + headless",
    "status": "done",
-   "round": 3,
-   "verdict": "478 assertions, 0 failures. onEnemyPhaseEnd hook shipped; announceRule now replaces by source; status options no longer dropped.",
+   "round": 4,
+   "verdict": "542 assertions with the strict Proxy armed. Snack API and onSnackUsed hook, state cache rebuilt as a revision counter, cost composition documented.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -141,10 +141,10 @@
    "id": "chrome",
    "name": "UI chrome & clarity",
    "desc": "HUD, tooltips, deck views, settings, previews, accessibility",
-   "status": "rework",
-   "round": 2,
-   "verdict": "Keyword tooltip resolving 121 ids with nested chips and occlusion-aware placement; 118 icons, all silhouette-distinct; colourblind palette.",
-   "gap": "hud.js, deckview.js and settings.js are imported by zero scenes, so Snacks can never be used, the deck cannot be viewed outside combat, and Settings is unreachable during a run.",
+   "status": "done",
+   "round": 3,
+   "verdict": "One HUD across six scenes, Snacks usable, deck viewable everywhere, Settings reachable, 27 checks 0 errors.",
+   "gap": null,
    "builder": null,
    "critic": null,
    "log": []
@@ -342,6 +342,22 @@
   {
    "t": "2026-08-20T10:59:20",
    "msg": "Balance pass started - the first that can measure a build where the mechanics actually work. The simulator itself is being rebuilt to play whole regions with real decks."
+  },
+  {
+   "t": "2026-08-20T11:21:11",
+   "msg": "Shared HUD adopted across six scenes; Snacks are usable at last; Settings reachable during a run; the title's bespoke overlay and combat's bespoke modal both deleted."
+  },
+  {
+   "t": "2026-08-20T11:21:11",
+   "msg": "Google Fonts was holding page load for 5.8s, delaying first render and skewing every timing measurement. Fonts now vendored locally (195KB)."
+  },
+  {
+   "t": "2026-08-20T11:32:50",
+   "msg": "SEAM CLASS CLOSED: 1556 call sites checked, 0 problems. A dev-only strict Proxy now throws on any undefined ctx or hook member."
+  },
+  {
+   "t": "2026-08-20T11:32:50",
+   "msg": "Engine round 4: the state cache dirty flag was a boolean cleared at the end of the build, so mutations raised mid-snapshot were swallowed. Now a revision counter."
   }
  ]
 }

@@ -231,9 +231,17 @@ export const ENEMY_STATUSES = [
     },
   },
   {
+    /**
+     * BALANCE 2026-08-20: `decay: 'turnEnd'` meant this expired at the end of
+     * the very enemy turn it was applied on, so the +25% covered no player turn
+     * at all — the boss's advertised "this is your window" was worth nothing,
+     * measurably (0.46 Discomposed per Butler fight, and each one blank).
+     * It is now cleared by its owner instead, on the turn after the wasted one,
+     * so the window is exactly one full player turn. See bosses/butler.js.
+     */
     id: 'discomposed', name: 'Discomposed', kind: 'debuff', icon: 'fluster',
     desc: 'Takes 25% more damage and cannot enforce a House Rule.',
-    decay: 'turnEnd', stacks: false, max: 1,
+    decay: 'never', stacks: false, max: 1,
     hooks: { modifyDamageTaken: (amt) => Math.ceil(amt * 1.25) },
   },
   {

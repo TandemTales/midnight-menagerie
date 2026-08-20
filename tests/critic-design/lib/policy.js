@@ -95,11 +95,17 @@ export function draft(offered, policy, ctx) {
   return best.v > ctx.skipFloor ? best.id : null;
 }
 
-/** Safe Room: heal, or upgrade? StS heuristic — heal when hurt, else upgrade. */
+/**
+ * Safe Room: heal, or upgrade? StS heuristic — heal when hurt, else upgrade,
+ * and *always* heal at the last Safe Room before the boss unless nearly full.
+ * A competent player treats the pre-boss campfire as non-negotiable.
+ */
 export function restChoice(run) {
   const frac = run.courage / run.maxCourage;
   const upgradeable = run.upgradeableCards();
   if (!upgradeable.length) return { kind: 'rest' };
+  const rowsLeft = (run.map?.rows ?? 13) - 1 - (run.currentNode?.row ?? 0);
+  if (rowsLeft <= 3 && frac < 0.9) return { kind: 'rest' };
   if (frac < 0.62) return { kind: 'rest' };
   return { kind: 'upgrade' };
 }
@@ -149,17 +155,21 @@ export function shopPlan(run, policy) {
  */
 export function pickNode(run, candidates, { greedElites = true } = {}) {
   const frac = run.courage / run.maxCourage;
+  const rows = run.map?.rows ?? 13;
   const score = (n) => {
     const t = run.effectiveType(n);
+    // Deep in the region every point of Courage is boss fuel: a Safe Room in
+    // the last three rows outranks anything else on the board.
+    const deep = n.row >= rows - 4;
     switch (t) {
-      case NodeType.SAFE: return frac < 0.75 ? 100 : 40;
+      case NodeType.SAFE: return deep ? 400 : (frac < 0.75 ? 100 : 40);
       case NodeType.TREASURE: return 70;
       case NodeType.SHOP: return run.lostThings > 130 ? 65 : 30;
-      case NodeType.BIG_SCARE: return (greedElites && frac > 0.7) ? 55 : -40;
-      case NodeType.CURIOSITY: return 45;
+      case NodeType.BIG_SCARE: return (greedElites && frac > 0.7 && !deep) ? 55 : -40;
+      case NodeType.CURIOSITY: return deep ? 55 : 45;
       case NodeType.UNKNOWN: return 42;
       case NodeType.RESCUE: return 60;
-      case NodeType.SCUFFLE: return 35;
+      case NodeType.SCUFFLE: return deep ? 20 : 35;
       case NodeType.BOSS: return 1000;
       default: return 20;
     }

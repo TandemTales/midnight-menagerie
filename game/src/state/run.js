@@ -493,8 +493,8 @@ export class Run {
     });
 
     try {
-      engine.registerCards?.(allCards());
-      engine.registerEnemies?.(ENEMY_LIST || []);
+      engine.registerCards(allCards());
+      engine.registerEnemies(ENEMY_LIST || []);
     } catch { /* registries are best-effort */ }
     await keywordsMod.loadContentRegistries?.(engine);
 

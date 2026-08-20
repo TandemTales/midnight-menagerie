@@ -98,6 +98,11 @@
  * rule           { rule:{id,name,text,when,once}, sourceId, action:'announce'|'clear' }
  * rule:broken    { ruleId, name, sourceId, cardUid }
  *
+ * snack:used     { snackId, name, desc, targetId, effect, potency }
+ *   Emitted BEFORE the Snack resolves, so the renderer can play the eat, the
+ *   banner and the target reticle while the numbers land underneath. `potency`
+ *   is the post-`modifySnackPotency` numbers actually about to be applied.
+ *
  * relic:trigger  { relicId, name, counter, reason }
  * log            { text, tone:'info'|'good'|'bad' }
  */
@@ -157,6 +162,8 @@ export const EV = /** @type {const} */ ({
   RULE: 'rule',
   RULE_BROKEN: 'rule:broken',
 
+  SNACK: 'snack:used',
+
   RELIC: 'relic:trigger',
   LOG: 'log',
 });
@@ -169,5 +176,5 @@ export const ANIMATED_EVENTS = Object.freeze([
   EV.DAMAGE, EV.BLOCK, EV.BLOCK_BREAK, EV.HEAL, EV.STATUS, EV.STATUS_TRIGGER,
   EV.DRAW, EV.DISCARD, EV.EXHAUST, EV.SHUFFLE, EV.CARD_PLAY, EV.CARD_MOVE,
   EV.DEATH, EV.SUMMON, EV.COUNTER, EV.TIMER_FIRE, EV.ENERGY,
-  EV.INTENT_QUEUE, EV.CHOICE, EV.RULE_BROKEN,
+  EV.INTENT_QUEUE, EV.CHOICE, EV.RULE_BROKEN, EV.SNACK,
 ]);

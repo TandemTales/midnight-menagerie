@@ -149,6 +149,7 @@ export class CombatEngine {
     this._seq = 0;
     this._collect = null;
     this._dirty = true;
+    this._rev = 0;
     this._stateCache = null;
     this.log = [];
     this._entityUid = 0;
@@ -226,9 +227,18 @@ export class CombatEngine {
   }
   off(type, fn) { this._listeners.get(type)?.delete(fn); }
 
+  /**
+   * Invalidate the state snapshot. Bumping a REVISION rather than setting a
+   * boolean is deliberate: `_buildState` can be interrupted by a mutation
+   * (a `dynamicCost` that touches a counter, a hook that fires mid-snapshot),
+   * and a boolean cleared at the end of the build would swallow it. The build
+   * only marks itself clean if the revision it started with is still current.
+   */
+  _invalidate() { this._dirty = true; this._rev++; }
+
   _emit(type, payload) {
     const ev = { type, seq: ++this._seq, turn: this.turn, ...payload };
-    this._dirty = true;
+    this._invalidate();
     if (this._collect) this._collect.push(ev);
     if (!this.isPreview) {
       this.log.push(ev);
@@ -270,7 +280,8 @@ export class CombatEngine {
     // (engine.turn / engine.phase / engine.energy) inside card code.
     if (this._buildingState) return this._stateCache || this._minimalState();
     this._buildingState = true;
-    try { return this._buildState(); } finally { this._buildingState = false; }
+    const rev = this._rev;
+    try { return this._buildState(rev); } finally { this._buildingState = false; }
   }
 
   /** Cheap, allocation-free reads that are always safe from inside a card effect. */
@@ -291,7 +302,7 @@ export class CombatEngine {
     };
   }
 
-  _buildState() {
+  _buildState(rev) {
     const s = {
       turn: this.turn,
       phase: this.phase,
@@ -332,7 +343,8 @@ export class CombatEngine {
       stats: { ...this.stats },
     };
     this._stateCache = s;
-    this._dirty = false;
+    // Only clean if nothing mutated while we were snapshotting.
+    this._dirty = (rev !== undefined) && (this._rev !== rev);
     return s;
   }
 
@@ -584,19 +596,38 @@ export class CombatEngine {
   // ── cost ──────────────────────────────────────────────────────────────────
 
   /** Effective cost after dynamicCost and modifyCardCost hooks. -1 = X, -2 = unplayable. */
+  /**
+   * Effective cost. -1 = X, -2 = unplayable.
+   *
+   * ── COMPOSITION ORDER (content authors: this is the one that bites) ───────
+   *   1. `CardDef.dynamicCost(ctx)`  computes the card's PRINTED cost right now.
+   *      It replaces `baseCost`; it is NOT the final answer. A card whose cost
+   *      depends on board state ("costs 2, or 0 after three Tricks") belongs here.
+   *   2. a hard override (`setCost(card, n, 'turn'|'combat')`) outranks both the
+   *      printed and the dynamic cost — "this costs 0 this turn" means 0.
+   *   3. `+ costCombatDelta + costTurnDelta`  (`modifyCost`), clamped at 0.
+   *   4. `modifyCardCost` hooks — the discount STATUSES live here
+   *      (`next-trick-discount`, `next-attack-discount`, the "costs less"
+   *      family). Clamped at 0 again.
+   *
+   * Step 1 used to RETURN, which meant no discount could ever reach a
+   * dynamic-cost card. Discounts now compose on top, which is what both a
+   * player and a designer expect.
+   */
   costOf(card) {
     if (card.unplayable) return -2;
     // Re-entrancy guard: dynamicCost may read state, which snapshots cards, which
-    // asks for their cost. One level deep only, then fall through to the raw cost.
+    // asks for their cost. One level deep only, then fall through to the printed cost.
+    let printed = null;
     if (typeof card.def.dynamicCost === 'function' && !card._costing) {
       card._costing = true;
       try {
         const c = card.def.dynamicCost(this.ctxFor(card, null));
-        if (typeof c === 'number') return Math.max(0, c);
+        if (typeof c === 'number') printed = c;
       } catch (err) { console.error(`[combat] ${card.id}.dynamicCost threw`, err); }
       finally { card._costing = false; }
     }
-    const raw = card.rawCost();
+    const raw = card.rawCost(printed);
     if (raw < 0) return raw;
     return Math.max(0, this.hooks.reduce('modifyCardCost', raw, { card }, this.hooks.actorHooks(this.player, 'modifyCardCost')));
   }
@@ -627,6 +658,7 @@ export class CombatEngine {
   setCardMeta(card, key, value) {
     const before = card.meta[key];
     card.meta[key] = value;
+    this._invalidate();
     this._emit(EV.CARD_META, { cardUid: card.uid, key, before: before ?? null, after: value });
     return value;
   }
@@ -1040,6 +1072,7 @@ export class CombatEngine {
     this.over = true;
     this.victory = victory;
     this.phase = 'over';
+    this._invalidate();
     this.hooks.dispatch('onCombatEnd', { victory });
     this._emit(EV.COMBAT_END, { victory, turn: this.turn, playerHp: this.player.hp });
   }
@@ -1463,6 +1496,11 @@ export class CombatEngine {
     if (this.over) return;
     this.turn++;
     this.phase = 'player';
+    // Turn rollover changes `turn`, `phase`, every per-turn stat and every
+    // turn-scoped card cost, none of which go through _emit. Invalidate here so
+    // a `turn:start` listener reading `engine.state.turn` cannot see last turn's
+    // number. (The HUD's Turn chip sat a whole turn behind on this.)
+    this._invalidate();
     this.stats.turnsTaken = this.turn;
     this.stats.cardsPlayedThisTurn = 0;
     this.stats.attacksPlayedThisTurn = 0;
@@ -1486,6 +1524,7 @@ export class CombatEngine {
 
     // turn-scoped card cost changes expire
     for (const c of this.piles.all()) { c.costTurnDelta = 0; c.costOverrideTurn = null; }
+    this._invalidate();
 
     this._emit(EV.PHASE, { phase: 'player', turn: this.turn });
     this._emit(EV.TURN_START, { actor: 'player', actorId: this.player.id, turn: this.turn, side: 'player' });
@@ -1651,8 +1690,14 @@ export class CombatEngine {
       const ctx = this.ctxFor(card, target, x);
       ctx.exhaustSelf = () => { card._exhaustAfterPlay = true; };
       let ret = null;
-      try { ret = card.def.effect?.(ctx); }
-      catch (err) { console.error(`[combat] card ${card.id} effect threw`, err); }
+      if (typeof card.def.effect !== 'function') {
+        // Not `effect?.()`. A Trick with no effect is a content bug and must be
+        // loud — CONTRACTS.md rule 8.
+        console.error(`[combat] card ${card.id} has no effect() — it will do nothing`);
+      } else {
+        try { ret = card.def.effect(ctx); }
+        catch (err) { console.error(`[combat] card ${card.id} effect threw`, err); }
+      }
 
       const finish = () => {
         this.hooks.dispatch('onCardPlayed', { card, target, index: this.stats.cardsPlayedThisTurn });
@@ -1708,6 +1753,128 @@ export class CombatEngine {
     return { events, pending };
   }
 
+  /* ══ Snacks ════════════════════════════════════════════════════════════
+   * A Snack (potion) is a rules effect, so it resolves here and not in the
+   * scene — CONTRACTS.md non-negotiable #5. The scene asks, the engine decides,
+   * the renderer animates the events.
+   *
+   * The engine does NOT own the inventory. `useSnack` resolves ONE Snack def;
+   * removing it from `run.snacks` is `Run.useSnack(index)`'s job. Consume it on
+   * your side the moment `canUseSnack` returns ok — a Snack is spent when eaten,
+   * win or lose.
+   *
+   * SnackDef.effect fields (state/run.js SNACKS):
+   *   heal, block, energy, cleanse, damageAll, status:[id,n], target:'enemy'
+   *
+   * ── RESOLUTION ORDER ──────────────────────────────────────────────────────
+   *   1. validate (`canUseSnack`)
+   *   2. resolve the target — if `target:'enemy'` and none was passed, ask
+   *      through the ordinary choice broker, so the scene's picker handles it
+   *   3. `modifySnackPotency` reducers per numeric field (Sacred-Bark shape)
+   *   4. emit `snack:used` BEFORE anything lands, carrying the final numbers
+   *   5. heal → block → energy → cleanse → damageAll → status
+   *   6. `onSnackUsed` hooks
+   *   7. death / combat-end check, then intents refresh
+   */
+
+  /** @returns {{ok:boolean, reason:string}} */
+  canUseSnack(snack, targetId = null) {
+    if (!snack || !snack.effect) return { ok: false, reason: 'That is not a Snack.' };
+    if (this.over) return { ok: false, reason: 'The Scuffle is over.' };
+    if (this.phase !== 'player') return { ok: false, reason: 'Wait for your turn.' };
+    if (snack.effect.target === 'enemy') {
+      if (this.livingEnemies().length === 0) return { ok: false, reason: 'Nothing to aim it at.' };
+      if (targetId !== null) {
+        const t = this.actor(targetId);
+        if (!t || !t.alive || t.side === 'player') return { ok: false, reason: 'Choose a target.' };
+      }
+    }
+    return { ok: true, reason: '' };
+  }
+
+  /** The numbers a Snack would actually apply, after every relic modifier. */
+  snackPotency(snack) {
+    const fx = snack.effect || {};
+    const provs = (f) => this.hooks.actorHooks(this.player, 'modifySnackPotency');
+    const scale = (field, v) => Math.max(0, Math.round(
+      this.hooks.reduce('modifySnackPotency', v, { snack, field }, provs(field))));
+    const out = {};
+    if (fx.heal) out.heal = scale('heal', fx.heal);
+    if (fx.block) out.block = scale('block', fx.block);
+    if (fx.energy) out.energy = scale('energy', fx.energy);
+    if (fx.damageAll) out.damageAll = scale('damageAll', fx.damageAll);
+    if (fx.cleanse) out.cleanse = true;
+    if (Array.isArray(fx.status)) out.status = [fx.status[0], scale('status', fx.status[1])];
+    return out;
+  }
+
+  /**
+   * Eat a Snack. Returns the events it caused, exactly like `playCard`.
+   * @param {Object} snack   a SnackDef ({ id, name, desc, effect })
+   * @param {string|null} targetId
+   * @returns {Promise<Event[]>}
+   */
+  async useSnack(snack, targetId = null) {
+    const check = this.canUseSnack(snack, targetId);
+    if (!check.ok) {
+      return this._capture(() => this._emit(EV.CARD_INVALID, {
+        cardUid: null, snackId: snack && snack.id, targetId, reason: check.reason,
+      }));
+    }
+    const fx = snack.effect;
+
+    // 2 — one target question, asked before anything is consumed.
+    let target = this.actor(targetId);
+    if (fx.target === 'enemy' && !target) {
+      const living = this.livingEnemies();
+      if (living.length === 1) target = living[0];
+      else {
+        const picked = await this.choices.ask({
+          kind: 'enemy', pool: living, count: 1, optional: true,
+          prompt: `Who gets the ${snack.name}?`,
+          meta: { cardId: snack.id },
+        });
+        if (!picked.length) return [];                 // cancelled — nothing spent
+        target = living[picked[0]];
+        if (!target || !target.alive) return [];
+      }
+    }
+
+    const potency = this.snackPotency(snack);
+    const me = this.player;
+
+    return this._capture(() => {
+      this._emit(EV.SNACK, {
+        snackId: snack.id, name: snack.name, desc: snack.desc || '',
+        targetId: target ? target.id : null, effect: { ...fx }, potency: { ...potency },
+      });
+
+      const results = {};
+      if (potency.heal) results.healed = this.heal(me, potency.heal, 'snack');
+      if (potency.block) results.blocked = this.gainBlock(me, potency.block, { source: 'snack', fromCard: false, reason: 'snack' });
+      if (potency.energy) results.energy = this.gainEnergy(potency.energy, 'snack');
+      if (potency.cleanse) this.cleanse(me, 'snack');
+      if (potency.damageAll) {
+        results.hit = 0;
+        for (const en of this.livingEnemies()) {
+          this.dealDamage({ attacker: me, defender: en, amount: potency.damageAll, kind: 'attack', cause: snack.name });
+          results.hit++;
+        }
+      }
+      if (potency.status) {
+        const [id, n] = potency.status;
+        this.applyStatus(target || me, id, n, { reason: 'snack', snack: snack.id });
+      }
+
+      this.hooks.dispatch('onSnackUsed', {
+        snack, snackId: snack.id, target: target || null, potency, results,
+      });
+
+      this.refreshIntents('snack');
+      if (!this.over && this.livingEnemies().length === 0) this._endCombat(true);
+    });
+  }
+
   /** @returns {Promise<Event[]>} */
   async endTurn() { return this._endTurn(); }
 
@@ -1736,6 +1903,7 @@ export class CombatEngine {
 
       // 5 — enemy actions, slot order
       this.phase = 'enemy';
+      this._invalidate();
       this._emit(EV.PHASE, { phase: 'enemy', turn: this.turn });
       const before = this.player.damageTakenThisTurn;
 
@@ -1790,6 +1958,7 @@ export class CombatEngine {
       //      inside a move cannot do that: the ally's intent was already drawn.
       //      Slot order cannot save a summoner, which is always slot 0.
       this.phase = 'enemyPhaseEnd';
+      this._invalidate();
       this._emit(EV.PHASE, { phase: 'enemyPhaseEnd', turn: this.turn });
       this.hooks.dispatch('onEnemyPhaseEnd', { turn: this.turn });
       this._enemyLifecycle('onEnemyPhaseEnd', { turn: this.turn });
