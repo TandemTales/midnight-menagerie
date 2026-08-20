@@ -338,9 +338,25 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
   const lastWalk = rows - 2;               // last row of ordinary rooms
   const bossRow  = rows - 1;
 
-  // ── 1. Carve paths ────────────────────────────────────────────────────────
+  // -- 1. Carve paths ---------------------------------------------------------
+  //
+  // Two facts drive this whole pass.
+  //
+  //  (a) Between two consecutive rows of width m and n, the largest set of
+  //      edges you can draw WITHOUT one crossing another is exactly m+n-1 - a
+  //      monotone staircase and not one edge more.  So the mean number of exits
+  //      per room in a crossing-free layered plan can never exceed 2 - 1/width,
+  //      and the number of rooms forced onto a single exit can never fall below
+  //      max(0, m-n+1) per band.  Those are theorems, not tuning knobs.
+  //  (b) A greedy "add any edge that fits" pass gets nowhere near either bound,
+  //      because one badly-placed early edge can wall a room off from every
+  //      target to its right for good.
+  //
+  // So: the random walks decide only the SHAPE of the wing - which rooms exist
+  // on which row.  The edges are then laid down as the canonical maximal
+  // staircase for each band, which hits (a) exactly.  Long passages that skip a
+  // row are the one legal way past that ceiling, and go on top.
   const grid = new Map();                            // "r:c" -> node
-  const rowEdges = Array.from({ length: rows }, () => []); // per-row [{from,to}]
 
   const node = (r, c) => {
     const k = key(r, c);
@@ -351,42 +367,19 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
     }
     return n;
   };
-  /** Two edges in the same row cross if their endpoints invert. */
-  const crosses = (r, from, to) => rowEdges[r].some(e =>
-    (e.from < from && e.to > to) || (e.from > from && e.to < to));
-
-  const link = (r, from, to) => {
-    if (!rowEdges[r].some(e => e.from === from && e.to === to)) rowEdges[r].push({ from, to });
-    const a = node(r, from), b = node(r + 1, to);
-    if (!a.next.includes(b.id)) a.next.push(b.id);
-    if (!b.prev.includes(a.id)) b.prev.push(a.id);
-  };
-
   const has  = (r, c) => grid.has(key(r, c));
-  const cols = (r) => [...grid.values()].filter(n => n.row === r).map(n => n.col).sort((a, b) => a - b);
   const at   = (r) => [...grid.values()].filter(n => n.row === r);
+  const cols = (r) => at(r).map(n => n.col).sort((a, b) => a - b);
 
-  // 1a. Carve trunk walks.  These alone guarantee the graph is connected and
-  //     planar; every later pass is additive and refuses any crossing edge.
+  // 1a. Random walks lay out the wing's footprint: an irregular, organic set of
+  //     occupied lanes per row rather than a solid block.
   const walks = lanes + 2;
-  const starts = [];
-  for (let i = 0; i < walks; i++) starts.push(rng.int(lanes));
-  // A first row you cannot make a choice on is not a first row.
-  const wantStarts = Math.min(lanes, 3);
-  for (let c = 0; new Set(starts).size < wantStarts && c < lanes * 3; c++) {
-    starts[c % starts.length] = c % lanes;
-  }
-
-  for (const s of starts) {
-    let c = s;
+  for (let w = 0; w < walks; w++) {
+    let c = rng.int(lanes);
     node(0, c);
     for (let r = 0; r < lastWalk; r++) {
-      const cand = [c - 1, c, c + 1]
-        .filter(nc => nc >= 0 && nc < lanes)
-        .filter(nc => !crosses(r, c, nc));
-      if (!cand.length) { link(r, c, c); continue; }
-      // Bias: keep spreading while the map is young, converge near the boss.
       const converge = r / lastWalk;
+      const cand = [c - 1, c, c + 1].filter(nc => nc >= 0 && nc < lanes);
       const weights = cand.map(nc => {
         const pull = nc === c ? 1.0 : 0.86;
         const centre = 1 - Math.abs((nc + 0.5) / lanes - 0.5) * 2;   // 0..1
@@ -395,124 +388,131 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
       let t = weights.reduce((a, b) => a + b, 0) * rng.next();
       let pick = cand[cand.length - 1];
       for (let i = 0; i < cand.length; i++) { t -= weights[i]; if (t <= 0) { pick = cand[i]; break; } }
-      link(r, c, pick);
+      node(r + 1, pick);
       c = pick;
     }
   }
 
-  // 1b. Occupancy.  Between two consecutive rows of width m and n, the number
-  //     of edges you can draw without one crossing another is exactly m+n-1 (a
-  //     staircase), so a narrow row physically cannot offer its rooms a choice.
-  //     Widen the wing into a bulge — narrow at the door, widest in the middle,
-  //     closing again towards the boss — by growing new rooms off a parent that
-  //     can reach them without crossing anything already drawn.
+  // 1b. Widen the footprint into a bulge - narrow at the door, widest through
+  //     the middle, closing again towards the boss.  A band whose next row is
+  //     no wider than itself is FORCED to leave a room on a single exit, so the
+  //     wing holds its width for as long as the plan can afford to.
   const wantAt = (r) => {
     if (r >= lastWalk - 1) return 2;
-    if (r <= 1) return 3;
+    if (r === 0) return 3;
     if (r === lastWalk - 2) return 3;
-    // widen fast, hold wide: a band whose next row is no wider than itself is
-    // forced to leave at least one room on a single exit, so hold the width.
-    return clamp(Math.min(lanes, 3 + (r - 1)) + (rng.chance(0.22) ? -1 : 0), 3, lanes);
+    return clamp(Math.min(lanes, 2 + r) - (rng.chance(0.22) ? 1 : 0), 3, lanes);
   };
-  for (let r = 1; r <= lastWalk; r++) {
+  for (let r = 0; r <= lastWalk; r++) {
     const want = Math.min(lanes, wantAt(r));
     for (let guard = 0; cols(r).length < want && guard < lanes + 2; guard++) {
       const present = new Set(cols(r));
-      const free = rng.shuffle([...Array(lanes).keys()].filter(c => !present.has(c)));
-      let grown = false;
-      for (const c of free) {
-        const parents = cols(r - 1).filter(pc => Math.abs(pc - c) <= 1 && !crosses(r - 1, pc, c));
-        if (!parents.length) continue;
-        link(r - 1, parents[rng.int(parents.length)], c);
-        grown = true; break;
-      }
-      if (!grown) break;
+      const free = [...Array(lanes).keys()].filter(c => !present.has(c));
+      if (!free.length) break;
+      // Prefer a lane touching one already in use: rows read as a band, not a
+      // scatter, and the staircase between two bands stays short and diagonal.
+      const touching = free.filter(c => present.has(c - 1) || present.has(c + 1));
+      node(r, rng.pick(touching.length ? touching : free));
+    }
+  }
+  // Trim any row the walks left wider than the plan wants, from the edges in.
+  for (let r = 1; r < lastWalk; r++) {
+    const want = Math.min(lanes, wantAt(r));
+    let cs = cols(r);
+    while (cs.length > want + 1) {
+      const drop = cs[0] <= (lanes - 1 - cs[cs.length - 1]) ? cs[0] : cs[cs.length - 1];
+      grid.delete(key(r, drop));
+      cs = cols(r);
     }
   }
 
-  // 1c. Every room that is not on the last walked row must lead somewhere.
-  for (let r = lastWalk - 1; r >= 0; r--) {
-    for (const a of at(r)) {
-      if (a.next.length) continue;
-      const near = cols(r + 1)
-        .filter(c => !crosses(r, a.col, c))
-        .sort((p, q) => Math.abs(p - a.col) - Math.abs(q - a.col));
-      if (near.length) link(r, a.col, near[0]);
-    }
-  }
-
-  // 1d. Densify.  A room with a single exit is a corridor, not a decision, and
-  //     Slay the Spire's map is a decision every single row.  Add every extra
-  //     forward edge that does not cross one already drawn, nearest lane first,
-  //     capped at three exits so a node never turns into a hub.
-  const OUT_CAP = 3;
-  const tryLink = (r, a, c) => {
-    if (a.next.length >= OUT_CAP) return false;
-    if (a.next.includes(`${regionId}-${r + 1}-${c}`)) return false;
-    if (crosses(r, a.col, c)) return false;
-    link(r, a.col, c);
-    return true;
+  // 1c. The staircase.  Walk both rows in rank order, always advancing whichever
+  //     side is further behind: that is the unique maximal crossing-free edge set
+  //     between two ordered rows, and it spreads exits as evenly as the widths
+  //     allow, which is what holds single-exit rooms down at their floor.
+  const linkIds = (a, b) => {
+    if (!a.next.includes(b.id)) a.next.push(b.id);
+    if (!b.prev.includes(a.id)) b.prev.push(a.id);
   };
-  const bandCand = (r, a) => cols(r + 1)
-    .filter(c => Math.abs(c - a.col) <= 2)
-    .sort((p, q) => Math.abs(p - a.col) - Math.abs(q - a.col));
-  // Fairest first: every room in a band gets a second exit before ANY room in
-  // that band gets a third.  The staircase is a fixed budget, so a hub is always
-  // paid for by a dead-straight corridor somewhere else in the same row.
-  for (let r = lastWalk - 1; r >= 0; r--) {
-    for (const a of rng.shuffle(at(r))) {
-      if (a.next.length !== 1) continue;
-      for (const c of bandCand(r, a)) if (tryLink(r, a, c)) break;
+  const REACH = 4;                       // no room reaches a lane four away
+  for (let r = 0; r < lastWalk; r++) {
+    const S = cols(r), T = cols(r + 1);
+    if (!S.length || !T.length) continue;
+    let pairs = [];
+    let i = 0, j = 0;
+    while (i < S.length && j < T.length) {
+      pairs.push([S[i], T[j]]);
+      if (i === S.length - 1) j++;
+      else if (j === T.length - 1) i++;
+      else if ((i + 1) / S.length <= (j + 1) / T.length) i++;
+      else j++;
     }
+    // Thin for character: a plan where every room has exactly two exits is a
+    // lattice, not a house.  Never strand a room on either side of the band.
+    const outDeg = new Map(), inDeg = new Map();
+    for (const [a, b] of pairs) {
+      outDeg.set(a, (outDeg.get(a) || 0) + 1);
+      inDeg.set(b, (inDeg.get(b) || 0) + 1);
+    }
+    for (const [a, b] of rng.shuffle(pairs.slice())) {
+      const far = Math.abs(a - b) > REACH;
+      if (!far) continue;
+      if (outDeg.get(a) <= 1 || inDeg.get(b) <= 1) continue;
+      outDeg.set(a, outDeg.get(a) - 1); inDeg.set(b, inDeg.get(b) - 1);
+      pairs = pairs.filter(p => !(p[0] === a && p[1] === b));
+    }
+    for (const [a, b] of pairs) linkIds(node(r, a), node(r + 1, b));
   }
 
-  // 1e. Long passages.  Between two consecutive rows the number of crossing-free
-  //     edges is capped at (rowA + rowB - 1) — a staircase and nothing more — so
-  //     a strictly layered plan can never average two exits per room however hard
-  //     it tries.  The way past that ceiling without drawing a single crossing is
-  //     a corridor that SKIPS a row: row r straight through an empty lane to row
-  //     r+2.  It is provably crossing-free when the lane is empty at r+1 and no
-  //     edge in either band straddles it, and it reads on the sheet as exactly
-  //     what it is: a long service passage that misses a room out.
-  const straddles = (r, c) => rowEdges[r].some(e =>
-    (e.from < c && e.to > c) || (e.from > c && e.to < c));
-  const skips = [];
+  // 1d. Long passages.  The staircase is now provably maximal, so the ONLY way
+  //     to give a room another exit without drawing a crossing is a corridor
+  //     that skips a row: straight down an empty lane from row r to row r+2.
+  //     That cannot cross anything when the lane is empty at r+1 and no edge in
+  //     either band straddles it - and on the sheet it reads as exactly what it
+  //     is, a long service passage that misses a room out.
+  const bandEdges = Array.from({ length: rows + 1 }, () => []);
+  {
+    const byNodeId = new Map([...grid.values()].map(n => [n.id, n]));
+    for (const n of grid.values()) for (const id of n.next) {
+      const b = byNodeId.get(id);
+      if (b && b.row === n.row + 1) bandEdges[n.row].push([n.col, b.col]);
+    }
+  }
+  const straddles = (r, c) => bandEdges[r].some(([a, b]) =>
+    (a < c && b > c) || (a > c && b < c));
+  const taken = new Set();
+  const OUT_CAP = 3;
   const trySkip = (r, a) => {
     const c = a.col;
-    if (r + 2 > lastWalk) return false;
-    if (a.next.length >= OUT_CAP) return false;
-    if (has(r + 1, c)) return false;                     // the lane must be empty
-    if (!has(r + 2, c)) return false;
+    if (r + 2 > lastWalk || a.next.length >= OUT_CAP) return false;
+    if (has(r + 1, c) || !has(r + 2, c)) return false;
     if (straddles(r, c) || straddles(r + 1, c)) return false;
-    if (skips.some(s => s.col === c && Math.abs(s.row - r) === 1)) return false;
+    if (taken.has(`${r - 1}:${c}`) || taken.has(`${r + 1}:${c}`)) return false;
     const b = node(r + 2, c);
     if (a.next.includes(b.id)) return false;
-    a.next.push(b.id); b.prev.push(a.id);
-    b.viaPassage = true; a.hasPassage = true;
-    skips.push({ row: r, col: c });
-    // the corridor is occupied now: nothing else may be drawn across it
-    rowEdges[r].push({ from: c, to: c });
-    rowEdges[r + 1].push({ from: c, to: c });
+    linkIds(a, b);
+    a.passage = true;
+    taken.add(`${r}:${c}`);
+    bandEdges[r].push([c, c]); bandEdges[r + 1].push([c, c]);
     return true;
   };
-
-  // 1f. Repair, in the order that helps most: first give every starved room a
-  //     second band edge, then hand the ones the staircase cannot serve a long
-  //     passage, then scatter a few more passages for texture.
-  for (let r = lastWalk - 1; r >= 0; r--) {
-    const dst = cols(r + 1);
-    for (const a of at(r)) {
-      if (a.next.length !== 1) continue;
-      const cand = dst.filter(c => Math.abs(c - a.col) <= 2)
-        .sort((p, q) => Math.abs(p - a.col) - Math.abs(q - a.col));
-      for (const c of cand) if (tryLink(r, a, c)) break;
-    }
-  }
   for (let r = 0; r + 2 <= lastWalk; r++) for (const a of at(r)) {
-    if (a.next.length === 1) trySkip(r, a);
+    if (a.next.length <= 1) trySkip(r, a);            // starved rooms first
   }
   for (let r = 0; r + 2 <= lastWalk; r++) for (const a of rng.shuffle(at(r))) {
-    if (a.next.length < OUT_CAP && rng.chance(0.55)) trySkip(r, a);
+    if (rng.chance(0.40)) trySkip(r, a);
+  }
+
+  // 1e. Safety net: nothing may be stranded at either end.
+  for (let r = lastWalk - 1; r >= 0; r--) for (const a of at(r)) {
+    if (a.next.length) continue;
+    const near = cols(r + 1).sort((p, q) => Math.abs(p - a.col) - Math.abs(q - a.col));
+    if (near.length) linkIds(a, node(r + 1, near[0]));
+  }
+  for (let r = 1; r <= lastWalk; r++) for (const b of at(r)) {
+    if (b.prev.length) continue;
+    const near = cols(r - 1).sort((p, q) => Math.abs(p - b.col) - Math.abs(q - b.col));
+    if (near.length) linkIds(node(r - 1, near[0]), b);
   }
 
   // Boss node, fed by every node on the last walked row.
@@ -527,22 +527,44 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
   const rowsOf = Array.from({ length: rows }, (_, r) => all.filter(n => n.row === r));
 
   // ── 2. Assign node types ──────────────────────────────────────────────────
+  // The first room is always a fight, the way it is in Slay the Spire.  Row two
+  // is left open so the second decision already has texture in it.
   for (const n of rowsOf[0]) n.type = NodeType.SCUFFLE;
-  if (rowsOf[1]) for (const n of rowsOf[1]) n.type = NodeType.SCUFFLE;
 
   const open = all.filter(n => !n.type);
   const n0 = open.length;
   const wantRescue = !!(companion === null || !rescued.includes(meta.companion)) && !!meta.companion;
 
+  // Two wings should never feel like the same wing.  The recipe is a base share
+  // of the rooms plus a die roll, and then a CHARACTER that leans the whole
+  // sheet one way — a market wing really does have more to buy in it, and a
+  // haunted one really is short of places to sleep.  Everything left over is a
+  // Scuffle, and that leftover is held near 40% so the sheet is not a wall of
+  // claw marks.
+  const CHARACTERS = [
+    { id: 'plain',    w: 3, lean: {} },
+    { id: 'market',   w: 2, lean: { [NodeType.SHOP]: +1, [NodeType.TREASURE]: +1, [NodeType.BIG_SCARE]: -1 } },
+    { id: 'haunted',  w: 2, lean: { [NodeType.BIG_SCARE]: +2, [NodeType.SAFE]: -1, [NodeType.CURIOSITY]: -1 } },
+    { id: 'hoard',    w: 2, lean: { [NodeType.TREASURE]: +2, [NodeType.UNKNOWN]: -1 } },
+    { id: 'quiet',    w: 2, lean: { [NodeType.SAFE]: +2, [NodeType.CURIOSITY]: +1, [NodeType.BIG_SCARE]: -1 } },
+    { id: 'strange',  w: 2, lean: { [NodeType.UNKNOWN]: +2, [NodeType.CURIOSITY]: +2, [NodeType.TREASURE]: -1 } },
+    { id: 'derelict', w: 1, lean: { [NodeType.UNKNOWN]: +3, [NodeType.SHOP]: -1, [NodeType.SAFE]: -1 } },
+  ];
+  const character = rng.weighted(CHARACTERS);
+  const share = (frac, lo, hi, jitter = 1) =>
+    clamp(Math.round(n0 * frac) + rng.range(-jitter, jitter), lo, hi);
+
   const quota = {
-    [NodeType.BIG_SCARE]: clamp(Math.round(n0 * 0.13) + (hauntLevel >= 3 ? 1 : 0), 3, 6),
-    [NodeType.SAFE]:      clamp(Math.round(n0 * 0.11), 3, 5),
-    [NodeType.SHOP]:      n0 >= 34 ? 2 : 1,
-    [NodeType.TREASURE]:  2,
+    [NodeType.BIG_SCARE]: share(0.11, 2, 8) + (hauntLevel >= 3 ? 1 : 0),
+    [NodeType.SAFE]:      share(0.10, 2, 6),
+    [NodeType.SHOP]:      clamp(Math.round(n0 / 26) + (rng.chance(0.35) ? 1 : 0), 1, 3),
+    [NodeType.TREASURE]:  share(0.06, 1, 5),
     [NodeType.RESCUE]:    wantRescue ? 1 : 0,
-    [NodeType.UNKNOWN]:   clamp(Math.round(n0 * 0.09), 2, 4),
-    [NodeType.CURIOSITY]: clamp(Math.round(n0 * 0.18), 4, 7),
+    [NodeType.UNKNOWN]:   share(0.10, 2, 7),
+    [NodeType.CURIOSITY]: share(0.19, 3, 12, 2),
   };
+  for (const t in character.lean) quota[t] = Math.max(0, (quota[t] || 0) + character.lean[t]);
+  if (wantRescue) quota[NodeType.RESCUE] = 1;
 
   const adjacentTypes = (n) => {
     const out = new Set();
@@ -612,22 +634,34 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
   // The lane band is deliberately narrower than the sheet: it keeps a route
   // step and a lane change roughly the same distance apart, which is what makes
   // a Slay the Spire map readable instead of a cat's cradle.
+  //
+  // The wobble is deliberately constrained, and that constraint is what makes
+  // the zero-crossing guarantee hold on the SHEET and not merely in the graph:
+  //   · depth jitter is applied per ROW, not per node, so every row keeps its
+  //     own vertical strip of the paper and two edges from different bands can
+  //     never share x — a row that is a little early or a little late still
+  //     cannot overtake its neighbour.
+  //   · lane jitter is capped below half a lane, so the top-to-bottom order of
+  //     a row's rooms is never inverted, and a monotone staircase drawn on a
+  //     monotone row cannot self-intersect.
+  // Rooms still sit at irregular, hand-surveyed intervals; they just cannot lie
+  // about which row or which lane they are in.
   const padD = 0.105, spanD = 0.800;       // along depth  (x)
-  const laneMid = 0.455, spanL = 0.600;    // across lanes (y)
+  const laneMid = 0.430, spanL = 0.600;    // across lanes (y)
   const padL = laneMid - spanL / 2;
-  const jd = (spanD / rows) * 0.30;
-  const jl = (spanL / Math.max(1, lanes - 1)) * 0.24;
+  const jd = (spanD / rows) * 0.34;
+  const jl = (spanL / Math.max(1, lanes - 1)) * 0.22;
+  const rowShift = Array.from({ length: rows }, () => (rng.next() - 0.5) * 2 * jd);
   for (const n of all) {
     const d = n.row / (rows - 1);
     const l = lanes > 1 ? n.col / (lanes - 1) : 0.5;
-    n.x = padD + d * spanD;
+    n.x = padD + d * spanD + (n.type === NodeType.BOSS ? 0 : rowShift[n.row]);
     n.y = padL + l * spanL;
-    if (n.type !== NodeType.BOSS) {
-      n.x += (rng.next() - 0.5) * 2 * jd;
-      n.y += (rng.next() - 0.5) * 2 * jl;
-    } else { n.y = laneMid; }
-    n.x = clamp(n.x, 0.075, 0.935);
-    n.y = clamp(n.y, 0.105, 0.805);
+    if (n.type !== NodeType.BOSS) n.y += (rng.next() - 0.5) * 2 * jl;
+    else n.y = laneMid;
+    // stay inside the drawn plan window: a room on the scale bar is a bug
+    n.x = clamp(n.x, 0.078, 0.930);
+    n.y = clamp(n.y, 0.098, 0.752);
   }
 
   // ── 4. Authored room names, matched to node type ─────────────────────────
@@ -655,7 +689,7 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
   }
 
   return {
-    regionId, seed, rows, lanes,
+    regionId, seed, rows, lanes, character: character.id,
     nodes: all,
     edges,
     bossId: boss.id,
@@ -789,8 +823,8 @@ function placeHazards(rng, all, rowsOf, byId, boss, rows, lanes, lastWalk, haunt
         rect: {
           x0: clamp(Math.min(...xs) - 0.075, 0.012, 0.98),
           x1: clamp(Math.max(...xs) + 0.075, 0.02, 0.988),
-          y0: clamp(Math.min(...ys) - 0.045, 0.012, 0.98),
-          y1: clamp(Math.max(...ys) + 0.045, 0.02, 0.988),
+          y0: clamp(Math.min(...ys) - 0.045, 0.058, 0.98),
+          y1: clamp(Math.max(...ys) + 0.045, 0.02, 0.83),
         },
       };
     }

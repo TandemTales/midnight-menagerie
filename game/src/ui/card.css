@@ -640,9 +640,9 @@
 .mm-card__embers { position: absolute; inset: 0; overflow: visible; opacity: 0; }
 .mm-card__embers i {
   position: absolute;
-  width: calc(5 * var(--u)); height: calc(5 * var(--u));
+  width: calc(8 * var(--u)); height: calc(8 * var(--u));
   border-radius: 50%;
-  background: radial-gradient(circle, var(--flame-100), var(--flame-glow) 45%, transparent 72%);
+  background: radial-gradient(circle, var(--flame-100) 18%, var(--flame-glow) 48%, transparent 74%);
   transform: translate3d(0, 0, 0);
 }
 

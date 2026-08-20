@@ -62,9 +62,16 @@ let _uid = 0;
 
 export class AtmoLight {
   /** kind: 'warm' | 'cold' */
-  constructor(scene, { kind = 'warm', pos, color, intensity = 1, radius = 6, flicker = true } = {}) {
+  constructor(scene, { kind = 'warm', pos, color, intensity = 1, radius = 6, flicker = true,
+                       glow = null, glowSize = null } = {}) {
     this.id = ++_uid;
     this.kind = kind;
+    /* Is this lamp a THING IN THE ROOM or a cinematic light? A candle you can see
+       is what puts real highlights in the frame and gives bloom something honest
+       to bloom; a key light is invisible. Round 1 had no visible sources at all,
+       which is a large part of why the frame had 0.9% of pixels above L192. */
+    this.glow = glow ?? (kind === 'warm' ? 1.0 : 0.55);
+    this.glowSize = glowSize ?? (kind === 'warm' ? 1.0 : 1.5);
     this.pos = new THREE.Vector3().copy(pos || new THREE.Vector3());
     this.color = new THREE.Color(color ?? (kind === 'warm' ? 0xffb64a : 0x6fd9ec));
     this.base = intensity;
@@ -76,7 +83,12 @@ export class AtmoLight {
           ? { depth: 0.32, rate: 1.0, gutter: 0.35 }
           : { depth: 0.20, rate: 0.35, gutter: 0.06 })
       : null;
-    this.point = new THREE.PointLight(this.color.getHex(), intensity * 6, radius * 3.2, 2);
+    /* Match the analytical falloff used by the backdrop shaders. Three's
+       punctual lights are I/d^2; ours is I/(1 + k^2(1 + 1.55k)) with k = d/r.
+       Equating the two at d = r/2 gives I_three = 0.17 * I * r^2. Round 1 used a
+       flat `intensity * 6`, which under-lit every wide-radius lamp by 3-5x — a
+       MeshStandardMaterial actor standing in a bright room came out black. */
+    this.point = new THREE.PointLight(this.color.getHex(), intensity * radius * radius * 0.17, radius * 3.4, 2);
     this.point.position.copy(this.pos);
     scene.add(this.point);
     this._scene = scene;
@@ -86,7 +98,7 @@ export class AtmoLight {
     if (!this.enabled) { this.live = 0; this.point.intensity = 0; return; }
     const f = this.flicker ? 1 - (1 - this.flicker.update(dt, t)) * motionScale : 1;
     this.live = this.base * f;
-    this.point.intensity = this.live * 6;
+    this.point.intensity = this.live * this.radius * this.radius * 0.17;
   }
   dispose() { this._scene.remove(this.point); this.point.dispose?.(); }
 }
@@ -100,13 +112,17 @@ export class LightRig {
   constructor(scene) {
     this.scene = scene;
     this.lights = [];
-    this.slots = 4;
+    /* Five slots, not four: a room needs a camera-side KEY and a cool FILL in
+       front of the action plane as well as the two or three lamps that live deep
+       in the room. Round 1 authored only the deep ones, so every actor in the
+       foreground was lit exclusively from behind and rendered as a silhouette. */
+    this.slots = 5;
 
     // Packed uniform payloads, reused every frame — never reallocated.
-    this.worldPos = [new THREE.Vector4(), new THREE.Vector4(), new THREE.Vector4(), new THREE.Vector4()];
-    this.colors   = [new THREE.Color(), new THREE.Color(), new THREE.Color(), new THREE.Color()];
-    this.inten    = [0, 0, 0, 0];
-    this.active   = [null, null, null, null];
+    this.worldPos = Array.from({ length: this.slots }, () => new THREE.Vector4());
+    this.colors   = Array.from({ length: this.slots }, () => new THREE.Color());
+    this.inten    = new Array(this.slots).fill(0);
+    this.active   = new Array(this.slots).fill(null);
 
     this.keyDir = new THREE.Vector2(0, 1);   // 2D direction toward the key light
     this.keyColor = new THREE.Color(0xffb64a);
@@ -139,14 +155,16 @@ export class LightRig {
     const ls = this.lights;
     for (let i = 0; i < ls.length; i++) ls[i].update(dt, t, motionScale);
 
-    // pick the four strongest without sorting (no allocation)
+    /* Pick the strongest by AUTHORED intensity, not by live intensity: flicker
+       changes `live` every frame and selecting on it makes the two weakest lamps
+       swap slots at random, which pops. `base` is stable. No allocation. */
     for (let s = 0; s < this.slots; s++) { this.active[s] = null; this.inten[s] = 0; }
     for (let i = 0; i < ls.length; i++) {
       const l = ls[i];
-      if (l.live <= 0.001) continue;
-      let worst = -1, worstVal = l.live;
+      if (!l.enabled || l.base <= 0.001) continue;
+      let worst = -1, worstVal = l.base;
       for (let s = 0; s < this.slots; s++) {
-        const cur = this.active[s] ? this.active[s].live : -1;
+        const cur = this.active[s] ? this.active[s].base : -1;
         if (cur < worstVal) { worstVal = cur; worst = s; }
       }
       if (worst >= 0) { this.active[worst] = l; }

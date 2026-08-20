@@ -262,11 +262,10 @@ setEnergy(3);
 // motion. This is the fix for "draw 5 into a hand of 12 = 43 fps cold": the
 // five fresh canvases were being painted and PNG-encoded inside the frame that
 // started the animation. A scene should call warmArt() on entry with its deck.
-// Then rehearse the raster: the first card ever painted costs the compositor
-// its shader + shadow-blur + glyph warm-up, which showed up as one 280 ms
-// frame on the first draw. Scene entry is where that gets paid.
+// Then rehearse the raster at every fit scale the hand can use, so the
+// compositor has seen each of them before the first draw.
 const warming = warmArt(CARDS, ART_W * CARD_SS, ART_H * CARD_SS, { upgraded: 'both' })
-  .then(() => hand.warmRaster(CARDS, 10));
+  .then(() => hand.warmRaster(CARDS, 6));
 
 // ── fit assertion: nothing may be clipped, at any hand size ────────────────
 // max(card.bottom) <= innerHeight - 8, for n = 1..12.

@@ -52,10 +52,9 @@ export class ParticleField {
         uPixelRatio: { value: 1 }, uWind: { value: 1 }, uReduce: { value: 0 },
         uCenter: { value: new THREE.Vector3(0, 5, -9) },
         uExtent: { value: new THREE.Vector3(16, 5, 8) },
-        uLights: { value: [new THREE.Vector4(0,0,0,1), new THREE.Vector4(0,0,0,1),
-                           new THREE.Vector4(0,0,0,1), new THREE.Vector4(0,0,0,1)] },
-        uLightCol: { value: [new THREE.Color(), new THREE.Color(), new THREE.Color(), new THREE.Color()] },
-        uLightInt: { value: [0, 0, 0, 0] },
+        uLights: { value: Array.from({ length: 5 }, () => new THREE.Vector4(0, 0, 0, 1)) },
+        uLightCol: { value: Array.from({ length: 5 }, () => new THREE.Color()) },
+        uLightInt: { value: new Array(5).fill(0) },
         uTint: { value: new THREE.Color(0xffe2a8) },
         uWispTint: { value: new THREE.Color(0x6fd9ec) },
         uEmberTint: { value: new THREE.Color(0xffb64a) },
@@ -92,7 +91,7 @@ export class ParticleField {
     if (cfg.scale !== undefined) u.uScale.value = cfg.scale;
     if (cfg.wind !== undefined) u.uWind.value = cfg.wind;
     // regions author density on a 0..1 'feels full' scale; halve it for screen calm
-    if (cfg.density !== undefined) u.uDensity.value = cfg.density * 0.5;
+    if (cfg.density !== undefined) u.uDensity.value = cfg.density * 0.34;
     if (cfg.tint) u.uTint.value.set(cfg.tint);
     if (cfg.wispTint) u.uWispTint.value.set(cfg.wispTint);
     if (cfg.emberTint) u.uEmberTint.value.set(cfg.emberTint);
@@ -122,7 +121,7 @@ export class ParticleField {
   /** Copy the rig's packed light payload into the particle uniforms. */
   syncLights(rig) {
     const u = this.material.uniforms;
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
       u.uLights.value[i].copy(rig.worldPos[i]);
       u.uLightCol.value[i].copy(rig.colors[i]);
       u.uLightInt.value[i] = rig.inten[i];

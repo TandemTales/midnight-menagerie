@@ -4,7 +4,8 @@
  *
  * Public API (do not break): resize(), shake(), flash(), setCameraBase(),
  * .scene, .camera, .grade, .bloom
- * Added by atmosphere: setParallax(), ripple(), pulse(), setQuality(), .lookAt
+ * Added by atmosphere: setParallax(), ripple(), pulse(), setQuality(), .lookAt,
+ *                      setCameraRig(), warmup()
  */
 import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
@@ -32,9 +33,9 @@ export class Stage {
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.FogExp2(0x08060f, 0.016);
 
-    this.camera = new THREE.PerspectiveCamera(38, 1, 0.1, 400);
-    this.camera.position.set(0, 2.2, 12);
-    this.lookAt = new THREE.Vector3(0, 1.9, 0);
+    this.camera = new THREE.PerspectiveCamera(42, 1, 0.1, 400);
+    this.camera.position.set(0, 2.3, 9.6);
+    this.lookAt = new THREE.Vector3(0, 2.4, 0);
     this.camera.lookAt(this.lookAt);
 
     this.composer = new EffectComposer(this.renderer);
@@ -74,6 +75,113 @@ export class Stage {
   }
 
   setQuality(q) { this.quality = q; this.resize(); }
+
+  /**
+   * Point the camera for a region. `rig` is {y, z, look, fov}; the rooms differ
+   * in proportion so the eye has to differ with them. StS2 frames "epic rather
+   * than intimate", so these sit close with a high horizon and little bare floor.
+   */
+  setCameraRig(rig = {}, dur = 0.7) {
+    const to = {
+      y: rig.y ?? 2.3, z: rig.z ?? 9.6,
+      look: rig.look ?? 2.4, fov: rig.fov ?? 42,
+    };
+    this._camRig = to;
+    const apply = (y, z, look, fov) => {
+      this._camBase.set(0, y, z);
+      this.lookAt.set(0, look, 0);
+      if (Math.abs(this.camera.fov - fov) > 0.01) {
+        this.camera.fov = fov;
+        this.camera.updateProjectionMatrix();
+      }
+    };
+    if (dur <= 0 || Save.settings?.reduceMotion) {
+      apply(to.y, to.z, to.look, to.fov);
+      this.camera.position.set(0, to.y, to.z);
+      return;
+    }
+    const from = { y: this._camBase.y, z: this._camBase.z, look: this.lookAt.y, fov: this.camera.fov };
+    clock.ramp(dur, (v) => {
+      const k = v * v * (3 - 2 * v);
+      apply(from.y + (to.y - from.y) * k, from.z + (to.z - from.z) * k,
+            from.look + (to.look - from.look) * k, from.fov + (to.fov - from.fov) * k);
+    });
+  }
+
+  /**
+   * Build every GPU program behind the loading frame instead of inside the first
+   * rendered one. Round 1 had no warm-up anywhere — `grep -rn "compileAsync"`
+   * returned nothing — and the first `composer.render()` linked RenderPass +
+   * UnrealBloomPass (5 mip levels, 3 materials each) + the grade pass + OutputPass
+   * in a single task measured at 5.4–6.4 s (and up to 15 s on a cold profile).
+   *
+   * Two things fix that: `compileAsync` (which uses KHR_parallel_shader_compile
+   * where it exists and, crucially, resolves off the current task where it does
+   * not), and rendering the whole post chain once at 8x8 with a yield between
+   * each pass so no single task owns the link cost of the entire chain.
+   */
+  warmup() { return this._warmPromise || (this._warmPromise = this._warmup()); }
+
+  async _warmup() {
+    // Block the frame loop until the chain is built. Set synchronously, BEFORE
+    // the first await, so frame 1 cannot slip through and pay the whole cost.
+    this._warming = true;
+    const yield_ = () => new Promise((r) => setTimeout(r, 0));
+    const t0 = performance.now();
+    const small = () => [Math.max(innerWidth >> 3, 8), Math.max(innerHeight >> 3, 8)];
+    this.warmStage = 'materials';
+    try {
+      /* ---- phase A: scene materials, ONE MESH PER TASK -------------------
+         `compileAsync(scene)` links every program in a single task, which under
+         software WebGL is one 6 s block — exactly the thing we are removing.
+         Compiling per object costs the same in total but spreads it over as many
+         tasks as there are materials, and each task yields to the event loop. */
+      const objs = [];
+      this.scene.traverse((o) => { if (o.isMesh || o.isPoints || o.isSprite) objs.push(o); });
+      for (const o of objs) {
+        try { await this.renderer.compileAsync(o, this.camera, this.scene); }
+        catch (e) { /* keep warming */ }
+        await yield_();
+      }
+
+      /* ---- phase B: show the room. Bloom and the grade are still cold, so run
+         RenderPass -> OutputPass only. The picture is up while the rest warms,
+         instead of the canvas sitting black for the whole compile. */
+      this.bloom.enabled = false;
+      this.grade.enabled = false;
+      this._warming = false;
+      this.warmStage = 'post';
+      await yield_();
+
+      /* ---- phase C/D: warm each remaining pass off-screen at 1/8 scale, then
+         switch it on. Each is its own task. */
+      const [sw, sh] = small();
+      const cold = [this.bloom, this.grade];
+      for (const pass of cold) {
+        this.composer.renderToScreen = false;
+        this.composer.setSize(sw, sh);
+        this.bloom.setSize(sw, sh);
+        pass.enabled = true;
+        const others = cold.filter((p) => p !== pass);
+        for (const o of others) o.enabled = false;
+        try { this.composer.render(0.016); } catch (e) { /* keep warming */ }
+        await yield_();
+        this.composer.renderToScreen = true;
+        this.resize();
+        for (const o of others) o.enabled = true;
+        await yield_();
+      }
+    } finally {
+      this.bloom.enabled = true;
+      this.grade.enabled = true;
+      this.composer.renderToScreen = true;
+      this.resize();
+      this._warming = false;
+      this.warmStage = 'done';
+    }
+    this._warmed = Math.round(performance.now() - t0);
+    return this._warmed;
+  }
 
   resize() {
     const dpr = Math.min(devicePixelRatio || 1, this.quality >= 1 ? 2 : 1.25);
@@ -158,6 +266,9 @@ export class Stage {
     }
     this.camera.lookAt(this.lookAt);
 
+    // While warm-up owns the composer, skip the frame entirely. Rendering here
+    // would re-enter the passes mid-resize and pay the full first-frame link.
+    if (this._warming) return;
     this.composer.render(dt);
   }
 

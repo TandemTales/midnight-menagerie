@@ -58,12 +58,17 @@ export function inkLine(seed, x1, y1, x2, y2, amp = 3, segs = 8) {
 // ── the nine glyphs, viewBox 0 0 48 48 ───────────────────────────────────────
 // `S` = stroked path, `F` = filled path.  Kept as data so states can restyle.
 const G = {
-  // Crossed claw scratches. The commonest room gets the simplest mark.
+  // Crossed claw scratches.  The commonest room gets the simplest mark — but
+  // simple is not the same as faint: fifteen of thirty rooms wear this, and at
+  // the sheet's fit zoom a hairline X vanishes into the plan's dot field.  So
+  // it is the heaviest single stroke weight on the map, with two gouged ends.
   [NodeType.SCUFFLE]: `
-    <path class="s w2" d="M15 13 L33 34"/>
-    <path class="s w2" d="M22 11 L38 30"/>
-    <path class="s w2" d="M33 14 L15 35"/>
-    <path class="s w1" d="M39 20 L26 37"/>`,
+    <path class="s w3" d="M13 11 L34 35"/>
+    <path class="s w3" d="M23 8 L41 29"/>
+    <path class="s w3" d="M35 12 L14 36"/>
+    <path class="s w1" d="M41 19 L27 37"/>
+    <path class="f" d="M33.4 34 l3.6 4.6 -5.6 -1.2Z"/>
+    <path class="f" d="M14.6 35 l-3.8 4.4 5.6 -1Z"/>`,
 
   // Spiked burst with a fanged mouth: heavier, angrier, unmistakably not a Scuffle.
   [NodeType.BIG_SCARE]: `
@@ -73,23 +78,40 @@ const G = {
     <path class="f" d="M29.5 21 a2.1 2.4 0 1 0 .01 0Z"/>
     <path class="s w1" d="M18 29 L21 32 L24 29 L27 32 L30 29"/>`,
 
-  // Tall arched double door with a crown. Reads as "the way through" at 20px.
+  // The keeper of the wing.  This used to be an arched door with vertical bars
+  // inside it, which in greyscale was the SAME silhouette as the Rescue cage —
+  // the two most important marks on the sheet were indistinguishable.  It is
+  // now the only large SOLID mass of ink on the whole drawing: a horned bulk
+  // with the paper showing through its eyes, standing inside a struck-out
+  // survey rosette.  Nothing else is filled, nothing else is this size, and
+  // nothing else radiates.  You can find it from across the sheet.
   [NodeType.BOSS]: `
-    <path class="s w2" d="M10 44 L10 22 a14 15 0 0 1 28 0 L38 44 Z"/>
-    <path class="s w1" d="M24 8.5 L24 44"/>
-    <path class="s w1" d="M15 27 a9 9 0 0 1 18 0"/>
-    <path class="f" d="M21.4 30 a2.6 2.6 0 1 0 5.2 0 a2.6 2.6 0 1 0 -5.2 0Z"/>
-    <path class="s w1" d="M22.6 32.4 L21.6 37.6 L26.4 37.6 L25.4 32.4"/>
-    <path class="s w2 j" d="M9 12 L13 4 L18 10 L24 1 L30 10 L35 4 L39 12"/>`,
+    <path class="s w1 ray" d="M24 24 L24 1 M24 24 L24 47 M24 24 L1 24 M24 24 L47 24
+                              M24 24 L7.7 7.7 M24 24 L40.3 40.3 M24 24 L40.3 7.7 M24 24 L7.7 40.3"/>
+    <path class="s w1 ray" d="M24 24 m-21 0 a21 21 0 1 0 42 0 a21 21 0 1 0 -42 0Z"/>
+    <path class="f mass" d="M4 46.5 L7.5 28 L3 15 L11.5 21 L14.5 6 L19.5 18
+                            L24 2 L28.5 18 L33.5 6 L36.5 21 L45 15 L40.5 28 L44 46.5 Z"/>
+    <path class="pw eye" d="M13.6 29.2 a4.6 5.4 0 1 0 9.2 0 a4.6 5.4 0 1 0 -9.2 0Z"/>
+    <path class="pw eye" d="M25.2 29.2 a4.6 5.4 0 1 0 9.2 0 a4.6 5.4 0 1 0 -9.2 0Z"/>
+    <path class="f" d="M16.4 30.6 a1.8 2.2 0 1 0 3.6 0 a1.8 2.2 0 1 0 -3.6 0Z"/>
+    <path class="f" d="M28 30.6 a1.8 2.2 0 1 0 3.6 0 a1.8 2.2 0 1 0 -3.6 0Z"/>
+    <path class="pw grin" d="M14 39 L17.5 42.5 L21 39 L24.5 42.5 L28 39 L31.5 42.5 L35 39
+                             L35 40.6 L31.5 44.2 L28 40.6 L24.5 44.2 L21 40.6 L17.5 44.2 L14 40.6 Z"/>`,
 
-  // Blanket fort: a tent with a hem and a lamp inside.
+  // Blanket fort.  This was a triangle with a hem, which on a plan covered in
+  // hazard warnings read as a warning sign — exactly backwards for the one room
+  // that is safe.  A blanket does not stand up in a point: it SAGS between two
+  // chairbacks and hangs in scallops, and there is a lamp on under it.
   [NodeType.SAFE]: `
-    <path class="s w2" d="M24 6 L44 39 L4 39 Z"/>
-    <path class="s w1" d="M3 39.5 L7 42 L11 39.5 L15 42 L19 39.5 L23 42 L27 39.5 L31 42
-                          L35 39.5 L39 42 L43 39.5"/>
-    <path class="s w1" d="M24 6 L24 25"/>
-    <path class="f" d="M20.6 31 a3.4 3.9 0 1 0 6.8 0 a3.4 3.9 0 1 0 -6.8 0Z"/>
-    <path class="s w1" d="M17 31.5 L13.5 30 M31 31.5 L34.5 30 M24 25.5 L24 27"/>`,
+    <path class="s w1" d="M8 14 L8 7 M40 13 L40 6"/>
+    <path class="s w1" d="M8 7 a1.9 1.9 0 1 0 .01 0Z M40 6 a1.9 1.9 0 1 0 .01 0Z"/>
+    <path class="s w3" d="M7 13 C12 24 18 26 24 26 C30 26 36 23.5 41 12"/>
+    <path class="s w2" d="M7 13 L5 37 M41 12 L43 37"/>
+    <path class="s w2" d="M4 37 q3.5 5.4 7 0 q3.5 5.4 7 0 q3.5 5.4 7 0 q3.5 5.4 7 0 q3.5 5.4 7 0"/>
+    <path class="s w1" d="M24 26 L24 30"/>
+    <path class="f" d="M18.4 34.6 a5.6 5.6 0 1 0 11.2 0 a5.6 5.6 0 1 0 -11.2 0Z"/>
+    <path class="s w2" d="M11.5 34.6 L7.6 34.6 M36.5 34.6 L40.4 34.6
+                          M14.4 29.4 L11.8 27 M33.6 29.4 L36.2 27"/>`,
 
   // Mr. Moth: wide soft wings + a tag. Nothing else on the map is this wide.
   [NodeType.SHOP]: `
@@ -102,12 +124,15 @@ const G = {
     <path class="s w1" d="M20 37 L28 37 L30 45 L18 45 Z"/>`,
 
   // Magnifying glass. Circle-on-a-stick — the "look into this" mark.
+  // The question mark that used to sit in the lens is gone: Unsurveyed already
+  // owns the "?" on this sheet, and two marks asking the same question is one
+  // too many.  What is in the lens now is a spiral — the house doing something
+  // odd in there, which is what a Curiosity actually is.
   [NodeType.CURIOSITY]: `
     <path class="s w2" d="M20.5 20.5 m-13 0 a13 13 0 1 0 26 0 a13 13 0 1 0 -26 0Z"/>
     <path class="s w2" d="M30.5 30.5 L43 43.5"/>
     <path class="s w1" d="M12.5 17 a8.5 8.5 0 0 1 6.5 -6.2"/>
-    <path class="s w1" d="M20.5 14.5 a3 3 0 0 1 3 3 c0 2.4 -3 2.2 -3 4.6"/>
-    <path class="f" d="M19.3 25.4 a1.3 1.3 0 1 0 2.6 0 a1.3 1.3 0 1 0 -2.6 0Z"/>`,
+    <path class="s w2" d="M20.5 27.5 a7 7 0 1 1 7 -7 a5 5 0 1 1 -5 5 a3.1 3.1 0 1 1 3.1 -3.1"/>`,
 
   // A chest. Hard-edged box with a lid band — the only rectangle with a lid.
   [NodeType.TREASURE]: `
@@ -189,29 +214,41 @@ export function createMapNode(node, info) {
 
   const s = seedOf(node.id);
   const big = node.type === NodeType.BOSS;
-  const box = big ? 124 : 86;
-  const gs = big ? 78 : 52;                       // glyph size inside the box
+  const box = big ? 156 : 86;
+  const gs = big ? 112 : 52;                      // glyph size inside the box
   const off = (box - gs) / 2;
 
   el.style.setProperty('--mn-box', box + 'px');
 
   // A pencil ring for "you may go here", drawn once and revealed by CSS.
   const ringD = pencilRing(s ^ 0x9e37, box / 2, box / 2,
-    big ? 53 : 36, big ? 50 : 34, 0.07, 26);
+    big ? 66 : 36, big ? 63 : 34, 0.07, 26);
   const ring2 = pencilRing(s ^ 0x51ed, box / 2, box / 2,
-    big ? 59 : 41, big ? 56 : 39, 0.085, 26);
+    big ? 73 : 41, big ? 70 : 39, 0.085, 26);
   // The tick the kids scratch over a room once they have been through it.
   const tickD = `M${box * 0.24} ${box * 0.55} L${box * 0.42} ${box * 0.72} L${box * 0.79} ${box * 0.26}`;
+  // Draughtsman's crop marks.  A merely-legal room wears a pencil ring; the one
+  // the KEYBOARD is on wears these as well, so the two states cannot be confused
+  // by anyone looking at the sheet instead of reading the hover card.
+  const i = box * 0.02, a = box * 0.20, f = box - i;
+  const kbdD = `M${i} ${i + a} L${i} ${i} L${i + a} ${i}
+                M${f - a} ${i} L${f} ${i} L${f} ${i + a}
+                M${f} ${f - a} L${f} ${f} L${f - a} ${f}
+                M${i + a} ${f} L${i} ${f} L${i} ${f - a}`;
 
   el.innerHTML = `
-    <span class="mn-pool" aria-hidden="true"></span>
-    <svg class="mn-art" viewBox="0 0 ${box} ${box}" width="${box}" height="${box}" aria-hidden="true">
-      <path class="mn-ring"  d="${ringD}"/>
-      <path class="mn-ring2" d="${ring2}"/>
-      <g transform="translate(${off} ${off}) scale(${gs / 48})">${glyphMarkup(node.type)}</g>
-      <path class="mn-tick" d="${tickD}"/>
-    </svg>
-    <span class="mn-label">${escapeHtml(shortName(node.roomName || info.label))}</span>`;
+    <span class="mn-in" aria-hidden="true">
+      <span class="mn-pool"></span>
+      <svg class="mn-art" viewBox="0 0 ${box} ${box}" width="${box}" height="${box}">
+        <path class="mn-ring"  d="${ringD}"/>
+        <path class="mn-ring2" d="${ring2}"/>
+        <g transform="translate(${off} ${off}) scale(${gs / 48})">${glyphMarkup(node.type)}</g>
+        <path class="mn-tick" d="${tickD}"/>
+        <path class="mn-kbd"  d="${kbdD}"/>
+      </svg>
+      <span class="mn-label">${escapeHtml(shortName(node.roomName || info.label))}</span>
+      ${big ? '<span class="mn-boss-tag">BOSS</span>' : ''}
+    </span>`;
   return el;
 }
 

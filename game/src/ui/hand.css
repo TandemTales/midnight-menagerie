@@ -28,12 +28,12 @@
 .mm-hand:focus { outline: none; }
 .mm-hand:focus-visible { outline: none; }
 
-/* Rehearsal layer (see Hand#warmRaster). On screen — the compositor skips
-   work it can prove is invisible — but at 2% and behind everything, for about
-   five frames on scene entry. */
+/* Rehearsal layer (see Hand#warmRaster). Parked one viewport below the fold:
+   still inside the compositor's raster interest rect, never on screen. */
 .mm-hand__warm {
-  position: absolute; inset: 0;
-  opacity: .02;
+  position: absolute;
+  left: 0; top: 100%;
+  width: 100%; height: 100%;
   z-index: 0;
   pointer-events: none;
   overflow: hidden;

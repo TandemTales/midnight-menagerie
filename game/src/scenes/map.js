@@ -23,14 +23,22 @@ import { createMapNode, nodeSymbol, hazardSymbol, inkLine, seedOf, escapeHtml } 
 /* The sheet is always the same height; its width follows the region's blueprint
    section, so a broad glass complex gets a broad sheet and a vertical shaft gets
    a narrow one, and the plan fills its own paper. */
-const SHEET_H = 1180, SHEET_W = 2030;
+/* The sheet's aspect is matched to a 16:9 screen minus the two chrome strips,
+   so fitting it wastes almost no paper: at 1600x900 the fit went from 0.61x —
+   where a 52px icon lands as 32 screen pixels and disappears into the plan's
+   dot field — to 0.76x, and the node art then counter-scales the rest. */
+const SHEET_H = 1010, SHEET_W = 2030;
 /** The drawn "plan window" the architecture is printed inside. */
-const WIN = { x: 74, y: 66, w: SHEET_W - 148, h: 950 };
+const WIN = { x: 74, y: 60, w: SHEET_W - 148, h: 776 };
 const NODE_R  = 44;
-const BOSS_R  = 62;
+const BOSS_R  = 78;
 const CSS_HREF = 'src/scenes/map.css';
 
 const ROMAN = ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII'];
+/** Pseudo-node standing for the doorway you came in through. */
+const ENTRY = '__in';
+/** Node icons stop shrinking with the sheet below this effective scale. */
+const MIN_ICON_SCALE = 0.86;
 
 export class MapScene extends Scene {
   constructor(ctx) {
@@ -62,18 +70,27 @@ export class MapScene extends Scene {
     this._buildNodes();
     this._buildMarginalia();
 
-    this._fitView(true);
+    this._fitView();
     this._syncStates();
     this._bindEvents();
-
-    ctx.atmosphere?.setMood?.('blueprint');
-    ctx.audio?.music?.('map', { fade: 1.2 });
 
     const walk = parseInt(params.walk, 10);
     if (Number.isFinite(walk) && walk > 0) this._prewalk(walk);
 
-    if (!this.still) this._drawOn();
-    else this.el.screen.classList.add('is-drawn');
+    const drawn = this.still
+      ? (this.el.screen.classList.add('is-drawn'), Promise.resolve())
+      : this._drawOn();
+
+    // Mood and music go AFTER the ink, deliberately.  Setting the mood can make
+    // the renderer compile a shader, and a compile landing on the entrance frame
+    // freezes the page for as long as it takes — which is what turned a staged
+    // 880ms draw-on into one instantaneous jump in the review's frame strip.
+    // The survey draws itself first; the room lights come up behind it.
+    drawn.then(() => {
+      if (!this.el) return;                        // scene left mid-draw
+      ctx.atmosphere?.setMood?.('blueprint');
+      ctx.audio?.music?.('map', { fade: 1.2 });
+    });
 
     bus.emit('map:shown', { regionId: this.model.map.regionId, seed: this.model.seed });
   }
@@ -116,7 +133,11 @@ export class MapScene extends Scene {
       byId: new Map(map.nodes.map(n => [n.id, n])),
       currentId: run?.currentNodeId ?? null,
       visited: new Set(run?.visitedIds || []),
-      path: (run?.pathIds || []).slice(),
+      // The route is seeded with the doorway marker so that the very first step
+      // already forms a pair and inks the way-in arrow you actually walked.
+      // Without it `path` holds one id, `walkedPairs` needs two, and the trail
+      // stays invisible until the second room.
+      path: (run?.pathIds?.length ? run.pathIds.slice() : [ENTRY]),
       hp: run?.hp ?? 68, maxHp: run?.maxHp ?? 80,
       gold: run?.gold ?? 137,
       relics: run?.relics ?? [
@@ -191,11 +212,11 @@ export class MapScene extends Scene {
             <h1>${escapeHtml(meta.name)}</h1>
             <p class="bn-form">${escapeHtml(meta.form)}</p>
             <p class="bn-meta">
-              <span>Floor <b>${m.floor}</b> of 17</span>
+              <span title="The house has seventeen wings. This is the ${ordinal(m.floor)}.">Wing <b>${m.floor}</b> of 17</span>
+              <span class="dot">·</span>
+              <span class="bn-row" title="Each wing is ${m.map.rows} rows deep. This is how far into this one you have walked."></span>
               <span class="dot">·</span>
               <span>Boss: <b>${escapeHtml(meta.boss)}</b></span>
-              <span class="dot">·</span>
-              <span>Seed <b>${escapeHtml(String(m.seed))}</b></span>
             </p>
           </div>
         </header>
@@ -216,7 +237,7 @@ export class MapScene extends Scene {
       paper: q('.map-paper'), ink: q('.map-ink'), nodes: q('.map-nodes'),
       lamp: q('.map-lamp'), lampWarm: q('.map-lamp--warm'), grain: q('.map-grain'),
       tip: q('.map-tip'), notes: q('.map-notes'), legend: q('.map-legend'),
-      hpNum: q('.hud-hp-num'),
+      hpNum: q('.hud-hp-num'), rowNum: q('.bn-row'),
     };
     this.el.sheet.style.width = this.SW + 'px';
     this.el.sheet.style.height = this.SH + 'px';
@@ -225,13 +246,17 @@ export class MapScene extends Scene {
 
   // ───────────────────────────────────────────────────────── paper + ink ────
   _tok(name, fallback) {
-    const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    // One style resolve for the whole paint, not one per token.
+    this._cs = this._cs || getComputedStyle(document.documentElement);
+    const v = this._cs.getPropertyValue(name).trim();
     return v || fallback;
   }
 
   async _paintPaper() {
     const cv = this.el.paper;
-    const q = Math.min(1.6, Math.max(1, (devicePixelRatio || 1) * 1.15));
+    // 1.25 is the point past which the parchment stops looking any better and
+    // starts costing whole frames: at 1.6 this canvas is 3248x1616 = 5.2M px.
+    const q = Math.min(1.25, Math.max(1, (devicePixelRatio || 1) * 1.1));
     const W = Math.round(this.SW * q), H = Math.round(this.SH * q);
     cv.width = W; cv.height = H;
     cv.style.width = this.SW + 'px'; cv.style.height = this.SH + 'px';
@@ -544,9 +569,9 @@ export class MapScene extends Scene {
         <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="22"
               fill="url(#${hz.kind === 'boon' ? 'mm-dots' : 'mm-hatch'})"/>
         <path class="mi-zone-edge" d="${roundedWobbleRect(s, x, y, w, h, 22)}"/>
-        <g class="mi-zone-tab" transform="translate(${x + 16} ${y - 4})">
-          <rect x="0" y="-36" rx="4" width="${Math.min(w - 20, 28 + hz.name.length * 15.4)}" height="36"/>
-          <text x="14" y="-11">${escapeHtml(hz.name.toUpperCase())}</text>
+        <g class="mi-zone-tab" transform="translate(${x + 14} ${y + 8})">
+          <rect x="0" y="0" rx="4" width="${Math.min(w - 20, 28 + hz.name.length * 15.4)}" height="34"/>
+          <text x="14" y="24">${escapeHtml(hz.name.toUpperCase())}</text>
         </g>
       </g>`);
     }
@@ -555,37 +580,41 @@ export class MapScene extends Scene {
     // route edges.  Each one is drawn twice: a parchment halo underneath so the
     // pencil line stays legible over dense architecture, then the line itself.
     const halos = [], lines = [];
+    const rowSpan = Math.max(1, map.rows - 1);
+    const put = (from, to, d, row, extra = '') => {
+      const delay = (0.05 + (row / rowSpan) * 0.46).toFixed(3);
+      halos.push(`<path class="mi-halo" data-from="${from}" data-to="${to}" d="${d}"
+        style="animation-delay:${delay}s"/>`);
+      lines.push(`<path class="mi-edge${extra}" data-from="${from}" data-to="${to}" d="${d}"
+        style="animation-delay:${delay}s"/>`);
+    };
     for (const e of map.edges) {
       const a = m.byId.get(e.from), b = m.byId.get(e.to);
       if (!a || !b) continue;
       const ra = a.type === NodeType.BOSS ? BOSS_R : NODE_R;
       const rb = b.type === NodeType.BOSS ? BOSS_R : NODE_R;
       const [x1, y1, x2, y2] = trim(a.x * this.SW, a.y * this.SH, b.x * this.SW, b.y * this.SH, ra + 4, rb + 7);
-      const d = inkLine(seedOf(e.from + e.to), x1, y1, x2, y2, 11, 9);
-      const delay = (0.10 + a.row * 0.026).toFixed(3);
-      halos.push(`<path class="mi-halo" data-from="${e.from}" data-to="${e.to}" d="${d}"
-        style="animation-delay:${delay}s"/>`);
-      lines.push(`<path class="mi-edge" data-from="${e.from}" data-to="${e.to}" d="${d}"
-        style="animation-delay:${delay}s"/>`);
+      const long = b.row - a.row > 1;
+      put(e.from, e.to, inkLine(seedOf(e.from + e.to), x1, y1, x2, y2, long ? 15 : 11, long ? 12 : 9),
+        a.row, long ? ' mi-edge--long' : '');
     }
-    parts.push('<g class="mi-halos">' + halos.join('') + '</g>');
-    parts.push('<g class="mi-edges">' + lines.join('') + '</g>');
 
-    // the way in: short pencil arrows off the west edge into the first rooms
-    parts.push('<g class="mi-entries">');
+    // The way in.  These are real edges from the doorway marker, not decoration:
+    // the one you walk through inks up like any other leg of the route.
     for (const id of map.startIds) {
       const n = m.byId.get(id); if (!n) continue;
       const x = n.x * this.SW, y = n.y * this.SH;
       const x0 = WIN.x + 16;
-      const d = inkLine(seedOf('in' + id), x0, y + 14, x - NODE_R - 14, y, 5, 6);
-      parts.push(`<path class="mi-entry" d="${d}" marker-end="url(#mm-arrow)"/>`);
+      put(ENTRY, id, inkLine(seedOf('in' + id), x0, y + 14, x - NODE_R - 14, y, 5, 6), 0, ' mi-edge--entry');
     }
+    parts.push('<g class="mi-halos">' + halos.join('') + '</g>');
+    parts.push('<g class="mi-edges">' + lines.join('') + '</g>');
+
     const sx = map.startIds.map(i => m.byId.get(i)).filter(Boolean);
     if (sx.length) {
       const my = sx.reduce((a, n) => a + n.y, 0) / sx.length * this.SH;
-      parts.push(`<text class="mi-in" transform="translate(${WIN.x - 16} ${my.toFixed(0)}) rotate(-90)">THE WAY IN</text>`);
+      parts.push(`<g class="mi-entries"><text class="mi-in" transform="translate(${WIN.x - 16} ${my.toFixed(0)}) rotate(-90)">THE WAY IN</text></g>`);
     }
-    parts.push('</g>');
 
     // "you are here" pin ring, positioned later
     parts.push('<g class="mi-here" style="display:none"><circle class="mi-here-a" r="48"/><circle class="mi-here-b" r="58"/></g>');
@@ -610,7 +639,8 @@ export class MapScene extends Scene {
       const el = createMapNode(n, NODE_INFO[n.type]);
       el.style.left = (n.x * this.SW) + 'px';
       el.style.top = (n.y * this.SH) + 'px';
-      el.style.setProperty('--delay', (0.20 + n.row * 0.026).toFixed(3) + 's');
+      el.style.setProperty('--delay',
+        (0.10 + (n.row / Math.max(1, m.map.rows - 1)) * 0.50).toFixed(3) + 's');
       this._nodeEls.set(n.id, el);
       frag.appendChild(el);
     }
@@ -649,33 +679,41 @@ export class MapScene extends Scene {
     this._legalIds = [...legal].sort((a, b) =>
       (m.byId.get(a)?.y ?? 0) - (m.byId.get(b)?.y ?? 0));
 
+    // Slay the Spire's rule, and the one this screen was failing: the nodes you
+    // may enter are lit and EVERYTHING else is dimmed.  Reachability is not the
+    // test — from row one almost the whole wing is still reachable, so keying
+    // the dim off it left every icon at full strength and the three live rings
+    // competing with thirty dead ones.  Reachability only picks which shade of
+    // dim: still ahead of you, or cut off for good.
     for (const [id, el] of this._nodeEls) {
-      const n = m.byId.get(id);
       const isVisited = m.visited.has(id);
       const isCurrent = id === m.currentId;
       const isLegal = legal.has(id);
-      const isReach = reach.has(id) || isCurrent || isLegal || (!m.currentId && n.row === 0);
+      const isOther = !isLegal && !isCurrent && !isVisited;
+      const isReach = reach.has(id);
       el.classList.toggle('is-visited', isVisited);
       el.classList.toggle('is-current', isCurrent);
       el.classList.toggle('is-legal', isLegal);
-      el.classList.toggle('is-dim', !isLegal && !isCurrent && !isVisited && !isReach);
-      el.classList.toggle('is-far', !isLegal && !isCurrent && !isVisited && isReach);
+      el.classList.toggle('is-dim', isOther);
+      el.classList.toggle('is-far', isOther && isReach);
+      el.classList.toggle('is-cold', isOther && !isReach);
       el.tabIndex = isLegal ? 0 : -1;
       el.setAttribute('aria-disabled', isLegal ? 'false' : 'true');
     }
 
     const walkedPairs = new Set();
     for (let i = 1; i < m.path.length; i++) walkedPairs.add(m.path[i - 1] + '>' + m.path[i]);
+    const here = m.currentId || ENTRY;
     for (const p of this._edges) {
       const f = p.dataset.from, t = p.dataset.to;
       const walked = walkedPairs.has(f + '>' + t);
-      const live = f === m.currentId || (reach.has(f) && reach.has(t)) ||
-                   (!m.currentId && m.map.startIds.includes(f));
-      const open = !walked && f === m.currentId;
-      const dead = !walked && !live && !!m.currentId;
+      const open = !walked && f === here && legal.has(t);
+      const dead = !walked && !open;
+      const cold = dead && !(reach.has(f) && reach.has(t));
       p.classList.toggle('is-walked', walked);
       p.classList.toggle('is-open', open);
       p.classList.toggle('is-dead', dead);
+      p.classList.toggle('is-cold', cold);
       p.setAttribute('marker-end', open ? 'url(#mm-arrow)' : '');
       const halo = this._halos?.get(f + '>' + t);
       if (halo) {
@@ -688,15 +726,33 @@ export class MapScene extends Scene {
     this.el.screen.classList.toggle('is-underway', !!m.currentId);
 
     // you-are-here ring
-    const here = this.el.ink.querySelector('.mi-here');
+    const hereRing = this.el.ink.querySelector('.mi-here');
     const cur = m.currentId && m.byId.get(m.currentId);
     if (cur) {
-      here.style.display = '';
-      here.setAttribute('transform', `translate(${cur.x * this.SW} ${cur.y * this.SH})`);
-    } else here.style.display = 'none';
+      hereRing.style.display = '';
+      hereRing.setAttribute('transform', `translate(${cur.x * this.SW} ${cur.y * this.SH})`);
+    } else hereRing.style.display = 'none';
+
+    // Row counter in the header, so "Wing 1 of 17" and "Row 4 of 13" are visibly
+    // the same two-level address and not two unrelated numbers.
+    if (this.el.rowNum) {
+      const cur = m.currentId && m.byId.get(m.currentId);
+      this.el.rowNum.textContent = cur
+        ? (cur.type === NodeType.BOSS ? 'at the boss' : `row ${cur.row + 1} of ${m.map.rows}`)
+        : 'at the door';
+    }
 
     if (!this._focusId || !legal.has(this._focusId)) this._focusId = this._legalIds[0] || null;
     this._markFocus();
+    this._refreshTip();
+  }
+
+  /** The hover card must never keep claiming "you may go here" after you went. */
+  _refreshTip() {
+    const id = this._hoverId;
+    if (!id || !this.el?.tip?.classList.contains('is-on')) return;
+    const el = this._nodeEls?.get(id);
+    if (el) this._showTip(id, el);
   }
 
   _markFocus() {
@@ -704,19 +760,37 @@ export class MapScene extends Scene {
   }
 
   // ─────────────────────────────────────────────────────────── the ink-on ──
+  /**
+   * The survey draws itself on, west to east, in one 880ms sweep.
+   * The stagger is normalised over the wing's depth (0.05s + up to 0.46s for
+   * edges, 0.10s + up to 0.50s for the marks), so a 13-row wing and a 15-row
+   * wing take the same time and the ink genuinely arrives in waves.  A frame
+   * strip taken from t=0 must show motion across at least eight of twelve
+   * frames; if it does not, this is a lie and should be deleted rather than
+   * dressed up.
+   */
   _drawOn() {
-    this.el.screen.classList.add('is-drawing');
-    // total budget 900ms; the class flip lets CSS run the staggered keyframes
-    clock.wait(0.90).then(() => {
-      this.el.screen.classList.remove('is-drawing');
-      this.el.screen.classList.add('is-drawn');
+    const scr = this.el.screen;
+    scr.classList.remove('is-drawn');
+    scr.classList.add('is-drawing');
+    return clock.wait(0.88).then(() => {
+      if (!this.el) return;
+      scr.classList.remove('is-drawing');
+      scr.classList.add('is-drawn');
     });
   }
 
   // ───────────────────────────────────────────────────────── view control ──
-  _fitView(instant) {
-    const vp = this.el.viewport.getBoundingClientRect();
-    const fit = Math.min((vp.width - 96) / this.SW, (vp.height - 72) / this.SH);
+  /** Cached viewport box.  _applyView runs on every drag move and every frame
+   *  of a look-at tween; measuring the DOM in there is a layout read per frame. */
+  _vpRect() {
+    return this._vp || (this._vp = this.el.viewport.getBoundingClientRect());
+  }
+
+  _fitView() {
+    this._vp = null;
+    const vp = this._vpRect();
+    const fit = Math.min((vp.width - 44) / this.SW, (vp.height - 30) / this.SH);
     this.view.minZ = Math.max(0.28, fit * 0.85);
     this.view.maxZ = 2.4;
     const z = clampN(fit, this.view.minZ, this.view.maxZ);
@@ -724,11 +798,11 @@ export class MapScene extends Scene {
     this.view.x = (vp.width - this.SW * z) / 2;
     this.view.y = (vp.height - this.SH * z) / 2;
     this._fitZoom = z;
-    this._applyView(instant);
+    this._applyView();
   }
 
   _clampPan() {
-    const vp = this.el.viewport.getBoundingClientRect();
+    const vp = this._vpRect();
     const w = this.SW * this.view.z, h = this.SH * this.view.z;
     const mx = Math.min(140, vp.width * 0.2), my = Math.min(120, vp.height * 0.2);
     if (w <= vp.width) this.view.x = (vp.width - w) / 2;
@@ -742,6 +816,15 @@ export class MapScene extends Scene {
     const v = this.view;
     this.el.sheet.style.transform =
       `translate3d(${v.x.toFixed(2)}px, ${v.y.toFixed(2)}px, 0) scale(${v.z.toFixed(4)})`;
+    // Counter-scale the marks so a zoomed-out sheet still has legible icons.
+    // The paper shrinks; the pencil on it does not go below a readable size.
+    // Quantised: writing this every wheel frame restyles all sixty-odd node
+    // subtrees, and a 2% step is invisible.
+    const k = Math.round(clampN(MIN_ICON_SCALE / v.z, 1, 1.5) * 50) / 50;
+    if (k !== this._mnK) {
+      this._mnK = k;
+      this.el.nodes.style.setProperty('--mn-k', k.toFixed(2));
+    }
     this.el.screen.classList.toggle('is-close', v.z > (this._fitZoom || 1) * 1.22);
   }
 
@@ -759,7 +842,7 @@ export class MapScene extends Scene {
   /** Keep the current node (or the start row) comfortably in frame. */
   _lookAt(node, dur = 0.55) {
     if (!node) return;
-    const vp = this.el.viewport.getBoundingClientRect();
+    const vp = this._vpRect();
     const z = this.view.z;
     const tx = vp.width * 0.40 - node.x * this.SW * z;   // keep the road ahead in view
     const ty = vp.height * 0.50 - node.y * this.SH * z;
@@ -796,36 +879,48 @@ export class MapScene extends Scene {
       this._focusId = b.dataset.id; this._markFocus(); this._showTip(b.dataset.id, b);
     });
 
-    // pan
+    // Pan.  The pointer is captured ONLY once a drag has actually started.
+    // Capturing on pointerdown retargets the resulting `click` to the viewport,
+    // which makes `e.target.closest('.map-node')` above return null on every
+    // single click and silently kills the entire mouse path through the map.
     on(el.viewport, 'pointerdown', (e) => {
       if (e.button !== 0) return;
-      this._drag = { x: e.clientX, y: e.clientY, vx: this.view.x, vy: this.view.y };
+      this._drag = { x: e.clientX, y: e.clientY, vx: this.view.x, vy: this.view.y, id: e.pointerId };
       this._movedFar = false;
-      el.viewport.setPointerCapture?.(e.pointerId);
       el.screen.classList.add('is-grabbing');
     });
     on(window, 'pointermove', (e) => {
       this.lamp.tx = e.clientX; this.lamp.ty = e.clientY;
       if (!this._drag) return;
       const dx = e.clientX - this._drag.x, dy = e.clientY - this._drag.y;
-      if (Math.hypot(dx, dy) > 5) this._movedFar = true;
+      if (!this._movedFar && Math.hypot(dx, dy) > 5) {
+        this._movedFar = true;
+        // now it is a drag, so keep the pointer even if it leaves the window
+        try { el.viewport.setPointerCapture?.(this._drag.id); this._drag.captured = true; } catch {}
+      }
+      if (!this._movedFar) return;
       this.view.x = this._drag.vx + dx; this.view.y = this._drag.vy + dy;
       this._applyView();
     }, { passive: true });
-    const endDrag = () => { this._drag = null; el.screen.classList.remove('is-grabbing'); };
+    const endDrag = () => {
+      if (this._drag?.captured) {
+        try { el.viewport.releasePointerCapture?.(this._drag.id); } catch {}
+      }
+      this._drag = null; el.screen.classList.remove('is-grabbing');
+    };
     on(window, 'pointerup', endDrag);
     on(window, 'pointercancel', endDrag);
 
-    // zoom
+    // zoom — about 1.2x per notch, not 1.9x
     on(el.viewport, 'wheel', (e) => {
       e.preventDefault();
-      const r = el.viewport.getBoundingClientRect();
-      this._zoomAt(e.clientX - r.left, e.clientY - r.top, Math.exp(-e.deltaY * 0.0016));
+      const r = this._vpRect();
+      this._zoomAt(e.clientX - r.left, e.clientY - r.top, Math.exp(-e.deltaY * 0.0005));
     }, { passive: false });
 
     // keyboard
     on(window, 'keydown', (e) => this._key(e));
-    on(window, 'resize', () => { this._fitView(true); }, { passive: true });
+    on(window, 'resize', () => { this._fitView(); }, { passive: true });
 
     // hazard note ↔ zone cross-highlight
     on(el.notes, 'pointerover', (e) => {
@@ -861,13 +956,13 @@ export class MapScene extends Scene {
         if (this._focusId) { e.preventDefault(); this._choose(this._focusId); } break;
       case '+': case '=': this._zoomCentre(1.2); break;
       case '-': case '_': this._zoomCentre(1 / 1.2); break;
-      case '0': this._fitView(true); break;
+      case '0': this._fitView(); break;
       case 'l': case 'L': this.el.screen.classList.toggle('no-bar'); break;
       default: return;
     }
   }
   _zoomCentre(f) {
-    const r = this.el.viewport.getBoundingClientRect();
+    const r = this._vpRect();
     this._zoomAt(r.width / 2, r.height / 2, f);
   }
   _focusMove() {
@@ -884,9 +979,10 @@ export class MapScene extends Scene {
     const hz = n.hazard ? hazardById(n.hazard) : null;
     const legal = (this._legalIds || []).includes(id);
     const visited = this.model.visited.has(id);
+    const current = id === this.model.currentId;
     const depth = n.type === NodeType.BOSS
       ? 'The end of this wing'
-      : `Row ${n.row + 1} of ${this.model.map.rows}`;
+      : `Row ${n.row + 1} of ${this.model.map.rows} in this wing`;
 
     this.el.tip.innerHTML = `
       <div class="tip-head">
@@ -902,9 +998,9 @@ export class MapScene extends Scene {
           <span>${hazardSymbol(hz.glyph, 16)}</span>
           <b>${escapeHtml(hz.name)}</b> — ${escapeHtml(hz.rule)}</p>` : ''}
       <p class="tip-foot">${depth} · ${
-        visited ? 'already walked'
+        current ? '<b>you are standing here</b>'
+        : visited ? 'already walked'
         : legal ? '<b>you may go here</b>'
-        : !this.model.currentId ? 'further into the wing'
         : this._reach?.has(id) ? 'still ahead of you on this route'
         : 'no route from where you are standing'}</p>`;
 
@@ -912,15 +1008,24 @@ export class MapScene extends Scene {
     const t = this.el.tip;
     t.setAttribute('aria-hidden', 'false');
     t.classList.add('is-on');
-    // Sit beside the node, never on top of a sibling choice: the whole point of
-    // the hover is comparing this room against the others you could pick.
-    const tw = t.offsetWidth || 320, th = t.offsetHeight || 160;
-    const gap = 18;
-    let x = r.right + gap;
-    if (x + tw > innerWidth - 14) x = r.left - gap - tw;
-    if (x < 14) { x = clampN(r.left + r.width / 2 - tw / 2, 14, innerWidth - tw - 14); }
-    let y = r.top + r.height / 2 - th / 2;
-    y = clampN(y, 66, innerHeight - th - 58);
+    // Depth runs west to east, so a room's onward edges leave to its RIGHT.
+    // The card therefore sits to the LEFT — over ground you have already walked
+    // — and never over the choice it is describing or the choices it leads to.
+    // Only if there is no room on the left does it go right, and only if there
+    // is no room either side does it go under the node.
+    const tw = t.offsetWidth || 320, th = t.offsetHeight || 170;
+    const gap = 20;
+    let x = r.left - gap - tw, side = 'left';
+    if (x < 14) {
+      if (r.right + gap + tw <= innerWidth - 14) { x = r.right + gap; side = 'right'; }
+      else { x = clampN(r.left + r.width / 2 - tw / 2, 14, innerWidth - tw - 14); side = 'below'; }
+    }
+    let y = side === 'below'
+      ? r.bottom + gap
+      : r.top + r.height / 2 - th / 2;
+    if (side === 'below' && y + th > innerHeight - 58) y = r.top - gap - th;
+    y = clampN(y, 66, Math.max(66, innerHeight - th - 58));
+    t.dataset.side = side;
     t.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
     if (hz) this.el.screen.dataset.hzFocus = hz.id;
   }
@@ -941,8 +1046,8 @@ export class MapScene extends Scene {
     // Local advance keeps the screen honest even before run.js exists.
     m.visited.add(id);
     node.visited = true;
-    if (!m.path.length && m.currentId) m.path.push(m.currentId);
-    if (m.currentId) m.path.push(id); else m.path = [id];
+    if (!m.path.length) m.path.push(ENTRY);
+    m.path.push(id);
     m.currentId = id;
 
     if (m.run) {
@@ -979,8 +1084,8 @@ export class MapScene extends Scene {
       const pick = ids[rng.int(ids.length)];
       const node = this.model.byId.get(pick);
       this.model.visited.add(pick); node.visited = true;
-      if (this.model.currentId) this.model.path.push(pick);
-      else this.model.path = [pick];
+      if (!this.model.path.length) this.model.path.push(ENTRY);
+      this.model.path.push(pick);
       this.model.currentId = pick;
       this._syncStates();
     }
@@ -1006,12 +1111,17 @@ export class MapScene extends Scene {
     this._edges = null;
     if (this.el?.paper) { this.el.paper.width = this.el.paper.height = 0; }
     this._cssLink?.remove(); this._cssLink = null;
+    this._cs = null; this._vp = null; this._halos = null;
     this.el = null; this.model = null;
   }
 }
 
 // ── little maths ─────────────────────────────────────────────────────────────
 function clampN(v, a, b) { return Math.max(a, Math.min(b, v)); }
+function ordinal(n) {
+  const s = ['th', 'st', 'nd', 'rd'], v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
 function trim(x1, y1, x2, y2, r1, r2) {
   const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1;
   return [x1 + dx / L * r1, y1 + dy / L * r1, x2 - dx / L * r2, y2 - dy / L * r2];

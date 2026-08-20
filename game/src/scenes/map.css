@@ -105,9 +105,9 @@
   opacity: .55;
   transition: opacity var(--t-base), stroke-width var(--t-base);
 }
-.mi-halo.is-open   { stroke-width: 14; opacity: .9; }
-.mi-halo.is-walked { stroke-width: 15; opacity: .88; }
-.mi-halo.is-dead   { opacity: .22; stroke-width: 6; }
+.mi-halo.is-open   { stroke-width: 16; opacity: .95; }
+.mi-halo.is-walked { stroke-width: 17; opacity: .9; }
+.mi-halo.is-dead   { opacity: .2; stroke-width: 5; }
 
 .mi-edge {
   fill: none; stroke: var(--pencil);
@@ -117,20 +117,25 @@
   transition: opacity var(--t-base) var(--ease-out), stroke-width var(--t-base);
 }
 .mi-edge.is-open {                            /* inked in: you can walk this now */
-  stroke: var(--mark); stroke-width: 5.2; stroke-dasharray: none; opacity: 1;
-  filter: drop-shadow(0 1px 1px rgba(255,255,255,.5));
+  stroke: var(--mark); stroke-width: 6; stroke-dasharray: none; opacity: 1;
+  filter: drop-shadow(0 1px 1px rgba(255,255,255,.55));
 }
 .mi-edge.is-walked {                          /* already walked: heavy pen */
-  stroke: var(--pencil); stroke-width: 6; stroke-dasharray: none; opacity: .95;
+  stroke: var(--pencil); stroke-width: 6.4; stroke-dasharray: none; opacity: .95;
   filter: drop-shadow(0 1px 0 rgba(255,255,255,.4));
 }
-.mi-edge.is-dead { opacity: .22; stroke-width: 2; }
+/* Everything that is not the choice in front of you drops back to a survey
+   note.  Two tiers: still ahead of you on some route, and cut off for good. */
+.mi-edge.is-dead { opacity: .34; stroke-width: 2.4; }
+.mi-edge.is-cold { opacity: .15; stroke-width: 1.8; }
 
-/* the way in */
-.mi-entry {
-  fill: none; stroke: var(--mark); stroke-width: 4; stroke-linecap: round;
-  stroke-dasharray: 12 9; opacity: .85;
-}
+/* a passage that skips a row: drawn as one long unbroken run */
+.mi-edge--long { stroke-dasharray: 34 12; }
+.mi-edge--long.is-dead { stroke-dasharray: 30 16; }
+
+/* the way in: the doorway edges read as arrivals, not as route legs */
+.mi-edge--entry { stroke: var(--mark); stroke-dasharray: 12 9; opacity: .85; }
+.mi-edge--entry.is-dead { stroke: var(--pencil); opacity: .2; }
 .mi-in {
   font-family: var(--font-display); font-size: 27px; font-weight: 600;
   letter-spacing: .3em; text-anchor: middle;
@@ -148,12 +153,12 @@
 /* ── hazard wings ───────────────────────────────────────────────────────── */
 .mi-zone { color: var(--threat-400); transition: opacity var(--t-base); }
 .mi-zone--boon { color: var(--spectre-500); }
-.mi-zone rect { opacity: .46; }
+.mi-zone rect { opacity: .3; }
 .mi-zone-edge {
   fill: none; stroke: currentColor; stroke-width: 3;
-  stroke-dasharray: 18 11; opacity: .78;
+  stroke-dasharray: 18 11; opacity: .6;
 }
-.mi-zone-tab rect { fill: currentColor; opacity: .88; }
+.mi-zone-tab rect { fill: currentColor; opacity: .72; }
 .mi-zone-tab text {
   font-family: var(--font-display); font-size: 19px; font-weight: 600;
   letter-spacing: .12em; fill: var(--parchment);
@@ -182,6 +187,17 @@
 }
 .map-node.is-legal { cursor: pointer; }
 
+/* Counter-scale layer.  The sheet has to fit the screen, which puts it around
+   0.76x; the marks on it must not shrink with it or a 52px icon lands as 39
+   screen pixels and disappears into the plan's dot field.  --mn-k is set by the
+   scene from the live zoom so the ink never reads below ~0.86x. */
+.mn-in {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  transform: scale(var(--mn-k, 1));
+  transform-origin: 50% 50%;
+}
+
 .mn-pool {                                  /* parchment clearing under the mark */
   position: absolute; inset: -12%;
   border-radius: 50%;
@@ -193,6 +209,7 @@
 }
 .mn-art { position: relative; overflow: visible; }
 .mn-art .s { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+.mn-art .w3 { stroke-width: 4.8; }
 .mn-art .w2 { stroke-width: 3.4; }
 .mn-art .w1 { stroke-width: 2.1; }
 .mn-art .j  { stroke-linejoin: miter; stroke-miterlimit: 3; }
@@ -200,6 +217,11 @@
 .mn-art .pl { fill: var(--parchment); stroke: currentColor; }
 .mn-art .pw { fill: var(--parchment); }
 .mn-art .tear { stroke-dasharray: 7 3.5; }
+/* the boss: solid mass, struck-out rosette, paper showing through the face */
+.mn-art .mass { fill: currentColor; stroke: currentColor; stroke-width: 2.2;
+                stroke-linejoin: round; paint-order: stroke; }
+.mn-art .ray  { stroke-width: 2.2; opacity: .62; stroke-dasharray: 6 5; }
+.mn-art .eye, .mn-art .grin { fill: var(--parchment); stroke: none; }
 
 .mn-ring, .mn-ring2 {
   fill: none; stroke: var(--mark); stroke-width: 4.4;
@@ -210,6 +232,13 @@
 .mn-tick {
   fill: none; stroke: var(--pencil); stroke-width: 4.4;
   stroke-linecap: round; stroke-linejoin: round; opacity: 0;
+}
+/* keyboard crop marks — a different SHAPE from the legal ring, not a shade of it */
+.mn-kbd {
+  fill: none; stroke: var(--mark-hot); stroke-width: 3.8;
+  stroke-linecap: square; stroke-linejoin: miter;
+  opacity: 0; transition: opacity var(--t-quick) var(--ease-out);
+  filter: drop-shadow(0 0 3px var(--parchment)) drop-shadow(0 0 2px var(--parchment));
 }
 
 .mn-label {
@@ -227,8 +256,29 @@
 }
 
 /* ── node states ────────────────────────────────────────────────────────── */
-.map-node.is-dim     { opacity: .34; filter: grayscale(.85); }
-.map-node.is-far     { opacity: .88; }
+/* "Available next nodes are highlighted and everything else is dimmed — you can
+   never be confused about where you may go."  Everything the player cannot
+   enter this turn is is-dim; is-far / is-cold only choose how far down.
+   No grayscale() here: the marks are already one pencil colour, so the filter
+   cost 34 composited layers a frame and bought nothing. */
+/* Dimming works on the INK, not on the whole node.  Fading the element wholesale
+   also fades the little clearing of clean paper under it, and the icon then
+   loses its fight with the blueprint's own dot field — you can see that the
+   room is dim but no longer what kind of room it is, which is the opposite of
+   the point.  Instead the pencil goes pale and the paper stays paper, so a
+   dimmed sheet is still a sheet you can plan two rows ahead on. */
+.map-node.is-dim  { color: color-mix(in srgb, var(--pencil) 40%, transparent); }
+.map-node.is-dim  .mn-pool  { opacity: .5; }
+.map-node.is-dim  .mn-label { opacity: 0; }
+.map-node.is-far  { color: color-mix(in srgb, var(--pencil) 48%, transparent); }
+.map-node.is-cold { color: color-mix(in srgb, var(--pencil) 24%, transparent); }
+.map-node.is-cold .mn-pool { opacity: .3; }
+/* The boss is the landmark of the wing and stays findable from the first row,
+   the way Slay the Spire shows it at the top of the act from the start. */
+.map-node--boss.is-dim,
+.map-node--boss.is-cold { color: color-mix(in srgb, var(--pencil) 88%, transparent); }
+.map-node--boss.is-dim .mn-pool { opacity: .9; }
+.map-node--boss.is-dim .mn-label { opacity: 1; }
 .map-node.is-visited { opacity: .82; }
 .map-node.is-visited .mn-tick { opacity: .85; }
 .map-node.is-visited .mn-art > g { opacity: .68; }
@@ -250,13 +300,14 @@
 .map-node.is-legal .mn-label,
 .map-node.is-current .mn-label,
 .map-node--boss .mn-label,
-.map-screen.is-close .map-node:not(.is-dim) .mn-label { opacity: 1; }
+.map-screen.is-close .map-node:not(.is-cold) .mn-label { opacity: 1; }
 .map-node.is-legal:hover, .map-node.is-kbd {
   filter: drop-shadow(0 0 24px color-mix(in srgb, var(--flame-glow) 62%, transparent));
 }
 .map-node.is-legal:hover .mn-art, .map-node.is-kbd .mn-art { transform: scale(1.10); }
 .mn-art { transition: transform var(--t-quick) var(--ease-snap); }
 .map-node.is-kbd .mn-ring { stroke: var(--mark-hot); stroke-width: 4; }
+.map-node.is-kbd .mn-kbd  { opacity: .95; }
 .map-node:focus-visible { outline: none; }
 .map-node.is-current .mn-pool {
   background: radial-gradient(circle closest-side,
@@ -264,10 +315,22 @@
     color-mix(in srgb, var(--parchment) 70%, transparent) 60%, transparent 80%);
 }
 .map-node--boss { z-index: 3; }
-.map-node--boss .mn-art .w2 { stroke-width: 2.6; }
 .map-node--boss .mn-label {
-  font-family: var(--font-display); font-size: 24px; letter-spacing: .09em;
+  font-family: var(--font-display); font-size: 25px; letter-spacing: .09em;
   text-transform: uppercase;
+}
+/* The boss is announced from the moment the sheet opens, the way an act's boss
+   is in Slay the Spire.  Never dimmed out of existence, always labelled. */
+.mn-boss-tag {
+  position: absolute; top: calc(100% + 26px); left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-display); font-size: 13px; font-weight: 700;
+  letter-spacing: .34em; text-indent: .34em; white-space: nowrap;
+  color: var(--parchment);
+  background: color-mix(in srgb, var(--threat-500) 92%, var(--ink-900));
+  padding: 3px 11px 4px; border-radius: 2px;
+  box-shadow: 0 3px 10px rgba(0,0,0,.4);
+  pointer-events: none;
 }
 .map-node.is-refused { animation: mm-refuse .3s var(--ease-out); }
 .map-node.is-stamping .mn-tick { animation: mm-tick .34s var(--ease-out) backwards; }
@@ -314,9 +377,14 @@
 
 /* ── region banner ──────────────────────────────────────────────────────── */
 .map-banner {
-  position: absolute; top: 74px; left: 26px; z-index: 5;
+  position: absolute; top: 66px; left: 20px; z-index: 5;
+  /* This card sits ON the sheet, over the top-left corner where the first row
+     of rooms lives.  It is a label, not a control, so it must never eat a
+     click: with pointer events on, the entry rooms underneath it are simply
+     not clickable and the map cannot be started with a mouse at all. */
+  pointer-events: none;
   display: flex; gap: var(--s-4); align-items: center;
-  max-width: 480px; padding: 14px 22px 14px 16px;
+  max-width: 440px; padding: 10px 18px 11px 14px;
   background:
     linear-gradient(174deg, color-mix(in srgb, var(--parchment) 97%, #fff), var(--parchment) 62%, var(--parchment-shade));
   color: var(--text-ink);
@@ -325,20 +393,20 @@
   border-radius: 2px;
 }
 .map-banner .tape {
-  position: absolute; top: -13px; width: 74px; height: 26px;
+  position: absolute; top: -11px; width: 66px; height: 22px;
   background: color-mix(in srgb, var(--flame-100) 62%, transparent);
   box-shadow: 0 1px 3px rgba(0,0,0,.35);
 }
 .tape-l { left: 14px; transform: rotate(-6deg); }
 .tape-r { right: 20px; transform: rotate(5deg); }
 .bn-roman {
-  font-family: var(--font-display); font-size: 40px; font-weight: 700; line-height: 1;
+  font-family: var(--font-display); font-size: 34px; font-weight: 700; line-height: 1;
   color: color-mix(in srgb, var(--blueprint-ink) 80%, var(--ink-900));
   padding-right: 14px;
   border-right: 2px solid color-mix(in srgb, var(--blueprint-ink) 40%, transparent);
 }
 .map-banner h1 {
-  margin: 0; font-family: var(--font-display); font-size: 23px; font-weight: 700;
+  margin: 0; font-family: var(--font-display); font-size: 21px; font-weight: 700;
   letter-spacing: .03em; color: color-mix(in srgb, var(--blueprint-ink) 88%, var(--ink-900));
 }
 .bn-form {
@@ -497,10 +565,10 @@
 
 .map-screen.is-drawing .mi-edge,
 .map-screen.is-drawing .mi-halo {
-  animation: mm-draw .40s var(--ease-out) backwards;
+  animation: mm-draw .36s var(--ease-out) backwards;
 }
 .map-screen.is-drawing .map-node {
-  animation: mm-stamp .30s var(--ease-snap) backwards;
+  animation: mm-stamp .26s var(--ease-snap) backwards;
   animation-delay: var(--delay);
 }
 .map-screen.is-drawing .mi-zone {
@@ -513,11 +581,35 @@
 }
 
 /* ── reduced motion ─────────────────────────────────────────────────────── */
+/* Two routes in: the in-game setting (Save.settings.reduceMotion -> .is-still)
+   and the OS-level one.  Both must land in the same place — nothing loops,
+   nothing draws itself on, and every state change is instantaneous but still
+   fully legible.  This file previously honoured only the first. */
 .map-screen.is-still *,
 .map-screen.is-still *::before,
 .map-screen.is-still *::after {
   animation: none !important;
   transition-duration: 1ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-screen *,
+  .map-screen *::before,
+  .map-screen *::after {
+    animation: none !important;
+    transition-duration: 1ms !important;
+  }
+  /* the breathing clearing under a legal room settles at its resting size */
+  .map-node.is-legal .mn-pool { transform: none; opacity: 1; }
+  /* no draw-on: the survey is simply already drawn */
+  .map-screen.is-drawing .mi-edge,
+  .map-screen.is-drawing .mi-halo,
+  .map-screen.is-drawing .map-node,
+  .map-screen.is-drawing .mi-zone,
+  .map-screen.is-drawing .map-banner,
+  .map-screen.is-drawing .map-bar,
+  .map-screen.is-drawing .map-hud { animation: none !important; opacity: 1; }
+  .map-lamp, .map-lamp--warm { transition: none; }
 }
 
 @media (max-width: 1500px) {

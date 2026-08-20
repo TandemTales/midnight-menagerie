@@ -21,9 +21,9 @@ attribute float aSize;
 
 uniform float uTime, uSpeed, uScale, uPixelRatio, uWind, uReduce;
 uniform vec3  uCenter, uExtent;
-uniform vec4  uLights[4];        // xyz world pos, w radius
-uniform vec3  uLightCol[4];
-uniform float uLightInt[4];
+uniform vec4  uLights[5];        // xyz world pos, w radius
+uniform vec3  uLightCol[5];
+uniform float uLightInt[5];
 uniform vec3  uTint, uWispTint, uEmberTint;
 uniform float uDensity;          // 0..1 — particles above this fraction are culled
 uniform vec4  uBurst;            // xyz origin, w = age (seconds; <0 = inactive)
@@ -117,13 +117,13 @@ void main(){
 
   // ---- light response: this is what makes dust read as "caught in the light"
   vec3 lit = vec3(selfLit);
-  for (int i = 0; i < 4; i++){
+  for (int i = 0; i < 5; i++){
     if (uLightInt[i] <= 0.001) continue;
     float d = distance(p, uLights[i].xyz);
     float a = uLightInt[i] / (1.0 + (d/uLights[i].w)*(d/uLights[i].w));
-    lit += uLightCol[i] * a * 0.55;
+    lit += uLightCol[i] * a * 0.26;
   }
-  vColor = tint * lit * 0.75;
+  vColor = tint * lit * 0.52;
 
   vec4 mv = modelViewMatrix * vec4(p, 1.0);
   gl_Position = projectionMatrix * mv;

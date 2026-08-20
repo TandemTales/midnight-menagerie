@@ -25,6 +25,9 @@ export const GradeShaderDef = {
     uPulse:      { value: 0.0 },
     uPulseColor: { value: null },      // THREE.Color
     uDesat:      { value: 0.0 },
+    /* >1 pushes chroma. The round-1 grade had no saturation control at all and
+       shipped combat at mean chroma 26 against reference art at 55. */
+    uSaturate:   { value: 1.20 },
     uDread:      { value: 0.0 },
     uWarmTint:   { value: null },      // THREE.Color — highlight bias
     uCoolTint:   { value: null },      // THREE.Color — shadow bias
@@ -51,7 +54,8 @@ export const GradeShaderDef = {
     uniform vec3  uFlashColor, uPulseColor, uWarmTint, uCoolTint, uHaloColor;
     uniform vec4  uImpact;
     uniform float uTime, uGrain, uVignette, uAberration, uFlash, uPulse, uDesat,
-                  uDread, uToneAmt, uHalation, uDirt, uExposure, uLift, uAspect;
+                  uDread, uToneAmt, uHalation, uDirt, uExposure, uLift, uAspect,
+                  uSaturate;
     varying vec2  vUv;
 
     /* Screen-static lens dirt: low-frequency smudge plus a couple of scratches. */
@@ -101,12 +105,21 @@ export const GradeShaderDef = {
         }
         halo /= wsum;
         float dirt = mix(1.0, dirtField(vUv), uDirt);
-        col += halo * uHaloColor * uHalation * dirt * 1.7;
+        col += halo * uHaloColor * uHalation * dirt * 0.95;
       }
 
       /* ---- split tone: warm highlights, cool shadows, black stays black ----- */
       col = mmSplitTone(col, uWarmTint, uCoolTint, uToneAmt);
       col = max(col - uLift*0.0 + uLift, 0.0);
+
+      /* ---- chroma push, weighted away from the very darkest pixels so noise
+              in the shadows does not turn into confetti ---------------------- */
+      if (abs(uSaturate - 1.0) > 0.001) {
+        float sl = mmLum(col);
+        float w  = smoothstep(0.012, 0.10, sl);
+        col = mix(col, vec3(sl) + (col - vec3(sl)) * uSaturate, w);
+        col = max(col, 0.0);
+      }
 
       /* ---- vignette (aspect-aware) + dread edge crush ----------------------- */
       vec2 vc = c * vec2(uAspect, 1.0) * 1.06;

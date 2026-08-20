@@ -24,18 +24,23 @@ export function mountShowcase(ctx, opts = {}) {
   if (opts.hideDom !== false) ctx.dom.style.display = 'none';
 
   /* A stand-in for a companion: something for the light to actually fall on,
-     so warm key / cold rim can be read on a solid object. */
+     so warm key / cold rim can be read on a solid object. Its albedo matches the
+     enemy sprites' mid-tone (a warm mid-brown), NOT near-black — a black stand-in
+     tells you nothing about whether the room is lighting anything. */
   const group = new THREE.Group();
-  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x2a2130, roughness: 0.82, metalness: 0.05 });
-  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.42, 0.62, 6, 18), bodyMat);
-  body.position.set(-1.9, 1.0, -2.2);
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.40, 22, 16), bodyMat);
-  head.position.set(-1.9, 1.85, -2.2);
+  const AT = [-1.9, -3.0];   // x, z
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x8a6a52, roughness: 0.72, metalness: 0.04 });
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.46, 0.70, 8, 22), bodyMat);
+  body.position.set(AT[0], 1.05, AT[1]);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.44, 26, 18), bodyMat);
+  head.position.set(AT[0], 1.98, AT[1]);
   const plinth = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 1.0, 0.30, 24),
-    new THREE.MeshStandardMaterial({ color: 0x1a1522, roughness: 0.95 }));
-  plinth.position.set(-1.9, 0.15, -2.2);
+    new THREE.MeshStandardMaterial({ color: 0x4a4048, roughness: 0.92 }));
+  plinth.position.set(AT[0], 0.15, AT[1]);
   group.add(body, head, plinth);
   ctx.stage.scene.add(group);
+  // and a real contact shadow under it, from the same system the scenes use
+  atmo.setActors([{ x: AT[0], z: AT[1], r: 1.05, strength: 0.68 }]);
 
   /* Caption */
   const cap = document.createElement('div');
@@ -57,13 +62,14 @@ export function mountShowcase(ctx, opts = {}) {
     next() { return api.set(SHOWCASE_ORDER[(idx + 1) % SHOWCASE_ORDER.length]); },
     dread(v) { atmo.dread(v); return v; },
     pulse(c) { atmo.pulse(c ?? 0x6fd9ec, 0.26); },
-    impact(x = -1.9, y = 1.4, z = -2.2, strength = 1.4, color = 0xffd75e) {
+    impact(x = -1.9, y = 1.4, z = -3.0, strength = 1.4, color = 0xffd75e) {
       atmo.impact(new THREE.Vector3(x, y, z), { strength, color });
     },
     trans(kind) { return ctx.transition.wipe(kind, () => ctx.clock.wait(0.25)); },
     cover(kind) { return ctx.transition.cover(kind); },
     reveal() { return ctx.transition.reveal(); },
     unmount() {
+      atmo.setActors([]);
       ctx.stage.scene.remove(group);
       body.geometry.dispose(); head.geometry.dispose(); plinth.geometry.dispose();
       bodyMat.dispose(); plinth.material.dispose();

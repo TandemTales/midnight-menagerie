@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T03:44:35",
+ "updated": "2026-08-20T04:27:06",
  "wave": 1,
  "waveLabel": "Core systems",
  "headline": "Seven builders running in parallel. Critics follow each one.",
@@ -141,8 +141,8 @@
    "id": "chrome",
    "name": "UI chrome & clarity",
    "desc": "HUD, tooltips, deck views, settings, previews, accessibility",
-   "status": "pending",
-   "round": 0,
+   "status": "building",
+   "round": 1,
    "verdict": null,
    "gap": null,
    "builder": null,
@@ -274,6 +274,14 @@
   {
    "t": "2026-08-20T03:44:35",
    "msg": "Combat engine PASSES round 3: 478 assertions. announceRule now replaces by source, which is what silently broke the Butler."
+  },
+  {
+   "t": "2026-08-20T04:27:06",
+   "msg": "UI chrome builder started: the keyword tooltip system, run HUD, deck viewer, settings, and a colourblind-safe palette."
+  },
+  {
+   "t": "2026-08-20T04:27:06",
+   "msg": "Atmosphere root cause found: 9 of 11 materials were raw ShaderMaterial, which ignores Three.js lights entirely. Lighting now lands on surfaces."
   }
  ]
 }

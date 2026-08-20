@@ -293,7 +293,7 @@ let warmRAF = 0;
  * @returns {Promise<number>} how many were rendered
  */
 export function warmArt(defs, w, h, o = {}) {
-  const budget = o.budgetMs || 6;
+  const budget = o.budgetMs || 11;
   const jobs = [];
   const seen = new Set();
   const variants = o.upgraded === 'both' ? [false, true] : [!!o.upgraded];
@@ -326,8 +326,13 @@ export function warmArt(defs, w, h, o = {}) {
         const now = (typeof performance !== 'undefined' ? performance.now() : Date.now());
         if (now - t0 > budget) break;
       }
-      if (warmQueue.length) warmRAF = requestAnimationFrame(step);
-      else Promise.all(decodes).then(() => { fireReady(); resolve(done); });
+      if (warmQueue.length) { warmRAF = requestAnimationFrame(step); return; }
+      // Decodes run in the background — do NOT block the caller on them. They
+      // are opportunistic, and awaiting 24 of them pushed scene-entry warm-up
+      // out past two seconds.
+      Promise.all(decodes).catch(() => {});
+      fireReady();
+      resolve(done);
     };
     if (!warmRAF) warmRAF = requestAnimationFrame(step);
     else resolve(0);
