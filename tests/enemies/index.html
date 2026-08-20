@@ -316,6 +316,11 @@ class MockCombat {
       if (r) acted.push({ actor: a, ...r });
     }
     this.resolveDeaths();
+    // 6c — onEnemyPhaseEnd: every enemy has acted and the decay buckets have run, but the
+    // next intents have NOT been chosen yet. Buffs armed during the phase land here, so
+    // they are always reflected in the intent that carries them. Mirrors engine.js:1978.
+    for (const a of this.living()) this.hook(a, 'onEnemyPhaseEnd');
+    this.resolveDeaths();
     return acted;
   }
 
@@ -1077,10 +1082,14 @@ for (const [desc, fn] of SPOT) {
 head('5b. Intent number vs damage actually dealt (all moves)');
 {
   let checked = 0, multi = 0, bad = 0;
+  // Run at Haunt 0 AND Haunt 10. The Haunt pressure axis (`bossDmg`) has to be added in
+  // BOTH a move's damageFn and its effect; miss one and the intent lies only at high
+  // Haunt, which a Haunt 0 reconciliation can never see.
+  for (const HAUNT of [0, 10]) {
   for (const def of ENEMY_LIST) {
     for (const [mid, mv] of Object.entries(def.moves)) {
       // Resolve this move in isolation against an undamageable dummy.
-      const sim = new MockCombat([def], `contract:${def.id}:${mid}`);
+      const sim = new MockCombat([def], `contract:${def.id}:${mid}:${HAUNT}`, { haunt: HAUNT });
       const a = sim.actors[0];
       a.hp = a.maxHp = 100000;
       sim.player.hp = sim.player.maxHp = 100000;
@@ -1111,17 +1120,18 @@ head('5b. Intent number vs damage actually dealt (all moves)');
       if (promisedHits > 1) multi++;
 
       if (dealt !== promised) {
-        fail(`${def.id}.${mid}: intent promises ${shown.damage}x${promisedHits} = ${promised}, `
+        fail(`${def.id}.${mid} @Haunt ${HAUNT}: intent promises ${shown.damage}x${promisedHits} = ${promised}, `
            + `move actually dealt ${dealt} (${(dealt / (promised || 1)).toFixed(2)}x)`);
         bad++;
       } else if (toPlayer.length !== promisedHits) {
-        fail(`${def.id}.${mid}: intent promises ${promisedHits} hit(s), move produced `
+        fail(`${def.id}.${mid} @Haunt ${HAUNT}: intent promises ${promisedHits} hit(s), move produced `
            + `${toPlayer.length} damage event(s) — multi-hit animation and per-hit Guard will desync`);
         bad++;
       }
     }
   }
-  if (!bad) pass(`${checked} attack moves (${multi} of them multi-hit): damage dealt === damage promised, hit-for-hit`);
+  }
+  if (!bad) pass(`${checked} attack-move resolutions across Haunt 0 and 10 (${multi} multi-hit): damage dealt === damage promised, hit-for-hit`);
   log(`  every attack intent in the game was resolved and reconciled against its own event stream.`, 'dim');
 }
 

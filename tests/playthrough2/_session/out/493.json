@@ -1,0 +1,10 @@
+{
+ "i": 493,
+ "cmd": "{\"op\": \"dom\", \"sel\": \"[class*=cb-hero],[class*=cb-player],[class*=portrait]\", \"depth\": 4}",
+ "result": "section.cb-player  [32,584 256x195]\n  div.cb-player__figure  [32,584 256x160]\n    div.cb-player__glow  [-18,553 357x222]\n    img.cb-player__art  [33,585 254x158]\n    div.cb-player__flash  [33,585 254x158]\n    div.cb-player__guard  [229,681 52x56]\n      svg  [229,681 52x56]\n        path  [234,686 41x46]\n      b  \"1\"  [252,696 6x26]\n  div.cb-player__plate  [32,752 256x27]\n    div.cb-player__name  \"ELI ROSEN\"  [120,757 81x15]\n    div.cb-statuses  [160,779 0x0]",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track003.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

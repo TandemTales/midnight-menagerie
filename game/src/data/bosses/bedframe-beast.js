@@ -20,7 +20,7 @@
 import { Intent } from '../schema.js';
 import {
   mem, cnt, setCnt, addCnt, cyc, countMoves, lastMove, hitPlayer, dmgTaken,
-  hauntBase, flag, field, played,
+  hauntBase, flag, field, played, bossDmg,
 } from '../enemies/_lib.js';
 
 const PHASE2_AT = 160;
@@ -99,12 +99,15 @@ export const bedframeBeast = {
     'bedpost-swipe': {
       id: 'bedpost-swipe', name: 'Bedpost Swipe', intent: Intent.ATTACK, damage: 11, hits: 1,
       tell: 'A carved post swings around on a joint that should not exist.',
-      effect(c) { hitPlayer(c, 11); },
+      damageFn: (c) => 11 + bossDmg(c),
+      effect(c) { hitPlayer(c, 11 + bossDmg(c)); },
     },
     'spring-snap': {
       id: 'spring-snap', name: 'Spring Snap', intent: Intent.ATTACK, damage: 5, hits: 2,
       tell: 'Two mattress springs come loose and go looking for you.',
-      effect(c) { hitPlayer(c, 5, 2); },
+      damageFn: (c) => 5 + bossDmg(c),
+      hitsFn: () => 2,
+      effect(c) { hitPlayer(c, 5 + bossDmg(c), 2); },
     },
     'rattle-the-frame': {
       id: 'rattle-the-frame', name: 'Rattle the Frame', intent: Intent.DEFEND_BUFF, block: 8,
@@ -143,10 +146,10 @@ export const bedframeBeast = {
     boo: {
       id: 'boo', name: 'BOO', intent: Intent.ATTACK_BIG, damage: 9, hits: 1,
       tell: 'It has been quiet for a while now.',
-      damageFn: (c) => 9 + 7 * cnt(c, 'scare'),
+      damageFn: (c) => 9 + 7 * cnt(c, 'scare') + bossDmg(c),
       effect(c) {
         mem(c).state = 'standing';
-        hitPlayer(c, 9 + 7 * cnt(c, 'scare'));
+        hitPlayer(c, 9 + 7 * cnt(c, 'scare') + bossDmg(c));
         setCnt(c, 'scare', 0);
       },
     },
@@ -174,18 +177,22 @@ export const bedframeBeast = {
     'splinter-swipe': {
       id: 'splinter-swipe', name: 'Splinter Swipe', intent: Intent.ATTACK, damage: 13, hits: 1,
       tell: 'The broken end of a bedpost, swung like a club.',
-      effect(c) { hitPlayer(c, 13); },
+      damageFn: (c) => 13 + bossDmg(c),
+      effect(c) { hitPlayer(c, 13 + bossDmg(c)); },
     },
     'mattress-maw': {
       id: 'mattress-maw', name: 'Mattress Maw', intent: Intent.ATTACK_DEBUFF, damage: 6, hits: 2,
       tell: 'The mattress opens along its whole length.',
+      damageFn: (c) => 6 + bossDmg(c),
+      hitsFn: () => 2,
       // Conditional on both hits biting through, but the player must be able to plan for it.
       applies: [{ id: 'frightened', stacks: 1, to: 'player' }],
       effect(c) {
+        const per = 6 + bossDmg(c);
         const before = c.player.hp;
-        hitPlayer(c, 6, 2);
+        hitPlayer(c, per, 2);
         // Frightened only if both hits actually bit into Courage.
-        if (c.player.hp < before - 6) c.applyStatus(c.player, 'frightened', 1);
+        if (before - c.player.hp > per) c.applyStatus(c.player, 'frightened', 1);
       },
     },
     'shake-the-room': {
@@ -203,15 +210,17 @@ export const bedframeBeast = {
     'claw-ambush': {
       id: 'claw-ambush', name: 'Claw Ambush', intent: Intent.ATTACK, damage: 7, hits: 3,
       tell: 'The LEFT bed is rattling. Three sets of claws, one after another.',
-      effect(c) { mem(c).state = 'standing'; hitPlayer(c, 7, 3); setCnt(c, 'scare', 0); },
+      damageFn: (c) => 7 + bossDmg(c),
+      hitsFn: () => 3,
+      effect(c) { mem(c).state = 'standing'; hitPlayer(c, 7 + bossDmg(c), 3); setCnt(c, 'scare', 0); },
     },
     'giant-scare': {
       id: 'giant-scare', name: 'Giant Scare', intent: Intent.ATTACK_BIG, damage: 13, hits: 1,
       tell: 'The CENTER bed is rattling. This is the big one.',
-      damageFn: (c) => 13 + 5 * cnt(c, 'scare'),
+      damageFn: (c) => 13 + 5 * cnt(c, 'scare') + bossDmg(c),
       effect(c) {
         mem(c).state = 'standing';
-        hitPlayer(c, 13 + 5 * cnt(c, 'scare'));
+        hitPlayer(c, 13 + 5 * cnt(c, 'scare') + bossDmg(c));
         setCnt(c, 'scare', 0);
       },
     },
@@ -220,9 +229,10 @@ export const bedframeBeast = {
       tell: 'The RIGHT bed is rattling. It is not going for your Courage.',
       addsCards: [{ id: 'drowsy', pile: 'discard' }, { id: 'drowsy', pile: 'discard' }],
       applies: [{ id: 'frightened', stacks: 1, to: 'player' }],
+      damageFn: (c) => 10 + bossDmg(c),
       effect(c) {
         mem(c).state = 'standing';
-        hitPlayer(c, 10);
+        hitPlayer(c, 10 + bossDmg(c));
         c.addCard('drowsy', 'discard');
         c.addCard('drowsy', 'discard');
         c.applyStatus(c.player, 'frightened', 1);

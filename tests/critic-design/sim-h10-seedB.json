@@ -1,0 +1,325 @@
+{
+ "config": {
+  "N": 60,
+  "BOTS": [
+   "competent"
+  ],
+  "POLS": [
+   "balanced"
+  ],
+  "HAUNT": 10,
+  "BENCH": 0,
+  "CLUTTER": true,
+  "SEED0": 71000
+ },
+ "cells": {
+  "competent/balanced": {
+   "expeditions": 60,
+   "survival": 23.3,
+   "deaths": 46,
+   "stalls": 0,
+   "reachedBoss": 48.3,
+   "deathsBy": {
+    "boss": 15,
+    "bigScare": 19,
+    "scuffle": 12
+   },
+   "byTier": {
+    "scuffle": {
+     "n": 209,
+     "winRate": 94.3,
+     "turns": {
+      "n": 209,
+      "mean": 5.23,
+      "min": 2,
+      "max": 10,
+      "p25": 4,
+      "med": 5,
+      "p75": 6
+     },
+     "courageCost": {
+      "n": 209,
+      "mean": 19.24,
+      "min": 0,
+      "max": 61,
+      "p25": 7,
+      "med": 17,
+      "p75": 31
+     },
+     "hauntDamage": {
+      "n": 209,
+      "mean": 1.62,
+      "min": 0,
+      "max": 25,
+      "p25": 0,
+      "med": 0,
+      "p75": 2
+     },
+     "pierceHits": 18,
+     "snacksUsed": 20,
+     "timeouts": 0
+    },
+    "elite": {
+     "n": 37,
+     "winRate": 48.6,
+     "turns": {
+      "n": 37,
+      "mean": 10.65,
+      "min": 2,
+      "max": 22,
+      "p25": 9,
+      "med": 11,
+      "p75": 12
+     },
+     "courageCost": {
+      "n": 37,
+      "mean": 48.51,
+      "min": 0,
+      "max": 90,
+      "p25": 28,
+      "med": 49,
+      "p75": 70
+     },
+     "hauntDamage": {
+      "n": 37,
+      "mean": 8.27,
+      "min": 0,
+      "max": 41,
+      "p25": 0,
+      "med": 3,
+      "p75": 8
+     },
+     "pierceHits": 7,
+     "snacksUsed": 22,
+     "timeouts": 0
+    },
+    "boss": {
+     "n": 29,
+     "winRate": 48.3,
+     "turns": {
+      "n": 29,
+      "mean": 11.79,
+      "min": 5,
+      "max": 18,
+      "p25": 10,
+      "med": 11,
+      "p75": 15
+     },
+     "courageCost": {
+      "n": 29,
+      "mean": 57.1,
+      "min": 14,
+      "max": 90,
+      "p25": 48,
+      "med": 55,
+      "p75": 68
+     },
+     "hauntDamage": {
+      "n": 29,
+      "mean": 7.59,
+      "min": 0,
+      "max": 53,
+      "p25": 0,
+      "med": 3,
+      "p75": 6
+     },
+     "pierceHits": 14,
+     "snacksUsed": 14,
+     "timeouts": 0
+    }
+   },
+   "earlyScuffles": {
+    "n": 165,
+    "turns": {
+     "n": 165,
+     "mean": 5.55,
+     "min": 2,
+     "max": 10,
+     "p25": 5,
+     "med": 6,
+     "p75": 7
+    },
+    "courageCost": {
+     "n": 165,
+     "mean": 21.23,
+     "min": 0,
+     "max": 61,
+     "p25": 8,
+     "med": 21,
+     "p75": 32
+    },
+    "freeFights": 9.1
+   },
+   "ledger": {
+    "scuffle": 67,
+    "elite": 29.9,
+    "boss": 27.6,
+    "event": 1.4,
+    "hazard": 0.6,
+    "rested": 24.4,
+    "healed": 7.9,
+    "combatHeal": 23.9,
+    "rests": 1.1
+   },
+   "visited": {
+    "scuffle": 3.48,
+    "curiosity": 2.4,
+    "safe": 1.42,
+    "treasure": 0.85,
+    "shop": 0.47,
+    "boss": 0.48,
+    "bigScare": 0.62
+   },
+   "courageAtBoss": {
+    "n": 29,
+    "mean": 58.76,
+    "min": 28,
+    "max": 81,
+    "p25": 48,
+    "med": 64,
+    "p75": 68
+   },
+   "courageAtBossPct": {
+    "n": 29,
+    "mean": 83.14,
+    "min": 41,
+    "max": 100,
+    "p25": 71,
+    "med": 91,
+    "p75": 100
+   },
+   "deckEnd": {
+    "n": 60,
+    "mean": 14.03,
+    "min": 11,
+    "max": 19,
+    "p25": 12,
+    "med": 14,
+    "p75": 16
+   },
+   "upgradesEnd": {
+    "n": 60,
+    "mean": 0.6,
+    "min": 0,
+    "max": 4,
+    "p25": 0,
+    "med": 0,
+    "p75": 1
+   },
+   "keepsakesEnd": {
+    "n": 60,
+    "mean": 3.85,
+    "min": 1,
+    "max": 8,
+    "p25": 2,
+    "med": 4,
+    "p75": 5
+   },
+   "endCourage": {
+    "n": 60,
+    "mean": 5.53,
+    "min": 0,
+    "max": 58,
+    "p25": 0,
+    "med": 0,
+    "p75": 0
+   },
+   "hauntTotal": 865,
+   "pierceTotal": 39,
+   "msPerRun": 188,
+   "sample": [
+    {
+     "seed": 71000,
+     "result": "victory",
+     "killedBy": null,
+     "nodes": "sscscsstssssb",
+     "deck": [
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/boo",
+      "marmalade/quick-pounce",
+      "marmalade/moonlit-claw",
+      "marmalade/hide-under-something",
+      "marmalade/hide-and-seek+",
+      "marmalade/predators-patience",
+      "marmalade/nine-lives-fury"
+     ],
+     "keepsakes": [
+      "pocket-flashlight",
+      "wind-up-mouse",
+      "chewed-tennis-ball",
+      "bedframe-splinter"
+     ]
+    },
+    {
+     "seed": 71007,
+     "result": "defeat",
+     "killedBy": "The Butler",
+     "nodes": "scctcstsbs",
+     "deck": [
+      "marmalade/scratch+",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/boo",
+      "marmalade/graveyard-pounce+",
+      "marmalade/graveyard-pounce"
+     ],
+     "keepsakes": [
+      "pocket-flashlight",
+      "moth-eaten-monocle",
+      "sticky-hand",
+      "coatcheck-ticket",
+      "nightlight",
+      "knotted-handkerchief"
+     ]
+    },
+    {
+     "seed": 71014,
+     "result": "defeat",
+     "killedBy": "The Butler",
+     "nodes": "ssccsstsbss",
+     "deck": [
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/boo",
+      "marmalade/poltercat",
+      "marmalade/soft-landing",
+      "marmalade/frenzied-zoomies",
+      "marmalade/hide-under-something",
+      "marmalade/ninefold-scratch",
+      "marmalade/the-last-thing-they-see"
+     ],
+     "keepsakes": [
+      "pocket-flashlight",
+      "moth-eaten-monocle",
+      "house-slippers",
+      "knotted-handkerchief",
+      "the-collar"
+     ]
+    }
+   ]
+  }
+ },
+ "bench": {},
+ "errors": []
+}

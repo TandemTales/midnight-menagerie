@@ -358,12 +358,23 @@ export const nightlightSnuffer = {
     return null;
   },
 
-  onTurnStart(c) {
-    // "Darkness lasts until the beginning of Nightlight Snuffer's next turn."
-    if (field(c).darkness) {
-      field(c).darkness = false;
-      for (const a of allies(c)) c.removeStatus(a, 'darkness');
-    }
+  /**
+   * "Darkness lasts until the beginning of Nightlight Snuffer's next turn."
+   *
+   * Expiring it at the Snuffer's own turn start was the mirror image of the Roused bug:
+   * from any slot but the last it stripped the +2 out of an ally that had not swung yet,
+   * so the player took LESS than the intent promised. It now expires at
+   * onEnemyPhaseEnd — after every enemy has acted, before the next intents are chosen —
+   * one full phase after it was cast, so the Darkness the player was shown is always
+   * exactly the Darkness that resolves. Slot order no longer matters.
+   */
+  onEnemyPhaseEnd(c) {
+    if (!field(c).darkness) return;
+    const now = c.turn ?? 0;
+    if (now <= (field(c).darknessTurn ?? now)) return;   // cast this phase — it still has a turn to run
+    field(c).darkness = false;
+    field(c).darknessTurn = null;
+    for (const a of allies(c)) c.removeStatus(a, 'darkness');
   },
 
   onDeath(c) {
@@ -380,6 +391,7 @@ export const nightlightSnuffer = {
         ? [{ id: 'darkness', stacks: nightlightSnuffer.darknessPower(c), to: 'allies' }] : []),
       effect(c) {
         field(c).darkness = true;
+        field(c).darknessTurn = c.turn ?? 0;
         // The Snuffer itself never benefits from its own Darkness.
         for (const a of allies(c)) c.applyStatus(a, 'darkness', nightlightSnuffer.darknessPower(c));
         /**

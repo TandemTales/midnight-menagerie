@@ -1,0 +1,10 @@
+{
+ "i": 192,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"document.querySelector(\\\".mm-hud__courage\\\").outerHTML\"}",
+ "result": "<div class=\"mm-hud__courage\" tabindex=\"0\" data-kw=\"courage\" data-low=\"0\" role=\"meter\" aria-valuenow=\"51\" aria-valuemin=\"0\" aria-valuemax=\"68\" aria-label=\"Courage 51 of 68\">\n          <div class=\"mm-hud__bar\"><i style=\"transform: scaleX(0.75);\"></i><span class=\"mm-hud__barlabel\">51 / 68</span></div>\n        </div>",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

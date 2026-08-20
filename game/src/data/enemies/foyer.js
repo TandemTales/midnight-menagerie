@@ -262,10 +262,21 @@ export const callingBell = {
         const stacks = (countMoves(c, 'ring') === 0 && flag(c, 'firstRingRoused', 1)) || 1;
         return allies(c).length ? [{ id: 'roused', stacks, to: 'allies' }] : [];
       },
+      /**
+       * Roused is ARMED here and applied at onEnemyPhaseEnd, never during the phase.
+       *
+       * Enemies act in slot order and next turn's intents are chosen after the whole
+       * phase. A buff handed out mid-phase therefore raises the damage of any ally that
+       * has not swung yet, whose number is already on screen — the player takes more than
+       * the intent promised. Deferring to the phase-end window means the Roused is always
+       * reflected in the next intent refresh before it can change a single number.
+       *
+       * This also makes board order irrelevant for correctness. Support enemies are still
+       * authored into the last slot because it reads better, but nothing depends on it.
+       */
       effect(c) {
         const first = countMoves(c, 'ring') === 0;
-        const stacks = (first && flag(c, 'firstRingRoused', 1)) || 1;
-        for (const a of allies(c)) c.applyStatus(a, 'roused', stacks);
+        mem(c).rousePending = (first && flag(c, 'firstRingRoused', 1)) || 1;
       },
     },
     ping: {
@@ -282,6 +293,14 @@ export const callingBell = {
         mem(c).calledService = true;
       },
     },
+  },
+
+  /** Roused armed by Ring lands here — after every enemy has acted, before intents refresh. */
+  onEnemyPhaseEnd(c) {
+    const stacks = mem(c).rousePending || 0;
+    if (!stacks) return;
+    mem(c).rousePending = 0;
+    for (const a of allies(c)) c.applyStatus(a, 'roused', stacks);
   },
 
   nextMove(c) {
@@ -758,6 +777,14 @@ export const houseBell = {
 
   onSpawn(c) { setCnt(c, 'resonance', 0); },
 
+  /** Roused armed by Ring for Service lands here, after every enemy has acted. */
+  onEnemyPhaseEnd(c) {
+    const stacks = mem(c).rousePending || 0;
+    if (!stacks) return;
+    mem(c).rousePending = 0;
+    for (const a of allies(c)) c.applyStatus(a, 'roused', stacks);
+  },
+
   /** Any summon of the Bell's dying drops Resonance — the player's lever on the Toll. */
   onAllyDeath(c, dead) {
     if (dead && dead.summonedBy === (c.self.uid ?? c.self.id)) {
@@ -775,21 +802,18 @@ export const houseBell = {
       // you are busy with the Bell projects up to 19 damage, which is most of
       // where this fight's 57 Courage bill came from.
       summons: [{ enemyId: 'dust-bunny', hpMul: 0.6 }],
+      appliesFn: (c) => (allies(c).length >= 2 ? [{ id: 'roused', stacks: 1, to: 'allies' }] : []),
+      /**
+       * The doc's Roused branch, restored. It was Guard for two rounds only because a
+       * summoner is permanently slot 0 — every ally it could buff acts after it, so a
+       * mid-phase Roused always landed on an already-telegraphed attack. Ordering could
+       * never fix that. `onEnemyPhaseEnd` can: the Roused is armed now and applied once
+       * every enemy has acted, so it shows up on the next intent and never behind it.
+       */
       effect(c) {
         addCnt(c, 'resonance', 1, 4);
-        if (allies(c).length >= 2) {
-          // DEVIATION from the design doc, for intent honesty. The doc gives this branch
-          // 1 Roused to every other enemy. The Bell is always slot 0, so it acts before
-          // every ally it buffs — a mid-phase Roused raises an attack whose number is
-          // already on screen, and the player takes 2 more than the intent promised.
-          // Guard (what Second Ring's crowded-room branch already grants) has no effect on
-          // any telegraphed number, so the room stays honest. Restore Roused here the
-          // moment the engine can arm a buff between the enemy phase and the intent
-          // refresh — see docs/NOTES.md.
-          for (const a of allies(c)) c.block(a, 8);
-        } else {
-          c.summon('dust-bunny', { hpMul: 0.6 });
-        }
+        if (allies(c).length >= 2) mem(c).rousePending = 1;
+        else c.summon('dust-bunny', { hpMul: 0.6 });
       },
     },
     'deep-vibration': {

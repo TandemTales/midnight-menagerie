@@ -1,0 +1,10 @@
+{
+ "i": 547,
+ "cmd": "{\"op\": \"shot\", \"name\": \"p2-48-slowclick\"}",
+ "result": "shots\\p2-48-slowclick.png",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track003.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

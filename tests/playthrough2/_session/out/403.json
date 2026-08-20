@@ -1,0 +1,10 @@
+{
+ "i": 403,
+ "cmd": "{\"op\": \"wait\", \"s\": 0.25}",
+ "result": "ok",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

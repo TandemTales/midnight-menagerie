@@ -1,0 +1,10 @@
+{
+ "i": 503,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"JSON.stringify({e:[...document.querySelectorAll(\\\".cb-enemy\\\")].map(e=>e.innerText.replace(/\\n/g,\\\"|\\\")),g:(document.querySelector(\\\".cb-player__guard\\\")||{}).innerText,hud:document.querySelector(\\\".mm-hud__courage\\\").getAttribute(\\\"aria-label\\\"),hand:[...document.querySelectorAll(\\\".mm-card\\\")].map(c=>c.getAttribute(\\\"aria-label\\\"))})\"}",
+ "result": null,
+ "error": "Error: Page.evaluate: SyntaxError: Invalid regular expression: missing /\n    at eval (<anonymous>)\n    at UtilityScript.evaluate (<anonymous>:311:30)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track003.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

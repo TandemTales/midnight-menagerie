@@ -1,0 +1,10 @@
+{
+ "i": 347,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"(()=>{const q=s=>[...document.querySelectorAll(s)];\\n const cards=q(\\\".mm-card\\\").filter(c=>c.dataset.uid).map(c=>{const r=c.getBoundingClientRect();\\n   return {uid:c.dataset.uid,label:c.getAttribute(\\\"aria-label\\\"),dis:c.getAttribute(\\\"aria-disabled\\\"),\\n           x:Math.round(r.x+r.width/2),y:Math.round(r.y+r.height*0.75)}});\\n const es=q(\\\".cb-enemy\\\").map(e=>{const r=e.getBoundingClientRect();const t=e.innerText.replace(/\\\\n/g,\\\"|\\\");\\n   return {t,x:Math.round(r.x+r.width/2),y:Math.round(r.y+r.height*0.45),dead:e.className.includes(\\\"is-dead\\\")}});\\n const nerve=(document.querySelector(\\\".cb-nerve,[class*=nerve]\\\")||{}).innerText||\\\"\\\";\\n const hud=(document.querySelector(\\\".mm-hud__courage\\\")||{}).getAttribute?\\n   document.querySelector(\\\".mm-hud__courage\\\").getAttribute(\\\"aria-label\\\"):\\\"\\\";\\n return JSON.stringify({scene:window.MM.state().scene,cards,es,nerve,hud,\\n   end:!!document.querySelector(\\\"#end-turn,.cb-endturn,[class*=endturn]\\\")})})()\"}",
+ "result": "{\"scene\":\"combat\",\"cards\":[{\"uid\":\"c4\",\"label\":\"Scratch, 1 Nerve, Attack, basic, Deal 6 damage.\",\"dis\":\"false\",\"x\":512,\"y\":817},{\"uid\":\"c1\",\"label\":\"Scratch, 1 Nerve, Attack, basic, Deal 6 damage.\",\"dis\":\"false\",\"x\":656,\"y\":791},{\"uid\":\"c9\",\"label\":\"Curl Up, 1 Nerve, Skill, basic, Gain 5 Guard.\",\"dis\":\"false\",\"x\":800,\"y\":779},{\"uid\":\"c8\",\"label\":\"Curl Up, 1 Nerve, Skill, basic, Gain 5 Guard.\",\"dis\":\"false\",\"x\":944,\"y\":791},{\"uid\":\"c2\",\"label\":\"Scratch, 1 Nerve, Attack, basic, Deal 6 damage.\",\"dis\":\"false\",\"x\":1088,\"y\":817}],\"es\":[{\"t\":\"5|DUST BUNNY|7|/20|DUST|0/4\",\"x\":699,\"y\":400,\"dead\":false},{\"t\":\"5|DUST BUNNY|14|/20|DUST|0/4\",\"x\":1020,\"y\":400,\"dead\":false}],\"nerve\":\"3\\n/3\\nNERVE\",\"hud\":\"Courage 25 of 68\",\"end\":true}",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

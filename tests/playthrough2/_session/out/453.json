@@ -1,0 +1,10 @@
+{
+ "i": 453,
+ "cmd": "{\"op\": \"text\"}",
+ "result": "Marmalade\nwent back in with you\n\nWING 1 \u00b7 THE FORGOTTEN FOYER\n\nThe candle goes out.\n\nMaya gets out. Dust Bunny keeps the room, and everything still in the backpack stays where it fell.\n\nWHAT YOU FOUND\n1 wing drawn onto the blueprint\nWHAT YOU LOST\nEvery Trick you had built up \u2014 10\n1 Keepsake, left on the floor\n99 Lost Things, scattered behind you\nEvery Snack and every piece of Gear\nTHE PET YOU DID NOT REACH\n\nOrbit is still in there. Maya does not say anything on the walk back. She is working out what to bring next time.\n\nAS FAR AS WE GOT \u2014 THE FORGOTTEN FOYER\n1 / 17 WINGS DRAWN\nMaya Chen\nwith Marmalade \u00b7 Haunt Level 0\nREACHED\n1 room deep\nthe Forgotten Foyer \u00b7 Wing 1\nSCUFFLES WON\n0\nBIG SCARES\n0\nCURIOSITIES\n0\nSAFE ROOMS\n0\nTRICKS PLAYED\n6\nDAMAGE DEALT\n19\nLOST THINGS\n99\nTURNS TAKEN\n6\nCOURAGE\n0 / 68\nthe candle ran out\nFINAL TRICKS\n10 TRICKS\n1\nmarmalade/scratch\n\u00d75\n1\nmarmalade/curl-up\n\u00d74\n1\nmarmalade/boo\nWORKED HARDEST\nPLAYED 41\u00d7\nmarmalade/scratch\nSKILL\n1\n\nEvery expedition ends up leaning on one Trick. This run it was , right up until it was not enough.\n\nKEEPSAKES\n1 KEPT\nPocket Flashlight\nAt the end of every Scuffle, recover 6 Courage.\nSEED\n0094-DBSJ\nCOPY\nRun this house again, exactly as it was.\nRETURN TO THE CLUBHOUSE\nwork out what to bring next time\nGO STRAIGHT BACK IN\nchoose a Kid and a Companion\nTITLE\nput the house down for now",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

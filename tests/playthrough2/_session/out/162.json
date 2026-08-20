@@ -1,0 +1,10 @@
+{
+ "i": 162,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"JSON.stringify(window.MM.state().run.pendingCombat)\"}",
+ "result": "{\"nodeId\":\"foyer-0-1\",\"type\":\"scuffle\",\"tier\":\"early\",\"encounter\":\"foyer-3\",\"histLen\":0,\"courageOnEntry\":68,\"actions\":[[\"p\",\"d4\",\"e0\"],[\"p\",\"d3\",\"e1\"],[\"p\",\"d8\",null],[\"e\"],[\"p\",\"d1\",\"e0\"],[\"e\"]],\"choices\":[],\"damage\":13,\"digest\":\"2~player~0~68~0~2~e0:13:0:1,e1:14:5:1~marmalade/scratch|marmalade/boo|marmalade/scratch|marmalade/curl-up~0~6~0\",\"unsafe\":false}",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

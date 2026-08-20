@@ -18,7 +18,7 @@
 import { Intent } from '../schema.js';
 import {
   mem, cnt, setCnt, addCnt, allies, board, cyc, countMoves, hitPlayer,
-  hauntBase, flag, announce, isAlive, played,
+  hauntBase, flag, announce, isAlive, played, bossDmg,
 } from '../enemies/_lib.js';
 
 /**
@@ -262,6 +262,14 @@ export const butler = {
     }
   },
 
+  /** Roused armed by Service, Please lands here, after every enemy has acted. */
+  onEnemyPhaseEnd(c) {
+    if (!mem(c).rousePending) return;
+    mem(c).rousePending = 0;
+    const other = allies(c)[0];
+    if (other) c.applyStatus(other, 'roused', 1);
+  },
+
   /** Promote a Reprimand banked this turn so the NEXT intent shows it. */
   onTurnEnd(c) {
     const pending = mem(c).retaliationPending || 0;
@@ -286,7 +294,9 @@ export const butler = {
    */
   perHitBonus(c, hits = 1) {
     const bonus = mem(c).retaliation || 0;
-    return bonus > 0 ? Math.ceil(bonus / Math.max(1, hits)) : 0;
+    // bossDmg is the Haunt pressure axis: bosses stopped growing in Courage at round 4,
+    // so they buy their difficulty back per hit instead of per turn.
+    return (bonus > 0 ? Math.ceil(bonus / Math.max(1, hits)) : 0) + bossDmg(c);
   },
   strike(c, dmg, hits = 1) {
     const per = butler.perHitBonus(c, hits);
@@ -319,17 +329,16 @@ export const butler = {
       id: 'service-please', name: 'Service, Please', intent: Intent.SUMMON,
       tell: 'He rings for assistance without once looking away from you.',
       summons: [{ enemyId: 'dust-bunny', hp: 12 }],
+      appliesFn: (c) => (allies(c)[0] ? [{ id: 'roused', stacks: 1, to: 'ally' }] : []),
+      /**
+       * 8 Guard and 1 Roused, as the doc writes it. The Roused is armed and applied at
+       * onEnemyPhaseEnd — he is slot 0 and his summons sit behind him, so handing it out
+       * mid-phase would have boosted an attack already telegraphed on screen.
+       */
       effect(c) {
         const other = allies(c)[0];
         if (!other) c.summon('dust-bunny', { hp: 12 });
-        // DEVIATION from the design doc, for intent honesty: the doc gives the standing
-        // ally 8 Guard AND 1 Roused. The Butler is slot 0 and his summons sit behind him,
-        // so a Roused handed out here always lands on an ally whose attack number is
-        // already on screen — the player then takes 2 more than promised. He gives Guard
-        // alone until the engine can arm a buff between the enemy phase and the intent
-        // refresh. Roused itself is untouched and still lives on Calling Bell, which acts
-        // last in every formation it appears in and is therefore honest. See docs/NOTES.md.
-        else c.block(other, 8);
+        else { c.block(other, 8); mem(c).rousePending = 1; }
         butler.announceNext(c);
       },
     },

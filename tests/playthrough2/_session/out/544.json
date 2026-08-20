@@ -1,0 +1,10 @@
+{
+ "i": 544,
+ "cmd": "{\"op\": \"dragxy\", \"x1\": 512, \"y1\": 770, \"x2\": 512, \"y2\": 770, \"steps\": 8}",
+ "result": "ok",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track003.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

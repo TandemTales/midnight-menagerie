@@ -16,7 +16,7 @@
 import { Intent } from '../schema.js';
 import {
   mem, cnt, setCnt, addCnt, allies, cyc, countMoves, hitPlayer, dmgTaken,
-  hauntBase, flag, isAlive,
+  hauntBase, flag, isAlive, bossDmg,
 } from '../enemies/_lib.js';
 
 const PHASE2_AT = 150;
@@ -205,13 +205,16 @@ export const governess = {
     'sharp-correction': {
       id: 'sharp-correction', name: 'Sharp Correction', intent: Intent.ATTACK, damage: 11, hits: 1,
       tell: 'Her needles come together with a small, tidy click.',
-      effect(c) { hitPlayer(c, 11); },
+      damageFn: (c) => 11 + bossDmg(c),
+      effect(c) { hitPlayer(c, 11 + bossDmg(c)); },
     },
     'mind-your-seams': {
       id: 'mind-your-seams', name: 'Mind Your Seams', intent: Intent.ATTACK_DEBUFF, damage: 5, hits: 2,
       tell: 'She takes in a seam somewhere on you that you did not know you had.',
       applies: [{ id: 'seam-pinch', stacks: 1, to: 'player' }],
-      effect(c) { hitPlayer(c, 5, 2); c.applyStatus(c.player, 'seam-pinch', 1); },
+      damageFn: (c) => 5 + bossDmg(c),
+      hitsFn: () => 2,
+      effect(c) { hitPlayer(c, 5 + bossDmg(c), 2); c.applyStatus(c.player, 'seam-pinch', 1); },
     },
     'mend-my-darling': {
       id: 'mend-my-darling', name: 'Mend My Darling', intent: Intent.BUFF,
@@ -253,9 +256,9 @@ export const governess = {
     'needle-point': {
       id: 'needle-point', name: 'Needle Point', intent: Intent.ATTACK, damage: 13, hits: 1,
       tell: 'One long silver finger, held perfectly level.',
-      damageFn: (c) => 13 + (mem(c).tightened ? 5 : 0),
+      damageFn: (c) => 13 + (mem(c).tightened ? 5 : 0) + bossDmg(c),
       effect(c) {
-        hitPlayer(c, 13 + (mem(c).tightened ? 5 : 0));
+        hitPlayer(c, 13 + (mem(c).tightened ? 5 : 0) + bossDmg(c));
         mem(c).tightened = false;
       },
     },
@@ -268,7 +271,9 @@ export const governess = {
     'snip-snip': {
       id: 'snip-snip', name: 'Snip Snip', intent: Intent.ATTACK, damage: 4, hits: 3,
       tell: 'Three quick cuts, the way one trims a loose thread.',
-      effect(c) { hitPlayer(c, 4, 3); },
+      damageFn: (c) => 4 + bossDmg(c),
+      hitsFn: () => 3,
+      effect(c) { hitPlayer(c, 4 + bossDmg(c), 3); },
     },
     'emergency-repair': {
       id: 'emergency-repair', name: 'Emergency Repair', intent: Intent.DEFEND_BUFF, block: 8,

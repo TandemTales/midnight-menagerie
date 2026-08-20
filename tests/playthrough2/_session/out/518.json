@@ -1,0 +1,10 @@
+{
+ "i": 518,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"(()=>{const e=document.elementFromPoint(512,760); let p=e,ch=[]; while(p&&ch.length<8){ch.push(p.tagName+\\\".\\\"+(typeof p.className===\\\"string\\\"?p.className:\\\"\\\")); p=p.parentElement;} return ch.join(\\\" < \\\")})()\"}",
+ "result": "DIV.mm-hand__hit < DIV.mm-hand < DIV.cb-handhost < DIV.cb < DIV.scene scene--combat cb-root < DIV. < DIV. < BODY.",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track003.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

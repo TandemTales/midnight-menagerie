@@ -1,0 +1,10 @@
+{
+ "i": 190,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"(()=>{const s=window.MM.state();const r=s.run;const cs=window.MM.ctx&&window.MM.ctx.combat;\\nreturn JSON.stringify({scene:s.scene,courage:r.courage+\\\"/\\\"+r.maxCourage,lost:r.lostThings,\\n snacks:(r.snacks||[]).map(x=>x.name||x),keeps:(r.keepsakes||[]).map(k=>k.name),deck:r.deck.length,\\n node:r.currentNodeId,depth:r.depth,stats:r.stats,\\n hand:[...document.querySelectorAll(\\\".mm-card\\\")].map(c=>c.getAttribute(\\\"aria-label\\\")),\\n nerve:(document.querySelector(\\\"[class*=nerve],[class*=energy]\\\")||{}).innerText,\\n enemies:[...document.querySelectorAll(\\\".cb-enemy\\\")].map(e=>e.innerText.replace(/\\\\n/g,\\\" | \\\"))})})()\\n\"}",
+ "result": "{\"scene\":\"combat\",\"courage\":\"68/68\",\"lost\":99,\"snacks\":[],\"keeps\":[\"Pocket Flashlight\"],\"deck\":10,\"node\":\"foyer-0-1\",\"depth\":1,\"stats\":{\"scuffles\":0,\"bigScares\":0,\"curiosities\":0,\"safeRooms\":0,\"shops\":0,\"treasures\":0,\"cardsPlayed\":0,\"damageDealt\":19,\"turns\":0,\"depth\":1,\"cardsTaken\":0,\"cardsSkipped\":0,\"clues\":0},\"hand\":[\"Scratch, 1 Nerve, Attack, basic, Deal 6 damage.\",\"Curl Up, 1 Nerve, Skill, basic, Gain 5 Guard.\",\"Scratch, 1 Nerve, Attack, basic, Deal 6 damage.\",null],\"nerve\":\"1\\n/3\\nNERVE\",\"enemies\":[\"5 | DUST BUNNY | 7 | /20 | DUST | 0/4\",\"5 | DUST BUNNY | 14 | /20 | DUST | 0/4\"]}",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

@@ -173,18 +173,47 @@ export function hauntBase(level, tierClass = 'normal') {
   // mean something: +2.5% (ordinary) / +2.7% (Big Scare and boss) per level
   // past the first, uncapped growth capped at double Courage. Courage is only
   // one axis — the per-enemy behavioural flags remain the interesting half.
-  const step = tierClass === 'normal' ? 0.022 : 0.020;
-  const base = tierClass === 'normal' ? 1.08 : 1.06;
+  // BALANCE 2026-08-20 (round 4): bosses come off the Courage ramp entirely.
+  //
+  // The round-2 ramp did its job — every level means something now — but for bosses it
+  // bought difficulty in the one currency that also buys LENGTH. Measured at Haunt 10 the
+  // Butler ran 15.5 turns against an 8-12 band while winning 64.3%: not harder so much as
+  // longer. Boss Courage at Haunt 10 was 1.24x, and boss turns track Courage almost
+  // linearly, so the ramp alone accounted for the entire overrun.
+  //
+  // Bosses now hold flat at the design doc's Haunt 1 value (+6%) and never grow again.
+  // The difficulty they lose is bought back through `dmgBonus` below, which is
+  // Courage-neutral: it makes each boss turn hurt more instead of adding more turns.
+  // Ordinary enemies and Big Scares keep their ramp — neither was measured as too long,
+  // and their Courage is what wears the player down on the way to the door.
+  const RAMP = {
+    normal: { base: 1.08, step: 0.022 },
+    elite:  { base: 1.06, step: 0.020 },
+    boss:   { base: 1.06, step: 0 },
+  };
+  const { base, step } = RAMP[tierClass] || RAMP.normal;
+
+  // Boss pressure: +1 damage per hit every third Haunt level, applied by each boss's own
+  // damage path so it shows up in the intent as well as the hit. Deliberately per-hit, so
+  // a multi-hit finisher scales with its own shape.
+  const dmgBonus = tierClass === 'boss' ? Math.floor(l / 3) : 0;
+
   return {
     level: l,
     hpMul: l >= 1 ? Math.min(2, base + step * (l - 1)) : 1,
     counters: {},                       // starting counters, always applied
-    flags: {},                          // behavioural switches, read via flag(c,'key')
+    flags: dmgBonus ? { dmgBonus } : {}, // behavioural switches, read via flag(c,'key')
     moves: {},                          // per-move stat overrides merged into the MoveDef
     advanced: { counters: {}, flags: {} }, // applied ONLY in advanced-pool encounters
-    notes: [],
+    notes: dmgBonus ? [`Haunt ${l}: every boss attack hits for ${dmgBonus} more per hit.`] : [],
   };
 }
+
+/**
+ * Per-hit damage a boss adds at this Haunt level. Bosses must apply this in BOTH their
+ * `damageFn` and their `effect`, or the intent stops telling the truth.
+ */
+export function bossDmg(c) { return flag(c, 'dmgBonus', 0) || 0; }
 
 /** Read a Haunt behavioural flag the engine merged onto the actor at spawn. */
 export function flag(c, key, dflt = undefined) {

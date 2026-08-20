@@ -124,7 +124,7 @@ end, so the boost is always visible on the intent that carries it. Same shape as
 Roused fixes: **nothing may change an attacker's damage between the intent being read and
 the attack resolving.**
 
-### Still open with the engine
+### Still open with the engine  *(RESOLVED in round 4 — see below)*
 
 Unchanged from round 2, and the reason two Roused branches are still Guard instead:
 **a point where a buff can be armed after the enemy phase and before intents refresh** —
@@ -170,3 +170,84 @@ Read this with three caveats, all of which matter more than the numbers:
    construction and contributes only to the first number. If boss length needs to come
    down, the Courage ramp is the thing to flatten, and the ladder now has enough character
    to carry difficulty without it.
+
+---
+
+## 2026-08-20 — round 4: Roused restored, boss Courage ramp flattened
+
+### `onEnemyPhaseEnd` closed the window I had been working around
+
+The hook existed since round 3; I only learned of it now. It fires after every enemy has
+acted and after the decay buckets, but **before** the next intents are chosen — exactly the
+window I had asked for and had been routing around with Guard substitutions.
+
+All three Roused sources now **arm** during their action and **apply** at phase end:
+
+- **Calling Bell — Ring.** Was applied inline and depended on the Bell being authored into
+  the last slot. Now correct from any slot; the ordering convention stays because it reads
+  better, but nothing depends on it.
+- **House Bell — Ring for Service.** The doc's 1 Roused to every other enemy, restored.
+- **The Butler — Service, Please.** 8 Guard *and* 1 Roused, as written.
+
+The same window fixed the **mirror-image** bug I had not been able to solve either.
+Nightlight Snuffer's Darkness expired at the Snuffer's own turn start, so from any slot but
+the last it stripped the +2 out of an ally that had not swung yet — the player took *less*
+than the intent promised. It now expires at `onEnemyPhaseEnd` one full phase after it is
+cast, gated on a turn stamp so it cannot expire in the phase it was applied.
+
+The mock now fires `onEnemyPhaseEnd` too, mirroring `engine.js:1978`. Without that the
+suite would have silently skipped every armed buff and passed on content that did nothing.
+Real-engine audit with Roused live: **2374 scored enemy turns, 0 mismatches.**
+
+### Boss Courage ramp flattened
+
+Took my own advice from round 3. Bosses are off the continuous ramp entirely — flat +6%,
+the doc's Haunt 1 value, at every level. Boss turns track boss Courage almost linearly, so
+the ramp was the whole of the 15.5-turn overrun.
+
+Difficulty is bought back with `bossDmg`: **+1 damage per hit every third Haunt level**,
+read by each boss's own damage path in both `damageFn` and `effect`. Courage-neutral by
+construction — each turn hurts more instead of there being more turns. It is per-hit, so a
+multi-hit finisher scales with its own shape (Remove the Intruder is 7×3 at Haunt 0 and
+10×3 at Haunt 10).
+
+Ordinary enemies and Big Scares keep their ramp. Neither was measured as too long, and
+their Courage is what wears the player down on the way to the boss door.
+
+| Haunt 10, competent, n=60 | boss turns | boss win |
+|---|---|---|
+| before | 15.5 | 64.3% |
+| after, seed 90000 | **11.50** | **46.4%** |
+| after, seed 71000 | **11.79** | **48.3%** |
+
+Both targets met and **stable across two independent seeds** — worth checking, because
+46.4% sits near the floor of the 45–65% band and boss samples are only n≈28. Haunt 5
+re-measured at 12.18 turns / 61.5% win, so the ladder ramps monotonically in difficulty
+while getting shorter rather than longer.
+
+I also wired `bossDmg` into The Governess and The Bedframe Beast. Neither is measured by the
+simulator, but flattening their Courage without giving them a pressure axis would have made
+them strictly *easier* at high Haunt — a silent regression in two thirds of the content.
+
+**§5b now reconciles intent against damage at Haunt 0 AND Haunt 10.** The pressure bonus has
+to be added in both a move's `damageFn` and its `effect`; miss one and the intent lies only
+at high Haunt, which a Haunt 0 reconciliation can never see. That guard is what makes
+extending the axis to the unmeasured bosses safe.
+
+### Extending the sim to a second region — cheap, but not my file
+
+Worth doing, and it is close to a one-line change:
+
+- `RUN_LENGTH_REGIONS = 1` in `game/src/state/run.js` is used in exactly two places, and its
+  own comment says "the structure below walks the ladder properly, this constant is the only
+  thing holding it to one".
+- `mapgen.js` already has full Nursery support — room-name pool, `regionMeta` entry naming
+  The Governess, and a blueprint crop.
+- `run.js` resolves encounters through `rollEncounter(this.region, …)`, so it is already
+  region-generic against my tables.
+- The data side is proven: my suite dumps the Nursery pools (14 Scuffles, 3 Big Scares,
+  boss) and `buildEncounter` passes for all of them at Haunt 0/1/3/5/9/10.
+
+`run.js` is meta-run's file, so I have not touched it. **Recommend they flip the constant to
+2 and re-run** — it would put the Nursery ladder and The Governess under measurement for the
+first time, which is worth more than any further Foyer tuning.

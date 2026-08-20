@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T14:49:51",
+ "updated": "2026-08-20T15:12:37",
  "wave": 4,
  "waveLabel": "Second playthrough",
  "headline": "Every piece rebuilt and rebalanced. A second fresh player is judging the whole game blind against Slay the Spire 2.",
@@ -430,6 +430,10 @@
   {
    "t": "2026-08-20T14:49:51",
    "msg": "That new sweep immediately caught a silent no-op in the agent's own new code: a buff-strip calling a method that does not exist, behind a typeof guard."
+  },
+  {
+   "t": "2026-08-20T15:12:37",
+   "msg": "Extending runs to two regions. The Nursery and The Governess are authored and validated but the simulator stopped at the first boss, so they have never been played."
   }
  ]
 }

@@ -1,0 +1,10 @@
+{
+ "i": 536,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"(()=>{const nl=String.fromCharCode(10);const j=s=>(s||\\\"\\\").split(nl).join(\\\"|\\\");\\nreturn JSON.stringify({\\n e:[...document.querySelectorAll(\\\".cb-enemy\\\")].map(e=>j(e.innerText)),\\n guard:(document.querySelector(\\\".cb-player__guard\\\")||{}).innerText,\\n statuses:j((document.querySelector(\\\".cb-statuses\\\")||{}).innerText),\\n hud:document.querySelector(\\\".mm-hud__courage\\\")?document.querySelector(\\\".mm-hud__courage\\\").getAttribute(\\\"aria-label\\\"):\\\"\\\",\\n nerve:j((document.querySelector(\\\"[class*=nerve]\\\")||{}).innerText),\\n incoming:j((document.querySelector(\\\"[class*=incoming]\\\")||{}).innerText),\\n hand:[...document.querySelectorAll(\\\".mm-card\\\")].map(c=>c.getAttribute(\\\"aria-label\\\")).filter(Boolean),\\n turn:(document.querySelector(\\\"[class*=turn]\\\")||{}).innerText})})()\\n\"}",
+ "result": "{\"e\":[\"5|DUST BUNNY|20|/20|DUST|0/4\",\"5|LOST LUGGAGE|23|/23\"],\"guard\":\"1\",\"statuses\":\"\",\"hud\":\"Courage 74 of 74\",\"nerve\":\"3|/3|NERVE\",\"incoming\":\"\",\"hand\":[\"Bite, 1 Nerve, Attack, basic, Deal 6 damage.\",\"Bite, 1 Nerve, Attack, basic, Deal 6 damage.\",\"Go Get It!, 1 Nerve, Skill, basic, Fetch a non-Slobbered Trick with printed cost 1 or less.\",\"Sit Pretty, 1 Nerve, Skill, basic, Gain 5 Guard. Gain 3 more while Whole.\",\"Sit Pretty, 1 Nerve, Skill, basic, Gain 5 Guard. Gain 3 more while Whole.\"],\"turn\":\"Turn 1\"}",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track003.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

@@ -1,0 +1,10 @@
+{
+ "i": 484,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"JSON.stringify([...document.querySelectorAll('.map-node')].filter(e=>e.className.includes('is-legal')).map(e=>{const r=e.getBoundingClientRect();return {id:e.dataset.id||e.getAttribute('data-node-id'),txt:e.innerText.trim(),x:Math.round(r.x+r.width/2),y:Math.round(r.y+r.height/2)}}))\"}",
+ "result": "[{\"id\":\"foyer-0-0\",\"txt\":\"Entry Hall\",\"x\":168,\"y\":157},{\"id\":\"foyer-0-1\",\"txt\":\"Music Room\",\"x\":168,\"y\":248},{\"id\":\"foyer-0-2\",\"txt\":\"Formal Dining Room\",\"x\":168,\"y\":334},{\"id\":\"foyer-0-3\",\"txt\":\"East Landing\",\"x\":168,\"y\":448},{\"id\":\"foyer-0-4\",\"txt\":\"Parlor\",\"x\":168,\"y\":563},{\"id\":\"foyer-0-5\",\"txt\":\"East Reception Hall\",\"x\":168,\"y\":647}]",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track006.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

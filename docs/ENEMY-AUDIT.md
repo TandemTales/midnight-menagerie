@@ -901,19 +901,57 @@ already noted for the Butler's 250 Courage, every turn-count figure here is meas
 against the 10-card starting deck; a realistic 25-card Act-1 deck kills far faster. No HP
 was cut on the strength of a starting-deck measurement.
 
-## Two further deviations from the design doc, both for intent honesty
+## Two deviations from the design doc — RESOLVED in round 4
 
-- **House Bell, Ring for Service (crowded-room branch).** Doc: 1 Roused to every other
-  enemy. Now: 8 Guard to every other enemy, mirroring what Second Ring's crowded-room
-  branch already does.
-- **The Butler, Service, Please (ally-present branch).** Doc: 8 Guard **and** 1 Roused.
-  Now: 8 Guard only.
+For two rounds the House Bell's Ring for Service and the Butler's Service, Please granted
+Guard where the doc says Roused. Both sit permanently in slot 0 with their summons behind
+them, so a Roused handed out mid-phase always boosted an attack whose number was already
+on screen. Ordering support enemies last fixed that for ordinary supports; it could never
+fix a summoner.
 
-Both enemies occupy slot 0 and their summons sit behind them, so a Roused handed out here
-always boosts an attack whose number is already on screen. Roused itself is untouched and
-still lives on Calling Bell — its designed home — which acts last in every formation it
-appears in and is therefore honest. **Restore both the moment the engine can arm a buff
-between the end of the enemy phase and the intent refresh** (see docs/NOTES.md).
+The engine's `onEnemyPhaseEnd` hook — fired after every enemy has acted and the decay
+buckets have run, but **before** the next intents are chosen — closes the window. All three
+Roused sources now *arm* during their action and *apply* at phase end, so the buff always
+lands on the intent that carries it rather than behind it:
+
+- **Calling Bell — Ring**: armed, not applied inline. Board order is now irrelevant to
+  correctness (support is still authored last because it reads better).
+- **House Bell — Ring for Service**: the doc's 1 Roused to every other enemy, restored.
+- **The Butler — Service, Please**: 8 Guard **and** 1 Roused, as written.
+
+The same window fixed the mirror-image bug on **Nightlight Snuffer**. Darkness used to
+expire at the Snuffer's own turn start, which from any slot but the last stripped the +2
+out of an ally that had not swung yet — the player took *less* than the intent promised. It
+now expires at `onEnemyPhaseEnd`, one full phase after it is cast, so slot order no longer
+matters there either.
+
+Verified against the real engine with Roused live: 2374 scored enemy turns, 0 mismatches.
+
+## Boss Courage ramp flattened (round 4)
+
+Bosses are off the continuous Courage ramp entirely — flat +6% (the design doc's Haunt 1
+value) at every level. The ramp bought difficulty in the one currency that also buys
+*length*: at Haunt 10 the Butler ran 15.5 turns against an 8–12 band while winning 64.3%,
+and boss turns track boss Courage almost linearly.
+
+The difficulty is bought back through `bossDmg` — **+1 damage per hit every third Haunt
+level**, applied by each boss's own damage path so it appears in the intent as well as the
+hit. It is Courage-neutral: each boss turn hurts more instead of there being more turns.
+Ordinary enemies and Big Scares keep their ramp; neither was measured as too long, and
+their Courage is what wears the player down on the way to the door.
+
+Measured at Haunt 10, competent bot, n=60, two independent seeds:
+
+| | boss turns | boss win |
+|---|---|---|
+| before | 15.5 | 64.3% |
+| after, seed A | **11.50** | **46.4%** |
+| after, seed B | **11.79** | **48.3%** |
+
+Both inside the 8–12 turn and 45–65% win targets, and stable across seeds. Haunt 5 moved
+12.18 turns / 61.5% win, so the ladder ramps monotonically in difficulty while getting
+*shorter* rather than longer.
+
 
 ## New tests
 

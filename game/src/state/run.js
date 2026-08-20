@@ -83,7 +83,7 @@ import { rollEvent, eventById, rollOutcome } from '../data/events.js';
  * 17 (REGION_ORDER); the structure below walks the ladder properly, this
  * constant is the only thing holding it to one.
  */
-export const RUN_LENGTH_REGIONS = 1;
+export const RUN_LENGTH_REGIONS = 2;
 
 /** Base Lost Things per room type, before Keepsake multipliers. */
 const PURSE = {
