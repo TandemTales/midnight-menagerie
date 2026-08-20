@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T02:58:52",
+ "updated": "2026-08-20T03:31:19",
  "wave": 1,
  "waveLabel": "Core systems",
  "headline": "Seven builders running in parallel. Critics follow each one.",
@@ -45,9 +45,9 @@
    "id": "scene",
    "name": "Combat presentation",
    "desc": "Battlefield staging, enemy rigs, damage numbers, hit reactions, VFX",
-   "status": "building",
+   "status": "reviewing",
    "round": 1,
-   "verdict": null,
+   "verdict": "Full StS2 layout, 16 intent types, 24 procedural enemy rigs, honest uncertainty previews, 61fps, zero console errors.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -57,10 +57,10 @@
    "id": "enemies",
    "name": "Enemies & intents",
    "desc": "Rosters, move selection, telegraph clarity, Scuffles and Big Scares",
-   "status": "rework",
-   "round": 2,
-   "verdict": "37 enemies across 3 regions, 137 moves, 54 formations, 3 multi-phase bosses. 0 validation errors.",
-   "gap": "Every multi-hit enemy attack resolves hits-squared times: the Butler's 21-damage intent actually deals 63. Makes two of three Foyer elites unwinnable (0% win rate).",
+   "status": "reviewing",
+   "round": 3,
+   "verdict": "Multi-hit bug fixed. Intent honesty: 2451 turns, 0 mismatches. Found two further bugs - the Butler was enforcing all four House Rules at once, and Blanket Blob's Cover was inert.",
+   "gap": null,
    "builder": null,
    "critic": null,
    "log": []
@@ -69,10 +69,10 @@
    "id": "map",
    "name": "Blueprint routes",
    "desc": "Branching route map drawn on the mansion blueprint sections",
-   "status": "reviewing",
-   "round": 1,
+   "status": "rework",
+   "round": 2,
    "verdict": "Route generation plus the blueprint map screen shipped (2500 lines).",
-   "gap": null,
+   "gap": "The map cannot be clicked with a mouse: setPointerCapture on pointerdown retargets the click to the viewport, so no node is ever selected. Also 0 of 34 nodes are dimmed, so legal moves do not stand out.",
    "builder": null,
    "critic": null,
    "log": []
@@ -81,10 +81,10 @@
    "id": "cards",
    "name": "Companion decks",
    "desc": "Card pools + keyword systems for the 16 Companions",
-   "status": "rework",
-   "round": 2,
-   "verdict": "445 cards across 5 Companions (Marmalade, Bones, Pipkin, Taffy, Wink), 0 validation errors.",
-   "gap": "Rarity ladders are numeric ramps, not changes in kind, and several cards are byte-identical duplicates at different rarities.",
+   "status": "reviewing",
+   "round": 3,
+   "verdict": "445 cards, 0 errors, 0 warnings. Nine rarity-ladder duplicates re-authored as changes in kind; the distinctness detector rewritten to catch the class.",
+   "gap": null,
    "builder": null,
    "critic": null,
    "log": []
@@ -129,10 +129,10 @@
    "id": "atmos",
    "name": "Atmosphere",
    "desc": "Lighting, fog, post FX, dust, candle flicker, transitions",
-   "status": "reviewing",
-   "round": 1,
+   "status": "rework",
+   "round": 2,
    "verdict": "Backdrop, candlelight, particles, 5 transitions and the grade shader shipped across 12 modules.",
-   "gap": null,
+   "gap": "Nothing in the scene is lit by a light. Props measure 0.0% of pixels above L192 and 11.2 saturation; light shafts terminate in mid-air with no floor pool. All 17 regions structurally correlate at 0.737.",
    "builder": null,
    "critic": null,
    "log": []
@@ -234,6 +234,34 @@
   {
    "t": "2026-08-20T02:58:52",
    "msg": "Design critic also flagged 9 near-duplicate card groups and two byte-identical cards at different rarities."
+  },
+  {
+   "t": "2026-08-20T03:08:58",
+   "msg": "Card pools round 2: the duplicate detector was keyed on rarity, so 'same card one rarity up' passed by construction. Detector rewritten around effect shape; it independently found the same nine groups the critic did."
+  },
+  {
+   "t": "2026-08-20T03:09:17",
+   "msg": "Combat screen playable end to end: procedural enemy rigs, intent shields, Nerve orb, draw and discard piles."
+  },
+  {
+   "t": "2026-08-20T03:29:24",
+   "msg": "CRITIC FAIL on map: setPointerCapture makes every node unclickable. Three clicks changed one pixel."
+  },
+  {
+   "t": "2026-08-20T03:29:25",
+   "msg": "CRITIC FAIL on atmosphere: measured mid-tones 12.3% vs the reference art's 24.1%; 17 regions are one room recoloured (structural correlation 0.737)."
+  },
+  {
+   "t": "2026-08-20T03:29:25",
+   "msg": "Combat presentation shipped: intents with redundant shape+glyph channels, honest '6?' previews for unmade choices, 61fps."
+  },
+  {
+   "t": "2026-08-20T03:31:19",
+   "msg": "Enemies round 2: the hits-squared bug is fixed and pinned by a test that resolves all 65 attack moves and asserts damage equals intent."
+  },
+  {
+   "t": "2026-08-20T03:31:19",
+   "msg": "Enemy agent's insight: its test mock implemented the mechanic it was testing, so the bug passed forever. A mock that implements a mechanic cannot prove it exists."
   }
  ]
 }

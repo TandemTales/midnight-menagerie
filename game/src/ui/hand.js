@@ -20,7 +20,7 @@
  */
 import { clock as defaultClock, Clock } from '../core/clock.js';
 import { bus as defaultBus } from '../core/bus.js';
-import { CardView } from './card.js';
+import { CardView, CARD_SS } from './card.js';
 
 /** Every tuned number in one place. Milliseconds are seconds here. */
 export const TUNE = {
@@ -30,19 +30,34 @@ export const TUNE = {
   // fan
   refan: 0.30, refanStagger: 0.010,
   rotPerCard: 3.1, maxFanDeg: 15,
-  stepRatio: 0.82, spreadRatio: 0.80, arcDip: 5.4, arcDipMax: 62,
+  stepRatio: 0.82, arcDip: 5.4, arcDipMax: 62,
   unplayableDrop: 24, unplayableScale: 0.965,
   bottomPad: 20,
+
+  // ── fit: how the hand stays on screen ──────────────────────────────────
+  // StS shrinks the cards as the hand grows. A fixed 224x312 box never fit:
+  // at n=12/1600x900 it overlapped 171px of 224 (76%) and hung 32px below the
+  // viewport. These three numbers are the contract:
+  maxCardHFrac: 0.30,   // a card is never taller than 30% of the viewport
+  maxOverlap: 0.45,     // a card never hides more than 45% of its neighbour
+  sideMarginFrac: 0.10, // free gutter each side (energy orb, draw/discard piles)
+  sideMarginMin: 150,
+  minFit: 0.62,         // never shrink past this fraction of the CSS card size
+
   // draw / discard / exhaust — three different signatures
   drawIn: 0.34, drawStagger: 0.055, drawFlick: 18,
   discard: 0.40, discardStagger: 0.035,
-  exhaust: 0.62, exhaustRise: 96,
+  exhaust: 0.38, exhaustRise: 96,
   // play
-  playTo: 0.26, playHold: 0.17, playArc: 0.44, playScale: 1.22, playY: 0.66,
+  playTo: 0.26, playHold: 0.20, playArc: 0.44, playScale: 1.30, playY: 0.62,
+  playOvershoot: 0.11,
   // drag
   dragFollow: 0.075, dragScale: 1.10, dragTiltMax: 14, dragTiltGain: 0.85,
   parkScale: 1.06, snapPad: 26,
   thresholdFrac: 0.54,
+  // arrow
+  arrowHead: 30,        // solid triangle, px
+  arrowReticleR: 46,    // the tip stops on the reticle, never in the sprite
 };
 
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
@@ -84,6 +99,9 @@ export class Hand {
     this.aim = null;
     this.targets = [];
     this.w = 1600; this.h = 900;
+    this.cw = 224; this.chh = 312;   // on-screen card size at fit 1 (measured)
+    this.fit = 1;                    // current per-hand size multiplier
+    this._anyUnplayable = false;
 
     this.playableFn = (card) => {
       const c = card.cost ?? card.def.cost ?? 1;
@@ -129,6 +147,19 @@ export class Hand {
         </g>
       </svg>`;
     this.el = el;
+    // The hand is the single Tab stop for the whole hand; individual cards are
+    // tabindex="-1" and get roving focus. See `_key` — Tab is trapped here
+    // while a card is selected so focus can never escape mid-decision.
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('role', 'group');
+    el.setAttribute('aria-label', 'Your hand');
+    // A hidden card used only to measure the CSS card size (which is now
+    // responsive) without depending on a real card existing.
+    const probe = document.createElement('div');
+    probe.className = 'mm-card mm-hand__probe';
+    probe.setAttribute('aria-hidden', 'true');
+    el.appendChild(probe);
+    this._probe = probe;
     this.layer = el.querySelector('.mm-hand__cards');
     this.hit = el.querySelector('.mm-hand__hit');
     this.$arrow = el.querySelector('.mm-hand__arrow');
@@ -153,15 +184,58 @@ export class Hand {
   _measure() {
     this.w = this.el.clientWidth || this.el.parentNode?.clientWidth || 1600;
     this.h = this.el.clientHeight || this.el.parentNode?.clientHeight || 900;
+
+    // The CSS card size is responsive (`--mm-card-w` in card.css), so read it
+    // rather than assuming 224x312. The probe is built at CARD_SS; divide it
+    // back out to get the size a card occupies on screen at transform scale 1.
+    const pw = this._probe?.offsetWidth || 224 * CARD_SS;
+    const ph = this._probe?.offsetHeight || 312 * CARD_SS;
+    this.cw = pw / CARD_SS;
+    this.chh = ph / CARD_SS;
+
     this.baseY = this.h - TUNE.bottomPad;
     this.thresholdY = this.h * TUNE.thresholdFrac;
-    this.parkY = this.h - 150;   // held card floats above the hand, enemies stay visible
+    // held card floats above the hand; enemies stay visible above it
+    this.parkY = Math.round(this.h - Math.max(96, this.chh * 0.42));
     this.piles = this.piles || {};
     this.piles.draw = this.piles.draw || { x: 96, y: this.h + 40 };
     this.piles.discard = this.piles.discard || { x: this.w - 96, y: this.h + 40 };
     this.$thresh.style.top = this.thresholdY + 'px';
-    this.hit.style.top = Math.max(0, this.h - 460) + 'px';
+    this.hit.style.top = Math.round(Math.max(0, this.h - (this.chh * 1.5 + 90))) + 'px';
     this.$arrow.setAttribute('viewBox', `0 0 ${this.w} ${this.h}`);
+  }
+
+  /** Gutter each side that the fan must never enter (energy orb, piles). */
+  _sideMargin() { return Math.max(TUNE.sideMarginMin, this.w * TUNE.sideMarginFrac); }
+
+  /**
+   * The per-hand size multiplier. Driven by BOTH the viewport and the hand
+   * size, exactly as StS does it: a big hand of small cards beats a small hand
+   * of clipped ones.
+   *
+   *   1. a card is never taller than `maxCardHFrac` of the viewport;
+   *   2. laid out at the widest allowed overlap the whole fan still fits
+   *      inside the safe band (viewport minus both gutters).
+   */
+  _fit(n) {
+    const ch = this.chh, cw = this.cw;
+    let s = Math.min(1, (this.h * TUNE.maxCardHFrac) / (ch || 1));
+    if (n > 1) {
+      const band = Math.max(cw * 0.8, this.w - this._sideMargin() * 2);
+      // The outer card is ROTATED about its bottom centre, so it reaches
+      // cw·cosθ/2 + ch·sinθ past its anchor — far more than half a card width.
+      // Budgeting only cw/2 is what let the fan run to x = -9 at n=12.
+      const A = this._overhang(n, 1);
+      const need = s * ((n - 1) * cw * (1 - TUNE.maxOverlap) + 2 * A);
+      if (need > band) s *= band / need;
+    }
+    return clamp(s, TUNE.minFit, 1);
+  }
+
+  /** Horizontal reach of the outermost card past its anchor, at scale `s`. */
+  _overhang(n, s) {
+    const th = (n <= 1 ? 0 : Math.min(TUNE.rotPerCard * (n - 1) / 2, TUNE.maxFanDeg)) * Math.PI / 180;
+    return s * (this.cw * Math.cos(th) / 2 + this.chh * Math.sin(th));
   }
 
   /** Where cards fly to/from. Combat scene should call this with real pile positions. */
@@ -184,9 +258,10 @@ export class Hand {
       largeText: this.largeText, reduceMotion: this.reduceMotion, clock: this.clock,
     });
     this.layer.appendChild(view.el);
+    const f = this.fit || 1;
     const start = entering
-      ? { x: this.piles.draw.x, y: this.piles.draw.y, rot: -26, scale: 0.52, z: 0 }
-      : { x: this.w / 2, y: this.baseY + 60, rot: 0, scale: 0.9, z: 0 };
+      ? { x: this.piles.draw.x, y: this.piles.draw.y, rot: -26, scale: 0.52 * f, z: 0 }
+      : { x: this.w / 2, y: this.baseY + 60, rot: 0, scale: 0.9 * f, z: 0 };
     const slot = {
       card, view,
       cur: { ...start }, from: { ...start }, to: { ...start },
@@ -269,7 +344,7 @@ export class Hand {
     const dur = this._d(TUNE.exhaust);
     const rise = this.clock.ramp(dur, (p) => {
       slot.view.setTransform({
-        x: c.x, y: c.y - TUNE.exhaustRise * p,
+        x: c.x, y: c.y - TUNE.exhaustRise * this.fit * p,
         rot: c.rot * (1 - p), scale: c.scale * (1 + 0.08 * p), z: 900,
       });
     }, Clock.easeOutCubic);
@@ -288,10 +363,13 @@ export class Hand {
   setEnergy(n) { this.energy = n; this._refreshPlayable(true); return this; }
 
   _refreshPlayable(relayout) {
+    let any = false;
     for (const s of this.slots) {
       const ok = !!this.playableFn(s.card, this.energy);
       if (s.playable !== ok) { s.playable = ok; s.view.setState({ playable: ok }); }
+      if (!ok) any = true;
     }
+    this._anyUnplayable = any;   // the fan reserves the 24px drop only if needed
     if (relayout) this._layout();
   }
 
@@ -305,21 +383,46 @@ export class Hand {
    * With few cards the arc flattens; with many, cards overlap and the arc
    * tightens." Recomputed with easing on every change — never a teleport.
    */
-  /** Fan geometry for n cards. Shared by layout and hit-testing so they agree. */
+  /**
+   * Fan geometry for n cards. Shared by layout and hit-testing so they agree.
+   * Everything here is in real screen px at the CURRENT fit scale.
+   */
   _fan(n) {
     const T = TUNE;
     const c = (n - 1) / 2;
-    const maxSpread = Math.min(this.w * T.spreadRatio, 1240);
+    const fit = this._fit(n);
+    const cw = this.cw * fit, ch = this.chh * fit;
+    const band = Math.max(cw, this.w - this._sideMargin() * 2);
+
     const f = this._fanTmp || (this._fanTmp = {});
-    f.c = c;
-    f.step = Math.min(224 * T.stepRatio, n > 1 ? maxSpread / (n - 1) : 0);
+    f.fit = fit; f.cw = cw; f.ch = ch; f.c = c;
+    f.overhang = this._overhang(n, fit);
+    // The widest step the safe band allows, capped so cards never separate.
+    f.step = n > 1 ? Math.max(8, Math.min(cw * T.stepRatio, (band - 2 * f.overhang) / (n - 1))) : 0;
     f.rotPer = n <= 1 ? 0 : Math.min(T.rotPerCard, T.maxFanDeg / c);
-    f.dip = Math.min(T.arcDipMax, 6 + n * T.arcDip);
-    // Anchor so the LOWEST card in the arc sits on the bottom pad: the fan
-    // rises as it widens instead of sliding off the bottom of the screen.
-    f.baseY = this.h - TUNE.bottomPad - f.dip;
+    f.dip = Math.min(T.arcDipMax, 6 + n * T.arcDip) * fit;
+    // A rotated card's bounding box hangs (w/2)·sin(rot) below its anchor, and
+    // an unaffordable one drops another 24px. Both are reserved here, so
+    // max(card.bottom) == h - bottomPad for EVERY n. Nothing is ever clipped.
+    f.sag = Math.abs(Math.sin(f.rotPer * c * Math.PI / 180)) * cw / 2;
+    f.drop = this._anyUnplayable ? T.unplayableDrop * fit : 0;
+    f.baseY = this.h - T.bottomPad - f.dip - f.sag - f.drop;
     f.cx = this.w / 2;
+    f.lift = T.hoverLift * fit;
+    f.nudge = T.hoverNudge * fit;
+    this.fit = fit;
     return f;
+  }
+
+  /** What the critic's assertion measures: the lowest pixel any card reaches. */
+  maxBottom() {
+    let m = -Infinity;
+    for (const s of this.slots) {
+      const c = s.cur;
+      const hw = this.cw * c.scale / 2;
+      m = Math.max(m, c.y + Math.abs(Math.sin(c.rot * Math.PI / 180)) * hw);
+    }
+    return m === -Infinity ? 0 : m;
   }
 
   _layout(o = {}) {
@@ -327,7 +430,7 @@ export class Hand {
     if (!n) return;
     const T = TUNE;
     const F = this._fan(n);
-    const c = F.c, step = F.step, rotPer = F.rotPer, dip = F.dip, cx = F.cx;
+    const c = F.c, step = F.step, rotPer = F.rotPer, dip = F.dip, cx = F.cx, fit = F.fit;
     this.baseY = F.baseY;
 
     const hover = this.hoverSlot;
@@ -342,20 +445,20 @@ export class Hand {
       let x = cx + d * step;
       let y = F.baseY + Math.pow(norm, 1.85) * dip;
       let rot = d * rotPer;
-      let scale = 1;
+      let scale = fit;
       let z = 20 + i;
 
-      if (!s.playable) { y += T.unplayableDrop; scale = T.unplayableScale; }
+      if (!s.playable) { y += T.unplayableDrop * fit; scale = fit * T.unplayableScale; }
 
       if (hoverIdx >= 0 && i !== hoverIdx) {
         const dd = i - hoverIdx;
         const fall = Math.abs(dd) === 1 ? 1 : Math.abs(dd) === 2 ? 0.42 : Math.abs(dd) === 3 ? 0.16 : 0;
-        x += Math.sign(dd) * T.hoverNudge * fall;
+        x += Math.sign(dd) * F.nudge * fall;
         y += 4 * fall;
       }
       if (i === hoverIdx) {
-        y = F.baseY - T.hoverLift;
-        rot = 0; scale = T.hoverScale; z = 500;
+        y = F.baseY - F.lift;
+        rot = 0; scale = fit * T.hoverScale; z = 500;
       }
 
       if (s === dragSlot) continue;               // drag owns its own goal
@@ -416,6 +519,14 @@ export class Hand {
     hit.addEventListener('pointerleave', this._onLeave);
     this._onKey = (e) => this._key(e);
     window.addEventListener('keydown', this._onKey);
+    // Tabbing into the hand puts you on a card immediately — the keyboard path
+    // must be discoverable, not a secret set of shortcuts.
+    this._onFocusIn = (e) => {
+      if (e.target === this.el && !this.locked && this.selIdx < 0 && this.slots.length) {
+        this._selectIdx(Math.floor(this.slots.length / 2));
+      }
+    };
+    this.el.addEventListener('focusin', this._onFocusIn);
   }
 
   _local(e) {
@@ -434,7 +545,7 @@ export class Hand {
       const a = -geo.rot * Math.PI / 180;
       const lx = dx * Math.cos(a) - dy * Math.sin(a);
       const ly = dx * Math.sin(a) + dy * Math.cos(a);
-      const hw = 112 * geo.scale, hh = 312 * geo.scale;
+      const hw = this.cw * geo.scale / 2, hh = this.chh * geo.scale;
       return lx >= -hw && lx <= hw && ly >= -hh && ly <= 0;
     };
     if (this.hoverSlot && inside(this.hoverSlot, this.hoverSlot.cur)) return this.hoverSlot;
@@ -451,8 +562,10 @@ export class Hand {
     const d = i - c, norm = c ? Math.abs(d) / c : 0;
     const g = this._geoTmp || (this._geoTmp = {});
     g.x = F.cx + d * F.step;
-    g.y = F.baseY + Math.pow(norm, 1.85) * F.dip + (this.slots[i].playable === false ? TUNE.unplayableDrop : 0);
-    g.rot = d * F.rotPer; g.scale = 1;
+    g.y = F.baseY + Math.pow(norm, 1.85) * F.dip
+        + (this.slots[i].playable === false ? TUNE.unplayableDrop * F.fit : 0);
+    g.rot = d * F.rotPer;
+    g.scale = F.fit * (this.slots[i].playable === false ? TUNE.unplayableScale : 1);
     return g;
   }
 
@@ -513,21 +626,30 @@ export class Hand {
     const above = p.y < this.thresholdY;
     const s = d.slot;
 
+    const fit = this.fit;
     if (d.needsTarget && above) {
       // Card parks; the arrow does the aiming.
       const parkX = lerp(this.w / 2, p.x, 0.18);
-      this._goal(s, parkX, this.parkY, 0, TUNE.parkScale, 600, this._d(0.16), 0, Clock.easeOutCubic);
+      this._goal(s, parkX, this.parkY, 0, fit * TUNE.parkScale, 600, this._d(0.16), 0, Clock.easeOutCubic);
       this._updateSnap(p.x, p.y);
-      this.aim = { slot: s, x: p.x, y: p.y, snap: d.snap, valid: !!d.snap };
+      this.aim = { slot: s, x: p.x, y: p.y, snap: d.snap, valid: !!d.snap && s.playable !== false };
       this._showArrow(true);
     } else {
       // Card follows the cursor with lag + tilt toward motion.
-      this._goal(s, p.x, p.y + 312 * TUNE.dragScale * 0.5, d.tilt, TUNE.dragScale, 600,
+      const y = Math.min(this.h - 6, p.y + this.chh * fit * TUNE.dragScale * 0.5);
+      this._goal(s, p.x, y, d.tilt, fit * TUNE.dragScale, 600,
         this._d(TUNE.dragFollow), 0, Clock.easeOutCubic);
       if (d.needsTarget) { this._showArrow(false); this.aim = null; d.snap = null; this._clearPreview(s); }
       else {
-        this.$thresh.classList.toggle('is-armed', above);
-        if (above !== d.wasAbove) { d.wasAbove = above; if (above) s.view.pulse('var(--flame-glow)', 0.3); }
+        // The threshold only ARMS for a card that can actually be played.
+        // Amber "RELEASE TO PLAY" over a card that will be refused is a lie.
+        const ok = s.playable !== false;
+        this.$thresh.classList.toggle('is-armed', above && ok);
+        this.$thresh.classList.toggle('is-blocked', above && !ok);
+        if (above !== d.wasAbove) {
+          d.wasAbove = above;
+          if (above && ok) s.view.pulse('var(--flame-glow)', 0.3);
+        }
       }
     }
   }
@@ -539,7 +661,7 @@ export class Hand {
     try { this.hit.releasePointerCapture(d.pointerId); } catch { /* already gone */ }
     const s = d.slot;
     s.view.setState({ dragging: false });
-    this.$thresh.classList.remove('is-on', 'is-armed');
+    this.$thresh.classList.remove('is-on', 'is-armed', 'is-blocked');
     this._showArrow(false);
     this.aim = null;
     this._clearPreview(s);
@@ -618,60 +740,111 @@ export class Hand {
     if (!on) { this.$arrow.classList.remove('is-snapped', 'is-invalid'); }
   }
 
+  /**
+   * The targeting arrow. STS2-REFERENCE §1: "a curved arrow springs from the
+   * card to the cursor and snaps onto the hovered enemy with a distinct click
+   * of feedback and a target reticle."
+   *
+   * Two things were wrong before and both are fixed here:
+   *  - the head had ZERO AREA. The terminal tangent was taken from t → t+0.01
+   *    clamped to 1, which at the last sample is t → t, so the direction was
+   *    (0,0) and the head path collapsed to `M x,y L x,y L x,y Z`. The tangent
+   *    is now taken BACKWARDS (t-δ → t), which is always defined, and the head
+   *    is a solid 30px triangle.
+   *  - with the body's `(1 - t^8·0.9)` taper the ribbon pinched to nothing at
+   *    the target and bulged in the middle: a comet with its fat end at the
+   *    enemy, so which way it pointed was ambiguous. The ribbon now widens
+   *    monotonically toward the target and stops at the base of the head.
+   *
+   * The tip stops on the reticle ring instead of piercing the sprite, and the
+   * whole thing stays grey when the card cannot actually be paid for.
+   */
   _drawArrow() {
     const a = this.aim;
     if (!a) return;
-    const v = a.slot.view.transform;
-    const x0 = v.x, y0 = v.y - 312 * v.scale * 0.72;
+    const T = TUNE;
+    const slot = a.slot;
+    const v = slot.view.transform;
+    const playable = slot.playable !== false;
     const snap = a.snap;
-    const x3 = snap ? snap.cx : a.x;
-    const y3 = snap ? snap.cy : a.y;
+    const live = !!snap && playable;
 
-    const dist = Math.hypot(x3 - x0, y3 - y0);
+    const x0 = v.x, y0 = v.y - this.chh * v.scale * 0.72;
+    const tgx = snap ? snap.cx : a.x;
+    const tgy = snap ? snap.cy : a.y;
+
+    const dist = Math.hypot(tgx - x0, tgy - y0);
     const bow = clamp(dist * 0.42, 60, 230);
+
+    // Terminal tangent of a cubic bezier is P3 - P2. Use it to back the tip
+    // off to the reticle edge, then rebuild the curve on the new endpoint.
+    const g2x = lerp(x0, tgx, 0.55), g2y = tgy - bow * 0.55;
+    let ax = tgx - g2x, ay = tgy - g2y;
+    const al = Math.hypot(ax, ay) || 1; ax /= al; ay /= al;
+    const back = snap ? Math.min(T.arrowReticleR, dist * 0.45) : 0;
+    const x3 = tgx - ax * back, y3 = tgy - ay * back;
+
     const x1 = x0, y1 = y0 - bow;
     const x2 = lerp(x0, x3, 0.55), y2 = y3 - bow * 0.55;
 
-    const N = 22;
-    const L = [], Rr = [];
-    let ex = 0, ey = 0, etx = 0, ety = 0;
+    // sample + cumulative arc length so the ribbon can stop exactly at the
+    // base of the head no matter how long or short the throw is
+    const N = 26;
+    const P = this._arrowPts || (this._arrowPts = []);
+    P.length = 0;
+    let total = 0;
     for (let i = 0; i <= N; i++) {
       const t = i / N;
-      const px = bez(x0, x1, x2, x3, t);
-      const py = bez(y0, y1, y2, y3, t);
-      const t2 = Math.min(1, t + 0.01);
-      const tx = bez(x0, x1, x2, x3, t2) - px;
-      const ty = bez(y0, y1, y2, y3, t2) - py;
+      const px = bez(x0, x1, x2, x3, t), py = bez(y0, y1, y2, y3, t);
+      if (i) total += Math.hypot(px - P[i - 1][0], py - P[i - 1][1]);
+      P.push([px, py, total]);
+    }
+
+    const head = T.arrowHead;
+    const stop = Math.max(total * 0.12, total - head * 0.82);
+
+    const L = [], Rr = [];
+    for (let i = 0; i <= N; i++) {
+      if (P[i][2] > stop) break;
+      const px = P[i][0], py = P[i][1];
+      // tangent from the PREVIOUS sample (never degenerate, including i === N)
+      const q = i > 0 ? P[i - 1] : P[1];
+      const tx = i > 0 ? px - q[0] : q[0] - px;
+      const ty = i > 0 ? py - q[1] : q[1] - py;
       const m = Math.hypot(tx, ty) || 1;
       const nx = -ty / m, ny = tx / m;
-      const wdt = lerp(4, 17, Math.pow(t, 0.85)) * (1 - Math.pow(t, 8) * 0.9);
+      const k = total ? P[i][2] / total : 0;
+      const wdt = lerp(4.5, 12.5, Math.pow(k, 0.8));    // monotonic: thin → thick
       L.push((px + nx * wdt).toFixed(1) + ',' + (py + ny * wdt).toFixed(1));
       Rr.push((px - nx * wdt).toFixed(1) + ',' + (py - ny * wdt).toFixed(1));
-      if (i === N) { ex = px; ey = py; etx = tx / m; ety = ty / m; }
     }
     Rr.reverse();
-    const d = 'M' + L.join(' L') + ' L' + Rr.join(' L') + ' Z';
-    this.$body.setAttribute('d', d);
+    this.$body.setAttribute('d', 'M' + L.join(' L') + ' L' + Rr.join(' L') + ' Z');
     this.$glow.setAttribute('d',
-      `M${x0.toFixed(1)},${y0.toFixed(1)} C${x1.toFixed(1)},${y1.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)} ${x3.toFixed(1)},${y3.toFixed(1)}`);
+      `M${x0.toFixed(1)},${y0.toFixed(1)} C${x1.toFixed(1)},${y1.toFixed(1)} ` +
+      `${x2.toFixed(1)},${y2.toFixed(1)} ${x3.toFixed(1)},${y3.toFixed(1)}`);
 
-    // head
-    const hs = 30;
-    const hx = ex + etx * hs * 0.55, hy = ey + ety * hs * 0.55;
-    const px1 = ex - etx * hs * 0.5 - ety * hs * 0.62, py1 = ey - ety * hs * 0.5 + etx * hs * 0.62;
-    const px2 = ex - etx * hs * 0.5 + ety * hs * 0.62, py2 = ey - ety * hs * 0.5 - etx * hs * 0.62;
+    // ── head: a solid triangle, tip on the reticle, pointing at the target ──
+    const pen = P[N - 1];
+    let hx = x3 - pen[0], hy = y3 - pen[1];
+    const hl = Math.hypot(hx, hy) || 1; hx /= hl; hy /= hl;
+    const nx = -hy, ny = hx;
+    const hw = head * 0.5;
+    const bx = x3 - hx * head, by = y3 - hy * head;          // base centre
+    const notchX = bx + hx * head * 0.26, notchY = by + hy * head * 0.26;
     this.$head.setAttribute('d',
-      `M${hx.toFixed(1)},${hy.toFixed(1)} L${px1.toFixed(1)},${py1.toFixed(1)} ` +
-      `L${(ex - etx * hs * 0.16).toFixed(1)},${(ey - ety * hs * 0.16).toFixed(1)} ` +
-      `L${px2.toFixed(1)},${py2.toFixed(1)} Z`);
+      `M${x3.toFixed(1)},${y3.toFixed(1)} ` +
+      `L${(bx + nx * hw).toFixed(1)},${(by + ny * hw).toFixed(1)} ` +
+      `L${notchX.toFixed(1)},${notchY.toFixed(1)} ` +
+      `L${(bx - nx * hw).toFixed(1)},${(by - ny * hw).toFixed(1)} Z`);
 
-    if (snap) {
+    if (live) {
       const s = 1 + (this._snapPulse || 0) * 0.42;
       this.$ret.setAttribute('transform',
         `translate(${snap.cx.toFixed(1)},${snap.cy.toFixed(1)}) scale(${s.toFixed(3)}) rotate(${(this.clock.t * 26 % 360).toFixed(1)})`);
     }
-    this.$arrow.classList.toggle('is-snapped', !!snap);
-    this.$arrow.classList.toggle('is-invalid', !snap);
+    this.$arrow.classList.toggle('is-snapped', live);
+    this.$arrow.classList.toggle('is-invalid', !live);
   }
 
   // ── commit + play motion ─────────────────────────────────────────────────
@@ -712,27 +885,40 @@ export class Hand {
 
     const v = slot.view;
     v.setPreviewNumbers(null);
+    // The card is out of the hand now: nothing about the hand's state may dim
+    // it. (Paying for it drops energy to 0, which used to repaint the card as
+    // `is-unplayable` a frame before it reached the play position — the hero
+    // frame arrived as a flat grey ghost.)
+    v.setState({ playable: true, hover: false, selected: false, dragging: false });
+    v.hero(true);
+
     const a = { ...v.transform };
-    const pX = this.w / 2, pY = this.h * TUNE.playY, pS = TUNE.playScale;
+    const pX = this.w / 2, pY = this.h * TUNE.playY;
+    const pS = TUNE.playScale * this.fit;
 
     if (this.reduceMotion) {
-      v.destroy(); this.flying.delete(slot); return;
+      v.hero(false); v.destroy(); this.flying.delete(slot); return;
     }
 
-    await this.clock.ramp(TUNE.playTo, (k) => {
+    // beat 1 — the strike. Scale overshoots past the play size and the card
+    // rises on a short arc; easeOutBack gives it weight arriving.
+    const over = 1 + TUNE.playOvershoot;
+    await this.clock.ramp(TUNE.playTo, (k, raw) => {
       v.setTransform({
         x: lerp(a.x, pX, k),
         y: lerp(a.y, pY, k) - Math.sin(k * Math.PI) * 46,
         rot: lerp(a.rot, 0, k),
-        scale: lerp(a.scale, pS, k),
+        scale: lerp(a.scale, pS * over, k),
         z: 900,
       });
     }, Clock.easeOutCubic);
 
-    v.flash(0.5, 0.2);
+    // beat 2 — contact. A hard white pop, then settle back from the overshoot.
+    v.impact(1);
     await this.clock.ramp(TUNE.playHold, (k) => {
-      v.setTransform({ scale: pS + Math.sin(k * Math.PI) * 0.055 });
-    });
+      v.setTransform({ scale: pS * lerp(over, 1, k) + Math.sin(k * Math.PI) * 0.06 * pS });
+    }, Clock.easeOutBack);
+    v.hero(false);
 
     const pile = this.piles.discard;
     const c1x = lerp(pX, pile.x, 0.35), c1y = pY - 120;
@@ -789,9 +975,17 @@ export class Hand {
       if (this.aim || this.selIdx >= 0) { e.preventDefault(); this._cancelAim(); this._selectIdx(-1); }
       return;
     }
-    if (e.key === 'Tab' && this.aim) {
-      e.preventDefault();
-      this._cycleTarget(e.shiftKey ? -1 : 1);
+    // Tab is TRAPPED inside the hand for as long as a decision is open: while
+    // aiming it cycles targets, while a card is selected it walks the hand.
+    // It only escapes to the page when nothing is selected.
+    if (e.key === 'Tab') {
+      if (this.aim) { e.preventDefault(); this._cycleTarget(e.shiftKey ? -1 : 1); return; }
+      if (this.selIdx >= 0 && n) {
+        e.preventDefault();
+        const dir = e.shiftKey ? -1 : 1;
+        this._selectIdx(((this.selIdx + dir) % n + n) % n);
+        return;
+      }
       return;
     }
     if (!n) return;
@@ -843,7 +1037,7 @@ export class Hand {
     if (this._needsTarget(s.card.def)) {
       this._readTargets();
       if (!this.targets.length) { s.view.shake(8, 0.28); return; }
-      this._goal(s, lerp(this.w / 2, s.cur.x, 0.3), this.parkY, 0, TUNE.parkScale, 600, this._d(0.18));
+      this._goal(s, lerp(this.w / 2, s.cur.x, 0.3), this.parkY, 0, this.fit * TUNE.parkScale, 600, this._d(0.18));
       this.aim = { slot: s, x: 0, y: 0, snap: this.targets[0], valid: true, key: true };
       this._applyPreview(this.targets[0].id);
       this.bus.emit('card:target', { uid: s.card.uid, targetId: this.targets[0].id });
@@ -883,6 +1077,7 @@ export class Hand {
     this._offSettings?.();
     this._ro?.disconnect();
     window.removeEventListener('keydown', this._onKey);
+    this.el.removeEventListener('focusin', this._onFocusIn);
     this.hit.removeEventListener('pointerdown', this._onDown);
     this.hit.removeEventListener('pointermove', this._onMove);
     this.hit.removeEventListener('pointerup', this._onUp);

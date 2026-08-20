@@ -80,7 +80,12 @@ export const buttonBaby = {
     'sew-on': {
       id: 'sew-on', name: 'Sew On', intent: Intent.BUFF,
       tell: 'It selects a button, licks the thread, and reaches for a friend.',
-      appliesStatus: [{ id: 'button-*', to: 'ally' }],
+      // Name the exact Button before it is sewn — which one it picks changes who the
+      // player should be attacking this turn.
+      appliesFn: (c) => {
+        const t = buttonBaby.buttonTarget(c);
+        return t ? [{ id: buttonBaby.chooseButton(c, t), stacks: 1, to: 'ally' }] : [];
+      },
       effect(c) {
         const t = buttonBaby.buttonTarget(c);
         if (!t) return;
@@ -374,6 +379,28 @@ export const blanketBlob = {
 
   coveredAlly(c) { return allies(c).find(a => c.has('covered', a)) || null; },
 
+  /**
+   * Pay the damage the `covered` status absorbed on an ally's behalf. Runs on the Blob's
+   * own hooks because a status hook cannot reach across actors to deal it directly.
+   * Settling does NOT re-arm the allowance — that is a separate, once-per-round step.
+   */
+  settleCover(c) {
+    for (const a of allies(c)) {
+      if (!c.has('covered', a)) continue;
+      const owed = a._coverPending || 0;
+      a._coverPending = 0;
+      if (owed > 0) c.damage(c.self, owed, { redirected: true, cause: 'cover' });
+    }
+  },
+
+  /** "The first 8 damage ... each player turn." One fresh allowance per round. */
+  rearmCover(c) {
+    for (const a of allies(c)) if (c.has('covered', a)) a._coverUsedThisTurn = 0;
+  },
+
+  onPlayerTurnEnd(c) { blanketBlob.settleCover(c); },
+  onTurnStart(c) { blanketBlob.settleCover(c); blanketBlob.rearmCover(c); },
+
   /** It will not tuck in another Blanket Blob — blankets under blankets go nowhere. */
   coverTarget(c) {
     return allies(c).find(a => a.id !== 'blanket-blob' && !c.has('covered', a)) || null;
@@ -381,16 +408,29 @@ export const blanketBlob = {
 
   onDeath(c) {
     // "When Blanket Blob is defeated, Cover immediately ends."
-    for (const a of allies(c)) if (c.has('covered', a)) c.removeStatus(a, 'covered');
+    for (const a of allies(c)) {
+      if (!c.has('covered', a)) continue;
+      c.removeStatus(a, 'covered');
+      a._coverPending = 0;
+      a._coverUsedThisTurn = 0;
+    }
   },
 
   moves: {
     'tuck-in': {
       id: 'tuck-in', name: 'Tuck In', intent: Intent.DEFEND, block: 5,
       tell: 'It flows over a friend and settles, leaving only a shape.',
+      appliesFn: (c) => (blanketBlob.coverTarget(c) ? [{ id: 'covered', stacks: 1, to: 'ally' }] : []),
       effect(c) {
         const t = blanketBlob.coverTarget(c);
-        if (t) c.applyStatus(t, 'covered', 1, { by: c.self.uid ?? c.self.id, amount: blanketBlob.coverAmount(c) });
+        if (t) {
+          // The engine's enemy ctx drops extra applyStatus args, so the size of the Cover
+          // is stamped straight onto the actor where the status hook can read it.
+          t._coverAmount = blanketBlob.coverAmount(c);
+          t._coverUsedThisTurn = 0;
+          t._coverPending = 0;
+          c.applyStatus(t, 'covered', 1);
+        }
         c.block(c.self, 5);
       },
     },
@@ -402,6 +442,7 @@ export const blanketBlob = {
     smother: {
       id: 'smother', name: 'Smother', intent: Intent.ATTACK_DEBUFF, damage: 5, hits: 1,
       tell: 'It presses down over your face, warm and far too heavy.',
+      applies: [{ id: 'smothered', stacks: 1, to: 'player' }],
       effect(c) { hitPlayer(c, 5); c.applyStatus(c.player, 'smothered', 1); },
     },
   },
@@ -768,15 +809,17 @@ function twinCommon(id) {
       const t = twinOf(c, id);
       if (t) {
         if (crackState(t) === 'shattered' && crackState(c.self) === 'pristine') b += 4;   // Distressed
-      } else if (mem(c).alone) {
-        b += 3;                                                                            // Alone
+      } else {
+        // Alone. Derived from "no living twin", never latched in a hook — a latch set at
+        // turn start lands AFTER the intent is read, so the survivor would telegraph a
+        // stale number for a full turn. This way the intent jumps the instant a Twin dies.
+        b += 3;
       }
       return b;
     },
 
     onTurnStart(c) {
       if (crackState(c.self) === 'pristine') c.block(c.self, 4);
-      if (!twinOf(c, id)) mem(c).alone = true;
     },
 
     afterAttack(c) { if (crackState(c.self) === 'shattered') c.loseHp(c.self, 3); },

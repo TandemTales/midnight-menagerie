@@ -368,40 +368,10 @@ export function ensure(c, slug) { installTrackers(c?.e, slug); return c; }
  * helper in this module behaves identically inside and outside a card effect.
  */
 export function trackerCtx(engine) {
-  if (!engine) return null;
-  if (engine.ctxFor) { const c = engine.ctxFor(null, null, 0); c.card = null; return c; }
-  const player = engine.player;
-  return {
-    e: engine, self: player, target: null, card: null, x: 0,
-    counter: (id) => engine.counter?.(id) ?? 0,
-    addCounter: (id, n) => engine.addCounter?.(id, n) ?? 0,
-    spendCounter: (id, n) => engine.spendCounter?.(id, n) ?? false,
-    count: (id, a) => ((a || player)?.statuses?.get ? (a || player).statuses.get(id) || 0 : ((a || player)?.statuses?.[id] || 0)),
-    applyStatus: (a, id, n) => engine.applyStatus?.(a || player, id, n),
-    damage: (t, n) => engine.dealDamage?.({ attacker: player, defender: t, amount: n, kind: 'attack' }),
-    damageAll: (n) => (engine.livingEnemies?.() || []).forEach(t => engine.dealDamage?.({ attacker: player, defender: t, amount: n, kind: 'attack' })),
-    loseHp: (t, n) => engine.loseHp?.(t || player, n, 'effect'),
-    block: (a, n) => engine.gainBlock?.(a || player, n, { reason: 'effect' }),
-    heal: (a, n) => engine.heal?.(a || player, n, 'effect'),
-    draw: (n) => engine.drawCards?.(n, 'effect'),
-    gainEnergy: (n) => engine.gainEnergy?.(n, 'effect'),
-    loseEnergy: (n) => engine.loseEnergy?.(n, 'effect'),
-    moveCard: (k, pile, o) => engine.moveCard?.(k, pile, o),
-    exhaust: (k) => engine.exhaustCard?.(k, 'effect'),
-    addCard: (def, pile, o) => engine.addCard?.(def, pile, o),
-    setCost: (k, v, sc) => engine.setCardCost?.(k, v, sc || 'turn'),
-    modifyCost: (k, d, sc) => engine.modifyCardCost?.(k, d, sc || 'turn'),
-    retainCard: (k) => { if (k) k.retainThisTurn = true; },
-    schedule: (o) => engine.schedule?.(o),
-    livingEnemies: () => engine.livingEnemies?.() || [],
-    randomEnemy: () => engine.randomEnemy?.(),
-    forEachEnemy: (fn) => (engine.livingEnemies?.() || []).forEach(fn),
-    hand: engine.piles?.hand, drawPile: engine.piles?.draw, discardPile: engine.piles?.discard,
-    exhaustPile: engine.piles?.exhaust, limbo: engine.piles?.limbo, stash: engine.piles?.stash,
-    cardsPlayedThisTurn: () => engine.stats?.cardsPlayedThisTurn ?? 0,
-    exhaustedThisCombat: () => engine.stats?.cardsExhaustedThisCombat ?? 0,
-    untouched: () => (engine.stats?.damageTakenLastEnemyTurn ?? 0) === 0,
-  };
+  if (!engine || !engine.ctxFor) return null;
+  const c = engine.ctxFor(null, null, 0);
+  c.card = null;
+  return c;
 }
 
 // ── clamps used by the balance validator ────────────────────────────────────

@@ -24,9 +24,13 @@ const lives = (c) => U.res(c, LIVES);
 /** Spend Lives. Returns true if the whole cost was paid. Fires the Nine Lives hook. */
 function spendLife(c, n) {
   if (!U.spendRes(c, LIVES, n)) return false;
+  const s = U.mm(c);
+  s.livesSpent = (s.livesSpent || 0) + n;
   if (U.once(c, 'lifeSpent')) U.fire(c, 'lifeSpent', { n });
   return true;
 }
+/** Lives burned so far this combat — Spectral Stampede's fuel. */
+const livesSpent = (c) => U.mm(c).livesSpent || 0;
 /** Gain Ghoststep. Fires the Haunted Housecat hook. */
 function gainGhost(c, n) {
   if (n <= 0) return 0;
@@ -166,13 +170,12 @@ const commons = [
   },
   {
     id: 'marmalade/moonlit-claw', name: 'Moonlit Claw', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 2, target: ENEMY, keywords: ['untouched'],
-    text: 'Deal {d} damage. Costs {n} less while [Untouched].',
-    flavor: 'Silver light does most of the sharpening.',
-    nums: { d: 13, n: 1 },
-    effect: eff(c => U.hit(c, N(c).d)),
-    dynamicCost: (c) => Math.max(0, 2 - (U.isUntouched(c) ? 1 : 0)),
-    upgrade: { nums: { d: 17, n: 1 } },
+    cost: 2, target: ENEMY,
+    text: 'Deal {d} damage. You cannot gain Guard for the rest of this turn.',
+    flavor: 'Silver light does most of the sharpening. She pays for it in cover.',
+    nums: { d: 16 },
+    effect: eff(c => { U.hit(c, N(c).d); U.applySelf(c, 'no-guard', 1); }),
+    upgrade: { nums: { d: 21 } },
   },
   {
     id: 'marmalade/back-arched-swipe', name: 'Back-Arched Swipe', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -209,9 +212,12 @@ const commons = [
   },
   {
     id: 'marmalade/fluff-up', name: 'Fluff Up', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, text: 'Gain {b} Guard.',
+    cost: 1, target: SELF, keywords: [GHOST],
+    text: 'Gain {b} Guard. If you have no [Ghoststep], gain {n}.',
     flavor: 'Ninety percent air, one hundred percent commitment.',
-    nums: { b: 8 }, effect: eff(c => U.guard(c, N(c).b)), upgrade: { nums: { b: 11 } },
+    nums: { b: 6, n: 1 },
+    effect: eff(c => { U.guard(c, N(c).b); if (ghost(c) === 0) gainGhost(c, N(c).n); }),
+    upgrade: { nums: { b: 9, n: 1 } },
   },
   {
     id: 'marmalade/watchful-eyes', name: 'Watchful Eyes', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -258,9 +264,12 @@ const commons = [
   },
   {
     id: 'marmalade/haunting-hiss', name: 'Haunting Hiss', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: [HAUNT], text: 'Apply {n} [Haunt].',
+    cost: 1, target: ENEMY, keywords: [HAUNT],
+    text: 'Apply {n} [Haunt]. If the target is already Haunted, apply {m0} instead.',
     flavor: 'A sound with a temperature.',
-    nums: { n: 6 }, effect: eff(c => haunt(c, c.target, N(c).n)), upgrade: { nums: { n: 8 } },
+    nums: { n: 3, m0: 7 },
+    effect: eff(c => haunt(c, c.target, U.stacks(c, c.target, HAUNT) > 0 ? N(c).m0 : N(c).n)),
+    upgrade: { nums: { n: 4, m0: 9 } },
   },
   {
     id: 'marmalade/knock-it-over', name: 'Knock It Over', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -521,10 +530,10 @@ const uncommons = [
     cost: 1, target: SELF, exhaust: true, keywords: ['lives', 'vanish'],
     text: 'Spend {m0} [Lives]. Gain {b} Guard. [Vanish].',
     flavor: 'One of her stays to take the hit. She is fine about it.',
-    nums: { m0: 1, b: 24 },
+    nums: { m0: 1, b: 15 },
     effect: eff(c => { if (spendLife(c, N(c).m0)) U.guard(c, N(c).b); }),
     playable: (c) => U.res(c, LIVES) >= 1,
-    upgrade: { nums: { m0: 1, b: 32 } },
+    upgrade: { nums: { m0: 1, b: 20 } },
   },
   {
     id: 'marmalade/impossible-squeeze', name: 'Impossible Squeeze', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -642,11 +651,14 @@ const rares = [
   {
     id: 'marmalade/final-pounce', name: 'Final Pounce', companion: SLUG, type: ATTACK, rarity: RARE,
     cost: 2, target: ENEMY, keywords: ['untouched'],
-    text: 'Deal {d} damage. Deal {m0} more while [Untouched].',
+    text: 'Deal {d} damage. While [Untouched], gain {n} Pluck and return this Trick to your hand. Once each turn.',
     flavor: 'She has been sitting perfectly still for four turns. This is why.',
-    nums: { d: 12, m0: 14 },
-    effect: eff(c => U.hit(c, N(c).d + (U.isUntouched(c) ? N(c).m0 : 0))),
-    upgrade: { nums: { d: 16, m0: 18 } },
+    nums: { d: 18, n: 1 },
+    effect: eff(c => {
+      U.hit(c, N(c).d);
+      if (U.isUntouched(c) && U.once(c, 'finalPounce')) { U.energy(c, N(c).n); U.returnSelf(c); }
+    }),
+    upgrade: { nums: { d: 23, n: 1 } },
   },
   {
     id: 'marmalade/nine-lives-fury', name: 'Nine Lives’ Fury', companion: SLUG, type: ATTACK, rarity: RARE,
@@ -660,11 +672,12 @@ const rares = [
   {
     id: 'marmalade/across-the-veil', name: 'Across the Veil', companion: SLUG, type: ATTACK, rarity: RARE,
     cost: 2, target: ENEMY, keywords: [GHOST],
-    text: 'Deal {d} damage. Ignores Guard. Gain {n} [Ghoststep].',
-    flavor: 'She reaches through from the other side of the wallpaper.',
-    nums: { d: 18, n: 1 },
-    effect: eff(c => { U.hit(c, N(c).d, { pierceBlock: true }); gainGhost(c, N(c).n); }),
-    upgrade: { nums: { d: 23, n: 2 } },
+    text: 'Spend all your [Ghoststep]. Deal {d} damage for each one spent, ignoring Guard.',
+    flavor: 'She reaches through from the other side of the wallpaper, and leaves nothing behind to hide in.',
+    nums: { d: 11, hits: 2 },
+    effect: eff(c => { const g = ghost(c); if (!g) return; U.addRes(c, GHOST, -g, 0, 9); U.hitN(c, N(c).d, g, { pierceBlock: true }); }),
+    playable: (c) => U.res(c, GHOST) >= 1,
+    upgrade: { nums: { d: 14, hits: 2 } },
   },
   {
     id: 'marmalade/everywhere-at-once', name: 'Everywhere at Once', companion: SLUG, type: ATTACK, rarity: RARE,
@@ -680,29 +693,31 @@ const rares = [
     cost: 2, target: ENEMY, keywords: [HAUNT],
     text: 'Deal {d} damage. Deal {m0} more for each [Haunt] on the target, then remove all of it.',
     flavor: 'Everything it has been afraid of, delivered at once.',
-    nums: { d: 6, m0: 2 },
+    balance: { scalesWith: 'the target’s Haunt — 10 Haunt makes this a 29 damage hit for 2' },
+    nums: { d: 9, m0: 2 },
     effect: eff(c => { const t = c.target, h = U.stacks(c, t, HAUNT); U.hit(c, N(c).d + N(c).m0 * h); U.unapply(c, t, HAUNT, h); }),
-    upgrade: { nums: { d: 8, m0: 3 } },
+    upgrade: { nums: { d: 12, m0: 3 } },
   },
   {
     id: 'marmalade/spectral-stampede', name: 'Spectral Stampede', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 3, target: RANDOM_ENEMY, text: 'Deal {d} damage to a random enemy {n} times.',
-    flavor: 'Every cat that has ever lived in this house, briefly, all at once.',
-    nums: { d: 6, n: 6, hits: 6 },
-    effect: eff(c => U.hitRandomN(c, N(c).d, N(c).n)),
-    upgrade: { nums: { d: 6, n: 8, hits: 8 } },
+    cost: 2, target: RANDOM_ENEMY, keywords: ['lives'],
+    text: 'Deal {d} damage to a random enemy once for each [Lives] you have spent this combat, up to {n} times.',
+    flavor: 'Every life she has already spent comes back through the room at once.',
+    nums: { d: 5, n: 8, hits: 4 },
+    effect: eff(c => U.hitRandomN(c, N(c).d, Math.min(N(c).n, livesSpent(c)))),
+    upgrade: { nums: { d: 7, n: 8, hits: 4 } },
   },
   {
     id: 'marmalade/the-last-thing-they-see', name: 'The Last Thing They See', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 2, target: ENEMY, text: 'Deal {d} damage. If the target has {n} or less Courage, defeat it instead. Bosses are immune.',
+    cost: 2, target: ENEMY, text: 'Deal {d} damage. If that leaves the target at {n} Courage or less, defeat it. Bosses are immune.',
     flavor: 'Two amber circles and then nothing at all.',
-    nums: { d: 12, n: 25 },
+    nums: { d: 15, n: 15 },
     effect: eff(c => {
       const t = c.target;
-      if (t && t.tier !== 'boss' && (t.hp ?? 999) <= N(c).n) { c.loseHp?.(t, t.hp); return; }
       U.hit(c, N(c).d);
+      if (t && t.alive !== false && t.tier !== 'boss' && (t.hp ?? 999) > 0 && t.hp <= N(c).n) c.loseHp?.(t, t.hp);
     }),
-    upgrade: { nums: { d: 16, n: 35 } },
+    upgrade: { nums: { d: 20, n: 20 } },
   },
   {
     id: 'marmalade/catastrophe', name: 'Catastrophe', companion: SLUG, type: ATTACK, rarity: RARE,
@@ -971,7 +986,7 @@ export default {
     {
       name: 'Ghoststep & Untouched',
       desc: 'Avoid damage entirely, stay Untouched, and cash that state in for cheaper and larger attacks. Escalating rewards for consecutive perfect enemy turns. Loses to multi-hit attackers and non-Attack damage.',
-      coreCards: ['marmalade/ghoststep', 'marmalade/soft-landing', 'marmalade/moonlit-claw', 'marmalade/ambush-from-nowhere', 'marmalade/perch-up-high', 'marmalade/predators-patience', 'marmalade/final-pounce', 'marmalade/untouchable', 'marmalade/perfect-landing'],
+      coreCards: ['marmalade/ghoststep', 'marmalade/fluff-up', 'marmalade/soft-landing', 'marmalade/ambush-from-nowhere', 'marmalade/perch-up-high', 'marmalade/predators-patience', 'marmalade/final-pounce', 'marmalade/untouchable', 'marmalade/perfect-landing', 'marmalade/across-the-veil'],
     },
     {
       name: 'Haunt',
@@ -981,7 +996,7 @@ export default {
     {
       name: 'Nine Lives',
       desc: 'Treat the nine Lives as a second resource pool — spend for Nerve, cards, defence and enormous attacks, or hoard them for the boss. All Nine and Come Back Wrong build a deck around burning through and recovering them. Loses when you simply run out.',
-      coreCards: ['marmalade/nine-lived-nerve', 'marmalade/borrowed-life', 'marmalade/leave-a-life-behind', 'marmalade/spend-a-life', 'marmalade/nine-lives-fury', 'marmalade/all-nine', 'marmalade/nine-lives', 'marmalade/not-dead-yet', 'marmalade/come-back-wrong'],
+      coreCards: ['marmalade/nine-lived-nerve', 'marmalade/borrowed-life', 'marmalade/leave-a-life-behind', 'marmalade/spend-a-life', 'marmalade/nine-lives-fury', 'marmalade/spectral-stampede', 'marmalade/all-nine', 'marmalade/nine-lives', 'marmalade/not-dead-yet', 'marmalade/come-back-wrong'],
     },
     {
       name: 'Zoomies',
@@ -991,7 +1006,7 @@ export default {
     {
       name: 'Hybrid Ghost Cat',
       desc: 'The strongest decks combine systems: Ghoststep to stay Untouched, a cheap Pounce into a Zoomies chain, Haunt applied on the way through, then the enemy swings, hits nothing, and hurts itself.',
-      coreCards: ['marmalade/spectral-scratch', 'marmalade/wall-bounce', 'marmalade/haunted-housecat', 'marmalade/always-lands', 'marmalade/hide-and-seek', 'marmalade/across-the-veil', 'marmalade/nine-lives-nine-plans'],
+      coreCards: ['marmalade/spectral-scratch', 'marmalade/wall-bounce', 'marmalade/moonlit-claw', 'marmalade/haunted-housecat', 'marmalade/always-lands', 'marmalade/hide-and-seek', 'marmalade/nine-lives-nine-plans'],
     },
   ],
 };

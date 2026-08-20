@@ -53,18 +53,18 @@ Marmalade is the agile technical Companion. Her conventional Guard is unreliable
 | 4 | Tail Flick | 1 | attack | Deal 5 damage. Apply 3 [Haunt]. | d 5 → 7, n 3 → 4 |
 | 5 | Startle | 1 | attack | Deal 6 damage. Apply 1 Weak. | d 6 → 8, n 1 → 2 |
 | 6 | Wall Bounce | 1 | attack | Deal 6 damage. If you have [Ghoststep], strike again. | d 6 → 8 |
-| 7 | Moonlit Claw | 2 | attack | Deal 13 damage. Costs 1 less while [Untouched]. | d 13 → 17 |
+| 7 | Moonlit Claw | 2 | attack | Deal 16 damage. You cannot gain Guard for the rest of this turn. | d 16 → 21 |
 | 8 | Back-Arched Swipe | 1 | attack | Deal 6 damage. Gain 6 Guard if the target intends to attack. | d 6 → 8, b 6 → 8 |
 | 9 | Quick Pounce | 1 | attack | Deal 5 damage. [Zoomies]: deal 6 more. | d 5 → 7, m0 6 → 8 |
 | 10 | Ghoststep | 1 | skill | Gain 1 [Ghoststep]. | cost 1 → 0 |
 | 11 | Slip Away | 1 | skill | Gain 5 Guard. Gain 4 more if any enemy intends to attack. | b 5 → 7, m0 4 → 5 |
-| 12 | Fluff Up | 1 | skill | Gain 8 Guard. | b 8 → 11 |
+| 12 | Fluff Up | 1 | skill | Gain 6 Guard. If you have no [Ghoststep], gain 1. | b 6 → 9 |
 | 13 | Watchful Eyes | 1 | skill | Draw 3 Tricks, then discard 1 Trick. | n 3 → 4 |
 | 14 | Catnap | 1 | skill | Gain 6 Guard. Draw 1 Tricks at the start of your next turn. | b 6 → 9 |
 | 15 | Curious Paw | 0 | skill | Draw 1 Tricks. Discard 1 Trick. [Vanish]. | n 1 → 2 |
 | 16 | Hide Under Something | 1 | skill | Gain 6 Guard. Your next Attack this turn costs 1 less. | b 6 → 9 |
-| 17 | Nine-Lived Nerve | 0 | skill | Spend 1 [Lives]. Gain 1 Pluck. | m1 — → 1, new text |
-| 18 | Haunting Hiss | 1 | skill | Apply 6 [Haunt]. | n 6 → 8 |
+| 17 | Nine-Lived Nerve | 0 | skill | Spend 1 [Lives]. Gain 1 Nerve. | m1 — → 1, new text |
+| 18 | Haunting Hiss | 1 | skill | Apply 3 [Haunt]. If the target is already Haunted, apply 7 instead. | n 3 → 4, m0 7 → 9 |
 | 19 | Knock It Over | 1 | skill | Remove 10 Guard from the target. Apply 3 [Haunt]. | b 10 → 14, n 3 → 4 |
 | 20 | Soft Landing | 1 | skill | Gain 5 Guard. Gain 6 more if [Untouched]. | b 5 → 7, m0 6 → 8 |
 
@@ -89,7 +89,7 @@ Marmalade is the agile technical Companion. Her conventional Guard is unreliable
 | 15 | Now You See Me | 0 | skill | Gain 1 [Ghoststep]. [Vanish]. | n 1 → 2 |
 | 16 | Nope. | 1 | skill | Prevent the next 1 negative conditions an enemy would apply to you this turn. | cost 1 → 0 |
 | 17 | Curiosity | 1 | skill | Draw 3 Tricks. Add 1 Spooked to your discard pile. | n 3 → 4 |
-| 18 | Chase the Light | 1 | skill | Draw 2 Tricks. Gain 1 Pluck for each of them that costs 0. | n 2 → 3 |
+| 18 | Chase the Light | 1 | skill | Draw 2 Tricks. Gain 1 Nerve for each of them that costs 0. | n 2 → 3 |
 | 19 | Steal Their Shadow | 1 | skill | Gain 6 Guard. Reduce the target’s Strength by 2. Apply 3 [Haunt] for each point removed. | b 6 → 8, n 2 → 3 |
 | 20 | Hairball | 1 | skill | Apply 3 Weak and 3 Vulnerable. | n 3 → 4, m0 3 → 4 |
 | 21 | Tripwire Tail | 1 | skill | The next enemy to attack you this turn gains 10 [Haunt]. | n 10 → 14 |
@@ -97,10 +97,10 @@ Marmalade is the agile technical Companion. Her conventional Guard is unreliable
 | 23 | Hide and Seek | 1 | skill | Choose one: gain 1 [Ghoststep]; draw 2 Tricks; or gain 9 Guard. | n 1 → 2, m0 2 → 3, b 9 → 13 |
 | 24 | Borrowed Life | 0 | skill | Spend 1 [Lives]. Draw 2 Tricks. | n 2 → 3 |
 | 25 | Second Chance | 1 | skill | Spend 1 [Lives]. Return a Trick that [Vanish]ed this combat to your hand. | cost 1 → 0 |
-| 26 | Leave a Life Behind | 1 | skill | Spend 1 [Lives]. Gain 24 Guard. [Vanish]. | b 24 → 32 |
+| 26 | Leave a Life Behind | 1 | skill | Spend 1 [Lives]. Gain 15 Guard. [Vanish]. | b 15 → 20 |
 | 27 | Impossible Squeeze | 0 | skill | [Vanish] another Trick in your hand. Draw 1 Trick. | n 1 → 2 |
 | 28 | Midnight Grooming | 1 | skill | Remove a negative condition from yourself. Gain 8 Guard. | b 8 → 12 |
-| 29 | Nine Lives, Nine Plans | 1 | skill | Choose one: gain 10 Guard; draw 2 Tricks; apply 6 [Haunt]; or gain 1 Pluck. Spend 1 [Lives] to choose two. | b 10 → 13, n 2 → 3, m0 6 → 8 |
+| 29 | Nine Lives, Nine Plans | 1 | skill | Choose one: gain 10 Guard; draw 2 Tricks; apply 6 [Haunt]; or gain 1 Nerve. Spend 1 [Lives] to choose two. | b 10 → 13, n 2 → 3, m0 6 → 8 |
 | 30 | Ghost in the Rafters | 1 | power | While [Untouched], [Retain] 1 Trick at the end of your turn. | n 1 → 2 |
 | 31 | Poltercat | 1 | power | Whenever an enemy buffs itself, apply 4 [Haunt] to it. | n 4 → 6 |
 | 32 | Always Lands on Her Feet | 1 | power | The first time each turn your [Ghoststep] is consumed, gain 8 Guard. | b 8 → 12 |
@@ -112,15 +112,15 @@ Marmalade is the agile technical Companion. Her conventional Guard is unreliable
 
 | # | Name | Pluck | Type | Text | Upgrade |
 |---:|---|---:|---|---|---|
-| 1 | Final Pounce | 2 | attack | Deal 12 damage. Deal 14 more while [Untouched]. | d 12 → 16, m0 14 → 18 |
+| 1 | Final Pounce | 2 | attack | Deal 18 damage. While [Untouched], gain 1 Pluck and return this Trick to your hand. Once each turn. | d 18 → 23 |
 | 2 | Nine Lives’ Fury | 2 | attack | Spend up to 3 [Lives]. Deal 9 damage for each Life spent. | d 9 → 10, m0 3 → 4, hits 3 → 4 |
-| 3 | Across the Veil | 2 | attack | Deal 18 damage. Ignores Guard. Gain 1 [Ghoststep]. | d 18 → 23, n 1 → 2 |
+| 3 | Across the Veil | 2 | attack | Spend all your [Ghoststep]. Deal 11 damage for each one spent, ignoring Guard. | d 11 → 14 |
 | 4 | Everywhere at Once | 2 | attack | Deal 8 damage to all enemies. Repeat once for each [Ghoststep] you have, to a maximum of 3 repeats. | d 8 → 10 |
-| 5 | Claws in the Dark | 2 | attack | Deal 6 damage. Deal 2 more for each [Haunt] on the target, then remove all of it. | d 6 → 8, m0 2 → 3 |
-| 6 | Spectral Stampede | 3 | attack | Deal 6 damage to a random enemy 6 times. | n 6 → 8, hits 6 → 8 |
-| 7 | The Last Thing They See | 2 | attack | Deal 12 damage. If the target has 25 or less Courage, defeat it instead. Bosses are immune. | d 12 → 16, n 25 → 35 |
-| 8 | Catastrophe | X | attack | Spend all your Pluck. Deal 6 damage to a random enemy 2 times for each Pluck spent. | d 6 → 8 |
-| 9 | Spend a Life | 0 | skill | Spend 1 [Lives]. Choose one: gain 2 Pluck; draw 3 Tricks; gain 2 [Ghoststep]; or gain 16 Guard. | m1 3 → 4, m2 2 → 3, b 16 → 22 |
+| 5 | Claws in the Dark | 2 | attack | Deal 9 damage. Deal 2 more for each [Haunt] on the target, then remove all of it. | d 9 → 12, m0 2 → 3 |
+| 6 | Spectral Stampede | 2 | attack | Deal 5 damage to a random enemy once for each [Lives] you have spent this combat, up to 8 times. | d 5 → 7 |
+| 7 | The Last Thing They See | 2 | attack | Deal 15 damage. If that leaves the target at 15 Courage or less, defeat it. Bosses are immune. | d 15 → 20, n 15 → 20 |
+| 8 | Catastrophe | X | attack | Spend all your Nerve. Deal 6 damage to a random enemy 2 times for each Nerve spent. | d 6 → 8 |
+| 9 | Spend a Life | 0 | skill | Spend 1 [Lives]. Choose one: gain 2 Nerve; draw 3 Tricks; gain 2 [Ghoststep]; or gain 16 Guard. | m1 3 → 4, m2 2 → 3, b 16 → 22 |
 | 10 | Come Back Wrong | 1 | skill | Spend 3 [Lives]. Heal 20 Courage and gain 20 Guard. Add 2 Wrong Side to your draw pile. [Vanish]. | n 20 → 28, b 20 → 26 |
 | 11 | Not Dead Yet | 1 | skill | The next time your Courage would reach 0 this turn, spend 3 [Lives] and survive with 1 Courage instead. | cost 1 → 0 |
 | 12 | Walk Between Rooms | 1 | skill | Discard your hand, then draw that many Tricks. Gain 1 [Ghoststep]. | n 1 → 2 |
@@ -142,15 +142,15 @@ Marmalade is the agile technical Companion. Her conventional Guard is unreliable
 
 **Ghoststep & Untouched** — Avoid damage entirely, stay Untouched, and cash that state in for cheaper and larger attacks. Escalating rewards for consecutive perfect enemy turns. Loses to multi-hit attackers and non-Attack damage.
 
-Core: Ghoststep, Soft Landing, Moonlit Claw, Ambush from Nowhere, Perch Up High, Predator’s Patience, Final Pounce, Untouchable, Perfect Landing
+Core: Ghoststep, Fluff Up, Soft Landing, Ambush from Nowhere, Perch Up High, Predator’s Patience, Final Pounce, Untouchable, Perfect Landing, Across the Veil
 
 **Haunt** — Load enemies up, invite them to swing, and stand behind Ghoststep while they take themselves apart. Claws in the Dark converts a stack into burst when you need it now. Loses to defensive and buff-focused enemies.
 
 Core: Boo!, Haunting Hiss, Tail Flick, Tripwire Tail, Graveyard Pounce, Poltercat, Haunted Housecat, Claws in the Dark, Haunt the Whole Room, Permanent Haunting
 
-**Nine Lives** — Treat the nine Lives as a second resource pool — spend for Pluck, cards, defence and enormous attacks, or hoard them for the boss. All Nine and Come Back Wrong build a deck around burning through and recovering them. Loses when you simply run out.
+**Nine Lives** — Treat the nine Lives as a second resource pool — spend for Nerve, cards, defence and enormous attacks, or hoard them for the boss. All Nine and Come Back Wrong build a deck around burning through and recovering them. Loses when you simply run out.
 
-Core: Nine-Lived Nerve, Borrowed Life, Leave a Life Behind, Spend a Life, Nine Lives’ Fury, All Nine, Nine Lives, Not Dead Yet, Come Back Wrong
+Core: Nine-Lived Nerve, Borrowed Life, Leave a Life Behind, Spend a Life, Nine Lives’ Fury, Spectral Stampede, All Nine, Nine Lives, Not Dead Yet, Come Back Wrong
 
 **Zoomies** — Cheap Tricks, draw, discard, Vanish, repeated small attacks, and payoffs for playing three, four, five or six Tricks in one turn. The screen should explode into frantic cat. Loses to Status cards and expensive hands.
 
@@ -158,7 +158,7 @@ Core: Sneak Attack, Quick Pounce, Frenzied Zoomies, Curious Paw, Double Pounce, 
 
 **Hybrid Ghost Cat** — The strongest decks combine systems: Ghoststep to stay Untouched, a cheap Pounce into a Zoomies chain, Haunt applied on the way through, then the enemy swings, hits nothing, and hurts itself.
 
-Core: Spectral Scratch, Wall Bounce, Haunted Housecat, Always Lands on Her Feet, Hide and Seek, Across the Veil, Nine Lives, Nine Plans
+Core: Spectral Scratch, Wall Bounce, Moonlit Claw, Haunted Housecat, Always Lands on Her Feet, Hide and Seek, Nine Lives, Nine Plans
 
 
 ## Bones, the Skeleton Puppy
@@ -211,10 +211,10 @@ Bones is a zone-manipulation and body-state Companion whose anatomy is a resourc
 | 6 | Digging Claws | 1 | attack | Deal 4 damage 2 times. Deal one more hit if you have a [Bury]ed Trick. | d 4 → 6 |
 | 7 | Full Body Tackle | 2 | attack | Cannot be played while [Scattered]. Deal 16 damage, then [Shed] 2 Bones. | d 16 → 21 |
 | 8 | Run in Circles | 0 | attack | Deal 4 damage. If you have [Rattle]d this turn, draw 1 Trick, then discard 1 Trick. | d 4 → 6 |
-| 9 | Shake It Loose | 0 | skill | [Shed] 1 Bone. Draw 1 Trick. | n 1 → 2 |
-| 10 | Sit, Stay | 1 | skill | Gain 7 Guard. Gain 6 more while [Whole]. | b 7 → 9, m0 6 → 8 |
+| 9 | Shake It Loose | 0 | skill | [Shed] 1 Bone. The next Trick you play this turn costs 1 less. | m1 — → 1, new text |
+| 10 | Sit, Stay | 1 | skill | Gain 7 Guard. [Retain] this Trick. | b 7 → 10 |
 | 11 | Reassemble | 1 | skill | [Reattach] up to 2 Bones. Gain 5 Guard for each Bone Reattached. | b 5 → 7 |
-| 12 | Fetch! | 1 | skill | [Fetch] a non-[Slobbered] Trick with printed cost 1 or less. | n 1 → 2 |
+| 12 | Fetch! | 1 | skill | [Shed] 1 Bone, then [Fetch] a non-[Slobbered] Trick with printed cost 1 or less. | n 1 → 2 |
 | 13 | Bury It | 0 | skill | [Bury] another Trick from your hand. Draw 1 Trick. | n 1 → 2 |
 | 14 | Dig Here | 1 | skill | [Dig Up] one [Bury]ed Trick. If you have none, gain 9 Guard instead. | b 9 → 13 |
 | 15 | Leave It! | 0 | skill | Discard another Trick. Gain 10 Guard if it was [Slobbered], otherwise 4. | b 10 → 14, m0 4 → 6 |
@@ -250,18 +250,18 @@ Bones is a zone-manipulation and body-state Companion whose anatomy is a resourc
 | 20 | Pile of Me | 1 | skill | Gain 6 Guard for each [Loose Bones], then [Reattach] all of them. | b 6 → 8 |
 | 21 | Emergency Reassembly | 0 | skill | Playable only while [Scattered]. [Reattach] 2 Bones and gain 10 Guard. [Vanish]. | b 10 → 15 |
 | 22 | Flop Over | 0 | skill | Gain 5 Guard. If [Scattered], gain 10 instead and [Retain] one other Trick this turn. | b 5 → 7, m0 10 → 13 |
-| 23 | Smell Something? | 1 | skill | Look at the top 5 Tricks of your draw pile. Put one into your hand, discard one, then return the rest in any order. | n 5 → 7 |
-| 24 | Treat Stash | 1 | skill | [Bury] this Trick with 1 counter. When it is [Dug Up], gain 2 Pluck, draw 1 Trick, then [Vanish] it. | m1 1 → 2 |
+| 23 | Smell Something? | 1 | skill | Look at the top 5 Tricks of your draw pile and [Bury] one with 1 counter. It is [Dig Up]ped at the start of your next turn. | n 5 → 7 |
+| 24 | Treat Stash | 1 | skill | [Bury] this Trick with 1 counter. When it is [Dug Up], gain 2 Nerve, draw 1 Trick, then [Vanish] it. | m1 1 → 2 |
 | 25 | Can’t Reach It | 0 | skill | Discard another Trick. Gain 5 Guard for each point of its printed cost. If you [Fetch] it this turn, it costs 1 less. | b 5 → 7 |
 | 26 | Skeleton Key | 1 | skill | [Dig Up] a [Bury]ed Trick. If you have none, [Bury] another Trick from your hand with 1 counter instead. | cost 1 → 0 |
 | 27 | Stash Under the Rug | 0 | skill | [Bury] another Trick with 1 counter. Draw 1 Trick. [Vanish]. | m0 1 → 2 |
-| 28 | Good Boy! | 0 | skill | Playable only if you [Fetch]ed or [Dug Up] a Trick this turn. Gain 1 Pluck. [Vanish]. | n 1 → 2 |
+| 28 | Good Boy! | 0 | skill | Playable only if you [Fetch]ed or [Dug Up] a Trick this turn. Gain 1 Nerve. [Vanish]. | n 1 → 2 |
 | 29 | Jingle Collar | 1 | skill | Playable only with 5 or fewer [Loose Bones]. [Shed] 1 Bone, then [Reattach] 1 Bone. These are separate effects and cause two [Rattle]s. | cost 1 → 0 |
 | 30 | Rattletrap | 1 | power | The first time you [Rattle] each turn, deal 5 damage to all enemies. | d 5 → 8 |
 | 31 | Scent Memory | 1 | power | The first time you [Fetch] each turn, draw 1 Trick. | n 1 → 2 |
 | 32 | Yard Map | 1 | power | The first 1 Tricks you [Bury] each turn receive only 1 counter instead of 2. | m0 1 → 2 |
 | 33 | Spare Parts Everywhere | 1 | power | The first time each turn you become [Scattered], create 1 Spare Bone. | n 1 → 2 |
-| 34 | Tighten the Collar | 1 | power | The first time each turn you become [Whole], gain 1 Pluck at the start of your next turn. | n 1 → 2 |
+| 34 | Tighten the Collar | 1 | power | The first time each turn you become [Whole], gain 1 Nerve at the start of your next turn. | n 1 → 2 |
 | 35 | Tail Going A Mile A Minute | 1 | power | The first Attack you play after [Fetch]ing or [Dig Up]ping each turn is [Empowered] 7. | n 7 → 10 |
 
 ### Rare (25)
@@ -282,14 +282,14 @@ Bones is a zone-manipulation and body-state Companion whose anatomy is a resourc
 | 12 | Shake Everything Off | 2 | skill | Remove [Slobbered] from up to 3 Tricks in your discard pile and shuffle them into your draw pile. They cannot be [Fetch]ed until your next turn. Draw 1 Trick. [Vanish]. | n 3 → 4, m0 1 → 2 |
 | 13 | Secret Stash | 2 | skill | [Bury] any number of other Tricks from your hand, then draw that many. The first time each is played after being [Dug Up], it costs 0. | cost 2 → 1 |
 | 14 | Rebuild from Scratch | 2 | skill | [Reattach] all [Loose Bones]. Gain 12 Guard plus 5 for each Bone Reattached. Draw 1 Trick for every 2 Bones, up to 3. | b 12 → 16, m0 5 → 6 |
-| 15 | Fall Apart on Purpose | 0 | skill | Lose all Guard. [Shed] until you reach 6. Gain 1 Pluck for every 2 Bones actually Shed. [Vanish]. | m1 — → 2, new text |
+| 15 | Fall Apart on Purpose | 0 | skill | Lose all Guard. [Shed] until you reach 6. Gain 1 Nerve for every 2 Bones actually Shed. [Vanish]. | m1 — → 2, new text |
 | 16 | Dig to the Basement | 2 | skill | [Dig Up] every [Bury]ed Trick. Each costs 1 less this turn. [Vanish]. | cost 2 → 1 |
 | 17 | One More Throw | 1 | skill | Choose a [Slobbered] Trick in your discard pile. [Fetch] it anyway and make it cost 0 this turn. After it is next played, it [Vanish]es. | cost 1 → 0 |
 | 18 | Play Dead | 1 | skill | Until your next turn, you may [Shed] 1 Bone before any hit to halve that hit’s damage. Once per hit. | cost 1 → 0 |
 | 19 | Favorite Toy | 2 | power | Choose a non-Basic Trick in your hand. It can be [Fetch]ed even while [Slobbered], at most once each turn. After its first Fetch, each later Fetch makes it cost 1 more that turn. | cost 2 → 1 |
 | 20 | Anatomy Is Optional | 1 | power | You count as [Scattered] at 2 or more [Loose Bones] instead of 4. [Whole] still requires exactly 0. | cost 1 → 0 |
 | 21 | Built Wrong, Still Works | 2 | power | 1 time each turn, if an effect would [Shed] while you already have 6 [Loose Bones], first [Reattach] 1, then Shed. Both cause separate [Rattle]s. | n 1 → 2 |
-| 22 | Treasure Yard | 2 | power | The first 2 times each turn a [Bury]ed Trick is [Dug Up], gain 1 Pluck. | n 2 → 3 |
+| 22 | Treasure Yard | 2 | power | The first 2 times each turn a [Bury]ed Trick is [Dug Up], gain 1 Nerve. | n 2 → 3 |
 | 23 | Every Bone Knows the Way Home | 2 | power | At the end of your turn, [Reattach] 1 Bone if possible. Whenever you begin your turn [Whole], draw 1 additional Trick. | m0 1 → 2 |
 | 24 | Never Really Lost | 2 | power | The first time each turn a [Slobbered] Trick reaches your discard pile after being played, remove Slobbered and put it on the bottom of your draw pile instead. | cost 2 → 1 |
 | 25 | Best Dog in the House | 3 | power | At the start of each turn, choose one: [Fetch] a non-[Slobbered] Trick with printed cost 1 or less, or [Dig Up] one [Bury]ed Trick. If neither is possible, create a Spare Bone. | cost 3 → 2 |
@@ -304,7 +304,7 @@ Bones is a zone-manipulation and body-state Companion whose anatomy is a resourc
 
 **The Rattle Engine** — Repeatedly Shed and Reattach small numbers. The objective is not to reach 6 — it is to keep moving. Stalls at either extreme, so the deck needs both directions.
 
-Core: Shake It Loose, Reassemble, Spare Parts, Off Leash, Jingle Collar, Rattletrap, Spare Parts Everywhere, Skeleton Stampede, Built Wrong, Still Works
+Core: Shake It Loose, Fetch!, Reassemble, Spare Parts, Off Leash, Jingle Collar, Rattletrap, Spare Parts Everywhere, Skeleton Stampede, Built Wrong, Still Works
 
 **Scattered Puppy** — Deliberately reach high Loose Bones and turn the missing anatomy into pressure. High burst and excellent multi-enemy damage, but permanently sitting at 6 starves its own engines.
 
@@ -316,11 +316,11 @@ Core: Fetch!, Leave It!, Shake Dry, Flying Femur, Boomerang Bone, Call That Back
 
 **Backyard Burial** — The Buried zone as delayed storage, deck thinning, tutoring and resource banking. The enemy does not care that your best Trick will be wonderful in two turns.
 
-Core: Bury It, Dig Here, Under the Couch, Backyard Cache, Bury the Evidence, Treat Stash, Skeleton Key, Yard Map, Buried Bite, Who Buried That?, Secret Stash, Dig to the Basement, Treasure Yard
+Core: Bury It, Dig Here, Under the Couch, Backyard Cache, Bury the Evidence, Smell Something?, Treat Stash, Skeleton Key, Yard Map, Buried Bite, Who Buried That?, Secret Stash, Dig to the Basement, Treasure Yard
 
 **Whole Dog Reassembly** — Exploit effects that need a fully reconstructed dog. Not a deck that sits at zero — it falls apart on purpose because its best payoffs require coming back.
 
-Core: Tailbone Thump, Sit, Stay, Full Body Tackle, Heel!, Good as New, Pile of Me, Tighten the Collar, Bone A Fide Missile, Rebuild from Scratch, Every Bone at Once, Every Bone Knows the Way Home
+Core: Tailbone Thump, Reassemble, Full Body Tackle, Heel!, Good as New, Pile of Me, Tighten the Collar, Bone A Fide Missile, Rebuild from Scratch, Every Bone at Once, Every Bone Knows the Way Home
 
 
 ## Pipkin, the Pumpkin Frog
@@ -340,7 +340,7 @@ Pipkin is a rhythm and maturation Companion — a tiny haunted garden problem wi
 | Height | resource | 0–3 | Hop gains 1 Height, maximum 3. Height does nothing by itself — Land spends all of it at once and scales its clause by the amount spent. Unused Height disappears at the end of your turn. |
 | The Patch | system | 0–6 | Up to 6 objects, each a Seed, Sprout or Pumpkin. At the end of your turn every Sprout ripens and every Seed sprouts, in the same step, so a Seed needs two turns. Plant adds Seeds; Harvest removes Pumpkins to power an effect. |
 | Plump | resource | 0–5 | How round Pipkin is, 0 to 3, persisting between turns. Many body Tricks scale with it and Deflate spends it. At maximum Plump, Heavy Feet makes every Hop Trick cost 1 more. |
-| Heavy Feet | system | 0–1 | At maximum Plump, Tricks containing Hop cost 1 additional Pluck. A Trick that Hops twice is taxed only once. This is Pipkin’s central internal tension. |
+| Heavy Feet | system | 0–1 | At maximum Plump, Tricks containing Hop cost 1 additional Nerve. A Trick that Hops twice is taxed only once. This is Pipkin’s central internal tension. |
 
 ### Starting deck (10 Tricks)
 
@@ -376,12 +376,12 @@ Pipkin is a rhythm and maturation Companion — a tiny haunted garden problem wi
 | 8 | Squash Tackle | 2 | attack | Deal 15 damage. You may [Deflate] 1 to gain 10 Guard. | d 15 → 19, b 10 → 12 |
 | 9 | Pocket Seeds | 1 | skill | [Plant] 2 [Seed]s. | n 2 → 3 |
 | 10 | Damp Corner | 1 | skill | Advance 1 [Patch] object by one stage. | n 1 → 2 |
-| 11 | Big Breath | 1 | skill | Gain 1 [Plump]. Gain 5 Guard. | b 5 → 8 |
+| 11 | Big Breath | 1 | skill | Gain 1 [Plump]. Draw 1 Trick. | m0 1 → 2 |
 | 12 | Soft Landing | 1 | skill | Gain 6 Guard. [Land]: gain 5 more Guard for each [Height] spent. | b 6 → 8, m0 5 → 6 |
 | 13 | Squat Low | 1 | skill | Gain 7 Guard. Gain 6 more if you have at least 2 [Plump]. | b 7 → 9, m0 6 → 8 |
 | 14 | Hopscotch | 1 | skill | [Hop]. Draw 1 Trick. If this brings you to 3 [Height], gain 5 Guard. | n 1 → 2 |
 | 15 | Weed the Patch | 0 | skill | Remove one [Seed] or [Sprout] from your [Patch]. Gain 4 Guard and draw 1 Trick. [Vanish]. | b 4 → 7 |
-| 16 | Pick One | 0 | skill | [Harvest] 1: gain 1 Pluck. [Vanish]. | n 1 → 2 |
+| 16 | Pick One | 0 | skill | [Harvest] 1: gain 1 Nerve. [Vanish]. | n 1 → 2 |
 | 17 | Scatter on Landing | 1 | skill | [Plant] 1 [Seed]. [Land]: [Plant] 1 more if you spent at least 2 [Height]. | n 1 → 2 |
 | 18 | Hold Your Croak | 1 | skill | [Retain] another Trick in your hand. It costs 1 less next turn. | n 1 → 2 |
 | 19 | Mud Nap | 1 | skill | Gain 8 Guard. If you end the turn at 0 [Height], gain 1 [Plump] at the start of your next turn. | b 8 → 11 |
@@ -409,8 +409,8 @@ Pipkin is a rhythm and maturation Companion — a tiny haunted garden problem wi
 | 16 | Crop Rotation | 1 | skill | Advance one [Patch] object by a stage and move another back by a stage. Draw 1 Trick. | n 1 → 2 |
 | 17 | Springboard | 1 | skill | [Hop] twice. Your next Trick containing [Land] this turn costs 1 less. | cost 1 → 0 |
 | 18 | Hang Time | 1 | skill | Your [Height] does not disappear at the end of this turn. If you keep at least 2, draw 1 additional Trick next turn. [Vanish]. | m0 1 → 2 |
-| 19 | Inflate | 1 | skill | Gain 2 [Plump]. Gain 5 Guard. | b 5 → 8 |
-| 20 | Pffft | 0 | skill | [Deflate] 1: gain 1 Pluck and draw 1 Trick. [Vanish]. | m1 1 → 2 |
+| 19 | Inflate | 1 | skill | Gain 2 [Plump]. If that brings you to maximum Plump, gain 1 Pluck — and [Heavy Feet] with it. | m0 1 → 2 |
+| 20 | Pffft | 0 | skill | [Deflate] 1: gain 1 Nerve and draw 1 Trick. [Vanish]. | m1 1 → 2 |
 | 21 | Mud Jacket | 1 | skill | Gain 5 Guard, plus 6 for each [Plump]. At 3 Plump, keep 8 of it into your next turn. | b 5 → 7, m0 6 → 8, m1 8 → 10 |
 | 22 | Choose the Biggest | 1 | skill | [Harvest] 1: gain 14 Guard and your next Attack this turn is [Empowered] 8. | b 14 → 18, n 8 → 10 |
 | 23 | Pantry Raid | 1 | skill | [Harvest] up to 2: draw 1 Trick for each Pumpkin taken, then discard 1 Trick if you took any. | n 2 → 3 |
@@ -423,7 +423,7 @@ Pipkin is a rhythm and maturation Companion — a tiny haunted garden problem wi
 | 30 | Deep Pond Breathing | 1 | skill | Choose one: gain 1 [Plump]; or [Deflate] 1 to [Hop] twice and draw 1 Trick. | n 1 → 2, m1 1 → 2 |
 | 31 | Fertile Footprints | 1 | power | The first time you [Land] each turn, [Plant] 1 [Seed]. | n 1 → 2 |
 | 32 | Elastic Legs | 1 | power | The first Trick containing [Hop] you play each turn costs 1 less, minimum 0. This can cancel [Heavy Feet]. | cost 1 → 0 |
-| 33 | Prize Pumpkin | 2 | power | The first time at least one [Pumpkin] ripens each turn, gain 1 Pluck at the start of your next turn. | n 1 → 2 |
+| 33 | Prize Pumpkin | 2 | power | The first time at least one [Pumpkin] ripens each turn, gain 1 Nerve at the start of your next turn. | n 1 → 2 |
 | 34 | Big Frog Energy | 2 | power | Whenever you gain [Plump], gain 5 Guard. The first time you [Deflate] each turn, your next Attack is [Empowered] 8. | b 5 → 7, n 8 → 10 |
 | 35 | Garden in Motion | 2 | power | The first time you [Harvest] each turn, advance a [Seed] into a [Sprout]. If there are none, [Plant] 1 Seed instead. | cost 2 → 1 |
 
@@ -442,13 +442,13 @@ Pipkin is a rhythm and maturation Companion — a tiny haunted garden problem wi
 | 9 | Overnight Miracle | 2 | skill | Immediately perform one [Patch] growth step. If the Patch was full when you played this, perform a second. | cost 2 → 1 |
 | 10 | Perfect Harvest | 1 | skill | [Harvest] any number. For each, choose: draw 1 Trick, gain 6 Guard, or [Empowered] 6. Each reward at most twice. | b 6 → 8, m0 6 → 8 |
 | 11 | Swallow the Sun | 2 | skill | [Harvest] 1. Set [Plump] to 3, gain 20 Guard, and your next [Hop] Trick this turn ignores [Heavy Feet]. | b 20 → 26 |
-| 12 | Emergency Deflation | 0 | skill | [Deflate] all [Plump]. Gain 1 Pluck and 6 Guard for each spent. [Vanish]. | b 6 → 9 |
+| 12 | Emergency Deflation | 0 | skill | [Deflate] all [Plump]. Gain 1 Nerve and 6 Guard for each spent. [Vanish]. | b 6 → 9 |
 | 13 | Triple Jump | 1 | skill | [Hop] until you reach 3 [Height]. [Vanish]. [Heavy Feet] applies normally. | cost 1 → 0 |
-| 14 | Back to Seed | 1 | skill | Turn up to 3 [Pumpkin]s into [Seed]s. For each, choose: draw 1 Trick now, or gain 1 Pluck next turn. This is not [Harvest]ing. | n 3 → 4 |
-| 15 | Store for Supper | 1 | skill | [Harvest] up to 2. For each, choose: draw 1 additional Trick at the start of your next turn, or gain 1 Pluck then. | n 2 → 3 |
+| 14 | Back to Seed | 1 | skill | Turn up to 3 [Pumpkin]s into [Seed]s. For each, choose: draw 1 Trick now, or gain 1 Nerve next turn. This is not [Harvest]ing. | n 3 → 4 |
+| 15 | Store for Supper | 1 | skill | [Harvest] up to 2. For each, choose: draw 1 additional Trick at the start of your next turn, or gain 1 Nerve then. | n 2 → 3 |
 | 16 | Big Little Frog | 1 | skill | Choose one: set [Plump] to 0 and [Hop] twice; or set Plump to 3 and gain 20 Guard. [Vanish]. | b 20 → 26 |
 | 17 | Seed Vault | 2 | skill | Increase [Patch] capacity by 2 for this combat, then [Plant] 2 [Seed]s. [Vanish]. | n 2 → 3, m0 2 → 3 |
-| 18 | Pick of the Patch | 2 | skill | [Harvest] 1. Choose one: draw 3 Tricks; gain 2 Pluck; gain 30 Guard; or your next [Land] this turn resolves twice. [Vanish]. | b 30 → 38 |
+| 18 | Pick of the Patch | 2 | skill | [Harvest] 1. Choose one: draw 3 Tricks; gain 2 Nerve; gain 30 Guard; or your next [Land] this turn resolves twice. [Vanish]. | b 30 → 38 |
 | 19 | Great Pumpkin Frog | 3 | power | [Heavy Feet] no longer raises [Hop] costs. Once each turn when you [Harvest], gain 1 [Plump]. Once each turn when you [Deflate], [Plant] 1 Seed. | cost 3 → 2 |
 | 20 | Spring Eternal | 2 | power | [Height] no longer disappears at the end of your turn. [Land] still spends it normally. | cost 2 → 1 |
 | 21 | Heirloom Seeds | 2 | power | [Plant] 2 [Seed]s. Every second [Pumpkin] you [Harvest] this combat Plants 1 Seed. | n 2 → 3 |
@@ -463,7 +463,7 @@ Pipkin is a rhythm and maturation Companion — a tiny haunted garden problem wi
 
 Core: Puddle Jumper, Drop In, Soft Landing, Hopscotch, Cannonball, Three Hop Combo, Springboard, Leapfrog, Triple Jump, Spring Eternal, Boing Without End
 
-**Pumpkin Farmer** — Plant early, watch the Patch mature, then convert Pumpkins into whatever the turn needs — damage, draw, Courage or Pluck. Exceptional long-fight scaling, terrible opening turns.
+**Pumpkin Farmer** — Plant early, watch the Patch mature, then convert Pumpkins into whatever the turn needs — damage, draw, Courage or Nerve. Exceptional long-fight scaling, terrible opening turns.
 
 Core: Pocket Seeds, Damp Corner, Pumpkin Pitch, Little Harvest, Warm Windowsill, No Room, No Problem, Moonbeam on the Patch, Pantry Raid, Prize Pumpkin, Garden in Motion, Overnight Miracle, Perfect Harvest, Moonlit Garden, Heirloom Seeds
 
@@ -528,13 +528,13 @@ Taffy is the deck-manipulation Companion, and her fantasy is not "slime that mak
 | 6 | Big Chew | 1 | attack | Deal 8 damage. You may [Recombine] 1 to deal 7 more. | d 8 → 11, m0 7 → 9 |
 | 7 | Stretch Punch | 1 | attack | Deal 6 damage, plus 4 for each [Stretch]. At 3 Stretch, deal 8 more on top. | d 6 → 8, m0 4 → 5, m1 8 → 10 |
 | 8 | Rebound Bite | 1 | attack | Deal 7 damage. If you [Spit Out] a Trick this turn, draw 1 Trick. | d 7 → 10 |
-| 9 | Pinch a Piece | 1 | skill | [Split] 1. Gain 6 Guard. | b 6 → 9 |
+| 9 | Pinch a Piece | 1 | skill | [Split] 1. Gain 3 Guard for each [Glob] you have. | b 3 → 4 |
 | 10 | Squish Flat | 1 | skill | Gain 8 Guard. If you have 0 [Glob]s, gain 13 instead. | b 8 → 10, m0 13 → 16 |
-| 11 | Pull It Long | 1 | skill | [Stretch] another Attack or Skill. | cost 1 → 0 |
+| 11 | Pull It Long | 1 | skill | [Stretch] another Attack or Skill, then draw 1 Trick. | cost 1 → 0 |
 | 12 | Save for Later | 1 | skill | [Absorb] one Trick from your hand, then draw 1 Trick. | n 1 → 2 |
 | 13 | Spit Take | 1 | skill | [Spit Out] one Trick. It costs 1 less this turn. | cost 1 → 0 |
 | 14 | Sticky Palm | 1 | skill | Give one Trick [Retain] this turn. If it is already [Stretch]ed, add 1 Stretch instead. | cost 1 → 0 |
-| 15 | Mix the Costs | 0 | skill | Choose two other Tricks in your hand. Swap their current Pluck costs until the end of the turn. | new text |
+| 15 | Mix the Costs | 0 | skill | Choose two other Tricks in your hand. Swap their current Nerve costs until the end of the turn. | new text |
 | 16 | Little Recombine | 1 | skill | [Recombine] up to 2. Gain 8 Guard for each [Glob] spent. | b 8 → 11 |
 | 17 | Sample Size | 1 | skill | Create a [Gummy] copy of a Common Attack or Skill in your hand. The copy costs 1 more. | n 1 → 0 |
 | 18 | Candy Wrapper | 1 | skill | Gain 8 Guard. The next [Gummy] copy you create this turn costs 1 less. | b 8 → 11 |
@@ -562,7 +562,7 @@ Taffy is the deck-manipulation Companion, and her fantasy is not "slime that mak
 | 15 | Regurgitate | 1 | skill | [Spit Out] every Trick in your [Belly]. Choose one of them to cost 0 this turn. | cost 1 → 0 |
 | 16 | Taste Memory | 1 | skill | Choose an [Absorb]ed Attack or Skill. Create a [Gummy] copy of it in your hand. | cost 1 → 0 |
 | 17 | Make It Sticky | 1 | skill | One Trick gains [Retain] for the rest of combat. If it is already [Stretch]ed, also add 1 Stretch. | cost 1 → 0 |
-| 18 | Borrowed Price | 1 | skill | Choose one Trick in hand and one in your [Belly]. Swap their current Pluck costs until each has been played once. | cost 1 → 0 |
+| 18 | Borrowed Price | 1 | skill | Choose one Trick in hand and one in your [Belly]. Swap their current Nerve costs until each has been played once. | cost 1 → 0 |
 | 19 | Pull Apart | 1 | skill | [Stretch] 2 different Attacks or Skills. [Split] 1. | cost 1 → 0 |
 | 20 | Overstretch | 1 | skill | Add 2 [Stretch] to an already Stretched Trick. It gains [Vanish] when next played. | cost 1 → 0 |
 | 21 | Let It Sag | 0 | skill | Choose a [Stretch]ed Trick. Reduce its cost this turn by 1 for each Stretch it has, to a minimum of 0. | m0 — → 1, new text |
@@ -590,10 +590,10 @@ Taffy is the deck-manipulation Companion, and her fantasy is not "slime that mak
 | 3 | Jawbreaker Drop | 2 | attack | Deal 18 damage. At 2 [Stretch] deal 32 instead. At 3 Stretch deal 52 instead, then [Vanish] this Trick. | d 18 → 23, m0 32 → 40, m1 52 → 64 |
 | 4 | Three Course Chomp | 2 | attack | Deal 14 damage. If your [Belly] holds an Attack, deal 12 more. A Skill: gain 14 Guard. A Power: a Trick in your hand costs 1 less. All three can happen. | d 14 → 18, m0 12 → 15, b 14 → 18 |
 | 5 | Copycat Cannon | 2 | attack | Choose an [Absorb]ed Attack. Create two [Gummy] copies. Play one immediately without paying for it, and put the other in your discard pile. | cost 2 → 1 |
-| 6 | Elastic Orbit | 2 | attack | Deal 13 damage to all enemies. If played at 3 [Stretch], return this Trick to your hand once that turn with its Stretch reset and its cost increased by 1. | d 13 → 17 |
+| 6 | Elastic Orbit | 2 | attack | Deal 15 damage to all enemies. If played at 3 [Stretch], return this Trick to your hand once that turn with its Stretch reset and its cost increased by 1. | d 15 → 19 |
 | 7 | Sugar Comet | 2 | attack | [Recombine] 3. Deal 22 damage to all enemies. Every [Gummy] copy in your hand costs 0 this turn. | d 22 → 28 |
 | 8 | Last Bite First | 1 | attack | Deal 6 damage. Create a [Gummy] copy of a non-Gummy Attack in your discard pile, in your hand. Its cost is reduced by 1 for each Trick in your [Belly]. | d 6 → 9 |
-| 9 | Mix Everything | 1 | skill | Choose up to 3 non-[Gummy] Tricks in your hand. Rearrange their current Pluck costs among them however you like, for the rest of combat. | cost 1 → 0 |
+| 9 | Mix Everything | 1 | skill | Choose up to 3 non-[Gummy] Tricks in your hand. Rearrange their current Nerve costs among them however you like, for the rest of combat. | cost 1 → 0 |
 | 10 | Deep Pocket | 1 | skill | Increase [Belly] capacity by 2 for the rest of combat, then [Absorb] up to 2 Tricks from your hand and draw the same number. | cost 1 → 0 |
 | 11 | Spit the Whole Bag | 1 | skill | [Spit Out] every Trick in your [Belly]. Each costs 1 less this turn. If your Belly was full, draw 2 Tricks. | cost 1 → 0 |
 | 12 | Pull to the Moon | 1 | skill | [Stretch] an Attack or Skill straight to 3 Stretch. It gains [Vanish] when played. | cost 1 → 0 |
@@ -629,7 +629,7 @@ Core: Save for Later, Better Save That, Pocket Taffy, Regurgitate, Taste Memory,
 
 Core: Sample Size, Candy Wrapper, Second Serving, Snapback Special, Same Again, Smoosh Together, Multipack, Chew Cycle, House of Mirrors, Copycat Cannon, Family Size
 
-**Cost Sculptor** — Treat Pluck costs as movable properties. Give the cheap utility Trick the expensive price, give the payoff the cheap one, then discard or Absorb the card holding the bill. Worthless if every Trick costs the same.
+**Cost Sculptor** — Treat Nerve costs as movable properties. Give the cheap utility Trick the expensive price, give the payoff the cheap one, then discard or Absorb the card holding the bill. Worthless if every Trick costs the same.
 
 Core: Mix the Costs, Borrowed Price, Let It Sag, Sugar Coat, Mix Everything, Candy Surgery, Spit Take, Spit the Whole Bag
 
@@ -640,7 +640,7 @@ Core: Mix the Costs, Borrowed Price, Let It Sag, Sugar Coat, Mix Everything, Can
 
 Wink is for players who want to know what is coming, decide whether knowing is worth the cost, and then interfere with the future just enough to look psychic. She is not a Guard character and she does not simply get bonuses for hitting something with an Attack intent — the puzzle is the enemy action queue. At low mastery she looks ahead and prepares. At high mastery she decides which information to leave hidden, places predictions before acquiring certainty, engineers those predictions into being correct by rearranging the queue underneath them, and converts delayed Set Tricks into a second layer of action economy. Her scaling is control complexity, not a damage stat.
 
-**Strengths:** Exceptional future information — she can see several turns ahead · Reorders enemy actions rather than merely weakening them · Set Tricks buy future turns with present Pluck · Predictable enemies become a resource · Scales through Web, Open Eyes, Sets, Powers and a growing network of Reads
+**Strengths:** Exceptional future information — she can see several turns ahead · Reorders enemy actions rather than merely weakening them · Set Tricks buy future turns with present Nerve · Predictable enemies become a resource · Scales through Web, Open Eyes, Sets, Powers and a growing network of Reads
 
 **Weaknesses:** Setup costs real tempo — previewing and preparing are turns not spent killing · Web does nothing without spenders · Information has diminishing returns against something about to die · Anchored boss Intents cannot be moved at all · Reads fail, and conditional enemy behaviour invalidates them · Set slots clog, temporarily removing Tricks from circulation · Immediate emergency defence is only adequate — she is much safer after preparation than when surprised
 
@@ -651,7 +651,7 @@ Wink is for players who want to know what is coming, decide whether knowing is w
 | Preview | system | 0–3 | Reveal additional future Intent positions for an enemy, to a depth of three. Previewed Intents stay visible until they become current. Preview is information only — it does not make an Intent immutable. |
 | Intent Families | system | 0–4 | Every Intent has exactly one primary family: Attack, Defense, Scheme or Special. This lets Wink predict without naming exact moves. |
 | Reads | system | 0–3 | Predict a family for a future position. Correct: Open 1 Eye. Wrong: Close 1 Eye. A Read attaches to the queue position, not the action — so reordering can make a wrong prediction right. A Read placed on a hidden position is Blind, and stays Blind even if Previewed later. |
-| Open Eyes | resource | 0–8 | Eight eyes, 3 Open at the start of combat, persisting between turns. Opening and Closing costs no Pluck, but a Trick that Closes Eyes as a cost needs enough Open. Full Gaze at 8 has no automatic benefit — specific Tricks reward it. |
+| Open Eyes | resource | 0–8 | Eight eyes, 3 Open at the start of combat, persisting between turns. Opening and Closing costs no Nerve, but a Trick that Closes Eyes as a cost needs enough Open. Full Gaze at 8 has no automatic benefit — specific Tricks reward it. |
 | Web | status | 0–99 | A persistent resource attached to an individual enemy. Web does nothing by itself; Wink spends it to rearrange, postpone, delete, attack, defend and feed Sets. Stacking Web without spenders is wasted. |
 | Intent reordering | system | 0–99 | Swap or postpone enemy Intents, usually needing the affected position Previewed first. Reordering changes when an action happens; it does not erase it. Anchored Intents can be Previewed and Read but never moved. |
 | Set Tricks | system | 0–5 | Placed face up outside the deck in one of 3 slots. A Set pays its cost when played, waits for its trigger, then resolves for free and goes to the discard pile. If its enemy dies first it returns without triggering. |
@@ -690,8 +690,8 @@ Wink is for players who want to know what is coming, decide whether knowing is w
 | 10 | Safe Distance | 1 | skill | Gain 7 Guard. Gain 5 more if at least one enemy currently intends to Attack. | b 7 → 9, m0 5 → 7 |
 | 11 | Wide Eyes | 1 | skill | Open 1 [Eye]. If the target has no [Preview]ed future Intent, Preview 1. | n 1 → 2 |
 | 12 | Blink | 0 | skill | Close 1 [Eye] to gain 9 Guard. | b 9 → 13 |
-| 13 | Tighten the Silk | 1 | skill | Apply 1 [Web]. If the target has a [Preview]ed future Intent, apply 3 additional Web. | n 1 → 2, m0 3 → 4 |
-| 14 | Web Patch | 1 | skill | Gain 8 Guard. Apply 2 [Web] to an enemy intending to Attack, if there is one. | b 8 → 11 |
+| 13 | Tighten the Silk | 1 | skill | Apply 3 [Web], then [Preview] 1 on the target. | n 3 → 4 |
+| 14 | Web Patch | 1 | skill | Gain 8 Guard. Apply 1 [Web] to every enemy. | b 8 → 11, n 1 → 2 |
 | 15 | Back Up a Little | 1 | skill | [Preview] 1. If the target currently intends to Attack, apply 3 [Web]. Otherwise gain 8 Guard. | n 3 → 4, b 8 → 11 |
 | 16 | Tripline | 1 | skill | [Set] on an enemy. When its Intent becomes Attack, gain 14 Guard and apply 2 [Web] to it, then discard this Trick. | b 14 → 18, n 2 → 3 |
 | 17 | Watch This One | 1 | skill | [Set] on an enemy with an unresolved [Read]. When that Read resolves, draw 1 Trick, and 1 more if it succeeded. Then discard this Trick. | n 1 → 2 |
@@ -711,7 +711,7 @@ Wink is for players who want to know what is coming, decide whether knowing is w
 | 6 | Silk Saw | 1 | attack | Deal 5 damage. You may remove up to 6 [Web] from the target. Deal one more hit for every 2 Web removed, up to 4 hits in total. | d 5 → 7 |
 | 7 | Forecast Fang | 1 | attack | Deal 8 damage, plus 5 for each [Preview]ed future Intent on the target, up to 2 extra hits. | d 8 → 11, m0 5 → 6 |
 | 8 | Wrong Answer | 1 | attack | Deal 5 damage. If any [Read] failed this turn, deal 18 instead and Open 1 [Eye] afterwards. | d 5 → 8, m0 18 → 23 |
-| 9 | Gotcha! | 0 | attack | Playable only if a [Read] succeeded this turn. Deal 9 damage. Once each turn. | d 9 → 13 |
+| 9 | Gotcha! | 0 | attack | Playable only if a [Read] succeeded this turn. Deal 8 damage. Once each turn. | d 8 → 11 |
 | 10 | Rehearsed Pounce | 1 | attack | [Set] on an enemy with an unresolved [Read]. When that Read resolves, deal 20 damage if it succeeded. If it failed, return this Trick to your hand at the start of your next turn instead. | d 20 → 26 |
 | 11 | Across the Web | 2 | attack | Deal 12 damage to one enemy and 6 to every other enemy with [Web]. Apply 1 Web to each enemy hit. | d 12 → 16, m0 6 → 8 |
 | 12 | Double Check | 1 | skill | [Preview] 2. If both newly revealed Intents share an [Intent Family], Open 1 [Eye]. | m0 1 → 2 |
@@ -749,7 +749,7 @@ Wink is for players who want to know what is coming, decide whether knowing is w
 | 4 | Closed Loop | 1 | attack | Deal 9 damage. If a [Read] succeeded and you [Reorder]ed an Intent this turn, return this Trick to your hand. Once each turn. | d 9 → 13 |
 | 5 | Deadline | 2 | attack | [Set] on an enemy. When it is about to execute an Attack Intent, deal 40 damage immediately before the attack, then discard this Trick. If that defeats it, the attack never happens. | d 40 → 50 |
 | 6 | Wrong on Purpose | 0 | attack | Deal 5 damage. Choose one unresolved [Read] on the target and force it to fail immediately, triggering its normal failure effects. Then [Preview] the position it predicted. Once each turn. | d 5 → 8 |
-| 7 | Spider’s Paradox | 2 | attack | Deal 13 damage to all enemies. For each enemy with an unresolved [Read], choose to [Preview] that Read’s position, or leave it hidden and apply 4 [Web] instead. | d 13 → 17, n 4 → 5 |
+| 7 | Spider’s Paradox | 2 | attack | Deal 15 damage to all enemies. For each enemy with an unresolved [Read], choose to [Preview] that Read’s position, or leave it hidden and apply 4 [Web] instead. | d 15 → 19, n 4 → 5 |
 | 8 | The Part Where You Panic | 3 | attack | Deal 24 damage. You may Close 2 [Eye]s to immediately trigger one [Set] attached to the target, even if its trigger has not occurred. Resolve it fully, then discard it. | d 24 → 30 |
 | 9 | Clairvoyant Lattice | 2 | skill | [Preview] future Intents until every living enemy has 3 future positions revealed. Apply 1 [Web] for every newly revealed Intent. | cost 2 → 1 |
 | 10 | Rewrite the Script | 2 | skill | Swap any two movable Intents among one enemy’s current and [Preview]ed queue. [Read]s stay attached to their positions. | cost 2 → 1 |
@@ -783,7 +783,7 @@ Core: Make a Guess, Long Shot, Blindside Probability, Wrong Answer, House Odds, 
 
 Core: Tighten the Silk, Thread Map, Tug the Thread, Stall the Bad Part, Loom Logic, Rewrite the Script, Postpone the Inevitable, Snip Here, Master of the Web
 
-**The Trap Architect** — Spend on one turn so future turns get free actions. Excellent Pluck efficiency across long encounters, badly punished by short ones and by Sets that sit in a slot waiting for a trigger that never comes.
+**The Trap Architect** — Spend on one turn so future turns get free actions. Excellent Nerve efficiency across long encounters, badly punished by short ones and by Sets that sit in a slot waiting for a trigger that never comes.
 
 Core: Tripline, Watch This One, Rehearsed Pounce, Set the Table, Doorframe Tripline, Lampshade Lookout, False Floor, Extra Corner, Deadline, Back Pocket Web, Patient Hunter
 
@@ -800,7 +800,7 @@ Core: Wide Eyes, House Pattern, Eight Eyes, One Target, Double Check, Reflexive 
 | Sticky Fur | 1 | status | special | [Vanish]. |
 | Candle Burn | — | status | special | Unplayable. At the end of your turn, lose 2 Courage. |
 | Scrape | — | status | special | Unplayable. |
-| Gloom | — | status | special | Unplayable. [Ethereal]. When drawn, lose 1 Pluck. |
+| Gloom | — | status | special | Unplayable. [Ethereal]. When drawn, lose 1 Nerve. |
 | Wrong Side | — | status | special | Unplayable. [Ethereal]. When drawn, lose 3 Courage. |
 | Regret | — | curse | curse | Unplayable. At the end of your turn, lose 1 Courage for each Trick in your hand. |
 | Bad Luck | — | curse | curse | Unplayable. At the end of your turn, gain 1 Weak. |
@@ -815,5 +815,5 @@ Core: Wide Eyes, House Pattern, Eight Eyes, One Target, Double Check, Reflexive 
 | Clumsy Swing | 1 | attack | uncommon | Deal 8 damage to all enemies. |
 | Dust Off | 1 | skill | uncommon | Remove a negative condition from yourself. Draw 1 Trick. |
 | Second Wind | 1 | skill | uncommon | [Vanish] every Skill in your hand. Gain 5 Guard for each. |
-| Lucky Penny | 0 | skill | rare | Gain 2 Pluck. Draw 1 Trick. [Vanish]. |
-| Big Swing | 3 | attack | rare | Deal 14 damage. Deal 4 more for each other Trick in your hand. |
+| Lucky Penny | 0 | skill | rare | Gain 2 Nerve. Draw 1 Trick. [Vanish]. |
+| Big Swing | 3 | attack | rare | Deal 16 damage. Deal 4 more for each other Trick in your hand. |

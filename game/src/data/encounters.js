@@ -112,7 +112,10 @@ const FOYER = [
   },
   {
     id: 'foyer-14', region: 'foyer', tier: 'advanced', name: 'Door Greeter + Calling Bell + Dust Bunny',
-    members: [m('door-greeter'), m('calling-bell'), m('dust-bunny')],
+    // Board order is turn order. The Bell is placed LAST so Ring always resolves after
+    // its allies have swung — a Roused granted mid-phase would boost an attack whose
+    // intent number was already on screen, and the intent must never under-report.
+    members: [m('door-greeter'), m('dust-bunny'), m('calling-bell')],
     teaches: 'One of the region\'s hardest normal formations. The Bell demands attention, the Greeter modifies sequencing, the Bunny punishes neglect.',
     advancedOnly: true,
   },
@@ -333,7 +336,9 @@ const SQ = [
   },
   {
     id: 'sq-14', region: 'sleeping-quarters', tier: 'advanced', name: 'Slipper Skitter + Nightlight Snuffer + Thing Beneath',
-    members: [m('slipper-skitter'), m('nightlight-snuffer'), m('thing-beneath')],
+    // Snuffer placed LAST: Darkness expires at the start of its turn, so from any earlier
+    // slot it would strip the +2 out of an ally's already-telegraphed attack.
+    members: [m('slipper-skitter'), m('thing-beneath'), m('nightlight-snuffer')],
     teaches: 'One of the region\'s hardest. The Skitter distracts, the Snuffer amplifies, and Thing Beneath looms.',
     advancedOnly: true, minScuffle: 1,
   },

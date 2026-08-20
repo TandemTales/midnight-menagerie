@@ -287,6 +287,17 @@ export class CombatScene extends Scene {
 
         <div class="cb-banner" aria-live="polite"></div>
         <div class="cb-deny" aria-live="assertive"></div>
+        <div class="cb-chooser" hidden>
+          <div class="cb-chooser__panel" role="dialog" aria-modal="true">
+            <h2 class="cb-chooser__prompt"></h2>
+            <p class="cb-chooser__sub"></p>
+            <div class="cb-chooser__pool"></div>
+            <div class="cb-chooser__bar">
+              <button class="cb-chooser__skip" type="button">Skip</button>
+              <button class="cb-chooser__ok" type="button">Confirm</button>
+            </div>
+          </div>
+        </div>
         <div class="cb-pileview" hidden>
           <div class="cb-pileview__panel" role="dialog" aria-modal="true" aria-label="Pile">
             <header><h2></h2><button class="cb-pileview__x" type="button" aria-label="Close">&times;</button></header>
@@ -327,6 +338,12 @@ export class CombatScene extends Scene {
     this.$endTurn = $('#end-turn');
     this.$banner = $('.cb-banner');
     this.$deny = $('.cb-deny');
+    this.$chooser = $('.cb-chooser');
+    this.$chPrompt = $('.cb-chooser__prompt');
+    this.$chSub = $('.cb-chooser__sub');
+    this.$chPool = $('.cb-chooser__pool');
+    this.$chOk = $('.cb-chooser__ok');
+    this.$chSkip = $('.cb-chooser__skip');
     this.$pileview = $('.cb-pileview');
     this.$pileTitle = $('.cb-pileview h2');
     this.$pileGrid = $('.cb-pileview__grid');
@@ -335,6 +352,12 @@ export class CombatScene extends Scene {
     const slug = String(params.companion || this.ctx.run?.companion || 'marmalade');
     this.$plArt.src = `${PORTRAITS}${slug}.png`;
     this.$plArt.addEventListener('error', () => { this.$plArt.style.display = 'none'; }, { once: true });
+
+    // CardView positions by its BOTTOM CENTRE, so any static card needs a real
+    // transform rather than a CSS scale.
+    const cs = getComputedStyle(this.root);
+    this._cardW = parseFloat(cs.getPropertyValue('--card-w')) || 174;
+    this._cardH = parseFloat(cs.getPropertyValue('--card-h')) || 242;
 
     // arc length for the Nerve ring
     this._arcLen = 2 * Math.PI * 42;
@@ -448,6 +471,132 @@ export class CombatScene extends Scene {
     return null;
   }
 
+  /* ══ player choice ══════════════════════════════════════════════════════ */
+  /**
+   * The engine BLOCKS on this. Returns the indices the player picked.
+   * `kind` is 'card' | 'option' | 'enemy'; enemy choices are made on the board
+   * itself (click a rig) as well as from the list, so the read stays spatial.
+   */
+  _resolveChoice(req) {
+    return new Promise((resolve) => {
+      this._choice = { req, picked: [], resolve, done: false };
+      this._openChooser(req);
+    });
+  }
+
+  _openChooser(req) {
+    const ch = this._choice;
+    const many = req.count > 1;
+    this.$chPrompt.textContent = req.prompt || (req.kind === 'enemy' ? 'Choose a target' : 'Choose');
+    this.$chSub.textContent = many
+      ? `Pick ${req.count}. ${req.optional ? 'You may pick fewer.' : ''}`
+      : (req.optional ? 'You may skip this.' : 'Pick one.');
+    this.$chSkip.hidden = !req.optional;
+    this.$chOk.hidden = !many;
+    this.$chPool.textContent = '';
+    this.$chPool.dataset.kind = req.kind;
+    this._chViews?.forEach(v => v.destroy());
+    this._chViews = [];
+    ch.nodes = [];
+
+    req.pool.forEach((item, i) => {
+      const node = document.createElement('button');
+      node.type = 'button';
+      node.className = 'cb-choice';
+      node.dataset.index = String(i);
+      if (req.kind === 'card' && item.uid) {
+        const def = this.engine.card(item.uid)?.def || item.def || item;
+        const cv = new CardView(def, {
+          uid: item.uid, upgraded: item.upgraded, cost: item.cost,
+          largeText: this.largeText, reduceMotion: true,
+        });
+        node.classList.add('cb-choice--card');
+        node.appendChild(cv.el);
+        this._placeCard(cv, node, 0.88);
+        node.setAttribute('aria-label', def.name || 'Trick');
+        this._chViews.push(cv);
+      } else if (req.kind === 'enemy') {
+        node.classList.add('cb-choice--enemy');
+        node.innerHTML = `<b>${esc(item.name || item.label || 'Enemy')}</b>`
+          + `<span>${item.hp ?? ''}${item.maxHp ? '/' + item.maxHp : ''} ${TERMS.hp}</span>`;
+        node.addEventListener('pointerenter', () => {
+          for (const v of this.views.values()) v.el.classList.toggle('is-aimed', v.id === item.id);
+        });
+      } else {
+        node.classList.add('cb-choice--option');
+        node.innerHTML = `<b>${esc(item.label ?? String(item))}</b>`;
+        if (item.disabled) node.disabled = true;
+      }
+      node.addEventListener('click', () => this._pickChoice(i));
+      this.$chPool.appendChild(node);
+      ch.nodes.push(node);
+    });
+
+    // enemy choices are also made by clicking the creature itself
+    if (req.kind === 'enemy') {
+      ch.boardOff = [];
+      req.pool.forEach((item, i) => {
+        const v = this.views.get(item.id);
+        if (!v) return;
+        const fn = () => this._pickChoice(i);
+        v.el.addEventListener('click', fn);
+        v.el.classList.add('is-choosable');
+        ch.boardOff.push(() => { v.el.removeEventListener('click', fn); v.el.classList.remove('is-choosable'); });
+      });
+    }
+
+    this.$chooser.hidden = false;
+    this.ctx.audio?.play?.('ui:open-panel');
+    ch.cursor = 0;
+    this._focusChoice(0);
+  }
+
+  _focusChoice(i) {
+    const ch = this._choice;
+    if (!ch || !ch.nodes.length) return;
+    ch.cursor = ((i % ch.nodes.length) + ch.nodes.length) % ch.nodes.length;
+    ch.nodes[ch.cursor].focus({ preventScroll: true });
+  }
+
+  _pickChoice(i) {
+    const ch = this._choice;
+    if (!ch || ch.done) return;
+    const req = ch.req;
+    const at = ch.picked.indexOf(i);
+    if (at >= 0) { ch.picked.splice(at, 1); ch.nodes[i].classList.remove('is-picked'); }
+    else {
+      if (ch.picked.length >= req.count) {
+        const drop = ch.picked.shift();
+        ch.nodes[drop]?.classList.remove('is-picked');
+      }
+      ch.picked.push(i);
+      ch.nodes[i].classList.add('is-picked');
+    }
+    this.ctx.audio?.play?.('ui:click');
+    this.$chOk.disabled = !req.optional && ch.picked.length < req.count;
+    if (req.count === 1 && ch.picked.length === 1) this._commitChoice();
+  }
+
+  _commitChoice(skip) {
+    const ch = this._choice;
+    if (!ch || ch.done) return;
+    if (!skip && !ch.req.optional && ch.picked.length < ch.req.count) {
+      this._deny(`Pick ${ch.req.count - ch.picked.length} more.`);
+      return;
+    }
+    ch.done = true;
+    this.$chooser.hidden = true;
+    ch.boardOff?.forEach(f => f());
+    for (const v of this.views.values()) v.el.classList.remove('is-aimed');
+    this._chViews?.forEach(v => v.destroy());
+    this._chViews = [];
+    this.$chPool.textContent = '';
+    this.ctx.audio?.play?.(skip ? 'ui:back' : 'ui:confirm');
+    const picked = skip ? [] : ch.picked.slice();
+    this._choice = null;
+    ch.resolve(picked);
+  }
+
   /* ══ preview / tactical clarity ═════════════════════════════════════════ */
   /**
    * STS2 §2: hovering a target while holding a card previews the outcome on
@@ -457,15 +606,32 @@ export class CombatScene extends Scene {
     const tid = targetId || this._defaultTargetFor(uid);
     const p = this._preview(uid, tid);
     this._paintPreview(uid, tid, p);
-    return this._cardNumbers(uid, tid);
+    this._refinePreview(uid, tid);      // previewAsync fills in past the choice
+    return this._cardNumbers(uid, tid, p);
   }
 
   _hoverPreview(uid) {
     const tid = this._defaultTargetFor(uid);
     const p = this._preview(uid, tid);
     this._paintPreview(uid, tid, p);
-    const v = this.hand.viewOf(uid);
-    v?.setPreviewNumbers(this._cardNumbers(uid, tid));
+    this.hand.viewOf(uid)?.setPreviewNumbers(this._cardNumbers(uid, tid, p));
+    this._refinePreview(uid, tid);
+  }
+
+  /**
+   * A card with an unmade choice can only be previewed up to that choice.
+   * `previewAsync` completes the picture with the auto-picker — one POSSIBLE
+   * outcome, so everything it produces is marked uncertain and printed with a
+   * `?`. A confident wrong number is worse than an honest uncertain one.
+   */
+  _refinePreview(uid, tid) {
+    if (!this.engine.previewAsync) return;
+    const token = (this._previewToken = (this._previewToken || 0) + 1);
+    this.engine.previewAsync(uid, tid, { assumeAffordable: true }).then((p) => {
+      if (token !== this._previewToken || !this._previewOn) return;
+      this._paintPreview(uid, tid, p);
+      this.hand.viewOf(uid)?.setPreviewNumbers(this._cardNumbers(uid, tid, p));
+    }).catch(() => {});
   }
 
   _preview(uid, tid) {
@@ -474,14 +640,15 @@ export class CombatScene extends Scene {
   }
 
   /** Live-modified card text numbers: `{ d, wasD, b, wasB, ... }`. */
-  _cardNumbers(uid, tid) {
+  _cardNumbers(uid, tid, p) {
     const card = this.engine.card(uid);
     if (!card) return null;
     const snap = this.engine.cardSnap(card, tid);
+    const uncertain = !!(p && p.uncertain);
     const out = {};
     for (const k in snap.display || {}) {
       const d = snap.display[k];
-      out[k] = d.value;
+      out[k] = uncertain && typeof d.value === 'number' ? `${d.value}?` : d.value;
       out['was' + k.charAt(0).toUpperCase() + k.slice(1)] = d.base;
     }
     return out;
@@ -499,7 +666,8 @@ export class CombatScene extends Scene {
       v.showPreview({
         damage: t.hpLoss > 0 || t.damage > 0 ? (t.damage || 0) : 0,
         hits: t.hits || 1,
-        kills: !!t.kills,
+        kills: !!t.kills && !p.uncertain,
+        uncertain: !!p.uncertain,
         statuses: (p.statuses || []).filter(s => s.actorId === t.id),
       });
     }
@@ -788,6 +956,57 @@ export class CombatScene extends Scene {
         return;
       }
 
+      case 'intent:queue': {
+        const v = this.views.get(ev.enemyId);
+        if (v) {
+          v.setQueue(ev.queue || []);
+          if (ev.action && ev.action !== 'preview') {
+            const c = this._pointOf(ev.enemyId);
+            this.fx.word(c.x, c.y - 70, ev.action.toUpperCase(), 'counter');
+            this.ctx.audio?.play?.('ui:confirm');
+          }
+        }
+        return;
+      }
+
+      case 'rule': {
+        if (ev.action === 'clear') this._rules.delete(ev.rule.id);
+        else this._rules.set(ev.rule.id, { ...ev.rule, sourceId: ev.sourceId });
+        if (ev.sourceId) this._syncEnemyExtras(ev.sourceId);
+        if (ev.action !== 'clear') {
+          this._banner(ev.rule.name || 'A Rule', 'rule', 1.4);
+          this.ctx.audio?.play?.('world:boss-roar', { vol: 0.5 });
+          await this._wait(this._d(0.4));
+        }
+        return;
+      }
+
+      case 'rule:broken': {
+        const v = ev.sourceId ? this.views.get(ev.sourceId) : null;
+        v?.el.classList.add('rule-broken');
+        this._banner(`${ev.name} BROKEN`, 'rulebreak', 1.3);
+        const c = this._pointOf(ev.sourceId || this.engine.player.id);
+        this.fx.burst(c.x, c.y, { color: this.fx.col.threatHi, count: 22, speed: 320 });
+        this._addShake(0.7);
+        this.ctx.audio?.play?.('ui:deny');
+        await this._wait(this._d(0.35));
+        v?.el.classList.remove('rule-broken');
+        return;
+      }
+
+      case 'choice':
+        // the engine is blocked awaiting `_resolveChoice`; make sure everything
+        // queued before it has finished animating so the picker reads in context
+        return;
+
+      case 'choice:resolved': {
+        if (ev.kind === 'enemy' && ev.chosen?.[0]?.id) {
+          const v = this.views.get(ev.chosen[0].id);
+          if (v) { const c = this._pointOf(ev.chosen[0].id); this.fx.ring(c.x, c.y, this.fx.col.flame, 60); }
+        }
+        return;
+      }
+
       case 'card:invalid':
         this._deny(ev.reason);
         return;
@@ -906,23 +1125,30 @@ export class CombatScene extends Scene {
     if (!this.engine) return;
     const st = this.engine.state;
     this.$turnN.textContent = String(st.turn);
-    this._syncPlayer(st);
+    this._syncPlayer();
     for (const e of st.enemies) { this.views.get(e.id)?.setState(e); this._syncEnemyExtras(e.id); }
-    this._syncPiles(st);
-    this._syncNerve(st.player.energy, st.player.energyMax);
+    this._syncPiles();
+    this._syncNerve(this.engine.energy, this.engine.player.energyMax);
     this._syncKeeps(st);
     this._syncHandPlayability();
     this._renderIncoming(0);
     this._syncEndTurn();
   }
 
+  /** Per-event refresh. Reads the actor directly — `engine.state` is a
+   *  serialising snapshot and this runs once per hit of a multi-hit attack. */
   _syncActor(id) {
-    const st = this.engine.state;
-    if (id === this.engine.player.id) this._syncPlayer(st);
-    else {
-      this.views.get(id)?.setState(st.enemies.find(e => e.id === id) || {});
-      this._syncEnemyExtras(id);
-    }
+    if (id === this.engine.player.id) { this._syncPlayer(); return; }
+    const en = this.engine.actor(id);
+    const v = this.views.get(id);
+    if (en && v) { v.setState(this._light(en)); this._syncEnemyExtras(id); }
+  }
+
+  _light(a) {
+    return {
+      id: a.id, hp: a.hp, maxHp: a.maxHp, block: a.block, alive: a.alive,
+      statuses: this.engine.statusList(a),
+    };
   }
 
   /**
@@ -970,9 +1196,9 @@ export class CombatScene extends Scene {
     }
   }
 
-  _syncPlayer(st) {
-    st = st || this.engine.state;
-    const p = st.player;
+  _syncPlayer() {
+    const p = this._light(this.engine.player);
+    p.name = this.engine.player.name;
     const pct = Math.max(0, Math.min(1, p.hp / (p.maxHp || 1)));
     this.$hpFill.style.transform = `scaleX(${pct.toFixed(4)})`;
     this.$hpTxtN.textContent = String(Math.max(0, p.hp));
@@ -1013,14 +1239,14 @@ export class CombatScene extends Scene {
     }
   }
 
-  _syncPiles(st) {
-    st = st || this.engine.state;
-    this.$drawPile.querySelector('b').textContent = String(st.counts?.draw ?? st.piles.draw.length);
-    this.$discardPile.querySelector('b').textContent = String(st.counts?.discard ?? st.piles.discard.length);
+  _syncPiles() {
+    const pl = this.engine.piles;
+    this.$drawPile.querySelector('b').textContent = String(pl?.draw?.length ?? 0);
+    this.$discardPile.querySelector('b').textContent = String(pl?.discard?.length ?? 0);
   }
 
   _syncNerve(cur, max) {
-    const c = cur ?? this.engine.player.energy;
+    const c = cur ?? this.engine.energy;
     const m = max ?? this.engine.player.energyMax;
     if (this._nerveV === c && this._nerveM === m) return;
     const dropped = this._nerveV !== undefined && c < this._nerveV;
@@ -1076,7 +1302,8 @@ export class CombatScene extends Scene {
   _syncEndTurn() {
     if (!this.engine || !this.hand) return;
     const playerTurn = this.engine.phase === 'player' && !this.engine.over;
-    const any = this.engine.state.piles.hand.some(c =>
+    // `engine.state` serialises the whole fight — never touch it in a hot path.
+    const any = (this.engine.piles?.hand || []).some(c =>
       this.engine.canPlay(c.uid, this._defaultTargetFor(c.uid)).ok);
     this.$endTurn.disabled = !playerTurn;
     this.$endTurn.classList.toggle('is-ready', playerTurn && !any);
@@ -1085,6 +1312,15 @@ export class CombatScene extends Scene {
       ? (any ? 'End Turn|You still have Tricks you can play.|Shortcut: E'
         : 'End Turn|Nothing left you can play.|Shortcut: E')
       : 'End Turn|Not your turn.||';
+  }
+
+  /** Place a CardView statically inside `wrap` at `scale`. */
+  _placeCard(cv, wrap, scale) {
+    const w = this._cardW * scale, h = this._cardH * scale;
+    wrap.style.width = w + 'px';
+    wrap.style.height = h + 'px';
+    cv.setTransform({ x: w / 2, y: h, rot: 0, scale, z: 0 });
+    return cv;
   }
 
   _handCard(snap) {
@@ -1113,6 +1349,8 @@ export class CombatScene extends Scene {
     on(this.$drawPile, 'click', () => this._openPile('draw'));
     on(this.$discardPile, 'click', () => this._openPile('discard'));
     on(this.root.querySelector('.cb-pileview__x'), 'click', () => this._closePile());
+    on(this.$chOk, 'click', () => this._commitChoice());
+    on(this.$chSkip, 'click', () => this._commitChoice(true));
     on(this.$pileview, 'click', (e) => { if (e.target === this.$pileview) this._closePile(); });
 
     // tooltips for anything carrying data-tip
@@ -1133,6 +1371,20 @@ export class CombatScene extends Scene {
     // keyboard: full parity. The Hand owns 1-9 / arrows / enter; we own the rest.
     this._onKey = (e) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
+      // the chooser owns the keyboard while it is open
+      if (this._choice && !this._choice.done) {
+        const ch = this._choice;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); this._focusChoice(ch.cursor + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); this._focusChoice(ch.cursor - 1); }
+        else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this._pickChoice(ch.cursor); }
+        else if (e.key === 'Escape') { e.preventDefault(); if (ch.req.optional) this._commitChoice(true); }
+        else if (e.key >= '1' && e.key <= '9') {
+          const i = +e.key - 1;
+          if (i < ch.nodes.length) { e.preventDefault(); this._pickChoice(i); }
+        }
+        e.stopPropagation();
+        return;
+      }
       const k = e.key.toLowerCase();
       if (k === 'e') { e.preventDefault(); this._endTurn(); }
       else if (k === 'q') { e.preventDefault(); this._openPile('draw'); }
@@ -1223,7 +1475,7 @@ export class CombatScene extends Scene {
       const wrap = document.createElement('div');
       wrap.className = 'cb-pilecard';
       wrap.appendChild(v.el);
-      v.setTransform({ x: 0, y: 0, rot: 0, scale: 1, z: 0 });
+      this._placeCard(v, wrap, 0.72);
       this.$pileGrid.appendChild(wrap);
       this._pileViews.push(v);
     }
@@ -1329,6 +1581,11 @@ export class CombatScene extends Scene {
     for (const off of this._engineOffs) { try { off(); } catch {} }
     this._offs.length = 0; this._engineOffs.length = 0;
     clearTimeout(this._bannerT); clearTimeout(this._denyT);
+    // never leave the engine awaiting a resolution that can no longer arrive
+    if (this._choice && !this._choice.done) { this._choice.done = true; this._choice.resolve([]); this._choice = null; }
+    this.engine?.setChoiceResolver?.(null);
+    this._chViews?.forEach(v => v.destroy());
+    this._chViews = [];
     this._q.length = 0;
     this.hand?.destroy();
     for (const v of this.views.values()) v.destroy();

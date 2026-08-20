@@ -401,19 +401,19 @@ const commons = [
   {
     id: 'wink/tighten-the-silk', name: 'Tighten the Silk', companion: SLUG, type: SKILL, rarity: COMMON,
     cost: 1, target: ENEMY, keywords: ['web', 'preview'],
-    text: 'Apply {n} [Web]. If the target has a [Preview]ed future Intent, apply {m0} additional Web.',
-    flavor: 'Every strand pulled a little further in.',
-    nums: { n: 1, m0: 3 },
-    effect: eff(c => web(c, c.target, N(c).n + (previewDepth(c, c.target) > 0 ? N(c).m0 : 0))),
-    upgrade: { nums: { n: 2, m0: 4 } },
+    text: 'Apply {n} [Web], then [Preview] {m0} on the target.',
+    flavor: 'Every strand pulled a little further in, until she can feel what it means to do next.',
+    nums: { n: 3, m0: 1 },
+    effect: eff(c => { web(c, c.target, N(c).n); preview(c, c.target, N(c).m0); }),
+    upgrade: { nums: { n: 4, m0: 1 } },
   },
   {
     id: 'wink/web-patch', name: 'Web Patch', companion: SLUG, type: SKILL, rarity: COMMON,
     cost: 1, target: SELF, keywords: ['web'],
-    text: 'Gain {b} Guard. Apply {n} [Web] to an enemy intending to Attack, if there is one.',
-    flavor: 'A repair and a threat in the same motion.',
-    nums: { b: 8, n: 2 },
-    effect: eff(c => { U.guard(c, N(c).b); const e = U.enemies(c).find(x => intendsAttack(c, x)); if (e) web(c, e, N(c).n); }),
+    text: 'Gain {b} Guard. Apply {n} [Web] to every enemy.',
+    flavor: 'She patches the whole corner at once and everybody gets some.',
+    nums: { b: 8, n: 1 },
+    effect: eff(c => { U.guard(c, N(c).b); for (const e of U.enemies(c)) web(c, e, N(c).n); }),
     upgrade: { nums: { b: 11, n: 2 } },
   },
   {
@@ -555,10 +555,10 @@ const uncommons = [
     cost: 0, target: ENEMY, keywords: ['read'],
     text: 'Playable only if a [Read] succeeded this turn. Deal {d} damage. Once each turn.',
     flavor: 'Said quietly. Said with enormous satisfaction.',
-    nums: { d: 9 },
+    nums: { d: 8 },
     effect: eff(c => U.hit(c, N(c).d)),
     playable: (c) => U.got(c, 'readSuccess') > 0,
-    upgrade: { nums: { d: 13 } },
+    upgrade: { nums: { d: 11 } },
   },
   {
     id: 'wink/rehearsed-pounce', name: 'Rehearsed Pounce', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -884,7 +884,7 @@ const rares = [
     cost: 2, target: ALL_ENEMIES, keywords: ['read', 'preview', 'web'],
     text: 'Deal {d} damage to all enemies. For each enemy with an unresolved [Read], choose to [Preview] that Read’s position, or leave it hidden and apply {n} [Web] instead.',
     flavor: 'Certainty and leverage, and only one of them per enemy.',
-    nums: { d: 13, n: 4 },
+    nums: { d: 15, n: 4 },
     effect: eff(async c => {
       U.hitAll(c, N(c).d);
       for (const e of U.enemies(c)) {
@@ -896,7 +896,7 @@ const rares = [
         ]);
       }
     }),
-    upgrade: { nums: { d: 17, n: 5 } },
+    upgrade: { nums: { d: 19, n: 5 } },
   },
   {
     id: 'wink/the-part-where-you-panic', name: 'The Part Where You Panic', companion: SLUG, type: ATTACK, rarity: RARE,

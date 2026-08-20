@@ -69,12 +69,16 @@ export const dustBunny = {
       },
     },
     tumble: {
-      id: 'tumble', name: 'Tumble', intent: Intent.ATTACK, damage: 5, hits: 1,
+      // BALANCE DEVIATION from the design doc (which says 5 + 3 per Dust). Measured at 5,
+      // the region's opening Scuffle cost the player 0.18 Courage out of 68 across 60
+      // seeded runs — a free encounter. The Slay the Spire Act-1 norm is 8-12. Base
+      // raised to 7; the Dust scaling and the whole disruption read are unchanged.
+      id: 'tumble', name: 'Tumble', intent: Intent.ATTACK, damage: 7, hits: 1,
       tell: 'It gathers itself up into something much too large for a clump of dust.',
-      damageFn: (c) => 5 + 3 * dustBunny.projectedDust(c),
+      damageFn: (c) => 7 + 3 * dustBunny.projectedDust(c),
       intentFn: (c) => (dustBunny.projectedDust(c) >= 3 ? Intent.ATTACK_BIG : Intent.ATTACK),
       effect(c) {
-        hitPlayer(c, 5 + 3 * cnt(c, 'dust'));
+        hitPlayer(c, 7 + 3 * cnt(c, 'dust'));
         setCnt(c, 'dust', 0);
       },
     },
@@ -149,9 +153,12 @@ export const coatrackCrawler = {
       },
     },
     'hat-swipe': {
-      id: 'hat-swipe', name: 'Hat Swipe', intent: Intent.ATTACK_DEFEND, damage: 6, hits: 1, block: 5,
+      // BALANCE DEVIATION from the design doc (6 damage / 5 Guard). Scuffle 2 cost the
+      // player 2.15 Courage of 68 across 60 seeded runs. Raised to 8; Guard unchanged, and
+      // Brace / Umbrella Jab — the enemy's actual lesson — are untouched.
+      id: 'hat-swipe', name: 'Hat Swipe', intent: Intent.ATTACK_DEFEND, damage: 8, hits: 1, block: 5,
       tell: 'It shrugs a bowler hat off a hook and swings the whole rack around.',
-      effect(c) { hitPlayer(c, 6); c.block(c.self, 5); },
+      effect(c) { hitPlayer(c, 8); c.block(c.self, 5); },
     },
   },
 
@@ -247,7 +254,11 @@ export const callingBell = {
     ring: {
       id: 'ring', name: 'Ring', intent: Intent.BUFF,
       tell: 'A bright little ding. Everything else in the room stands up straighter.',
-      appliesStatus: [{ id: 'roused', stacks: 1, to: 'allies' }],
+      // Roused changes how hard everything else hits — it must never land unannounced.
+      appliesFn: (c) => {
+        const stacks = (countMoves(c, 'ring') === 0 && flag(c, 'firstRingRoused', 1)) || 1;
+        return allies(c).length ? [{ id: 'roused', stacks, to: 'allies' }] : [];
+      },
       effect(c) {
         const first = countMoves(c, 'ring') === 0;
         const stacks = (first && flag(c, 'firstRingRoused', 1)) || 1;
@@ -589,9 +600,14 @@ export const unwelcomeGuest = {
     'too-familiar': {
       id: 'too-familiar', name: 'Too Familiar', intent: Intent.ATTACK, damage: 9, hits: 1,
       tell: 'It has seen you do that before. It has seen you do that a great many times.',
+      // The intent counts Familiar Tricks live, against the type that is Familiar RIGHT NOW.
+      // By the time the move resolves, onPlayerTurnEnd has already rotated `familiar` to
+      // next turn's type — so the effect must use the count latched at turn end, not a
+      // fresh live count against the new type. Reading it live here made Too Familiar
+      // deal 15 while its intent promised 12.
       damageFn: (c) => Math.min(15, 9 + 3 * unwelcomeGuest.familiarPlayedThisTurn(c)),
       intentFn: (c) => (unwelcomeGuest.familiarPlayedThisTurn(c) >= 2 ? Intent.ATTACK_BIG : Intent.ATTACK),
-      effect(c) { hitPlayer(c, Math.min(15, 9 + 3 * unwelcomeGuest.familiarPlayedThisTurn(c))); },
+      effect(c) { hitPlayer(c, Math.min(15, 9 + 3 * (mem(c).familiarPlayed || 0))); },
     },
     'wrong-face': {
       id: 'wrong-face', name: 'Wrong Face', intent: Intent.ATTACK, damage: 6, hits: 2,
@@ -656,7 +672,15 @@ export const houseBell = {
       effect(c) {
         addCnt(c, 'resonance', 1, 4);
         if (allies(c).length >= 2) {
-          for (const a of allies(c)) c.applyStatus(a, 'roused', 1);
+          // DEVIATION from the design doc, for intent honesty. The doc gives this branch
+          // 1 Roused to every other enemy. The Bell is always slot 0, so it acts before
+          // every ally it buffs — a mid-phase Roused raises an attack whose number is
+          // already on screen, and the player takes 2 more than the intent promised.
+          // Guard (what Second Ring's crowded-room branch already grants) has no effect on
+          // any telegraphed number, so the room stays honest. Restore Roused here the
+          // moment the engine can arm a buff between the enemy phase and the intent
+          // refresh — see docs/NOTES.md.
+          for (const a of allies(c)) c.block(a, 8);
         } else {
           c.summon('dust-bunny', {});
         }

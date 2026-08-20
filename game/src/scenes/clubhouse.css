@@ -191,6 +191,12 @@
   box-shadow: var(--shadow-3);
   overflow: auto;
 }
+.cl-panel::-webkit-scrollbar { width: 8px; }
+.cl-panel::-webkit-scrollbar-track { background: transparent; }
+.cl-panel::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--flame-400) 42%, transparent);
+  border-radius: 4px;
+}
 .cl-panel__head { display: grid; gap: 3px; margin-bottom: var(--s-4); position: relative; }
 .cl-panel__head h2 {
   margin: 0;
@@ -328,7 +334,13 @@
 .scrawl u { text-decoration-thickness: 2px; text-underline-offset: 3px; }
 
 /* ── menagerie roster ─────────────────────────────────────────────────────── */
-.scrapgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(8px, 1vw, 16px); }
+/* All sixteen plates on screen at once — the roster is the point of the panel,
+   and a scrapbook you have to scroll stops reading as a wall. */
+.scrapgrid {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(7px, .8vw, 13px);
+  width: min(100%, 830px); margin-inline: auto;
+}
 .scrapcell {
   position: relative;
   display: grid; grid-template-rows: auto auto;
@@ -341,7 +353,7 @@
 .scrapgrid > :nth-child(4n+3) { --r: -.6; }  .scrapgrid > :nth-child(4n) { --r: 1.4; }
 .scrapcell .pf { aspect-ratio: 828/516; border-radius: 2px; }
 .scrapcell__cap { display: grid; gap: 0; padding-top: 5px; text-align: center; color: var(--text-ink); }
-.scrapcell__cap b { font-family: var(--font-display); font-size: var(--fs-sm); }
+.scrapcell__cap b { font-family: var(--font-display); font-size: var(--fs-sm); line-height: 1.15; }
 .scrapcell__cap span { font-size: var(--fs-xs); font-style: italic; color: color-mix(in oklab, var(--text-ink) 62%, var(--parchment-shade)); }
 .scrapcell.is-empty { background: color-mix(in oklab, var(--parchment-shade) 62%, var(--ink-700)); opacity: .72; }
 .scrapcell__tape {
@@ -387,6 +399,9 @@
 
 .packcols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 1.6vw, 28px); align-items: start; }
 .packbag__list, .packshelf__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
+.packshelf__list { grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); align-content: start; }
+.packcols { min-height: 0; }
+.packbag { position: sticky; top: 0; }
 .packbag__hint, .packbag__empty { font-size: var(--fs-xs); font-style: italic; color: var(--text-lo); margin: var(--s-2) 0 0; }
 .gear {
   position: relative;

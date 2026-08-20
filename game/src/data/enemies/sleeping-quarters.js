@@ -103,11 +103,13 @@ export const slipperSkitter = {
     'toe-stomp': {
       id: 'toe-stomp', name: 'Toe Stomp', intent: Intent.ATTACK, damage: 4, hits: 2,
       tell: 'Two quick stamps, one from each slipper.',
+      applies: [{ id: 'scurry', stacks: 1, to: 'self' }],
       effect(c) { hitPlayer(c, 4, 2); c.applyStatus(c.self, 'scurry', 1); },
     },
     'heel-kick': {
       id: 'heel-kick', name: 'Heel Kick', intent: Intent.ATTACK, damage: 7, hits: 1,
       tell: 'One rears back on its heel.',
+      applies: [{ id: 'scurry', stacks: 1, to: 'self' }],
       effect(c) { hitPlayer(c, 7); c.applyStatus(c.self, 'scurry', 1); },
     },
     'hide-under-the-bed': {
@@ -165,6 +167,7 @@ export const wardrobeGuest = {
     'back-inside': {
       id: 'back-inside', name: 'Back Inside', intent: Intent.DEFEND, block: 7,
       tell: 'The doors pull shut from within.',
+      applies: [{ id: 'hidden', stacks: 1, to: 'self' }],
       effect(c) { c.block(c.self, 7); wardrobeGuest.goHidden(c); },
     },
     rustle: {
@@ -250,6 +253,7 @@ export const blanketCreeper = {
       id: 'smother', name: 'Smother', intent: Intent.ATTACK_DEBUFF, damage: 5, hits: 1,
       tell: 'It settles over you, and it is in no hurry.',
       damageFn: (c) => 5 + blanketCreeper.atkBonus(c),
+      applies: [{ id: 'smothered', stacks: 1, to: 'player' }],
       effect(c) {
         hitPlayer(c, 5 + blanketCreeper.atkBonus(c));
         c.applyStatus(c.player, 'smothered', 1);
@@ -316,6 +320,9 @@ export const nightlightSnuffer = {
     snuff: {
       id: 'snuff', name: 'Snuff', intent: Intent.BUFF,
       tell: 'It leans over the nightlight. The room gets a great deal larger.',
+      // Darkness is a flat damage buff to the rest of the room. Announce the exact size.
+      appliesFn: (c) => (allies(c).length
+        ? [{ id: 'darkness', stacks: nightlightSnuffer.darknessPower(c), to: 'allies' }] : []),
       effect(c) {
         field(c).darkness = true;
         // The Snuffer itself never benefits from its own Darkness.
@@ -494,6 +501,10 @@ export const nightTerror = {
       },
       hitsFn: (c) => (nightTerror.branch(c) === 'recoil' ? 0 : 1),
       blockFn: (c) => (nightTerror.branch(c) === 'recoil' ? 14 : 0),
+      appliesFn: (c) => {
+        const b = nightTerror.branch(c);
+        return (b === 'recoil' || b === 'looming') ? [{ id: 'frightened', stacks: 1, to: 'player' }] : [];
+      },
       effect(c) {
         const b = nightTerror.branch(c) || 'lunge';    // no cards played → it lunges
         if (b === 'recoil') { c.block(c.self, 14); c.applyStatus(c.player, 'frightened', 1); }
@@ -509,11 +520,13 @@ export const nightTerror = {
     'bedroom-corner': {
       id: 'bedroom-corner', name: 'Bedroom Corner', intent: Intent.DEFEND, block: 12,
       tell: 'It folds itself into the angle where two walls meet and is simply not there.',
+      applies: [{ id: 'hidden', stacks: 1, to: 'self' }],
       effect(c) { c.block(c.self, 12); c.applyStatus(c.self, 'hidden', 1); },
     },
     'sudden-face': {
       id: 'sudden-face', name: 'Sudden Face', intent: Intent.ATTACK_DEBUFF, damage: 10, hits: 1,
       tell: 'It is going to be much closer than this in a moment.',
+      applies: [{ id: 'frightened', stacks: 1, to: 'player' }],
       effect(c) {
         c.removeStatus(c.self, 'hidden');
         hitPlayer(c, 10);
@@ -692,6 +705,7 @@ export const blanketHydra = {
       damageFn: () => 0,
       hitsFn: () => 1,
       intentFn: () => Intent.DEBUFF,
+      applies: [{ id: 'frightened', stacks: 1, to: 'player' }],
       effect(c) { c.applyStatus(c.player, 'frightened', 1); c.block(c.self, 6); },
     },
     'roll-over': {
@@ -847,6 +861,7 @@ export const theWardrobe = {
     'empty-hangers': {
       id: 'empty-hangers', name: 'Empty Hangers', intent: Intent.DEBUFF, block: 10,
       tell: 'Every hanger inside is empty, and every one of them is swinging.',
+      applies: [{ id: 'frightened', stacks: 1, to: 'player' }],
       effect(c) { c.applyStatus(c.player, 'frightened', 1); c.block(c.self, 10); },
     },
   },

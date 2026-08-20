@@ -17,6 +17,15 @@ import { cardArt, onArtReady } from './cardart.js';
 /** Must match `--ss` in card.css. */
 export const CARD_SS = 1.4;
 
+/**
+ * Art window, in design-grid units. The name banner used to sit ON the
+ * illustration and 90%-black covered 20% of it; it is now a plate BELOW the
+ * art (126u..160u), so the art box shrank to a clean, fully-visible 224x126.
+ * Must match `.mm-card__art` in card.css.
+ */
+export const ART_W = 224;
+export const ART_H = 126;
+
 const TYPE_LABEL = { attack: 'Attack', skill: 'Skill', power: 'Power', status: 'Status', curse: 'Curse' };
 const TARGET_SUB = { allEnemies: 'All', self: 'Self', randomEnemy: 'Random', ally: 'Ally' };
 const KEYWORD_LABEL = {}; // filled by keywords.js consumers via CardView.registerKeywords()
@@ -66,36 +75,45 @@ export class CardView {
     el.dataset.uid = this.uid;
     el.dataset.cardId = def.id;
     el.setAttribute('role', 'button');
+    // Focusable so `view.el.focus()` is not a no-op and the hand can run a
+    // roving-focus model. -1: reachable programmatically, never by raw Tab
+    // (the hand itself is the single tab stop and traps Tab while selecting).
+    el.setAttribute('tabindex', '-1');
 
+    // Everything visible lives inside __body so `dissolve()` can mask ONE node
+    // and still leave the ember layer (a sibling) outside the mask.
     el.innerHTML = `
-      <div class="mm-card__ring"></div>
-      <div class="mm-card__crest"></div>
-      <div class="mm-card__pip mm-card__pip--l"></div>
-      <div class="mm-card__pip mm-card__pip--r"></div>
-      <div class="mm-card__pip mm-card__pip2 mm-card__pip--l"></div>
-      <div class="mm-card__pip mm-card__pip2 mm-card__pip--r"></div>
-      <div class="mm-card__frame">
-        <div class="mm-card__face">
-          <div class="mm-card__art"></div>
-          <div class="mm-card__artline"></div>
-          <div class="mm-card__banner"><div class="mm-card__name"></div></div>
-          <div class="mm-card__type">
-            <span class="mm-card__typeicon"></span><span class="mm-card__typelabel"></span>
+      <div class="mm-card__body">
+        <div class="mm-card__ring"></div>
+        <div class="mm-card__crest"><i></i></div>
+        <div class="mm-card__pip mm-card__pip--l"></div>
+        <div class="mm-card__pip mm-card__pip--r"></div>
+        <div class="mm-card__pip mm-card__pip2 mm-card__pip--l"></div>
+        <div class="mm-card__pip mm-card__pip2 mm-card__pip--r"></div>
+        <div class="mm-card__frame">
+          <div class="mm-card__face">
+            <div class="mm-card__art"></div>
+            <div class="mm-card__artline"></div>
+            <div class="mm-card__banner"><div class="mm-card__name"></div></div>
+            <div class="mm-card__type">
+              <span class="mm-card__typeicon"></span><span class="mm-card__typelabel"></span>
+            </div>
+            <div class="mm-card__rules"></div>
+            <div class="mm-card__badges"></div>
           </div>
-          <div class="mm-card__rules"></div>
-          <div class="mm-card__badges"></div>
+          <div class="mm-card__rivets"><i></i><i></i><i></i><i></i></div>
+          <div class="mm-card__flourish"><i></i><i></i><i></i><i></i></div>
+          <div class="mm-card__setgem"></div>
+          <div class="mm-card__shimmer"></div>
+          <div class="mm-card__sheen"></div>
+          <div class="mm-card__flash"></div>
         </div>
-        <div class="mm-card__rivets"><i></i><i></i><i></i><i></i></div>
-        <div class="mm-card__flourish"><i></i><i></i><i></i><i></i></div>
-        <div class="mm-card__setgem"></div>
-        <div class="mm-card__shimmer"></div>
-        <div class="mm-card__sheen"></div>
-        <div class="mm-card__flash"></div>
+        <div class="mm-card__cost"></div>
       </div>
-      <div class="mm-card__cost"></div>
       <div class="mm-card__embers"></div>`;
 
     this.el = el;
+    this.$body = el.querySelector('.mm-card__body');
     this.$art = el.querySelector('.mm-card__art');
     this.$name = el.querySelector('.mm-card__name');
     this.$type = el.querySelector('.mm-card__typelabel');
@@ -117,9 +135,10 @@ export class CardView {
 
   _paintArt() {
     if (this._dead) return;
-    // Art box is 224x172 design px; render at the on-screen size the card can
-    // reach so it never upscales.
-    const url = cardArt(this.def, 224 * CARD_SS, 172 * CARD_SS, { upgraded: this.state.upgraded });
+    // Rastered at a FIXED size (never the live display size) so the cache key
+    // is viewport-independent and `warmArt()` can pre-generate every card in
+    // the deck before combat starts. CSS scales the bitmap down, never up.
+    const url = cardArt(this.def, ART_W * CARD_SS, ART_H * CARD_SS, { upgraded: this.state.upgraded });
     this.$art.style.backgroundImage = `url("${url}")`;
   }
 
@@ -133,9 +152,9 @@ export class CardView {
       this.$name.appendChild(s);
     }
     const len = n.length + (this.state.upgraded ? 1 : 0);
-    this.el.classList.toggle('is-name-long', len > 14 && len <= 19);
-    this.el.classList.toggle('is-name-xlong', len > 19);
-    this.el.setAttribute('aria-label', this._ariaLabel());
+    this.el.classList.toggle('is-name-long', len > 13 && len <= 18);
+    this.el.classList.toggle('is-name-xlong', len > 18);
+    this._updateAria();
   }
 
   _renderType() {
@@ -225,6 +244,7 @@ export class CardView {
     this.el.classList.toggle('is-text-long', plain > 62 && plain <= 104);
     this.el.classList.toggle('is-text-xlong', plain > 104);
     this._preview = null;
+    this._updateAria();
   }
 
   _renderCost() {
@@ -250,17 +270,50 @@ export class CardView {
     }
   }
 
+  /**
+   * The rules text as a screen reader should hear it: placeholders replaced by
+   * the numbers actually on the card RIGHT NOW (including any live preview
+   * adjustment), keywords spoken as their plain-language label, emphasis and
+   * line breaks flattened. Never "Deal d damage."
+   */
+  _spokenText() {
+    const base = this.nums, p = this._preview;
+    return String(this.text)
+      .replace(/\{(\w+)\}|\[([^\]]+)\]|\*([^*]+)\*/g, (m, key, kw, em) => {
+        if (key) {
+          let v = base[key];
+          if (p && p[key] !== undefined) v = p[key];
+          return v === undefined ? 'some' : String(v);
+        }
+        if (kw) return KEYWORD_LABEL[kw.toLowerCase().replace(/\s+/g, '-')] || kw;
+        return em;
+      })
+      .replace(/\s*\n\s*/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
   _ariaLabel() {
     const s = this.state;
+    const c = this.cost;
+    const costWord = c === -1 ? 'X Nerve' : c === -2 ? 'unplayable' : `${c} Nerve`;
+    const extra = [];
+    if (this.def.exhaust) extra.push('Exhaust');
+    if (this.def.ethereal) extra.push('Ethereal');
+    if (this.def.innate) extra.push('Innate');
+    if (this.def.retain) extra.push('Retain');
     return [
       this.def.name + (s.upgraded ? ' plus' : ''),
-      `${this.cost} Nerve`,
+      costWord,
       TYPE_LABEL[this.def.type] || this.def.type,
       this.def.rarity,
-      String(this.text).replace(/[{}\[\]*]/g, ''),
-      s.playable ? '' : 'unplayable',
+      this._spokenText(),
+      extra.join(' '),
+      s.playable ? '' : 'cannot be played right now',
     ].filter(Boolean).join(', ');
   }
+
+  _updateAria() { this.el.setAttribute('aria-label', this._ariaLabel()); }
 
   _applyClasses() {
     const s = this.state, cl = this.el.classList;
@@ -292,6 +345,7 @@ export class CardView {
     }
     if ('nums' in patch) this._renderRules();
     this._applyClasses();
+    if ('playable' in patch || this.cost !== before.cost) this._updateAria();
     return this;
   }
 
@@ -324,6 +378,7 @@ export class CardView {
         e.classList.toggle('is-down', down);
       }
     }
+    this._updateAria();
     return this;
   }
 
@@ -358,6 +413,29 @@ export class CardView {
     });
   }
 
+  /**
+   * The hero frame. STS2-REFERENCE §4: "combat effects pop off the screen".
+   * A played card must be the most SOLID thing on screen at the instant it
+   * resolves — full saturation, a hard rim of light, and a bloom that reads
+   * even over a bright background. `is-hero` kills every dimming filter.
+   */
+  hero(on = true) {
+    this.el.classList.toggle('is-hero', !!on);
+    return this;
+  }
+
+  /** Wind-up → contact: a hard white pop with a bloom ring behind it. */
+  impact(strength = 1) {
+    if (this.reduceMotion) return Promise.resolve();
+    const f = this.$flash, el = this.el;
+    return this.clock.ramp(0.26, (v) => {
+      // fast attack, slow release — reads as a strike, not a fade
+      const a = v < 0.16 ? v / 0.16 : Math.pow(1 - (v - 0.16) / 0.84, 2.2);
+      f.style.opacity = String(a * strength);
+      el.style.setProperty('--glow-amt', String(a * 0.9 * strength));
+    }).then(() => { f.style.opacity = '0'; el.style.setProperty('--glow-amt', '0'); });
+  }
+
   /** Decaying shake, composed on top of whatever setTransform is doing. */
   shake(mag = 10, dur = 0.34) {
     if (this.reduceMotion) return Promise.resolve();
@@ -371,35 +449,69 @@ export class CardView {
     }).then(() => { s.x = s.y = s.r = 0; this._apply(); });
   }
 
-  /** Exhaust: burns away bottom-to-top into rising embers. */
-  dissolve(dur = 0.62) {
-    const el = this.el;
+  /**
+   * Exhaust: the card burns away bottom-to-top and the ash rises as embers.
+   *
+   * The mask goes on `__body` (frame + face + crest + cost gem), NOT on the
+   * card root — the ember layer is a sibling of `__body`, so the embers drift
+   * up through the region the mask has already erased instead of being erased
+   * with it. The mask box is stretched 30u above the card so the crest and the
+   * cost gem burn with everything else rather than floating on as solid gold.
+   *
+   * Timing: the burn front clears the top of the card by ~250 ms; the embers
+   * finish by `dur`. (Was 615 ms of nothing visible.)
+   */
+  dissolve(dur = 0.38) {
+    const el = this.el, body = this.$body;
     if (this.reduceMotion) { el.style.opacity = '0'; return Promise.resolve(); }
+
+    const u = (el.offsetWidth || 224) / 224;      // design unit in CSS px
+    const over = 30 * u;                          // mask box overhang above the card
+    const cardH = el.offsetHeight || 312 * u;
+    const maskH = cardH + over;
+
     const embers = this.$embers;
-    const N = 16;
+    const N = 18;
     embers.textContent = '';
     const parts = [];
     for (let i = 0; i < N; i++) {
       const b = document.createElement('i');
-      const px = 6 + (i * 37 % 88);
-      const py = 30 + (i * 53 % 68);
-      b.style.left = px + '%';
-      b.style.top = py + '%';
+      b.style.left = (5 + (i * 37 % 90)) + '%';
+      b.style.top = (24 + (i * 53 % 72)) + '%';
       embers.appendChild(b);
-      parts.push({ el: b, dx: ((i * 29 % 40) - 20), dy: -70 - (i * 17 % 90), sw: 0.5 + (i % 5) * 0.22, ph: (i % 7) / 7 });
+      parts.push({
+        el: b,
+        dx: ((i * 29 % 40) - 20) * u * 1.6,
+        dy: (-80 - (i * 17 % 90)) * u * 1.6,
+        sw: 0.55 + (i % 5) * 0.24,
+        ph: (i % 7) / 9,                          // embers lead the burn front
+      });
     }
     embers.style.opacity = '1';
+
+    body.style.webkitMaskRepeat = body.style.maskRepeat = 'no-repeat';
+    body.style.webkitMaskSize = body.style.maskSize = `100% ${maskH.toFixed(1)}px`;
+    body.style.webkitMaskPosition = body.style.maskPosition = `0 ${(-over).toFixed(1)}px`;
+
     return this.clock.ramp(dur, (v) => {
-      const cut = v * 132 - 16;
-      el.style.webkitMaskImage = `linear-gradient(to top, transparent ${cut}%, rgba(0,0,0,.4) ${cut + 7}%, black ${cut + 16}%)`;
-      el.style.maskImage = el.style.webkitMaskImage;
+      // `cut` measured from the BOTTOM of the mask box, in px.
+      const cut = v * (maskH + 44 * u) - 14 * u;
+      const g = `linear-gradient(to top,` +
+        ` transparent ${cut.toFixed(1)}px,` +
+        ` rgba(0,0,0,.35) ${(cut + 12 * u).toFixed(1)}px,` +
+        ` rgba(0,0,0,.85) ${(cut + 24 * u).toFixed(1)}px,` +
+        ` black ${(cut + 40 * u).toFixed(1)}px)`;
+      body.style.webkitMaskImage = g;
+      body.style.maskImage = g;
       for (const p of parts) {
-        const t = Math.min(1, Math.max(0, (v - p.ph * 0.35) / 0.65));
-        p.el.style.transform = `translate3d(${p.dx * t}px, ${p.dy * t}px, 0) scale(${p.sw * (1 - t * 0.7)})`;
-        p.el.style.opacity = String(Math.sin(t * Math.PI) * 0.95);
+        const t = Math.min(1, Math.max(0, (v - p.ph * 0.3) / 0.7));
+        p.el.style.transform = `translate3d(${(p.dx * t).toFixed(1)}px, ${(p.dy * t).toFixed(1)}px, 0) scale(${(p.sw * (1 - t * 0.65)).toFixed(3)})`;
+        p.el.style.opacity = String(Math.sin(t * Math.PI) * 0.98);
       }
     }, Clock.easeOutCubic).then(() => {
-      el.style.webkitMaskImage = ''; el.style.maskImage = '';
+      body.style.webkitMaskImage = ''; body.style.maskImage = '';
+      body.style.webkitMaskSize = ''; body.style.maskSize = '';
+      body.style.webkitMaskPosition = ''; body.style.maskPosition = '';
       embers.style.opacity = '0'; embers.textContent = '';
     });
   }

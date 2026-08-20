@@ -1,0 +1,268 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Midnight Menagerie — intent truth audit (real engine)</title>
+<style>
+  body { background:#14121a; color:#ddd6e6; font:13px/1.5 ui-monospace,Menlo,Consolas,monospace; margin:0; padding:24px; }
+  pre  { white-space:pre-wrap; margin:0; }
+  .ok  { color:#8fdc9b; } .err { color:#ff8080; } .warn { color:#ffd479; }
+  .h   { color:#c9a7ff; font-weight:700; } .dim { color:#8b849b; }
+</style>
+<pre id="out">running…</pre>
+<script type="module">
+/**
+ * Does the intent tell the truth, in the REAL CombatEngine?
+ *
+ * The mock in index.html proves the content is internally consistent. This proves it
+ * against the shipping engine, the shipping deck and a greedy AI.
+ *
+ * MEASUREMENT NOTE — this is the whole reason this file exists.
+ * "Damage the player actually took" must be measured from the engine's own damage
+ * events as `blocked + hpLoss`, NOT from player HP/Guard deltas across endTurn():
+ *   • endTurn() finishes by calling _beginPlayerTurn(), which zeroes player Guard.
+ *     Reading `player.block` after endTurn therefore always sees ~0, so a
+ *     `blockBefore - blockAfter` term silently counts the player's entire unspent
+ *     Guard as damage taken. Every defensive turn looks like a lie.
+ *   • player.hp floors at 0, so in a losing fight a lethal 21 registers as whatever
+ *     HP remained. Every killing blow looks like an overstatement.
+ * `blocked + hpLoss` is immune to both.
+ *
+ * WHICH intent is the promise?  The one on screen when the player commits — i.e. after
+ * their last card, immediately before endTurn. Dynamic intents are *designed* to move
+ * during the turn (strip a Brace, watch 12 become 7). We measure both and report the
+ * drift separately, because that drift is the feature, not the defect.
+ */
+import { CombatEngine } from '/game/src/combat/engine.js';
+import { RNG } from '/game/src/core/rng.js';
+import { startingDeckFor, cardById } from '/game/src/data/cards.js';
+import { ENEMIES, getEnemy, ENEMY_STATUSES, STATUS_TRICK_DEFS } from '/game/src/data/enemies/index.js';
+import * as enc from '/game/src/data/encounters.js';
+import * as statuses from '/game/src/data/statuses.js';
+
+const lines = [];
+let errors = 0;
+const esc = (s) => String(s).replace(/[&<>]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[ch]));
+const log  = (s = '', cls = '') => lines.push(cls ? `<span class="${cls}">${esc(s)}</span>` : esc(s));
+const head = (s) => { lines.push(''); lines.push(`<span class="h">${esc(s)}</span>`); };
+const fail = (s) => { errors++; log('  ✗ ' + s, 'err'); };
+const pass = (s) => log('  ✓ ' + s, 'ok');
+
+try { statuses.registerStatuses?.(ENEMY_STATUSES); } catch (e) { log('registerStatuses threw: ' + e, 'warn'); }
+
+// ── mirror scenes/combat.js adaptEnemyDef ────────────────────────────────────
+const extra = new Map(STATUS_TRICK_DEFS.map(c => [c.id, c]));
+const resolve = {
+  card: (d) => (typeof d !== 'string' ? d : (extra.get(d) || cardById(d) || cardById('status/' + d) || d)),
+  enemy: (d) => (typeof d === 'string' ? (ENEMIES[d] || d) : d),
+};
+const CTX_HOOKS = ['onSpawn', 'onDeath', 'onTurnStart', 'onTurnEnd', 'onDamaged', 'onPlayerCard',
+  'onPlayerTurnStart', 'onPlayerTurnEnd', 'onAllyDeath', 'onAttacked', 'onBoardEvent', 'onRuleBroken'];
+function adaptEnemyDef(def) {
+  if (!def || def.__adapted) return def;
+  const wrapCtx = (c) => {
+    const c2 = Object.create(c);
+    c2.addCard = (d, pile, o) => c.addCard(resolve.card(d), pile, o);
+    c2.summon = (d, o) => c.summon(resolve.enemy(d), o);
+    return c2;
+  };
+  const out = Object.create(Object.getPrototypeOf(def));
+  Object.assign(out, def);
+  for (const h of CTX_HOOKS) if (typeof def[h] === 'function') out[h] = (c, ...r) => def[h](wrapCtx(c), ...r);
+  out.moves = {};
+  for (const [k, mv] of Object.entries(def.moves)) {
+    out.moves[k] = { ...mv, effect: (c, ...r) => mv.effect(wrapCtx(c), ...r) };
+  }
+  out.__adapted = true;
+  return out;
+}
+
+const DECK = startingDeckFor('marmalade');
+
+function makeEngine(encId, seed, haunt = 0) {
+  const rng = new RNG(seed);
+  const members = enc.buildEncounter(encId, rng, haunt);
+  const enemies = members.map((mm, i) => ({
+    def: adaptEnemyDef(getEnemy(mm.enemyId)), hp: mm.hp || undefined, id: `e${i}`,
+  }));
+  const e = new CombatEngine({
+    rng,
+    player: { name: 'Kid', companion: 'marmalade', maxHp: 68, hp: 68, energyMax: 3, drawPerTurn: 5, deck: DECK },
+    enemies,
+  });
+  e.enemies.forEach((en, i) => {
+    const mm = members[i];
+    if (mm?.counters) en.counters = { ...(en.counters || {}), ...mm.counters };
+    if (mm?.flags) en.flags = { ...(en.flags || {}), ...mm.flags };
+  });
+  return e;
+}
+
+function shownIncoming(e) {
+  return e.enemies.filter(x => x.alive && x.intent).reduce((s, x) => s + (x.intent.totalDamage || 0), 0);
+}
+
+async function greedyTurn(e) {
+  for (let step = 0; step < 40; step++) {
+    if (e.over || e.phase !== 'player') break;
+    const st = e.state;
+    const hand = st.piles.hand.filter(c => c.playable);
+    if (!hand.length) break;
+    const need = Math.max(0, shownIncoming(e) - st.player.block);
+    const enemy = e.livingEnemies()[0];
+    const tid = enemy ? enemy.id : null;
+    let pick = null;
+    for (const c of hand) {
+      if (c.type !== 'attack') continue;
+      const en = e.livingEnemies().find(x => (c.display?.d?.value ?? 0) >= x.hp + x.block);
+      if (en) { pick = { c, t: en.id }; break; }
+    }
+    if (!pick && need > 0) {
+      const blocks = hand.filter(c => (c.display?.b?.value ?? 0) > 0)
+        .sort((a, b) => (b.display.b.value) - (a.display.b.value));
+      if (blocks.length) pick = { c: blocks[0], t: null };
+    }
+    if (!pick) {
+      const atks = hand.filter(c => c.type === 'attack')
+        .sort((a, b) => (b.display?.d?.value ?? 0) - (a.display?.d?.value ?? 0));
+      if (atks.length) pick = { c: atks[0], t: tid };
+    }
+    if (!pick) {
+      const rest = hand.filter(c => c.type !== 'attack');
+      if (rest.length) pick = { c: rest[0], t: tid };
+    }
+    if (!pick) break;
+    await e.playCard(pick.c.uid, pick.t);
+  }
+}
+
+const ROWS = [];
+// How much of what the enemies threw actually reached the player's Courage. Against an AI
+// that blocks exactly the telegraphed number, a single-attack encounter is absorbed almost
+// entirely — which is why raising one enemy's damage barely moves "HP cost per fight".
+let ABSORB = { blocked: 0, hpLoss: 0 };
+const ABSORB_BY_ENC = {};
+async function auditFight(encId, seed, maxTurns = 60) {
+  const e = makeEngine(encId, seed);
+
+  // Damage the enemies actually delivered, straight from the engine's event stream,
+  // attributed to the enemy that dealt it so a mismatch names its own culprit.
+  let delivered = 0;
+  const bySource = new Map();
+  e.on('damage', (ev) => {
+    if (ev.targetId !== 'player') return;
+    const amt = (ev.blocked || 0) + (ev.hpLoss || 0);
+    delivered += amt;
+    ABSORB.blocked += (ev.blocked || 0);
+    ABSORB.hpLoss += (ev.hpLoss || 0);
+    const k = ev.sourceId || ev.attackerId || '?';
+    bySource.set(k, (bySource.get(k) || 0) + amt);
+  });
+
+  await e.startCombat();
+  let turns = 0;
+  while (!e.over && turns < maxTurns) {
+    turns++;
+    const atStart = shownIncoming(e);
+    await greedyTurn(e);
+    if (e.over) break;
+    // The promise the player commits to: intents as they read at end-of-turn.
+    const promised = e.enemies.filter(x => x.alive && x.intent)
+      .map(x => ({ id: x.id, move: x.intent.moveId, name: x.name, d: x.intent.damage,
+                   h: x.intent.hits, t: x.intent.totalDamage,
+                   st: Object.keys(x.statuses || {}).join('/') }));
+    const atCommit = promised.reduce((s, p) => s + p.t, 0);
+    delivered = 0;
+    bySource.clear();
+    await e.endTurn();
+    const per = promised.map(p => ({ ...p, got: bySource.get(p.id) || 0,
+                                     alive: !!e.enemies.find(x => x.id === p.id && x.alive),
+                                     gone: !e.enemies.find(x => x.id === p.id) }));
+    // If the player died mid-phase the remaining hits of a multi-hit attack never
+    // resolve, and enemies removed from the board (Wardrobe summons vanishing with their
+    // parent) never act. Neither is the intent lying, so neither is scored.
+    const truncated = e.over;
+    ROWS.push({ encId, seed, turn: turns, promised, per, atStart, atCommit, delivered, truncated });
+  }
+  return { win: e.victory, turns };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+const BATCHES = [
+  ['Foyer Scuffle 1', 'foyer-1'], ['Foyer Scuffle 2', 'foyer-2'],
+  ['Foyer Scuffle 14', 'foyer-14'],
+  ['Grand Coatcheck', 'foyer-scare-coatcheck'], ['Unwelcome Guest', 'foyer-scare-guest'],
+  ['House Bell', 'foyer-scare-bell'], ['The Butler', 'foyer-boss'],
+  ['Nursery 14', 'nursery-14'], ['Porcelain Twins', 'nursery-scare-twins'],
+  ['The Governess', 'nursery-boss'],
+  ['SQ 14', 'sq-14'], ['Blanket Hydra', 'sq-scare-hydra'],
+  ['The Wardrobe', 'sq-scare-wardrobe'], ['Bedframe Beast', 'sq-boss'],
+];
+const N = Number(new URLSearchParams(location.search).get('n') || 12);
+
+head('Intent truth audit — real CombatEngine, damage measured from the event stream');
+for (const [label, encId] of BATCHES) {
+  const before = ROWS.length;
+  ABSORB = { blocked: 0, hpLoss: 0 };
+  for (let i = 0; i < N; i++) {
+    try { await auditFight(encId, 5000 + i); }
+    catch (err) { fail(`${encId} seed ${5000 + i} threw: ${err && err.message}`); }
+  }
+  ABSORB_BY_ENC[label] = { ...ABSORB, enc: encId };
+  log(`  ${label.padEnd(20)} ${String(ROWS.length - before).padStart(4)} enemy turns audited`, 'dim');
+}
+
+head('Where the damage went — thrown vs absorbed vs landed');
+log('  Guard absorbed / reached Courage. A greedy AI blocks exactly the number the intent', 'dim');
+log('  shows, so encounters built on one big telegraph round to zero HP cost no matter how', 'dim');
+log('  large that number is. Only pressure that outruns a turn of Guard actually costs HP.', 'dim');
+for (const [label, a] of Object.entries(ABSORB_BY_ENC)) {
+  const thrown = a.blocked + a.hpLoss;
+  const pctAbs = thrown ? (100 * a.blocked / thrown).toFixed(0) : '--';
+  log(`    ${label.padEnd(20)} thrown ${String(thrown).padStart(5)}   blocked ${String(a.blocked).padStart(5)} (${String(pctAbs).padStart(3)}%)   `
+    + `reached Courage ${String(a.hpLoss).padStart(5)}`);
+}
+
+head('Result');
+{
+  const scored = ROWS.filter(r => !r.truncated && !r.per.some(p => p.gone));
+  const bad = scored.filter(r => r.delivered !== r.atCommit);
+  const moved = ROWS.filter(r => r.atStart !== r.atCommit);
+  if (bad.length) {
+    fail(`${bad.length} of ${scored.length} scored enemy turns delivered damage != the intent shown at commit`);
+    // Attribute the discrepancy to the individual enemy that under/over-delivered.
+    const byCulprit = new Map();
+    for (const r of bad) {
+      for (const p of r.per) {
+        if (p.got === p.t) continue;
+        const k = `${p.move}`;
+        const cur = byCulprit.get(k) || { n: 0, died: 0, ex: null, deltas: [] };
+        cur.n++;
+        if (!p.alive) cur.died++;
+        cur.deltas.push(p.got - p.t);
+        cur.ex = cur.ex || { p, r };
+        byCulprit.set(k, cur);
+      }
+    }
+    for (const [k, v] of [...byCulprit.entries()].sort((a, b) => b[1].n - a[1].n).slice(0, 15)) {
+      const { p } = v.ex;
+      const ds = v.deltas.slice().sort((a, b) => a - b);
+      const med = ds[Math.floor(ds.length / 2)];
+      log(`      ${String(v.n).padStart(4)}×  ${k.padEnd(26)} promised ${String(p.t).padStart(3)} got ${String(p.got).padStart(3)}`
+        + `  median ${med >= 0 ? '+' : ''}${med}  [${ds[0]}..${ds[ds.length - 1]}]`
+        + `  died-mid-phase:${v.died}  statuses:${p.st || '-'}`, 'err');
+    }
+  } else {
+    pass(`${scored.length} scored enemy turns: damage delivered === intent shown at commit, exactly, every time`);
+  }
+  log(`  ${ROWS.length - scored.length} turns excluded (fight ended mid-phase, or an enemy left the board).`, 'dim');
+  log(`  ${moved.length} of ${ROWS.length} turns (${(100 * moved.length / ROWS.length).toFixed(1)}%) had an intent that `
+    + `CHANGED during the player turn — dynamic intents responding to play. That is the design working, `
+    + `and it is why a start-of-turn snapshot cannot be used as the promise.`, 'dim');
+}
+
+lines.push('');
+const summary = `RESULT: ${ROWS.length} enemy turns audited, ${errors} errors`;
+lines.push(`<span class="${errors ? 'err' : 'ok'}">${esc(summary)}</span>`);
+document.getElementById('out').innerHTML = lines.join('\n');
+window.__RESULT__ = { rows: ROWS.length, errors, text: lines.join('\n').replace(/<[^>]+>/g, '') };
+window.__DONE__ = true;
+</script>

@@ -86,7 +86,7 @@ function roundRect(x, y, w, h, r) {
 /* ── body archetypes ───────────────────────────────────────────────────────── */
 const BODY = {
   squat: (rnd) => ({ path: blob(rnd, 78, 62, { wob: 0.10 }), w: 78, h: 62, lift: 0 }),
-  'tall-thin': (rnd) => ({ path: blob(rnd, 40, 100, { wob: 0.055, n: 22 }), w: 40, h: 100, lift: 0 }),
+  'tall-thin': (rnd) => ({ path: blob(rnd, 52, 98, { wob: 0.06, n: 22 }), w: 52, h: 98, lift: 0 }),
   sprawling: (rnd) => ({ path: blob(rnd, 100, 46, { wob: 0.13, n: 24 }), w: 100, h: 46, lift: 0 }),
   floating: (rnd) => ({ path: blob(rnd, 62, 68, { wob: 0.07, n: 20, flat: false }), w: 62, h: 68, lift: 30 }),
 };
@@ -441,6 +441,7 @@ export class EnemyView {
         <div class="cb-enemy__badges"></div>
         <div class="cb-enemy__alts" hidden></div>
         <div class="cb-enemy__intent"></div>
+        <div class="cb-enemy__queue" hidden></div>
       </div>
       <div class="cb-enemy__stage">
         <div class="cb-enemy__pool"></div>
@@ -506,6 +507,7 @@ export class EnemyView {
     this.$badges = el.querySelector('.cb-enemy__badges');
     this.$rule = el.querySelector('.cb-enemy__rule');
     this.$alts = el.querySelector('.cb-enemy__alts');
+    this.$queue = el.querySelector('.cb-enemy__queue');
     this.$preview = el.querySelector('.cb-enemy__preview');
     this.$eyes = Array.from(el.querySelectorAll('.rg-eye'));
     this.$pupils = Array.from(el.querySelectorAll('.rg-pupil'));
@@ -661,6 +663,40 @@ export class EnemyView {
     return this;
   }
 
+  /**
+   * The planned intent queue past position 0. Wink reorders, postpones and
+   * deletes future intents, so this has to be a real read, not decoration.
+   * Unrevealed slots come back `revealed:false` and render as a locked slot.
+   * @param {Array<{position,name,type,family,damage,hits,block,revealed,anchored}>} q
+   */
+  setQueue(q) {
+    const rest = (q || []).filter(x => x && x.position > 0);
+    const key = rest.map(x => `${x.position}:${x.revealed ? (x.moveId || x.name) : '?'}:${x.damage}x${x.hits}`).join('|');
+    if (key === this._queueKey) return this;
+    this._queueKey = key;
+    const show = rest.length > 0 && rest.some(x => x.revealed);
+    this.$queue.hidden = !show;
+    this.$queue.textContent = '';
+    if (!show) return this;
+    for (const x of rest.slice(0, 3)) {
+      const d = document.createElement('span');
+      d.className = 'cb-qslot';
+      d.dataset.family = x.family || 'special';
+      d.dataset.revealed = x.revealed ? '1' : '0';
+      if (x.anchored) d.dataset.anchored = '1';
+      const num = x.revealed
+        ? (x.damage > 0 ? `${x.damage}${x.hits > 1 ? '×' + x.hits : ''}` : (x.block > 0 ? String(x.block) : '·'))
+        : '?';
+      d.innerHTML = `<i>${x.position + 1}</i><b>${num}</b>`;
+      d.dataset.tip = x.revealed
+        ? `Turn +${x.position} — ${x.name || 'planned'}|${x.tooltip || ''}|Its plan, not a guarantee: change the board and it changes.`
+        : `Turn +${x.position} — hidden|You cannot see this far ahead yet.|Some Tricks reveal an enemy's plan.`;
+      d.tabIndex = 0;
+      this.$queue.appendChild(d);
+    }
+    return this;
+  }
+
   /** A handwritten House Rule pinned beside the intent. `null` clears it. */
   setRule(rule) {
     const key = rule ? rule.name + '|' + rule.text : '';
@@ -715,9 +751,10 @@ export class EnemyView {
     if (!p) { this.$preview.hidden = true; this.el.classList.remove('is-targeted', 'is-lethal'); return this; }
     const bits = [];
     if (p.damage > 0) {
-      bits.push(`<span class="cb-prev__dmg">-${p.damage}</span>`);
+      bits.push(`<span class="cb-prev__dmg">-${p.damage}${p.uncertain ? '?' : ''}</span>`);
       if (p.hits > 1) bits.push(`<span class="cb-prev__x">×${p.hits}</span>`);
     }
+    if (p.uncertain) bits.push(`<span class="cb-prev__maybe">depends on your pick</span>`);
     if (p.kills) bits.push(`<span class="cb-prev__lethal">LETHAL</span>`);
     for (const s of p.statuses || []) {
       bits.push(`<span class="cb-prev__st" data-kind="${s.kind}">${s.remove ? '−' : '+'}${s.stacks} ${s.name}</span>`);
@@ -727,6 +764,7 @@ export class EnemyView {
     this.$preview.hidden = false;
     this.el.classList.add('is-targeted');
     this.el.classList.toggle('is-lethal', !!p.kills);
+    this.$preview.classList.toggle('is-uncertain', !!p.uncertain);
     return this;
   }
 

@@ -96,16 +96,48 @@ export const butler = {
   phase(c) { return mem(c).phase || 1; },
   flusterThreshold(c) { return butler.phase(c) >= 2 ? 2 : 3; },
 
-  /** Pick and announce the next House Rule. Never the same one twice consecutively. */
+  /**
+   * Announce the standing House Rule(s).
+   *
+   * Phase one: ONE rule at a time, never the same one twice running. You choose which
+   * single line to cross, and crossing it is cheap — Flustered is a resource you farm
+   * toward a Discomposed window you picked the timing of.
+   *
+   * Phase two: TWO rules stand at once, and the Discomposed threshold is 2 instead of 3.
+   * That inverts the read completely. With two lines on the board almost every strong
+   * turn crosses one, so Flustered stops being something you accumulate on purpose and
+   * becomes something you have to steer around — the question flips from "which rule do
+   * I break for value?" to "which rule can I still afford to respect?". A careless burst
+   * turn now crosses both at once and hands him the Discomposed recovery on his terms.
+   *
+   * The engine keeps every announced rule standing until it is cleared (rules are only
+   * replaced by id), so his previous rules must be cleared explicitly or he would
+   * silently accumulate all four and enforce them simultaneously from turn four onward.
+   */
   announceNext(c) {
     if (c.has?.('discomposed', c.self)) return;          // he cannot enforce while Discomposed
     const hist = mem(c).ruleHistory || (mem(c).ruleHistory = []);
-    const prev = hist[hist.length - 1];
-    const pool = RULE_IDS.filter(r => r !== prev);
-    const pick = pool[c.rng.int(pool.length)];
-    hist.push(pick);
-    announce(c, HOUSE_RULES[pick](butler.phase(c) >= 2));
+    const p2 = butler.phase(c) >= 2;
+    const count = p2 ? 2 : 1;
+    const prev = [].concat(hist[hist.length - 1] || []);
+
+    // Never re-announce the identical set. With four rules there is always another.
+    let picked = [];
+    for (let attempt = 0; attempt < 8; attempt++) {
+      const avail = RULE_IDS.slice();
+      picked = [];
+      for (let i = 0; i < count && avail.length; i++) picked.push(avail.splice(c.rng.int(avail.length), 1)[0]);
+      const same = picked.length === prev.length && picked.every(r => prev.includes(r));
+      if (!same) break;
+    }
+
+    hist.push(p2 ? picked.slice() : picked[0]);
+    c.clearRules?.();                                     // drop the standing set first
+    for (const id of picked) announce(c, HOUSE_RULES[id](p2));
   },
+
+  /** How many House Rules he is enforcing right now. Phase one 1, phase two 2. */
+  standingRules(c) { return butler.phase(c) >= 2 ? 2 : 1; },
 
   /** Engine hook: any House Rule of his was broken this turn. */
   onRuleBroken(c) {
@@ -158,7 +190,14 @@ export const butler = {
       effect(c) {
         const other = allies(c)[0];
         if (!other) c.summon('dust-bunny', { hp: 12 });
-        else { c.block(other, 8); c.applyStatus(other, 'roused', 1); }
+        // DEVIATION from the design doc, for intent honesty: the doc gives the standing
+        // ally 8 Guard AND 1 Roused. The Butler is slot 0 and his summons sit behind him,
+        // so a Roused handed out here always lands on an ally whose attack number is
+        // already on screen — the player then takes 2 more than promised. He gives Guard
+        // alone until the engine can arm a buff between the enemy phase and the intent
+        // refresh. Roused itself is untouched and still lives on Calling Bell, which acts
+        // last in every formation it appears in and is therefore honest. See docs/NOTES.md.
+        else c.block(other, 8);
         butler.announceNext(c);
       },
     },

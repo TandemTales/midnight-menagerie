@@ -109,6 +109,20 @@ export const COMPANION_STATUSES = [
     },
   },
 
+  {
+    id: 'no-guard', name: 'Exposed', kind: 'debuff', icon: 'no-guard', decay: 'turnEnd', stacks: false,
+    desc: 'You cannot gain Guard for the rest of this turn.',
+    hooks: { modifyBlockGain: () => 0 },
+  },
+  {
+    id: 'next-trick-discount', name: 'Loosened', kind: 'buff', icon: 'energy', decay: 'turnEnd', stacks: true,
+    desc: 'The next Trick you play this turn costs {n} less.',
+  },
+  {
+    id: 'next-attack-discount', name: 'Opening', kind: 'buff', icon: 'energy', decay: 'turnEnd', stacks: true,
+    desc: 'The next Attack you play this turn costs {n} less.',
+  },
+
   // ── Marmalade ─────────────────────────────────────────────────────────────
   {
     id: 'ghoststep', name: 'Ghoststep', kind: 'buff', icon: 'ghoststep', decay: 'enemyTurnEnd', stacks: true, max: 9,

@@ -243,15 +243,38 @@ function balanceCheck(card) {
   if (!d) return;
   // conditional riders ("deal {m0} more") count towards the ceiling, not the floor
   const dMax = (n.d + (n.m0 || 0)) * hits;
-  if (dMax < band[0]) W(card.id, `${d} damage for ${card.cost} is low for a ${card.rarity} (band ${band[0]}–${band[1]})`);
+  // A card may declare what it scales on; the floor check then does not apply.
+  // The ceiling check always does.
+  if (dMax < band[0] && !(card.balance && card.balance.scalesWith)) W(card.id, `${d} damage for ${card.cost} is low for a ${card.rarity} (band ${band[0]}–${band[1]})`);
   if (d > band[1]) W(card.id, `${d} damage for ${card.cost} is high for a ${card.rarity} (band ${band[0]}–${band[1]})`);
 }
+/**
+ * Effect shape: the card's rules text with every number, placeholder, keyword
+ * bracket and bit of punctuation stripped out. Two cards with the same shape do
+ * the same thing — the only difference between them is the size of a number.
+ * Rarity and cost are deliberately NOT part of the key: "the same card one
+ * rarity up for one more Pluck" is exactly the failure this is hunting.
+ */
+function shapeOf(card) {
+  return card.text
+    .replace(/\{[a-zA-Z0-9]+\}/g, '#')
+    .replace(/[\[\]]/g, '')
+    .replace(/\b\d+\b/g, '#')
+    .toLowerCase()
+    .replace(/[^a-z#]+/g, ' ')
+    .trim();
+}
 function distinctness(cards, slug) {
-  const sig = new Map();
+  const byShape = new Map();
   for (const c of cards) {
-    const k = `${c.rarity}|${c.type}|${c.cost}|${c.target}|${c.text.replace(/\{[a-zA-Z0-9]+\}/g, '#')}`;
-    if (sig.has(k)) E(c.id, `mechanically identical to ${sig.get(k)} (same type, cost, target and templated text)`);
-    else sig.set(k, c.id);
+    const k = `${c.type}|${shapeOf(c)}`;
+    if (!byShape.has(k)) byShape.set(k, []);
+    byShape.get(k).push(c);
+  }
+  for (const group of byShape.values()) {
+    if (group.length < 2) continue;
+    const names = group.map(c => `${c.name} (${c.rarity} ${c.cost})`).join(' · ');
+    E(group[0].id, `${group.length} cards in ${slug} share one effect shape — same card, different numbers: ${names}`);
   }
 }
 

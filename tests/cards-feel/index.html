@@ -97,55 +97,39 @@ import { clock } from '/game/src/core/clock.js';
 import { bus } from '/game/src/core/bus.js';
 import { Save } from '/game/src/core/save.js';
 import { Hand, TUNE } from '/game/src/ui/hand.js';
-import { preloadArt } from '/game/src/ui/cardart.js';
+import { ART_W, ART_H, CARD_SS } from '/game/src/ui/card.js';
+import { warmArt, clearArtCache, artCacheSize, subjectFor } from '/game/src/ui/cardart.js';
+import { cardById, allCards } from '/game/src/data/cards.js';
 
 clock.start();
 Save.load();
 
-// ── fabricated cards, all types + rarities ──────────────────────────────────
-const CARDS = [
-  { id:'marmalade/scratch', name:'Scratch', companion:'marmalade', type:'attack', rarity:'basic',
-    cost:1, target:'enemy', text:'Deal {d} damage.', nums:{d:6}, upgrade:{nums:{d:9}} },
-
-  { id:'marmalade/curl-up', name:'Curl Up', companion:'marmalade', type:'skill', rarity:'basic',
-    cost:1, target:'self', text:'Gain {b} Guard.', nums:{b:5}, upgrade:{nums:{b:8}} },
-
-  { id:'marmalade/spectral-pounce', name:'Spectral Pounce', companion:'marmalade', type:'attack', rarity:'common',
-    cost:1, target:'enemy', text:'Deal {d} damage.\nIf [Untouched], deal {m0} more.', nums:{d:8,m0:5},
-    upgrade:{nums:{d:11,m0:7}} },
-
-  { id:'bones/fetch', name:'Fetch!', companion:'bones', type:'skill', rarity:'common',
-    cost:0, target:'none', text:'Draw {n} card.\n*Good boy.*', nums:{n:1}, upgrade:{nums:{n:2}} },
-
-  { id:'pipkin/lantern-smash', name:'Lantern Smash', companion:'pipkin', type:'attack', rarity:'uncommon',
-    cost:2, target:'allEnemies', text:'Deal {d} damage to ALL.\nApply {m0} [Brittle].', nums:{d:11,m0:1},
-    upgrade:{nums:{d:15,m0:2}} },
-
-  { id:'taffy/sugar-rush', name:'Sugar Rush', companion:'taffy', type:'skill', rarity:'uncommon',
-    cost:1, target:'self', text:'Gain {b} Guard.\n[Zoomies]: draw {n}.', nums:{b:7,n:1}, exhaust:true,
-    upgrade:{nums:{b:10,n:2}} },
-
-  { id:'crumbula/night-draught', name:'Night Draught', companion:'crumbula', type:'attack', rarity:'uncommon',
-    cost:1, target:'enemy', text:'Deal {d} damage.\nHeal {m0} Courage.', nums:{d:7,m0:3},
-    upgrade:{nums:{d:10,m0:4}} },
-
-  { id:'marmalade/nine-lives', name:'Nine Lives', companion:'marmalade', type:'power', rarity:'rare',
-    cost:2, target:'self', text:'Each turn, spend a Life to gain {n} [Ghoststep].', nums:{n:1}, innate:true,
-    upgrade:{nums:{n:2}} },
-
-  { id:'wink/hundred-eyes', name:'A Hundred Eyes', companion:'wink', type:'power', rarity:'rare',
-    cost:3, target:'self', text:'When you play a Trick, apply {n} [Weak] to a random foe.', nums:{n:1},
-    upgrade:{nums:{n:2}} },
-
-  { id:'marmalade/boo', name:'Boo!', companion:'marmalade', type:'skill', rarity:'basic',
-    cost:0, target:'enemy', text:'Apply {n} [Haunt].', nums:{n:2}, upgrade:{nums:{n:4}} },
-
-  { id:'curse/regret', name:'Regret', companion:'curse', type:'curse', rarity:'curse',
-    cost:-2, target:'none', text:'Unplayable.\nAt end of turn, lose {n} Courage.', nums:{n:2} },
-
-  { id:'status/dust', name:'Dust', companion:'status', type:'status', rarity:'status',
-    cost:-2, target:'none', text:'Unplayable.\n*It gets everywhere.*', nums:{} },
+// ── the showcase hand: REAL cards from data/cards.js ────────────────────────
+// Twelve real CardDefs chosen to cover every type, every rarity, both
+// unplayable classes, and — the point of round 2 — twelve visibly different
+// subject silhouettes (claw / curled cat / pouncing cat / bone / pumpkin /
+// candy / eye / ghost / web / nine lives / thorn / status).
+const SHOWCASE = [
+  'marmalade/scratch',        // attack  basic     enemy       claw
+  'marmalade/curl-up',        // skill   basic     self        curled cat
+  'marmalade/quick-pounce',   // attack  common    enemy       pouncing cat
+  'bones/go-get-it',          // skill   basic                 bone
+  'pipkin/pumpkin-pitch',     // attack  common    enemy       pumpkin
+  'taffy/sugar-sling',        // attack  uncommon  enemy       candy
+  'wink/wide-eyes',           // skill   common                eye
+  'marmalade/boo',            // skill   basic     enemy       ghost
+  'wink/web-patch',           // skill   common                web
+  'marmalade/nine-lives-fury',// attack  rare      enemy       nine lives
+  'curse/regret',             // curse                         thorn
+  'status/spooked',           // status
 ];
+const CARDS = SHOWCASE.map(id => cardById(id)).filter(Boolean);
+if (CARDS.length < SHOWCASE.length) {
+  // Never silently show fewer than 12 — fall back to whatever the registry has.
+  const have = new Set(CARDS.map(c => c.id));
+  for (const c of allCards()) { if (CARDS.length >= 12) break; if (!have.has(c.id)) CARDS.push(c); }
+  console.warn('showcase: missing ids', SHOWCASE.filter(id => !cardById(id)));
+}
 
 let uidSeq = 0;
 const mk = (i, up) => ({ uid:'c' + (++uidSeq), def: CARDS[i % CARDS.length], upgraded: !!up });
@@ -240,6 +224,11 @@ const BTN = [
   ['lock',         () => (hand.locked ? hand.unlock() : hand.lock())],
   ['reduce motion',() => { Save.setSetting('reduceMotion', !Save.settings.reduceMotion); location.reload(); }],
   ['large text',   () => { Save.setSetting('largeText', !Save.settings.largeText); bus.emit('settings:changed'); }],
+  ['fit check',    async () => { const r = await fitCheck(); console.table(r);
+                                 const bad = r.filter(x => !x.pass);
+                                 say(bad.length ? `<b style="color:#f2654c">FIT FAIL n=${bad.map(b=>b.n)}</b>`
+                                                : `<b style="color:#74e08a">fit OK 1–12</b>`); }],
+  ['cold art',     () => { clearArtCache(); say('art cache cleared'); }],
 ];
 let seq = 0;
 function pick() { return (seq = (seq + 5) % CARDS.length); }
@@ -268,9 +257,52 @@ function setSize(n) {
 // ── boot ───────────────────────────────────────────────────────────────────
 setSize(7);
 setEnergy(3);
-preloadArt();
 
-window.MMTEST = { hand, bus, clock, setSize, setEnergy, TUNE, CARDS,
+// Pre-warm every bitmap the showcase can show, upgraded and not, BEFORE any
+// motion. This is the fix for "draw 5 into a hand of 12 = 43 fps cold": the
+// five fresh canvases were being painted and PNG-encoded inside the frame that
+// started the animation. A scene should call warmArt() on entry with its deck.
+const warming = warmArt(CARDS, ART_W * CARD_SS, ART_H * CARD_SS, { upgraded: 'both' });
+
+// ── fit assertion: nothing may be clipped, at any hand size ────────────────
+// max(card.bottom) <= innerHeight - 8, for n = 1..12.
+async function fitCheck(sizes) {
+  const out = [];
+  for (const n of (sizes || [1,2,3,4,5,6,7,8,9,10,11,12])) {
+    setSize(n);
+    await new Promise(r => setTimeout(r, 420));
+    const els = [...document.querySelectorAll('.mm-hand__cards .mm-card')];
+    const rs = els.map(e => e.getBoundingClientRect());
+    const bottom = Math.max(...rs.map(r => r.bottom));
+    const left = Math.min(...rs.map(r => r.left));
+    const right = Math.max(...rs.map(r => r.right));
+    // getBoundingClientRect is the ROTATED bounding box, which is much wider
+    // than the card. The real card size is cw * fit.
+    const w = hand.cw * hand.fit, h = hand.chh * hand.fit;
+    const step = n > 1
+      ? Math.min(...rs.slice(1).map((r, i) => r.left - rs[i].left))
+      : w;
+    out.push({
+      n,
+      cardW: +w.toFixed(1), cardH: +h.toFixed(1),
+      cardHFrac: +(h / innerHeight).toFixed(3),
+      sliver: +step.toFixed(1),
+      overlapPct: n > 1 ? +(100 * (w - step) / w).toFixed(1) : 0,
+      handW: +(right - left).toFixed(1),
+      handWFrac: +((right - left) / innerWidth).toFixed(3),
+      left: +left.toFixed(1), right: +right.toFixed(1),
+      maxBottom: +bottom.toFixed(1),
+      limit: innerHeight - 8,
+      pass: bottom <= innerHeight - 8,
+    });
+  }
+  return out;
+}
+
+window.MMTEST = {
+  hand, bus, clock, setSize, setEnergy, TUNE, CARDS, fitCheck,
+  warming, warmArt, clearArtCache, artCacheSize, subjectFor,
+  subjects: () => CARDS.map(c => [c.id, subjectFor(c)]),
   fps: async () => { let n = 0; const t0 = performance.now();
     await new Promise(r => { const f = () => { n++; performance.now() - t0 < 1000 ? requestAnimationFrame(f) : r(); }; requestAnimationFrame(f); });
     return n; } };

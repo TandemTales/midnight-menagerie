@@ -258,6 +258,31 @@ export const ENEMY_STATUSES = [
     id: 'covered', name: 'Covered', kind: 'buff', icon: 'blanket',
     desc: 'The first {n} damage this enemy would take each turn hits its Blanket Blob instead.',
     decay: 'never', stacks: false, max: 1,
+    /**
+     * Redirect, done entirely data-side.
+     *
+     * A status hook cannot reach another actor — `modifyDamageTaken` is handed
+     * {attacker, defender, self} and no engine handle — so this cannot deal the damage to
+     * the Blob itself. Instead it absorbs on the covered ally and books the absorbed total
+     * on that actor; Blanket Blob settles the tab against its own Courage on its next
+     * hook (see blanketBlob.settleCover). Net effect matches the design doc: the first N
+     * damage each player turn comes off the Blob rather than the ally.
+     *
+     * `_coverAmount` and the per-turn allowance are stamped by Tuck In.
+     */
+    hooks: {
+      modifyDamageTaken: (amt, ctx) => {
+        const a = ctx && ctx.self;
+        if (!a || amt <= 0) return amt;
+        const cap = a._coverAmount || 8;
+        const used = a._coverUsedThisTurn || 0;
+        const take = Math.max(0, Math.min(amt, cap - used));
+        if (take <= 0) return amt;
+        a._coverUsedThisTurn = used + take;
+        a._coverPending = (a._coverPending || 0) + take;
+        return amt - take;
+      },
+    },
   },
   {
     id: 'scurry', name: 'Scurry', kind: 'buff', icon: 'scurry',

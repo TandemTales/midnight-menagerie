@@ -325,8 +325,8 @@ export class GameOverScene extends Scene {
              style="width:${(MASTER.w / plan.sw * 100).toFixed(3)}%;
                     transform:translate(${(-plan.sx / MASTER.w * 100).toFixed(3)}%,
                                         ${(-plan.sy / MASTER.h * 100).toFixed(3)}%)">` : ''}
-        <span class="go-bp__mark" aria-hidden="true"></span>
         <span class="go-bp__wash"></span>
+        <span class="go-bp__mark" aria-hidden="true"></span>
       </div>
       <div class="go-bp__meta">
         <span class="go-bp__label">${label}</span>

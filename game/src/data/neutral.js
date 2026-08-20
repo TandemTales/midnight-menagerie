@@ -162,9 +162,9 @@ export const SHARED_CARDS = [
     id: 'neutral/big-swing', name: 'Big Swing', companion: 'neutral', type: ATTACK, rarity: Rarity.RARE,
     cost: 3, target: Target.ENEMY, text: 'Deal {d} damage. Deal {m0} more for each other Trick in your hand.',
     flavor: 'Wind up. Commit. Do not look.',
-    nums: { d: 14, m0: 4 },
+    nums: { d: 16, m0: 4 },
     effect: (c) => hit(c, N(c).d + N(c).m0 * handOthers(c).length),
-    upgrade: { nums: { d: 18, m0: 5 } },
+    upgrade: { nums: { d: 21, m0: 5 } },
   },
 ];
 

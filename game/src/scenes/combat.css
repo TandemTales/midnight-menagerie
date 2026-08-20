@@ -206,8 +206,11 @@
   --e-aspect: .92;
   --e-h: min(calc(226px * var(--e-scale)), calc(100vh - 460px));
   height: var(--e-h);
-  width: calc(var(--e-h) * var(--e-aspect));
-  min-width: calc(88px * var(--e-scale));
+  /* a sprawling rig can fit a 2.6:1 bbox — cap the footprint and let the SVG's
+     `meet` fit inside it, or one rug eats the whole room */
+  width: clamp(calc(88px * var(--e-scale)),
+               calc(var(--e-h) * var(--e-aspect)),
+               min(320px, 24vw));
   display: flex; align-items: flex-end; justify-content: center;
   transform-origin: 50% 100%;
 }
@@ -372,7 +375,7 @@
 .cb-enemy__hpm { color: color-mix(in srgb, var(--text-hi) 65%, transparent); }
 
 .cb-enemy__guard {
-  position: absolute; left: -12px; bottom: 26px;
+  position: absolute; left: -24px; bottom: 24px;
   display: flex; align-items: center; justify-content: center;
   width: 40px; height: 42px;
   filter: drop-shadow(0 2px 6px var(--ink-900));
@@ -419,8 +422,10 @@
 .cb-enemy.is-targeted .rg-trunk-rim { stroke: var(--flame-200); stroke-width: 3.4; }
 .cb-enemy.is-lethal .rg-trunk-rim { stroke: var(--threat-200); stroke-width: 4; }
 .cb-enemy__preview {
-  position: absolute; left: 50%; top: 8%;
-  transform: translateX(-50%);
+  /* upper-right of the creature: the aim arrow terminates at the stage centre
+     coming from below, so this corner is the one place it never covers */
+  position: absolute; right: -4%; top: 2%; left: auto;
+  transform: none;
   z-index: 8;
   display: flex; flex-direction: column; align-items: center; gap: 2px;
   padding: var(--s-1) var(--s-2);
@@ -429,12 +434,13 @@
   border: 1px solid var(--flame-400);
   box-shadow: var(--shadow-3), 0 0 18px color-mix(in srgb, var(--flame-glow) 30%, transparent);
   white-space: nowrap;
+  transform-origin: 100% 0;
   animation: cb-pop .16s var(--ease-snap);
   pointer-events: none;
 }
-@keyframes cb-pop { from { opacity: 0; transform: translateX(-50%) scale(.82); } to { opacity: 1; transform: translateX(-50%) scale(1); } }
+@keyframes cb-pop { from { opacity: 0; transform: scale(.78) translateY(6px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 .cb-prev__dmg {
-  font-family: var(--font-num); font-size: var(--fs-lg); font-weight: 700;
+  font-family: var(--font-num); font-size: var(--fs-xl); font-weight: 700;
   color: var(--threat-200);
   text-shadow: 0 2px 4px var(--ink-900);
 }
@@ -915,7 +921,7 @@
 
 /* ───────────────────────────────────────────── banner + deny ───────────── */
 .cb-banner {
-  position: absolute; left: 50%; top: 21%;
+  position: absolute; left: 50%; top: 9%;
   transform: translate(-50%, 0);
   z-index: 360; pointer-events: none;
   font-family: var(--font-display);
@@ -1066,16 +1072,7 @@
   overflow-y: auto;
   justify-content: center;
 }
-.cb-pilecard {
-  position: relative;
-  width: calc(var(--card-w) * .62); height: calc(var(--card-h) * .62);
-}
-.cb-pilecard .mm-card {
-  position: absolute; left: 50%; top: 0;
-  transform-origin: 50% 0;
-  scale: .62;
-  translate: -50% 0;
-}
+.cb-pilecard { position: relative; }
 .cb-pileview__none { color: var(--text-lo); font-size: var(--fs-lg); padding: var(--s-7); }
 
 /* ───────────────────────────────────────────── a11y / settings ─────────── */
@@ -1100,3 +1097,117 @@
     color-mix(in srgb, var(--flame-glow) 55%, transparent) 0%, transparent 72%);
 }
 .cb-enemy.is-aimed { filter: brightness(1.14) saturate(1.08); }
+
+/* ── the intent queue: what it plans to do after this ───────────────────── */
+.cb-enemy__queue { display: flex; gap: 3px; margin-top: 2px; }
+.cb-qslot {
+  display: inline-flex; align-items: baseline; gap: 3px;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--ink-900) 82%, transparent);
+  border: 1px solid var(--ink-500);
+  cursor: help;
+  opacity: .78;
+  transition: transform var(--t-quick) var(--ease-snap), opacity var(--t-quick);
+}
+.cb-qslot:hover, .cb-qslot:focus-visible { transform: translateY(-2px); opacity: 1; }
+.cb-qslot i { font-style: normal; font-size: 8px; color: var(--text-lo); }
+.cb-qslot b { font-family: var(--font-num); font-size: 11px; color: var(--text-mid); }
+.cb-qslot[data-family="attack"]  { border-color: color-mix(in srgb, var(--threat-400) 60%, transparent); }
+.cb-qslot[data-family="attack"] b { color: var(--threat-200); }
+.cb-qslot[data-family="defense"] { border-color: color-mix(in srgb, var(--guard-500) 75%, transparent); }
+.cb-qslot[data-family="defense"] b { color: var(--guard-300); }
+.cb-qslot[data-family="scheme"]  { border-color: color-mix(in srgb, var(--rarity-curse) 70%, transparent); }
+.cb-qslot[data-revealed="0"] { border-style: dashed; opacity: .5; }
+.cb-qslot[data-anchored="1"] { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--flame-400) 55%, transparent); }
+
+.cb-prev__maybe {
+  font-size: var(--fs-xs); font-style: italic; color: var(--flame-200);
+}
+.cb-enemy__preview.is-uncertain { border-style: dashed; }
+
+/* an enemy the engine is asking you to pick */
+.cb-enemy.is-choosable { cursor: crosshair; }
+.cb-enemy.is-choosable .cb-enemy__pool {
+  background: radial-gradient(50% 50% at 50% 50%,
+    color-mix(in srgb, var(--spectre-300) 60%, transparent) 0%, transparent 72%);
+}
+@keyframes cb-rulebreak { 0%,100% { filter: none; } 50% { filter: brightness(1.6) saturate(1.4); } }
+.cb-enemy.rule-broken .cb-enemy__stage { animation: cb-rulebreak .34s var(--ease-out) 2; }
+
+/* ── the chooser: "choose a Trick" is 70 cards' worth of agency ─────────── */
+.cb-chooser {
+  position: absolute; inset: 0; z-index: 520;
+  display: grid; place-items: center;
+  background: color-mix(in srgb, var(--ink-900) 78%, transparent);
+  backdrop-filter: blur(5px);
+}
+.cb-chooser__panel {
+  width: min(1080px, 88vw); max-height: 84vh;
+  display: flex; flex-direction: column; align-items: center; gap: var(--s-3);
+  padding: var(--s-5) var(--s-5) var(--s-4);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, var(--ink-700), var(--ink-900));
+  border: 1px solid var(--flame-500);
+  box-shadow: var(--shadow-4), 0 0 60px color-mix(in srgb, var(--flame-glow) 18%, transparent);
+}
+.cb-chooser__prompt {
+  margin: 0; font-family: var(--font-display); font-size: var(--fs-xl);
+  letter-spacing: .1em; color: var(--flame-200); font-weight: 600; text-align: center;
+}
+.cb-chooser__sub { margin: 0; color: var(--text-lo); font-size: var(--fs-sm); }
+.cb-chooser__pool {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: var(--s-4);
+  overflow-y: auto; padding: var(--s-3) var(--s-2);
+  max-height: 56vh;
+}
+.cb-choice {
+  position: relative;
+  border-radius: var(--radius-md);
+  transition: transform var(--t-quick) var(--ease-snap), filter var(--t-quick);
+  padding: 0;
+}
+.cb-choice--card { filter: brightness(.86) saturate(.9); }
+.cb-choice--card:hover, .cb-choice--card:focus-visible { transform: translateY(-10px); filter: none; }
+.cb-choice--card.is-picked {
+  transform: translateY(-14px); filter: none;
+  box-shadow: 0 0 0 3px var(--flame-200), 0 0 30px color-mix(in srgb, var(--flame-glow) 60%, transparent);
+}
+.cb-choice--enemy, .cb-choice--option {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  min-width: 170px;
+  padding: var(--s-3) var(--s-5);
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, var(--ink-600), var(--ink-800));
+  border: 1px solid var(--ink-400);
+  color: var(--text-hi);
+}
+.cb-choice--enemy b, .cb-choice--option b {
+  font-family: var(--font-display); font-size: var(--fs-md); letter-spacing: .08em;
+}
+.cb-choice--enemy span { font-size: var(--fs-xs); color: var(--courage-300); font-family: var(--font-num); }
+.cb-choice--enemy:hover, .cb-choice--option:hover,
+.cb-choice--enemy:focus-visible, .cb-choice--option:focus-visible {
+  transform: translateY(-3px); border-color: var(--flame-300); color: var(--flame-100);
+}
+.cb-choice--enemy.is-picked, .cb-choice--option.is-picked {
+  border-color: var(--flame-200);
+  box-shadow: 0 0 22px color-mix(in srgb, var(--flame-glow) 50%, transparent);
+}
+.cb-choice:disabled { opacity: .35; pointer-events: none; }
+.cb-chooser__bar { display: flex; gap: var(--s-3); }
+.cb-chooser__ok, .cb-chooser__skip {
+  padding: var(--s-2) var(--s-6);
+  border-radius: var(--radius-md);
+  font-family: var(--font-display); letter-spacing: .14em; text-transform: uppercase;
+  font-size: var(--fs-sm);
+  border: 1px solid var(--ink-400);
+  background: var(--ink-700); color: var(--text-mid);
+}
+.cb-chooser__ok { background: linear-gradient(180deg, var(--flame-400), var(--flame-500)); color: var(--ink-900); border-color: var(--flame-200); }
+.cb-chooser__ok:disabled { opacity: .4; }
+.cb-chooser__skip:hover, .cb-chooser__ok:hover { filter: brightness(1.12); }
+
+.cb-banner[data-kind="rule"] { color: var(--rarity-curse); font-size: var(--fs-xl); }
+.cb-banner[data-kind="rulebreak"] { color: var(--threat-100); font-size: var(--fs-xl); }

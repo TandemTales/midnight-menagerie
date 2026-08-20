@@ -134,6 +134,7 @@ export const bedframeBeast = {
     'footsteps-around-the-bed': {
       id: 'footsteps-around-the-bed', name: 'Footsteps Around the Bed', intent: Intent.DEBUFF,
       tell: 'Something walks a slow circle around you, and it is not under the bed any more.',
+      applies: [{ id: 'frightened', stacks: 1, to: 'player' }],
       effect(c) {
         addCnt(c, 'scare', 1, bedframeBeast.maxScareNow(c));
         c.applyStatus(c.player, 'frightened', 1);
@@ -178,6 +179,8 @@ export const bedframeBeast = {
     'mattress-maw': {
       id: 'mattress-maw', name: 'Mattress Maw', intent: Intent.ATTACK_DEBUFF, damage: 6, hits: 2,
       tell: 'The mattress opens along its whole length.',
+      // Conditional on both hits biting through, but the player must be able to plan for it.
+      applies: [{ id: 'frightened', stacks: 1, to: 'player' }],
       effect(c) {
         const before = c.player.hp;
         hitPlayer(c, 6, 2);
@@ -216,6 +219,7 @@ export const bedframeBeast = {
       id: 'grab-and-drag', name: 'Grab and Drag', intent: Intent.ATTACK_DEBUFF, damage: 10, hits: 1,
       tell: 'The RIGHT bed is rattling. It is not going for your Courage.',
       addsCards: [{ id: 'drowsy', pile: 'discard' }, { id: 'drowsy', pile: 'discard' }],
+      applies: [{ id: 'frightened', stacks: 1, to: 'player' }],
       effect(c) {
         mem(c).state = 'standing';
         hitPlayer(c, 10);

@@ -313,16 +313,18 @@
 }
 .go-bp__mark {
   position: absolute; left: 50%; top: 50%;
-  width: 7.4%; aspect-ratio: 1;
+  width: 9.5%; aspect-ratio: 1;
   transform: translate(-50%, -50%) rotate(-8deg);
   border: 2.5px solid color-mix(in srgb, var(--threat-400) 88%, transparent);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--threat-400) 14%, transparent);
   border-radius: 52% 48% 46% 54% / 50% 54% 46% 50%;
 }
 .scene--gameover[data-result="victory"] .go-bp__mark {
+  border-width: 3px;
   border-color: var(--flame-300);
-  box-shadow: 0 0 30px 6px color-mix(in srgb, var(--flame-glow) 66%, transparent),
-              inset 0 0 22px color-mix(in srgb, var(--flame-glow) 38%, transparent);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--flame-glow) 34%, transparent), transparent 78%);
+  box-shadow: 0 0 34px 8px color-mix(in srgb, var(--flame-glow) 72%, transparent),
+              inset 0 0 22px color-mix(in srgb, var(--flame-glow) 40%, transparent);
   animation: go-mark 3.2s var(--ease-soft) infinite;
 }
 @keyframes go-mark { 0%,100% { opacity: .8; } 50% { opacity: 1; } }

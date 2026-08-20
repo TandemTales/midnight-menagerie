@@ -192,7 +192,7 @@
 .ti-plinth {
   position: relative;
   display: flex; flex-direction: column; align-items: stretch;
-  width: min(486px, 40vw);
+  width: min(534px, 43vw);
   padding: clamp(var(--s-4), 2.2vh, var(--s-6)) clamp(var(--s-4), 1.9vw, var(--s-6))
            clamp(var(--s-4), 2vh, var(--s-6));
   border-radius: var(--radius-lg);
@@ -206,11 +206,9 @@
   border-radius: inherit;
   background:
     linear-gradient(180deg,
-      color-mix(in srgb, var(--ink-900) 82%, transparent) 0%,
-      color-mix(in oklab, var(--ink-800) 70%, var(--arcane-700)) 42%,
-      color-mix(in srgb, var(--ink-900) 90%, transparent) 100%);
-  backdrop-filter: blur(7px) saturate(.72) brightness(.5);
-  -webkit-backdrop-filter: blur(7px) saturate(.72) brightness(.5);
+      color-mix(in srgb, var(--ink-900) 93%, transparent) 0%,
+      color-mix(in srgb, color-mix(in oklab, var(--ink-800) 62%, var(--arcane-700)) 92%, transparent) 44%,
+      color-mix(in srgb, var(--ink-900) 96%, transparent) 100%);
   border: 1px solid color-mix(in srgb, var(--brass-400) 34%, transparent);
   box-shadow:
     var(--shadow-4),
@@ -233,7 +231,7 @@
 .ti-tagline {
   margin: 0 0 clamp(var(--s-3), 1.6vh, var(--s-5));
   font-family: var(--font-body);
-  font-size: var(--fs-lg);
+  font-size: clamp(15px, 1.18vw, 20px);
   font-style: italic;
   line-height: 1.5;
   text-align: center;
@@ -247,7 +245,9 @@
   position: relative;
   display: flex; flex-direction: column;
   gap: clamp(2px, .5vh, 7px);
-  width: 100%;
+  width: fit-content;
+  min-width: 64%;
+  align-self: center;
 }
 .ti-item {
   position: relative;
@@ -294,7 +294,7 @@
   width: 22px; height: 22px;
   justify-self: center;
   opacity: 0;
-  transform: translateX(-8px) rotate(-25deg);
+  transform: translateX(-8px) rotate(-25deg) scaleX(-1);
   transition: opacity var(--t-quick) var(--ease-out), transform var(--t-base) var(--ease-snap);
   background: var(--brass-200);
   clip-path: polygon(0% 50%, 30% 24%, 26% 44%, 100% 42%, 100% 58%, 26% 56%, 30% 76%);
@@ -321,7 +321,7 @@
 
 .ti-item:hover, .ti-item:focus-visible { outline: none; transform: translateX(6px); }
 .ti-item:hover::before, .ti-item:focus-visible::before { opacity: 1; transform: scaleX(1); }
-.ti-item:hover .ti-item__glyph, .ti-item:focus-visible .ti-item__glyph { opacity: 1; transform: translateX(0) rotate(0deg); }
+.ti-item:hover .ti-item__glyph, .ti-item:focus-visible .ti-item__glyph { opacity: 1; transform: translateX(0) rotate(0deg) scaleX(-1); }
 .ti-item:hover .ti-item__label, .ti-item:focus-visible .ti-item__label {
   color: var(--flame-100);
   text-shadow: 0 0 18px color-mix(in srgb, var(--flame-glow) 55%, transparent), 0 2px 8px color-mix(in srgb, var(--ink-900) 90%, transparent);

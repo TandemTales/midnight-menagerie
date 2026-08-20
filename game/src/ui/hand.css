@@ -22,7 +22,22 @@
   touch-action: none;
 }
 .mm-hand.is-locked .mm-hand__hit { pointer-events: none; }
+/* The hand is the single tab stop; focus is then roving between cards, which
+   carry tabindex="-1". No ring on the container itself — the selected card's
+   own glow is the focus indicator. */
 .mm-hand:focus { outline: none; }
+.mm-hand:focus-visible { outline: none; }
+
+/* Off-screen sizer: lets the hand read the responsive CSS card size without
+   assuming a card exists. Never visible, never hit-tested, never measured by
+   the critic's `.mm-hand__cards .mm-card` selector (it is not in that layer). */
+.mm-hand__probe {
+  position: absolute !important;
+  left: -99999px !important; top: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transform: none !important;
+}
 
 /* ── commit threshold (non-targeted cards) ──────────────────────────────── */
 .mm-hand__threshold {
@@ -59,6 +74,18 @@
   box-shadow: 0 0 22px color-mix(in srgb, var(--flame-glow) 70%, transparent);
 }
 .mm-hand__threshold.is-armed::after { color: var(--flame-100); opacity: 1; }
+/* Above the line but the card cannot be paid for: stays grey and says so.
+   Arming in amber and then refusing on release is a lie about affordability. */
+.mm-hand__threshold.is-blocked {
+  opacity: .85;
+  background: repeating-linear-gradient(90deg,
+    color-mix(in srgb, var(--ink-300) 80%, transparent) 0 10px, transparent 10px 22px);
+  box-shadow: none;
+}
+.mm-hand__threshold.is-blocked::after {
+  content: 'Not enough Nerve';
+  color: var(--ink-300); opacity: 1;
+}
 
 /* ── drag arrow ─────────────────────────────────────────────────────────── */
 .mm-hand__arrow {

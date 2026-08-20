@@ -56,6 +56,12 @@
   --type-skill:  #4f8fbf;
   --type-power:  #b071d6;
 
+  /* --- Delta: a number went up (good) or needs caution -------------------- */
+  --good-300: #74e08a;   /* preview number boosted */
+  --good-500: #2f8f4d;
+  --warn-300: #d9a441;   /* uncertain / unresolved choice — distinct from flame */
+  --warn-500: #8a6318;
+
   /* --- Text -------------------------------------------------------------- */
   --text-hi:  #f4efe4;   /* parchment white */
   --text-mid: #c3bbcd;

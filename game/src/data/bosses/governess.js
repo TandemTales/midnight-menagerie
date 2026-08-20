@@ -210,6 +210,7 @@ export const governess = {
     'mind-your-seams': {
       id: 'mind-your-seams', name: 'Mind Your Seams', intent: Intent.ATTACK_DEBUFF, damage: 5, hits: 2,
       tell: 'She takes in a seam somewhere on you that you did not know you had.',
+      applies: [{ id: 'seam-pinch', stacks: 1, to: 'player' }],
       effect(c) { hitPlayer(c, 5, 2); c.applyStatus(c.player, 'seam-pinch', 1); },
     },
     'mend-my-darling': {

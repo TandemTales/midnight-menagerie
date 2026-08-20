@@ -1,0 +1,102 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cover redirect — real engine probe</title>
+<style>body{background:#14121a;color:#ddd6e6;font:13px/1.6 ui-monospace,Consolas,monospace;padding:24px}
+.ok{color:#8fdc9b}.err{color:#ff8080}.dim{color:#8b849b}</style>
+<pre id="out">running…</pre>
+<script type="module">
+/**
+ * Blanket Blob's Cover must actually redirect damage IN THE SHIPPING ENGINE.
+ * The mock in index.html implements redirection itself, so it cannot prove this —
+ * it would pass even with the mechanic completely inert, which it was.
+ */
+import { CombatEngine } from '/game/src/combat/engine.js';
+import { RNG } from '/game/src/core/rng.js';
+import { startingDeckFor, cardById } from '/game/src/data/cards.js';
+import { ENEMIES, getEnemy, ENEMY_STATUSES, STATUS_TRICK_DEFS } from '/game/src/data/enemies/index.js';
+import * as enc from '/game/src/data/encounters.js';
+import * as statuses from '/game/src/data/statuses.js';
+
+const L = []; let errors = 0;
+const ok = (s) => L.push(`<span class="ok">  ✓ ${s}</span>`);
+const no = (s) => { errors++; L.push(`<span class="err">  ✗ ${s}</span>`); };
+const dim = (s) => L.push(`<span class="dim">  ${s}</span>`);
+
+try { statuses.registerStatuses?.(ENEMY_STATUSES); } catch (e) { no('registerStatuses: ' + e); }
+
+const extra = new Map(STATUS_TRICK_DEFS.map(c => [c.id, c]));
+const resolve = {
+  card: (d) => (typeof d !== 'string' ? d : (extra.get(d) || cardById(d) || cardById('status/' + d) || d)),
+  enemy: (d) => (typeof d === 'string' ? (ENEMIES[d] || d) : d),
+};
+const CTX_HOOKS = ['onSpawn', 'onDeath', 'onTurnStart', 'onTurnEnd', 'onDamaged', 'onPlayerCard',
+  'onPlayerTurnStart', 'onPlayerTurnEnd', 'onAllyDeath', 'onAttacked', 'onBoardEvent', 'onRuleBroken'];
+function adapt(def) {
+  if (!def || def.__adapted) return def;
+  const w = (c) => { const c2 = Object.create(c);
+    c2.addCard = (d, p, o) => c.addCard(resolve.card(d), p, o);
+    c2.summon = (d, o) => c.summon(resolve.enemy(d), o); return c2; };
+  const out = Object.create(Object.getPrototypeOf(def)); Object.assign(out, def);
+  for (const h of CTX_HOOKS) if (typeof def[h] === 'function') out[h] = (c, ...r) => def[h](w(c), ...r);
+  out.moves = {};
+  for (const [k, mv] of Object.entries(def.moves)) out.moves[k] = { ...mv, effect: (c, ...r) => mv.effect(w(c), ...r) };
+  out.__adapted = true; return out;
+}
+
+const rng = new RNG(99);
+const members = enc.buildEncounter('nursery-10', rng, 0);   // Blanket Blob + Porcelain Doll
+const e = new CombatEngine({
+  rng,
+  player: { name: 'Kid', companion: 'marmalade', maxHp: 68, hp: 68, energyMax: 3, drawPerTurn: 5,
+            deck: startingDeckFor('marmalade') },
+  enemies: members.map((m, i) => ({ def: adapt(getEnemy(m.enemyId)), hp: m.hp, id: `e${i}` })),
+});
+await e.startCombat();
+
+const blob = e.enemies.find(x => x.id === 'e0');
+const doll = e.enemies.find(x => x.id === 'e1');
+L.push('<b>Cover redirect in the real CombatEngine</b>');
+dim(`blob=${blob.name} ${blob.hp}hp   doll=${doll.name} ${doll.hp}hp`);
+
+// Force the Blob to Tuck In right now.
+getEnemy('blanket-blob').moves['tuck-in'].effect(e.enemyCtx(blob, null));
+const covered = doll.status('covered') > 0;
+(covered ? ok : no)(`Tuck In applies 'covered' to the Doll (status=${doll.status('covered')})`);
+dim(`doll._coverAmount=${doll._coverAmount}`);
+
+// Hit the covered Doll for 12. Doc: first 8 goes to the Blob, remaining 4 to the Doll.
+blob.block = 0; doll.block = 0;
+const b0 = blob.hp, d0 = doll.hp;
+e.dealDamage({ attacker: e.player, defender: doll, amount: 12, kind: 'attack' });
+// Blob settles what it absorbed on its own hook.
+getEnemy('blanket-blob').onPlayerTurnEnd(e.enemyCtx(blob, null));
+const dollLost = d0 - doll.hp, blobLost = b0 - blob.hp;
+((dollLost === 4 && blobLost === 8) ? ok : no)
+  (`12 damage into a Covered ally → Doll takes ${dollLost} (want 4), Blob takes ${blobLost} (want 8)`);
+
+// A second hit the same player turn is no longer covered: the allowance is spent and
+// only re-arms on the Blob's own turn, so settling in between must not refresh it.
+const b1 = blob.hp, d1 = doll.hp;
+e.dealDamage({ attacker: e.player, defender: doll, amount: 6, kind: 'attack' });
+getEnemy('blanket-blob').onPlayerTurnEnd(e.enemyCtx(blob, null));
+(((d1 - doll.hp) === 6 && (b1 - blob.hp) === 0) ? ok : no)
+  (`second hit same turn is uncovered → Doll ${d1 - doll.hp} (want 6), Blob ${b1 - blob.hp} (want 0)`);
+
+// Allowance re-arms for the next player turn.
+getEnemy('blanket-blob').onTurnStart(e.enemyCtx(blob, null));
+const b2 = blob.hp, d2 = doll.hp;
+e.dealDamage({ attacker: e.player, defender: doll, amount: 5, kind: 'attack' });
+getEnemy('blanket-blob').onPlayerTurnEnd(e.enemyCtx(blob, null));
+(((d2 - doll.hp) === 0 && (b2 - blob.hp) === 5) ? ok : no)
+  (`next turn re-arms → Doll ${d2 - doll.hp} (want 0), Blob ${b2 - blob.hp} (want 5)`);
+
+// Killing the Blob ends Cover.
+e.dealDamage({ attacker: e.player, defender: blob, amount: 999, kind: 'attack' });
+((doll.status('covered') === 0) ? ok : no)(`Blob's death clears Cover (status=${doll.status('covered')})`);
+
+L.push('');
+L.push(`<span class="${errors ? 'err' : 'ok'}">RESULT: ${errors} errors</span>`);
+document.getElementById('out').innerHTML = L.join('\n');
+window.__RESULT__ = { errors, text: L.join('\n').replace(/<[^>]+>/g, '') };
+window.__DONE__ = true;
+</script>

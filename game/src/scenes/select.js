@@ -25,8 +25,9 @@ import {
   REGION_NAMES, COMPANION_BY_SLUG, heroSrc, cobweb, candle,
 } from '../ui/portrait.js';
 
-const CSS_KIT = new URL('../ui/portrait.css', import.meta.url).href;
-const CSS_SEL = new URL('./select.css', import.meta.url).href;
+const CSS_KIT  = new URL('../ui/portrait.css', import.meta.url).href;
+const CSS_SEL  = new URL('./select.css', import.meta.url).href;
+const CSS_CARD = new URL('../ui/card.css', import.meta.url).href;
 
 /** Companions unlocked on a fresh save (design doc: "approximately four"). */
 export const STARTER_COMPANIONS = ['marmalade', 'bones', 'pipkin', 'taffy'];
@@ -494,6 +495,7 @@ export class SelectScene extends Scene {
     super(ctx);
     this._offs = [];
     this._portraits = [];
+    this._deckCards = [];
     this.state = { mode: 'grid', companion: null, kid: null, seed: 0, haunt: 0 };
   }
 
@@ -570,6 +572,10 @@ export class SelectScene extends Scene {
   /* ── the 4x4 wall ───────────────────────────────────────────────────────── */
   _buildGrid() {
     const wrap = el('div', 'sel__gridwrap');
+    // the wall used to arrive with no instruction at all
+    wrap.appendChild(el('div', 'sel-prompt',
+      `<h2>Choose a Companion</h2>` +
+      `<p>Sixteen animals the house kept. The ones you have freed walk back in with you.</p>`));
     const grid = el('div', 'sel__grid');
     grid.setAttribute('role', 'listbox');
     grid.setAttribute('aria-label', 'The Menagerie — sixteen Companions');
@@ -625,10 +631,12 @@ export class SelectScene extends Scene {
           <div class="hero__artvig"></div>
           <div class="hero__region"></div>
         </div>
+        <div class="hero__vitals" aria-label="Starting numbers"></div>
         <div class="hero__knows">
           <h3 class="hero__h">Knows about the house</h3>
           <p class="hero__knowstext"></p>
         </div>
+
         <div class="hero__bond">
           <h3 class="hero__h">Bond <em class="hero__bondlvl"></em></h3>
           <div class="bondbar"><i></i></div>
@@ -645,7 +653,7 @@ export class SelectScene extends Scene {
             <h3 class="hero__h">Signature mechanics</h3>
             <ul class="hero__mechs"></ul>
           </div>
-          <div class="hero__col hero__swrap">
+          <div class="hero__swrap">
             <div>
               <h3 class="hero__h hero__h--good">Strengths</h3>
               <ul class="hero__list hero__list--good"></ul>
@@ -656,11 +664,11 @@ export class SelectScene extends Scene {
             </div>
           </div>
         </div>
-        <div class="hero__deckwrap">
-          <h3 class="hero__h">Starting ${TERMS.deck.toLowerCase()} <em class="hero__decknote">every expedition begins here; the rest of the pool is found inside</em></h3>
-          <div class="hero__deck"></div>
-        </div>
         <div class="hero__arch"><h3 class="hero__h">Deck archetypes</h3><div class="hero__pills"></div></div>
+      </div>
+      <div class="hero__deckwrap">
+        <h3 class="hero__h hero__deckhead">Starting ${TERMS.deck} <em class="hero__decknote">every expedition begins here &mdash; the rest of the pool is found inside the house</em></h3>
+        <div class="hero__deck"></div>
         <div class="hero__cta">
           <button type="button" class="btn btn--ghost" data-act="deselect">Choose another</button>
           <button type="button" class="btn btn--primary" data-act="tokid">Take <span class="hero__ctaname"></span> in <span aria-hidden="true">&#8594;</span></button>
@@ -697,7 +705,13 @@ export class SelectScene extends Scene {
             <ul class="kid__packlist"></ul>
           </div>
           <p class="kid__focus"></p>
-          <div class="kid__pairing"><h3 class="hero__h">Together</h3><p class="kid__pairtext"></p></div>
+          <div class="kid__pairing">
+            <h3 class="hero__h">Together</h3>
+            <div class="pair">
+              <div class="pair__pf" aria-hidden="true"></div>
+              <p class="kid__pairtext"></p>
+            </div>
+          </div>
         </div>
       </div>
       <div class="kid__strip" role="listbox" aria-label="Choose a Kid"></div>`;
@@ -844,6 +858,13 @@ export class SelectScene extends Scene {
     this._go.addEventListener('click', onGo);
     this._offs.push(() => this._go.removeEventListener('click', onGo));
 
+    const onResize = () => {
+      clearTimeout(this._rzT);
+      this._rzT = setTimeout(() => this._layoutDeck(), 120);
+    };
+    addEventListener('resize', onResize, { passive: true });
+    this._offs.push(() => { removeEventListener('resize', onResize); clearTimeout(this._rzT); });
+
     const onKey = (e) => {
       if (e.key === 'Escape') { e.preventDefault(); this._back(); }
       else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && !this._go.disabled) { e.preventDefault(); this._begin(); }
@@ -901,9 +922,20 @@ export class SelectScene extends Scene {
     this._syncGo();
   }
 
-  /** Render the starting deck. Prefers real card data if data/cards.js exists. */
+  /**
+   * The starting deck.
+   *
+   * The codex summary paints first so there is never an empty frame, then the
+   * authored cards from data/cards.js replace it with the *real* renderer —
+   * card-feel's CardView, at the exact frame, rarity and rules text the player
+   * will hold in combat. Companions whose module has not shipped keep the
+   * summary. Both paths are guarded: neither module is ours.
+   */
   async _renderDeck(host, slug, codex) {
-    const render = (rows) => {
+    this._killDeckCards();
+    host.classList.remove('is-real');
+
+    const renderSummary = (rows) => {
       host.innerHTML = rows.map(([n, name, type, text]) => `
         <div class="mcard" data-type="${type}">
           <span class="mcard__cost">1</span>
@@ -913,31 +945,81 @@ export class SelectScene extends Scene {
           <span class="mcard__text">${text}</span>
         </div>`).join('');
       const total = rows.reduce((s, r) => s + r[0], 0);
-      host.appendChild(el('div', 'mcard__total', `${total} ${TERMS.deck}`));
+      host.appendChild(el('div', 'hero__decktotal', `${total} ${TERMS.deck}`));
     };
-    render(codex.deck);
+    renderSummary(codex.deck);
 
-    // Upgrade to authored card data the moment companion-cards ships it.
+    let defs = [];
+    let def = null;
     try {
       const mod = await import('../data/cards.js');
-      const fn = mod.startingDeck || mod.getStartingDeck;
-      const raw = typeof fn === 'function' ? fn(slug) : (mod.STARTING_DECKS?.[slug] ?? null);
-      if (!Array.isArray(raw) || !raw.length) return;
-      if (this.state.companion !== slug) return;      // player moved on while importing
-      const counts = new Map();
-      for (const card of raw) {
-        const id = card?.id ?? card?.name;
-        if (!id) continue;
-        const prev = counts.get(id);
-        if (prev) prev.n++;
-        else counts.set(id, { n: 1, card });
-      }
-      const rows = [...counts.values()].map(({ n, card }) => [
-        n, card.name ?? card.id, card.type ?? 'skill',
-        String(card.text ?? '').replace(/\{(\w+)\}/g, (_, k) => card.nums?.[k] ?? '') || '—',
-      ]);
-      if (rows.length) render(rows);
-    } catch { /* data/cards.js not built yet — the codex deck stands */ }
+      defs = mod.startingDeckFor?.(slug) ?? [];
+      def = mod.companion?.(slug) ?? null;
+    } catch { defs = []; }
+    if (this.state.companion !== slug || !this._hero) return;   // moved on mid-import
+    this._setVitals(def, defs.length);
+    if (!Array.isArray(defs) || !defs.length) return;
+
+    let CardView;
+    try {
+      await ensureCss(CSS_CARD);
+      ({ CardView } = await import('../ui/card.js'));
+    } catch { return; }
+    if (this.state.companion !== slug || !this._hero || !CardView) return;
+
+    // collapse duplicates: the player wants to read five distinct Tricks, not
+    // count ten identical ones
+    const counts = new Map();
+    for (const d of defs) {
+      if (!d?.id) continue;
+      const hit = counts.get(d.id);
+      if (hit) hit.n++; else counts.set(d.id, { n: 1, def: d });
+    }
+    const rows = [...counts.values()];
+
+    host.innerHTML = '';
+    host.classList.add('is-real');
+    host.style.setProperty('--deck-n', String(rows.length));
+    const largeText = !!Save?.settings?.largeText;
+    for (const { n, def: d } of rows) {
+      const slot = el('div', 'deckslot');
+      if (n > 1) slot.appendChild(el('span', 'deckslot__n', `&#215;${n}`));
+      let view;
+      try {
+        view = new CardView(d, { uid: `sel-${d.id}`, largeText, reduceMotion: reduceMotion() });
+      } catch { continue; }
+      slot.appendChild(view.el);
+      host.appendChild(slot);
+      this._deckCards.push({ view, slot });
+    }
+    host.appendChild(el('div', 'hero__decktotal', `${defs.length} ${TERMS.deck}`));
+    this._layoutDeck();
+  }
+
+  /** Scale each CardView to the slot CSS gave it. Called on render and resize. */
+  _layoutDeck() {
+    for (const { view, slot } of this._deckCards) {
+      const w = slot.clientWidth, h = slot.clientHeight;
+      if (!w || !h) continue;
+      try { view.setTransform({ x: w / 2, y: h, scale: w / 224 }); } catch {}
+    }
+  }
+
+  _killDeckCards() {
+    for (const { view } of this._deckCards) { try { view.destroy(); } catch {} }
+    this._deckCards.length = 0;
+  }
+
+  /** Starting Courage / Nerve / deck size, the way a character-select should. */
+  _setVitals(def, deckSize) {
+    const host = this._hero?.querySelector('.hero__vitals');
+    if (!host) return;
+    const hp = Number(def?.startingHp) || 70;
+    const nerve = Number(def?.startingEnergy) || 3;
+    host.innerHTML =
+      `<div class="vital vital--hp"><span class="vital__n">${hp}</span><span class="vital__l">${TERMS.hp}</span></div>` +
+      `<div class="vital vital--nerve"><span class="vital__n">${nerve}</span><span class="vital__l">${TERMS.energy} / turn</span></div>` +
+      `<div class="vital vital--deck"><span class="vital__n">${deckSize || 10}</span><span class="vital__l">Starting ${TERMS.deck}</span></div>`;
   }
 
   _deselect() {
@@ -981,6 +1063,21 @@ export class SelectScene extends Scene {
     step.querySelector('.kid__perkdesc').textContent = info.perk[1];
     step.querySelector('.kid__focus').innerHTML = `<span class="foot__lbl">Plays around</span> ${info.focus}`;
     step.querySelector('.kid__pairtext').textContent = pairingNote(this.state.companion, slug);
+
+    // the Companion travelling with them, so "Together" is a picture and not a claim
+    const pairHost = step.querySelector('.pair__pf');
+    if (pairHost) {
+      try { this._pairPf?.destroy?.(); } catch {}
+      this._pairPf = null;
+      pairHost.innerHTML = '';
+      const cslug = this.state.companion;
+      if (cslug && COMPANION_BY_SLUG[cslug]) {
+        const pf = companionPortrait({ slug: cslug, variant: '@2x', parallax: 0.5, shimmer: true });
+        this._pairPf = pf;
+        pairHost.appendChild(pf.el);
+        pairHost.appendChild(el('span', 'pair__name', COMPANION_BY_SLUG[cslug].name));
+      }
+    }
 
     const used = info.pack.reduce((s, [, n]) => s + n, 0);
     step.querySelector('.kid__slots').textContent = `${used} / 5 slots`;
@@ -1055,6 +1152,9 @@ export class SelectScene extends Scene {
     this._offs.length = 0;
     for (const p of this._portraits) { try { p.destroy(); } catch {} }
     this._portraits.length = 0;
+    this._killDeckCards();
+    try { this._pairPf?.destroy?.(); } catch {}
+    this._pairPf = null;
     this._grid = this._hero = this._kidStep = this._foot = this._go = this._rail = null;
     this.root.innerHTML = '';
   }

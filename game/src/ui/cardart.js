@@ -12,12 +12,21 @@
  *   2  moon         disc or crescent + halo, seeded position
  *   3  scene        a silhouette set piece (mansion / graves / vines / drapes / web)
  *   4  floor        mist band + ground curve
- *   5  subject      the companion portrait (if loaded) blob-masked and graded,
- *                   otherwise the family motif drawn large
+ *   5  subject      A SILHOUETTE CHOSEN BY CARD ID — claw, curled cat, pouncing
+ *                   cat, bone, pumpkin, candy drip, eye, flask… This layer used
+ *                   to be the companion PORTRAIT, re-cropped per card, so all
+ *                   five Marmalade cards showed the same ghost-cat face and you
+ *                   could not tell Scratch from Curl Up without reading. The
+ *                   companion now lives in the palette, scene and accents; the
+ *                   card lives in the shape.
  *   6  motif        family accents (paw wisps, bones, vines, drips, eyes…)
  *   7  type         attack = claw slashes, skill = ward arcs, power = rays + runes
  *   8  particles    seeded embers with a soft glow
  *   9  grade        vignette, warm/cool bloom, upgrade gild, bottom fade
+ *
+ * Cost: one `paint()` is a few ms. Five of them inside one frame (draw 5 into a
+ * hand of 12) cost ~18 fps. `warmArt(defs)` renders a whole deck ahead of time,
+ * a couple per frame, so combat never pays for art during motion.
  *
  * Colour: UI colours are read from tokens.css via getComputedStyle. A short
  * `PIGMENT` table adds illustration-only hues (moss, bone, candy, rot, stone)
@@ -124,36 +133,76 @@ function fam(slug) {
   return FAM[slug] || FAM.neutral;
 }
 
-// ── portraits ───────────────────────────────────────────────────────────────
-const PORTRAIT = new Map();      // slug -> HTMLImageElement (loaded only)
+// ── subject: what this specific card is a picture OF ────────────────────────
+/**
+ * Keyed off `def.id` (and the printed name as a fallback signal), so Scratch is
+ * a claw, Curl Up is a sleeping cat, Spectral Pounce is a cat mid-leap, Fetch!
+ * is a bone, Lantern Smash is a pumpkin and Sugar Rush is a candy drip — you
+ * can name every card in the hand without reading a word of it.
+ * First match wins; order is significance order, not alphabetical.
+ */
+const SUBJECT_RULES = [
+  [/(scratch|rake|shred|rend|swipe|slash|claw)/, 'claw'],
+  [/(pounce|leap|lunge|spring|ambush|dive|prowl)/, 'pounce'],
+  [/(curl|nap|sleep|doze|cosy|cozy|snug|hunker|tuck)/, 'curl'],
+  [/(fetch|bone|dig|bury|marrow|skull|rattle)/, 'bone'],
+  [/(pumpkin|lantern|gourd|jack|smash)/, 'pumpkin'],
+  [/(sugar|candy|taffy|sweet|syrup|caramel|drip|gum)/, 'candy'],
+  [/(eye|eyes|gaze|stare|glare|watch|peek|hundred)/, 'eye'],
+  [/(boo|haunt|spook|shriek|wail|scare|fright|spectre|spirit)/, 'ghost'],
+  [/(lives|life|revive|rebirth|soul)/, 'ninelives'],
+  [/(draught|potion|brew|elixir|tonic|flask|philtre|remedy)/, 'flask'],
+  [/(web|silk|thread|weave|spin|snare)/, 'webbing'],
+  [/(thorn|curse|regret|doom|dread|hex|blight)/, 'thorn'],
+  [/(dust|grime|rot|mould|mold|wound|sick|ache|nausea|burden)/, 'sick'],
+  [/(fang|bite|chomp|gnash|snarl|growl|howl|bark)/, 'fang'],
+  [/(ward|guard|block|brace|shield|bulwark|parry|shell)/, 'ward'],
+  [/(paw|pad|step|stalk|tiptoe|creep)/, 'paw'],
+  [/(feather|quill|plume|page|book|tome|scroll|note)/, 'feather'],
+  [/(flame|candle|ember|spark|burn|torch|blaze|wick)/, 'flame'],
+  [/(tomb|grave|crypt|stone|headstone|epitaph)/, 'tomb'],
+  [/(leaf|vine|sprig|bramble|root|seed|bloom|thicket)/, 'sprig'],
+  [/(cloud|rain|storm|drizzle|mist|fog|damp)/, 'cloud'],
+  [/(hush|whisper|silence|veil|swirl|shroud|fade)/, 'swirl'],
+  [/(stitch|patch|mend|sew|plush|seam)/, 'stitch'],
+  [/(moon|midnight|night|dusk|dark|shadow)/, 'moon'],
+];
+
+/** Fallback pools, so even an unmatched card gets a shape that suits its type. */
+const TYPE_POOL = {
+  attack: ['claw', 'fang', 'pounce', 'bone'],
+  skill:  ['ward', 'curl', 'swirl', 'paw'],
+  power:  ['eye', 'moon', 'ninelives', 'flask'],
+  status: ['sick'],
+  curse:  ['thorn'],
+};
+
+export function subjectFor(def) {
+  const s = ((def.id || '') + ' ' + (def.name || '')).toLowerCase();
+  // Statuses are clutter you did not choose: they never borrow a hero shape.
+  if (def.type === 'status') {
+    const p = ['sick', 'cloud', 'swirl', 'stitch'];
+    return p[hash32(def.id || 'x') % p.length];
+  }
+  for (let i = 0; i < SUBJECT_RULES.length; i++) {
+    if (SUBJECT_RULES[i][0].test(s)) return SUBJECT_RULES[i][1];
+  }
+  const pool = TYPE_POOL[def.type] || TYPE_POOL.skill;
+  return pool[hash32(def.id || 'x') % pool.length];
+}
+
+// ── art-ready subscribers (kept for API compatibility) ──────────────────────
 const readyFns = new Set();
-let portraitsPending = null;
-
-const PORTRAIT_SLUGS = ['marmalade', 'wisp', 'crumbula', 'boggle', 'bones', 'pipkin', 'taffy',
-  'truffle', 'hush', 'mopsy', 'drizzle', 'pudding', 'wink', 'crinkle', 'mossbit', 'brambleboo'];
-
-function portraitURL(slug) {
-  return new URL(`../../assets/portraits/${slug}.png`, import.meta.url).href;
-}
-
-/** Load the companion portraits used as the subject layer. Safe to call many times. */
-export function preloadArt(slugs = PORTRAIT_SLUGS) {
-  if (portraitsPending) return portraitsPending;
-  portraitsPending = Promise.all(slugs.map(s => new Promise((res) => {
-    const img = new Image();
-    img.decoding = 'async';
-    img.onload = () => { PORTRAIT.set(s, img); res(s); };
-    img.onerror = () => res(null);
-    img.src = portraitURL(s);
-  }))).then((r) => {
-    CACHE.clear();
-    for (const fn of [...readyFns]) { try { fn(); } catch (e) { console.error(e); } }
-    return r.filter(Boolean);
-  });
-  return portraitsPending;
-}
-/** Subscribe to "portraits arrived, regenerate your art". Returns an unsubscribe. */
+/** Subscribe to "the art source changed, regenerate". Returns an unsubscribe. */
 export function onArtReady(fn) { readyFns.add(fn); return () => readyFns.delete(fn); }
+function fireReady() { for (const fn of [...readyFns]) { try { fn(); } catch (e) { console.error(e); } } }
+
+/**
+ * DEPRECATED. The subject layer no longer uses the companion portraits, so
+ * there is nothing to preload. Kept so existing callers keep working.
+ * Use `warmArt(defs, w, h)` instead — that is the one that matters for fps.
+ */
+export function preloadArt() { return Promise.resolve([]); }
 
 // ── canvas plumbing ─────────────────────────────────────────────────────────
 const CACHE = new Map();
@@ -178,24 +227,109 @@ function scratch(w, h) {
  * @returns {string} data URL
  */
 export function cardArt(def, w, h, o = {}) {
-  const dpr = Math.min(o.dpr || (typeof devicePixelRatio === 'number' ? devicePixelRatio : 1), 2);
-  const W = Math.round(w * dpr), H = Math.round(h * dpr);
-  const slug = def.companion || 'neutral';
-  const havePortrait = PORTRAIT.has(slug);
-  const key = `${def.id}|${def.type}|${slug}|${W}x${H}|${o.upgraded ? 'u' : ''}|${havePortrait ? 'p' : ''}`;
+  const key = artKey(def, w, h, o);
   const hit = CACHE.get(key);
   if (hit) return hit;
+  return render(def, w, h, o, key);
+}
 
+function artKey(def, w, h, o) {
+  const dpr = Math.min(o.dpr || (typeof devicePixelRatio === 'number' ? devicePixelRatio : 1), 2);
+  const W = Math.round(w * dpr), H = Math.round(h * dpr);
+  return `${def.id}|${def.type}|${def.companion || 'neutral'}|${W}x${H}|${o.upgraded ? 'u' : ''}`;
+}
+
+function render(def, w, h, o, key) {
+  const dpr = Math.min(o.dpr || (typeof devicePixelRatio === 'number' ? devicePixelRatio : 1), 2);
+  const W = Math.round(w * dpr), H = Math.round(h * dpr);
   const cv = document.createElement('canvas');
   cv.width = W; cv.height = H;
   const g = cv.getContext('2d');
   g.scale(dpr, dpr);
-  paint(g, w, h, def, slug, !!o.upgraded);
+  paint(g, w, h, def, def.companion || 'neutral', !!o.upgraded);
   const url = cv.toDataURL('image/png');
-  if (CACHE.size > 220) CACHE.clear();
+  if (CACHE.size > 320) CACHE.clear();
   CACHE.set(key, url);
   return url;
 }
+
+// ── warming ─────────────────────────────────────────────────────────────────
+let warmQueue = [];
+let warmRAF = 0;
+
+/**
+ * Pre-render card art OFF the critical path. Call it on scene entry with every
+ * CardDef that can reach the hand this combat (deck + statuses + curses).
+ *
+ * Painting five fresh canvases inside the frame that starts a draw animation
+ * cost 43 fps cold / 56 warm at n=12. With the deck warmed first, every
+ * `cardArt()` during motion is a Map hit and the same draw runs at ~61.
+ *
+ * Work is chunked to a ~6 ms budget per frame, and each finished bitmap is
+ * decoded as well as encoded, so the first paint of a card is not a decode
+ * stall either.
+ *
+ * @param {object[]} defs  CardDefs (duplicates fine — keys dedupe)
+ * @param {number} w  css px, must match what CardView asks for (ART_W * CARD_SS)
+ * @param {number} h  css px (ART_H * CARD_SS)
+ * @param {object} [o] { upgraded: boolean | 'both', budgetMs }
+ * @returns {Promise<number>} how many were rendered
+ */
+export function warmArt(defs, w, h, o = {}) {
+  const budget = o.budgetMs || 6;
+  const jobs = [];
+  const seen = new Set();
+  const variants = o.upgraded === 'both' ? [false, true] : [!!o.upgraded];
+  for (const def of defs || []) {
+    if (!def || !def.id) continue;
+    for (const up of variants) {
+      const opt = { upgraded: up };
+      const key = artKey(def, w, h, opt);
+      if (seen.has(key) || CACHE.has(key)) continue;
+      seen.add(key);
+      jobs.push({ def, opt, key });
+    }
+  }
+  if (!jobs.length) return Promise.resolve(0);
+  warmQueue = warmQueue.concat(jobs);
+
+  return new Promise((resolve) => {
+    let done = 0;
+    const step = () => {
+      warmRAF = 0;
+      const t0 = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+      while (warmQueue.length) {
+        const j = warmQueue.shift();
+        if (!CACHE.has(j.key)) { render(j.def, w, h, j.opt, j.key); done++; }
+        const now = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+        if (now - t0 > budget) break;
+      }
+      if (warmQueue.length) warmRAF = requestAnimationFrame(step);
+      else { fireReady(); resolve(done); }
+    };
+    if (!warmRAF) warmRAF = requestAnimationFrame(step);
+    else resolve(0);
+  });
+}
+
+/** Synchronous warm — for tests and for a loading screen that can afford it. */
+export function warmArtSync(defs, w, h, o = {}) {
+  let n = 0;
+  const variants = o.upgraded === 'both' ? [false, true] : [!!o.upgraded];
+  for (const def of defs || []) {
+    if (!def || !def.id) continue;
+    for (const up of variants) {
+      const opt = { upgraded: up };
+      const key = artKey(def, w, h, opt);
+      if (!CACHE.has(key)) { render(def, w, h, opt, key); n++; }
+    }
+  }
+  return n;
+}
+
+/** How many bitmaps are resident. Used by the test page's fps harness. */
+export function artCacheSize() { return CACHE.size; }
+export function clearArtCache() { CACHE.clear(); }
 
 // ── the painting ────────────────────────────────────────────────────────────
 function paint(g, w, h, def, slug, upgraded) {
@@ -251,21 +385,29 @@ function paint(g, w, h, def, slug, upgraded) {
   g.fillStyle = mist; g.fillRect(0, h * 0.58, w, h * 0.42);
 
   // 5 subject ────────────────────────────────────────────────────────────────
-  const img = PORTRAIT.get(slug);
-  const cx = w * rnd(0.42, 0.58), cy = h * 0.60;
-  const rad = h * rnd(0.46, 0.54);
+  // One silhouette per CARD, not per companion. See SUBJECT_RULES.
+  const subject = subjectFor(def);
+  const cx = w * rnd(0.44, 0.56), cy = h * 0.58;
+  const rad = h * rnd(0.40, 0.47);
 
-  // backlight behind the subject
-  const bl = g.createRadialGradient(cx, cy - rad * 0.25, 0, cx, cy - rad * 0.2, rad * 1.5);
-  bl.addColorStop(0, rgba(f.glow, 0.50));
-  bl.addColorStop(0.5, rgba(f.glow, 0.16));
+  // backlight behind the subject — a rim of family colour so the silhouette
+  // separates from the scene even at 45% overlap in a big hand
+  const bl = g.createRadialGradient(cx, cy - rad * 0.20, 0, cx, cy - rad * 0.16, rad * 1.7);
+  bl.addColorStop(0, rgba(f.glow, 0.58));
+  bl.addColorStop(0.45, rgba(f.glow, 0.20));
   bl.addColorStop(1, rgba(f.glow, 0));
   g.fillStyle = bl; g.fillRect(0, 0, w, h);
 
-  if (type === 'power') drawRays(g, cx, cy - rad * 0.25, w, h, f, R);
+  if (type === 'power') drawRays(g, cx, cy - rad * 0.22, w, h, f, R);
 
-  if (img) drawPortrait(g, img, w, h, cx, cy, rad, f, R);
-  else drawMotif(g, cx, cy - rad * 0.12, rad * 0.95, f, f.motif, R, true);
+  // contact shadow so the subject sits in the scene rather than floating
+  const sh = g.createRadialGradient(cx, cy + rad * 0.72, 0, cx, cy + rad * 0.72, rad * 1.15);
+  sh.addColorStop(0, rgba(sink(f.sky[0], 0.55), 0.55));
+  sh.addColorStop(1, rgba(sink(f.sky[0], 0.55), 0));
+  g.fillStyle = sh; g.beginPath();
+  g.ellipse(cx, cy + rad * 0.72, rad * 1.1, rad * 0.24, 0, 0, 7); g.fill();
+
+  drawMotif(g, cx, cy - rad * 0.10, rad, f, subject, R, true);
 
   // 6 family accents ─────────────────────────────────────────────────────────
   drawAccents(g, w, h, f, f.motif, R);
@@ -318,53 +460,6 @@ function paint(g, w, h, def, slug, upgraded) {
     g.fillRect(Math.floor(R() * w), Math.floor(R() * h), 1, 1);
   }
   g.globalAlpha = 1;
-}
-
-// ── portrait layer ──────────────────────────────────────────────────────────
-function drawPortrait(g, img, w, h, cx, cy, rad, f, R) {
-  // Seeded framing: zoom, pan and mirror all vary per card id, so two cards
-  // from the same companion never look like the same picture twice.
-  const zoom = 0.56 + R() * 0.42;                       // tight crop .. full body
-  const sw = Math.min(img.width, img.height) * zoom;
-  const sh = sw * 0.86;
-  const sx = Math.max(0, Math.min(img.width - sw, img.width * (0.5 + (R() - 0.5) * 0.42) - sw / 2));
-  const sy = Math.max(0, Math.min(img.height - sh, img.height * (0.44 + (R() - 0.5) * 0.34) - sh / 2));
-  const flip = R() < 0.42;
-  const dw = rad * 2.15, dh = dw * 0.86;
-  const dx = cx - dw / 2, dy = cy - dh * 0.62;
-
-  const S = scratch(Math.max(2, Math.round(w)), Math.max(2, Math.round(h)));
-  const s = S.getContext('2d');
-  if (flip) { s.save(); s.translate(w, 0); s.scale(-1, 1); }
-  s.drawImage(img, sx, sy, sw, sh, flip ? w - dx - dw : dx, dy, dw, dh);
-  if (flip) s.restore();
-
-  // grade toward the family palette
-  s.globalCompositeOperation = 'soft-light';
-  s.fillStyle = rgba(f.glow, 0.55); s.fillRect(dx, dy, dw, dh);
-  s.globalCompositeOperation = 'overlay';
-  s.fillStyle = rgba(sink(f.sky[0], 0.2), 0.28); s.fillRect(dx, dy, dw, dh);
-
-  // feathered blob mask — soft oval, not a hard circle
-  s.globalCompositeOperation = 'destination-in';
-  const m = s.createRadialGradient(cx, cy - dh * 0.10, rad * 0.20, cx, cy - dh * 0.06, rad * 1.02);
-  m.addColorStop(0, 'rgba(0,0,0,1)');
-  m.addColorStop(0.62, 'rgba(0,0,0,0.98)');
-  m.addColorStop(0.86, 'rgba(0,0,0,0.45)');
-  m.addColorStop(1, 'rgba(0,0,0,0)');
-  s.fillStyle = m; s.fillRect(0, 0, w, h);
-  s.globalCompositeOperation = 'source-over';
-
-  g.drawImage(S, 0, 0, S.width, S.height, 0, 0, w, h);
-
-  // rim light along the top-left of the blob
-  g.save();
-  g.globalCompositeOperation = 'screen';
-  const rim = g.createRadialGradient(cx - rad * 0.45, cy - rad * 0.6, 0, cx - rad * 0.3, cy - rad * 0.45, rad * 1.05);
-  rim.addColorStop(0, rgba(lift(f.key, 0.3), 0.28));
-  rim.addColorStop(1, rgba(f.glow, 0));
-  g.fillStyle = rim; g.fillRect(0, 0, w, h);
-  g.restore();
 }
 
 // ── scenes (background silhouettes) ─────────────────────────────────────────
@@ -607,6 +702,251 @@ function drawMotif(g, cx, cy, r, f, kind, R, big) {
       g.stroke();
       break;
     }
+    // ── cat, curled up asleep: a fat comma with ears and a tail round it ──
+    case 'curl': {
+      shade();
+      g.beginPath();                              // body
+      g.ellipse(0, r * 0.16, r * 0.86, r * 0.62, 0, 0, 7);
+      g.fill(); g.stroke();
+      g.beginPath();                              // head tucked to the left
+      g.arc(-r * 0.44, -r * 0.16, r * 0.40, 0, 7);
+      g.fill(); g.stroke();
+      g.beginPath();                              // ears
+      g.moveTo(-r * 0.72, -r * 0.40); g.lineTo(-r * 0.68, -r * 0.80); g.lineTo(-r * 0.34, -r * 0.50);
+      g.closePath(); g.fill(); g.stroke();
+      g.beginPath();
+      g.moveTo(-r * 0.26, -r * 0.50); g.lineTo(-r * 0.10, -r * 0.78); g.lineTo(-r * 0.06, -r * 0.38);
+      g.closePath(); g.fill(); g.stroke();
+      g.strokeStyle = fill; g.lineWidth = r * 0.20; g.lineCap = 'round';
+      g.beginPath();                              // tail curled round the front
+      g.moveTo(r * 0.78, r * 0.30);
+      g.bezierCurveTo(r * 1.05, r * 0.85, -r * 0.30, r * 0.98, -r * 0.72, r * 0.42);
+      g.stroke();
+      g.strokeStyle = line; g.lineWidth = r * 0.06;
+      g.beginPath();                              // closed, sleeping eye
+      g.arc(-r * 0.50, -r * 0.16, r * 0.16, 0.25, Math.PI - 0.25);
+      g.stroke();
+      // zzz
+      g.fillStyle = lift(f.key, 0.4);
+      for (let i = 0; i < 3; i++) {
+        const s = r * (0.11 + i * 0.05), zx = r * (0.34 + i * 0.30), zy = -r * (0.62 + i * 0.30);
+        g.beginPath();
+        g.moveTo(zx - s, zy - s); g.lineTo(zx + s, zy - s); g.lineTo(zx - s, zy + s); g.lineTo(zx + s, zy + s);
+        g.lineTo(zx + s, zy + s * 1.3); g.lineTo(zx - s * 1.3, zy + s * 1.3);
+        g.lineTo(zx + s, zy - s * 1.3); g.lineTo(zx - s * 1.3, zy - s * 1.3);
+        g.closePath(); g.fill();
+      }
+      break;
+    }
+
+    // ── cat mid-pounce: stretched, forelegs out, tail streaming behind ────
+    case 'pounce': {
+      shade();
+      g.rotate(-0.22);
+      g.beginPath();                              // stretched body
+      g.ellipse(0, 0, r * 0.95, r * 0.40, 0, 0, 7);
+      g.fill(); g.stroke();
+      g.beginPath();                              // head, forward and low
+      g.arc(r * 0.82, -r * 0.16, r * 0.34, 0, 7);
+      g.fill(); g.stroke();
+      for (const o of [-1, 1]) {                  // ears
+        g.beginPath();
+        g.moveTo(r * (0.66 + o * 0.10), -r * 0.40);
+        g.lineTo(r * (0.72 + o * 0.14), -r * 0.78);
+        g.lineTo(r * (0.94 + o * 0.06), -r * 0.42);
+        g.closePath(); g.fill(); g.stroke();
+      }
+      g.strokeStyle = fill; g.lineWidth = r * 0.17; g.lineCap = 'round';
+      g.beginPath();                              // forelegs reaching
+      g.moveTo(r * 0.52, r * 0.16); g.quadraticCurveTo(r * 1.02, r * 0.34, r * 1.30, r * 0.10); g.stroke();
+      g.beginPath();
+      g.moveTo(r * 0.40, r * 0.30); g.quadraticCurveTo(r * 0.92, r * 0.58, r * 1.22, r * 0.40); g.stroke();
+      g.beginPath();                              // back legs coiled
+      g.moveTo(-r * 0.62, r * 0.22); g.quadraticCurveTo(-r * 0.98, r * 0.56, -r * 0.66, r * 0.72); g.stroke();
+      g.lineWidth = r * 0.13;
+      g.beginPath();                              // tail streaming
+      g.moveTo(-r * 0.90, -r * 0.06);
+      g.bezierCurveTo(-r * 1.35, -r * 0.30, -r * 1.42, -r * 0.86, -r * 1.02, -r * 1.00);
+      g.stroke();
+      g.fillStyle = lift(f.key, 0.55);            // eye
+      g.beginPath(); g.ellipse(r * 0.92, -r * 0.20, r * 0.09, r * 0.06, -0.2, 0, 7); g.fill();
+      // motion streaks behind the leap
+      g.strokeStyle = rgba(lift(f.key, 0.3), 0.42); g.lineWidth = r * 0.05;
+      for (let i = -1; i <= 1; i++) {
+        g.beginPath();
+        g.moveTo(-r * 1.15, r * i * 0.30); g.lineTo(-r * 1.75, r * i * 0.44); g.stroke();
+      }
+      break;
+    }
+
+    // ── little sheeted ghost ──────────────────────────────────────────────
+    case 'ghost': {
+      const gg = g.createLinearGradient(0, -r, 0, r);
+      gg.addColorStop(0, lift(f.key, 0.55));
+      gg.addColorStop(1, mix(f.key, f.glow, 0.7));
+      g.fillStyle = gg;
+      g.beginPath();
+      g.moveTo(-r * 0.72, r * 0.72);
+      g.lineTo(-r * 0.72, -r * 0.10);
+      g.arc(0, -r * 0.10, r * 0.72, Math.PI, 0);
+      g.lineTo(r * 0.72, r * 0.72);
+      for (let i = 0; i < 4; i++) {               // scalloped hem
+        const x1 = r * (0.72 - i * 0.36), x2 = r * (0.72 - (i + 1) * 0.36);
+        g.quadraticCurveTo((x1 + x2) / 2, r * (i % 2 ? 1.02 : 0.42), x2, r * 0.72);
+      }
+      g.closePath(); g.fill(); g.stroke();
+      g.fillStyle = sink(f.sky[0], 0.45);
+      g.beginPath(); g.ellipse(-r * 0.26, -r * 0.16, r * 0.11, r * 0.15, 0, 0, 7); g.fill();
+      g.beginPath(); g.ellipse(r * 0.26, -r * 0.16, r * 0.11, r * 0.15, 0, 0, 7); g.fill();
+      g.beginPath(); g.ellipse(0, r * 0.20, r * 0.17, r * 0.12, 0, 0, 7); g.fill();
+      break;
+    }
+
+    // ── nine lives: a cat's head inside a ring of tally marks ─────────────
+    case 'ninelives': {
+      g.strokeStyle = rgba(lift(f.key, 0.35), 0.8); g.lineWidth = r * 0.06;
+      for (let i = 0; i < 9; i++) {
+        const a = (i / 9) * Math.PI * 2 - Math.PI / 2;
+        g.beginPath();
+        g.moveTo(Math.cos(a) * r * 0.86, Math.sin(a) * r * 0.86);
+        g.lineTo(Math.cos(a) * r * 1.14, Math.sin(a) * r * 1.14);
+        g.stroke();
+      }
+      shade();
+      g.beginPath();
+      g.moveTo(-r * 0.58, -r * 0.20); g.lineTo(-r * 0.42, -r * 0.74); g.lineTo(-r * 0.12, -r * 0.38);
+      g.lineTo(r * 0.12, -r * 0.38); g.lineTo(r * 0.42, -r * 0.74); g.lineTo(r * 0.58, -r * 0.20);
+      g.bezierCurveTo(r * 0.76, r * 0.42, -r * 0.76, r * 0.42, -r * 0.58, -r * 0.20);
+      g.closePath(); g.fill(); g.stroke();
+      g.fillStyle = lift(f.key, 0.6);
+      g.beginPath(); g.arc(-r * 0.22, -r * 0.06, r * 0.09, 0, 7); g.fill();
+      g.beginPath(); g.arc(r * 0.22, -r * 0.06, r * 0.09, 0, 7); g.fill();
+      break;
+    }
+
+    // ── flask / draught ───────────────────────────────────────────────────
+    case 'flask': {
+      shade();
+      g.beginPath();
+      g.moveTo(-r * 0.22, -r * 0.86);
+      g.lineTo(-r * 0.22, -r * 0.28);
+      g.bezierCurveTo(-r * 0.86, r * 0.12, -r * 0.66, r * 0.86, 0, r * 0.86);
+      g.bezierCurveTo(r * 0.66, r * 0.86, r * 0.86, r * 0.12, r * 0.22, -r * 0.28);
+      g.lineTo(r * 0.22, -r * 0.86);
+      g.closePath(); g.fill(); g.stroke();
+      g.save();                                    // liquid
+      g.beginPath();
+      g.moveTo(-r * 0.62, r * 0.14);
+      g.bezierCurveTo(-r * 0.66, r * 0.86, r * 0.66, r * 0.86, r * 0.62, r * 0.14);
+      g.closePath(); g.clip();
+      g.fillStyle = rgba(f.glow, 0.85); g.fillRect(-r, r * 0.12, r * 2, r);
+      g.fillStyle = rgba(lift(f.key, 0.5), 0.5);
+      g.beginPath(); g.arc(-r * 0.2, r * 0.48, r * 0.10, 0, 7); g.fill();
+      g.beginPath(); g.arc(r * 0.24, r * 0.62, r * 0.07, 0, 7); g.fill();
+      g.restore();
+      g.fillStyle = sink(fill, 0.2);               // stopper
+      g.beginPath(); g.roundRect(-r * 0.30, -r * 1.06, r * 0.60, r * 0.26, r * 0.08); g.fill(); g.stroke();
+      break;
+    }
+
+    // ── candy drip: a wrapped sweet melting ───────────────────────────────
+    case 'candy': {
+      shade();
+      g.beginPath(); g.ellipse(0, -r * 0.06, r * 0.56, r * 0.52, 0, 0, 7); g.fill(); g.stroke();
+      for (const o of [-1, 1]) {                   // wrapper twists
+        g.beginPath();
+        g.moveTo(o * r * 0.50, -r * 0.22);
+        g.lineTo(o * r * 1.02, -r * 0.56);
+        g.lineTo(o * r * 0.92, -r * 0.02);
+        g.lineTo(o * r * 1.06, r * 0.42);
+        g.lineTo(o * r * 0.50, r * 0.14);
+        g.closePath(); g.fill(); g.stroke();
+      }
+      g.strokeStyle = rgba(lift(f.key, 0.5), 0.85); g.lineWidth = r * 0.09;
+      for (let i = -1; i <= 1; i++) {              // swirl stripes
+        g.beginPath();
+        g.arc(0, -r * 0.06, r * (0.18 + i * 0.14 + 0.16), -0.9, 1.6);
+        g.stroke();
+      }
+      g.fillStyle = mix(PIGMENT.candy, f.glow, 0.4);
+      for (let i = -1; i <= 1; i++) {              // drips off the bottom
+        const x = i * r * 0.32, dl = r * (0.42 + Math.abs(i) * 0.16);
+        g.beginPath(); g.moveTo(x - r * 0.11, r * 0.36);
+        g.quadraticCurveTo(x, r * 0.46 + dl, x + r * 0.11, r * 0.36);
+        g.closePath(); g.fill();
+        g.beginPath(); g.arc(x, r * 0.48 + dl * 0.92, r * 0.10, 0, 7); g.fill();
+      }
+      break;
+    }
+
+    // ── a single big paw print ────────────────────────────────────────────
+    case 'paw': {
+      shade();
+      g.beginPath(); g.ellipse(0, r * 0.34, r * 0.62, r * 0.50, 0, 0, 7); g.fill(); g.stroke();
+      const toes = [[-0.62, -0.30, -0.35], [-0.24, -0.56, -0.14], [0.24, -0.56, 0.14], [0.62, -0.30, 0.35]];
+      for (const [tx, ty, rot] of toes) {
+        g.beginPath();
+        g.ellipse(tx * r, ty * r, r * 0.20, r * 0.27, rot, 0, 7);
+        g.fill(); g.stroke();
+      }
+      break;
+    }
+
+    // ── ward: a heater shield with a rune ─────────────────────────────────
+    case 'ward': {
+      shade();
+      g.beginPath();
+      g.moveTo(-r * 0.72, -r * 0.78);
+      g.lineTo(r * 0.72, -r * 0.78);
+      g.lineTo(r * 0.66, r * 0.20);
+      g.quadraticCurveTo(r * 0.40, r * 0.92, 0, r * 1.02);
+      g.quadraticCurveTo(-r * 0.40, r * 0.92, -r * 0.66, r * 0.20);
+      g.closePath(); g.fill(); g.stroke();
+      g.strokeStyle = rgba(lift(f.key, 0.45), 0.9); g.lineWidth = r * 0.09;
+      g.beginPath();
+      g.moveTo(0, -r * 0.48); g.lineTo(0, r * 0.52);
+      g.moveTo(-r * 0.34, -r * 0.10); g.lineTo(r * 0.34, -r * 0.10);
+      g.stroke();
+      g.strokeStyle = rgba(lift(f.key, 0.2), 0.5); g.lineWidth = r * 0.05;
+      g.beginPath();
+      g.moveTo(-r * 0.56, -r * 0.62); g.lineTo(r * 0.56, -r * 0.62); g.stroke();
+      break;
+    }
+
+    // ── a web corner with a dangling spider thread ────────────────────────
+    case 'webbing': {
+      g.strokeStyle = rgba(lift(f.key, 0.25), 0.85); g.lineWidth = r * 0.055; g.lineCap = 'round';
+      for (let i = 0; i <= 6; i++) {
+        const a = Math.PI * (0.12 + (i / 6) * 0.76);
+        g.beginPath(); g.moveTo(0, -r * 0.95);
+        g.lineTo(Math.cos(a) * r * 1.25, -r * 0.95 + Math.sin(a) * r * 1.25);
+        g.stroke();
+      }
+      for (let k = 1; k <= 4; k++) {
+        g.beginPath();
+        for (let i = 0; i <= 6; i++) {
+          const a = Math.PI * (0.12 + (i / 6) * 0.76), rr = r * 0.30 * k;
+          const px = Math.cos(a) * rr, py = -r * 0.95 + Math.sin(a) * rr;
+          i ? g.lineTo(px, py) : g.moveTo(px, py);
+        }
+        g.stroke();
+      }
+      shade();
+      g.beginPath(); g.ellipse(0, r * 0.42, r * 0.30, r * 0.26, 0, 0, 7); g.fill(); g.stroke();
+      g.strokeStyle = line; g.lineWidth = r * 0.05;
+      for (let i = 0; i < 4; i++) {
+        for (const o of [-1, 1]) {
+          g.beginPath(); g.moveTo(o * r * 0.22, r * (0.30 + i * 0.10));
+          g.quadraticCurveTo(o * r * 0.62, r * (0.22 + i * 0.14), o * r * 0.74, r * (0.52 + i * 0.12));
+          g.stroke();
+        }
+      }
+      g.fillStyle = lift(f.key, 0.6);
+      g.beginPath(); g.arc(-r * 0.10, r * 0.36, r * 0.06, 0, 7); g.fill();
+      g.beginPath(); g.arc(r * 0.10, r * 0.36, r * 0.06, 0, 7); g.fill();
+      break;
+    }
+
     case 'bone': {
       shade();
       g.rotate(-0.5);
@@ -1057,4 +1397,4 @@ function tri(g, x, y, s) {
   g.lineTo(x, y - s * 0.6); g.closePath(); g.fill();
 }
 
-export default { cardArt, preloadArt, onArtReady };
+export default { cardArt, warmArt, warmArtSync, preloadArt, onArtReady, subjectFor, artCacheSize, clearArtCache };

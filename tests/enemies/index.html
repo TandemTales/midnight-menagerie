@@ -54,6 +54,7 @@ class MockCombat {
     this.cardsPlayedThisTurn = [];
     this.damageDealtThisTurn = 0;
     this.damageLog = [];
+    this.statusLog = [];
     this.player = { id: 'player', name: 'Kid', hp: 80, maxHp: 80, block: 0, statuses: {}, damageTakenThisTurn: 0 };
     this.discard = [];
     this.actors = defs.map(d => makeActor(d, opts.hp?.[d.id] ?? d.hp[0]));
@@ -89,6 +90,7 @@ class MockCombat {
       },
       applyStatus: (a, id, n = 1, data) => {
         if (!a) return;
+        self.statusLog.push({ id, stacks: n, to: a === self.player ? 'player' : (a === actor ? 'self' : 'ally') });
         if (!STATUS_BY_ID[id] && !/^button-/.test(id)) self.unknownStatus(id);
         a.statuses[id] = (a.statuses[id] || 0) + n;
         if (data) (a.statusData ||= {})[id] = data;
@@ -110,7 +112,10 @@ class MockCombat {
       despawn: (a) => { a.alive = false; a.despawned = true; },
       setCounter: (k, v) => { actor.counters[k] = v; },
       counter: (k) => actor.counters[k],
-      announceRule: (r) => { self.rules = self.rules.filter(x => x.source !== (actor.uid)); r.source = actor.uid; r._owner = actor; self.rules.push(r); },
+      // Mirrors engine.js announceRule: a rule replaces only the rule with the SAME id.
+      // Rules from one source accumulate until explicitly cleared. Replacing by source
+      // here (which the engine does not do) hid the Butler stacking all four rules.
+      announceRule: (r) => { self.rules = self.rules.filter(x => x.id !== r.id); r.source = actor.uid; r._owner = actor; self.rules.push(r); },
       clearRules: () => { self.rules = self.rules.filter(x => x.source !== actor.uid); },
       log: (msg) => self.events.push(msg),
       // proxy the actor's own fields
@@ -153,27 +158,21 @@ class MockCombat {
     n = Math.max(0, Math.round(n));
     if (!target) return;
     this.damageLog.push({ source: source === this.player ? 'player' : source.id, target: target === this.player ? 'player' : target.id, amount: n });
-    // Stitched Together / Cover: redirect before anything else touches the target.
-    if (!o?.redirected && target !== this.player) {
-      // Blanket Blob's Cover
-      const cov = target.statusData?.covered;
-      if (cov && target.statuses.covered) {
-        const blob = this.actors.find(a => (a.uid === cov.by) && a.alive);
-        if (blob) {
-          const budget = Math.max(0, (cov.amount ?? 8) - (target._coverUsedThisTurn || 0));
-          const take = Math.min(budget, n);
-          if (take > 0) {
-            target._coverUsedThisTurn = (target._coverUsedThisTurn || 0) + take;
-            this.damage(source, blob, take, { redirected: true });
-            n -= take;
-          }
+    // The Governess's thread redirects before anything else touches her.
+    if (!o?.redirected && target !== this.player && target.def?.redirect && source === this.player) {
+      n -= target.def.redirect(this.ctx(target), n);
+    }
+    // Defender-side status hooks, mirroring combat/damage.js. Cover, Scurry and
+    // Discomposed all live here — the harness must NOT reimplement them, or it would
+    // pass with the real mechanic completely inert (which is how Cover shipped broken).
+    if (!o?.redirected) {
+      for (const [sid, stacks] of Object.entries(target.statuses || {})) {
+        const def = STATUS_BY_ID[sid];
+        if (def?.hooks?.modifyDamageTaken) {
+          n = def.hooks.modifyDamageTaken(n, { stacks, actor: target, self: target, attacker: source, defender: target, card: o?.card });
         }
       }
-      // The Governess's thread
-      if (target.def?.redirect && source === this.player) {
-        const took = target.def.redirect(this.ctx(target), n);
-        n -= took;
-      }
+      n = Math.max(0, Math.round(n));
     }
     if (n <= 0) return;
     // statuses that modify damage dealt (roused, darkness, buttons)
@@ -255,6 +254,11 @@ class MockCombat {
       }
       r._fired = false;
     }
+    if (!profile.deferEnd) this.playerTurnEndHooks();
+  }
+
+  /** onPlayerTurnEnd, split out so a test can read intents at the commit moment first. */
+  playerTurnEndHooks() {
     for (const a of this.living()) this.hook(a, 'onPlayerTurnEnd');
   }
 
@@ -640,12 +644,15 @@ head('3e. Nursery cross-enemy mechanics');
   blob.block = 0;                                   // measure Courage, not the Blob's own Guard
   const blobBefore = blob.hp, tgtBefore = target.hp;
   sim3.damage(sim3.player, target, 12);
+  sim3.hook(blob, 'onPlayerTurnEnd');               // the Blob pays what Cover absorbed
   const redirected = blobBefore - blob.hp, through = tgtBefore - target.hp;
   (redirected === 8 && through === 4
     ? pass : fail)(`Cover redirects the first 8 damage (blob took ${redirected}, doll took ${through}; expected 8 / 4)`);
-  // A second hit the same turn is no longer covered — the allowance is per player turn.
+  // A second hit the same turn is no longer covered — the allowance is per player turn
+  // and only re-arms on the Blob's own turn.
   const blob2 = blob.hp, tgt2 = target.hp;
   sim3.damage(sim3.player, target, 6);
+  sim3.hook(blob, 'onPlayerTurnEnd');
   ((blob.hp === blob2 && tgt2 - target.hp === 6)
     ? pass : fail)('Cover\'s 8-damage allowance is spent for the turn after the first hit');
 }
@@ -741,6 +748,7 @@ head('3h. The Butler — House Rules and phases');
   const sim = new MockCombat([def], 'butler:rules');
   const actor = sim.actors[0];
   const ruleSeq = [], moveSeq = [];
+  const ruleCounts = { p1: [], p2: [] };
   for (let t = 0; t < 120 && actor.hp > 0; t++) {
     sim.playerTurn({ cards: 5, dmg: 6 });
     if (actor.hp <= 0) break;
@@ -749,12 +757,26 @@ head('3h. The Butler — House Rules and phases');
     if (mine) moveSeq.push(mine.moveId);
     const r = sim.rules[0];
     if (r && ruleSeq[ruleSeq.length - 1] !== r.id) ruleSeq.push(r.id);
+    // Sample how many of his rules are standing, bucketed by phase.
+    if (!actor.statuses.discomposed && sim.rules.length) {
+      ((actor.mem.phase || 1) >= 2 ? ruleCounts.p2 : ruleCounts.p1).push(sim.rules.length);
+    }
     sim.player.hp = sim.player.maxHp;
   }
   const hist = actor.mem.ruleHistory || [];
-  const dupes = hist.filter((r, i) => i > 0 && r === hist[i - 1]);
-  if (dupes.length) fail(`Butler announced the same House Rule twice consecutively (${dupes[0]})`);
-  else pass(`never announces the same House Rule twice in a row (${hist.length} announcements)`);
+  const key = (x) => [].concat(x).slice().sort().join('+');
+  const dupes = hist.filter((r, i) => i > 0 && key(r) === key(hist[i - 1]));
+  if (dupes.length) fail(`Butler announced the same House Rule set twice consecutively (${key(dupes[0])})`);
+  else pass(`never announces the same House Rule set twice in a row (${hist.length} announcements)`);
+  // Phase one enforces exactly one rule, phase two exactly two. The engine only replaces
+  // a rule by id, so a missing clearRules() would silently stack all four.
+  if (ruleCounts.p1.length && Math.max(...ruleCounts.p1) > 1) {
+    fail(`phase one had ${Math.max(...ruleCounts.p1)} House Rules standing at once — he must enforce one at a time`);
+  } else if (ruleCounts.p1.length) pass('phase one enforces exactly one House Rule at a time');
+  if (ruleCounts.p2.length && Math.max(...ruleCounts.p2) !== 2) {
+    fail(`phase two had ${Math.max(...ruleCounts.p2)} House Rules standing, expected exactly 2`);
+  } else if (ruleCounts.p2.length) pass('phase two stands up exactly two House Rules at once — the phase-one read inverts');
+  else warn('phase two rule count never sampled');
   if (moveSeq[0] !== 'formal-welcome') fail(`Butler must open with Formal Welcome, opened with '${moveSeq[0]}'`);
   else pass('opens with Formal Welcome');
   const nTrans = moveSeq.filter(x => x === 'this-is-most-irregular').length;
@@ -872,17 +894,17 @@ function intentAfter(enemyId, setup) {
 }
 
 const SPOT = [
-  ['Dust Bunny at 3 Dust shows Tumble 14', () => intentAfter('dust-bunny', (sim, a, d, show) => {
+  ['Dust Bunny at 3 Dust shows Tumble 16', () => intentAfter('dust-bunny', (sim, a, d, show) => {
     a.counters.dust = 3; a.damageTakenThisTurn = 1;        // hit this turn → no projection
-    return show('tumble').damage === 14;
+    return show('tumble').damage === 16;
   })],
   ['Dust Bunny untouched projects the Dust it is about to gain', () => intentAfter('dust-bunny', (sim, a, d, show) => {
     a.counters.dust = 2; a.damageTakenThisTurn = 0;
-    return show('tumble').damage === 14;                    // 5 + 3×(2+1)
+    return show('tumble').damage === 16;                    // 7 + 3×(2+1)
   })],
   ['…and drops the moment you poke it', () => intentAfter('dust-bunny', (sim, a, d, show) => {
     a.counters.dust = 2; a.damageTakenThisTurn = 3;
-    return show('tumble').damage === 11;
+    return show('tumble').damage === 13;
   })],
   ['Coatrack Crawler shows Umbrella Jab 12 behind an intact Brace', () => intentAfter('coatrack-crawler', (sim, a, d, show) => {
     a.mem.braced = true; a.block = 10;
@@ -1044,15 +1066,16 @@ head('5b. Intent number vs damage actually dealt (all moves)');
       const a = sim.actors[0];
       a.hp = a.maxHp = 100000;
       sim.player.hp = sim.player.maxHp = 100000;
-      sim.playerTurn({ cards: 2, dmg: 0 });
+      sim.playerTurn({ cards: 2, dmg: 0, deferEnd: true });
       sim.player.hp = sim.player.maxHp = 100000;
 
-      // The intent is read DURING the player turn — that is the promise the player acts on.
+      // Read the intent at the COMMIT moment — after the player's last card, before any
+      // turn-end bookkeeping. This is exactly what is on screen when they press End Turn.
       const shown = renderIntent(mv, sim.ctx(a));
-      if (shown.error) continue;
-      // Then the enemy turn begins exactly as the engine runs it: Guard clears, onTurnStart
-      // fires (this is where projected counters like Dust actually land), then the move
-      // resolves. Skipping onTurnStart here would let a lying projection pass.
+      if (shown.error) { sim.playerTurnEndHooks(); continue; }
+      // Then the engine's real order: onPlayerTurnEnd, Guard clears, onTurnStart (where
+      // projected counters like Dust actually land), then the move resolves.
+      sim.playerTurnEndHooks();
       a.block = 0;
       sim.hook(a, 'onTurnStart');
       sim.damageLog = [];
@@ -1094,6 +1117,64 @@ head('5c. hitPlayer hands the hit count to the engine exactly once');
   if (calls.length !== 1) fail(`hitPlayer(·,7,3) made ${calls.length} ctx.damage calls, expected exactly 1 — the engine does the looping`);
   else if (totalHits !== 3) fail(`hitPlayer(·,7,3) requested ${totalHits} hits, expected 3`);
   else pass('hitPlayer(·, 7, 3) → one ctx.damage call carrying {hits:3} → 21 total, never 63');
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// 5d. NOTHING LANDS UNANNOUNCED
+// combat/intents.js reads `move.applies` / `move.appliesFn` to draw status pips on the
+// intent. Any move that applies a status without declaring it is a silent effect, and
+// silent effects that change next turn's damage are exactly what StS never does.
+// ═════════════════════════════════════════════════════════════════════════════
+head('5d. Declared statuses vs statuses actually applied');
+{
+  let undeclared = 0, declared = 0;
+  // Self-inflicted bookkeeping the player does not need warned about on the intent.
+  const EXEMPT = new Set(['discomposed']);
+  for (const def of ENEMY_LIST) {
+    for (const [mid, mv] of Object.entries(def.moves)) {
+      // Give the move a populated board so ally-targeted effects actually fire.
+      const partners = ENEMY_LIST.filter(d => d.region === def.region && d.id !== def.id && d.tier === 'normal').slice(0, 1);
+      const sim = new MockCombat([def, ...partners], `applies:${def.id}:${mid}`);
+      const a = sim.actors[0];
+      a.hp = a.maxHp = 100000;
+      sim.player.hp = sim.player.maxHp = 100000;
+      sim.playerTurn({ cards: 2, dmg: 0, deferEnd: true });
+      sim.player.hp = sim.player.maxHp = 100000;
+
+      const c = sim.ctx(a);
+      let promised = [];
+      try {
+        promised = (typeof mv.appliesFn === 'function' ? mv.appliesFn(c) : mv.applies) || [];
+      } catch (e) { fail(`${def.id}.${mid}: appliesFn threw — ${e.message}`); continue; }
+
+      sim.playerTurnEndHooks();
+      a.block = 0;
+      sim.hook(a, 'onTurnStart');
+      sim.statusLog = [];
+      try { mv.effect(sim.ctx(a)); } catch (e) { continue; }
+
+      const applied = sim.statusLog.filter(x => !EXEMPT.has(x.id));
+      const promisedIds = new Set(promised.map(x => x.id));
+      const missing = [...new Set(applied.map(x => x.id))].filter(id => !promisedIds.has(id));
+      if (missing.length) {
+        fail(`${def.id}.${mid}: applies ${missing.join(', ')} but the intent declares `
+           + `${promised.length ? [...promisedIds].join(', ') : 'nothing'} — it will land with no warning`);
+        undeclared++;
+      } else if (promised.length) {
+        declared++;
+        // Stacks must match too, or the pip lies about magnitude.
+        for (const pr of promised) {
+          const got = applied.filter(x => x.id === pr.id).reduce((n, x) => n + x.stacks, 0);
+          const want = (pr.stacks ?? 1) * Math.max(1, applied.filter(x => x.id === pr.id).length ? 1 : 1);
+          if (got && pr.to !== 'allies' && got !== want) {
+            fail(`${def.id}.${mid}: intent says ${pr.stacks ?? 1} stack(s) of ${pr.id}, applied ${got}`);
+            undeclared++;
+          }
+        }
+      }
+    }
+  }
+  if (!undeclared) pass(`${declared} moves declare their statuses, and no move applies one it did not declare`);
 }
 
 // ═════════════════════════════════════════════════════════════════════════════

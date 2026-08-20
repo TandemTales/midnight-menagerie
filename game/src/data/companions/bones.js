@@ -254,20 +254,20 @@ const commons = [
   {
     id: 'bones/shake-it-loose', name: 'Shake It Loose', companion: SLUG, type: SKILL, rarity: COMMON,
     cost: 0, target: SELF, keywords: ['shed'],
-    text: '[Shed] {m0} Bone. Draw {n} Trick.',
-    flavor: 'A full-body shake with one predictable consequence.',
+    text: '[Shed] {m0} Bone. The next Trick you play this turn costs {n} less.',
+    flavor: 'A full-body shake with one predictable consequence and one useful one.',
     nums: { m0: 1, n: 1 },
-    effect: eff(c => { shed(c, N(c).m0); U.draw(c, N(c).n); }),
-    upgrade: { nums: { m0: 1, n: 2 } },
+    effect: eff(c => { shed(c, N(c).m0); U.applySelf(c, 'next-trick-discount', N(c).n); }),
+    upgrade: { nums: { m0: 1, n: 1, m1: 1 }, text: '[Shed] {m0} Bone. The next Trick you play this turn costs {n} less. Draw {m1} Trick.' },
   },
   {
     id: 'bones/sit-stay', name: 'Sit, Stay', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['whole'],
-    text: 'Gain {b} Guard. Gain {m0} more while [Whole].',
-    flavor: 'Staying is much easier when all your parts agree.',
-    nums: { b: 7, m0: 6 },
-    effect: eff(c => U.guard(c, N(c).b + (isWhole(c) ? N(c).m0 : 0))),
-    upgrade: { nums: { b: 9, m0: 8 } },
+    cost: 1, target: SELF, keywords: ['retain'],
+    text: 'Gain {b} Guard. [Retain] this Trick.',
+    flavor: 'He will stay. He will stay for as long as it takes.',
+    nums: { b: 7 },
+    effect: eff(c => { U.guard(c, N(c).b); U.retain(c, c.card); }),
+    upgrade: { nums: { b: 10 } },
   },
   {
     id: 'bones/reassemble', name: 'Reassemble', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -280,12 +280,12 @@ const commons = [
   },
   {
     id: 'bones/fetch', name: 'Fetch!', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: NONE, keywords: ['fetch', 'slobbered'],
-    text: '[Fetch] a non-[Slobbered] Trick with printed cost {n} or less.',
-    flavor: 'The single greatest word in the language.',
-    nums: { n: 1 },
-    effect: eff(c => fetch(c, (k) => U.printedCost(k) <= N(c).n)),
-    upgrade: { nums: { n: 2 } },
+    cost: 1, target: NONE, keywords: ['fetch', 'slobbered', 'shed'],
+    text: '[Shed] {m0} Bone, then [Fetch] a non-[Slobbered] Trick with printed cost {n} or less.',
+    flavor: 'The single greatest word in the language. He leaves a rib behind on the way out.',
+    nums: { n: 1, m0: 1 },
+    effect: eff(async c => { shed(c, N(c).m0); await fetch(c, (k) => U.printedCost(k) <= N(c).n); }),
+    upgrade: { nums: { n: 2, m0: 1 } },
   },
   {
     id: 'bones/bury-it', name: 'Bury It', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -574,19 +574,17 @@ const uncommons = [
   },
   {
     id: 'bones/smell-something', name: 'Smell Something?', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: NONE,
-    text: 'Look at the top {n} Tricks of your draw pile. Put one into your hand, discard one, then return the rest in any order.',
-    flavor: 'He does. He always does. It is usually the boiler.',
-    nums: { n: 5 },
+    cost: 1, target: NONE, keywords: ['bury', 'dig-up'],
+    text: 'Look at the top {n} Tricks of your draw pile and [Bury] one with {m0} counter. It is [Dig Up]ped at the start of your next turn.',
+    flavor: 'He does. He always does. And then he hides it.',
+    nums: { n: 5, m0: 1 },
     effect: eff(async c => {
       const top = U.cardsIn(c, 'draw').slice(0, N(c).n);
       if (!top.length) return;
-      const [keep] = await U.pickCards(c, { pile: 'draw', count: 1, prompt: 'Take into hand', filter: (k) => top.includes(k) });
-      if (keep) U.toHand(c, keep);
-      const rest = top.filter(k => k !== keep);
-      if (rest.length) U.moveCard(c, rest[0], 'discard');
+      const [pick] = await U.pickCards(c, { pile: 'draw', count: 1, prompt: 'Bury one of these', filter: (k) => top.includes(k) });
+      bury(c, pick, N(c).m0);
     }),
-    upgrade: { nums: { n: 7 } },
+    upgrade: { nums: { n: 7, m0: 1 } },
   },
   {
     id: 'bones/treat-stash', name: 'Treat Stash', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -1044,10 +1042,10 @@ export default {
   ],
   cards: [...basics, SPARE_BONE, ...commons, ...uncommons, ...rares],
   archetypes: [
-    { name: 'The Rattle Engine', desc: 'Repeatedly Shed and Reattach small numbers. The objective is not to reach 6 — it is to keep moving. Stalls at either extreme, so the deck needs both directions.', coreCards: ['bones/shake-it-loose', 'bones/reassemble', 'bones/spare-parts', 'bones/off-leash', 'bones/jingle-collar', 'bones/rattletrap', 'bones/spare-parts-everywhere', 'bones/skeleton-stampede', 'bones/built-wrong'] },
+    { name: 'The Rattle Engine', desc: 'Repeatedly Shed and Reattach small numbers. The objective is not to reach 6 — it is to keep moving. Stalls at either extreme, so the deck needs both directions.', coreCards: ['bones/shake-it-loose', 'bones/fetch', 'bones/reassemble', 'bones/spare-parts', 'bones/off-leash', 'bones/jingle-collar', 'bones/rattletrap', 'bones/spare-parts-everywhere', 'bones/skeleton-stampede', 'bones/built-wrong'] },
     { name: 'Scattered Puppy', desc: 'Deliberately reach high Loose Bones and turn the missing anatomy into pressure. High burst and excellent multi-enemy damage, but permanently sitting at 6 starves its own engines.', coreCards: ['bones/clatter-pounce', 'bones/scattershot-skeleton', 'bones/take-me-apart', 'bones/flop-over', 'bones/spare-parts-everywhere', 'bones/every-bone-at-once', 'bones/headless-rush', 'bones/play-dead', 'bones/anatomy-is-optional'] },
     { name: 'Fetch Toolbox', desc: 'The discard pile as a second hand. Replay exactly the defence, attack or setup the turn needs. Slobbered stops it becoming one card played forever.', coreCards: ['bones/fetch', 'bones/leave-it', 'bones/shake-dry', 'bones/flying-femur', 'bones/boomerang-bone', 'bones/call-that-back', 'bones/scent-trail', 'bones/scent-memory', 'bones/perfect-fetch', 'bones/one-more-throw', 'bones/favorite-toy', 'bones/never-really-lost'] },
-    { name: 'Backyard Burial', desc: 'The Buried zone as delayed storage, deck thinning, tutoring and resource banking. The enemy does not care that your best Trick will be wonderful in two turns.', coreCards: ['bones/bury-it', 'bones/dig-here', 'bones/under-the-couch', 'bones/backyard-cache', 'bones/bury-the-evidence', 'bones/treat-stash', 'bones/skeleton-key', 'bones/yard-map', 'bones/buried-bite', 'bones/who-buried-that', 'bones/secret-stash', 'bones/dig-to-the-basement', 'bones/treasure-yard'] },
-    { name: 'Whole Dog Reassembly', desc: 'Exploit effects that need a fully reconstructed dog. Not a deck that sits at zero — it falls apart on purpose because its best payoffs require coming back.', coreCards: ['bones/tailbone-thump', 'bones/sit-stay', 'bones/full-body-tackle', 'bones/heel', 'bones/good-as-new', 'bones/pile-of-me', 'bones/tighten-the-collar', 'bones/bone-a-fide-missile', 'bones/rebuild-from-scratch', 'bones/every-bone-at-once', 'bones/every-bone-knows-the-way-home'] },
+    { name: 'Backyard Burial', desc: 'The Buried zone as delayed storage, deck thinning, tutoring and resource banking. The enemy does not care that your best Trick will be wonderful in two turns.', coreCards: ['bones/bury-it', 'bones/dig-here', 'bones/under-the-couch', 'bones/backyard-cache', 'bones/bury-the-evidence', 'bones/smell-something', 'bones/treat-stash', 'bones/skeleton-key', 'bones/yard-map', 'bones/buried-bite', 'bones/who-buried-that', 'bones/secret-stash', 'bones/dig-to-the-basement', 'bones/treasure-yard'] },
+    { name: 'Whole Dog Reassembly', desc: 'Exploit effects that need a fully reconstructed dog. Not a deck that sits at zero — it falls apart on purpose because its best payoffs require coming back.', coreCards: ['bones/tailbone-thump', 'bones/reassemble', 'bones/full-body-tackle', 'bones/heel', 'bones/good-as-new', 'bones/pile-of-me', 'bones/tighten-the-collar', 'bones/bone-a-fide-missile', 'bones/rebuild-from-scratch', 'bones/every-bone-at-once', 'bones/every-bone-knows-the-way-home'] },
   ],
 };
