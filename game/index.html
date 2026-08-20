@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Midnight Menagerie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Grenze:ital,wght@0,400;0,600;1,400&family=Rye&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/ui/tokens.css">
+<link rel="stylesheet" href="src/ui/base.css">
+<script type="importmap">
+{ "imports": {
+    "three": "./vendor/three.module.js",
+    "three/addons/": "./vendor/jsm/"
+} }
+</script>
+</head>
+<body>
+  <div id="app">
+    <canvas id="gl"></canvas>
+    <div id="dom-layer" aria-live="polite"></div>
+    <div id="fx-layer" aria-hidden="true"></div>
+    <div id="tooltip-layer" aria-hidden="true"></div>
+  </div>
+  <noscript>Midnight Menagerie requires JavaScript.</noscript>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+/* ===========================================================================
+   Midnight Menagerie — design tokens.
+   Single source of truth for colour, type, spacing, motion.
+   OWNER: art-direction agent. Everything else reads these; nothing hardcodes.
+   =========================================================================== */
+:root {
+  /* --- Ground: the mansion at night ------------------------------------- */
+  --ink-900: #07060d;   /* void behind everything */
+  --ink-800: #0d0b16;   /* panel ground */
+  --ink-700: #14111f;   /* raised panel */
+  --ink-600: #1d1930;   /* hover panel */
+  --ink-500: #2a2442;   /* border, low contrast */
+  --ink-400: #3d3559;   /* border, mid */
+  --ink-300: #5b5079;   /* disabled text */
+
+  /* --- Candlelight: the warm, safe, human side -------------------------- */
+  --flame-100: #fff4d6;
+  --flame-200: #ffe2a8;
+  --flame-300: #f8c96b;
+  --flame-400: #e0a23c;
+  --flame-500: #b87826;
+  --flame-glow: #ffb64a;
+
+  /* --- Spectre: the supernatural, cool side ----------------------------- */
+  --spectre-100: #e6fbff;
+  --spectre-200: #a8ecf7;
+  --spectre-300: #6fd9ec;
+  --spectre-400: #3fb4d0;
+  --spectre-500: #2a7f99;
+
+  /* --- Blood/threat ------------------------------------------------------ */
+  --threat-100: #ffd9d3;
+  --threat-200: #ff9c8a;
+  --threat-300: #f2654c;
+  --threat-400: #cf3c28;
+  --threat-500: #8e2417;
+
+  /* --- Vitality / block / resource -------------------------------------- */
+  --courage-300: #f26d78;   /* HP — "Courage" */
+  --courage-500: #a3283a;
+  --guard-300:  #8fb7d9;    /* Block — "Guard" */
+  --guard-500:  #3d6b96;
+  --pluck-300:  #ffd75e;    /* Energy — "Pluck" */
+  --pluck-500:  #c98f14;
+
+  /* --- Rarity ------------------------------------------------------------ */
+  --rarity-basic:    #8d8598;
+  --rarity-common:   #cfd6e6;
+  --rarity-uncommon: #6fd9ec;
+  --rarity-rare:     #ffc14d;
+  --rarity-curse:    #7a4a9e;
+  --rarity-status:   #5e6472;
+
+  /* --- Card types -------------------------------------------------------- */
+  --type-attack: #d9583f;
+  --type-skill:  #4f8fbf;
+  --type-power:  #b071d6;
+
+  /* --- Text -------------------------------------------------------------- */
+  --text-hi:  #f4efe4;   /* parchment white */
+  --text-mid: #c3bbcd;
+  --text-lo:  #8b839a;
+  --text-ink: #1a1526;   /* on light surfaces */
+  --parchment: #e8dcc0;
+  --parchment-shade: #cdbb96;
+  --blueprint-ink: #2d4a7a;
+
+  /* --- Type scale (fluid) ------------------------------------------------ */
+  --font-display: 'Cinzel', 'Trajan Pro', Georgia, serif;
+  --font-body: 'Grenze', 'Palatino Linotype', Georgia, serif;
+  --font-num: 'Cinzel', Georgia, serif;
+
+  --fs-xs:  clamp(10px, 0.72vw, 12px);
+  --fs-sm:  clamp(12px, 0.86vw, 14px);
+  --fs-md:  clamp(14px, 1.02vw, 17px);
+  --fs-lg:  clamp(18px, 1.35vw, 23px);
+  --fs-xl:  clamp(24px, 2.1vw, 36px);
+  --fs-2xl: clamp(34px, 3.4vw, 58px);
+  --fs-3xl: clamp(48px, 5.6vw, 96px);
+
+  /* --- Space ------------------------------------------------------------- */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 64px;
+
+  --radius-sm: 4px; --radius-md: 8px; --radius-lg: 14px; --radius-card: 13px;
+
+  /* --- Motion: everything reads from here so feel is tunable in one place */
+  --t-instant: 70ms;
+  --t-quick:   130ms;
+  --t-base:    220ms;
+  --t-slow:    380ms;
+  --t-scene:   620ms;
+  --ease-out:  cubic-bezier(.16,1,.3,1);
+  --ease-in:   cubic-bezier(.7,0,.84,0);
+  --ease-snap: cubic-bezier(.34,1.56,.64,1);
+  --ease-soft: cubic-bezier(.4,0,.2,1);
+
+  /* --- Card geometry (shared by DOM + WebGL so they register exactly) ---- */
+  --card-w: 224px;
+  --card-h: 312px;
+  --card-aspect: 0.7179;
+
+  /* --- Elevation --------------------------------------------------------- */
+  --shadow-1: 0 1px 2px rgba(0,0,0,.5);
+  --shadow-2: 0 4px 12px rgba(0,0,0,.55);
+  --shadow-3: 0 12px 36px rgba(0,0,0,.62);
+  --shadow-4: 0 26px 70px rgba(0,0,0,.7);
+
+  /* --- Z-index scale ----------------------------------------------------- */
+  --z-scene: 10; --z-hud: 100; --z-hand: 200; --z-drag: 300;
+  --z-overlay: 400; --z-modal: 500; --z-tooltip: 900; --z-transition: 1000;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --t-instant: 1ms; --t-quick: 1ms; --t-base: 1ms;
+    --t-slow: 1ms; --t-scene: 1ms;
+  }
+}

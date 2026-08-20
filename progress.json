@@ -1,0 +1,179 @@
+{
+ "title": "Midnight Menagerie",
+ "updated": "2026-08-19T21:26:38",
+ "wave": 1,
+ "waveLabel": "Core systems",
+ "headline": "Seven builders running in parallel. Critics follow each one.",
+ "pieces": [
+  {
+   "id": "engine",
+   "name": "Engine foundation",
+   "desc": "Renderer, scene manager, clock, RNG, save, dev server, asset pipeline",
+   "status": "done",
+   "round": 1,
+   "verdict": "baseline",
+   "gap": null,
+   "builder": null,
+   "critic": null,
+   "log": []
+  },
+  {
+   "id": "combat",
+   "name": "Combat engine",
+   "desc": "Turn rules, damage pipeline, statuses, intents, deterministic + headless",
+   "status": "building",
+   "round": 1,
+   "verdict": null,
+   "gap": null,
+   "builder": null,
+   "critic": null,
+   "log": []
+  },
+  {
+   "id": "card",
+   "name": "Card feel",
+   "desc": "Hover, drag, arc-fan hand, play arc, impact, re-fan easing",
+   "status": "building",
+   "round": 1,
+   "verdict": null,
+   "gap": null,
+   "builder": null,
+   "critic": null,
+   "log": []
+  },
+  {
+   "id": "scene",
+   "name": "Combat presentation",
+   "desc": "Battlefield staging, enemy rigs, damage numbers, hit reactions, VFX",
+   "status": "pending",
+   "round": 0,
+   "verdict": null,
+   "gap": null,
+   "builder": null,
+   "critic": null,
+   "log": []
+  },
+  {
+   "id": "enemies",
+   "name": "Enemies & intents",
+   "desc": "Rosters, move selection, telegraph clarity, Scuffles and Big Scares",
+   "status": "building",
+   "round": 1,
+   "verdict": null,
+   "gap": null,
+   "builder": null,
+   "critic": null,
+   "log": []
+  },
+  {
+   "id": "map",
+   "name": "Blueprint routes",
+   "desc": "Branching route map drawn on the mansion blueprint sections",
+   "status": "building",
+   "round": 1,
+   "verdict": null,
+   "gap": null,
+   "builder": null,
+   "critic": null,
+   "log": []
+  },
+  {
+   "id": "cards",
+   "name": "Companion decks",
+   "desc": "Card pools + keyword systems for the 16 Companions",
+   "status": "building",
+   "round": 1,
+   "verdict": null,
+   "gap": null,
+   "builder": null,
+   "critic": null,
+   "log": []
+  },
+  {
+   "id": "meta",
+   "name": "Run layer",
+   "desc": "Rewards, shops, rest, Curiosities, Keepsakes, Backpack",
+   "status": "pending",
+   "round": 0,
+   "verdict": null,
+   "gap": null,
+   "builder": null,
+   "critic": null,
+   "log": []
+  },
+  {
+   "id": "frontend",
+   "name": "Title / Select / Clubhouse",
+   "desc": "Front end, Companion select, investigation board",
+   "status": "building",
+   "round": 1,
+   "verdict": null,
+   "gap": null,
+   "builder": null,
+   "critic": null,
+   "log": []
+  },
+  {
+   "id": "audio",
+   "name": "Audio",
+   "desc": "Layered music, crossfades, SFX design",
+   "status": "building",
+   "round": 1,
+   "verdict": null,
+   "gap": null,
+   "builder": null,
+   "critic": null,
+   "log": []
+  },
+  {
+   "id": "atmos",
+   "name": "Atmosphere",
+   "desc": "Lighting, fog, post FX, dust, candle flicker, transitions",
+   "status": "building",
+   "round": 1,
+   "verdict": null,
+   "gap": null,
+   "builder": null,
+   "critic": null,
+   "log": []
+  },
+  {
+   "id": "chrome",
+   "name": "UI chrome & clarity",
+   "desc": "HUD, tooltips, deck views, settings, previews, accessibility",
+   "status": "pending",
+   "round": 0,
+   "verdict": null,
+   "gap": null,
+   "builder": null,
+   "critic": null,
+   "log": []
+  }
+ ],
+ "events": [
+  {
+   "t": "2026-08-19T21:12:33",
+   "msg": "Project scaffolded: Three.js engine, asset pipeline, dev server, design doc carved into 45 reference files."
+  },
+  {
+   "t": "2026-08-19T21:14:20",
+   "msg": "Design doc carved into 45 reference files under docs/design/."
+  },
+  {
+   "t": "2026-08-19T21:20:47",
+   "msg": "Data schemas locked (game/src/data/schema.js) so six agents can build in parallel."
+  },
+  {
+   "t": "2026-08-19T21:20:47",
+   "msg": "Slay the Spire 2 reference yardstick written to docs/STS2-REFERENCE.md - every critic judges against it."
+  },
+  {
+   "t": "2026-08-19T21:25:39",
+   "msg": "Wave 1 launched: 6 builders in parallel - combat engine, card feel, companion decks, enemies, atmosphere, audio, blueprint map."
+  },
+  {
+   "t": "2026-08-19T21:26:38",
+   "msg": "Front-end builder started on Title, Companion Select, Clubhouse and Expedition End."
+  }
+ ]
+}
