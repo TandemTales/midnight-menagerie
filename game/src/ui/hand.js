@@ -62,7 +62,7 @@ export const TUNE = {
   // the fallback for a hand that has not laid out yet, and the clamp keeps the
   // band off the enemies at extreme aspect ratios.
   thresholdFrac: 0.54,
-  thresholdLift: 0.30,   // card-heights between the fan's top edge and the line
+  thresholdLift: 0.66,   // card-heights between the fan's top edge and the line
   thresholdBand: 0.40,   // band depth, in card-heights, ABOVE the line
   thresholdMinY: 0.20,   // never higher than this fraction of the host
   // tap-to-play: pointerdown and pointerup in the same spot, quickly
@@ -113,9 +113,13 @@ const BAND_CSS = `
       transparent 82%);
   box-shadow: 0 0 18px color-mix(in srgb, var(--spectre-300) 26%, transparent);
 }
+/* The label hangs BELOW the line and at its LEFT end. Centred and inside the
+   band it sat straight on top of the enemy name plates and their health bars,
+   which are the one thing on this screen that has to stay readable; the floor
+   at the left end of the line is empty in every room. */
 .mm-hand__threshold.is-band::after {
-  top: auto; bottom: .5em;
-  transform: translate(-50%, 0);
+  left: 1.2em; top: 100%; bottom: auto;
+  transform: translate(0, .35em);
 }
 .mm-hand__threshold.is-band.is-on { opacity: .9; }
 .mm-hand__threshold.is-band.is-on.is-armed {
@@ -124,7 +128,7 @@ const BAND_CSS = `
     repeating-linear-gradient(90deg,
       var(--flame-200) 0 20px, transparent 20px 30px) left bottom / 100% 3px no-repeat,
     linear-gradient(to top,
-      color-mix(in srgb, var(--flame-glow) 34%, transparent),
+      color-mix(in srgb, var(--flame-glow) 26%, transparent),
       transparent 84%);
   box-shadow: 0 0 26px color-mix(in srgb, var(--flame-glow) 55%, transparent);
 }

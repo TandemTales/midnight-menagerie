@@ -441,11 +441,17 @@ export const grandCoatcheck = {
   region: REGION,
   tier: 'elite',
   role: 'bigScare',
-  // BALANCE 2026-08-20: 96 -> 115. At 96 a competent player finished it in 6.3
+  // Round 2 (corrected targets): 0.9x across all three Big Scares. Region
+  // survival is P(reach the boss) x P(win the boss), and with ~0.83 Big Scares
+  // on a path a 73%-win elite alone removes 18% of all runs before the boss is
+  // even seen — which capped survival at 50% against a 65-78% target. Sweeping
+  // elite Courage (45 fights per step) put a competent player at 88.9% and a
+  // naive one at 60% here; at full Courage it was 77.8 / 40.0. See docs/notes.
+  // BALANCE 2026-08-20: 96 -> 115 -> 104. At 96 a competent player finished it in 6.3
   // turns, which is a long Scuffle, not a Big Scare; StS elites run 8-12. 122
   // overshot hard (43% for a competent player, and the naive bot within ten
   // points of it, which means the fight had stopped rewarding play at all).
-  hp: [115, 115],
+  hp: [104, 104],
   silhouette: 'coat-rack-mass',
   palette: ['#2f2a3a', '#6a5f7d', '#c4b48c'],
   shape: { body: 'sprawling', limbs: 8, eyes: 3 },
@@ -565,13 +571,19 @@ export const unwelcomeGuest = {
   region: REGION,
   tier: 'elite',
   role: 'bigScare',
-  // BALANCE 2026-08-20: 91 -> 142. It was the softest thing in the region by a
+  // Round 2 (corrected targets): 0.9x across all three Big Scares. Region
+  // survival is P(reach the boss) x P(win the boss), and with ~0.83 Big Scares
+  // on a path a 73%-win elite alone removes 18% of all runs before the boss is
+  // even seen — which capped survival at 50% against a 65-78% target. Sweeping
+  // elite Courage (45 fights per step) put a competent player at 88.9% and a
+  // naive one at 60% here; at full Courage it was 77.8 / 40.0. See docs/notes.
+  // BALANCE 2026-08-20: 91 -> 142 -> 128. It was the softest thing in the region by a
   // distance — 100% for a competent player and 12.6 Courage, a fifth of what
   // the House Bell cost for the same Big Scare reward — and 72% of everything
   // it threw was being absorbed, so raising per-hit numbers alone could not
   // reach the player. The extra Courage is what turns those numbers into a
   // bill: the fight now runs ~10 turns instead of ~7.
-  hp: [142, 142],
+  hp: [128, 128],
   silhouette: 'faceless-guest',
   palette: ['#1f2430', '#4a5468', '#e8e3d6'],
   shape: { body: 'tall-thin', limbs: 2, eyes: 0 },
@@ -684,7 +696,13 @@ export const houseBell = {
   region: REGION,
   tier: 'elite',
   role: 'bigScare',
-  hp: [105, 105],
+  // Round 2 (corrected targets): 0.9x across all three Big Scares. Region
+  // survival is P(reach the boss) x P(win the boss), and with ~0.83 Big Scares
+  // on a path a 73%-win elite alone removes 18% of all runs before the boss is
+  // even seen — which capped survival at 50% against a 65-78% target. Sweeping
+  // elite Courage (45 fights per step) put a competent player at 88.9% and a
+  // naive one at 60% here; at full Courage it was 77.8 / 40.0. See docs/notes.
+  hp: [95, 95],
   silhouette: 'great-bell',
   palette: ['#8a6b18', '#e0c46a', '#3b2c08'],
   shape: { body: 'floating', limbs: 0, eyes: 2 },

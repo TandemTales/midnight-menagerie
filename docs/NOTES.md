@@ -14,6 +14,7 @@ to concurrent whole-file writes, so this is now structural rather than a convent
 | [2026-08-19-enemies-agent](notes/2026-08-19-enemies-agent.md) | 6 KB |
 | [2026-08-20-atmosphere-round-2-lighting-room-identity-warm-up](notes/2026-08-20-atmosphere-round-2-lighting-room-identity-warm-up.md) | 10 KB |
 | [2026-08-20-balance-the-simulator-now-plays-a-run-and-the-foy](notes/2026-08-20-balance-the-simulator-now-plays-a-run-and-the-foy.md) | 15 KB |
+| [2026-08-20-balance-round-2-corrected-targets-haunt-ladder](notes/2026-08-20-balance-round-2-corrected-targets-haunt-ladder.md) | 9 KB |
 | [2026-08-20-card-feel-round-2-fixing-the-critic-s-forensic-pa](notes/2026-08-20-card-feel-round-2-fixing-the-critic-s-forensic-pa.md) | 9 KB |
 | [2026-08-20-combat-engine-round-2](notes/2026-08-20-combat-engine-round-2.md) | 13 KB |
 | [2026-08-20-combat-engine-round-3](notes/2026-08-20-combat-engine-round-3.md) | 4 KB |

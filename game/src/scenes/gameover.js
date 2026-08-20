@@ -9,7 +9,7 @@
  *   left  — the beat. A candle (snuffed or burning), the Companion's plate, and
  *           three short stanzas: what you found, what you lost, and the pet you
  *           did not reach. This column is the reason anyone remembers the run.
- *   right — the ledger. Floor and wing reached, Scuffles won, the final Tricks,
+ *   right — the ledger. Rooms deep and wing reached, Scuffles won, the Tricks,
  *           the Keepsakes, the seed. Everything a player wants to screenshot.
  *
  * Reads `ctx.run` when meta-run has built one; otherwise fabricates a fully
@@ -160,11 +160,12 @@ export class GameOverScene extends Scene {
 
     const mocked = !run;
     /* Two numbers, not one. The run layer split the old ambiguous "floor":
-       `depth` is how many rooms deep the expedition got (what the Clubhouse
-       calls "Deepest floor", what the ledger prints as "Reached Floor N"), and
-       `wing` is the ladder position the map prints as "Wing N of 17". The
-       `floor` param carries `depth` now, so the kicker must read `wing` or it
-       announces "Expedition 14" for a run that never left the Foyer. */
+       `depth` is how many rooms deep the expedition got (the number the
+       Clubhouse records as its best), and `wing` is the ladder position the map
+       prints as "Wing N of 17". The `floor` param carries `depth` now, so this
+       screen prints it as ROOMS DEEP and prints `wing` as the wing — labelling
+       either with the other's word is how the Clubhouse ended up boasting
+       "Deepest floor 5" about a run Game Over called "Floor 1". */
     const floor = Number(hash('floor', run?.depth)) || (mocked ? meta.index * 4 + rng.int(4) : meta.index);
     const wing  = Number(hash('wing', run?.wing)) || meta.index;
 
@@ -375,8 +376,8 @@ export class GameOverScene extends Scene {
       </div>
       <div class="go-who__reach">
         <span class="go-lbl">Reached</span>
-        <b>Floor ${s.floor}</b>
-        <span class="go-who__wing">${esc(region)}</span>
+        <b>${plural(s.floor, 'room')} deep</b>
+        <span class="go-who__wing">${esc(region)} &middot; Wing ${s.wing}</span>
       </div>`);
     who.querySelector('.go-who__kid')
       .appendChild(kidPortrait({ ...k, petKind: k.petKind }, { w: 92, h: 102, tag: false }));

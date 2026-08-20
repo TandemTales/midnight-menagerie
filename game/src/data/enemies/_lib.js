@@ -158,10 +158,26 @@ export function intentOf(c, actor) {
 /** Standard Haunt scaling envelope. Every EnemyDef.hauntScaling(level) returns this shape. */
 export function hauntBase(level, tierClass = 'normal') {
   const l = Math.max(0, level | 0);
+  // BALANCE 2026-08-20 (round 2): the ladder now has a continuous axis.
+  //
+  // `hpMul` used to be a flat +8% / +6% applied at level 1 and never again, so
+  // Haunt 20 fielded exactly the same Courage as Haunt 1. Everything else in the
+  // ladder is per-enemy flags, and counting them across the whole roster there
+  // are 35 hooks at `level >= 1`, 13 at `>= 9`, 4 at `>= 10` — and three in
+  // total anywhere between 2 and 8. Levels 2 to 8 did essentially nothing.
+  // Measured: Haunt 0 -> 5 moved a competent player's region survival only
+  // 70% -> 65% and the boss 82.5% -> 76.7%, and even Haunt 10 left the boss at
+  // 70%, above the 45-65% band asked of high Haunt.
+  //
+  // The ramp below is deliberately the gentlest thing that makes every level
+  // mean something: +2.5% (ordinary) / +2.7% (Big Scare and boss) per level
+  // past the first, uncapped growth capped at double Courage. Courage is only
+  // one axis — the per-enemy behavioural flags remain the interesting half.
+  const step = tierClass === 'normal' ? 0.022 : 0.020;
+  const base = tierClass === 'normal' ? 1.08 : 1.06;
   return {
     level: l,
-    // Haunt 1: ordinary +8% Courage, Big Scares and bosses +6%. It does not compound.
-    hpMul: l >= 1 ? (tierClass === 'normal' ? 1.08 : 1.06) : 1,
+    hpMul: l >= 1 ? Math.min(2, base + step * (l - 1)) : 1,
     counters: {},                       // starting counters, always applied
     flags: {},                          // behavioural switches, read via flag(c,'key')
     moves: {},                          // per-move stat overrides merged into the MoveDef

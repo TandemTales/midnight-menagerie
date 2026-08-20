@@ -19,15 +19,17 @@ import { naiveTurn, competentTurn } from './bot.js';
 export const MAX_TURNS = 60;
 
 /**
- * `state/run.js buildCombat()` registers `allCards()` but not the two Status
- * Tricks that live in `data/enemies/_lib.js`, so in a real run every enemy that
- * does `addCard('clutter')` logs "unknown card" and adds nothing. Deck
- * interference — a whole Foyer enemy's design — is currently free. Reported to
- * the meta-run owner; the sim registers them so the measurement describes the
- * encounter as designed. `?clutter=0` measures the shipped behaviour instead.
+ * Round 1 registered `STATUS_TRICK_DEFS` here, because `state/run.js
+ * buildCombat()` did not — so in a real run every enemy doing
+ * `addCard('clutter')` logged "unknown card" and added nothing, and Lost
+ * Luggage's and the Grand Coatcheck's deck interference was free. The run layer
+ * registers them itself now, so this is a no-op kept only so `?clutter=0` can
+ * still answer "what is that interference actually worth".
  */
 export function wireStatusTricks(engine, on = true) {
-  if (on && engine?.registerCards) engine.registerCards(STATUS_TRICK_DEFS);
+  if (on || !engine) return;
+  engine.cardDefs.delete('clutter');
+  engine.cardDefs.delete('drowsy');
 }
 
 /** Run one fight to completion with the given bot. Returns per-fight telemetry. */

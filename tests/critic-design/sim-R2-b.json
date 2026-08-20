@@ -1,0 +1,630 @@
+{
+ "config": {
+  "N": 60,
+  "BOTS": [
+   "naive",
+   "competent"
+  ],
+  "POLS": [
+   "balanced"
+  ],
+  "HAUNT": 0,
+  "BENCH": 0,
+  "CLUTTER": true,
+  "SEED0": 90000
+ },
+ "cells": {
+  "naive/balanced": {
+   "expeditions": 60,
+   "survival": 33.3,
+   "deaths": 40,
+   "stalls": 0,
+   "reachedBoss": 55,
+   "deathsBy": {
+    "boss": 13,
+    "bigScare": 24,
+    "scuffle": 2,
+    "curiosity": 1
+   },
+   "byTier": {
+    "scuffle": {
+     "n": 231,
+     "winRate": 99.1,
+     "turns": {
+      "n": 231,
+      "mean": 4.64,
+      "min": 1,
+      "max": 12,
+      "p25": 3,
+      "med": 5,
+      "p75": 5
+     },
+     "courageCost": {
+      "n": 231,
+      "mean": 10.85,
+      "min": 0,
+      "max": 44,
+      "p25": 2,
+      "med": 11,
+      "p75": 18
+     },
+     "hauntDamage": {
+      "n": 231,
+      "mean": 0.7,
+      "min": 0,
+      "max": 14,
+      "p25": 0,
+      "med": 0,
+      "p75": 0
+     },
+     "pierceHits": 19,
+     "snacksUsed": 0,
+     "timeouts": 0
+    },
+    "elite": {
+     "n": 43,
+     "winRate": 41.9,
+     "turns": {
+      "n": 43,
+      "mean": 10.23,
+      "min": 3,
+      "max": 19,
+      "p25": 8,
+      "med": 9,
+      "p75": 12
+     },
+     "courageCost": {
+      "n": 43,
+      "mean": 50.63,
+      "min": 9,
+      "max": 80,
+      "p25": 35,
+      "med": 52,
+      "p75": 65
+     },
+     "hauntDamage": {
+      "n": 43,
+      "mean": 5.6,
+      "min": 0,
+      "max": 46,
+      "p25": 0,
+      "med": 2,
+      "p75": 6
+     },
+     "pierceHits": 12,
+     "snacksUsed": 0,
+     "timeouts": 0
+    },
+    "boss": {
+     "n": 33,
+     "winRate": 60.6,
+     "turns": {
+      "n": 33,
+      "mean": 13.85,
+      "min": 7,
+      "max": 22,
+      "p25": 12,
+      "med": 14,
+      "p75": 16
+     },
+     "courageCost": {
+      "n": 33,
+      "mean": 46.27,
+      "min": 6,
+      "max": 84,
+      "p25": 32,
+      "med": 49,
+      "p75": 64
+     },
+     "hauntDamage": {
+      "n": 33,
+      "mean": 10.91,
+      "min": 0,
+      "max": 58,
+      "p25": 0,
+      "med": 3,
+      "p75": 16
+     },
+     "pierceHits": 15,
+     "snacksUsed": 0,
+     "timeouts": 0
+    }
+   },
+   "earlyScuffles": {
+    "n": 174,
+    "turns": {
+     "n": 174,
+     "mean": 4.59,
+     "min": 1,
+     "max": 12,
+     "p25": 3,
+     "med": 5,
+     "p75": 5
+    },
+    "courageCost": {
+     "n": 174,
+     "mean": 10,
+     "min": 0,
+     "max": 44,
+     "p25": 0,
+     "med": 10,
+     "p75": 16
+    },
+    "freeFights": 25.9
+   },
+   "ledger": {
+    "scuffle": 41.8,
+    "elite": 33.6,
+    "boss": 25.4,
+    "event": 3.9,
+    "hazard": 0.3,
+    "rested": 19.3,
+    "healed": 5.6,
+    "combatHeal": 23.2,
+    "rests": 0.8
+   },
+   "visited": {
+    "scuffle": 3.85,
+    "curiosity": 2.98,
+    "safe": 1.58,
+    "rescue": 0.02,
+    "boss": 0.55,
+    "treasure": 0.88,
+    "bigScare": 0.67,
+    "shop": 0.6
+   },
+   "courageAtBoss": {
+    "n": 33,
+    "mean": 58.52,
+    "min": 30,
+    "max": 77,
+    "p25": 48,
+    "med": 64,
+    "p75": 68
+   },
+   "courageAtBossPct": {
+    "n": 33,
+    "mean": 82.76,
+    "min": 40,
+    "max": 100,
+    "p25": 63,
+    "med": 92,
+    "p75": 100
+   },
+   "deckEnd": {
+    "n": 60,
+    "mean": 14.7,
+    "min": 11,
+    "max": 18,
+    "p25": 14,
+    "med": 15,
+    "p75": 16
+   },
+   "upgradesEnd": {
+    "n": 60,
+    "mean": 1,
+    "min": 0,
+    "max": 4,
+    "p25": 0,
+    "med": 1,
+    "p75": 2
+   },
+   "keepsakesEnd": {
+    "n": 60,
+    "mean": 4.4,
+    "min": 1,
+    "max": 9,
+    "p25": 3,
+    "med": 4,
+    "p75": 5
+   },
+   "endCourage": {
+    "n": 60,
+    "mean": 10.02,
+    "min": 0,
+    "max": 62,
+    "p25": 0,
+    "med": 0,
+    "p75": 17
+   },
+   "hauntTotal": 762,
+   "pierceTotal": 46,
+   "msPerRun": 24,
+   "sample": [
+    {
+     "seed": 90000,
+     "result": "defeat",
+     "killedBy": "The Butler",
+     "nodes": "sssscsccsrcs",
+     "deck": [
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/boo",
+      "marmalade/wall-bounce",
+      "marmalade/queen-of-the-rafters+",
+      "marmalade/back-arched-swipe+",
+      "marmalade/ninefold-scratch+"
+     ],
+     "keepsakes": [
+      "pocket-flashlight",
+      "lucky-button",
+      "porcupine-slipper",
+      "moth-eaten-monocle"
+     ]
+    },
+    {
+     "seed": 90007,
+     "result": "defeat",
+     "killedBy": "The Grand Coatcheck",
+     "nodes": "ssccsccstc",
+     "deck": [
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/boo",
+      "marmalade/phantom-flurry+",
+      "marmalade/sneak-attack",
+      "curse/clingy-shadow",
+      "marmalade/spectral-scratch"
+     ],
+     "keepsakes": [
+      "pocket-flashlight",
+      "knotted-handkerchief",
+      "spare-key",
+      "lucky-button",
+      "stopped-pocket-watch"
+     ]
+    },
+    {
+     "seed": 90014,
+     "result": "defeat",
+     "killedBy": "The Butler",
+     "nodes": "ssssscctcscs",
+     "deck": [
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/boo",
+      "marmalade/shadow-swat+",
+      "marmalade/endless-zoomies+",
+      "marmalade/rattle-the-chandelier+",
+      "marmalade/slip-away"
+     ],
+     "keepsakes": [
+      "pocket-flashlight",
+      "house-slippers",
+      "chalk-stub",
+      "porcupine-slipper",
+      "tin-of-sardines"
+     ]
+    }
+   ]
+  },
+  "competent/balanced": {
+   "expeditions": 60,
+   "survival": 50,
+   "deaths": 30,
+   "stalls": 0,
+   "reachedBoss": 75,
+   "deathsBy": {
+    "boss": 15,
+    "bigScare": 11,
+    "scuffle": 4
+   },
+   "byTier": {
+    "scuffle": {
+     "n": 237,
+     "winRate": 98.3,
+     "turns": {
+      "n": 237,
+      "mean": 3.93,
+      "min": 1,
+      "max": 8,
+      "p25": 3,
+      "med": 4,
+      "p75": 5
+     },
+     "courageCost": {
+      "n": 237,
+      "mean": 10.29,
+      "min": 0,
+      "max": 50,
+      "p25": 0,
+      "med": 7,
+      "p75": 16
+     },
+     "hauntDamage": {
+      "n": 237,
+      "mean": 0.91,
+      "min": 0,
+      "max": 9,
+      "p25": 0,
+      "med": 0,
+      "p75": 2
+     },
+     "pierceHits": 19,
+     "snacksUsed": 23,
+     "timeouts": 0
+    },
+    "elite": {
+     "n": 50,
+     "winRate": 78,
+     "turns": {
+      "n": 50,
+      "mean": 9.94,
+      "min": 1,
+      "max": 19,
+      "p25": 7,
+      "med": 10,
+      "p75": 12
+     },
+     "courageCost": {
+      "n": 50,
+      "mean": 39.28,
+      "min": 0,
+      "max": 85,
+      "p25": 27,
+      "med": 41,
+      "p75": 53
+     },
+     "hauntDamage": {
+      "n": 50,
+      "mean": 5.98,
+      "min": 0,
+      "max": 47,
+      "p25": 0,
+      "med": 3,
+      "p75": 6
+     },
+     "pierceHits": 18,
+     "snacksUsed": 24,
+     "timeouts": 0
+    },
+    "boss": {
+     "n": 45,
+     "winRate": 66.7,
+     "turns": {
+      "n": 45,
+      "mean": 12.4,
+      "min": 5,
+      "max": 18,
+      "p25": 10,
+      "med": 13,
+      "p75": 14
+     },
+     "courageCost": {
+      "n": 45,
+      "mean": 37.82,
+      "min": 0,
+      "max": 88,
+      "p25": 26,
+      "med": 37,
+      "p75": 48
+     },
+     "hauntDamage": {
+      "n": 45,
+      "mean": 11.42,
+      "min": 0,
+      "max": 49,
+      "p25": 0,
+      "med": 5,
+      "p75": 19
+     },
+     "pierceHits": 16,
+     "snacksUsed": 18,
+     "timeouts": 0
+    }
+   },
+   "earlyScuffles": {
+    "n": 175,
+    "turns": {
+     "n": 175,
+     "mean": 4.05,
+     "min": 1,
+     "max": 8,
+     "p25": 3,
+     "med": 4,
+     "p75": 5
+    },
+    "courageCost": {
+     "n": 175,
+     "mean": 10.99,
+     "min": 0,
+     "max": 50,
+     "p25": 0,
+     "med": 7,
+     "p75": 17
+    },
+    "freeFights": 25.1
+   },
+   "ledger": {
+    "scuffle": 40.6,
+    "elite": 30.7,
+    "boss": 28.4,
+    "event": 4.1,
+    "hazard": 0.3,
+    "rested": 22,
+    "healed": 5.9,
+    "combatHeal": 27.9,
+    "rests": 1
+   },
+   "visited": {
+    "scuffle": 3.95,
+    "curiosity": 3.02,
+    "safe": 1.8,
+    "boss": 0.75,
+    "treasure": 0.9,
+    "bigScare": 0.78,
+    "shop": 0.58
+   },
+   "courageAtBoss": {
+    "n": 45,
+    "mean": 57.58,
+    "min": 28,
+    "max": 79,
+    "p25": 43,
+    "med": 62,
+    "p75": 68
+   },
+   "courageAtBossPct": {
+    "n": 45,
+    "mean": 81.07,
+    "min": 39,
+    "max": 100,
+    "p25": 60,
+    "med": 91,
+    "p75": 100
+   },
+   "deckEnd": {
+    "n": 60,
+    "mean": 15.28,
+    "min": 12,
+    "max": 19,
+    "p25": 14,
+    "med": 15,
+    "p75": 16
+   },
+   "upgradesEnd": {
+    "n": 60,
+    "mean": 1.08,
+    "min": 0,
+    "max": 4,
+    "p25": 0,
+    "med": 1,
+    "p75": 2
+   },
+   "keepsakesEnd": {
+    "n": 60,
+    "mean": 4.93,
+    "min": 1,
+    "max": 9,
+    "p25": 4,
+    "med": 5,
+    "p75": 6
+   },
+   "endCourage": {
+    "n": 60,
+    "mean": 20.27,
+    "min": 0,
+    "max": 78,
+    "p25": 0,
+    "med": 8,
+    "p75": 46
+   },
+   "hauntTotal": 1028,
+   "pierceTotal": 53,
+   "msPerRun": 158,
+   "sample": [
+    {
+     "seed": 90000,
+     "result": "defeat",
+     "killedBy": "The Butler",
+     "nodes": "ssccscssssss",
+     "deck": [
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/boo",
+      "marmalade/wall-bounce",
+      "marmalade/queen-of-the-rafters+",
+      "marmalade/spectral-scratch",
+      "marmalade/steal-their-shadow",
+      "marmalade/paw-through",
+      "marmalade/zoomies-at-midnight"
+     ],
+     "keepsakes": [
+      "pocket-flashlight",
+      "knotted-handkerchief"
+     ]
+    },
+    {
+     "seed": 90007,
+     "result": "defeat",
+     "killedBy": "The Grand Coatcheck",
+     "nodes": "ssccsccstc",
+     "deck": [
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/boo",
+      "marmalade/phantom-flurry+",
+      "marmalade/sneak-attack",
+      "curse/clingy-shadow",
+      "marmalade/spectral-scratch"
+     ],
+     "keepsakes": [
+      "pocket-flashlight",
+      "knotted-handkerchief",
+      "spare-key",
+      "lucky-button",
+      "stopped-pocket-watch"
+     ]
+    },
+    {
+     "seed": 90014,
+     "result": "victory",
+     "killedBy": null,
+     "nodes": "ssssscctcscsb",
+     "deck": [
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/scratch",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/curl-up",
+      "marmalade/boo",
+      "marmalade/shadow-swat+",
+      "marmalade/endless-zoomies+",
+      "marmalade/rattle-the-chandelier+",
+      "marmalade/slip-away",
+      "marmalade/leave-a-life-behind"
+     ],
+     "keepsakes": [
+      "pocket-flashlight",
+      "house-slippers",
+      "chalk-stub",
+      "porcupine-slipper",
+      "tin-of-sardines",
+      "lantern-of-the-lamplighter"
+     ]
+    }
+   ]
+  }
+ },
+ "bench": {},
+ "errors": []
+}

@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T13:54:46",
+ "updated": "2026-08-20T14:15:43",
  "wave": 3,
  "waveLabel": "Closing the seams",
  "headline": "A full playthrough found that every module passes its own tests and silently no-ops at the join. Fixing that class of bug.",
@@ -58,8 +58,8 @@
    "name": "Enemies & intents",
    "desc": "Rosters, move selection, telegraph clarity, Scuffles and Big Scares",
    "status": "reviewing",
-   "round": 4,
-   "verdict": "Foyer retuned on working mechanics: Butler 250 to 178, Big Scares from a 67-point win-rate spread to 72-78%, two unreachable House Rules made reachable.",
+   "round": 5,
+   "verdict": "Region survival 70% (target 65-78%), boss 82.5%, naive-vs-competent gap 33.3 points. Haunt 10 lands the 45-65% band.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -406,6 +406,14 @@
   {
    "t": "2026-08-20T13:54:46",
    "msg": "Target contradiction found: region survival 60-75% and boss win 45-65% are mutually exclusive, since survival is roughly P(reach) x P(win boss). Revising."
+  },
+  {
+   "t": "2026-08-20T14:15:43",
+   "msg": "BALANCE IN BAND: region survival 70%, boss 82.5%, Scuffles 3.9 turns costing 10.6 Courage. The naive-to-competent gap is 33.3 points, so decisions genuinely matter."
+  },
+  {
+   "t": "2026-08-20T14:15:43",
+   "msg": "Haunt scaling had no continuous axis: hpMul was applied once at level 1 and never again, so Haunt 20 fielded the same Courage as Haunt 1."
   }
  ]
 }

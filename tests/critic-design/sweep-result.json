@@ -1,119 +1,119 @@
 {
  "config": {
-  "TIER": "boss",
+  "TIER": "elite",
   "ENC": null,
-  "N": 48,
-  "GEN": 16,
+  "N": 45,
+  "GEN": 15,
   "BOTS": [
    "naive",
    "competent"
   ],
   "POL": "balanced",
   "SCALES": [
-   0.75,
-   0.7,
-   0.65,
-   0.6
+   1,
+   0.9,
+   0.82,
+   0.75
   ],
   "HEAL": 0
  },
- "loadouts": 14,
+ "loadouts": 15,
  "table": [
   {
    "bot": "naive",
-   "hpScale": 0.75,
-   "win": 33.3,
-   "turnsMean": 12.42,
+   "hpScale": 1,
+   "win": 40,
+   "turnsMean": 10.04,
    "turnsMed": 10,
-   "costMean": 40.1,
-   "hpAfterWinMean": 45.63,
-   "courageAtDoor": 50.29,
+   "costMean": 54.87,
+   "hpAfterWinMean": 31.56,
+   "courageAtDoor": 61.2,
    "timeouts": 0,
-   "n": 48
+   "n": 45
   },
   {
    "bot": "naive",
-   "hpScale": 0.7,
-   "win": 35.4,
-   "turnsMean": 11.35,
-   "turnsMed": 10,
-   "costMean": 42.83,
-   "hpAfterWinMean": 37.65,
-   "courageAtDoor": 50.29,
-   "timeouts": 0,
-   "n": 48
-  },
-  {
-   "bot": "naive",
-   "hpScale": 0.65,
-   "win": 39.6,
-   "turnsMean": 10.31,
+   "hpScale": 0.9,
+   "win": 60,
+   "turnsMean": 9.58,
    "turnsMed": 9,
-   "costMean": 40.63,
-   "hpAfterWinMean": 37.79,
-   "courageAtDoor": 50.29,
+   "costMean": 50.24,
+   "hpAfterWinMean": 28.96,
+   "courageAtDoor": 61.2,
    "timeouts": 0,
-   "n": 48
+   "n": 45
   },
   {
    "bot": "naive",
-   "hpScale": 0.6,
-   "win": 37.5,
-   "turnsMean": 9.65,
+   "hpScale": 0.82,
+   "win": 64.4,
+   "turnsMean": 9.27,
+   "turnsMed": 9,
+   "costMean": 46.98,
+   "hpAfterWinMean": 32.07,
+   "courageAtDoor": 61.2,
+   "timeouts": 0,
+   "n": 45
+  },
+  {
+   "bot": "naive",
+   "hpScale": 0.75,
+   "win": 71.1,
+   "turnsMean": 8.84,
    "turnsMed": 8,
-   "costMean": 39.13,
-   "hpAfterWinMean": 42.5,
-   "courageAtDoor": 50.29,
+   "costMean": 43.71,
+   "hpAfterWinMean": 33.38,
+   "courageAtDoor": 61.2,
    "timeouts": 0,
-   "n": 48
+   "n": 45
+  },
+  {
+   "bot": "competent",
+   "hpScale": 1,
+   "win": 77.8,
+   "turnsMean": 8.64,
+   "turnsMed": 9,
+   "costMean": 39.87,
+   "hpAfterWinMean": 35.83,
+   "courageAtDoor": 61.2,
+   "timeouts": 0,
+   "n": 45
+  },
+  {
+   "bot": "competent",
+   "hpScale": 0.9,
+   "win": 88.9,
+   "turnsMean": 8.09,
+   "turnsMed": 8,
+   "costMean": 34.02,
+   "hpAfterWinMean": 38.02,
+   "courageAtDoor": 61.2,
+   "timeouts": 0,
+   "n": 45
+  },
+  {
+   "bot": "competent",
+   "hpScale": 0.82,
+   "win": 95.6,
+   "turnsMean": 7.36,
+   "turnsMed": 7,
+   "costMean": 30.33,
+   "hpAfterWinMean": 38.93,
+   "courageAtDoor": 61.2,
+   "timeouts": 0,
+   "n": 45
   },
   {
    "bot": "competent",
    "hpScale": 0.75,
-   "win": 37.5,
-   "turnsMean": 11.71,
-   "turnsMed": 12,
-   "costMean": 42.15,
-   "hpAfterWinMean": 39.78,
-   "courageAtDoor": 50.29,
+   "win": 95.6,
+   "turnsMean": 6.78,
+   "turnsMed": 6,
+   "costMean": 27.56,
+   "hpAfterWinMean": 41.6,
+   "courageAtDoor": 61.2,
    "timeouts": 0,
-   "n": 48
-  },
-  {
-   "bot": "competent",
-   "hpScale": 0.7,
-   "win": 37.5,
-   "turnsMean": 10.98,
-   "turnsMed": 10,
-   "costMean": 43.08,
-   "hpAfterWinMean": 38.83,
-   "courageAtDoor": 50.29,
-   "timeouts": 0,
-   "n": 48
-  },
-  {
-   "bot": "competent",
-   "hpScale": 0.65,
-   "win": 41.7,
-   "turnsMean": 10.25,
-   "turnsMed": 9,
-   "costMean": 41.06,
-   "hpAfterWinMean": 37.65,
-   "courageAtDoor": 50.29,
-   "timeouts": 0,
-   "n": 48
-  },
-  {
-   "bot": "competent",
-   "hpScale": 0.6,
-   "win": 35.4,
-   "turnsMean": 9.13,
-   "turnsMed": 9,
-   "costMean": 42.65,
-   "hpAfterWinMean": 41.47,
-   "courageAtDoor": 50.29,
-   "timeouts": 0,
-   "n": 48
+   "n": 45
   }
  ],
  "errors": []

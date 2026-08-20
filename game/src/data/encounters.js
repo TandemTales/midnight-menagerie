@@ -73,15 +73,16 @@ const FOYER = [
     teaches: 'Choose between disrupting Brace and preventing Dust accumulation.',
   },
   {
-    id: 'foyer-7', region: 'foyer', tier: 'early', name: 'Lost Luggage + Dust Bunny',
+    id: 'foyer-7', region: 'foyer', tier: 'standard', name: 'Lost Luggage + Dust Bunny',
     members: [m('lost-luggage'), m('dust-bunny')],
     teaches: 'Deck interference competes with immediate escalation.',
-    // BALANCE 2026-08-20: promoted from 'standard'. The early pool was three
-    // solos and one pair, and a lone enemy cannot out-damage one turn of Guard,
-    // so a quarter of opening Scuffles cost literally nothing. This is the
-    // cheapest pair in the roster, so it raises the floor without moving the
-    // ceiling. Promoting the 53-Courage pair as well overshot the 8-12 band
-    // (measured: mean scuffle cost 15.6), so only this one moved.
+    // BALANCE 2026-08-20 round 1 promoted this to 'early' to put a second pair
+    // in the opening pool; round 2 put it back. Clutter went live in between
+    // (state/run.js now registers STATUS_TRICK_DEFS, so Lost Luggage's deck
+    // interference finally does something), which made this a materially harder
+    // fight than the one that was promoted: opening-Scuffle cost measured 14.65
+    // against an 8-12 target. The weighted roll below does the composition work
+    // on its own.
   },
   {
     id: 'foyer-8', region: 'foyer', tier: 'standard', name: 'Door Greeter + Dust Bunny',
@@ -544,12 +545,12 @@ export function rollEncounter(region, tier, rng, history = []) {
  * of Guard would make it lethal the moment the player draws no Guard card.
  *
  * So the fix is composition. The Foyer's early pool is now three solos and
- * three pairs, and the pairs are picked twice as often; the solos remain
+ * one pair, and the pair is picked three times as often; the solos remain
  * because each one is the first time the player meets that enemy and that
  * introduction is worth keeping.
  */
 function defaultWeight(enc) {
-  return (enc.members && enc.members.length > 1) ? 2 : 1;
+  return (enc.members && enc.members.length > 1) ? 3 : 1;
 }
 
 /**

@@ -10,9 +10,9 @@
  * That inversion is the whole boss. "Breaking rules is not simply failure. It is a
  * strategic option."
  *
- *   Phase 1  178 → 101   one rule at a time, never the same twice running.
- *   Transition at ≤100   This Is Most Irregular: 16 Guard, dismisses every summon.
- *   Phase 2  100 → 0     harsher Reprimands, but Discomposed at 2 Flustered, not 3.
+ *   Phase 1  165 → 93    one rule at a time, never the same twice running.
+ *   Transition at ≤92    This Is Most Irregular: 16 Guard, dismisses every summon.
+ *   Phase 2  92 → 0      harsher Reprimands, but Discomposed at 2 Flustered, not 3.
  */
 
 import { Intent } from '../schema.js';
@@ -22,7 +22,7 @@ import {
 } from '../enemies/_lib.js';
 
 /**
- * BALANCE 2026-08-20: Courage 250 -> 178, phase two at 140 -> 100 (the same
+ * BALANCE 2026-08-20: Courage 250 -> 165, phase two at 140 -> 92 (the same
  * 56% of the pool).
  *
  * 250 was measured for the first time against a deck a player actually brings
@@ -37,7 +37,7 @@ import {
  * 0.65x — 10.3 turns mean, 9 median, and 42% overall which is ~65% among the
  * runs that arrive in reasonable shape. See docs/NOTES.md for the table.
  */
-const PHASE2_AT = 100;
+const PHASE2_AT = 92;
 
 // ── The four House Rules ─────────────────────────────────────────────────────
 /**
@@ -90,37 +90,28 @@ export const HOUSE_RULES = {
     onBreak: (c) => c.block(c.self, p2 ? 12 : 10),
   }),
   /**
-   * NOTE for the combat-engine owner: `RuleCtx.damageDealtThisTurn` reads
-   * `engine.stats.damageDealtThisTurn`, which is declared in the constructor
-   * and zeroed in `_beginPlayerTurn` and **never incremented** — `damage.js`
-   * does not touch `engine.stats` at all. So this rule could not fire at any
-   * threshold; lowering 20 to 15 changed 0 breaks per fight into 0 breaks per
-   * fight. Until the stat is real, the Butler counts what is done to him
-   * himself, through his own `onDamaged` (see `roughhousingThisTurn`).
+   * BALANCE 2026-08-20 (round 2): back to the plain `rc.damageDealtThisTurn`.
+   *
+   * This rule could not fire at ANY threshold until today: the stat was
+   * declared on `CombatEngine`, zeroed every turn, and never written, because
+   * `damage.js` did not touch `engine.stats`. The Butler counted hits on
+   * himself as a stand-in. The engine owner has since made the stat real, so
+   * the workaround is gone — note the semantics widened with it, from "damage
+   * put into the Butler" to "damage dealt to anything", which is what the rule
+   * text has always said and which makes his summoned Dust Bunny a way to trip
+   * the rule by accident.
    */
   'no-roughhousing': (p2) => ({
     id: 'no-roughhousing',
     name: 'GUESTS DO NOT ROUGHHOUSE',
     text: `Dealing 15 or more damage this turn breaks the rule. Reprimand: his next damaging attack deals ${p2 ? 7 : 5} more.`,
     when: 'turnEnd', once: true,
-    broken: (rc) => Math.max(roughhousingThisTurn(rc.e), rc.damageDealtThisTurn || 0) >= 15,
+    broken: (rc) => (rc.damageDealtThisTurn || 0) >= 15,
     onBreak: (c) => { mem(c).retaliation = (mem(c).retaliation || 0) + (p2 ? 7 : 5); },
   }),
 };
 
 const RULE_IDS = Object.keys(HOUSE_RULES);
-
-/**
- * Damage the player has put into the Butler this player turn.
- *
- * Lives in `engine.field`, which the engine deep-clones for previews, so
- * hovering a card can never bank Roughhousing. Keyed by turn so it resets
- * without needing a turn hook.
- */
-function roughhousingThisTurn(e) {
-  const r = e && e.field && e.field.butlerRoughhousing;
-  return (r && r.turn === e.turn) ? r.n : 0;
-}
 
 export const butler = {
   id: 'butler',
@@ -128,7 +119,7 @@ export const butler = {
   region: 'foyer',
   tier: 'boss',
   role: 'boss',
-  hp: [178, 178],
+  hp: [165, 165],
   silhouette: 'butler',
   palette: ['#14161d', '#2c3140', '#e9e4d4'],
   shape: { body: 'tall-thin', limbs: 2, eyes: 2 },
@@ -192,16 +183,6 @@ export const butler = {
 
   /** How many House Rules he is enforcing right now. Phase one 1, phase two 2. */
   standingRules(c) { return butler.phase(c) >= 2 ? 2 : 1; },
-
-  /** Count what the guest is doing to him, for GUESTS DO NOT ROUGHHOUSE. */
-  onDamaged(c) {
-    const info = c.info;
-    if (!info || info.attacker !== c.e.player) return;
-    const f = c.e.field;
-    const r = f.butlerRoughhousing;
-    const n = (r && r.turn === c.e.turn ? r.n : 0) + (info.amount || 0);
-    f.butlerRoughhousing = { turn: c.e.turn, n };
-  },
 
   /** Engine hook: any House Rule of his was broken this turn. */
   onRuleBroken(c) {

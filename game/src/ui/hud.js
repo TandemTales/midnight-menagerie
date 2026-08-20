@@ -6,7 +6,7 @@
  *   hud.refresh();                                    // usually automatic
  *   hud.destroy();                                    // in Scene.exit()
  *
- * Shows, left to right: Companion + region/floor, Courage, Lost Things, Clues,
+ * Shows, left to right: Companion + region/wing, Courage, Lost Things, Clues,
  * Luck, Snack slots, the Keepsake bar, the Backpack Gear bar, Haunt Level,
  * seed, the deck button and the settings button. Every chip on it is hoverable and
  * keyboard-focusable, and every tooltip is a plain-language sentence — the HUD
@@ -106,6 +106,14 @@ const GEAR_CSS = `
 }
 .mm-hud__gearchip .mm-hud__relicn { background: var(--spectre-200); }
 
+/* The wing sub-label. At --text-lo the chip measures 4.38:1 against the room
+   behind it (tests/chrome/run.py measures real pixels, and the shorter "Wing 1"
+   gives it less ink to work with than "Floor 1" did) — under the 4.5:1 the HUD
+   is held to. --text-mid is the next step up the same ramp and still reads as
+   secondary to the region name beside it.
+   NOTE: no backticks in this block. It is a template literal. */
+.mm-hud__where .mm-hud__s { color: var(--text-mid); }
+
 /* Clues and Luck. Same chip as Lost Things — only the icon is tinted, cool for
    the investigation, green for the odds, so neither competes with Courage. */
 .mm-hud__clue .mm-icon { color: var(--spectre-300); }
@@ -133,7 +141,7 @@ const MOCK = {
   companionName: 'Marmalade', kidName: 'Maya',
   courage: 52, maxCourage: 70, lostThings: 137,
   cluesFound: 2, luck: 1,
-  region: 'foyer', floor: 1, hauntLevel: 0, seed: '—',
+  region: 'foyer', wing: 1, depth: 3, hauntLevel: 0, seed: '—',
   keepsakes: [], snacks: [], snackCap: 3, deck: [],
   _mock: true,
 };
@@ -147,6 +155,9 @@ const REGION_LABEL = {
   'secret-passages': 'Secret Passages', bathhouse: 'The Bathhouse',
   kennels: 'The Kennels', 'pumpkin-grounds': 'Pumpkin Grounds', heart: 'The Heart',
 };
+
+/** The house has seventeen wings — the same seventeen the map counts. */
+const WINGS = Object.keys(REGION_LABEL).length;
 
 /** Snack slots are keyed ⇧1..⇧3 — the plain digits belong to the hand. */
 const SNACK_KEYS = ['⇧1', '⇧2', '⇧3'];
@@ -291,13 +302,20 @@ export class HUD {
     const r = this.data;
     this.el.classList.toggle('is-mock', !!r._mock);
 
-    // where
+    /* where — WING, not "floor".
+       The map header says "Wing 1 of 17" and this strip is mounted directly
+       above it; saying "Floor 1" in the same breath invented a third word for
+       one number. "Floor" is also wrong on its own terms — several wings sit on
+       the same storey. `run.wing` is the ladder position; `run.floor` is its
+       documented alias and the fallback for a stand-in that only has that. */
     const region = REGION_LABEL[r.region || r.regionId] || cap(r.region || 'Somewhere');
-    const floor = r.floor ?? 1;
+    const wing = num(r.wing ?? r.floor, 1);
+    const rooms = num(r.depth, 0);
     this.$where.textContent = '';
-    this.$where.append(icon('res.region'), text(region), sub(`Floor ${floor}`));
+    this.$where.append(icon('res.region'), text(region), sub(`Wing ${wing}`));
     this.$where.dataset.tip =
-      `${region}. You are on floor ${floor} of the expedition.` +
+      `${region}. Wing ${wing} of ${WINGS} — the house has ${WINGS}.` +
+      (rooms ? ` You are ${plural(rooms, 'room')} deep.` : '') +
       (r.companionName ? ` ${r.companionName} is with ${r.kidName || 'you'}.` : '');
     this.$where.dataset.tipTitle = r._mock ? 'Preview — no run in progress' : region;
 
