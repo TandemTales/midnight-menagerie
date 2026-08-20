@@ -130,6 +130,21 @@ export class CombatEngine {
     this.enemyDefs = new Map();
     this.choices = new ChoiceBroker(this);
 
+    /**
+     * Counters content is allowed to read. EVERY key here is maintained — if a
+     * counter cannot be maintained it does not belong in this object, because a
+     * field that is declared, zeroed and never written reads exactly like a
+     * mechanic the designer wanted to do nothing. `damageDealtThisTurn` was that
+     * for a whole build, and it made the Butler's Roughhousing rule impossible
+     * to trigger at any threshold.
+     *
+     * `tests/combat` asserts that this key set and the documented contract agree
+     * and that a real fight actually moves every one of them.
+     *
+     * ThisTurn counters reset at the START of the player turn, so they cover the
+     * player turn AND the enemy phase that follows it — the same lifecycle as
+     * `actor.damageTakenThisTurn`. ThisCombat counters never reset.
+     */
     this.stats = {
       cardsPlayedThisTurn: 0,
       cardsPlayedThisCombat: 0,
@@ -139,10 +154,11 @@ export class CombatEngine {
       cardsExhaustedThisTurn: 0,
       cardsExhaustedThisCombat: 0,
       damageDealtThisTurn: 0,
+      damageDealtThisCombat: 0,
       damageTakenThisTurn: 0,
+      damageTakenThisCombat: 0,
       damageTakenLastEnemyTurn: 0,
       turnsTaken: 0,
-      livesSpentThisTurn: 0,
     };
 
     this._listeners = new Map();
@@ -1509,7 +1525,6 @@ export class CombatEngine {
     this.stats.cardsExhaustedThisTurn = 0;
     this.stats.damageDealtThisTurn = 0;
     this.stats.damageTakenThisTurn = 0;
-    this.stats.livesSpentThisTurn = 0;
     this.playedThisTurn = [];
     // `damageTakenThisTurn` resets HERE and only here, for every actor. It then
     // accumulates through the player turn and is STILL READABLE during the enemy

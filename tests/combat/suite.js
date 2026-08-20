@@ -1891,6 +1891,144 @@ export async function run() {
     ok(e.resolveCardDef('scratch'), 'including by the last path segment');
   });
 
+
+  // ══ ROUND 5 ═════════════════════════════════════════════════════════════
+
+  /**
+   * The contract for `engine.stats`. A counter that is declared but never
+   * written is worse than a missing one: content reads it, gets 0 forever, and
+   * the mechanic silently does nothing. `damageDealtThisTurn` was exactly that,
+   * and it made the Butler's Roughhousing rule impossible to trigger.
+   *
+   * Every key below must (a) exist and (b) actually move during a real fight.
+   * Any key NOT below must not exist. Adding a counter means adding it here.
+   */
+  const STAT_CONTRACT = [
+    'cardsPlayedThisTurn', 'cardsPlayedThisCombat',
+    'attacksPlayedThisTurn', 'skillsPlayedThisTurn',
+    'cardsDiscardedThisTurn', 'cardsExhaustedThisTurn', 'cardsExhaustedThisCombat',
+    'damageDealtThisTurn', 'damageDealtThisCombat',
+    'damageTakenThisTurn', 'damageTakenThisCombat',
+    'damageTakenLastEnemyTurn', 'turnsTaken',
+  ];
+
+  test('stats: the declared key set matches the documented contract exactly', () => {
+    const e = mk();
+    const declared = Object.keys(e.stats).sort();
+    const contract = STAT_CONTRACT.slice().sort();
+    deepEq(declared, contract, 'no undeclared and no undocumented counters');
+    ok(!('livesSpentThisTurn' in e.stats),
+      'livesSpentThisTurn is gone — the engine has no concept of a Life, so it could never write it');
+    for (const k of STAT_CONTRACT) eq(typeof e.stats[k], 'number', `stats.${k} is a number`);
+  });
+
+  await atest('stats: a real fight moves every single declared counter', async () => {
+    const moved = new Set();
+    const watch = (e) => { for (const k of STAT_CONTRACT) if (e.stats[k] > 0) moved.add(k); };
+
+    const e = mk({ enemies: [dummyEnemy({ hp: 200, damage: 7 })] });
+    await e.startCombat();
+    const en = e.enemies[0];
+
+    // attacks, skills, exhaust, discards, damage dealt
+    e.player.energy = 9;
+    await e.playCard(plant(e, SCRATCH).uid, en.id);
+    await e.playCard(plant(e, CURL_UP).uid, null);
+    await e.playCard(plant(e, SECOND_WIND).uid, null);
+    e.discardCard(e.piles.hand[0], 'test');
+    watch(e);
+
+    // damage taken, inside the player turn so the ThisTurn counter is readable
+    e.dealDamage({ attacker: en, defender: e.player, amount: 9 });
+    watch(e);
+
+    await e.endTurn();            // enemy swings → damageTakenLastEnemyTurn
+    watch(e);
+
+    const missing = STAT_CONTRACT.filter(k => !moved.has(k));
+    deepEq(missing, [], `every counter was written by real play (dead: ${missing.join(', ') || 'none'})`);
+  });
+
+  await atest('stats: damageDealtThisTurn is what the Butler\'s Roughhousing rule reads', async () => {
+    const e = mk({ enemies: [dummyEnemy({ hp: 200, move: 'nothing' })] });
+    await e.startCombat();
+    const en = e.enemies[0];
+    eq(e.stats.damageDealtThisTurn, 0, 'starts at zero');
+
+    e.player.energy = 9;
+    await e.playCard(plant(e, SCRATCH).uid, en.id);      // 6
+    eq(e.stats.damageDealtThisTurn, 6, 'one Scratch counted');
+    await e.playCard(plant(e, FLURRY).uid, en.id);       // 3 x 3
+    eq(e.stats.damageDealtThisTurn, 15, 'multi-hit counted per hit — the rule can now reach 15');
+    eq(e.stats.damageDealtThisCombat, 15, 'and the combat total tracks it');
+
+    // this is the RuleCtx field the Butler reads
+    let sawInRule = -1;
+    e.announceRule({
+      id: 'test/roughhousing', name: 'Roughhousing', text: 'x', when: 'cardPlayed', once: true,
+      broken: (rc) => { sawInRule = rc.damageDealtThisTurn; return rc.damageDealtThisTurn >= 15; },
+      onBreak: () => {},
+    }, en.id);
+    let broke = 0;
+    e.on('rule:broken', () => broke++);
+    await e.playCard(plant(e, CURL_UP).uid, null);
+    eq(sawInRule, 15, 'RuleCtx.damageDealtThisTurn carried the real number');
+    eq(broke, 1, 'and a >= 15 threshold rule actually fired');
+
+    // Guard absorbing a swing is not damage dealt
+    const before = e.stats.damageDealtThisTurn;
+    en.block = 50;
+    await e.playCard(plant(e, SCRATCH).uid, en.id);
+    eq(e.stats.damageDealtThisTurn, before, 'a fully blocked hit deals no damage');
+  });
+
+  await atest('stats: the counter still holds at turnEnd, which is when the Butler checks', async () => {
+    // The real rule is `when: 'turnEnd'`, so the number must survive until the
+    // end-of-turn rule sweep and only reset at the START of the next player turn.
+    const e = mk({ enemies: [dummyEnemy({ hp: 200, move: 'nothing' })] });
+    await e.startCombat();
+    const en = e.enemies[0];
+    let sawAtTurnEnd = -1, broke = 0;
+    e.announceRule({
+      id: 'test/no-roughhousing', name: 'GUESTS DO NOT ROUGHHOUSE', text: 'x',
+      when: 'turnEnd', once: true,
+      broken: (rc) => { sawAtTurnEnd = rc.damageDealtThisTurn; return (rc.damageDealtThisTurn || 0) >= 15; },
+      onBreak: () => { broke++; },
+    }, en.id);
+
+    e.player.energy = 9;
+    await e.playCard(plant(e, SCRATCH).uid, en.id);   // 6
+    await e.playCard(plant(e, FLURRY).uid, en.id);    // 9
+    await e.endTurn();
+    eq(sawAtTurnEnd, 15, 'the end-of-turn rule sweep saw the full turn total');
+    eq(broke, 1, 'so the boss rule fired');
+    eq(e.stats.damageDealtThisTurn, 0, 'and only then did the counter reset');
+  });
+
+  await atest('stats: turn/combat lifecycles are distinct, and mirror the actor counters', async () => {
+    const e = mk({ enemies: [dummyEnemy({ hp: 200, damage: 5 })] });
+    await e.startCombat();
+    const en = e.enemies[0];
+    e.player.energy = 9;
+    await e.playCard(plant(e, SCRATCH).uid, en.id);
+    eq(e.stats.damageDealtThisTurn, 6, 'turn counter');
+    eq(e.stats.damageDealtThisCombat, 6, 'combat counter');
+
+    await e.endTurn();
+    eq(e.stats.damageDealtThisTurn, 0, 'the turn counter reset at the start of the new turn');
+    eq(e.stats.damageDealtThisCombat, 6, 'the combat counter did NOT reset');
+    eq(e.stats.damageTakenThisTurn, 0, 'damage taken during the enemy phase resets with the turn…');
+    eq(e.stats.damageTakenLastEnemyTurn, 5, '…and is carried by damageTakenLastEnemyTurn instead');
+    eq(e.stats.damageTakenThisCombat, 5, 'while the combat total keeps it');
+    eq(e.stats.damageTakenThisCombat, e.player.maxHp - e.player.hp,
+      'and agrees with the Courage the player has actually lost');
+    eq(e.stats.turnsTaken, e.turn, 'turnsTaken tracks the turn number');
+
+    // state exposes all of it to the renderer
+    const st = e.state.stats;
+    for (const k of STAT_CONTRACT) eq(typeof st[k], 'number', `state.stats.${k} reaches the renderer`);
+  });
+
   // ── report ---------------------------------------------------------------
   let passed = 0, failed = 0;
   for (const r of results) {

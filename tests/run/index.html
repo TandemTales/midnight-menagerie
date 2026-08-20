@@ -452,6 +452,33 @@ async function main() {
   }
   say(`<pre class="ok">${resumeOk}/${resumeTried} resumed identically and were still playable</pre>`);
 
+  /* ── content registries on the REAL path ───────────────────────────────────
+     scenes/combat.js registered STATUS_TRICK_DEFS on its standalone deep-link
+     path and the run layer did not, so every `addCard('clutter')` an enemy made
+     during an actual expedition logged "unknown card" and added nothing — Lost
+     Luggage and the Grand Coatcheck had no deck interference at all in the
+     shipped game while looking perfect in a deep-linked fight. Exactly the
+     asymmetry CONTRACTS.md rule 9 is about, so it gets asserted against the
+     real `run.buildCombat()`, not a mock.                                     */
+  say('<h2>content registries (the real buildCombat path)</h2>');
+  {
+    resetMeta();
+    const run = new Run({ companion: 'marmalade', kid: 'maya', seed: 4242 });
+    const node = run.map.nodes.find(n => run.sceneFor(n) === 'combat') || run.map.nodes[0];
+    const eng = await run.buildCombat(node);
+    // every id enemy content resolves by name
+    for (const id of ['clutter', 'drowsy']) {
+      check(!!eng.resolveCardDef(id),
+        `buildCombat: addCard('${id}') would find no card — enemy deck interference is inert`);
+    }
+    for (const id of ['dust-bunny', 'coatrack-crawler']) {
+      check(!!eng.enemyDefs.get(id), `buildCombat: summon('${id}') would find no enemy`);
+    }
+    check(eng.cardDefs.size > 100, `buildCombat: only ${eng.cardDefs.size} card defs registered`);
+    say(`<pre class="ok">${eng.cardDefs.size} card defs · ${eng.enemyDefs.size} enemy defs`
+      + ` · clutter/drowsy/dust-bunny/coatrack-crawler all resolve</pre>`);
+  }
+
   /* ── quitting mid-Scuffle ──────────────────────────────────────────────────
      THE regression. Reloading during a fight used to hand the player the room:
      the node came back marked visited, at full Courage, with no reward and no

@@ -54,29 +54,58 @@ const PORTRAITS = new URL('../../assets/portraits/', import.meta.url).href;
  * Matched on `node.roomName` (state/mapgen.js authors all 340). First hit wins,
  * and anything unmatched falls back to the region — never worse than before.
  */
+/** Run region slugs are not all atmosphere keys. */
+const REGION_KEY = {
+  'sleeping-quarters': 'sleeping', 'kitchens-cellars': 'kitchens', cellars: 'kitchens',
+  conservatory: 'greenhouse', 'study-library': 'study', library: 'study',
+  'attic-observatory': 'attic', observatory: 'attic', ossuary: 'crypt',
+  'hedge-maze': 'hedge', 'secret-passages': 'passages', 'pumpkin-grounds': 'pumpkin',
+};
+
 const ROOM_MOOD = [
-  [/ballroom|music|dance|salon|revels|velvet|mask room|supper room/i, 'ballroom'],
-  [/dining|breakfast|refreshment|pantry|kitchen|scullery|larder|milk|flour|spice|pastry|bottle|dish/i, 'kitchens'],
-  [/librar|study|book|read|archive|scribe|map room|writing|portrait|globe|curiosit|reference|newspaper|letter/i, 'study'],
+  // the Foyer's own grand spaces must win before the catch-all "…Hall" rule
+  [/vestibule|entry hall|entrance|grand staircase|main stair|front hall/i, 'foyer'],
+  [/ballroom|music|dance|salon|revels|velvet|mask room|supper|drawing room|reception|receiving/i, 'ballroom'],
+  [/dining|breakfast|refreshment|pantry|kitchen|scullery|larder|milk|flour|spice|pastry|bottle|dish|buttery/i, 'kitchens'],
+  [/librar|study|book|read|archive|scribe|map room|writing|portrait|globe|curiosit|reference|newspaper|letter|register|parlou?r/i, 'study'],
   [/nurser|playroom|toy|doll|cradle|schoolroom|story|rocking|music box|blanket/i, 'nursery'],
   [/bedroom|bedchamber|sleep|dressing|canopy|box room|underbed|guest suite|guest hall/i, 'sleeping'],
   [/attic|loft|trunk|observator|telescope|star|moon dome|astronom|weather/i, 'attic'],
-  [/lamp|candle|wax|lantern|sconce|wick|boiler|chimney|gas valve|match safe|reflector|glow/i, 'lampworks'],
-  [/crypt|vault|coffin|burial|ossuar|tomb|name vault/i, 'crypt'],
+  [/lamp|candle|wax|lantern|sconce|wick|boiler|chimney|gas valve|match safe|reflector|glow|bell/i, 'lampworks'],
+  [/crypt|vault|coffin|burial|ossuar|tomb|marble/i, 'crypt'],
   [/greenhouse|conservator|potting|moss|cactus|seed|garden|mushroom|compost|leaf/i, 'greenhouse'],
   [/bath|wash|steam|sauna|shower|cistern|pump|pipe|towel|locker|drying/i, 'bathhouse'],
   [/kennel|animal|dog|cat room|groom|feed|collar|treat|veterinar|quarantine/i, 'kennels'],
   [/hedge|maze|terrace|court|grounds|pumpkin|balcony|fountain/i, 'hedge'],
   [/grave|mausoleum|memorial|headstone/i, 'graveyard'],
-  [/passage|crawlspace|junction|behind the|catwalk|landing|corridor|stair|walk|arcade|gallery|hall/i, 'passages'],
+  [/passage|crawlspace|junction|behind the|catwalk|landing|corridor|stair|walk|arcade|gallery|cloak|coat room|hall/i, 'passages'],
 ];
 
-/** The atmosphere region a node should actually play in. */
-function moodForRoom(roomName, region) {
+/**
+ * A boss gets a room nobody else in its region fights in. Round 1 put The
+ * Butler in the same warm gallery as the first Dust Bunny of the run.
+ */
+const BOSS_MOOD = {
+  // The Butler's Receiving Chamber goes COLD. Every ordinary Foyer room is warm
+  // candlelight; the one room where the house decides whether you belong is
+  // stone and spectral light, and no Scuffle in the region shares it.
+  foyer: 'crypt', nursery: 'attic', sleeping: 'passages', kitchens: 'crypt',
+  greenhouse: 'graveyard', graveyard: 'crypt', study: 'attic', attic: 'lampworks',
+  lampworks: 'crypt', ballroom: 'crypt', hedge: 'graveyard', passages: 'crypt',
+  bathhouse: 'crypt', kennels: 'hedge',
+};
+
+/** The atmosphere region a node should actually play in. Exported so a test
+ *  can assert the whole 340-room table without booting a scene. */
+export function moodForRoom(roomName, region, arena) {
+  const base = REGION_KEY[region] || region || 'foyer';
+  if (arena === 'boss') return BOSS_MOOD[base] || base;
   const n = String(roomName || '');
   if (n) for (const [re, key] of ROOM_MOOD) if (re.test(n)) return key;
-  return region || 'foyer';
+  return base;
 }
+
+
 
 export class CombatScene extends Scene {
   constructor(ctx) {
@@ -133,10 +162,18 @@ export class CombatScene extends Scene {
     this._ro.observe(this.root);
 
     this._syncAll();
-    if (this.arena === 'boss' || this.arena === 'elite') await this._arenaEntrance();
-    await this.engine.startCombat();
-    await this._settle();
-    this._opening = false;
+
+    /* ── DO NOT AWAIT THE FIGHT HERE ────────────────────────────────────────
+       `core/scenes.js#go` awaits `enter()` and only THEN calls
+       `transition.reveal()`. Round 1 awaited `startCombat()` and `_settle()`
+       inside `enter()`, so the opening banner, the opening statuses, the
+       shuffle and the first turn all played to a covered screen — that is the
+       "six seconds of near-black" the playtester measured, and no amount of
+       trimming animation would have fixed it while the veil was still down.
+
+       Returning here lifts the veil on a built, lit, populated board, and the
+       fight opens in front of the player. */
+    this._boot = this._begin();
     // The keyboard path starts IN the hand. CONTRACTS §6 wants a keyboard route
     // to every action and `ui/hand.js` already implements the whole thing
     // (1-9 select, arrows, Enter to play, Tab to cycle targets, Esc to cancel);
@@ -144,6 +181,19 @@ export class CombatScene extends Scene {
     // left BODY. `focusHand` is bound to Tab in `_bindUi`; the scene does NOT
     // grab focus on entry, because auto-lifting a card for a mouse player who
     // never touched the keyboard is worse than the problem it solves.
+  }
+
+  /** The fight's opening, played AFTER the transition veil lifts. */
+  async _begin() {
+    try {
+      if (this.arena === 'boss' || this.arena === 'elite') await this._arenaEntrance();
+      if (!this.engine) return;
+      await this.engine.startCombat();
+      await this._settle();
+    } catch (e) {
+      if (this.engine) console.error('[combat] startCombat', e);
+    }
+    this._opening = false;
   }
 
   /**
@@ -162,7 +212,7 @@ export class CombatScene extends Scene {
       || (this.engine.enemies || []).reduce(
         (t, e) => (e.tier === 'boss' ? 'boss' : t === 'boss' ? t : e.tier === 'elite' ? 'elite' : t), 'standard');
     this.arena = tier === 'boss' ? 'boss' : tier === 'elite' ? 'elite' : 'normal';
-    this.mood = moodForRoom(this.roomName, this.region);
+    this.mood = moodForRoom(this.roomName, this.region, this.arena);
 
     this.root.dataset.arena = this.arena;
     this.root.dataset.mood = this.mood;
@@ -1039,6 +1089,8 @@ export class CombatScene extends Scene {
 
   async _drain() {
     while (this._q.length) {
+      // the scene can be torn down mid-drain (defeat navigates to gameover)
+      if (!this.engine) { this._q.length = 0; return; }
       const ev = this._q.shift();
       try { await this._animate(ev); } catch (e) { console.error('[combat] animate ' + ev.type, e); }
     }
@@ -1062,6 +1114,7 @@ export class CombatScene extends Scene {
   /* ══ the animator ═══════════════════════════════════════════════════════ */
   async _animate(ev) {
     const E = this.engine;
+    if (!E) return;                    // torn down while this event was queued
     switch (ev.type) {
 
       case 'combat:start':

@@ -252,11 +252,25 @@ const PROPS = {
     faceY: -0.72, faceScale: 0.78,
   }),
   'patchwork-giant': (b, rnd) => ({ front: stitches(b, rnd, 5), faceY: -1.25, faceScale: 0.95 }),
+  /**
+   * The Butler. He is the 250-Courage region boss and round 1 drew him as a
+   * grey blob with two eyes, because the only props he had were a 48px collar
+   * and a bow tie the size of a coin, both filled in his own coat colour.
+   * A butler is READ from three things — a white shirt front, a wing collar and
+   * a black tie — so all three are now full-size and in contrasting fills.
+   */
   butler: (b) => ({
-    back: `<path class="rg-shade" d="M${-b.w * 0.95},${-b.h * 1.5} q${b.w * 0.95},${b.h * 0.6} ${b.w * 1.9},0 l${-b.w * 0.15},${b.h * 1.5} h${-b.w * 1.6} Z"/>`,
-    front: `<path class="rg-collar" d="M${-24},${-b.h * 1.62} l24,26 l24,-26 l-10,-12 h-28 Z"/>`
-      + `<path class="rg-bow" d="M-16,${-b.h * 1.5} l16,10 l16,-10 l-16,-10 Z"/>`,
-    faceY: -1.72, faceScale: 0.86,
+    back: `<path class="rg-shade" d="M${-b.w * 1.02},${-b.h * 1.46} q${b.w * 1.02},${b.h * 0.62} ${b.w * 2.04},0 l${-b.w * 0.2},${b.h * 1.46} h${-b.w * 1.64} Z"/>`
+      // coat tails, so the silhouette says "formal" from across the room
+      + `<path class="rg-shade" d="M${-b.w * 0.62},${-b.h * 0.62} q${-b.w * 0.34},${b.h * 0.5} ${-b.w * 0.18},${b.h * 0.62} l${b.w * 0.5},${-b.h * 0.16} Z"/>`
+      + `<path class="rg-shade" d="M${b.w * 0.62},${-b.h * 0.62} q${b.w * 0.34},${b.h * 0.5} ${b.w * 0.18},${b.h * 0.62} l${-b.w * 0.5},${-b.h * 0.16} Z"/>`,
+    // a starched shirt front: the one bright shape on an otherwise black rig
+    front: `<path class="rg-shirt" d="M${-b.w * 0.3},${-b.h * 1.5} L0,${-b.h * 1.16} L${b.w * 0.3},${-b.h * 1.5} L${b.w * 0.22},${-b.h * 0.5} h${-b.w * 0.44} Z"/>`
+      + `<path class="rg-collar" d="M${-b.w * 0.42},${-b.h * 1.62} l${b.w * 0.42},${b.h * 0.46} l${b.w * 0.42},${-b.h * 0.46} l${-b.w * 0.16},${-b.h * 0.2} h${-b.w * 0.52} Z"/>`
+      + `<path class="rg-bow" d="M${-b.w * 0.3},${-b.h * 1.2} l${b.w * 0.3},${b.h * 0.13} l${b.w * 0.3},${-b.h * 0.13} l${-b.w * 0.3},${-b.h * 0.13} Z"/>`
+      + `<circle class="rg-metal" cx="0" cy="${-b.h * 0.92}" r="5"/>`
+      + `<circle class="rg-metal" cx="0" cy="${-b.h * 0.72}" r="5"/>`,
+    faceY: -1.76, faceScale: 0.9,
   }),
   governess: (b) => ({
     back: `<path class="rg-bun" d="M0,${-b.h * 1.98} a24,20 0 1 0 0.1,0 Z"/>`

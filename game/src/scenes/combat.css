@@ -219,7 +219,11 @@
 .rg-hat { fill: var(--e3); }
 .rg-mane, .rg-hair, .rg-bun { fill: var(--e3); }
 .rg-dress { fill: var(--e2); opacity: .92; }
-.rg-collar, .rg-bow { fill: var(--e2); }
+/* A butler is read from a white shirt front, a wing collar and a black tie.
+   All three now use palette slot 3 (the light one) against the coat. */
+.rg-collar { fill: var(--e3); }
+.rg-shirt { fill: var(--e3); opacity: .96; }
+.rg-bow { fill: color-mix(in srgb, var(--e1) 82%, var(--ink-900)); }
 .rg-claw { fill: var(--e2); }
 .rg-neck { fill: none; stroke: var(--e1); stroke-width: 16; stroke-linecap: round; }
 .rg-head { fill: var(--e1); }
@@ -1100,9 +1104,10 @@
    ========================================================================= */
 
 /* the room's name, stated once on entry and then left in the corner */
+/* Top-LEFT, under the HUD: the centre column belongs to the intent stack, and
+   a boss's intent sits high enough to collide with anything put up there. */
 .cb-room {
-  position: absolute; left: 50%; top: 74px;
-  transform: translateX(-50%);
+  position: absolute; left: clamp(16px, 2vw, 34px); top: 52px;
   z-index: 40;
   pointer-events: none;
   font-family: var(--font-display);
@@ -1146,7 +1151,7 @@
 /* ── Big Scare: staged, lit, a step back from the intimate framing ──────── */
 .cb-root[data-arena="elite"] .cb-arena { opacity: .85; }
 .cb-root[data-arena="elite"] .cb-enemy__stage {
-  --e-h: min(calc(300px * var(--e-scale)), calc(100vh - 420px));
+  --e-h: min(calc(300px * var(--e-scale)), calc(100vh - 455px));
 }
 .cb-root[data-arena="elite"] .cb-field { top: 54px; }
 
@@ -1159,17 +1164,19 @@
     transparent 74%);
 }
 .cb-root[data-arena="boss"] .cb-field {
-  top: 48px; bottom: 33%;
+  top: 48px; bottom: 36%;
 }
 /* THE size change. A 1.5-scale boss was capped to the same ~340px as a trash
    mob because the cap was written for a four-up formation. A boss is alone. */
+/* Sized so the stage AND the name plate fit inside the field: the field is
+   (100vh - 48 - 33%) tall, less the intent stack's 96px and the plate's ~44. */
 .cb-root[data-arena="boss"] .cb-enemy__stage {
-  --e-h: min(calc(430px * var(--e-scale)), calc(100vh - 330px));
+  --e-h: min(calc(430px * var(--e-scale)), calc(100vh - 505px));
   width: clamp(calc(150px * var(--e-scale)),
                calc(var(--e-h) * var(--e-aspect)),
                min(560px, 40vw));
 }
-.cb-root[data-arena="boss"] .cb-enemies { padding-top: 128px; }
+.cb-root[data-arena="boss"] .cb-enemies { padding-top: 72px; }
 .cb-root[data-arena="boss"] .cb-enemy__name { font-size: var(--fs-md); letter-spacing: .22em; }
 .cb-root[data-arena="boss"] .cb-enemy__bar { height: 18px; }
 /* a boss's plate must not be read through its own legs */

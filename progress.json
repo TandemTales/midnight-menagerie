@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T12:54:03",
+ "updated": "2026-08-20T13:04:42",
  "wave": 3,
  "waveLabel": "Closing the seams",
  "headline": "A full playthrough found that every module passes its own tests and silently no-ops at the join. Fixing that class of bug.",
@@ -22,8 +22,8 @@
    "name": "Combat engine",
    "desc": "Turn rules, damage pipeline, statuses, intents, deterministic + headless",
    "status": "done",
-   "round": 4,
-   "verdict": "542 assertions with the strict Proxy armed. Snack API and onSnackUsed hook, state cache rebuilt as a revision counter, cost composition documented.",
+   "round": 5,
+   "verdict": "590 assertions. Stats audit: 2 counters were declared and never written, 1 could never work. Contract test now fails if any counter stays at zero in a scripted fight.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -374,6 +374,14 @@
   {
    "t": "2026-08-20T12:54:03",
    "msg": "Two more inert mechanics found: the Butler's Roughhousing rule could never fire, and Lost Luggage's deck interference adds nothing in a real run."
+  },
+  {
+   "t": "2026-08-20T13:04:42",
+   "msg": "Engine round 5: the dead-counter bug had a twin sitting next to it. damageTakenThisTurn was also never written, and livesSpentThisTurn could never have worked."
+  },
+  {
+   "t": "2026-08-20T13:04:42",
+   "msg": "Boss now has its own arena: Receiving Chamber, distinct palette, the Butler large and centred."
   }
  ]
 }

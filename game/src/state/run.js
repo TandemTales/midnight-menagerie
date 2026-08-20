@@ -943,16 +943,21 @@ export class Run {
    * This is the tenth time: if the screen ended up anywhere else, or on a combat
    * scene holding a stand-in engine, put the real fight up.
    */
-  _ensureCombatOnScreen(engine, params) {
+  _ensureCombatOnScreen(engine, params, tries = 0) {
     const scenes = this.ctx && this.ctx.scenes;
-    if (!scenes) return;
-    const settled = () => scenes.currentName === 'combat'
-      && scenes.current && scenes.current.engine === engine;
-    if (!scenes.busy) { if (!settled()) scenes.go('combat', params); return; }
-    const off = bus.on('scene:entered', () => {
-      off();
-      if (!settled()) scenes.go('combat', params);
-    });
+    if (!scenes || tries > 40) return;                 // ~2.5s, then give up quietly
+    if (this.combat !== engine) return;                // something else took over
+    if (scenes.currentName === 'combat' && scenes.current && scenes.current.engine === engine) return;
+
+    // `SceneManager.go` DROPS a navigation while another is in flight, and
+    // `scene:entered` fires *before* `busy` is cleared — so waiting on that
+    // event and calling `go` from it gets dropped too. Both the title's own
+    // navigation and this one were lost that way when Continue was clicked
+    // while the title screen's own entrance transition was still running.
+    // Poll instead: cheap, bounded, and it cannot be raced.
+    const again = () => setTimeout(() => this._ensureCombatOnScreen(engine, params, tries + 1), 60);
+    if (scenes.busy) { again(); return; }
+    Promise.resolve(scenes.go('combat', params)).then(again, again);
   }
 
   /**

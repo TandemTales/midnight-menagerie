@@ -257,7 +257,10 @@ export const NODE_INFO = {
   [NodeType.BIG_SCARE]: { label: 'Big Scare',   blurb: 'A named horror holds this room. Harder, and worth it.',      reward: 'A Keepsake · more Lost Things' },
   [NodeType.BOSS]:      { label: 'Boss',        blurb: 'The keeper of this wing. The way onward is behind it.',       reward: 'A Boss Keepsake · the next region' },
   [NodeType.SAFE]:      { label: 'Safe Room',   blurb: 'Barricade the door, drag the table over, hang the blankets.', reward: 'Rest · upgrade a Trick · talk' },
-  [NodeType.SHOP]:      { label: 'Lost Things', blurb: 'Mr. Moth trades in buttons, keys and things people dropped.', reward: 'Spend Lost Things' },
+  // The node is "Mr. Moth's" and the currency is "Lost Things".  The key used to
+  // call the node "Lost Things" too, so the legend, the shop sign and the wallet
+  // were three different things wearing one name.
+  [NodeType.SHOP]:      { label: "Mr. Moth's",  blurb: 'Mr. Moth trades in buttons, keys and things people dropped.', reward: 'Spend Lost Things' },
   [NodeType.CURIOSITY]: { label: 'Curiosity',   blurb: 'The house is doing something odd in here. Your call.',        reward: 'Unknown · sometimes a Clue' },
   [NodeType.TREASURE]:  { label: 'Treasure',    blurb: 'Something worth carrying out has been left behind.',          reward: 'A Keepsake' },
   [NodeType.RESCUE]:    { label: 'Rescue',      blurb: 'A Companion is trapped in here. It has been a long time.',    reward: 'Free a Menagerie Companion' },
@@ -416,7 +419,12 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
     }
   }
   // Trim any row the walks left wider than the plan wants, from the edges in.
-  for (let r = 1; r < lastWalk; r++) {
+  // `lastWalk` is included: it was not, and `wantAt` asks for 2 there, so the
+  // wing never actually closed towards the boss — the walks left a mean of 4.5
+  // rooms on the last row, all of them feeding the boss.  That is both wrong on
+  // the sheet (a wing that fans OUT at its far end) and expensive now that the
+  // whole row is the guaranteed Safe Room.
+  for (let r = 1; r <= lastWalk; r++) {
     const want = Math.min(lanes, wantAt(r));
     let cs = cols(r);
     while (cs.length > want + 1) {
@@ -584,8 +592,9 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
       && !adjacentTypes(n).has(NodeType.BIG_SCARE)
       && !sameRowNeighbourTypes(n).has(NodeType.BIG_SCARE),
     // Never two Safe Rooms in a row (along a path or side by side); never on the
-    // row before the boss, and never on row 14 whichever way you count it.
-    [NodeType.SAFE]: (n) => n.row >= 4 && n.row !== lastWalk && n.row !== 13 && (n.row + 1) !== 14
+    // guaranteed pre-boss row (that whole row is already Safe, see below), and
+    // never on row 14 whichever way you count it.
+    [NodeType.SAFE]: (n) => n.row >= 4 && n.row !== lastWalk && n.row !== 13
       && !adjacentTypes(n).has(NodeType.SAFE)
       && !sameRowNeighbourTypes(n).has(NodeType.SAFE),
     [NodeType.SHOP]: (n) => n.row >= 3 && n.row !== lastWalk
@@ -598,20 +607,58 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
     [NodeType.CURIOSITY]: (n) => n.row >= 2,
   };
 
-  // A Safe Room on the last legal row before the boss: likely, never certain.
-  // (Only the paths that happen to run through it get the rest — which is the
-  // decision.  StS guarantees this; we deliberately do not.)
-  if (quota[NodeType.SAFE] > 0 && rng.chance(0.80)) {
-    const lastSafeRow = rowsOf[lastWalk - 1] || [];
-    const cand = rng.shuffle(lastSafeRow.filter(n => !n.type));
-    for (const n of cand) {
-      if (n.row !== 13 && (n.row + 1) !== 14) { n.type = NodeType.SAFE; quota[NodeType.SAFE]--; break; }
+  // ── The guaranteed Safe Room at the boss's door ───────────────────────────
+  //
+  // This used to be an 80% chance on the row two before the boss, so it could be
+  // routed past, and 20% of sheets simply did not have one.  The balance sim
+  // then played whole regions with real decks and put the entire survival gap on
+  // that one line: 0.7 Safe Room rests per expedition, region survival 46.7%
+  // against a 60-75% target, and the boss won 15% of the time at the Courage the
+  // player actually arrived with.  Handing the player one extra rest's worth of
+  // Courage at the door — and nothing else — moved the boss to 45.8%.
+  //
+  // So it is now a guarantee and not a gift: EVERY room on the last walkable row
+  // is a Safe Room, which is exactly what Slay the Spire does with the floor
+  // before an act boss.  Every node on that row feeds the boss and nothing else
+  // does, so there is no route that misses it and no routing decision to get
+  // wrong.  Two consequences, both deliberate:
+  //   · the row-14 taboo does not apply here.  In a 15-row wing the pre-boss row
+  //     IS row index 13; a superstition about numbering does not get to cost the
+  //     player the run.
+  //   · two Safe Rooms may sit side by side on this row.  The rule that matters
+  //     is "never two rests in a row along a PATH", and that still holds: the
+  //     rooms on this row are alternatives, never a sequence, and the general
+  //     rules below keep any Safe Room off the row that feeds it.
+  const doorRow = rowsOf[lastWalk] || [];
+  for (const n of doorRow) n.type = NodeType.SAFE;
+  // The old opportunistic placement cost one from the quota; so does this, so
+  // the sheet's total Safe count is unchanged and only its placement moved.
+  if (doorRow.length) quota[NodeType.SAFE] = Math.max(0, (quota[NodeType.SAFE] || 0) - 1);
+
+  /**
+   * Is the boss still reachable from the door if you refuse to enter any room
+   * in `blocked`?  (Same question the hazard placer asks about its wings.)
+   */
+  const bossReachableAvoiding = (blocked) => {
+    const seen = new Set();
+    const q = rowsOf[0].filter(n => !blocked.has(n.id)).map(n => n.id);
+    for (const id of q) seen.add(id);
+    while (q.length) {
+      const cur = byId[q.shift()];
+      if (!cur) continue;
+      for (const id of cur.next) {
+        if (id === boss.id) return true;
+        if (blocked.has(id) || seen.has(id)) continue;
+        seen.add(id); q.push(id);
+      }
     }
-  }
+    return false;
+  };
 
   // Place scarce, heavily-constrained types first.
   const order = [NodeType.RESCUE, NodeType.BIG_SCARE, NodeType.SAFE, NodeType.TREASURE,
                  NodeType.SHOP, NodeType.UNKNOWN, NodeType.CURIOSITY];
+  const scares = new Set();
   for (const type of order) {
     let need = quota[type] || 0;
     if (!need) continue;
@@ -621,7 +668,19 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
     if (type === NodeType.TREASURE)  pool.sort((a, b) => Math.abs(a.row - rows * 0.55) - Math.abs(b.row - rows * 0.55));
     for (const n of pool) {
       if (need <= 0) break;
-      if (rules[type](n)) { n.type = type; need--; }
+      if (!rules[type](n)) continue;
+      // EVERY Big Scare must be avoidable.  Same-row and along-path adjacency
+      // used to be the only brakes, and they are local: with the boss's door row
+      // taken out of the content pool the deepest-first pass packed two Big
+      // Scares onto the three-room row that feeds it, and then every single
+      // route had to fight one on the way to a boss it now had no Courage for.
+      // Elite win rate fell 69% -> 54% and whole-region survival went DOWN.
+      // A named horror you cannot route around is not a decision, it is a toll.
+      if (type === NodeType.BIG_SCARE) {
+        scares.add(n.id);
+        if (!bossReachableAvoiding(scares)) { scares.delete(n.id); continue; }
+      }
+      n.type = type; need--;
     }
   }
   for (const n of open) if (!n.type) n.type = NodeType.SCUFFLE;
@@ -738,13 +797,19 @@ function assignRoomNames(regionId, all, boss, rng, lanes, rows) {
   for (const n of all) {
     const prefs = PREFERRED[n.type] || ['sc'];
     let room = null;
+    // Least-used room across the WHOLE preference list, not just the first
+    // non-empty tag.  Safe Rooms prefer 'bf' and most wings author exactly one
+    // blanket fort, so first-tag-wins put four rooms called "Blanket Room —
+    // West / Lower / Far End / Back" on one sheet — and with the guaranteed
+    // pre-boss row, two of them side by side at the boss's door.  Falling
+    // through to the next tag once a pool is used up keeps the names varied.
     for (const tag of prefs) {
       const pool = pools[tag];
       if (!pool || !pool.length) continue;
-      // least-used entry in this pool, stable order
-      room = pool.reduce((best, r) =>
-        (uses.get(r.name) || 0) < (uses.get(best.name) || 0) ? r : best, pool[0]);
-      break;
+      const best = pool.reduce((b, r) =>
+        (uses.get(r.name) || 0) < (uses.get(b.name) || 0) ? r : b, pool[0]);
+      if (!room || (uses.get(best.name) || 0) < (uses.get(room.name) || 0)) room = best;
+      if ((uses.get(room.name) || 0) === 0) break;      // an unused room wins outright
     }
     if (!room) room = rooms[0];
     const u = uses.get(room.name) || 0;

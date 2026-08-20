@@ -192,6 +192,19 @@ export function applyDamage(engine, o) {
   defender.hitsTakenThisTurn += 1;
   if (t.hpLoss > 0) defender.unblockedHitsThisTurn += 1;
 
+  // engine.stats — the board-wide mirror content reads. "Damage" here means
+  // Courage actually removed, not the pre-Guard number, which is the same
+  // definition the run layer's end screen uses. Guard absorbing a swing means
+  // no damage was dealt.
+  const st = engine.stats;
+  if (defender.side === 'player') {
+    st.damageTakenThisTurn += t.hpLoss;
+    st.damageTakenThisCombat += t.hpLoss;
+  } else if (attacker && attacker.side === 'player') {
+    st.damageDealtThisTurn += t.hpLoss;
+    st.damageDealtThisCombat += t.hpLoss;
+  }
+
   engine._emit(EV.DAMAGE, {
     sourceId: attacker ? attacker.id : null,
     sourceName: attacker ? attacker.name : (o.cause || 'the house'),
