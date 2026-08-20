@@ -35,6 +35,7 @@
 
 import { Intent } from '../data/schema.js';
 import { intentFamily } from '../combat/intents.js';
+import { getStatus } from '../combat/statuses.js';
 import { iconSvg, hasIcon } from './icons.js';
 
 const NS = 'http://www.w3.org/2000/svg';
@@ -470,12 +471,36 @@ export class IntentView {
 
 function pipKey(list) { return (list || []).map(s => s.id + ':' + s.stacks).join('|'); }
 
-/** An intent pip wears the real status icon — 118 of them exist in icons.js. */
+/**
+ * The icon id for a status, from `ui/icons.js` (118 glyphs, the status set
+ * included). Shared with `ui/enemy.js` so the intent pip, the enemy row and
+ * the player row can never disagree about what Haunt looks like.
+ *
+ * Two lookups, because the two callers carry different shapes: `engine.state`
+ * status snapshots include `icon`, but the status objects on an `Intent` do
+ * not — `combat/intents.js#buildIntent` copies only id/stacks/to/name/kind —
+ * so the definition is consulted directly. Without that, Roused (whose icon is
+ * `bell-small`) rendered as a question mark, which on an intent reads as
+ * "unknown intent" and is worse than no pip at all.
+ *
+ * The last resort is a buff/debuff arrow, never a `?`.
+ */
+export function statusIconId(s) {
+  if (!s) return 'status.unknown';
+  const def = s.icon ? null : safeStatus(s.id);
+  const id = s.icon || (def && def.icon) || s.id;
+  if (hasIcon(`status.${id}`)) return `status.${id}`;
+  if (hasIcon(`status.${s.id}`)) return `status.${s.id}`;
+  const kind = s.kind || (def && def.kind);
+  return kind === 'buff' ? 'intent.buff' : kind === 'debuff' ? 'intent.debuff' : 'status.unknown';
+}
+
+function safeStatus(id) {
+  try { const d = getStatus(id); return d && !d._missing ? d : null; } catch { return null; }
+}
+
 function statusPipIcon(s) {
-  const id = s.icon || s.id;
-  const key = hasIcon(`status.${id}`) ? `status.${id}`
-    : hasIcon(`status.${s.id}`) ? `status.${s.id}` : 'status.unknown';
-  return iconSvg(key, { cls: 'cb-intent__pipicon' });
+  return iconSvg(statusIconId(s), { cls: 'cb-intent__pipicon' });
 }
 
 export default IntentView;

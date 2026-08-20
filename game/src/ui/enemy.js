@@ -23,8 +23,8 @@
  */
 
 import { Clock } from '../core/clock.js';
-import { IntentView } from './intent.js';
-import { iconSvg, hasIcon } from './icons.js';
+import { IntentView, statusIconId } from './intent.js';
+import { iconSvg } from './icons.js';
 
 const NS = 'http://www.w3.org/2000/svg';
 const TAU = Math.PI * 2;
@@ -1076,12 +1076,9 @@ function statusTip(s) {
   return `${s.name}|${s.desc || ''}|${s.decay === 'turnEnd' ? 'Wears off at the end of its turn.' : s.decay === 'turnStart' ? 'Ticks at the start of its turn.' : 'Lasts the whole Scuffle.'}`;
 }
 
-/** The status set from ui/icons.js, resolved through the engine's `icon` field. */
+/** The status set from ui/icons.js. One resolver, shared with the intent pips. */
 export function statusGlyph(s) {
-  const id = s.icon || s.id;
-  const key = hasIcon(`status.${id}`) ? `status.${id}`
-    : hasIcon(`status.${s.id}`) ? `status.${s.id}` : 'status.unknown';
-  return iconSvg(key, { cls: 'cb-status__g' });
+  return iconSvg(statusIconId(s), { cls: 'cb-status__g' });
 }
 function esc(s) { return String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
 

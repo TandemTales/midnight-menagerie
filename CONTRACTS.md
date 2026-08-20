@@ -87,7 +87,11 @@ report the request instead — the integrator applies it.
 | atmosphere | `src/fx/atmosphere.js`, `src/fx/transition.js`, `src/fx/shaders/**`, `src/core/renderer.js` (co-owned with lead — coordinate) |
 | ui-chrome | `src/ui/tooltip.js`, `src/ui/hud.js`, `src/ui/modal.js`, `src/ui/settings.js`, `src/ui/deckview.js`, `src/ui/base.css`, `src/ui/tokens.css` |
 
-Shared, append-only: `docs/NOTES.md` (one dated section per agent, never edit others').
+Notes: write **your own file** at `docs/notes/<date>-<your-area>.md`, then add one row to the
+table in `docs/NOTES.md`. Never write to another agent's note file. A single shared append-only
+file was tried first; two agents lost their sections to concurrent whole-file writes, because
+"append-only" is a convention and `git restore`, a stale read, or a scripted rewrite all break it
+silently. One file per agent makes the collision structurally impossible.
 
 ## Module seams
 

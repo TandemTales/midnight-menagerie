@@ -568,8 +568,10 @@ export class CombatScene extends Scene {
     turn.tabIndex = 0;
     turn.dataset.tipTitle = 'Turn';
     turn.dataset.tip = 'Which round of the Scuffle this is. Some Tricks and some enemies count turns.';
-    turn.innerHTML = '<span class="mm-hud__t">Turn 1</span>';
-    this.$turnN = turn.querySelector('.mm-hud__t');
+    // `mm-hud__t` is the shared HUD's own generic text span (hud.js#text) and
+    // reusing it made `.mm-hud__t` ambiguous. This chip owns its own class.
+    turn.innerHTML = '<span class="mm-hud__t cb-hud__turn">Turn 1</span>';
+    this.$turnN = turn.querySelector('.cb-hud__turn');
     this.hud.addChip(turn);
   }
 

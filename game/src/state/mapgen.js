@@ -563,7 +563,16 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
     clamp(Math.round(n0 * frac) + rng.range(-jitter, jitter), lo, hi);
 
   const quota = {
-    [NodeType.BIG_SCARE]: share(0.11, 2, 8) + (hauntLevel >= 3 ? 1 : 0),
+    // 0.11 of the sheet was 5.7 named horrors on a 58-room wing, and the only
+    // reason it did not read as one was that three quarters of them were parked
+    // on the two deepest rows, where any player heading for the boss simply went
+    // round.  With the boss's door row given over to the Safe Room they came
+    // forward into the wide middle of the wing, and the same quota that had been
+    // costing 0.8 elite fights per expedition started costing 1.23 — which is
+    // where the survival that the Safe Room bought was going.  Slay the Spire
+    // puts TWO elites on an act-one map of this size.  Three is our ceiling for
+    // an ordinary wing, and a haunted one earns its extra.
+    [NodeType.BIG_SCARE]: share(0.065, 2, 5) + (hauntLevel >= 3 ? 1 : 0),
     [NodeType.SAFE]:      share(0.10, 2, 6),
     [NodeType.SHOP]:      clamp(Math.round(n0 / 26) + (rng.chance(0.35) ? 1 : 0), 1, 3),
     [NodeType.TREASURE]:  share(0.06, 1, 5),
@@ -629,11 +638,13 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
   //     is "never two rests in a row along a PATH", and that still holds: the
   //     rooms on this row are alternatives, never a sequence, and the general
   //     rules below keep any Safe Room off the row that feeds it.
+  // The door row is IN ADDITION to the wing's own Safe Rooms, not instead of one
+  // of them.  Slay the Spire gives you two to three campfires an act AND the
+  // rest before the boss; taking the guarantee out of the quota measured as one
+  // extra rest per expedition instead of two, and left the boss's door as the
+  // only deep place to sit down.
   const doorRow = rowsOf[lastWalk] || [];
   for (const n of doorRow) n.type = NodeType.SAFE;
-  // The old opportunistic placement cost one from the quota; so does this, so
-  // the sheet's total Safe count is unchanged and only its placement moved.
-  if (doorRow.length) quota[NodeType.SAFE] = Math.max(0, (quota[NodeType.SAFE] || 0) - 1);
 
   /**
    * Is the boss still reachable from the door if you refuse to enter any room
@@ -885,11 +896,15 @@ function placeHazards(rng, all, rowsOf, byId, boss, rows, lanes, lastWalk, haunt
         ...h,
         rows: [r0, r1], cols: [c0, c1],
         nodeIds: members.map(n => n.id),
+        // The boundary keeps a full mark's radius clear of its members on every
+        // side (a node box is 86px on a 1010px sheet, counter-scaled up to 1.15x
+        // = 0.049 of the height), so the scene can hang the wing's name tag off
+        // the outside of the line without it ever landing on a room's icon.
         rect: {
           x0: clamp(Math.min(...xs) - 0.075, 0.012, 0.98),
           x1: clamp(Math.max(...xs) + 0.075, 0.02, 0.988),
-          y0: clamp(Math.min(...ys) - 0.045, 0.058, 0.98),
-          y1: clamp(Math.max(...ys) + 0.045, 0.02, 0.83),
+          y0: clamp(Math.min(...ys) - 0.062, 0.050, 0.98),
+          y1: clamp(Math.max(...ys) + 0.062, 0.02, 0.845),
         },
       };
     }

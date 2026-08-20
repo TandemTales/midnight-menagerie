@@ -112,7 +112,35 @@
 }
 
 /* ── route ink ──────────────────────────────────────────────────────────── */
-/* the halo: a wipe of clean paper under every pencil line */
+/* THE ROUTE GRAPH IS THE MAP.  This block was the single biggest defect on the
+   screen and it is worth writing down why, because the mistake is an easy one
+   to make again.
+   Slay the Spire's map rule has two halves and we had only implemented one:
+   "available next nodes are highlighted" — yes — "and everything else is
+   dimmed" — which we read as "and everything else is erased".  A corridor you
+   may not walk *this turn* is not noise; it is the entire reason the screen is
+   a graph and not a list of two buttons.  Every route decision a player makes
+   is made three or four rooms early, and it is made by reading the dashed
+   lines.  At .34 / 2.4px (still-ahead) and .15 / 1.8px (cut off) over the
+   plan's own navy linework, at the 0.76x the sheet fits the screen at, both
+   tiers were simply not there: 102 edges, of which a player could see the two
+   or three they were standing on.  You could not plan.  You could only step.
+   So the tiers are now separated by WEIGHT and TREATMENT, not by fading to
+   nothing:
+     walked   heavy unbroken pencil, the trail you have inked
+     open     flame, solid, arrowheaded, haloed — unmistakably the live choice
+     ahead    full-strength dashed pencil — the plan.  READABLE.  A survey draws
+              a corridor it has not measured as a dashed line, not as a rumour.
+     cut off  the same dashed pencil at survey weight: still on the sheet,
+              because the sheet is a drawing of a building, but obviously not
+              part of any route you still have.
+   The unmistakable-ness of "where you may go" is carried by colour + solidity +
+   arrowhead + the breathing pencil ring on the node, which is a far stronger
+   signal than being the only visible line on the paper. */
+
+/* the halo: a wipe of clean paper under every pencil line.  This is what keeps
+   a pencil route legible where it crosses the plan's own dense linework, so it
+   scales WITH the tier rather than being thrown away on the quiet ones. */
 .mi-halo {
   fill: none; stroke: var(--parchment);
   stroke-width: 9; stroke-linecap: round; stroke-linejoin: round;
@@ -121,31 +149,32 @@
 }
 .mi-halo.is-open   { stroke-width: 16; opacity: .95; }
 .mi-halo.is-walked { stroke-width: 17; opacity: .9; }
-.mi-halo.is-dead   { opacity: .2; stroke-width: 5; }
+.mi-halo.is-dead   { stroke-width: 8;  opacity: .5; }
+.mi-halo.is-cold   { stroke-width: 6;  opacity: .3; }
 
 .mi-edge {
   fill: none; stroke: var(--pencil);
-  stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round;
+  stroke-width: 4; stroke-linecap: round; stroke-linejoin: round;
   stroke-dasharray: 23 13;                   /* architect's dashed = possible */
   opacity: .78;
   transition: opacity var(--t-base) var(--ease-out), stroke-width var(--t-base);
 }
 .mi-edge.is-open {                            /* inked in: you can walk this now */
-  stroke: var(--mark); stroke-width: 6; stroke-dasharray: none; opacity: 1;
+  stroke: var(--mark); stroke-width: 6.4; stroke-dasharray: none; opacity: 1;
   filter: drop-shadow(0 1px 1px rgba(255,255,255,.55));
 }
 .mi-edge.is-walked {                          /* already walked: heavy pen */
   stroke: var(--pencil); stroke-width: 6.4; stroke-dasharray: none; opacity: .95;
   filter: drop-shadow(0 1px 0 rgba(255,255,255,.4));
 }
-/* Everything that is not the choice in front of you drops back to a survey
-   note.  Two tiers: still ahead of you on some route, and cut off for good. */
-.mi-edge.is-dead { opacity: .34; stroke-width: 2.4; }
-.mi-edge.is-cold { opacity: .15; stroke-width: 1.8; }
+/* still ahead of you on some route — the layer you plan on */
+.mi-edge.is-dead { opacity: .72; stroke-width: 4; }
+/* no route from where you are standing — survey weight, never invisible */
+.mi-edge.is-cold { opacity: .38; stroke-width: 2.8; }
 
 /* a passage that skips a row: drawn as one long unbroken run */
 .mi-edge--long { stroke-dasharray: 34 12; }
-.mi-edge--long.is-dead { stroke-dasharray: 30 16; }
+.mi-edge--long.is-dead { stroke-dasharray: 34 12; }
 
 /* the way in: the doorway edges read as arrivals, not as route legs */
 .mi-edge--entry { stroke: var(--mark); stroke-dasharray: 12 9; opacity: .85; }
@@ -172,7 +201,8 @@
   fill: none; stroke: currentColor; stroke-width: 3;
   stroke-dasharray: 18 11; opacity: .6;
 }
-.mi-zone-tab rect { fill: currentColor; opacity: .72; }
+.mi-zone-tab rect { fill: currentColor; opacity: .82; }
+.mi-zone-stem { stroke: currentColor; stroke-width: 3; opacity: .7; }
 .mi-zone-tab text {
   font-family: var(--font-display); font-size: 19px; font-weight: 600;
   letter-spacing: .12em; fill: var(--parchment);

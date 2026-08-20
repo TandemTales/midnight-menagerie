@@ -548,16 +548,30 @@ export class MapScene extends Scene {
 
     // hazard wings, under the route
     parts.push('<g class="mi-zones">');
+    const TAB_H = 34;
     for (const hz of map.hazards) {
       const x = hz.rect.x0 * this.SW, y = hz.rect.y0 * this.SH;
       const w = (hz.rect.x1 - hz.rect.x0) * this.SW, h = (hz.rect.y1 - hz.rect.y0) * this.SH;
       const s = seedOf(hz.id + map.regionId);
+      // The wing's name tag used to sit INSIDE the rectangle, 8px down from its
+      // top edge — which on a wing whose first room is near the top-left corner
+      // is directly over that room's mark.  A hazard banner covering the icon of
+      // the room it is warning you about is the whole warning wasted.  The tag
+      // now hangs off the outside of the boundary: above it by preference, below
+      // it when the wing is already hard against the top of the plan window.
+      // Either way it is clear of every node in the wing by construction, since
+      // mapgen keeps the boundary a full mark's radius clear of its members.
+      const tw = 28 + hz.name.length * 15.4;
+      const above = y - TAB_H - 6 >= WIN.y + 4;
+      const ty = above ? y - TAB_H - 6 : y + h + 6;
+      const tx = clampN(x + 14, WIN.x + 6, Math.max(WIN.x + 6, WIN.x + WIN.w - tw - 6));
       parts.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
         <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="22"
               fill="url(#${hz.kind === 'boon' ? 'mm-dots' : 'mm-hatch'})"/>
         <path class="mi-zone-edge" d="${roundedWobbleRect(s, x, y, w, h, 22)}"/>
-        <g class="mi-zone-tab" transform="translate(${x + 14} ${y + 8})">
-          <rect x="0" y="0" rx="4" width="${Math.min(w - 20, 28 + hz.name.length * 15.4)}" height="34"/>
+        <g class="mi-zone-tab" transform="translate(${tx.toFixed(1)} ${ty.toFixed(1)})">
+          <path class="mi-zone-stem" d="M22 ${above ? TAB_H : 0} L22 ${above ? TAB_H + 6 : -6}"/>
+          <rect x="0" y="0" rx="4" width="${tw.toFixed(1)}" height="${TAB_H}"/>
           <text x="14" y="24">${escapeHtml(hz.name.toUpperCase())}</text>
         </g>
       </g>`);
@@ -653,6 +667,13 @@ export class MapScene extends Scene {
     const m = this.model;
     const legal = new Set(this._legal());
     const reach = this._reach = reachableFrom(m.map, m.currentId);
+    // `reachableFrom` returns what you can reach FROM the seeds, so at the door
+    // the seeds themselves — the whole first row — were not in the set, and
+    // every edge leaving row one was classified "no route from here" and drawn
+    // at the faintest weight there is.  That is the exact moment the player is
+    // trying to read the sheet for the first time.  Standing at the door, the
+    // first row is ahead of you.
+    if (!m.currentId) for (const id of m.map.startIds) reach.add(id);
     // depth runs left→right, so the choice you are making is a vertical one
     this._legalIds = [...legal].sort((a, b) =>
       (m.byId.get(a)?.y ?? 0) - (m.byId.get(b)?.y ?? 0));
@@ -693,11 +714,12 @@ export class MapScene extends Scene {
       p.classList.toggle('is-dead', dead);
       p.classList.toggle('is-cold', cold);
       p.setAttribute('marker-end', open ? 'url(#mm-arrow)' : '');
-      const halo = this._halos?.get(f + '>' + t);
+      const halo = this._halos.get(f + '>' + t);
       if (halo) {
         halo.classList.toggle('is-walked', walked);
         halo.classList.toggle('is-open', open);
         halo.classList.toggle('is-dead', dead);
+        halo.classList.toggle('is-cold', cold);
       }
     }
 

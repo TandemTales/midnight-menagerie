@@ -886,22 +886,28 @@ export class Run {
       engine = null;
     }
 
-    if (!engine) {
-      // Fresh instance of the same fight. Un-bank the damage the abandoned
-      // attempt contributed, or the expedition total counts it twice.
-      this.stats.damageDealt = Math.max(0, this.stats.damageDealt - (pc.damage || 0));
-      pc.damage = 0;
-      pc.actions = [];
-      pc.choices = [];
-      pc.digest = null;
-      pc.unsafe = false;
-      engine = build();
-      mode = 'restart';
-    }
+    if (!engine) { engine = this._freshCombat(pc, node); mode = 'restart'; }
 
     this._beginCombat(engine, node, pc.type, { resumed: true, mode });
-    this._ensureCombatOnScreen(engine, { node: node.id, region: this.region, seed: this.seed });
+    this._ensureCombatOnScreen(engine, { node: node.id, region: this.region, seed: this.seed }, 0, mode);
     return mode;
+  }
+
+  /**
+   * Throw the abandoned attempt away and stand the same encounter back up from
+   * the top, at the Courage the room was entered with.
+   */
+  _freshCombat(pc, node) {
+    // Un-bank the damage the abandoned attempt contributed, or the expedition
+    // total counts it twice.
+    this.stats.damageDealt = Math.max(0, this.stats.damageDealt - (pc.damage || 0));
+    pc.damage = 0;
+    pc.actions = [];
+    pc.choices = [];
+    pc.digest = null;
+    pc.unsafe = false;
+    this.courage = Math.max(1, Math.min(this.maxCourage, pc.courageOnEntry ?? this.courage));
+    return this._buildCombat(CONTENT, node, pc.type, { histLen: pc.histLen, replay: true });
   }
 
   /**
@@ -943,11 +949,14 @@ export class Run {
    * This is the tenth time: if the screen ended up anywhere else, or on a combat
    * scene holding a stand-in engine, put the real fight up.
    */
-  _ensureCombatOnScreen(engine, params, tries = 0) {
+  _ensureCombatOnScreen(engine, params, tries = 0, mode = 'replay') {
     const scenes = this.ctx && this.ctx.scenes;
     if (!scenes || tries > 40) return;                 // ~2.5s, then give up quietly
     if (this.combat !== engine) return;                // something else took over
-    if (scenes.currentName === 'combat' && scenes.current && scenes.current.engine === engine) return;
+    if (scenes.currentName === 'combat' && scenes.current && scenes.current.engine === engine) {
+      if (mode === 'replay') setTimeout(() => this._auditResumedCombat(engine, params), 700);
+      return;
+    }
 
     // `SceneManager.go` DROPS a navigation while another is in flight, and
     // `scene:entered` fires *before* `busy` is cleared — so waiting on that
@@ -955,9 +964,52 @@ export class Run {
     // navigation and this one were lost that way when Continue was clicked
     // while the title screen's own entrance transition was still running.
     // Poll instead: cheap, bounded, and it cannot be raced.
-    const again = () => setTimeout(() => this._ensureCombatOnScreen(engine, params, tries + 1), 60);
+    const again = () => setTimeout(() => this._ensureCombatOnScreen(engine, params, tries + 1, mode), 60);
     if (scenes.busy) { again(); return; }
     Promise.resolve(scenes.go('combat', params)).then(again, again);
+  }
+
+  /**
+   * A replayed fight is rules-correct the moment the engine is rebuilt. Whether
+   * the player can SEE it is a separate question, and it is not one this file
+   * can answer on its own.
+   *
+   * `scenes/combat.js` fills its hand purely from `draw` events. A resumed
+   * engine already holds its hand and will never emit those, so today a
+   * replayed fight renders with an empty hand — mechanically perfect, unplayable
+   * to look at. The one-line fix is in that file (seed `Hand.setCards` /
+   * `Hand.draw` from `engine.piles.hand` in `_buildHand` when the engine is
+   * already started) and it is written up in docs/NOTES.md.
+   *
+   * Until it lands, this reads the scene's own public `Hand.cards()` — a
+   * read-only health check, it mutates nothing — and if the hand did not make it
+   * to the screen it drops back to a fresh instance of the same encounter, which
+   * renders correctly because the scene starts that one itself. The player loses
+   * the fight's progress rather than the ability to play. It self-heals the
+   * moment the scene seeds its hand; there is no flag to remember to flip.
+   */
+  _auditResumedCombat(engine, params) {
+    const scenes = this.ctx && this.ctx.scenes;
+    const scene = scenes && scenes.current;
+    const pc = this.pendingCombat;
+    if (!pc || !scene || this.combat !== engine) return;
+    if (scenes.currentName !== 'combat' || scene.engine !== engine) return;
+    if (!engine.started || engine.over || !engine.piles.hand.length) return;
+
+    const hand = scene.hand;
+    if (!hand || typeof hand.cards !== 'function') return;
+    const shown = hand.cards().length;
+    if (shown >= engine.piles.hand.length) return;
+
+    console.warn(`[run] the Scuffle scene showed ${shown} of ${engine.piles.hand.length} `
+      + 'Tricks in a replayed hand, so the replay is being dropped for a fresh '
+      + 'instance of the same encounter. See docs/NOTES.md → meta-run round 2.');
+    const node = this.nodeById(pc.nodeId);
+    if (!node) return;
+    this._unwireCombat();
+    const fresh = this._freshCombat(pc, node);
+    this._beginCombat(fresh, node, pc.type, { resumed: true, mode: 'restart' });
+    this._ensureCombatOnScreen(fresh, params, 0, 'restart');
   }
 
   /**
