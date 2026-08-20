@@ -28,6 +28,17 @@
 .mm-hand:focus { outline: none; }
 .mm-hand:focus-visible { outline: none; }
 
+/* Rehearsal layer (see Hand#warmRaster). On screen — the compositor skips
+   work it can prove is invisible — but at 2% and behind everything, for about
+   five frames on scene entry. */
+.mm-hand__warm {
+  position: absolute; inset: 0;
+  opacity: .02;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
 /* Off-screen sizer: lets the hand read the responsive CSS card size without
    assuming a card exists. Never visible, never hit-tested, never measured by
    the critic's `.mm-hand__cards .mm-card` selector (it is not in that layer). */

@@ -31,6 +31,8 @@ export class Actor {
     this.block = o.block | 0;
     /** @type {Map<string, number>} statusId → stacks */
     this.statuses = new Map();
+    /** Content data a status was applied with, keyed by status id. Plain data only. */
+    this.statusMeta = {};
     /** @type {Map<string, Object>} powerId → { id, name, stacks, hooks } */
     this.powers = new Map();
     this.alive = this.hp > 0;
@@ -71,6 +73,7 @@ export class Actor {
     a.block = this.block;
     a.alive = this.alive;
     a.statuses = new Map(this.statuses);
+    a.statusMeta = JSON.parse(JSON.stringify(this.statusMeta));
     a.powers = new Map();
     for (const [k, v] of this.powers) a.powers.set(k, { ...v });
     a.flags = JSON.parse(JSON.stringify(this.flags));
@@ -119,6 +122,7 @@ export class Player extends Actor {
     p.keepBlock = this.keepBlock;
     p.alive = this.alive;
     p.statuses = new Map(this.statuses);
+    p.statusMeta = JSON.parse(JSON.stringify(this.statusMeta));
     p.powers = new Map();
     for (const [k, v] of this.powers) p.powers.set(k, { ...v });
     p.flags = JSON.parse(JSON.stringify(this.flags));
@@ -194,6 +198,7 @@ export class Enemy extends Actor {
     e.block = this.block;
     e.alive = this.alive;
     e.statuses = new Map(this.statuses);
+    e.statusMeta = JSON.parse(JSON.stringify(this.statusMeta));
     e.powers = new Map();
     for (const [k, v] of this.powers) e.powers.set(k, { ...v });
     e.flags = JSON.parse(JSON.stringify(this.flags));

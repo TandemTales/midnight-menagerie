@@ -46,6 +46,9 @@
  *   onDebuffIncoming(h) a debuff is about to land. h.id, h.stacks, h.actor.
  *                     Call h.prevent() to refuse it.
  *   onBoardEvent(h)   a generic broadcast: h.event, h.data
+ *   onEnemyPhaseEnd(h) every enemy has acted and the decay buckets have run, but
+ *                     intents have NOT been redrawn yet. Arm ally buffs here so
+ *                     the intent the player reads afterwards is the true number.
  *
  * EVERY hook payload also carries:
  *   h.e / h.engine   the engine        h.stacks   the provider's stack count

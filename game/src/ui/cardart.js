@@ -253,6 +253,23 @@ function render(def, w, h, o, key) {
   return url;
 }
 
+/**
+ * Put the DECODED bitmap in the browser's image cache under the same data URL
+ * the CSS will use. Generating the PNG is only half the cost of a cold card —
+ * the other half is Blink decoding it the first time it appears as a
+ * background-image, which lands inside the frame that starts the animation.
+ */
+function predecode(url) {
+  if (typeof Image !== 'function' || DECODED.has(url)) return null;
+  DECODED.add(url);
+  if (DECODED.size > 400) DECODED.clear();
+  const img = new Image();
+  img.decoding = 'async';
+  img.src = url;
+  return img.decode ? img.decode().catch(() => {}) : null;
+}
+const DECODED = new Set();
+
 // ── warming ─────────────────────────────────────────────────────────────────
 let warmQueue = [];
 let warmRAF = 0;
@@ -295,17 +312,22 @@ export function warmArt(defs, w, h, o = {}) {
 
   return new Promise((resolve) => {
     let done = 0;
+    const decodes = [];
     const step = () => {
       warmRAF = 0;
       const t0 = (typeof performance !== 'undefined' ? performance.now() : Date.now());
       while (warmQueue.length) {
         const j = warmQueue.shift();
-        if (!CACHE.has(j.key)) { render(j.def, w, h, j.opt, j.key); done++; }
+        const url = CACHE.get(j.key) || render(j.def, w, h, j.opt, j.key);
+        if (!CACHE.has(j.key)) CACHE.set(j.key, url);
+        const d = predecode(url);
+        if (d) decodes.push(d);
+        done++;
         const now = (typeof performance !== 'undefined' ? performance.now() : Date.now());
         if (now - t0 > budget) break;
       }
       if (warmQueue.length) warmRAF = requestAnimationFrame(step);
-      else { fireReady(); resolve(done); }
+      else Promise.all(decodes).then(() => { fireReady(); resolve(done); });
     };
     if (!warmRAF) warmRAF = requestAnimationFrame(step);
     else resolve(0);

@@ -1465,6 +1465,198 @@ export async function run() {
     eq(e2.piles.hand.length, 3, 'Smothered 2 cut the draw from 5 to 3, and the floor held');
   });
 
+
+  // ══ ROUND 3 ═════════════════════════════════════════════════════════════
+
+  await atest('onEnemyPhaseEnd: a support enemy can arm an ally buff and the intent stays honest', async () => {
+    // The shipping bug: Calling Bell buffs an ally from inside its MOVE, but the
+    // ally's intent was drawn before the buff landed, so the displayed number lied.
+    // A summoner is always slot 0, so ordering support enemies last cannot fix it.
+    registerStatus({
+      id: 'test/roused', name: 'Roused', kind: 'buff', decay: 'never', desc: 'Next attack hits harder.',
+      hooks: { modifyDamageDealt: (amt, h) => amt + 2 * (h.stacks || 1) },
+    });
+
+    const attacker = {
+      id: 'test/brute', name: 'Brute', region: 'test', tier: 'normal', hp: [50, 50],
+      moves: { swing: { id: 'swing', name: 'Swing', intent: Intent.ATTACK, damage: 6, effect: (c) => c.damage(c.player, 6) } },
+      nextMove: () => 'swing',
+    };
+    // slot 0 — ordering cannot save this one
+    const bell = {
+      id: 'test/bell', name: 'Bell', region: 'test', tier: 'normal', hp: [30, 30],
+      moves: { ring: { id: 'ring', name: 'Ring', intent: Intent.BUFF, effect: () => {} } },
+      nextMove: () => 'ring',
+      onEnemyPhaseEnd: (c) => { for (const a of c.allies()) c.applyStatus(a, 'test/roused', 1); },
+    };
+
+    const e = mk({ enemies: [bell, attacker] });
+    await e.startCombat();
+    const brute = e.enemies[1];
+    eq(brute.intent.damage, 6, 'turn 1 intent is the unbuffed number');
+
+    await e.endTurn();
+    eq(brute.status('test/roused'), 1, 'the Bell armed its ally at enemy-phase end');
+    eq(brute.intent.damage, 8, 'and the intent the player now reads INCLUDES the buff');
+
+    const hp0 = e.player.hp;
+    await e.endTurn();
+    eq(hp0 - e.player.hp, 8, 'the hit landed for exactly what the intent promised');
+    eq(brute.intent.damage, 10, 'and the next intent shows the second stack');
+  });
+
+  await atest('onEnemyPhaseEnd: fires as a status/relic hook too, once, in the right window', async () => {
+    const order = [];
+    const relic = {
+      id: 'test/watcher-relic', name: 'Watcher', hooks: {
+        onEnemyPhaseEnd: () => order.push('phaseEnd'),
+      },
+    };
+    const e = mk({ relics: [relic], enemies: [dummyEnemy({ damage: 2 })] });
+    await e.startCombat();
+    e.on('*', ev => {
+      if (ev.type === 'turn:end' && ev.side === 'enemy') order.push('enemyDone');
+      if (ev.type === 'intent' && ev.reason === 'turnEnd') order.push('intentRedrawn');
+    });
+    await e.endTurn();
+    const i = (t) => order.indexOf(t);
+    ok(i('enemyDone') >= 0 && i('phaseEnd') >= 0, 'both markers were seen');
+    ok(i('enemyDone') < i('phaseEnd'), 'onEnemyPhaseEnd runs AFTER every enemy has acted');
+    ok(i('intentRedrawn') >= 0, 'intents really were redrawn (the check is not vacuous)');
+    ok(i('phaseEnd') < i('intentRedrawn'), 'and onEnemyPhaseEnd ran BEFORE they were redrawn');
+    eq(order.filter(x => x === 'phaseEnd').length, 1, 'exactly once per enemy phase');
+    ok(e.state.phase === 'player', 'and the phase settles back to the player turn');
+  });
+
+  await atest('decay: the enemyTurnEnd bucket now runs on enemies too', async () => {
+    registerStatus({
+      id: 'test/shimmer', name: 'Shimmer', kind: 'buff', decay: 'enemyTurnEnd',
+      desc: 'Expires at the end of the enemy phase.',
+    });
+    const e = mk({ enemies: [dummyEnemy({ move: 'nothing' })] });
+    await e.startCombat();
+    const en = e.enemies[0];
+    e.applyStatus(en, 'test/shimmer', 2);
+    e.applyStatus(e.player, 'test/shimmer', 2);
+    await e.endTurn();
+    eq(en.status('test/shimmer'), 1, 'an enemy-held enemyTurnEnd status decayed');
+    eq(e.player.status('test/shimmer'), 1, 'and so did the player-held one');
+    await e.endTurn();
+    eq(en.status('test/shimmer'), 0, 'gone after the second enemy phase');
+  });
+
+  await atest('House Rules: announcing replaces the source\'s previous rule by default', async () => {
+    const rule = (id, n) => ({
+      id, name: n, text: n, when: 'cardPlayed', once: true,
+      broken: () => false, onBreak: () => {},
+    });
+    const butler = {
+      id: 'test/butler2', name: 'Butler', region: 'test', tier: 'boss', hp: [90, 90],
+      moves: { wait: { id: 'wait', name: 'Wait', intent: Intent.BUFF, effect: () => {} } },
+      nextMove: () => 'wait',
+    };
+    const e = mk({ enemies: [butler, dummyEnemy({ move: 'nothing' })] });
+    await e.startCombat();
+    const b = e.enemies[0], other = e.enemies[1];
+
+    const ctx = e.enemyCtx(b, null);
+    ctx.announceRule(rule('r1', 'Guests do not rush.'));
+    eq(e.rules.length, 1, 'one rule');
+    ctx.announceRule(rule('r2', 'Guests wait their turn.'));
+    eq(e.rules.length, 1, 'announcing a second rule REPLACED the first — the Butler enforces one rule, not four');
+    eq(e.rules[0].id, 'r2', 'and it is the new one');
+
+    // another source is untouched
+    e.enemyCtx(other, null).announceRule(rule('r3', 'Wipe your feet.'));
+    eq(e.rules.length, 2, 'a different source keeps its own rule');
+    deepEq(e.rules.map(r => r.id).sort(), ['r2', 'r3'], 'both are live');
+
+    // explicit opt-in to stacking
+    ctx.announceRule({ ...rule('r4', 'And no running.'), stack: true });
+    eq(e.rules.filter(r => r.sourceId === b.id).length, 2, 'stack:true keeps the source\'s earlier rule alongside');
+
+    e.dealDamage({ attacker: e.player, defender: b, amount: 999 });
+    eq(e.rules.filter(r => r.sourceId === b.id).length, 0, 'a dead source loses all of its rules');
+    eq(e.rules.length, 1, 'the other source keeps its own');
+  });
+
+  await atest('applyStatus: the 4th argument survives the enemy ctx wrapper', async () => {
+    registerStatus({ id: 'test/cover', name: 'Covered', kind: 'buff', decay: 'never', desc: 'Soaks {n}.' });
+    let seenOpts = null;
+    registerStatus({
+      id: 'test/tagged', name: 'Tagged', kind: 'buff', decay: 'never', desc: 'x',
+      hooks: { onApply: (h) => { seenOpts = h.opts; } },
+    });
+
+    const blob = {
+      id: 'test/blob', name: 'Blob', region: 'test', tier: 'normal', hp: [40, 40],
+      moves: {
+        cover: {
+          id: 'cover', name: 'Cover', intent: Intent.DEFEND,
+          // this is the exact shape Blanket Blob sends
+          effect: (c) => { const a = c.allies()[0]; if (a) c.applyStatus(a, 'test/cover', 1, { by: c.self.id, amount: 7 }); },
+        },
+      },
+      nextMove: () => 'cover',
+    };
+    const e = mk({ enemies: [blob, dummyEnemy({ move: 'nothing' })] });
+    let meta = null;
+    e.on('status', ev => { if (ev.id === 'test/cover') meta = ev.meta; });
+    await e.startCombat();
+    await e.endTurn();
+
+    const ally = e.enemies[1];
+    eq(ally.status('test/cover'), 1, 'the status landed');
+    ok(meta, 'the status event carried the content data');
+    eq(meta.amount, 7, 'amount arrived');
+    eq(meta.by, e.enemies[0].id, 'by arrived');
+    const read = e.statusMeta(ally, 'test/cover');
+    eq(read.amount, 7, 'and it is readable later via engine.statusMeta');
+    ok(e.state.enemies[1].statuses.find(x => x.id === 'test/cover').meta.amount === 7,
+      'the renderer can see it in state');
+
+    // player ctx passes it through as well
+    const e2 = mk();
+    await e2.startCombat();
+    const c = plant(e2, SCRATCH);
+    e2.ctxFor(c, e2.enemies[0]).applyStatus(e2.player, 'test/tagged', 1, { source: 'trick', power: 3 });
+    ok(seenOpts && seenOpts.power === 3, 'the player ctx passes options through to onApply too');
+    eq(e2.statusMeta(e2.player, 'test/tagged').power, 3, 'and stores them');
+    eq(e2.statusMeta(e2.player, 'test/tagged').reason, undefined, 'engine bookkeeping keys are not leaked into meta');
+  });
+
+  await atest('intent honesty: the audit method — blocked + hpLoss equals the promise', async () => {
+    // This mirrors tests/enemies/audit.py: score honesty from the `damage` events
+    // as blocked + hpLoss, never from HP/Guard deltas across endTurn (which counts
+    // the player's whole unspent Guard as damage taken).
+    let mismatches = 0, turns = 0;
+    for (let seed = 1; seed <= 12; seed++) {
+      const e = makeDummyCombat(new RNG(seed));
+      await e.startCombat();
+      for (let t = 0; t < 6 && !e.over; t++) {
+        const promised = new Map();
+        for (const en of e.livingEnemies()) {
+          if (en.intent && en.intent.damage > 0) promised.set(en.id, en.intent.damage * en.intent.hits);
+        }
+        const got = new Map();
+        const off = e.on('damage', ev => {
+          if (ev.targetId !== e.player.id || !ev.sourceId) return;
+          got.set(ev.sourceId, (got.get(ev.sourceId) || 0) + ev.blocked + ev.hpLoss);
+        });
+        // give the player some Guard so a naive HP-delta method would be fooled
+        e.gainBlock(e.player, 12, { fromCard: false });
+        await e.endTurn();
+        off();
+        for (const [id, want] of promised) {
+          turns++;
+          if ((got.get(id) || 0) !== want) mismatches++;
+        }
+      }
+    }
+    ok(turns > 40, `sampled a meaningful number of enemy actions (${turns})`);
+    eq(mismatches, 0, `every attack intent delivered exactly what it promised (${turns} checked)`);
+  });
+
   // ── report ---------------------------------------------------------------
   let passed = 0, failed = 0;
   for (const r of results) {

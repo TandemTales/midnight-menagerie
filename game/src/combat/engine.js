@@ -337,6 +337,7 @@ export class CombatEngine {
         id, stacks, name: d.name, kind: d.kind, icon: d.icon || id,
         desc: String(d.desc || '').replace(/\{n\}/g, String(stacks)),
         decay: d.decay, showStacks: d.stacks !== false,
+        meta: actor.statusMeta[id] ? { ...actor.statusMeta[id] } : null,
       });
     }
     for (const [id, p] of actor.powers) {
@@ -479,9 +480,26 @@ export class CombatEngine {
   get awaitingChoice() { return this.choices.pending > 0; }
 
   // ── House Rules (Door Greeter → The Butler) ───────────────────────────────
+  /**
+   * Stand up a House Rule.
+   *
+   * REPLACE-BY-SOURCE is the default and it is deliberate: one actor announcing a
+   * new rule almost always means "instead of", not "as well as". The Butler
+   * announcing his fourth rule should be enforcing his fourth rule, not all four
+   * at once. Pass `rule.stack = true` to keep a source's earlier rules alongside
+   * the new one — a boss that genuinely escalates opts in explicitly.
+   *
+   * Rules from OTHER sources are never touched, and every rule a source owns is
+   * cleared automatically when that source dies.
+   */
   announceRule(rule, sourceId = null) {
     if (!rule || !rule.id) return null;
     this.clearRule(rule.id);
+    if (!rule.stack && sourceId != null) {
+      for (const other of [...this.rules]) {
+        if (other.sourceId === sourceId) this.clearRule(other.id);
+      }
+    }
     const r = { ...rule, sourceId };
     this.rules.push(r);
     this.field.activeRule = r.id;
@@ -729,14 +747,20 @@ export class CombatEngine {
     if (after === before) return 0;
 
     actor._setStatus(id, after);
+    // Anything else on `opts` is content data (Cover's { by, amount }, a source
+    // card, a tag). It rides along on the event as `meta` and reaches onApply as
+    // `h.opts`, so a status can be parameterised at the moment it is applied.
+    const meta = statusMeta(opts);
+    if (meta) actor.statusMeta[id] = { ...(actor.statusMeta[id] || {}), ...meta };
     this._emit(EV.STATUS, {
       actorId: actor.id, id, name: def.name, kind: def.kind, icon: def.icon || id,
       before, after, delta: after - before,
       sourceId: opts.sourceId || null, reason: opts.reason || 'effect',
+      meta: meta || null,
       desc: String(def.desc || '').replace(/\{n\}/g, String(after)),
     });
 
-    const payload = { actor, id, delta: after - before, stacks: after, def };
+    const payload = { actor, id, delta: after - before, stacks: after, def, opts, meta: meta || null };
     if (after > before) {
       def.hooks?.onApply?.({ ...payload, e: this, engine: this, owner: actor });
       this.hooks.dispatch('onStatusApplied', payload);
@@ -751,7 +775,11 @@ export class CombatEngine {
   removeStatus(actor, id, reason = 'effect') {
     const cur = actor.status(id);
     if (cur) this.applyStatus(actor, id, -cur, { reason });
+    delete actor.statusMeta[id];
   }
+
+  /** The options a status was applied with (Cover's `{ by, amount }`). */
+  statusMeta(actor, id) { return (actor && actor.statusMeta[id]) || null; }
 
   /** Remove every debuff (Midnight Grooming, boss phase transitions). */
   cleanse(actor, reason = 'cleanse') {
@@ -1078,11 +1106,13 @@ export class CombatEngine {
       heal: (a, n) => (typeof a === 'number' ? e.heal(enemy, a, 'enemy') : e.heal(a || enemy, n, 'enemy')),
       loseHp: (a, n) => (typeof a === 'number' ? e.loseHp(enemy, a, 'enemy') : e.loseHp(a || enemy, n, 'enemy')),
 
-      // statuses
-      applyStatus: (a, id, n) => e.applyStatus(a || e.player, id, n, { sourceId: enemy.id }),
-      removeStatus: (a, id) => e.removeStatus(a || enemy, id, 'enemy'),
-      buff: (id, n) => e.applyStatus(enemy, id, n, { sourceId: enemy.id }),
-      debuff: (id, n) => e.applyStatus(target(), id, n, { sourceId: enemy.id }),
+      // statuses. The 4th argument is options/content data and MUST be passed
+      // through — Blanket Blob's Cover sends `{ by, amount }` this way.
+      applyStatus: (a, id, n, opts) => e.applyStatus(a || e.player, id, n, { sourceId: enemy.id, ...(opts || {}) }),
+      removeStatus: (a, id, opts) => e.removeStatus(a || enemy, id, (opts && opts.reason) || 'enemy'),
+      buff: (id, n, opts) => e.applyStatus(enemy, id, n, { sourceId: enemy.id, ...(opts || {}) }),
+      debuff: (id, n, opts) => e.applyStatus(target(), id, n, { sourceId: enemy.id, ...(opts || {}) }),
+      statusMeta: (a, id) => e.statusMeta(a || enemy, id),
       count: (id, a) => (a || enemy).status(id),
       has: (id, a) => (a || enemy).hasStatus(id),
 
@@ -1229,7 +1259,8 @@ export class CombatEngine {
       loseHp: (t, amount) => e.loseHp(t || self, amount, card ? card.id : 'effect'),
       block: (actor, amount) => e.gainBlock(actor || self, amount, { source: card, reason: 'card' }),
       heal: (actor, amount) => e.heal(actor || self, amount, card ? card.id : 'effect'),
-      applyStatus: (actor, id, stacks) => e.applyStatus(actor || self, id, stacks, { sourceId: self.id, reason: card ? card.id : 'effect' }),
+      applyStatus: (actor, id, stacks, opts) => e.applyStatus(actor || self, id, stacks, { sourceId: self.id, reason: card ? card.id : 'effect', ...(opts || {}) }),
+      statusMeta: (actor, id) => e.statusMeta(actor || self, id),
       removeStatus: (actor, id) => e.removeStatus(actor || self, id),
 
       // cards
@@ -1725,20 +1756,34 @@ export class CombatEngine {
       this.stats.damageTakenLastEnemyTurn = this.player.damageTakenThisTurn - before;
       if (this.over) return;
 
-      // 6 — enemy end-of-turn statuses, then the shared `enemyTurnEnd` decay
-      //     bucket. That bucket is what Marmalade's Ghoststep expires on: it is
-      //     gone once the enemies have finished swinging, whether or not it was
-      //     used, and it belongs to the PLAYER, not to any one enemy.
+      // 6a — per-enemy end-of-turn statuses.
       for (const en of [...this.enemies]) {
         if (!en.alive) continue;
         this._tickStatuses(en, 'turnEnd');
       }
+
+      // 6b — the shared `enemyTurnEnd` decay bucket, for EVERY actor. This is
+      //      what Marmalade's Ghoststep expires on: gone once the enemies have
+      //      finished swinging, used or not.
       this._decayBucket(this.player, 'enemyTurnEnd');
       for (const a of this.allies) if (a.alive) this._decayBucket(a, 'enemyTurnEnd');
+      for (const en of this.enemies) if (en.alive) this._decayBucket(en, 'enemyTurnEnd');
+
+      // 6c — ENEMY PHASE END. The one point that is after every enemy has acted
+      //      and after the decay buckets, but BEFORE intents are redrawn. A
+      //      support enemy arms its allies' buffs here so the intent the player
+      //      then reads is the true post-buff number. Buffing an ally from
+      //      inside a move cannot do that: the ally's intent was already drawn.
+      //      Slot order cannot save a summoner, which is always slot 0.
+      this.phase = 'enemyPhaseEnd';
+      this._emit(EV.PHASE, { phase: 'enemyPhaseEnd', turn: this.turn });
+      this.hooks.dispatch('onEnemyPhaseEnd', { turn: this.turn });
+      this._enemyLifecycle('onEnemyPhaseEnd', { turn: this.turn });
+
       this._tickTimers('enemyTurnEnd');
       if (this.over) return;
 
-      // 7 — next intents
+      // 7 — next intents. Everything armed in 6c is already in force.
       for (const en of this.enemies) if (en.alive) chooseMove(this, en, 'turnEnd');
 
       // 8
@@ -1842,6 +1887,20 @@ export class CombatEngine {
     c.bus = null;
     return c;
   }
+}
+
+/** Strip the engine's own bookkeeping keys; whatever remains is content data. */
+const STATUS_OPT_KEYS = new Set(['reason', 'sourceId', 'ignoreCharm', 'silentBlock']);
+function statusMeta(opts) {
+  if (!opts) return null;
+  let out = null;
+  for (const k of Object.keys(opts)) {
+    if (STATUS_OPT_KEYS.has(k)) continue;
+    const v = opts[k];
+    if (typeof v === 'function') continue;
+    (out || (out = {}))[k] = (v && typeof v === 'object' && v.id) ? v.id : v;
+  }
+  return out;
 }
 
 function _cfgLite(cfg) {

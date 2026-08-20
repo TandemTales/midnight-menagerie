@@ -181,23 +181,23 @@ const ROMAN = ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII',
 
 /** @type {Object<string, object>} */
 export const REGIONS = Object.fromEntries([
-  M('foyer','The Forgotten Foyer','The Butler','marmalade',1,4,13,'Formal entrance block · symmetrical about a central axis'),
-  M('nursery','The Forgotten Nursery','The Governess','mopsy',2,4,13,'Compact suite around two communal play spaces'),
-  M('sleeping-quarters','The Sleeping Quarters','The Bedframe Beast','boggle',3,3,14,'Long residential corridor · bedrooms both sides'),
-  M('kitchens-cellars','The Kitchens and Cellars','The Confectioner','taffy',4,4,14,'Service complex above · older cellars below'),
-  M('greenhouse','The Impossible Greenhouse','The Head Gardener','brambleboo',5,4,13,'Branching glass complex beyond the exterior wall'),
-  M('graveyard','The Mansion Graveyard','The Groundskeeper of Names','pudding',6,4,14,'Irregular ring of burial paths'),
-  M('study-library','The Grand Study and Library','The Archivist','crinkle',7,4,14,'Asymmetrical library wing · several expansions'),
-  M('attic-observatory','The Moonlit Attic and Observatory','The Watcher in the Rafters','wink',8,4,14,'Attic chambers climbing to a tower'),
-  M('lampworks','The Lampworks','The Lamplighter','wisp',9,3,15,'Narrow vertical shaft · maintenance floors'),
-  M('ballroom','The Ballroom and Velvet Suites','The Master of Revels','crumbula',10,4,14,'Formal entertainment wing · strict symmetry'),
-  M('crypt','The Crypt and Ossuary','The Bone Curator','bones',11,4,14,'Subterranean radial complex'),
-  M('hedge-maze','The Withered Hedge Maze','The Gardener of Rot','truffle',12,4,15,'Exterior maze · the paths are the rooms'),
-  M('secret-passages','The Secret Passages','The Whisper Warden','hush',13,3,15,'Thin circulation network inside the walls'),
-  M('bathhouse','The Bathhouse and Rain Wing','The Drowned Matron','drizzle',14,3,14,'Crescent wing around an indoor pool'),
-  M('kennels','The Kennels and Animal Ward','The Kennelmaster','mossbit',15,4,14,'Animal care wing around an exercise yard'),
-  M('pumpkin-grounds','The Moon Courtyard and Pumpkin Grounds','The Harvest King','pipkin',16,4,15,'Enclosed grounds · ponds, patches and paths'),
-  M('heart','The Heart of the House','The Heart','',17,4,15,'Impossible interior · a plan folded into an organ'),
+  M('foyer','The Forgotten Foyer','The Butler','marmalade',1,6,13,'Formal entrance block · symmetrical about a central axis'),
+  M('nursery','The Forgotten Nursery','The Governess','mopsy',2,6,13,'Compact suite around two communal play spaces'),
+  M('sleeping-quarters','The Sleeping Quarters','The Bedframe Beast','boggle',3,5,14,'Long residential corridor · bedrooms both sides'),
+  M('kitchens-cellars','The Kitchens and Cellars','The Confectioner','taffy',4,6,14,'Service complex above · older cellars below'),
+  M('greenhouse','The Impossible Greenhouse','The Head Gardener','brambleboo',5,6,13,'Branching glass complex beyond the exterior wall'),
+  M('graveyard','The Mansion Graveyard','The Groundskeeper of Names','pudding',6,6,14,'Irregular ring of burial paths'),
+  M('study-library','The Grand Study and Library','The Archivist','crinkle',7,6,14,'Asymmetrical library wing · several expansions'),
+  M('attic-observatory','The Moonlit Attic and Observatory','The Watcher in the Rafters','wink',8,6,14,'Attic chambers climbing to a tower'),
+  M('lampworks','The Lampworks','The Lamplighter','wisp',9,5,15,'Narrow vertical shaft · maintenance floors'),
+  M('ballroom','The Ballroom and Velvet Suites','The Master of Revels','crumbula',10,6,14,'Formal entertainment wing · strict symmetry'),
+  M('crypt','The Crypt and Ossuary','The Bone Curator','bones',11,6,14,'Subterranean radial complex'),
+  M('hedge-maze','The Withered Hedge Maze','The Gardener of Rot','truffle',12,6,15,'Exterior maze · the paths are the rooms'),
+  M('secret-passages','The Secret Passages','The Whisper Warden','hush',13,5,15,'Thin circulation network inside the walls'),
+  M('bathhouse','The Bathhouse and Rain Wing','The Drowned Matron','drizzle',14,5,14,'Crescent wing around an indoor pool'),
+  M('kennels','The Kennels and Animal Ward','The Kennelmaster','mossbit',15,6,14,'Animal care wing around an exercise yard'),
+  M('pumpkin-grounds','The Moon Courtyard and Pumpkin Grounds','The Harvest King','pipkin',16,6,15,'Enclosed grounds · ponds, patches and paths'),
+  M('heart','The Heart of the House','The Heart','',17,6,15,'Impossible interior · a plan folded into an organ'),
 ].map(m => [m.slug, m]));
 
 export function regionMeta(regionId) {
@@ -362,10 +362,20 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
     if (!b.prev.includes(a.id)) b.prev.push(a.id);
   };
 
-  const walks = lanes + 1;
+  const has  = (r, c) => grid.has(key(r, c));
+  const cols = (r) => [...grid.values()].filter(n => n.row === r).map(n => n.col).sort((a, b) => a - b);
+  const at   = (r) => [...grid.values()].filter(n => n.row === r);
+
+  // 1a. Carve trunk walks.  These alone guarantee the graph is connected and
+  //     planar; every later pass is additive and refuses any crossing edge.
+  const walks = lanes + 2;
   const starts = [];
   for (let i = 0; i < walks; i++) starts.push(rng.int(lanes));
-  if (new Set(starts).size < 2) starts[0] = (starts[1] + 1) % lanes;   // never one-lane
+  // A first row you cannot make a choice on is not a first row.
+  const wantStarts = Math.min(lanes, 3);
+  for (let c = 0; new Set(starts).size < wantStarts && c < lanes * 3; c++) {
+    starts[c % starts.length] = c % lanes;
+  }
 
   for (const s of starts) {
     let c = s;
@@ -378,7 +388,7 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
       // Bias: keep spreading while the map is young, converge near the boss.
       const converge = r / lastWalk;
       const weights = cand.map(nc => {
-        const pull = nc === c ? 1.0 : 0.72;
+        const pull = nc === c ? 1.0 : 0.86;
         const centre = 1 - Math.abs((nc + 0.5) / lanes - 0.5) * 2;   // 0..1
         return pull * (1 + converge * centre * 1.4);
       });
@@ -388,6 +398,121 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
       link(r, c, pick);
       c = pick;
     }
+  }
+
+  // 1b. Occupancy.  Between two consecutive rows of width m and n, the number
+  //     of edges you can draw without one crossing another is exactly m+n-1 (a
+  //     staircase), so a narrow row physically cannot offer its rooms a choice.
+  //     Widen the wing into a bulge — narrow at the door, widest in the middle,
+  //     closing again towards the boss — by growing new rooms off a parent that
+  //     can reach them without crossing anything already drawn.
+  const wantAt = (r) => {
+    if (r >= lastWalk - 1) return 2;
+    if (r <= 1) return 3;
+    if (r === lastWalk - 2) return 3;
+    // widen fast, hold wide: a band whose next row is no wider than itself is
+    // forced to leave at least one room on a single exit, so hold the width.
+    return clamp(Math.min(lanes, 3 + (r - 1)) + (rng.chance(0.22) ? -1 : 0), 3, lanes);
+  };
+  for (let r = 1; r <= lastWalk; r++) {
+    const want = Math.min(lanes, wantAt(r));
+    for (let guard = 0; cols(r).length < want && guard < lanes + 2; guard++) {
+      const present = new Set(cols(r));
+      const free = rng.shuffle([...Array(lanes).keys()].filter(c => !present.has(c)));
+      let grown = false;
+      for (const c of free) {
+        const parents = cols(r - 1).filter(pc => Math.abs(pc - c) <= 1 && !crosses(r - 1, pc, c));
+        if (!parents.length) continue;
+        link(r - 1, parents[rng.int(parents.length)], c);
+        grown = true; break;
+      }
+      if (!grown) break;
+    }
+  }
+
+  // 1c. Every room that is not on the last walked row must lead somewhere.
+  for (let r = lastWalk - 1; r >= 0; r--) {
+    for (const a of at(r)) {
+      if (a.next.length) continue;
+      const near = cols(r + 1)
+        .filter(c => !crosses(r, a.col, c))
+        .sort((p, q) => Math.abs(p - a.col) - Math.abs(q - a.col));
+      if (near.length) link(r, a.col, near[0]);
+    }
+  }
+
+  // 1d. Densify.  A room with a single exit is a corridor, not a decision, and
+  //     Slay the Spire's map is a decision every single row.  Add every extra
+  //     forward edge that does not cross one already drawn, nearest lane first,
+  //     capped at three exits so a node never turns into a hub.
+  const OUT_CAP = 3;
+  const tryLink = (r, a, c) => {
+    if (a.next.length >= OUT_CAP) return false;
+    if (a.next.includes(`${regionId}-${r + 1}-${c}`)) return false;
+    if (crosses(r, a.col, c)) return false;
+    link(r, a.col, c);
+    return true;
+  };
+  const bandCand = (r, a) => cols(r + 1)
+    .filter(c => Math.abs(c - a.col) <= 2)
+    .sort((p, q) => Math.abs(p - a.col) - Math.abs(q - a.col));
+  // Fairest first: every room in a band gets a second exit before ANY room in
+  // that band gets a third.  The staircase is a fixed budget, so a hub is always
+  // paid for by a dead-straight corridor somewhere else in the same row.
+  for (let r = lastWalk - 1; r >= 0; r--) {
+    for (const a of rng.shuffle(at(r))) {
+      if (a.next.length !== 1) continue;
+      for (const c of bandCand(r, a)) if (tryLink(r, a, c)) break;
+    }
+  }
+
+  // 1e. Long passages.  Between two consecutive rows the number of crossing-free
+  //     edges is capped at (rowA + rowB - 1) — a staircase and nothing more — so
+  //     a strictly layered plan can never average two exits per room however hard
+  //     it tries.  The way past that ceiling without drawing a single crossing is
+  //     a corridor that SKIPS a row: row r straight through an empty lane to row
+  //     r+2.  It is provably crossing-free when the lane is empty at r+1 and no
+  //     edge in either band straddles it, and it reads on the sheet as exactly
+  //     what it is: a long service passage that misses a room out.
+  const straddles = (r, c) => rowEdges[r].some(e =>
+    (e.from < c && e.to > c) || (e.from > c && e.to < c));
+  const skips = [];
+  const trySkip = (r, a) => {
+    const c = a.col;
+    if (r + 2 > lastWalk) return false;
+    if (a.next.length >= OUT_CAP) return false;
+    if (has(r + 1, c)) return false;                     // the lane must be empty
+    if (!has(r + 2, c)) return false;
+    if (straddles(r, c) || straddles(r + 1, c)) return false;
+    if (skips.some(s => s.col === c && Math.abs(s.row - r) === 1)) return false;
+    const b = node(r + 2, c);
+    if (a.next.includes(b.id)) return false;
+    a.next.push(b.id); b.prev.push(a.id);
+    b.viaPassage = true; a.hasPassage = true;
+    skips.push({ row: r, col: c });
+    // the corridor is occupied now: nothing else may be drawn across it
+    rowEdges[r].push({ from: c, to: c });
+    rowEdges[r + 1].push({ from: c, to: c });
+    return true;
+  };
+
+  // 1f. Repair, in the order that helps most: first give every starved room a
+  //     second band edge, then hand the ones the staircase cannot serve a long
+  //     passage, then scatter a few more passages for texture.
+  for (let r = lastWalk - 1; r >= 0; r--) {
+    const dst = cols(r + 1);
+    for (const a of at(r)) {
+      if (a.next.length !== 1) continue;
+      const cand = dst.filter(c => Math.abs(c - a.col) <= 2)
+        .sort((p, q) => Math.abs(p - a.col) - Math.abs(q - a.col));
+      for (const c of cand) if (tryLink(r, a, c)) break;
+    }
+  }
+  for (let r = 0; r + 2 <= lastWalk; r++) for (const a of at(r)) {
+    if (a.next.length === 1) trySkip(r, a);
+  }
+  for (let r = 0; r + 2 <= lastWalk; r++) for (const a of rng.shuffle(at(r))) {
+    if (a.next.length < OUT_CAP && rng.chance(0.55)) trySkip(r, a);
   }
 
   // Boss node, fed by every node on the last walked row.

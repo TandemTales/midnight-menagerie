@@ -99,27 +99,21 @@
   left: 50%; top: calc(-7 * var(--u));
   width: calc(58 * var(--u)); height: calc(14 * var(--u));
   margin-left: calc(-29 * var(--u));
-  background:
-    /* brushed metal, same treatment as the frame rails */
-    repeating-linear-gradient(74deg,
-      color-mix(in srgb, var(--frame) 30%, black) 0 2px,
-      color-mix(in srgb, var(--frame) 40%, black) 2px 4px),
-    linear-gradient(180deg,
-      color-mix(in srgb, var(--frame-hi) 80%, white) 0%,
-      var(--frame) 40%,
-      var(--frame-lo) 72%,
-      var(--frame-deep) 100%);
-  background-blend-mode: overlay, normal;
-  filter:
-    drop-shadow(calc(1 * var(--u)) 0 0 var(--ink-900))
-    drop-shadow(calc(-1 * var(--u)) 0 0 var(--ink-900))
-    drop-shadow(0 calc(-1 * var(--u)) 0 var(--ink-900))
-    drop-shadow(0 calc(2 * var(--u)) calc(3 * var(--u)) rgba(0,0,0,.8));
+  /* The outline is the PARENT's own dark fill with the metal inset inside it.
+     The old version stacked four drop-shadow() filters to fake a 1px outline;
+     that filter chain cost ~32 ms of raster per newly created card and was
+     over half the cost of drawing five cards into a hand of twelve. One cheap
+     soft shadow is all that is left. */
+  background: var(--ink-900);
+  filter: drop-shadow(0 calc(2 * var(--u)) calc(3 * var(--u)) rgba(0,0,0,.8));
 }
-/* the bevel: a lit top facet and a shaded underside, clipped to whatever
-   silhouette the card type gives the crest */
+/* the metal, inset by the outline width, bevelled: lit top facet, shaded
+   underside. `inherit` re-resolves the type-specific silhouette against this
+   smaller box, so it works for blade, dome and crown alike. */
 .mm-card__crest i {
-  position: absolute; inset: 0;
+  position: absolute; inset: calc(1.2 * var(--u));
+  clip-path: inherit;
+  border-radius: inherit;
   background:
     linear-gradient(180deg,
       rgba(255,255,255,.55) 0%,
@@ -128,7 +122,15 @@
       rgba(0,0,0,.34) 100%),
     linear-gradient(98deg,
       rgba(255,255,255,.26) 0%, rgba(255,255,255,0) 38%,
-      rgba(0,0,0,0) 60%, rgba(0,0,0,.32) 100%);
+      rgba(0,0,0,0) 60%, rgba(0,0,0,.32) 100%),
+    repeating-linear-gradient(74deg,
+      color-mix(in srgb, var(--frame) 62%, black) 0 2px,
+      color-mix(in srgb, var(--frame) 78%, black) 2px 4px),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--frame-hi) 80%, white) 0%,
+      var(--frame) 40%,
+      var(--frame-lo) 72%,
+      var(--frame-deep) 100%);
 }
 .mm-card__pip {
   position: absolute;
@@ -359,8 +361,10 @@
 .mm-card[data-rarity="basic"] .mm-card__crest {
   height: calc(8 * var(--u)); top: calc(-4 * var(--u));
   width: calc(50 * var(--u)); margin-left: calc(-25 * var(--u));
+  filter: none;
+}
+.mm-card[data-rarity="basic"] .mm-card__crest i {
   background: linear-gradient(180deg, var(--frame-lo), var(--frame-deep));
-  filter: drop-shadow(0 0 calc(1 * var(--u)) rgba(0,0,0,.9));
 }
 .mm-card[data-rarity="basic"] .mm-card__artline { opacity: .2; }
 
@@ -471,7 +475,9 @@
 
 /* attack: sharp corners, twin blade crest, fins on the flanks */
 .mm-card[data-type="attack"] .mm-card__frame { border-radius: calc(4 * var(--u)) calc(4 * var(--u)) calc(14 * var(--u)) calc(14 * var(--u)); }
-.mm-card[data-type="attack"] .mm-card__shimmer { border-radius: calc(4 * var(--u)); }
+.mm-card[data-type="attack"] .mm-card__shimmer,
+.mm-card[data-type="attack"] .mm-card__sheen,
+.mm-card[data-type="attack"] .mm-card__flash { border-radius: calc(4 * var(--u)) calc(4 * var(--u)) calc(14 * var(--u)) calc(14 * var(--u)); }
 .mm-card[data-type="attack"] .mm-card__crest {
   clip-path: polygon(0% 100%, 26% 34%, 50% 0%, 74% 34%, 100% 100%);
   width: calc(52 * var(--u)); margin-left: calc(-26 * var(--u));
@@ -490,7 +496,9 @@
 /* skill: soft rounded frame, dome crest */
 .mm-card[data-type="skill"] .mm-card__frame { border-radius: calc(22 * var(--u)); }
 .mm-card[data-type="skill"] .mm-card__face  { border-radius: calc(16 * var(--u)); }
-.mm-card[data-type="skill"] .mm-card__shimmer { border-radius: calc(22 * var(--u)); }
+.mm-card[data-type="skill"] .mm-card__shimmer,
+.mm-card[data-type="skill"] .mm-card__sheen,
+.mm-card[data-type="skill"] .mm-card__flash { border-radius: calc(22 * var(--u)); }
 .mm-card[data-type="skill"] .mm-card__crest {
   clip-path: none;
   width: calc(76 * var(--u)); margin-left: calc(-38 * var(--u));
@@ -540,7 +548,7 @@
 }
 .mm-card__sheen {
   position: absolute; inset: 0;
-  border-radius: inherit;
+  border-radius: calc(13 * var(--u));
   background: linear-gradient(160deg,
     color-mix(in srgb, var(--flame-100) 16%, transparent) 0%,
     transparent 34%, transparent 66%,
@@ -595,7 +603,7 @@
   background:
     linear-gradient(180deg, var(--ink-800) 0%, var(--ink-900) 58%, var(--ink-800) 100%);
 }
-.mm-card.is-unplayable .mm-card__rules { color: var(--text-hi); opacity: .96; }
+.mm-card.is-unplayable .mm-card__rules { color: var(--text-hi); }
 .mm-card.is-unplayable .mm-card__num { color: var(--text-hi); }
 .mm-card.is-unplayable .mm-card__name { color: var(--text-hi); opacity: .88; }
 .mm-card.is-unplayable .mm-card__type { color: var(--text-lo); }
@@ -615,10 +623,7 @@
 }
 .mm-card.is-hero .mm-card__face { filter: saturate(1.22) contrast(1.06) brightness(1.1) !important; }
 .mm-card.is-hero .mm-card__art  { filter: saturate(1.3) contrast(1.08) brightness(1.12) !important; }
-.mm-card.is-hero .mm-card__crest { filter:
-    drop-shadow(calc(1 * var(--u)) 0 0 var(--ink-900))
-    drop-shadow(calc(-1 * var(--u)) 0 0 var(--ink-900))
-    drop-shadow(0 0 calc(8 * var(--u)) var(--flame-glow)) !important; }
+.mm-card.is-hero .mm-card__crest { filter: drop-shadow(0 0 calc(8 * var(--u)) var(--flame-glow)) !important; }
 .mm-card.is-hero .mm-card__rules,
 .mm-card.is-hero .mm-card__name { color: var(--flame-100); }
 

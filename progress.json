@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T03:31:19",
+ "updated": "2026-08-20T03:44:35",
  "wave": 1,
  "waveLabel": "Core systems",
  "headline": "Seven builders running in parallel. Critics follow each one.",
@@ -22,8 +22,8 @@
    "name": "Combat engine",
    "desc": "Turn rules, damage pipeline, statuses, intents, deterministic + headless",
    "status": "done",
-   "round": 2,
-   "verdict": "445 assertions, 0 failures. Player choice with deterministic replay log, first-class intent queue, House Rules.",
+   "round": 3,
+   "verdict": "478 assertions, 0 failures. onEnemyPhaseEnd hook shipped; announceRule now replaces by source; status options no longer dropped.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -93,8 +93,8 @@
    "id": "meta",
    "name": "Run layer",
    "desc": "Rewards, shops, rest, Curiosities, Keepsakes, Backpack",
-   "status": "pending",
-   "round": 0,
+   "status": "building",
+   "round": 1,
    "verdict": null,
    "gap": null,
    "builder": null,
@@ -105,9 +105,9 @@
    "id": "frontend",
    "name": "Title / Select / Clubhouse",
    "desc": "Front end, Companion select, investigation board",
-   "status": "building",
-   "round": 1,
-   "verdict": null,
+   "status": "reviewing",
+   "round": 2,
+   "verdict": "Title, Select, Clubhouse and Expedition End all shipping. 61fps, zero console errors, full keyboard nav.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -262,6 +262,18 @@
   {
    "t": "2026-08-20T03:31:19",
    "msg": "Enemy agent's insight: its test mock implemented the mechanic it was testing, so the bug passed forever. A mock that implements a mechanic cannot prove it exists."
+  },
+  {
+   "t": "2026-08-20T03:44:35",
+   "msg": "Front-end complete: Expedition End built from scratch with a snuffed candle and a real card-view ledger; Select's deck preview was silently broken and is now real cards."
+  },
+  {
+   "t": "2026-08-20T03:44:35",
+   "msg": "Run layer started - the missing connective tissue. Nothing had built state/run.js, so every screen was mocking the run."
+  },
+  {
+   "t": "2026-08-20T03:44:35",
+   "msg": "Combat engine PASSES round 3: 478 assertions. announceRule now replaces by source, which is what silently broke the Butler."
   }
  ]
 }

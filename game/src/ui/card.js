@@ -82,6 +82,11 @@ export class CardView {
 
     // Everything visible lives inside __body so `dissolve()` can mask ONE node
     // and still leave the ember layer (a sibling) outside the mask.
+    // NOTE ON ORDER: `__face` is a SIBLING of `__frame`, not a child. The
+    // unplayable treatment desaturates the frame with a CSS filter, and a
+    // filter applies to the whole subtree — with the face nested inside, that
+    // filter was dimming the rules text as well and dropped Curse contrast to
+    // 1.22:1. Frame material and card contents are now filtered separately.
     el.innerHTML = `
       <div class="mm-card__body">
         <div class="mm-card__ring"></div>
@@ -91,23 +96,23 @@ export class CardView {
         <div class="mm-card__pip mm-card__pip2 mm-card__pip--l"></div>
         <div class="mm-card__pip mm-card__pip2 mm-card__pip--r"></div>
         <div class="mm-card__frame">
-          <div class="mm-card__face">
-            <div class="mm-card__art"></div>
-            <div class="mm-card__artline"></div>
-            <div class="mm-card__banner"><div class="mm-card__name"></div></div>
-            <div class="mm-card__type">
-              <span class="mm-card__typeicon"></span><span class="mm-card__typelabel"></span>
-            </div>
-            <div class="mm-card__rules"></div>
-            <div class="mm-card__badges"></div>
-          </div>
           <div class="mm-card__rivets"><i></i><i></i><i></i><i></i></div>
           <div class="mm-card__flourish"><i></i><i></i><i></i><i></i></div>
           <div class="mm-card__setgem"></div>
-          <div class="mm-card__shimmer"></div>
-          <div class="mm-card__sheen"></div>
-          <div class="mm-card__flash"></div>
         </div>
+        <div class="mm-card__face">
+          <div class="mm-card__art"></div>
+          <div class="mm-card__artline"></div>
+          <div class="mm-card__banner"><div class="mm-card__name"></div></div>
+          <div class="mm-card__type">
+            <span class="mm-card__typeicon"></span><span class="mm-card__typelabel"></span>
+          </div>
+          <div class="mm-card__rules"></div>
+          <div class="mm-card__badges"></div>
+        </div>
+        <div class="mm-card__shimmer"></div>
+        <div class="mm-card__sheen"></div>
+        <div class="mm-card__flash"></div>
         <div class="mm-card__cost"></div>
       </div>
       <div class="mm-card__embers"></div>`;

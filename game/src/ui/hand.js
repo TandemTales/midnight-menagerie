@@ -241,6 +241,62 @@ export class Hand {
   /** Where cards fly to/from. Combat scene should call this with real pile positions. */
   setPiles(p) { this.piles = Object.assign(this.piles || {}, p); return this; }
 
+  /**
+   * Rehearsal. Call once on scene entry, together with `warmArt()`.
+   *
+   * The FIRST time a card is rasterised the compositor pays for shader
+   * compilation, shadow-blur caches and glyph atlases; measured cold, drawing
+   * five cards into a hand of twelve cost a single 280 ms frame (45 fps over
+   * the second) and the same action a moment later cost 18 ms. That is a
+   * warm-up cost, not a per-frame cost, and the place to pay it is scene
+   * entry — not the first attack of the fight.
+   *
+   * This paints `count` throwaway cards for a few frames at 2% opacity behind
+   * the hand (nothing legible, but the compositor does real work on them),
+   * covering the hover, unplayable and hero variants too, then discards them.
+   *
+   * @param {object[]} defs   CardDefs to rehearse with (the deck)
+   * @param {number} count    how many cards to paint at once
+   * @returns {Promise<number>}
+   */
+  warmRaster(defs, count = 8) {
+    const list = (defs || []).filter(Boolean);
+    if (!list.length || typeof document === 'undefined') return Promise.resolve(0);
+    const host = document.createElement('div');
+    host.className = 'mm-hand__warm';
+    host.setAttribute('aria-hidden', 'true');
+    this.el.appendChild(host);
+    const views = [];
+    const cols = Math.max(1, Math.floor(this.w / Math.max(120, this.cw)) || 4);
+    for (let i = 0; i < count; i++) {
+      const v = new CardView(list[i % list.length], {
+        uid: 'warm#' + i, clock: this.clock, reduceMotion: true,
+        upgraded: i % 3 === 2,
+      });
+      v.setTransform({
+        x: (i % cols) * this.cw + this.cw * 0.6,
+        y: Math.floor(i / cols) * this.chh + this.chh,
+        rot: (i % 5) - 2, scale: 1, z: i,
+      });
+      host.appendChild(v.el);
+      views.push(v);
+    }
+    if (views[0]) views[0].setState({ hover: true });
+    if (views[1]) views[1].setState({ playable: false });
+    if (views[2]) views[2].hero(true);
+    if (views[3]) views[3].setState({ selected: true });
+    return new Promise((res) => {
+      let f = 0;
+      const tick = () => {
+        if (++f < 5) { requestAnimationFrame(tick); return; }
+        for (const v of views) v.destroy();
+        host.remove();
+        res(views.length);
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+
   // ── card list ────────────────────────────────────────────────────────────
   _norm(c) {
     const def = c.def || c;
@@ -283,8 +339,12 @@ export class Hand {
       if (ex) { keep.delete(c.uid); ex.card = c; out.push(ex); }
       else out.push(this._makeSlot(c, false, 0));
     }
-    for (const dead of keep.values()) { dead.view.destroy(); }
+    for (const dead of keep.values()) {
+      if (document.activeElement === dead.view.el) this.el.focus?.({ preventScroll: true });
+      dead.view.destroy();
+    }
     this.slots = out;
+    this.selIdx = -1;            // the hand changed; no stale keyboard selection
     this._clearHover();
     this._refreshPlayable(true);
     return this;
@@ -879,6 +939,8 @@ export class Hand {
     const i = this.slots.indexOf(slot);
     if (i >= 0) this.slots.splice(i, 1);
     if (this.hoverSlot === slot) this._clearHover();
+    // the card is leaving; the keyboard stays in the hand
+    if (document.activeElement === slot.view.el) this.el.focus?.({ preventScroll: true });
     this.selIdx = Math.min(this.selIdx, this.slots.length - 1);
     this._layout();                                  // the rest re-fans at once
     this.flying.add(slot);
@@ -980,13 +1042,14 @@ export class Hand {
     // It only escapes to the page when nothing is selected.
     if (e.key === 'Tab') {
       if (this.aim) { e.preventDefault(); this._cycleTarget(e.shiftKey ? -1 : 1); return; }
-      if (this.selIdx >= 0 && n) {
+      if (n && (this.selIdx >= 0 || this._focusInHand())) {
         e.preventDefault();
         const dir = e.shiftKey ? -1 : 1;
-        this._selectIdx(((this.selIdx + dir) % n + n) % n);
+        const from = this.selIdx < 0 ? (dir > 0 ? -1 : 0) : this.selIdx;
+        this._selectIdx(((from + dir) % n + n) % n);
         return;
       }
-      return;
+      return;   // nothing open: Tab belongs to the page
     }
     if (!n) return;
 
@@ -1016,11 +1079,22 @@ export class Hand {
     }
   }
 
+  /** Is the keyboard currently "inside" the hand? Drives the Tab trap. */
+  _focusInHand() {
+    const a = typeof document !== 'undefined' ? document.activeElement : null;
+    return !!a && this.el.contains(a);
+  }
+  /** Keep the keyboard in the hand after a card leaves it. */
+  _releaseFocusToHand() {
+    if (this._focusInHand()) this.el.focus?.({ preventScroll: true });
+  }
+
   _selectIdx(i) {
     this.selIdx = i;
     for (let k = 0; k < this.slots.length; k++) this.slots[k].view.setState({ selected: k === i });
     this._setHover(i >= 0 ? this.slots[i] : null);
     if (i >= 0) this.slots[i].view.el.focus?.({ preventScroll: true });
+    else this._releaseFocusToHand();
   }
 
   _confirm() {

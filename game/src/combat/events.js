@@ -20,7 +20,9 @@
  *
  * turn:start     { actor:'player'|<enemyId>, actorId, turn, side:'player'|'enemy' }
  * turn:end       { actor, actorId, turn, side }
- * phase          { phase:'player'|'enemy'|'over', turn }
+ * phase          { phase:'player'|'enemy'|'enemyPhaseEnd'|'over', turn }
+ *   'enemyPhaseEnd' is the window between the last enemy acting and intents
+ *   being redrawn — support enemies arm their allies' buffs there.
  *
  * draw           { cardUid, card:<CardSnap>, from:'draw', to:'hand',
  *                  handSize, drawCount, discardCount, reason }
@@ -53,7 +55,9 @@
  * hp:max         { actorId, before, after, delta }
  *
  * status         { actorId, id, name, kind, icon, before, after, delta,
- *                  sourceId, reason }               // delta<0 = decay/removal
+ *                  sourceId, reason, meta }         // delta<0 = decay/removal
+ *   `meta` is whatever content data the status was applied with — the 4th
+ *   argument of applyStatus minus the engine's own keys.
  * status:trigger { actorId, id, name, stacks, effect, amount }
  *
  * death          { actorId, name, killerId, side, slot }
