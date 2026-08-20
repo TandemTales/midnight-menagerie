@@ -303,14 +303,46 @@ export class Backdrop {
     this.flames.renderOrder = 5;
     this.group.add(this.flames);
 
-    /* --------------------------------------------------------- near frame */
+    /* --------------------------------------------------------- near frame
+       PERF (2026-08-20): these four quads were 7.4 x 4.2 m planes sitting 2.2 m
+       from the eye with `depthTest: false` and `frustumCulled = false`. Each one
+       therefore rasterised the ENTIRE viewport and ran FRAME_FRAG — which opens
+       with an mmFbm3 before it can reach its `discard` — on every pixel of it.
+       Measured on Intel UHD at 1600x900 that was 4.2-4.7 ms per frame, the single
+       most expensive item in the whole scene, and a screenshot bisection showed
+       three of the four quads contributing ZERO visible pixels (the side drapes
+       fall outside the horizontal frustum, the clutter band below it).
+
+       Each mode only ever marks a narrow band of its own quad, so the geometry is
+       now cropped to that band and the uv attribute is remapped to carry the
+       original 0..1 range across it. FRAME_FRAG is untouched and every pixel it
+       used to write it still writes — the crop only removes fragments where the
+       mask was provably zero. Bounds below are the analytic maxima of each mask
+       (mmFbm3 <= 0.9625, mmRidge <= 0.9375) plus margin. */
     this.frames = [];
-    const fGeo = new THREE.PlaneGeometry(7.4, 4.2);
+    //          mode, uMin, uMax, vMin, vMax
+    const FRAME_CROP = [
+      [0, 0.00, 0.24, 0.00, 1.00],   // left drape:  mask needs p.x < 0.218
+      [0, 0.00, 0.24, 0.00, 1.00],   // right drape: same, mirrored by scale.x
+      [1, 0.00, 1.00, 0.59, 1.00],   // top lintel:  mask needs p.y > 0.607
+      [2, 0.00, 1.00, 0.00, 0.23],   // clutter band: mask needs p.y < 0.206
+    ];
+    const FW = 7.4, FH = 4.2;
     for (let i = 0; i < 4; i++) {
+      const [mode, u0, u1, v0, v1] = FRAME_CROP[i];
+      const g = new THREE.PlaneGeometry(FW * (u1 - u0), FH * (v1 - v0));
+      // keep the crop where the full quad had it
+      g.translate(FW * ((u0 + u1) * 0.5 - 0.5), FH * ((v0 + v1) * 0.5 - 0.5), 0);
+      const uvAttr = g.attributes.uv;
+      for (let k = 0; k < uvAttr.count; k++) {
+        uvAttr.setXY(k, u0 + (u1 - u0) * uvAttr.getX(k), v0 + (v1 - v0) * uvAttr.getY(k));
+      }
+      uvAttr.needsUpdate = true;
+
       const mat = new THREE.ShaderMaterial({
         uniforms: {
           uTime: { value: 0 }, uSeed: { value: i * 3.7 + 1 },
-          uMode: { value: i < 2 ? 0 : i === 2 ? 1 : 2 },
+          uMode: { value: mode },
           uAmount: { value: 0.9 }, uDread: { value: 0 },
           uColor: { value: new THREE.Color(0x06050c) },
           uRim: { value: new THREE.Color(0xffb64a) },
@@ -319,11 +351,14 @@ export class Backdrop {
         transparent: true, depthWrite: false, depthTest: false,
         side: THREE.DoubleSide, fog: false,
       });
-      const m = new THREE.Mesh(fGeo, mat);
+      const m = new THREE.Mesh(g, mat);
       m.position.set(0, 2.08, 7.2 + i * 0.01);
       if (i === 1) m.scale.x = -1;                // mirrored right-hand drape
       m.renderOrder = 8;
-      m.frustumCulled = false;
+      /* Now that each quad is only as big as its band, frustum culling is worth
+         having: in most camera rigs the two drapes and the clutter band fall
+         outside the frustum entirely and cost nothing at all. */
+      m.frustumCulled = true;
       this.frames.push(m);
       this.group.add(m);
     }

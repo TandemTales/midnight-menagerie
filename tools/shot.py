@@ -12,7 +12,13 @@ shots/<name>.state.json with window.MM.state()).  Exit code 1 if the page threw.
 
 --script  runs arbitrary JS in the page BEFORE the screenshot (after --wait).
 --steps   pipe-separated actions: click:SEL | hover:SEL | key:KEY | wait:SEC |
-          drag:SELA>SELB | js:EXPR | shot:NAME  (shot: writes an extra frame)
+          drag:SELA>SELB | js:EXPR | jsawait:EXPR | shot:NAME
+          js:      fire-and-forget — a returned promise is deliberately NOT awaited, so
+                   animation kicked off here is still running for the following frames.
+          jsawait: blocks until the returned promise settles. Using js: where you meant
+                   jsawait: is harmless; using jsawait: (or plain --script) to start an
+                   animation makes every later strip frame land on the END state, which
+                   reads as "the animation is instant". This has already fooled one review.
 --strip N captures N frames 120ms apart into shots/<name>_f0..fN.png so motion
           can actually be judged (card play arcs, hit reactions, transitions).
 """
@@ -63,6 +69,7 @@ async def run(a):
 
         if a.script:
             try:
+                # NOTE: --script DOES await a returned promise. See the --steps js: note above.
                 await page.evaluate(a.script)
                 await page.wait_for_timeout(600)
             except Exception as e:
@@ -81,6 +88,12 @@ async def run(a):
                 elif op == "wait":
                     await page.wait_for_timeout(int(float(arg) * 1000))
                 elif op == "js":
+                    # Wrap so a returned promise is NOT awaited. page.evaluate awaits any
+                    # thenable, which would block until the animation finished and make every
+                    # subsequent strip frame land on the end state. Use "jsawait:" if you
+                    # genuinely want to wait.
+                    await page.evaluate(f"(()=>{{ ({arg}); return 1; }})()")
+                elif op == "jsawait":
                     await page.evaluate(arg)
                 elif op == "shot":
                     await snap(arg)

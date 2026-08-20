@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T08:19:21",
+ "updated": "2026-08-20T08:31:08",
  "wave": 1,
  "waveLabel": "Core systems",
  "headline": "Seven builders running in parallel. Critics follow each one.",
@@ -69,10 +69,10 @@
    "id": "map",
    "name": "Blueprint routes",
    "desc": "Branching route map drawn on the mansion blueprint sections",
-   "status": "rework",
-   "round": 2,
-   "verdict": "Route generation plus the blueprint map screen shipped (2500 lines).",
-   "gap": "The map cannot be clicked with a mouse: setPointerCapture on pointerdown retargets the click to the viewport, so no node is ever selected. Also 0 of 34 nodes are dimmed, so legal moves do not stand out.",
+   "status": "reviewing",
+   "round": 3,
+   "verdict": "Clicking fixed, route inks, 64 nodes with varied composition, 0 edge crossings across 2584 edges in 24 maps, entrance stall 2564ms to 149ms.",
+   "gap": null,
    "builder": null,
    "critic": null,
    "log": []
@@ -302,6 +302,14 @@
   {
    "t": "2026-08-20T08:19:21",
    "msg": "PERFORMANCE ALERT: measured on the real Intel GPU (not software), the title screen runs at 15fps and combat at 35fps. Automatic fail; dedicated perf pass starting."
+  },
+  {
+   "t": "2026-08-20T08:31:08",
+   "msg": "Map round 2: the entrance stall was 115 simultaneous SVG dash animations forcing a full re-raster. Replaced with one composited sweep; worst frame gap 2564ms to 149ms."
+  },
+  {
+   "t": "2026-08-20T08:31:08",
+   "msg": "Tooling fix: shot.py's js: step was awaiting returned promises, so motion strips all landed on the end state. That had already fooled one review."
   }
  ]
 }

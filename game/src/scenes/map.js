@@ -1131,12 +1131,21 @@ export class MapScene extends Scene {
   // ─────────────────────────────────────────────────────────────── frame ───
   update(dt, t) {
     // lamp follows the cursor with a little lag, and breathes like a real flame
+    if (!this.el?.lamp) return;
     const l = this.lamp;
     const k = this.still ? 1 : 1 - Math.pow(0.001, dt);
     l.x += (l.tx - l.x) * k; l.y += (l.ty - l.y) * k;
     const flick = this.still ? 1 : 1 + Math.sin(t * 7.3) * 0.018 + Math.sin(t * 17.1) * 0.011;
-    const tr = `translate3d(${(l.x).toFixed(1)}px, ${(l.y).toFixed(1)}px, 0) scale(${flick.toFixed(4)})`;
-    if (this.el?.lamp) { this.el.lamp.style.transform = tr; this.el.lampWarm.style.transform = tr; }
+    // Two 1280px layers with mix-blend-mode: writing them every frame recomposites
+    // the whole screen whether or not anything moved.  Quantise, and only write
+    // when the change would actually be visible.
+    const qx = Math.round(l.x * 2) / 2, qy = Math.round(l.y * 2) / 2;
+    const qf = Math.round(flick * 250) / 250;
+    if (qx === this._lx && qy === this._ly && qf === this._lf) return;
+    this._lx = qx; this._ly = qy; this._lf = qf;
+    const tr = `translate3d(${qx}px, ${qy}px, 0) scale(${qf})`;
+    this.el.lamp.style.transform = tr;
+    this.el.lampWarm.style.transform = tr;
   }
 
   // ──────────────────────────────────────────────────────────────── exit ───
