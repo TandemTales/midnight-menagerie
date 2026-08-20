@@ -32,6 +32,25 @@ Debug handle in the page: `window.MM` → `{ ctx, bus, clock, Save, goto(scene, 
 6. **Accessibility.** Keyboard path for every action. Respect
    `Save.settings.reduceMotion`, `screenShake`, `flashes`, `largeText`, `colorblind`.
 7. **Never leak listeners.** `Scene.exit()` must remove everything it added.
+8. **Optional chaining is for genuinely optional systems only.** Earlier guidance to "guard
+   cross-system calls with `?.`" was too broad and it cost us real bugs: Marmalade's signature
+   keyword called `ctx.loseHp?.()`, the hook payload never provided `loseHp`, and Haunt silently
+   dealt zero damage for the entire build. "Ignores Guard" passed `{pierceBlock:true}` while the
+   damage pipeline read `pierce || ignoreBlock`, so it never ignored Guard.
+
+   The rule now:
+   - `?.` is allowed for **presentation niceties** whose absence is harmless: `ctx.audio?.play`,
+     `ctx.atmosphere?.impact`, `ctx.tooltip?.show`.
+   - `?.` is **forbidden on contract APIs** — anything in `combat/engine.js`, the `ctx` helper
+     surface, `state/run.js`, or a documented module API. Call them directly. If the method is
+     missing you want a loud `TypeError` in a test, not a silent no-op in someone's run.
+   - If you must call something that may legitimately not exist yet, assert it at module load:
+     `assertApi(ctx, ['damage','block','loseHp'])` — fail at boot, not at the moment it matters.
+9. **Test across the seam, not just inside your module.** Every module in this build passed its
+   own harness while silently no-opping at the join. A test that mocks the thing it is testing
+   proves nothing — an enemy suite whose mock implemented multi-hit hid a bug where every
+   multi-hit attack dealt damage `hits²` times. If your module calls another module's API, your
+   tests must exercise it against the **real** implementation at least once.
 8. Design source of truth: `docs/design/`. Read only the files you need — the full
    design doc is 1.6M characters. Deviating from the doc is allowed only when the doc
    is silent or when a rule actively harms play; say so explicitly in your report.

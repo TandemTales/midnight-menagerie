@@ -396,3 +396,50 @@ ok jsawait -> "A COLD DRAUGHT MOONLIT WING THE WAY IN East Reception Hall Parlor
 >>> errors
 ERRORS(0):
 --- batch done ---
+
+>>> jsawait:(()=>[...document.querySelectorAll("*")].filter(e=>{const r=e.getBoundingClientRect();return r.y<50&&r.x>1540&&r.width>8&&r.width<60}).map(e=>[e.tagName,e.className&&e.className.baseVal!==undefined?e.className.baseVal:e.className,Math.round(e.getBoundingClientRect().x),Math.round(e.getBoundingClientRect().y)]))()
+ok jsawait -> [["SPAN", "hud-cog", 1561, 14]]
+--- batch done ---
+
+>>> console
+[warning] [audio] unknown sfx id: ui/begin
+[warning] [scenes] busy, queued drop: combat
+[warning] [scenes] busy, queued drop: combat
+[warning] [scenes] busy, queued drop: combat
+--- batch done ---
+
+>>> js:window.MM.goto("title",{})
+ok js
+
+>>> wait:3.0
+ok wait
+
+>>> clicktext:SETTINGS
+ok clicktext
+
+>>> wait:1.5
+ok wait
+
+>>> shot:pt-99-settings-overlay
+!! TimeoutError: Page.screenshot: Timeout 30000ms exceeded.
+Call log:
+  - taking page screenshot
+  - waiting for fonts to load...
+  - fonts loaded
+
+>>> jsawait:(()=>document.body.innerText.replace(/\s+/g," ").slice(0,900))()
+ok jsawait -> "MIDNIGHT MENAGERIE Sixteen lost pets became something else inside that house. Eight kids are going in to bring the rest home. CONTINUE Return to the expedition in progress NEW EXPEDITION Choose a Kid, a Companion, and go in THE MENAGERIE The clubhouse, the board, the roster SETTINGS Sound, motion, readability CREDITS Who built the house 0 / 16 MENAGERIE COMPANIONS FREED MIDNIGHT MENAGERIE \u00b7 BUILD 0.1.0 SETTINGS Master volume 90 Music 60 Effects 80 Reduce motion Stills the drifting particles and screen motion Larger text Increases body text across every screen Screen flashes Bright impact flashes during combat Screen shake Camera kick scaled to damage Damage numbers Floating numbers on every hit CLOSE"
+
+>>> errors
+ERRORS(0):
+--- batch done ---
+
+>>> shot:pt-100-settings-overlay
+ok shot pt-100-settings-overlay
+
+>>> fps
+fps 61
+--- batch done ---
+
+>>> quit
+bye

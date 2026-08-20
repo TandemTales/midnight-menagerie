@@ -1,9 +1,9 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T09:52:27",
- "wave": 2,
- "waveLabel": "Integration and polish",
- "headline": "Every piece exists and the game is playable end to end. A fresh player is now playing the whole thing to find the seams.",
+ "updated": "2026-08-20T10:05:53",
+ "wave": 3,
+ "waveLabel": "Closing the seams",
+ "headline": "A full playthrough found that every module passes its own tests and silently no-ops at the join. Fixing that class of bug.",
  "pieces": [
   {
    "id": "engine",
@@ -45,10 +45,10 @@
    "id": "scene",
    "name": "Combat presentation",
    "desc": "Battlefield staging, enemy rigs, damage numbers, hit reactions, VFX",
-   "status": "reviewing",
-   "round": 1,
+   "status": "rework",
+   "round": 2,
    "verdict": "Full StS2 layout, 16 intent types, 24 procedural enemy rigs, honest uncertainty previews, 61fps, zero console errors.",
-   "gap": null,
+   "gap": "No intent tooltips despite the engine supplying them; 6-7 second load into every Scuffle; every room in the region including the boss uses one identical backdrop; no keyboard path.",
    "builder": null,
    "critic": null,
    "log": []
@@ -93,10 +93,10 @@
    "id": "meta",
    "name": "Run layer",
    "desc": "Rewards, shops, rest, Curiosities, Keepsakes, Backpack",
-   "status": "reviewing",
-   "round": 1,
+   "status": "rework",
+   "round": 2,
    "verdict": "Run layer complete: 33 Keepsakes, 16 Curiosities, 18 Gear, four node scenes. 50 seeded runs, 0 errors, determinism and resume verified.",
-   "gap": null,
+   "gap": "Quitting mid-Scuffle and resuming skips the fight for free: the node is marked visited with full Courage and no reward.",
    "builder": null,
    "critic": null,
    "log": []
@@ -141,10 +141,10 @@
    "id": "chrome",
    "name": "UI chrome & clarity",
    "desc": "HUD, tooltips, deck views, settings, previews, accessibility",
-   "status": "reviewing",
-   "round": 1,
+   "status": "rework",
+   "round": 2,
    "verdict": "Keyword tooltip resolving 121 ids with nested chips and occlusion-aware placement; 118 icons, all silhouette-distinct; colourblind palette.",
-   "gap": null,
+   "gap": "hud.js, deckview.js and settings.js are imported by zero scenes, so Snacks can never be used, the deck cannot be viewed outside combat, and Settings is unreachable during a run.",
    "builder": null,
    "critic": null,
    "log": []
@@ -322,6 +322,14 @@
   {
    "t": "2026-08-20T09:52:27",
    "msg": "Biggest single win was invisible to pass profiling: instanced attributes marked dirty every frame on STATIC_DRAW buffers, stalling the D3D11 driver."
+  },
+  {
+   "t": "2026-08-20T10:05:53",
+   "msg": "PLAYTHROUGH VERDICT: each module passes its own harness and silently no-ops at the join. Haunt dealt no damage; 'Ignores Guard' did not; the shared HUD is imported by zero scenes; 8 scenes call audio with the wrong id separator."
+  },
+  {
+   "t": "2026-08-20T10:05:53",
+   "msg": "Root cause was my own instruction: I told every agent to guard cross-system calls with '?.', which turned missing implementations into silent no-ops. CONTRACTS.md rewritten."
   }
  ]
 }

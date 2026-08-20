@@ -19,9 +19,25 @@ const CSS_TITLE = new URL('./title.css', import.meta.url).href;
 
 /* ── the house ─────────────────────────────────────────────────────────────
    Built from a small spec rather than hand-authored path soup so the windows,
-   pickets and treeline stay editable. Deterministic: the same house every boot. */
+   pickets and treeline stay editable. Deterministic: the same house every boot.
+
+   Returns an ORDERED LIST of sibling <svg> layers rather than one SVG, because
+   the warm glow has to live outside the mansion markup. See the `.ti-glow` note
+   in title.css: a blurred SVG *child* whose opacity animates cannot be promoted
+   to its own compositor layer, so Chromium re-rasterises the blur on the main
+   thread every single frame — measured here as a 3.3 s long task on entry. As
+   sibling <svg> elements they are ordinary HTML boxes, so the blur is rasterised
+   once into a texture and the flicker is a pure compositor opacity animation.
+
+   The layers keep the original paint order: base house -> door glow -> door ->
+   window bloom. Nothing that used to sit above the glow overlaps it (the fence
+   and the dead trees are well below and outside the lit windows), so the stack
+   renders identically. */
 function mansionSVG() {
   const W = 1600, H = 960, DROP = 200;   // DROP pushes the house down under the logo
+  const layer = (cls, inner) =>
+    `<svg class="${cls}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" aria-hidden="true">`
+    + `<g transform="translate(0 ${DROP})">${inner}</g></svg>`;
   let s = '';
 
   // --- far treeline ---------------------------------------------------------
@@ -75,10 +91,12 @@ function mansionSVG() {
   s += `<path class="ms-col" d="M700 640V528h14v112Zm186 0V528h14v112Z"/>`;
   s += `<path class="ms-steps" d="M676 640h248l14 18H662Zm-16 18h280l14 18H646Z"/>`;
 
-  // the door: the one warm rectangle in a cold house
-  s += `<path class="ms-doorglow" d="M756 640V556a44 44 0 0 1 88 0v84Z"/>`;
-  s += `<path class="ms-door" d="M760 640V558a40 40 0 0 1 80 0v82Z"/>`;
-  s += `<path class="ms-doorsplit" d="M800 566v74"/>`;
+  // the door: the one warm rectangle in a cold house. Its halo is a layer of its
+  // own (below the door, above the porch) so the blur can be promoted; see below.
+  const doorGlow = `<path class="ms-doorglow" d="M756 640V556a44 44 0 0 1 88 0v84Z"/>`;
+  const door =
+    `<path class="ms-door" d="M760 640V558a40 40 0 0 1 80 0v82Z"/>`
+    + `<path class="ms-doorsplit" d="M800 566v74"/>`;
 
   // --- windows --------------------------------------------------------------
   // [x, y, w, h, lit]
