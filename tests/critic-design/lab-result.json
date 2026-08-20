@@ -1,9 +1,9 @@
 {
  "config": {
-  "TIER": "boss",
-  "ENC": null,
-  "N": 20,
-  "GEN": 6,
+  "TIER": "elite",
+  "ENC": "foyer-scare-guest",
+  "N": 36,
+  "GEN": 12,
   "BOTS": [
    "naive",
    "competent"
@@ -12,179 +12,6 @@
   "HAUNT": 0
  },
  "loadouts": [
-  {
-   "deck": [
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/boo",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/wall-bounce",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/queen-of-the-rafters",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/back-arched-swipe",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/ninefold-scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/hide-and-seek",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/zoomies-at-midnight",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/frenzied-zoomies",
-     "upgraded": false
-    }
-   ],
-   "keepsakes": [
-    "pocket-flashlight",
-    "bag-of-preparation",
-    "porcupine-slipper"
-   ],
-   "snacks": [
-    {
-     "id": "liquorice",
-     "name": "Liquorice Rope",
-     "base": 60,
-     "desc": "Gain 12 Guard.",
-     "effect": {
-      "block": 12
-     },
-     "price": 62
-    }
-   ],
-   "courage": 23,
-   "maxCourage": 68,
-   "lostThings": 106
-  },
-  {
-   "deck": [
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/curl-up",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/boo",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/phantom-flurry",
-     "upgraded": true
-    },
-    {
-     "id": "marmalade/back-arched-swipe",
-     "upgraded": true
-    },
-    {
-     "id": "marmalade/sneak-attack",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/phantom-flurry",
-     "upgraded": false
-    }
-   ],
-   "keepsakes": [
-    "pocket-flashlight",
-    "lucky-button",
-    "black-cats-shadow",
-    "thermos-of-cocoa"
-   ],
-   "snacks": [
-    {
-     "id": "gummy-bat",
-     "name": "Gummy Bat",
-     "base": 55,
-     "desc": "Recover 12 Courage.",
-     "effect": {
-      "heal": 12
-     },
-     "price": 54
-    }
-   ],
-   "courage": 47,
-   "maxCourage": 76,
-   "lostThings": 118
-  },
   {
    "deck": [
     {
@@ -234,32 +61,18 @@
     {
      "id": "marmalade/endless-zoomies",
      "upgraded": true
-    },
-    {
-     "id": "marmalade/slip-away",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/spectral-scratch",
-     "upgraded": false
-    },
-    {
-     "id": "marmalade/haunted-housecat",
-     "upgraded": false
     }
    ],
    "keepsakes": [
     "pocket-flashlight",
     "chewed-tennis-ball",
     "ninth-life-charm",
-    "house-slippers",
-    "chalk-stub",
-    "knotted-handkerchief"
+    "house-slippers"
    ],
    "snacks": [],
-   "courage": 15,
+   "courage": 68,
    "maxCourage": 68,
-   "lostThings": 301
+   "lostThings": 219
   },
   {
    "deck": [
@@ -314,9 +127,186 @@
     {
      "id": "marmalade/moonlit-claw",
      "upgraded": false
+    }
+   ],
+   "keepsakes": [
+    "pocket-flashlight",
+    "spare-key",
+    "moth-eaten-monocle"
+   ],
+   "snacks": [
+    {
+     "id": "cold-milk",
+     "name": "Cold Milk",
+     "base": 45,
+     "desc": "Remove all debuffs.",
+     "effect": {
+      "cleanse": true
+     },
+     "price": 39
     },
     {
-     "id": "marmalade/untouchable",
+     "id": "liquorice",
+     "name": "Liquorice Rope",
+     "base": 45,
+     "desc": "Gain 12 Guard.",
+     "effect": {
+      "block": 12
+     },
+     "price": 46
+    }
+   ],
+   "courage": 68,
+   "maxCourage": 68,
+   "lostThings": 142
+  },
+  {
+   "deck": [
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/boo",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/sneak-attack",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/soft-landing",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/graveyard-pounce",
+     "upgraded": false
+    }
+   ],
+   "keepsakes": [
+    "pocket-flashlight",
+    "thermos-of-cocoa",
+    "the-collar"
+   ],
+   "snacks": [
+    {
+     "id": "gummy-bat",
+     "name": "Gummy Bat",
+     "base": 45,
+     "desc": "Recover 12 Courage.",
+     "effect": {
+      "heal": 12
+     },
+     "price": 52
+    },
+    {
+     "id": "jawbreaker",
+     "name": "Jawbreaker",
+     "base": 65,
+     "desc": "Apply 3 Vulnerable to one enemy.",
+     "effect": {
+      "status": [
+       "vulnerable",
+       3
+      ],
+      "target": "enemy"
+     },
+     "price": 63
+    },
+    {
+     "id": "toffee",
+     "name": "Stubborn Toffee",
+     "base": 80,
+     "desc": "Gain 2 Strength.",
+     "effect": {
+      "status": [
+       "strength",
+       2
+      ]
+     },
+     "price": 75
+    }
+   ],
+   "courage": 60,
+   "maxCourage": 74,
+   "lostThings": 0
+  },
+  {
+   "deck": [
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/boo",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/ambush-from-nowhere",
      "upgraded": false
     },
     {
@@ -324,861 +314,3574 @@
      "upgraded": false
     },
     {
-     "id": "marmalade/soft-landing",
+     "id": "marmalade/double-pounce",
+     "upgraded": true
+    }
+   ],
+   "keepsakes": [
+    "pocket-flashlight",
+    "moth-eaten-monocle",
+    "wind-up-mouse"
+   ],
+   "snacks": [
+    {
+     "id": "liquorice",
+     "name": "Liquorice Rope",
+     "base": 45,
+     "desc": "Gain 12 Guard.",
+     "effect": {
+      "block": 12
+     },
+     "price": 44
+    },
+    {
+     "id": "toffee",
+     "name": "Stubborn Toffee",
+     "base": 80,
+     "desc": "Gain 2 Strength.",
+     "effect": {
+      "status": [
+       "strength",
+       2
+      ]
+     },
+     "price": 75
+    }
+   ],
+   "courage": 68,
+   "maxCourage": 68,
+   "lostThings": 71
+  },
+  {
+   "deck": [
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/boo",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/final-pounce",
+     "upgraded": true
+    },
+    {
+     "id": "marmalade/steal-their-shadow",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/ninefold-scratch",
+     "upgraded": true
+    },
+    {
+     "id": "marmalade/double-pounce",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/frenzied-zoomies",
+     "upgraded": false
+    }
+   ],
+   "keepsakes": [
+    "pocket-flashlight",
+    "thermos-of-cocoa",
+    "knotted-handkerchief",
+    "lucky-button"
+   ],
+   "snacks": [
+    {
+     "id": "cold-milk",
+     "name": "Cold Milk",
+     "base": 45,
+     "desc": "Remove all debuffs.",
+     "effect": {
+      "cleanse": true
+     },
+     "price": 39
+    },
+    {
+     "id": "liquorice",
+     "name": "Liquorice Rope",
+     "base": 45,
+     "desc": "Gain 12 Guard.",
+     "effect": {
+      "block": 12
+     },
+     "price": 44
+    }
+   ],
+   "courage": 62,
+   "maxCourage": 62,
+   "lostThings": 76
+  },
+  {
+   "deck": [
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/boo",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/phase-out",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/through-the-wall",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/graveyard-pounce",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/through-the-wall",
      "upgraded": false
     }
    ],
    "keepsakes": [
     "pocket-flashlight",
     "spare-key",
-    "moth-eaten-monocle",
-    "jar-of-fireflies",
-    "coatcheck-ticket"
+    "jar-of-fireflies"
    ],
    "snacks": [
     {
      "id": "cold-milk",
      "name": "Cold Milk",
-     "base": 60,
+     "base": 45,
      "desc": "Remove all debuffs.",
      "effect": {
       "cleanse": true
      },
-     "price": 61
+     "price": 47
+    },
+    {
+     "id": "popping-candy",
+     "name": "Popping Candy",
+     "base": 65,
+     "desc": "Deal 10 damage to all enemies.",
+     "effect": {
+      "damageAll": 10
+     },
+     "price": 59
     }
    ],
-   "courage": 67,
+   "courage": 41,
+   "maxCourage": 64,
+   "lostThings": 83
+  },
+  {
+   "deck": [
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/boo",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/pounce-on-the-weak",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curiosity-killed-the-cat",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/pounce-on-the-weak",
+     "upgraded": false
+    }
+   ],
+   "keepsakes": [
+    "pocket-flashlight",
+    "jar-of-fireflies",
+    "photograph-of-a-cat",
+    "chalk-stub",
+    "spare-key"
+   ],
+   "snacks": [
+    {
+     "id": "cold-milk",
+     "name": "Cold Milk",
+     "base": 45,
+     "desc": "Remove all debuffs.",
+     "effect": {
+      "cleanse": true
+     },
+     "price": 50
+    }
+   ],
+   "courage": 62,
+   "maxCourage": 64,
+   "lostThings": 78
+  },
+  {
+   "deck": [
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/scratch",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/curl-up",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/boo",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/ricochet-cat",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/moonlit-claw",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/sneak-attack",
+     "upgraded": false
+    },
+    {
+     "id": "marmalade/frenzied-zoomies",
+     "upgraded": true
+    },
+    {
+     "id": "marmalade/sneak-attack",
+     "upgraded": false
+    }
+   ],
+   "keepsakes": [
+    "pocket-flashlight",
+    "mothballed-quilt",
+    "coatcheck-ticket"
+   ],
+   "snacks": [
+    {
+     "id": "gummy-bat",
+     "name": "Gummy Bat",
+     "base": 45,
+     "desc": "Recover 12 Courage.",
+     "effect": {
+      "heal": 12
+     },
+     "price": 43
+    },
+    {
+     "id": "toffee",
+     "name": "Stubborn Toffee",
+     "base": 80,
+     "desc": "Gain 2 Strength.",
+     "effect": {
+      "status": [
+       "strength",
+       2
+      ]
+     },
+     "price": 78
+    }
+   ],
+   "courage": 62,
    "maxCourage": 68,
-   "lostThings": 166
+   "lostThings": 95
   }
  ],
  "rows": {
   "naive": {
-   "n": 20,
-   "winRate": 20,
+   "n": 36,
+   "winRate": 50,
    "turns": {
-    "n": 20,
-    "mean": 10.1,
-    "min": 6,
+    "n": 36,
+    "mean": 9.81,
+    "min": 5,
     "med": 9,
-    "max": 22
+    "max": 15
    },
    "courageBefore": {
-    "n": 20,
-    "mean": 38,
-    "min": 15,
-    "med": 47,
-    "max": 67
-   },
-   "dmgTaken": {
-    "n": 20,
-    "mean": 35.35,
-    "min": 2,
-    "med": 31,
-    "max": 70
-   },
-   "dmgDealt": {
-    "n": 20,
-    "mean": 150.45,
-    "min": 94,
-    "med": 115,
-    "max": 300
-   },
-   "dealtPerTurn": {
-    "n": 20,
-    "mean": 15.11,
-    "min": 10.3,
-    "med": 14.4,
-    "max": 25.6
-   },
-   "takenPerTurn": {
-    "n": 20,
-    "mean": 3.78,
-    "min": 0.2,
-    "med": 4.2,
-    "max": 6
-   },
-   "enemyGuard": {
-    "n": 20,
-    "mean": 58.15,
-    "min": 17,
-    "med": 52,
-    "max": 146
-   },
-   "blockedByEnemy": {
-    "n": 20,
-    "mean": 32.75,
-    "min": 9,
-    "med": 26,
-    "max": 94
-   },
-   "enemyHpLeftOnLoss": {
-    "n": 16,
-    "mean": 141.56,
-    "min": 32,
-    "med": 154,
-    "max": 168
-   },
-   "hpAfterOnWin": {
-    "n": 4,
-    "mean": 39.75,
-    "min": 10,
-    "med": 52,
+    "n": 36,
+    "mean": 61.89,
+    "min": 41,
+    "med": 62,
     "max": 68
    },
+   "dmgTaken": {
+    "n": 36,
+    "mean": 56.86,
+    "min": 19,
+    "med": 65,
+    "max": 81
+   },
+   "dmgDealt": {
+    "n": 36,
+    "mean": 116.97,
+    "min": 57,
+    "med": 142,
+    "max": 151
+   },
+   "dealtPerTurn": {
+    "n": 36,
+    "mean": 12.22,
+    "min": 6.5,
+    "med": 12.3,
+    "max": 18.9
+   },
+   "takenPerTurn": {
+    "n": 36,
+    "mean": 6.13,
+    "min": 2.2,
+    "med": 6.1,
+    "max": 10.4
+   },
+   "enemyGuard": {
+    "n": 36,
+    "mean": 59.83,
+    "min": 28,
+    "med": 58,
+    "max": 106
+   },
+   "blockedByEnemy": {
+    "n": 36,
+    "mean": 35.58,
+    "min": 12,
+    "med": 38,
+    "max": 58
+   },
+   "enemyHpLeftOnLoss": {
+    "n": 18,
+    "mean": 52.94,
+    "min": 13,
+    "med": 64,
+    "max": 85
+   },
+   "hpAfterOnWin": {
+    "n": 18,
+    "mean": 24.78,
+    "min": 6,
+    "med": 19,
+    "max": 55
+   },
    "haunt": {
-    "n": 20,
-    "mean": 0.75,
+    "n": 36,
+    "mean": 2.61,
     "min": 0,
     "med": 0,
-    "max": 6
+    "max": 30
    },
-   "pierce": 0,
+   "pierce": 17,
    "snacks": 0,
    "timeouts": 0,
    "byEncounter": {
-    "foyer-boss": {
-     "n": 20,
-     "w": 4
+    "foyer-scare-guest": {
+     "n": 36,
+     "w": 18
     }
    },
-   "rulesBrokenPerFight": {
-    "one-at-a-time": 1.7,
-    "no-running": 0.25,
-    "keep-the-hall-clear": 0.15
-   },
+   "rulesBrokenPerFight": {},
    "enemyStatusPerFight": {
     "weak": 1,
-    "haunt": 0.6,
-    "discomposed": 0.5,
-    "vulnerable": 0.25
+    "haunt": 1.83,
+    "vulnerable": 0.28
    },
-   "summonsPerFight": 1.2
+   "summonsPerFight": 0
   },
   "competent": {
-   "n": 20,
-   "winRate": 0,
+   "n": 36,
+   "winRate": 72.2,
    "turns": {
-    "n": 20,
-    "mean": 11.6,
-    "min": 6,
-    "med": 13,
-    "max": 18
+    "n": 36,
+    "mean": 10.47,
+    "min": 5,
+    "med": 11,
+    "max": 17
    },
    "courageBefore": {
-    "n": 20,
-    "mean": 38,
-    "min": 15,
-    "med": 47,
-    "max": 67
+    "n": 36,
+    "mean": 61.89,
+    "min": 41,
+    "med": 62,
+    "max": 68
    },
    "dmgTaken": {
-    "n": 20,
-    "mean": 46.4,
-    "min": 19,
-    "med": 64,
-    "max": 77
+    "n": 36,
+    "mean": 43.67,
+    "min": 10,
+    "med": 49,
+    "max": 80
    },
    "dmgDealt": {
-    "n": 20,
-    "mean": 146.4,
-    "min": 63,
-    "med": 160,
-    "max": 235
+    "n": 36,
+    "mean": 131.64,
+    "min": 58,
+    "med": 143,
+    "max": 152
    },
    "dealtPerTurn": {
-    "n": 20,
-    "mean": 12.7,
-    "min": 10.4,
-    "med": 12.9,
-    "max": 14.8
+    "n": 36,
+    "mean": 13.41,
+    "min": 6.8,
+    "med": 12.1,
+    "max": 28.6
    },
    "takenPerTurn": {
-    "n": 20,
-    "mean": 3.9,
-    "min": 1.9,
-    "med": 4.2,
-    "max": 5.1
+    "n": 36,
+    "mean": 4.19,
+    "min": 0.8,
+    "med": 4.3,
+    "max": 7.3
    },
    "enemyGuard": {
-    "n": 20,
-    "mean": 43.35,
-    "min": 12,
-    "med": 56,
-    "max": 94
+    "n": 36,
+    "mean": 60.06,
+    "min": 20,
+    "med": 58,
+    "max": 124
    },
    "blockedByEnemy": {
-    "n": 20,
-    "mean": 17.6,
+    "n": 36,
+    "mean": 14.39,
     "min": 0,
     "med": 12,
-    "max": 52
+    "max": 48
    },
    "enemyHpLeftOnLoss": {
-    "n": 20,
-    "mean": 126.7,
-    "min": 41,
-    "med": 120,
-    "max": 199
+    "n": 10,
+    "mean": 43.3,
+    "min": 15,
+    "med": 39,
+    "max": 84
    },
    "hpAfterOnWin": {
-    "n": 0
+    "n": 26,
+    "mean": 36.46,
+    "min": 7,
+    "med": 35,
+    "max": 60
    },
    "haunt": {
-    "n": 20,
-    "mean": 1.95,
+    "n": 36,
+    "mean": 3.08,
     "min": 0,
     "med": 3,
-    "max": 6
+    "max": 16
    },
-   "pierce": 0,
-   "snacks": 10,
+   "pierce": 19,
+   "snacks": 34,
    "timeouts": 0,
    "byEncounter": {
-    "foyer-boss": {
-     "n": 20,
-     "w": 0
+    "foyer-scare-guest": {
+     "n": 36,
+     "w": 26
     }
    },
-   "rulesBrokenPerFight": {
-    "one-at-a-time": 0.75,
-    "no-running": 0.05,
-    "keep-the-hall-clear": 0.05
-   },
+   "rulesBrokenPerFight": {},
    "enemyStatusPerFight": {
     "weak": 1,
-    "haunt": 1.4,
-    "discomposed": 0.2,
-    "vulnerable": 0.25
+    "vulnerable": 0.69,
+    "haunt": 2.44
    },
-   "summonsPerFight": 1.8
+   "summonsPerFight": 0
   }
  },
  "trace": [
   {
    "turn": 1,
-   "dealt": 24,
+   "dealt": 29,
    "enemies": [
     {
-     "n": "The Butler",
-     "hp": 226,
+     "n": "The Unwelcome Guest",
+     "hp": 113,
      "blk": 0,
-     "i": "formal-welcome",
+     "i": "watching",
      "d": 0
     }
    ],
-   "php": 23,
-   "blk": 12,
-   "played": [
-    "Ninefold Scratch",
-    "Back-Arched Swipe"
-   ],
-   "hand": [
-    "Hide and Seek",
-    "Curl Up",
-    "Back-Arched Swipe",
-    "Zoomies at Midnight",
-    "Curl Up",
-    "Ninefold Scratch",
-    "Curl Up"
-   ],
-   "dbg": [
-    {
-     "d": 1,
-     "names": [
-      "Ninefold Scratch",
-      "Back-Arched Swipe"
-     ],
-     "score": -30.1,
-     "guarded": 0,
-     "ehp": 226
-    },
-    {
-     "d": 1,
-     "names": [
-      "Back-Arched Swipe",
-      "Ninefold Scratch"
-     ],
-     "score": -30.1,
-     "guarded": 0,
-     "ehp": 226
-    },
-    {
-     "d": 0,
-     "names": [
-      "Ninefold Scratch"
-     ],
-     "score": -45.5,
-     "guarded": 0,
-     "ehp": 232
-    },
-    {
-     "d": 1,
-     "names": [
-      "Ninefold Scratch",
-      "Hide and Seek"
-     ],
-     "score": -45.5,
-     "guarded": 0,
-     "ehp": 232
-    },
-    {
-     "d": -1,
-     "names": [
-      "(pass)"
-     ],
-     "score": -98.8,
-     "guarded": 0
-    },
-    {
-     "d": 0,
-     "names": [
-      "Back-Arched Swipe"
-     ],
-     "score": -98.8,
-     "guarded": 0,
-     "ehp": 244
-    }
-   ],
-   "fc": {
-    "dps": 24,
-    "threat": 4,
-    "turns": 1
-   },
-   "took": 0
-  },
-  {
-   "turn": 2,
-   "dealt": 6,
-   "enemies": [
-    {
-     "n": "The Butler",
-     "hp": 220,
-     "blk": 0,
-     "i": "walking-stick",
-     "d": 10
-    }
-   ],
-   "php": 23,
+   "php": 68,
    "blk": 0,
    "played": [
-    "Scratch",
-    "Wall Bounce",
-    "Scratch"
-   ],
-   "hand": [
-    "Scratch",
-    "Wall Bounce",
-    "Scratch",
-    "Scratch",
-    "Queen of the Rafters"
-   ],
-   "dbg": [
-    {
-     "d": 2,
-     "names": [
-      "Scratch",
-      "Wall Bounce",
-      "Scratch"
-     ],
-     "score": -98.9,
-     "guarded": 0,
-     "ehp": 220
-    },
-    {
-     "d": 2,
-     "names": [
-      "Scratch",
-      "Scratch",
-      "Wall Bounce"
-     ],
-     "score": -98.9,
-     "guarded": 0,
-     "ehp": 220
-    },
-    {
-     "d": 2,
-     "names": [
-      "Scratch",
-      "Scratch",
-      "Scratch"
-     ],
-     "score": -98.9,
-     "guarded": 0,
-     "ehp": 220
-    },
-    {
-     "d": -1,
-     "names": [
-      "(pass)"
-     ],
-     "score": -145.4,
-     "guarded": 0
-    },
-    {
-     "d": 0,
-     "names": [
-      "Scratch"
-     ],
-     "score": -145.4,
-     "guarded": 0,
-     "ehp": 226
-    },
-    {
-     "d": 0,
-     "names": [
-      "Wall Bounce"
-     ],
-     "score": -145.4,
-     "guarded": 0,
-     "ehp": 226
-    }
-   ],
-   "fc": {
-    "dps": 15,
-    "threat": 7,
-    "turns": 2
-   },
-   "took": 10
-  },
-  {
-   "turn": 3,
-   "dealt": 20,
-   "enemies": [
-    {
-     "n": "The Butler",
-     "hp": 197,
-     "blk": 0,
-     "i": "dust-them-off",
-     "d": 10
-    }
-   ],
-   "php": 13,
-   "blk": 5,
-   "played": [
-    "Scratch",
-    "Scratch",
-    "Frenzied Zoomies",
-    "Frenzied Zoomies",
-    "Curl Up"
-   ],
-   "hand": [
-    "Curl Up",
-    "Frenzied Zoomies",
-    "Boo!",
+    "Scratch+",
     "Scratch",
     "Scratch"
    ],
-   "dbg": [
-    {
-     "d": 5,
-     "names": [
-      "Scratch",
-      "Scratch",
-      "Frenzied Zoomies",
-      "Frenzied Zoomies",
-      "Frenzied Zoomies",
-      "Curl Up"
-     ],
-     "score": -17.3,
-     "guarded": 5,
-     "ehp": 193
-    },
-    {
-     "d": 5,
-     "names": [
-      "Scratch",
-      "Scratch",
-      "Frenzied Zoomies",
-      "Frenzied Zoomies",
-      "Curl Up",
-      "Frenzied Zoomies"
-     ],
-     "score": -17.3,
-     "guarded": 5,
-     "ehp": 193
-    },
-    {
-     "d": 4,
-     "names": [
-      "Scratch",
-      "Scratch",
-      "Frenzied Zoomies",
-      "Frenzied Zoomies",
-      "Curl Up"
-     ],
-     "score": -20.9,
-     "guarded": 5,
-     "ehp": 197
-    },
-    {
-     "d": 4,
-     "names": [
-      "Scratch",
-      "Scratch",
-      "Frenzied Zoomies",
-      "Curl Up",
-      "Frenzied Zoomies"
-     ],
-     "score": -20.9,
-     "guarded": 5,
-     "ehp": 197
-    },
-    {
-     "d": 3,
-     "names": [
-      "Scratch",
-      "Scratch",
-      "Frenzied Zoomies",
-      "Curl Up"
-     ],
-     "score": -25.4,
-     "guarded": 5,
-     "ehp": 201
-    },
-    {
-     "d": 3,
-     "names": [
-      "Scratch",
-      "Scratch",
-      "Curl Up",
-      "Frenzied Zoomies"
-     ],
-     "score": -25.4,
-     "guarded": 5,
-     "ehp": 201
-    }
-   ],
-   "fc": {
-    "dps": 16.666666666666668,
-    "threat": 8,
-    "turns": 3
-   },
-   "took": 5
-  },
-  {
-   "turn": 4,
-   "dealt": 12,
-   "enemies": [
-    {
-     "n": "The Butler",
-     "hp": 179,
-     "blk": 0,
-     "i": "service-please",
-     "d": 0
-    }
-   ],
-   "php": 8,
-   "blk": 5,
-   "played": [
-    "Scratch",
-    "Scratch",
-    "Frenzied Zoomies",
-    "Frenzied Zoomies",
-    "Curl Up"
-   ],
    "hand": [
+    "Endless Zoomies+",
+    "Scratch+",
     "Scratch",
-    "Curl Up",
-    "Frenzied Zoomies",
     "Scratch",
-    "Curl Up"
-   ],
-   "dbg": [
-    {
-     "d": 5,
-     "names": [
-      "Scratch",
-      "Scratch",
-      "Frenzied Zoomies",
-      "Frenzied Zoomies",
-      "Frenzied Zoomies",
-      "Curl Up"
-     ],
-     "score": -21.9,
-     "guarded": 5,
-     "ehp": 175
-    },
-    {
-     "d": 5,
-     "names": [
-      "Scratch",
-      "Scratch",
-      "Frenzied Zoomies",
-      "Frenzied Zoomies",
-      "Curl Up",
-      "Frenzied Zoomies"
-     ],
-     "score": -21.9,
-     "guarded": 5,
-     "ehp": 175
-    },
-    {
-     "d": 0,
-     "names": [
-      "Curl Up"
-     ],
-     "score": -29.8,
-     "guarded": 5,
-     "ehp": 191
-    },
-    {
-     "d": 3,
-     "names": [
-      "Scratch",
-      "Scratch",
-      "Frenzied Zoomies",
-      "Curl Up"
-     ],
-     "score": -29.8,
-     "guarded": 5,
-     "ehp": 179
-    },
-    {
-     "d": 3,
-     "names": [
-      "Scratch",
-      "Frenzied Zoomies",
-      "Scratch",
-      "Curl Up"
-     ],
-     "score": -29.8,
-     "guarded": 5,
-     "ehp": 181
-    },
-    {
-     "d": 4,
-     "names": [
-      "Scratch",
-      "Scratch",
-      "Frenzied Zoomies",
-      "Frenzied Zoomies",
-      "Curl Up"
-     ],
-     "score": -29.8,
-     "guarded": 5,
-     "ehp": 179
-    }
-   ],
-   "fc": {
-    "dps": 15.5,
-    "threat": 6,
-    "turns": 4
-   },
-   "took": 0
-  },
-  {
-   "turn": 5,
-   "dealt": 12,
-   "enemies": [
-    {
-     "n": "The Butler",
-     "hp": 179,
-     "blk": 0,
-     "i": "walking-stick",
-     "d": 10
-    }
-   ],
-   "php": 8,
-   "blk": 5,
-   "played": [
-    "Scratch",
-    "Wall Bounce",
-    "Curl Up"
-   ],
-   "hand": [
-    "Hide and Seek",
-    "Scratch",
-    "Wall Bounce",
-    "Curl Up",
     "Boo!"
    ],
    "dbg": [
     {
      "d": 2,
      "names": [
+      "Scratch+",
       "Scratch",
-      "Wall Bounce",
-      "Curl Up"
+      "Scratch"
      ],
-     "score": 12.1,
-     "guarded": 5,
-     "ehp": 179
+     "score": 59.3,
+     "guarded": 0,
+     "ehp": 113
     },
     {
      "d": 2,
      "names": [
       "Scratch",
-      "Wall Bounce",
-      "Hide and Seek"
-     ],
-     "score": -54.8,
-     "guarded": 0,
-     "ehp": 179
-    },
-    {
-     "d": -1,
-     "names": [
-      "(pass)"
-     ],
-     "score": -1000000,
-     "guarded": 0
-    },
-    {
-     "d": 0,
-     "names": [
+      "Scratch+",
       "Scratch"
      ],
-     "score": -1000000,
+     "score": 59.3,
      "guarded": 0,
-     "ehp": 185
+     "ehp": 113
     },
     {
-     "d": 0,
+     "d": 2,
      "names": [
-      "Scratch"
+      "Scratch",
+      "Scratch",
+      "Scratch+"
      ],
-     "score": -1000000,
+     "score": 59.3,
      "guarded": 0,
-     "ehp": 185
-    },
-    {
-     "d": 0,
-     "names": [
-      "Wall Bounce"
-     ],
-     "score": -1000000,
-     "guarded": 0,
-     "ehp": 185
-    }
-   ],
-   "fc": {
-    "dps": 14.8,
-    "threat": 6.8,
-    "turns": 5
-   },
-   "took": 5
-  },
-  {
-   "turn": 6,
-   "dealt": 0,
-   "enemies": [
-    {
-     "n": "The Butler",
-     "hp": 176,
-     "blk": 0,
-     "i": "dust-them-off",
-     "d": 10
-    }
-   ],
-   "php": 3,
-   "blk": 0,
-   "played": [],
-   "hand": [
-    "Scratch",
-    "Ninefold Scratch",
-    "Curl Up",
-    "Zoomies at Midnight",
-    "Queen of the Rafters"
-   ],
-   "dbg": [
-    {
-     "d": -1,
-     "names": [
-      "(pass)"
-     ],
-     "score": -1000000,
-     "guarded": 0
-    },
-    {
-     "d": 0,
-     "names": [
-      "Ninefold Scratch"
-     ],
-     "score": -1000000,
-     "guarded": 0,
-     "ehp": 158
-    },
-    {
-     "d": 0,
-     "names": [
-      "Scratch"
-     ],
-     "score": -1000000,
-     "guarded": 0,
-     "ehp": 170
-    },
-    {
-     "d": 0,
-     "names": [
-      "Curl Up"
-     ],
-     "score": -1000000,
-     "guarded": 5,
-     "ehp": 176
+     "ehp": 113
     },
     {
      "d": 1,
      "names": [
-      "Ninefold Scratch",
+      "Scratch+",
+      "Scratch"
+     ],
+     "score": 58.2,
+     "guarded": 0,
+     "ehp": 119
+    },
+    {
+     "d": 1,
+     "names": [
+      "Scratch",
+      "Scratch+"
+     ],
+     "score": 58.2,
+     "guarded": 0,
+     "ehp": 119
+    },
+    {
+     "d": 1,
+     "names": [
+      "Scratch",
+      "Scratch"
+     ],
+     "score": 57.5,
+     "guarded": 0,
+     "ehp": 122
+    }
+   ],
+   "fc": {
+    "dps": 29,
+    "threat": 4,
+    "guard": 0,
+    "peak": 0,
+    "turns": 1
+   },
+   "took": 0
+  },
+  {
+   "turn": 2,
+   "dealt": 4,
+   "enemies": [
+    {
+     "n": "The Unwelcome Guest",
+     "hp": 109,
+     "blk": 0,
+     "i": "too-familiar",
+     "d": 16
+    }
+   ],
+   "php": 68,
+   "blk": 10,
+   "played": [
+    "Shadow Swat+",
+    "Curl Up",
+    "Curl Up"
+   ],
+   "hand": [
+    "Scratch",
+    "Curl Up",
+    "Curl Up",
+    "Shadow Swat+",
+    "Scratch+"
+   ],
+   "dbg": [
+    {
+     "d": 2,
+     "names": [
+      "Shadow Swat+",
+      "Curl Up",
       "Curl Up"
      ],
-     "score": -1000000,
+     "score": 33.3,
+     "guarded": 10,
+     "ehp": 109
+    },
+    {
+     "d": 2,
+     "names": [
+      "Shadow Swat+",
+      "Curl Up",
+      "Scratch+"
+     ],
+     "score": 26.5,
      "guarded": 5,
-     "ehp": 158
+     "ehp": 100
+    },
+    {
+     "d": 2,
+     "names": [
+      "Shadow Swat+",
+      "Scratch+",
+      "Curl Up"
+     ],
+     "score": 26.5,
+     "guarded": 5,
+     "ehp": 100
+    },
+    {
+     "d": 0,
+     "names": [
+      "Curl Up"
+     ],
+     "score": 25.9,
+     "guarded": 5,
+     "ehp": 113
+    },
+    {
+     "d": 1,
+     "names": [
+      "Shadow Swat+",
+      "Curl Up"
+     ],
+     "score": 25,
+     "guarded": 5,
+     "ehp": 109
+    },
+    {
+     "d": 1,
+     "names": [
+      "Shadow Swat+",
+      "Scratch+"
+     ],
+     "score": 18.7,
+     "guarded": 0,
+     "ehp": 100
+    }
+   ],
+   "fc": {
+    "dps": 16.5,
+    "threat": 8.5,
+    "guard": 5,
+    "peak": 13,
+    "turns": 2
+   },
+   "took": 3
+  },
+  {
+   "turn": 3,
+   "dealt": 6,
+   "enemies": [
+    {
+     "n": "The Unwelcome Guest",
+     "hp": 103,
+     "blk": 6,
+     "i": "wrong-face",
+     "d": 18
+    }
+   ],
+   "php": 65,
+   "blk": 10,
+   "played": [
+    "Curl Up",
+    "Curl Up",
+    "Shadow Swat+"
+   ],
+   "hand": [
+    "Curl Up",
+    "Curl Up",
+    "Scratch",
+    "Scratch+",
+    "Shadow Swat+"
+   ],
+   "dbg": [
+    {
+     "d": 2,
+     "names": [
+      "Shadow Swat+",
+      "Scratch+",
+      "Scratch"
+     ],
+     "score": 11.6,
+     "guarded": 0,
+     "ehp": 82
+    },
+    {
+     "d": 2,
+     "names": [
+      "Scratch+",
+      "Shadow Swat+",
+      "Scratch"
+     ],
+     "score": 11.6,
+     "guarded": 0,
+     "ehp": 82
+    },
+    {
+     "d": 2,
+     "names": [
+      "Shadow Swat+",
+      "Scratch",
+      "Scratch+"
+     ],
+     "score": 11.6,
+     "guarded": 0,
+     "ehp": 82
+    },
+    {
+     "d": 1,
+     "names": [
+      "Shadow Swat+",
+      "Scratch+"
+     ],
+     "score": 7,
+     "guarded": 0,
+     "ehp": 88
+    },
+    {
+     "d": 1,
+     "names": [
+      "Scratch+",
+      "Shadow Swat+"
+     ],
+     "score": 7,
+     "guarded": 0,
+     "ehp": 88
+    },
+    {
+     "d": 1,
+     "names": [
+      "Shadow Swat+",
+      "Scratch"
+     ],
+     "score": 4.6,
+     "guarded": 0,
+     "ehp": 91
+    }
+   ],
+   "fc": {
+    "dps": 13,
+    "threat": 11.666666666666666,
+    "guard": 6.666666666666667,
+    "peak": 18,
+    "turns": 3
+   },
+   "took": 8
+  },
+  {
+   "turn": 4,
+   "dealt": 6,
+   "enemies": [
+    {
+     "n": "The Unwelcome Guest",
+     "hp": 97,
+     "blk": 6,
+     "i": "come-in-then",
+     "d": 0
+    }
+   ],
+   "php": 57,
+   "blk": 10,
+   "played": [
+    "Scratch",
+    "Curl Up",
+    "Curl Up"
+   ],
+   "hand": [
+    "Curl Up",
+    "Endless Zoomies+",
+    "Curl Up",
+    "Boo!",
+    "Scratch"
+   ],
+   "dbg": [
+    {
+     "d": 2,
+     "names": [
+      "Scratch",
+      "Boo!",
+      "Curl Up"
+     ],
+     "score": 9,
+     "guarded": 5,
+     "ehp": 97
+    },
+    {
+     "d": 2,
+     "names": [
+      "Boo!",
+      "Scratch",
+      "Curl Up"
+     ],
+     "score": 9,
+     "guarded": 5,
+     "ehp": 97
+    },
+    {
+     "d": 2,
+     "names": [
+      "Scratch",
+      "Curl Up",
+      "Boo!"
+     ],
+     "score": 9,
+     "guarded": 5,
+     "ehp": 97
+    },
+    {
+     "d": 1,
+     "names": [
+      "Scratch",
+      "Curl Up"
+     ],
+     "score": 7.9,
+     "guarded": 5,
+     "ehp": 97
+    },
+    {
+     "d": 1,
+     "names": [
+      "Scratch",
+      "Boo!"
+     ],
+     "score": 2.4,
+     "guarded": 0,
+     "ehp": 97
+    },
+    {
+     "d": 1,
+     "names": [
+      "Boo!",
+      "Scratch"
+     ],
+     "score": 2.4,
+     "guarded": 0,
+     "ehp": 97
+    }
+   ],
+   "fc": {
+    "dps": 11.25,
+    "threat": 8.75,
+    "guard": 7.5,
+    "peak": 18,
+    "turns": 4
+   },
+   "took": 0
+  },
+  {
+   "turn": 5,
+   "dealt": 0,
+   "enemies": [
+    {
+     "n": "The Unwelcome Guest",
+     "hp": 97,
+     "blk": 18,
+     "i": "too-familiar",
+     "d": 19
+    }
+   ],
+   "php": 57,
+   "blk": 10,
+   "played": [
+    "Curl Up",
+    "Curl Up"
+   ],
+   "hand": [
+    "Scratch",
+    "Scratch+",
+    "Curl Up",
+    "Curl Up",
+    "Curl Up"
+   ],
+   "dbg": [
+    {
+     "d": 1,
+     "names": [
+      "Curl Up",
+      "Curl Up"
+     ],
+     "score": 5.6,
+     "guarded": 10,
+     "ehp": 97
+    },
+    {
+     "d": 2,
+     "names": [
+      "Curl Up",
+      "Scratch+",
+      "Curl Up"
+     ],
+     "score": 5.6,
+     "guarded": 10,
+     "ehp": 97
+    },
+    {
+     "d": 2,
+     "names": [
+      "Curl Up",
+      "Scratch+",
+      "Scratch"
+     ],
+     "score": -0.2,
+     "guarded": 5,
+     "ehp": 94
+    },
+    {
+     "d": 2,
+     "names": [
+      "Scratch+",
+      "Curl Up",
+      "Scratch"
+     ],
+     "score": -0.2,
+     "guarded": 5,
+     "ehp": 94
+    },
+    {
+     "d": 0,
+     "names": [
+      "Curl Up"
+     ],
+     "score": -4,
+     "guarded": 5,
+     "ehp": 97
     },
     {
      "d": 1,
      "names": [
       "Curl Up",
-      "Ninefold Scratch"
+      "Scratch+"
      ],
-     "score": -1000000,
+     "score": -4,
      "guarded": 5,
-     "ehp": 158
+     "ehp": 97
     }
    ],
    "fc": {
-    "dps": 12.333333333333334,
-    "threat": 7.333333333333333,
+    "dps": 9,
+    "threat": 9.6,
+    "guard": 8,
+    "peak": 18,
+    "turns": 5
+   },
+   "took": 9
+  },
+  {
+   "turn": 6,
+   "dealt": 21,
+   "enemies": [
+    {
+     "n": "The Unwelcome Guest",
+     "hp": 76,
+     "blk": 0,
+     "i": "wrong-face",
+     "d": 18
+    }
+   ],
+   "php": 48,
+   "blk": 5,
+   "played": [
+    "Shadow Swat+",
+    "Scratch+",
+    "Curl Up"
+   ],
+   "hand": [
+    "Curl Up",
+    "Scratch+",
+    "Shadow Swat+",
+    "Boo!",
+    "Endless Zoomies+"
+   ],
+   "dbg": [
+    {
+     "d": 2,
+     "names": [
+      "Shadow Swat+",
+      "Scratch+",
+      "Curl Up"
+     ],
+     "score": 3.3,
+     "guarded": 5,
+     "ehp": 76
+    },
+    {
+     "d": 2,
+     "names": [
+      "Scratch+",
+      "Shadow Swat+",
+      "Curl Up"
+     ],
+     "score": 3.3,
+     "guarded": 5,
+     "ehp": 76
+    },
+    {
+     "d": 2,
+     "names": [
+      "Shadow Swat+",
+      "Curl Up",
+      "Scratch+"
+     ],
+     "score": 3.3,
+     "guarded": 5,
+     "ehp": 76
+    },
+    {
+     "d": 1,
+     "names": [
+      "Shadow Swat+",
+      "Curl Up"
+     ],
+     "score": -5.5,
+     "guarded": 5,
+     "ehp": 85
+    },
+    {
+     "d": 1,
+     "names": [
+      "Shadow Swat+",
+      "Scratch+"
+     ],
+     "score": -6.9,
+     "guarded": 0,
+     "ehp": 76
+    },
+    {
+     "d": 1,
+     "names": [
+      "Scratch+",
+      "Shadow Swat+"
+     ],
+     "score": -6.9,
+     "guarded": 0,
+     "ehp": 76
+    }
+   ],
+   "fc": {
+    "dps": 11,
+    "threat": 11,
+    "guard": 7.5,
+    "peak": 18,
     "turns": 6
    },
+   "took": 13
+  },
+  {
+   "turn": 7,
+   "dealt": 18,
+   "enemies": [
+    {
+     "n": "The Unwelcome Guest",
+     "hp": 58,
+     "blk": 12,
+     "i": "watching",
+     "d": 0
+    }
+   ],
+   "php": 35,
+   "blk": 5,
+   "played": [
+    "Scratch+",
+    "Scratch+",
+    "Curl Up"
+   ],
+   "hand": [
+    "Scratch",
+    "Scratch",
+    "Curl Up",
+    "Scratch+",
+    "Scratch+"
+   ],
+   "dbg": [
+    {
+     "d": 2,
+     "names": [
+      "Scratch+",
+      "Scratch+",
+      "Curl Up"
+     ],
+     "score": 9.3,
+     "guarded": 5,
+     "ehp": 58
+    },
+    {
+     "d": 2,
+     "names": [
+      "Scratch+",
+      "Scratch",
+      "Curl Up"
+     ],
+     "score": 7.1,
+     "guarded": 5,
+     "ehp": 61
+    },
+    {
+     "d": 2,
+     "names": [
+      "Scratch",
+      "Scratch+",
+      "Curl Up"
+     ],
+     "score": 7.1,
+     "guarded": 5,
+     "ehp": 61
+    },
+    {
+     "d": 1,
+     "names": [
+      "Scratch+",
+      "Scratch+"
+     ],
+     "score": 5.4,
+     "guarded": 0,
+     "ehp": 58
+    },
+    {
+     "d": 1,
+     "names": [
+      "Scratch+",
+      "Scratch"
+     ],
+     "score": 2.8,
+     "guarded": 0,
+     "ehp": 61
+    },
+    {
+     "d": 1,
+     "names": [
+      "Scratch",
+      "Scratch+"
+     ],
+     "score": 2.8,
+     "guarded": 0,
+     "ehp": 61
+    }
+   ],
+   "fc": {
+    "dps": 12,
+    "threat": 9.428571428571429,
+    "guard": 7.142857142857143,
+    "peak": 18,
+    "turns": 7
+   },
+   "took": 0
+  },
+  {
+   "turn": 8,
+   "dealt": 4,
+   "enemies": [
+    {
+     "n": "The Unwelcome Guest",
+     "hp": 54,
+     "blk": 0,
+     "i": "too-familiar",
+     "d": 16
+    }
+   ],
+   "php": 35,
+   "blk": 10,
+   "played": [
+    "Shadow Swat+",
+    "Curl Up",
+    "Curl Up"
+   ],
+   "hand": [
+    "Endless Zoomies+",
+    "Shadow Swat+",
+    "Curl Up",
+    "Scratch",
+    "Curl Up"
+   ],
+   "dbg": [
+    {
+     "d": 2,
+     "names": [
+      "Shadow Swat+",
+      "Curl Up",
+      "Curl Up"
+     ],
+     "score": 6.6,
+     "guarded": 10,
+     "ehp": 54
+    },
+    {
+     "d": 2,
+     "names": [
+      "Curl Up",
+      "Shadow Swat+",
+      "Curl Up"
+     ],
+     "score": 6.6,
+     "guarded": 10,
+     "ehp": 54
+    },
+    {
+     "d": 2,
+     "names": [
+      "Curl Up",
+      "Curl Up",
+      "Shadow Swat+"
+     ],
+     "score": 6.6,
+     "guarded": 10,
+     "ehp": 54
+    },
+    {
+     "d": 1,
+     "names": [
+      "Curl Up",
+      "Curl Up"
+     ],
+     "score": 6.5,
+     "guarded": 10,
+     "ehp": 58
+    },
+    {
+     "d": 1,
+     "names": [
+      "Shadow Swat+",
+      "Curl Up"
+     ],
+     "score": -2.1,
+     "guarded": 5,
+     "ehp": 54
+    },
+    {
+     "d": 1,
+     "names": [
+      "Curl Up",
+      "Shadow Swat+"
+     ],
+     "score": -2.1,
+     "guarded": 5,
+     "ehp": 54
+    }
+   ],
+   "fc": {
+    "dps": 11,
+    "threat": 9.875,
+    "guard": 7.5,
+    "peak": 18,
+    "turns": 8
+   },
+   "took": 6
+  },
+  {
+   "turn": 9,
+   "dealt": 6,
+   "enemies": [
+    {
+     "n": "The Unwelcome Guest",
+     "hp": 48,
+     "blk": 6,
+     "i": "wrong-face",
+     "d": 18
+    }
+   ],
+   "php": 29,
+   "blk": 10,
+   "played": [
+    "Scratch",
+    "Curl Up",
+    "Curl Up"
+   ],
+   "hand": [
+    "Boo!",
+    "Curl Up",
+    "Curl Up",
+    "Scratch",
+    "Curl Up"
+   ],
+   "dbg": [
+    {
+     "d": 2,
+     "names": [
+      "Scratch",
+      "Curl Up",
+      "Curl Up"
+     ],
+     "score": 1.4,
+     "guarded": 10,
+     "ehp": 48
+    },
+    {
+     "d": 2,
+     "names": [
+      "Curl Up",
+      "Scratch",
+      "Curl Up"
+     ],
+     "score": 1.4,
+     "guarded": 10,
+     "ehp": 48
+    },
+    {
+     "d": 1,
+     "names": [
+      "Curl Up",
+      "Curl Up"
+     ],
+     "score": -3.1,
+     "guarded": 10,
+     "ehp": 54
+    },
+    {
+     "d": 2,
+     "names": [
+      "Scratch",
+      "Curl Up",
+      "Boo!"
+     ],
+     "score": -4.9,
+     "guarded": 5,
+     "ehp": 48
+    },
+    {
+     "d": 1,
+     "names": [
+      "Scratch",
+      "Curl Up"
+     ],
+     "score": -7.1,
+     "guarded": 5,
+     "ehp": 48
+    },
+    {
+     "d": 1,
+     "names": [
+      "Curl Up",
+      "Scratch"
+     ],
+     "score": -7.1,
+     "guarded": 5,
+     "ehp": 48
+    }
+   ],
+   "fc": {
+    "dps": 10.444444444444445,
+    "threat": 10.777777777777779,
+    "guard": 7.777777777777778,
+    "peak": 18,
+    "turns": 9
+   },
+   "took": 8
+  },
+  {
+   "turn": 10,
+   "dealt": 30,
+   "enemies": [
+    {
+     "n": "The Unwelcome Guest",
+     "hp": 18,
+     "blk": 0,
+     "i": "come-in-then",
+     "d": 0
+    }
+   ],
+   "php": 21,
+   "blk": 0,
+   "played": [
+    "Shadow Swat+",
+    "Scratch+",
+    "Scratch+"
+   ],
+   "hand": [
+    "Scratch",
+    "Shadow Swat+",
+    "Scratch+",
+    "Scratch+",
+    "Scratch"
+   ],
+   "dbg": [
+    {
+     "d": 2,
+     "names": [
+      "Shadow Swat+",
+      "Scratch+",
+      "Scratch+"
+     ],
+     "score": 10.8,
+     "guarded": 0,
+     "ehp": 18
+    },
+    {
+     "d": 2,
+     "names": [
+      "Scratch+",
+      "Shadow Swat+",
+      "Scratch+"
+     ],
+     "score": 10.8,
+     "guarded": 0,
+     "ehp": 18
+    },
+    {
+     "d": 2,
+     "names": [
+      "Shadow Swat+",
+      "Scratch+",
+      "Scratch"
+     ],
+     "score": 9.1,
+     "guarded": 0,
+     "ehp": 21
+    },
+    {
+     "d": 1,
+     "names": [
+      "Shadow Swat+",
+      "Scratch+"
+     ],
+     "score": 5.5,
+     "guarded": 0,
+     "ehp": 27
+    },
+    {
+     "d": 1,
+     "names": [
+      "Scratch+",
+      "Shadow Swat+"
+     ],
+     "score": 5.5,
+     "guarded": 0,
+     "ehp": 27
+    },
+    {
+     "d": 1,
+     "names": [
+      "Shadow Swat+",
+      "Scratch"
+     ],
+     "score": 3.5,
+     "guarded": 0,
+     "ehp": 30
+    }
+   ],
+   "fc": {
+    "dps": 12.4,
+    "threat": 9.7,
+    "guard": 7,
+    "peak": 18,
+    "turns": 10
+   },
+   "took": 0
+  },
+  {
+   "turn": 11,
+   "dealt": 0,
+   "enemies": [
+    {
+     "n": "The Unwelcome Guest",
+     "hp": 18,
+     "blk": 12,
+     "i": "too-familiar",
+     "d": 13
+    }
+   ],
+   "php": 21,
+   "blk": 10,
+   "played": [
+    "Curl Up",
+    "Curl Up"
+   ],
+   "hand": [
+    "Curl Up",
+    "Endless Zoomies+",
+    "Shadow Swat+",
+    "Scratch",
+    "Curl Up"
+   ],
+   "dbg": [
+    {
+     "d": 1,
+     "names": [
+      "Curl Up",
+      "Curl Up"
+     ],
+     "score": 10.1,
+     "guarded": 10,
+     "ehp": 18
+    },
+    {
+     "d": 2,
+     "names": [
+      "Curl Up",
+      "Curl Up",
+      "Shadow Swat+"
+     ],
+     "score": 7.1,
+     "guarded": 10,
+     "ehp": 18
+    },
+    {
+     "d": 2,
+     "names": [
+      "Curl Up",
+      "Shadow Swat+",
+      "Curl Up"
+     ],
+     "score": 7.1,
+     "guarded": 10,
+     "ehp": 18
+    },
+    {
+     "d": 2,
+     "names": [
+      "Shadow Swat+",
+      "Curl Up",
+      "Curl Up"
+     ],
+     "score": 7.1,
+     "guarded": 10,
+     "ehp": 18
+    },
+    {
+     "d": 0,
+     "names": [
+      "Curl Up"
+     ],
+     "score": 3.9,
+     "guarded": 5,
+     "ehp": 18
+    },
+    {
+     "d": 1,
+     "names": [
+      "Curl Up",
+      "Shadow Swat+"
+     ],
+     "score": 0.9,
+     "guarded": 5,
+     "ehp": 18
+    }
+   ],
+   "fc": {
+    "dps": 11.272727272727273,
+    "threat": 10,
+    "guard": 7.2727272727272725,
+    "peak": 18,
+    "turns": 11
+   },
    "took": 3
+  },
+  {
+   "turn": 12,
+   "dealt": 18,
+   "enemies": [],
+   "php": 24,
+   "blk": 0,
+   "played": [
+    "Scratch+",
+    "Scratch+"
+   ],
+   "hand": [
+    "Scratch+",
+    "Scratch+",
+    "Curl Up",
+    "Scratch",
+    "Scratch"
+   ],
+   "dbg": [
+    {
+     "d": 2,
+     "names": [
+      "Scratch+",
+      "Scratch",
+      "Curl Up"
+     ],
+     "score": 3.7,
+     "guarded": 5,
+     "ehp": 3
+    },
+    {
+     "d": 2,
+     "names": [
+      "Scratch",
+      "Scratch+",
+      "Curl Up"
+     ],
+     "score": 3.7,
+     "guarded": 5,
+     "ehp": 3
+    },
+    {
+     "d": 2,
+     "names": [
+      "Scratch+",
+      "Curl Up",
+      "Scratch"
+     ],
+     "score": 3.7,
+     "guarded": 5,
+     "ehp": 3
+    },
+    {
+     "d": 1,
+     "names": [
+      "Scratch+",
+      "Curl Up"
+     ],
+     "score": 0.8,
+     "guarded": 5,
+     "ehp": 9
+    },
+    {
+     "d": 1,
+     "names": [
+      "Scratch+",
+      "Scratch"
+     ],
+     "score": -0.5,
+     "guarded": 0,
+     "ehp": 3
+    },
+    {
+     "d": 1,
+     "names": [
+      "Scratch",
+      "Scratch+"
+     ],
+     "score": -0.5,
+     "guarded": 0,
+     "ehp": 3
+    }
+   ],
+   "fc": {
+    "dps": 11.833333333333334,
+    "threat": 10.666666666666666,
+    "guard": 6.666666666666667,
+    "peak": 18,
+    "turns": 12
+   }
   }
  ],
  "errors": [],
  "loadoutSummary": [
   {
-   "deck": 17,
-   "up": 0,
-   "keeps": 3,
-   "snacks": 1,
-   "courage": 23,
+   "deck": 12,
+   "up": 4,
+   "keeps": 4,
+   "snacks": 0,
+   "courage": 68,
    "max": 68
   },
   {
-   "deck": 14,
-   "up": 2,
-   "keeps": 4,
-   "snacks": 1,
-   "courage": 47,
-   "max": 76
+   "deck": 13,
+   "up": 1,
+   "keeps": 3,
+   "snacks": 2,
+   "courage": 68,
+   "max": 68
+  },
+  {
+   "deck": 13,
+   "up": 0,
+   "keeps": 3,
+   "snacks": 3,
+   "courage": 60,
+   "max": 74
+  },
+  {
+   "deck": 13,
+   "up": 1,
+   "keeps": 3,
+   "snacks": 2,
+   "courage": 68,
+   "max": 68
   },
   {
    "deck": 15,
-   "up": 4,
-   "keeps": 6,
-   "snacks": 0,
-   "courage": 15,
-   "max": 68
+   "up": 2,
+   "keeps": 4,
+   "snacks": 2,
+   "courage": 62,
+   "max": 62
   },
   {
-   "deck": 16,
-   "up": 1,
+   "deck": 14,
+   "up": 0,
+   "keeps": 3,
+   "snacks": 2,
+   "courage": 41,
+   "max": 64
+  },
+  {
+   "deck": 13,
+   "up": 0,
    "keeps": 5,
    "snacks": 1,
-   "courage": 67,
+   "courage": 62,
+   "max": 64
+  },
+  {
+   "deck": 15,
+   "up": 1,
+   "keeps": 3,
+   "snacks": 2,
+   "courage": 62,
    "max": 68
   }
- ]
+ ],
+ "traces": {
+  "naive": [
+   {
+    "turn": 1,
+    "dealt": 29,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 113,
+      "blk": 0,
+      "i": "watching",
+      "d": 0
+     }
+    ],
+    "php": 68,
+    "blk": 0,
+    "played": [
+     "Scratch+",
+     "Scratch",
+     "Scratch"
+    ],
+    "hand": [
+     "Endless Zoomies+",
+     "Scratch+",
+     "Scratch",
+     "Scratch",
+     "Boo!"
+    ],
+    "dbg": null,
+    "fc": {
+     "dps": 10,
+     "threat": 8,
+     "guard": 4,
+     "peak": 0,
+     "turns": 0
+    },
+    "took": 0
+   },
+   {
+    "turn": 2,
+    "dealt": 4,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 109,
+      "blk": 0,
+      "i": "too-familiar",
+      "d": 16
+     }
+    ],
+    "php": 68,
+    "blk": 10,
+    "played": [
+     "Curl Up",
+     "Curl Up",
+     "Shadow Swat+"
+    ],
+    "hand": [
+     "Scratch",
+     "Curl Up",
+     "Curl Up",
+     "Shadow Swat+",
+     "Scratch+"
+    ],
+    "dbg": null,
+    "fc": {
+     "dps": 10,
+     "threat": 8,
+     "guard": 4,
+     "peak": 0,
+     "turns": 0
+    },
+    "took": 3
+   },
+   {
+    "turn": 3,
+    "dealt": 0,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 109,
+      "blk": 6,
+      "i": "wrong-face",
+      "d": 18
+     }
+    ],
+    "php": 65,
+    "blk": 8,
+    "played": [
+     "Curl Up",
+     "Curl Up",
+     "Curl Up"
+    ],
+    "hand": [
+     "Curl Up",
+     "Curl Up",
+     "Scratch",
+     "Scratch+",
+     "Curl Up"
+    ],
+    "dbg": null,
+    "fc": {
+     "dps": 10,
+     "threat": 8,
+     "guard": 4,
+     "peak": 0,
+     "turns": 0
+    },
+    "took": 10
+   },
+   {
+    "turn": 4,
+    "dealt": 18,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 91,
+      "blk": 0,
+      "i": "come-in-then",
+      "d": 0
+     }
+    ],
+    "php": 55,
+    "blk": 5,
+    "played": [
+     "Shadow Swat+",
+     "Scratch",
+     "Curl Up"
+    ],
+    "hand": [
+     "Shadow Swat+",
+     "Endless Zoomies+",
+     "Curl Up",
+     "Boo!",
+     "Scratch"
+    ],
+    "dbg": null,
+    "fc": {
+     "dps": 10,
+     "threat": 8,
+     "guard": 4,
+     "peak": 0,
+     "turns": 0
+    },
+    "took": 0
+   },
+   {
+    "turn": 5,
+    "dealt": 0,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 91,
+      "blk": 3,
+      "i": "too-familiar",
+      "d": 16
+     }
+    ],
+    "php": 55,
+    "blk": 10,
+    "played": [
+     "Curl Up",
+     "Curl Up",
+     "Scratch+"
+    ],
+    "hand": [
+     "Scratch",
+     "Scratch+",
+     "Curl Up",
+     "Scratch",
+     "Curl Up"
+    ],
+    "dbg": null,
+    "fc": {
+     "dps": 10,
+     "threat": 8,
+     "guard": 4,
+     "peak": 0,
+     "turns": 0
+    },
+    "took": 6
+   },
+   {
+    "turn": 6,
+    "dealt": 3,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 88,
+      "blk": 6,
+      "i": "wrong-face",
+      "d": 18
+     }
+    ],
+    "php": 49,
+    "blk": 10,
+    "played": [
+     "Curl Up",
+     "Curl Up",
+     "Scratch+"
+    ],
+    "hand": [
+     "Curl Up",
+     "Scratch+",
+     "Curl Up",
+     "Boo!",
+     "Endless Zoomies+"
+    ],
+    "dbg": null,
+    "fc": {
+     "dps": 10,
+     "threat": 8,
+     "guard": 4,
+     "peak": 0,
+     "turns": 0
+    },
+    "took": 8
+   },
+   {
+    "turn": 7,
+    "dealt": 27,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 61,
+      "blk": 0,
+      "i": "watching",
+      "d": 0
+     }
+    ],
+    "php": 41,
+    "blk": 0,
+    "played": [
+     "Shadow Swat+",
+     "Scratch+",
+     "Scratch"
+    ],
+    "hand": [
+     "Shadow Swat+",
+     "Scratch",
+     "Scratch+",
+     "Scratch",
+     "Curl Up"
+    ],
+    "dbg": null,
+    "fc": {
+     "dps": 10,
+     "threat": 8,
+     "guard": 4,
+     "peak": 0,
+     "turns": 0
+    },
+    "took": 0
+   },
+   {
+    "turn": 8,
+    "dealt": 1,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 60,
+      "blk": 0,
+      "i": "too-familiar",
+      "d": 16
+     }
+    ],
+    "php": 41,
+    "blk": 10,
+    "played": [
+     "Curl Up",
+     "Curl Up",
+     "Scratch+"
+    ],
+    "hand": [
+     "Endless Zoomies+",
+     "Curl Up",
+     "Curl Up",
+     "Scratch+",
+     "Scratch"
+    ],
+    "dbg": null,
+    "fc": {
+     "dps": 10,
+     "threat": 8,
+     "guard": 4,
+     "peak": 0,
+     "turns": 0
+    },
+    "took": 6
+   },
+   {
+    "turn": 9,
+    "dealt": 0,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 60,
+      "blk": 6,
+      "i": "wrong-face",
+      "d": 18
+     }
+    ],
+    "php": 35,
+    "blk": 10,
+    "played": [
+     "Curl Up",
+     "Curl Up",
+     "Scratch"
+    ],
+    "hand": [
+     "Boo!",
+     "Curl Up",
+     "Curl Up",
+     "Scratch",
+     "Scratch"
+    ],
+    "dbg": null,
+    "fc": {
+     "dps": 10,
+     "threat": 8,
+     "guard": 4,
+     "peak": 0,
+     "turns": 0
+    },
+    "took": 8
+   },
+   {
+    "turn": 10,
+    "dealt": 27,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 33,
+      "blk": 0,
+      "i": "come-in-then",
+      "d": 0
+     }
+    ],
+    "php": 27,
+    "blk": 0,
+    "played": [
+     "Shadow Swat+",
+     "Scratch+",
+     "Scratch"
+    ],
+    "hand": [
+     "Scratch",
+     "Curl Up",
+     "Scratch+",
+     "Shadow Swat+",
+     "Curl Up"
+    ],
+    "dbg": null,
+    "fc": {
+     "dps": 10,
+     "threat": 8,
+     "guard": 4,
+     "peak": 0,
+     "turns": 0
+    },
+    "took": 0
+   },
+   {
+    "turn": 11,
+    "dealt": 0,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 33,
+      "blk": 0,
+      "i": "too-familiar",
+      "d": 16
+     }
+    ],
+    "php": 27,
+    "blk": 10,
+    "played": [
+     "Curl Up",
+     "Curl Up",
+     "Shadow Swat+"
+    ],
+    "hand": [
+     "Scratch+",
+     "Endless Zoomies+",
+     "Shadow Swat+",
+     "Curl Up",
+     "Curl Up"
+    ],
+    "dbg": null,
+    "fc": {
+     "dps": 10,
+     "threat": 8,
+     "guard": 4,
+     "peak": 0,
+     "turns": 0
+    },
+    "took": 6
+   },
+   {
+    "turn": 12,
+    "dealt": 3,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 30,
+      "blk": 6,
+      "i": "wrong-face",
+      "d": 18
+     }
+    ],
+    "php": 21,
+    "blk": 10,
+    "played": [
+     "Curl Up",
+     "Curl Up",
+     "Scratch+"
+    ],
+    "hand": [
+     "Scratch",
+     "Scratch+",
+     "Scratch",
+     "Curl Up",
+     "Curl Up"
+    ],
+    "dbg": null,
+    "fc": {
+     "dps": 10,
+     "threat": 8,
+     "guard": 4,
+     "peak": 0,
+     "turns": 0
+    },
+    "took": 8
+   },
+   {
+    "turn": 13,
+    "dealt": 15,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 15,
+      "blk": 0,
+      "i": "watching",
+      "d": 0
+     }
+    ],
+    "php": 13,
+    "blk": 0,
+    "played": [
+     "Scratch+",
+     "Scratch",
+     "Boo!"
+    ],
+    "hand": [
+     "Boo!",
+     "Scratch",
+     "Scratch+",
+     "Curl Up",
+     "Endless Zoomies+"
+    ],
+    "dbg": null,
+    "fc": {
+     "dps": 10,
+     "threat": 8,
+     "guard": 4,
+     "peak": 0,
+     "turns": 0
+    },
+    "took": 0
+   },
+   {
+    "turn": 14,
+    "dealt": 0,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 15,
+      "blk": 8,
+      "i": "too-familiar",
+      "d": 13
+     }
+    ],
+    "php": 13,
+    "blk": 15,
+    "played": [
+     "Curl Up",
+     "Curl Up",
+     "Curl Up"
+    ],
+    "hand": [
+     "Curl Up",
+     "Curl Up",
+     "Shadow Swat+",
+     "Curl Up",
+     "Scratch"
+    ],
+    "dbg": null,
+    "fc": {
+     "dps": 10,
+     "threat": 8,
+     "guard": 4,
+     "peak": 0,
+     "turns": 0
+    },
+    "took": 0
+   },
+   {
+    "turn": 15,
+    "dealt": 15,
+    "enemies": [],
+    "php": 19,
+    "blk": 0,
+    "played": [
+     "Scratch+",
+     "Scratch"
+    ],
+    "hand": [
+     "Scratch+",
+     "Scratch",
+     "Scratch",
+     "Endless Zoomies+",
+     "Scratch+"
+    ],
+    "dbg": null,
+    "fc": {
+     "dps": 10,
+     "threat": 8,
+     "guard": 4,
+     "peak": 0,
+     "turns": 0
+    }
+   }
+  ],
+  "competent": [
+   {
+    "turn": 1,
+    "dealt": 29,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 113,
+      "blk": 0,
+      "i": "watching",
+      "d": 0
+     }
+    ],
+    "php": 68,
+    "blk": 0,
+    "played": [
+     "Scratch+",
+     "Scratch",
+     "Scratch"
+    ],
+    "hand": [
+     "Endless Zoomies+",
+     "Scratch+",
+     "Scratch",
+     "Scratch",
+     "Boo!"
+    ],
+    "dbg": [
+     {
+      "d": 2,
+      "names": [
+       "Scratch+",
+       "Scratch",
+       "Scratch"
+      ],
+      "score": 59.3,
+      "guarded": 0,
+      "ehp": 113
+     },
+     {
+      "d": 2,
+      "names": [
+       "Scratch",
+       "Scratch+",
+       "Scratch"
+      ],
+      "score": 59.3,
+      "guarded": 0,
+      "ehp": 113
+     },
+     {
+      "d": 2,
+      "names": [
+       "Scratch",
+       "Scratch",
+       "Scratch+"
+      ],
+      "score": 59.3,
+      "guarded": 0,
+      "ehp": 113
+     },
+     {
+      "d": 1,
+      "names": [
+       "Scratch+",
+       "Scratch"
+      ],
+      "score": 58.2,
+      "guarded": 0,
+      "ehp": 119
+     },
+     {
+      "d": 1,
+      "names": [
+       "Scratch",
+       "Scratch+"
+      ],
+      "score": 58.2,
+      "guarded": 0,
+      "ehp": 119
+     },
+     {
+      "d": 1,
+      "names": [
+       "Scratch",
+       "Scratch"
+      ],
+      "score": 57.5,
+      "guarded": 0,
+      "ehp": 122
+     }
+    ],
+    "fc": {
+     "dps": 29,
+     "threat": 4,
+     "guard": 0,
+     "peak": 0,
+     "turns": 1
+    },
+    "took": 0
+   },
+   {
+    "turn": 2,
+    "dealt": 4,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 109,
+      "blk": 0,
+      "i": "too-familiar",
+      "d": 16
+     }
+    ],
+    "php": 68,
+    "blk": 10,
+    "played": [
+     "Shadow Swat+",
+     "Curl Up",
+     "Curl Up"
+    ],
+    "hand": [
+     "Scratch",
+     "Curl Up",
+     "Curl Up",
+     "Shadow Swat+",
+     "Scratch+"
+    ],
+    "dbg": [
+     {
+      "d": 2,
+      "names": [
+       "Shadow Swat+",
+       "Curl Up",
+       "Curl Up"
+      ],
+      "score": 33.3,
+      "guarded": 10,
+      "ehp": 109
+     },
+     {
+      "d": 2,
+      "names": [
+       "Shadow Swat+",
+       "Curl Up",
+       "Scratch+"
+      ],
+      "score": 26.5,
+      "guarded": 5,
+      "ehp": 100
+     },
+     {
+      "d": 2,
+      "names": [
+       "Shadow Swat+",
+       "Scratch+",
+       "Curl Up"
+      ],
+      "score": 26.5,
+      "guarded": 5,
+      "ehp": 100
+     },
+     {
+      "d": 0,
+      "names": [
+       "Curl Up"
+      ],
+      "score": 25.9,
+      "guarded": 5,
+      "ehp": 113
+     },
+     {
+      "d": 1,
+      "names": [
+       "Shadow Swat+",
+       "Curl Up"
+      ],
+      "score": 25,
+      "guarded": 5,
+      "ehp": 109
+     },
+     {
+      "d": 1,
+      "names": [
+       "Shadow Swat+",
+       "Scratch+"
+      ],
+      "score": 18.7,
+      "guarded": 0,
+      "ehp": 100
+     }
+    ],
+    "fc": {
+     "dps": 16.5,
+     "threat": 8.5,
+     "guard": 5,
+     "peak": 13,
+     "turns": 2
+    },
+    "took": 3
+   },
+   {
+    "turn": 3,
+    "dealt": 6,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 103,
+      "blk": 6,
+      "i": "wrong-face",
+      "d": 18
+     }
+    ],
+    "php": 65,
+    "blk": 10,
+    "played": [
+     "Curl Up",
+     "Curl Up",
+     "Shadow Swat+"
+    ],
+    "hand": [
+     "Curl Up",
+     "Curl Up",
+     "Scratch",
+     "Scratch+",
+     "Shadow Swat+"
+    ],
+    "dbg": [
+     {
+      "d": 2,
+      "names": [
+       "Shadow Swat+",
+       "Scratch+",
+       "Scratch"
+      ],
+      "score": 11.6,
+      "guarded": 0,
+      "ehp": 82
+     },
+     {
+      "d": 2,
+      "names": [
+       "Scratch+",
+       "Shadow Swat+",
+       "Scratch"
+      ],
+      "score": 11.6,
+      "guarded": 0,
+      "ehp": 82
+     },
+     {
+      "d": 2,
+      "names": [
+       "Shadow Swat+",
+       "Scratch",
+       "Scratch+"
+      ],
+      "score": 11.6,
+      "guarded": 0,
+      "ehp": 82
+     },
+     {
+      "d": 1,
+      "names": [
+       "Shadow Swat+",
+       "Scratch+"
+      ],
+      "score": 7,
+      "guarded": 0,
+      "ehp": 88
+     },
+     {
+      "d": 1,
+      "names": [
+       "Scratch+",
+       "Shadow Swat+"
+      ],
+      "score": 7,
+      "guarded": 0,
+      "ehp": 88
+     },
+     {
+      "d": 1,
+      "names": [
+       "Shadow Swat+",
+       "Scratch"
+      ],
+      "score": 4.6,
+      "guarded": 0,
+      "ehp": 91
+     }
+    ],
+    "fc": {
+     "dps": 13,
+     "threat": 11.666666666666666,
+     "guard": 6.666666666666667,
+     "peak": 18,
+     "turns": 3
+    },
+    "took": 8
+   },
+   {
+    "turn": 4,
+    "dealt": 6,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 97,
+      "blk": 6,
+      "i": "come-in-then",
+      "d": 0
+     }
+    ],
+    "php": 57,
+    "blk": 10,
+    "played": [
+     "Scratch",
+     "Curl Up",
+     "Curl Up"
+    ],
+    "hand": [
+     "Curl Up",
+     "Endless Zoomies+",
+     "Curl Up",
+     "Boo!",
+     "Scratch"
+    ],
+    "dbg": [
+     {
+      "d": 2,
+      "names": [
+       "Scratch",
+       "Boo!",
+       "Curl Up"
+      ],
+      "score": 9,
+      "guarded": 5,
+      "ehp": 97
+     },
+     {
+      "d": 2,
+      "names": [
+       "Boo!",
+       "Scratch",
+       "Curl Up"
+      ],
+      "score": 9,
+      "guarded": 5,
+      "ehp": 97
+     },
+     {
+      "d": 2,
+      "names": [
+       "Scratch",
+       "Curl Up",
+       "Boo!"
+      ],
+      "score": 9,
+      "guarded": 5,
+      "ehp": 97
+     },
+     {
+      "d": 1,
+      "names": [
+       "Scratch",
+       "Curl Up"
+      ],
+      "score": 7.9,
+      "guarded": 5,
+      "ehp": 97
+     },
+     {
+      "d": 1,
+      "names": [
+       "Scratch",
+       "Boo!"
+      ],
+      "score": 2.4,
+      "guarded": 0,
+      "ehp": 97
+     },
+     {
+      "d": 1,
+      "names": [
+       "Boo!",
+       "Scratch"
+      ],
+      "score": 2.4,
+      "guarded": 0,
+      "ehp": 97
+     }
+    ],
+    "fc": {
+     "dps": 11.25,
+     "threat": 8.75,
+     "guard": 7.5,
+     "peak": 18,
+     "turns": 4
+    },
+    "took": 0
+   },
+   {
+    "turn": 5,
+    "dealt": 0,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 97,
+      "blk": 18,
+      "i": "too-familiar",
+      "d": 19
+     }
+    ],
+    "php": 57,
+    "blk": 10,
+    "played": [
+     "Curl Up",
+     "Curl Up"
+    ],
+    "hand": [
+     "Scratch",
+     "Scratch+",
+     "Curl Up",
+     "Curl Up",
+     "Curl Up"
+    ],
+    "dbg": [
+     {
+      "d": 1,
+      "names": [
+       "Curl Up",
+       "Curl Up"
+      ],
+      "score": 5.6,
+      "guarded": 10,
+      "ehp": 97
+     },
+     {
+      "d": 2,
+      "names": [
+       "Curl Up",
+       "Scratch+",
+       "Curl Up"
+      ],
+      "score": 5.6,
+      "guarded": 10,
+      "ehp": 97
+     },
+     {
+      "d": 2,
+      "names": [
+       "Curl Up",
+       "Scratch+",
+       "Scratch"
+      ],
+      "score": -0.2,
+      "guarded": 5,
+      "ehp": 94
+     },
+     {
+      "d": 2,
+      "names": [
+       "Scratch+",
+       "Curl Up",
+       "Scratch"
+      ],
+      "score": -0.2,
+      "guarded": 5,
+      "ehp": 94
+     },
+     {
+      "d": 0,
+      "names": [
+       "Curl Up"
+      ],
+      "score": -4,
+      "guarded": 5,
+      "ehp": 97
+     },
+     {
+      "d": 1,
+      "names": [
+       "Curl Up",
+       "Scratch+"
+      ],
+      "score": -4,
+      "guarded": 5,
+      "ehp": 97
+     }
+    ],
+    "fc": {
+     "dps": 9,
+     "threat": 9.6,
+     "guard": 8,
+     "peak": 18,
+     "turns": 5
+    },
+    "took": 9
+   },
+   {
+    "turn": 6,
+    "dealt": 21,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 76,
+      "blk": 0,
+      "i": "wrong-face",
+      "d": 18
+     }
+    ],
+    "php": 48,
+    "blk": 5,
+    "played": [
+     "Shadow Swat+",
+     "Scratch+",
+     "Curl Up"
+    ],
+    "hand": [
+     "Curl Up",
+     "Scratch+",
+     "Shadow Swat+",
+     "Boo!",
+     "Endless Zoomies+"
+    ],
+    "dbg": [
+     {
+      "d": 2,
+      "names": [
+       "Shadow Swat+",
+       "Scratch+",
+       "Curl Up"
+      ],
+      "score": 3.3,
+      "guarded": 5,
+      "ehp": 76
+     },
+     {
+      "d": 2,
+      "names": [
+       "Scratch+",
+       "Shadow Swat+",
+       "Curl Up"
+      ],
+      "score": 3.3,
+      "guarded": 5,
+      "ehp": 76
+     },
+     {
+      "d": 2,
+      "names": [
+       "Shadow Swat+",
+       "Curl Up",
+       "Scratch+"
+      ],
+      "score": 3.3,
+      "guarded": 5,
+      "ehp": 76
+     },
+     {
+      "d": 1,
+      "names": [
+       "Shadow Swat+",
+       "Curl Up"
+      ],
+      "score": -5.5,
+      "guarded": 5,
+      "ehp": 85
+     },
+     {
+      "d": 1,
+      "names": [
+       "Shadow Swat+",
+       "Scratch+"
+      ],
+      "score": -6.9,
+      "guarded": 0,
+      "ehp": 76
+     },
+     {
+      "d": 1,
+      "names": [
+       "Scratch+",
+       "Shadow Swat+"
+      ],
+      "score": -6.9,
+      "guarded": 0,
+      "ehp": 76
+     }
+    ],
+    "fc": {
+     "dps": 11,
+     "threat": 11,
+     "guard": 7.5,
+     "peak": 18,
+     "turns": 6
+    },
+    "took": 13
+   },
+   {
+    "turn": 7,
+    "dealt": 18,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 58,
+      "blk": 12,
+      "i": "watching",
+      "d": 0
+     }
+    ],
+    "php": 35,
+    "blk": 5,
+    "played": [
+     "Scratch+",
+     "Scratch+",
+     "Curl Up"
+    ],
+    "hand": [
+     "Scratch",
+     "Scratch",
+     "Curl Up",
+     "Scratch+",
+     "Scratch+"
+    ],
+    "dbg": [
+     {
+      "d": 2,
+      "names": [
+       "Scratch+",
+       "Scratch+",
+       "Curl Up"
+      ],
+      "score": 9.3,
+      "guarded": 5,
+      "ehp": 58
+     },
+     {
+      "d": 2,
+      "names": [
+       "Scratch+",
+       "Scratch",
+       "Curl Up"
+      ],
+      "score": 7.1,
+      "guarded": 5,
+      "ehp": 61
+     },
+     {
+      "d": 2,
+      "names": [
+       "Scratch",
+       "Scratch+",
+       "Curl Up"
+      ],
+      "score": 7.1,
+      "guarded": 5,
+      "ehp": 61
+     },
+     {
+      "d": 1,
+      "names": [
+       "Scratch+",
+       "Scratch+"
+      ],
+      "score": 5.4,
+      "guarded": 0,
+      "ehp": 58
+     },
+     {
+      "d": 1,
+      "names": [
+       "Scratch+",
+       "Scratch"
+      ],
+      "score": 2.8,
+      "guarded": 0,
+      "ehp": 61
+     },
+     {
+      "d": 1,
+      "names": [
+       "Scratch",
+       "Scratch+"
+      ],
+      "score": 2.8,
+      "guarded": 0,
+      "ehp": 61
+     }
+    ],
+    "fc": {
+     "dps": 12,
+     "threat": 9.428571428571429,
+     "guard": 7.142857142857143,
+     "peak": 18,
+     "turns": 7
+    },
+    "took": 0
+   },
+   {
+    "turn": 8,
+    "dealt": 4,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 54,
+      "blk": 0,
+      "i": "too-familiar",
+      "d": 16
+     }
+    ],
+    "php": 35,
+    "blk": 10,
+    "played": [
+     "Shadow Swat+",
+     "Curl Up",
+     "Curl Up"
+    ],
+    "hand": [
+     "Endless Zoomies+",
+     "Shadow Swat+",
+     "Curl Up",
+     "Scratch",
+     "Curl Up"
+    ],
+    "dbg": [
+     {
+      "d": 2,
+      "names": [
+       "Shadow Swat+",
+       "Curl Up",
+       "Curl Up"
+      ],
+      "score": 6.6,
+      "guarded": 10,
+      "ehp": 54
+     },
+     {
+      "d": 2,
+      "names": [
+       "Curl Up",
+       "Shadow Swat+",
+       "Curl Up"
+      ],
+      "score": 6.6,
+      "guarded": 10,
+      "ehp": 54
+     },
+     {
+      "d": 2,
+      "names": [
+       "Curl Up",
+       "Curl Up",
+       "Shadow Swat+"
+      ],
+      "score": 6.6,
+      "guarded": 10,
+      "ehp": 54
+     },
+     {
+      "d": 1,
+      "names": [
+       "Curl Up",
+       "Curl Up"
+      ],
+      "score": 6.5,
+      "guarded": 10,
+      "ehp": 58
+     },
+     {
+      "d": 1,
+      "names": [
+       "Shadow Swat+",
+       "Curl Up"
+      ],
+      "score": -2.1,
+      "guarded": 5,
+      "ehp": 54
+     },
+     {
+      "d": 1,
+      "names": [
+       "Curl Up",
+       "Shadow Swat+"
+      ],
+      "score": -2.1,
+      "guarded": 5,
+      "ehp": 54
+     }
+    ],
+    "fc": {
+     "dps": 11,
+     "threat": 9.875,
+     "guard": 7.5,
+     "peak": 18,
+     "turns": 8
+    },
+    "took": 6
+   },
+   {
+    "turn": 9,
+    "dealt": 6,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 48,
+      "blk": 6,
+      "i": "wrong-face",
+      "d": 18
+     }
+    ],
+    "php": 29,
+    "blk": 10,
+    "played": [
+     "Scratch",
+     "Curl Up",
+     "Curl Up"
+    ],
+    "hand": [
+     "Boo!",
+     "Curl Up",
+     "Curl Up",
+     "Scratch",
+     "Curl Up"
+    ],
+    "dbg": [
+     {
+      "d": 2,
+      "names": [
+       "Scratch",
+       "Curl Up",
+       "Curl Up"
+      ],
+      "score": 1.4,
+      "guarded": 10,
+      "ehp": 48
+     },
+     {
+      "d": 2,
+      "names": [
+       "Curl Up",
+       "Scratch",
+       "Curl Up"
+      ],
+      "score": 1.4,
+      "guarded": 10,
+      "ehp": 48
+     },
+     {
+      "d": 1,
+      "names": [
+       "Curl Up",
+       "Curl Up"
+      ],
+      "score": -3.1,
+      "guarded": 10,
+      "ehp": 54
+     },
+     {
+      "d": 2,
+      "names": [
+       "Scratch",
+       "Curl Up",
+       "Boo!"
+      ],
+      "score": -4.9,
+      "guarded": 5,
+      "ehp": 48
+     },
+     {
+      "d": 1,
+      "names": [
+       "Scratch",
+       "Curl Up"
+      ],
+      "score": -7.1,
+      "guarded": 5,
+      "ehp": 48
+     },
+     {
+      "d": 1,
+      "names": [
+       "Curl Up",
+       "Scratch"
+      ],
+      "score": -7.1,
+      "guarded": 5,
+      "ehp": 48
+     }
+    ],
+    "fc": {
+     "dps": 10.444444444444445,
+     "threat": 10.777777777777779,
+     "guard": 7.777777777777778,
+     "peak": 18,
+     "turns": 9
+    },
+    "took": 8
+   },
+   {
+    "turn": 10,
+    "dealt": 30,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 18,
+      "blk": 0,
+      "i": "come-in-then",
+      "d": 0
+     }
+    ],
+    "php": 21,
+    "blk": 0,
+    "played": [
+     "Shadow Swat+",
+     "Scratch+",
+     "Scratch+"
+    ],
+    "hand": [
+     "Scratch",
+     "Shadow Swat+",
+     "Scratch+",
+     "Scratch+",
+     "Scratch"
+    ],
+    "dbg": [
+     {
+      "d": 2,
+      "names": [
+       "Shadow Swat+",
+       "Scratch+",
+       "Scratch+"
+      ],
+      "score": 10.8,
+      "guarded": 0,
+      "ehp": 18
+     },
+     {
+      "d": 2,
+      "names": [
+       "Scratch+",
+       "Shadow Swat+",
+       "Scratch+"
+      ],
+      "score": 10.8,
+      "guarded": 0,
+      "ehp": 18
+     },
+     {
+      "d": 2,
+      "names": [
+       "Shadow Swat+",
+       "Scratch+",
+       "Scratch"
+      ],
+      "score": 9.1,
+      "guarded": 0,
+      "ehp": 21
+     },
+     {
+      "d": 1,
+      "names": [
+       "Shadow Swat+",
+       "Scratch+"
+      ],
+      "score": 5.5,
+      "guarded": 0,
+      "ehp": 27
+     },
+     {
+      "d": 1,
+      "names": [
+       "Scratch+",
+       "Shadow Swat+"
+      ],
+      "score": 5.5,
+      "guarded": 0,
+      "ehp": 27
+     },
+     {
+      "d": 1,
+      "names": [
+       "Shadow Swat+",
+       "Scratch"
+      ],
+      "score": 3.5,
+      "guarded": 0,
+      "ehp": 30
+     }
+    ],
+    "fc": {
+     "dps": 12.4,
+     "threat": 9.7,
+     "guard": 7,
+     "peak": 18,
+     "turns": 10
+    },
+    "took": 0
+   },
+   {
+    "turn": 11,
+    "dealt": 0,
+    "enemies": [
+     {
+      "n": "The Unwelcome Guest",
+      "hp": 18,
+      "blk": 12,
+      "i": "too-familiar",
+      "d": 13
+     }
+    ],
+    "php": 21,
+    "blk": 10,
+    "played": [
+     "Curl Up",
+     "Curl Up"
+    ],
+    "hand": [
+     "Curl Up",
+     "Endless Zoomies+",
+     "Shadow Swat+",
+     "Scratch",
+     "Curl Up"
+    ],
+    "dbg": [
+     {
+      "d": 1,
+      "names": [
+       "Curl Up",
+       "Curl Up"
+      ],
+      "score": 10.1,
+      "guarded": 10,
+      "ehp": 18
+     },
+     {
+      "d": 2,
+      "names": [
+       "Curl Up",
+       "Curl Up",
+       "Shadow Swat+"
+      ],
+      "score": 7.1,
+      "guarded": 10,
+      "ehp": 18
+     },
+     {
+      "d": 2,
+      "names": [
+       "Curl Up",
+       "Shadow Swat+",
+       "Curl Up"
+      ],
+      "score": 7.1,
+      "guarded": 10,
+      "ehp": 18
+     },
+     {
+      "d": 2,
+      "names": [
+       "Shadow Swat+",
+       "Curl Up",
+       "Curl Up"
+      ],
+      "score": 7.1,
+      "guarded": 10,
+      "ehp": 18
+     },
+     {
+      "d": 0,
+      "names": [
+       "Curl Up"
+      ],
+      "score": 3.9,
+      "guarded": 5,
+      "ehp": 18
+     },
+     {
+      "d": 1,
+      "names": [
+       "Curl Up",
+       "Shadow Swat+"
+      ],
+      "score": 0.9,
+      "guarded": 5,
+      "ehp": 18
+     }
+    ],
+    "fc": {
+     "dps": 11.272727272727273,
+     "threat": 10,
+     "guard": 7.2727272727272725,
+     "peak": 18,
+     "turns": 11
+    },
+    "took": 3
+   },
+   {
+    "turn": 12,
+    "dealt": 18,
+    "enemies": [],
+    "php": 24,
+    "blk": 0,
+    "played": [
+     "Scratch+",
+     "Scratch+"
+    ],
+    "hand": [
+     "Scratch+",
+     "Scratch+",
+     "Curl Up",
+     "Scratch",
+     "Scratch"
+    ],
+    "dbg": [
+     {
+      "d": 2,
+      "names": [
+       "Scratch+",
+       "Scratch",
+       "Curl Up"
+      ],
+      "score": 3.7,
+      "guarded": 5,
+      "ehp": 3
+     },
+     {
+      "d": 2,
+      "names": [
+       "Scratch",
+       "Scratch+",
+       "Curl Up"
+      ],
+      "score": 3.7,
+      "guarded": 5,
+      "ehp": 3
+     },
+     {
+      "d": 2,
+      "names": [
+       "Scratch+",
+       "Curl Up",
+       "Scratch"
+      ],
+      "score": 3.7,
+      "guarded": 5,
+      "ehp": 3
+     },
+     {
+      "d": 1,
+      "names": [
+       "Scratch+",
+       "Curl Up"
+      ],
+      "score": 0.8,
+      "guarded": 5,
+      "ehp": 9
+     },
+     {
+      "d": 1,
+      "names": [
+       "Scratch+",
+       "Scratch"
+      ],
+      "score": -0.5,
+      "guarded": 0,
+      "ehp": 3
+     },
+     {
+      "d": 1,
+      "names": [
+       "Scratch",
+       "Scratch+"
+      ],
+      "score": -0.5,
+      "guarded": 0,
+      "ehp": 3
+     }
+    ],
+    "fc": {
+     "dps": 11.833333333333334,
+     "threat": 10.666666666666666,
+     "guard": 6.666666666666667,
+     "peak": 18,
+     "turns": 12
+    }
+   }
+  ]
+ }
 }

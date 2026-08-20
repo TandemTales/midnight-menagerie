@@ -10,6 +10,27 @@
  * line, the reward is named in `reward`, and the only thing hidden is which of
  * the authored outcomes you land on.
  *
+ * ── What `risk` and `reward` are for (read this before writing one) ─────────
+ * They name the **kind of thing at stake**, never the flavour and never the
+ * roll.  This build shipped with `RISK You might find it / GAIN You might find
+ * it`, which is beautiful prose and a blind gamble — in a game whose combat is
+ * a clarity showcase.  Slay the Spire's `?` rooms always tell you the shape of
+ * the bet: HP, gold, a relic, a card, a curse, a fight.  So do these.
+ *
+ * The vocabulary is the player's own nouns, and one line names at most two:
+ *   Courage · maximum Courage · Lost Things · a Keepsake · a Trick · a Snack
+ *   a Clue · a Curse in your deck · a fight / a Big Scare · Nothing
+ *
+ * Say `Nothing` only when the option genuinely cannot cost anything.  Say "or"
+ * when the outcomes disagree about which resource moves ('Lost Things, or a
+ * Keepsake') and "and" when they all deliver both.  Hedge with "maybe" when
+ * only some outcomes carry it.  What stays hidden — and should — is which
+ * authored outcome you land on and how big the number is.
+ *
+ * `scenes/event.js` labels the pair `risk`/`gain` when an option has more than
+ * one outcome and `costs`/`always` when it has exactly one, so "this is a bet"
+ * and "this is a price" never look the same on the button.
+ *
  * ── Shape ───────────────────────────────────────────────────────────────────
  * {
  *   id, name, room, mood,
@@ -69,8 +90,8 @@ export const CURIOSITIES = [
         id: 'open', label: 'Open the panel.',
         requires: 'multitool',
         gateText: 'The screws are painted in. You would need a tool.',
-        risk: 'Whatever is in there comes out',
-        reward: 'Whatever is in there comes out',
+        risk: 'Courage, or a Curse in your deck',
+        reward: 'Lost Things, or a Keepsake',
         outcomes: [
           { w: 3, title: 'A cat, an ordinary cat',
             text: 'Grey, filthy, absolutely furious, and completely normal. It walks over your hands, out into the corridor, and sits down to wash as if it has been waiting for a door its whole life. In the cavity behind the panel: a nest of chewed paper and a small pile of shiny things somebody was saving.',
@@ -85,8 +106,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'call', label: 'Call through the wall.',
-        risk: 'It knows your voice now',
-        reward: 'It might know your pet',
+        risk: 'A little Courage',
+        reward: 'Clues, and pocket money',
         outcomes: [
           { w: 3, title: 'It answers',
             text: 'You say your pet\'s name into the wallpaper and the scratching stops dead. Then, very carefully, three scratches. You say the name again. Three scratches. You write it all down with your hand shaking.',
@@ -100,8 +121,8 @@ export const CURIOSITIES = [
         id: 'feed', label: 'Post food under the panel.',
         requires: ['pet-treats', 'feed'],
         gateText: 'You have nothing to give it.',
-        risk: 'None you can see',
-        reward: 'Trust, of a sort',
+        risk: 'Nothing you can see',
+        reward: 'A Keepsake, and a Clue',
         outcomes: [
           { w: 1, title: 'Taken',
             text: 'You slide two treats under the gap. There is a pause exactly long enough to be polite, and then they are gone. Something pushes a button back out to you — brass, four holes, warm. It seems important that this was a trade and not a gift.',
@@ -110,8 +131,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'leave', label: 'Walk away.',
-        risk: 'You will think about it later',
-        reward: 'You keep your fingers',
+        risk: 'You never find out',
+        reward: 'A little Courage back',
         effects: { heal: 4 },
         outcomes: [
           { w: 1, title: 'You walk away',
@@ -136,8 +157,8 @@ export const CURIOSITIES = [
     options: [
       {
         id: 'take', label: 'Pick it up.',
-        risk: 'Whatever put it there notices',
-        reward: 'Evidence you can carry',
+        risk: 'Courage — a bite of it, or a lot',
+        reward: 'A Keepsake, and a Clue',
         outcomes: [
           { w: 3, title: 'It is still warm',
             text: 'It is still warm, which does not make sense in a room this cold. The tag has a name on it that you have seen on a lamppost poster four streets from your school. You put the collar in your bag and something in the wall lets out a long breath.',
@@ -151,8 +172,8 @@ export const CURIOSITIES = [
         id: 'read', label: 'Read the tag and copy it down.',
         requires: ['notebook', 'record'],
         gateText: 'You would need something to write on.',
-        risk: 'None',
-        reward: 'A name for the board',
+        risk: 'Nothing',
+        reward: 'Three Clues, and Lost Things',
         outcomes: [
           { w: 1, title: 'BISCUIT — and a phone number',
             text: 'You copy the name, the number, and the little scratched-out word underneath that somebody tried to remove. Back home this goes on the board with a red string running to the photographs. That is three animals from the same four streets.',
@@ -161,8 +182,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'leave', label: 'Leave it exactly where it is.',
-        risk: 'You leave without it',
-        reward: 'The house prefers polite guests',
+        risk: 'You walk away empty-handed',
+        reward: 'A Keepsake, and a little Courage',
         outcomes: [
           { w: 1, title: 'Squared up again',
             text: 'You square it up again, the way you found it, and back out. When you look through the doorway from the corridor, the collar is gone and the boards are dusty and undisturbed, as if it was never put down at all. Something decides you are all right.',
@@ -189,8 +210,8 @@ export const CURIOSITIES = [
         id: 'fill', label: 'Fill the empty ones.',
         requires: ['pet-treats', 'feed'],
         gateText: 'You have nothing to put in them.',
-        risk: 'You are now part of the routine',
-        reward: 'The house owes you one',
+        risk: 'Nothing you can see',
+        reward: 'A Keepsake, and a Clue',
         outcomes: [
           { w: 1, title: 'It notices',
             text: 'You go down the rows and share out what you brought. It takes a while. When you stand up, every bowl you filled has been licked clean and there is nothing else in the room, and hanging on the door handle is a bowl with your own name on it in your own handwriting.',
@@ -199,8 +220,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'read', label: 'Read the names on the bowls.',
-        risk: 'You will recognise one',
-        reward: 'Names for the investigation board',
+        risk: 'Courage',
+        reward: 'Clues, maybe maximum Courage',
         outcomes: [
           { w: 3, title: 'Sixty-one names',
             text: 'You copy down sixty-one names. Four of them are from posters on your street. One of them is a dog your neighbour lost before you were born and still talks about. And near the window, in newer paint, a bowl with your pet\'s name and today\'s date.',
@@ -212,8 +233,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'wait', label: 'Hide and wait for whoever feeds them.',
-        risk: 'It finds you first',
-        reward: 'You see it',
+        risk: 'A lot of Courage',
+        reward: 'A Keepsake, or a Snack',
         outcomes: [
           { w: 2, title: 'You see it',
             text: 'It comes in at a quarter past, carrying a jug bigger than itself, and it does the whole room without hurrying. It is not a person. It has never been a person. When it finishes it looks straight at your hiding place, bows very slightly, and leaves. Your Companion is shaking. So are you.',
@@ -225,8 +246,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'leave', label: 'Close the door quietly.',
-        risk: 'None',
-        reward: 'Nothing at all',
+        risk: 'Nothing',
+        reward: 'A little Courage back',
         outcomes: [
           { w: 1, title: 'Quietly',
             text: 'You close the door quietly, the way you would leave a room where something is asleep. Halfway down the corridor you hear the sound of a jug being set down, and you walk a little faster.',
@@ -253,8 +274,8 @@ export const CURIOSITIES = [
         id: 'photograph', label: 'Photograph the photograph.',
         requires: ['camera', 'photo'],
         gateText: 'You would need a camera.',
-        risk: 'None',
-        reward: 'Proof, for the board',
+        risk: 'Nothing',
+        reward: 'Clues, and a Keepsake',
         outcomes: [
           { w: 1, title: 'The flash shows more',
             text: 'In the flash, for a fraction of a second, the photograph is different: there are nine animals on the steps instead of one, and the family are not looking at the camera, they are looking at the door. When you lower the camera the picture is just a picture again. But you have it now.',
@@ -263,8 +284,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'take', label: 'Take the photograph out of the frame.',
-        risk: 'The house is protective of its records',
-        reward: 'You keep the evidence',
+        risk: 'Courage',
+        reward: 'Clues, maybe maximum Courage',
         outcomes: [
           { w: 3, title: 'It comes away easily',
             text: 'It comes away easily, and on the back somebody has written a name and a date and, later, in a different pen, a second date with a question mark. Your Companion will not look at it. You put it in the notebook and you do not bring it up again tonight.',
@@ -276,8 +297,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'ask', label: 'Ask your Companion about it.',
-        risk: 'They might remember',
-        reward: 'They might remember',
+        risk: 'A little Courage',
+        reward: 'Maximum Courage, and a Clue',
         outcomes: [
           { w: 3, title: 'She remembers the step',
             text: 'She remembers the step. She remembers the warm bit at eleven in the morning. She does not remember the people, and when you ask their names she puts her ears back and looks at the door and asks, in the way animals ask, whether you can go now. You go.',
@@ -305,8 +326,8 @@ export const CURIOSITIES = [
     options: [
       {
         id: 'find', label: 'Look for your pet\'s name.',
-        risk: 'You might find it',
-        reward: 'You might find it',
+        risk: 'Courage',
+        reward: 'Clues, maybe maximum Courage',
         outcomes: [
           { w: 3, title: 'Page 1,144',
             text: 'It is there. Arrived, three weeks ago. Room assigned: blank. Condition: "settling". Somebody has written, in the margin, in smaller writing, "asks about the front door".',
@@ -318,8 +339,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'tear', label: 'Tear out the last page.',
-        risk: 'The house keeps its records',
-        reward: 'What is not written did not happen',
+        risk: 'A fight, or a Curse in your deck',
+        reward: 'Four Clues',
         outcomes: [
           { w: 2, title: 'The lamp goes out',
             text: 'The page comes out clean. The lamp goes out. Every door on this floor is now shut, and something a long way off has started walking. But you have the page, and the page has four names on it that nobody else in the world knows.',
@@ -331,8 +352,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'sign', label: 'Write your own name in it.',
-        risk: 'You are now in the register',
-        reward: 'The house likes things filed correctly',
+        risk: 'Maximum Courage',
+        reward: 'A Keepsake',
         outcomes: [
           { w: 1, title: 'Condition: guest',
             text: 'You write your name and, under condition, "guest". The ink dries gold. Doors that were locked are now merely closed, and something that was following you at a distance stops following you. You will worry about this later. You should worry about it later.',
@@ -355,8 +376,8 @@ export const CURIOSITIES = [
     options: [
       {
         id: 'ring', label: 'Ring it.',
-        risk: 'Service arrives',
-        reward: 'Service arrives',
+        risk: 'A Big Scare, right here',
+        reward: 'Lost Things, or Snacks and Courage',
         outcomes: [
           { w: 2, title: 'Service arrives',
             text: 'Something comes. It is enormous and it is extremely polite and it would like to know what you require. What you require is to not be here.',
@@ -370,8 +391,8 @@ export const CURIOSITIES = [
         id: 'cut', label: 'Cut the rope down.',
         requires: ['multitool', 'open'],
         gateText: 'You would need something with a blade.',
-        risk: 'Forty bells stop at once',
-        reward: 'Quiet',
+        risk: 'Nothing',
+        reward: 'A Keepsake, and Clues',
         outcomes: [
           { w: 1, title: 'Quiet',
             text: 'You saw through it and the whole board goes still for the first time in a century. In the silence you can hear, very faintly, animals moving about upstairs — a lot of animals, in a lot of rooms. You write down the floor and the direction.',
@@ -380,8 +401,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'read', label: 'Read the room labels.',
-        risk: 'None',
-        reward: 'A better map',
+        risk: 'Nothing',
+        reward: 'Lost Things, and a Clue',
         outcomes: [
           { w: 1, title: 'Forty rooms, thirty-eight named',
             text: 'Thirty-eight rooms are named. Two are labelled only with a small drawn paw. You note where the wires run.',
@@ -404,8 +425,8 @@ export const CURIOSITIES = [
     options: [
       {
         id: 'build', label: 'Build the fort. Properly.',
-        risk: 'It costs time, and the house moves',
-        reward: `Rest, and something you make together`,
+        risk: 'Nothing but the time',
+        reward: 'Courage, and a Trick sharpened',
         outcomes: [
           { w: 1, title: 'Blankets over the table',
             text: 'You drag the table, hang the blankets, wedge the door, and build a clatter-line of umbrellas across the entrance. Inside it is warm and yellow and about four feet high. Your Companion falls asleep almost immediately. You sit up a while listening to the house being somewhere else.',
@@ -414,8 +435,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'search', label: 'Go through the umbrella stands.',
-        risk: 'Some of them are occupied',
-        reward: 'A century of dropped things',
+        risk: 'Courage',
+        reward: 'A great many Lost Things',
         outcomes: [
           { w: 3, title: 'Pockets and handles',
             text: 'Umbrella handles unscrew. This is the sort of thing you only learn by doing it two hundred times. Inside: coins, a key, three marbles, and a folded photograph of a dog.',
@@ -427,8 +448,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'take-umbrella', label: 'Take an umbrella for later.',
-        risk: 'It has an opinion',
-        reward: 'A very good umbrella',
+        risk: 'Nothing',
+        reward: 'A Keepsake',
         outcomes: [
           { w: 1, title: 'Black, enormous, unkillable',
             text: 'You pick the biggest, blackest, most funeral-looking one on the rack, and it settles into your hand like it has been waiting for someone with the sense to choose properly.',
@@ -451,8 +472,8 @@ export const CURIOSITIES = [
     options: [
       {
         id: 'look', label: 'Lie down and look through.',
-        risk: 'Something looks back',
-        reward: 'You see where they are kept',
+        risk: 'Courage',
+        reward: 'Clues, and a little Courage',
         outcomes: [
           { w: 3, title: 'A field',
             text: 'On the other side of an interior door on the second floor there is a field at about four in the afternoon, in summer, and there are animals in it, a lot of them, asleep in the warm. One of them lifts its head. You are absolutely certain it is looking at you.',
@@ -466,8 +487,8 @@ export const CURIOSITIES = [
         id: 'whistle', label: 'Whistle through it.',
         requires: ['dog-whistle', 'call'],
         gateText: 'You have nothing that would carry.',
-        risk: 'Everything hears you',
-        reward: 'Something comes',
+        risk: 'Nothing',
+        reward: 'A Keepsake, Clues and Courage',
         outcomes: [
           { w: 1, title: 'Something comes',
             text: 'You do not hear it. The field does. Something bounds up out of the grass and pushes its whole head through the flap — a scruffy, delighted, utterly ordinary terrier — licks your face once, and is pulled back by the scruff by a hand you do not see. In your palm, left behind: a tag.',
@@ -476,8 +497,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'reach', label: 'Reach through.',
-        risk: 'You are reaching into somewhere else',
-        reward: 'You can hold summer for a second',
+        risk: 'A little Courage',
+        reward: 'A Keepsake, or maximum Courage',
         outcomes: [
           { w: 2, title: 'Grass',
             text: 'Your hand comes back warm and smelling of cut grass, with three seed heads caught in your sleeve and a small hard object you did not pick up.',
@@ -504,8 +525,8 @@ export const CURIOSITIES = [
       {
         id: 'send-things', label: `Send up 55 Lost Things.`,
         cost: { lostThings: 55 },
-        risk: 'It might send back rubbish',
-        reward: 'It might not',
+        risk: '55 Lost Things, possibly wasted',
+        reward: 'A Keepsake',
         outcomes: [
           { w: 3, title: 'It sends back better',
             text: 'The rope goes up on its own. Two minutes later the box comes down with something in it that is worth considerably more than buttons, and a note that says THANK YOU in the same handwriting.',
@@ -519,8 +540,8 @@ export const CURIOSITIES = [
         id: 'send-toy', label: 'Send up the toy.',
         requires: ['familiar-toy', 'pet'],
         gateText: 'You would have to have brought something of theirs.',
-        risk: 'You might not get it back',
-        reward: 'They might know it',
+        risk: 'Nothing',
+        reward: 'Clues, and maximum Courage',
         outcomes: [
           { w: 1, title: 'It comes back chewed',
             text: 'It comes back chewed. Freshly. There is one long ginger-and-white hair caught in the seam, and it is exactly the right colour, and you sit down on the floor of a haunted house at midnight and put your face in your hands for a minute. Then you get up, because now you know they are upstairs.',
@@ -529,8 +550,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'ride', label: 'Get in the box.',
-        risk: 'Obvious',
-        reward: 'A shortcut',
+        risk: 'A lot of Courage',
+        reward: 'Lost Things, or a Keepsake',
         outcomes: [
           { w: 2, title: 'Up two floors, sideways one',
             text: 'You fold yourself in and the rope takes you up two floors and then, impossibly, sideways, and lets you out in a linen cupboard full of things people have hidden.',
@@ -556,7 +577,7 @@ export const CURIOSITIES = [
     options: [
       {
         id: 'grab', label: 'Take an armful and run.',
-        risk: 'The counter is attended',
+        risk: 'Courage, or a Curse in your deck',
         reward: 'A great deal of Lost Things',
         outcomes: [
           { w: 3, title: 'You get out',
@@ -569,8 +590,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'collars', label: 'Go through the collars.',
-        risk: 'You will read all of them',
-        reward: 'Names, and one you know',
+        risk: 'A little Courage',
+        reward: 'Clues, and Lost Things',
         outcomes: [
           { w: 1, title: 'Ninety-four collars',
             text: 'You take them out one at a time and read every tag and put them back in the right order, which takes forty minutes you did not have. Ninety-four names. You know two. One of them is on a poster in your kitchen.',
@@ -579,8 +600,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'ring', label: 'Ring the bell and ask properly.',
-        risk: 'Being seen',
-        reward: 'Being helped',
+        risk: 'Maximum Courage',
+        reward: 'A Keepsake, and a Clue',
         outcomes: [
           { w: 3, title: 'Ticket 41',
             text: 'The attendant appears, listens to the whole thing without interrupting, and hands you a numbered ticket. "When you find them," it says, "bring this." It will not explain further, and it is not being unkind.',
@@ -607,8 +628,8 @@ export const CURIOSITIES = [
     options: [
       {
         id: 'call', label: 'Call it.',
-        risk: 'It has been waiting a hundred years',
-        reward: 'It has been waiting a hundred years',
+        risk: 'Nothing',
+        reward: 'A Keepsake, and Courage',
         outcomes: [
           { w: 1, title: 'It comes out',
             text: 'You whistle the way you whistle for a dog and eleven painted spaniels lift their heads at once. Then something steps out of the empty frame, brown and white and not quite solid, and puts its chin on your knee, and stays for exactly as long as it takes you to say good boy.',
@@ -619,8 +640,8 @@ export const CURIOSITIES = [
         id: 'photograph', label: 'Photograph all eleven.',
         requires: ['camera', 'photo'],
         gateText: 'You would need a camera.',
-        risk: 'None',
-        reward: 'A hundred years of evidence',
+        risk: 'Nothing',
+        reward: 'Four Clues, and Lost Things',
         outcomes: [
           { w: 1, title: 'The same dog, eleven times, eighty years apart',
             text: 'You photograph the lot. Laid out on the board at home, in order, they will show one dog living through four generations of a family that clearly never once questioned it. That is the whole thesis, in eleven frames.',
@@ -629,8 +650,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'straighten', label: 'Straighten the empty frame and move on.',
-        risk: 'None',
-        reward: 'The hall approves',
+        risk: 'Nothing',
+        reward: 'A little Courage, and Lost Things',
         outcomes: [
           { w: 1, title: 'Level',
             text: 'You get it level and step back and check it from the doorway, the way you do. Behind you, all eleven painted dogs have moved to the side of their frames nearest the empty one.',
@@ -655,8 +676,8 @@ export const CURIOSITIES = [
       {
         id: 'buy-blind', label: 'Buy what is under the cloth. 80 Lost Things.',
         cost: { lostThings: 80 },
-        risk: 'You do not get to look first',
-        reward: 'Something better than you would have chosen',
+        risk: '80 Lost Things, sight unseen',
+        reward: 'A Keepsake — possibly a Rare one',
         outcomes: [
           { w: 3, title: 'Better than you would have chosen',
             text: 'It sweeps the cloth off with real theatre. One of the three is genuinely good, and it lets you take that one, and looks quietly pleased with itself the whole time.',
@@ -668,8 +689,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'scissors', label: 'Ask about the scissors.',
-        risk: `You lose a Trick you like`,
-        reward: 'You lose a Trick you do not',
+        risk: 'You must give up a Trick',
+        reward: 'You choose which Trick goes',
         outcomes: [
           { w: 1, title: 'Snip',
             text: '"Everyone carries something they wish they didn\'t," it says, and holds them out handles first. It does not charge you. That is somehow worse.',
@@ -678,8 +699,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'ask-moth', label: 'Ask whether Mr. Moth really has a cousin.',
-        risk: 'Rudeness',
-        reward: 'The truth, and a discount',
+        risk: '20 Lost Things',
+        reward: 'Lost Things, or a Keepsake',
         outcomes: [
           { w: 2, title: 'No',
             text: '"No," it admits, after a pause of exactly the right length. It seems relieved. It gives you a marble and its actual name and asks you not to spread it about.',
@@ -706,8 +727,8 @@ export const CURIOSITIES = [
     options: [
       {
         id: 'follow', label: 'Follow the prints out.',
-        risk: 'You are two floors up in a house with no outside',
-        reward: 'Somebody got out this way',
+        risk: 'Courage',
+        reward: 'Lost Things, and Clues',
         outcomes: [
           { w: 3, title: 'A roof, and then back in',
             text: 'You get out onto a slate roof under a sky with the wrong number of stars, follow the prints thirty feet, and come back in through a window into a room you have not been able to find all night.',
@@ -721,8 +742,8 @@ export const CURIOSITIES = [
         id: 'measure', label: 'Measure the prints and write it down.',
         requires: ['notebook', 'record', 'evidence'],
         gateText: 'You would need to write it down properly.',
-        risk: 'None',
-        reward: 'Something for the board',
+        risk: 'Nothing',
+        reward: 'Clues, and a little Courage',
         outcomes: [
           { w: 1, title: 'Four toes, no claw marks, 5cm',
             text: 'Four toes, no claw marks, five centimetres across, going out and not coming back. Cat. Big one. Three weeks of mud in this house means nothing but you write down the date anyway, because that is what you do now.',
@@ -731,8 +752,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'shut', label: 'Shut it.',
-        risk: 'You shut the way out',
-        reward: 'The house is grateful, in its way',
+        risk: 'Nothing',
+        reward: 'A Keepsake, and maximum Courage',
         outcomes: [
           { w: 1, title: 'Latched',
             text: 'You slide it down and latch it, and the street noise stops mid-car. The house settles around you like a held breath let go. Something has been trying to close this window for a long time and could not reach.',
@@ -755,8 +776,8 @@ export const CURIOSITIES = [
     options: [
       {
         id: 'pockets', label: 'Go through the pockets. All of them.',
-        risk: 'One of the coats objects',
-        reward: 'Forty pockets',
+        risk: 'Courage',
+        reward: 'A great many Lost Things',
         outcomes: [
           { w: 3, title: 'Forty pockets',
             text: 'Bus tickets, a boiled sweet welded to its wrapper, a house key, eleven coins, a folded shopping list from 1961 that ends "and something for the cat".',
@@ -768,8 +789,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'unbutton', label: 'Unbutton the breathing one.',
-        risk: 'High',
-        reward: 'Whatever is wearing it',
+        risk: 'Courage, and a Curse in your deck',
+        reward: 'A Keepsake, and a Snack',
         outcomes: [
           { w: 2, title: 'A rabbit, enormously offended',
             text: 'Inside the coat, standing on the shoulders of the coat below, is a rabbit the size of a spaniel wearing the coat as a coat. It regards you with the deep contempt of someone caught doing something perfectly reasonable, and stalks off down the rail.',
@@ -783,8 +804,8 @@ export const CURIOSITIES = [
         id: 'leave-treat', label: 'Leave a treat in its pocket and go.',
         requires: ['pet-treats', 'feed'],
         gateText: 'You have nothing to leave.',
-        risk: 'None',
-        reward: 'A friend on this floor',
+        risk: 'Nothing',
+        reward: 'A Keepsake, and Courage',
         outcomes: [
           { w: 1, title: 'A friend on this floor',
             text: 'You drop two treats in the pocket, do the button back up, and leave. For the rest of the region you keep finding doors already open, and once, at a corner, a coat sleeve pointing.',
@@ -807,8 +828,8 @@ export const CURIOSITIES = [
     options: [
       {
         id: 'step-over', label: 'Step over it.',
-        risk: 'Cats remember',
-        reward: 'Speed',
+        risk: 'A Curse in your deck',
+        reward: 'A few Lost Things',
         outcomes: [
           { w: 1, title: 'It watches you all the way up',
             text: 'You step over. It watches you all the way up without moving its body, only its head, and you feel judged in a way that will stay with you.',
@@ -817,8 +838,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'sit', label: 'Sit down on the step and wait.',
-        risk: 'You lose time',
-        reward: 'A cat decides about you',
+        risk: 'Nothing',
+        reward: 'A Keepsake, Clues and Courage',
         outcomes: [
           { w: 1, title: 'Eleven minutes',
             text: 'You sit two steps down and wait. It takes eleven minutes. Then it gets up, stretches enormously, walks up two steps, and looks back at you, which in cat means come on then. It shows you a door. The door is not on the blueprint.',
@@ -827,8 +848,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'ask', label: 'Ask your Companion to talk to it.',
-        risk: 'They may not want to',
-        reward: 'Two cats, one conversation',
+        risk: 'A little Courage',
+        reward: 'Maximum Courage, and Clues',
         outcomes: [
           { w: 3, title: 'A long silence between cats',
             text: 'The two of them look at each other for a full minute without a sound and then your Companion comes back and is quiet for a while. Later she tells you: the tortoiseshell has been on that stair since 1958 and does not want to leave, and has asked her, politely, to stop asking.',
@@ -855,8 +876,8 @@ export const CURIOSITIES = [
     options: [
       {
         id: 'yes', label: 'Write YES.',
-        risk: 'You have answered',
-        reward: 'The house agrees with you',
+        risk: 'Nothing',
+        reward: 'A Keepsake, and maximum Courage',
         outcomes: [
           { w: 1, title: 'The house agrees',
             text: 'You write YES and the lamp warms up a shade and the whole closet feels, briefly, like somebody being thanked. Something is put into your bag while you are not looking, and you decide not to think too hard about what the question was really about.',
@@ -865,8 +886,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'no', label: 'Write NO.',
-        risk: 'You have answered',
-        reward: 'You are probably right',
+        risk: 'Courage',
+        reward: 'Clues, and a Trick sharpened',
         outcomes: [
           { w: 1, title: 'The lamp goes out',
             text: 'You write NO. The lamp goes out. In the dark something puts the rabbit back in the drawer, gently, and shuts it, and you get the strong impression that you have hurt somebody\'s feelings and also that you were right.',
@@ -875,8 +896,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'mend', label: 'Mend something of your own.',
-        risk: 'Your Trick will not be quite the same',
-        reward: 'It will be better',
+        risk: 'A Curse in your deck',
+        reward: 'Two Tricks sharpened',
         outcomes: [
           { w: 1, title: 'New stuffing',
             text: 'You put one of your own things on the bench and the room does the rest, quickly and expertly and without asking permission. It comes back stronger and slightly wrong, the way everything in this wing does.',
@@ -885,8 +906,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'leave', label: 'Take the card and leave the rabbit.',
-        risk: 'None',
-        reward: 'Evidence',
+        risk: 'Nothing',
+        reward: 'Clues, and Lost Things',
         outcomes: [
           { w: 1, title: 'Evidence',
             text: 'You pocket the card. It is the first thing you have found all night that reads like somebody in this house worrying about whether what they are doing is right.',
@@ -910,8 +931,8 @@ export const CURIOSITIES = [
     options: [
       {
         id: 'fix', label: 'Fix the sum.',
-        risk: 'It takes something',
-        reward: 'It gives something',
+        risk: 'Maximum Courage, or a Trick',
+        reward: 'A Rare Keepsake, or Lost Things',
         outcomes: [
           { w: 3, title: 'It takes the weight',
             text: 'You correct the carry and the whole line rewrites itself in a hand much older than the first. Something lifts off you — you cannot say what — and something else settles in your bag.',
@@ -923,8 +944,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'add', label: 'Add a harder sum underneath.',
-        risk: 'It will answer',
-        reward: 'It will answer',
+        risk: 'Nothing',
+        reward: 'Clues, and a Trick sharpened',
         outcomes: [
           { w: 1, title: 'It answers, and asks one back',
             text: 'You chalk up something you only half understand from school. Overnight — in the four seconds you look away — it is solved, correctly, and a new question is written beneath it that is not arithmetic. It asks how many animals you think are in this house. You write your guess. You are wrong by a factor of nine.',
@@ -933,8 +954,8 @@ export const CURIOSITIES = [
       },
       {
         id: 'rub', label: 'Rub it all out.',
-        risk: 'Somebody worked on that',
-        reward: 'Nothing takes anything',
+        risk: 'Nothing',
+        reward: 'A little Courage back',
         outcomes: [
           { w: 1, title: 'Clean floor',
             text: 'You wipe the landing clean with your sleeve. It takes a while and it is oddly upsetting, like tidying away somebody\'s homework. Your Companion sits and watches and does not comment.',

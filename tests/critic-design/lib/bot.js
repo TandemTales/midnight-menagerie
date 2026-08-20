@@ -167,12 +167,22 @@ function projectedValue(t, before, guarded, fc) {
   const pool = enemyPool(t);
   if (pool.living === 0) return 1e4 + t.player.hp;
 
+  // The projection describes THE REST of the fight, so both rates are dominated
+  // by what the fight has actually been doing, not by the candidate turn. This
+  // matters more than it looks: `turnsLeft` multiplies the Guard term, so
+  // letting this turn's Guard move the *future* Guard estimate valued one point
+  // of Curl Up at three or four points of Courage and the bot turtled itself to
+  // death. What this turn's Guard is worth is the damage it stops this turn,
+  // and that is already inside `t.player.hp`.
   const dealt = Math.max(0, before.enemyHp - pool.hp);
-  // Floored so a pure-defence turn does not project an infinite fight, and
-  // blended with what this fight has actually managed so far.
-  const dps = Math.max(2.5, 0.65 * dealt + 0.35 * fc.dps);
+  const dps = Math.max(2.5, 0.15 * dealt + 0.85 * fc.dps);
+  const sustain = 0.15 * guarded + 0.85 * fc.guard;
   const turnsLeft = Math.min(28, (pool.hp + pool.block * 0.6) / dps);
-  const lossPerTurn = Math.max(0, Math.max(1, fc.threat) - guarded);
+  // Plan for the spikes, not just the mean. The Butler alternates a 0-damage
+  // turn with a 21, and a bot that budgets for the average of the two walks
+  // into phase two with nothing standing.
+  const threat = Math.max(1, fc.threat, 0.65 * (fc.peak || 0));
+  const lossPerTurn = Math.max(0, threat - sustain);
 
   let v = t.player.hp - turnsLeft * lossPerTurn;
   v -= turnsLeft * 0.35;                        // a long fight is its own risk
@@ -250,11 +260,20 @@ export async function competentTurn(e, opts = {}) {
   const { snacks = null, onSnack = null, beam = 3, depth = 6, cap = 12, fc = null, debug = null } = opts;
   const pool0 = enemyPool(e);
   const before = { living: pool0.living, enemyHp: pool0.hp };
-  const F = fc || { dps: 10, threat: 8, turns: 0 };
-  F.threat = F.turns === 0 ? Math.max(4, shownIncoming(e))
-    : (F.threat * F.turns + shownIncoming(e)) / (F.turns + 1);
+  const F = fc || { dps: 10, threat: 8, guard: 4, peak: 0, turns: 0 };
+  const shown = shownIncoming(e);
+  F.peak = Math.max(F.peak || 0, shown);
+  F.threat = F.turns === 0 ? Math.max(4, shown) : (F.threat * F.turns + shown) / (F.turns + 1);
 
-  const baseline = await planTurn(e, before, { beam, depth, cap, fc: F, debug });
+  let baseline = await planTurn(e, before, { beam, depth, cap, fc: F, debug });
+
+  // A competent player also knows the simple heuristic. Score "just block the
+  // telegraph and swing the rest" as one more candidate and take it when it
+  // wins, so the competent bot is never worse than the naive one by
+  // construction. Without this the beam occasionally talks itself into a
+  // long grind against a boss whose Courage pool it cannot actually finish.
+  const heur = await naivePlan(e, before, F);
+  if (heur && heur.score > baseline.score) baseline = heur;
 
   // A Snack is a limited resource: eat one only when it is worth ~12 Courage of
   // board value, or when the snackless plan gets us killed.
@@ -282,10 +301,25 @@ export async function competentTurn(e, opts = {}) {
   return bookkeep(e, before, F);
 }
 
+/** Play the naive heuristic on a clone and score the result like any other plan. */
+async function naivePlan(e, before, fc) {
+  let c;
+  try { c = e.clone(); } catch { return null; }
+  const seq = [];
+  const orig = c.playCard.bind(c);
+  c.playCard = async (uid, tid) => { seq.push({ uid, targetId: tid }); return orig(uid, tid); };
+  try { await naiveTurn(c); } catch { return null; }
+  if (!seq.length) return null;
+  if (c.over) return { seq, score: c.victory ? 1e4 + c.player.hp + 200 : -1e6 };
+  return { seq, score: await endTurnValue(c, before, fc) };
+}
+
 /** Fold what the turn actually achieved back into the running estimates. */
 function bookkeep(e, before, F) {
   const dealt = Math.max(0, before.enemyHp - enemyPool(e).hp);
+  const guard = e.player.block;
   F.dps = F.turns === 0 ? Math.max(4, dealt) : (F.dps * F.turns + dealt) / (F.turns + 1);
+  F.guard = F.turns === 0 ? guard : (F.guard * F.turns + guard) / (F.turns + 1);
   F.turns++;
   return F;
 }

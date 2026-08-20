@@ -26,6 +26,7 @@ import { relicById, relicSigil } from '../data/relics.js';
 import { Run } from '../state/run.js';
 import { regionMeta } from '../state/mapgen.js';
 import { el, ensureCss, rovingFocus, reduceMotion as prefersReduced } from '../ui/portrait.js';
+import { plural, word } from '../util/plural.js';
 import { HUD } from '../ui/hud.js';
 import { pauseStageFor } from './_stage.js';
 import { fitCardToSlot } from './_cardfit.js';
@@ -160,8 +161,47 @@ export class RoomScene extends Scene {
         mount: this.$hud, run: this.run, fixed: false, escape: true, useSnacks: false,
       });
       this._own(() => { this.hud?.destroy(); this.hud = null; });
+      this._buildHudExtras();
     }
     this.hud.refresh();
+    this._syncHudExtras();
+  }
+
+  /**
+   * Clues and Luck, in the status strip.
+   *
+   * The run awards both — a Curiosity hands out +3 Clues, skipping a reward
+   * buys +2 Luck — and until now neither appeared anywhere the player could
+   * see, so both were invisible currencies. `ui/hud.js` belongs to ui-chrome
+   * and does not carry them yet, but it publishes `addChip()` for exactly this,
+   * so the four room screens can at least tell the truth today. (The ask to put
+   * them in the shared HUD, so the map and a Scuffle show them too, is in
+   * docs/NOTES.md.)
+   */
+  _buildHudExtras() {
+    const mk = (cls, kw, title) => {
+      const n = el('div', `mm-hud__chip rm-hudx rm-hudx--${cls}`);
+      n.tabIndex = 0;
+      n.dataset.kw = kw;
+      n.dataset.tipTitle = title;
+      this.hud.addChip(n);
+      return n;
+    };
+    this.$clues = mk('clue', 'clue',
+      'Clues — what you have worked out about where the animals went. They carry over to the investigation board at the clubhouse.');
+    this.$luck = mk('luck', 'luck',
+      'Luck — how much more likely a Rare Trick is to turn up in a reward. Keepsakes raise it, and so does taking none of the three.');
+  }
+
+  _syncHudExtras() {
+    if (!this.$clues) return;
+    const clues = Number(this.run.cluesFound) || 0;
+    const luck = Number(this.run.flags?.luck) || 0;
+    this.$clues.textContent = `${clues} ${word(clues, 'Clue')}`;
+    this.$clues.setAttribute('aria-label', `${plural(clues, 'Clue')} found`);
+    this.$luck.textContent = `Luck +${luck}`;
+    this.$luck.setAttribute('aria-label', `Luck plus ${luck}`);
+    this.$luck.hidden = luck <= 0;
   }
 
   /** The one large action at the bottom right. */
@@ -292,6 +332,7 @@ export class RoomScene extends Scene {
     for (const off of this._off.splice(0)) { try { off(); } catch { /* teardown */ } }
     for (const v of this._views.splice(0)) { try { v.destroy?.(); } catch { /* teardown */ } }
     this.$body = this.$foot = this.$hud = this.$go = null;
+    this.$clues = this.$luck = null;
     this.run = null;
   }
 }
@@ -350,7 +391,7 @@ export class RewardScene extends RoomScene {
     wrap.innerHTML = `
       <div class="rw-spoils__row">
         ${chip('gold', TERMS.gold, `+${r.lostThings}`)}
-        ${r.clues ? chip('clue', r.clues === 1 ? 'Clue' : 'Clues', `+${r.clues}`) : ''}
+        ${r.clues ? chip('clue', word(r.clues, 'Clue'), `+${r.clues}`) : ''}
         ${chip('luck', 'Luck', `+${this.run.flags.luck}`,
     'Raises the chance a Rare Trick appears in a reward. Skipping a reward raises it further.')}
       </div>

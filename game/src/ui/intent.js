@@ -4,23 +4,38 @@
  *
  *   const iv = new IntentView();
  *   host.appendChild(iv.el);
- *   iv.set(intent, { playerHp: 62 });     // animates a number flip when it changes
+ *   iv.set(intent, { playerHp: 62, def, mods });   // animates a number flip
+ *   ctx.tooltip.attach(iv.el, () => iv.describe());
  *   iv.destroy();
  *
- * Two independent visual channels so the read never depends on colour:
- *   1. FRAME shape  — one per intent *family*:
- *        attack  = downward shard        defense = shield
- *        scheme  = hexagon               special = circle
- *   2. GLYPH        — one per intent *type*, 15 distinct silhouettes.
- * Colour is a third, redundant channel only.
+ * ─────────────────────────────────────────────────────────────────────────────
+ * ONE GRAMMAR, applied to all sixteen intent types. Round 1 shipped three
+ * different presentations on one screen (a shield badge plus a separate `🛡5`
+ * pill; a hexagon plus a dim word plus a 4-character chip reading "ROUS"; a
+ * named pill above a shield). Every intent now renders exactly this stack and
+ * nothing else:
  *
- * Attack intents print the exact post-modifier per-hit damage and `xN` for
+ *      ┌───────────────┐
+ *      │  FRAME+GLYPH  │   family shape (4) × type glyph (16). Colour is a
+ *      └───────────────┘   third, redundant channel — never the only one.
+ *       [ 7 ×3 ][ 🛡 5 ]   VALUE CHIPS: one row, same chip, same order.
+ *                          damage · guard · word (only when there is no number)
+ *       [☠2][💧1]          STATUS PIPS: icon + stacks. NEVER a clipped name.
+ *
+ * Attack chips print the exact post-modifier per-hit damage and ×N for
  * multi-hits. `set()` is called from the engine's `intent` event, which fires
  * only when the rendered intent actually changed — so every call animates.
+ *
+ * The tooltip is `describe()`, a Tooltip DESCRIPTOR (not an HTML string — the
+ * shared Tooltip escapes strings, which is why round 1's intent tooltip
+ * rendered as literal `<div class="cb-tip__title">` markup on screen). It
+ * carries the engine's own `intent.tooltip` sentence, the `tell`, and — the
+ * lesson round 1 never told anyone — WHY the number is what it is.
  */
 
 import { Intent } from '../data/schema.js';
 import { intentFamily } from '../combat/intents.js';
+import { iconSvg, hasIcon } from './icons.js';
 
 const NS = 'http://www.w3.org/2000/svg';
 
@@ -34,6 +49,10 @@ const FRAMES = {
   scheme: 'M24 8 L76 8 L96 50 L76 92 L24 92 L4 50 Z',
   // a circle
   special: 'M50 4 A46 46 0 1 1 49.9 4 Z',
+};
+
+const FAMILY_WORD = {
+  attack: 'Attack', defense: 'Defend', scheme: 'Scheme', special: 'Special',
 };
 
 /**
@@ -155,12 +174,24 @@ function glyph(type) {
   }
 }
 
-/** Short plain-language label under the glyph when there is no number to show. */
+/** Short plain-language label for an intent that has no number to show. */
 const WORD = {
   [Intent.DEFEND]: 'Guard', [Intent.DEFEND_BUFF]: 'Guard', [Intent.DEFEND_DEBUFF]: 'Guard',
   [Intent.BUFF]: 'Buff', [Intent.DEBUFF]: 'Debuff', [Intent.STRONG_DEBUFF]: 'Debuff',
   [Intent.SUMMON]: 'Summon', [Intent.SLEEP]: 'Asleep', [Intent.STUN]: 'Stunned',
-  [Intent.ESCAPE]: 'Fleeing', [Intent.UNKNOWN]: '?',
+  [Intent.ESCAPE]: 'Fleeing', [Intent.UNKNOWN]: 'Unknown',
+  [Intent.ATTACK]: 'Attack', [Intent.ATTACK_BIG]: 'Big Attack',
+  [Intent.ATTACK_DEFEND]: 'Attack', [Intent.ATTACK_BUFF]: 'Attack',
+  [Intent.ATTACK_DEBUFF]: 'Attack',
+};
+
+/** Plain sentence for an intent that carries no numbers at all. */
+const NO_NUMBER_LINE = {
+  [Intent.SLEEP]: 'Asleep. It does nothing this turn.',
+  [Intent.STUN]: 'Stunned. It does nothing this turn.',
+  [Intent.ESCAPE]: 'Preparing to flee the room.',
+  [Intent.SUMMON]: 'Calling something else into the fight.',
+  [Intent.UNKNOWN]: 'You cannot tell what it is about to do.',
 };
 
 function svg(tag, attrs) {
@@ -175,6 +206,7 @@ export class IntentView {
     this.clock = o.clock || null;
     this.reduceMotion = !!o.reduceMotion;
     this.intent = null;
+    this.info = {};
     this._t = 0;
     this._flip = 0;
     this._heavyPhase = Math.random() * 6.283;
@@ -185,7 +217,9 @@ export class IntentView {
     const el = document.createElement('div');
     el.className = 'cb-intent';
     el.setAttribute('role', 'img');
-    el.tabIndex = -1;
+    // The intent is THE read of the genre, so it is a real tab stop, not a
+    // decoration. Its tooltip is reachable with the keyboard for free.
+    el.tabIndex = 0;
     el.innerHTML = `
       <div class="cb-intent__halo"></div>
       <svg class="cb-intent__art" viewBox="0 0 100 100" aria-hidden="true">
@@ -193,28 +227,28 @@ export class IntentView {
         <path class="cb-intent__frameline" d=""></path>
         <g class="cb-intent__glyph" transform="translate(50 50) scale(0.56) translate(-50 -50)"></g>
       </svg>
-      <div class="cb-intent__num"><span class="cb-intent__d"></span><span class="cb-intent__x"></span></div>
-      <div class="cb-intent__word"></div>
+      <div class="cb-intent__vals"></div>
       <div class="cb-intent__pips"></div>`;
     this.el = el;
     this.$frame = el.querySelector('.cb-intent__frame');
     this.$frameline = el.querySelector('.cb-intent__frameline');
     this.$glyph = el.querySelector('.cb-intent__glyph');
-    this.$num = el.querySelector('.cb-intent__num');
-    this.$d = el.querySelector('.cb-intent__d');
-    this.$x = el.querySelector('.cb-intent__x');
-    this.$word = el.querySelector('.cb-intent__word');
+    this.$vals = el.querySelector('.cb-intent__vals');
     this.$pips = el.querySelector('.cb-intent__pips');
     this.$halo = el.querySelector('.cb-intent__halo');
   }
 
   /**
    * @param {object|null} intent  the engine's Intent object
-   * @param {object} [o] { playerHp, playerBlock } — used to decide "this will hurt"
+   * @param {object} [o] extra render context, all optional:
+   *        { playerHp, playerBlock, def, selfName, mods:[{name,kind}] }
+   *        `def` is the EnemyDef — used to explain a number that changed
+   *        because of the enemy's own state (Brace broken: 12 becomes 7).
    */
   set(intent, o = {}) {
     const prev = this.intent;
     this.intent = intent;
+    this.info = o || {};
     if (!intent) { this.el.classList.add('is-empty'); return this; }
     this.el.classList.remove('is-empty');
 
@@ -222,6 +256,7 @@ export class IntentView {
     // DEFEND_DEBUFF postdates combat/intents.js's family map — it is a defense
     // read, not a "special" one. Remove this line once the engine agrees.
     const fam = type === Intent.DEFEND_DEBUFF ? 'defense' : (intent.family || intentFamily(type));
+    this.family = fam;
 
     if (this._type !== type) {
       this._type = type;
@@ -239,48 +274,47 @@ export class IntentView {
       }
     }
 
-    // ── the number: exact post-modifier damage, xN for multi-hits ──────────
+    // ── ONE row of value chips, same order, every type ─────────────────────
     const dmg = intent.damage | 0;
     const hits = intent.hits | 0;
-    const showNum = dmg > 0 && hits > 0;
-    this.el.classList.toggle('has-num', showNum);
-    // A Guard number and a damage number must never look alike: the Guard one
-    // wears a shield and the Guard colour, the damage one does not.
-    this.el.classList.toggle('is-blocknum', !showNum && intent.block > 0);
-    if (showNum) {
-      const changed = prev && (prev.damage !== intent.damage || prev.hits !== intent.hits);
-      this.$d.textContent = String(dmg);
-      this.$x.textContent = hits > 1 ? `×${hits}` : '';
-      this.el.classList.toggle('is-multi', hits > 1);
-      if (changed) this._flipNumber(intent.damage > (prev.damage ?? 0));
-    } else if (intent.block > 0) {
-      this.$d.textContent = String(intent.block);
-      this.$x.textContent = '';
-      this.el.classList.add('has-num');
-      this.el.classList.remove('is-multi');
-      if (prev && prev.block !== intent.block) this._flipNumber(intent.block > (prev.block ?? 0));
-    } else {
-      this.$d.textContent = '';
-      this.$x.textContent = '';
+    const blk = intent.block | 0;
+    const hasDmg = dmg > 0 && hits > 0;
+    const hasBlk = blk > 0;
+    const key = `${hasDmg ? dmg + 'x' + hits : ''}|${hasBlk ? blk : ''}|${type}`;
+    if (key !== this._valKey) {
+      this._valKey = key;
+      this.$vals.textContent = '';
+      if (hasDmg) this.$vals.appendChild(this._chip('damage', String(dmg), hits > 1 ? `×${hits}` : ''));
+      if (hasBlk) this.$vals.appendChild(this._chip('guard', String(blk), ''));
+      if (!hasDmg && !hasBlk) this.$vals.appendChild(this._chip('word', WORD[type] || FAMILY_WORD[fam] || 'Acts', ''));
+    }
+    this.el.classList.toggle('has-num', hasDmg || hasBlk);
+    this.el.classList.toggle('is-multi', hasDmg && hits > 1);
+
+    // the flip animation fires on whichever number actually moved
+    if (prev) {
+      if (hasDmg && (prev.damage !== dmg || prev.hits !== hits)) this._flipNumber(dmg > (prev.damage ?? 0));
+      else if (!hasDmg && hasBlk && prev.block !== blk) this._flipNumber(blk > (prev.block ?? 0));
     }
 
-    // ── word label for non-numeric intents ─────────────────────────────────
-    const word = (!showNum && !(intent.block > 0)) ? (WORD[type] || '') : '';
-    this.$word.textContent = word;
-    this.el.classList.toggle('has-word', !!word);
-
-    // ── status pips: what it will apply, without needing the tooltip ───────
+    // ── status pips: ICONS with stacks. A name is never clipped. ───────────
     const pips = intent.statuses || [];
     if (this._pipKey !== pipKey(pips)) {
       this._pipKey = pipKey(pips);
       this.$pips.textContent = '';
-      for (const s of pips.slice(0, 3)) {
+      for (const s of pips.slice(0, 4)) {
         const d = document.createElement('span');
         d.className = 'cb-intent__pip';
         d.dataset.kind = s.kind || 'debuff';
-        d.textContent = (s.stacks > 1 ? s.stacks : '') + shortName(s.name || s.id);
+        d.tabIndex = 0;
+        const who = s.to === 'self' ? 'itself' : s.to === 'allEnemies' || s.to === 'allies' ? 'its allies' : 'you';
+        d.dataset.tipTitle = s.name || s.id;
+        d.dataset.tip = `${s.stacks} ${s.name} on ${who} when this resolves.`;
+        d.setAttribute('aria-label', `${s.stacks} ${s.name} to ${who}`);
+        d.innerHTML = statusPipIcon(s) + `<b>${s.stacks}</b>`;
         this.$pips.appendChild(d);
       }
+      this.el.classList.toggle('has-pips', pips.length > 0);
     }
 
     // ── "a big incoming hit should be felt" ────────────────────────────────
@@ -293,8 +327,32 @@ export class IntentView {
     this.el.classList.toggle('is-heavy', !!heavy);
     this.el.classList.toggle('is-lethal', !!lethal);
 
-    this.el.setAttribute('aria-label', intent.tooltip || intent.name || 'intent');
+    this.el.setAttribute('aria-label', this._ariaLabel(intent));
     return this;
+  }
+
+  _chip(role, value, sub) {
+    const d = document.createElement('span');
+    d.className = 'cb-intent__chip';
+    d.dataset.role = role;
+    if (role === 'guard') d.innerHTML = iconSvg('res.guard', { cls: 'cb-intent__chipicon' });
+    const b = document.createElement('b');
+    b.textContent = value;
+    d.appendChild(b);
+    if (sub) {
+      const s = document.createElement('span');
+      s.textContent = sub;
+      d.appendChild(s);
+    }
+    return d;
+  }
+
+  _ariaLabel(i) {
+    const bits = [i.name || 'Intent'];
+    if (i.damage > 0) bits.push(i.hits > 1 ? `${i.damage} damage, ${i.hits} times` : `${i.damage} damage`);
+    if (i.block > 0) bits.push(`${i.block} Guard`);
+    for (const s of i.statuses || []) bits.push(`${s.stacks} ${s.name}`);
+    return bits.join('. ') + '.';
   }
 
   _flipNumber(up) {
@@ -304,37 +362,96 @@ export class IntentView {
     this.el.classList.add(up ? 'is-flip-up' : 'is-flip-down');
   }
 
-  /** Rich tooltip HTML: the move name, plain language, then the tell. */
-  tooltipHTML() {
+  /**
+   * The tooltip, as a Tooltip DESCRIPTOR.
+   *
+   * `ui/tooltip.js` renders a descriptor object; handed a raw string it treats
+   * it as literal text and escapes it, which is exactly how round 1 put
+   * `<div class="cb-tip__title">Pack Wrong</div>` on screen as visible markup.
+   *
+   * Four things go in, in this order, because that is the order a player asks
+   * them: what it does · why that number · what it feels like · the tell.
+   */
+  describe() {
     const i = this.intent;
-    if (!i) return '';
+    if (!i) return null;
+    const o = this.info || {};
     const lines = [];
+
+    // PLAIN TEXT ONLY. `tooltip._linkKeywords` escapes every line before it
+    // links the keywords in it, so markup here prints as literal characters —
+    // which is exactly what round 1 put on screen.  Emphasis lives in `rows`
+    // below, which the tooltip renders as a real definition list.
     if (i.damage > 0 && i.hits > 1) {
-      lines.push(`Attacks <b>${i.hits}</b> times for <b>${i.damage}</b> damage each &mdash; <b>${i.totalDamage}</b> total.`);
+      lines.push(`Attacks ${i.hits} times for ${i.damage} damage each — ${i.totalDamage} in total.`);
     } else if (i.damage > 0) {
-      lines.push(`Attacks for <b>${i.damage}</b> damage.`);
+      lines.push(`Attacks for ${i.damage} damage.`);
     }
-    if (i.block > 0) lines.push(`Gains <b>${i.block}</b> Guard.`);
+    if (i.block > 0) lines.push(`Gains ${i.block} Guard.`);
     for (const s of i.statuses || []) {
-      const who = s.to === 'self' ? 'itself' : s.to === 'allEnemies' ? 'its allies' : 'you';
-      lines.push(`Applies <b>${s.stacks} ${s.name}</b> to ${who}.`);
+      const who = s.to === 'self' ? (o.selfName || 'itself')
+        : (s.to === 'allEnemies' || s.to === 'allies') ? 'its allies' : 'you';
+      lines.push(`Applies ${s.stacks} ${s.name} to ${who}.`);
     }
-    if (!lines.length) {
-      const fallback = {
-        [Intent.SLEEP]: 'Asleep. It does nothing this turn.',
-        [Intent.STUN]: 'Stunned. It does nothing this turn.',
-        [Intent.ESCAPE]: 'Preparing to flee the room.',
-        [Intent.SUMMON]: 'Calling something else into the fight.',
-        [Intent.UNKNOWN]: 'You cannot tell what it is about to do.',
-      };
-      lines.push(fallback[i.type] || i.name || 'It is planning something.');
+    if (!lines.length) lines.push(NO_NUMBER_LINE[i.type] || i.name || 'It is planning something.');
+    if (i.anchored) lines.push('Anchored — this action cannot be rearranged.');
+
+    // ── why is the number what it is? ────────────────────────────────────
+    const rows = this._breakdown();
+
+    return {
+      kind: 'intent',
+      id: i.type,
+      icon: hasIcon(`intent.${i.type}`) ? `intent.${i.type}` : 'intent.unknown',
+      color: `var(--frame-c-${this.family || 'special'}, var(--flame-200))`,
+      title: i.name || 'Intent',
+      subtitle: i.familyLabel || FAMILY_WORD[this.family] || 'Intent',
+      lines,
+      rows: rows.length ? rows : null,
+      footer: i.tell || (i.damage > 0
+        ? 'This number is exact — every modifier is already counted.' : null),
+    };
+  }
+
+  /**
+   * The damage arithmetic, spelled out.
+   *
+   * Two different things can move an attack number and the player deserves to
+   * see both, because one of them is a lesson:
+   *
+   *   • the enemy's own state — the Coatrack Crawler's Umbrella Jab is 12
+   *     while its Brace stands and 7 once you break it. `def.moves[id].damage`
+   *     is the number the move declares; `intent.baseDamage` is what its
+   *     `damageFn` returned this turn. When they disagree, something you did
+   *     changed the future, and this row is the only place the game says so.
+   *   • Strength / Weak / Vulnerable — `baseDamage` -> `damage`.
+   */
+  _breakdown() {
+    const i = this.intent;
+    const rows = [];
+    if (!i || !(i.damage > 0)) return rows;
+    const base = Number.isFinite(i.baseDamage) ? i.baseDamage : i.damage;
+    const declared = this._declaredDamage();
+
+    if (declared != null && declared !== base) {
+      rows.push(['Normally', String(declared)]);
+      rows.push(['Right now', String(base)]);
+    } else {
+      rows.push(['Base', String(base)]);
     }
-    const damageNote = i.damage > 0
-      ? `<div class="cb-tip__note">This number is exact &mdash; every modifier is already counted.</div>` : '';
-    return `<div class="cb-tip__title">${esc(i.name || 'Intent')}</div>
-      <div class="cb-tip__body">${lines.join('<br>')}</div>
-      ${i.tell ? `<div class="cb-tip__tell">${esc(i.tell)}</div>` : ''}
-      ${damageNote}`;
+    if (base !== i.damage) {
+      const mods = (this.info.mods || []).map(m => m.name).filter(Boolean);
+      rows.push([mods.length ? mods.join(' · ') : 'Modifiers',
+        `${base} → ${i.damage}`]);
+    }
+    if (i.hits > 1) rows.push(['Hits', `×${i.hits} = ${i.totalDamage}`]);
+    return rows;
+  }
+
+  /** What the EnemyDef's move statically declares, if the scene handed us one. */
+  _declaredDamage() {
+    const m = this.info.def?.moves?.[this.intent?.moveId];
+    return m && typeof m.damage === 'number' ? m.damage : null;
   }
 
   /** Called once per frame by the scene. Only touches transforms. */
@@ -352,7 +469,13 @@ export class IntentView {
 }
 
 function pipKey(list) { return (list || []).map(s => s.id + ':' + s.stacks).join('|'); }
-function shortName(n) { return String(n).slice(0, 4); }
-function esc(s) { return String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
+
+/** An intent pip wears the real status icon — 118 of them exist in icons.js. */
+function statusPipIcon(s) {
+  const id = s.icon || s.id;
+  const key = hasIcon(`status.${id}`) ? `status.${id}`
+    : hasIcon(`status.${s.id}`) ? `status.${s.id}` : 'status.unknown';
+  return iconSvg(key, { cls: 'cb-intent__pipicon' });
+}
 
 export default IntentView;

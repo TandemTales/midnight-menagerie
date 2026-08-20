@@ -321,3 +321,13 @@
 @media (max-width: 1200px) {
   .rw-slot { width: clamp(126px, 15vw, 180px); height: clamp(176px, 21vw, 252px); }
 }
+
+/* ── Clues and Luck in the room HUD ────────────────────────────────────────
+   Added through ui/hud.js's public `addChip()`, so they inherit the shared
+   `.mm-hud__chip` treatment and only need their own accent. See the note in
+   reward.js: the run has always awarded both and nothing ever showed them. */
+.rm-hudx { font-size: var(--fs-xs); letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+.rm-hudx--clue { color: var(--spectre-300); }
+.rm-hudx--luck { color: var(--good-300); }
+.rm-hudx[hidden] { display: none; }
+.is-large .rm-hudx { font-size: var(--fs-sm); }

@@ -473,10 +473,13 @@ const CONSTRAINTS = [
     t => t.every((m, i) => m === ['unroll', 'gather-speed', 'run-the-hall'][i % 3])],
   ['door-greeter', 'Mind Your Manners → Threshold Slam → Hold the Door',
     t => t.every((m, i) => m === ['mind-your-manners', 'threshold-slam', 'hold-the-door'][i % 3])],
-  ['grand-coatcheck', 'Check → Sweep → Flurry → Check → Everything at Once',
-    t => t.every((m, i) => m === ['check-your-things', 'umbrella-sweep', 'hanger-flurry', 'check-your-things', 'everything-at-once'][i % 5])],
-  ['unwelcome-guest', 'Watching → Too Familiar → Wrong Face → Come In, Then → Too Familiar',
-    t => t.every((m, i) => m === ['watching', 'too-familiar', 'wrong-face', 'come-in-then', 'too-familiar'][i % 5])],
+  // BALANCE 2026-08-20: one Check per cycle, not two — two of five turns dealt
+  // zero, which made a solo elite free against one turn of Guard.
+  ['grand-coatcheck', 'Check → Sweep → Flurry → Everything at Once',
+    t => t.every((m, i) => m === ['check-your-things', 'umbrella-sweep', 'hanger-flurry', 'everything-at-once'][i % 4])],
+  // BALANCE 2026-08-20: the repeat no longer carries a second pure-defence turn.
+  ['unwelcome-guest', 'Watching → Too Familiar → Wrong Face → Come In, Then → Too Familiar → Wrong Face',
+    t => t.every((m, i) => m === ['watching', 'too-familiar', 'wrong-face', 'come-in-then', 'too-familiar', 'wrong-face'][i % 6])],
   ['house-bell', 'MIDNIGHT TOLL never follows another TOLL',
     t => t.every((m, i) => !(m === 'midnight-toll' && t[i - 1] === 'midnight-toll'))],
 
@@ -929,20 +932,20 @@ const SPOT = [
   })],
   ['Grand Coatcheck: Evening Coat adds 4 per hit', () => intentAfter('grand-coatcheck', (sim, a, d, show) => {
     a.counters.garment = 1;                                  // evening-coat
-    return show('umbrella-sweep').damage === 15 && show('hanger-flurry').damage === 8 && show('hanger-flurry').hits === 3;
+    return show('umbrella-sweep').damage === 17 && show('hanger-flurry').damage === 8 && show('hanger-flurry').hits === 3;
   })],
   ['Grand Coatcheck: a Snagged Garment stops adding damage', () => intentAfter('grand-coatcheck', (sim, a, d, show) => {
     a.counters.garment = 1; a.mem.snagged = true;
-    return show('umbrella-sweep').damage === 11;
+    return show('umbrella-sweep').damage === 13;
   })],
-  ['Unwelcome Guest: Too Familiar climbs 9 → 12 → 15 and caps', () => intentAfter('unwelcome-guest', (sim, a, d, show) => {
+  ['Unwelcome Guest: Too Familiar climbs 13 → 16 → 19 and caps', () => intentAfter('unwelcome-guest', (sim, a, d, show) => {
     a.mem.familiar = 'attack';
     const seen = [];
     for (let n = 0; n <= 4; n++) {
       sim.cardsPlayedThisTurn = Array.from({ length: n }, (_, i) => ({ id: 'x' + i, type: 'attack' }));
       seen.push(show('too-familiar').damage);
     }
-    return seen.join(',') === '9,12,15,15,15';
+    return seen.join(',') === '13,16,19,20,20';
   })],
   ['House Bell: MIDNIGHT TOLL is 20 and only at 4 Resonance', () => intentAfter('house-bell', (sim, a, d, show) => {
     a.counters.resonance = 4;

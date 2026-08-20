@@ -22,6 +22,7 @@ import { relicById, relicSigil } from '../data/relics.js';
 import { satisfyingItem, itemById } from '../data/backpack.js';
 import { RoomScene, esc, chip } from './reward.js';
 import { el, ensureCss, rovingFocus } from '../ui/portrait.js';
+import { word } from '../util/plural.js';
 
 const CSS_EVENT = new URL('./event.css', import.meta.url).href;
 
@@ -157,11 +158,18 @@ export class EventScene extends RoomScene {
       const cost = o.cost?.lostThings;
       const poor = cost != null && this.run.lostThings < cost;
       if (poor) b.disabled = true;
+      /* An option with one authored outcome is a PRICE; an option with several
+         is a BET. Labelling both "risk / gain" made every Curiosity look like a
+         coin flip, including the ones that are not. The stake itself is named
+         either way — see the vocabulary note in data/events.js. */
+      const certain = (o.outcomes || []).length <= 1;
+      const nothing = /^(none|nothing)$/i.test(String(o.risk || '').trim());
       b.innerHTML = `
         <span class="ev-opt__label">${esc(o.label)}</span>
         <span class="ev-opt__meta">
-          ${o.risk ? `<span class="ev-tag ev-tag--risk"><i>risk</i>${esc(o.risk)}</span>` : ''}
-          ${o.reward ? `<span class="ev-tag ev-tag--gain"><i>gain</i>${esc(o.reward)}</span>` : ''}
+          ${o.risk && !(certain && nothing)
+    ? `<span class="ev-tag ev-tag--risk"><i>${certain ? 'costs' : 'risk'}</i>${esc(o.risk)}</span>` : ''}
+          ${o.reward ? `<span class="ev-tag ev-tag--gain"><i>${certain ? 'always' : 'gain'}</i>${esc(o.reward)}</span>` : ''}
           ${cost != null ? `<span class="ev-tag ev-tag--cost"><i>cost</i>${cost} ${esc(TERMS.gold)}</span>` : ''}
           ${held ? `<span class="ev-tag ev-tag--gear"><i>gear</i>${esc(held.name)}</span>` : ''}
         </span>
@@ -233,7 +241,7 @@ export class EventScene extends RoomScene {
       case 'heal': return chip('hp', TERMS.hp, `+${g.n}`);
       case 'maxHp': return chip(g.n < 0 ? 'cost' : 'hp', `max ${TERMS.hp}`, `${g.n > 0 ? '+' : ''}${g.n}`);
       case 'lostThings': return chip('gold', TERMS.gold, `${g.n > 0 ? '+' : ''}${g.n}`);
-      case 'clues': return chip('clue', g.n === 1 ? 'Clue' : 'Clues', `+${g.n}`);
+      case 'clues': return chip('clue', word(g.n, 'Clue'), `+${g.n}`);
       case 'snack': return chip('gold', TERMS.potion, esc(g.name));
       case 'keepsake': return chip('luck', TERMS.relic, esc(g.name));
       case 'card': return chip('luck', TERMS.card, esc(g.name));
@@ -341,7 +349,7 @@ export class EventScene extends RoomScene {
     b.dataset.opt = 'free';
     b.innerHTML = `<span class="ev-opt__label">${already ? 'Take what they left.' : 'Open the door.'}</span>
       <span class="ev-opt__meta">
-        <span class="ev-tag ev-tag--gain"><i>gain</i>${already ? `${TERMS.gold} and a Clue` : 'A Companion goes free'}</span>
+        <span class="ev-tag ev-tag--gain"><i>always</i>${already ? `${TERMS.gold} and a Clue` : 'A Companion goes free'}</span>
       </span>`;
     b.addEventListener('click', () => {
       if (this._answered) return;

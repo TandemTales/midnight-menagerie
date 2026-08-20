@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T11:32:50",
+ "updated": "2026-08-20T12:54:03",
  "wave": 3,
  "waveLabel": "Closing the seams",
  "headline": "A full playthrough found that every module passes its own tests and silently no-ops at the join. Fixing that class of bug.",
@@ -58,8 +58,8 @@
    "name": "Enemies & intents",
    "desc": "Rosters, move selection, telegraph clarity, Scuffles and Big Scares",
    "status": "reviewing",
-   "round": 3,
-   "verdict": "Multi-hit bug fixed. Intent honesty: 2451 turns, 0 mismatches. Found two further bugs - the Butler was enforcing all four House Rules at once, and Blanket Blob's Cover was inert.",
+   "round": 4,
+   "verdict": "Foyer retuned on working mechanics: Butler 250 to 178, Big Scares from a 67-point win-rate spread to 72-78%, two unreachable House Rules made reachable.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -358,6 +358,22 @@
   {
    "t": "2026-08-20T11:32:50",
    "msg": "Engine round 4: the state cache dirty flag was a boolean cleared at the end of the build, so mutations raised mid-snapshot were swallowed. Now a revision counter."
+  },
+  {
+   "t": "2026-08-20T11:34:26",
+   "msg": "Combat scene and run layer both in round 2: intent tooltips, per-room backdrops, a boss arena, and the mid-combat resume exploit."
+  },
+  {
+   "t": "2026-08-20T12:54:03",
+   "msg": "Balance: the simulator was rebuilt to play whole regions with real decks, upgrades, Keepsakes and Snacks, driven by a beam-search bot that scores by simulating the enemy turn."
+  },
+  {
+   "t": "2026-08-20T12:54:03",
+   "msg": "Boss win rate 20% to 60% for a competent player; boss length 16 turns to 12.6. Region survival 36.7% to 46.7%, short by exactly one Safe Room."
+  },
+  {
+   "t": "2026-08-20T12:54:03",
+   "msg": "Two more inert mechanics found: the Butler's Roughhousing rule could never fire, and Lost Luggage's deck interference adds nothing in a real run."
   }
  ]
 }

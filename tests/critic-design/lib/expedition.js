@@ -64,7 +64,7 @@ export async function fight(engine, bot, { run = null, maxTurns = MAX_TURNS, tra
   let turns = 0;
   // Per-fight running estimates the competent bot projects the rest of the
   // fight from. One object per fight, never shared between fights.
-  const fc = { dps: 10, threat: 8, turns: 0 };
+  const fc = { dps: 10, threat: 8, guard: 4, peak: 0, turns: 0 };
   let dbg = null;
   while (!engine.over && turns < maxTurns) {
     turns++;
@@ -131,7 +131,7 @@ export async function expedition({
     endCourage: 0, maxCourage: run.maxCourage,
     deckEnd: null, keepsakesEnd: null,
     // The Courage ledger. Where a region's whole health budget actually goes.
-    ledger: { scuffle: 0, elite: 0, boss: 0, event: 0, hazard: 0, rested: 0, healed: 0, rests: 0 },
+    ledger: { scuffle: 0, elite: 0, boss: 0, event: 0, hazard: 0, rested: 0, healed: 0, combatHeal: 0, rests: 0 },
     visited: {},
     ms: 0,
   };
@@ -159,6 +159,10 @@ export async function expedition({
       rec.fight = { ...meta, ...r };
       out.fights.push(rec.fight);
       out.ledger[type === NodeType.BOSS ? 'boss' : type === NodeType.BIG_SCARE ? 'elite' : 'scuffle'] += r.dmgTaken;
+      // Anything that put Courage back during the fight (Pocket Flashlight's
+      // end-of-combat heal, Tin of Sardines, Snacks) shows up as the gap
+      // between what we were hit for and what we actually walked out with.
+      if (r.win) out.ledger.combatHeal += Math.max(0, run.courage - (cBeforeNode - r.dmgTaken));
       if (type === NodeType.BIG_SCARE) { out.elites++; if (r.win) out.eliteWins++; }
       if (type === NodeType.SCUFFLE) out.scuffles++;
       if (type === NodeType.BOSS) { out.reachedBoss = true; out.bossWin = r.win; }

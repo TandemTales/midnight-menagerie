@@ -30,6 +30,7 @@ import { getEnemy, hasEnemy, rollHp } from './enemies/index.js';
  * @property {string} teaches     why this formation exists
  * @property {number} [minScuffle] earliest Scuffle index (0-based) it may appear at
  * @property {boolean} [advancedOnly] excluded from any "appears earlier" relaxation
+ * @property {number} [weight]    relative pick weight within its tier (default 1)
  */
 
 const m = (enemyId, extra) => Object.assign({ enemyId }, extra || {});
@@ -72,9 +73,15 @@ const FOYER = [
     teaches: 'Choose between disrupting Brace and preventing Dust accumulation.',
   },
   {
-    id: 'foyer-7', region: 'foyer', tier: 'standard', name: 'Lost Luggage + Dust Bunny',
+    id: 'foyer-7', region: 'foyer', tier: 'early', name: 'Lost Luggage + Dust Bunny',
     members: [m('lost-luggage'), m('dust-bunny')],
     teaches: 'Deck interference competes with immediate escalation.',
+    // BALANCE 2026-08-20: promoted from 'standard'. The early pool was three
+    // solos and one pair, and a lone enemy cannot out-damage one turn of Guard,
+    // so a quarter of opening Scuffles cost literally nothing. This is the
+    // cheapest pair in the roster, so it raises the floor without moving the
+    // ceiling. Promoting the 53-Courage pair as well overshot the 8-12 band
+    // (measured: mean scuffle cost 15.6), so only this one moved.
   },
   {
     id: 'foyer-8', region: 'foyer', tier: 'standard', name: 'Door Greeter + Dust Bunny',
@@ -517,7 +524,32 @@ export function rollEncounter(region, tier, rng, history = []) {
     cand = soften(cand, (e) => leadOf(e) !== recentLeads[0]);
   }
 
-  return cand[rng.int(cand.length)];
+  // Weighted, not uniform. A formation's `weight` is how often the region wants
+  // to ask that particular question; two-body formations carry 2 because a lone
+  // enemy is structurally unable to out-damage one turn of Guard, so a pool of
+  // solos produces free fights however much Courage the solos have. See the
+  // `defaultWeight` note.
+  return rng.weighted(cand.map(e => ({ e, w: e.weight != null ? e.weight : defaultWeight(e) }))).e;
+}
+
+/**
+ * BALANCE 2026-08-20 — why two-body formations weigh double.
+ *
+ * Measured over whole-region expeditions: 22-29% of the first three Scuffles of
+ * a region cost the player **zero** Courage. Not because the early enemies are
+ * weak — a Dust Bunny's Tumble projects up to 19 — but because one enemy's
+ * whole turn fits inside one turn of Guard, so the player simply never pays.
+ * A fight that costs nothing is not a fight, and it is the pacing, not the
+ * damage numbers, that is wrong: raising a lone enemy's damage to beat a turn
+ * of Guard would make it lethal the moment the player draws no Guard card.
+ *
+ * So the fix is composition. The Foyer's early pool is now three solos and
+ * three pairs, and the pairs are picked twice as often; the solos remain
+ * because each one is the first time the player meets that enemy and that
+ * introduction is worth keeping.
+ */
+function defaultWeight(enc) {
+  return (enc.members && enc.members.length > 1) ? 2 : 1;
 }
 
 /**

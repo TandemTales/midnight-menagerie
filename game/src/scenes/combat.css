@@ -279,6 +279,12 @@
   width: min(230px, 100%);
   display: flex; flex-direction: column; align-items: center; gap: 3px;
   margin-top: 4px;
+  /* A rig draws past the bottom of its own stage box, so the name and the
+     Courage bar were being read through a pair of legs. */
+  padding: 3px var(--s-2) 4px;
+  border-radius: var(--radius-md);
+  background: radial-gradient(70% 100% at 50% 60%,
+    color-mix(in srgb, var(--ink-900) 78%, transparent) 0%, transparent 100%);
 }
 .cb-enemy__name {
   font-family: var(--font-display);
@@ -411,10 +417,12 @@
   transition: transform var(--t-quick) var(--ease-snap), border-color var(--t-quick);
 }
 .cb-status:hover, .cb-status:focus-visible { transform: translateY(-2px) scale(1.08); border-color: var(--flame-300); z-index: 3; }
-.cb-status svg { width: 15px; height: 15px; fill: currentColor; }
-.cb-status svg.is-stroke path { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+/* One icon set for every status in the game — ui/icons.js, 118 glyphs,
+   each identifiable at 16px from its silhouette alone. Round 1 drew the
+   player row from a private 14-path table that had no Haunt in it, and the
+   enemy row from an empty `<i data-g="haunt">` no stylesheet ever styled. */
+.cb-status__g, .cb-status svg { width: 15px; height: 15px; display: block; color: currentColor; }
 .cb-status b { font-family: var(--font-num); font-size: 11px; color: var(--text-hi); }
-.cb-status__letter { font-family: var(--font-num); font-size: 12px; font-style: normal; padding: 0 3px; }
 .cb-status[data-kind="buff"] { color: var(--spectre-200); border-color: color-mix(in srgb, var(--spectre-400) 55%, transparent); }
 .cb-status[data-kind="debuff"] { color: var(--threat-200); border-color: color-mix(in srgb, var(--threat-400) 55%, transparent); }
 @keyframes cb-stpop { from { transform: scale(.4) translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
@@ -475,87 +483,81 @@
 .cb-intent.is-lethal { animation: cb-lethal 1.1s var(--ease-soft) infinite; }
 @keyframes cb-lethal { 0%,100% { filter: drop-shadow(0 0 0 transparent); } 50% { filter: drop-shadow(0 0 14px var(--threat-200)); } }
 
-.cb-intent__num {
-  position: absolute; left: 50%; bottom: 2px;
+/* ── ONE grammar for all sixteen intent types ──────────────────────────────
+   Round 1 had three: a shield badge plus a separate `🛡5` pill; a hexagon plus
+   a dim always-visible word (the `.has-word` rule below was a broken selector,
+   so `BUFF` was pinned on at full opacity forever) plus a chip that sliced the
+   move name to four characters and printed "ROUS"; and a named pill above a
+   shield. There is now exactly one row of value chips, and pips are icons. */
+.cb-intent__vals {
+  position: absolute; left: 50%; bottom: 0;
   transform: translateX(-50%);
-  display: flex; align-items: baseline; gap: 2px;
-  padding: 1px 7px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--ink-900) 90%, transparent);
-  border: 1px solid color-mix(in srgb, var(--frame-c) 70%, transparent);
-  opacity: 0;
+  display: flex; align-items: center; gap: 3px;
+  white-space: nowrap;
 }
-.cb-intent.has-num .cb-intent__num { opacity: 1; }
-.cb-intent__d {
+.cb-intent__chip {
+  display: inline-flex; align-items: center; gap: 2px;
+  height: 20px; padding: 0 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink-900) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--frame-c) 70%, transparent);
+  box-shadow: var(--shadow-1);
+}
+.cb-intent__chip b {
   font-family: var(--font-num); font-weight: 700;
-  font-size: var(--fs-md);
+  font-size: var(--fs-md); line-height: 1.15;
   color: var(--text-hi);
   text-shadow: 0 1px 3px var(--ink-900);
-  line-height: 1.15;
 }
-.cb-intent.is-heavy .cb-intent__d { color: var(--threat-100); font-size: var(--fs-lg); }
-.cb-intent__x {
+.cb-intent__chip span {
   font-family: var(--font-num); font-size: var(--fs-xs);
   color: var(--flame-200); letter-spacing: .02em;
 }
 /* a Guard number wears a shield so it can never be mistaken for damage */
-.cb-intent.is-blocknum .cb-intent__num {
+.cb-intent__chip[data-role="guard"] {
   border-color: var(--guard-300);
   background: linear-gradient(180deg,
     color-mix(in srgb, var(--guard-500) 62%, var(--ink-900)), var(--ink-900));
-  padding-left: 20px;
 }
-.cb-intent.is-blocknum .cb-intent__num::before {
-  content: '';
-  position: absolute; left: 5px; top: 50%;
-  width: 12px; height: 13px; margin-top: -6px;
-  background: var(--guard-300);
-  clip-path: polygon(50% 0, 100% 18%, 100% 58%, 50% 100%, 0 58%, 0 18%);
+.cb-intent__chip[data-role="guard"] b { color: var(--spectre-100); }
+.cb-intent__chipicon { width: 12px; height: 13px; color: var(--guard-300); display: block; }
+/* the word chip is the same chip — smaller type, never a second grammar */
+.cb-intent__chip[data-role="word"] {
+  padding: 0 8px; height: 18px;
 }
-.cb-intent.is-blocknum .cb-intent__d { color: var(--spectre-100); }
-.cb-intent__num { position: absolute; }
-
-.cb-intent__word {
-  position: absolute; left: 50%; bottom: 3px;
-  transform: translateX(-50%);
-  font-family: var(--font-display); font-size: 10px;
+.cb-intent__chip[data-role="word"] b {
+  font-family: var(--font-display); font-size: 10px; font-weight: 400;
   letter-spacing: .14em; text-transform: uppercase;
   color: var(--frame-c);
-  text-shadow: 0 1px 3px var(--ink-900);
-  opacity: 0; white-space: nowrap;
 }
-.cb-intent.has-word /* a Guard number wears a shield so it can never be mistaken for damage */
-.cb-intent.is-blocknum .cb-intent__num {
-  border-color: var(--guard-300);
-  background: linear-gradient(180deg,
-    color-mix(in srgb, var(--guard-500) 62%, var(--ink-900)), var(--ink-900));
-  padding-left: 20px;
+.cb-intent.is-heavy .cb-intent__chip[data-role="damage"] b {
+  color: var(--threat-100); font-size: var(--fs-lg);
 }
-.cb-intent.is-blocknum .cb-intent__num::before {
-  content: '';
-  position: absolute; left: 5px; top: 50%;
-  width: 12px; height: 13px; margin-top: -6px;
-  background: var(--guard-300);
-  clip-path: polygon(50% 0, 100% 18%, 100% 58%, 50% 100%, 0 58%, 0 18%);
+.cb-intent.is-heavy .cb-intent__chip[data-role="damage"] {
+  border-color: var(--threat-200); height: 24px;
 }
-.cb-intent.is-blocknum .cb-intent__d { color: var(--spectre-100); }
-.cb-intent__num { position: absolute; }
 
-.cb-intent__word { opacity: 1; }
-
+/* status pips: an ICON and a stack count. A name is never truncated. */
 .cb-intent__pips {
-  position: absolute; left: 50%; top: calc(100% - 4px);
+  position: absolute; left: 50%; top: calc(100% + 1px);
   transform: translateX(-50%);
   display: flex; gap: 2px;
 }
 .cb-intent__pip {
-  font-family: var(--font-num); font-size: 9px; letter-spacing: .06em;
-  padding: 0 4px; border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--ink-900) 88%, transparent);
+  display: inline-flex; align-items: center; gap: 1px;
+  height: 16px; padding: 0 4px 0 3px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--ink-900) 90%, transparent);
   color: var(--threat-200);
   border: 1px solid color-mix(in srgb, var(--threat-400) 60%, transparent);
+  cursor: help;
 }
+.cb-intent__pip b { font-family: var(--font-num); font-size: 10px; color: var(--text-hi); }
+.cb-intent__pipicon { width: 11px; height: 11px; display: block; color: currentColor; }
 .cb-intent__pip[data-kind="buff"] { color: var(--spectre-200); border-color: color-mix(in srgb, var(--spectre-400) 60%, transparent); }
+.cb-intent__pip:hover, .cb-intent__pip:focus-visible {
+  transform: translateY(-1px) scale(1.1); border-color: var(--flame-300); outline: none;
+}
 
 /* the number flip when a modifier moves it */
 @keyframes cb-flipup {
@@ -568,10 +570,10 @@
   55% { transform: translateX(-50%) translateY(2px) scale(.78); }
   100% { transform: translateX(-50%) translateY(0) scale(1); }
 }
-.cb-intent.is-flip-up .cb-intent__num { animation: cb-flipup .34s var(--ease-snap); }
-.cb-intent.is-flip-down .cb-intent__num { animation: cb-flipdn .34s var(--ease-snap); }
-.cb-intent.is-flip-up .cb-intent__d { color: var(--threat-100); }
-.cb-intent.is-flip-down .cb-intent__d { color: var(--spectre-200); }
+.cb-intent.is-flip-up .cb-intent__vals { animation: cb-flipup .34s var(--ease-snap); }
+.cb-intent.is-flip-down .cb-intent__vals { animation: cb-flipdn .34s var(--ease-snap); }
+.cb-intent.is-flip-up .cb-intent__chip b { color: var(--threat-100); }
+.cb-intent.is-flip-down .cb-intent__chip b { color: var(--spectre-200); }
 
 /* ───────────────────────────────────────────── the player ──────────────── */
 .cb-player {
@@ -648,57 +650,35 @@
 .cb-player.is-preview .cb-player__figure { border-color: var(--flame-400); }
 .cb-player.is-lethal .cb-player__figure { border-color: var(--threat-300); }
 
+/* The plate used to be a panel because it held a Courage bar. It no longer
+   holds one, and an empty bordered box under the portrait reads as a broken
+   input field — so the chrome is gone and only real content draws. */
 .cb-player__plate {
-  display: flex; flex-direction: column; gap: 5px;
-  padding: var(--s-2) var(--s-3);
-  border-radius: var(--radius-md);
-  background: linear-gradient(180deg,
-    color-mix(in srgb, var(--ink-700) 90%, transparent), color-mix(in srgb, var(--ink-900) 92%, transparent));
-  border: 1px solid var(--ink-400);
-  box-shadow: var(--shadow-2);
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  padding: 5px 0 0;
 }
 .cb-player__name {
   font-family: var(--font-display); font-size: var(--fs-xs);
   letter-spacing: .2em; text-transform: uppercase; color: var(--text-lo);
+  text-shadow: 0 2px 6px var(--ink-900);
 }
-.cb-hpbar {
-  position: relative; height: 22px;
-  border-radius: 999px;
-  background: var(--ink-900);
-  border: 1px solid var(--ink-400);
-  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--ink-900) 90%, transparent);
-  overflow: hidden;
-  cursor: help;
+/* NO Courage bar here. `ui/hud.js` owns the one on this screen, top-right.
+   What stays is the low-Courage tell on the portrait, which is a mood cue and
+   not a second copy of the number. */
+.cb-player.is-low .cb-player__figure {
+  border-color: var(--threat-400);
+  animation: cb-lowpulse 1.5s var(--ease-soft) infinite;
 }
-.cb-hpbar__ghost, .cb-hpbar__fill {
-  position: absolute; inset: 1px; border-radius: 999px;
-  transform-origin: left center; will-change: transform;
+@keyframes cb-lowpulse {
+  0%,100% { box-shadow: var(--shadow-3), inset 0 0 46px color-mix(in srgb, var(--ink-900) 70%, transparent); }
+  50% { box-shadow: var(--shadow-3), inset 0 0 46px color-mix(in srgb, var(--threat-500) 60%, transparent),
+                    0 0 18px color-mix(in srgb, var(--threat-400) 60%, transparent); }
 }
-.cb-hpbar__ghost { background: color-mix(in srgb, var(--threat-100) 55%, transparent); }
-.cb-hpbar__fill {
-  background: linear-gradient(180deg, var(--courage-300), var(--courage-500));
-  box-shadow: 0 0 12px color-mix(in srgb, var(--courage-300) 40%, transparent);
-  transition: transform var(--t-quick) var(--ease-out);
+.cb-player.is-snacking .cb-player__figure {
+  animation: cb-snack .34s var(--ease-snap);
+  border-color: var(--pluck-300);
 }
-/* how much of the bar this turn's unblocked damage will eat */
-.cb-hpbar__incoming {
-  position: absolute; top: 1px; bottom: 1px; right: 1px;
-  width: 0; border-radius: 0 999px 999px 0;
-  background: repeating-linear-gradient(135deg,
-    color-mix(in srgb, var(--threat-300) 62%, transparent) 0 6px,
-    color-mix(in srgb, var(--threat-500) 62%, transparent) 6px 12px);
-  transition: width var(--t-base) var(--ease-soft);
-  pointer-events: none;
-}
-.cb-hpbar__txt {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center; gap: 1px;
-  font-family: var(--font-num); font-size: var(--fs-sm);
-  color: var(--text-hi); text-shadow: 0 1px 3px var(--ink-900);
-}
-.cb-hpbar__txt span { color: color-mix(in srgb, var(--text-hi) 62%, transparent); }
-.cb-player.is-low .cb-hpbar { border-color: var(--threat-400); animation: cb-lowpulse 1.5s var(--ease-soft) infinite; }
-@keyframes cb-lowpulse { 0%,100% { box-shadow: inset 0 2px 6px var(--ink-900); } 50% { box-shadow: inset 0 2px 6px var(--ink-900), 0 0 16px color-mix(in srgb, var(--threat-400) 70%, transparent); } }
+@keyframes cb-snack { 0% { transform: scale(1); } 40% { transform: scale(1.07) translateY(-3px); } 100% { transform: none; } }
 
 /* the incoming-damage readout — the single most useful number on the screen */
 .cb-incoming[hidden] { display: none; }
@@ -972,16 +952,17 @@
 .cb-root.is-large { font-size: 118%; }
 .cb-root.is-large .cb-enemy__name,
 .cb-root.is-large .cb-inc__k { font-size: var(--fs-sm); }
-.cb-root.is-large .cb-intent__d { font-size: var(--fs-lg); }
+.cb-root.is-large .cb-intent__chip b { font-size: var(--fs-lg); }
 
-.cb-enemy:focus-visible, .cb-status:focus-visible,
+.cb-enemy:focus-visible, .cb-status:focus-visible, .cb-intent:focus-visible,
+.cb-count:focus-visible, .cb-badge:focus-visible, .cb-qslot:focus-visible,
 .cb-pile:focus-visible, .cb-endturn:focus-visible {
   outline: 2px solid var(--flame-300); outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cb-intent.is-lethal, .cb-endturn.is-ready, .cb-player.is-low .cb-hpbar,
-  .cb-player__glow { animation: none; }
+  .cb-intent.is-lethal, .cb-endturn.is-ready, .cb-player.is-low .cb-player__figure,
+  .cb-player.is-snacking .cb-player__figure, .cb-player__glow { animation: none; }
 }
 
 /* the arrow has snapped onto this one */
@@ -1104,3 +1085,140 @@
 
 .cb-banner[data-kind="rule"] { color: var(--rarity-curse); font-size: var(--fs-xl); }
 .cb-banner[data-kind="rulebreak"] { color: var(--threat-100); font-size: var(--fs-xl); }
+
+/* ═══════════════════════════════════════════ the room, and the arena ══════
+   FINDING: every room in the region — the Formal Dining Room, the Music Room,
+   East Landing, the Grand Coatcheck's Big Scare and The Butler, the 250-Courage
+   region boss — played in one identical warm gallery with the same furniture
+   and the same teal doorway. The map names 13 rooms and promises 13 places.
+
+   Two halves to the fix. `scenes/combat.js` picks the authored atmosphere room
+   from the node's name (see ROOM_MOOD there), which changes the geometry, the
+   camera, the palette, the props and the particles. This half is the FRAMING:
+   a normal Scuffle is intimate, a Big Scare is staged, and a boss owns the
+   frame — STS2-REFERENCE §4, "epic rather than intimate".
+   ========================================================================= */
+
+/* the room's name, stated once on entry and then left in the corner */
+.cb-room {
+  position: absolute; left: 50%; top: 74px;
+  transform: translateX(-50%);
+  z-index: 40;
+  pointer-events: none;
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  letter-spacing: .34em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--text-hi) 60%, transparent);
+  text-shadow: 0 2px 10px var(--ink-900);
+  white-space: nowrap;
+  animation: cb-roomin 3.4s var(--ease-soft) forwards;
+}
+.cb-room[hidden] { display: none; }
+@keyframes cb-roomin {
+  0% { opacity: 0; letter-spacing: .62em; }
+  14% { opacity: 1; letter-spacing: .34em; }
+  70% { opacity: 1; }
+  100% { opacity: .3; letter-spacing: .34em; }
+}
+
+/* the stage the fight happens on */
+.cb-arena {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity var(--t-slow) var(--ease-soft);
+}
+.cb-arena__spot, .cb-arena__floor { position: absolute; inset: 0; }
+.cb-arena__spot {
+  background: radial-gradient(48% 76% at 50% 6%,
+    color-mix(in srgb, var(--flame-100) 16%, transparent) 0%,
+    color-mix(in srgb, var(--flame-300) 7%, transparent) 42%,
+    transparent 72%);
+  mix-blend-mode: screen;
+}
+.cb-arena__floor {
+  top: auto; height: 46%;
+  background: radial-gradient(58% 100% at 50% 100%,
+    color-mix(in srgb, var(--ink-900) 74%, transparent) 0%, transparent 76%);
+}
+
+/* ── Big Scare: staged, lit, a step back from the intimate framing ──────── */
+.cb-root[data-arena="elite"] .cb-arena { opacity: .85; }
+.cb-root[data-arena="elite"] .cb-enemy__stage {
+  --e-h: min(calc(300px * var(--e-scale)), calc(100vh - 420px));
+}
+.cb-root[data-arena="elite"] .cb-field { top: 54px; }
+
+/* ── the boss owns the frame ────────────────────────────────────────────── */
+.cb-root[data-arena="boss"] .cb-arena { opacity: 1; }
+.cb-root[data-arena="boss"] .cb-arena__spot {
+  background: radial-gradient(40% 92% at 50% -6%,
+    color-mix(in srgb, var(--flame-100) 22%, transparent) 0%,
+    color-mix(in srgb, var(--threat-300) 10%, transparent) 46%,
+    transparent 74%);
+}
+.cb-root[data-arena="boss"] .cb-field {
+  top: 48px; bottom: 33%;
+}
+/* THE size change. A 1.5-scale boss was capped to the same ~340px as a trash
+   mob because the cap was written for a four-up formation. A boss is alone. */
+.cb-root[data-arena="boss"] .cb-enemy__stage {
+  --e-h: min(calc(430px * var(--e-scale)), calc(100vh - 330px));
+  width: clamp(calc(150px * var(--e-scale)),
+               calc(var(--e-h) * var(--e-aspect)),
+               min(560px, 40vw));
+}
+.cb-root[data-arena="boss"] .cb-enemies { padding-top: 128px; }
+.cb-root[data-arena="boss"] .cb-enemy__name { font-size: var(--fs-md); letter-spacing: .22em; }
+.cb-root[data-arena="boss"] .cb-enemy__bar { height: 18px; }
+/* a boss's plate must not be read through its own legs */
+.cb-root[data-arena="boss"] .cb-enemy__plate,
+.cb-root[data-arena="elite"] .cb-enemy__plate {
+  padding: 4px var(--s-3) 5px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--ink-900) 72%, transparent);
+  backdrop-filter: blur(3px);
+}
+
+/* the edges close in while a boss arrives, then relax to a held vignette */
+.cb.is-arena-in::before, .cb.is-arena::before {
+  content: ''; position: absolute; inset: 0;
+  pointer-events: none; z-index: 6;
+  background: radial-gradient(78% 68% at 50% 42%, transparent 42%,
+    color-mix(in srgb, var(--ink-900) 82%, transparent) 100%);
+  opacity: 0;
+  transition: opacity var(--t-slow) var(--ease-soft);
+}
+.cb.is-arena-in::before { opacity: 1; }
+.cb.is-arena::before { opacity: .5; }
+
+/* the boss entrance: it is a shadow until it has risen */
+.cb-enemy.is-entering .rg-body,
+.cb-enemy.is-entering .rg-limbs-back,
+.cb-enemy.is-entering .rg-limbs-front { filter: brightness(.06) saturate(0); }
+.cb-enemy.is-entering .rg-lid { transform: scale(1, 1); }
+.cb-enemy.is-entering .cb-enemy__above,
+.cb-enemy.is-entering .cb-enemy__plate { opacity: 0; }
+.cb-enemy.has-entered .cb-enemy__above,
+.cb-enemy.has-entered .cb-enemy__plate {
+  animation: cb-plate-in .42s var(--ease-out) both;
+}
+@keyframes cb-plate-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+.cb-enemy .rg-body, .cb-enemy .rg-limbs-back, .cb-enemy .rg-limbs-front {
+  transition: filter var(--t-slow) var(--ease-soft);
+}
+
+/* the boss banner is bigger than a turn banner and holds longer */
+.cb-banner[data-kind="boss"] {
+  font-size: clamp(38px, 5.4vw, 84px);
+  color: var(--threat-100);
+  text-shadow: 0 0 34px color-mix(in srgb, var(--threat-400) 70%, transparent);
+}
+.cb-banner[data-kind="elite"] { color: var(--flame-100); }
+
+@media (prefers-reduced-motion: reduce) {
+  .cb-room { animation: none; opacity: .55; }
+  .cb-enemy.has-entered .cb-enemy__above,
+  .cb-enemy.has-entered .cb-enemy__plate { animation: none; }
+}

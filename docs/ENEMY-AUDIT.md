@@ -7,6 +7,16 @@ implemented and validated:
 |---|---|---|
 | Content + schema + patterns | `python tests/enemies/run.py` | **37 enemies, 0 errors** |
 | Intent truth, real engine | `python tests/enemies/audit.py 12` | **2368 scored enemy turns, 0 mismatches** |
+| Whole-region balance | `python tests/critic-design/sim.py` | see docs/NOTES.md 2026-08-20 |
+
+**Round 3 (2026-08-20, balance agent)** retuned the Foyer's three Big Scares and the
+Butler after measuring them for the first time against decks a real run actually
+brings — see the dated section in `docs/NOTES.md` for every number and the
+measurement that justified it. Changed here: Grand Coatcheck 96 -> 115 and one
+Check per cycle instead of two; Unwelcome Guest 91 -> 142, Too Familiar 9 -> 13
+(cap 15 -> 20), Wrong Face 6x2 -> 9x2, and a sixth move in the cycle; House Bell's
+Deep Vibration no longer charges Resonance and Ring for Service summons at 60%
+Courage; The Butler 250 -> 178 with two of his four House Rules made reachable.
 
 Round 2 fixed a `hits²` bug in `hitPlayer` that made all 16 multi-hit attacks deal up to
 5.7× their telegraphed damage. See **Round 2 changes** at the end.
@@ -47,10 +57,10 @@ display rather than using the static value.
 | Calling Bell | 18 | normal | interaction |
 | Red Carpet Runner | 43 | normal | pressure |
 | Door Greeter | 29 | normal | pressure |
-| The Grand Coatcheck | 96 | elite | Big Scare — adaptability |
-| The Unwelcome Guest | 91 | elite | Big Scare — pattern breaking |
+| The Grand Coatcheck | 115 | elite | Big Scare — adaptability |
+| The Unwelcome Guest | 142 | elite | Big Scare — pattern breaking |
 | The House Bell | 105 | elite | Big Scare — add management |
-| **The Butler** | **250** | boss | 2 phases |
+| **The Butler** | **178** | boss | 2 phases |
 
 ### Dust Bunny — 20
 | Move | Intent | Numbers | Notes |
@@ -120,22 +130,22 @@ second Momentum. The player should feel clever, not merely alive.
 It never prevents the action. "You may do this, but something will happen." Directly
 foreshadows The Butler.
 
-### Big Scare: The Grand Coatcheck — 96
+### Big Scare: The Grand Coatcheck — 115
 Cycles three Garments: **Raincoat** (10 Guard at the start of its turn), **Evening Coat**
 (+4 damage per hit), **Mourning Coat** (first time you damage it each turn, gain 1 Clutter).
 
 | Move | Intent | Numbers |
 |---|---|---|
 | Check Your Things | defend | 8 Guard, change Garment |
-| Umbrella Sweep | attack **dyn** | 11 (15 in Evening Coat) |
+| Umbrella Sweep | attack **dyn** | 13 (17 in Evening Coat) |
 | Hanger Flurry | attack **dyn** | 4×3 (8×3 in Evening Coat) |
-| Everything at Once | attackBig **dyn** | 15 (19 in Evening Coat), then change Garment |
+| Everything at Once | attackBig **dyn** | 17 (21 in Evening Coat), then change Garment |
 
-**Pattern:** Check → Sweep → Flurry → Check → Everything at Once.
+**Pattern:** Check → Sweep → Flurry → Everything at Once.
 **Snag:** deal 18+ in one player turn and the active Garment's passive switches off until
 it changes. Aggressive decks can shut the gimmick down; slow decks play around it.
 
-### Big Scare: The Unwelcome Guest — 91
+### Big Scare: The Unwelcome Guest — 142
 **Familiarity:** at the end of each player turn it notes which Trick type you used most
 (ties favour the last played). That type is Familiar next turn. First Familiar Trick is
 free; the second gives it 6 Guard; the third hits you for 7 (10 after Come In, Then).
@@ -143,29 +153,29 @@ free; the second gives it 6 Guard; the third hits you for 7 (10 after Come In, T
 | Move | Intent | Numbers |
 |---|---|---|
 | Watching | defend | 8 Guard |
-| Too Familiar | attack / attackBig **dyn** | `9 + 3×(Familiar Tricks this turn)`, cap **15** |
-| Wrong Face | attack | 6×2 |
+| Too Familiar | attack / attackBig **dyn** | `13 + 3×(Familiar Tricks this turn)`, cap **20** |
+| Wrong Face | attack | 9×2 |
 | Come In, Then | defend | 12 Guard, next Familiarity reaction deals 10 |
 
-**Pattern:** Watching → Too Familiar → Wrong Face → Come In, Then → Too Familiar.
-**The read:** Too Familiar's number climbs 9 → 12 → 15 *as you play*, in front of you. It
+**Pattern:** Watching → Too Familiar → Wrong Face → Come In, Then → Too Familiar → Wrong Face.
+**The read:** Too Familiar's number climbs 13 → 16 → 19 *as you play*, in front of you. It
 never says "do not play Skills"; it says "not three of them again this turn."
 
 ### Big Scare: The House Bell — 105
-**Resonance** 0–4. Every ring adds 1. At 4 its next action is MIDNIGHT TOLL, visible a
+**Resonance** 0–4. Every *ring* adds 1 — Deep Vibration does not (balance, 2026-08-20). At 4 its next action is MIDNIGHT TOLL, visible a
 full turn ahead. Killing a Bell-summoned enemy reduces Resonance by 1.
 
 | Move | Intent | Numbers |
 |---|---|---|
-| Ring for Service | summon | +1 Resonance, summon Dust Bunny (or 8 Guard to all if 2 others exist) |
-| Deep Vibration | attack | 7, +1 Resonance |
+| Ring for Service | summon | +1 Resonance, summon Dust Bunny at 60% Courage (or 8 Guard to all if 2 others exist) |
+| Deep Vibration | attack | 7 |
 | Second Ring | summon | +1 Resonance, summon Coatrack Crawler at 60% (or 8 Guard to all) |
 | MIDNIGHT TOLL | attackBig | **20**, clears Resonance |
 
 **Pattern:** Ring → Deep Vibration → Second Ring → Deep Vibration → Toll (if at 4).
 **The question:** race the Bell, or farm its summons to keep pushing the Toll away?
 
-### Boss: The Butler — 250, two phases
+### Boss: The Butler — 178, two phases
 
 **House Rules.** At the start of a player turn he announces his rules. Rules never
 prohibit; they attach a consequence. He never announces the same rule set twice running.
@@ -186,8 +196,8 @@ change that matters, and it inverts the read rather than swapping a move list:
 |---|---|---|
 | GUESTS DO NOT RUSH | playing a 4th Trick this turn | 6 → **8** damage |
 | GUESTS WAIT THEIR TURN | two Tricks of the same type in a row | 8 → **10** Guard to him |
-| GUESTS DO NOT CLUTTER THE HALL | ending the turn with 18+ Guard | 10 → **12** Guard to him |
-| GUESTS DO NOT ROUGHHOUSE | dealing 20+ damage in a turn | his next attack +5 → **+7** |
+| GUESTS DO NOT CLUTTER THE HALL | ending the turn with 12+ Guard | 10 → **12** Guard to him |
+| GUESTS DO NOT ROUGHHOUSE | dealing 15+ damage in a turn | his next attack +5 → **+7** (spread across its hits, not per hit) |
 
 **Flustered / Discomposed.** Each break gives 1 Flustered. At 3 (**2 in phase two**) he
 loses all Flustered and becomes Discomposed: takes **+25% damage**, cannot enforce a rule,
@@ -195,7 +205,7 @@ and his next action is wasted on Collect Himself (12 Guard, nothing else).
 **This is the boss.** Breaking rules is a strategic option, not a failure — the player can
 deliberately irritate him into an offensive window.
 
-**Phase 1 (250 → 141)**
+**Phase 1 (178 → 101)**
 
 | Move | Intent | Numbers |
 |---|---|---|
@@ -207,10 +217,10 @@ deliberately irritate him into an offensive window.
 Sequence: Formal Welcome → Walking Stick → then repeating **Dust Them Off → Service,
 Please → Walking Stick**.
 
-**Transition at ≤140:** *This Is Most Irregular* — 16 Guard, dismisses every summoned
+**Transition at ≤100:** *This Is Most Irregular* — 16 Guard, dismisses every summoned
 ordinary enemy, keeps his own debuffs. Jacket open, hair loose, posture going.
 
-**Phase 2 (140 → 0)**
+**Phase 2 (100 → 0)**
 
 | Move | Intent | Numbers |
 |---|---|---|
@@ -231,7 +241,7 @@ repeating. House Rules continue throughout, announced each player turn.
 | 4 | early | Lost Luggage | 30 | mild deck interference |
 | 5 | standard | Dust Bunny + Calling Bell | 38 | the Bell accelerates the Bunny |
 | 6 | standard | Coatrack Crawler + Dust Bunny | 53 | disrupt Brace or deny Dust? |
-| 7 | standard | Lost Luggage + Dust Bunny | 50 | interference vs escalation |
+| 7 | **early** | Lost Luggage + Dust Bunny | 50 | interference vs escalation |
 | 8 | standard | Door Greeter + Dust Bunny | 49 | the rule fights your tempo |
 | 9 | advanced | Coatrack Crawler + Calling Bell | 51 | Roused makes the Jab far worse |
 | 10 | advanced | Lost Luggage + Door Greeter | 59 | worse hand, and pressure not to dump it |
@@ -239,8 +249,8 @@ repeating. House Rules continue throughout, announced each player turn.
 | 12 | advanced | Red Carpet Runner + Dust Bunny | 63 | split your damage budget |
 | 13 | advanced | Coatrack Crawler + Lost Luggage | 63 | slow attrition |
 | 14 | advanced | Door Greeter + Dust Bunny + Calling Bell | 67 | the region's hardest normal fight |
-| — | elite | Grand Coatcheck / Unwelcome Guest / House Bell | 96 / 91 / 105 | |
-| — | boss | The Butler | 250 | |
+| — | elite | Grand Coatcheck / Unwelcome Guest / House Bell | 115 / 142 / 105 | |
+| — | boss | The Butler | 178 | |
 
 **Selection rules (enforced in code):** the first Scuffle contains no Door Greeter,
 Calling Bell or Red Carpet Runner; Red Carpet Runner cannot appear before the 3rd Scuffle;

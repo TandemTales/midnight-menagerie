@@ -452,6 +452,116 @@ async function main() {
   }
   say(`<pre class="ok">${resumeOk}/${resumeTried} resumed identically and were still playable</pre>`);
 
+  /* ── quitting mid-Scuffle ──────────────────────────────────────────────────
+     THE regression. Reloading during a fight used to hand the player the room:
+     the node came back marked visited, at full Courage, with no reward and no
+     damage — so any fight in the game, up to and including the Butler, could be
+     skipped by pressing F5.  What must be true after a reload:
+
+       · the node is NOT in visitedIds (it was entered, never cleared)
+       · there is no pendingReward
+       · Courage is what it was walking IN, never restored to full
+       · the run resumes INTO the fight — same node, same encounter
+       · the recorded actions replay onto the same board, or the identical
+         encounter restarts from the top; never a skip either way            */
+  say('<h2>quitting mid-Scuffle does not skip the fight</h2>');
+  let combatResume = 0, combatResumeTried = 0, replayed = 0;
+  for (const seed of [5150, 8128, 60613]) {
+    combatResumeTried++;
+    resetMeta();
+    const run = new Run({ companion: 'marmalade', kid: 'maya', seed });
+    const pick = run.fork('sim:path');
+
+    // walk until we are standing in a fight
+    let steps = 0;
+    while (!run.combat && steps++ < 12) {
+      const legal = run.legalNextIds();
+      if (!legal.length) break;
+      const ids = legal.filter(id => run.sceneFor(run.nodeById(id)) === 'combat');
+      await run.enterNode((ids.length ? ids : legal)[pick.int((ids.length ? ids : legal).length)]);
+      if (run.combat) break;
+      if (run.pendingReward) run.claimReward();
+      else run.leaveNode();
+      if (run.result) break;
+    }
+    if (!run.combat) { fail(`seed ${seed}: never reached a Scuffle to interrupt`); continue; }
+
+    const engine = run.combat;
+    const nodeId = run.currentNodeId;
+    const courageOnEntry = run.pendingCombat.courageOnEntry;
+    const encounter = run.pendingCombat.encounter;
+
+    check(!run.visitedIds.includes(nodeId),
+      `seed ${seed}: a Scuffle in progress is already marked cleared`);
+
+    // play part of a turn, take some damage, then "close the tab"
+    await engine.startCombat();
+    let played = 0;
+    for (const card of [...engine.piles.hand]) {
+      if (played >= 2 || engine.over) break;
+      const t = pickTarget(engine, card);
+      if (!engine.canPlay(card.uid, t).ok) continue;
+      await engine.playCard(card.uid, t);
+      played++;
+    }
+    if (!engine.over) await engine.endTurn();
+    if (engine.over) { fail(`seed ${seed}: the fight resolved before it could be interrupted`); continue; }
+    run._combatSave();
+
+    const boardBefore = run._combatDigest(engine);
+    const hpMidFight = engine.player.hp;
+    const deckBefore = run.deck.length;
+
+    // ── the reload ────────────────────────────────────────────────────────
+    const saved = JSON.parse(JSON.stringify(Save.loadRun()));
+    check(!!saved.pendingCombat, `seed ${seed}: the save does not know a fight was in progress`);
+    check(!(saved.visitedIds || []).includes(nodeId),
+      `seed ${seed}: the save marks the unfinished Scuffle's node as visited`);
+    check(!saved.pendingReward, `seed ${seed}: the save carries a reward for a fight nobody won`);
+    check(saved.scene === 'combat',
+      `seed ${seed}: Continue would land on "${saved.scene}", not back in the fight`);
+
+    const back = Run.resume(saved);
+    if (!back) { fail(`seed ${seed}: Run.resume returned null mid-combat`); continue; }
+
+    check(back.currentNodeId === nodeId, `seed ${seed}: resumed standing somewhere else`);
+    check(!back.visitedIds.includes(nodeId),
+      `seed ${seed}: THE BUG — the unfinished room came back cleared`);
+    check(!back.pendingReward, `seed ${seed}: THE BUG — a reward was granted for an unfought fight`);
+    check(back.resumeScene() === 'combat',
+      `seed ${seed}: resumeScene() says "${back.resumeScene()}", not combat`);
+    check(back.deck.length === deckBefore, `seed ${seed}: the deck changed across the reload`);
+
+    const mode = await back.restoreInterruptedCombat();
+    check(mode === 'replay' || mode === 'restart',
+      `seed ${seed}: restoreInterruptedCombat() returned ${mode}`);
+    check(!!back.combat, `seed ${seed}: resumed without an engine — the fight is gone`);
+    check(back.combatMeta.encounter === encounter,
+      `seed ${seed}: came back to a different encounter (${back.combatMeta.encounter} vs ${encounter})`);
+    check(!back.visitedIds.includes(nodeId),
+      `seed ${seed}: restoring the fight cleared the node`);
+    check(!back.pendingReward, `seed ${seed}: restoring the fight granted a reward`);
+
+    if (mode === 'replay') {
+      replayed++;
+      check(back._combatDigest(back.combat) === boardBefore,
+        `seed ${seed}: the replayed board is not the board that was left`);
+      check(back.combat.player.hp === hpMidFight,
+        `seed ${seed}: replayed to ${back.combat.player.hp} Courage, left at ${hpMidFight}`);
+    } else {
+      check(back.courage === courageOnEntry,
+        `seed ${seed}: restarted at ${back.courage} Courage, walked in with ${courageOnEntry}`);
+      check(back.combat.player.hp === courageOnEntry,
+        `seed ${seed}: the restarted fight did not start at the entry Courage`);
+    }
+    // Either way the fight is still ahead of the player, not behind them.
+    check(back.combat.player.hp <= courageOnEntry,
+      `seed ${seed}: THE BUG — resumed with more Courage than the room was entered with`);
+    combatResume++;
+  }
+  say(`<pre class="ok">${combatResume}/${combatResumeTried} interrupted Scuffles resumed`
+    + ` (${replayed} replayed onto the exact board, ${combatResume - replayed} restarted)</pre>`);
+
   // ── the real localStorage seam, three short runs ─────────────────────────
   say('<h2>real Save / localStorage seam</h2>');
   useRealSave();
@@ -518,6 +628,7 @@ autosaves ${saveCount}</pre>`);
     ms, meanRooms: +avg.toFixed(1), ends,
     lengths, decks, purses, keeps, saveCount,
     determinism: detOk, resume: resumeOk, storage: storeOk,
+    combatResume: combatResume, combatResumeTried: combatResumeTried, replayed,
   };
 }
 

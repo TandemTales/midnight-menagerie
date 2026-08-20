@@ -106,7 +106,7 @@ export function restChoice(run) {
   if (!upgradeable.length) return { kind: 'rest' };
   const rowsLeft = (run.map?.rows ?? 13) - 1 - (run.currentNode?.row ?? 0);
   if (rowsLeft <= 3 && frac < 0.9) return { kind: 'rest' };
-  if (frac < 0.62) return { kind: 'rest' };
+  if (frac < 0.7) return { kind: 'rest' };
   return { kind: 'upgrade' };
 }
 
@@ -165,7 +165,7 @@ export function pickNode(run, candidates, { greedElites = true } = {}) {
       case NodeType.SAFE: return deep ? 400 : (frac < 0.75 ? 100 : 40);
       case NodeType.TREASURE: return 70;
       case NodeType.SHOP: return run.lostThings > 130 ? 65 : 30;
-      case NodeType.BIG_SCARE: return (greedElites && frac > 0.7 && !deep) ? 55 : -40;
+      case NodeType.BIG_SCARE: return (greedElites && frac > 0.82 && !deep) ? 55 : -40;
       case NodeType.CURIOSITY: return deep ? 55 : 45;
       case NodeType.UNKNOWN: return 42;
       case NodeType.RESCUE: return 60;

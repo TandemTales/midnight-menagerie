@@ -441,7 +441,11 @@ export const grandCoatcheck = {
   region: REGION,
   tier: 'elite',
   role: 'bigScare',
-  hp: [96, 96],
+  // BALANCE 2026-08-20: 96 -> 115. At 96 a competent player finished it in 6.3
+  // turns, which is a long Scuffle, not a Big Scare; StS elites run 8-12. 122
+  // overshot hard (43% for a competent player, and the naive bot within ten
+  // points of it, which means the fight had stopped rewarding play at all).
+  hp: [115, 115],
   silhouette: 'coat-rack-mass',
   palette: ['#2f2a3a', '#6a5f7d', '#c4b48c'],
   shape: { body: 'sprawling', limbs: 8, eyes: 3 },
@@ -489,10 +493,11 @@ export const grandCoatcheck = {
       effect(c) { c.block(c.self, 8); grandCoatcheck.changeGarment(c); },
     },
     'umbrella-sweep': {
-      id: 'umbrella-sweep', name: 'Umbrella Sweep', intent: Intent.ATTACK, damage: 11, hits: 1,
+      // BALANCE 2026-08-20: 11 -> 13.
+      id: 'umbrella-sweep', name: 'Umbrella Sweep', intent: Intent.ATTACK, damage: 13, hits: 1,
       tell: 'A dozen umbrellas open at once and swing in a single wide arc.',
-      damageFn: (c) => 11 + grandCoatcheck.eveningBonus(c),
-      effect(c) { hitPlayer(c, 11 + grandCoatcheck.eveningBonus(c)); },
+      damageFn: (c) => 13 + grandCoatcheck.eveningBonus(c),
+      effect(c) { hitPlayer(c, 13 + grandCoatcheck.eveningBonus(c)); },
     },
     'hanger-flurry': {
       id: 'hanger-flurry', name: 'Hanger Flurry', intent: Intent.ATTACK, damage: 4, hits: 3,
@@ -502,18 +507,33 @@ export const grandCoatcheck = {
       effect(c) { hitPlayer(c, 4 + grandCoatcheck.eveningBonus(c), 3); },
     },
     'everything-at-once': {
-      id: 'everything-at-once', name: 'Everything at Once', intent: Intent.ATTACK_BIG, damage: 15, hits: 1,
+      // BALANCE 2026-08-20: 15 -> 17. Its one big telegraph has to be bigger
+      // than a turn of Guard or the whole "accept the Garment or spend 18 to
+      // Snag it" decision never has to be made.
+      id: 'everything-at-once', name: 'Everything at Once', intent: Intent.ATTACK_BIG, damage: 17, hits: 1,
       tell: 'Coats, hats, scarves and cases all lean toward you together.',
-      damageFn: (c) => 15 + grandCoatcheck.eveningBonus(c),
+      damageFn: (c) => 17 + grandCoatcheck.eveningBonus(c),
       effect(c) {
-        hitPlayer(c, 15 + grandCoatcheck.eveningBonus(c));
+        hitPlayer(c, 17 + grandCoatcheck.eveningBonus(c));
         grandCoatcheck.changeGarment(c);
       },
     },
   },
 
+  /**
+   * BALANCE 2026-08-20: one Check Your Things per cycle, not two.
+   *
+   * Measured at 96.7% for a competent player and 22.9 Courage — a Big Scare
+   * that costs less than two Scuffles. The numbers were not the problem: two of
+   * its five turns dealt zero, so its average output was 7.6 a turn against a
+   * player who can raise 10-15 Guard, and a solo enemy that cannot out-damage
+   * one turn of Guard is free however much Courage it has. Dropping the second
+   * Check takes it to 9.5 a turn and one blank turn in four, and the Garments
+   * now rotate twice a cycle rather than twice every five turns, which makes
+   * the read it is built around come round often enough to matter.
+   */
   nextMove: (c) => cyc(
-    ['check-your-things', 'umbrella-sweep', 'hanger-flurry', 'check-your-things', 'everything-at-once'],
+    ['check-your-things', 'umbrella-sweep', 'hanger-flurry', 'everything-at-once'],
     (c.history || []).length,
   ),
 
@@ -545,7 +565,13 @@ export const unwelcomeGuest = {
   region: REGION,
   tier: 'elite',
   role: 'bigScare',
-  hp: [91, 91],
+  // BALANCE 2026-08-20: 91 -> 142. It was the softest thing in the region by a
+  // distance — 100% for a competent player and 12.6 Courage, a fifth of what
+  // the House Bell cost for the same Big Scare reward — and 72% of everything
+  // it threw was being absorbed, so raising per-hit numbers alone could not
+  // reach the player. The extra Courage is what turns those numbers into a
+  // bill: the fight now runs ~10 turns instead of ~7.
+  hp: [142, 142],
   silhouette: 'faceless-guest',
   palette: ['#1f2430', '#4a5468', '#e8e3d6'],
   shape: { body: 'tall-thin', limbs: 2, eyes: 0 },
@@ -598,21 +624,21 @@ export const unwelcomeGuest = {
       effect(c) { c.block(c.self, 8); },
     },
     'too-familiar': {
-      id: 'too-familiar', name: 'Too Familiar', intent: Intent.ATTACK, damage: 9, hits: 1,
+      id: 'too-familiar', name: 'Too Familiar', intent: Intent.ATTACK, damage: 13, hits: 1,
       tell: 'It has seen you do that before. It has seen you do that a great many times.',
       // The intent counts Familiar Tricks live, against the type that is Familiar RIGHT NOW.
       // By the time the move resolves, onPlayerTurnEnd has already rotated `familiar` to
       // next turn's type — so the effect must use the count latched at turn end, not a
       // fresh live count against the new type. Reading it live here made Too Familiar
       // deal 15 while its intent promised 12.
-      damageFn: (c) => Math.min(15, 9 + 3 * unwelcomeGuest.familiarPlayedThisTurn(c)),
+      damageFn: (c) => Math.min(20, 13 + 3 * unwelcomeGuest.familiarPlayedThisTurn(c)),
       intentFn: (c) => (unwelcomeGuest.familiarPlayedThisTurn(c) >= 2 ? Intent.ATTACK_BIG : Intent.ATTACK),
-      effect(c) { hitPlayer(c, Math.min(15, 9 + 3 * (mem(c).familiarPlayed || 0))); },
+      effect(c) { hitPlayer(c, Math.min(20, 13 + 3 * (mem(c).familiarPlayed || 0))); },
     },
     'wrong-face': {
-      id: 'wrong-face', name: 'Wrong Face', intent: Intent.ATTACK, damage: 6, hits: 2,
+      id: 'wrong-face', name: 'Wrong Face', intent: Intent.ATTACK, damage: 9, hits: 2,
       tell: 'It turns toward you, and keeps turning.',
-      effect(c) { hitPlayer(c, 6, 2); },
+      effect(c) { hitPlayer(c, 9, 2); },
     },
     'come-in-then': {
       id: 'come-in-then', name: 'Come In, Then', intent: Intent.DEFEND, block: 12,
@@ -621,8 +647,20 @@ export const unwelcomeGuest = {
     },
   },
 
+  /**
+   * BALANCE 2026-08-20: Too Familiar 9->11 (cap 15->18), Wrong Face 6x2->8x2,
+   * and the repeating cycle no longer contains a second pure-defence turn.
+   *
+   * It was the softest thing in the region by a distance: 100% for a competent
+   * player, 80% for a naive one, and 12.6 Courage — a fifth of what the House
+   * Bell costs, for the same Big Scare reward. Two of its five turns did
+   * nothing but gain Guard, and the other three landed 12-ish into a player who
+   * blocks 10-15, so it took 1.55 Courage a turn off a competent player.
+   * Familiarity is a good mechanic attached to numbers too small to make
+   * anybody change what they were going to do anyway.
+   */
   nextMove: (c) => cyc(
-    ['watching', 'too-familiar', 'wrong-face', 'come-in-then', 'too-familiar'],
+    ['watching', 'too-familiar', 'wrong-face', 'come-in-then', 'too-familiar', 'wrong-face'],
     (c.history || []).length,
   ),
 
@@ -668,7 +706,12 @@ export const houseBell = {
     'ring-for-service': {
       id: 'ring-for-service', name: 'Ring for Service', intent: Intent.SUMMON,
       tell: 'One clear note. Somewhere below stairs, something puts down what it was doing.',
-      summons: [{ enemyId: 'dust-bunny' }],
+      // BALANCE 2026-08-20: the summoned Bunny arrives at 60% Courage, matching
+      // what Second Ring already does to its Crawler and what the Butler's
+      // Service, Please does. A full-Courage Dust Bunny that banks Dust while
+      // you are busy with the Bell projects up to 19 damage, which is most of
+      // where this fight's 57 Courage bill came from.
+      summons: [{ enemyId: 'dust-bunny', hpMul: 0.6 }],
       effect(c) {
         addCnt(c, 'resonance', 1, 4);
         if (allies(c).length >= 2) {
@@ -682,14 +725,27 @@ export const houseBell = {
           // refresh — see docs/NOTES.md.
           for (const a of allies(c)) c.block(a, 8);
         } else {
-          c.summon('dust-bunny', {});
+          c.summon('dust-bunny', { hpMul: 0.6 });
         }
       },
     },
     'deep-vibration': {
+      /**
+       * BALANCE 2026-08-20: no longer adds Resonance.
+       *
+       * "Every ring adds 1" is the rule the fight is sold on, and Deep
+       * Vibration is not a ring — but it added 1 anyway, so Resonance climbed
+       * on all four of its actions and MIDNIGHT TOLL landed every fourth turn
+       * no matter what the player did. Killing a summon gives -1, so denying
+       * the Toll required killing one add EVERY turn on top of racing 105
+       * Courage: the advertised lever ("race the Bell, or farm its summons to
+       * push the Toll away") could not actually be pulled. Now only the two
+       * Ring moves charge it, the Toll is roughly every eight turns, and one
+       * kill really does buy a turn.
+       */
       id: 'deep-vibration', name: 'Deep Vibration', intent: Intent.ATTACK, damage: 7, hits: 1,
       tell: 'The floor hums. Your teeth hum with it.',
-      effect(c) { hitPlayer(c, 7); addCnt(c, 'resonance', 1, 4); },
+      effect(c) { hitPlayer(c, 7); },
     },
     'second-ring': {
       id: 'second-ring', name: 'Second Ring', intent: Intent.SUMMON,

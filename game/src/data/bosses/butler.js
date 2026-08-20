@@ -10,9 +10,9 @@
  * That inversion is the whole boss. "Breaking rules is not simply failure. It is a
  * strategic option."
  *
- *   Phase 1  250 → 141   one rule at a time, never the same twice running.
- *   Transition at ≤140   This Is Most Irregular: 16 Guard, dismisses every summon.
- *   Phase 2  140 → 0     harsher Reprimands, but Discomposed at 2 Flustered, not 3.
+ *   Phase 1  178 → 101   one rule at a time, never the same twice running.
+ *   Transition at ≤100   This Is Most Irregular: 16 Guard, dismisses every summon.
+ *   Phase 2  100 → 0     harsher Reprimands, but Discomposed at 2 Flustered, not 3.
  */
 
 import { Intent } from '../schema.js';
@@ -21,7 +21,23 @@ import {
   hauntBase, flag, announce, isAlive, played,
 } from '../enemies/_lib.js';
 
-const PHASE2_AT = 140;
+/**
+ * BALANCE 2026-08-20: Courage 250 -> 178, phase two at 140 -> 100 (the same
+ * 56% of the pool).
+ *
+ * 250 was measured for the first time against a deck a player actually brings
+ * to this door — ~16 Tricks, one upgrade, five Keepsakes, arriving at a median
+ * 46 of 68 Courage. That deck puts out ~13 Courage a turn net of his Guard and
+ * takes ~4 a turn from him, so 250 needed 20+ turns and paid for 11. Both bots
+ * won 15% of the time; the brief asks for 8-12 turns and 45-65%.
+ *
+ * The Courage pool was the wrong number, not the damage: he is not dangerous,
+ * he is long. Sweeping the pool against captured pre-boss loadouts (48 fights
+ * per step, tests/critic-design/sweep.py) put the fight in the target band at
+ * 0.65x — 10.3 turns mean, 9 median, and 42% overall which is ~65% among the
+ * runs that arrive in reasonable shape. See docs/NOTES.md for the table.
+ */
+const PHASE2_AT = 100;
 
 // ── The four House Rules ─────────────────────────────────────────────────────
 /**
@@ -73,17 +89,38 @@ export const HOUSE_RULES = {
     broken: (rc) => (rc.playerBlock || 0) >= 12,
     onBreak: (c) => c.block(c.self, p2 ? 12 : 10),
   }),
+  /**
+   * NOTE for the combat-engine owner: `RuleCtx.damageDealtThisTurn` reads
+   * `engine.stats.damageDealtThisTurn`, which is declared in the constructor
+   * and zeroed in `_beginPlayerTurn` and **never incremented** — `damage.js`
+   * does not touch `engine.stats` at all. So this rule could not fire at any
+   * threshold; lowering 20 to 15 changed 0 breaks per fight into 0 breaks per
+   * fight. Until the stat is real, the Butler counts what is done to him
+   * himself, through his own `onDamaged` (see `roughhousingThisTurn`).
+   */
   'no-roughhousing': (p2) => ({
     id: 'no-roughhousing',
     name: 'GUESTS DO NOT ROUGHHOUSE',
     text: `Dealing 15 or more damage this turn breaks the rule. Reprimand: his next damaging attack deals ${p2 ? 7 : 5} more.`,
     when: 'turnEnd', once: true,
-    broken: (rc) => (rc.damageDealtThisTurn || 0) >= 15,
+    broken: (rc) => Math.max(roughhousingThisTurn(rc.e), rc.damageDealtThisTurn || 0) >= 15,
     onBreak: (c) => { mem(c).retaliation = (mem(c).retaliation || 0) + (p2 ? 7 : 5); },
   }),
 };
 
 const RULE_IDS = Object.keys(HOUSE_RULES);
+
+/**
+ * Damage the player has put into the Butler this player turn.
+ *
+ * Lives in `engine.field`, which the engine deep-clones for previews, so
+ * hovering a card can never bank Roughhousing. Keyed by turn so it resets
+ * without needing a turn hook.
+ */
+function roughhousingThisTurn(e) {
+  const r = e && e.field && e.field.butlerRoughhousing;
+  return (r && r.turn === e.turn) ? r.n : 0;
+}
 
 export const butler = {
   id: 'butler',
@@ -91,7 +128,7 @@ export const butler = {
   region: 'foyer',
   tier: 'boss',
   role: 'boss',
-  hp: [250, 250],
+  hp: [178, 178],
   silhouette: 'butler',
   palette: ['#14161d', '#2c3140', '#e9e4d4'],
   shape: { body: 'tall-thin', limbs: 2, eyes: 2 },
@@ -156,6 +193,16 @@ export const butler = {
   /** How many House Rules he is enforcing right now. Phase one 1, phase two 2. */
   standingRules(c) { return butler.phase(c) >= 2 ? 2 : 1; },
 
+  /** Count what the guest is doing to him, for GUESTS DO NOT ROUGHHOUSE. */
+  onDamaged(c) {
+    const info = c.info;
+    if (!info || info.attacker !== c.e.player) return;
+    const f = c.e.field;
+    const r = f.butlerRoughhousing;
+    const n = (r && r.turn === c.e.turn ? r.n : 0) + (info.amount || 0);
+    f.butlerRoughhousing = { turn: c.e.turn, n };
+  },
+
   /** Engine hook: any House Rule of his was broken this turn. */
   onRuleBroken(c) {
     const n = addCnt(c, 'flustered', 1, 9);
@@ -192,13 +239,29 @@ export const butler = {
     }
   },
 
-  /** Apply and clear the No Roughhousing retaliation rider. */
-  strike(c, dmg, hits = 1) {
+  /**
+   * Apply and clear the No Roughhousing retaliation rider.
+   *
+   * BALANCE 2026-08-20: the rider used to be added to **every hit**, so "his
+   * next damaging attack deals 5 more" was +10 on Dust Them Off (5×2) and +15
+   * on Remove the Intruder (7×3) — a telegraphed 21 arriving as 36. It never
+   * showed up before because the rule that arms it could not fire at all (see
+   * the note on `no-roughhousing`); the moment it could, the boss started
+   * one-shotting people. The rider is now spread across the hits, rounded up,
+   * so a 3-hit attack takes +6 rather than +15 — and, just as important, the
+   * per-hit number stays uniform so `damageFn × hitsFn` remains exactly what
+   * the player is about to take.
+   */
+  perHitBonus(c, hits = 1) {
     const bonus = mem(c).retaliation || 0;
-    mem(c).retaliation = 0;
-    hitPlayer(c, dmg + bonus, hits);
+    return bonus > 0 ? Math.ceil(bonus / Math.max(1, hits)) : 0;
   },
-  strikeDisplay(c, dmg) { return dmg + (mem(c).retaliation || 0); },
+  strike(c, dmg, hits = 1) {
+    const per = butler.perHitBonus(c, hits);
+    mem(c).retaliation = 0;
+    hitPlayer(c, dmg + per, hits);
+  },
+  strikeDisplay(c, dmg, hits = 1) { return dmg + butler.perHitBonus(c, hits); },
 
   moves: {
     // ── phase one ────────────────────────────────────────────────────────────
@@ -216,7 +279,7 @@ export const butler = {
     'dust-them-off': {
       id: 'dust-them-off', name: 'Dust Them Off', intent: Intent.ATTACK, damage: 5, hits: 2,
       tell: 'He produces a cloth and begins, briskly, to tidy you.',
-      damageFn: (c) => butler.strikeDisplay(c, 5),
+      damageFn: (c) => butler.strikeDisplay(c, 5, 2),
       hitsFn: () => 2,
       effect(c) { butler.strike(c, 5, 2); butler.announceNext(c); },
     },
@@ -269,7 +332,7 @@ export const butler = {
     'remove-the-intruder': {
       id: 'remove-the-intruder', name: 'Remove the Intruder', intent: Intent.ATTACK, damage: 7, hits: 3,
       tell: 'He takes hold of you the way one takes hold of a stray animal.',
-      damageFn: (c) => butler.strikeDisplay(c, 7),
+      damageFn: (c) => butler.strikeDisplay(c, 7, 3),
       hitsFn: () => 3,
       effect(c) { butler.strike(c, 7, 3); },
     },

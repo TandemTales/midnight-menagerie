@@ -24,6 +24,7 @@ const BOTS = (Q.get('bots') || 'competent').split(',');
 const POL = Q.get('pol') || 'balanced';
 const HAUNT = +(Q.get('haunt') || 0);
 const SEED0 = +(Q.get('seed') || 90000);
+const SCALE = +(Q.get('scale') || 1);
 
 const out = document.getElementById('out');
 const R = { config: { TIER, ENC, N, GEN, BOTS, POL, HAUNT }, loadouts: [], rows: {}, trace: null, errors: [] };
@@ -59,7 +60,7 @@ for (const bot of BOTS) {
     const tr = (i === 0) ? [] : null;
     try {
       rows.push(await bench({ loadout: l, encounterTier: TIER, encounterId: ENC,
-                              seed: 700000 + i * 13, bot, haunt: HAUNT, trace: tr, maxTurns: 120 }));
+                              seed: 700000 + i * 13, bot, haunt: HAUNT, trace: tr, maxTurns: 120, hpScale: SCALE }));
       if (tr) trace = tr;
     } catch (e) { R.errors.push(`${bot} ${i}: ` + (e.stack || e.message)); }
   }
@@ -98,6 +99,7 @@ for (const bot of BOTS) {
     })(),
     summonsPerFight: +(rows.reduce((s, r) => s + (r.summons || 0), 0) / rows.length).toFixed(2),
   };
+  if (trace) (R.traces || (R.traces = {}))[bot] = trace;
   if (bot === BOTS[BOTS.length - 1] && trace) R.trace = trace;
 }
 

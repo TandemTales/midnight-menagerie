@@ -87,7 +87,7 @@ for key, S in res["cells"].items():
     lg = S.get("ledger", {})
     print(f"  Courage ledger/run: scuffles -{lg.get('scuffle')}  elites -{lg.get('elite')}  "
           f"boss -{lg.get('boss')}  events -{lg.get('event')}  hazards -{lg.get('hazard')}  "
-          f"| rests +{lg.get('rested')} ({lg.get('rests')}x)  other heals +{lg.get('healed')}")
+          f"| rests +{lg.get('rested')} ({lg.get('rests')}x)  in-combat +{lg.get('combatHeal')}  events +{lg.get('healed')}")
     print(f"  rooms/run: {S.get('visited')}")
     print(line("Courage at boss door", S.get("courageAtBoss")))
     print(line("  ... as % of max", S.get("courageAtBossPct")))

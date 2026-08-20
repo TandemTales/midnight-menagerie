@@ -24,8 +24,9 @@ import { makeDummyCombat } from '../combat/dummy.js';
 import { previewIncoming } from '../combat/preview.js';
 import { Intent, TERMS } from '../data/schema.js';
 import { Hand } from '../ui/hand.js';
-import { CardView } from '../ui/card.js';
-import { EnemyView } from '../ui/enemy.js';
+import { CardView, ART_W, ART_H, CARD_SS } from '../ui/card.js';
+import { warmArt } from '../ui/cardart.js';
+import { EnemyView, statusGlyph } from '../ui/enemy.js';
 import { CombatFX } from '../fx/combatfx.js';
 import { HUD } from '../ui/hud.js';
 import { openPile } from '../ui/deckview.js';
@@ -35,24 +36,47 @@ const CARD_CSS = new URL('../ui/card.css', import.meta.url).href;
 const HAND_CSS = new URL('../ui/hand.css', import.meta.url).href;
 const PORTRAITS = new URL('../../assets/portraits/', import.meta.url).href;
 
-/* ── status glyphs: one distinct silhouette each, on a 24x24 box ───────────── */
-const SG = {
-  strength: 'M12 2 L15 8 L21 9 L16.5 13.5 L18 20 L12 17 L6 20 L7.5 13.5 L3 9 L9 8 Z',
-  dexterity: 'M4 20 L10 4 L14 4 L20 20 L16 20 L14.6 16 L9.4 16 L8 20 Z M10.6 12 L13.4 12 L12 7.6 Z',
-  focus: 'M12 3 A9 9 0 1 1 11.9 3 Z M12 8 A4 4 0 1 0 12.1 8 Z',
-  regen: 'M12 21 C6 16 3 12.5 3 9 A4.6 4.6 0 0 1 12 7 A4.6 4.6 0 0 1 21 9 C21 12.5 18 16 12 21 Z',
-  bristle: 'M12 2 L14 9 L21 8 L16 13 L21 19 L13 17 L12 22 L11 17 L3 19 L8 13 L3 8 L10 9 Z',
-  faint: 'M12 2 C7 6 5 9 5 13 A7 7 0 0 0 19 13 C19 9 17 6 12 2 Z M12 7 C9 10 8.5 11.5 8.5 13 A3.5 3.5 0 0 0 15.5 13 C15.5 11.5 15 10 12 7 Z',
-  charm: 'M12 2 L20 5.5 C20 13 16.5 18.5 12 21 C7.5 18.5 4 13 4 5.5 Z',
-  weak: 'M4 6 L20 6 L20 9 L14 9 L14 20 L10 20 L10 9 L4 9 Z',
-  vulnerable: 'M12 3 L22 21 L2 21 Z M11 9 H13 V15 H11 Z M11 17 H13 V19 H11 Z',
-  frail: 'M6 3 L18 3 L18 8 L13 12 L18 16 L18 21 L6 21 L6 16 L11 12 L6 8 Z',
-  dread: 'M12 2 C7 2 4 5.5 4 10 C4 13 5.5 15 7 16.5 L7 20 H17 L17 16.5 C18.5 15 20 13 20 10 C20 5.5 17 2 12 2 Z M9 9.5 A1.8 1.8 0 1 1 8.9 9.5 Z M15 9.5 A1.8 1.8 0 1 1 14.9 9.5 Z',
-  confusion: 'M9 8 C9 5 10.5 3.5 12.5 3.5 C14.8 3.5 16 5 16 7 C16 9.5 13.5 10 13 12 L11 12 C11 9.5 14 8.8 14 7 C14 6 13.5 5.4 12.5 5.4 C11.4 5.4 11 6.3 11 8 Z M11 15 H13 V17.4 H11 Z',
-  entangle: 'M5 4 C13 6 11 12 5 14 M19 4 C11 6 13 12 19 14 M5 20 H19',
-  roused: 'M12 2 L14.5 9 L22 9 L16 13.5 L18 21 L12 16.6 L6 21 L8 13.5 L2 9 L9.5 9 Z',
-};
-const SG_STROKE = new Set(['entangle']);
+/* ─────────────────────────────────────────────────────────────────────────────
+ * WHICH ROOM ARE WE IN?
+ *
+ * `atmosphere.setMood(region)` and nothing else meant the Formal Dining Room,
+ * the Music Room, East Landing, the Grand Coatcheck's Big Scare and The Butler
+ * all played in one identical warm gallery. The map names 13 rooms per region
+ * and promises 13 places.
+ *
+ * The atmosphere layer is data-driven and owns seventeen fully authored rooms
+ * (geometry, camera, palette, props, shafts, particles). It does not yet expose
+ * a per-ROOM variation hook — see docs/NOTES.md for the precise ask. What it
+ * DOES expose is `setMood(name)`, so a room picks the authored space it most
+ * honestly is: the Music Room plays in the ballroom, the Formal Dining Room in
+ * the kitchens' long service space, East Landing in the passages.
+ *
+ * Matched on `node.roomName` (state/mapgen.js authors all 340). First hit wins,
+ * and anything unmatched falls back to the region — never worse than before.
+ */
+const ROOM_MOOD = [
+  [/ballroom|music|dance|salon|revels|velvet|mask room|supper room/i, 'ballroom'],
+  [/dining|breakfast|refreshment|pantry|kitchen|scullery|larder|milk|flour|spice|pastry|bottle|dish/i, 'kitchens'],
+  [/librar|study|book|read|archive|scribe|map room|writing|portrait|globe|curiosit|reference|newspaper|letter/i, 'study'],
+  [/nurser|playroom|toy|doll|cradle|schoolroom|story|rocking|music box|blanket/i, 'nursery'],
+  [/bedroom|bedchamber|sleep|dressing|canopy|box room|underbed|guest suite|guest hall/i, 'sleeping'],
+  [/attic|loft|trunk|observator|telescope|star|moon dome|astronom|weather/i, 'attic'],
+  [/lamp|candle|wax|lantern|sconce|wick|boiler|chimney|gas valve|match safe|reflector|glow/i, 'lampworks'],
+  [/crypt|vault|coffin|burial|ossuar|tomb|name vault/i, 'crypt'],
+  [/greenhouse|conservator|potting|moss|cactus|seed|garden|mushroom|compost|leaf/i, 'greenhouse'],
+  [/bath|wash|steam|sauna|shower|cistern|pump|pipe|towel|locker|drying/i, 'bathhouse'],
+  [/kennel|animal|dog|cat room|groom|feed|collar|treat|veterinar|quarantine/i, 'kennels'],
+  [/hedge|maze|terrace|court|grounds|pumpkin|balcony|fountain/i, 'hedge'],
+  [/grave|mausoleum|memorial|headstone/i, 'graveyard'],
+  [/passage|crawlspace|junction|behind the|catwalk|landing|corridor|stair|walk|arcade|gallery|hall/i, 'passages'],
+];
+
+/** The atmosphere region a node should actually play in. */
+function moodForRoom(roomName, region) {
+  const n = String(roomName || '');
+  if (n) for (const [re, key] of ROOM_MOOD) if (re.test(n)) return key;
+  return region || 'foyer';
+}
 
 export class CombatScene extends Scene {
   constructor(ctx) {
@@ -64,6 +88,8 @@ export class CombatScene extends Scene {
     this._shake = { mag: 0, ph: 0 };
     this._pt = { x: 0, y: 0 };
     this._rules = new Map();       // ruleId -> { id, name, text, sourceId }
+    this._opening = true;          // see _o(): set-up beats are not play beats
+    this._tipOffs = [];            // tooltip.attach() unsubscribes
   }
 
   /* ══ boot ═══════════════════════════════════════════════════════════════ */
@@ -77,6 +103,7 @@ export class CombatScene extends Scene {
 
     this.fx = new CombatFX(ctx, this.root);
     this.engine = await this._makeEngine(params);
+    this._readRoom(params);
     this._buildHud();
     this._wireEngine();
     this._buildEnemies();
@@ -88,16 +115,122 @@ export class CombatScene extends Scene {
        rather than trusting that whatever came before unpaused on its way out. */
     try { ctx.stage?.setPaused?.(false); } catch { /* no stage */ }
 
-    ctx.atmosphere?.setMood?.(this.region || 'foyer');
-    ctx.audio?.music?.('combat');
+    // THE ROOM, not "the region". See ROOM_MOOD at the top of this file.
+    ctx.atmosphere?.setMood?.(this.mood || this.region || 'foyer');
+    ctx.audio?.music?.(this.arena === 'boss' ? 'boss' : 'combat');
+
+    /* ── the warm-up that never ran ─────────────────────────────────────────
+       `ui/cardart.js#warmArt` and `ui/hand.js#warmRaster` were both written for
+       exactly this moment and NO scene in the build ever called either of them.
+       Measured cost of not calling them: the first `Hand.draw` of five cards
+       took 716 ms of synchronous canvas painting inside the frame that starts
+       the draw animation. Both are chunked and off the critical path, and both
+       finish long before the first card is dealt (~1 s later). */
+    this._warmDeck();
 
     this._offFrame = ctx.clock.onFrame((dt, t) => this._frame(dt, t));
     this._ro = new ResizeObserver(() => { this.fx?.resize(); this._layoutEnemies(); });
     this._ro.observe(this.root);
 
     this._syncAll();
+    if (this.arena === 'boss' || this.arena === 'elite') await this._arenaEntrance();
     await this.engine.startCombat();
     await this._settle();
+    this._opening = false;
+    // The keyboard path starts IN the hand. CONTRACTS §6 wants a keyboard route
+    // to every action and `ui/hand.js` already implements the whole thing
+    // (1-9 select, arrows, Enter to play, Tab to cycle targets, Esc to cancel);
+    // round 1 simply never handed it focus, so Tab from a blurred start never
+    // left BODY. `focusHand` is bound to Tab in `_bindUi`; the scene does NOT
+    // grab focus on entry, because auto-lifting a card for a mouse player who
+    // never touched the keyboard is worse than the problem it solves.
+  }
+
+  /**
+   * Which room is this, and how should it be framed?
+   *   `mood`  — the authored atmosphere space this room plays in
+   *   `arena` — 'normal' | 'elite' | 'boss', which drives the whole stage
+   */
+  _readRoom(params) {
+    const run = this.ctx.run;
+    const node = run && run.currentNode ? run.currentNode : null;
+    const meta = run ? run.combatMeta : null;
+    this.roomName = (node && node.roomName) || params.room || '';
+    this.roomTag = (node && node.roomTag) || '';
+
+    const tier = (meta && meta.tier) || params.tier
+      || (this.engine.enemies || []).reduce(
+        (t, e) => (e.tier === 'boss' ? 'boss' : t === 'boss' ? t : e.tier === 'elite' ? 'elite' : t), 'standard');
+    this.arena = tier === 'boss' ? 'boss' : tier === 'elite' ? 'elite' : 'normal';
+    this.mood = moodForRoom(this.roomName, this.region);
+
+    this.root.dataset.arena = this.arena;
+    this.root.dataset.mood = this.mood;
+    if (this.roomName) this.$room.textContent = this.roomName;
+    this.$room.hidden = !this.roomName;
+  }
+
+  /** Pre-render every CardDef that can reach the hand this fight. */
+  _warmDeck() {
+    const defs = [];
+    const seen = new Set();
+    const piles = this.engine.piles || {};
+    for (const key of ['draw', 'hand', 'discard', 'exhaust']) {
+      for (const c of piles[key] || []) {
+        const def = c.def || c;
+        if (def && def.id && !seen.has(def.id)) { seen.add(def.id); defs.push(def); }
+      }
+    }
+    if (!defs.length) return;
+    try {
+      warmArt(defs, ART_W * CARD_SS, ART_H * CARD_SS, { upgraded: 'both' }).catch(() => {});
+      this.hand.warmRaster(defs, 6).catch(() => {});
+    } catch (e) { console.error('[combat] warm', e); }
+  }
+
+  /**
+   * A Big Scare or a boss gets an ARENA and an ENTRANCE.
+   * STS2-REFERENCE §4: StS2 aims "epic rather than intimate" — a boss should be
+   * big, get an entrance, and own the frame. Round 1 gave The Butler, the
+   * 250-Courage region boss, the same warm gallery and the same trash-mob scale
+   * as a Dust Bunny.
+   */
+  async _arenaEntrance() {
+    const boss = this.arena === 'boss';
+    this.ctx.atmosphere?.dread?.(boss ? 0.55 : 0.3, 0.5);
+    this.$cb.classList.add('is-arena-in');
+    const big = [...this.views.values()].filter(v => v.tier === 'boss' || v.tier === 'elite');
+    const named = big[0] || [...this.views.values()][0];
+    if (named) {
+      this._banner(named.name, boss ? 'boss' : 'elite', boss ? 2.0 : 1.4);
+      this.ctx.audio?.stinger?.(boss ? 'sting:boss' : 'sting:elite');
+    }
+    this.ctx.atmosphere?.pulse?.(boss ? 0xf26d78 : 0xffb64a, 0.18, 0.7);
+    await Promise.all(big.map(v => v.enterArena({ big: boss })));
+    if (boss && !this.reduceMotion) {
+      this._addShake(0.9);
+      this.ctx.atmosphere?.impact?.(this._viewportPoint(named), { strength: 1.2, color: 0xf26d78, shake: false });
+    }
+    this.ctx.atmosphere?.dread?.(boss ? 0.22 : 0.12, 0.8);
+    this.$cb.classList.remove('is-arena-in');
+    this.$cb.classList.add('is-arena');
+  }
+
+  _viewportPoint(v) {
+    if (!v) return { x: innerWidth / 2, y: innerHeight / 2 };
+    const c = v.centre();
+    return { x: c.x, y: c.y };
+  }
+
+  /**
+   * Hand the keyboard to the Hand. `ui/hand.js` is the single Tab stop for the
+   * whole hand and auto-selects the middle card on focusin.
+   */
+  focusHand() {
+    const el = this.hand && this.hand.el;
+    if (!el || !el.isConnected) return false;
+    el.focus({ preventScroll: true });
+    return document.activeElement === el || el.contains(document.activeElement);
   }
 
   _readSettings() {
@@ -110,6 +243,19 @@ export class CombatScene extends Scene {
   }
   /** Every animation duration passes through here. One switch for reduceMotion. */
   _d(sec) { return this.reduceMotion ? 0.001 : sec / this.speed; }
+
+  /**
+   * An OPENING duration. Everything the engine emits between `startCombat()`
+   * and the first player turn is set-up, not play: statuses the encounter
+   * builder applied, the opening shuffle, the first intent roll. Round 1 gave
+   * each of them its full ceremony and the player watched a near-black screen
+   * for 6-7 seconds before their first card existed (measured: combat:start
+   * 415 ms, two status words 235 ms, shuffle 166 ms, turn banner 233 ms).
+   *
+   * STS2-REFERENCE §8: "Nothing makes you wait." During the opening these
+   * collapse to a third; after it they are exactly `_d`.
+   */
+  _o(sec) { return this._opening ? this._d(sec * 0.34) : this._d(sec); }
 
   /* ── engine construction ─────────────────────────────────────────────── */
   async _makeEngine(params) {
@@ -223,8 +369,13 @@ export class CombatScene extends Scene {
         <header class="cb-top"></header>
 
         <div class="cb-field">
+          <div class="cb-arena" aria-hidden="true">
+            <div class="cb-arena__spot"></div>
+            <div class="cb-arena__floor"></div>
+          </div>
           <div class="cb-enemies" role="group" aria-label="Enemies"></div>
         </div>
+        <div class="cb-room" hidden></div>
 
         <section class="cb-player" aria-label="You">
           <div class="cb-player__figure">
@@ -238,12 +389,10 @@ export class CombatScene extends Scene {
           </div>
           <div class="cb-player__plate">
             <div class="cb-player__name"></div>
-            <div class="cb-hpbar" data-tip="${T.hp}|What is left of your nerve.|At zero the night is over." tabindex="0">
-              <div class="cb-hpbar__ghost"></div>
-              <div class="cb-hpbar__fill"></div>
-              <div class="cb-hpbar__incoming"></div>
-              <div class="cb-hpbar__txt"><b></b><span></span></div>
-            </div>
+            <!-- No Courage bar here: ui/hud.js owns exactly one, top-right,
+                 and two of the same number on one screen is a bug, not
+                 reassurance. What is NOT duplicated - how much of it you are
+                 about to lose - stays, and is the panel below. -->
             <div class="cb-incoming" hidden></div>
             <div class="cb-statuses" role="list" aria-label="Your conditions"></div>
           </div>
@@ -300,6 +449,7 @@ export class CombatScene extends Scene {
     this.$cb = $('.cb');
     this.$field = $('.cb-field');
     this.$enemies = $('.cb-enemies');
+    this.$room = $('.cb-room');
     this.$top = $('.cb-top');
     this.$pl = $('.cb-player');
     this.$plArt = $('.cb-player__art');
@@ -307,11 +457,6 @@ export class CombatScene extends Scene {
     this.$plFlash = $('.cb-player__flash');
     this.$plGuard = $('.cb-player__guard');
     this.$plGuardN = $('.cb-player__guard b');
-    this.$hpFill = $('.cb-hpbar__fill');
-    this.$hpGhost = $('.cb-hpbar__ghost');
-    this.$hpInc = $('.cb-hpbar__incoming');
-    this.$hpTxtN = $('.cb-hpbar__txt b');
-    this.$hpTxtM = $('.cb-hpbar__txt span');
     this.$inc = $('.cb-incoming');
     this.$statuses = $('.cb-statuses');
     this.$handHost = $('.cb-handhost');
@@ -386,12 +531,7 @@ export class CombatScene extends Scene {
       const v = new EnemyView(e, {
         clock: this.ctx.clock, reduceMotion: this.reduceMotion, def,
       });
-      v.el.addEventListener('pointerenter', () => this._enemyHover(v, true));
-      v.el.addEventListener('pointerleave', () => this._enemyHover(v, false));
-      v.el.addEventListener('focus', () => this._enemyHover(v, true));
-      v.el.addEventListener('blur', () => this._enemyHover(v, false));
-      v.intentView.el.addEventListener('pointerenter', () => this._showTip(v.intentView.el, v.intentView.tooltipHTML(), true));
-      v.intentView.el.addEventListener('pointerleave', () => this._hideTip());
+      this._attachTips(v);
       this.views.set(e.id, v);
       this.$enemies.appendChild(v.el);
     }
@@ -403,14 +543,49 @@ export class CombatScene extends Scene {
     this.$enemies.dataset.n = String(n);
   }
 
-  _enemyHover(v, on) {
-    if (on) {
-      const lore = v.def?.lore ? `<div class="cb-tip__tell">${esc(v.def.lore)}</div>` : '';
-      const body = v.intentView.intent
-        ? v.intentView.tooltipHTML()
-        : `<div class="cb-tip__title">${esc(v.name)}</div>`;
-      this._showTip(v.el, `${body}${lore}`, true);
-    } else this._hideTip();
+  /**
+   * Tooltips for the creature and for its intent.
+   *
+   * These go through `tooltip.attach(el, fn)` and NOT through
+   * `pointerenter -> tooltip.show(el, html)`. Two reasons, both bugs round 1
+   * shipped:
+   *
+   *   1. `show()` handed a STRING renders it as literal text. The intent
+   *      tooltip was built as HTML, so the panel displayed the characters
+   *      `<div class="cb-tip__title">Pack Wrong</div>` on screen. A descriptor
+   *      object is what the shared Tooltip actually renders.
+   *   2. The Tooltip owns a document-level `pointerover` handler that hides the
+   *      panel over any element it does not recognise as an anchor. Moving one
+   *      pixel inside the intent — onto a glyph path — dismissed it instantly.
+   *      `attach()` registers the element so `_anchorFor` walks up to it,
+   *      exactly like `[data-tip]`, and the keyboard path comes free.
+   */
+  _attachTips(v) {
+    const tip = this.ctx.tooltip;
+    if (!tip || !tip.attach) return;
+    this._tipOffs.push(tip.attach(v.intentView.el, () => v.intentView.describe()));
+    this._tipOffs.push(tip.attach(v.el, () => this._enemyDesc(v)));
+  }
+
+  /** The creature panel: what it is, how much is left, what it is about to do. */
+  _enemyDesc(v) {
+    const intent = v.intentView.describe();
+    const rows = [[TERMS.hp, `${v.hp} / ${v.maxHp}`]];
+    if (v.block > 0) rows.push(['Guard', String(v.block)]);
+    const lines = [];
+    if (intent) {
+      lines.push(`Next: ${intent.title}`);
+      for (const l of intent.lines || []) lines.push(l);
+    }
+    return {
+      kind: 'enemy',
+      id: v.def && v.def.id,
+      title: v.name,
+      subtitle: v.tier === 'boss' ? 'Boss' : v.tier === 'elite' ? 'Big Scare' : 'Scuffle',
+      rows,
+      lines,
+      footer: (v.def && v.def.lore) || (intent && intent.footer) || null,
+    };
   }
 
   /* ══ hand ═══════════════════════════════════════════════════════════════ */
@@ -435,12 +610,53 @@ export class CombatScene extends Scene {
     this._offs.push(ctx.bus.on('card:drop', () => {
       for (const v of this.views.values()) v.el.classList.remove('is-aimed');
     }));
-    this._offs.push(ctx.bus.on('card:cancel', () => this._clearPreview()));
+    /* ── a click is a play ──────────────────────────────────────────────────
+     * FINDING: a non-targeted card could only be played by dragging it above
+     * roughly y=450; a click did nothing at all. The Hand commits a drag on
+     * crossing its threshold and treats a tap — pointerdown and pointerup in
+     * the same place — as a cancelled drag, so nothing happens.
+     *
+     * The Hand's public `playCard(uid, targetId)` is the right seam, and its
+     * `card:pickup` / `card:cancel` pair is enough to recognise a tap without
+     * touching its pointer code. A tap on a self-targeted Trick plays it; a tap
+     * on an aimed Trick with exactly one living enemy plays it at that enemy
+     * (Slay the Spire does the same); otherwise it says what to do instead.
+     */
+    this._offs.push(ctx.bus.on('card:pickup', (p) => {
+      this._tap = { uid: p.uid, t: performance.now(), x: this._pt.x, y: this._pt.y };
+    }));
+    this._offs.push(ctx.bus.on('card:cancel', (p) => {
+      this._clearPreview();
+      const t = this._tap; this._tap = null;
+      if (!t || !p || t.uid !== p.uid || !this.engine || this.engine.over) return;
+      if (performance.now() - t.t > 420) return;                               // a slow drag
+      if (Math.hypot(this._pt.x - t.x, this._pt.y - t.y) > 12) return;         // it moved
+      this._tapPlay(p.uid);
+    }));
     this._offs.push(ctx.bus.on('settings:changed', () => {
       this._readSettings();
       this.root.classList.toggle('is-large', this.largeText);
       for (const v of this.views.values()) v.reduceMotion = this.reduceMotion;
     }));
+  }
+
+  /** Resolve a tap on a card in hand into a play, or into a usable hint. */
+  _tapPlay(uid) {
+    const card = this.engine.card(uid);
+    if (!card) return;
+    const aimed = card.target === 'enemy' || card.target === 'ally';
+    let tid = null;
+    if (aimed) {
+      const living = card.target === 'enemy' ? this.engine.livingEnemies() : [];
+      if (living.length !== 1) {
+        this._deny('Drag it onto the one you mean, or select it and press Tab.');
+        return;
+      }
+      tid = living[0].id;
+    }
+    const chk = this.engine.canPlay(uid, tid);
+    if (!chk.ok) { this._deny(chk.reason); return; }
+    this.hand.playCard(uid, tid || undefined);
   }
 
   _updatePilePositions() {
@@ -455,7 +671,7 @@ export class CombatScene extends Scene {
 
   /** Hand asked to commit a card. Returning false rejects it with a shake. */
   _onPlay({ uid, targetId }) {
-    if (this._resolving || this.engine.over) return false;
+    if (this._resolving || !this.engine || this.engine.over) return false;
     const tid = targetId ?? (this._defaultTargetFor(uid));
     const chk = this.engine.canPlay(uid, tid);
     if (!chk.ok) { this._deny(chk.reason); return false; }
@@ -473,6 +689,11 @@ export class CombatScene extends Scene {
       await this._settle();
       this._playedUid = null;
       this._resolving = false;
+      // `_settle()` can end the fight, and `_animEnd` navigates away, which runs
+      // `exit()` and nulls the engine. Reading `this.engine.over` here is what
+      // threw `Cannot read properties of null (reading 'over')` at the moment
+      // of defeat — a listener outliving its teardown, CONTRACTS §7.
+      if (!this.engine) return;
       if (!this.engine.over && this.engine.phase === 'player') this.hand.unlock();
     });
     return true;
@@ -487,71 +708,37 @@ export class CombatScene extends Scene {
 
   /* ══ Snacks ═══════════════════════════════════════════════════════════════
    * STS2-REFERENCE §6: "Potions: 3 slots, usable any time in combat, they are a
-   * real tactical layer." Until now you could buy a Snack for 74 Lost Things
-   * and there was no code path anywhere that could ever consume one.
+   * real tactical layer."
    *
-   * A Snack costs no Nerve, does not end anything, and resolves through the
-   * engine's ordinary public API — so Guard, Strength, Frail, Vulnerable, every
-   * relic hook and every animation behave exactly as they do for a card.
+   * The ~50-line effect table that used to live here is GONE. It decided rules,
+   * which CONTRACTS.md §5 puts in `src/combat/` — it was only here because the
+   * previous agent could not edit that directory. The engine now owns it:
+   * `canUseSnack` / `snackPotency` / `useSnack`, with relic modifiers, the
+   * ordinary choice broker for targeting, an `onSnackUsed` hook, and a
+   * `snack:used` event emitted BEFORE anything lands so the eat animates first.
    *
-   * OWNERSHIP, HONESTLY: the effect table below decides rules, and by
-   * CONTRACTS.md §5 rules belong in `src/combat/`. It is here because
-   * `src/combat/**` and `src/state/run.js` belong to other agents. The engine
-   * needs `engine.useSnack(snack, targetId)` plus an `onSnackUsed` hook (no
-   * Keepsake can react to a Snack today — Slay the Spire has several that do),
-   * and `Run` needs `useSnack(index)` so the scene stops splicing the array.
-   * Both asks are written up in docs/NOTES.md. Move this table wholesale.
+   * Still ours, because it is inventory and not rules: taking the Snack off the
+   * run. `Run.useSnack(index)` does not exist yet (asked for in docs/NOTES.md);
+   * until it does, `_consumeSnack` splices. It runs only if the engine actually
+   * emitted `snack:used` — a Snack cancelled at its target picker is not spent.
    */
   async _useSnack(index, snack) {
-    if (!this.engine || this.engine.over || this._resolving || this._snacking) return;
-    if (this.engine.phase !== 'player') { this._deny('Wait for your turn.'); return; }
-    const fx = snack?.effect;
-    if (!fx) return;
+    if (!this.engine || this._resolving || this._snacking) return;
+    const chk = this.engine.canUseSnack(snack, null);
+    if (!chk.ok) { this._deny(chk.reason); return; }
 
-    const E = this.engine;
-    const me = E.player;
-
-    // One target question, asked before anything is consumed.
-    let target = null;
-    if (fx.target === 'enemy') {
-      const living = E.livingEnemies();
-      if (!living.length) { this._deny('Nothing to aim it at.'); return; }
-      if (living.length === 1) target = living[0];
-      else {
-        this._snacking = true;
-        const picked = await this._resolveChoice({
-          kind: 'enemy', count: 1, optional: true,
-          prompt: `Who gets the ${snack.name}?`,
-          pool: living.map(e => ({ id: e.id, name: e.name, hp: e.hp, maxHp: e.maxHp })),
-        });
-        this._snacking = false;
-        if (!picked.length) return;
-        target = living[picked[0]];
-        if (!target?.alive) return;
-      }
+    this._snacking = true;
+    let events = [];
+    try {
+      events = await this.engine.useSnack(snack, null);
+    } catch (e) {
+      console.error('[combat] useSnack', e);
+    } finally {
+      this._snacking = false;
     }
-
-    // Consume first: a Snack is spent the moment you eat it, win or lose.
-    this._consumeSnack(index, snack);
-    this.ctx.audio?.play?.('ui:confirm');
-    this._banner(snack.name, 'good', 0.8);
-
-    if (fx.heal)      E.heal(me, fx.heal, 'snack');
-    if (fx.block)     E.gainBlock(me, fx.block, { source: 'snack', fromCard: false, reason: 'snack' });
-    if (fx.energy)    E.gainEnergy(fx.energy, 'snack');
-    if (fx.cleanse)   E.cleanse(me, 'snack');
-    if (fx.damageAll) {
-      for (const en of E.livingEnemies()) {
-        E.dealDamage({ attacker: me, defender: en, amount: fx.damageAll, kind: 'snack', cause: snack.name });
-      }
-    }
-    if (Array.isArray(fx.status)) {
-      const [id, n] = fx.status;
-      E.applyStatus(target || me, id, n, { source: 'snack' });
-    }
-
+    if (events.some(e => e.type === 'snack:used')) this._consumeSnack(index, snack);
     await this._settle();
-    this._syncEndTurn();
+    if (this.engine) this._syncEndTurn();
   }
 
   /** Take the Snack off the run and tell the HUD. */
@@ -809,7 +996,6 @@ export class CombatScene extends Scene {
     const through = Math.max(0, inc.total - block);
     if (inc.total <= 0) {
       this.$inc.hidden = true;
-      this.$hpInc.style.width = '0%';
       this.$pl.classList.remove('is-lethal');
       return;
     }
@@ -832,9 +1018,6 @@ export class CombatScene extends Scene {
         : `Your ${block} Guard stops all of it.`);
     this.$inc.tabIndex = 0;
     this.$pl.classList.toggle('is-lethal', lethal);
-
-    const maxHp = this.engine.player.maxHp || 1;
-    this.$hpInc.style.width = Math.min(100, (through / maxHp) * 100).toFixed(2) + '%';
   }
 
   /* ══ engine wiring ══════════════════════════════════════════════════════ */
@@ -884,7 +1067,7 @@ export class CombatScene extends Scene {
       case 'combat:start':
         this._banner('The Scuffle Begins', 'start');
         this.ctx.atmosphere?.dread?.(0.12, 0.6);
-        await this._wait(this._d(0.24));
+        await this._wait(this._o(0.24));
         return;
 
       case 'phase':
@@ -904,7 +1087,10 @@ export class CombatScene extends Scene {
           this.$turnN.textContent = `Turn ${ev.turn}`;
           this._banner(`Your Turn ${ev.turn}`, 'player');
           this.ctx.audio?.play?.('combat:turn-start');
-          await this._wait(this._d(0.22));
+          await this._wait(this._o(0.22));
+          // Everything queued before this point was set-up, not play. From here
+          // the fight animates at full weight.
+          this._opening = false;
         } else {
           const v = this.views.get(ev.actorId);
           if (v) {
@@ -958,7 +1144,7 @@ export class CombatScene extends Scene {
         this.$drawPile.classList.remove('is-shuffle');
         void this.$drawPile.offsetWidth;
         this.$drawPile.classList.add('is-shuffle');
-        await this._wait(this._d(0.16));
+        await this._wait(this._o(0.16));
         return;
 
       case 'energy':
@@ -1018,7 +1204,7 @@ export class CombatScene extends Scene {
           this.fx.word(c.x, c.y - 46, `${ev.delta > 0 ? '+' : ''}${ev.delta} ${ev.name}`,
             ev.kind === 'debuff' ? 'debuff' : 'buff');
           this.ctx.audio?.play?.(ev.kind === 'debuff' ? 'combat:status-apply-debuff' : 'combat:status-apply-buff');
-          await this._wait(this._d(0.11));
+          await this._wait(this._o(0.11));
         }
         return;
       }
@@ -1035,6 +1221,22 @@ export class CombatScene extends Scene {
         if (en) this._addEnemyView(en);
         this.ctx.audio?.play?.('world:rescue-chime');
         await this._wait(this._d(0.2));
+        return;
+      }
+
+      case 'snack:used': {
+        // Emitted BEFORE the effects land, which is the whole point: the eat
+        // plays first, then heal / Guard / Nerve arrive as their own events.
+        this._banner(ev.name || 'Snack', 'good', 0.9);
+        const c = this._pointOf(E.player.id);
+        this.fx.shimmer(c.x, c.y, this.fx.col.flame);
+        this.fx.ring(c.x, c.y, this.fx.col.pluck, 54);
+        this.ctx.audio?.play?.('ui:confirm');
+        this.$pl.classList.remove('is-snacking');
+        void this.$pl.offsetWidth;
+        this.$pl.classList.add('is-snacking');
+        await this._wait(this._d(0.22));
+        this.$pl.classList.remove('is-snacking');
         return;
       }
 
@@ -1267,6 +1469,9 @@ export class CombatScene extends Scene {
       if (typeof val !== 'number') continue;
       const m = COUNTER_META[k] || {};
       if (m.hidden) continue;
+      // A gauge (`max`) reads as 0/4 and that is information. A bare counter at
+      // zero is not: the region boss shipped with a permanent `FLUSTERED 0`.
+      if (!val && !m.max) continue;
       out.push({ id: k, label: m.label || titleCase(k), value: val, max: m.max, desc: m.desc, note: m.note });
     }
     v.setCounters(out);
@@ -1298,15 +1503,8 @@ export class CombatScene extends Scene {
     const p = this._light(this.engine.player);
     p.name = this.engine.player.name;
     const pct = Math.max(0, Math.min(1, p.hp / (p.maxHp || 1)));
-    this.$hpFill.style.transform = `scaleX(${pct.toFixed(4)})`;
-    this.$hpTxtN.textContent = String(Math.max(0, p.hp));
-    this.$hpTxtM.textContent = '/' + p.maxHp;
     this.$plName.textContent = p.name || 'You';
     this.$pl.classList.toggle('is-low', pct <= 0.3);
-    this._hpTarget = pct;
-    if (this._hpGhostV === undefined) { this._hpGhostV = pct; this.$hpGhost.style.transform = `scaleX(${pct})`; }
-    if (pct < this._hpGhostV) this._hpGhostAt = performance.now();
-    else if (pct > this._hpGhostV) { this._hpGhostV = pct; this.$hpGhost.style.transform = `scaleX(${pct})`; }
 
     if (!this.$plGuard.classList.contains('is-preview')) {
       if (p.block > 0) { this.$plGuard.hidden = false; this.$plGuardN.textContent = String(p.block); }
@@ -1329,7 +1527,7 @@ export class CombatScene extends Scene {
       d.setAttribute('role', 'listitem');
       d.dataset.tip = `${s.name}|${s.desc || ''}|${decayLine(s.decay)}`;
       d.setAttribute('aria-label', `${s.name} ${s.stacks}. ${s.desc || ''}`);
-      d.innerHTML = statusIcon(s.id) + (s.showStacks === false ? '' : `<b>${s.stacks}</b>`);
+      d.innerHTML = statusGlyph(s) + (s.showStacks === false ? '' : `<b>${s.stacks}</b>`);
       this.$statuses.appendChild(d);
     }
   }
@@ -1404,10 +1602,7 @@ export class CombatScene extends Scene {
     const snap = this.engine.state.enemies.find(e => e.id === en.id);
     if (!snap || this.views.has(en.id)) return;
     const v = new EnemyView(snap, { clock: this.ctx.clock, reduceMotion: this.reduceMotion, def: en.def });
-    v.el.addEventListener('pointerenter', () => this._enemyHover(v, true));
-    v.el.addEventListener('pointerleave', () => this._enemyHover(v, false));
-    v.intentView.el.addEventListener('pointerenter', () => this._showTip(v.intentView.el, v.intentView.tooltipHTML(), true));
-    v.intentView.el.addEventListener('pointerleave', () => this._hideTip());
+    this._attachTips(v);
     this.views.set(en.id, v);
     this.$enemies.appendChild(v.el);
     this._layoutEnemies();
@@ -1431,7 +1626,19 @@ export class CombatScene extends Scene {
     window.addEventListener('pointermove', this._onPointer, { passive: true });
     this._offs.push(() => window.removeEventListener('pointermove', this._onPointer));
 
-    // keyboard: full parity. The Hand owns 1-9 / arrows / enter; we own the rest.
+    /* ── keyboard ─────────────────────────────────────────────────────────
+     * CONTRACTS §6: a keyboard path for every action.
+     *
+     * `ui/hand.js` already implements the whole card interaction — 1-9 select,
+     * arrows to walk the fan, Enter/ArrowUp to play, Tab to cycle targets while
+     * aiming, Escape to cancel — on its own window listener. Round 1's fault
+     * was not a missing implementation, it was that nothing ever gave the Hand
+     * focus, so Tab from a blurred start never left BODY.
+     *
+     * So: this handler runs SECOND (the Hand binds first, in `_buildHand`), it
+     * never re-implements anything the Hand owns, and its one addition to card
+     * play is the handoff below.
+     */
     this._onKey = (e) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       // the chooser owns the keyboard while it is open
@@ -1440,13 +1647,32 @@ export class CombatScene extends Scene {
         if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); this._focusChoice(ch.cursor + 1); }
         else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); this._focusChoice(ch.cursor - 1); }
         else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this._pickChoice(ch.cursor); }
-        else if (e.key === 'Escape') { e.preventDefault(); if (ch.req.optional) this._commitChoice(true); }
-        else if (e.key >= '1' && e.key <= '9') {
+        else if (e.key === 'Tab') {
+          // A blocking choice is modal: Tab walks it and never escapes it.
+          e.preventDefault();
+          this._focusChoice(ch.cursor + (e.shiftKey ? -1 : 1));
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          if (ch.req.optional) this._commitChoice(true);
+          // A mandatory choice cannot be dismissed — the engine is blocked on
+          // it. Round 1 swallowed Escape in silence, which reads as a frozen
+          // game. Say why, and point at the key that does work.
+          else this._deny(`You have to pick ${ch.req.count === 1 ? 'one' : ch.req.count}. Use the arrow keys, then Enter.`);
+        } else if (e.key >= '1' && e.key <= '9') {
           const i = +e.key - 1;
           if (i < ch.nodes.length) { e.preventDefault(); this._pickChoice(i); }
         }
         e.stopPropagation();
         return;
+      }
+      // TAB FROM NOWHERE. If focus is sitting on BODY — first entry to the
+      // scene, or anything that blurred — Tab enters the hand rather than
+      // walking the browser's default order from the top of the document.
+      if (e.key === 'Tab' && !e.shiftKey && !e.defaultPrevented) {
+        const a = document.activeElement;
+        if (!a || a === document.body || a === document.documentElement) {
+          if (this.focusHand()) { e.preventDefault(); return; }
+        }
       }
       if (e.shiftKey && e.code && /^Digit[1-3]$/.test(e.code)) return;   // Snacks — the HUD owns these
       const k = e.key.toLowerCase();
@@ -1474,6 +1700,7 @@ export class CombatScene extends Scene {
     try { await this.engine.endTurn(); } catch (e) { console.error('[combat] endTurn', e); }
     await this._settle();
     this._resolving = false;
+    if (!this.engine) return;                     // the fight ended and we left
     if (!this.engine.over && this.engine.phase === 'player') this.hand.unlock();
     this._syncEndTurn();
   }
@@ -1549,16 +1776,10 @@ export class CombatScene extends Scene {
 
   /* ── tooltips ─────────────────────────────────────────────────────────────
    * There is one tooltip in this game and it lives in `ui/tooltip.js`. It owns
-   * every `[data-tip]` anchor on this screen by its own document delegation;
-   * these two exist only for the intent / enemy panels, whose content is built
-   * HTML rather than an attribute.
+   * every `[data-tip]` anchor on this screen by document delegation, and the
+   * two rich panels (intent, creature) by `attach()` — see `_attachTips`.
+   * This screen no longer calls `tooltip.show()` at all.
    */
-  _showTip(anchor, html) {
-    if (!html) return;
-    this.ctx.tooltip?.show?.(anchor, html);
-  }
-
-  _hideTip() { this.ctx.tooltip?.hide?.(); }
 
   /* ══ frame ══════════════════════════════════════════════════════════════ */
   _frame(dt, t) {
@@ -1585,14 +1806,6 @@ export class CombatScene extends Scene {
       this.$plFlash.style.opacity = String(Math.max(0, this._plFlash * 0.8));
     }
 
-    // player Courage bar lags behind so the loss reads
-    if (this._hpTarget !== undefined && this._hpGhostV > this._hpTarget) {
-      const held = this._hpGhostAt && performance.now() - this._hpGhostAt < 300;
-      if (!held) {
-        this._hpGhostV = Math.max(this._hpTarget, this._hpGhostV - dt * 0.8);
-        this.$hpGhost.style.transform = `scaleX(${this._hpGhostV.toFixed(4)})`;
-      }
-    }
   }
 
   update() { /* driven by clock.onFrame */ }
@@ -1603,6 +1816,8 @@ export class CombatScene extends Scene {
     this._ro?.disconnect();
     for (const off of this._offs) { try { off(); } catch {} }
     for (const off of this._engineOffs) { try { off(); } catch {} }
+    for (const off of this._tipOffs) { try { off(); } catch {} }
+    this._tipOffs.length = 0;
     this._offs.length = 0; this._engineOffs.length = 0;
     clearTimeout(this._bannerT); clearTimeout(this._denyT);
     // never leave the engine awaiting a resolution that can no longer arrive
@@ -1686,13 +1901,6 @@ function badgesFor(en, field) {
 
 function titleCase(s) {
   return String(s).replace(/[-_]/g, ' ').replace(/\b\w/g, m => m.toUpperCase());
-}
-
-function statusIcon(id) {
-  const d = SG[id];
-  if (!d) return `<i class="cb-status__letter">${String(id).charAt(0).toUpperCase()}</i>`;
-  const stroke = SG_STROKE.has(id) ? ' class="is-stroke"' : '';
-  return `<svg viewBox="0 0 24 24" aria-hidden="true"${stroke}><path d="${d}"/></svg>`;
 }
 
 function decayLine(decay) {

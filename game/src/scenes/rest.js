@@ -22,6 +22,7 @@
 import { bus } from '../core/bus.js';
 import { TERMS, NodeType, COMPANIONS } from '../data/schema.js';
 import { cardById } from '../data/cards.js';
+import { plural } from '../util/plural.js';
 import { relicSigil } from '../data/relics.js';
 import { RoomScene, esc } from './reward.js';
 import { el, ensureCss, rovingFocus } from '../ui/portrait.js';
@@ -164,7 +165,7 @@ export class RestScene extends RoomScene {
       {
         id: 'upgrade', name: `Sharpen a ${TERMS.card}`,
         blurb: `Work on one ${TERMS.card} by torchlight until it is better than it was.`,
-        readout: `${upgradeable.length} can be sharpened`,
+        readout: `${plural(upgradeable.length, TERMS.card)} can be sharpened`,
         note: `Permanent, for the rest of the expedition.`,
         can: upgradeable.length > 0,
         why: upgradeable.length ? '' : `Every ${TERMS.card} you carry is already as good as it gets.`,

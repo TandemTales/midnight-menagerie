@@ -91,6 +91,9 @@ async def main(a):
     print("  determinism   %s/5 replays identical" % res.get("determinism", 0))
     print("  resume        %s/3 round-trips identical" % res.get("resume", 0))
     print("  localStorage  %s/3 wrote and read back" % res.get("storage", 0))
+    print("  mid-fight     %s/%s interrupted Scuffles resumed (%s exact replays)"
+          % (res.get("combatResume", 0), res.get("combatResumeTried", 0),
+             res.get("replayed", 0)))
     print("  autosaves     %s" % res.get("saveCount", 0))
 
     if res.get("errorList"):

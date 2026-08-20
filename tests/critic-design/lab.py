@@ -16,6 +16,7 @@ ap.add_argument("--bots", default="naive,competent")
 ap.add_argument("--pol", default="balanced")
 ap.add_argument("--haunt", type=int, default=0)
 ap.add_argument("--seed", type=int, default=90000)
+ap.add_argument("--scale", type=float, default=1.0)
 ap.add_argument("--trace", action="store_true")
 ap.add_argument("--timeout", type=float, default=900)
 a = ap.parse_args()
@@ -26,7 +27,7 @@ except Exception:
     pass
 
 URL = (f"http://localhost:8777/tests/critic-design/lab.html?tier={a.tier}&enc={a.enc}"
-       f"&n={a.n}&gen={a.gen}&bots={a.bots}&pol={a.pol}&haunt={a.haunt}&seed={a.seed}")
+       f"&n={a.n}&gen={a.gen}&bots={a.bots}&pol={a.pol}&haunt={a.haunt}&seed={a.seed}&scale={a.scale}")
 
 with sync_playwright() as p:
     b = p.chromium.launch(args=["--enable-unsafe-swiftshader"])

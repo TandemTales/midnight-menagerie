@@ -24,6 +24,7 @@
 
 import { Clock } from '../core/clock.js';
 import { IntentView } from './intent.js';
+import { iconSvg, hasIcon } from './icons.js';
 
 const NS = 'http://www.w3.org/2000/svg';
 const TAU = Math.PI * 2;
@@ -392,6 +393,7 @@ export class EnemyView {
       twitch: 0, nextTwitch: 2.5 + this.rnd() * 4,
       dead: 0, spawn: 0,
       glow: 0,
+      entrance: 0,     // 1 = fully off-frame below, 0 = standing. Boss entrance.
     };
 
     this._build(snap, o);
@@ -603,15 +605,23 @@ export class EnemyView {
       d.dataset.id = s.id;
       d.dataset.tip = statusTip(s);
       d.tabIndex = 0;
-      d.innerHTML = `<i class="cb-status__g" data-g="${s.id}"></i>`
+      // A real icon, from the 118-glyph set in ui/icons.js. Round 1 emitted an
+      // empty `<i data-g="haunt">` that no stylesheet ever drew, so Haunt was a
+      // bare `2` in a dark box.
+      d.innerHTML = statusGlyph(s)
         + (s.showStacks === false ? '' : `<b>${s.stacks}</b>`);
       if (prev && !prev.includes(s.id + ':')) d.classList.add('is-new');
       this.$statuses.appendChild(d);
     }
   }
 
+  /**
+   * `o` is the scene's render context ({ playerHp, playerBlock, mods }). The
+   * EnemyDef and this creature's name are added here so the intent tooltip can
+   * say WHY a number moved without the scene having to plumb them through.
+   */
   setIntent(intent, o) {
-    this.intentView.set(intent, o);
+    this.intentView.set(intent, { ...(o || {}), def: this.def, selfName: this.name });
     this.lastIntent = intent;
     return this;
   }
@@ -855,6 +865,42 @@ export class EnemyView {
     this.el.classList.add('is-guarding');
   }
 
+  /**
+   * A boss does not simply be there. STS2-REFERENCE §4: StS2 aims for "epic
+   * rather than intimate", and §4 again: "Deaths are events." So are arrivals.
+   *
+   * Three beats, and it owns the frame for all of them:
+   *   1. it is a silhouette, sunk below the floor line, eyes shut
+   *   2. it rises — slow, heavy, with the lights coming up on it
+   *   3. it plants, opens its eyes, and leans in once
+   *
+   * Resolves when the pose is held. `reduceMotion` collapses it to nothing.
+   */
+  async enterArena(o = {}) {
+    const a = this.a;
+    if (this.reduceMotion || !this.clock) { this.el.classList.add('has-entered'); return; }
+    const big = o.big !== false;
+    this.el.classList.add('is-entering');
+    a.entrance = 1;
+    a.spawn = 0;
+    a.squashT = 0.16;
+    // 1 — hold in shadow for a beat, so the room reads before the shape does
+    await this.clock.wait(big ? 0.24 : 0.12);
+    // 2 — the rise
+    await this.clock.ramp(big ? 0.86 : 0.5, (v) => { a.entrance = 1 - v; }, Clock.easeOutCubic);
+    this.el.classList.remove('is-entering');
+    this.el.classList.add('has-entered');
+    // 3 — plant, then one slow lean at the player
+    a.squashT = 0.34;
+    await this.clock.ramp(0.12, () => {}, Clock.easeOutCubic);
+    a.blink = 1;
+    a.squashT = 0;
+    a.leanT = 0.5; a.lookTX = -0.6;
+    await this.clock.ramp(0.3, () => {}, Clock.easeOutCubic);
+    a.leanT = 0; a.lookTX = 0;
+    await this.clock.ramp(0.26, () => {}, Clock.easeOutCubic);
+  }
+
   /** A death is an EVENT: it sags, the eyes go out, then it comes apart. */
   async die() {
     if (this.dying) return;
@@ -946,8 +992,10 @@ export class EnemyView {
 
     // ── compose the root transform ────────────────────────────────────────
     const lean = a.lean;
+    const ent = a.entrance;
     const dx = sway * 3.4 + lean * -26 + a.shove * -1 + tw * 3;
-    const dy = -a.rise * 16 + Math.abs(lean) * -4 + a.spawn * 40;
+    // `entrance` sinks the whole rig below its own floor line and lets it rise.
+    const dy = -a.rise * 16 + Math.abs(lean) * -4 + a.spawn * 40 + ent * this.body.h * 3.4;
     const rot = sway * 1.25 + lean * -4.5 + tw * 2.4;
     this.$root.setAttribute('transform',
       `translate(${f(dx)} ${f(dy)}) rotate(${f(rot)} 0 0)`);
@@ -1012,6 +1060,14 @@ const f2 = (v) => (Math.round(v * 1000) / 1000);
 
 function statusTip(s) {
   return `${s.name}|${s.desc || ''}|${s.decay === 'turnEnd' ? 'Wears off at the end of its turn.' : s.decay === 'turnStart' ? 'Ticks at the start of its turn.' : 'Lasts the whole Scuffle.'}`;
+}
+
+/** The status set from ui/icons.js, resolved through the engine's `icon` field. */
+export function statusGlyph(s) {
+  const id = s.icon || s.id;
+  const key = hasIcon(`status.${id}`) ? `status.${id}`
+    : hasIcon(`status.${s.id}`) ? `status.${s.id}` : 'status.unknown';
+  return iconSvg(key, { cls: 'cb-status__g' });
 }
 function esc(s) { return String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
 

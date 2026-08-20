@@ -21,6 +21,7 @@
 import { bus } from '../core/bus.js';
 import { TERMS, NodeType } from '../data/schema.js';
 import { cardById } from '../data/cards.js';
+import { word } from '../util/plural.js';
 import { relicById, relicSigil } from '../data/relics.js';
 import { RoomScene, esc } from './reward.js';
 import { el, ensureCss, rovingFocus } from '../ui/portrait.js';
@@ -129,9 +130,9 @@ export class ShopScene extends RoomScene {
               <div><dt>${esc(TERMS.deck)}</dt><dd><button type="button" class="sh-deck"
                 data-tip-title="Your ${esc(TERMS.deck)}"
                 data-tip="Look through every ${esc(TERMS.card)} you own before you spend anything.">${this.run.deck.length}</button></dd></div>
-              <div><dt>${esc(TERMS.relic)}s</dt><dd>${this.run.keepsakes.length}</dd></div>
+              <div><dt>${esc(word(this.run.keepsakes.length, TERMS.relic))}</dt><dd>${this.run.keepsakes.length}</dd></div>
               <div><dt>${esc(TERMS.potion)}s</dt><dd>${this.run.snacks.length}/${this.run.snackCap}</dd></div>
-              <div><dt>Clues</dt><dd>${this.run.cluesFound}</dd></div>
+              <div><dt>${esc(word(this.run.cluesFound, 'Clue'))}</dt><dd>${this.run.cluesFound}</dd></div>
             </dl>
           </div>
           <div class="sh-service" aria-label="Removal service">

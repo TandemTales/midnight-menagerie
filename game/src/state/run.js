@@ -15,7 +15,9 @@
  *
  * 2. **Autosaved.**  `save()` runs after every state change; `Run.resume()`
  *    restores mid-map exactly, including deck uids, Keepsake counters, the
- *    walked path and which Curiosities have been seen.
+ *    walked path, which Curiosities have been seen — and an unfinished fight.
+ *    See "Interrupted fights" below: a room is only ever *cleared* when it
+ *    resolves, so quitting can never buy you a free room.
  *
  * 3. **Scenes stay dumb.**  A scene asks the run for facts and calls one run
  *    method.  It never decides what a node is, what a reward costs, or where to
@@ -27,14 +29,39 @@
  *   Run.resume(saved)                  from Save.loadRun()
  *   run.snapshot() / run.save()
  *   deck · addCard(def) · removeCard(uid) · upgradeCard(uid) · transformCard(uid)
- *   courage · maxCourage · lostThings · keepsakes · snacks
+ *   courage · maxCourage · lostThings · keepsakes · snacks · useSnack(i)
  *   region · regionIndex · map · currentNode · legalNodes() · enterNode(id)
- *   hauntLevel · rescued · cluesFound
+ *   hauntLevel · rescued · cluesFound · depth · wing
  *   rng
  *
- * Legacy aliases the other agents' scenes already read (`hp`, `maxHp`, `gold`,
- * `relics`, `regionId`, `currentNodeId`, `visitedIds`, `pathIds`, `floor`,
- * `combat`, `chooseNode`) are all live properties, not copies.
+ * ── Canonical names, and the aliases ────────────────────────────────────────
+ * One name per concept.  The canonical property is the one that is stored and
+ * serialised; everything else is a **compatibility getter over the same field**,
+ * never a second copy that can drift:
+ *
+ *   Courage  →  `courage` / `maxCourage`      aliases: `hp`, `maxHp`
+ *   money    →  `lostThings`                  alias:   `gold`
+ *   relics   →  `keepsakes`                   alias:   `relics`
+ *   snacks   →  `snacks`                      alias:   `potions`
+ *   region   →  `region`                      alias:   `regionId`
+ *
+ * Depth is two different numbers and used to be one ambiguous one, which is how
+ * the Clubhouse came to print "Deepest floor 5" for a run whose Game Over screen
+ * said "REACHED Floor 1":
+ *
+ *   `wing`   which of the house's 17 wings you are in   (map: "Wing 1 of 17")
+ *   `depth`  how many rooms deep you got, all wings     (Game Over / Clubhouse)
+ *   `floor`  documented alias of `wing` — map.js and ui/hud.js read it.
+ *
+ * ── Interrupted fights ──────────────────────────────────────────────────────
+ * A room is marked **entered** on the way in and **cleared** only when it
+ * resolves (`leaveNode`, `claimReward`, or a won fight).  `visitedIds` is the
+ * cleared set, so a run quit mid-Scuffle comes back with the node still
+ * standing.  `pendingCombat` carries the seed-relative recipe for the fight plus
+ * the player's action log, and `restoreInterruptedCombat()` replays it into the
+ * exact board you left — falling back to a fresh instance of the *same*
+ * encounter at the Courage you walked in with if the replay cannot be verified.
+ * Either way: no reward, no clear, no free Courage.
  */
 import { RNG, hashSeed } from '../core/rng.js';
 import { Save } from '../core/save.js';
@@ -67,6 +94,49 @@ const PURSE = {
 
 let UID = 0;
 const nextUid = () => `c${(++UID).toString(36)}`;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Combat content, pre-warmed.
+//
+// Building a fight needs four dynamically-imported modules.  That is fine when
+// a fight starts from a click, and fatal when a fight has to be rebuilt during
+// `run:continue`: the title screen navigates in the same synchronous tick, so a
+// rebuild that has to go to the network loses the race and `scenes/combat.js`
+// builds a stand-in engine with the wrong deck.
+//
+// Warming them up front turns the rebuild into a pure microtask chain, which
+// always completes before the scene manager's cover transition does.
+// ─────────────────────────────────────────────────────────────────────────────
+/** @type {{CombatEngine:Function, enemies:Object, statuses:Object, keywords:Object, lib:Object|null}|null} */
+let CONTENT = null;
+let CONTENT_P = null;
+
+/** Load (once) everything `buildCombat` needs. Safe to call any number of times. */
+export function warmCombatContent() {
+  if (CONTENT_P) return CONTENT_P;
+  CONTENT_P = (async () => {
+    const [engineMod, enemiesMod, statusesMod, keywordsMod, libMod] = await Promise.all([
+      import('../combat/engine.js'),
+      import('../data/enemies/index.js'),
+      import('../combat/statuses.js'),
+      import('../data/keywords.js'),
+      import('../data/enemies/_lib.js').catch(() => null),
+    ]);
+    if (enemiesMod.ENEMY_STATUSES) statusesMod.registerStatuses(enemiesMod.ENEMY_STATUSES);
+    // Global keyword/status registries. Per-engine registration happens in
+    // `_buildCombat`, which is why this is called with no engine.
+    await keywordsMod.loadContentRegistries(null);
+    CONTENT = {
+      CombatEngine: engineMod.CombatEngine,
+      enemies: enemiesMod,
+      statuses: statusesMod,
+      keywords: keywordsMod,
+      lib: libMod,
+    };
+    return CONTENT;
+  })();
+  return CONTENT_P;
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -123,7 +193,11 @@ export class Run {
 
     this.stats = {
       scuffles: 0, bigScares: 0, curiosities: 0, safeRooms: 0, shops: 0,
-      treasures: 0, cardsPlayed: 0, damageDealt: 0, turns: 0, floor: 0,
+      treasures: 0, cardsPlayed: 0, damageDealt: 0, turns: 0,
+      // `depth` = deepest room reached, counted across every wing. This used to
+      // be called `floor`, which collided with the wing number `run.floor`
+      // returns, and the two disagreed on every end screen.
+      depth: 0,
       cardsTaken: 0, cardsSkipped: 0, clues: 0,
     };
 
@@ -135,23 +209,41 @@ export class Run {
     this.pendingReward = null;
     this.pendingEvent = null;
     this.combat = null;
+    /** The recipe + action log for a fight that has not resolved yet. */
+    this.pendingCombat = null;
     this._ctx = null;
-    this._offCombat = null;
+    this._combatOffs = [];
+    this._saveTimer = null;
 
     this._buildMap();
   }
 
   // ══ identity / derived ═══════════════════════════════════════════════════
-  get regionId() { return this.region; }
   get meta() { return regionMeta(this.region); }
-  get floor() { return this.regionIndex + 1; }
+
+  /* ── depth, in the two senses the screens actually mean ───────────────── */
+  /** Which of the house's 17 wings this is. 1-based. */
+  get wing() { return this.regionIndex + 1; }
+  /** How many rooms deep the expedition got, counted across every wing. */
+  get depth() { return this.stats.depth; }
+
+  /* ── documented compatibility aliases (see the header) ────────────────── */
+  /** @deprecated alias of `region`. */
+  get regionId() { return this.region; }
+  /** @deprecated alias of `wing`. `map.js` renders it as "Wing N of 17". */
+  get floor() { return this.wing; }
+  /** @deprecated alias of `courage`. */
   get hp() { return this.courage; }
   set hp(v) { this.courage = v; }
+  /** @deprecated alias of `maxCourage`. */
   get maxHp() { return this.maxCourage; }
   set maxHp(v) { this.maxCourage = v; }
+  /** @deprecated alias of `lostThings`. */
   get gold() { return this.lostThings; }
   set gold(v) { this.lostThings = v; }
+  /** @deprecated alias of `keepsakes`. */
   get relics() { return this.keepsakes; }
+  /** @deprecated alias of `snacks`. */
   get potions() { return this.snacks; }
   get alive() { return this.courage > 0 && this.result !== 'defeat'; }
   get companionName() { return COMPANIONS.find(c => c.slug === this.companion)?.name || this.companion; }
@@ -307,6 +399,42 @@ export class Run {
     this.save();
     return snack;
   }
+
+  /**
+   * Eat a Snack.  The counterpart `addSnack` never had — scenes were splicing
+   * `run.snacks` themselves, which meant nothing recorded the use and the run
+   * could not resume a fight a Snack had been eaten in.
+   *
+   * The RULES belong to the engine (CONTRACTS.md §5), so this owns exactly two
+   * things: the inventory, and the fact that a Snack is spent the moment it is
+   * eaten, win or lose.  Snacks are a combat resource; outside a Scuffle there
+   * is nothing to resolve them against and this refuses.
+   *
+   * @param {number} index          slot in `run.snacks`
+   * @param {string|null} targetId  engine actor id, for `target:'enemy'` Snacks
+   * @returns {Promise<Object[]|null>} the engine events, or null if not allowed
+   */
+  async useSnack(index, targetId = null) {
+    const snack = this.snacks[index];
+    if (!snack) return null;
+    const engine = this.combat;
+    if (!engine) return null;
+    if (!engine.canUseSnack(snack, targetId).ok) return null;
+
+    this.snacks.splice(index, 1);
+    bus.emit('run:snack', { snack, index });
+    this.save();
+    const events = await engine.useSnack(snack, targetId);
+    return events;
+  }
+
+  /** Whether a Snack could be eaten right now, and why not. */
+  canUseSnack(index, targetId = null) {
+    const snack = this.snacks[index];
+    if (!snack) return { ok: false, reason: 'That slot is empty.' };
+    if (!this.combat) return { ok: false, reason: 'You eat Snacks during a Scuffle.' };
+    return this.combat.canUseSnack(snack, targetId);
+  }
   addClues(n = 1) {
     const total = Math.max(0, Math.round(n + (n > 0 ? this.flags.clueBonus : 0)));
     if (!total) return 0;
@@ -378,13 +506,13 @@ export class Run {
     if (!node) return null;
     if (this.currentNodeId && !this.isLegal(nodeId)) return null;
 
-    node.visited = true;
     this._roomDone = false;
-    if (!this.visitedIds.includes(nodeId)) this.visitedIds.push(nodeId);
+    this._markEntered(nodeId);
     if (this.currentNodeId && !this.pathIds.includes(this.currentNodeId)) this.pathIds.push(this.currentNodeId);
     this.pathIds.push(nodeId);
     this.currentNodeId = nodeId;
-    this.stats.floor = Math.max(this.stats.floor, node.row + 1);
+    const rows = this.map?.rows ?? 6;
+    this.stats.depth = Math.max(this.stats.depth, this.regionIndex * rows + node.row + 1);
 
     // Hazard wings bite on entry (mapgen HAZARDS: "The Floor Sags").
     if (node.payload?.hazard === 'sagging') this.hurt(3);
@@ -406,12 +534,37 @@ export class Run {
     return this._goto(scene, { node: nodeId, region: this.region });
   }
 
+  /**
+   * ENTERED, not cleared.
+   *
+   * `scenes/map.js` optimistically writes the node into `run.visitedIds` before
+   * it calls `chooseNode` ("keeps the screen honest even before run.js exists"),
+   * so this actively takes it back out again.  A room only joins `visitedIds`
+   * when it *resolves* — see `_markCleared`.  That is the whole difference
+   * between quitting mid-fight and being handed the room for free.
+   */
+  _markEntered(nodeId) {
+    const node = this.nodeById(nodeId);
+    if (node) node.visited = false;
+    const i = this.visitedIds.indexOf(nodeId);
+    if (i >= 0) this.visitedIds.splice(i, 1);
+  }
+
+  /** The room is done with. This — and only this — clears a node. */
+  _markCleared(nodeId = this.currentNodeId) {
+    if (!nodeId) return;
+    const node = this.nodeById(nodeId);
+    if (node) node.visited = true;
+    if (!this.visitedIds.includes(nodeId)) this.visitedIds.push(nodeId);
+  }
+
   /** Leave a non-combat room and go back to the blueprint. */
   leaveNode() {
     this.pendingReward = null;
     this.pendingEvent = null;
     this.pendingShop = null;
     this._roomDone = true;
+    this._markCleared();
     this.save();
     const node = this.currentNode;
     if (node && this.effectiveType(node) === NodeType.BOSS) return this.completeRegion();
@@ -446,24 +599,38 @@ export class Run {
    * Build the CombatEngine for a node and hand it to the combat scene through
    * `ctx.run.combat` — the seam the combat-scene agent asked for.
    */
-  async buildCombat(node, type = null) {
+  async buildCombat(node, type = null, opts = {}) {
+    const C = CONTENT || await warmCombatContent();
+    return this._buildCombat(C, node, type, opts);
+  }
+
+  /**
+   * The synchronous half of `buildCombat`.
+   *
+   * It is split out because resuming an interrupted fight has to rebuild the
+   * engine *and* replay it inside one microtask chain, before the scene manager
+   * finishes its cover transition — see `restoreInterruptedCombat`.  Every
+   * module it needs is pre-warmed by `warmCombatContent()`.
+   *
+   * @param {{histLen?:number, replay?:boolean}} opts
+   *   `histLen` rolls the encounter against the history as it stood when the
+   *   fight was first entered, so a resumed fight is the same fight.
+   *   `replay` suppresses the history push and the room counters.
+   */
+  _buildCombat(C, node, type = null, opts = {}) {
     const t = type || this.effectiveType(node);
     const tier = this.tierFor(node, t);
     const region = this._contentRegion(tier);
     const rng = this.fork(`combat:${node.id}`);
 
-    const [{ CombatEngine }, enemiesMod, statusesMod, keywordsMod] = await Promise.all([
-      import('../combat/engine.js'),
-      import('../data/enemies/index.js'),
-      import('../combat/statuses.js'),
-      import('../data/keywords.js'),
-    ]);
-    const { getEnemy, ENEMY_STATUSES, ENEMY_LIST } = enemiesMod;
-    if (ENEMY_STATUSES) statusesMod.registerStatuses?.(ENEMY_STATUSES);
+    const { CombatEngine } = C;
+    const { getEnemy, ENEMY_LIST } = C.enemies;
 
-    const enc = rollEncounter(region, tier, rng, this.encounterHistory);
+    const histLen = Number.isInteger(opts.histLen) ? opts.histLen : this.encounterHistory.length;
+    const history = this.encounterHistory.slice(0, histLen);
+    const enc = rollEncounter(region, tier, rng, history);
     const members = buildEncounter(enc.id, rng, this.hauntLevel);
-    this.encounterHistory.push(enc.id);
+    if (!opts.replay) this.encounterHistory.push(enc.id);
 
     const hpMul = this.flags.enemyHpMul || 1;
     const enemies = members.map((m, i) => {
@@ -495,21 +662,297 @@ export class Run {
     try {
       engine.registerCards(allCards());
       engine.registerEnemies(ENEMY_LIST || []);
+      // Enemy-generated status Tricks (`ctx.addCard('clutter')`). The global
+      // keyword/status registries were already loaded by warmCombatContent();
+      // this is the only per-engine part of loadContentRegistries().
+      if (C.lib && C.lib.STATUS_TRICK_DEFS) engine.registerCards(C.lib.STATUS_TRICK_DEFS);
     } catch { /* registries are best-effort */ }
-    await keywordsMod.loadContentRegistries?.(engine);
 
-    this.combatMeta = { nodeId: node.id, type: t, tier, encounter: enc.id, name: enc.name, region };
+    this.combatMeta = {
+      nodeId: node.id, type: t, tier, encounter: enc.id, name: enc.name, region, histLen,
+    };
     return engine;
   }
 
   async _startCombat(node, type) {
     const engine = await this.buildCombat(node, type);
-    this.combat = engine;
-    this._offCombat?.();
-    this._offCombat = engine.on('combat:end', (ev) => this._onCombatEnd(ev));
-    bus.emit('run:combatStart', { node, engine, meta: this.combatMeta });
-    this.save();
+    this._beginCombat(engine, node, type);
     return this._goto('combat', { node: node.id, region: this.region, seed: this.seed });
+  }
+
+  /**
+   * Put a built engine on the run and start recording it.
+   *
+   * `pendingCombat` is the fight's whole identity: which node, which encounter,
+   * the Courage the player walked in with, and every action they have taken.
+   * It exists from the first frame of the fight, so there is no window in which
+   * a reload loses the room.
+   */
+  _beginCombat(engine, node, type, { resumed = false, mode = 'fresh' } = {}) {
+    this.combat = engine;
+    if (!resumed) {
+      const m = this.combatMeta || {};
+      this.pendingCombat = {
+        nodeId: node.id,
+        type,
+        tier: m.tier || null,
+        encounter: m.encounter || null,
+        histLen: Number.isInteger(m.histLen) ? m.histLen : this.encounterHistory.length - 1,
+        courageOnEntry: this.courage,
+        actions: [],
+        choices: [],
+        damage: 0,
+        digest: null,
+        unsafe: false,
+      };
+    }
+    this._wireCombat(engine);
+    bus.emit('run:combatStart', { node, engine, meta: this.combatMeta, resumed, mode });
+    this._combatSave();
+    return engine;
+  }
+
+  /* ── recording an in-flight fight ──────────────────────────────────────── */
+
+  /**
+   * A stable name for every card in a fight.
+   *
+   * Engine card uids come from a module counter, so they are not stable across
+   * a page reload — but the ORDER cards are created in is, because the engine is
+   * deterministic.  Deck cards get `d<index into the run deck>`; anything an
+   * effect creates mid-fight gets `x<n>` in creation order.  Both sides of a
+   * replay build this map the same way, so a recorded action always finds the
+   * card it meant.
+   *
+   * @returns {{byUid:Map<string,string>, byKey:Map<string,string>, off:Function}}
+   */
+  _cardKeys(engine) {
+    const byUid = new Map();
+    const byKey = new Map();
+    const put = (uid, key) => { byUid.set(uid, key); byKey.set(key, uid); };
+    engine.piles.draw.forEach((c, i) => put(c.uid, `d${i}`));
+    let extra = 0;
+    const off = engine.on('card:add', (ev) => {
+      if (ev && ev.cardUid && !byUid.has(ev.cardUid)) put(ev.cardUid, `x${extra++}`);
+    });
+    return { byUid, byKey, off };
+  }
+
+  _wireCombat(engine) {
+    this._unwireCombat();
+    const offs = this._combatOffs;
+    const keys = this._cardKeys(engine);
+    offs.push(keys.off);
+    this._combatKeys = keys;
+
+    offs.push(engine.on('combat:end', (ev) => this._onCombatEnd(ev)));
+
+    // "DAMAGE DEALT 0" lived here: nothing ever added combat damage to the run.
+    // The engine's own counter is per-turn, so the run watches the events.
+    const playerId = engine.player.id;
+    offs.push(engine.on('damage', (ev) => {
+      if (!ev || ev.sourceId !== playerId || ev.targetId === playerId) return;
+      const n = Math.max(0, Number(ev.hpLoss) || 0);
+      if (!n) return;
+      this.stats.damageDealt += n;
+      if (this.pendingCombat) this.pendingCombat.damage += n;
+    }));
+
+    offs.push(engine.on('card:play', (ev) => {
+      const pc = this.pendingCombat;
+      if (!pc) return;
+      const key = keys.byUid.get(ev && ev.cardUid);
+      // A card we cannot name cannot be replayed. Say so rather than resuming
+      // into a board that quietly disagrees with the one the player left.
+      if (!key) { pc.unsafe = true; return; }
+      pc.actions.push(['p', key, (ev && ev.targetId) || null]);
+      this._combatSaveSoon();
+    }));
+
+    offs.push(engine.on('turn:end', (ev) => {
+      const pc = this.pendingCombat;
+      if (!pc || !ev || ev.side !== 'player') return;
+      pc.actions.push(['e']);
+      this._combatSave();                     // turn boundary: flush for real
+    }));
+
+    offs.push(engine.on('snack:used', (ev) => {
+      const pc = this.pendingCombat;
+      if (!pc || !ev) return;
+      pc.actions.push(['s', ev.snackId, ev.targetId || null]);
+      this._combatSaveSoon();
+    }));
+
+    // Card plays are debounced so localStorage is not written inside an
+    // animation frame. A reload must still capture the last one, so flush on
+    // the way out of the page.
+    if (typeof window !== 'undefined') {
+      const flush = () => this._combatSave();
+      window.addEventListener('pagehide', flush);
+      window.addEventListener('beforeunload', flush);
+      document.addEventListener('visibilitychange', flush);
+      offs.push(() => {
+        window.removeEventListener('pagehide', flush);
+        window.removeEventListener('beforeunload', flush);
+        document.removeEventListener('visibilitychange', flush);
+      });
+    }
+  }
+
+  _unwireCombat() {
+    for (const off of this._combatOffs.splice(0)) { try { off(); } catch { /* teardown */ } }
+    this._combatKeys = null;
+    if (this._saveTimer) { clearTimeout(this._saveTimer); this._saveTimer = null; }
+  }
+
+  /**
+   * A fingerprint of the board.  Written on every combat save and checked after
+   * a replay: if the replayed board is not the board the player left, the
+   * replay is thrown away rather than trusted.
+   */
+  _combatDigest(e) {
+    if (!e) return null;
+    return [
+      e.turn, e.phase, e.over ? 1 : 0,
+      e.player.hp, e.player.block, e.player.energy,
+      e.enemies.map(x => `${x.id}:${x.hp}:${x.block}:${x.alive ? 1 : 0}`).join(','),
+      e.piles.hand.map(c => `${c.id}${c.upgraded ? '+' : ''}`).join('|'),
+      e.piles.draw.length, e.piles.discard.length, e.piles.exhaust.length,
+    ].join('~');
+  }
+
+  _combatSaveSoon() {
+    if (this._saveTimer) return;
+    this._saveTimer = setTimeout(() => { this._saveTimer = null; this._combatSave(); }, 120);
+  }
+
+  _combatSave() {
+    if (this._saveTimer) { clearTimeout(this._saveTimer); this._saveTimer = null; }
+    const pc = this.pendingCombat;
+    const e = this.combat;
+    if (!pc || !e) return;
+    pc.choices = e.choiceLog.map(c => ({ picked: c.picked.slice() }));
+    pc.digest = this._combatDigest(e);
+    this.save();
+  }
+
+  /* ── putting an interrupted fight back on screen ───────────────────────── */
+
+  /**
+   * Rebuild the fight the player quit out of.
+   *
+   * Two outcomes, in order of preference:
+   *
+   *   'replay'   the engine is deterministic and the player's actions were
+   *              recorded, so the fight is re-run silently and the player lands
+   *              on the exact board they left — same hand, same Courage, same
+   *              enemy plans.  Verified against a digest before it is trusted.
+   *   'restart'  anything the replay cannot verify falls back to a FRESH
+   *              instance of the same encounter at the Courage the player had
+   *              when they walked in.  You lose the fight's progress; you do not
+   *              lose the room, and you do not get the reward.
+   *
+   * Never: the room silently clearing itself.
+   */
+  async restoreInterruptedCombat() {
+    const pc = this.pendingCombat;
+    if (!pc || this.result) return null;
+    const node = this.nodeById(pc.nodeId);
+    if (!node) { this.pendingCombat = null; this.save(); return null; }
+
+    // The room is not cleared and the reward does not exist. Say it out loud
+    // here too, in case a save from an older build claimed otherwise.
+    this._markEntered(pc.nodeId);
+    this.pendingReward = null;
+    this.currentNodeId = pc.nodeId;
+    this.courage = Math.max(1, Math.min(this.maxCourage, pc.courageOnEntry ?? this.courage));
+
+    const build = () => this._buildCombat(
+      CONTENT, node, pc.type, { histLen: pc.histLen, replay: true },
+    );
+
+    if (!CONTENT) await warmCombatContent();
+
+    let engine = null;
+    let mode = 'restart';
+    try {
+      engine = build();
+      if (pc.unsafe) { engine = null; }
+      else if (!pc.actions.length) { mode = 'replay'; }        // nothing had happened yet
+      else if (await this._replayCombat(engine, pc)) { mode = 'replay'; }
+      else { engine = null; }
+    } catch (err) {
+      console.warn('[run] could not replay the interrupted Scuffle, restarting it', err);
+      engine = null;
+    }
+
+    if (!engine) {
+      // Fresh instance of the same fight. Un-bank the damage the abandoned
+      // attempt contributed, or the expedition total counts it twice.
+      this.stats.damageDealt = Math.max(0, this.stats.damageDealt - (pc.damage || 0));
+      pc.damage = 0;
+      pc.actions = [];
+      pc.choices = [];
+      pc.digest = null;
+      pc.unsafe = false;
+      engine = build();
+      mode = 'restart';
+    }
+
+    this._beginCombat(engine, node, pc.type, { resumed: true, mode });
+    this._ensureCombatOnScreen(engine, { node: node.id, region: this.region, seed: this.seed });
+    return mode;
+  }
+
+  /**
+   * Re-run a recorded fight against a fresh engine.
+   * @returns {Promise<boolean>} true only when the board matches the digest.
+   */
+  async _replayCombat(engine, pc) {
+    const keys = this._cardKeys(engine);
+    try {
+      engine.setChoiceScript(pc.choices || []);
+      await engine.startCombat();
+      for (const a of (pc.actions || [])) {
+        if (engine.over) return false;
+        if (a[0] === 'e') { await engine.endTurn(); continue; }
+        if (a[0] === 's') {
+          const snack = SNACKS.find(s => s.id === a[1]);
+          if (!snack) return false;
+          if (!engine.canUseSnack(snack, a[2]).ok) return false;
+          await engine.useSnack(snack, a[2]);
+          continue;
+        }
+        const uid = keys.byKey.get(a[1]);
+        if (!uid || !engine.canPlay(uid, a[2]).ok) return false;
+        await engine.playCard(uid, a[2]);
+      }
+      engine.setChoiceScript(null);
+      if (engine.over) return false;
+      return !pc.digest || this._combatDigest(engine) === pc.digest;
+    } finally {
+      keys.off();
+    }
+  }
+
+  /**
+   * The title screen navigates on its own the moment it emits `run:continue`,
+   * using the `scene` field the snapshot carries.  Nine times in ten the rebuild
+   * above finishes first (it is one microtask chain against a cover transition)
+   * and `scenes/combat.js` picks the real engine straight off `ctx.run.combat`.
+   * This is the tenth time: if the screen ended up anywhere else, or on a combat
+   * scene holding a stand-in engine, put the real fight up.
+   */
+  _ensureCombatOnScreen(engine, params) {
+    const scenes = this.ctx && this.ctx.scenes;
+    if (!scenes) return;
+    const settled = () => scenes.currentName === 'combat'
+      && scenes.current && scenes.current.engine === engine;
+    if (!scenes.busy) { if (!settled()) scenes.go('combat', params); return; }
+    const off = bus.on('scene:entered', () => {
+      off();
+      if (!settled()) scenes.go('combat', params);
+    });
   }
 
   /**
@@ -522,7 +965,8 @@ export class Run {
   _onCombatEnd(ev) {
     const engine = this.combat;
     if (!engine) return;
-    this._offCombat?.(); this._offCombat = null;
+    this._unwireCombat();
+    this.pendingCombat = null;             // the fight resolved; nothing to resume
 
     this.courage = Math.max(0, engine.player?.hp ?? this.courage);
     this.stats.cardsPlayed += engine.stats?.cardsPlayedThisCombat || 0;
@@ -543,6 +987,9 @@ export class Run {
     else if (type === NodeType.BIG_SCARE) this.stats.bigScares++;
 
     this.combat = null;
+    // The fight is won, so the room is done with even though the reward screen
+    // has not been answered yet. Quitting on the reward screen resumes there.
+    this._markCleared(node ? node.id : this.currentNodeId);
     this._prepareReward(node, type, { navigate: false });
     this.save();
   }
@@ -666,6 +1113,7 @@ export class Run {
     }
     const wasBoss = r.kind === 'boss';
     this.pendingReward = null;
+    this._markCleared(r.nodeId || this.currentNodeId);
     this.save();
     if (wasBoss) return this.completeRegion();
     return this._goto('map', { region: this.region, seed: this.seed });
@@ -934,10 +1382,7 @@ export class Run {
     const fake = { ...node, row: node.row, id: node.id };
     const type = kind === 'elite' ? NodeType.BIG_SCARE : NodeType.SCUFFLE;
     const engine = await this.buildCombat(fake, type);
-    this.combat = engine;
-    this._offCombat?.();
-    this._offCombat = engine.on('combat:end', (ev) => this._onCombatEnd(ev));
-    bus.emit('run:combatStart', { node, engine, meta: this.combatMeta });
+    this._beginCombat(engine, node, type);
     return this._goto('combat', { node: node.id, region: this.region });
   }
 
@@ -978,14 +1423,18 @@ export class Run {
     this.killedBy = killedBy || this.killedBy;
     this.endedAt = Date.now();
     this.combat = null;
-    this._offCombat?.(); this._offCombat = null;
+    this.pendingCombat = null;
+    this._unwireCombat();
 
     const meta = Save.data;
     if (meta) {
       meta.stats.runs = (meta.stats.runs || 0) + 1;
       if (victory) meta.stats.wins = (meta.stats.wins || 0) + 1;
-      meta.stats.bestFloor = Math.max(meta.stats.bestFloor || 0, this.stats.floor);
+      // The Clubhouse's "Deepest floor" and Game Over's "REACHED Floor" are now
+      // the same number, because both of them are `depth`.
+      meta.stats.bestFloor = Math.max(meta.stats.bestFloor || 0, this.depth);
       meta.stats.cardsPlayed = (meta.stats.cardsPlayed || 0) + this.stats.cardsPlayed;
+      meta.stats.damageDealt = (meta.stats.damageDealt || 0) + this.stats.damageDealt;
       for (const slug of this.rescued) {
         if (!meta.companionsRescued.includes(slug)) meta.companionsRescued.push(slug);
       }
@@ -998,11 +1447,24 @@ export class Run {
     return this._goto('gameover', {
       result: this.result, seed: this.seed,
       companion: this.companion, kid: this.kid, region: this.region,
+      // `floor` is what scenes/gameover.js prints as "REACHED Floor N", and it
+      // must agree with the Clubhouse's "Deepest floor". `wing` is the other
+      // number — see the header note on the two senses of depth.
+      floor: this.depth, depth: this.depth, wing: this.wing,
+      damageDealt: this.stats.damageDealt,
     });
   }
 
   // ══ persistence ══════════════════════════════════════════════════════════
-  /** Plain and serialisable. `window.MM.state()` reads exactly this. */
+  /**
+   * Plain and serialisable. `window.MM.state()` reads exactly this.
+   *
+   * One key per concept.  This used to carry `hp`/`maxHp`/`gold` alongside
+   * `courage`/`maxCourage`/`lostThings` — two copies of one number in a blob
+   * that survives a reload, which is exactly how a save drifts.  The live
+   * aliases on the class are getters, so nothing needs the duplicates; `resume`
+   * still reads the old keys so saves from earlier builds load.
+   */
   snapshot() {
     return {
       version: this.version,
@@ -1010,19 +1472,18 @@ export class Run {
       hauntLevel: this.hauntLevel, backpack: this.backpack.slice(),
 
       courage: this.courage, maxCourage: this.maxCourage,
-      hp: this.courage, maxHp: this.maxCourage,
       energyMax: this.energyMax,
-      lostThings: this.lostThings, gold: this.lostThings,
+      lostThings: this.lostThings,
       snacks: this.snacks.map(s => ({ ...s })),
 
       deck: this.deck.map(c => ({ uid: c.uid, id: c.id, upgraded: c.upgraded, name: cardById(c.id)?.name || c.id })),
-      relics: this.keepsakes.map(k => ({
+      keepsakes: this.keepsakes.map(k => ({
         id: k.id, name: k.name, desc: k.desc, rarity: k.rarity,
         counter: k.counter ?? null, forged: !!k.forged, icon: k.icon,
       })),
 
-      region: this.region, regionId: this.region, regionIndex: this.regionIndex,
-      floor: this.floor,
+      region: this.region, regionIndex: this.regionIndex,
+      wing: this.wing, depth: this.depth,
       map: this.map,
       currentNodeId: this.currentNodeId,
       visitedIds: this.visitedIds.slice(),
@@ -1036,6 +1497,7 @@ export class Run {
       pendingReward: this.pendingReward,
       pendingEvent: this.pendingEvent,
       pendingShop: this.pendingShop || null,
+      pendingCombat: this.pendingCombat,
       roomDone: !!this._roomDone,
       curiosityHealUsed: !!this._curiosityHealUsed,
 
@@ -1069,7 +1531,7 @@ export class Run {
     run.courage = Math.round(run.maxCourage * 0.62);
     run.pity = 3;
     run.cluesFound = 4;
-    run.stats = { ...run.stats, scuffles: 5, bigScares: 1, curiosities: 2, floor: 4 };
+    run.stats = { ...run.stats, scuffles: 5, bigScares: 1, curiosities: 2, depth: 4, damageDealt: 612 };
     run.encounterHistory = [];
     for (const id of ['welcome-mat', 'chewed-tennis-ball', 'nightlight', 'butterfly-net']) {
       const k = makeRelic(id); if (k) run.keepsakes.push(k);
@@ -1105,7 +1567,7 @@ export class Run {
 
     run.deck = (saved.deck || []).map(c => ({ uid: c.uid || nextUid(), id: c.id, upgraded: !!c.upgraded }))
       .filter(c => !!cardById(c.id));
-    run.keepsakes = (saved.relics || []).map(r => {
+    run.keepsakes = (saved.keepsakes || saved.relics || []).map(r => {
       const inst = makeRelic(r.id);
       if (!inst) return null;
       inst.counter = r.counter ?? inst.counter;
@@ -1133,22 +1595,36 @@ export class Run {
     run.pendingReward = saved.pendingReward || null;
     run.pendingEvent = saved.pendingEvent || null;
     run.pendingShop = saved.pendingShop || null;
+    run.pendingCombat = saved.pendingCombat || null;
     run._roomDone = !!saved.roomDone;
     run._curiosityHealUsed = !!saved.curiosityHealUsed;
     run.stats = { ...run.stats, ...(saved.stats || {}) };
+    // Saves from before `stats.floor` was renamed to the unambiguous `depth`.
+    if (run.stats.depth == null || run.stats.depth === 0) {
+      run.stats.depth = Number(saved.stats?.depth ?? saved.stats?.floor ?? 0) || 0;
+    }
+    delete run.stats.floor;
     run.startedAt = saved.startedAt || run.startedAt;
+
+    // An unfinished fight must never be resumable as a cleared room, whatever
+    // an older save claimed.
+    if (run.pendingCombat && run.pendingCombat.nodeId) {
+      run.pendingReward = null;
+      run._markEntered(run.pendingCombat.nodeId);
+    }
     return run;
   }
 
   /**
    * Where a resumed run should be standing.
    *
-   * Mid-combat resume is explicitly out of scope: an unfinished fight drops the
-   * player back on the blueprint rather than being re-run for free, which is
-   * both honest and non-exploitable.  Everything else resumes in place.
+   * An unfinished fight resumes INTO the fight — see `restoreInterruptedCombat`.
+   * Dropping the player back on the blueprint instead is what let any room in
+   * the game, up to and including the boss, be skipped by reloading the page.
    */
   resumeScene() {
     if (this.result) return 'gameover';
+    if (this.pendingCombat) return 'combat';
     if (this.pendingReward) return 'reward';
     if (this.pendingEvent && !this.pendingEvent.resolved) return 'event';
     const node = this.currentNode;
@@ -1160,15 +1636,39 @@ export class Run {
   }
 }
 
-/** Snacks (potions). Small, single-use, and they read in one line. */
+/**
+ * Snacks (potions). Small, single-use, and they read in one line.
+ *
+ * ── Pricing ─────────────────────────────────────────────────────────────────
+ * Now that Snacks can actually be eaten, the price has to mean something. The
+ * ladder is StS's, and so is the purse it is measured against:
+ *
+ *   Scuffle purse    11-19    (StS normal fight: 10-20 gold)
+ *   Big Scare        26-36    (StS elite:        25-35)
+ *   Boss             92-108   (StS boss:         ~100)
+ *   Shop Tricks      55 / 85 / 145 ± 12   (StS cards: 50 / 75 / 150-ish)
+ *
+ * So one Snack should cost about three Scuffles, and a *strong* one about the
+ * same as a common Trick you keep forever — which is the trade the player is
+ * actually being asked to make.  The old table was flat (55-75 for everything),
+ * so Cold Milk cost the same as +2 Nerve.  Three tiers now:
+ *
+ *   45  a single clean effect                  (heal, Guard, cleanse)
+ *   65  swings a fight                         (AoE, Vulnerable)
+ *   80  changes what a turn can do             (+2 Nerve, +2 Strength)
+ *
+ * `shopStock` adds ±8, so the shelf runs 37-88 against StS's 48-115. Snacks are
+ * deliberately a little cheaper than StS potions: this build's fights are
+ * shorter, so a Snack has fewer turns in which to pay for itself.
+ */
 export const SNACKS = [
-  { id: 'gummy-bat',     name: 'Gummy Bat',      base: 55, desc: `Recover 12 ${TERMS.hp}.`,               effect: { heal: 12 } },
-  { id: 'liquorice',     name: 'Liquorice Rope', base: 60, desc: `Gain 12 ${TERMS.block}.`,               effect: { block: 12 } },
-  { id: 'popping-candy', name: 'Popping Candy',  base: 70, desc: 'Deal 10 damage to all enemies.',        effect: { damageAll: 10 } },
-  { id: 'sherbet',       name: 'Sherbet Fizz',   base: 70, desc: `Gain 2 ${TERMS.energy}.`,               effect: { energy: 2 } },
-  { id: 'toffee',        name: 'Stubborn Toffee', base: 65, desc: 'Gain 2 Strength.',                     effect: { status: ['strength', 2] } },
-  { id: 'cold-milk',     name: 'Cold Milk',      base: 60, desc: 'Remove all debuffs.',                   effect: { cleanse: true } },
-  { id: 'jawbreaker',    name: 'Jawbreaker',     base: 75, desc: 'Apply 3 Vulnerable to one enemy.',      effect: { status: ['vulnerable', 3], target: 'enemy' } },
+  { id: 'gummy-bat',     name: 'Gummy Bat',      base: 45, desc: `Recover 12 ${TERMS.hp}.`,               effect: { heal: 12 } },
+  { id: 'liquorice',     name: 'Liquorice Rope', base: 45, desc: `Gain 12 ${TERMS.block}.`,               effect: { block: 12 } },
+  { id: 'cold-milk',     name: 'Cold Milk',      base: 45, desc: 'Remove all debuffs.',                   effect: { cleanse: true } },
+  { id: 'popping-candy', name: 'Popping Candy',  base: 65, desc: 'Deal 10 damage to all enemies.',        effect: { damageAll: 10 } },
+  { id: 'jawbreaker',    name: 'Jawbreaker',     base: 65, desc: 'Apply 3 Vulnerable to one enemy.',      effect: { status: ['vulnerable', 3], target: 'enemy' } },
+  { id: 'sherbet',       name: 'Sherbet Fizz',   base: 80, desc: `Gain 2 ${TERMS.energy}.`,               effect: { energy: 2 } },
+  { id: 'toffee',        name: 'Stubborn Toffee', base: 80, desc: 'Gain 2 Strength.',                     effect: { status: ['strength', 2] } },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1184,8 +1684,14 @@ export function installRunLayer() {
   if (INSTALLED || typeof window === 'undefined') return;
   INSTALLED = true;
 
+  // If the save on disk is mid-fight, the modules needed to rebuild it are
+  // needed the instant "Continue" is clicked. Fetch them while the player is
+  // still looking at the title screen.
+  try { if (Save.loadRun()) warmCombatContent(); } catch { /* storage is best-effort */ }
+
   bus.on('run:start', (p) => {
     const ctx = window.MM?.ctx;
+    warmCombatContent();
     const run = new Run({
       companion: p?.companion, kid: p?.kid, seed: p?.seed,
       hauntLevel: p?.haunt ?? p?.hauntLevel, backpack: p?.backpack,
@@ -1206,6 +1712,10 @@ export function installRunLayer() {
     if (!run) return;
     run.attach(ctx);
     bus.emit('run:ready', { run });
+    // Kick the rebuild NOW, synchronously with the emit, so it is finished
+    // before the title's own `scenes.go` gets past its cover transition and
+    // scenes/combat.js looks for `ctx.run.combat`.
+    if (run.pendingCombat) run.restoreInterruptedCombat();
   });
 
   // The map screen emits this before it calls `run.chooseNode`, which is a
