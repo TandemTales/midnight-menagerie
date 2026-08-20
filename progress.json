@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-19T22:12:35",
+ "updated": "2026-08-20T02:35:20",
  "wave": 1,
  "waveLabel": "Core systems",
  "headline": "Seven builders running in parallel. Critics follow each one.",
@@ -21,10 +21,10 @@
    "id": "combat",
    "name": "Combat engine",
    "desc": "Turn rules, damage pipeline, statuses, intents, deterministic + headless",
-   "status": "reviewing",
-   "round": 1,
+   "status": "rework",
+   "round": 2,
    "verdict": "Engine shipped: 261 assertions, 0 failures. Preview clones the engine so it cannot drift from resolution.",
-   "gap": null,
+   "gap": "~70 cards say 'choose a Trick' but the engine auto-picks, silently removing player agency. Also: intents must read damageFn/hitsFn or they lie.",
    "builder": null,
    "critic": null,
    "log": []
@@ -69,9 +69,9 @@
    "id": "map",
    "name": "Blueprint routes",
    "desc": "Branching route map drawn on the mansion blueprint sections",
-   "status": "building",
+   "status": "reviewing",
    "round": 1,
-   "verdict": null,
+   "verdict": "Route generation plus the blueprint map screen shipped (2500 lines).",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -81,9 +81,9 @@
    "id": "cards",
    "name": "Companion decks",
    "desc": "Card pools + keyword systems for the 16 Companions",
-   "status": "building",
+   "status": "reviewing",
    "round": 1,
-   "verdict": null,
+   "verdict": "445 cards across 5 Companions (Marmalade, Bones, Pipkin, Taffy, Wink), 0 validation errors.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -129,9 +129,9 @@
    "id": "atmos",
    "name": "Atmosphere",
    "desc": "Lighting, fog, post FX, dust, candle flicker, transitions",
-   "status": "building",
+   "status": "reviewing",
    "round": 1,
-   "verdict": null,
+   "verdict": "Backdrop, candlelight, particles, 5 transitions and the grade shader shipped across 12 modules.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -202,6 +202,22 @@
   {
    "t": "2026-08-19T22:12:35",
    "msg": "Critics dispatched on card feel and on game design (cards + enemies + balance simulation)."
+  },
+  {
+   "t": "2026-08-19T22:23:10",
+   "msg": "Card pools done: 445 cards, 54 companion keywords, validated against the live engine."
+  },
+  {
+   "t": "2026-08-19T22:23:10",
+   "msg": "Terminology corrected to the design doc: energy is Nerve (not Pluck), currency is Lost Things."
+  },
+  {
+   "t": "2026-08-20T02:35:19",
+   "msg": "Terminology swept across 15 files: Nerve, Courage, Guard, Tricks, Keepsakes, Lost Things."
+  },
+  {
+   "t": "2026-08-20T02:35:20",
+   "msg": "Critics running on card feel and on game design. Front-end finisher building the Expedition End screen."
   }
  ]
 }

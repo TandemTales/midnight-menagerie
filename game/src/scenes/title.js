@@ -379,7 +379,7 @@ export class TitleScene extends Scene {
           <dt>Companion art</dt><dd>The Menagerie plates &mdash; sixteen portraits</dd>
           <dt>Blueprint</dt><dd>The mansion floor plan, seventeen wings</dd>
           <dt>Soundtrack</dt><dd>Ten tracks for the house and the clubhouse</dd>
-          <dt>Fiction</dt><dd>Courage, Guard, Pluck, Tricks, Keepsakes, Trinkets, Lost Things</dd>
+          <dt>Fiction</dt><dd>Courage, Guard, Nerve, Tricks, Keepsakes, Lost Things, Lost Things</dd>
         </dl>
         <p class="ti-credits__foot">Protection without freedom is still imprisonment.</p>`));
     }

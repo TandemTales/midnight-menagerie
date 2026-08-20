@@ -27,6 +27,9 @@ import { CardType, Rarity, Target, COMPANIONS as ROSTER } from '../../game/src/d
 import { KEYWORD_IDS, COMPANION_KEYWORDS, COMPANION_STATUSES, ENGINE_HOOKS_REQUIRED } from '../../game/src/data/companions/keywords.js';
 import * as CARDS from '../../game/src/data/cards.js';
 import { RNG } from '../../game/src/core/rng.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import { makeDummySetup } from '../../game/src/combat/dummy.js';
+import { installTrackers } from '../../game/src/data/companions/_util.js';
 
 const out = document.getElementById('out');
 const errors = [];
@@ -108,83 +111,66 @@ function validateCard(card, seen) {
   if (!card.flavor && card.rarity !== Rarity.SPECIAL) W(id, 'no flavor line');
 }
 
-// ── mock engine for the effect smoke test ───────────────────────────────────
-function actor(id, hp, extra) {
-  return { id, hp, maxHp: hp, block: 0, statuses: Object.create(null), dead: false, ...extra };
-}
-function runtimeCard(def, upgraded) {
-  return { uid: def.id + (upgraded ? '+' : ''), def, upgraded, nums: { ...(def.nums || {}), ...(upgraded && def.upgrade && def.upgrade.nums ? def.upgrade.nums : {}) }, cost: (upgraded && def.upgrade && 'cost' in def.upgrade) ? def.upgrade.cost : def.cost, mmFlags: {}, mmCounters: {} };
-}
+// ── live-engine smoke test ──────────────────────────────────────────────────
+// Every card is played through a real CombatEngine, base and upgraded, so the
+// ctx it receives is exactly the one the game hands it.
+const SEED_COUNTERS = [['lives', 9], ['loose-bones', 3], ['height', 2], ['plump', 2], ['globs', 3], ['open-eyes', 3]];
+const SEED_ENEMY_STATUS = [['haunt', 6], ['web', 6], ['weak', 1]];
 
-function makeCtx(def, upgraded) {
-  const rng = new RNG(20260819);
-  const player = actor('player', 70, { isPlayer: true });
-  const es = [actor('e1', 60, { intent: 'attack', tier: 'normal' }), actor('e2', 45, { intent: 'defend', tier: 'normal' })];
-  const decoy = (n, tag) => Array.from({ length: n }, (_, i) => runtimeCard({ id: `neutral/decoy-${tag}${i}`, name: 'Decoy', companion: 'neutral', type: CardType.SKILL, rarity: Rarity.COMMON, cost: i % 3, target: Target.NONE, text: 'x', nums: {}, effect() {} }, false));
-  const state = {
-    turn: 3, cardsPlayedThisTurn: 3, handSize: 10, untouched: true,
-    player, enemies: es,
-    hand: decoy(4, 'h'), draw: decoy(6, 'd'), discard: decoy(5, 'x'), exhaust: decoy(3, 'e'), limbo: [], stash: [],
-  };
-  const listeners = new Map();
-  const engine = {
-    rng, state, player, enemies: es,
-    hand: state.hand, draw: state.draw, discard: state.discard, exhaust: state.exhaust, stash: state.stash,
-    on(evt, fn) { if (!listeners.has(evt)) listeners.set(evt, []); listeners.get(evt).push(fn); return () => { const a = listeners.get(evt); const i = a.indexOf(fn); if (i >= 0) a.splice(i, 1); }; },
-    emit(evt, payload) { for (const fn of (listeners.get(evt) || []).slice()) fn(payload); },
-  };
-  const card = runtimeCard(def, upgraded);
-  state.hand.unshift(card);
-  const st = (a, id) => (a && a.statuses ? (a.statuses[id] || 0) : 0);
-  const c = {
-    e: engine, self: player, target: es[0], card, x: 3,
-    damage: (t, n) => { if (t) t.hp -= Math.max(0, n | 0); },
-    damageAll: (n) => { for (const t of es) t.hp -= Math.max(0, n | 0); },
-    loseHp: (t, n) => { if (t) t.hp -= Math.max(0, n | 0); },
-    block: (a, n) => { if (a) a.block += Math.max(0, n | 0); },
-    heal: (a, n) => { if (a) a.hp = Math.min(a.maxHp, a.hp + Math.max(0, n | 0)); },
-    applyStatus: (a, id, n) => { if (!a) return; a.statuses[id] = Math.max(0, (a.statuses[id] || 0) + (n | 0)); },
-    draw: () => {}, discard: () => {}, exhaust: () => {}, addCard: () => {},
-    gainEnergy: () => {}, loseEnergy: () => {},
-    count: (id, a) => st(a || player, id),
-    has: (id, a) => st(a || player, id) > 0,
-    forEachEnemy: (fn) => es.forEach(fn),
-    randomEnemy: () => es[rng.int(es.length)],
-    livingEnemies: () => es.filter(e => e.hp > 0),
-    cardsIn: (pile) => state[pile] || [],
-    moveCard: () => {}, modifyCost: () => {}, setCost: () => {}, retain: () => {}, returnToHand: () => {},
-    removeBlock: (t, n) => { if (t) t.block = Math.max(0, t.block - n); },
-    removeDebuff: () => {}, cancelIntent: () => {}, shuffleDraw: () => {}, modifyDraw: () => {}, setVanish: () => {},
-  };
-  // start the resource pools where the companion says they start
-  player.statuses['lives'] = 9;
-  player.statuses['open-eyes'] = 3;
-  player.statuses['ghoststep'] = 2;
-  player.statuses['loose-bones'] = 3;
-  player.statuses['height'] = 2;
-  player.statuses['plump'] = 2;
-  player.statuses['globs'] = 3;
-  es[0].statuses['haunt'] = 6;
-  es[0].statuses['web'] = 6;
-  es[0].statuses['weak'] = 1;
-  return { c, engine };
+function buildEngine(slug) {
+  const deck = CARDS.companion(slug) ? CARDS.startingDeckFor(slug) : CARDS.sharedPool().slice(0, 8);
+  const setup = makeDummySetup(new RNG(20260819), { companion: slug, deck: deck.length ? deck : CARDS.sharedPool() });
+  return new CombatEngine(setup);
 }
 
 async function smoke(def) {
   for (const upgraded of [false, true]) {
-    const { c, engine } = makeCtx(def, upgraded);
+    let engine = null;
     try {
-      if (def.dynamicCost) def.dynamicCost(c);
-      if (def.playable) def.playable(c);
-      if (def.previewFn) def.previewFn(c);
-      await def.effect(c);
-      // fire every engine event once so Power listeners run too
-      for (const evt of ['turn:start','turn:end','damage','status','discard','draw','intent','death','shuffle','energy']) {
-        engine.emit(evt, { count: 1, kind: 'buff', target: engine.enemies[0], source: engine.enemies[0], targetIsPlayer: false });
-      }
+      engine = buildEngine(def.companion);
+      await engine.startCombat();
+      installTrackers(engine, def.companion);
+      for (const [id, v] of SEED_COUNTERS) if (engine.counters.has(id)) engine.setCounter(id, v, 'test');
+      const t = engine.livingEnemies()[0];
+      if (t) for (const [id, v] of SEED_ENEMY_STATUS) engine.applyStatus(t, id, v);
+      engine.applyStatus(engine.player, 'ghoststep', 2);
+
+      const made = engine.addCard(def, 'hand', { upgraded });
+      const card = Array.isArray(made) ? made[0] : made;
+      if (!card) { E(def.id, 'the engine could not instantiate this card'); return; }
+
+      const ctx = engine.ctxFor(card, t, 3);
+      if (def.dynamicCost) def.dynamicCost(ctx);
+      if (def.playable) def.playable(ctx);
+      if (def.previewFn) def.previewFn(ctx);
+      await def.effect(ctx);
     } catch (err) {
-      E(def.id, `${upgraded ? 'upgraded ' : ''}effect threw: ${err && err.message ? err.message : err}`);
+      const where = (err && err.stack ? String(err.stack).split('\n').slice(1, 4).join(' | ').replace(/https?:\/\/[^ ]*?\/game\//g, '') : '');
+      E(def.id, `${upgraded ? 'upgraded ' : ''}effect threw in a live engine: ${err && err.message ? err.message : err} @ ${where}`);
     }
+  }
+}
+
+/** One full turn cycle per companion — exercises trackers, timers and Powers. */
+async function cycle(slug) {
+  try {
+    const engine = buildEngine(slug);
+    await engine.startCombat();
+    installTrackers(engine, slug);
+    for (let turn = 0; turn < 3; turn++) {
+      const hand = engine.piles.hand.slice();
+      for (const card of hand) {
+        const chk = engine.canPlay(card.uid, engine.livingEnemies()[0]?.id);
+        if (chk && chk.ok === false) continue;
+        try { await engine.playCard(card.uid, engine.livingEnemies()[0]?.id); } catch (_) { /* affordability */ }
+        if (engine.over) break;
+      }
+      if (engine.over) break;
+      await engine.endTurn();
+      if (engine.over) break;
+    }
+  } catch (err) {
+    E(slug, `three-turn cycle threw: ${err && err.message ? err.message : err}`);
   }
 }
 
@@ -334,6 +320,7 @@ function auditFor(def) {
   }
 
   for (const card of all) await smoke(card);
+  for (const def of defs) await cycle(def.slug);
 
   // ── render ────────────────────────────────────────────────────────────────
   let h = '';

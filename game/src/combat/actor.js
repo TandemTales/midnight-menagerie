@@ -2,7 +2,7 @@
  * Actor model. OWNER: combat-engine.
  *
  * In-fiction naming (schema.js TERMS): hp = "Courage", block = "Guard",
- * energy = "Pluck". The engine keeps the mechanical field names so the code
+ * energy = "Nerve". The engine keeps the mechanical field names so the code
  * stays readable; the UI is responsible for showing the in-fiction words.
  *
  * Statuses and powers are Maps so iteration order is insertion order — which

@@ -23,7 +23,7 @@ const REGION = 'sleeping-quarters';
 // 1. Pillow Puff — introductory nuisance
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- * Drowsy is deliberately not a dead card: 1 Pluck for 4 Guard, then it leaves. Awkward,
+ * Drowsy is deliberately not a dead card: 1 Nerve for 4 Guard, then it leaves. Awkward,
  * not useless. That principle governs every status Trick in the game.
  */
 export const pillowPuff = {

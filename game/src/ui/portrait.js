@@ -442,14 +442,17 @@ const GEAR = {
 };
 
 const PET_GLYPH = {
-  cat:      'M12 26c-4-3-6-8-6-13l4 3 3-6 4 4h6l4-4 3 6 4-3c0 5-2 10-6 13Z',
-  dog:      'M8 10 5 4l6 3h10l6-3-3 6c3 3 4 7 4 11 0 5-5 8-12 8s-12-3-12-8c0-4 1-8 4-11Z',
-  rabbit:   'M11 16C9 11 8 6 10 3s5-1 6 3l1 7h2l1-7c1-4 4-6 6-3s1 8-1 13c3 2 5 5 5 8 0 5-4 8-9 8s-9-3-9-8c0-3 2-6 5-8Z',
-  bird:     'M6 18c0-7 6-13 13-13 4 0 7 2 9 4l4-1-2 5c1 2 2 4 2 7 0 7-6 12-13 12S6 25 6 18Z',
-  rat:      'M9 14a7 7 0 1 1 14 0c3 1 5 4 5 7 0 5-5 9-12 9S4 26 4 21c0-3 2-6 5-7Z',
-  gecko:    'M6 20c0-6 5-11 11-11s11 5 11 11c0 4-2 7-5 9l3 5-6-3-3 3-3-3-6 3 3-5c-3-2-5-5-5-9Z',
-  hamster:  'M16 5c7 0 12 6 12 13s-5 13-12 13S4 25 4 18 9 5 16 5Z',
-  'guinea pig': 'M16 6c8 0 13 5 13 12s-6 13-13 13S3 25 3 18 8 6 16 6Z',
+  // head silhouettes in a 0..32 box — legible down to ~16px
+  cat:      'M5 13 3.5 3.5 11 7.5h10l7.5-4L27 13c1.8 2 2.8 4.6 2.8 7.2 0 5.6-5.2 9.3-13.8 9.3S2.2 25.8 2.2 20.2C2.2 17.6 3.2 15 5 13Z',
+  dog:      'M8.5 6.5C5 6.5 3 10 3 14.5c0 3.4 1.2 5.6 3 6.6.8 4.7 5 8 10 8s9.2-3.3 10-8c1.8-1 3-3.2 3-6.6C29 10 27 6.5 23.5 6.5c-1.6 0-2.8.8-3.6 2A9.6 9.6 0 0 0 16 7.6c-1.4 0-2.7.3-3.9.9-.8-1.2-2-2-3.6-2Z',
+  rabbit:   'M10.5 15C8.2 10.4 7 5.6 8.6 3.4c1.6-2.2 4 .2 4.6 4l.6 5.2h4.4l.6-5.2c.6-3.8 3-6.2 4.6-4C25 5.6 23.8 10.4 21.5 15c2.6 1.8 4.2 4.4 4.2 7 0 4.6-4 7.4-9.7 7.4S6.3 26.6 6.3 22c0-2.6 1.6-5.2 4.2-7Z',
+  bird:     'M4.5 17.5C4.5 10.6 9.8 5 16.6 5c3.8 0 7 1.7 9.1 4.3L31 8l-2.3 4.4c.5 1.5.8 3.2.8 5 0 6.9-5.3 12.1-12.1 12.1S4.5 24.4 4.5 17.5Z',
+  rat:      'M7.5 12.5a5 5 0 1 1 4.6-6.9A11 11 0 0 1 16 5c1.4 0 2.7.2 3.9.6a5 5 0 1 1 4.6 6.9c1.8 1.9 2.8 4.3 2.8 6.9 0 5.5-4.9 9.1-11.3 9.1S4.7 24.9 4.7 19.4c0-2.6 1-5 2.8-6.9Z',
+  gecko:    'M5 18c0-6.1 4.9-11 11-11s11 4.9 11 11c0 3.3-1.5 6.2-3.8 8.2l1.9 3.6-4.3-1.9-2.4 2.1-2.4-2.1-4.3 1.9 1.9-3.6C6.5 24.2 5 21.3 5 18Z',
+  hamster:  'M8.5 11a4.6 4.6 0 1 1 4.4-6 12 12 0 0 1 6.2 0 4.6 4.6 0 1 1 4.4 6c2 2 3.2 4.7 3.2 7.6 0 6-5 10-10.7 10S5.3 24.6 5.3 18.6c0-2.9 1.2-5.6 3.2-7.6Z',
+  'guinea pig': 'M16 4.5c7.4 0 12.6 5 12.6 11.8S23.4 29.5 16 29.5 3.4 23.1 3.4 16.3 8.6 4.5 16 4.5Zm-8.6 4.2L4.6 4.2 9.9 5.9Zm17.2 0L27.4 4.2 22.1 5.9Z',
+  plant:    'M15 30V17c-4 0-7-3-7-7 4 0 7 3 7 7V9c0-3 1-6 1-6s1 3 1 6v8c0-4 3-7 7-7 0 4-3 7-7 7v13Z',
+  spider:   'M16 10a6 6 0 1 1 0 12 6 6 0 0 1 0-12Zm-6 1L3 6m19 5 7-5M9 16H2m21 0h7m-21 5-6 6m19-6 6 6',
 };
 export function petGlyph(kind) {
   const k = String(kind || '').toLowerCase();
@@ -462,6 +465,8 @@ export function petGlyph(kind) {
   if (k.includes('gecko') || k.includes('lizard')) return PET_GLYPH.gecko;
   if (k.includes('hamster')) return PET_GLYPH.hamster;
   if (k.includes('guinea')) return PET_GLYPH['guinea pig'];
+  if (k.includes('spider')) return PET_GLYPH.spider;
+  if (k.includes('plant')) return PET_GLYPH.plant;
   return PET_GLYPH.cat;
 }
 
@@ -475,7 +480,7 @@ export function kidPortrait(kid, { w = 260, h = 300, tag = true } = {}) {
   const gear = GEAR[look.gear] || '';
   const uid = `kp-${kid.slug}`;
   return svg(`
-<svg class="kidpf" viewBox="0 0 288 320" width="${w}" height="${h}" role="img"
+<svg class="kidpf" viewBox="0 0 288 320" width="${w}" height="${h}" preserveAspectRatio="xMidYMid slice" role="img"
      aria-label="${kid.name}, searching with a flashlight" style="--kid-hue:${look.hue}">
   <defs>
     <radialGradient id="${uid}-room" cx="50%" cy="34%" r="72%">

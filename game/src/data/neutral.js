@@ -6,7 +6,7 @@
  * colourless rewards.
  */
 import { CardType, Rarity, Target } from './schema.js';
-import { guard, draw, hit, hitAll, energy, N, cardsIn, handOthers, bleed, applySelf } from './companions/_util.js';
+import { guard, draw, hit, hitAll, energy, N, cardsIn, handOthers, bleed, applySelf, removeOneDebuff } from './companions/_util.js';
 
 const STATUS = CardType.STATUS, CURSE = CardType.CURSE, ATTACK = CardType.ATTACK, SKILL = CardType.SKILL;
 
@@ -41,9 +41,9 @@ export const STATUS_CARDS = [
   {
     id: 'status/gloom', name: 'Gloom', companion: 'status', type: STATUS, rarity: Rarity.SPECIAL,
     cost: -2, target: Target.NONE, unplayable: true, ethereal: true, keywords: ['ethereal'],
-    text: 'Unplayable. [Ethereal]. When drawn, lose {n} Pluck.',
+    text: 'Unplayable. [Ethereal]. When drawn, lose {n} Nerve.',
     flavor: 'The room gets one shade dimmer.',
-    nums: { n: 1 }, effect: (c) => energy(c, -N(c).n), upgrade: { text: 'Unplayable. [Ethereal]. When drawn, lose {n} Pluck.' },
+    nums: { n: 1 }, effect: (c) => energy(c, -N(c).n), upgrade: { text: 'Unplayable. [Ethereal]. When drawn, lose {n} Nerve.' },
   },
   {
     id: 'status/wrong-side', name: 'Wrong Side', companion: 'status', type: STATUS, rarity: Rarity.SPECIAL,
@@ -137,7 +137,7 @@ export const SHARED_CARDS = [
     cost: 1, target: Target.SELF, text: 'Remove a negative condition from yourself. Draw {n} Trick.',
     flavor: 'Shake it out and pretend it never happened.',
     nums: { n: 1 },
-    effect: (c) => { c.removeDebuff?.(c.self, 1); draw(c, N(c).n); },
+    effect: (c) => { removeOneDebuff(c); draw(c, N(c).n); },
     upgrade: { nums: { n: 2 } },
   },
   {
@@ -152,7 +152,7 @@ export const SHARED_CARDS = [
   {
     id: 'neutral/lucky-penny', name: 'Lucky Penny', companion: 'neutral', type: SKILL, rarity: Rarity.RARE,
     cost: 0, target: Target.SELF, exhaust: true, keywords: ['vanish'],
-    text: 'Gain {n} Pluck. Draw {m0} Trick. [Vanish].',
+    text: 'Gain {n} Nerve. Draw {m0} Trick. [Vanish].',
     flavor: 'Heads up, in a house where nothing is.',
     nums: { n: 2, m0: 1 },
     effect: (c) => { energy(c, N(c).n); draw(c, N(c).m0); },

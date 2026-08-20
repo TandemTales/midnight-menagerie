@@ -45,8 +45,14 @@ export function mm(c) {
 }
 const FALLBACK_SCRATCH = { onceTurn: -1, once: {}, played: 0, patch: [], patchCap: 6, sets: [], setCap: 3, bellyCap: 2, buried: [], reads: [], previewed: {}, turnFlags: {}, lastTurnEndHp: null, untouched: true, installed: false, maxPlump: 3 };
 
-/** Current turn number. */
-export function turn(c) { return c?.e?.state?.turn ?? c?.e?.turn ?? 0; }
+/**
+ * Current turn number.
+ * `engine.state` is a full serialising snapshot getter — never touch it here.
+ */
+export function turn(c) {
+  const t = (typeof c?.turn === 'number') ? c.turn : c?.e?.turn;
+  return typeof t === 'number' ? t : 0;
+}
 
 /** Per-turn scratch bag, auto-cleared when the turn number changes. */
 export function tf(c) {
@@ -168,7 +174,7 @@ export function defineCounters(engine, defs) {
 /** Runtime cards in a pile.  Piles: 'draw' | 'hand' | 'discard' | 'exhaust' | 'limbo' | 'stash'. */
 const PILE_PROP = { draw: 'drawPile', hand: 'hand', discard: 'discardPile', exhaust: 'exhaustPile', limbo: 'limbo', stash: 'stash' };
 export function cardsIn(c, pile) {
-  const v = c?.[PILE_PROP[pile] || pile] ?? c?.e?.piles?.[pile] ?? c.cardsIn?.(pile) ?? c?.e?.state?.[pile] ?? c?.e?.[pile];
+  const v = c?.[PILE_PROP[pile] || pile] ?? c?.e?.piles?.[pile] ?? c.cardsIn?.(pile) ?? c?.e?.[pile];
   return Array.isArray(v) ? v : [];
 }
 /** Other cards in hand (never the card currently resolving). */
@@ -296,7 +302,7 @@ export function empower(c, n) { applySelf(c, 'empowered', n); }
 /** Cards played so far this turn, including the one currently resolving. */
 export function playedThisTurn(c) {
   if (typeof c?.cardsPlayedThisTurn === 'function') return c.cardsPlayedThisTurn() | 0;
-  const n = c?.e?.stats?.cardsPlayedThisTurn ?? c?.e?.state?.cardsPlayedThisTurn ?? c?.e?.cardsPlayedThisTurn;
+  const n = c?.e?.stats?.cardsPlayedThisTurn ?? c?.e?.cardsPlayedThisTurn;
   return typeof n === 'number' ? n : mm(c).played;
 }
 /** Marmalade: this is the third or later Trick played this turn. */
@@ -305,8 +311,8 @@ export function zoomies(c) { return playedThisTurn(c) >= 3; }
 export function isUntouched(c) {
   if (typeof c?.untouched === 'function') return !!c.untouched();
   if (stacks(c, c.self, 'untouched') > 0) return true;
-  const s = c?.e?.state?.untouched;
-  if (s != null) return !!s;
+  const d = c?.e?.stats?.damageTakenLastEnemyTurn;
+  if (typeof d === 'number') return d === 0;
   return mm(c).untouched;
 }
 /** Tricks that have Vanished (exhausted) so far this combat. */
@@ -355,6 +361,48 @@ export function installTrackers(engine, slug) {
 }
 /** Called at the top of every card effect. */
 export function ensure(c, slug) { installTrackers(c?.e, slug); return c; }
+
+/**
+ * A ctx for code that runs outside a card: turn trackers, timers and Power
+ * listeners.  It is the engine's own card ctx with no card attached, so every
+ * helper in this module behaves identically inside and outside a card effect.
+ */
+export function trackerCtx(engine) {
+  if (!engine) return null;
+  if (engine.ctxFor) { const c = engine.ctxFor(null, null, 0); c.card = null; return c; }
+  const player = engine.player;
+  return {
+    e: engine, self: player, target: null, card: null, x: 0,
+    counter: (id) => engine.counter?.(id) ?? 0,
+    addCounter: (id, n) => engine.addCounter?.(id, n) ?? 0,
+    spendCounter: (id, n) => engine.spendCounter?.(id, n) ?? false,
+    count: (id, a) => ((a || player)?.statuses?.get ? (a || player).statuses.get(id) || 0 : ((a || player)?.statuses?.[id] || 0)),
+    applyStatus: (a, id, n) => engine.applyStatus?.(a || player, id, n),
+    damage: (t, n) => engine.dealDamage?.({ attacker: player, defender: t, amount: n, kind: 'attack' }),
+    damageAll: (n) => (engine.livingEnemies?.() || []).forEach(t => engine.dealDamage?.({ attacker: player, defender: t, amount: n, kind: 'attack' })),
+    loseHp: (t, n) => engine.loseHp?.(t || player, n, 'effect'),
+    block: (a, n) => engine.gainBlock?.(a || player, n, { reason: 'effect' }),
+    heal: (a, n) => engine.heal?.(a || player, n, 'effect'),
+    draw: (n) => engine.drawCards?.(n, 'effect'),
+    gainEnergy: (n) => engine.gainEnergy?.(n, 'effect'),
+    loseEnergy: (n) => engine.loseEnergy?.(n, 'effect'),
+    moveCard: (k, pile, o) => engine.moveCard?.(k, pile, o),
+    exhaust: (k) => engine.exhaustCard?.(k, 'effect'),
+    addCard: (def, pile, o) => engine.addCard?.(def, pile, o),
+    setCost: (k, v, sc) => engine.setCardCost?.(k, v, sc || 'turn'),
+    modifyCost: (k, d, sc) => engine.modifyCardCost?.(k, d, sc || 'turn'),
+    retainCard: (k) => { if (k) k.retainThisTurn = true; },
+    schedule: (o) => engine.schedule?.(o),
+    livingEnemies: () => engine.livingEnemies?.() || [],
+    randomEnemy: () => engine.randomEnemy?.(),
+    forEachEnemy: (fn) => (engine.livingEnemies?.() || []).forEach(fn),
+    hand: engine.piles?.hand, drawPile: engine.piles?.draw, discardPile: engine.piles?.discard,
+    exhaustPile: engine.piles?.exhaust, limbo: engine.piles?.limbo, stash: engine.piles?.stash,
+    cardsPlayedThisTurn: () => engine.stats?.cardsPlayedThisTurn ?? 0,
+    exhaustedThisCombat: () => engine.stats?.cardsExhaustedThisCombat ?? 0,
+    untouched: () => (engine.stats?.damageTakenLastEnemyTurn ?? 0) === 0,
+  };
+}
 
 // ── clamps used by the balance validator ────────────────────────────────────
 export const CAP = {

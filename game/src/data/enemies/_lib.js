@@ -182,7 +182,7 @@ export const STATUS_TRICK_DEFS = [
     text: 'Does nothing. [Exhaust]',
     flavor: 'Someone packed this. Nobody knows why.',
     keywords: ['exhaust'],
-    effect() { /* deliberately nothing — it costs a draw, not a Pluck */ },
+    effect() { /* deliberately nothing — it costs a draw, not a Nerve */ },
   },
   {
     id: 'drowsy', name: 'Drowsy', companion: 'status', type: 'status', rarity: 'special',

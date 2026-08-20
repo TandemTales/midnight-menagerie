@@ -346,7 +346,7 @@ export class MapScene extends Scene {
       const r = p[i], gg = p[i + 1], b = p[i + 2];
       const blue = (b - r) / 255;                       // blue ink against warm paper
       const dark = 1 - (r * 0.299 + gg * 0.587 + b * 0.114) / 255;
-      let v = blue * 1.75 + Math.max(0, dark - 0.46) * 0.85;
+      let v = blue * 2.6 + Math.max(0, dark - 0.42) * 1.1;
       v = v <= 0 ? 0 : v >= 1 ? 1 : v;
       v = v * v * (3 - 2 * v);                          // smoothstep: tighten the edge
       p[i] = rgb[0]; p[i + 1] = rgb[1]; p[i + 2] = rgb[2];
@@ -359,13 +359,13 @@ export class MapScene extends Scene {
     //    through a steep smoothstep recovers a hard edge, so what lands on the
     //    paper is crisp ink with a slightly irregular contour — which is what
     //    old drafting ink actually looks like.
-    const k = Math.max(4, Math.min(8, Math.round(WIN.w / sw) + 1));
+    const k = 2;
     const b1 = document.createElement('canvas'); b1.width = sw * k; b1.height = sh * k;
     const bg = b1.getContext('2d', { willReadFrequently: true });
     bg.imageSmoothingEnabled = true; bg.imageSmoothingQuality = 'high';
     bg.drawImage(a, 0, 0, sw * k, sh * k);
     const d2 = bg.getImageData(0, 0, b1.width, b1.height); const p2 = d2.data;
-    const e0 = 0.30, e1 = 0.54, inv = 1 / (e1 - e0);
+    const e0 = 0.16, e1 = 0.68, inv = 1 / (e1 - e0);
     for (let i = 3; i < p2.length; i += 4) {
       let v = (p2[i] / 255 - e0) * inv;
       v = v <= 0 ? 0 : v >= 1 ? 1 : v * v * (3 - 2 * v);
@@ -387,7 +387,7 @@ export class MapScene extends Scene {
     g.imageSmoothingQuality = 'high';
     g.globalAlpha = 0.24;                                     // soft under-bleed
     g.drawImage(b1, dx - 1.8, dy + 1.8, dw, dh);
-    g.globalAlpha = 0.86;                                     // the linework itself
+    g.globalAlpha = 0.74;                                     // the linework itself
     g.drawImage(b1, dx, dy, dw, dh);
     g.restore();
     this._plan = { dx, dy, dw, dh };
@@ -545,26 +545,31 @@ export class MapScene extends Scene {
               fill="url(#${hz.kind === 'boon' ? 'mm-dots' : 'mm-hatch'})"/>
         <path class="mi-zone-edge" d="${roundedWobbleRect(s, x, y, w, h, 22)}"/>
         <g class="mi-zone-tab" transform="translate(${x + 16} ${y - 4})">
-          <rect x="0" y="-27" rx="4" width="${Math.min(w - 26, 20 + hz.name.length * 11.2)}" height="27"/>
-          <text x="10" y="-8">${escapeHtml(hz.name.toUpperCase())}</text>
+          <rect x="0" y="-36" rx="4" width="${Math.min(w - 20, 28 + hz.name.length * 15.4)}" height="36"/>
+          <text x="14" y="-11">${escapeHtml(hz.name.toUpperCase())}</text>
         </g>
       </g>`);
     }
     parts.push('</g>');
 
-    // route edges
-    parts.push('<g class="mi-edges">');
+    // route edges.  Each one is drawn twice: a parchment halo underneath so the
+    // pencil line stays legible over dense architecture, then the line itself.
+    const halos = [], lines = [];
     for (const e of map.edges) {
       const a = m.byId.get(e.from), b = m.byId.get(e.to);
       if (!a || !b) continue;
       const ra = a.type === NodeType.BOSS ? BOSS_R : NODE_R;
       const rb = b.type === NodeType.BOSS ? BOSS_R : NODE_R;
-      const [x1, y1, x2, y2] = trim(a.x * this.SW, a.y * this.SH, b.x * this.SW, b.y * this.SH, ra + 6, rb + 8);
+      const [x1, y1, x2, y2] = trim(a.x * this.SW, a.y * this.SH, b.x * this.SW, b.y * this.SH, ra + 4, rb + 7);
       const d = inkLine(seedOf(e.from + e.to), x1, y1, x2, y2, 11, 9);
-      parts.push(`<path class="mi-edge" data-from="${e.from}" data-to="${e.to}"
-        d="${d}" style="animation-delay:${(0.10 + a.row * 0.026).toFixed(3)}s"/>`);
+      const delay = (0.10 + a.row * 0.026).toFixed(3);
+      halos.push(`<path class="mi-halo" data-from="${e.from}" data-to="${e.to}" d="${d}"
+        style="animation-delay:${delay}s"/>`);
+      lines.push(`<path class="mi-edge" data-from="${e.from}" data-to="${e.to}" d="${d}"
+        style="animation-delay:${delay}s"/>`);
     }
-    parts.push('</g>');
+    parts.push('<g class="mi-halos">' + halos.join('') + '</g>');
+    parts.push('<g class="mi-edges">' + lines.join('') + '</g>');
 
     // the way in: short pencil arrows off the west edge into the first rooms
     parts.push('<g class="mi-entries">');
@@ -588,9 +593,12 @@ export class MapScene extends Scene {
     this.el.ink.innerHTML = parts.join('');
     this.el.ink.style.color = this._inkColor || '#2d4a7a';
     this._edges = [...this.el.ink.querySelectorAll('.mi-edge')];
-    for (const p of this._edges) {
-      const L = p.getTotalLength();
-      p.style.setProperty('--len', L.toFixed(1));
+    this._halos = new Map();
+    for (const p of this.el.ink.querySelectorAll('.mi-halo')) {
+      this._halos.set(p.dataset.from + '>' + p.dataset.to, p);
+    }
+    for (const p of this.el.ink.querySelectorAll('.mi-edge, .mi-halo')) {
+      p.style.setProperty('--len', p.getTotalLength().toFixed(1));
     }
   }
 
@@ -636,7 +644,7 @@ export class MapScene extends Scene {
   _syncStates() {
     const m = this.model;
     const legal = new Set(this._legal());
-    const reach = reachableFrom(m.map, m.currentId);
+    const reach = this._reach = reachableFrom(m.map, m.currentId);
     // depth runs left→right, so the choice you are making is a vertical one
     this._legalIds = [...legal].sort((a, b) =>
       (m.byId.get(a)?.y ?? 0) - (m.byId.get(b)?.y ?? 0));
@@ -661,13 +669,20 @@ export class MapScene extends Scene {
     for (const p of this._edges) {
       const f = p.dataset.from, t = p.dataset.to;
       const walked = walkedPairs.has(f + '>' + t);
-      const open = f === m.currentId || (!m.currentId && m.map.byRow0?.has?.(f));
-      const live = open || (reach.has(f) && reach.has(t)) ||
+      const live = f === m.currentId || (reach.has(f) && reach.has(t)) ||
                    (!m.currentId && m.map.startIds.includes(f));
+      const open = !walked && f === m.currentId;
+      const dead = !walked && !live && !!m.currentId;
       p.classList.toggle('is-walked', walked);
-      p.classList.toggle('is-open', !walked && f === m.currentId);
-      p.classList.toggle('is-dead', !walked && !live && !!m.currentId);
-      p.setAttribute('marker-end', (!walked && f === m.currentId) ? 'url(#mm-arrow)' : '');
+      p.classList.toggle('is-open', open);
+      p.classList.toggle('is-dead', dead);
+      p.setAttribute('marker-end', open ? 'url(#mm-arrow)' : '');
+      const halo = this._halos?.get(f + '>' + t);
+      if (halo) {
+        halo.classList.toggle('is-walked', walked);
+        halo.classList.toggle('is-open', open);
+        halo.classList.toggle('is-dead', dead);
+      }
     }
 
     this.el.screen.classList.toggle('is-underway', !!m.currentId);
@@ -886,19 +901,26 @@ export class MapScene extends Scene {
       ${hz ? `<p class="tip-hz tip-hz--${hz.kind}">
           <span>${hazardSymbol(hz.glyph, 16)}</span>
           <b>${escapeHtml(hz.name)}</b> — ${escapeHtml(hz.rule)}</p>` : ''}
-      <p class="tip-foot">${depth}${visited ? ' · already walked'
-        : legal ? ' · <b>you may go here</b>' : ' · not reachable from here'}</p>`;
+      <p class="tip-foot">${depth} · ${
+        visited ? 'already walked'
+        : legal ? '<b>you may go here</b>'
+        : !this.model.currentId ? 'further into the wing'
+        : this._reach?.has(id) ? 'still ahead of you on this route'
+        : 'no route from where you are standing'}</p>`;
 
     const r = anchor.getBoundingClientRect();
     const t = this.el.tip;
     t.setAttribute('aria-hidden', 'false');
     t.classList.add('is-on');
-    const tw = t.offsetWidth || 300, th = t.offsetHeight || 150;
-    let x = r.left + r.width / 2 - tw / 2;
-    let y = r.top - th - 14;
-    if (y < 78) y = r.bottom + 14;
-    x = clampN(x, 14, innerWidth - tw - 14);
-    y = clampN(y, 14, innerHeight - th - 14);
+    // Sit beside the node, never on top of a sibling choice: the whole point of
+    // the hover is comparing this room against the others you could pick.
+    const tw = t.offsetWidth || 320, th = t.offsetHeight || 160;
+    const gap = 18;
+    let x = r.right + gap;
+    if (x + tw > innerWidth - 14) x = r.left - gap - tw;
+    if (x < 14) { x = clampN(r.left + r.width / 2 - tw / 2, 14, innerWidth - tw - 14); }
+    let y = r.top + r.height / 2 - th / 2;
+    y = clampN(y, 66, innerHeight - th - 58);
     t.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
     if (hz) this.el.screen.dataset.hzFocus = hz.id;
   }

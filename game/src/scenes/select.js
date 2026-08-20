@@ -133,7 +133,7 @@ export const CODEX = {
     deck: [
       [4, 'Bite', 'attack', 'Deal light damage.'],
       [3, 'Sit Pretty', 'skill', 'Gain modest Guard. Gain more if Whole.'],
-      [1, 'Shake, Boy!', 'skill', '0 Pluck. Shed 1 Bone. Draw 1 Trick.'],
+      [1, 'Shake, Boy!', 'skill', '0 Nerve. Shed 1 Bone. Draw 1 Trick.'],
       [1, 'Put Yourself Back Together', 'skill', 'Reattach up to 2 Bones. Guard for each.'],
       [1, 'Go Get It!', 'skill', 'Fetch a non-Slobbered Trick costing 1 or less.'],
     ],
@@ -198,7 +198,7 @@ export const CODEX = {
       [3, 'Round Up', 'skill', 'Gain light Guard.'],
       [1, 'Prickle Up', 'skill', 'Gain 1 Bristle and Regrow 1.'],
       [1, 'Oops, a Quill', 'attack', 'Deal moderate damage and Shed 1.'],
-      [1, 'Found It', 'skill', '0 Pluck. Gather 1. If a Quill was gathered, gain light Guard.'],
+      [1, 'Found It', 'skill', '0 Nerve. Gather 1. If a Quill was gathered, gain light Guard.'],
     ],
   },
   hush: {
@@ -280,7 +280,7 @@ export const CODEX = {
     deck: [
       [4, 'Little Chomp', 'attack', 'Deal light damage.'],
       [4, 'Guard the Ankles', 'skill', 'Best Friend gains light Guard.'],
-      [1, 'Bury This!', 'skill', '0 Pluck. Bury another Trick from hand. Draw 1.'],
+      [1, 'Bury This!', 'skill', '0 Nerve. Bury another Trick from hand. Draw 1.'],
       [1, 'Dig It Up!', 'skill', 'Dig Up one Trick, or Best Friend gains light Guard.'],
     ],
   },
@@ -292,7 +292,7 @@ export const CODEX = {
       ['Reads', 'Placed predictions. Correct Reads pay out; Blind Reads gamble for more.'],
       ['Web', 'Accumulates on an enemy and does nothing alone — Web spenders are the payoff.'],
       ['Intent Reordering', 'Actually rearrange the enemy’s action queue. Anchored intents resist it.'],
-      ['Set Tricks', 'Pay Pluck now for an effect that fires automatically on a future trigger.'],
+      ['Set Tricks', 'Pay Nerve now for an effect that fires automatically on a future trigger.'],
     ],
     strengths: ['Exceptional future information', 'Reorders enemy actions instead of just weakening them', 'Very efficient delayed effects', 'Punishes predictable enemies brutally'],
     weaknesses: ['Setup costs real tempo', 'Web does nothing by itself', 'Information has diminishing returns', 'Anchored intents refuse to move'],
@@ -313,7 +313,7 @@ export const CODEX = {
       ['Copy', 'Duplicate a Trick for this fight. Copies are real, and usually Vanish.'],
       ['Creased', 'A Trick folded too many times. Powerful, and one use from falling apart.'],
       ['Origami', 'Transform a Trick into an entirely different one from the same pool.'],
-      ['Paper Thin', 'High-power effects that cost durability rather than Pluck.'],
+      ['Paper Thin', 'High-power effects that cost durability rather than Nerve.'],
     ],
     strengths: ['Enormous single-turn ceilings', 'Duplicates rare finds', 'Reshapes bad draws into good ones', 'Very high skill expression'],
     weaknesses: ['Fragile effects vanish permanently', 'Deck degrades as it folds', 'Poor at grinding long fights', 'Punished hard by a bad opening'],
@@ -365,7 +365,7 @@ export const CODEX = {
       [4, 'Curl the Leaves', 'skill', 'Gain light Guard.'],
       [1, 'Tiny Creeper', 'skill', 'Plant a Creeping Ivy.'],
       [1, 'Cup of Water', 'skill', 'Give one immature Plant 1 Growth, or gain light Guard.'],
-      [1, 'Careful Snip', 'skill', '0 Pluck. Harvest a Mature Plant, or Uproot an immature one.'],
+      [1, 'Careful Snip', 'skill', '0 Nerve. Harvest a Mature Plant, or Uproot an immature one.'],
     ],
   },
 };
@@ -426,7 +426,7 @@ export const KID_CODEX = {
     lost: 'Slipped his leash near the property fence.',
     note: '"Scout tracks. If I can get him to hear me, he’ll come."',
     trait: 'Loud, brave, improvises constantly, apologises later.',
-    perk: ['Whatever Works', 'Start with one extra Snack and find Trinkets more often.'],
+    perk: ['Whatever Works', 'Start with one extra Snack and find Lost Things more often.'],
     focus: 'Consumables, temporary resources, Treasure, improvisation',
     pack: [['Dog Whistle', 1], ['Pet Treats', 1], ['Thermos', 2], ['Glow Sticks', 1]],
   },
@@ -460,6 +460,32 @@ const HAUNTS = [
 ];
 
 const TYPE_LABEL = { attack: 'Attack', skill: 'Skill', power: 'Power' };
+
+/** Companion species, for Kid/Companion pairing flavour. */
+const COMPANION_SPECIES = {
+  marmalade: 'cat', wisp: null, crumbula: 'rodent', boggle: null, bones: 'dog',
+  pipkin: 'amphibian', taffy: null, truffle: 'rodent', hush: 'rodent', mopsy: 'rabbit',
+  drizzle: null, pudding: 'dog', wink: 'spider', crinkle: 'bird', mossbit: 'reptile',
+  brambleboo: 'plant',
+};
+const PET_SPECIES = {
+  maya: 'cat', mateo: 'bird', amina: 'rabbit', eli: 'rodent',
+  priya: 'reptile', jordan: 'dog', lena: 'rodent', lucy: 'rodent',
+};
+
+/** One line about what happens when this Kid walks in with this Companion. */
+function pairingNote(compSlug, kidSlug) {
+  const c = COMPANION_BY_SLUG[compSlug];
+  const k = KIDS.find((x) => x.slug === kidSlug);
+  if (!c || !k) return '';
+  const same = COMPANION_SPECIES[compSlug] && COMPANION_SPECIES[compSlug] === PET_SPECIES[kidSlug];
+  if (same) {
+    return `${c.name} keeps looking at ${k.name.split(' ')[0]}'s collar tag. ` +
+      `Whatever ${k.pet} is now, ${c.name} was once the same kind of animal — and remembers being found.`;
+  }
+  return `${c.name} does not know ${k.pet}. But ${c.name} knows the house, ` +
+    `and ${k.name.split(' ')[0]} knows what she is looking for. That is enough to get through the door.`;
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -671,6 +697,7 @@ export class SelectScene extends Scene {
             <ul class="kid__packlist"></ul>
           </div>
           <p class="kid__focus"></p>
+          <div class="kid__pairing"><h3 class="hero__h">Together</h3><p class="kid__pairtext"></p></div>
         </div>
       </div>
       <div class="kid__strip" role="listbox" aria-label="Choose a Kid"></div>`;
@@ -953,6 +980,7 @@ export class SelectScene extends Scene {
     step.querySelector('.kid__perkname').textContent = info.perk[0];
     step.querySelector('.kid__perkdesc').textContent = info.perk[1];
     step.querySelector('.kid__focus').innerHTML = `<span class="foot__lbl">Plays around</span> ${info.focus}`;
+    step.querySelector('.kid__pairtext').textContent = pairingNote(this.state.companion, slug);
 
     const used = info.pack.reduce((s, [, n]) => s + n, 0);
     step.querySelector('.kid__slots').textContent = `${used} / 5 slots`;
@@ -994,8 +1022,8 @@ export class SelectScene extends Scene {
     // move focus somewhere sensible for keyboard users
     requestAnimationFrame(() => {
       if (mode === 'hero') this._hero.querySelector('[data-act="tokid"]')?.focus();
-      else if (mode === 'kid') this._kidStep.querySelector('.kid-tile.is-selected, .kid-tile')?.focus();
-      else this._grid.querySelector('.companion-tile:not(.is-locked)')?.focus();
+      else if (mode === 'kid') (this._kidStep.querySelector('.kid-tile.is-selected') || this._kidStep.querySelector('.kid-tile'))?.focus();
+      else (this._grid.querySelector('.companion-tile.is-selected') || this._grid.querySelector('.companion-tile:not(.is-locked)'))?.focus();
     });
   }
 

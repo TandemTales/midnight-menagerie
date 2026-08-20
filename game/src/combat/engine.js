@@ -397,7 +397,7 @@ export class CombatEngine {
     return value;
   }
 
-  // ── resources: Courage, Guard, Pluck ──────────────────────────────────────
+  // ── resources: Courage, Guard, Nerve ──────────────────────────────────────
 
   /** Post-Dexterity, post-Frail Guard value. Pure; used by previews and intents. */
   previewBlockValue(actor, amount, opts = {}) {
@@ -1115,7 +1115,7 @@ export class CombatEngine {
 
     const cost = this.costOf(card);
     const need = cost === -1 ? 0 : cost;
-    if (this.player.energy < need) return { ok: false, reason: `Not enough Pluck (needs ${need}).` };
+    if (this.player.energy < need) return { ok: false, reason: `Not enough Nerve (needs ${need}).` };
 
     if (card.target === Target.ENEMY) {
       const t = this.actor(targetId);

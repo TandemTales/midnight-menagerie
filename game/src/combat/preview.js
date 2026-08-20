@@ -59,7 +59,7 @@ export function previewCard(engine, cardUid, targetId = null, opts = {}) {
   if (!card) { out.reason = 'No such Trick.'; return out; }
 
   const check = engine.canPlay(cardUid, targetId);
-  const onlyCost = !check.ok && /Pluck/.test(check.reason);
+  const onlyCost = !check.ok && /Nerve/.test(check.reason);
   if (!check.ok && !(opts.assumeAffordable && onlyCost)) {
     out.reason = check.reason;
     out.cost = Math.max(0, engine.costOf(card));

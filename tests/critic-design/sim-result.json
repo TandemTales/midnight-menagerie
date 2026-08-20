@@ -1,0 +1,3451 @@
+{
+ "batches": [
+  {
+   "label": "Foyer Scuffle 1 \u2014 Dust Bunny (20)",
+   "encId": "foyer-1",
+   "n": 200,
+   "winRate": 66.5,
+   "losses": 67,
+   "timeouts": 0,
+   "turns": {
+    "n": 200,
+    "mean": 2,
+    "min": 2,
+    "max": 2,
+    "p25": 2,
+    "med": 2,
+    "p75": 2
+   },
+   "dmgTaken": {
+    "n": 200,
+    "mean": NaN,
+    "min": 0,
+    "max": NaN,
+    "p25": 0,
+    "med": 0,
+    "p75": NaN
+   },
+   "hpLeft": {
+    "n": 200,
+    "mean": 45.22,
+    "min": 0,
+    "max": 68,
+    "p25": 0,
+    "med": 68,
+    "p75": 68
+   },
+   "turnHist": "2+:200",
+   "dmgHist": "0+:133  NaN+:67"
+  },
+  {
+   "label": "Foyer Scuffle 2 \u2014 Coatrack Crawler (33)",
+   "encId": "foyer-2",
+   "n": 200,
+   "winRate": 0,
+   "losses": 200,
+   "timeouts": 0,
+   "turns": {
+    "n": 200,
+    "mean": 2,
+    "min": 2,
+    "max": 2,
+    "p25": 2,
+    "med": 2,
+    "p75": 2
+   },
+   "dmgTaken": {
+    "n": 200,
+    "mean": NaN,
+    "min": NaN,
+    "max": NaN,
+    "p25": NaN,
+    "med": NaN,
+    "p75": NaN
+   },
+   "hpLeft": {
+    "n": 200,
+    "mean": 0,
+    "min": 0,
+    "max": 0,
+    "p25": 0,
+    "med": 0,
+    "p75": 0
+   },
+   "turnHist": "2+:200",
+   "dmgHist": "NaN+:200"
+  },
+  {
+   "label": "Foyer Scuffle 14 \u2014 hardest normal (67)",
+   "encId": "foyer-14",
+   "n": 200,
+   "winRate": 0,
+   "losses": 200,
+   "timeouts": 0,
+   "turns": {
+    "n": 200,
+    "mean": 2,
+    "min": 2,
+    "max": 2,
+    "p25": 2,
+    "med": 2,
+    "p75": 2
+   },
+   "dmgTaken": {
+    "n": 200,
+    "mean": NaN,
+    "min": NaN,
+    "max": NaN,
+    "p25": NaN,
+    "med": NaN,
+    "p75": NaN
+   },
+   "hpLeft": {
+    "n": 200,
+    "mean": 0,
+    "min": 0,
+    "max": 0,
+    "p25": 0,
+    "med": 0,
+    "p75": 0
+   },
+   "turnHist": "2+:200",
+   "dmgHist": "NaN+:200"
+  },
+  {
+   "label": "Foyer elite \u2014 Grand Coatcheck (96)",
+   "encId": "foyer-scare-coatcheck",
+   "n": 200,
+   "winRate": 0,
+   "losses": 200,
+   "timeouts": 0,
+   "turns": {
+    "n": 200,
+    "mean": 2,
+    "min": 2,
+    "max": 2,
+    "p25": 2,
+    "med": 2,
+    "p75": 2
+   },
+   "dmgTaken": {
+    "n": 200,
+    "mean": NaN,
+    "min": NaN,
+    "max": NaN,
+    "p25": NaN,
+    "med": NaN,
+    "p75": NaN
+   },
+   "hpLeft": {
+    "n": 200,
+    "mean": 0,
+    "min": 0,
+    "max": 0,
+    "p25": 0,
+    "med": 0,
+    "p75": 0
+   },
+   "turnHist": "2+:200",
+   "dmgHist": "NaN+:200"
+  },
+  {
+   "label": "Foyer BOSS \u2014 The Butler (250)",
+   "encId": "foyer-boss",
+   "n": 200,
+   "winRate": 0,
+   "losses": 200,
+   "timeouts": 0,
+   "turns": {
+    "n": 200,
+    "mean": 2,
+    "min": 2,
+    "max": 2,
+    "p25": 2,
+    "med": 2,
+    "p75": 2
+   },
+   "dmgTaken": {
+    "n": 200,
+    "mean": NaN,
+    "min": NaN,
+    "max": NaN,
+    "p25": NaN,
+    "med": NaN,
+    "p75": NaN
+   },
+   "hpLeft": {
+    "n": 200,
+    "mean": 0,
+    "min": 0,
+    "max": 0,
+    "p25": 0,
+    "med": 0,
+    "p75": 0
+   },
+   "turnHist": "2+:200",
+   "dmgHist": "NaN+:200"
+  }
+ ],
+ "auditMismatch": [
+  {
+   "encId": "foyer-1",
+   "seed": 1001,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-1",
+   "seed": 1001,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    }
+   ],
+   "promisedTotal": 11,
+   "actualDealt": 73
+  },
+  {
+   "encId": "foyer-1",
+   "seed": 1002,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-1",
+   "seed": 1004,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 10
+  },
+  {
+   "encId": "foyer-1",
+   "seed": 1004,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    }
+   ],
+   "promisedTotal": 11,
+   "actualDealt": 73
+  },
+  {
+   "encId": "foyer-1",
+   "seed": 1009,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-1",
+   "seed": 1009,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    }
+   ],
+   "promisedTotal": 11,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-1",
+   "seed": 1010,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    }
+   ],
+   "promisedTotal": 11,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-1",
+   "seed": 1012,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    }
+   ],
+   "promisedTotal": 11,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-1",
+   "seed": 1015,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    }
+   ],
+   "promisedTotal": 11,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-1",
+   "seed": 1017,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-1",
+   "seed": 1020,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-1",
+   "seed": 1020,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    }
+   ],
+   "promisedTotal": 11,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-1",
+   "seed": 1023,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-1",
+   "seed": 1023,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    }
+   ],
+   "promisedTotal": 11,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-1",
+   "seed": 1024,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    }
+   ],
+   "promisedTotal": 11,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1000,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1001,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "brace",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1001,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 73
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1002,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "brace",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1002,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 73
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1003,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1004,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "brace",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 10
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1004,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 73
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1005,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1006,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1007,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1008,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1009,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "brace",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1009,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1010,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1011,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1012,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1013,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1014,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1015,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1016,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1017,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "brace",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1017,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 73
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1018,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1019,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1020,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "brace",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1020,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1021,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1022,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1023,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "brace",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1023,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-2",
+   "seed": 1024,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Coatrack Crawler",
+     "move": "umbrella-jab",
+     "dmg": 7,
+     "hits": 1,
+     "total": 7
+    }
+   ],
+   "promisedTotal": 7,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1000,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 83
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1001,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "mind-your-manners",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "call-for-service",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1001,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 73
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1002,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "mind-your-manners",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "call-for-service",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1002,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 73
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1003,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1004,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "mind-your-manners",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "call-for-service",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 10
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1004,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 73
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1005,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1006,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 83
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1007,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1008,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 83
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1009,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "mind-your-manners",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "call-for-service",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1009,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1010,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1011,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 83
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1012,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1013,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1014,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 83
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1015,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1016,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1017,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "mind-your-manners",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "call-for-service",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1017,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 73
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1018,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1019,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1020,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "mind-your-manners",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "call-for-service",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1020,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1021,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 83
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1022,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1023,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "mind-your-manners",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "call-for-service",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1023,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-14",
+   "seed": 1024,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "Door Greeter",
+     "move": "threshold-slam",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    },
+    {
+     "id": "e1",
+     "name": "Calling Bell",
+     "move": "ring",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    },
+    {
+     "id": "e2",
+     "name": "Dust Bunny",
+     "move": "tumble",
+     "dmg": 11,
+     "hits": 1,
+     "total": 11
+    },
+    {
+     "id": "s1",
+     "name": "Dust Bunny",
+     "move": "gather",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 21,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1000,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 83
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1001,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "check-your-things",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1001,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 73
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1002,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "check-your-things",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1002,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 73
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1003,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1004,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "check-your-things",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 10
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1004,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 73
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1005,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1006,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 83
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1007,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1008,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 83
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1009,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "check-your-things",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1009,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1010,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1011,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 83
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1012,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1013,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1014,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 83
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1015,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1016,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1017,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "check-your-things",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1017,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 73
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1018,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1019,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1020,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "check-your-things",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1020,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1021,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 83
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1022,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1023,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "check-your-things",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1023,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-scare-coatcheck",
+   "seed": 1024,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Grand Coatcheck",
+     "move": "umbrella-sweep",
+     "dmg": 15,
+     "hits": 1,
+     "total": 15
+    }
+   ],
+   "promisedTotal": 15,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1000,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1001,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "formal-welcome",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1001,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 73
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1002,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "formal-welcome",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1002,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 73
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1003,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1004,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "formal-welcome",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 10
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1004,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 73
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1005,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1006,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1007,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1008,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1009,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "formal-welcome",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1009,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1010,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1011,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1012,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1013,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1014,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1015,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1016,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1017,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "formal-welcome",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1017,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 73
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1018,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1019,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1020,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "formal-welcome",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1020,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1021,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1022,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1023,
+   "turn": 1,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "formal-welcome",
+     "dmg": 0,
+     "hits": 0,
+     "total": 0
+    }
+   ],
+   "promisedTotal": 0,
+   "actualDealt": 5
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1023,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 78
+  },
+  {
+   "encId": "foyer-boss",
+   "seed": 1024,
+   "turn": 2,
+   "promised": [
+    {
+     "id": "e0",
+     "name": "The Butler",
+     "move": "walking-stick",
+     "dmg": 10,
+     "hits": 1,
+     "total": 10
+    }
+   ],
+   "promisedTotal": 10,
+   "actualDealt": 78
+  }
+ ],
+ "auditRows": 234,
+ "notes": [],
+ "hintGaps": [
+  "dust-bunny/tumble: engine ignores intentFn",
+  "lost-luggage/pack-wrong: engine ignores addsCards",
+  "calling-bell/ring: engine ignores appliesStatus",
+  "calling-bell/call-for-service: engine ignores summons",
+  "grand-coatcheck/hanger-flurry: engine ignores hitsFn",
+  "unwelcome-guest/too-familiar: engine ignores intentFn",
+  "house-bell/ring-for-service: engine ignores summons",
+  "house-bell/second-ring: engine ignores summons",
+  "butler/dust-them-off: engine ignores hitsFn",
+  "butler/service-please: engine ignores summons",
+  "butler/remove-the-intruder: engine ignores hitsFn",
+  "button-baby/sew-on: engine ignores appliesStatus",
+  "porcelain-doll/sharp-little-hands: engine ignores hitsFn",
+  "toy-chest/spill-toys: engine ignores summons",
+  "patchwork-giant/stuffed-fist: engine ignores hitsFn",
+  "patchwork-giant/wild-flail: engine ignores hitsFn",
+  "porcelain-twin-prim/little-slap: engine ignores hitsFn",
+  "governess/tighten-the-stitch: engine ignores blockFn",
+  "governess/emergency-repair: engine ignores blockFn",
+  "pillow-puff/feather-cloud: engine ignores addsCards",
+  "wardrobe-guest/rustle: engine ignores blockFn",
+  "night-terror/watching-you: engine ignores hitsFn, intentFn, blockFn",
+  "blanket-hydra/tangle: engine ignores hitsFn, intentFn",
+  "hydra-head-snoring/snore: engine ignores addsCards",
+  "hydra-head-crying/wail: engine ignores blockFn",
+  "the-wardrobe/creak-open: engine ignores summons",
+  "bedframe-beast/scratching-below: engine ignores addsCards",
+  "bedframe-beast/grab-and-drag: engine ignores addsCards"
+ ],
+ "declaredHooks": {
+  "onSpawn": 17,
+  "onTurnStart": 10,
+  "onPlayerTurnEnd": 10,
+  "onDamaged": 2,
+  "onPlayerCard": 1,
+  "onAllyDeath": 1,
+  "onDeath": 9
+ },
+ "hooksActuallyCalled": [
+  "onSpawn"
+ ],
+ "hooksDeclaredOnDustBunny": [
+  "onSpawn",
+  "onTurnStart"
+ ],
+ "coatrackProbe": {
+  "guardIntact": 7,
+  "afterGuardStripped": 7,
+  "actualJabDamage": 68,
+  "docSays": "12 intact \u2192 7 when stripped"
+ },
+ "dustBunnyProbe": {
+  "trace": [
+   {
+    "turn": 1,
+    "move": "gather",
+    "shown": 0,
+    "dust": 0,
+    "enemyHp": 20
+   },
+   {
+    "afterEnemyTurn": true,
+    "dealt": 0,
+    "dust": 1
+   },
+   {
+    "turn": 2,
+    "move": "tumble",
+    "shown": 11,
+    "dust": 1,
+    "enemyHp": 20
+   },
+   {
+    "afterEnemyTurn": true,
+    "dealt": 68,
+    "dust": 0
+   }
+  ],
+  "docSays": "ignored Bunny banks 2 Dust per Gather turn; Tumble intent projects up to 17"
+ },
+ "butlerProbe": {
+  "seq": [
+   {
+    "turn": 1,
+    "hp": 250,
+    "move": "formal-welcome",
+    "shown": 0
+   },
+   {
+    "turn": 2,
+    "hp": 250,
+    "move": "walking-stick",
+    "shown": 10
+   }
+  ],
+  "docSays": "transition at <=140: This Is Most Irregular, then P2 move set"
+ }
+}

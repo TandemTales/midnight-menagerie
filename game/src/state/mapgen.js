@@ -242,8 +242,10 @@ export function blueprintPlan(regionId, aspect = 1.98) {
   let w = Math.min(c.w, MASTER.w);
   let h = Math.min(w / aspect, MASTER.h);
   w = Math.min(w, h * aspect);
-  const sx = clamp(c.cx - w / 2, 0, MASTER.w - w);
-  const sy = clamp(c.cy - h / 2, 0, MASTER.h - h);
+  // stay clear of the master sheet's own ornamental border
+  const bx = Math.min(88, (MASTER.w - w) / 2), by = Math.min(74, (MASTER.h - h) / 2);
+  const sx = clamp(c.cx - w / 2, bx, MASTER.w - w - bx);
+  const sy = clamp(c.cy - h / 2, by, MASTER.h - h - by);
   return { url: MASTER.url, sx: Math.round(sx), sy: Math.round(sy), sw: Math.round(w), sh: Math.round(h) };
 }
 
@@ -251,11 +253,11 @@ export function blueprintPlan(regionId, aspect = 1.98) {
 // Node vocabulary — the words and one-line promises the player reads on hover.
 // ─────────────────────────────────────────────────────────────────────────────
 export const NODE_INFO = {
-  [NodeType.SCUFFLE]:   { label: 'Scuffle',     blurb: 'Something in this room does not want you here.',            reward: 'Trinkets · a Trick to learn' },
-  [NodeType.BIG_SCARE]: { label: 'Big Scare',   blurb: 'A named horror holds this room. Harder, and worth it.',      reward: 'A Keepsake · more Trinkets' },
+  [NodeType.SCUFFLE]:   { label: 'Scuffle',     blurb: 'Something in this room does not want you here.',            reward: 'Lost Things · a Trick to learn' },
+  [NodeType.BIG_SCARE]: { label: 'Big Scare',   blurb: 'A named horror holds this room. Harder, and worth it.',      reward: 'A Keepsake · more Lost Things' },
   [NodeType.BOSS]:      { label: 'Boss',        blurb: 'The keeper of this wing. The way onward is behind it.',       reward: 'A Boss Keepsake · the next region' },
   [NodeType.SAFE]:      { label: 'Safe Room',   blurb: 'Barricade the door, drag the table over, hang the blankets.', reward: 'Rest · upgrade a Trick · talk' },
-  [NodeType.SHOP]:      { label: 'Lost Things', blurb: 'Mr. Moth trades in buttons, keys and things people dropped.', reward: 'Spend Trinkets' },
+  [NodeType.SHOP]:      { label: 'Lost Things', blurb: 'Mr. Moth trades in buttons, keys and things people dropped.', reward: 'Spend Lost Things' },
   [NodeType.CURIOSITY]: { label: 'Curiosity',   blurb: 'The house is doing something odd in here. Your call.',        reward: 'Unknown · sometimes a Clue' },
   [NodeType.TREASURE]:  { label: 'Treasure',    blurb: 'Something worth carrying out has been left behind.',          reward: 'A Keepsake' },
   [NodeType.RESCUE]:    { label: 'Rescue',      blurb: 'A Companion is trapped in here. It has been a long time.',    reward: 'Free a Menagerie Companion' },
@@ -294,7 +296,7 @@ export const HAZARDS = [
     rule: 'Enemy intents are hidden on the first turn of every Scuffle in this wing.',
     note: 'furniture covered · room closed', glyph: 'sheet' },
   { id: 'cold-draught', kind: 'hazard', name: 'A Cold Draught',
-    rule: 'You begin every Scuffle here with 2 Chill: your first Trick each turn costs 1 more Pluck.',
+    rule: 'You begin every Scuffle here with 2 Chill: your first Trick each turn costs 1 more Nerve.',
     note: 'window sashes never seated', glyph: 'draught' },
   { id: 'pipes',        kind: 'hazard', name: 'The Pipes Rattle',
     rule: 'Noise carries. Every Scuffle in this wing brings one extra small enemy.',
@@ -448,6 +450,17 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
     [NodeType.UNKNOWN]: (n) => n.row >= 2 && n.row !== lastWalk,
     [NodeType.CURIOSITY]: (n) => n.row >= 2,
   };
+
+  // A Safe Room on the last legal row before the boss: likely, never certain.
+  // (Only the paths that happen to run through it get the rest — which is the
+  // decision.  StS guarantees this; we deliberately do not.)
+  if (quota[NodeType.SAFE] > 0 && rng.chance(0.80)) {
+    const lastSafeRow = rowsOf[lastWalk - 1] || [];
+    const cand = rng.shuffle(lastSafeRow.filter(n => !n.type));
+    for (const n of cand) {
+      if (n.row !== 13 && (n.row + 1) !== 14) { n.type = NodeType.SAFE; quota[NodeType.SAFE]--; break; }
+    }
+  }
 
   // Place scarce, heavily-constrained types first.
   const order = [NodeType.RESCUE, NodeType.BIG_SCARE, NodeType.SAFE, NodeType.TREASURE,

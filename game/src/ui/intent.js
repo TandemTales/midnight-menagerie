@@ -87,6 +87,14 @@ function glyph(type) {
         { d: 'M28 62 L50 34 L72 62 L60 62 L50 49 L40 62 Z' },
         { d: 'M36 76 L50 58 L64 76 L56 76 L50 68 L44 76 Z' },
       ];
+    case Intent.DEFEND_DEBUFF:
+      // shield with a FALLING chevron — the mirror of DEFEND_BUFF, so the two
+      // are told apart by direction alone, with no colour involved
+      return [
+        { d: 'M50 12 C64 19 76 21 86 21 C86 54 74 76 50 88 C26 76 14 54 14 21 C24 21 36 19 50 12 Z', hollow: 1 },
+        { d: 'M28 34 L40 34 L50 47 L60 34 L72 34 L50 62 Z' },
+        { d: 'M36 62 L44 62 L50 70 L56 62 L64 62 L50 80 Z' },
+      ];
     case Intent.BUFF:
       // a triple rising chevron with a spark above
       return [
@@ -149,7 +157,7 @@ function glyph(type) {
 
 /** Short plain-language label under the glyph when there is no number to show. */
 const WORD = {
-  [Intent.DEFEND]: 'Guard', [Intent.DEFEND_BUFF]: 'Guard',
+  [Intent.DEFEND]: 'Guard', [Intent.DEFEND_BUFF]: 'Guard', [Intent.DEFEND_DEBUFF]: 'Guard',
   [Intent.BUFF]: 'Buff', [Intent.DEBUFF]: 'Debuff', [Intent.STRONG_DEBUFF]: 'Debuff',
   [Intent.SUMMON]: 'Summon', [Intent.SLEEP]: 'Asleep', [Intent.STUN]: 'Stunned',
   [Intent.ESCAPE]: 'Fleeing', [Intent.UNKNOWN]: '?',
@@ -210,8 +218,10 @@ export class IntentView {
     if (!intent) { this.el.classList.add('is-empty'); return this; }
     this.el.classList.remove('is-empty');
 
-    const fam = intent.family || intentFamily(intent.type);
     const type = intent.type || Intent.UNKNOWN;
+    // DEFEND_DEBUFF postdates combat/intents.js's family map — it is a defense
+    // read, not a "special" one. Remove this line once the engine agrees.
+    const fam = type === Intent.DEFEND_DEBUFF ? 'defense' : (intent.family || intentFamily(type));
 
     if (this._type !== type) {
       this._type = type;

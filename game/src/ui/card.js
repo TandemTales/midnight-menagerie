@@ -254,7 +254,7 @@ export class CardView {
     const s = this.state;
     return [
       this.def.name + (s.upgraded ? ' plus' : ''),
-      `${this.cost} Pluck`,
+      `${this.cost} Nerve`,
       TYPE_LABEL[this.def.type] || this.def.type,
       this.def.rarity,
       String(this.text).replace(/[{}\[\]*]/g, ''),

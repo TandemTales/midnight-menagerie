@@ -335,13 +335,13 @@ export const REGIONS = {
                  tint: '#fff2d8', wispTint: '#ffd9a8', emberTint: '#ffcf7a',
                  speed: 0.55, scale: 1.15, wind: 0.35, density: 1.0 },
     lights: [
-      { kind: 'warm', x: 0.0, y: 4.0, z: -15.0, color: '#ffe0a0', intensity: 2.10, radius: 13.0, flicker: false },
+      { kind: 'warm', x: 0.0, y: 4.2, z: -16.4, color: '#ffe0a0', intensity: 1.35, radius: 11.0, flicker: false },
       { kind: 'warm', x: -6.0, y: 2.2, z: -10.0, color: '#ffcf8a', intensity: 0.95, radius: 7.0 },
       { kind: 'warm', x: 6.0, y: 2.2, z: -10.0, color: '#ffcf8a', intensity: 0.95, radius: 7.0 },
       { kind: 'cold', x: 0.0, y: 1.0, z: -4.0, color: '#8fd9ec', intensity: 0.35, radius: 5.0 },
     ],
     shafts: { count: 3, spread: 16, y: 8.0, z: -13, angle: 0.20, length: 12, width: 3.8, intensity: 0.70 },
-    bloom: 1.0, warmTone: 0.15, halation: 0.90, vignette: 0.88, grain: 0.022,
+    bloom: 0.80, warmTone: 0.15, halation: 0.55, vignette: 0.92, grain: 0.022, openGlow: 0.55,
   },
 };
 
@@ -482,7 +482,7 @@ export class Atmosphere {
     const w = this._toWorld(pos, this._v3);
     // particles
     if (opts.burst !== false) {
-      this.particles.burst(w.x, w.y, w.z, colorHex, 2.2 + strength * 2.4, 0.75);
+      this.particles.burst(w.x, w.y, w.z, colorHex, 1.1 + strength * 1.3, 0.62);
     }
     // a real light flash at the hit point
     this.flare.setPos(w.x, w.y, w.z);
@@ -494,6 +494,7 @@ export class Atmosphere {
     this._v3b.copy(w).project(this.ctx.stage.camera);
     this.ctx.stage.ripple(this._v3b.x * 0.5 + 0.5, this._v3b.y * 0.5 + 0.5, Math.min(strength, 1.6));
     if (opts.shake !== false) this.ctx.stage.shake(0.07 + 0.10 * strength, 10);
+    if (strength >= 0.8) this.ctx.stage.flash(colorHex, 0.05 * Math.min(strength, 2), 0.14);
     return this;
   }
 

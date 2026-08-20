@@ -140,14 +140,12 @@ export class Transition {
       p.style.opacity = '0';
       p.style.transform = '';
     }
-    this._parts.veilTop.style.transform = 'translateY(-101%)';
-    this._parts.veilBot.style.transform = 'translateY(101%)';
-    this._parts.veilTop.style.opacity = '1';
-    this._parts.veilBot.style.opacity = '1';
-    this._parts.doorL.style.transform = 'translateX(-101%)';
-    this._parts.doorR.style.transform = 'translateX(101%)';
-    this._parts.doorL.style.opacity = '1';
-    this._parts.doorR.style.opacity = '1';
+    // Panels are parked just outside the frame by their own offsets, so the
+    // "open" state is transform:none and "closed" is a full self-width slide.
+    this._parts.veilTop.style.transform = 'translateY(0%)';
+    this._parts.veilBot.style.transform = 'translateY(0%)';
+    this._parts.doorL.style.transform = 'translateX(0%)';
+    this._parts.doorR.style.transform = 'translateX(0%)';
     this.el.style.setProperty('--mm-hole', '60%');
   }
 
@@ -189,18 +187,19 @@ const TRANSITIONS = {
   veil: {
     in(t) {
       const { veilTop, veilBot, veilGlow } = t._parts;
+      veilTop.style.opacity = veilBot.style.opacity = '1';
       veilGlow.style.opacity = '1';
       return clock.ramp(0.30, (v) => {
-        veilTop.style.transform = `translateY(${-101 + 101 * v}%)`;
-        veilBot.style.transform = `translateY(${101 - 101 * v}%)`;
+        veilTop.style.transform = `translateY(${101 * v}%)`;
+        veilBot.style.transform = `translateY(${-101 * v}%)`;
         veilGlow.style.opacity = String(Math.sin(Math.PI * v) * 0.9);
       }, EASE_IN);
     },
     out(t) {
       const { veilTop, veilBot, veilGlow } = t._parts;
       return clock.ramp(0.32, (v) => {
-        veilTop.style.transform = `translateY(${-101 * v}%)`;
-        veilBot.style.transform = `translateY(${101 * v}%)`;
+        veilTop.style.transform = `translateY(${101 * (1 - v)}%)`;
+        veilBot.style.transform = `translateY(${-101 * (1 - v)}%)`;
         veilGlow.style.opacity = String((1 - v) * 0.8);
       }, EASE_OUT);
     },
@@ -210,10 +209,11 @@ const TRANSITIONS = {
   doorway: {
     async in(t) {
       const { doorL, doorR, doorSeam } = t._parts;
+      doorL.style.opacity = doorR.style.opacity = '1';
       doorSeam.style.opacity = '1';
       await clock.ramp(0.34, (v) => {
-        doorL.style.transform = `translateX(${-101 + 101 * v}%)`;
-        doorR.style.transform = `translateX(${101 - 101 * v}%)`;
+        doorL.style.transform = `translateX(${101 * v}%)`;
+        doorR.style.transform = `translateX(${-101 * v}%)`;
         doorSeam.style.opacity = String(Math.min(1, v * 1.4) * 0.85);
       }, EASE_IN);
       t.ctx.stage?.shake(0.20, 13);
@@ -222,8 +222,8 @@ const TRANSITIONS = {
     out(t) {
       const { doorL, doorR, doorSeam } = t._parts;
       return clock.ramp(0.36, (v) => {
-        doorL.style.transform = `translateX(${-101 * v}%)`;
-        doorR.style.transform = `translateX(${101 * v}%)`;
+        doorL.style.transform = `translateX(${101 * (1 - v)}%)`;
+        doorR.style.transform = `translateX(${-101 * (1 - v)}%)`;
         doorSeam.style.opacity = String((1 - v) * 0.5);
       }, EASE_OUT);
     },

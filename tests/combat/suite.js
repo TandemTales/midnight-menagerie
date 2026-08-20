@@ -452,7 +452,7 @@ export async function run() {
     e2.player.energy = 0;
     const p2 = e2.preview(c2.uid, e2.enemies[0].id);
     eq(p2.ok, false, 'preview refuses an unaffordable card');
-    ok(/Pluck/.test(p2.reason), `and says why: "${p2.reason}"`);
+    ok(/Nerve/.test(p2.reason), `and says why: "${p2.reason}"`);
     const p3 = e2.preview(c2.uid, e2.enemies[0].id, { assumeAffordable: true });
     eq(p3.ok, true, 'assumeAffordable previews it anyway for the card face');
     ok(p3.damage > 0, 'and still computes real damage');
@@ -555,9 +555,9 @@ export async function run() {
     const i = (t) => seen.lastIndexOf(t);
     ok(i('turn:start') < i('draw'), 'turn:start precedes the draw');
     ok(i('block:lose') < i('draw'), 'Guard is wiped before the draw');
-    ok(i('draw') < i('energy'), 'the draw happens before the Pluck refill');
+    ok(i('draw') < i('energy'), 'the draw happens before the Nerve refill');
     eq(e.player.block, 0, 'Guard did not carry over');
-    eq(e.player.energy, 3, 'Pluck refilled to max');
+    eq(e.player.energy, 3, 'Nerve refilled to max');
     eq(e.piles.hand.length, 5, 'a fresh hand was drawn');
     eq(e.turn, 2, 'we are on turn 2');
   });

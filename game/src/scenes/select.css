@@ -15,7 +15,8 @@
 }
 .scene--select[data-mode="hero"],
 .scene--select[data-mode="kid"] { --gx: -33.5vw; --gs: .482; --plate-fs: 1.72; }
-.scene--select[data-mode="kid"] { --gx: -52vw; --gs: .30; }
+.scene--select[data-mode="kid"] { --gx: -46vw; --gs: .34; }
+.scene--select[data-mode="kid"] .sel__gridwrap { opacity: 0; pointer-events: none; }
 
 /* ── ground ───────────────────────────────────────────────────────────────── */
 .sel-bg {
@@ -101,6 +102,7 @@
 /* ── the 4x4 wall ─────────────────────────────────────────────────────────── */
 .sel__gridwrap {
   position: absolute; left: 50%; top: 50%;
+  transition: transform var(--t-scene) var(--ease-out), opacity var(--t-base) var(--ease-out);
   width: var(--grid-w);
   transform: translate(-50%, -50%) translateX(var(--gx)) scale(var(--gs));
   transform-origin: 50% 50%;
@@ -384,7 +386,7 @@
 /* ── kid step ─────────────────────────────────────────────────────────────── */
 .sel__kidstep {
   position: absolute;
-  left: clamp(150px, 12.5vw, 240px); right: clamp(20px, 2.4vw, 44px);
+  left: clamp(20px, 2.4vw, 44px); right: clamp(20px, 2.4vw, 44px);
   top: clamp(6px, 1.4vh, 18px); bottom: clamp(6px, 1.4vh, 18px);
   display: grid; grid-template-rows: 1fr auto;
   gap: clamp(8px, 1.2vh, 16px);
@@ -395,7 +397,7 @@
 .scene--select[data-mode="kid"] .sel__kidstep { opacity: 1; pointer-events: auto; transform: none; }
 
 .kid__detail {
-  display: grid; grid-template-columns: minmax(190px, 22%) minmax(210px, 26%) 1fr;
+  display: grid; grid-template-columns: minmax(200px, 20%) minmax(230px, 24%) 1fr;
   gap: clamp(10px, 1.3vw, 24px);
   padding: clamp(12px, 1.5vh, 22px);
   min-height: 0;
@@ -406,8 +408,8 @@
 }
 .sel__kidstep:not([data-chosen]) .kid__detail { opacity: .4; }
 
-.kid__portrait { align-self: start; border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-2); }
-.kid__portrait .kidpf { width: 100%; height: auto; }
+.kid__portrait { align-self: start; aspect-ratio: 288 / 320; border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-2); }
+.kid__portrait .kidpf { width: 100%; height: 100%; display: block; }
 
 /* the missing-pet poster: paper, tape, and a kid's handwriting */
 .kid__poster {
@@ -460,7 +462,7 @@
 .kid__perk, .kid__pack { display: flex; flex-direction: column; gap: var(--s-2); }
 .kid__perkname { font-family: var(--font-display); font-size: var(--fs-lg); color: var(--flame-200); }
 .kid__perkdesc { margin: 0; font-size: var(--fs-sm); line-height: 1.5; color: var(--text-mid); }
-.kid__packlist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 4px; }
+.kid__packlist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 5px; }
 .packitem {
   display: grid; grid-template-columns: auto 1fr auto; gap: var(--s-3); align-items: center;
   padding: 4px var(--s-3);
@@ -471,7 +473,14 @@
 .packitem__slots { color: var(--brass-300); letter-spacing: 2px; font-size: 9px; }
 .packitem__name { font-size: var(--fs-sm); color: var(--text-hi); }
 .packitem__n { font-size: var(--fs-xs); color: var(--text-lo); }
-.kid__focus { margin: auto 0 0; font-size: var(--fs-sm); color: var(--text-mid); }
+.kid__focus { margin: var(--s-2) 0 0; font-size: var(--fs-sm); color: var(--text-mid); }
+.kid__pairing { margin-top: auto; padding-top: var(--s-3); display: flex; flex-direction: column; gap: var(--s-2); }
+.kid__pairtext {
+  margin: 0; font-size: var(--fs-md); font-style: italic; line-height: 1.55;
+  color: color-mix(in oklab, var(--flame-200) 62%, var(--text-mid));
+  border-left: 2px solid color-mix(in srgb, var(--brass-400) 44%, transparent);
+  padding-left: var(--s-4);
+}
 
 .kid__strip { display: grid; grid-template-columns: repeat(8, 1fr); gap: clamp(5px, .6vw, 10px); }
 .kid-tile {

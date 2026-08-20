@@ -43,7 +43,8 @@ const heavyFeet = (c) => (plump(c) >= heavyAt(c) && U.stacks(c, c.self, 'pipkin/
 /** dynamicCost for any Trick containing Hop. */
 const hopCost = (base) => (c) => Math.max(0, base + heavyFeet(c) - (U.stacks(c, c.self, 'elastic-legs') > 0 ? 1 : 0));
 function gainPlump(c, n) {
-  const d = U.addRes(c, PLUMP, n, 0, maxPlump(c));
+  const room = Math.max(0, maxPlump(c) - plump(c));
+  const d = U.addRes(c, PLUMP, Math.min(n, room), 0, maxPlump(c));
   if (d > 0) U.fire(c, 'plump', { n: d, above3: plump(c) > 3 });
   return d;
 }
@@ -106,7 +107,11 @@ function power(c, id, n, install) {
 
 // ── per-combat bookkeeping ──────────────────────────────────────────────────
 U.onTracker(SLUG, (e, s) => {
-  const fake = () => ({ e, self: e.state?.player || e.player, count: (id, a) => (a?.statuses?.[id] || 0), applyStatus: (a, id, n) => { if (a) a.statuses[id] = Math.max(0, (a.statuses[id] || 0) + n); }, block: () => {}, draw: () => {}, gainEnergy: () => {} });
+  U.defineCounters(e, [
+    { id: 'height', name: 'Height', icon: 'height', desc: 'How far off the ground Pipkin has bounced. Land spends all of it at once. Unused Height disappears at the end of your turn.', min: 0, max: 3, start: 0 },
+    { id: 'plump', name: 'Plump', icon: 'plump', desc: 'How round Pipkin is. Persists between turns. At maximum Plump, Heavy Feet makes Hop Tricks cost 1 more.', min: 0, max: 5, start: 0 },
+  ]);
+  const fake = () => U.trackerCtx(e);
   e.on('turn:end', () => {
     const c = fake();
     const steps = U.stacks(c, c.self, 'pipkin/moonlit-garden') > 0 ? 2 : 1;
@@ -333,7 +338,7 @@ const commons = [
   {
     id: 'pipkin/pick-one', name: 'Pick One', companion: SLUG, type: SKILL, rarity: COMMON,
     cost: 0, target: SELF, exhaust: true, keywords: ['harvest', 'vanish'],
-    text: '[Harvest] {m0}: gain {n} Pluck. [Vanish].',
+    text: '[Harvest] {m0}: gain {n} Nerve. [Vanish].',
     flavor: 'The biggest one. Obviously the biggest one.',
     nums: { m0: 1, n: 1 },
     effect: eff(c => { if (harvest(c, N(c).m0)) U.energy(c, N(c).n); }),
@@ -562,7 +567,7 @@ const uncommons = [
   {
     id: 'pipkin/pffft', name: 'Pffft', companion: SLUG, type: SKILL, rarity: UNCOMMON,
     cost: 0, target: SELF, exhaust: true, keywords: ['deflate', 'vanish'],
-    text: '[Deflate] {m0}: gain {n} Pluck and draw {m1} Trick. [Vanish].',
+    text: '[Deflate] {m0}: gain {n} Nerve and draw {m1} Trick. [Vanish].',
     flavor: 'Not dignified. Extremely efficient.',
     nums: { m0: 1, n: 1, m1: 1 },
     effect: eff(c => { if (deflate(c, N(c).m0)) { U.energy(c, N(c).n); U.draw(c, N(c).m1); } }),
@@ -693,7 +698,7 @@ const uncommons = [
   {
     id: 'pipkin/prize-pumpkin', name: 'Prize Pumpkin', companion: SLUG, type: POWER, rarity: UNCOMMON,
     cost: 2, target: SELF, keywords: ['pumpkin'],
-    text: 'The first time at least one [Pumpkin] ripens each turn, gain {n} Pluck at the start of your next turn.',
+    text: 'The first time at least one [Pumpkin] ripens each turn, gain {n} Nerve at the start of your next turn.',
     flavor: 'Blue ribbon. Slightly menacing.',
     nums: { n: 1 },
     effect: eff(c => power(c, 'pipkin/prize-pumpkin', 1)),
@@ -839,7 +844,7 @@ const rares = [
   {
     id: 'pipkin/emergency-deflation', name: 'Emergency Deflation', companion: SLUG, type: SKILL, rarity: RARE,
     cost: 0, target: SELF, exhaust: true, keywords: ['deflate', 'plump', 'vanish'],
-    text: '[Deflate] all [Plump]. Gain {n} Pluck and {b} Guard for each spent. [Vanish].',
+    text: '[Deflate] all [Plump]. Gain {n} Nerve and {b} Guard for each spent. [Vanish].',
     flavor: 'The room clears. The frog is much smaller.',
     nums: { n: 1, b: 6 },
     effect: eff(c => { const p = plump(c); if (deflate(c, p)) { U.energy(c, p * N(c).n); U.guard(c, p * N(c).b); } }),
@@ -858,7 +863,7 @@ const rares = [
   {
     id: 'pipkin/back-to-seed', name: 'Back to Seed', companion: SLUG, type: SKILL, rarity: RARE,
     cost: 1, target: SELF, keywords: ['pumpkin', 'seed', 'harvest'],
-    text: 'Turn up to {n} [Pumpkin]s into [Seed]s. For each, choose: draw {m0} Trick now, or gain {m1} Pluck next turn. This is not [Harvest]ing.',
+    text: 'Turn up to {n} [Pumpkin]s into [Seed]s. For each, choose: draw {m0} Trick now, or gain {m1} Nerve next turn. This is not [Harvest]ing.',
     flavor: 'Undoing a season of work, deliberately, for a better one.',
     nums: { n: 3, m0: 1, m1: 1 },
     effect: eff(async c => {
@@ -869,7 +874,7 @@ const rares = [
         p[i] = SEED; done++;
         await U.chooseOne(c, [
           { label: 'Draw now', fn: (x) => U.draw(x, N(x).m0) },
-          { label: 'Pluck next turn', fn: (x) => { const m = N(x).m1; U.nextTurn(x, (y) => U.energy(y, m)); } },
+          { label: 'Nerve next turn', fn: (x) => { const m = N(x).m1; U.nextTurn(x, (y) => U.energy(y, m)); } },
         ]);
       }
     }),
@@ -878,7 +883,7 @@ const rares = [
   {
     id: 'pipkin/store-for-supper', name: 'Store for Supper', companion: SLUG, type: SKILL, rarity: RARE,
     cost: 1, target: SELF, keywords: ['harvest'],
-    text: '[Harvest] up to {n}. For each, choose: draw {m0} additional Trick at the start of your next turn, or gain {m1} Pluck then.',
+    text: '[Harvest] up to {n}. For each, choose: draw {m0} additional Trick at the start of your next turn, or gain {m1} Nerve then.',
     flavor: 'A frog with a larder is a frog with a future.',
     nums: { n: 2, m0: 1, m1: 1 },
     effect: eff(async c => {
@@ -886,7 +891,7 @@ const rares = [
       for (let i = 0; i < took; i++) {
         await U.chooseOne(c, [
           { label: 'Draw next turn', fn: (x) => { const m = N(x).m0; U.nextTurn(x, (y) => U.draw(y, m)); } },
-          { label: 'Pluck next turn', fn: (x) => { const m = N(x).m1; U.nextTurn(x, (y) => U.energy(y, m)); } },
+          { label: 'Nerve next turn', fn: (x) => { const m = N(x).m1; U.nextTurn(x, (y) => U.energy(y, m)); } },
         ]);
       }
     }),
@@ -916,14 +921,14 @@ const rares = [
   {
     id: 'pipkin/pick-of-the-patch', name: 'Pick of the Patch', companion: SLUG, type: SKILL, rarity: RARE,
     cost: 2, target: SELF, exhaust: true, keywords: ['harvest', 'land', 'vanish'],
-    text: '[Harvest] {m1}. Choose one: draw {n} Tricks; gain {m0} Pluck; gain {b} Guard; or your next [Land] this turn resolves twice. [Vanish].',
+    text: '[Harvest] {m1}. Choose one: draw {n} Tricks; gain {m0} Nerve; gain {b} Guard; or your next [Land] this turn resolves twice. [Vanish].',
     flavor: 'The one he has been protecting all fight.',
     nums: { m1: 1, n: 3, m0: 2, b: 30 },
     effect: eff(async c => {
       if (!harvest(c, N(c).m1)) return;
       await U.chooseOne(c, [
         { label: 'Draw', fn: (x) => U.draw(x, N(x).n) },
-        { label: 'Pluck', fn: (x) => U.energy(x, N(x).m0) },
+        { label: 'Nerve', fn: (x) => U.energy(x, N(x).m0) },
         { label: 'Guard', fn: (x) => U.guard(x, N(x).b) },
         { label: 'Double Land', fn: (x) => U.applySelf(x, 'double-land', 1) },
       ]);
@@ -1033,7 +1038,7 @@ export default {
     height: { name: 'Height', kind: 'resource', desc: 'Hop gains 1 Height, maximum 3. Height does nothing by itself — Land spends all of it at once and scales its clause by the amount spent. Unused Height disappears at the end of your turn.', min: 0, max: 3, hooks: ['hop', 'land'] },
     patch: { name: 'The Patch', kind: 'system', desc: 'Up to 6 objects, each a Seed, Sprout or Pumpkin. At the end of your turn every Sprout ripens and every Seed sprouts, in the same step, so a Seed needs two turns. Plant adds Seeds; Harvest removes Pumpkins to power an effect.', min: 0, max: 6, hooks: ['plant', 'harvest', 'ripen'] },
     plump: { name: 'Plump', kind: 'resource', desc: 'How round Pipkin is, 0 to 3, persisting between turns. Many body Tricks scale with it and Deflate spends it. At maximum Plump, Heavy Feet makes every Hop Trick cost 1 more.', min: 0, max: 5, hooks: ['plump', 'deflate'] },
-    heavyFeet: { name: 'Heavy Feet', kind: 'system', desc: 'At maximum Plump, Tricks containing Hop cost 1 additional Pluck. A Trick that Hops twice is taxed only once. This is Pipkin’s central internal tension.', min: 0, max: 1, hooks: [] },
+    heavyFeet: { name: 'Heavy Feet', kind: 'system', desc: 'At maximum Plump, Tricks containing Hop cost 1 additional Nerve. A Trick that Hops twice is taxed only once. This is Pipkin’s central internal tension.', min: 0, max: 1, hooks: [] },
   },
   startingDeck: [
     'pipkin/tiny-tongue', 'pipkin/tiny-tongue', 'pipkin/tiny-tongue',
@@ -1043,7 +1048,7 @@ export default {
   cards: [...basics, ...commons, ...uncommons, ...rares],
   archetypes: [
     { name: 'The Hopper', desc: 'Treat the hand as a sequence puzzle: build Height efficiently, then decide which Trick is the one that finally brings him down. Landing Tricks are mediocre without Hop support, and Heavy Feet can wreck the whole plan.', coreCards: ['pipkin/puddle-jumper', 'pipkin/drop-in', 'pipkin/soft-landing', 'pipkin/hopscotch', 'pipkin/cannonball', 'pipkin/three-hop-combo', 'pipkin/springboard', 'pipkin/leapfrog', 'pipkin/triple-jump', 'pipkin/spring-eternal', 'pipkin/boing-without-end'] },
-    { name: 'Pumpkin Farmer', desc: 'Plant early, watch the Patch mature, then convert Pumpkins into whatever the turn needs — damage, draw, Courage or Pluck. Exceptional long-fight scaling, terrible opening turns.', coreCards: ['pipkin/pocket-seeds', 'pipkin/damp-corner', 'pipkin/pumpkin-pitch', 'pipkin/little-harvest', 'pipkin/warm-windowsill', 'pipkin/no-room-no-problem', 'pipkin/moonbeam-on-the-patch', 'pipkin/pantry-raid', 'pipkin/prize-pumpkin', 'pipkin/garden-in-motion', 'pipkin/overnight-miracle', 'pipkin/perfect-harvest', 'pipkin/moonlit-garden', 'pipkin/heirloom-seeds'] },
+    { name: 'Pumpkin Farmer', desc: 'Plant early, watch the Patch mature, then convert Pumpkins into whatever the turn needs — damage, draw, Courage or Nerve. Exceptional long-fight scaling, terrible opening turns.', coreCards: ['pipkin/pocket-seeds', 'pipkin/damp-corner', 'pipkin/pumpkin-pitch', 'pipkin/little-harvest', 'pipkin/warm-windowsill', 'pipkin/no-room-no-problem', 'pipkin/moonbeam-on-the-patch', 'pipkin/pantry-raid', 'pipkin/prize-pumpkin', 'pipkin/garden-in-motion', 'pipkin/overnight-miracle', 'pipkin/perfect-harvest', 'pipkin/moonlit-garden', 'pipkin/heirloom-seeds'] },
     { name: 'Big Frog', desc: 'Push Plump upward and exploit the mass. The interesting decks inflate and deflate repeatedly rather than parking at maximum, because maximum Plump fights the Hop engine.', coreCards: ['pipkin/belly-bop', 'pipkin/big-breath', 'pipkin/squat-low', 'pipkin/squash-tackle', 'pipkin/inflate', 'pipkin/pffft', 'pipkin/mud-jacket', 'pipkin/heavy-hopper', 'pipkin/big-frog-energy', 'pipkin/emergency-deflation', 'pipkin/frogapult', 'pipkin/big-little-frog', 'pipkin/bigger-than-the-doorway'] },
     { name: 'The Fast Garden', desc: 'Refuse the normal Patch clock and manipulate growth stages directly, sometimes moving things backwards to engineer a future turn. An engine, not a deck — it has to feed something.', coreCards: ['pipkin/damp-corner', 'pipkin/weed-the-patch', 'pipkin/warm-windowsill', 'pipkin/crop-rotation', 'pipkin/no-room-no-problem', 'pipkin/crouch-and-count', 'pipkin/moonbeam-on-the-patch', 'pipkin/garden-in-motion', 'pipkin/overnight-miracle', 'pipkin/back-to-seed', 'pipkin/moonlit-garden'] },
     { name: 'Bridges', desc: 'The Tricks that stop the optimal deck being twenty copies of one keyword: Height into planting, Harvest into Plump, Plump into Height, and agriculture into Landing burst.', coreCards: ['pipkin/tongue-from-above', 'pipkin/seed-slam', 'pipkin/fertile-footprints', 'pipkin/choose-the-biggest', 'pipkin/heavy-hopper', 'pipkin/frogapult', 'pipkin/swallow-the-sun', 'pipkin/great-pumpkin-frog', 'pipkin/the-patch-fights-back'] },

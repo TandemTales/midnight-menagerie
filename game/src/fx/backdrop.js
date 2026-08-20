@@ -22,6 +22,12 @@ const WALL_W = 66, WALL_H = 13, WALL_Z = -18;
 const FLOOR_X = 72, FLOOR_Z = 32, FLOOR_CZ = -2;
 const SIDE_X = 16, SIDE_D = 24, SIDE_CZ = -6;   // side walls: z from +6 back to -18
 const MAX_PROPS = 40, MAX_SHAFTS = 6;
+// Per-shape height correction so a candlestick is not the size of a wardrobe.
+// index = shape id: 0 chair 1 candelabra 2 plant 3 headstone 4 chandelier
+//                   5 cabinet 6 column 7 drape 8 crates 9 shrub
+const SHAPE_H = [0.85, 0.50, 1.00, 0.62, 0.80, 1.05, 1.25, 1.00, 0.66, 0.80];
+// ...and a width ratio, so a column is a column and not a capital-T.
+const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 1.20, 0.80, 0.34, 0.85, 1.10, 1.35];
 
 function v4arr() { return [new THREE.Vector4(), new THREE.Vector4(), new THREE.Vector4(), new THREE.Vector4()]; }
 function colArr() { return [new THREE.Color(), new THREE.Color(), new THREE.Color(), new THREE.Color()]; }
@@ -253,8 +259,8 @@ export class Backdrop {
         let shape = shapes[(rand() * shapes.length) | 0];
         if ((shape === 4 || shape === 7) && b > 0) shape = shapes[0] === 4 ? 5 : shapes[0];
         const hanging = shape === 4 || shape === 7;
-        const h = (P.height ?? 2.2) * band.scale * (0.72 + rand() * 0.58);
-        const w = h * (0.65 + rand() * 0.55);
+        const h = (P.height ?? 2.2) * band.scale * (SHAPE_H[shape] ?? 1) * (0.78 + rand() * 0.48);
+        const w = h * (SHAPE_W[shape] ?? 1) * (0.62 + rand() * 0.42);
         // spread across the frame, biased to the sides so the centre stays readable
         let x = (rand() * 2 - 1);
         x = Math.sign(x) * Math.pow(Math.abs(x), 0.62) * band.spread;

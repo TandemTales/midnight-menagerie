@@ -1,0 +1,38 @@
+<!doctype html><meta charset="utf-8"><body><pre id="o">…</pre></body>
+<script type="module">
+import { CombatEngine } from '/game/src/combat/engine.js';
+import { RNG } from '/game/src/core/rng.js';
+import { startingDeckFor } from '/game/src/data/cards.js';
+import { getEnemy } from '/game/src/data/enemies/index.js';
+const R = {};
+const e = new CombatEngine({ rng: new RNG(3),
+  player:{name:'Kid',companion:'marmalade',maxHp:68,hp:68,energyMax:3,drawPerTurn:5,deck:startingDeckFor('marmalade')},
+  enemies:[{def:getEnemy('dust-bunny'),id:'e0'}] });
+await e.startCombat();
+const en = e.enemies[0];
+// exactly what enemy content calls: hitPlayer -> c.damage(c.player, 5, {hits:1,hitIndex:0})
+const ctx = e.enemyCtx(en, null);
+R.playerHpBefore = e.player.hp;
+const trace = ctx.damage(e.player, 5, {hits:1,hitIndex:0});
+R.contentCall = 'ctx.damage(player, 5, {..}) — the signature every enemy file uses';
+R.computedBase = trace ? trace.base : null;
+R.computedFinal = trace ? trace.final : null;
+R.playerHpAfter = e.player.hp;
+R.playerAlive = e.player.alive;
+// engine-native order for comparison
+const e2 = new CombatEngine({ rng: new RNG(3),
+  player:{name:'Kid',companion:'marmalade',maxHp:68,hp:68,energyMax:3,drawPerTurn:5,deck:startingDeckFor('marmalade')},
+  enemies:[{def:getEnemy('dust-bunny'),id:'e0'}] });
+await e2.startCombat();
+const t2 = e2.enemyCtx(e2.enemies[0], null).damage(5, {});
+R.engineNative = { base: t2.base, final: t2.final, hpAfter: e2.player.hp };
+// enemy Guard: content calls c.block(c.self, 10); engine signature is block(amount, who)
+const en2 = e2.enemies[0];
+R.enemyBlockBefore = en2.block;
+e2.enemyCtx(en2, null).block(en2, 10);
+R.enemyBlockAfter_contentOrder = en2.block;
+e2.enemyCtx(en2, null).block(10, en2);
+R.enemyBlockAfter_engineOrder = en2.block;
+window.__R__ = R; window.__DONE__ = true;
+document.getElementById('o').textContent = JSON.stringify(R,null,1);
+</script>

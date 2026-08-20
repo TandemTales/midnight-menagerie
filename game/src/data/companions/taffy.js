@@ -104,18 +104,24 @@ function power(c, id, n, install) {
 
 // ── per-combat bookkeeping ──────────────────────────────────────────────────
 U.onTracker(SLUG, (e, s) => {
-  const fake = () => ({ e, self: e.state?.player || e.player, count: (id, a) => (a?.statuses?.[id] || 0), applyStatus: (a, id, n) => { if (a) a.statuses[id] = Math.max(0, (a.statuses[id] || 0) + n); }, cardsIn: (p) => e.state?.[p] || [], loseHp: (a, n) => { if (a) a.hp -= n; }, retain: () => {}, draw: () => {}, block: () => {} });
+  U.defineCounters(e, [
+    { id: 'globs', name: 'Globs', icon: 'globs', desc: 'Pieces of Taffy separated from her body. Runny at 5 or more, which costs Courage at the end of each enemy turn.', min: 0, max: 6, start: 0 },
+  ]);
+  const fake = () => U.trackerCtx(e);
   e.on('turn:end', () => {
     const c = fake();
     const extra = U.stacks(c, c.self, 'taffy/slow-pull') > 0 ? 2 : 1;
-    for (const k of (e.state?.hand || [])) if (U.counter(k, 'stretch') > 0) U.setCounter(k, 'stretch', Math.min(3, U.counter(k, 'stretch') + extra));
+    for (const k of U.cardsIn(c, 'hand')) if (U.counter(k, 'stretch') > 0) U.setCounter(k, 'stretch', Math.min(3, U.counter(k, 'stretch') + extra));
   });
-  e.on('enemyTurn:end', () => {
+  // Runny costs Courage once at the end of each enemy turn, not once per Glob.
+  const runnyTick = () => {
     const c = fake();
     if (U.res(c, 'globs') < 5) return;
     if (U.stacks(c, c.self, 'blob-insurance') > 0 || U.stacks(c, c.self, 'no-runny') > 0) return;
     U.bleed(c, 3);
-  });
+  };
+  if (e.schedule) e.schedule({ turns: 1, repeat: 1, when: 'enemyTurnEnd', label: 'Runny', run: runnyTick });
+  else e.on('enemyTurn:end', runnyTick);
   e.on('turn:start', () => { s.played = 0; });
 });
 
@@ -299,11 +305,11 @@ const commons = [
   {
     id: 'taffy/mix-the-costs', name: 'Mix the Costs', companion: SLUG, type: SKILL, rarity: COMMON,
     cost: 0, target: NONE,
-    text: 'Choose two other Tricks in your hand. Swap their current Pluck costs until the end of the turn.',
+    text: 'Choose two other Tricks in your hand. Swap their current Nerve costs until the end of the turn.',
     flavor: 'Price tags are only stuck on.',
     nums: {},
     effect: eff(async c => { const ks = await U.pickCards(c, { pile: 'hand', count: 2, prompt: 'Swap two costs' }); if (ks.length < 2) return; const a = U.nowCost(ks[0]), b = U.nowCost(ks[1]); U.costSet(c, ks[0], b, 'turn'); U.costSet(c, ks[1], a, 'turn'); }),
-    upgrade: { text: 'Choose two other Tricks in your hand. Swap their current Pluck costs for the rest of combat.' },
+    upgrade: { text: 'Choose two other Tricks in your hand. Swap their current Nerve costs for the rest of combat.' },
   },
   {
     id: 'taffy/little-recombine', name: 'Little Recombine', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -516,7 +522,7 @@ const uncommons = [
   {
     id: 'taffy/borrowed-price', name: 'Borrowed Price', companion: SLUG, type: SKILL, rarity: UNCOMMON,
     cost: 1, target: NONE, keywords: ['belly'],
-    text: 'Choose one Trick in hand and one in your [Belly]. Swap their current Pluck costs until each has been played once.',
+    text: 'Choose one Trick in hand and one in your [Belly]. Swap their current Nerve costs until each has been played once.',
     flavor: 'The expensive one goes in the tummy and comes out cheap.',
     nums: {},
     effect: eff(async c => {
@@ -788,7 +794,7 @@ const rares = [
   {
     id: 'taffy/mix-everything', name: 'Mix Everything', companion: SLUG, type: SKILL, rarity: RARE,
     cost: 1, target: NONE,
-    text: 'Choose up to {n} non-[Gummy] Tricks in your hand. Rearrange their current Pluck costs among them however you like, for the rest of combat.',
+    text: 'Choose up to {n} non-[Gummy] Tricks in your hand. Rearrange their current Nerve costs among them however you like, for the rest of combat.',
     flavor: 'The economics of the hand, redrawn by a slime.',
     nums: { n: 3 },
     effect: eff(async c => {
@@ -1020,6 +1026,6 @@ export default {
     { name: 'Long Pull', desc: 'Stretch a small number of high-value Tricks and let them mature while the rest of the deck handles the turn. The difficulty is deciding how much present hand space future power is worth.', coreCards: ['taffy/long-pull', 'taffy/pull-it-long', 'taffy/stretch-punch', 'taffy/elastic-reversal', 'taffy/overstretch', 'taffy/let-it-sag', 'taffy/stretch-transfer', 'taffy/elastic-memory', 'taffy/slow-pull', 'taffy/jawbreaker-drop', 'taffy/pull-to-the-moon'] },
     { name: 'Snack Pocket', desc: 'Use the Belly to decide which Tricks are allowed to participate in the current deck cycle. Temporary thinning, tactical storage, and a protected template for every copy effect.', coreCards: ['taffy/save-for-later', 'taffy/better-save-that', 'taffy/pocket-taffy', 'taffy/regurgitate', 'taffy/taste-memory', 'taffy/snack-pocket', 'taffy/wrapped-up', 'taffy/three-course-chomp', 'taffy/deep-pocket', 'taffy/bottomless-belly'] },
     { name: 'Candy Factory', desc: 'Manufacture Gummy copies of the Tricks worth duplicating. Copying an inefficient Trick just makes more inefficiency, and recursive copying is prohibited outright.', coreCards: ['taffy/sample-size', 'taffy/candy-wrapper', 'taffy/second-serving', 'taffy/snapback-special', 'taffy/same-again', 'taffy/smoosh-together', 'taffy/multipack', 'taffy/chew-cycle', 'taffy/house-of-mirrors', 'taffy/copycat-cannon', 'taffy/family-size'] },
-    { name: 'Cost Sculptor', desc: 'Treat Pluck costs as movable properties. Give the cheap utility Trick the expensive price, give the payoff the cheap one, then discard or Absorb the card holding the bill. Worthless if every Trick costs the same.', coreCards: ['taffy/mix-the-costs', 'taffy/borrowed-price', 'taffy/let-it-sag', 'taffy/sugar-coat', 'taffy/mix-everything', 'taffy/candy-surgery', 'taffy/spit-take', 'taffy/spit-the-whole-bag'] },
+    { name: 'Cost Sculptor', desc: 'Treat Nerve costs as movable properties. Give the cheap utility Trick the expensive price, give the payoff the cheap one, then discard or Absorb the card holding the bill. Worthless if every Trick costs the same.', coreCards: ['taffy/mix-the-costs', 'taffy/borrowed-price', 'taffy/let-it-sag', 'taffy/sugar-coat', 'taffy/mix-everything', 'taffy/candy-surgery', 'taffy/spit-take', 'taffy/spit-the-whole-bag'] },
   ],
 };

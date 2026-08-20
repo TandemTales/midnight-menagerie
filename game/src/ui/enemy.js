@@ -436,7 +436,12 @@ export class EnemyView {
 
     const gid = `eg${this.uid}`;
     el.innerHTML = `
-      <div class="cb-enemy__intent"></div>
+      <div class="cb-enemy__above">
+        <div class="cb-enemy__rule" hidden></div>
+        <div class="cb-enemy__badges"></div>
+        <div class="cb-enemy__alts" hidden></div>
+        <div class="cb-enemy__intent"></div>
+      </div>
       <div class="cb-enemy__stage">
         <div class="cb-enemy__pool"></div>
         <svg class="cb-enemy__rig" viewBox="-140 -300 280 320" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
@@ -474,6 +479,7 @@ export class EnemyView {
           <div class="cb-enemy__hp"><span class="cb-enemy__hpn"></span><span class="cb-enemy__hpm"></span></div>
         </div>
         <div class="cb-enemy__guard" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 L21 5.5 C21 14 17 20 12 22.5 C7 20 3 14 3 5.5 Z"/></svg><span></span></div>
+        <div class="cb-enemy__counters"></div>
         <div class="cb-enemy__statuses"></div>
       </div>
       <div class="cb-enemy__preview" hidden></div>`;
@@ -496,6 +502,10 @@ export class EnemyView {
     this.$guard = el.querySelector('.cb-enemy__guard');
     this.$guardN = el.querySelector('.cb-enemy__guard span');
     this.$statuses = el.querySelector('.cb-enemy__statuses');
+    this.$counters = el.querySelector('.cb-enemy__counters');
+    this.$badges = el.querySelector('.cb-enemy__badges');
+    this.$rule = el.querySelector('.cb-enemy__rule');
+    this.$alts = el.querySelector('.cb-enemy__alts');
     this.$preview = el.querySelector('.cb-enemy__preview');
     this.$eyes = Array.from(el.querySelectorAll('.rg-eye'));
     this.$pupils = Array.from(el.querySelectorAll('.rg-pupil'));
@@ -601,6 +611,101 @@ export class EnemyView {
   setIntent(intent, o) {
     this.intentView.set(intent, o);
     this.lastIntent = intent;
+    return this;
+  }
+
+  /**
+   * Enemy counters (Dust, Momentum, Resonance, Wound Up…). The enemies agent
+   * calls these "the telegraph" — they sit right under the Courage bar and are
+   * the reason a 14 becomes an 11 when you poke something.
+   * @param {Array<{id,label,value,max}>} list
+   */
+  setCounters(list) {
+    const key = (list || []).map(c => c.id + ':' + c.value).join('|');
+    if (key === this._counterKey) return this;
+    const bumped = new Set();
+    if (this._counterPrev) {
+      for (const c of list || []) {
+        const was = this._counterPrev.get(c.id);
+        if (was !== undefined && was !== c.value) bumped.add(c.id);
+      }
+    }
+    this._counterKey = key;
+    this._counterPrev = new Map((list || []).map(c => [c.id, c.value]));
+    this.$counters.textContent = '';
+    for (const c of list || []) {
+      const d = document.createElement('span');
+      d.className = 'cb-count' + (bumped.has(c.id) ? ' is-bumped' : '');
+      d.dataset.tip = `${c.label}|${c.desc || `${c.label}: ${c.value}${c.max ? ' of ' + c.max : ''}.`}|${c.note || 'Watch this number — it drives what this enemy does next.'}`;
+      d.tabIndex = 0;
+      d.innerHTML = `<i>${esc(c.label)}</i><b>${c.value}${c.max ? `<u>/${c.max}</u>` : ''}</b>`;
+      this.$counters.appendChild(d);
+    }
+    return this;
+  }
+
+  /** Named state badges above the intent: Garment, Pristine/Cracked, Hidden… */
+  setBadges(list) {
+    const key = (list || []).map(b => b.text + (b.tone || '')).join('|');
+    if (key === this._badgeKey) return this;
+    this._badgeKey = key;
+    this.$badges.textContent = '';
+    for (const b of list || []) {
+      const d = document.createElement('span');
+      d.className = 'cb-badge';
+      d.dataset.tone = b.tone || 'neutral';
+      if (b.desc) { d.dataset.tip = `${b.text}|${b.desc}|`; d.tabIndex = 0; }
+      d.textContent = b.text;
+      this.$badges.appendChild(d);
+    }
+    return this;
+  }
+
+  /** A handwritten House Rule pinned beside the intent. `null` clears it. */
+  setRule(rule) {
+    const key = rule ? rule.name + '|' + rule.text : '';
+    if (key === this._ruleKey) return this;
+    this._ruleKey = key;
+    if (!rule) { this.$rule.hidden = true; this.$rule.textContent = ''; return this; }
+    this.$rule.hidden = false;
+    this.$rule.innerHTML = `<b>${esc(rule.name)}</b><span>${esc(rule.text)}</span>`;
+    return this;
+  }
+
+  /**
+   * The Night Terror's two-possibility read: both outcomes on screen at once,
+   * collapsing to one the moment the branch resolves.
+   */
+  setAlternatives(list) {
+    const key = (list || []).map(a => a.key + a.label + a.note).join('|');
+    if (key === this._altKey) return this;
+    this._altKey = key;
+    this.$alts.textContent = '';
+    const many = (list || []).length > 1;
+    this.$alts.hidden = !many;
+    this.el.classList.toggle('has-alts', many);
+    if (!many) return this;
+    for (const a of list) {
+      const d = document.createElement('div');
+      d.className = 'cb-alt';
+      const iv = new IntentView({ clock: this.clock, reduceMotion: this.reduceMotion });
+      iv.set({
+        type: a.intent, moveId: a.key, name: a.label,
+        damage: a.damage || 0, hits: a.hits || 0,
+        totalDamage: (a.damage || 0) * (a.hits || 0),
+        block: a.block || 0, statuses: a.statuses || [],
+        tell: a.note || '', tooltip: a.note || '',
+      });
+      d.appendChild(iv.el);
+      const l = document.createElement('span');
+      l.className = 'cb-alt__l';
+      l.textContent = a.label || '';
+      d.appendChild(l);
+      d.dataset.tip = `${a.label || 'Possibility'}|${a.note || ''}|Both are on the table until you commit.`;
+      d.tabIndex = 0;
+      this.$alts.appendChild(d);
+      (this._altViews ||= []).push(iv);
+    }
     return this;
   }
   hideIntent(v) { this.el.classList.toggle('no-intent', !!v); }
@@ -733,7 +838,28 @@ export class EnemyView {
   }
 
   /* ── frame ──────────────────────────────────────────────────────────────── */
+  /**
+   * Crop the viewBox to what the rig actually draws, so a squat dust bunny and
+   * a 2.0-scale bedframe both sit on the floor with their intent right above
+   * their heads instead of floating in a fixed box.
+   */
+  _fitViewBox() {
+    if (this._fitted || !this.el.isConnected) return;
+    let b;
+    try { b = this.$root.getBBox(); } catch { return; }
+    if (!b || !b.width || !b.height) return;
+    this._fitted = true;
+    const padX = b.width * 0.14 + 10;
+    const padT = b.height * 0.12 + 8;
+    this.$rig.setAttribute('viewBox',
+      `${f(b.x - padX)} ${f(b.y - padT)} ${f(b.width + padX * 2)} ${f(b.height + padT + 6)}`);
+    // keep the on-screen footprint proportional to the rig's real aspect
+    const aspect = (b.width + padX * 2) / (b.height + padT + 6);
+    this.$stage.style.setProperty('--e-aspect', aspect.toFixed(3));
+  }
+
   update(dt, t) {
+    if (!this._fitted) this._fitViewBox();
     const a = this.a;
     const rm = this.reduceMotion;
 
@@ -795,7 +921,8 @@ export class EnemyView {
     this.$body.setAttribute('transform', `scale(${f2(sx)} ${f2(sy)})`);
 
     // eyes
-    const lidK = Math.max(0, Math.min(1, a.blink));
+    // a real blink: open -> shut -> open, over the life of `a.blink`
+    const lidK = a.blink > 0 ? Math.sin(Math.min(1, a.blink) * Math.PI) : 0;
     for (let i = 0; i < this.$pupils.length; i++) {
       const p = this.$pupils[i];
       p.setAttribute('transform', `translate(${f(a.lookX * 5.2)} ${f(a.lookY * 4.4)})`);
@@ -837,6 +964,8 @@ export class EnemyView {
 
   destroy() {
     this.intentView.destroy();
+    this._altViews?.forEach(v => v.destroy());
+    this._altViews = null;
     this.el.remove();
   }
 }
@@ -846,5 +975,6 @@ const f2 = (v) => (Math.round(v * 1000) / 1000);
 function statusTip(s) {
   return `${s.name}|${s.desc || ''}|${s.decay === 'turnEnd' ? 'Wears off at the end of its turn.' : s.decay === 'turnStart' ? 'Ticks at the start of its turn.' : 'Lasts the whole Scuffle.'}`;
 }
+function esc(s) { return String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
 
 export default EnemyView;

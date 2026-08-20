@@ -70,7 +70,10 @@ export class CombatFX {
     }
 
     this.col = readTokens(root);
-    this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // 1.5 is the point past which extra particle resolution stops being visible
+    // and starts costing frames on a full-screen surface.
+    this.dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    this._painted = false;
     this.resize();
   }
 
@@ -230,9 +233,11 @@ export class CombatFX {
 
   /* ── frame ──────────────────────────────────────────────────────────────── */
   update(dt) {
-    // particles
+    // particles — an idle board must not repaint a full-screen surface
     const g = this.g;
+    if (this.n === 0 && !this._painted) { this._updateNumbers(dt); return this; }
     g.clearRect(0, 0, this.w, this.h);
+    this._painted = this.n > 0;
     let n = this.n;
     for (let i = 0; i < n; i++) {
       this.pl[i] -= dt;
@@ -293,8 +298,11 @@ export class CombatFX {
       g.beginPath(); g.arc(this.px[i], this.py[i], this.ps[i] * (1.4 - a * 0.5), 0, TAU); g.fill();
     }
     g.globalAlpha = 1;
+    this._updateNumbers(dt);
+    return this;
+  }
 
-    // numbers
+  _updateNumbers(dt) {
     for (const s of this.nums) {
       if (!s.live) continue;
       s.t += dt;

@@ -57,7 +57,7 @@ const FOYER = [
   {
     id: 'foyer-4', region: 'foyer', tier: 'early', name: 'Lost Luggage',
     members: [m('lost-luggage')],
-    teaches: 'Very mild deck interference. Clutter costs a draw, not a Pluck.',
+    teaches: 'Very mild deck interference. Clutter costs a draw, not a Nerve.',
   },
 
   // ── Standard: "These begin combining mechanics." ──────────────────────────

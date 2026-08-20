@@ -207,8 +207,17 @@ void main(){
     float gx = abs(fract(w.x/0.78 + 0.5) - 0.5)*0.78;
     float gy = abs(fract(w.y/0.78 + 0.5) - 0.5)*0.78;
     pat -= (1.0 - smoothstep(0.008, 0.030, min(gx, gy)))*0.45;
-  } else if (uPattern < 2.5) {               // flagstone / soil
-    pat = mmFbm3(w*0.9 + uSeed)*0.75;
+  } else if (uPattern < 2.5) {               // irregular flagstone
+    vec2 cell = vec2(1.45, 1.00);
+    float row = floor(w.y/cell.y);
+    float ox  = mmHash11(row + uSeed)*cell.x;
+    vec2 g  = vec2(fract((w.x+ox)/cell.x), fract(w.y/cell.y));
+    vec2 id = vec2(floor((w.x+ox)/cell.x), row);
+    float slab = mmHash11(id.x*17.3 + id.y*31.7 + uSeed);
+    float dx = min(g.x, 1.0-g.x)*cell.x;
+    float dy = min(g.y, 1.0-g.y)*cell.y;
+    float joint = 1.0 - smoothstep(0.025, 0.10, min(dx, dy));
+    pat = (0.45 + 0.55*slab) - joint*0.80 + mmFbm3(w*2.6 + slab)*0.22;
   } else {                                   // coffered ceiling beams
     float bx = abs(fract(w.x/2.70 + 0.5) - 0.5)*2.70;
     float by = abs(fract(w.y/2.70 + 0.5) - 0.5)*2.70;

@@ -6,7 +6,7 @@
  * registered by the content agents through `registerStatus()` — they use the same
  * shape and the same hook names, so the engine needs no changes to support them.
  *
- * Naming: schema.js TERMS renames the resources (Courage / Guard / Pluck) but has
+ * Naming: schema.js TERMS renames the resources (Courage / Guard / Nerve) but has
  * no in-fiction word for the universal conditions, so the recognisable roguelike
  * names are kept where they exist (Strength, Dexterity, Weak, Vulnerable, Frail,
  * Regen, Focus) and the four that DO have Menagerie names use them:
@@ -153,7 +153,7 @@ export const UNIVERSAL_STATUSES = {
 
   confusion: {
     id: 'confusion', name: 'Confusion', kind: 'debuff', icon: 'confusion',
-    desc: 'Tricks cost a random amount of Pluck (0-3) when drawn.',
+    desc: 'Tricks cost a random amount of Nerve (0-3) when drawn.',
     decay: 'never', stacks: false, max: 1,
     hooks: {
       onCardDrawn: D((h) => {

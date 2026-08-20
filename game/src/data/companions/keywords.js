@@ -60,7 +60,7 @@ export const COMPANION_KEYWORDS = [
   K('plant', 'Plant', 'Add that many Seeds to the Patch, up to its capacity.', { companion: 'pipkin' }),
   K('harvest', 'Harvest', 'Remove up to that many Pumpkins from the Patch to power an effect. Harvesting is optional.', { companion: 'pipkin' }),
   K('plump', 'Plump', 'How round Pipkin is, 0 to 3. Plump persists between turns.', { companion: 'pipkin' }),
-  K('heavy-feet', 'Heavy Feet', 'While at maximum Plump, Tricks containing Hop cost 1 more Pluck. A Trick that Hops twice is still only taxed once.', { companion: 'pipkin' }),
+  K('heavy-feet', 'Heavy Feet', 'While at maximum Plump, Tricks containing Hop cost 1 more Nerve. A Trick that Hops twice is still only taxed once.', { companion: 'pipkin' }),
   K('deflate', 'Deflate', 'Spend that much Plump. If you do not have enough, the clause cannot be used.', { companion: 'pipkin' }),
 
   // ── Taffy ─────────────────────────────────────────────────────────────────
@@ -80,8 +80,8 @@ export const COMPANION_KEYWORDS = [
   K('read', 'Read', 'Predict an Intent Family for an enemy’s future position. Correct: Open 1 Eye. Wrong: Close 1 Eye. A Read stays attached to the position, not the action.', { companion: 'wink' }),
   K('blind-read', 'Blind Read', 'A Read placed on a position that was still hidden. Its Blind status is remembered even if you Preview it afterwards.', { companion: 'wink' }),
   K('intent-family', 'Intent Family', 'Every Intent is exactly one of Attack, Defense, Scheme or Special.', { companion: 'wink' }),
-  K('eye', 'Eyes', 'Wink has eight supernatural eyes. Opening and Closing them costs no Pluck. Eyes persist between turns, and a Trick that Closes Eyes as a cost needs enough Open ones to pay.', { companion: 'wink' }),
-  K('open-eyes', 'Open Eyes', 'Wink has eight eyes and begins combat with 3 Open. Eyes persist between turns and cost no Pluck to open or close.', { companion: 'wink' }),
+  K('eye', 'Eyes', 'Wink has eight supernatural eyes. Opening and Closing them costs no Nerve. Eyes persist between turns, and a Trick that Closes Eyes as a cost needs enough Open ones to pay.', { companion: 'wink' }),
+  K('open-eyes', 'Open Eyes', 'Wink has eight eyes and begins combat with 3 Open. Eyes persist between turns and cost no Nerve to open or close.', { companion: 'wink' }),
   K('full-gaze', 'Full Gaze', 'Active at 8 Open Eyes. No automatic benefit — specific Tricks reward it.', { companion: 'wink' }),
   K('web', 'Web', 'A persistent resource attached to an enemy. Web does nothing by itself; Wink’s Tricks spend it to rearrange, postpone, attack or defend.', { companion: 'wink' }),
   K('set', 'Set', 'Place this Trick face up outside your deck, in one of 3 Set slots. It resolves automatically and for free when its trigger occurs.', { companion: 'wink' }),
@@ -240,5 +240,18 @@ export const ENGINE_HOOKS_REQUIRED = [
   { hook: 'onDebuffIncoming', when: 'A debuff is about to land on the player.', neededBy: ['nope'] },
   { hook: 'enemyTurnEnd decay', when: 'Decay bucket that expires at the end of the enemy turn.', neededBy: ['ghoststep'] },
 ];
+
+/**
+ * Self-register with the engine's status registry.  `data/statuses.js` is the
+ * documented entry point for content agents, and `data/keywords.js` already
+ * dynamic-imports this module for COMPANION_KEYWORDS, so importing it here means
+ * combat-engine has to do nothing at all.  Guarded so the validation page and any
+ * headless tooling still load if the combat folder is absent.
+ */
+try {
+  const m = await import('../statuses.js');
+  if (m.registerStatuses) m.registerStatuses(COMPANION_STATUSES);
+  else if (m.registerStatus) COMPANION_STATUSES.forEach(s => m.registerStatus(s));
+} catch (_) { /* engine not present — keyword data is still exported */ }
 
 export default { COMPANION_KEYWORDS, COMPANION_STATUSES, KEYWORD_IDS, STATUS_IDS, ENGINE_HOOKS_REQUIRED };

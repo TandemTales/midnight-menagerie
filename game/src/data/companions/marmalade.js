@@ -50,12 +50,15 @@ const WRONG_SIDE = STATUS_CARDS.find(k => k.id === 'status/wrong-side');
 
 // ── per-combat bookkeeping ──────────────────────────────────────────────────
 U.onTracker(SLUG, (e, s) => {
-  const hp = () => (e.state?.player?.hp ?? e.player?.hp ?? 0);
+  U.defineCounters(e, [
+    { id: 'lives', name: 'Lives', icon: 'lives', desc: 'Marmalade begins every combat with 9 Lives. Tricks spend them for bursts of power; they do not return until the next battle.', min: 0, max: 9, start: 9 },
+  ]);
+  const hp = () => (e.player?.hp ?? 0);
   s.lastTurnEndHp = null;
   e.on('turn:start', () => {
     s.untouched = (s.lastTurnEndHp == null) ? true : hp() >= s.lastTurnEndHp;
     s.played = 0;
-    s.exhaustAtTurnStart = (e.state?.exhaust || e.exhaust || []).length;
+    s.exhaustAtTurnStart = (e.piles?.exhaust || e.exhaust || []).length;
   });
   e.on('turn:end', () => { s.lastTurnEndHp = hp(); });
   // "I Meant to Do That" counts everything that left the hand this turn.
@@ -64,7 +67,7 @@ U.onTracker(SLUG, (e, s) => {
 /** Tricks discarded or Vanished so far this turn. */
 function gone(c) {
   const s = U.mm(c);
-  const ex = (c.e?.state?.exhaust || c.e?.exhaust || []).length;
+  const ex = (c.e?.piles?.exhaust || c.e?.exhaust || []).length;
   return (U.got(c, 'gone') || 0) + Math.max(0, ex - (s.exhaustAtTurnStart || 0));
 }
 
@@ -246,12 +249,12 @@ const commons = [
   {
     id: 'marmalade/nine-lived-nerve', name: 'Nine-Lived Nerve', companion: SLUG, type: SKILL, rarity: COMMON,
     cost: 0, target: SELF, keywords: ['lives'],
-    text: 'Spend {m0} [Lives]. Gain {n} Pluck.',
+    text: 'Spend {m0} [Lives]. Gain {n} Nerve.',
     flavor: 'She has eight more. She has done the arithmetic.',
     nums: { m0: 1, n: 1 },
     effect: eff(c => { if (spendLife(c, N(c).m0)) U.energy(c, N(c).n); }),
     playable: (c) => U.res(c, LIVES) >= 1,
-    upgrade: { nums: { m0: 1, n: 1, m1: 1 }, text: 'Spend {m0} [Lives]. Gain {n} Pluck. Draw {m1} Trick.' },
+    upgrade: { nums: { m0: 1, n: 1, m1: 1 }, text: 'Spend {m0} [Lives]. Gain {n} Nerve. Draw {m1} Trick.' },
   },
   {
     id: 'marmalade/haunting-hiss', name: 'Haunting Hiss', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -265,7 +268,7 @@ const commons = [
     text: 'Remove {b} Guard from the target. Apply {n} [Haunt].',
     flavor: 'Direct eye contact the entire time.',
     nums: { b: 10, n: 3 },
-    effect: eff(c => { c.removeBlock?.(c.target, N(c).b); haunt(c, c.target, N(c).n); }),
+    effect: eff(c => { U.stripGuard(c, c.target, N(c).b); haunt(c, c.target, N(c).n); }),
     upgrade: { nums: { b: 14, n: 4 } },
   },
   {
@@ -435,7 +438,7 @@ const uncommons = [
   },
   {
     id: 'marmalade/chase-the-light', name: 'Chase the Light', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: NONE, text: 'Draw {n} Tricks. Gain {m0} Pluck for each of them that costs 0.',
+    cost: 1, target: NONE, text: 'Draw {n} Tricks. Gain {m0} Nerve for each of them that costs 0.',
     flavor: 'The dot is on the wall. The dot is the enemy. The dot is everything.',
     nums: { n: 2, m0: 1 },
     effect: eff(c => {
@@ -537,13 +540,13 @@ const uncommons = [
     cost: 1, target: SELF, text: 'Remove a negative condition from yourself. Gain {b} Guard.',
     flavor: 'Whatever it was, it is not on her any more.',
     nums: { b: 8 },
-    effect: eff(c => { c.removeDebuff?.(c.self, 1); U.guard(c, N(c).b); }),
+    effect: eff(c => { U.removeOneDebuff(c); U.guard(c, N(c).b); }),
     upgrade: { nums: { b: 12 } },
   },
   {
     id: 'marmalade/nine-lives-nine-plans', name: 'Nine Lives, Nine Plans', companion: SLUG, type: SKILL, rarity: UNCOMMON,
     cost: 1, target: SELF, keywords: ['lives', HAUNT],
-    text: 'Choose one: gain {b} Guard; draw {n} Tricks; apply {m0} [Haunt]; or gain {m1} Pluck. Spend {m2} [Lives] to choose two.',
+    text: 'Choose one: gain {b} Guard; draw {n} Tricks; apply {m0} [Haunt]; or gain {m1} Nerve. Spend {m2} [Lives] to choose two.',
     flavor: 'Plan one through eight are variations on hiding.',
     nums: { b: 10, n: 2, m0: 6, m1: 1, m2: 1 },
     effect: eff(async c => {
@@ -551,7 +554,7 @@ const uncommons = [
         { label: 'Guard', fn: (x) => U.guard(x, N(x).b) },
         { label: 'Draw', fn: (x) => U.draw(x, N(x).n) },
         { label: 'Haunt', fn: (x) => haunt(x, x.target || x.randomEnemy?.(), N(x).m0) },
-        { label: 'Pluck', fn: (x) => U.energy(x, N(x).m1) },
+        { label: 'Nerve', fn: (x) => U.energy(x, N(x).m1) },
       ];
       const two = U.res(c, LIVES) >= N(c).m2 && spendLife(c, N(c).m2);
       await U.chooseOne(c, opts, two ? 2 : 1);
@@ -704,7 +707,7 @@ const rares = [
   {
     id: 'marmalade/catastrophe', name: 'Catastrophe', companion: SLUG, type: ATTACK, rarity: RARE,
     cost: -1, target: RANDOM_ENEMY, keywords: ['zoomies'],
-    text: 'Spend all your Pluck. Deal {d} damage to a random enemy {n} times for each Pluck spent.',
+    text: 'Spend all your Nerve. Deal {d} damage to a random enemy {n} times for each Nerve spent.',
     flavor: 'Cat-astrophe. She is very proud of it.',
     nums: { d: 6, n: 2, hits: 6 },
     effect: eff(c => U.hitRandomN(c, N(c).d, N(c).n * (c.x || 0))),
@@ -715,13 +718,13 @@ const rares = [
   {
     id: 'marmalade/spend-a-life', name: 'Spend a Life', companion: SLUG, type: SKILL, rarity: RARE,
     cost: 0, target: SELF, keywords: ['lives', GHOST],
-    text: 'Spend {m0} [Lives]. Choose one: gain {n} Pluck; draw {m1} Tricks; gain {m2} [Ghoststep]; or gain {b} Guard.',
+    text: 'Spend {m0} [Lives]. Choose one: gain {n} Nerve; draw {m1} Tricks; gain {m2} [Ghoststep]; or gain {b} Guard.',
     flavor: 'Nine is a budget, not a promise.',
     nums: { m0: 1, n: 2, m1: 3, m2: 2, b: 16 },
     effect: eff(async c => {
       if (!spendLife(c, N(c).m0)) return;
       await U.chooseOne(c, [
-        { label: 'Pluck', fn: (x) => U.energy(x, N(x).n) },
+        { label: 'Nerve', fn: (x) => U.energy(x, N(x).n) },
         { label: 'Draw', fn: (x) => U.draw(x, N(x).m1) },
         { label: 'Ghoststep', fn: (x) => gainGhost(x, N(x).m2) },
         { label: 'Guard', fn: (x) => U.guard(x, N(x).b) },
@@ -765,7 +768,7 @@ const rares = [
     flavor: 'She knows. She is going in anyway.',
     nums: { n: 3 },
     effect: eff(c => {
-      const cap = (c.e?.state?.handSize ?? 10) - U.cardsIn(c, 'hand').length;
+      const cap = (c.e?.handSize ?? c.e?.player?.handSize ?? 10) - U.cardsIn(c, 'hand').length;
       U.draw(c, Math.max(0, cap));
       const marked = U.cardsIn(c, 'hand').slice();
       const n = N(c).n;
@@ -977,7 +980,7 @@ export default {
     },
     {
       name: 'Nine Lives',
-      desc: 'Treat the nine Lives as a second resource pool — spend for Pluck, cards, defence and enormous attacks, or hoard them for the boss. All Nine and Come Back Wrong build a deck around burning through and recovering them. Loses when you simply run out.',
+      desc: 'Treat the nine Lives as a second resource pool — spend for Nerve, cards, defence and enormous attacks, or hoard them for the boss. All Nine and Come Back Wrong build a deck around burning through and recovering them. Loses when you simply run out.',
       coreCards: ['marmalade/nine-lived-nerve', 'marmalade/borrowed-life', 'marmalade/leave-a-life-behind', 'marmalade/spend-a-life', 'marmalade/nine-lives-fury', 'marmalade/all-nine', 'marmalade/nine-lives', 'marmalade/not-dead-yet', 'marmalade/come-back-wrong'],
     },
     {

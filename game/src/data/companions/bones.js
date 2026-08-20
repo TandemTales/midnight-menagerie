@@ -96,10 +96,13 @@ const spawnSpare = (c, n) => { for (let i = 0; i < n; i++) U.spawn(c, SPARE_BONE
 
 // ── per-combat bookkeeping ──────────────────────────────────────────────────
 U.onTracker(SLUG, (e, s) => {
+  U.defineCounters(e, [
+    { id: 'loose-bones', name: 'Loose Bones', icon: 'loose-bones', desc: 'How much of Bones is currently detached. Whole at 0, Scattered at 4 or more.', min: 0, max: 6, start: 0 },
+  ]);
   e.on('turn:start', () => {
     s.played = 0;
-    const c = { e, self: e.state?.player || e.player, count: (id, a) => (a?.statuses?.[id] || 0), applyStatus: (a, id, n) => { if (a) a.statuses[id] = Math.max(0, (a.statuses[id] || 0) + n); }, cardsIn: (p) => e.state?.[p] || [], moveCard: () => {}, draw: () => {} };
-    for (const k of (e.state?.stash || [])) {
+    const c = U.trackerCtx(e);
+    for (const k of U.cardsIn(c, 'stash')) {
       if (U.counter(k, 'buried') > 0) {
         U.addCounter(k, 'buried', -1);
         if (U.counter(k, 'buried') === 0) digUp(c, k);
@@ -588,7 +591,7 @@ const uncommons = [
   {
     id: 'bones/treat-stash', name: 'Treat Stash', companion: SLUG, type: SKILL, rarity: UNCOMMON,
     cost: 1, target: SELF, keywords: ['bury', 'dig-up', 'vanish'],
-    text: '[Bury] this Trick with {n} counter. When it is [Dug Up], gain {m0} Pluck, draw {m1} Trick, then [Vanish] it.',
+    text: '[Bury] this Trick with {n} counter. When it is [Dug Up], gain {m0} Nerve, draw {m1} Trick, then [Vanish] it.',
     flavor: 'Three biscuits and a chicken bone under the third floorboard.',
     nums: { n: 1, m0: 2, m1: 1 },
     effect: eff(c => { bury(c, c.card, N(c).n); U.setFlag(c.card, 'treatStash', true); }),
@@ -628,7 +631,7 @@ const uncommons = [
   {
     id: 'bones/good-boy', name: 'Good Boy!', companion: SLUG, type: SKILL, rarity: UNCOMMON,
     cost: 0, target: SELF, exhaust: true, keywords: ['fetch', 'dig-up', 'vanish'],
-    text: 'Playable only if you [Fetch]ed or [Dug Up] a Trick this turn. Gain {n} Pluck. [Vanish].',
+    text: 'Playable only if you [Fetch]ed or [Dug Up] a Trick this turn. Gain {n} Nerve. [Vanish].',
     flavor: 'The tail alone generates most of the energy.',
     nums: { n: 1 },
     effect: eff(c => U.energy(c, N(c).n)),
@@ -686,7 +689,7 @@ const uncommons = [
   {
     id: 'bones/tighten-the-collar', name: 'Tighten the Collar', companion: SLUG, type: POWER, rarity: UNCOMMON,
     cost: 1, target: SELF, keywords: ['whole'],
-    text: 'The first time each turn you become [Whole], gain {n} Pluck at the start of your next turn.',
+    text: 'The first time each turn you become [Whole], gain {n} Nerve at the start of your next turn.',
     flavor: 'One notch. Everything stays where it belongs.',
     nums: { n: 1 },
     effect: eff(c => power(c, 'bones/tighten-the-collar', 1)),
@@ -869,11 +872,11 @@ const rares = [
   {
     id: 'bones/fall-apart-on-purpose', name: 'Fall Apart on Purpose', companion: SLUG, type: SKILL, rarity: RARE,
     cost: 0, target: SELF, exhaust: true, keywords: ['shed', 'vanish'],
-    text: 'Lose all Guard. [Shed] until you reach 6. Gain {m0} Pluck for every {n} Bones actually Shed. [Vanish].',
+    text: 'Lose all Guard. [Shed] until you reach 6. Gain {m0} Nerve for every {n} Bones actually Shed. [Vanish].',
     flavor: 'A controlled demolition of a very good boy.',
     nums: { n: 2, m0: 1 },
     effect: eff(c => { if (c.self) c.self.block = 0; const s = shed(c, 6 - loose(c)); U.energy(c, Math.floor(s / N(c).n) * N(c).m0); }),
-    upgrade: { nums: { n: 2, m0: 1, m1: 2 }, text: 'Lose all Guard. [Shed] until you reach 6. Gain {m0} Pluck for every {n} Bones actually Shed. Draw {m1} Tricks. [Vanish].' },
+    upgrade: { nums: { n: 2, m0: 1, m1: 2 }, text: 'Lose all Guard. [Shed] until you reach 6. Gain {m0} Nerve for every {n} Bones actually Shed. Draw {m1} Tricks. [Vanish].' },
   },
   {
     id: 'bones/dig-to-the-basement', name: 'Dig to the Basement', companion: SLUG, type: SKILL, rarity: RARE,
@@ -939,7 +942,7 @@ const rares = [
   {
     id: 'bones/treasure-yard', name: 'Treasure Yard', companion: SLUG, type: POWER, rarity: RARE,
     cost: 2, target: SELF, keywords: ['bury', 'dig-up'],
-    text: 'The first {n} times each turn a [Bury]ed Trick is [Dug Up], gain {m0} Pluck.',
+    text: 'The first {n} times each turn a [Bury]ed Trick is [Dug Up], gain {m0} Nerve.',
     flavor: 'Every hole is a withdrawal.',
     nums: { n: 2, m0: 1 },
     effect: eff(c => power(c, 'bones/treasure-yard', 1)),

@@ -42,11 +42,11 @@ const K = (id, name, desc, category = 'card', extra = {}) => ({
 const CORE = [
   K('courage', TERMS.hp, 'Your health. At 0 Courage the expedition ends and you are put back where you belong.', 'core'),
   K('guard', TERMS.block, 'Temporary protection. Damage removes Guard before it removes Courage. All Guard is lost at the start of your turn unless a Trick says otherwise.', 'core'),
-  K('pluck', TERMS.energy, 'Your energy for the turn. It refills to full at the start of every turn and unspent Pluck is lost.', 'resource'),
+  K('nerve', TERMS.energy, 'Your energy for the turn. It refills to full at the start of every turn and unspent Nerve is lost.', 'resource'),
   K('trick', TERMS.card, 'A card. Your deck is your Tricks.', 'core'),
   K('keepsake', TERMS.relic, 'A small found object with a permanent passive effect for the rest of the run.', 'core'),
   K('snack', TERMS.potion, 'A one-use item you can eat at any point during a Scuffle. You can carry three.', 'core'),
-  K('trinkets', TERMS.gold, 'Currency. Spend it at Lost Things.', 'core'),
+  K('lost-things', TERMS.gold, "Currency. Spend it at Mr. Moth's.", 'core'),
 ];
 
 // ── card-flow vocabulary ────────────────────────────────────────────────────
@@ -57,7 +57,7 @@ const CARD_FLOW = [
   K('innate', 'Innate', 'This Trick is always in your opening hand.', 'card'),
   K('ethereal', 'Ethereal', 'If this Trick is still in your hand at the end of your turn, it Vanishes.', 'card'),
   K('unplayable', 'Unplayable', 'This Trick cannot be played. Get rid of it another way.', 'card'),
-  K('x-cost', 'X', 'Spend all your remaining Pluck. X is however much you spent.', 'resource'),
+  K('x-cost', 'X', 'Spend all your remaining Nerve. X is however much you spent.', 'resource'),
   K('shuffle', 'Shuffle', 'When your draw pile runs out, your discard pile is shuffled and becomes the new draw pile.', 'card'),
   K('hand-size', 'Hand Size', 'You can hold 10 Tricks. A Trick drawn into a full hand goes straight to the discard pile.', 'card'),
   K('upgrade', 'Upgraded', 'A permanently improved Trick, marked with a +.', 'card'),

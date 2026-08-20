@@ -187,13 +187,10 @@ function power(c, id, n, install) {
 
 // ── per-combat bookkeeping ──────────────────────────────────────────────────
 U.onTracker(SLUG, (e, s) => {
-  const fake = () => ({
-    e, self: e.state?.player || e.player, target: null,
-    count: (id, a) => (a?.statuses?.[id] || 0),
-    applyStatus: (a, id, n) => { if (a) a.statuses[id] = Math.max(0, (a.statuses[id] || 0) + n); },
-    livingEnemies: () => (e.state?.enemies || e.enemies || []).filter(x => x.hp > 0),
-    cardsIn: (p) => e.state?.[p] || [], moveCard: () => {}, exhaust: () => {}, draw: () => {}, block: () => {}, damage: () => {},
-  });
+  U.defineCounters(e, [
+    { id: 'open-eyes', name: 'Open Eyes', icon: 'open-eyes', desc: 'Wink has eight eyes and begins combat with 3 Open. Full Gaze at 8. Eyes persist between turns.', min: 0, max: 8, start: 3 },
+  ]);
+  const fake = () => U.trackerCtx(e);
   // an Intent becoming current resolves the Read on that position and fires Sets
   e.on('intent', (ev) => {
     const c = fake();
@@ -1112,7 +1109,7 @@ export default {
   strengths: [
     'Exceptional future information — she can see several turns ahead',
     'Reorders enemy actions rather than merely weakening them',
-    'Set Tricks buy future turns with present Pluck',
+    'Set Tricks buy future turns with present Nerve',
     'Predictable enemies become a resource',
     'Scales through Web, Open Eyes, Sets, Powers and a growing network of Reads',
   ],
@@ -1131,7 +1128,7 @@ export default {
     preview: { name: 'Preview', kind: 'system', desc: 'Reveal additional future Intent positions for an enemy, to a depth of three. Previewed Intents stay visible until they become current. Preview is information only — it does not make an Intent immutable.', min: 0, max: 3, hooks: ['preview'] },
     intentFamilies: { name: 'Intent Families', kind: 'system', desc: 'Every Intent has exactly one primary family: Attack, Defense, Scheme or Special. This lets Wink predict without naming exact moves.', min: 0, max: 4, hooks: [] },
     reads: { name: 'Reads', kind: 'system', desc: 'Predict a family for a future position. Correct: Open 1 Eye. Wrong: Close 1 Eye. A Read attaches to the queue position, not the action — so reordering can make a wrong prediction right. A Read placed on a hidden position is Blind, and stays Blind even if Previewed later.', min: 0, max: 3, hooks: ['readPlaced', 'readSuccess', 'readFail'] },
-    openEyes: { name: 'Open Eyes', kind: 'resource', desc: 'Eight eyes, 3 Open at the start of combat, persisting between turns. Opening and Closing costs no Pluck, but a Trick that Closes Eyes as a cost needs enough Open. Full Gaze at 8 has no automatic benefit — specific Tricks reward it.', min: 0, max: 8, hooks: ['eyesOpened', 'eyesClosed'] },
+    openEyes: { name: 'Open Eyes', kind: 'resource', desc: 'Eight eyes, 3 Open at the start of combat, persisting between turns. Opening and Closing costs no Nerve, but a Trick that Closes Eyes as a cost needs enough Open. Full Gaze at 8 has no automatic benefit — specific Tricks reward it.', min: 0, max: 8, hooks: ['eyesOpened', 'eyesClosed'] },
     web: { name: 'Web', kind: 'status', desc: 'A persistent resource attached to an individual enemy. Web does nothing by itself; Wink spends it to rearrange, postpone, delete, attack, defend and feed Sets. Stacking Web without spenders is wasted.', min: 0, max: 99, hooks: [] },
     reorder: { name: 'Intent reordering', kind: 'system', desc: 'Swap or postpone enemy Intents, usually needing the affected position Previewed first. Reordering changes when an action happens; it does not erase it. Anchored Intents can be Previewed and Read but never moved.', min: 0, max: 99, hooks: ['reorder'] },
     sets: { name: 'Set Tricks', kind: 'system', desc: 'Placed face up outside the deck in one of 3 slots. A Set pays its cost when played, waits for its trigger, then resolves for free and goes to the discard pile. If its enemy dies first it returns without triggering.', min: 0, max: 5, hooks: ['setPlaced', 'setTriggered'] },
@@ -1146,7 +1143,7 @@ export default {
     { name: 'The Seer', desc: 'Reveal sequences and turn accurate Reads into reliable value. Very consistent and excellent against patterned bosses, but a large part of the deck is spent learning things instead of killing.', coreCards: ['wink/read-the-room', 'wink/double-check', 'wink/pattern-library', 'wink/three-steps-ahead', 'wink/clairvoyant-lattice', 'wink/triple-prediction', 'wink/every-angle-covered'] },
     { name: 'The Blind Gambler', desc: 'Predict before revealing, then profit whether the prediction lands or not. The mastery trick: Read blind, Preview afterwards, discover you are wrong, build Web, and rearrange the queue until you are right.', coreCards: ['wink/make-a-guess', 'wink/long-shot', 'wink/blindside-probability', 'wink/wrong-answer', 'wink/house-odds', 'wink/wrong-on-purpose', 'wink/eyes-shut'] },
     { name: 'The Web Editor', desc: 'Treat enemy actions as an editable schedule. Not that attack now — put the buff first, move the big one behind the harmless setup. The dangerous action still exists afterwards, and Anchored ones never move.', coreCards: ['wink/tighten-the-silk', 'wink/thread-map', 'wink/tug-the-thread', 'wink/stall-the-bad-part', 'wink/loom-logic', 'wink/rewrite-the-script', 'wink/postpone-the-inevitable', 'wink/snip-here', 'wink/master-of-the-web'] },
-    { name: 'The Trap Architect', desc: 'Spend on one turn so future turns get free actions. Excellent Pluck efficiency across long encounters, badly punished by short ones and by Sets that sit in a slot waiting for a trigger that never comes.', coreCards: ['wink/tripline', 'wink/watch-this-one', 'wink/rehearsed-pounce', 'wink/set-the-table', 'wink/doorframe-tripline', 'wink/lampshade-lookout', 'wink/false-floor', 'wink/extra-corner', 'wink/deadline', 'wink/back-pocket-web', 'wink/patient-hunter'] },
+    { name: 'The Trap Architect', desc: 'Spend on one turn so future turns get free actions. Excellent Nerve efficiency across long encounters, badly punished by short ones and by Sets that sit in a slot waiting for a trigger that never comes.', coreCards: ['wink/tripline', 'wink/watch-this-one', 'wink/rehearsed-pounce', 'wink/set-the-table', 'wink/doorframe-tripline', 'wink/lampshade-lookout', 'wink/false-floor', 'wink/extra-corner', 'wink/deadline', 'wink/back-pocket-web', 'wink/patient-hunter'] },
     { name: 'Full Gaze', desc: 'Accumulate all eight Eyes and stay there long enough to use the thresholds. Every Eye spent breaks it, and a player who refuses to spend can die sitting on a theoretically valuable resource.', coreCards: ['wink/wide-eyes', 'wink/house-pattern', 'wink/eight-eyes-one-target', 'wink/double-check', 'wink/reflexive-blink', 'wink/eight-cornered-view', 'wink/all-eyes-open', 'wink/all-eight-at-once'] },
   ],
 };

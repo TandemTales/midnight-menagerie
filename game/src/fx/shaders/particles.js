@@ -47,11 +47,12 @@ void main(){
     float age = uBurst.w;
     if (age < 0.0 || age > 1.0) { gl_Position = vec4(2.0,2.0,2.0,1.0); return; }
     vec3 dir = normalize(vec3(aRand.x-0.5, aRand.y-0.35, aRand.z-0.5) + 0.0001);
-    float sp = (0.5 + aRand.w) * uBurstPower;
-    p = uBurst.xyz + dir*sp*age*(1.6 - 0.9*age) - vec3(0.0, 2.4*age*age, 0.0)*sp*0.30;
+    float sp = (0.35 + aRand.w*0.9) * uBurstPower;
+    p = uBurst.xyz + dir*sp*age*(1.7 - 1.0*age) - vec3(0.0, 2.2*age*age, 0.0)*sp*0.28;
     vAlpha = (1.0 - age)*(1.0 - age);
-    tint = uBurstCol; selfLit = 1.0;
-    sz = aSize * (1.5 - 0.7*age);
+    tint = uBurstCol; selfLit = 3.2;
+    sz = aSize * (3.4 - 2.2*age);
+    vSoft = 1.2;
   } else {
     vec3 ext = uExtent;
     p = uCenter + aBase * ext;          // aBase is -1..1; spread it over the volume
