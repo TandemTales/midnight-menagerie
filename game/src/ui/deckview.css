@@ -91,8 +91,17 @@
   gap: var(--s-4) var(--s-3);
   justify-items: center;
   align-content: start;
-  padding: var(--s-2) 0 var(--s-3);
+  padding: var(--s-2) 4px var(--s-3);
   outline: none;
+  /* the grid scrolls, the controls above it do not */
+  flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+  scrollbar-width: thin; scrollbar-color: var(--surface-line-hi) transparent;
+}
+.mm-deck__grid::-webkit-scrollbar { width: 10px; }
+.mm-deck__grid::-webkit-scrollbar-track { background: var(--chip-bg); border-radius: 5px; }
+.mm-deck__grid::-webkit-scrollbar-thumb {
+  background: var(--surface-line); border-radius: 5px;
+  border: 2px solid transparent; background-clip: padding-box;
 }
 .mm-deck__cell {
   position: relative;

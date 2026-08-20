@@ -199,7 +199,12 @@
   cursor: default;
   transition: opacity var(--t-base) var(--ease-out), filter var(--t-base);
 }
-.map-node.is-legal { cursor: pointer; }
+.map-node.is-legal { cursor: pointer; z-index: 2; }
+/* Rooms sit close enough on a crowded lane that one mark's ink can land over the
+   next one's name.  Whatever the player is pointing at, or the keyboard is on,
+   wins the stack. */
+.map-node { z-index: 1; }
+.map-node:hover, .map-node.is-kbd, .map-node.is-current { z-index: 5; }
 
 /* Counter-scale layer.  The sheet has to fit the screen, which puts it around
    0.76x; the marks on it must not shrink with it or a 52px icon lands as 39
@@ -260,7 +265,7 @@
      was sitting straight through the room's name */
   position: absolute; top: calc(100% + 3px); left: 50%;
   transform: translateX(-50%);
-  font-family: var(--font-body); font-size: 19px; font-weight: 600;
+  font-family: var(--font-body); font-size: 16.5px; font-weight: 600;
   letter-spacing: .01em; white-space: nowrap; line-height: 1.15;
   color: color-mix(in srgb, var(--ink) 88%, var(--ink-900));
   background: color-mix(in srgb, var(--parchment) 95%, #fff);
@@ -578,7 +583,6 @@
   88%  { opacity: .85; }
   to   { transform: translate3d(var(--sw, 2030px), 0, 0); opacity: 0; }
 }
-@keyframes mm-paper-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes mm-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @keyframes mm-breathe {
   0%, 100% { transform: scale(1);    opacity: .9; }
@@ -590,17 +594,26 @@
   60% { transform: translateX(4px); }
 }
 
-/* Armed: blank sheet, marks clipped away, nothing animating. */
+/* Armed: the paper is on the desk and blank, the survey not yet drawn on it.
+   Leaving the parchment PAINTED here is deliberate — it is the expensive layer
+   (a 2233x1111 canvas), and rastering it while nothing is moving is what stops
+   the sweep from opening into a 390ms stall. */
+/* The marks are laid out and rastered but held at 2% ink — invisible on paper,
+   yet enough that the browser has already done the work when the sweep opens.
+   Clipping them away instead skipped the raster and moved the stall into the
+   middle of the animation (measured: a 244ms gap two frames in). */
 .map-screen.is-armed .map-ink,
-.map-screen.is-armed .map-nodes { clip-path: inset(0 100% 0 0); }
-.map-screen.is-armed .map-paper { opacity: 0; }
+.map-screen.is-armed .map-nodes { opacity: .02; will-change: clip-path, opacity; }
+.map-screen.is-armed .map-wet   { opacity: .01; }
 
 /* The sweep. Ink and marks share one clip so a route edge and the room it runs
    into are inked by the same pass of the pen, never out of step with each other. */
 .map-screen.is-drawing .map-ink,
-.map-screen.is-drawing .map-nodes { animation: mm-wipe .70s var(--ease-out) .10s backwards; }
-.map-screen.is-drawing .map-wet   { animation: mm-wet  .70s var(--ease-out) .10s backwards; }
-.map-screen.is-drawing .map-paper { animation: mm-paper-in .26s var(--ease-out) backwards; }
+.map-screen.is-drawing .map-nodes {
+  animation: mm-wipe .70s var(--ease-soft) .10s backwards;
+  will-change: clip-path;
+}
+.map-screen.is-drawing .map-wet   { animation: mm-wet  .70s var(--ease-soft) .10s backwards; }
 .map-screen.is-drawing .map-banner,
 .map-screen.is-drawing .map-bar,
 .map-screen.is-drawing .map-hud {

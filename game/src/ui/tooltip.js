@@ -170,6 +170,16 @@ export class Tooltip {
     this.ready = (async () => {
       try { await loadCompanionKeywords(); } catch { /* not present yet */ }
       try { await loadContentRegistries(null); } catch { /* not present yet */ }
+      // `data/keywords.js` registers COMPANION_KEYWORDS and then COMPANION_STATUSES
+      // under the same ids, so the status' terse `{n}` sentence replaces the
+      // hand-written keyword prose for Ghoststep, Haunt, Web, Loose Bones and the
+      // rest. Keep the prose here and prefer it for the KEYWORD variant; the
+      // status variant still uses the live-stack sentence. (Read-only import —
+      // data/companions/** belongs to companion-cards.)
+      try {
+        const m = await import('../data/companions/keywords.js');
+        this._prose = new Map((m.COMPANION_KEYWORDS || []).map(k => [k.id, k.desc]));
+      } catch { this._prose = new Map(); }
       this._matcher = null;        // rebuild on next use
       return this;
     })();
@@ -249,11 +259,33 @@ export class Tooltip {
     // Anything that moves the world under the panel closes it — cheaper and
     // less confusing than chasing the anchor.
     on(window, 'resize', () => this.hide());
-    on(window, 'scroll', () => this.hide(), true);
+    // Scrolling normally dismisses. But a KEYBOARD user reaches an off-screen
+    // anchor by focusing it, and the browser scrolls to it — dismissing there
+    // would make the tooltip unreachable by keyboard. So if the anchor still
+    // holds focus, follow it instead of hiding.
+    on(window, 'scroll', () => {
+      const a = this._anchor;
+      if (!a || this.el.hidden) return;
+      if (a === document.activeElement || a.contains(document.activeElement)) {
+        this._place(this.el, a, {
+          placement: a.dataset?.tipPlacement || 'auto', avoid: a.dataset?.tipAvoid,
+        });
+      } else this.hide();
+    }, true);
     on(document, 'pointerdown', () => this.hide(), true);
     if (this.ctx.bus?.on) {
-      this._offs.push(this.ctx.bus.on('scene:enter', () => this.hide()));
-      this._offs.push(this.ctx.bus.on('scene:exit', () => this.hide()));
+      const b = this.ctx.bus;
+      this._offs.push(b.on('scene:enter', () => this.hide()));
+      this._offs.push(b.on('scene:exit', () => this.hide()));
+      // CARDS IN HAND. `.mm-card` is `pointer-events:none` — the Hand hit-tests
+      // itself — so the keyword chips on a card can never receive a pointerover.
+      // Slay the Spire does not ask you to hover individual words anyway: it
+      // shows every keyword on the hovered card at once, beside it. That is what
+      // this does, driven by the Hand's own `card:hover` event.
+      this._offs.push(b.on('card:hover', (p) => this._showCardKeywords(p?.view?.el || p?.el)));
+      this._offs.push(b.on('card:unhover', () => { if (this._cardMode) this.hide(); }));
+      this._offs.push(b.on('card:pickup', () => this.hide()));
+      this._offs.push(b.on('card:play', () => this.hide()));
     }
   }
 
@@ -321,6 +353,7 @@ export class Tooltip {
 
   hide() {
     clearTimeout(this._timer); this._timer = 0;
+    this._cardMode = false;
     if (this._raf) { cancelAnimationFrame(this._raf); this._raf = 0; }
     this._hideSub();
     if (this._anchor) { this._anchor.removeAttribute('aria-describedby'); this._anchor = null; }
@@ -412,6 +445,8 @@ export class Tooltip {
   // ── descriptor builders ────────────────────────────────────────────────
   _kwDesc(kw) {
     const st = kw.status ? getStatus(kw.id) : null;
+    const prose = this._prose?.get(kw.id);
+    const body = (prose && prose.length > String(kw.desc || '').length) ? prose : kw.desc;
     return {
       kind: 'keyword',
       id: kw.id,
@@ -420,9 +455,12 @@ export class Tooltip {
       color: kw.color,
       icon: hasIcon(`status.${kw.icon || kw.id}`) ? `status.${kw.icon || kw.id}`
           : hasIcon(kw.id) ? kw.id : null,
-      body: kw.desc,
-      footer: st && st.decay && st.decay !== 'never' && st.decay !== 'combat'
-        ? null : null,
+      body,
+      // A keyword that is also a live condition says so, so the player knows to
+      // look for it in the status row.
+      footer: st && !st._missing && kw.status
+        ? 'This is a condition — look for it in the status row, with its stack count.'
+        : null,
     };
   }
 
@@ -537,6 +575,31 @@ export class Tooltip {
     host.textContent = '';
     if (d.node) { host.appendChild(d.node); return; }
 
+    if (d.kind === 'keywords') {
+      for (const it of d.items) {
+        const block = document.createElement('div');
+        block.className = 'mm-tip__block';
+        const h = document.createElement('div');
+        h.className = 'mm-tip__head';
+        if (it.icon) { const i = icon(it.icon); i.classList.add('mm-tip__icon'); h.appendChild(i); }
+        const t = document.createElement('span');
+        t.className = 'mm-tip__title';
+        if (it.color) t.style.color = it.color;
+        t.textContent = it.title;
+        h.appendChild(t);
+        const sb = document.createElement('span');
+        sb.className = 'mm-tip__sub';
+        sb.textContent = it.subtitle || '';
+        h.appendChild(sb);
+        const p = document.createElement('p');
+        p.className = 'mm-tip__body';
+        p.innerHTML = this._linkKeywords(it.body || (it.lines || []).join(' '), it.id);
+        block.append(h, p);
+        host.appendChild(block);
+      }
+      return;
+    }
+
     const head = document.createElement('div');
     head.className = 'mm-tip__head';
     if (d.icon) { const i = icon(d.icon); i.classList.add('mm-tip__icon'); head.appendChild(i); }
@@ -635,6 +698,7 @@ export class Tooltip {
 
   /** Plain-text version for the live region. */
   _plain(d) {
+    if (d.kind === 'keywords') return d.items.map(i => `${i.title}. ${i.body || ''}`).join(' ');
     const bits = [d.title, d.subtitle, d.body, ...(d.lines || [])].filter(Boolean);
     if (d.stacks != null) bits.splice(1, 0, `${d.stacks} stacks`);
     return bits.join('. ');
@@ -681,6 +745,20 @@ export class Tooltip {
     return out;
   }
 
+  /**
+   * Every keyword printed on one card, stacked in a single panel beside it.
+   * @param {Element} cardEl  the `.mm-card` root
+   */
+  _showCardKeywords(cardEl) {
+    if (!cardEl || !this.enabled) return;
+    const ids = [...new Set([...cardEl.querySelectorAll('.mm-card__kw[data-kw]')]
+      .map(n => n.dataset.kw).filter(Boolean))];
+    const items = ids.map(id => this.keyword(id)).filter(Boolean);
+    if (!items.length) { if (this._cardMode) this.hide(); return; }
+    this._cardMode = true;
+    this.show(cardEl, { kind: 'keywords', items }, { placement: 'right' });
+  }
+
   _showSub(chip) {
     const id = chip?.dataset?.kw;
     if (!id) return;
@@ -688,7 +766,12 @@ export class Tooltip {
     if (!d) return;
     this._render(this.subInner, { ...d, kind: 'keyword-sub' });
     this.subEl.hidden = false;
-    this._place(this.subEl, chip, { placement: 'auto', avoid: [this.el] });
+    // Anchored to the PARENT PANEL, not to the chip. The chip lives inside the
+    // panel, so placing against the chip put the second level on top of the
+    // first. Placing against the panel and aligning to the chip gives the
+    // side-by-side reading StS uses, and the "never covers its anchor"
+    // guarantee then covers the parent panel for free.
+    this._place(this.subEl, this.el, { placement: 'right', alignTo: chip });
   }
   _hideSub() { if (!this.subEl.hidden) { this.subEl.hidden = true; this.subEl.classList.remove('is-in'); } }
 
@@ -700,7 +783,7 @@ export class Tooltip {
    *   −(px²) area of `avoid` elements it would cover
    *   +bias  for the caller's preferred side
    */
-  _place(panel, anchor, { placement = 'auto', avoid = null } = {}) {
+  _place(panel, anchor, { placement = 'auto', avoid = null, alignTo = null } = {}) {
     if (this._raf) cancelAnimationFrame(this._raf);
     this._raf = requestAnimationFrame(() => {
       this._raf = 0;
@@ -708,6 +791,9 @@ export class Tooltip {
 
       // one read pass
       const a = anchor.getBoundingClientRect();
+      // Cross-axis alignment can track a different element than the one the
+      // panel is placed against (a chip inside the panel it belongs to).
+      const c = alignTo?.isConnected ? alignTo.getBoundingClientRect() : a;
       panel.style.maxHeight = '';
       const p = panel.getBoundingClientRect();
       const vw = window.innerWidth, vh = window.innerHeight;
@@ -718,10 +804,10 @@ export class Tooltip {
       const clampX = (x) => Math.max(EDGE, Math.min(x, vw - w - EDGE));
       const clampY = (y) => Math.max(EDGE, Math.min(y, vh - h - EDGE));
 
-      cands.push({ side: 'top',    x: clampX(a.left + a.width / 2 - w / 2), y: a.top - h - GAP });
-      cands.push({ side: 'bottom', x: clampX(a.left + a.width / 2 - w / 2), y: a.bottom + GAP });
-      cands.push({ side: 'right',  x: a.right + GAP,     y: clampY(a.top + a.height / 2 - h / 2) });
-      cands.push({ side: 'left',   x: a.left - w - GAP,  y: clampY(a.top + a.height / 2 - h / 2) });
+      cands.push({ side: 'top',    x: clampX(c.left + c.width / 2 - w / 2), y: a.top - h - GAP });
+      cands.push({ side: 'bottom', x: clampX(c.left + c.width / 2 - w / 2), y: a.bottom + GAP });
+      cands.push({ side: 'right',  x: a.right + GAP,     y: clampY(c.top + c.height / 2 - h / 2) });
+      cands.push({ side: 'left',   x: a.left - w - GAP,  y: clampY(c.top + c.height / 2 - h / 2) });
 
       let best = null;
       for (const c of cands) {
@@ -733,8 +819,13 @@ export class Tooltip {
                      + Math.max(0, c.x + w - (vw - EDGE)) + Math.max(0, c.y + h - (vh - EDGE));
           score -= over;
         }
+        // Occlusion is weighted heavily enough to CHOOSE between two sides that
+        // both fit — that is the whole point of `avoid`. It is capped below the
+        // fits/doesn't-fit gap so a fitting side always beats a clipped one.
         const r = { left: c.x, top: c.y, right: c.x + w, bottom: c.y + h };
-        for (const ar of avoidRects) score -= overlapArea(r, ar) / 400;
+        let occl = 0;
+        for (const ar of avoidRects) occl += overlapArea(r, ar);
+        score -= Math.min(900, occl / 30);
         if (c.side === placement) score += 300;
         else if (placement === 'auto' && c.side === 'top') score += 20;  // gentle default
         if (!best || score > best.score) best = { ...c, score, fits };
@@ -752,11 +843,11 @@ export class Tooltip {
           panel.style.maxHeight = `${Math.min(h, maxH)}px`;
           const hh = Math.min(h, maxH);
           y = side === 'top' ? Math.max(EDGE, a.top - hh - GAP) : Math.min(vh - hh - EDGE, a.bottom + GAP);
-          x = clampX(a.left + a.width / 2 - w / 2);
+          x = clampX(c.left + c.width / 2 - w / 2);
         } else {
           panel.style.maxHeight = `${Math.min(h, vh - 2 * EDGE)}px`;
           x = side === 'left' ? Math.max(EDGE, a.left - w - GAP) : Math.min(vw - w - EDGE, a.right + GAP);
-          y = clampY(a.top + a.height / 2 - h / 2);
+          y = clampY(c.top + c.height / 2 - h / 2);
         }
       }
 
@@ -765,8 +856,8 @@ export class Tooltip {
       panel.style.transform = `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`;
       const beak = panel.querySelector('.mm-tip__beak');
       if (beak) {
-        const cx = Math.max(10, Math.min(a.left + a.width / 2 - x, w - 10));
-        const cy = Math.max(10, Math.min(a.top + a.height / 2 - y, h - 10));
+        const cx = Math.max(10, Math.min(c.left + c.width / 2 - x, w - 10));
+        const cy = Math.max(10, Math.min(c.top + c.height / 2 - y, h - 10));
         beak.style.left = (side === 'left') ? `${w}px` : (side === 'right') ? '0px' : `${cx}px`;
         beak.style.top = (side === 'top') ? `${h}px` : (side === 'bottom') ? '0px' : `${cy}px`;
       }

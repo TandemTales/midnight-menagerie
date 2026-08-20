@@ -121,6 +121,15 @@ async def run(a):
               return {fps:n, mem:(performance.memory?Math.round(performance.memory.usedJSHeapSize/1048576):null)}})()""")
         except Exception:
             perf = {}
+        try:
+            gl = await page.evaluate("""(()=>{const c=document.createElement('canvas');
+              const g=c.getContext('webgl2')||c.getContext('webgl');if(!g)return 'none';
+              const d=g.getExtension('WEBGL_debug_renderer_info');
+              return d?g.getParameter(d.UNMASKED_RENDERER_WEBGL):g.getParameter(g.RENDERER)})()""")
+        except Exception:
+            gl = "?"
+        perf["gl"] = gl
+        perf["software"] = "SwiftShader" in str(gl)
 
         open(os.path.join(SHOTS, f"{a.name}.state.json"), "w", encoding="utf-8").write(
             json.dumps({"url": url, "state": state, "perf": perf,
@@ -132,7 +141,9 @@ async def run(a):
         print("JS ERRORS:", file=sys.stderr)
         for e in errors[:20]:
             print("  " + e[:400], file=sys.stderr)
-    print("fps:", perf.get("fps"), "| state:", str(state)[:300])
+    soft = " [SOFTWARE RASTERISER - fps not representative]" if perf.get("software") else ""
+    print("fps:", perf.get("fps"), soft, "| gl:", str(perf.get("gl"))[:70])
+    print("state:", str(state)[:280])
     return 1 if errors else 0
 
 

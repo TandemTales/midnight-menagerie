@@ -29,8 +29,13 @@ const NS = 'http://www.w3.org/2000/svg';
 /* ── shared sub-shapes, so members of a family share exact geometry ───────── */
 const SHIELD   = 'M12 1.6 3.2 4.9v6.6c0 5.6 3.8 9.4 8.8 11 5-1.6 8.8-5.4 8.8-11V4.9z';
 const BLADE    = 'M8.2 1.8h7.6v3.4h-1.5L12 22.4 9.7 5.2H8.2z';
-const UPSPIKE  = 'M18.4 0.2 23.6 8.4h-3.3v3.1h-3.8V8.4h-3.3z';
-const DOWNSPIKE= 'M18.4 23.8 13.2 15.6h3.3v-3.1h3.8v3.1h3.3z';
+/* The defend family carries its modifier as a WHOLE ARROW STANDING CLEAR of a
+   narrowed shield, not as a notch in the shield outline. A notch disappears at
+   16px, and mistaking "gaining Guard and buffing" for "gaining Guard and
+   debuffing you" is a real tactical error, so the two must never be close. */
+const SHIELD_SM = 'M8 1.6 0.9 4.3v5.6c0 4.7 3.1 7.9 7.1 9.2 4-1.3 7.1-4.5 7.1-9.2V4.3z';
+const UPSPIKE  = 'M19.6 2.8 24 10.4h-2.6v8.6h-3.6v-8.6h-2.6z';
+const DOWNSPIKE= 'M19.6 19.2 15.2 11.6h2.6V3h3.6v8.6H24z';
 const CARDBACK = 'M5.2 2.4h13.6a1.6 1.6 0 0 1 1.6 1.6v16a1.6 1.6 0 0 1-1.6 1.6H5.2a1.6 1.6 0 0 1-1.6-1.6V4a1.6 1.6 0 0 1 1.6-1.6z';
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -51,8 +56,8 @@ const INTENT = {
   attackDebuff: 'M1.6 2.6h11.2v3.8H10L7.2 22.4 4.4 6.4H1.6zM18.5 23.4 13.1 15h10.8z',
 
   defend: SHIELD,
-  defendBuff: SHIELD + UPSPIKE,
-  defendDebuff: SHIELD + DOWNSPIKE,
+  defendBuff: SHIELD_SM + UPSPIKE,
+  defendDebuff: SHIELD_SM + DOWNSPIKE,
 
   /* scheme: an arrow standing on a plinth. Up = buff, down = debuff. */
   buff: 'M12 0.8 20.6 10h-4.9v6.4H8.3V10H3.4zM4.4 18.4h15.2v4.8H4.4z',
@@ -99,7 +104,7 @@ const STATUS = {
   ghoststep: 'M8.6 12.4c2.9 0 5.2 1.9 5.2 4.4s-2.3 4.4-5.2 4.4-5.2-1.9-5.2-4.4 2.3-4.4 5.2-4.4zM3.4 4.8a2.4 2.9 0 1 1 0 5.8 2.4 2.9 0 0 1 0-5.8zm5.2-2.2a2.4 2.9 0 1 1 0 5.8 2.4 2.9 0 0 1 0-5.8zm5.2 2.2a2.4 2.9 0 1 1 0 5.8 2.4 2.9 0 0 1 0-5.8zM17.6 13.2h5.8v2.4h-5.8zm2 5h4.4v2.4h-4.4z',
   haunt: 'M15.8 1.2c3.6 0 6.4 2.8 6.4 6.4v9.6l-2.1-1.8-2.1 1.8-2.1-1.8-2.1 1.8-2.1-1.8-2.3 1.8V7.6c0-3.6 2.8-6.4 6.4-6.4zM6.6 17.6a2.1 2.1 0 1 1 0 4.2 2.1 2.1 0 0 1 0-4.2zm-4.8-1.4a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8z',
   lives: 'M4.2 1.4 8.4 6h7.2l4.2-4.6 1.2 8.2c.6 1.4.9 2.9.9 4.4 0 5-4.4 8.6-9.9 8.6S2.1 19 2.1 14c0-1.5.3-3 .9-4.4zM8.4 11.6a1.8 2.2 0 1 0 0 4.4 1.8 2.2 0 0 0 0-4.4zm7.2 0a1.8 2.2 0 1 0 0 4.4 1.8 2.2 0 0 0 0-4.4z',
-  untouched: 'M12 .8A11.2 11.2 0 1 1 12 23.2 11.2 11.2 0 0 1 12 .8zm0 3.4a7.8 7.8 0 0 0-6.1 12.7L18.6 6.5A7.8 7.8 0 0 0 12 4.2zm6.1 3.9L5.4 17.5A7.8 7.8 0 0 0 18.1 8.1z',
+  untouched: 'M12 .8A11.2 11.2 0 1 1 12 23.2 11.2 11.2 0 0 1 12 .8zm-1.6 16.9 8.2-8.2-2.6-2.6-5.6 5.6-2.4-2.4-2.6 2.6z',
   'untouched-streak': 'M12 .6l2.9 6.6 7.1.7-5.3 4.8 1.5 7-6.2-3.6-6.2 3.6 1.5-7L2 7.9l7.1-.7zM3.4 20.8h17.2v2.6H3.4z',
   scattered: 'M2.4 3.6a2 2 0 0 1 3.3 2l4.4 2.2a2 2 0 1 1-.9 1.8L4.8 7.4a2 2 0 0 1-3.2-.6 2 2 0 0 1 .8-3.2zM21.8 8.6a2 2 0 0 1-1.7 3.1l-1.5 4.6a2 2 0 1 1-2-.4l1.4-4.4a2 2 0 0 1 .9-3.2 2 2 0 0 1 2.9.3zM8.6 15.4a2 2 0 0 1 1 3.5l.6 3.4-2.1.4-.6-3.4a2 2 0 0 1 1.1-3.9z',
   'play-dead': 'M4.6 9.4a7.4 7.4 0 0 1 14.8 0v13H4.6zM9 6.6l1.4 1.4 1.4-1.4 1.2 1.2-1.4 1.4 1.4 1.4-1.2 1.2-1.4-1.4-1.4 1.4-1.2-1.2L9.2 9.2 7.8 7.8zM2.2 22.4h19.6v1.4H2.2z',
@@ -231,6 +236,25 @@ export const ICON_GROUPS = Object.freeze({
   node: NODE, type: TYPE, rarity: RARITY, ui: UI,
 });
 
+/**
+ * DELIBERATE ALIASES. Each group below is ONE drawing published under several
+ * ids because the concepts genuinely are the same picture: Guard *is* a shield,
+ * Nerve *is* the energy orb, a seed *is* a die. `tests/chrome/run.py` collapses
+ * ids that share identical path data before running the silhouette check, so an
+ * alias is never mistaken for a collision — and two DIFFERENT drawings that
+ * happen to read the same still fail.
+ */
+export const ICON_ALIASES = Object.freeze([
+  ['intent.defend', 'res.guard'],
+  ['intent.unknown', 'status.unknown', 'node.unknown'],
+  ['status.energy', 'res.nerve'],
+  ['res.seed', 'ui.dice'],
+  ['type.status', 'rarity.status'],
+  ['type.curse', 'rarity.curse'],
+  ['rarity.rare', 'ui.star'],
+  ['status.open-eyes', 'ui.eye'],
+]);
+
 /** Search order for a bare (un-namespaced) id. */
 const ORDER = ['status', 'intent', 'res', 'node', 'type', 'rarity', 'ui'];
 
@@ -309,4 +333,4 @@ export function statusIcon(def) {
   return STATUS[k] ? `status.${k}` : (STATUS[def?.id] ? `status.${def.id}` : 'status.unknown');
 }
 
-export default { icon, iconSvg, iconPath, hasIcon, intentIcon, statusIcon, ICON_IDS, ICON_GROUPS };
+export default { icon, iconSvg, iconPath, hasIcon, intentIcon, statusIcon, ICON_IDS, ICON_GROUPS, ICON_ALIASES };

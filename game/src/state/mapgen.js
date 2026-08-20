@@ -647,7 +647,7 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
   // Rooms still sit at irregular, hand-surveyed intervals; they just cannot lie
   // about which row or which lane they are in.
   const padD = 0.105, spanD = 0.800;       // along depth  (x)
-  const laneMid = 0.430, spanL = 0.600;    // across lanes (y)
+  const laneMid = 0.425, spanL = 0.640;    // across lanes (y)
   const padL = laneMid - spanL / 2;
   const jd = (spanD / rows) * 0.34;
   const jl = (spanL / Math.max(1, lanes - 1)) * 0.22;

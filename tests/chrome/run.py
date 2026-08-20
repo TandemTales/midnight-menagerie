@@ -183,7 +183,8 @@ async def main(a):
         targets = await page.evaluate("""() => {
           const sels = ['.mm-hud__where .mm-hud__t', '.mm-hud__gold .mm-hud__t',
                         '.mm-hud__barlabel', '.mm-hud__haunt .mm-hud__t',
-                        '.mm-hud__seed .mm-hud__t', '.mm-hud__deck .mm-hud__t'];
+                        '.mm-hud__seed .mm-hud__t', '.mm-hud__deck .mm-hud__t',
+                        '.mm-hud__deck .mm-hud__s', '.mm-hud__where .mm-hud__s'];
           const base = document.querySelector('.mm-hud').getBoundingClientRect();
           return sels.map(s => { const e = document.querySelector(s); if (!e) return null;
             const r = e.getBoundingClientRect();
@@ -264,6 +265,20 @@ async def main(a):
           }
           return out;
         }""")
+        # An icon published under several ids (Guard *is* a shield) is ONE
+        # drawing: collapse ids that share identical path data first, so an
+        # alias is never counted as a collision. Two DIFFERENT paths that
+        # render the same silhouette still fail below.
+        paths = await page.evaluate(
+            "Object.fromEntries(CHROME.ICON_IDS.map(id => [id, CHROME.iconPath(id)]))")
+        canon = {}
+        for iid in list(sil.keys()):
+            canon.setdefault(paths[iid], iid)
+        alias_of = {iid: canon[paths[iid]] for iid in sil}
+        n_alias = sum(1 for k, v in alias_of.items() if k != v)
+        sil = {iid: v for iid, v in sil.items() if alias_of[iid] == iid}
+        print(f"  {len(sil)} distinct drawings ({n_alias} declared aliases collapsed)")
+
         by_hash = {}
         thin = []
         for iid, v in sil.items():
@@ -300,8 +315,9 @@ async def main(a):
 
         print("\n── 5. keyboard + modal behaviour ─────────────────────────")
         await page.evaluate("CHROME.hideTip()")
-        await page.evaluate("CHROME.scrollTo(0)")
-        await page.eval_on_selector('[data-kw="ghoststep"]', "el => el.focus()")
+        await page.eval_on_selector('[data-kw="ghoststep"]', "el => el.scrollIntoView({block:'center'})")
+        await page.wait_for_timeout(250)
+        await page.eval_on_selector('[data-kw="ghoststep"]', "el => el.focus({preventScroll:true})")
         await page.wait_for_timeout(300)
         shown = await page.evaluate("!document.querySelector('.mm-tip').hidden")
         (ok if shown else bad)("focusing an anchor opens its tooltip")
@@ -392,7 +408,10 @@ async def main(a):
         await page.evaluate("CHROME.scrollTo(0)")
         await page.wait_for_timeout(200)
         await snap("chrome-overview", full=True)
-        await page.evaluate("CHROME.scrollTo(document.body.scrollHeight)")
+        await page.eval_on_selector("#s-icons", "el => el.scrollIntoView({block:'start'})")
+        await page.wait_for_timeout(300)
+        await snap("chrome-icons")
+        await page.eval_on_selector("#grey", "el => el.scrollIntoView({block:'center'})")
         await page.wait_for_timeout(300)
         await snap("chrome-icons-grey")
 
@@ -405,8 +424,20 @@ async def main(a):
         await page.evaluate("""() => { const c = document.querySelector('.mm-tip .mm-tip__kw');
             if (c) CHROME.tooltip._showSub(c); }""")
         await page.wait_for_timeout(400)
-        nested = await page.evaluate("!document.querySelector('.mm-tip--sub').hidden")
-        (ok if nested else bad)("a keyword inside a tooltip opens a second-level tooltip")
+        nested = await page.evaluate("""() => {
+          const sub = document.querySelector('.mm-tip--sub');
+          if (sub.hidden) return { shown: false };
+          const a = document.querySelector('.mm-tip:not(.mm-tip--sub)').getBoundingClientRect();
+          const b = sub.getBoundingClientRect();
+          const w = Math.min(a.right,b.right) - Math.max(a.left,b.left);
+          const h = Math.min(a.bottom,b.bottom) - Math.max(a.top,b.top);
+          return { shown: true, overlap: (w>0&&h>0) ? Math.round(w*h) : 0,
+                   off: b.left<0||b.top<0||b.right>innerWidth||b.bottom>innerHeight };
+        }""")
+        (ok if nested["shown"] else bad)("a keyword inside a tooltip opens a second-level tooltip")
+        (ok if nested.get("overlap", 1) == 0 else
+         bad)(f"second-level tooltip does not cover the first ({nested.get('overlap')} px overlap)")
+        (ok if not nested.get("off") else bad)("second-level tooltip stays inside the viewport")
         await snap("chrome-nested")
 
         perf = await page.evaluate("""(async()=>{let n=0;const t0=performance.now();

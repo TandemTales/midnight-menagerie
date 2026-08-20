@@ -74,7 +74,10 @@
   /* --- Text -------------------------------------------------------------- */
   --text-hi:  #f4efe4;   /* parchment white */
   --text-mid: #c3bbcd;
-  --text-lo:  #8b839a;
+  /* Was #8b839a. Measured from rendered pixels it landed at 4.08:1 on the HUD
+     chip ground — under WCAG AA. Lifted to clear 4.5:1 on every chrome surface
+     while staying clearly below --text-mid in the hierarchy. */
+  --text-lo:  #9a92a8;
   --text-ink: #1a1526;   /* on light surfaces */
   --parchment: #e8dcc0;
   --parchment-shade: #cdbb96;

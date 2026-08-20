@@ -79,6 +79,10 @@
   min-height: 0;
   padding: var(--s-4) var(--s-5);
 }
+/* The pile viewer owns its own scrolling: its count, filters and note must stay
+   put while the card grid scrolls under them. */
+.mm-modal__body:has(> .mm-deck) { overflow: hidden; display: flex; }
+.mm-modal__body:has(> .mm-deck) > .mm-deck { flex: 1 1 auto; min-height: 0; }
 .mm-modal__text { margin: 0; font-size: var(--fs-md); line-height: 1.5; color: var(--text-mid); }
 
 .mm-modal__foot {
@@ -86,7 +90,7 @@
   flex-wrap: wrap;
   padding: var(--s-3) var(--s-5) var(--s-4);
   border-top: 1px solid color-mix(in srgb, var(--surface-line) 70%, transparent);
-  background: color-mix(in srgb, var(--ink-900) 40%, transparent);
+  background: var(--ink-900);
 }
 .mm-modal__foot:empty { display: none; }
 

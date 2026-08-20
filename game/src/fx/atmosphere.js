@@ -63,7 +63,7 @@ const D = {
   open: '#3aa0bd', floorDeep: '#120d18', floorMid: '#33232a', ambient: '#171225',
   propAlb: '#3a2a2c', propHi: '#6a4f45',
   rimCol: '#ffb64a', shaft: '#ffcf8a', frame: '#05040a',
-  gain: 1.85, propGain: 1.85, propGloss: 0.66,
+  gain: 1.85, propGain: 1.42, propGloss: 0.62,
   bloom: 0.72, bloomThreshold: 0.86, warmTone: 0.10, halation: 0.30, exposure: 2.05,
   vignette: 1.26, grain: 0.026, saturate: 1.24, contrast: 1.26,
   fogDensity: 0.014,
@@ -112,7 +112,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.DUST, 0.80], [PTYPE.WISP, 0.12], [PTYPE.EMBER, 0.08]],
                  tint: '#ffe6bc', wispTint: '#7fd9ec', emberTint: '#ffb64a',
                  speed: 0.85, scale: 1.05, wind: 0.7, density: 0.85 },
-    exposure: 1.46, contrast: 1.21,
+    exposure: 2.10, contrast: 1.21,
     key:  { glow: 0, kind: 'warm', x: -4.6, y: 3.6, z: 2.6, color: '#ffc06a', intensity: 2.40, radius: 9.5 },
     fill: { glow: 0, kind: 'cold', x: 5.6, y: 2.6, z: 1.2, color: '#6fd9ec', intensity: 1.19, radius: 9.0, flicker: false },
     lights: [
@@ -140,7 +140,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.DUST, 0.68], [PTYPE.ASH, 0.20], [PTYPE.WISP, 0.12]],
                  tint: '#ffdfe4', wispTint: '#a8ecf7', emberTint: '#ffc7a0',
                  speed: 0.8, scale: 1.1, wind: 0.6, density: 0.9 },
-    exposure: 1.82, contrast: 1.62,
+    exposure: 1.96, contrast: 1.62,
     key:  { glow: 0, kind: 'warm', x: -3.4, y: 2.9, z: 2.2, color: '#ffc79a', intensity: 2.10, radius: 7.5 },
     fill: { glow: 0, kind: 'cold', x: 4.4, y: 2.4, z: 1.4, color: '#9fd4ee', intensity: 1.19, radius: 7.5, flicker: false },
     lights: [
@@ -169,7 +169,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.DUST, 0.60], [PTYPE.WISP, 0.28], [PTYPE.ASH, 0.12]],
                  tint: '#cfd8f2', wispTint: '#8fb7ff', emberTint: '#ffb64a',
                  speed: 0.7, scale: 1.0, wind: 0.5, density: 0.8 },
-    exposure: 1.77, contrast: 1.63,
+    exposure: 2.52, contrast: 1.63,
     key:  { glow: 0, kind: 'warm', x: -4.0, y: 3.2, z: 2.4, color: '#ffb877', intensity: 1.95, radius: 8.5 },
     fill: { glow: 0, kind: 'cold', x: 5.4, y: 2.6, z: 1.0, color: '#8fb0ff', intensity: 1.44, radius: 8.5, flicker: false },
     lights: [
@@ -196,7 +196,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.EMBER, 0.46], [PTYPE.DUST, 0.40], [PTYPE.PLASTER, 0.14]],
                  tint: '#ffcf9a', wispTint: '#8fd9a8', emberTint: '#ff7a28',
                  speed: 1.2, scale: 1.05, wind: 1.3, density: 0.95 },
-    exposure: 1.61, contrast: 1.55,
+    exposure: 2.11, contrast: 1.55,
     key:  { glow: 0, kind: 'warm', x: -3.6, y: 2.8, z: 2.0, color: '#ff9640', intensity: 2.60, radius: 8.0 },
     fill: { glow: 0, kind: 'cold', x: 5.0, y: 2.2, z: 1.2, color: '#8fd0a8', intensity: 0.94, radius: 7.0, flicker: false },
     lights: [
@@ -224,7 +224,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.SPORE, 0.52], [PTYPE.DUST, 0.30], [PTYPE.WISP, 0.18]],
                  tint: '#d9ffcf', wispTint: '#7fffc9', emberTint: '#cfff6a',
                  speed: 0.85, scale: 1.35, wind: 0.7, density: 0.95 },
-    exposure: 1.24, contrast: 1.62,
+    exposure: 1.71, contrast: 1.62,
     key:  { glow: 0, kind: 'warm', x: -4.4, y: 3.8, z: 2.8, color: '#ffc98a', intensity: 2.20, radius: 9.5 },
     fill: { glow: 0, kind: 'cold', x: 6.0, y: 3.0, z: 1.6, color: '#6fdcf2', intensity: 1.50, radius: 9.5, flicker: false },
     lights: [
@@ -253,7 +253,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.ASH, 0.40], [PTYPE.DUST, 0.34], [PTYPE.WISP, 0.26]],
                  tint: '#cfd9e0', wispTint: '#8fe8d0', emberTint: '#ffb64a',
                  speed: 0.65, scale: 1.2, wind: 0.9, density: 0.9 },
-    exposure: 1.67, contrast: 1.65,
+    exposure: 1.90, contrast: 1.65,
     key:  { glow: 0, kind: 'cold', x: -4.6, y: 6.0, z: 3.0, color: '#cfe0ff', intensity: 2.10, radius: 17.0, flicker: false },
     fill: { glow: 0, kind: 'warm', x: 5.4, y: 1.6, z: 1.6, color: '#ffb04a', intensity: 1.38, radius: 6.5 },
     lights: [
@@ -280,7 +280,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.DUST, 0.86], [PTYPE.EMBER, 0.08], [PTYPE.WISP, 0.06]],
                  tint: '#ffe6bc', wispTint: '#8fd9ec', emberTint: '#ffb64a',
                  speed: 0.7, scale: 0.95, wind: 0.5, density: 1.0 },
-    exposure: 1.75, contrast: 1.67,
+    exposure: 2.74, contrast: 1.67,
     key:  { glow: 0, kind: 'warm', x: -3.8, y: 3.2, z: 2.2, color: '#ffc06a', intensity: 2.35, radius: 8.5 },
     fill: { glow: 0, kind: 'cold', x: 5.0, y: 3.4, z: 1.2, color: '#6fb4d4', intensity: 1.12, radius: 8.0, flicker: false },
     lights: [
@@ -308,7 +308,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.DUST, 0.62], [PTYPE.WISP, 0.26], [PTYPE.ASH, 0.12]],
                  tint: '#d8dcf5', wispTint: '#b0b8ff', emberTint: '#ffcf7a',
                  speed: 0.6, scale: 1.0, wind: 0.4, density: 0.95 },
-    exposure: 1.66, contrast: 1.65,
+    exposure: 2.80, contrast: 1.65,
     key:  { glow: 0, kind: 'warm', x: -4.0, y: 3.2, z: 2.4, color: '#ffc890', intensity: 2.00, radius: 8.5 },
     fill: { glow: 0, kind: 'cold', x: 5.4, y: 2.8, z: 1.4, color: '#9fb0ff', intensity: 1.44, radius: 8.5, flicker: false },
     lights: [
@@ -334,7 +334,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.EMBER, 0.42], [PTYPE.WISP, 0.30], [PTYPE.DUST, 0.28]],
                  tint: '#cfe8ff', wispTint: '#6fd9ec', emberTint: '#ff9e3c',
                  speed: 1.1, scale: 1.1, wind: 1.0, density: 1.0 },
-    exposure: 1.48, contrast: 1.41,
+    exposure: 2.04, contrast: 1.41,
     key:  { glow: 0, kind: 'warm', x: -4.2, y: 3.2, z: 2.2, color: '#ffa858', intensity: 2.30, radius: 9.0 },
     fill: { glow: 0, kind: 'cold', x: 6.2, y: 3.2, z: 1.4, color: '#7fe0f5', intensity: 1.69, radius: 9.5, flicker: false },
     lights: [
@@ -363,7 +363,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.DUST, 0.58], [PTYPE.EMBER, 0.26], [PTYPE.WISP, 0.16]],
                  tint: '#ffe8c0', wispTint: '#d8a8ff', emberTint: '#ffc95a',
                  speed: 0.9, scale: 1.1, wind: 0.8, density: 1.0 },
-    exposure: 2.14, contrast: 1.61,
+    exposure: 2.17, contrast: 1.61,
     key:  { glow: 0, kind: 'warm', x: -5.2, y: 4.0, z: 2.8, color: '#ffd07a', intensity: 2.55, radius: 11.0 },
     fill: { glow: 0, kind: 'cold', x: 7.2, y: 3.0, z: 1.6, color: '#b47fe8', intensity: 1.38, radius: 10.0, flicker: false },
     lights: [
@@ -392,7 +392,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.DUST, 0.48], [PTYPE.WISP, 0.36], [PTYPE.ASH, 0.16]],
                  tint: '#cfe0dc', wispTint: '#5fe8d8', emberTint: '#ffb64a',
                  speed: 0.6, scale: 1.15, wind: 0.4, density: 0.85 },
-    exposure: 1.50, contrast: 1.69,
+    exposure: 2.79, contrast: 1.69,
     key:  { glow: 0, kind: 'warm', x: -3.0, y: 2.8, z: 2.0, color: '#ffb45c', intensity: 2.30, radius: 8.0 },
     fill: { glow: 0, kind: 'cold', x: 3.6, y: 2.4, z: 1.2, color: '#5fe8d8', intensity: 1.25, radius: 7.5, flicker: false },
     lights: [
@@ -419,7 +419,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.SPORE, 0.44], [PTYPE.ASH, 0.30], [PTYPE.DUST, 0.26]],
                  tint: '#e0d8a8', wispTint: '#b08fd8', emberTint: '#d8a04a',
                  speed: 0.75, scale: 1.3, wind: 1.4, density: 0.95 },
-    exposure: 2.52, contrast: 1.21,
+    exposure: 2.55, contrast: 1.21,
     key:  { glow: 0, kind: 'cold', x: -4.2, y: 5.6, z: 3.0, color: '#cfd8f0', intensity: 1.95, radius: 15.0, flicker: false },
     fill: { glow: 0, kind: 'warm', x: 5.0, y: 1.6, z: 1.6, color: '#ffb04a', intensity: 1.44, radius: 6.5 },
     lights: [
@@ -446,7 +446,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.DUST, 0.78], [PTYPE.PLASTER, 0.16], [PTYPE.WISP, 0.06]],
                  tint: '#ffe0b8', wispTint: '#a87fd8', emberTint: '#ffb64a',
                  speed: 0.8, scale: 0.9, wind: 0.5, density: 1.0 },
-    exposure: 1.85, contrast: 1.28,
+    exposure: 2.07, contrast: 1.28,
     key:  { glow: 0, kind: 'warm', x: -1.9, y: 2.4, z: 1.8, color: '#ffbe6a', intensity: 2.50, radius: 6.5 },
     fill: { glow: 0, kind: 'cold', x: 1.9, y: 1.8, z: 0.8, color: '#8f6fe8', intensity: 1.00, radius: 5.5, flicker: false },
     lights: [
@@ -474,7 +474,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.RAIN, 0.58], [PTYPE.DUST, 0.26], [PTYPE.WISP, 0.16]],
                  tint: '#bfe8f5', wispTint: '#6fd9ec', emberTint: '#ffb64a',
                  speed: 1.0, scale: 1.0, wind: 1.2, density: 1.0 },
-    exposure: 0.70, contrast: 1.69,
+    exposure: 1.33, contrast: 1.69,
     key:  { glow: 0, kind: 'warm', x: -3.8, y: 3.2, z: 2.2, color: '#ffc98c', intensity: 2.00, radius: 8.5 },
     fill: { glow: 0, kind: 'cold', x: 5.8, y: 3.0, z: 1.4, color: '#8fe8ff', intensity: 1.71, radius: 9.0, flicker: false },
     lights: [
@@ -501,7 +501,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.DUST, 0.70], [PTYPE.ASH, 0.20], [PTYPE.EMBER, 0.10]],
                  tint: '#ffdfae', wispTint: '#8fd9ec', emberTint: '#ffb64a',
                  speed: 0.8, scale: 1.1, wind: 0.6, density: 0.95 },
-    exposure: 2.01, contrast: 1.54,
+    exposure: 2.12, contrast: 1.54,
     key:  { glow: 0, kind: 'warm', x: -3.4, y: 2.6, z: 2.0, color: '#ffc27a', intensity: 2.25, radius: 7.5 },
     fill: { glow: 0, kind: 'cold', x: 5.0, y: 2.2, z: 1.2, color: '#7fbcd4', intensity: 1.12, radius: 7.5, flicker: false },
     lights: [
@@ -528,7 +528,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.DUST, 0.40], [PTYPE.SPORE, 0.30], [PTYPE.EMBER, 0.30]],
                  tint: '#cfe0e8', wispTint: '#8fe8c0', emberTint: '#ff8a28',
                  speed: 0.9, scale: 1.25, wind: 1.1, density: 1.0 },
-    exposure: 1.67, contrast: 1.52,
+    exposure: 1.69, contrast: 1.52,
     key:  { glow: 0, kind: 'cold', x: -5.0, y: 6.4, z: 3.0, color: '#cfe0ff', intensity: 2.10, radius: 18.0, flicker: false },
     fill: { glow: 0, kind: 'warm', x: 5.2, y: 1.2, z: 1.8, color: '#ff9034', intensity: 1.71, radius: 6.0 },
     lights: [
@@ -557,7 +557,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.DUST, 0.54], [PTYPE.WISP, 0.30], [PTYPE.EMBER, 0.16]],
                  tint: '#fff2d8', wispTint: '#ffd9a8', emberTint: '#ffcf7a',
                  speed: 0.55, scale: 1.15, wind: 0.35, density: 1.0 },
-    exposure: 1.07, contrast: 1.67,
+    exposure: 1.11, contrast: 1.67,
     key:  { glow: 0, kind: 'warm', x: -4.4, y: 3.6, z: 2.6, color: '#ffdaa0', intensity: 2.35, radius: 10.0 },
     fill: { glow: 0, kind: 'cold', x: 5.6, y: 2.6, z: 1.4, color: '#8fd9ec', intensity: 1.06, radius: 8.5, flicker: false },
     lights: [

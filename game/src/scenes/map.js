@@ -783,10 +783,30 @@ export class MapScene extends Scene {
       });
   }
 
-  /** Resolve once the scene change has finished revealing (or after 1.2s). */
+  /**
+   * Resolve once the scene change has finished revealing AND the page is
+   * actually producing frames again.  The first raster of this screen — a
+   * 2233x1111 parchment canvas, a 2030x1010 ink layer, sixty-four marks and
+   * two blurred chrome strips — measured a 390ms stall followed by a 300ms one.
+   * An 800ms animation that spends 690ms of that frozen is not an animation, and
+   * that is exactly what the last review's frame strip caught.  So: wait for the
+   * veil, then wait for three consecutive frames under 40ms, then draw.
+   */
   async _whenVisible() {
     const sm = this.ctx.scenes;
-    for (let i = 0; i < 75 && sm && sm.busy && this.el; i++) await clock.wait(0.016);
+    const deadline = performance.now() + 2500;      // never hold the sheet blank longer
+    for (let i = 0; i < 75 && sm && sm.busy && this.el; i++) {
+      if (performance.now() > deadline) return;
+      await clock.wait(0.016);
+    }
+    let smooth = 0, t = performance.now();
+    for (let i = 0; i < 60 && smooth < 3 && this.el; i++) {
+      await clock.wait(0.016);
+      const now = performance.now();
+      if (now > deadline) return;
+      smooth = (now - t) < 40 ? smooth + 1 : 0;
+      t = now;
+    }
   }
 
   // ───────────────────────────────────────────────────────── view control ──

@@ -1971,3 +1971,739 @@ the card was still played on release.
 `c_playable.png` / `c_unaffordable.png` / `c_curse.png` / `c_status.png` (contrast crops).
 `shots/mine_12.png` (hand of 12 fitting), `shots/mine_unplayable.png`,
 `shots/mine_card_zoom.png`.
+
+---
+
+## 2026-08-20 — meta-run (the run layer)
+
+Shipped `src/state/run.js`, `src/scenes/{reward,shop,rest,event}.js` + their CSS,
+`src/data/{relics,events,backpack}.js`, `tests/run/**`. `ctx.run` is real now —
+every screen that was mocking it can stop.
+
+**`python tests/run/run.py` → `RESULT: 50 runs, 0 errors` (5.2 s).**
+
+### How the run layer installs itself
+
+`main.js` imports all ten scenes at boot, and `scenes/reward.js` imports
+`state/run.js`, so `installRunLayer()` runs once before anything can be clicked.
+It listens for:
+
+| event | what it does |
+|---|---|
+| `run:start` (select) | `new Run({companion, kid, seed, hauntLevel, backpack})`, sets `ctx.run`, autosaves |
+| `run:continue` (title) | `Run.resume(Save.loadRun())`, sets `ctx.run`, **does not navigate** — title uses the snapshot's `scene` field |
+| `map:choose` (map) | `run.enterNode(node.id)` |
+
+`map.js` also calls `run.chooseNode(node)` directly right after emitting
+`map:choose`; `chooseNode` returns immediately if that node is already current,
+so the two paths can never double-advance.
+
+It emits `run:enterNode`, `run:combatStart`, `run:combatEnd`, `run:reward`,
+`run:end`, plus `run:deck`, `run:courage`, `run:lostThings`, `run:keepsake`,
+`run:clue`, `run:rescue`, `run:forge`, `run:region`, `run:ready`.
+
+### `Run` — the API
+
+```js
+new Run({ companion, kid, seed, hauntLevel, backpack })
+Run.resume(saved)                         // from Save.loadRun()
+Run.mock({ seed, companion, kid, node })  // a real run walked a few rooms, ephemeral
+run.snapshot()  run.save()                // window.MM.state() reads snapshot()
+// deck (entries are { uid, id, upgraded }; defs via cardById)
+deck  deckViews()  addCard(defOrId)  removeCard(uid)  upgradeCard(uid)
+transformCard(uid)  upgradeableCards()  removableCards()
+// resources, in TERMS vocabulary
+courage  maxCourage  lostThings  keepsakes  snacks  cluesFound
+heal(n) hurt(n) addMaxCourage(n) addLostThings(n) spendLostThings(n)
+addKeepsake(id) addSnack(s) addClues(n)
+// map
+region  regionIndex  map  currentNode  legalNodes()  legalNextIds()
+enterNode(id)  chooseNode(node)  leaveNode()  effectiveType(node)  sceneFor(node)
+// rooms
+claimReward() takeRewardCard(id) skipRewardCards()
+rest() restHealAmount() forgeKeepsake(id) forgePreview(id) forgeCost()
+shopStock() buyCard() buyKeepsake() buySnack() buyRemoval(uid)
+currentEvent() optionOpen(o) chooseEventOption(id) applyEffects(fx) eventCombat(kind)
+rescueCompanion(slug) completeRegion() advanceRegion() end(victory, killedBy, {navigate})
+// progression
+hauntLevel  rescued  flags        // flags = aggregated Keepsake + Gear run effects
+rng  fork(tag)
+```
+
+Legacy aliases the other agents' code already reads are live getters, not copies:
+`hp`, `maxHp`, `gold`, `relics`, `potions`, `regionId`, `floor`, plus the plain
+fields `currentNodeId`, `visitedIds`, `pathIds`, `combat`. Gameover's documented
+field list is satisfied by `snapshot()` verbatim, including `companionsFreed`,
+`killedBy` and `stats.{scuffles,bigScares,curiosities,safeRooms,cardsPlayed,turns,clues}`.
+
+### Determinism
+
+`this.rng = new RNG(seed)` is never consumed for content. Every subsystem takes
+`run.fork(tag)`, and `RNG.fork` hashes the *constructor* seed, not the stream
+position — so `fork('map:foyer')`, `fork('reward:foyer-3-2')`,
+`fork('shop:foyer-4-1')`, `fork('combat:<nodeId>')`, `fork('event:<node>:<option>')`
+are independent. Adding a shop roll cannot move the map. Verified: 5/5 seeds
+replay byte-identically (a digest over result, deck, Keepsakes, path, stats).
+
+**One qualification worth writing down.** A seed reproduces a run *given the same
+meta state*. `generateRegionMap` is handed `rescued` on purpose — the design doc's
+premise is that the house rearranges itself differently for different Kids and
+Companions — so a run that frees Marmalade changes what the *next* run with the
+same seed looks like. That is a feature, but it means any determinism test must
+reset `Save.data` first. The harness does; it cost me an hour of confusion.
+
+### Autosave / resume
+
+`save()` runs after every state change (~80 per expedition, 4023 across the 50-run
+sim). `Run.resume(saved)` restores deck uids, Keepsake counters and forge state,
+the map with its `visited` flags and resolved Unsurveyed rooms, the walked path,
+seen Curiosities, encounter history, removal price, pity counter and pending
+reward/event/shop. Round-trip digest is identical, 3/3.
+
+Mid-**map** resume is exact. Mid-**combat** deliberately is not: an unfinished
+fight puts you back on the blueprint rather than replaying for free.
+`snapshot().scene` tells `title.js` where Continue should land.
+
+### The four scenes
+
+Deep links all work standalone — `#scene=reward` (`&kind=bigScare`), `#scene=shop`,
+`#scene=rest`, `#scene=event` (`&event=the-collar`). With no expedition running they
+build `Run.mock()`: a **real** Run on a fixed seed, walked a few rooms, with
+`ephemeral = true` so it cannot overwrite a genuine save. Nothing on these screens
+is a fake number.
+
+`scenes/reward.js` also exports the **shared room chrome** (`RoomScene`, `esc`,
+`chip`) that shop/rest/event extend — ground, vignette, header, live HUD, footer,
+the CardView picker overlay, settings handling and the teardown registry. I put it
+there rather than in a new file so I stayed inside my ownership row, and because
+reward.js is already imported at boot.
+
+- **reward** — 3 real `CardView`s on a shallow arc, take one or skip. The spoils
+  (Lost Things, the Big Scare Keepsake with its full text, Clues) are on screen
+  *before* you choose. Skipping is a stated play: `+12 Lost Things, Luck +2`, and
+  the live Luck chip shows the pity counter so "none of these three" is legible as
+  correct rather than as a forfeit. Keys: `1-3` / arrows to move, `Enter` take,
+  `S` skip.
+- **shop** — Mr. Moth (procedural SVG, lamp and all) behind his counter. Five
+  Tricks, three Keepsakes, three Snacks, and the removal service, all seeded per
+  node. Owning a card already is a *note*, not a lock. Unaffordable is unmistakable:
+  desaturated item, struck-through price in the threat ramp, and the button reads
+  `N short` instead of `Buy`. Removal starts at 65 and rises 25 each use unless
+  you have Mr. Moth's Ledger.
+- **rest** — a Blanket Fort you build (§24). Four doors, one choice: **Rest**
+  (30% + Gear/Keepsake bonuses, shown as an exact `42 → 62`), **Sharpen a Trick**
+  (the picker renders the real card and swaps it to its `+` face on hover/focus —
+  before and after on the card itself), **Forge a Keepsake** (StS2's Forge: +1 tier
+  for 8 maximum Courage, with before/after prose per Keepsake), and **Sit with your
+  Companion** (free, +1 Clue, and a line of authored dialogue per Companion).
+- **event** — prose first: a per-mood vignette, the authored text set as a page,
+  then the options as full-width doors that name their **risk** and **gain** up
+  front. Gated options stay visible and say exactly which Gear would have opened
+  them, which is what makes the Backpack loadout screen mean something. Outcomes
+  render with effect chips and can chain into a card picker or a fight.
+
+All four: full keyboard path, visible focus, `reduceMotion` / `largeText` honoured
+and re-read on `settings:changed`, `exit()` removes every listener and destroys
+every CardView. Measured **61 fps** at 1600x900 on reward, shop and rest while the machine was
+quiet. Later readings of 21-35 are machine-wide, not mine: in the same sweep
+`#scene=title` read 29 and `#scene=map` read 21 while my shop read 35, so the
+shared backdrop or a concurrent agent is the load. Re-measure in isolation
+before believing any low number here.
+
+### Forge, and why it works for every Keepsake
+
+Rather than authoring a bespoke tier-2 for 30-plus relics, a forged Keepsake fires
+its **opening hook twice** (`onCombatStart` / `onTurnStart`). Welcome Mat gives 8
+Guard, Porcupine Slipper 6 Bristle, the Night-Before Bag draws 4. `forgePreview(id)`
+says so in plain language and flags the Keepsakes with no opener as a poor purchase
+instead of silently taking your Courage.
+
+### Keepsakes — `data/relics.js`, 33 of them
+
+- starter: Pocket Flashlight, Spare Batteries, Friendship Bracelet
+- common: Welcome Mat, House Slippers, Brass Service Bell, Chewed Tennis Ball,
+  Jar of Fireflies, Butterfly Net, Sticky Hand, Lucky Button, Chalk Stub,
+  Thermos of Cocoa
+- uncommon: Wind-Up Mouse, Moth-Eaten Monocle, Nightlight, Porcupine Slipper,
+  Coatcheck Ticket, Spare Key, Knotted Handkerchief, Tin of Sardines
+- rare: Ninth Life Charm, Night-Before Bag, Stopped Pocket Watch, Mothballed Quilt,
+  Hollow Birdcage, Black Cat's Shadow, The Collar
+- boss: The Butler's White Glove, The Governess's Hand Bell, Bedframe Splinter,
+  Lamplighter's Wick
+- shop: Mr. Moth's Ledger, Pocketful of Buttons, Night Vendor's Lantern
+- event: Bowl With Your Name On It, Photograph of a Cat, Wall Scratchings
+
+Five of the Foyer's authored run-passive concepts (§32) are in as written: Brass
+Service Bell, House Slippers, Spare Key, Coatcheck Ticket, Welcome Mat.
+
+Three implementation notes for anyone writing more:
+
+1. **Value reducers must be pure.** `modifyDamageDealt` / `modifyDamageTaken` /
+   `modifyCardCost` also run on the *display* path (intent numbers, live card text,
+   hand playability), so a "first time each combat" flag consumed inside one is a
+   bug you will see as a number that changes when you hover. Per-combat memory
+   lives in `engine.field` (which `clone()` deep-copies, so previews are sandboxed)
+   and is only ever *written* from a real mutation hook — `onIncomingHit`,
+   `onAttackDealt`, `onCardPlayed`, `onCombatStart`.
+2. **`h.amount = n` does nothing in `onIncomingHit`.** The payload is spread per
+   provider; use `h.setAmount(n)` / `h.prevent()` / `h.setHp(n)`.
+3. **A turn-start `gainEnergy` is silently overwritten.** The pipeline refills
+   Nerve to `energyMax` at step 6, after every `onTurnStart` hook. Keepsakes that
+   grant Nerve raise `player.energyMax` instead (`lendNerve` / `returnNerve` in
+   relics.js), which also makes the orb honestly read 4/4.
+
+Declarative run-layer effects live on `RelicDef.run` and are aggregated by
+`relicRunFlags()` into one plain object (`run.flags`), so no scene ever knows a
+Keepsake by name: `lostThingsMul, luck, restBonus, shopDiscount, revealUnknown,
+unlockEvents, flatRemoval, shopRare, noRestHeal, clueOnClear, enemyHpMul,
+maxHpOnMilestone`.
+
+### Curiosities — `data/events.js`, 16 of them
+
+The four the design doc names — **Scratching Behind the Wall**, **The Collar**,
+**The Feeding Room**, **The Photograph** — plus **The House Register**, **The Bell
+Pull**, **The Umbrella Gallery**, **The Cat Flap**, **The Dumbwaiter**, **The Lost
+and Found**, **The Painted Dog**, **Mr. Moth's Cousin**, **The Open Window**, **The
+Coat With Something In It**, **The Cat on the Stair**, **The Mended Thing**, **The
+Night's Arithmetic**. Every one has 2-4 options with authored, weighted outcomes;
+ten of them turn up Clues for the missing-pet investigation, and The Dumbwaiter's
+Familiar Toy branch is the one where you find out your pet is upstairs.
+
+Effects vocabulary (applied only by `run.applyEffects`): `hp, heal, maxHp,
+lostThings, snacks, clues, relic, card, curse, removeCard, upgradeCard, combat`.
+Options may carry `requires` (a Backpack item id or tag), `gateText` and
+`cost.lostThings`.
+
+### Backpack — `data/backpack.js`, 18 items
+
+Dog Whistle, Pet Treats, Camera, Familiar Toy, Collar and Tag, Big Flashlight,
+Walkie Talkie, Pocket Mirror, Multitool, Coil of Rope, Box of Chalk, Glow Sticks,
+Compass, Investigation Notebook, Good Blanket, Thermos, Spare Batteries, First Aid
+Tin. Sizes are 1/2/3 slots against `SLOTS_BASE = 5` (`SLOTS_MAX = 8`), per §19.
+Each item can carry `tags` (what Curiosity gates ask for), `hooks` (relic-shaped
+combat behaviour, handed to the engine by `backpackHooks()`) and `run` flags.
+`KID_LOADOUTS` gives all eight Kids an authored starting loadout that fits in 5.
+
+### Simulation — `tests/run/**`
+
+50 seeded expeditions driven straight through `Run`, no scenes, no DOM. A bot
+scores each playable card with the engine's own `preview()` and plays the best.
+
+```
+run length  6-7 x5  8-9 x12  10-11 x7  12-13 x26   mean 10.6, min 6, max 13
+end state   defeat/foyer x44   victory x6
+final       deck 11/14.1/18   purse 12/185.8/420   keepsakes 1/3.2/7
+determinism 5/5   resume 3/3   localStorage 3/3   autosaves 4023
+RESULT: 50 runs, 0 errors
+```
+
+Plus an explicit boss block that walks a run to the Butler and asserts the whole
+tail: boss node reached, reward `kind === 'boss'`, a boss Keepsake dropped,
+`result === 'victory'`, the region Companion freed, the rescue written to
+`Save.data.companionsRescued`, and `Save.loadRun()` null afterwards.
+
+For speed the bulk runs use an in-memory stand-in for `Save.saveRun` (a snapshot
+carries the whole region map; 4000 multi-kilobyte localStorage writes dominates the
+runtime otherwise). Three runs at the end go through the real `Save`/localStorage
+path to prove that seam.
+
+**Balance observation, not a defect:** 44/50 expeditions end in defeat in the
+Foyer with a competent-but-not-clever bot. That is either the Foyer being tuned
+hard or the bot being mediocre; whoever owns tuning may want a human read.
+
+### Scope
+
+`RUN_LENGTH_REGIONS = 1` in `run.js` — an expedition ends at the region boss, as
+briefed. The ladder itself is real: `completeRegion()` frees the region Companion
+and then either `advanceRegion()` (rebuilds the map, resets encounter history,
+emits `run:region`) or ends the run. Raising that constant is the only change the
+17-region campaign needs from this file; `_contentRegion(tier)` already falls back
+to a region with authored formations when the current one has none, so the ladder
+does not crash on the fourteen regions without enemy content yet.
+
+### Tokens
+
+No new tokens needed. Used `--good-300/-500` and `--warn-300` (thank you — they had
+landed by the time I needed them), the `--arcane-*` / `--brass-*` ramps from
+`ui/portrait.css`, and the standard ink/flame/spectre/threat/courage/guard/rarity
+ramps. **Zero hex literals in my four CSS files.**
+
+### Asks
+
+- **combat-scene** — `ctx.run.combat` is set before I navigate, exactly as you
+  asked, and `ctx.run.{companion,region,seed,rng,gold}` are all live. Two small
+  things: (1) I pass Backpack Gear to the engine as extra relic-shaped providers
+  marked `gear: true`, so the Keepsake bar currently shows Maya's Camera next to
+  her Pocket Flashlight — worth a different chip treatment. (2) Please keep your
+  `scenes.go('reward')` / `scenes.go('gameover')` on victory/defeat: `run.js`
+  deliberately does **not** navigate out of combat, because `combat:end` fires a
+  second before your death animation finishes. The reward is already prepared by
+  the time you arrive.
+- **frontend** — gameover's field list is satisfied by `snapshot()` as written, and
+  `Save.clearRun()` has already run by the time you get there, so your
+  `_activate()` clear is harmless but redundant. Title's Continue works: the
+  snapshot carries `scene`.
+- **map** — `run.legalNextIds()`, `run.currentNodeId`, `run.visitedIds`,
+  `run.pathIds` and `run.chooseNode(node)` are all live. `run.flags.revealUnknown`
+  (Chalk Stub / Pocket Mirror) sets `node.revealed` to the real type on Unsurveyed
+  nodes if you want to draw it; `run.effectiveType(node)` is the resolver.
+- **lead** — `tests/run/**` is mine and does not touch `tools/`. `data/relics.js`,
+  `data/events.js`, `data/backpack.js` and `state/run.js` are all created as listed
+  in the ownership table.
+
+### Screenshots
+
+`shots/rw.png` (scuffle reward), `f-rw.png` (Big Scare reward with the Keepsake
+plate), `sh4.png` (Mr. Moth's), `rs2.png` (the fort), `f-rs.png` (the Sharpen
+picker showing Scratch to Scratch+ on the real card), `ev2.png` / `ev2b.png`
+(Scratching Behind the Wall, before and after choosing), `f-flow.png` /
+`f-flow2.png` (`run:start` to map to a real fight booted from the run's deck).
+
+---
+
+## 2026-08-20 — atmosphere (round 2): lighting, room identity, warm-up
+
+Round 1 shipped a good authoring surface with nothing lit by it. Every number below
+was measured from the actual PNGs with a script written for this pass
+(luma = Rec.709 on 8-bit sRGB; saturation = mean chroma, max-min; structural
+cross-correlation = Pearson on a brightness- and contrast-normalised 128x72 luma
+downsample). Reference target is `game/assets/portraits/pipkin.png`.
+
+### 1. Nothing was lit by a light — three separate causes, all fixed
+
+1. **Every region's lamps were deep in the room** (z between -4 and -17), so the
+   camera only ever saw the *shadow* side of anything in the foreground. The
+   showcase stand-in, the near props and the enemies were all backlit silhouettes
+   no matter how bright the wall behind them was. Every region now authors a
+   **`key`** and a **`fill`** in FRONT of the action plane (positive z, between the
+   camera and the actors). `LightRig.slots` went 4 -> 5 so the key can never be
+   evicted, and slot selection now sorts on *authored* intensity rather than live
+   intensity so flicker cannot make lamps swap slots and pop.
+2. **`AtmoLight` under-drove its real `THREE.PointLight`** — a flat `intensity * 6`
+   regardless of radius. The backdrop shaders use `I / (1 + k^2(1 + 1.55k))` with
+   `k = d/r`; equating the two at `d = r/2` gives `I_three = 0.17 * I * r^2`. A
+   wide-radius lamp was 3-5x too dim, which is why any `MeshStandardMaterial` an
+   agent adds to the scene rendered black in a visibly bright room.
+3. **The prop shader lit four quad corners with a near-black albedo.** Props are
+   now shaded **per pixel** from an SDF-derived normal (the coverage-field gradient
+   turns the flat quad into a rounded slab that faces outward at the silhouette and
+   toward the camera in the middle), with a real material colour per region
+   (`propAlb` / `propHi`), a specular term, and interpolated world position so a
+   crown is genuinely farther from a low lamp than a base is.
+
+Also new: **visible flames.** Every practical light now draws an additive billboard
+(`FLAME_VERT/FRAG`, `Backdrop.syncFlames`), driven by the same flicker that drives
+the illumination. This is the only thing in frame that is *supposed* to clip to
+white, and it is what gives bloom something honest to work on. `key`/`fill` set
+`glow: 0` — they are cinematic lights, not objects.
+
+And **contact shadows**: an instanced multiply-blended ellipse under every standing
+prop, plus `atmosphere.setActors([{x, z, r, strength}])` for actors a scene owns.
+
+### 2. Shafts now land
+
+Each shaft computes its own floor intersection, is extended to reach it
+(`len = originY / cos(angle) * 1.06`), brightens into the contact instead of fading
+out, and publishes an elliptical **pool** that the floor shader paints
+(`uPool` / `uPoolAxis` / `uPoolCol`, 4 slots). Round 1 faded the beam out at its own
+bottom edge, so every shaft in all seventeen regions stopped in mid-air.
+All 17 regions author shafts now; five had none. **`foyer` — the first atmosphere
+any player ever sees — declared no lights, no shafts and no particles at all.**
+
+### 3. Seventeen rooms, not one room recoloured
+
+The palette gained three structural blocks:
+
+* `room: { w, d, h, side, ceilPattern, wallPad }` — the shell geometry is rebuilt
+  per region. The Secret Passages is 7.5 m wide with a 3.4 m ceiling; the Ballroom
+  is 34 x 26 x 10.5; the Graveyard, Hedge Maze and Pumpkin Grounds have no ceiling
+  and no side walls at all and use a new **exterior** wall mode (night sky
+  gradient, stars, a moon with a real halo, a distant roofline with lit windows
+  that spill onto the masonry).
+* `cam: { y, z, look, fov }` — eye height, distance and lens per region, applied by
+  `stage.setCameraRig()`. Combat framing is pushed in and the horizon raised:
+  StS2 is "epic rather than intimate", and the old frame was ~70% bare floor.
+* `props.layout` — one of `wings | colonnade | rows | aisle | clutter | nook |
+  terrace | hang | perimeter`. Props are also now clamped to the visible half-width
+  at their depth, so a prop in a 34 m room is actually in the shot.
+
+Ceiling treatments went from 4 to 9 (planks / checker / flagstone / coffered /
+vaulted ribs / glazed panes / exposed rafters / plaster rose / industrial truss).
+The silhouette library went from 10 shapes to 20 — cot, rocking horse, four-poster,
+range, longcase clock, statue, sarcophagus, clawfoot bath, gas lamp, birdcage — and
+every region draws from its own set.
+
+### 4. The 6 s first frame
+
+`grep -rn "compileAsync"` returned nothing in round 1; the first `composer.render()`
+linked RenderPass + UnrealBloomPass (5 mips) + grade + OutputPass in one task.
+`Stage.warmup()` now compiles **one object per task** (`compileAsync(obj, cam, scene)`
+with a yield between each), shows the room un-posted as soon as the scene materials
+are ready, then warms bloom and the grade off-screen at 1/8 scale and switches each
+on. Two shader-side changes cut the link cost directly: the wall relief and the prop
+coverage field are each evaluated **once** instead of three times, using `dFdx/dFdy`
+for the gradient. That alone took total warm-up from 21.7 s to 6.3 s under
+SwiftShader (`window.__MM_WARMUP_MS`).
+
+### 5. New API and seams (for other agents)
+
+```js
+atmosphere.setActors([{ x, z, r, strength }])  // ground shadows for your actors
+atmosphere.keyLight()             // { dirX, dirY, color, fill, strength }
+atmosphere.screenToFloor(px, py)  // CSS pixels -> world point on the floor plane
+stage.setCameraRig({ y, z, look, fov }, seconds)
+stage.warmup()                    // idempotent; resolves with ms taken
+```
+
+Atmosphere also publishes the live key light on `document.documentElement` as
+`--atmo-key-x`, `--atmo-key-y`, `--atmo-key`, `--atmo-fill`, `--atmo-key-strength`,
+`--atmo-ground` (throttled to ~6 Hz). **combat-scene**: these are there so
+`ui/enemy.js` can give its SVG sprites a directional gradient along
+`(--atmo-key-x, --atmo-key-y)` in `--atmo-key`, an ambient-occluded base in
+`--atmo-fill`, and a ground ellipse at `--atmo-ground` opacity. Lost Luggage is
+currently the same brown at its crown as at its base while standing in an amber-lit
+room; the room now has a defined key direction to shade it with. Alternatively call
+`atmosphere.setActors()` with each enemy's floor position and get the contact shadow
+in WebGL for free.
+
+### 6. Hand-off: the title screen
+
+`scenes/title.js` / `title.css` are the frontend agent's. `.ti-sky` is an **opaque**
+full-viewport gradient, so nothing the atmosphere layer renders is ever visible on
+the title screen — the measured before/after there is unchanged (mean luma 25.7,
+mean chroma 15.3, 85.5% of pixels below L32, 4.8% mid-tones). A `title` region is
+now authored in `REGIONS` (exterior night: sky gradient, stars, a moon with a real
+inverse-exponential halo rather than a flat disc, a roofline with lit windows that
+spill onto surrounding masonry, and two candle pools at the front of frame). To use
+it: make `.ti-sky` / `.ti-clouds` / `.ti-moon` transparent or drop them, and call
+`ctx.atmosphere.setMood('title')` instead of `'foyer'` in `TitleScene.enter()`.
+
+If the SVG mansion stays, the specific defects measured were: mansion, trees, fence
+and hedges are single flat fills with no value ramp and no rim; the moon is a flat
+grey disc with three flat darker circles and no halo; lit windows are flat amber
+rects that do not spill onto the masonry; fence pickets 40px from a lit candle
+measure the same as pickets 400px away (the candles need a real radial falloff);
+and the cobwebs read as a 15%-white UI overlay rather than as part of the world.
+
+### 7. Measured before / after
+
+Region set = all 17, captured through `fx/showcase.js` at 1600x900.
+
+| | before | after | reference (pipkin) |
+|---|---|---|---|
+| mean luma (17-region avg) | 17.4 | **53.8** | 52.9 |
+| median luma | 6.1 | **33.7** | 32.2 |
+| p95 luma | 75.6 | **182.0** | 164.0 |
+| mean chroma | 20.2 | **52.4** | 54.6 |
+| shadows L<32 | 82.4% | **48.2%** | 49.7% |
+| mid-tones 64-160 | 7.1% | **22.7%** | 24.1% |
+| highlights L>192 | 0.1% | **4.2%** | 3.6% |
+
+Combat (`shots/ca-combat.png` -> `shots/zz-combat.png`, full frame incl. DOM UI):
+mean luma 27.3 -> **49.6**, median 8.2 -> **29.5**, mean chroma 26.1 -> **46.1**,
+shadows 73.5% -> **53.5%**, mid-tones 12.3% -> **19.0%**, highlights 0.9% -> **2.8%**.
+
+Props (the two side bands where props live, `(100,360)-(560,700)` and
+`(1080,360)-(1540,700)`): p95 luma **116.9 -> 199.9** (target >=140), pixels above
+L192 **1.7% -> 6.3%** (target >=3%), mean chroma 25.0 -> 67.4.
+
+Structural cross-correlation across the 17 regions, brightness and contrast
+normalised out: **0.627 -> 0.296** (target < 0.35). Strictest variant (also
+high-passed to remove global gradients): 0.290 -> 0.049. Worst surviving pairs are
+pumpkin/graveyard and lampworks/bathhouse at ~0.70 — both are legitimately similar
+room *types*, and both are well below the round-1 average.
+
+Longest `PerformanceObserver` long task, cold load, SwiftShader software WebGL:
+title **6360 ms -> 2941 ms**, combat **5952 ms -> 2599 ms**, map **5447 ms -> 2949 ms**.
+
+### 8. Known gaps, honestly
+
+* The **<250 ms long-task target is not met** and is not reachable under
+  SwiftShader: what remains is a single `gl.linkProgram` for one material, and
+  software GL takes seconds over it. The structural fix is in (per-object compile,
+  one task each, no single task owning the whole chain, and the two heaviest
+  shaders cut to a third of their code size), and the screen is no longer blank or
+  frozen while it happens. This needs a re-measure on hardware GL.
+* Frame rate under SwiftShader at 1600x900 dropped from ~61 to ~30 fps: 5 lights
+  instead of 4 across wall/sides/floor/ceiling/props, per-pixel prop lighting, the
+  pool loop, flame billboards and contact shadows. This is a software-rasteriser
+  number, not a GPU one, but somebody should confirm 60 fps on real hardware before
+  sign-off. `stage.setQuality(0)` halves DPR if it is needed.
+* Combat's *composite* mid-tone figure (19.0%) sits under the 22-25% target because
+  roughly 40% of that frame is dark DOM chrome; the WebGL layer on its own is 22.7%.
+* Props still read slightly waxy in the brighter rooms (nursery, sleeping, kennels).
+
+### Screenshots
+
+`shots/zz-regions.png` (17-region contact sheet, after) vs
+`shots/zz-regions-before.png` (same regions, round 1).
+`shots/zz-combat.png`, `shots/zz-title.png`.
+Per-region frames: `shots/M_<region>.png` (after), `shots/B_<region>.png` (before).
+
+
+---
+
+## 2026-08-20 — ui-chrome
+
+Owned and delivered: `src/ui/tooltip.js` (+ `tooltip.css`), `hud.js`/`hud.css`,
+`modal.js`/`modal.css`, `settings.js`/`settings.css`, `deckview.js`/`deckview.css`,
+`icons.js`, `base.css`, `tokens.css`, and `tests/chrome/**`. Nothing outside those
+paths was touched.
+
+Harness: `http://localhost:8777/tests/chrome/index.html`
+Checks: `python tests/chrome/run.py` -> **RESULT: 27 checks, 0 errors**, 61 fps,
+zero console errors. Shots: `chrome-overview / -tip / -nested / -settings /
+-deckview / -drawpile / -icons / -icons-grey / -largetext / -colorblind / -hud`.
+In the real game: `shots/ch-tip2.png` (Haunt explained beside a hovered Boo!).
+
+### `tooltip.js` — the keyword system
+
+One delegated `pointerover`/`pointerout`/`focusin` handler on `document`. **There is
+no `pointermove` listener anywhere**: those two events bubble and fire only on
+boundary crossings, so the cost is zero while the pointer is moving. Geometry is read
+exactly twice per tooltip (anchor, then panel) inside one rAF and written as a single
+`transform`.
+
+Anchors are declarative — add an attribute, get a tooltip:
+
+| attribute | shows |
+|---|---|
+| `data-kw="ghoststep"` | a keyword or status from the merged registries |
+| `data-tip="free text"` (+ `data-tip-title`) | literal text |
+| `data-tip-status="weak"` + `data-tip-stacks` + `data-tip-owner` | the live condition: what it does **at this stack count**, and what it will be after this turn |
+| `data-tip-intent="attackBig"` (+ `data-tip-damage`, `data-tip-hits`) | the intent, in plain language |
+| `data-tip-card="marmalade/pounce"` (+ `data-tip-upgraded`) | a real `CardView` preview |
+| `data-tip-enemy="dust-bunny"` | name, Courage, lore, and the move list filtered to what you have seen |
+| `data-tip-keepsake="brass-button"` | name, rarity, effect, live counter, flavour |
+| `data-tip-node="bigScare"` | what that map room is |
+| `data-tip-placement="top/bottom/left/right/auto"` | a preference, not a promise |
+| `data-tip-avoid=".mm-map__node"` | **extra rects the panel must not cover** |
+| `data-tip-delay="0"` | override the 110 ms intent delay |
+
+Programmatic API:
+
+```js
+ctx.tooltip.show(anchorEl, descriptorOrString, { placement, avoid })
+ctx.tooltip.hide()
+ctx.tooltip.attach(el, descriptorOrFn)          // bind without attributes
+ctx.tooltip.provide('card',     id => CardDef)  // lookups it must not import
+ctx.tooltip.provide('enemy',    id => ({ def, name, hp, maxHp, seen }))
+ctx.tooltip.provide('keepsake', id => RelicDef)
+ctx.tooltip.provide('status',   (id, el) => ({ stacks, owner }))
+ctx.tooltip.keyword('ghoststep')  -> descriptor
+ctx.tooltip.allIds()              -> every id it can resolve (121 today)
+ctx.tooltip.setEnabled(false) / ctx.tooltip.destroy()
+```
+
+Descriptor: `{ kind, id, title, subtitle, color, icon, body, lines[], rows[], moves[],
+stacks, footer, node }`. `kind` is one of `keyword | keywords | status | intent | card |
+enemy | keepsake | node | text | custom`.
+
+**Registries.** It calls `loadCompanionKeywords()` and `loadContentRegistries()` itself
+at construction, so all three sources are merged whether or not combat has booted —
+**121 ids, every one of them resolving with a title and a non-empty body** (asserted).
+
+One thing worth knowing: `data/keywords.js` registers `COMPANION_KEYWORDS` and then
+`COMPANION_STATUSES` under the same ids, so the status' terse `{n}` sentence *replaces*
+the hand-written keyword prose for Ghoststep, Haunt, Web, Loose Bones and about a dozen
+others. Rather than ask combat-engine to reorder, the tooltip keeps a read-only copy of
+the prose and prefers it for the **keyword** variant; the **status** variant still uses
+the live-stack sentence. Both readings are therefore available and neither is lost.
+
+**Nested keywords.** Every keyword named inside a description becomes a chip (longest
+match first, plurals handled, a keyword never links to itself, nothing under 3
+characters). Hovering a chip opens a second-level panel — and that panel is anchored to
+the **parent panel**, not to the chip, so it lands beside the first instead of on top of
+it. Depth is capped at two.
+
+**Placement.** Four candidate sides, scored: +1000 if it fits the viewport entirely,
+minus the area of everything it would occlude (capped below the fits/doesn't-fit gap, so
+a fitting side always wins, but occlusion decides *between* fitting sides), plus a bias
+for the caller's preference. The anchor is always in the avoid set, so **the panel can
+never cover the thing it describes** — that is asserted over all 202 anchors in the
+harness, along with zero viewport overflow. `data-tip-avoid` extends the set: the map
+can pass its own node selector and the panel will stop hiding a node's successors.
+
+**Cards in hand.** `.mm-card` is `pointer-events:none` (the Hand hit-tests itself), so a
+keyword chip on a card can never receive a `pointerover` — binding to `.mm-card__kw`
+alone would have been dead code in combat. Slay the Spire does not ask you to hover
+individual words anyway: it shows **every keyword on the hovered card at once, beside
+it**. The tooltip listens for the Hand's `card:hover` / `card:unhover` / `card:pickup` /
+`card:play` and does exactly that, placed to the right of the card so it covers neither
+the card nor the enemies. `.mm-card__kw[data-kw]` delegation still works everywhere the
+card *is* interactive (deck view, reward, shop).
+
+**Timing.** 110 ms intent delay cold, 0 ms warm (within 420 ms of the last one), ~130 ms
+fade in, and it disappears the instant you leave. Scrolling dismisses — **unless the
+anchor still holds focus**, in which case the panel follows it, because a keyboard user
+reaches an off-screen anchor by focusing it and the browser scrolls to it.
+
+**Keyboard/AT.** Focus opens, Escape closes, `ArrowDown` opens the second level. Because
+`#tooltip-layer` is `aria-hidden="true"` in `index.html`, the panel text is also mirrored
+into an `aria-live="polite"` region inside `#dom-layer`, and the anchor gets
+`aria-describedby`. See the asks below.
+
+### `hud.js` — the persistent run HUD
+
+```js
+const hud = new HUD(ctx, { mount: this.root, compact: false });
+hud.refresh(); hud.openDeck(); hud.openSettings(); hud.destroy();
+```
+
+Region + floor / Courage bar with a stroked number and a low-Courage pulse / Lost Things /
+three Snack slots (filled ones are buttons and emit `hud:useSnack`) / the Keepsake bar
+with per-chip counters / Haunt Level / seed / a deck button / a settings button. Every
+chip is focusable and hoverable through the tooltip; the Keepsake chips carry their own
+`data-tip`.
+
+It reads `ctx.run` entirely through `?.` and falls back to a stand-in that is **labelled
+`preview` on screen** so a mocked HUD can never be mistaken for a real one. It refreshes
+on `run:start|enterNode|combatEnd|reward|update|heal|damage|gold|relic|potion|deck`,
+`hud:refresh`, `settings:changed` and `scene:enter` — never per frame. Emits
+`hud:useSnack` and `hud:where`.
+
+### `deckview.js` — one viewer for every pile
+
+```js
+await openPile({ mode: 'draw', cards, ctx, host: ctx.dom });   // deck|draw|discard|exhaust|reward
+const v = new DeckView({ mode: 'deck', cards, ctx });          // or inline, v.el
+```
+
+Real `CardView`s in a grid, count, text search, filters (type / cost incl. X and 4+ /
+rarity / upgraded) and sort (name / cost / type / rarity). The controls stay put and the
+grid scrolls. Keyboard: arrows walk the real column count, Home/End/PageUp/PageDown,
+Enter picks in reward mode. **The draw pile is force-sorted inside the view**, not just
+by the caller, so looking is information and never an oracle — asserted in the harness.
+Cards are placed with one read pass and one write pass per layout.
+
+### `modal.js`
+
+`new Modal({title, subtitle, size:'sm'|'md'|'wide'|'full', dismissible, host})`,
+`m.body`, `m.footer`, `await m.open()`, `m.close(result)`, plus `confirmModal({...})`.
+Escape closes, the backdrop closes, focus moves in and returns to the opener, Tab is
+trapped, siblings get real `inert`, and the page cannot scroll behind it. All six
+behaviours are asserted.
+
+### `settings.js` — and they all actually do something
+
+Driven by one `SETTINGS_SPEC` table. Every flag lands by one of three routes:
+
+1. **an attribute on `<html>`** — `data-colorblind`, `data-reduce-motion` (`1` forces on,
+   `0` explicitly opts out of the OS preference), `data-large-text`, and `--anim-scale`
+   (durations scale *inversely* with speed). tokens.css does the rest, so the switch
+   reaches every stylesheet in the game with no component changes.
+2. **a direct write** — `clock.scale = speed * (fastMode ? 1.6 : 1)`.
+3. **`settings:changed`** — which audio, the hand and the combat scene already consume.
+
+Plus the current seed, an entry field for the next run's seed (`Save.data.nextSeed`,
+also emitted as `settings:seed`), restore-defaults, and a two-step "reset all progress".
+
+`applySettings(ctx)` is called from the **`Tooltip` constructor**, because `main.js` is
+not mine and `main.js` always constructs a Tooltip. That is the only reason the
+accessibility flags are live on the title screen. If foundation would rather call
+`applySettings(ctx)` explicitly in `main.js` after `Save.load()`, delete the two lines in
+`tooltip.js` — it is idempotent either way.
+
+### `icons.js`
+
+118 ids in seven namespaces: `intent.*` (all 16 in `schema.js`), `status.*` (the 13
+universal, the companion set, the enemy set), `res.*`, `node.*`, `type.*`, `rarity.*`,
+`ui.*`. `icon(id, {size, title})` -> a `<span class="mm-icon">` sized in `em`;
+`iconSvg(id)`, `iconPath(id)`, `hasIcon(id)`, `intentIcon(type)`, `statusIcon(def)`.
+
+Everything is a filled 24x24 path with `fill-rule: evenodd` — no stroke-only geometry,
+because a hairline vanishes at 16px and its silhouette is a lie. Eight ids are
+**declared aliases** in `ICON_ALIASES` (Guard *is* the shield, Nerve *is* the energy orb,
+a seed *is* a die...); the test collapses ids with identical path data before checking, so
+an alias is never mistaken for a collision while two genuinely different drawings that
+read the same still fail. **110 distinct drawings, all unique, and no pair within 40 of
+2304 px of each other's 48x48 alpha bitmap.**
+
+Specifically avoiding the two faults a previous review found on the map: `node.boss` is a
+**crown**, `node.rescue` is an **open cage** — nothing alike — and `node.safe` is a **lit
+candle on a saucer**, not a hazard triangle. The defend family carries its modifier as a
+whole arrow standing clear of a narrowed shield rather than a notch in the outline,
+because confusing `defendBuff` with `defendDebuff` is a real tactical error. Rarity is
+square / circle / diamond / star, not four coloured dots.
+
+### tokens.css — what I added
+
+| token | value | why |
+|---|---|---|
+| `--paper-wash` | `ink-900 34%` | requested by frontend — the multiply wash over blueprint parchment |
+| `--paper-wash-strong` | `ink-900 58%` | the heavier variant the same screens wanted |
+| `--surface-1/2/3` | ink + a little flame | the three chrome panel grounds |
+| `--surface-line`, `--surface-line-hi` | | chrome borders, resting and lit |
+| `--scrim`, `--scrim-soft` | | modal backdrops |
+| `--chip-bg` | | the ground under every HUD/deck chip |
+| `--focus-ring` | `var(--flame-300)` | one name for the focus colour |
+| `--type-scale` | `1` / `1.22` under `[data-large-text="1"]` | the whole `--fs-*` ramp now multiplies through this |
+| `--anim-scale` | `1` | every `--t-*` is `calc(base * var(--anim-scale))`, so `Save.settings.speed` reaches all CSS motion |
+| `--hud-h`, `--tip-max-w` (`34ch`), `--tip-gap` | | chrome geometry, in `ch` so largeText widens rather than clips |
+
+Changed: **`--card-w` -> `clamp(150px, min(13.5vw, 27vh), 224px)`** as card-feel formally
+requested (`card.css`'s local clamp is now a no-op), and **`--text-lo` `#8b839a` ->
+`#9a92a8`** — measured from rendered pixels the old value landed at **4.08:1** on the HUD
+chip ground, under WCAG AA. The new one clears 4.5:1 on every chrome surface and is still
+clearly below `--text-mid`. `--good-300/500` and `--warn-300/500` were already present.
+
+**Colour audit.** Every colour in `game/src/**/*.css` already traces to a token — the
+scene-local ramps (`--arcane-*`, `--brass-*`, `--wood-*`, `--cork-*`, `--kid-*`) are all
+`color-mix()` over tokens, which is exactly right. Two literals remain and are not mine:
+`scenes/map.css` uses `#fff` in 8 places (**map**), and `ui/card.css` still carries the
+now-dead fallback `var(--good-300, #74e08a)` (**card-feel**). `cardart.js`'s `PIGMENT`
+table is illustration paint and correctly out of scope.
+
+### Colourblind palettes
+
+Switched by `data-colorblind` on `<html>`. Only hue assignments change — every component
+keeps its token names, so one attribute repaints the whole game.
+
+- **Protanopia / deuteranopia** (red-green): the safe axis is **blue <-> orange**.
+  Attack `#ef8b32` vs Skill `#56a4ff`; the threat ramp becomes a deep orange-brown so
+  buff (`--good-300` -> a *light* blue `#9ad6ff`) and debuff (`--threat-300` -> a *dark*
+  orange `#e08a2e`) separate by luminance as well as hue. Courage and Nerve lift out of
+  the red hole protans fall into.
+- **Tritanopia** (blue-yellow): the safe axis is **red <-> teal**, and gold moves off
+  yellow entirely — Nerve becomes coral, rare becomes warm pink.
+- **The rarity ladder** in every mode is four separated luminance steps on the safe axis,
+  with curse and status pushed darker so they never collide with basic or uncommon.
+
+Colour is never the only channel regardless: card frames differ by material and crest,
+intents by frame shape, icons by silhouette, statuses by glyph, and the settings toggles
+spell out "On"/"Off" in words. The harness asserts all three critical pairs stay distinct
+under every palette.
+
+### What I need from other agents
+
+1. **foundation — `game/index.html`.** `#tooltip-layer` carries `aria-hidden="true"`.
+   Tooltips are frequently the only place a rule is written down, so that hides real
+   content from screen readers. Please **remove `aria-hidden` from `#tooltip-layer`**
+   (keep it on `#fx-layer`). Until then I mirror every panel into an `aria-live` region
+   inside `#dom-layer`, which works but announces twice as much as it should.
+2. **foundation — optional.** If you would rather own it, call `applySettings(ctx)` in
+   `main.js` right after `Save.load()`; I will drop the call from `tooltip.js`.
+3. **map — one line.** Your node tooltips can now stop covering the nodes: put
+   `data-tip-node="<NodeType>"` and `data-tip-avoid="<your node selector>"` on each node
+   and delete your own tooltip renderer. The placement scorer will keep the panel off
+   both the node and its successors.
+4. **combat-scene.** `ctx.tooltip.show()` is real now and appends to `ctx.tipLayer`, so
+   your probe should defer automatically. Two things would make it better: call
+   `ctx.tooltip.provide('enemy', ...)` and `provide('card', ...)` at scene enter, and put
+   `data-tip-status` / `data-tip-stacks` / `data-tip-owner` on your status pills so they
+   get the "...and here is what it does at 3 stacks, and what it will be next turn" copy
+   for free.
+5. **combat-engine.** Consider registering `COMPANION_STATUSES` *before*
+   `COMPANION_KEYWORDS` in `data/keywords.js`, so the hand-written keyword prose wins for
+   ids that are both. I work around it read-only today (see above).
+6. **frontend — heads-up, not a request.** `--card-w` is responsive as of now.
+   `select.js` and `gameover.js` size CardView slots from it directly, so their slot maths
+   will be a few px out at small viewports. I did not touch either file.
+
+### Not mine, but worth someone looking
+
+Every scene measures **17-35 fps** through `tools/shot.py` on this machine, including the
+title screen, which has almost nothing on it. I A/B'd combat with my `tooltip.js` stashed
+back to the 6-line stub: **18 fps with the stub, 28 fps with mine**, so this is not the
+chrome. `tests/chrome/index.html`, which has no WebGL, runs at **61**. That points at the
+shared renderer/atmosphere layer rather than at any one scene.

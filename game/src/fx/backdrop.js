@@ -696,7 +696,7 @@ export class Backdrop {
     c.uFog.value.copy(p._fog);
     c.uAccent.value.copy(p._accent);
     c.uAmbient.value.copy(p._ambient);
-    c.uGain.value = (p.gain ?? 3.4) * 0.15;
+    c.uGain.value = (p.gain ?? 3.4) * 0.085;
 
     const pr = this.propMat.uniforms;
     pr.uAlbedo.value.copy(p._propAlb);

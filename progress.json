@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T07:56:04",
+ "updated": "2026-08-20T08:19:21",
  "wave": 1,
  "waveLabel": "Core systems",
  "headline": "Seven builders running in parallel. Critics follow each one.",
@@ -93,9 +93,9 @@
    "id": "meta",
    "name": "Run layer",
    "desc": "Rewards, shops, rest, Curiosities, Keepsakes, Backpack",
-   "status": "building",
+   "status": "reviewing",
    "round": 1,
-   "verdict": null,
+   "verdict": "Run layer complete: 33 Keepsakes, 16 Curiosities, 18 Gear, four node scenes. 50 seeded runs, 0 errors, determinism and resume verified.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -129,9 +129,9 @@
    "id": "atmos",
    "name": "Atmosphere",
    "desc": "Lighting, fog, post FX, dust, candle flicker, transitions",
-   "status": "rework",
+   "status": "reviewing",
    "round": 2,
-   "verdict": "Backdrop, candlelight, particles, 5 transitions and the grade shader shipped across 12 modules.",
+   "verdict": "Lighting rebuilt: mid-tones 7.1% to 22.7%, region cross-correlation 0.627 to 0.296. But it now costs too much on integrated graphics.",
    "gap": "Nothing in the scene is lit by a light. Props measure 0.0% of pixels above L192 and 11.2 saturation; light shafts terminate in mid-air with no floor pool. All 17 regions structurally correlate at 0.737.",
    "builder": null,
    "critic": null,
@@ -141,9 +141,9 @@
    "id": "chrome",
    "name": "UI chrome & clarity",
    "desc": "HUD, tooltips, deck views, settings, previews, accessibility",
-   "status": "building",
+   "status": "reviewing",
    "round": 1,
-   "verdict": null,
+   "verdict": "Keyword tooltip resolving 121 ids with nested chips and occlusion-aware placement; 118 icons, all silhouette-distinct; colourblind palette.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -294,6 +294,14 @@
   {
    "t": "2026-08-20T07:56:04",
    "msg": "Run layer, Keepsakes and Curiosities now exist on disk. UI chrome building the keyword tooltip system."
+  },
+  {
+   "t": "2026-08-20T08:19:20",
+   "msg": "Run layer complete - the game is now playable end to end: title, select, map, combat, reward, shop, rest, Curiosity, expedition end."
+  },
+  {
+   "t": "2026-08-20T08:19:21",
+   "msg": "PERFORMANCE ALERT: measured on the real Intel GPU (not software), the title screen runs at 15fps and combat at 35fps. Automatic fail; dedicated perf pass starting."
   }
  ]
 }
