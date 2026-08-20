@@ -1,0 +1,80 @@
+{
+ "i": 36,
+ "cmd": "{\"op\": \"box\", \"sel\": \"[class*=haunt] button, [class*=haunt] *\"}",
+ "result": [
+  {
+   "t": "HAUNT LEVEL",
+   "x": 358,
+   "y": 855,
+   "w": 86,
+   "h": 17,
+   "cls": "foot__lbl"
+  },
+  {
+   "t": "0\n1\n2\n3\n4\n5",
+   "x": 455,
+   "y": 851,
+   "w": 176,
+   "h": 26,
+   "cls": "haunt__row"
+  },
+  {
+   "t": "0",
+   "x": 455,
+   "y": 851,
+   "w": 26,
+   "h": 26,
+   "cls": "haunt__pip"
+  },
+  {
+   "t": "1",
+   "x": 485,
+   "y": 851,
+   "w": 26,
+   "h": 26,
+   "cls": "haunt__pip is-locked"
+  },
+  {
+   "t": "2",
+   "x": 515,
+   "y": 851,
+   "w": 26,
+   "h": 26,
+   "cls": "haunt__pip is-locked"
+  },
+  {
+   "t": "3",
+   "x": 545,
+   "y": 851,
+   "w": 26,
+   "h": 26,
+   "cls": "haunt__pip is-locked"
+  },
+  {
+   "t": "4",
+   "x": 575,
+   "y": 851,
+   "w": 26,
+   "h": 26,
+   "cls": "haunt__pip is-locked"
+  },
+  {
+   "t": "5",
+   "x": 605,
+   "y": 851,
+   "w": 26,
+   "h": 26,
+   "cls": "haunt__pip is-locked"
+  },
+  {
+   "t": "Standard",
+   "x": 643,
+   "y": 854,
+   "w": 55,
+   "h": 20,
+   "cls": "haunt__desc"
+  }
+ ],
+ "error": null,
+ "console_errors": []
+}

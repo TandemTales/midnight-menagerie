@@ -24,6 +24,7 @@ to concurrent whole-file writes, so this is now structural rather than a convent
 | [2026-08-20-combat-scene-round-2](notes/2026-08-20-combat-scene-round-2.md) | 16 KB |
 | [2026-08-20-companion-cards-round-2-critic-response](notes/2026-08-20-companion-cards-round-2-critic-response.md) | 4 KB |
 | [2026-08-20-enemies-agent-round-2](notes/2026-08-20-enemies-agent-round-2.md) | 5 KB |
+| [2026-08-20-enemies-round-3-haunt-ladder-and-opening-scuffle](notes/2026-08-20-enemies-round-3-haunt-ladder-and-opening-scuffle.md) | 9 KB |
 | [2026-08-20-frontend-agent-round-2-title-select-clubhouse-gam](notes/2026-08-20-frontend-agent-round-2-title-select-clubhouse-gam.md) | 8 KB |
 | [2026-08-20-loose-ends](notes/2026-08-20-loose-ends.md) | 16 KB |
 | [2026-08-20-map-agent-round-2-finishing-the-blueprint-pass](notes/2026-08-20-map-agent-round-2-finishing-the-blueprint-pass.md) | 9 KB |

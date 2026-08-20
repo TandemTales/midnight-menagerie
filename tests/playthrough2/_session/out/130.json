@@ -1,0 +1,10 @@
+{
+ "i": 130,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"[...document.querySelectorAll(\\\".cb-enemy\\\")].map((e,i)=>i+\\\":\\\"+e.className).join(\\\" ; \\\")\"}",
+ "result": "0:enemy cb-enemy is-hit is-guarding is-targeted ; 1:enemy cb-enemy is-hit is-guarding",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

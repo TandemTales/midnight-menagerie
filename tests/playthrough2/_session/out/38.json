@@ -1,0 +1,7 @@
+{
+ "i": 38,
+ "cmd": "{\"op\": \"wait\", \"s\": 0.6}",
+ "result": "ok",
+ "error": null,
+ "console_errors": []
+}

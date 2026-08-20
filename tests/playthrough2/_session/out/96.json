@@ -1,0 +1,21 @@
+{
+ "i": 96,
+ "cmd": "{\"op\": \"strip\", \"name\": \"p2-20-play\", \"n\": 10, \"interval\": 0.09}",
+ "result": [
+  "shots\\p2-20-play_f0.png",
+  "shots\\p2-20-play_f1.png",
+  "shots\\p2-20-play_f2.png",
+  "shots\\p2-20-play_f3.png",
+  "shots\\p2-20-play_f4.png",
+  "shots\\p2-20-play_f5.png",
+  "shots\\p2-20-play_f6.png",
+  "shots\\p2-20-play_f7.png",
+  "shots\\p2-20-play_f8.png",
+  "shots\\p2-20-play_f9.png"
+ ],
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

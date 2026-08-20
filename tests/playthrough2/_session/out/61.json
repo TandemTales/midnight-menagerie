@@ -1,0 +1,9 @@
+{
+ "i": 61,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"(()=>{const a=document.activeElement; return a.className+\\\"|\\\"+(a.innerText||\\\"\\\").slice(0,40)})()\"}",
+ "result": "map-node map-node--scuffle is-legal is-kbd|East Reception Hall",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

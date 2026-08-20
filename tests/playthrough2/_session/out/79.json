@@ -1,0 +1,10 @@
+{
+ "i": 79,
+ "cmd": "{\"op\": \"shot\", \"name\": \"p2-15-card-hover\"}",
+ "result": "shots\\p2-15-card-hover.png",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

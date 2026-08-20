@@ -1,0 +1,474 @@
+{
+ "i": 45,
+ "cmd": "{\"op\": \"box\", \"sel\": \".map-node, [class*=mapnode], [data-node]\"}",
+ "result": [
+  {
+   "t": "Entry Hall",
+   "x": 168,
+   "y": 113,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-legal is-kbd"
+  },
+  {
+   "t": "Parlor",
+   "x": 168,
+   "y": 227,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-legal"
+  },
+  {
+   "t": "Music Room",
+   "x": 168,
+   "y": 408,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-legal"
+  },
+  {
+   "t": "East Landing",
+   "x": 168,
+   "y": 503,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-legal"
+  },
+  {
+   "t": "East Reception Hall",
+   "x": 168,
+   "y": 614,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-legal"
+  },
+  {
+   "t": "Formal Dining Room",
+   "x": 259,
+   "y": 120,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-dim is-far"
+  },
+  {
+   "t": "Grand Staircase",
+   "x": 259,
+   "y": 213,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-dim is-far"
+  },
+  {
+   "t": "West Landing",
+   "x": 259,
+   "y": 408,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-dim is-far"
+  },
+  {
+   "t": "Front Vestibule",
+   "x": 259,
+   "y": 614,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-dim is-far"
+  },
+  {
+   "t": "Coat Room",
+   "x": 382,
+   "y": 224,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--unknown is-dim is-far"
+  },
+  {
+   "t": "Receiving Room",
+   "x": 382,
+   "y": 303,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--curiosity is-dim is-far"
+  },
+  {
+   "t": "Bell Pull Gallery",
+   "x": 382,
+   "y": 426,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-dim is-far"
+  },
+  {
+   "t": "Entry Hall \u00b7 East",
+   "x": 382,
+   "y": 508,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-dim is-far"
+  },
+  {
+   "t": "Parlor \u00b7 East",
+   "x": 382,
+   "y": 600,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-dim is-far"
+  },
+  {
+   "t": "Music Room \u00b7 West",
+   "x": 457,
+   "y": 204,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-dim is-far"
+  },
+  {
+   "t": "Portrait Hall",
+   "x": 457,
+   "y": 335,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--curiosity is-dim is-far"
+  },
+  {
+   "t": "East Landing \u00b7 East",
+   "x": 457,
+   "y": 406,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-dim is-far"
+  },
+  {
+   "t": "East Reception Hall \u00b7 East",
+   "x": 457,
+   "y": 500,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-dim is-far"
+  },
+  {
+   "t": "Formal Dining Room \u00b7 East",
+   "x": 457,
+   "y": 614,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-dim is-far"
+  },
+  {
+   "t": "Visitor Cloakroom",
+   "x": 594,
+   "y": 113,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--shop is-dim is-far"
+  },
+  {
+   "t": "Drawing Room",
+   "x": 594,
+   "y": 219,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--curiosity is-dim is-far"
+  },
+  {
+   "t": "Umbrella Gallery",
+   "x": 594,
+   "y": 333,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--safe is-dim is-far"
+  },
+  {
+   "t": "Grand Staircase \u00b7 East",
+   "x": 594,
+   "y": 531,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-dim is-far"
+  },
+  {
+   "t": "West Landing \u00b7 East",
+   "x": 594,
+   "y": 599,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-dim is-far"
+  },
+  {
+   "t": "Front Vestibule \u00b7 West",
+   "x": 641,
+   "y": 114,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-dim is-far"
+  },
+  {
+   "t": "Receiving Room \u00b7 West",
+   "x": 641,
+   "y": 230,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-dim is-far"
+  },
+  {
+   "t": "Bell Pull Gallery \u00b7 West",
+   "x": 641,
+   "y": 323,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-dim is-far"
+  },
+  {
+   "t": "Butler's Passage",
+   "x": 641,
+   "y": 392,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--unknown is-dim is-far"
+  },
+  {
+   "t": "House Register Alcove",
+   "x": 641,
+   "y": 526,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--unknown is-dim is-far"
+  },
+  {
+   "t": "Entry Hall \u00b7 Lower",
+   "x": 641,
+   "y": 596,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-dim is-far"
+  },
+  {
+   "t": "Portrait Hall \u00b7 West",
+   "x": 763,
+   "y": 137,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--rescue is-dim is-far"
+  },
+  {
+   "t": "Coat Room \u00b7 West",
+   "x": 763,
+   "y": 210,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--shop is-dim is-far"
+  },
+  {
+   "t": "Parlor \u00b7 Lower",
+   "x": 763,
+   "y": 332,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-dim is-far"
+  },
+  {
+   "t": "Drawing Room \u00b7 East",
+   "x": 763,
+   "y": 416,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--curiosity is-dim is-far"
+  },
+  {
+   "t": "Visitor Cloakroom \u00b7 East",
+   "x": 763,
+   "y": 501,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--unknown is-dim is-far"
+  },
+  {
+   "t": "Music Room \u00b7 Lower",
+   "x": 763,
+   "y": 613,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--bigScare is-dim is-far"
+  },
+  {
+   "t": "Marble Gallery",
+   "x": 884,
+   "y": 219,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--treasure is-dim is-far"
+  },
+  {
+   "t": "East Landing \u00b7 Upper",
+   "x": 884,
+   "y": 324,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-dim is-far"
+  },
+  {
+   "t": "Marble Gallery \u00b7 East",
+   "x": 884,
+   "y": 403,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--treasure is-dim is-far"
+  },
+  {
+   "t": "House Register Alcove \u00b7 East",
+   "x": 884,
+   "y": 504,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--curiosity is-dim is-far"
+  },
+  {
+   "t": "Butler's Passage \u00b7 East",
+   "x": 884,
+   "y": 614,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--treasure is-dim is-far"
+  },
+  {
+   "t": "Umbrella Gallery \u00b7 West",
+   "x": 992,
+   "y": 113,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--safe is-dim is-far"
+  },
+  {
+   "t": "East Reception Hall \u00b7 Upper",
+   "x": 992,
+   "y": 225,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--bigScare is-dim is-far"
+  },
+  {
+   "t": "Umbrella Gallery \u00b7 Upper",
+   "x": 992,
+   "y": 308,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--safe is-dim is-far"
+  },
+  {
+   "t": "Formal Dining Room \u00b7 Upper",
+   "x": 992,
+   "y": 427,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--bigScare is-dim is-far"
+  },
+  {
+   "t": "West Landing \u00b7 Upper",
+   "x": 992,
+   "y": 492,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--curiosity is-dim is-far"
+  },
+  {
+   "t": "Grand Staircase \u00b7 Upper",
+   "x": 992,
+   "y": 614,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--bigScare is-dim is-far"
+  },
+  {
+   "t": "Front Vestibule \u00b7 Upper",
+   "x": 1091,
+   "y": 237,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-dim is-far"
+  },
+  {
+   "t": "Marble Gallery \u00b7 Upper",
+   "x": 1091,
+   "y": 333,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--treasure is-dim is-far"
+  },
+  {
+   "t": "Receiving Room \u00b7 Upper",
+   "x": 1091,
+   "y": 428,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--scuffle is-dim is-far"
+  },
+  {
+   "t": "Bell Pull Gallery \u00b7 Upper",
+   "x": 1091,
+   "y": 493,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--curiosity is-dim is-far"
+  },
+  {
+   "t": "Entry Hall \u00b7 Far End",
+   "x": 1171,
+   "y": 326,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--bigScare is-dim is-far"
+  },
+  {
+   "t": "Portrait Hall \u00b7 Upper",
+   "x": 1171,
+   "y": 409,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--curiosity is-dim is-far"
+  },
+  {
+   "t": "Parlor \u00b7 Far End",
+   "x": 1171,
+   "y": 495,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--bigScare is-dim is-far"
+  },
+  {
+   "t": "Umbrella Gallery \u00b7 Far End",
+   "x": 1269,
+   "y": 295,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--safe is-dim is-far"
+  },
+  {
+   "t": "West Landing \u00b7 Far End",
+   "x": 1269,
+   "y": 394,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--safe is-dim is-far"
+  },
+  {
+   "t": "Front Vestibule \u00b7 Far End",
+   "x": 1269,
+   "y": 600,
+   "w": 65,
+   "h": 65,
+   "cls": "map-node map-node--safe is-dim is-far"
+  },
+  {
+   "t": "RECEIVING CHAMBER\nBOSS",
+   "x": 1364,
+   "y": 337,
+   "w": 118,
+   "h": 118,
+   "cls": "map-node map-node--boss is-dim is-far"
+  }
+ ],
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

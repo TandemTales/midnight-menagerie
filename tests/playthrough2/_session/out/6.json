@@ -1,0 +1,7 @@
+{
+ "i": 6,
+ "cmd": "{\"op\": \"dom\", \"sel\": \".ti-menu\", \"depth\": 3}",
+ "result": "nav.ti-menu  [627,339 346x236]\n  button.ti-item  [627,339 346x56]\n    span.ti-item__glyph  [635,352 29x29]\n    span.ti-item__label  \"NEW EXPEDITION\"  [685,349 272x35]\n    span.ti-item__hint  \"Choose a Kid, a Companion, and go in\"  [685,384 272x0]\n  button.ti-item  [627,399 346x56]\n    span.ti-item__glyph  [635,412 29x29]\n    span.ti-item__label  \"THE MENAGERIE\"  [685,409 272x35]\n    span.ti-item__hint  \"The clubhouse, the board, the roster\"  [685,444 272x0]\n  button.ti-item  [627,459 346x56]\n    span.ti-item__glyph  [635,473 29x29]\n    span.ti-item__label  \"SETTINGS\"  [685,470 272x35]\n    span.ti-item__hint  \"Sound, motion, readability\"  [685,505 272x0]\n  button.ti-item  [627,520 346x56]\n    span.ti-item__glyph  [635,533 29x29]\n    span.ti-item__label  \"CREDITS\"  [685,530 272x35]\n    span.ti-item__hint  \"Who built the house\"  [685,565 272x0]",
+ "error": null,
+ "console_errors": []
+}

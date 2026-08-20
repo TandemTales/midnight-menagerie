@@ -1,0 +1,161 @@
+{"op": "wait", "s": 1.5}
+{"op": "shot", "name": "p2-01-title"}
+{"op": "text"}
+{"op": "fps"}
+{"op": "errors"}
+{"op": "dom", "sel": "body", "depth": 6}
+{"op": "dom", "sel": ".ti-menu", "depth": 3}
+{"op": "key", "key": "Tab"}
+{"op": "jsawait", "expr": "(()=>{const a=document.activeElement; return a? (a.tagName+\"|\"+a.className+\"|\"+(a.innerText||\"\").slice(0,40)) : \"none\"})()"}
+{"op": "shot", "name": "p2-02-title-focus"}
+{"op": "key", "key": "Tab"}
+{"op": "key", "key": "Tab"}
+{"op": "key", "key": "Enter"}
+{"op": "wait", "s": 1.2}
+{"op": "shot", "name": "p2-03-settings"}
+{"op": "text"}
+{"op": "errors"}
+{"op": "key", "key": "Escape"}
+{"op": "wait", "s": 0.8}
+{"op": "click", "sel": ".ti-menu .ti-item:nth-child(1)"}
+{"op": "wait", "s": 2.0}
+{"op": "shot", "name": "p2-04-select"}
+{"op": "text"}
+{"op": "box", "sel": ".sel-card, [class*=comp-card], button"}
+{"op": "click", "sel": ".companion-tile:nth-of-type(1)"}
+{"op": "wait", "s": 1.2}
+{"op": "shot", "name": "p2-05-companion-picked"}
+{"op": "text"}
+{"op": "click", "sel": ".sel-detail__take, button:has-text(\"TAKE MARMALADE IN\")"}
+{"op": "wait", "s": 1.5}
+{"op": "shot", "name": "p2-06-kid"}
+{"op": "errors"}
+{"op": "clickxy", "x": 128, "y": 690}
+{"op": "wait", "s": 1.2}
+{"op": "shot", "name": "p2-07-kid-maya"}
+{"op": "text"}
+{"op": "box", "sel": "[class*=haunt] button, [class*=haunt] *"}
+{"op": "clickxy", "x": 528, "y": 864}
+{"op": "wait", "s": 0.6}
+{"op": "shot", "name": "p2-08-haunt2"}
+{"op": "click", "sel": ".sel-begin, button:has-text(\"BEGIN EXPEDITION\")"}
+{"op": "wait", "s": 9}
+{"op": "shot", "name": "p2-09-map"}
+{"op": "state"}
+{"op": "errors"}
+{"op": "box", "sel": ".map-node, [class*=mapnode], [data-node]"}
+{"op": "hoverxy", "x": 200, "y": 260}
+{"op": "wait", "s": 0.7}
+{"op": "shot", "name": "p2-10-map-hover"}
+{"op": "hoverxy", "x": 1424, "y": 405}
+{"op": "wait", "s": 0.7}
+{"op": "shot", "name": "p2-11-map-hover-boss"}
+{"op": "jsawait", "expr": "(()=>{const e=document.elementFromPoint(200,145); return e? (e.tagName+\".\"+e.className) : \"none\"})()"}
+{"op": "jsawait", "expr": "(()=>{const n=[...document.querySelectorAll(\".map-node\")].find(x=>x.innerText.includes(\"Entry Hall\")); const r=n.getBoundingClientRect(); const cx=r.x+r.width/2, cy=r.y+r.height/2; const top=document.elementFromPoint(cx,cy); return JSON.stringify({cx,cy,top:top.tagName+\".\"+top.className, contains:n.contains(top)})})()"}
+{"op": "hoverxy", "x": 800, "y": 790}
+{"op": "wait", "s": 6}
+{"op": "shot", "name": "p2-12-map-later"}
+{"op": "jsawait", "expr": "(()=>{const p=document.querySelector(\"[class*=region],[class*=plate],[class*=mp-card]\"); return p? p.className+\" op=\"+getComputedStyle(p).opacity : \"none\"})()"}
+{"op": "key", "key": "ArrowDown"}
+{"op": "wait", "s": 0.4}
+{"op": "shot", "name": "p2-13-map-kbd"}
+{"op": "jsawait", "expr": "(()=>{const a=document.activeElement; return a.className+\"|\"+(a.innerText||\"\").slice(0,40)})()"}
+{"op": "key", "key": "ArrowDown"}
+{"op": "jsawait", "expr": "document.querySelector(\".is-kbd\").innerText"}
+{"op": "key", "key": "ArrowDown"}
+{"op": "jsawait", "expr": "document.querySelector(\".is-kbd\").innerText"}
+{"op": "key", "key": "ArrowUp"}
+{"op": "jsawait", "expr": "document.querySelector(\".is-kbd\").innerText"}
+{"op": "key", "key": "ArrowDown"}
+{"op": "key", "key": "ArrowDown"}
+{"op": "jsawait", "expr": "document.querySelector(\".is-kbd\").innerText"}
+{"op": "key", "key": "Enter"}
+{"op": "wait", "s": 0.35}
+{"op": "strip", "name": "p2-14-into-combat", "n": 10, "interval": 0.12}
+{"op": "box", "sel": ".card, [class*=hand] > *"}
+{"op": "js", "expr": "(()=>{window.__s=[];const c=document.querySelectorAll(\".mm-card\")[2];const t0=performance.now();const f=()=>{const r=c.getBoundingClientRect();window.__s.push([Math.round(performance.now()-t0),Math.round(r.y),Math.round(r.width)]);if(performance.now()-t0<800)requestAnimationFrame(f)};requestAnimationFrame(f)})()"}
+{"op": "hoverxy", "x": 800, "y": 700}
+{"op": "wait", "s": 1.0}
+{"op": "jsawait", "expr": "JSON.stringify(window.__s.filter((_,i)=>i%2==0))"}
+{"op": "shot", "name": "p2-15-card-hover"}
+{"op": "jsawait", "expr": "JSON.stringify([...document.querySelectorAll(\".mm-card\")].map(c=>({t:c.innerText.split(String.fromCharCode(10))[0],tr:c.style.transform||getComputedStyle(c).transform,cls:c.className})))"}
+{"op": "hoverxy", "x": 699, "y": 253}
+{"op": "wait", "s": 0.8}
+{"op": "shot", "name": "p2-16-intent-hover"}
+{"op": "hoverxy", "x": 699, "y": 390}
+{"op": "wait", "s": 0.8}
+{"op": "shot", "name": "p2-17-enemy-hover"}
+{"op": "box", "sel": ".mm-card [class*=kw], .mm-card b, .mm-card em, [data-kw]"}
+{"op": "jsawait", "expr": "document.querySelectorAll(\".mm-card\")[0].innerHTML.slice(0,1400)"}
+{"op": "jsawait", "expr": "document.querySelectorAll(\".mm-card\")[0].outerHTML.replace(/></g,String.fromCharCode(62,10,60)).slice(0,2500)"}
+{"op": "jsawait", "expr": "document.querySelectorAll(\".mm-card\")[0].querySelector(\".mm-card__text, .mm-card__rules, .mm-card__desc\") ? document.querySelectorAll(\".mm-card\")[0].querySelector(\".mm-card__text, .mm-card__rules, .mm-card__desc\").outerHTML : [...document.querySelectorAll(\".mm-card\")[0].querySelectorAll(\"*\")].filter(e=>e.textContent.includes(\"Guard\")).slice(-1)[0].outerHTML"}
+{"op": "dragshot", "name": "p2-18-drag", "x1": 800, "y1": 700, "x2": 699, "y2": 400, "release": false}
+{"op": "shot", "name": "p2-19-drag-hold"}
+{"op": "js", "expr": "1"}
+{"op": "dragxy", "x1": 699, "y1": 400, "x2": 699, "y2": 401, "steps": 2}
+{"op": "wait", "s": 0.02}
+{"op": "strip", "name": "p2-20-play", "n": 10, "interval": 0.09}
+{"op": "dom", "sel": ".mm-enemy, [class*=enemy]", "depth": 3}
+{"op": "js", "expr": "(()=>{window.__h=[];const e=document.querySelectorAll(\".cb-enemy\")[1];const st=e.querySelector(\".cb-enemy__stage\");const fl=e.querySelector(\".cb-enemy__flash\");const t0=performance.now();const f=()=>{const cs=getComputedStyle(st);window.__h.push([Math.round(performance.now()-t0),cs.transform.slice(0,44),getComputedStyle(fl).opacity,e.className,document.body.style.transform||(getComputedStyle(document.querySelector(\"#app\")).transform||\"\").slice(0,30)]);if(performance.now()-t0<2200)requestAnimationFrame(f)};requestAnimationFrame(f)})()"}
+{"op": "dragxy", "x1": 870, "y1": 700, "x2": 1020, "y2": 400, "steps": 10}
+{"op": "wait", "s": 2.5}
+{"op": "jsawait", "expr": "JSON.stringify(window.__h.filter(r=>r[0]>250&&r[0]<1400))"}
+{"op": "key", "key": "1"}
+{"op": "wait", "s": 0.8}
+{"op": "shot", "name": "p2-21-kbd-card"}
+{"op": "state"}
+{"op": "jsawait", "expr": "(()=>{const s=window.MM.state();const r=s.run;const cs=window.MM.ctx&&window.MM.ctx.combat;\nreturn JSON.stringify({scene:s.scene,courage:r.courage+\"/\"+r.maxCourage,lost:r.lostThings,\n snacks:(r.snacks||[]).map(x=>x.name||x),keeps:(r.keepsakes||[]).map(k=>k.name),deck:r.deck.length,\n node:r.currentNodeId,depth:r.depth,stats:r.stats,\n hand:[...document.querySelectorAll(\".mm-card\")].map(c=>c.getAttribute(\"aria-label\")),\n nerve:(document.querySelector(\"[class*=nerve],[class*=energy]\")||{}).innerText,\n enemies:[...document.querySelectorAll(\".cb-enemy\")].map(e=>e.innerText.replace(/\\n/g,\" | \"))})})()\n"}
+{"op": "key", "key": "Enter"}
+{"op": "wait", "s": 0.9}
+{"op": "shot", "name": "p2-22-guard"}
+{"op": "jsawait", "expr": "JSON.stringify({g:(document.querySelector(\"[class*=guard],[class*=block]\")||{}).outerHTML})"}
+{"op": "key", "key": "e"}
+{"op": "wait", "s": 0.2}
+{"op": "strip", "name": "p2-23-enemyturn", "n": 14, "interval": 0.16}
+{"op": "hoverxy", "x": 800, "y": 700}
+{"op": "wait", "s": 0.5}
+{"op": "box", "sel": "[class*=kw], .mm-card__kw, mark"}
+{"op": "shot", "name": "p2-24-kw-tip"}
+{"op": "hoverxy", "x": 820, "y": 727}
+{"op": "wait", "s": 0.7}
+{"op": "shot", "name": "p2-25-haunt-tip"}
+{"op": "hoverxy", "x": 1090, "y": 760}
+{"op": "wait", "s": 0.7}
+{"op": "shot", "name": "p2-26-curl-tip"}
+{"op": "jsawait", "expr": "(document.querySelector(\"#tooltip-layer\")||{}).innerText||\"(no tip)\""}
+{"op": "key", "key": "3"}
+{"op": "wait", "s": 0.4}
+{"op": "shot", "name": "p2-27-kbd-target"}
+{"op": "key", "key": "ArrowRight"}
+{"op": "wait", "s": 0.4}
+{"op": "jsawait", "expr": "[...document.querySelectorAll(\".cb-enemy\")].map((e,i)=>i+\":\"+e.className).join(\" ; \")"}
+{"op": "key", "key": "Enter"}
+{"op": "wait", "s": 1.0}
+{"op": "shot", "name": "p2-28-boo"}
+{"op": "key", "key": "1"}
+{"op": "wait", "s": 0.3}
+{"op": "jsawait", "expr": "[...document.querySelectorAll(\".cb-enemy\")].map((e,i)=>i+\":\"+(e.className.includes(\"is-targeted\")?\"T\":\"-\")).join(\"\")"}
+{"op": "key", "key": "Tab"}
+{"op": "wait", "s": 0.3}
+{"op": "jsawait", "expr": "[...document.querySelectorAll(\".cb-enemy\")].map((e,i)=>i+\":\"+(e.className.includes(\"is-targeted\")?\"T\":\"-\")).join(\"\")+\" | af=\"+document.activeElement.className"}
+{"op": "key", "key": "ArrowLeft"}
+{"op": "wait", "s": 0.3}
+{"op": "jsawait", "expr": "[...document.querySelectorAll(\".cb-enemy\")].map((e,i)=>i+\":\"+(e.className.includes(\"is-targeted\")?\"T\":\"-\")).join(\"\")"}
+{"op": "key", "key": "d"}
+{"op": "wait", "s": 0.3}
+{"op": "jsawait", "expr": "[...document.querySelectorAll(\".cb-enemy\")].map((e,i)=>i+\":\"+(e.className.includes(\"is-targeted\")?\"T\":\"-\")).join(\"\")"}
+{"op": "key", "key": "?"}
+{"op": "wait", "s": 0.6}
+{"op": "shot", "name": "p2-29-help"}
+{"op": "jsawait", "expr": "document.body.innerText.length"}
+{"op": "key", "key": "Escape"}
+{"op": "key", "key": "1"}
+{"op": "key", "key": "Enter"}
+{"op": "wait", "s": 1.0}
+{"op": "key", "key": "1"}
+{"op": "key", "key": "Enter"}
+{"op": "wait", "s": 1.2}
+{"op": "shot", "name": "p2-30-t2-end"}
+{"op": "key", "key": "e"}
+{"op": "wait", "s": 3.5}
+{"op": "shot", "name": "p2-31-t3"}

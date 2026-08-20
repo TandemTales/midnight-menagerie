@@ -1,0 +1,9 @@
+{
+ "i": 52,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"(()=>{const e=document.elementFromPoint(200,145); return e? (e.tagName+\\\".\\\"+e.className) : \\\"none\\\"})()\"}",
+ "result": "path.[object SVGAnimatedString]",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

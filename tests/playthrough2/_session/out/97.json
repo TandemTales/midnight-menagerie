@@ -1,0 +1,10 @@
+{
+ "i": 97,
+ "cmd": "{\"op\": \"dom\", \"sel\": \".mm-enemy, [class*=enemy]\", \"depth\": 3}",
+ "result": "div.enemy.cb-enemy.is-hit  [563,285 273x255]\n  div.cb-enemy__above  [660,202 78x89]\n    div.cb-enemy__badges  [699,202 0x0]\n    div.cb-enemy__intent  [660,205 78x86]\n      div.cb-intent.has-num  [660,205 78x86]\n  div.cb-enemy__stage  [563,285 273x181]\n    div.cb-enemy__pool  [593,434 213x30]\n    svg  [563,285 273x181]\n      defs  [0,0 0x0]\n      g  [597,310 199x151]\n    div.cb-enemy__flash  [547,274 306x202]\n  div.cb-enemy__plate  [584,470 230x70]\n    div.cb-enemy__name  \"DUST BUNNY\"  [651,473 96x15]\n    div.cb-enemy__bar  [592,491 214x15]\n      div.cb-enemy__ghost  [594,493 210x11]\n      div.cb-enemy__fill  [594,493 147x11]\n      div.cb-enemy__hp  [593,492 212x13]\n    div.cb-enemy__counters  [665,509 69x22]\n      span.cb-count  [665,509 69x22]\n    div.cb-enemy__statuses  [699,536 0x0]",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

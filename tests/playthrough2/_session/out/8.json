@@ -1,0 +1,7 @@
+{
+ "i": 8,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"(()=>{const a=document.activeElement; return a? (a.tagName+\\\"|\\\"+a.className+\\\"|\\\"+(a.innerText||\\\"\\\").slice(0,40)) : \\\"none\\\"})()\"}",
+ "result": "BUTTON|ti-item|NEW EXPEDITION\nChoose a Kid, a Companion",
+ "error": null,
+ "console_errors": []
+}

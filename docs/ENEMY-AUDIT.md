@@ -239,6 +239,7 @@ repeating. House Rules continue throughout, announced each player turn.
 | 2 | early | Coatrack Crawler | 33 | disruptible preparation |
 | 3 | early | Dust Bunny ×2 | 40 | target prioritisation |
 | 4 | early | Lost Luggage | 30 | mild deck interference |
+| 4b | early | Dust Bunny + Half-Packed Luggage (0.75x) | **43** | two attackers on different clocks — one turn of Guard no longer covers the room |
 | 5 | standard | Dust Bunny + Calling Bell | 38 | the Bell accelerates the Bunny |
 | 6 | standard | Coatrack Crawler + Dust Bunny | 53 | disrupt Brace or deny Dust? |
 | 7 | **early** | Lost Luggage + Dust Bunny | 50 | interference vs escalation |
@@ -675,21 +676,45 @@ Puff thins out of the advanced pool; Scuffle 14 is advanced-only.
 Haunt 1 is the only Courage bump (ordinary +8%, Big Scares and bosses +6%) and it does not
 compound. Everything after it changes **behaviour**.
 
+**Behavioural** changes are in bold — they alter what the player must do. Plain entries
+are numeric. Every level from 2 up carries at least one bold entry; that is asserted by
+test §5f, which diffs `hauntScaling(n)` against `hauntScaling(n-1)` and ignores `hpMul`
+entirely, since Courage is the laziest ascension axis and the balance pass already ramps
+it continuously.
+
 | Haunt | Foyer | Nursery | Sleeping Quarters |
 |---|---|---|---|
 | 1 | Courage +8% / +6% | same | same |
-| 2 | advanced formations enter the pool one encounter earlier | same | same |
-| 3 | Dust Bunny starts advanced Scuffles with 1 Dust | Button Baby starts with a Button already sewn | Slipper Skitter starts with Scurry active |
-| 4 | Calling Bell's first Ring grants 2 Roused | Jack in the Box starts with 1 Wound Up | Pillow Puff's first Feather Cloud adds 2 Drowsy |
-| 5 | undisturbed Umbrella Jab 12 → **14** (disrupted stays 7) | Patch Up restores 11, still costs 7 | Rustle grants 8 Guard instead of 5 |
-| 6 | Lost Luggage's first Pack Wrong adds 2 Clutter | Cover redirects 10 instead of 8 | Blanket Creeper starts with 4 Layers |
-| 7 | Run the Hall gains 8 per Momentum (max 24) | Rocking Horse holds 4 Excitement (max Gallop 23) | Darkness grants +3 instead of +2 |
-| 8 | Door Greeter's Reprimand 6 → 8 | Porcelain Doll Shatters at 14, not 12 | Thing Beneath holds 4 Scare (max 32) |
+| 2 | **Door Greeter alternates ONE AT A TIME with NO RUNNING** — the standing rule is no longer predictable from the enemy | **Patchwork Soldier may Patch Up on consecutive turns** — the guaranteed post-repair window is gone | advanced formations enter the pool one encounter earlier |
+| 3 | **Every Dust Bunny starts with 1 Dust** (no longer advanced-pool only) | **Every Button Baby starts with a Button already sewn** (no longer advanced-pool only) | **Every Slipper Skitter starts with Scurry up**; **Blanket Creeper re-folds a Layer after two untouched turns** |
+| 4 | Calling Bell's first Ring grants 2 Roused | **Blanket Blob moves Cover off a dying ally onto a healthy one** | **Thing Beneath may hold UNDER THE BED back a turn at full Scare**; Pillow Puff's first Feather Cloud adds 2 Drowsy |
+| 5 | **Red Carpet Runner starts with 1 Momentum**; undisturbed Umbrella Jab 12 → 14 | Patch Up restores 11, still costs 7 | **Back Inside takes an ally into the wardrobe too**; Rustle grants 8 Guard |
+| 6 | Lost Luggage's first Pack Wrong adds 2 Clutter | **Porcelain Doll cracks itself rather than sitting Pristine** ; Cover redirects 10 | Blanket Creeper starts advanced encounters with 4 Layers |
+| 7 | Run the Hall gains 8 per Momentum (max 24) | **Patchwork Soldier Dismantles an ally at ≤6 Courage to restuff itself** ; Rocking Horse holds 4 Excitement | **Snuff extinguishes a stack of one of your buffs**; Darkness grants +3 |
+| 8 | **The Butler gains a fifth House Rule, GUESTS DO NOT DAWDLE**; Door Greeter's Reprimand 6 → 8 | Porcelain Doll Shatters at 14, not 12 | Thing Beneath holds 4 Scare (max 32) |
 | 9 | Snag needs 20 · Familiarity hits for 9 · TOLL 23 | Chest starts with 7 Contents · Giant gains 2 Stuffing per tear · Twins gain 6 Guard on a new Crack state | Night Terror gains a Power branch · Hydra regrows a turn faster · Wardrobe starts with a Door open |
 | 10 | The Butler opens with a House Rule already active | Favorite Doll carries two Patches | The Bedframe Beast starts with 1 Scare |
 
-Haunt 3, 4 and 6 entries marked "advanced" apply only in the advanced encounter pool, per
-the design doc — `buildEncounter` merges those from `hauntScaling(level).advanced`.
+**Haunt 1 is deliberately Courage-only.** All three region docs define it identically as
+the calibration step, and §5f exempts it explicitly rather than silently.
+
+The Haunt 6 Blanket Creeper entry is the only one still scoped to the advanced pool;
+`buildEncounter` merges those from `hauntScaling(level).advanced`. The Haunt 3 opening-state
+upgrades used to be scoped that way too and were un-gated in round 3 — scoped to advanced
+they almost never fired in a real run.
+
+### GUESTS DO NOT DAWDLE (Haunt 8)
+
+> Ending your turn having played fewer than two Tricks breaks the rule.
+> Reprimand: 1 Clutter into your discard pile (2 in phase two).
+
+The other four rules all punish excess — too many Tricks, too much Guard, too much damage,
+the same type twice — so slowing down answered all of them at once. This is the first that
+punishes doing too little. Beside NO RUNNING in phase two it closes the safe band to exactly
+two or three Tricks a turn, the tightest sequencing constraint in the region. Its Reprimand
+is Clutter rather than damage or Guard: a fifth flavour of consequence, it ties the boss to
+the Foyer's own deck-interference thread, and unlike a heal it makes the fight harder
+without making it longer.
 
 ---
 

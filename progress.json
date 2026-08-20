@@ -1,9 +1,9 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T14:28:54",
- "wave": 3,
- "waveLabel": "Closing the seams",
- "headline": "A full playthrough found that every module passes its own tests and silently no-ops at the join. Fixing that class of bug.",
+ "updated": "2026-08-20T14:49:51",
+ "wave": 4,
+ "waveLabel": "Second playthrough",
+ "headline": "Every piece rebuilt and rebalanced. A second fresh player is judging the whole game blind against Slay the Spire 2.",
  "pieces": [
   {
    "id": "engine",
@@ -58,8 +58,8 @@
    "name": "Enemies & intents",
    "desc": "Rosters, move selection, telegraph clarity, Scuffles and Big Scares",
    "status": "reviewing",
-   "round": 5,
-   "verdict": "Region survival 70% (target 65-78%), boss 82.5%, naive-vs-competent gap 33.3 points. Haunt 10 lands the 45-65% band.",
+   "round": 6,
+   "verdict": "12 new behavioural Haunt upgrades from the design doc, all Courage-neutral. New opening formation halves free openings from 26% to 15.5%.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -418,6 +418,18 @@
   {
    "t": "2026-08-20T14:28:54",
    "msg": "Loose ends cleared across seven owners. Found in passing: every card was playing the skill sound, because the two card:play emitters carried different payloads."
+  },
+  {
+   "t": "2026-08-20T14:29:37",
+   "msg": "Second full playthrough started - an independent cold read, deliberately not shown the first report."
+  },
+  {
+   "t": "2026-08-20T14:49:51",
+   "msg": "Enemy round 3: the test suite had never executed a single Haunt branch - every section built enemies at Haunt 0. New sweep runs all 37 enemies across 814 Haunt combinations."
+  },
+  {
+   "t": "2026-08-20T14:49:51",
+   "msg": "That new sweep immediately caught a silent no-op in the agent's own new code: a buff-strip calling a method that does not exist, behind a typeof guard."
   }
  ]
 }

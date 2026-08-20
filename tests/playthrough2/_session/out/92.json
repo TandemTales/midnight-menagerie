@@ -1,0 +1,10 @@
+{
+ "i": 92,
+ "cmd": "{\"op\": \"shot\", \"name\": \"p2-19-drag-hold\"}",
+ "result": "shots\\p2-19-drag-hold.png",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

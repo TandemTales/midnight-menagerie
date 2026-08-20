@@ -1,0 +1,10 @@
+{
+ "i": 104,
+ "cmd": "{\"op\": \"shot\", \"name\": \"p2-21-kbd-card\"}",
+ "result": "shots\\p2-21-kbd-card.png",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

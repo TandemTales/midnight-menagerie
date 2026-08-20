@@ -107,7 +107,17 @@ export const HOUSE_RULES = {
     text: `Dealing 15 or more damage this turn breaks the rule. Reprimand: his next damaging attack deals ${p2 ? 7 : 5} more.`,
     when: 'turnEnd', once: true,
     broken: (rc) => (rc.damageDealtThisTurn || 0) >= 15,
-    onBreak: (c) => { mem(c).retaliation = (mem(c).retaliation || 0) + (p2 ? 7 : 5); },
+    /**
+     * Armed for the NEXT telegraphed attack, not the one already on screen.
+     *
+     * This rule is evaluated at turnEnd, which the engine runs at the top of endTurn —
+     * after the player has committed and after his intent number is fixed, but before he
+     * swings. Adding the rider straight to `retaliation` therefore made him hit for 15
+     * from an intent that promised 10. It banks into `retaliationPending` instead and
+     * promotes at his own turn end, so the boost is visible on the intent that carries it.
+     * (Only reachable at all since the engine started maintaining damageDealtThisTurn.)
+     */
+    onBreak: (c) => { mem(c).retaliationPending = (mem(c).retaliationPending || 0) + (p2 ? 7 : 5); },
   }),
 
   /**
@@ -159,6 +169,7 @@ export const butler = {
     mem(c).phase = 1;
     mem(c).ruleHistory = [];
     mem(c).retaliation = 0;
+    mem(c).retaliationPending = 0;
     // Haunt 10: he opens with a rule already standing, so Formal Welcome is no longer free.
     if (flag(c, 'openWithRule')) butler.announceNext(c);
   },
@@ -248,6 +259,15 @@ export const butler = {
     if (m.windowTurn != null && c.turn > m.windowTurn) {
       c.removeStatus(c.self, 'discomposed');
       m.windowTurn = null;
+    }
+  },
+
+  /** Promote a Reprimand banked this turn so the NEXT intent shows it. */
+  onTurnEnd(c) {
+    const pending = mem(c).retaliationPending || 0;
+    if (pending) {
+      mem(c).retaliation = (mem(c).retaliation || 0) + pending;
+      mem(c).retaliationPending = 0;
     }
   },
 

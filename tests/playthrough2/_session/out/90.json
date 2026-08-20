@@ -1,0 +1,10 @@
+{
+ "i": 90,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"document.querySelectorAll(\\\".mm-card\\\")[0].querySelector(\\\".mm-card__text, .mm-card__rules, .mm-card__desc\\\") ? document.querySelectorAll(\\\".mm-card\\\")[0].querySelector(\\\".mm-card__text, .mm-card__rules, .mm-card__desc\\\").outerHTML : [...document.querySelectorAll(\\\".mm-card\\\")[0].querySelectorAll(\\\"*\\\")].filter(e=>e.textContent.includes(\\\"Guard\\\")).slice(-1)[0].outerHTML\"}",
+ "result": "<div class=\"mm-card__rules\"><div>Gain <b class=\"mm-card__num\" data-key=\"b\">5</b> Guard.</div></div>",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

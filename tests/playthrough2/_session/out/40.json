@@ -1,0 +1,7 @@
+{
+ "i": 40,
+ "cmd": "{\"op\": \"click\", \"sel\": \".sel-begin, button:has-text(\\\"BEGIN EXPEDITION\\\")\"}",
+ "result": "ok",
+ "error": null,
+ "console_errors": []
+}

@@ -1,0 +1,10 @@
+{
+ "i": 98,
+ "cmd": "{\"op\": \"js\", \"expr\": \"(()=>{window.__h=[];const e=document.querySelectorAll(\\\".cb-enemy\\\")[1];const st=e.querySelector(\\\".cb-enemy__stage\\\");const fl=e.querySelector(\\\".cb-enemy__flash\\\");const t0=performance.now();const f=()=>{const cs=getComputedStyle(st);window.__h.push([Math.round(performance.now()-t0),cs.transform.slice(0,44),getComputedStyle(fl).opacity,e.className,document.body.style.transform||(getComputedStyle(document.querySelector(\\\"#app\\\")).transform||\\\"\\\").slice(0,30)]);if(performance.now()-t0<2200)requestAnimationFrame(f)};requestAnimationFrame(f)})()\"}",
+ "result": "fired",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

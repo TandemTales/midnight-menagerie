@@ -1,0 +1,218 @@
+booted
+0 {"op": "wait", "s": 1.5} -> ok err=None (1.51s)
+1 {"op": "shot", "name": "p2-01-title"} -> shots\p2-01-title.png err=None (0.31s)
+2 {"op": "text"} -> MIDNIGHT
+MENAGERIE
+
+Sixteen lost pets became something else inside that house.
+Eight kids are going in to bring the rest err=None (0.01s)
+3 {"op": "fps"} -> {'fps': 61, 'mem': 11, 'nodes': 327} err=None (1.02s)
+4 {"op": "errors"} -> [] err=None (0.00s)
+5 {"op": "dom", "sel": "body", "depth": 6} -> body  [0,0 1600x900]
+  div#app  [0,0 1600x900]
+    canvas#gl  [0,0 1600x900]
+    div#dom-layer  [0,0 1600x900]
+      div err=None (0.01s)
+6 {"op": "dom", "sel": ".ti-menu", "depth": 3} -> nav.ti-menu  [627,339 346x236]
+  button.ti-item  [627,339 346x56]
+    span.ti-item__glyph  [635,352 29x29]
+    span.ti-i err=None (0.00s)
+7 {"op": "key", "key": "Tab"} -> ok err=None (0.01s)
+8 {"op": "jsawait", "expr": "(()=>{const a=document.activeElement; return a? (a.tagName+\"|\"+a.className+\"|\"+(a.innerText||\"\").slice(0,40)) : \"none\"})()"} -> BUTTON|ti-item|NEW EXPEDITION
+Choose a Kid, a Companion err=None (0.01s)
+9 {"op": "shot", "name": "p2-02-title-focus"} -> shots\p2-02-title-focus.png err=None (0.30s)
+10 {"op": "key", "key": "Tab"} -> ok err=None (0.01s)
+11 {"op": "key", "key": "Tab"} -> ok err=None (0.01s)
+12 {"op": "key", "key": "Enter"} -> ok err=None (0.04s)
+13 {"op": "wait", "s": 1.2} -> ok err=None (1.21s)
+14 {"op": "shot", "name": "p2-03-settings"} -> shots\p2-03-settings.png err=None (0.16s)
+15 {"op": "text"} -> MIDNIGHT
+MENAGERIE
+
+Sixteen lost pets became something else inside that house.
+Eight kids are going in to bring the rest err=None (0.01s)
+16 {"op": "errors"} -> [] err=None (0.00s)
+17 {"op": "key", "key": "Escape"} -> ok err=None (0.01s)
+18 {"op": "wait", "s": 0.8} -> ok err=None (0.82s)
+19 {"op": "click", "sel": ".ti-menu .ti-item:nth-child(1)"} -> ok err=None (0.08s)
+20 {"op": "wait", "s": 2.0} -> ok err=None (2.02s)
+21 {"op": "shot", "name": "p2-04-select"} -> shots\p2-04-select.png err=None (0.25s)
+22 {"op": "text"} -> ←
+BACK
+MIDNIGHT
+MENAGERIE
+★
+MENAGERIE COMPANIONS
+★
+1
+COMPANION
+2
+KID
+3
+EXPEDITION
+CHOOSE A COMPANION
+
+Sixteen animals th err=None (0.00s)
+23 {"op": "box", "sel": ".sel-card, [class*=comp-card], button"} -> [{'t': '←\nBACK', 'x': 24, 'y': 28, 'w': 103, 'h': 36, 'cls': 'sel-back'}, {'t': 'Marmalade\nthe Ghost Cat', 'x': 481, ' err=None (0.01s)
+24 {"op": "click", "sel": ".companion-tile:nth-of-type(1)"} -> ok err=None (0.08s)
+25 {"op": "wait", "s": 1.2} -> ok err=None (1.20s)
+26 {"op": "shot", "name": "p2-05-companion-picked"} -> shots\p2-05-companion-picked.png err=None (0.21s)
+27 {"op": "text"} -> ←
+BACK
+MIDNIGHT
+MENAGERIE
+★
+MENAGERIE COMPANIONS
+★
+1
+COMPANION
+2
+KID
+3
+EXPEDITION
+CHOOSE A COMPANION
+
+Sixteen animals th err=None (0.00s)
+28 {"op": "click", "sel": ".sel-detail__take, button:has-text(\"TAKE MARMALADE IN\")"} -> ok err=None (0.06s)
+29 {"op": "wait", "s": 1.5} -> ok err=None (1.51s)
+30 {"op": "shot", "name": "p2-06-kid"} -> shots\p2-06-kid.png err=None (0.18s)
+31 {"op": "errors"} -> ['REQFAIL http://localhost:8777/game/assets/audio/track003.mp3 net::ERR_ABORTED'] err=None (0.00s)
+32 {"op": "clickxy", "x": 128, "y": 690} -> ok err=None (0.01s)
+33 {"op": "wait", "s": 1.2} -> ok err=None (1.21s)
+34 {"op": "shot", "name": "p2-07-kid-maya"} -> shots\p2-07-kid-maya.png err=None (0.20s)
+35 {"op": "text"} -> ←
+BACK
+MIDNIGHT
+MENAGERIE
+★
+MENAGERIE COMPANIONS
+★
+1
+COMPANION
+2
+KID
+3
+EXPEDITION
+CHOOSE A COMPANION
+
+Sixteen animals th err=None (0.01s)
+36 {"op": "box", "sel": "[class*=haunt] button, [class*=haunt] *"} -> [{'t': 'HAUNT LEVEL', 'x': 358, 'y': 855, 'w': 86, 'h': 17, 'cls': 'foot__lbl'}, {'t': '0\n1\n2\n3\n4\n5', 'x': 455, 'y' err=None (0.00s)
+37 {"op": "clickxy", "x": 528, "y": 864} -> ok err=None (0.01s)
+38 {"op": "wait", "s": 0.6} -> ok err=None (0.61s)
+39 {"op": "shot", "name": "p2-08-haunt2"} -> shots\p2-08-haunt2.png err=None (0.20s)
+40 {"op": "click", "sel": ".sel-begin, button:has-text(\"BEGIN EXPEDITION\")"} -> ok err=None (0.07s)
+41 {"op": "wait", "s": 9} -> ok err=None (9.01s)
+42 {"op": "shot", "name": "p2-09-map"} -> shots\p2-09-map.png err=None (0.41s)
+43 {"op": "state"} -> {"scene":"map","run":{"version":1,"seed":551535859,"companion":"marmalade","kid":"maya","hauntLevel":0,"backpack":[{"nam err=None (0.01s)
+44 {"op": "errors"} -> [] err=None (0.00s)
+45 {"op": "box", "sel": ".map-node, [class*=mapnode], [data-node]"} -> [{'t': 'Entry Hall', 'x': 168, 'y': 113, 'w': 65, 'h': 65, 'cls': 'map-node map-node--scuffle is-legal is-kbd'}, {'t': ' err=None (0.01s)
+46 {"op": "hoverxy", "x": 200, "y": 260} -> ok err=None (0.02s)
+47 {"op": "wait", "s": 0.7} -> ok err=None (0.70s)
+48 {"op": "shot", "name": "p2-10-map-hover"} -> shots\p2-10-map-hover.png err=None (0.43s)
+49 {"op": "hoverxy", "x": 1424, "y": 405} -> ok err=None (0.01s)
+50 {"op": "wait", "s": 0.7} -> ok err=None (0.71s)
+51 {"op": "shot", "name": "p2-11-map-hover-boss"} -> shots\p2-11-map-hover-boss.png err=None (0.39s)
+52 {"op": "jsawait", "expr": "(()=>{const e=document.elementFromPoint(200,145); return e? (e.tagName+\".\"+e.className) : \"none\"})()"} -> path.[object SVGAnimatedString] err=None (0.01s)
+53 {"op": "jsawait", "expr": "(()=>{const n=[...document.querySelectorAll(\".map-node\")].find(x=>x.innerText.includes(\"Entry Hall\")); const r=n.getBoundingClien -> {"cx":200.9803466796875,"cy":146.05789947509766,"top":"path.[object SVGAnimatedString]","contains":true} err=None (0.01s)
+54 {"op": "hoverxy", "x": 800, "y": 790} -> ok err=None (0.01s)
+55 {"op": "wait", "s": 6} -> ok err=None (6.00s)
+56 {"op": "shot", "name": "p2-12-map-later"} -> shots\p2-12-map-later.png err=None (0.42s)
+57 {"op": "jsawait", "expr": "(()=>{const p=document.querySelector(\"[class*=region],[class*=plate],[class*=mp-card]\"); return p? p.className+\" op=\"+getComputed -> none err=None (0.01s)
+58 {"op": "key", "key": "ArrowDown"} -> ok err=None (0.02s)
+59 {"op": "wait", "s": 0.4} -> ok err=None (0.40s)
+60 {"op": "shot", "name": "p2-13-map-kbd"} -> shots\p2-13-map-kbd.png err=None (0.40s)
+61 {"op": "jsawait", "expr": "(()=>{const a=document.activeElement; return a.className+\"|\"+(a.innerText||\"\").slice(0,40)})()"} -> map-node map-node--scuffle is-legal is-kbd|East Reception Hall err=None (0.00s)
+62 {"op": "key", "key": "ArrowDown"} -> ok err=None (0.01s)
+63 {"op": "jsawait", "expr": "document.querySelector(\".is-kbd\").innerText"} -> East Landing err=None (0.00s)
+64 {"op": "key", "key": "ArrowDown"} -> ok err=None (0.01s)
+65 {"op": "jsawait", "expr": "document.querySelector(\".is-kbd\").innerText"} -> Music Room err=None (0.00s)
+66 {"op": "key", "key": "ArrowUp"} -> ok err=None (0.01s)
+67 {"op": "jsawait", "expr": "document.querySelector(\".is-kbd\").innerText"} -> East Landing err=None (0.00s)
+68 {"op": "key", "key": "ArrowDown"} -> ok err=None (0.01s)
+69 {"op": "key", "key": "ArrowDown"} -> ok err=None (0.01s)
+70 {"op": "jsawait", "expr": "document.querySelector(\".is-kbd\").innerText"} -> Parlor err=None (0.00s)
+71 {"op": "key", "key": "Enter"} -> ok err=None (0.03s)
+72 {"op": "wait", "s": 0.35} -> ok err=None (0.36s)
+73 {"op": "strip", "name": "p2-14-into-combat", "n": 10, "interval": 0.12} -> ['shots\\p2-14-into-combat_f0.png', 'shots\\p2-14-into-combat_f1.png', 'shots\\p2-14-into-combat_f2.png', 'shots\\p2-14- err=None (6.52s)
+74 {"op": "box", "sel": ".card, [class*=hand] > *"} -> [{'t': 'Curl Up\nSKILL · SELF\nGain 5 Guard.\n1\nCurl Up\nSKILL · SELF\nGa', 'x': 0, 'y': 0, 'w': 1600, 'h': 900, 'cls': err=None (0.01s)
+75 {"op": "js", "expr": "(()=>{window.__s=[];const c=document.querySelectorAll(\".mm-card\")[2];const t0=performance.now();const f=()=>{const r=c.getBoundingClient -> fired err=None (0.00s)
+76 {"op": "hoverxy", "x": 800, "y": 700} -> ok err=None (0.01s)
+77 {"op": "wait", "s": 1.0} -> ok err=None (1.01s)
+78 {"op": "jsawait", "expr": "JSON.stringify(window.__s.filter((_,i)=>i%2==0))"} -> [[15,604,168],[49,604,168],[82,604,168],[115,604,168],[149,604,168],[182,604,168],[215,604,168],[249,604,168],[281,604,1 err=None (0.01s)
+79 {"op": "shot", "name": "p2-15-card-hover"} -> shots\p2-15-card-hover.png err=None (0.50s)
+80 {"op": "jsawait", "expr": "JSON.stringify([...document.querySelectorAll(\".mm-card\")].map(c=>({t:c.innerText.split(String.fromCharCode(10))[0],tr:c.style.trans -> [{"t":"Curl Up","tr":"translate3d(512.11px, 872.62px, 0px) translate(-50%, -100%) rotate(-6.2deg) scale(0.71429)","cls": err=None (0.01s)
+81 {"op": "hoverxy", "x": 699, "y": 253} -> ok err=None (0.00s)
+82 {"op": "wait", "s": 0.8} -> ok err=None (0.81s)
+83 {"op": "shot", "name": "p2-16-intent-hover"} -> shots\p2-16-intent-hover.png err=None (0.50s)
+84 {"op": "hoverxy", "x": 699, "y": 390} -> ok err=None (0.01s)
+85 {"op": "wait", "s": 0.8} -> ok err=None (0.81s)
+86 {"op": "shot", "name": "p2-17-enemy-hover"} -> shots\p2-17-enemy-hover.png err=None (0.49s)
+87 {"op": "box", "sel": ".mm-card [class*=kw], .mm-card b, .mm-card em, [data-kw]"} -> [{'t': '68 / 68', 'x': 176, 'y': 12, 'w': 80, 'h': 21, 'cls': 'mm-hud__courage'}, {'t': '99', 'x': 267, 'y': 9, 'w': 57, err=None (0.01s)
+88 {"op": "jsawait", "expr": "document.querySelectorAll(\".mm-card\")[0].innerHTML.slice(0,1400)"} -> 
+      <div class="mm-card__body">
+        <div class="mm-card__ring"></div>
+        <div class="mm-card__crest"><i></i> err=None (0.01s)
+89 {"op": "jsawait", "expr": "document.querySelectorAll(\".mm-card\")[0].outerHTML.replace(/></g,String.fromCharCode(62,10,60)).slice(0,2500)"} -> <div class="mm-card" data-type="skill" data-rarity="basic" data-uid="c9" data-card-id="marmalade/curl-up" role="button"  err=None (0.01s)
+90 {"op": "jsawait", "expr": "document.querySelectorAll(\".mm-card\")[0].querySelector(\".mm-card__text, .mm-card__rules, .mm-card__desc\") ? document.querySelecto -> <div class="mm-card__rules"><div>Gain <b class="mm-card__num" data-key="b">5</b> Guard.</div></div> err=None (0.00s)
+91 {"op": "dragshot", "name": "p2-18-drag", "x1": 800, "y1": 700, "x2": 699, "y2": 400, "release": false} -> ['shots\\p2-18-drag.png', 'shots\\p2-18-drag_held.png'] err=None (1.66s)
+92 {"op": "shot", "name": "p2-19-drag-hold"} -> shots\p2-19-drag-hold.png err=None (0.48s)
+93 {"op": "js", "expr": "1"} -> fired err=None (0.00s)
+94 {"op": "dragxy", "x1": 699, "y1": 400, "x2": 699, "y2": 401, "steps": 2} -> ok err=None (0.25s)
+95 {"op": "wait", "s": 0.02} -> ok err=None (0.03s)
+96 {"op": "strip", "name": "p2-20-play", "n": 10, "interval": 0.09} -> ['shots\\p2-20-play_f0.png', 'shots\\p2-20-play_f1.png', 'shots\\p2-20-play_f2.png', 'shots\\p2-20-play_f3.png', 'shots\ err=None (6.19s)
+97 {"op": "dom", "sel": ".mm-enemy, [class*=enemy]", "depth": 3} -> div.enemy.cb-enemy.is-hit  [563,285 273x255]
+  div.cb-enemy__above  [660,202 78x89]
+    div.cb-enemy__badges  [699,202 0 err=None (0.01s)
+98 {"op": "js", "expr": "(()=>{window.__h=[];const e=document.querySelectorAll(\".cb-enemy\")[1];const st=e.querySelector(\".cb-enemy__stage\");const fl=e.querySel -> fired err=None (0.01s)
+99 {"op": "dragxy", "x1": 870, "y1": 700, "x2": 1020, "y2": 400, "steps": 10} -> ok err=None (0.67s)
+100 {"op": "wait", "s": 2.5} -> ok err=None (2.52s)
+101 {"op": "jsawait", "expr": "JSON.stringify(window.__h.filter(r=>r[0]>250&&r[0]<1400))"} -> [[266,"none","0","enemy cb-enemy","none"],[284,"none","0","enemy cb-enemy","none"],[301,"none","0","enemy cb-enemy","non err=None (0.01s)
+102 {"op": "key", "key": "1"} -> ok err=None (0.01s)
+103 {"op": "wait", "s": 0.8} -> ok err=None (0.81s)
+104 {"op": "shot", "name": "p2-21-kbd-card"} -> shots\p2-21-kbd-card.png err=None (0.48s)
+105 {"op": "state"} -> {"scene":"combat","run":{"version":1,"seed":551535859,"companion":"marmalade","kid":"maya","hauntLevel":0,"backpack":[{" err=None (0.01s)
+106 {"op": "jsawait", "expr": "(()=>{const s=window.MM.state();const r=s.run;const cs=window.MM.ctx&&window.MM.ctx.combat;\nreturn JSON.stringify({scene:s.scene,cou -> {"scene":"combat","courage":"68/68","lost":99,"snacks":[],"keeps":["Pocket Flashlight"],"deck":10,"node":"foyer-0-1","de err=None (0.00s)
+107 {"op": "key", "key": "Enter"} -> ok err=None (0.01s)
+108 {"op": "wait", "s": 0.9} -> ok err=None (0.91s)
+109 {"op": "shot", "name": "p2-22-guard"} -> shots\p2-22-guard.png err=None (0.47s)
+110 {"op": "jsawait", "expr": "JSON.stringify({g:(document.querySelector(\"[class*=guard],[class*=block]\")||{}).outerHTML})"} -> {"g":"<div class=\"cb-enemy__guard\" hidden=\"\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2 L21 5.5 err=None (0.01s)
+111 {"op": "key", "key": "e"} -> ok err=None (0.02s)
+112 {"op": "wait", "s": 0.2} -> ok err=None (0.20s)
+113 {"op": "strip", "name": "p2-23-enemyturn", "n": 14, "interval": 0.16} -> ['shots\\p2-23-enemyturn_f0.png', 'shots\\p2-23-enemyturn_f1.png', 'shots\\p2-23-enemyturn_f2.png', 'shots\\p2-23-enemyt err=None (9.19s)
+114 {"op": "hoverxy", "x": 800, "y": 700} -> ok err=None (0.02s)
+115 {"op": "wait", "s": 0.5} -> ok err=None (0.51s)
+116 {"op": "box", "sel": "[class*=kw], .mm-card__kw, mark"} -> [{'t': 'Haunt', 'x': 801, 'y': 718, 'w': 39, 'h': 20, 'cls': 'mm-card__kw'}, {'t': 'Courage', 'x': 1043, 'y': 689, 'w':  err=None (0.00s)
+117 {"op": "shot", "name": "p2-24-kw-tip"} -> shots\p2-24-kw-tip.png err=None (0.48s)
+118 {"op": "hoverxy", "x": 820, "y": 727} -> ok err=None (0.02s)
+119 {"op": "wait", "s": 0.7} -> ok err=None (0.71s)
+120 {"op": "shot", "name": "p2-25-haunt-tip"} -> shots\p2-25-haunt-tip.png err=None (0.45s)
+121 {"op": "hoverxy", "x": 1090, "y": 760} -> ok err=None (0.02s)
+122 {"op": "wait", "s": 0.7} -> ok err=None (0.71s)
+123 {"op": "shot", "name": "p2-26-curl-tip"} -> shots\p2-26-curl-tip.png err=None (0.48s)
+124 {"op": "jsawait", "expr": "(document.querySelector(\"#tooltip-layer\")||{}).innerText||\"(no tip)\""} -> (no tip) err=None (0.01s)
+125 {"op": "key", "key": "3"} -> ok err=None (0.01s)
+126 {"op": "wait", "s": 0.4} -> ok err=None (0.41s)
+127 {"op": "shot", "name": "p2-27-kbd-target"} -> shots\p2-27-kbd-target.png err=None (0.48s)
+128 {"op": "key", "key": "ArrowRight"} -> ok err=None (0.01s)
+129 {"op": "wait", "s": 0.4} -> ok err=None (0.41s)
+130 {"op": "jsawait", "expr": "[...document.querySelectorAll(\".cb-enemy\")].map((e,i)=>i+\":\"+e.className).join(\" ; \")"} -> 0:enemy cb-enemy is-hit is-guarding is-targeted ; 1:enemy cb-enemy is-hit is-guarding err=None (0.01s)
+131 {"op": "key", "key": "Enter"} -> ok err=None (0.01s)
+132 {"op": "wait", "s": 1.0} -> ok err=None (1.02s)
+133 {"op": "shot", "name": "p2-28-boo"} -> shots\p2-28-boo.png err=None (0.48s)
+134 {"op": "key", "key": "1"} -> ok err=None (0.01s)
+135 {"op": "wait", "s": 0.3} -> ok err=None (0.31s)
+136 {"op": "jsawait", "expr": "[...document.querySelectorAll(\".cb-enemy\")].map((e,i)=>i+\":\"+(e.className.includes(\"is-targeted\")?\"T\":\"-\")).join(\"\")"} -> 0:T1:- err=None (0.00s)
+137 {"op": "key", "key": "Tab"} -> ok err=None (0.02s)
+138 {"op": "wait", "s": 0.3} -> ok err=None (0.31s)
+139 {"op": "jsawait", "expr": "[...document.querySelectorAll(\".cb-enemy\")].map((e,i)=>i+\":\"+(e.className.includes(\"is-targeted\")?\"T\":\"-\")).join(\"\")+\" | -> 0:T1:- | af=mm-card is-selected is-hover err=None (0.01s)
+140 {"op": "key", "key": "ArrowLeft"} -> ok err=None (0.01s)
+141 {"op": "wait", "s": 0.3} -> ok err=None (0.30s)
+142 {"op": "jsawait", "expr": "[...document.querySelectorAll(\".cb-enemy\")].map((e,i)=>i+\":\"+(e.className.includes(\"is-targeted\")?\"T\":\"-\")).join(\"\")"} -> 0:T1:- err=None (0.00s)
+143 {"op": "key", "key": "d"} -> ok err=None (0.03s)
+144 {"op": "wait", "s": 0.3} -> ok err=None (0.32s)
+145 {"op": "jsawait", "expr": "[...document.querySelectorAll(\".cb-enemy\")].map((e,i)=>i+\":\"+(e.className.includes(\"is-targeted\")?\"T\":\"-\")).join(\"\")"} -> 0:-1:- err=None (0.01s)
+146 {"op": "key", "key": "?"} -> ok err=None (0.01s)
+147 {"op": "wait", "s": 0.6} -> ok err=None (0.60s)
+148 {"op": "shot", "name": "p2-29-help"} -> shots\p2-29-help.png err=None (1.49s)
+149 {"op": "jsawait", "expr": "document.body.innerText.length"} -> 700 err=None (0.00s)
+150 {"op": "key", "key": "Escape"} -> ok err=None (0.02s)

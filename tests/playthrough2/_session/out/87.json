@@ -1,0 +1,67 @@
+{
+ "i": 87,
+ "cmd": "{\"op\": \"box\", \"sel\": \".mm-card [class*=kw], .mm-card b, .mm-card em, [data-kw]\"}",
+ "result": [
+  {
+   "t": "68 / 68",
+   "x": 176,
+   "y": 12,
+   "w": 80,
+   "h": 21,
+   "cls": "mm-hud__courage"
+  },
+  {
+   "t": "99",
+   "x": 267,
+   "y": 9,
+   "w": 57,
+   "h": 28,
+   "cls": "mm-hud__chip mm-hud__gold"
+  },
+  {
+   "t": "5",
+   "x": 511,
+   "y": 810,
+   "w": 9,
+   "h": 17,
+   "cls": "mm-card__num"
+  },
+  {
+   "t": "5",
+   "x": 652,
+   "y": 786,
+   "w": 8,
+   "h": 17,
+   "cls": "mm-card__num"
+  },
+  {
+   "t": "6",
+   "x": 788,
+   "y": 777,
+   "w": 8,
+   "h": 16,
+   "cls": "mm-card__num"
+  },
+  {
+   "t": "6",
+   "x": 928,
+   "y": 785,
+   "w": 9,
+   "h": 17,
+   "cls": "mm-card__num"
+  },
+  {
+   "t": "5",
+   "x": 1073,
+   "y": 809,
+   "w": 9,
+   "h": 17,
+   "cls": "mm-card__num"
+  }
+ ],
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

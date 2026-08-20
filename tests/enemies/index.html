@@ -125,7 +125,12 @@ class MockCombat {
       // Mirrors engine.js announceRule: a rule replaces only the rule with the SAME id.
       // Rules from one source accumulate until explicitly cleared. Replacing by source
       // here (which the engine does not do) hid the Butler stacking all four rules.
-      announceRule: (r) => { self.rules = self.rules.filter(x => x.id !== r.id); r.source = actor.uid; r._owner = actor; self.rules.push(r); },
+      announceRule: (r) => {
+        self.rules = self.rules.filter(x => x.id !== r.id);
+        r.source = actor.uid; r._owner = actor;
+        self.rules.push(r);
+        (self.ruleLog ||= []).push({ id: r.id, name: r.name });
+      },
       clearRules: () => { self.rules = self.rules.filter(x => x.source !== actor.uid); },
       log: (msg) => self.events.push(msg),
       // proxy the actor's own fields
@@ -1243,6 +1248,119 @@ head('5e. Every enemy at Haunt 0-10, normal and advanced pools');
   if (!crashes && !impure && !illegal) {
     pass(`${ran} enemy/Haunt/pool combinations ran clean — no crash, no impure nextMove, no illegal move id`);
   }
+}
+
+head('5g. Each Haunt upgrade actually changes something observable');
+{
+  /**
+   * A Haunt flag that is set but never read is dead content, and it looks identical to
+   * working content in every other test here: §5e proves nothing crashes, §5f proves the
+   * flag differs between levels. Neither notices a no-op. This section drives each new
+   * upgrade and asserts a visible difference against the same enemy at Haunt 0.
+   */
+  const run = (id, lvl, turns, fn, partners = []) => {
+    const defs = [getEnemy(id), ...partners.map(getEnemy)];
+    const sim = new MockCombat(defs, `beh:${id}:${lvl}`, { haunt: lvl });
+    const a = sim.actors[0];
+    a.hp = a.maxHp = 100000;
+    const seq = [];
+    for (let t = 0; t < turns; t++) {
+      sim.playerTurn({ cards: 3, dmg: 0 });
+      for (const x of sim.actors) { if (!x.despawned) { x.hp = x.maxHp; x.alive = true; } }
+      const acted = sim.enemyTurn({ fail: () => {} });
+      const mine = acted.find(x => x.actor === a);
+      if (mine) seq.push(mine.moveId);
+      sim.player.hp = sim.player.maxHp;
+    }
+    return fn(sim, a, seq);
+  };
+
+  const check = (label, got, want) => (got === want ? pass(`${label} — ${got}`)
+    : fail(`${label}: got ${got}, expected ${want} — the Haunt flag is set but nothing observable changed`));
+
+  // H2 Door Greeter: two different rules appear over time, instead of only NO RUNNING.
+  const rulesAt = (lvl) => run('door-greeter', lvl, 12,
+    (sim) => new Set((sim.ruleLog || []).map(r => r.id)).size);
+  check('H2 Door Greeter announces more than one kind of rule', rulesAt(2) > 1, true);
+  check('  ...and at Haunt 0 still announces exactly one', rulesAt(0), 1);
+
+  // H2 Patchwork Soldier: Patch Up may repeat back-to-back. The ally is held wounded
+  // every turn, so a repair is always available and only the lockout decides the answer.
+  const consecutivePatch = (lvl) => {
+    const sim = new MockCombat([getEnemy('patchwork-soldier'), getEnemy('porcelain-doll')],
+      `patch:${lvl}`, { haunt: lvl });
+    const sol = sim.actors[0], ally = sim.actors[1];
+    sol.hp = sol.maxHp = 100000;
+    const seq = [];
+    for (let t = 0; t < 12; t++) {
+      sim.playerTurn({ cards: 1, dmg: 0 });
+      sol.hp = sol.maxHp; sol.alive = true;
+      ally.alive = true; ally.hp = Math.max(1, ally.maxHp - 20);   // always needs 12+
+      const acted = sim.enemyTurn({ fail: () => {} });
+      const mine = acted.find(x => x.actor === sol);
+      if (mine) seq.push(mine.moveId);
+      sim.player.hp = sim.player.maxHp;
+    }
+    return seq.some((m, i) => m === 'patch-up' && seq[i - 1] === 'patch-up');
+  };
+  check('H2 Patchwork Soldier repairs on consecutive turns', consecutivePatch(2), true);
+  check('  ...and the one-turn lockout still holds at Haunt 0', consecutivePatch(0), false);
+
+  // H4 Thing Beneath: the delayed scare exists at 4 and never at 0.
+  const canLoom = (lvl) => {
+    let seen = false;
+    for (let seed = 0; seed < 12 && !seen; seed++) {
+      const sim = new MockCombat([getEnemy('thing-beneath')], `loom:${lvl}:${seed}`, { haunt: lvl });
+      const a = sim.actors[0]; a.hp = a.maxHp = 100000;
+      for (let t = 0; t < 20; t++) {
+        sim.playerTurn({ cards: 2, dmg: 0 });
+        a.hp = a.maxHp; a.alive = true;
+        const acted = sim.enemyTurn({ fail: () => {} });
+        if (acted.some(x => x.moveId === 'loom')) { seen = true; break; }
+        sim.player.hp = sim.player.maxHp;
+      }
+    }
+    return seen;
+  };
+  check('H4 Thing Beneath can hold UNDER THE BED back a turn', canLoom(4), true);
+  check('  ...and never does so at Haunt 0', canLoom(0), false);
+
+  // H6 Porcelain Doll cracks itself out of Pristine.
+  const selfCracks = (lvl) => {
+    const sim = new MockCombat([getEnemy('porcelain-doll')], `crack:${lvl}`, { haunt: lvl });
+    const a = sim.actors[0];
+    let used = false;
+    for (let t = 0; t < 8; t++) {
+      sim.playerTurn({ cards: 1, dmg: 0 });
+      a.hp = a.maxHp; a.alive = true;               // keep it Pristine so the choice is live
+      const acted = sim.enemyTurn({ fail: () => {} });
+      if (acted.some(x => x.moveId === 'hairline-crack')) { used = true; break; }
+      sim.player.hp = sim.player.maxHp;
+    }
+    return used;
+  };
+  check('H6 Porcelain Doll cracks itself while Pristine', selfCracks(6), true);
+  check('  ...and holds Perfect Posture at Haunt 0', selfCracks(0), false);
+
+  // H7 Nightlight Snuffer puts out a real player buff.
+  const snuffs = (lvl) => {
+    const sim = new MockCombat([getEnemy('nightlight-snuffer'), getEnemy('thing-beneath')],
+      `snuff:${lvl}`, { haunt: lvl });
+    const a = sim.actors[0];
+    sim.player.statuses.strength = 3;
+    getEnemy('nightlight-snuffer').moves.snuff.effect(sim.ctx(a));
+    return sim.player.statuses.strength;
+  };
+  check('H7 Snuff extinguishes a stack of Strength', snuffs(7), 2);
+  check('  ...and leaves it alone at Haunt 0', snuffs(0), 3);
+
+  // H8 The Butler's fifth rule enters the pool.
+  const poolSize = (lvl) => {
+    const sim = new MockCombat([getEnemy('butler')], `pool:${lvl}`, { haunt: lvl });
+    return getEnemy('butler').rulePool(sim.ctx(sim.actors[0])).length;
+  };
+  check('H8 The Butler knows a fifth House Rule', poolSize(8), 5);
+  check('  ...and only four below that', poolSize(7), 4);
 }
 
 head('5f. No Haunt level is a pure stat bump');

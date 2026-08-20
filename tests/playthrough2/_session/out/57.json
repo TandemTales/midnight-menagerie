@@ -1,0 +1,9 @@
+{
+ "i": 57,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"(()=>{const p=document.querySelector(\\\"[class*=region],[class*=plate],[class*=mp-card]\\\"); return p? p.className+\\\" op=\\\"+getComputedStyle(p).opacity : \\\"none\\\"})()\"}",
+ "result": "none",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

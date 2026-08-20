@@ -1,0 +1,25 @@
+{
+ "i": 113,
+ "cmd": "{\"op\": \"strip\", \"name\": \"p2-23-enemyturn\", \"n\": 14, \"interval\": 0.16}",
+ "result": [
+  "shots\\p2-23-enemyturn_f0.png",
+  "shots\\p2-23-enemyturn_f1.png",
+  "shots\\p2-23-enemyturn_f2.png",
+  "shots\\p2-23-enemyturn_f3.png",
+  "shots\\p2-23-enemyturn_f4.png",
+  "shots\\p2-23-enemyturn_f5.png",
+  "shots\\p2-23-enemyturn_f6.png",
+  "shots\\p2-23-enemyturn_f7.png",
+  "shots\\p2-23-enemyturn_f8.png",
+  "shots\\p2-23-enemyturn_f9.png",
+  "shots\\p2-23-enemyturn_f10.png",
+  "shots\\p2-23-enemyturn_f11.png",
+  "shots\\p2-23-enemyturn_f12.png",
+  "shots\\p2-23-enemyturn_f13.png"
+ ],
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

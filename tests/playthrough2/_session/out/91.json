@@ -1,0 +1,13 @@
+{
+ "i": 91,
+ "cmd": "{\"op\": \"dragshot\", \"name\": \"p2-18-drag\", \"x1\": 800, \"y1\": 700, \"x2\": 699, \"y2\": 400, \"release\": false}",
+ "result": [
+  "shots\\p2-18-drag.png",
+  "shots\\p2-18-drag_held.png"
+ ],
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

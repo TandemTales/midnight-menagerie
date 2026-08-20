@@ -1,0 +1,7 @@
+{
+ "i": 1,
+ "cmd": "{\"op\": \"shot\", \"name\": \"p2-01-title\"}",
+ "result": "shots\\p2-01-title.png",
+ "error": null,
+ "console_errors": []
+}

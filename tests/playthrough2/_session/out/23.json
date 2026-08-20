@@ -1,0 +1,290 @@
+{
+ "i": 23,
+ "cmd": "{\"op\": \"box\", \"sel\": \".sel-card, [class*=comp-card], button\"}",
+ "result": [
+  {
+   "t": "\u2190\nBACK",
+   "x": 24,
+   "y": 28,
+   "w": 103,
+   "h": 36,
+   "cls": "sel-back"
+  },
+  {
+   "t": "Marmalade\nthe Ghost Cat",
+   "x": 481,
+   "y": 185,
+   "w": 152,
+   "h": 148,
+   "cls": "companion-tile"
+  },
+  {
+   "t": "Not yet rescued\nSomewhere in the Lampworks",
+   "x": 643,
+   "y": 185,
+   "w": 152,
+   "h": 148,
+   "cls": "companion-tile is-locked"
+  },
+  {
+   "t": "Not yet rescued\nSomewhere in the Ballroom",
+   "x": 805,
+   "y": 185,
+   "w": 152,
+   "h": 148,
+   "cls": "companion-tile is-locked"
+  },
+  {
+   "t": "Not yet rescued\nSomewhere in the Sleeping Quarters",
+   "x": 967,
+   "y": 185,
+   "w": 152,
+   "h": 148,
+   "cls": "companion-tile is-locked"
+  },
+  {
+   "t": "Bones\nthe Skeleton Puppy",
+   "x": 481,
+   "y": 343,
+   "w": 152,
+   "h": 148,
+   "cls": "companion-tile"
+  },
+  {
+   "t": "Pipkin\nthe Pumpkin Frog",
+   "x": 643,
+   "y": 343,
+   "w": 152,
+   "h": 148,
+   "cls": "companion-tile"
+  },
+  {
+   "t": "Taffy\nthe Candy Slime",
+   "x": 805,
+   "y": 343,
+   "w": 152,
+   "h": 148,
+   "cls": "companion-tile"
+  },
+  {
+   "t": "Not yet rescued\nSomewhere in the Hedge Maze",
+   "x": 967,
+   "y": 343,
+   "w": 152,
+   "h": 148,
+   "cls": "companion-tile is-locked"
+  },
+  {
+   "t": "Not yet rescued\nSomewhere in the Secret Passages",
+   "x": 481,
+   "y": 501,
+   "w": 152,
+   "h": 148,
+   "cls": "companion-tile is-locked"
+  },
+  {
+   "t": "Not yet rescued\nSomewhere in the Nursery",
+   "x": 643,
+   "y": 501,
+   "w": 152,
+   "h": 148,
+   "cls": "companion-tile is-locked"
+  },
+  {
+   "t": "Not yet rescued\nSomewhere in the Bathhouse",
+   "x": 805,
+   "y": 501,
+   "w": 152,
+   "h": 148,
+   "cls": "companion-tile is-locked"
+  },
+  {
+   "t": "Not yet rescued\nSomewhere in the Graveyard",
+   "x": 967,
+   "y": 501,
+   "w": 152,
+   "h": 148,
+   "cls": "companion-tile is-locked"
+  },
+  {
+   "t": "Not yet rescued\nSomewhere in the Attic & Observatory",
+   "x": 481,
+   "y": 659,
+   "w": 152,
+   "h": 148,
+   "cls": "companion-tile is-locked"
+  },
+  {
+   "t": "Not yet rescued\nSomewhere in the Study & Library",
+   "x": 643,
+   "y": 659,
+   "w": 152,
+   "h": 148,
+   "cls": "companion-tile is-locked"
+  },
+  {
+   "t": "Not yet rescued\nSomewhere in the Kennels",
+   "x": 805,
+   "y": 659,
+   "w": 152,
+   "h": 148,
+   "cls": "companion-tile is-locked"
+  },
+  {
+   "t": "Not yet rescued\nSomewhere in the Greenhouse",
+   "x": 967,
+   "y": 659,
+   "w": 152,
+   "h": 148,
+   "cls": "companion-tile is-locked"
+  },
+  {
+   "t": "CHOOSE ANOTHER",
+   "x": 1344,
+   "y": 699,
+   "w": 225,
+   "h": 43,
+   "cls": "btn btn--ghost"
+  },
+  {
+   "t": "TAKE IN \u2192",
+   "x": 1344,
+   "y": 751,
+   "w": 225,
+   "h": 43,
+   "cls": "btn btn--primary"
+  },
+  {
+   "t": "Maya\nlooking for Orbit",
+   "x": 38,
+   "y": 589,
+   "w": 182,
+   "h": 246,
+   "cls": "kid-tile"
+  },
+  {
+   "t": "Mateo\nlooking for Pepper",
+   "x": 230,
+   "y": 589,
+   "w": 182,
+   "h": 246,
+   "cls": "kid-tile"
+  },
+  {
+   "t": "Amina\nlooking for Mochi",
+   "x": 422,
+   "y": 589,
+   "w": 182,
+   "h": 246,
+   "cls": "kid-tile"
+  },
+  {
+   "t": "Eli\nlooking for Sprocket",
+   "x": 613,
+   "y": 589,
+   "w": 182,
+   "h": 246,
+   "cls": "kid-tile"
+  },
+  {
+   "t": "Priya\nlooking for Pixel",
+   "x": 805,
+   "y": 589,
+   "w": 182,
+   "h": 246,
+   "cls": "kid-tile"
+  },
+  {
+   "t": "Jordan\nlooking for Scout",
+   "x": 996,
+   "y": 589,
+   "w": 182,
+   "h": 246,
+   "cls": "kid-tile"
+  },
+  {
+   "t": "Lena\nlooking for Mooncake",
+   "x": 1188,
+   "y": 589,
+   "w": 182,
+   "h": 246,
+   "cls": "kid-tile"
+  },
+  {
+   "t": "Lucy\nlooking for Biscuit",
+   "x": 1380,
+   "y": 589,
+   "w": 182,
+   "h": 246,
+   "cls": "kid-tile"
+  },
+  {
+   "t": "0",
+   "x": 455,
+   "y": 851,
+   "w": 26,
+   "h": 26,
+   "cls": "haunt__pip"
+  },
+  {
+   "t": "1",
+   "x": 485,
+   "y": 851,
+   "w": 26,
+   "h": 26,
+   "cls": "haunt__pip is-locked"
+  },
+  {
+   "t": "2",
+   "x": 515,
+   "y": 851,
+   "w": 26,
+   "h": 26,
+   "cls": "haunt__pip is-locked"
+  },
+  {
+   "t": "3",
+   "x": 545,
+   "y": 851,
+   "w": 26,
+   "h": 26,
+   "cls": "haunt__pip is-locked"
+  },
+  {
+   "t": "4",
+   "x": 575,
+   "y": 851,
+   "w": 26,
+   "h": 26,
+   "cls": "haunt__pip is-locked"
+  },
+  {
+   "t": "5",
+   "x": 605,
+   "y": 851,
+   "w": 26,
+   "h": 26,
+   "cls": "haunt__pip is-locked"
+  },
+  {
+   "t": "\u21bb",
+   "x": 1247,
+   "y": 850,
+   "w": 28,
+   "h": 28,
+   "cls": "seed__roll"
+  },
+  {
+   "t": "BEGIN EXPEDITION",
+   "x": 1301,
+   "y": 840,
+   "w": 275,
+   "h": 48,
+   "cls": "btn btn--go"
+  }
+ ],
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track003.mp3 net::ERR_ABORTED"
+ ]
+}

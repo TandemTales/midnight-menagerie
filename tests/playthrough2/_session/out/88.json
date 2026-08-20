@@ -1,0 +1,10 @@
+{
+ "i": 88,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"document.querySelectorAll(\\\".mm-card\\\")[0].innerHTML.slice(0,1400)\"}",
+ "result": "\n      <div class=\"mm-card__body\">\n        <div class=\"mm-card__ring\"></div>\n        <div class=\"mm-card__crest\"><i></i></div>\n        <div class=\"mm-card__pip mm-card__pip--l\"></div>\n        <div class=\"mm-card__pip mm-card__pip--r\"></div>\n        <div class=\"mm-card__pip mm-card__pip2 mm-card__pip--l\"></div>\n        <div class=\"mm-card__pip mm-card__pip2 mm-card__pip--r\"></div>\n        <div class=\"mm-card__frame\">\n          <div class=\"mm-card__rivets\"><i></i><i></i><i></i><i></i></div>\n          <div class=\"mm-card__flourish\"><i></i><i></i><i></i><i></i></div>\n          <div class=\"mm-card__setgem\"></div>\n        </div>\n        <div class=\"mm-card__face\">\n          <div class=\"mm-card__art\" style=\"background-image: url(&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAToAAACwCAYAAACfHqJWAAAQAElEQVR4AbT9B7xt11XeDT/PGPtc3XvVZcuSbLljy924Y8AFUww2BDCEwAu4gEPHBie0JGBqyEeSNyT0kPAmBEwvgdiAKYZQAgTbYMAVNxlLcpHVy9U9e87v/8y9z5UcYpJ8v/fbd4/1jPKMMeaca+251tnn6qrOufeD5rn3fvA8Bzn3Pkd4xTznPlfMc8/IQ+a59408FMR/P/B+2Pd7GDb6/R8yz7vvQ+d590eInYc/cv79Hz7Pv//DkOBOzls+9Ac8Yp7/gEeSg/5AEPuCBz5qnvfAR8wLYiM7+5Hzgg975Dyf2AUf9mgQeRCCfuGDP3xegH7Bg4KRx2AfYfTHzgseDC7Bf8XefgiIXPiQx80Lgw8Fkbs97AnzQuSih4PI3R7+xHkRcrdHPGlehNz9kU+ed3vkk+bdHgUid3/0R867Pwp59EfNix+FPPqjd/gYEP0ej33KvMeHI8HHPHXe47FPnRcvfBr60+Ylj/uYeY/HPX1e+viPmZc8/mnz0ic8A/wY8GORj5mXPekZ89Ingk/82HlZ5EkfNy97EnrwIz523vMjPn5e9hEfN+/55I/fyUd+MN7roz5h3vMj",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

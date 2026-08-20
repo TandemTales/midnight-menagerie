@@ -342,6 +342,22 @@ export const nightlightSnuffer = {
 
   darknessPower(c) { return flag(c, 'darknessPower', 2); },
 
+  /**
+   * Put out one stack of the player's most valuable standing buff. Ordered most to least
+   * painful to lose, so it always takes something the player would actually miss rather
+   * than nibbling the cheapest stack on the row.
+   */
+  SNUFFABLE: ['strength', 'focus', 'dexterity', 'regen', 'bristle', 'charm'],
+  extinguish(c) {
+    for (const id of nightlightSnuffer.SNUFFABLE) {
+      if (c.count(id, c.player) > 0) {
+        c.applyStatus(c.player, id, -1);
+        return id;
+      }
+    }
+    return null;
+  },
+
   onTurnStart(c) {
     // "Darkness lasts until the beginning of Nightlight Snuffer's next turn."
     if (field(c).darkness) {
@@ -368,13 +384,17 @@ export const nightlightSnuffer = {
         for (const a of allies(c)) c.applyStatus(a, 'darkness', nightlightSnuffer.darknessPower(c));
         /**
          * Haunt 7 (design doc §48, "may extinguish a positive player battlefield effect").
-         * Snuffing now takes one of your buffs with the light. Below Haunt 7 you can set
-         * up through a Snuff freely; from Haunt 7 the Snuffer is on a four-turn clock
-         * against your own preparation, so when you spend a Power stops being free.
+         * Snuffing takes one stack of one of your buffs with the light. Below Haunt 7 you
+         * can set up through a Snuff freely; from Haunt 7 the Snuffer is on a four-turn
+         * clock against your own preparation, so when you spend a Power stops being free.
+         *
+         * Written against `removeStatus`/`count`, which the engine actually has. The first
+         * draft called a `removeBestStatus(actor, {kind})` helper that does not exist, and
+         * because the call was behind a `typeof` guard it degraded to a silent no-op — the
+         * upgrade would have shipped doing nothing at all, exactly like Cover in round 2.
+         * Feature-detecting a helper you have not confirmed is a way to ship dead content.
          */
-        if (flag(c, 'snuffBuffs') && typeof c.removeBestStatus === 'function') {
-          c.removeBestStatus(c.player, { kind: 'buff' });
-        }
+        if (flag(c, 'snuffBuffs')) nightlightSnuffer.extinguish(c);
       },
     },
     'hot-wick': {
