@@ -60,6 +60,31 @@ const FOYER = [
     members: [m('lost-luggage')],
     teaches: 'Very mild deck interference. Clutter costs a draw, not a Nerve.',
   },
+  {
+    /**
+     * BALANCE 2026-08-20 round 3 — authored to close the free-opening gap.
+     *
+     * A quarter of opening Scuffles cost the player nothing. The cause is structural,
+     * not numeric: only three enemies are legal in a first Scuffle, and against a fresh
+     * deck a SOLO enemy is almost perfectly blockable. Measured Guard absorption is 95%
+     * for one Dust Bunny and 91% for one Coatrack Crawler, versus 46-57% once two
+     * enemies act on different cycles. Raising a single enemy's damage does not fix
+     * that — the bot simply blocks the bigger number. Two attackers does.
+     *
+     * The early pool had exactly one pair (foyer-3, 40 Courage) and the next step up was
+     * foyer-7 at 50, which measured 14.65 and overshot the 8-12 target once Clutter went
+     * live. This sits between them at 43: a half-packed case that still runs its full
+     * Pack Wrong / Baggage Bash / Snap Shut cycle and still pollutes the deck, but dies
+     * early enough to land roughly one Clutter instead of two or three.
+     *
+     * The two cycles are deliberately coprime — the Bunny alternates on 2, the case runs
+     * on 4 — so they never stack their big turns and the fight threatens without spiking.
+     */
+    id: 'foyer-4b', region: 'foyer', tier: 'early', name: 'Dust Bunny + Half-Packed Luggage',
+    members: [m('dust-bunny'), m('lost-luggage', { hpMul: 0.75 })],
+    teaches: 'Two attackers on different clocks. One turn of Guard can no longer cover '
+      + 'the whole room, which is the first time that is true.',
+  },
 
   // ── Standard: "These begin combining mechanics." ──────────────────────────
   {

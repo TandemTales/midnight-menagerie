@@ -109,9 +109,34 @@ export const HOUSE_RULES = {
     broken: (rc) => (rc.damageDealtThisTurn || 0) >= 15,
     onBreak: (c) => { mem(c).retaliation = (mem(c).retaliation || 0) + (p2 ? 7 : 5); },
   }),
+
+  /**
+   * The fifth rule (design doc §30, "The Butler may gain a fifth rare House Rule").
+   * Unlocked at Haunt 8 and never before.
+   *
+   * The other four all punish doing too MUCH — too many Tricks, too much Guard, too
+   * much damage, the same type twice. This one punishes doing too little, so it is the
+   * first rule that cannot be respected by simply slowing down. Standing beside NO
+   * RUNNING in phase two it closes the safe band to exactly two or three Tricks a turn,
+   * which is the tightest sequencing constraint in the region.
+   *
+   * Its Reprimand is Clutter rather than damage or Guard: a fifth flavour of
+   * consequence, it ties the boss back to the Foyer's own deck-interference thread, and
+   * unlike a heal it makes the fight harder without making it longer.
+   */
+  'no-dawdling': (p2) => ({
+    id: 'no-dawdling',
+    name: 'GUESTS DO NOT DAWDLE',
+    text: `Ending your turn having played fewer than two Tricks breaks the rule. `
+        + `Reprimand: ${p2 ? 2 : 1} Clutter into your discard pile.`,
+    when: 'turnEnd', once: true,
+    broken: (rc) => (rc.cardsPlayedThisTurn || []).length < 2,
+    onBreak: (c) => { for (let i = 0; i < (p2 ? 2 : 1); i++) c.addCard('clutter', 'discard'); },
+  }),
 };
 
-const RULE_IDS = Object.keys(HOUSE_RULES);
+/** The four he always knows. The fifth is Haunt 8 only — see rulePool(). */
+const RULE_IDS = ['no-running', 'one-at-a-time', 'keep-the-hall-clear', 'no-roughhousing'];
 
 export const butler = {
   id: 'butler',
@@ -167,9 +192,10 @@ export const butler = {
     const prev = [].concat(hist[hist.length - 1] || []);
 
     // Never re-announce the identical set. With four rules there is always another.
+    const pool = butler.rulePool(c);
     let picked = [];
     for (let attempt = 0; attempt < 8; attempt++) {
-      const avail = RULE_IDS.slice();
+      const avail = pool.slice();
       picked = [];
       for (let i = 0; i < count && avail.length; i++) picked.push(avail.splice(c.rng.int(avail.length), 1)[0]);
       const same = picked.length === prev.length && picked.every(r => prev.includes(r));
@@ -183,6 +209,11 @@ export const butler = {
 
   /** How many House Rules he is enforcing right now. Phase one 1, phase two 2. */
   standingRules(c) { return butler.phase(c) >= 2 ? 2 : 1; },
+
+  /** The rules available to him. Haunt 8 adds GUESTS DO NOT DAWDLE. */
+  rulePool(c) {
+    return flag(c, 'fifthRule') ? RULE_IDS.concat('no-dawdling') : RULE_IDS;
+  },
 
   /** Engine hook: any House Rule of his was broken this turn. */
   onRuleBroken(c) {
@@ -364,6 +395,11 @@ export const butler = {
   hauntScaling(level) {
     const h = hauntBase(level, 'boss');
     if (level >= 1) h.notes.push('Courage +6%.');
+    if (level >= 8) {
+      h.flags.fifthRule = true;
+      h.notes.push('Haunt 8: gains a fifth House Rule, GUESTS DO NOT DAWDLE (design doc §30) — the '
+        + 'first one that punishes playing too little, so slowing down stops being a safe answer.');
+    }
     if (level >= 10) {
       h.flags.openWithRule = true;
       h.notes.push('Haunt 10: he begins combat with a House Rule already active, so Formal Welcome no longer gives an unrestricted opening turn.');

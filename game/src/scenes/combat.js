@@ -145,7 +145,10 @@ export class CombatScene extends Scene {
     try { ctx.stage?.setPaused?.(false); } catch { /* no stage */ }
 
     // THE ROOM, not "the region". See ROOM_MOOD at the top of this file.
-    ctx.atmosphere?.setMood?.(this.mood || this.region || 'foyer');
+    ctx.atmosphere?.setMood?.(this.mood || this.region || 'foyer',
+      // per-room seed: without it, the six Foyer rooms that share the 'passages'
+      // space render pixel-identically.
+      { seed: this.roomName || this.mood || this.region });
     ctx.audio?.music?.(this.arena === 'boss' ? 'boss' : 'combat');
 
     /* ── the warm-up that never ran ─────────────────────────────────────────
@@ -780,7 +783,9 @@ export class CombatScene extends Scene {
     this._clearPreview();
     this.hand.lock();
     const card = this.engine.card(uid);
-    this.ctx.bus.emit('card:play', { type: card?.type, cardId: card?.id });
+    /* No `card:play` re-emit here: `ui/hand.js` already emits it (now carrying `type`),
+       and this method is the handler for that very event. Emitting again made every
+       play appear twice on the bus. */
     // resolve on the "hold" beat of the Hand's play animation, so the effect
     // lands while the card is presented rather than the instant it leaves
     this.ctx.clock.wait(this._d(0.20)).then(async () => {

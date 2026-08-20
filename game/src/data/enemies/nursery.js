@@ -114,8 +114,10 @@ export const buttonBaby = {
     const h = hauntBase(level, 'normal');
     if (level >= 1) h.notes.push('Courage +8%.');
     if (level >= 3) {
-      h.advanced.flags.preSewn = true;
-      h.notes.push('Haunt 3: begins advanced Scuffles with one Button already attached to an ally.');
+      h.flags.preSewn = true;
+      h.notes.push('Haunt 3: every Button Baby arrives with a Button already sewn onto an ally, not '
+        + 'just those in advanced Scuffles — the formation you are reading is already modified '
+        + 'before your first card.');
     }
     return h;
   },
@@ -224,6 +226,13 @@ export const patchworkSoldier = {
   scale: 1.0,
   lore: 'One cloth arm, one metal leg, and far too many seams. It has repaired everything in this room at least once.',
 
+  /** A nearly-defeated ally it can take apart for its own stuffing. Haunt 7 only. */
+  scrapTarget(c) {
+    if (!flag(c, 'cannibalise')) return null;
+    if ((c.self.hp || 0) >= (c.self.maxHp || 1) * 0.6) return null;   // only when hurt itself
+    return allies(c).find(a => (a.hp || 0) > 0 && (a.hp || 0) <= 6) || null;
+  },
+
   /** The ally most in need of stuffing. */
   patchTarget(c) {
     let best = null, worst = 0;
@@ -252,6 +261,24 @@ export const patchworkSoldier = {
       tell: 'It presents the wooden sword with complete seriousness.',
       effect(c) { hitPlayer(c, 9); },
     },
+    'dismantle': {
+      id: 'dismantle', name: 'Dismantle', intent: Intent.BUFF,
+      tell: 'It looks at the one that is barely holding together, and reaches for its seams.',
+      /**
+       * Haunt 7 (design doc §38, "can repair itself by dismantling another enemy that is
+       * nearly defeated"). Leaving something on 4 Courage stops being safe: the Soldier
+       * finishes it for you and pockets the stuffing. It inverts the Haunt 0 exploit,
+       * where you deliberately left an ally damaged to bleed the Soldier dry.
+       */
+      effect(c) {
+        const scrap = patchworkSoldier.scrapTarget(c);
+        if (!scrap) return;
+        const gained = Math.max(6, Math.round((scrap.hp || 0) + 6));
+        c.loseHp(scrap, (scrap.hp || 0));
+        c.heal(c.self, gained);
+        c.block(c.self, 6);
+      },
+    },
     'stand-guard': {
       id: 'stand-guard', name: 'Stand Guard', intent: Intent.DEFEND, block: 8,
       tell: 'It plants itself between you and everything behind it.',
@@ -265,16 +292,34 @@ export const patchworkSoldier = {
 
   nextMove(c) {
     // Patch Up when someone needs it, but never twice running.
-    if (patchworkSoldier.patchTarget(c) && lastMove(c) !== 'patch-up') return 'patch-up';
+    //
+    // Haunt 2 removes that lockout. Below Haunt 2 the one-turn gap is a guarantee the
+    // player builds plans on: damage an ally, get exactly one clean turn to finish it.
+    // From Haunt 2 the Soldier will keep stitching every single turn for as long as
+    // anyone is hurt, so out-healing it stops being free and killing it first stops
+    // being optional.
+    if (patchworkSoldier.scrapTarget(c)) return 'dismantle';
+    const relentless = flag(c, 'relentlessRepair');
+    if (patchworkSoldier.patchTarget(c) && (relentless || lastMove(c) !== 'patch-up')) return 'patch-up';
     return cyc(['wooden-saber', 'stand-guard'], countMoves(c, ['wooden-saber', 'stand-guard']));
   },
 
   hauntScaling(level) {
     const h = hauntBase(level, 'normal');
     if (level >= 1) h.notes.push('Courage +8%.');
+    if (level >= 2) {
+      h.flags.relentlessRepair = true;
+      h.notes.push('Haunt 2: Patch Up may occur on consecutive turns. The guaranteed one-turn '
+        + 'window after a repair is gone, so racing past it no longer works by default.');
+    }
     if (level >= 5) {
       h.flags.patchHeal = 11;
       h.notes.push('Haunt 5: Patch Up restores 11 Courage instead of 9. It still loses 7, so exploiting its repairs matters more.');
+    }
+    if (level >= 7) {
+      h.flags.cannibalise = true;
+      h.notes.push('Haunt 7: when hurt, Dismantles an ally at 6 Courage or less to restuff itself '
+        + '(design doc §38) — leaving something nearly dead is now a mistake.');
     }
     return h;
   },
@@ -401,6 +446,15 @@ export const blanketBlob = {
   onPlayerTurnEnd(c) { blanketBlob.settleCover(c); },
   onTurnStart(c) { blanketBlob.settleCover(c); blanketBlob.rearmCover(c); },
 
+  /** Haunt 4: the covered ally is about to die and somebody healthier needs the blanket. */
+  shouldMoveCover(c) {
+    const cur = blanketBlob.coveredAlly(c);
+    if (!cur) return false;
+    if ((cur.hp || 0) > (cur.maxHp || 1) * 0.25) return false;
+    return allies(c).some(a => a !== cur && a.id !== 'blanket-blob'
+      && (a.hp || 0) > (a.maxHp || 1) * 0.25);
+  },
+
   /** It will not tuck in another Blanket Blob — blankets under blankets go nowhere. */
   coverTarget(c) {
     return allies(c).find(a => a.id !== 'blanket-blob' && !c.has('covered', a)) || null;
@@ -420,8 +474,14 @@ export const blanketBlob = {
     'tuck-in': {
       id: 'tuck-in', name: 'Tuck In', intent: Intent.DEFEND, block: 5,
       tell: 'It flows over a friend and settles, leaving only a shape.',
-      appliesFn: (c) => (blanketBlob.coverTarget(c) ? [{ id: 'covered', stacks: 1, to: 'ally' }] : []),
+      appliesFn: (c) => ((blanketBlob.coverTarget(c) || blanketBlob.shouldMoveCover(c))
+        ? [{ id: 'covered', stacks: 1, to: 'ally' }] : []),
       effect(c) {
+        // Moving the blanket first frees the ally that no longer needs it.
+        if (flag(c, 'mobileCover') && blanketBlob.shouldMoveCover(c)) {
+          const old = blanketBlob.coveredAlly(c);
+          if (old) { c.removeStatus(old, 'covered'); old._coverPending = 0; old._coverUsedThisTurn = 0; }
+        }
         const t = blanketBlob.coverTarget(c);
         if (t) {
           // The engine's enemy ctx drops extra applyStatus args, so the size of the Cover
@@ -448,6 +508,11 @@ export const blanketBlob = {
   },
 
   nextMove(c) {
+    // Haunt 4 (design doc §38, "can move Cover between enemies"): if the thing it is
+    // covering is already nearly dead, it re-tucks onto a healthier ally instead. Below
+    // Haunt 4 you could strand the Cover on a corpse-to-be and ignore it; now the
+    // protection follows the target that still matters.
+    if (flag(c, 'mobileCover') && blanketBlob.shouldMoveCover(c)) return 'tuck-in';
     if (!blanketBlob.coveredAlly(c) && blanketBlob.coverTarget(c)) return 'tuck-in';
     return cyc(['blanket-snap', 'smother', 'blanket-snap'], countMoves(c, ['blanket-snap', 'smother']));
   },
@@ -455,6 +520,11 @@ export const blanketBlob = {
   hauntScaling(level) {
     const h = hauntBase(level, 'normal');
     if (level >= 1) h.notes.push('Courage +8%.');
+    if (level >= 4) {
+      h.flags.mobileCover = true;
+      h.notes.push('Haunt 4: moves Cover off a nearly-dead ally onto a healthy one (design doc §38), '
+        + 'so the protection can no longer be stranded on something you were about to kill anyway.');
+    }
     if (level >= 6) {
       h.flags.coverAmount = 10;
       h.notes.push('Haunt 6: Cover redirects the first 10 damage instead of 8.');
@@ -508,6 +578,23 @@ export const porcelainDoll = {
       tell: 'It sits up very straight, the way it was taught.',
       effect(c) { c.block(c.self, 10); },
     },
+    'hairline-crack': {
+      id: 'hairline-crack', name: 'Hairline Crack', intent: Intent.BUFF,
+      tell: 'It presses a thumb into its own cheek until something gives.',
+      /**
+       * Haunt 6 (design doc §38, "may deliberately crack itself before attacking").
+       * Replaces Perfect Posture while Pristine. The Doll stops waiting for you to
+       * escalate it and does the job itself, which removes the Haunt 0 option of simply
+       * leaving it intact — the safest line against this enemy no longer exists.
+       */
+      effect(c) {
+        const max = c.self.maxHp || 36;
+        const target = Math.round(max * (2 / 3));
+        const drop = Math.max(0, (c.self.hp || 0) - target);
+        if (drop > 0) c.loseHp(c.self, drop);
+        c.block(c.self, 6);
+      },
+    },
     'sharp-little-hands': {
       id: 'sharp-little-hands', name: 'Sharp Little Hands', intent: Intent.ATTACK, damage: 4, hits: 2,
       tell: 'Its fingers have gone to points somewhere along the way.',
@@ -517,11 +604,21 @@ export const porcelainDoll = {
     },
   },
 
-  nextMove: (c) => cyc(['tea-cup-tap', 'perfect-posture', 'sharp-little-hands'], (c.history || []).length),
+  nextMove(c) {
+    const planned = cyc(['tea-cup-tap', 'perfect-posture', 'sharp-little-hands'], (c.history || []).length);
+    if (planned === 'perfect-posture' && flag(c, 'selfCrack')
+        && porcelainDoll.state(c) === 'pristine') return 'hairline-crack';
+    return planned;
+  },
 
   hauntScaling(level) {
     const h = hauntBase(level, 'normal');
     if (level >= 1) h.notes.push('Courage +8%.');
+    if (level >= 6) {
+      h.flags.selfCrack = true;
+      h.notes.push('Haunt 6: cracks itself instead of sitting Pristine (design doc §38). Leaving the '
+        + 'Doll alone stops being a way to keep it harmless.');
+    }
     if (level >= 8) {
       h.flags.shatterFrac = 14 / 36;
       h.notes.push('Haunt 8: enters Shattered at 14 Courage rather than 12 — the dangerous final state lasts longer.');

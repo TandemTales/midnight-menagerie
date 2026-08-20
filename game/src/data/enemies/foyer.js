@@ -91,9 +91,12 @@ export const dustBunny = {
     const h = hauntBase(level, 'normal');
     if (level >= 1) h.notes.push('Courage +8%.');
     if (level >= 3) {
-      h.advanced.counters.dust = 1;
-      h.advanced.flags.startDust = 1;
-      h.notes.push('Haunt 3: begins advanced Scuffles with 1 Dust.');
+      // The doc scopes this to advanced Scuffles. At Haunt 3 it applies everywhere:
+      // the opening board state itself changes, so the very first Tumble already
+      // reads 3 higher and the "poke it now" decision arrives a turn earlier.
+      h.counters.dust = 1;
+      h.flags.startDust = 1;
+      h.notes.push('Haunt 3: every Dust Bunny begins combat with 1 Dust, not just those in advanced Scuffles.');
     }
     return h;
   },
@@ -328,6 +331,13 @@ export const redCarpetRunner = {
     return Math.min(flag(c, 'maxMomentum', 2), m + pending);
   },
 
+  onSpawn(c) {
+    // Haunt 5 (design doc §30): it is already moving when the fight starts, so the
+    // very first Run the Hall reads 15 instead of 8 and the disruption window on
+    // Unroll matters immediately rather than on the second cycle.
+    setCnt(c, 'momentum', flag(c, 'startMomentum', 0));
+  },
+
   onPlayerTurnEnd(c) {
     // "Gain 1 Momentum unless all of this Guard is broken during the player's next turn."
     if (mem(c).unrolled) {
@@ -363,6 +373,12 @@ export const redCarpetRunner = {
   hauntScaling(level) {
     const h = hauntBase(level, 'normal');
     if (level >= 1) h.notes.push('Courage +8%.');
+    if (level >= 5) {
+      h.counters.momentum = 1;
+      h.flags.startMomentum = 1;
+      h.notes.push('Haunt 5: begins combat with 1 Momentum already built (design doc §30), so its '
+        + 'first Run the Hall lands a full cycle earlier than you have learned to expect.');
+    }
     if (level >= 7) {
       h.flags.momentumDamage = 8;
       h.notes.push('Haunt 7: Run the Hall gains 8 damage per Momentum instead of 7 (max 24).');
@@ -392,8 +408,32 @@ export const doorGreeter = {
       id: 'mind-your-manners', name: 'Mind Your Manners', intent: Intent.DEBUFF,
       tell: 'It clears a throat it does not have. A rule appears in the air beside it.',
       rule: 'no-running',
+      /**
+       * Haunt 2 (design doc §30, "Door Greeter occasionally announces One at a Time
+       * instead of only No Running"): it alternates between two different rules.
+       * Below Haunt 2 the Greeter is a fixed lesson — you learn NO RUNNING once and
+       * play around it forever. From Haunt 2 the rule on the board is no longer
+       * predictable from the enemy alone; you have to read it every cycle, which is
+       * the whole point of the Foyer.
+       */
       effect(c) {
         const dmg = flag(c, 'reprimand', 6);
+        const alt = flag(c, 'altRules') && countMoves(c, 'mind-your-manners') % 2 === 1;
+        if (alt) {
+          announce(c, {
+            id: 'greeter-one-at-a-time', source: c.self.uid ?? c.self.id,
+            name: 'ONE AT A TIME',
+            text: 'Playing two Tricks of the same type in a row breaks the rule. '
+                + 'Reprimand: every enemy gains 6 Guard.',
+            when: 'cardPlayed', once: true,
+            broken: (rc) => {
+              const h = rc.cardsPlayedThisTurn || [];
+              return h.length >= 2 && h[h.length - 1]?.type === h[h.length - 2]?.type;
+            },
+            onBreak: (cc) => { for (const e of board(cc)) cc.block(e, 6); },
+          });
+          return;
+        }
         announce(c, {
           id: 'no-running', source: c.self.uid ?? c.self.id,
           name: 'NO RUNNING',
@@ -421,6 +461,11 @@ export const doorGreeter = {
   hauntScaling(level) {
     const h = hauntBase(level, 'normal');
     if (level >= 1) h.notes.push('Courage +8%.');
+    if (level >= 2) {
+      h.flags.altRules = true;
+      h.notes.push('Haunt 2: alternates ONE AT A TIME with NO RUNNING, so which rule is standing '
+        + 'is no longer predictable from the enemy alone (design doc §30).');
+    }
     if (level >= 8) {
       h.flags.reprimand = 8;
       h.notes.push('Haunt 8: Reprimand deals 8 instead of 6.');

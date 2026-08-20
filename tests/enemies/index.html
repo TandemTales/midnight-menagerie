@@ -45,6 +45,7 @@ function makeActor(def, hp) {
 }
 
 class MockCombat {
+  /** opts.haunt applies hauntScaling(level) flags+counters, exactly as buildEncounter does. */
   constructor(defs, seed, opts = {}) {
     this.rng = new RNG(seed);
     this.field = {};
@@ -58,6 +59,15 @@ class MockCombat {
     this.player = { id: 'player', name: 'Kid', hp: 80, maxHp: 80, block: 0, statuses: {}, damageTakenThisTurn: 0 };
     this.discard = [];
     this.actors = defs.map(d => makeActor(d, opts.hp?.[d.id] ?? d.hp[0]));
+    if (opts.haunt) {
+      for (const a of this.actors) {
+        const h = a.def.hauntScaling ? a.def.hauntScaling(opts.haunt) : null;
+        if (!h) continue;
+        Object.assign(a.flags, h.flags, opts.advanced ? h.advanced?.flags : null);
+        Object.assign(a.counters, h.counters, opts.advanced ? h.advanced?.counters : null);
+        if (h.hpMul) { a.maxHp = Math.round(a.maxHp * h.hpMul); a.hp = a.maxHp; }
+      }
+    }
     this.opts = opts;
     for (const a of this.actors) this.hook(a, 'onSpawn');
   }
@@ -1178,6 +1188,93 @@ head('5d. Declared statuses vs statuses actually applied');
     }
   }
   if (!undeclared) pass(`${declared} moves declare their statuses, and no move applies one it did not declare`);
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// 5e. THE HAUNT LADDER ACTUALLY RUNS
+// Every behavioural Haunt upgrade is a branch that only executes when its flag is set,
+// and nothing else in this suite sets one — every earlier section builds enemies at
+// Haunt 0. So the entire ascension ladder shipped untested, and a `rng` call that broke
+// nextMove purity at Haunt 4 sailed straight through. Run the whole roster at every
+// level, in both the normal and advanced encounter pools.
+// ═════════════════════════════════════════════════════════════════════════════
+head('5e. Every enemy at Haunt 0-10, normal and advanced pools');
+{
+  let crashes = 0, impure = 0, illegal = 0, ran = 0;
+  for (const def of ENEMY_LIST) {
+    for (let lvl = 0; lvl <= 10; lvl++) {
+      for (const advanced of [false, true]) {
+        const partners = ENEMY_LIST.filter(d => d.region === def.region && d.id !== def.id
+          && d.tier === def.tier).slice(0, 1);
+        const sim = new MockCombat([def, ...partners], `haunt:${def.id}:${lvl}:${advanced}`,
+          { haunt: lvl, advanced });
+        const a = sim.actors[0];
+        a.hp = a.maxHp = 100000;
+        try {
+          for (let t = 0; t < 14; t++) {
+            sim.playerTurn({ cards: 3, dmg: t % 3 === 0 ? 0 : 11 });
+            for (const x of sim.actors) { if (!x.despawned) { x.hp = x.maxHp; x.alive = true; } }
+            // purity under Haunt flags, which is where the rng-in-nextMove bug lived
+            const before = snapshot(a);
+            const id1 = a.def.nextMove(sim.ctx(a));
+            const id2 = a.def.nextMove(sim.ctx(a));
+            if (id1 !== id2) {
+              fail(`${def.id} @Haunt ${lvl}${advanced ? ' (advanced)' : ''}: nextMove not deterministic `
+                 + `(${id1} vs ${id2}) — the engine re-calls it on every intent refresh`);
+              impure++; break;
+            }
+            if (snapshot(a) !== before) {
+              fail(`${def.id} @Haunt ${lvl}: nextMove mutated state`); impure++; break;
+            }
+            if (!a.def.moves[id1]) {
+              fail(`${def.id} @Haunt ${lvl}: illegal move id '${id1}'`); illegal++; break;
+            }
+            sim.enemyTurn({ fail: () => {} });
+            sim.player.hp = sim.player.maxHp;
+          }
+          ran++;
+        } catch (err) {
+          fail(`${def.id} @Haunt ${lvl}${advanced ? ' (advanced)' : ''} threw: ${err && err.message}`);
+          crashes++;
+        }
+      }
+    }
+  }
+  if (!crashes && !impure && !illegal) {
+    pass(`${ran} enemy/Haunt/pool combinations ran clean — no crash, no impure nextMove, no illegal move id`);
+  }
+}
+
+head('5f. No Haunt level is a pure stat bump');
+{
+  // A level "has character" if some enemy changes behaviour there: a flag, a starting
+  // counter, or a move override. hpMul alone does not count -- Courage is the laziest
+  // ascension axis and the one the balance pass already ramps continuously.
+  const perLevel = {};
+  for (let lvl = 1; lvl <= 10; lvl++) {
+    const changes = [];
+    for (const def of ENEMY_LIST) {
+      if (!def.hauntScaling) continue;
+      const now = def.hauntScaling(lvl), prev = def.hauntScaling(lvl - 1);
+      const key = (h) => JSON.stringify([h.flags, h.counters, h.moves,
+        h.advanced?.flags, h.advanced?.counters]);
+      if (key(now) !== key(prev)) changes.push(def.id);
+    }
+    perLevel[lvl] = changes;
+  }
+  let bare = 0;
+  // Haunt 1 is deliberately exempt. All three region docs define it identically as the
+  // Courage calibration step (+8% ordinary / +6% Big Scare and boss), and it is the one
+  // level whose intended statement really is "the same fight, slightly tougher". Every
+  // level above it has to earn its place by changing behaviour.
+  for (let lvl = 2; lvl <= 10; lvl++) {
+    const n = perLevel[lvl].length;
+    if (!n) { fail(`Haunt ${lvl} changes no enemy behaviour — it is a pure Courage bump`); bare++; }
+    else log(`    Haunt ${String(lvl).padStart(2)}: ${String(n).padStart(2)} enem${n === 1 ? 'y' : 'ies'} change behaviour  `
+      + `${perLevel[lvl].slice(0, 6).join(', ')}${n > 6 ? ', …' : ''}`, 'dim');
+  }
+  log(`    Haunt  1: Courage only, by design (all three region docs define it that way).`, 'dim');
+  if (!bare) pass('every Haunt level from 2 to 10 changes how at least one enemy behaves');
 }
 
 // ═════════════════════════════════════════════════════════════════════════════

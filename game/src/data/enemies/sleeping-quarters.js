@@ -125,8 +125,9 @@ export const slipperSkitter = {
     const h = hauntBase(level, 'normal');
     if (level >= 1) h.notes.push('Courage +8%.');
     if (level >= 3) {
-      h.advanced.flags.startScurry = true;
-      h.notes.push('Haunt 3: begins advanced Scuffles with Scurry already active.');
+      h.flags.startScurry = true;
+      h.notes.push('Haunt 3: every Slipper Skitter begins with Scurry already up, not just those in '
+        + 'advanced Scuffles — your opening Attack is halved before you have done anything.');
     }
     return h;
   },
@@ -155,6 +156,16 @@ export const wardrobeGuest = {
     c.applyStatus(c.self, 'hidden', 1);
     // Nightlight Snuffer's Darkness makes hiding materially better.
     if (c.has('darkness', c.self) || field(c).darkness) c.block(c.self, 4);
+    /**
+     * Haunt 5 (design doc §48, "may hide another enemy with it"). It pulls the ally you
+     * were actually trying to kill into the wardrobe too. Below Haunt 5 the Guest's
+     * hiding cycle gives you a clean window on everything else in the room; from Haunt 5
+     * that window can close on the target that mattered, and Hidden is not a state you
+     * can simply out-damage.
+     */
+    if (!flag(c, 'hideAlly')) return;
+    const friend = allies(c).find(a => !c.has('hidden', a));
+    if (friend) c.applyStatus(friend, 'hidden', 1);
   },
 
   moves: {
@@ -167,7 +178,9 @@ export const wardrobeGuest = {
     'back-inside': {
       id: 'back-inside', name: 'Back Inside', intent: Intent.DEFEND, block: 7,
       tell: 'The doors pull shut from within.',
-      applies: [{ id: 'hidden', stacks: 1, to: 'self' }],
+      appliesFn: (c) => (flag(c, 'hideAlly') && allies(c).some(a => !c.has('hidden', a))
+        ? [{ id: 'hidden', stacks: 1, to: 'self' }, { id: 'hidden', stacks: 1, to: 'ally' }]
+        : [{ id: 'hidden', stacks: 1, to: 'self' }]),
       effect(c) { c.block(c.self, 7); wardrobeGuest.goHidden(c); },
     },
     rustle: {
@@ -195,8 +208,11 @@ export const wardrobeGuest = {
     if (level >= 1) h.notes.push('Courage +8%.');
     if (level >= 5) {
       h.flags.rustleBlock = 8;
+      h.flags.hideAlly = true;
       h.moves.rustle = { block: 8 };
-      h.notes.push('Haunt 5: Rustle grants 8 Guard instead of 5 while Hidden.');
+      h.notes.push('Haunt 5: Rustle grants 8 Guard instead of 5 while Hidden, and Back Inside now '
+        + 'takes an ally into the wardrobe with it (design doc §48) — your targeting window closes '
+        + 'on the enemy you actually wanted.');
     }
     return h;
   },
@@ -234,7 +250,25 @@ export const blanketCreeper = {
 
   onPlayerTurnEnd(c) {
     // One Layer per turn, at 10+ damage. Slow, deliberate, and completely readable.
-    if (cnt(c, 'layers') > 0 && dmgTaken(c) >= 10) addCnt(c, 'layers', -1, 9, 0);
+    if (cnt(c, 'layers') > 0 && dmgTaken(c) >= 10) {
+      addCnt(c, 'layers', -1, 9, 0);
+      mem(c).idleTurns = 0;
+      return;
+    }
+    /**
+     * Haunt 3 (design doc §48, "may restore a Layer if completely ignored for several
+     * turns"). Two consecutive turns without taking a single point and it folds a layer
+     * back on. Below Haunt 3 stripping Layers is monotonic, so you can chip it down at
+     * whatever pace you like; from Haunt 3 the work rots if you stop, and splitting
+     * attention between the Creeper and a second enemy costs you real progress.
+     */
+    if (!flag(c, 'relayer')) return;
+    if (dmgTaken(c) > 0) { mem(c).idleTurns = 0; return; }
+    mem(c).idleTurns = (mem(c).idleTurns || 0) + 1;
+    if (mem(c).idleTurns >= 2 && cnt(c, 'layers') < flag(c, 'layers', 3)) {
+      addCnt(c, 'layers', 1, flag(c, 'layers', 3));
+      mem(c).idleTurns = 0;
+    }
   },
 
   moves: {
@@ -272,6 +306,11 @@ export const blanketCreeper = {
   hauntScaling(level) {
     const h = hauntBase(level, 'normal');
     if (level >= 1) h.notes.push('Courage +8%.');
+    if (level >= 3) {
+      h.flags.relayer = true;
+      h.notes.push('Haunt 3: folds a Layer back on after two turns without taking damage '
+        + '(design doc §48) — progress rots if you look away.');
+    }
     if (level >= 6) {
       h.advanced.counters.layers = 4;
       h.advanced.flags.layers = 4;
@@ -327,6 +366,15 @@ export const nightlightSnuffer = {
         field(c).darkness = true;
         // The Snuffer itself never benefits from its own Darkness.
         for (const a of allies(c)) c.applyStatus(a, 'darkness', nightlightSnuffer.darknessPower(c));
+        /**
+         * Haunt 7 (design doc §48, "may extinguish a positive player battlefield effect").
+         * Snuffing now takes one of your buffs with the light. Below Haunt 7 you can set
+         * up through a Snuff freely; from Haunt 7 the Snuffer is on a four-turn clock
+         * against your own preparation, so when you spend a Power stops being free.
+         */
+        if (flag(c, 'snuffBuffs') && typeof c.removeBestStatus === 'function') {
+          c.removeBestStatus(c.player, { kind: 'buff' });
+        }
       },
     },
     'hot-wick': {
@@ -354,7 +402,9 @@ export const nightlightSnuffer = {
     if (level >= 1) h.notes.push('Courage +8%.');
     if (level >= 7) {
       h.flags.darknessPower = 3;
-      h.notes.push('Haunt 7: Darkness grants 3 additional attack damage instead of 2.');
+      h.flags.snuffBuffs = true;
+      h.notes.push('Haunt 7: Darkness grants 3 additional attack damage instead of 2, and Snuff '
+        + 'puts out one of your own positive effects (design doc §48).');
     }
     return h;
   },
@@ -391,6 +441,17 @@ export const thingBeneath = {
 
   onPlayerTurnStart(c) { mem(c).interruptedThisTurn = false; },
 
+  /** Decide, once, whether the next full-Scare cycle holds back a turn. Haunt 4+. */
+  rollDelay(c) {
+    if (!flag(c, 'delayScare')) { mem(c).willDelay = false; return; }
+    if (cnt(c, 'scare') < thingBeneath.maxScare(c)) return;
+    if (mem(c).delayRolled) return;
+    mem(c).delayRolled = true;
+    mem(c).willDelay = c.rng.chance(0.5);
+  },
+
+  onSpawn(c) { mem(c).delayRolled = false; mem(c).willDelay = false; },
+
   onPlayerTurnEnd(c) {
     // "If Thing Beneath loses at least 15 Courage during a single player turn, remove 1 Scare."
     if (!mem(c).interruptedThisTurn && dmgTaken(c) >= 15) {
@@ -403,29 +464,69 @@ export const thingBeneath = {
     'scratch-scratch': {
       id: 'scratch-scratch', name: 'Scratch Scratch', intent: Intent.DEFEND, block: 7,
       tell: 'Something under the bed goes very still, then starts scratching.',
-      effect(c) { addCnt(c, 'scare', 1, thingBeneath.maxScare(c)); c.block(c.self, 7); },
+      effect(c) {
+        addCnt(c, 'scare', 1, thingBeneath.maxScare(c));
+        c.block(c.self, 7);
+        thingBeneath.rollDelay(c);
+      },
     },
     'grab-an-ankle': {
       id: 'grab-an-ankle', name: 'Grab an Ankle', intent: Intent.ATTACK, damage: 6, hits: 1,
       tell: 'A hand closes around your ankle, just for a moment.',
-      effect(c) { hitPlayer(c, 6); addCnt(c, 'scare', 1, thingBeneath.maxScare(c)); },
+      effect(c) { hitPlayer(c, 6); addCnt(c, 'scare', 1, thingBeneath.maxScare(c)); thingBeneath.rollDelay(c); },
+    },
+    loom: {
+      id: 'loom', name: 'Not Yet', intent: Intent.DEFEND, block: 7,
+      tell: 'It is ready. It is not coming out. Not this turn.',
+      effect(c) { c.block(c.self, 7); mem(c).willDelay = false; },
     },
     'under-the-bed': {
       id: 'under-the-bed', name: 'UNDER THE BED', intent: Intent.ATTACK_BIG, damage: 8, hits: 1,
       tell: 'Every noise in the room stops at once.',
       damageFn: (c) => 8 + 6 * thingBeneath.projectedScare(c),
-      effect(c) { hitPlayer(c, 8 + 6 * cnt(c, 'scare')); setCnt(c, 'scare', 0); },
+      effect(c) {
+        hitPlayer(c, 8 + 6 * cnt(c, 'scare'));
+        setCnt(c, 'scare', 0);
+        mem(c).delayRolled = false;
+        mem(c).willDelay = false;
+      },
     },
   },
 
-  nextMove: (c) => cyc(
-    ['scratch-scratch', 'grab-an-ankle', 'scratch-scratch', 'under-the-bed'],
-    (c.history || []).length,
-  ),
+  nextMove(c) {
+    const planned = cyc(
+      ['scratch-scratch', 'grab-an-ankle', 'scratch-scratch', 'under-the-bed'],
+      (c.history || []).length,
+    );
+    /**
+     * Haunt 4 (design doc §48, "may delay UNDER THE BED for one turn, creating
+     * uncertainty about when the scare arrives"). Below Haunt 4 the countdown is a
+     * metronome: you know the exact turn and can pre-build the exact answer. From Haunt 4
+     * it will sometimes hold at maximum Scare and scratch for one more turn instead,
+     * banking nothing but forcing you to hold your defensive turn open. The delay only
+     * happens at full Scare and never twice running, so it is uncertainty with a
+     * ceiling — you always know it is coming and you always know how big.
+     *
+     * The coin is flipped in the effect that banks the final Scare, never here:
+     * nextMove is re-called every time the intent refreshes, so drawing from the rng
+     * inside it would both desync the run seed and make the telegraph flicker between
+     * "Not Yet" and UNDER THE BED while the player watched.
+     */
+    if (planned === 'under-the-bed' && flag(c, 'delayScare')
+        && mem(c).willDelay && lastMove(c) !== 'loom') {
+      return 'loom';
+    }
+    return planned;
+  },
 
   hauntScaling(level) {
     const h = hauntBase(level, 'normal');
     if (level >= 1) h.notes.push('Courage +8%.');
+    if (level >= 4) {
+      h.flags.delayScare = true;
+      h.notes.push('Haunt 4: at full Scare it may hold UNDER THE BED back a turn (design doc §48). '
+        + 'You still know how big it is, but no longer exactly when.');
+    }
     if (level >= 8) {
       h.flags.maxScare = 4;
       h.notes.push('Haunt 8: can hold 4 Scare, so UNDER THE BED reaches 32. The player gets an extra visual warning at 4.');

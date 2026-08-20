@@ -1128,7 +1128,12 @@ export class Hand {
         return;
       }
     }
-    this.bus.emit('card:play', { cardUid: slot.card.uid, cardId: slot.card.def.id, targetId });
+    this.bus.emit('card:play', {
+      cardUid: slot.card.uid, cardId: slot.card.def.id,
+      // `type` matters: the audio bus picks attack/skill/power from it, and without
+      // it every card played the skill cue.
+      type: slot.card.def.type, targetId,
+    });
     this._animatePlay(slot, targetId);
   }
 

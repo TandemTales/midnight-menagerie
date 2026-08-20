@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T14:15:43",
+ "updated": "2026-08-20T14:28:54",
  "wave": 3,
  "waveLabel": "Closing the seams",
  "headline": "A full playthrough found that every module passes its own tests and silently no-ops at the join. Fixing that class of bug.",
@@ -45,9 +45,9 @@
    "id": "scene",
    "name": "Combat presentation",
    "desc": "Battlefield staging, enemy rigs, damage numbers, hit reactions, VFX",
-   "status": "reviewing",
+   "status": "done",
    "round": 3,
-   "verdict": "Intent tooltips fixed, one grammar across 16 types, 7 distinct Foyer rooms plus a boss arena, enter-to-first-card 1781ms to ~1000ms, keyboard path live.",
+   "verdict": "Intent tooltips, one grammar across 16 types, 7 distinct rooms plus a boss arena, ~1s to first card, full keyboard path.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -93,9 +93,9 @@
    "id": "meta",
    "name": "Run layer",
    "desc": "Rewards, shops, rest, Curiosities, Keepsakes, Backpack",
-   "status": "reviewing",
+   "status": "done",
    "round": 3,
-   "verdict": "Mid-combat resume by deterministic replay with digest verification and a self-healing fallback. Stats fixed, 54 Curiosity affordances rewritten, Snack prices tiered.",
+   "verdict": "Mid-combat resume by verified replay, stats fixed, 54 Curiosity affordances rewritten, Snack prices tiered.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -414,6 +414,10 @@
   {
    "t": "2026-08-20T14:15:43",
    "msg": "Haunt scaling had no continuous axis: hpMul was applied once at level 1 and never again, so Haunt 20 fielded the same Courage as Haunt 1."
+  },
+  {
+   "t": "2026-08-20T14:28:54",
+   "msg": "Loose ends cleared across seven owners. Found in passing: every card was playing the skill sound, because the two card:play emitters carried different payloads."
   }
  ]
 }

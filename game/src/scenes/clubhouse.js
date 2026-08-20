@@ -422,7 +422,7 @@ export class ClubhouseScene extends Scene {
       <dl class="chalk__dl">
         <dt>Expeditions</dt><dd>${st.runs ?? 0}</dd>
         <dt>Made it out</dt><dd>${st.wins ?? 0}</dd>
-        <dt>Deepest floor</dt><dd>${st.bestFloor ?? 0}</dd>
+        <dt>Deepest room</dt><dd>${st.bestFloor ?? 0}</dd>
         <dt>${TERMS.card}s played</dt><dd>${st.cardsPlayed ?? 0}</dd>
         <dt>Damage dealt</dt><dd>${st.damageDealt ?? 0}</dd>
       </dl>`;
