@@ -1150,10 +1150,14 @@
 
 /* ── Big Scare: staged, lit, a step back from the intimate framing ──────── */
 .cb-root[data-arena="elite"] .cb-arena { opacity: .85; }
+/* The field is opened up and the cap is set so the STAGE PLUS THE NAME PLATE
+   still land above the top edge of the hand. Round 1 let a 1.6-scale Grand
+   Coatcheck push its own name and Courage bar underneath the cards. */
 .cb-root[data-arena="elite"] .cb-enemy__stage {
-  --e-h: min(calc(300px * var(--e-scale)), calc(100vh - 455px));
+  --e-h: min(calc(320px * var(--e-scale)), calc(100vh - 500px));
 }
-.cb-root[data-arena="elite"] .cb-field { top: 54px; }
+.cb-root[data-arena="elite"] .cb-field { top: 72px; bottom: 32%; }
+.cb-root[data-arena="elite"] .cb-enemies { padding-top: 88px; }
 
 /* ── the boss owns the frame ────────────────────────────────────────────── */
 .cb-root[data-arena="boss"] .cb-arena { opacity: 1; }
@@ -1164,14 +1168,14 @@
     transparent 74%);
 }
 .cb-root[data-arena="boss"] .cb-field {
-  top: 48px; bottom: 36%;
+  top: 48px; bottom: 33%;
 }
 /* THE size change. A 1.5-scale boss was capped to the same ~340px as a trash
    mob because the cap was written for a four-up formation. A boss is alone. */
 /* Sized so the stage AND the name plate fit inside the field: the field is
    (100vh - 48 - 33%) tall, less the intent stack's 96px and the plate's ~44. */
 .cb-root[data-arena="boss"] .cb-enemy__stage {
-  --e-h: min(calc(430px * var(--e-scale)), calc(100vh - 505px));
+  --e-h: min(calc(430px * var(--e-scale)), calc(100vh - 480px));
   width: clamp(calc(150px * var(--e-scale)),
                calc(var(--e-h) * var(--e-aspect)),
                min(560px, 40vw));

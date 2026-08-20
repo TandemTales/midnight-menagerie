@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T13:04:42",
+ "updated": "2026-08-20T13:33:22",
  "wave": 3,
  "waveLabel": "Closing the seams",
  "headline": "A full playthrough found that every module passes its own tests and silently no-ops at the join. Fixing that class of bug.",
@@ -45,10 +45,10 @@
    "id": "scene",
    "name": "Combat presentation",
    "desc": "Battlefield staging, enemy rigs, damage numbers, hit reactions, VFX",
-   "status": "rework",
-   "round": 2,
-   "verdict": "Full StS2 layout, 16 intent types, 24 procedural enemy rigs, honest uncertainty previews, 61fps, zero console errors.",
-   "gap": "No intent tooltips despite the engine supplying them; 6-7 second load into every Scuffle; every room in the region including the boss uses one identical backdrop; no keyboard path.",
+   "status": "reviewing",
+   "round": 3,
+   "verdict": "Intent tooltips fixed, one grammar across 16 types, 7 distinct Foyer rooms plus a boss arena, enter-to-first-card 1781ms to ~1000ms, keyboard path live.",
+   "gap": null,
    "builder": null,
    "critic": null,
    "log": []
@@ -93,10 +93,10 @@
    "id": "meta",
    "name": "Run layer",
    "desc": "Rewards, shops, rest, Curiosities, Keepsakes, Backpack",
-   "status": "rework",
-   "round": 2,
-   "verdict": "Run layer complete: 33 Keepsakes, 16 Curiosities, 18 Gear, four node scenes. 50 seeded runs, 0 errors, determinism and resume verified.",
-   "gap": "Quitting mid-Scuffle and resuming skips the fight for free: the node is marked visited with full Courage and no reward.",
+   "status": "reviewing",
+   "round": 3,
+   "verdict": "Mid-combat resume by deterministic replay with digest verification and a self-healing fallback. Stats fixed, 54 Curiosity affordances rewritten, Snack prices tiered.",
+   "gap": null,
    "builder": null,
    "critic": null,
    "log": []
@@ -382,6 +382,22 @@
   {
    "t": "2026-08-20T13:04:42",
    "msg": "Boss now has its own arena: Receiving Chamber, distinct palette, the Butler large and centred."
+  },
+  {
+   "t": "2026-08-20T13:14:16",
+   "msg": "Resume exploit closed: rooms are now entered on the way in and cleared only when they resolve. Replay verified against a board digest before it is trusted."
+  },
+  {
+   "t": "2026-08-20T13:14:16",
+   "msg": "Notes split into one file per agent: two agents had lost sections to concurrent writes on the shared file."
+  },
+  {
+   "t": "2026-08-20T13:33:22",
+   "msg": "Combat scene round 2: the intent tooltip was printing escaped HTML as visible text and dismissing itself on the first pixel of movement - a shared-tooltip API trap, now documented in the file."
+  },
+  {
+   "t": "2026-08-20T13:33:22",
+   "msg": "Fight opening was animating behind the transition veil because scenes await enter() before revealing. 1781ms of black screen before the first card; now ~1000ms."
   }
  ]
 }

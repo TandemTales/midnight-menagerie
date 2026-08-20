@@ -6,7 +6,15 @@ import { bus } from './bus.js';
 
 export class Scene {
   constructor(ctx) { this.ctx = ctx; this.root = null; this.group = null; }
-  /** Build DOM/3D. Return a promise if async assets are needed. */
+  /**
+   * Build DOM/3D. Return a promise if async assets are needed.
+   *
+   * IMPORTANT: `go()` awaits this BEFORE lifting the transition veil, so anything you
+   * await here happens behind a black screen and the player just waits. Put *construction*
+   * here and resolve as soon as the board is built; kick opening animations off afterwards
+   * without awaiting them. Combat originally awaited its whole opening sequence here and
+   * cost 1.8s of black screen before the first card appeared.
+   */
   async enter(params) {}
   /** Called every frame while active. */
   update(dt, t) {}

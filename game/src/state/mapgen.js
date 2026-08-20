@@ -401,6 +401,12 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
   //     no wider than itself is FORCED to leave a room on a single exit, so the
   //     wing holds its width for as long as the plan can afford to.
   const wantAt = (r) => {
+    // The boss's door.  Three, so the trim below leaves four: narrowing it
+    // further to three would make the band into it 3 -> 3, and by the theorem
+    // above that FORCES a single-exit room where there was none (measured:
+    // single-exit rooms 19.7% -> 21.8% across 24 sheets).  Four ways to the
+    // boss, every one of them the guaranteed Safe Room.
+    if (r === lastWalk) return 3;
     if (r >= lastWalk - 1) return 2;
     if (r === 0) return 3;
     if (r === lastWalk - 2) return 3;

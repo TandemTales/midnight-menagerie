@@ -60,6 +60,21 @@
  * panel fits in the viewport at all and (b) how much of the anchor's own
  * `avoid` set it would occlude. It always sits fully outside the anchor rect.
  */
+/**
+ * NOTE ON THE API SHAPE — read before calling.
+ *
+ * `show(anchor, value)` ESCAPES a string value. Passing HTML gives you visible markup
+ * on screen, not rendered markup. Pass a **descriptor object** instead.
+ *
+ * And the document-level `pointerover` handler hides the panel over any unregistered
+ * descendant, so a hover target that contains child elements (an SVG glyph, an icon)
+ * will dismiss its own tooltip the moment the pointer moves inside it. For those, use
+ * `attach(el, descriptorOrFn)`, which registers the subtree.
+ *
+ * Together these two behaviours made the documented `show(el, html)` call produce
+ * markup-as-text that then vanished on the first pixel of movement. That cost the
+ * combat scene an entire round to diagnose, so it is written down here.
+ */
 
 import { getKeyword, allKeywords, slug, loadCompanionKeywords, loadContentRegistries } from '../data/keywords.js';
 import { getStatus, allStatuses, statusDesc } from '../data/statuses.js';

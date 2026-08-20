@@ -200,6 +200,8 @@ export function hazardSymbol(glyph, size = 16) {
   return `<svg class="mn-hz" viewBox="0 0 16 16" width="${size}" height="${size}"
     aria-hidden="true" focusable="false">${HG[glyph] || HG.beam}</svg>`;
 }
+/** The same mark's raw paths, for drawing straight into another SVG (0 0 16 16). */
+export function hazardGlyphMarkup(glyph) { return HG[glyph] || HG.beam; }
 
 // ── the node button ──────────────────────────────────────────────────────────
 /**
@@ -208,7 +210,7 @@ export function hazardSymbol(glyph, size = 16) {
  * @param {object} node  MapNode from mapgen
  * @param {object} info  NODE_INFO[type]
  */
-export function createMapNode(node, info) {
+export function createMapNode(node, info, hazardName = '') {
   const el = document.createElement('button');
   el.type = 'button';
   el.className = `map-node map-node--${node.type}`;
@@ -218,8 +220,10 @@ export function createMapNode(node, info) {
   el.dataset.col = String(node.col);
   if (node.hazard) el.dataset.hazard = node.hazard;
   el.tabIndex = -1;
+  // The wing condition is named here too: the plan itself now carries only the
+  // wing's keyed symbol, and a symbol is not a thing a screen reader can key.
   el.setAttribute('aria-label',
-    `${node.roomName || info.label}. ${info.label}. Row ${node.row + 1}.`);
+    `${node.roomName || info.label}. ${info.label}.${hazardName ? ` In ${hazardName}.` : ''} Row ${node.row + 1}.`);
 
   const s = seedOf(node.id);
   const big = node.type === NodeType.BOSS;

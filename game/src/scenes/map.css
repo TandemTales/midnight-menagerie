@@ -201,12 +201,18 @@
   fill: none; stroke: currentColor; stroke-width: 3;
   stroke-dasharray: 18 11; opacity: .6;
 }
-.mi-zone-tab rect { fill: currentColor; opacity: .82; }
-.mi-zone-stem { stroke: currentColor; stroke-width: 3; opacity: .7; }
-.mi-zone-tab text {
-  font-family: var(--font-display); font-size: 19px; font-weight: 600;
-  letter-spacing: .12em; fill: var(--parchment);
+/* The wing's keyed symbol.  Same mark as the bar's note wears, so the plan and
+   the margin legend read as one thing. */
+.mi-zone-key circle {
+  fill: currentColor; opacity: .92;
+  stroke: var(--parchment); stroke-width: 2.4; paint-order: stroke;
 }
+.mi-zone-lead { stroke: currentColor; stroke-width: 3; stroke-dasharray: 7 5; opacity: .7; }
+.mi-zone-glyph .s {
+  fill: none; stroke: var(--parchment); stroke-width: 1.9;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.mi-zone-glyph .f { fill: var(--parchment); }
 .map-screen[data-hz-focus] .mi-zone { opacity: .3; }
 .map-screen[data-hz-focus] .mi-zone[data-hz] { transition: opacity var(--t-quick); }
 .map-screen[data-hz-focus="lights-out"]   .mi-zone[data-hz="lights-out"],
@@ -292,11 +298,15 @@
 
 .mn-label {
   /* clear of the pencil ring: the ring's lower arc reaches ~98% of the box and
-     was sitting straight through the room's name */
-  position: absolute; top: calc(100% + 3px); left: 50%;
+     was sitting straight through the room's name.
+     --mn-dy is written by the scene's collision pass (`_layoutLabels`): a chip
+     that would land on a neighbouring mark is nudged down or flipped above its
+     own.  Zero for almost every chip on almost every sheet. */
+  position: absolute; top: calc(100% + 3px + var(--mn-dy, 0px)); left: 50%;
   transform: translateX(-50%);
   font-family: var(--font-body); font-size: 16.5px; font-weight: 600;
   letter-spacing: .01em; white-space: nowrap; line-height: 1.15;
+  max-width: 244px; overflow: hidden; text-overflow: ellipsis;
   color: color-mix(in srgb, var(--ink) 88%, var(--ink-900));
   background: color-mix(in srgb, var(--parchment) 95%, #fff);
   padding: 1px 10px 3px; border-radius: 3px;
@@ -352,6 +362,12 @@
 .map-node.is-current .mn-label,
 .map-node--boss .mn-label,
 .map-screen.is-close .map-node:not(.is-cold) .mn-label { opacity: 1; }
+/* The collision pass could not find clear paper for this one. Dropping a
+   low-priority name is better than printing two on top of each other; the
+   full name is one hover away either way. Must out-rank the is-close rule
+   above, hence the matching specificity and the later position. */
+.map-screen .map-node.lab-off .mn-label,
+.map-screen.is-close .map-node.lab-off .mn-label { opacity: 0; }
 .map-node.is-legal:hover, .map-node.is-kbd {
   filter: drop-shadow(0 0 24px color-mix(in srgb, var(--flame-glow) 62%, transparent));
 }

@@ -22,7 +22,7 @@ import { RNG } from '../core/rng.js';
 import { CombatEngine } from '../combat/engine.js';
 import { makeDummyCombat } from '../combat/dummy.js';
 import { previewIncoming } from '../combat/preview.js';
-import { Intent, TERMS } from '../data/schema.js';
+import { TERMS } from '../data/schema.js';
 import { Hand } from '../ui/hand.js';
 import { CardView, ART_W, ART_H, CARD_SS } from '../ui/card.js';
 import { warmArt } from '../ui/cardart.js';
@@ -183,12 +183,40 @@ export class CombatScene extends Scene {
     // never touched the keyboard is worse than the problem it solves.
   }
 
+  /**
+   * Resolve once the scene manager has finished its reveal, so a boss entrance
+   * is not played behind the curtain. Capped, because a missing transition or a
+   * queued `go()` must never leave the fight unstarted.
+   */
+  _untilRevealed() {
+    const scenes = this.ctx.scenes;
+    if (!scenes || !scenes.busy) return Promise.resolve();
+    return new Promise((resolve) => {
+      const t0 = performance.now();
+      const off = this.ctx.clock.onFrame(() => {
+        if (!scenes.busy || performance.now() - t0 > 1600) { off(); resolve(); }
+      });
+    });
+  }
+
   /** The fight's opening, played AFTER the transition veil lifts. */
   async _begin() {
     try {
-      if (this.arena === 'boss' || this.arena === 'elite') await this._arenaEntrance();
+      const resumed = this.engine.started;
+      if (!resumed && (this.arena === 'boss' || this.arena === 'elite')) {
+        // An entrance nobody sees is not an entrance. `core/scenes.js` reveals
+        // AFTER `enter()` returns, so wait for the veil to finish lifting
+        // before the boss rises. Ordinary Scuffles do not wait — their opening
+        // banner reads perfectly well through the last of the fade.
+        await this._untilRevealed();
+        if (!this.engine) return;
+        await this._arenaEntrance();
+      }
       if (!this.engine) return;
-      await this.engine.startCombat();
+      // `startCombat()` returns [] on an already-started engine; calling it on a
+      // resumed fight is harmless but the settle still has to run so the board
+      // matches the restored state.
+      if (!resumed) await this.engine.startCombat();
       await this._settle();
     } catch (e) {
       if (this.engine) console.error('[combat] startCombat', e);
@@ -317,7 +345,14 @@ export class CombatScene extends Scene {
     }
 
     const seed = Number(params.seed ?? ctx.run?.seed ?? 42) || 42;
-    const rng = ctx.run?.rng || new RNG(seed);
+    /* FORK, never the run's own stream. Drawing straight from `ctx.run.rng`
+       advances the run's sequence by however many rolls this fight happens to
+       need, so the same seed stops reproducing the same run the moment anyone
+       deep-links a combat. `RNG#fork` gives a stream derived from the seed and
+       a label, which is stable and independent. */
+    const rng = (ctx.run && typeof ctx.run.fork === 'function')
+      ? ctx.run.fork(`combat:deeplink:${params.node ?? params.encounter ?? seed}`)
+      : new RNG(seed);
     this.companion = params.companion || ctx.run?.companion || 'marmalade';
     this.region = params.region || ctx.run?.region || 'foyer';
 
@@ -651,6 +686,18 @@ export class CombatScene extends Scene {
         .filter(v => v.alive && !v.dying)
         .map(v => ({ id: v.id, el: v.$stage })),
     });
+    /* RESUME. The hand is normally filled by `draw` events, which a resumed
+       engine has already emitted and will never emit again — so a restored
+       mid-combat save rendered an empty hand while the engine held five cards.
+       Seed from the pile when the fight is already under way. `engine.started`
+       is the flag; a fresh engine is false here and draws normally. */
+    if (this.engine.started && !this.engine.over) {
+      const held = (this.engine.piles && this.engine.piles.hand) || [];
+      if (held.length) {
+        this.hand.setCards(held.map(c => this._handCard(this.engine.cardSnap(c))));
+        this._opening = false;              // a resumed fight is not opening
+      }
+    }
     this._syncHandPlayability();
     this._updatePilePositions();
 
@@ -769,40 +816,29 @@ export class CombatScene extends Scene {
    * ordinary choice broker for targeting, an `onSnackUsed` hook, and a
    * `snack:used` event emitted BEFORE anything lands so the eat animates first.
    *
-   * Still ours, because it is inventory and not rules: taking the Snack off the
-   * run. `Run.useSnack(index)` does not exist yet (asked for in docs/NOTES.md);
-   * until it does, `_consumeSnack` splices. It runs only if the engine actually
-   * emitted `snack:used` — a Snack cancelled at its target picker is not spent.
+   * Inventory is `Run.useSnack(index, targetId)`, which takes the Snack off the
+   * run and forwards to the engine — so this scene no longer splices an array
+   * either. Without a run (a deep-linked Scuffle) the engine is called direct.
    */
   async _useSnack(index, snack) {
     if (!this.engine || this._resolving || this._snacking) return;
-    const chk = this.engine.canUseSnack(snack, null);
+    const run = this.ctx.run;
+    const chk = run && typeof run.canUseSnack === 'function'
+      ? run.canUseSnack(index, null)
+      : this.engine.canUseSnack(snack, null);
     if (!chk.ok) { this._deny(chk.reason); return; }
 
     this._snacking = true;
-    let events = [];
     try {
-      events = await this.engine.useSnack(snack, null);
+      if (run && typeof run.useSnack === 'function') await run.useSnack(index, null);
+      else await this.engine.useSnack(snack, null);
     } catch (e) {
       console.error('[combat] useSnack', e);
     } finally {
       this._snacking = false;
     }
-    if (events.some(e => e.type === 'snack:used')) this._consumeSnack(index, snack);
     await this._settle();
-    if (this.engine) this._syncEndTurn();
-  }
-
-  /** Take the Snack off the run and tell the HUD. */
-  _consumeSnack(index, snack) {
-    const run = this.ctx.run;
-    const list = run?.snacks;
-    if (!Array.isArray(list)) return;
-    const at = list[index] === snack ? index : list.indexOf(snack);
-    if (at < 0) return;
-    list.splice(at, 1);
-    run.save();
-    this.ctx.bus.emit('run:potion', { used: snack });
+    if (this.engine) { this.hud.refresh(); this._syncEndTurn(); }
   }
 
   /* ══ player choice ══════════════════════════════════════════════════════ */

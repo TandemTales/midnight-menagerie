@@ -18,7 +18,7 @@ import {
   generateRegionMap, regionMeta, blueprintPlan,
   NODE_INFO, sceneForNode, legalNextIds, reachableFrom, hazardById,
 } from '../state/mapgen.js';
-import { createMapNode, nodeSymbol, hazardSymbol, inkLine, seedOf, escapeHtml } from '../ui/mapnode.js';
+import { createMapNode, nodeSymbol, hazardSymbol, hazardGlyphMarkup, inkLine, seedOf, escapeHtml } from '../ui/mapnode.js';
 import { HUD } from '../ui/hud.js';
 import { pauseStageFor } from './_stage.js';
 
@@ -34,6 +34,10 @@ const SHEET_H = 1010, SHEET_W = 2030;
 const WIN = { x: 74, y: 60, w: SHEET_W - 148, h: 776 };
 const NODE_R  = 44;
 const BOSS_R  = 78;
+/** Mark box sizes, mirrored from ui/mapnode.js — the label pass needs them. */
+const NODE_BOX = 86, BOSS_BOX = 156;
+/** Height of a name chip in unscaled sheet px (16.5px/1.15 + 4px padding). */
+const LABEL_H = 23;
 const CSS_HREF = 'src/scenes/map.css';
 
 const ROMAN = ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII'];
@@ -193,10 +197,16 @@ export class MapScene extends Scene {
           <div class="bn-body">
             <h1>${escapeHtml(meta.name)}</h1>
             <p class="bn-form">${escapeHtml(meta.form)}</p>
+            <!-- Two halves of ONE address, written the same way on purpose:
+                 which wing of the house you are in, and how far into it you
+                 have walked.  A playtester read "Wing 1 of 17" and "row 2 of
+                 13" as two unrelated facts, so they now share capitalisation,
+                 weight and the "N of M" shape, and the hover on either one
+                 explains the pair. -->
             <p class="bn-meta">
-              <span title="The house has seventeen wings. This is the ${ordinal(m.floor)}.">Wing <b>${m.floor}</b> of 17</span>
+              <span title="The house has seventeen wings. This is the ${ordinal(m.floor)}. The second number is how far into this wing you have walked.">Wing <b>${m.floor}</b> of 17</span>
               <span class="dot">·</span>
-              <span class="bn-row" title="Each wing is ${m.map.rows} rows deep. This is how far into this one you have walked."></span>
+              <span class="bn-row" title="This wing is ${m.map.rows} rows deep, door to boss. The first number is which of the seventeen wings you are in."></span>
               <span class="dot">·</span>
               <span>Boss: <b>${escapeHtml(meta.boss)}</b></span>
             </p>
@@ -547,32 +557,59 @@ export class MapScene extends Scene {
     </defs>`);
 
     // hazard wings, under the route
+    //
+    // The wing used to be labelled with its full name on a banner inside the top
+    // edge of its boundary.  On a plan this dense that banner is 300px of solid
+    // ink laid across two and a half rows of rooms, and it landed squarely on
+    // the icons of the rooms it was warning about — the playtester's report, and
+    // measured: five marks covered, one of them by 2,200 square pixels.  There
+    // is nowhere on this drawing a 300px banner fits: rows are 125px apart and a
+    // mark is 106px wide, so the clear paper between them is nineteen pixels.
+    //
+    // So the plan is now keyed the way a real drawing is keyed: the wing carries
+    // its SYMBOL, and the margin carries the legend.  The symbol is the same one
+    // the bar's note wears, so the two read as one thing, and the full name and
+    // rule are on the note, on every affected room's hover card, and announced
+    // in the node's aria-label.  The roundel is 40px and it is placed by
+    // measuring — four corners just outside the boundary, scored against every
+    // mark on the sheet, least-covered wins.
+    const marks = map.nodes.map((n) => {
+      const hx = (n.type === NodeType.BOSS ? 86 : 58);
+      return { left: n.x * this.SW - hx, right: n.x * this.SW + hx,
+               top: n.y * this.SH - hx, bottom: n.y * this.SH + hx };
+    });
+    const KEY = 40;
     parts.push('<g class="mi-zones">');
-    const TAB_H = 34;
     for (const hz of map.hazards) {
       const x = hz.rect.x0 * this.SW, y = hz.rect.y0 * this.SH;
       const w = (hz.rect.x1 - hz.rect.x0) * this.SW, h = (hz.rect.y1 - hz.rect.y0) * this.SH;
       const s = seedOf(hz.id + map.regionId);
-      // The wing's name tag used to sit INSIDE the rectangle, 8px down from its
-      // top edge — which on a wing whose first room is near the top-left corner
-      // is directly over that room's mark.  A hazard banner covering the icon of
-      // the room it is warning you about is the whole warning wasted.  The tag
-      // now hangs off the outside of the boundary: above it by preference, below
-      // it when the wing is already hard against the top of the plan window.
-      // Either way it is clear of every node in the wing by construction, since
-      // mapgen keeps the boundary a full mark's radius clear of its members.
-      const tw = 28 + hz.name.length * 15.4;
-      const above = y - TAB_H - 6 >= WIN.y + 4;
-      const ty = above ? y - TAB_H - 6 : y + h + 6;
-      const tx = clampN(x + 14, WIN.x + 6, Math.max(WIN.x + 6, WIN.x + WIN.w - tw - 6));
+      let best = null;
+      for (const [kx, ky] of [[x - KEY - 4, y - KEY - 4], [x + w + 4, y - KEY - 4],
+                              [x - KEY - 4, y + h + 4], [x + w + 4, y + h + 4],
+                              [x - KEY - 4, y + h / 2 - KEY / 2], [x + w + 4, y + h / 2 - KEY / 2]]) {
+        const px = clampN(kx, WIN.x + 4, WIN.x + WIN.w - KEY - 4);
+        const py = clampN(ky, WIN.y + 4, WIN.y + WIN.h - KEY - 4);
+        const box = { left: px, top: py, right: px + KEY, bottom: py + KEY };
+        let c = 0;
+        for (const mk of marks) c += rectOverlap(box, mk);
+        if (!best || c < best.c) best = { px, py, c };
+        if (c === 0) break;
+      }
+      // a short leader from the roundel back to the nearest point on the boundary
+      const ax = best.px + KEY / 2, ay = best.py + KEY / 2;
+      const bx = clampN(ax, x, x + w), by = clampN(ay, y, y + h);
       parts.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
         <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="22"
               fill="url(#${hz.kind === 'boon' ? 'mm-dots' : 'mm-hatch'})"/>
         <path class="mi-zone-edge" d="${roundedWobbleRect(s, x, y, w, h, 22)}"/>
-        <g class="mi-zone-tab" transform="translate(${tx.toFixed(1)} ${ty.toFixed(1)})">
-          <path class="mi-zone-stem" d="M22 ${above ? TAB_H : 0} L22 ${above ? TAB_H + 6 : -6}"/>
-          <rect x="0" y="0" rx="4" width="${tw.toFixed(1)}" height="${TAB_H}"/>
-          <text x="14" y="24">${escapeHtml(hz.name.toUpperCase())}</text>
+        <g class="mi-zone-key">
+          <path class="mi-zone-lead" d="M${ax.toFixed(1)} ${ay.toFixed(1)} L${bx.toFixed(1)} ${by.toFixed(1)}"/>
+          <circle cx="${ax.toFixed(1)}" cy="${ay.toFixed(1)}" r="${KEY / 2}"/>
+          <g class="mi-zone-glyph"
+             transform="translate(${(best.px + 8).toFixed(1)} ${(best.py + 8).toFixed(1)}) scale(1.5)">
+            ${hazardGlyphMarkup(hz.glyph)}
+          </g>
         </g>
       </g>`);
     }
@@ -630,13 +667,117 @@ export class MapScene extends Scene {
     const frag = document.createDocumentFragment();
     this._nodeEls = new Map();
     for (const n of m.map.nodes) {
-      const el = createMapNode(n, NODE_INFO[n.type]);
+      const hz = n.hazard ? hazardById(n.hazard) : null;
+      const el = createMapNode(n, NODE_INFO[n.type], hz ? hz.name : '');
       el.style.left = (n.x * this.SW) + 'px';
       el.style.top = (n.y * this.SH) + 'px';
       this._nodeEls.set(n.id, el);
       frag.appendChild(el);
     }
     this.el.nodes.appendChild(frag);
+
+    // One measuring pass for every name chip, read together so the browser does
+    // a single layout rather than sixty.  Widths never change after this: the
+    // text is fixed and the counter-scale is a transform.
+    this._labels = [];
+    for (const n of m.map.nodes) {
+      const el = this._nodeEls.get(n.id);
+      const lab = el.querySelector('.mn-label');
+      this._labels.push({ n, el, lab, box: n.type === NodeType.BOSS ? BOSS_BOX : NODE_BOX, w: 0 });
+    }
+    for (const L of this._labels) L.w = L.lab.offsetWidth || 120;
+  }
+
+  /**
+   * Keep the name chips off each other and off the marks.
+   *
+   * Lanes sit 129 sheet-px apart and a counter-scaled mark plus its name is
+   * ~125 of them, so a room's name lands on the next lane's icon the moment the
+   * lane jitter closes the gap — which is what put "Formal Dining R…" under the
+   * "Music Room" chip.  There is no CSS for this: it is a placement problem, so
+   * it gets solved as one, analytically, in sheet coordinates.
+   *
+   * Each visible chip tries a short ladder of vertical offsets (in place, a
+   * nudge down, flipped above the mark, further out) and takes the first that
+   * touches nothing.  Priority decides who gets the good slot: where you are
+   * standing, then the boss, then the rooms you may enter, then the rest.  Only
+   * the last group may be dropped, and only when nothing clears — a chip that
+   * cannot be read is worse than no chip.
+   *
+   * Runs on state changes and when the counter-scale steps, never per frame.
+   */
+  _layoutLabels() {
+    if (!this._labels) return;
+    const m = this.model;
+    const k = this._mnK || 1;
+    const close = this.el.screen.classList.contains('is-close');
+    const legal = new Set(this._legalIds || []);
+
+    const rank = (L) => {
+      if (L.n.id === m.currentId) return 0;
+      if (L.n.type === NodeType.BOSS) return 1;
+      if (legal.has(L.n.id)) return 2;
+      return 3;
+    };
+    const shown = this._labels.filter((L) => {
+      const r = rank(L);
+      if (r < 3) return true;
+      // matches the CSS: when zoomed in, everything except cut-off rooms
+      return close && !L.el.classList.contains('is-cold');
+    });
+    const shownSet = new Set(shown);
+
+    // The marks themselves are obstacles.  How big a mark is depends on what it
+    // is wearing: a room you may enter has the pencil ring round it and the ring
+    // is the "you may go here" signal, so nothing may touch it.  A quiet room is
+    // only its glyph, and a name chip tucked into the empty paper beside that
+    // glyph reads fine — treating every mark as ring-sized over-constrains the
+    // problem and leaves chips sitting on ink they could have avoided.
+    const discs = this._labels.map((L) => {
+      const lit = L.n.id === m.currentId || legal.has(L.n.id);
+      return {
+        cx: L.n.x * this.SW, cy: L.n.y * this.SH,
+        r: (L.n.type === NodeType.BOSS ? 74 : lit ? 44 : 30) * k,
+      };
+    });
+
+    const placed = [];
+    const boxOf = (L, dy) => {
+      const cx = L.n.x * this.SW, cy = L.n.y * this.SH;
+      const top = cy + (L.box / 2 + 3 + dy) * k;
+      const hw = (L.w / 2 + 4) * k, hh = LABEL_H * k;
+      return { left: cx - hw, right: cx + hw, top, bottom: top + hh };
+    };
+    const cost = (L, b) => {
+      let c = 0;
+      for (const p of placed) c += rectOverlap(b, p) * 4;
+      for (let i = 0; i < discs.length; i++) {
+        if (this._labels[i] !== L) c += discOverlap(b, discs[i]);
+      }
+      return c;
+    };
+
+    // `lab-off` means "the pass could not find clear paper", never "the CSS
+    // was going to hide this anyway" — otherwise the class stops meaning
+    // anything and the next person to read it is misled.
+    for (const L of this._labels) { L.dy = 0; L.off = false; }
+    for (const L of shown.sort((a, b) => rank(a) - rank(b))) {
+      const ladder = [0, 26, -(L.box + 26), 54, -(L.box + 54), 82, -(L.box + 82)];
+      let best = null;
+      for (const dy of ladder) {
+        const b = boxOf(L, dy);
+        const c = cost(L, b);
+        if (!best || c < best.c) best = { dy, c, b };
+        if (c === 0) break;
+      }
+      if (best.c > 0 && rank(L) === 3) { L.off = true; continue; }
+      L.dy = best.dy;
+      placed.push(best.b);
+    }
+    for (const L of this._labels) {
+      L.el.style.setProperty('--mn-dy', L.dy ? L.dy + 'px' : '0px');
+      L.el.classList.toggle('lab-off', !!L.off);
+    }
   }
 
   _buildMarginalia() {
@@ -655,11 +796,25 @@ export class MapScene extends Scene {
           </span>
         </button>`).join('')}` : '';
 
+    // The key is a key to THIS drawing, so it lists the marks that are actually
+    // on it.  All nine are real and distinct — measured across every region:
+    // an average sheet carries 22 Scuffles, 10 Curiosities, 8 Safe Rooms, 6
+    // Unsurveyed, 4 Big Scares, 3 Treasures, 2 of Mr. Moth's, a Rescue and the
+    // boss — but two of them are conditional.  Rescue only exists while that
+    // wing's Companion is still trapped (the Heart has none at all), and the
+    // Unsurveyed mark is genuinely its own thing rather than a second Curiosity:
+    // `run.js` resolves it on entry into a Curiosity, Scuffle, shop or Treasure,
+    // which is the whole point of it.  Printing a symbol for a room the player
+    // will not find on this sheet is the kind of small lie that makes a key
+    // untrustworthy, so the conditional ones drop out when they are not there.
     const order = [NodeType.SCUFFLE, NodeType.BIG_SCARE, NodeType.CURIOSITY, NodeType.TREASURE,
                    NodeType.SAFE, NodeType.SHOP, NodeType.RESCUE, NodeType.UNKNOWN, NodeType.BOSS];
+    const present = new Set(map.nodes.map(n => n.type));
     this.el.legend.innerHTML = `
       <span class="lg-h">Key</span>
-      ${order.map(t => `<span class="lg-i"><span class="lg-ico">${nodeSymbol(t, 19)}</span>${NODE_INFO[t].label}</span>`).join('')}`;
+      ${order.filter(t => present.has(t))
+             .map(t => `<span class="lg-i"><span class="lg-ico">${nodeSymbol(t, 19)}</span>${escapeHtml(NODE_INFO[t].label)}</span>`)
+             .join('')}`;
   }
 
   // ────────────────────────────────────────────────────────────── states ───
@@ -734,16 +889,20 @@ export class MapScene extends Scene {
     } else hereRing.style.display = 'none';
 
     // Row counter in the header, so "Wing 1 of 17" and "Row 4 of 13" are visibly
-    // the same two-level address and not two unrelated numbers.
+    // the same two-level address and not two unrelated numbers — same case, same
+    // bold numeral, same "N of M".
     if (this.el.rowNum) {
-      const cur = m.currentId && m.byId.get(m.currentId);
-      this.el.rowNum.textContent = cur
-        ? (cur.type === NodeType.BOSS ? 'at the boss' : `row ${cur.row + 1} of ${m.map.rows}`)
-        : 'at the door';
+      const at = m.currentId && m.byId.get(m.currentId);
+      this.el.rowNum.innerHTML = at
+        ? (at.type === NodeType.BOSS
+            ? `Row <b>${m.map.rows}</b> of ${m.map.rows} — the boss`
+            : `Row <b>${at.row + 1}</b> of ${m.map.rows}`)
+        : `Row <b>—</b> of ${m.map.rows} — at the door`;
     }
 
     if (!this._focusId || !legal.has(this._focusId)) this._focusId = this._legalIds[0] || null;
     this._markFocus();
+    this._layoutLabels();
     this._refreshTip();
   }
 
@@ -857,11 +1016,22 @@ export class MapScene extends Scene {
     // Quantised: writing this every wheel frame restyles all sixty-odd node
     // subtrees, and a 2% step is invisible.
     const k = Math.round(clampN(MIN_ICON_SCALE / v.z, 1, 1.5) * 50) / 50;
+    let relayout = false;
     if (k !== this._mnK) {
       this._mnK = k;
       this.el.nodes.style.setProperty('--mn-k', k.toFixed(2));
+      relayout = true;
     }
-    this.el.screen.classList.toggle('is-close', v.z > (this._fitZoom || 1) * 1.22);
+    const close = v.z > (this._fitZoom || 1) * 1.22;
+    if (close !== this._isClose) {
+      this._isClose = close;
+      this.el.screen.classList.toggle('is-close', close);
+      relayout = true;
+    }
+    // Both of these change which chips are on the paper and how big they are, so
+    // the collision pass has to run again — but only on the step, never per
+    // wheel frame.
+    if (relayout && this._labels) this._layoutLabels();
   }
 
   _zoomAt(px, py, factor) {
@@ -1057,17 +1227,45 @@ export class MapScene extends Scene {
     const centreY = clampN(r.top + r.height / 2 - th / 2, topLim, Math.max(topLim, botLim - th));
     const centreX = clampN(r.left + r.width / 2 - tw / 2, 14, Math.max(14, innerWidth - tw - 14));
 
-    let side, x, y;
-    if (r.left - gap - tw >= 14) {
-      side = 'left';  x = r.left - gap - tw;  y = centreY;
-    } else if (r.top - gap - th >= topLim) {
-      side = 'above'; x = centreX;            y = r.top - gap - th;
-    } else if (r.bottom + gap + th <= botLim) {
-      side = 'below'; x = centreX;            y = r.bottom + gap;
-    } else {
-      side = 'right'; x = clampN(r.right + gap, 14, Math.max(14, innerWidth - tw - 14));
-      y = centreY;
+    // The card must never cover the room's own onward corridors, or it hides the
+    // very choice it is explaining.  This used to be a fixed ladder (left, then
+    // above, then below, then right) reasoned from "depth runs west to east, so
+    // the fan leaves to the right".  That is true on average and wrong often
+    // enough — a long passage or a lane change can put an outgoing edge anywhere.
+    // ui-chrome's shared tooltip solved the same problem properly, by MEASURING
+    // what a side would occlude; this is that idea applied to the real thing
+    // that matters here, the `.mi-edge` paths leaving this node.  (Their panel
+    // itself is not adopted — see the note in docs/notes.)
+    const avoid = [r];
+    for (const p of this._edges) {
+      if (p.dataset.from !== id) continue;
+      const b = p.getBoundingClientRect();
+      if (b.width && b.height) avoid.push(b);
     }
+    const cands = [
+      { side: 'left',  x: r.left - gap - tw,  y: centreY },
+      { side: 'above', x: centreX,            y: r.top - gap - th },
+      { side: 'below', x: centreX,            y: r.bottom + gap },
+      { side: 'right', x: r.right + gap,      y: centreY },
+    ];
+    let best = null;
+    for (const c of cands) {
+      const fits = c.x >= 14 && c.y >= topLim && c.x + tw <= innerWidth - 14 && c.y + th <= botLim;
+      let score = fits ? 1000 : 0;
+      if (!fits) {
+        score -= Math.max(0, 14 - c.x) + Math.max(0, topLim - c.y)
+               + Math.max(0, c.x + tw - (innerWidth - 14)) + Math.max(0, c.y + th - (botLim));
+      }
+      const box = { left: c.x, top: c.y, right: c.x + tw, bottom: c.y + th };
+      let occl = 0;
+      for (const a of avoid) occl += rectOverlap(box, a);
+      score -= Math.min(900, occl / 26);
+      if (c.side === 'left') score += 30;      // ground already walked, all else equal
+      if (!best || score > best.score) best = { ...c, score };
+    }
+    const side = best.side;
+    const x = clampN(best.x, 14, Math.max(14, innerWidth - tw - 14));
+    const y = clampN(best.y, topLim, Math.max(topLim, botLim - th));
     t.dataset.side = side;
     t.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
     if (hz) this.el.screen.dataset.hzFocus = hz.id;
@@ -1176,6 +1374,16 @@ function clampN(v, a, b) { return Math.max(a, Math.min(b, v)); }
 function ordinal(n) {
   const s = ['th', 'st', 'nd', 'rd'], v = n % 100;
   return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+/** Overlap area of two {left,right,top,bottom} boxes, 0 if they miss. */
+function rectOverlap(a, b) {
+  const w = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+  const h = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+  return (w > 0 && h > 0) ? w * h : 0;
+}
+/** Approximate overlap of a box and a disc, via the disc's bounding square. */
+function discOverlap(a, d) {
+  return rectOverlap(a, { left: d.cx - d.r, right: d.cx + d.r, top: d.cy - d.r, bottom: d.cy + d.r });
 }
 function trim(x1, y1, x2, y2, r1, r2) {
   const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1;
