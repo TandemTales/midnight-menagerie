@@ -1,0 +1,55 @@
+<!doctype html><meta charset="utf-8"><body><pre id="o">…</pre></body>
+<script type="module">
+import { CombatEngine } from '/game/src/combat/engine.js';
+import { RNG } from '/game/src/core/rng.js';
+import { startingDeckFor } from '/game/src/data/cards.js';
+import { ENEMIES, getEnemy } from '/game/src/data/enemies/index.js';
+// clean intent-vs-actual: compare intent.totalDamage against the SUM OF DAMAGE
+// EVENTS that enemy emits during its action. No block-wipe pollution.
+function fix(engine){
+  const orig=engine.enemyCtx.bind(engine);
+  engine.enemyCtx=(en,mv)=>{const c=orig(en,mv);const rd=c.damage,rb=c.block;
+    c.damage=(a,b,o={})=>typeof a==='number'?rd(a,b||{}):rd(b,{...(typeof o==='object'?o:{}),target:a});
+    c.block=(a,b)=>typeof a==='number'?rb(a,b):rb(b,a);
+    c.enemies=()=>engine.livingEnemies(); c.allies=()=>engine.livingEnemies().filter(x=>x!==en);
+    c.counter=k=>(en.counters||{})[k]; c.setCounter=(k,v)=>{(en.counters||={})[k]=v;};
+    c.field=(engine._f||={}); c.cardsPlayedThisTurn=engine._p||[];
+    c.announceRule=r=>{(engine._r||=[]).push(r);}; c.removeStatus=(w,i)=>engine.removeStatus(w||engine.player,i);
+    return c;};
+  const call=(en,h)=>{const f=en.def?.[h]; if(f){try{f.call(en.def,engine.enemyCtx(en,null));}catch(e){}}};
+  engine._p=[];
+  engine.on('card:play',ev=>{engine._p.push({id:ev.card?.id,type:ev.card?.type});
+    for(const en of engine.enemies) if(en.alive) call(en,'onPlayerCard');});
+  engine.on('turn:end',ev=>{if(ev.side!=='player')return; for(const en of engine.enemies) if(en.alive) call(en,'onPlayerTurnEnd');});
+  engine.on('turn:start',ev=>{if(ev.side==='player'){engine._p=[];return;}
+    const en=engine.enemies.find(x=>x.id===ev.actorId); if(en?.alive) call(en,'onTurnStart');});
+  engine.on('damage',ev=>{const en=engine.enemies.find(x=>x.id===ev.targetId); if(en?.alive) call(en,'onDamaged');});
+  return engine;
+}
+async function audit(ids, seeds, doFix){
+  const rows=[], bad=[];
+  for(const id of ids){ for(let s=0;s<seeds;s++){
+    const e=new CombatEngine({rng:new RNG(500+s),
+      player:{name:'Kid',companion:'marmalade',maxHp:400,hp:400,energyMax:3,drawPerTurn:5,deck:startingDeckFor('marmalade')},
+      enemies:[{def:getEnemy(id),id:'e0'}]});
+    if(doFix) fix(e);
+    // never let the enemy die: keep it topped up so we can watch many turns
+    await e.startCombat();
+    for(let t=0;t<10 && !e.over;t++){
+      const en=e.enemies[0]; if(!en.alive) break;
+      const promised=en.intent?.totalDamage||0, mv=en.intent?.moveId;
+      let got=0;
+      const off=e.on('damage',ev=>{ if(ev.sourceId===en.id && ev.targetId==='player') got+=ev.amount; });
+      await e.endTurn(); off();
+      rows.push(1);
+      if(promised!==got) bad.push({enemy:id,seed:500+s,turn:t+1,move:mv,intentSays:promised,actuallyDealt:got});
+      en.hp=en.maxHp; e.player.hp=400;
+    }
+  }}
+  return {turns:rows.length, mismatches:bad.length, sample:bad.slice(0,20)};
+}
+const ids=Object.values(ENEMIES).filter(d=>d.region==='foyer').map(d=>d.id);
+const R={ shipped: await audit(ids,4,false), seamFixed: await audit(ids,4,true) };
+window.__R__=R; window.__DONE__=true;
+document.getElementById('o').textContent=JSON.stringify(R,null,1);
+</script>

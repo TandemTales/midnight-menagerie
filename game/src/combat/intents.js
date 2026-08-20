@@ -1,28 +1,43 @@
 /**
- * Enemy intent resolution. OWNER: combat-engine.
+ * Enemy intents and the intent queue. OWNER: combat-engine.
  *
- * The intent icon is the single most important read in the game, so the number
- * on it is computed with the SAME function that resolves the hit — see
- * damage.js `previewDamageValue`. It is post-Strength, post-Weak, post-Vulnerable,
- * post-relic, post-Faint. If the player gains 3 Strength, nothing about the
- * enemy changed and the intent stays put; if the player gains Vulnerable, every
- * attack intent on the board goes up immediately and re-emits `intent`.
+ * The intent icon is the single most important read in the game, so its number is
+ * computed with the SAME function that resolves the hit (damage.js
+ * `previewDamageValue`). It is post-Strength, post-Weak, post-Vulnerable,
+ * post-relic, post-Faint, and it re-renders the instant anything moves it.
  *
- * `refreshIntents()` is cheap and idempotent — the engine calls it after any
- * mutation that could move a number, and only emits when the rendered intent
- * actually differs.
+ * ── Dynamic moves win ───────────────────────────────────────────────────────
+ * A MoveDef may carry `damageFn(c)`, `hitsFn(c)`, `blockFn(c)`, `intentFn(c)` and
+ * `alternatives(c)`. The engine PREFERS them over the static `damage`/`hits`/
+ * `block`/`intent`. Most region enemies put their whole design in those functions
+ * (Dust Bunny growth, Rocking Horse momentum, Porcelain Doll cracks), so reading
+ * the static field would make the intent lie — the worst bug this game can have.
  *
- * MoveDef display hints (all optional, all pure data):
- *   damage, hits, block           the printed numbers
- *   applies: [{id, stacks, to:'player'|'self'|'allEnemies'}]  status preview
- *   tell                          one line of flavour for the tooltip
- *   damageFn(ctx) -> number       dynamic base damage (Dust Bunny growth etc.)
+ * ── The intent queue ────────────────────────────────────────────────────────
+ * Every enemy has a PLAN: position 0 is the move it will resolve next, positions
+ * 1..3 are what it intends after that. Wink can look into the plan (Preview),
+ * predict its family (Read), and rearrange it (swap / postpone / delete).
+ *
+ * Move selection is deterministic *per position*: position k uses
+ * `rng.fork('intent:<enemyId>:<absoluteIndex>')`, never the main stream. That has
+ * three consequences that matter:
+ *   • looking ahead costs nothing and cannot desync the fight,
+ *   • a previewed future action is the action you actually get, unless the board
+ *     changed the enemy's own reasoning (which the design doc explicitly allows,
+ *     and which re-renders the revealed icon),
+ *   • whether or not the player previews, the fight plays out identically.
+ *
+ * Positions the player has manipulated are LOCKED (`enemy.planLocked`) and stop
+ * being re-derived until they are consumed, so a swap is not undone a tick later.
+ * `move.anchored: true` marks a boss mechanic Wink may not move.
  */
 
 import { EV } from './events.js';
 import { Intent } from '../data/schema.js';
 import { previewDamageValue } from './damage.js';
 import { getStatus } from './statuses.js';
+
+export const MAX_PLAN = 4;          // current + 3 future positions (Wink's cap)
 
 /** Wink's four Intent Families. Every intent type maps to exactly one. */
 export function intentFamily(type) {
@@ -38,58 +53,139 @@ export function intentFamily(type) {
       return 'special';   // summon / sleep / stun / escape / unknown
   }
 }
+/** Capitalised names, which is how wink.js writes them. */
+export const FAMILY_LABEL = { attack: 'Attack', defense: 'Defense', scheme: 'Scheme', special: 'Special' };
 
 export function isAttackIntent(type) { return intentFamily(type) === 'attack'; }
 
+// ── plan derivation ─────────────────────────────────────────────────────────
+
 /**
- * Build the display intent for a chosen move. Pure — no mutation, no events.
- * @returns {{type, family, moveId, name, damage, hits, totalDamage, block,
- *            statuses, tell, tooltip, targetId}}
+ * Resolve the move id for plan position `k`, deriving it if it is not already
+ * locked or cached. Pure with respect to the main RNG.
  */
-export function buildIntent(engine, enemy, move) {
+function deriveMoveId(engine, enemy, k) {
+  const def = enemy.def;
+  if (!def || typeof def.nextMove !== 'function') return null;
+  const absolute = enemy.history.length + k;
+  const ctx = engine.enemyCtx(enemy, null, {
+    rng: engine.rng.fork(`intent:${enemy.id}:${absolute}`),
+    history: enemy.history.concat(enemy.plan.slice(0, k).filter(Boolean)),
+    planPosition: k,
+  });
+  let id = null;
+  try { id = def.nextMove(ctx); } catch (err) { console.error(`[combat] ${enemy.defId}.nextMove threw`, err); }
+  if (id && !(def.moves && def.moves[id])) {
+    console.warn(`[combat] enemy ${enemy.defId} planned unknown move "${id}"`);
+    id = null;
+  }
+  return id;
+}
+
+/**
+ * Bring `enemy.plan` up to `depth` entries, re-deriving every unlocked position.
+ * Called on every intent refresh, so a reactive enemy keeps its plan honest.
+ */
+export function rebuildPlan(engine, enemy, depth = MAX_PLAN) {
+  if (!enemy.alive) { enemy.plan.length = 0; enemy.pendingMove = null; return; }
+  for (let k = 0; k < depth; k++) {
+    if (k < enemy.planLocked && enemy.plan[k]) continue;
+    enemy.plan[k] = deriveMoveId(engine, enemy, k);
+  }
+  enemy.plan.length = depth;
+  const id = enemy.plan[0];
+  const raw = id && enemy.def?.moves ? enemy.def.moves[id] : null;
+  enemy.pendingMove = raw ? { id, ...raw } : null;
+}
+
+/** Advance the plan by one after a move resolves. */
+export function consumePlan(enemy) {
+  enemy.plan.shift();
+  enemy.plan.push(null);
+  enemy.planLocked = Math.max(0, enemy.planLocked - 1);
+  enemy.previewDepth = Math.max(0, enemy.previewDepth - 1);
+}
+
+function lock(enemy, upTo) { enemy.planLocked = Math.max(enemy.planLocked, upTo + 1); }
+
+export function moveAt(enemy, k) {
+  const id = enemy.plan[k];
+  const raw = id && enemy.def?.moves ? enemy.def.moves[id] : null;
+  return raw ? { id, ...raw } : null;
+}
+
+export function isAnchored(enemy, k) {
+  const m = moveAt(enemy, k);
+  return !!(m && m.anchored);
+}
+
+// ── intent construction ─────────────────────────────────────────────────────
+
+/**
+ * Build the display intent for a move. Pure — no mutation, no events.
+ * Dynamic `*Fn` variants always win over the static fields.
+ */
+export function buildIntent(engine, enemy, move, opts = {}) {
   if (!move) {
     return {
-      type: Intent.UNKNOWN, family: 'special', moveId: null, name: '???',
+      type: Intent.UNKNOWN, family: 'special', familyLabel: 'Special', moveId: null, name: '???',
       damage: 0, hits: 0, totalDamage: 0, block: 0, statuses: [],
       tell: '', tooltip: 'You cannot tell what it is about to do.', targetId: null,
+      anchored: false, revealed: true, position: opts.position ?? 0,
     };
   }
 
+  const c = engine.enemyCtx(enemy, move, { planPosition: opts.position ?? 0, forecast: (opts.position ?? 0) > 0 });
+
+  // Dynamic first. A static value is only a fallback.
+  const type = pick(move.intentFn, c, move.intent) || Intent.UNKNOWN;
+  let base = pick(move.damageFn, c, move.damage) ?? 0;
+  let hits = pick(move.hitsFn, c, move.hits);
+  const blockRaw = pick(move.blockFn, c, move.block) ?? 0;
+
+  if (hits == null) hits = base > 0 ? 1 : 0;
+  hits = Math.max(0, hits | 0);
+
   const defender = engine.intentTargetFor(enemy);
-  const hits = Math.max(0, move.hits ?? (move.damage != null ? 1 : 0));
-
-  let base = move.damage ?? 0;
-  if (typeof move.damageFn === 'function') {
-    base = move.damageFn(engine.enemyCtx(enemy, move)) ?? 0;
-  }
-
   const damage = (hits > 0 && base > 0 && defender)
     ? previewDamageValue(engine, enemy, defender, base, { kind: 'attack', pierce: !!move.pierce })
     : 0;
 
-  const blockRaw = move.block ?? 0;
-  const block = blockRaw > 0 ? engine.previewBlockValue(enemy, blockRaw) : 0;
+  const block = blockRaw > 0 ? engine.previewBlockValue(enemy, blockRaw, { fromCard: false }) : 0;
 
-  const statuses = (move.applies || []).map(a => ({
+  const applies = (typeof move.appliesFn === 'function' ? safe(move.appliesFn, c) : move.applies) || [];
+  const statuses = applies.map(a => ({
     id: a.id, stacks: a.stacks ?? 1, to: a.to || 'player',
     name: getStatus(a.id).name, kind: getStatus(a.id).kind,
   }));
 
+  const family = intentFamily(type);
   const intent = {
-    type: move.intent || Intent.UNKNOWN,
-    family: intentFamily(move.intent || Intent.UNKNOWN),
-    moveId: move.id,
-    name: move.name || move.id,
-    damage, hits,
-    totalDamage: damage * hits,
-    block,
-    statuses,
-    tell: move.tell || '',
+    type, family, familyLabel: FAMILY_LABEL[family],
+    moveId: move.id, name: move.name || move.id,
+    damage, hits, totalDamage: damage * hits,
+    baseDamage: base,
+    block, statuses,
+    tell: typeof move.tellFn === 'function' ? (safe(move.tellFn, c) || '') : (move.tell || ''),
     targetId: defender ? defender.id : null,
+    anchored: !!move.anchored,
+    position: opts.position ?? 0,
+    revealed: opts.revealed !== false,
     tooltip: '',
   };
   intent.tooltip = intentTooltip(intent, enemy);
   return intent;
+}
+
+function pick(fn, ctx, staticValue) {
+  if (typeof fn === 'function') {
+    const v = safe(fn, ctx);
+    if (v !== undefined && v !== null) return v;
+  }
+  return staticValue;
+}
+function safe(fn, ctx) {
+  try { return fn(ctx); } catch (err) { console.error('[combat] dynamic intent fn threw', err); return undefined; }
 }
 
 /** Plain-language sentence for the intent hover. Never leaves a number implicit. */
@@ -102,7 +198,7 @@ export function intentTooltip(intent, enemy) {
   }
   if (intent.block > 0) parts.push(`Gains ${intent.block} Guard.`);
   for (const s of intent.statuses) {
-    const who = s.to === 'self' ? enemy?.name || 'itself' : s.to === 'allEnemies' ? 'its allies' : 'you';
+    const who = s.to === 'self' ? (enemy?.name || 'itself') : s.to === 'allEnemies' ? 'its allies' : 'you';
     parts.push(`Applies ${s.stacks} ${s.name} to ${who}.`);
   }
   if (parts.length === 0) {
@@ -115,6 +211,7 @@ export function intentTooltip(intent, enemy) {
       default: parts.push(intent.name); break;
     }
   }
+  if (intent.anchored) parts.push('Anchored — this action cannot be rearranged.');
   if (intent.tell) parts.push(intent.tell);
   return parts.join(' ');
 }
@@ -124,6 +221,7 @@ export function sameIntent(a, b) {
   if (!a || !b) return a === b;
   if (a.type !== b.type || a.moveId !== b.moveId) return false;
   if (a.damage !== b.damage || a.hits !== b.hits || a.block !== b.block) return false;
+  if (a.anchored !== b.anchored) return false;
   if (a.statuses.length !== b.statuses.length) return false;
   for (let i = 0; i < a.statuses.length; i++) {
     if (a.statuses[i].id !== b.statuses[i].id || a.statuses[i].stacks !== b.statuses[i].stacks) return false;
@@ -131,40 +229,143 @@ export function sameIntent(a, b) {
   return true;
 }
 
+function sameQueue(a, b) {
+  if (!a || !b || a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i].moveId !== b[i].moveId || a[i].family !== b[i].family || a[i].revealed !== b[i].revealed) return false;
+  }
+  return true;
+}
+
+/** The revealed slice of an enemy's plan, as plain data for the renderer. */
+export function queueSnapshot(engine, enemy) {
+  const out = [];
+  const depth = Math.min(MAX_PLAN, 1 + (enemy.previewDepth || 0));
+  for (let k = 0; k < depth; k++) {
+    const m = moveAt(enemy, k);
+    if (!m && k > 0) break;
+    const it = buildIntent(engine, enemy, m, { position: k, revealed: true });
+    out.push({
+      position: k, moveId: it.moveId, name: it.name, type: it.type,
+      family: it.family, familyLabel: it.familyLabel,
+      damage: it.damage, hits: it.hits, block: it.block,
+      anchored: it.anchored, revealed: true, tooltip: it.tooltip,
+    });
+  }
+  // Only the REVEALED slice is returned. The renderer knows how many hidden
+  // slots to draw from `MAX_PLAN - out.length`; putting placeholder entries in
+  // here made `queue[1]` mean two different things depending on Preview depth.
+  return out;
+}
+
 /**
- * Recompute every living enemy's displayed intent. Emits `intent` only for the
- * ones whose rendering changed. Call after ANY mutation that could move a number.
+ * Recompute every living enemy's plan and displayed intent. Emits `intent` only
+ * where the rendering actually changed, so the renderer can animate every one.
  */
 export function refreshIntents(engine, reason = 'refresh') {
   for (const en of engine.enemies) {
-    if (!en.alive) { en.intent = null; continue; }
-    const next = buildIntent(engine, en, en.pendingMove);
-    if (!sameIntent(en.intent, next)) {
+    if (!en.alive) { en.intent = null; en.queue = []; continue; }
+    rebuildPlan(engine, en);
+    const next = buildIntent(engine, en, en.pendingMove, { position: 0 });
+    const q = queueSnapshot(engine, en);
+    const changed = !sameIntent(en.intent, next) || !sameQueue(en.queue, q);
+    if (changed) {
       const prev = en.intent;
       en.intent = next;
-      engine._emit(EV.INTENT, { enemyId: en.id, intent: { ...next }, previous: prev ? { ...prev } : null, reason });
+      en.queue = q;
+      engine._emit(EV.INTENT, {
+        enemyId: en.id, intent: { ...next }, previous: prev ? { ...prev } : null,
+        queue: q.map(x => ({ ...x })), reason,
+      });
     }
   }
 }
 
-/**
- * Ask an enemy for its next move and set the intent.
- * `def.nextMove(ctx)` MUST be deterministic given (rng, turn, history, board).
- */
+/** Force a fresh choice for an enemy (combat start, summon, after resolving). */
 export function chooseMove(engine, enemy, reason = 'turn') {
   if (!enemy.alive) return null;
-  const def = enemy.def;
-  let moveId = null;
-  if (def && typeof def.nextMove === 'function') {
-    moveId = def.nextMove(engine.enemyCtx(enemy, null));
-  }
-  const move = (def && def.moves && def.moves[moveId]) || null;
-  if (!move && moveId) console.warn(`[combat] enemy ${enemy.defId} chose unknown move "${moveId}"`);
-  enemy.pendingMove = move ? { id: moveId, ...move } : null;
+  rebuildPlan(engine, enemy);
   engine.hooks.dispatch('onIntentChosen', { enemy, move: enemy.pendingMove });
-  const next = buildIntent(engine, enemy, enemy.pendingMove);
+  const next = buildIntent(engine, enemy, enemy.pendingMove, { position: 0 });
   const prev = enemy.intent;
   enemy.intent = next;
-  engine._emit(EV.INTENT, { enemyId: enemy.id, intent: { ...next }, previous: prev ? { ...prev } : null, reason });
+  enemy.queue = queueSnapshot(engine, enemy);
+  engine._emit(EV.INTENT, {
+    enemyId: enemy.id, intent: { ...next }, previous: prev ? { ...prev } : null,
+    queue: enemy.queue.map(x => ({ ...x })), reason,
+  });
   return enemy.pendingMove;
+}
+
+// ── player-facing queue manipulation (Wink) ─────────────────────────────────
+
+/** Reveal `n` more future positions. Returns how many were newly revealed. */
+export function previewIntent(engine, enemy, n = 1) {
+  if (!enemy || !enemy.alive) return 0;
+  const before = enemy.previewDepth || 0;
+  const got = Math.max(0, Math.min(n, (MAX_PLAN - 1) - before));
+  if (!got) return 0;
+  enemy.previewDepth = before + got;
+  rebuildPlan(engine, enemy);
+  engine._emit(EV.INTENT_QUEUE, {
+    enemyId: enemy.id, action: 'preview', depth: enemy.previewDepth,
+    queue: queueSnapshot(engine, enemy),
+  });
+  engine.refreshIntents('preview');
+  return got;
+}
+
+export function previewDepthOf(enemy) { return enemy?.previewDepth || 0; }
+
+/** Families of the revealed FUTURE positions (position 1 onward). */
+export function previewedFamilies(engine, enemy) {
+  const q = queueSnapshot(engine, enemy);
+  return q.slice(1).filter(x => x.revealed).map(x => x.familyLabel);
+}
+
+/** Swap two plan positions. Refuses if either is Anchored. */
+export function swapIntents(engine, enemy, a, b) {
+  if (!enemy || a === b) return false;
+  if (a < 0 || b < 0 || a >= MAX_PLAN || b >= MAX_PLAN) return false;
+  if (isAnchored(enemy, a) || isAnchored(enemy, b)) return false;
+  if (!enemy.plan[a] || !enemy.plan[b]) return false;
+  const t = enemy.plan[a]; enemy.plan[a] = enemy.plan[b]; enemy.plan[b] = t;
+  lock(enemy, Math.max(a, b));
+  afterQueueEdit(engine, enemy, 'swap');
+  return true;
+}
+
+/** Push the current action to the back of the plan; everything else moves up. */
+export function postponeIntent(engine, enemy) {
+  if (!enemy || isAnchored(enemy, 0) || !enemy.plan[0]) return false;
+  const cur = enemy.plan.shift();
+  const last = enemy.plan.filter(Boolean).length;
+  enemy.plan.splice(Math.min(last, MAX_PLAN - 1), 0, cur);
+  enemy.plan.length = MAX_PLAN;
+  lock(enemy, MAX_PLAN - 1);
+  afterQueueEdit(engine, enemy, 'postpone');
+  return true;
+}
+
+/** Remove the current action entirely. The next one becomes current. */
+export function deleteIntent(engine, enemy) {
+  if (!enemy || isAnchored(enemy, 0) || !enemy.plan[0]) return false;
+  enemy.plan.shift();
+  enemy.plan.push(null);
+  enemy.previewDepth = Math.max(0, enemy.previewDepth - 1);
+  // Everything still in the plan was chosen by the player's edit — freeze it, or
+  // the very next rebuild would derive the deleted action straight back in.
+  enemy.planLocked = Math.max(enemy.planLocked, enemy.plan.filter(Boolean).length);
+  afterQueueEdit(engine, enemy, 'delete');
+  return true;
+}
+
+function afterQueueEdit(engine, enemy, action) {
+  rebuildPlan(engine, enemy);
+  enemy.queue = queueSnapshot(engine, enemy);
+  engine._emit(EV.INTENT_QUEUE, {
+    enemyId: enemy.id, action, depth: enemy.previewDepth,
+    queue: enemy.queue.map(x => ({ ...x })),
+  });
+  engine.refreshIntents(action);
 }

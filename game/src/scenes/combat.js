@@ -20,7 +20,7 @@ import { Scene } from '../core/scenes.js';
 import { Clock } from '../core/clock.js';
 import { RNG } from '../core/rng.js';
 import { CombatEngine } from '../combat/engine.js';
-import { makeDummyCombat, makeDummySetup } from '../combat/dummy.js';
+import { makeDummyCombat } from '../combat/dummy.js';
 import { previewIncoming } from '../combat/preview.js';
 import { Intent, TERMS } from '../data/schema.js';
 import { Hand } from '../ui/hand.js';
@@ -65,6 +65,7 @@ export class CombatScene extends Scene {
     this._shake = { mag: 0, ph: 0 };
     this._tipEl = null;
     this._pt = { x: 0, y: 0 };
+    this._rules = new Map();       // ruleId -> { id, name, text, sourceId }
   }
 
   /* ══ boot ═══════════════════════════════════════════════════════════════ */
@@ -133,7 +134,7 @@ export class CombatScene extends Scene {
     } catch (e) { /* companion content not present yet */ }
 
     try {
-      const [{ getEnemy, hasEnemy, ENEMY_STATUSES }, enc, statuses] = await Promise.all([
+      const [{ getEnemy, hasEnemy, ENEMY_STATUSES, ENEMY_LIST }, enc, statuses] = await Promise.all([
         import('../data/enemies/index.js'),
         import('../data/encounters.js'),
         import('../combat/statuses.js'),
@@ -158,11 +159,11 @@ export class CombatScene extends Scene {
 
       if (members && members.length) {
         this._members = members;
-        const resolve = await makeIdResolver(getEnemy);
         enemies = members.map((mm, i) => {
           const def = getEnemy(mm.enemyId);
-          return def ? { def: adaptEnemyDef(def, resolve), hp: mm.hp || undefined, id: `e${i}` } : null;
+          return def ? { def, hp: mm.hp || undefined, id: `e${i}` } : null;
         }).filter(Boolean);
+        this._enemyDefs = ENEMY_LIST;
         if (!enemies.length) enemies = null;
       }
     } catch (e) { /* enemy content not present yet */ }
@@ -186,13 +187,23 @@ export class CombatScene extends Scene {
           if (mm.flags) en.flags = { ...(en.flags || {}), ...mm.flags };
         });
       }
+      // Teach the engine the content vocabulary its EnemyCtx resolves ids against.
+      try {
+        const [cards, lib] = await Promise.all([
+          import('../data/cards.js'), import('../data/enemies/_lib.js'),
+        ]);
+        engine.registerCards?.(cards.allCards());
+        engine.registerCards?.(lib.STATUS_TRICK_DEFS || []);
+      } catch { /* nothing to register */ }
+      try { engine.registerEnemies?.(this._enemyDefs || []); } catch { /* none */ }
+
       this.usingRealContent = true;
       return engine;
     }
 
     // last resort — always playable
     this.usingRealContent = false;
-    return makeDummyCombat(rng, makeDummySetup(rng).player ? {} : {});
+    return makeDummyCombat(rng);
   }
 
   /* ══ DOM ════════════════════════════════════════════════════════════════ */
@@ -208,7 +219,7 @@ export class CombatScene extends Scene {
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21 C5 15.5 2.5 12 2.5 8.4 A5 5 0 0 1 12 6.2 A5 5 0 0 1 21.5 8.4 C21.5 12 19 15.5 12 21 Z"/></svg>
               <b class="cb-chip__n">0</b><span class="cb-chip__m">/0</span>
             </div>
-            <div class="cb-chip cb-chip--gold" data-tip="${T.gold}|Spent at Lost Things." tabindex="0">
+            <div class="cb-chip cb-chip--gold" data-tip="${T.gold}|Spent at ${T.shop}." tabindex="0">
               <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.6" class="hole"/></svg>
               <b class="cb-chip__n">0</b>
             </div>
@@ -245,14 +256,14 @@ export class CombatScene extends Scene {
         <div class="cb-handhost"></div>
 
         <div class="cb-bl">
-          <div class="cb-pluck" data-tip="${T.energy}|You spend it to play Tricks.|It refills to full at the start of every turn." tabindex="0">
-            <svg class="cb-pluck__ring" viewBox="0 0 100 100" aria-hidden="true">
-              <circle class="cb-pluck__track" cx="50" cy="50" r="42"/>
-              <circle class="cb-pluck__arc" cx="50" cy="50" r="42"/>
+          <div class="cb-nerve" data-tip="${T.energy}|You spend it to play Tricks.|It refills to full at the start of every turn." tabindex="0">
+            <svg class="cb-nerve__ring" viewBox="0 0 100 100" aria-hidden="true">
+              <circle class="cb-nerve__track" cx="50" cy="50" r="42"/>
+              <circle class="cb-nerve__arc" cx="50" cy="50" r="42"/>
             </svg>
-            <div class="cb-pluck__core"></div>
-            <div class="cb-pluck__n"><b>3</b><span>/3</span></div>
-            <div class="cb-pluck__lbl">${T.energy}</div>
+            <div class="cb-nerve__core"></div>
+            <div class="cb-nerve__n"><b>3</b><span>/3</span></div>
+            <div class="cb-nerve__lbl">${T.energy}</div>
           </div>
           <button class="cb-pile cb-pile--draw" id="draw-pile" type="button"
                   data-tip="Draw pile|The Tricks still to come. Order is hidden.|Click to look through them.">
@@ -307,10 +318,10 @@ export class CombatScene extends Scene {
     this.$inc = $('.cb-incoming');
     this.$statuses = $('.cb-statuses');
     this.$handHost = $('.cb-handhost');
-    this.$pluckN = $('.cb-pluck__n b');
-    this.$pluckM = $('.cb-pluck__n span');
-    this.$pluckArc = $('.cb-pluck__arc');
-    this.$pluck = $('.cb-pluck');
+    this.$nerveN = $('.cb-nerve__n b');
+    this.$nerveM = $('.cb-nerve__n span');
+    this.$nerveArc = $('.cb-nerve__arc');
+    this.$nerve = $('.cb-nerve');
     this.$drawPile = $('#draw-pile');
     this.$discardPile = $('#discard-pile');
     this.$endTurn = $('#end-turn');
@@ -325,9 +336,9 @@ export class CombatScene extends Scene {
     this.$plArt.src = `${PORTRAITS}${slug}.png`;
     this.$plArt.addEventListener('error', () => { this.$plArt.style.display = 'none'; }, { once: true });
 
-    // arc length for the Pluck ring
+    // arc length for the Nerve ring
     this._arcLen = 2 * Math.PI * 42;
-    this.$pluckArc.style.strokeDasharray = String(this._arcLen);
+    this.$nerveArc.style.strokeDasharray = String(this._arcLen);
   }
 
   /* ══ enemies ════════════════════════════════════════════════════════════ */
@@ -376,12 +387,17 @@ export class CombatScene extends Scene {
         .filter(v => v.alive && !v.dying)
         .map(v => ({ id: v.id, el: v.$stage })),
     });
-    this.hand.setPlayable((card) => this.engine.canPlay(card.uid, null).ok
-      || this.engine.canPlay(card.uid, this.engine.firstLivingEnemy()?.id || null).ok);
+    this._syncHandPlayability();
     this._updatePilePositions();
 
     this._offs.push(ctx.bus.on('card:hover', (p) => this._hoverPreview(p.uid)));
     this._offs.push(ctx.bus.on('card:unhover', () => this._clearPreview()));
+    this._offs.push(ctx.bus.on('card:target', (p) => {
+      for (const v of this.views.values()) v.el.classList.toggle('is-aimed', v.id === p.targetId);
+    }));
+    this._offs.push(ctx.bus.on('card:drop', () => {
+      for (const v of this.views.values()) v.el.classList.remove('is-aimed');
+    }));
     this._offs.push(ctx.bus.on('card:cancel', () => this._clearPreview()));
     this._offs.push(ctx.bus.on('settings:changed', () => {
       this._readSettings();
@@ -509,7 +525,7 @@ export class CombatScene extends Scene {
   _clearPreview() {
     if (!this._previewOn) return;
     this._previewOn = false;
-    for (const v of this.views.values()) v.showPreview(null);
+    for (const v of this.views.values()) { v.showPreview(null); v.el.classList.remove('is-aimed'); }
     this.$pl.classList.remove('is-preview');
     this.$plGuard.classList.remove('is-preview');
     delete this.$plGuard.dataset.plus;
@@ -564,6 +580,9 @@ export class CombatScene extends Scene {
       this._q.push(ev);
       this._kick();
     }));
+    // ~70 Tricks say "choose a Trick". Without a resolver the engine silently
+    // auto-picks and the player loses agency, so this is not optional.
+    this.engine.setChoiceResolver?.((req) => this._resolveChoice(req));
   }
 
   _kick() {
@@ -680,7 +699,7 @@ export class CombatScene extends Scene {
         return;
 
       case 'energy':
-        this._syncPluck(ev.after, ev.max ?? E.player.energyMax);
+        this._syncNerve(ev.after, ev.max ?? E.player.energyMax);
         return;
 
       case 'damage':
@@ -823,7 +842,7 @@ export class CombatScene extends Scene {
     // shake scaled to Courage actually lost, never to the raw number
     this._addShake(Math.min(1.5, hpLoss / 12 + (blockedAll ? 0.12 : 0.18)));
     this.ctx.atmosphere?.impact?.(c, {
-      strength: Math.min(1.8, 0.35 + hpLoss / 14),
+      strength: Math.min(1.5, 0.2 + hpLoss / 22),
       color: blockedAll ? 0x8fb7d9 : (isPlayer ? 0xf26d78 : 0xffb64a),
       shake: false,
     });
@@ -888,9 +907,9 @@ export class CombatScene extends Scene {
     const st = this.engine.state;
     this.$turnN.textContent = String(st.turn);
     this._syncPlayer(st);
-    for (const e of st.enemies) this.views.get(e.id)?.setState(e);
+    for (const e of st.enemies) { this.views.get(e.id)?.setState(e); this._syncEnemyExtras(e.id); }
     this._syncPiles(st);
-    this._syncPluck(st.player.energy, st.player.energyMax);
+    this._syncNerve(st.player.energy, st.player.energyMax);
     this._syncKeeps(st);
     this._syncHandPlayability();
     this._renderIncoming(0);
@@ -900,7 +919,55 @@ export class CombatScene extends Scene {
   _syncActor(id) {
     const st = this.engine.state;
     if (id === this.engine.player.id) this._syncPlayer(st);
-    else this.views.get(id)?.setState(st.enemies.find(e => e.id === id) || {});
+    else {
+      this.views.get(id)?.setState(st.enemies.find(e => e.id === id) || {});
+      this._syncEnemyExtras(id);
+    }
+  }
+
+  /**
+   * Counters, named state badges, House Rules and two-possibility intents.
+   * The enemies agent writes counters through `_lib.setCnt` (which lands on
+   * `actor.counters`) and mirrors rules into the shared `field` object, so this
+   * reads both rather than inventing display state.
+   */
+  _syncEnemyExtras(id) {
+    const v = this.views.get(id);
+    const en = this.engine.actor(id);
+    if (!v || !en) return;
+
+    // counters
+    const out = [];
+    for (const k in en.counters || {}) {
+      const val = en.counters[k];
+      if (typeof val !== 'number') continue;
+      const m = COUNTER_META[k] || {};
+      if (m.hidden) continue;
+      out.push({ id: k, label: m.label || titleCase(k), value: val, max: m.max, desc: m.desc, note: m.note });
+    }
+    v.setCounters(out);
+
+    // named state badges
+    v.setBadges(badgesFor(en, this.engine.field));
+
+    // House Rule pinned beside the intent (engine `rule` event)
+    let rule = null;
+    for (const r of this._rules.values()) if (r.sourceId === id) rule = r;
+    v.setRule(rule);
+    // the revealed intent queue — Wink reorders it, so it is first-class
+    v.setQueue(en.queue || []);
+
+    // two-possibility intent
+    const mv = en.pendingMove;
+    if (mv && typeof mv.alternatives === 'function') {
+      let alts = null;
+      try { alts = mv.alternatives(this.engine.enemyCtx(en, mv)); } catch { alts = null; }
+      v.setAlternatives(alts || []);
+      v.hideIntent(!!(alts && alts.length > 1));
+    } else {
+      v.setAlternatives([]);
+      v.hideIntent(false);
+    }
   }
 
   _syncPlayer(st) {
@@ -952,19 +1019,19 @@ export class CombatScene extends Scene {
     this.$discardPile.querySelector('b').textContent = String(st.counts?.discard ?? st.piles.discard.length);
   }
 
-  _syncPluck(cur, max) {
+  _syncNerve(cur, max) {
     const c = cur ?? this.engine.player.energy;
     const m = max ?? this.engine.player.energyMax;
-    if (this._pluckV === c && this._pluckM === m) return;
-    const dropped = this._pluckV !== undefined && c < this._pluckV;
-    this._pluckV = c; this._pluckM = m;
-    this.$pluckN.textContent = String(c);
-    this.$pluckM.textContent = '/' + m;
-    this.$pluckArc.style.strokeDashoffset = String(this._arcLen * (1 - Math.max(0, Math.min(1, c / (m || 1)))));
-    this.$pluck.classList.toggle('is-empty', c <= 0);
-    this.$pluck.classList.remove('is-spend', 'is-gain');
-    void this.$pluck.offsetWidth;
-    this.$pluck.classList.add(dropped ? 'is-spend' : 'is-gain');
+    if (this._nerveV === c && this._nerveM === m) return;
+    const dropped = this._nerveV !== undefined && c < this._nerveV;
+    this._nerveV = c; this._nerveM = m;
+    this.$nerveN.textContent = String(c);
+    this.$nerveM.textContent = '/' + m;
+    this.$nerveArc.style.strokeDashoffset = String(this._arcLen * (1 - Math.max(0, Math.min(1, c / (m || 1)))));
+    this.$nerve.classList.toggle('is-empty', c <= 0);
+    this.$nerve.classList.remove('is-spend', 'is-gain');
+    void this.$nerve.offsetWidth;
+    this.$nerve.classList.add(dropped ? 'is-spend' : 'is-gain');
     this.hand?.setEnergy(c);
     this._syncHandPlayability();
     this._syncEndTurn();
@@ -1292,45 +1359,53 @@ function ensureCss(href) {
   return p;
 }
 
+/** Counters the enemies agent names as "the telegraph". */
+const COUNTER_META = {
+  dust: { label: 'Dust', max: 4, note: 'Each Dust adds 3 to the Tumble. Hitting it stops the gain.' },
+  momentum: { label: 'Momentum', max: 2, note: 'Each Momentum adds 7 to Run the Hall.' },
+  resonance: { label: 'Resonance', max: 4, note: 'At 4 the MIDNIGHT TOLL pre-empts everything.' },
+  flustered: { label: 'Flustered' },
+  'wound-up': { label: 'Wound Up', note: 'POP! gets bigger the longer it winds.' },
+  excitement: { label: 'Excitement' },
+  layers: { label: 'Layers' },
+  scare: { label: 'Scare' },
+  contents: { label: 'Contents' },
+  patches: { label: 'Patches' },
+  'loose-stuffing': { label: 'Loose Stuffing' },
+  heads: { label: 'Heads' },
+  'repair-patch': { label: 'Repair Patch' },
+  garment: { hidden: true },   // shown as a named badge instead
+};
+
+const GARMENTS = { raincoat: 'Raincoat', 'evening-coat': 'Evening Coat', 'mourning-coat': 'Mourning Coat' };
+
 /**
- * Enemy content addresses Tricks and other enemies by **id string**
- * (`c.addCard('clutter','discard')`, `c.summon('dust-bunny')`) while the engine's
- * EnemyCtx wants a def object. Rather than have either agent guess, the scene
- * resolves ids at boot: a pure look-up adapter, no rules involved.
- * Reported to the integrator — delete this the moment the seam is agreed.
+ * Named state badges. The enemies encode these in per-instance `mem` and
+ * counters; this maps the documented ones onto a badge with a tone.
  */
-async function makeIdResolver(getEnemy) {
-  let cardById = null, statusTricks = [];
-  try { ({ cardById } = await import('../data/cards.js')); } catch { /* no card registry yet */ }
-  try { ({ STATUS_TRICK_DEFS: statusTricks = [] } = await import('../data/enemies/_lib.js')); } catch { /* none */ }
-  const extra = new Map(statusTricks.map(c => [c.id, c]));
-  return {
-    card: (d) => {
-      if (!d || typeof d !== 'string') return d;
-      return extra.get(d) || cardById?.(d) || cardById?.('status/' + d) || d;
-    },
-    enemy: (d) => (typeof d === 'string' ? (getEnemy(d) || d) : d),
-  };
+function badgesFor(en, field) {
+  const out = [];
+  const mem = en.mem || {};
+  const c = en.counters || {};
+  const id = en.defId || '';
+
+  if (id === 'grand-coatcheck') {
+    const keys = Object.keys(GARMENTS);
+    out.push(mem.snagged
+      ? { text: 'Snagged', tone: 'good', desc: 'Its Garment is off. No Garment bonus until it changes.' }
+      : { text: GARMENTS[keys[(c.garment || 0) % keys.length]], tone: 'warn', desc: 'The Garment it is currently wearing. Each one changes what it does.' });
+  }
+  if (mem.condition) out.push({ text: titleCase(mem.condition), tone: mem.condition === 'shattered' ? 'good' : 'warn' });
+  if (mem.hidden || en.flags?.hidden) out.push({ text: 'Hidden', tone: 'warn', desc: 'It cannot be targeted by Attacks right now.' });
+  else if (mem.exposed) out.push({ text: 'Exposed', tone: 'good', desc: 'Wide open. Attacks land.' });
+  if (mem.position) out.push({ text: titleCase(mem.position), tone: 'warn', desc: 'Where the Beast currently is.' });
+  if (mem.discomposed || en.statuses?.has?.('discomposed')) out.push({ text: 'Discomposed', tone: 'good' });
+  if (field?.darkness) out.push({ text: 'Darkness', tone: 'warn' });
+  return out;
 }
 
-const CTX_HOOKS = ['onSpawn', 'onDeath', 'onTurnStart', 'onTurnEnd', 'onDamaged',
-  'onPlayerCard', 'onPlayerTurnEnd', 'onAllyDeath', 'onAttacked'];
-
-function adaptEnemyDef(def, resolve) {
-  if (!def || def.__adapted) return def;
-  const wrap = (fn) => (typeof fn !== 'function' ? fn : function (c, ...rest) {
-    const c2 = Object.create(c);
-    if (typeof c.addCard === 'function') c2.addCard = (d, p, o) => c.addCard(resolve.card(d), p, o);
-    if (typeof c.summon === 'function') c2.summon = (d, o) => c.summon(resolve.enemy(d), o);
-    return fn.call(this, c2, ...rest);
-  });
-  const out = Object.create(Object.getPrototypeOf(def));
-  Object.assign(out, def);
-  out.__adapted = true;
-  out.moves = {};
-  for (const k in def.moves || {}) out.moves[k] = { ...def.moves[k], effect: wrap(def.moves[k].effect) };
-  for (const h of CTX_HOOKS) if (def[h]) out[h] = wrap(def[h]);
-  return out;
+function titleCase(s) {
+  return String(s).replace(/[-_]/g, ' ').replace(/\b\w/g, m => m.toUpperCase());
 }
 
 function statusIcon(id) {

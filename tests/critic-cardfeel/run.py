@@ -1,521 +1,406 @@
-"""Critic runner for the card-feel showcase harness.
+"""Critic runner for CARD FEEL. Drives http://localhost:8777/tests/cards-feel/index.html
+with Playwright, captures motion strips + rAF-sampled timings, dumps JSON metrics.
 
-Drives http://localhost:8777/tests/cards-feel/index.html with Playwright,
-captures motion strips (frames N ms apart) into shots/critic/, and records
-rAF-accurate transform traces so hover/refan/play durations can be MEASURED
-rather than guessed.
+    python tests/critic-cardfeel/run.py            # everything
+    python tests/critic-cardfeel/run.py hover arc  # named sections only
 
-    python tests/critic-cardfeel/run.py [scenario ...]      (default: all)
-
-Outputs:
-    shots/critic/<name>_f0..fN.png    motion strips
-    shots/critic/<name>.json          trace + fps + console errors
+Output: shots/cf/*.png and shots/cf/metrics.json
 """
 import asyncio, sys, os, json, math
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-OUT = os.path.join(ROOT, "shots", "critic")
+OUT = os.path.join(ROOT, "shots", "cf")
 os.makedirs(OUT, exist_ok=True)
 URL = "http://localhost:8777/tests/cards-feel/index.html"
 
 W, H = 1600, 900
+EB = "[...document.querySelectorAll('#bar button')].filter(b=>b.textContent.startsWith('energy'))"
+EPLUS = EB + "[0].click()"
+EMINUS = EB + "[1].click()"
+M = {}          # metrics
+ERRORS, LOGS = [], []
 
-# ── page-side instrumentation ───────────────────────────────────────────────
-INSTRUMENT = r"""
-window.__T = { rec: [], on: false, t0: 0 };
-window.__trace = (ms) => {
-  const T = window.__T; T.rec = []; T.on = true; T.t0 = performance.now();
-  const f = () => {
-    if (!T.on) return;
-    const now = performance.now() - T.t0;
-    const H = window.MMTEST.hand;
-    T.rec.push({
-      t: +now.toFixed(1),
-      cards: H.slots.map(s => ({
-        u: s.card.uid,
-        x: +s.view.transform.x.toFixed(2),
-        y: +s.view.transform.y.toFixed(2),
-        r: +s.view.transform.rot.toFixed(2),
-        s: +s.view.transform.scale.toFixed(4),
-        z: s.view.transform.z | 0,
-      })),
-      fly: H.flying.size,
-      flyc: [...H.flying].map(s => ({ u: s.card.uid,
-        x: +s.view.transform.x.toFixed(1), y: +s.view.transform.y.toFixed(1),
-        r: +s.view.transform.rot.toFixed(1), s: +s.view.transform.scale.toFixed(3),
-        o: +(getComputedStyle(s.view.el).opacity), })),
-      arrow: H.el.querySelector('.mm-hand__arrow').classList.contains('is-on'),
-      snapped: H.el.querySelector('.mm-hand__arrow').classList.contains('is-snapped'),
-      apath: (H.el.querySelector('.mm-arrow__glow').getAttribute('d')||'').slice(0,160),
-    });
-    if (now < ms) requestAnimationFrame(f); else T.on = false;
-  };
-  requestAnimationFrame(f);
-  return true;
+
+# ── rAF sampler injected into the page ──────────────────────────────────────
+SAMPLER = """
+window.__cf = {
+  // sample a card's box every frame for `ms`, return [{t,x,y,w,h,rot}]
+  sample: (sel, ms) => new Promise(res => {
+    const el = document.querySelector(sel); const out = []; const t0 = performance.now();
+    const f = () => {
+      const r = el.getBoundingClientRect();
+      const cs = getComputedStyle(el).transform;
+      out.push({ t: +(performance.now()-t0).toFixed(1), x:+r.x.toFixed(2), y:+r.y.toFixed(2),
+                 w:+r.width.toFixed(2), h:+r.height.toFixed(2), tf: cs });
+      if (performance.now()-t0 < ms) requestAnimationFrame(f); else res(out);
+    };
+    requestAnimationFrame(f);
+  }),
+  // geometry of every card in the hand
+  geom: () => [...document.querySelectorAll('.mm-hand__cards .mm-card')].map((el,i) => {
+    const r = el.getBoundingClientRect();
+    const m = new DOMMatrixReadOnly(getComputedStyle(el).transform);
+    return { i, x:+r.x.toFixed(1), y:+r.y.toFixed(1), w:+r.width.toFixed(1), h:+r.height.toFixed(1),
+             cx:+(r.x+r.width/2).toFixed(1), cy:+(r.y+r.height/2).toFixed(1),
+             bottom:+r.bottom.toFixed(1), top:+r.top.toFixed(1),
+             rot:+(Math.atan2(m.b,m.a)*180/Math.PI).toFixed(2),
+             scale:+Math.hypot(m.a,m.b).toFixed(3),
+             cls: el.className, op:+getComputedStyle(el).opacity };
+  }),
+  fps: () => new Promise(r => { let n=0; const t0=performance.now();
+    const f=()=>{n++; performance.now()-t0<1000?requestAnimationFrame(f):r(n)}; requestAnimationFrame(f); }),
+  arrow: () => {
+    const s = document.querySelector('.mm-hand__arrow');
+    if (!s) return null;
+    const g = (k) => { const p = s.querySelector(k); return p ? p.getAttribute('d') : null; };
+    return { visible: getComputedStyle(s).opacity, display: getComputedStyle(s).display,
+             cls: s.className.baseVal || s.getAttribute('class'),
+             body: g('.mm-arrow__body'), head: g('.mm-arrow__head'),
+             reticle: (()=>{const r=s.querySelector('.mm-arrow__reticle');
+               return r? {op:getComputedStyle(r).opacity, tf:getComputedStyle(r).transform}:null})() };
+  },
 };
-window.__dump = () => JSON.parse(JSON.stringify(window.__T.rec));
-window.__geo = () => {
-  const H = window.MMTEST.hand;
-  return H.slots.map(s => {
-    const b = s.view.el.getBoundingClientRect();
-    return { u: s.card.uid, name: s.card.def.name,
-             x: +s.view.transform.x.toFixed(1), y: +s.view.transform.y.toFixed(1),
-             rot: +s.view.transform.rot.toFixed(2), sc: +s.view.transform.scale.toFixed(3),
-             rect: [Math.round(b.left), Math.round(b.top), Math.round(b.width), Math.round(b.height)],
-             playable: s.playable };
-  });
-};
-window.__fps = async () => { let n=0; const t0=performance.now();
-  await new Promise(r=>{const f=()=>{n++;performance.now()-t0<1000?requestAnimationFrame(f):r()};requestAnimationFrame(f)});
-  return n; };
 """
 
 
-class Runner:
-    def __init__(self, page, name):
-        self.page, self.name, self.i = page, name, 0
-        self.meta = {}
-
-    async def shot(self, tag=None):
-        n = f"{self.name}_f{self.i}" if tag is None else f"{self.name}_{tag}"
-        try:
-            t = await self.page.evaluate("performance.now()-(window.__T?window.__T.t0:0)")
-        except Exception:
-            t = None
-        await self.page.screenshot(path=os.path.join(OUT, n + ".png"), animations="allow")
-        self.meta.setdefault("stamps", []).append([n, round(t, 1) if t else t])
-        self.i += 1
-        return n
-
-    async def strip(self, count, interval=0.09, during=None):
-        """Capture `count` frames `interval` apart. `during` is an awaitable
-        coroutine factory kicked off before frame 0."""
-        if during:
-            asyncio.ensure_future(during())
-        for _ in range(count):
-            await self.shot()
-            await self.page.wait_for_timeout(int(interval * 1000))
-
-
-async def boot(pw, errors, logs, w=W, h=H, reduce_motion="no-preference"):
-    browser = await pw.chromium.launch(args=[
-        "--use-gl=angle", "--use-angle=default", "--enable-unsafe-swiftshader",
-        "--force-color-profile=srgb", "--font-render-hinting=none", "--disable-lcd-text",
-        "--autoplay-policy=no-user-gesture-required",
-    ])
-    ctx = await browser.new_context(viewport={"width": w, "height": h},
-                                    device_scale_factor=1.0, reduced_motion=reduce_motion)
-    page = await ctx.new_page()
-    page.on("console", lambda m: (logs.append(f"[{m.type}] {m.text}"),
-                                  errors.append(m.text) if m.type == "error" else None))
-    page.on("pageerror", lambda e: errors.append("PAGEERROR " + str(e)))
-    await page.goto(URL, wait_until="load", timeout=45000)
-    await page.wait_for_timeout(2000)
-    await page.evaluate(INSTRUMENT)
-    return browser, page
-
-
-async def card_center(page, idx):
-    g = await page.evaluate("window.__geo()")
-    c = g[idx]
-    r = c["rect"]
-    return r[0] + r[2] / 2, r[1] + r[3] * 0.55, g
-
-
-# ── scenarios ───────────────────────────────────────────────────────────────
-async def sc_baseline(page, errors):
-    r = Runner(page, "baseline")
-    await page.click("#size-7")
-    await page.wait_for_timeout(900)
-    await r.shot("still")
-    r.meta["geo7"] = await page.evaluate("window.__geo()")
-    r.meta["fps_idle"] = await page.evaluate("window.__fps()")
-    r.meta["viewport"] = [W, H]
-    r.meta["cardbox"] = await page.evaluate(
-        "(()=>{const e=document.querySelector('.mm-card');const b=e.getBoundingClientRect();"
-        "const cs=getComputedStyle(e);return {rect:[b.width,b.height],css:[cs.width,cs.height],"
-        "bottom:b.bottom, vh:innerHeight};})()")
-    return r
-
-
-async def sc_hover(page, errors):
-    r = Runner(page, "hover")
-    await page.click("#size-7")
-    await page.wait_for_timeout(800)
-    cx, cy, g = await card_center(page, 3)
-    # park off-card first
-    await page.mouse.move(cx, H - 20)
-    await page.mouse.move(800, 300)
-    await page.wait_for_timeout(400)
-    await page.evaluate("window.__trace(1400)")
-    await page.mouse.move(cx, cy, steps=2)
-    for _ in range(8):
-        await r.shot()
-        await page.wait_for_timeout(60)
-    await page.wait_for_timeout(500)
-    r.meta["trace_in"] = await page.evaluate("window.__dump()")
-
-    # hover OUT
-    await page.wait_for_timeout(300)
-    await page.evaluate("window.__trace(1200)")
-    await page.mouse.move(800, 260, steps=2)
-    r2 = Runner(page, "hoverout")
-    for _ in range(8):
-        await r2.shot()
-        await page.wait_for_timeout(60)
-    r.meta["trace_out"] = await page.evaluate("window.__dump()")
-
-    # oscillation test: sit exactly on the seam between two cards
-    g = await page.evaluate("window.__geo()")
-    seam_x = (g[3]["rect"][0] + g[3]["rect"][2] + g[4]["rect"][0]) / 2
-    seam_y = g[3]["rect"][1] + g[3]["rect"][3] * 0.5
-    await page.mouse.move(600, 300)
-    await page.wait_for_timeout(300)
-    await page.evaluate("window.__trace(1500)")
-    await page.mouse.move(seam_x, seam_y, steps=3)
-    for k in range(30):
-        await page.mouse.move(seam_x + (0.6 if k % 2 else -0.6), seam_y)
-        await page.wait_for_timeout(35)
-    r.meta["trace_seam"] = await page.evaluate("window.__dump()")
-    r.meta["seam_pt"] = [seam_x, seam_y]
-    await Runner(page, "seam").shot("still")
-    return r
-
-
-async def sc_arc(page, errors):
-    r = Runner(page, "arc")
-    out = {}
-    for n in (1, 3, 5, 8, 12):
-        await page.mouse.move(800, 200)
-        await page.click(f"#size-{n}")
-        await page.wait_for_timeout(900)
-        await r.shot(f"n{n}")
-        out[n] = await page.evaluate("window.__geo()")
-    r.meta["geo"] = out
-    # re-fan easing: 5 -> 12, strip it
-    await page.click("#size-5")
-    await page.wait_for_timeout(800)
-    await page.evaluate("window.__trace(1200)")
-    rr = Runner(page, "refan")
-    asyncio.ensure_future(page.click("#size-12"))
-    for _ in range(9):
-        await rr.shot()
-        await page.wait_for_timeout(70)
-    r.meta["trace_refan"] = await page.evaluate("window.__dump()")
-    return r
-
-
-async def sc_drag(page, errors):
-    r = Runner(page, "drag")
-    await page.click("#size-7")
-    await page.wait_for_timeout(900)
-    g = await page.evaluate("window.__geo()")
-    # find an enemy-targeted card
-    idx = await page.evaluate(
-        "window.MMTEST.hand.slots.findIndex(s=>s.card.def.target==='enemy')")
-    r.meta["dragIdx"] = idx
-    r.meta["dragCard"] = g[idx]["name"] if idx >= 0 else None
-    c = g[idx]["rect"]
-    sx, sy = c[0] + c[2] / 2, c[1] + c[3] * 0.6
-    foe = await page.evaluate(
-        "(()=>{const b=document.querySelector('.foe[data-id=\"grumble\"] .foe__body').getBoundingClientRect();"
-        "return [b.left+b.width/2, b.top+b.height/2];})()")
-    await page.evaluate("window.__trace(3000)")
-    await page.mouse.move(sx, sy)
-    await page.wait_for_timeout(120)
-    await page.mouse.down()
-    await r.shot()
-    # drag upward in steps, screenshotting
-    pts = [(sx, sy - 120), (sx + 60, sy - 300), (sx + 120, 430), (foe[0] - 140, 320),
-           (foe[0] - 30, foe[1] + 40), (foe[0], foe[1])]
-    for (px, py) in pts:
-        await page.mouse.move(px, py, steps=5)
-        await page.wait_for_timeout(90)
-        await r.shot()
-    await page.wait_for_timeout(120)
-    await r.shot()
-    r.meta["snapped_geo"] = await page.evaluate(
-        "(()=>{const a=document.querySelector('.mm-hand__arrow');"
-        "return {cls:a.className.baseVal||a.getAttribute('class'),"
-        "glow:a.querySelector('.mm-arrow__glow').getAttribute('d'),"
-        "ret:a.querySelector('.mm-arrow__reticle').getAttribute('transform'),"
-        "nums:[...document.querySelectorAll('.mm-card__num')].map(n=>[n.textContent,n.className])};})()")
-    await r.shot("snapped")
-    # move off target to test un-snap
-    await page.mouse.move(foe[0], 700, steps=6)
-    await page.wait_for_timeout(150)
-    await r.shot("unsnapped")
-    await page.mouse.move(foe[0], foe[1], steps=6)
-    await page.wait_for_timeout(150)
-    await page.mouse.up()
-    r.meta["trace"] = await page.evaluate("window.__dump()")
-    await page.wait_for_timeout(200)
-    return r
-
-
-async def sc_play(page, errors):
-    r = Runner(page, "play")
-    await page.mouse.move(800, 200)
-    await page.click("#size-7")
-    await page.wait_for_timeout(900)
-    await page.evaluate("window.__trace(2200)")
-    await page.evaluate(
-        "(()=>{const c=window.MMTEST.hand.cards().find(c=>c.def.target==='enemy');"
-        "window.MMTEST.hand.playCard(c.uid,'grumble');})()")
-    for _ in range(12):
-        await r.shot()
-        await page.wait_for_timeout(70)
-    r.meta["trace"] = await page.evaluate("window.__dump()")
-    return r
-
-
-async def sc_draw(page, errors):
-    r = Runner(page, "draw")
-    await page.mouse.move(800, 200)
-    await page.click("#size-3")
-    await page.wait_for_timeout(800)
-    await page.evaluate("window.__trace(1600)")
-    asyncio.ensure_future(page.click("#btn-draw-5"))
-    for _ in range(10):
-        await r.shot()
-        await page.wait_for_timeout(70)
-    r.meta["trace"] = await page.evaluate("window.__dump()")
-    return r
-
-
-async def sc_discard(page, errors):
-    r = Runner(page, "discard")
-    await page.mouse.move(800, 200)
-    await page.click("#size-7")
-    await page.wait_for_timeout(800)
-    await page.evaluate("window.__trace(1600)")
-    asyncio.ensure_future(page.click("#btn-discard-all"))
-    for _ in range(10):
-        await r.shot()
-        await page.wait_for_timeout(70)
-    r.meta["trace"] = await page.evaluate("window.__dump()")
-    return r
-
-
-async def sc_exhaust(page, errors):
-    r = Runner(page, "exhaust")
-    await page.mouse.move(800, 200)
-    await page.click("#size-7")
-    await page.wait_for_timeout(800)
-    await page.evaluate("window.__trace(1600)")
-    asyncio.ensure_future(page.click("#btn-exhaust"))
-    for _ in range(10):
-        await r.shot()
-        await page.wait_for_timeout(70)
-    r.meta["trace"] = await page.evaluate("window.__dump()")
-    return r
-
-
-async def sc_unplayable(page, errors):
-    r = Runner(page, "unplayable")
-    await page.mouse.move(800, 200)
-    await page.click("#size-7")
-    await page.wait_for_timeout(800)
-    await r.shot("energy3")
-    await page.click("#btn-energy")   # energy + (first match) -- resolve below
-    await page.wait_for_timeout(400)
-    # set energy 0 directly to be sure
-    await page.evaluate("window.MMTEST.setEnergy(0)")
-    await page.wait_for_timeout(800)
-    await r.shot("energy0")
-    r.meta["geo0"] = await page.evaluate("window.__geo()")
-    r.meta["classes"] = await page.evaluate(
-        "[...document.querySelectorAll('.mm-card')].map(e=>({id:e.dataset.cardId,c:e.className,"
-        "op:getComputedStyle(e).opacity,fil:getComputedStyle(e).filter}))")
-    # greyscale check: is it colour-only?
-    await page.evaluate("window.MMTEST.setEnergy(3)")
-    await page.wait_for_timeout(600)
-    await page.evaluate("document.documentElement.style.filter='grayscale(1)'")
-    await page.evaluate("window.MMTEST.setEnergy(1)")
-    await page.wait_for_timeout(800)
-    await r.shot("grayscale_e1")
-    await page.evaluate("document.documentElement.style.filter=''")
-    await page.evaluate("window.MMTEST.setEnergy(3)")
-    return r
-
-
-async def sc_numbers(page, errors):
-    r = Runner(page, "numbers")
-    await page.mouse.move(800, 200)
-    await page.click("#size-7")
-    await page.wait_for_timeout(800)
-    await r.shot("base")
-    await page.click("#btn-upgrade-all")
-    await page.wait_for_timeout(700)
-    await r.shot("upgraded")
-    r.meta["upgraded_nums"] = await page.evaluate(
-        "[...document.querySelectorAll('.mm-card')].map(e=>({n:e.querySelector('.mm-card__name').textContent,"
-        "nums:[...e.querySelectorAll('.mm-card__num')].map(x=>[x.textContent,x.className,getComputedStyle(x).color])}))")
-    # boosted / reduced via keyboard aim at grumble (x1.5) then chandy (x0.6)
-    await page.keyboard.press("Escape")
-    await page.evaluate(
-        "(()=>{const h=window.MMTEST.hand;const i=h.slots.findIndex(s=>s.card.def.target==='enemy');"
-        "h._selectIdx(i);h._confirm();})()")
-    await page.wait_for_timeout(500)
-    await r.shot("preview_grumble")
-    r.meta["boosted"] = await page.evaluate(
-        "[...document.querySelectorAll('.mm-card')].map(e=>[...e.querySelectorAll('.mm-card__num')]"
-        ".map(x=>[x.textContent,x.className,getComputedStyle(x).color])).filter(a=>a.some(b=>b[1]!=='mm-card__num'))")
-    await page.keyboard.press("Tab")
-    await page.wait_for_timeout(200)
-    await page.keyboard.press("Tab")
-    await page.wait_for_timeout(500)
-    await r.shot("preview_chandy")
-    r.meta["reduced"] = await page.evaluate(
-        "[...document.querySelectorAll('.mm-card')].map(e=>[...e.querySelectorAll('.mm-card__num')]"
-        ".map(x=>[x.textContent,x.className,getComputedStyle(x).color])).filter(a=>a.some(b=>b[1]!=='mm-card__num'))")
-    await page.keyboard.press("Escape")
-    return r
-
-
-async def sc_keyboard(page, errors):
-    r = Runner(page, "keyboard")
-    await page.mouse.move(800, 120)
-    await page.click("#size-7")
-    await page.wait_for_timeout(800)
-    await page.evaluate("document.activeElement.blur()")
-    await page.wait_for_timeout(200)
-    await r.shot("k0_start")
-    r.meta["focus_before"] = await page.evaluate("document.activeElement.tagName+'.'+document.activeElement.className")
-    await page.keyboard.press("3")
-    await page.wait_for_timeout(400)
-    await r.shot("k1_num3")
-    r.meta["focus_after_3"] = await page.evaluate("document.activeElement.tagName+'.'+document.activeElement.className")
-    r.meta["outline"] = await page.evaluate(
-        "(()=>{const s=document.querySelector('.mm-card.is-selected');if(!s)return null;const c=getComputedStyle(s);"
-        "return {outline:c.outline,ol:c.outlineWidth,sel:s.className,tabindex:s.getAttribute('tabindex')};})()")
-    await page.keyboard.press("ArrowRight")
-    await page.wait_for_timeout(350)
-    await r.shot("k2_right")
-    await page.keyboard.press("Enter")
-    await page.wait_for_timeout(450)
-    await r.shot("k3_enter")
-    r.meta["aim"] = await page.evaluate("!!window.MMTEST.hand.aim && (window.MMTEST.hand.aim.snap||{}).id")
-    await page.keyboard.press("Tab")
-    await page.wait_for_timeout(350)
-    await r.shot("k4_tab")
-    r.meta["aim2"] = await page.evaluate("!!window.MMTEST.hand.aim && (window.MMTEST.hand.aim.snap||{}).id")
-    r.meta["tab_stole_focus"] = await page.evaluate("document.activeElement.tagName+'.'+(document.activeElement.className||'')")
-    await page.keyboard.press("Escape")
-    await page.wait_for_timeout(350)
-    await r.shot("k5_esc")
-    r.meta["aim_after_esc"] = await page.evaluate("!!window.MMTEST.hand.aim")
-    # play by keyboard
-    await page.keyboard.press("3")
-    await page.wait_for_timeout(250)
-    await page.keyboard.press("Enter")
-    await page.wait_for_timeout(300)
-    await page.keyboard.press("Enter")
-    await page.wait_for_timeout(600)
-    await r.shot("k6_played")
-    r.meta["count_after"] = await page.evaluate("window.MMTEST.hand.count")
-    # Tab with no aim: does it reach the hand at all?
-    await page.evaluate("document.activeElement.blur()")
-    for _ in range(3):
-        await page.keyboard.press("Tab")
-        await page.wait_for_timeout(120)
-    r.meta["tab3_focus"] = await page.evaluate("document.activeElement.tagName+'.'+(document.activeElement.className||'')+'#'+(document.activeElement.id||'')")
-    await r.shot("k7_tabfocus")
-    return r
-
-
-async def sc_stress(page, errors):
-    """fps under motion + interrupt a re-fan mid-flight."""
-    r = Runner(page, "stress")
-    await page.click("#size-12")
-    await page.wait_for_timeout(900)
-    fps_task = page.evaluate("window.__fps()")
-    await page.click("#btn-draw-5")
-    fps = await fps_task
-    r.meta["fps_motion"] = fps
-    await page.wait_for_timeout(1200)
-    # interrupt: start refan then immediately change again
-    await page.click("#size-3")
-    await page.wait_for_timeout(80)
-    await page.evaluate("window.__trace(1000)")
-    await page.click("#size-11")
-    await page.wait_for_timeout(60)
-    await page.click("#size-4")
-    for _ in range(8):
-        await r.shot()
-        await page.wait_for_timeout(70)
-    r.meta["trace_interrupt"] = await page.evaluate("window.__dump()")
-    r.meta["fps_idle2"] = await page.evaluate("window.__fps()")
-    return r
-
-
-async def _slowmo(page, name, btn, frames=11, setup="#size-7", scale=0.25):
-    """Same motion, clock.scale slowed so screenshot latency (~350ms real) equals
-    ~90ms of GAME time. Shape is identical; only the rate changes. Real durations
-    come from the rAF traces captured at scale 1."""
-    r = Runner(page, name)
-    await page.mouse.move(800, 200)
-    await page.click(setup)
-    await page.wait_for_timeout(900)
-    await page.evaluate(f"window.MMTEST.clock.scale={scale}")
-    await page.evaluate("window.__trace(9000)")
-    if btn.startswith("js:"):
-        asyncio.ensure_future(page.evaluate(btn[3:]))
-    else:
-        asyncio.ensure_future(page.click(btn))
-    for _ in range(frames):
-        await r.shot()
-    r.meta["trace"] = await page.evaluate("window.__dump()")
-    r.meta["scale"] = scale
-    await page.evaluate("window.MMTEST.clock.scale=1")
-    return r
-
-
-async def sc_slow_draw(page, e):
-    return await _slowmo(page, "slowdraw", "#btn-draw-5", 11, "#size-3")
-async def sc_slow_discard(page, e):
-    return await _slowmo(page, "slowdiscard", "#btn-discard-all", 11)
-async def sc_slow_exhaust(page, e):
-    return await _slowmo(page, "slowexhaust", "#btn-exhaust", 12)
-async def sc_slow_play(page, e):
-    return await _slowmo(page, "slowplay",
-        "js:(()=>{const c=window.MMTEST.hand.cards().find(c=>c.def.target==='enemy');"
-        "window.MMTEST.hand.playCard(c.uid,'grumble');})()", 13)
-async def sc_slow_refan(page, e):
-    return await _slowmo(page, "slowrefan", "#size-12", 10, "#size-4", 0.3)
-
-
-SCENARIOS = {
-    "slowdraw": sc_slow_draw, "slowdiscard": sc_slow_discard,
-    "slowexhaust": sc_slow_exhaust, "slowplay": sc_slow_play,
-    "slowrefan": sc_slow_refan,
-    "baseline": sc_baseline, "hover": sc_hover, "arc": sc_arc, "drag": sc_drag,
-    "play": sc_play, "draw": sc_draw, "discard": sc_discard, "exhaust": sc_exhaust,
-    "unplayable": sc_unplayable, "numbers": sc_numbers, "keyboard": sc_keyboard,
-    "stress": sc_stress,
-}
-
-
-async def main(names):
+async def main(sections):
     from playwright.async_api import async_playwright
-    async with async_playwright() as pw:
-        for nm in names:
-            errors, logs = [], []
-            browser, page = await boot(pw, errors, logs)
-            try:
-                r = await SCENARIOS[nm](page, errors)
-                meta = r.meta
-            except Exception as e:
-                meta = {"EXC": repr(e)}
-                errors.append("RUNNER " + repr(e))
-            meta["errors"] = errors[:40]
-            meta["logs"] = logs[-40:]
-            with open(os.path.join(OUT, nm + ".json"), "w", encoding="utf-8") as f:
-                json.dump(meta, f, indent=1)
-            print(nm, "done. errors:", len(errors))
-            await browser.close()
+    async with async_playwright() as p:
+        br = await p.chromium.launch(args=[
+            "--use-gl=angle", "--use-angle=default", "--enable-unsafe-swiftshader",
+            "--force-color-profile=srgb", "--font-render-hinting=none", "--disable-lcd-text",
+            "--autoplay-policy=no-user-gesture-required"])
+        ctx = await br.new_context(viewport={"width": W, "height": H},
+                                   device_scale_factor=1.0, reduced_motion="no-preference")
+        page = await ctx.new_page()
+        page.on("console", lambda m: (LOGS.append(f"[{m.type}] {m.text}"),
+                                      ERRORS.append(m.text) if m.type == "error" else None))
+        page.on("pageerror", lambda e: ERRORS.append("PAGEERROR " + str(e)))
+        await page.goto(URL, wait_until="load", timeout=45000)
+        await page.wait_for_timeout(2500)
+        await page.evaluate(SAMPLER)
+
+        async def snap(n):
+            await page.screenshot(path=os.path.join(OUT, n + ".png"), animations="allow")
+            return n
+
+        async def strip(name, n=8, iv=0.09):
+            for i in range(n):
+                await snap(f"{name}_f{i}")
+                await page.wait_for_timeout(int(iv * 1000))
+
+        async def size(n):
+            await page.click(f"#size-{n}")
+            await page.wait_for_timeout(700)
+
+        async def box(i=3):
+            return await page.evaluate(
+                f"(()=>{{const e=document.querySelectorAll('.mm-hand__cards .mm-card')[{i}];"
+                f"const r=e.getBoundingClientRect();return{{x:r.x+r.width/2,y:r.y+r.height/2,"
+                f"w:r.width,h:r.height,top:r.top,bottom:r.bottom}}}})()")
+
+        run = lambda s: (not sections) or s in sections
+
+        # ── 0. baseline / clipping ──────────────────────────────────────────
+        if run("base"):
+            await size(7)
+            g = await page.evaluate("__cf.geom()")
+            M["viewport"] = {"w": W, "h": H}
+            M["base_geom_7"] = g
+            M["clip"] = {"max_bottom": max(c["bottom"] for c in g),
+                         "min_top": min(c["top"] for c in g),
+                         "card_w": g[0]["w"], "card_h": g[0]["h"],
+                         "offscreen_bottom_px": max(0, max(c["bottom"] for c in g) - H),
+                         "hand_width": max(c["x"] + c["w"] for c in g) - min(c["x"] for c in g)}
+            await snap("base_7")
+            M["fps_idle"] = await page.evaluate("__cf.fps()")
+
+        # ── 1. hover in / out, rAF-measured ─────────────────────────────────
+        if run("hover"):
+            await size(7)
+            b = await box(3)
+            await page.mouse.move(10, 10)
+            await page.wait_for_timeout(400)
+            task = asyncio.ensure_future(page.evaluate(
+                "__cf.sample('.mm-hand__cards .mm-card:nth-child(4)', 700)"))
+            await page.wait_for_timeout(60)
+            await page.mouse.move(b["x"], b["y"], steps=1)
+            hin = await task
+            M["hover_in_samples"] = hin
+            await page.wait_for_timeout(300)
+            task = asyncio.ensure_future(page.evaluate(
+                "__cf.sample('.mm-hand__cards .mm-card:nth-child(4)', 700)"))
+            await page.wait_for_timeout(60)
+            await page.mouse.move(10, 10, steps=1)
+            M["hover_out_samples"] = await task
+            # visual strips at 40ms so a <120ms move is actually resolvable
+            await page.mouse.move(10, 10); await page.wait_for_timeout(400)
+            await page.mouse.move(b["x"], b["y"], steps=1)
+            await strip("hoverin", 6, 0.04)
+            await page.wait_for_timeout(500)
+            await snap("hover_settled")
+            M["hover_geom"] = await page.evaluate("__cf.geom()")
+            await page.mouse.move(10, 10, steps=1)
+            await strip("hoverout", 6, 0.04)
+            await page.wait_for_timeout(400)
+
+            # oscillation: park the pointer exactly on the seam between 2 cards
+            g = await page.evaluate("__cf.geom()")
+            seam = (g[3]["x"] + g[3]["w"] + g[4]["x"]) / 2
+            await page.mouse.move(seam, g[3]["cy"])
+            await page.wait_for_timeout(300)
+            osc = await page.evaluate(
+                "(async()=>{const o=[];const t0=performance.now();"
+                "const f=()=>{const h=document.querySelector('.mm-card.is-hover');"
+                "o.push({t:+(performance.now()-t0).toFixed(0),u:h?h.dataset.uid:null});"
+                "if(performance.now()-t0<900)requestAnimationFrame(f);};"
+                "requestAnimationFrame(f);await new Promise(r=>setTimeout(r,1000));return o})()")
+            flips = sum(1 for a, b2 in zip(osc, osc[1:]) if a["u"] != b2["u"])
+            M["seam_hover_flips"] = flips
+            M["seam_hover_trace"] = osc[::10]
+            await snap("seam_hover")
+            await page.mouse.move(10, 10); await page.wait_for_timeout(400)
+
+        # ── 2. arc fan at 1/3/5/8/12 ────────────────────────────────────────
+        if run("arc"):
+            for n in (1, 3, 5, 8, 12):
+                await size(n)
+                await page.wait_for_timeout(500)
+                g = await page.evaluate("__cf.geom()")
+                cy = [c["cy"] for c in g]
+                mid = cy[len(cy) // 2]
+                M[f"arc_{n}"] = {
+                    "cy": cy, "rot": [c["rot"] for c in g],
+                    "outer_minus_centre_y": round(max(cy[0], cy[-1]) - mid, 1),
+                    "dip_px": round(max(cy) - min(cy), 1),
+                    "overlap_px": round((g[0]["w"] - (g[1]["x"] - g[0]["x"])), 1) if n > 1 else None,
+                    "max_bottom": max(c["bottom"] for c in g),
+                    "offscreen": max(0, max(c["bottom"] for c in g) - H),
+                }
+                await snap(f"arc_{n}")
+            # re-fan easing: 5 -> 12, strip
+            await size(5)
+            await page.click("#size-12")
+            await strip("refan_5to12", 7, 0.05)
+            await page.wait_for_timeout(600)
+            # interruptibility: retarget mid-flight
+            await page.click("#size-3")
+            await page.wait_for_timeout(120)
+            await page.click("#size-10")
+            await strip("refan_interrupt", 7, 0.06)
+            await page.wait_for_timeout(600)
+
+        # ── 3. drag a targeted card at an enemy ─────────────────────────────
+        if run("drag"):
+            await size(7)
+            await page.wait_for_timeout(500)
+            # find a card whose def targets an enemy
+            idx = await page.evaluate(
+                "(()=>{const c=MMTEST.hand.cards();for(let i=0;i<c.length;i++)"
+                "if(c[i].def.target==='enemy')return i;return 0})()")
+            M["drag_card_index"] = idx
+            b = await box(idx)
+            foe = await page.evaluate(
+                "(()=>{const r=document.querySelector('.foe[data-id=\"grumble\"] .foe__body')"
+                ".getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()")
+            await page.mouse.move(b["x"], b["y"])
+            await page.wait_for_timeout(200)
+            await page.mouse.down()
+            await page.wait_for_timeout(80)
+            await snap("drag_f0_pickup")
+            steps = 6
+            for i in range(1, steps + 1):
+                t = i / steps
+                await page.mouse.move(b["x"] + (foe["x"] - b["x"]) * t,
+                                      b["y"] + (foe["y"] - b["y"]) * t, steps=3)
+                await page.wait_for_timeout(70)
+                await snap(f"drag_f{i}")
+                if i == steps:
+                    M["arrow_at_target"] = await page.evaluate("__cf.arrow()")
+                elif i == 3:
+                    M["arrow_midway"] = await page.evaluate("__cf.arrow()")
+            # off-target for comparison
+            await page.mouse.move(W - 120, 300, steps=6)
+            await page.wait_for_timeout(150)
+            M["arrow_offtarget"] = await page.evaluate("__cf.arrow()")
+            await snap("drag_offtarget")
+            await page.mouse.move(foe["x"], foe["y"], steps=6)
+            await page.wait_for_timeout(150)
+            await snap("drag_resnap")
+            await page.mouse.up()
+            await strip("play_after_drag", 8, 0.09)
+            await page.wait_for_timeout(900)
+
+        # ── 4. play / draw / discard / exhaust signatures ───────────────────
+        if run("motion"):
+            await size(7); await page.wait_for_timeout(600)
+            await page.evaluate(EPLUS)
+            await page.wait_for_timeout(200)
+            await page.click("#btn-play-random")
+            await strip("play", 10, 0.07)
+            await page.wait_for_timeout(900)
+
+            await page.click("#btn-discard-all")
+            await strip("discard", 8, 0.07)
+            await page.wait_for_timeout(900)
+
+            await page.click("#btn-draw-5")
+            await strip("draw", 8, 0.07)
+            await page.wait_for_timeout(900)
+
+            await page.click("#btn-exhaust")
+            await strip("exhaust", 9, 0.08)
+            await page.wait_for_timeout(1000)
+
+            # sampled traces so the three can be compared numerically
+            await size(6); await page.wait_for_timeout(600)
+            M["trace_discard"] = await page.evaluate(
+                "(async()=>{const s=__cf.sample('.mm-hand__cards .mm-card:nth-child(2)',900);"
+                "document.querySelector('#btn-discard-all').click();return await s})()")
+            await page.wait_for_timeout(900)
+            await size(6); await page.wait_for_timeout(600)
+            M["trace_exhaust"] = await page.evaluate(
+                "(async()=>{const s=__cf.sample('.mm-hand__cards .mm-card:nth-child(4)',1200);"
+                "document.querySelector('#btn-exhaust').click();return await s})()")
+            await page.wait_for_timeout(900)
+            M["fps_after_motion"] = await page.evaluate("__cf.fps()")
+
+        # ── 5. unplayable state ─────────────────────────────────────────────
+        if run("unplayable"):
+            await size(7); await page.wait_for_timeout(600)
+            await snap("playable_on")
+            M["geom_playable"] = await page.evaluate("__cf.geom()")
+            await page.click("#btn-toggle-playable")
+            await page.wait_for_timeout(600)
+            await snap("playable_off")
+            M["geom_unplayable"] = await page.evaluate("__cf.geom()")
+            M["unplayable_css"] = await page.evaluate(
+                "(()=>{const e=document.querySelector('.mm-hand__cards .mm-card');"
+                "const s=getComputedStyle(e);return{filter:s.filter,opacity:s.opacity,"
+                "cls:e.className}})()")
+            await page.click("#btn-toggle-playable")
+            await page.wait_for_timeout(500)
+            # energy-driven unplayability (mixed hand)
+            for _ in range(3):
+                await page.evaluate(EMINUS)
+                await page.wait_for_timeout(150)
+            await page.wait_for_timeout(600)
+            await snap("energy0_mixed")
+            M["geom_energy0"] = await page.evaluate("__cf.geom()")
+            for _ in range(3):
+                await page.evaluate(EPLUS)
+                await page.wait_for_timeout(120)
+
+        # ── 6. numbers: upgraded / boosted / reduced ────────────────────────
+        if run("numbers"):
+            await size(7); await page.wait_for_timeout(500)
+            await snap("nums_base")
+            M["nums_base"] = await page.evaluate(
+                "[...document.querySelectorAll('.mm-card__num')].map(n=>({t:n.textContent,"
+                "cls:n.className,col:getComputedStyle(n).color}))")
+            await page.click("#btn-upgrade-all")
+            await page.wait_for_timeout(800)
+            await snap("nums_upgraded")
+            M["nums_upgraded"] = await page.evaluate(
+                "[...document.querySelectorAll('.mm-card__num')].map(n=>({t:n.textContent,"
+                "cls:n.className,col:getComputedStyle(n).color}))")
+            # boosted / reduced: aim at Grumbleboot (x1.5) then Chandelier (x0.6)
+            idx = await page.evaluate(
+                "(()=>{const c=MMTEST.hand.cards();for(let i=0;i<c.length;i++)"
+                "if(c[i].def.target==='enemy')return i;return 0})()")
+            b = await box(idx)
+            for foe_id, tag in (("grumble", "boost"), ("chandy", "reduce")):
+                f = await page.evaluate(
+                    f"(()=>{{const r=document.querySelector('.foe[data-id=\"{foe_id}\"] .foe__body')"
+                    ".getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()")
+                await page.mouse.move(b["x"], b["y"]); await page.wait_for_timeout(150)
+                await page.mouse.down(); await page.wait_for_timeout(80)
+                await page.mouse.move(f["x"], f["y"], steps=10); await page.wait_for_timeout(450)
+                await snap(f"nums_{tag}")
+                M[f"nums_{tag}"] = await page.evaluate(
+                    "[...document.querySelectorAll('.mm-card.is-drag .mm-card__num,"
+                    ".mm-card.is-held .mm-card__num,.mm-card[style*=\"z-index\"] .mm-card__num')]"
+                    ".map(n=>({t:n.textContent,cls:n.className,col:getComputedStyle(n).color}))")
+                await page.keyboard.press("Escape")
+                await page.mouse.up()
+                await page.wait_for_timeout(600)
+            # zoom crop of one card at hover scale for text-blur judgement
+            await page.mouse.move(10, 10); await page.wait_for_timeout(400)
+            b = await box(3)
+            await page.mouse.move(b["x"], b["y"]); await page.wait_for_timeout(500)
+            bb = await box(3)
+            await page.screenshot(path=os.path.join(OUT, "hovercard_zoom.png"),
+                                  clip={"x": max(0, bb["x"] - bb["w"] / 2 - 10),
+                                        "y": max(0, bb["top"] - 10),
+                                        "width": bb["w"] + 20,
+                                        "height": min(bb["h"] + 20, H - bb["top"] + 10)})
+            await page.mouse.move(10, 10); await page.wait_for_timeout(300)
+
+        # ── 7. keyboard-only path ───────────────────────────────────────────
+        if run("kbd"):
+            await size(6); await page.wait_for_timeout(600)
+            await page.mouse.move(10, 10)
+            await page.keyboard.press("1")
+            await page.wait_for_timeout(350)
+            await snap("kbd_1_selected")
+            M["kbd_after_1"] = await page.evaluate(
+                "({sel:MMTEST.hand.selIdx, aim:!!MMTEST.hand.aim,"
+                " focus:document.activeElement.className||document.activeElement.tagName,"
+                " arrow:__cf.arrow()})")
+            await page.keyboard.press("ArrowRight")
+            await page.wait_for_timeout(300)
+            await snap("kbd_arrowright")
+            M["kbd_after_right"] = await page.evaluate("({sel:MMTEST.hand.selIdx})")
+            await page.keyboard.press("Enter")
+            await page.wait_for_timeout(350)
+            await snap("kbd_enter")
+            M["kbd_after_enter"] = await page.evaluate(
+                "({sel:MMTEST.hand.selIdx, aim:MMTEST.hand.aim?MMTEST.hand.aim.targetId||true:false,"
+                " arrow:__cf.arrow(), n:MMTEST.hand.count})")
+            await page.keyboard.press("Tab")
+            await page.wait_for_timeout(300)
+            await snap("kbd_tab_target")
+            M["kbd_after_tab"] = await page.evaluate(
+                "({aim:MMTEST.hand.aim?MMTEST.hand.aim.targetId||true:false,"
+                " focus:document.activeElement.className||document.activeElement.tagName})")
+            await page.keyboard.press("Enter")
+            await page.wait_for_timeout(600)
+            await snap("kbd_played")
+            M["kbd_after_play"] = await page.evaluate("({n:MMTEST.hand.count})")
+            await page.keyboard.press("2"); await page.wait_for_timeout(250)
+            await page.keyboard.press("Escape"); await page.wait_for_timeout(300)
+            await snap("kbd_escape")
+            M["kbd_after_esc"] = await page.evaluate(
+                "({sel:MMTEST.hand.selIdx, aim:!!MMTEST.hand.aim})")
+            # focus visibility: native Tab from the page body
+            await page.evaluate("document.body.focus()")
+            M["focusable_cards"] = await page.evaluate(
+                "[...document.querySelectorAll('.mm-hand__cards .mm-card')]"
+                ".map(e=>({ti:e.getAttribute('tabindex'),role:e.getAttribute('role'),"
+                "al:e.getAttribute('aria-label')}))")
+
+        # ── 8. small viewport ───────────────────────────────────────────────
+        if run("small"):
+            await page.set_viewport_size({"width": 1280, "height": 720})
+            await page.wait_for_timeout(700)
+            await size(10); await page.wait_for_timeout(700)
+            await snap("small_1280x720_10")
+            g = await page.evaluate("__cf.geom()")
+            M["small_1280"] = {"card_h": g[0]["h"], "max_bottom": max(c["bottom"] for c in g),
+                               "offscreen": max(0, max(c["bottom"] for c in g) - 720),
+                               "vh_frac": round(g[0]["h"] / 720, 3)}
+            await page.set_viewport_size({"width": 1600, "height": 900})
+            await page.wait_for_timeout(600)
+
+        M["errors"] = ERRORS[:40]
+        M["logs"] = LOGS[-40:]
+        json.dump(M, open(os.path.join(OUT, "metrics.json"), "w"), indent=1)
+        await br.close()
+    print("errors:", len(ERRORS))
+    for e in ERRORS[:10]:
+        print("  ", e[:300])
+    print("wrote", os.path.join(OUT, "metrics.json"))
 
 
 if __name__ == "__main__":
-    args = sys.argv[1:] or list(SCENARIOS)
-    asyncio.run(main(args))
+    asyncio.run(main(set(sys.argv[1:])))

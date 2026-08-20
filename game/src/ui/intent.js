@@ -244,6 +244,9 @@ export class IntentView {
     const hits = intent.hits | 0;
     const showNum = dmg > 0 && hits > 0;
     this.el.classList.toggle('has-num', showNum);
+    // A Guard number and a damage number must never look alike: the Guard one
+    // wears a shield and the Guard colour, the damage one does not.
+    this.el.classList.toggle('is-blocknum', !showNum && intent.block > 0);
     if (showNum) {
       const changed = prev && (prev.damage !== intent.damage || prev.hits !== intent.hits);
       this.$d.textContent = String(dmg);

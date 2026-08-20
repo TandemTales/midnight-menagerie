@@ -134,6 +134,37 @@ export function slug(s) {
 }
 
 /**
+ * Merge every content registry the engine knows about, without hard import
+ * dependencies on files owned by other agents. Safe to call repeatedly, and safe
+ * to call before any of those files exist.
+ *
+ *   await loadContentRegistries(engine)
+ *
+ * Registers: companion keywords + statuses, enemy statuses, and (if an engine is
+ * passed) the enemy-generated status Tricks so `ctx.addCard('clutter')` resolves.
+ */
+export async function loadContentRegistries(engine = null) {
+  const done = { companions: false, enemies: false };
+  done.companions = await loadCompanionKeywords();
+  try {
+    const m = await import('./enemies/_lib.js');
+    const { registerStatuses } = await import('../combat/statuses.js');
+    if (m.ENEMY_STATUSES) {
+      registerStatuses(m.ENEMY_STATUSES);
+      registerKeywords(m.ENEMY_STATUSES.map(s2 => ({
+        id: s2.id, name: s2.name, desc: String(s2.desc || '').replace(/\{n\}/g, 'X'),
+        category: s2.kind === 'debuff' ? 'debuff' : 'buff', status: true, icon: s2.icon,
+      })));
+    }
+    if (engine && m.STATUS_TRICK_DEFS) engine.registerCards(m.STATUS_TRICK_DEFS);
+    done.enemies = true;
+  } catch (e) {
+    console.warn('[keywords] enemy library not available yet', e?.message || e);
+  }
+  return done;
+}
+
+/**
  * Merge the companion-cards agent's registry without a hard import dependency.
  * Safe to call more than once; safe to call before that file exists.
  */

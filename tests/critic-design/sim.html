@@ -43,6 +43,7 @@ function adaptEnemyDef(def) {
 
 const DECK = startingDeckFor('marmalade');
 
+let FIX = false;
 function makeEngine(encId, seed, haunt = 0) {
   const rng = new RNG(seed);
   const members = enc.buildEncounter(encId, rng, haunt);
@@ -60,6 +61,19 @@ function makeEngine(encId, seed, haunt = 0) {
     if (mm?.flags) en.flags = { ...(en.flags || {}), ...mm.flags };
   });
   return e;
+}
+
+
+// ── MULTIHIT FIX: make ctx.damage not re-loop opts.hits (hitPlayer already loops)
+function fixSeam(engine) {
+  const orig = engine.enemyCtx.bind(engine);
+  engine.enemyCtx = (en, mv, extra) => {
+    const c = orig(en, mv, extra);
+    const rd = c.damage;
+    c.damage = (t, n, opts = {}) => rd(t, n, { ...opts, hits: 1 });
+    return c;
+  };
+  return engine;
 }
 
 // ── incoming damage the player is TOLD to expect this enemy turn ─────────────
@@ -196,6 +210,19 @@ await batch('Foyer Scuffle 2 — Coatrack Crawler (33)', 'foyer-2', N, 60);
 await batch('Foyer Scuffle 14 — hardest normal (67)', 'foyer-14', N, 60);
 await batch('Foyer elite — Grand Coatcheck (96)', 'foyer-scare-coatcheck', N, 80);
 await batch('Foyer BOSS — The Butler (250)', 'foyer-boss', N, 120);
+
+FIX = true;
+RESULT.fixedSeam = [];
+{
+  const keep = RESULT.batches; RESULT.batches = [];
+  await batch('[MULTIHIT FIXED] Foyer 1 — Dust Bunny (20)', 'foyer-1', N, 60);
+  await batch('[MULTIHIT FIXED] Foyer 2 — Coatrack Crawler (33)', 'foyer-2', N, 60);
+  await batch('[MULTIHIT FIXED] Foyer 14 — hardest normal (67)', 'foyer-14', N, 60);
+  await batch('[MULTIHIT FIXED] Foyer elite — Coatcheck (96)', 'foyer-scare-coatcheck', N, 80);
+  await batch('[MULTIHIT FIXED] Foyer BOSS — Butler (250)', 'foyer-boss', N, 120);
+  RESULT.fixedSeam = RESULT.batches; RESULT.batches = keep;
+}
+FIX = false;
 
 // ── declared-vs-rendered display hints ───────────────────────────────────────
 const hintGaps = [];

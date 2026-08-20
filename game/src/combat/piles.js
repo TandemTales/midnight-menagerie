@@ -172,8 +172,11 @@ export class Piles {
     if (toPile === Pile.STASH && this.stash.length >= this.stashCap && !this.stash.includes(card)) {
       return false;
     }
+    // `{top:true}` / `{bottom:true}` are what the content helpers write.
+    let position = opts.position;
+    if (position === undefined) position = opts.top ? 'top' : opts.bottom ? 'bottom' : (toPile === Pile.DRAW ? 'top' : 'bottom');
     const from = this._pull(card);
-    const idx = this._push(card, toPile, opts.position ?? 'bottom');
+    const idx = this._push(card, toPile, position);
     this.e._emit(EV.CARD_MOVE, {
       cardUid: card.uid, card: this.e.cardSnap(card),
       from, to: toPile, position: idx, reason: opts.reason || 'effect',

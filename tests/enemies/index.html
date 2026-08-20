@@ -12,6 +12,7 @@
 import { Intent } from '../../game/src/data/schema.js';
 import { RNG } from '../../game/src/core/rng.js';
 import { ENEMIES, ENEMY_LIST, getEnemy, ENEMY_STATUSES, STATUS_TRICK_DEFS } from '../../game/src/data/enemies/index.js';
+import * as LIB from '../../game/src/data/enemies/_lib.js';
 import {
   encountersFor, rollEncounter, buildEncounter, ENCOUNTER_LIST, REGION_RULES, scufflePool,
 } from '../../game/src/data/encounters.js';
@@ -52,6 +53,7 @@ class MockCombat {
     this.events = [];
     this.cardsPlayedThisTurn = [];
     this.damageDealtThisTurn = 0;
+    this.damageLog = [];
     this.player = { id: 'player', name: 'Kid', hp: 80, maxHp: 80, block: 0, statuses: {}, damageTakenThisTurn: 0 };
     this.discard = [];
     this.actors = defs.map(d => makeActor(d, opts.hp?.[d.id] ?? d.hp[0]));
@@ -136,9 +138,21 @@ class MockCombat {
     finally { this._inBoardEvent = false; }
   }
 
+  /**
+   * Mirrors combat/engine.js:1061 — `damage(target, amount, {hits})` resolves `hits`
+   * separate hits internally. The harness MUST model this or a caller that also loops
+   * looks correct here and deals hits² in the real game. That is exactly how the
+   * hits-squared bug shipped green.
+   */
   damage(source, target, n, o) {
+    const hits = (o && o.hits) || 1;
+    if (hits > 1) {
+      for (let i = 0; i < hits; i++) this.damage(source, target, n, { ...o, hits: 1, hitIndex: i });
+      return;
+    }
     n = Math.max(0, Math.round(n));
     if (!target) return;
+    this.damageLog.push({ source: source === this.player ? 'player' : source.id, target: target === this.player ? 'player' : target.id, amount: n });
     // Stitched Together / Cover: redirect before anything else touches the target.
     if (!o?.redirected && target !== this.player) {
       // Blanket Blob's Cover
@@ -1012,6 +1026,74 @@ for (const [desc, fn] of SPOT) {
   let ok = false, err = null;
   try { ok = fn(); } catch (e) { err = e.message; }
   if (ok) pass(desc); else fail(`${desc}${err ? ' — threw: ' + err : ''}`);
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// 5b. THE INTENT IS THE CONTRACT
+// Every move is resolved against a dummy player and the damage events it actually
+// produces are compared against the number the intent promised. This exists because a
+// hits-squared bug shipped green: the intent said 7x3 and the move dealt 63.
+// ═════════════════════════════════════════════════════════════════════════════
+head('5b. Intent number vs damage actually dealt (all moves)');
+{
+  let checked = 0, multi = 0, bad = 0;
+  for (const def of ENEMY_LIST) {
+    for (const [mid, mv] of Object.entries(def.moves)) {
+      // Resolve this move in isolation against an undamageable dummy.
+      const sim = new MockCombat([def], `contract:${def.id}:${mid}`);
+      const a = sim.actors[0];
+      a.hp = a.maxHp = 100000;
+      sim.player.hp = sim.player.maxHp = 100000;
+      sim.playerTurn({ cards: 2, dmg: 0 });
+      sim.player.hp = sim.player.maxHp = 100000;
+
+      // The intent is read DURING the player turn — that is the promise the player acts on.
+      const shown = renderIntent(mv, sim.ctx(a));
+      if (shown.error) continue;
+      // Then the enemy turn begins exactly as the engine runs it: Guard clears, onTurnStart
+      // fires (this is where projected counters like Dust actually land), then the move
+      // resolves. Skipping onTurnStart here would let a lying projection pass.
+      a.block = 0;
+      sim.hook(a, 'onTurnStart');
+      sim.damageLog = [];
+      try { mv.effect(sim.ctx(a)); }
+      catch (e) { fail(`${def.id}.${mid}: effect threw — ${e.message}`); bad++; continue; }
+
+      const toPlayer = sim.damageLog.filter(d => d.target === 'player');
+      const dealt = toPlayer.reduce((n, d) => n + d.amount, 0);
+      const isAttack = ATTACK_INTENTS.has(shown.intent);
+      if (!isAttack) continue;
+
+      const promisedHits = shown.hits || 0;
+      const promised = (shown.damage || 0) * promisedHits;
+      checked++;
+      if (promisedHits > 1) multi++;
+
+      if (dealt !== promised) {
+        fail(`${def.id}.${mid}: intent promises ${shown.damage}x${promisedHits} = ${promised}, `
+           + `move actually dealt ${dealt} (${(dealt / (promised || 1)).toFixed(2)}x)`);
+        bad++;
+      } else if (toPlayer.length !== promisedHits) {
+        fail(`${def.id}.${mid}: intent promises ${promisedHits} hit(s), move produced `
+           + `${toPlayer.length} damage event(s) — multi-hit animation and per-hit Guard will desync`);
+        bad++;
+      }
+    }
+  }
+  if (!bad) pass(`${checked} attack moves (${multi} of them multi-hit): damage dealt === damage promised, hit-for-hit`);
+  log(`  every attack intent in the game was resolved and reconciled against its own event stream.`, 'dim');
+}
+
+// A direct guard on the helper itself, so the invariant is pinned at the source.
+head('5c. hitPlayer hands the hit count to the engine exactly once');
+{
+  const calls = [];
+  const fakeCtx = { player: { id: 'player' }, damage: (t, n, o) => calls.push({ n, hits: (o && o.hits) || 1 }) };
+  LIB.hitPlayer(fakeCtx, 7, 3);
+  const totalHits = calls.reduce((s, c) => s + c.hits, 0);
+  if (calls.length !== 1) fail(`hitPlayer(·,7,3) made ${calls.length} ctx.damage calls, expected exactly 1 — the engine does the looping`);
+  else if (totalHits !== 3) fail(`hitPlayer(·,7,3) requested ${totalHits} hits, expected 3`);
+  else pass('hitPlayer(·, 7, 3) → one ctx.damage call carrying {hits:3} → 21 total, never 63');
 }
 
 // ═════════════════════════════════════════════════════════════════════════════

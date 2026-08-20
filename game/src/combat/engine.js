@@ -62,8 +62,14 @@ import { Player, Enemy } from './actor.js';
 import { Card, Piles } from './piles.js';
 import { applyDamage, previewDamageValue } from './damage.js';
 import { getStatus, FRAIL_MULT } from './statuses.js';
-import { buildIntent, chooseMove, refreshIntents, intentFamily } from './intents.js';
-import { previewCard } from './preview.js';
+import {
+  buildIntent, chooseMove, refreshIntents, intentFamily, FAMILY_LABEL,
+  queueSnapshot, consumePlan, rebuildPlan, moveAt, isAnchored,
+  previewIntent, previewDepthOf, previewedFamilies,
+  swapIntents, postponeIntent, deleteIntent, MAX_PLAN,
+} from './intents.js';
+import { previewCard, previewCardAsync } from './preview.js';
+import { ChoiceBroker } from './choice.js';
 import { Pile, CardType, Target } from '../data/schema.js';
 
 const MAX_LOG = 400;
@@ -103,6 +109,18 @@ export class CombatEngine {
     this.objects = [];
     /** @type {Enemy[]} */
     this.allies = [];
+    /** Per-combat shared scratch every enemy can read and write (Darkness, House Rules). */
+    this.field = {};
+    /** @type {Object[]} active House Rules */
+    this.rules = [];
+    /** @type {{id:string,type:string,uid:string}[]} cards played during the current player turn */
+    this.playedThisTurn = [];
+    /** Extra draw applied to the NEXT player turn only (ctx.modifyDraw). */
+    this.drawDeltaNextTurn = 0;
+    /** Content registries so enemy moves can say addCard('clutter') / summon('dust-bunny'). */
+    this.cardDefs = new Map();
+    this.enemyDefs = new Map();
+    this.choices = new ChoiceBroker(this);
 
     this.stats = {
       cardsPlayedThisTurn: 0,
@@ -128,6 +146,7 @@ export class CombatEngine {
     this._entityUid = 0;
     this._objectUid = 0;
     this._timerUid = 0;
+    this._buildingState = false;
 
     this.piles = new Piles(this);
 
@@ -236,6 +255,35 @@ export class CombatEngine {
    */
   get state() {
     if (!this._dirty && this._stateCache) return this._stateCache;
+    // RE-ENTRANCY: building the snapshot calls cardSnap → canPlay → costOf →
+    // CardDef.dynamicCost(ctx), and a content helper may read `ctx.e.state` from
+    // in there. Rebuilding at that moment recurses forever. Hand back the last
+    // good snapshot instead — and use the cheap direct accessors
+    // (engine.turn / engine.phase / engine.energy) inside card code.
+    if (this._buildingState) return this._stateCache || this._minimalState();
+    this._buildingState = true;
+    try { return this._buildState(); } finally { this._buildingState = false; }
+  }
+
+  /** Cheap, allocation-free reads that are always safe from inside a card effect. */
+  get energy() { return this.player ? this.player.energy : 0; }
+  get energyMax() { return this.player ? this.player.energyMax : 0; }
+  get handSize() { return this.piles.hand.length; }
+  get cardsPlayedThisTurn() { return this.stats.cardsPlayedThisTurn; }
+
+  _minimalState() {
+    return {
+      turn: this.turn, phase: this.phase, over: this.over, victory: this.victory,
+      seed: this.seed, partial: true,
+      player: this.player ? this.player.snapshot() : null,
+      enemies: this.enemies.map(e => e.snapshot()),
+      allies: [], piles: { draw: [], hand: [], discard: [], exhaust: [], limbo: [], stash: [] },
+      counts: this.piles.snapshotCounts(), counters: [], timers: [], objects: [],
+      relics: [], stats: { ...this.stats },
+    };
+  }
+
+  _buildState() {
     const s = {
       turn: this.turn,
       phase: this.phase,
@@ -258,6 +306,9 @@ export class CombatEngine {
       },
       counts: this.piles.snapshotCounts(),
       stashCap: this.piles.stashCap,
+      rules: this.rules.map(r => ({ id: r.id, name: r.name, text: r.text, sourceId: r.sourceId || null })),
+      field: JSON.parse(JSON.stringify(this.field)),
+      playedThisTurn: this.playedThisTurn.map(x => ({ ...x })),
       counters: [...this.counters.values()].map(c => ({
         id: c.id, name: c.name, value: c.value, min: c.min, max: c.max,
         ownerId: c.ownerId, icon: c.icon, desc: c.desc, focusable: !!c.focusable,
@@ -347,6 +398,153 @@ export class CombatEngine {
   }
   handCap() { return this.hooks.reduce('modifyHandCap', this.player.handCap, {}, this.hooks.actorHooks(this.player, 'modifyHandCap')); }
 
+  /** Cards in a zone, by the zone name or the content agents' aliases. */
+  cardsIn(pile) {
+    const map = {
+      draw: 'draw', drawPile: 'draw', hand: 'hand', discard: 'discard',
+      discardPile: 'discard', exhaust: 'exhaust', exhaustPile: 'exhaust',
+      vanished: 'exhaust', limbo: 'limbo', stash: 'stash',
+    };
+    return this.piles[map[pile] || pile] || [];
+  }
+
+  /** StatusDef.untargetableBy: ['attack'] — Hidden blocks Attack Tricks only. */
+  isTargetable(actor, card) {
+    if (!actor || !actor.alive) return false;
+    if (!card) return true;
+    for (const [id] of actor.statuses) {
+      const list = getStatus(id).untargetableBy;
+      if (Array.isArray(list) && list.includes(card.type)) return false;
+    }
+    return true;
+  }
+  targetableEnemies(card) { return this.enemies.filter(e => this.isTargetable(e, card)); }
+
+  // ── content registries (enemy moves refer to content by id) ───────────────
+  /** Teach the engine card definitions so `addCard('clutter')` works. */
+  registerCards(defs) {
+    const list = Array.isArray(defs) ? defs : Object.values(defs || {});
+    for (const d of list) if (d && d.id) this.cardDefs.set(d.id, d);
+    return this.cardDefs.size;
+  }
+  /** Teach the engine enemy definitions so `summon('dust-bunny')` works. */
+  registerEnemies(defs) {
+    const list = Array.isArray(defs) ? defs : Object.values(defs || {});
+    for (const d of list) if (d && d.id) this.enemyDefs.set(d.id, d);
+    return this.enemyDefs.size;
+  }
+  resolveCardDef(idOrDef) {
+    if (!idOrDef) return null;
+    if (typeof idOrDef === 'object') return idOrDef;
+    return this.cardDefs.get(idOrDef)
+      || [...this.cardDefs.values()].find(d => d.id.split('/').pop() === idOrDef)
+      || null;
+  }
+  resolveEnemyDef(idOrDef) {
+    if (!idOrDef) return null;
+    if (typeof idOrDef === 'object') return idOrDef;
+    return this.enemyDefs.get(idOrDef)
+      || [...this.enemyDefs.values()].find(d => d.id.split('/').pop() === idOrDef)
+      || null;
+  }
+
+  // ── intent queue (Wink + the enemies agent both read this) ────────────────
+  /** The revealed slice of an enemy's plan. Position 0 is what resolves next. */
+  intentQueue(enemy) { return enemy ? queueSnapshot(this, enemy) : []; }
+  /** Capitalised Intent Family of plan position `pos` ('Attack'|'Defense'|'Scheme'|'Special'). */
+  intentFamilyOf(enemy, pos = 0) {
+    const m = moveAt(enemy, pos);
+    if (!m) return null;
+    const type = (typeof m.intentFn === 'function')
+      ? (() => { try { return m.intentFn(this.enemyCtx(enemy, m, { planPosition: pos, forecast: pos > 0 })); } catch { return m.intent; } })()
+      : m.intent;
+    return FAMILY_LABEL[intentFamily(type)];
+  }
+  previewIntent(enemy, n = 1) { return previewIntent(this, enemy, n); }
+  previewDepth(enemy) { return previewDepthOf(enemy); }
+  previewedFamilies(enemy) { return previewedFamilies(this, enemy); }
+  isAnchored(enemy, pos = 0) { return isAnchored(enemy, pos); }
+  swapIntents(enemy, a, b) { return swapIntents(this, enemy, a, b); }
+  postponeIntent(enemy) { return postponeIntent(this, enemy); }
+  deleteIntent(enemy) { return deleteIntent(this, enemy); }
+  /** Cancel the current action outright. Alias of deleteIntent, named for cards. */
+  cancelIntent(enemy) { return deleteIntent(this, enemy); }
+
+  // ── player choice ─────────────────────────────────────────────────────────
+  /** The renderer registers `fn(req) -> Promise<number[]>` (indices into req.pool). */
+  setChoiceResolver(fn) { this.choices.setResolver(fn); return this; }
+  /** Replay a recorded `engine.choiceLog`. Seed + choice log reproduces a fight exactly. */
+  setChoiceScript(log) { this.choices.setScript(log); return this; }
+  get choiceLog() { return this.choices.log; }
+  get awaitingChoice() { return this.choices.pending > 0; }
+
+  // ── House Rules (Door Greeter → The Butler) ───────────────────────────────
+  announceRule(rule, sourceId = null) {
+    if (!rule || !rule.id) return null;
+    this.clearRule(rule.id);
+    const r = { ...rule, sourceId };
+    this.rules.push(r);
+    this.field.activeRule = r.id;
+    this._emit(EV.RULE, { rule: { id: r.id, name: r.name, text: r.text, when: r.when, once: !!r.once }, sourceId, action: 'announce' });
+    return r;
+  }
+  clearRule(id) {
+    const i = this.rules.findIndex(r => r.id === id);
+    if (i >= 0) { const r = this.rules.splice(i, 1)[0]; this._emit(EV.RULE, { rule: { id: r.id, name: r.name }, sourceId: r.sourceId || null, action: 'clear' }); return true; }
+    return false;
+  }
+  clearRules(sourceId = null) {
+    for (const r of [...this.rules]) if (sourceId == null || r.sourceId === sourceId) this.clearRule(r.id);
+  }
+  /** A House Rule never forbids an action — it attaches a consequence. */
+  _checkRules(when, extra = {}) {
+    for (const r of [...this.rules]) {
+      if (r.when !== when) continue;
+      if (r.once && r._firedTurn === this.turn) continue;
+      const rc = {
+        cardsPlayedThisTurn: this.playedThisTurn.map(x => ({ ...x })),
+        card: extra.card || null,
+        prevCard: this.playedThisTurn.length > 1 ? this.playedThisTurn[this.playedThisTurn.length - 2] : null,
+        playerBlock: this.player.block,
+        damageDealtThisTurn: this.stats.damageDealtThisTurn,
+        turn: this.turn, e: this,
+      };
+      let broken = false;
+      try { broken = !!r.broken?.(rc); } catch (err) { console.error(`[combat] rule ${r.id}.broken threw`, err); }
+      if (!broken) continue;
+      r._firedTurn = this.turn;
+      const src = this.actor(r.sourceId);
+      this._emit(EV.RULE_BROKEN, { ruleId: r.id, name: r.name, sourceId: r.sourceId || null, cardUid: extra.card?.uid || null });
+      try { r.onBreak?.(src ? this.enemyCtx(src, null, { rule: r }) : this.ctxFor(null, null)); }
+      catch (err) { console.error(`[combat] rule ${r.id}.onBreak threw`, err); }
+      if (src?.def?.onRuleBroken) {
+        try { src.def.onRuleBroken(this.enemyCtx(src, null, { rule: r })); } catch (err) { console.error(err); }
+      }
+    }
+  }
+
+  /** Broadcast an arbitrary board event to every EnemyDef.onBoardEvent. */
+  boardEvent(event, data = {}) {
+    for (const en of [...this.enemies, ...this.allies]) {
+      if (!en.alive || !en.def?.onBoardEvent) continue;
+      try { en.def.onBoardEvent(this.enemyCtx(en, null, { event, data })); } catch (err) { console.error(err); }
+    }
+  }
+
+  /**
+   * Fire one EnemyDef lifecycle hook across the board, in slot order.
+   * The ten documented hooks are: onCombatStart, onSpawn, onPlayerTurnStart,
+   * onTurnStart, onTurnEnd, onPlayerTurnEnd, onDamaged, onDealtDamage,
+   * onAllyDeath, onDeath — plus onPlayerCard / onBoardEvent / onRuleBroken.
+   */
+  _enemyLifecycle(name, extra = {}, list = null) {
+    for (const en of (list || [...this.enemies, ...this.allies])) {
+      if (!en.alive || !en.def?.[name]) continue;
+      try { en.def[name](this.enemyCtx(en, null, extra)); }
+      catch (err) { console.error(`[combat] ${en.defId}.${name} threw`, err); }
+    }
+  }
+
   /** Who an enemy is aiming at. Ally summons can pull aggro by setting `taunt`. */
   intentTargetFor(enemy) {
     const taunting = this.allies.find(a => a.alive && a.flags.taunt);
@@ -358,9 +556,15 @@ export class CombatEngine {
   /** Effective cost after dynamicCost and modifyCardCost hooks. -1 = X, -2 = unplayable. */
   costOf(card) {
     if (card.unplayable) return -2;
-    if (typeof card.def.dynamicCost === 'function') {
-      const c = card.def.dynamicCost(this.ctxFor(card, null));
-      if (typeof c === 'number') return Math.max(0, c);
+    // Re-entrancy guard: dynamicCost may read state, which snapshots cards, which
+    // asks for their cost. One level deep only, then fall through to the raw cost.
+    if (typeof card.def.dynamicCost === 'function' && !card._costing) {
+      card._costing = true;
+      try {
+        const c = card.def.dynamicCost(this.ctxFor(card, null));
+        if (typeof c === 'number') return Math.max(0, c);
+      } catch (err) { console.error(`[combat] ${card.id}.dynamicCost threw`, err); }
+      finally { card._costing = false; }
     }
     const raw = card.rawCost();
     if (raw < 0) return raw;
@@ -499,10 +703,22 @@ export class CombatEngine {
     if (!actor.alive && delta > 0) return 0;
     const def = getStatus(id);
 
-    if (delta > 0 && def.kind === 'debuff' && !opts.ignoreCharm && actor.status('charm') > 0) {
-      this.applyStatus(actor, 'charm', -1, { reason: 'consumed', ignoreCharm: true });
-      this._statusTrigger(actor, 'charm', actor.status('charm'), 'blocked');
-      return 0;
+    if (delta > 0 && def.kind === 'debuff' && !opts.ignoreCharm) {
+      // onDebuffIncoming — a vetoable view of the debuff before it lands (Nope.).
+      const dbox = { prevented: false, stacks: delta };
+      const inc = { actor, target: actor, id, stacks: delta, def, sourceId: opts.sourceId || null,
+                    prevent: () => { dbox.prevented = true; },
+                    setStacks: (n) => { dbox.stacks = Math.max(0, n | 0); } };
+      this.hooks.dispatch('onDebuffIncoming', inc, this.hooks.actorHooks(actor, 'onDebuffIncoming'));
+      if (dbox.prevented) { this._statusTrigger(actor, id, 0, 'refused'); return 0; }
+      if (dbox.stacks !== delta) delta = dbox.stacks;
+      if (delta === 0) return 0;
+      // Charm eats one debuff application per stack.
+      if (actor.status('charm') > 0) {
+        this.applyStatus(actor, 'charm', -1, { reason: 'consumed', ignoreCharm: true });
+        this._statusTrigger(actor, 'charm', actor.status('charm'), 'blocked');
+        return 0;
+      }
     }
 
     const before = actor.status(id);
@@ -771,6 +987,9 @@ export class CombatEngine {
     this._emit(EV.DEATH, { actorId: actor.id, name: actor.name, killerId: killerId || null, side: actor.side, slot: actor.slot });
     this.hooks.dispatch('onDeath', { actor, killerId });
     if (actor.def?.onDeath) { try { actor.def.onDeath(this.enemyCtx(actor, null)); } catch (e) { console.error(e); } }
+    this.clearRules(actor.id);
+    this._enemyLifecycle('onAllyDeath', { dead: actor, deadId: actor.id },
+      [...this.enemies, ...this.allies].filter(x => x !== actor));
     if (actor === this.player) this._endCombat(false);
     else if (actor.side === 'enemy' && this.livingEnemies().length === 0) this._endCombat(true);
     return true;
@@ -787,42 +1006,125 @@ export class CombatEngine {
 
   // ── intents ───────────────────────────────────────────────────────────────
 
-  refreshIntents(reason = 'refresh') { if (this.started && !this.over) refreshIntents(this, reason); }
+  /**
+   * Recompute every intent. Guarded against re-entry: rebuilding a plan calls
+   * `EnemyDef.nextMove`, and a def that touches state from in there would
+   * otherwise loop forever. `nextMove` is required to be pure; this makes a
+   * violation merely wrong instead of fatal.
+   */
+  refreshIntents(reason = 'refresh') {
+    if (!this.started || this.over || this._refreshing) return;
+    this._refreshing = true;
+    try { refreshIntents(this, reason); } finally { this._refreshing = false; }
+  }
 
-  /** EnemyCtx handed to nextMove / effect / onSpawn / onDeath. */
-  enemyCtx(enemy, move) {
+  /**
+   * EnemyCtx — handed to nextMove, move effects and every EnemyDef lifecycle hook.
+   * The full surface documented at the top of `data/enemies/_lib.js`.
+   *
+   * `nextMove` MUST be pure: the engine calls it repeatedly to re-render dynamic
+   * intents and to look ahead into the plan. `extra.rng` is a per-position fork,
+   * so lookahead never disturbs the main stream.
+   */
+  enemyCtx(enemy, move, extra = {}) {
     const e = this;
+    const target = () => e.intentTargetFor(enemy);
     return {
       e, engine: e, self: enemy, enemy, move,
-      rng: e.rng, turn: e.turn,
-      player: e.player, target: e.intentTargetFor(enemy),
-      enemies: e.enemies, allies: e.allies,
-      history: enemy.history, lastMove: enemy.lastMove,
+      rng: extra.rng || e.rng,
+      turn: e.turn,
+      player: e.player,
+      target: target(),
+      field: e.field,
+      history: extra.history || enemy.history,
+      lastMove: enemy.lastMove,
+      mem: enemy.mem,
+      planPosition: extra.planPosition ?? 0,
+      forecast: !!extra.forecast,
+      cardsPlayedThisTurn: e.playedThisTurn,
+      ...extra,
+
+      // board
+      enemies: () => e.livingEnemies(),
+      allies: () => e.livingEnemies().filter(x => x !== enemy),
+      friends: () => e.allies.filter(x => x.alive),
+      livingEnemies: () => e.livingEnemies(),
+      intentOf: (a) => (a && a.intent ? a.intent.type : null),
+      intentFamily: (a, pos) => e.intentFamilyOf(a || enemy, pos ?? 0),
       timesUsed: (id) => enemy.timesUsed(id),
       usedInARow: (id, n) => enemy.usedInARow(id, n),
-      livingEnemies: () => e.livingEnemies(),
-      damage: (amount, opts = {}) => e.dealDamage({
-        attacker: enemy, defender: opts.target || e.intentTargetFor(enemy),
-        amount, kind: 'attack', ...opts,
-      }),
+
+      // damage / health
+      damage: (t, n, opts = {}) => {
+        const d = (t && t.id) ? t : target();
+        const amount = (t && t.id) ? n : t;
+        const hits = opts.hits ?? 1;
+        for (let i = 0; i < hits; i++) {
+          if (e.over || !d.alive) break;
+          e.dealDamage({ attacker: enemy, defender: d, amount, kind: 'attack', hits, hitIndex: i, ...opts });
+        }
+      },
       damageMulti: (amount, hits, opts = {}) => {
         for (let i = 0; i < hits; i++) {
           if (e.over) break;
-          e.dealDamage({
-            attacker: enemy, defender: opts.target || e.intentTargetFor(enemy),
-            amount, kind: 'attack', hits, hitIndex: i, ...opts,
-          });
+          e.dealDamage({ attacker: enemy, defender: opts.target || target(), amount, kind: 'attack', hits, hitIndex: i, ...opts });
         }
       },
-      block: (amount, who) => e.gainBlock(who || enemy, amount, { fromCard: false, reason: 'enemy' }),
-      applyStatus: (who, id, n) => e.applyStatus(who || e.player, id, n, { sourceId: enemy.id }),
+      block: (a, n) => {
+        // block(4) or block(actor, 4)
+        if (typeof a === 'number') return e.gainBlock(enemy, a, { fromCard: false, reason: 'enemy' });
+        return e.gainBlock(a || enemy, n, { fromCard: false, reason: 'enemy' });
+      },
+      heal: (a, n) => (typeof a === 'number' ? e.heal(enemy, a, 'enemy') : e.heal(a || enemy, n, 'enemy')),
+      loseHp: (a, n) => (typeof a === 'number' ? e.loseHp(enemy, a, 'enemy') : e.loseHp(a || enemy, n, 'enemy')),
+
+      // statuses
+      applyStatus: (a, id, n) => e.applyStatus(a || e.player, id, n, { sourceId: enemy.id }),
+      removeStatus: (a, id) => e.removeStatus(a || enemy, id, 'enemy'),
       buff: (id, n) => e.applyStatus(enemy, id, n, { sourceId: enemy.id }),
-      debuff: (id, n) => e.applyStatus(e.intentTargetFor(enemy), id, n, { sourceId: enemy.id }),
-      heal: (amount, who) => e.heal(who || enemy, amount, 'enemy'),
-      addCard: (def, pile, opts) => e.addCard(def, pile, opts),
-      summon: (def, opts) => e.summon(def, { ...opts, sourceId: enemy.id }),
-      count: (id, who) => (who || enemy).status(id),
-      has: (id, who) => (who || enemy).hasStatus(id),
+      debuff: (id, n) => e.applyStatus(target(), id, n, { sourceId: enemy.id }),
+      count: (id, a) => (a || enemy).status(id),
+      has: (id, a) => (a || enemy).hasStatus(id),
+
+      // per-enemy displayed counters
+      counter: (key) => (enemy.counters[key] ?? 0),
+      setCounter: (key, v) => {
+        const before = enemy.counters[key] ?? 0;
+        enemy.counters[key] = v;
+        e._dirty = true;
+        if (before !== v) {
+          e._emit(EV.COUNTER, { ownerId: enemy.id, id: key, name: key, before, after: v, delta: v - before, min: 0, max: 99, reason: 'enemy' });
+          e.refreshIntents('enemyCounter');
+        }
+        return v;
+      },
+      addCounter: (key, n, max = Infinity, min = 0) => {
+        const v = Math.max(min, Math.min(max, (enemy.counters[key] ?? 0) + n));
+        return e.enemyCtx(enemy, move).setCounter(key, v);
+      },
+
+      // cards and spawns, by id or by def
+      addCard: (idOrDef, pile = Pile.DISCARD, opts) => {
+        const def = e.resolveCardDef(idOrDef);
+        if (!def) { console.warn(`[combat] unknown card "${idOrDef}"`); return null; }
+        return e.addCard(def, pile, { reason: enemy.id, ...(opts || {}) });
+      },
+      summon: (idOrDef, opts = {}) => {
+        const def = e.resolveEnemyDef(idOrDef);
+        if (!def) { console.warn(`[combat] unknown enemy "${idOrDef}"`); return null; }
+        let hp = opts.hp;
+        if (hp == null && opts.hpMul != null && Array.isArray(def.hp)) {
+          hp = Math.max(1, Math.round(e.rng.range(def.hp[0], def.hp[1]) * opts.hpMul));
+        }
+        return e.summon(def, { ...opts, hp, sourceId: enemy.id });
+      },
+      despawn: (a) => e.removeEntity(a || enemy, 'despawn'),
+
+      // House Rules
+      announceRule: (rule) => e.announceRule(rule, enemy.id),
+      clearRules: (sourceId) => e.clearRules(sourceId ?? enemy.id),
+      rules: () => e.rules.slice(),
+
       say: (text, tone) => e.say(text, tone),
     };
   }
@@ -933,9 +1235,23 @@ export class CombatEngine {
       // cards
       draw: (n) => e.drawCards(n, card ? card.id : 'effect'),
       discard: (n, opts = {}) => {
-        if (opts.cards) return opts.cards.map(c => e.discardCard(c, card ? card.id : 'effect'));
-        if (opts.all) return e.piles.hand.slice().map(c => e.discardCard(c, card ? card.id : 'effect'));
-        return e.discardRandom(n, card ? card.id : 'effect', card);
+        const why = card ? card.id : 'effect';
+        if (opts.cards) return opts.cards.map(c => e.discardCard(c, why));
+        if (opts.all) return e.piles.hand.slice().map(c => e.discardCard(c, why));
+        if (opts.choose) {
+          // async: resolves to the discarded cards once the player has picked
+          return (async () => {
+            const pool = e.piles.hand.filter(k => k !== card && (!opts.filter || opts.filter(k)));
+            if (!pool.length) return [];
+            const picked = await e.choices.ask({
+              kind: 'card', pool, count: Math.min(n, pool.length), optional: !!opts.optional,
+              prompt: opts.prompt || `Choose ${n} Trick${n > 1 ? 's' : ''} to discard.`,
+              meta: { pile: 'hand', cardId: card?.id, cardUid: card?.uid },
+            });
+            return picked.map(i => pool[i]).filter(Boolean).map(c => e.discardCard(c, why));
+          })();
+        }
+        return e.discardRandom(n, why, card);
       },
       exhaust: (c) => e.exhaustCard(c || card, card ? card.id : 'effect'),
       addCard: (def, pile, opts) => e.addCard(def, pile || Pile.HAND, opts),
@@ -948,6 +1264,71 @@ export class CombatEngine {
       // energy
       gainEnergy: (n) => e.gainEnergy(n, card ? card.id : 'effect'),
       loseEnergy: (n) => e.loseEnergy(n, card ? card.id : 'effect'),
+
+      // ── player choice (async) ───────────────────────────────────────────
+      /** Ask the player to pick cards. Resolves to an array of runtime Cards. */
+      chooseCard: async (o = {}) => {
+        const pileName = o.pile || 'hand';
+        const pool = (o.pool && o.pool.length ? o.pool : e.cardsIn(pileName))
+          .filter(k => k && k !== card && (!o.filter || o.filter(k)));
+        if (!pool.length) return [];
+        const picked = await e.choices.ask({
+          kind: 'card', pool, count: o.count ?? 1, optional: !!o.optional,
+          prompt: o.prompt || `Choose ${o.count ?? 1} Trick${(o.count ?? 1) > 1 ? 's' : ''}.`,
+          meta: { pile: pileName, cardId: card?.id, cardUid: card?.uid },
+        });
+        return picked.map(i => pool[i]).filter(Boolean);
+      },
+      /** Ask the player to pick from named options. Resolves to an array of indices. */
+      choose: async (o = {}) => {
+        const opts = (o.options || []).map(x => (typeof x === 'string' ? { label: x } : x));
+        if (!opts.length) return [];
+        return e.choices.ask({
+          kind: 'option', pool: opts, count: o.count ?? 1, optional: !!o.optional,
+          prompt: o.prompt || 'Choose one.',
+          meta: { cardId: card?.id, cardUid: card?.uid },
+        });
+      },
+      /** Ask the player to pick an enemy. Resolves to an array of Actors. */
+      chooseEnemy: async (o = {}) => {
+        const pool = (o.pool || e.livingEnemies());
+        if (!pool.length) return [];
+        const picked = await e.choices.ask({
+          kind: 'enemy', pool, count: o.count ?? 1, optional: !!o.optional,
+          prompt: o.prompt || 'Choose an enemy.', meta: { cardId: card?.id, cardUid: card?.uid },
+        });
+        return picked.map(i => pool[i]).filter(Boolean);
+      },
+
+      // ── zone / card-state helpers the content agents call ───────────────
+      /** Mark a card so it Vanishes the next time it is played. */
+      setVanish: (c2, on = true) => { const k = c2 || card; if (k) { k.exhaust = !!on; k.meta.vanish = !!on; e._dirty = true; } },
+      /** Return a card to hand (defaults to the card resolving). */
+      returnToHand: (c2) => {
+        const k = c2 || card;
+        if (!k) return false;
+        if (e.piles.hand.length >= e.handCap()) return false;
+        return e.piles.move(k, Pile.HAND, { reason: 'returned' });
+      },
+      /** Shuffle the draw pile in place. */
+      shuffleDraw: () => e.piles.shuffleDraw('effect'),
+      /** Change how many Tricks you draw at the start of your NEXT turn. */
+      modifyDraw: (n) => { e.drawDeltaNextTurn += n; e._dirty = true; return e.drawDeltaNextTurn; },
+      cardsIn: (pile) => e.cardsIn(pile),
+
+      // ── intent queue (Wink) ─────────────────────────────────────────────
+      intentQueue: (en) => e.intentQueue(en),
+      intentFamily: (en, pos) => e.intentFamilyOf(en, pos ?? 0),
+      intentOf: (en) => (en && en.intent ? en.intent.type : null),
+      previewIntent: (en, n) => e.previewIntent(en, n),
+      previewDepth: (en) => previewDepthOf(en),
+      previewedFamilies: (en) => previewedFamilies(e, en),
+      isAnchored: (en, pos) => isAnchored(en, pos ?? 0),
+      swapIntents: (en, a, b) => e.swapIntents(en, a, b),
+      postponeIntent: (en) => e.postponeIntent(en),
+      deleteIntent: (en) => e.deleteIntent(en),
+      /** Cancel what this enemy is about to do; the next planned action steps up. */
+      cancelIntent: (en) => e.cancelIntent(en),
 
       // queries
       count: (statusId, actor) => (actor || self).status(statusId),
@@ -1021,8 +1402,10 @@ export class CombatEngine {
       });
 
       for (const en of this.enemies) {
-        en.def?.onSpawn?.(this.enemyCtx(en, null));
+        if (en.def) this.enemyDefs.set(en.def.id, en.def);
+        try { en.def?.onSpawn?.(this.enemyCtx(en, null)); } catch (err) { console.error(err); }
       }
+      this._enemyLifecycle('onCombatStart');
       for (const en of this.enemies) {
         if (en.alive) chooseMove(this, en, 'combatStart');
       }
@@ -1044,16 +1427,33 @@ export class CombatEngine {
     this.stats.damageDealtThisTurn = 0;
     this.stats.damageTakenThisTurn = 0;
     this.stats.livesSpentThisTurn = 0;
-    this.player.damageTakenLastTurn = this.player.damageTakenThisTurn;
-    this.player.damageTakenThisTurn = 0;
-    this.player.hitsTakenThisTurn = 0;
-    this.player.unblockedHitsThisTurn = 0;
+    this.playedThisTurn = [];
+    // `damageTakenThisTurn` resets HERE and only here, for every actor. It then
+    // accumulates through the player turn and is STILL READABLE during the enemy
+    // turn that follows — several enemies key their whole design off
+    // "was I hit last turn?". (data/enemies/_lib.js dmgTaken / wasHit.)
+    for (const a of [this.player, ...this.enemies, ...this.allies]) {
+      a.damageTakenLastTurn = a.damageTakenThisTurn;
+      a.damageTakenThisTurn = 0;
+      a.hitsTakenThisTurn = 0;
+      a.unblockedHitsThisTurn = 0;
+    }
 
     // turn-scoped card cost changes expire
     for (const c of this.piles.all()) { c.costTurnDelta = 0; c.costOverrideTurn = null; }
 
     this._emit(EV.PHASE, { phase: 'player', turn: this.turn });
     this._emit(EV.TURN_START, { actor: 'player', actorId: this.player.id, turn: this.turn, side: 'player' });
+
+    // Draw penalties are measured BEFORE the start-of-turn decay, so a status
+    // that says "draw N fewer next turn" and expires at turn start still bites
+    // on the turn it was aimed at. (Smothered, and any StatusDef.drawDelta.)
+    this._drawPenalty = 0;
+    for (const [id, stacks] of this.player.statuses) {
+      const d = getStatus(id);
+      const per = d.drawDelta ?? (id === 'smothered' ? -1 : 0);
+      if (per) this._drawPenalty += per * stacks;
+    }
 
     // 2 — Guard wipe
     const keep = Math.min(this.player.keepBlock, this.player.block);
@@ -1071,10 +1471,16 @@ export class CombatEngine {
     this._tickTimers('playerTurnStart');
     for (const c of this.counters.values()) if (c.resetEachTurn) this.setCounter(c.id, c.min, 'turnStart');
 
+    this._enemyLifecycle('onPlayerTurnStart');
     if (this.over) return;
 
-    // 5 — draw
-    this.drawCards(this.player.drawPerTurn, 'turnStart');
+    // 5 — draw. Smothered (and any StatusDef with `drawDelta`) reduces it, never
+    //     below 3; ctx.modifyDraw() adds a one-shot delta for this turn only.
+    let want = this.player.drawPerTurn + this.drawDeltaNextTurn;
+    this.drawDeltaNextTurn = 0;
+    if (this._drawPenalty < 0) want = Math.max(3, want + this._drawPenalty);
+    this._drawPenalty = 0;
+    this.drawCards(Math.max(0, want), 'turnStart');
 
     // 6 — energy
     this.setEnergy(this.player.energyMax, 'turnStart');
@@ -1093,10 +1499,20 @@ export class CombatEngine {
     this.hooks.dispatch(hookName, { actor, turn: this.turn, side: actor.side },
       this.hooks.actorHooks(actor, hookName));
     if (!actor.alive) return;
+    this._decayBucket(actor, phase);
+  }
+
+  /**
+   * Drop one stack from every status whose `decay` bucket matches.
+   * Buckets: 'turnStart' | 'turnEnd' | 'enemyTurnEnd' | 'never' | 'combat'.
+   */
+  _decayBucket(actor, bucket) {
     for (const [id, stacks] of [...actor.statuses]) {
       if (stacks <= 0) continue;
       const def = getStatus(id);
-      if (def.decay === phase) this.applyStatus(actor, id, -1, { reason: 'decay', ignoreCharm: true });
+      if (def.decay !== bucket) continue;
+      const all = def.decayAll || def.expiresFully;
+      this.applyStatus(actor, id, all ? -stacks : -1, { reason: 'decay', ignoreCharm: true });
     }
   }
 
@@ -1120,7 +1536,9 @@ export class CombatEngine {
     if (card.target === Target.ENEMY) {
       const t = this.actor(targetId);
       if (targetId !== null && (!t || !t.alive || t.side === 'player')) return { ok: false, reason: 'Choose a target.' };
-      if (targetId === null && this.livingEnemies().length === 0) return { ok: false, reason: 'Nothing to target.' };
+      if (targetId === null && this.targetableEnemies(card).length === 0) return { ok: false, reason: 'Nothing to target.' };
+      // StatusDef.untargetableBy: ['attack'] — the Hidden shape.
+      if (t && !this.isTargetable(t, card)) return { ok: false, reason: `${t.name} cannot be targeted by that.` };
     }
     if (card.target === Target.ALL_ENEMIES && this.livingEnemies().length === 0) {
       return { ok: false, reason: 'Nothing to target.' };
@@ -1175,6 +1593,7 @@ export class CombatEngine {
       // 3. announce
       this.stats.cardsPlayedThisTurn++;
       this.stats.cardsPlayedThisCombat++;
+      this.playedThisTurn.push({ id: card.id, type: card.type, uid: card.uid, name: card.name });
       if (card.type === CardType.ATTACK) this.stats.attacksPlayedThisTurn++;
       if (card.type === CardType.SKILL) this.stats.skillsPlayedThisTurn++;
       this._emit(EV.CARD_PLAY, {
@@ -1192,6 +1611,12 @@ export class CombatEngine {
 
       const finish = () => {
         this.hooks.dispatch('onCardPlayed', { card, target, index: this.stats.cardsPlayedThisTurn });
+        if (card.type === CardType.ATTACK) {
+          this.hooks.dispatch('onAttackDealt', { card, target }, this.hooks.actorHooks(this.player, 'onAttackDealt'));
+        }
+        this._enemyLifecycle('onPlayerCard', { card: { id: card.id, type: card.type, uid: card.uid }, playedCard: card });
+        this._enemyLifecycle('onCardPlayed', { card: { id: card.id, type: card.type, uid: card.uid }, playedCard: card });
+        this._checkRules('cardPlayed', { card });
         if (card.type === CardType.POWER) {
           // Powers leave play entirely once resolved. They are parked in limbo
           // tagged `meta.zone='power'` rather than in exhaust, so effects that
@@ -1255,7 +1680,9 @@ export class CombatEngine {
       }
 
       // 3 — player end-of-turn statuses
+      this._checkRules('turnEnd');
       this._tickStatuses(this.player, 'turnEnd');
+      this._enemyLifecycle('onPlayerTurnEnd');
       if (this.over) return;
 
       // 4 — timers
@@ -1278,10 +1705,9 @@ export class CombatEngine {
           en.block = 0;
           this._emit(EV.BLOCK_LOSE, { actorId: en.id, before: b, after: 0, reason: 'turnStart' });
         }
-        en.damageTakenLastTurn = en.damageTakenThisTurn;
-        en.damageTakenThisTurn = 0;
-        en.hitsTakenThisTurn = 0;
-
+        // NOTE: damageTakenThisTurn is deliberately NOT reset here — it must
+        // survive into this enemy turn so "was I hit last turn?" works.
+        if (en.def?.onTurnStart) { try { en.def.onTurnStart(this.enemyCtx(en, null)); } catch (err) { console.error(err); } }
         this._tickStatuses(en, 'turnStart');
         if (!en.alive || this.over) { if (en.alive) this._emit(EV.TURN_END, { actor: en.id, actorId: en.id, turn: this.turn, side: 'enemy' }); continue; }
 
@@ -1290,18 +1716,25 @@ export class CombatEngine {
           en.history.push(move.id);
           try { move.effect?.(this.enemyCtx(en, move)); }
           catch (err) { console.error(`[combat] enemy ${en.defId} move ${move.id} threw`, err); }
+          consumePlan(en);
         }
+        if (en.def?.onTurnEnd) { try { en.def.onTurnEnd(this.enemyCtx(en, null)); } catch (err) { console.error(err); } }
         this._emit(EV.TURN_END, { actor: en.id, actorId: en.id, turn: this.turn, side: 'enemy' });
       }
 
       this.stats.damageTakenLastEnemyTurn = this.player.damageTakenThisTurn - before;
       if (this.over) return;
 
-      // 6 — enemy end-of-turn statuses
+      // 6 — enemy end-of-turn statuses, then the shared `enemyTurnEnd` decay
+      //     bucket. That bucket is what Marmalade's Ghoststep expires on: it is
+      //     gone once the enemies have finished swinging, whether or not it was
+      //     used, and it belongs to the PLAYER, not to any one enemy.
       for (const en of [...this.enemies]) {
         if (!en.alive) continue;
         this._tickStatuses(en, 'turnEnd');
       }
+      this._decayBucket(this.player, 'enemyTurnEnd');
+      for (const a of this.allies) if (a.alive) this._decayBucket(a, 'enemyTurnEnd');
       this._tickTimers('enemyTurnEnd');
       if (this.over) return;
 
@@ -1319,6 +1752,13 @@ export class CombatEngine {
    * the identical RNG state, so it cannot drift from resolution.
    */
   preview(cardUid, targetId = null, opts = undefined) { return previewCard(this, cardUid, targetId, opts); }
+
+  /**
+   * The full preview, including everything behind a player choice. Resolves the
+   * choice with the deterministic auto-picker and flags the result `uncertain`.
+   * Use this for hover previews; `preview()` stays synchronous for the contract.
+   */
+  previewAsync(cardUid, targetId = null, opts = undefined) { return previewCardAsync(this, cardUid, targetId, opts); }
 
   /** Post-modifier damage this card would do to this target, per hit. */
   cardDamageFor(cardUid, targetId, key = 'd') {
@@ -1347,6 +1787,10 @@ export class CombatEngine {
       counters: this.counters,
       timers: this.timers,
       objects: this.objects,
+      field: this.field,
+      rules: this.rules,
+      playedThisTurn: this.playedThisTurn,
+      drawDeltaNextTurn: this.drawDeltaNextTurn,
       hooks: this.hooks.snapshot(),
       entityUid: this._entityUid, objectUid: this._objectUid, timerUid: this._timerUid,
     };
@@ -1385,6 +1829,14 @@ export class CombatEngine {
     for (const [k, v] of s.counters) c.counters.set(k, { ...v });
     c.timers = s.timers.map(t => ({ ...t, data: { ...t.data } }));
     c.objects = s.objects.map(o => ({ ...o, data: JSON.parse(JSON.stringify(o.data || {})) }));
+    c.field = JSON.parse(JSON.stringify(s.field));
+    c.rules = s.rules.map(r => ({ ...r }));
+    c.playedThisTurn = s.playedThisTurn.map(x => ({ ...x }));
+    c.drawDeltaNextTurn = s.drawDeltaNextTurn;
+    c.cardDefs = this.cardDefs;
+    c.enemyDefs = this.enemyDefs;
+    c.choices.autoOnly = true;          // a preview NEVER asks a human a question
+    c.choices.resolver = null;
     c.hooks.restore(s.hooks);
     c._entityUid = s.entityUid; c._objectUid = s.objectUid; c._timerUid = s.timerUid;
     c.bus = null;

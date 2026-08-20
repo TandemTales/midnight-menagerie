@@ -4,7 +4,14 @@
    token from ui/tokens.css — there are no literals below except geometry.
    =========================================================================== */
 
-.cb-root { position: absolute; inset: 0; }
+.cb-root {
+  position: absolute; inset: 0;
+  /* The hand is scaled to leave the field room to breathe: with 10 cards the
+     StS2 arc must not reach the enemies. Token override, not a new colour. */
+  --card-w: clamp(140px, 10.5vw, 174px);
+  --card-h: calc(var(--card-w) / var(--card-aspect));
+}
+.cb-root [hidden] { display: none !important; }
 
 .cb {
   position: absolute; inset: 0;
@@ -91,14 +98,14 @@
 /* ───────────────────────────────────────────── the field ───────────────── */
 .cb-field {
   position: absolute; left: 0; right: 0;
-  top: 68px; bottom: 47%;
+  top: 62px; bottom: 40%;
   z-index: 20;
   display: flex; align-items: flex-end; justify-content: center;
 }
 .cb-enemies {
   display: flex; align-items: flex-end; justify-content: center;
   gap: clamp(18px, 3.4vw, 64px);
-  padding: 96px 0 0 clamp(0px, 11vw, 210px);   /* room for intents; player keeps the corner */
+  padding: 104px 0 0 clamp(0px, 7vw, 132px);   /* room for the intent stack; clear of the player */
   height: 100%;
 }
 .cb-enemies[data-n="1"] { gap: 0; }
@@ -121,17 +128,86 @@
 .cb-enemies.is-focusing .cb-enemy:not(.is-focus) { filter: brightness(.55) saturate(.7); }
 .cb-enemy.is-focus { filter: brightness(1.12); }
 
-.cb-enemy__intent {
+.cb-enemy__above {
   position: absolute; left: 50%; transform: translateX(-50%);
-  bottom: calc(100% - 4px);
+  bottom: calc(100% - 6px);
   z-index: 6;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  pointer-events: none;
+}
+.cb-enemy__above > * { pointer-events: auto; }
+.cb-enemy__intent { display: flex; }
+.cb-enemy.no-intent .cb-enemy__intent { display: none; }
+
+/* named state badge — Garment, Cracked, Hidden, Standing... */
+.cb-enemy__badges { display: flex; gap: 4px; }
+.cb-badge {
+  font-family: var(--font-display); font-size: 10px;
+  letter-spacing: .16em; text-transform: uppercase;
+  padding: 2px var(--s-2);
+  border-radius: 999px;
+  white-space: nowrap;
+  background: color-mix(in srgb, var(--ink-900) 88%, transparent);
+  border: 1px solid var(--ink-400);
+  color: var(--text-mid);
+  box-shadow: var(--shadow-1);
+}
+.cb-badge[data-tone="warn"] { color: var(--flame-200); border-color: color-mix(in srgb, var(--flame-400) 70%, transparent); }
+.cb-badge[data-tone="good"] { color: var(--spectre-200); border-color: color-mix(in srgb, var(--spectre-400) 70%, transparent); }
+
+/* a large handwritten House Rule pinned above the enemy */
+.cb-enemy__rule {
+  max-width: 240px;
+  padding: var(--s-2) var(--s-3);
+  border-radius: 2px 10px 3px 9px;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 17px,
+      color-mix(in srgb, var(--blueprint-ink) 22%, transparent) 17px 18px),
+    linear-gradient(178deg, var(--parchment), var(--parchment-shade));
+  border: 1px solid color-mix(in srgb, var(--ink-900) 40%, transparent);
+  box-shadow: var(--shadow-3);
+  color: var(--text-ink);
+  transform: rotate(-1.6deg);
+  text-align: center;
+}
+.cb-enemy__rule b {
+  display: block;
+  font-family: var(--font-display); font-size: var(--fs-sm);
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--rarity-curse);
+}
+.cb-enemy__rule span {
+  display: block; margin-top: 2px;
+  font-size: var(--fs-xs); font-style: italic; line-height: 1.3;
+  color: color-mix(in srgb, var(--text-ink) 88%, transparent);
+}
+
+/* two-possibility intent: both futures on screen at once */
+.cb-enemy__alts { display: flex; gap: var(--s-3); align-items: flex-start; }
+.cb-alt {
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  padding: var(--s-1) var(--s-2) 3px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--ink-900) 72%, transparent);
+  border: 1px dashed var(--ink-400);
+  cursor: help;
+}
+.cb-alt .cb-intent { width: 60px; height: 68px; }
+.cb-alt .cb-intent__art { width: 48px; height: 48px; margin-left: -24px; }
+.cb-alt__l {
+  max-width: 120px; text-align: center;
+  font-size: 9px; line-height: 1.2; letter-spacing: .04em;
+  color: var(--text-lo);
 }
 .cb-enemy.no-intent .cb-enemy__intent { opacity: 0; }
 
 .cb-enemy__stage {
   position: relative;
-  width: calc(238px * var(--e-scale));
-  height: calc(268px * var(--e-scale));
+  --e-aspect: .92;
+  --e-h: min(calc(226px * var(--e-scale)), calc(100vh - 460px));
+  height: var(--e-h);
+  width: calc(var(--e-h) * var(--e-aspect));
+  min-width: calc(88px * var(--e-scale));
   display: flex; align-items: flex-end; justify-content: center;
   transform-origin: 50% 100%;
 }
@@ -220,8 +296,14 @@
   55% { transform: translate3d(5px, -1px, 0) rotate(1.4deg); }
   100% { transform: translate3d(0,0,0); }
 }
+@keyframes cb-hitflash {
+  0%   { filter: brightness(2.2) saturate(.4); }
+  38%  { filter: brightness(1.5) saturate(.7); }
+  100% { filter: none; }
+}
 .cb-enemy.is-hit .cb-enemy__stage { animation: cb-hitshake .22s var(--ease-out); }
-.cb-enemy.is-hit .rg-trunk { filter: brightness(2.6) saturate(.4); }
+.cb-enemy.is-hit .rg-trunk,
+.cb-enemy.is-hit .rg-trunk-lit { animation: cb-hitflash .26s var(--ease-out); }
 @keyframes cb-clank {
   0% { transform: translate3d(0,0,0) scale(1); }
   40% { transform: translate3d(-3px,0,0) scale(1.03, .97); }
@@ -237,6 +319,7 @@
   content: ''; position: absolute; inset: -8%;
   border-radius: 50%;
   border: 2px solid color-mix(in srgb, var(--guard-300) 70%, transparent);
+  opacity: 0;                       /* the keyframe owns the visible window */
   animation: cb-guardup .5s var(--ease-out);
   pointer-events: none;
 }
@@ -300,6 +383,32 @@
   color: var(--spectre-100); text-shadow: 0 1px 2px var(--ink-900);
   padding-bottom: 3px;
 }
+
+.cb-enemy__counters { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; }
+.cb-count {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 1px var(--s-2) 1px 6px;
+  border-radius: 999px;
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--flame-500) 34%, var(--ink-900)), var(--ink-900));
+  border: 1px solid color-mix(in srgb, var(--flame-400) 62%, transparent);
+  cursor: help;
+  transition: transform var(--t-quick) var(--ease-snap);
+}
+.cb-count:hover, .cb-count:focus-visible { transform: translateY(-2px) scale(1.06); }
+.cb-count i {
+  font-style: normal; font-family: var(--font-display);
+  font-size: 9px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--flame-200);
+}
+.cb-count b { font-family: var(--font-num); font-size: var(--fs-sm); color: var(--text-hi); }
+.cb-count u { text-decoration: none; font-size: 10px; color: var(--text-lo); }
+@keyframes cb-countbump {
+  0% { transform: scale(1); } 35% { transform: scale(1.38); }
+  100% { transform: scale(1); }
+}
+.cb-count.is-bumped { animation: cb-countbump .42s var(--ease-snap); }
+.cb-count.is-bumped b { color: var(--flame-100); }
 
 .cb-enemy__statuses, .cb-statuses {
   display: flex; flex-wrap: wrap; justify-content: center; gap: 3px;
@@ -404,7 +513,7 @@
 .cb-intent[data-family="scheme"]  { --frame-c: var(--rarity-curse); }
 .cb-intent[data-family="special"] { --frame-c: var(--flame-300); }
 .cb-intent[data-family="scheme"] .cb-intent__gp { fill: var(--spectre-200); }
-.cb-intent[data-family="scheme"] .cb-intent__frameline { stroke: var(--spectre-300); }
+.cb-intent[data-family="scheme"] .cb-intent__frame { fill: color-mix(in srgb, var(--rarity-curse) 34%, var(--ink-900)); }
 
 /* a big incoming hit is FELT: heavier frame, a slow pulse, a hotter glyph */
 .cb-intent.is-heavy .cb-intent__frameline { stroke-width: 7; stroke: var(--threat-100); }
@@ -438,6 +547,23 @@
   font-family: var(--font-num); font-size: var(--fs-xs);
   color: var(--flame-200); letter-spacing: .02em;
 }
+/* a Guard number wears a shield so it can never be mistaken for damage */
+.cb-intent.is-blocknum .cb-intent__num {
+  border-color: var(--guard-300);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--guard-500) 62%, var(--ink-900)), var(--ink-900));
+  padding-left: 20px;
+}
+.cb-intent.is-blocknum .cb-intent__num::before {
+  content: '';
+  position: absolute; left: 5px; top: 50%;
+  width: 12px; height: 13px; margin-top: -6px;
+  background: var(--guard-300);
+  clip-path: polygon(50% 0, 100% 18%, 100% 58%, 50% 100%, 0 58%, 0 18%);
+}
+.cb-intent.is-blocknum .cb-intent__d { color: var(--spectre-100); }
+.cb-intent__num { position: absolute; }
+
 .cb-intent__word {
   position: absolute; left: 50%; bottom: 3px;
   transform: translateX(-50%);
@@ -447,7 +573,24 @@
   text-shadow: 0 1px 3px var(--ink-900);
   opacity: 0; white-space: nowrap;
 }
-.cb-intent.has-word .cb-intent__word { opacity: 1; }
+.cb-intent.has-word /* a Guard number wears a shield so it can never be mistaken for damage */
+.cb-intent.is-blocknum .cb-intent__num {
+  border-color: var(--guard-300);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--guard-500) 62%, var(--ink-900)), var(--ink-900));
+  padding-left: 20px;
+}
+.cb-intent.is-blocknum .cb-intent__num::before {
+  content: '';
+  position: absolute; left: 5px; top: 50%;
+  width: 12px; height: 13px; margin-top: -6px;
+  background: var(--guard-300);
+  clip-path: polygon(50% 0, 100% 18%, 100% 58%, 50% 100%, 0 58%, 0 18%);
+}
+.cb-intent.is-blocknum .cb-intent__d { color: var(--spectre-100); }
+.cb-intent__num { position: absolute; }
+
+.cb-intent__word { opacity: 1; }
 
 .cb-intent__pips {
   position: absolute; left: 50%; top: calc(100% - 4px);
@@ -482,8 +625,8 @@
 /* ───────────────────────────────────────────── the player ──────────────── */
 .cb-player {
   position: absolute; left: clamp(16px, 2vw, 34px);
-  bottom: 45%;
-  width: clamp(250px, 21vw, 330px);
+  bottom: clamp(104px, 13.5vh, 140px);
+  width: clamp(196px, 16vw, 262px);
   z-index: 250;
   pointer-events: none;
   display: flex; flex-direction: column; gap: var(--s-2);
@@ -646,21 +789,21 @@
 .cb-bl { left: clamp(16px, 2vw, 34px); }
 .cb-br { right: clamp(16px, 2vw, 34px); flex-direction: row-reverse; }
 
-/* Pluck orb */
-.cb-pluck {
+/* Nerve orb */
+.cb-nerve {
   position: relative;
   width: clamp(84px, 7vw, 108px); aspect-ratio: 1;
   display: flex; align-items: center; justify-content: center;
   cursor: help;
 }
-.cb-pluck__ring { position: absolute; inset: 0; transform: rotate(-90deg); overflow: visible; }
-.cb-pluck__track { fill: none; stroke: var(--ink-600); stroke-width: 9; }
-.cb-pluck__arc {
+.cb-nerve__ring { position: absolute; inset: 0; transform: rotate(-90deg); overflow: visible; }
+.cb-nerve__track { fill: none; stroke: var(--ink-600); stroke-width: 9; }
+.cb-nerve__arc {
   fill: none; stroke: var(--pluck-300); stroke-width: 9; stroke-linecap: round;
   filter: drop-shadow(0 0 6px color-mix(in srgb, var(--pluck-300) 70%, transparent));
   transition: stroke-dashoffset var(--t-base) var(--ease-out);
 }
-.cb-pluck__core {
+.cb-nerve__core {
   position: absolute; inset: 14%;
   border-radius: 50%;
   background: radial-gradient(60% 60% at 38% 32%,
@@ -668,26 +811,26 @@
   box-shadow: 0 0 26px color-mix(in srgb, var(--pluck-300) 55%, transparent),
               inset 0 -6px 14px color-mix(in srgb, var(--ink-900) 55%, transparent);
 }
-.cb-pluck__n {
+.cb-nerve__n {
   position: relative; z-index: 2;
   display: flex; align-items: baseline;
   font-family: var(--font-num);
   color: var(--text-ink);
   text-shadow: 0 1px 0 color-mix(in srgb, var(--flame-100) 60%, transparent);
 }
-.cb-pluck__n b { font-size: var(--fs-xl); line-height: 1; }
-.cb-pluck__n span { font-size: var(--fs-sm); opacity: .72; }
-.cb-pluck__lbl {
+.cb-nerve__n b { font-size: var(--fs-xl); line-height: 1; }
+.cb-nerve__n span { font-size: var(--fs-sm); opacity: .72; }
+.cb-nerve__lbl {
   position: absolute; left: 50%; bottom: -16px; transform: translateX(-50%);
   font-family: var(--font-display); font-size: 10px;
   letter-spacing: .24em; text-transform: uppercase; color: var(--pluck-300);
 }
-.cb-pluck.is-empty .cb-pluck__core { filter: grayscale(.75) brightness(.5); }
-.cb-pluck.is-empty .cb-pluck__n { color: var(--text-lo); text-shadow: none; }
+.cb-nerve.is-empty .cb-nerve__core { filter: grayscale(.75) brightness(.5); }
+.cb-nerve.is-empty .cb-nerve__n { color: var(--text-lo); text-shadow: none; }
 @keyframes cb-spend { 0% { transform: scale(1.14); } 100% { transform: scale(1); } }
 @keyframes cb-gain { 0% { transform: scale(.82); } 60% { transform: scale(1.1); } 100% { transform: scale(1); } }
-.cb-pluck.is-spend .cb-pluck__core { animation: cb-spend .26s var(--ease-out); }
-.cb-pluck.is-gain .cb-pluck__core { animation: cb-gain .38s var(--ease-snap); }
+.cb-nerve.is-spend .cb-nerve__core { animation: cb-spend .26s var(--ease-out); }
+.cb-nerve.is-gain .cb-nerve__core { animation: cb-gain .38s var(--ease-snap); }
 
 /* piles */
 .cb-pile {
@@ -827,9 +970,11 @@
   transform-origin: 50% 50%;
   will-change: transform, opacity;
   font-family: var(--font-num); font-weight: 700;
-  font-size: 26px; line-height: 1;
+  font-size: 30px; line-height: 1;
   white-space: nowrap;
-  margin: -13px 0 0 0;
+  margin: -15px 0 0 0;
+  -webkit-text-stroke: 2px var(--ink-900);
+  paint-order: stroke fill;
   translate: -50% 0;
   color: var(--flame-100);
   text-shadow:
@@ -847,12 +992,13 @@
 .cb-num[data-kind="debuff"] { color: var(--threat-200); font-size: 17px; letter-spacing: .04em; }
 .cb-num[data-kind="counter"]{ color: var(--pluck-300); font-size: 16px; }
 .cb-num[data-kind="shatter"]{
+  -webkit-text-stroke: 0;
   color: var(--ink-900); background: var(--guard-300);
   font-family: var(--font-display); font-size: 13px; letter-spacing: .18em;
   padding: 2px 8px; border-radius: var(--radius-sm); text-shadow: none;
 }
 .cb-num[data-kind="status"] { color: var(--text-hi); font-size: 16px; }
-.cb-num.is-big { -webkit-text-stroke: 1px var(--ink-900); }
+.cb-num.is-big { -webkit-text-stroke: 3px var(--ink-900); }
 
 /* ───────────────────────────────────────────── tooltip ─────────────────── */
 .cb-tip {
@@ -947,3 +1093,10 @@
   .cb-intent.is-lethal, .cb-endturn.is-ready, .cb-player.is-low .cb-hpbar,
   .cb-player__glow { animation: none; }
 }
+
+/* the arrow has snapped onto this one */
+.cb-enemy.is-aimed .cb-enemy__pool {
+  background: radial-gradient(50% 50% at 50% 50%,
+    color-mix(in srgb, var(--flame-glow) 55%, transparent) 0%, transparent 72%);
+}
+.cb-enemy.is-aimed { filter: brightness(1.14) saturate(1.08); }

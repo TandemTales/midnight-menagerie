@@ -1,0 +1,23 @@
+<!doctype html><meta charset="utf-8"><body><pre id="o">…</pre></body>
+<script type="module">
+import { CombatEngine } from '/game/src/combat/engine.js';
+import { RNG } from '/game/src/core/rng.js';
+import { startingDeckFor } from '/game/src/data/cards.js';
+import { getEnemy } from '/game/src/data/enemies/index.js';
+const R={events:[],notes:[]};
+const e=new CombatEngine({rng:new RNG(3),
+  player:{name:'Kid',companion:'marmalade',maxHp:68,hp:68,energyMax:3,drawPerTurn:5,deck:startingDeckFor('marmalade')},
+  enemies:[{def:getEnemy('dust-bunny'),id:'e0'}]});
+e.on('damage',ev=>R.events.push({src:ev.sourceId,tgt:ev.targetId,base:ev.base,amount:ev.amount,
+   hpBefore:ev.hpBefore,hpAfter:ev.hpAfter, amountIsNaN:Number.isNaN(ev.amount)}));
+await e.startCombat();
+// inspect the exact ctx the engine hands a move
+const ctx=e.enemyCtx(e.enemies[0], e.enemies[0].pendingMove);
+R.notes.push('ctx.damage.length (declared arg count) = '+ctx.damage.length);
+R.notes.push('ctx.player is Actor: '+(ctx.player && ctx.player.id));
+R.notes.push('Math.floor(ctx.player) = '+String(Math.floor(ctx.player)));
+for(let t=0;t<4 && !e.over;t++){ await e.endTurn(); }
+R.playerHp=e.player.hp; R.over=e.over; R.victory=e.victory;
+window.__R__=R; window.__DONE__=true;
+document.getElementById('o').textContent=JSON.stringify(R,null,1);
+</script>

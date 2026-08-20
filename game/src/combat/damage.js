@@ -21,10 +21,18 @@
  *                       the engine runs them in the fixed order below, not in
  *                       whatever order the statuses happen to sit in the Map.)
  *   6. CLAMP           floor, never below 0
+ *   6b. onIncomingHit  LAST CHANCE to change or negate this specific hit, before
+ *                      Guard is even consulted. Mutable payload: set `h.amount`,
+ *                      or call `h.prevent()`. This is Marmalade's Ghoststep shape
+ *                      and Play Dead's shape — "the hit does not happen" rather
+ *                      than "the hit does 0".
  *   7. BLOCK ABSORB    min(amount, defender.block) removed from Guard,
  *                      unless `pierce` (spectral attacks) or `ignoreBlock` (Courage loss)
+ *   7b. onLethal       fires only if the remainder would take hp to 0.
+ *                      `h.prevent()` cancels the hit; `h.setHp(n)` survives at n.
  *   8. HP LOSS         defender.hp -= remainder
- *   9. onDamaged / onAttacked HOOKS   Bristle, Haunt, "when you are hit" powers
+ *   9. onDamaged → onAttacked (attacks only) → onDealtDamage → onAttack
+ *                      (onAttack = "an enemy finished a damaging move", Haunt)
  *  10. DEATH CHECK     hp <= 0 → death event, once
  *
  * Steps 1-6 are pure: `computeDamage()` runs them and mutates nothing, which is
@@ -115,6 +123,63 @@ export function applyDamage(engine, o) {
   const kind = o.kind || 'attack';
   const t = computeDamage(engine, o);
 
+  // 6b. onIncomingHit — a mutable, vetoable view of this single hit.
+  if (!o.skipModifiers) {
+    // NOTE: hook payloads are SPREAD into each provider's own object, so a
+    // method using `this` would mutate the copy. Everything mutable closes over
+    // `box` instead.
+    const box = { prevented: false, amount: t.final };
+    const inc = {
+      attacker, defender, target: defender, kind, card: o.card || null,
+      amount: t.final, base: t.base, cause: o.cause || null,
+      hits: o.hits ?? 1, hitIndex: o.hitIndex ?? 0,
+      prevent: () => { box.prevented = true; },
+      setAmount: (n) => { box.amount = Math.max(0, n | 0); },
+    };
+    engine.hooks.dispatch('onIncomingHit', inc, engine.hooks.actorHooks(defender, 'onIncomingHit'));
+    if (box.prevented) {
+      engine._emit(EV.DAMAGE, {
+        sourceId: attacker ? attacker.id : null,
+        sourceName: attacker ? attacker.name : (o.cause || 'the house'),
+        targetId: defender.id, targetName: defender.name, kind,
+        base: t.base, amount: 0, blocked: 0, hpLoss: 0,
+        hpBefore: defender.hp, hpAfter: defender.hp,
+        blockBefore: defender.block, blockAfter: defender.block,
+        hits: o.hits ?? 1, hitIndex: o.hitIndex ?? 0,
+        lethal: false, pierce: !!o.pierce, prevented: true,
+        cause: o.cause || null, cardId: o.card ? o.card.id : null,
+        cardUid: o.card ? o.card.uid : null,
+      });
+      return { ...t, final: 0, blocked: 0, hpLoss: 0, lethal: false, prevented: true, dead: false };
+    }
+    if (box.amount !== t.final) {
+      t.final = Math.max(0, Math.floor(box.amount));
+      const skipBlock2 = !!(o.pierce || o.ignoreBlock);
+      t.blocked = skipBlock2 ? 0 : Math.min(t.final, defender.block);
+      t.hpLoss = Math.max(0, t.final - t.blocked);
+      t.lethal = (defender.hp - t.hpLoss) <= 0;
+    }
+  }
+
+  // 7b. onLethal — the one place a Companion can refuse to die.
+  if (t.lethal && t.hpLoss > 0) {
+    const lbox = { prevented: false, survivesAt: null };
+    const le = {
+      attacker, defender, target: defender, kind, card: o.card || null,
+      amount: t.final, hpLoss: t.hpLoss,
+      prevent: () => { lbox.prevented = true; },
+      setHp: (n) => { lbox.survivesAt = Math.max(1, n | 0); },
+    };
+    engine.hooks.dispatch('onLethal', le, engine.hooks.actorHooks(defender, 'onLethal'));
+    if (lbox.prevented) {
+      t.hpLoss = Math.max(0, defender.hp - 1);
+      t.lethal = false;
+    } else if (lbox.survivesAt != null) {
+      t.hpLoss = Math.max(0, defender.hp - lbox.survivesAt);
+      t.lethal = false;
+    }
+  }
+
   const hpBefore = defender.hp;
   const blockBefore = defender.block;
 
@@ -166,6 +231,19 @@ export function applyDamage(engine, o) {
   }
   if (attacker) {
     engine.hooks.dispatch('onDealtDamage', hookPayload, engine.hooks.actorHooks(attacker, 'onDealtDamage'));
+    // onAttack: "an enemy landed a damaging action on you". Haunt hangs off this.
+    if (kind === 'attack' && attacker.side === 'enemy' && (o.hitIndex ?? 0) === ((o.hits ?? 1) - 1)) {
+      engine.hooks.dispatch('onAttack', hookPayload, engine.hooks.actorHooks(attacker, 'onAttack'));
+    }
+    if (attacker.def?.onDealtDamage) {
+      try { attacker.def.onDealtDamage(engine.enemyCtx(attacker, null, { info: hookPayload })); } catch (err) { console.error(err); }
+    }
+  }
+  if (defender.def?.onDamaged) {
+    try { defender.def.onDamaged(engine.enemyCtx(defender, null, { info: hookPayload })); } catch (err) { console.error(err); }
+  }
+  if (defender.def?.onAttacked && kind === 'attack') {
+    try { defender.def.onAttacked(engine.enemyCtx(defender, null, { info: hookPayload })); } catch (err) { console.error(err); }
   }
 
   // 10. death

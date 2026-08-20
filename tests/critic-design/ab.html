@@ -1,0 +1,53 @@
+<!doctype html><meta charset="utf-8"><body><pre id="o">…</pre></body>
+<script type="module">
+import { CombatEngine } from '/game/src/combat/engine.js';
+import { RNG } from '/game/src/core/rng.js';
+import { startingDeckFor } from '/game/src/data/cards.js';
+import { getEnemy } from '/game/src/data/enemies/index.js';
+import * as enc from '/game/src/data/encounters.js';
+const DECK=startingDeckFor('marmalade');
+const NATIVE=CombatEngine.prototype.enemyCtx;
+function setMultihitFix(on){
+  CombatEngine.prototype.enemyCtx = on
+    ? function(en,mv,extra){ const c=NATIVE.call(this,en,mv,extra); const rd=c.damage;
+        c.damage=(t,n,o={})=>rd(t,n,{...o,hits:1}); return c; }
+    : NATIVE;
+}
+function mk(id,seed){ const rng=new RNG(seed);
+  const mem=enc.buildEncounter(id,rng,0);
+  const e=new CombatEngine({rng,player:{name:'Kid',companion:'marmalade',maxHp:68,hp:68,energyMax:3,drawPerTurn:5,deck:DECK},
+    enemies:mem.map((m,i)=>({def:getEnemy(m.enemyId),hp:m.hp||undefined,id:'e'+i}))});
+  e.enemies.forEach((x,i)=>{const m=mem[i]; if(m?.counters)x.counters={...(x.counters||{}),...m.counters}; if(m?.flags)x.flags={...(x.flags||{}),...m.flags};});
+  return e;}
+async function turn(e){ for(let s=0;s<40;s++){ if(e.over||e.phase!=='player')break;
+  const st=e.state, hand=st.piles.hand.filter(c=>c.playable); if(!hand.length)break;
+  let inc=0; for(const x of e.enemies) if(x.alive&&x.intent) inc+=x.intent.totalDamage||0;
+  const need=Math.max(0,inc-st.player.block); const tgt=e.livingEnemies()[0]?.id||null;
+  let p=null;
+  for(const c of hand){ if(c.type!=='attack')continue;
+    const k=e.livingEnemies().find(x=>(c.display?.d?.value??0)>=x.hp+x.block); if(k){p={c,t:k.id};break;} }
+  if(!p&&need>0){ const b=hand.filter(c=>(c.display?.b?.value??0)>0).sort((a,b2)=>b2.display.b.value-a.display.b.value); if(b.length)p={c:b[0],t:null}; }
+  if(!p){ const a=hand.filter(c=>c.type==='attack').sort((x,y)=>(y.display?.d?.value??0)-(x.display?.d?.value??0)); if(a.length)p={c:a[0],t:tgt}; }
+  if(!p){ const r=hand.filter(c=>c.type!=='attack'); if(r.length)p={c:r[0],t:tgt}; }
+  if(!p)break; await e.playCard(p.c.uid,p.t); } }
+async function run(id,n,maxT){ let w=0; const T=[],D=[];
+  for(let i=0;i<n;i++){ const e=mk(id,2000+i); let d=0;
+    e.on('damage',ev=>{if(ev.targetId==='player')d+=ev.hpLoss;});
+    await e.startCombat(); let t=0;
+    while(!e.over&&t<maxT){ t++; await turn(e); if(e.over)break; await e.endTurn(); }
+    if(e.victory)w++; T.push(t); D.push(d); }
+  const avg=a=>+(a.reduce((x,y)=>x+y,0)/a.length).toFixed(1);
+  return {winRate:+(w/n*100).toFixed(1), avgTurns:avg(T), avgDmg:avg(D)};
+}
+const R={};
+for(const [k,on] of [['shipped',false],['multihitFixed',true]]){
+  setMultihitFix(on); R[k]={};
+  R[k]['foyer-14 (hardest normal, 67)']=await run('foyer-14',40,60);
+  R[k]['elite Grand Coatcheck (96)']=await run('foyer-scare-coatcheck',40,80);
+  R[k]['elite Unwelcome Guest (91)']=await run('foyer-scare-guest',40,80);
+  R[k]['BOSS Butler (250)']=await run('foyer-boss',40,120);
+}
+setMultihitFix(false);
+window.__R__=R; window.__DONE__=true;
+document.getElementById('o').textContent=JSON.stringify(R,null,1);
+</script>

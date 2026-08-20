@@ -223,8 +223,16 @@ export class TitleScene extends Scene {
     logo.classList.add('ti-logo');
     stage.appendChild(logo);
 
-    stage.appendChild(el('p', 'ti-tagline',
-      'Sixteen lost pets became something else inside that house.<br>Eight kids are going in to bring the rest home.'));
+    /* The menu used to float straight over the lit windows, which made the
+       words fight the house. It now sits on a slate plinth: a framed, blurred
+       panel of its own, so the type always has an unambiguous ground and the
+       tagline reads at a glance. */
+    const plinth = el('div', 'ti-plinth');
+    plinth.appendChild(el('div', 'ti-plinth__glass'));
+
+    plinth.appendChild(el('p', 'ti-tagline',
+      'Sixteen lost pets became something else inside that house.<br>' +
+      '<span>Eight kids are going in to bring the rest home.</span>'));
 
     const rescued = new Set(Save?.data?.companionsRescued ?? []);
     const nav = el('nav', 'ti-menu');
@@ -240,7 +248,8 @@ export class TitleScene extends Scene {
         `<span class="ti-item__hint">${it.hint}</span>`;
       nav.appendChild(b);
     }
-    stage.appendChild(nav);
+    plinth.appendChild(nav);
+    stage.appendChild(plinth);
     root.appendChild(stage);
 
     // ── footer chrome ──────────────────────────────────────────────────────

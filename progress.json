@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T02:35:20",
+ "updated": "2026-08-20T02:58:52",
  "wave": 1,
  "waveLabel": "Core systems",
  "headline": "Seven builders running in parallel. Critics follow each one.",
@@ -21,10 +21,10 @@
    "id": "combat",
    "name": "Combat engine",
    "desc": "Turn rules, damage pipeline, statuses, intents, deterministic + headless",
-   "status": "rework",
+   "status": "done",
    "round": 2,
-   "verdict": "Engine shipped: 261 assertions, 0 failures. Preview clones the engine so it cannot drift from resolution.",
-   "gap": "~70 cards say 'choose a Trick' but the engine auto-picks, silently removing player agency. Also: intents must read damageFn/hitsFn or they lie.",
+   "verdict": "445 assertions, 0 failures. Player choice with deterministic replay log, first-class intent queue, House Rules.",
+   "gap": null,
    "builder": null,
    "critic": null,
    "log": []
@@ -33,10 +33,10 @@
    "id": "card",
    "name": "Card feel",
    "desc": "Hover, drag, arc-fan hand, play arc, impact, re-fan easing",
-   "status": "reviewing",
-   "round": 1,
+   "status": "rework",
+   "round": 2,
    "verdict": "Hover 105ms, arc fan, 114 motion frames captured. Under critic review.",
-   "gap": null,
+   "gap": "Card is a fixed 224x312 box with no responsive scaling: at 12 cards the hand overlaps 76%, truncates every name and clips 32px below the viewport. Also 43fps drawing into a full hand.",
    "builder": null,
    "critic": null,
    "log": []
@@ -57,10 +57,10 @@
    "id": "enemies",
    "name": "Enemies & intents",
    "desc": "Rosters, move selection, telegraph clarity, Scuffles and Big Scares",
-   "status": "reviewing",
-   "round": 1,
+   "status": "rework",
+   "round": 2,
    "verdict": "37 enemies across 3 regions, 137 moves, 54 formations, 3 multi-phase bosses. 0 validation errors.",
-   "gap": null,
+   "gap": "Every multi-hit enemy attack resolves hits-squared times: the Butler's 21-damage intent actually deals 63. Makes two of three Foyer elites unwinnable (0% win rate).",
    "builder": null,
    "critic": null,
    "log": []
@@ -81,10 +81,10 @@
    "id": "cards",
    "name": "Companion decks",
    "desc": "Card pools + keyword systems for the 16 Companions",
-   "status": "reviewing",
-   "round": 1,
+   "status": "rework",
+   "round": 2,
    "verdict": "445 cards across 5 Companions (Marmalade, Bones, Pipkin, Taffy, Wink), 0 validation errors.",
-   "gap": null,
+   "gap": "Rarity ladders are numeric ramps, not changes in kind, and several cards are byte-identical duplicates at different rarities.",
    "builder": null,
    "critic": null,
    "log": []
@@ -218,6 +218,22 @@
   {
    "t": "2026-08-20T02:35:20",
    "msg": "Critics running on card feel and on game design. Front-end finisher building the Expedition End screen."
+  },
+  {
+   "t": "2026-08-20T02:57:01",
+   "msg": "CRITIC FAIL on enemies: multi-hit attacks deal hits-squared damage. Proven by A/B - fixing it takes an elite from 0% to 72.5% win rate."
+  },
+  {
+   "t": "2026-08-20T02:57:01",
+   "msg": "Combat engine PASSES round 2: 445 assertions, real player choice, intent queue, House Rules."
+  },
+  {
+   "t": "2026-08-20T02:58:52",
+   "msg": "CRITIC FAIL on card feel. Hover (100ms), arc, re-fan and keyboard all tied with StS2 - but the hand does not fit the screen and the targeting arrowhead is a zero-area path."
+  },
+  {
+   "t": "2026-08-20T02:58:52",
+   "msg": "Design critic also flagged 9 near-duplicate card groups and two byte-identical cards at different rarities."
   }
  ]
 }

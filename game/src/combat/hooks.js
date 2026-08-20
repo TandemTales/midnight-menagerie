@@ -37,6 +37,23 @@
  *   onStatusApplied(h) h.actor, h.id, h.delta
  *   onCounterChanged(h) h.id, h.delta, h.value
  *   onIntentChosen(h) h.enemy, h.move
+ *   onAttack(h)       an ENEMY finished a damaging move.  h.attacker, h.defender, h.hpLoss
+ *   onAttackDealt(h)  the PLAYER finished resolving an Attack card. h.card, h.target
+ *   onIncomingHit(h)  per individual hit against h.defender, BEFORE mitigation.
+ *                     Mutable: set h.amount to change it, call h.prevent() to negate.
+ *   onLethal(h)       a hit is about to reduce h.defender to 0 Courage.
+ *                     Call h.prevent() to survive; set h.setHp(n) to survive at n.
+ *   onDebuffIncoming(h) a debuff is about to land. h.id, h.stacks, h.actor.
+ *                     Call h.prevent() to refuse it.
+ *   onBoardEvent(h)   a generic broadcast: h.event, h.data
+ *
+ * EVERY hook payload also carries:
+ *   h.e / h.engine   the engine        h.stacks   the provider's stack count
+ *   h.owner          the actor/relic that owns the hook
+ *   h.actor          alias of h.owner when the owner is an actor
+ *   h.remove()       strip this status from its owner (self-consuming statuses)
+ *   h.block(a, n)    grant Guard without going through a card
+ *   h.card           the card in play, when there is one
  *
  * Value reducers (must return a number):
  *   modifyDamageDealt(amount, h)   h.attacker, h.defender, h.card, h.kind, h.stacks
@@ -150,10 +167,30 @@ export class Hooks {
     const list = providers || this.globalHooks(name);
     if (list === NOOP_LIST || list.length === 0) return;
     for (const p of list) {
-      const h = { ...payload, e: this.e, engine: this.e, stacks: p.stacks, owner: p.owner, hookId: p.id, source: p.source, def: p.def };
-      p.fn(h);
+      p.fn(this._payload(p, payload));
       if (p.rec?.once) this.remove(p.id);
     }
+  }
+
+  /** Build the shared hook payload. Kept in one place so every hook gets the same tools. */
+  _payload(p, payload) {
+    const e = this.e;
+    const owner = p.owner;
+    return {
+      ...payload,
+      e, engine: e,
+      stacks: p.stacks, owner, hookId: p.id, source: p.source, def: p.def,
+      actor: payload.actor ?? (owner && owner.statuses ? owner : undefined),
+      remove: () => {
+        if (p.source === 'status' && owner && owner.statuses) e.removeStatus(owner, p.id, 'consumed');
+        else if (p.source === 'effect') e.hooks.remove(p.id);
+      },
+      consume: (n = 1) => {
+        if (p.source === 'status' && owner && owner.statuses) e.applyStatus(owner, p.id, -n, { reason: 'consumed', ignoreCharm: true });
+      },
+      block: (a, n) => e.gainBlock(a || owner, n, { fromCard: false, reason: p.id }),
+      damage: (target, n, opts) => e.dealDamage({ attacker: owner, defender: target, amount: n, kind: 'attack', ...(opts || {}) }),
+    };
   }
 
   /** Chain a number through every modifier. Always returns a finite number. */
@@ -161,8 +198,7 @@ export class Hooks {
     const list = providers || this.globalHooks(name);
     let v = value;
     for (const p of list) {
-      const h = { ...payload, e: this.e, engine: this.e, stacks: p.stacks, owner: p.owner, hookId: p.id, source: p.source, def: p.def };
-      const next = p.fn(v, h);
+      const next = p.fn(v, this._payload(p, payload));
       if (typeof next === 'number' && Number.isFinite(next)) v = next;
     }
     return v;
@@ -172,8 +208,7 @@ export class Hooks {
   any(name, payload = {}, providers = null) {
     const list = providers || this.globalHooks(name);
     for (const p of list) {
-      const h = { ...payload, e: this.e, engine: this.e, stacks: p.stacks, owner: p.owner, hookId: p.id, source: p.source };
-      if (p.fn(h)) return true;
+      if (p.fn(this._payload(p, payload))) return true;
     }
     return false;
   }

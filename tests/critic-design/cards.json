@@ -1,0 +1,8116 @@
+[
+ {
+  "id": "marmalade/scratch",
+  "name": "Scratch",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage.",
+  "nums": {
+   "d": 6
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/curl-up",
+  "name": "Curl Up",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard.",
+  "nums": {
+   "b": 5
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/boo",
+  "name": "Boo!",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Apply {n} [Haunt].",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "haunt"
+  ]
+ },
+ {
+  "id": "marmalade/spectral-scratch",
+  "name": "Spectral Scratch",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. Deal {m0} more while [Untouched].",
+  "nums": {
+   "d": 6,
+   "m0": 4
+  },
+  "exhaust": false,
+  "keywords": [
+   "untouched"
+  ]
+ },
+ {
+  "id": "marmalade/paw-through",
+  "name": "Paw Through",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. Gain {b} Guard.",
+  "nums": {
+   "d": 6,
+   "b": 5
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/sneak-attack",
+  "name": "Sneak Attack",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 0,
+  "target": "enemy",
+  "text": "Deal {d} damage. If this is the first Trick you played this turn, draw {n} Trick.",
+  "nums": {
+   "d": 4,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/tail-flick",
+  "name": "Tail Flick",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. Apply {n} [Haunt].",
+  "nums": {
+   "d": 5,
+   "n": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "haunt"
+  ]
+ },
+ {
+  "id": "marmalade/startle",
+  "name": "Startle",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. Apply {n} Weak.",
+  "nums": {
+   "d": 6,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/wall-bounce",
+  "name": "Wall Bounce",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. If you have [Ghoststep], strike again.",
+  "nums": {
+   "d": 6,
+   "hits": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "ghoststep"
+  ]
+ },
+ {
+  "id": "marmalade/moonlit-claw",
+  "name": "Moonlit Claw",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage. Costs {n} less while [Untouched].",
+  "nums": {
+   "d": 13,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "untouched"
+  ]
+ },
+ {
+  "id": "marmalade/back-arched-swipe",
+  "name": "Back-Arched Swipe",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. Gain {b} Guard if the target intends to attack.",
+  "nums": {
+   "d": 6,
+   "b": 6
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/quick-pounce",
+  "name": "Quick Pounce",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. [Zoomies]: deal {m0} more.",
+  "nums": {
+   "d": 5,
+   "m0": 6
+  },
+  "exhaust": false,
+  "keywords": [
+   "zoomies"
+  ]
+ },
+ {
+  "id": "marmalade/ghoststep",
+  "name": "Ghoststep",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {n} [Ghoststep].",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "ghoststep"
+  ]
+ },
+ {
+  "id": "marmalade/slip-away",
+  "name": "Slip Away",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard. Gain {m0} more if any enemy intends to attack.",
+  "nums": {
+   "b": 5,
+   "m0": 4
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/fluff-up",
+  "name": "Fluff Up",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard.",
+  "nums": {
+   "b": 8
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/watchful-eyes",
+  "name": "Watchful Eyes",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "none",
+  "text": "Draw {n} Tricks, then discard {m0} Trick.",
+  "nums": {
+   "n": 3,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/catnap",
+  "name": "Catnap",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard. Draw {n} Tricks at the start of your next turn.",
+  "nums": {
+   "b": 6,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/curious-paw",
+  "name": "Curious Paw",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 0,
+  "target": "none",
+  "text": "Draw {n} Tricks. Discard {m0} Trick. [Vanish].",
+  "nums": {
+   "n": 1,
+   "m0": 1
+  },
+  "exhaust": true,
+  "keywords": [
+   "vanish"
+  ]
+ },
+ {
+  "id": "marmalade/hide-under-something",
+  "name": "Hide Under Something",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard. Your next Attack this turn costs {n} less.",
+  "nums": {
+   "b": 6,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/nine-lived-nerve",
+  "name": "Nine-Lived Nerve",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 0,
+  "target": "self",
+  "text": "Spend {m0} [Lives]. Gain {n} Nerve.",
+  "nums": {
+   "m0": 1,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "lives"
+  ]
+ },
+ {
+  "id": "marmalade/haunting-hiss",
+  "name": "Haunting Hiss",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Apply {n} [Haunt].",
+  "nums": {
+   "n": 6
+  },
+  "exhaust": false,
+  "keywords": [
+   "haunt"
+  ]
+ },
+ {
+  "id": "marmalade/knock-it-over",
+  "name": "Knock It Over",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Remove {b} Guard from the target. Apply {n} [Haunt].",
+  "nums": {
+   "b": 10,
+   "n": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "haunt"
+  ]
+ },
+ {
+  "id": "marmalade/soft-landing",
+  "name": "Soft Landing",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard. Gain {m0} more if [Untouched].",
+  "nums": {
+   "b": 5,
+   "m0": 6
+  },
+  "exhaust": false,
+  "keywords": [
+   "untouched"
+  ]
+ },
+ {
+  "id": "marmalade/double-pounce",
+  "name": "Double Pounce",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage {n} times. [Zoomies]: strike once more.",
+  "nums": {
+   "d": 5,
+   "n": 2,
+   "hits": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "zoomies"
+  ]
+ },
+ {
+  "id": "marmalade/through-the-wall",
+  "name": "Through the Wall",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. Ignores Guard.",
+  "nums": {
+   "d": 9
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/ambush-from-nowhere",
+  "name": "Ambush from Nowhere",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage. Costs {n} less for each [Ghoststep] you have.",
+  "nums": {
+   "d": 16,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "ghoststep"
+  ]
+ },
+ {
+  "id": "marmalade/rattle-the-chandelier",
+  "name": "Rattle the Chandelier",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage to all enemies. Apply {n} [Haunt] to the target.",
+  "nums": {
+   "d": 7,
+   "n": 4
+  },
+  "exhaust": false,
+  "keywords": [
+   "haunt"
+  ]
+ },
+ {
+  "id": "marmalade/claw-from-beyond",
+  "name": "Claw from Beyond",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. Deal {m0} more for each Trick that has [Vanish]ed this combat.",
+  "nums": {
+   "d": 4,
+   "m0": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "vanish"
+  ]
+ },
+ {
+  "id": "marmalade/frenzied-zoomies",
+  "name": "Frenzied Zoomies",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 0,
+  "target": "enemy",
+  "text": "Deal {d} damage. [Zoomies]: return this to your hand. Once each turn.",
+  "nums": {
+   "d": 4
+  },
+  "exhaust": false,
+  "keywords": [
+   "zoomies"
+  ]
+ },
+ {
+  "id": "marmalade/shadow-swat",
+  "name": "Shadow Swat",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. If this defeats an enemy, gain {n} [Ghoststep].",
+  "nums": {
+   "d": 9,
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "ghoststep"
+  ]
+ },
+ {
+  "id": "marmalade/graveyard-pounce",
+  "name": "Graveyard Pounce",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. Deal additional damage equal to the target\u2019s [Haunt].",
+  "nums": {
+   "d": 6
+  },
+  "exhaust": false,
+  "keywords": [
+   "haunt"
+  ]
+ },
+ {
+  "id": "marmalade/hiss-and-hit",
+  "name": "Hiss and Hit",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. The target loses Courage equal to half its [Haunt], rounded up. Its Haunt does not dissipate.",
+  "nums": {
+   "d": 7
+  },
+  "exhaust": false,
+  "keywords": [
+   "haunt"
+  ]
+ },
+ {
+  "id": "marmalade/ricochet-cat",
+  "name": "Ricochet Cat",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "randomEnemy",
+  "text": "Deal {d} damage to a random enemy {n} times.",
+  "nums": {
+   "d": 4,
+   "n": 4,
+   "hits": 4
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/phantom-flurry",
+  "name": "Phantom Flurry",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage once for each Trick you have played this turn, to a maximum of {n}.",
+  "nums": {
+   "d": 3,
+   "n": 5,
+   "hits": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "zoomies"
+  ]
+ },
+ {
+  "id": "marmalade/pounce-on-the-weak",
+  "name": "Pounce on the Weak",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. Deal {m0} more if the target has any negative condition.",
+  "nums": {
+   "d": 6,
+   "m0": 7
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/ninefold-scratch",
+  "name": "Ninefold Scratch",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage {n} times.",
+  "nums": {
+   "d": 2,
+   "n": 9,
+   "hits": 9
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/phase-out",
+  "name": "Phase Out",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {n} [Ghoststep]. Draw {m0} fewer Tricks next turn.",
+  "nums": {
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "ghoststep"
+  ]
+ },
+ {
+  "id": "marmalade/now-you-see-me",
+  "name": "Now You See Me",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 0,
+  "target": "self",
+  "text": "Gain {n} [Ghoststep]. [Vanish].",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": true,
+  "keywords": [
+   "ghoststep",
+   "vanish"
+  ]
+ },
+ {
+  "id": "marmalade/nope",
+  "name": "Nope.",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Prevent the next {n} negative conditions an enemy would apply to you this turn.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/curiosity",
+  "name": "Curiosity",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "none",
+  "text": "Draw {n} Tricks. Add {m0} Spooked to your discard pile.",
+  "nums": {
+   "n": 3,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/chase-the-light",
+  "name": "Chase the Light",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "none",
+  "text": "Draw {n} Tricks. Gain {m0} Nerve for each of them that costs 0.",
+  "nums": {
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/steal-their-shadow",
+  "name": "Steal Their Shadow",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Gain {b} Guard. Reduce the target\u2019s Strength by {n}. Apply {m0} [Haunt] for each point removed.",
+  "nums": {
+   "b": 6,
+   "n": 2,
+   "m0": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "haunt"
+  ]
+ },
+ {
+  "id": "marmalade/hairball",
+  "name": "Hairball",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Apply {n} Weak and {m0} Vulnerable.",
+  "nums": {
+   "n": 3,
+   "m0": 3
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/tripwire-tail",
+  "name": "Tripwire Tail",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "The next enemy to attack you this turn gains {n} [Haunt].",
+  "nums": {
+   "n": 10
+  },
+  "exhaust": false,
+  "keywords": [
+   "haunt"
+  ]
+ },
+ {
+  "id": "marmalade/perch-up-high",
+  "name": "Perch Up High",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "self",
+  "text": "Gain {b} Guard. Gain {n} [Ghoststep] at the start of your next turn.",
+  "nums": {
+   "b": 14,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "ghoststep"
+  ]
+ },
+ {
+  "id": "marmalade/hide-and-seek",
+  "name": "Hide and Seek",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Choose one: gain {n} [Ghoststep]; draw {m0} Tricks; or gain {b} Guard.",
+  "nums": {
+   "n": 1,
+   "m0": 2,
+   "b": 9
+  },
+  "exhaust": false,
+  "keywords": [
+   "ghoststep"
+  ]
+ },
+ {
+  "id": "marmalade/borrowed-life",
+  "name": "Borrowed Life",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 0,
+  "target": "self",
+  "text": "Spend {m0} [Lives]. Draw {n} Tricks.",
+  "nums": {
+   "m0": 1,
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "lives"
+  ]
+ },
+ {
+  "id": "marmalade/second-chance",
+  "name": "Second Chance",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "none",
+  "text": "Spend {m0} [Lives]. Return a Trick that [Vanish]ed this combat to your hand.",
+  "nums": {
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "lives",
+   "vanish"
+  ]
+ },
+ {
+  "id": "marmalade/leave-a-life-behind",
+  "name": "Leave a Life Behind",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Spend {m0} [Lives]. Gain {b} Guard. [Vanish].",
+  "nums": {
+   "m0": 1,
+   "b": 24
+  },
+  "exhaust": true,
+  "keywords": [
+   "lives",
+   "vanish"
+  ]
+ },
+ {
+  "id": "marmalade/impossible-squeeze",
+  "name": "Impossible Squeeze",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 0,
+  "target": "none",
+  "text": "[Vanish] another Trick in your hand. Draw {n} Trick.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "vanish"
+  ]
+ },
+ {
+  "id": "marmalade/midnight-grooming",
+  "name": "Midnight Grooming",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Remove a negative condition from yourself. Gain {b} Guard.",
+  "nums": {
+   "b": 8
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/nine-lives-nine-plans",
+  "name": "Nine Lives, Nine Plans",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Choose one: gain {b} Guard; draw {n} Tricks; apply {m0} [Haunt]; or gain {m1} Nerve. Spend {m2} [Lives] to choose two.",
+  "nums": {
+   "b": 10,
+   "n": 2,
+   "m0": 6,
+   "m1": 1,
+   "m2": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "lives",
+   "haunt"
+  ]
+ },
+ {
+  "id": "marmalade/ghost-in-the-rafters",
+  "name": "Ghost in the Rafters",
+  "comp": "marmalade",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "While [Untouched], [Retain] {n} Trick at the end of your turn.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "untouched",
+   "retain"
+  ]
+ },
+ {
+  "id": "marmalade/poltercat",
+  "name": "Poltercat",
+  "comp": "marmalade",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Whenever an enemy buffs itself, apply {n} [Haunt] to it.",
+  "nums": {
+   "n": 4
+  },
+  "exhaust": false,
+  "keywords": [
+   "haunt"
+  ]
+ },
+ {
+  "id": "marmalade/always-lands",
+  "name": "Always Lands on Her Feet",
+  "comp": "marmalade",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "The first time each turn your [Ghoststep] is consumed, gain {b} Guard.",
+  "nums": {
+   "b": 8
+  },
+  "exhaust": false,
+  "keywords": [
+   "ghoststep"
+  ]
+ },
+ {
+  "id": "marmalade/predators-patience",
+  "name": "Predator\u2019s Patience",
+  "comp": "marmalade",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "At the start of your turn, if you were [Untouched], your Attacks deal {n} more damage for the rest of combat.",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "untouched"
+  ]
+ },
+ {
+  "id": "marmalade/haunted-housecat",
+  "name": "Haunted Housecat",
+  "comp": "marmalade",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Whenever you gain [Ghoststep], apply {n} [Haunt] to a random enemy.",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "ghoststep",
+   "haunt"
+  ]
+ },
+ {
+  "id": "marmalade/zoomies-at-midnight",
+  "name": "Zoomies at Midnight",
+  "comp": "marmalade",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "The first Trick each turn that activates [Zoomies] costs {n} less.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "zoomies"
+  ]
+ },
+ {
+  "id": "marmalade/final-pounce",
+  "name": "Final Pounce",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage. Deal {m0} more while [Untouched].",
+  "nums": {
+   "d": 12,
+   "m0": 14
+  },
+  "exhaust": false,
+  "keywords": [
+   "untouched"
+  ]
+ },
+ {
+  "id": "marmalade/nine-lives-fury",
+  "name": "Nine Lives\u2019 Fury",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Spend up to {m0} [Lives]. Deal {d} damage for each Life spent.",
+  "nums": {
+   "d": 9,
+   "m0": 3,
+   "hits": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "lives"
+  ]
+ },
+ {
+  "id": "marmalade/across-the-veil",
+  "name": "Across the Veil",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage. Ignores Guard. Gain {n} [Ghoststep].",
+  "nums": {
+   "d": 18,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "ghoststep"
+  ]
+ },
+ {
+  "id": "marmalade/everywhere-at-once",
+  "name": "Everywhere at Once",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "allEnemies",
+  "text": "Deal {d} damage to all enemies. Repeat once for each [Ghoststep] you have, to a maximum of {n} repeats.",
+  "nums": {
+   "d": 8,
+   "n": 3,
+   "hits": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "ghoststep"
+  ]
+ },
+ {
+  "id": "marmalade/claws-in-the-dark",
+  "name": "Claws in the Dark",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage. Deal {m0} more for each [Haunt] on the target, then remove all of it.",
+  "nums": {
+   "d": 6,
+   "m0": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "haunt"
+  ]
+ },
+ {
+  "id": "marmalade/spectral-stampede",
+  "name": "Spectral Stampede",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 3,
+  "target": "randomEnemy",
+  "text": "Deal {d} damage to a random enemy {n} times.",
+  "nums": {
+   "d": 6,
+   "n": 6,
+   "hits": 6
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/the-last-thing-they-see",
+  "name": "The Last Thing They See",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage. If the target has {n} or less Courage, defeat it instead. Bosses are immune.",
+  "nums": {
+   "d": 12,
+   "n": 25
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/catastrophe",
+  "name": "Catastrophe",
+  "comp": "marmalade",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": -1,
+  "target": "randomEnemy",
+  "text": "Spend all your Nerve. Deal {d} damage to a random enemy {n} times for each Nerve spent.",
+  "nums": {
+   "d": 6,
+   "n": 2,
+   "hits": 6
+  },
+  "exhaust": false,
+  "keywords": [
+   "zoomies"
+  ]
+ },
+ {
+  "id": "marmalade/spend-a-life",
+  "name": "Spend a Life",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 0,
+  "target": "self",
+  "text": "Spend {m0} [Lives]. Choose one: gain {n} Nerve; draw {m1} Tricks; gain {m2} [Ghoststep]; or gain {b} Guard.",
+  "nums": {
+   "m0": 1,
+   "n": 2,
+   "m1": 3,
+   "m2": 2,
+   "b": 16
+  },
+  "exhaust": false,
+  "keywords": [
+   "lives",
+   "ghoststep"
+  ]
+ },
+ {
+  "id": "marmalade/come-back-wrong",
+  "name": "Come Back Wrong",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "self",
+  "text": "Spend {m0} [Lives]. Heal {n} Courage and gain {b} Guard. Add {m1} Wrong Side to your draw pile. [Vanish].",
+  "nums": {
+   "m0": 3,
+   "n": 20,
+   "b": 20,
+   "m1": 2
+  },
+  "exhaust": true,
+  "keywords": [
+   "lives",
+   "vanish"
+  ]
+ },
+ {
+  "id": "marmalade/not-dead-yet",
+  "name": "Not Dead Yet",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "self",
+  "text": "The next time your Courage would reach 0 this turn, spend {m0} [Lives] and survive with {n} Courage instead.",
+  "nums": {
+   "m0": 3,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "lives"
+  ]
+ },
+ {
+  "id": "marmalade/walk-between-rooms",
+  "name": "Walk Between Rooms",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "none",
+  "text": "Discard your hand, then draw that many Tricks. Gain {n} [Ghoststep].",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "ghoststep"
+  ]
+ },
+ {
+  "id": "marmalade/curiosity-killed-the-cat",
+  "name": "Curiosity Killed the Cat",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "none",
+  "text": "Draw until your hand is full. At the end of your turn, lose {n} Courage for each Trick drawn this way still in your hand.",
+  "nums": {
+   "n": 3
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "marmalade/but-satisfaction-brought-it-back",
+  "name": "But Satisfaction Brought It Back",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "none",
+  "text": "Return {n} Tricks that [Vanish]ed this combat to your hand. They cost {m0} less this turn.",
+  "nums": {
+   "n": 3,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "vanish"
+  ]
+ },
+ {
+  "id": "marmalade/steal-a-turn",
+  "name": "Steal a Turn",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 3,
+  "target": "enemy",
+  "text": "Cancel the target\u2019s current action. Apply {n} [Haunt]. [Vanish].",
+  "nums": {
+   "n": 6
+  },
+  "exhaust": true,
+  "keywords": [
+   "haunt",
+   "vanish"
+  ]
+ },
+ {
+  "id": "marmalade/perfect-landing",
+  "name": "Perfect Landing",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard. If [Untouched], gain {m0} more and draw {n} Tricks.",
+  "nums": {
+   "b": 8,
+   "m0": 16,
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "untouched"
+  ]
+ },
+ {
+  "id": "marmalade/haunt-the-whole-room",
+  "name": "Haunt the Whole Room",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "allEnemies",
+  "text": "Apply {n} [Haunt] to all enemies.",
+  "nums": {
+   "n": 12
+  },
+  "exhaust": false,
+  "keywords": [
+   "haunt"
+  ]
+ },
+ {
+  "id": "marmalade/disappearing-act",
+  "name": "Disappearing Act",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "none",
+  "text": "[Vanish] your hand. Draw that many Tricks plus {m0}. Gain {n} [Ghoststep].",
+  "nums": {
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "ghoststep",
+   "vanish"
+  ]
+ },
+ {
+  "id": "marmalade/i-meant-to-do-that",
+  "name": "I Meant to Do That",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard for each Trick you discarded or [Vanish]ed this turn. Draw {n} Tricks if that is at least {m0}.",
+  "nums": {
+   "b": 5,
+   "n": 2,
+   "m0": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "vanish"
+  ]
+ },
+ {
+  "id": "marmalade/all-nine",
+  "name": "All Nine",
+  "comp": "marmalade",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "Restore your [Lives] to {n}. [Vanish].",
+  "nums": {
+   "n": 9
+  },
+  "exhaust": true,
+  "keywords": [
+   "lives",
+   "vanish"
+  ]
+ },
+ {
+  "id": "marmalade/nine-lives",
+  "name": "Nine Lives",
+  "comp": "marmalade",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "self",
+  "text": "The first [Lives] you spend each turn also draws {n} Trick and gains {b} Guard.",
+  "nums": {
+   "n": 1,
+   "b": 6
+  },
+  "exhaust": false,
+  "keywords": [
+   "lives"
+  ]
+ },
+ {
+  "id": "marmalade/untouchable",
+  "name": "Untouchable",
+  "comp": "marmalade",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "At the start of your turn, gain a Perfect Streak if you were [Untouched], otherwise lose all of them. Your Attacks deal {n} more damage and you gain {b} Guard for each Streak.",
+  "nums": {
+   "n": 2,
+   "b": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "untouched"
+  ]
+ },
+ {
+  "id": "marmalade/queen-of-the-rafters",
+  "name": "Queen of the Rafters",
+  "comp": "marmalade",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "At the end of your turn, [Retain] a Trick of your choice. It costs {n} less next turn.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "retain"
+  ]
+ },
+ {
+  "id": "marmalade/permanent-haunting",
+  "name": "Permanent Haunting",
+  "comp": "marmalade",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "[Haunt] loses only {n} stack when it triggers instead of half.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "haunt"
+  ]
+ },
+ {
+  "id": "marmalade/endless-zoomies",
+  "name": "Endless Zoomies",
+  "comp": "marmalade",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "Whenever a Trick activates [Zoomies], draw {m0} Trick. Maximum {m1} times each turn.",
+  "nums": {
+   "m0": 1,
+   "m1": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "zoomies"
+  ]
+ },
+ {
+  "id": "bones/bite",
+  "name": "Bite",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage.",
+  "nums": {
+   "d": 6
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "bones/sit-pretty",
+  "name": "Sit Pretty",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard. Gain {m0} more while [Whole].",
+  "nums": {
+   "b": 5,
+   "m0": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "whole"
+  ]
+ },
+ {
+  "id": "bones/shake-boy",
+  "name": "Shake, Boy!",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "basic",
+  "cost": 0,
+  "target": "self",
+  "text": "[Shed] {m0} Bone. Draw {n} Trick.",
+  "nums": {
+   "m0": 1,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "shed"
+  ]
+ },
+ {
+  "id": "bones/put-yourself-back-together",
+  "name": "Put Yourself Back Together",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "self",
+  "text": "[Reattach] up to {n} Bones. Gain {b} Guard for each. If you have none, gain {m0} Guard instead.",
+  "nums": {
+   "n": 2,
+   "b": 4,
+   "m0": 6
+  },
+  "exhaust": false,
+  "keywords": [
+   "reattach"
+  ]
+ },
+ {
+  "id": "bones/go-get-it",
+  "name": "Go Get It!",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "none",
+  "text": "[Fetch] a non-[Slobbered] Trick with printed cost {n} or less.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "fetch",
+   "slobbered"
+  ]
+ },
+ {
+  "id": "bones/spare-bone",
+  "name": "Spare Bone",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "special",
+  "cost": 0,
+  "target": "self",
+  "text": "Choose one: [Shed] {n} Bone, or [Reattach] {n} Bone. [Vanish].",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": true,
+  "keywords": [
+   "shed",
+   "reattach",
+   "vanish"
+  ]
+ },
+ {
+  "id": "bones/rib-rattle",
+  "name": "Rib Rattle",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. [Shed] {n} Bone.",
+  "nums": {
+   "d": 8,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "shed"
+  ]
+ },
+ {
+  "id": "bones/tailbone-thump",
+  "name": "Tailbone Thump",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. If [Whole], gain {b} Guard.",
+  "nums": {
+   "d": 7,
+   "b": 5
+  },
+  "exhaust": false,
+  "keywords": [
+   "whole"
+  ]
+ },
+ {
+  "id": "bones/clatter-pounce",
+  "name": "Clatter Pounce",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "allEnemies",
+  "text": "Deal {d} damage to all enemies. Deal {m0} more while [Scattered].",
+  "nums": {
+   "d": 5,
+   "m0": 4
+  },
+  "exhaust": false,
+  "keywords": [
+   "scattered"
+  ]
+ },
+ {
+  "id": "bones/skull-boop",
+  "name": "Skull Boop",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. If you [Reattach]ed a Bone this turn, deal {m0} more.",
+  "nums": {
+   "d": 8,
+   "m0": 5
+  },
+  "exhaust": false,
+  "keywords": [
+   "reattach"
+  ]
+ },
+ {
+  "id": "bones/bone-toss",
+  "name": "Bone Toss",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. You may [Reattach] {m0} Bone. If you do, your next Trick this turn is [Empowered] {n}.",
+  "nums": {
+   "d": 7,
+   "m0": 1,
+   "n": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "reattach",
+   "empowered"
+  ]
+ },
+ {
+  "id": "bones/digging-claws",
+  "name": "Digging Claws",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage {n} times. Deal one more hit if you have a [Bury]ed Trick.",
+  "nums": {
+   "d": 4,
+   "n": 2,
+   "hits": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "bury"
+  ]
+ },
+ {
+  "id": "bones/full-body-tackle",
+  "name": "Full Body Tackle",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Cannot be played while [Scattered]. Deal {d} damage, then [Shed] {n} Bones.",
+  "nums": {
+   "d": 16,
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "scattered",
+   "shed"
+  ]
+ },
+ {
+  "id": "bones/run-in-circles",
+  "name": "Run in Circles",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 0,
+  "target": "enemy",
+  "text": "Deal {d} damage. If you have [Rattle]d this turn, draw {n} Trick, then discard {m0} Trick.",
+  "nums": {
+   "d": 4,
+   "n": 1,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "rattle"
+  ]
+ },
+ {
+  "id": "bones/shake-it-loose",
+  "name": "Shake It Loose",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 0,
+  "target": "self",
+  "text": "[Shed] {m0} Bone. Draw {n} Trick.",
+  "nums": {
+   "m0": 1,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "shed"
+  ]
+ },
+ {
+  "id": "bones/sit-stay",
+  "name": "Sit, Stay",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard. Gain {m0} more while [Whole].",
+  "nums": {
+   "b": 7,
+   "m0": 6
+  },
+  "exhaust": false,
+  "keywords": [
+   "whole"
+  ]
+ },
+ {
+  "id": "bones/reassemble",
+  "name": "Reassemble",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "[Reattach] up to {n} Bones. Gain {b} Guard for each Bone Reattached.",
+  "nums": {
+   "n": 2,
+   "b": 5
+  },
+  "exhaust": false,
+  "keywords": [
+   "reattach"
+  ]
+ },
+ {
+  "id": "bones/fetch",
+  "name": "Fetch!",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "none",
+  "text": "[Fetch] a non-[Slobbered] Trick with printed cost {n} or less.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "fetch",
+   "slobbered"
+  ]
+ },
+ {
+  "id": "bones/bury-it",
+  "name": "Bury It",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 0,
+  "target": "none",
+  "text": "[Bury] another Trick from your hand. Draw {n} Trick.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "bury"
+  ]
+ },
+ {
+  "id": "bones/dig-here",
+  "name": "Dig Here",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "[Dig Up] one [Bury]ed Trick. If you have none, gain {b} Guard instead.",
+  "nums": {
+   "b": 9
+  },
+  "exhaust": false,
+  "keywords": [
+   "dig-up",
+   "bury"
+  ]
+ },
+ {
+  "id": "bones/leave-it",
+  "name": "Leave It!",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 0,
+  "target": "self",
+  "text": "Discard another Trick. Gain {b} Guard if it was [Slobbered], otherwise {m0}.",
+  "nums": {
+   "b": 10,
+   "m0": 4
+  },
+  "exhaust": false,
+  "keywords": [
+   "slobbered"
+  ]
+ },
+ {
+  "id": "bones/sniff-around",
+  "name": "Sniff Around",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "none",
+  "text": "Look at the top {n} Tricks of your draw pile. Put one into your hand, discard one, and return the rest to the top.",
+  "nums": {
+   "n": 3
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "bones/under-the-couch",
+  "name": "Under the Couch",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "[Bury] another Trick from your hand. Gain {b} Guard. The first time that Trick is played after being [Dug Up], it costs {n} less.",
+  "nums": {
+   "b": 10,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "bury",
+   "dug-up"
+  ]
+ },
+ {
+  "id": "bones/spare-parts",
+  "name": "Spare Parts",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "Create {n} Spare Bones in your hand.",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "bones/shake-dry",
+  "name": "Shake Dry",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "none",
+  "text": "Choose a [Slobbered] Trick in your discard pile. Remove Slobbered and put it on the bottom of your draw pile. It cannot be [Fetch]ed until your next turn.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "slobbered",
+   "fetch"
+  ]
+ },
+ {
+  "id": "bones/good-dog",
+  "name": "Good Dog",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard. If you [Fetch]ed or [Dug Up] a Trick this turn, [Reattach] {n} Bone.",
+  "nums": {
+   "b": 7,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "fetch",
+   "dig-up",
+   "reattach"
+  ]
+ },
+ {
+  "id": "bones/flying-femur",
+  "name": "Flying Femur",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. If this Trick was [Fetch]ed since it was last played, deal {d} again.",
+  "nums": {
+   "d": 8,
+   "hits": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "fetch"
+  ]
+ },
+ {
+  "id": "bones/dug-up-dinner",
+  "name": "Dug Up Dinner",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. If this Trick is [Dug Up], deal {m0} more and [Reattach] {n} Bone.",
+  "nums": {
+   "d": 8,
+   "m0": 6,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "dug-up",
+   "reattach"
+  ]
+ },
+ {
+  "id": "bones/scattershot-skeleton",
+  "name": "Scattershot Skeleton",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "allEnemies",
+  "text": "Deal {d} damage to all enemies. Then deal {m0} damage to a random enemy for each [Loose Bones], up to {n} hits.",
+  "nums": {
+   "d": 9,
+   "m0": 3,
+   "n": 6
+  },
+  "exhaust": false,
+  "keywords": [
+   "loose-bones"
+  ]
+ },
+ {
+  "id": "bones/boomerang-bone",
+  "name": "Boomerang Bone",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. The first time you play this while it is not [Slobbered], return it to your hand and make it Slobbered.",
+  "nums": {
+   "d": 9
+  },
+  "exhaust": false,
+  "keywords": [
+   "slobbered"
+  ]
+ },
+ {
+  "id": "bones/heel",
+  "name": "Heel!",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage and [Reattach] {n} Bone. If this makes you [Whole], repeat the attack.",
+  "nums": {
+   "d": 8,
+   "n": 1,
+   "hits": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "reattach",
+   "whole"
+  ]
+ },
+ {
+  "id": "bones/off-leash",
+  "name": "Off Leash",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage, plus one more hit for each [Rattle] this turn, up to {n} extra hits.",
+  "nums": {
+   "d": 4,
+   "n": 4,
+   "hits": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "rattle"
+  ]
+ },
+ {
+  "id": "bones/missing-piece-missile",
+  "name": "Missing Piece Missile",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 0,
+  "target": "enemy",
+  "text": "[Reattach] {n} Bone as an additional cost. Deal {d} damage.",
+  "nums": {
+   "d": 8,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "reattach"
+  ]
+ },
+ {
+  "id": "bones/jawbone-jamboree",
+  "name": "Jawbone Jamboree",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage, then [Shed] {n} Bones. If this makes you [Scattered], deal {m0} damage to all other enemies.",
+  "nums": {
+   "d": 18,
+   "n": 2,
+   "m0": 7
+  },
+  "exhaust": false,
+  "keywords": [
+   "shed",
+   "scattered"
+  ]
+ },
+ {
+  "id": "bones/excavation-frenzy",
+  "name": "Excavation Frenzy",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage, plus {m0} for each [Bury]ed Trick, up to {n} extra hits.",
+  "nums": {
+   "d": 15,
+   "m0": 6,
+   "n": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "bury"
+  ]
+ },
+ {
+  "id": "bones/toss-and-chase",
+  "name": "Toss and Chase",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. Put a non-[Slobbered] Trick from your discard pile on top of your draw pile. This is not [Fetch]ing.",
+  "nums": {
+   "d": 8
+  },
+  "exhaust": false,
+  "keywords": [
+   "slobbered",
+   "fetch"
+  ]
+ },
+ {
+  "id": "bones/good-as-new",
+  "name": "Good as New",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage. If [Whole], deal {m0} instead.",
+  "nums": {
+   "d": 12,
+   "m0": 28
+  },
+  "exhaust": false,
+  "keywords": [
+   "whole"
+  ]
+ },
+ {
+  "id": "bones/take-me-apart",
+  "name": "Take Me Apart",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. You may [Shed] up to {n} Bones. Deal {m0} more for each Bone actually Shed.",
+  "nums": {
+   "d": 7,
+   "n": 2,
+   "m0": 5
+  },
+  "exhaust": false,
+  "keywords": [
+   "shed"
+  ]
+ },
+ {
+  "id": "bones/roll-over",
+  "name": "Roll Over",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Set your [Loose Bones] to exactly {n}, [Shed]ing or [Reattach]ing as needed. Gain {b} Guard.",
+  "nums": {
+   "n": 3,
+   "b": 8
+  },
+  "exhaust": false,
+  "keywords": [
+   "loose-bones",
+   "rattle"
+  ]
+ },
+ {
+  "id": "bones/call-that-back",
+  "name": "Call That Back",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "none",
+  "text": "[Fetch] any non-[Slobbered] Trick. If its printed cost is {m0} or more, it costs {n} less this turn.",
+  "nums": {
+   "n": 1,
+   "m0": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "fetch",
+   "slobbered"
+  ]
+ },
+ {
+  "id": "bones/scent-trail",
+  "name": "Scent Trail",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "none",
+  "text": "Choose up to {n} non-[Slobbered] Tricks in your discard pile. Put one on top of your draw pile and the other on the bottom.",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "slobbered"
+  ]
+ },
+ {
+  "id": "bones/backyard-cache",
+  "name": "Backyard Cache",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 0,
+  "target": "none",
+  "text": "[Bury] up to {n} other Tricks from your hand. Draw {m0} Trick for each.",
+  "nums": {
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "bury"
+  ]
+ },
+ {
+  "id": "bones/dig-like-crazy",
+  "name": "Dig Like Crazy",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "none",
+  "text": "[Dig Up] up to {n} Tricks, then discard {m0} Trick.",
+  "nums": {
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "dig-up"
+  ]
+ },
+ {
+  "id": "bones/bury-the-evidence",
+  "name": "Bury the Evidence",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "none",
+  "text": "Choose a [Slobbered] Trick in your discard pile. Remove Slobbered and [Bury] it with {n} counters.",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "slobbered",
+   "bury"
+  ]
+ },
+ {
+  "id": "bones/wet-dog-shake",
+  "name": "Wet Dog Shake",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Remove [Slobbered] from up to {n} Tricks in your discard pile and shuffle them into your draw pile. [Shed] {m0} Bone.",
+  "nums": {
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "slobbered",
+   "shed"
+  ]
+ },
+ {
+  "id": "bones/pile-of-me",
+  "name": "Pile of Me",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard for each [Loose Bones], then [Reattach] all of them.",
+  "nums": {
+   "b": 6
+  },
+  "exhaust": false,
+  "keywords": [
+   "loose-bones",
+   "reattach"
+  ]
+ },
+ {
+  "id": "bones/emergency-reassembly",
+  "name": "Emergency Reassembly",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 0,
+  "target": "self",
+  "text": "Playable only while [Scattered]. [Reattach] {n} Bones and gain {b} Guard. [Vanish].",
+  "nums": {
+   "n": 2,
+   "b": 10
+  },
+  "exhaust": true,
+  "keywords": [
+   "scattered",
+   "reattach",
+   "vanish"
+  ]
+ },
+ {
+  "id": "bones/flop-over",
+  "name": "Flop Over",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 0,
+  "target": "self",
+  "text": "Gain {b} Guard. If [Scattered], gain {m0} instead and [Retain] one other Trick this turn.",
+  "nums": {
+   "b": 5,
+   "m0": 10
+  },
+  "exhaust": false,
+  "keywords": [
+   "scattered",
+   "retain"
+  ]
+ },
+ {
+  "id": "bones/smell-something",
+  "name": "Smell Something?",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "none",
+  "text": "Look at the top {n} Tricks of your draw pile. Put one into your hand, discard one, then return the rest in any order.",
+  "nums": {
+   "n": 5
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "bones/treat-stash",
+  "name": "Treat Stash",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "[Bury] this Trick with {n} counter. When it is [Dug Up], gain {m0} Nerve, draw {m1} Trick, then [Vanish] it.",
+  "nums": {
+   "n": 1,
+   "m0": 2,
+   "m1": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "bury",
+   "dig-up",
+   "vanish"
+  ]
+ },
+ {
+  "id": "bones/cant-reach-it",
+  "name": "Can\u2019t Reach It",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 0,
+  "target": "self",
+  "text": "Discard another Trick. Gain {b} Guard for each point of its printed cost. If you [Fetch] it this turn, it costs {n} less.",
+  "nums": {
+   "b": 5,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "fetch"
+  ]
+ },
+ {
+  "id": "bones/skeleton-key",
+  "name": "Skeleton Key",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "none",
+  "text": "[Dig Up] a [Bury]ed Trick. If you have none, [Bury] another Trick from your hand with {n} counter instead.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "dig-up",
+   "bury"
+  ]
+ },
+ {
+  "id": "bones/stash-under-the-rug",
+  "name": "Stash Under the Rug",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 0,
+  "target": "none",
+  "text": "[Bury] another Trick with {n} counter. Draw {m0} Trick. [Vanish].",
+  "nums": {
+   "n": 1,
+   "m0": 1
+  },
+  "exhaust": true,
+  "keywords": [
+   "bury",
+   "vanish"
+  ]
+ },
+ {
+  "id": "bones/good-boy",
+  "name": "Good Boy!",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 0,
+  "target": "self",
+  "text": "Playable only if you [Fetch]ed or [Dug Up] a Trick this turn. Gain {n} Nerve. [Vanish].",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": true,
+  "keywords": [
+   "fetch",
+   "dig-up",
+   "vanish"
+  ]
+ },
+ {
+  "id": "bones/jingle-collar",
+  "name": "Jingle Collar",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Playable only with {n} or fewer [Loose Bones]. [Shed] {m0} Bone, then [Reattach] {m0} Bone. These are separate effects and cause two [Rattle]s.",
+  "nums": {
+   "n": 5,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "shed",
+   "reattach",
+   "rattle"
+  ]
+ },
+ {
+  "id": "bones/rattletrap",
+  "name": "Rattletrap",
+  "comp": "bones",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "The first time you [Rattle] each turn, deal {d} damage to all enemies.",
+  "nums": {
+   "d": 5
+  },
+  "exhaust": false,
+  "keywords": [
+   "rattle"
+  ]
+ },
+ {
+  "id": "bones/scent-memory",
+  "name": "Scent Memory",
+  "comp": "bones",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "The first time you [Fetch] each turn, draw {n} Trick.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "fetch"
+  ]
+ },
+ {
+  "id": "bones/yard-map",
+  "name": "Yard Map",
+  "comp": "bones",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "The first {m0} Tricks you [Bury] each turn receive only {n} counter instead of 2.",
+  "nums": {
+   "n": 1,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "bury"
+  ]
+ },
+ {
+  "id": "bones/spare-parts-everywhere",
+  "name": "Spare Parts Everywhere",
+  "comp": "bones",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "The first time each turn you become [Scattered], create {n} Spare Bone.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "scattered"
+  ]
+ },
+ {
+  "id": "bones/tighten-the-collar",
+  "name": "Tighten the Collar",
+  "comp": "bones",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "The first time each turn you become [Whole], gain {n} Nerve at the start of your next turn.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "whole"
+  ]
+ },
+ {
+  "id": "bones/tail-a-mile-a-minute",
+  "name": "Tail Going A Mile A Minute",
+  "comp": "bones",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "The first Attack you play after [Fetch]ing or [Dig Up]ping each turn is [Empowered] {n}.",
+  "nums": {
+   "n": 7
+  },
+  "exhaust": false,
+  "keywords": [
+   "fetch",
+   "dig-up",
+   "empowered"
+  ]
+ },
+ {
+  "id": "bones/every-bone-at-once",
+  "name": "Every Bone at Once",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 3,
+  "target": "allEnemies",
+  "text": "Playable only while [Whole]. Deal {d} damage to all enemies, then [Shed] {n} Bones.",
+  "nums": {
+   "d": 30,
+   "n": 6
+  },
+  "exhaust": false,
+  "keywords": [
+   "whole",
+   "shed"
+  ]
+ },
+ {
+  "id": "bones/bone-a-fide-missile",
+  "name": "Bone A Fide Missile",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "enemy",
+  "text": "[Reattach] any number of Bones as an additional cost, minimum {n}. Deal {d} damage, plus {m0} for each Bone Reattached. If this makes you [Whole], draw {m1} Trick.",
+  "nums": {
+   "d": 8,
+   "m0": 6,
+   "n": 1,
+   "m1": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "reattach",
+   "whole"
+  ]
+ },
+ {
+  "id": "bones/fetch-the-moon",
+  "name": "Fetch the Moon",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage. Whenever this Trick is [Fetch]ed, it costs {n} for that turn.",
+  "nums": {
+   "d": 32,
+   "n": 0
+  },
+  "exhaust": false,
+  "keywords": [
+   "fetch"
+  ]
+ },
+ {
+  "id": "bones/buried-bite",
+  "name": "Buried Bite",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage, then [Bury] this Trick with {n} counter instead of discarding it. Each time it is [Dug Up], it permanently gains a {m0} damage hit this combat.",
+  "nums": {
+   "d": 9,
+   "n": 1,
+   "m0": 5
+  },
+  "exhaust": false,
+  "keywords": [
+   "bury",
+   "dig-up"
+  ]
+ },
+ {
+  "id": "bones/skeleton-stampede",
+  "name": "Skeleton Stampede",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "allEnemies",
+  "text": "Deal {d} damage to all enemies, then repeat once for each [Rattle] this turn, up to {n} repeats.",
+  "nums": {
+   "d": 6,
+   "n": 5,
+   "hits": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "rattle"
+  ]
+ },
+ {
+  "id": "bones/dogpile-of-one",
+  "name": "Dogpile of One",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage, plus {m0} for each Trick you [Fetch]ed or [Dug Up] this turn, up to {n} extra hits.",
+  "nums": {
+   "d": 18,
+   "m0": 6,
+   "n": 4
+  },
+  "exhaust": false,
+  "keywords": [
+   "fetch",
+   "dig-up"
+  ]
+ },
+ {
+  "id": "bones/headless-rush",
+  "name": "Headless Rush",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage and [Shed] {n} Bone. The first time each turn this makes you [Scattered], return it to your hand, make it [Slobbered], and it costs {m0} for the rest of the turn.",
+  "nums": {
+   "d": 14,
+   "n": 1,
+   "m0": 0
+  },
+  "exhaust": false,
+  "keywords": [
+   "shed",
+   "scattered",
+   "slobbered"
+  ]
+ },
+ {
+  "id": "bones/dig-up-a-fight",
+  "name": "Dig Up a Fight",
+  "comp": "bones",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage {n} times. Reduce one [Bury]ed Trick\u2019s counter by 1. If that [Dig Up]s it, deal {m0} more and it costs {m1} less this turn.",
+  "nums": {
+   "d": 9,
+   "n": 2,
+   "hits": 2,
+   "m0": 14,
+   "m1": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "bury",
+   "dig-up"
+  ]
+ },
+ {
+  "id": "bones/perfect-fetch",
+  "name": "Perfect Fetch",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "none",
+  "text": "[Fetch] up to {n} non-[Slobbered] Tricks with different printed costs. Each costs {m0} less this turn. [Vanish].",
+  "nums": {
+   "n": 3,
+   "m0": 1
+  },
+  "exhaust": true,
+  "keywords": [
+   "fetch",
+   "slobbered",
+   "vanish"
+  ]
+ },
+ {
+  "id": "bones/no-the-other-bone",
+  "name": "No, the Other Bone",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "none",
+  "text": "Choose another Trick in your hand and a non-[Slobbered] Trick in your discard pile. Exchange their locations. The one entering your hand becomes [Slobbered].",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "slobbered"
+  ]
+ },
+ {
+  "id": "bones/who-buried-that",
+  "name": "Who Buried That?",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "none",
+  "text": "Search your draw pile for any Trick and [Bury] it with {n} counter, then shuffle your draw pile.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "bury"
+  ]
+ },
+ {
+  "id": "bones/shake-everything-off",
+  "name": "Shake Everything Off",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "none",
+  "text": "Remove [Slobbered] from up to {n} Tricks in your discard pile and shuffle them into your draw pile. They cannot be [Fetch]ed until your next turn. Draw {m0} Trick. [Vanish].",
+  "nums": {
+   "n": 3,
+   "m0": 1
+  },
+  "exhaust": true,
+  "keywords": [
+   "slobbered",
+   "fetch",
+   "vanish"
+  ]
+ },
+ {
+  "id": "bones/secret-stash",
+  "name": "Secret Stash",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "none",
+  "text": "[Bury] any number of other Tricks from your hand, then draw that many. The first time each is played after being [Dug Up], it costs {n}.",
+  "nums": {
+   "n": 0
+  },
+  "exhaust": false,
+  "keywords": [
+   "bury",
+   "dug-up"
+  ]
+ },
+ {
+  "id": "bones/rebuild-from-scratch",
+  "name": "Rebuild from Scratch",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "[Reattach] all [Loose Bones]. Gain {b} Guard plus {m0} for each Bone Reattached. Draw {m1} Trick for every 2 Bones, up to {n}.",
+  "nums": {
+   "b": 12,
+   "m0": 5,
+   "m1": 1,
+   "n": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "reattach"
+  ]
+ },
+ {
+  "id": "bones/fall-apart-on-purpose",
+  "name": "Fall Apart on Purpose",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 0,
+  "target": "self",
+  "text": "Lose all Guard. [Shed] until you reach 6. Gain {m0} Nerve for every {n} Bones actually Shed. [Vanish].",
+  "nums": {
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": true,
+  "keywords": [
+   "shed",
+   "vanish"
+  ]
+ },
+ {
+  "id": "bones/dig-to-the-basement",
+  "name": "Dig to the Basement",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "none",
+  "text": "[Dig Up] every [Bury]ed Trick. Each costs {n} less this turn. [Vanish].",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": true,
+  "keywords": [
+   "dig-up",
+   "vanish"
+  ]
+ },
+ {
+  "id": "bones/one-more-throw",
+  "name": "One More Throw",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "none",
+  "text": "Choose a [Slobbered] Trick in your discard pile. [Fetch] it anyway and make it cost {n} this turn. After it is next played, it [Vanish]es.",
+  "nums": {
+   "n": 0
+  },
+  "exhaust": false,
+  "keywords": [
+   "slobbered",
+   "fetch",
+   "vanish"
+  ]
+ },
+ {
+  "id": "bones/play-dead",
+  "name": "Play Dead",
+  "comp": "bones",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "self",
+  "text": "Until your next turn, you may [Shed] {n} Bone before any hit to halve that hit\u2019s damage. Once per hit.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "shed"
+  ]
+ },
+ {
+  "id": "bones/favorite-toy",
+  "name": "Favorite Toy",
+  "comp": "bones",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "none",
+  "text": "Choose a non-Basic Trick in your hand. It can be [Fetch]ed even while [Slobbered], at most once each turn. After its first Fetch, each later Fetch makes it cost {n} more that turn.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "fetch",
+   "slobbered"
+  ]
+ },
+ {
+  "id": "bones/anatomy-is-optional",
+  "name": "Anatomy Is Optional",
+  "comp": "bones",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "self",
+  "text": "You count as [Scattered] at {n} or more [Loose Bones] instead of 4. [Whole] still requires exactly 0.",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "scattered",
+   "whole"
+  ]
+ },
+ {
+  "id": "bones/built-wrong",
+  "name": "Built Wrong, Still Works",
+  "comp": "bones",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "{n} time each turn, if an effect would [Shed] while you already have 6 [Loose Bones], first [Reattach] 1, then Shed. Both cause separate [Rattle]s.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "shed",
+   "reattach",
+   "rattle"
+  ]
+ },
+ {
+  "id": "bones/treasure-yard",
+  "name": "Treasure Yard",
+  "comp": "bones",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "The first {n} times each turn a [Bury]ed Trick is [Dug Up], gain {m0} Nerve.",
+  "nums": {
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "bury",
+   "dig-up"
+  ]
+ },
+ {
+  "id": "bones/every-bone-knows-the-way-home",
+  "name": "Every Bone Knows the Way Home",
+  "comp": "bones",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "At the end of your turn, [Reattach] {n} Bone if possible. Whenever you begin your turn [Whole], draw {m0} additional Trick.",
+  "nums": {
+   "n": 1,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "reattach",
+   "whole"
+  ]
+ },
+ {
+  "id": "bones/never-really-lost",
+  "name": "Never Really Lost",
+  "comp": "bones",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "The first time each turn a [Slobbered] Trick reaches your discard pile after being played, remove Slobbered and put it on the bottom of your draw pile instead.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "slobbered"
+  ]
+ },
+ {
+  "id": "bones/best-dog-in-the-house",
+  "name": "Best Dog in the House",
+  "comp": "bones",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 3,
+  "target": "self",
+  "text": "At the start of each turn, choose one: [Fetch] a non-[Slobbered] Trick with printed cost {n} or less, or [Dig Up] one [Bury]ed Trick. If neither is possible, create a Spare Bone.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "fetch",
+   "dig-up",
+   "slobbered"
+  ]
+ },
+ {
+  "id": "pipkin/tiny-tongue",
+  "name": "Tiny Tongue",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage.",
+  "nums": {
+   "d": 6
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "pipkin/leaf-umbrella",
+  "name": "Leaf Umbrella",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard.",
+  "nums": {
+   "b": 5
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "pipkin/puddle-hop",
+  "name": "Puddle Hop",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "self",
+  "text": "[Hop]. Gain {b} Guard.",
+  "nums": {
+   "b": 4
+  },
+  "exhaust": false,
+  "keywords": [
+   "hop"
+  ]
+ },
+ {
+  "id": "pipkin/belly-drop",
+  "name": "Belly Drop",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. [Land]: deal {m0} more for each [Height] spent.",
+  "nums": {
+   "d": 5,
+   "m0": 4
+  },
+  "exhaust": false,
+  "keywords": [
+   "land",
+   "height"
+  ]
+ },
+ {
+  "id": "pipkin/plant-a-little-one",
+  "name": "Plant a Little One",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "self",
+  "text": "[Plant] {n} [Seed].",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "plant",
+   "seed"
+  ]
+ },
+ {
+  "id": "pipkin/puff-up",
+  "name": "Puff Up",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {n} [Plump]. Gain {b} Guard.",
+  "nums": {
+   "n": 1,
+   "b": 4
+  },
+  "exhaust": false,
+  "keywords": [
+   "plump"
+  ]
+ },
+ {
+  "id": "pipkin/puddle-jumper",
+  "name": "Puddle Jumper",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. [Hop].",
+  "nums": {
+   "d": 6
+  },
+  "exhaust": false,
+  "keywords": [
+   "hop"
+  ]
+ },
+ {
+  "id": "pipkin/tongue-snap",
+  "name": "Tongue Snap",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. If you have at least {m0} [Height], draw {n} Trick.",
+  "nums": {
+   "d": 8,
+   "m0": 2,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "height"
+  ]
+ },
+ {
+  "id": "pipkin/belly-bop",
+  "name": "Belly Bop",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage, plus {m0} for each [Plump].",
+  "nums": {
+   "d": 6,
+   "m0": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "plump"
+  ]
+ },
+ {
+  "id": "pipkin/pumpkin-pitch",
+  "name": "Pumpkin Pitch",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. [Harvest] {n}: deal {m0} damage to another enemy, or to the same one if it is alone.",
+  "nums": {
+   "d": 8,
+   "n": 1,
+   "m0": 6
+  },
+  "exhaust": false,
+  "keywords": [
+   "harvest",
+   "pumpkin"
+  ]
+ },
+ {
+  "id": "pipkin/drop-in",
+  "name": "Drop In",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "allEnemies",
+  "text": "Deal {d} damage to all enemies. [Land]: deal {m0} more to all enemies for each [Height] spent.",
+  "nums": {
+   "d": 5,
+   "m0": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "land",
+   "height"
+  ]
+ },
+ {
+  "id": "pipkin/seed-spit",
+  "name": "Seed Spit",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. [Plant] {n} [Seed].",
+  "nums": {
+   "d": 6,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "plant",
+   "seed"
+  ]
+ },
+ {
+  "id": "pipkin/footstool-kick",
+  "name": "Footstool Kick",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 0,
+  "target": "enemy",
+  "text": "Deal {d} damage. If you have 0 [Height], [Hop]. [Vanish].",
+  "nums": {
+   "d": 5
+  },
+  "exhaust": true,
+  "keywords": [
+   "hop",
+   "height",
+   "vanish"
+  ]
+ },
+ {
+  "id": "pipkin/squash-tackle",
+  "name": "Squash Tackle",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage. You may [Deflate] {n} to gain {b} Guard.",
+  "nums": {
+   "d": 15,
+   "n": 1,
+   "b": 10
+  },
+  "exhaust": false,
+  "keywords": [
+   "deflate"
+  ]
+ },
+ {
+  "id": "pipkin/pocket-seeds",
+  "name": "Pocket Seeds",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "[Plant] {n} [Seed]s.",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "plant",
+   "seed"
+  ]
+ },
+ {
+  "id": "pipkin/damp-corner",
+  "name": "Damp Corner",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "Advance {n} [Patch] object by one stage.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "patch",
+   "seed",
+   "sprout"
+  ]
+ },
+ {
+  "id": "pipkin/big-breath",
+  "name": "Big Breath",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {n} [Plump]. Gain {b} Guard.",
+  "nums": {
+   "n": 1,
+   "b": 5
+  },
+  "exhaust": false,
+  "keywords": [
+   "plump"
+  ]
+ },
+ {
+  "id": "pipkin/soft-landing",
+  "name": "Soft Landing",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard. [Land]: gain {m0} more Guard for each [Height] spent.",
+  "nums": {
+   "b": 6,
+   "m0": 5
+  },
+  "exhaust": false,
+  "keywords": [
+   "land",
+   "height"
+  ]
+ },
+ {
+  "id": "pipkin/squat-low",
+  "name": "Squat Low",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard. Gain {m0} more if you have at least {n} [Plump].",
+  "nums": {
+   "b": 7,
+   "m0": 6,
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "plump"
+  ]
+ },
+ {
+  "id": "pipkin/hopscotch",
+  "name": "Hopscotch",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "[Hop]. Draw {n} Trick. If this brings you to 3 [Height], gain {b} Guard.",
+  "nums": {
+   "n": 1,
+   "b": 5
+  },
+  "exhaust": false,
+  "keywords": [
+   "hop",
+   "height"
+  ]
+ },
+ {
+  "id": "pipkin/weed-the-patch",
+  "name": "Weed the Patch",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 0,
+  "target": "self",
+  "text": "Remove one [Seed] or [Sprout] from your [Patch]. Gain {b} Guard and draw {n} Trick. [Vanish].",
+  "nums": {
+   "b": 4,
+   "n": 1
+  },
+  "exhaust": true,
+  "keywords": [
+   "patch",
+   "seed",
+   "sprout",
+   "vanish"
+  ]
+ },
+ {
+  "id": "pipkin/pick-one",
+  "name": "Pick One",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 0,
+  "target": "self",
+  "text": "[Harvest] {m0}: gain {n} Nerve. [Vanish].",
+  "nums": {
+   "m0": 1,
+   "n": 1
+  },
+  "exhaust": true,
+  "keywords": [
+   "harvest",
+   "vanish"
+  ]
+ },
+ {
+  "id": "pipkin/scatter-on-landing",
+  "name": "Scatter on Landing",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "[Plant] {n} [Seed]. [Land]: [Plant] {m0} more if you spent at least {m1} [Height].",
+  "nums": {
+   "n": 1,
+   "m0": 1,
+   "m1": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "plant",
+   "land",
+   "height",
+   "seed"
+  ]
+ },
+ {
+  "id": "pipkin/hold-your-croak",
+  "name": "Hold Your Croak",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "none",
+  "text": "[Retain] another Trick in your hand. It costs {n} less next turn.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "retain"
+  ]
+ },
+ {
+  "id": "pipkin/mud-nap",
+  "name": "Mud Nap",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard. If you end the turn at 0 [Height], gain {n} [Plump] at the start of your next turn.",
+  "nums": {
+   "b": 8,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "height",
+   "plump"
+  ]
+ },
+ {
+  "id": "pipkin/little-harvest",
+  "name": "Little Harvest",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "none",
+  "text": "Draw {n} Trick. [Harvest] {m0}: draw {m1} additional Trick.",
+  "nums": {
+   "n": 1,
+   "m0": 1,
+   "m1": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "harvest"
+  ]
+ },
+ {
+  "id": "pipkin/cannonball",
+  "name": "Cannonball",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage. [Land]: deal {m0} more for each [Height] spent. If you spent 3 Height with at least {m1} [Plump], you may [Deflate] 1 to gain {b} Guard.",
+  "nums": {
+   "d": 14,
+   "m0": 6,
+   "m1": 2,
+   "b": 14
+  },
+  "exhaust": false,
+  "keywords": [
+   "land",
+   "height",
+   "deflate",
+   "plump"
+  ]
+ },
+ {
+  "id": "pipkin/tongue-from-above",
+  "name": "Tongue from Above",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. [Land]: if at least {n} [Height] was spent, draw {m0} Trick and [Plant] {m1} [Seed].",
+  "nums": {
+   "d": 8,
+   "n": 2,
+   "m0": 1,
+   "m1": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "land",
+   "height",
+   "plant",
+   "seed"
+  ]
+ },
+ {
+  "id": "pipkin/pumpkin-bowling",
+  "name": "Pumpkin Bowling",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage. [Harvest] {n}: deal {m0} damage to all other enemies, or add it to the target if it is alone.",
+  "nums": {
+   "d": 16,
+   "n": 1,
+   "m0": 9
+  },
+  "exhaust": false,
+  "keywords": [
+   "harvest"
+  ]
+ },
+ {
+  "id": "pipkin/seed-slam",
+  "name": "Seed Slam",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. [Plant] {n} [Seed]. If the [Patch] is full, advance one object instead.",
+  "nums": {
+   "d": 8,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "plant",
+   "patch",
+   "seed"
+  ]
+ },
+ {
+  "id": "pipkin/lily-pad-lariat",
+  "name": "Lily Pad Lariat",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage {n} times. If you have [Height], the second hit may strike another enemy and grants {b} Guard.",
+  "nums": {
+   "d": 5,
+   "n": 2,
+   "hits": 2,
+   "b": 5
+  },
+  "exhaust": false,
+  "keywords": [
+   "height"
+  ]
+ },
+ {
+  "id": "pipkin/three-hop-combo",
+  "name": "Three Hop Combo",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. [Land]: if {n} [Height] was spent, repeat the attack twice.",
+  "nums": {
+   "d": 8,
+   "n": 3,
+   "hits": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "land",
+   "height"
+  ]
+ },
+ {
+  "id": "pipkin/gourdquake",
+  "name": "Gourdquake",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "allEnemies",
+  "text": "Deal {d} damage to all enemies. [Land]: deal {m0} more to all for each [Height] spent. [Harvest] {n}: also gain {b} Guard.",
+  "nums": {
+   "d": 9,
+   "m0": 4,
+   "n": 1,
+   "b": 12
+  },
+  "exhaust": false,
+  "keywords": [
+   "land",
+   "height",
+   "harvest"
+  ]
+ },
+ {
+  "id": "pipkin/bug-lunch-break",
+  "name": "Bug Lunch Break",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. If this defeats a non-boss enemy, [Plant] {n} [Seed] and gain {m0} [Plump].",
+  "nums": {
+   "d": 9,
+   "n": 1,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "plant",
+   "plump",
+   "seed"
+  ]
+ },
+ {
+  "id": "pipkin/heavy-hopper",
+  "name": "Heavy Hopper",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage, plus {m0} for each [Plump]. You may [Deflate] {n} afterwards to [Hop].",
+  "nums": {
+   "d": 14,
+   "m0": 5,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "plump",
+   "deflate",
+   "hop"
+  ]
+ },
+ {
+  "id": "pipkin/pond-skimmer",
+  "name": "Pond Skimmer",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 0,
+  "target": "enemy",
+  "text": "Deal {d} damage. [Hop]. If this brings you to at least {n} [Height], draw {m0} Trick. [Vanish].",
+  "nums": {
+   "d": 5,
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": true,
+  "keywords": [
+   "hop",
+   "height",
+   "vanish"
+  ]
+ },
+ {
+  "id": "pipkin/ripe-for-throwing",
+  "name": "Ripe for Throwing",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. [Harvest] up to {n}: repeat the attack once for each Pumpkin harvested.",
+  "nums": {
+   "d": 8,
+   "n": 2,
+   "hits": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "harvest"
+  ]
+ },
+ {
+  "id": "pipkin/squash-match",
+  "name": "Squash Match",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage. If your [Patch] is full, deal {d} to another enemy. If you have 3 [Plump], one of the hits deals {m0} instead.",
+  "nums": {
+   "d": 15,
+   "m0": 22
+  },
+  "exhaust": false,
+  "keywords": [
+   "patch",
+   "plump"
+  ]
+ },
+ {
+  "id": "pipkin/croak-shock",
+  "name": "Croak Shock",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "allEnemies",
+  "text": "Deal {d} damage to all enemies. If you have both [Plant]ed and [Harvest]ed this turn, deal {m0} instead and draw {n} Trick.",
+  "nums": {
+   "d": 5,
+   "m0": 9,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "plant",
+   "harvest"
+  ]
+ },
+ {
+  "id": "pipkin/leapfrog",
+  "name": "Leapfrog",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. [Hop]. Your next [Land] this turn treats the [Height] spent as {n} higher, to a maximum of 3.",
+  "nums": {
+   "d": 8,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "hop",
+   "land",
+   "height"
+  ]
+ },
+ {
+  "id": "pipkin/warm-windowsill",
+  "name": "Warm Windowsill",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Advance up to {n} different [Patch] objects by one stage.",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "patch"
+  ]
+ },
+ {
+  "id": "pipkin/crop-rotation",
+  "name": "Crop Rotation",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Advance one [Patch] object by a stage and move another back by a stage. Draw {n} Trick.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "patch"
+  ]
+ },
+ {
+  "id": "pipkin/springboard",
+  "name": "Springboard",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "[Hop] twice. Your next Trick containing [Land] this turn costs {n} less.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "hop",
+   "land"
+  ]
+ },
+ {
+  "id": "pipkin/hang-time",
+  "name": "Hang Time",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Your [Height] does not disappear at the end of this turn. If you keep at least {n}, draw {m0} additional Trick next turn. [Vanish].",
+  "nums": {
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": true,
+  "keywords": [
+   "height",
+   "vanish"
+  ]
+ },
+ {
+  "id": "pipkin/inflate",
+  "name": "Inflate",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {n} [Plump]. Gain {b} Guard.",
+  "nums": {
+   "n": 2,
+   "b": 5
+  },
+  "exhaust": false,
+  "keywords": [
+   "plump"
+  ]
+ },
+ {
+  "id": "pipkin/pffft",
+  "name": "Pffft",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 0,
+  "target": "self",
+  "text": "[Deflate] {m0}: gain {n} Nerve and draw {m1} Trick. [Vanish].",
+  "nums": {
+   "m0": 1,
+   "n": 1,
+   "m1": 1
+  },
+  "exhaust": true,
+  "keywords": [
+   "deflate",
+   "vanish"
+  ]
+ },
+ {
+  "id": "pipkin/mud-jacket",
+  "name": "Mud Jacket",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard, plus {m0} for each [Plump]. At 3 Plump, keep {m1} of it into your next turn.",
+  "nums": {
+   "b": 5,
+   "m0": 6,
+   "m1": 8
+  },
+  "exhaust": false,
+  "keywords": [
+   "plump"
+  ]
+ },
+ {
+  "id": "pipkin/choose-the-biggest",
+  "name": "Choose the Biggest",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "[Harvest] {m0}: gain {b} Guard and your next Attack this turn is [Empowered] {n}.",
+  "nums": {
+   "m0": 1,
+   "b": 14,
+   "n": 8
+  },
+  "exhaust": false,
+  "keywords": [
+   "harvest",
+   "empowered"
+  ]
+ },
+ {
+  "id": "pipkin/pantry-raid",
+  "name": "Pantry Raid",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "none",
+  "text": "[Harvest] up to {n}: draw {m0} Trick for each Pumpkin taken, then discard {m1} Trick if you took any.",
+  "nums": {
+   "n": 2,
+   "m0": 1,
+   "m1": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "harvest"
+  ]
+ },
+ {
+  "id": "pipkin/replant-the-rind",
+  "name": "Replant the Rind",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 0,
+  "target": "self",
+  "text": "[Harvest] {m0}: [Plant] {n} [Seed]s. [Vanish].",
+  "nums": {
+   "m0": 1,
+   "n": 2
+  },
+  "exhaust": true,
+  "keywords": [
+   "harvest",
+   "plant",
+   "seed",
+   "vanish"
+  ]
+ },
+ {
+  "id": "pipkin/seed-stash",
+  "name": "Seed Stash",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "[Plant] {n} [Seed]. [Plant] {m0} more at the start of your next turn if there is room.",
+  "nums": {
+   "n": 1,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "plant",
+   "seed"
+  ]
+ },
+ {
+  "id": "pipkin/no-room-no-problem",
+  "name": "No Room, No Problem",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "If your [Patch] is full, turn one [Seed] or [Sprout] straight into a [Pumpkin]. Otherwise [Plant] {n} Seed and gain {b} Guard.",
+  "nums": {
+   "n": 1,
+   "b": 9
+  },
+  "exhaust": false,
+  "keywords": [
+   "patch",
+   "plant",
+   "seed",
+   "sprout",
+   "pumpkin"
+  ]
+ },
+ {
+  "id": "pipkin/crouch-and-count",
+  "name": "Crouch and Count",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard. If you end the turn at 0 [Height], advance one [Patch] object by a stage.",
+  "nums": {
+   "b": 8
+  },
+  "exhaust": false,
+  "keywords": [
+   "height",
+   "patch"
+  ]
+ },
+ {
+  "id": "pipkin/moonbeam-on-the-patch",
+  "name": "Moonbeam on the Patch",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "self",
+  "text": "Choose [Seed]s or [Sprout]s. Advance every [Patch] object of that stage by one.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "patch",
+   "seed",
+   "sprout"
+  ]
+ },
+ {
+  "id": "pipkin/picnic-basket",
+  "name": "Picnic Basket",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "[Harvest] {m0}: recover {n} Courage. If you are already at full Courage, gain {b} Guard instead.",
+  "nums": {
+   "m0": 1,
+   "n": 8,
+   "b": 16
+  },
+  "exhaust": false,
+  "keywords": [
+   "harvest"
+  ]
+ },
+ {
+  "id": "pipkin/deep-pond-breathing",
+  "name": "Deep Pond Breathing",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Choose one: gain {n} [Plump]; or [Deflate] {m0} to [Hop] twice and draw {m1} Trick.",
+  "nums": {
+   "n": 1,
+   "m0": 1,
+   "m1": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "plump",
+   "deflate",
+   "hop"
+  ]
+ },
+ {
+  "id": "pipkin/fertile-footprints",
+  "name": "Fertile Footprints",
+  "comp": "pipkin",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "The first time you [Land] each turn, [Plant] {n} [Seed].",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "land",
+   "plant",
+   "seed"
+  ]
+ },
+ {
+  "id": "pipkin/elastic-legs",
+  "name": "Elastic Legs",
+  "comp": "pipkin",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "The first Trick containing [Hop] you play each turn costs {n} less, minimum 0. This can cancel [Heavy Feet].",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "hop",
+   "heavy-feet"
+  ]
+ },
+ {
+  "id": "pipkin/prize-pumpkin",
+  "name": "Prize Pumpkin",
+  "comp": "pipkin",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "self",
+  "text": "The first time at least one [Pumpkin] ripens each turn, gain {n} Nerve at the start of your next turn.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "pumpkin"
+  ]
+ },
+ {
+  "id": "pipkin/big-frog-energy",
+  "name": "Big Frog Energy",
+  "comp": "pipkin",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "self",
+  "text": "Whenever you gain [Plump], gain {b} Guard. The first time you [Deflate] each turn, your next Attack is [Empowered] {n}.",
+  "nums": {
+   "b": 5,
+   "n": 8
+  },
+  "exhaust": false,
+  "keywords": [
+   "plump",
+   "deflate",
+   "empowered"
+  ]
+ },
+ {
+  "id": "pipkin/garden-in-motion",
+  "name": "Garden in Motion",
+  "comp": "pipkin",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "self",
+  "text": "The first time you [Harvest] each turn, advance a [Seed] into a [Sprout]. If there are none, [Plant] {n} Seed instead.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "harvest",
+   "plant",
+   "seed",
+   "sprout"
+  ]
+ },
+ {
+  "id": "pipkin/crater-maker",
+  "name": "Crater Maker",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 3,
+  "target": "allEnemies",
+  "text": "Deal {d} damage to all enemies. [Land]: deal {m0} more to all for each [Height] spent. If 3 Height was spent, you may [Deflate] {n} to repeat the Land damage.",
+  "nums": {
+   "d": 20,
+   "m0": 8,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "land",
+   "height",
+   "deflate"
+  ]
+ },
+ {
+  "id": "pipkin/frogapult",
+  "name": "Frogapult",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "[Deflate] any amount up to {n}. [Hop] once for each [Plump] spent, then immediately [Land] and deal {d} damage plus {m0} for each [Height] spent.",
+  "nums": {
+   "d": 12,
+   "m0": 12,
+   "n": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "deflate",
+   "hop",
+   "land",
+   "height"
+  ]
+ },
+ {
+  "id": "pipkin/pumpkin-barrage",
+  "name": "Pumpkin Barrage",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage. [Harvest] up to {n}: launch {m0} damage at a random enemy for each Pumpkin taken.",
+  "nums": {
+   "d": 8,
+   "n": 3,
+   "m0": 10
+  },
+  "exhaust": false,
+  "keywords": [
+   "harvest"
+  ]
+ },
+ {
+  "id": "pipkin/grand-slam-gourd",
+  "name": "Grand Slam Gourd",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage. [Land]: deal {m0} more for each [Height] spent. [Harvest] {n}: add a {m1} hit for each [Plump].",
+  "nums": {
+   "d": 18,
+   "m0": 8,
+   "n": 1,
+   "m1": 5
+  },
+  "exhaust": false,
+  "keywords": [
+   "land",
+   "height",
+   "harvest",
+   "plump"
+  ]
+ },
+ {
+  "id": "pipkin/eat-the-whole-thing",
+  "name": "Eat the Whole Thing",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. [Harvest] {m1}: deal {m0} instead, gain {m2} [Plump], and recover {n} Courage.",
+  "nums": {
+   "d": 8,
+   "m0": 22,
+   "n": 4,
+   "m1": 1,
+   "m2": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "harvest",
+   "plump"
+  ]
+ },
+ {
+  "id": "pipkin/three-story-belly-flop",
+  "name": "Three Story Belly Flop",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 3,
+  "target": "enemy",
+  "text": "Deal {d} damage. [Land]: deal {m0} more for each [Height] spent. If you also have 3 [Plump], gain {b} Guard after impact.",
+  "nums": {
+   "d": 10,
+   "m0": 14,
+   "b": 20
+  },
+  "exhaust": false,
+  "keywords": [
+   "land",
+   "height",
+   "plump"
+  ]
+ },
+ {
+  "id": "pipkin/pumpkin-meteor",
+  "name": "Pumpkin Meteor",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 3,
+  "target": "allEnemies",
+  "text": "Deal {d} damage to all enemies. [Harvest] up to {n}: deal {m0} more to all for each Pumpkin taken, then [Plant] {m1} [Seed] for each.",
+  "nums": {
+   "d": 20,
+   "n": 3,
+   "m0": 10,
+   "m1": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "harvest",
+   "plant",
+   "seed"
+  ]
+ },
+ {
+  "id": "pipkin/leap-of-faith",
+  "name": "Leap of Faith",
+  "comp": "pipkin",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 0,
+  "target": "enemy",
+  "text": "Deal {d} damage and [Hop] twice. If you do not [Land] before the end of this turn, lose {n} Courage. [Vanish].",
+  "nums": {
+   "d": 6,
+   "n": 8
+  },
+  "exhaust": true,
+  "keywords": [
+   "hop",
+   "land",
+   "vanish"
+  ]
+ },
+ {
+  "id": "pipkin/overnight-miracle",
+  "name": "Overnight Miracle",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "Immediately perform one [Patch] growth step. If the Patch was full when you played this, perform a second.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "patch"
+  ]
+ },
+ {
+  "id": "pipkin/perfect-harvest",
+  "name": "Perfect Harvest",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "self",
+  "text": "[Harvest] any number. For each, choose: draw {n} Trick, gain {b} Guard, or [Empowered] {m0}. Each reward at most twice.",
+  "nums": {
+   "n": 1,
+   "b": 6,
+   "m0": 6
+  },
+  "exhaust": false,
+  "keywords": [
+   "harvest",
+   "empowered"
+  ]
+ },
+ {
+  "id": "pipkin/swallow-the-sun",
+  "name": "Swallow the Sun",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "[Harvest] {m0}. Set [Plump] to {n}, gain {b} Guard, and your next [Hop] Trick this turn ignores [Heavy Feet].",
+  "nums": {
+   "m0": 1,
+   "n": 3,
+   "b": 20
+  },
+  "exhaust": false,
+  "keywords": [
+   "harvest",
+   "plump",
+   "hop",
+   "heavy-feet"
+  ]
+ },
+ {
+  "id": "pipkin/emergency-deflation",
+  "name": "Emergency Deflation",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 0,
+  "target": "self",
+  "text": "[Deflate] all [Plump]. Gain {n} Nerve and {b} Guard for each spent. [Vanish].",
+  "nums": {
+   "n": 1,
+   "b": 6
+  },
+  "exhaust": true,
+  "keywords": [
+   "deflate",
+   "plump",
+   "vanish"
+  ]
+ },
+ {
+  "id": "pipkin/triple-jump",
+  "name": "Triple Jump",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "self",
+  "text": "[Hop] until you reach 3 [Height]. [Vanish]. [Heavy Feet] applies normally.",
+  "nums": {},
+  "exhaust": true,
+  "keywords": [
+   "hop",
+   "height",
+   "heavy-feet",
+   "vanish"
+  ]
+ },
+ {
+  "id": "pipkin/back-to-seed",
+  "name": "Back to Seed",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "self",
+  "text": "Turn up to {n} [Pumpkin]s into [Seed]s. For each, choose: draw {m0} Trick now, or gain {m1} Nerve next turn. This is not [Harvest]ing.",
+  "nums": {
+   "n": 3,
+   "m0": 1,
+   "m1": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "pumpkin",
+   "seed",
+   "harvest"
+  ]
+ },
+ {
+  "id": "pipkin/store-for-supper",
+  "name": "Store for Supper",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "self",
+  "text": "[Harvest] up to {n}. For each, choose: draw {m0} additional Trick at the start of your next turn, or gain {m1} Nerve then.",
+  "nums": {
+   "n": 2,
+   "m0": 1,
+   "m1": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "harvest"
+  ]
+ },
+ {
+  "id": "pipkin/big-little-frog",
+  "name": "Big Little Frog",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "self",
+  "text": "Choose one: set [Plump] to 0 and [Hop] twice; or set Plump to {n} and gain {b} Guard. [Vanish].",
+  "nums": {
+   "n": 3,
+   "b": 20
+  },
+  "exhaust": true,
+  "keywords": [
+   "plump",
+   "hop",
+   "vanish"
+  ]
+ },
+ {
+  "id": "pipkin/seed-vault",
+  "name": "Seed Vault",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "Increase [Patch] capacity by {n} for this combat, then [Plant] {m0} [Seed]s. [Vanish].",
+  "nums": {
+   "n": 2,
+   "m0": 2
+  },
+  "exhaust": true,
+  "keywords": [
+   "patch",
+   "plant",
+   "seed",
+   "vanish"
+  ]
+ },
+ {
+  "id": "pipkin/pick-of-the-patch",
+  "name": "Pick of the Patch",
+  "comp": "pipkin",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "[Harvest] {m1}. Choose one: draw {n} Tricks; gain {m0} Nerve; gain {b} Guard; or your next [Land] this turn resolves twice. [Vanish].",
+  "nums": {
+   "m1": 1,
+   "n": 3,
+   "m0": 2,
+   "b": 30
+  },
+  "exhaust": true,
+  "keywords": [
+   "harvest",
+   "land",
+   "vanish"
+  ]
+ },
+ {
+  "id": "pipkin/great-pumpkin-frog",
+  "name": "Great Pumpkin Frog",
+  "comp": "pipkin",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 3,
+  "target": "self",
+  "text": "[Heavy Feet] no longer raises [Hop] costs. Once each turn when you [Harvest], gain {n} [Plump]. Once each turn when you [Deflate], [Plant] {m0} Seed.",
+  "nums": {
+   "n": 1,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "heavy-feet",
+   "hop",
+   "harvest",
+   "plump",
+   "deflate",
+   "plant"
+  ]
+ },
+ {
+  "id": "pipkin/spring-eternal",
+  "name": "Spring Eternal",
+  "comp": "pipkin",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "[Height] no longer disappears at the end of your turn. [Land] still spends it normally.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "height",
+   "land"
+  ]
+ },
+ {
+  "id": "pipkin/heirloom-seeds",
+  "name": "Heirloom Seeds",
+  "comp": "pipkin",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "[Plant] {n} [Seed]s. Every second [Pumpkin] you [Harvest] this combat Plants {m0} Seed.",
+  "nums": {
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "plant",
+   "harvest",
+   "seed"
+  ]
+ },
+ {
+  "id": "pipkin/moonlit-garden",
+  "name": "Moonlit Garden",
+  "comp": "pipkin",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 3,
+  "target": "self",
+  "text": "Your [Patch] performs {n} growth steps at the end of each turn instead of one.",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "patch"
+  ]
+ },
+ {
+  "id": "pipkin/bigger-than-the-doorway",
+  "name": "Bigger Than the Doorway",
+  "comp": "pipkin",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 3,
+  "target": "self",
+  "text": "Maximum [Plump] becomes {n}. [Heavy Feet] activates at {m0} instead of 3. Whenever you gain Plump above 3, gain {b} Guard.",
+  "nums": {
+   "n": 5,
+   "m0": 4,
+   "b": 8
+  },
+  "exhaust": false,
+  "keywords": [
+   "plump",
+   "heavy-feet"
+  ]
+ },
+ {
+  "id": "pipkin/boing-without-end",
+  "name": "Boing Without End",
+  "comp": "pipkin",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "The first time you [Land] each turn, set your [Height] to {n} afterwards instead of 0.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "land",
+   "height"
+  ]
+ },
+ {
+  "id": "pipkin/the-patch-fights-back",
+  "name": "The Patch Fights Back",
+  "comp": "pipkin",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 3,
+  "target": "self",
+  "text": "Once each turn when you [Harvest] a Pumpkin, choose an enemy. Your next [Land] that turn also deals {d} damage to it.",
+  "nums": {
+   "d": 20
+  },
+  "exhaust": false,
+  "keywords": [
+   "harvest",
+   "land"
+  ]
+ },
+ {
+  "id": "taffy/sugar-bonk",
+  "name": "Sugar Bonk",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage.",
+  "nums": {
+   "d": 6
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "taffy/squish",
+  "name": "Squish",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard.",
+  "nums": {
+   "b": 5
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "taffy/pinch-off",
+  "name": "Pinch Off",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "self",
+  "text": "[Split] {n}. Gain {b} Guard.",
+  "nums": {
+   "n": 1,
+   "b": 4
+  },
+  "exhaust": false,
+  "keywords": [
+   "split",
+   "glob"
+  ]
+ },
+ {
+  "id": "taffy/long-pull",
+  "name": "Long Pull",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "none",
+  "text": "[Stretch] one other Attack or Skill.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "stretch"
+  ]
+ },
+ {
+  "id": "taffy/gummy-jab",
+  "name": "Gummy Jab",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. Deal {m0} more if you have at least {n} [Glob].",
+  "nums": {
+   "d": 6,
+   "m0": 4,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "glob"
+  ]
+ },
+ {
+  "id": "taffy/licorice-lash",
+  "name": "Licorice Lash",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage, plus {m0} for each [Stretch]. At {n} or more Stretch it also hits a second enemy.",
+  "nums": {
+   "d": 6,
+   "m0": 3,
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "stretch"
+  ]
+ },
+ {
+  "id": "taffy/snap-back",
+  "name": "Snap Back",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. If this Trick had [Stretch], gain {b} Guard.",
+  "nums": {
+   "d": 8,
+   "b": 6
+  },
+  "exhaust": false,
+  "keywords": [
+   "stretch"
+  ]
+ },
+ {
+  "id": "taffy/split-splat",
+  "name": "Split Splat",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. [Split] {n}.",
+  "nums": {
+   "d": 7,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "split"
+  ]
+ },
+ {
+  "id": "taffy/gumball-volley",
+  "name": "Gumball Volley",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage {n} times. Deal one more hit if you have at least {m0} [Glob]s.",
+  "nums": {
+   "d": 4,
+   "n": 2,
+   "hits": 2,
+   "m0": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "glob"
+  ]
+ },
+ {
+  "id": "taffy/big-chew",
+  "name": "Big Chew",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. You may [Recombine] {n} to deal {m0} more.",
+  "nums": {
+   "d": 8,
+   "n": 1,
+   "m0": 7
+  },
+  "exhaust": false,
+  "keywords": [
+   "recombine"
+  ]
+ },
+ {
+  "id": "taffy/stretch-punch",
+  "name": "Stretch Punch",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage, plus {m0} for each [Stretch]. At 3 Stretch, deal {m1} more on top.",
+  "nums": {
+   "d": 6,
+   "m0": 4,
+   "m1": 8
+  },
+  "exhaust": false,
+  "keywords": [
+   "stretch"
+  ]
+ },
+ {
+  "id": "taffy/rebound-bite",
+  "name": "Rebound Bite",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. If you [Spit Out] a Trick this turn, draw {n} Trick.",
+  "nums": {
+   "d": 7,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "spit-out"
+  ]
+ },
+ {
+  "id": "taffy/pinch-a-piece",
+  "name": "Pinch a Piece",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "[Split] {n}. Gain {b} Guard.",
+  "nums": {
+   "n": 1,
+   "b": 6
+  },
+  "exhaust": false,
+  "keywords": [
+   "split"
+  ]
+ },
+ {
+  "id": "taffy/squish-flat",
+  "name": "Squish Flat",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard. If you have 0 [Glob]s, gain {m0} instead.",
+  "nums": {
+   "b": 8,
+   "m0": 13
+  },
+  "exhaust": false,
+  "keywords": [
+   "glob"
+  ]
+ },
+ {
+  "id": "taffy/pull-it-long",
+  "name": "Pull It Long",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "none",
+  "text": "[Stretch] another Attack or Skill.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "stretch"
+  ]
+ },
+ {
+  "id": "taffy/save-for-later",
+  "name": "Save for Later",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "none",
+  "text": "[Absorb] one Trick from your hand, then draw {n} Trick.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "absorb",
+   "belly"
+  ]
+ },
+ {
+  "id": "taffy/spit-take",
+  "name": "Spit Take",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "none",
+  "text": "[Spit Out] one Trick. It costs {n} less this turn.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "spit-out"
+  ]
+ },
+ {
+  "id": "taffy/sticky-palm",
+  "name": "Sticky Palm",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "none",
+  "text": "Give one Trick [Retain] this turn. If it is already [Stretch]ed, add {n} Stretch instead.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "retain",
+   "stretch"
+  ]
+ },
+ {
+  "id": "taffy/mix-the-costs",
+  "name": "Mix the Costs",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 0,
+  "target": "none",
+  "text": "Choose two other Tricks in your hand. Swap their current Nerve costs until the end of the turn.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "taffy/little-recombine",
+  "name": "Little Recombine",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "[Recombine] up to {n}. Gain {b} Guard for each [Glob] spent.",
+  "nums": {
+   "n": 2,
+   "b": 8
+  },
+  "exhaust": false,
+  "keywords": [
+   "recombine",
+   "glob"
+  ]
+ },
+ {
+  "id": "taffy/sample-size",
+  "name": "Sample Size",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "none",
+  "text": "Create a [Gummy] copy of a Common Attack or Skill in your hand. The copy costs {n} more.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "gummy"
+  ]
+ },
+ {
+  "id": "taffy/candy-wrapper",
+  "name": "Candy Wrapper",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard. The next [Gummy] copy you create this turn costs {n} less.",
+  "nums": {
+   "b": 8,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "gummy"
+  ]
+ },
+ {
+  "id": "taffy/wobble-room",
+  "name": "Wobble Room",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 0,
+  "target": "self",
+  "text": "[Split] {m0}. If this makes you [Runny], draw {n} Tricks.",
+  "nums": {
+   "m0": 1,
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "split",
+   "runny"
+  ]
+ },
+ {
+  "id": "taffy/chew-slowly",
+  "name": "Chew Slowly",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard for each [Stretch]ed Trick in your hand, up to {n}.",
+  "nums": {
+   "b": 4,
+   "n": 4
+  },
+  "exhaust": false,
+  "keywords": [
+   "stretch"
+  ]
+ },
+ {
+  "id": "taffy/elastic-reversal",
+  "name": "Elastic Reversal",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. At {n} or more [Stretch], repeat the damage once.",
+  "nums": {
+   "d": 9,
+   "n": 2,
+   "hits": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "stretch"
+  ]
+ },
+ {
+  "id": "taffy/blob-barrage",
+  "name": "Blob Barrage",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage once for each [Glob] you have, up to {n} hits. This does not spend Globs.",
+  "nums": {
+   "d": 4,
+   "n": 6,
+   "hits": 4
+  },
+  "exhaust": false,
+  "keywords": [
+   "glob"
+  ]
+ },
+ {
+  "id": "taffy/recombination-slam",
+  "name": "Recombination Slam",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "[Recombine] any number of [Glob]s. Deal {d} damage plus {m0} for each spent.",
+  "nums": {
+   "d": 5,
+   "m0": 6
+  },
+  "exhaust": false,
+  "keywords": [
+   "recombine",
+   "glob"
+  ]
+ },
+ {
+  "id": "taffy/second-serving",
+  "name": "Second Serving",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. If you played a [Gummy] copy earlier this turn, create a Gummy copy of this Trick in your discard pile.",
+  "nums": {
+   "d": 8
+  },
+  "exhaust": false,
+  "keywords": [
+   "gummy"
+  ]
+ },
+ {
+  "id": "taffy/bellyflop",
+  "name": "Bellyflop",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage. If your [Belly] is full, gain {b} Guard.",
+  "nums": {
+   "d": 16,
+   "b": 12
+  },
+  "exhaust": false,
+  "keywords": [
+   "belly"
+  ]
+ },
+ {
+  "id": "taffy/sugar-sling",
+  "name": "Sugar Sling",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "allEnemies",
+  "text": "Deal {d} damage to all enemies. If [Runny], deal {m0} instead, then [Recombine] {n}.",
+  "nums": {
+   "d": 6,
+   "m0": 13,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "runny",
+   "recombine"
+  ]
+ },
+ {
+  "id": "taffy/snapback-special",
+  "name": "Snapback Special",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. If this Trick was played with [Stretch], create a [Gummy] copy of it in your discard pile.",
+  "nums": {
+   "d": 9
+  },
+  "exhaust": false,
+  "keywords": [
+   "stretch",
+   "gummy"
+  ]
+ },
+ {
+  "id": "taffy/hard-candy-haymaker",
+  "name": "Hard Candy Haymaker",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage. You may [Recombine] {n} before paying to reduce this Trick\u2019s cost by {m0} this turn.",
+  "nums": {
+   "d": 20,
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "recombine"
+  ]
+ },
+ {
+  "id": "taffy/taffy-hook",
+  "name": "Taffy Hook",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. [Spit Out] one [Absorb]ed Attack.",
+  "nums": {
+   "d": 8
+  },
+  "exhaust": false,
+  "keywords": [
+   "spit-out",
+   "absorb"
+  ]
+ },
+ {
+  "id": "taffy/feed-the-blob",
+  "name": "Feed the Blob",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage, plus {m0} for each Trick in your [Belly].",
+  "nums": {
+   "d": 7,
+   "m0": 6
+  },
+  "exhaust": false,
+  "keywords": [
+   "belly"
+  ]
+ },
+ {
+  "id": "taffy/long-distance-smack",
+  "name": "Long Distance Smack",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. Each [Stretch] adds a {m0} hit against another enemy where possible.",
+  "nums": {
+   "d": 9,
+   "m0": 5
+  },
+  "exhaust": false,
+  "keywords": [
+   "stretch"
+  ]
+ },
+ {
+  "id": "taffy/bite-sized-brigade",
+  "name": "Bite Sized Brigade",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage, plus {m0} for each [Gummy] copy you have played this turn, up to {n} extra hits.",
+  "nums": {
+   "d": 5,
+   "m0": 5,
+   "n": 4
+  },
+  "exhaust": false,
+  "keywords": [
+   "gummy"
+  ]
+ },
+ {
+  "id": "taffy/better-save-that",
+  "name": "Better Save That",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "none",
+  "text": "[Absorb] up to {n} Tricks from your hand, respecting [Belly] capacity. Draw {m0} Trick for each.",
+  "nums": {
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "absorb",
+   "belly"
+  ]
+ },
+ {
+  "id": "taffy/pocket-taffy",
+  "name": "Pocket Taffy",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "[Absorb] one Trick from your discard pile. Gain {b} Guard.",
+  "nums": {
+   "b": 10
+  },
+  "exhaust": false,
+  "keywords": [
+   "absorb",
+   "belly"
+  ]
+ },
+ {
+  "id": "taffy/regurgitate",
+  "name": "Regurgitate",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "none",
+  "text": "[Spit Out] every Trick in your [Belly]. Choose one of them to cost {n} this turn.",
+  "nums": {
+   "n": 0
+  },
+  "exhaust": false,
+  "keywords": [
+   "spit-out",
+   "belly"
+  ]
+ },
+ {
+  "id": "taffy/taste-memory",
+  "name": "Taste Memory",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "none",
+  "text": "Choose an [Absorb]ed Attack or Skill. Create a [Gummy] copy of it in your hand.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "gummy",
+   "absorb"
+  ]
+ },
+ {
+  "id": "taffy/make-it-sticky",
+  "name": "Make It Sticky",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "none",
+  "text": "One Trick gains [Retain] for the rest of combat. If it is already [Stretch]ed, also add {n} Stretch.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "retain",
+   "stretch"
+  ]
+ },
+ {
+  "id": "taffy/borrowed-price",
+  "name": "Borrowed Price",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "none",
+  "text": "Choose one Trick in hand and one in your [Belly]. Swap their current Nerve costs until each has been played once.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "belly"
+  ]
+ },
+ {
+  "id": "taffy/pull-apart",
+  "name": "Pull Apart",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "[Stretch] {n} different Attacks or Skills. [Split] {m0}.",
+  "nums": {
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "stretch",
+   "split"
+  ]
+ },
+ {
+  "id": "taffy/overstretch",
+  "name": "Overstretch",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "none",
+  "text": "Add {n} [Stretch] to an already Stretched Trick. It gains [Vanish] when next played.",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "stretch",
+   "vanish"
+  ]
+ },
+ {
+  "id": "taffy/let-it-sag",
+  "name": "Let It Sag",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 0,
+  "target": "none",
+  "text": "Choose a [Stretch]ed Trick. Reduce its cost this turn by {n} for each Stretch it has, to a minimum of 0.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "stretch"
+  ]
+ },
+ {
+  "id": "taffy/blob-insurance",
+  "name": "Blob Insurance",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "[Split] {n}. You cannot lose Courage from being [Runny] before your next turn.",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "split",
+   "runny"
+  ]
+ },
+ {
+  "id": "taffy/smoosh-together",
+  "name": "Smoosh Together",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "[Recombine] {n}. The next non-[Gummy] Attack or Skill you play this turn creates a Gummy copy of itself in your discard pile.",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "recombine",
+   "gummy"
+  ]
+ },
+ {
+  "id": "taffy/mouthfeel",
+  "name": "Mouthfeel",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard and draw {n} Trick for each different Trick type in your [Belly].",
+  "nums": {
+   "b": 5,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "belly"
+  ]
+ },
+ {
+  "id": "taffy/wrapped-up",
+  "name": "Wrapped Up",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "[Absorb] one Status or Curse from your hand for the rest of combat without using a [Belly] slot. Gain {b} Guard.",
+  "nums": {
+   "b": 10
+  },
+  "exhaust": false,
+  "keywords": [
+   "absorb",
+   "belly"
+  ]
+ },
+ {
+  "id": "taffy/same-again",
+  "name": "Same Again",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "none",
+  "text": "Create a [Gummy] copy of the last non-Gummy Attack or Skill you played this turn. Once each turn.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "gummy"
+  ]
+ },
+ {
+  "id": "taffy/stretch-transfer",
+  "name": "Stretch Transfer",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 0,
+  "target": "none",
+  "text": "Move the [Stretch]ed state and all Stretch counters from one Trick to another Attack or Skill.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "stretch"
+  ]
+ },
+ {
+  "id": "taffy/sugar-coat",
+  "name": "Sugar Coat",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "none",
+  "text": "Choose one Trick. For the rest of combat, nothing can raise its cost above its printed cost. Reset it now if it already has.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "taffy/half-now-half-later",
+  "name": "Half Now, Half Later",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "[Split] {m0} and draw {n} Trick. At the start of your next turn, [Recombine] {m0} if possible; if you do, draw {m1} Trick.",
+  "nums": {
+   "m0": 1,
+   "n": 1,
+   "m1": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "split",
+   "recombine"
+  ]
+ },
+ {
+  "id": "taffy/elastic-memory",
+  "name": "Elastic Memory",
+  "comp": "taffy",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "The first time each turn you play a [Stretch]ed Trick, add {n} Stretch to another Stretched Trick in your hand.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "stretch"
+  ]
+ },
+ {
+  "id": "taffy/snack-pocket",
+  "name": "Snack Pocket",
+  "comp": "taffy",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Increase [Belly] capacity by {n}. The first time you [Absorb] each turn, gain {b} Guard.",
+  "nums": {
+   "n": 1,
+   "b": 6
+  },
+  "exhaust": false,
+  "keywords": [
+   "belly",
+   "absorb"
+  ]
+ },
+ {
+  "id": "taffy/multipack",
+  "name": "Multipack",
+  "comp": "taffy",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "The first [Gummy] copy you create each turn costs {n} less.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "gummy"
+  ]
+ },
+ {
+  "id": "taffy/surface-tension",
+  "name": "Surface Tension",
+  "comp": "taffy",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "At the start of your turn, gain {b} Guard if you have 3 or 4 [Glob]s. If you are [Runny] instead, draw {n} Trick.",
+  "nums": {
+   "b": 10,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "glob",
+   "runny"
+  ]
+ },
+ {
+  "id": "taffy/sweet-spot",
+  "name": "Sweet Spot",
+  "comp": "taffy",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "The first time each turn a [Recombine] leaves you at exactly {n} [Glob]s, draw {m0} Trick.",
+  "nums": {
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "recombine",
+   "glob"
+  ]
+ },
+ {
+  "id": "taffy/chew-cycle",
+  "name": "Chew Cycle",
+  "comp": "taffy",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "self",
+  "text": "The first time each turn you [Spit Out] a Trick, create a [Gummy] copy of a different [Absorb]ed Attack or Skill in your discard pile.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "spit-out",
+   "gummy",
+   "absorb"
+  ]
+ },
+ {
+  "id": "taffy/whole-body-slam",
+  "name": "Whole Body Slam",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "[Recombine] all [Glob]s. Deal {d} damage plus {m0} for each one spent.",
+  "nums": {
+   "d": 8,
+   "m0": 11
+  },
+  "exhaust": false,
+  "keywords": [
+   "recombine",
+   "glob"
+  ]
+ },
+ {
+  "id": "taffy/splattershot",
+  "name": "Splattershot",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "randomEnemy",
+  "text": "[Split] until you reach 6 [Glob]s. Deal {d} damage to a random enemy for each Glob gained. This can leave you [Runny].",
+  "nums": {
+   "d": 8,
+   "hits": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "split",
+   "glob",
+   "runny"
+  ]
+ },
+ {
+  "id": "taffy/jawbreaker-drop",
+  "name": "Jawbreaker Drop",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage. At 2 [Stretch] deal {m0} instead. At 3 Stretch deal {m1} instead, then [Vanish] this Trick.",
+  "nums": {
+   "d": 18,
+   "m0": 32,
+   "m1": 52
+  },
+  "exhaust": false,
+  "keywords": [
+   "stretch",
+   "vanish"
+  ]
+ },
+ {
+  "id": "taffy/three-course-chomp",
+  "name": "Three Course Chomp",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage. If your [Belly] holds an Attack, deal {m0} more. A Skill: gain {b} Guard. A Power: a Trick in your hand costs {m1} less. All three can happen.",
+  "nums": {
+   "d": 14,
+   "m0": 12,
+   "b": 14,
+   "m1": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "belly"
+  ]
+ },
+ {
+  "id": "taffy/copycat-cannon",
+  "name": "Copycat Cannon",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "none",
+  "text": "Choose an [Absorb]ed Attack. Create two [Gummy] copies. Play one immediately without paying for it, and put the other in your discard pile.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "gummy",
+   "absorb"
+  ]
+ },
+ {
+  "id": "taffy/elastic-orbit",
+  "name": "Elastic Orbit",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "allEnemies",
+  "text": "Deal {d} damage to all enemies. If played at 3 [Stretch], return this Trick to your hand once that turn with its Stretch reset and its cost increased by {n}.",
+  "nums": {
+   "d": 13,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "stretch"
+  ]
+ },
+ {
+  "id": "taffy/sugar-comet",
+  "name": "Sugar Comet",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "allEnemies",
+  "text": "[Recombine] {n}. Deal {d} damage to all enemies. Every [Gummy] copy in your hand costs {m0} this turn.",
+  "nums": {
+   "d": 22,
+   "n": 3,
+   "m0": 0
+  },
+  "exhaust": false,
+  "keywords": [
+   "recombine",
+   "gummy"
+  ]
+ },
+ {
+  "id": "taffy/last-bite-first",
+  "name": "Last Bite First",
+  "comp": "taffy",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. Create a [Gummy] copy of a non-Gummy Attack in your discard pile, in your hand. Its cost is reduced by {n} for each Trick in your [Belly].",
+  "nums": {
+   "d": 6,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "gummy",
+   "belly"
+  ]
+ },
+ {
+  "id": "taffy/mix-everything",
+  "name": "Mix Everything",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "none",
+  "text": "Choose up to {n} non-[Gummy] Tricks in your hand. Rearrange their current Nerve costs among them however you like, for the rest of combat.",
+  "nums": {
+   "n": 3
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "taffy/deep-pocket",
+  "name": "Deep Pocket",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "none",
+  "text": "Increase [Belly] capacity by {n} for the rest of combat, then [Absorb] up to {m0} Tricks from your hand and draw the same number.",
+  "nums": {
+   "n": 2,
+   "m0": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "belly",
+   "absorb"
+  ]
+ },
+ {
+  "id": "taffy/spit-the-whole-bag",
+  "name": "Spit the Whole Bag",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "none",
+  "text": "[Spit Out] every Trick in your [Belly]. Each costs {n} less this turn. If your Belly was full, draw {m0} Tricks.",
+  "nums": {
+   "n": 1,
+   "m0": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "spit-out",
+   "belly"
+  ]
+ },
+ {
+  "id": "taffy/pull-to-the-moon",
+  "name": "Pull to the Moon",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "none",
+  "text": "[Stretch] an Attack or Skill straight to {n} Stretch. It gains [Vanish] when played.",
+  "nums": {
+   "n": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "stretch",
+   "vanish"
+  ]
+ },
+ {
+  "id": "taffy/unsplit",
+  "name": "Unsplit",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "self",
+  "text": "[Recombine] all [Glob]s. Gain {b} Guard for each, and recover {n} Courage for every 2.",
+  "nums": {
+   "b": 8,
+   "n": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "recombine",
+   "glob"
+  ]
+ },
+ {
+  "id": "taffy/perfect-replica",
+  "name": "Perfect Replica",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "none",
+  "text": "Choose an [Absorb]ed Attack or Skill. Create a {n}-cost [Gummy] copy. The first time that copy is played it does not [Vanish]. Its second play does.",
+  "nums": {
+   "n": 0
+  },
+  "exhaust": false,
+  "keywords": [
+   "gummy",
+   "absorb",
+   "vanish"
+  ]
+ },
+ {
+  "id": "taffy/cross-flavor",
+  "name": "Cross Flavor",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "none",
+  "text": "Create a [Gummy] copy of an [Absorb]ed Attack and one of an Absorbed Skill. If both are created, each costs {n} less this turn.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "gummy",
+   "absorb"
+  ]
+ },
+ {
+  "id": "taffy/candy-surgery",
+  "name": "Candy Surgery",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "none",
+  "text": "Choose two Tricks in your hand. Independently choose whether to exchange their costs, their [Retain], and their [Stretch] counters.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "retain",
+   "stretch"
+  ]
+ },
+ {
+  "id": "taffy/keep-the-wrapper",
+  "name": "Keep the Wrapper",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 0,
+  "target": "none",
+  "text": "Choose a [Gummy] copy in your hand. It does not [Vanish] on its next play. Afterwards it behaves as a temporary Trick in your discard pile and is [Chewed].",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "gummy",
+   "vanish",
+   "chewed"
+  ]
+ },
+ {
+  "id": "taffy/melt-and-remake",
+  "name": "Melt and Remake",
+  "comp": "taffy",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "none",
+  "text": "[Vanish] one non-[Gummy] Trick from your hand for this combat. Create Gummy copies of {n} other non-Gummy Attacks or Skills in your hand.",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "gummy",
+   "vanish"
+  ]
+ },
+ {
+  "id": "taffy/conservation-of-taffy",
+  "name": "Conservation of Taffy",
+  "comp": "taffy",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "self",
+  "text": "Once each turn, after you [Recombine] {n} or more [Glob]s, regain {m0} Glob at the end of that turn.",
+  "nums": {
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "recombine",
+   "glob"
+  ]
+ },
+ {
+  "id": "taffy/bottomless-belly",
+  "name": "Bottomless Belly",
+  "comp": "taffy",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "Increase [Belly] capacity by {n}. Whenever you [Absorb] from your hand, draw {m0} Trick. Tricks [Spit Out] cost {m1} more that turn.",
+  "nums": {
+   "n": 3,
+   "m0": 1,
+   "m1": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "belly",
+   "absorb",
+   "spit-out"
+  ]
+ },
+ {
+  "id": "taffy/house-of-mirrors",
+  "name": "House of Mirrors",
+  "comp": "taffy",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "The first non-[Gummy] Attack or Skill you play each turn creates a Gummy copy of itself in your discard pile. That copy costs {n} more.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "gummy"
+  ]
+ },
+ {
+  "id": "taffy/runaway-puddle",
+  "name": "Runaway Puddle",
+  "comp": "taffy",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "Being [Runny] no longer costs you Courage. While Runny, the first {n} [Gummy] copies you play each turn cost 0, and after each one [Recombine] {m0} if possible.",
+  "nums": {
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "runny",
+   "gummy",
+   "recombine"
+  ]
+ },
+ {
+  "id": "taffy/slow-pull",
+  "name": "Slow Pull",
+  "comp": "taffy",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "[Stretch]ed Tricks gain {n} additional Stretch at the end of your turn. A Trick at 3 Stretch costs {m0} less while it remains Stretched.",
+  "nums": {
+   "n": 1,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "stretch"
+  ]
+ },
+ {
+  "id": "taffy/one-big-piece",
+  "name": "One Big Piece",
+  "comp": "taffy",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "While you have exactly 0 [Glob]s, the first non-[Gummy] Attack or Skill you play each turn repeats its damage, Guard, healing and enemy statuses once. [Split]ting turns this off until you return to 0.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "glob",
+   "split",
+   "gummy"
+  ]
+ },
+ {
+  "id": "taffy/family-size",
+  "name": "Family Size",
+  "comp": "taffy",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "[Gummy] copies no longer [Vanish] the first time they are played. They go to your discard pile [Chewed] instead, and Vanish when played again.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "gummy",
+   "chewed",
+   "vanish"
+  ]
+ },
+ {
+  "id": "wink/little-nibble",
+  "name": "Little Nibble",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage.",
+  "nums": {
+   "d": 6
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "wink/silk-screen",
+  "name": "Silk Screen",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard. If an enemy currently intends to Attack, apply {n} [Web] to it.",
+  "nums": {
+   "b": 5,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "web"
+  ]
+ },
+ {
+  "id": "wink/peek-around-the-corner",
+  "name": "Peek Around the Corner",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "enemy",
+  "text": "[Preview] {n}. If a new Intent is revealed, Open {m0} [Eye].",
+  "nums": {
+   "n": 1,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "preview",
+   "eye"
+  ]
+ },
+ {
+  "id": "wink/call-it",
+  "name": "Call It",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Place a [Read] on the target\u2019s next [Intent Family].",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "read",
+   "intent-family"
+  ]
+ },
+ {
+  "id": "wink/loose-thread",
+  "name": "Loose Thread",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "basic",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Apply {n} [Web]. Apply {m0} more if the target has a [Preview]ed Intent.",
+  "nums": {
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "web",
+   "preview"
+  ]
+ },
+ {
+  "id": "wink/nibble-then-stare",
+  "name": "Nibble, Then Stare",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. If the target currently intends to Attack, apply {n} [Web].",
+  "nums": {
+   "d": 6,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "web"
+  ]
+ },
+ {
+  "id": "wink/sticky-situation",
+  "name": "Sticky Situation",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. If the target has a [Preview]ed future Intent, apply {n} [Web]. Otherwise Preview {m0}.",
+  "nums": {
+   "d": 6,
+   "n": 3,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "preview",
+   "web"
+  ]
+ },
+ {
+  "id": "wink/skitter-skitter-bite",
+  "name": "Skitter, Skitter, Bite",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 0,
+  "target": "enemy",
+  "text": "Deal {d} damage. If a [Read] succeeded this turn, gain {b} Guard. Once each turn.",
+  "nums": {
+   "d": 5,
+   "b": 5
+  },
+  "exhaust": false,
+  "keywords": [
+   "read"
+  ]
+ },
+ {
+  "id": "wink/future-tense",
+  "name": "Future Tense",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "If the target has a [Preview]ed future Intent, deal {d} damage. Otherwise deal {m0} damage and Preview {n}.",
+  "nums": {
+   "d": 11,
+   "m0": 6,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "preview"
+  ]
+ },
+ {
+  "id": "wink/look-over-there",
+  "name": "Look Over There",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage to one enemy, then [Preview] {n} on another enemy. If it is alone, Preview the same one.",
+  "nums": {
+   "d": 7,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "preview"
+  ]
+ },
+ {
+  "id": "wink/threadbare-pounce",
+  "name": "Threadbare Pounce",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage. You may remove {n} [Web] from the target to reduce this Trick\u2019s cost to {m0} for this play.",
+  "nums": {
+   "d": 16,
+   "n": 3,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "web"
+  ]
+ },
+ {
+  "id": "wink/seen-it-before",
+  "name": "Seen It Before",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. If the target\u2019s current [Intent Family] matches the one it used last time, apply {n} [Web].",
+  "nums": {
+   "d": 8,
+   "n": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "intent-family",
+   "web"
+  ]
+ },
+ {
+  "id": "wink/read-the-room",
+  "name": "Read the Room",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "none",
+  "text": "[Preview] {n} on every living enemy.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "preview"
+  ]
+ },
+ {
+  "id": "wink/make-a-guess",
+  "name": "Make a Guess",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Place a [Read]. If it is a [Blind Read], gain {b} Guard immediately.",
+  "nums": {
+   "b": 6
+  },
+  "exhaust": false,
+  "keywords": [
+   "read",
+   "blind-read"
+  ]
+ },
+ {
+  "id": "wink/safe-distance",
+  "name": "Safe Distance",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard. Gain {m0} more if at least one enemy currently intends to Attack.",
+  "nums": {
+   "b": 7,
+   "m0": 5
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "wink/wide-eyes",
+  "name": "Wide Eyes",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Open {n} [Eye]. If the target has no [Preview]ed future Intent, Preview {m0}.",
+  "nums": {
+   "n": 1,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "eye",
+   "preview"
+  ]
+ },
+ {
+  "id": "wink/blink",
+  "name": "Blink",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 0,
+  "target": "self",
+  "text": "Close {n} [Eye] to gain {b} Guard.",
+  "nums": {
+   "n": 1,
+   "b": 9
+  },
+  "exhaust": false,
+  "keywords": [
+   "eye"
+  ]
+ },
+ {
+  "id": "wink/tighten-the-silk",
+  "name": "Tighten the Silk",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Apply {n} [Web]. If the target has a [Preview]ed future Intent, apply {m0} additional Web.",
+  "nums": {
+   "n": 1,
+   "m0": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "web",
+   "preview"
+  ]
+ },
+ {
+  "id": "wink/web-patch",
+  "name": "Web Patch",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "Gain {b} Guard. Apply {n} [Web] to an enemy intending to Attack, if there is one.",
+  "nums": {
+   "b": 8,
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "web"
+  ]
+ },
+ {
+  "id": "wink/back-up-a-little",
+  "name": "Back Up a Little",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "[Preview] {m0}. If the target currently intends to Attack, apply {n} [Web]. Otherwise gain {b} Guard.",
+  "nums": {
+   "m0": 1,
+   "n": 3,
+   "b": 8
+  },
+  "exhaust": false,
+  "keywords": [
+   "preview",
+   "web"
+  ]
+ },
+ {
+  "id": "wink/tripline",
+  "name": "Tripline",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "[Set] on an enemy. When its Intent becomes Attack, gain {b} Guard and apply {n} [Web] to it, then discard this Trick.",
+  "nums": {
+   "b": 14,
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "set",
+   "web"
+  ]
+ },
+ {
+  "id": "wink/watch-this-one",
+  "name": "Watch This One",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "[Set] on an enemy with an unresolved [Read]. When that Read resolves, draw {n} Trick, and {m0} more if it succeeded. Then discard this Trick.",
+  "nums": {
+   "n": 1,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "set",
+   "read"
+  ]
+ },
+ {
+  "id": "wink/ceiling-survey",
+  "name": "Ceiling Survey",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "[Preview] {m0}. If the target has at least {n} [Web], Preview {m0} additional future Intent.",
+  "nums": {
+   "m0": 1,
+   "n": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "preview",
+   "web"
+  ]
+ },
+ {
+  "id": "wink/telltale-twitch",
+  "name": "Telltale Twitch",
+  "comp": "wink",
+  "type": "power",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "The first successful [Read] each turn applies {n} [Web] to that enemy.",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "read",
+   "web"
+  ]
+ },
+ {
+  "id": "wink/house-pattern",
+  "name": "House Pattern",
+  "comp": "wink",
+  "type": "power",
+  "rarity": "common",
+  "cost": 1,
+  "target": "self",
+  "text": "The first time each turn you [Preview] an Intent whose [Intent Family] differs from that enemy\u2019s current one, Open {n} [Eye].",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "preview",
+   "intent-family",
+   "eye"
+  ]
+ },
+ {
+  "id": "wink/cross-examination",
+  "name": "Cross Examination",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. If the target has an unresolved [Read], [Preview] {m0} additional future Intent and apply {n} [Web].",
+  "nums": {
+   "d": 8,
+   "n": 1,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "read",
+   "preview",
+   "web"
+  ]
+ },
+ {
+  "id": "wink/pulling-strings",
+  "name": "Pulling Strings",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "enemy",
+  "text": "You may remove {n} [Web] to swap the target\u2019s current Intent with its first [Preview]ed movable one. Deal {d} damage, or {m0} if you performed the swap.",
+  "nums": {
+   "d": 13,
+   "m0": 20,
+   "n": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "web",
+   "reorder",
+   "preview"
+  ]
+ },
+ {
+  "id": "wink/corner-to-corner",
+  "name": "Corner to Corner",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "allEnemies",
+  "text": "Deal {d} damage to all enemies. [Preview] {n} on each enemy that already has [Web].",
+  "nums": {
+   "d": 6,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "preview",
+   "web"
+  ]
+ },
+ {
+  "id": "wink/eight-eyes-one-target",
+  "name": "Eight Eyes, One Target",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage. At [Full Gaze], Close {n} [Eye]s after the hit to deal {m0} again.",
+  "nums": {
+   "d": 18,
+   "n": 2,
+   "m0": 12
+  },
+  "exhaust": false,
+  "keywords": [
+   "full-gaze",
+   "eye"
+  ]
+ },
+ {
+  "id": "wink/blindside-probability",
+  "name": "Blindside Probability",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. If the target has an unresolved [Blind Read], deal {m0} instead.",
+  "nums": {
+   "d": 8,
+   "m0": 18
+  },
+  "exhaust": false,
+  "keywords": [
+   "blind-read"
+  ]
+ },
+ {
+  "id": "wink/silk-saw",
+  "name": "Silk Saw",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. You may remove up to {n} [Web] from the target. Deal one more hit for every {m0} Web removed, up to 4 hits in total.",
+  "nums": {
+   "d": 5,
+   "n": 6,
+   "m0": 2,
+   "hits": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "web"
+  ]
+ },
+ {
+  "id": "wink/forecast-fang",
+  "name": "Forecast Fang",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage, plus {m0} for each [Preview]ed future Intent on the target, up to {n} extra hits.",
+  "nums": {
+   "d": 8,
+   "m0": 5,
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "preview"
+  ]
+ },
+ {
+  "id": "wink/wrong-answer",
+  "name": "Wrong Answer",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. If any [Read] failed this turn, deal {m0} instead and Open {n} [Eye] afterwards.",
+  "nums": {
+   "d": 5,
+   "m0": 18,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "read",
+   "eye"
+  ]
+ },
+ {
+  "id": "wink/gotcha",
+  "name": "Gotcha!",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 0,
+  "target": "enemy",
+  "text": "Playable only if a [Read] succeeded this turn. Deal {d} damage. Once each turn.",
+  "nums": {
+   "d": 9
+  },
+  "exhaust": false,
+  "keywords": [
+   "read"
+  ]
+ },
+ {
+  "id": "wink/rehearsed-pounce",
+  "name": "Rehearsed Pounce",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "[Set] on an enemy with an unresolved [Read]. When that Read resolves, deal {d} damage if it succeeded. If it failed, return this Trick to your hand at the start of your next turn instead.",
+  "nums": {
+   "d": 20
+  },
+  "exhaust": false,
+  "keywords": [
+   "set",
+   "read"
+  ]
+ },
+ {
+  "id": "wink/across-the-web",
+  "name": "Across the Web",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage to one enemy and {m0} to every other enemy with [Web]. Apply {n} Web to each enemy hit.",
+  "nums": {
+   "d": 12,
+   "m0": 6,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "web"
+  ]
+ },
+ {
+  "id": "wink/double-check",
+  "name": "Double Check",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "[Preview] {n}. If both newly revealed Intents share an [Intent Family], Open {m0} [Eye].",
+  "nums": {
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "preview",
+   "intent-family",
+   "eye"
+  ]
+ },
+ {
+  "id": "wink/long-shot",
+  "name": "Long Shot",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Playable only if the target\u2019s next Intent is hidden. Place a [Blind Read]. Success Opens {n} additional [Eye]. Failure Closes {m0} additional Eye.",
+  "nums": {
+   "n": 1,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "blind-read",
+   "eye"
+  ]
+ },
+ {
+  "id": "wink/safe-bet",
+  "name": "Safe Bet",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Place a [Read] naming {n} [Intent Family]s instead of one. It neither Opens nor Closes an [Eye], but still counts as a success or failure.",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "read",
+   "intent-family",
+   "eye"
+  ]
+ },
+ {
+  "id": "wink/thread-map",
+  "name": "Thread Map",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "[Preview] {m1}. Apply {n} [Web] for each distinct [Intent Family] among the target\u2019s current and Previewed Intents, up to {m0} Web.",
+  "nums": {
+   "n": 1,
+   "m0": 4,
+   "m1": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "preview",
+   "web",
+   "intent-family"
+  ]
+ },
+ {
+  "id": "wink/red-string-theory",
+  "name": "Red String Theory",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "none",
+  "text": "Apply {n} [Web] to every enemy with at least one [Preview]ed Intent. If only one enemy remains, apply {m0} to it instead.",
+  "nums": {
+   "n": 2,
+   "m0": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "web",
+   "preview"
+  ]
+ },
+ {
+  "id": "wink/tug-the-thread",
+  "name": "Tug the Thread",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Remove {n} [Web] to swap the target\u2019s current Intent with its first [Preview]ed movable one. If an Attack moved out of the current position, gain {b} Guard.",
+  "nums": {
+   "n": 3,
+   "b": 12
+  },
+  "exhaust": false,
+  "keywords": [
+   "web",
+   "reorder",
+   "preview"
+  ]
+ },
+ {
+  "id": "wink/stall-the-bad-part",
+  "name": "Stall the Bad Part",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Remove {n} [Web] to swap the target\u2019s first and second [Preview]ed movable Intents. [Read]s stay attached to their queue positions.",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "web",
+   "reorder",
+   "preview",
+   "read"
+  ]
+ },
+ {
+  "id": "wink/cut-the-web",
+  "name": "Cut the Web",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Remove up to {n} [Web] from one enemy. Gain {b} Guard for every {m0} removed.",
+  "nums": {
+   "n": 6,
+   "b": 4,
+   "m0": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "web"
+  ]
+ },
+ {
+  "id": "wink/catch-and-release",
+  "name": "Catch and Release",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 0,
+  "target": "enemy",
+  "text": "Move up to {n} [Web] from one enemy to another. If the receiving enemy has no [Preview]ed Intent, Preview {m0}.",
+  "nums": {
+   "n": 3,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "web",
+   "preview"
+  ]
+ },
+ {
+  "id": "wink/set-the-table",
+  "name": "Set the Table",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "The next [Set] Trick you play this turn costs {n}.",
+  "nums": {
+   "n": 0
+  },
+  "exhaust": false,
+  "keywords": [
+   "set"
+  ]
+ },
+ {
+  "id": "wink/doorframe-tripline",
+  "name": "Doorframe Tripline",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "[Set] on an enemy. When its Intent becomes Defense, apply {n} [Web] and Open {m0} [Eye], then discard this Trick.",
+  "nums": {
+   "n": 4,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "set",
+   "web",
+   "eye"
+  ]
+ },
+ {
+  "id": "wink/lampshade-lookout",
+  "name": "Lampshade Lookout",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "[Set] globally. The next time an enemy executes a Scheme or Special Intent, [Preview] {m0} on it and draw {n} additional Tricks at the start of your next turn. Then discard this Trick.",
+  "nums": {
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "set",
+   "preview"
+  ]
+ },
+ {
+  "id": "wink/false-floor",
+  "name": "False Floor",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "[Set] on an enemy. The next time you [Reorder] one of its Intents, deal {d} damage and [Preview] {n}, then discard this Trick.",
+  "nums": {
+   "d": 14,
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "set",
+   "reorder",
+   "preview"
+  ]
+ },
+ {
+  "id": "wink/thread-count",
+  "name": "Thread Count",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "none",
+  "text": "Draw one Trick for each distinct [Intent Family] among enemies\u2019 current Intents, up to {n}.",
+  "nums": {
+   "n": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "intent-family"
+  ]
+ },
+ {
+  "id": "wink/blink-twice",
+  "name": "Blink Twice",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 0,
+  "target": "none",
+  "text": "Close {n} [Eye]s. [Set] one Set Trick from your hand without paying its cost. It still needs an empty slot.",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "eye",
+   "set"
+  ]
+ },
+ {
+  "id": "wink/eight-cornered-view",
+  "name": "Eight Cornered View",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "none",
+  "text": "[Preview] {m1} on all enemies. For every {m0} new Intents revealed this way, Open {n} [Eye], to a maximum of 2.",
+  "nums": {
+   "n": 1,
+   "m0": 2,
+   "m1": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "preview",
+   "eye"
+  ]
+ },
+ {
+  "id": "wink/controlled-panic",
+  "name": "Controlled Panic",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "enemy",
+  "text": "If the target\u2019s current and first [Preview]ed Intents are both Attacks, gain {b} Guard and apply {n} [Web]. Otherwise Preview {m1} and draw {m0} Trick.",
+  "nums": {
+   "b": 16,
+   "n": 3,
+   "m0": 1,
+   "m1": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "preview",
+   "web"
+  ]
+ },
+ {
+  "id": "wink/pattern-library",
+  "name": "Pattern Library",
+  "comp": "wink",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "The first time a [Read] succeeds each turn, draw {n} Trick.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "read"
+  ]
+ },
+ {
+  "id": "wink/house-odds",
+  "name": "House Odds",
+  "comp": "wink",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "self",
+  "text": "Successful [Blind Read]s Open {n} additional [Eye]. When a Blind Read fails, apply {m0} [Web] to that enemy before the normal Eye loss.",
+  "nums": {
+   "n": 1,
+   "m0": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "blind-read",
+   "eye",
+   "web"
+  ]
+ },
+ {
+  "id": "wink/loom-logic",
+  "name": "Loom Logic",
+  "comp": "wink",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "self",
+  "text": "Whenever you spend [Web] to [Reorder] an Intent, apply {n} Web to every other enemy. If only one remains, reapply {m0} to it instead.",
+  "nums": {
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "web",
+   "reorder"
+  ]
+ },
+ {
+  "id": "wink/reflexive-blink",
+  "name": "Reflexive Blink",
+  "comp": "wink",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "The first time each turn you Close one or more [Eye]s, Open {n} Eye at the end of that turn.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "eye"
+  ]
+ },
+ {
+  "id": "wink/three-steps-ahead",
+  "name": "Three Steps Ahead",
+  "comp": "wink",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "self",
+  "text": "At the start of your turn, [Preview] {n} additional future Intent on an enemy, up to the normal depth of three.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "preview"
+  ]
+ },
+ {
+  "id": "wink/extra-corner",
+  "name": "Extra Corner",
+  "comp": "wink",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "self",
+  "text": "Increase your [Set] slot limit to {n} for this combat. Whenever your first Set of a turn triggers, apply {m0} [Web] to its attached enemy.",
+  "nums": {
+   "n": 4,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "set",
+   "web"
+  ]
+ },
+ {
+  "id": "wink/observe-and-interfere",
+  "name": "Observe and Interfere",
+  "comp": "wink",
+  "type": "power",
+  "rarity": "uncommon",
+  "cost": 2,
+  "target": "self",
+  "text": "Whenever a [Preview]ed Intent becomes current, gain {b} Guard if it is an Attack. If it is not, apply {n} [Web] to that enemy.",
+  "nums": {
+   "b": 6,
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "preview",
+   "web"
+  ]
+ },
+ {
+  "id": "wink/future-perfect",
+  "name": "Future Perfect",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Deal {d} damage. For each distinct [Intent Family] among the target\u2019s [Preview]ed Intents \u2014 Attack adds a {m0} hit, Defense applies {n} [Web], Scheme Opens {m1} [Eye], Special draws {m2} Trick. Each once.",
+  "nums": {
+   "d": 20,
+   "m0": 8,
+   "n": 2,
+   "m1": 1,
+   "m2": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "preview",
+   "intent-family",
+   "web",
+   "eye"
+  ]
+ },
+ {
+  "id": "wink/all-eight-at-once",
+  "name": "All Eight at Once",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Close any number of [Eye]s. Deal {d} damage for each Eye Closed. If exactly 8 were Closed, the final hit deals {m0} instead.",
+  "nums": {
+   "d": 6,
+   "m0": 20,
+   "hits": 4
+  },
+  "exhaust": false,
+  "keywords": [
+   "eye"
+  ]
+ },
+ {
+  "id": "wink/silk-snap",
+  "name": "Silk Snap",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Remove up to {n} [Web] from the target. Deal {d} damage for each Web removed. If exactly 8 were removed, reapply {m0} Web afterwards.",
+  "nums": {
+   "d": 5,
+   "n": 8,
+   "m0": 4,
+   "hits": 5
+  },
+  "exhaust": false,
+  "keywords": [
+   "web"
+  ]
+ },
+ {
+  "id": "wink/closed-loop",
+  "name": "Closed Loop",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage. If a [Read] succeeded and you [Reorder]ed an Intent this turn, return this Trick to your hand. Once each turn.",
+  "nums": {
+   "d": 9
+  },
+  "exhaust": false,
+  "keywords": [
+   "read",
+   "reorder"
+  ]
+ },
+ {
+  "id": "wink/deadline",
+  "name": "Deadline",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "[Set] on an enemy. When it is about to execute an Attack Intent, deal {d} damage immediately before the attack, then discard this Trick. If that defeats it, the attack never happens.",
+  "nums": {
+   "d": 40
+  },
+  "exhaust": false,
+  "keywords": [
+   "set"
+  ]
+ },
+ {
+  "id": "wink/wrong-on-purpose",
+  "name": "Wrong on Purpose",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 0,
+  "target": "enemy",
+  "text": "Deal {d} damage. Choose one unresolved [Read] on the target and force it to fail immediately, triggering its normal failure effects. Then [Preview] the position it predicted. Once each turn.",
+  "nums": {
+   "d": 5
+  },
+  "exhaust": false,
+  "keywords": [
+   "read",
+   "preview"
+  ]
+ },
+ {
+  "id": "wink/spiders-paradox",
+  "name": "Spider\u2019s Paradox",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "allEnemies",
+  "text": "Deal {d} damage to all enemies. For each enemy with an unresolved [Read], choose to [Preview] that Read\u2019s position, or leave it hidden and apply {n} [Web] instead.",
+  "nums": {
+   "d": 13,
+   "n": 4
+  },
+  "exhaust": false,
+  "keywords": [
+   "read",
+   "preview",
+   "web"
+  ]
+ },
+ {
+  "id": "wink/the-part-where-you-panic",
+  "name": "The Part Where You Panic",
+  "comp": "wink",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 3,
+  "target": "enemy",
+  "text": "Deal {d} damage. You may Close {n} [Eye]s to immediately trigger one [Set] attached to the target, even if its trigger has not occurred. Resolve it fully, then discard it.",
+  "nums": {
+   "d": 24,
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "eye",
+   "set"
+  ]
+ },
+ {
+  "id": "wink/clairvoyant-lattice",
+  "name": "Clairvoyant Lattice",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "none",
+  "text": "[Preview] future Intents until every living enemy has {n} future positions revealed. Apply {m0} [Web] for every newly revealed Intent.",
+  "nums": {
+   "n": 3,
+   "m0": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "preview",
+   "web"
+  ]
+ },
+ {
+  "id": "wink/rewrite-the-script",
+  "name": "Rewrite the Script",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Swap any two movable Intents among one enemy\u2019s current and [Preview]ed queue. [Read]s stay attached to their positions.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "reorder",
+   "read",
+   "preview"
+  ]
+ },
+ {
+  "id": "wink/postpone-the-inevitable",
+  "name": "Postpone the Inevitable",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Remove {n} [Web]. Move the target\u2019s current movable Intent behind all of its [Preview]ed future Intents. Its next queued Intent becomes current immediately.",
+  "nums": {
+   "n": 5
+  },
+  "exhaust": false,
+  "keywords": [
+   "web",
+   "reorder",
+   "preview"
+  ]
+ },
+ {
+  "id": "wink/i-meant-that-one",
+  "name": "I Meant That One",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Choose an unresolved [Read]. If it would fail, treat it as successful instead, but Close {n} [Eye]s when it resolves. It does not count as a failed Read.",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "read",
+   "eye"
+  ]
+ },
+ {
+  "id": "wink/eyes-shut",
+  "name": "Eyes Shut",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "self",
+  "text": "Close all Open [Eye]s. Until the end of this turn, [Read]s you place count as [Blind Read]s even on revealed positions. Each successful one draws {n} Trick at the start of your next turn.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "eye",
+   "read",
+   "blind-read"
+  ]
+ },
+ {
+  "id": "wink/house-spider",
+  "name": "House Spider",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "none",
+  "text": "Choose up to {n} [Set] Tricks in your discard pile and place them into empty Set slots for free. After those Sets trigger, they [Vanish].",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "set",
+   "vanish"
+  ]
+ },
+ {
+  "id": "wink/snip-here",
+  "name": "Snip Here",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Remove {n} [Web] from an enemy to delete its current movable Intent from the queue. Its next Intent becomes current immediately. Cannot affect [Anchored] Intents.",
+  "nums": {
+   "n": 8
+  },
+  "exhaust": false,
+  "keywords": [
+   "web",
+   "reorder",
+   "anchored"
+  ]
+ },
+ {
+  "id": "wink/triple-prediction",
+  "name": "Triple Prediction",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "enemy",
+  "text": "Place separate [Read]s on the target\u2019s next {n} future positions, choosing an [Intent Family] for each. A Read on a hidden position is a [Blind Read].",
+  "nums": {
+   "n": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "read",
+   "blind-read",
+   "intent-family"
+  ]
+ },
+ {
+  "id": "wink/forked-future",
+  "name": "Forked Future",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Choose an enemy with at least {n} [Preview]ed future Intents. After its current Intent finishes, you choose which of the two becomes current next. The other stays queued.",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "preview",
+   "reorder"
+  ]
+ },
+ {
+  "id": "wink/back-pocket-web",
+  "name": "Back Pocket Web",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 0,
+  "target": "none",
+  "text": "Return one active [Set] Trick you own to your hand, freeing its slot. That Trick costs {n} this turn.",
+  "nums": {
+   "n": 0
+  },
+  "exhaust": false,
+  "keywords": [
+   "set"
+  ]
+ },
+ {
+  "id": "wink/no-such-thing-as-random",
+  "name": "No Such Thing as Random",
+  "comp": "wink",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 3,
+  "target": "enemy",
+  "text": "For the rest of combat, whenever the target\u2019s AI would choose randomly among legal Intents, you choose instead. This cannot alter scripted or [Anchored] actions. [Preview] {n} immediately.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "preview",
+   "anchored"
+  ]
+ },
+ {
+  "id": "wink/all-eyes-open",
+  "name": "All Eyes Open",
+  "comp": "wink",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 3,
+  "target": "self",
+  "text": "While at [Full Gaze], [Preview] every enemy to a depth of {n} at the start of each turn. Your first Intent [Reorder] each turn needs {m0} fewer [Web], minimum 1.",
+  "nums": {
+   "n": 2,
+   "m0": 2
+  },
+  "exhaust": false,
+  "keywords": [
+   "full-gaze",
+   "preview",
+   "web",
+   "reorder"
+  ]
+ },
+ {
+  "id": "wink/master-of-the-web",
+  "name": "Master of the Web",
+  "comp": "wink",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 3,
+  "target": "self",
+  "text": "The first time each turn you spend [Web] to [Reorder] or delete an Intent, the target must have the Web but it is not removed.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "web",
+   "reorder"
+  ]
+ },
+ {
+  "id": "wink/the-house-has-tells",
+  "name": "The House Has Tells",
+  "comp": "wink",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "Whenever enemy AI changes one of its future Intents because conditions changed, reveal the replacement and Open {n} [Eye]. Once per enemy each turn.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "preview",
+   "eye"
+  ]
+ },
+ {
+  "id": "wink/patient-hunter",
+  "name": "Patient Hunter",
+  "comp": "wink",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 2,
+  "target": "self",
+  "text": "The first [Set] Trick that triggers after each of your turns returns to your hand at the start of your next turn instead of the discard pile. It costs {n} that turn.",
+  "nums": {
+   "n": 0
+  },
+  "exhaust": false,
+  "keywords": [
+   "set"
+  ]
+ },
+ {
+  "id": "wink/probability-collapse",
+  "name": "Probability Collapse",
+  "comp": "wink",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 3,
+  "target": "self",
+  "text": "At the end of your turn, if every living enemy has an unresolved [Read], choose one. If its predicted [Intent Family] is legal for that enemy\u2019s next action, force its next Intent to be from that family. Cannot affect [Anchored] actions. Once each turn.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "read",
+   "intent-family",
+   "anchored"
+  ]
+ },
+ {
+  "id": "wink/every-angle-covered",
+  "name": "Every Angle Covered",
+  "comp": "wink",
+  "type": "power",
+  "rarity": "rare",
+  "cost": 3,
+  "target": "self",
+  "text": "Whenever a [Read] succeeds, once per enemy each turn, copy its predicted family onto that enemy\u2019s following position if that position has no Read. The copy is a [Blind Read] if the position is hidden.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "read",
+   "blind-read",
+   "preview"
+  ]
+ },
+ {
+  "id": "status/spooked",
+  "name": "Spooked",
+  "comp": "status",
+  "type": "status",
+  "rarity": "special",
+  "cost": -2,
+  "target": "none",
+  "text": "Unplayable. [Ethereal].",
+  "nums": {},
+  "exhaust": false,
+  "keywords": [
+   "ethereal"
+  ]
+ },
+ {
+  "id": "status/sticky-fur",
+  "name": "Sticky Fur",
+  "comp": "status",
+  "type": "status",
+  "rarity": "special",
+  "cost": 1,
+  "target": "none",
+  "text": "[Vanish].",
+  "nums": {},
+  "exhaust": true,
+  "keywords": [
+   "vanish"
+  ]
+ },
+ {
+  "id": "status/candle-burn",
+  "name": "Candle Burn",
+  "comp": "status",
+  "type": "status",
+  "rarity": "special",
+  "cost": -2,
+  "target": "none",
+  "text": "Unplayable. At the end of your turn, lose {n} Courage.",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "status/scrape",
+  "name": "Scrape",
+  "comp": "status",
+  "type": "status",
+  "rarity": "special",
+  "cost": -2,
+  "target": "none",
+  "text": "Unplayable.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "status/gloom",
+  "name": "Gloom",
+  "comp": "status",
+  "type": "status",
+  "rarity": "special",
+  "cost": -2,
+  "target": "none",
+  "text": "Unplayable. [Ethereal]. When drawn, lose {n} Nerve.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": [
+   "ethereal"
+  ]
+ },
+ {
+  "id": "status/wrong-side",
+  "name": "Wrong Side",
+  "comp": "status",
+  "type": "status",
+  "rarity": "special",
+  "cost": -2,
+  "target": "none",
+  "text": "Unplayable. [Ethereal]. When drawn, lose {n} Courage.",
+  "nums": {
+   "n": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "ethereal"
+  ]
+ },
+ {
+  "id": "curse/regret",
+  "name": "Regret",
+  "comp": "curse",
+  "type": "curse",
+  "rarity": "curse",
+  "cost": -2,
+  "target": "none",
+  "text": "Unplayable. At the end of your turn, lose {n} Courage for each Trick in your hand.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "curse/bad-luck",
+  "name": "Bad Luck",
+  "comp": "curse",
+  "type": "curse",
+  "rarity": "curse",
+  "cost": -2,
+  "target": "none",
+  "text": "Unplayable. At the end of your turn, gain {n} Weak.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "curse/clingy-shadow",
+  "name": "Clingy Shadow",
+  "comp": "curse",
+  "type": "curse",
+  "rarity": "curse",
+  "cost": -2,
+  "target": "none",
+  "text": "Unplayable. At the end of your turn, gain {n} Frail.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "curse/creaky-floorboard",
+  "name": "Creaky Floorboard",
+  "comp": "curse",
+  "type": "curse",
+  "rarity": "curse",
+  "cost": -2,
+  "target": "none",
+  "text": "Unplayable.",
+  "nums": {},
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "curse/heavy-heart",
+  "name": "Heavy Heart",
+  "comp": "curse",
+  "type": "curse",
+  "rarity": "curse",
+  "cost": -2,
+  "target": "none",
+  "text": "Unplayable. At the end of your turn, lose {n} Courage.",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "curse/night-terror",
+  "name": "Night Terror",
+  "comp": "curse",
+  "type": "curse",
+  "rarity": "curse",
+  "cost": -2,
+  "target": "none",
+  "text": "Unplayable. While this is in your hand, lose {n} Courage whenever you play a Trick.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "curse/lost-mitten",
+  "name": "Lost Mitten",
+  "comp": "curse",
+  "type": "curse",
+  "rarity": "curse",
+  "cost": -2,
+  "target": "none",
+  "text": "Unplayable. [Ethereal]. While this is in your hand, you cannot play more than {n} Tricks each turn.",
+  "nums": {
+   "n": 3
+  },
+  "exhaust": false,
+  "keywords": [
+   "ethereal"
+  ]
+ },
+ {
+  "id": "neutral/torchlight",
+  "name": "Torchlight",
+  "comp": "neutral",
+  "type": "attack",
+  "rarity": "common",
+  "cost": 1,
+  "target": "enemy",
+  "text": "Deal {d} damage.",
+  "nums": {
+   "d": 8
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "neutral/borrowed-courage",
+  "name": "Borrowed Courage",
+  "comp": "neutral",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 0,
+  "target": "self",
+  "text": "Gain {b} Guard.",
+  "nums": {
+   "b": 5
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "neutral/quick-look",
+  "name": "Quick Look",
+  "comp": "neutral",
+  "type": "skill",
+  "rarity": "common",
+  "cost": 0,
+  "target": "none",
+  "text": "Draw {n} Tricks. [Vanish].",
+  "nums": {
+   "n": 2
+  },
+  "exhaust": true,
+  "keywords": [
+   "vanish"
+  ]
+ },
+ {
+  "id": "neutral/clumsy-swing",
+  "name": "Clumsy Swing",
+  "comp": "neutral",
+  "type": "attack",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "allEnemies",
+  "text": "Deal {d} damage to all enemies.",
+  "nums": {
+   "d": 8
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "neutral/dust-off",
+  "name": "Dust Off",
+  "comp": "neutral",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "Remove a negative condition from yourself. Draw {n} Trick.",
+  "nums": {
+   "n": 1
+  },
+  "exhaust": false,
+  "keywords": []
+ },
+ {
+  "id": "neutral/second-wind",
+  "name": "Second Wind",
+  "comp": "neutral",
+  "type": "skill",
+  "rarity": "uncommon",
+  "cost": 1,
+  "target": "self",
+  "text": "[Vanish] every Skill in your hand. Gain {b} Guard for each.",
+  "nums": {
+   "b": 5
+  },
+  "exhaust": false,
+  "keywords": [
+   "vanish"
+  ]
+ },
+ {
+  "id": "neutral/lucky-penny",
+  "name": "Lucky Penny",
+  "comp": "neutral",
+  "type": "skill",
+  "rarity": "rare",
+  "cost": 0,
+  "target": "self",
+  "text": "Gain {n} Nerve. Draw {m0} Trick. [Vanish].",
+  "nums": {
+   "n": 2,
+   "m0": 1
+  },
+  "exhaust": true,
+  "keywords": [
+   "vanish"
+  ]
+ },
+ {
+  "id": "neutral/big-swing",
+  "name": "Big Swing",
+  "comp": "neutral",
+  "type": "attack",
+  "rarity": "rare",
+  "cost": 3,
+  "target": "enemy",
+  "text": "Deal {d} damage. Deal {m0} more for each other Trick in your hand.",
+  "nums": {
+   "d": 14,
+   "m0": 4
+  },
+  "exhaust": false,
+  "keywords": []
+ }
+]

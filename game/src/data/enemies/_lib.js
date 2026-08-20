@@ -122,9 +122,16 @@ export function pct(n, p) { return Math.max(1, Math.round(n * p)); }
 /** Fraction of current/max Courage, 0..1. */
 export function hpFrac(a) { return (a && a.maxHp) ? (a.hp || 0) / a.maxHp : 1; }
 
-/** Convenience: hit the player. */
+/**
+ * Hit the player for `n` damage, `hits` times.
+ *
+ * The engine's `ctx.damage(target, amount, {hits})` ALREADY loops `hits` times internally
+ * (combat/engine.js:1061). Loop here as well and every multi-hit attack resolves hits²
+ * times — a 7x3 intent silently dealing 63. Hand the count to the engine exactly once.
+ * The intent number is the contract; this function is the only place enemies can break it.
+ */
 export function hitPlayer(c, n, hits = 1) {
-  for (let i = 0; i < hits; i++) c.damage?.(c.player, n, { hits, hitIndex: i });
+  c.damage?.(c.player, n, { hits });
 }
 
 /** Shared per-combat scratch (Darkness, Bed Positions, House Rules…). */

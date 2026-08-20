@@ -365,10 +365,10 @@ export function logoLockup({ size = 'hero', plaque = null, id = 'mm-logo' } = {}
     </g>
 
     <!-- the cartouche -->
-    <ellipse class="mm-logo__oval" cx="700" cy="178" rx="556" ry="152" fill="url(#${uid}-oval)"/>
-    <ellipse class="mm-logo__ring mm-logo__ring--out"  cx="700" cy="178" rx="556" ry="152" stroke="url(#${uid}-rim)"/>
-    <ellipse class="mm-logo__ring mm-logo__ring--in"   cx="700" cy="178" rx="538" ry="137"/>
-    <ellipse class="mm-logo__ring mm-logo__ring--hair" cx="700" cy="178" rx="528" ry="128"/>
+    <ellipse class="mm-logo__oval" cx="700" cy="178" rx="562" ry="166" fill="url(#${uid}-oval)"/>
+    <ellipse class="mm-logo__ring mm-logo__ring--out"  cx="700" cy="178" rx="562" ry="166" stroke="url(#${uid}-rim)"/>
+    <ellipse class="mm-logo__ring mm-logo__ring--in"   cx="700" cy="178" rx="544" ry="150"/>
+    <ellipse class="mm-logo__ring mm-logo__ring--hair" cx="700" cy="178" rx="534" ry="141"/>
 
     <!-- star dust inside the cartouche -->
     <g class="mm-logo__stars">

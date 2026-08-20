@@ -167,55 +167,87 @@
     linear-gradient(to bottom, color-mix(in srgb, var(--ink-900) 62%, transparent) 0%, transparent 22%, transparent 70%, color-mix(in srgb, var(--ink-900) 78%, transparent) 100%);
 }
 
-/* a soft pillar of shadow so the menu never fights a lit window */
+/* a soft pillar of shadow so the house sits back behind the plinth */
 .ti-scrim {
-  position: absolute; left: 50%; top: 26%;
-  width: min(880px, 62vw); height: 58%;
+  position: absolute; left: 50%; top: 22%;
+  width: min(1000px, 70vw); height: 66%;
   transform: translateX(-50%);
   pointer-events: none;
-  background: radial-gradient(52% 50% at 50% 46%,
-    color-mix(in srgb, var(--ink-900) 88%, transparent) 0%,
-    color-mix(in srgb, var(--ink-900) 74%, transparent) 42%,
-    transparent 78%);
+  background: radial-gradient(50% 52% at 50% 48%,
+    color-mix(in srgb, var(--ink-900) 82%, transparent) 0%,
+    color-mix(in srgb, var(--ink-900) 60%, transparent) 46%,
+    transparent 80%);
 }
 
 /* ── foreground stage ─────────────────────────────────────────────────────── */
 .ti-stage {
   position: absolute; inset: 0;
   display: flex; flex-direction: column; align-items: center;
-  padding-top: clamp(var(--s-3), 2.4vh, var(--s-6));
-  gap: clamp(var(--s-2), 1.1vh, var(--s-4));
+  padding-top: clamp(var(--s-2), 1.8vh, var(--s-5));
+  gap: clamp(var(--s-3), 2vh, var(--s-6));
 }
 .ti-logo { --logo-w: clamp(440px, 52vw, 860px); filter: drop-shadow(0 18px 40px color-mix(in srgb, var(--ink-900) 80%, transparent)); }
 
-.ti-tagline {
-  margin: 0;
-  font-family: var(--font-body);
-  font-size: var(--fs-md);
-  font-style: italic;
-  line-height: 1.55;
-  text-align: center;
-  color: color-mix(in oklab, var(--text-mid) 84%, var(--arcane-200));
-  text-shadow: 0 2px 10px color-mix(in srgb, var(--ink-900) 90%, transparent);
-  max-width: 46ch;
+/* ── the plinth: the menu's own ground ────────────────────────────────────── */
+.ti-plinth {
+  position: relative;
+  display: flex; flex-direction: column; align-items: stretch;
+  width: min(486px, 40vw);
+  padding: clamp(var(--s-4), 2.2vh, var(--s-6)) clamp(var(--s-4), 1.9vw, var(--s-6))
+           clamp(var(--s-4), 2vh, var(--s-6));
+  border-radius: var(--radius-lg);
+  isolation: isolate;
 }
+/* The blurred, framed slate. Separate from the plinth so the frame can carry a
+   feathered edge without the type inheriting any of it. */
+.ti-plinth__glass {
+  position: absolute; inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--ink-900) 82%, transparent) 0%,
+      color-mix(in oklab, var(--ink-800) 70%, var(--arcane-700)) 42%,
+      color-mix(in srgb, var(--ink-900) 90%, transparent) 100%);
+  backdrop-filter: blur(7px) saturate(.72) brightness(.5);
+  -webkit-backdrop-filter: blur(7px) saturate(.72) brightness(.5);
+  border: 1px solid color-mix(in srgb, var(--brass-400) 34%, transparent);
+  box-shadow:
+    var(--shadow-4),
+    inset 0 1px 0 color-mix(in srgb, var(--brass-200) 16%, transparent),
+    inset 0 0 60px color-mix(in srgb, var(--ink-900) 70%, transparent);
+}
+/* brass hairline + diamond, top and bottom, so it reads as an object */
+.ti-plinth__glass::before,
+.ti-plinth__glass::after {
+  content: ''; position: absolute; left: 9%; right: 9%; height: 9px;
+  background:
+    linear-gradient(90deg, transparent,
+      color-mix(in srgb, var(--brass-300) 60%, transparent) 24%,
+      color-mix(in srgb, var(--brass-300) 60%, transparent) 76%, transparent) center/100% 1px no-repeat,
+    conic-gradient(from 45deg at 50% 50%, var(--brass-200) 0 25%, transparent 0 100%) center/9px 9px no-repeat;
+}
+.ti-plinth__glass::before { top: 7px; }
+.ti-plinth__glass::after  { bottom: 7px; }
+
+.ti-tagline {
+  margin: 0 0 clamp(var(--s-3), 1.6vh, var(--s-5));
+  font-family: var(--font-body);
+  font-size: var(--fs-lg);
+  font-style: italic;
+  line-height: 1.5;
+  text-align: center;
+  color: color-mix(in oklab, var(--parchment) 76%, var(--arcane-200));
+  text-shadow: 0 1px 0 var(--ink-900), 0 2px 14px color-mix(in srgb, var(--ink-900) 92%, transparent);
+}
+.ti-tagline span { color: color-mix(in oklab, var(--flame-200) 58%, var(--parchment)); }
 
 /* ── menu ─────────────────────────────────────────────────────────────────── */
 .ti-menu {
   position: relative;
   display: flex; flex-direction: column;
-  gap: clamp(2px, .5vh, 8px);
-  margin-top: clamp(var(--s-3), 2.2vh, var(--s-6));
-  padding-top: clamp(var(--s-3), 2vh, var(--s-5));
-  width: min(560px, 46vw);
-}
-/* a small brass diamond rule separating the tagline from the menu */
-.ti-menu::before {
-  content: ''; position: absolute; top: 0; left: 8%; right: 8%; height: 9px;
-  background:
-    linear-gradient(90deg, transparent, color-mix(in srgb, var(--brass-400) 52%, transparent) 22%,
-      color-mix(in srgb, var(--brass-400) 52%, transparent) 78%, transparent) center/100% 1px no-repeat,
-    conic-gradient(from 45deg at 50% 50%, var(--brass-200) 0 25%, transparent 0 100%) center/9px 9px no-repeat;
+  gap: clamp(2px, .5vh, 7px);
+  width: 100%;
 }
 .ti-item {
   position: relative;
@@ -224,7 +256,7 @@
   grid-template-areas: 'g label' 'g hint';
   align-items: center;
   column-gap: var(--s-3);
-  padding: clamp(7px, 1.1vh, 13px) var(--s-5);
+  padding: clamp(7px, 1.15vh, 14px) var(--s-4);
   text-align: left;
   border-radius: var(--radius-sm);
   color: var(--text-mid);
@@ -274,8 +306,8 @@
   font-weight: 600;
   letter-spacing: .10em;
   text-transform: uppercase;
-  color: color-mix(in oklab, var(--text-hi) 74%, var(--arcane-200));
-  text-shadow: 0 2px 8px color-mix(in srgb, var(--ink-900) 88%, transparent);
+  color: color-mix(in oklab, var(--text-hi) 88%, var(--arcane-200));
+  text-shadow: 0 1px 0 var(--ink-900), 0 2px 10px color-mix(in srgb, var(--ink-900) 90%, transparent);
   transition: color var(--t-quick) var(--ease-out), text-shadow var(--t-quick) var(--ease-out);
 }
 .ti-item__hint {
@@ -312,7 +344,7 @@
 
 /* ── entrance ─────────────────────────────────────────────────────────────── */
 .scene--title.is-entering .ti-logo    { animation: ti-in-logo 1.15s var(--ease-out) both; }
-.scene--title.is-entering .ti-tagline { animation: ti-in-up .8s var(--ease-out) .45s both; }
+.scene--title.is-entering .ti-plinth  { animation: ti-in-up .8s var(--ease-out) .42s both; }
 .scene--title.is-entering .ti-item    { animation: ti-in-up .6s var(--ease-out) both; }
 .scene--title.is-entering .ti-item:nth-child(1) { animation-delay: .62s; }
 .scene--title.is-entering .ti-item:nth-child(2) { animation-delay: .70s; }
@@ -410,12 +442,15 @@
 .ti-ov__close:hover { background: color-mix(in oklab, var(--flame-500) 40%, var(--ink-600)); border-color: var(--brass-300); }
 
 /* ── readability ──────────────────────────────────────────────────────────── */
-.mm-large-text .ti-tagline,
 .mm-large-text .ti-item__hint,
 .mm-large-text .ti-credits { font-size: calc(var(--fs-md) * 1.18); }
 .mm-large-text .ti-foot { font-size: var(--fs-sm); }
 
 @media (max-width: 900px) {
-  .ti-menu { width: min(92vw, 520px); }
+  .ti-plinth { width: min(92vw, 520px); }
   .ti-candle { display: none; }
+}
+@media (max-height: 760px) {
+  .ti-logo { --logo-w: clamp(380px, 42vw, 660px); }
+  .ti-tagline { font-size: var(--fs-md); }
 }

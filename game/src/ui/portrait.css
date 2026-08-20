@@ -230,7 +230,7 @@
   position: relative;
   display: grid;
   justify-items: center;
-  gap: calc(var(--logo-w) * -.008);
+  gap: calc(var(--logo-w) * -.011);
   transform: translateY(calc(var(--logo-w) * -.008));
   pointer-events: none;
 }
@@ -252,16 +252,17 @@
   color: transparent;
   filter:
     drop-shadow(0 calc(var(--logo-w) * .0022) 0 color-mix(in srgb, var(--ink-900) 92%, transparent))
-    drop-shadow(0 0 calc(var(--logo-w) * .022) color-mix(in srgb, var(--arcane-400) 52%, transparent));
+    drop-shadow(0 0 calc(var(--logo-w) * .016) color-mix(in srgb, var(--arcane-300) 46%, transparent))
+    drop-shadow(0 0 calc(var(--logo-w) * .046) color-mix(in srgb, var(--arcane-400) 40%, transparent));
 }
 .mm-logo__top {
-  font-size: calc(var(--logo-w) * .062);
-  letter-spacing: calc(var(--logo-w) * .0138);
-  text-indent: calc(var(--logo-w) * .0138);
+  font-size: calc(var(--logo-w) * .0715);
+  letter-spacing: calc(var(--logo-w) * .0148);
+  text-indent: calc(var(--logo-w) * .0148);
 }
 .mm-logo__main {
-  font-size: calc(var(--logo-w) * .100);
-  letter-spacing: calc(var(--logo-w) * .0018);
+  font-size: calc(var(--logo-w) * .1105);
+  letter-spacing: calc(var(--logo-w) * .0012);
 }
 
 .mm-logo__plaque {

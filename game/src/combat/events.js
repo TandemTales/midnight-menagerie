@@ -78,6 +78,22 @@
  * object:update  { id, kind, slot, data, before }
  * object:remove  { id, kind, slot, reason }
  *
+ * intent:queue  { enemyId, action:'preview'|'swap'|'postpone'|'delete', depth, queue }
+ *   queue = [{ position, moveId, name, type, family, familyLabel, damage, hits,
+ *              block, anchored, revealed, tooltip }]
+ *   Position 0 is the action resolving next. Unrevealed slots come back with
+ *   `revealed:false` and no numbers — Wink's Preview is what reveals them.
+ *
+ * choice         { requestId, kind:'card'|'option'|'enemy', prompt, count, optional,
+ *                  pool:[{index,label,cardUid?,card?,id?}], cardUid, cardId, pile }
+ *   The engine is BLOCKED awaiting a resolution. Call
+ *   `engine.resolveChoice(requestId, indices)` or register a resolver up front
+ *   with `engine.setChoiceResolver(fn)`.
+ * choice:resolved{ requestId, kind, picked:[index], chosen:[...], cardUid }
+ *
+ * rule           { rule:{id,name,text,when,once}, sourceId, action:'announce'|'clear' }
+ * rule:broken    { ruleId, name, sourceId, cardUid }
+ *
  * relic:trigger  { relicId, name, counter, reason }
  * log            { text, tone:'info'|'good'|'bad' }
  */
@@ -129,6 +145,14 @@ export const EV = /** @type {const} */ ({
   OBJECT_UPDATE: 'object:update',
   OBJECT_REMOVE: 'object:remove',
 
+  INTENT_QUEUE: 'intent:queue',
+
+  CHOICE: 'choice',
+  CHOICE_RESOLVED: 'choice:resolved',
+
+  RULE: 'rule',
+  RULE_BROKEN: 'rule:broken',
+
   RELIC: 'relic:trigger',
   LOG: 'log',
 });
@@ -141,4 +165,5 @@ export const ANIMATED_EVENTS = Object.freeze([
   EV.DAMAGE, EV.BLOCK, EV.BLOCK_BREAK, EV.HEAL, EV.STATUS, EV.STATUS_TRIGGER,
   EV.DRAW, EV.DISCARD, EV.EXHAUST, EV.SHUFFLE, EV.CARD_PLAY, EV.CARD_MOVE,
   EV.DEATH, EV.SUMMON, EV.COUNTER, EV.TIMER_FIRE, EV.ENERGY,
+  EV.INTENT_QUEUE, EV.CHOICE, EV.RULE_BROKEN,
 ]);

@@ -1,0 +1,30 @@
+<!doctype html><meta charset="utf-8"><body><pre id="o">…</pre></body>
+<script type="module">
+import { CombatEngine } from '/game/src/combat/engine.js';
+import { RNG } from '/game/src/core/rng.js';
+import { startingDeckFor } from '/game/src/data/cards.js';
+import { ENEMIES, getEnemy } from '/game/src/data/enemies/index.js';
+const R={multi:[],perMove:[]};
+// every move in the game that declares hits > 1
+for(const d of Object.values(ENEMIES))
+  for(const [mid,m] of Object.entries(d.moves||{}))
+    if((m.hits||1)>1) R.multi.push({enemy:d.id,move:mid,damage:m.damage,hits:m.hits,intentTotal:(m.damage||0)*m.hits});
+// measure each one live
+for(const row of R.multi){
+  const e=new CombatEngine({rng:new RNG(9),
+    player:{name:'Kid',companion:'marmalade',maxHp:9999,hp:9999,energyMax:3,drawPerTurn:5,deck:startingDeckFor('marmalade')},
+    enemies:[{def:getEnemy(row.enemy),id:'e0'}]});
+  await e.startCombat();
+  const en=e.enemies[0];
+  let n=0,sum=0;
+  e.on('damage',ev=>{ if(ev.sourceId===en.id&&ev.targetId==='player'){n++;sum+=ev.amount;} });
+  const mv={id:row.move,...en.def.moves[row.move]};
+  en.pendingMove=mv; e.refreshIntents('probe');
+  const shown=en.intent?en.intent.totalDamage:null, shownHits=en.intent?en.intent.hits:null;
+  try{ mv.effect?.(e.enemyCtx(en,mv)); }catch(err){ R.perMove.push({...row,error:String(err).slice(0,90)}); continue; }
+  R.perMove.push({enemy:row.enemy,move:row.move,intentShows:shown,intentHits:shownHits,
+                  actualHits:n,actualTotal:sum,ratio:shown?+(sum/shown).toFixed(2):null});
+}
+window.__R__=R; window.__DONE__=true;
+document.getElementById('o').textContent=JSON.stringify(R,null,1);
+</script>

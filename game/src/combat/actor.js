@@ -21,6 +21,8 @@ export class Actor {
    */
   constructor(o) {
     this.id = o.id;
+    /** Alias — enemy content reads either. */
+    this.uid = o.id;
     this.name = o.name;
     this.side = o.side;
     this.slot = o.slot ?? 0;
@@ -36,6 +38,10 @@ export class Actor {
     this.tier = o.tier || 'normal';
     /** Free-form per-combat scratch space for companion mechanics. Plain data only. */
     this.flags = {};
+    /** Per-actor scratch memory for enemy definitions. Survives the whole combat. */
+    this.mem = {};
+    /** Displayed per-enemy counters (Dust, Momentum, Scare, Resonance…). Plain numbers. */
+    this.counters = {};
     /** Damage bookkeeping the UI and several companions read. */
     this.damageTakenThisTurn = 0;
     this.damageTakenLastTurn = 0;
@@ -68,6 +74,8 @@ export class Actor {
     a.powers = new Map();
     for (const [k, v] of this.powers) a.powers.set(k, { ...v });
     a.flags = JSON.parse(JSON.stringify(this.flags));
+    a.mem = JSON.parse(JSON.stringify(this.mem));
+    a.counters = { ...this.counters };
     a.damageTakenThisTurn = this.damageTakenThisTurn;
     a.damageTakenLastTurn = this.damageTakenLastTurn;
     a.hitsTakenThisTurn = this.hitsTakenThisTurn;
@@ -83,6 +91,7 @@ export class Actor {
       damageTakenThisTurn: this.damageTakenThisTurn,
       damageTakenLastTurn: this.damageTakenLastTurn,
       flags: JSON.parse(JSON.stringify(this.flags)),
+      counters: { ...this.counters },
     };
   }
 }
@@ -113,6 +122,8 @@ export class Player extends Actor {
     p.powers = new Map();
     for (const [k, v] of this.powers) p.powers.set(k, { ...v });
     p.flags = JSON.parse(JSON.stringify(this.flags));
+    p.mem = JSON.parse(JSON.stringify(this.mem));
+    p.counters = { ...this.counters };
     p.damageTakenThisTurn = this.damageTakenThisTurn;
     p.damageTakenLastTurn = this.damageTakenLastTurn;
     p.hitsTakenThisTurn = this.hitsTakenThisTurn;
@@ -148,6 +159,14 @@ export class Enemy extends Actor {
     this.pendingMove = null;
     /** @type {Object|null} the display intent derived from pendingMove */
     this.intent = null;
+    /** @type {(string|null)[]} the intent queue: plan[0] is the move resolving next */
+    this.plan = [];
+    /** Positions 0..planLocked-1 were set by the player (Wink) and are not re-derived. */
+    this.planLocked = 0;
+    /** How many FUTURE positions the player has revealed (0..3). */
+    this.previewDepth = 0;
+    /** @type {Object[]} plain snapshot of the revealed queue, for the renderer */
+    this.queue = [];
     this.turnsAlive = 0;
   }
 
@@ -178,9 +197,15 @@ export class Enemy extends Actor {
     e.powers = new Map();
     for (const [k, v] of this.powers) e.powers.set(k, { ...v });
     e.flags = JSON.parse(JSON.stringify(this.flags));
+    e.mem = JSON.parse(JSON.stringify(this.mem));
+    e.counters = { ...this.counters };
     e.history = this.history.slice();
     e.pendingMove = this.pendingMove;
     e.intent = this.intent ? { ...this.intent } : null;
+    e.plan = this.plan.slice();
+    e.planLocked = this.planLocked;
+    e.previewDepth = this.previewDepth;
+    e.queue = this.queue.map(q => ({ ...q }));
     e.turnsAlive = this.turnsAlive;
     e.damageTakenThisTurn = this.damageTakenThisTurn;
     e.damageTakenLastTurn = this.damageTakenLastTurn;
@@ -196,6 +221,8 @@ export class Enemy extends Actor {
       silhouette: this.silhouette,
       scale: this.scale,
       intent: this.intent ? { ...this.intent } : null,
+      queue: this.queue.map(q => ({ ...q })),
+      previewDepth: this.previewDepth,
       moveId: this.pendingMove?.id || null,
       history: this.history.slice(),
       turnsAlive: this.turnsAlive,

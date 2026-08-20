@@ -1,0 +1,21 @@
+<!doctype html><meta charset="utf-8"><body><pre id="o">…</pre></body>
+<script type="module">
+import { CombatEngine } from '/game/src/combat/engine.js';
+import { RNG } from '/game/src/core/rng.js';
+import { startingDeckFor } from '/game/src/data/cards.js';
+import { ENEMIES, getEnemy } from '/game/src/data/enemies/index.js';
+const R=[];
+for(const d of Object.values(ENEMIES).filter(x=>x.region==='foyer')){
+ for(const mid of Object.keys(d.moves||{})){
+  const e=new CombatEngine({rng:new RNG(5),
+    player:{name:'K',companion:'marmalade',maxHp:999,hp:999,energyMax:3,drawPerTurn:5,deck:startingDeckFor('marmalade')},
+    enemies:[{def:getEnemy(d.id),id:'e0'}]});
+  await e.startCombat();
+  const en=e.enemies[0]; en.pendingMove={id:mid,...en.def.moves[mid]}; e.refreshIntents('t');
+  const i=en.intent;
+  R.push({enemy:d.id,move:mid,type:i.type,dmg:i.damage,hits:i.hits,block:i.block,
+          statuses:i.statuses.length,tooltip:i.tooltip});
+ }}
+window.__R__=R; window.__DONE__=true;
+document.getElementById('o').textContent=JSON.stringify(R,null,1);
+</script>

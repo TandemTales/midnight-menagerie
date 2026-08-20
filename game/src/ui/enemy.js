@@ -797,7 +797,7 @@ export class EnemyView {
     this.el.classList.remove('is-hit');
     void this.el.offsetWidth;
     this.el.classList.add('is-hit');
-    this.$flash.style.opacity = String(Math.min(0.95, 0.42 + k * 0.4));
+    this.$flash.style.opacity = String(Math.min(0.6, 0.24 + k * 0.28));
     this._flashDecay = 1;
   }
 
@@ -873,8 +873,8 @@ export class EnemyView {
     a.lookY = sp(a.lookY, a.lookTY, 7);
 
     if (this._flashDecay > 0) {
-      this._flashDecay -= dt * 5;
-      this.$flash.style.opacity = String(Math.max(0, this._flashDecay * 0.8));
+      this._flashDecay -= dt * 6.5;
+      this.$flash.style.opacity = String(Math.max(0, this._flashDecay * 0.5));
       if (this._flashDecay <= 0) this.$flash.style.opacity = '0';
     }
 

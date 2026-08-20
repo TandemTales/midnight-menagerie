@@ -8,11 +8,11 @@ import { RNG } from '../../game/src/core/rng.js';
 import { Card, _resetUid } from '../../game/src/combat/piles.js';
 import { computeDamage } from '../../game/src/combat/damage.js';
 import { getStatus, registerStatus, UNIVERSAL_STATUSES, STATUS_ORDER } from '../../game/src/combat/statuses.js';
-import { getKeyword, allKeywords, renderCardText, registerKeywords } from '../../game/src/data/keywords.js';
-import { intentFamily, buildIntent } from '../../game/src/combat/intents.js';
+import { getKeyword, allKeywords, renderCardText, registerKeywords, loadContentRegistries } from '../../game/src/data/keywords.js';
+import { intentFamily, buildIntent, MAX_PLAN } from '../../game/src/combat/intents.js';
 import { previewIncoming } from '../../game/src/combat/preview.js';
 import { makeDummyCombat, makeDummyDeck, SCRATCH, CURL_UP, BOO, FLURRY, RATTLE, SECOND_WIND, BRACE, DUST_BUNNY, COATRACK } from '../../game/src/combat/dummy.js';
-import { CardType, Rarity, Target, Intent, Pile } from '../../game/src/data/schema.js';
+import { CardType, Rarity, Target, Intent, Pile, TERMS } from '../../game/src/data/schema.js';
 
 // ── micro test framework ────────────────────────────────────────────────────
 const results = [];
@@ -789,7 +789,7 @@ export async function run() {
       const k = getKeyword(id);
       ok(k && k.name && k.desc && k.color, `keyword "${id}" exists (${k?.name})`);
     }
-    for (const id of ['courage', 'guard', 'pluck', 'vanish', 'retain', 'innate', 'ethereal', 'intent', 'x-cost']) {
+    for (const id of ['courage', 'guard', 'nerve', 'vanish', 'retain', 'innate', 'ethereal', 'intent', 'x-cost']) {
       ok(getKeyword(id), `core keyword "${id}" exists`);
     }
     ok(allKeywords().length >= 35, `registry is populated (${allKeywords().length} entries)`);
@@ -862,6 +862,607 @@ export async function run() {
     }
     eq(e.over, true, `the dummy fight reaches a conclusion (${turns} turns, victory=${e.victory})`);
     ok(e.log.length > 50, `and produced a rich event log (${e.log.length} events)`);
+  });
+
+
+  // ══ ROUND 2 ═════════════════════════════════════════════════════════════
+
+  test('terminology: the engine speaks the design doc\'s words', () => {
+    eq(TERMS.energy, 'Nerve', 'energy is Nerve');
+    eq(TERMS.gold, 'Lost Things', 'gold is Lost Things');
+    ok(getKeyword('nerve'), 'the nerve keyword exists');
+    ok(!getKeyword('pluck'), 'the old Pluck keyword is gone');
+    ok(getKeyword('lost-things'), 'the Lost Things keyword exists');
+  });
+
+  await atest('terminology: player-facing refusal text uses Nerve', async () => {
+    const e = mk();
+    await e.startCombat();
+    const c = plant(e, RATTLE);
+    e.player.energy = 0;
+    const r = e.canPlay(c.uid, e.enemies[0].id);
+    eq(r.ok, false, 'refused');
+    ok(/Nerve/.test(r.reason), `and says Nerve: "${r.reason}"`);
+    ok(!/Pluck/.test(r.reason), 'never says Pluck');
+  });
+
+  // ── player choice ────────────────────────────────────────────────────────
+  const CHOOSY = {
+    id: 'test/choosy', name: 'Choosy', companion: 'neutral',
+    type: CardType.SKILL, rarity: Rarity.COMMON, cost: 0, target: Target.NONE,
+    text: 'Choose a Trick in your hand and Vanish it.',
+    effect: async (c) => {
+      const [picked] = await c.chooseCard({ pile: 'hand', count: 1, prompt: 'Vanish which?' });
+      if (picked) c.exhaust(picked);
+    },
+  };
+  const FORK = {
+    id: 'test/fork', name: 'Fork', companion: 'neutral',
+    type: CardType.SKILL, rarity: Rarity.COMMON, cost: 0, target: Target.NONE,
+    text: 'Choose one: Guard or damage.', nums: { b: 7, d: 7 },
+    effect: async (c) => {
+      const [i] = await c.choose({ options: ['Gain 7 Guard', 'Deal 7 damage'], count: 1 });
+      if (i === 0) c.block(c.self, 7); else c.damage(c.randomEnemy(), 7);
+    },
+  };
+
+  await atest('choice: the engine raises a request and the renderer fulfils it', async () => {
+    const e = mk();
+    await e.startCombat();
+    const a = plant(e, SCRATCH), b = plant(e, CURL_UP);
+    const card = plant(e, CHOOSY);
+
+    let seen = null;
+    e.on('choice', ev => { seen = ev; });
+    // resolver picks card `b`, which is never index 0, so the auto-picker would miss it
+    e.setChoiceResolver(async (req) => [req.pool.indexOf(b)]);
+
+    await e.playCard(card.uid, null);
+    ok(seen, 'a choice event was emitted');
+    eq(seen.kind, 'card', 'and it says what kind of choice it is');
+    ok(seen.pool.length >= 2, `the candidate set is in the payload (${seen.pool?.length})`);
+    ok(seen.pool[0].card && seen.pool[0].label, 'each candidate carries a full card snapshot for the picker UI');
+    eq(seen.prompt, 'Vanish which?', 'the prompt reaches the UI');
+    eq(e.piles.exhaust.some(x => x.uid === b.uid), true, 'the RESOLVER\'s pick was Vanished, not the auto-pick');
+    eq(e.piles.exhaust.some(x => x.uid === a.uid), false, 'the auto-pick was left alone');
+  });
+
+  await atest('choice: headless callers get a deterministic auto-resolver', async () => {
+    const run1 = async () => {
+      const e = mk();
+      await e.startCombat();
+      const a = plant(e, SCRATCH); plant(e, CURL_UP);
+      const card = plant(e, CHOOSY);
+      let pool0 = null;
+      e.on('choice', ev => { pool0 = ev.pool[0].cardUid; });
+      await e.playCard(card.uid, null);
+      return { exhausted: e.piles.exhaust.map(x => x.uid), pool0, first: a.uid };
+    };
+    const r1 = await run1(), r2 = await run1();
+    deepEq(r1.exhausted, r2.exhausted, 'the auto-resolver is deterministic across runs');
+    ok(r1.exhausted.includes(r1.pool0), 'it picks the lowest index in the offered pool');
+
+    const e = mk();
+    await e.startCombat();
+    plant(e, SCRATCH); plant(e, CURL_UP);
+    const card = plant(e, FORK);
+    await e.playCard(card.uid, null);
+    ok(e.player.block >= 7, 'ctx.choose auto-picks option 0');
+    eq(e.choiceLog.length, 1, 'every resolution is recorded in engine.choiceLog');
+    eq(e.choiceLog[0].kind, 'option', 'with its kind');
+    deepEq(e.choiceLog[0].picked, [0], 'and the indices chosen');
+  });
+
+  await atest('choice: seed + choiceLog reproduces a fight a human played', async () => {
+    const play = async (resolver, script) => {
+      _resetUid(0);
+      const e = new CombatEngine({
+        rng: new RNG(77),
+        player: { name: 'C', maxHp: 70, deck: makeDummyDeck() },
+        enemies: [dummyEnemy({ move: 'nothing' })],
+      });
+      if (resolver) e.setChoiceResolver(resolver);
+      if (script) e.setChoiceScript(script);
+      await e.startCombat();
+      for (let i = 0; i < 3; i++) {
+        const card = plant(e, FORK);
+        e.player.energy = 3;
+        await e.playCard(card.uid, null);
+      }
+      return e;
+    };
+    // a "human" who chooses 1, 0, 1
+    let n = 0;
+    const human = await play(async () => [[1, 0, 1][n++ % 3]]);
+    const log = human.choiceLog.map(x => ({ ...x }));
+    ok(log.length === 3, 'three decisions recorded');
+
+    const replay = await play(null, log);
+    eq(JSON.stringify(replay.state.player.hp), JSON.stringify(human.state.player.hp), 'replay reproduced the player');
+    eq(replay.player.block, human.player.block, 'replay reproduced the Guard exactly');
+    deepEq(replay.choiceLog.map(x => x.picked), log.map(x => x.picked), 'replay made the same decisions');
+  });
+
+  await atest('choice: discard({choose:true}) asks, and preview is honest about the unknown', async () => {
+    const DUMP = {
+      id: 'test/dump', name: 'Dump', companion: 'neutral', type: CardType.SKILL,
+      rarity: Rarity.COMMON, cost: 0, target: Target.NONE, text: 'Discard 1.',
+      effect: async (c) => { await c.discard(1, { choose: true }); },
+    };
+    const e = mk();
+    await e.startCombat();
+    const keep = plant(e, SCRATCH);
+    const card = plant(e, DUMP);
+    e.setChoiceResolver(async (req) => [Math.max(0, req.pool.indexOf(keep))]);
+    const before = e.piles.discard.length;
+    await e.playCard(card.uid, null);
+    eq(e.piles.discard.length, before + 2, 'the chosen card and the played card both reached the discard pile');
+    ok(!e.piles.hand.includes(keep), 'the chosen Trick left the hand');
+
+    // preview of a card gated behind a choice
+    const e2 = mk();
+    await e2.startCombat();
+    plant(e2, SCRATCH);
+    const c2 = plant(e2, CHOOSY);
+    const sync = e2.preview(c2.uid, null);
+    eq(sync.ok, true, 'a sync preview still returns');
+    eq(sync.partial, true, 'and admits it is partial');
+    eq(sync.uncertain, true, 'and flags itself uncertain so the UI can show "?"');
+    const full = await e2.previewAsync(c2.uid, null);
+    eq(full.partial, false, 'previewAsync completes the picture');
+    eq(full.uncertain, true, 'but still says the outcome depends on your choice');
+    eq(full.exhaust >= 1, true, 'and reports the Vanish the auto-pick would cause');
+    eq(e2.piles.exhaust.length, 0, 'previewing changed nothing in the real fight');
+  });
+
+  // ── new ctx helpers ──────────────────────────────────────────────────────
+  await atest('ctx: setVanish, returnToHand, shuffleDraw, modifyDraw, cancelIntent', async () => {
+    const e = mk({ enemies: [dummyEnemy({ damage: 9 })] });
+    await e.startCombat();
+    const c = plant(e, SCRATCH);
+    const ctx = e.ctxFor(c, e.enemies[0]);
+
+    ctx.setVanish(c, true);
+    eq(c.exhaust, true, 'setVanish marks the card to Vanish when played');
+    ctx.setVanish(c, false);
+    eq(c.exhaust, false, 'and can be turned off again');
+
+    const moved = plant(e, CURL_UP);
+    e.piles.move(moved, Pile.DISCARD);
+    eq(ctx.returnToHand(moved), true, 'returnToHand pulls a card back');
+    eq(moved.pile, Pile.HAND, 'and it is in hand');
+
+    let shuffles = 0;
+    e.on('shuffle', () => shuffles++);
+    ctx.shuffleDraw();
+    eq(shuffles, 1, 'shuffleDraw emits exactly one shuffle');
+
+    ctx.modifyDraw(2);
+    const handBefore = e.piles.hand.length;
+    await e.endTurn();
+    eq(e.piles.hand.length, e.player.drawPerTurn + 2, 'modifyDraw added to next turn\'s draw');
+    await e.endTurn();
+    eq(e.piles.hand.length, e.player.drawPerTurn, 'and it was a one-turn effect');
+
+    const en = e.enemies[0];
+    ok(en.intent, 'the enemy has an intent');
+    const before = en.intent.moveId;
+    eq(ctx.cancelIntent(en), true, 'cancelIntent succeeds');
+    ok(en.plan[0] !== null, 'the enemy still has a plan afterwards');
+    ok(handBefore >= 0, 'sanity');
+  });
+
+  // ── new status hooks ─────────────────────────────────────────────────────
+  await atest('hooks: onIncomingHit can negate a hit outright (Ghoststep shape)', async () => {
+    registerStatus({
+      id: 'test/step', name: 'Step', kind: 'buff', decay: 'enemyTurnEnd', desc: 'Negate the next hit.',
+      hooks: {
+        onIncomingHit: (h) => { if (h.kind === 'attack' && h.stacks > 0) { h.prevent(); h.consume(1); } },
+      },
+    });
+    const e = mk({ enemies: [dummyEnemy({ damage: 40, hits: 2 })] });
+    await e.startCombat();
+    e.applyStatus(e.player, 'test/step', 1);
+    const hp0 = e.player.hp;
+    let prevented = 0;
+    e.on('damage', ev => { if (ev.prevented) prevented++; });
+    await e.endTurn();
+    eq(prevented, 1, 'exactly one hit was negated');
+    eq(e.player.hp, hp0 - 40, 'the other 40-damage hit still landed');
+    eq(e.player.status('test/step'), 0, 'the stack was consumed');
+  });
+
+  await atest('hooks: enemyTurnEnd is a real decay bucket', async () => {
+    const e = mk({ enemies: [dummyEnemy({ move: 'nothing' })] });
+    await e.startCombat();
+    e.applyStatus(e.player, 'test/step', 2);
+    eq(e.player.status('test/step'), 2, 'two stacks');
+    await e.endTurn();
+    eq(e.player.status('test/step'), 1, 'one stack expired after the enemy turn, unused');
+    eq(getStatus('test/step').decay, 'enemyTurnEnd', 'the bucket name is enemyTurnEnd');
+  });
+
+  await atest('hooks: onLethal can refuse death; onDebuffIncoming can refuse a debuff', async () => {
+    registerStatus({
+      id: 'test/notdead', name: 'Not Dead Yet', kind: 'buff', decay: 'never', desc: 'Survive at 1.',
+      hooks: { onLethal: (h) => { h.prevent(); h.remove(); } },
+    });
+    const e = mk({ enemies: [dummyEnemy({ damage: 500 })] });
+    await e.startCombat();
+    e.applyStatus(e.player, 'test/notdead', 1);
+    await e.endTurn();
+    eq(e.player.alive, true, 'the player survived a lethal hit');
+    eq(e.player.hp, 1, 'at exactly 1 Courage');
+    eq(e.player.status('test/notdead'), 0, 'and the effect was spent');
+
+    registerStatus({
+      id: 'test/nope', name: 'Nope.', kind: 'buff', decay: 'never', desc: 'Refuse a debuff.',
+      hooks: { onDebuffIncoming: (h) => { h.prevent(); h.remove(); } },
+    });
+    const e2 = mk();
+    await e2.startCombat();
+    e2.applyStatus(e2.player, 'test/nope', 1);
+    e2.applyStatus(e2.player, 'weak', 3);
+    eq(e2.player.status('weak'), 0, 'the debuff was refused');
+    eq(e2.player.status('test/nope'), 0, 'and the refusal was spent');
+    e2.applyStatus(e2.player, 'weak', 3);
+    eq(e2.player.status('weak'), 3, 'the next debuff lands normally');
+  });
+
+  await atest('hooks: onAttack fires when an enemy lands a move; onAttackDealt when you play an Attack', async () => {
+    let attacks = 0, dealt = 0;
+    registerStatus({
+      id: 'test/haunt', name: 'Haunt', kind: 'debuff', decay: 'never', desc: 'Hurts itself.',
+      hooks: { onAttack: (h) => { attacks++; h.e.loseHp(h.owner, h.stacks, 'haunt'); } },
+    });
+    registerStatus({
+      id: 'test/emp', name: 'Empowered', kind: 'buff', decay: 'never', desc: 'Spent on an Attack.',
+      hooks: { onAttackDealt: () => { dealt++; } },
+    });
+    const e = mk({ enemies: [dummyEnemy({ damage: 3, hits: 3, hp: 60 })] });
+    await e.startCombat();
+    const en = e.enemies[0];
+    e.applyStatus(en, 'test/haunt', 4);
+    e.applyStatus(e.player, 'test/emp', 1);
+    const hp0 = en.hp;
+    await e.endTurn();
+    eq(attacks, 1, 'onAttack fired ONCE for a 3-hit move, not three times');
+    eq(hp0 - en.hp, 4, 'the Haunt-shaped status hurt the attacker for its stacks');
+
+    const c = plant(e, SCRATCH);
+    e.player.energy = 3;
+    await e.playCard(c.uid, en.id);
+    eq(dealt, 1, 'onAttackDealt fired for the Attack card');
+    const c2 = plant(e, CURL_UP);
+    await e.playCard(c2.uid, null);
+    eq(dealt, 1, 'and not for a Skill');
+  });
+
+  // ── state re-entrancy ────────────────────────────────────────────────────
+  await atest('state: reading engine.state from inside a card helper does not blow the stack', async () => {
+    const NOSY = {
+      id: 'test/nosy', name: 'Nosy', companion: 'neutral', type: CardType.ATTACK,
+      rarity: Rarity.COMMON, cost: 2, target: Target.ENEMY, text: 'Deal {d}.', nums: { d: 5 },
+      dynamicCost: (c) => (c.e.state.turn >= 1 ? 0 : 2),
+      effect: (c) => c.damage(c.target, c.card.nums.d),
+    };
+    const e = mk();
+    await e.startCombat();
+    const c = plant(e, NOSY);
+    let snap = null, threw = null;
+    try { snap = e.state; } catch (err) { threw = err; }
+    ok(!threw, `engine.state survived a dynamicCost that reads it (${threw?.message || 'no throw'})`);
+    ok(snap && Array.isArray(snap.piles.hand), 'and returned a usable snapshot');
+    eq(e.costOf(c), 0, 'the dynamicCost still evaluated correctly');
+    eq(typeof e.turn, 'number', 'engine.turn is a cheap direct accessor');
+    eq(e.energy, e.player.energy, 'engine.energy is a cheap direct accessor');
+    eq(e.cardsPlayedThisTurn, e.stats.cardsPlayedThisTurn, 'engine.cardsPlayedThisTurn too');
+  });
+
+  // ── EnemyCtx surface ─────────────────────────────────────────────────────
+  await atest('EnemyCtx: the full documented surface exists and works', async () => {
+    let ctx = null;
+    const probe = {
+      id: 'test/probe', name: 'Probe', region: 'test', tier: 'normal', hp: [30, 30],
+      moves: { look: { id: 'look', name: 'Look', intent: Intent.BUFF, effect: (c) => { ctx = c; } } },
+      nextMove: () => 'look',
+    };
+    const e = mk({ enemies: [probe, dummyEnemy({ move: 'nothing' })] });
+    e.registerCards([SCRATCH, BOO]);
+    e.registerEnemies([probe]);
+    await e.startCombat();
+    await e.endTurn();
+    ok(ctx, 'the move received a ctx');
+    for (const k of ['self', 'player', 'rng', 'history', 'turn', 'field', 'cardsPlayedThisTurn',
+                     'enemies', 'allies', 'damage', 'block', 'heal', 'loseHp', 'applyStatus',
+                     'removeStatus', 'count', 'has', 'addCard', 'summon', 'despawn',
+                     'setCounter', 'counter', 'announceRule', 'clearRules', 'intentOf', 'mem']) {
+      ok(ctx[k] !== undefined, `ctx.${k} exists`);
+    }
+    ok(Array.isArray(ctx.cardsPlayedThisTurn), 'cardsPlayedThisTurn is an array of {id,type}');
+    eq(typeof ctx.enemies, 'function', 'enemies() is a function');
+    eq(ctx.enemies().length, 2, 'enemies() includes self');
+    eq(ctx.allies().length, 1, 'allies() excludes self');
+    ok(ctx.self.uid, 'self carries a uid');
+    ctx.mem.seen = 7;
+    eq(e.enemies[0].mem.seen, 7, 'mem persists on the actor');
+    ctx.setCounter('dust', 3);
+    eq(ctx.counter('dust'), 3, 'per-enemy counters read back');
+    eq(e.state.enemies[0].counters.dust, 3, 'and reach the renderer through state');
+    ctx.field.dark = true;
+    eq(e.field.dark, true, 'field is shared per-combat scratch');
+    const before = e.piles.discard.length;
+    ctx.addCard('neutral/scratch', Pile.DISCARD);
+    eq(e.piles.discard.length, before + 1, 'addCard by id resolves through the registry');
+    const n0 = e.enemies.length;
+    const s2 = ctx.summon('test/probe', { hpMul: 0.5 });
+    eq(e.enemies.length, n0 + 1, 'summon by id works');
+    eq(s2.maxHp, 15, 'hpMul was applied');
+    ctx.despawn(s2);
+    eq(e.enemies.length, n0, 'despawn removes it again');
+  });
+
+  await atest('EnemyCtx: damageTakenThisTurn survives into the enemy turn that follows', async () => {
+    let sawDuringEnemyTurn = -1;
+    const watcher = {
+      id: 'test/watcher', name: 'Watcher', region: 'test', tier: 'normal', hp: [50, 50],
+      moves: {
+        check: {
+          id: 'check', name: 'Check', intent: Intent.BUFF,
+          effect: (c) => { sawDuringEnemyTurn = c.self.damageTakenThisTurn; },
+        },
+      },
+      nextMove: () => 'check',
+    };
+    const e = mk({ enemies: [watcher] });
+    await e.startCombat();
+    const c = plant(e, SCRATCH);
+    e.player.energy = 3;
+    await e.playCard(c.uid, e.enemies[0].id);
+    eq(e.enemies[0].damageTakenThisTurn, 6, 'damage accumulated during the player turn');
+    await e.endTurn();
+    eq(sawDuringEnemyTurn, 6, 'and was STILL readable during the enemy turn');
+    eq(e.enemies[0].damageTakenThisTurn, 0, 'then reset at the start of the next player turn');
+    eq(e.enemies[0].damageTakenLastTurn, 6, 'with the old value preserved as damageTakenLastTurn');
+  });
+
+  await atest('intents: damageFn / hitsFn / intentFn beat the static fields', async () => {
+    const grower = {
+      id: 'test/grower', name: 'Grower', region: 'test', tier: 'normal', hp: [60, 60],
+      moves: {
+        swell: {
+          id: 'swell', name: 'Swell', intent: Intent.ATTACK, damage: 1, hits: 1,
+          damageFn: (c) => 2 + (c.self.counters.dust || 0) * 3,
+          hitsFn: (c) => ((c.self.counters.dust || 0) >= 2 ? 2 : 1),
+          intentFn: (c) => ((c.self.counters.dust || 0) >= 2 ? Intent.ATTACK_BIG : Intent.ATTACK),
+          effect: (c) => c.damage(c.player, 2),
+        },
+      },
+      nextMove: () => 'swell',
+    };
+    const e = mk({ enemies: [grower] });
+    await e.startCombat();
+    const en = e.enemies[0];
+    eq(en.intent.damage, 2, 'the dynamic damageFn is used, not the static damage:1');
+    eq(en.intent.hits, 1, 'the dynamic hitsFn is used');
+    eq(en.intent.type, Intent.ATTACK, 'the dynamic intentFn is used');
+
+    en.counters.dust = 2;
+    e.refreshIntents('test');
+    eq(en.intent.damage, 8, 'the intent re-rendered when the fn\'s input changed: 2 + 2*3');
+    eq(en.intent.hits, 2, 'hits changed too');
+    eq(en.intent.type, Intent.ATTACK_BIG, 'and the silhouette got heavier');
+    eq(en.intent.totalDamage, 16, 'total is per-hit × hits');
+
+    e.applyStatus(e.player, 'vulnerable', 2);
+    eq(en.intent.damage, 12, 'and it still goes through the damage pipeline: floor(8*1.5)');
+  });
+
+  // ── intent queue (Wink) ──────────────────────────────────────────────────
+  const CYCLER = {
+    id: 'test/cycler', name: 'Cycler', region: 'test', tier: 'normal', hp: [90, 90],
+    moves: {
+      a: { id: 'a', name: 'Alpha', intent: Intent.ATTACK, damage: 4, effect: (c) => c.damage(c.player, 4) },
+      b: { id: 'b', name: 'Beta', intent: Intent.DEFEND, block: 5, effect: (c) => c.block(5) },
+      c: { id: 'c', name: 'Gamma', intent: Intent.BUFF, anchored: true, effect: (c) => c.buff('strength', 1) },
+    },
+    nextMove: (ctx) => ['a', 'b', 'c'][ctx.history.length % 3],
+  };
+
+  await atest('intent queue: preview reveals the future, and the future is what actually happens', async () => {
+    const e = mk({ enemies: [CYCLER] });
+    await e.startCombat();
+    const en = e.enemies[0];
+    eq(e.intentQueue(en).length, 1, 'only the current action is visible to start with');
+    eq(e.intentQueue(en)[0].moveId, 'a', 'and it is the first of the cycle');
+    eq(e.previewDepth(en), 0, 'nothing previewed yet');
+
+    eq(e.previewIntent(en, 2), 2, 'Preview 2 revealed two more positions');
+    const q = e.intentQueue(en);
+    eq(q.length, 3, 'the queue is now three deep');
+    deepEq(q.map(x => x.moveId), ['a', 'b', 'c'], 'and shows the real upcoming cycle');
+    deepEq(q.map(x => x.familyLabel), ['Attack', 'Defense', 'Scheme'],
+      'each position reports its Intent Family');
+    eq(e.intentFamilyOf(en, 1), 'Defense', 'intentFamilyOf reads a future position');
+    eq(e.previewIntent(en, 5), 1, `Preview is capped at ${MAX_PLAN - 1} future positions`);
+
+    // and the revealed plan is honoured
+    const predicted = e.intentQueue(en)[1].moveId;
+    await e.endTurn();
+    eq(en.intent.moveId, predicted, 'what the player was shown is what became current');
+  });
+
+  await atest('intent queue: swap, postpone and delete, with Anchored respected', async () => {
+    const e = mk({ enemies: [CYCLER] });
+    await e.startCombat();
+    const en = e.enemies[0];
+    e.previewIntent(en, 2);
+    deepEq(e.intentQueue(en).map(x => x.moveId), ['a', 'b', 'c'], 'baseline plan');
+
+    eq(e.isAnchored(en, 2), true, 'Gamma is Anchored');
+    eq(e.swapIntents(en, 0, 2), false, 'an Anchored position refuses to be swapped');
+    deepEq(e.intentQueue(en).map(x => x.moveId), ['a', 'b', 'c'], 'and nothing moved');
+
+    let queueEvents = 0;
+    e.on('intent:queue', () => queueEvents++);
+    eq(e.swapIntents(en, 0, 1), true, 'a legal swap succeeds');
+    deepEq(e.intentQueue(en).map(x => x.moveId), ['b', 'a', 'c'], 'the plan really changed');
+    ok(queueEvents >= 1, 'the renderer was told');
+    eq(en.intent.moveId, 'b', 'and the displayed intent followed');
+    eq(en.intent.block, 5, 'showing the swapped-in action\'s numbers');
+
+    eq(e.postponeIntent(en), true, 'postpone succeeds');
+    eq(e.intentQueue(en)[0].moveId, 'a', 'the postponed action stepped aside');
+
+    const e2 = mk({ enemies: [CYCLER] });
+    await e2.startCombat();
+    const en2 = e2.enemies[0];
+    e2.previewIntent(en2, 2);
+    eq(e2.deleteIntent(en2), true, 'delete succeeds on an unanchored action');
+    eq(en2.intent.moveId, 'b', 'the next action became current');
+    await e2.endTurn();
+    eq(en2.history[0], 'b', 'and the deleted action never resolved');
+  });
+
+  await atest('intent queue: looking ahead does not change how the fight plays out', async () => {
+    const play = async (peek) => {
+      _resetUid(0);
+      const e = new CombatEngine({
+        rng: new RNG(31), player: { name: 'P', maxHp: 80, deck: makeDummyDeck() },
+        enemies: [DUST_BUNNY, COATRACK],
+      });
+      await e.startCombat();
+      for (let t = 0; t < 4 && !e.over; t++) {
+        if (peek) for (const en of e.livingEnemies()) e.previewIntent(en, 3);
+        await e.endTurn();
+      }
+      return e.enemies.map(x => x.history.join('>')).join('|') + '#' + e.player.hp;
+    };
+    const a = await play(false), b = await play(true);
+    eq(a, b, `previewing the queue is information only, not a change to the fight (${a})`);
+  });
+
+  // ── enemy lifecycle hooks ────────────────────────────────────────────────
+  await atest('EnemyDef: the ten lifecycle hooks all fire', async () => {
+    const fired = [];
+    const mkHook = (n) => (c) => fired.push(n + ':' + c.self.id);
+    const subject = {
+      id: 'test/lifecycle', name: 'Subject', region: 'test', tier: 'normal', hp: [40, 40],
+      moves: { hit: { id: 'hit', name: 'Hit', intent: Intent.ATTACK, damage: 2, effect: (c) => c.damage(c.player, 2) } },
+      nextMove: () => 'hit',
+      onCombatStart: mkHook('combatStart'),
+      onSpawn: mkHook('spawn'),
+      onPlayerTurnStart: mkHook('playerTurnStart'),
+      onPlayerTurnEnd: mkHook('playerTurnEnd'),
+      onTurnStart: mkHook('turnStart'),
+      onTurnEnd: mkHook('turnEnd'),
+      onDamaged: mkHook('damaged'),
+      onDealtDamage: mkHook('dealtDamage'),
+      onPlayerCard: mkHook('playerCard'),
+      onAllyDeath: mkHook('allyDeath'),
+      onDeath: mkHook('death'),
+      onBoardEvent: mkHook('boardEvent'),
+    };
+    const e = mk({ enemies: [subject, dummyEnemy({ hp: 6, move: 'nothing' })] });
+    await e.startCombat();
+    ok(fired.some(x => x.startsWith('spawn')), 'onSpawn');
+    ok(fired.some(x => x.startsWith('combatStart')), 'onCombatStart');
+
+    const c = plant(e, SCRATCH);
+    e.player.energy = 3;
+    await e.playCard(c.uid, e.enemies[0].id);
+    ok(fired.some(x => x.startsWith('playerCard')), 'onPlayerCard');
+    ok(fired.some(x => x.startsWith('damaged')), 'onDamaged');
+
+    e.boardEvent('lightsOut', { level: 2 });
+    ok(fired.some(x => x.startsWith('boardEvent')), 'onBoardEvent');
+
+    await e.endTurn();
+    ok(fired.some(x => x.startsWith('playerTurnEnd')), 'onPlayerTurnEnd');
+    ok(fired.some(x => x.startsWith('turnStart')), 'onTurnStart (its own turn)');
+    ok(fired.some(x => x.startsWith('turnEnd')), 'onTurnEnd (its own turn)');
+    ok(fired.some(x => x.startsWith('dealtDamage')), 'onDealtDamage');
+    ok(fired.some(x => x.startsWith('playerTurnStart')), 'onPlayerTurnStart');
+
+    e.dealDamage({ attacker: e.player, defender: e.enemies[1], amount: 99 });
+    ok(fired.some(x => x.startsWith('allyDeath')), 'onAllyDeath fires on the survivors');
+    e.dealDamage({ attacker: e.player, defender: e.enemies[0], amount: 999 });
+    ok(fired.some(x => x.startsWith('death')), 'onDeath');
+  });
+
+  await atest('House Rules: a rule attaches a consequence, it never forbids the action', async () => {
+    let reprimands = 0;
+    const butler = {
+      id: 'test/butler', name: 'Butler', region: 'test', tier: 'boss', hp: [80, 80],
+      moves: { wait: { id: 'wait', name: 'Wait', intent: Intent.BUFF, effect: () => {} } },
+      nextMove: () => 'wait',
+      onSpawn: (c) => c.announceRule({
+        id: 'no-rushing', name: 'Guests do not rush.',
+        text: 'Playing a third Trick in one turn earns a Reprimand.',
+        when: 'cardPlayed', once: true,
+        broken: (rc) => rc.cardsPlayedThisTurn.length >= 3,
+        onBreak: (c2) => { reprimands++; c2.damage(c2.player, 5); },
+      }),
+    };
+    const e = mk({ enemies: [butler] });
+    await e.startCombat();
+    eq(e.state.rules.length, 1, 'the rule is in state for the renderer');
+    eq(e.state.rules[0].name, 'Guests do not rush.', 'with its player-facing name');
+
+    let broken = 0;
+    e.on('rule:broken', () => broken++);
+    for (let i = 0; i < 3; i++) {
+      const c = plant(e, CURL_UP);
+      e.player.energy = 3;
+      await e.playCard(c.uid, null);
+    }
+    eq(reprimands, 1, 'the third Trick earned exactly one Reprimand');
+    eq(broken, 1, 'and one rule:broken event');
+    eq(e.piles.discard.filter(x => x.id === CURL_UP.id).length, 3, 'all three Tricks were still allowed to resolve');
+
+    e.clearRules('e0');
+    eq(e.rules.length, 0, 'clearRules removes them by source');
+  });
+
+  await atest('content: ENEMY_STATUSES and companion statuses are registered', async () => {
+    const loaded = await loadContentRegistries();
+    ok(loaded.enemies || loaded.companions, 'at least one content registry loaded');
+    if (loaded.enemies) {
+      for (const id of ['roused', 'frightened', 'discomposed', 'hidden', 'darkness', 'smothered', 'scurry']) {
+        const d = getStatus(id);
+        ok(d && !d._missing, `enemy status "${id}" is registered (${d?.name})`);
+        ok(getKeyword(id), `and has a tooltip entry`);
+      }
+      eq(getStatus('hidden').untargetableBy?.[0], 'attack', 'Hidden declares what it blocks');
+    }
+    if (loaded.companions) {
+      const gs = getStatus('ghoststep');
+      ok(gs && !gs._missing, 'companion statuses are registered');
+    }
+  });
+
+  await atest('content: Hidden really does block Attack targeting; Smothered really does reduce the draw', async () => {
+    await loadContentRegistries();
+    const e = mk({ enemies: [dummyEnemy({ hp: 30, id: 'test/x' }), dummyEnemy({ hp: 30, id: 'test/y' })] });
+    await e.startCombat();
+    const [a, b] = e.enemies;
+    e.applyStatus(a, 'hidden', 1);
+    const atk = plant(e, SCRATCH);
+    const skill = plant(e, BOO);
+    eq(e.canPlay(atk.uid, a.id).ok, false, 'an Attack cannot target a Hidden enemy');
+    eq(e.canPlay(atk.uid, b.id).ok, true, 'but can target the one beside it');
+    eq(e.canPlay(skill.uid, a.id).ok, true, 'a Skill still reaches it');
+    const aoe = plant(e, RATTLE);
+    e.player.energy = 3;
+    const hp0 = a.hp;
+    await e.playCard(aoe.uid, null);
+    ok(a.hp < hp0, 'area damage still hits a Hidden enemy');
+
+    const e2 = mk({ enemies: [dummyEnemy({ move: 'nothing' })] });
+    await e2.startCombat();
+    e2.applyStatus(e2.player, 'smothered', 2);
+    await e2.endTurn();
+    eq(e2.piles.hand.length, 3, 'Smothered 2 cut the draw from 5 to 3, and the floor held');
   });
 
   // ── report ---------------------------------------------------------------
