@@ -668,8 +668,19 @@ export class Atmosphere {
 
     this.backdrop = new Backdrop(stage.scene);
     this.rig = new LightRig(stage.scene);
-    this.particles = new ParticleField(stage.scene, { count: 1500, seedFn: () => this._rand() });
-    this.particles.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+    /* Particle budget follows the quality tier. The field is always ALLOCATED at
+       the high-tier count so a tier switch is a draw-range change and never a
+       buffer rebuild (which would mean a shader relink mid-session); only the
+       number actually drawn moves. */
+    this.particles = new ParticleField(stage.scene, {
+      count: 1500, seedFn: () => this._rand(),
+    });
+    this.particles.setAmbientBudget(stage.tierSpec?.particles ?? 1500);
+    this.particles.setPixelRatio(stage.renderer.getPixelRatio());
+    this._unTier = stage.onTierChange?.((name, spec) => {
+      this.particles.setAmbientBudget(spec.particles);
+      this.particles.setPixelRatio(stage.renderer.getPixelRatio());
+    });
 
     // a pooled light used by impact() so hits actually illuminate the room
     this.flare = this.rig.add({ kind: 'warm', pos: new THREE.Vector3(0, 2, -4), color: 0xffd75e, intensity: 0, radius: 6, flicker: false });
@@ -953,6 +964,11 @@ export class Atmosphere {
     }
     this.backdrop.setSway(motion);
     this.particles.setReduce(reduce);
+    /* Point sprites are sized in device pixels, so they have to follow the
+       renderer's pixel ratio — which the quality tier and its calibration both
+       move. One float compare per frame, one uniform write when it changes. */
+    const pr = this.ctx.stage.renderer.getPixelRatio();
+    if (pr !== this._pr) { this._pr = pr; this.particles.setPixelRatio(pr); }
 
     this.backdrop.update(dt, t);
     this.particles.update(dt, t);
@@ -960,6 +976,7 @@ export class Atmosphere {
 
   dispose() {
     this._unsub?.();
+    this._unTier?.();
     this.backdrop?.dispose();
     this.particles?.dispose();
     this.rig?.clear();

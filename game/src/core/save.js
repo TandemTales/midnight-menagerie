@@ -16,6 +16,7 @@ const DEFAULT = {
     music: 0.6, sfx: 0.8, master: 0.9,
     screenShake: 1, flashes: 1, speed: 1,
     fastMode: false, colorblind: 'off', reduceMotion: false,
+    quality: 'auto',            // 'auto' | 'high' | 'medium' | 'low' — see Stage.setTier
     showDamageNumbers: true, autoEndTurn: false, confirmSingleTarget: false,
     largeText: false,
   },

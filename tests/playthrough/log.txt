@@ -1,0 +1,398 @@
+=== driver up ===
+loaded http://localhost:8777/game/index.html
+
+>>> clicktext:NEW EXPEDITION
+ok clicktext
+
+>>> wait:2.0
+ok wait
+
+>>> clicktext:Pipkin
+ok clicktext
+
+>>> wait:1.2
+ok wait
+
+>>> shot:pt-79-pipkin
+ok shot pt-79-pipkin
+
+>>> clicktext:TAKE PIPKIN IN
+ok clicktext
+
+>>> wait:1.5
+ok wait
+
+>>> clickxy:703,690
+ok clickxy
+
+>>> wait:1.5
+ok wait
+
+>>> shot:pt-80-eli-together
+ok shot pt-80-eli-together
+
+>>> jsawait:(()=>{const e=document.querySelector(".kid__pairtext");return {pair:e?e.innerText:"none"}})()
+ok jsawait -> {"pair": "Pipkin does not know Sprocket. But Pipkin knows the house, and Eli knows what she is looking for. That is enough to get through the door."}
+
+>>> clicktext:BEGIN EXPEDITION
+ok clicktext
+
+>>> wait:5.0
+ok wait
+
+>>> jsawait:(()=>({scene:window.MM.state().scene,companion:window.MM.state().run.companion,kid:window.MM.state().run.kid}))()
+ok jsawait -> {"scene": "map", "companion": "pipkin", "kid": "eli"}
+
+>>> errors
+ERRORS(0):
+--- batch done ---
+
+>>> js:window.MM.goto("shop",{})
+ok js
+
+>>> wait:3.5
+ok wait
+
+>>> shot:pt-81-shop
+ok shot pt-81-shop
+
+>>> jsawait:(()=>({scene:window.MM.state().scene,txt:document.body.innerText.replace(/\s+/g," ").slice(0,1200)}))()
+ok jsawait -> {"scene": "shop", "txt": "MR. MOTH'S The Midnight Market Buttons, keys, marbles, teeth. He considers them incredibly valuable. COURAGE 72 /72 99 LOST THINGS TRICKS on the table Scatter on Landing SKILL \u00b7 SELF Plant 1 Seed. Land: Plant 1 more if you spent at least 2 Height. 1 56 LOST THINGS BUY Soft Landing SKILL \u00b7 SELF Gain 6 Guard. Land: gain 5 more Guard for each Height spent. 1 55 LOST THINGS BUY No Room, No Problem SKILL \u00b7 SELF If your Patch is full, turn one Seed or Sprout straight into a Pumpkin. Otherwise Plant 1 Seed and gain 9 Guard. 1 91 LOST THINGS BUY Prize Pumpkin POWER \u00b7 SELF The first time at least one Pumpkin ripens each turn, gain 1 Nerve at the start of your next turn. 2 83 LOST THINGS BUY Gourdquake ATTACK \u00b7 ALL Deal 9 damage to all enemies. Land: deal 4 more to all for each Height spent. Harvest 1: also gain 12 Guard. 2 101 LOST THINGS 2 SHORT MR. MOTH \u201cButtons, keys, marbles, teeth. I take all of it. Look around.\u201d TRICKS 10 KEEPSAKES 1 SNACKS 0/3 CLUES 0 FORGETTING a service Hand over one Trick and he will keep it. You will not remember it. Each one after this costs 25 more. 65 LOST THINGS BUY KEEPSAKES under the glass House Slippers The first attack against you each Scuffle deals 3 les"}
+
+>>> errors
+ERRORS(0):
+--- batch done ---
+
+>>> clickxy:365,490
+ok clickxy
+
+>>> wait:1.5
+ok wait
+
+>>> shot:pt-82-shop-bought
+ok shot pt-82-shop-bought
+
+>>> jsawait:(()=>({lost:window.MM.state().run.lostThings,deck:window.MM.state().run.deck.length}))()
+ok jsawait -> {"lost": 44, "deck": 11}
+
+>>> errors
+ERRORS(0):
+--- batch done ---
+
+>>> js:window.MM.goto("rest",{})
+ok js
+
+>>> wait:3.5
+ok wait
+
+>>> shot:pt-83-saferoom
+ok shot pt-83-saferoom
+
+>>> jsawait:(()=>({scene:window.MM.state().scene,txt:document.body.innerText.replace(/\s+/g," ").slice(0,900)}))()
+ok jsawait -> {"scene": "rest", "txt": "SAFE ROOM You Build the Fort Door wedged. Table dragged over. Blankets down. Nothing gets in here without knocking things over first. COURAGE 72 /72 44 LOST THINGS Rest Sleep for two hours with somebody keeping watch. Courage 72 \u2192 72 You are already at full Courage. Sharpen a Trick Work on one Trick by torchlight until it is better than it was. 11 can be sharpened Permanent, for the rest of the expedition. Forge a Keepsake Hold it in the flame. It comes out meaning more, and you come out smaller. Costs 8 maximum Courage Courage 72 \u2192 64 \u00b7 the Keepsake fires twice Sit with your Companion Nothing useful. Ask them something. +1 Clue They have been in this house a long time. PACK UP AND GO ON you have not used the fort yet ENTER"}
+
+>>> errors
+ERRORS(0):
+--- batch done ---
+
+>>> clickxy:1150,405
+ok clickxy
+
+>>> wait:1.8
+ok wait
+
+>>> shot:pt-84-sharpen
+ok shot pt-84-sharpen
+
+>>> jsawait:(()=>document.body.innerText.replace(/\s+/g," ").slice(0,600))()
+ok jsawait -> "SAFE ROOM You Build the Fort Door wedged. Table dragged over. Blankets down. Nothing gets in here without knocking things over first. COURAGE 72 /72 44 LOST THINGS Rest Sleep for two hours with somebody keeping watch. Courage 72 \u2192 72 You are already at full Courage. Sharpen a Trick Work on one Trick by torchlight until it is better than it was. 11 can be sharpened Permanent, for the rest of the expedition. Forge a Keepsake Hold it in the flame. It comes out meaning more, and you come out smaller. Costs 8 maximum Courage Courage 72 \u2192 64 \u00b7 the Keepsake fires twice Sit with your Companion Nothing"
+
+>>> errors
+ERRORS(0):
+--- batch done ---
+
+>>> js:window.MM.goto("combat",{encounter:"foyer-boss"})
+ok js
+
+>>> wait:6.0
+ok wait
+
+>>> shot:pt-85-boss
+ok shot pt-85-boss
+
+>>> jsawait:(()=>{const sc=window.MM.ctx.scenes.current;const st=sc.engine&&sc.engine.state;return {scene:window.MM.state().scene,e:st?st.enemies.map(x=>[x.name,x.hp,x.maxHp,x.intent&&x.intent.name,x.intent&&x.intent.totalDamage,x.tier]):null}})()
+ok jsawait -> {"scene": "combat", "e": [["The Butler", 250, 250, "Formal Welcome", 0, "boss"]]}
+
+>>> errors
+ERRORS(0):
+--- batch done ---
+
+>>> wait:3.0
+ok wait
+
+>>> shot:pt-86-boss
+ok shot pt-86-boss
+
+>>> fps
+fps 61
+
+>>> errors
+ERRORS(0):
+--- batch done ---
+
+>>> js:window.MM.goto("combat",{encounter:"foyer-scare-coatcheck"})
+ok js
+
+>>> wait:7.0
+ok wait
+
+>>> shot:pt-87-bigscare
+ok shot pt-87-bigscare
+
+>>> jsawait:(()=>{const st=window.MM.ctx.scenes.current.engine.state;return {e:st.enemies.map(x=>[x.name,x.hp,x.tier,x.intent&&x.intent.name])}})()
+ok jsawait -> {"e": [["The Grand Coatcheck", 96, "elite", "Check Your Things"]]}
+
+>>> errors
+ERRORS(0):
+--- batch done ---
+
+>>> jsawait:(()=>({cards:document.querySelectorAll(".mm-card[data-uid]").length,tr:[...document.querySelectorAll("[class*=transition],[class*=wipe],[class*=fx-]")].map(e=>e.className+":"+getComputedStyle(e).opacity).slice(0,6)}))()
+ok jsawait -> {"cards": 5, "tr": ["transition:1"]}
+
+>>> wait:3
+ok wait
+
+>>> jsawait:(()=>({cards:document.querySelectorAll(".mm-card[data-uid]").length}))()
+ok jsawait -> {"cards": 5}
+
+>>> shot:pt-88-bigscare2
+ok shot pt-88-bigscare2
+--- batch done ---
+
+>>> jsawait:(async()=>{const t0=performance.now();window.MM.goto("map",{});let t1=0;while(performance.now()-t0<15000){if(window.MM.state().scene==="map"&&document.querySelector(".map-node")){t1=performance.now();break}await new Promise(r=>setTimeout(r,50))}const tMap=t1-t0;const t2=performance.now();window.MM.goto("combat",{encounter:"foyer-scuffle-1"});let t3=0;while(performance.now()-t2<20000){if(document.querySelector(".mm-card[data-uid]")){t3=performance.now();break}await new Promise(r=>setTimeout(r,50))}return {toMapMs:Math.round(tMap),toCombatMs:Math.round(t3-t2)}})()
+ok jsawait -> {"toMapMs": 899, "toCombatMs": -505071}
+--- batch done ---
+
+>>> jsawait:(()=>({scene:window.MM.state().scene,cards:document.querySelectorAll(".mm-card[data-uid]").length}))()
+ok jsawait -> {"scene": "map", "cards": 0}
+
+>>> errors
+ERRORS(0):
+
+>>> shot:pt-89-state
+ok shot pt-89-state
+--- batch done ---
+
+>>> jsawait:(async()=>{const t2=performance.now();window.MM.goto("combat",{encounter:"foyer-1"});let t3=0,tScene=0;while(performance.now()-t2<25000){if(!tScene&&window.MM.state().scene==="combat")tScene=performance.now();if(document.querySelector(".mm-card[data-uid]")){t3=performance.now();break}await new Promise(r=>setTimeout(r,50))}return {sceneSwapMs:Math.round(tScene-t2),handReadyMs:Math.round(t3-t2)}})()
+ok jsawait -> {"sceneSwapMs": 341, "handReadyMs": 15972}
+--- batch done ---
+
+>>> jsawait:(()=>window.__MM_WARMUP_MS)()
+ok jsawait -> 5075
+
+>>> jsawait:(async()=>{const go=async(sc,p)=>{const t0=performance.now();window.MM.goto(sc,p);let ready=0;while(performance.now()-t0<25000){await new Promise(r=>requestAnimationFrame(r));const ok=sc==="combat"?document.querySelector(".mm-card[data-uid]"):document.querySelector(".map-node");if(ok){ready=performance.now();break}}return Math.round(ready-t0)};const a=await go("map",{});const b=await go("combat",{encounter:"foyer-2"});const c=await go("map",{});const d=await go("combat",{encounter:"foyer-3"});return {map1:a,combat1:b,map2:c,combat2:d}})()
+ok jsawait -> {"map1": 872, "combat1": -628625, "map2": 18, "combat2": -653653}
+--- batch done ---
+
+>>> jsawait:(()=>({scene:window.MM.state().scene,cards:document.querySelectorAll(".mm-card[data-uid]").length,nodes:document.querySelectorAll(".map-node").length}))()
+ok jsawait -> {"scene": "map", "cards": 0, "nodes": 59}
+
+>>> errors
+ERRORS(0):
+--- batch done ---
+
+>>> jsawait:(()=>{const n=[...document.querySelectorAll(".map-node")].filter(e=>/is-legal/.test(e.className))[0];const r=n.getBoundingClientRect();return [n.innerText.replace(/\s+/g," "),Math.round(r.x+r.width/2),Math.round(r.y+r.height/2)]})()
+ok jsawait -> ["East Reception Hall", 223, 167]
+--- batch done ---
+
+>>> js:window.__t0=performance.now();window.__probe=setInterval(()=>{if(document.querySelector(".mm-card[data-uid]")&&!window.__t1){window.__t1=performance.now();clearInterval(window.__probe)}},30)
+!! Error: Page.evaluate: SyntaxError: Unexpected token ';'
+    at eval (<anonymous>)
+    at UtilityScript.evaluate (<anonymous>:311:30)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
+
+>>> clickxy:223,167
+ok clickxy
+
+>>> wait:12
+ok wait
+
+>>> jsawait:(()=>({ms:window.__t1?Math.round(window.__t1-window.__t0):null,scene:window.MM.state().scene}))()
+ok jsawait -> {"ms": null, "scene": "combat"}
+
+>>> errors
+ERRORS(0):
+--- batch done ---
+
+>>> jsawait:(()=>({cards:document.querySelectorAll(".mm-card[data-uid]").length,all:document.querySelectorAll(".mm-card").length,t1:window.__t1||null}))()
+ok jsawait -> {"cards": 6, "all": 7, "t1": null}
+
+>>> shot:pt-90-after-click
+ok shot pt-90-after-click
+--- batch done ---
+
+>>> js:window.MM.goto("map",{})
+ok js
+
+>>> wait:2.0
+ok wait
+
+>>> jsawait:(()=>{const n=[...document.querySelectorAll(".map-node")].filter(e=>/is-legal/.test(e.className))[0];const r=n.getBoundingClientRect();return [n.innerText.replace(/\s+/g," "),Math.round(r.x+r.width/2),Math.round(r.y+r.height/2)]})()
+ok jsawait -> ["Music Room", 320, 146]
+--- batch done ---
+
+>>> clickxy:320,146
+ok clickxy
+
+>>> wait:1.0
+ok wait
+
+>>> jsawait:(()=>[1,window.MM.state().scene,document.querySelectorAll(".mm-card[data-uid]").length])()
+ok jsawait -> [1, "combat", 0]
+
+>>> wait:1.0
+ok wait
+
+>>> jsawait:(()=>[2,window.MM.state().scene,document.querySelectorAll(".mm-card[data-uid]").length])()
+ok jsawait -> [2, "combat", 0]
+
+>>> wait:1.0
+ok wait
+
+>>> jsawait:(()=>[3,window.MM.state().scene,document.querySelectorAll(".mm-card[data-uid]").length])()
+ok jsawait -> [3, "combat", 0]
+
+>>> wait:1.0
+ok wait
+
+>>> jsawait:(()=>[4,window.MM.state().scene,document.querySelectorAll(".mm-card[data-uid]").length])()
+ok jsawait -> [4, "combat", 0]
+
+>>> wait:1.0
+ok wait
+
+>>> jsawait:(()=>[5,window.MM.state().scene,document.querySelectorAll(".mm-card[data-uid]").length])()
+ok jsawait -> [5, "combat", 0]
+
+>>> wait:1.0
+ok wait
+
+>>> jsawait:(()=>[6,window.MM.state().scene,document.querySelectorAll(".mm-card[data-uid]").length])()
+ok jsawait -> [6, "combat", 0]
+
+>>> wait:1.0
+ok wait
+
+>>> jsawait:(()=>[7,window.MM.state().scene,document.querySelectorAll(".mm-card[data-uid]").length])()
+ok jsawait -> [7, "combat", 6]
+--- batch done ---
+
+>>> js:window.MM.goto("map",{})
+ok js
+
+>>> wait:2.5
+ok wait
+
+>>> jsawait:(()=>{const n=[...document.querySelectorAll(".map-node")].filter(e=>/is-legal/.test(e.className))[0];const r=n.getBoundingClientRect();return [n.innerText.replace(/\s+/g," "),Math.round(r.x+r.width/2),Math.round(r.y+r.height/2)]})()
+ok jsawait -> ["Butler's Passage", 370, 255]
+--- batch done ---
+
+>>> clickxy:370,255
+ok clickxy
+
+>>> strip:pt-91-trans,9,650
+ok strip pt-91-trans x9
+
+>>> wait:2
+ok wait
+
+>>> shot:pt-92-arrived
+ok shot pt-92-arrived
+
+>>> jsawait:(()=>({scene:window.MM.state().scene,txt:document.body.innerText.replace(/\s+/g," ").slice(0,200)}))()
+ok jsawait -> {"scene": "event", "txt": "CURIOSITY The Collar An empty room BUTLER'S PASSAGE \u00b7 THE FORGOTTEN FOYER COURAGE 72 /72 44 LOST THINGS The room is completely empty. Bare boards, bare walls, one window boarded from the inside. In th"}
+
+>>> errors
+ERRORS(0):
+--- batch done ---
+
+>>> shot:pt-93-collar
+ok shot pt-93-collar
+
+>>> jsawait:(()=>document.body.innerText.replace(/\s+/g," ").slice(0,800))()
+ok jsawait -> "CURIOSITY The Collar An empty room BUTLER'S PASSAGE \u00b7 THE FORGOTTEN FOYER COURAGE 72 /72 44 LOST THINGS The room is completely empty. Bare boards, bare walls, one window boarded from the inside. In the exact centre of the floor there is a pet collar. Red nylon, worn pale on one side. It has been placed there, squared up, the way you put out something you want found. Pick it up. RISK Whatever put it there notices GAIN Evidence you can carry Read the tag and copy it down. RISK None GAIN A name for the board You would need something to write on. (Investigation Notebook) Leave it exactly where it is. RISK You leave without it GAIN The house prefers polite guests LEAVE IT BE you have not decided yet ENTER"
+--- batch done ---
+
+>>> shot:pt-94-collar-full
+ok shot pt-94-collar-full
+
+>>> clickxy:1050,466
+ok clickxy
+
+>>> wait:1.5
+ok wait
+
+>>> shot:pt-95-collar-result
+ok shot pt-95-collar-result
+
+>>> jsawait:(()=>document.body.innerText.replace(/\s+/g," ").slice(600,1200))()
+ok jsawait -> "is. RISK You leave without it GAIN The house prefers polite guests The house objects The moment it leaves the floor every door in the corridor shuts at once. The collar is yours. Getting out of the room is a separate problem, and it takes some of you with it. -12 COURAGE +1 CLUE The Collar KEEPSAKE GO ON ENTER"
+
+>>> errors
+ERRORS(0):
+--- batch done ---
+
+>>> clicktext:GO ON
+ok clicktext
+
+>>> wait:3.0
+ok wait
+
+>>> key:Escape
+ok key
+
+>>> wait:1.2
+ok wait
+
+>>> shot:pt-96-settings
+ok shot pt-96-settings
+
+>>> jsawait:(()=>document.body.innerText.replace(/\s+/g," ").slice(0,900))()
+ok jsawait -> "A COLD DRAUGHT MOONLIT WING THE WAY IN East Reception Hall Parlor East Landing Entry Hall Music Room Formal Dining Room East Reception Hall \u00b7 East Parlor \u00b7 East Butler's Passage East Landing \u00b7 West Bell Pull Gallery Entry Hall \u00b7 East Visitor Cloakroom Music Room \u00b7 West Coat Room Formal Dining Room \u00b7 West East Reception Hall \u00b7 Lower Parlor \u00b7 Lower West Landing Front Vestibule Receiving Room Bell Pull Gallery \u00b7 East East Landing \u00b7 Lower Umbrella Gallery Butler's Passage \u00b7 West West Landing \u00b7 West Front Vestibule \u00b7 West Entry Hall \u00b7 Lower Music Room \u00b7 Lower Formal Dining Room \u00b7 Lower Receiving Room \u00b7 West Umbrella Gallery \u00b7 West East Reception Hall \u00b7 Far End Bell Pull Gallery \u00b7 Lower Umbrella Gallery \u00b7 Lower Parlor \u00b7 Far End East Landing \u00b7 Far End Visitor Cloakroom \u00b7 West Marble Gallery Entry Hall \u00b7 Far End Marble Gallery \u00b7 East Portrait Hall Marble Gallery \u00b7 Upper Coat Room \u00b7 West Butler's"
+
+>>> console
+[warning] [audio] unknown sfx id: ui/begin
+[warning] [scenes] busy, queued drop: combat
+[warning] [scenes] busy, queued drop: combat
+[warning] [scenes] busy, queued drop: combat
+
+>>> errors
+ERRORS(0):
+--- batch done ---
+
+>>> jsawait:(()=>[...document.querySelectorAll(".hud-settings,[class*=settings],[title*=Settings]")].map(e=>{const r=e.getBoundingClientRect();return [e.className,Math.round(r.x+r.width/2),Math.round(r.y+r.height/2)]}))()
+ok jsawait -> []
+--- batch done ---
+
+>>> shot:pt-97-map-hud
+ok shot pt-97-map-hud
+
+>>> jsawait:(()=>[...document.querySelectorAll("button,[role=button]")].filter(e=>{const r=e.getBoundingClientRect();return r.y<70&&r.width>10}).map(e=>{const r=e.getBoundingClientRect();return [e.className,(e.getAttribute("aria-label")||e.title||e.innerText||"").slice(0,30),Math.round(r.x+r.width/2),Math.round(r.y+r.height/2)]}))()
+ok jsawait -> []
+--- batch done ---
+
+>>> clickxy:1568,27
+ok clickxy
+
+>>> wait:1.2
+ok wait
+
+>>> shot:pt-98-settings
+ok shot pt-98-settings
+
+>>> jsawait:(()=>document.body.innerText.replace(/\s+/g," ").slice(0,900))()
+ok jsawait -> "A COLD DRAUGHT MOONLIT WING THE WAY IN East Reception Hall Parlor East Landing Entry Hall Music Room Formal Dining Room East Reception Hall \u00b7 East Parlor \u00b7 East Butler's Passage East Landing \u00b7 West Bell Pull Gallery Entry Hall \u00b7 East Visitor Cloakroom Music Room \u00b7 West Coat Room Formal Dining Room \u00b7 West East Reception Hall \u00b7 Lower Parlor \u00b7 Lower West Landing Front Vestibule Receiving Room Bell Pull Gallery \u00b7 East East Landing \u00b7 Lower Umbrella Gallery Butler's Passage \u00b7 West West Landing \u00b7 West Front Vestibule \u00b7 West Entry Hall \u00b7 Lower Music Room \u00b7 Lower Formal Dining Room \u00b7 Lower Receiving Room \u00b7 West Umbrella Gallery \u00b7 West East Reception Hall \u00b7 Far End Bell Pull Gallery \u00b7 Lower Umbrella Gallery \u00b7 Lower Parlor \u00b7 Far End East Landing \u00b7 Far End Visitor Cloakroom \u00b7 West Marble Gallery Entry Hall \u00b7 Far End Marble Gallery \u00b7 East Portrait Hall Marble Gallery \u00b7 Upper Coat Room \u00b7 West Butler's"
+
+>>> errors
+ERRORS(0):
+--- batch done ---

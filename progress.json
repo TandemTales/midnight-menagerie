@@ -1,9 +1,9 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T08:31:08",
- "wave": 1,
- "waveLabel": "Core systems",
- "headline": "Seven builders running in parallel. Critics follow each one.",
+ "updated": "2026-08-20T09:52:27",
+ "wave": 2,
+ "waveLabel": "Integration and polish",
+ "headline": "Every piece exists and the game is playable end to end. A fresh player is now playing the whole thing to find the seams.",
  "pieces": [
   {
    "id": "engine",
@@ -129,10 +129,10 @@
    "id": "atmos",
    "name": "Atmosphere",
    "desc": "Lighting, fog, post FX, dust, candle flicker, transitions",
-   "status": "reviewing",
-   "round": 2,
-   "verdict": "Lighting rebuilt: mid-tones 7.1% to 22.7%, region cross-correlation 0.627 to 0.296. But it now costs too much on integrated graphics.",
-   "gap": "Nothing in the scene is lit by a light. Props measure 0.0% of pixels above L192 and 11.2 saturation; light shafts terminate in mid-air with no floor pool. All 17 regions structurally correlate at 0.737.",
+   "status": "done",
+   "round": 3,
+   "verdict": "61fps on every scene at 1600x900 and 1920x1080, with the look metrics improved: mid-tones 24.9%, median luma 38.6, cross-correlation 0.30.",
+   "gap": null,
    "builder": null,
    "critic": null,
    "log": []
@@ -310,6 +310,18 @@
   {
    "t": "2026-08-20T08:31:08",
    "msg": "Tooling fix: shot.py's js: step was awaiting returned promises, so motion strips all landed on the end state. That had already fooled one review."
+  },
+  {
+   "t": "2026-08-20T08:31:57",
+   "msg": "Full-game playthrough started: one fresh agent playing a complete expedition, a second run, and a quit-and-resume."
+  },
+  {
+   "t": "2026-08-20T09:52:27",
+   "msg": "PERFORMANCE FIXED: every scene 61fps at both resolutions, up from 15-47. Frame time 24.1ms to 14.0ms; at 1080p 46.5ms to 17.5ms."
+  },
+  {
+   "t": "2026-08-20T09:52:27",
+   "msg": "Biggest single win was invisible to pass profiling: instanced attributes marked dirty every frame on STATIC_DRAW buffers, stalling the D3D11 driver."
   }
  ]
 }

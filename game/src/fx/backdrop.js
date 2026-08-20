@@ -226,6 +226,12 @@ export class Backdrop {
     this._shdOffset = new THREE.InstancedBufferAttribute(new Float32Array(MAX_PROPS * 3), 3);
     this._shdScale = new THREE.InstancedBufferAttribute(new Float32Array(MAX_PROPS * 2), 2);
     this._shdStr = new THREE.InstancedBufferAttribute(new Float32Array(MAX_PROPS), 1);
+    /* setActorShadows() is a per-frame call for any scene that moves an actor, and
+       a STATIC_DRAW respecification there stalls the pipeline the same way the
+       flame buffers did. Declare the intent up front. */
+    for (const a of [this._shdOffset, this._shdScale, this._shdStr]) {
+      a.setUsage(THREE.DynamicDrawUsage);
+    }
     shGeo.setAttribute('aOffset', this._shdOffset);
     shGeo.setAttribute('aScale', this._shdScale);
     shGeo.setAttribute('aStrength', this._shdStr);
@@ -285,6 +291,16 @@ export class Backdrop {
     this._flCol = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FLAMES * 3), 3);
     this._flParam = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FLAMES * 2), 2);
     this._flSeed = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FLAMES), 1);
+    /* PERF: these are rewritten every frame by syncFlames(). three defaults
+       BufferAttributes to STATIC_DRAW, which ANGLE backs with a D3D11 DEFAULT
+       buffer — and bufferSubData on one of those is an UpdateSubresource that
+       must wait for every queued draw still reading it. Four of them per frame
+       measured as 8.5 ms of pure pipeline stall on Intel UHD (25.0 -> 16.5 ms
+       median frame with syncFlames stubbed out) on 90 floats of actual data.
+       DynamicDrawUsage lets the driver rename the buffer instead of syncing. */
+    for (const a of [this._flPos, this._flCol, this._flParam, this._flSeed]) {
+      a.setUsage(THREE.DynamicDrawUsage);
+    }
     flGeo.setAttribute('aPos', this._flPos);
     flGeo.setAttribute('aCol', this._flCol);
     flGeo.setAttribute('aParam', this._flParam);
@@ -816,18 +832,35 @@ export class Backdrop {
       par = this._flParam.array, sd = this._flSeed.array;
     let k = 0;
     const ls = rig.lights;
+    /* Only flag an attribute dirty when its contents actually moved. Of the four,
+       only aParam.y (the flicker) changes on a normal frame — position, colour and
+       seed are fixed per region and were being re-uploaded 60 times a second for
+       nothing. Combined with DynamicDrawUsage above, this is what took syncFlames
+       from 8.5 ms/frame to noise. */
+    let dPos = false, dCol = false, dPar = false, dSeed = false;
     for (let i = 0; i < ls.length && k < MAX_FLAMES; i++) {
       const l = ls[i];
       if (!l.enabled || l.glow <= 0.001 || l.live <= 0.01) continue;
-      pos[k * 3 + 0] = l.pos.x; pos[k * 3 + 1] = l.pos.y; pos[k * 3 + 2] = l.pos.z;
-      col[k * 3 + 0] = l.color.r; col[k * 3 + 1] = l.color.g; col[k * 3 + 2] = l.color.b;
-      par[k * 2 + 0] = (0.16 + 0.030 * l.radius) * l.glowSize;
-      par[k * 2 + 1] = l.glow * (0.55 + 0.75 * Math.min(l.live / 2.2, 1.4));
-      sd[k] = l.id * 0.37;
+      const p3 = k * 3, p2 = k * 2;
+      if (pos[p3] !== l.pos.x || pos[p3 + 1] !== l.pos.y || pos[p3 + 2] !== l.pos.z) {
+        pos[p3] = l.pos.x; pos[p3 + 1] = l.pos.y; pos[p3 + 2] = l.pos.z; dPos = true;
+      }
+      if (col[p3] !== l.color.r || col[p3 + 1] !== l.color.g || col[p3 + 2] !== l.color.b) {
+        col[p3] = l.color.r; col[p3 + 1] = l.color.g; col[p3 + 2] = l.color.b; dCol = true;
+      }
+      const size = (0.16 + 0.030 * l.radius) * l.glowSize;
+      const inten = l.glow * (0.55 + 0.75 * Math.min(l.live / 2.2, 1.4));
+      if (par[p2] !== size || par[p2 + 1] !== inten) {
+        par[p2] = size; par[p2 + 1] = inten; dPar = true;
+      }
+      const seed = l.id * 0.37;
+      if (sd[k] !== seed) { sd[k] = seed; dSeed = true; }
       k++;
     }
-    this._flPos.needsUpdate = this._flCol.needsUpdate = true;
-    this._flParam.needsUpdate = this._flSeed.needsUpdate = true;
+    if (dPos) this._flPos.needsUpdate = true;
+    if (dCol) this._flCol.needsUpdate = true;
+    if (dPar) this._flParam.needsUpdate = true;
+    if (dSeed) this._flSeed.needsUpdate = true;
     this.flameGeo.instanceCount = k;
   }
 

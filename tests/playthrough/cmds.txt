@@ -1,0 +1,121 @@
+clicktext:NEW EXPEDITION
+wait:2.0
+clicktext:Pipkin
+wait:1.2
+shot:pt-79-pipkin
+clicktext:TAKE PIPKIN IN
+wait:1.5
+clickxy:703,690
+wait:1.5
+shot:pt-80-eli-together
+jsawait:(()=>{const e=document.querySelector(".kid__pairtext");return {pair:e?e.innerText:"none"}})()
+clicktext:BEGIN EXPEDITION
+wait:5.0
+jsawait:(()=>({scene:window.MM.state().scene,companion:window.MM.state().run.companion,kid:window.MM.state().run.kid}))()
+errors
+js:window.MM.goto("shop",{})
+wait:3.5
+shot:pt-81-shop
+jsawait:(()=>({scene:window.MM.state().scene,txt:document.body.innerText.replace(/\s+/g," ").slice(0,1200)}))()
+errors
+clickxy:365,490
+wait:1.5
+shot:pt-82-shop-bought
+jsawait:(()=>({lost:window.MM.state().run.lostThings,deck:window.MM.state().run.deck.length}))()
+errors
+js:window.MM.goto("rest",{})
+wait:3.5
+shot:pt-83-saferoom
+jsawait:(()=>({scene:window.MM.state().scene,txt:document.body.innerText.replace(/\s+/g," ").slice(0,900)}))()
+errors
+clickxy:1150,405
+wait:1.8
+shot:pt-84-sharpen
+jsawait:(()=>document.body.innerText.replace(/\s+/g," ").slice(0,600))()
+errors
+js:window.MM.goto("combat",{encounter:"foyer-boss"})
+wait:6.0
+shot:pt-85-boss
+jsawait:(()=>{const sc=window.MM.ctx.scenes.current;const st=sc.engine&&sc.engine.state;return {scene:window.MM.state().scene,e:st?st.enemies.map(x=>[x.name,x.hp,x.maxHp,x.intent&&x.intent.name,x.intent&&x.intent.totalDamage,x.tier]):null}})()
+errors
+wait:3.0
+shot:pt-86-boss
+fps
+errors
+js:window.MM.goto("combat",{encounter:"foyer-scare-coatcheck"})
+wait:7.0
+shot:pt-87-bigscare
+jsawait:(()=>{const st=window.MM.ctx.scenes.current.engine.state;return {e:st.enemies.map(x=>[x.name,x.hp,x.tier,x.intent&&x.intent.name])}})()
+errors
+jsawait:(()=>({cards:document.querySelectorAll(".mm-card[data-uid]").length,tr:[...document.querySelectorAll("[class*=transition],[class*=wipe],[class*=fx-]")].map(e=>e.className+":"+getComputedStyle(e).opacity).slice(0,6)}))()
+wait:3
+jsawait:(()=>({cards:document.querySelectorAll(".mm-card[data-uid]").length}))()
+shot:pt-88-bigscare2
+jsawait:(async()=>{const t0=performance.now();window.MM.goto("map",{});let t1=0;while(performance.now()-t0<15000){if(window.MM.state().scene==="map"&&document.querySelector(".map-node")){t1=performance.now();break}await new Promise(r=>setTimeout(r,50))}const tMap=t1-t0;const t2=performance.now();window.MM.goto("combat",{encounter:"foyer-scuffle-1"});let t3=0;while(performance.now()-t2<20000){if(document.querySelector(".mm-card[data-uid]")){t3=performance.now();break}await new Promise(r=>setTimeout(r,50))}return {toMapMs:Math.round(tMap),toCombatMs:Math.round(t3-t2)}})()
+jsawait:(()=>({scene:window.MM.state().scene,cards:document.querySelectorAll(".mm-card[data-uid]").length}))()
+errors
+shot:pt-89-state
+jsawait:(async()=>{const t2=performance.now();window.MM.goto("combat",{encounter:"foyer-1"});let t3=0,tScene=0;while(performance.now()-t2<25000){if(!tScene&&window.MM.state().scene==="combat")tScene=performance.now();if(document.querySelector(".mm-card[data-uid]")){t3=performance.now();break}await new Promise(r=>setTimeout(r,50))}return {sceneSwapMs:Math.round(tScene-t2),handReadyMs:Math.round(t3-t2)}})()
+jsawait:(()=>window.__MM_WARMUP_MS)()
+jsawait:(async()=>{const go=async(sc,p)=>{const t0=performance.now();window.MM.goto(sc,p);let ready=0;while(performance.now()-t0<25000){await new Promise(r=>requestAnimationFrame(r));const ok=sc==="combat"?document.querySelector(".mm-card[data-uid]"):document.querySelector(".map-node");if(ok){ready=performance.now();break}}return Math.round(ready-t0)};const a=await go("map",{});const b=await go("combat",{encounter:"foyer-2"});const c=await go("map",{});const d=await go("combat",{encounter:"foyer-3"});return {map1:a,combat1:b,map2:c,combat2:d}})()
+jsawait:(()=>({scene:window.MM.state().scene,cards:document.querySelectorAll(".mm-card[data-uid]").length,nodes:document.querySelectorAll(".map-node").length}))()
+errors
+jsawait:(()=>{const n=[...document.querySelectorAll(".map-node")].filter(e=>/is-legal/.test(e.className))[0];const r=n.getBoundingClientRect();return [n.innerText.replace(/\s+/g," "),Math.round(r.x+r.width/2),Math.round(r.y+r.height/2)]})()
+js:window.__t0=performance.now();window.__probe=setInterval(()=>{if(document.querySelector(".mm-card[data-uid]")&&!window.__t1){window.__t1=performance.now();clearInterval(window.__probe)}},30)
+clickxy:223,167
+wait:12
+jsawait:(()=>({ms:window.__t1?Math.round(window.__t1-window.__t0):null,scene:window.MM.state().scene}))()
+errors
+jsawait:(()=>({cards:document.querySelectorAll(".mm-card[data-uid]").length,all:document.querySelectorAll(".mm-card").length,t1:window.__t1||null}))()
+shot:pt-90-after-click
+js:window.MM.goto("map",{})
+wait:2.0
+jsawait:(()=>{const n=[...document.querySelectorAll(".map-node")].filter(e=>/is-legal/.test(e.className))[0];const r=n.getBoundingClientRect();return [n.innerText.replace(/\s+/g," "),Math.round(r.x+r.width/2),Math.round(r.y+r.height/2)]})()
+clickxy:320,146
+wait:1.0
+jsawait:(()=>[1,window.MM.state().scene,document.querySelectorAll(".mm-card[data-uid]").length])()
+wait:1.0
+jsawait:(()=>[2,window.MM.state().scene,document.querySelectorAll(".mm-card[data-uid]").length])()
+wait:1.0
+jsawait:(()=>[3,window.MM.state().scene,document.querySelectorAll(".mm-card[data-uid]").length])()
+wait:1.0
+jsawait:(()=>[4,window.MM.state().scene,document.querySelectorAll(".mm-card[data-uid]").length])()
+wait:1.0
+jsawait:(()=>[5,window.MM.state().scene,document.querySelectorAll(".mm-card[data-uid]").length])()
+wait:1.0
+jsawait:(()=>[6,window.MM.state().scene,document.querySelectorAll(".mm-card[data-uid]").length])()
+wait:1.0
+jsawait:(()=>[7,window.MM.state().scene,document.querySelectorAll(".mm-card[data-uid]").length])()
+js:window.MM.goto("map",{})
+wait:2.5
+jsawait:(()=>{const n=[...document.querySelectorAll(".map-node")].filter(e=>/is-legal/.test(e.className))[0];const r=n.getBoundingClientRect();return [n.innerText.replace(/\s+/g," "),Math.round(r.x+r.width/2),Math.round(r.y+r.height/2)]})()
+clickxy:370,255
+strip:pt-91-trans,9,650
+wait:2
+shot:pt-92-arrived
+jsawait:(()=>({scene:window.MM.state().scene,txt:document.body.innerText.replace(/\s+/g," ").slice(0,200)}))()
+errors
+shot:pt-93-collar
+jsawait:(()=>document.body.innerText.replace(/\s+/g," ").slice(0,800))()
+shot:pt-94-collar-full
+clickxy:1050,466
+wait:1.5
+shot:pt-95-collar-result
+jsawait:(()=>document.body.innerText.replace(/\s+/g," ").slice(600,1200))()
+errors
+clicktext:GO ON
+wait:3.0
+key:Escape
+wait:1.2
+shot:pt-96-settings
+jsawait:(()=>document.body.innerText.replace(/\s+/g," ").slice(0,900))()
+console
+errors
+jsawait:(()=>[...document.querySelectorAll(".hud-settings,[class*=settings],[title*=Settings]")].map(e=>{const r=e.getBoundingClientRect();return [e.className,Math.round(r.x+r.width/2),Math.round(r.y+r.height/2)]}))()
+shot:pt-97-map-hud
+jsawait:(()=>[...document.querySelectorAll("button,[role=button]")].filter(e=>{const r=e.getBoundingClientRect();return r.y<70&&r.width>10}).map(e=>{const r=e.getBoundingClientRect();return [e.className,(e.getAttribute("aria-label")||e.title||e.innerText||"").slice(0,30),Math.round(r.x+r.width/2),Math.round(r.y+r.height/2)]}))()
+clickxy:1568,27
+wait:1.2
+shot:pt-98-settings
+jsawait:(()=>document.body.innerText.replace(/\s+/g," ").slice(0,900))()
+errors

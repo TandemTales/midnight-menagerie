@@ -11,6 +11,24 @@
 import { NOISE, COLOR } from './common.js';
 
 export const GradeShaderDef = {
+  /**
+   * Compile-time switches, driven by the quality tier (see Stage.setQuality).
+   * These are `defines` rather than uniforms on purpose: the measured cost of
+   * this pass is almost entirely the full-resolution read + write, not its ALU,
+   * so branching on a uniform bought nothing — but a tier that wants the pass
+   * genuinely cheaper needs the taps GONE, not skipped.
+   *
+   * MM_TONEMAP folds what used to be a separate OutputPass (ACES filmic + sRGB
+   * encode) into this shader. That deletes an entire full-screen read+write from
+   * the chain, which on Intel UHD at 1600x900 was ~2 ms — the pass did nothing
+   * else, and doing it here is bit-for-bit the same operation in the same order.
+   */
+  defines: {
+    MM_HAL_TAPS: 8,
+    MM_DIRT: 1,
+    MM_TONEMAP: 1,
+  },
+
   uniforms: {
     tDiffuse:    { value: null },
     uTime:       { value: 0 },
@@ -43,6 +61,9 @@ export const GradeShaderDef = {
     uExposure:   { value: 1.0 },
     uLift:       { value: 0.0 },       // black point — stays 0 unless a scene wants haze
     uImpact:     { value: null },      // THREE.Vector4 (x, y, age 0..1, strength)
+    /* Mirrors renderer.toneMappingExposure. Only used when MM_TONEMAP is on —
+       i.e. when this pass has absorbed the OutputPass. */
+    uToneExposure: { value: 1.0 },
   },
 
   vertexShader: /* glsl */`
@@ -60,9 +81,10 @@ export const GradeShaderDef = {
     uniform vec4  uImpact;
     uniform float uTime, uGrain, uVignette, uAberration, uFlash, uPulse, uDesat,
                   uDread, uToneAmt, uHalation, uDirt, uExposure, uLift, uAspect,
-                  uSaturate, uContrast;
+                  uSaturate, uContrast, uToneExposure;
     varying vec2  vUv;
 
+    #if MM_DIRT
     /* Screen-static lens dirt: low-frequency smudge plus a couple of scratches. */
     float dirtField(vec2 uv){
       vec2 p = uv*vec2(uAspect, 1.0);
@@ -71,6 +93,38 @@ export const GradeShaderDef = {
       float scratch = smoothstep(0.985, 1.0, mmNoise(vec2(p.x*1.4 + p.y*0.35, 0.0)*18.0));
       return clamp(smudge*0.85 + fine*0.35 + scratch*0.6, 0.0, 1.6);
     }
+    #endif
+
+    #if MM_TONEMAP
+    /* Verbatim three.js ACESFilmicToneMapping + sRGB OETF, so removing OutputPass
+       is a no-op on the pixels. Note that three only applies tone mapping when a
+       material renders straight to the canvas, which is why the composer needs
+       this done explicitly at the end of the chain. */
+    vec3 mmRRTAndODTFit(vec3 v){
+      vec3 a = v*(v + 0.0245786) - 0.000090537;
+      vec3 b = v*(0.983729*v + 0.4329510) + 0.238081;
+      return a/b;
+    }
+    vec3 mmACESFilmic(vec3 color){
+      const mat3 ACESIn = mat3(
+        vec3(0.59719, 0.07600, 0.02840),
+        vec3(0.35458, 0.90834, 0.13383),
+        vec3(0.04823, 0.01566, 0.83777));
+      const mat3 ACESOut = mat3(
+        vec3( 1.60475, -0.10208, -0.00327),
+        vec3(-0.53108,  1.10813, -0.07276),
+        vec3(-0.07367, -0.00605,  1.07602));
+      color *= uToneExposure/0.6;
+      color = ACESIn * color;
+      color = mmRRTAndODTFit(color);
+      color = ACESOut * color;
+      return clamp(color, 0.0, 1.0);
+    }
+    vec3 mmSRGBEncode(vec3 c){
+      return mix(pow(c, vec3(0.41666))*1.055 - vec3(0.055), c*12.92,
+                 vec3(lessThanEqual(c, vec3(0.0031308))));
+    }
+    #endif
 
     void main(){
       vec2 uv = vUv + uShake;
@@ -95,13 +149,14 @@ export const GradeShaderDef = {
       col = max(col, 0.0) * uExposure;
 
       /* ---- halation: highlights bleed a warm glow, modulated by lens dirt --- */
+      #if MM_HAL_TAPS > 0
       if (uHalation > 0.001) {
         vec3 halo = vec3(0.0);
         float wsum = 0.0;
-        for (int i = 0; i < 8; i++){
+        for (int i = 0; i < MM_HAL_TAPS; i++){
           float fi = float(i);
           float a  = fi * 2.39996;
-          float rr = (fi + 0.6) / 8.0;
+          float rr = (fi + 0.6) / float(MM_HAL_TAPS);
           vec2 off = vec2(cos(a), sin(a)) * rr * 9.0 * uTexel;
           vec3 s = texture2D(tDiffuse, uv + off).rgb;
           float w = 1.0 - rr*0.55;
@@ -109,9 +164,14 @@ export const GradeShaderDef = {
           wsum += w;
         }
         halo /= wsum;
+        #if MM_DIRT
         float dirt = mix(1.0, dirtField(vUv), uDirt);
+        #else
+        float dirt = 1.0;
+        #endif
         col += halo * uHaloColor * uHalation * dirt * 0.95;
       }
+      #endif
 
       /* ---- split tone: warm highlights, cool shadows, black stays black ----- */
       col = mmSplitTone(col, uWarmTint, uCoolTint, uToneAmt);
@@ -157,7 +217,15 @@ export const GradeShaderDef = {
       /* ---- flash (gated by Save.settings.flashes upstream) ------------------ */
       col = mix(col, uFlashColor, uFlash);
 
-      gl_FragColor = vec4(max(col, 0.0), 1.0);
+      col = max(col, 0.0);
+
+      /* ---- absorbed OutputPass: tone map, then encode to sRGB --------------- */
+      #if MM_TONEMAP
+      col = mmACESFilmic(col);
+      col = mmSRGBEncode(col);
+      #endif
+
+      gl_FragColor = vec4(col, 1.0);
     }
   `,
 };

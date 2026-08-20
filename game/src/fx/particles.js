@@ -16,6 +16,12 @@ export class ParticleField {
   constructor(scene, { count = 2200, seedFn = Math.random } = {}) {
     this.count = count + BURST_COUNT;
     this.ambientCount = count;
+    /* How many ambient particles the current quality tier wants drawn. The buffer
+       is always allocated at full size; only the draw range moves, so changing
+       tier never rebuilds geometry or relinks the program.
+       BURST particles live at the FRONT of the buffer precisely so that trimming
+       the tail trims ambient drift and never a hit effect. */
+    this.ambientBudget = count;
     this.scene = scene;
 
     const g = new THREE.BufferGeometry();
@@ -33,7 +39,7 @@ export class ParticleField {
       rand[i * 4 + 2] = seedFn();
       rand[i * 4 + 3] = seedFn();
       size[i] = 0.55 + seedFn() * 1.1;
-      type[i] = i >= this.ambientCount ? PTYPE.BURST : PTYPE.DUST;
+      type[i] = i < BURST_COUNT ? PTYPE.BURST : PTYPE.DUST;
     }
     // positions attribute is required by three even though we ignore it
     g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(this.count * 3), 3));
@@ -100,17 +106,37 @@ export class ParticleField {
       let total = 0;
       for (const m of cfg.mix) total += m[1];
       const t = this._type;
-      let cursor = 0;
-      for (let mi = 0; mi < cfg.mix.length; mi++) {
-        const [type, w] = cfg.mix[mi];
-        const end = mi === cfg.mix.length - 1
-          ? this.ambientCount
-          : Math.min(this.ambientCount, cursor + Math.round(this.ambientCount * w / total));
-        for (let i = cursor; i < end; i++) t[i] = type;
-        cursor = end;
+      /* Types are INTERLEAVED across the ambient span, not laid down in
+         contiguous blocks. The quality tier trims this span from the tail, and
+         with blocks a 73% budget would have kept 1100 dust motes and dropped
+         every wisp and ember — the accents are the whole point of the mix. A
+         golden-ratio sequence is low-discrepancy, so any prefix of the span
+         carries the authored proportions to within a particle or two. */
+      const first = BURST_COUNT, last = BURST_COUNT + this.ambientCount;
+      for (let i = first; i < last; i++) {
+        const f = ((i - first) * 0.6180339887498949) % 1;
+        let acc = 0, chosen = cfg.mix[cfg.mix.length - 1][0];
+        for (let mi = 0; mi < cfg.mix.length; mi++) {
+          acc += cfg.mix[mi][1] / total;
+          if (f < acc) { chosen = cfg.mix[mi][0]; break; }
+        }
+        t[i] = chosen;
       }
       this.geometry.attributes.aType.needsUpdate = true;
     }
+  }
+
+  /**
+   * Quality tier hook: how many of the ambient particles to actually draw.
+   * The mix proportions are laid out across the whole ambient span, so trimming
+   * the tail biases the field toward whichever type was authored first. Regions
+   * list DUST first everywhere, which is the right thing to keep — it is the
+   * fill; wisps and embers are the accents and they sit in the middle.
+   */
+  setAmbientBudget(n) {
+    this.ambientBudget = Math.max(0, Math.min(this.ambientCount, Math.round(n)));
+    this.geometry.setDrawRange(0, BURST_COUNT + this.ambientBudget);
+    return this;
   }
 
   setVolume(cx, cy, cz, ex, ey, ez) {
