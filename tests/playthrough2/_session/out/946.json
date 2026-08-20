@@ -1,0 +1,7 @@
+{
+ "i": 946,
+ "cmd": "{\"op\": \"text\"}",
+ "result": "The Foyer\nWing 1\n65 / 74\n99\n0 Clues\nHaunt 0\n553148210\nTricks\n11\nROOM CLEARED\nNothing Left Standing\n\nDust Bunny + Half-Packed Luggage\n\nENTRY HALL \u00b7 THE FORGOTTEN FOYER\n\n+12\nLOST THINGS\n+0\nLUCK\nCHOOSE ONE TRICK\n\nOr take none \u2014 and be luckier next time.\n\nTail Going A Mile A Minute\nPOWER \u00b7 SELF\nThe first Attack you play after Fetching or Dig Upping each turn is Empowered 7.\n1\nUNCOMMON\nBoomerang Bone\nATTACK\nDeal 9 damage. The first time you play this while it is not Slobbered, return it to your hand and make it Slobbered.\n1\nUNCOMMON\nBest Dog in the House\nPOWER \u00b7 SELF\nAt the start of each turn, choose one: Fetch a non-Slobbered Trick with printed cost 1 or less, or Dig Up one Buryed Trick. If neither is possible, create a Spare Bone.\n3\nRARE\n\nBest Dog in the House added to your Tricks.\n\nTAKE NONE\n+12 Lost Things \u00b7 Luck +2\nS\nLEAVE THE ROOM\nENTER",
+ "error": null,
+ "console_errors": []
+}

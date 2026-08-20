@@ -154,19 +154,45 @@ const FOYER = [
   },
 
   // ── Big Scares ────────────────────────────────────────────────────────────
+  /**
+   * BALANCE 2026-08-20 (two-region round) — all three at 0.9x Courage.
+   *
+   * The Foyer's Big Scares were tuned when the Foyer WAS the game: at that point a
+   * 78%-competent elite was the right shape, because the only thing behind it was the
+   * Butler. With `RUN_LENGTH_REGIONS = 2` they are act-one elites, and act one was
+   * removing 35% of all competent runs before the Nursery had been seen at all — ten of
+   * sixty competent deaths were at a Foyer Big Scare and eight more were Foyer Scuffles
+   * fought on the Courage those Big Scares had taken. Whole-run survival is the product
+   * of every act, so an act-one elite band that was correct for a one-act game caps a
+   * two-act game far below its own target.
+   *
+   * Swept at the real Foyer elite door, 45 fights per step (`sweep.py --tier elite`):
+   *
+   *   xCourage   competent   naive   turns
+   *     1.00       80.0%     55.6%    9.1
+   *     0.90       91.1%     73.3%    8.1     <- here
+   *     0.85       95.6%     75.6%    7.8
+   *     0.80      100.0%     77.8%    7.4
+   *
+   * 0.85 and below make them free for a competent player and stop teaching anything.
+   * 0.90 keeps an 18-point skill gap and still costs 35 Courage to win.
+   *
+   * Applied as `hpMul` here rather than in `enemies/foyer.js` because this pass owns the
+   * encounter tables, not the Foyer roster — see the note in docs/notes/.
+   */
   {
     id: 'foyer-scare-coatcheck', region: 'foyer', tier: 'elite', name: 'The Grand Coatcheck',
-    members: [m('grand-coatcheck')],
+    members: [m('grand-coatcheck', { hpMul: 0.9 })],
     teaches: 'Adaptability. Accept the current Garment or spend 18 damage in a turn to Snag it.',
   },
   {
     id: 'foyer-scare-guest', region: 'foyer', tier: 'elite', name: 'The Unwelcome Guest',
-    members: [m('unwelcome-guest')],
+    members: [m('unwelcome-guest', { hpMul: 0.9 })],
     teaches: 'Pattern breaking. It never says "do not play Skills" — only "not three of them again".',
   },
   {
     id: 'foyer-scare-bell', region: 'foyer', tier: 'elite', name: 'The House Bell',
-    members: [m('house-bell')],
+    members: [m('house-bell', { hpMul: 0.9 })],
     teaches: 'Add management. Race the Toll, or kill its summons to push Resonance back down.',
   },
 

@@ -182,8 +182,11 @@ export class GameOverScene extends Scene {
     const turns      = Number(run?.stats?.turns) || (mocked ? 40 + rng.int(90) : 0);
 
     const wingsMapped = Number(run?.wingsMapped ?? Save?.data?.blueprint?.revealed?.length) || 1;
+    // `run.companionsFreed` is what you freed on THIS expedition (run.rescued is the
+    // lifetime set). The old fallback quietly printed "1 Companion freed" naming the one you
+    // brought in, so a two-wing victory that freed two undercounted to one.
     const freedThisRun = Array.isArray(run?.companionsFreed) ? run.companionsFreed.slice()
-      : (result === 'victory' ? [companion] : []);
+      : (mocked && result === 'victory' ? [companion] : []);
     const cluesFound = Number(run?.stats?.clues) || (mocked ? rng.int(3) : 0);
     const petHome = !!(run?.petRescued ?? (result === 'victory' && rng.chance(0.35)));
 

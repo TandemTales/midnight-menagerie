@@ -1,0 +1,7 @@
+{
+ "i": 1461,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"(()=>{const e=document.querySelector(String.fromCharCode(46)+\\\"mm-card\\\").closest(\\\"div[class]\\\").parentElement; let p=document.querySelector(String.fromCharCode(46)+\\\"mm-card\\\"),ch=[]; while(p&&ch.length<7){ch.push(p.className); p=p.parentElement} return ch.join(\\\" < \\\")})()\"}",
+ "result": "mm-card is-unplayable is-unaffordable < mm-hand__cards < mm-hand is-locked < cb-handhost < cb is-arena < scene scene--combat cb-root < ",
+ "error": null,
+ "console_errors": []
+}

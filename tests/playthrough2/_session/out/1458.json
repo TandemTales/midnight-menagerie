@@ -1,0 +1,7 @@
+{
+ "i": 1458,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"JSON.stringify({hand:document.querySelector(String.fromCharCode(46)+\\\"mm-hand\\\").className,modal:[...document.querySelectorAll(String.fromCharCode(91)+\\\"class*=modal\\\"+String.fromCharCode(93))].map(e=>e.className+\\\":\\\"+e.innerText.slice(0,60)),cards:[...document.querySelectorAll(String.fromCharCode(46)+\\\"mm-card\\\")].length,root:document.querySelector(String.fromCharCode(46)+\\\"cb-root\\\").className})\"}",
+ "result": "{\"hand\":\"mm-hand is-locked\",\"modal\":[],\"cards\":5,\"root\":\"scene scene--combat cb-root\"}",
+ "error": null,
+ "console_errors": []
+}

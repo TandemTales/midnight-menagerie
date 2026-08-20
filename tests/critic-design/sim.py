@@ -23,6 +23,8 @@ ap.add_argument("--haunt", type=int, default=0)
 ap.add_argument("--bench", type=int, default=0)
 ap.add_argument("--seed", type=int, default=90000)
 ap.add_argument("--clutter", default="1")
+ap.add_argument("--regionheal", default="0",
+                help="WHAT-IF: restore this fraction of max Courage on clearing a region")
 ap.add_argument("--out", default="sim-result.json")
 ap.add_argument("--timeout", type=float, default=3600)
 ap.add_argument("--quiet", action="store_true")
@@ -35,7 +37,7 @@ except Exception:
 
 URL = (f"http://localhost:8777/tests/critic-design/sim.html"
        f"?n={a.n}&bots={a.bots}&policies={a.policies}&haunt={a.haunt}"
-       f"&bench={a.bench}&seed={a.seed}&clutter={a.clutter}")
+       f"&bench={a.bench}&seed={a.seed}&clutter={a.clutter}&regionheal={a.regionheal}")
 
 with sync_playwright() as p:
     b = p.chromium.launch(args=["--enable-unsafe-swiftshader"])
@@ -66,31 +68,60 @@ def line(k, s):
             f"p25 {s['p25']:<5} med {s['med']:<5} p75 {s['p75']:<5} max {s['max']}")
 
 
-for key, S in res["cells"].items():
-    print(f"\n═══ {key}  ({S['expeditions']} expeditions, haunt {res['config']['HAUNT']})")
-    print(f"  WHOLE-REGION SURVIVAL   {S['survival']}%   "
-          f"(boss reached {S['reachedBoss']}%, deaths {S['deaths']}, stalls {S['stalls']})")
-    print(f"  deaths by room type     {S['deathsBy']}")
+def tier_lines(byTier, indent="  "):
     for tier in ("scuffle", "elite", "boss"):
-        t = S["byTier"].get(tier) or {}
+        t = byTier.get(tier) or {}
         if not t.get("n"):
-            print(f"  {tier:<8} —")
+            print(f"{indent}{tier:<8} —")
             continue
-        print(f"  {tier:<8} n={t['n']:<4} win {t['winRate']}%  "
+        print(f"{indent}{tier:<8} n={t['n']:<4} win {t['winRate']}%  "
               f"turns mean {t['turns']['mean']} (med {t['turns']['med']})  "
               f"Courage cost mean {t['courageCost']['mean']} (med {t['courageCost']['med']})  "
               f"haunt {t['hauntDamage']['mean']}  pierce {t['pierceHits']}  snacks {t['snacksUsed']}")
-    e = S["earlyScuffles"]
-    if e.get("n"):
-        print(f"  first 3 Scuffles: turns {e['turns']['mean']}  "
-              f"Courage cost {e['courageCost']['mean']}  free fights {e['freeFights']}%")
-    lg = S.get("ledger", {})
-    print(f"  Courage ledger/run: scuffles -{lg.get('scuffle')}  elites -{lg.get('elite')}  "
+
+
+def ledger_line(lg, indent="  "):
+    print(f"{indent}Courage ledger: scuffles -{lg.get('scuffle')}  elites -{lg.get('elite')}  "
           f"boss -{lg.get('boss')}  events -{lg.get('event')}  hazards -{lg.get('hazard')}  "
-          f"| rests +{lg.get('rested')} ({lg.get('rests')}x)  in-combat +{lg.get('combatHeal')}  events +{lg.get('healed')}")
+          f"| rests +{lg.get('rested')} ({lg.get('rests')}x)  in-combat +{lg.get('combatHeal')}  "
+          f"events +{lg.get('healed')}")
+
+
+for key, S in res["cells"].items():
+    print(f"\n═══ {key}  ({S['expeditions']} expeditions, haunt {res['config']['HAUNT']}, "
+          f"{S.get('regionsTarget', 1)} region ladder)")
+    print(f"  WHOLE-RUN SURVIVAL      {S['survival']}%   "
+          f"(deaths {S['deaths']}, stalls {S['stalls']}, "
+          f"regions cleared mean {S.get('regionsCleared', {}).get('mean')})")
+    print(f"  deaths by region/room   {S['deathsBy']}")
+
+    for G in S.get("regions", []):
+        print(f"\n  ── region {G['index']}: {G['region']} "
+              f"— entered {G['entered']}/{S['expeditions']} ({G['enteredPct']}%), "
+              f"cleared {G['clearedPct']}% of those")
+        print(f"     reached its boss {G['reachedBoss']}%  |  "
+              f"boss win given reached {G['bossWinGivenReached']}% (n={G['bossN']})")
+        tier_lines(G["byTier"], indent="     ")
+        e = G["earlyScuffles"]
+        if e.get("n"):
+            print(f"     first 3 Scuffles: turns {e['turns']['mean']}  "
+                  f"Courage cost {e['courageCost']['mean']}  free fights {e['freeFights']}%")
+        ledger_line(G.get("ledger", {}), indent="     ")
+        print(f"     rooms: {G.get('visited')}")
+        print(f"     ENTERED region with: Courage {G['entryCourage']['mean']}"
+              f"/{G['entryMaxCourage']['mean']} ({G['entryCouragePct']['mean']}%)  "
+              f"deck {G['entryDeck']['mean']} (+{G['entryUpgrades']['mean']})  "
+              f"keepsakes {G['entryKeepsakes']['mean']}")
+        print("    " + line("Courage at boss door", G.get("courageAtBoss")))
+        print("    " + line("  ... as % of max", G.get("courageAtBossPct")))
+        print("    " + line("deck at boss door", G.get("deckAtBoss")))
+        print("    " + line("upgrades at boss door", G.get("upgradesAtBoss")))
+        print("    " + line("keepsakes at boss door", G.get("keepsakesAtBoss")))
+
+    print("\n  ── whole run")
+    tier_lines(S["byTier"])
+    ledger_line(S.get("ledger", {}))
     print(f"  rooms/run: {S.get('visited')}")
-    print(line("Courage at boss door", S.get("courageAtBoss")))
-    print(line("  ... as % of max", S.get("courageAtBossPct")))
     print(line("deck size at end", S["deckEnd"]))
     print(line("upgrades at end", S["upgradesEnd"]))
     print(line("keepsakes at end", S["keepsakesEnd"]))
@@ -101,9 +132,9 @@ if res.get("bench"):
     print("\n═══ BENCH (captured pre-fight loadouts, replayed)")
     for k, v in res["bench"].items():
         if not v.get("n"):
-            print(f"  {k:<22} {v.get('note')}")
+            print(f"  {k:<32} {v.get('note')}")
             continue
-        print(f"  {k:<22} win {v['winRate']}%  n={v['n']}  turns {v['turns']['mean']} "
+        print(f"  {k:<32} win {v['winRate']}%  n={v['n']}  turns {v['turns']['mean']} "
               f"(med {v['turns']['med']})  Courage cost {v['courageCost']['mean']}  "
               f"deck {v['deckSize']['mean']} (+{v['upgrades']['mean']})  "
               f"keepsakes {v['keepsakes']['mean']}  timeouts {v['timeouts']}")

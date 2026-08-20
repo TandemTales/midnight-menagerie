@@ -1,0 +1,11 @@
+{
+ "i": 941,
+ "cmd": "{\"op\": \"fps\"}",
+ "result": {
+  "fps": 61,
+  "mem": 20,
+  "nodes": 308
+ },
+ "error": null,
+ "console_errors": []
+}

@@ -34,6 +34,9 @@ const HAUNT = +(Q.get('haunt') || 0);
 const BENCH = +(Q.get('bench') || 0);
 const CLUTTER = Q.get('clutter') !== '0';
 const SEED0 = +(Q.get('seed') || 90000);
+// WHAT-IF ONLY: restore this fraction of maximum Courage when a region is
+// cleared. 0 = shipping behaviour. See lib/expedition.js.
+const REGIONHEAL = +(Q.get('regionheal') || 0);
 
 const out = document.getElementById('out');
 const say = (s) => { out.textContent += '\n' + s; };
@@ -55,24 +58,16 @@ const pct = (a, b) => (b ? +(a / b * 100).toFixed(1) : 0);
 
 const TIER_BUCKET = (t) => (t === 'boss' ? 'boss' : t === 'elite' ? 'elite' : 'scuffle');
 
-function summarise(runs) {
-  const S = { expeditions: runs.length };
-  S.survival = pct(runs.filter(r => r.result === 'victory').length, runs.length);
-  S.deaths = runs.filter(r => r.result === 'defeat').length;
-  S.stalls = runs.filter(r => r.result === 'stall' || r.result === 'incomplete').length;
-  S.reachedBoss = pct(runs.filter(r => r.reachedBoss).length, runs.length);
+const LEDGER_KEYS = ['scuffle', 'elite', 'boss', 'event', 'hazard', 'rested', 'healed', 'combatHeal', 'rests'];
 
-  const deathAt = {};
-  for (const r of runs) if (r.result === 'defeat') deathAt[r.deathType || '?'] = (deathAt[r.deathType || '?'] || 0) + 1;
-  S.deathsBy = deathAt;
-
+/** Fight-tier breakdown for one bag of fights. */
+function tiers(fights) {
   const buckets = { scuffle: [], elite: [], boss: [] };
-  for (const r of runs) for (const f of r.fights) buckets[TIER_BUCKET(f.tier)].push(f);
-
-  S.byTier = {};
+  for (const f of fights) buckets[TIER_BUCKET(f.tier)].push(f);
+  const T = {};
   for (const [k, fs] of Object.entries(buckets)) {
-    if (!fs.length) { S.byTier[k] = { n: 0 }; continue; }
-    S.byTier[k] = {
+    if (!fs.length) { T[k] = { n: 0 }; continue; }
+    T[k] = {
       n: fs.length,
       winRate: pct(fs.filter(f => f.win).length, fs.length),
       turns: stats(fs.map(f => f.turns)),
@@ -83,21 +78,89 @@ function summarise(runs) {
       timeouts: fs.filter(f => f.timeout).length,
     };
   }
-  // the first three Scuffles of a region — the "costs 8-12 of a ~70 pool" target
-  const early = [];
-  for (const r of runs) {
-    const sc = r.fights.filter(f => TIER_BUCKET(f.tier) === 'scuffle');
-    early.push(...sc.slice(0, 3));
-  }
+  return T;
+}
+
+/**
+ * One region's slice, across every expedition that entered it.
+ *
+ * `entered` is the denominator that matters for a second region: region-2
+ * numbers conditioned on "you got here" are the only honest ones, and the
+ * unconditional whole-run survival is reported separately.
+ */
+function summariseRegion(slices, totalRuns) {
+  const S = { region: slices[0]?.region || '?', index: slices[0]?.index ?? 0 };
+  S.entered = slices.length;
+  S.enteredPct = pct(slices.length, totalRuns);
+  S.cleared = slices.filter(s => s.cleared).length;
+  S.clearedPct = pct(S.cleared, slices.length);
+  S.reachedBoss = pct(slices.filter(s => s.reachedBoss).length, slices.length);
+  S.bossWinGivenReached = pct(slices.filter(s => s.bossWin).length,
+    Math.max(1, slices.filter(s => s.reachedBoss).length));
+  S.bossN = slices.filter(s => s.reachedBoss).length;
+  S.byTier = tiers(slices.flatMap(s => s.fights));
+
+  // the first three Scuffles of THIS region — a second region opens with a
+  // built deck, so its opening cost is a different question from the Foyer's
+  const early = slices.flatMap(s => s.fights.filter(f => TIER_BUCKET(f.tier) === 'scuffle').slice(0, 3));
   S.earlyScuffles = early.length ? {
     n: early.length, turns: stats(early.map(f => f.turns)),
     courageCost: stats(early.map(f => f.dmgTaken)),
     freeFights: pct(early.filter(f => f.dmgTaken === 0).length, early.length),
   } : { n: 0 };
 
-  const L = ['scuffle', 'elite', 'boss', 'event', 'hazard', 'rested', 'healed', 'combatHeal', 'rests'];
   S.ledger = {};
-  for (const k of L) S.ledger[k] = +(runs.reduce((s, r) => s + (r.ledger?.[k] || 0), 0) / Math.max(1, runs.length)).toFixed(1);
+  for (const k of LEDGER_KEYS) {
+    S.ledger[k] = +(slices.reduce((s, x) => s + (x.ledger?.[k] || 0), 0) / Math.max(1, slices.length)).toFixed(1);
+  }
+  S.visited = {};
+  for (const s of slices) for (const [k, v] of Object.entries(s.visited || {})) S.visited[k] = (S.visited[k] || 0) + v;
+  for (const k of Object.keys(S.visited)) S.visited[k] = +(S.visited[k] / slices.length).toFixed(2);
+
+  const atBoss = slices.filter(s => s.loadoutAtBoss);
+  S.courageAtBoss = stats(atBoss.map(s => s.loadoutAtBoss.courage));
+  S.courageAtBossPct = stats(atBoss.map(s => Math.round(s.loadoutAtBoss.courage / s.loadoutAtBoss.maxCourage * 100)));
+  S.deckAtBoss = stats(atBoss.map(s => s.loadoutAtBoss.deck.length));
+  S.upgradesAtBoss = stats(atBoss.map(s => s.loadoutAtBoss.deck.filter(c => c.upgraded).length));
+  S.keepsakesAtBoss = stats(atBoss.map(s => s.loadoutAtBoss.keepsakes.length));
+
+  S.entryDeck = stats(slices.map(s => s.entry.deck));
+  S.entryUpgrades = stats(slices.map(s => s.entry.upgrades));
+  S.entryKeepsakes = stats(slices.map(s => s.entry.keepsakes));
+  S.entryCourage = stats(slices.map(s => s.entry.courage));
+  S.entryMaxCourage = stats(slices.map(s => s.entry.maxCourage));
+  S.entryCouragePct = stats(slices.map(s => Math.round(s.entry.courage / s.entry.maxCourage * 100)));
+  return S;
+}
+
+function summarise(runs) {
+  const S = { expeditions: runs.length };
+  // Whole-LADDER survival: cleared every region the build ships.
+  S.survival = pct(runs.filter(r => r.result === 'victory').length, runs.length);
+  S.deaths = runs.filter(r => r.result === 'defeat').length;
+  S.stalls = runs.filter(r => r.result === 'stall' || r.result === 'incomplete').length;
+  S.reachedBoss = pct(runs.filter(r => r.reachedBoss).length, runs.length);
+  S.regionsTarget = runs[0]?.regionsTarget ?? 1;
+  S.regionsCleared = stats(runs.map(r => r.regionsCleared || 0));
+
+  const deathAt = {};
+  for (const r of runs) {
+    if (r.result !== 'defeat') continue;
+    const k = `${r.deathRegion || '?'}/${r.deathType || '?'}`;
+    deathAt[k] = (deathAt[k] || 0) + 1;
+  }
+  S.deathsBy = deathAt;
+
+  S.byTier = tiers(runs.flatMap(r => r.fights));
+  const early = runs.flatMap(r => r.fights.filter(f => TIER_BUCKET(f.tier) === 'scuffle').slice(0, 3));
+  S.earlyScuffles = early.length ? {
+    n: early.length, turns: stats(early.map(f => f.turns)),
+    courageCost: stats(early.map(f => f.dmgTaken)),
+    freeFights: pct(early.filter(f => f.dmgTaken === 0).length, early.length),
+  } : { n: 0 };
+
+  S.ledger = {};
+  for (const k of LEDGER_KEYS) S.ledger[k] = +(runs.reduce((s, r) => s + (r.ledger?.[k] || 0), 0) / Math.max(1, runs.length)).toFixed(1);
   S.visited = {};
   for (const r of runs) for (const [k, v] of Object.entries(r.visited || {})) S.visited[k] = (S.visited[k] || 0) + v;
   for (const k of Object.keys(S.visited)) S.visited[k] = +(S.visited[k] / runs.length).toFixed(2);
@@ -111,12 +174,24 @@ function summarise(runs) {
   S.hauntTotal = runs.reduce((s, r) => s + r.fights.reduce((t, f) => t + f.hauntDamage, 0), 0);
   S.pierceTotal = runs.reduce((s, r) => s + r.fights.reduce((t, f) => t + f.pierceHits, 0), 0);
   S.msPerRun = +(runs.reduce((s, r) => s + r.ms, 0) / Math.max(1, runs.length)).toFixed(0);
+
+  // ── per region ─────────────────────────────────────────────────────────────
+  const byIndex = new Map();
+  for (const r of runs) for (const g of (r.regions || [])) {
+    if (!byIndex.has(g.index)) byIndex.set(g.index, []);
+    byIndex.get(g.index).push(g);
+  }
+  S.regions = [...byIndex.keys()].sort((a, b) => a - b)
+    .map(i => summariseRegion(byIndex.get(i), runs.length));
   return S;
 }
 
 // ── run ──────────────────────────────────────────────────────────────────────
-const RESULT = { config: { N, BOTS, POLS, HAUNT, BENCH, CLUTTER, SEED0 }, cells: {}, bench: {}, errors: [] };
-const loadouts = { boss: [], elite: [] };
+const RESULT = { config: { N, BOTS, POLS, HAUNT, BENCH, CLUTTER, SEED0, REGIONHEAL }, cells: {}, bench: {}, errors: [] };
+// keyed `${regionId}/${tier}` — a second region needs its own loadout pool,
+// because the deck that meets The Governess is not the deck that met the Butler
+const loadouts = new Map();
+const push = (k, v) => { if (!loadouts.has(k)) loadouts.set(k, []); loadouts.get(k).push(v); };
 
 for (const bot of BOTS) {
   for (const policy of POLS) {
@@ -124,10 +199,12 @@ for (const bot of BOTS) {
     const runs = [];
     for (let i = 0; i < N; i++) {
       try {
-        const r = await expedition({ seed: SEED0 + i * 7, bot, policy, haunt: HAUNT, clutter: CLUTTER });
+        const r = await expedition({ seed: SEED0 + i * 7, bot, policy, haunt: HAUNT, clutter: CLUTTER, regionHeal: REGIONHEAL });
         runs.push(r);
-        if (r.loadoutAtBoss) loadouts.boss.push({ bot, policy, l: r.loadoutAtBoss });
-        if (r.loadoutAtFirstElite) loadouts.elite.push({ bot, policy, l: r.loadoutAtFirstElite });
+        for (const g of r.regions || []) {
+          if (g.loadoutAtBoss) push(`${g.region}/boss`, { bot, policy, l: g.loadoutAtBoss });
+          if (g.loadoutAtFirstElite) push(`${g.region}/elite`, { bot, policy, l: g.loadoutAtFirstElite });
+        }
       } catch (err) {
         RESULT.errors.push(`${key} seed ${SEED0 + i * 7}: ${err && (err.stack || err.message || err)}`);
       }
@@ -135,33 +212,41 @@ for (const bot of BOTS) {
     }
     RESULT.cells[key] = summarise(runs);
     RESULT.cells[key].sample = runs.slice(0, 3).map(r => ({
-      seed: r.seed, result: r.result, killedBy: r.killedBy,
-      nodes: r.nodes.map(n => n.type[0]).join(''),
+      seed: r.seed, result: r.result, killedBy: r.killedBy, deathRegion: r.deathRegion,
+      nodes: (r.regions || []).map(g => g.nodes.map(n => n.type[0]).join('')).join(' | '),
       deck: r.deckEnd, keepsakes: r.keepsakesEnd,
     }));
-    say(`${key}: survival ${RESULT.cells[key].survival}%  boss reached ${RESULT.cells[key].reachedBoss}%`);
+    const rr = RESULT.cells[key].regions.map(g => `${g.region} ${g.enteredPct}%→${g.clearedPct}%`).join('  ');
+    say(`${key}: whole-run ${RESULT.cells[key].survival}%   ${rr}`);
   }
 }
 
-// ── benches: the boss and the elite, fought many times with loadouts real
-//    expeditions were actually carrying when they arrived at that door ────────
+// ── benches: the boss and the elite of EVERY region, fought many times with
+//    loadouts real expeditions were actually carrying at that door ────────────
 if (BENCH > 0) {
-  for (const tier of ['elite', 'boss']) {
-    const pool = loadouts[tier];
-    if (!pool.length) { RESULT.bench[tier] = { n: 0, note: 'no expedition reached it' }; continue; }
+  for (const poolKey of [...loadouts.keys()].sort()) {
+    const [regionId, tier] = poolKey.split('/');
+    const pool = loadouts.get(poolKey);
+    if (!pool.length) { RESULT.bench[poolKey] = { n: 0, note: 'no expedition reached it' }; continue; }
     for (const bot of BOTS) {
       const rows = [];
       for (let i = 0; i < BENCH; i++) {
-        const pick = pool[i % pool.length];
+        // Stride the whole pool instead of taking its first BENCH entries.
+        // The naive loop fills the pool first, so `i % pool.length` benched
+        // almost entirely naive-run loadouts once the pool grew past BENCH —
+        // which is exactly the selected-for-luck subset. Measured: the
+        // Governess read 75-77.5% on the biased sample against 60.5-61.9%
+        // in-run on the same two seeds. Striding closes it.
+        const pick = pool[Math.floor(i * pool.length / BENCH) % pool.length];
         try {
           rows.push(await bench({
             loadout: pick.l, encounterTier: tier, seed: 500000 + i * 13,
-            bot, haunt: HAUNT, clutter: CLUTTER,
+            bot, haunt: HAUNT, clutter: CLUTTER, region: regionId,
           }));
-        } catch (err) { RESULT.errors.push(`bench ${tier}/${bot} ${i}: ${err && (err.stack || err.message)}`); }
+        } catch (err) { RESULT.errors.push(`bench ${poolKey}/${bot} ${i}: ${err && (err.stack || err.message)}`); }
       }
       if (!rows.length) continue;
-      RESULT.bench[`${tier}/${bot}`] = {
+      RESULT.bench[`${poolKey}/${bot}`] = {
         n: rows.length,
         winRate: pct(rows.filter(r => r.win).length, rows.length),
         turns: stats(rows.map(r => r.turns)),
@@ -180,7 +265,7 @@ if (BENCH > 0) {
           return a;
         }, {}),
       };
-      say(`bench ${tier}/${bot}: ${RESULT.bench[`${tier}/${bot}`].winRate}%`);
+      say(`bench ${poolKey}/${bot}: ${RESULT.bench[`${poolKey}/${bot}`].winRate}%`);
     }
   }
 }

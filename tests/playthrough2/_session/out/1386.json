@@ -1,0 +1,7 @@
+{
+ "i": 1386,
+ "cmd": "{\"op\": \"dragxy\", \"x1\": 800, \"y1\": 733, \"x2\": 800, \"y2\": 393, \"steps\": 14}",
+ "result": "ok",
+ "error": null,
+ "console_errors": []
+}

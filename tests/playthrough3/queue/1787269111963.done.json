@@ -1,0 +1,11 @@
+{
+ "out": [
+  {
+   "step": "jsawait:Array.from(document.querySelectorAll('button,[role=button],a')).map(e=>e",
+   "r": "BUTTON.ti-item# :: NEW EXPEDITION/Choose a Kid, a Companion ||| BUTTON.ti-item# :: THE MENAGERIE/The clubhouse, the board,  ||| BUTTON.ti-item# :: SETTINGS/Sound, motion, readability ||| BUTTON.ti-item# :: CREDITS/Who built the house"
+  }
+ ],
+ "new_logs": [],
+ "errors": [],
+ "nerr": 0
+}

@@ -1,0 +1,7 @@
+{
+ "i": 1266,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"JSON.stringify(window.MM.state().run.snacks)+\\\" lost=\\\"+window.MM.state().run.lostThings\"}",
+ "result": "[{\"id\":\"gummy-bat\",\"name\":\"Gummy Bat\",\"base\":45,\"desc\":\"Recover 12 Courage.\",\"effect\":{\"heal\":12},\"price\":52},{\"id\":\"liquorice\",\"name\":\"Liquorice Rope\",\"base\":45,\"desc\":\"Gain 12 Guard.\",\"effect\":{\"block\":12},\"price\":50}] lost=43",
+ "error": null,
+ "console_errors": []
+}

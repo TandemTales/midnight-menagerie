@@ -1,0 +1,10 @@
+{
+ "i": 1107,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"JSON.stringify([...document.querySelectorAll(String.fromCharCode(46)+\\\"cb-enemy\\\")].map(e=>({n:(e.querySelector(String.fromCharCode(46)+\\\"cb-enemy__name\\\")||{}).innerText,intentHTML:(e.querySelector(String.fromCharCode(46)+\\\"cb-enemy__intent\\\")||{}).innerHTML||\\\"NONE\\\"})))\"}",
+ "result": "[{\"n\":\"DOOR GREETER\",\"intentHTML\":\"<div class=\\\"cb-intent\\\" role=\\\"img\\\" tabindex=\\\"0\\\">\\n      <div class=\\\"cb-intent__halo\\\"></div>\\n      <svg class=\\\"cb-intent__art\\\" viewBox=\\\"0 0 100 100\\\" aria-hidden=\\\"true\\\">\\n        <path class=\\\"cb-intent__frame\\\" d=\\\"\\\"></path>\\n        <path class=\\\"cb-intent__frameline\\\" d=\\\"\\\"></path>\\n        <g class=\\\"cb-intent__glyph\\\" transform=\\\"translate(50 50) scale(0.56) translate(-50 -50)\\\"></g>\\n      </svg>\\n      <div class=\\\"cb-intent__vals\\\"></div>\\n      <div class=\\\"cb-intent__pips\\\"></div></div>\"},{\"n\":\"DUST BUNNY\",\"intentHTML\":\"<div class=\\\"cb-intent\\\" role=\\\"img\\\" tabindex=\\\"0\\\">\\n      <div class=\\\"cb-intent__halo\\\"></div>\\n      <svg class=\\\"cb-intent__art\\\" viewBox=\\\"0 0 100 100\\\" aria-hidden=\\\"true\\\">\\n        <path class=\\\"cb-intent__frame\\\" d=\\\"\\\"></path>\\n        <path class=\\\"cb-intent__frameline\\\" d=\\\"\\\"></path>\\n        <g class=\\\"cb-intent__glyph\\\" transform=\\\"translate(50 50) scale(0.56) translate(-50 -50)\\\"></g>\\n      </svg>\\n      <div class=\\\"cb-intent__vals\\\"></div>\\n      <div class=\\\"cb-intent__pips\\\"></div></div>\"}]",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track003.mp3 net::ERR_ABORTED"
+ ]
+}

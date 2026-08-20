@@ -1,0 +1,12 @@
+{
+ "i": 1244,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"(()=>{const nl=String.fromCharCode(10);\\n const os=[...document.querySelectorAll(\\\".ev-choice,[class*=choice]\\\")].filter(e=>e.getBoundingClientRect().height>20);\\n return JSON.stringify({title:((document.querySelector(\\\"h1,[class*=title]\\\")||{}).innerText||\\\"\\\").split(nl).join(\\\" \\\"),\\n  opts:os.map(e=>{const r=e.getBoundingClientRect();return {t:(e.innerText||\\\"\\\").split(nl).join(\\\" | \\\").slice(0,110),\\n   dis:e.className.includes(\\\"is-locked\\\")||e.className.includes(\\\"is-disabled\\\"),\\n   x:Math.round(r.x+r.width/2),y:Math.round(r.y+r.height/2)}})})})()\"}",
+ "result": "{\"title\":\"The Feeding Room\",\"opts\":[]}",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track003.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track007.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

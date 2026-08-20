@@ -1,0 +1,12 @@
+{
+ "i": 1233,
+ "cmd": "{\"op\": \"text\"}",
+ "result": "The Foyer\nWing 1\n26 / 74\n145\n1 Clue\nLuck +2\nHaunt 0\n553148210\nTricks\n13\nCURIOSITY\nThe Collar\n\nAn empty room\n\nFRONT VESTIBULE \u2014 WEST \u00b7 THE FORGOTTEN FOYER\n\nThe room is completely empty. Bare boards, bare walls, one window boarded from the inside.\n\nIn the exact centre of the floor there is a pet collar. Red nylon, worn pale on one side. It has been placed there, squared up, the way you put out something you want found.\n\nPick it up.\nRISK\nCourage \u2014 a bite of it, or a lot\nGAIN\nA Keepsake, and a Clue\nRead the tag and copy it down.\nALWAYS\nThree Clues, and Lost Things\nLeave it exactly where it is.\nCOSTS\nYou walk away empty-handed\nALWAYS\nA Keepsake, and a little Courage\nSquared up again\n\nYou square it up again, the way you found it, and back out. When you look through the doorway from the corridor, the collar is gone and the boards are dusty and undisturbed, as if it was never put down at all. Something decides you are all right.\n\n+6\nCOURAGE\nSticky Hand\nKEEPSAKE\nGO ON\nENTER",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track003.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track007.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}

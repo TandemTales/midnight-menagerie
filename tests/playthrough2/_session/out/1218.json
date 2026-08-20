@@ -1,0 +1,10 @@
+{
+ "i": 1218,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"JSON.stringify([...document.querySelectorAll('.rw-card,.mm-card')].map(c=>{const b=c.getBoundingClientRect();return {t:(c.innerText||'').split(String.fromCharCode(10)).join(' | ').slice(0,90),x:Math.round(b.x+b.width/2),y:Math.round(b.y+b.height*0.35)}}))\"}",
+ "result": "[{\"t\":\"Scattershot Skeleton | ATTACK \u00b7 ALL | Deal 9 damage to all enemies. Then deal 3 damage to \",\"x\":528,\"y\":483},{\"t\":\"Sniff Around | SKILL | Look at the top 3 Tricks of your draw pile. Put one into your hand,\",\"x\":800,\"y\":508},{\"t\":\"Bone Toss | ATTACK | Deal 7 damage. You may Reattach 1 Bone. If you do, your next Trick th\",\"x\":1072,\"y\":514}]",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track003.mp3 net::ERR_ABORTED"
+ ]
+}

@@ -1,0 +1,1 @@
+{"steps": ["jsawait:Array.from(document.querySelectorAll('button,[role=button],a')).map(e=>e.tagName+'.'+(e.className||'')+'#'+(e.id||'')+' :: '+(e.innerText||'').slice(0,40).replace(/\\n/g,'/')).join(' ||| ')"]}

@@ -1,0 +1,147 @@
+{
+ "config": {
+  "TIER": "boss",
+  "ENC": null,
+  "REGION": "nursery",
+  "N": 40,
+  "GEN": 30,
+  "BOTS": [
+   "naive",
+   "competent"
+  ],
+  "POL": "balanced",
+  "SCALES": [
+   1,
+   0.8,
+   0.7,
+   0.6,
+   0.5
+  ],
+  "HAUNT": 0,
+  "HEAL": 0
+ },
+ "loadouts": 17,
+ "table": [
+  {
+   "bot": "naive",
+   "hpScale": 1,
+   "win": 87.5,
+   "turnsMean": 16.85,
+   "turnsMed": 19,
+   "costMean": 22.1,
+   "hpAfterWinMean": 54.11,
+   "courageAtDoor": 62.42,
+   "timeouts": 0,
+   "n": 40
+  },
+  {
+   "bot": "naive",
+   "hpScale": 0.8,
+   "win": 95,
+   "turnsMean": 14.3,
+   "turnsMed": 15,
+   "costMean": 19.68,
+   "hpAfterWinMean": 52.95,
+   "courageAtDoor": 62.42,
+   "timeouts": 0,
+   "n": 40
+  },
+  {
+   "bot": "naive",
+   "hpScale": 0.7,
+   "win": 95,
+   "turnsMean": 12.7,
+   "turnsMed": 13,
+   "costMean": 16.88,
+   "hpAfterWinMean": 55.32,
+   "courageAtDoor": 62.42,
+   "timeouts": 0,
+   "n": 40
+  },
+  {
+   "bot": "naive",
+   "hpScale": 0.6,
+   "win": 92.5,
+   "turnsMean": 11.05,
+   "turnsMed": 11,
+   "costMean": 14.9,
+   "hpAfterWinMean": 58.84,
+   "courageAtDoor": 62.42,
+   "timeouts": 0,
+   "n": 40
+  },
+  {
+   "bot": "naive",
+   "hpScale": 0.5,
+   "win": 95,
+   "turnsMean": 9.25,
+   "turnsMed": 10,
+   "costMean": 12.9,
+   "hpAfterWinMean": 59.13,
+   "courageAtDoor": 62.42,
+   "timeouts": 0,
+   "n": 40
+  },
+  {
+   "bot": "competent",
+   "hpScale": 1,
+   "win": 95,
+   "turnsMean": 15.7,
+   "turnsMed": 16,
+   "costMean": 22.63,
+   "hpAfterWinMean": 53.47,
+   "courageAtDoor": 62.42,
+   "timeouts": 0,
+   "n": 40
+  },
+  {
+   "bot": "competent",
+   "hpScale": 0.8,
+   "win": 95,
+   "turnsMean": 12.32,
+   "turnsMed": 12,
+   "costMean": 20.63,
+   "hpAfterWinMean": 54.84,
+   "courageAtDoor": 62.42,
+   "timeouts": 0,
+   "n": 40
+  },
+  {
+   "bot": "competent",
+   "hpScale": 0.7,
+   "win": 95,
+   "turnsMean": 11.28,
+   "turnsMed": 11,
+   "costMean": 16.98,
+   "hpAfterWinMean": 57.13,
+   "courageAtDoor": 62.42,
+   "timeouts": 0,
+   "n": 40
+  },
+  {
+   "bot": "competent",
+   "hpScale": 0.6,
+   "win": 95,
+   "turnsMean": 9.65,
+   "turnsMed": 10,
+   "costMean": 15.97,
+   "hpAfterWinMean": 58.37,
+   "courageAtDoor": 62.42,
+   "timeouts": 0,
+   "n": 40
+  },
+  {
+   "bot": "competent",
+   "hpScale": 0.5,
+   "win": 95,
+   "turnsMean": 8.15,
+   "turnsMed": 8,
+   "costMean": 15.35,
+   "hpAfterWinMean": 58.76,
+   "courageAtDoor": 62.42,
+   "timeouts": 0,
+   "n": 40
+  }
+ ],
+ "errors": []
+}

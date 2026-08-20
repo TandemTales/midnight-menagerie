@@ -1,0 +1,10 @@
+{
+ "i": 1108,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"JSON.stringify([...document.querySelectorAll(String.fromCharCode(91)+\\\"class*=rule\\\"+String.fromCharCode(93)+\\\",\\\"+String.fromCharCode(91)+\\\"class*=hazard\\\"+String.fromCharCode(93)+\\\",\\\"+String.fromCharCode(91)+\\\"class*=modifier\\\"+String.fromCharCode(93)].map(e=>e.className+\\\":\\\"+e.innerText.slice(0,80)))\"}",
+ "result": null,
+ "error": "Error: Page.evaluate: SyntaxError: missing ) after argument list\n    at eval (<anonymous>)\n    at UtilityScript.evaluate (<anonymous>:311:30)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track003.mp3 net::ERR_ABORTED"
+ ]
+}

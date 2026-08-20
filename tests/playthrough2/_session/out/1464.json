@@ -1,0 +1,7 @@
+{
+ "i": 1464,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"document.querySelector(String.fromCharCode(46)+\\\"mm-hand\\\").className\"}",
+ "result": "mm-hand is-locked",
+ "error": null,
+ "console_errors": []
+}

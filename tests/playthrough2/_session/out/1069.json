@@ -1,0 +1,7 @@
+{
+ "i": 1069,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"(()=>{const e=[...document.querySelectorAll('.map-node')].find(x=>x.dataset.id==='foyer-3-1');if(!e)return 'none';const r=e.getBoundingClientRect();return JSON.stringify([Math.round(r.x+r.width/2),Math.round(r.y+r.height/2),e.className])})()\"}",
+ "result": "[490,262,\"map-node map-node--scuffle is-legal\"]",
+ "error": null,
+ "console_errors": []
+}

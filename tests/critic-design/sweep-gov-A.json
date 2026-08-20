@@ -1,0 +1,47 @@
+{
+ "config": {
+  "TIER": "boss",
+  "ENC": null,
+  "REGION": "nursery",
+  "N": 40,
+  "GEN": 30,
+  "BOTS": [
+   "naive",
+   "competent"
+  ],
+  "POL": "balanced",
+  "SCALES": [
+   1
+  ],
+  "HAUNT": 0,
+  "HEAL": 0
+ },
+ "loadouts": 14,
+ "table": [
+  {
+   "bot": "naive",
+   "hpScale": 1,
+   "win": 77.5,
+   "turnsMean": 11.55,
+   "turnsMed": 12,
+   "costMean": 42.4,
+   "hpAfterWinMean": 40.32,
+   "courageAtDoor": 66.28,
+   "timeouts": 0,
+   "n": 40
+  },
+  {
+   "bot": "competent",
+   "hpScale": 1,
+   "win": 87.5,
+   "turnsMean": 10.15,
+   "turnsMed": 11,
+   "costMean": 42.63,
+   "hpAfterWinMean": 38.91,
+   "courageAtDoor": 66.28,
+   "timeouts": 0,
+   "n": 40
+  }
+ ],
+ "errors": []
+}

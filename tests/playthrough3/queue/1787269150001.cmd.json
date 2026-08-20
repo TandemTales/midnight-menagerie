@@ -1,0 +1,1 @@
+{"steps": ["jsawait:Array.from(document.querySelectorAll('.sel-card,.sel-comp,[data-companion]')).slice(0,20).map(e=>e.className+'|'+(e.dataset.companion||'')+'|'+(e.querySelector('img')?e.querySelector('img').getAttribute('src'):'NOIMG')+'|'+(e.querySelector('img')?e.querySelector('img').naturalWidth:'-')).join('\\n')"]}

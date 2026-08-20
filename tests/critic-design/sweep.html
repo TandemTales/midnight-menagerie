@@ -12,28 +12,35 @@
  * into the enemy def by hand, and then re-measured through the ordinary sim.
  *
  *   ?tier=boss&enc=foyer-boss&n=24&gen=8&scales=1,0.85,0.75,0.7,0.65,0.6
+ *   ?tier=boss&region=nursery&haunt=0   — a second-region door
  */
 import { expedition, bench } from './lib/expedition.js';
 
 const Q = new URLSearchParams(location.search);
 const TIER = Q.get('tier') || 'boss';
 const ENC = Q.get('enc') || null;
+const REGION = Q.get('region') || 'foyer';
 const N = +(Q.get('n') || 24);
 const GEN = +(Q.get('gen') || 8);
 const BOTS = (Q.get('bots') || 'competent').split(',');
 const POL = Q.get('pol') || 'balanced';
 const SCALES = (Q.get('scales') || '1,0.85,0.75,0.7,0.65,0.6').split(',').map(Number);
 const SEED0 = +(Q.get('seed') || 90000);
+const HAUNT = +(Q.get('haunt') || 0);
 const HEAL = +(Q.get('heal') || 0);   // pretend a Safe Room stood before this door
 
 const out = document.getElementById('out');
-const R = { config: { TIER, ENC, N, GEN, BOTS, POL, SCALES, HEAL }, loadouts: 0, table: [], errors: [] };
+const R = { config: { TIER, ENC, REGION, N, GEN, BOTS, POL, SCALES, HAUNT, HEAL }, loadouts: 0, table: [], errors: [] };
 
+// Generating a region-2 loadout means playing region 1 first, and only the runs
+// that survive it produce one — so `gen` has to be generous for the Nursery.
 const loadouts = [];
 for (let i = 0; i < GEN; i++) {
   try {
-    const r = await expedition({ seed: SEED0 + i * 7, bot: 'competent', policy: POL });
-    const l = TIER === 'boss' ? r.loadoutAtBoss : (r.loadoutAtFirstElite || r.loadoutAtBoss);
+    const r = await expedition({ seed: SEED0 + i * 7, bot: 'competent', policy: POL, haunt: HAUNT });
+    const g = (r.regions || []).find(x => x.region === REGION);
+    if (!g) continue;
+    const l = TIER === 'boss' ? g.loadoutAtBoss : (g.loadoutAtFirstElite || g.loadoutAtBoss);
     if (l) loadouts.push(l);
   } catch (e) { R.errors.push('gen ' + i + ': ' + (e.message || e)); }
 }
@@ -51,8 +58,8 @@ for (const bot of BOTS) {
       if (!l) break;
       if (HEAL) l = { ...l, courage: Math.min(l.maxCourage, l.courage + HEAL) };
       try {
-        rows.push(await bench({ loadout: l, encounterTier: TIER, encounterId: ENC,
-                                seed: 700000 + i * 13, bot, hpScale, maxTurns: 120 }));
+        rows.push(await bench({ loadout: l, encounterTier: TIER, encounterId: ENC, region: REGION,
+                                seed: 700000 + i * 13, bot, haunt: HAUNT, hpScale, maxTurns: 120 }));
       } catch (e) { R.errors.push(`${bot} ${hpScale} ${i}: ` + (e.message || e)); }
     }
     if (!rows.length) continue;

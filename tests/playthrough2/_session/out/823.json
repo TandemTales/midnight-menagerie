@@ -1,0 +1,7 @@
+{
+ "i": 823,
+ "cmd": "{\"op\": \"clickxy\", \"x\": 799, \"y\": 490}",
+ "result": "ok",
+ "error": null,
+ "console_errors": []
+}

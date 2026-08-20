@@ -1,0 +1,1 @@
+{"steps": ["hover:.ti-item", "shot:p3-02-title-hover", "js:document.querySelectorAll('.ti-item')[0].click()", "strip:p3-03-trans,8,90", "wait:1.2", "shot:p3-04-select", "text"]}

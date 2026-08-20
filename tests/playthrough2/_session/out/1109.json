@@ -1,0 +1,10 @@
+{
+ "i": 1109,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"(()=>{const nl=String.fromCharCode(10);\\n const sels=[\\\"[class*=rule]\\\",\\\"[class*=hazard]\\\",\\\"[class*=modifier]\\\",\\\"[class*=banner]\\\",\\\".cb-room\\\",\\\".cb-rules\\\"];\\n const out=[];\\n sels.forEach(s=>{document.querySelectorAll(s).forEach(e=>out.push(s+\\\" :: \\\"+e.className+\\\" :: \\\"+(e.innerText||\\\"\\\").split(nl).join(\\\" \\\").slice(0,100)))});\\n return out.join(nl)||\\\"(none)\\\"})()\\n\"}",
+ "result": "[class*=rule] :: cb-enemy__rule :: \n[class*=rule] :: cb-enemy__rule :: \n[class*=rule] :: mm-card__rules :: Fetch a non-Slobbered Trick with printed cost 1 or less.\n[class*=rule] :: mm-card__rules :: Reattach up to 2 Bones. Gain 4 Guard for each. If you have none, gain 6 Guard instead.\n[class*=rule] :: mm-card__rules :: At the start of each turn, choose one: Fetch a non-Slobbered Trick with printed cost 1 or less, or D\n[class*=rule] :: mm-card__rules :: Gain 5 Guard. Gain 3 more while Whole.\n[class*=rule] :: mm-card__rules :: Deal 6 damage.\n[class*=banner] :: mm-card__banner :: Go Get It!\n[class*=banner] :: mm-card__banner :: Put Yourself Back Together\n[class*=banner] :: mm-card__banner :: Best Dog in the House\n[class*=banner] :: mm-card__banner :: Sit Pretty\n[class*=banner] :: mm-card__banner :: Bite\n[class*=banner] :: cb-banner :: \n.cb-room :: cb-room :: MUSIC ROOM \u2014 WEST",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED",
+  "REQFAIL http://localhost:8777/game/assets/audio/track003.mp3 net::ERR_ABORTED"
+ ]
+}

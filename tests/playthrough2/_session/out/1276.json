@@ -1,0 +1,40 @@
+{
+ "i": 1276,
+ "cmd": "{\"op\": \"box\", \"sel\": \"[class*=snack]\"}",
+ "result": [
+  {
+   "t": "",
+   "x": 518,
+   "y": 9,
+   "w": 91,
+   "h": 28,
+   "cls": "mm-hud__snacks"
+  },
+  {
+   "t": "",
+   "x": 518,
+   "y": 9,
+   "w": 28,
+   "h": 28,
+   "cls": "mm-hud__snack is-idle"
+  },
+  {
+   "t": "",
+   "x": 550,
+   "y": 9,
+   "w": 28,
+   "h": 28,
+   "cls": "mm-hud__snack is-idle"
+  },
+  {
+   "t": "",
+   "x": 581,
+   "y": 9,
+   "w": 28,
+   "h": 28,
+   "cls": "mm-hud__snack is-empty"
+  }
+ ],
+ "error": null,
+ "console_errors": []
+}

@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T15:12:37",
+ "updated": "2026-08-20T17:40:06",
  "wave": 4,
  "waveLabel": "Second playthrough",
  "headline": "Every piece rebuilt and rebalanced. A second fresh player is judging the whole game blind against Slay the Spire 2.",
@@ -94,8 +94,8 @@
    "name": "Run layer",
    "desc": "Rewards, shops, rest, Curiosities, Keepsakes, Backpack",
    "status": "done",
-   "round": 3,
-   "verdict": "Mid-combat resume by verified replay, stats fixed, 54 Curiosity affordances rewritten, Snack prices tiered.",
+   "round": 4,
+   "verdict": "Two-region runs validated: whole-run survival 50%, Governess 73.7% when reached, boss 9.4 turns. Courage floor on wing entry.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -434,6 +434,10 @@
   {
    "t": "2026-08-20T15:12:37",
    "msg": "Extending runs to two regions. The Nursery and The Governess are authored and validated but the simulator stopped at the first boss, so they have never been played."
+  },
+  {
+   "t": "2026-08-20T17:40:06",
+   "msg": "Two regions validated and kept: whole-run survival 50%, The Governess 73.7% when reached. The Nursery had been authored at first-region power against a deck 60% bigger with 5x the Keepsakes."
   }
  ]
 }

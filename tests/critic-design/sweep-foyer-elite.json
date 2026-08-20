@@ -1,0 +1,122 @@
+{
+ "config": {
+  "TIER": "elite",
+  "ENC": null,
+  "REGION": "foyer",
+  "N": 45,
+  "GEN": 15,
+  "BOTS": [
+   "naive",
+   "competent"
+  ],
+  "POL": "balanced",
+  "SCALES": [
+   1,
+   0.9,
+   0.85,
+   0.8
+  ],
+  "HAUNT": 0,
+  "HEAL": 0
+ },
+ "loadouts": 14,
+ "table": [
+  {
+   "bot": "naive",
+   "hpScale": 1,
+   "win": 55.6,
+   "turnsMean": 10.2,
+   "turnsMed": 10,
+   "costMean": 51.22,
+   "hpAfterWinMean": 30.28,
+   "courageAtDoor": 62.04,
+   "timeouts": 0,
+   "n": 45
+  },
+  {
+   "bot": "naive",
+   "hpScale": 0.9,
+   "win": 73.3,
+   "turnsMean": 9.64,
+   "turnsMed": 9,
+   "costMean": 46.6,
+   "hpAfterWinMean": 30.3,
+   "courageAtDoor": 62.04,
+   "timeouts": 0,
+   "n": 45
+  },
+  {
+   "bot": "naive",
+   "hpScale": 0.85,
+   "win": 75.6,
+   "turnsMean": 9.18,
+   "turnsMed": 9,
+   "costMean": 43.07,
+   "hpAfterWinMean": 33.97,
+   "courageAtDoor": 62.04,
+   "timeouts": 0,
+   "n": 45
+  },
+  {
+   "bot": "naive",
+   "hpScale": 0.8,
+   "win": 77.8,
+   "turnsMean": 8.76,
+   "turnsMed": 8,
+   "costMean": 42.27,
+   "hpAfterWinMean": 33.77,
+   "courageAtDoor": 62.04,
+   "timeouts": 0,
+   "n": 45
+  },
+  {
+   "bot": "competent",
+   "hpScale": 1,
+   "win": 80,
+   "turnsMean": 9.09,
+   "turnsMed": 9,
+   "costMean": 40.69,
+   "hpAfterWinMean": 37.81,
+   "courageAtDoor": 62.04,
+   "timeouts": 0,
+   "n": 45
+  },
+  {
+   "bot": "competent",
+   "hpScale": 0.9,
+   "win": 91.1,
+   "turnsMean": 8.13,
+   "turnsMed": 8,
+   "costMean": 34.98,
+   "hpAfterWinMean": 38.27,
+   "courageAtDoor": 62.04,
+   "timeouts": 0,
+   "n": 45
+  },
+  {
+   "bot": "competent",
+   "hpScale": 0.85,
+   "win": 95.6,
+   "turnsMean": 7.78,
+   "turnsMed": 7,
+   "costMean": 32.8,
+   "hpAfterWinMean": 38.4,
+   "courageAtDoor": 62.04,
+   "timeouts": 0,
+   "n": 45
+  },
+  {
+   "bot": "competent",
+   "hpScale": 0.8,
+   "win": 100,
+   "turnsMean": 7.42,
+   "turnsMed": 7,
+   "costMean": 29.2,
+   "hpAfterWinMean": 40.04,
+   "courageAtDoor": 62.04,
+   "timeouts": 0,
+   "n": 45
+  }
+ ],
+ "errors": []
+}

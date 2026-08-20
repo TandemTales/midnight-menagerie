@@ -48,7 +48,7 @@ export const buttonBaby = {
   region: REGION,
   tier: 'normal',
   role: 'introductory',
-  hp: [21, 21],
+  hp: [30, 30],
   silhouette: 'button-doll',
   palette: ['#e0b7c4', '#f6e3d2', '#7a4f5c'],
   shape: { body: 'squat', limbs: 4, eyes: 2 },
@@ -94,9 +94,9 @@ export const buttonBaby = {
       },
     },
     'button-toss': {
-      id: 'button-toss', name: 'Button Toss', intent: Intent.ATTACK, damage: 5, hits: 1,
+      id: 'button-toss', name: 'Button Toss', intent: Intent.ATTACK, damage: 8, hits: 1,
       tell: 'It flicks a brass button at you, hard.',
-      effect(c) { hitPlayer(c, 5); },
+      effect(c) { hitPlayer(c, 8); },
     },
     'gather-thread': {
       id: 'gather-thread', name: 'Gather Thread', intent: Intent.DEFEND, block: 7,
@@ -139,7 +139,7 @@ export const jackInTheBox = {
   region: REGION,
   tier: 'normal',
   role: 'introductory',
-  hp: [32, 32],
+  hp: [46, 46],
   silhouette: 'jackbox',
   palette: ['#3c6e8f', '#e8d24a', '#1f3a4a'],
   shape: { body: 'squat', limbs: 1, eyes: 2 },
@@ -186,9 +186,9 @@ export const jackInTheBox = {
       },
     },
     'box-bite': {
-      id: 'box-bite', name: 'Box Bite', intent: Intent.ATTACK, damage: 7, hits: 1,
+      id: 'box-bite', name: 'Box Bite', intent: Intent.ATTACK, damage: 10, hits: 1,
       tell: 'The lid snaps at you like a mouth, because it is one.',
-      effect(c) { hitPlayer(c, 7); },
+      effect(c) { hitPlayer(c, 10); },
     },
   },
 
@@ -219,7 +219,7 @@ export const patchworkSoldier = {
   region: REGION,
   tier: 'normal',
   role: 'interaction',
-  hp: [38, 38],
+  hp: [55, 55],
   silhouette: 'toy-soldier',
   palette: ['#7a2b2b', '#c9b18a', '#3b2a1a'],
   shape: { body: 'tall-thin', limbs: 4, eyes: 2 },
@@ -257,9 +257,9 @@ export const patchworkSoldier = {
       },
     },
     'wooden-saber': {
-      id: 'wooden-saber', name: 'Wooden Saber', intent: Intent.ATTACK, damage: 9, hits: 1,
+      id: 'wooden-saber', name: 'Wooden Saber', intent: Intent.ATTACK, damage: 13, hits: 1,
       tell: 'It presents the wooden sword with complete seriousness.',
-      effect(c) { hitPlayer(c, 9); },
+      effect(c) { hitPlayer(c, 13); },
     },
     'dismantle': {
       id: 'dismantle', name: 'Dismantle', intent: Intent.BUFF,
@@ -339,7 +339,7 @@ export const rockingHorse = {
   region: REGION,
   tier: 'normal',
   role: 'pressure',
-  hp: [42, 42],
+  hp: [60, 60],
   silhouette: 'rocking-horse',
   palette: ['#a8763f', '#e6d3ad', '#4a3018'],
   shape: { body: 'sprawling', limbs: 4, eyes: 2 },
@@ -364,9 +364,9 @@ export const rockingHorse = {
 
   moves: {
     rock: {
-      id: 'rock', name: 'Rock', intent: Intent.ATTACK_DEFEND, damage: 6, hits: 1, block: 5,
+      id: 'rock', name: 'Rock', intent: Intent.ATTACK_DEFEND, damage: 9, hits: 1, block: 5,
       tell: 'It tips forward on its rockers and comes down hard.',
-      effect(c) { hitPlayer(c, 6); c.block(c.self, 5); },
+      effect(c) { hitPlayer(c, 9); c.block(c.self, 5); },
     },
     gallop: {
       id: 'gallop', name: 'Gallop', intent: Intent.ATTACK_BIG, damage: 7, hits: 1,
@@ -413,7 +413,7 @@ export const blanketBlob = {
   region: REGION,
   tier: 'normal',
   role: 'interaction',
-  hp: [34, 34],
+  hp: [50, 50],
   silhouette: 'blanket-pile',
   palette: ['#8f9ec4', '#cfd8ee', '#4a5170'],
   shape: { body: 'squat', limbs: 1, eyes: 3 },
@@ -495,15 +495,15 @@ export const blanketBlob = {
       },
     },
     'blanket-snap': {
-      id: 'blanket-snap', name: 'Blanket Snap', intent: Intent.ATTACK, damage: 8, hits: 1,
+      id: 'blanket-snap', name: 'Blanket Snap', intent: Intent.ATTACK, damage: 11, hits: 1,
       tell: 'A corner of it cracks out like a wet towel.',
-      effect(c) { hitPlayer(c, 8); },
+      effect(c) { hitPlayer(c, 11); },
     },
     smother: {
-      id: 'smother', name: 'Smother', intent: Intent.ATTACK_DEBUFF, damage: 5, hits: 1,
+      id: 'smother', name: 'Smother', intent: Intent.ATTACK_DEBUFF, damage: 7, hits: 1,
       tell: 'It presses down over your face, warm and far too heavy.',
       applies: [{ id: 'smothered', stacks: 1, to: 'player' }],
-      effect(c) { hitPlayer(c, 5); c.applyStatus(c.player, 'smothered', 1); },
+      effect(c) { hitPlayer(c, 7); c.applyStatus(c.player, 'smothered', 1); },
     },
   },
 
@@ -547,7 +547,7 @@ export const porcelainDoll = {
   region: REGION,
   tier: 'normal',
   role: 'pressure',
-  hp: [36, 36],
+  hp: [52, 52],
   silhouette: 'porcelain-doll',
   palette: ['#f3e7de', '#c8a2a8', '#5b4750'],
   shape: { body: 'tall-thin', limbs: 4, eyes: 2 },
@@ -621,7 +621,7 @@ export const porcelainDoll = {
     }
     if (level >= 8) {
       h.flags.shatterFrac = 14 / 36;
-      h.notes.push('Haunt 8: enters Shattered at 14 Courage rather than 12 — the dangerous final state lasts longer.');
+      h.notes.push('Haunt 8: enters Shattered at 39% of its Courage rather than a third — the dangerous final state lasts longer.');
     }
     return h;
   },
@@ -642,7 +642,7 @@ export const toyChest = {
   region: REGION,
   tier: 'elite',
   role: 'bigScare',
-  hp: [110, 110],
+  hp: [132, 132],
   silhouette: 'toy-chest',
   palette: ['#6a4423', '#b98a4b', '#2e1c0e'],
   shape: { body: 'squat', limbs: 6, eyes: 4 },
@@ -681,14 +681,14 @@ export const toyChest = {
       effect(c) { c.block(c.self, 9); mem(c).slammed = false; },
     },
     'lid-slam': {
-      id: 'lid-slam', name: 'Lid Slam', intent: Intent.ATTACK, damage: 13, hits: 1,
+      id: 'lid-slam', name: 'Lid Slam', intent: Intent.ATTACK, damage: 17, hits: 1,
       tell: 'It rears up on its back edge to bring the whole lid down.',
-      effect(c) { hitPlayer(c, 13); },
+      effect(c) { hitPlayer(c, 17); },
     },
     'toy-barrage': {
-      id: 'toy-barrage', name: 'Toy Barrage', intent: Intent.ATTACK, damage: 4, hits: 3,
+      id: 'toy-barrage', name: 'Toy Barrage', intent: Intent.ATTACK, damage: 6, hits: 3,
       tell: 'It throws its own contents at you, one handful at a time.',
-      effect(c) { hitPlayer(c, 4, 3); },
+      effect(c) { hitPlayer(c, 6, 3); },
     },
     'tidy-up': {
       id: 'tidy-up', name: 'Tidy Up', intent: Intent.DEFEND_BUFF,
@@ -747,7 +747,7 @@ export const patchworkGiant = {
   region: REGION,
   tier: 'elite',
   role: 'bigScare',
-  hp: [126, 126],
+  hp: [150, 150],
   silhouette: 'patchwork-giant',
   palette: ['#8a6f5c', '#c8a97e', '#4a3a2c'],
   shape: { body: 'sprawling', limbs: 4, eyes: 2 },
@@ -771,7 +771,7 @@ export const patchworkGiant = {
   atkBonus(c) {
     return (patchworkGiant.hasPatch(c, 'bear') ? 3 : 0)
       + patchworkGiant.stuffing(c)
-      + (mem(c).comingApart ? 4 : 0);
+      + (mem(c).comingApart ? 6 : 0);
   },
 
   /** Spring Patch splits the first attack of each cycle into two 60% hits. */
@@ -817,7 +817,7 @@ export const patchworkGiant = {
       mem(c).patches = (mem(c).patches || []).filter(x => x !== p);
       mem(c).torn = (mem(c).torn || 0) + 1;
       setCnt(c, 'patches', (mem(c).patches || []).length);
-      addCnt(c, 'loose-stuffing', flag(c, 'stuffingPerTear', 1), 99);
+      addCnt(c, 'loose-stuffing', flag(c, 'stuffingPerTear', 2), 99);
       mem(c).lastTorn = p;
     }
   },
@@ -867,8 +867,8 @@ export const patchworkGiant = {
     const h = hauntBase(level, 'elite');
     if (level >= 1) h.notes.push('Courage +6%.');
     if (level >= 9) {
-      h.flags.stuffingPerTear = 2;
-      h.notes.push('Haunt 9: gains 2 Loose Stuffing whenever a Patch tears instead of 1.');
+      h.flags.stuffingPerTear = 3;
+      h.notes.push('Haunt 9: gains 3 Loose Stuffing whenever a Patch tears instead of 2.');
     }
     return h;
   },
@@ -893,7 +893,7 @@ function twinCommon(id) {
     region: REGION,
     tier: 'elite',
     role: 'bigScare',
-    hp: [68, 68],
+    hp: [80, 80],
     silhouette: 'porcelain-twin',
     shape: { body: 'tall-thin', limbs: 4, eyes: 2 },
     scale: 1.15,
@@ -946,22 +946,22 @@ export const porcelainTwinPrim = Object.assign(twinCommon('porcelain-twin-prim')
 
   moves: {
     'pointed-finger': {
-      id: 'pointed-finger', name: 'Pointed Finger', intent: Intent.ATTACK, damage: 10, hits: 1,
+      id: 'pointed-finger', name: 'Pointed Finger', intent: Intent.ATTACK, damage: 13, hits: 1,
       tell: 'Prim points at you. It is not a friendly gesture.',
-      damageFn: (c) => 10 + porcelainTwinPrim.bonus(c) + (mem(c).hushed ? 4 : 0),
+      damageFn: (c) => 13 + porcelainTwinPrim.bonus(c) + (mem(c).hushed ? 4 : 0),
       effect(c) {
-        hitPlayer(c, 10 + porcelainTwinPrim.bonus(c) + (mem(c).hushed ? 4 : 0));
+        hitPlayer(c, 13 + porcelainTwinPrim.bonus(c) + (mem(c).hushed ? 4 : 0));
         mem(c).hushed = false;
         porcelainTwinPrim.afterAttack(c);
       },
     },
     'little-slap': {
-      id: 'little-slap', name: 'Little Slap', intent: Intent.ATTACK, damage: 5, hits: 2,
+      id: 'little-slap', name: 'Little Slap', intent: Intent.ATTACK, damage: 7, hits: 2,
       tell: 'Two small, extremely precise slaps.',
-      damageFn: (c) => 5 + porcelainTwinPrim.bonus(c) + (mem(c).hushed ? 4 : 0),
+      damageFn: (c) => 7 + porcelainTwinPrim.bonus(c) + (mem(c).hushed ? 4 : 0),
       hitsFn: () => 2,
       effect(c) {
-        hitPlayer(c, 5 + porcelainTwinPrim.bonus(c) + (mem(c).hushed ? 4 : 0), 2);
+        hitPlayer(c, 7 + porcelainTwinPrim.bonus(c) + (mem(c).hushed ? 4 : 0), 2);
         mem(c).hushed = false;
         porcelainTwinPrim.afterAttack(c);
       },

@@ -1,0 +1,24 @@
+  T0: Courage 74 of 74 guard=1 nerve=3/3NERVE inc='INCOMING 19 −1 Guard → 18 18 more Guard to stop it all' | 10|DUST BUNNY|8|/20|5|DUST|0/4 ; 9|LOST LUGGAGE|23|/23|5
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @8hp
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @7hp
+    -> Put Yourself Back Together, 1 Nerve, Skill, basic, R
+    -> Shake, Boy!, 0 Nerve, Skill, basic, Shed 1 Bone. Dra
+  T1: Courage 65 of 74 guard=1 nerve=3/3NERVE inc='Incoming16−7 Guard→99 more Guard to stop it all' | 5|DUST BUNNY|1|/20|DUST|0/4 ; 12|LOST LUGGAGE|23|/23
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @1hp
+    -> Put Yourself Back Together, 1 Nerve, Skill, basic, R
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @23hp
+  T2: Courage 65 of 74 guard=1 nerve=3/3NERVE inc='INCOMING 12 −1 Guard → 11 11 more Guard to stop it all' | |      |        |        |        |        |      |      |        |        |        |      |      5|      |        |      |      |        |        |          |            |              |            |            |              |            |          |          |            |            |              |              |              |              |              |              |                |                |              |            |            |          |        |        |      |      |        Dust Bunny|        |          |          |          0/20|        |        5|        Dust0/4|        |      |      -6LETHAL ; 12|LOST LUGGAGE|17|/23|12
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @17hp
+    -> Clutter, 0 Nerve, Status, special, Does nothing. Exh
+    -> Sit Pretty, 1 Nerve, Skill, basic, Gain 5 Guard. Gai
+    -> Sit Pretty, 1 Nerve, Skill, basic, Gain 5 Guard. Gai
+  T3: Courage 65 of 74 guard=1 nerve=3/3NERVE inc='Incoming12−17 Guard→0Fully blocked' | |      |        |        |        |        |      |      |        |        |        |      |      5|      |        |      |      |        |        |          |            |              |            |            |              |            |          |          |            |            |              |              |              |              |              |              |                |                |              |            |            |          |        |        |      |      |        Dust Bunny|        |          |          |          0/20|        |        5|        Dust0/4|        |      |      -6LETHAL ; 5|LOST LUGGAGE|17|/23
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @17hp
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @11hp
+    -> Sit Pretty, 1 Nerve, Skill, basic, Gain 5 Guard. Gai
+    -> Shake, Boy!, 0 Nerve, Skill, basic, Shed 1 Bone. Dra
+  T4: Courage 65 of 74 guard=1 nerve=3/3NERVE inc='INCOMING 9 −1 Guard → 8 8 more Guard to stop it all' | |      |        |        |        |        |      |      |        |        |        |      |      5|      |        |      |      |        |        |          |            |              |            |            |              |            |          |          |            |            |              |              |              |              |              |              |                |                |              |            |            |          |        |        |      |      |        Dust Bunny|        |          |          |          0/20|        |        5|        Dust0/4|        |      |      -6LETHAL ; 9|LOST LUGGAGE|5|/23|5
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @5hp
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @4hp
+    -> Sit Pretty, 1 Nerve, Skill, basic, Gain 5 Guard. Gai
+  left combat -> reward

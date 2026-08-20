@@ -1,0 +1,7 @@
+{
+ "i": 825,
+ "cmd": "{\"op\": \"shot\", \"name\": \"p2-50-after-fetch\"}",
+ "result": "shots\\p2-50-after-fetch.png",
+ "error": null,
+ "console_errors": []
+}

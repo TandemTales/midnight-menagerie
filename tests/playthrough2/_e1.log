@@ -1,0 +1,37 @@
+  T0: Courage 37 of 74 guard=2 nerve=3/3NERVE inc='Incoming20−2 Guard→1818 more Guard to stop it all' | 6|DOOR GREETER|29|/29 ; 5|DUST BUNNY|8|/20|DUST|0/4
+    -> Sit, Stay, 1 Nerve, Skill, common, Gain 7 Guard. Ret
+    -> Sit Pretty, 1 Nerve, Skill, basic, Gain 5 Guard. Gai
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @8hp
+  T1: Courage 37 of 74 guard=2 nerve=3/3NERVE inc='INCOMING 10 −2 Guard → 8 8 more Guard to stop it all' | DEBUFF|DOOR GREETER|29|/29|6 ; 10|DUST BUNNY|2|/20|5|DUST|0/4
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @2hp
+    -> Shake, Boy!, 0 Nerve, Skill, basic, Shed 1 Bone. Dra
+    -> Sit Pretty, 1 Nerve, Skill, basic, Gain 5 Guard. Gai
+    -> Put Yourself Back Together, 1 Nerve, Skill, basic, R
+  T2: Courage 37 of 74 guard=2 nerve=3/3NERVE inc='INCOMING 10 −2 Guard → 8 8 more Guard to stop it all' | NO RUNNING|Playing a fourth Trick this turn breaks the rule. Reprimand: 6 damage.|10|DOOR GREETER|29|/29 ; 5|DUST BUNNY|1|/20|DUST|0/4
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @1hp
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @29hp
+    -> Shake, Boy!, 0 Nerve, Skill, basic, Shed 1 Bone. Dra
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @23hp
+  T3: Courage 23 of 74 guard=2 nerve=3/3NERVE inc='Incoming10→1010 more Guard to stop it all' | NO RUNNING|Playing a fourth Trick this turn breaks the rule. Reprimand: 6 damage.|6|DOOR GREETER|17|/29 ; |      |        |        |        |        |      |      |        |        |        |      |      5|      |        |      |      |        |        |          |            |              |            |            |              |            |          |          |            |            |              |              |              |              |              |              |                |                |              |            |            |          |        |        |      |      |        Dust Bunny|        |          |          |          0/20|        |        5|        Dust0/4|        |      |      -6LETHAL
+    -> Sit Pretty, 1 Nerve, Skill, basic, Gain 5 Guard. Gai
+    -> Sit Pretty, 1 Nerve, Skill, basic, Gain 5 Guard. Gai
+    -> Sit Pretty, 1 Nerve, Skill, basic, Gain 5 Guard. Gai
+  T4: Courage 23 of 74 guard=2 nerve=3/3NERVE inc='Incoming10→1010 more Guard to stop it all' | NO RUNNING|Playing a fourth Trick this turn breaks the rule. Reprimand: 6 damage.|DEBUFF|DOOR GREETER|17|/29|6 ; |      |        |        |        |        |      |      |        |        |        |      |      5|      |        |      |      |        |        |          |            |              |            |            |              |            |          |          |            |            |              |              |              |              |              |              |                |                |              |            |            |          |        |        |      |      |        Dust Bunny|        |          |          |          0/20|        |        5|        Dust0/4|        |      |      -6LETHAL
+    -> Sit Pretty, 1 Nerve, Skill, basic, Gain 5 Guard. Gai
+    -> Put Yourself Back Together, 1 Nerve, Skill, basic, R
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @17hp
+    -> Shake, Boy!, 0 Nerve, Skill, basic, Shed 1 Bone. Dra
+  T5: Courage 23 of 74 guard=2 nerve=3/3NERVE inc='INCOMING 10 −2 Guard → 8 8 more Guard to stop it all' | NO RUNNING|Playing a fourth Trick this turn breaks the rule. Reprimand: 6 damage.|10|DOOR GREETER|17|/29 ; |      |        |        |        |        |      |      |        |        |        |      |      5|      |        |      |      |        |        |          |            |              |            |            |              |            |          |          |            |            |              |              |              |              |              |              |                |                |              |            |            |          |        |        |      |      |        Dust Bunny|        |          |          |          0/20|        |        5|        Dust0/4|        |      |      -6LETHAL
+    -> Sit Pretty, 1 Nerve, Skill, basic, Gain 5 Guard. Gai
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @17hp
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @11hp
+  T6: Courage 20 of 74 guard=2 nerve=3/3NERVE inc='Incoming10−7 Guard→33 more Guard to stop it all' | NO RUNNING|Playing a fourth Trick this turn breaks the rule. Reprimand: 6 damage.|6|DOOR GREETER|5|/29 ; |      |        |        |        |        |      |      |        |        |        |      |      5|      |        |      |      |        |        |          |            |              |            |            |              |            |          |          |            |            |              |              |              |              |              |              |                |                |              |            |            |          |        |        |      |      |        Dust Bunny|        |          |          |          0/20|        |        5|        Dust0/4|        |      |      -6LETHAL
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @5hp
+    -> Sit Pretty, 1 Nerve, Skill, basic, Gain 5 Guard. Gai
+  left combat -> reward
+    reward: Scattershot Skeleton | ATTACK · ALL | Deal 9 damage to all enemies. Then deal 3 damage to 
+    reward: Sniff Around | SKILL | Look at the top 3 Tricks of your draw pile. Put one into your hand,
+    reward: Bone Toss | ATTACK | Deal 7 damage. You may Reattach 1 Bone. If you do, your next Trick th
+map -> foyer-4-2 (curiosity) Front Vestibule — West   route ahead: curiosity,curiosity,unknown,shop,scuffle,bigScare,curiosity,safe,boss
+  -> scene event type curiosity
+  STOP for manual review at event curiosity

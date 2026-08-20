@@ -6,11 +6,19 @@
  * everything messy corrected, and everything frightened kept somewhere safe. Forever,
  * if necessary. "Nothing properly cared for should ever be allowed to come apart."
  *
- *   Phase 1  280 → 151   Stitched Together: Favorite Doll eats the first 10 damage each
+ *   Phase 1  175 → 101   Stitched Together: Favorite Doll eats the first 10 damage each
  *                        turn. Tear the Doll, get a window, watch her spend a turn mending.
- *   Transition at ≤150   Look What You've Done: the Doll is permanently Torn, and she
+ *   Transition at ≤100   Look What You've Done: the Doll is permanently Torn, and she
  *                        starts patching herself with what is left of it.
- *   Phase 2  150 → 0     A three-Patch cycle you can either play around or hit through.
+ *   Phase 2  100 → 0     A three-Patch cycle you can either play around or hit through.
+ *
+ * BALANCE 2026-08-20 (two-region round): she was 280 Courage and 15.2 turns against an
+ * 8-12 band, and a competent player beat her 94.7% of the time against a 60-75% band.
+ * A Courage sweep at the real Nursery door settled the question — x1.0/0.8/0.7/0.6/0.5
+ * measured 95% / 95% / 95% / 95% / 95%. Her Courage was buying LENGTH and nothing else,
+ * because 85% of her printed damage was being blocked and one turn in four of each cycle
+ * dealt none at all. Courage came down to 190; the threat was bought back in damage, and
+ * Tighten the Stitch stopped being a free turn for the player.
  */
 
 import { Intent } from '../schema.js';
@@ -19,7 +27,7 @@ import {
   hauntBase, flag, isAlive, bossDmg,
 } from '../enemies/_lib.js';
 
-const PHASE2_AT = 150;
+const PHASE2_AT = 100;
 
 /** Favorite Doll's random Patch, visible before the first player turn. */
 export const DOLL_PATCHES = {
@@ -100,7 +108,7 @@ export const governess = {
   region: 'nursery',
   tier: 'boss',
   role: 'boss',
-  hp: [280, 280],
+  hp: [175, 175],
   silhouette: 'governess',
   palette: ['#2b2233', '#6b5a72', '#e6dcc8'],
   shape: { body: 'tall-thin', limbs: 2, eyes: 2 },
@@ -203,18 +211,18 @@ export const governess = {
       },
     },
     'sharp-correction': {
-      id: 'sharp-correction', name: 'Sharp Correction', intent: Intent.ATTACK, damage: 11, hits: 1,
+      id: 'sharp-correction', name: 'Sharp Correction', intent: Intent.ATTACK, damage: 24, hits: 1,
       tell: 'Her needles come together with a small, tidy click.',
-      damageFn: (c) => 11 + bossDmg(c),
-      effect(c) { hitPlayer(c, 11 + bossDmg(c)); },
+      damageFn: (c) => 24 + bossDmg(c),
+      effect(c) { hitPlayer(c, 24 + bossDmg(c)); },
     },
     'mind-your-seams': {
-      id: 'mind-your-seams', name: 'Mind Your Seams', intent: Intent.ATTACK_DEBUFF, damage: 5, hits: 2,
+      id: 'mind-your-seams', name: 'Mind Your Seams', intent: Intent.ATTACK_DEBUFF, damage: 12, hits: 2,
       tell: 'She takes in a seam somewhere on you that you did not know you had.',
       applies: [{ id: 'seam-pinch', stacks: 1, to: 'player' }],
-      damageFn: (c) => 5 + bossDmg(c),
+      damageFn: (c) => 12 + bossDmg(c),
       hitsFn: () => 2,
-      effect(c) { hitPlayer(c, 5 + bossDmg(c), 2); c.applyStatus(c.player, 'seam-pinch', 1); },
+      effect(c) { hitPlayer(c, 12 + bossDmg(c), 2); c.applyStatus(c.player, 'seam-pinch', 1); },
     },
     'mend-my-darling': {
       id: 'mend-my-darling', name: 'Mend My Darling', intent: Intent.BUFF,
@@ -263,17 +271,27 @@ export const governess = {
       },
     },
     'tighten-the-stitch': {
-      id: 'tighten-the-stitch', name: 'Tighten the Stitch', intent: Intent.DEFEND_BUFF, block: 13,
-      tell: 'She pulls a thread through herself and draws it tight.',
+      /**
+       * BALANCE 2026-08-20: this was `DEFEND_BUFF`, 13 Guard and no damage — one turn in
+       * every four of phase two where a competent player could block nothing and spend the
+       * whole hand on her. A wasted enemy turn against a deck that can convert energy to
+       * Guard on demand is worth more to the player than the Guard is worth to her, and it
+       * was the single largest reason 85% of her printed damage never landed. The thread
+       * she is drawing tight is the seam Mind Your Seams took in on YOU, so it hurts.
+       */
+      id: 'tighten-the-stitch', name: 'Tighten the Stitch', intent: Intent.ATTACK_DEFEND,
+      damage: 17, hits: 1, block: 13,
+      tell: 'She pulls a thread through herself, and through you, and draws it tight.',
+      damageFn: (c) => 17 + bossDmg(c),
       blockFn: (c) => 13 + (governess.activePatch(c) === 'buttoned' ? 4 : 0),
-      effect(c) { governess.gainGuard(c, 13); mem(c).tightened = true; },
+      effect(c) { hitPlayer(c, 17 + bossDmg(c)); governess.gainGuard(c, 13); mem(c).tightened = true; },
     },
     'snip-snip': {
-      id: 'snip-snip', name: 'Snip Snip', intent: Intent.ATTACK, damage: 4, hits: 3,
+      id: 'snip-snip', name: 'Snip Snip', intent: Intent.ATTACK, damage: 11, hits: 3,
       tell: 'Three quick cuts, the way one trims a loose thread.',
-      damageFn: (c) => 4 + bossDmg(c),
+      damageFn: (c) => 11 + bossDmg(c),
       hitsFn: () => 3,
-      effect(c) { hitPlayer(c, 4 + bossDmg(c), 3); },
+      effect(c) { hitPlayer(c, 11 + bossDmg(c), 3); },
     },
     'emergency-repair': {
       id: 'emergency-repair', name: 'Emergency Repair', intent: Intent.DEFEND_BUFF, block: 8,

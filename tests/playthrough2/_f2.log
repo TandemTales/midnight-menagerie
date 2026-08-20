@@ -1,0 +1,28 @@
+  T0: Courage 65 of 74 guard=1 nerve=3/3NERVE inc='' | 5|DUST BUNNY|20|/20|DUST|0/4 ; 5|DUST BUNNY|20|/20|DUST|0/4
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @20hp
+    -> Shake, Boy!, 0 Nerve, Skill, basic, Shed 1 Bone. Dra
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @14hp
+    -> Put Yourself Back Together, 1 Nerve, Skill, basic, R
+  T1: Courage 65 of 74 guard=1 nerve=3/3NERVE inc='INCOMING 26 −1 Guard → 25 25 more Guard to stop it all' | 10|DUST BUNNY|8|/20|5|DUST|0/4 ; 16|DUST BUNNY|20|/20|5|DUST|2/4
+    -> Sit Pretty, 1 Nerve, Skill, basic, Gain 5 Guard. Gai
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @8hp
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @7hp
+  T2: Courage 51 of 74 guard=1 nerve=3/3NERVE inc='Incoming23−9 Guard→1414 more Guard to stop it all' | 5|DUST BUNNY|1|/20|DUST|0/4 ; 5|DUST BUNNY|20|/20|DUST|0/4
+    -> Put Yourself Back Together, 1 Nerve, Skill, basic, R
+    -> Sit Pretty, 1 Nerve, Skill, basic, Gain 5 Guard. Gai
+    -> Sit Pretty, 1 Nerve, Skill, basic, Gain 5 Guard. Gai
+    -> Shake, Boy!, 0 Nerve, Skill, basic, Shed 1 Bone. Dra
+  T3: Courage 51 of 74 guard=1 nerve=3/3NERVE inc='INCOMING 32 −1 Guard → 31 31 more Guard to stop it all' | 16|DUST BUNNY|1|/20|5|DUST|2/4 ; 16|DUST BUNNY|20|/20|5|DUST|2/4
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @1hp
+    -> Sit Pretty, 1 Nerve, Skill, basic, Gain 5 Guard. Gai
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @20hp
+  T4: Courage 44 of 74 guard=1 nerve=3/3NERVE inc='Incoming13−6 Guard→77 more Guard to stop it all' | |      |        |        |        |        |      |      |        |        |        |      |      16|      |        |      |      |        |        |          |            |              |            |            |              |            |          |          |            |            |              |              |              |              |              |              |                |                |              |            |            |          |        |        |      |      |        Dust Bunny|        |          |          |          0/20|        |        5|        Dust2/4|        |      |      -6LETHAL ; 5|DUST BUNNY|19|/20|DUST|0/4
+    -> Sit Pretty, 1 Nerve, Skill, basic, Gain 5 Guard. Gai
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @19hp
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @13hp
+  T5: Courage 44 of 74 guard=1 nerve=3/3NERVE inc='INCOMING 10 −1 Guard → 9 9 more Guard to stop it all' | |      |        |        |        |        |      |      |        |        |        |      |      16|      |        |      |      |        |        |          |            |              |            |            |              |            |          |          |            |            |              |              |              |              |              |              |                |                |              |            |            |          |        |        |      |      |        Dust Bunny|        |          |          |          0/20|        |        5|        Dust2/4|        |      |      -6LETHAL ; 10|DUST BUNNY|7|/20|5|DUST|0/4
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @7hp
+    -> Shake, Boy!, 0 Nerve, Skill, basic, Shed 1 Bone. Dra
+    -> Bite, 1 Nerve, Attack, basic, Deal 6 damage.  @6hp
+    -> Sit Pretty, 1 Nerve, Skill, basic, Gain 5 Guard. Gai
+  left combat -> reward

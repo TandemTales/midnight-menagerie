@@ -1,0 +1,7 @@
+{
+ "i": 954,
+ "cmd": "{\"op\": \"jsawait\", \"expr\": \"JSON.stringify(window.MM.state().scene)\"}",
+ "result": "\"combat\"",
+ "error": null,
+ "console_errors": []
+}

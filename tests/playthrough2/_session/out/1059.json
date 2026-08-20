@@ -1,0 +1,9 @@
+{
+ "i": 1059,
+ "cmd": "{\"op\": \"text\"}",
+ "result": "The Foyer\nWing 1\n44 / 74\n130\n0 Clues\nLuck +1\nHaunt 0\n553148210\nTricks\n12\nCURIOSITY\nThe Painted Dog\n\nPortrait Hall\n\nRECEIVING ROOM \u00b7 THE FORGOTTEN FOYER\n\nEleven family portraits, all extremely serious, and in the corner of every single one there is the same brown-and-white spaniel.\n\nIn the first painting it is a puppy. In the eleventh it is old and grey around the muzzle and lying at somebody's feet.\n\nIn the twelfth frame, which is empty and has been empty for a long time, there is a dog-shaped patch where the varnish has not yellowed.\n\nCall it.\nALWAYS\nA Keepsake, and Courage\nPhotograph all eleven.\nALWAYS\nFour Clues, and Lost Things\nYou would need a camera. (Camera)\nStraighten the empty frame and move on.\nALWAYS\nA little Courage, and Lost Things\nLEAVE IT BE\nyou have not decided yet\nENTER",
+ "error": null,
+ "console_errors": [
+  "REQFAIL http://localhost:8777/game/assets/audio/track004.mp3 net::ERR_ABORTED"
+ ]
+}
