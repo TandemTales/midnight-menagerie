@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Midnight Menagerie — chrome harness</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Grenze:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../game/src/ui/tokens.css">
+<link rel="stylesheet" href="../../game/src/ui/base.css">
+<link rel="stylesheet" href="../../game/src/ui/card.css">
+<style>
+  html, body { overflow: auto; height: auto; }
+  body { background:
+      radial-gradient(120% 80% at 50% -20%, color-mix(in oklab, var(--flame-500) 10%, transparent), transparent 60%),
+      var(--ink-900); }
+  #dom-layer { position: static; }
+  .wrap { max-width: 1500px; margin: 0 auto; padding: var(--s-5) var(--s-5) 40vh; }
+  h1 { font-family: var(--font-display); color: var(--flame-200); font-size: var(--fs-xl); margin: 0 0 var(--s-2); }
+  h2 {
+    font-family: var(--font-display); color: var(--flame-300);
+    font-size: var(--fs-md); letter-spacing: .14em; text-transform: uppercase;
+    margin: var(--s-7) 0 var(--s-3); padding-bottom: var(--s-2);
+    border-bottom: 1px solid var(--surface-line);
+  }
+  h3 { font-family: var(--font-display); color: var(--text-mid); font-size: var(--fs-sm);
+       letter-spacing: .1em; text-transform: uppercase; margin: var(--s-4) 0 var(--s-2); }
+  p.lead { color: var(--text-mid); margin: 0 0 var(--s-4); font-size: var(--fs-sm); max-width: 80ch; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+  .chip {
+    display: inline-flex; align-items: center; gap: .4em;
+    padding: .3em .7em;
+    font-size: var(--fs-sm);
+    color: var(--text-hi);
+    background: var(--chip-bg);
+    border: 1px solid var(--surface-line);
+    border-radius: var(--radius-sm);
+  }
+  .chip .mm-icon { width: 1.1em; height: 1.1em; }
+  .chip[data-cat="buff"]    { border-color: var(--good-500);  color: var(--good-300); }
+  .chip[data-cat="debuff"]  { border-color: var(--threat-500);color: var(--threat-200); }
+  .chip[data-cat="core"]    { border-color: var(--flame-500); color: var(--flame-200); }
+  .chip[data-cat="companion"] { border-color: var(--rarity-rare); color: var(--rarity-rare); }
+  .chip[data-cat="zone"]    { border-color: var(--rarity-curse); }
+  .chip[data-cat="intent"]  { border-color: var(--type-attack); }
+
+  .iconrow { display: flex; flex-wrap: wrap; gap: var(--s-3); }
+  .ic { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 76px; }
+  .ic .box { display: grid; place-items: center; padding: 6px; background: var(--surface-2);
+             border: 1px solid var(--surface-line); border-radius: var(--radius-sm); color: var(--flame-200); }
+  .ic small { font-size: 9px; color: var(--text-lo); text-align: center; word-break: break-all; line-height: 1.15; }
+  #grey { filter: grayscale(1) brightness(2.2) contrast(3); }
+  #grey .box { background: #000; color: #fff; border-color: #333; }
+
+  .panel { background: var(--surface-1); border: 1px solid var(--surface-line);
+           border-radius: var(--radius-lg); padding: var(--s-4); }
+  .btnrow { display: flex; gap: var(--s-3); flex-wrap: wrap; margin-bottom: var(--s-3); }
+  .deckhost { min-height: 300px; }
+  .edge { display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+<div id="dom-layer" aria-live="polite">
+<div class="wrap">
+  <h1>Chrome harness — tooltip · HUD · deck view · settings · icons</h1>
+  <p class="lead">Every chip below is a live tooltip anchor. Hover or Tab to one.
+     <code>window.CHROME</code> exposes the pieces for <code>tests/chrome/run.py</code>.</p>
+
+  <h2 id="s-hud">HUD</h2>
+  <div id="hud-host" class="panel"></div>
+  <div class="btnrow" style="margin-top:var(--s-3)">
+    <button class="mm-btn" id="b-settings">Open settings</button>
+    <button class="mm-btn" id="b-deck">Open deck view</button>
+    <button class="mm-btn" id="b-draw">Open draw pile</button>
+    <button class="mm-btn" id="b-reward">Card reward</button>
+    <button class="mm-btn" id="b-large">Toggle large text</button>
+    <button class="mm-btn" id="b-cb">Cycle colourblind palette</button>
+  </div>
+
+  <h2 id="s-kw">Keywords — every entry in all three registries</h2>
+  <p class="lead" id="kw-count"></p>
+  <div class="chips" id="kw"></div>
+
+  <h2 id="s-st">Statuses — live, with stack counts</h2>
+  <div class="chips" id="st"></div>
+
+  <h2 id="s-int">Intents — all 16</h2>
+  <div class="chips" id="int"></div>
+
+  <h2 id="s-edge">Placement — viewport edges</h2>
+  <p class="lead">These four sit hard against the edges. A tooltip must never overflow and never cover its own chip.</p>
+  <div class="edge">
+    <span class="chip" data-kw="ghoststep" tabindex="0" id="edge-l">left edge</span>
+    <span class="chip" data-kw="haunt" tabindex="0" id="edge-r">right edge</span>
+  </div>
+
+  <h2 id="s-icons">Icons — 48px</h2>
+  <div class="iconrow" id="ic48"></div>
+  <h3>24px</h3>
+  <div class="iconrow" id="ic24"></div>
+  <h3>16px</h3>
+  <div class="iconrow" id="ic16"></div>
+  <h3>16px, greyscale — the silhouette test</h3>
+  <div class="iconrow" id="grey"></div>
+
+  <h2 id="s-deck">Deck view, inline</h2>
+  <div class="panel deckhost" id="deck-host"></div>
+</div>
+</div>
+
+<div id="fx-layer" aria-hidden="true"></div>
+<div id="tooltip-layer"></div>
+
+<script type="module">
+import { Tooltip } from '../../game/src/ui/tooltip.js';
+import { HUD } from '../../game/src/ui/hud.js';
+import { DeckView, openPile } from '../../game/src/ui/deckview.js';
+import { openSettings, applySettings } from '../../game/src/ui/settings.js';
+import { icon, ICON_IDS, ICON_GROUPS, iconPath } from '../../game/src/ui/icons.js';
+import { Modal, confirmModal } from '../../game/src/ui/modal.js';
+import { allKeywords, loadContentRegistries } from '../../game/src/data/keywords.js';
+import { allStatuses } from '../../game/src/data/statuses.js';
+import { Save } from '../../game/src/core/save.js';
+import { bus } from '../../game/src/core/bus.js';
+import { clock } from '../../game/src/core/clock.js';
+
+Save.load();
+clock.start();
+
+const ctx = {
+  Save, bus, clock,
+  dom: document.getElementById('dom-layer'),
+  tipLayer: document.getElementById('tooltip-layer'),
+  run: null,
+};
+const tooltip = new Tooltip(ctx);
+ctx.tooltip = tooltip;
+window.MM = { ctx, Save, bus, clock, state: () => ({ scene: 'chrome-harness' }) };
+
+await tooltip.ready;
+await loadContentRegistries(null).catch(() => {});
+
+// ── cards, for the deck view / card tooltips ────────────────────────────────
+let CARDS = [];
+try {
+  const m = await import('../../game/src/data/cards.js');
+  CARDS = (m.allCards?.() || []).slice(0, 60);
+  tooltip.provide('card', (id) => m.cardById?.(id));
+} catch (e) { console.warn('cards unavailable', e?.message); }
+
+tooltip.provide('keepsake', (id) => ({
+  id, name: 'Brass Button', rarity: 'uncommon',
+  desc: 'At the start of each Scuffle, gain 3 Guard.',
+  flavour: 'It came off a coat nobody remembers wearing.',
+  counter: 4,
+}));
+tooltip.provide('enemy', (id) => ({
+  name: 'Dust Bunny', hp: 14, maxHp: 18,
+  def: { tier: 'normal', lore: 'It has been under the settee since before you were born, and it has opinions.',
+    moves: { pounce: { name: 'Pounce', damage: 6 }, fluff: { name: 'Fluff Up', block: 5 } } },
+  seen: new Set(['pounce']),
+}));
+
+// ── HUD ─────────────────────────────────────────────────────────────────────
+const hud = new HUD(ctx, { mount: document.getElementById('hud-host') });
+
+// give it something to show
+ctx.run = {
+  companionName: 'Marmalade', kidName: 'Maya',
+  courage: 41, maxCourage: 70, lostThings: 137,
+  region: 'nursery', floor: 2, hauntLevel: 1, seed: '42',
+  snackCap: 3,
+  snacks: [{ name: 'Liquorice Whip', desc: 'Deal 12 damage to one enemy.' }, null, null],
+  keepsakes: [
+    { id: 'brass-button', name: 'Brass Button', rarity: 'uncommon', desc: 'At the start of each Scuffle, gain 3 Guard.' },
+    { id: 'lucky-collar', name: 'Lucky Collar', rarity: 'rare', desc: 'The first time you would lose Courage each Scuffle, prevent it.', counter: 1 },
+    { id: 'chalk-nub', name: 'Chalk Nub', rarity: 'common', desc: 'Curiosities reveal one extra option.' },
+  ],
+  deck: CARDS.slice(0, 14),
+  deckViews: () => CARDS.slice(0, 14).map((d, i) => ({ uid: 'd' + i, def: d, upgraded: i % 5 === 0 })),
+};
+hud.refresh();
+
+// ── keyword grid ────────────────────────────────────────────────────────────
+const kws = allKeywords();
+const kwHost = document.getElementById('kw');
+for (const k of kws) {
+  const s = document.createElement('span');
+  s.className = 'chip';
+  s.tabIndex = 0;
+  s.dataset.kw = k.id;
+  s.dataset.cat = k.category || 'card';
+  s.textContent = k.name || k.id;
+  kwHost.appendChild(s);
+}
+document.getElementById('kw-count').textContent =
+  `${kws.length} keywords merged from data/keywords.js, data/companions/keywords.js and data/statuses.js.`;
+
+// ── status grid, with stacks ────────────────────────────────────────────────
+const stHost = document.getElementById('st');
+const statuses = allStatuses();
+statuses.forEach((st, i) => {
+  const s = document.createElement('span');
+  s.className = 'chip';
+  s.tabIndex = 0;
+  s.dataset.tipStatus = st.id;
+  s.dataset.tipStacks = String((i % 4) + 1);
+  s.dataset.tipOwner = i % 2 ? 'You' : 'Enemy';
+  s.dataset.cat = st.kind;
+  s.append(icon('status.' + (st.icon || st.id)), document.createTextNode(`${st.name} ${(i % 4) + 1}`));
+  stHost.appendChild(s);
+});
+
+// ── intents ─────────────────────────────────────────────────────────────────
+const intHost = document.getElementById('int');
+for (const t of Object.keys(ICON_GROUPS.intent)) {
+  const s = document.createElement('span');
+  s.className = 'chip';
+  s.tabIndex = 0;
+  s.dataset.tipIntent = t;
+  s.dataset.cat = 'intent';
+  if (t.startsWith('attack')) { s.dataset.tipDamage = '11'; s.dataset.tipHits = t === 'attackBig' ? '1' : '2'; }
+  s.append(icon('intent.' + t), document.createTextNode(t));
+  intHost.appendChild(s);
+}
+
+// ── icon sheets ─────────────────────────────────────────────────────────────
+function sheet(hostId, px, labels = true) {
+  const host = document.getElementById(hostId);
+  for (const id of ICON_IDS) {
+    const cell = document.createElement('div');
+    cell.className = 'ic';
+    const box = document.createElement('div');
+    box.className = 'box';
+    box.appendChild(icon(id, { size: px }));
+    cell.appendChild(box);
+    if (labels) { const l = document.createElement('small'); l.textContent = id; cell.appendChild(l); }
+    cell.dataset.iconId = id;
+    host.appendChild(cell);
+  }
+}
+sheet('ic48', 48);
+sheet('ic24', 24);
+sheet('ic16', 16);
+sheet('grey', 16, false);
+
+// ── inline deck view ────────────────────────────────────────────────────────
+const inlineDeck = new DeckView({
+  mode: 'deck', ctx,
+  cards: CARDS.slice(0, 18).map((d, i) => ({ uid: 'x' + i, def: d, upgraded: i % 4 === 0 })),
+});
+document.getElementById('deck-host').appendChild(inlineDeck.el);
+
+// ── buttons ─────────────────────────────────────────────────────────────────
+document.getElementById('b-settings').onclick = () => openSettings(ctx);
+document.getElementById('b-deck').onclick = () =>
+  openPile({ mode: 'deck', ctx, cards: ctx.run.deckViews(), host: ctx.dom });
+document.getElementById('b-draw').onclick = () =>
+  openPile({ mode: 'draw', ctx, cards: ctx.run.deckViews(), host: ctx.dom });
+document.getElementById('b-reward').onclick = () =>
+  openPile({ mode: 'reward', ctx, cards: CARDS.slice(0, 3), host: ctx.dom });
+document.getElementById('b-large').onclick = () => {
+  Save.setSetting('largeText', !Save.settings.largeText);
+  applySettings(ctx); bus.emit('settings:changed', {});
+};
+const CB = ['off', 'protanopia', 'deuteranopia', 'tritanopia'];
+document.getElementById('b-cb').onclick = () => {
+  const i = (CB.indexOf(Save.settings.colorblind) + 1) % CB.length;
+  Save.setSetting('colorblind', CB[i]);
+  applySettings(ctx); bus.emit('settings:changed', {});
+};
+
+// ── the surface run.py drives ───────────────────────────────────────────────
+window.CHROME = {
+  tooltip, hud, ctx, Save, bus,
+  ICON_IDS, iconPath,
+  keywords: kws.map(k => k.id),
+  statuses: statuses.map(s => s.id),
+  intents: Object.keys(ICON_GROUPS.intent),
+
+  /** Resolve every id through the tooltip and report anything unusable. */
+  auditKeywords() {
+    const bad = [];
+    const ids = tooltip.allIds();
+    for (const id of ids) {
+      const d = tooltip.keyword(id);
+      const text = d ? [d.title, d.body, ...(d.lines || [])].filter(Boolean).join(' ') : '';
+      if (!d) { bad.push([id, 'no descriptor']); continue; }
+      if (!d.title) { bad.push([id, 'no title']); continue; }
+      if (!text.trim()) { bad.push([id, 'empty body']); continue; }
+      if (/undefined|null|\[object|NaN|\{n\}/.test(text)) bad.push([id, 'placeholder leak: ' + text.slice(0, 80)]);
+    }
+    return { total: ids.length, bad };
+  },
+
+  /** Open a tooltip on one element and report its box + overflow. */
+  probe(selector) {
+    const el = document.querySelector(selector);
+    if (!el) return { error: 'no element ' + selector };
+    tooltip.show(el, tooltip._descFor(el));
+    return new Promise(r => requestAnimationFrame(() => requestAnimationFrame(() => {
+      const p = tooltip.el.getBoundingClientRect();
+      const a = el.getBoundingClientRect();
+      r({
+        panel: { x: p.x, y: p.y, w: p.width, h: p.height },
+        anchor: { x: a.x, y: a.y, w: a.width, h: a.height },
+        overflow: {
+          left: p.left < 0, top: p.top < 0,
+          right: p.right > innerWidth, bottom: p.bottom > innerHeight,
+        },
+        coversAnchor: !(p.right <= a.left || p.left >= a.right || p.bottom <= a.top || p.top >= a.bottom),
+        text: tooltip.el.innerText.slice(0, 300),
+        side: tooltip.el.dataset.side,
+      });
+    })));
+  },
+
+  /** Every anchor on the page, for the sweep. */
+  anchors() {
+    return [...document.querySelectorAll('[data-kw],[data-tip-status],[data-tip-intent]')]
+      .map((el, i) => { el.dataset.probeId = 'p' + i; return '[data-probe-id="p' + i + '"]'; });
+  },
+
+  hideTip() { tooltip.hide(); },
+  scrollTo(y) { window.scrollTo(0, y); },
+};
+console.log('[chrome] ready:', kws.length, 'keywords,', statuses.length, 'statuses,', ICON_IDS.length, 'icons');
+</script>
+</body>
+</html>

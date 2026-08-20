@@ -1,0 +1,130 @@
+/* ===========================================================================
+   A Curiosity.  OWNER: meta-run.
+   Shared chrome lives in reward.css (.rm-*).  Tokens only.
+   =========================================================================== */
+
+.scene--event .rm-body {
+  justify-content: center; align-items: center;
+  overflow-y: auto; scrollbar-color: var(--brass-400) var(--ink-800);
+  padding-top: var(--s-2); padding-bottom: var(--s-3);
+}
+
+.ev-page {
+  display: grid;
+  grid-template-columns: clamp(280px, 30vw, 460px) minmax(0, 1fr);
+  grid-template-areas: 'plate prose' 'plate options' 'plate outcome';
+  align-content: start;
+  gap: clamp(12px, 1.6vw, 30px) clamp(18px, 2.4vw, 44px);
+  width: min(1480px, 100%);
+}
+
+/* ── vignette ─────────────────────────────────────────────────────────────── */
+.ev-plate {
+  grid-area: plate;
+  position: relative; align-self: start;
+  border: 1px solid var(--brass-500); border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-3), inset 0 0 0 1px color-mix(in srgb, var(--ink-900) 60%, transparent);
+}
+.ev-plate::after {                     /* a soft frame vignette over the art */
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(120% 96% at 50% 46%, transparent 40%,
+              color-mix(in srgb, var(--ink-900) 76%, transparent) 100%);
+}
+.ev-art { display: block; width: 100%; height: auto; }
+.ev-art path, .ev-art ellipse, .ev-art rect { stroke-linecap: round; stroke-linejoin: round; }
+.ev-wall { fill: color-mix(in oklab, var(--ink-700) 72%, var(--arcane-700)); }
+.ev-paper { fill: none; stroke: color-mix(in srgb, var(--arcane-500) 30%, transparent); stroke-width: 6; }
+.ev-rail  { fill: none; stroke: color-mix(in srgb, var(--brass-500) 66%, transparent); stroke-width: 3; }
+.ev-skirt { fill: color-mix(in srgb, var(--brass-600) 74%, var(--ink-800)); stroke: none; }
+.ev-pool-a { stop-color: var(--spectre-400); stop-opacity: .3; }
+.ev-pool-b { stop-color: var(--spectre-400); stop-opacity: 0; }
+.ev-sub  { fill: color-mix(in srgb, var(--ink-600) 82%, var(--arcane-600)); stroke: var(--spectre-300); stroke-width: 2.4; }
+.ev-line { fill: none; stroke: color-mix(in srgb, var(--spectre-200) 46%, transparent); stroke-width: 1.8; }
+.ev-mark { fill: none; stroke: var(--flame-200); stroke-width: 2.4; }
+.ev-glowbox { fill: color-mix(in srgb, var(--flame-300) 40%, transparent); stroke: none; }
+.ev-floor { fill: none; stroke: color-mix(in srgb, var(--brass-400) 40%, transparent); stroke-width: 2; }
+
+/* per-mood tinting: the room tells you how to feel before you read a word */
+.ev-art[data-mood="sad"]        { --ev-a: var(--courage-300); }
+.ev-art[data-mood="warm"]       { --ev-a: var(--flame-200); }
+.ev-art[data-mood="trade"]      { --ev-a: var(--arcane-200); }
+.ev-art[data-mood="greedy"]     { --ev-a: var(--brass-200); }
+.ev-art[data-mood="unsettling"] { --ev-a: var(--threat-200); }
+.ev-art[data-mood="revelation"] { --ev-a: var(--good-300); }
+.ev-art[data-mood="escape"]     { --ev-a: var(--spectre-100); }
+.ev-art[data-mood] .ev-mark  { stroke: var(--ev-a, var(--flame-200)); }
+.ev-art[data-mood] .ev-pool-a { stop-color: var(--ev-a, var(--spectre-400)); }
+
+/* ── prose ────────────────────────────────────────────────────────────────── */
+.ev-prose { grid-area: prose; max-width: 74ch; }
+.ev-prose p {
+  margin: 0 0 .62em;
+  font-size: var(--fs-md); line-height: 1.62; color: var(--text-hi);
+}
+/* `flow-root` makes the first paragraph its own block formatting context, so the
+   drop cap cannot bleed down and indent the paragraph after it. */
+.ev-prose p:first-child { display: flow-root; }
+.ev-prose p:first-child::first-letter {
+  float: left; line-height: .8; padding: 6px 10px 0 0;
+  font-family: var(--font-display); font-size: 2.5em; color: var(--flame-300);
+}
+.ev-prose p:last-child { margin-bottom: 0; color: var(--text-mid); }
+
+/* ── options ──────────────────────────────────────────────────────────────── */
+.ev-options { grid-area: options; display: flex; flex-direction: column; gap: 8px; }
+.ev-opt {
+  display: grid; gap: 4px; text-align: left;
+  padding: 10px var(--s-4);
+  border: 1px solid var(--ink-500); border-radius: var(--radius-md);
+  background: linear-gradient(100deg, color-mix(in srgb, var(--ink-700) 80%, transparent),
+              color-mix(in srgb, var(--ink-800) 90%, transparent));
+  transition: border-color var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out),
+              background-color var(--t-quick) var(--ease-out), opacity var(--t-base) var(--ease-out);
+}
+.ev-opt:hover:not(:disabled), .ev-opt:focus-visible {
+  border-color: var(--spectre-300); transform: translateX(4px); outline: none;
+  background: linear-gradient(100deg, color-mix(in srgb, var(--spectre-500) 22%, var(--ink-700)),
+              color-mix(in srgb, var(--ink-700) 88%, transparent));
+}
+.ev-opt:focus-visible { box-shadow: 0 0 0 2px color-mix(in srgb, var(--spectre-300) 62%, transparent); }
+.ev-opt:disabled { cursor: not-allowed; opacity: .5; border-style: dashed; }
+.ev-opt.is-chosen { opacity: 1; border-color: var(--good-300); border-style: solid;
+                    background: linear-gradient(100deg, color-mix(in srgb, var(--good-500) 24%, var(--ink-700)), var(--ink-800)); }
+.ev-opt.is-faded { opacity: .26; }
+
+.ev-opt__label { font-family: var(--font-display); font-size: var(--fs-md); color: var(--text-hi); letter-spacing: .02em; }
+.ev-opt__meta { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.ev-tag { display: inline-flex; align-items: baseline; gap: 6px; font-size: var(--fs-xs); color: var(--text-mid); }
+.ev-tag i {
+  font-style: normal; font-size: 9px; letter-spacing: .18em; text-transform: uppercase;
+  padding: 1px 5px; border-radius: 3px; border: 1px solid currentColor; opacity: .8;
+}
+.ev-tag--risk { color: var(--threat-200); }
+.ev-tag--gain { color: var(--good-300); }
+.ev-tag--cost { color: var(--brass-200); }
+.ev-tag--gear { color: var(--spectre-200); }
+.ev-opt__gate { font-size: var(--fs-xs); font-style: italic; color: var(--text-lo); }
+
+/* ── outcome ──────────────────────────────────────────────────────────────── */
+.ev-outcome {
+  grid-area: outcome;
+  border-left: 2px solid var(--good-300);
+  padding: var(--s-2) 0 var(--s-2) var(--s-4);
+}
+.ev-outcome.is-in { animation: ev-rise 420ms var(--ease-out) both; }
+@keyframes ev-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.ev-out__t {
+  margin: 0 0 4px; font-family: var(--font-display); font-size: var(--fs-lg);
+  letter-spacing: .03em; color: var(--good-300);
+}
+.ev-out__p { margin: 0; font-size: var(--fs-md); line-height: 1.6; color: var(--text-hi); max-width: 78ch; }
+.ev-out__chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: var(--s-3); }
+.ev-out__next { margin: var(--s-3) 0 0; font-size: var(--fs-sm); font-style: italic; color: var(--flame-200); }
+
+.ev-page.is-answered .ev-options { pointer-events: none; }
+
+@media (max-width: 1080px) {
+  .ev-page { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'prose' 'options' 'outcome'; }
+  .ev-plate { display: none; }
+}

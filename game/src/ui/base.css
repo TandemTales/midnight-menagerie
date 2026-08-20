@@ -1,4 +1,14 @@
-/* Reset + shell. OWNER: ui-chrome agent. */
+/* Reset + shell + shared chrome. OWNER: ui-chrome agent.
+   The five chrome stylesheets are imported here rather than injected by JS:
+   tooltip / HUD / modal / settings / deck view are needed on EVERY screen, so
+   they must be present before the first scene paints. index.html links this
+   file after tokens.css, so everything below resolves against the token layer. */
+@import url('./tooltip.css');
+@import url('./hud.css');
+@import url('./modal.css');
+@import url('./settings.css');
+@import url('./deckview.css');
+
 *,*::before,*::after { box-sizing: border-box; }
 html, body { margin:0; padding:0; height:100%; overflow:hidden; background:var(--ink-900); }
 body {
@@ -19,8 +29,67 @@ body {
 #dom-layer > * { pointer-events: auto; }
 
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
-:focus-visible { outline: 2px solid var(--flame-300); outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .sr-only {
   position:absolute; width:1px; height:1px; padding:0; margin:-1px;
   overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
 }
+
+/* Background made inert while a modal is open (see ui/modal.js). `inert` is
+   supported natively; this is the visual half plus a scroll lock. */
+[data-mm-inert] { pointer-events: none !important; }
+html.mm-modal-open, html.mm-modal-open body { overflow: hidden; }
+
+/* A keyboard focus ring that survives a dark, busy scene: bright inner line
+   plus a dark outer halo, so it reads over parchment AND over candlelight. */
+.mm-focusable:focus-visible,
+.mm-btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--scrim);
+}
+
+/* ── shared chrome button ─────────────────────────────────────────────────── */
+.mm-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--s-2);
+  padding: .45em .95em;
+  min-height: 2.1em;                    /* em, so largeText grows the hit target */
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  letter-spacing: .04em;
+  color: var(--text-hi);
+  background: linear-gradient(var(--surface-3), var(--surface-2));
+  border: 1px solid var(--surface-line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-1), inset 0 1px 0 color-mix(in srgb, var(--flame-100) 8%, transparent);
+  transition: background var(--t-quick) var(--ease-out),
+              border-color var(--t-quick) var(--ease-out),
+              transform var(--t-instant) var(--ease-out);
+}
+.mm-btn:hover { background: linear-gradient(var(--surface-3), var(--surface-3)); border-color: var(--surface-line-hi); }
+.mm-btn:active { transform: translateY(1px); }
+.mm-btn[disabled], .mm-btn[aria-disabled="true"] { opacity: .42; cursor: default; pointer-events: none; }
+.mm-btn--primary {
+  color: var(--text-ink);
+  background: linear-gradient(var(--flame-200), var(--flame-400));
+  border-color: var(--flame-500);
+  font-weight: 600;
+}
+.mm-btn--danger { color: var(--threat-100); border-color: var(--threat-500); }
+.mm-btn--danger:hover { background: linear-gradient(var(--threat-500), var(--threat-500)); }
+.mm-btn--ghost { background: none; border-color: color-mix(in srgb, var(--surface-line) 60%, transparent); }
+
+/* ── shared scrollbar so every chrome panel scrolls the same way ──────────── */
+.mm-scroll { overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+  scrollbar-color: var(--surface-line-hi) transparent; }
+.mm-scroll::-webkit-scrollbar { width: 10px; }
+.mm-scroll::-webkit-scrollbar-track { background: var(--chip-bg); border-radius: 5px; }
+.mm-scroll::-webkit-scrollbar-thumb {
+  background: var(--surface-line); border-radius: 5px;
+  border: 2px solid transparent; background-clip: padding-box;
+}
+.mm-scroll::-webkit-scrollbar-thumb:hover { background: var(--surface-line-hi); background-clip: padding-box; }
+
+/* ── shared icon sizing (ui/icons.js) ─────────────────────────────────────── */
+.mm-icon { display: inline-block; width: 1em; height: 1em; flex: none; vertical-align: -0.125em; }
+.mm-icon svg { display: block; width: 100%; height: 100%; }

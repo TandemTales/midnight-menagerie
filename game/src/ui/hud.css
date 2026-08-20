@@ -1,0 +1,149 @@
+/* Run HUD. OWNER: ui-chrome agent. Paired with ui/hud.js. */
+
+.mm-hud {
+  --hud-chip-h: 2em;
+  display: flex; align-items: center; gap: var(--s-4);
+  flex-wrap: wrap;
+  padding: var(--s-2) var(--s-4);
+  min-height: var(--hud-h);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--text-hi);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--ink-900) 82%, transparent), color-mix(in srgb, var(--ink-900) 40%, transparent));
+  border-bottom: 1px solid color-mix(in srgb, var(--surface-line) 70%, transparent);
+  backdrop-filter: blur(2px);
+}
+.mm-hud__group { display: flex; align-items: center; gap: var(--s-3); min-width: 0; }
+.mm-hud__group--keepsakes { flex: 1 1 auto; min-width: 0; }
+.mm-hud__group--meta { margin-left: auto; }
+
+/* ── chips ────────────────────────────────────────────────────────────────── */
+.mm-hud__chip {
+  display: inline-flex; align-items: center; gap: .45em;
+  height: var(--hud-chip-h);
+  padding: 0 .7em;
+  color: var(--text-hi);
+  background: var(--chip-bg);
+  border: 1px solid color-mix(in srgb, var(--surface-line) 80%, transparent);
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.mm-hud__chip .mm-icon { width: 1.15em; height: 1.15em; opacity: .9; }
+.mm-hud__btn { transition: border-color var(--t-quick) var(--ease-out), background var(--t-quick) var(--ease-out); }
+.mm-hud__btn:hover { border-color: var(--surface-line-hi); background: var(--surface-2); }
+.mm-hud__t { font-weight: 600; }
+.mm-hud__s {
+  font-size: var(--fs-xs); color: var(--text-lo);
+  padding-left: .35em; border-left: 1px solid color-mix(in srgb, var(--surface-line) 70%, transparent);
+}
+
+.mm-hud__where { max-width: 26ch; overflow: hidden; }
+.mm-hud__where .mm-hud__t { overflow: hidden; text-overflow: ellipsis; }
+.mm-hud__gold .mm-icon { color: var(--flame-300); }
+.mm-hud__haunt .mm-icon { color: var(--rarity-curse); }
+.mm-hud__seed { color: var(--text-mid); font-family: var(--font-num); }
+
+/* ── Courage bar ──────────────────────────────────────────────────────────── */
+.mm-hud__courage { display: flex; align-items: center; min-width: 11ch; }
+.mm-hud__bar {
+  position: relative;
+  width: 12ch; height: 1.5em;
+  background: color-mix(in srgb, var(--ink-900) 78%, transparent);
+  border: 1px solid var(--courage-500);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.mm-hud__bar > i {
+  position: absolute; inset: 0;
+  transform-origin: left center;
+  background: linear-gradient(180deg,
+    color-mix(in oklab, var(--courage-300) 88%, white 12%),
+    var(--courage-300) 45%, var(--courage-500));
+  transition: transform var(--t-slow) var(--ease-out);
+}
+.mm-hud__barlabel {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  font-family: var(--font-num);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--text-hi);
+  /* a real ink stroke so the number survives the bar sliding under it */
+  text-shadow:
+    0 0 2px var(--ink-900), 0 1px 0 var(--ink-900), 0 -1px 0 var(--ink-900),
+    1px 0 0 var(--ink-900), -1px 0 0 var(--ink-900);
+  font-variant-numeric: tabular-nums;
+}
+.mm-hud__courage[data-low="1"] .mm-hud__bar { border-color: var(--threat-300); }
+.mm-hud__courage[data-low="1"] .mm-hud__bar::after {
+  content: ''; position: absolute; inset: 0;
+  box-shadow: inset 0 0 10px color-mix(in srgb, var(--threat-300) 60%, transparent);
+  animation: mm-hud-pulse 1.6s var(--ease-soft) infinite;
+}
+@keyframes mm-hud-pulse { 0%,100% { opacity: .35; } 50% { opacity: .95; } }
+
+/* ── Snacks ───────────────────────────────────────────────────────────────── */
+.mm-hud__snacks { display: flex; gap: var(--s-1); }
+.mm-hud__snack {
+  display: grid; place-items: center;
+  width: var(--hud-chip-h); height: var(--hud-chip-h);
+  color: var(--flame-200);
+  background: var(--chip-bg);
+  border: 1px solid var(--surface-line);
+  border-radius: 999px;
+}
+.mm-hud__snack .mm-icon { width: 1.05em; height: 1.05em; }
+.mm-hud__snack.is-empty { color: var(--ink-300); border-style: dashed; }
+.mm-hud__snack:not(.is-empty):hover { border-color: var(--flame-300); background: var(--surface-2); }
+
+/* ── Keepsakes ────────────────────────────────────────────────────────────── */
+.mm-hud__relics { display: flex; gap: var(--s-1); flex-wrap: wrap; min-width: 0; }
+.mm-hud__relic {
+  position: relative;
+  display: grid; place-items: center;
+  width: var(--hud-chip-h); height: var(--hud-chip-h);
+  color: var(--flame-200);
+  background:
+    radial-gradient(70% 70% at 50% 30%, color-mix(in srgb, var(--flame-400) 26%, transparent), transparent 70%),
+    var(--chip-bg);
+  border: 1px solid var(--rarity-common);
+  border-radius: var(--radius-sm);
+  transition: transform var(--t-quick) var(--ease-out), border-color var(--t-quick) var(--ease-out);
+}
+.mm-hud__relic:hover { transform: translateY(-2px); border-color: var(--flame-300); }
+.mm-hud__relic[data-rarity="uncommon"] { border-color: var(--rarity-uncommon); }
+.mm-hud__relic[data-rarity="rare"]     { border-color: var(--rarity-rare); }
+.mm-hud__relic[data-rarity="boss"]     { border-color: var(--rarity-curse); }
+.mm-hud__relicn {
+  position: absolute; right: -3px; bottom: -4px;
+  min-width: 1.35em; padding: 0 .2em;
+  font-family: var(--font-num); font-size: var(--fs-xs); font-weight: 700;
+  color: var(--text-ink); background: var(--flame-300);
+  border-radius: 999px; text-align: center;
+}
+.mm-hud__norelics {
+  font-size: var(--fs-xs); letter-spacing: .04em;
+  color: var(--text-lo); font-style: italic;
+  padding: 0 .4em;
+}
+
+/* the "no run yet" state is labelled, never silently fake */
+.mm-hud.is-mock { border-bottom-style: dashed; }
+.mm-hud.is-mock::before {
+  content: 'preview';
+  font-size: var(--fs-xs); letter-spacing: .14em; text-transform: uppercase;
+  color: var(--warn-300);
+  border: 1px dashed var(--warn-500);
+  border-radius: var(--radius-sm);
+  padding: 0 .4em;
+}
+
+.mm-hud[data-compact="1"] { gap: var(--s-3); padding: var(--s-1) var(--s-3); }
+.mm-hud[data-compact="1"] .mm-hud__seed,
+.mm-hud[data-compact="1"] .mm-hud__where .mm-hud__s { display: none; }
+
+/* largeText: wrap into two rows rather than squeezing chips off the edge */
+:root[data-large-text="1"] .mm-hud { gap: var(--s-2) var(--s-3); padding: var(--s-2); }
+:root[data-large-text="1"] .mm-hud__group--meta { margin-left: 0; }

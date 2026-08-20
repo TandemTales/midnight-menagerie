@@ -181,10 +181,16 @@ vec3 skyColor(vec2 q, float horizon){
 void main(){
   vec2 q = vUv * uSize;                     // metres, origin at floor-left
 
+  /* One relief evaluation, not three. The old code sampled wallH() at three
+     offsets for a finite-difference normal; wallH() carries six architecture
+     branches, so the compiler inlined all six THREE times and the program took
+     seconds to link. Screen-space derivatives give the same normal from one
+     sample, and they also flatten the relief at grazing angles, which kills the
+     shimmer the finite difference used to produce on the far wall. */
   float h  = wallH(q);
-  float hx = wallH(q + vec2(0.05, 0.0));
-  float hy = wallH(q + vec2(0.0, 0.05));
-  vec3  nrm = normalize(vec3(h - hx, h - hy, 0.42));
+  vec2  dq = vec2(max(abs(dFdx(q.x)), 1e-4), max(abs(dFdy(q.y)), 1e-4));
+  vec2  gh = vec2(dFdx(h), dFdy(h)) / dq;
+  vec3  nrm = normalize(vec3(-gh * 0.05, 0.42));
 
   // ---- albedo ---------------------------------------------------------------
   float up = clamp(q.y/max(uCeil, 1.0), 0.0, 1.0);
@@ -593,9 +599,10 @@ void main(){
      treating the shape as a rounded slab turns that gradient into a normal
      that faces outward at the silhouette and toward the camera in the middle.
      That is what makes a crown read brighter than a base under a high light. */
-  float fa = shapeField(vUv + vec2(0.013, 0.0), vShape, vSeed);
-  float fb = shapeField(vUv + vec2(0.0, 0.013), vShape, vSeed);
-  vec2  g  = normalize(vec2(fa - f, fb - f) + 1e-6);        // points inward
+  /* Same trick as the wall: shapeField() has twenty branches, so sampling it
+     three times for a gradient tripled the program. dFdx/dFdy give the gradient
+     from the single sample we already have. */
+  vec2  g  = normalize(vec2(dFdx(f), dFdy(f)) + 1e-6);      // points inward
   float edge = 1.0 - smoothstep(0.0, 0.085, f);
   vec3  N  = normalize(vec3(-g * edge * 1.75, 0.62 + 0.38*(1.0 - edge)));
   // surface break-up so the body is not a smooth CG gradient
@@ -625,12 +632,12 @@ void main(){
     spec += mmSpec(N, ldir, V, uLightCol[i], att, uGloss, 34.0);
   }
 
-  vec3 col = albedo * (uAmbient + uAccent * 0.13 + diff * 1.45) + spec * 1.25;
+  vec3 col = albedo * (uAmbient + uAccent * 0.13 + diff * 1.45) + spec * 0.85;
   col *= uGain;
 
   /* --- rim: the edge that separates a prop from the wall behind it -------- */
   float rim = pow(band, 1.5) * (0.12 + 0.88*pow(facing, 1.4)) * mask;
-  col += (uRim * 0.11 + raw * 0.15) * rim * uRimAmt;
+  col += (uRim * 0.07 + raw * 0.09) * rim * uRimAmt;
 
   col = mix(col, uFog, vFog);
   col = mmDesat(col, uDread*0.5) * (1.0 - uDread*0.22);

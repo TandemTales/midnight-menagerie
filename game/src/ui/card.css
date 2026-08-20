@@ -36,11 +36,8 @@
 
    Colour
    ------
-   Everything comes from tokens.css except two pigments that tokens.css does
-   not yet define. They are declared once, here, behind a var() so that the
-   moment ui-chrome adds them to tokens.css these fall away:
-     --good-300 / --good-500   "this number went up"  (green)
-   See docs/NOTES.md — requested as tokens.
+   Everything comes from tokens.css. (--good-300 / --good-500 landed there in
+   round 2, so the local fallbacks this file used to carry are gone.)
    =========================================================================== */
 
 .mm-hand,
@@ -52,8 +49,8 @@
   --ss: 1.4;
   --u: calc(var(--mm-card-w) / 224 * var(--ss));
 
-  --c-good:  var(--good-300, #74e08a);
-  --c-good-d: var(--good-500, #2f8f4d);
+  --c-good:  var(--good-300);
+  --c-good-d: var(--good-500);
   --c-bad:   var(--threat-300);
 
   --frame:      var(--rarity-common);
@@ -605,6 +602,11 @@
 }
 .mm-card.is-unplayable .mm-card__rules { color: var(--text-hi); }
 .mm-card.is-unplayable .mm-card__num { color: var(--text-hi); }
+/* ...but a previewed number is green/red no matter what state the card is in.
+   STS2-REFERENCE §2 — the recolour is the preview. It must outrank every
+   dimming rule above, including the unplayable and upgraded colours. */
+.mm-card .mm-card__num.is-up   { color: var(--c-good); }
+.mm-card .mm-card__num.is-down { color: var(--c-bad); }
 .mm-card.is-unplayable .mm-card__name { color: var(--text-hi); opacity: .88; }
 .mm-card.is-unplayable .mm-card__type { color: var(--text-lo); }
 

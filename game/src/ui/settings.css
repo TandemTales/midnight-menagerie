@@ -1,0 +1,151 @@
+/* Settings panel. OWNER: ui-chrome agent. Paired with ui/settings.js. */
+
+.mm-set { display: flex; flex-direction: column; gap: var(--s-4); }
+
+.mm-set__group {
+  margin: 0; padding: var(--s-3) var(--s-4) var(--s-4);
+  border: 1px solid color-mix(in srgb, var(--surface-line) 65%, transparent);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--ink-900) 30%, transparent);
+}
+.mm-set__group--danger { border-color: color-mix(in srgb, var(--threat-500) 70%, transparent); }
+.mm-set__legend {
+  padding: 0 .5em;
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--flame-300);
+}
+.mm-set__group--danger .mm-set__legend { color: var(--threat-200); }
+
+.mm-set__row {
+  display: grid;
+  grid-template-columns: minmax(12ch, 1fr) minmax(9rem, auto);
+  align-items: start;
+  gap: var(--s-2) var(--s-4);
+  padding: var(--s-2) 0;
+}
+.mm-set__row + .mm-set__row {
+  border-top: 1px solid color-mix(in srgb, var(--surface-line) 40%, transparent);
+}
+.mm-set__label { display: flex; flex-direction: column; gap: 2px; cursor: pointer; }
+.mm-set__label > span:first-child { font-size: var(--fs-md); color: var(--text-hi); }
+.mm-set__hint {
+  font-size: var(--fs-xs); line-height: 1.4; color: var(--text-lo);
+  max-width: 52ch;
+}
+
+/* ── range ────────────────────────────────────────────────────────────────── */
+.mm-set__rangewrap { display: flex; align-items: center; gap: var(--s-3); }
+.mm-set__rangewrap input[type="range"] {
+  flex: 1 1 8rem; min-width: 6rem;
+  appearance: none; height: 1.4em; background: none; cursor: pointer;
+}
+.mm-set__rangewrap input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px; border-radius: 3px;
+  background: linear-gradient(90deg, var(--flame-400), var(--flame-300));
+  border: 1px solid var(--ink-900);
+}
+.mm-set__rangewrap input[type="range"]::-moz-range-track {
+  height: 6px; border-radius: 3px;
+  background: linear-gradient(90deg, var(--flame-400), var(--flame-300));
+  border: 1px solid var(--ink-900);
+}
+.mm-set__rangewrap input[type="range"]::-webkit-slider-thumb {
+  appearance: none; margin-top: -6px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--flame-100), var(--flame-400));
+  border: 1px solid var(--ink-900);
+  box-shadow: var(--shadow-1);
+}
+.mm-set__rangewrap input[type="range"]::-moz-range-thumb {
+  width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--ink-900);
+  background: radial-gradient(circle at 35% 30%, var(--flame-100), var(--flame-400));
+}
+.mm-set__out {
+  min-width: 4ch; text-align: right;
+  font-family: var(--font-num); font-size: var(--fs-sm);
+  color: var(--flame-200);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── toggle ───────────────────────────────────────────────────────────────── */
+.mm-set__toggle {
+  display: inline-flex; align-items: center; gap: var(--s-2);
+  justify-self: start;
+  padding: .3em .8em .3em .35em;
+  font-size: var(--fs-sm);
+  color: var(--text-mid);
+  background: var(--chip-bg);
+  border: 1px solid var(--surface-line);
+  border-radius: 999px;
+  transition: color var(--t-quick) var(--ease-out), border-color var(--t-quick) var(--ease-out);
+}
+.mm-set__toggle i {
+  position: relative;
+  width: 2.4em; height: 1.3em;
+  border-radius: 999px;
+  background: var(--ink-700);
+  border: 1px solid var(--surface-line);
+  transition: background var(--t-quick) var(--ease-out);
+}
+.mm-set__toggle i::after {
+  content: ''; position: absolute; top: 50%; left: 2px;
+  width: 1em; height: 1em; margin-top: -.5em;
+  border-radius: 50%;
+  background: var(--text-lo);
+  transition: transform var(--t-quick) var(--ease-snap), background var(--t-quick) var(--ease-out);
+}
+.mm-set__toggle[data-on="1"] { color: var(--flame-100); border-color: var(--flame-400); }
+.mm-set__toggle[data-on="1"] i { background: var(--flame-500); }
+.mm-set__toggle[data-on="1"] i::after {
+  transform: translateX(1.1em);
+  background: var(--flame-100);
+}
+/* the state is also spelled out in words next to the switch — never colour alone */
+
+/* ── choice ───────────────────────────────────────────────────────────────── */
+.mm-set__choices { display: flex; flex-wrap: wrap; gap: var(--s-1); justify-self: start; }
+.mm-set__choice {
+  padding: .3em .7em;
+  font-size: var(--fs-sm);
+  color: var(--text-mid);
+  background: var(--chip-bg);
+  border: 1px solid var(--surface-line);
+  border-radius: var(--radius-sm);
+}
+.mm-set__choice[data-on="1"] {
+  color: var(--text-ink);
+  background: var(--flame-300);
+  border-color: var(--flame-200);
+  font-weight: 600;
+}
+
+/* ── seed ─────────────────────────────────────────────────────────────────── */
+.mm-set__seed {
+  justify-self: start;
+  font-family: var(--font-num); font-size: var(--fs-md);
+  color: var(--flame-200);
+  padding: .2em .6em;
+  background: var(--chip-bg);
+  border: 1px dashed var(--surface-line);
+  border-radius: var(--radius-sm);
+  user-select: text;
+}
+.mm-set__text {
+  justify-self: start;
+  width: 14ch;
+  font: inherit; font-family: var(--font-num); font-size: var(--fs-sm);
+  color: var(--text-hi);
+  background: var(--ink-900);
+  border: 1px solid var(--surface-line);
+  border-radius: var(--radius-sm);
+  padding: .3em .5em;
+  user-select: text;
+}
+.mm-set__text:focus-visible { border-color: var(--flame-300); outline: 2px solid var(--focus-ring); outline-offset: 1px; }
+
+/* largeText: stack label above control so neither is squeezed */
+:root[data-large-text="1"] .mm-set__row { grid-template-columns: 1fr; }
+:root[data-large-text="1"] .mm-set__rangewrap { width: 100%; }

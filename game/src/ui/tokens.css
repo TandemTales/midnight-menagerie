@@ -1,7 +1,16 @@
 /* ===========================================================================
    Midnight Menagerie — design tokens.
    Single source of truth for colour, type, spacing, motion.
-   OWNER: art-direction agent. Everything else reads these; nothing hardcodes.
+   OWNER: ui-chrome agent. Everything else reads these; nothing hardcodes.
+
+   THREE LAYERS, in this order:
+     1. :root                          the default (trichromat) palette
+     2. :root[data-colorblind="…"]     alternate hue assignments — see §CB
+     3. :root[data-large-text] / [data-reduce-motion] / [data-anim-scale]
+                                       accessibility switches driven by
+                                       Save.settings via ui/settings.js
+   Every component colour must resolve through a token here so switch (2)
+   reaches the whole game with no component changes.
    =========================================================================== */
 :root {
   /* --- Ground: the mansion at night ------------------------------------- */
@@ -70,19 +79,36 @@
   --parchment: #e8dcc0;
   --parchment-shade: #cdbb96;
   --blueprint-ink: #2d4a7a;
+  /* Multiply wash laid over blueprint parchment on dark screens so the paper
+     sits in the room's light instead of glowing. Requested by frontend. */
+  --paper-wash: color-mix(in srgb, var(--ink-900) 34%, transparent);
+  --paper-wash-strong: color-mix(in srgb, var(--ink-900) 58%, transparent);
 
-  /* --- Type scale (fluid) ------------------------------------------------ */
+  /* --- Chrome surfaces (tooltip / HUD / modal / pile viewer) -------------- */
+  --surface-1: color-mix(in oklab, var(--ink-800) 92%, var(--flame-500));
+  --surface-2: color-mix(in oklab, var(--ink-700) 90%, var(--flame-500));
+  --surface-3: color-mix(in oklab, var(--ink-600) 88%, var(--flame-400));
+  --surface-line: color-mix(in oklab, var(--ink-400) 72%, var(--flame-500));
+  --surface-line-hi: color-mix(in oklab, var(--flame-400) 46%, var(--ink-400));
+  --scrim: color-mix(in srgb, var(--ink-900) 78%, transparent);
+  --scrim-soft: color-mix(in srgb, var(--ink-900) 52%, transparent);
+  --focus-ring: var(--flame-300);
+  --chip-bg: color-mix(in srgb, var(--ink-900) 55%, transparent);
+
+  /* --- Type scale (fluid). `--type-scale` is the largeText multiplier. ---- */
   --font-display: 'Cinzel', 'Trajan Pro', Georgia, serif;
   --font-body: 'Grenze', 'Palatino Linotype', Georgia, serif;
   --font-num: 'Cinzel', Georgia, serif;
 
-  --fs-xs:  clamp(10px, 0.72vw, 12px);
-  --fs-sm:  clamp(12px, 0.86vw, 14px);
-  --fs-md:  clamp(14px, 1.02vw, 17px);
-  --fs-lg:  clamp(18px, 1.35vw, 23px);
-  --fs-xl:  clamp(24px, 2.1vw, 36px);
-  --fs-2xl: clamp(34px, 3.4vw, 58px);
-  --fs-3xl: clamp(48px, 5.6vw, 96px);
+  --type-scale: 1;
+
+  --fs-xs:  calc(clamp(10px, 0.72vw, 12px) * var(--type-scale));
+  --fs-sm:  calc(clamp(12px, 0.86vw, 14px) * var(--type-scale));
+  --fs-md:  calc(clamp(14px, 1.02vw, 17px) * var(--type-scale));
+  --fs-lg:  calc(clamp(18px, 1.35vw, 23px) * var(--type-scale));
+  --fs-xl:  calc(clamp(24px, 2.1vw, 36px) * var(--type-scale));
+  --fs-2xl: calc(clamp(34px, 3.4vw, 58px) * var(--type-scale));
+  --fs-3xl: calc(clamp(48px, 5.6vw, 96px) * var(--type-scale));
 
   /* --- Space ------------------------------------------------------------- */
   --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
@@ -91,20 +117,28 @@
   --radius-sm: 4px; --radius-md: 8px; --radius-lg: 14px; --radius-card: 13px;
 
   /* --- Motion: everything reads from here so feel is tunable in one place */
-  --t-instant: 70ms;
-  --t-quick:   130ms;
-  --t-base:    220ms;
-  --t-slow:    380ms;
-  --t-scene:   620ms;
+  --anim-scale: 1;              /* Save.settings.speed, applied by settings.js */
+  --t-instant: calc(70ms  * var(--anim-scale));
+  --t-quick:   calc(130ms * var(--anim-scale));
+  --t-base:    calc(220ms * var(--anim-scale));
+  --t-slow:    calc(380ms * var(--anim-scale));
+  --t-scene:   calc(620ms * var(--anim-scale));
   --ease-out:  cubic-bezier(.16,1,.3,1);
   --ease-in:   cubic-bezier(.7,0,.84,0);
   --ease-snap: cubic-bezier(.34,1.56,.64,1);
   --ease-soft: cubic-bezier(.4,0,.2,1);
 
   /* --- Card geometry (shared by DOM + WebGL so they register exactly) ---- */
-  --card-w: 224px;
+  /* Requested by card-feel: the fixed 224px box could not fit a hand of 12.
+     card.css's local clamp is now a no-op. */
+  --card-w: clamp(150px, min(13.5vw, 27vh), 224px);
   --card-h: 312px;
   --card-aspect: 0.7179;
+
+  /* --- Chrome geometry --------------------------------------------------- */
+  --hud-h: 46px;
+  --tip-max-w: 34ch;     /* in ch so largeText widens instead of clipping */
+  --tip-gap: 12px;       /* clearance between tooltip and its anchor */
 
   /* --- Elevation --------------------------------------------------------- */
   --shadow-1: 0 1px 2px rgba(0,0,0,.5);
@@ -117,9 +151,123 @@
   --z-overlay: 400; --z-modal: 500; --z-tooltip: 900; --z-transition: 1000;
 }
 
+/* ===========================================================================
+   §CB — Colourblind-safe alternate palettes.
+   Switched by ui/settings.js writing `data-colorblind` on <html> from
+   Save.settings.colorblind ('off' | 'protanopia' | 'deuteranopia' | 'tritanopia').
+
+   Only HUE ASSIGNMENTS change. Every component keeps its token names, so the
+   switch reaches scene CSS, card CSS and JS-read colours with no other edits.
+
+   The three pairs that carry real tactical information:
+     A. attack-red   vs skill-blue     (--type-attack / --type-skill)
+     B. buff-green   vs debuff-red     (--good-300 / --threat-300 family)
+     C. the rarity ladder              (--rarity-*)
+
+   Colour is never the only channel — card frames differ by material and crest
+   silhouette, intents by frame shape, icons by silhouette, statuses by glyph.
+   These palettes exist so colour stops actively *misleading*, and each pair is
+   separated on BOTH the safe hue axis and by relative luminance, so even a
+   monochrome reading keeps them apart.
+   =========================================================================== */
+
+/* — Protanopia & Deuteranopia: red/green confusion.
+     Safe axis is blue ↔ orange. Everything that was "red vs green" becomes
+     "dark orange vs light blue", which also separates by luminance. — */
+:root[data-colorblind="protanopia"],
+:root[data-colorblind="deuteranopia"] {
+  /* A. card / damage identity */
+  --type-attack: #ef8b32;   /* orange, L≈65 */
+  --type-skill:  #56a4ff;   /* blue,   L≈65 */
+  --type-power:  #cbb2ff;   /* pale violet, separated by luminance */
+
+  /* threat family drifts to a deep, unmistakably dark orange-brown */
+  --threat-100: #ffe6cd;
+  --threat-200: #ffbb7a;
+  --threat-300: #e08a2e;
+  --threat-400: #a85f10;
+  --threat-500: #6d3c05;
+
+  /* B. good is a LIGHT blue; debuff/threat is a DARK orange */
+  --good-300: #9ad6ff;
+  --good-500: #2f6f9f;
+  --warn-300: #ffd36b;
+  --warn-500: #8a6318;
+
+  /* Courage stays warm but lifts out of the red hole protans fall into */
+  --courage-300: #ff9f6d;
+  --courage-500: #a05316;
+  --guard-300:  #9cc4ea;
+  --guard-500:  #34648f;
+  --pluck-300:  #ffe07a;
+  --pluck-500:  #b98a08;
+
+  /* C. rarity ladder — four clearly separated luminance steps on the safe axis */
+  --rarity-basic:    #7d7a86;   /* dark neutral */
+  --rarity-common:   #e2e7ef;   /* near-white   */
+  --rarity-uncommon: #3f9dff;   /* blue         */
+  --rarity-rare:     #ffb020;   /* gold/orange  */
+  --rarity-curse:    #6f5bc4;   /* dark violet — darker than uncommon */
+  --rarity-status:   #45474e;   /* darkest neutral, clear of basic */
+
+  --spectre-300: #7fd3ff;
+  --spectre-400: #3f9ed0;
+}
+
+/* — Tritanopia: blue/yellow confusion; red and green survive.
+     Safe axis is red ↔ teal-green. Gold must move off yellow. — */
+:root[data-colorblind="tritanopia"] {
+  --type-attack: #ff5f45;   /* red     */
+  --type-skill:  #17b0c2;   /* teal    */
+  --type-power:  #c46ad0;   /* magenta */
+
+  --good-300: #4bd88a;      /* green — safe for tritan */
+  --good-500: #218a4c;
+  --warn-300: #ff8f6e;      /* warm coral, not amber */
+  --warn-500: #a34527;
+
+  --courage-300: #ff6a72;
+  --courage-500: #a3283a;
+  --guard-300:  #6fc9d6;
+  --guard-500:  #2b7d8c;
+  --pluck-300:  #ff9d7c;    /* Nerve moves off yellow entirely */
+  --pluck-500:  #b8542c;
+
+  --flame-300: #ffb59a;
+  --flame-400: #e0784c;
+  --flame-glow: #ff8f5e;
+
+  --rarity-basic:    #86828c;
+  --rarity-common:   #ecebe8;
+  --rarity-uncommon: #17b0c2;
+  --rarity-rare:     #ff7f5c;
+  --rarity-curse:    #a24fbf;
+  --rarity-status:   #4a4d55;
+}
+
+/* ===========================================================================
+   Accessibility switches. `data-*` wins over the media query so an explicit
+   in-game choice can turn motion back ON for a user whose OS says otherwise.
+   =========================================================================== */
 @media (prefers-reduced-motion: reduce) {
-  :root {
+  :root:not([data-reduce-motion="0"]) {
     --t-instant: 1ms; --t-quick: 1ms; --t-base: 1ms;
     --t-slow: 1ms; --t-scene: 1ms;
   }
 }
+:root[data-reduce-motion="1"] {
+  --t-instant: 1ms; --t-quick: 1ms; --t-base: 1ms;
+  --t-slow: 1ms; --t-scene: 1ms;
+}
+:root[data-reduce-motion="1"] *,
+:root[data-reduce-motion="1"] *::before,
+:root[data-reduce-motion="1"] *::after {
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 1ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* largeText: scale the whole type ramp. Chrome components size their boxes in
+   `ch`/`em`, so the panels grow with the text instead of clipping it. */
+:root[data-large-text="1"] { --type-scale: 1.22; --tip-max-w: 32ch; }

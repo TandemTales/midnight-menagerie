@@ -266,9 +266,11 @@ export class Stage {
     }
     this.camera.lookAt(this.lookAt);
 
-    // While warm-up owns the composer, skip the frame entirely. Rendering here
-    // would re-enter the passes mid-resize and pay the full first-frame link.
-    if (this._warming) return;
+    /* While the post chain is still cold, draw the scene straight to the canvas.
+       The player sees the room immediately (un-graded, un-bloomed) instead of a
+       black screen for the length of the compile, and this path needs only the
+       programs the scene itself uses. */
+    if (this._warming) { this.renderer.render(this.scene, this.camera); return; }
     this.composer.render(dt);
   }
 

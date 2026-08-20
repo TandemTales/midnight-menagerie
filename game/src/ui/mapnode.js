@@ -102,16 +102,25 @@ const G = {
   // hazard warnings read as a warning sign — exactly backwards for the one room
   // that is safe.  A blanket does not stand up in a point: it SAGS between two
   // chairbacks and hangs in scallops, and there is a lamp on under it.
+  //
+  // The lamp used to be a solid disc.  At 20px that disc plus the two chairback
+  // posts collapsed into a dark mass with two points on top — which is the BOSS
+  // silhouette.  Only one mark on this sheet is allowed to be a solid mass, so
+  // the lamp is now drawn as an outlined lantern with a wick spark and rays: the
+  // fort stays an open, airy shape and cannot be mistaken for the horned bulk.
   [NodeType.SAFE]: `
     <path class="s w1" d="M8 14 L8 7 M40 13 L40 6"/>
     <path class="s w1" d="M8 7 a1.9 1.9 0 1 0 .01 0Z M40 6 a1.9 1.9 0 1 0 .01 0Z"/>
     <path class="s w3" d="M7 13 C12 24 18 26 24 26 C30 26 36 23.5 41 12"/>
     <path class="s w2" d="M7 13 L5 37 M41 12 L43 37"/>
     <path class="s w2" d="M4 37 q3.5 5.4 7 0 q3.5 5.4 7 0 q3.5 5.4 7 0 q3.5 5.4 7 0 q3.5 5.4 7 0"/>
-    <path class="s w1" d="M24 26 L24 30"/>
-    <path class="f" d="M18.4 34.6 a5.6 5.6 0 1 0 11.2 0 a5.6 5.6 0 1 0 -11.2 0Z"/>
-    <path class="s w2" d="M11.5 34.6 L7.6 34.6 M36.5 34.6 L40.4 34.6
-                          M14.4 29.4 L11.8 27 M33.6 29.4 L36.2 27"/>`,
+    <path class="s w1" d="M24 26 L24 29.4"/>
+    <path class="s w2" d="M20.6 33.4 a3.4 3.4 0 0 1 6.8 0 L27.4 36.4
+                          a3.4 3.4 0 0 1 -6.8 0 Z"/>
+    <path class="f" d="M22.8 34.3 a1.2 1.4 0 1 0 2.4 0 a1.2 1.4 0 1 0 -2.4 0Z"/>
+    <path class="s w1" d="M16.6 34.9 L12.4 34.9 M31.4 34.9 L35.6 34.9
+                          M18 30.6 L15.2 28.2 M30 30.6 L32.8 28.2
+                          M18.4 39.2 L15.8 41.4 M29.6 39.2 L32.2 41.4"/>`,
 
   // Mr. Moth: wide soft wings + a tag. Nothing else on the map is this wide.
   [NodeType.SHOP]: `
@@ -230,7 +239,7 @@ export function createMapNode(node, info) {
   // Draughtsman's crop marks.  A merely-legal room wears a pencil ring; the one
   // the KEYBOARD is on wears these as well, so the two states cannot be confused
   // by anyone looking at the sheet instead of reading the hover card.
-  const i = box * 0.02, a = box * 0.20, f = box - i;
+  const i = box * 0.02, a = box * 0.25, f = box - i;
   const kbdD = `M${i} ${i + a} L${i} ${i} L${i + a} ${i}
                 M${f - a} ${i} L${f} ${i} L${f} ${i + a}
                 M${f} ${f - a} L${f} ${f} L${f - a} ${f}

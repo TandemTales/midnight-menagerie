@@ -57,6 +57,20 @@
 .map-ink   { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
 .map-nodes { position: absolute; inset: 0; }
 
+/* The wet edge that travels ahead of the sweep on entry: the pencil's own
+   shadow, so the survey reads as being drawn rather than uncovered. */
+.map-wet {
+  position: absolute; top: 0; left: 0; width: 140px; height: 100%;
+  pointer-events: none; opacity: 0; will-change: transform;
+  mix-blend-mode: multiply;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--pencil) 14%, transparent) 58%,
+    color-mix(in srgb, var(--pencil) 34%, transparent) 88%,
+    color-mix(in srgb, var(--flame-500) 30%, transparent) 97%,
+    transparent 100%);
+}
+
 /* the corner someone keeps folding back */
 .map-curl {
   position: absolute; right: 0; bottom: 0; width: 64px; height: 64px;
@@ -242,7 +256,9 @@
 }
 
 .mn-label {
-  position: absolute; top: calc(100% - 6px); left: 50%;
+  /* clear of the pencil ring: the ring's lower arc reaches ~98% of the box and
+     was sitting straight through the room's name */
+  position: absolute; top: calc(100% + 3px); left: 50%;
   transform: translateX(-50%);
   font-family: var(--font-body); font-size: 19px; font-weight: 600;
   letter-spacing: .01em; white-space: nowrap; line-height: 1.15;
@@ -322,7 +338,7 @@
 /* The boss is announced from the moment the sheet opens, the way an act's boss
    is in Slay the Spire.  Never dimmed out of existence, always labelled. */
 .mn-boss-tag {
-  position: absolute; top: calc(100% + 26px); left: 50%;
+  position: absolute; top: calc(100% + 35px); left: 50%;
   transform: translateX(-50%);
   font-family: var(--font-display); font-size: 13px; font-weight: 700;
   letter-spacing: .34em; text-indent: .34em; white-space: nowrap;
@@ -542,16 +558,27 @@
 
 
 /* ── the ink drawing itself on ──────────────────────────────────────────── */
-@keyframes mm-draw {
-  from { stroke-dasharray: var(--len) var(--len); stroke-dashoffset: var(--len); opacity: 0; }
-  15%  { opacity: 1; }
-  to   { stroke-dasharray: var(--len) var(--len); stroke-dashoffset: 0; opacity: 1; }
+/* This used to be 115 simultaneous stroke-dashoffset animations plus 64 node
+   stamps.  Two things were wrong with it.  It was a lie — a twelve-frame strip
+   showed 29,085 changed pixels on the first delta and then 0-217 for the whole
+   rest of the entrance, because animating dasharray on a 2030x1010 SVG forces a
+   full re-raster of the ink layer every frame and the compositor simply gave up
+   (a 491ms frame gap, measured).  And it broke the 60fps contract while doing it.
+   What replaces it is the same idea done as one composited sweep: the survey is
+   drawn west to east, ink layer and marks alike, behind a travelling wet edge.
+   Two clip-path animations and one transform, and it is genuinely visible for
+   every frame of its 800ms. */
+@keyframes mm-wipe {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 -3% 0 0); }
 }
-@keyframes mm-stamp {
-  from { opacity: 0; transform: scale(.55) rotate(-9deg); }
-  to   { opacity: 1; transform: scale(1) rotate(0); }
+@keyframes mm-wet {
+  from { transform: translate3d(-140px, 0, 0); opacity: 0; }
+  12%  { opacity: .85; }
+  88%  { opacity: .85; }
+  to   { transform: translate3d(var(--sw, 2030px), 0, 0); opacity: 0; }
 }
-@keyframes mm-wash { from { opacity: 0; } to { opacity: 1; } }
+@keyframes mm-paper-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes mm-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @keyframes mm-breathe {
   0%, 100% { transform: scale(1);    opacity: .9; }
@@ -563,17 +590,17 @@
   60% { transform: translateX(4px); }
 }
 
-.map-screen.is-drawing .mi-edge,
-.map-screen.is-drawing .mi-halo {
-  animation: mm-draw .36s var(--ease-out) backwards;
-}
-.map-screen.is-drawing .map-node {
-  animation: mm-stamp .26s var(--ease-snap) backwards;
-  animation-delay: var(--delay);
-}
-.map-screen.is-drawing .mi-zone {
-  animation: mm-wash .45s var(--ease-out) .06s backwards;
-}
+/* Armed: blank sheet, marks clipped away, nothing animating. */
+.map-screen.is-armed .map-ink,
+.map-screen.is-armed .map-nodes { clip-path: inset(0 100% 0 0); }
+.map-screen.is-armed .map-paper { opacity: 0; }
+
+/* The sweep. Ink and marks share one clip so a route edge and the room it runs
+   into are inked by the same pass of the pen, never out of step with each other. */
+.map-screen.is-drawing .map-ink,
+.map-screen.is-drawing .map-nodes { animation: mm-wipe .70s var(--ease-out) .10s backwards; }
+.map-screen.is-drawing .map-wet   { animation: mm-wet  .70s var(--ease-out) .10s backwards; }
+.map-screen.is-drawing .map-paper { animation: mm-paper-in .26s var(--ease-out) backwards; }
 .map-screen.is-drawing .map-banner,
 .map-screen.is-drawing .map-bar,
 .map-screen.is-drawing .map-hud {
@@ -602,13 +629,18 @@
   /* the breathing clearing under a legal room settles at its resting size */
   .map-node.is-legal .mn-pool { transform: none; opacity: 1; }
   /* no draw-on: the survey is simply already drawn */
-  .map-screen.is-drawing .mi-edge,
-  .map-screen.is-drawing .mi-halo,
-  .map-screen.is-drawing .map-node,
-  .map-screen.is-drawing .mi-zone,
+  .map-screen.is-armed .map-ink,
+  .map-screen.is-armed .map-nodes,
+  .map-screen.is-armed .map-paper,
+  .map-screen.is-drawing .map-ink,
+  .map-screen.is-drawing .map-nodes,
+  .map-screen.is-drawing .map-paper,
   .map-screen.is-drawing .map-banner,
   .map-screen.is-drawing .map-bar,
-  .map-screen.is-drawing .map-hud { animation: none !important; opacity: 1; }
+  .map-screen.is-drawing .map-hud {
+    animation: none !important; opacity: 1; clip-path: none !important;
+  }
+  .map-wet { display: none; }
   .map-lamp, .map-lamp--warm { transition: none; }
 }
 

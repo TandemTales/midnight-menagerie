@@ -1,0 +1,121 @@
+/* Pile viewer. OWNER: ui-chrome agent. Paired with ui/deckview.js. */
+
+.mm-deck {
+  --deck-cw: clamp(132px, 12vw, 176px);
+  --card-w: var(--deck-cw);              /* CardView sizes itself from this */
+  display: flex; flex-direction: column;
+  gap: var(--s-3);
+  min-height: 0;
+}
+
+/* ── bar: count + search ──────────────────────────────────────────────────── */
+.mm-deck__bar {
+  display: flex; align-items: center; gap: var(--s-4); flex-wrap: wrap;
+}
+.mm-deck__count {
+  display: flex; align-items: baseline; gap: .4em;
+  font-family: var(--font-display);
+  color: var(--text-mid);
+  font-size: var(--fs-sm);
+}
+.mm-deck__count b {
+  font-size: var(--fs-lg);
+  color: var(--flame-200);
+  font-variant-numeric: tabular-nums;
+}
+.mm-deck__search {
+  display: flex; align-items: center; gap: var(--s-2);
+  flex: 1 1 14ch; max-width: 28ch;
+  padding: .3em .7em;
+  background: var(--chip-bg);
+  border: 1px solid var(--surface-line);
+  border-radius: var(--radius-md);
+  color: var(--text-lo);
+}
+.mm-deck__search:focus-within { border-color: var(--surface-line-hi); color: var(--text-mid); }
+.mm-deck__search input {
+  flex: 1 1 auto; min-width: 0;
+  background: none; border: 0; outline: none;
+  font: inherit; font-size: var(--fs-sm);
+  color: var(--text-hi);
+}
+.mm-deck__search input::placeholder { color: var(--text-lo); }
+
+/* ── filters ──────────────────────────────────────────────────────────────── */
+.mm-deck__filters {
+  display: flex; align-items: flex-end; gap: var(--s-3); flex-wrap: wrap;
+}
+.mm-deck__sortwrap { display: flex; flex-direction: column; gap: 2px; }
+.mm-deck__label {
+  font-size: var(--fs-xs); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text-lo);
+}
+.mm-deck__select {
+  font: inherit; font-size: var(--fs-sm);
+  color: var(--text-hi);
+  background: var(--surface-2);
+  border: 1px solid var(--surface-line);
+  border-radius: var(--radius-sm);
+  padding: .3em 1.6em .3em .5em;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+                    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right .8em top 55%, right .5em top 55%;
+  background-size: .32em .32em, .32em .32em;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+.mm-deck__select:hover { border-color: var(--surface-line-hi); }
+.mm-deck__select option { background: var(--ink-800); color: var(--text-hi); }
+.mm-deck__clear { align-self: flex-end; }
+
+.mm-deck__note {
+  margin: 0;
+  padding: var(--s-2) var(--s-3);
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+  color: var(--text-mid);
+  background: color-mix(in srgb, var(--guard-500) 16%, transparent);
+  border-left: 3px solid var(--guard-300);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.mm-deck__empty {
+  margin: var(--s-6) 0; text-align: center;
+  font-size: var(--fs-md); color: var(--text-lo);
+}
+
+/* ── grid ─────────────────────────────────────────────────────────────────── */
+.mm-deck__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--deck-cw), 1fr));
+  gap: var(--s-4) var(--s-3);
+  justify-items: center;
+  align-content: start;
+  padding: var(--s-2) 0 var(--s-3);
+  outline: none;
+}
+.mm-deck__cell {
+  position: relative;
+  width: var(--deck-cw);
+  height: calc(var(--deck-cw) * 312 / 224);
+  border-radius: var(--radius-card);
+  outline: none;
+  transition: transform var(--t-quick) var(--ease-out);
+}
+.mm-deck__cell:hover { transform: translateY(-4px); z-index: 2; }
+.mm-deck__cell.is-focus {
+  transform: translateY(-6px);
+  z-index: 3;
+  box-shadow: 0 0 0 2px var(--focus-ring), 0 0 0 6px var(--scrim), var(--shadow-3);
+}
+.mm-deck__cell .mm-card { pointer-events: none; }
+
+/* reward mode: the cards are the choice, so make picking obvious */
+.mm-deck[data-mode="reward"] .mm-deck__cell { cursor: pointer; }
+.mm-deck[data-mode="reward"] .mm-deck__cell:hover,
+.mm-deck[data-mode="reward"] .mm-deck__cell.is-focus {
+  transform: translateY(-10px) scale(1.02);
+}
+
+/* largeText: fewer, larger cards rather than the same grid with clipped text */
+:root[data-large-text="1"] .mm-deck { --deck-cw: clamp(150px, 15vw, 200px); }

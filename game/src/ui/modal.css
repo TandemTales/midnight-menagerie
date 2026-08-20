@@ -1,0 +1,96 @@
+/* Modal primitive. OWNER: ui-chrome agent. Paired with ui/modal.js. */
+
+.mm-modal {
+  position: fixed; inset: 0;
+  z-index: var(--z-modal);
+  display: grid; place-items: center;
+  padding: var(--s-5);
+}
+.mm-modal[hidden] { display: none; }
+
+.mm-modal__scrim {
+  position: absolute; inset: 0;
+  background: var(--scrim);
+  backdrop-filter: blur(3px) saturate(.7);
+  opacity: 0;
+  transition: opacity var(--t-base) var(--ease-out);
+}
+.mm-modal.is-in .mm-modal__scrim { opacity: 1; }
+
+.mm-modal__dialog {
+  position: relative;
+  display: flex; flex-direction: column;
+  width: min(100%, 44rem);
+  max-height: min(88vh, 60rem);
+  background:
+    radial-gradient(120% 90% at 50% -10%,
+      color-mix(in oklab, var(--flame-500) 12%, transparent), transparent 60%),
+    linear-gradient(180deg, var(--surface-2), var(--surface-1) 45%, var(--ink-900));
+  border: 1px solid var(--surface-line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-4), inset 0 1px 0 color-mix(in srgb, var(--flame-100) 8%, transparent);
+  opacity: 0;
+  transform: translateY(10px) scale(.985);
+  transition: opacity var(--t-base) var(--ease-out), transform var(--t-base) var(--ease-out);
+  outline: none;
+  overflow: hidden;
+}
+.mm-modal.is-in .mm-modal__dialog { opacity: 1; transform: none; }
+.mm-modal[data-size="sm"]   .mm-modal__dialog { width: min(100%, 26rem); }
+.mm-modal[data-size="wide"] .mm-modal__dialog { width: min(100%, 74rem); }
+.mm-modal[data-size="full"] .mm-modal__dialog { width: 100%; max-height: 94vh; }
+
+/* a candlelit rule across the top so it reads as part of the mansion */
+.mm-modal__dialog::before {
+  content: ''; position: absolute; inset: 0 0 auto; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--flame-400) 22%, var(--flame-200) 50%, var(--flame-400) 78%, transparent);
+  opacity: .7;
+}
+
+.mm-modal__head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--s-1) var(--s-3);
+  padding: var(--s-4) var(--s-5) var(--s-3);
+  border-bottom: 1px solid color-mix(in srgb, var(--surface-line) 70%, transparent);
+}
+.mm-modal__title {
+  grid-column: 1;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: var(--flame-200);
+}
+.mm-modal__subtitle {
+  grid-column: 1; margin: 0;
+  font-size: var(--fs-sm); color: var(--text-lo);
+}
+.mm-modal__close {
+  grid-column: 2; grid-row: 1 / span 2;
+  width: 2.2em; height: 2.2em; min-height: 0; padding: 0;
+  font-size: var(--fs-md);
+}
+
+.mm-modal__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: var(--s-4) var(--s-5);
+}
+.mm-modal__text { margin: 0; font-size: var(--fs-md); line-height: 1.5; color: var(--text-mid); }
+
+.mm-modal__foot {
+  display: flex; justify-content: flex-end; gap: var(--s-3);
+  flex-wrap: wrap;
+  padding: var(--s-3) var(--s-5) var(--s-4);
+  border-top: 1px solid color-mix(in srgb, var(--surface-line) 70%, transparent);
+  background: color-mix(in srgb, var(--ink-900) 40%, transparent);
+}
+.mm-modal__foot:empty { display: none; }
+
+/* largeText: the dialog is already sized in rem/ch, but tighten the padding so
+   the extra type has somewhere to go instead of pushing content off-screen. */
+:root[data-large-text="1"] .mm-modal__head { padding: var(--s-3) var(--s-4) var(--s-2); }
+:root[data-large-text="1"] .mm-modal__body { padding: var(--s-3) var(--s-4); }

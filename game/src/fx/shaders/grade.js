@@ -28,6 +28,11 @@ export const GradeShaderDef = {
     /* >1 pushes chroma. The round-1 grade had no saturation control at all and
        shipped combat at mean chroma 26 against reference art at 55. */
     uSaturate:   { value: 1.20 },
+    /* Shadow contrast. >1 pulls the midtones down while leaving highlights where
+       they are — the reference art is a DARK image with a few bright accents
+       (pipkin.png: 49.7% below L32, 24.1% mid, 3.6% above L192), not an evenly
+       lit one, and this is the single knob that shapes that distribution. */
+    uContrast:   { value: 1.30 },
     uDread:      { value: 0.0 },
     uWarmTint:   { value: null },      // THREE.Color — highlight bias
     uCoolTint:   { value: null },      // THREE.Color — shadow bias
@@ -55,7 +60,7 @@ export const GradeShaderDef = {
     uniform vec4  uImpact;
     uniform float uTime, uGrain, uVignette, uAberration, uFlash, uPulse, uDesat,
                   uDread, uToneAmt, uHalation, uDirt, uExposure, uLift, uAspect,
-                  uSaturate;
+                  uSaturate, uContrast;
     varying vec2  vUv;
 
     /* Screen-static lens dirt: low-frequency smudge plus a couple of scratches. */
@@ -120,6 +125,9 @@ export const GradeShaderDef = {
         col = mix(col, vec3(sl) + (col - vec3(sl)) * uSaturate, w);
         col = max(col, 0.0);
       }
+
+      /* ---- shadow contrast: a pivotless power curve in linear light --------- */
+      if (abs(uContrast - 1.0) > 0.001) col = pow(max(col, 0.0), vec3(uContrast));
 
       /* ---- vignette (aspect-aware) + dread edge crush ----------------------- */
       vec2 vc = c * vec2(uAspect, 1.0) * 1.06;

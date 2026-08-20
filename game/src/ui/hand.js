@@ -57,7 +57,7 @@ export const TUNE = {
   parkScale: 1.06, snapPad: 26,
   thresholdFrac: 0.54,
   // arrow
-  arrowHead: 30,        // solid triangle, px
+  arrowHead: 36,        // solid triangle, px
   arrowReticleR: 46,    // the tip stops on the reticle, never in the sprite
 };
 
@@ -407,7 +407,11 @@ export class Hand {
       else out.push(this._makeSlot(c, false, 0));
     }
     for (const dead of keep.values()) {
-      if (document.activeElement === dead.view.el) this.el.focus?.({ preventScroll: true });
+      if (document.activeElement === dead.view.el) {
+        this._quietFocus = true;
+        this.el.focus?.({ preventScroll: true });
+        this._quietFocus = false;
+      }
       dead.view.destroy();
     }
     this.slots = out;
@@ -649,6 +653,9 @@ export class Hand {
     // Tabbing into the hand puts you on a card immediately — the keyboard path
     // must be discoverable, not a secret set of shortcuts.
     this._onFocusIn = (e) => {
+      // `_quiet` means WE moved focus here (Escape releasing, or a played card
+      // handing focus back). Auto-selecting then would undo the release.
+      if (this._quietFocus) return;
       if (e.target === this.el && !this.locked && this.selIdx < 0 && this.slots.length) {
         this._selectIdx(Math.floor(this.slots.length / 2));
       }
@@ -795,7 +802,7 @@ export class Hand {
     this.bus.emit('card:drop', { uid: s.card.uid, cardId: s.card.def.id });
 
     const above = d.py < this.thresholdY;
-    const commit = d.needsTarget ? !!d.snap : above;
+    const commit = d.cancelled ? false : (d.needsTarget ? !!d.snap : above);
     if (commit && s.playable) {
       this._commit(s, d.snap ? d.snap.id : undefined);
     } else {
@@ -941,7 +948,7 @@ export class Hand {
       const m = Math.hypot(tx, ty) || 1;
       const nx = -ty / m, ny = tx / m;
       const k = total ? P[i][2] / total : 0;
-      const wdt = lerp(4.5, 12.5, Math.pow(k, 0.8));    // monotonic: thin → thick
+      const wdt = lerp(4.5, 11, Math.pow(k, 0.8));    // monotonic: thin → thick
       L.push((px + nx * wdt).toFixed(1) + ',' + (py + ny * wdt).toFixed(1));
       Rr.push((px - nx * wdt).toFixed(1) + ',' + (py - ny * wdt).toFixed(1));
     }
@@ -1007,7 +1014,11 @@ export class Hand {
     if (i >= 0) this.slots.splice(i, 1);
     if (this.hoverSlot === slot) this._clearHover();
     // the card is leaving; the keyboard stays in the hand
-    if (document.activeElement === slot.view.el) this.el.focus?.({ preventScroll: true });
+    if (document.activeElement === slot.view.el) {
+      this._quietFocus = true;
+      this.el.focus?.({ preventScroll: true });
+      this._quietFocus = false;
+    }
     this.selIdx = Math.min(this.selIdx, this.slots.length - 1);
     this._layout();                                  // the rest re-fans at once
     this.flying.add(slot);
@@ -1043,7 +1054,7 @@ export class Hand {
     }, Clock.easeOutCubic);
 
     // beat 2 — contact. A hard white pop, then settle back from the overshoot.
-    v.impact(1);
+    v.impact(0.82);
     await this.clock.ramp(TUNE.playHold, (k) => {
       v.setTransform({ scale: pS * lerp(over, 1, k) + Math.sin(k * Math.PI) * 0.06 * pS });
     }, Clock.easeOutBack);
@@ -1151,9 +1162,12 @@ export class Hand {
     const a = typeof document !== 'undefined' ? document.activeElement : null;
     return !!a && this.el.contains(a);
   }
-  /** Keep the keyboard in the hand after a card leaves it. */
+  /** Keep the keyboard in the hand after a card leaves it, without re-selecting. */
   _releaseFocusToHand() {
-    if (this._focusInHand()) this.el.focus?.({ preventScroll: true });
+    if (!this._focusInHand()) return;
+    this._quietFocus = true;
+    this.el.focus?.({ preventScroll: true });
+    this._quietFocus = false;
   }
 
   _selectIdx(i) {
@@ -1206,6 +1220,10 @@ export class Hand {
     if (!this.aim) return;
     const s = this.aim.slot;
     this.aim = null;
+    // If the pointer is still down, cancelling the aim cancels the DRAG too.
+    // Otherwise `_pointerUp` still saw a live snap target and played the card
+    // on release — Escape looked like it worked and then the card went anyway.
+    if (this.drag) { this.drag.snap = null; this.drag.cancelled = true; }
     this._showArrow(false);
     this._clearPreview(s);
     this.bus.emit('card:cancel', { uid: s.card.uid });

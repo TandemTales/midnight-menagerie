@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Midnight Menagerie — run layer simulation</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; padding: 24px 28px 60px; background: #0d0b16; color: #c3bbcd;
+         font: 13px/1.55 ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  h1 { font-size: 18px; letter-spacing: .14em; text-transform: uppercase; color: #f4efe4; margin: 0 0 4px; }
+  .sub { color: #8b839a; margin-bottom: 18px; font-size: 12px; }
+  #summary { position: sticky; top: 0; z-index: 5; padding: 12px 14px; margin: 0 0 18px;
+             border-radius: 8px; background: #14111f; border: 1px solid #2a2442; font-size: 15px; }
+  #summary.pass { border-color: #3fb4d0; color: #a8ecf7; }
+  #summary.fail { border-color: #cf3c28; color: #ff9c8a; }
+  h2 { font-size: 13px; color: #f4efe4; margin: 20px 0 6px; letter-spacing: .06em; }
+  pre { margin: 0; white-space: pre-wrap; }
+  .err { color: #ff9c8a; background: #1a0f12; padding: 8px 10px; border-radius: 6px; margin: 6px 0; }
+  .ok  { color: #6fd9ec; }
+  table { border-collapse: collapse; margin: 4px 0 0; }
+  td, th { padding: 1px 14px 1px 0; text-align: left; font-weight: 400; }
+  th { color: #8b839a; }
+  .bar { color: #f8c96b; }
+</style>
+</head>
+<body>
+<h1>Run layer — headless simulation</h1>
+<div class="sub">
+  50 seeded expeditions driven straight through <code>state/run.js</code>: map &rarr; combat &rarr;
+  reward &rarr; next node &rarr; &hellip; &rarr; boss. No scenes, no DOM, no rendering.
+  Asserts determinism, autosave/resume round-trips and resource sanity.
+</div>
+<div id="summary">running&hellip;</div>
+<div id="out"></div>
+
+<script type="module">
+import { RNG, hashSeed } from '../../game/src/core/rng.js';
+import { Save } from '../../game/src/core/save.js';
+import { Run } from '../../game/src/state/run.js';
+import { NodeType, REGION_ORDER } from '../../game/src/data/schema.js';
+import { cardById } from '../../game/src/data/cards.js';
+
+const out = document.getElementById('out');
+const sum = document.getElementById('summary');
+const say = (html, cls = '') => { const d = document.createElement('div'); if (cls) d.className = cls; d.innerHTML = html; out.appendChild(d); };
+
+const errors = [];
+const fail = (msg) => { errors.push(msg); };
+const check = (cond, msg) => { if (!cond) fail(msg); return !!cond; };
+
+/* ────────────────────────────────────────────────────────────────────────────
+   An in-memory stand-in for localStorage.
+
+   The run autosaves after every state change and a snapshot carries the whole
+   region map, so 50 expeditions against the real localStorage is tens of
+   thousands of multi-kilobyte string writes and the harness spends its life in
+   the storage layer rather than in the code under test.  Three runs at the end
+   go through the REAL Save/localStorage path to prove that seam works.
+   ──────────────────────────────────────────────────────────────────────────── */
+const realSaveRun = Save.saveRun.bind(Save);
+const realLoadRun = Save.loadRun.bind(Save);
+const realClear   = Save.clearRun.bind(Save);
+let MEM = null;
+let saveCount = 0;
+function useMemorySave() {
+  Save.saveRun = (s) => { saveCount++; MEM = JSON.stringify(s); };
+  Save.loadRun = () => (MEM ? JSON.parse(MEM) : null);
+  Save.clearRun = () => { MEM = null; };
+}
+function useRealSave() {
+  Save.saveRun = realSaveRun; Save.loadRun = realLoadRun; Save.clearRun = realClear;
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Meta-progression isolation.
+
+   A seed reproduces a run *given the same meta state* — and that is on purpose:
+   `generateRegionMap` is handed `rescued`, because the design doc's premise is
+   that "the house reacts differently to different Kids and Companions".  A run
+   that ends writes its rescues into Save.data, so run #2 of a batch legitimately
+   gets a different Foyer from run #1 with the same seed.  Every simulation here
+   therefore starts from a pristine meta save, and the determinism test restores
+   it before replaying.
+   ──────────────────────────────────────────────────────────────────────────── */
+const PRISTINE_META = JSON.parse(JSON.stringify(Save.data));
+function resetMeta() { Save.data = JSON.parse(JSON.stringify(PRISTINE_META)); }
+
+/* ── the combat bot ─────────────────────────────────────────────────────────
+   Deterministic and only as clever as it needs to be: score every playable
+   card with the engine's own `preview()` — damage, lethality, and Guard valued
+   only up to the damage actually incoming this turn — then play the best one.
+   It is not trying to be a good player.  It is trying to reach the end of every
+   fight the run layer can produce, without dying so fast that the boss path
+   never gets exercised.                                                       */
+async function playCombat(engine, budgetTurns = 80) {
+  await engine.startCombat();
+  let guard = 0;
+  while (!engine.over && guard++ < budgetTurns) {
+    let inner = 0;
+    while (!engine.over && inner++ < 40) {
+      const incoming = incomingDamage(engine);
+      const need = Math.max(0, incoming - engine.player.block);
+      let best = null;
+      for (const card of [...engine.piles.hand]) {
+        const target = pickTarget(engine, card);
+        if (!engine.canPlay(card.uid, target).ok) continue;
+        let s = 0;
+        try {
+          const pv = engine.preview(card.uid, target);
+          s = (pv.damage || 0) * 1.0
+            + Math.min(pv.block || 0, Math.max(need, 0)) * 1.15
+            + (pv.block || 0) * 0.08
+            + (pv.killsAny ? 14 : 0)
+            + (pv.draw || 0) * 2
+            + (pv.heal || 0) * 0.8
+            + (pv.statuses?.length || 0) * 1.2;
+        } catch { s = 0.5; }              // an un-previewable card is still worth trying
+        if (!best || s > best.s) best = { card, target, s };
+      }
+      if (!best) break;
+      await engine.playCard(best.card.uid, best.target);
+    }
+    if (engine.over) break;
+    await engine.endTurn();
+  }
+  if (!engine.over) {
+    // A fight that will not resolve is a real failure, not a timeout to hide.
+    fail(`combat did not resolve in ${budgetTurns} turns`);
+    return false;
+  }
+  return true;
+}
+
+/** Lowest-Courage living enemy, so the board actually thins out. */
+function pickTarget(engine, card) {
+  const alive = engine.livingEnemies();
+  if (!alive.length) return null;
+  let t = alive[0];
+  for (const e of alive) if (e.hp < t.hp) t = e;
+  return t.id;
+}
+
+function incomingDamage(engine) {
+  let total = 0;
+  for (const e of engine.livingEnemies()) {
+    const i = e.intent;
+    if (!i) continue;
+    total += (i.damage || 0) * (i.hits || 1);
+  }
+  return total;
+}
+
+/* ── drive one whole expedition ─────────────────────────────────────────── */
+async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0, trace = null,
+  shepherd = false } = {}) {
+  resetMeta();
+  const run = new Run({ companion, kid, seed, hauntLevel: haunt });
+  const pick = run.fork('sim:path');
+  const dice = run.fork('sim:choices');
+  const t = trace || [];
+  let steps = 0;
+
+  const log = (s) => t.push(s);
+  log(`seed ${run.seed} ${companion}/${kid} h${haunt}`);
+
+  while (!run.result && steps++ < 400) {
+    // `shepherd` runs exist to exercise the *back half* of an expedition —
+    // the boss fight, the boss reward, completeRegion() and the victory end —
+    // which a bot this crude would otherwise never reach.
+    if (shepherd) run.courage = run.maxCourage;
+
+    const legal = run.legalNextIds();
+    if (!legal.length) { fail(`seed ${seed}: stranded with no legal nodes at ${run.currentNodeId}`); break; }
+    const id = legal[pick.int(legal.length)];
+    const node = run.nodeById(id);
+    const type = run.effectiveType(node);
+    log(`> ${id} ${type}`);
+
+    await run.enterNode(id);
+
+    if (run.combat) {
+      const engine = run.combat;
+      const ok = await playCombat(engine);
+      if (!ok) break;
+      log(`  fight ${engine.victory ? 'won' : 'lost'} hp=${run.courage}`);
+    }
+
+    if (run.result) break;
+
+    if (run.pendingReward) {
+      const r = run.pendingReward;
+      if (r.cards.length && dice.chance(0.7)) {
+        const c = r.cards[dice.int(r.cards.length)];
+        run.takeRewardCard(c.id);
+        log(`  took ${c.id}`);
+      } else if (r.cards.length) {
+        run.skipRewardCards();
+        log('  skipped');
+      }
+      run.claimReward();
+      continue;
+    }
+
+    if (run.pendingEvent) {
+      if (run.pendingEvent.rescue) {
+        run.rescueCompanion(run.pendingEvent.companion);
+      } else {
+        const def = run.currentEvent();
+        const open = (def?.options || []).filter(o => run.optionOpen(o)
+          && !(o.cost?.lostThings > run.lostThings));
+        if (open.length) {
+          const o = open[dice.int(open.length)];
+          const res = run.chooseEventOption(o.id);
+          log(`  curiosity ${def.id}/${o.id}`);
+          const p = res?.pending;
+          if (p?.upgradeCard) {
+            const up = run.upgradeableCards();
+            for (let i = 0; i < p.upgradeCard && up.length; i++) run.upgradeCard(up[i % up.length].uid);
+          }
+          if (p?.removeCard) {
+            for (let i = 0; i < p.removeCard; i++) {
+              const rem = run.removableCards();
+              if (rem.length) run.removeCard(rem[dice.int(rem.length)].uid);
+            }
+          }
+          if (p?.combat) {
+            await run.eventCombat(p.combat);
+            if (run.combat) { await playCombat(run.combat); }
+            if (run.result) break;
+            if (run.pendingReward) { run.claimReward(); continue; }
+          }
+        }
+      }
+      if (run.result) break;
+      run.leaveNode();
+      continue;
+    }
+
+    if (type === NodeType.SHOP) {
+      const stock = run.shopStock();
+      for (const c of stock.cards) if (run.lostThings >= c.price && dice.chance(0.35)) run.buyCard(c.id, c.price);
+      for (const k of stock.keepsakes) if (run.lostThings >= k.price && dice.chance(0.5)) run.buyKeepsake(k.id, k.price);
+      for (const s of stock.snacks) if (run.lostThings >= s.price && dice.chance(0.2)) run.buySnack(s, s.price);
+      if (run.lostThings >= run.removalPrice && dice.chance(0.5)) {
+        const rem = run.removableCards();
+        if (rem.length) run.buyRemoval(rem[dice.int(rem.length)].uid);
+      }
+      log(`  shop, purse ${run.lostThings}`);
+      run.leaveNode();
+      continue;
+    }
+
+    if (type === NodeType.SAFE) {
+      const roll = dice.int(3);
+      if (roll === 0 && run.restHealAmount() > 0) run.rest();
+      else if (roll === 1 && run.upgradeableCards().length) run.upgradeCard(run.upgradeableCards()[0].uid);
+      else if (run.forgeableKeepsakes().length && run.maxCourage - run.forgeCost() >= 10) {
+        run.forgeKeepsake(run.forgeableKeepsakes()[0].id);
+      } else run.rest();
+      log(`  safe room, hp ${run.courage}/${run.maxCourage}`);
+      run.leaveNode();
+      continue;
+    }
+
+    // treasure and anything else already left a pendingReward or is a no-op
+    run.leaveNode();
+  }
+
+  if (!run.result && steps >= 400) fail(`seed ${seed}: run never terminated (400 steps)`);
+  return { run, trace: t, steps };
+}
+
+/* ── a stable digest of everything a run ended up being ─────────────────── */
+function digest(run) {
+  return JSON.stringify({
+    result: run.result,
+    hp: run.courage, max: run.maxCourage, gold: run.lostThings,
+    deck: run.deck.map(c => `${c.id}${c.upgraded ? '+' : ''}`).sort(),
+    keeps: run.keepsakes.map(k => `${k.id}${k.forged ? '*' : ''}`).sort(),
+    region: run.region, clues: run.cluesFound,
+    path: run.pathIds, seen: run.seenEvents,
+    stats: run.stats,
+  });
+}
+
+/* ── the suite ──────────────────────────────────────────────────────────── */
+const COMPANIONS = ['marmalade', 'bones', 'pipkin', 'taffy', 'wink'];
+const KIDS = ['maya', 'mateo', 'amina', 'eli', 'priya', 'jordan', 'lena', 'lucy'];
+
+async function main() {
+  const t0 = performance.now();
+  useMemorySave();
+
+  const N = 50;
+  const results = [];
+  const lengths = [];
+  const ends = {};
+
+  for (let i = 0; i < N; i++) {
+    const seed = 1000 + i * 7717;
+    const companion = COMPANIONS[i % COMPANIONS.length];
+    const kid = KIDS[i % KIDS.length];
+    const haunt = i % 4;
+    // Every fifth expedition is shepherded, so ~10 of the 50 walk the full
+    // ladder into the Butler and out the other side.
+    const shepherd = i % 5 === 0;
+    let r;
+    try {
+      r = await simulate(seed, { companion, kid, haunt, shepherd });
+    } catch (e) {
+      fail(`seed ${seed} threw: ${e && e.stack ? e.stack.split('\n').slice(0, 3).join(' | ') : e}`);
+      continue;
+    }
+    const run = r.run;
+    results.push({ seed, companion, kid, haunt, shepherd, run, steps: r.steps, trace: r.trace });
+
+    // ── sanity ──────────────────────────────────────────────────────────────
+    check(run.result === 'victory' || run.result === 'defeat',
+      `seed ${seed}: ended with result=${run.result}`);
+    check(run.deck.length >= 5 && run.deck.length <= 60,
+      `seed ${seed}: deck size out of range (${run.deck.length})`);
+    check(run.deck.every(c => !!cardById(c.id)),
+      `seed ${seed}: deck holds an unknown card id`);
+    check(run.lostThings >= 0, `seed ${seed}: negative ${'Lost Things'} (${run.lostThings})`);
+    check(run.lostThings < 5000, `seed ${seed}: implausible purse (${run.lostThings})`);
+    check(run.courage >= 0 && run.courage <= run.maxCourage,
+      `seed ${seed}: courage ${run.courage}/${run.maxCourage}`);
+    check(run.maxCourage >= 10, `seed ${seed}: max courage collapsed to ${run.maxCourage}`);
+    check(new Set(run.keepsakes.map(k => k.id)).size === run.keepsakes.length,
+      `seed ${seed}: duplicate Keepsake`);
+    check(new Set(run.deck.map(c => c.uid)).size === run.deck.length,
+      `seed ${seed}: duplicate card uid in deck`);
+
+    lengths.push(run.visitedIds.length);
+    const key = run.result === 'victory' ? 'victory' : `defeat/${run.region}`;
+    ends[key] = (ends[key] || 0) + 1;
+  }
+
+  // ── determinism: the same seed twice, byte-identical ─────────────────────
+  say('<h2>determinism</h2>');
+  let detOk = 0;
+  for (const pickIdx of [0, 7, 19, 33, 44]) {
+    const r0 = results[pickIdx];
+    if (!r0) continue;
+    const again = await simulate(r0.seed, {
+      companion: r0.companion, kid: r0.kid, haunt: r0.haunt, shepherd: r0.shepherd,
+    });
+    const a = digest(r0.run), b = digest(again.run);
+    if (a === b) { detOk++; }
+    else {
+      fail(`seed ${r0.seed}: replay diverged`);
+      say(`<pre class="err">seed ${r0.seed}\n A ${a.slice(0, 400)}\n B ${b.slice(0, 400)}</pre>`);
+    }
+  }
+  say(`<pre class="ok">${detOk}/5 replayed identically</pre>`);
+
+  // ── the boss path, end to end, asserted explicitly ───────────────────────
+  say('<h2>boss and victory</h2>');
+  {
+    resetMeta();
+    const run = new Run({ companion: 'marmalade', kid: 'maya', seed: 777 });
+    // This block asserts the *shape* of the back half of an expedition — boss
+    // node, boss reward, completeRegion, victory, meta write, save cleared.
+    // It is not a balance test, so the Kid is given enough Courage that the
+    // bot's play quality cannot make the structural assertions flaky.
+    run.maxCourage = 400; run.courage = 400;
+    const pick = run.fork('sim:boss');
+    let sawBoss = false, bossReward = null, steps = 0;
+    const bossTrace = [];
+    while (!run.result && steps++ < 60) {
+      run.courage = run.maxCourage;                 // straight to the point
+      // Route around Big Scares — that is a legitimate thing a player does, and
+      // it keeps this structural test from turning into a balance test.
+      const all = run.legalNextIds();
+      if (!all.length) break;
+      const safe = all.filter(n => run.effectiveType(run.nodeById(n)) !== NodeType.BIG_SCARE);
+      const legal = safe.length ? safe : all;
+      const id = legal[pick.int(legal.length)];
+      const node = run.nodeById(id);
+      const bt = run.effectiveType(node);
+      const isBoss = bt === NodeType.BOSS;
+      await run.enterNode(id);
+      if (run.combat) {
+        const eng = run.combat;
+        await playCombat(eng);
+        bossTrace.push(`${node.row}:${bt} ${eng.victory ? 'won' : 'LOST'} hp=${eng.player.hp}/${eng.player.maxHp}`);
+      } else bossTrace.push(`${node.row}:${bt} hp=${run.courage}`);
+      if (run.result) break;
+      if (isBoss) {
+        sawBoss = true;
+        bossReward = run.pendingReward ? { ...run.pendingReward } : null;
+      }
+      if (run.pendingReward) { run.claimReward(); continue; }
+      if (run.pendingEvent) {
+        const def = run.currentEvent();
+        const open = (def?.options || []).filter(o => run.optionOpen(o) && !(o.cost?.lostThings > run.lostThings));
+        if (open.length) run.chooseEventOption(open[0].id);
+        if (run.result) break;
+        run.leaveNode();
+        continue;
+      }
+      run.leaveNode();
+    }
+    check(sawBoss, 'boss path: never reached the boss node');
+    check(!!bossReward && bossReward.kind === 'boss', 'boss path: boss reward was not kind="boss"');
+    check(!!bossReward?.keepsake, 'boss path: boss dropped no Keepsake');
+    check(run.result === 'victory', `boss path: expected victory, got ${run.result}`);
+    check(run.rescued.includes('marmalade'), 'boss path: the region Companion was not freed');
+    check((Save.data.companionsRescued || []).includes('marmalade'),
+      'boss path: the rescue did not reach the meta save');
+    check(Save.loadRun() === null, 'boss path: a finished run is still resumable');
+    say('<pre class="ok">'
+      + `walked ${run.visitedIds.length} rooms · ${run.result}`
+      + ` · freed ${run.rescued.join(', ') || 'nobody'}`
+      + ` · boss Keepsake ${bossReward?.keepsake || 'none'}` + '<br>'
+      + bossTrace.join('<br>') + '</pre>');
+  }
+
+  // ── autosave / resume round-trip, mid-map ────────────────────────────────
+  say('<h2>autosave / resume</h2>');
+  let resumeOk = 0, resumeTried = 0;
+  for (const seed of [4242, 9001, 31337]) {
+    resumeTried++;
+    resetMeta();
+    const run = new Run({ companion: 'marmalade', kid: 'maya', seed });
+    const pick = run.fork('sim:path');
+    // walk three rooms, stopping on something that is not a fight
+    for (let i = 0; i < 3; i++) {
+      const legal = run.legalNextIds();
+      if (!legal.length) break;
+      const id = legal[pick.int(legal.length)];
+      await run.enterNode(id);
+      if (run.combat) { await playCombat(run.combat); if (run.pendingReward) run.claimReward(); }
+      else if (run.pendingEvent || run.pendingShop) run.leaveNode();
+      else run.leaveNode();
+      if (run.result) break;
+    }
+    const before = digest(run);
+    const saved = JSON.parse(JSON.stringify(run.snapshot()));
+    const back = Run.resume(saved);
+    if (!back) { fail(`seed ${seed}: Run.resume returned null`); continue; }
+    const after = digest(back);
+    if (before !== after) {
+      fail(`seed ${seed}: resume round-trip lost state`);
+      say(`<pre class="err">before ${before.slice(0, 400)}\nafter  ${after.slice(0, 400)}</pre>`);
+      continue;
+    }
+    // and it must still be playable from there
+    const legal = back.legalNextIds();
+    check(legal.length > 0 || back.result, `seed ${seed}: resumed run has nowhere to go`);
+    resumeOk++;
+  }
+  say(`<pre class="ok">${resumeOk}/${resumeTried} resumed identically and were still playable</pre>`);
+
+  // ── the real localStorage seam, three short runs ─────────────────────────
+  say('<h2>real Save / localStorage seam</h2>');
+  useRealSave();
+  let storeOk = 0;
+  try {
+    for (const seed of [11, 22, 33]) {
+      resetMeta();
+      const run = new Run({ companion: 'bones', kid: 'mateo', seed });
+      const legal = run.legalNextIds();
+      await run.enterNode(legal[0]);
+      if (run.combat) { await playCombat(run.combat); if (run.pendingReward) run.claimReward(); }
+      else run.leaveNode();
+      const raw = Save.loadRun();
+      if (raw && raw.seed === run.seed && Array.isArray(raw.deck)) storeOk++;
+      else fail(`seed ${seed}: nothing usable came back out of localStorage`);
+    }
+  } finally {
+    Save.clearRun();
+    useMemorySave();
+  }
+  say(`<pre class="ok">${storeOk}/3 wrote and read back through localStorage</pre>`);
+
+  // ── distributions ────────────────────────────────────────────────────────
+  say('<h2>run length (rooms entered)</h2>');
+  const hist = {};
+  for (const n of lengths) { const b = Math.floor(n / 2) * 2; hist[b] = (hist[b] || 0) + 1; }
+  let rows = '<table><tr><th>rooms</th><th>runs</th><th></th></tr>';
+  for (const k of Object.keys(hist).map(Number).sort((a, b) => a - b)) {
+    rows += `<tr><td>${k}&ndash;${k + 1}</td><td>${hist[k]}</td><td class="bar">${'#'.repeat(hist[k])}</td></tr>`;
+  }
+  rows += '</table>';
+  const avg = lengths.reduce((a, b) => a + b, 0) / (lengths.length || 1);
+  say(rows + `<pre>mean ${avg.toFixed(1)} rooms, min ${Math.min(...lengths)}, max ${Math.max(...lengths)}</pre>`);
+
+  say('<h2>end state</h2>');
+  let erows = '<table><tr><th>outcome</th><th>runs</th><th></th></tr>';
+  for (const [k, v] of Object.entries(ends).sort((a, b) => b[1] - a[1])) {
+    erows += `<tr><td>${k}</td><td>${v}</td><td class="bar">${'#'.repeat(v)}</td></tr>`;
+  }
+  say(erows + '</table>');
+
+  say('<h2>deck and purse at the end</h2>');
+  const decks = results.map(r => r.run.deck.length);
+  const purses = results.map(r => r.run.lostThings);
+  const keeps = results.map(r => r.run.keepsakes.length);
+  const stat = (a) => `min ${Math.min(...a)} / mean ${(a.reduce((x, y) => x + y, 0) / a.length).toFixed(1)} / max ${Math.max(...a)}`;
+  say(`<pre>deck      ${stat(decks)}
+purse     ${stat(purses)}
+keepsakes ${stat(keeps)}
+autosaves ${saveCount}</pre>`);
+
+  if (errors.length) {
+    say('<h2>errors</h2>');
+    for (const e of errors.slice(0, 60)) say(`<pre class="err">${e}</pre>`);
+  }
+
+  const ms = Math.round(performance.now() - t0);
+  const line = `RESULT: ${results.length} runs, ${errors.length} errors`;
+  sum.className = errors.length ? 'fail' : 'pass';
+  sum.textContent = `${line}  ·  ${ms} ms`;
+  console.log(line);
+  window.__RUN_RESULT__ = {
+    runs: results.length, errors: errors.length, errorList: errors.slice(0, 60),
+    ms, meanRooms: +avg.toFixed(1), ends,
+    lengths, decks, purses, keeps, saveCount,
+    determinism: detOk, resume: resumeOk, storage: storeOk,
+  };
+}
+
+main().catch((e) => {
+  sum.className = 'fail';
+  sum.textContent = 'RESULT: 0 runs, 1 errors (harness crashed)';
+  say(`<pre class="err">${e && e.stack ? e.stack : e}</pre>`);
+  window.__RUN_RESULT__ = { runs: 0, errors: 1, errorList: [String(e && e.stack || e)] };
+});
+</script>
+</body>
+</html>

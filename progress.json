@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T04:27:06",
+ "updated": "2026-08-20T07:56:04",
  "wave": 1,
  "waveLabel": "Core systems",
  "headline": "Seven builders running in parallel. Critics follow each one.",
@@ -33,10 +33,10 @@
    "id": "card",
    "name": "Card feel",
    "desc": "Hover, drag, arc-fan hand, play arc, impact, re-fan easing",
-   "status": "rework",
-   "round": 2,
-   "verdict": "Hover 105ms, arc fan, 114 motion frames captured. Under critic review.",
-   "gap": "Card is a fixed 224x312 box with no responsive scaling: at 12 cards the hand overlaps 76%, truncates every name and clips 32px below the viewport. Also 43fps drawing into a full hand.",
+   "status": "reviewing",
+   "round": 3,
+   "verdict": "Hand fits at all four resolutions with zero clipping. 61fps cold on draw-5-into-12 (was 43). Curse card contrast 1.22:1 to 15.79:1.",
+   "gap": null,
    "builder": null,
    "critic": null,
    "log": []
@@ -282,6 +282,18 @@
   {
    "t": "2026-08-20T04:27:06",
    "msg": "Atmosphere root cause found: 9 of 11 materials were raw ShaderMaterial, which ignores Three.js lights entirely. Lighting now lands on surfaces."
+  },
+  {
+   "t": "2026-08-20T07:35:37",
+   "msg": "Map round 2 verified by direct DOM probe: clicking works, the walked path inks, branching nearly doubled (34 nodes to 64)."
+  },
+  {
+   "t": "2026-08-20T07:56:04",
+   "msg": "Card feel round 2: the contrast failure was structural - the card face was a child of the frame, so the unplayable filter dimmed the text. Face is now a sibling."
+  },
+  {
+   "t": "2026-08-20T07:56:04",
+   "msg": "Run layer, Keepsakes and Curiosities now exist on disk. UI chrome building the keyword tooltip system."
   }
  ]
 }

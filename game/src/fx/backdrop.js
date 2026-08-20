@@ -400,7 +400,17 @@ export class Backdrop {
       const h = H * scale * (SHAPE_H[shape] ?? 1) * (0.80 + rand() * 0.44);
       return { h, w: h * (SHAPE_W[shape] ?? 1) * (0.66 + rand() * 0.38) };
     };
+    /* Keep props inside the lens. A prop at x = +-halfW in a 34 m ballroom is
+       simply off-screen, which is how round 1 ended up with a props crop that
+       contained almost no prop: the layout spread across the ROOM, not across
+       the FRAME. Clamp to the visible half-width at that depth. */
+    const cam = pal.cam || {};
+    const camZ = cam.z ?? 9.6;
+    const tanH = Math.tan(((cam.fov ?? 42) * Math.PI) / 360) * (16 / 9);
+    const frameX = (z) => Math.max((camZ - z) * tanH * 0.94, 1.2);
     const push = (shape, x, z, scale, tone) => {
+      const lim = Math.min(halfW * 0.98, frameX(z));
+      if (Math.abs(x) > lim) x = Math.sign(x || 1) * lim * (0.60 + 0.36 * rand());
       const { h, w } = sized(shape, scale);
       const hang = HANGING[shape] === 1;
       out.push({

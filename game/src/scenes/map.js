@@ -172,6 +172,7 @@ export class MapScene extends Scene {
             <svg class="map-ink" viewBox="0 0 ${this.SW} ${this.SH}"
                  width="${this.SW}" height="${this.SH}" aria-hidden="true"></svg>
             <div class="map-nodes"></div>
+            <div class="map-wet" aria-hidden="true"></div>
             <div class="map-curl" aria-hidden="true"></div>
           </div>
         </div>
@@ -241,6 +242,7 @@ export class MapScene extends Scene {
     };
     this.el.sheet.style.width = this.SW + 'px';
     this.el.sheet.style.height = this.SH + 'px';
+    this.el.sheet.style.setProperty('--sw', this.SW + 'px');   // the wet edge's run
     this._paintGrain();
   }
 
@@ -580,13 +582,9 @@ export class MapScene extends Scene {
     // route edges.  Each one is drawn twice: a parchment halo underneath so the
     // pencil line stays legible over dense architecture, then the line itself.
     const halos = [], lines = [];
-    const rowSpan = Math.max(1, map.rows - 1);
     const put = (from, to, d, row, extra = '') => {
-      const delay = (0.05 + (row / rowSpan) * 0.46).toFixed(3);
-      halos.push(`<path class="mi-halo" data-from="${from}" data-to="${to}" d="${d}"
-        style="animation-delay:${delay}s"/>`);
-      lines.push(`<path class="mi-edge${extra}" data-from="${from}" data-to="${to}" d="${d}"
-        style="animation-delay:${delay}s"/>`);
+      halos.push(`<path class="mi-halo" data-from="${from}" data-to="${to}" d="${d}"/>`);
+      lines.push(`<path class="mi-edge${extra}" data-from="${from}" data-to="${to}" d="${d}"/>`);
     };
     for (const e of map.edges) {
       const a = m.byId.get(e.from), b = m.byId.get(e.to);
@@ -626,9 +624,6 @@ export class MapScene extends Scene {
     for (const p of this.el.ink.querySelectorAll('.mi-halo')) {
       this._halos.set(p.dataset.from + '>' + p.dataset.to, p);
     }
-    for (const p of this.el.ink.querySelectorAll('.mi-edge, .mi-halo')) {
-      p.style.setProperty('--len', p.getTotalLength().toFixed(1));
-    }
   }
 
   _buildNodes() {
@@ -639,8 +634,6 @@ export class MapScene extends Scene {
       const el = createMapNode(n, NODE_INFO[n.type]);
       el.style.left = (n.x * this.SW) + 'px';
       el.style.top = (n.y * this.SH) + 'px';
-      el.style.setProperty('--delay',
-        (0.10 + (n.row / Math.max(1, m.map.rows - 1)) * 0.50).toFixed(3) + 's');
       this._nodeEls.set(n.id, el);
       frag.appendChild(el);
     }
@@ -761,23 +754,39 @@ export class MapScene extends Scene {
 
   // ─────────────────────────────────────────────────────────── the ink-on ──
   /**
-   * The survey draws itself on, west to east, in one 880ms sweep.
-   * The stagger is normalised over the wing's depth (0.05s + up to 0.46s for
-   * edges, 0.10s + up to 0.50s for the marks), so a 13-row wing and a 15-row
-   * wing take the same time and the ink genuinely arrives in waves.  A frame
-   * strip taken from t=0 must show motion across at least eight of twelve
-   * frames; if it does not, this is a lie and should be deleted rather than
-   * dressed up.
+   * The survey draws itself on, west to east, in one 800ms sweep: a clip on the
+   * ink layer and the marks, with a wet pencil edge travelling ahead of it.
+   * A frame strip taken from t=0 must show motion across at least eight of
+   * twelve frames; if it does not, this is a lie and should be deleted rather
+   * than dressed up.  (It did not, once — see the note over @keyframes mm-wipe.)
    */
   _drawOn() {
     const scr = this.el.screen;
     scr.classList.remove('is-drawn');
-    scr.classList.add('is-drawing');
-    return clock.wait(0.88).then(() => {
-      if (!this.el) return;
-      scr.classList.remove('is-drawing');
-      scr.classList.add('is-drawn');
-    });
+    // Armed: the sheet is blank and the marks are clipped away, but nothing is
+    // animating yet.  `scenes.go` awaits enter() and only THEN lifts the veil,
+    // so a sweep started here would spend its first third behind a black screen
+    // and arrive already half-drawn.  Hold the blank sheet until the screen is
+    // actually being looked at, then draw.
+    scr.classList.add('is-armed');
+    return this._whenVisible()
+      .then(() => {
+        if (!this.el) return null;
+        scr.classList.remove('is-armed');
+        scr.classList.add('is-drawing');
+        return clock.wait(0.82);
+      })
+      .then(() => {
+        if (!this.el) return;
+        scr.classList.remove('is-armed', 'is-drawing');
+        scr.classList.add('is-drawn');
+      });
+  }
+
+  /** Resolve once the scene change has finished revealing (or after 1.2s). */
+  async _whenVisible() {
+    const sm = this.ctx.scenes;
+    for (let i = 0; i < 75 && sm && sm.busy && this.el; i++) await clock.wait(0.016);
   }
 
   // ───────────────────────────────────────────────────────── view control ──
@@ -1008,23 +1017,30 @@ export class MapScene extends Scene {
     const t = this.el.tip;
     t.setAttribute('aria-hidden', 'false');
     t.classList.add('is-on');
-    // Depth runs west to east, so a room's onward edges leave to its RIGHT.
-    // The card therefore sits to the LEFT — over ground you have already walked
-    // — and never over the choice it is describing or the choices it leads to.
-    // Only if there is no room on the left does it go right, and only if there
-    // is no room either side does it go under the node.
+    // Depth runs west to east, so a room's onward edges leave to its RIGHT and
+    // fan out over the next two rows.  The card must never cover that fan, or it
+    // hides the very choice it is explaining.  So: LEFT first, over ground already
+    // walked.  When the room is hard against the west edge of the screen — which
+    // every room on row one is — the card goes ABOVE or BELOW instead, where it
+    // crosses at most one lane of the fan.  Going right is the last resort and
+    // only happens when there is no vertical room either.
     const tw = t.offsetWidth || 320, th = t.offsetHeight || 170;
     const gap = 20;
-    let x = r.left - gap - tw, side = 'left';
-    if (x < 14) {
-      if (r.right + gap + tw <= innerWidth - 14) { x = r.right + gap; side = 'right'; }
-      else { x = clampN(r.left + r.width / 2 - tw / 2, 14, innerWidth - tw - 14); side = 'below'; }
+    const topLim = 66, botLim = innerHeight - 58;
+    const centreY = clampN(r.top + r.height / 2 - th / 2, topLim, Math.max(topLim, botLim - th));
+    const centreX = clampN(r.left + r.width / 2 - tw / 2, 14, Math.max(14, innerWidth - tw - 14));
+
+    let side, x, y;
+    if (r.left - gap - tw >= 14) {
+      side = 'left';  x = r.left - gap - tw;  y = centreY;
+    } else if (r.top - gap - th >= topLim) {
+      side = 'above'; x = centreX;            y = r.top - gap - th;
+    } else if (r.bottom + gap + th <= botLim) {
+      side = 'below'; x = centreX;            y = r.bottom + gap;
+    } else {
+      side = 'right'; x = clampN(r.right + gap, 14, Math.max(14, innerWidth - tw - 14));
+      y = centreY;
     }
-    let y = side === 'below'
-      ? r.bottom + gap
-      : r.top + r.height / 2 - th / 2;
-    if (side === 'below' && y + th > innerHeight - 58) y = r.top - gap - th;
-    y = clampN(y, 66, Math.max(66, innerHeight - th - 58));
     t.dataset.side = side;
     t.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
     if (hz) this.el.screen.dataset.hzFocus = hz.id;

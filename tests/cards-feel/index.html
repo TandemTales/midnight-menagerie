@@ -252,7 +252,8 @@ for (const [label, fn] of BTN) {
 
 function setSize(n) {
   hand.setCards(Array.from({ length: n }, (_, i) => mk(i)));
-}
+  setEnergy(3);   // a new hand is a new turn — otherwise the showcase drifts
+}                 // into a state where nothing is affordable and stays there.
 
 // ── boot ───────────────────────────────────────────────────────────────────
 setSize(7);
