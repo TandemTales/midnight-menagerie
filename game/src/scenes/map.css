@@ -1,0 +1,517 @@
+/* ===========================================================================
+   The Map — a stolen architectural blueprint, marked up in pencil.
+   OWNER: map agent.  All hues come from tokens.css; only neutral shadows and
+   paper highlights use raw rgba (they are elevation, not colour).
+   =========================================================================== */
+
+.map-screen {
+  position: absolute; inset: 0;
+  overflow: hidden;
+  color: var(--blueprint-ink);
+  --ink: var(--blueprint-ink);
+  --ink-soft: color-mix(in srgb, var(--blueprint-ink) 58%, transparent);
+  /* Graphite. The plan is printed in blue; everything the kids added is pencil,
+     so figure and ground never compete. */
+  --pencil: color-mix(in srgb, var(--ink-900) 74%, var(--blueprint-ink));
+  --mark: color-mix(in srgb, var(--flame-500) 88%, var(--ink-900));
+  --mark-hot: var(--flame-400);
+}
+
+/* ── the desk the sheet is lying on ─────────────────────────────────────── */
+.map-desk {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 50% 30%,
+      color-mix(in srgb, var(--ink-700) 88%, var(--flame-500)) 0%,
+      var(--ink-900) 78%),
+    var(--ink-900);
+}
+.map-desk::after {                       /* felt weave */
+  content: ''; position: absolute; inset: 0; opacity: .5;
+  background:
+    repeating-linear-gradient(94deg, rgba(255,255,255,.014) 0 2px, transparent 2px 5px),
+    repeating-linear-gradient(4deg,  rgba(0,0,0,.05) 0 3px, transparent 3px 7px);
+}
+
+/* ── viewport + sheet ───────────────────────────────────────────────────── */
+.map-viewport {
+  position: absolute; inset: 56px 0 48px 0;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+}
+.map-screen.is-grabbing .map-viewport { cursor: grabbing; }
+
+.map-sheet {
+  position: absolute; top: 0; left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+  background: var(--parchment);
+  box-shadow:
+    0 2px 0 rgba(255,255,255,.10) inset,
+    0 40px 90px rgba(0,0,0,.66),
+    0 8px 26px rgba(0,0,0,.5),
+    0 0 0 1px color-mix(in srgb, var(--parchment-shade) 70%, transparent);
+}
+.map-paper { display: block; }
+.map-ink   { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
+.map-nodes { position: absolute; inset: 0; }
+
+/* the corner someone keeps folding back */
+.map-curl {
+  position: absolute; right: 0; bottom: 0; width: 64px; height: 64px;
+  pointer-events: none;
+  background: linear-gradient(315deg,
+    color-mix(in srgb, var(--parchment) 96%, #fff) 0 40%,
+    color-mix(in srgb, var(--parchment-shade) 78%, transparent) 45%,
+    transparent 46%);
+  filter: drop-shadow(-5px -5px 9px rgba(0,0,0,.3));
+  opacity: .85;
+}
+
+/* ── overlays ───────────────────────────────────────────────────────────── */
+.map-shade {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 74% 66% at 50% 46%,
+    transparent 0%, transparent 38%, rgba(6,5,12,.55) 82%, rgba(4,3,9,.86) 100%);
+}
+.map-lamp {
+  position: absolute; top: -640px; left: -640px;
+  width: 1280px; height: 1280px; pointer-events: none;
+  mix-blend-mode: screen;
+  background: radial-gradient(circle closest-side,
+    color-mix(in srgb, var(--flame-glow) 22%, transparent) 0%,
+    color-mix(in srgb, var(--flame-500) 9%, transparent) 42%,
+    transparent 70%);
+}
+.map-lamp--warm {
+  mix-blend-mode: overlay;
+  background: radial-gradient(circle closest-side,
+    color-mix(in srgb, var(--flame-100) 46%, transparent) 0%,
+    color-mix(in srgb, var(--flame-200) 12%, transparent) 34%,
+    transparent 60%);
+}
+.map-grain {
+  position: absolute; inset: 0; pointer-events: none;
+  mix-blend-mode: overlay; opacity: .075;
+  background-repeat: repeat;
+}
+
+/* ── route ink ──────────────────────────────────────────────────────────── */
+.mi-edge {
+  fill: none; stroke: var(--pencil);
+  stroke-width: 3; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 13 11;                   /* architect's dashed = possible */
+  opacity: .46;
+  transition: opacity var(--t-base) var(--ease-out), stroke-width var(--t-base);
+}
+.mi-edge.is-open {                            /* inked in: you can walk this now */
+  stroke: var(--mark); stroke-width: 5.2; stroke-dasharray: none; opacity: 1;
+  filter: drop-shadow(0 1px 1px rgba(255,255,255,.5));
+}
+.mi-edge.is-walked {                          /* already walked: heavy pen */
+  stroke: var(--pencil); stroke-width: 6; stroke-dasharray: none; opacity: .95;
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,.4));
+}
+.mi-edge.is-dead { opacity: .1; stroke-width: 1.8; }
+
+/* the way in */
+.mi-entry {
+  fill: none; stroke: var(--mark); stroke-width: 4; stroke-linecap: round;
+  stroke-dasharray: 12 9; opacity: .85;
+}
+.mi-in {
+  font-family: var(--font-display); font-size: 20px; font-weight: 600;
+  letter-spacing: .3em; text-anchor: middle;
+  fill: var(--mark); opacity: .8;
+}
+.map-screen.is-underway .mi-entries { opacity: 0; }
+.mi-entries { transition: opacity var(--t-base); }
+
+.mi-here-a, .mi-here-b {
+  fill: none; stroke: var(--pencil); stroke-width: 3; opacity: .85;
+  stroke-dasharray: 6 8;
+}
+.mi-here-b { stroke-width: 1.6; opacity: .45; stroke-dasharray: 2 10; }
+
+/* ── hazard wings ───────────────────────────────────────────────────────── */
+.mi-zone { color: var(--threat-400); transition: opacity var(--t-base); }
+.mi-zone--boon { color: var(--spectre-500); }
+.mi-zone rect { opacity: .30; }
+.mi-zone-edge {
+  fill: none; stroke: currentColor; stroke-width: 2.4;
+  stroke-dasharray: 16 10; opacity: .62;
+}
+.mi-zone-tab rect { fill: currentColor; opacity: .88; }
+.mi-zone-tab text {
+  font-family: var(--font-display); font-size: 13px; font-weight: 600;
+  letter-spacing: .13em; fill: var(--parchment);
+}
+.map-screen[data-hz-focus] .mi-zone { opacity: .3; }
+.map-screen[data-hz-focus] .mi-zone[data-hz] { transition: opacity var(--t-quick); }
+.map-screen[data-hz-focus="lights-out"]   .mi-zone[data-hz="lights-out"],
+.map-screen[data-hz-focus="sagging"]      .mi-zone[data-hz="sagging"],
+.map-screen[data-hz-focus="dust-sheets"]  .mi-zone[data-hz="dust-sheets"],
+.map-screen[data-hz-focus="cold-draught"] .mi-zone[data-hz="cold-draught"],
+.map-screen[data-hz-focus="pipes"]        .mi-zone[data-hz="pipes"],
+.map-screen[data-hz-focus="long-shadows"] .mi-zone[data-hz="long-shadows"],
+.map-screen[data-hz-focus="moonlit"]      .mi-zone[data-hz="moonlit"],
+.map-screen[data-hz-focus="paw-prints"]   .mi-zone[data-hz="paw-prints"] { opacity: 1; }
+
+/* ── nodes ──────────────────────────────────────────────────────────────── */
+.map-node {
+  position: absolute;
+  width: var(--mn-box); height: var(--mn-box);
+  margin: calc(var(--mn-box) / -2) 0 0 calc(var(--mn-box) / -2);
+  padding: 0; border: 0; background: none;
+  color: var(--pencil);
+  display: grid; place-items: center;
+  cursor: default;
+  transition: opacity var(--t-base) var(--ease-out), filter var(--t-base);
+}
+.map-node.is-legal { cursor: pointer; }
+
+.mn-pool {                                  /* parchment clearing under the mark */
+  position: absolute; inset: -12%;
+  border-radius: 50%;
+  background: radial-gradient(circle closest-side,
+    color-mix(in srgb, var(--parchment) 97%, #fff) 0%,
+    color-mix(in srgb, var(--parchment) 94%, #fff) 34%,
+    color-mix(in srgb, var(--parchment) 74%, transparent) 62%,
+    transparent 80%);
+}
+.mn-art { position: relative; overflow: visible; }
+.mn-art .s { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+.mn-art .w2 { stroke-width: 3.4; }
+.mn-art .w1 { stroke-width: 2.1; }
+.mn-art .j  { stroke-linejoin: miter; stroke-miterlimit: 3; }
+.mn-art .f  { fill: currentColor; stroke: none; }
+.mn-art .pl { fill: var(--parchment); stroke: currentColor; }
+.mn-art .pw { fill: var(--parchment); }
+.mn-art .tear { stroke-dasharray: 7 3.5; }
+
+.mn-ring, .mn-ring2 {
+  fill: none; stroke: var(--mark); stroke-width: 3;
+  stroke-linecap: round; opacity: 0;
+  transition: opacity var(--t-base) var(--ease-out);
+}
+.mn-ring2 { stroke-width: 1.5; opacity: 0; }
+.mn-tick {
+  fill: none; stroke: var(--pencil); stroke-width: 5.2;
+  stroke-linecap: round; stroke-linejoin: round; opacity: 0;
+}
+
+.mn-label {
+  position: absolute; top: calc(100% - 6px); left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-body); font-size: 12.5px; font-weight: 600;
+  letter-spacing: .015em; white-space: nowrap;
+  color: color-mix(in srgb, var(--ink) 88%, var(--ink-900));
+  background: color-mix(in srgb, var(--parchment) 84%, transparent);
+  padding: 1px 7px 2px; border-radius: 3px;
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--t-quick) var(--ease-out);
+  text-shadow: 0 1px 0 rgba(255,255,255,.45);
+}
+
+/* ── node states ────────────────────────────────────────────────────────── */
+.map-node.is-dim     { opacity: .20; filter: grayscale(.8); }
+.map-node.is-far     { opacity: .84; }
+.map-node.is-visited { opacity: .74; }
+.map-node.is-visited .mn-tick { opacity: .85; }
+.map-node.is-visited .mn-art > g { opacity: .55; }
+
+.map-node.is-legal {
+  opacity: 1;
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--flame-glow) 40%, transparent));
+}
+.map-node.is-legal .mn-ring  { opacity: .95; }
+.map-node.is-legal .mn-ring2 { opacity: .5; }
+.map-node.is-legal .mn-pool {
+  background: radial-gradient(circle closest-side,
+    color-mix(in srgb, var(--flame-100) 88%, transparent) 0%,
+    color-mix(in srgb, var(--flame-200) 42%, transparent) 52%,
+    transparent 78%);
+  animation: mm-breathe 2.6s var(--ease-soft) infinite;
+}
+.map-node.is-legal .mn-label,
+.map-node.is-current .mn-label,
+.map-node--boss .mn-label,
+.map-screen.is-close .map-node:not(.is-dim) .mn-label { opacity: 1; }
+.map-node.is-legal:hover, .map-node.is-kbd {
+  filter: drop-shadow(0 0 24px color-mix(in srgb, var(--flame-glow) 62%, transparent));
+}
+.map-node.is-legal:hover .mn-art, .map-node.is-kbd .mn-art { transform: scale(1.10); }
+.mn-art { transition: transform var(--t-quick) var(--ease-snap); }
+.map-node.is-kbd .mn-ring { stroke: var(--mark-hot); stroke-width: 4; }
+.map-node:focus-visible { outline: none; }
+.map-node.is-current .mn-pool {
+  background: radial-gradient(circle closest-side,
+    color-mix(in srgb, var(--parchment) 96%, #fff) 0%,
+    color-mix(in srgb, var(--parchment) 70%, transparent) 60%, transparent 80%);
+}
+.map-node--boss { z-index: 3; }
+.map-node--boss .mn-art .w2 { stroke-width: 2.6; }
+.map-node--boss .mn-label {
+  font-family: var(--font-display); font-size: 15px; letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.map-node.is-refused { animation: mm-refuse .3s var(--ease-out); }
+.map-node.is-stamping .mn-tick { animation: mm-tick .34s var(--ease-out) backwards; }
+
+/* ── HUD placeholder strip (ui-chrome replaces this wholesale) ──────────── */
+.map-hud {
+  position: absolute; top: 0; left: 0; right: 0; height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 var(--s-5);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--ink-900) 94%, transparent),
+    color-mix(in srgb, var(--ink-800) 78%, transparent) 70%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--ink-500) 70%, transparent);
+  backdrop-filter: blur(6px);
+  z-index: 6;
+}
+.hud-l, .hud-r { display: flex; align-items: center; gap: var(--s-4); }
+.hud-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-num); font-size: var(--fs-md); color: var(--text-hi);
+}
+.hud-chip svg { fill: none; stroke: currentColor; stroke-width: 1.8; }
+.hud-hp { color: var(--courage-300); }
+.hud-hp i { color: var(--text-lo); font-style: normal; font-size: var(--fs-sm); }
+.hud-bar {
+  display: inline-block; width: 88px; height: 6px; margin-left: 4px;
+  background: color-mix(in srgb, var(--courage-500) 45%, var(--ink-900));
+  border-radius: 3px; overflow: hidden;
+}
+.hud-bar > span { display: block; height: 100%; background: var(--courage-300); }
+.hud-gold { color: var(--pluck-300); }
+.hud-gold svg { fill: none; stroke: currentColor; stroke-width: 1.6; }
+.hud-keeps { display: inline-flex; gap: 5px; }
+.hud-keeps .keep {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, var(--flame-200), var(--flame-500) 70%, var(--ink-700));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--flame-500) 60%, transparent);
+}
+.hud-haunt {
+  font-family: var(--font-display); font-size: var(--fs-sm);
+  letter-spacing: .14em; text-transform: uppercase; color: var(--spectre-300);
+}
+.hud-cog { color: var(--text-lo); font-size: 18px; }
+
+/* ── region banner ──────────────────────────────────────────────────────── */
+.map-banner {
+  position: absolute; top: 74px; left: 26px; z-index: 5;
+  display: flex; gap: var(--s-4); align-items: center;
+  max-width: 480px; padding: 14px 22px 14px 16px;
+  background:
+    linear-gradient(174deg, color-mix(in srgb, var(--parchment) 97%, #fff), var(--parchment) 62%, var(--parchment-shade));
+  color: var(--text-ink);
+  transform: rotate(-.7deg);
+  box-shadow: 0 18px 40px rgba(0,0,0,.55), 0 2px 0 rgba(255,255,255,.3) inset;
+  border-radius: 2px;
+}
+.map-banner .tape {
+  position: absolute; top: -13px; width: 74px; height: 26px;
+  background: color-mix(in srgb, var(--flame-100) 62%, transparent);
+  box-shadow: 0 1px 3px rgba(0,0,0,.35);
+}
+.tape-l { left: 14px; transform: rotate(-6deg); }
+.tape-r { right: 20px; transform: rotate(5deg); }
+.bn-roman {
+  font-family: var(--font-display); font-size: 40px; font-weight: 700; line-height: 1;
+  color: color-mix(in srgb, var(--blueprint-ink) 80%, var(--ink-900));
+  padding-right: 14px;
+  border-right: 2px solid color-mix(in srgb, var(--blueprint-ink) 40%, transparent);
+}
+.map-banner h1 {
+  margin: 0; font-family: var(--font-display); font-size: 23px; font-weight: 700;
+  letter-spacing: .03em; color: color-mix(in srgb, var(--blueprint-ink) 88%, var(--ink-900));
+}
+.bn-form {
+  margin: 3px 0 0; font-size: 13px; font-style: italic;
+  color: color-mix(in srgb, var(--text-ink) 68%, transparent);
+}
+.bn-meta {
+  margin: 6px 0 0; font-size: 12px; letter-spacing: .04em;
+  color: color-mix(in srgb, var(--text-ink) 74%, transparent);
+}
+.bn-meta b { font-weight: 700; }
+.bn-meta .dot { opacity: .45; margin: 0 5px; }
+
+/* ── the bar: key, wing conditions, controls. Nothing else may cover the sheet,
+      because the boss has to stay visible from the moment the map opens. ───── */
+.map-bar {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 48px; z-index: 6;
+  display: flex; align-items: center; gap: var(--s-5);
+  padding: 0 var(--s-4) 0 var(--s-5);
+  background: linear-gradient(0deg,
+    color-mix(in srgb, var(--ink-900) 96%, transparent),
+    color-mix(in srgb, var(--ink-800) 82%, transparent) 72%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--ink-500) 70%, transparent);
+  backdrop-filter: blur(7px);
+  transition: opacity var(--t-base);
+}
+.map-screen.no-bar .map-bar { opacity: 0; pointer-events: none; }
+
+.map-legend { display: flex; align-items: center; gap: 13px; flex: none; }
+.lg-h, .notes-h {
+  font-family: var(--font-display); font-size: 10px; letter-spacing: .24em;
+  text-transform: uppercase; color: var(--text-lo); flex: none;
+}
+.lg-i {
+  display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+  font-size: 11.5px; color: var(--text-mid);
+}
+.lg-ico { color: var(--spectre-200); display: grid; place-items: center; width: 19px; }
+.lg-ico .s { fill: none; stroke: currentColor; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+.lg-ico .w1 { stroke-width: 2.2; }
+.lg-ico .f { fill: currentColor; }
+.lg-ico .pl, .lg-ico .pw { fill: var(--ink-800); }
+
+.map-notes { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.note {
+  position: relative;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px 5px; border-radius: 2px;
+  font-size: 11.5px; white-space: nowrap; cursor: help;
+  color: var(--threat-100);
+  background: color-mix(in srgb, var(--threat-500) 34%, transparent);
+  border: 1px solid color-mix(in srgb, var(--threat-400) 62%, transparent);
+  border-left-width: 3px;
+}
+.note--boon {
+  color: var(--spectre-100);
+  background: color-mix(in srgb, var(--spectre-500) 30%, transparent);
+  border-color: color-mix(in srgb, var(--spectre-400) 62%, transparent);
+}
+.note b { font-family: var(--font-display); font-weight: 600; letter-spacing: .05em; }
+.note-ico svg .s { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.note-ico svg .f { fill: currentColor; }
+.note-pop {
+  position: absolute; bottom: calc(100% + 9px); right: 0; width: 268px;
+  padding: 9px 11px; text-align: left; white-space: normal;
+  background: linear-gradient(168deg, color-mix(in srgb, var(--parchment) 97%, #fff), var(--parchment) 70%, var(--parchment-shade));
+  color: var(--text-ink);
+  box-shadow: 0 16px 34px rgba(0,0,0,.6);
+  opacity: 0; transform: translateY(5px); pointer-events: none;
+  transition: opacity var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out);
+}
+.note:hover .note-pop, .note:focus-visible .note-pop { opacity: 1; transform: none; }
+.note-pop i { font-style: normal; font-size: 12.5px; line-height: 1.38; display: block; }
+.note-pop em {
+  display: block; margin-top: 5px; font-size: 10.5px; opacity: .6; letter-spacing: .05em;
+}
+
+.map-hint {
+  flex: none; font-size: 11px; letter-spacing: .05em; color: var(--text-lo);
+  padding-left: var(--s-3);
+  border-left: 1px solid color-mix(in srgb, var(--ink-500) 60%, transparent);
+}
+.map-hint b { color: var(--text-mid); font-weight: 600; }
+
+/* ── hover card ─────────────────────────────────────────────────────────── */
+.map-tip {
+  position: fixed; top: 0; left: 0; z-index: 40;
+  width: 320px; padding: 12px 14px 11px;
+  background: linear-gradient(168deg, color-mix(in srgb, var(--parchment) 97%, #fff), var(--parchment) 66%, var(--parchment-shade));
+  color: var(--text-ink);
+  box-shadow: 0 20px 46px rgba(0,0,0,.6), 0 0 0 1px color-mix(in srgb, var(--parchment-shade) 80%, transparent);
+  border-radius: 2px;
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--t-quick) var(--ease-out);
+}
+.map-tip.is-on { opacity: 1; }
+.tip-head { display: flex; gap: 10px; align-items: center; }
+.tip-ico { color: var(--blueprint-ink); flex: none; }
+.tip-ico .s { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.tip-ico .w1 { stroke-width: 2; }
+.tip-ico .f { fill: currentColor; }
+.tip-ico .pl, .tip-ico .pw { fill: var(--parchment); }
+.tip-room {
+  display: block; font-family: var(--font-display); font-size: 16px; line-height: 1.15;
+  color: color-mix(in srgb, var(--blueprint-ink) 88%, var(--ink-900));
+}
+.tip-type {
+  font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--text-ink) 60%, transparent);
+}
+.tip-blurb { margin: 9px 0 0; font-size: 13.5px; line-height: 1.4; }
+.tip-reward { margin: 6px 0 0; font-size: 12.5px; }
+.tip-reward i { font-style: normal; letter-spacing: .14em; text-transform: uppercase; font-size: 10.5px; opacity: .6; margin-right: 6px; }
+.tip-hz {
+  display: flex; gap: 7px; align-items: flex-start;
+  margin: 9px 0 0; padding: 7px 8px; font-size: 12.5px; line-height: 1.35;
+  background: color-mix(in srgb, var(--threat-400) 16%, transparent);
+  border-left: 3px solid var(--threat-400);
+}
+.tip-hz--boon {
+  background: color-mix(in srgb, var(--spectre-500) 17%, transparent);
+  border-left-color: var(--spectre-500);
+}
+.tip-hz span { color: var(--blueprint-ink); flex: none; }
+.tip-hz svg .s { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
+.tip-hz svg .f { fill: currentColor; }
+.tip-foot {
+  margin: 9px 0 0; padding-top: 7px; font-size: 11.5px; letter-spacing: .05em;
+  border-top: 1px solid color-mix(in srgb, var(--parchment-shade) 90%, transparent);
+  color: color-mix(in srgb, var(--text-ink) 66%, transparent);
+}
+.tip-foot b { color: var(--flame-500); }
+
+
+/* ── the ink drawing itself on ──────────────────────────────────────────── */
+@keyframes mm-draw {
+  from { stroke-dasharray: var(--len) var(--len); stroke-dashoffset: var(--len); opacity: 0; }
+  15%  { opacity: 1; }
+  to   { stroke-dasharray: var(--len) var(--len); stroke-dashoffset: 0; opacity: 1; }
+}
+@keyframes mm-stamp {
+  from { opacity: 0; transform: scale(.55) rotate(-9deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0); }
+}
+@keyframes mm-wash { from { opacity: 0; } to { opacity: 1; } }
+@keyframes mm-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes mm-breathe {
+  0%, 100% { transform: scale(1);    opacity: .9; }
+  50%      { transform: scale(1.13); opacity: 1; }
+}
+@keyframes mm-tick { from { stroke-dasharray: 90; stroke-dashoffset: 90; } to { stroke-dashoffset: 0; } }
+@keyframes mm-refuse {
+  0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); }
+  60% { transform: translateX(4px); }
+}
+
+.map-screen.is-drawing .mi-edge {
+  animation: mm-draw .40s var(--ease-out) backwards;
+}
+.map-screen.is-drawing .map-node {
+  animation: mm-stamp .30s var(--ease-snap) backwards;
+  animation-delay: var(--delay);
+}
+.map-screen.is-drawing .mi-zone {
+  animation: mm-wash .45s var(--ease-out) .06s backwards;
+}
+.map-screen.is-drawing .map-banner,
+.map-screen.is-drawing .map-bar,
+.map-screen.is-drawing .map-hud {
+  animation: mm-rise .42s var(--ease-out) .18s backwards;
+}
+
+/* ── reduced motion ─────────────────────────────────────────────────────── */
+.map-screen.is-still *,
+.map-screen.is-still *::before,
+.map-screen.is-still *::after {
+  animation: none !important;
+  transition-duration: 1ms !important;
+}
+
+@media (max-width: 1500px) {
+  .map-hint { display: none; }
+  .lg-i { font-size: 11px; }
+  .map-legend { gap: 10px; }
+}
+@media (max-width: 1280px) {
+  .map-legend .lg-i:nth-child(n+7) { display: none; }
+  .map-banner { max-width: 380px; }
+}

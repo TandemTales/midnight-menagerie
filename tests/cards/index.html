@@ -1,0 +1,384 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Midnight Menagerie — card data validation</title>
+<style>
+  :root { color-scheme: dark; }
+  body { background:#14121c; color:#e8e4f0; font:13px/1.5 ui-monospace,Menlo,Consolas,monospace; margin:0; padding:24px 28px; }
+  h1 { font-size:18px; letter-spacing:.14em; text-transform:uppercase; color:#c9b8ff; margin:0 0 4px; }
+  h2 { font-size:14px; letter-spacing:.1em; text-transform:uppercase; color:#ffcf8a; margin:26px 0 8px; border-bottom:1px solid #2e2a3d; padding-bottom:4px; }
+  h3 { font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:#8fb8ff; margin:16px 0 6px; }
+  table { border-collapse:collapse; margin:6px 0 14px; }
+  th,td { border:1px solid #2e2a3d; padding:2px 9px; text-align:right; }
+  th { color:#9a92b8; font-weight:400; text-align:center; }
+  td:first-child, th:first-child { text-align:left; }
+  .ok { color:#7fe3a0; } .bad { color:#ff7b8a; } .warn { color:#ffcf8a; } .dim { color:#6f6885; }
+  #result { font-size:16px; letter-spacing:.1em; padding:10px 14px; margin:18px 0; border:1px solid #2e2a3d; display:inline-block; }
+  pre { white-space:pre-wrap; margin:0; }
+  .bar { display:inline-block; background:#5b4b9c; height:10px; vertical-align:middle; }
+  ul { margin:4px 0 12px; padding-left:20px; }
+  li { margin:1px 0; }
+</style>
+<h1>Midnight Menagerie — card data validation</h1>
+<div class="dim">schema.js conformance · pool counts · cost curve · damage per Pluck · live effect smoke test</div>
+<div id="out"></div>
+
+<script type="module">
+import { CardType, Rarity, Target, COMPANIONS as ROSTER } from '../../game/src/data/schema.js';
+import { KEYWORD_IDS, COMPANION_KEYWORDS, COMPANION_STATUSES, ENGINE_HOOKS_REQUIRED } from '../../game/src/data/companions/keywords.js';
+import * as CARDS from '../../game/src/data/cards.js';
+import { RNG } from '../../game/src/core/rng.js';
+
+const out = document.getElementById('out');
+const errors = [];
+const warns = [];
+const E = (id, msg) => errors.push(`${id}: ${msg}`);
+const W = (id, msg) => warns.push(`${id}: ${msg}`);
+
+const TYPES = new Set(Object.values(CardType));
+const RARITIES = new Set(Object.values(Rarity));
+const TARGETS = new Set(Object.values(Target));
+// keywords the combat engine owns; ours are in companions/keywords.js
+const ENGINE_KEYWORDS = new Set(['exhaust','weak','vulnerable','frail','strength','dexterity','poison','brittle','momentum','echo','linger','artifact','regen','intangible','thorns']);
+const KNOWN_KEYWORDS = new Set([...KEYWORD_IDS, ...ENGINE_KEYWORDS]);
+const UPGRADE_KEYS = new Set(['nums','cost','text','name','flavor','type','target','rarity','keywords','exhaust','ethereal','innate','retain','unplayable','effect','previewFn','playable','dynamicCost','art']);
+const PLACEHOLDER = /\{([a-zA-Z][a-zA-Z0-9]*)\}/g;
+const KEYWORD_TAG = /\[([^\]]+)\]/g;
+
+// ── card-level validation ───────────────────────────────────────────────────
+function placeholders(text) { const s = new Set(); let m; PLACEHOLDER.lastIndex = 0; while ((m = PLACEHOLDER.exec(text))) s.add(m[1]); return s; }
+
+function validateCard(card, seen) {
+  const id = card && card.id ? card.id : '<no id>';
+  if (!card || typeof card !== 'object') { E(id, 'not an object'); return; }
+
+  // identity
+  if (typeof card.id !== 'string' || !card.id) E(id, 'missing id');
+  else if (!/^[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(card.id)) E(id, 'id is not <slug>/<kebab-name>');
+  if (seen.has(card.id)) E(id, 'duplicate id'); else seen.add(card.id);
+  if (typeof card.name !== 'string' || !card.name.trim()) E(id, 'missing name');
+  if (typeof card.companion !== 'string' || !card.companion) E(id, 'missing companion');
+  else if (card.id.split('/')[0] !== card.companion) E(id, `id prefix "${card.id.split('/')[0]}" does not match companion "${card.companion}"`);
+
+  // vocabulary
+  if (!TYPES.has(card.type)) E(id, `bad type "${card.type}"`);
+  if (!RARITIES.has(card.rarity)) E(id, `bad rarity "${card.rarity}"`);
+  if (!TARGETS.has(card.target)) E(id, `bad target "${card.target}"`);
+  if (!Number.isInteger(card.cost)) E(id, `cost must be an integer, got ${card.cost}`);
+  else if (card.cost < -2 || card.cost > 5) E(id, `cost ${card.cost} out of range [-2,5]`);
+  if (card.unplayable && card.cost !== -2) E(id, 'unplayable card must have cost -2');
+  if (card.cost === -2 && !card.unplayable) E(id, 'cost -2 must be marked unplayable');
+
+  // text + placeholders
+  if (typeof card.text !== 'string' || !card.text.trim()) { E(id, 'missing text'); return; }
+  const nums = card.nums || {};
+  for (const p of placeholders(card.text)) if (!(p in nums)) E(id, `text placeholder {${p}} has no matching nums.${p}`);
+  for (const k of Object.keys(nums)) if (typeof nums[k] !== 'number') E(id, `nums.${k} is not a number`);
+  KEYWORD_TAG.lastIndex = 0;
+  let m;
+  while ((m = KEYWORD_TAG.exec(card.text))) {
+    const kw = m[1].toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-(s|ed|es)$/, '');
+    if (!KNOWN_KEYWORDS.has(kw) && !KNOWN_KEYWORDS.has(m[1].toLowerCase())) E(id, `text keyword [${m[1]}] is not in the keyword registry`);
+  }
+  for (const kw of card.keywords || []) if (!KNOWN_KEYWORDS.has(kw)) E(id, `keywords entry "${kw}" is not in the keyword registry`);
+  if (card.exhaust && !/\[Vanish\]/.test(card.text)) W(id, 'exhaust:true but the text never says [Vanish]');
+  if (/(^|\.\s)\[Vanish\]\s*\./.test(card.text) && !card.exhaust) W(id, 'text says [Vanish]. but exhaust is not set');
+
+  // behaviour
+  if (typeof card.effect !== 'function') E(id, 'effect is not a function');
+  for (const opt of ['previewFn','playable','dynamicCost']) if (card[opt] != null && typeof card[opt] !== 'function') E(id, `${opt} must be a function`);
+  for (const f of ['exhaust','ethereal','innate','retain','unplayable']) if (card[f] != null && typeof card[f] !== 'boolean') E(id, `${f} must be a boolean`);
+
+  // upgrade
+  const u = card.upgrade;
+  if (card.type !== CardType.CURSE && card.type !== CardType.STATUS) {
+    if (!u || typeof u !== 'object') E(id, 'missing upgrade');
+    else {
+      for (const k of Object.keys(u)) if (!UPGRADE_KEYS.has(k)) E(id, `upgrade has unknown key "${k}"`);
+      const merged = { ...nums, ...(u.nums || {}) };
+      const utext = u.text || card.text;
+      for (const p of placeholders(utext)) if (!(p in merged)) E(id, `upgraded text placeholder {${p}} has no matching nums.${p}`);
+      if (u.nums) for (const k of Object.keys(u.nums)) { if (typeof u.nums[k] !== 'number') E(id, `upgrade.nums.${k} is not a number`); }
+      const changedNums = u.nums && Object.keys(u.nums).some(k => u.nums[k] !== nums[k]);
+      const changedElse = ['cost','text','exhaust','retain','innate','ethereal','target','type'].some(k => k in u && u[k] !== card[k]);
+      if (!changedNums && !changedElse) E(id, 'upgrade changes nothing');
+      if ('cost' in u && (!Number.isInteger(u.cost) || u.cost < -2 || u.cost > 5)) E(id, `upgrade cost ${u.cost} out of range`);
+      if ('cost' in u && u.cost > card.cost) W(id, 'upgrade makes the card more expensive');
+    }
+  }
+  if (!card.flavor && card.rarity !== Rarity.SPECIAL) W(id, 'no flavor line');
+}
+
+// ── mock engine for the effect smoke test ───────────────────────────────────
+function actor(id, hp, extra) {
+  return { id, hp, maxHp: hp, block: 0, statuses: Object.create(null), dead: false, ...extra };
+}
+function runtimeCard(def, upgraded) {
+  return { uid: def.id + (upgraded ? '+' : ''), def, upgraded, nums: { ...(def.nums || {}), ...(upgraded && def.upgrade && def.upgrade.nums ? def.upgrade.nums : {}) }, cost: (upgraded && def.upgrade && 'cost' in def.upgrade) ? def.upgrade.cost : def.cost, mmFlags: {}, mmCounters: {} };
+}
+
+function makeCtx(def, upgraded) {
+  const rng = new RNG(20260819);
+  const player = actor('player', 70, { isPlayer: true });
+  const es = [actor('e1', 60, { intent: 'attack', tier: 'normal' }), actor('e2', 45, { intent: 'defend', tier: 'normal' })];
+  const decoy = (n, tag) => Array.from({ length: n }, (_, i) => runtimeCard({ id: `neutral/decoy-${tag}${i}`, name: 'Decoy', companion: 'neutral', type: CardType.SKILL, rarity: Rarity.COMMON, cost: i % 3, target: Target.NONE, text: 'x', nums: {}, effect() {} }, false));
+  const state = {
+    turn: 3, cardsPlayedThisTurn: 3, handSize: 10, untouched: true,
+    player, enemies: es,
+    hand: decoy(4, 'h'), draw: decoy(6, 'd'), discard: decoy(5, 'x'), exhaust: decoy(3, 'e'), limbo: [], stash: [],
+  };
+  const listeners = new Map();
+  const engine = {
+    rng, state, player, enemies: es,
+    hand: state.hand, draw: state.draw, discard: state.discard, exhaust: state.exhaust, stash: state.stash,
+    on(evt, fn) { if (!listeners.has(evt)) listeners.set(evt, []); listeners.get(evt).push(fn); return () => { const a = listeners.get(evt); const i = a.indexOf(fn); if (i >= 0) a.splice(i, 1); }; },
+    emit(evt, payload) { for (const fn of (listeners.get(evt) || []).slice()) fn(payload); },
+  };
+  const card = runtimeCard(def, upgraded);
+  state.hand.unshift(card);
+  const st = (a, id) => (a && a.statuses ? (a.statuses[id] || 0) : 0);
+  const c = {
+    e: engine, self: player, target: es[0], card, x: 3,
+    damage: (t, n) => { if (t) t.hp -= Math.max(0, n | 0); },
+    damageAll: (n) => { for (const t of es) t.hp -= Math.max(0, n | 0); },
+    loseHp: (t, n) => { if (t) t.hp -= Math.max(0, n | 0); },
+    block: (a, n) => { if (a) a.block += Math.max(0, n | 0); },
+    heal: (a, n) => { if (a) a.hp = Math.min(a.maxHp, a.hp + Math.max(0, n | 0)); },
+    applyStatus: (a, id, n) => { if (!a) return; a.statuses[id] = Math.max(0, (a.statuses[id] || 0) + (n | 0)); },
+    draw: () => {}, discard: () => {}, exhaust: () => {}, addCard: () => {},
+    gainEnergy: () => {}, loseEnergy: () => {},
+    count: (id, a) => st(a || player, id),
+    has: (id, a) => st(a || player, id) > 0,
+    forEachEnemy: (fn) => es.forEach(fn),
+    randomEnemy: () => es[rng.int(es.length)],
+    livingEnemies: () => es.filter(e => e.hp > 0),
+    cardsIn: (pile) => state[pile] || [],
+    moveCard: () => {}, modifyCost: () => {}, setCost: () => {}, retain: () => {}, returnToHand: () => {},
+    removeBlock: (t, n) => { if (t) t.block = Math.max(0, t.block - n); },
+    removeDebuff: () => {}, cancelIntent: () => {}, shuffleDraw: () => {}, modifyDraw: () => {}, setVanish: () => {},
+  };
+  // start the resource pools where the companion says they start
+  player.statuses['lives'] = 9;
+  player.statuses['open-eyes'] = 3;
+  player.statuses['ghoststep'] = 2;
+  player.statuses['loose-bones'] = 3;
+  player.statuses['height'] = 2;
+  player.statuses['plump'] = 2;
+  player.statuses['globs'] = 3;
+  es[0].statuses['haunt'] = 6;
+  es[0].statuses['web'] = 6;
+  es[0].statuses['weak'] = 1;
+  return { c, engine };
+}
+
+async function smoke(def) {
+  for (const upgraded of [false, true]) {
+    const { c, engine } = makeCtx(def, upgraded);
+    try {
+      if (def.dynamicCost) def.dynamicCost(c);
+      if (def.playable) def.playable(c);
+      if (def.previewFn) def.previewFn(c);
+      await def.effect(c);
+      // fire every engine event once so Power listeners run too
+      for (const evt of ['turn:start','turn:end','damage','status','discard','draw','intent','death','shuffle','energy']) {
+        engine.emit(evt, { count: 1, kind: 'buff', target: engine.enemies[0], source: engine.enemies[0], targetIsPlayer: false });
+      }
+    } catch (err) {
+      E(def.id, `${upgraded ? 'upgraded ' : ''}effect threw: ${err && err.message ? err.message : err}`);
+    }
+  }
+}
+
+// ── analysis ────────────────────────────────────────────────────────────────
+const dmgOf = (c) => (c.nums && c.nums.d ? c.nums.d * (c.nums.hits || 1) : 0);
+const effEnergy = (c) => (c.cost <= 0 ? 0.5 : c.cost);
+
+function countTable(cards) {
+  const rar = [Rarity.BASIC, Rarity.COMMON, Rarity.UNCOMMON, Rarity.RARE, Rarity.SPECIAL];
+  const typ = [CardType.ATTACK, CardType.SKILL, CardType.POWER, CardType.STATUS, CardType.CURSE];
+  let h = '<table><tr><th>rarity</th>' + typ.map(t => `<th>${t}</th>`).join('') + '<th>total</th></tr>';
+  for (const r of rar) {
+    const row = cards.filter(c => c.rarity === r);
+    if (!row.length) continue;
+    h += `<tr><td>${r}</td>` + typ.map(t => `<td>${row.filter(c => c.type === t).length || '<span class="dim">·</span>'}</td>`).join('') + `<td><b>${row.length}</b></td></tr>`;
+  }
+  h += `<tr><td>ALL</td>` + typ.map(t => `<td>${cards.filter(c => c.type === t).length || '<span class="dim">·</span>'}</td>`).join('') + `<td><b>${cards.length}</b></td></tr></table>`;
+  return h;
+}
+
+function costCurve(cards) {
+  const pool = cards.filter(c => c.cost >= -1 && c.rarity !== Rarity.SPECIAL);
+  const buckets = new Map();
+  for (const c of pool) { const k = c.cost === -1 ? 'X' : String(c.cost); buckets.set(k, (buckets.get(k) || 0) + 1); }
+  const keys = ['0','1','2','3','4','5','X'].filter(k => buckets.has(k));
+  const max = Math.max(1, ...keys.map(k => buckets.get(k)));
+  let h = '<table><tr><th>Pluck</th><th>cards</th><th>curve</th></tr>';
+  for (const k of keys) h += `<tr><td>${k}</td><td>${buckets.get(k)}</td><td><span class="bar" style="width:${Math.round(160 * buckets.get(k) / max)}px"></span></td></tr>`;
+  return h + '</table>';
+}
+
+function dpeTable(cards) {
+  const atk = cards.filter(c => c.type === CardType.ATTACK && dmgOf(c) > 0);
+  if (!atk.length) return '<div class="dim">no attacks</div>';
+  const rows = [Rarity.BASIC, Rarity.COMMON, Rarity.UNCOMMON, Rarity.RARE];
+  let h = '<table><tr><th>rarity</th><th>n</th><th>avg dmg</th><th>avg dmg/Pluck</th><th>min</th><th>max</th><th>outliers &gt;18/Pluck</th></tr>';
+  for (const r of rows) {
+    const g = atk.filter(c => c.rarity === r);
+    if (!g.length) continue;
+    const dpe = g.map(c => dmgOf(c) / effEnergy(c));
+    const avgD = g.reduce((s, c) => s + dmgOf(c), 0) / g.length;
+    const avg = dpe.reduce((s, v) => s + v, 0) / dpe.length;
+    const hot = g.filter(c => dmgOf(c) / effEnergy(c) > 18).map(c => c.name);
+    h += `<tr><td>${r}</td><td>${g.length}</td><td>${avgD.toFixed(1)}</td><td>${avg.toFixed(1)}</td><td>${Math.min(...dpe).toFixed(1)}</td><td>${Math.max(...dpe).toFixed(1)}</td><td>${hot.length ? '<span class="warn">' + hot.join(', ') + '</span>' : '<span class="ok">none</span>'}</td></tr>`;
+  }
+  h += '</table>';
+  // histogram
+  const bins = [0,4,6,8,10,12,14,16,18,99];
+  const counts = bins.slice(0, -1).map((lo, i) => atk.filter(c => { const v = dmgOf(c) / effEnergy(c); return v >= lo && v < bins[i+1]; }).length);
+  const max = Math.max(1, ...counts);
+  h += '<table><tr><th>dmg / Pluck</th><th>n</th><th>histogram</th></tr>';
+  counts.forEach((n, i) => { h += `<tr><td>${bins[i]}–${bins[i+1] === 99 ? '∞' : bins[i+1]}</td><td>${n}</td><td><span class="bar" style="width:${Math.round(160*n/max)}px"></span></td></tr>`; });
+  return h + '</table>';
+}
+
+// ── balance heuristics ──────────────────────────────────────────────────────
+const BAND = {
+  [Rarity.BASIC]:    { 1: [5, 10] },
+  [Rarity.COMMON]:   { 0: [3, 6], 1: [5, 11], 2: [11, 16], 3: [16, 24] },
+  [Rarity.UNCOMMON]: { 0: [3, 8], 1: [5, 20], 2: [12, 24], 3: [18, 32] },
+  [Rarity.RARE]:     { 0: [3, 12], 1: [6, 26], 2: [14, 40], 3: [20, 52] },
+};
+function balanceCheck(card) {
+  if (card.type !== CardType.ATTACK) return;
+  const band = BAND[card.rarity] && BAND[card.rarity][card.cost];
+  if (!band) return;
+  const n = card.nums || {};
+  const hits = n.hits || 1;
+  const d = dmgOf(card);
+  if (!d) return;
+  // conditional riders ("deal {m0} more") count towards the ceiling, not the floor
+  const dMax = (n.d + (n.m0 || 0)) * hits;
+  if (dMax < band[0]) W(card.id, `${d} damage for ${card.cost} is low for a ${card.rarity} (band ${band[0]}–${band[1]})`);
+  if (d > band[1]) W(card.id, `${d} damage for ${card.cost} is high for a ${card.rarity} (band ${band[0]}–${band[1]})`);
+}
+function distinctness(cards, slug) {
+  const sig = new Map();
+  for (const c of cards) {
+    const k = `${c.rarity}|${c.type}|${c.cost}|${c.target}|${c.text.replace(/\{[a-zA-Z0-9]+\}/g, '#')}`;
+    if (sig.has(k)) E(c.id, `mechanically identical to ${sig.get(k)} (same type, cost, target and templated text)`);
+    else sig.set(k, c.id);
+  }
+}
+
+// ── audit markdown ──────────────────────────────────────────────────────────
+function resolve(text, nums) { return String(text).replace(PLACEHOLDER, (_, k) => (nums && k in nums ? nums[k] : `{${k}}`)); }
+function upgradeSummary(card) {
+  const u = card.upgrade;
+  if (!u) return '—';
+  const bits = [];
+  if (u.cost != null && u.cost !== card.cost) bits.push(`cost ${card.cost} → ${u.cost}`);
+  if (u.nums) for (const k of Object.keys(u.nums)) if (u.nums[k] !== (card.nums || {})[k]) bits.push(`${k} ${(card.nums || {})[k] ?? '—'} → ${u.nums[k]}`);
+  if (u.text && u.text !== card.text) bits.push('new text');
+  for (const f of ['exhaust','retain','innate','ethereal']) if (f in u && u[f] !== card[f]) bits.push(`${f}: ${u[f]}`);
+  return bits.join(', ') || '—';
+}
+function esc(s) { return String(s).replace(/\|/g, '\\|').replace(/\n/g, ' '); }
+function auditFor(def) {
+  let md = `\n## ${def.name}, ${def.title}\n\n`;
+  md += `**Region:** ${def.region} · **Courage:** ${def.startingHp} · **Pluck:** ${def.startingEnergy}\n\n`;
+  md += `${def.identity}\n\n`;
+  md += `**Strengths:** ${(def.strengths || []).join(' · ')}\n\n**Weaknesses:** ${(def.weaknesses || []).join(' · ')}\n\n`;
+  md += `### Signature mechanics\n\n| Mechanic | Kind | Range | Rules |\n|---|---|---|---|\n`;
+  for (const [k, m] of Object.entries(def.mechanics || {})) md += `| ${m.name} | ${m.kind} | ${m.min}–${m.max} | ${esc(m.desc)} |\n`;
+  const deckCount = {};
+  for (const id of def.startingDeck || []) deckCount[id] = (deckCount[id] || 0) + 1;
+  md += `\n### Starting deck (${(def.startingDeck || []).length} Tricks)\n\n`;
+  for (const [id, n] of Object.entries(deckCount)) { const c = CARDS.cardById(id); md += `- ${n}× **${c ? c.name : id}** — ${c ? esc(resolve(c.text, c.nums)) : '??'}\n`; }
+  for (const r of [Rarity.BASIC, Rarity.COMMON, Rarity.UNCOMMON, Rarity.RARE, Rarity.SPECIAL]) {
+    const g = (def.cards || []).filter(c => c.rarity === r);
+    if (!g.length) continue;
+    md += `\n### ${r[0].toUpperCase() + r.slice(1)} (${g.length})\n\n| # | Name | Pluck | Type | Text | Upgrade |\n|---:|---|---:|---|---|---|\n`;
+    g.forEach((c, i) => {
+      const cost = c.cost === -1 ? 'X' : c.cost === -2 ? '—' : c.cost;
+      md += `| ${i + 1} | ${c.name} | ${cost} | ${c.type} | ${esc(resolve(c.text, c.nums))} | ${esc(upgradeSummary(c))} |\n`;
+    });
+  }
+  md += `\n### Archetypes\n\n`;
+  for (const a of def.archetypes || []) md += `**${a.name}** — ${esc(a.desc)}\n\nCore: ${(a.coreCards || []).map(id => { const c = CARDS.cardById(id); return c ? c.name : `\`${id}\` (MISSING)`; }).join(', ')}\n\n`;
+  return md;
+}
+
+// ── run ─────────────────────────────────────────────────────────────────────
+(async function run() {
+  const all = CARDS.allCards();
+  const seen = new Set();
+  for (const err of CARDS.registryErrors()) errors.push(`registry: ${err}`);
+
+  for (const card of all) { validateCard(card, seen); balanceCheck(card); }
+
+  const defs = CARDS.companions().filter(d => (d.cards || []).length);
+  for (const def of defs) {
+    distinctness(def.cards, def.slug);
+    if (!def.identity) E(def.slug, 'companion has no identity paragraph');
+    if (!Number.isInteger(def.startingHp)) E(def.slug, 'startingHp must be an integer');
+    if (!Number.isInteger(def.startingEnergy)) E(def.slug, 'startingEnergy must be an integer');
+    if (!def.mechanics || !Object.keys(def.mechanics).length) E(def.slug, 'companion declares no mechanics');
+    if ((def.startingDeck || []).length !== 10) E(def.slug, `starting deck has ${(def.startingDeck || []).length} Tricks, expected 10`);
+    for (const id of def.startingDeck || []) if (!CARDS.cardById(id)) E(def.slug, `starting deck references unknown card "${id}"`);
+    for (const a of def.archetypes || []) for (const id of a.coreCards || []) if (!CARDS.cardById(id)) E(def.slug, `archetype "${a.name}" references unknown card "${id}"`);
+    const counts = { common: def.cards.filter(c => c.rarity === Rarity.COMMON).length, uncommon: def.cards.filter(c => c.rarity === Rarity.UNCOMMON).length, rare: def.cards.filter(c => c.rarity === Rarity.RARE).length };
+    if (counts.common < 18) E(def.slug, `only ${counts.common} commons, minimum 18`);
+    if (counts.uncommon < 30) E(def.slug, `only ${counts.uncommon} uncommons, minimum 30`);
+    if (counts.rare < 22) E(def.slug, `only ${counts.rare} rares, minimum 22`);
+    if (!CARDS.poolFor(def.slug, Rarity.COMMON).length) E(def.slug, 'poolFor returned nothing for commons');
+    if (CARDS.startingDeckFor(def.slug).length !== (def.startingDeck || []).length) E(def.slug, 'startingDeckFor did not resolve every id');
+  }
+
+  for (const card of all) await smoke(card);
+
+  // ── render ────────────────────────────────────────────────────────────────
+  let h = '';
+  h += `<div id="result" class="${errors.length ? 'bad' : 'ok'}">RESULT: ${all.length} cards, ${errors.length} errors</div>`;
+  h += `<div class="dim">${warns.length} warnings · ${defs.length} companions · ${KEYWORD_IDS.length} companion keywords · ${COMPANION_STATUSES.length} companion statuses</div>`;
+
+  if (errors.length) { h += '<h2 class="bad">Errors</h2><ul class="bad">' + errors.map(e => `<li>${e}</li>`).join('') + '</ul>'; }
+  if (warns.length) { h += `<h2 class="warn">Warnings (${warns.length})</h2><ul class="warn">` + warns.map(e => `<li>${e}</li>`).join('') + '</ul>'; }
+
+  for (const def of defs) {
+    h += `<h2>${def.name} — ${def.title}</h2>`;
+    h += `<div class="dim">Courage ${def.startingHp} · Pluck ${def.startingEnergy} · deck ${(def.startingDeck || []).length} · mechanics: ${Object.keys(def.mechanics || {}).join(', ')}</div>`;
+    h += '<h3>counts by rarity / type</h3>' + countTable(def.cards);
+    h += '<h3>cost curve</h3>' + costCurve(def.cards);
+    h += '<h3>damage per Pluck</h3>' + dpeTable(def.cards);
+  }
+
+  const nc = CARDS.neutralCards();
+  h += `<h2>Neutral</h2>` + countTable(nc);
+
+  h += `<h2>Engine hooks required</h2><ul>` + ENGINE_HOOKS_REQUIRED.map(x => `<li><b>${x.hook}</b> — ${x.when} <span class="dim">(${x.neededBy.join(', ')})</span></li>`).join('') + '</ul>';
+
+  out.innerHTML = h;
+
+  // audit markdown for tests/cards/run.py to pull out
+  let md = '# Card audit\n\n';
+  md += '_Generated by `tests/cards/index.html`. Every Trick in the game, with resolved numbers, so balance can be reviewed without reading code._\n\n';
+  md += `**Totals:** ${all.length} cards · ${defs.length} companions · ${errors.length} validation errors\n\n`;
+  md += '## Reading the numbers\n\nPluck is energy (3 per turn). Guard is block. Courage is HP. Damage figures below are the printed base, before Strength, Weak and Vulnerable.\nThe yardstick used throughout: a 1-Pluck common Attack lands 6–9, a 1-Pluck common Skill gives 5–8 Guard, a 2-Pluck uncommon Attack lands 14–18 or 10 plus a rider, and Powers cost 1–3 and repay over three or more turns.\n';
+  for (const def of defs) md += auditFor(def);
+  md += '\n## Neutral — Status Tricks, Curses and shared Tricks\n\n| Name | Pluck | Type | Rarity | Text |\n|---|---:|---|---|---|\n';
+  for (const c of nc) md += `| ${c.name} | ${c.cost === -2 ? '—' : c.cost} | ${c.type} | ${c.rarity} | ${esc(resolve(c.text, c.nums))} |\n`;
+  window.__AUDIT_MD = md;
+  window.__RESULT = { cards: all.length, errors: errors.length, warnings: warns.length, errorList: errors, warnList: warns,
+    counts: defs.map(d => ({ slug: d.slug, deck: (d.startingDeck||[]).length,
+      basic: d.cards.filter(c => c.rarity === Rarity.BASIC).length,
+      common: d.cards.filter(c => c.rarity === Rarity.COMMON).length,
+      uncommon: d.cards.filter(c => c.rarity === Rarity.UNCOMMON).length,
+      rare: d.cards.filter(c => c.rarity === Rarity.RARE).length,
+      special: d.cards.filter(c => c.rarity === Rarity.SPECIAL).length,
+      total: d.cards.length,
+      attack: d.cards.filter(c => c.type === CardType.ATTACK).length,
+      skill: d.cards.filter(c => c.type === CardType.SKILL).length,
+      power: d.cards.filter(c => c.type === CardType.POWER).length })),
+    neutral: nc.length, keywords: KEYWORD_IDS.length, statuses: COMPANION_STATUSES.length };
+  window.__DONE = true;
+})();
+</script>

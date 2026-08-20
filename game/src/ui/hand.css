@@ -1,0 +1,129 @@
+/* ===========================================================================
+   The hand. OWNER: card-feel agent.
+   Layout, the drag arrow, the target reticle and the commit threshold.
+   All card motion is JS transforms; CSS here only styles the furniture.
+   =========================================================================== */
+
+.mm-hand {
+  position: absolute; inset: 0;
+  z-index: var(--z-hand);
+  pointer-events: none;
+  overflow: visible;
+  font-family: var(--font-body);
+}
+.mm-hand__cards { position: absolute; inset: 0; pointer-events: none; }
+/* Cards are never hit-tested by the browser. The hand does it itself against
+   the *base* fan geometry, so a card lifting under the cursor can't oscillate. */
+.mm-hand .mm-card { pointer-events: none; }
+.mm-hand__hit {
+  position: absolute; left: 0; right: 0; bottom: 0; top: 55%;
+  pointer-events: auto;
+  z-index: 700;
+  touch-action: none;
+}
+.mm-hand.is-locked .mm-hand__hit { pointer-events: none; }
+.mm-hand:focus { outline: none; }
+
+/* ── commit threshold (non-targeted cards) ──────────────────────────────── */
+.mm-hand__threshold {
+  position: absolute;
+  left: 7%; right: 7%;
+  height: calc(2 * var(--card-w) / 224);
+  transform: translateY(-50%);
+  z-index: 760;
+  opacity: 0;
+  transition: opacity var(--t-quick) var(--ease-soft);
+  background: repeating-linear-gradient(90deg,
+    color-mix(in srgb, var(--spectre-200) 70%, transparent) 0 14px,
+    transparent 14px 26px);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--spectre-300) 45%, transparent);
+}
+.mm-hand__threshold::after {
+  content: attr(data-label);
+  position: absolute; left: 50%; top: 0;
+  transform: translate(-50%, -160%);
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--spectre-200);
+  text-shadow: 0 2px 6px var(--ink-900);
+  opacity: .78;
+}
+.mm-hand__threshold.is-on { opacity: .55; }
+.mm-hand__threshold.is-armed {
+  opacity: 1;
+  background: repeating-linear-gradient(90deg,
+    var(--flame-200) 0 20px, transparent 20px 30px);
+  box-shadow: 0 0 22px color-mix(in srgb, var(--flame-glow) 70%, transparent);
+}
+.mm-hand__threshold.is-armed::after { color: var(--flame-100); opacity: 1; }
+
+/* ── drag arrow ─────────────────────────────────────────────────────────── */
+.mm-hand__arrow {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 800;
+  opacity: 0;
+  transition: opacity 80ms var(--ease-soft);
+  overflow: visible;
+}
+.mm-hand__arrow.is-on { opacity: 1; }
+
+.mm-arrow__body {
+  fill: color-mix(in srgb, var(--spectre-300) 88%, transparent);
+  stroke: var(--ink-900);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+.mm-arrow__head {
+  fill: var(--spectre-200);
+  stroke: var(--ink-900);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+.mm-arrow__glow {
+  fill: none;
+  stroke: color-mix(in srgb, var(--spectre-300) 55%, transparent);
+  stroke-width: 16;
+  stroke-linecap: round;
+  filter: blur(9px);
+}
+.mm-hand__arrow.is-snapped .mm-arrow__body { fill: color-mix(in srgb, var(--flame-300) 92%, transparent); }
+.mm-hand__arrow.is-snapped .mm-arrow__head { fill: var(--flame-100); }
+.mm-hand__arrow.is-snapped .mm-arrow__glow { stroke: color-mix(in srgb, var(--flame-glow) 70%, transparent); }
+.mm-hand__arrow.is-invalid .mm-arrow__body { fill: color-mix(in srgb, var(--ink-400) 85%, transparent); }
+.mm-hand__arrow.is-invalid .mm-arrow__head { fill: var(--ink-300); }
+.mm-hand__arrow.is-invalid .mm-arrow__glow { stroke: transparent; }
+
+/* ── target reticle ─────────────────────────────────────────────────────── */
+.mm-arrow__reticle { opacity: 0; }
+.mm-hand__arrow.is-snapped .mm-arrow__reticle { opacity: 1; }
+.mm-arrow__reticle circle {
+  fill: color-mix(in srgb, var(--flame-glow) 12%, transparent);
+  stroke: var(--flame-200);
+  stroke-width: 2.5;
+  stroke-dasharray: 9 13;
+}
+.mm-arrow__reticle path {
+  fill: none;
+  stroke: var(--flame-100);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+/* ── pile markers (the hand draws to/from these) ────────────────────────── */
+.mm-hand__pile {
+  position: absolute;
+  width: calc(var(--card-w) * .42);
+  height: calc(var(--card-h) * .42);
+  transform: translate(-50%, -50%);
+  border-radius: var(--radius-md);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.mm-reduce .mm-hand__threshold,
+.mm-reduce .mm-hand__arrow { transition: none; }

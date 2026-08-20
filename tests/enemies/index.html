@@ -1,0 +1,1040 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Midnight Menagerie — enemy validation</title>
+<style>
+  body { background:#14121a; color:#ddd6e6; font:13px/1.5 ui-monospace,Menlo,Consolas,monospace; margin:0; padding:24px; }
+  pre  { white-space:pre-wrap; margin:0; }
+  .ok  { color:#8fdc9b; } .err { color:#ff8080; } .warn { color:#ffd479; }
+  .h   { color:#c9a7ff; font-weight:700; } .dim { color:#8b849b; }
+</style>
+<pre id="out">running…</pre>
+<script type="module">
+import { Intent } from '../../game/src/data/schema.js';
+import { RNG } from '../../game/src/core/rng.js';
+import { ENEMIES, ENEMY_LIST, getEnemy, ENEMY_STATUSES, STATUS_TRICK_DEFS } from '../../game/src/data/enemies/index.js';
+import {
+  encountersFor, rollEncounter, buildEncounter, ENCOUNTER_LIST, REGION_RULES, scufflePool,
+} from '../../game/src/data/encounters.js';
+
+const lines = [];
+let errors = 0, warnings = 0;
+const log  = (s = '', cls = '') => lines.push(cls ? `<span class="${cls}">${esc(s)}</span>` : esc(s));
+const head = (s) => { lines.push(''); lines.push(`<span class="h">${esc(s)}</span>`); };
+const fail = (s) => { errors++; log('  ✗ ' + s, 'err'); };
+const warn = (s) => { warnings++; log('  ! ' + s, 'warn'); };
+const pass = (s) => log('  ✓ ' + s, 'ok');
+function esc(s) { return String(s).replace(/[&<>]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[ch])); }
+
+const ATTACK_INTENTS = new Set([Intent.ATTACK, Intent.ATTACK_BIG, Intent.ATTACK_DEFEND, Intent.ATTACK_BUFF, Intent.ATTACK_DEBUFF]);
+const INTENT_VALUES  = new Set(Object.values(Intent));
+
+// ═════════════════════════════════════════════════════════════════════════════
+// A mock combat context implementing the EnemyCtx surface documented in
+// data/enemies/_lib.js. If an enemy reaches for something not here, that is a real
+// requirement the combat engine must satisfy, and this harness must be told about it.
+// ═════════════════════════════════════════════════════════════════════════════
+const STATUS_BY_ID = ENEMY_STATUSES.reduce((m, s) => (m[s.id] = s, m), {});
+
+function makeActor(def, hp) {
+  return {
+    id: def.id, uid: def.id + '#' + (makeActor.n = (makeActor.n || 0) + 1), name: def.name,
+    hp, maxHp: hp, block: 0, alive: true, mem: {}, counters: {}, flags: {},
+    statuses: {}, damageTakenThisTurn: 0, def,
+  };
+}
+
+class MockCombat {
+  constructor(defs, seed, opts = {}) {
+    this.rng = new RNG(seed);
+    this.field = {};
+    this.turn = 0;
+    this.rules = [];
+    this.events = [];
+    this.cardsPlayedThisTurn = [];
+    this.damageDealtThisTurn = 0;
+    this.player = { id: 'player', name: 'Kid', hp: 80, maxHp: 80, block: 0, statuses: {}, damageTakenThisTurn: 0 };
+    this.discard = [];
+    this.actors = defs.map(d => makeActor(d, opts.hp?.[d.id] ?? d.hp[0]));
+    this.opts = opts;
+    for (const a of this.actors) this.hook(a, 'onSpawn');
+  }
+
+  living() { return this.actors.filter(a => a.alive && a.hp > 0); }
+
+  ctxFor(actor) {
+    const self = this;
+    return {
+      self, e: self, // engine handle
+      get player() { return self.player; },
+      rng: self.rng,
+      turn: self.turn,
+      field: self.field,
+      history: actor.history || (actor.history = []),
+      cardsPlayedThisTurn: self.cardsPlayedThisTurn,
+      enemies: () => self.living(),
+      allies: () => self.living().filter(a => a !== actor),
+      damage: (t, n, o) => self.damage(actor, t, n, o),
+      loseHp: (t, n) => { t.hp = Math.max(0, t.hp - n); if (t.hp === 0 && t !== self.player) t.alive = false; },
+      block: (a, n, o) => {
+        if (!a || a.alive === false) return;
+        a.block = (a.block || 0) + Math.max(0, n | 0);
+        self.boardEvent({ type: 'block', actor: a, source: actor, amount: Math.max(0, n | 0), ...(o || {}) });
+      },
+      heal: (a, n) => {
+        if (!a) return;
+        const before = a.hp; a.hp = Math.min(a.maxHp, a.hp + n);
+        if (a.hp > before) self.boardEvent({ type: 'heal', actor: a, source: actor, amount: a.hp - before });
+      },
+      applyStatus: (a, id, n = 1, data) => {
+        if (!a) return;
+        if (!STATUS_BY_ID[id] && !/^button-/.test(id)) self.unknownStatus(id);
+        a.statuses[id] = (a.statuses[id] || 0) + n;
+        if (data) (a.statusData ||= {})[id] = data;
+        self.boardEvent({ type: 'status', actor: a, source: actor, id, kind: STATUS_BY_ID[id]?.kind, ...(data || {}) });
+      },
+      intentOf: (a) => {
+        if (!a || !a.def) return null;
+        try { return a.def.moves[a.def.nextMove(self.ctx(a))]?.intent ?? null; } catch { return null; }
+      },
+      removeStatus: (a, id) => { if (a) delete a.statuses[id]; },
+      removeWorstStatus: (a) => { const k = Object.keys(a.statuses)[0]; if (k) delete a.statuses[k]; },
+      count: (id, a) => ((a || actor).statuses[id] || 0),
+      has: (id, a) => !!((a || actor).statuses[id]),
+      addCard: (cardId, pile) => {
+        if (!STATUS_TRICK_DEFS.some(d => d.id === cardId)) self.unknownCard(cardId);
+        self.discard.push({ id: cardId, pile: pile || 'discard' });
+      },
+      summon: (enemyId, o = {}) => self.summon(actor, enemyId, o),
+      despawn: (a) => { a.alive = false; a.despawned = true; },
+      setCounter: (k, v) => { actor.counters[k] = v; },
+      counter: (k) => actor.counters[k],
+      announceRule: (r) => { self.rules = self.rules.filter(x => x.source !== (actor.uid)); r.source = actor.uid; r._owner = actor; self.rules.push(r); },
+      clearRules: () => { self.rules = self.rules.filter(x => x.source !== actor.uid); },
+      log: (msg) => self.events.push(msg),
+      // proxy the actor's own fields
+      ...{},
+      __actor: actor,
+    };
+  }
+
+  // ctx.self must BE the actor — rebuild the object with the right binding.
+  ctx(actor) {
+    const c = this.ctxFor(actor);
+    c.self = actor;
+    // Haunt flags live on the actor; _lib.flag() reads actor.flags.
+    return c;
+  }
+
+  unknownStatus(id) { (this.missingStatuses ||= new Set()).add(id); }
+  unknownCard(id)   { (this.missingCards ||= new Set()).add(id); }
+
+  /** Broadcast a board event (Guard granted, Courage recovered, status attached). */
+  boardEvent(ev) {
+    if (this._inBoardEvent) return;                 // no cascades
+    this._inBoardEvent = true;
+    try { for (const a of this.living()) this.hook(a, 'onBoardEvent', ev); }
+    finally { this._inBoardEvent = false; }
+  }
+
+  damage(source, target, n, o) {
+    n = Math.max(0, Math.round(n));
+    if (!target) return;
+    // Stitched Together / Cover: redirect before anything else touches the target.
+    if (!o?.redirected && target !== this.player) {
+      // Blanket Blob's Cover
+      const cov = target.statusData?.covered;
+      if (cov && target.statuses.covered) {
+        const blob = this.actors.find(a => (a.uid === cov.by) && a.alive);
+        if (blob) {
+          const budget = Math.max(0, (cov.amount ?? 8) - (target._coverUsedThisTurn || 0));
+          const take = Math.min(budget, n);
+          if (take > 0) {
+            target._coverUsedThisTurn = (target._coverUsedThisTurn || 0) + take;
+            this.damage(source, blob, take, { redirected: true });
+            n -= take;
+          }
+        }
+      }
+      // The Governess's thread
+      if (target.def?.redirect && source === this.player) {
+        const took = target.def.redirect(this.ctx(target), n);
+        n -= took;
+      }
+    }
+    if (n <= 0) return;
+    // statuses that modify damage dealt (roused, darkness, buttons)
+    for (const [sid, stacks] of Object.entries(source.statuses || {})) {
+      const def = STATUS_BY_ID[sid];
+      if (def?.hooks?.modifyDamageDealt) n = def.hooks.modifyDamageDealt(n, { stacks, actor: source });
+    }
+    const absorbed = Math.min(target.block || 0, n);
+    target.block -= absorbed;
+    const through = n - absorbed;
+    target.hp = Math.max(0, target.hp - through);
+    target.damageTakenThisTurn = (target.damageTakenThisTurn || 0) + through;
+    if (target.hp === 0 && target !== this.player) target.alive = false;
+  }
+
+  summon(source, enemyId, o) {
+    if (!ENEMIES[enemyId]) { (this.missingSummons ||= new Set()).add(enemyId); return null; }
+    if (this.living().length >= 4) return null;                    // board cap safety
+    const def = getEnemy(enemyId);
+    const hp = o.hp != null ? o.hp : Math.round(def.hp[0] * (o.hpMul || 1));
+    const a = makeActor(def, Math.max(1, hp));
+    a.summoned = true; a.summonedBy = source.uid;
+    this.actors.push(a);
+    this.hook(a, 'onSpawn');
+    return a;
+  }
+
+  hook(actor, name, ...args) {
+    const fn = actor.def[name];
+    if (typeof fn === 'function') fn.call(actor.def, this.ctx(actor), ...args);
+  }
+
+  /** One full player turn: play some cards, deal some damage, resolve rules. */
+  playerTurn(profile) {
+    this.turn++;
+    this.player.block = 0;
+    this.cardsPlayedThisTurn = [];
+    this.damageDealtThisTurn = 0;
+    for (const a of this.actors) a.damageTakenThisTurn = 0;
+
+    for (const a of this.actors) a._coverUsedThisTurn = 0;
+    for (const a of this.living()) this.hook(a, 'onPlayerTurnStart');
+
+    const nCards = profile.cards ?? this.rng.range(0, 6);
+    const types = ['attack', 'skill', 'power'];
+    for (let i = 0; i < nCards; i++) {
+      const type = profile.type || types[this.rng.int(types.length)];
+      this.cardsPlayedThisTurn.push({ id: `test-${type}-${i}`, type });
+      if (type === 'attack') {
+        const targets = this.living();
+        if (targets.length) {
+          const t = targets[this.rng.int(targets.length)];
+          const dmg = profile.dmg ?? this.rng.range(0, 12);
+          this.damageDealtThisTurn += dmg;
+          this.damage(this.player, t, dmg);
+          this.hook(t, 'onDamaged');
+        }
+      } else if (type === 'skill') {
+        this.player.block += this.rng.range(0, 9);
+      }
+      // rules that evaluate per card played
+      for (const r of this.rules.slice()) {
+        if (r.when === 'cardPlayed' && !r._fired && r.broken({ cardsPlayedThisTurn: this.cardsPlayedThisTurn, card: this.cardsPlayedThisTurn[i], playerBlock: this.player.block, damageDealtThisTurn: this.damageDealtThisTurn })) {
+          r._fired = true;
+          r.onBreak(this.ctx(r._owner));
+          this.hook(r._owner, 'onRuleBroken');
+        }
+      }
+      // per-card enemy reactions (The Unwelcome Guest)
+      for (const a of this.living()) this.hook(a, 'onPlayerCard');
+    }
+
+    // end-of-turn rules
+    for (const r of this.rules.slice()) {
+      if (r.when === 'turnEnd' && !r._fired && r.broken({ cardsPlayedThisTurn: this.cardsPlayedThisTurn, playerBlock: this.player.block, damageDealtThisTurn: this.damageDealtThisTurn })) {
+        r._fired = true;
+        r.onBreak(this.ctx(r._owner));
+        this.hook(r._owner, 'onRuleBroken');
+      }
+      r._fired = false;
+    }
+    for (const a of this.living()) this.hook(a, 'onPlayerTurnEnd');
+  }
+
+  /** One enemy action for a specific actor. Returns {moveId, move}. */
+  enemyAction(actor, report) {
+    const c0 = this.ctx(actor);
+
+    // ── nextMove must be pure and deterministic ────────────────────────────
+    const before = snapshot(actor);
+    const id1 = actor.def.nextMove(c0);
+    const mid = snapshot(actor);
+    const id2 = actor.def.nextMove(this.ctx(actor));
+    if (id1 !== id2) report.fail(`${actor.id}: nextMove not deterministic (${id1} vs ${id2})`);
+    if (mid !== before) report.fail(`${actor.id}: nextMove MUTATED state (must be pure — engine re-calls it to re-render dynamic intents)`);
+
+    const move = actor.def.moves[id1];
+    if (!move) { report.fail(`${actor.id}: nextMove returned illegal move id '${id1}'`); return null; }
+
+    // ── the intent the player would see must be renderable ─────────────────
+    const shown = renderIntent(move, c0);
+    if (shown.error) report.fail(`${actor.id}.${id1}: ${shown.error}`);
+
+    // ── resolve ────────────────────────────────────────────────────────────
+    actor.block = 0;                                      // enemy Guard clears on its turn
+    this.hook(actor, 'onTurnStart');
+    for (const [sid] of Object.entries(actor.statuses)) {
+      const sd = STATUS_BY_ID[sid];
+      if (sd?.hooks?.onTurnStart) sd.hooks.onTurnStart({ actor, block: (a, n) => { a.block += n; } });
+    }
+    move.effect(this.ctx(actor));
+    (actor.history ||= []).push(id1);
+    return { moveId: id1, move, shown };
+  }
+
+  enemyTurn(report) {
+    const acted = [];
+    for (const a of this.living().slice()) {
+      if (!a.alive || a.hp <= 0) continue;
+      const r = this.enemyAction(a, report);
+      if (r) acted.push({ actor: a, ...r });
+    }
+    this.resolveDeaths();
+    return acted;
+  }
+
+  resolveDeaths() {
+    for (const a of this.actors) {
+      if (a.alive && a.hp <= 0) {
+        this.hook(a, 'onDeath');
+        if (a.hp > 0) continue;                     // onDeath may have mended it (Favorite Doll)
+        a.alive = false;
+        for (const other of this.living()) this.hook(other, 'onAllyDeath', a);
+      }
+    }
+  }
+}
+
+function snapshot(actor) {
+  return JSON.stringify({ mem: actor.mem, counters: actor.counters, hp: actor.hp, block: actor.block, statuses: actor.statuses });
+}
+
+/** What the intent widget would draw. Mirrors the contract in _lib.js. */
+function renderIntent(move, c) {
+  let intent = move.intent, damage = move.damage, hits = move.hits, block = move.block;
+  try {
+    if (typeof move.intentFn === 'function') intent = move.intentFn(c);
+    if (typeof move.damageFn === 'function') damage = move.damageFn(c);
+    if (typeof move.hitsFn === 'function') hits = move.hitsFn(c);
+    if (typeof move.blockFn === 'function') block = move.blockFn(c);
+  } catch (e) { return { error: `intent fn threw: ${e.message}` }; }
+  if (!INTENT_VALUES.has(intent)) return { error: `resolved to unknown intent '${intent}'` };
+  if (ATTACK_INTENTS.has(intent)) {
+    if (!Number.isFinite(damage) || damage < 0) return { error: `attack intent has non-numeric damage (${damage})` };
+    if (!Number.isInteger(hits) || hits < 1) return { error: `attack intent has bad hits (${hits})` };
+  }
+  return { intent, damage, hits, block };
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// 1. Schema conformance
+// ═════════════════════════════════════════════════════════════════════════════
+head('1. EnemyDef schema conformance');
+const seenIds = new Set();
+for (const def of ENEMY_LIST) {
+  const where = def.id || def.name || '(anonymous)';
+  const req = (cond, msg) => { if (!cond) fail(`${where}: ${msg}`); };
+
+  req(typeof def.id === 'string' && /^[a-z0-9-]+$/.test(def.id), 'id must be kebab-case');
+  req(!seenIds.has(def.id), 'duplicate enemy id'); seenIds.add(def.id);
+  req(typeof def.name === 'string' && def.name.length, 'name required');
+  req(typeof def.region === 'string', 'region required');
+  req(['normal', 'elite', 'boss'].includes(def.tier), `tier must be normal|elite|boss (got ${def.tier})`);
+  req(Array.isArray(def.hp) && def.hp.length === 2 && def.hp.every(Number.isFinite) && def.hp[0] <= def.hp[1] && def.hp[0] > 0,
+      `hp must be an inclusive [min,max] range (got ${JSON.stringify(def.hp)})`);
+  req(def.moves && typeof def.moves === 'object' && Object.keys(def.moves).length, 'moves required');
+  req(typeof def.nextMove === 'function', 'nextMove required');
+  req(typeof def.hauntScaling === 'function', 'hauntScaling(level) required');
+
+  // brief-mandated presentation fields
+  req(typeof def.silhouette === 'string' && def.silhouette.length, 'silhouette key required');
+  req(typeof def.lore === 'string' && def.lore.length > 20, 'lore line required');
+  req(Array.isArray(def.palette) && def.palette.length >= 2 && def.palette.length <= 3
+      && def.palette.every(h => /^#[0-9a-f]{6}$/i.test(h)), 'palette must be 2-3 hex colours');
+  req(def.shape && ['tall-thin', 'squat', 'sprawling', 'floating'].includes(def.shape.body)
+      && Number.isInteger(def.shape.limbs) && Number.isInteger(def.shape.eyes),
+      'shape {body,limbs,eyes} required');
+
+  for (const [key, mv] of Object.entries(def.moves)) {
+    const w = `${where}.${key}`;
+    if (mv.id !== key) fail(`${w}: move.id '${mv.id}' does not match its key`);
+    if (typeof mv.name !== 'string' || !mv.name.length) fail(`${w}: name required`);
+    if (!INTENT_VALUES.has(mv.intent)) fail(`${w}: intent '${mv.intent}' is not in schema Intent`);
+    if (typeof mv.tell !== 'string' || mv.tell.length < 8) fail(`${w}: needs a one-line 'tell' for the intent tooltip`);
+    if (typeof mv.effect !== 'function') fail(`${w}: effect required`);
+    if (ATTACK_INTENTS.has(mv.intent)) {
+      if (!Number.isFinite(mv.damage)) fail(`${w}: attack intent must declare base 'damage'`);
+      if (!Number.isInteger(mv.hits) || mv.hits < 1) fail(`${w}: attack intent must declare 'hits'`);
+    }
+    if (mv.block != null && !Number.isFinite(mv.block)) fail(`${w}: block must be numeric`);
+  }
+
+  // hauntScaling must be total over 0..10
+  for (let l = 0; l <= 10; l++) {
+    let h; try { h = def.hauntScaling(l); } catch (e) { fail(`${where}.hauntScaling(${l}) threw: ${e.message}`); break; }
+    if (!h || typeof h.hpMul !== 'number' || !(h.hpMul >= 1)) fail(`${where}.hauntScaling(${l}) must return {hpMul>=1,…}`);
+  }
+}
+log(`  ${ENEMY_LIST.length} EnemyDefs checked, ${Object.values(ENEMIES).reduce((n, d) => n + Object.keys(d.moves).length, 0)} moves.`, 'dim');
+if (!errors) pass('all definitions conform to schema.js');
+
+// ═════════════════════════════════════════════════════════════════════════════
+// 2. Simulation — 200 turns per enemy, seeded, several player profiles
+// ═════════════════════════════════════════════════════════════════════════════
+head('2. Behaviour simulation (200 turns per enemy)');
+
+/** Player archetypes, so dynamic intents get exercised in both directions. */
+const PROFILES = [
+  { name: 'passive',    cards: 0, dmg: 0 },
+  { name: 'chip',       cards: 2, dmg: 3 },
+  { name: 'burst',      cards: 3, dmg: 14 },
+  { name: 'spam',       cards: 6, dmg: 4 },
+  { name: 'skills',     cards: 5, dmg: 0, type: 'skill' },
+  { name: 'mixed',      cards: null },
+];
+
+const traces = {};
+for (const def of ENEMY_LIST) {
+  const report = { fail: (m) => fail(m) };
+  const trace = [];
+  let simErrors = errors;
+
+  for (const profile of PROFILES) {
+    const sim = new MockCombat([def], `enemy:${def.id}:${profile.name}`);
+    const actor = sim.actors[0];
+    actor.hp = actor.maxHp = 100000;              // keep it alive for the whole run
+    for (let t = 0; t < Math.ceil(200 / PROFILES.length); t++) {
+      sim.playerTurn(profile.cards == null ? {} : profile);
+      actor.hp = actor.maxHp;                     // undo player damage; we want pattern length
+      actor.alive = true;
+      const acted = sim.enemyTurn(report);
+      const mine = acted.find(a => a.actor === actor);
+      if (mine && profile.name === 'mixed') trace.push(mine.moveId);
+      sim.player.hp = sim.player.maxHp;           // never let the mock player die
+    }
+    if (sim.missingStatuses) fail(`${def.id}: applied unregistered status(es) ${[...sim.missingStatuses].join(', ')}`);
+    if (sim.missingCards)    fail(`${def.id}: added unknown card(s) ${[...sim.missingCards].join(', ')}`);
+    if (sim.missingSummons)  fail(`${def.id}: summoned unknown enemy(s) ${[...sim.missingSummons].join(', ')}`);
+  }
+  traces[def.id] = trace;
+  if (errors === simErrors) pass(`${def.name} — 200 turns, no crash, no illegal move id`);
+}
+
+// A boss-specific run that actually drains HP, so phases and transitions execute.
+head('2b. Boss phase transitions (HP-draining run)');
+for (const def of ENEMY_LIST.filter(d => d.tier === 'boss')) {
+  const report = { fail: (m) => fail(m) };
+  const sim = new MockCombat([def], `boss:${def.id}`);
+  const actor = sim.actors[0];
+  const seq = [];
+  for (let t = 0; t < 120 && actor.hp > 0; t++) {
+    sim.playerTurn({ cards: 4, dmg: 7 });
+    if (actor.hp <= 0) break;
+    const acted = sim.enemyTurn(report);
+    const mine = acted.find(a => a.actor === actor);
+    if (mine) seq.push(`${mine.moveId}@${actor.hp}`);
+    sim.player.hp = sim.player.maxHp;
+  }
+  traces['__boss__' + def.id] = seq;
+  log(`  ${def.name}: resolved ${seq.length} actions down to ${actor.hp} Courage.`, 'dim');
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// 3. Stated pattern constraints
+// ═════════════════════════════════════════════════════════════════════════════
+head('3. Stated pattern constraints from the design doc');
+
+/** Each check gets the 'mixed'-profile move trace for that enemy. */
+const CONSTRAINTS = [
+  ['dust-bunny', 'Turn 1 Gather, turn 2 Tumble, then repeat',
+    t => t.every((m, i) => m === ['gather', 'tumble'][i % 2])],
+  ['coatrack-crawler', 'Brace → Umbrella Jab → Hat Swipe, repeating',
+    t => t.every((m, i) => m === ['brace', 'umbrella-jab', 'hat-swipe'][i % 3])],
+  ['coatrack-crawler', 'Umbrella Jab is only ever used the turn after a Brace',
+    t => t.every((m, i) => m !== 'umbrella-jab' || t[i - 1] === 'brace')],
+  ['lost-luggage', 'Pack Wrong → Baggage Bash → Snap Shut → Baggage Bash',
+    t => t.every((m, i) => m === ['pack-wrong', 'baggage-bash', 'snap-shut', 'baggage-bash'][i % 4])],
+  ['calling-bell', 'Call for Service is used at most once',
+    t => t.filter(m => m === 'call-for-service').length <= 1],
+  ['calling-bell', 'never Rings twice in a row',
+    t => t.every((m, i) => !(m === 'ring' && t[i - 1] === 'ring'))],
+  ['red-carpet-runner', 'Unroll → Gather Speed → Run the Hall, repeating',
+    t => t.every((m, i) => m === ['unroll', 'gather-speed', 'run-the-hall'][i % 3])],
+  ['door-greeter', 'Mind Your Manners → Threshold Slam → Hold the Door',
+    t => t.every((m, i) => m === ['mind-your-manners', 'threshold-slam', 'hold-the-door'][i % 3])],
+  ['grand-coatcheck', 'Check → Sweep → Flurry → Check → Everything at Once',
+    t => t.every((m, i) => m === ['check-your-things', 'umbrella-sweep', 'hanger-flurry', 'check-your-things', 'everything-at-once'][i % 5])],
+  ['unwelcome-guest', 'Watching → Too Familiar → Wrong Face → Come In, Then → Too Familiar',
+    t => t.every((m, i) => m === ['watching', 'too-familiar', 'wrong-face', 'come-in-then', 'too-familiar'][i % 5])],
+  ['house-bell', 'MIDNIGHT TOLL never follows another TOLL',
+    t => t.every((m, i) => !(m === 'midnight-toll' && t[i - 1] === 'midnight-toll'))],
+
+  // ── Nursery ──
+  ['jack-in-the-box', 'Handle → Handle → POP! → Box Bite',
+    t => t.every((m, i) => m === ['turn-the-handle', 'turn-the-handle', 'pop', 'box-bite'][i % 4])],
+  ['jack-in-the-box', 'POP! only ever follows two Turn the Handles',
+    t => t.every((m, i) => m !== 'pop' || (t[i - 1] === 'turn-the-handle' && t[i - 2] === 'turn-the-handle'))],
+  ['patchwork-soldier', 'Patch Up never occurs twice consecutively',
+    t => t.every((m, i) => !(m === 'patch-up' && t[i - 1] === 'patch-up'))],
+  ['patchwork-soldier', 'solo, it simply alternates Wooden Saber and Stand Guard',
+    t => t.every((m, i) => m === ['wooden-saber', 'stand-guard'][i % 2])],
+  ['porcelain-doll', 'Tea Cup Tap → Perfect Posture → Sharp Little Hands',
+    t => t.every((m, i) => m === ['tea-cup-tap', 'perfect-posture', 'sharp-little-hands'][i % 3])],
+  ['blanket-blob', 'solo, it never wastes a turn on Tuck In with nobody to cover',
+    t => !t.includes('tuck-in')],
+  ['rocking-horse', 'Gallop only fires at 2+ Excitement (never twice running at 0)',
+    t => t.every((m, i) => !(m === 'gallop' && t[i - 1] === 'gallop'))],
+  ['button-baby', 'solo, it cycles Button Toss / Gather Thread / Button Toss',
+    t => t.every((m, i) => m === ['button-toss', 'gather-thread', 'button-toss'][i % 3])],
+  ['toy-chest', 'Spill Toys becomes Rattle Angrily rather than fizzling',
+    t => t.every(m => ['spill-toys', 'rattle-angrily', 'lid-slam', 'toy-barrage', 'tidy-up'].includes(m))],
+  ['patchwork-giant', 'Stuffed Fist → Sit Down → Wild Flail → Coming Apart',
+    t => t.every((m, i) => m === ['stuffed-fist', 'sit-down', 'wild-flail', 'coming-apart'][i % 4])],
+  ['porcelain-twin-prim', 'alone, Prim never holds a Tea Party by herself',
+    t => !t.includes('tea-party')],
+  ['favorite-doll', 'never acts on its own',
+    t => t.every(m => m === 'sit-still')],
+
+  // ── Sleeping Quarters ──
+  ['pillow-puff', 'Feather Cloud → Puff → Pillow Bonk',
+    t => t.every((m, i) => m === ['feather-cloud', 'puff', 'pillow-bonk'][i % 3])],
+  ['slipper-skitter', 'Toe Stomp → Heel Kick → Hide Under the Bed',
+    t => t.every((m, i) => m === ['toe-stomp', 'heel-kick', 'hide-under-the-bed'][i % 3])],
+  ['wardrobe-guest', 'Long Fingers → Back Inside → Rustle → Peek Out',
+    t => t.every((m, i) => m === ['long-fingers', 'back-inside', 'rustle', 'peek-out'][i % 4])],
+  ['wardrobe-guest', 'only ever Rustles while it is actually Hidden',
+    t => t.every((m, i) => m !== 'rustle' || t[i - 1] === 'back-inside')],
+  ['nightlight-snuffer', 'Snuff → Hot Wick → Flicker Out → Hot Wick',
+    t => t.every((m, i) => m === ['snuff', 'hot-wick', 'flicker-out', 'hot-wick'][i % 4])],
+  ['thing-beneath', 'Scratch → Grab an Ankle → Scratch → UNDER THE BED',
+    t => t.every((m, i) => m === ['scratch-scratch', 'grab-an-ankle', 'scratch-scratch', 'under-the-bed'][i % 4])],
+  ['blanket-creeper', 'only ever uses its two authored cycles',
+    t => t.every(m => ['wrap-up', 'blanket-lash', 'smother'].includes(m))],
+  ['night-terror', 'Watching You → Long Shadow → Bedroom Corner → Sudden Face',
+    t => t.every((m, i) => m === ['watching-you', 'long-shadow', 'bedroom-corner', 'sudden-face'][i % 4])],
+  ['blanket-hydra', 'Blanket Crush → Tangle → Roll Over',
+    t => t.every((m, i) => m === ['blanket-crush', 'tangle', 'roll-over'][i % 3])],
+  ['the-wardrobe', 'Creak Open → Something Reaches Out → Slam Shut → Empty Hangers',
+    t => t.every((m, i) => m === ['creak-open', 'something-reaches-out', 'slam-shut', 'empty-hangers'][i % 4])],
+  ['hydra-head-biting', 'the Biting Head attacks every single turn',
+    t => t.every(m => m === 'chomp')],
+  ['hydra-head-snoring', 'the Snoring Head acts every second turn',
+    t => t.every((m, i) => m === ['doze', 'snore'][i % 2])],
+  ['hydra-head-crying', 'the Crying Head acts every second turn',
+    t => t.every((m, i) => m === ['sniffle', 'wail'][i % 2])],
+];
+
+for (const [id, desc, fn] of CONSTRAINTS) {
+  const t = traces[id] || [];
+  if (!t.length) { warn(`${id}: no trace captured for "${desc}"`); continue; }
+  if (fn(t)) pass(`${id}: ${desc}`);
+  else fail(`${id}: VIOLATED — ${desc}\n      trace: ${t.slice(0, 16).join(' → ')}`);
+}
+
+// Counter bounds, driven live rather than from a trace.
+head('3b. Counter bounds');
+const BOUNDS = [
+  ['dust-bunny', 'dust', 0, 4],
+  ['red-carpet-runner', 'momentum', 0, 2],
+  ['house-bell', 'resonance', 0, 4],
+];
+for (const [id, key, lo, hi] of BOUNDS) {
+  const def = getEnemy(id);
+  let worstLo = Infinity, worstHi = -Infinity;
+  for (const profile of PROFILES) {
+    const sim = new MockCombat([def], `bounds:${id}:${profile.name}`);
+    const actor = sim.actors[0]; actor.hp = actor.maxHp = 100000;
+    for (let t = 0; t < 40; t++) {
+      sim.playerTurn(profile.cards == null ? {} : profile);
+      actor.hp = actor.maxHp; actor.alive = true;
+      sim.enemyTurn({ fail });
+      sim.player.hp = sim.player.maxHp;
+      const v = actor.counters[key] ?? 0;
+      worstLo = Math.min(worstLo, v); worstHi = Math.max(worstHi, v);
+    }
+  }
+  if (worstLo < lo || worstHi > hi) fail(`${id}.${key} left [${lo},${hi}] — observed [${worstLo},${worstHi}]`);
+  else pass(`${id}.${key} stays within [${lo},${hi}] (observed [${worstLo},${worstHi}])`);
+}
+
+// ── Multi-actor formations: interactions only exist when enemies stand together ──
+head('3c. Multi-actor formations');
+const formTraces = {};
+for (const enc of ENCOUNTER_LIST.filter(e => e.members.length > 1)) {
+  const defs = enc.members.map(mm => getEnemy(mm.enemyId));
+  const sim = new MockCombat(defs, `form:${enc.id}`);
+  for (const a of sim.actors) { a.hp = a.maxHp = Math.max(a.maxHp, 400); }
+  const per = {};
+  let crashed = null;
+  try {
+    for (let t = 0; t < 60; t++) {
+      sim.playerTurn({ cards: 3, dmg: 6 });
+      for (const a of sim.actors) { if (!a.despawned) { a.hp = a.maxHp; a.alive = true; } }
+      const acted = sim.enemyTurn({ fail });
+      for (const x of acted) (per[x.actor.id] ||= []).push(x.moveId);
+      sim.player.hp = sim.player.maxHp;
+    }
+  } catch (e) { crashed = e; }
+  if (crashed) fail(`${enc.id}: formation sim threw — ${crashed.message}`);
+  else pass(`${enc.id}: ${defs.map(d => d.name).join(' + ')} — 60 rounds together, no crash`);
+  Object.assign(formTraces, Object.fromEntries(Object.entries(per).map(([k, v]) => [`${enc.id}:${k}`, v])));
+  if (sim.missingStatuses) fail(`${enc.id}: unregistered status(es) ${[...sim.missingStatuses].join(', ')}`);
+}
+
+head('3d. Interactions that only exist in formation');
+const FORM_CHECKS = [
+  ['nursery-scare-twins:porcelain-twin-prim', 'Prim holds a Tea Party on every fourth turn',
+    t => t.length >= 8 && t.every((m, i) => (m === 'tea-party') === ((i + 1) % 4 === 0))],
+  ['nursery-scare-twins:porcelain-twin-proper', 'Proper matches Prim\'s Tea Party rhythm',
+    t => t.length >= 8 && t.every((m, i) => (m === 'tea-party') === ((i + 1) % 4 === 0))],
+  ['nursery-7:blanket-blob', 'Blanket Blob tucks its friend in before it starts hitting',
+    t => t[0] === 'tuck-in' && t.slice(1).filter(m => m === 'tuck-in').length <= t.length],
+  ['nursery-8:button-baby', 'Button Baby sews before it does anything else',
+    t => t[0] === 'sew-on'],
+  ['nursery-boss:favorite-doll', 'Favorite Doll never takes an action beside her',
+    t => t.every(m => m === 'sit-still')],
+  ['foyer-5:calling-bell', 'escorted, the Bell rings rather than calling for service',
+    t => !t.includes('call-for-service')],
+];
+for (const [key, desc, fn] of FORM_CHECKS) {
+  const t = formTraces[key];
+  if (!t) { fail(`${key}: no formation trace captured for "${desc}"`); continue; }
+  if (fn(t)) pass(`${key.split(':')[1]}: ${desc}`);
+  else fail(`${key}: VIOLATED — ${desc}\n      trace: ${t.slice(0, 12).join(' → ')}`);
+}
+
+// Nursery interaction spot-checks with real cross-enemy state.
+head('3e. Nursery cross-enemy mechanics');
+{
+  // Rocking Horse gains Excitement when the Soldier repairs SOMEONE ELSE.
+  // (Healing the Horse itself must NOT excite it — the doc says "another enemy".)
+  const sim = new MockCombat(
+    [getEnemy('rocking-horse'), getEnemy('patchwork-soldier'), getEnemy('button-baby')], 'excite');
+  const horse = sim.actors[0], soldier = sim.actors[1], baby = sim.actors[2];
+  baby.hp = baby.maxHp - 20;                                // 20 missing → Patch Up targets it
+  const before = horse.counters.excitement || 0;
+  soldier.def.moves['patch-up'].effect(sim.ctx(soldier));
+  const after = horse.counters.excitement || 0;
+  (after === before + 1 ? pass : fail)(`Rocking Horse gains Excitement when the Soldier repairs an ally (${before} → ${after})`);
+  // ...and the Soldier paid for it out of its own stuffing.
+  (soldier.hp < soldier.maxHp ? pass : fail)(`Patch Up costs the Soldier its own Courage (${soldier.hp}/${soldier.maxHp})`);
+
+  // Button Baby's Spring Button choice keys off the ally's telegraphed intent.
+  const sim2 = new MockCombat([getEnemy('button-baby'), getEnemy('porcelain-doll')], 'sew');
+  const bb = sim2.actors[0], doll = sim2.actors[1];
+  const intent = sim2.ctx(bb).intentOf(doll);
+  const chosen = getEnemy('button-baby').chooseButton(sim2.ctx(bb), doll);
+  (intent && chosen ? pass : fail)(`Button Baby reads the Doll's intent (${intent}) and picks ${chosen}`);
+
+  // Blanket Blob's Cover actually redirects damage.
+  const sim3 = new MockCombat([getEnemy('blanket-blob'), getEnemy('porcelain-doll')], 'cover');
+  const blob = sim3.actors[0], target = sim3.actors[1];
+  blob.def.moves['tuck-in'].effect(sim3.ctx(blob));
+  blob.block = 0;                                   // measure Courage, not the Blob's own Guard
+  const blobBefore = blob.hp, tgtBefore = target.hp;
+  sim3.damage(sim3.player, target, 12);
+  const redirected = blobBefore - blob.hp, through = tgtBefore - target.hp;
+  (redirected === 8 && through === 4
+    ? pass : fail)(`Cover redirects the first 8 damage (blob took ${redirected}, doll took ${through}; expected 8 / 4)`);
+  // A second hit the same turn is no longer covered — the allowance is per player turn.
+  const blob2 = blob.hp, tgt2 = target.hp;
+  sim3.damage(sim3.player, target, 6);
+  ((blob.hp === blob2 && tgt2 - target.hp === 6)
+    ? pass : fail)('Cover\'s 8-damage allowance is spent for the turn after the first hit');
+}
+
+// ── Every boss must actually reach and cross its phase transition ────────────
+head('3f. Boss phase structure');
+const BOSSES = [
+  { enc: 'foyer-boss', id: 'butler', transition: 'this-is-most-irregular', at: 140,
+    p1: ['formal-welcome', 'walking-stick', 'dust-them-off', 'service-please'],
+    p2: ['remove-the-intruder', 'enough-of-this', 'restore-order'], opens: 'formal-welcome' },
+  { enc: 'nursery-boss', id: 'governess', transition: 'look-what-youve-done', at: 150,
+    p1: ['inspect-the-nursery', 'sharp-correction', 'mind-your-seams', 'mend-my-darling'],
+    p2: ['needle-point', 'tighten-the-stitch', 'snip-snip', 'emergency-repair'], opens: 'inspect-the-nursery' },
+  { enc: 'sq-boss', id: 'bedframe-beast', transition: 'no-more-hiding', at: 160,
+    p1: ['bedpost-swipe', 'rattle-the-frame', 'spring-snap', 'pull-the-covers-up', 'retreat-underneath',
+      'scratching-below', 'footsteps-around-the-bed', 'boo'],
+    p2: ['splinter-swipe', 'shake-the-room', 'mattress-maw', 'dive-under',
+      'claw-ambush', 'giant-scare', 'grab-and-drag'], opens: 'bedpost-swipe' },
+];
+for (const b of BOSSES) {
+  const enc = ENCOUNTER_LIST.find(e => e.id === b.enc);
+  const defs = enc.members.map(mm => getEnemy(mm.enemyId));
+  const sim = new MockCombat(defs, `phases:${b.id}`);
+  const boss = sim.actors.find(a => a.id === b.id);
+  const seq = [];
+  for (let t = 0; t < 200 && boss.hp > 0; t++) {
+    sim.playerTurn({ cards: 4, dmg: 8 });
+    if (boss.hp <= 0) break;
+    const acted = sim.enemyTurn({ fail });
+    const mine = acted.find(a => a.actor === boss);
+    if (mine) seq.push(mine.moveId);
+    sim.player.hp = sim.player.maxHp;
+  }
+  const label = boss.name;
+  if (seq[0] !== b.opens) fail(`${label}: must open with '${b.opens}', opened with '${seq[0]}'`);
+  else pass(`${label}: opens with ${getEnemy(b.id).moves[b.opens].name}`);
+
+  const nT = seq.filter(x => x === b.transition).length;
+  if (nT !== 1) fail(`${label}: phase transition '${b.transition}' fired ${nT} times, expected exactly 1`);
+  else pass(`${label}: ${getEnemy(b.id).moves[b.transition].name} fires exactly once at ≤${b.at} Courage`);
+
+  const ti = seq.indexOf(b.transition);
+  if (ti >= 0) {
+    const early = seq.slice(0, ti).filter(x => b.p2.includes(x));
+    const late = seq.slice(ti + 1).filter(x => b.p1.includes(x));
+    if (early.length) fail(`${label}: phase-two moves before the transition — ${[...new Set(early)].join(', ')}`);
+    else pass(`${label}: no phase-two move leaks into phase one`);
+    if (late.length) fail(`${label}: phase-one moves after the transition — ${[...new Set(late)].join(', ')}`);
+    else pass(`${label}: no phase-one move leaks into phase two`);
+    const p2used = new Set(seq.slice(ti + 1));
+    if (p2used.size < 2) warn(`${label}: only ${p2used.size} distinct phase-two move(s) exercised`);
+    else pass(`${label}: phase two exercises ${p2used.size} distinct moves (${[...p2used].slice(0, 5).join(', ')})`);
+  }
+  log(`    ${label}: ${seq.length} actions, transition at action ${ti + 1}/${seq.length}.`, 'dim');
+}
+
+// Bedframe Beast: the Bed Position puzzle must actually be steerable.
+head('3g. Bedframe Beast — Bed Positions');
+{
+  const def = getEnemy('bedframe-beast');
+  const sim = new MockCombat([def], 'beds');
+  const a = sim.actors[0];
+  a.mem.phase = 2; a.mem.state = 'underneath';
+  const probe = (nCards) => {
+    sim.field.bedPosition = 'left';
+    sim.cardsPlayedThisTurn = Array.from({ length: nCards }, (_, i) => ({ id: 'c' + i, type: 'skill' }));
+    return def.rattling(sim.ctx(a));
+  };
+  const r = [probe(0), probe(2), probe(3), probe(5), probe(6), probe(9)];
+  (r.join(',') === 'left,left,center,center,right,right'
+    ? pass : fail)(`3rd Trick moves Rattling one step, 6th moves it again (got ${r.join(', ')})`);
+  // Each position maps to its own ambush.
+  const maps = BED_POSITIONS_CHECK(def, sim, a);
+  (maps ? pass : fail)('each Bed Position emerges with its own distinct ambush move');
+}
+function BED_POSITIONS_CHECK(def, sim, a) {
+  const seen = new Set();
+  for (const pos of ['left', 'center', 'right']) {
+    sim.field.bedPosition = pos;
+    sim.cardsPlayedThisTurn = [];
+    a.mem.phase = 2; a.mem.state = 'underneath'; a.mem.disoriented = false;
+    const mv = def.nextMove(sim.ctx(a));
+    if (!def.moves[mv]) return false;
+    seen.add(mv);
+  }
+  return seen.size === 3;
+}
+
+// The Butler's rule selection.
+head('3h. The Butler — House Rules and phases');
+{
+  const def = getEnemy('butler');
+  const sim = new MockCombat([def], 'butler:rules');
+  const actor = sim.actors[0];
+  const ruleSeq = [], moveSeq = [];
+  for (let t = 0; t < 120 && actor.hp > 0; t++) {
+    sim.playerTurn({ cards: 5, dmg: 6 });
+    if (actor.hp <= 0) break;
+    const acted = sim.enemyTurn({ fail });
+    const mine = acted.find(a => a.actor === actor);
+    if (mine) moveSeq.push(mine.moveId);
+    const r = sim.rules[0];
+    if (r && ruleSeq[ruleSeq.length - 1] !== r.id) ruleSeq.push(r.id);
+    sim.player.hp = sim.player.maxHp;
+  }
+  const hist = actor.mem.ruleHistory || [];
+  const dupes = hist.filter((r, i) => i > 0 && r === hist[i - 1]);
+  if (dupes.length) fail(`Butler announced the same House Rule twice consecutively (${dupes[0]})`);
+  else pass(`never announces the same House Rule twice in a row (${hist.length} announcements)`);
+  if (moveSeq[0] !== 'formal-welcome') fail(`Butler must open with Formal Welcome, opened with '${moveSeq[0]}'`);
+  else pass('opens with Formal Welcome');
+  const nTrans = moveSeq.filter(x => x === 'this-is-most-irregular').length;
+  if (nTrans !== 1) fail(`phase transition fired ${nTrans} times, expected exactly 1`);
+  else pass('This Is Most Irregular fires exactly once, at ≤140 Courage');
+  const tIdx = moveSeq.indexOf('this-is-most-irregular');
+  const p2Only = ['remove-the-intruder', 'enough-of-this', 'restore-order'];
+  const leaked = moveSeq.slice(0, tIdx).filter(x => p2Only.includes(x));
+  if (leaked.length) fail(`phase-two moves used before the transition: ${leaked.join(', ')}`);
+  else pass('phase-two moves never appear before the transition');
+  const p1Only = ['formal-welcome', 'walking-stick', 'dust-them-off', 'service-please'];
+  const leaked2 = moveSeq.slice(tIdx + 1).filter(x => p1Only.includes(x));
+  if (leaked2.length) fail(`phase-one moves used after the transition: ${leaked2.join(', ')}`);
+  else pass('phase-one moves never appear after the transition');
+  if (!moveSeq.includes('collect-himself')) warn('Discomposed never triggered in this run — Collect Himself unexercised');
+  else pass('Flustered → Discomposed → Collect Himself window occurs');
+  log(`  rule order: ${hist.slice(0, 10).join(' → ')}…`, 'dim');
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// 4. Encounter tables
+// ═════════════════════════════════════════════════════════════════════════════
+head('4. Encounter tables');
+const REGIONS = [...new Set(ENCOUNTER_LIST.map(e => e.region))];
+for (const region of REGIONS) {
+  log('');
+  log(`  ── ${region} ──`, 'h');
+  for (const tier of ['early', 'standard', 'advanced', 'elite', 'boss']) {
+    const list = encountersFor(region, tier);
+    if (!list.length) continue;
+    log(`  ${tier}:`);
+    for (const enc of list) {
+      const parts = enc.members.map(mm => {
+        const d = ENEMIES[mm.enemyId];
+        if (!d) { fail(`${enc.id} references unknown enemy '${mm.enemyId}'`); return mm.enemyId + '(?)'; }
+        const hp = mm.hp != null ? mm.hp : Math.round(d.hp[0] * (mm.hpMul || 1));
+        return `${d.name} ${hp}`;
+      });
+      const total = enc.members.reduce((n, mm) => {
+        const d = ENEMIES[mm.enemyId];
+        return n + (d ? (mm.hp != null ? mm.hp : Math.round(d.hp[0] * (mm.hpMul || 1))) : 0);
+      }, 0);
+      log(`    ${enc.id.padEnd(26)} ${String(total).padStart(4)} Courage  ${parts.join(' + ')}`);
+    }
+  }
+}
+
+head('4b. Selection rules');
+{
+  const region = 'foyer';
+  const rules = REGION_RULES[region];
+  // No immediate repeats, and first-Scuffle bans respected, over many seeds.
+  let repeats = 0, firstViolations = 0, runnerEarly = 0, aloneBell = 0;
+  for (let seed = 0; seed < 400; seed++) {
+    const rng = new RNG(`sel:${seed}`);
+    const history = [];
+    for (let i = 0; i < 8; i++) {
+      const tier = i < 2 ? 'early' : i < 5 ? 'standard' : 'advanced';
+      const enc = rollEncounter(region, tier, rng, history);
+      if (history.length && enc.id === history[history.length - 1]) repeats++;
+      if (i === 0 && enc.members.some(mm => rules.bannedFirstScuffle.includes(mm.enemyId))) firstViolations++;
+      if (i < 2 && enc.members.some(mm => mm.enemyId === 'red-carpet-runner')) runnerEarly++;
+      if (enc.members.length === 1 && enc.members[0].enemyId === 'calling-bell') aloneBell++;
+      history.push(enc.id);
+    }
+  }
+  (repeats ? fail : pass)(`no immediate repeats over 400 seeds × 8 Scuffles (${repeats} violations)`);
+  (firstViolations ? fail : pass)(`first Scuffle never contains Door Greeter / Calling Bell / Red Carpet Runner (${firstViolations} violations)`);
+  (runnerEarly ? fail : pass)(`Red Carpet Runner never appears before the 3rd Scuffle (${runnerEarly} violations)`);
+  (aloneBell ? fail : pass)(`Calling Bell never appears alone (${aloneBell} violations)`);
+
+  // Determinism: the same seed must produce the same sequence.
+  const seqOf = () => { const rng = new RNG('determinism'); const h = []; for (let i = 0; i < 10; i++) h.push(rollEncounter(region, i < 4 ? 'early' : 'advanced', rng, h)?.id); return h.join(','); };
+  (seqOf() === seqOf() ? pass : fail)('rollEncounter is reproducible from a seed');
+}
+
+head('4c. buildEncounter');
+{
+  let bad = 0;
+  for (const enc of ENCOUNTER_LIST) {
+    for (const level of [0, 1, 3, 5, 9, 10]) {
+      const rng = new RNG(`build:${enc.id}:${level}`);
+      let spawn;
+      try { spawn = buildEncounter(enc.id, rng, level); }
+      catch (e) { fail(`buildEncounter(${enc.id}, ·, ${level}) threw: ${e.message}`); bad++; continue; }
+      if (spawn.length !== enc.members.length) { fail(`${enc.id}@H${level}: expected ${enc.members.length} spawns, got ${spawn.length}`); bad++; }
+      spawn.forEach((s, i) => {
+        if (!ENEMIES[s.enemyId]) { fail(`${enc.id}@H${level}: unknown enemyId ${s.enemyId}`); bad++; }
+        if (!(s.hp > 0)) { fail(`${enc.id}@H${level}: non-positive hp ${s.hp}`); bad++; }
+        if (s.slot !== i) { fail(`${enc.id}@H${level}: slot ${s.slot} != index ${i}`); bad++; }
+      });
+    }
+  }
+  if (!bad) pass(`every formation instantiates at Haunt 0/1/3/5/9/10`);
+  // Show the Haunt curve on one formation.
+  const demo = [0, 1, 5, 10].map(l => {
+    const s = buildEncounter('foyer-14', new RNG('demo'), l);
+    return `H${l}: ${s.map(x => `${x.name} ${x.hp}`).join(' + ')}`;
+  });
+  for (const d of demo) log('    ' + d, 'dim');
+  const adv = buildEncounter('foyer-12', new RNG('adv'), 3);
+  log(`    Haunt 3 advanced pool — Dust Bunny starts with ${adv.find(x => x.enemyId === 'dust-bunny')?.counters?.dust ?? 0} Dust`, 'dim');
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// 5. Intent-clarity spot checks — the numbers the doc promises
+// ═════════════════════════════════════════════════════════════════════════════
+head('5. Intent clarity — doc-stated numbers');
+
+function intentAfter(enemyId, setup) {
+  const def = getEnemy(enemyId);
+  const sim = new MockCombat([def], `intent:${enemyId}`);
+  const actor = sim.actors[0]; actor.hp = actor.maxHp = 100000;
+  return setup(sim, actor, def, (moveId) => renderIntent(def.moves[moveId], sim.ctx(actor)));
+}
+
+const SPOT = [
+  ['Dust Bunny at 3 Dust shows Tumble 14', () => intentAfter('dust-bunny', (sim, a, d, show) => {
+    a.counters.dust = 3; a.damageTakenThisTurn = 1;        // hit this turn → no projection
+    return show('tumble').damage === 14;
+  })],
+  ['Dust Bunny untouched projects the Dust it is about to gain', () => intentAfter('dust-bunny', (sim, a, d, show) => {
+    a.counters.dust = 2; a.damageTakenThisTurn = 0;
+    return show('tumble').damage === 14;                    // 5 + 3×(2+1)
+  })],
+  ['…and drops the moment you poke it', () => intentAfter('dust-bunny', (sim, a, d, show) => {
+    a.counters.dust = 2; a.damageTakenThisTurn = 3;
+    return show('tumble').damage === 11;
+  })],
+  ['Coatrack Crawler shows Umbrella Jab 12 behind an intact Brace', () => intentAfter('coatrack-crawler', (sim, a, d, show) => {
+    a.mem.braced = true; a.block = 10;
+    return show('umbrella-jab').damage === 12;
+  })],
+  ['…and 7 once the Brace is stripped', () => intentAfter('coatrack-crawler', (sim, a, d, show) => {
+    a.mem.braced = true; a.block = 0;
+    return show('umbrella-jab').damage === 7;
+  })],
+  ['Red Carpet Runner peaks at 22 (2 Momentum)', () => intentAfter('red-carpet-runner', (sim, a, d, show) => {
+    a.counters.momentum = 2;
+    return show('run-the-hall').damage === 22;
+  })],
+  ['Breaking Unroll turns that 22 into 15', () => intentAfter('red-carpet-runner', (sim, a, d, show) => {
+    a.counters.momentum = 1; a.mem.unrolled = true; a.block = 0;   // Guard broken → no bank
+    return show('run-the-hall').damage === 15;
+  })],
+  ['Lost Luggage: Snap Shut primes Baggage Bash 9 → 12', () => intentAfter('lost-luggage', (sim, a, d, show) => {
+    const before = show('baggage-bash').damage;
+    a.mem.primed = true;
+    return before === 9 && show('baggage-bash').damage === 12;
+  })],
+  ['Grand Coatcheck: Evening Coat adds 4 per hit', () => intentAfter('grand-coatcheck', (sim, a, d, show) => {
+    a.counters.garment = 1;                                  // evening-coat
+    return show('umbrella-sweep').damage === 15 && show('hanger-flurry').damage === 8 && show('hanger-flurry').hits === 3;
+  })],
+  ['Grand Coatcheck: a Snagged Garment stops adding damage', () => intentAfter('grand-coatcheck', (sim, a, d, show) => {
+    a.counters.garment = 1; a.mem.snagged = true;
+    return show('umbrella-sweep').damage === 11;
+  })],
+  ['Unwelcome Guest: Too Familiar climbs 9 → 12 → 15 and caps', () => intentAfter('unwelcome-guest', (sim, a, d, show) => {
+    a.mem.familiar = 'attack';
+    const seen = [];
+    for (let n = 0; n <= 4; n++) {
+      sim.cardsPlayedThisTurn = Array.from({ length: n }, (_, i) => ({ id: 'x' + i, type: 'attack' }));
+      seen.push(show('too-familiar').damage);
+    }
+    return seen.join(',') === '9,12,15,15,15';
+  })],
+  ['House Bell: MIDNIGHT TOLL is 20 and only at 4 Resonance', () => intentAfter('house-bell', (sim, a, d, show) => {
+    a.counters.resonance = 4;
+    return show('midnight-toll').damage === 20 && d.nextMove(sim.ctx(a)) === 'midnight-toll';
+  })],
+  ['House Bell: at 3 Resonance it keeps ringing instead', () => intentAfter('house-bell', (sim, a, d, show) => {
+    a.counters.resonance = 3;
+    return d.nextMove(sim.ctx(a)) !== 'midnight-toll';
+  })],
+  ['Butler: No Roughhousing rider shows on the intent before it lands', () => intentAfter('butler', (sim, a, d, show) => {
+    const base = show('walking-stick').damage;
+    a.mem.retaliation = 5;
+    return base === 10 && show('walking-stick').damage === 15;
+  })],
+
+  // ── Nursery ──
+  ['Jack in the Box: POP! reads 7 / 12 / 17 by Wound Up', () => intentAfter('jack-in-the-box', (sim, a, d, show) => {
+    return [0, 1, 2].map(w => { a.counters['wound-up'] = w; return show('pop').damage; }).join(',') === '7,12,17';
+  })],
+  ['…and drops to 12 the moment you break the handle Guard', () => intentAfter('jack-in-the-box', (sim, a, d, show) => {
+    a.counters['wound-up'] = 2; a.mem.handleGuard = true; a.block = 0;
+    return show('pop').damage === 12;
+  })],
+  ['Porcelain Doll: Sharp Little Hands is 4×2 Pristine, 10×2 Shattered', () => intentAfter('porcelain-doll', (sim, a, d, show) => {
+    a.maxHp = 36; a.hp = 36;
+    const pristine = show('sharp-little-hands');
+    a.hp = 10;                                          // Shattered
+    const shattered = show('sharp-little-hands');
+    return pristine.damage === 4 && pristine.hits === 2 && shattered.damage === 10 && shattered.hits === 2;
+  })],
+  ['Porcelain Doll: Cracked adds exactly 3', () => intentAfter('porcelain-doll', (sim, a, d, show) => {
+    a.maxHp = 36; a.hp = 20;
+    return show('tea-cup-tap').damage === 10;
+  })],
+  ['Rocking Horse: Gallop peaks at 19 (3 Excitement)', () => intentAfter('rocking-horse', (sim, a, d, show) => {
+    a.counters.excitement = 3;
+    return show('gallop').damage === 19;
+  })],
+  ['Patchwork Giant: Bear Patch adds 3 per hit of Wild Flail', () => intentAfter('patchwork-giant', (sim, a, d, show) => {
+    a.mem.patches = ['bear']; a.counters['loose-stuffing'] = 0;
+    const withBear = show('wild-flail').damage;
+    a.mem.patches = [];
+    return withBear === 8 && show('wild-flail').damage === 5;
+  })],
+  ['Patchwork Giant: Spring Patch splits the cycle\'s first attack into 7×2', () => intentAfter('patchwork-giant', (sim, a, d, show) => {
+    a.mem.patches = ['spring']; a.counters['loose-stuffing'] = 0;
+    const s = show('stuffed-fist');
+    return s.damage === 7 && s.hits === 2;               // round(11 × 0.6) = 7
+  })],
+  ['Governess: Tighten the Stitch primes Needle Point 13 → 18', () => intentAfter('governess', (sim, a, d, show) => {
+    const before = show('needle-point').damage;
+    a.mem.tightened = true;
+    return before === 13 && show('needle-point').damage === 18;
+  })],
+
+  // ── Sleeping Quarters ──
+  ['Thing Beneath: UNDER THE BED peaks at 26 (3 Scare)', () => intentAfter('thing-beneath', (sim, a, d, show) => {
+    a.counters.scare = 3;
+    return show('under-the-bed').damage === 26;
+  })],
+  ['…and drops to 20 the moment you land 15 damage in a turn', () => intentAfter('thing-beneath', (sim, a, d, show) => {
+    a.counters.scare = 3; a.damageTakenThisTurn = 15;
+    return show('under-the-bed').damage === 20;
+  })],
+  ['Blanket Creeper: Uncovered adds 2 to its attacks', () => intentAfter('blanket-creeper', (sim, a, d, show) => {
+    a.counters.layers = 1;
+    const covered = show('blanket-lash').damage;
+    a.counters.layers = 0;
+    return covered === 8 && show('blanket-lash').damage === 10;
+  })],
+  ['Night Terror: Watching You shows BOTH branches until you commit', () => intentAfter('night-terror', (sim, a, d, show) => {
+    sim.cardsPlayedThisTurn = [];
+    const alts = d.moves['watching-you'].alternatives(sim.ctx(a));
+    return alts.length === 2 && show('watching-you').intent === Intent.UNKNOWN;
+  })],
+  ['…opening with an Attack collapses it to Recoil (0 damage, 14 Guard)', () => intentAfter('night-terror', (sim, a, d, show) => {
+    sim.cardsPlayedThisTurn = [{ id: 'x', type: 'attack' }];
+    const s = show('watching-you');
+    return s.damage === 0 && s.block === 14 && d.moves['watching-you'].alternatives(sim.ctx(a)).length === 1;
+  })],
+  ['…opening with a Skill collapses it to Lunge (14 damage)', () => intentAfter('night-terror', (sim, a, d, show) => {
+    sim.cardsPlayedThisTurn = [{ id: 'x', type: 'skill' }];
+    const s = show('watching-you');
+    return s.damage === 14 && s.intent === Intent.ATTACK_BIG;
+  })],
+  ['Bedframe Beast: BOO peaks at 30 (3 Scare)', () => intentAfter('bedframe-beast', (sim, a, d, show) => {
+    a.counters.scare = 3;
+    return show('boo').damage === 30;
+  })],
+  ['Bedframe Beast: Centre Bed Giant Scare is 13 + 5 per Scare', () => intentAfter('bedframe-beast', (sim, a, d, show) => {
+    a.counters.scare = 0;
+    const base = show('giant-scare').damage;
+    a.counters.scare = 3;
+    return base === 13 && show('giant-scare').damage === 28;
+  })],
+  ['Wardrobe Guest: Rustle primes the next attack for +3', () => intentAfter('wardrobe-guest', (sim, a, d, show) => {
+    const base = show('peek-out').damage;
+    a.mem.rustled = true;
+    return base === 5 && show('peek-out').damage === 8;
+  })],
+];
+for (const [desc, fn] of SPOT) {
+  let ok = false, err = null;
+  try { ok = fn(); } catch (e) { err = e.message; }
+  if (ok) pass(desc); else fail(`${desc}${err ? ' — threw: ' + err : ''}`);
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+head('6. Haunt scaling summary');
+for (const def of ENEMY_LIST) {
+  const notes = [];
+  for (let l = 1; l <= 10; l++) {
+    const h = def.hauntScaling(l);
+    const prev = def.hauntScaling(l - 1);
+    const fresh = h.notes.filter(n => !prev.notes.includes(n));
+    for (const n of fresh) notes.push(`H${l}: ${n}`);
+  }
+  log(`  ${def.name}`);
+  for (const n of notes) log(`    ${n}`, 'dim');
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+lines.push('');
+const summary = `RESULT: ${ENEMY_LIST.length} enemies, ${errors} errors`;
+lines.push(`<span class="${errors ? 'err' : 'ok'}">${esc(summary)}</span>`);
+lines.push(`<span class="dim">${esc(`(${warnings} warnings, ${ENCOUNTER_LIST.length} encounters, ${ENEMY_STATUSES.length} statuses, ${STATUS_TRICK_DEFS.length} status Tricks)`)}</span>`);
+
+document.getElementById('out').innerHTML = lines.join('\n');
+window.__RESULT__ = { enemies: ENEMY_LIST.length, errors, warnings, text: lines.join('\n').replace(/<[^>]+>/g, '') };
+window.__DONE__ = true;
+</script>

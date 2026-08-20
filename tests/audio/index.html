@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Midnight Menagerie — audio soundboard + self-test</title>
+<link rel="stylesheet" href="../../game/src/ui/tokens.css">
+<style>
+  html,body{margin:0;background:var(--ink-900,#07060d);color:var(--text-hi,#f4efe4);
+    font:14px/1.45 ui-sans-serif,system-ui,'Segoe UI',sans-serif;}
+  a{color:var(--spectre-300,#6fd9ec);}
+  .wrap{max-width:1440px;margin:0 auto;padding:18px 22px 80px;}
+  h1{font-size:19px;margin:0 0 2px;letter-spacing:.02em;}
+  .sub{color:var(--text-lo,#9a92a8);font-size:12px;margin-bottom:16px;}
+  section{background:var(--ink-800,#0d0b16);border:1px solid var(--ink-500,#2a2442);
+    border-radius:10px;padding:14px 16px;margin-bottom:14px;}
+  h2{font-size:12px;text-transform:uppercase;letter-spacing:.12em;margin:0 0 10px;
+    color:var(--flame-300,#f8c96b);font-weight:600;}
+  .fam{margin-bottom:12px;}
+  .fam-h{font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--text-lo,#9a92a8);margin:0 0 6px;}
+  .grid{display:flex;flex-wrap:wrap;gap:6px;}
+  button{background:var(--ink-700,#14111f);color:var(--text-hi,#f4efe4);
+    border:1px solid var(--ink-400,#3d3559);border-radius:7px;padding:7px 11px;
+    font:12px/1 ui-monospace,SFMono-Regular,Consolas,monospace;cursor:pointer;
+    transition:background .09s ease,border-color .09s ease,transform .06s ease;}
+  button:hover{background:var(--ink-600,#1d1930);border-color:var(--spectre-400,#3fb4d0);}
+  button:active{transform:translateY(1px);}
+  button:focus-visible{outline:2px solid var(--flame-300,#f8c96b);outline-offset:2px;}
+  button.mus{border-color:var(--flame-500,#b87826);}
+  button.mus.on{background:var(--flame-500,#b87826);color:#1a1206;}
+  button.sting{border-color:var(--type-power,#b071d6);}
+  button.prim{background:var(--spectre-500,#2a7f99);border-color:var(--spectre-300,#6fd9ec);}
+  .row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  label.sl{display:flex;align-items:center;gap:8px;font:12px ui-monospace,monospace;
+    color:var(--text-lo,#9a92a8);}
+  input[type=range]{width:190px;accent-color:var(--spectre-300,#6fd9ec);}
+  .val{min-width:44px;color:var(--text-hi,#f4efe4);display:inline-block;text-align:right;}
+  #meter{display:block;border-radius:5px;background:#000;}
+  .stat{font:12px ui-monospace,monospace;color:var(--text-lo,#9a92a8);}
+  .stat b{color:var(--text-hi,#f4efe4);font-weight:500;}
+  pre{background:#050409;border:1px solid var(--ink-500,#2a2442);border-radius:8px;
+    padding:12px;font:11.5px/1.5 ui-monospace,Consolas,monospace;max-height:340px;
+    overflow:auto;margin:0;white-space:pre;}
+  .ok{color:#7fdca0;} .bad{color:var(--threat-200,#ff9c8a);} .warn{color:var(--flame-300,#f8c96b);}
+  #strips{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:10px;}
+  #strips figure{margin:0;background:#050409;border:1px solid var(--ink-500,#2a2442);
+    border-radius:8px;overflow:hidden;}
+  #strips img{display:block;width:100%;height:auto;image-rendering:auto;}
+  .gate{background:var(--flame-500,#b87826);color:#1a1206;padding:8px 12px;border-radius:8px;
+    font-size:12px;display:none;}
+  .gate.show{display:inline-block;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Midnight Menagerie — audio soundboard</h1>
+  <div class="sub">
+    Every SFX below is synthesised live from <code>game/src/audio/dsp.js</code>. No sample files.
+    The self-test renders each cue through the real master bus in an OfflineAudioContext.
+  </div>
+
+  <section>
+    <h2>Transport</h2>
+    <div class="row">
+      <button id="unlock" class="prim">unlock audio</button>
+      <span id="gate" class="gate">click anywhere to start audio</span>
+      <span class="stat">ctx <b id="state">–</b> · sr <b id="sr">–</b> · voices <b id="voices">0</b></span>
+      <canvas id="meter" width="260" height="26"></canvas>
+      <span class="stat">peak <b id="pk">-inf</b> dB</span>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <label class="sl">master <input type="range" id="v-master" min="0" max="1" step="0.01" value="0.9"><span class="val" id="v-master-o">0.90</span></label>
+      <label class="sl">music <input type="range" id="v-music" min="0" max="1" step="0.01" value="0.6"><span class="val" id="v-music-o">0.60</span></label>
+      <label class="sl">sfx <input type="range" id="v-sfx" min="0" max="1" step="0.01" value="0.8"><span class="val" id="v-sfx-o">0.80</span></label>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <label class="sl">tension <input type="range" id="tension" min="0" max="1" step="0.01" value="0"><span class="val" id="tension-o">0.00</span></label>
+      <label class="sl">duck amt <input type="range" id="duckamt" min="0" max="2" step="0.05" value="1"><span class="val" id="duckamt-o">1.00</span></label>
+      <label class="sl">duck ms <input type="range" id="duckms" min="60" max="1500" step="20" value="260"><span class="val" id="duckms-o">260</span></label>
+      <button id="duck">duck now</button>
+      <button id="stopmus">stop music</button>
+      <button id="panic">stop all sfx</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Music cues</h2>
+    <div class="grid" id="music-row"></div>
+    <div class="stat" id="np" style="margin-top:8px">–</div>
+  </section>
+
+  <section>
+    <h2>SFX <span class="stat" id="sfxcount"></span></h2>
+    <div id="board"></div>
+  </section>
+
+  <section>
+    <h2>Bus auto-wiring (emits real bus events)</h2>
+    <div class="grid" id="busrow"></div>
+  </section>
+
+  <section>
+    <h2>Self-test</h2>
+    <div class="row">
+      <button id="run" class="prim">run self-test</button>
+      <span class="stat" id="progress"></span>
+    </div>
+    <pre id="report" style="margin-top:10px">not run</pre>
+  </section>
+
+  <section>
+    <h2>Rendered cues — waveform (top) + spectrogram (bottom)</h2>
+    <div id="strips"></div>
+  </section>
+</div>
+
+<script type="module">
+import { Audio } from '../../game/src/audio/audio.js';
+import { CUES, SFX_IDS, SfxEngine } from '../../game/src/audio/sfx.js';
+import { MUSIC_CUES, MUSIC_IDS } from '../../game/src/audio/music.js';
+import { createMasterBus } from '../../game/src/audio/dsp.js';
+import { bus } from '../../game/src/core/bus.js';
+
+// ═════════════════════════════════ live rig ═════════════════════════════════
+
+const audio = new Audio({ bus });
+window.audio = audio; window.bus = bus;
+
+const $ = (s) => document.querySelector(s);
+$('#sr').textContent = audio.ac ? audio.ac.sampleRate : 'n/a';
+$('#sfxcount').textContent = `(${SFX_IDS.length} cues)`;
+
+function refreshGate() {
+  const running = audio.ac && audio.ac.state === 'running';
+  $('#state').textContent = audio.ac ? audio.ac.state : 'none';
+  $('#gate').classList.toggle('show', !running);
+}
+refreshGate();
+$('#unlock').addEventListener('click', async () => { await audio.unlock(); refreshGate(); });
+
+// SFX board, grouped by family
+const FAMS = ['card', 'combat', 'ui', 'world', 'sting'];
+const board = $('#board');
+for (const fam of FAMS) {
+  const ids = SFX_IDS.filter((i) => CUES[i].family === fam);
+  if (!ids.length) continue;
+  const d = document.createElement('div'); d.className = 'fam';
+  const h = document.createElement('p'); h.className = 'fam-h';
+  h.textContent = `${fam} — ${ids.length}`;
+  const g = document.createElement('div'); g.className = 'grid';
+  for (const id of ids) {
+    const b = document.createElement('button');
+    if (fam === 'sting') b.className = 'sting';
+    b.textContent = id;
+    b.dataset.id = id;
+    b.addEventListener('click', async () => {
+      await audio.unlock(); refreshGate();
+      if (fam === 'sting') audio.stinger(id); else audio.play(id);
+    });
+    g.appendChild(b);
+  }
+  d.appendChild(h); d.appendChild(g); board.appendChild(d);
+}
+
+// Music row
+const mrow = $('#music-row');
+for (const cue of MUSIC_IDS) {
+  const b = document.createElement('button');
+  b.className = 'mus';
+  b.textContent = `${cue} · ${MUSIC_CUES[cue].track.replace('.mp3', '')}`;
+  b.title = MUSIC_CUES[cue].note;
+  b.addEventListener('click', async () => {
+    await audio.unlock(); refreshGate();
+    audio.music(cue);
+    for (const o of mrow.children) o.classList.remove('on');
+    b.classList.add('on');
+  });
+  mrow.appendChild(b);
+}
+
+// Bus events, to prove the auto-wiring
+const BUS_TESTS = [
+  ['card:play', { type: 'attack' }], ['card:play', { type: 'skill' }],
+  ['card:play', { type: 'power' }],
+  ['damage', { targetId: 'e1', amount: 7 }], ['damage', { targetId: 'e1', amount: 22 }],
+  ['damage', { targetId: 'e1', amount: 30, crit: true }],
+  ['damage', { targetId: 'player', amount: 14, hp: 22, maxHp: 70 }],
+  ['block', { amount: 8 }], ['block', { broken: true }],
+  ['status', { kind: 'buff' }], ['status', { kind: 'debuff' }],
+  ['heal', { amount: 9, hp: 60, maxHp: 70 }],
+  ['draw', { n: 5 }], ['shuffle', {}], ['discard', {}], ['exhaust', {}],
+  ['turn:start', {}], ['turn:end', {}], ['death', { targetId: 'e1' }],
+  ['intent', { damage: 26 }], ['map:choose', {}], ['ui:click', {}],
+  ['rescue', {}], ['boss:intro', {}], ['gold', {}],
+];
+const brow = $('#busrow');
+BUS_TESTS.forEach(([ev, p], i) => {
+  const b = document.createElement('button');
+  const tag = p.type || p.kind || (p.crit ? 'crit' : p.broken ? 'broken' : p.amount ?? p.damage ?? p.n ?? '');
+  b.textContent = tag === '' ? ev : `${ev}(${tag})`;
+  b.addEventListener('click', async () => { await audio.unlock(); refreshGate(); bus.emit(ev, p); });
+  brow.appendChild(b);
+  void i;
+});
+
+// Sliders
+const bindSlider = (id, fn, fmt = (v) => v.toFixed(2)) => {
+  const el = $('#' + id), out = $('#' + id + '-o');
+  const upd = () => { const v = parseFloat(el.value); if (out) out.textContent = fmt(v); fn(v); };
+  el.addEventListener('input', upd); upd();
+};
+bindSlider('v-master', (v) => audio.setVolume('master', v));
+bindSlider('v-music', (v) => audio.setVolume('music', v));
+bindSlider('v-sfx', (v) => audio.setVolume('sfx', v));
+bindSlider('tension', (v) => audio.tension(v));
+bindSlider('duckamt', () => {});
+bindSlider('duckms', () => {}, (v) => String(v | 0));
+$('#duck').addEventListener('click', async () => {
+  await audio.unlock();
+  audio.duck(parseFloat($('#duckamt').value), parseFloat($('#duckms').value));
+});
+$('#stopmus').addEventListener('click', () => audio.stopMusic({ fade: 1.2 }));
+$('#panic').addEventListener('click', () => audio.sfx?.stopAll());
+
+// Meter
+const mc = $('#meter'), mx = mc.getContext('2d');
+let hold = 0, holdT = 0;
+function frame() {
+  const { peak, rms } = audio.level();
+  const w = mc.width, h = mc.height;
+  mx.clearRect(0, 0, w, h);
+  mx.fillStyle = '#000'; mx.fillRect(0, 0, w, h);
+  const db = (v) => 20 * Math.log10(Math.max(v, 1e-6));
+  const norm = (v) => Math.max(0, Math.min(1, (db(v) + 60) / 60));
+  const gr = mx.createLinearGradient(0, 0, w, 0);
+  gr.addColorStop(0, '#2a7f99'); gr.addColorStop(0.72, '#6fd9ec');
+  gr.addColorStop(0.9, '#f8c96b'); gr.addColorStop(1, '#f2654c');
+  mx.fillStyle = gr; mx.fillRect(0, 6, norm(rms) * w, h - 12);
+  const now = performance.now();
+  if (peak >= hold || now - holdT > 900) { hold = peak; holdT = now; }
+  mx.fillStyle = hold > 0.94 ? '#f2654c' : '#fff4d6';
+  mx.fillRect(Math.min(w - 2, norm(hold) * w), 2, 2, h - 4);
+  $('#pk').textContent = peak > 0 ? db(peak).toFixed(1) : '-inf';
+  $('#voices').textContent = audio.sfx ? audio.sfx.activeCount : 0;
+  const np = audio.nowPlaying();
+  $('#np').textContent = np
+    ? `${np.cue} · ${np.track} · ${np.time.toFixed(1)} / ${np.duration.toFixed(0)}s · deck level ${np.level.toFixed(3)}`
+    : 'nothing playing';
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+setInterval(refreshGate, 500);
+
+// ═════════════════════════════════ self-test ════════════════════════════════
+
+const SR = 48000;
+const LIMIT = { card: 1.2, combat: 1.2, ui: 1.2, world: 1.2, sting: 3.0 };
+
+/** iterative radix-2 FFT, in place */
+function fft(re, im) {
+  const n = re.length;
+  for (let i = 1, j = 0; i < n; i++) {
+    let bit = n >> 1;
+    for (; j & bit; bit >>= 1) j ^= bit;
+    j ^= bit;
+    if (i < j) { let t = re[i]; re[i] = re[j]; re[j] = t; t = im[i]; im[i] = im[j]; im[j] = t; }
+  }
+  for (let len = 2; len <= n; len <<= 1) {
+    const ang = -2 * Math.PI / len, wr = Math.cos(ang), wi = Math.sin(ang);
+    for (let i = 0; i < n; i += len) {
+      let cr = 1, ci = 0;
+      for (let k = 0; k < len >> 1; k++) {
+        const a = i + k, b = a + (len >> 1);
+        const vr = re[b] * cr - im[b] * ci, vi = re[b] * ci + im[b] * cr;
+        re[b] = re[a] - vr; im[b] = im[a] - vi;
+        re[a] += vr; im[a] += vi;
+        const ncr = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = ncr;
+      }
+    }
+  }
+}
+
+async function renderCue(id, seed) {
+  const cue = CUES[id];
+  const len = Math.ceil((cue.dur + 1.1) * SR);
+  const oac = new OfflineAudioContext(2, len, SR);
+  const mixer = createMasterBus(oac, { master: 0.9, sfx: 0.8, destination: oac.destination });
+  const eng = new SfxEngine(oac, mixer.sfxIn, { seed, deterministic: false });
+  eng.play(id, {});
+  const buf = await oac.startRendering();
+  return buf;
+}
+
+function analyse(id, buf) {
+  const cue = CUES[id];
+  const L = buf.getChannelData(0), R = buf.numberOfChannels > 1 ? buf.getChannelData(1) : L;
+  const n = L.length;
+  let peak = 0, sum = 0, sq = 0, nan = 0;
+  const mono = new Float32Array(n);
+  // env[i] = loudest channel at i. Peak/attack/duration must come from this,
+  // not from the mono sum: hard-panned or partly out-of-phase cues (coins,
+  // debris, the plate's decorrelated return) cancel in mono.
+  const envAbs = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const l = L[i], r = R[i];
+    if (!Number.isFinite(l) || !Number.isFinite(r)) { nan++; continue; }
+    const m = (l + r) * 0.5;
+    mono[i] = m;
+    const al = l < 0 ? -l : l, ar = r < 0 ? -r : r;
+    const a = al > ar ? al : ar;
+    envAbs[i] = a;
+    if (a > peak) peak = a;
+    sum += m; sq += m * m;
+  }
+  const dc = sum / n;
+  const rms = Math.sqrt(sq / n);
+
+  // audible extent: last sample above -50 dB relative to peak
+  const floor = peak * 0.00316;
+  let last = 0, first = -1;
+  for (let i = 0; i < n; i++) {
+    if (envAbs[i] > floor) { last = i; if (first < 0) first = i; }
+  }
+  const effDur = (last + 1) / SR;
+
+  // envelope shape: fraction of the audible window within 6 dB of peak.
+  // a raw beep or a square blob scores high; a shaped percussive cue scores low.
+  let loud = 0;
+  const win = Math.max(1, last + 1);
+  for (let i = 0; i < win; i++) if (envAbs[i] > peak * 0.501) loud++;
+  const squareness = loud / win;
+
+  // attack: samples until the running peak first reaches 90% of the max
+  let atk = 0, run = 0;
+  for (let i = 0; i < win; i++) {
+    if (envAbs[i] > run) run = envAbs[i];
+    if (run >= peak * 0.9) { atk = i; break; }
+  }
+
+  // edges — a click is a non-zero value at the very first/last audible sample
+  const edgeStart = envAbs[0];
+  const edgeEnd = envAbs[Math.min(n - 1, last + 1)];
+  // largest single-sample jump anywhere (a hard click shows up as a big step)
+  let maxJump = 0;
+  for (let i = 1; i < win; i++) {
+    const d = Math.abs(L[i] - L[i - 1]), e = Math.abs(R[i] - R[i - 1]);
+    if (d > maxJump) maxJump = d;
+    if (e > maxJump) maxJump = e;
+  }
+
+  // Average spectrum over four frames spread across the audible window — one
+  // frame is far too noisy to characterise a cue that evolves.
+  const N = 2048, FR = 4;
+  const re = new Float32Array(N), im = new Float32Array(N);
+  const mag = new Float32Array(N / 2);
+  for (let f = 0; f < FR; f++) {
+    const off = Math.min(Math.max(0, n - N), Math.floor(win * (0.05 + 0.22 * f)));
+    for (let i = 0; i < N; i++) {
+      const w = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / (N - 1));
+      re[i] = (mono[off + i] || 0) * w; im[i] = 0;
+    }
+    fft(re, im);
+    for (let k = 1; k < N / 2; k++) mag[k] += Math.hypot(re[k], im[k]) / FR;
+  }
+  let num = 0, den = 0;
+  for (let k = 1; k < N / 2; k++) { num += mag[k] * (k * SR / N); den += mag[k]; }
+  const centroid = den > 0 ? num / den : 0;
+
+  // "is this a raw beep?" — two independent reads over 150 Hz..16 kHz.
+  // Below 150 Hz an FFT bin is wider than a semitone, so a low thud would look
+  // tonal for reasons of resolution rather than content; that band is excluded.
+  //   flat   Wiener entropy (geometric/arithmetic mean). sine ~1e-4,
+  //          a struck bell ~0.01-0.06, noise ~0.3+
+  //   parts  spectral peaks within 20 dB of the loudest. A sine has 1.
+  const kLo = Math.max(2, Math.ceil(150 * N / SR));
+  const kHi = Math.min(N / 2 - 2, Math.floor(16000 * N / SR));
+  let logSum = 0, linSum = 0, cnt = 0, top = 0;
+  for (let k = kLo; k <= kHi; k++) {
+    const v = mag[k] + 1e-12;
+    logSum += Math.log(v); linSum += v; cnt++;
+    if (mag[k] > top) top = mag[k];
+  }
+  const flat = cnt ? Math.exp(logSum / cnt) / (linSum / cnt) : 0;
+  let parts = 0;
+  for (let k = kLo + 1; k < kHi; k++) {
+    if (mag[k] > mag[k - 1] && mag[k] >= mag[k + 1] && mag[k] > top * 0.1) parts++;
+  }
+
+  const errs = [], warns = [];
+  const limit = LIMIT[cue.family] ?? 1.2;
+  if (nan) errs.push(`${nan} non-finite samples`);
+  if (peak < 0.002) errs.push(`silent (peak ${peak.toExponential(2)})`);
+  if (peak > 0.99) errs.push(`clipping (peak ${peak.toFixed(4)})`);
+  if (Math.abs(dc) > 0.002) errs.push(`DC offset ${dc.toFixed(5)}`);
+  if (effDur > limit) errs.push(`too long: ${effDur.toFixed(3)}s > ${limit}s`);
+  if (edgeStart > 0.01) errs.push(`click at start (${edgeStart.toFixed(4)})`);
+  if (edgeEnd > 0.01) errs.push(`click at end (${edgeEnd.toFixed(4)})`);
+  if (maxJump > 0.35) errs.push(`discontinuity ${maxJump.toFixed(3)}`);
+  if (squareness > 0.35) warns.push(`flat envelope (${(squareness * 100) | 0}% near peak)`);
+  if (parts <= 2 && flat < 0.004) warns.push(`beep-like (${parts} partials, flatness ${flat.toExponential(1)})`);
+  if (peak / Math.max(rms, 1e-9) < 3) warns.push('low crest');
+
+  return {
+    id, family: cue.family, peak, peakDb: 20 * Math.log10(Math.max(peak, 1e-9)),
+    rmsDb: 20 * Math.log10(Math.max(rms, 1e-9)), dc, effDur, limit,
+    attackMs: atk / SR * 1000, squareness, centroid, flat, parts,
+    edgeStart, edgeEnd, maxJump, errs, warns, mono, envAbs, n: win,
+  };
+}
+
+/** magma-ish perceptual ramp for the spectrogram */
+const RAMP = [
+  [0.00, 5, 3, 15], [0.14, 27, 16, 53], [0.32, 92, 26, 94],
+  [0.52, 163, 48, 90], [0.70, 221, 96, 49], [0.86, 245, 176, 46],
+  [1.00, 252, 246, 192],
+];
+function ramp(u, out, o) {
+  u = u < 0 ? 0 : u > 1 ? 1 : u;
+  let i = 1;
+  while (i < RAMP.length - 1 && RAMP[i][0] < u) i++;
+  const a = RAMP[i - 1], b = RAMP[i];
+  const f = (u - a[0]) / (b[0] - a[0]);
+  out[o] = a[1] + (b[1] - a[1]) * f;
+  out[o + 1] = a[2] + (b[2] - a[2]) * f;
+  out[o + 2] = a[3] + (b[3] - a[3]) * f;
+  out[o + 3] = 255;
+}
+
+/**
+ * One strip per cue: a dB-scale amplitude envelope over a log-frequency
+ * spectrogram.
+ *
+ * The envelope is plotted in dBFS, not linear, on purpose — an exponential
+ * decay draws as a straight taper, so "is the decay smooth" and "is the
+ * envelope shaped rather than square" are both readable at a glance, and the
+ * absolute level stays legible against the 0 dBFS ceiling.
+ */
+function strip(id, a) {
+  const W = 720, HW = 104, HS = 128, PAD = 16, H = HW + HS + PAD;
+  const c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  g.fillStyle = '#07060d'; g.fillRect(0, 0, W, H);
+
+  const mono = a.mono, envAbs = a.envAbs, n = mono.length;
+  const shown = Math.max(2, Math.min(n, Math.ceil(a.effDur * SR * 1.10)));
+  const FLOOR = -66;                                   // bottom of the dB axis
+  const half = HW / 2, span = half - 2;
+  const yOf = (db) => {
+    const u = Math.max(0, Math.min(1, (db - FLOOR) / -FLOOR));
+    return u * span;
+  };
+
+  // dB gridlines every 12 dB
+  g.font = '9px ui-monospace,Consolas,monospace';
+  for (let db = 0; db >= FLOOR; db -= 12) {
+    const dy = yOf(db);
+    g.strokeStyle = db === 0 ? '#5b2a22' : '#1d1930';
+    g.beginPath();
+    g.moveTo(0, half - dy + 0.5); g.lineTo(W, half - dy + 0.5);
+    g.moveTo(0, half + dy + 0.5); g.lineTo(W, half + dy + 0.5);
+    g.stroke();
+    if (db !== 0) { g.fillStyle = '#3d3559'; g.fillText(db + '', W - 22, half - dy - 2); }
+  }
+
+  const per = shown / W;
+  for (let x = 0; x < W; x++) {
+    const s0 = (x * per) | 0, s1 = Math.min(shown, Math.max(s0 + 1, ((x + 1) * per) | 0));
+    let mx = 0, sq = 0, cnt = 0;
+    for (let i = s0; i < s1; i++) { const v = envAbs[i]; if (v > mx) mx = v; sq += v * v; cnt++; }
+    const rms = cnt ? Math.sqrt(sq / cnt) : 0;
+    const dPk = yOf(20 * Math.log10(Math.max(mx, 1e-9)));
+    const dRm = yOf(20 * Math.log10(Math.max(rms, 1e-9)));
+    if (dPk > 0) { g.fillStyle = '#3fb4d0'; g.fillRect(x, half - dPk, 1, dPk * 2); }
+    if (dRm > 0) { g.fillStyle = '#e6fbff'; g.fillRect(x, half - dRm, 1, dRm * 2); }
+  }
+  g.strokeStyle = '#2a2442'; g.beginPath();
+  g.moveTo(0, half + 0.5); g.lineTo(W, half + 0.5); g.stroke();
+
+  // ── spectrogram, log frequency 40 Hz .. 18 kHz, per-image dB normalisation
+  const N = 2048, COLS = 360, CW = W / COLS;
+  const re = new Float32Array(N), im = new Float32Array(N);
+  const mags = new Float32Array(COLS * (N / 2));
+  const fmin = 40, fmax = 18000, lr = Math.log(fmax / fmin);
+  let top = 1e-9;
+  for (let x = 0; x < COLS; x++) {
+    const off = Math.min(Math.max(0, n - N), Math.floor(x * shown / COLS));
+    for (let i = 0; i < N; i++) {
+      const w = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / (N - 1));
+      re[i] = (mono[off + i] || 0) * w; im[i] = 0;
+    }
+    fft(re, im);
+    const base = x * (N / 2);
+    for (let k = 1; k < N / 2; k++) {
+      const m = Math.hypot(re[k], im[k]);
+      mags[base + k] = m;
+      if (m > top) top = m;
+    }
+  }
+  const RANGE = 74;                                     // dB shown below the max
+  const img = g.createImageData(W, HS);
+  const kOf = (f) => f * N / SR;
+  for (let y = 0; y < HS; y++) {
+    // this row covers [fLo, fHi); take the loudest bin inside, interpolating
+    // where the row is narrower than one bin (which it is in the low octaves)
+    const u0 = (HS - 1 - y - 0.5) / (HS - 1), u1 = (HS - 1 - y + 0.5) / (HS - 1);
+    const kLo = kOf(fmin * Math.exp(lr * u0)), kHi = kOf(fmin * Math.exp(lr * u1));
+    for (let x = 0; x < COLS; x++) {
+      const base = x * (N / 2);
+      let m;
+      if (Math.floor(kHi) > Math.floor(kLo)) {
+        m = 0;
+        for (let k = Math.max(1, Math.floor(kLo)); k <= Math.min(N / 2 - 1, Math.ceil(kHi)); k++) {
+          if (mags[base + k] > m) m = mags[base + k];
+        }
+      } else {
+        const kc = (kLo + kHi) * 0.5, k0 = Math.max(1, Math.floor(kc)), fr = kc - k0;
+        m = mags[base + k0] * (1 - fr) + mags[base + Math.min(N / 2 - 1, k0 + 1)] * fr;
+      }
+      const db = 20 * Math.log10(Math.max(m, 1e-9) / top);
+      const v = (db + RANGE) / RANGE;
+      for (let d = 0; d < CW; d++) ramp(v, img.data, ((y * W) + (x * CW | 0) + d) * 4);
+    }
+  }
+  g.putImageData(img, 0, HW + PAD);
+
+  // frequency labels down the side of the spectrogram
+  g.font = '9px ui-monospace,Consolas,monospace';
+  g.fillStyle = 'rgba(230,251,255,.55)';
+  for (const f of [100, 400, 1600, 6400]) {
+    const y = HW + PAD + (HS - 1) - Math.round(Math.log(f / fmin) / lr * (HS - 1));
+    g.fillText(f >= 1000 ? (f / 1000) + 'k' : f + '', 3, y - 2);
+  }
+
+  g.font = '11px ui-monospace,Consolas,monospace';
+  g.fillStyle = a.errs.length ? '#ff9c8a' : a.warns.length ? '#f8c96b' : '#f4efe4';
+  g.fillText(id, 6, 13);
+  g.fillStyle = '#9a92a8';
+  g.fillText(`${a.effDur.toFixed(3)}s  pk ${a.peakDb.toFixed(1)}dB  rms ${a.rmsDb.toFixed(1)}dB  ` +
+             `atk ${a.attackMs.toFixed(0)}ms  dc ${a.dc.toExponential(1)}  cen ${(a.centroid | 0)}Hz  ` +
+             `flat ${a.flat.toExponential(1)}  ${a.parts}p`,
+             6, HW + PAD - 4);
+  return c.toDataURL('image/png');
+}
+
+async function runSelfTest({ withImages = true } = {}) {
+  const t0 = performance.now();
+  const results = [];
+  const pngs = {};
+  const strips = $('#strips'); strips.innerHTML = '';
+  let done = 0;
+  for (const id of SFX_IDS) {
+    $('#progress').textContent = `${++done}/${SFX_IDS.length} ${id}`;
+    const bufA = await renderCue(id, 0x1234abcd);
+    const a = analyse(id, bufA);
+
+    // per-play variation must actually change the render
+    const bufB = await renderCue(id, 0x77c0ffee);
+    const B = bufB.getChannelData(0), A = bufA.getChannelData(0);
+    let diff = 0, m = Math.min(A.length, B.length);
+    for (let i = 0; i < m; i += 7) diff += Math.abs(A[i] - B[i]);
+    a.variation = diff / (m / 7) / Math.max(a.peak, 1e-9);
+    if (a.variation < 1e-4) a.errs.push('no per-play variation');
+
+    if (withImages) {
+      pngs[id] = strip(id, a);
+      const fig = document.createElement('figure');
+      const im = document.createElement('img'); im.src = pngs[id]; im.alt = id;
+      fig.appendChild(im); strips.appendChild(fig);
+    }
+    delete a.mono; delete a.envAbs;
+    results.push(a);
+    await new Promise((r) => setTimeout(r, 0));
+  }
+
+  const errors = results.reduce((s, r) => s + r.errs.length, 0);
+  const warnings = results.reduce((s, r) => s + r.warns.length, 0);
+  const lines = [];
+  lines.push(`sampleRate ${SR}  ·  rendered through createMasterBus (compressor + limiter, ceil 0.94)`);
+  lines.push('');
+  lines.push('id                            fam     dur     peak    rms    atk   square  cent   flat  parts  var    status');
+  for (const r of results) {
+    const st = r.errs.length ? 'ERR ' + r.errs.join('; ')
+      : r.warns.length ? 'warn ' + r.warns.join('; ') : 'ok';
+    lines.push(
+      r.id.padEnd(29) + r.family.padEnd(8) +
+      r.effDur.toFixed(3).padStart(6) + ' ' +
+      r.peakDb.toFixed(1).padStart(7) + ' ' +
+      r.rmsDb.toFixed(1).padStart(6) + ' ' +
+      r.attackMs.toFixed(0).padStart(5) + ' ' +
+      (r.squareness * 100).toFixed(0).padStart(6) + '% ' +
+      (r.centroid | 0).toString().padStart(6) + ' ' +
+      r.flat.toExponential(1).padStart(8) + ' ' +
+      String(r.parts).padStart(4) + ' ' +
+      r.variation.toFixed(3).padStart(6) + '  ' + st);
+  }
+  lines.push('');
+  lines.push(`RESULT: ${SFX_IDS.length} cues, ${errors} errors`);
+  lines.push(`warnings: ${warnings}   ·   music cues: ${MUSIC_IDS.length}   ·   ${((performance.now() - t0) / 1000).toFixed(1)}s`);
+
+  const text = lines.join('\n');
+  $('#report').textContent = text;
+  $('#progress').textContent = `done — ${errors} errors`;
+  window.__AUDIO_PNGS__ = pngs;
+  window.__AUDIO_TEST__ = {
+    done: true, cues: SFX_IDS.length, errors, warnings, text,
+    results, musicCues: MUSIC_IDS.length,
+  };
+  return window.__AUDIO_TEST__;
+}
+
+window.runSelfTest = runSelfTest;
+$('#run').addEventListener('click', () => runSelfTest());
+
+if (new URLSearchParams(location.search).has('autotest')) {
+  runSelfTest().catch((e) => {
+    window.__AUDIO_TEST__ = { done: true, cues: SFX_IDS.length, errors: 999, text: 'FATAL ' + e };
+    $('#report').textContent = 'FATAL ' + (e && e.stack || e);
+  });
+}
+</script>
+</body>
+</html>

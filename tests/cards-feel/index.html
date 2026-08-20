@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Midnight Menagerie — card feel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Grenze:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/game/src/ui/tokens.css">
+<link rel="stylesheet" href="/game/src/ui/base.css">
+<link rel="stylesheet" href="/game/src/ui/card.css">
+<link rel="stylesheet" href="/game/src/ui/hand.css">
+<style>
+  html,body { height:100%; overflow:hidden; }
+  body {
+    background:
+      radial-gradient(120% 80% at 50% 8%, color-mix(in srgb, var(--ink-600) 70%, transparent), transparent 60%),
+      radial-gradient(90% 60% at 12% 96%, color-mix(in srgb, var(--flame-500) 12%, transparent), transparent 70%),
+      radial-gradient(90% 60% at 88% 96%, color-mix(in srgb, var(--spectre-500) 12%, transparent), transparent 70%),
+      var(--ink-900);
+  }
+  #stage { position:fixed; inset:0; }
+
+  /* ── control bar ─────────────────────────────────────────────────── */
+  #bar {
+    position:fixed; left:0; right:0; top:0; z-index:1000;
+    display:flex; flex-wrap:wrap; gap:6px; align-items:center;
+    padding:8px 12px;
+    background: color-mix(in srgb, var(--ink-900) 78%, transparent);
+    border-bottom:1px solid var(--ink-500);
+    font-family: var(--font-display); font-size:12px; letter-spacing:.08em;
+  }
+  #bar button, #bar select {
+    padding:5px 10px; border-radius:var(--radius-sm);
+    background: var(--ink-700); color: var(--text-mid);
+    border:1px solid var(--ink-500); cursor:pointer; font:inherit;
+  }
+  #bar button:hover { background: var(--ink-600); color: var(--text-hi); }
+  #bar .sep { width:1px; height:20px; background:var(--ink-500); margin:0 4px; }
+  #bar .lab { color: var(--text-lo); text-transform:uppercase; }
+
+  /* ── enemies ─────────────────────────────────────────────────────── */
+  #foes { position:fixed; left:0; right:0; top:120px; display:flex; justify-content:center; gap:90px; }
+  .foe { width:190px; text-align:center; }
+  .foe__body {
+    height:170px; border-radius:14px; position:relative;
+    background:
+      radial-gradient(70% 60% at 50% 34%, color-mix(in srgb, var(--spectre-500) 44%, transparent), transparent 70%),
+      linear-gradient(180deg, var(--ink-600), var(--ink-800));
+    box-shadow: inset 0 0 0 2px var(--ink-500), 0 18px 44px rgba(0,0,0,.6);
+    display:grid; place-items:center;
+  }
+  .foe__glyph { font-size:64px; filter: drop-shadow(0 0 16px color-mix(in srgb, var(--spectre-300) 60%, transparent)); }
+  .foe__name { margin-top:8px; font-family:var(--font-display); font-size:14px; letter-spacing:.14em;
+               text-transform:uppercase; color:var(--text-mid); }
+  .foe__hp { margin-top:5px; height:12px; border-radius:6px; background:var(--ink-700);
+             box-shadow: inset 0 0 0 1px var(--ink-500); position:relative; overflow:hidden; }
+  .foe__hp i { position:absolute; inset:0; right:22%; background:linear-gradient(180deg,var(--courage-300),var(--courage-500)); }
+  .foe__hp span { position:absolute; inset:0; display:grid; place-items:center; font-size:9px;
+                  font-family:var(--font-num); color:var(--text-hi); text-shadow:0 1px 2px #000; }
+  .foe__tag { margin-top:5px; font-size:11px; color:var(--flame-300); font-family:var(--font-body); }
+
+  /* ── hud ─────────────────────────────────────────────────────────── */
+  #orb {
+    position:fixed; left:52px; bottom:120px; width:104px; height:104px; border-radius:50%;
+    display:grid; place-items:center; font-family:var(--font-num); font-size:30px; color:var(--ink-900);
+    background:
+      radial-gradient(70% 70% at 34% 26%, color-mix(in srgb, var(--pluck-300) 78%, white), transparent 62%),
+      radial-gradient(100% 100% at 50% 60%, var(--pluck-300), var(--pluck-500));
+    box-shadow: 0 0 0 4px var(--ink-700), 0 0 0 6px var(--ink-500), 0 0 44px color-mix(in srgb, var(--pluck-300) 45%, transparent);
+  }
+  .pile {
+    position:fixed; bottom:26px; width:74px; height:104px; border-radius:8px;
+    background:linear-gradient(160deg,var(--ink-600),var(--ink-800));
+    box-shadow: inset 0 0 0 2px var(--ink-500), 0 10px 26px rgba(0,0,0,.6);
+    display:grid; place-items:center; font-family:var(--font-num); font-size:22px; color:var(--text-mid);
+  }
+  #pile-draw { left:30px; } #pile-discard { right:30px; }
+  .pile b { position:absolute; bottom:-20px; left:0; right:0; text-align:center;
+            font:400 10px/1 var(--font-display); letter-spacing:.16em; color:var(--text-lo); text-transform:uppercase; }
+  #log { position:fixed; right:14px; top:60px; width:250px; font:11px/1.5 var(--font-body);
+         color:var(--text-lo); text-align:right; pointer-events:none; }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div id="foes"></div>
+<div id="orb">3</div>
+<div class="pile" id="pile-draw">18<b>Draw</b></div>
+<div class="pile" id="pile-discard">4<b>Discard</b></div>
+<div id="log"></div>
+<div id="stage"></div>
+
+<script type="module">
+import { clock } from '/game/src/core/clock.js';
+import { bus } from '/game/src/core/bus.js';
+import { Save } from '/game/src/core/save.js';
+import { Hand, TUNE } from '/game/src/ui/hand.js';
+import { preloadArt } from '/game/src/ui/cardart.js';
+
+clock.start();
+Save.load();
+
+// ── fabricated cards, all types + rarities ──────────────────────────────────
+const CARDS = [
+  { id:'marmalade/scratch', name:'Scratch', companion:'marmalade', type:'attack', rarity:'basic',
+    cost:1, target:'enemy', text:'Deal {d} damage.', nums:{d:6}, upgrade:{nums:{d:9}} },
+
+  { id:'marmalade/curl-up', name:'Curl Up', companion:'marmalade', type:'skill', rarity:'basic',
+    cost:1, target:'self', text:'Gain {b} Guard.', nums:{b:5}, upgrade:{nums:{b:8}} },
+
+  { id:'marmalade/spectral-pounce', name:'Spectral Pounce', companion:'marmalade', type:'attack', rarity:'common',
+    cost:1, target:'enemy', text:'Deal {d} damage.\nIf [Untouched], deal {m0} more.', nums:{d:8,m0:5},
+    upgrade:{nums:{d:11,m0:7}} },
+
+  { id:'bones/fetch', name:'Fetch!', companion:'bones', type:'skill', rarity:'common',
+    cost:0, target:'none', text:'Draw {n} card.\n*Good boy.*', nums:{n:1}, upgrade:{nums:{n:2}} },
+
+  { id:'pipkin/lantern-smash', name:'Lantern Smash', companion:'pipkin', type:'attack', rarity:'uncommon',
+    cost:2, target:'allEnemies', text:'Deal {d} damage to ALL.\nApply {m0} [Brittle].', nums:{d:11,m0:1},
+    upgrade:{nums:{d:15,m0:2}} },
+
+  { id:'taffy/sugar-rush', name:'Sugar Rush', companion:'taffy', type:'skill', rarity:'uncommon',
+    cost:1, target:'self', text:'Gain {b} Guard.\n[Zoomies]: draw {n}.', nums:{b:7,n:1}, exhaust:true,
+    upgrade:{nums:{b:10,n:2}} },
+
+  { id:'crumbula/night-draught', name:'Night Draught', companion:'crumbula', type:'attack', rarity:'uncommon',
+    cost:1, target:'enemy', text:'Deal {d} damage.\nHeal {m0} Courage.', nums:{d:7,m0:3},
+    upgrade:{nums:{d:10,m0:4}} },
+
+  { id:'marmalade/nine-lives', name:'Nine Lives', companion:'marmalade', type:'power', rarity:'rare',
+    cost:2, target:'self', text:'Each turn, spend a Life to gain {n} [Ghoststep].', nums:{n:1}, innate:true,
+    upgrade:{nums:{n:2}} },
+
+  { id:'wink/hundred-eyes', name:'A Hundred Eyes', companion:'wink', type:'power', rarity:'rare',
+    cost:3, target:'self', text:'When you play a Trick, apply {n} [Weak] to a random foe.', nums:{n:1},
+    upgrade:{nums:{n:2}} },
+
+  { id:'marmalade/boo', name:'Boo!', companion:'marmalade', type:'skill', rarity:'basic',
+    cost:0, target:'enemy', text:'Apply {n} [Haunt].', nums:{n:2}, upgrade:{nums:{n:4}} },
+
+  { id:'curse/regret', name:'Regret', companion:'curse', type:'curse', rarity:'curse',
+    cost:-2, target:'none', text:'Unplayable.\nAt end of turn, lose {n} Courage.', nums:{n:2} },
+
+  { id:'status/dust', name:'Dust', companion:'status', type:'status', rarity:'status',
+    cost:-2, target:'none', text:'Unplayable.\n*It gets everywhere.*', nums:{} },
+];
+
+let uidSeq = 0;
+const mk = (i, up) => ({ uid:'c' + (++uidSeq), def: CARDS[i % CARDS.length], upgraded: !!up });
+
+// ── enemies ────────────────────────────────────────────────────────────────
+const FOES = [
+  { id:'grumble',  name:'Grumbleboot', glyph:'👻', hp:'34/48', tag:'Vulnerable 2' },
+  { id:'ratlin',   name:'Ratlin',      glyph:'🐀', hp:'12/20', tag:'' },
+  { id:'chandy',   name:'Chandelier',  glyph:'🕯', hp:'55/70', tag:'Resistant' },
+];
+document.getElementById('foes').innerHTML = FOES.map(f => `
+  <div class="foe" data-id="${f.id}">
+    <div class="foe__body"><div class="foe__glyph">${f.glyph}</div></div>
+    <div class="foe__name">${f.name}</div>
+    <div class="foe__hp"><i></i><span>${f.hp}</span></div>
+    <div class="foe__tag">${f.tag}</div>
+  </div>`).join('');
+
+// ── hand ───────────────────────────────────────────────────────────────────
+const stage = document.getElementById('stage');
+const log = document.getElementById('log');
+const lines = [];
+function say(s) { lines.unshift(s); lines.length = Math.min(lines.length, 12); log.innerHTML = lines.join('<br>'); }
+
+let energy = 3;
+let forceUnplayable = false;
+
+const hand = new Hand({ bus, clock, Save }, {
+  root: stage,
+  getTargets: () => FOES.map(f => ({ id: f.id, el: document.querySelector(`.foe[data-id="${f.id}"] .foe__body`) })),
+  onPreview: ({ card, targetId }) => {
+    // Fabricated modifier maths so the live recolour is visible:
+    //   +3 Strength always; Grumbleboot is Vulnerable (x1.5); Chandelier resists (x0.6).
+    const base = card.upgraded && card.def.upgrade?.nums ? { ...card.def.nums, ...card.def.upgrade.nums } : card.def.nums;
+    if (!base || base.d === undefined) return null;
+    const mult = targetId === 'grumble' ? 1.5 : targetId === 'chandy' ? 0.6 : 1;
+    return { d: Math.floor((base.d + 3) * mult), wasD: base.d };
+  },
+  onPlay: ({ card, targetId }) => {
+    const c = card.cost ?? card.def.cost ?? 1;
+    energy = Math.max(0, energy - Math.max(0, c));
+    setEnergy(energy);
+    say(`play <b>${card.def.name}</b>${targetId ? ' → ' + targetId : ''}`);
+    bump('#pile-discard', 1);
+  },
+});
+
+function setEnergy(n) {
+  energy = n;
+  document.getElementById('orb').textContent = String(n);
+  hand.setEnergy(n);
+}
+hand.setPlayable((card) => {
+  if (forceUnplayable) return false;
+  const c = card.cost ?? card.def.cost ?? 1;
+  return c !== -2 && (c < 0 || c <= energy);
+});
+
+function bump(sel, d) {
+  const el = document.querySelector(sel);
+  el.childNodes[0].nodeValue = String(Math.max(0, (+el.childNodes[0].nodeValue || 0) + d));
+}
+
+function setPiles() {
+  const r = stage.getBoundingClientRect();
+  const a = document.getElementById('pile-draw').getBoundingClientRect();
+  const b = document.getElementById('pile-discard').getBoundingClientRect();
+  hand.setPiles({
+    draw: { x: a.left - r.left + a.width / 2, y: a.top - r.top + a.height },
+    discard: { x: b.left - r.left + b.width / 2, y: b.top - r.top + b.height },
+  });
+}
+setPiles();
+addEventListener('resize', setPiles);
+
+for (const ev of ['card:hover','card:pickup','card:drop','card:target','card:cancel'])
+  bus.on(ev, (p) => { if (ev !== 'card:hover') say(`<i>${ev}</i> ${p.targetId || p.uid || ''}`); });
+
+// ── controls ───────────────────────────────────────────────────────────────
+const BTN = [
+  ['draw 1',       () => { hand.draw([mk(pick())]); bump('#pile-draw', -1); }],
+  ['draw 5',       () => { hand.draw(Array.from({length:5}, () => mk(pick()))); bump('#pile-draw', -5); }],
+  ['discard all',  () => hand.discardAll()],
+  ['play random',  () => { const c = hand.cards(); if (!c.length) return;
+                           const k = c[Math.floor(Math.random()*c.length)];
+                           hand.playCard(k.uid, k.def.target === 'enemy' ? 'grumble' : undefined); }],
+  ['exhaust',      () => { const c = hand.cards(); if (c.length) hand.exhaust(c[Math.floor(c.length/2)].uid); }],
+  ['upgrade all',  () => { for (const c of hand.cards()) hand.viewOf(c.uid)?.setState({ upgraded: true }); }],
+  ['toggle playable', () => { forceUnplayable = !forceUnplayable; hand.setPlayable(hand.playableFn); }],
+  ['energy +',     () => setEnergy(Math.min(9, energy + 1))],
+  ['energy –',     () => setEnergy(Math.max(0, energy - 1))],
+  ['lock',         () => (hand.locked ? hand.unlock() : hand.lock())],
+  ['reduce motion',() => { Save.setSetting('reduceMotion', !Save.settings.reduceMotion); location.reload(); }],
+  ['large text',   () => { Save.setSetting('largeText', !Save.settings.largeText); bus.emit('settings:changed'); }],
+];
+let seq = 0;
+function pick() { return (seq = (seq + 5) % CARDS.length); }
+
+const bar = document.getElementById('bar');
+bar.insertAdjacentHTML('beforeend', '<span class="lab">hand</span>');
+for (let n = 1; n <= 12; n++) {
+  const b = document.createElement('button');
+  b.textContent = n; b.id = 'size-' + n;
+  b.onclick = () => setSize(n);
+  bar.appendChild(b);
+}
+bar.insertAdjacentHTML('beforeend', '<span class="sep"></span>');
+for (const [label, fn] of BTN) {
+  const b = document.createElement('button');
+  b.textContent = label;
+  b.id = 'btn-' + label.replace(/[^a-z0-9]+/gi, '-').replace(/-$/, '').toLowerCase();
+  b.onclick = fn;
+  bar.appendChild(b);
+}
+
+function setSize(n) {
+  hand.setCards(Array.from({ length: n }, (_, i) => mk(i)));
+}
+
+// ── boot ───────────────────────────────────────────────────────────────────
+setSize(7);
+setEnergy(3);
+preloadArt();
+
+window.MMTEST = { hand, bus, clock, setSize, setEnergy, TUNE, CARDS,
+  fps: async () => { let n = 0; const t0 = performance.now();
+    await new Promise(r => { const f = () => { n++; performance.now() - t0 < 1000 ? requestAnimationFrame(f) : r(); }; requestAnimationFrame(f); });
+    return n; } };
+</script>
+</body>
+</html>

@@ -1,0 +1,536 @@
+/* ===========================================================================
+   Card. OWNER: card-feel agent.
+
+   Geometry contract
+   -----------------
+   The card is BUILT at 1.4x its on-screen size (`--ss`) and always displayed
+   with a transform scale <= 1. Nothing is ever upscaled past its raster, so
+   text stays crisp from 1.0x right through the 1.35x inspect scale, and
+   because every size is a transform, *layout never changes* — text can never
+   reflow while a card grows or shrinks.
+
+   `--u` is the design unit: 1u == 1px of the 224x312 design grid.
+   Every number below is in design-grid px.
+
+   Colour
+   ------
+   Everything comes from tokens.css except two pigments that tokens.css does
+   not yet define. They are declared once, here, behind a var() so that the
+   moment ui-chrome adds them to tokens.css these fall away:
+     --good-300 / --good-500   "this number went up"  (green)
+   See docs/NOTES.md — requested as tokens.
+   =========================================================================== */
+
+.mm-card {
+  --ss: 1.4;
+  --u: calc(var(--card-w) / 224 * var(--ss));
+
+  --c-good:  var(--good-300, #74e08a);
+  --c-good-d: var(--good-500, #2f8f4d);
+  --c-bad:   var(--threat-300);
+
+  --frame:      var(--rarity-common);
+  --frame-hi:   color-mix(in srgb, var(--frame) 55%, white);
+  --frame-lo:   color-mix(in srgb, var(--frame) 30%, black);
+  --frame-deep: color-mix(in srgb, var(--frame) 14%, black);
+  --type-color: var(--type-skill);
+  --glow-color: var(--frame);
+  --glow-amt: 0;
+  --shake-x: 0px; --shake-y: 0px; --shake-r: 0deg;
+
+  position: absolute;
+  left: 0; top: 0;
+  width: calc(224 * var(--u));
+  height: calc(312 * var(--u));
+  transform-origin: 50% 100%;
+  transform: translate3d(0, 0, 0) translate(-50%, -100%);
+  will-change: transform;
+  contain: layout style;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  cursor: pointer;
+}
+.mm-card * { pointer-events: none; }
+
+/* ── silhouette cues: protruding shapes that read with colour removed ───── */
+.mm-card__crest {
+  position: absolute;
+  left: 50%; top: calc(-18 * var(--u));
+  width: calc(62 * var(--u)); height: calc(19 * var(--u));
+  margin-left: calc(-31 * var(--u));
+  background: linear-gradient(180deg, var(--frame) 0%, var(--frame-lo) 52%, var(--frame-deep) 100%);
+  /* cheap 1px outline so the ornament never reads as a pale smudge */
+  filter:
+    drop-shadow(calc(1 * var(--u)) 0 0 var(--ink-900))
+    drop-shadow(calc(-1 * var(--u)) 0 0 var(--ink-900))
+    drop-shadow(0 calc(-1 * var(--u)) 0 var(--ink-900))
+    drop-shadow(0 calc(3 * var(--u)) calc(4 * var(--u)) rgba(0,0,0,.7));
+}
+.mm-card__pip {
+  position: absolute;
+  background: linear-gradient(180deg, var(--frame-hi), var(--frame-lo));
+  opacity: 0;
+}
+.mm-card__pip--l { left: calc(-7 * var(--u)); }
+.mm-card__pip--r { right: calc(-7 * var(--u)); }
+
+/* ── frame material ─────────────────────────────────────────────────────── */
+.mm-card__frame {
+  position: absolute; inset: 0;
+  border-radius: calc(13 * var(--u));
+  background:
+    linear-gradient(155deg,
+      var(--frame-hi) 0%, var(--frame) 18%, var(--frame-lo) 46%,
+      var(--frame) 72%, var(--frame-hi) 100%);
+  box-shadow:
+    inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb, var(--frame-deep) 80%, transparent),
+    0 calc(3 * var(--u)) calc(9 * var(--u)) rgba(0,0,0,.55),
+    0 calc(10 * var(--u)) calc(26 * var(--u)) rgba(0,0,0,.45);
+}
+.mm-card__face {
+  position: absolute; inset: calc(7 * var(--u));
+  border-radius: calc(8 * var(--u));
+  overflow: hidden;
+  background:
+    radial-gradient(130% 46% at 50% 100%, color-mix(in srgb, var(--type-color) 26%, transparent), transparent 70%),
+    linear-gradient(180deg, var(--ink-700) 0%, var(--ink-800) 46%, var(--ink-700) 78%, var(--ink-600) 100%);
+  box-shadow:
+    inset 0 0 0 calc(1 * var(--u)) rgba(0,0,0,.7),
+    inset 0 calc(-40 * var(--u)) calc(50 * var(--u)) calc(-30 * var(--u)) color-mix(in srgb, var(--frame) 18%, transparent);
+}
+
+/* ── art ────────────────────────────────────────────────────────────────── */
+.mm-card__art {
+  position: absolute; left: 0; right: 0; top: 0;
+  height: calc(172 * var(--u));
+  background-size: cover;
+  background-position: 50% 45%;
+  image-rendering: auto;
+}
+.mm-card__artline {
+  position: absolute; left: 0; right: 0;
+  top: calc(171 * var(--u)); height: calc(2 * var(--u));
+  background: linear-gradient(90deg, transparent, var(--frame-hi) 22%, var(--frame-hi) 78%, transparent);
+  opacity: .55;
+}
+
+/* ── name banner ────────────────────────────────────────────────────────── */
+.mm-card__banner {
+  position: absolute; left: calc(-2 * var(--u)); right: calc(-2 * var(--u));
+  top: calc(126 * var(--u)); height: calc(34 * var(--u));
+  display: grid; place-items: center;
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--ink-900) 62%, transparent) 0%,
+      color-mix(in srgb, var(--ink-900) 90%, transparent) 40%,
+      color-mix(in srgb, var(--ink-900) 88%, transparent) 100%);
+  border-top: calc(1 * var(--u)) solid color-mix(in srgb, var(--frame) 60%, transparent);
+  border-bottom: calc(1 * var(--u)) solid color-mix(in srgb, var(--frame-deep) 90%, transparent);
+}
+.mm-card__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: calc(16.5 * var(--u));
+  line-height: 1;
+  letter-spacing: .012em;
+  color: var(--text-hi);
+  text-shadow: 0 calc(1 * var(--u)) calc(2 * var(--u)) rgba(0,0,0,.9);
+  white-space: nowrap;
+  padding: 0 calc(10 * var(--u));
+}
+.mm-card.is-name-long  .mm-card__name { font-size: calc(14 * var(--u)); }
+.mm-card.is-name-xlong { }
+.mm-card.is-name-xlong .mm-card__name { font-size: calc(11.5 * var(--u)); letter-spacing: 0; }
+.mm-card__plus {
+  color: var(--c-good);
+  text-shadow: 0 0 calc(6 * var(--u)) color-mix(in srgb, var(--c-good) 70%, transparent);
+}
+
+/* ── type line ──────────────────────────────────────────────────────────── */
+.mm-card__type {
+  position: absolute; left: 0; right: 0;
+  top: calc(166 * var(--u)); height: calc(22 * var(--u));
+  display: flex; align-items: center; justify-content: center;
+  gap: calc(6 * var(--u));
+  font-family: var(--font-display);
+  font-size: calc(10.5 * var(--u));
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--type-color) 72%, var(--text-hi));
+  text-shadow: 0 calc(1 * var(--u)) calc(2 * var(--u)) rgba(0,0,0,.85);
+}
+.mm-card__typeicon {
+  width: calc(13 * var(--u)); height: calc(13 * var(--u));
+  background: currentColor;
+  flex: none;
+}
+.mm-card__typesub { color: var(--text-lo); letter-spacing: .12em; }
+
+/* ── rules text ─────────────────────────────────────────────────────────── */
+.mm-card__rules {
+  position: absolute;
+  left: calc(13 * var(--u)); right: calc(13 * var(--u));
+  top: calc(191 * var(--u)); bottom: calc(30 * var(--u));
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: calc(14.5 * var(--u));
+  line-height: 1.2;
+  color: var(--text-mid);
+  text-shadow: 0 calc(1 * var(--u)) calc(2 * var(--u)) rgba(0,0,0,.8);
+  overflow: hidden;
+}
+.mm-card.is-largetext .mm-card__rules { font-size: calc(16.5 * var(--u)); line-height: 1.14; }
+.mm-card.is-text-long  .mm-card__rules { font-size: calc(13 * var(--u)); }
+.mm-card.is-text-xlong .mm-card__rules { font-size: calc(11.5 * var(--u)); line-height: 1.16; }
+.mm-card__rules em { font-style: italic; color: var(--text-lo); }
+
+.mm-card__num {
+  font-family: var(--font-num);
+  font-weight: 700;
+  color: var(--text-hi);
+  font-size: 1.06em;
+  transition: color var(--t-quick) var(--ease-soft);
+}
+.mm-card__num.is-up   { color: var(--c-good); text-shadow: 0 0 calc(7 * var(--u)) color-mix(in srgb, var(--c-good) 60%, transparent); }
+.mm-card__num.is-down { color: var(--c-bad);  text-shadow: 0 0 calc(7 * var(--u)) color-mix(in srgb, var(--c-bad) 55%, transparent); }
+.mm-card.is-upgraded .mm-card__num { color: var(--c-good); }
+.mm-card.is-upgraded .mm-card__num.is-down { color: var(--c-bad); }
+
+.mm-card__kw {
+  color: var(--flame-300);
+  font-weight: 600;
+  padding: 0 calc(3 * var(--u));
+  border-radius: calc(3 * var(--u));
+  background: color-mix(in srgb, var(--flame-500) 22%, transparent);
+  box-shadow: inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb, var(--flame-400) 32%, transparent);
+  white-space: nowrap;
+}
+
+/* ── badges (exhaust / ethereal / innate / retain) ──────────────────────── */
+.mm-card__badges {
+  position: absolute; left: 0; right: 0; bottom: calc(7 * var(--u));
+  display: flex; justify-content: center; gap: calc(6 * var(--u));
+  font-family: var(--font-display);
+  font-size: calc(9 * var(--u));
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--text-lo);
+}
+.mm-card__badge {
+  padding: calc(1.5 * var(--u)) calc(6 * var(--u));
+  border-radius: calc(9 * var(--u));
+  background: color-mix(in srgb, var(--ink-600) 80%, transparent);
+  box-shadow: inset 0 0 0 calc(1 * var(--u)) var(--ink-500);
+}
+.mm-card__badge--exhaust { color: var(--threat-200); box-shadow: inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb, var(--threat-400) 60%, transparent); }
+.mm-card__badge--ethereal { color: var(--spectre-200); }
+.mm-card__badge--innate,
+.mm-card__badge--retain  { color: var(--flame-200); }
+
+/* ── cost gem ───────────────────────────────────────────────────────────── */
+.mm-card__cost {
+  position: absolute;
+  left: calc(-6 * var(--u)); top: calc(-6 * var(--u));
+  width: calc(50 * var(--u)); height: calc(50 * var(--u));
+  display: grid; place-items: center;
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-size: calc(24 * var(--u));
+  line-height: 1;
+  color: var(--ink-900);
+  text-shadow: 0 calc(1 * var(--u)) 0 color-mix(in srgb, var(--pluck-300) 70%, white);
+  background:
+    radial-gradient(70% 70% at 34% 28%, color-mix(in srgb, var(--pluck-300) 70%, white), transparent 60%),
+    radial-gradient(100% 100% at 50% 60%, var(--pluck-300), var(--pluck-500) 78%, color-mix(in srgb, var(--pluck-500) 40%, black));
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 calc(2.5 * var(--u)) var(--frame-lo),
+    0 0 0 calc(4 * var(--u)) rgba(0,0,0,.55),
+    0 calc(3 * var(--u)) calc(8 * var(--u)) rgba(0,0,0,.6),
+    0 0 calc(16 * var(--u)) color-mix(in srgb, var(--pluck-300) 45%, transparent);
+}
+.mm-card.is-cost-reduced .mm-card__cost {
+  background:
+    radial-gradient(70% 70% at 34% 28%, color-mix(in srgb, var(--c-good) 70%, white), transparent 60%),
+    radial-gradient(100% 100% at 50% 60%, var(--c-good), var(--c-good-d) 80%);
+  box-shadow:
+    0 0 0 calc(2.5 * var(--u)) var(--frame-lo),
+    0 0 0 calc(4 * var(--u)) rgba(0,0,0,.55),
+    0 0 calc(18 * var(--u)) color-mix(in srgb, var(--c-good) 60%, transparent);
+}
+.mm-card.is-cost-raised .mm-card__cost {
+  background:
+    radial-gradient(70% 70% at 34% 28%, color-mix(in srgb, var(--c-bad) 70%, white), transparent 60%),
+    radial-gradient(100% 100% at 50% 60%, var(--c-bad), var(--threat-500) 80%);
+}
+.mm-card.is-unaffordable .mm-card__cost { filter: grayscale(.55) brightness(.8); }
+
+/* ── rarity: frame material ─────────────────────────────────────────────── */
+.mm-card[data-rarity="basic"]    { --frame: var(--rarity-basic); }
+.mm-card[data-rarity="common"]   { --frame: var(--rarity-common); }
+.mm-card[data-rarity="uncommon"] { --frame: var(--rarity-uncommon); }
+.mm-card[data-rarity="rare"]     { --frame: var(--rarity-rare); }
+.mm-card[data-rarity="special"]  { --frame: var(--parchment); }
+.mm-card[data-rarity="curse"]    { --frame: var(--rarity-curse); }
+.mm-card[data-rarity="status"]   { --frame: var(--rarity-status); }
+
+/* basic — rough pewter: matte, no ornament, a thin band and a stubby crest */
+.mm-card[data-rarity="basic"] .mm-card__frame {
+  background: linear-gradient(168deg, var(--frame-lo) 0%, var(--frame-deep) 42%, var(--frame-lo) 100%);
+  box-shadow:
+    inset 0 0 0 calc(1 * var(--u)) rgba(0,0,0,.75),
+    0 calc(3 * var(--u)) calc(8 * var(--u)) rgba(0,0,0,.5);
+}
+.mm-card[data-rarity="basic"] .mm-card__face { inset: calc(5 * var(--u)); }
+.mm-card[data-rarity="basic"] .mm-card__crest {
+  height: calc(9 * var(--u)); top: calc(-7 * var(--u));
+  width: calc(52 * var(--u)); margin-left: calc(-26 * var(--u));
+  background: linear-gradient(180deg, var(--frame-lo), var(--frame-deep));
+  filter: drop-shadow(0 0 calc(1 * var(--u)) rgba(0,0,0,.9));
+}
+.mm-card[data-rarity="basic"] .mm-card__artline { opacity: .2; }
+
+/* common — brushed steel with rivets and a bright polished band */
+.mm-card[data-rarity="common"] .mm-card__rivets { opacity: 1; }
+.mm-card[data-rarity="common"] .mm-card__frame {
+  background:
+    repeating-linear-gradient(72deg,
+      color-mix(in srgb, var(--frame) 26%, black) 0 3px,
+      color-mix(in srgb, var(--frame) 34%, black) 3px 6px),
+    linear-gradient(155deg, var(--frame-hi), var(--frame-lo) 50%, var(--frame-hi));
+  background-blend-mode: overlay, normal;
+  box-shadow:
+    inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb, var(--frame-deep) 85%, transparent),
+    inset 0 0 0 calc(2.5 * var(--u)) color-mix(in srgb, var(--frame-hi) 28%, transparent),
+    0 calc(3 * var(--u)) calc(9 * var(--u)) rgba(0,0,0,.55);
+}
+
+/* uncommon — inlaid double line + a set gem + a cold edge glow */
+.mm-card[data-rarity="uncommon"] .mm-card__frame {
+  box-shadow:
+    inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb, var(--frame-deep) 80%, transparent),
+    inset 0 0 0 calc(3.5 * var(--u)) color-mix(in srgb, var(--frame-hi) 45%, transparent),
+    0 calc(3 * var(--u)) calc(9 * var(--u)) rgba(0,0,0,.55),
+    0 0 calc(20 * var(--u)) color-mix(in srgb, var(--rarity-uncommon) 26%, transparent);
+}
+.mm-card[data-rarity="uncommon"] .mm-card__setgem { opacity: 1; }
+
+/* rare — heavy gold filigree, corner flourishes, slow shimmer */
+.mm-card[data-rarity="rare"] .mm-card__frame {
+  background:
+    linear-gradient(155deg,
+      color-mix(in srgb, var(--frame) 70%, white) 0%, var(--frame) 14%,
+      var(--frame-lo) 34%, color-mix(in srgb, var(--frame) 80%, white) 50%,
+      var(--frame-lo) 66%, var(--frame) 86%, color-mix(in srgb, var(--frame) 70%, white) 100%);
+  box-shadow:
+    inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb, var(--frame-deep) 85%, transparent),
+    inset 0 0 0 calc(4.5 * var(--u)) color-mix(in srgb, var(--frame-hi) 40%, transparent),
+    inset 0 0 calc(10 * var(--u)) calc(3 * var(--u)) color-mix(in srgb, var(--frame-deep) 55%, transparent),
+    0 calc(4 * var(--u)) calc(12 * var(--u)) rgba(0,0,0,.6),
+    0 0 calc(30 * var(--u)) color-mix(in srgb, var(--rarity-rare) 34%, transparent);
+}
+.mm-card[data-rarity="rare"] .mm-card__face { inset: calc(9 * var(--u)); }
+.mm-card[data-rarity="rare"] .mm-card__flourish { opacity: 1; }
+.mm-card[data-rarity="rare"] .mm-card__shimmer { opacity: 1; }
+.mm-card[data-rarity="rare"] .mm-card__crest { height: calc(22 * var(--u)); top: calc(-12 * var(--u)); width: calc(96 * var(--u)); margin-left: calc(-48 * var(--u)); }
+
+/* curse — thorned violet */
+.mm-card[data-rarity="curse"] .mm-card__frame,
+.mm-card[data-type="curse"] .mm-card__frame {
+  background: linear-gradient(160deg, var(--frame-lo), var(--frame) 40%, var(--frame-deep) 100%);
+}
+
+.mm-card__rivets, .mm-card__setgem, .mm-card__flourish, .mm-card__shimmer { opacity: 0; }
+
+.mm-card__rivets { position: absolute; inset: 0; }
+.mm-card__rivets i {
+  position: absolute; width: calc(4 * var(--u)); height: calc(4 * var(--u));
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, var(--frame-hi), var(--frame-deep));
+}
+.mm-card__rivets i:nth-child(1) { left: calc(15 * var(--u)); top: calc(60 * var(--u)); }
+.mm-card__rivets i:nth-child(2) { right: calc(15 * var(--u)); top: calc(60 * var(--u)); }
+.mm-card__rivets i:nth-child(3) { left: calc(15 * var(--u)); bottom: calc(16 * var(--u)); }
+.mm-card__rivets i:nth-child(4) { right: calc(15 * var(--u)); bottom: calc(16 * var(--u)); }
+
+.mm-card__setgem {
+  position: absolute; left: 50%; bottom: calc(1.5 * var(--u));
+  width: calc(11 * var(--u)); height: calc(11 * var(--u));
+  margin-left: calc(-5.5 * var(--u));
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--frame) 60%, white), var(--frame-lo));
+  box-shadow: 0 0 calc(8 * var(--u)) color-mix(in srgb, var(--frame) 60%, transparent);
+}
+
+.mm-card__flourish { position: absolute; inset: 0; }
+.mm-card__flourish i {
+  position: absolute;
+  width: calc(34 * var(--u)); height: calc(34 * var(--u));
+  border: calc(2 * var(--u)) solid color-mix(in srgb, var(--frame-hi) 75%, transparent);
+  border-right-color: transparent; border-bottom-color: transparent;
+  border-top-left-radius: calc(16 * var(--u));
+}
+.mm-card__flourish i:nth-child(1) { left: calc(3 * var(--u)); top: calc(3 * var(--u)); }
+.mm-card__flourish i:nth-child(2) { right: calc(3 * var(--u)); top: calc(3 * var(--u)); transform: scaleX(-1); }
+.mm-card__flourish i:nth-child(3) { left: calc(3 * var(--u)); bottom: calc(3 * var(--u)); transform: scaleY(-1); }
+.mm-card__flourish i:nth-child(4) { right: calc(3 * var(--u)); bottom: calc(3 * var(--u)); transform: scale(-1); }
+
+.mm-card__shimmer {
+  position: absolute; inset: 0;
+  border-radius: calc(13 * var(--u));
+  background: linear-gradient(105deg,
+    transparent 38%,
+    color-mix(in srgb, var(--flame-100) 42%, transparent) 47%,
+    transparent 56%);
+  background-size: 260% 100%;
+  animation: mm-shimmer 5.2s linear infinite;
+  mix-blend-mode: screen;
+}
+@keyframes mm-shimmer { from { background-position: 130% 0; } to { background-position: -130% 0; } }
+
+/* ── type: colour + silhouette ──────────────────────────────────────────── */
+.mm-card[data-type="attack"] { --type-color: var(--type-attack); }
+.mm-card[data-type="skill"]  { --type-color: var(--type-skill); }
+.mm-card[data-type="power"]  { --type-color: var(--type-power); }
+.mm-card[data-type="status"] { --type-color: var(--rarity-status); }
+.mm-card[data-type="curse"]  { --type-color: var(--rarity-curse); }
+
+/* attack: sharp corners, twin blade crest, fins on the flanks */
+.mm-card[data-type="attack"] .mm-card__frame { border-radius: calc(4 * var(--u)) calc(4 * var(--u)) calc(14 * var(--u)) calc(14 * var(--u)); }
+.mm-card[data-type="attack"] .mm-card__shimmer { border-radius: calc(4 * var(--u)); }
+.mm-card[data-type="attack"] .mm-card__crest {
+  clip-path: polygon(0% 100%, 26% 34%, 50% 0%, 74% 34%, 100% 100%);
+  width: calc(54 * var(--u)); margin-left: calc(-27 * var(--u));
+  height: calc(22 * var(--u)); top: calc(-20 * var(--u));
+}
+.mm-card[data-type="attack"] .mm-card__pip {
+  opacity: 1; top: calc(52 * var(--u));
+  width: calc(9 * var(--u)); height: calc(42 * var(--u));
+}
+.mm-card[data-type="attack"] .mm-card__pip--l { clip-path: polygon(100% 0%, 100% 100%, 0% 62%); }
+.mm-card[data-type="attack"] .mm-card__pip--r { clip-path: polygon(0% 0%, 0% 100%, 100% 62%); }
+.mm-card[data-type="attack"] .mm-card__typeicon {
+  clip-path: polygon(6% 0%, 34% 0%, 100% 74%, 100% 100%, 62% 100%, 0% 26%);
+}
+
+/* skill: soft rounded frame, dome crest */
+.mm-card[data-type="skill"] .mm-card__frame { border-radius: calc(22 * var(--u)); }
+.mm-card[data-type="skill"] .mm-card__face  { border-radius: calc(16 * var(--u)); }
+.mm-card[data-type="skill"] .mm-card__shimmer { border-radius: calc(22 * var(--u)); }
+.mm-card[data-type="skill"] .mm-card__crest {
+  clip-path: none;
+  width: calc(76 * var(--u)); margin-left: calc(-38 * var(--u));
+  border-radius: calc(46 * var(--u)) calc(46 * var(--u)) 0 0 / calc(22 * var(--u)) calc(22 * var(--u)) 0 0;
+  height: calc(15 * var(--u)); top: calc(-13 * var(--u));
+}
+.mm-card[data-type="skill"] .mm-card__typeicon {
+  clip-path: polygon(50% 0%, 100% 20%, 100% 58%, 50% 100%, 0% 58%, 0% 20%);
+}
+
+/* power: crown crest, faceted corners, side pips */
+.mm-card[data-type="power"] .mm-card__frame { border-radius: calc(13 * var(--u)); }
+.mm-card[data-type="power"] .mm-card__crest {
+  clip-path: polygon(0% 100%, 10% 26%, 27% 68%, 50% 0%, 73% 68%, 90% 26%, 100% 100%);
+  height: calc(25 * var(--u)); top: calc(-23 * var(--u));
+  width: calc(74 * var(--u)); margin-left: calc(-37 * var(--u));
+}
+.mm-card[data-type="power"] .mm-card__pip {
+  opacity: 1;
+  width: calc(11 * var(--u)); height: calc(11 * var(--u));
+  top: calc(96 * var(--u));
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  box-shadow: 0 0 calc(10 * var(--u)) color-mix(in srgb, var(--type-power) 70%, transparent);
+}
+.mm-card[data-type="power"] .mm-card__pip2 { display: block; }
+.mm-card[data-type="power"] .mm-card__typeicon {
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 93%, 50% 71%, 21% 93%, 32% 57%, 2% 35%, 39% 35%);
+}
+.mm-card[data-type="status"] .mm-card__typeicon,
+.mm-card[data-type="curse"]  .mm-card__typeicon {
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+}
+.mm-card__pip2 { display: none; }
+.mm-card[data-type="power"] .mm-card__pip2 { top: calc(178 * var(--u)); }
+
+/* ── state ──────────────────────────────────────────────────────────────── */
+.mm-card__ring {
+  position: absolute; inset: calc(-10 * var(--u));
+  border-radius: calc(22 * var(--u));
+  pointer-events: none;
+  opacity: var(--glow-amt);
+  background: radial-gradient(closest-side,
+    color-mix(in srgb, var(--glow-color) 40%, transparent),
+    transparent 72%);
+  box-shadow: 0 0 calc(26 * var(--u)) calc(4 * var(--u)) color-mix(in srgb, var(--glow-color) 45%, transparent);
+  transition: opacity var(--t-quick) var(--ease-soft);
+}
+.mm-card__sheen {
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(160deg,
+    color-mix(in srgb, var(--flame-100) 16%, transparent) 0%,
+    transparent 34%, transparent 66%,
+    color-mix(in srgb, var(--spectre-100) 8%, transparent) 100%);
+  opacity: 0;
+  transition: opacity var(--t-quick) var(--ease-soft);
+}
+.mm-card.is-hover .mm-card__sheen { opacity: 1; }
+/* A hovered card is lifted off the table, so it casts a bigger, softer shadow. */
+.mm-card.is-hover .mm-card__frame,
+.mm-card.is-dragging .mm-card__frame {
+  box-shadow:
+    inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb, var(--frame-deep) 80%, transparent),
+    inset 0 0 0 calc(2.5 * var(--u)) color-mix(in srgb, var(--frame-hi) 34%, transparent),
+    0 calc(10 * var(--u)) calc(20 * var(--u)) rgba(0,0,0,.62),
+    0 calc(26 * var(--u)) calc(54 * var(--u)) rgba(0,0,0,.55),
+    0 0 calc(30 * var(--u)) color-mix(in srgb, var(--frame) 30%, transparent);
+}
+
+.mm-card__flash {
+  position: absolute; inset: 0;
+  border-radius: calc(13 * var(--u));
+  background: var(--flame-100);
+  opacity: 0;
+  mix-blend-mode: screen;
+}
+
+/* unplayable: unmistakable without reading a number */
+.mm-card.is-unplayable .mm-card__frame,
+.mm-card.is-unplayable .mm-card__crest,
+.mm-card.is-unplayable .mm-card__pip { filter: saturate(.12) brightness(.52); }
+.mm-card.is-unplayable .mm-card__face { filter: saturate(.18) brightness(.55) contrast(.92); }
+.mm-card.is-unplayable .mm-card__cost { filter: saturate(.2) brightness(.7); }
+.mm-card.is-unplayable::after {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: calc(13 * var(--u));
+  background: color-mix(in srgb, var(--ink-900) 42%, transparent);
+  pointer-events: none;
+}
+
+.mm-card.is-selected .mm-card__frame {
+  box-shadow:
+    inset 0 0 0 calc(2 * var(--u)) var(--flame-200),
+    0 0 calc(28 * var(--u)) color-mix(in srgb, var(--flame-glow) 55%, transparent),
+    0 calc(6 * var(--u)) calc(16 * var(--u)) rgba(0,0,0,.6);
+}
+.mm-card.is-dragging { cursor: grabbing; }
+.mm-card.is-ghost { opacity: .28; }
+
+/* ── ember dissolve (exhaust) ───────────────────────────────────────────── */
+.mm-card__embers { position: absolute; inset: 0; overflow: visible; opacity: 0; }
+.mm-card__embers i {
+  position: absolute;
+  width: calc(5 * var(--u)); height: calc(5 * var(--u));
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--flame-100), var(--flame-glow) 45%, transparent 72%);
+  transform: translate3d(0, 0, 0);
+}
+
+/* ── reduce motion ──────────────────────────────────────────────────────── */
+.mm-reduce .mm-card__shimmer { animation: none; opacity: .25; }
+.mm-reduce .mm-card__num { transition: none; }
+.mm-reduce .mm-card__sheen,
+.mm-reduce .mm-card__ring { transition: none; }

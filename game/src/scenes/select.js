@@ -1,8 +1,1033 @@
+/**
+ * Companion Select — the heart of the pre-run experience.
+ *
+ * Three steps in one scene, each a transform on the same living 4x4 plate wall:
+ *   1. COMPANION  the 4x4 Menagerie grid from UI/selectCompanion.png, alive.
+ *                 Choosing one shrinks the wall to a rail and blows the pick up
+ *                 into a hero dossier: identity, signature mechanics, starting
+ *                 deck, strengths/weaknesses, archetypes.
+ *   2. KID        the eight kids, their missing pets, their perk and Backpack.
+ *   3. GO         Haunt Level, seed, Begin Expedition.
+ *
+ * Emits `run:start` with { companion, kid, seed, haunt, backpack } and hands off
+ * to the map scene.
+ *
+ * OWNER: frontend agent.
+ */
 import { Scene } from '../core/scenes.js';
+import { bus } from '../core/bus.js';
+import { Save } from '../core/save.js';
+import { clock, Clock } from '../core/clock.js';
+import { COMPANIONS, KIDS, TERMS } from '../data/schema.js';
+import {
+  ensureCss, fontsReady, companionPortrait, kidPortrait, logoLockup, petGlyph,
+  el, svg, rovingFocus, setReduceMotion, reduceMotion, formatSeed,
+  REGION_NAMES, COMPANION_BY_SLUG, heroSrc, cobweb, candle,
+} from '../ui/portrait.js';
+
+const CSS_KIT = new URL('../ui/portrait.css', import.meta.url).href;
+const CSS_SEL = new URL('./select.css', import.meta.url).href;
+
+/** Companions unlocked on a fresh save (design doc: "approximately four"). */
+export const STARTER_COMPANIONS = ['marmalade', 'bones', 'pipkin', 'taffy'];
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Companion codex. Condensed from docs/design/companions/*.md.
+   Crinkle has no design file yet; her entry is authored from the one-line brief
+   in 00-core-overview.md ("Card duplication, folding, transformations and
+   fragile high power effects") and is flagged provisional in docs/NOTES.md.
+   ═══════════════════════════════════════════════════════════════════════════ */
+export const CODEX = {
+  marmalade: {
+    knows: 'Remembers doors that only appear to ghosts.',
+    identity: 'The agile technical Companion. Poor conventional defence and only moderate raw damage — what makes her powerful is avoiding attacks entirely, punishing enemies for trying to hit her, spending Nine Lives for bursts, and chaining lots of small actions together. High skill ceiling: she rewards reading intents and planning a turn ahead.',
+    mechanics: [
+      ['Ghoststep', 'Each stack cancels the next hit of enemy Attack damage. Not Guard — one stack eats a 20-damage swing, but a six-hit flurry chews straight through it.'],
+      ['Haunt', 'Haunted enemies hurt themselves whenever they attack. It dissipates as it triggers.'],
+      ['Nine Lives', 'She starts every Scuffle with 9 Lives. Powerful Tricks spend them. They do not come back until the next fight.'],
+      ['Zoomies', 'Effects that only fire on the third or later Trick you play this turn.'],
+      ['Untouched', 'Bonuses if she lost no Courage during the last enemy turn.'],
+    ],
+    strengths: ['High card mobility', 'Cancels single huge attacks outright', 'Powerful reactive damage', 'Strong draw', 'Excellent 0-cost chains', 'Converts defence into offence'],
+    weaknesses: ['Unreliable conventional Guard', 'Multi-hit attacks strip Ghoststep fast', 'Little straightforward heavy damage', 'Nine Lives are finite per fight', 'Haunt is dead against passive enemies'],
+    archetypes: ['Ghoststep & Untouched', 'Haunt', 'Nine Lives', 'Zoomies', 'Hybrid Ghost Cat'],
+    deck: [
+      [5, 'Scratch', 'attack', 'Deal light damage.'],
+      [4, 'Curl Up', 'skill', 'Gain basic Guard.'],
+      [1, 'Boo!', 'skill', 'Apply a small amount of Haunt.'],
+    ],
+  },
+  wisp: {
+    knows: 'Remembers which lamps the house lights when it is watching you.',
+    identity: 'A delayed-resolution and stored-power archetype. Much of Wisp’s value does not happen when a Trick is played — Tricks hang suspended in the Gloaming and resolve later. Every turn asks three questions at once: what do I need now, what do I schedule, and do I want my delayed Tricks arriving one at a time or all together as a Convergence?',
+    mechanics: [
+      ['Glow', 'The stored resource. It accumulates, powers everything, and caps — hoarding it wastes future generation.'],
+      ['Linger X', 'The Trick does not finish. It waits X turns in the Gloaming, then resolves.'],
+      ['Afterglow', 'The delayed half of a Lingering Trick, usually bigger than the immediate half.'],
+      ['Convergence', 'Several delayed Tricks landing on the same turn, amplifying one another.'],
+      ['Hasten / Delay', 'Move a scheduled Trick earlier or later. The whole build is timing control.'],
+    ],
+    strengths: ['Exceptional long-fight scaling', 'Deck compression via the Gloaming', 'Turns setup turns into explosive payoffs', 'Very flexible Glow economy'],
+    weaknesses: ['Slow opening turns', 'Delayed defence is useless when you need it now', 'Bad scheduling wastes whole Tricks', 'Glow cap punishes hoarding'],
+    archetypes: ['Convergence', 'Deep Gloaming', 'Bright Wisp', 'Flare', 'Countdown Manipulation'],
+    deck: [
+      [4, 'Baby Spark', 'attack', 'Deal light damage.'],
+      [4, 'Soft Halo', 'skill', 'Gain moderate Guard.'],
+      [1, 'Wait… Wait…', 'attack', 'Deal light damage. Linger 1. Afterglow: light damage, gain 1 Glow.'],
+      [1, 'Nightlight Practice', 'skill', 'Gain light Guard. Linger 1. Afterglow: light Guard, gain 1 Glow.'],
+    ],
+  },
+  crumbula: {
+    knows: 'Knows which rooms the house keeps warm, and why.',
+    identity: 'A risk-management and state-cycling Companion. He puts Bite Marks on enemies as stored feeding opportunities, then consumes them later to recover Courage — but feeding raises Appetite, shutting off his Hungry effects and eventually making him Queasy. He hurts himself on purpose, stays alive on a prepared food supply, and chooses exactly when to cash it in.',
+    mechanics: [
+      ['Appetite', 'Hungry → Sated → Queasy. Nearly every Trick cares which one he is in.'],
+      ['Bite Marks', 'Stored on an enemy. Consumed later for Courage. Lost if that enemy dies first.'],
+      ['Feed', 'Spend Bite Marks to heal, and climb the Appetite track.'],
+      ['Indulge', 'Voluntarily spend Courage to make a Trick much stronger.'],
+      ['Leftovers', 'Value salvaged from Bite Marks you never got to eat.'],
+    ],
+    strengths: ['Excellent control of his own Courage', 'Strong burst from spent Courage', 'Bite Marks bank value across turns', 'Great boss scaling on one durable target'],
+    weaknesses: ['Healing requires setup', 'Bite Marks die with their host', 'Overfeeding causes Queasy', 'Careless Indulging kills him'],
+    archetypes: ['Famished Fangs', 'Velvet Banquet', 'Bite Mark Engine', 'Indulgent Aristocrat'],
+    deck: [
+      [4, 'Tiny Nibble', 'attack', 'Deal light damage and apply 1 Bite Mark.'],
+      [4, 'Cape Curl', 'skill', 'Gain light Guard.'],
+      [1, 'Midnight Snack', 'skill', 'Feed 1. If this makes him Sated, gain light Guard.'],
+      [1, 'Bad Idea, Delicious', 'attack', 'Deal moderate damage. Indulge to apply 2 Bite Marks.'],
+    ],
+  },
+  boggle: {
+    knows: 'Knows every space underneath the mansion’s furniture.',
+    identity: 'A setup, concealment and burst Companion who alternates between two phases. Hidden: he makes enemies Unaware, stacks Fright and Lurk, and prepares Ambushes. Exposed: he has jumped out, enemies are Suspicious, and he plays defensively until their attention lapses. The strongest Boggle decks move deliberately between the two rather than trying to hide forever.',
+    mechanics: [
+      ['Awareness', 'Every enemy is Aware, Unaware or Suspicious — independently. Multi-enemy fights become a puzzle.'],
+      ['Ambush', 'Huge bonuses on Tricks played while an enemy is Unaware. Usually reveals him.'],
+      ['Fright', 'Accumulates and does nothing by itself. Scare N spends it for a payoff.'],
+      ['Lurk', 'Slow, capped, permanent-for-the-fight power gained by staying hidden.'],
+      ['Search', 'The enemy looks under the bed. Being found makes them Suspicious.'],
+    ],
+    strengths: ['Excellent control of directed enemy attacks', 'Enormous prepared burst', 'Great multi-enemy tactics', 'Strong long-fight scaling'],
+    weaknesses: ['Cannot re-hide from the same enemy every turn', 'Room-wide attacks ignore concealment', 'Fright with no Scare payoff is wasted', 'Lurk accumulates slowly'],
+    archetypes: ['Quiet Ambusher', 'Fright Engine', 'Patient Lurker', 'Caught Red-Pawed', 'Houseful of Monsters'],
+    deck: [
+      [4, 'Little Chomp', 'attack', 'Deal moderate damage.'],
+      [3, 'Pillow Shield', 'skill', 'Gain moderate Guard.'],
+      [2, 'Creepy Little Noise', 'skill', 'Apply 2 Fright.'],
+      [1, 'Under the Bed', 'skill', 'Make one Aware enemy Unaware, or gain light Guard.'],
+    ],
+  },
+  bones: {
+    knows: 'Remembers where the house buried the things it wanted forgotten.',
+    identity: 'A zone-manipulation and body-state Companion on a cycle: Whole → shed bones → Rattle → Scattered → exploit the missing pieces → fetch old Tricks back → reattach → cash out → fall apart again. His recursion is deliberately constrained, so he rewards planning a turn or two ahead while keeping an instantly readable fantasy: the puppy keeps losing his bones, burying things, finding them again, and somehow winning.',
+    mechanics: [
+      ['Loose Bones', 'A resource he sheds off his own body. Fuel for almost everything.'],
+      ['Whole / Scattered', 'Two body states. Defensive Tricks like Whole; offensive Tricks like Scattered.'],
+      ['Rattle', 'Triggers that fire as bones come loose.'],
+      ['Fetch', 'Pull a specific spent Trick back out of the discard pile. Slobbered stops him re-fetching the same premium card forever.'],
+      ['Bury / Dig Up', 'Deeper recursion and deck thinning, paid for with tempo.'],
+    ],
+    strengths: ['Exceptional access to specific spent Tricks', 'The discard pile becomes a toolbox', 'Excellent long-fight scaling', 'Can temporarily thin his own deck'],
+    weaknesses: ['Re-fetching one premium Trick is restricted', 'Burying costs immediate tempo', 'Whole and Scattered pull in opposite directions', 'Sitting at max Loose Bones shuts off Rattle'],
+    archetypes: ['The Rattle Engine', 'Scattered Puppy', 'Fetch Toolbox', 'Deep Burial', 'Good Boy Hybrid'],
+    deck: [
+      [4, 'Bite', 'attack', 'Deal light damage.'],
+      [3, 'Sit Pretty', 'skill', 'Gain modest Guard. Gain more if Whole.'],
+      [1, 'Shake, Boy!', 'skill', '0 Pluck. Shed 1 Bone. Draw 1 Trick.'],
+      [1, 'Put Yourself Back Together', 'skill', 'Reattach up to 2 Bones. Guard for each.'],
+      [1, 'Go Get It!', 'skill', 'Fetch a non-Slobbered Trick costing 1 or less.'],
+    ],
+  },
+  pipkin: {
+    knows: 'Knows the grounds outside — and the one gap in the boundary.',
+    identity: 'A rhythm and maturation Companion. A Pipkin turn is a sequence, not a list: hop, hop again, accelerate a Sprout into a Pumpkin, harvest it, use the harvest to swell, then come crashing down with a Landing Trick. Seeds planted now pay out two turns later, so the player must think about what the Patch will contain, not what it contains.',
+    mechanics: [
+      ['Height', 'Gained by hopping. Spent by landing. Disappears at end of turn unless preserved.'],
+      ['Hop / Land', 'The core rhythm. Landing Tricks scale with the Height you built.'],
+      ['The Patch', 'Limited plots holding Seeds → Sprouts → Pumpkins, ripening over turns.'],
+      ['Harvest', 'Cash a ripe Pumpkin. Dead Trick if the Patch is empty.'],
+      ['Plump', 'Permanent-for-the-fight body mass. Improves heavy Tricks, eventually taxes Hops.'],
+    ],
+    strengths: ['Explosive burst once systems align', 'Strong multi-enemy damage from Landings', 'Flexible delayed resources', 'Scales without a damage stat'],
+    weaknesses: ['Patch Tricks are weak before things ripen', 'Limited Patch capacity', 'Harvest payoffs go dead with no Pumpkins', 'Height evaporates each turn'],
+    archetypes: ['The Hopper', 'Patch Farmer', 'Plump Bruiser', 'Seed Cannon', 'Growth Acceleration'],
+    deck: [
+      [3, 'Tiny Tongue', 'attack', 'Deal light damage.'],
+      [3, 'Leaf Umbrella', 'skill', 'Gain moderate Guard.'],
+      [1, 'Puddle Hop', 'skill', 'Hop and gain light Guard.'],
+      [1, 'Belly Drop', 'attack', 'Light damage. Land: more damage per Height spent.'],
+      [1, 'Plant a Little One', 'skill', 'Plant 1 Seed.'],
+      [1, 'Puff Up', 'skill', 'Gain 1 Plump and light Guard.'],
+    ],
+  },
+  taffy: {
+    knows: 'Remembers the kitchens before the house closed them.',
+    identity: 'An adaptive combo architect whose strongest resource is the mutable state of her own deck mid-fight. She holds Tricks until they become unusually valuable, pulls awkward ones out of circulation to sculpt her draws, makes expendable copies of the good ones, rewrites costs, and alternates between a dispersed unstable body and a recombined one. Her best decks manufacture a favourable board over several turns and then cash it.',
+    mechanics: [
+      ['Globs', 'Split pieces of herself. Useful, but too many expose her to Courage loss.'],
+      ['Stretch', 'Hold a Trick in hand and grow it. Clogs the hand if overdone.'],
+      ['Belly', 'Absorb Tricks out of circulation to sculpt future draws.'],
+      ['Gummy Copies', 'Temporary duplicates, weaker than the original but free.'],
+      ['Card Shaping', 'Rewriting cost and properties of specific Tricks for the rest of the fight.'],
+    ],
+    strengths: ['Exceptional control of what is circulating', 'Turns mediocre cards into ingredients', 'Reuses key Attacks without discard recursion', 'Loves expensive rare Tricks'],
+    weaknesses: ['Substantial setup cost', 'Stretching clogs the hand', 'Over-absorbing leaves her unable to answer now', 'Too many Globs is a liability'],
+    archetypes: ['Puddle Cycle', 'Long Pull', 'Snack Pocket', 'Candy Factory', 'Cost Sculptor'],
+    deck: [
+      [4, 'Sugar Bonk', 'attack', 'Deal light damage.'],
+      [4, 'Squish', 'skill', 'Gain light Guard.'],
+      [1, 'Pinch Off', 'skill', 'Split 1. Gain a small amount of Guard.'],
+      [1, 'Long Pull', 'skill', 'Stretch one other Attack or Skill.'],
+    ],
+  },
+  truffle: {
+    knows: 'Knows the hedges, and what the hedges have grown over.',
+    identity: 'A controlled-damage and retaliation Companion. He is strongest when the player regulates incoming damage instead of preventing it: grow Quills, raise some with Bristle, block *most* of an attack, let a little through, and Bristle fires and sheds Quills onto the floor as ammunition. A second axis is Ragged — his dangerous, powerful state at half Courage or below.',
+    mechanics: [
+      ['Quills', 'Attached to his body. The raw material for everything.'],
+      ['Bristle', 'Retaliation that fires when enemy Attack damage actually reaches his Courage.'],
+      ['Shed / Gather', 'Quills fall to the battlefield as Loose Quills, then get picked back up.'],
+      ['Regrow', 'Rebuilds attached Quills over time.'],
+      ['Ragged', 'At half Courage or below. Many of his best Tricks only work here.'],
+    ],
+    strengths: ['Excellent retaliation vs regular attackers', 'Strong resource conversion', 'Great sustained scaling on a littered battlefield', 'Flexible recovery'],
+    weaknesses: ['Big single attacks are still lethal', 'Perfect blocking switches his engine off', 'Non-attack damage bypasses Bristle', 'Buff/summon enemies starve him'],
+    archetypes: ['Bristle Counterattack', 'Quill Carpet', 'Ragged Survivor', 'Regrowth Engine', 'Damage Valve'],
+    deck: [
+      [4, 'Zombie Nibble', 'attack', 'Deal light damage.'],
+      [3, 'Round Up', 'skill', 'Gain light Guard.'],
+      [1, 'Prickle Up', 'skill', 'Gain 1 Bristle and Regrow 1.'],
+      [1, 'Oops, a Quill', 'attack', 'Deal moderate damage and Shed 1.'],
+      [1, 'Found It', 'skill', '0 Pluck. Gather 1. If a Quill was gathered, gain light Guard.'],
+    ],
+  },
+  hush: {
+    knows: 'Can travel through certain shadows.',
+    identity: 'A zone-manipulation, preparation and theft archetype. The Shadow Pocket is almost a second hand, but with only three spaces. His strongest turns are not created by drawing well — they were created two turns earlier by putting the right Trick where he would need it.',
+    mechanics: [
+      ['Shadow Pocket', 'Three slots outside the deck. Stash Tricks now, pull them later.'],
+      ['Stash', 'Move a Trick from hand into the Pocket.'],
+      ['Unseen', 'A stealth state. Not invulnerability — damage reaching Courage makes him Seen.'],
+      ['Ambush', 'Big bonuses on Tricks played from concealment or straight out of the Pocket.'],
+      ['Pilfer', 'Steal a resource or effect off the enemy, reactive to what they are doing.'],
+    ],
+    strengths: ['Exceptional card access', 'Enormous planned turns', 'Flexible reactive answers', 'Strong tactical burst'],
+    weaknesses: ['Needs a turn to prepare', 'Three Pocket slots vanish instantly', 'Unseen is not invulnerability', 'Weak when forced to improvise'],
+    archetypes: ['Ambush Hush', 'Pocket Architect', 'Scurry Engine', 'Little Thief', 'Hallway Phantom'],
+    deck: [
+      [4, 'Quick Nip', 'attack', 'Deal light damage.'],
+      [3, 'Cushion Dive', 'skill', 'Gain modest Guard.'],
+      [1, 'Pocket This', 'skill', 'Stash 1 Trick, then draw 1 Trick.'],
+      [1, 'Lights Out', 'skill', 'Become Unseen and gain a small amount of Guard.'],
+      [1, 'From Under the Sofa', 'attack', 'Moderate damage. Ambush: additional light damage.'],
+    ],
+  },
+  mopsy: {
+    knows: 'Remembers the nursery, and who used to be kept there.',
+    identity: 'A combat-modification and reconstruction Companion. She sews temporary Patches onto Tricks that physically change what they do for the rest of the fight, Tears Tricks out of her deck and Mends them back later, and spends Stuffing as both crafting material and emergency protection. She rebuilds the exact deck she needs, mid-fight, out of whatever she was dealt.',
+    mechanics: [
+      ['Patch', 'Bolt a new effect onto a specific Trick. It wears out after a number of uses.'],
+      ['Stuffing', 'A limited internal resource: crafting material and emergency damage soak.'],
+      ['Tear / Mend', 'Pull a Trick out of the deck temporarily, then stitch it back where you want it.'],
+      ['Cushion / Hollow', 'How full of Stuffing she currently is. Both states have Tricks that want them.'],
+      ['Masterpiece', 'The payoff for maintaining a diverse set of Patches at once.'],
+    ],
+    strengths: ['Extremely adaptable', 'Excellent in long encounters', 'Less dependent on one rare card', 'Turns mediocre reward picks into engine parts'],
+    weaknesses: ['Considerable setup cost', 'Patches can land on cards you draw at bad times', 'Patch durability is a real constraint', 'Too many appliers, too few carriers'],
+    archetypes: ['Patchwork Toolbox', 'The Masterpiece', 'Tear and Mend', 'Stuffing Oscillation', 'Rag Doll Endurance'],
+    deck: [
+      [3, 'Sock Kick', 'attack', 'Deal light damage.'],
+      [3, 'Folded Arms', 'skill', 'Gain light Guard.'],
+      [1, "Beginner's Patch", 'skill', 'Patch a Trick in hand: "when played, gain light Guard." 2 Stitches.'],
+      [1, 'Loose Stuffing', 'skill', 'Gain 1 Stuffing.'],
+      [1, 'Snip and Save', 'skill', 'Tear another Trick in hand. Draw 1 and gain 1 Stuffing.'],
+      [1, 'Little Repair', 'skill', 'Mend a chosen Torn Trick to your discard pile.'],
+    ],
+  },
+  drizzle: {
+    knows: 'Knows how water still moves through a house that has no plumbing.',
+    identity: 'Drizzle controls a global Weather state shared by the whole Scuffle. Most Companions manipulate their hand or their resources; she manipulates the conditions the fight is happening under. Her ideal turn began several turns earlier — holding at Downpour to keep everything Soaked, or racing to Thunderstorm for explosive Conduct chains, or deliberately collapsing her own storm because her deck is built on what happens after the rain.',
+    mechanics: [
+      ['Weather', 'Clear → Sprinkle → Downpour → Thunderstorm. Global, and everything reads it.'],
+      ['Soaked', 'A wet enemy. Useful, but does nothing on its own.'],
+      ['Conduct', 'Chains an effect between Soaked enemies. The multi-target payoff.'],
+      ['Forecast', 'A Trick that waits for a specific Weather before paying out.'],
+      ['Stormbreak', 'Thunderstorm is unstable and collapses. Some builds want exactly that.'],
+    ],
+    strengths: ['Excellent multi-enemy control', 'Very efficient delayed effects', 'Can intensify, stabilise or ease the pace', 'Strong medium and long fights'],
+    weaknesses: ['Clear is deliberately her weakest state', 'Forecasts can sit uselessly', 'Thunderstorm collapses on its own', 'Slow to set the board'],
+    archetypes: ['Stormchaser', 'Rainkeeper', 'Conduct Network', 'Forecast Engine', 'Silver Lining'],
+    deck: [
+      [4, 'Pitter Patter', 'attack', 'Light damage. A little more if the target is Soaked.'],
+      [4, 'Cloud Cover', 'skill', 'Light Guard. More while it is raining.'],
+      [1, 'Damp Spot', 'skill', 'Soak one enemy. If already Soaked, gain light Guard.'],
+      [1, 'Just a Sprinkle', 'skill', 'Advance Weather one step. If it changed, gain light Guard.'],
+    ],
+  },
+  pudding: {
+    knows: 'Remembers every animal buried on the grounds, by name.',
+    identity: 'A protective setup and retrieval Companion with unusual control over where his important Tricks are. Instead of relying on draw order he buries them in three cemetery Plots and digs them up when needed — and occupied Plots make the graveyard itself stronger. His second system is Loyalty: he gets better when enemies threaten whoever he has decided is his responsibility.',
+    mechanics: [
+      ['Plots', 'Three graves. Bury a Trick now, Dig It Up exactly when you need it.'],
+      ['Bury / Dig Up', 'Deck control and a guaranteed answer held in reserve.'],
+      ['Loyalty', 'Builds when enemies threaten his Best Friend. Spent for defence or retaliation.'],
+      ['Graveside', 'Bonuses while Plots stay occupied — digging too eagerly turns it off.'],
+      ['Unearthed', 'Bonuses on a Trick the turn it comes out of the ground.'],
+    ],
+    strengths: ['Excellent control of important Tricks', 'Very reliable defence against clear threats', 'Banks Loyalty and buried answers together', 'Hybridises well'],
+    weaknesses: ['Burials cost hand resources up front', 'Buried means denied to yourself', 'Digging too aggressively kills Graveside', 'Slows against non-attacking enemies'],
+    archetypes: ['The Loyal Guardian', 'The Gravedigger', 'The Haunted Cemetery', 'The Scrappy Watchdog', 'Cemetery Caretaker'],
+    deck: [
+      [4, 'Little Chomp', 'attack', 'Deal light damage.'],
+      [4, 'Guard the Ankles', 'skill', 'Best Friend gains light Guard.'],
+      [1, 'Bury This!', 'skill', '0 Pluck. Bury another Trick from hand. Draw 1.'],
+      [1, 'Dig It Up!', 'skill', 'Dig Up one Trick, or Best Friend gains light Guard.'],
+    ],
+  },
+  wink: {
+    knows: 'Can see passages hidden behind walls.',
+    identity: 'Predictive control and information management. Wink asks four questions: what is this enemy doing *after* the thing I can already see; do I want to know or would I rather gamble; can I rearrange that sequence into something more convenient; and can I prepare now so a future event gives me a free action later. She should feel like a tiny spider building an increasingly elaborate plan in the corners of the ceiling.',
+    mechanics: [
+      ['Preview', 'Reveal enemy intents several turns ahead.'],
+      ['Reads', 'Placed predictions. Correct Reads pay out; Blind Reads gamble for more.'],
+      ['Web', 'Accumulates on an enemy and does nothing alone — Web spenders are the payoff.'],
+      ['Intent Reordering', 'Actually rearrange the enemy’s action queue. Anchored intents resist it.'],
+      ['Set Tricks', 'Pay Pluck now for an effect that fires automatically on a future trigger.'],
+    ],
+    strengths: ['Exceptional future information', 'Reorders enemy actions instead of just weakening them', 'Very efficient delayed effects', 'Punishes predictable enemies brutally'],
+    weaknesses: ['Setup costs real tempo', 'Web does nothing by itself', 'Information has diminishing returns', 'Anchored intents refuse to move'],
+    archetypes: ['The Seer', 'Web Weaver', 'Set and Forget', 'Blind Gambler', 'Ceiling Architect'],
+    deck: [
+      [4, 'Little Nibble', 'attack', 'Deal light damage.'],
+      [3, 'Silk Screen', 'skill', 'Moderate Guard. If an enemy intends to attack, apply 1 Web.'],
+      [1, 'Peek Around the Corner', 'skill', 'Preview 1. If a new intent is revealed, open 1 Eye.'],
+      [1, 'Call It', 'skill', 'Place a Read on an enemy intent.'],
+      [1, 'Tripline', 'skill', 'Set: the next time this enemy attacks, apply 2 Web.'],
+    ],
+  },
+  crinkle: {
+    knows: 'Knows how the house changes its floor plan.',
+    identity: 'A duplication and transformation Companion built out of folded paper. Crinkle copies her best Tricks, folds cards into sharper versions of themselves, and reaches for enormous single-turn effects that tear her apart in the process. Everything she makes is powerful and everything she makes is fragile — a Crinkle deck is a stack of one-use masterpieces that has to win before it runs out of paper.',
+    mechanics: [
+      ['Fold', 'Permanently reshape a Trick in your deck into a sharper, narrower version.'],
+      ['Copy', 'Duplicate a Trick for this fight. Copies are real, and usually Vanish.'],
+      ['Creased', 'A Trick folded too many times. Powerful, and one use from falling apart.'],
+      ['Origami', 'Transform a Trick into an entirely different one from the same pool.'],
+      ['Paper Thin', 'High-power effects that cost durability rather than Pluck.'],
+    ],
+    strengths: ['Enormous single-turn ceilings', 'Duplicates rare finds', 'Reshapes bad draws into good ones', 'Very high skill expression'],
+    weaknesses: ['Fragile effects vanish permanently', 'Deck degrades as it folds', 'Poor at grinding long fights', 'Punished hard by a bad opening'],
+    archetypes: ['Paper Storm', 'The Fold', 'Origami Toolbox', 'One Perfect Crane', 'Confetti'],
+    deck: [
+      [4, 'Paper Cut', 'attack', 'Deal light damage.'],
+      [4, 'Fold Flat', 'skill', 'Gain light Guard.'],
+      [1, 'Trace', 'skill', 'Copy a Trick in your hand. The copy Vanishes.'],
+      [1, 'Sharp Crease', 'skill', 'Fold a Trick in your hand. It becomes Creased.'],
+    ],
+    provisional: true,
+  },
+  mossbit: {
+    knows: 'Remembers rooms that existed decades ago.',
+    identity: 'A delayed-resolution and temporal-planning Companion. Most of his power exists several turns from the moment he creates it. The question is always: what must happen now, and what can I afford to let happen later? He writes Epitaphs that resolve on a countdown, earns Patience for letting them run on schedule, lets held Tricks improve by Weathering, and buries incoming damage instead of preventing it.',
+    mechanics: [
+      ['Epitaph', 'A delayed effect on a countdown. Up to five active at once.'],
+      ['Patience', 'Earned by letting Epitaphs resolve on schedule instead of rushing them.'],
+      ['Advance / Delay', 'Move a countdown. Fast is tempting and costs Patience.'],
+      ['Weather', 'Tricks held in hand accumulate Weather counters and get stronger.'],
+      ['Buried Harm', 'Absorb attack damage now, deal with it later. It does not go away.'],
+    ],
+    strengths: ['Excellent long-fight scaling', 'Preloads future turns', 'Big effects without paying their full cost on the payoff turn', 'Aligns offence and defence around known intents'],
+    weaknesses: ['Very fast encounters kill him', 'Vulnerable before the Epitaph network exists', 'Weather Tricks congest the hand', 'Buried Harm always comes due'],
+    archetypes: ['Buried Weight', 'Weathered Relics', 'Patient Monument', 'Gravekeeper', 'Set in Stone'],
+    deck: [
+      [4, 'Small Headbutt', 'attack', 'Deal light damage.'],
+      [3, 'Pull In', 'skill', 'Gain modest Guard.'],
+      [1, 'Written in Stone', 'skill', 'Create Epitaph 2: moderate damage to a chosen enemy.'],
+      [1, 'Not Yet', 'skill', 'Bury a light amount of Attack damage next enemy turn.'],
+      [1, 'Sun on the Shell', 'skill', 'Weather 1. Light Guard. Weathered: moderate Guard, draw 1.'],
+    ],
+  },
+  brambleboo: {
+    knows: 'Is connected to the roots growing through the mansion itself.',
+    identity: 'A garden-builder and battlefield controller. Brambleboo grows four Cultivars in four Plots, matures them over turns, and Harvests them for payoffs that also destroy the engine that made them. Vines pin enemies down; Compost recycles what he tears up; and Overgrown gradually contaminates his own deck with Weeds. Slow to start, then he owns the room.',
+    mechanics: [
+      ['The Garden', 'Four Plots. Creeping Ivy, Briar, Moonflower and Grave Moss each do something different.'],
+      ['Growth / Mature', 'Plants ripen over turns. Mature plants have recurring effects.'],
+      ['Harvest / Uproot', 'Cash a plant in, or rip it out for Compost. Either way the Plot is empty again.'],
+      ['Entwine / Snare', 'Vines pile onto an enemy; enough of them cancel its Attack outright.'],
+      ['Overgrown', 'Four mature plants. Enormous, and it adds a Weed to your deck every turn.'],
+    ],
+    strengths: ['Excellent long-fight scaling', 'Strong against repeat attackers', 'Highly modular defence', 'Excellent multi-enemy control once established'],
+    weaknesses: ['Slow initial setup', 'Only four Plots', 'Harvesting destroys your own engine', 'Overgrown contaminates the deck with Weeds', 'Weak against non-attacking enemies'],
+    archetypes: ['Creeping Ivy Control', 'Briar Retaliation', 'Moonflower Selection', 'Overgrown', 'Compost Cycle'],
+    deck: [
+      [3, 'Leaf Bop', 'attack', 'Deal light damage.'],
+      [4, 'Curl the Leaves', 'skill', 'Gain light Guard.'],
+      [1, 'Tiny Creeper', 'skill', 'Plant a Creeping Ivy.'],
+      [1, 'Cup of Water', 'skill', 'Give one immature Plant 1 Growth, or gain light Guard.'],
+      [1, 'Careful Snip', 'skill', '0 Pluck. Harvest a Mature Plant, or Uproot an immature one.'],
+    ],
+  },
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Kid codex. Species and circumstances come from docs/design/kids/*.md; the
+   slugs, names and pet names come from data/schema.js. Where the two disagree
+   the design doc wins for player-facing text — see docs/NOTES.md.
+   ═══════════════════════════════════════════════════════════════════════════ */
+export const KID_CODEX = {
+  maya: {
+    age: 13, species: 'Black domestic cat, white patch on his chest',
+    lost: 'Slipped out of a closed house. Every door was shut.',
+    note: '"The building refuses to follow rules. That is the part I intend to fix."',
+    trait: 'Practical, organised, observant, stubborn, dryly funny. Uses forearm crutches.',
+    perk: ['Checked the Batteries', 'Backpack Gear has one extra use per expedition, and Gear never breaks in the first region.'],
+    focus: 'Backpack preparation and equipment specialisation',
+    pack: [['Flashlight', 1], ['Spare Batteries', 1], ['Multitool', 2], ['Notebook', 1]],
+  },
+  mateo: {
+    age: 12, species: 'Green-cheek conure',
+    lost: 'Flew toward the mansion at dusk and did not come back.',
+    note: '"Pepper repeats things. If he’s in there, he’s been listening to something."',
+    trait: 'Talkative, warm, keeps every scrap of evidence in order.',
+    perk: ['Cross-Reference', 'Start each expedition already holding one Clue, and Clue rooms reveal one extra detail.'],
+    focus: 'Clues, persistent investigation, interpreting old evidence',
+    pack: [['Notebook', 1], ['Camera', 2], ['Walkie-Talkie', 2]],
+  },
+  amina: {
+    age: 11, species: 'Lop-eared rabbit',
+    lost: 'Escaped her enclosure during the move to the new house.',
+    note: '"Mochi hides when she’s frightened. She’s very good at it."',
+    trait: 'Gentle, patient, the one who notices when someone needs to stop.',
+    perk: ['Blanket Fort Builder', 'Safe Rooms restore an extra chunk of Courage and let you keep one Snack.'],
+    focus: 'Courage recovery, long expeditions, animal Curiosities',
+    pack: [['Blanket', 2], ['First Aid Kit', 2], ['Pet Treats', 1]],
+  },
+  eli: {
+    age: 13, species: 'Black and white fancy rat',
+    lost: 'Got out through a gap nobody knew existed.',
+    note: '"Sprocket finds the way through. That’s literally what he does."',
+    trait: 'Inventive, funny, cannot walk past a mechanism without opening it.',
+    perk: ['Jimmy the Latch', 'Locked doors and mechanical Curiosities always offer one extra option.'],
+    focus: 'Mechanical Curiosities, utility Gear, Connectors and Secrets',
+    pack: [['Multitool', 2], ['Rope', 2], ['Chalk', 1]],
+  },
+  priya: {
+    age: 12, species: 'Leopard gecko',
+    lost: 'Vanished from a locked tank on a warm night.',
+    note: '"Pixel does not go anywhere. Which is how I know she did not go anywhere."',
+    trait: 'Methodical, competitive, plans three rooms ahead.',
+    perk: ['Read the Room', 'See one extra Trick in every reward, and upgrades cost less at Safe Rooms.'],
+    focus: 'Trick rewards, upgrade decisions, long-range planning',
+    pack: [['Notebook', 1], ['Pocket Mirror', 1], ['Compass', 1], ['Glow Sticks', 2]],
+  },
+  jordan: {
+    age: 12, species: 'Beagle mix',
+    lost: 'Slipped his leash near the property fence.',
+    note: '"Scout tracks. If I can get him to hear me, he’ll come."',
+    trait: 'Loud, brave, improvises constantly, apologises later.',
+    perk: ['Whatever Works', 'Start with one extra Snack and find Trinkets more often.'],
+    focus: 'Consumables, temporary resources, Treasure, improvisation',
+    pack: [['Dog Whistle', 1], ['Pet Treats', 1], ['Thermos', 2], ['Glow Sticks', 1]],
+  },
+  lena: {
+    age: 13, species: 'Syrian hamster',
+    lost: 'Gone from a sealed cage. The latch was still closed.',
+    note: '"Mooncake left something behind. Things always leave something behind."',
+    trait: 'Quiet, watchful, records everything, misses nothing.',
+    perk: ['Look Again', 'Secret rooms appear more often, and every Secret you find is recorded permanently.'],
+    focus: 'Secrets, evidence, environmental observation',
+    pack: [['Flashlight', 1], ['Camera', 2], ['Pocket Mirror', 1], ['Chalk', 1]],
+  },
+  lucy: {
+    age: 11, species: 'Tricolour guinea pig',
+    lost: 'Wandered out through an unlatched door during a family party.',
+    note: '"He answers when I call him properly. Nobody else says it right."',
+    trait: 'Peacemaker, endlessly stubborn about the things that matter.',
+    perk: ['Say It Properly', 'Animal Curiosities always offer a kind option, and it always works.'],
+    focus: 'Curiosity outcomes, animal handling, group morale',
+    pack: [['Pet Treats', 1], ['Familiar Toy', 1], ['Blanket', 2], ['Flashlight', 1]],
+  },
+};
+
+const HAUNTS = [
+  [0, 'Standard', 'The mansion as it is.'],
+  [1, 'Stirred', 'Enemies hit harder and have more Courage.'],
+  [2, 'Watchful', 'Curiosities turn dangerous.'],
+  [3, 'Awake', 'Bosses gain an additional ability.'],
+  [4, 'Hungry', 'Far more dangerous room combinations.'],
+  [5, 'Possessive', 'The house actively works against you.'],
+];
+
+const TYPE_LABEL = { attack: 'Attack', skill: 'Skill', power: 'Power' };
+
+/* ═══════════════════════════════════════════════════════════════════════════ */
+
 export class SelectScene extends Scene {
-  async enter(params) {
-    this.root.innerHTML = `<div style="position:absolute;inset:0;display:grid;place-items:center;
-      font-family:var(--font-display);color:var(--text-mid);letter-spacing:.16em;text-transform:uppercase">
-      select — not built yet</div>`;
+  constructor(ctx) {
+    super(ctx);
+    this._offs = [];
+    this._portraits = [];
+    this.state = { mode: 'grid', companion: null, kid: null, seed: 0, haunt: 0 };
+  }
+
+  async enter(params = {}) {
+    const { ctx } = this;
+    await Promise.all([ensureCss(CSS_KIT), ensureCss(CSS_SEL)]);
+
+    const settings = Save?.settings ?? {};
+    setReduceMotion(!!settings.reduceMotion);
+    document.documentElement.classList.toggle('mm-large-text', !!settings.largeText);
+    try { ctx.atmosphere?.setMood?.('foyer'); } catch {}
+
+    // unlocked set: saved rescues, plus the starters, plus ?all=1 for review
+    const revealAll = params.all === '1' || params.all === true;
+    const saved = Save?.data?.companionsRescued ?? [];
+    this.unlocked = new Set(revealAll ? COMPANIONS.map((c) => c.slug) : [...STARTER_COMPANIONS, ...saved]);
+
+    this.state.seed = Number(params.seed) || (Date.now() % 0x7fffffff);
+    this.state.haunt = Math.max(0, Math.min(HAUNTS.length - 1, Number(params.haunt ?? Save?.data?.hauntLevel ?? 0)));
+
+    const root = this.root;
+    root.innerHTML = '';
+    root.dataset.mode = 'grid';
+
+    root.appendChild(el('div', 'sel-bg'));
+    root.appendChild(svg(`<div class="sel-web sel-web--l">${cobweb()}</div>`));
+    root.appendChild(svg(`<div class="sel-web sel-web--r">${cobweb()}</div>`));
+    root.appendChild(svg(`<div class="sel-candle sel-candle--l">${candle()}</div>`));
+    root.appendChild(svg(`<div class="sel-candle sel-candle--r">${candle()}</div>`));
+
+    root.appendChild(this._buildHeader());
+    const stage = el('div', 'sel__stage');
+    stage.appendChild(this._buildGrid());
+    stage.appendChild(this._buildHero());
+    stage.appendChild(this._buildKidStep());
+    root.appendChild(stage);
+    root.appendChild(this._buildFooter());
+
+    this._wire();
+
+    await fontsReady();
+    if (params.companion && this.unlocked.has(params.companion)) this._pickCompanion(params.companion, true);
+    if (params.kid && KID_CODEX[params.kid]) { this._pickKid(params.kid, true); this._setMode('kid'); }
+    bus.emit('select:ready');
+  }
+
+  /* ── header ─────────────────────────────────────────────────────────────── */
+  _buildHeader() {
+    const h = el('header', 'sel__head');
+
+    const back = el('button', 'sel-back');
+    back.type = 'button';
+    back.innerHTML = '<span aria-hidden="true">&#8592;</span> Back';
+    back.addEventListener('click', () => this._back());
+    h.appendChild(back);
+
+    const logo = logoLockup({ size: 'sm', plaque: 'Menagerie Companions' });
+    logo.classList.add('sel__logo');
+    h.appendChild(logo);
+
+    const rail = el('ol', 'sel-rail');
+    rail.setAttribute('aria-label', 'Expedition setup steps');
+    for (const [i, label] of [['1', 'Companion'], ['2', 'Kid'], ['3', 'Expedition']]) {
+      const li = el('li', 'sel-rail__step');
+      li.dataset.step = i;
+      li.innerHTML = `<b>${i}</b><span>${label}</span>`;
+      rail.appendChild(li);
+    }
+    h.appendChild(rail);
+    this._rail = rail;
+    return h;
+  }
+
+  /* ── the 4x4 wall ───────────────────────────────────────────────────────── */
+  _buildGrid() {
+    const wrap = el('div', 'sel__gridwrap');
+    const grid = el('div', 'sel__grid');
+    grid.setAttribute('role', 'listbox');
+    grid.setAttribute('aria-label', 'The Menagerie — sixteen Companions');
+
+    for (const c of COMPANIONS) {
+      const locked = !this.unlocked.has(c.slug);
+      const tile = el('button', 'companion-tile' + (locked ? ' is-locked' : ''));
+      tile.type = 'button';
+      tile.dataset.slug = c.slug;
+      tile.setAttribute('role', 'option');
+      tile.setAttribute('aria-selected', 'false');
+      tile.disabled = false;   // locked tiles stay focusable so they can explain themselves
+
+      const frame = el('div', 'tile__frame');
+      const p = companionPortrait({ slug: c.slug, variant: '@2x', locked, parallax: 1 });
+      this._portraits.push(p);
+      frame.appendChild(p.el);
+      frame.appendChild(el('div', 'tile__inner-edge'));
+      tile.appendChild(frame);
+
+      const plate = el('div', 'tile__plate');
+      if (locked) {
+        plate.innerHTML =
+          `<span class="tile__name">Not yet rescued</span>` +
+          `<span class="tile__title">Somewhere in ${REGION_NAMES[c.region] ?? c.region}</span>`;
+        tile.setAttribute('aria-label', `Locked slot. A Companion is bound somewhere in ${REGION_NAMES[c.region] ?? c.region}.`);
+      } else {
+        plate.innerHTML =
+          `<span class="tile__name">${c.name}</span>` +
+          `<span class="tile__title">${c.title}</span>`;
+        tile.setAttribute('aria-label', `${c.name}, ${c.title}. Found in ${REGION_NAMES[c.region] ?? c.region}.`);
+      }
+      tile.appendChild(plate);
+      grid.appendChild(tile);
+    }
+    wrap.appendChild(grid);
+    this._grid = grid;
+
+    const count = el('div', 'sel__gridcount');
+    count.innerHTML = `<b>${this.unlocked.size}</b> / ${COMPANIONS.length} freed`;
+    wrap.appendChild(count);
+    return wrap;
+  }
+
+  /* ── hero dossier ───────────────────────────────────────────────────────── */
+  _buildHero() {
+    const hero = el('section', 'sel__hero');
+    hero.setAttribute('aria-live', 'polite');
+    hero.innerHTML = `
+      <div class="hero__side">
+        <div class="hero__art">
+          <img class="hero__img" alt="" decoding="async" width="560" height="560">
+          <div class="hero__artvig"></div>
+          <div class="hero__region"></div>
+        </div>
+        <div class="hero__knows">
+          <h3 class="hero__h">Knows about the house</h3>
+          <p class="hero__knowstext"></p>
+        </div>
+        <div class="hero__bond">
+          <h3 class="hero__h">Bond <em class="hero__bondlvl"></em></h3>
+          <div class="bondbar"><i></i></div>
+        </div>
+      </div>
+      <div class="hero__body">
+        <div class="hero__titles">
+          <h2 class="hero__name"></h2>
+          <p class="hero__sub"></p>
+        </div>
+        <p class="hero__identity"></p>
+        <div class="hero__cols">
+          <div class="hero__col hero__col--mech">
+            <h3 class="hero__h">Signature mechanics</h3>
+            <ul class="hero__mechs"></ul>
+          </div>
+          <div class="hero__col hero__swrap">
+            <div>
+              <h3 class="hero__h hero__h--good">Strengths</h3>
+              <ul class="hero__list hero__list--good"></ul>
+            </div>
+            <div>
+              <h3 class="hero__h hero__h--bad">Weaknesses</h3>
+              <ul class="hero__list hero__list--bad"></ul>
+            </div>
+          </div>
+        </div>
+        <div class="hero__deckwrap">
+          <h3 class="hero__h">Starting ${TERMS.deck.toLowerCase()} <em class="hero__decknote">every expedition begins here; the rest of the pool is found inside</em></h3>
+          <div class="hero__deck"></div>
+        </div>
+        <div class="hero__arch"><h3 class="hero__h">Deck archetypes</h3><div class="hero__pills"></div></div>
+        <div class="hero__cta">
+          <button type="button" class="btn btn--ghost" data-act="deselect">Choose another</button>
+          <button type="button" class="btn btn--primary" data-act="tokid">Take <span class="hero__ctaname"></span> in <span aria-hidden="true">&#8594;</span></button>
+        </div>
+      </div>`;
+    this._hero = hero;
+    return hero;
+  }
+
+  /* ── kid step ───────────────────────────────────────────────────────────── */
+  _buildKidStep() {
+    const step = el('section', 'sel__kidstep');
+    step.innerHTML = `
+      <div class="kid__detail">
+        <div class="kid__portrait"></div>
+        <div class="kid__poster">
+          <div class="poster__head">Missing</div>
+          <div class="poster__photo"></div>
+          <div class="poster__pet"></div>
+          <div class="poster__species"></div>
+          <p class="poster__lost"></p>
+          <p class="poster__note"></p>
+        </div>
+        <div class="kid__info">
+          <h2 class="kid__name"></h2>
+          <p class="kid__trait"></p>
+          <div class="kid__perk">
+            <h3 class="hero__h">Persistent perk</h3>
+            <b class="kid__perkname"></b>
+            <p class="kid__perkdesc"></p>
+          </div>
+          <div class="kid__pack">
+            <h3 class="hero__h">Backpack loadout <em class="kid__slots"></em></h3>
+            <ul class="kid__packlist"></ul>
+          </div>
+          <p class="kid__focus"></p>
+        </div>
+      </div>
+      <div class="kid__strip" role="listbox" aria-label="Choose a Kid"></div>`;
+
+    const strip = step.querySelector('.kid__strip');
+    for (const k of KIDS) {
+      const info = KID_CODEX[k.slug] || {};
+      const b = el('button', 'kid-tile');
+      b.type = 'button';
+      b.dataset.slug = k.slug;
+      b.setAttribute('role', 'option');
+      b.setAttribute('aria-selected', 'false');
+      const pw = el('div', 'kid-tile__pf');
+      pw.appendChild(kidPortrait({ ...k, petKind: info.species || k.petKind }, { w: 150, h: 166, tag: true }));
+      b.appendChild(pw);
+      b.appendChild(el('div', 'kid-tile__plate',
+        `<span class="kid-tile__name">${k.name.split(' ')[0]}</span>` +
+        `<span class="kid-tile__pet">looking for ${k.pet}</span>`));
+      b.setAttribute('aria-label', `${k.name}, looking for ${k.pet}`);
+      strip.appendChild(b);
+    }
+    this._kidStep = step;
+    return step;
+  }
+
+  /* ── footer ─────────────────────────────────────────────────────────────── */
+  _buildFooter() {
+    const f = el('footer', 'sel__foot');
+
+    const picks = el('div', 'foot__picks');
+    picks.innerHTML =
+      `<span class="foot__chip is-empty" data-chip="companion"><i></i><b>Companion</b><em>not chosen</em></span>` +
+      `<span class="foot__chip is-empty" data-chip="kid"><i></i><b>Kid</b><em>not chosen</em></span>`;
+    f.appendChild(picks);
+
+    const haunt = el('div', 'foot__haunt');
+    haunt.innerHTML = `<span class="foot__lbl">${TERMS.ascension}</span>`;
+    const hrow = el('div', 'haunt__row', '');
+    hrow.setAttribute('role', 'radiogroup');
+    hrow.setAttribute('aria-label', TERMS.ascension);
+    const maxHaunt = Math.max(0, Number(Save?.data?.hauntLevel ?? 0));
+    for (const [lvl, name, desc] of HAUNTS) {
+      const b = el('button', 'haunt__pip');
+      b.type = 'button';
+      b.dataset.haunt = String(lvl);
+      b.setAttribute('role', 'radio');
+      b.setAttribute('aria-checked', String(lvl === this.state.haunt));
+      b.textContent = String(lvl);
+      const locked = lvl > maxHaunt;
+      if (locked) { b.classList.add('is-locked'); b.disabled = true; }
+      b.title = locked ? `Haunt ${lvl}: ${name} — locked` : `Haunt ${lvl}: ${name}. ${desc}`;
+      b.setAttribute('aria-label', b.title);
+      hrow.appendChild(b);
+    }
+    haunt.appendChild(hrow);
+    haunt.appendChild(el('span', 'haunt__desc', HAUNTS[this.state.haunt][1]));
+    f.appendChild(haunt);
+
+    const seed = el('div', 'foot__seed');
+    seed.innerHTML =
+      `<span class="foot__lbl">Seed</span>` +
+      `<code class="seed__val">${formatSeed(this.state.seed)}</code>` +
+      `<button type="button" class="seed__roll" aria-label="Roll a new seed">&#8635;</button>`;
+    f.appendChild(seed);
+
+    const go = el('button', 'btn btn--go');
+    go.type = 'button';
+    go.disabled = true;
+    go.innerHTML = 'Begin Expedition';
+    f.appendChild(go);
+
+    this._foot = f;
+    this._go = go;
+    return f;
+  }
+
+  /* ── wiring ─────────────────────────────────────────────────────────────── */
+  _wire() {
+    const root = this.root;
+
+    const unlockOnce = () => { try { this.ctx.audio?.unlock?.(); } catch {} };
+    root.addEventListener('pointerdown', unlockOnce, { once: true });
+    this._offs.push(() => root.removeEventListener('pointerdown', unlockOnce));
+
+    // companion grid
+    const onGrid = (e) => {
+      const t = e.target.closest('.companion-tile');
+      if (!t) return;
+      unlockOnce();
+      if (t.classList.contains('is-locked')) { this._nudgeLocked(t); return; }
+      this._pickCompanion(t.dataset.slug);
+    };
+    this._grid.addEventListener('click', onGrid);
+    this._offs.push(() => this._grid.removeEventListener('click', onGrid));
+    this._offs.push(rovingFocus(this._grid, '.companion-tile', {
+      cols: 4,
+      onActivate: (t) => t.classList.contains('is-locked') ? this._nudgeLocked(t) : this._pickCompanion(t.dataset.slug),
+    }));
+
+    // hero buttons
+    const onHero = (e) => {
+      const b = e.target.closest('[data-act]');
+      if (!b) return;
+      if (b.dataset.act === 'deselect') this._deselect();
+      if (b.dataset.act === 'tokid') this._setMode('kid');
+    };
+    this._hero.addEventListener('click', onHero);
+    this._offs.push(() => this._hero.removeEventListener('click', onHero));
+
+    // kid strip
+    const strip = this._kidStep.querySelector('.kid__strip');
+    const onKid = (e) => {
+      const b = e.target.closest('.kid-tile');
+      if (b) this._pickKid(b.dataset.slug);
+    };
+    strip.addEventListener('click', onKid);
+    this._offs.push(() => strip.removeEventListener('click', onKid));
+    this._offs.push(rovingFocus(strip, '.kid-tile', { cols: 4, onActivate: (b) => this._pickKid(b.dataset.slug) }));
+
+    // haunt
+    const hrow = this._foot.querySelector('.haunt__row');
+    const onHaunt = (e) => {
+      const b = e.target.closest('.haunt__pip');
+      if (!b || b.disabled) return;
+      this.state.haunt = Number(b.dataset.haunt);
+      for (const p of hrow.querySelectorAll('.haunt__pip')) p.setAttribute('aria-checked', String(Number(p.dataset.haunt) === this.state.haunt));
+      this._foot.querySelector('.haunt__desc').textContent = HAUNTS[this.state.haunt][1];
+    };
+    hrow.addEventListener('click', onHaunt);
+    this._offs.push(() => hrow.removeEventListener('click', onHaunt));
+    this._offs.push(rovingFocus(hrow, '.haunt__pip', { cols: 0, onActivate: (b) => b.click() }));
+
+    // seed
+    const roll = this._foot.querySelector('.seed__roll');
+    const onRoll = () => {
+      this.state.seed = (Math.floor(Math.random() * 0x7fffffff)) >>> 0;
+      this._foot.querySelector('.seed__val').textContent = formatSeed(this.state.seed);
+    };
+    roll.addEventListener('click', onRoll);
+    this._offs.push(() => roll.removeEventListener('click', onRoll));
+
+    // go
+    const onGo = () => this._begin();
+    this._go.addEventListener('click', onGo);
+    this._offs.push(() => this._go.removeEventListener('click', onGo));
+
+    const onKey = (e) => {
+      if (e.key === 'Escape') { e.preventDefault(); this._back(); }
+      else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && !this._go.disabled) { e.preventDefault(); this._begin(); }
+    };
+    addEventListener('keydown', onKey);
+    this._offs.push(() => removeEventListener('keydown', onKey));
+  }
+
+  _nudgeLocked(tile) {
+    tile.classList.remove('is-nudging');
+    void tile.offsetWidth;              // one forced reflow, only on a locked click
+    tile.classList.add('is-nudging');
+    try { this.ctx.audio?.play?.('ui/denied'); } catch {}
+  }
+
+  /* ── selection ──────────────────────────────────────────────────────────── */
+  _pickCompanion(slug, instant = false) {
+    const c = COMPANION_BY_SLUG[slug];
+    const codex = CODEX[slug];
+    if (!c || !codex) return;
+    this.state.companion = slug;
+
+    for (const t of this._grid.querySelectorAll('.companion-tile')) {
+      const on = t.dataset.slug === slug;
+      t.classList.toggle('is-selected', on);
+      t.setAttribute('aria-selected', String(on));
+    }
+
+    const h = this._hero;
+    const img = h.querySelector('.hero__img');
+    img.src = heroSrc(slug);
+    img.alt = `${c.name}, ${c.title}`;
+    h.querySelector('.hero__region').textContent = `Bound to ${REGION_NAMES[c.region] ?? c.region}`;
+    h.querySelector('.hero__name').textContent = c.name;
+    h.querySelector('.hero__sub').textContent = c.title;
+    h.querySelector('.hero__identity').textContent = codex.identity;
+    h.querySelector('.hero__knowstext').textContent = codex.knows ?? '';
+    const bond = Number(Save?.data?.bonds?.[slug] ?? 0);
+    h.querySelector('.hero__bondlvl').textContent = `${bond} / 5`;
+    h.querySelector('.bondbar i').style.width = `${(bond / 5) * 100}%`;
+    h.querySelector('.hero__ctaname').textContent = c.name;
+
+    const mechs = h.querySelector('.hero__mechs');
+    mechs.innerHTML = codex.mechanics.map(([name, desc]) =>
+      `<li><span class="chip">${name}</span><span class="mech__desc">${desc}</span></li>`).join('');
+
+    this._renderDeck(h.querySelector('.hero__deck'), slug, codex);
+
+    h.querySelector('.hero__list--good').innerHTML = codex.strengths.map((s) => `<li>${s}</li>`).join('');
+    h.querySelector('.hero__list--bad').innerHTML = codex.weaknesses.map((s) => `<li>${s}</li>`).join('');
+    h.querySelector('.hero__pills').innerHTML = codex.archetypes.map((a) => `<span class="pill">${a}</span>`).join('');
+
+    this._setChip('companion', c.name, c.title);
+    this._setMode('hero', instant);
+    this._syncGo();
+  }
+
+  /** Render the starting deck. Prefers real card data if data/cards.js exists. */
+  async _renderDeck(host, slug, codex) {
+    const render = (rows) => {
+      host.innerHTML = rows.map(([n, name, type, text]) => `
+        <div class="mcard" data-type="${type}">
+          <span class="mcard__cost">1</span>
+          <span class="mcard__n">${n > 1 ? `&#215;${n}` : ''}</span>
+          <span class="mcard__name">${name}</span>
+          <span class="mcard__type">${TYPE_LABEL[type] ?? type}</span>
+          <span class="mcard__text">${text}</span>
+        </div>`).join('');
+      const total = rows.reduce((s, r) => s + r[0], 0);
+      host.appendChild(el('div', 'mcard__total', `${total} ${TERMS.deck}`));
+    };
+    render(codex.deck);
+
+    // Upgrade to authored card data the moment companion-cards ships it.
+    try {
+      const mod = await import('../data/cards.js');
+      const fn = mod.startingDeck || mod.getStartingDeck;
+      const raw = typeof fn === 'function' ? fn(slug) : (mod.STARTING_DECKS?.[slug] ?? null);
+      if (!Array.isArray(raw) || !raw.length) return;
+      if (this.state.companion !== slug) return;      // player moved on while importing
+      const counts = new Map();
+      for (const card of raw) {
+        const id = card?.id ?? card?.name;
+        if (!id) continue;
+        const prev = counts.get(id);
+        if (prev) prev.n++;
+        else counts.set(id, { n: 1, card });
+      }
+      const rows = [...counts.values()].map(({ n, card }) => [
+        n, card.name ?? card.id, card.type ?? 'skill',
+        String(card.text ?? '').replace(/\{(\w+)\}/g, (_, k) => card.nums?.[k] ?? '') || '—',
+      ]);
+      if (rows.length) render(rows);
+    } catch { /* data/cards.js not built yet — the codex deck stands */ }
+  }
+
+  _deselect() {
+    this.state.companion = null;
+    for (const t of this._grid.querySelectorAll('.companion-tile')) {
+      t.classList.remove('is-selected');
+      t.setAttribute('aria-selected', 'false');
+    }
+    this._setChip('companion', null);
+    this._setMode('grid');
+    this._syncGo();
+  }
+
+  _pickKid(slug, instant = false) {
+    const k = KIDS.find((x) => x.slug === slug);
+    const info = KID_CODEX[slug];
+    if (!k || !info) return;
+    this.state.kid = slug;
+
+    const step = this._kidStep;
+    for (const b of step.querySelectorAll('.kid-tile')) {
+      const on = b.dataset.slug === slug;
+      b.classList.toggle('is-selected', on);
+      b.setAttribute('aria-selected', String(on));
+    }
+
+    const pf = step.querySelector('.kid__portrait');
+    pf.innerHTML = '';
+    pf.appendChild(kidPortrait({ ...k, petKind: info.species }, { w: 300, h: 334, tag: true }));
+
+    step.querySelector('.poster__pet').textContent = k.pet;
+    step.querySelector('.poster__species').textContent = info.species;
+    step.querySelector('.poster__lost').textContent = info.lost;
+    step.querySelector('.poster__note').textContent = info.note;
+    step.querySelector('.poster__photo').innerHTML =
+      `<svg viewBox="0 0 34 34" aria-hidden="true"><path d="${petGlyph(info.species)}"/></svg>`;
+
+    step.querySelector('.kid__name').textContent = k.name;
+    step.querySelector('.kid__trait').textContent = info.trait;
+    step.querySelector('.kid__perkname').textContent = info.perk[0];
+    step.querySelector('.kid__perkdesc').textContent = info.perk[1];
+    step.querySelector('.kid__focus').innerHTML = `<span class="foot__lbl">Plays around</span> ${info.focus}`;
+
+    const used = info.pack.reduce((s, [, n]) => s + n, 0);
+    step.querySelector('.kid__slots').textContent = `${used} / 5 slots`;
+    step.querySelector('.kid__packlist').innerHTML = info.pack.map(([name, n]) =>
+      `<li class="packitem"><span class="packitem__slots" aria-hidden="true">${'■'.repeat(n)}</span>` +
+      `<span class="packitem__name">${name}</span><span class="packitem__n">${n} slot${n > 1 ? 's' : ''}</span></li>`).join('');
+
+    step.dataset.chosen = '1';
+    this._setChip('kid', k.name, `looking for ${k.pet}`);
+    if (!instant) this._setMode('kid');
+    this._syncGo();
+  }
+
+  _setChip(which, name, sub) {
+    const chip = this._foot.querySelector(`[data-chip="${which}"]`);
+    if (!chip) return;
+    chip.classList.toggle('is-empty', !name);
+    chip.querySelector('b').textContent = name ?? (which === 'kid' ? 'Kid' : 'Companion');
+    chip.querySelector('em').textContent = name ? (sub ?? '') : 'not chosen';
+  }
+
+  _syncGo() {
+    const ready = !!(this.state.companion && this.state.kid);
+    this._go.disabled = !ready;
+    this._go.classList.toggle('is-ready', ready);
+  }
+
+  _setMode(mode, instant = false) {
+    if (mode === 'kid' && !this.state.companion) return;
+    this.state.mode = mode;
+    this.root.dataset.mode = mode;
+    const stepIndex = mode === 'grid' ? 1 : mode === 'hero' ? 1 : 2;
+    for (const li of this._rail.querySelectorAll('.sel-rail__step')) {
+      const n = Number(li.dataset.step);
+      li.classList.toggle('is-active', n === (this.state.kid && mode === 'kid' ? 3 : stepIndex));
+      li.classList.toggle('is-done', n < stepIndex || (n === 2 && !!this.state.kid && mode === 'kid'));
+    }
+    if (instant || reduceMotion()) return;
+    // move focus somewhere sensible for keyboard users
+    requestAnimationFrame(() => {
+      if (mode === 'hero') this._hero.querySelector('[data-act="tokid"]')?.focus();
+      else if (mode === 'kid') this._kidStep.querySelector('.kid-tile.is-selected, .kid-tile')?.focus();
+      else this._grid.querySelector('.companion-tile:not(.is-locked)')?.focus();
+    });
+  }
+
+  _back() {
+    if (this.state.mode === 'kid') this._setMode('hero');
+    else if (this.state.mode === 'hero') this._deselect();
+    else this.ctx.scenes?.go?.('title', {});
+  }
+
+  _begin() {
+    const { companion, kid, seed, haunt } = this.state;
+    if (!companion || !kid) return;
+    const backpack = (KID_CODEX[kid]?.pack ?? []).map(([name, slots]) => ({ name, slots }));
+    const payload = { companion, kid, seed, haunt, backpack };
+    try { this.ctx.audio?.play?.('ui/begin'); } catch {}
+    bus.emit('run:start', payload);
+    this.root.classList.add('is-leaving');
+    const go = () => this.ctx.scenes?.go?.('map', payload);
+    if (reduceMotion()) go();
+    else clock.wait(0.32).then(go);
+  }
+
+  update(dt, t) {
+    // nothing per-frame: every animation on this screen is CSS-composited.
+  }
+
+  async exit() {
+    for (const off of this._offs) { try { off(); } catch {} }
+    this._offs.length = 0;
+    for (const p of this._portraits) { try { p.destroy(); } catch {} }
+    this._portraits.length = 0;
+    this._grid = this._hero = this._kidStep = this._foot = this._go = this._rail = null;
+    this.root.innerHTML = '';
   }
 }

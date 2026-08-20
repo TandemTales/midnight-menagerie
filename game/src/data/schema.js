@@ -21,6 +21,7 @@ export const Intent = /** @type {const} */ ({
   ATTACK_DEBUFF: 'attackDebuff',
   DEFEND: 'defend',
   DEFEND_BUFF: 'defendBuff',
+  DEFEND_DEBUFF: 'defendDebuff',
   BUFF: 'buff',
   DEBUFF: 'debuff',
   STRONG_DEBUFF: 'strongDebuff',

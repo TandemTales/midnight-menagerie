@@ -1,0 +1,331 @@
+/* ===========================================================================
+   Shared portrait / ornament kit. OWNER: frontend agent (pairs with portrait.js).
+   Every colour derives from ui/tokens.css via var() or color-mix(). No hex.
+   =========================================================================== */
+
+:root {
+  /* --- derived: the arcane purple/silver ramp the logo and frames need ---- */
+  --arcane-100: color-mix(in oklab, var(--type-power) 8%,  var(--text-hi));
+  --arcane-200: color-mix(in oklab, var(--type-power) 26%, var(--text-hi));
+  --arcane-300: color-mix(in oklab, var(--type-power) 62%, var(--text-hi));
+  --arcane-400: var(--type-power);
+  --arcane-500: var(--rarity-curse);
+  --arcane-600: color-mix(in oklab, var(--rarity-curse) 62%, var(--ink-900));
+  --arcane-700: color-mix(in oklab, var(--rarity-curse) 30%, var(--ink-900));
+
+  /* --- derived: brass, the frame metal in the source art ----------------- */
+  --brass-100: color-mix(in oklab, var(--flame-200) 70%, var(--text-hi));
+  --brass-200: var(--flame-300);
+  --brass-300: var(--flame-400);
+  --brass-400: var(--flame-500);
+  --brass-500: color-mix(in oklab, var(--flame-500) 55%, var(--ink-900));
+  --brass-600: color-mix(in oklab, var(--flame-500) 24%, var(--ink-900));
+
+  /* --- the eight Kids' signature colours, all pulled off the token ramps -- */
+  --kid-maya:   var(--spectre-300);
+  --kid-mateo:  var(--flame-300);
+  --kid-amina:  color-mix(in oklab, var(--threat-200) 70%, var(--flame-200));
+  --kid-eli:    color-mix(in oklab, var(--guard-300) 76%, var(--spectre-200));
+  --kid-priya:  var(--type-power);
+  --kid-jordan: color-mix(in oklab, var(--flame-400) 60%, var(--threat-300));
+  --kid-lena:   color-mix(in oklab, var(--spectre-200) 60%, var(--type-power));
+  --kid-lucy:   color-mix(in oklab, var(--pluck-300) 74%, var(--threat-200));
+
+  --veil: color-mix(in srgb, var(--ink-900) 78%, transparent);
+  --glass: color-mix(in srgb, var(--ink-700) 74%, transparent);
+}
+
+.mm-reduce-motion *,
+.mm-reduce-motion *::before,
+.mm-reduce-motion *::after {
+  animation-duration: .001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: .001ms !important;
+}
+
+/* ── portrait plate ───────────────────────────────────────────────────────── */
+.pf {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--ink-900);
+  isolation: isolate;
+  contain: paint;
+}
+.pf__inner {
+  position: absolute; inset: 0;
+  transform: scale(1.06);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+.pf__img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  user-select: none; -webkit-user-drag: none;
+}
+/* inner vignette keeps the label legible and sinks the art into the frame */
+.pf__vig {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(120% 92% at 50% 34%, transparent 42%, color-mix(in srgb, var(--ink-900) 62%, transparent) 100%),
+    linear-gradient(to top, color-mix(in srgb, var(--ink-900) 88%, transparent) 0%, transparent 46%);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--brass-400) 34%, transparent);
+  border-radius: inherit;
+}
+/* a slow spectral sheen crossing the plate */
+.pf__shimmer {
+  position: absolute; inset: -40%;
+  pointer-events: none;
+  background: linear-gradient(104deg,
+    transparent 38%,
+    color-mix(in srgb, var(--spectre-200) 16%, transparent) 47%,
+    color-mix(in srgb, var(--spectre-100) 26%, transparent) 50%,
+    color-mix(in srgb, var(--spectre-200) 14%, transparent) 53%,
+    transparent 62%);
+  mix-blend-mode: screen;
+  opacity: 0;
+  transform: translate3d(-42%, 0, 0);
+  will-change: transform, opacity;
+}
+.pf:hover .pf__shimmer,
+.pf.is-shimmering .pf__shimmer { animation: pf-sheen 1.5s var(--ease-soft) 1; }
+@keyframes pf-sheen {
+  0%   { opacity: 0;  transform: translate3d(-42%, 0, 0); }
+  18%  { opacity: 1; }
+  100% { opacity: 0;  transform: translate3d(42%, 0, 0); }
+}
+
+/* locked: the companion is in there, but the house still has it */
+.pf.is-locked .pf__img {
+  /* dark enough to read as a silhouette, bright enough that there IS a silhouette */
+  filter: grayscale(1) brightness(.46) contrast(1.75);
+}
+.pf.is-locked::after {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(96% 86% at 50% 42%, color-mix(in srgb, var(--arcane-500) 68%, transparent), color-mix(in srgb, var(--ink-900) 82%, transparent) 76%),
+    linear-gradient(180deg, transparent, color-mix(in srgb, var(--ink-900) 72%, transparent));
+  mix-blend-mode: multiply;
+}
+.pf.is-locked .pf__vig {
+  background:
+    radial-gradient(120% 92% at 50% 34%, transparent 30%, color-mix(in srgb, var(--ink-900) 80%, transparent) 100%),
+    linear-gradient(to top, color-mix(in srgb, var(--ink-900) 92%, transparent) 0%, transparent 52%);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--arcane-400) 30%, transparent);
+}
+.pf__lock {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 19%; max-width: 34px; aspect-ratio: 40/46;
+  opacity: .62; z-index: 2;
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--arcane-400) 70%, transparent));
+}
+.pf__lock svg { width: 100%; height: 100%; fill: color-mix(in oklab, var(--brass-300) 54%, var(--arcane-300)); }
+
+/* ── ornaments ────────────────────────────────────────────────────────────── */
+.orn-fil__stem {
+  fill: none; stroke: currentColor; stroke-width: 3.2;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.orn-fil__leaf, .orn-fil__berry { fill: currentColor; }
+.orn-bat path { fill: currentColor; }
+
+.orn-web { color: color-mix(in srgb, var(--text-mid) 30%, transparent); }
+.orn-web path { fill: none; stroke: currentColor; stroke-width: 1.1; vector-effect: non-scaling-stroke; }
+.orn-web__rings path { stroke-width: .9; opacity: .78; }
+
+/* candlestick */
+.orn-candle { position: relative; width: 60px; height: 190px; }
+.orn-candle__body { width: 100%; height: 100%; display: block; overflow: visible; }
+.orn-candle__body .wax    { fill: color-mix(in oklab, var(--flame-100) 74%, var(--parchment-shade)); }
+.orn-candle__body .drip   { fill: color-mix(in oklab, var(--flame-100) 92%, white); opacity: .5; }
+.orn-candle__body .brass  { fill: var(--brass-400); }
+.orn-candle__body .brass2 { fill: var(--brass-300); }
+.orn-candle__body .wick   { fill: color-mix(in oklab, var(--ink-800) 80%, var(--flame-500)); }
+.orn-candle__flame {
+  position: absolute; left: 50%; top: -22px;
+  width: 22px; height: 46px; margin-left: -11px;
+  transform-origin: 50% 100%;
+  animation: flame-sway 2.9s var(--ease-soft) infinite;
+}
+.orn-candle__flame i, .orn-candle__flame b {
+  position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
+  border-radius: 50% 50% 42% 42% / 68% 68% 32% 32%;
+  display: block;
+}
+.orn-candle__flame i {
+  width: 20px; height: 44px;
+  background: radial-gradient(60% 70% at 50% 76%, var(--flame-100), var(--flame-300) 46%, var(--flame-glow) 70%, transparent 100%);
+  filter: blur(.4px);
+}
+.orn-candle__flame b {
+  width: 9px; height: 20px;
+  background: radial-gradient(60% 70% at 50% 70%, white, var(--flame-100) 62%, transparent 100%);
+}
+.orn-candle__halo {
+  position: absolute; left: 50%; top: -78px; width: 260px; height: 260px;
+  margin-left: -130px; pointer-events: none;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--flame-glow) 26%, transparent), transparent 72%);
+  animation: flame-breathe 3.7s var(--ease-soft) infinite;
+}
+@keyframes flame-sway {
+  0%, 100% { transform: rotate(-2.5deg) scaleY(1); }
+  28%      { transform: rotate(2deg)   scaleY(1.07); }
+  55%      { transform: rotate(-1deg)  scaleY(.95); }
+  78%      { transform: rotate(2.6deg) scaleY(1.04); }
+}
+@keyframes flame-breathe {
+  0%, 100% { opacity: .82; transform: scale(1); }
+  40%      { opacity: 1;   transform: scale(1.07); }
+  70%      { opacity: .74; transform: scale(.97); }
+}
+
+/* ── the logo ─────────────────────────────────────────────────────────────── */
+.mm-logo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--logo-w, 780px);
+  aspect-ratio: 1400 / 360;
+}
+.mm-logo--md { --logo-w: 420px; }
+.mm-logo--sm { --logo-w: 250px; }
+
+.mm-logo__plate { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.s-oval-in  { stop-color: color-mix(in oklab, var(--arcane-600) 66%, var(--ink-900)); }
+.s-oval-mid { stop-color: color-mix(in oklab, var(--ink-900) 62%, var(--arcane-700)); }
+.s-oval-out { stop-color: var(--ink-900); }
+.s-rim-hi   { stop-color: var(--brass-200); }
+.s-rim-lo   { stop-color: var(--brass-500); }
+
+.mm-logo__halo    { fill: color-mix(in srgb, var(--ink-900) 92%, transparent); }
+.mm-logo__oval    { }
+.mm-logo__vines   { color: color-mix(in oklab, var(--arcane-500) 72%, var(--arcane-300)); opacity: .68;
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--arcane-500) 60%, transparent)); }
+.mm-logo__vines .orn-fil__stem { stroke-width: 3.6; }
+
+.mm-logo__ring { fill: none; }
+.mm-logo__ring--out  { stroke-width: 5.5; }
+.mm-logo__ring--in   { stroke: color-mix(in srgb, var(--brass-300) 52%, transparent); stroke-width: 1.6; }
+.mm-logo__ring--hair { stroke: color-mix(in srgb, var(--arcane-300) 26%, transparent); stroke-width: .9; }
+
+.mm-logo__stars circle { fill: var(--spectre-100); opacity: .8; animation: twinkle 4.6s ease-in-out infinite; }
+.mm-logo__stars circle:nth-child(2n) { animation-delay: -1.4s; }
+.mm-logo__stars circle:nth-child(3n) { animation-delay: -2.7s; }
+@keyframes twinkle { 0%,100% { opacity: .22; } 50% { opacity: .95; } }
+
+.mm-logo__bats { color: color-mix(in oklab, var(--ink-900) 78%, var(--arcane-500)); }
+.mm-logo__bats > g { animation: bat-bob 5.2s var(--ease-soft) infinite; transform-box: fill-box; }
+.mm-logo__bats > g:nth-child(2) { animation-duration: 6.4s; animation-delay: -1.8s; }
+.mm-logo__bats > g:nth-child(3) { animation-duration: 4.4s; animation-delay: -3.1s; }
+@keyframes bat-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  30%      { transform: translateY(-4px) rotate(-3deg); }
+  65%      { transform: translateY(3px) rotate(2deg); }
+}
+
+.mm-logo__text {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: calc(var(--logo-w) * -.008);
+  transform: translateY(calc(var(--logo-w) * -.008));
+  pointer-events: none;
+}
+.mm-logo__top, .mm-logo__main {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: .95;
+  background-image: linear-gradient(178deg,
+    color-mix(in oklab, var(--arcane-100) 92%, white) 0%,
+    var(--arcane-200) 16%,
+    var(--arcane-300) 38%,
+    var(--arcane-400) 54%,
+    color-mix(in oklab, var(--arcane-500) 76%, var(--arcane-400)) 66%,
+    var(--arcane-300) 80%,
+    color-mix(in oklab, var(--arcane-100) 88%, white) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter:
+    drop-shadow(0 calc(var(--logo-w) * .0022) 0 color-mix(in srgb, var(--ink-900) 92%, transparent))
+    drop-shadow(0 0 calc(var(--logo-w) * .022) color-mix(in srgb, var(--arcane-400) 52%, transparent));
+}
+.mm-logo__top {
+  font-size: calc(var(--logo-w) * .062);
+  letter-spacing: calc(var(--logo-w) * .0138);
+  text-indent: calc(var(--logo-w) * .0138);
+}
+.mm-logo__main {
+  font-size: calc(var(--logo-w) * .100);
+  letter-spacing: calc(var(--logo-w) * .0018);
+}
+
+.mm-logo__plaque {
+  position: absolute;
+  left: 50%; bottom: calc(var(--logo-w) * -.028);
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: .7em;
+  padding: calc(var(--logo-w) * .008) calc(var(--logo-w) * .036);
+  font-family: var(--font-display);
+  font-size: calc(var(--logo-w) * .026);
+  letter-spacing: calc(var(--logo-w) * .0038);
+  text-transform: uppercase;
+  color: var(--brass-100);
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--ink-700) 88%, var(--brass-600)), var(--ink-900));
+  border: 1px solid color-mix(in srgb, var(--brass-300) 46%, transparent);
+  border-radius: 3px;
+  box-shadow: var(--shadow-2), inset 0 1px 0 color-mix(in srgb, var(--brass-200) 20%, transparent);
+  white-space: nowrap;
+}
+.mm-logo__plaque span { color: var(--brass-200); font-size: .8em; }
+
+/* ── procedural kid portrait ──────────────────────────────────────────────── */
+.kidpf { display: block; width: 100%; height: auto; }
+.kp-room-in  { stop-color: color-mix(in oklab, var(--ink-700) 76%, var(--kid-hue)); }
+.kp-room-out { stop-color: var(--ink-900); }
+.kp-paper rect { fill: color-mix(in srgb, var(--kid-hue) 7%, transparent); }
+.kp-floor rect { fill: color-mix(in oklab, var(--ink-900) 74%, var(--flame-500)); }
+.kp-floor path { stroke: color-mix(in srgb, var(--ink-900) 70%, transparent); stroke-width: 1.4; fill: none; }
+.kp-beam-a { stop-color: var(--kid-hue); }
+.kp-beam-b { stop-color: var(--kid-hue); }
+.kp-beam   { mix-blend-mode: screen; animation: beam-drift 6.5s var(--ease-soft) infinite; transform-origin: 88% 40%; }
+@keyframes beam-drift { 0%,100% { transform: rotate(0deg);} 50% { transform: rotate(-2.2deg);} }
+
+.kp-body { fill: color-mix(in oklab, var(--ink-900) 82%, var(--kid-hue)); }
+.kp-head { fill: color-mix(in oklab, var(--ink-900) 80%, var(--kid-hue)); }
+.kp-hair { fill: color-mix(in oklab, var(--ink-900) 90%, var(--kid-hue)); }
+.kp-eye  { fill: color-mix(in oklab, var(--kid-hue) 70%, white); opacity: .9; }
+.kp-rim  { stroke-width: 4; stroke-linecap: round; opacity: .85; }
+.kp-rim-a { stop-color: var(--kid-hue); }
+.kp-rim-b { stop-color: color-mix(in oklab, var(--kid-hue) 40%, var(--flame-300)); }
+
+.kp-figure .kg    { stroke: color-mix(in oklab, var(--kid-hue) 55%, var(--text-mid)); stroke-width: 3; fill: none; stroke-linecap: round; }
+.kp-figure .kg-f  { fill: color-mix(in oklab, var(--ink-900) 72%, var(--kid-hue)); }
+.kp-figure .kg-l  { fill: color-mix(in srgb, var(--kid-hue) 22%, transparent); stroke: color-mix(in oklab, var(--kid-hue) 62%, var(--text-hi)); stroke-width: 2.6; }
+.kp-figure .kg-d  { fill: color-mix(in oklab, var(--kid-hue) 40%, var(--ink-700)); }
+.kp-figure .kg-d2 { fill: color-mix(in oklab, var(--kid-hue) 50%, var(--ink-600)); }
+
+.kp-torch-b { fill: color-mix(in oklab, var(--ink-800) 70%, var(--kid-hue)); }
+.kp-torch-h { fill: var(--brass-400); }
+.kp-torch-l { fill: color-mix(in oklab, var(--kid-hue) 30%, white); }
+.kp-glow {
+  fill: radial-gradient(var(--kid-hue), transparent);
+  fill: color-mix(in srgb, var(--kid-hue) 34%, transparent);
+  filter: blur(9px);
+  animation: flame-breathe 4.1s var(--ease-soft) infinite;
+}
+
+.kp-tag-d   { fill: var(--brass-300); }
+.kp-tag-r   { fill: none; stroke: color-mix(in oklab, var(--brass-100) 70%, white); stroke-width: 1.6; opacity: .7; }
+.kp-tag-h   { fill: var(--ink-900); opacity: .6; }
+.kp-tag-g   { fill: color-mix(in oklab, var(--brass-600) 82%, var(--ink-900)); }
+.kp-tag-str { stroke: color-mix(in oklab, var(--parchment-shade) 70%, var(--ink-700)); stroke-width: 2; }
+.kp-tag     { animation: tag-swing 5.4s var(--ease-soft) infinite; transform-origin: 64px 168px; }
+@keyframes tag-swing { 0%,100% { transform: translate(44px,214px) rotate(-2deg);} 50% { transform: translate(44px,214px) rotate(2.6deg);} }
+
+.kp-edge { stroke: color-mix(in srgb, var(--brass-400) 40%, transparent); stroke-width: 2; }

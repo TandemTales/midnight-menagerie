@@ -56,7 +56,7 @@ report the request instead — the integrator applies it.
 | Area | Owns |
 |---|---|
 | foundation (lead) | `game/index.html`, `src/main.js`, `src/core/**`, `CONTRACTS.md`, `tools/**` |
-| combat-engine | `src/combat/**`, `src/data/keywords.js` |
+| combat-engine | `src/combat/**`, `src/data/keywords.js`, `src/data/statuses.js` |
 | card-feel | `src/ui/card.js`, `src/ui/card.css`, `src/ui/hand.js`, `src/ui/hand.css` |
 | combat-scene | `src/scenes/combat.js`, `src/scenes/combat.css`, `src/ui/enemy.js`, `src/ui/intent.js`, `src/fx/combatfx.js` |
 | map | `src/scenes/map.js`, `src/scenes/map.css`, `src/state/mapgen.js` |
