@@ -1,0 +1,76 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>balance sweep — what-if on enemy Courage</title>
+<body><pre id="out" style="font:12px ui-monospace,monospace">running…</pre></body>
+<script type="module">
+/**
+ * "What Courage pool would put this fight in the target band?" OWNER: balance.
+ *
+ * Scales the encounter's Courage on the way in and reports the win rate, turn
+ * count and Courage cost at each step, against loadouts real expeditions were
+ * carrying. Purely a measuring instrument — the answer it produces gets written
+ * into the enemy def by hand, and then re-measured through the ordinary sim.
+ *
+ *   ?tier=boss&enc=foyer-boss&n=24&gen=8&scales=1,0.85,0.75,0.7,0.65,0.6
+ */
+import { expedition, bench } from './lib/expedition.js';
+
+const Q = new URLSearchParams(location.search);
+const TIER = Q.get('tier') || 'boss';
+const ENC = Q.get('enc') || null;
+const N = +(Q.get('n') || 24);
+const GEN = +(Q.get('gen') || 8);
+const BOTS = (Q.get('bots') || 'competent').split(',');
+const POL = Q.get('pol') || 'balanced';
+const SCALES = (Q.get('scales') || '1,0.85,0.75,0.7,0.65,0.6').split(',').map(Number);
+const SEED0 = +(Q.get('seed') || 90000);
+const HEAL = +(Q.get('heal') || 0);   // pretend a Safe Room stood before this door
+
+const out = document.getElementById('out');
+const R = { config: { TIER, ENC, N, GEN, BOTS, POL, SCALES, HEAL }, loadouts: 0, table: [], errors: [] };
+
+const loadouts = [];
+for (let i = 0; i < GEN; i++) {
+  try {
+    const r = await expedition({ seed: SEED0 + i * 7, bot: 'competent', policy: POL });
+    const l = TIER === 'boss' ? r.loadoutAtBoss : (r.loadoutAtFirstElite || r.loadoutAtBoss);
+    if (l) loadouts.push(l);
+  } catch (e) { R.errors.push('gen ' + i + ': ' + (e.message || e)); }
+}
+R.loadouts = loadouts.length;
+out.textContent = 'loadouts ' + loadouts.length;
+
+const mean = (a) => (a.length ? +(a.reduce((x, y) => x + y, 0) / a.length).toFixed(2) : 0);
+const med = (a) => (a.length ? a.slice().sort((x, y) => x - y)[Math.floor(a.length / 2)] : 0);
+
+for (const bot of BOTS) {
+  for (const hpScale of SCALES) {
+    const rows = [];
+    for (let i = 0; i < N; i++) {
+      let l = loadouts[i % Math.max(1, loadouts.length)];
+      if (!l) break;
+      if (HEAL) l = { ...l, courage: Math.min(l.maxCourage, l.courage + HEAL) };
+      try {
+        rows.push(await bench({ loadout: l, encounterTier: TIER, encounterId: ENC,
+                                seed: 700000 + i * 13, bot, hpScale, maxTurns: 120 }));
+      } catch (e) { R.errors.push(`${bot} ${hpScale} ${i}: ` + (e.message || e)); }
+    }
+    if (!rows.length) continue;
+    R.table.push({
+      bot, hpScale,
+      win: +(rows.filter(r => r.win).length / rows.length * 100).toFixed(1),
+      turnsMean: mean(rows.map(r => r.turns)), turnsMed: med(rows.map(r => r.turns)),
+      costMean: mean(rows.map(r => r.dmgTaken)),
+      hpAfterWinMean: mean(rows.filter(r => r.win).map(r => r.hpAfter)),
+      courageAtDoor: mean(rows.map(r => r.courageBefore)),
+      timeouts: rows.filter(r => r.timeout).length,
+      n: rows.length,
+    });
+    out.textContent += `\n${bot} x${hpScale}: ${R.table[R.table.length - 1].win}%`;
+  }
+}
+
+window.__SWEEP__ = R;
+window.__DONE__ = true;
+out.textContent += '\n\n' + JSON.stringify(R.table, null, 1);
+</script>

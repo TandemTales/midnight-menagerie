@@ -135,7 +135,7 @@
   /* Requested by card-feel: the fixed 224px box could not fit a hand of 12.
      card.css's local clamp is now a no-op. */
   --card-w: clamp(150px, min(13.5vw, 27vh), 224px);
-  --card-h: 312px;
+  --card-h: calc(var(--card-w) / var(--card-aspect));
   --card-aspect: 0.7179;
 
   /* --- Chrome geometry --------------------------------------------------- */

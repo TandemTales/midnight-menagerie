@@ -1,58 +1,119 @@
-"""Headless balance simulation: N seeded Foyer Scuffles + the Butler with the
-marmalade starting deck and a greedy AI, driven through the REAL CombatEngine.
+"""Whole-region balance simulation, driven through the REAL Run and CombatEngine.
 
-    python tests/critic-design/sim.py [N]
+    python tests/critic-design/sim.py [--n 25] [--bots naive,competent]
+                                      [--policies balanced,...] [--haunt 0]
+                                      [--bench 40] [--seed 90000] [--clutter 0]
+                                      [--out sim-result.json] [--timeout 3600]
+
+Everything the previous version measured was measured against the unmodified
+10-card starting deck. This one plays a run: it walks the map, drafts card
+rewards, collects Keepsakes and Snacks, rests, upgrades, shops, and carries
+Courage from room to room, all the way to the boss.
 """
-import sys, json, pathlib
+import sys, json, pathlib, argparse
 from playwright.sync_api import sync_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-N = int(sys.argv[1]) if len(sys.argv) > 1 else 200
-URL = f"http://localhost:8777/tests/critic-design/sim.html?n={N}"
+
+ap = argparse.ArgumentParser()
+ap.add_argument("--n", type=int, default=12)
+ap.add_argument("--bots", default="naive,competent")
+ap.add_argument("--policies", default="balanced")
+ap.add_argument("--haunt", type=int, default=0)
+ap.add_argument("--bench", type=int, default=0)
+ap.add_argument("--seed", type=int, default=90000)
+ap.add_argument("--clutter", default="1")
+ap.add_argument("--out", default="sim-result.json")
+ap.add_argument("--timeout", type=float, default=3600)
+ap.add_argument("--quiet", action="store_true")
+a = ap.parse_args()
+
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
+URL = (f"http://localhost:8777/tests/critic-design/sim.html"
+       f"?n={a.n}&bots={a.bots}&policies={a.policies}&haunt={a.haunt}"
+       f"&bench={a.bench}&seed={a.seed}&clutter={a.clutter}")
 
 with sync_playwright() as p:
     b = p.chromium.launch(args=["--enable-unsafe-swiftshader"])
     pg = b.new_page()
-    errs, console = [], []
-    pg.on("console", lambda m: (console.append(f"[{m.type}] {m.text}"),
-                                errs.append(m.text) if m.type == "error" else None))
+    errs = []
+    pg.on("console", lambda m: errs.append(m.text) if m.type == "error" else None)
     pg.on("pageerror", lambda e: errs.append("PAGEERROR " + str(e)))
     pg.goto(URL, wait_until="load", timeout=60000)
     try:
-        pg.wait_for_function("window.__DONE__ === true", timeout=600000)
+        pg.wait_for_function("window.__DONE__ === true", timeout=int(a.timeout * 1000))
     except Exception as e:
         print("SIM DID NOT FINISH:", str(e)[:200])
-        print(pg.evaluate("document.body.innerText")[:4000])
-        for l in console[-40:]: print(" ", l[:300])
-        b.close(); sys.exit(2)
+        print(pg.evaluate("document.body.innerText")[-4000:])
+        for l in errs[-20:]:
+            print("  !", str(l)[:250])
+        b.close()
+        sys.exit(2)
     res = pg.evaluate("window.__RESULT__")
     b.close()
 
-(ROOT / "tests" / "critic-design" / "sim-result.json").write_text(
-    json.dumps(res, indent=1), encoding="utf-8")
+(ROOT / "tests" / "critic-design" / a.out).write_text(json.dumps(res, indent=1), encoding="utf-8")
 
-for bt in res["batches"]:
-    print(f"\n== {bt['label']}  ({bt['encId']}, n={bt['n']})")
-    print(f"   win {bt['winRate']}%   losses {bt['losses']}   timeouts {bt['timeouts']}")
-    print(f"   turns      {bt['turns']}")
-    print(f"   dmg taken  {bt['dmgTaken']}")
-    print(f"   hp left    {bt['hpLeft']}")
-    print(f"   turn hist  {bt['turnHist']}")
-print(f"\n== INTENT vs ACTUAL: {res['auditRows']} enemy turns audited, "
-      f"{len(res['auditMismatch'])} mismatched")
-for m in res["auditMismatch"][:15]:
-    print("   ", json.dumps(m))
-print("\n== display hints the engine ignores:", len(res.get("hintGaps", [])))
-for h in res.get("hintGaps", [])[:25]: print("   ", h)
-print("\n== EnemyDef hooks declared across roster:", json.dumps(res.get("declaredHooks")))
-print("   dust-bunny declares:", res.get("hooksDeclaredOnDustBunny"))
-print("   engine ACTUALLY called:", res.get("hooksActuallyCalled"))
-print("\n== coatrack probe:", json.dumps(res.get("coatrackProbe")))
-print("\n== dust bunny probe:", json.dumps(res.get("dustBunnyProbe"), indent=1)[:1800])
-print("\n== butler probe:", json.dumps(res.get("butlerProbe"), indent=1)[:2200])
-if res.get("notes"):
-    print("\n== NOTES/THROWS:", len(res["notes"]))
-    for n_ in res["notes"][:15]: print("   ", n_[:300])
+
+def line(k, s):
+    if not s or not s.get("n"):
+        return f"  {k:<26} —"
+    return (f"  {k:<26} n={s['n']:<5} mean {s['mean']:<7} "
+            f"p25 {s['p25']:<5} med {s['med']:<5} p75 {s['p75']:<5} max {s['max']}")
+
+
+for key, S in res["cells"].items():
+    print(f"\n═══ {key}  ({S['expeditions']} expeditions, haunt {res['config']['HAUNT']})")
+    print(f"  WHOLE-REGION SURVIVAL   {S['survival']}%   "
+          f"(boss reached {S['reachedBoss']}%, deaths {S['deaths']}, stalls {S['stalls']})")
+    print(f"  deaths by room type     {S['deathsBy']}")
+    for tier in ("scuffle", "elite", "boss"):
+        t = S["byTier"].get(tier) or {}
+        if not t.get("n"):
+            print(f"  {tier:<8} —")
+            continue
+        print(f"  {tier:<8} n={t['n']:<4} win {t['winRate']}%  "
+              f"turns mean {t['turns']['mean']} (med {t['turns']['med']})  "
+              f"Courage cost mean {t['courageCost']['mean']} (med {t['courageCost']['med']})  "
+              f"haunt {t['hauntDamage']['mean']}  pierce {t['pierceHits']}  snacks {t['snacksUsed']}")
+    e = S["earlyScuffles"]
+    if e.get("n"):
+        print(f"  first 3 Scuffles: turns {e['turns']['mean']}  "
+              f"Courage cost {e['courageCost']['mean']}  free fights {e['freeFights']}%")
+    print(line("deck size at end", S["deckEnd"]))
+    print(line("upgrades at end", S["upgradesEnd"]))
+    print(line("keepsakes at end", S["keepsakesEnd"]))
+    print(f"  haunt Courage total {S['hauntTotal']}   piercing hits {S['pierceTotal']}"
+          f"   {S['msPerRun']}ms/expedition")
+
+if res.get("bench"):
+    print("\n═══ BENCH (captured pre-fight loadouts, replayed)")
+    for k, v in res["bench"].items():
+        if not v.get("n"):
+            print(f"  {k:<22} {v.get('note')}")
+            continue
+        print(f"  {k:<22} win {v['winRate']}%  n={v['n']}  turns {v['turns']['mean']} "
+              f"(med {v['turns']['med']})  Courage cost {v['courageCost']['mean']}  "
+              f"deck {v['deckSize']['mean']} (+{v['upgrades']['mean']})  "
+              f"keepsakes {v['keepsakes']['mean']}  timeouts {v['timeouts']}")
+        print(f"     by encounter: {v['byEncounter']}")
+
+if res.get("errors"):
+    print(f"\n═══ ERRORS {len(res['errors'])}")
+    for e in res["errors"][:12]:
+        print("  !", str(e)[:400])
 if errs:
-    print("\n== CONSOLE ERRORS:", len(errs))
-    for e in errs[:20]: print("   !", str(e)[:300])
+    print(f"\n═══ CONSOLE ERRORS {len(errs)}")
+    seen = set()
+    for e in errs:
+        s = str(e)[:200]
+        if s in seen:
+            continue
+        seen.add(s)
+        print("  !", s)
+        if len(seen) > 15:
+            break

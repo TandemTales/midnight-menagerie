@@ -133,6 +133,8 @@
 .ti-glow--b1 { animation-delay: -1.4s; }   /* three phases so the halos de-sync */
 .ti-glow--b2 { animation-delay: -2.7s; }
 .ti-glow--door { filter: blur(15px); animation-duration: 3.1s; }
+/* Nothing is animating, so do not hold four promoted textures for it. */
+.mm-reduce-motion .ti-glow { animation: none; will-change: auto; }
 
 .ms-doorglow { fill: color-mix(in srgb, var(--flame-glow) 34%, transparent); }
 .ms-door     { fill: color-mix(in oklab, var(--flame-300) 74%, var(--flame-500)); }

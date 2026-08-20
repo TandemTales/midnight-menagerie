@@ -156,7 +156,9 @@ export class RoomScene extends Scene {
       // In flow, not pinned: these screens are a grid and the strip is its
       // first row, so a wrapped HUD under largeText pushes the room down
       // instead of sitting on top of the title.
-      this.hud = new HUD(this.ctx, { mount: this.$hud, run: this.run, fixed: false, useSnacks: false });
+      this.hud = new HUD(this.ctx, {
+        mount: this.$hud, run: this.run, fixed: false, escape: true, useSnacks: false,
+      });
       this._own(() => { this.hud?.destroy(); this.hud = null; });
     }
     this.hud.refresh();

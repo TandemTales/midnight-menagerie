@@ -1,335 +1,182 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>critic-design sim</title>
-<body><pre id="out">running…</pre></body>
+<title>balance sim — whole-region expeditions</title>
+<body><pre id="out" style="font:12px ui-monospace,monospace">running…</pre></body>
 <script type="module">
-import { CombatEngine } from '/game/src/combat/engine.js';
-import { RNG } from '/game/src/core/rng.js';
-import { startingDeckFor, cardById } from '/game/src/data/cards.js';
-import { ENEMIES, getEnemy, ENEMY_STATUSES, STATUS_TRICK_DEFS } from '/game/src/data/enemies/index.js';
-import * as enc from '/game/src/data/encounters.js';
-import * as statuses from '/game/src/data/statuses.js';
-import { buildIntent } from '/game/src/combat/intents.js';
+/**
+ * The balance instrument. OWNER: balance.
+ *
+ * v2 — it plays a RUN. The previous version brought the unmodified 10-card
+ * starting deck to every encounter including the region boss, which meant
+ * Ignores-Guard (an uncommon and a rare) was unmeasurable, Haunt contributed
+ * ~1.4 Courage per fight from a single Boo!, and the Butler's 250 Courage was
+ * being judged against the tutorial. It also had exactly one bot, and that bot
+ * blocked precisely the telegraphed number, which makes any solo enemy
+ * structurally unloseable no matter what its damage says.
+ *
+ * Now: real `Run`, real map, real card rewards drafted by a policy, real
+ * Keepsakes at the rate the run layer grants them, Snacks bought and eaten,
+ * Courage carried between rooms, Safe Rooms healing and upgrading — walked node
+ * by node to the boss. Two bots, and the gap between them is reported, because
+ * if there is no gap then decisions do not matter.
+ *
+ *   ?n=25&bots=naive,competent&policies=balanced,greedy-damage,defensive,
+ *    archetype-haunt,archetype-ghoststep&haunt=0&bench=40&clutter=1
+ */
+import { expedition, bench } from './lib/expedition.js';
+import { POLICIES } from './lib/policy.js';
 
-const log = [];
-const say = (s) => log.push(s);
+const Q = new URLSearchParams(location.search);
+const N = +(Q.get('n') || 12);
+const BOTS = (Q.get('bots') || 'naive,competent').split(',').filter(Boolean);
+const POLS = (Q.get('policies') || 'balanced').split(',').filter(Boolean);
+const HAUNT = +(Q.get('haunt') || 0);
+const BENCH = +(Q.get('bench') || 0);
+const CLUTTER = Q.get('clutter') !== '0';
+const SEED0 = +(Q.get('seed') || 90000);
 
-try { statuses.registerStatuses?.(ENEMY_STATUSES); } catch (e) { say('registerStatuses threw: ' + e); }
+const out = document.getElementById('out');
+const say = (s) => { out.textContent += '\n' + s; };
+out.textContent = `sim v2  n=${N} bots=${BOTS} policies=${POLS} haunt=${HAUNT} bench=${BENCH}`;
 
-// ── replicate scenes/combat.js adaptEnemyDef EXACTLY (this is what the real game runs) ──
-const extra = new Map(STATUS_TRICK_DEFS.map(c => [c.id, c]));
-const resolve = {
-  card: (d) => (typeof d !== 'string' ? d : (extra.get(d) || cardById(d) || cardById('status/' + d) || d)),
-  enemy: (d) => (typeof d === 'string' ? (ENEMIES[d] || d) : d),
-};
-const CTX_HOOKS = ['onSpawn', 'onDeath', 'onTurnStart', 'onTurnEnd', 'onDamaged',
-  'onPlayerCard', 'onPlayerTurnEnd', 'onAllyDeath', 'onAttacked'];
-function adaptEnemyDef(def) {
-  if (!def || def.__adapted) return def;
-  const wrap = (fn) => (typeof fn !== 'function' ? fn : function (c, ...rest) {
-    const c2 = Object.create(c);
-    if (typeof c.addCard === 'function') c2.addCard = (d, p, o) => c.addCard(resolve.card(d), p, o);
-    if (typeof c.summon === 'function') c2.summon = (d, o) => c.summon(resolve.enemy(d), o);
-    return fn.call(this, c2, ...rest);
-  });
-  const out = Object.create(Object.getPrototypeOf(def));
-  Object.assign(out, def);
-  out.__adapted = true;
-  out.moves = {};
-  for (const k in def.moves || {}) out.moves[k] = { ...def.moves[k], effect: wrap(def.moves[k].effect) };
-  for (const h of CTX_HOOKS) if (def[h]) out[h] = wrap(def[h]);
-  return out;
-}
-
-const DECK = startingDeckFor('marmalade');
-
-let FIX = false;
-function makeEngine(encId, seed, haunt = 0) {
-  const rng = new RNG(seed);
-  const members = enc.buildEncounter(encId, rng, haunt);
-  const enemies = members.map((mm, i) => ({
-    def: adaptEnemyDef(getEnemy(mm.enemyId)), hp: mm.hp || undefined, id: `e${i}`,
-  }));
-  const e = new CombatEngine({
-    rng,
-    player: { name: 'Kid', companion: 'marmalade', maxHp: 68, hp: 68, energyMax: 3, drawPerTurn: 5, deck: DECK },
-    enemies,
-  });
-  e.enemies.forEach((en, i) => {
-    const mm = members[i];
-    if (mm?.counters) en.counters = { ...(en.counters || {}), ...mm.counters };
-    if (mm?.flags) en.flags = { ...(en.flags || {}), ...mm.flags };
-  });
-  return e;
-}
-
-
-// ── MULTIHIT FIX: make ctx.damage not re-loop opts.hits (hitPlayer already loops)
-function fixSeam(engine) {
-  const orig = engine.enemyCtx.bind(engine);
-  engine.enemyCtx = (en, mv, extra) => {
-    const c = orig(en, mv, extra);
-    const rd = c.damage;
-    c.damage = (t, n, opts = {}) => rd(t, n, { ...opts, hits: 1 });
-    return c;
-  };
-  return engine;
-}
-
-// ── incoming damage the player is TOLD to expect this enemy turn ─────────────
-function shownIncoming(e) {
-  let t = 0;
-  for (const en of e.enemies) {
-    if (!en.alive || !en.intent) continue;
-    t += (en.intent.totalDamage || 0);
-  }
-  return t;
-}
-
-// ── greedy AI: block if the shown incoming beats current guard, else swing ────
-async function greedyTurn(e) {
-  let guard = 0;
-  for (let step = 0; step < 40; step++) {
-    if (e.over || e.phase !== 'player') break;
-    const st = e.state;
-    const hand = st.piles.hand.filter(c => c.playable);
-    if (!hand.length) break;
-    const incoming = shownIncoming(e);
-    const need = Math.max(0, incoming - st.player.block);
-    const enemy = e.livingEnemies()[0];
-    const tid = enemy ? enemy.id : null;
-
-    // lethal-first: if an attack finishes an enemy, take it
-    let pick = null;
-    for (const c of hand) {
-      if (c.type !== 'attack') continue;
-      const en = e.livingEnemies().find(x => (c.display?.d?.value ?? 0) >= x.hp + x.block);
-      if (en) { pick = { c, t: en.id }; break; }
-    }
-    if (!pick && need > 0) {
-      const blocks = hand.filter(c => (c.display?.b?.value ?? 0) > 0)
-        .sort((a, b) => (b.display.b.value) - (a.display.b.value));
-      if (blocks.length) pick = { c: blocks[0], t: null };
-    }
-    if (!pick) {
-      const atks = hand.filter(c => c.type === 'attack')
-        .sort((a, b) => (b.display?.d?.value ?? 0) - (a.display?.d?.value ?? 0));
-      if (atks.length) pick = { c: atks[0], t: tid };
-    }
-    if (!pick) {
-      const rest = hand.filter(c => c.type !== 'attack');
-      if (rest.length) pick = { c: rest[0], t: tid };
-    }
-    if (!pick) break;
-    await e.playCard(pick.c.uid, pick.t);
-  }
-  return guard;
-}
-
-// ── one fight ────────────────────────────────────────────────────────────────
-async function runFight(encId, seed, maxTurns = 60, audit = null) {
-  const e = makeEngine(encId, seed);
-  let dmgTaken = 0;
-  e.on('damage', (ev) => { if (ev.targetId === 'player') dmgTaken += ev.hpLoss; });
-  await e.startCombat();
-  let turns = 0;
-  while (!e.over && turns < maxTurns) {
-    turns++;
-    // audit: what the intents PROMISE before we end turn
-    let promised = null, before = 0;
-    if (audit) {
-      promised = e.enemies.filter(x => x.alive && x.intent)
-        .map(x => ({ id: x.id, name: x.name, move: x.intent.moveId, dmg: x.intent.damage,
-                     hits: x.intent.hits, total: x.intent.totalDamage }));
-      before = e.player.hp + e.player.block;
-    }
-    await greedyTurn(e);
-    if (e.over) break;
-    const hpB = e.player.hp, blkB = e.player.block;
-    await e.endTurn();
-    if (audit && promised) {
-      const actual = (hpB + blkB) - (e.player.hp + Math.min(blkB, e.player.block));
-      const dealt = (hpB - e.player.hp) + Math.max(0, blkB - (e.player.block));
-      const total = promised.reduce((s, p) => s + p.total, 0);
-      audit.push({ encId, seed, turn: turns, promised, promisedTotal: total, actualDealt: dealt });
-    }
-  }
+// ── stats helpers ────────────────────────────────────────────────────────────
+function stats(a) {
+  if (!a.length) return { n: 0 };
+  const s = a.slice().sort((x, y) => x - y);
+  const sum = s.reduce((p, q) => p + q, 0);
   return {
-    win: e.victory, lose: e.over && !e.victory, timeout: !e.over,
-    turns, dmgTaken, hpLeft: e.player.hp,
-    enemyHpLeft: e.enemies.reduce((s, x) => s + Math.max(0, x.hp), 0),
+    n: s.length, mean: +(sum / s.length).toFixed(2),
+    min: s[0], max: s[s.length - 1],
+    p25: s[Math.floor(s.length * .25)], med: s[Math.floor(s.length * .5)],
+    p75: s[Math.floor(s.length * .75)],
   };
 }
+const pct = (a, b) => (b ? +(a / b * 100).toFixed(1) : 0);
 
-function stats(arr) {
-  if (!arr.length) return { n: 0 };
-  const s = arr.slice().sort((a, b) => a - b);
-  const sum = s.reduce((a, b) => a + b, 0);
-  return { n: s.length, mean: +(sum / s.length).toFixed(2), min: s[0], max: s[s.length - 1],
-           p25: s[Math.floor(s.length * .25)], med: s[Math.floor(s.length * .5)], p75: s[Math.floor(s.length * .75)] };
-}
-function hist(arr, lo, hi, step) {
-  const b = {};
-  for (const v of arr) { const k = Math.min(hi, Math.max(lo, Math.floor(v / step) * step)); b[k] = (b[k] || 0) + 1; }
-  return Object.keys(b).sort((a, b2) => a - b2).map(k => `${k}+:${b[k]}`).join('  ');
-}
+const TIER_BUCKET = (t) => (t === 'boss' ? 'boss' : t === 'elite' ? 'elite' : 'scuffle');
 
-const RESULT = { batches: [], auditMismatch: [], auditRows: 0, notes: [] };
+function summarise(runs) {
+  const S = { expeditions: runs.length };
+  S.survival = pct(runs.filter(r => r.result === 'victory').length, runs.length);
+  S.deaths = runs.filter(r => r.result === 'defeat').length;
+  S.stalls = runs.filter(r => r.result === 'stall' || r.result === 'incomplete').length;
+  S.reachedBoss = pct(runs.filter(r => r.reachedBoss).length, runs.length);
 
-async function batch(label, encId, n, maxTurns) {
-  const wins = [], turns = [], dmg = [], hpLeft = [];
-  let losses = 0, timeouts = 0;
-  const audit = [];
-  for (let i = 0; i < n; i++) {
-    let r;
-    try { r = await runFight(encId, 1000 + i, maxTurns, i < 25 ? audit : null); }
-    catch (err) { RESULT.notes.push(`${label} seed ${1000 + i} THREW: ${err && err.message}`); continue; }
-    if (r.win) wins.push(1); else if (r.lose) losses++; else timeouts++;
-    turns.push(r.turns); dmg.push(r.dmgTaken); hpLeft.push(r.hpLeft);
+  const deathAt = {};
+  for (const r of runs) if (r.result === 'defeat') deathAt[r.deathType || '?'] = (deathAt[r.deathType || '?'] || 0) + 1;
+  S.deathsBy = deathAt;
+
+  const buckets = { scuffle: [], elite: [], boss: [] };
+  for (const r of runs) for (const f of r.fights) buckets[TIER_BUCKET(f.tier)].push(f);
+
+  S.byTier = {};
+  for (const [k, fs] of Object.entries(buckets)) {
+    if (!fs.length) { S.byTier[k] = { n: 0 }; continue; }
+    S.byTier[k] = {
+      n: fs.length,
+      winRate: pct(fs.filter(f => f.win).length, fs.length),
+      turns: stats(fs.map(f => f.turns)),
+      courageCost: stats(fs.map(f => f.dmgTaken)),
+      hauntDamage: stats(fs.map(f => f.hauntDamage)),
+      pierceHits: fs.reduce((s, f) => s + f.pierceHits, 0),
+      snacksUsed: fs.reduce((s, f) => s + f.snacksUsed, 0),
+      timeouts: fs.filter(f => f.timeout).length,
+    };
   }
-  // intent-vs-actual
-  for (const row of audit) {
-    RESULT.auditRows++;
-    if (row.promisedTotal !== row.actualDealt) {
-      RESULT.auditMismatch.push(row);
+  // the first three Scuffles of a region — the "costs 8-12 of a ~70 pool" target
+  const early = [];
+  for (const r of runs) {
+    const sc = r.fights.filter(f => TIER_BUCKET(f.tier) === 'scuffle');
+    early.push(...sc.slice(0, 3));
+  }
+  S.earlyScuffles = early.length ? {
+    n: early.length, turns: stats(early.map(f => f.turns)),
+    courageCost: stats(early.map(f => f.dmgTaken)),
+    freeFights: pct(early.filter(f => f.dmgTaken === 0).length, early.length),
+  } : { n: 0 };
+
+  S.deckEnd = stats(runs.map(r => (r.deckEnd || []).length));
+  S.upgradesEnd = stats(runs.map(r => (r.deckEnd || []).filter(x => x.endsWith('+')).length));
+  S.keepsakesEnd = stats(runs.map(r => (r.keepsakesEnd || []).length));
+  S.endCourage = stats(runs.map(r => r.endCourage));
+  S.hauntTotal = runs.reduce((s, r) => s + r.fights.reduce((t, f) => t + f.hauntDamage, 0), 0);
+  S.pierceTotal = runs.reduce((s, r) => s + r.fights.reduce((t, f) => t + f.pierceHits, 0), 0);
+  S.msPerRun = +(runs.reduce((s, r) => s + r.ms, 0) / Math.max(1, runs.length)).toFixed(0);
+  return S;
+}
+
+// ── run ──────────────────────────────────────────────────────────────────────
+const RESULT = { config: { N, BOTS, POLS, HAUNT, BENCH, CLUTTER, SEED0 }, cells: {}, bench: {}, errors: [] };
+const loadouts = { boss: [], elite: [] };
+
+for (const bot of BOTS) {
+  for (const policy of POLS) {
+    const key = `${bot}/${policy}`;
+    const runs = [];
+    for (let i = 0; i < N; i++) {
+      try {
+        const r = await expedition({ seed: SEED0 + i * 7, bot, policy, haunt: HAUNT, clutter: CLUTTER });
+        runs.push(r);
+        if (r.loadoutAtBoss) loadouts.boss.push({ bot, policy, l: r.loadoutAtBoss });
+        if (r.loadoutAtFirstElite) loadouts.elite.push({ bot, policy, l: r.loadoutAtFirstElite });
+      } catch (err) {
+        RESULT.errors.push(`${key} seed ${SEED0 + i * 7}: ${err && (err.stack || err.message || err)}`);
+      }
+      if (i % 5 === 4) say(`  ${key}: ${i + 1}/${N}`);
+    }
+    RESULT.cells[key] = summarise(runs);
+    RESULT.cells[key].sample = runs.slice(0, 3).map(r => ({
+      seed: r.seed, result: r.result, killedBy: r.killedBy,
+      nodes: r.nodes.map(n => n.type[0]).join(''),
+      deck: r.deckEnd, keepsakes: r.keepsakesEnd,
+    }));
+    say(`${key}: survival ${RESULT.cells[key].survival}%  boss reached ${RESULT.cells[key].reachedBoss}%`);
+  }
+}
+
+// ── benches: the boss and the elite, fought many times with loadouts real
+//    expeditions were actually carrying when they arrived at that door ────────
+if (BENCH > 0) {
+  for (const tier of ['elite', 'boss']) {
+    const pool = loadouts[tier];
+    if (!pool.length) { RESULT.bench[tier] = { n: 0, note: 'no expedition reached it' }; continue; }
+    for (const bot of BOTS) {
+      const rows = [];
+      for (let i = 0; i < BENCH; i++) {
+        const pick = pool[i % pool.length];
+        try {
+          rows.push(await bench({
+            loadout: pick.l, encounterTier: tier, seed: 500000 + i * 13,
+            bot, haunt: HAUNT, clutter: CLUTTER,
+          }));
+        } catch (err) { RESULT.errors.push(`bench ${tier}/${bot} ${i}: ${err && (err.stack || err.message)}`); }
+      }
+      if (!rows.length) continue;
+      RESULT.bench[`${tier}/${bot}`] = {
+        n: rows.length,
+        winRate: pct(rows.filter(r => r.win).length, rows.length),
+        turns: stats(rows.map(r => r.turns)),
+        courageCost: stats(rows.map(r => r.dmgTaken)),
+        hpAfter: stats(rows.map(r => r.hpAfter)),
+        hauntDamage: stats(rows.map(r => r.hauntDamage)),
+        pierceHits: rows.reduce((s, r) => s + r.pierceHits, 0),
+        timeouts: rows.filter(r => r.timeout).length,
+        deckSize: stats(rows.map(r => r.deckSize)),
+        upgrades: stats(rows.map(r => r.upgrades)),
+        keepsakes: stats(rows.map(r => r.keepsakes)),
+        byEncounter: rows.reduce((a, r) => {
+          const k = r.encounter || '?';
+          a[k] = a[k] || { n: 0, wins: 0 };
+          a[k].n++; if (r.win) a[k].wins++;
+          return a;
+        }, {}),
+      };
+      say(`bench ${tier}/${bot}: ${RESULT.bench[`${tier}/${bot}`].winRate}%`);
     }
   }
-  RESULT.batches.push({
-    label, encId, n,
-    winRate: +(wins.length / n * 100).toFixed(1),
-    losses, timeouts,
-    turns: stats(turns), dmgTaken: stats(dmg), hpLeft: stats(hpLeft),
-    turnHist: hist(turns, 0, 60, 1), dmgHist: hist(dmg, 0, 100, 10),
-  });
-}
-
-const N = +(new URLSearchParams(location.search).get('n') || 200);
-
-await batch('Foyer Scuffle 1 — Dust Bunny (20)', 'foyer-1', N, 60);
-await batch('Foyer Scuffle 2 — Coatrack Crawler (33)', 'foyer-2', N, 60);
-await batch('Foyer Scuffle 14 — hardest normal (67)', 'foyer-14', N, 60);
-await batch('Foyer elite — Grand Coatcheck (96)', 'foyer-scare-coatcheck', N, 80);
-await batch('Foyer BOSS — The Butler (250)', 'foyer-boss', N, 120);
-
-FIX = true;
-RESULT.fixedSeam = [];
-{
-  const keep = RESULT.batches; RESULT.batches = [];
-  await batch('[MULTIHIT FIXED] Foyer 1 — Dust Bunny (20)', 'foyer-1', N, 60);
-  await batch('[MULTIHIT FIXED] Foyer 2 — Coatrack Crawler (33)', 'foyer-2', N, 60);
-  await batch('[MULTIHIT FIXED] Foyer 14 — hardest normal (67)', 'foyer-14', N, 60);
-  await batch('[MULTIHIT FIXED] Foyer elite — Coatcheck (96)', 'foyer-scare-coatcheck', N, 80);
-  await batch('[MULTIHIT FIXED] Foyer BOSS — Butler (250)', 'foyer-boss', N, 120);
-  RESULT.fixedSeam = RESULT.batches; RESULT.batches = keep;
-}
-FIX = false;
-
-// ── declared-vs-rendered display hints ───────────────────────────────────────
-const hintGaps = [];
-for (const def of Object.values(ENEMIES)) {
-  for (const [mid, mv] of Object.entries(def.moves || {})) {
-    const miss = [];
-    if (typeof mv.hitsFn === 'function') miss.push('hitsFn');
-    if (typeof mv.intentFn === 'function') miss.push('intentFn');
-    if (typeof mv.blockFn === 'function') miss.push('blockFn');
-    if (mv.appliesStatus) miss.push('appliesStatus');
-    if (mv.addsCards) miss.push('addsCards');
-    if (mv.summons) miss.push('summons');
-    if (miss.length) hintGaps.push(`${def.id}/${mid}: engine ignores ${miss.join(', ')}`);
-  }
-}
-RESULT.hintGaps = hintGaps;
-
-// ── which EnemyDef lifecycle hooks the engine never calls ────────────────────
-const declared = {};
-for (const def of Object.values(ENEMIES)) {
-  for (const h of CTX_HOOKS) if (typeof def[h] === 'function') (declared[h] ||= []).push(def.id);
-}
-RESULT.declaredHooks = Object.fromEntries(Object.entries(declared).map(([k, v]) => [k, v.length]));
-
-// ── live probe: does the engine actually invoke them? ────────────────────────
-{
-  const seen = new Set();
-  const probeDef = adaptEnemyDef(getEnemy('dust-bunny'));
-  const spy = Object.create(Object.getPrototypeOf(probeDef));
-  Object.assign(spy, probeDef);
-  for (const h of CTX_HOOKS) {
-    const orig = probeDef[h];
-    spy[h] = function (c, ...r) { seen.add(h); return orig ? orig.call(this, c, ...r) : undefined; };
-  }
-  const rng = new RNG(7);
-  const e = new CombatEngine({
-    rng, player: { name: 'Kid', companion: 'marmalade', maxHp: 68, hp: 68, energyMax: 3, drawPerTurn: 5, deck: DECK },
-    enemies: [{ def: spy, id: 'e0' }],
-  });
-  await e.startCombat();
-  for (let i = 0; i < 6 && !e.over; i++) { await greedyTurn(e); if (!e.over) await e.endTurn(); }
-  RESULT.hooksActuallyCalled = [...seen];
-  RESULT.hooksDeclaredOnDustBunny = CTX_HOOKS.filter(h => typeof getEnemy('dust-bunny')[h] === 'function');
-}
-
-// ── targeted probe: Coatrack Crawler's advertised 12→7 read ──────────────────
-{
-  const rng = new RNG(11);
-  const e = new CombatEngine({
-    rng, player: { name: 'Kid', companion: 'marmalade', maxHp: 68, hp: 68, energyMax: 9, drawPerTurn: 5, deck: DECK },
-    enemies: [{ def: adaptEnemyDef(getEnemy('coatrack-crawler')), id: 'e0' }],
-  });
-  await e.startCombat();
-  await e.endTurn();                        // it Braces (10 Guard)
-  const en = e.enemies[0];
-  const jabBefore = en.intent?.damage;
-  // strip every point of its Brace Guard
-  e.dealDamage({ attacker: e.player, defender: en, amount: 30, kind: 'attack' });
-  e.refreshIntents('probe');
-  const jabAfterStrip = e.enemies[0].intent?.damage;
-  const hpBefore = e.player.hp + e.player.block;
-  await e.endTurn();                        // it Jabs
-  const dealt = hpBefore - (e.player.hp + e.player.block);
-  RESULT.coatrackProbe = { guardIntact: jabBefore, afterGuardStripped: jabAfterStrip,
-                           actualJabDamage: dealt, docSays: '12 intact → 7 when stripped' };
-}
-
-// ── targeted probe: Dust Bunny escalation ────────────────────────────────────
-{
-  const rng = new RNG(13);
-  const e = new CombatEngine({
-    rng, player: { name: 'Kid', companion: 'marmalade', maxHp: 68, hp: 68, energyMax: 3, drawPerTurn: 5, deck: DECK },
-    enemies: [{ def: adaptEnemyDef(getEnemy('dust-bunny')), id: 'e0' }],
-  });
-  await e.startCombat();
-  const trace = [];
-  for (let i = 0; i < 6 && !e.over; i++) {
-    const en = e.enemies[0];
-    trace.push({ turn: e.turn, move: en.intent?.moveId, shown: en.intent?.totalDamage,
-                 dust: en.counters?.dust ?? null, enemyHp: en.hp });
-    const hpB = e.player.hp + e.player.block;
-    await e.endTurn();                       // never attack it: Dust should climb
-    trace.push({ afterEnemyTurn: true, dealt: hpB - (e.player.hp + e.player.block),
-                 dust: e.enemies[0].counters?.dust ?? null });
-  }
-  RESULT.dustBunnyProbe = { trace, docSays: 'ignored Bunny banks 2 Dust per Gather turn; Tumble intent projects up to 17' };
-}
-
-// ── targeted probe: Butler phase transition ──────────────────────────────────
-{
-  const rng = new RNG(17);
-  const e = new CombatEngine({
-    rng, player: { name: 'Kid', companion: 'marmalade', maxHp: 200, hp: 200, energyMax: 3, drawPerTurn: 5, deck: DECK },
-    enemies: [{ def: adaptEnemyDef(getEnemy('butler')), id: 'e0' }],
-  });
-  await e.startCombat();
-  const seq = [];
-  for (let i = 0; i < 14 && !e.over; i++) {
-    const en = e.enemies[0];
-    seq.push({ turn: e.turn, hp: en.hp, move: en.intent?.moveId, shown: en.intent?.totalDamage });
-    if (i === 3) e.dealDamage({ attacker: e.player, defender: en, amount: 120, kind: 'attack' });
-    await e.endTurn();
-  }
-  RESULT.butlerProbe = { seq, docSays: 'transition at <=140: This Is Most Irregular, then P2 move set' };
 }
 
 window.__RESULT__ = RESULT;
 window.__DONE__ = true;
-document.getElementById('out').textContent = JSON.stringify(RESULT, null, 1);
+say('DONE');
 </script>

@@ -901,7 +901,7 @@ export class CombatScene extends Scene {
 
       case 'turn:start':
         if (ev.side === 'player') {
-          this.$turnN.textContent = String(ev.turn);
+          this.$turnN.textContent = `Turn ${ev.turn}`;
           this._banner(`Your Turn ${ev.turn}`, 'player');
           this.ctx.audio?.play?.('combat:turn-start');
           await this._wait(this._d(0.22));
@@ -1219,7 +1219,10 @@ export class CombatScene extends Scene {
   _syncAll() {
     if (!this.engine) return;
     const st = this.engine.state;
-    this.$turnN.textContent = `Turn ${st.turn}`;
+    // `engine.turn`, not `st.turn`: the state snapshot is cached and a turn
+    // rollover does not always mark it dirty, so the top bar could sit a whole
+    // turn behind the fight it is labelling.
+    this.$turnN.textContent = `Turn ${this.engine.turn}`;
     this._syncPlayer();
     for (const e of st.enemies) { this.views.get(e.id)?.setState(e); this._syncEnemyExtras(e.id); }
     this._syncPiles();

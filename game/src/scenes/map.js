@@ -224,7 +224,7 @@ export class MapScene extends Scene {
     // One HUD, one position: the shared strip along the top edge. Everything it
     // used to duplicate here — Courage, Lost Things, Keepsakes, Haunt, the cog
     // that did nothing — is that component's job now.
-    this.hud = new HUD(this.ctx, { mount: this.el.hudHost, useSnacks: false });
+    this.hud = new HUD(this.ctx, { mount: this.el.hudHost, escape: true, useSnacks: false });
     this.el.sheet.style.width = this.SW + 'px';
     this.el.sheet.style.height = this.SH + 'px';
     this.el.sheet.style.setProperty('--sw', this.SW + 'px');   // the wet edge's run

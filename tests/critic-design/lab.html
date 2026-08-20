@@ -1,0 +1,107 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>balance lab — one encounter, in detail</title>
+<body><pre id="out" style="font:12px ui-monospace,monospace">running…</pre></body>
+<script type="module">
+/**
+ * Diagnostic bench. OWNER: balance.
+ *
+ * Captures the loadouts real expeditions were carrying when they arrived at a
+ * given door, then fights that encounter many times and reports the shape of
+ * the fight, not just the win rate: damage in, damage out, Guard the enemy
+ * gained, how long the player survived, and a turn-by-turn trace of one fight.
+ *
+ *   ?enc=foyer-boss&tier=boss&n=40&bots=naive,competent&pol=balanced&gen=10
+ */
+import { expedition, bench } from './lib/expedition.js';
+
+const Q = new URLSearchParams(location.search);
+const TIER = Q.get('tier') || 'boss';
+const ENC = Q.get('enc') || null;
+const N = +(Q.get('n') || 30);
+const GEN = +(Q.get('gen') || 8);
+const BOTS = (Q.get('bots') || 'competent').split(',');
+const POL = Q.get('pol') || 'balanced';
+const HAUNT = +(Q.get('haunt') || 0);
+const SEED0 = +(Q.get('seed') || 90000);
+
+const out = document.getElementById('out');
+const R = { config: { TIER, ENC, N, GEN, BOTS, POL, HAUNT }, loadouts: [], rows: {}, trace: null, errors: [] };
+
+// 1. generate loadouts by walking real expeditions
+for (let i = 0; i < GEN; i++) {
+  try {
+    const r = await expedition({ seed: SEED0 + i * 7, bot: 'competent', policy: POL, haunt: HAUNT });
+    const l = TIER === 'boss' ? r.loadoutAtBoss : (r.loadoutAtFirstElite || r.loadoutAtBoss);
+    if (l) R.loadouts.push(l);
+  } catch (e) { R.errors.push('gen ' + i + ': ' + (e.stack || e.message)); }
+}
+out.textContent = `loadouts captured: ${R.loadouts.length}`;
+R.loadoutSummary = R.loadouts.map(l => ({
+  deck: l.deck.length, up: l.deck.filter(c => c.upgraded).length,
+  keeps: l.keepsakes.length, snacks: l.snacks.length,
+  courage: l.courage, max: l.maxCourage,
+}));
+
+const stats = (a) => {
+  if (!a.length) return { n: 0 };
+  const s = a.slice().sort((x, y) => x - y);
+  return { n: s.length, mean: +(s.reduce((p, q) => p + q, 0) / s.length).toFixed(2),
+           min: s[0], med: s[Math.floor(s.length / 2)], max: s[s.length - 1] };
+};
+
+for (const bot of BOTS) {
+  const rows = [];
+  let trace = null;
+  for (let i = 0; i < N; i++) {
+    const l = R.loadouts[i % Math.max(1, R.loadouts.length)];
+    if (!l) break;
+    const tr = (i === 0) ? [] : null;
+    try {
+      rows.push(await bench({ loadout: l, encounterTier: TIER, encounterId: ENC,
+                              seed: 700000 + i * 13, bot, haunt: HAUNT, trace: tr, maxTurns: 120 }));
+      if (tr) trace = tr;
+    } catch (e) { R.errors.push(`${bot} ${i}: ` + (e.stack || e.message)); }
+  }
+  if (!rows.length) continue;
+  R.rows[bot] = {
+    n: rows.length,
+    winRate: +(rows.filter(r => r.win).length / rows.length * 100).toFixed(1),
+    turns: stats(rows.map(r => r.turns)),
+    courageBefore: stats(rows.map(r => r.courageBefore)),
+    dmgTaken: stats(rows.map(r => r.dmgTaken)),
+    dmgDealt: stats(rows.map(r => r.dmgDealt)),
+    dealtPerTurn: stats(rows.map(r => +(r.dmgDealt / Math.max(1, r.turns)).toFixed(1))),
+    takenPerTurn: stats(rows.map(r => +(r.dmgTaken / Math.max(1, r.turns)).toFixed(1))),
+    enemyGuard: stats(rows.map(r => r.enemyGuard)),
+    blockedByEnemy: stats(rows.map(r => r.dmgBlockedByEnemies)),
+    enemyHpLeftOnLoss: stats(rows.filter(r => !r.win).map(r => r.enemyHpLeft)),
+    hpAfterOnWin: stats(rows.filter(r => r.win).map(r => r.hpAfter)),
+    haunt: stats(rows.map(r => r.hauntDamage)),
+    pierce: rows.reduce((s, r) => s + r.pierceHits, 0),
+    snacks: rows.reduce((s, r) => s + r.snacksUsed, 0),
+    timeouts: rows.filter(r => r.timeout).length,
+    byEncounter: rows.reduce((a, r) => {
+      const k = r.encounter || '?'; a[k] = a[k] || { n: 0, w: 0 }; a[k].n++; if (r.win) a[k].w++; return a;
+    }, {}),
+    rulesBrokenPerFight: (() => {
+      const t = {};
+      for (const r of rows) for (const [k, v] of Object.entries(r.rulesBroken || {})) t[k] = (t[k] || 0) + v;
+      for (const k of Object.keys(t)) t[k] = +(t[k] / rows.length).toFixed(2);
+      return t;
+    })(),
+    enemyStatusPerFight: (() => {
+      const t = {};
+      for (const r of rows) for (const [k, v] of Object.entries(r.statusSeen || {})) t[k] = (t[k] || 0) + v;
+      for (const k of Object.keys(t)) t[k] = +(t[k] / rows.length).toFixed(2);
+      return t;
+    })(),
+    summonsPerFight: +(rows.reduce((s, r) => s + (r.summons || 0), 0) / rows.length).toFixed(2),
+  };
+  if (bot === BOTS[BOTS.length - 1] && trace) R.trace = trace;
+}
+
+window.__LAB__ = R;
+window.__DONE__ = true;
+out.textContent = JSON.stringify(R, null, 1);
+</script>

@@ -39,8 +39,11 @@
  *   useSnacks  the Snack slots are ACTIVATABLE here (combat only). Outside a
  *              Scuffle they still show what you carry, but say so instead of
  *              offering a dead click.
- *   escape     bind Escape -> Settings (default true). A scene that owns Escape
- *              for something else passes false and calls `hud.openSettings()`.
+ *   escape     bind Escape -> Settings. OPT-IN: a mounted component that seizes
+ *              a global key would surprise any host with its own use for it
+ *              (the chrome harness has one). Every run scene passes true;
+ *              combat handles Escape itself so it can close an open pile first,
+ *              then calls `hud.openSettings()`.
  *
  * It reads `ctx.run` **defensively**. Every field is optional; when there is no
  * run at all it shows a clearly-labelled preview so a scene can be developed
@@ -169,7 +172,7 @@ export class HUD {
    * they all begin `if (e.defaultPrevented) return`.
    */
   _bindKeys() {
-    const wantEsc = this.o.escape !== false;
+    const wantEsc = this.o.escape === true;
     const wantSnack = !!this.o.useSnacks;
     if (!wantEsc && !wantSnack) return;
     const onKey = (e) => {

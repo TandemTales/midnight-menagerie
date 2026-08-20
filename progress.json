@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T10:58:28",
+ "updated": "2026-08-20T10:59:20",
  "wave": 3,
  "waveLabel": "Closing the seams",
  "headline": "A full playthrough found that every module passes its own tests and silently no-ops at the join. Fixing that class of bug.",
@@ -338,6 +338,10 @@
   {
    "t": "2026-08-20T10:58:28",
    "msg": "Critical: Companion statuses were never registered in the balance simulation, so every prior Marmalade balance number is suspect. Re-measuring."
+  },
+  {
+   "t": "2026-08-20T10:59:20",
+   "msg": "Balance pass started - the first that can measure a build where the mechanics actually work. The simulator itself is being rebuilt to play whole regions with real decks."
   }
  ]
 }
