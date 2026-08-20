@@ -407,9 +407,16 @@ export class MapScene extends Scene {
     g.beginPath(); g.rect(WIN.x, WIN.y, WIN.w, WIN.h); g.clip();
     g.globalCompositeOperation = 'multiply';
     g.imageSmoothingQuality = 'high';
-    g.globalAlpha = 0.24;                                     // soft under-bleed
+    // GROUND, not figure — and 0.74 was not ground.  The plan is several hundred
+    // navy lines at roughly the weight of a pencil route drawn in a near-navy
+    // graphite, so the two competed on equal terms and the route lost on count.
+    // Making the pencil heavier alone does not fix that; the architecture has to
+    // sit back.  At 0.52 the wing is still completely legible as a building —
+    // rooms, doors, stairs, the lot — and the marks and the route now read as
+    // something laid ON it rather than as more of it.
+    g.globalAlpha = 0.16;                                     // soft under-bleed
     g.drawImage(b1, dx - 1.8, dy + 1.8, dw, dh);
-    g.globalAlpha = 0.74;                                     // the linework itself
+    g.globalAlpha = 0.52;                                     // the linework itself
     g.drawImage(b1, dx, dy, dw, dh);
     g.restore();
     this._plan = { dx, dy, dw, dh };
@@ -1293,7 +1300,9 @@ export class MapScene extends Scene {
 
     if (m.run) {
       m.run.currentNodeId = id;
-      m.run.visitedIds = [...m.visited];
+      // Deliberately NOT `run.visitedIds = [...m.visited]`. `visitedIds` is the
+      // *cleared* set now, and `run._markEntered()` had to actively splice this
+      // optimistic entry back out. Entering a room is not clearing it.
       m.run.pathIds = m.path.slice();
       if (typeof m.run.chooseNode === 'function') { m.run.chooseNode(node); return; }
       this.ctx.scenes?.go?.(sceneForNode(node), { node: id, region: m.regionId });

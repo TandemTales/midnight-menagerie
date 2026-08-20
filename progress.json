@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T13:33:22",
+ "updated": "2026-08-20T13:54:46",
  "wave": 3,
  "waveLabel": "Closing the seams",
  "headline": "A full playthrough found that every module passes its own tests and silently no-ops at the join. Fixing that class of bug.",
@@ -69,9 +69,9 @@
    "id": "map",
    "name": "Blueprint routes",
    "desc": "Branching route map drawn on the mansion blueprint sections",
-   "status": "reviewing",
+   "status": "done",
    "round": 3,
-   "verdict": "Clicking fixed, route inks, 64 nodes with varied composition, 0 edge crossings across 2584 edges in 24 maps, entrance stall 2564ms to 149ms.",
+   "verdict": "Safe Room guaranteed before the boss: region survival 40% to 50%, boss reached 58% to 68%. Route now readable three rooms ahead; 0 label collisions.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -398,6 +398,14 @@
   {
    "t": "2026-08-20T13:33:22",
    "msg": "Fight opening was animating behind the transition veil because scenes await enter() before revealing. 1781ms of black screen before the first card; now ~1000ms."
+  },
+  {
+   "t": "2026-08-20T13:54:46",
+   "msg": "Map round 3: the blueprint architecture was drawn at alpha 0.74, competing with the route on equal terms. Dropped to 0.52 - that, not line weight, is what made the route readable."
+  },
+  {
+   "t": "2026-08-20T13:54:46",
+   "msg": "Target contradiction found: region survival 60-75% and boss win 45-65% are mutually exclusive, since survival is roughly P(reach) x P(win boss). Revising."
   }
  ]
 }

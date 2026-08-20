@@ -6,9 +6,9 @@
  *   hud.refresh();                                    // usually automatic
  *   hud.destroy();                                    // in Scene.exit()
  *
- * Shows, left to right: Companion + region/floor, Courage, Lost Things, Snack
- * slots, the Keepsake bar, the Backpack Gear bar, Haunt Level, seed, the deck
- * button and the settings button. Every chip on it is hoverable and
+ * Shows, left to right: Companion + region/floor, Courage, Lost Things, Clues,
+ * Luck, Snack slots, the Keepsake bar, the Backpack Gear bar, Haunt Level,
+ * seed, the deck button and the settings button. Every chip on it is hoverable and
  * keyboard-focusable, and every tooltip is a plain-language sentence — the HUD
  * is the game's answer to "what do I actually have right now".
  *
@@ -56,6 +56,7 @@
 import { icon } from './icons.js';
 import { openPile } from './deckview.js';
 import { openSettings } from './settings.js';
+import { plural, word } from '../util/plural.js';
 // One Keepsake sigil set for the whole game. The shop and the reward room
 // already draw Keepsakes with this; the HUD drawing a generic glyph instead is
 // exactly the drift this component exists to end.
@@ -64,7 +65,7 @@ import { relicSigil } from '../data/relics.js';
 // only sees the subset with combat hooks. See gearList() below.
 import { itemById } from '../data/backpack.js';
 
-/* ── Gear chip styling ────────────────────────────────────────────────────────
+/* ── Gear, Clue and Luck chip styling ────────────────────────────────────────
    This belongs in ui/hud.css beside `.mm-hud__relic`, and it is here instead
    only because hud.css is another owner's file and this change was scoped to
    hud.js. It is one idempotent <style> tag, injected once per document, using
@@ -104,6 +105,12 @@ const GEAR_CSS = `
   stroke-linecap: round; stroke-linejoin: round;
 }
 .mm-hud__gearchip .mm-hud__relicn { background: var(--spectre-200); }
+
+/* Clues and Luck. Same chip as Lost Things — only the icon is tinted, cool for
+   the investigation, green for the odds, so neither competes with Courage. */
+.mm-hud__clue .mm-icon { color: var(--spectre-300); }
+.mm-hud__luck .mm-icon { color: var(--good-300); }
+.mm-hud__clue[hidden], .mm-hud__luck[hidden] { display: none; }
 `;
 
 function ensureGearCss() {
@@ -125,6 +132,7 @@ const EVENTS = [
 const MOCK = {
   companionName: 'Marmalade', kidName: 'Maya',
   courage: 52, maxCourage: 70, lostThings: 137,
+  cluesFound: 2, luck: 1,
   region: 'foyer', floor: 1, hauntLevel: 0, seed: '—',
   keepsakes: [], snacks: [], snackCap: 3, deck: [],
   _mock: true,
@@ -216,6 +224,8 @@ export class HUD {
           <div class="mm-hud__bar"><i></i><span class="mm-hud__barlabel"></span></div>
         </div>
         <div class="mm-hud__chip mm-hud__gold" tabindex="0"></div>
+        <div class="mm-hud__chip mm-hud__clue" tabindex="0"></div>
+        <div class="mm-hud__chip mm-hud__luck" tabindex="0"></div>
         <div class="mm-hud__snacks" role="group" aria-label="Snacks"></div>
       </div>
       <div class="mm-hud__group mm-hud__group--keepsakes">
@@ -236,6 +246,8 @@ export class HUD {
     this.$bar = root.querySelector('.mm-hud__bar > i');
     this.$barLabel = root.querySelector('.mm-hud__barlabel');
     this.$gold = root.querySelector('.mm-hud__gold');
+    this.$clue = root.querySelector('.mm-hud__clue');
+    this.$luck = root.querySelector('.mm-hud__luck');
     this.$snacks = root.querySelector('.mm-hud__snacks');
     this.$extra = root.querySelector('.mm-hud__group--extra');
     this.$relics = root.querySelector('.mm-hud__relics');
@@ -247,6 +259,14 @@ export class HUD {
 
     this.$where.prepend(icon('res.region'));
     this.$gold.prepend(icon('res.lost-things'));
+    /* Clues and Luck keep a PERSISTENT text node, unlike the chips that rebuild
+       themselves each refresh: `addChip()` hands this node to a room scene that
+       still writes its own Clue chip, and a node that gets replaced every
+       refresh would leave that scene writing into a detached span. */
+    this.$clue.append(icon('ui.search'), text(''));
+    this.$luck.append(icon('ui.star'), text(''));
+    this.$clueT = this.$clue.querySelector('.mm-hud__t');
+    this.$luckT = this.$luck.querySelector('.mm-hud__t');
     this.$haunt.prepend(icon('res.haunt-level'));
     this.$seed.prepend(icon('res.seed'));
     this.$deck.prepend(icon('res.deck'));
@@ -299,6 +319,27 @@ export class HUD {
     // gold
     this.$gold.textContent = '';
     this.$gold.append(icon('res.lost-things'), text(String(num(r.lostThings ?? r.gold, 0))));
+
+    /* Clues and Luck — the run awards both and, until now, only the four room
+       screens showed them (through `addChip()`), so on the map and inside a
+       Scuffle they were currencies the player could not see. `flags` is a
+       getter on the real run that aggregates Keepsake + Gear + pity; the mock
+       has no such getter, hence the explicit branch rather than `r.flags?.luck`
+       — CONTRACTS rule 8: never `?.` a run API that must exist. */
+    const clues = num(r.cluesFound ?? r.clues, 0);
+    const luck = num(r.flags ? r.flags.luck : r.luck, 0);
+    this.$clueT.textContent = `${clues} ${word(clues, 'Clue')}`;
+    this.$clue.setAttribute('aria-label', `${plural(clues, 'Clue')} found`);
+    this.$clue.dataset.tipTitle = plural(clues, 'Clue');
+    this.$clue.dataset.tip =
+      'What you have worked out about where the animals went. Curiosities and some rooms give them up, and they carry over to the investigation board at the clubhouse.';
+    this.$luckT.textContent = `Luck +${luck}`;
+    this.$luck.setAttribute('aria-label', `Luck plus ${luck}`);
+    this.$luck.dataset.tipTitle = `Luck +${luck}`;
+    this.$luck.dataset.tip =
+      'How much more likely a Rare Trick is to turn up in a reward. Keepsakes raise it, and so does taking none of the three.';
+    // No Luck is the normal state; an always-on "+0" would be noise.
+    this.$luck.hidden = luck <= 0;
 
     // snacks
     const snacks = Array.isArray(r.snacks) ? r.snacks : [];
@@ -397,7 +438,7 @@ export class HUD {
     const deck = Array.isArray(r.deck) ? r.deck : [];
     this.$deck.textContent = '';
     this.$deck.append(icon('res.deck'), text('Tricks'), sub(String(deck.length)));
-    this.$deck.setAttribute('aria-label', `View your ${deck.length} Tricks`);
+    this.$deck.setAttribute('aria-label', `View your ${plural(deck.length, 'Trick')}`);
   }
 
   // ── actions ────────────────────────────────────────────────────────────
@@ -422,9 +463,23 @@ export class HUD {
   /**
    * Add a scene-owned chip to the HUD (combat's Turn counter is the only one).
    * Use `.mm-hud__chip` so it inherits the shared chip treatment exactly.
-   * @returns {Element} the node, so the caller can update it in place.
+   *
+   * Clues and Luck are carried natively now, so a chip that asks for one of
+   * them is NOT added twice: the HUD returns its own chip's text node instead
+   * and the caller keeps updating "its" chip in place, in the one position the
+   * player learns. The four room screens went through here for exactly this
+   * (see `scenes/reward.js#_buildHudExtras`) and can drop their copy whenever
+   * meta-run gets to it.
+   *
+   * @returns {Element} the node to update in place.
    */
-  addChip(node) { this.$extra?.appendChild(node); return node; }
+  addChip(node) {
+    const kw = node && node.dataset ? node.dataset.kw : '';
+    if (kw === 'clue' && this.$clueT) return this.$clueT;
+    if (kw === 'luck' && this.$luckT) return this.$luckT;
+    this.$extra?.appendChild(node);
+    return node;
+  }
 
   destroy() {
     for (const off of this._offs) { try { off(); } catch {} }

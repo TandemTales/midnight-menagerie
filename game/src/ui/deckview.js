@@ -25,6 +25,7 @@
 
 import { Modal } from './modal.js';
 import { icon } from './icons.js';
+import { plural, word } from '../util/plural.js';
 
 const TYPES = ['attack', 'skill', 'power', 'status', 'curse'];
 const RARITIES = ['basic', 'common', 'uncommon', 'rare'];
@@ -218,9 +219,12 @@ export class DeckView {
 
     const total = this.all.length;
     this.countN.textContent = String(list.length);
+    // The count itself is in `countN`, so the unfiltered label is the bare noun.
+    // The filtered one carries its own number — "of 1 Tricks" was reachable with
+    // a one-card pile and a filter that excluded it.
     this.countL.textContent = list.length === total
-      ? (total === 1 ? 'Trick' : 'Tricks')
-      : `of ${total} Tricks`;
+      ? word(total, 'Trick')
+      : `of ${plural(total, 'Trick')}`;
     this.clearBtn.hidden = list.length === total && !this.filters.q;
 
     this.emptyEl.hidden = list.length > 0;

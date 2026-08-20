@@ -3,7 +3,11 @@
  * OWNER: atmosphere agent.
  *
  * Public API (other agents call these; documented in docs/NOTES.md):
- *   atmosphere.setMood(region, { instant })      swap region look (17 regions + title)
+ *   atmosphere.setMood(region, { instant, seed, variant })
+ *                                                swap region look (17 regions + title).
+ *                                                `seed` is WHICH ROOM this is — pass the
+ *                                                room name or node id and two rooms that
+ *                                                share a space stop being the same room.
  *   atmosphere.impact(pos, { strength, color })  hit feedback at a world or screen point
  *   atmosphere.dread(0..1, seconds)              scary-moment desaturate + edge crush
  *   atmosphere.pulse(color, amount)              soft coloured wash
@@ -625,6 +629,41 @@ const NUM_KEYS = ['coolFill', 'grime', 'openGlow', 'wallFog', 'gloss', 'rim', 'g
   'exposure', 'vignette', 'grain', 'fogDensity', 'propGain', 'propGloss', 'saturate',
   'contrast'];
 
+/**
+ * PER-ROOM VARIATION.
+ *
+ * Seventeen authored spaces have to carry 340 authored rooms: `scenes/combat.js`
+ * maps six different Foyer rooms onto `passages`, and with the RNG seeded from
+ * the palette key alone all six rendered pixel-identically — the same corridor,
+ * the same props in the same places, the same lamps. `setMood(name, { seed })`
+ * re-seeds from the ROOM as well, and this table lets the seed reach the one
+ * thing a reseed alone cannot change: the arrangement itself.
+ *
+ * Each authored layout maps to the arrangements that are still honestly the
+ * same KIND of space — a corridor stays a corridor, it just is not the same
+ * corridor twice. The authored layout is always in its own family, so an
+ * unseeded `setMood()` is byte-for-byte what it was before.
+ */
+const LAYOUT_FAMILY = {
+  wings:     ['wings', 'nook', 'clutter'],
+  colonnade: ['colonnade', 'rows', 'perimeter'],
+  rows:      ['rows', 'colonnade', 'terrace'],
+  aisle:     ['aisle', 'colonnade', 'nook'],
+  clutter:   ['clutter', 'nook', 'wings'],
+  nook:      ['nook', 'clutter', 'wings'],
+  terrace:   ['terrace', 'rows', 'perimeter'],
+  hang:      ['hang', 'clutter', 'nook'],
+  perimeter: ['perimeter', 'wings', 'colonnade'],
+};
+
+/** 32-bit FNV-1a. A room name, a node id or a number all hash the same way. */
+function hashSeed(v) {
+  let h = 2166136261;
+  const s = String(v);
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+
 function resolve(name) {
   const key = REGION_ALIAS[name] || (REGIONS[name] ? name : 'foyer');
   const src = REGIONS[key] || {};
@@ -703,7 +742,26 @@ export class Atmosphere {
 
   /* ------------------------------------------------------------ public API */
 
-  /** Swap region look. Cross-fades colour/light over ~0.7 s unless instant. */
+  /**
+   * Swap region look. Cross-fades colour/light over ~0.7 s unless instant.
+   *
+   * @param {string} name   region / atmosphere key (see REGION_ALIAS)
+   * @param {object} [opts]
+   * @param {boolean} [opts.instant]  no cross-fade
+   * @param {string|number} [opts.seed]     WHICH ROOM this is. Two rooms that
+   *        resolve to the same authored space (six Foyer rooms all play in
+   *        `passages`) rendered identically because the RNG was seeded from the
+   *        palette key alone. Pass anything stable and per-room — the room name
+   *        or the node id — and the same room comes back the same every time
+   *        while its neighbour on the same key does not. Costs no new authored
+   *        data: prop arrangement, prop count, room proportions and lamp
+   *        positions are all derived from it.
+   * @param {string|number} [opts.variant]  a second axis on the same seed, for
+   *        a caller that wants "this room, but the other way round" (a rematch,
+   *        a Big Scare in a room already fought in). Folded into the seed.
+   *
+   * Omit both and nothing changes: the palette is used exactly as authored.
+   */
   setMood(name, opts = {}) {
     if (!this.backdrop) return this;
     const pal = resolve(name);
@@ -711,6 +769,18 @@ export class Atmosphere {
     this.target = pal;
     this._seed = 1;
     for (let i = 0; i < pal.regionKey.length; i++) this._seed = (this._seed * 31 + pal.regionKey.charCodeAt(i)) % 100003;
+
+    const hasSeed = opts.seed !== undefined && opts.seed !== null && opts.seed !== '';
+    const hasVariant = opts.variant !== undefined && opts.variant !== null && opts.variant !== '';
+    this.roomSeed = hasSeed || hasVariant ? `${opts.seed ?? ''}#${opts.variant ?? ''}` : null;
+    if (this.roomSeed) {
+      // Mix the room into the space's own seed rather than replacing it, so the
+      // palette key still contributes and two rooms in DIFFERENT spaces that
+      // happen to share a name do not share a layout.
+      this._seed = (this._seed ^ hashSeed(this.roomSeed)) % 2147483647;
+      if (this._seed <= 0) this._seed += 2147483646;
+      this._vary(pal, hashSeed(`${pal.regionKey}|${this.roomSeed}`));
+    }
 
     this.backdrop.build(pal, () => this._rand());
     this._buildLights(pal);
@@ -829,6 +899,68 @@ export class Atmosphere {
   _rand() {
     this._seed = (this._seed * 1103515245 + 12345) & 0x7fffffff;
     return (this._seed >>> 8) / 8388608;
+  }
+
+  /**
+   * Turn one authored space into THIS room. Structure only — never colour,
+   * never grade, never the particle mix: the region has to stay recognisably
+   * itself, so what moves is the arrangement, the proportions and the lamps.
+   *
+   *   layout       a sibling arrangement from LAYOUT_FAMILY
+   *   prop count   ±25%, so one room is sparse and the next is crowded
+   *   proportions  ±9% on width and depth, ±6% on height
+   *   lamps        each moved up to ~14% of the room across and along it,
+   *                intensity ±10%, and the key/fill swapped left-to-right half
+   *                the time — which is the single most visible change of all
+   *   shafts       ±1 shaft, and the fall moved along the room
+   *
+   * `pal` is the fresh object `resolve()` just built, so mutating it is safe —
+   * EXCEPT `pal.lights`, which `resolve()` aliases straight to the authored
+   * REGIONS array. That one is cloned here before anything touches it.
+   *
+   * Runs once per room entry, never per frame.
+   */
+  _vary(pal, h) {
+    let s = h >>> 0 || 1;
+    const r = () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+    const spread = (amt) => 1 + (r() * 2 - 1) * amt;    // 1±amt
+
+    // ── the arrangement ────────────────────────────────────────────────────
+    const fam = LAYOUT_FAMILY[pal.props.layout] || [pal.props.layout];
+    pal.props = Object.assign({}, pal.props, {
+      layout: fam[(r() * fam.length) | 0],
+      count: Math.max(6, Math.round((pal.props.count ?? 22) * spread(0.25))),
+      height: (pal.props.height ?? 2.2) * spread(0.08),
+    });
+
+    // ── the shell ──────────────────────────────────────────────────────────
+    // Small: the camera rig is authored against these proportions and a room
+    // that grows 30% stops being framed. 9% is a different room, not a mistake.
+    const R = pal.room;
+    R.w *= spread(0.09);
+    R.d *= spread(0.09);
+    if (R.h > 0) R.h *= spread(0.06);
+    R.side += (r() * 2 - 1) * 0.02;
+
+    // ── the lamps ──────────────────────────────────────────────────────────
+    const flip = r() < 0.5 ? -1 : 1;      // mirror the room's lighting
+    const move = (L, ax, az) => {
+      L.x = L.x * flip + (r() * 2 - 1) * R.w * ax;
+      L.z += (r() * 2 - 1) * R.d * az;
+      L.intensity *= spread(0.10);
+      return L;
+    };
+    // key and fill are already fresh copies; the lamp array is not.
+    move(pal.key, 0.06, 0.04);
+    move(pal.fill, 0.06, 0.04);
+    pal.lights = (pal.lights || []).map((L) => move(Object.assign({}, L), 0.14, 0.10));
+
+    // ── the shafts ─────────────────────────────────────────────────────────
+    const sh = pal.shafts;
+    sh.count = Math.max(1, (sh.count ?? 3) + ((r() * 3) | 0) - 1);
+    sh.z *= spread(0.12);
+    sh.spread *= spread(0.16);
+    sh.angle *= spread(0.20);
   }
 
   _readTokens() {

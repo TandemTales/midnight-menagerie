@@ -147,10 +147,10 @@
   opacity: .55;
   transition: opacity var(--t-base), stroke-width var(--t-base);
 }
-.mi-halo.is-open   { stroke-width: 16; opacity: .95; }
-.mi-halo.is-walked { stroke-width: 17; opacity: .9; }
-.mi-halo.is-dead   { stroke-width: 8;  opacity: .5; }
-.mi-halo.is-cold   { stroke-width: 6;  opacity: .3; }
+.mi-halo.is-open   { stroke-width: 18; opacity: .96; }
+.mi-halo.is-walked { stroke-width: 18; opacity: .92; }
+.mi-halo.is-dead   { stroke-width: 13; opacity: .7; }
+.mi-halo.is-cold   { stroke-width: 8;  opacity: .38; }
 
 .mi-edge {
   fill: none; stroke: var(--pencil);

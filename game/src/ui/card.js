@@ -13,6 +13,7 @@
  */
 import { clock as defaultClock, Clock } from '../core/clock.js';
 import { cardArt, onArtReady } from './cardart.js';
+import { fixNumberedNouns } from '../util/plural.js';
 
 /** Must match `--ss` in card.css. */
 export const CARD_SS = 1.4;
@@ -210,13 +211,21 @@ export class CardView {
 
     const frag = document.createDocumentFragment();
     let plain = 0;
+    this._nounNodes = [];
 
     for (const line of String(txt).split('\n')) {
       const row = document.createElement('div');
       const re = /\{(\w+)\}|\[([^\]]+)\]|\*([^*]+)\*/g;
-      let last = 0, m;
+      let last = 0, m, lastNum = null;
+      const addText = (str) => {
+        const t = document.createTextNode(str);
+        this._nounNodes.push({ node: t, orig: str, num: lastNum });
+        row.appendChild(t);
+        plain += str.length;
+        lastNum = null;
+      };
       while ((m = re.exec(line))) {
-        if (m.index > last) { row.appendChild(document.createTextNode(line.slice(last, m.index))); plain += m.index - last; }
+        if (m.index > last) addText(line.slice(last, m.index));
         if (m[1]) {
           const b = document.createElement('b');
           b.className = 'mm-card__num';
@@ -227,6 +236,7 @@ export class CardView {
           if (!this._numEls.has(m[1])) this._numEls.set(m[1], []);
           this._numEls.get(m[1]).push(b);
           row.appendChild(b);
+          lastNum = b;
         } else if (m[2]) {
           const s = document.createElement('span');
           s.className = 'mm-card__kw';
@@ -234,22 +244,54 @@ export class CardView {
           s.textContent = KEYWORD_LABEL[s.dataset.kw] || m[2];
           plain += s.textContent.length;
           row.appendChild(s);
+          lastNum = null;
         } else {
           const e = document.createElement('em');
           e.textContent = m[3];
           plain += m[3].length;
           row.appendChild(e);
+          lastNum = null;
         }
         last = re.lastIndex;
       }
-      if (last < line.length) { row.appendChild(document.createTextNode(line.slice(last))); plain += line.length - last; }
+      if (last < line.length) addText(line.slice(last));
       frag.appendChild(row);
     }
+    plain += this._repairNouns();
     this.$rules.appendChild(frag);
     this.el.classList.toggle('is-text-long', plain > 62 && plain <= 104);
     this.el.classList.toggle('is-text-xlong', plain > 104);
     this._preview = null;
     this._updateAria();
+  }
+
+  /**
+   * "Draw {n} Tricks" with n=1 printed "Draw 1 Tricks".
+   *
+   * The authored string cannot fix this: the noun is written before the number
+   * exists, and the number is substituted here. 46 lines across five content
+   * files say "Tricks" because they are usually right — so repair the finished
+   * line instead of editing content. Only the TEXT nodes are rewritten, so the
+   * live `<b class="mm-card__num">` elements keep their identity (and their
+   * green/red preview classes) across the repair.
+   *
+   * `orig` is always the authored, plural form, so a preview that pushes a 1 up
+   * to a 2 restores "Tricks" as cleanly as it singularised it.
+   * Returns the character delta, for the is-text-long thresholds.
+   */
+  _repairNouns() {
+    if (!this._nounNodes) return 0;
+    let delta = 0;
+    for (const e of this._nounNodes) {
+      // The count lives in the preceding <b>; give the repair that context.
+      const lead = e.num ? (/(\d+)\s*$/.exec(e.num.textContent) || ['', ''])[1] : '';
+      const out = fixNumberedNouns(lead + e.orig).slice(lead.length);
+      if (out !== e.node.nodeValue) {
+        delta += out.length - e.node.nodeValue.length;
+        e.node.nodeValue = out;
+      }
+    }
+    return delta;
   }
 
   _renderCost() {
@@ -283,7 +325,7 @@ export class CardView {
    */
   _spokenText() {
     const base = this.nums, p = this._preview;
-    return String(this.text)
+    return fixNumberedNouns(String(this.text)
       .replace(/\{(\w+)\}|\[([^\]]+)\]|\*([^*]+)\*/g, (m, key, kw, em) => {
         if (key) {
           let v = base[key];
@@ -295,7 +337,7 @@ export class CardView {
       })
       .replace(/\s*\n\s*/g, ' ')
       .replace(/\s+/g, ' ')
-      .trim();
+      .trim());
   }
 
   _ariaLabel() {
@@ -383,6 +425,9 @@ export class CardView {
         e.classList.toggle('is-down', down);
       }
     }
+    // A preview can move a count across 1 in either direction ("Draw 1 Trick"
+    // -> "Draw 2 Tricks"), so the nouns follow the numbers.
+    this._repairNouns();
     this._updateAria();
     return this;
   }

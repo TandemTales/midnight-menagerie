@@ -55,7 +55,18 @@ export const TUNE = {
   // drag
   dragFollow: 0.075, dragScale: 1.10, dragTiltMax: 14, dragTiltGain: 0.85,
   parkScale: 1.06, snapPad: 26,
+  // ── the commit threshold ───────────────────────────────────────────────
+  // The line is ANCHORED TO THE FAN, not to the host: it sits `thresholdLift`
+  // card-heights above the top edge of the resting fan, so the gesture is the
+  // same reach at every viewport and every hand size. `thresholdFrac` is only
+  // the fallback for a hand that has not laid out yet, and the clamp keeps the
+  // band off the enemies at extreme aspect ratios.
   thresholdFrac: 0.54,
+  thresholdLift: 0.30,   // card-heights between the fan's top edge and the line
+  thresholdBand: 0.40,   // band depth, in card-heights, ABOVE the line
+  thresholdMinY: 0.20,   // never higher than this fraction of the host
+  // tap-to-play: pointerdown and pointerup in the same spot, quickly
+  tapTime: 0.42, tapSlop: 12,
   // arrow
   arrowHead: 36,        // solid triangle, px
   arrowReticleR: 46,    // the tip stops on the reticle, never in the sprite
@@ -71,6 +82,73 @@ function hash(s) {
   let h = 5381;
   for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
   return Math.abs(h);
+}
+
+/* ── the commit band ─────────────────────────────────────────────────────────
+   `.mm-hand__threshold` is authored in ui/hand.css as a 2px hairline centred on
+   its own `top`. A hairline is not a drop zone: a player who releases a card in
+   the middle of the field gets a silent return and no idea what they missed. So
+   the same element becomes a BAND — a soft field whose BOTTOM EDGE is the line
+   the release is measured against — and it arms on pointerdown, not part-way
+   through a drag.
+
+   This block belongs beside the hairline in ui/hand.css; it is here only
+   because that file is another owner's and this change was scoped to hand.js.
+   One idempotent <style> tag per document, tokens only, and every rule carries
+   `.is-band` so the hairline styling is untouched for anyone still using it.
+   The armed/blocked rules are 3 classes deep so they beat hand.css's 2-class
+   `.is-armed` regardless of which stylesheet the document ends up loading last.
+   HAND-OFF: whoever owns hand.css next should lift this in verbatim and delete
+   `ensureBandCss()`. Noted in docs/NOTES.md. */
+const BAND_CSS = `
+.mm-hand__threshold.is-band {
+  transform: none;                 /* the bottom edge IS the line */
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  background:
+    repeating-linear-gradient(90deg,
+      color-mix(in srgb, var(--spectre-200) 70%, transparent) 0 14px,
+      transparent 14px 26px) left bottom / 100% 2px no-repeat,
+    linear-gradient(to top,
+      color-mix(in srgb, var(--spectre-500) 26%, transparent),
+      transparent 82%);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--spectre-300) 26%, transparent);
+}
+.mm-hand__threshold.is-band::after {
+  top: auto; bottom: .5em;
+  transform: translate(-50%, 0);
+}
+.mm-hand__threshold.is-band.is-on { opacity: .9; }
+.mm-hand__threshold.is-band.is-on.is-armed {
+  opacity: 1;
+  background:
+    repeating-linear-gradient(90deg,
+      var(--flame-200) 0 20px, transparent 20px 30px) left bottom / 100% 3px no-repeat,
+    linear-gradient(to top,
+      color-mix(in srgb, var(--flame-glow) 34%, transparent),
+      transparent 84%);
+  box-shadow: 0 0 26px color-mix(in srgb, var(--flame-glow) 55%, transparent);
+}
+.mm-hand__threshold.is-band.is-on.is-blocked {
+  opacity: .92;
+  background:
+    repeating-linear-gradient(90deg,
+      color-mix(in srgb, var(--ink-300) 80%, transparent) 0 10px,
+      transparent 10px 22px) left bottom / 100% 2px no-repeat,
+    linear-gradient(to top,
+      color-mix(in srgb, var(--ink-500) 30%, transparent),
+      transparent 84%);
+  box-shadow: none;
+}
+.mm-reduce .mm-hand__threshold.is-band { transition: none; }
+`;
+
+function ensureBandCss() {
+  if (typeof document === 'undefined') return;
+  if (document.getElementById('mm-hand-band-css')) return;
+  const st = document.createElement('style');
+  st.id = 'mm-hand-band-css';
+  st.textContent = BAND_CSS;
+  document.head.appendChild(st);
 }
 
 let UID = 0;
@@ -169,6 +247,8 @@ export class Hand {
     this.$head = el.querySelector('.mm-arrow__head');
     this.$ret = el.querySelector('.mm-arrow__reticle');
     this.$thresh = el.querySelector('.mm-hand__threshold');
+    ensureBandCss();
+    this.$thresh.classList.add('is-band');
     if (this.reduceMotion) el.classList.add('mm-reduce');
 
     if (root) { root.appendChild(el); this.mount(root); }
@@ -195,15 +275,41 @@ export class Hand {
     this.chh = ph / CARD_SS;
 
     this.baseY = this.h - TUNE.bottomPad;
-    this.thresholdY = this.h * TUNE.thresholdFrac;
+    this.thresholdY = this.h * TUNE.thresholdFrac;   // replaced by _syncThreshold
     // held card floats above the hand; enemies stay visible above it
     this.parkY = Math.round(this.h - Math.max(96, this.chh * 0.42));
     this.piles = this.piles || {};
     this.piles.draw = this.piles.draw || { x: 96, y: this.h + 40 };
     this.piles.discard = this.piles.discard || { x: this.w - 96, y: this.h + 40 };
-    this.$thresh.style.top = this.thresholdY + 'px';
+    this._syncThreshold();
     this.hit.style.top = Math.round(Math.max(0, this.h - (this.chh * 1.5 + 90))) + 'px';
     this.$arrow.setAttribute('viewBox', `0 0 ${this.w} ${this.h}`);
+  }
+
+  /**
+   * Place the commit band. ANCHORED TO THE FAN: the line sits
+   * `thresholdLift` card-heights above the top edge of the resting fan, so
+   * "lift it clear of your hand" is the same gesture whatever the viewport and
+   * however many cards are in it. Anchored to the host (`h * 0.54`) it drifted
+   * — at a short viewport with a big hand the line fell inside the fan itself.
+   *
+   * The band is drawn ABOVE the line and its BOTTOM EDGE is the line, so what
+   * the player sees is exactly what `_pointerUp` measures.
+   *
+   * @param {object} [F] the fan geometry, when the caller already has it.
+   */
+  _syncThreshold(F) {
+    const ch = F ? F.ch : this.chh * (this.fit || 1);
+    const baseY = F ? F.baseY : this.baseY;
+    const y = baseY - ch * (1 + TUNE.thresholdLift);
+    this.thresholdY = Math.round(clamp(y, this.h * TUNE.thresholdMinY, this.h - 40));
+    const band = Math.round(clamp(ch * TUNE.thresholdBand, 44, this.h * 0.26));
+    // `_layout` runs on every hover; only touch the DOM when it actually moved.
+    if (this._threshTop === this.thresholdY && this._threshBand === band) return;
+    this._threshTop = this.thresholdY;
+    this._threshBand = band;
+    this.$thresh.style.top = (this.thresholdY - band) + 'px';
+    this.$thresh.style.height = band + 'px';
   }
 
   /** Gutter each side that the fan must never enter (energy orb, piles). */
@@ -563,6 +669,7 @@ export class Hand {
     const F = this._fan(n);
     const c = F.c, step = F.step, rotPer = F.rotPer, dip = F.dip, cx = F.cx, fit = F.fit;
     this.baseY = F.baseY;
+    this._syncThreshold(F);
 
     const hover = this.hoverSlot;
     const hoverIdx = hover ? this.slots.indexOf(hover) : -1;
@@ -735,6 +842,9 @@ export class Hand {
     this._readTargets();
     this.drag = {
       slot, px: p.x, py: p.y, lastX: p.x, tilt: 0, moved: 0,
+      // where and when the gesture started — a tap is judged against these,
+      // not against `moved`, which is a path length and grows on a jitter.
+      sx: p.x, sy: p.y, t0: performance.now(),
       needsTarget: this._needsTarget(slot.card.def),
       snap: null, committed: false, pointerId: e.pointerId,
     };
@@ -802,7 +912,20 @@ export class Hand {
     this.bus.emit('card:drop', { uid: s.card.uid, cardId: s.card.def.id });
 
     const above = d.py < this.thresholdY;
-    const commit = d.cancelled ? false : (d.needsTarget ? !!d.snap : above);
+    /* A CLICK IS A PLAY. A non-targeted Trick used to need a drag across the
+     * line and nothing else worked, so a click on a self-targeted card did
+     * literally nothing. Pointerdown and pointerup in the same place, quickly,
+     * is a tap and commits exactly as a drop above the line does — including
+     * the shake when the card is unaffordable. A pointercancel is the browser
+     * taking the gesture away (touch-scroll), never a tap. Targeted cards are
+     * deliberately excluded: the Hand cannot know which enemy was meant, so
+     * the aim arrow (or the scene) still resolves those.
+     */
+    const held = (performance.now() - d.t0) / 1000;
+    const slip = Math.hypot(d.px - d.sx, d.py - d.sy);
+    const tap = !d.needsTarget && e && e.type !== 'pointercancel'
+      && held <= TUNE.tapTime && slip <= TUNE.tapSlop;
+    const commit = d.cancelled ? false : (d.needsTarget ? !!d.snap : (above || tap));
     if (commit && s.playable) {
       this._commit(s, d.snap ? d.snap.id : undefined);
     } else {

@@ -204,10 +204,19 @@ export function buildIntent(engine, enemy, move, opts = {}) {
   const block = blockRaw > 0 ? engine.previewBlockValue(enemy, blockRaw, { fromCard: false }) : 0;
 
   const applies = (typeof move.appliesFn === 'function' ? safe(move.appliesFn, c) : move.applies) || [];
-  const statuses = applies.map(a => ({
-    id: a.id, stacks: a.stacks ?? 1, to: a.to || 'player',
-    name: getStatus(a.id).name, kind: getStatus(a.id).kind,
-  }));
+  // Carry `icon` through with name/kind. The renderer draws the pip straight
+  // from this; without the icon Roused (icon `bell-small`) fell back to a `?`,
+  // which on an intent reads as "unknown intent". An unregistered status has no
+  // real icon, so leave the field off and let the renderer pick its fallback.
+  const statuses = applies.map(a => {
+    const def = getStatus(a.id);
+    const s = {
+      id: a.id, stacks: a.stacks ?? 1, to: a.to || 'player',
+      name: def.name, kind: def.kind,
+    };
+    if (def.icon && !def._missing) s.icon = def.icon;
+    return s;
+  });
 
   const family = intentFamily(type);
   const intent = {

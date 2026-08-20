@@ -32,6 +32,7 @@ import {
 } from '../ui/portrait.js';
 import { pauseStageFor } from './_stage.js';
 import { fitCardToSlot } from './_cardfit.js';
+import { plural, word } from '../util/plural.js';
 
 const CSS_KIT  = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_OVER = new URL('./gameover.css', import.meta.url).href;
@@ -71,9 +72,6 @@ const KILLERS = {
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => (
   { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-
-/** Cheap plural helper so the copy never reads like a debug print. */
-const plural = (n, one, many) => `${n} ${n === 1 ? one : (many ?? one + 's')}`;
 
 export class GameOverScene extends Scene {
   constructor(ctx) {
@@ -161,7 +159,14 @@ export class GameOverScene extends Scene {
     const meta = regionMeta(regionId);
 
     const mocked = !run;
-    const floor = Number(hash('floor', run?.floor)) || (mocked ? meta.index * 4 + rng.int(4) : meta.index);
+    /* Two numbers, not one. The run layer split the old ambiguous "floor":
+       `depth` is how many rooms deep the expedition got (what the Clubhouse
+       calls "Deepest floor", what the ledger prints as "Reached Floor N"), and
+       `wing` is the ladder position the map prints as "Wing N of 17". The
+       `floor` param carries `depth` now, so the kicker must read `wing` or it
+       announces "Expedition 14" for a run that never left the Foyer. */
+    const floor = Number(hash('floor', run?.depth)) || (mocked ? meta.index * 4 + rng.int(4) : meta.index);
+    const wing  = Number(hash('wing', run?.wing)) || meta.index;
 
     // Real values when the run exists; deterministic, plausible ones when not.
     const scuffles   = Number(run?.stats?.scuffles   ?? run?.scufflesWon) || (mocked ? 6 + rng.int(9) : 0);
@@ -183,7 +188,7 @@ export class GameOverScene extends Scene {
 
     return {
       result, seed: seedRaw, rng, mocked,
-      companion, kid, regionId, meta, floor,
+      companion, kid, regionId, meta, floor, wing,
       scuffles, bigScares, curiosity, safeRooms, cardsPlay, damage, gold,
       hp, maxHp, turns, wingsMapped, freedThisRun, cluesFound, petHome,
       haunt: Number(run?.hauntLevel ?? Save?.data?.hauntLevel ?? 0) || 0,
@@ -249,11 +254,11 @@ export class GameOverScene extends Scene {
     /* --- headline --------------------------------------------------------- */
     const head = el('div', 'go-head');
     head.innerHTML = this.won
-      ? `<p class="go-kicker">Expedition ${s.floor} &middot; ${esc(region)}</p>
+      ? `<p class="go-kicker">Wing ${s.wing} &middot; ${esc(region)}</p>
          <h1 class="go-title">You got one out.</h1>
          <p class="go-lede">${esc(c.name)} walked through the front door on ${esc(first)}&rsquo;s shoulder
             and did not look back at the house once.</p>`
-      : `<p class="go-kicker">Expedition ${s.floor} &middot; ${esc(region)}</p>
+      : `<p class="go-kicker">Wing ${s.wing} &middot; ${esc(region)}</p>
          <h1 class="go-title">The candle goes out.</h1>
          <p class="go-lede">${esc(first)} gets out. ${esc(s.killedBy.replace(/^the /, 'The '))} keeps the room,
             and everything still in the backpack stays where it fell.</p>`;
@@ -280,7 +285,9 @@ export class GameOverScene extends Scene {
         ]
       : [
           `Every ${TERMS.card} you had built up &mdash; <b class="go-num" data-deck-count>&hellip;</b>`,
-          `<b class="go-num" data-relic-count>&hellip;</b> ${TERMS.relic}s, left on the floor`,
+          // The count arrives later (`_hydrateKeepsakes`), so the noun has to be
+          // patched with it — printed flat this read "1 Keepsakes".
+          `<b class="go-num" data-relic-count>&hellip;</b> <span data-relic-noun>${TERMS.relic}s</span>, left on the floor`,
           `<b class="go-num">${s.gold}</b> ${TERMS.gold}, scattered behind you`,
           `Every ${TERMS.potion} and every piece of Gear`,
         ];
@@ -586,6 +593,8 @@ export class GameOverScene extends Scene {
     if (this._keepTotal) this._keepTotal.textContent = `${list.length} kept`;
     const el0 = this.root?.querySelector('[data-relic-count]');
     if (el0) el0.textContent = String(list.length);
+    const noun = this.root?.querySelector('[data-relic-noun]');
+    if (noun) noun.textContent = word(list.length, TERMS.relic);
   }
 
   /* ═══ footer ═════════════════════════════════════════════════════════════ */

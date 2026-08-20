@@ -25,6 +25,7 @@ to concurrent whole-file writes, so this is now structural rather than a convent
 | [2026-08-20-enemies-agent-round-2](notes/2026-08-20-enemies-agent-round-2.md) | 5 KB |
 | [2026-08-20-frontend-agent-round-2-title-select-clubhouse-gam](notes/2026-08-20-frontend-agent-round-2-title-select-clubhouse-gam.md) | 8 KB |
 | [2026-08-20-map-agent-round-2-finishing-the-blueprint-pass](notes/2026-08-20-map-agent-round-2-finishing-the-blueprint-pass.md) | 9 KB |
+| [2026-08-20-map-round-3-safe-room-guarantee-and-route-vis](notes/2026-08-20-map-round-3-safe-room-guarantee-and-route-vis.md) | 15 KB |
 | [2026-08-20-meta-run-run-layer-round-2](notes/2026-08-20-meta-run-run-layer-round-2.md) | 13 KB |
 | [2026-08-20-meta-run-the-run-layer](notes/2026-08-20-meta-run-the-run-layer.md) | 15 KB |
 | [2026-08-20-one-game-pass-the-shared-hud-snacks-the-deck-sett](notes/2026-08-20-one-game-pass-the-shared-hud-snacks-the-deck-sett.md) | 12 KB |
