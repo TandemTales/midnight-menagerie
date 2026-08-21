@@ -144,8 +144,16 @@ export function slug(s) {
  * passed) the enemy-generated status Tricks so `ctx.addCard('clutter')` resolves.
  */
 export async function loadContentRegistries(engine = null) {
-  const done = { companions: false, enemies: false };
+  const done = { companions: false, enemies: false, trackers: false };
   done.companions = await loadCompanionKeywords();
+  // Companion per-combat trackers. The engine installs them at startCombat, but
+  // it will not statically import another agent's module to find them.
+  try {
+    const { preloadCompanionTrackers } = await import('../combat/engine.js');
+    done.trackers = await preloadCompanionTrackers();
+  } catch (e) {
+    console.warn('[keywords] tracker preload failed', e && e.message);
+  }
   try {
     const m = await import('./enemies/_lib.js');
     const { registerStatuses } = await import('../combat/statuses.js');

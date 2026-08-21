@@ -101,7 +101,11 @@
   /* --- Type scale (fluid). `--type-scale` is the largeText multiplier. ---- */
   --font-display: 'Cinzel', 'Trajan Pro', Georgia, serif;
   --font-body: 'Grenze', 'Palatino Linotype', Georgia, serif;
-  --font-num: 'Cinzel', Georgia, serif;
+  /* Numerals. NOT Cinzel: it draws `1` as a Roman I and `0` narrow, so the Nerve orb,
+     Courage counters, intent chips and pile counts all read as letters. Grenze's figures
+     are old-style, so lining+tabular is mandatory wherever this is used. */
+  --font-num: 'Grenze', 'Palatino Linotype', Georgia, serif;
+  --num-feat: lining-nums tabular-nums;
 
   --type-scale: 1;
 

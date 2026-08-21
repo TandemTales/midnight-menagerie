@@ -7,9 +7,10 @@
  * post-relic, post-Faint, and it re-renders the instant anything moves it.
  *
  * ── Dynamic moves win ───────────────────────────────────────────────────────
- * A MoveDef may carry `damageFn(c)`, `hitsFn(c)`, `blockFn(c)`, `intentFn(c)` and
- * `alternatives(c)`. The engine PREFERS them over the static `damage`/`hits`/
- * `block`/`intent`. Most region enemies put their whole design in those functions
+ * A MoveDef may carry `damageFn(c)`, `hitsFn(c)`, `blockFn(c)`, `intentFn(c)`,
+ * `appliesFn(c)`, `addsCardsFn(c)`, `ruleFn(c)` and `alternatives(c)`. The engine
+ * PREFERS them over the static `damage`/`hits`/`block`/`intent`/`applies`/
+ * `addsCards`/`rule`. Most region enemies put their whole design in those functions
  * (Dust Bunny growth, Rocking Horse momentum, Porcelain Doll cracks), so reading
  * the static field would make the intent lie — the worst bug this game can have.
  *
@@ -180,6 +181,7 @@ export function buildIntent(engine, enemy, move, opts = {}) {
     return {
       type: Intent.UNKNOWN, family: 'special', familyLabel: 'Special', moveId: null, name: '???',
       damage: 0, hits: 0, totalDamage: 0, block: 0, statuses: [],
+      addsCards: [], rule: null,
       tell: '', tooltip: 'You cannot tell what it is about to do.', targetId: null,
       anchored: false, revealed: true, position: opts.position ?? 0,
     };
@@ -218,13 +220,26 @@ export function buildIntent(engine, enemy, move, opts = {}) {
     return s;
   });
 
+  // Deck pollution is a threat and belongs on the chip. Pack Wrong was rendering
+  // a bare "5" -- its GUARD -- under a debuff icon, and never mentioned the
+  // Clutter, which is the entire point of the move. Entries are grouped by
+  // (id, pile) and COUNTED, so a move that adds two of something says 2.
+  const addsRaw = (typeof move.addsCardsFn === 'function' ? safe(move.addsCardsFn, c) : move.addsCards) || [];
+  const addsCards = groupCards(engine, addsRaw);
+
+  // A House Rule is the whole content of some intents (Door Greeter showed a
+  // bare "DEBUFF" with no magnitude and no duration). `ruleFn` lets an enemy
+  // that alternates rules name the one it is actually about to announce.
+  const ruleRef = (typeof move.ruleFn === 'function' ? safe(move.ruleFn, c) : move.rule) || null;
+  const rule = ruleRef ? engine.resolveRule(ruleRef) : null;
+
   const family = intentFamily(type);
   const intent = {
     type, family, familyLabel: FAMILY_LABEL[family],
     moveId: move.id, name: move.name || move.id,
     damage, hits, totalDamage: damage * hits,
     baseDamage: base,
-    block, statuses,
+    block, statuses, addsCards, rule,
     tell: typeof move.tellFn === 'function' ? (safe(move.tellFn, c) || '') : (move.tell || ''),
     targetId: defender ? defender.id : null,
     anchored: !!move.anchored,
@@ -234,6 +249,31 @@ export function buildIntent(engine, enemy, move, opts = {}) {
   };
   intent.tooltip = intentTooltip(intent, enemy);
   return intent;
+}
+
+/**
+ * Collapse `[{id,pile},{id,pile}]` into `[{id,name,pile,count}]`, resolving the
+ * card name through the engine's registry so the chip can say CLUTTER rather
+ * than `clutter`. An entry may carry its own `count`.
+ */
+function groupCards(engine, list) {
+  const out = [];
+  const byKey = new Map();
+  for (const raw of (Array.isArray(list) ? list : [list])) {
+    if (!raw) continue;
+    const entry = typeof raw === 'string' ? { id: raw } : raw;
+    if (!entry.id) continue;
+    const pile = entry.pile || 'discard';
+    const key = `${entry.id}/${pile}`;
+    const n = Math.max(1, entry.count ?? 1);
+    const hit = byKey.get(key);
+    if (hit) { hit.count += n; continue; }
+    const def = engine.resolveCardDef(entry.id);
+    const rec = { id: entry.id, name: (def && def.name) || entry.id, pile, count: n };
+    byKey.set(key, rec);
+    out.push(rec);
+  }
+  return out;
 }
 
 function pick(fn, ctx, staticValue) {
@@ -260,6 +300,13 @@ export function intentTooltip(intent, enemy) {
     const who = s.to === 'self' ? (enemy?.name || 'itself') : s.to === 'allEnemies' ? 'its allies' : 'you';
     parts.push(`Applies ${s.stacks} ${s.name} to ${who}.`);
   }
+  for (const a of (intent.addsCards || [])) {
+    const where = a.pile === 'draw' ? 'your draw pile' : a.pile === 'hand' ? 'your hand' : 'your discard pile';
+    parts.push(`Puts ${a.count} ${a.name} into ${where}.`);
+  }
+  if (intent.rule) {
+    parts.push(`Announces a House Rule: ${intent.rule.name}.${intent.rule.text ? ' ' + intent.rule.text : ''}`);
+  }
   if (parts.length === 0) {
     switch (intent.type) {
       case Intent.SLEEP: parts.push('Asleep. It does nothing this turn.'); break;
@@ -281,6 +328,17 @@ export function sameIntent(a, b) {
   if (a.type !== b.type || a.moveId !== b.moveId) return false;
   if (a.damage !== b.damage || a.hits !== b.hits || a.block !== b.block) return false;
   if (a.anchored !== b.anchored) return false;
+  // Compare what is DRAWN, not just what it points at: registering a rule's real
+  // text, or a card's display name, changes the chip and must re-render.
+  const ar = a.rule, br = b.rule;
+  if (!!ar !== !!br) return false;
+  if (ar && (ar.id !== br.id || ar.name !== br.name || ar.text !== br.text)) return false;
+  const ac = a.addsCards || [], bc = b.addsCards || [];
+  if (ac.length !== bc.length) return false;
+  for (let i = 0; i < ac.length; i++) {
+    if (ac[i].id !== bc[i].id || ac[i].count !== bc[i].count
+      || ac[i].pile !== bc[i].pile || ac[i].name !== bc[i].name) return false;
+  }
   if (a.statuses.length !== b.statuses.length) return false;
   for (let i = 0; i < a.statuses.length; i++) {
     if (a.statuses[i].id !== b.statuses[i].id || a.statuses[i].stacks !== b.statuses[i].stacks) return false;
@@ -308,6 +366,7 @@ export function queueSnapshot(engine, enemy) {
       position: k, moveId: it.moveId, name: it.name, type: it.type,
       family: it.family, familyLabel: it.familyLabel,
       damage: it.damage, hits: it.hits, block: it.block,
+      addsCards: it.addsCards.map(x => ({ ...x })), rule: it.rule ? { ...it.rule } : null,
       anchored: it.anchored, revealed: true, tooltip: it.tooltip,
     });
   }

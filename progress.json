@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T20:35:03",
+ "updated": "2026-08-20T20:46:35",
  "wave": 5,
  "waveLabel": "Closing the render seam",
  "headline": "A full two-act playthrough scored 7-3-2 against Slay the Spire 2. The engine is right; the screen is not always showing it.",
@@ -33,10 +33,10 @@
    "id": "card",
    "name": "Card feel",
    "desc": "Hover, drag, arc-fan hand, play arc, impact, re-fan easing",
-   "status": "rework",
+   "status": "reviewing",
    "round": 4,
-   "verdict": "Hand fits at all four resolutions with zero clipping. 61fps cold on draw-5-into-12 (was 43). Curse card contrast 1.22:1 to 15.79:1.",
-   "gap": "A full-screen pointer-events host blocks every intent and enemy tooltip; card art matches the companion slug so all 40+ Bones cards draw one identical picture.",
+   "verdict": "Hand no longer covers the board (intent tooltips work, zero hover oscillation kept), card art distinct across all pools, lining figures.",
+   "gap": null,
    "builder": null,
    "critic": null,
    "log": []
@@ -450,6 +450,14 @@
   {
    "t": "2026-08-20T20:35:03",
    "msg": "Render seam closed. Also caught: retained cards were wiped at end of turn with nothing putting them back."
+  },
+  {
+   "t": "2026-08-20T20:46:35",
+   "msg": "Card feel round 3: the hand host was a full-screen pointer-events layer. Fixed generically, which also fixed the showcase harness's identical bug that nobody had noticed."
+  },
+  {
+   "t": "2026-08-20T20:46:35",
+   "msg": "Cinzel draws 1 as a Roman I, so the Nerve orb and every counter read as letters. Numerals moved off it and lining figures now inherit globally."
   }
  ]
 }

@@ -2029,6 +2029,293 @@ export async function run() {
     for (const k of STAT_CONTRACT) eq(typeof st[k], 'number', `state.stats.${k} reaches the renderer`);
   });
 
+
+  // ══ ROUND 6 ═════════════════════════════════════════════════════════════
+
+  await atest('trackers: a Companion\'s counters exist at combat start, before the first card', async () => {
+    // The bug: installTrackers was only reached from U.ensure() inside a card
+    // effect, so loose-bones did not exist on turn one and the HUD gauge had
+    // nothing to show.
+    let installedFor = null;
+    const e = mk({ player: { companion: 'bones' } });
+    e.player.companion = 'bones';
+    e.setTrackerInstaller((engine, slug) => {
+      installedFor = slug;
+      engine.defineCounter({
+        id: 'loose-bones', name: 'Loose Bones', min: 0, max: 6, start: 0,
+        states: [{ at: 0, label: 'Whole' }, { from: 4, to: 6, label: 'Scattered' }],
+      });
+    });
+
+    let counterAtFirstIntent = null;
+    e.on('intent', () => { if (counterAtFirstIntent === null) counterAtFirstIntent = e.counters.has('loose-bones'); });
+
+    await e.startCombat();
+    eq(installedFor, 'bones', 'the engine installed the player Companion\'s trackers');
+    eq(counterAtFirstIntent, true, 'and did it BEFORE the first intent was drawn');
+    ok(e.counters.has('loose-bones'), 'the counter exists on turn one with no card played');
+    eq(e.state.counters.find(c => c.id === 'loose-bones').value, 0, 'and the HUD can read it from state');
+    deepEq(e.trackersInstalled, ['bones'], 'the engine records what it installed');
+  });
+
+  await atest('trackers: startCombat completes SYNCHRONOUSLY for callers that do not await', async () => {
+    // Regression guard. Installing trackers behind an `await` moved the whole of
+    // combat setup one microtask later, and every harness that calls
+    // `engine.startCombat()` without awaiting (tests/seams/proof.js:50 among
+    // them) got an empty opening hand. startCombat returns a Promise, but its
+    // body must run to completion before it returns.
+    const e = mk();
+    e.startCombat();                              // deliberately NOT awaited
+    eq(e.started, true, 'combat started before startCombat() returned');
+    eq(e.piles.hand.length, 5, 'the opening hand is already dealt');
+    eq(e.turn, 1, 'and we are on turn 1');
+    ok(e.enemies.every(x => x.intent), 'intents are already drawn');
+  });
+
+  await atest('trackers: a missing installer warns loudly instead of failing silently', async () => {
+    const warnings = [];
+    const realWarn = console.warn;
+    console.warn = (...a) => { warnings.push(a.join(' ')); };
+    try {
+      const e = mk();
+      e.player.companion = 'nobody-registered-this';
+      e.setTrackerInstaller(null);
+      const { setTrackerInstaller } = await import('../../game/src/combat/engine.js');
+      const saved = await import('../../game/src/combat/engine.js');
+      // temporarily clear the shared installer so the warning path is reachable
+      setTrackerInstaller(null);
+      await e.startCombat();
+      ok(warnings.some(w => /no tracker installer/.test(w)),
+        'a Companion with no installer produces a warning, not silence');
+      // restore for the tests that follow
+      const util = await import('../../game/src/data/companions/_util.js');
+      setTrackerInstaller(util.installTrackers);
+      ok(saved, 'module handle held');
+    } finally { console.warn = realWarn; }
+  });
+
+  await atest('trackers: a neutral deck installs nothing and still boots', async () => {
+    let called = 0;
+    const e = mk();
+    e.setTrackerInstaller(() => { called++; });
+    await e.startCombat();
+    eq(called, 0, 'no Companion means no tracker install');
+    eq(e.over, false, 'and combat started normally');
+  });
+
+  await atest('trackers: the real companion _util installs Bones\'s counter for real', async () => {
+    // CONTRACTS rule 9 — across the seam, against the real module.
+    let util = null;
+    try { util = await import('../../game/src/data/companions/_util.js'); }
+    catch (err) { ok(false, 'could not import the real _util: ' + (err?.message || err)); }
+    if (!util) return;
+    try { await import('../../game/src/data/companions/bones.js'); }
+    catch (err) { ok(false, 'could not import bones.js: ' + (err?.message || err)); return; }
+    // Explicit, so this test does not depend on an earlier one having warmed it.
+    const { preloadCompanionTrackers } = await import('../../game/src/combat/engine.js');
+    eq(await preloadCompanionTrackers(), true, 'the real installTrackers was registered with the engine');
+
+    _resetUid(0);
+    const e = new CombatEngine({
+      rng: new RNG(4),
+      player: { name: 'B', maxHp: 70, companion: 'bones', deck: makeDummyDeck() },
+      enemies: [dummyEnemy({ move: 'nothing' })],
+    });
+    await e.startCombat();
+    ok(e.counters.has('loose-bones'),
+      'the real installTrackers ran from startCombat and defined loose-bones');
+    const snap = e.state.counters.find(c => c.id === 'loose-bones');
+    ok(snap, 'and it reaches state for the HUD gauge');
+    eq(snap.value, 0, 'starting at 0');
+  });
+
+  // ── counter states ───────────────────────────────────────────────────────
+  await atest('counters: declare their own named states so nobody parses desc', async () => {
+    const e = mk();
+    await e.startCombat();
+    e.defineCounter({
+      id: 'bones', name: 'Loose Bones', min: 0, max: 6, start: 0,
+      desc: 'How much of Bones is currently detached.',
+      states: [{ at: 0, label: 'Whole' }, { from: 4, to: 6, label: 'Scattered' }],
+    });
+    eq(e.counterState('bones'), 'Whole', '0 is Whole');
+    e.addCounter('bones', 2);
+    eq(e.counterState('bones'), null, '2 is in neither band, and says so rather than guessing');
+    e.addCounter('bones', 2);
+    eq(e.counterState('bones'), 'Scattered', '4 is Scattered');
+    e.addCounter('bones', 2);
+    eq(e.counterState('bones'), 'Scattered', 'and so is 6');
+
+    const snap = e.state.counters.find(c => c.id === 'bones');
+    eq(snap.state, 'Scattered', 'state carries the current label');
+    eq(snap.states.length, 2, 'and the full band list, so the renderer can draw the track');
+    deepEq(snap.states.map(x => x.label), ['Whole', 'Scattered'], 'in declaration order');
+
+    let ev = null;
+    e.on('counter', (x) => { ev = x; });
+    e.addCounter('bones', -6);
+    eq(ev.state, 'Whole', 'the counter event carries the new state');
+    eq(ev.stateBefore, 'Scattered', 'and the old one, so a transition can be animated');
+
+    // a counter with no states is unaffected
+    e.defineCounter({ id: 'plain', name: 'Plain', max: 9, start: 3 });
+    eq(e.counterState('plain'), null, 'a counter without states has none');
+    deepEq(e.state.counters.find(c => c.id === 'plain').states, [], 'and an empty band list');
+
+    // malformed entries are dropped, not thrown
+    e.defineCounter({ id: 'messy', name: 'Messy', max: 9, states: [{ label: 'nope' }, null, { at: 1, label: 'One' }] });
+    eq(e.counterDef('messy').states.length, 1, 'malformed bands are dropped rather than crashing the fight');
+  });
+
+  // ── intents: addsCards and rule ──────────────────────────────────────────
+  await atest('intents: deck pollution is on the chip, resolved and counted', async () => {
+    const CLUTTER = {
+      id: 'clutter', name: 'Clutter', companion: 'status', type: CardType.STATUS,
+      rarity: Rarity.SPECIAL, cost: 0, target: Target.NONE, exhaust: true,
+      text: 'Does nothing.', effect() {},
+    };
+    // Pack Wrong's real shape: a DEBUFF intent whose only visible number was its Guard.
+    const luggage = {
+      id: 'test/luggage', name: 'Lost Luggage', region: 'test', tier: 'normal', hp: [40, 40],
+      moves: {
+        'pack-wrong': {
+          id: 'pack-wrong', name: 'Pack Wrong', intent: Intent.DEBUFF, block: 5,
+          addsCards: [{ id: 'clutter', pile: 'discard' }],
+          // first use puts in two — the resolved count is what the chip must show
+          addsCardsFn: (c) => [{ id: 'clutter', pile: 'discard', count: c.history.length === 0 ? 2 : 1 }],
+          effect: (c) => { c.addCard('clutter', 'discard'); c.block(5); },
+        },
+      },
+      nextMove: () => 'pack-wrong',
+    };
+    const e = mk({ enemies: [luggage] });
+    e.registerCards([CLUTTER]);
+    await e.startCombat();
+    const it = e.enemies[0].intent;
+
+    eq(it.block, 5, 'the Guard is still reported');
+    eq(it.addsCards.length, 1, 'and so is the deck pollution, which used to be invisible');
+    eq(it.addsCards[0].id, 'clutter', 'by id');
+    eq(it.addsCards[0].name, 'Clutter', 'resolved to a display name through the card registry');
+    eq(it.addsCards[0].pile, 'discard', 'with the destination pile');
+    eq(it.addsCards[0].count, 2, 'and the RESOLVED count — 2 on its first use');
+    ok(/2 Clutter/.test(it.tooltip), `the tooltip says it out loud: "${it.tooltip}"`);
+    ok(/discard pile/.test(it.tooltip), 'including where they go');
+
+    // static entries are grouped and counted too
+    const twice = { ...luggage.moves['pack-wrong'], addsCardsFn: undefined,
+      addsCards: [{ id: 'clutter', pile: 'discard' }, { id: 'clutter', pile: 'discard' }] };
+    const it2 = buildIntent(e, e.enemies[0], { id: 'x', ...twice });
+    eq(it2.addsCards[0].count, 2, 'two identical static entries collapse into a count of 2');
+
+    // an unregistered card still names itself rather than vanishing
+    const it3 = buildIntent(e, e.enemies[0], { id: 'y', intent: Intent.DEBUFF, addsCards: [{ id: 'mystery-goo' }] });
+    eq(it3.addsCards[0].name, 'mystery-goo', 'an unknown card id falls back to the id');
+    eq(it3.addsCards[0].pile, 'discard', 'and defaults to the discard pile');
+  });
+
+  await atest('intents: a House Rule intent names the actual rule', async () => {
+    const greeter = {
+      id: 'test/greeter', name: 'Door Greeter', region: 'test', tier: 'normal', hp: [40, 40],
+      moves: {
+        manners: {
+          id: 'manners', name: 'Mind Your Manners', intent: Intent.DEBUFF,
+          rule: 'no-running',
+          effect: (c) => c.announceRule({
+            id: 'no-running', name: 'NO RUNNING', text: 'Playing a fourth Trick this turn breaks the rule.',
+            when: 'cardPlayed', once: true, broken: () => false, onBreak: () => {},
+          }),
+        },
+      },
+      nextMove: () => 'manners',
+    };
+    const e = mk({ enemies: [greeter] });
+    await e.startCombat();
+    let it = e.enemies[0].intent;
+    ok(it.rule, 'the intent carries the rule instead of a bare DEBUFF with no magnitude');
+    eq(it.rule.id, 'no-running', 'by id');
+    eq(it.rule.name, 'NO RUNNING', 'humanised from the id before it has ever been announced');
+    ok(/House Rule: NO RUNNING/.test(it.tooltip), `and the tooltip names it: "${it.tooltip}"`);
+
+    // registering the real text makes the chip exact
+    e.registerRules([{ id: 'no-running', name: 'NO RUNNING', text: 'Playing a fourth Trick this turn breaks the rule.' }]);
+    e.refreshIntents('test');
+    it = e.enemies[0].intent;
+    eq(it.rule.text, 'Playing a fourth Trick this turn breaks the rule.', 'registered rules give the chip the real text');
+    ok(/fourth Trick/.test(it.tooltip), 'which reaches the tooltip');
+
+    // announcing seeds the registry too, so the next cycle is exact for free
+    const e2 = mk({ enemies: [greeter] });
+    await e2.startCombat();
+    await e2.endTurn();
+    eq(e2.resolveRule('no-running').text.length > 0, true, 'announceRule seeded the rule registry');
+
+    // an alternating enemy names the one it is ACTUALLY about to announce
+    const alt = {
+      ...greeter,
+      moves: { manners: { ...greeter.moves.manners,
+        ruleFn: (c) => (c.history.length % 2 === 1
+          ? { id: 'one-at-a-time', name: 'ONE AT A TIME', text: 'x' }
+          : { id: 'no-running', name: 'NO RUNNING', text: 'y' }) } },
+    };
+    const e3 = mk({ enemies: [alt] });
+    await e3.startCombat();
+    eq(e3.enemies[0].intent.rule.id, 'no-running', 'first cycle');
+    await e3.endTurn();
+    eq(e3.enemies[0].intent.rule.id, 'one-at-a-time', 'second cycle names the other rule');
+  });
+
+  await atest('intents: addsCards and rule take part in change detection', async () => {
+    let emitted = 0;
+    const shifty = {
+      id: 'test/shifty', name: 'Shifty', region: 'test', tier: 'normal', hp: [40, 40],
+      moves: {
+        pack: {
+          id: 'pack', name: 'Pack', intent: Intent.DEBUFF,
+          addsCardsFn: (c) => [{ id: 'clutter', pile: 'discard', count: (c.self.counters.n || 0) + 1 }],
+          effect: () => {},
+        },
+      },
+      nextMove: () => 'pack',
+    };
+    const e = mk({ enemies: [shifty] });
+    await e.startCombat();
+    e.on('intent', () => emitted++);
+    eq(e.enemies[0].intent.addsCards[0].count, 1, 'baseline');
+    e.enemies[0].counters.n = 2;
+    e.refreshIntents('test');
+    eq(e.enemies[0].intent.addsCards[0].count, 3, 'the count re-rendered');
+    ok(emitted >= 1, 'and an intent event told the renderer, because addsCards is part of sameIntent');
+    const before = emitted;
+    e.refreshIntents('test');
+    eq(emitted, before, 'an unchanged intent still emits nothing');
+  });
+
+  // ── retain contract ──────────────────────────────────────────────────────
+  await atest('retain: the engine never empties the hand — retained Tricks persist across the boundary', async () => {
+    // The renderer was calling hand.discardAll() at turn:end and nothing put the
+    // retained cards back. The engine's contract is that the hand is ADDED to at
+    // turn start, never rebuilt, so this states it explicitly.
+    const e = mk({ enemies: [dummyEnemy({ move: 'nothing' })], drawPerTurn: 5 });
+    await e.startCombat();
+    const kept = plant(e, { ...CURL_UP, id: 'x/keeper', retain: true });
+    const doomed = plant(e, SCRATCH);
+
+    await e.endTurn();
+
+    const hand = e.state.piles.hand;
+    ok(hand.some(c => c.uid === kept.uid), 'the retained Trick is still in state.piles.hand next turn');
+    ok(!hand.some(c => c.uid === doomed.uid), 'the un-retained one is not');
+    eq(hand.length, e.player.drawPerTurn + 1, 'the new hand is the fresh draw PLUS what was retained');
+    eq(kept.pile, Pile.HAND, 'and it never left the hand pile');
+
+    let cleared = 0;
+    e.on('discard', (ev) => { if (ev.cardUid === kept.uid) cleared++; });
+    await e.endTurn();
+    eq(cleared, 0, 'a retained Trick is never discarded, so no discard event is emitted for it');
+    ok(e.state.piles.hand.some(c => c.uid === kept.uid), 'and it is still there a second turn later');
+  });
+
   // ── report ---------------------------------------------------------------
   let passed = 0, failed = 0;
   for (const r of results) {

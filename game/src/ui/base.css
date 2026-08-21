@@ -19,6 +19,13 @@ body {
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   touch-action: none;
+  /* Grenze ships old-style figures, which render `0` as a small `o` and sit below the
+     baseline — unreadable in a game whose whole design rests on reading numbers. Lining +
+     tabular is inherited everywhere so no component has to remember it; the dozen places
+     that set `font-family: var(--font-num)` get it for free. Opt out locally if a display
+     heading genuinely wants old-style. */
+  font-variant-numeric: lining-nums tabular-nums;
+  font-feature-settings: 'lnum' 1, 'tnum' 1;
 }
 #app { position:fixed; inset:0; }
 #gl { position:absolute; inset:0; width:100%; height:100%; display:block; }

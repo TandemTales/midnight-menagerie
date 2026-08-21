@@ -14,7 +14,7 @@
    The type does the work, which is the only honest response to writing this
    good sitting next to line-art this cheap.                                 */
 .scene--event .rm-head { justify-content: center; text-align: center; }
-.scene--event .rm-head .rm-where { max-width: 68ch; }
+.scene--event .rm-head .rm-where { max-width: 980px; }   /* px: see reward.css */
 
 .ev-page {
   position: relative;
@@ -146,6 +146,7 @@
 .rm--event.is-rescue .rm-title { font-size: var(--fs-2xl); }
 /* the Rescue is a picture, not a page: no printed sheet, header stays left */
 .scene--event .rm--event.is-rescue .rm-head { justify-content: flex-start; text-align: left; }
+.scene--event .rm--event.is-rescue .rm-head .rm-where { max-width: none; }
 .ev-page--rescue { padding: 0; }
 .ev-page--rescue::before { content: none; }
 

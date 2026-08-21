@@ -226,7 +226,10 @@
    L-shaped hole across half the frame. Everything on this screen is about the
    same three cards, so everything lines up over them. */
 .scene--reward .rm-head { justify-content: center; text-align: center; }
-.scene--reward .rm-head .rm-where { max-width: 74ch; }
+/* px, not ch: `ch` here resolves against the body font, not the display face the
+   title is set in, and 74ch was narrow enough to wrap "You Were Not Ready For
+   That" onto two lines. */
+.scene--reward .rm-head .rm-where { max-width: 1100px; }
 .scene--reward .rm-body { gap: clamp(14px, 2.4vh, 34px); }
 
 .rw-spoils { display: flex; flex-direction: column; align-items: center; gap: var(--s-3); }

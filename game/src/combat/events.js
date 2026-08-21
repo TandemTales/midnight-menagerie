@@ -63,12 +63,19 @@
  * death          { actorId, name, killerId, side, slot }
  *
  * intent         { enemyId, intent:<Intent>, previous:<Intent|null>, reason }
- *   Intent = { type, family, moveId, name, damage, hits, block, totalDamage,
- *              tooltip, tell, statuses:[{id,name,stacks}] }
+ *   Intent = { type, family, familyLabel, moveId, name, damage, hits, block,
+ *              totalDamage, baseDamage, tooltip, tell, anchored, position,
+ *              statuses:[{id,name,stacks,to}],
+ *              addsCards:[{id,name,pile,count}],   // deck pollution, resolved+counted
+ *              rule:{id,name,text}|null }          // a House Rule it will announce
  *   `damage` is per-hit AFTER every modifier. It is recomputed and re-emitted
  *   whenever anything that could change it changes (Strength, Weak, Vulnerable…).
  *
- * counter        { ownerId, id, name, before, after, delta, min, max, reason }
+ * counter        { ownerId, id, name, before, after, delta, min, max, reason,
+ *                  state, stateBefore, states }
+ *   `states` are the named bands declared on the counter
+ *   ([{at:0,label:'Whole'},{from:4,label:'Scattered'}]) and `state` is the label
+ *   the value currently falls in. Read these — never parse `desc`.
  *   Persistent per-combat resource tracks: Nine Lives, Glow, Height, Loose Bones,
  *   Globs, Loyalty, Compost, Web, Open Eyes…
  *

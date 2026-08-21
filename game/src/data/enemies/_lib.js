@@ -231,7 +231,7 @@ export const STATUS_TRICK_DEFS = [
   {
     id: 'clutter', name: 'Clutter', companion: 'status', type: 'status', rarity: 'special',
     cost: 0, target: 'none', exhaust: true,
-    text: 'Does nothing. [Exhaust]',
+    text: 'Does nothing. [Vanish].',
     flavor: 'Someone packed this. Nobody knows why.',
     keywords: ['exhaust'],
     effect() { /* deliberately nothing — it costs a draw, not a Nerve */ },
@@ -239,7 +239,7 @@ export const STATUS_TRICK_DEFS = [
   {
     id: 'drowsy', name: 'Drowsy', companion: 'status', type: 'status', rarity: 'special',
     cost: 1, target: 'self', exhaust: true, nums: { b: 4 },
-    text: 'Gain {b} Guard. [Exhaust]',
+    text: 'Gain {b} Guard. [Vanish].',
     flavor: 'Five more minutes.',
     keywords: ['exhaust'],
     effect(ctx) { ctx.block(ctx.self, ctx.card?.nums?.b ?? 4); },

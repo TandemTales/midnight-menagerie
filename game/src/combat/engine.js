@@ -128,7 +128,11 @@ export class CombatEngine {
     /** Content registries so enemy moves can say addCard('clutter') / summon('dust-bunny'). */
     this.cardDefs = new Map();
     this.enemyDefs = new Map();
+    /** id -> { id, name, text } for House Rules, so an intent can name a rule it
+     *  has not announced yet. Seeded by registerRules() and by announceRule(). */
+    this.ruleDefs = new Map();
     this.choices = new ChoiceBroker(this);
+    this._trackerInstaller = cfg.trackerInstaller || null;
 
     /**
      * Counters content is allowed to read. EVERY key here is maintained — if a
@@ -347,6 +351,8 @@ export class CombatEngine {
       counters: [...this.counters.values()].map(c => ({
         id: c.id, name: c.name, value: c.value, min: c.min, max: c.max,
         ownerId: c.ownerId, icon: c.icon, desc: c.desc, focusable: !!c.focusable,
+        states: c.states.map(x => ({ ...x })),
+        state: stateFor(c, c.value),
       })),
       timers: this.timers.map(t => ({
         id: t.id, label: t.label, turnsLeft: t.turnsLeft, ownerId: t.ownerId, when: t.when,
@@ -470,6 +476,26 @@ export class CombatEngine {
     for (const d of list) if (d && d.id) this.enemyDefs.set(d.id, d);
     return this.enemyDefs.size;
   }
+  /** Teach the engine House Rule names so an intent can name one before it lands. */
+  registerRules(defs) {
+    const list = Array.isArray(defs) ? defs : Object.values(defs || {});
+    for (const d of list) if (d && d.id) this.ruleDefs.set(d.id, { id: d.id, name: d.name || d.id, text: d.text || '' });
+    return this.ruleDefs.size;
+  }
+  /** Resolve a rule id to something displayable. Never returns null for an id. */
+  resolveRule(idOrObj) {
+    if (!idOrObj) return null;
+    if (typeof idOrObj === 'object') {
+      const r = { id: idOrObj.id, name: idOrObj.name || humanise(idOrObj.id), text: idOrObj.text || '' };
+      if (r.id) this.ruleDefs.set(r.id, r);
+      return r;
+    }
+    const known = this.ruleDefs.get(idOrObj);
+    if (known) return { ...known };
+    const live = this.rules.find(r => r.id === idOrObj);
+    if (live) return { id: live.id, name: live.name || humanise(live.id), text: live.text || '' };
+    return { id: idOrObj, name: humanise(idOrObj), text: '' };
+  }
   resolveCardDef(idOrDef) {
     if (!idOrDef) return null;
     if (typeof idOrDef === 'object') return idOrDef;
@@ -541,6 +567,7 @@ export class CombatEngine {
       }
     }
     const r = { ...rule, sourceId };
+    this.ruleDefs.set(r.id, { id: r.id, name: r.name || humanise(r.id), text: r.text || '' });
     this.rules.push(r);
     this.field.activeRule = r.id;
     this._emit(EV.RULE, { rule: { id: r.id, name: r.name, text: r.text, when: r.when, once: !!r.once }, sourceId, action: 'announce' });
@@ -879,6 +906,15 @@ export class CombatEngine {
       min: o.min ?? 0, max: o.max ?? 99, value: o.start ?? 0,
       ownerId: o.ownerId || this.player.id, focusable: !!o.focusable,
       onChange: o.onChange || null, resetEachTurn: !!o.resetEachTurn,
+      /**
+       * Named bands on the track, so the renderer never parses `desc` to find
+       * them. It was regexing "Whole at 0, Scattered at 4 or more" out of Loose
+       * Bones, which breaks the first time anyone rewords a description.
+       *   states: [{ at: 0, label: 'Whole' }, { from: 4, to: 6, label: 'Scattered' }]
+       * `at` is an exact value; `from`/`to` are an inclusive range and either may
+       * be omitted. The FIRST matching entry wins, so list exact values first.
+       */
+      states: normaliseStates(o.states),
     };
     c.value = Math.max(c.min, Math.min(c.max, c.value));
     this.counters.set(c.id, c);
@@ -887,6 +923,11 @@ export class CombatEngine {
   }
 
   counter(id) { return this.counters.get(id)?.value ?? 0; }
+  /** The label of the band the counter is currently in, or null. */
+  counterState(id) {
+    const c = this.counters.get(id);
+    return c ? stateFor(c, c.value) : null;
+  }
   counterDef(id) { return this.counters.get(id) || null; }
   counterMax(id) { return this.counters.get(id)?.max ?? 0; }
   /** True if `n` can actually be spent — used by `canPlay` for Life costs. */
@@ -908,6 +949,8 @@ export class CombatEngine {
     this._emit(EV.COUNTER, {
       ownerId: c.ownerId, id, name: c.name, before, after: c.value,
       delta: applied, min: c.min, max: c.max, reason,
+      state: stateFor(c, c.value), stateBefore: stateFor(c, before),
+      states: c.states.map(x => ({ ...x })),
     });
     c.onChange?.({ e: this, engine: this, counter: c, delta: applied, before, after: c.value });
     this.hooks.dispatch('onCounterChanged', { id, delta: applied, value: c.value, counter: c });
@@ -1469,7 +1512,58 @@ export class CombatEngine {
 
   // ── the public API ────────────────────────────────────────────────────────
 
-  /** @returns {Promise<void>} */
+  /**
+   * Supply the companion tracker installer. Two ways in:
+   *   new CombatEngine({ trackerInstaller })   or   engine.setTrackerInstaller(fn)
+   * `loadContentRegistries(engine)` in data/keywords.js does it for you, which is
+   * the path the game takes.
+   */
+  setTrackerInstaller(fn) { this._trackerInstaller = fn; return this; }
+
+  /**
+   * Install the Companion's per-combat trackers BEFORE the first intent is drawn.
+   *
+   * `data/companions/_util.js` only reached `installTrackers` from `U.ensure()`
+   * inside a card effect, so a Companion's counters did not exist until it played
+   * something: `loose-bones` was absent on turn one, the HUD gauge had nothing to
+   * show, and any Keepsake or status reading a counter before the first card saw
+   * nothing. Combat setup is the engine's job, so the engine does it.
+   *
+   * SYNCHRONOUS on purpose. `startCombat()` returns a Promise, but several
+   * harnesses call it without awaiting and rely on the fight being fully set up
+   * when it returns. Doing the install behind an `await` moved setup a microtask
+   * later and emptied the opening hand for every one of them. The installer is
+   * therefore injected ahead of time rather than imported here.
+   */
+  _installCompanionTrackers() {
+    const slugs = [];
+    if (this.player && this.player.companion && this.player.companion !== 'neutral') {
+      slugs.push(this.player.companion);
+    }
+    for (const s of (this._cfg.companions || [])) if (!slugs.includes(s)) slugs.push(s);
+    if (!slugs.length) return;
+
+    const install = this._trackerInstaller || TRACKER_INSTALLER;
+    if (typeof install !== 'function') {
+      // Loud, not silent: a Companion with no trackers is a broken fight.
+      console.warn(
+        `[combat] no tracker installer for "${slugs.join(', ')}" — Companion counters `
+        + 'will not exist. Call `await loadContentRegistries(engine)` (data/keywords.js) '
+        + 'or `engine.setTrackerInstaller(installTrackers)` before startCombat().');
+      return;
+    }
+    for (const slug of slugs) {
+      try { install(this, slug); }
+      catch (err) { console.error(`[combat] installing trackers for "${slug}" threw`, err); }
+    }
+    this.trackersInstalled = slugs.slice();
+  }
+
+  /**
+   * @returns {Promise<void>}
+   * The body runs to completion synchronously — callers that do not await it
+   * still get a fully started fight.
+   */
   async startCombat() { this._startCombat(); }
 
   _startCombat() {
@@ -1477,6 +1571,7 @@ export class CombatEngine {
     return this._capture(() => {
       this.started = true;
       this.phase = 'setup';
+      this._installCompanionTrackers();
       this._emit(EV.COMBAT_START, {
         seed: this.seed, playerId: this.player.id,
         enemies: this.enemies.map(e => ({ id: e.id, name: e.name, hp: e.hp, maxHp: e.maxHp, slot: e.slot, tier: e.tier })),
@@ -2069,7 +2164,7 @@ export class CombatEngine {
     c.piles.stashCap = s.stashCap;
 
     c.counters = new Map();
-    for (const [k, v] of s.counters) c.counters.set(k, { ...v });
+    for (const [k, v] of s.counters) c.counters.set(k, { ...v, states: (v.states || []).map(x => ({ ...x })) });
     c.timers = s.timers.map(t => ({ ...t, data: { ...t.data } }));
     c.objects = s.objects.map(o => ({ ...o, data: JSON.parse(JSON.stringify(o.data || {})) }));
     c.field = JSON.parse(JSON.stringify(s.field));
@@ -2078,6 +2173,8 @@ export class CombatEngine {
     c.drawDeltaNextTurn = s.drawDeltaNextTurn;
     c.cardDefs = this.cardDefs;
     c.enemyDefs = this.enemyDefs;
+    c.ruleDefs = this.ruleDefs;
+    c._trackerInstaller = this._trackerInstaller;
     c.choices.autoOnly = true;          // a preview NEVER asks a human a question
     c.choices.resolver = null;
     c.hooks.restore(s.hooks);
@@ -2085,6 +2182,63 @@ export class CombatEngine {
     c.bus = null;
     return c;
   }
+}
+
+/**
+ * The companion tracker installer, shared by every engine once something has
+ * supplied it. `data/companions/**` is another agent's area and a headless engine
+ * must boot without it, so this is injected rather than statically imported.
+ */
+let TRACKER_INSTALLER = null;
+export function setTrackerInstaller(fn) { TRACKER_INSTALLER = fn; }
+
+/**
+ * Load `data/companions/_util.js` and register its `installTrackers` for every
+ * engine. Called by `loadContentRegistries(engine)`; safe to call repeatedly and
+ * safe to call when that file does not exist.
+ * @returns {Promise<boolean>}
+ */
+export async function preloadCompanionTrackers() {
+  if (TRACKER_INSTALLER) return true;
+  try {
+    const m = await import('../data/companions/_util.js');
+    if (typeof m.installTrackers === 'function') { TRACKER_INSTALLER = m.installTrackers; return true; }
+  } catch (e) {
+    console.warn('[combat] companion trackers unavailable', e && e.message);
+  }
+  return false;
+}
+
+/** `no-running` -> `NO RUNNING`. The last-resort name for an unregistered rule. */
+export function humanise(id) {
+  return String(id || '').replace(/[-_/]+/g, ' ').trim().toUpperCase();
+}
+
+/** Normalise `states` entries and drop anything malformed rather than throwing. */
+function normaliseStates(states) {
+  if (!Array.isArray(states)) return [];
+  const out = [];
+  for (const s of states) {
+    if (!s || !s.label) continue;
+    const e = { label: String(s.label) };
+    if (typeof s.at === 'number') e.at = s.at;
+    if (typeof s.from === 'number') e.from = s.from;
+    if (typeof s.to === 'number') e.to = s.to;
+    if (e.at === undefined && e.from === undefined && e.to === undefined) continue;
+    out.push(e);
+  }
+  return out;
+}
+
+/** First matching band wins. Exact `at` entries should be listed first. */
+function stateFor(c, value) {
+  for (const s of (c.states || [])) {
+    if (s.at !== undefined) { if (value === s.at) return s.label; continue; }
+    if (s.from !== undefined && value < s.from) continue;
+    if (s.to !== undefined && value > s.to) continue;
+    return s.label;
+  }
+  return null;
 }
 
 /** Strip the engine's own bookkeeping keys; whatever remains is content data. */

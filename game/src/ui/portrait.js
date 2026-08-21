@@ -616,5 +616,9 @@ export function parseSeed(text) {
   const s = String(text ?? '').replace(/[^0-9a-z]/gi, '').toUpperCase();
   if (!s || s.length > 8) return null;
   const n = parseInt(s, 36);
-  return Number.isFinite(n) ? (n >>> 0) % 0x7fffffff : null;
+  // Out of range is REJECTED, not wrapped. Folding a too-large value into range
+  // would answer "ZZZZ-1234" with a different seed than the one just typed,
+  // which is the one thing a seed field must never do.
+  if (!Number.isFinite(n) || n < 0 || n > 0x7fffffff) return null;
+  return n >>> 0;
 }

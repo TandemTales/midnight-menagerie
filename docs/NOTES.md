@@ -22,6 +22,7 @@ to concurrent whole-file writes, so this is now structural rather than a convent
 | [2026-08-20-combat-engine-round-3](notes/2026-08-20-combat-engine-round-3.md) | 4 KB |
 | [2026-08-20-combat-engine-round-4](notes/2026-08-20-combat-engine-round-4.md) | 7 KB |
 | [2026-08-20-combat-engine-round-5](notes/2026-08-20-combat-engine-round-5.md) | 4 KB |
+| [2026-08-20-combat-engine-round-6](notes/2026-08-20-combat-engine-round-6.md) | 8 KB |
 | [2026-08-20-combat-scene](notes/2026-08-20-combat-scene.md) | 11 KB |
 | [2026-08-20-combat-scene-round-2](notes/2026-08-20-combat-scene-round-2.md) | 16 KB |
 | [2026-08-20-combat-scene-round-3](notes/2026-08-20-combat-scene-round-3.md) | 19 KB |
@@ -36,6 +37,7 @@ to concurrent whole-file writes, so this is now structural rather than a convent
 | [2026-08-20-meta-run-the-run-layer](notes/2026-08-20-meta-run-the-run-layer.md) | 15 KB |
 | [2026-08-20-one-game-pass-the-shared-hud-snacks-the-deck-sett](notes/2026-08-20-one-game-pass-the-shared-hud-snacks-the-deck-sett.md) | 12 KB |
 | [2026-08-20-performance-frame-budget-on-real-hardware](notes/2026-08-20-performance-frame-budget-on-real-hardware.md) | 14 KB |
+| [2026-08-20-round-4-the-rescue-node-and-the-run-end-screens](notes/2026-08-20-round-4-the-rescue-node-and-the-run-end-screens.md) | 11 KB |
 | [2026-08-20-scene-perf-title-stall-stage-pause-card-sizing-ge](notes/2026-08-20-scene-perf-title-stall-stage-pause-card-sizing-ge.md) | 13 KB |
 | [2026-08-20-seam-audit-silent-no-ops-at-module-joins](notes/2026-08-20-seam-audit-silent-no-ops-at-module-joins.md) | 9 KB |
 | [2026-08-20-ui-chrome](notes/2026-08-20-ui-chrome.md) | 15 KB |
