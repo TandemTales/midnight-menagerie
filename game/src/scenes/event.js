@@ -310,22 +310,22 @@ export class EventScene extends RoomScene {
 
     const page = el('article', 'ev-page ev-page--rescue');
     page.innerHTML = `
-      <figure class="rs-plate${already ? ' is-empty is-open' : ''}">
-        <div class="rs-room" aria-hidden="true"></div>
-        ${already ? '' : `<img class="rs-art" src="${esc(thumbSrc(slug, '-card'))}"
+      <figure class="ev-rsplate${already ? ' is-empty is-open' : ''}">
+        <div class="ev-rsroom" aria-hidden="true"></div>
+        ${already ? '' : `<img class="ev-rsart" src="${esc(thumbSrc(slug, '-card'))}"
               width="${PORTRAIT_W}" height="${PORTRAIT_H}" decoding="async" draggable="false"
               alt="${esc(name)}, ${esc(c?.title || 'a Menagerie Companion')}">`}
-        <div class="rs-glow" aria-hidden="true"></div>
-        <div class="rs-dust" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-        <div class="rs-doors" aria-hidden="true">
-          <i class="rs-door rs-door--l"></i><i class="rs-door rs-door--r"></i>
-          <b class="rs-seam"></b>
+        <div class="ev-rsglow" aria-hidden="true"></div>
+        <div class="ev-rsdust" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="ev-rsdoors" aria-hidden="true">
+          <i class="ev-rsdoor ev-rsdoor--l"></i><i class="ev-rsdoor ev-rsdoor--r"></i>
+          <b class="ev-rsseam"></b>
         </div>
-        <div class="rs-frame" aria-hidden="true"></div>
-        <figcaption class="rs-cap">
+        <div class="ev-rsframe" aria-hidden="true"></div>
+        <figcaption class="ev-rscap">
           <b>${esc(name)}</b>
           <span>${esc(c?.title || '')}</span>
-          <em class="rs-cap__state" data-state>${already ? 'the room is empty' : 'behind the door'}</em>
+          <em class="ev-rscap__state" data-state>${already ? 'the room is empty' : 'behind the door'}</em>
         </figcaption>
       </figure>
       <div class="ev-prose">
@@ -340,14 +340,14 @@ export class EventScene extends RoomScene {
       <div class="ev-outcome" hidden aria-live="polite"></div>`;
     this.$body.appendChild(page);
     this.$page = page;
-    this.$plate = page.querySelector('.rs-plate');
+    this.$plate = page.querySelector('.ev-rsplate');
     this.$options = page.querySelector('.ev-options');
     this.$outcome = page.querySelector('.ev-outcome');
 
     // The full 828x516 painting is 550KB; the -card thumbnail is what shows
     // first so the screen is never a grey box, and the full render swaps in
     // underneath the moment it has decoded.
-    if (!already) this._own(upgradeToFullArt(page.querySelector('.rs-art'), slug));
+    if (!already) this._own(upgradeToFullArt(page.querySelector('.ev-rsart'), slug));
 
     const b = el('button', 'ev-opt ev-opt--door');
     b.type = 'button';
@@ -409,7 +409,7 @@ export class EventScene extends RoomScene {
     }
     // Say it once, out loud, for a screen reader: the picture is the whole point
     // and a screen reader cannot see it open.
-    plate.querySelector('.rs-cap')?.setAttribute('aria-label', `${name} is free.`);
+    plate.querySelector('.ev-rscap')?.setAttribute('aria-label', `${name} is free.`);
   }
 
   _bindKeys() {

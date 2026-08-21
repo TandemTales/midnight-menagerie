@@ -1,9 +1,9 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T20:46:35",
- "wave": 5,
- "waveLabel": "Closing the render seam",
- "headline": "A full two-act playthrough scored 7-3-2 against Slay the Spire 2. The engine is right; the screen is not always showing it.",
+ "updated": "2026-08-20T23:31:06",
+ "wave": 6,
+ "waveLabel": "Fourth playthrough",
+ "headline": "Score improved to 7 ties, 5 losses, 0 outright wins for StS2's side on ties. The biggest gap was a two-word CSS collision.",
  "pieces": [
   {
    "id": "engine",
@@ -22,8 +22,8 @@
    "name": "Combat engine",
    "desc": "Turn rules, damage pipeline, statuses, intents, deterministic + headless",
    "status": "done",
-   "round": 5,
-   "verdict": "590 assertions. Stats audit: 2 counters were declared and never written, 1 could never work. Contract test now fails if any counter stays at zero in a scripted fight.",
+   "round": 6,
+   "verdict": "649 assertions. Trackers install at combat start, counters declare their own states, intents carry addsCards and rule.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -33,9 +33,9 @@
    "id": "card",
    "name": "Card feel",
    "desc": "Hover, drag, arc-fan hand, play arc, impact, re-fan easing",
-   "status": "reviewing",
+   "status": "done",
    "round": 4,
-   "verdict": "Hand no longer covers the board (intent tooltips work, zero hover oscillation kept), card art distinct across all pools, lining figures.",
+   "verdict": "Hand no longer covers the board, card art distinct across all pools, lining figures throughout.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -45,9 +45,9 @@
    "id": "scene",
    "name": "Combat presentation",
    "desc": "Battlefield staging, enemy rigs, damage numbers, hit reactions, VFX",
-   "status": "reviewing",
+   "status": "done",
    "round": 4,
-   "verdict": "Render seam closed: card:move now animates, DOM hand matches engine hand, House Rule visible at both resolutions, boss now larger than its minion.",
+   "verdict": "Render seam closed, player counters, House Rule docked, boss scale fixed, Guard-aware damage preview.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -105,9 +105,9 @@
    "id": "frontend",
    "name": "Title / Select / Clubhouse",
    "desc": "Front end, Companion select, investigation board",
-   "status": "reviewing",
-   "round": 2,
-   "verdict": "Title, Select, Clubhouse and Expedition End all shipping. 61fps, zero console errors, full keyboard nav.",
+   "status": "done",
+   "round": 3,
+   "verdict": "Rescue is its own screen: the painted portrait behind a door that opens. Run-end raw ids resolved, counters agree, seed notation unified.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -458,6 +458,30 @@
   {
    "t": "2026-08-20T20:46:35",
    "msg": "Cinzel draws 1 as a Roman I, so the Nerve orb and every counter read as letters. Numerals moved off it and lining figures now inherit globally."
+  },
+  {
+   "t": "2026-08-20T21:00:14",
+   "msg": "Run-end 'played 21x' was an invented statistic - literally 4 + rng.int(38). No per-card play count exists, so it now reports something true."
+  },
+  {
+   "t": "2026-08-20T21:00:14",
+   "msg": "A backtick inside a template literal has taken the whole app down twice. Documented with six other traps in CONTRACTS.md."
+  },
+  {
+   "t": "2026-08-20T21:03:51",
+   "msg": "Fourth blind playthrough started, deliberately not told what was fixed."
+  },
+  {
+   "t": "2026-08-20T23:31:05",
+   "msg": "BIGGEST GAP FOUND AND FIXED: a CSS class collision. The Curiosity scene and the Safe Room both declared .rs-door; stylesheets are global and never unload, so visiting one Curiosity permanently deleted every Safe Room for the rest of the run - all healing and all card upgrading, with zero console output."
+  },
+  {
+   "t": "2026-08-20T23:31:06",
+   "msg": "That single bug explains why the simulator (which models rests working) disagreed with actual play. A run's own summary said SAFE ROOMS 0 after walking through two."
+  },
+  {
+   "t": "2026-08-20T23:31:06",
+   "msg": "New gate: tests/scene-css/check.py fails the build if two scenes declare the same class with conflicting layout. Now at 0 conflicts."
   }
  ]
 }

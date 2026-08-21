@@ -257,7 +257,7 @@
 }
 .pin--blue { background: radial-gradient(circle at 34% 28%, var(--spectre-100), var(--spectre-300) 55%, var(--spectre-500)); }
 
-.polaroid, .note, .bpfrag, .scrawl { position: absolute; transform: rotate(var(--rot, 0deg)); z-index: 2; }
+.polaroid, .ch-note, .bpfrag, .scrawl { position: absolute; transform: rotate(var(--rot, 0deg)); z-index: 2; }
 
 .polaroid {
   width: clamp(96px, 9.4vw, 138px);
@@ -290,7 +290,7 @@
 .polaroid.is-found .polaroid__photo { filter: none; }
 .polaroid:not(.is-found) .polaroid__photo svg { opacity: .55; }
 
-.note {
+.ch-note {
   width: clamp(120px, 12vw, 176px);
   padding: 10px 11px 12px;
   background: linear-gradient(180deg, color-mix(in oklab, var(--flame-100) 82%, var(--parchment)), color-mix(in oklab, var(--parchment) 90%, var(--flame-300)));
@@ -298,12 +298,12 @@
   color: var(--text-ink);
   transition: transform var(--t-base) var(--ease-out);
 }
-.note:hover { transform: rotate(0deg) scale(1.04); z-index: 5; }
-.note b { display: block; font-family: var(--font-display); font-size: var(--fs-sm); letter-spacing: .04em; }
-.note p { margin: 3px 0 0; font-size: var(--fs-xs); line-height: 1.4; font-style: italic; color: color-mix(in oklab, var(--text-ink) 82%, var(--parchment-shade)); }
-.note.is-unknown { background: color-mix(in oklab, var(--parchment-shade) 74%, var(--ink-700)); opacity: .62; }
-.note.is-unknown b { font-size: var(--fs-lg); text-align: center; }
-.tape {
+.ch-note:hover { transform: rotate(0deg) scale(1.04); z-index: 5; }
+.ch-note b { display: block; font-family: var(--font-display); font-size: var(--fs-sm); letter-spacing: .04em; }
+.ch-note p { margin: 3px 0 0; font-size: var(--fs-xs); line-height: 1.4; font-style: italic; color: color-mix(in oklab, var(--text-ink) 82%, var(--parchment-shade)); }
+.ch-note.is-unknown { background: color-mix(in oklab, var(--parchment-shade) 74%, var(--ink-700)); opacity: .62; }
+.ch-note.is-unknown b { font-size: var(--fs-lg); text-align: center; }
+.ch-tape {
   position: absolute; top: -9px; left: 50%; width: 54px; height: 18px;
   transform: translateX(-50%) rotate(-4deg);
   background: var(--tape);
@@ -490,7 +490,7 @@
 .cl-quote { margin: 0; text-align: center; font-size: var(--fs-sm); font-style: italic; color: color-mix(in oklab, var(--parchment) 60%, var(--flame-400)); }
 
 /* ── readability ──────────────────────────────────────────────────────────── */
-.mm-large-text .note p, .mm-large-text .gear em, .mm-large-text .petcard__lost { font-size: var(--fs-sm); }
+.mm-large-text .ch-note p, .mm-large-text .gear em, .mm-large-text .petcard__lost { font-size: var(--fs-sm); }
 .mm-large-text .cl-panel__head p { font-size: var(--fs-md); }
 
 @media (max-width: 1150px) {

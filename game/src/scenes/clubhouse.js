@@ -227,8 +227,8 @@ export class ClubhouseScene extends Scene {
       const note = el('div', 'note' + (known ? '' : ' is-unknown'));
       note.style.cssText = `left:${cluePos[i][0]}%;top:${cluePos[i][1]}%;--rot:${(i % 2 ? 1.8 : -2.2)}deg`;
       note.innerHTML = known
-        ? `<span class="tape" aria-hidden="true"></span><b>${title}</b><p>${text}</p>`
-        : `<span class="tape" aria-hidden="true"></span><b>?</b><p>Not found yet.</p>`;
+        ? `<span class="ch-tape" aria-hidden="true"></span><b>${title}</b><p>${text}</p>`
+        : `<span class="ch-tape" aria-hidden="true"></span><b>?</b><p>Not found yet.</p>`;
       cork.appendChild(note);
     });
 
