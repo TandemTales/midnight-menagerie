@@ -115,6 +115,34 @@ async def main():
                         await page.mouse.click(x, y)
                     elif op == "hover":
                         await page.hover(arg, timeout=8000)
+                    elif op == "movexy":
+                        x, y = [float(v) for v in arg.split(",")]
+                        await page.mouse.move(x, y, steps=6)
+                    elif op == "movesel":
+                        # raw pointer move to the centre of a selector, bypassing
+                        # Playwright actionability (hand/board use an overlay hit layer)
+                        r = await page.evaluate(
+                            "(s)=>{const e=document.querySelector(s);if(!e)return null;"
+                            "const b=e.getBoundingClientRect();return [b.x+b.width/2,b.y+b.height/2]}", arg)
+                        if not r:
+                            out.append({"err": "no element " + arg})
+                        else:
+                            await page.mouse.move(r[0], r[1], steps=6)
+                    elif op == "dragxy":
+                        p = [float(v) for v in arg.split(",")]
+                        await page.mouse.move(p[0], p[1], steps=4)
+                        await page.mouse.down()
+                        for i in range(1, 15):
+                            t = i / 14
+                            await page.mouse.move(p[0] + (p[2] - p[0]) * t,
+                                                  p[1] + (p[3] - p[1]) * t)
+                            await page.wait_for_timeout(16)
+                        await page.wait_for_timeout(120)
+                        await page.mouse.up()
+                    elif op == "down":
+                        await page.mouse.down()
+                    elif op == "up":
+                        await page.mouse.up()
                     elif op == "key":
                         await page.keyboard.press(arg)
                     elif op == "type":

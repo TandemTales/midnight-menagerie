@@ -1,9 +1,9 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T17:40:06",
- "wave": 4,
- "waveLabel": "Second playthrough",
- "headline": "Every piece rebuilt and rebalanced. A second fresh player is judging the whole game blind against Slay the Spire 2.",
+ "updated": "2026-08-20T19:31:48",
+ "wave": 5,
+ "waveLabel": "Closing the render seam",
+ "headline": "A full two-act playthrough scored 7-3-2 against Slay the Spire 2. The engine is right; the screen is not always showing it.",
  "pieces": [
   {
    "id": "engine",
@@ -33,10 +33,10 @@
    "id": "card",
    "name": "Card feel",
    "desc": "Hover, drag, arc-fan hand, play arc, impact, re-fan easing",
-   "status": "reviewing",
-   "round": 3,
+   "status": "rework",
+   "round": 4,
    "verdict": "Hand fits at all four resolutions with zero clipping. 61fps cold on draw-5-into-12 (was 43). Curse card contrast 1.22:1 to 15.79:1.",
-   "gap": null,
+   "gap": "A full-screen pointer-events host blocks every intent and enemy tooltip; card art matches the companion slug so all 40+ Bones cards draw one identical picture.",
    "builder": null,
    "critic": null,
    "log": []
@@ -45,10 +45,10 @@
    "id": "scene",
    "name": "Combat presentation",
    "desc": "Battlefield staging, enemy rigs, damage numbers, hit reactions, VFX",
-   "status": "done",
-   "round": 3,
+   "status": "rework",
+   "round": 4,
    "verdict": "Intent tooltips, one grammar across 16 types, 7 distinct rooms plus a boss arena, ~1s to first card, full keyboard path.",
-   "gap": null,
+   "gap": "Nothing listens for card:move, so every card Fetch/Dig Up/Bury moves into your hand exists in the rules and not on screen. Bones's identity silently does nothing.",
    "builder": null,
    "critic": null,
    "log": []
@@ -438,6 +438,14 @@
   {
    "t": "2026-08-20T17:40:06",
    "msg": "Two regions validated and kept: whole-run survival 50%, The Governess 73.7% when reached. The Nursery had been authored at first-region power against a deck 60% bigger with 5x the Keepsakes."
+  },
+  {
+   "t": "2026-08-20T19:31:47",
+   "msg": "PLAYTHROUGH: 7 dimensions to StS2, 3 ties, 2 wins (atmosphere and accessibility). Zero console errors across two full runs - rare and worth protecting."
+  },
+  {
+   "t": "2026-08-20T19:31:48",
+   "msg": "The p2 softlock was settled as NOT a softlock: every exit works, but Escape's refusal message is painted 160 z-layers beneath the modal that provoked it."
   }
  ]
 }
