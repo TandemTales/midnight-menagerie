@@ -17,12 +17,14 @@ to concurrent whole-file writes, so this is now structural rather than a convent
 | [2026-08-20-balance-round-2-corrected-targets-haunt-ladder](notes/2026-08-20-balance-round-2-corrected-targets-haunt-ladder.md) | 9 KB |
 | [2026-08-20-balance-round-3-two-regions-the-nursery-under-measurement](notes/2026-08-20-balance-round-3-two-regions-the-nursery-under-measurement.md) | 21 KB |
 | [2026-08-20-card-feel-round-2-fixing-the-critic-s-forensic-pa](notes/2026-08-20-card-feel-round-2-fixing-the-critic-s-forensic-pa.md) | 9 KB |
+| [2026-08-20-card-feel-round-3-the-hand-stops-eating-the-board](notes/2026-08-20-card-feel-round-3-the-hand-stops-eating-the-board.md) | 16 KB |
 | [2026-08-20-combat-engine-round-2](notes/2026-08-20-combat-engine-round-2.md) | 13 KB |
 | [2026-08-20-combat-engine-round-3](notes/2026-08-20-combat-engine-round-3.md) | 4 KB |
 | [2026-08-20-combat-engine-round-4](notes/2026-08-20-combat-engine-round-4.md) | 7 KB |
 | [2026-08-20-combat-engine-round-5](notes/2026-08-20-combat-engine-round-5.md) | 4 KB |
 | [2026-08-20-combat-scene](notes/2026-08-20-combat-scene.md) | 11 KB |
 | [2026-08-20-combat-scene-round-2](notes/2026-08-20-combat-scene-round-2.md) | 16 KB |
+| [2026-08-20-combat-scene-round-3](notes/2026-08-20-combat-scene-round-3.md) | 19 KB |
 | [2026-08-20-companion-cards-round-2-critic-response](notes/2026-08-20-companion-cards-round-2-critic-response.md) | 4 KB |
 | [2026-08-20-enemies-agent-round-2](notes/2026-08-20-enemies-agent-round-2.md) | 5 KB |
 | [2026-08-20-enemies-round-3-haunt-ladder-and-opening-scuffle](notes/2026-08-20-enemies-round-3-haunt-ladder-and-opening-scuffle.md) | 9 KB |

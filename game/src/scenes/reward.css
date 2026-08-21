@@ -220,6 +220,15 @@
 /* ===========================================================================
    Reward
    =========================================================================== */
+
+/* One axis. The room title sat hard against the top-left corner while the
+   spoils, the heading and the three Tricks were all centred, which left an
+   L-shaped hole across half the frame. Everything on this screen is about the
+   same three cards, so everything lines up over them. */
+.scene--reward .rm-head { justify-content: center; text-align: center; }
+.scene--reward .rm-head .rm-where { max-width: 74ch; }
+.scene--reward .rm-body { gap: clamp(14px, 2.4vh, 34px); }
+
 .rw-spoils { display: flex; flex-direction: column; align-items: center; gap: var(--s-3); }
 .rw-spoils__row { display: flex; gap: var(--s-3); flex-wrap: wrap; justify-content: center; }
 
@@ -271,8 +280,10 @@
 }
 .rw-slot {
   position: relative;
-  width: clamp(164px, 15vw, 248px);
-  height: clamp(228px, 20.9vw, 345px);
+  /* the three Tricks ARE the screen — let them take the room the header used
+     to leave empty */
+  width: clamp(164px, 16.6vw, 280px);
+  height: clamp(228px, 23.1vw, 390px);
   transform: translateY(calc(var(--ia, 0) * 8px)) rotate(calc(var(--i, 0) * 3deg));
   transition: transform var(--t-quick) var(--ease-out), opacity var(--t-base) var(--ease-out),
               filter var(--t-base) var(--ease-out);

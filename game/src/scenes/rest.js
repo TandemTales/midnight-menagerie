@@ -227,6 +227,11 @@ export class RestScene extends RoomScene {
     this.root.querySelector(`[data-opt="${o.id}"]`)?.classList.add('is-done');
     this._say(msg);
     this._syncHud();
+    /* Sharpening and Sitting change no Courage, so hanging the footer hint off
+       `run:courage` alone left "you have not used the fort yet" under the
+       button after the fort had plainly been used. The hint follows `this.used`
+       now, and `used` is what just changed. */
+    this._syncFoot?.();
     this.$go?.classList.add('is-ready');
     this.$go?.focus();
     this.ctx.audio?.play?.('ui:confirm');
@@ -363,12 +368,12 @@ export class RestScene extends RoomScene {
     this._primary('Pack up and go on', () => this._leave(), {
       hint: 'you have not used the fort yet', key: 'Enter',
     });
-    const sync = () => {
-      const hint = this.$go.querySelector('em');
+    this._syncFoot = () => {
+      const hint = this.$go?.querySelector('em');
       if (hint) hint.textContent = this.used ? '' : 'you have not used the fort yet';
     };
-    sync();
-    this._own(bus.on('run:courage', sync));
+    this._syncFoot();
+    this._own(bus.on('run:courage', this._syncFoot));
   }
 
   _bindKeys() {

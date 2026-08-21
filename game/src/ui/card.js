@@ -31,6 +31,28 @@ const TYPE_LABEL = { attack: 'Attack', skill: 'Skill', power: 'Power', status: '
 const TARGET_SUB = { allEnemies: 'All', self: 'Self', randomEnemy: 'Random', ally: 'Ally' };
 const KEYWORD_LABEL = {}; // filled by keywords.js consumers via CardView.registerKeywords()
 
+/**
+ * The game's word for a mechanic, when content still writes the placeholder
+ * name. `data/companions/keywords.js` defines the shared vocabulary and the
+ * word for "remove this card from the combat" is **Vanish** — but the enemy
+ * status Tricks in `data/enemies/_lib.js` still author `[Exhaust]` into their
+ * rules text, so "Good Boy!" read "… Vanish." over a badge saying EXHAUST and
+ * Clutter read "Does nothing. Exhaust." One card, two names for one rule.
+ *
+ * The badge row is fixed at source (see `_renderBadges`). This map covers the
+ * text placeholders we do not own. REPORTED: `data/enemies/_lib.js:234,242`
+ * should say `[Vanish]`; the day it does, this entry is a harmless no-op.
+ */
+const KEYWORD_ALIAS = { exhaust: 'vanish' };
+
+/** Canonical display word for a `[Bracketed]` keyword in rules text. */
+function keywordLabel(raw) {
+  const key = raw.toLowerCase().replace(/\s+/g, '-');
+  const id = KEYWORD_ALIAS[key] || key;
+  return { id, text: KEYWORD_LABEL[id] || (KEYWORD_ALIAS[key] ? capitalise(id) : raw) };
+}
+const capitalise = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
 let SEQ = 0;
 
 export class CardView {
@@ -240,8 +262,9 @@ export class CardView {
         } else if (m[2]) {
           const s = document.createElement('span');
           s.className = 'mm-card__kw';
-          s.dataset.kw = m[2].toLowerCase().replace(/\s+/g, '-');
-          s.textContent = KEYWORD_LABEL[s.dataset.kw] || m[2];
+          const kw = keywordLabel(m[2]);
+          s.dataset.kw = kw.id;
+          s.textContent = kw.text;
           plain += s.textContent.length;
           row.appendChild(s);
           lastNum = null;
@@ -302,9 +325,16 @@ export class CardView {
     this.el.classList.toggle('is-cost-raised', c > baseCost);
   }
 
+  /**
+   * The badge row. The word for `def.exhaust` is **Vanish** — that is what
+   * `data/companions/keywords.js` defines and what the rules text prints. The
+   * badge said EXHAUST, so "Good Boy!" read "Gain 1 Nerve. Vanish." directly
+   * above a chip reading EXHAUST: two names for one rule on one card face.
+   * The CSS modifier stays `--exhaust` (it names the card *flag*, not the word).
+   */
   _renderBadges() {
     const d = this.def, out = [];
-    if (d.exhaust) out.push(['exhaust', 'Exhaust']);
+    if (d.exhaust) out.push(['exhaust', 'Vanish']);
     if (d.ethereal) out.push(['ethereal', 'Ethereal']);
     if (d.innate) out.push(['innate', 'Innate']);
     if (d.retain) out.push(['retain', 'Retain']);
@@ -332,7 +362,7 @@ export class CardView {
           if (p && p[key] !== undefined) v = p[key];
           return v === undefined ? 'some' : String(v);
         }
-        if (kw) return KEYWORD_LABEL[kw.toLowerCase().replace(/\s+/g, '-')] || kw;
+        if (kw) return keywordLabel(kw).text;
         return em;
       })
       .replace(/\s*\n\s*/g, ' ')
@@ -345,7 +375,7 @@ export class CardView {
     const c = this.cost;
     const costWord = c === -1 ? 'X Nerve' : c === -2 ? 'unplayable' : `${c} Nerve`;
     const extra = [];
-    if (this.def.exhaust) extra.push('Exhaust');
+    if (this.def.exhaust) extra.push('Vanish');
     if (this.def.ethereal) extra.push('Ethereal');
     if (this.def.innate) extra.push('Innate');
     if (this.def.retain) extra.push('Retain');
@@ -570,16 +600,24 @@ export class CardView {
     });
   }
 
-  /** Draw: fades and swells in. Pairs with the hand's riffle. */
+  /**
+   * Draw: fades and swells in. Pairs with the hand's riffle.
+   *
+   * Ends by CLEARING the inline opacity rather than pinning it to 1. An inline
+   * `opacity:1` outranks every stylesheet rule, so a card that had ever been
+   * materialised could not be faded by a class again — which is how the
+   * aiming fade (`.mm-card.is-aiming`) silently did nothing on any card that
+   * arrived by a draw. A finished fade-in must leave no override behind.
+   */
   materialize(dur = 0.24) {
     const el = this.el;
-    if (this.reduceMotion) { el.style.opacity = '1'; this._extraScale = 1; this._apply(); return Promise.resolve(); }
+    if (this.reduceMotion) { el.style.opacity = ''; this._extraScale = 1; this._apply(); return Promise.resolve(); }
     el.style.opacity = '0';
     return this.clock.ramp(dur, (v) => {
       el.style.opacity = String(Math.min(1, v * 1.6));
       this._extraScale = 0.84 + 0.16 * v;
       this._apply();
-    }, Clock.easeOutCubic).then(() => { el.style.opacity = '1'; this._extraScale = 1; this._apply(); });
+    }, Clock.easeOutCubic).then(() => { el.style.opacity = ''; this._extraScale = 1; this._apply(); });
   }
 
   /** Persistent glow. `glow(null)` turns it off. */

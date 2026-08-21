@@ -23,6 +23,7 @@ import {
   ensureCss, fontsReady, companionPortrait, kidPortrait, logoLockup, petGlyph,
   el, svg, rovingFocus, setReduceMotion, reduceMotion, formatSeed,
   REGION_NAMES, COMPANION_BY_SLUG, heroSrc, cobweb, candle,
+  freedCompanions, STARTER_COMPANIONS, parseSeed,
 } from '../ui/portrait.js';
 import { pauseStageFor } from './_stage.js';
 import { fitCardToSlot } from './_cardfit.js';
@@ -31,8 +32,10 @@ const CSS_KIT  = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_SEL  = new URL('./select.css', import.meta.url).href;
 const CSS_CARD = new URL('../ui/card.css', import.meta.url).href;
 
-/** Companions unlocked on a fresh save (design doc: "approximately four"). */
-export const STARTER_COMPANIONS = ['marmalade', 'bones', 'pipkin', 'taffy'];
+/* `STARTER_COMPANIONS` and the "N / 16 freed" count now live in ui/portrait.js
+   so the Title, this screen and the Clubhouse cannot drift apart again; it is
+   re-exported here because clubhouse.js has always imported it from select. */
+export { STARTER_COMPANIONS };
 
 /* ═══════════════════════════════════════════════════════════════════════════
    Companion codex. Condensed from docs/design/companions/*.md.
@@ -513,10 +516,12 @@ export class SelectScene extends Scene {
     // The canvas measures 0.00% visible behind this screen — stop drawing it.
     this._unpauseStage = pauseStageFor(ctx);
 
-    // unlocked set: saved rescues, plus the starters, plus ?all=1 for review
+    // unlocked set: the shared freed count, plus ?all=1 for review
     const revealAll = params.all === '1' || params.all === true;
-    const saved = Save?.data?.companionsRescued ?? [];
-    this.unlocked = new Set(revealAll ? COMPANIONS.map((c) => c.slug) : [...STARTER_COMPANIONS, ...saved]);
+    this.unlocked = revealAll ? new Set(COMPANIONS.map((c) => c.slug)) : freedCompanions();
+    /* The grid tally must never move with `?all=1`: that flag is a review door,
+       not progress. It counts what you actually freed either way. */
+    this.freed = freedCompanions();
 
     this.state.seed = Number(params.seed) || (Date.now() % 0x7fffffff);
     this.state.haunt = Math.max(0, Math.min(HAUNTS.length - 1, Number(params.haunt ?? Save?.data?.hauntLevel ?? 0)));
@@ -620,7 +625,7 @@ export class SelectScene extends Scene {
     this._grid = grid;
 
     const count = el('div', 'sel__gridcount');
-    count.innerHTML = `<b>${this.unlocked.size}</b> / ${COMPANIONS.length} freed`;
+    count.innerHTML = `<b>${this.freed.size}</b> / ${COMPANIONS.length} freed`;
     wrap.appendChild(count);
     return wrap;
   }
@@ -775,10 +780,18 @@ export class SelectScene extends Scene {
     haunt.appendChild(el('span', 'haunt__desc', HAUNTS[this.state.haunt][1]));
     f.appendChild(haunt);
 
+    /* Typeable, not just readable. Settings already lets you set next run's
+       seed while this screen — the one place you are actually choosing a run —
+       only showed one, so "run my friend's house" meant a detour through a
+       menu. Same `XXXX-XXXX` form the run-end screen prints, so a seed
+       screenshotted off Game Over can be pasted straight back in here. */
     const seed = el('div', 'foot__seed');
     seed.innerHTML =
-      `<span class="foot__lbl">Seed</span>` +
-      `<code class="seed__val">${formatSeed(this.state.seed)}</code>` +
+      `<label class="foot__lbl" for="sel-seed">Seed</label>` +
+      `<input class="seed__val" id="sel-seed" type="text" spellcheck="false" autocomplete="off"
+              maxlength="9" size="9" aria-describedby="sel-seed-hint"
+              value="${formatSeed(this.state.seed)}">` +
+      `<span class="seed__hint" id="sel-seed-hint">type one in, or roll</span>` +
       `<button type="button" class="seed__roll" aria-label="Roll a new seed">&#8635;</button>`;
     f.appendChild(seed);
 
@@ -826,14 +839,27 @@ export class SelectScene extends Scene {
     this._hero.addEventListener('click', onHero);
     this._offs.push(() => this._hero.removeEventListener('click', onHero));
 
-    // kid strip
+    // kid strip — hover and focus PREVIEW, click and Enter CHOOSE
     const strip = this._kidStep.querySelector('.kid__strip');
     const onKid = (e) => {
       const b = e.target.closest('.kid-tile');
       if (b) this._pickKid(b.dataset.slug);
     };
+    const onKidHover = (e) => {
+      const b = e.target.closest?.('.kid-tile');
+      if (b) this._showKid(b.dataset.slug);
+    };
+    const onKidOut = () => { if (this.state.kid) this._showKid(this.state.kid); };
     strip.addEventListener('click', onKid);
-    this._offs.push(() => strip.removeEventListener('click', onKid));
+    strip.addEventListener('pointerover', onKidHover);
+    strip.addEventListener('pointerleave', onKidOut);
+    strip.addEventListener('focusin', onKidHover);
+    this._offs.push(() => {
+      strip.removeEventListener('click', onKid);
+      strip.removeEventListener('pointerover', onKidHover);
+      strip.removeEventListener('pointerleave', onKidOut);
+      strip.removeEventListener('focusin', onKidHover);
+    });
     this._offs.push(rovingFocus(strip, '.kid-tile', { cols: 4, onActivate: (b) => this._pickKid(b.dataset.slug) }));
 
     // haunt
@@ -851,12 +877,32 @@ export class SelectScene extends Scene {
 
     // seed
     const roll = this._foot.querySelector('.seed__roll');
+    const seedIn = this._foot.querySelector('.seed__val');
     const onRoll = () => {
       this.state.seed = (Math.floor(Math.random() * 0x7fffffff)) >>> 0;
-      this._foot.querySelector('.seed__val').textContent = formatSeed(this.state.seed);
+      seedIn.value = formatSeed(this.state.seed);
+      seedIn.classList.remove('is-bad');
+    };
+    // Commit on blur / Enter, not per keystroke: half a seed is not a seed.
+    const onSeedCommit = () => {
+      const n = parseSeed(seedIn.value);
+      if (n == null) { seedIn.classList.add('is-bad'); seedIn.value = formatSeed(this.state.seed); }
+      else { this.state.seed = n; seedIn.classList.remove('is-bad'); }
+      seedIn.value = formatSeed(this.state.seed);
+    };
+    const onSeedKey = (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); onSeedCommit(); seedIn.blur(); }
     };
     roll.addEventListener('click', onRoll);
-    this._offs.push(() => roll.removeEventListener('click', onRoll));
+    seedIn.addEventListener('change', onSeedCommit);
+    seedIn.addEventListener('blur', onSeedCommit);
+    seedIn.addEventListener('keydown', onSeedKey);
+    this._offs.push(() => {
+      roll.removeEventListener('click', onRoll);
+      seedIn.removeEventListener('change', onSeedCommit);
+      seedIn.removeEventListener('blur', onSeedCommit);
+      seedIn.removeEventListener('keydown', onSeedKey);
+    });
 
     // go
     const onGo = () => this._begin();
@@ -891,6 +937,8 @@ export class SelectScene extends Scene {
     const codex = CODEX[slug];
     if (!c || !codex) return;
     this.state.companion = slug;
+    // the Kid dossier's "Together" panel is about THIS Companion — force a redraw
+    this._shownKid = null;
 
     for (const t of this._grid.querySelectorAll('.companion-tile')) {
       const on = t.dataset.slug === slug;
@@ -1036,17 +1084,25 @@ export class SelectScene extends Scene {
     this._syncGo();
   }
 
-  _pickKid(slug, instant = false) {
+  /**
+   * Fill the dossier for one Kid WITHOUT choosing them.
+   *
+   * Step 2 used to render nothing at all until you clicked: an empty grey
+   * MISSING poster over three empty section headers, which read as a broken
+   * screen rather than an invitation. The panel is a preview now — it follows
+   * the pointer and the focus ring the way the reward fan does — and the footer
+   * chip still says "not chosen" until you actually commit.
+   */
+  _showKid(slug) {
     const k = KIDS.find((x) => x.slug === slug);
     const info = KID_CODEX[slug];
-    if (!k || !info) return;
-    this.state.kid = slug;
+    if (!k || !info || !this._kidStep) return;
+    if (this._shownKid === slug) return;
+    this._shownKid = slug;
 
     const step = this._kidStep;
     for (const b of step.querySelectorAll('.kid-tile')) {
-      const on = b.dataset.slug === slug;
-      b.classList.toggle('is-selected', on);
-      b.setAttribute('aria-selected', String(on));
+      b.classList.toggle('is-shown', b.dataset.slug === slug);
     }
 
     const pf = step.querySelector('.kid__portrait');
@@ -1089,6 +1145,20 @@ export class SelectScene extends Scene {
       `<span class="packitem__name">${name}</span><span class="packitem__n">${n} slot${n > 1 ? 's' : ''}</span></li>`).join('');
 
     step.dataset.chosen = '1';
+  }
+
+  /** Commit to a Kid. The dossier is already on screen; this is the decision. */
+  _pickKid(slug, instant = false) {
+    const k = KIDS.find((x) => x.slug === slug);
+    if (!k || !KID_CODEX[slug]) return;
+    this.state.kid = slug;
+    this._showKid(slug);
+
+    for (const b of this._kidStep.querySelectorAll('.kid-tile')) {
+      const on = b.dataset.slug === slug;
+      b.classList.toggle('is-selected', on);
+      b.setAttribute('aria-selected', String(on));
+    }
     this._setChip('kid', k.name, `looking for ${k.pet}`);
     if (!instant) this._setMode('kid');
     this._syncGo();
@@ -1112,6 +1182,10 @@ export class SelectScene extends Scene {
     if (mode === 'kid' && !this.state.companion) return;
     this.state.mode = mode;
     this.root.dataset.mode = mode;
+    /* Arriving at step 2 with a live dossier instead of an empty poster. The
+       Companion decides the "Together" panel, so the preview is re-rendered
+       whenever we walk in. */
+    if (mode === 'kid' && !this._shownKid) this._showKid(this.state.kid || KIDS[0].slug);
     const stepIndex = mode === 'grid' ? 1 : mode === 'hero' ? 1 : 2;
     for (const li of this._rail.querySelectorAll('.sel-rail__step')) {
       const n = Number(li.dataset.step);

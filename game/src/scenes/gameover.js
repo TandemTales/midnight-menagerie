@@ -73,6 +73,23 @@ const KILLERS = {
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => (
   { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
+/**
+ * Normalise one deck entry to `{def, upgraded}`.
+ *
+ * Three shapes reach this screen and only one of them is a CardDef: `ctx.run`
+ * holds instances (`{uid, id, upgraded}`), `Run.snapshot()` holds `{def, upgraded}`,
+ * and the standalone mock builds real defs straight out of `data/cards.js`.
+ * Anything whose id does not resolve is dropped — a run summary that prints an
+ * internal id has already failed.
+ */
+function resolveCard(entry, cardById) {
+  if (!entry) return null;
+  if (entry.def) return { def: entry.def, upgraded: !!entry.upgraded };
+  if (entry.name && entry.type) return { def: entry, upgraded: !!entry.upgraded };
+  const def = entry.id ? cardById(entry.id) : null;
+  return def ? { def, upgraded: !!entry.upgraded } : null;
+}
+
 export class GameOverScene extends Scene {
   constructor(ctx) {
     super(ctx);
@@ -459,9 +476,22 @@ export class GameOverScene extends Scene {
      ═══════════════════════════════════════════════════════════════════════ */
   async _hydrateCards() {
     const s = this.summary;
-    let defs = Array.isArray(s.deck) ? s.deck.filter(Boolean) : null;
+    let cards = null;
 
-    if (!defs || !defs.length) {
+    // `run.deck` is a list of INSTANCES — `{uid, id, upgraded}` — not CardDefs.
+    // Printing them straight is what put `bones/bite ×4` and a card face reading
+    // BONES/BITE on the most emotional screen in the game, and left the closing
+    // line with an empty name slot where `def.name` should have been. Resolve
+    // every entry to its real definition first; anything that will not resolve
+    // is dropped rather than printed as an id.
+    if (Array.isArray(s.deck) && s.deck.length) {
+      try {
+        const { cardById } = await import('../data/cards.js');
+        cards = s.deck.map((c) => resolveCard(c, cardById)).filter(Boolean);
+      } catch { cards = null; }
+    }
+
+    if (!cards || !cards.length) {
       try {
         const mod = await import('../data/cards.js');
         const start = mod.startingDeckFor?.(s.companion) ?? [];
@@ -472,35 +502,39 @@ export class GameOverScene extends Scene {
         const bag = [...pool, ...shared].filter(Boolean);
         const extra = bag.length ? 5 + rng.int(7) : 0;
         for (let i = 0; i < extra; i++) picked.push(bag[rng.int(bag.length)]);
-        defs = [...start, ...picked].filter(Boolean);
-      } catch { defs = []; }
+        cards = [...start, ...picked].filter(Boolean)
+          .map((def) => ({ def, upgraded: false }));
+      } catch { cards = []; }
     }
     if (this._dead) return;
 
-    if (defs.length) this._renderDeck(defs);
+    if (cards.length) this._renderDeck(cards);
     else this._renderDeckFallback();
 
     await this._hydrateKeepsakes();
   }
 
-  _renderDeck(defs) {
+  /** @param {{def:object, upgraded:boolean}[]} cards */
+  _renderDeck(cards) {
     const host = this._deckHost;
     if (!host) return;
+    // Scratch and Scratch+ are different Tricks to a player, so they are
+    // different rows — keyed on the pair, not on the id alone.
     const counts = new Map();
-    for (const d of defs) {
-      const id = d?.id ?? d?.name;
-      if (!id) continue;
-      const hit = counts.get(id);
-      if (hit) hit.n++; else counts.set(id, { n: 1, def: d });
+    for (const c of cards) {
+      if (!c?.def?.name) continue;
+      const key = `${c.def.id}${c.upgraded ? '+' : ''}`;
+      const hit = counts.get(key);
+      if (hit) hit.n++; else counts.set(key, { n: 1, def: c.def, upgraded: !!c.upgraded });
     }
     const rows = [...counts.values()].sort((a, b) =>
       (b.n - a.n) || String(a.def.name).localeCompare(String(b.def.name)));
 
-    host.innerHTML = rows.map(({ n, def }) => `
-      <span class="go-trick" role="listitem"
+    host.innerHTML = rows.map(({ n, def, upgraded }) => `
+      <span class="go-trick" role="listitem"${upgraded ? ' data-up="1"' : ''}
             data-type="${esc(def.type || 'skill')}" data-rarity="${esc(def.rarity || 'common')}">
         <i class="go-trick__cost">${def.cost < 0 ? 'X' : (def.cost ?? 1)}</i>
-        <b class="go-trick__name">${esc(def.name ?? def.id)}</b>
+        <b class="go-trick__name">${esc(def.name)}${upgraded ? '<u>+</u>' : ''}</b>
         ${n > 1 ? `<em class="go-trick__n">&#215;${n}</em>` : ''}
       </span>`).join('');
 
@@ -512,7 +546,7 @@ export class GameOverScene extends Scene {
     this._renderMvp(rows);
   }
 
-  /** No card module yet: still show a real, readable list rather than nothing. */
+  /** No card module at all: still show a real, readable list rather than nothing. */
   _renderDeckFallback() {
     const host = this._deckHost;
     if (!host) return;
@@ -533,7 +567,6 @@ export class GameOverScene extends Scene {
 
   /** One real CardView: the Trick the run leaned on hardest. */
   async _renderMvp(rows) {
-    const s = this.summary;
     const pick = rows.find((r) => r.def?.id && r.def.rarity !== 'basic') || rows[0];
     if (!pick?.def?.id || !this._mvpSlot) return;
     try {
@@ -542,6 +575,7 @@ export class GameOverScene extends Scene {
       if (this._dead || !this._mvpSlot) return;
       const view = new CardView(pick.def, {
         uid: `go-${pick.def.id}`,
+        upgraded: !!pick.upgraded,
         largeText: !!Save?.settings?.largeText,
         reduceMotion: reduceMotion(),
       });
@@ -559,14 +593,22 @@ export class GameOverScene extends Scene {
       this._mvpSlot.appendChild(view.el);
       fitCardToSlot(view, this._mvpSlot);
 
-      const plays = 4 + new RNG(hashSeed(`${s.seed}:mvp`)).int(38);
-      if (this._mvpN) this._mvpN.textContent = `played ${plays}×`;
+      /* This used to read "played 21×" off `new RNG(seed).int(38)` — a number
+         invented on the spot and printed as a statistic on the screen a player
+         screenshots. Neither the run nor the engine keeps a per-Trick play
+         count (the ask is in docs/NOTES.md), so the chip now states the one
+         thing that IS true: how many copies of it you finished the night with. */
+      const name = esc(pick.def.name) + (pick.upgraded ? '+' : '');
+      if (this._mvpN) {
+        this._mvpN.textContent = pick.n > 1
+          ? `${pick.n} copies` : String(pick.def.rarity || 'common');
+      }
       if (this._mvpNote) {
         this._mvpNote.innerHTML = this.won
           ? `Every expedition ends up leaning on one ${TERMS.card}. This run it was
-             <b>${esc(pick.def.name)}</b>, and it held.`
+             <b>${name}</b>, and it held.`
           : `Every expedition ends up leaning on one ${TERMS.card}. This run it was
-             <b>${esc(pick.def.name)}</b>, right up until it was not enough.`;
+             <b>${name}</b>, right up until it was not enough.`;
       }
       this._mvpBlock.hidden = false;
     } catch { /* card-feel's renderer is not available; the list above stands */ }

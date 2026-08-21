@@ -259,6 +259,26 @@ export class RoomScene extends Scene {
         for (const { slot, view } of views) fitCardToSlot(view, slot);
       };
 
+      /* ── the upgrade preview ──────────────────────────────────────────────
+         Exactly ONE card may wear its upgraded face at a time, plus whichever
+         one is actually chosen. Round 3 hung the preview off each slot's own
+         enter/leave AND focus/blur, so opening the picker focused slot 0 (which
+         showed `Scratch+`), and then hovering `Boo!` showed `Boo!+` without ever
+         blurring slot 0 — two `+` cards on screen with nothing selected.
+         Pointer beats focus; focus is what is left when the pointer leaves. */
+      let hoverEntry = null;
+      let focusEntry = null;
+      const paint = () => {
+        if (o.preview !== 'upgrade') return;
+        const active = hoverEntry || focusEntry;
+        for (const v of views) {
+          const want = (v === active || v.c.uid === chosen) ? true : !!v.c.upgraded;
+          if (v.shown === want) continue;
+          v.shown = want;
+          try { v.view.setState({ upgraded: want }); } catch { /* card-feel owns the face */ }
+        }
+      };
+
       for (const c of o.cards) {
         const slot = el('div', 'rm-slot');
         slot.setAttribute('role', 'option');
@@ -270,23 +290,31 @@ export class RoomScene extends Scene {
           largeText: this.largeText, reduceMotion: this.reduceMotion,
         });
         slot.appendChild(view.el);
-        views.push({ slot, view, c });
+        const entry = { slot, view, c, shown: !!c.upgraded };
+        views.push(entry);
 
-        // Before / after on the real card: hovering an upgradeable Trick shows
-        // the upgraded face in place, so the change is read on the card itself.
-        const showAfter = (on) => {
-          if (o.preview !== 'upgrade') return;
-          try { view.setState({ upgraded: on ? true : !!c.upgraded }); } catch { /* no-op */ }
-        };
-        slot.addEventListener('pointerenter', () => { showAfter(true); read.textContent = this._pickerRead(c, o); });
-        slot.addEventListener('pointerleave', () => { if (chosen !== c.uid) showAfter(false); });
-        slot.addEventListener('focus', () => { showAfter(true); read.textContent = this._pickerRead(c, o); });
-        slot.addEventListener('blur', () => { if (chosen !== c.uid) showAfter(false); });
+        // Before / after on the real card: the Trick under the pointer (or, with
+        // no pointer, under the focus ring) shows the upgraded face in place, so
+        // the change is read on the card itself.
+        slot.addEventListener('pointerenter', () => {
+          hoverEntry = entry; read.textContent = this._pickerRead(c, o); paint();
+        });
+        slot.addEventListener('pointerleave', () => {
+          if (hoverEntry === entry) hoverEntry = null;
+          paint();
+        });
+        slot.addEventListener('focus', () => {
+          focusEntry = entry; read.textContent = this._pickerRead(c, o); paint();
+        });
+        slot.addEventListener('blur', () => {
+          if (focusEntry === entry) focusEntry = null;
+          paint();
+        });
         const choose = () => {
           chosen = c.uid;
           for (const v of views) v.slot.classList.toggle('is-chosen', v.c.uid === chosen);
           for (const v of views) v.slot.setAttribute('aria-selected', String(v.c.uid === chosen));
-          showAfter(true);
+          paint();
           ok.disabled = false;
           this.ctx.audio?.play?.('ui:tick');
         };

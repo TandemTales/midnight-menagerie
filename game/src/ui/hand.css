@@ -4,6 +4,29 @@
    All card motion is JS transforms; CSS here only styles the furniture.
    =========================================================================== */
 
+/* ── the host ─────────────────────────────────────────────────────────────
+   `Hand#mount` stamps this class on whatever element it is mounted into, and
+   `Hand#destroy` takes it off again.
+
+   Why the Hand reaches out to its host at all: a Hand is mounted into a
+   full-bleed container (`.cb-handhost` in the combat scene, `#stage` in
+   tests/cards-feel) so it can fly cards to the pile markers in the screen
+   corners. Such a container is `position:absolute; inset:0` with a z-index
+   above the field, and `pointer-events` defaults to `auto` — so the container
+   itself, an empty div with nothing drawn in it, hit-tested over the entire
+   board and swallowed every mouse event aimed at an enemy. No intent, enemy
+   or enemy-status tooltip was reachable at all (STS2-REFERENCE §1 calls
+   intents "the single most important UI element in the game").
+
+   The Hand cannot fix that from inside itself — `.mm-hand` was already
+   `pointer-events:none` and it made no difference, because the *parent* was
+   the hit target. So the Hand takes responsibility for the surface it asked
+   for: the host goes inert, and the only things that take pointer events back
+   are the cards and the fan-sized backstop below.
+   Zero specificity is deliberate — a scene that genuinely wants a live host
+   overrides this with any rule at all.                                      */
+:where(.mm-hand-host) { pointer-events: none; }
+
 .mm-hand {
   position: absolute; inset: 0;
   z-index: var(--z-hand);
@@ -12,16 +35,50 @@
   font-family: var(--font-body);
 }
 .mm-hand__cards { position: absolute; inset: 0; pointer-events: none; }
-/* Cards are never hit-tested by the browser. The hand does it itself against
-   the *base* fan geometry, so a card lifting under the cursor can't oscillate. */
-.mm-hand .mm-card { pointer-events: none; }
+
+/* ── the hit model ────────────────────────────────────────────────────────
+   TWO separate jobs, and an earlier round conflated them:
+
+   1. WHICH CARD is under the cursor. The Hand answers this itself, in JS,
+      against the *base* (unlifted) fan geometry — `Hand#_hitTest`. That is
+      what makes seam hover unflickerable: a card that lifts under the cursor
+      cannot move itself out from under it. Measured: 0 seam-hover flips.
+   2. WHETHER THE HAND gets the event at all. That is the DOM's job, and it
+      used to be done by parking one `pointer-events:auto` sheet over the
+      bottom 45% of the viewport at z 700 — on top of the cards, on top of the
+      bottom of the enemy field, and (with the host div defaulting to `auto`
+      above it) on top of everything else too.
+
+   Job 1 is unchanged. Job 2 is now: cards are real hit targets again
+   (`.mm-card *` stays inert, so the target is always the card root), and
+   `.mm-hand__hit` is a BACKSTOP behind them — sized by JS to the fan's own
+   bounding box, never the viewport — that catches the gaps between and below
+   the cards, including the hole a lifted card leaves behind. Nothing the hand
+   owns covers a pixel the fan does not occupy.
+
+   Consequences that matter: enemy/intent/status tooltips are reachable again,
+   and Playwright's ordinary `hover('.mm-card')` / `click('.mm-card')`
+   actionability passes instead of needing raw mouse.move/down/up. */
+.mm-hand .mm-card { pointer-events: auto; }
+/* A card in flight (play arc, discard tumble, exhaust rise) or under the
+   pointer-captured drag leaves the fan and crosses the enemies at z 600–900.
+   It must not steal their hover on the way past; the drag reaches the hand
+   through pointer capture, not through hit testing. */
+.mm-hand .mm-card.is-dragging,
+.mm-hand .mm-card.is-flying { pointer-events: none; }
+
 .mm-hand__hit {
-  position: absolute; left: 0; right: 0; bottom: 0; top: 55%;
+  /* geometry is written by Hand#_syncHitBox; these are the pre-layout values */
+  position: absolute; left: 0; width: 100%; bottom: 0; top: 60%;
   pointer-events: auto;
-  z-index: 700;
+  z-index: 1;               /* BEHIND every card (cards run z 20..900) */
   touch-action: none;
 }
-.mm-hand.is-locked .mm-hand__hit { pointer-events: none; }
+/* Locked (enemy turn, resolving a play): the whole hand is inert, cards
+   included — otherwise a card would still show `cursor:pointer` and swallow a
+   hover it is going to refuse. */
+.mm-hand.is-locked .mm-hand__hit,
+.mm-hand.is-locked .mm-card { pointer-events: none; }
 /* The hand is the single tab stop; focus is then roving between cards, which
    carry tabindex="-1". No ring on the container itself — the selected card's
    own glow is the focus indicator. */
@@ -38,6 +95,9 @@
   pointer-events: none;
   overflow: hidden;
 }
+/* …including the throwaway cards inside it: `.mm-hand .mm-card` re-enables
+   pointer events for the fan, and rehearsal cards are not the fan. */
+.mm-hand__warm .mm-card { pointer-events: none; }
 
 /* Off-screen sizer: lets the hand read the responsive CSS card size without
    assuming a card exists. Never visible, never hit-tested, never measured by

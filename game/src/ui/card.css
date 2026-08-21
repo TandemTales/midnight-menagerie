@@ -73,6 +73,17 @@
   backface-visibility: hidden;
   -webkit-font-smoothing: antialiased;
   cursor: pointer;
+
+  /* ── LINING FIGURES, everywhere on a card ──────────────────────────────
+     Both card faces (Cinzel display/num, Grenze body) ship OLD-STYLE figures
+     by default: `1` draws as a small serif I, `0` as a lowercase o, and 3/4/5/
+     7/9 descend below the baseline. At hand scale that turns "Shed 1 Bone"
+     into "Shed I Bone", "exactly 0 Loose Bones" into "exactly o Loose Bones",
+     and a 1-cost gem into a gem reading I. In a game whose whole design rests
+     on reading numbers that is a defect, not a flourish.
+     Both faces carry a real `lnum` feature (verified in-browser, Chromium,
+     shots/fontprobe.png), so this is a one-line fix rather than a new face. */
+  font-variant-numeric: lining-nums;
 }
 .mm-card * { pointer-events: none; }
 .mm-card:focus { outline: none; }
@@ -255,11 +266,31 @@
 .mm-card.is-text-xlong .mm-card__rules { font-size: calc(12.5 * var(--u)); line-height: 1.18; }
 .mm-card__rules em { font-style: italic; color: var(--text-mid); }
 
+/* ── the numbers ─────────────────────────────────────────────────────────
+   NOT `--font-num`. That token resolves to Cinzel, a Trajan-style Roman face
+   whose ONE is a bare stem with slab serifs top and bottom — the Roman I. At
+   hand scale (a ~15px glyph) "Deal 13 damage" printed "Deal I3 damage",
+   "Zoomies 1:" printed "Zoomies I:", and a 1-cost gem printed a gem reading I.
+   `lining-nums` cannot fix that: Cinzel's figures are ALREADY lining, the 1 is
+   simply drawn as an I.
+
+   The rules face carries a real `lnum` feature and its lining 1 has an angled
+   flag that reads as a one at any size — and numbers in the same face as the
+   sentence around them is what StS does anyway. Verified by screenshot at
+   actual hand scale, not zoomed (tests/cards-feel `figures`).
+
+   REPORTED (tokens.css is ui-chrome's): `--font-num` has this problem
+   everywhere it is used — Nerve orb, Courage counters, intent damage chips.
+   Either the token should carry `font-variant-numeric` and a face whose 1 is
+   unambiguous, or every numeric readout needs this same local override.       */
 .mm-card__num {
-  font-family: var(--font-num);
-  font-weight: 700;
+  font-family: var(--font-body);
+  font-weight: 600;          /* the real Grenze semibold; 700 would synthesise */
   color: var(--text-hi);
-  font-size: 1.06em;
+  font-size: 1.1em;
+  /* tabular as well as lining: a live preview swaps 9 -> 12 in place and the
+     line must not re-flow under the swap. */
+  font-variant-numeric: lining-nums tabular-nums;
   transition: color var(--t-quick) var(--ease-soft);
 }
 .mm-card__num.is-up   { color: var(--c-good); text-shadow: 0 0 calc(7 * var(--u)) color-mix(in srgb, var(--c-good) 60%, transparent); }
@@ -306,9 +337,12 @@
   left: calc(3 * var(--u)); top: calc(3 * var(--u));
   width: calc(46 * var(--u)); height: calc(46 * var(--u));
   display: grid; place-items: center;
-  font-family: var(--font-num);
-  font-weight: 700;
-  font-size: calc(23 * var(--u));
+  /* Same face as the rules numbers, for the same reason — see `.mm-card__num`.
+     This gem is the number the player reads most often in the whole game. */
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: calc(25 * var(--u));
+  font-variant-numeric: lining-nums tabular-nums;
   line-height: 1;
   color: var(--ink-900);
   text-shadow: 0 calc(1 * var(--u)) 0 color-mix(in srgb, var(--pluck-300) 70%, white);
@@ -637,6 +671,20 @@
 }
 .mm-card.is-dragging { cursor: grabbing; }
 .mm-card.is-ghost { opacity: .28; }
+
+/* ── held, and aimed at something ────────────────────────────────────────
+   The card you are holding is the least important thing on screen once a
+   target is locked: you chose it a second ago, and what you now need to read
+   is the ENEMY — its HP bar, its Guard badge, the damage preview above it.
+   Full-size and fully opaque, the held card sat straight on top of all three.
+   `Hand` also shrinks it and slides it clear of the target's box; this is the
+   part that stops it being a wall even when there is nowhere to slide to.   */
+.mm-card.is-aiming {
+  opacity: .42;
+  transition: opacity var(--t-quick) var(--ease-soft);
+}
+.mm-card.is-aiming .mm-card__frame { box-shadow: none; }
+.mm-reduce .mm-card.is-aiming { transition: none; }
 
 /* ── ember dissolve (exhaust) ───────────────────────────────────────────── */
 .mm-card__embers { position: absolute; inset: 0; overflow: visible; opacity: 0; }

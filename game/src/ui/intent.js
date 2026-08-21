@@ -186,6 +186,19 @@ const WORD = {
   [Intent.ATTACK_DEBUFF]: 'Attack',
 };
 
+/** Where a move shoves a card, as a chip sub-label and as a sentence. */
+const PILE_WORD = { discard: 'to discard', draw: 'to draw', hand: 'to hand', exhaust: 'vanished' };
+const PILE_LINE = {
+  'to discard': 'into your discard pile', 'to draw': 'into your draw pile',
+  'to hand': 'straight into your hand', vanished: 'out of the Scuffle',
+};
+
+/** `clutter` -> `Clutter`. Card ids are kebab-case and read fine as words. */
+function words(id) {
+  return String(id).replace(/^.*\//, '').replace(/[-_]/g, ' ')
+    .replace(/\b\w/g, (m) => m.toUpperCase());
+}
+
 /** Plain sentence for an intent that carries no numbers at all. */
 const NO_NUMBER_LINE = {
   [Intent.SLEEP]: 'Asleep. It does nothing this turn.',
@@ -281,13 +294,28 @@ export class IntentView {
     const blk = intent.block | 0;
     const hasDmg = dmg > 0 && hits > 0;
     const hasBlk = blk > 0;
-    const key = `${hasDmg ? dmg + 'x' + hits : ''}|${hasBlk ? blk : ''}|${type}`;
+    /* WHAT IT ACTUALLY DOES TO YOU. The Lost Luggage's Pack Wrong is
+       `intent: DEBUFF, block: 5, addsCards:[{id:'clutter',pile:'discard'}]`, so
+       round 3 drew a `5` under a debuff frame and labelled it "Pack Wrong.
+       5 Guard." — the deck pollution, which is the entire threat, was never
+       mentioned anywhere on screen. The Door Greeter's rule announcement showed
+       a chip reading just "DEBUFF". Neither of those is in the Intent payload;
+       both are in the EnemyDef's move, which the scene already hands us. */
+    const extras = this._extras();
+    const ek = extras.map(e => e.k).join(',');
+    const key = `${hasDmg ? dmg + 'x' + hits : ''}|${hasBlk ? blk : ''}|${type}|${ek}`;
     if (key !== this._valKey) {
       this._valKey = key;
       this.$vals.textContent = '';
       if (hasDmg) this.$vals.appendChild(this._chip('damage', String(dmg), hits > 1 ? `×${hits}` : ''));
       if (hasBlk) this.$vals.appendChild(this._chip('guard', String(blk), ''));
-      if (!hasDmg && !hasBlk) this.$vals.appendChild(this._chip('word', WORD[type] || FAMILY_WORD[fam] || 'Acts', ''));
+      for (const e of extras) this.$vals.appendChild(this._chip(e.role, e.text, e.sub));
+      // The word chip names the family when no number does — and also when the
+      // only number on a NON-defense intent is its Guard, which otherwise reads
+      // as damage under a debuff frame.
+      if (!extras.length && !hasDmg && (!hasBlk || fam !== 'defense')) {
+        this.$vals.appendChild(this._chip('word', WORD[type] || FAMILY_WORD[fam] || 'Acts', ''));
+      }
     }
     this.el.classList.toggle('has-num', hasDmg || hasBlk);
     this.el.classList.toggle('is-multi', hasDmg && hits > 1);
@@ -332,6 +360,44 @@ export class IntentView {
     return this;
   }
 
+  /**
+   * The parts of a move that the Intent payload drops on the floor: the cards
+   * it shoves into your piles, and the House Rule it announces.
+   *
+   * `combat/intents.js#buildIntent` carries `damage / hits / block / applies`
+   * and nothing else, so these are read off the EnemyDef's move — which the
+   * scene passes in as `o.def` for exactly this kind of question. If the engine
+   * ever carries `addsCards` / `rule` on the Intent, this reads them from there
+   * first and the def lookup becomes the fallback.
+   */
+  _extras() {
+    const i = this.intent;
+    if (!i) return [];
+    const m = (this.info.def && this.info.def.moves && this.info.def.moves[i.moveId]) || null;
+    const adds = i.addsCards || (m && m.addsCards);
+    const rule = i.rule || (m && m.rule);
+    const out = [];
+    if (Array.isArray(adds) && adds.length) {
+      const seen = new Map();
+      for (const a of adds) {
+        const id = (typeof a === 'string' ? a : a && a.id) || '';
+        if (!id) continue;
+        const pile = (typeof a === 'object' && a.pile) || 'discard';
+        seen.set(id + '/' + pile, { id, pile });
+      }
+      for (const a of seen.values()) {
+        out.push({
+          role: 'cards', k: `c:${a.id}:${a.pile}`,
+          // No count: several moves scale how many they add on the first use or
+          // with Haunt, and a confident wrong number is worse than none.
+          text: words(a.id), sub: PILE_WORD[a.pile] || ('to ' + a.pile),
+        });
+      }
+    }
+    if (rule) out.push({ role: 'rule', k: 'r:' + rule, text: 'House Rule', sub: '' });
+    return out;
+  }
+
   _chip(role, value, sub) {
     const d = document.createElement('span');
     d.className = 'cb-intent__chip';
@@ -352,6 +418,9 @@ export class IntentView {
     const bits = [i.name || 'Intent'];
     if (i.damage > 0) bits.push(i.hits > 1 ? `${i.damage} damage, ${i.hits} times` : `${i.damage} damage`);
     if (i.block > 0) bits.push(`${i.block} Guard`);
+    for (const e of this._extras()) {
+      bits.push(e.role === 'cards' ? `puts ${e.text} ${e.sub}` : 'announces a House Rule');
+    }
     for (const s of i.statuses || []) bits.push(`${s.stacks} ${s.name}`);
     return bits.join('. ') + '.';
   }
@@ -389,6 +458,10 @@ export class IntentView {
       lines.push(`Attacks for ${i.damage} damage.`);
     }
     if (i.block > 0) lines.push(`Gains ${i.block} Guard.`);
+    for (const e of this._extras()) {
+      if (e.role === 'cards') lines.push(`Puts ${e.text} ${PILE_LINE[e.sub] || 'into your discard pile'}.`);
+      else if (e.role === 'rule') lines.push('Announces a House Rule you then have to play around.');
+    }
     for (const s of i.statuses || []) {
       const who = s.to === 'self' ? (o.selfName || 'itself')
         : (s.to === 'allEnemies' || s.to === 'allies') ? 'its allies' : 'you';

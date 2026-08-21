@@ -177,8 +177,24 @@ const TYPE_POOL = {
   curse:  ['thorn'],
 };
 
+/**
+ * The part of a card id that actually names the card.
+ *
+ * Ids are `<companion-slug>/<card-slug>` — `bones/tailbone-thump`. Matching
+ * SUBJECT_RULES against the WHOLE id meant the companion slug decided the
+ * picture for its entire pool: `bones/*` hit /bone/, `taffy/*` hit /taffy/,
+ * `hush/*` hit /hush/, `drizzle/*` hit /drizzle/ and `brambleboo/*` hit /boo/.
+ * Five companions, ~200 cards, one drawing each. The slug is a *family* label —
+ * it already picks the palette in `fam()` — so it must never pick the subject.
+ */
+function cardStem(id) {
+  const s = String(id || '');
+  const i = s.lastIndexOf('/');
+  return i < 0 ? s : s.slice(i + 1);
+}
+
 export function subjectFor(def) {
-  const s = ((def.id || '') + ' ' + (def.name || '')).toLowerCase();
+  const s = (cardStem(def.id) + ' ' + (def.name || '')).toLowerCase();
   // Statuses are clutter you did not choose: they never borrow a hero shape.
   if (def.type === 'status') {
     const p = ['sick', 'cloud', 'swirl', 'stitch'];

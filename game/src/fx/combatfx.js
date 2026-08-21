@@ -200,7 +200,11 @@ export class CombatFX {
    * @param {number} x @param {number} y  layer-local px
    * @param {string|number} text
    * @param {object} o { kind:'damage'|'blocked'|'block'|'heal'|'crit'|'status'|'miss',
-   *                     mag, delay }
+   *                     mag, delay, rise }
+   *   `rise` caps how far the numeral climbs, in px. The caller needs it because
+   *   the default 62-100px carried a damage number off the top of a short rig
+   *   and straight onto that enemy's intent chip — every hit briefly replaced
+   *   the intent's value with the damage value, in the same spot.
    */
   number(x, y, text, o = {}) {
     if (!this.showNumbers && o.kind !== 'status') return this;
@@ -213,7 +217,7 @@ export class CombatFX {
     s.dur = 0.72 + scale * 0.24;
     s.x = x + (Math.random() - 0.5) * 26;
     s.y = y;
-    s.rise = 62 + scale * 26;
+    s.rise = o.rise > 0 ? Math.min(o.rise, 62 + scale * 26) : 62 + scale * 26;
     s.drift = (Math.random() - 0.5) * 34;
     s.scale = scale;
     const el = s.el;

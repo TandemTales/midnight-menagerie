@@ -607,11 +607,40 @@
 .kid-tile__plate { display: grid; gap: 0; padding: 4px 4px 6px; text-align: center; background: linear-gradient(180deg, color-mix(in oklab, var(--ink-700) 70%, var(--brass-600)), var(--ink-900)); }
 .kid-tile__name { font-family: var(--font-display); font-size: var(--fs-sm); color: var(--brass-100); }
 .kid-tile__pet { font-size: var(--fs-xs); font-style: italic; color: var(--text-lo); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.kid-tile:hover, .kid-tile:focus-visible { outline: none; transform: translateY(-4px); box-shadow: 0 0 0 1px var(--brass-300), 0 0 20px color-mix(in srgb, var(--spectre-300) 24%, transparent), var(--shadow-3); }
-.kid-tile:focus-visible { box-shadow: 0 0 0 2px var(--flame-300), var(--shadow-3); }
-.kid-tile.is-selected { transform: translateY(-4px); box-shadow: 0 0 0 2px var(--brass-200), 0 0 26px color-mix(in srgb, var(--flame-glow) 38%, transparent), var(--shadow-3); }
+/* Three states, and they must not look like each other:
+     LOOKING AT  (hover / focus / whichever tile the dossier is showing) — cool
+                 spectral outline, tile lifts a little
+     FOCUSED     — the same, plus the dashed keyboard ring
+     CHOSEN      — warm brass, the plate lights up, and a tick badge, because the
+                 footer says "Kid — not chosen" until this appears.
+   Round 3 gave hover, focus and selection the same lifted brass glow, so the
+   screen read as "a Kid is selected" while the footer said the opposite. */
+.kid-tile:hover, .kid-tile.is-shown {
+  outline: none; transform: translateY(-4px);
+  box-shadow: 0 0 0 1px var(--spectre-300),
+              0 0 22px color-mix(in srgb, var(--spectre-300) 26%, transparent), var(--shadow-3);
+}
+.kid-tile:focus-visible {
+  outline: 2px dashed var(--spectre-200); outline-offset: 3px;
+  box-shadow: 0 0 0 1px var(--spectre-300), var(--shadow-3);
+}
+.kid-tile.is-selected {
+  transform: translateY(-6px);
+  box-shadow: 0 0 0 2px var(--brass-200), 0 0 26px color-mix(in srgb, var(--flame-glow) 38%, transparent), var(--shadow-3);
+}
 .kid-tile.is-selected .kid-tile__plate { background: linear-gradient(180deg, color-mix(in oklab, var(--flame-500) 46%, var(--ink-800)), var(--ink-900)); }
 .kid-tile.is-selected .kid-tile__name { color: var(--flame-100); }
+/* the badge that means CHOSEN and nothing else */
+.kid-tile.is-selected::after {
+  content: '\2713';
+  position: absolute; top: 6px; right: 6px; z-index: 2;
+  display: grid; place-items: center;
+  width: 20px; height: 20px; border-radius: 50%;
+  font-family: var(--font-num); font-size: 11px; font-weight: 700;
+  color: var(--ink-900);
+  background: radial-gradient(circle at 34% 30%, var(--flame-200), var(--flame-400));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--flame-glow) 70%, transparent);
+}
 
 /* ── footer ───────────────────────────────────────────────────────────────── */
 .sel__foot {
@@ -664,7 +693,21 @@
   border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--ink-900) 70%, transparent);
   border: 1px solid color-mix(in srgb, var(--spectre-500) 40%, transparent);
+  text-align: center; text-transform: uppercase;
+  transition: border-color var(--t-quick) var(--ease-out), color var(--t-quick) var(--ease-out);
 }
+.seed__val:hover { border-color: color-mix(in srgb, var(--spectre-300) 66%, transparent); }
+.seed__val:focus-visible {
+  outline: none; color: var(--spectre-100);
+  border-color: var(--spectre-300);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--spectre-300) 40%, transparent);
+}
+.seed__val.is-bad { border-color: var(--threat-300); color: var(--threat-200); }
+.seed__hint {
+  font-size: var(--fs-xs); font-style: italic; color: var(--text-lo);
+  opacity: 0; transition: opacity var(--t-quick) var(--ease-out);
+}
+.foot__seed:hover .seed__hint, .foot__seed:focus-within .seed__hint { opacity: 1; }
 .seed__roll {
   width: 28px; height: 28px; border-radius: var(--radius-sm);
   font-size: 15px; color: var(--text-mid);

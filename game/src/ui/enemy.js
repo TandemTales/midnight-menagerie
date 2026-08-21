@@ -433,6 +433,13 @@ export class EnemyView {
     el.dataset.id = this.id;
     el.dataset.body = bodyKind;
     el.dataset.tier = this.tier;
+    /* ROLE, not just tier. The Governess's Favorite Doll is `tier:'boss'`,
+       `role:'bossPart'`, 50 Courage — and the stylesheet's boss-arena size rule
+       applied to every rig on the board, so she staged at 258x420 while her own
+       doll staged at 436x366 and the boss read as the sidekick. `data-role` is
+       what lets the arena size the creature it is actually for. */
+    this.role = def.role || snap.role || (this.tier === 'boss' ? 'boss' : 'normal');
+    el.dataset.role = this.role;
     el.tabIndex = 0;
     el.setAttribute('role', 'button');
     el.style.setProperty('--e-scale', String(scale));
@@ -453,7 +460,9 @@ export class EnemyView {
     const gid = `eg${this.uid}`;
     el.innerHTML = `
       <div class="cb-enemy__above">
-        <div class="cb-enemy__rule" hidden></div>
+        <!-- The House Rule's TEXT is not here. See setRule() and the docked
+             rail in scenes/combat.js: pinned above the head it measured
+             [571, -120] on The Butler, entirely off the top of the screen. -->
         <div class="cb-enemy__badges"></div>
         <div class="cb-enemy__alts" hidden></div>
         <div class="cb-enemy__intent"></div>
@@ -521,7 +530,6 @@ export class EnemyView {
     this.$statuses = el.querySelector('.cb-enemy__statuses');
     this.$counters = el.querySelector('.cb-enemy__counters');
     this.$badges = el.querySelector('.cb-enemy__badges');
-    this.$rule = el.querySelector('.cb-enemy__rule');
     this.$alts = el.querySelector('.cb-enemy__alts');
     this.$queue = el.querySelector('.cb-enemy__queue');
     this.$preview = el.querySelector('.cb-enemy__preview');
@@ -721,14 +729,22 @@ export class EnemyView {
     return this;
   }
 
-  /** A handwritten House Rule pinned beside the intent. `null` clears it. */
+  /**
+   * This creature is holding a House Rule. `null` clears it.
+   *
+   * The rule's TEXT lives in the scene's docked rail — round 3 rendered it as a
+   * parchment card stacked on top of the intent inside `.cb-enemy__above`, and
+   * because that block grows upward from the creature's head The Butler's
+   * measured `[571, -120, 135, 155]`: 120px above the top of the viewport, on
+   * the most consequential sentence in the fight. What stays here is the marker
+   * that says WHICH creature is keeping it.
+   */
   setRule(rule) {
     const key = rule ? rule.name + '|' + rule.text : '';
     if (key === this._ruleKey) return this;
     this._ruleKey = key;
-    if (!rule) { this.$rule.hidden = true; this.$rule.textContent = ''; return this; }
-    this.$rule.hidden = false;
-    this.$rule.innerHTML = `<b>${esc(rule.name)}</b><span>${esc(rule.text)}</span>`;
+    this.rule = rule || null;
+    this.el.classList.toggle('has-rule', !!rule);
     return this;
   }
 
@@ -770,13 +786,26 @@ export class EnemyView {
   }
   hideIntent(v) { this.el.classList.toggle('no-intent', !!v); }
 
-  /** Preview overlay: predicted damage / LETHAL / statuses coming to this enemy. */
+  /**
+   * Preview overlay: predicted damage / LETHAL / statuses coming to this enemy.
+   *
+   * GUARD IS PART OF THE ANSWER. Round 3 printed `-6` on a 5-Guard enemy and
+   * the Courage it actually lost was 1 — the single worst kind of lie this
+   * screen can tell, because STS2-REFERENCE §2 is "the player can always see
+   * exactly what will happen before it happens." `p.guard` is the Guard
+   * standing when the hit lands and `p.hpLoss` is what gets through it.
+   */
   showPreview(p) {
     if (!p) { this.$preview.hidden = true; this.el.classList.remove('is-targeted', 'is-lethal'); return this; }
     const bits = [];
     if (p.damage > 0) {
       bits.push(`<span class="cb-prev__dmg">-${p.damage}${p.uncertain ? '?' : ''}</span>`);
       if (p.hits > 1) bits.push(`<span class="cb-prev__x">×${p.hits}</span>`);
+      if (p.guard > 0) {
+        bits.push(p.hpLoss > 0
+          ? `<span class="cb-prev__thru">${p.hpLoss} through ${p.guard} Guard</span>`
+          : `<span class="cb-prev__thru is-stopped">${p.guard} Guard stops it</span>`);
+      }
     }
     if (p.uncertain) bits.push(`<span class="cb-prev__maybe">depends on your pick</span>`);
     if (p.kills) bits.push(`<span class="cb-prev__lethal">LETHAL</span>`);

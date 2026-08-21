@@ -433,6 +433,9 @@
   background: radial-gradient(circle at 34% 30%, var(--pluck-300), var(--pluck-500));
 }
 .go-trick__name { font-family: var(--font-body); font-size: var(--fs-sm); font-weight: 600; color: var(--text-hi); white-space: nowrap; }
+/* the sharpened mark, in the same green the card face uses for an upgrade */
+.go-trick__name u { text-decoration: none; color: var(--good-300); font-weight: 700; }
+.go-trick[data-up] { border-color: color-mix(in srgb, var(--good-300) 52%, transparent); }
 .go-trick__n { font-family: var(--font-num); font-size: var(--fs-xs); font-style: normal; color: var(--brass-200); }
 
 /* --- the card that did the work ------------------------------------------ */

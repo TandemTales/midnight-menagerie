@@ -464,6 +464,12 @@ export class CombatScene extends Scene {
           <div class="cb-enemies" role="group" aria-label="Enemies"></div>
         </div>
         <div class="cb-room" hidden></div>
+        <!-- HOUSE RULES live in a docked rail, not pinned over the creature's
+             head. Round 3 stacked .cb-enemy__rule on top of the intent inside
+             .cb-enemy__above, so The Butler's rule measured [571, -120] —
+             entirely above the viewport — and the Door Greeter's sat behind the
+             HUD. This rail starts below the HUD and can never leave the screen. -->
+        <div class="cb-rules" role="list" aria-label="House Rules in play" hidden></div>
 
         <section class="cb-player" aria-label="You">
           <div class="cb-player__figure">
@@ -474,6 +480,13 @@ export class CombatScene extends Scene {
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5 L21.5 5.2 C21.5 14 17.3 20.2 12 22.8 C6.7 20.2 2.5 14 2.5 5.2 Z"/></svg>
               <b>0</b>
             </div>
+            <!-- YOUR counters. engine.state.counters has always shipped the
+                 player's resource tracks (Loose Bones, Nine Lives, Glow, Web…)
+                 and round 3 rendered only en.counters, so Bones's Sit Pretty
+                 and Put Yourself Back Together keyed off a number the player
+                 could not see. Same widget as the enemies' DUST 0/4, beside
+                 the Guard shield. -->
+            <div class="cb-player__counters" role="list" aria-label="Your resources"></div>
           </div>
           <div class="cb-player__plate">
             <div class="cb-player__name"></div>
@@ -538,6 +551,7 @@ export class CombatScene extends Scene {
     this.$field = $('.cb-field');
     this.$enemies = $('.cb-enemies');
     this.$room = $('.cb-room');
+    this.$rules = $('.cb-rules');
     this.$top = $('.cb-top');
     this.$pl = $('.cb-player');
     this.$plArt = $('.cb-player__art');
@@ -545,6 +559,7 @@ export class CombatScene extends Scene {
     this.$plFlash = $('.cb-player__flash');
     this.$plGuard = $('.cb-player__guard');
     this.$plGuardN = $('.cb-player__guard b');
+    this.$plCounters = $('.cb-player__counters');
     this.$inc = $('.cb-incoming');
     this.$statuses = $('.cb-statuses');
     this.$handHost = $('.cb-handhost');
@@ -617,6 +632,8 @@ export class CombatScene extends Scene {
   _buildEnemies() {
     const st = this.engine.state;
     for (const e of st.enemies) {
+      // A resumed fight ships its dead. They get no rig — see `_syncAll`.
+      if (e.alive === false || e.hp <= 0) continue;
       const def = this.engine.actor(e.id)?.def || null;
       const v = new EnemyView(e, {
         clock: this.ctx.clock, reduceMotion: this.reduceMotion, def,
@@ -667,6 +684,7 @@ export class CombatScene extends Scene {
       lines.push(`Next: ${intent.title}`);
       for (const l of intent.lines || []) lines.push(l);
     }
+    if (v.rule) lines.push(`House Rule — ${v.rule.name}: ${v.rule.text}`);
     return {
       kind: 'enemy',
       id: v.def && v.def.id,
@@ -783,6 +801,9 @@ export class CombatScene extends Scene {
     this._clearPreview();
     this.hand.lock();
     const card = this.engine.card(uid);
+    // The wind-up runs during the Hand's 0.20s hold, so contact lands on the
+    // frame the effect resolves rather than after it.
+    if (card && card.type === 'attack') this._playerWindup();
     /* No `card:play` re-emit here: `ui/hand.js` already emits it (now carrying `type`),
        and this method is the handler for that very event. Emitting again made every
        play appear twice on the bus. */
@@ -863,9 +884,17 @@ export class CombatScene extends Scene {
     const ch = this._choice;
     const many = req.count > 1;
     this.$chPrompt.textContent = req.prompt || (req.kind === 'enemy' ? 'Choose a target' : 'Choose');
+    /* SAY WHAT THE BUTTON IS. A single pick shows a prompt, a sub-line and a
+       row of cards and NO button of any kind — nothing on screen told a mouse
+       player that the card itself is the control, and a previous reviewer filed
+       the whole panel as a soft-lock. The sub-line now names both routes. */
+    const noun = req.kind === 'card' ? 'a Trick' : req.kind === 'enemy' ? 'a target' : 'an option';
+    const how = req.kind === 'enemy'
+      ? 'Click one here or on the board, or use the arrow keys and Enter.'
+      : 'Click one, or use the arrow keys and Enter.';
     this.$chSub.textContent = many
-      ? `Pick ${req.count}. ${req.optional ? 'You may pick fewer.' : ''}`
-      : (req.optional ? 'You may skip this.' : 'Pick one.');
+      ? `Pick ${req.count}.${req.optional ? ' You may pick fewer.' : ''} Click them, then Confirm.`
+      : (req.optional ? `You may skip this. ${how}` : `Pick ${noun}. ${how}`);
     this.$chSkip.hidden = !req.optional;
     this.$chOk.hidden = !many;
     this.$chPool.textContent = '';
@@ -982,14 +1011,14 @@ export class CombatScene extends Scene {
     const p = this._preview(uid, tid);
     this._paintPreview(uid, tid, p);
     this._refinePreview(uid, tid);      // previewAsync fills in past the choice
-    return this._cardNumbers(uid, tid, p);
+    return this._cardNumbers(uid, tid);
   }
 
   _hoverPreview(uid) {
     const tid = this._defaultTargetFor(uid);
     const p = this._preview(uid, tid);
     this._paintPreview(uid, tid, p);
-    this.hand.viewOf(uid)?.setPreviewNumbers(this._cardNumbers(uid, tid, p));
+    this.hand.viewOf(uid)?.setPreviewNumbers(this._cardNumbers(uid, tid));
     this._refinePreview(uid, tid);
   }
 
@@ -1005,7 +1034,7 @@ export class CombatScene extends Scene {
     this.engine.previewAsync(uid, tid, { assumeAffordable: true }).then((p) => {
       if (token !== this._previewToken || !this._previewOn) return;
       this._paintPreview(uid, tid, p);
-      this.hand.viewOf(uid)?.setPreviewNumbers(this._cardNumbers(uid, tid, p));
+      this.hand.viewOf(uid)?.setPreviewNumbers(this._cardNumbers(uid, tid));
     }).catch(() => {});
   }
 
@@ -1014,16 +1043,28 @@ export class CombatScene extends Scene {
     catch (e) { console.error('[combat] preview', e); return null; }
   }
 
-  /** Live-modified card text numbers: `{ d, wasD, b, wasB, ... }`. */
-  _cardNumbers(uid, tid, p) {
+  /**
+   * Live-modified card text numbers: `{ d, wasD, b, wasB, ... }`.
+   *
+   * NO uncertainty marker here. Round 3 stamped `?` on every number of a card
+   * that contained an unresolved choice, which printed `Go Get It!` as "printed
+   * cost **1?** or less" and `Toss and Chase` as "Deal **8?** damage" — both of
+   * those are printed constants that no pick can move. `cardSnap.display` is
+   * computed from the card's own `nums` plus Strength / Weak / Vulnerable and
+   * never consults the auto-picker, so nothing in it is ever an estimate.
+   *
+   * The uncertainty is real, but it belongs to the OUTCOME, and that is where
+   * it is shown: the target overlay prints `-6?` and "depends on your pick"
+   * (`_paintPreview` -> `EnemyView#showPreview`).
+   */
+  _cardNumbers(uid, tid) {
     const card = this.engine.card(uid);
     if (!card) return null;
     const snap = this.engine.cardSnap(card, tid);
-    const uncertain = !!(p && p.uncertain);
     const out = {};
     for (const k in snap.display || {}) {
       const d = snap.display[k];
-      out[k] = uncertain && typeof d.value === 'number' ? `${d.value}?` : d.value;
+      out[k] = d.value;
       out['was' + k.charAt(0).toUpperCase() + k.slice(1)] = d.base;
     }
     return out;
@@ -1038,8 +1079,16 @@ export class CombatScene extends Scene {
     for (const t of p.targets || []) {
       const v = this.views.get(t.id);
       if (!v || !v.alive) continue;
+      /* GUARD IS PART OF THE ANSWER. Round 3 printed `-6` on a 5-Guard enemy
+         and the actual Courage loss was 1. `preview()` has always returned
+         `hpLoss`, `blocked` and `blockBefore` per target — the renderer just
+         threw them away. STS2-REFERENCE §2: "the player can always see exactly
+         what will happen before it happens." */
+      const guard = Number.isFinite(t.blockBefore) ? t.blockBefore : (t.blocked || 0);
       v.showPreview({
         damage: t.hpLoss > 0 || t.damage > 0 ? (t.damage || 0) : 0,
+        hpLoss: t.hpLoss || 0,
+        guard,
         hits: t.hits || 1,
         kills: !!t.kills && !p.uncertain,
         uncertain: !!p.uncertain,
@@ -1234,6 +1283,24 @@ export class CombatScene extends Scene {
         this._syncPiles();
         return;
 
+      /* ── THE RENDER SEAM ────────────────────────────────────────────────
+         `piles.move()` is how every effect that is not a draw / discard /
+         exhaust relocates a card: Fetch, Dig Up, Bury, the Bury return,
+         Stash, Scurry, "put it on top of your draw pile", the forced
+         discard inside Slobber. It emits `card:move` at
+         combat/piles.js:188 and round 3 had NO case for it, so the entire
+         Bones identity resolved in the rules and never appeared on screen —
+         `engine.state.piles.hand` held `[c26,c27,c24,c35]` while the DOM
+         hand held `[c26,c27,c24]`, and the fetched card was discarded
+         unplayed at end of turn.
+
+         `_reconcileHand()` in `_syncAll` is the belt to this braces: if any
+         future effect moves a card by a route this switch does not know
+         about, the fan still ends the beat matching `piles.hand`. */
+      case 'card:move':
+        await this._animCardMove(ev);
+        return;
+
       case 'shuffle':
         this._syncPiles();
         this.ctx.audio?.play?.('card:shuffle');
@@ -1341,11 +1408,15 @@ export class CombatScene extends Scene {
         return;
 
       case 'counter': {
-        const v = this.views.get(ev.ownerId);
-        if (v) {
+        // The PLAYER owns counters too (Loose Bones, Nine Lives, Glow, Web…) and
+        // round 3 only floated a word for enemies, so every change to your own
+        // resource track happened in silence.
+        if (ev.delta) {
           const c = this._pointOf(ev.ownerId);
-          if (ev.delta) this.fx.word(c.x, c.y - 56, `${ev.delta > 0 ? '+' : ''}${ev.delta} ${ev.name || ev.id}`, 'counter');
+          this.fx.word(c.x + (ev.ownerId === E.player.id ? 64 : 0), c.y - 56,
+            `${ev.delta > 0 ? '+' : ''}${ev.delta} ${ev.name || ev.id}`, 'counter');
         }
+        if (ev.ownerId === E.player.id) this._syncPlayer();
         return;
       }
 
@@ -1413,6 +1484,110 @@ export class CombatScene extends Scene {
     }
   }
 
+  /* ── card:move — a card changing zones by effect ─────────────────────────
+   * Three motions, because three different things are happening:
+   *   into the hand  — it flies UP out of the zone it came from, lands in the
+   *                    fan and lights briefly. Distinct from a draw because it
+   *                    leaves the discard pile (or the ground, for Buried).
+   *   out of the hand— it tumbles to wherever it is actually going, which is
+   *                    not always the discard pile.
+   *   pile to pile   — no card is on screen; only the counters move.
+   *
+   * Budget: the fetched card must be in the DOM and playable within 250 ms of
+   * the chooser closing, so this awaits one short beat and never the flight.
+   */
+  async _animCardMove(ev) {
+    if (!this.hand) return;
+    const from = ev.from || null;
+    const to = ev.to || null;
+    this._syncPiles();
+    if (!to || to === from) return;
+
+    if (to === 'hand') {
+      // Already in the fan (the Hand put it there itself, or a duplicate
+      // event): nothing to build, but the piles and playability still moved.
+      if (!this.hand.viewOf(ev.cardUid)) {
+        /* The Hand deals every entering card from `piles.draw`. Point that
+           anchor at the zone this card is genuinely coming from for exactly
+           this insertion — `_makeSlot` reads it synchronously — then put it
+           back, so a real draw one event later is unaffected. */
+        const keep = this.hand.piles.draw;
+        this.hand.setPiles({ draw: this._pileAnchor(from) });
+        this.hand.draw([this._handCard(ev.card)]);
+        this.hand.setPiles({ draw: keep });
+        const v = this.hand.viewOf(ev.cardUid);
+        if (v) {
+          v.el.classList.add('is-recovered');
+          this.ctx.clock.wait(this._d(0.85))
+            .then(() => v.el.classList.remove('is-recovered'));
+        }
+      }
+      this.ctx.audio?.play?.('card:draw');
+      this._syncHandPlayability();
+      this._syncEndTurn();
+      await this._wait(this._d(0.14));
+      return;
+    }
+
+    if (from === 'hand') {
+      if (!this.hand.viewOf(ev.cardUid)) return;   // the Hand already let it go
+      if (to === 'exhaust') { await this.hand.exhaust(ev.cardUid); return; }
+      /* `Hand#discard` reads `piles.discard` synchronously inside its own
+         `.map()`, before its first await — so aiming it at another zone for
+         one call is safe, and it is the only way to make "put it on top of
+         your draw pile" fly to the draw pile instead of the discard pile. */
+      const keep = this.hand.piles.discard;
+      this.hand.setPiles({ discard: this._pileAnchor(to) });
+      const flight = this.hand.discard(ev.cardUid);
+      this.hand.setPiles({ discard: keep });
+      this._syncHandPlayability();
+      this._syncEndTurn();
+      await flight;
+      this._syncPiles();
+      return;
+    }
+
+    // pile -> pile with nothing on screen. The counts already moved above.
+  }
+
+  /**
+   * Where a zone lives, in the Hand's own coordinate space.
+   * Buried / Stashed / Limbo have no pile on the board, so they come up out of
+   * the floor under the fan — which is what digging something up should read
+   * as, and never a lie about which corner it came from.
+   */
+  _pileAnchor(which) {
+    const p = this.hand.piles || {};
+    if (which === 'draw' && p.draw) return { x: p.draw.x, y: p.draw.y };
+    if (which === 'discard' && p.discard) return { x: p.discard.x, y: p.discard.y };
+    const r = this.$handHost.getBoundingClientRect();
+    return { x: r.width * 0.5, y: r.height + 80 };
+  }
+
+  /**
+   * The fan and `piles.hand` must agree at the end of every beat.
+   *
+   * This is the CONTRACTS §9 guard for this scene: the switch above animates
+   * the moves it knows, and this catches everything else — a retained card
+   * (`turn:end` clears the whole fan but the engine keeps retained cards), a
+   * card moved by a route nobody has written a case for yet, a resumed fight.
+   * It only touches the DOM when the two genuinely disagree.
+   */
+  _reconcileHand() {
+    if (!this.hand || !this.engine || this.engine.over) return;
+    const want = (this.engine.piles && this.engine.piles.hand) || [];
+    const have = this.hand.cards();
+    if (want.length === have.length) {
+      let same = true;
+      for (let i = 0; i < want.length; i++) {
+        if (!have.some(h => h.uid === want[i].uid)) { same = false; break; }
+      }
+      if (same) return;
+    }
+    this.hand.setCards(want.map(c => this._handCard(this.engine.cardSnap(c))));
+    this._syncHandPlayability();
+  }
+
   /* ── damage ──────────────────────────────────────────────────────────── */
   async _animDamage(ev) {
     const E = this.engine;
@@ -1422,6 +1597,11 @@ export class CombatScene extends Scene {
 
     // the attacker commits — this is the contact beat
     if (src && !src.dying) await src.strike();
+    // STS2-REFERENCE §4: "Characters animate their attacks: StS2 explicitly
+    // fixed the StS1 complaint that the player figure just twitched." Round 3
+    // had the player as a framed portrait that never moved at all. Wind-up is
+    // armed in `_onPlay`; this is contact and follow-through.
+    else if (ev.sourceId === E.player.id) await this._playerStrike();
 
     const c = this._pointOf(ev.targetId);
     const hpLoss = ev.hpLoss || 0;
@@ -1436,11 +1616,22 @@ export class CombatScene extends Scene {
       speed: 240 + (ev.amount || 0) * 12,
     });
 
+    /* NUMERALS STAY ON THE BODY, NEVER ON THE INTENT.
+       A damage numeral spawned at the stage centre and rose 88-100px, which on
+       a short rig carried it clean off the top of the creature and onto that
+       creature's own intent chips — every hit briefly replaced the enemy's
+       intent number with the damage number, in the same spot, both dark on
+       dark. Two changes: a lateral offset, and a rise capped so the numeral
+       cannot leave the rig it belongs to. */
+    const n = this._numeralSpot(ev.targetId, c);
     if (blockedAll) {
-      this.fx.number(c.x, c.y - 18, ev.amount, { kind: 'blocked', mag: ev.amount });
+      this.fx.number(n.x, n.y, ev.amount, { kind: 'blocked', mag: ev.amount, rise: n.rise });
     } else {
-      this.fx.number(c.x, c.y - 18, hpLoss, { kind: isPlayer ? 'taken' : 'damage', mag: hpLoss });
-      if (ev.blocked > 0) this.fx.number(c.x + 54, c.y + 6, ev.blocked, { kind: 'blocked', mag: ev.blocked, delay: 0.06 });
+      this.fx.number(n.x, n.y, hpLoss, { kind: isPlayer ? 'taken' : 'damage', mag: hpLoss, rise: n.rise });
+      if (ev.blocked > 0) {
+        this.fx.number(c.x - (n.x - c.x), n.y + 20, ev.blocked,
+          { kind: 'blocked', mag: ev.blocked, delay: 0.06, rise: n.rise });
+      }
     }
 
     if (isPlayer) {
@@ -1452,7 +1643,7 @@ export class CombatScene extends Scene {
     }
 
     // shake scaled to Courage actually lost, never to the raw number
-    this._addShake(Math.min(1.5, hpLoss / 12 + (blockedAll ? 0.12 : 0.18)));
+    this._addShake(Math.min(1.5, hpLoss / 9 + (blockedAll ? 0.10 : 0.22)));
     this.ctx.atmosphere?.impact?.(c, {
       strength: Math.min(1.5, 0.2 + hpLoss / 22),
       color: blockedAll ? 0x8fb7d9 : (isPlayer ? 0xf26d78 : 0xffb64a),
@@ -1467,6 +1658,50 @@ export class CombatScene extends Scene {
     this._syncActor(ev.targetId);
     this._renderIncoming(0);
     await this._wait(this._d(ev.hits > 1 ? 0.115 : 0.19));
+  }
+
+  /**
+   * Where a damage numeral spawns, and how far it may climb, for one actor.
+   * Measured against the creature's own stage so a 168px Dust Bunny and a 420px
+   * Butler both keep their numbers on their bodies and off their intent.
+   */
+  _numeralSpot(id, c) {
+    const v = this.views.get(id);
+    let dx = NUM_DX;
+    let rise = 0;
+    if (v) {
+      const st = v.$stage.getBoundingClientRect();
+      const top = this.fx.toLocal(st.left, st.top).y;
+      // top out NUM_HEADROOM below the top of the rig, so the intent stack —
+      // which begins at that line and grows upward — is never reached
+      rise = Math.max(24, (c.y - 6) - top - NUM_HEADROOM);
+      if (c.x > this.fx.w * 0.62) dx = -dx;     // stay inside the board
+    }
+    return { x: c.x + dx, y: c.y - 6, rise };
+  }
+
+  /** Wind-up: the Kid coils before the Trick lands. Armed by `_onPlay`. */
+  _playerWindup() {
+    if (this.reduceMotion) return;
+    const el = this.$pl;
+    el.classList.remove('is-windup', 'is-striking');
+    void el.offsetWidth;
+    el.classList.add('is-windup');
+    clearTimeout(this._windT);
+    // an attack that never produces a damage event must not leave the pose held
+    this._windT = setTimeout(() => el.classList.remove('is-windup'), 900);
+  }
+
+  /** Contact + follow-through. Resolves on the contact frame, like `EnemyView#strike`. */
+  async _playerStrike() {
+    const el = this.$pl;
+    clearTimeout(this._windT);
+    el.classList.remove('is-windup', 'is-striking');
+    if (this.reduceMotion) return;
+    void el.offsetWidth;
+    el.classList.add('is-striking');
+    this.ctx.clock.wait(this._d(0.36)).then(() => el.classList.remove('is-striking'));
+    await this._wait(this._d(0.085));
   }
 
   _playerHit(hpLoss, blocked) {
@@ -1522,10 +1757,28 @@ export class CombatScene extends Scene {
     // turn behind the fight it is labelling.
     this.$turnN.textContent = `Turn ${this.engine.turn}`;
     this._syncPlayer();
-    for (const e of st.enemies) { this.views.get(e.id)?.setState(e); this._syncEnemyExtras(e.id); }
+    for (const e of st.enemies) {
+      const v = this.views.get(e.id);
+      if (!v) continue;
+      /* A corpse holds no board slot. After reload -> Continue, the engine ships
+         `{hp:0, alive:false}` for anything killed before the save and there is
+         no `death` event left to animate it away, so round 3 rendered a
+         full-size 0/20 body. Anything already dead when we get here is simply
+         not on the board. */
+      if ((e.alive === false || e.hp <= 0) && !v.dying) {
+        v.alive = false;
+        v.el.classList.add('is-removed');
+        continue;
+      }
+      v.setState(e);
+      this._syncEnemyExtras(e.id);
+    }
+    this._renderRules();
     this._syncPiles();
     this._syncNerve(this.engine.energy, this.engine.player.energyMax);
     this.hud?.refresh();
+    // The fan and `piles.hand` agree at the end of every beat, or this fixes it.
+    this._reconcileHand();
     this._syncHandPlayability();
     this._renderIncoming(0);
     this._syncEndTurn();
@@ -1575,7 +1828,10 @@ export class CombatScene extends Scene {
     // named state badges
     v.setBadges(badgesFor(en, this.engine.field));
 
-    // House Rule pinned beside the intent (engine `rule` event)
+    // House Rule. The TEXT lives in the docked rail (`_renderRules`) because
+    // pinned above the creature it measured [571, -120] on The Butler — fully
+    // off the top of the screen. The creature keeps only the marker that says
+    // "this one is holding the rule".
     let rule = null;
     for (const r of this._rules.values()) if (r.sourceId === id) rule = r;
     v.setRule(rule);
@@ -1606,7 +1862,81 @@ export class CombatScene extends Scene {
       if (p.block > 0) { this.$plGuard.hidden = false; this.$plGuardN.textContent = String(p.block); }
       else this.$plGuard.hidden = true;
     }
+    this._renderPlayerCounters();
     this._renderStatusRow(p.statuses || []);
+  }
+
+  /**
+   * YOUR resource tracks, beside the Guard shield.
+   *
+   * `engine.state.counters` has always carried them —
+   * `{id:'loose-bones', name:'Loose Bones', value, min:0, max:6,
+   *   ownerId:'player', desc:'Whole at 0, Scattered at 4 or more.'}` — and the
+   * scene walked only `en.counters`, so Bones's whole gauge was invisible while
+   * `Sit Pretty` and `Put Yourself Back Together` keyed off it.
+   *
+   * Read from the live Map, not `engine.state`: that snapshot serialises the
+   * entire fight and this runs once per damage event.
+   */
+  _renderPlayerCounters() {
+    const pid = this.engine.player.id;
+    const out = [];
+    for (const c of this.engine.counters.values()) {
+      if (c.ownerId !== pid) continue;
+      const gauge = c.max > 0 && c.max <= GAUGE_MAX;
+      // A gauge reads as 0/6 and that is information. A bare track at zero is not.
+      if (!c.value && !gauge) continue;
+      out.push({ c, gauge, state: counterState(c) });
+    }
+    const key = out.map(o => `${o.c.id}:${o.c.value}/${o.c.max}:${o.state || ''}`).join('|');
+    if (key === this._plCounterKey) return;
+    const prev = this._plCounterPrev;
+    this._plCounterKey = key;
+    this._plCounterPrev = new Map(out.map(o => [o.c.id, o.c.value]));
+    this.$plCounters.textContent = '';
+    for (const { c, gauge, state } of out) {
+      const bumped = prev && prev.has(c.id) && prev.get(c.id) !== c.value;
+      const d = document.createElement('span');
+      d.className = 'cb-count cb-count--mine' + (bumped ? ' is-bumped' : '');
+      d.setAttribute('role', 'listitem');
+      d.tabIndex = 0;
+      d.dataset.tip = `${c.name}|${c.desc || `${c.name}: ${c.value}${gauge ? ' of ' + c.max : ''}.`}|`
+        + (state ? `Right now: ${state}.` : 'Some of your Tricks read this number.');
+      d.setAttribute('aria-label',
+        `${c.name} ${c.value}${gauge ? ' of ' + c.max : ''}${state ? '. ' + state : ''}`);
+      d.innerHTML = `<i>${esc(c.name)}</i><b>${c.value}${gauge ? `<u>/${c.max}</u>` : ''}</b>`
+        + (state ? `<em>${esc(state)}</em>` : '');
+      this.$plCounters.appendChild(d);
+    }
+  }
+
+  /**
+   * The House Rules rail, docked under the HUD on the left.
+   *
+   * "Playing two Tricks of the same type in a row breaks the rule. Reprimand:
+   * The Butler gains 8 Guard" is the single most consequential sentence in that
+   * fight, and pinned above the creature's head it rendered at y = -120.
+   */
+  _renderRules() {
+    if (!this.$rules) return;
+    const list = [...this._rules.values()];
+    const key = list.map(r => `${r.id}|${r.name}|${r.text}|${r.sourceId || ''}`).join('\n');
+    if (key === this._rulesKey) return;
+    this._rulesKey = key;
+    this.$rules.textContent = '';
+    this.$rules.hidden = list.length === 0;
+    for (const r of list) {
+      const who = r.sourceId ? (this.views.get(r.sourceId)?.name || '') : '';
+      const d = document.createElement('div');
+      d.className = 'cb-rule';
+      d.setAttribute('role', 'listitem');
+      d.tabIndex = 0;
+      d.dataset.tip = `${r.name}|${r.text}|`
+        + (who ? `${who} is keeping this rule.` : 'The house is keeping this rule.');
+      d.innerHTML = `<i>House Rule</i><b>${esc(r.name)}</b><span>${esc(r.text)}</span>`
+        + (who ? `<u>${esc(who)}</u>` : '');
+      this.$rules.appendChild(d);
+    }
   }
 
   _renderStatusRow(list) {
@@ -1820,6 +2150,13 @@ export class CombatScene extends Scene {
   _deny(reason) {
     this.$deny.textContent = reason || 'You cannot do that.';
     this.$deny.classList.remove('is-on');
+    /* The deny used to paint 160 stacking layers BENEATH the modal that
+       provoked it (`.cb-deny` z 360 vs `.cb-chooser` z 520):
+       `document.elementFromPoint` at the deny's own centre returned
+       `DIV.cb-chooser__pool`. On screen, Escape on a mandatory pick visibly did
+       nothing, which is exactly how the chooser got filed as a soft-lock. */
+    const modal = !!(this._choice && !this._choice.done);
+    this.$deny.classList.toggle('is-over-chooser', modal);
     void this.$deny.offsetWidth;
     this.$deny.classList.add('is-on');
     this.ctx.audio?.play?.('ui:deny');
@@ -1827,10 +2164,21 @@ export class CombatScene extends Scene {
     this._denyT = setTimeout(() => this.$deny.classList.remove('is-on'), 1500);
   }
 
+  /**
+   * STS2-REFERENCE §4: "Screen shake scaled to damage. Hitstop on big hits.
+   * Never on small ones."
+   *
+   * Two surfaces, because they move different things: `this._shake` translates
+   * the DOM board (`_frame`), `stage.shake()` kicks the 3D camera and only the
+   * 3D camera. Round 3 drove the camera at 0.05-0.185 world units, of which the
+   * renderer uses half — under a pixel on screen — so the room never moved with
+   * the board and no shake read at any damage tier in capture.
+   */
   _addShake(k) {
     if (!this.shakeAmt) return;
-    this._shake.mag = Math.min(28, this._shake.mag + 13 * k * this.shakeAmt);
-    this.ctx.stage?.shake?.(0.05 + 0.09 * k, 11);
+    if (this.reduceMotion) return;
+    this._shake.mag = Math.min(30, this._shake.mag + 16 * k * this.shakeAmt);
+    this.ctx.stage?.shake?.(0.08 + 0.22 * k, 11);
   }
 
   /** Layer-local point for FX, from an actor id. */
@@ -1915,7 +2263,7 @@ export class CombatScene extends Scene {
     for (const off of this._tipOffs) { try { off(); } catch {} }
     this._tipOffs.length = 0;
     this._offs.length = 0; this._engineOffs.length = 0;
-    clearTimeout(this._bannerT); clearTimeout(this._denyT);
+    clearTimeout(this._bannerT); clearTimeout(this._denyT); clearTimeout(this._windT);
     // never leave the engine awaiting a resolution that can no longer arrive
     if (this._choice && !this._choice.done) { this._choice.done = true; this._choice.resolve([]); this._choice = null; }
     this.engine?.setChoiceResolver?.(null);
@@ -1967,6 +2315,48 @@ const COUNTER_META = {
   'repair-patch': { label: 'Repair Patch' },
   garment: { hidden: true },   // shown as a named badge instead
 };
+
+/** `defineCounter` defaults `max` to 99, which means "no ceiling", not a gauge. */
+const GAUGE_MAX = 24;
+
+/** How far a floating numeral is offset sideways from an actor's centre, and
+ *  how much clear air it leaves below the top of the rig it belongs to. */
+const NUM_DX = 46;
+const NUM_HEADROOM = 34;
+
+/**
+ * The state word for a player gauge — "Whole" / "Scattered" on Loose Bones.
+ *
+ * The engine ships the thresholds inside the counter's own `desc`
+ * ("Whole at 0, Scattered at 4 or more.") and nowhere else, so they are read
+ * from there rather than duplicated here: a table in the renderer would drift
+ * away from the card text the moment Bones is rebalanced. If a counter's `desc`
+ * is not written in that shape, it simply shows its number.
+ *
+ * The clean fix is upstream — see the note to the engine: a counter could carry
+ * `states: [{at:0,label:'Whole'},{from:4,label:'Scattered'}]`.
+ */
+const STATE_RE = /\b([A-Z][A-Za-z' -]{1,22}?)\s+at\s+(\d+)(\s+or\s+more)?/g;
+const _stateCache = new Map();
+function counterState(c) {
+  const desc = c.desc || '';
+  if (!desc) return null;
+  let parsed = _stateCache.get(desc);
+  if (!parsed) {
+    parsed = [];
+    STATE_RE.lastIndex = 0;
+    let m;
+    while ((m = STATE_RE.exec(desc))) {
+      parsed.push({ label: m[1].trim(), n: +m[2], orMore: !!m[3] });
+    }
+    _stateCache.set(desc, parsed);
+  }
+  let hit = null;
+  for (const p of parsed) {
+    if (p.orMore ? c.value >= p.n : c.value === p.n) hit = p.label;
+  }
+  return hit;
+}
 
 const GARMENTS = { raincoat: 'Raincoat', 'evening-coat': 'Evening Coat', 'mourning-coat': 'Mourning Coat' };
 

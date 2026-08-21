@@ -8,7 +8,14 @@
  *
  *   const hand = new Hand(ctx, { root, onPlay, onPreview, getTargets });
  *   hand.setCards(cards);  hand.draw(cards);  hand.discardAll();
+ *   await hand.add(card);  // moved in from the discard pile — see Hand#add
  *   hand.exhaust(uid);     hand.setEnergy(3); hand.lock(); hand.unlock();
+ *
+ * Pointer model: the HOST element the hand is mounted into is made inert
+ * (`.mm-hand-host`), the cards are ordinary hit targets, and `.mm-hand__hit`
+ * is a backstop sized to the fan that catches the gaps between them. Which
+ * card is under the cursor is still decided in JS against the BASE fan
+ * geometry (`_hitTest`), which is what makes hover unflickerable.
  *
  * Bus: card:hover, card:unhover, card:pickup, card:drop, card:target,
  *      card:play {cardUid,targetId}, card:cancel
@@ -45,8 +52,14 @@ export const TUNE = {
   minFit: 0.625,        // never shrink past this fraction of the CSS card size
   fitSteps: 8,          // fit is quantised to 1/8ths — see Hand#_fit
 
-  // draw / discard / exhaust — three different signatures
+  // draw / add / discard / exhaust — four different signatures
   drawIn: 0.34, drawStagger: 0.055, drawFlick: 18,
+  // `add` (a card moved INTO hand from the discard pile — Hand#add). It must
+  // not read as a draw, so every knob differs: the other pile, the other spin
+  // direction, a slower flight, and — the part you actually see — a real ARC.
+  // A draw riffles straight up out of the deck; an add is LOBBED back over the
+  // table, so its y is non-monotonic where a draw's is monotonic.
+  addIn: 0.46, addStagger: 0.075, addArc: 150, addSpin: 34, addFromScale: 0.30,
   discard: 0.40, discardStagger: 0.035,
   exhaust: 0.38, exhaustRise: 96,
   // play
@@ -55,6 +68,15 @@ export const TUNE = {
   // drag
   dragFollow: 0.075, dragScale: 1.10, dragTiltMax: 14, dragTiltGain: 0.85,
   parkScale: 1.06, snapPad: 26,
+  // ── while aiming AT something ──────────────────────────────────────────
+  // The held card used to sit full-size and fully opaque right on top of the
+  // enemy it was aimed at, hiding its HP bar, its Guard badge and the damage
+  // preview — you could not see the thing you were about to hit. Once a target
+  // is snapped the card gets out of the way: smaller, translucent, and slid
+  // clear of the target's box if it would still overlap it.
+  parkScaleAimed: 0.86, aimClear: 22,
+  // fan hit backstop: slack around the fan's own bounding box, px
+  hitPad: 22,
   // ── the commit threshold ───────────────────────────────────────────────
   // The line is ANCHORED TO THE FAN, not to the host: it sits `thresholdLift`
   // card-heights above the top edge of the resting fan, so the gesture is the
@@ -258,8 +280,22 @@ export class Hand {
     if (root) { root.appendChild(el); this.mount(root); }
   }
 
+  /**
+   * Mount into `parent` and take responsibility for its hit surface.
+   *
+   * A Hand is always mounted into a full-bleed container so it can fly cards
+   * to the pile markers in the screen corners. That container defaults to
+   * `pointer-events:auto`, which made an empty div at z-index 200 hit-test
+   * over the whole board and eat every mouse event aimed at an enemy — no
+   * intent, enemy or enemy-status tooltip was reachable at all. `.mm-hand-host`
+   * (styled in ui/hand.css) makes the host inert; the cards and the fan-sized
+   * `.mm-hand__hit` backstop are the only things that take pointer events back.
+   * `destroy()` removes the class again.
+   */
   mount(parent) {
     if (this.el.parentNode !== parent) parent.appendChild(this.el);
+    this._host = parent;
+    parent.classList.add('mm-hand-host');
     this._measure();
     this._ro = new ResizeObserver(() => { this._measure(); this._layout(); });
     this._ro.observe(this.el);
@@ -269,6 +305,7 @@ export class Hand {
   _measure() {
     this.w = this.el.clientWidth || this.el.parentNode?.clientWidth || 1600;
     this.h = this.el.clientHeight || this.el.parentNode?.clientHeight || 900;
+    this._rect = null;               // pointer coords are relative to this box
 
     // The CSS card size is responsive (`--mm-card-w` in card.css), so read it
     // rather than assuming 224x312. The probe is built at CARD_SS; divide it
@@ -286,8 +323,49 @@ export class Hand {
     this.piles.draw = this.piles.draw || { x: 96, y: this.h + 40 };
     this.piles.discard = this.piles.discard || { x: this.w - 96, y: this.h + 40 };
     this._syncThreshold();
-    this.hit.style.top = Math.round(Math.max(0, this.h - (this.chh * 1.5 + 90))) + 'px';
+    this._syncHitBox();
     this.$arrow.setAttribute('viewBox', `0 0 ${this.w} ${this.h}`);
+  }
+
+  /**
+   * Size `.mm-hand__hit` to the FAN — not to the viewport, and not to a
+   * fraction of it.
+   *
+   * The element is a BACKSTOP that sits *behind* the cards (z-index 1 against
+   * their 20..900): the cards themselves are the hit targets now, and this
+   * only has to catch the places inside the fan where there is no card under
+   * the cursor — the gaps between two rotated cards, the strip below them,
+   * and the hole a hovered card leaves behind when it lifts. That last one is
+   * the anti-oscillation case and it is why the box is measured from the
+   * *base* (unlifted) fan: the lifted card is its own hit target up there, the
+   * hole it left is inside this box, and `_hitTest` answers "still card i" for
+   * both. Zero flips, and not one pixel of the enemy field is covered by
+   * anything except an actual card.
+   *
+   * @param {object} [F] fan geometry, when the caller already computed it.
+   */
+  _syncHitBox(F) {
+    const n = this.slots.length;
+    if (!n) {                       // no cards: no surface at all
+      if (this._hitBox !== 'off') { this._hitBox = 'off'; this.hit.style.display = 'none'; }
+      return;
+    }
+    const fan = F || this._fan(n);
+    const pad = TUNE.hitPad;
+    const half = (n > 1 ? fan.c * fan.step : 0) + fan.overhang + pad;
+    const left = Math.max(0, Math.round(fan.cx - half));
+    const right = Math.min(this.w, Math.round(fan.cx + half));
+    // + the unplayable drop, which pushes individual cards below `baseY`.
+    const top = Math.max(0, Math.round(fan.baseY - fan.ch - pad));
+    const key = left + ':' + right + ':' + top;
+    if (this._hitBox === key) return;      // `_layout` runs on every hover
+    this._hitBox = key;
+    const s = this.hit.style;
+    s.display = '';
+    s.left = left + 'px';
+    s.width = (right - left) + 'px';
+    s.top = top + 'px';
+    s.bottom = '0px';
   }
 
   /**
@@ -471,7 +549,17 @@ export class Hand {
     };
   }
 
-  _makeSlot(card, entering, delay, attachFrame) {
+  /**
+   * @param {object} card            normalised card
+   * @param {object} [o]
+   * @param {'draw'|'add'|false} [o.entering]  which entry signature to play
+   * @param {number} [o.delay]        seconds before the entry tween starts
+   * @param {number} [o.attachFrame]  frames to wait before DOM insertion
+   */
+  _makeSlot(card, o = {}) {
+    const entering = o.entering || false;
+    const delay = o.delay || 0;
+    const attachFrame = o.attachFrame || 0;
     const view = new CardView(card.def, {
       uid: card.uid, upgraded: card.upgraded, cost: card.cost,
       largeText: this.largeText, reduceMotion: this.reduceMotion, clock: this.clock,
@@ -492,17 +580,38 @@ export class Hand {
       this.layer.appendChild(view.el);
     }
     const f = this.fit || 1;
-    const start = entering
+    // Three distinct entry signatures. `_layout` reads enterDur/enterEase/
+    // enterArc off the slot, so the difference is data, not branches.
+    const T = TUNE;
+    const start = entering === 'draw'
       ? { x: this.piles.draw.x, y: this.piles.draw.y, rot: -26, scale: 0.52 * f, z: 0 }
-      : { x: this.w / 2, y: this.baseY + 60, rot: 0, scale: 0.9 * f, z: 0 };
+      : entering === 'add'
+        ? { x: this.piles.discard.x, y: this.piles.discard.y, rot: T.addSpin, scale: T.addFromScale * f, z: 0 }
+        : { x: this.w / 2, y: this.baseY + 60, rot: 0, scale: 0.9 * f, z: 0 };
     const slot = {
       card, view,
       cur: { ...start }, from: { ...start }, to: { ...start },
-      e: 1, dur: 1, delay: 0, ease: Clock.easeOutCubic, flick: 0,
+      e: 1, dur: 1, delay: 0, ease: Clock.easeOutCubic, flick: 0, arc: 0,
       entering: !!entering, enterDelay: delay || 0,
+      enterDur: entering === 'add' ? T.addIn : T.drawIn,
+      // A draw snaps into the fan with a little overshoot; an add settles out
+      // of a lob, where an overshoot would read as a bounce off the table.
+      enterEase: entering === 'add' ? Clock.easeOutCubic : Clock.easeOutBack,
+      enterArc: entering === 'add' && !this.reduceMotion ? T.addArc : 0,
     };
     view.setTransform(slot.cur);
-    if (entering) view.materialize(this._d(0.24));
+    // In transit from a pile, so not a hit target yet: an arriving card crosses
+    // the board (an `add` lobs 150px above the fan, right through the enemy
+    // row) and must not steal a tooltip on the way in. `_tick` clears it the
+    // frame the card lands in the fan.
+    if (entering) { slot.airborne = true; view.el.classList.add('is-flying'); }
+    if (entering === 'add') {
+      // Distinct arrival read: a cold spectral ring, not the draw's warm swell.
+      view.materialize(this._d(0.30));
+      view.pulse('var(--spectre-300)', this._d(0.5));
+    } else if (entering) {
+      view.materialize(this._d(0.24));
+    }
     return slot;
   }
 
@@ -514,7 +623,7 @@ export class Hand {
     for (const c of next) {
       const ex = keep.get(c.uid);
       if (ex) { keep.delete(c.uid); ex.card = c; out.push(ex); }
-      else out.push(this._makeSlot(c, false, 0));
+      else out.push(this._makeSlot(c));
     }
     for (const dead of keep.values()) {
       if (document.activeElement === dead.view.el) {
@@ -533,13 +642,63 @@ export class Hand {
 
   /** Draw: cards riffle up from the draw pile, staggered. */
   draw(cards) {
-    const list = (Array.isArray(cards) ? cards : [cards]).map(c => this._norm(c));
+    const list = (Array.isArray(cards) ? cards : [cards]).filter(Boolean).map(c => this._norm(c));
     list.forEach((c, i) => {
-      const s = this._makeSlot(c, true, i * this._d(TUNE.drawStagger), i * 2);
+      const s = this._makeSlot(c, {
+        entering: 'draw', delay: i * this._d(TUNE.drawStagger), attachFrame: i * 2,
+      });
       s.flick = TUNE.drawFlick * (i % 2 ? 1 : -1);
       this.slots.push(s);
     });
     this._refreshPlayable(true);
+    return this;
+  }
+
+  /**
+   * PUBLIC. A card is MOVED INTO the hand from somewhere that is not the draw
+   * pile — `card:move` with `to:'hand'`, e.g. a Trick fished back out of the
+   * discard, a card conjured by a relic, a returning Echo.
+   *
+   *     await hand.add(card)                       // one card
+   *     await hand.add([cardA, cardB])             // several, staggered
+   *     await hand.add(card, { from: 'draw' })     // override the origin pile
+   *
+   * @param {object|object[]} cards  `{ uid?, def, upgraded?, cost? }`, or a bare
+   *   CardDef, or an array of either. `uid` is generated if omitted; pass the
+   *   engine's uid if you want `discard()`/`exhaust()`/`playCard()` to find it.
+   * @param {object} [o]
+   * @param {'discard'|'draw'} [o.from='discard']  which pile it flies out of.
+   * @returns {Promise<Hand>} resolves when the arrival has settled into the fan.
+   *
+   * MOTION SIGNATURE — deliberately not a draw (STS2-REFERENCE §1: "Draw/
+   * discard/exhaust each have a *different* motion signature"). A draw riffles
+   * straight up out of the deck in the bottom-LEFT corner, spinning
+   * anticlockwise, in 340 ms, with a little easeOutBack snap. An add is LOBBED
+   * back over the table from the discard pile in the bottom-RIGHT corner:
+   * clockwise spin, 460 ms, a 150px arc so its path rises above the fan and
+   * comes down into the gap, no overshoot, and a cold spectral ring pulse on
+   * arrival instead of the draw's warm swell. The two are distinguishable from
+   * a single frame of a motion strip, let alone in play.
+   *
+   * The rest of the fan opens its gap immediately — the arriving card is a
+   * real slot from the first frame, so `count`, `cards()` and playability are
+   * correct before the animation finishes.
+   */
+  async add(cards, o = {}) {
+    const list = (Array.isArray(cards) ? cards : [cards]).filter(Boolean).map(c => this._norm(c));
+    if (!list.length) return this;
+    const from = o.from === 'draw' ? 'draw' : 'discard';
+    const stagger = this._d(TUNE.addStagger);
+    const fresh = list.map((c, i) => {
+      const s = this._makeSlot(c, {
+        entering: from === 'draw' ? 'draw' : 'add', delay: i * stagger, attachFrame: i * 2,
+      });
+      this.slots.push(s);
+      return s;
+    });
+    this._refreshPlayable(true);            // lays the fan out, gap included
+    const last = fresh[fresh.length - 1];
+    await this.clock.wait(this._d(TUNE.addIn) + (last ? last.enterDelay : 0));
     return this;
   }
 
@@ -580,7 +739,7 @@ export class Hand {
     this.slots.splice(i, 1);
     if (this.hoverSlot === slot) this._clearHover();
     this._layout();
-    this.flying.add(slot);
+    this._takeOff(slot);
     const c = { ...slot.view.transform };
     const dur = this._d(TUNE.exhaust);
     const rise = this.clock.ramp(dur, (p) => {
@@ -593,6 +752,18 @@ export class Hand {
     slot.view.destroy();
     this.flying.delete(slot);
     return this;
+  }
+
+  /**
+   * A card has left the fan and is flying (play arc / discard tumble / exhaust
+   * rise). `is-flying` takes it out of hit testing for the duration: its path
+   * crosses the enemy field at z 600–900 and it must not steal an enemy's
+   * hover on the way past. `view.destroy()` removes the element, so there is
+   * nothing to clean up on the way out.
+   */
+  _takeOff(slot) {
+    this.flying.add(slot);
+    slot.view.el.classList.add('is-flying');
   }
 
   cards() { return this.slots.map(s => s.card); }
@@ -668,12 +839,13 @@ export class Hand {
 
   _layout(o = {}) {
     const n = this.slots.length;
-    if (!n) return;
+    if (!n) { this._syncHitBox(); return; }
     const T = TUNE;
     const F = this._fan(n);
     const c = F.c, step = F.step, rotPer = F.rotPer, dip = F.dip, cx = F.cx, fit = F.fit;
     this.baseY = F.baseY;
     this._syncThreshold(F);
+    this._syncHitBox(F);
 
     const hover = this.hoverSlot;
     const hoverIdx = hover ? this.slots.indexOf(hover) : -1;
@@ -707,7 +879,13 @@ export class Hand {
 
       let dur = o.dur ?? this._d(TUNE.refan);
       let delay = 0;
-      if (s.entering) { dur = this._d(TUNE.drawIn); delay = s.enterDelay; s.entering = false; s.ease = Clock.easeOutBack; }
+      if (s.entering) {
+        dur = this._d(s.enterDur || TUNE.drawIn);
+        delay = s.enterDelay;
+        s.entering = false;
+        s.ease = s.enterEase || Clock.easeOutBack;
+        s.arc = s.enterArc || 0;       // consumed by _tick, cleared when it lands
+      }
       else if (o.stagger) delay = Math.abs(d) * this._d(TUNE.refanStagger);
       else s.ease = Clock.easeOutCubic;
 
@@ -731,34 +909,56 @@ export class Hand {
     for (let i = 0; i < slots.length; i++) {
       const s = slots[i];
       if (s.delay > 0) { s.delay -= dt; if (s.delay > 0) continue; }
-      if (s.e >= s.dur) continue;
+      if (s.e >= s.dur) { this._landed(s); continue; }
       s.e += dt;
       const p = s.e >= s.dur ? 1 : s.e / s.dur;
       const k = s.ease(p);
       const cu = s.cur, f = s.from, t = s.to;
       cu.x = lerp(f.x, t.x, k);
-      cu.y = lerp(f.y, t.y, k);
+      // `arc` lifts the path off the straight line between from and to, so a
+      // card that is LOBBED (Hand#add) rises above the fan and drops into it
+      // instead of sliding. Retargetable like everything else here.
+      cu.y = lerp(f.y, t.y, k) - (s.arc ? Math.sin(p * Math.PI) * s.arc : 0);
       cu.rot = lerp(f.rot, t.rot, k) + (s.flick ? Math.sin(p * Math.PI) * s.flick : 0);
       cu.scale = lerp(f.scale, t.scale, k);
       cu.z = t.z > f.z ? t.z : (p >= 1 ? t.z : f.z);
       s.view.setTransform(cu);
-      if (p >= 1) s.flick = 0;
+      if (p >= 1) { s.flick = 0; s.arc = 0; this._landed(s); }
     }
     if (this.aim) this._drawArrow();
   }
 
+  /** An arriving card has reached the fan: it becomes a hit target again. */
+  _landed(s) {
+    if (!s.airborne) return;
+    s.airborne = false;
+    s.view.el.classList.remove('is-flying');
+  }
+
   // ── pointer ──────────────────────────────────────────────────────────────
+  /**
+   * Pointer events are handled on `.mm-hand` — the common ancestor of the
+   * cards and the backstop — not on the backstop itself, because the cards are
+   * hit targets in their own right now and their events must reach the same
+   * handler. `.mm-hand` is `pointer-events:none`, which stops it being a hit
+   * target but does not stop its descendants' events bubbling through it.
+   *
+   * `pointerleave` on `.mm-hand` is chain-based, not geometric: it fires the
+   * moment the element under the pointer stops being inside the hand, whether
+   * that is a card, the backstop, or nothing. That is exactly "the pointer has
+   * left the fan", which is the only time hover should clear.
+   */
   _bind() {
-    const hit = this.hit;
+    const el = this.el;
     this._onDown = (e) => this._pointerDown(e);
     this._onMove = (e) => this._pointerMove(e);
     this._onUp = (e) => this._pointerUp(e);
     this._onLeave = () => { if (!this.drag) this._setHover(null); };
-    hit.addEventListener('pointerdown', this._onDown);
-    hit.addEventListener('pointermove', this._onMove);
-    hit.addEventListener('pointerup', this._onUp);
-    hit.addEventListener('pointercancel', this._onUp);
-    hit.addEventListener('pointerleave', this._onLeave);
+    el.addEventListener('pointerdown', this._onDown);
+    el.addEventListener('pointermove', this._onMove);
+    el.addEventListener('pointerup', this._onUp);
+    el.addEventListener('pointercancel', this._onUp);
+    el.addEventListener('pointerleave', this._onLeave);
     this._onKey = (e) => this._key(e);
     window.addEventListener('keydown', this._onKey);
     // Tabbing into the hand puts you on a card immediately — the keyboard path
@@ -875,11 +1075,18 @@ export class Hand {
     const s = d.slot;
 
     const fit = this.fit;
-    if (d.needsTarget && above) {
-      // Card parks; the arrow does the aiming.
-      const parkX = lerp(this.w / 2, p.x, 0.18);
-      this._goal(s, parkX, this.parkY, 0, fit * TUNE.parkScale, 600, this._d(0.16), 0, Clock.easeOutCubic);
-      this._updateSnap(p.x, p.y);
+    // Targets are live at ANY height. They used to only be read once the
+    // cursor crossed the commit line, so dragging a targeted card straight at
+    // an enemy left it in follow-the-cursor mode — and the card, at full size
+    // and full opacity, parked itself squarely over the enemy's sprite, HP bar,
+    // Guard badge and damage preview. You could not see the thing you were
+    // about to hit. Snapping onto a target is now enough to enter aim mode.
+    if (d.needsTarget) this._updateSnap(p.x, p.y);
+    if (d.needsTarget && (above || d.snap)) {
+      // Card parks out of the way; the arrow does the aiming.
+      const g = this._aimPark(p.x, d.snap, fit);
+      this._setAimGhost(s, !!d.snap);
+      this._goal(s, g.x, g.y, 0, g.scale, 600, this._d(0.16), 0, Clock.easeOutCubic);
       this.aim = { slot: s, x: p.x, y: p.y, snap: d.snap, valid: !!d.snap && s.playable !== false };
       this._showArrow(true);
     } else {
@@ -887,7 +1094,7 @@ export class Hand {
       const y = Math.min(this.h - 6, p.y + this.chh * fit * TUNE.dragScale * 0.5);
       this._goal(s, p.x, y, d.tilt, fit * TUNE.dragScale, 600,
         this._d(TUNE.dragFollow), 0, Clock.easeOutCubic);
-      if (d.needsTarget) { this._showArrow(false); this.aim = null; d.snap = null; this._clearPreview(s); }
+      if (d.needsTarget) { this._showArrow(false); this.aim = null; this._setAimGhost(s, false); this._clearPreview(s); }
       else {
         // The threshold only ARMS for a card that can actually be played.
         // Amber "RELEASE TO PLAY" over a card that will be refused is a lie.
@@ -912,6 +1119,7 @@ export class Hand {
     this.$thresh.classList.remove('is-on', 'is-armed', 'is-blocked');
     this._showArrow(false);
     this.aim = null;
+    this._setAimGhost(s, false);
     this._clearPreview(s);
     this.bus.emit('card:drop', { uid: s.card.uid, cardId: s.card.def.id });
 
@@ -976,6 +1184,49 @@ export class Hand {
         this._applyPreview(null);
       }
     }
+  }
+
+  /**
+   * Where the held card sits while you aim, and how solid it is.
+   *
+   * STS2-REFERENCE §2: "Hovering a target while holding a card previews the
+   * outcome on that target" — which requires being able to SEE the target. The
+   * held card is the least important thing on screen at that moment (you have
+   * already chosen it; its rules text is what you read a second ago), so once
+   * a target is locked it shrinks, goes translucent, and slides clear of the
+   * target's box if it would otherwise overlap it. Un-snap and it comes back.
+   *
+   * @returns {{x:number,y:number,scale:number}} reused object — do not retain.
+   */
+  _aimPark(px, snap, fit) {
+    const g = this._parkTmp || (this._parkTmp = { x: 0, y: 0, scale: 1 });
+    g.scale = fit * (snap ? TUNE.parkScaleAimed : TUNE.parkScale);
+    g.y = this.parkY;
+    g.x = lerp(this.w / 2, px, 0.18);
+    if (!snap) return g;
+    const hw = this.cw * g.scale / 2;
+    const ch = this.chh * g.scale;
+    // Only dodge if the parked card would actually sit over the target's box.
+    if (g.y > snap.y && g.y - ch < snap.y + snap.h
+        && g.x + hw > snap.x && g.x - hw < snap.x + snap.w) {
+      const pad = TUNE.aimClear;
+      const lx = snap.x - pad - hw, rx = snap.x + snap.w + pad + hw;
+      const lo = hw + 8, hi = this.w - hw - 8;
+      const okL = lx >= lo, okR = rx <= hi;
+      if (okL && okR) g.x = Math.abs(lx - g.x) <= Math.abs(rx - g.x) ? lx : rx;
+      else if (okL) g.x = lx;
+      else if (okR) g.x = rx;
+      // Neither side has room (a very wide target): the fade and the shrink
+      // are what keep the enemy readable, so leave x alone.
+    }
+    return g;
+  }
+
+  /** Translucent held card while a target is locked. See `_aimPark`. */
+  _setAimGhost(slot, on) {
+    if (!slot || slot._aimGhost === !!on) return;
+    slot._aimGhost = !!on;
+    slot.view.el.classList.toggle('is-aiming', !!on);
   }
 
   /** Put the card's numbers back to their printed values. */
@@ -1145,15 +1396,28 @@ export class Hand {
     const i = this.slots.indexOf(slot);
     if (i >= 0) this.slots.splice(i, 1);
     if (this.hoverSlot === slot) this._clearHover();
-    // the card is leaving; the keyboard stays in the hand
-    if (document.activeElement === slot.view.el) {
-      this._quietFocus = true;
-      this.el.focus?.({ preventScroll: true });
-      this._quietFocus = false;
+    this._setAimGhost(slot, false);
+
+    /* ── ROVING FOCUS ──────────────────────────────────────────────────────
+       A card that resolves used to hand focus back to the hand CONTAINER, so
+       `document.activeElement` became `DIV.mm-hand`: a dead end, not a roving
+       focus model. You had to press an arrow to get back onto a card before
+       Enter did anything again, which is two keystrokes of nothing after
+       every single play. Focus now lands on a REAL card — the one that slid
+       into the gap the played card left — so Enter → Enter → Enter plays your
+       way along the hand exactly as it reads.
+
+       Only when the keyboard was already in the hand: a mouse drag must not
+       silently lift a neighbour under the cursor. */
+    const keyboardWasHere = this._focusInHand();
+    if (this.slots.length && keyboardWasHere) {
+      this._selectIdx(clamp(i < 0 ? this.selIdx : i, 0, this.slots.length - 1));
+    } else {
+      this.selIdx = -1;
+      if (keyboardWasHere) this._releaseFocusToHand();   // hand is empty now
     }
-    this.selIdx = Math.min(this.selIdx, this.slots.length - 1);
     this._layout();                                  // the rest re-fans at once
-    this.flying.add(slot);
+    this._takeOff(slot);
 
     const v = slot.view;
     v.setPreviewNumbers(null);
@@ -1212,7 +1476,7 @@ export class Hand {
 
   /** Discard signature: a tumble, not a flight. */
   async _flyToPile(slot, o) {
-    this.flying.add(slot);
+    this._takeOff(slot);
     const v = slot.view;
     const a = { ...v.transform };
     const pile = o.pile;
@@ -1317,23 +1581,33 @@ export class Hand {
     if (this.aim) {
       const id = this.aim.snap ? this.aim.snap.id : undefined;
       this._cancelAim();
+      // `_animatePlay` owns where the selection lands next — see the roving
+      // focus block there. Blanket-clearing it here is what dropped the
+      // keyboard onto the hand CONTAINER after every play.
       this._commit(s, id);
-      this._selectIdx(-1);
       return;
     }
     if (this._needsTarget(s.card.def)) {
       this._readTargets();
       if (!this.targets.length) { s.view.shake(8, 0.28); return; }
-      this._goal(s, lerp(this.w / 2, s.cur.x, 0.3), this.parkY, 0, this.fit * TUNE.parkScale, 600, this._d(0.18));
       this.aim = { slot: s, x: 0, y: 0, snap: this.targets[0], valid: true, key: true };
       this._applyPreview(this.targets[0].id);
       this.bus.emit('card:target', { uid: s.card.uid, targetId: this.targets[0].id });
       this._showArrow(true);
+      this._reparkAim();               // same clear-of-the-target park as the mouse
       s.view.pulse('var(--flame-glow)', 0.3);
       return;
     }
     this._commit(s, undefined);
-    this._selectIdx(-1);
+  }
+
+  /** Keyboard aiming: keep the held card clear of whatever is now targeted. */
+  _reparkAim() {
+    if (!this.aim || !this.aim.key) return;
+    const s = this.aim.slot;
+    const g = this._aimPark(s.cur.x, this.aim.snap, this.fit);
+    this._setAimGhost(s, !!this.aim.snap);
+    this._goal(s, g.x, g.y, 0, g.scale, 600, this._d(0.18), 0, Clock.easeOutCubic);
   }
 
   _cycleTarget(dir) {
@@ -1346,6 +1620,7 @@ export class Hand {
     this.aim.slot.view.pulse('var(--flame-glow)', 0.3);
     this.bus.emit('card:target', { uid: this.aim.slot.card.uid, targetId: this.aim.snap.id });
     this._applyPreview(this.aim.snap.id);
+    this._reparkAim();
   }
 
   _cancelAim() {
@@ -1357,6 +1632,7 @@ export class Hand {
     // on release — Escape looked like it worked and then the card went anyway.
     if (this.drag) { this.drag.snap = null; this.drag.cancelled = true; }
     this._showArrow(false);
+    this._setAimGhost(s, false);
     this._clearPreview(s);
     this.bus.emit('card:cancel', { uid: s.card.uid });
     this._layout({ dur: this._d(0.24) });
@@ -1369,11 +1645,13 @@ export class Hand {
     this._ro?.disconnect();
     window.removeEventListener('keydown', this._onKey);
     this.el.removeEventListener('focusin', this._onFocusIn);
-    this.hit.removeEventListener('pointerdown', this._onDown);
-    this.hit.removeEventListener('pointermove', this._onMove);
-    this.hit.removeEventListener('pointerup', this._onUp);
-    this.hit.removeEventListener('pointercancel', this._onUp);
-    this.hit.removeEventListener('pointerleave', this._onLeave);
+    this.el.removeEventListener('pointerdown', this._onDown);
+    this.el.removeEventListener('pointermove', this._onMove);
+    this.el.removeEventListener('pointerup', this._onUp);
+    this.el.removeEventListener('pointercancel', this._onUp);
+    this.el.removeEventListener('pointerleave', this._onLeave);
+    this._host?.classList.remove('mm-hand-host');
+    this._host = null;
     for (const s of this.slots) s.view.destroy();
     for (const s of this.flying) s.view.destroy();
     this.slots.length = 0; this.flying.clear();

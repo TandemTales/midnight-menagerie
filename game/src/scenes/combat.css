@@ -100,10 +100,30 @@
 .cb-badge[data-tone="warn"] { color: var(--flame-200); border-color: color-mix(in srgb, var(--flame-400) 70%, transparent); }
 .cb-badge[data-tone="good"] { color: var(--spectre-200); border-color: color-mix(in srgb, var(--spectre-400) 70%, transparent); }
 
-/* a large handwritten House Rule pinned above the enemy */
-.cb-enemy__rule {
-  max-width: 240px;
-  padding: var(--s-2) var(--s-3);
+/* ── HOUSE RULES: a docked rail, not a card over the creature's head ────────
+   FINDING: `.cb-enemy__rule` lived inside `.cb-enemy__above`, which is anchored
+   to `bottom: calc(100% - 6px)` of the creature and grows UPWARD. On The
+   Butler — a 430px boss stage — the rule measured [571, -120, 135, 155]: the
+   whole card 120px above the top of the viewport, carrying the single most
+   consequential sentence in that fight. The Door Greeter's landed behind the
+   HUD instead. There is no clamp that makes an upward-growing stack safe at
+   every stage height, so the text is docked where it is always readable and
+   the creature keeps a marker saying it is the one holding the rule. */
+.cb-rules {
+  position: absolute;
+  left: clamp(16px, 2vw, 34px);
+  /* under the HUD (48px) and under the room caption (52px + line) */
+  top: 78px;
+  z-index: 300;
+  width: min(320px, 26vw);
+  max-height: 42vh; overflow-y: auto;
+  display: flex; flex-direction: column; gap: var(--s-2);
+  pointer-events: none;
+}
+.cb-rules > * { pointer-events: auto; }
+.cb-rule {
+  position: relative;
+  padding: var(--s-2) var(--s-3) 6px;
   border-radius: 2px 10px 3px 9px;
   background:
     repeating-linear-gradient(0deg, transparent 0 17px,
@@ -112,19 +132,48 @@
   border: 1px solid color-mix(in srgb, var(--ink-900) 40%, transparent);
   box-shadow: var(--shadow-3);
   color: var(--text-ink);
-  transform: rotate(-1.6deg);
-  text-align: center;
+  transform: rotate(-1.1deg);
+  cursor: help;
+  animation: cb-rule-in .4s var(--ease-out) both;
 }
-.cb-enemy__rule b {
+@keyframes cb-rule-in {
+  from { opacity: 0; transform: rotate(-5deg) translateY(-10px) scale(.94); }
+  to   { opacity: 1; transform: rotate(-1.1deg); }
+}
+.cb-rule i {
+  display: block; font-style: normal;
+  font-family: var(--font-display); font-size: 9px;
+  letter-spacing: .24em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--text-ink) 55%, transparent);
+}
+.cb-rule b {
   display: block;
   font-family: var(--font-display); font-size: var(--fs-sm);
-  letter-spacing: .18em; text-transform: uppercase;
+  letter-spacing: .16em; text-transform: uppercase;
   color: var(--rarity-curse);
 }
-.cb-enemy__rule span {
-  display: block; margin-top: 2px;
-  font-size: var(--fs-xs); font-style: italic; line-height: 1.3;
-  color: color-mix(in srgb, var(--text-ink) 88%, transparent);
+.cb-rule span {
+  display: block; margin-top: 3px;
+  font-size: var(--fs-xs); font-style: italic; line-height: 1.35;
+  color: color-mix(in srgb, var(--text-ink) 92%, transparent);
+}
+.cb-rule u {
+  display: block; margin-top: 4px;
+  text-decoration: none;
+  font-family: var(--font-display); font-size: 9px;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--text-ink) 62%, transparent);
+}
+/* the creature keeping it */
+.cb-enemy.has-rule .cb-enemy__plate::before {
+  content: 'RULE';
+  position: absolute; left: 50%; top: -9px; transform: translateX(-50%);
+  padding: 1px 7px; border-radius: 999px;
+  font-family: var(--font-display); font-size: 8px; letter-spacing: .2em;
+  background: var(--parchment); color: var(--rarity-curse);
+  border: 1px solid color-mix(in srgb, var(--ink-900) 45%, transparent);
+  box-shadow: var(--shadow-1);
+  z-index: 2;
 }
 
 /* two-possibility intent: both futures on screen at once */
@@ -146,16 +195,34 @@
 }
 .cb-enemy.no-intent .cb-enemy__intent { opacity: 0; }
 
+/* ── FOOTPRINT IS SET BY TIER AND ROLE, NEVER BY THE RIG'S BBOX ────────────
+   FINDING: the Governess (175 Courage, boss) staged at 258x420 while her own
+   50-Courage Favorite Doll staged at 436x366; The Butler (165) at 262x484 while
+   a summoned 12-Courage Dust Bunny rendered 511x430. The boss read as the
+   sidekick. Two causes, both here:
+     1. the arena size rules were written as `[data-arena="boss"] .cb-enemy__stage`
+        — they applied to EVERY creature on the board, including minions;
+     2. the width clamp let a wide bbox grow to the full 24vw / 40vw ceiling
+        independently of the height, so a sprawling 12-Courage rig could take
+        twice a tall boss's area while being half its height.
+   Width is now also capped against the creature's own height, so mass tracks
+   the tier cap instead of the silhouette. */
+.cb-enemy { --e-tier: 1; }
+.cb-enemy[data-tier="elite"] { --e-tier: 1.2; }
+.cb-enemy[data-tier="boss"] { --e-tier: 1.45; }
+.cb-enemy[data-role="bossPart"], .cb-enemy[data-role="minion"] { --e-tier: .8; }
+
 .cb-enemy__stage {
   position: relative;
   --e-aspect: .92;
-  --e-h: min(calc(226px * var(--e-scale)), calc(100vh - 460px));
+  --e-wide: 1.25;                 /* never wider than this many of its own heights */
+  --e-h: min(calc(226px * var(--e-scale) * var(--e-tier)), calc(100vh - 460px));
   height: var(--e-h);
   /* a sprawling rig can fit a 2.6:1 bbox — cap the footprint and let the SVG's
      `meet` fit inside it, or one rug eats the whole room */
   width: clamp(calc(88px * var(--e-scale)),
                calc(var(--e-h) * var(--e-aspect)),
-               min(320px, 24vw));
+               min(320px, 24vw, calc(var(--e-h) * var(--e-wide))));
   display: flex; align-items: flex-end; justify-content: center;
   transform-origin: 50% 100%;
 }
@@ -287,15 +354,24 @@
      Courage bar were being read through a pair of legs. */
   padding: 3px var(--s-2) 4px;
   border-radius: var(--radius-md);
-  background: radial-gradient(70% 100% at 50% 60%,
-    color-mix(in srgb, var(--ink-900) 78%, transparent) 0%, transparent 100%);
+  /* The name sits at the TOP of the plate, where a 60%-centred radial has
+     already fallen away to nothing — which is most of why it read as
+     low-contrast. A flat wash plus a small blur is legible over any room. */
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--ink-900) 86%, transparent) 0%,
+    color-mix(in srgb, var(--ink-900) 88%, transparent) 42%,
+    color-mix(in srgb, var(--ink-900) 30%, transparent) 88%,
+    transparent 100%);
 }
+/* --text-mid over a 78%-ink plate measured too low to read at a glance, and it
+   does not move in the deuteranopia palette (only hues shift there, not text
+   luminance), so it was worse again with the plate's warm wash removed. */
 .cb-enemy__name {
   font-family: var(--font-display);
   font-size: var(--fs-xs);
   letter-spacing: .16em; text-transform: uppercase;
-  color: var(--text-mid);
-  text-shadow: 0 2px 6px var(--ink-900);
+  color: var(--text-hi);
+  text-shadow: 0 1px 2px var(--ink-900), 0 2px 8px var(--ink-900), 0 0 14px var(--ink-900);
   white-space: nowrap;
 }
 .cb-enemy__bar {
@@ -406,6 +482,14 @@
   background: var(--threat-200); border-radius: var(--radius-sm);
   padding: 1px var(--s-2);
 }
+/* what actually reaches its Courage after its Guard. Round 3 showed `-6` on a
+   5-Guard enemy and the real loss was 1. */
+.cb-prev__thru {
+  font-size: var(--fs-xs); letter-spacing: .04em;
+  color: var(--guard-300);
+  font-family: var(--font-num);
+}
+.cb-prev__thru.is-stopped { color: var(--spectre-200); font-style: italic; }
 .cb-prev__st { font-size: var(--fs-xs); color: var(--spectre-200); letter-spacing: .06em; }
 .cb-prev__st[data-kind="debuff"] { color: var(--threat-200); }
 
@@ -525,6 +609,34 @@
 }
 .cb-intent__chip[data-role="guard"] b { color: var(--spectre-100); }
 .cb-intent__chipicon { width: 12px; height: 13px; color: var(--guard-300); display: block; }
+/* ── what the move does to your DECK, and the rule it announces ────────────
+   Same chip, same row. `Pack Wrong` is `intent: DEBUFF, block: 5` plus
+   `addsCards:[{id:'clutter',pile:'discard'}]`, and round 3 rendered only the
+   5 — so the chip read as a number under a debuff icon and the actual threat,
+   a Clutter in your discard pile, was never stated anywhere on screen. */
+.cb-intent__chip[data-role="cards"] {
+  padding: 0 7px; height: 18px;
+  border-color: color-mix(in srgb, var(--rarity-curse) 80%, transparent);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--rarity-curse) 42%, var(--ink-900)), var(--ink-900));
+}
+.cb-intent__chip[data-role="cards"] b {
+  font-family: var(--font-display); font-size: 10px; font-weight: 400;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--text-hi);
+}
+.cb-intent__chip[data-role="cards"] span { color: var(--text-lo); font-size: 9px; }
+.cb-intent__chip[data-role="rule"] {
+  padding: 0 8px; height: 18px;
+  border-color: color-mix(in srgb, var(--ink-900) 45%, transparent);
+  background: var(--parchment);
+}
+.cb-intent__chip[data-role="rule"] b {
+  font-family: var(--font-display); font-size: 10px; font-weight: 400;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--rarity-curse);
+}
+
 /* the word chip is the same chip — smaller type, never a second grammar */
 .cb-intent__chip[data-role="word"] {
   padding: 0 8px; height: 18px;
@@ -642,12 +754,73 @@
 }
 .cb-player__guard.is-preview svg { stroke: var(--flame-200); stroke-width: 1.8; }
 
+/* ── YOUR resource gauges, beside the Guard shield ─────────────────────────
+   `state.counters` has always shipped Loose Bones 0/6 with `ownerId:'player'`
+   and the scene walked only `en.counters`, so Bones's Sit Pretty and Put
+   Yourself Back Together keyed off a number that was never on screen. Same
+   widget as the enemies' DUST 0/4, mirrored to the other bottom corner of the
+   portrait so the two read as a pair. */
+.cb-player__counters {
+  position: absolute; left: 6px; bottom: 6px;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
+  pointer-events: auto;
+  max-width: calc(100% - 66px);
+}
+.cb-count--mine {
+  padding: 1px 7px 1px 7px;
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--spectre-500) 40%, var(--ink-900)), var(--ink-900));
+  border-color: color-mix(in srgb, var(--spectre-300) 62%, transparent);
+}
+.cb-count--mine i { color: var(--spectre-200); }
+.cb-count--mine em {
+  font-style: normal;
+  font-family: var(--font-display); font-size: 9px;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--flame-200);
+  padding-left: 4px; margin-left: 3px;
+  border-left: 1px solid color-mix(in srgb, var(--spectre-300) 40%, transparent);
+}
+
 @keyframes cb-plhit {
   0% { transform: translate3d(0,0,0); }
   20% { transform: translate3d(9px, 3px, 0) rotate(1.6deg); }
   60% { transform: translate3d(-5px, 0, 0) rotate(-.9deg); }
   100% { transform: translate3d(0,0,0); }
 }
+/* ── THE PLAYER ATTACKS ────────────────────────────────────────────────────
+   STS2-REFERENCE §4: "Characters animate their attacks: StS2 explicitly fixed
+   the StS1 complaint that the player figure just twitched." Round 3's player
+   was a framed portrait that never moved at all — the enemies had windup,
+   strike, flinch, clank and a death, and the Kid had nothing. Three beats,
+   matching `EnemyView#windup`/`#strike`: coil back and low, snap forward and
+   up into the board, drift back. */
+@keyframes cb-plwind {
+  0%   { transform: none; }
+  100% { transform: translate3d(-10px, 4px, 0) rotate(-2.4deg) scale(.965); }
+}
+@keyframes cb-plstrike {
+  0%   { transform: translate3d(-10px, 4px, 0) rotate(-2.4deg) scale(.965); }
+  26%  { transform: translate3d(26px, -12px, 0) rotate(4.6deg) scale(1.075); }
+  46%  { transform: translate3d(18px, -6px, 0) rotate(3deg) scale(1.04); }
+  100% { transform: none; }
+}
+.cb-player.is-windup .cb-player__figure {
+  animation: cb-plwind .18s var(--ease-out) forwards;
+}
+.cb-player.is-striking .cb-player__figure {
+  animation: cb-plstrike .36s var(--ease-snap);
+}
+/* the swing throws light off the portrait as it lands */
+.cb-player.is-striking .cb-player__glow {
+  animation: cb-plflare .36s var(--ease-out);
+}
+@keyframes cb-plflare {
+  0% { opacity: .5; }
+  22% { opacity: 1; transform: scale(1.22); }
+  100% { opacity: .55; transform: scale(1); }
+}
+
 .cb-player.is-hit .cb-player__figure { animation: cb-plhit .26s var(--ease-out); }
 .cb-player.is-clank .cb-player__figure { animation: cb-plhit .16s var(--ease-out); }
 .cb-player.is-guarding .cb-player__figure { box-shadow: var(--shadow-3), 0 0 26px color-mix(in srgb, var(--guard-300) 55%, transparent); }
@@ -872,10 +1045,17 @@
 .cb-banner[data-kind="win"] { color: var(--flame-200); }
 .cb-banner[data-kind="lose"] { color: var(--threat-300); }
 
+/* ABOVE EVERYTHING IT CAN BE PROVOKED BY.
+   FINDING: `.cb-deny` was z 360 and `.cb-chooser` is z 520, so the one message
+   that explains a mandatory pick — "You have to pick one. Use the arrow keys,
+   then Enter." — painted 160 layers beneath the modal that produced it;
+   `elementFromPoint` at the deny's own centre returned `DIV.cb-chooser__pool`.
+   Escape visibly did nothing, and that is what got the chooser filed as a
+   soft-lock. */
 .cb-deny {
   position: absolute; left: 50%; bottom: 30%;
   transform: translateX(-50%);
-  z-index: 360; pointer-events: none;
+  z-index: 620; pointer-events: none;
   padding: var(--s-2) var(--s-4);
   border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--ink-900) 92%, transparent);
@@ -892,6 +1072,14 @@
   100% { opacity: 0; }
 }
 .cb-deny.is-on { animation: cb-denyin 1.5s var(--ease-out) forwards; }
+/* while a chooser is open it sits just under the panel rather than across the
+   cards it is talking about */
+.cb-deny.is-over-chooser {
+  bottom: 9%;
+  background: var(--ink-900);
+  border-color: var(--threat-200);
+  box-shadow: var(--shadow-4), 0 0 34px color-mix(in srgb, var(--threat-500) 60%, transparent);
+}
 
 /* ───────────────────────────────────────────── fx layer ────────────────── */
 .cb-fx {
@@ -900,6 +1088,9 @@
 }
 .cb-fx__c { position: absolute; inset: 0; }
 .cb-fx__nums { position: absolute; inset: 0; }
+/* Numerals must stay legible over a dark rig mid-shake mid-particles
+   (STS2-REFERENCE §4). A 2px stroke on a 30px face at 0.82 scale was thin
+   enough that a hit on a dark enemy read as grey-on-grey. */
 .cb-num {
   position: absolute; left: 0; top: 0;
   transform-origin: 50% 50%;
@@ -908,10 +1099,11 @@
   font-size: 30px; line-height: 1;
   white-space: nowrap;
   margin: -15px 0 0 0;
-  -webkit-text-stroke: 2px var(--ink-900);
+  -webkit-text-stroke: 3.5px var(--ink-900);
   paint-order: stroke fill;
   translate: -50% 0;
   color: var(--flame-100);
+  filter: drop-shadow(0 2px 5px var(--ink-900)) drop-shadow(0 0 12px var(--ink-900));
   text-shadow:
     0 0 3px var(--ink-900), 0 0 3px var(--ink-900),
     0 2px 0 var(--ink-900), 0 -2px 0 var(--ink-900),
@@ -933,7 +1125,7 @@
   padding: 2px 8px; border-radius: var(--radius-sm); text-shadow: none;
 }
 .cb-num[data-kind="status"] { color: var(--text-hi); font-size: 16px; }
-.cb-num.is-big { -webkit-text-stroke: 3px var(--ink-900); }
+.cb-num.is-big { -webkit-text-stroke: 4.5px var(--ink-900); }
 
 /* ── tooltip content ──────────────────────────────────────────────────────
    The PANEL is `ui/tooltip.js`'s (one tooltip, whole game). These are the
@@ -966,7 +1158,25 @@
 
 @media (prefers-reduced-motion: reduce) {
   .cb-intent.is-lethal, .cb-endturn.is-ready, .cb-player.is-low .cb-player__figure,
-  .cb-player.is-snacking .cb-player__figure, .cb-player__glow { animation: none; }
+  .cb-player.is-snacking .cb-player__figure, .cb-player__glow,
+  .cb-player.is-windup .cb-player__figure, .cb-player.is-striking .cb-player__figure,
+  .cb-player.is-striking .cb-player__glow, .cb-rule,
+  .cb-handhost .mm-card.is-recovered { animation: none; }
+}
+
+/* ── a Trick recovered from a pile is not a Trick drawn ────────────────────
+   Fetch, Dig Up and the Bury return all put a card in your hand out of turn
+   order. It arrives from the pile it was actually in (see `_pileAnchor`) and
+   then says so for a beat, or a card simply materialising in the fan reads as
+   a bug. Scoped to this scene's host so `ui/card.css` stays card-feel's. */
+@keyframes cb-recovered {
+  0%   { box-shadow: 0 0 0 3px var(--flame-200), 0 0 34px color-mix(in srgb, var(--flame-glow) 85%, transparent); }
+  60%  { box-shadow: 0 0 0 2px color-mix(in srgb, var(--flame-200) 70%, transparent), 0 0 22px color-mix(in srgb, var(--flame-glow) 45%, transparent); }
+  100% { box-shadow: none; }
+}
+.cb-handhost .mm-card.is-recovered {
+  animation: cb-recovered .85s var(--ease-out) forwards;
+  border-radius: var(--radius-md);
 }
 
 /* the arrow has snapped onto this one */
@@ -1113,8 +1323,12 @@
   font-family: var(--font-display);
   font-size: var(--fs-sm);
   letter-spacing: .34em; text-transform: uppercase;
-  color: color-mix(in srgb, var(--text-hi) 60%, transparent);
-  text-shadow: 0 2px 10px var(--ink-900);
+  /* Round 3 settled this at 60% of --text-hi and then faded the whole element
+     to opacity .3 — an effective 18% alpha over black, measured as
+     near-invisible dark grey. It is the only thing on screen that says which
+     of thirteen rooms you are in. */
+  color: var(--flame-200);
+  text-shadow: 0 2px 10px var(--ink-900), 0 0 20px var(--ink-900), 0 0 4px var(--ink-900);
   white-space: nowrap;
   animation: cb-roomin 3.4s var(--ease-soft) forwards;
 }
@@ -1123,7 +1337,7 @@
   0% { opacity: 0; letter-spacing: .62em; }
   14% { opacity: 1; letter-spacing: .34em; }
   70% { opacity: 1; }
-  100% { opacity: .3; letter-spacing: .34em; }
+  100% { opacity: .68; letter-spacing: .34em; }
 }
 
 /* the stage the fight happens on */
@@ -1153,8 +1367,17 @@
 /* The field is opened up and the cap is set so the STAGE PLUS THE NAME PLATE
    still land above the top edge of the hand. Round 1 let a 1.6-scale Grand
    Coatcheck push its own name and Courage bar underneath the cards. */
-.cb-root[data-arena="elite"] .cb-enemy__stage {
+/* Only the creature the arena is FOR. Its escorts stay trash-mob sized. */
+.cb-root[data-arena="elite"] .cb-enemy[data-tier="elite"] .cb-enemy__stage {
   --e-h: min(calc(320px * var(--e-scale)), calc(100vh - 500px));
+  --e-wide: 1.2;
+}
+.cb-root[data-arena="elite"] .cb-enemy:not([data-tier="elite"]) .cb-enemy__stage {
+  --e-h: min(calc(200px * var(--e-scale)), calc(100vh - 540px));
+  --e-wide: 1.2;
+  width: clamp(calc(80px * var(--e-scale)),
+               calc(var(--e-h) * var(--e-aspect)),
+               min(250px, 17vw, calc(var(--e-h) * var(--e-wide))));
 }
 .cb-root[data-arena="elite"] .cb-field { top: 72px; bottom: 32%; }
 .cb-root[data-arena="elite"] .cb-enemies { padding-top: 88px; }
@@ -1174,11 +1397,28 @@
    mob because the cap was written for a four-up formation. A boss is alone. */
 /* Sized so the stage AND the name plate fit inside the field: the field is
    (100vh - 48 - 33%) tall, less the intent stack's 96px and the plate's ~44. */
-.cb-root[data-arena="boss"] .cb-enemy__stage {
+.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__stage {
   --e-h: min(calc(430px * var(--e-scale)), calc(100vh - 480px));
+  --e-wide: 1.15;
   width: clamp(calc(150px * var(--e-scale)),
                calc(var(--e-h) * var(--e-aspect)),
-               min(560px, 40vw));
+               min(560px, 40vw, calc(var(--e-h) * var(--e-wide))));
+}
+/* A limb of the boss (the Favorite Doll) and anything the boss summons are
+   both explicitly SMALLER than the boss, on both axes. */
+.cb-root[data-arena="boss"] .cb-enemy[data-role="bossPart"] .cb-enemy__stage {
+  --e-h: min(calc(270px * var(--e-scale)), calc(100vh - 540px));
+  --e-wide: .95;
+  width: clamp(calc(96px * var(--e-scale)),
+               calc(var(--e-h) * var(--e-aspect)),
+               min(300px, 20vw, calc(var(--e-h) * var(--e-wide))));
+}
+.cb-root[data-arena="boss"] .cb-enemy:not([data-tier="boss"]) .cb-enemy__stage {
+  --e-h: min(calc(210px * var(--e-scale)), calc(100vh - 560px));
+  --e-wide: 1.2;
+  width: clamp(calc(80px * var(--e-scale)),
+               calc(var(--e-h) * var(--e-aspect)),
+               min(250px, 17vw, calc(var(--e-h) * var(--e-wide))));
 }
 .cb-root[data-arena="boss"] .cb-enemies { padding-top: 72px; }
 .cb-root[data-arena="boss"] .cb-enemy__name { font-size: var(--fs-md); letter-spacing: .22em; }

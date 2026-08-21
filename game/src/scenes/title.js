@@ -11,7 +11,7 @@ import { Save } from '../core/save.js';
 import { COMPANIONS } from '../data/schema.js';
 import {
   ensureCss, fontsReady, logoLockup, candle, cobweb, bat,
-  el, svg, rovingFocus, setReduceMotion, reduceMotion,
+  el, svg, rovingFocus, setReduceMotion, reduceMotion, freedCompanions,
 } from '../ui/portrait.js';
 import { pauseStageFor } from './_stage.js';
 import { openSettings } from '../ui/settings.js';
@@ -286,7 +286,10 @@ export class TitleScene extends Scene {
       'Sixteen lost pets became something else inside that house.<br>' +
       '<span>Eight kids are going in to bring the rest home.</span>'));
 
-    const rescued = new Set(Save?.data?.companionsRescued ?? []);
+    // `freedCompanions()` is the shared count — see ui/portrait.js. This screen
+    // used the raw save array and so said "0 / 16 freed" on the same save where
+    // Select and the Clubhouse both said "4 / 16".
+    const rescued = freedCompanions();
     const nav = el('nav', 'ti-menu');
     nav.setAttribute('aria-label', 'Main menu');
     const items = menuItems(!!Save?.hasRun?.());

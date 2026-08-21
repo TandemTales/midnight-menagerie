@@ -1,0 +1,311 @@
+"""Scene-to-engine seam proofs for the Scuffle screen.  OWNER: combat-scene.
+
+    python tests/combat-scene/seam.py [--wait 25] [--verbose] [--w 1600] [--h 900]
+
+CONTRACTS.md rule 9: "Test across the seam, not just inside your module.  If
+your module calls another module's API, your tests must exercise it against the
+REAL implementation at least once."
+
+This drives the REAL game at http://localhost:8777/game/index.html with the real
+CombatEngine, the real Bones deck and the real CombatScene, and asserts the
+things a module-level harness structurally cannot see.
+
+Why it exists: `game/src/scenes/combat.js` rendered `draw` / `discard` /
+`exhaust` / `card:add` and had no `case 'card:move'`, so every card the engine
+moved INTO the hand — Fetch, Dig Up, the Bury return, Stash, Scurry — existed in
+the rules and not on screen.  Observed live: after resolving the Fetch chooser
+`engine.state.piles.hand` was `[c26,c27,c24,c35]` while the DOM hand was
+`[c26,c27,c24]`; the card stayed missing and was discarded unplayed at end of
+turn.  Every scene-side unit test passed the whole time, because they all
+rendered from a fixture instead of from the engine.
+
+Prints `RESULT: n passed, m failed`.  Exit 0 only when m == 0.
+"""
+import argparse
+import asyncio
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
+BASE = "http://localhost:8777/game/index.html"
+
+# Parenthesised: it gets interpolated behind `!`, and `!window.MM && …` is not
+# `!(window.MM && …)`.
+SCENE = "(window.MM && window.MM.ctx.scenes.current)"
+
+# `ui/hand.js` keeps ONE permanent hidden `.mm-card.mm-hand__probe` for
+# measurement, and paints throwaway `.mm-hand__warm` waves during the scene's
+# raster rehearsal.  Neither is a card in your hand.  `.mm-hand__cards` is the
+# fan itself, so that is what "the cards on screen" means here; the raw
+# `.mm-card` count is asserted too, minus the probe, once the rehearsal is over.
+FAN = ".mm-hand__cards .mm-card"
+
+# Put `bones/go-get-it` in hand and a legal Fetch target in the discard pile.
+# Both moves go through `piles.move()`, which is the very seam under test.
+SETUP = r"""
+() => {
+  const sc = window.MM.ctx.scenes.current;
+  const E = sc.engine;
+  const all = E.piles.all();
+  const g = all.find(c => c.id === 'bones/go-get-it');
+  if (!g) return { ok: false, why: 'bones/go-get-it is not in this deck' };
+  const t = all.find(c => c !== g && c.baseCost >= 0 && c.baseCost <= 1);
+  if (!t) return { ok: false, why: 'no printed-cost-1-or-less Trick to fetch' };
+  if (E.piles.pileOf(t) !== 'discard') E.piles.move(t, 'discard', { reason: 'seamtest' });
+  if (E.piles.pileOf(g) !== 'hand') E.piles.move(g, 'hand', { reason: 'seamtest' });
+  return { ok: true, uid: g.uid, target: t.uid, hand: E.piles.hand.length };
+}
+"""
+
+# Arm the observer, then play the card.  `hand.playCard` is the same entry point
+# a click and the keyboard both use, so this exercises
+# _onPlay -> engine.playCard -> choice resolver -> _animate, not a shortcut.
+PLAY = r"""
+(uid) => {
+  const FAN = '.mm-hand__cards .mm-card';
+  const sc = window.MM.ctx.scenes.current;
+  window.__seam = null;
+  let closedAt = 0;
+  const t0 = performance.now();
+  const poll = () => {
+    const E = sc.engine;
+    if (!E) { window.__seam = { ms: -1, why: 'scene left' }; return; }
+    const ch = document.querySelector('.cb-chooser');
+    const open = ch && !ch.hidden;
+    if (!closedAt && !open && performance.now() - t0 > 60) closedAt = performance.now();
+    const dom = [...document.querySelectorAll(FAN)].map(e => e.dataset.uid);
+    const eng = E.piles.hand.map(c => c.uid);
+    const same = dom.length === eng.length && eng.every(u => dom.includes(u));
+    const snap = {
+      dom, eng,
+      // the literal assertion, minus the Hand's own measurement probe
+      allCards: document.querySelectorAll('.mm-card:not(.mm-hand__probe)').length,
+      stateHand: E.state.piles.hand.length,
+    };
+    if (closedAt && same) { window.__seam = { ms: performance.now() - closedAt, ...snap }; return; }
+    if (performance.now() - t0 > 6000) { window.__seam = { ms: -1, why: 'timeout', ...snap }; return; }
+    requestAnimationFrame(poll);
+  };
+  sc.hand.playCard(uid);
+  requestAnimationFrame(poll);
+  return true;
+}
+"""
+
+# Is the deny message actually the thing PAINTED at its own centre?
+#
+# `elementFromPoint` skips `pointer-events:none` elements and the deny is one,
+# so the hit test is run with pointer events momentarily restored and then put
+# straight back.  Paint order is what decides that hit, which is exactly the
+# property under test: at z 360 under a z 520 modal the reviewer's probe
+# returned `DIV.cb-chooser__pool`.
+DENY_HIT = r"""
+() => {
+  const d = document.querySelector('.cb-deny');
+  const ch = document.querySelector('.cb-chooser');
+  if (!d) return { ok: false, why: 'no .cb-deny' };
+  const r = d.getBoundingClientRect();
+  if (!r.width) return { ok: false, why: 'deny has no box' };
+  const cs = getComputedStyle(d);
+  const prev = d.style.pointerEvents;
+  d.style.pointerEvents = 'auto';
+  const el = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+  d.style.pointerEvents = prev;
+  return {
+    ok: !!el && (el === d || d.contains(el)),
+    hit: el ? (el.tagName + '.' + String(el.className).split(' ').join('.')) : null,
+    text: d.textContent,
+    z: +cs.zIndex, chooserZ: +getComputedStyle(ch).zIndex,
+    opacity: +cs.opacity,
+    chooserOpen: !ch.hidden,
+  };
+}
+"""
+
+
+async def main(a):
+    from playwright.async_api import async_playwright
+    passed, failed, notes = 0, 0, []
+    errors, logs = [], []
+
+    def check(cond, label, detail=""):
+        nonlocal passed, failed
+        if cond:
+            passed += 1
+            notes.append(("PASS", label, detail))
+        else:
+            failed += 1
+            notes.append(("FAIL", label, detail))
+
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(args=[
+            "--use-gl=angle", "--use-angle=default", "--enable-unsafe-swiftshader",
+            "--autoplay-policy=no-user-gesture-required",
+        ])
+        page = await (await browser.new_context(
+            viewport={"width": a.w, "height": a.h}, reduced_motion="no-preference",
+        )).new_page()
+        page.on("console", lambda m: (logs.append(f"[{m.type}] {m.text}"),
+                                      errors.append(m.text) if m.type == "error" else None))
+        page.on("pageerror", lambda e: errors.append("PAGEERROR " + str(e)))
+
+        await page.goto(BASE + "#scene=combat&seed=7&companion=bones",
+                        wait_until="load", timeout=60000)
+        await page.wait_for_function(
+            f"!!({SCENE}) && {SCENE}.engine"
+            f" && document.querySelectorAll('{FAN}').length > 0",
+            timeout=int(a.wait * 1000))
+        await page.wait_for_function(f"{SCENE} && {SCENE}._opening === false", timeout=20000)
+        # `_opening` clears on the first `turn:start`, which is BEFORE the opening
+        # draw has finished animating — wait for the event queue to go idle too.
+        await page.wait_for_function(
+            f"{SCENE} && !{SCENE}._draining && {SCENE}._q.length === 0", timeout=20000)
+        # the raster rehearsal paints throwaway cards; wait it out before counting
+        await page.wait_for_function("!document.querySelector('.mm-hand__warm')", timeout=20000)
+        await page.wait_for_timeout(500)
+
+        # ── 1. the fan and the engine agree before we touch anything ────────
+        base = await page.evaluate(
+            f"() => ({{ dom: document.querySelectorAll('{FAN}').length,"
+            f" all: document.querySelectorAll('.mm-card:not(.mm-hand__probe)').length,"
+            f" eng: {SCENE}.engine.state.piles.hand.length }})")
+        check(base["dom"] == base["eng"] == base["all"],
+              "opening hand: DOM cards == piles.hand",
+              f"fan {base['dom']} / all {base['all']} / engine {base['eng']}")
+
+        # ── 2. Fetch: bones/go-get-it against the real engine ───────────────
+        setup = await page.evaluate(SETUP)
+        if not setup.get("ok"):
+            check(False, "setup: go-get-it playable with a Fetch target", setup.get("why", ""))
+        else:
+            await page.wait_for_timeout(600)
+            after = await page.evaluate(
+                f"() => ({{ dom: document.querySelectorAll('{FAN}').length,"
+                f" eng: {SCENE}.engine.state.piles.hand.length }})")
+            check(after["dom"] == after["eng"],
+                  "card:move into hand (setup) renders",
+                  f"dom {after['dom']} / engine {after['eng']}")
+
+            await page.evaluate(PLAY, setup["uid"])
+            await page.wait_for_selector(".cb-chooser:not([hidden]) .cb-choice", timeout=10000)
+
+            # ── 3. the deny paints ABOVE the modal that provoked it ─────────
+            await page.keyboard.press("Escape")
+            await page.wait_for_timeout(140)
+            deny = await page.evaluate(DENY_HIT)
+            check(deny.get("chooserOpen") is True,
+                  "Escape does not dismiss a mandatory chooser")
+            check(deny.get("z", 0) > deny.get("chooserZ", 0),
+                  "deny stacks above the chooser",
+                  f"deny z {deny.get('z')} vs chooser z {deny.get('chooserZ')}")
+            check(deny.get("ok") is True,
+                  "deny message is the element painted at its own centre",
+                  f"hit {deny.get('hit')} · \"{(deny.get('text') or '')[:64]}\"")
+
+            # a mouse player must be told the card is the control
+            sub = await page.evaluate(
+                "() => document.querySelector('.cb-chooser__sub').textContent")
+            check("lick" in sub, "chooser sub-line names the mouse action", repr(sub))
+
+            await page.click(".cb-chooser:not([hidden]) .cb-choice", timeout=5000)
+            await page.wait_for_function("window.__seam !== null", timeout=12000)
+            seam = await page.evaluate("window.__seam")
+
+            check(seam.get("ms", -1) >= 0,
+                  "the fetched Trick reaches the DOM at all",
+                  f"engine hand {seam.get('eng')} · DOM hand {seam.get('dom')}")
+            check(seam.get("allCards") == seam.get("stateHand"),
+                  "querySelectorAll('.mm-card').length == engine.state.piles.hand.length",
+                  f"{seam.get('allCards')} vs {seam.get('stateHand')}")
+            ms = seam.get("ms", -1)
+            check(0 <= ms <= 250,
+                  "fetched Trick on screen within 250 ms of the chooser closing",
+                  f"{ms:.0f} ms" if ms >= 0 else "never")
+
+            # ── 4. and it is actually playable, not decoration ──────────────
+            held = await page.evaluate(f"""() => {{
+              const E = {SCENE}.engine;
+              const en = E.livingEnemies()[0];
+              return E.piles.hand.map(c => ({{
+                uid: c.uid, id: c.id,
+                inDom: !!document.querySelector(
+                  '.mm-hand__cards .mm-card[data-uid="' + c.uid + '"]'),
+                ok: E.canPlay(c.uid, en ? en.id : null).ok,
+              }}));
+            }}""")
+            missing = [c for c in held if not c["inDom"]]
+            check(not missing, "every Trick the engine holds has a card on screen",
+                  ", ".join(c["id"] for c in missing) or "all present")
+            check(any(c["ok"] for c in held),
+                  "the hand on screen is playable",
+                  f"{sum(1 for c in held if c['ok'])}/{len(held)} playable")
+
+        # ── 5. survives a full turn cycle ───────────────────────────────────
+        try:
+            await page.wait_for_function(
+                f"{SCENE} && !{SCENE}._resolving && {SCENE}.engine", timeout=20000)
+            start_turn = await page.evaluate(f"() => {SCENE}.engine.turn")
+            await page.evaluate(f"() => {{ {SCENE}._endTurn(); }}")
+            await page.wait_for_function(
+                f"!({SCENE}) || !{SCENE}.engine || {SCENE}.engine.over"
+                f" || (!{SCENE}._resolving && {SCENE}.engine.phase === 'player'"
+                f"     && {SCENE}.engine.turn > {start_turn})",
+                timeout=60000)
+            await page.wait_for_timeout(900)
+            turn = await page.evaluate(
+                f"() => {{ const sc = {SCENE}; if (!sc || !sc.engine) return null;"
+                f" return {{ dom: document.querySelectorAll('{FAN}').length,"
+                "            eng: sc.engine.state.piles.hand.length, over: sc.engine.over }; }")
+            if turn is None or turn["over"]:
+                notes.append(("SKIP", "after a full turn cycle: DOM cards == piles.hand",
+                              "the Scuffle ended during the cycle"))
+            else:
+                check(turn["dom"] == turn["eng"],
+                      "after a full turn cycle: DOM cards == piles.hand",
+                      f"dom {turn['dom']} / engine {turn['eng']}")
+        except Exception as e:                                   # noqa: BLE001
+            check(False, "after a full turn cycle: DOM cards == piles.hand",
+                  f"turn never came back: {type(e).__name__}")
+
+        # ── 6. the player's own counters are on screen ──────────────────────
+        gauge = await page.evaluate(f"""() => {{
+          const sc = {SCENE}; if (!sc || !sc.engine) return null;
+          const E = sc.engine;
+          const mine = [...E.counters.values()].filter(c => c.ownerId === E.player.id);
+          const els = [...document.querySelectorAll('.cb-player__counters .cb-count')];
+          return {{
+            defined: mine.map(c => c.id),
+            shown: els.map(e => e.textContent),
+            visible: els.filter(e => e.getBoundingClientRect().width > 0).length,
+          }};
+        }}""")
+        if gauge and gauge["defined"]:
+            check(gauge["visible"] >= 1,
+                  "player-owned counters are rendered",
+                  f"engine has {gauge['defined']} · on screen {gauge['shown']}")
+        else:
+            notes.append(("SKIP", "player-owned counters are rendered",
+                          "engine defined none this fight"))
+
+        # ── 7. no console errors across the whole run ───────────────────────
+        check(not errors, "zero console errors", "; ".join(errors[:4]))
+
+        await browser.close()
+
+    for kind, label, detail in notes:
+        if kind != "PASS" or a.verbose:
+            print(f"{kind}  {label}" + (f"  — {detail}" if detail else ""))
+    print("\nRESULT: %d passed, %d failed" % (passed, failed))
+    return 0 if failed == 0 else 1
+
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--wait", type=float, default=25)
+    ap.add_argument("--w", type=int, default=1600)
+    ap.add_argument("--h", type=int, default=900)
+    ap.add_argument("--verbose", action="store_true")
+    sys.exit(asyncio.run(main(ap.parse_args())))

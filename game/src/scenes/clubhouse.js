@@ -18,9 +18,9 @@ import { Save } from '../core/save.js';
 import { COMPANIONS, KIDS, TERMS, REGION_ORDER } from '../data/schema.js';
 import {
   ensureCss, fontsReady, companionPortrait, kidPortrait, petGlyph, blueprintSrc,
-  el, svg, rovingFocus, setReduceMotion, REGION_NAMES,
+  el, svg, rovingFocus, setReduceMotion, REGION_NAMES, freedCompanions,
 } from '../ui/portrait.js';
-import { KID_CODEX, STARTER_COMPANIONS } from './select.js';
+import { KID_CODEX } from './select.js';
 import { pauseStageFor } from './_stage.js';
 
 const CSS_KIT  = new URL('../ui/portrait.css', import.meta.url).href;
@@ -89,7 +89,7 @@ export class ClubhouseScene extends Scene {
     this._unpauseStage = pauseStageFor(ctx);
 
     const data = Save?.data ?? {};
-    this.rescued = new Set([...STARTER_COMPANIONS, ...(data.companionsRescued ?? [])]);
+    this.rescued = freedCompanions();   // the shared count — see ui/portrait.js
     this.petsRescued = new Set(data.petsRescued ?? []);
     this.revealed = new Set(data.blueprint?.revealed ?? ['foyer']);
     this.haunt = Math.max(0, Number(data.hauntLevel ?? 0));
@@ -185,9 +185,15 @@ export class ClubhouseScene extends Scene {
     cork.innerHTML = `<svg class="cork__string" aria-hidden="true"><g></g></svg>`;
 
     // the pinned pet polaroids
+    /* Corkboard geography. The right ~24% of the board belongs to the recovered
+       blueprint and the right-hand clue notes, so the eight pet photographs live
+       in two rows across the left. Round 3 pinned the fifth one at 72% and the
+       blueprint (later in the DOM, same z-index) covered Pixel completely — a
+       missing pet you could not see on the missing-pets board. */
     const rot = [-3.4, 2.1, -1.6, 3.2, -2.4, 1.4, -3.0, 2.6];
     const pos = [
-      [4, 8], [21, 3], [38, 10], [55, 4], [72, 9], [5, 46], [23, 52], [40, 45],
+      [2, 5], [17, 2], [32, 7], [47, 3],
+      [2, 40], [17, 45], [32, 39], [47, 44],
     ];
     KIDS.forEach((k, i) => {
       const info = KID_CODEX[k.slug] ?? {};
@@ -215,7 +221,7 @@ export class ClubhouseScene extends Scene {
     cork.appendChild(bp);
 
     // clue notes
-    const cluePos = [[58, 44], [74, 50], [59, 70], [76, 74], [42, 72]];
+    const cluePos = [[63, 44], [80, 50], [63, 68], [80, 74], [43, 73]];
     BOARD_CLUES.forEach((c, i) => {
       const [title, text, known] = c;
       const note = el('div', 'note' + (known ? '' : ' is-unknown'));

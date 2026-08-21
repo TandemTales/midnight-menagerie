@@ -13,6 +13,7 @@
  */
 
 import { COMPANIONS, KIDS } from '../data/schema.js';
+import { Save } from '../core/save.js';
 
 // ── stylesheet loading ──────────────────────────────────────────────────────
 // index.html is owned by the lead and only links tokens.css + base.css, so scene
@@ -68,6 +69,31 @@ export function blueprintSrc(name = 'mansion') { return `${ASSETS}blueprint/${na
 
 export const COMPANION_BY_SLUG = Object.fromEntries(COMPANIONS.map((c) => [c.slug, c]));
 export const KID_BY_SLUG = Object.fromEntries(KIDS.map((k) => [k.slug, k]));
+
+// ── who is out of the house ─────────────────────────────────────────────────
+/** The four that already live at the clubhouse on a fresh save. */
+export const STARTER_COMPANIONS = ['marmalade', 'bones', 'pipkin', 'taffy'];
+
+/**
+ * **The** Companion count. One function, because three screens each computed
+ * their own and disagreed on the same save in the same session: the Title said
+ * "0 / 16 freed" off the raw save array while Select and the Clubhouse said
+ * "4 / 16" off starters-plus-saves. The four starters ARE out of the house —
+ * they are on the corkboard and they are pickable — so they count, and the
+ * lifetime rescues join them.
+ *
+ * @param {Iterable<string>} [alsoFreed] slugs freed this session that the save
+ *        has not been asked for yet (a just-finished run, mid-expedition).
+ * @returns {Set<string>} slugs, deduped.
+ */
+export function freedCompanions(alsoFreed) {
+  const known = new Set(COMPANIONS.map((c) => c.slug));
+  const out = new Set();
+  for (const slug of [...STARTER_COMPANIONS, ...(Save?.data?.companionsRescued ?? []), ...(alsoFreed ?? [])]) {
+    if (known.has(slug)) out.add(slug);
+  }
+  return out;
+}
 
 /** Region slug -> the name the fiction uses. */
 export const REGION_NAMES = {
@@ -575,8 +601,20 @@ export function rovingFocus(container, selector, { cols = 0, wrap = true, onActi
   return () => container.removeEventListener('keydown', onKey);
 }
 
-/** Format a seed as the game shows it: MM-XXXX-XXXX. */
+/** Format a seed as the game shows it: XXXX-XXXX. */
 export function formatSeed(seed) {
   const s = Math.abs(Number(seed) | 0).toString(36).toUpperCase().padStart(8, '0').slice(-8);
   return `${s.slice(0, 4)}-${s.slice(4)}`;
+}
+
+/**
+ * Read a seed back out of the shown form. Round-trips `formatSeed` exactly —
+ * a 31-bit seed is at most six base-36 digits, so the eight-digit window never
+ * truncates one. Returns null for anything that is not a seed.
+ */
+export function parseSeed(text) {
+  const s = String(text ?? '').replace(/[^0-9a-z]/gi, '').toUpperCase();
+  if (!s || s.length > 8) return null;
+  const n = parseInt(s, 36);
+  return Number.isFinite(n) ? (n >>> 0) % 0x7fffffff : null;
 }

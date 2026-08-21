@@ -126,13 +126,18 @@ export class ShopScene extends RoomScene {
           <div class="sh-moth__say">
             <p class="sh-moth__name">Mr. Moth</p>
             <p class="sh-moth__line">&ldquo;${esc(this._greeting)}&rdquo;</p>
+            <!-- Live, not a snapshot: this panel is the only place in the shop
+                 that says what you already have, and it used to be written once
+                 at build time — so after buying two Snacks the HUD read 2 and
+                 the counter underneath still read SNACKS 0/3. -->
             <dl class="sh-moth__you">
               <div><dt>${esc(TERMS.deck)}</dt><dd><button type="button" class="sh-deck"
                 data-tip-title="Your ${esc(TERMS.deck)}"
-                data-tip="Look through every ${esc(TERMS.card)} you own before you spend anything.">${this.run.deck.length}</button></dd></div>
-              <div><dt>${esc(word(this.run.keepsakes.length, TERMS.relic))}</dt><dd>${this.run.keepsakes.length}</dd></div>
-              <div><dt>${esc(TERMS.potion)}s</dt><dd>${this.run.snacks.length}/${this.run.snackCap}</dd></div>
-              <div><dt>${esc(word(this.run.cluesFound, 'Clue'))}</dt><dd>${this.run.cluesFound}</dd></div>
+                data-tip="Look through every ${esc(TERMS.card)} you own before you spend anything."
+                data-inv="deck"></button></dd></div>
+              <div><dt data-invlabel="keeps"></dt><dd data-inv="keeps"></dd></div>
+              <div><dt>${esc(TERMS.potion)}s</dt><dd data-inv="snacks"></dd></div>
+              <div><dt data-invlabel="clues"></dt><dd data-inv="clues"></dd></div>
             </dl>
           </div>
           <div class="sh-service" aria-label="Removal service">
@@ -219,11 +224,14 @@ export class ShopScene extends RoomScene {
           ${iconSvg('res.snack')}
         </span>
         <span class="sh-row__txt"><b>${esc(item.name)}</b><em>${esc(item.desc)}</em></span>`;
-      const full = this.run.snacks.length >= this.run.snackCap;
-      row.appendChild(this._priceTag(item.price, key, `Buy ${item.name}`, () => {
+      // Fullness is recomputed in `_syncAffordable()`, not frozen here: buying
+      // the last free slot has to lock the rows next to it immediately.
+      const tag = this._priceTag(item.price, key, `Buy ${item.name}`, () => {
         if (!this.run.buySnack(item, item.price, key)) return false;
         return `${item.name} in the pocket.`;
-      }, full ? 'Your pockets are full.' : ''));
+      });
+      tag.dataset.kind = 'snack';
+      row.appendChild(tag);
       this.$snacks.appendChild(row);
     }
 
@@ -305,14 +313,40 @@ export class ShopScene extends RoomScene {
     b.classList.remove('is-refused'); void b.offsetWidth; b.classList.add('is-refused');
   }
 
+  /** What you are carrying, restated after every purchase. */
+  _syncInventory() {
+    const set = (k, v) => {
+      const n = this.root?.querySelector(`[data-inv="${k}"]`);
+      if (n) n.textContent = String(v);
+    };
+    const label = (k, v) => {
+      const n = this.root?.querySelector(`[data-invlabel="${k}"]`);
+      if (n) n.textContent = v;
+    };
+    const keeps = this.run.keepsakes.length;
+    const clues = Number(this.run.cluesFound) || 0;
+    set('deck', this.run.deck.length);
+    set('keeps', keeps);
+    set('snacks', `${this.run.snacks.length}/${this.run.snackCap}`);
+    set('clues', clues);
+    label('keeps', word(keeps, TERMS.relic));
+    label('clues', word(clues, 'Clue'));
+  }
+
   /** One pass over every purchasable: sold, unaffordable, or ready. */
   _syncAffordable() {
     const purse = this.run.lostThings;
+    const pocketsFull = this.run.snacks.length >= this.run.snackCap;
+    this._syncInventory();
     for (const b of this.root.querySelectorAll('.sh-buy')) {
       const price = Number(b.dataset.price);
       const key = b.dataset.key;
       const owner = b.closest('.sh-card, .sh-row, .sh-remove');
       const sold = this.sold.has(key);
+      if (b.dataset.kind === 'snack') {
+        if (pocketsFull) b.dataset.blocked = 'Your pockets are full.';
+        else delete b.dataset.blocked;
+      }
       const blocked = b.dataset.blocked || '';
       const short = purse - price;
       const state = b.querySelector('.sh-buy__state');

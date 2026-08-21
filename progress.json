@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T19:31:48",
+ "updated": "2026-08-20T20:35:03",
  "wave": 5,
  "waveLabel": "Closing the render seam",
  "headline": "A full two-act playthrough scored 7-3-2 against Slay the Spire 2. The engine is right; the screen is not always showing it.",
@@ -45,10 +45,10 @@
    "id": "scene",
    "name": "Combat presentation",
    "desc": "Battlefield staging, enemy rigs, damage numbers, hit reactions, VFX",
-   "status": "rework",
+   "status": "reviewing",
    "round": 4,
-   "verdict": "Intent tooltips, one grammar across 16 types, 7 distinct rooms plus a boss arena, ~1s to first card, full keyboard path.",
-   "gap": "Nothing listens for card:move, so every card Fetch/Dig Up/Bury moves into your hand exists in the rules and not on screen. Bones's identity silently does nothing.",
+   "verdict": "Render seam closed: card:move now animates, DOM hand matches engine hand, House Rule visible at both resolutions, boss now larger than its minion.",
+   "gap": null,
    "builder": null,
    "critic": null,
    "log": []
@@ -446,6 +446,10 @@
   {
    "t": "2026-08-20T19:31:48",
    "msg": "The p2 softlock was settled as NOT a softlock: every exit works, but Escape's refusal message is painted 160 z-layers beneath the modal that provoked it."
+  },
+  {
+   "t": "2026-08-20T20:35:03",
+   "msg": "Render seam closed. Also caught: retained cards were wiped at end of turn with nothing putting them back."
   }
  ]
 }

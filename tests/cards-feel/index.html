@@ -4,9 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Midnight Menagerie — card feel</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Grenze:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<!-- The SAME vendored faces the game loads (game/src/ui/fonts.css), not the
+     Google CDN. CONTRACTS §1 forbids a CDN dependency, and more to the point
+     this harness was silently rendering a fallback serif where the game
+     renders Cinzel — so a typography check here proved nothing about the game.
+     Caught by the lining-figures work: `lining-nums` looked like a no-op in
+     the harness and a clear fix in the real build. -->
+<link rel="stylesheet" href="/game/src/ui/fonts.css">
 <link rel="stylesheet" href="/game/src/ui/tokens.css">
 <link rel="stylesheet" href="/game/src/ui/base.css">
 <link rel="stylesheet" href="/game/src/ui/card.css">

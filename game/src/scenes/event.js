@@ -5,8 +5,8 @@
  * strange discoveries that lean into the missing-animal mystery — Scratching
  * Behind the Wall, The Collar, The Feeding Room, The Photograph.
  *
- * The screen is prose first.  A wide vignette of the room, the authored text
- * set like a page, and then the options as full-width doors, each one naming
+ * The screen is prose, and only prose.  The authored text set like a printed
+ * page, and then the options as full-width doors, each one naming
  * its risk and its reward *before* you take it.  Options the Backpack does not
  * satisfy stay visible and locked, with the exact thing you would have needed —
  * that is what makes loadout choices feel real at the headquarters.
@@ -21,76 +21,41 @@ import { cardById } from '../data/cards.js';
 import { relicById, relicSigil } from '../data/relics.js';
 import { satisfyingItem, itemById } from '../data/backpack.js';
 import { RoomScene, esc, chip } from './reward.js';
-import { el, ensureCss, rovingFocus } from '../ui/portrait.js';
+import {
+  el, ensureCss, rovingFocus, fullSrc, thumbSrc, freedCompanions,
+  PORTRAIT_W, PORTRAIT_H,
+} from '../ui/portrait.js';
 import { word } from '../util/plural.js';
 
 const CSS_EVENT = new URL('./event.css', import.meta.url).href;
 
-/* ── the vignette ──────────────────────────────────────────────────────────
-   One parametric room band — back wall, a lit opening, a floor — with a large
-   subject glyph chosen by the Curiosity's `mood`. Cheap, coherent, and every
-   Curiosity looks like its own room.                                        */
-const SUBJECT = {
-  listen: `<path class="ev-sub" d="M150 96h100v128H150Z"/>
-           <path class="ev-line" d="M150 128h100M150 160h100M150 192h100M200 96v128"/>
-           <path class="ev-mark" d="M262 118c14 10 14 22 0 32m14-48c24 18 24 42 0 60"/>
-           <path class="ev-mark" d="M126 140l-16-12m16 34h-20m20 26-16 12"/>`,
-  sad: `<ellipse class="ev-sub" cx="200" cy="196" rx="58" ry="20"/>
-        <path class="ev-line" d="M158 190c14-8 70-8 84 0"/>
-        <path class="ev-mark" d="M200 214v18m0 22a10 10 0 1 1 0-.02"/>`,
-  unsettling: `<path class="ev-sub" d="M96 200h56l-6 22H102ZM172 200h56l-6 22h-44ZM248 200h56l-6 22h-44Z
-                 M134 168h48l-5 20h-38ZM210 168h48l-5 20h-38Z"/>
-               <path class="ev-line" d="M104 208h44M180 208h44M256 208h44"/>`,
-  revelation: `<path class="ev-sub" d="M132 92h136v112H132Z"/>
-               <path class="ev-line" d="M144 176l32-40 26 26 20-18 34 32M172 122a10 10 0 1 1 0-.02"/>
-               <path class="ev-mark" d="M212 176c0-12 8-20 16-20s16 8 16 20Zm10-22-3-9m14 8 4-9"/>`,
-  investigation: `<path class="ev-sub" d="M120 96h140l20 18v112H120Z"/>
-                  <path class="ev-line" d="M140 132h100M140 156h100M140 180h64"/>
-                  <path class="ev-mark" d="M232 190a20 20 0 1 1 0-.02M248 206l18 18"/>`,
-  mischief: `<path class="ev-line" d="M92 104h216"/>
-             <path class="ev-sub" d="M118 104c0 34 12 54 12 96h-32c0-42 10-62 10-96Z
-               M170 104c0 34 12 54 12 96h-32c0-42 10-62 10-96Z
-               M222 104c0 34 12 54 12 96h-32c0-42 10-62 10-96Z
-               M274 104c0 34 12 54 12 96h-32c0-42 10-62 10-96Z"/>
-             <path class="ev-mark" d="M244 148a5 5 0 1 1 0-.02M244 170a5 5 0 1 1 0-.02"/>`,
-  warm: `<path class="ev-sub" d="M92 226h60v-30h60v-30h60v-30h60v90Z"/>
-         <path class="ev-line" d="M92 226h240M152 196h180M212 166h120M272 136h60"/>
-         <path class="ev-mark" d="M186 196c0-16 9-26 20-26s20 10 20 26Zm11-27-4-13m22 12 6-13"/>`,
-  curious: `<path class="ev-sub" d="M120 84h160v148H120Z"/>
-            <path class="ev-line" d="M120 84v148"/>
-            <path class="ev-mark" d="M186 232v-40h44v40Z"/>
-            <path class="ev-glowbox" d="M188 230v-36h40v36Z"/>`,
-  trade: `<path class="ev-sub" d="M108 176h184v14H108ZM126 190v42M274 190v42"/>
-          <path class="ev-mark" d="M232 128h30l6 46h-42ZM247 116v12M228 174h38l4 12h-46Z"/>
-          <path class="ev-line" d="M132 158c0-14 12-24 26-24s26 10 26 24Z"/>`,
-  greedy: `<path class="ev-sub" d="M104 88h192v144H104Z"/>
-           <path class="ev-line" d="M104 136h192M104 184h192M152 88v144M200 88v144M248 88v144"/>
-           <path class="ev-mark" d="M118 112h20M166 160h20M262 208h20"/>`,
-  escape: `<path class="ev-sub" d="M136 76h128v152H136Z"/>
-           <path class="ev-glowbox" d="M144 84h112v136H144Z"/>
-           <path class="ev-line" d="M200 84v136M144 152h112"/>
-           <path class="ev-mark" d="M164 236a7 7 0 1 1 0-.02M186 244a7 7 0 1 1 0-.02M208 236a7 7 0 1 1 0-.02"/>`,
-};
-const DEFAULT_SUBJECT = SUBJECT.curious;
+/* ── mood ──────────────────────────────────────────────────────────────────
+   Every Curiosity in data/events.js declares a `mood`. Round 3 turned it into a
+   parametric cyan wireframe of a room — an arch, two rectangles, a glyph —
+   pinned beside the best writing in the build, where it read as placeholder art
+   and cheapened the prose. The drawing is gone; the mood survives as the ground
+   temperature of the page, keyed in event.css off `.ev-page[data-mood]`.
 
-function vignette(mood) {
-  return `
-  <svg class="ev-art" viewBox="0 0 400 260" role="img" aria-hidden="true" data-mood="${esc(mood || 'curious')}">
-    <defs>
-      <radialGradient id="evPool" cx="50%" cy="70%">
-        <stop offset="0%" class="ev-pool-a"/><stop offset="100%" class="ev-pool-b"/>
-      </radialGradient>
-    </defs>
-    <rect class="ev-wall" x="0" y="0" width="400" height="228"/>
-    <path class="ev-paper" d="M28 0v228M84 0v228M140 0v228M196 0v228M252 0v228M308 0v228M364 0v228"/>
-    <ellipse cx="200" cy="212" rx="190" ry="62" fill="url(#evPool)"/>
-    <g transform="translate(200 132) scale(1.14) translate(-200 -132)">
-      ${SUBJECT[mood] || DEFAULT_SUBJECT}
-    </g>
-    <path class="ev-rail" d="M0 214h400"/>
-    <path class="ev-skirt" d="M0 228h400v14H0Z"/>
-    <path class="ev-floor" d="M0 244h400M0 254h400"/>
-  </svg>`;
+   Authored moods: listen · sad · unsettling · revelation · investigation ·
+   mischief · warm · curious · trade · greedy · escape                        */
+
+/**
+ * Swap a companion's `-card` thumbnail for the full 828x516 painting once it has
+ * decoded, so the Rescue plate is never a grey box and never a soft upscale.
+ * Returns a disposer — if the scene leaves mid-download nothing touches the DOM.
+ */
+function upgradeToFullArt(img, slug) {
+  if (!img) return () => {};
+  let live = true;
+  const full = new Image();
+  full.decoding = 'async';
+  full.addEventListener('load', () => {
+    if (!live) return;
+    img.src = full.src;
+    img.classList.add('is-full');
+  }, { once: true });
+  full.src = fullSrc(slug);
+  return () => { live = false; };
 }
 
 export class EventScene extends RoomScene {
@@ -135,8 +100,14 @@ export class EventScene extends RoomScene {
   _buildPage() {
     const d = this.def;
     const page = el('article', 'ev-page');
+    page.dataset.mood = d.mood || 'curious';
+    /* No illustration. The Curiosities are the best writing in the build and the
+       parametric line-art beside them — an arch and two rectangles in cyan —
+       was actively cheapening it; a wireframe of a room is worse than no room.
+       So this is a printed page instead: one measure, a drop cap, a rule, and
+       the room's own name as its slug. The mood still colours the ground, so a
+       Curiosity still arrives with a temperature. */
     page.innerHTML = `
-      <div class="ev-plate">${vignette(d.mood)}</div>
       <div class="ev-prose">
         ${d.text.map(p => `<p>${esc(p)}</p>`).join('')}
       </div>
@@ -316,23 +287,51 @@ export class EventScene extends RoomScene {
     this._leave();
   }
 
-  /* ── a Companion rescue ───────────────────────────────────────────────── */
+  /* ── a Companion rescue ───────────────────────────────────────────────────
+     The premise of the whole game, so it does not get the parametric wireframe
+     the Curiosities use.  The painted portrait of *this* animal is on screen
+     from the first frame, behind a shut door; the one button parts the door and
+     the light comes up on them.  The art was always in the assets folder — this
+     screen is the reason it exists.                                          */
   _enterRescue() {
     const slug = this.run.pendingEvent?.companion || this.run.meta.companion;
     const c = COMPANIONS.find(x => x.slug === slug);
     const already = this.run.rescued.includes(slug);
+    const name = c?.name || 'Somebody';
+
     this._shell({
       eyebrow: 'Rescue',
-      title: already ? 'Somebody Has Been Here' : `${c?.name || 'Somebody'} Is In Here`,
+      title: already ? 'Somebody Has Been Here' : `${name} Is In Here`,
       sub: c ? c.title : '',
     });
-    const page = el('article', 'ev-page');
+    // Warm key light instead of the Curiosity's cold spectral one: this is the
+    // one room in the mansion where the candle wins.
+    this.root.querySelector('.rm').classList.add('is-rescue');
+
+    const page = el('article', 'ev-page ev-page--rescue');
     page.innerHTML = `
-      <div class="ev-plate">${vignette('warm')}</div>
+      <figure class="rs-plate${already ? ' is-empty is-open' : ''}">
+        <div class="rs-room" aria-hidden="true"></div>
+        ${already ? '' : `<img class="rs-art" src="${esc(thumbSrc(slug, '-card'))}"
+              width="${PORTRAIT_W}" height="${PORTRAIT_H}" decoding="async" draggable="false"
+              alt="${esc(name)}, ${esc(c?.title || 'a Menagerie Companion')}">`}
+        <div class="rs-glow" aria-hidden="true"></div>
+        <div class="rs-dust" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="rs-doors" aria-hidden="true">
+          <i class="rs-door rs-door--l"></i><i class="rs-door rs-door--r"></i>
+          <b class="rs-seam"></b>
+        </div>
+        <div class="rs-frame" aria-hidden="true"></div>
+        <figcaption class="rs-cap">
+          <b>${esc(name)}</b>
+          <span>${esc(c?.title || '')}</span>
+          <em class="rs-cap__state" data-state>${already ? 'the room is empty' : 'behind the door'}</em>
+        </figcaption>
+      </figure>
       <div class="ev-prose">
         <p>${already
     ? 'The door is already open and the room is already empty, and there is a small tidy pile in the corner of things somebody decided not to take with them.'
-    : `The door is wedged from the outside with a chair, which tells you everything about who put it there. ${esc(c?.name || 'They')} has been in this room a long time — long enough to have arranged it, long enough to have stopped expecting the door to open.`}</p>
+    : `The door is wedged from the outside with a chair, which tells you everything about who put it there. ${esc(name)} has been in this room a long time — long enough to have arranged it, long enough to have stopped expecting the door to open.`}</p>
         <p>${already
     ? 'You leave the door open anyway.'
     : 'You move the chair. It takes both hands and it is the easiest thing you have done all night.'}</p>
@@ -341,30 +340,44 @@ export class EventScene extends RoomScene {
       <div class="ev-outcome" hidden aria-live="polite"></div>`;
     this.$body.appendChild(page);
     this.$page = page;
+    this.$plate = page.querySelector('.rs-plate');
     this.$options = page.querySelector('.ev-options');
     this.$outcome = page.querySelector('.ev-outcome');
 
-    const b = el('button', 'ev-opt');
+    // The full 828x516 painting is 550KB; the -card thumbnail is what shows
+    // first so the screen is never a grey box, and the full render swaps in
+    // underneath the moment it has decoded.
+    if (!already) this._own(upgradeToFullArt(page.querySelector('.rs-art'), slug));
+
+    const b = el('button', 'ev-opt ev-opt--door');
     b.type = 'button';
     b.dataset.opt = 'free';
     b.innerHTML = `<span class="ev-opt__label">${already ? 'Take what they left.' : 'Open the door.'}</span>
       <span class="ev-opt__meta">
         <span class="ev-tag ev-tag--gain"><i>always</i>${already ? `${TERMS.gold} and a Clue` : 'A Companion goes free'}</span>
       </span>`;
-    b.addEventListener('click', () => {
-      if (this._answered) return;
+    b.addEventListener('click', async () => {
+      if (this._answered || this._opening) return;
       if (already) {
         this.run.addLostThings(60);
         this.run.addClues(1);
         this._showOutcome({ option: 'free', title: 'A tidy pile', text: 'Buttons, a bent spoon, a photograph of a door. Somebody meant these to be found.' },
           { gained: [{ kind: 'lostThings', n: 60 }, { kind: 'clues', n: 1 }] }, true);
-      } else {
-        this.run.rescueCompanion(slug);
-        this._showOutcome({
-          option: 'free', title: `${c?.name || 'They'} come out`,
-          text: `${c?.name || 'They'} does not run. ${c?.name || 'They'} walks out slowly, looks both ways down the corridor like somebody checking a road, and then sits down next to your Companion as though they have been introduced. You will see them again at the clubhouse.`,
-        }, { gained: [{ kind: 'clues', n: 2 }] }, true);
+        this._syncHud();
+        return;
       }
+      this._opening = true;
+      b.disabled = true;
+      this.run.rescueCompanion(slug);
+      this._openDoor(name);
+      // The door opens, and *then* Marmalade walks out. Landing both in the same
+      // frame threw away the beat the writing is built on.
+      await this._wait(0.7);
+      if (this._dead) return;
+      this._showOutcome({
+        option: 'free', title: `${name}, come out`,
+        text: `${name} does not run. ${name} walks out slowly, looks both ways down the corridor like somebody checking a road, and then sits down next to your Companion as though they have been introduced. You will see them again at the clubhouse.`,
+      }, { gained: [{ kind: 'clues', n: 2 }] }, true);
       this._syncHud();
     });
     this.$options.appendChild(b);
@@ -372,6 +385,28 @@ export class EventScene extends RoomScene {
     this._buildFoot();
     this._bindKeys();
     requestAnimationFrame(() => b.focus());
+  }
+
+  /**
+   * The reveal.  Everything moved here is a transform or an opacity on a
+   * composited layer, so the door opening costs nothing per frame; the timings
+   * come from the motion tokens and therefore collapse to nothing under
+   * `reduceMotion`, which lands the screen straight on the open state.
+   */
+  _openDoor(name) {
+    const plate = this.$plate;
+    if (!plate || plate.classList.contains('is-open')) return;
+    plate.classList.add('is-open');
+    this.ctx.audio?.play?.('ui:confirm');
+    const freed = freedCompanions().size;
+    const state = plate.querySelector('[data-state]');
+    if (state) {
+      state.textContent = `free · ${freed} of ${COMPANIONS.length}`;
+      state.classList.add('is-free');
+    }
+    // Say it once, out loud, for a screen reader: the picture is the whole point
+    // and a screen reader cannot see it open.
+    plate.querySelector('.rs-cap')?.setAttribute('aria-label', `${name} is free.`);
   }
 
   _bindKeys() {
