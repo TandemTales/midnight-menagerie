@@ -55,6 +55,32 @@ Debug handle in the page: `window.MM` → `{ ctx, bus, clock, Save, goto(scene, 
    design doc is 1.6M characters. Deviating from the doc is allowed only when the doc
    is silent or when a rule actively harms play; say so explicitly in your report.
 
+## Traps this codebase has already fallen into
+
+Each of these cost a round to diagnose. They are written down so they cost nobody another one.
+
+1. **A backtick inside a template literal takes the whole app down.** Twice now, an HTML comment
+   written inside a `` const X = `…` `` block contained a backtick (e.g. referring to `` `setRule` ``)
+   and silently ended the template. Chrome reports the syntax error *hundreds of lines* from the
+   cause, and because `main.js` statically imports the scenes, `window.MM` never exists and every
+   screen is blank. If the app is dead with a weird parse error, grep your recent diff for
+   backticks inside template literals first.
+2. **`gl.finish()` is not a fence under ANGLE.** It reported 0.217 ms for a frame that timer
+   queries measured at 24.1 ms. Use `EXT_disjoint_timer_query_webgl2`, or rAF for closed loops.
+3. **`page.evaluate` awaits a returned promise.** Kicking off an animation with `--script` or a
+   `jsawait:` step means every later frame in a motion strip lands on the end state — which reads
+   as "the animation is instant" and has already fooled a reviewer. `tools/shot.py` has a
+   fire-and-forget `js:` step for this.
+4. **`Scene.enter()` is awaited before the transition veil lifts.** Anything you await there
+   happens behind a black screen. Combat awaited its whole opening and cost 1.8s of black.
+5. **A mock that implements the mechanic it is testing proves nothing.** An enemy suite whose mock
+   applied multi-hit itself hid a bug where every multi-hit attack dealt `hits²` damage — and the
+   suite was green. Test against the real implementation at least once (rule 9).
+6. **`--wait 4.5` can catch the map mid-draw.** Its entrance sweep runs ~800 ms; use `--wait 9`.
+7. **fps collapses when two Playwright runs overlap on this machine.** Re-measure in isolation
+   before believing a low number. `tools/shot.py` prints the GL renderer so you can also confirm
+   you are on the real GPU and not a software rasteriser.
+
 ## Quality bar
 
 Slay the Spire 2. Not "a good web game" — that specific bar. Concretely:

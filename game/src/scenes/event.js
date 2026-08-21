@@ -398,7 +398,10 @@ export class EventScene extends RoomScene {
     if (!plate || plate.classList.contains('is-open')) return;
     plate.classList.add('is-open');
     this.ctx.audio?.play?.('ui:confirm');
-    const freed = freedCompanions().size;
+    /* `run.rescued` has to be passed in: the meta save only learns about a
+       rescue when the expedition ends, so mid-run `freedCompanions()` alone
+       would still be counting the one that just walked out of the door. */
+    const freed = freedCompanions(this.run.rescued).size;
     const state = plate.querySelector('[data-state]');
     if (state) {
       state.textContent = `free · ${freed} of ${COMPANIONS.length}`;

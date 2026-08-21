@@ -26,6 +26,7 @@
  */
 
 import { Modal, confirmModal } from './modal.js';
+import { formatSeed } from './portrait.js';
 import { icon } from './icons.js';
 
 /**
@@ -163,7 +164,9 @@ export async function openSettings(ctx = {}) {
 
   const cur = document.createElement('div');
   cur.className = 'mm-set__row';
-  const curSeed = String(ctx.run?.seed ?? Save?.data?.nextSeed ?? '—');
+  // Same notation as Select, the HUD and Game Over — see formatSeed() in ui/portrait.js.
+  const rawSeed = ctx.run ? ctx.run.seed : (Save?.data?.nextSeed ?? null);
+  const curSeed = (rawSeed === undefined || rawSeed === null) ? '—' : formatSeed(rawSeed);
   cur.innerHTML =
     `<div class="mm-set__label"><span>Current expedition</span>` +
     `<span class="mm-set__hint">A seed reproduces a run exactly: the same rooms, rewards and shop stock.</span></div>` +

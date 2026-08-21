@@ -226,7 +226,7 @@ const commons = [
   {
     id: 'bones/digging-claws', name: 'Digging Claws', companion: SLUG, type: ATTACK, rarity: COMMON,
     cost: 1, target: ENEMY, keywords: ['bury'],
-    text: 'Deal {d} damage {n} times. Deal one more hit if you have a [Bury]ed Trick.',
+    text: 'Deal {d} damage {n} times. Deal one more hit if you have a [Buried] Trick.',
     flavor: 'The rug is not going to survive this either.',
     nums: { d: 4, n: 2, hits: 2 },
     effect: eff(c => U.hitN(c, N(c).d, N(c).n + (buriedCards(c).length ? 1 : 0))),
@@ -299,7 +299,7 @@ const commons = [
   {
     id: 'bones/dig-here', name: 'Dig Here', companion: SLUG, type: SKILL, rarity: COMMON,
     cost: 1, target: SELF, keywords: ['dig-up', 'bury'],
-    text: '[Dig Up] one [Bury]ed Trick. If you have none, gain {b} Guard instead.',
+    text: '[Dig Up] one [Buried] Trick. If you have none, gain {b} Guard instead.',
     flavor: 'He is certain. He is always certain.',
     nums: { b: 9 },
     effect: eff(async c => { const pool = buriedCards(c); if (!pool.length) { U.guard(c, N(c).b); return; } const [k] = await U.pickCards(c, { pile: 'stash', count: 1, prompt: 'Dig Up', filter: (x) => U.counter(x, 'buried') > 0 }); digUp(c, k); }),
@@ -446,7 +446,7 @@ const uncommons = [
   {
     id: 'bones/excavation-frenzy', name: 'Excavation Frenzy', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
     cost: 2, target: ENEMY, keywords: ['bury'],
-    text: 'Deal {d} damage, plus {m0} for each [Bury]ed Trick, up to {n} extra hits.',
+    text: 'Deal {d} damage, plus {m0} for each [Buried] Trick, up to {n} extra hits.',
     flavor: 'The lawn is a crime scene and he is the perpetrator.',
     nums: { d: 15, m0: 6, n: 3 },
     effect: eff(c => { U.hit(c, N(c).d); U.hitN(c, N(c).m0, Math.min(N(c).n, buriedCards(c).length)); }),
@@ -607,7 +607,7 @@ const uncommons = [
   {
     id: 'bones/skeleton-key', name: 'Skeleton Key', companion: SLUG, type: SKILL, rarity: UNCOMMON,
     cost: 1, target: NONE, keywords: ['dig-up', 'bury'],
-    text: '[Dig Up] a [Bury]ed Trick. If you have none, [Bury] another Trick from your hand with {n} counter instead.',
+    text: '[Dig Up] a [Buried] Trick. If you have none, [Bury] another Trick from your hand with {n} counter instead.',
     flavor: 'It is not a key. It is a key-shaped bone. It works anyway.',
     nums: { n: 1 },
     effect: eff(async c => {
@@ -783,7 +783,7 @@ const rares = [
   {
     id: 'bones/dig-up-a-fight', name: 'Dig Up a Fight', companion: SLUG, type: ATTACK, rarity: RARE,
     cost: 2, target: ENEMY, keywords: ['bury', 'dig-up'],
-    text: 'Deal {d} damage {n} times. Reduce one [Bury]ed Trick’s counter by 1. If that [Dig Up]s it, deal {m0} more and it costs {m1} less this turn.',
+    text: 'Deal {d} damage {n} times. Reduce one [Buried] Trick’s counter by 1. If that [Dig Up]s it, deal {m0} more and it costs {m1} less this turn.',
     flavor: 'He was digging for a bone. He found an argument.',
     nums: { d: 9, n: 2, hits: 2, m0: 14, m1: 1 },
     effect: eff(async c => {
@@ -879,7 +879,7 @@ const rares = [
   {
     id: 'bones/dig-to-the-basement', name: 'Dig to the Basement', companion: SLUG, type: SKILL, rarity: RARE,
     cost: 2, target: NONE, exhaust: true, keywords: ['dig-up', 'vanish'],
-    text: '[Dig Up] every [Bury]ed Trick. Each costs {n} less this turn. [Vanish].',
+    text: '[Dig Up] every [Buried] Trick. Each costs {n} less this turn. [Vanish].',
     flavor: 'He was aiming for the garden. He arrived in the wine cellar.',
     nums: { n: 1 },
     effect: eff(c => { for (const k of buriedCards(c)) { digUp(c, k); U.costMod(c, k, -N(c).n, 'turn'); } }),
@@ -940,7 +940,7 @@ const rares = [
   {
     id: 'bones/treasure-yard', name: 'Treasure Yard', companion: SLUG, type: POWER, rarity: RARE,
     cost: 2, target: SELF, keywords: ['bury', 'dig-up'],
-    text: 'The first {n} times each turn a [Bury]ed Trick is [Dug Up], gain {m0} Nerve.',
+    text: 'The first {n} times each turn a [Buried] Trick is [Dug Up], gain {m0} Nerve.',
     flavor: 'Every hole is a withdrawal.',
     nums: { n: 2, m0: 1 },
     effect: eff(c => power(c, 'bones/treasure-yard', 1)),
@@ -976,7 +976,7 @@ const rares = [
   {
     id: 'bones/best-dog-in-the-house', name: 'Best Dog in the House', companion: SLUG, type: POWER, rarity: RARE,
     cost: 3, target: SELF, keywords: ['fetch', 'dig-up', 'slobbered'],
-    text: 'At the start of each turn, choose one: [Fetch] a non-[Slobbered] Trick with printed cost {n} or less, or [Dig Up] one [Bury]ed Trick. If neither is possible, create a Spare Bone.',
+    text: 'At the start of each turn, choose one: [Fetch] a non-[Slobbered] Trick with printed cost {n} or less, or [Dig Up] one [Buried] Trick. If neither is possible, create a Spare Bone.',
     flavor: 'Unanimous. Every year. There are no other candidates.',
     nums: { n: 1 },
     effect: eff(c => power(c, 'bones/best-dog-in-the-house', 1, (x) => {

@@ -86,6 +86,9 @@ export const COMPANION_KEYWORDS = [
   K('fetch', 'Fetch', 'Return an eligible Trick from your discard pile to your hand. This is not drawing. A Fetched Trick becomes Slobbered.', { companion: 'bones' }),
   K('slobbered', 'Slobbered', 'A Slobbered Trick cannot be Fetched again this combat. It can still be drawn, played, discarded or Buried.', { companion: 'bones' }),
   K('bury', 'Bury', 'Place a Trick in the Buried zone with 2 counters. It loses 1 counter at the start of your turn, and is Dug Up when the last one goes. Buried Tricks cannot be drawn, played, discarded or Fetched.', { companion: 'bones' }),
+  // `[Bury]ed` used to render as "Buryed" — the renderer strips the brackets and the
+  // suffix lands on the stem. Cards say `[Buried]`, which needs its own entry.
+  K('buried', 'Buried', 'A Trick in the Buried zone. It loses 1 counter at the start of your turn and is Dug Up when the last one goes. Buried Tricks cannot be drawn, played, discarded or Fetched.', { companion: 'bones' }),
   K('dig-up', 'Dig Up', 'Return a Trick from the Buried zone to your hand. This is not drawing or Fetching, and it does not Slobber the Trick. It gains a Dug Up marker until it is next played.', { companion: 'bones' }),
   K('dug-up', 'Dug Up', 'This Trick came out of the ground and has not been played since.', { companion: 'bones' }),
 

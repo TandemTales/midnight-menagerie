@@ -54,6 +54,7 @@
  */
 
 import { icon } from './icons.js';
+import { formatSeed } from './portrait.js';
 import { openPile } from './deckview.js';
 import { openSettings } from './settings.js';
 import { plural, word } from '../util/plural.js';
@@ -447,7 +448,9 @@ export class HUD {
       ? `Every Haunt Level stacks another permanent difficulty modifier onto the whole expedition. You are running ${haunt} of them.`
       : 'The base difficulty. Win an expedition to unlock Haunt Level 1, which adds a permanent modifier.';
 
-    const seed = String(r.seed ?? '—');
+    // One notation everywhere: Select and Game Over both print formatSeed(), so the HUD
+    // must too or the same run shows three different 'seeds'.
+    const seed = (r.seed === undefined || r.seed === null) ? '—' : formatSeed(r.seed);
     this.$seed.textContent = '';
     this.$seed.append(icon('res.seed'), text(seed));
     this.$seed.dataset.tipTitle = 'Seed';
