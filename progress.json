@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-25T09:56:47",
+ "updated": "2026-08-25T14:36:40",
  "wave": 9,
  "waveLabel": "The player's half",
  "headline": "Every screen except the one you play on is finished. The Companion you chose is a generic cat in combat, and the Backpack does nothing.",
@@ -550,6 +550,10 @@
   {
    "t": "2026-08-25T09:56:47",
    "msg": "Accessibility gate finished: a big hit now lifts frame luminance +60.7% by default, +1.7% at Flashes 0%, +0.6% on Reduced motion. The spark burst had a 0.16 brightness floor that survived any gate."
+  },
+  {
+   "t": "2026-08-25T14:36:40",
+   "msg": "USER REPORT: combat lights flashing on and off, unplayable. Flicker dipped 30% across three octaves and fired 75%-deep gutters 0.35 times a second per light. Frame-to-frame swing 9.6% to 1.7%."
   }
  ]
 }

@@ -6,19 +6,26 @@
 .scene--select {
   position: absolute; inset: 0;
   overflow: hidden;
-  --head-h: clamp(80px, 10.2vh, 112px);
+  /* The painting carries the wordmark, so the header only has to hold Back and
+     the step rail: it is shorter here than on the other pre-run screens, and
+     the board is allowed to rise a little into it (its middle is empty). */
+  --head-h: clamp(54px, 6.8vh, 78px);
   --foot-h: clamp(62px, 8.2vh, 92px);
-  --grid-w: min(830px, 54vw, 71vh);
-  --gx: 0px;      /* wall offset  */
-  --gs: 1;        /* wall scale   */
-  --plate-fs: 1;
+  --cap-h: clamp(28px, 4vh, 46px);
+  /* UI/selectCompanion.png is square. It takes every pixel of height that is
+     not header, footer or caption. */
+  --board-w: min(calc(100vh - var(--foot-h) - var(--cap-h) - var(--head-h) * .34 - 20px), 57vw, 900px);
+  --grid-w: var(--board-w);
+  --gx: 0px;                            /* wall offset  */
+  --gy: calc(var(--head-h) * -.33);     /* wall rise     */
+  --gs: 1;                              /* wall scale   */
 }
 .scene--select[data-mode="hero"],
-.scene--select[data-mode="kid"] { --gx: -33.5vw; --gs: .482; --plate-fs: 1.72; }
-.scene--select[data-mode="kid"] { --gx: -46vw; --gs: .34; }
-/* Sixteen Companion portraits behind a Kid dossier that covers them: same
-   deal as .sel__kidstep below. */
-.scene--select[data-mode="kid"] .sel__gridwrap {
+.scene--select[data-mode="kid"] { --gx: -33.5vw; --gy: 0px; --gs: .5; }
+.scene--select[data-mode="kid"] { --gx: -46vw; --gs: .36; }
+/* The whole Menagerie behind a Kid dossier that covers it: same deal as
+   .sel__kidstep below. */
+.scene--select[data-mode="kid"] .sel__boardwrap {
   opacity: 0; pointer-events: none; visibility: hidden;
   transition: transform var(--t-scene) var(--ease-out),
               opacity var(--t-base) var(--ease-out),
@@ -48,10 +55,25 @@
 .sel-web--l { left: 0; top: 0; }
 .sel-web--r { right: 0; top: 0; transform: scaleX(-1); }
 .sel-web svg { width: 100%; height: 100%; }
-.sel-candle { position: absolute; bottom: calc(var(--foot-h) + 8px); width: clamp(30px, 2.6vw, 44px); pointer-events: none; opacity: .95; }
+/* The two floor candles flank the PAINTING rather than the viewport. Pinned to
+   the screen edges they read as two unrelated props in a 16:9 void; brought in
+   to the board's shoulders they light the wall the Menagerie hangs on, and they
+   answer the two candles painted into the sheet's own cartouche. */
+.sel-candle {
+  position: absolute; bottom: calc(var(--foot-h) + 4px);
+  width: clamp(34px, 3vw, 52px);
+  pointer-events: none; opacity: .95;
+  transition: transform var(--t-scene) var(--ease-out), opacity var(--t-base) var(--ease-out);
+}
 .sel-candle .orn-candle { width: 100%; height: auto; aspect-ratio: 60/190; }
-.sel-candle--l { left: 1.6%; }
-.sel-candle--r { right: 1.6%; transform: scaleX(-1); }
+.sel-candle--l { left: 1.6%; transform: translateX(var(--cand-in)); }
+.sel-candle--r { right: 1.6%; transform: translateX(calc(-1 * var(--cand-in))) scaleX(-1); }
+/* Moved with a transform, not with `left`, so walking to the dossier does not
+   reflow the scene — and once the wall has slid away they go back to the walls
+   of the room instead of standing in front of the shrunken painting. */
+.scene--select { --cand-in: max(0px, calc(50vw - var(--board-w) * .5 - clamp(46px, 5vw, 108px) - 1.6vw)); }
+.scene--select:not([data-mode="grid"]) { --cand-in: 0px; }
+.scene--select:not([data-mode="grid"]) .sel-candle { opacity: .38; }
 
 /* ── header ───────────────────────────────────────────────────────────────── */
 .sel__head {
@@ -61,8 +83,23 @@
   z-index: 4;
   background: linear-gradient(180deg, color-mix(in srgb, var(--ink-900) 90%, transparent), transparent);
 }
-.sel__logo { --logo-w: clamp(186px, 16vw, 252px); justify-self: center; align-self: start; margin-top: -2px; }
+.sel__logo {
+  --logo-w: clamp(160px, 13vw, 218px);
+  justify-self: center; align-self: center;
+  transition: opacity var(--t-base) var(--ease-out), visibility 0s linear 0s;
+}
 .sel__logo .mm-logo__plaque { font-size: calc(var(--logo-w) * .042); padding: 3px calc(var(--logo-w) * .05); bottom: calc(var(--logo-w) * -.085); }
+/* While the Menagerie is on screen the painting carries the wordmark in its own
+   cartouche. Two of them, one above the other, was the giveaway that this screen
+   was a reconstruction of the art rather than the art itself. So the wordmark is
+   handed over: it lives on the board for as long as the board is on screen, and
+   only moves up into the header for the Kid step, where the painting has slid
+   away entirely. */
+.scene--select[data-mode="grid"] .sel__logo,
+.scene--select[data-mode="hero"] .sel__logo {
+  opacity: 0; visibility: hidden;
+  transition: opacity var(--t-quick) var(--ease-out), visibility 0s linear var(--t-quick);
+}
 
 .sel-back {
   justify-self: start;
@@ -106,140 +143,192 @@
   top: var(--head-h); bottom: var(--foot-h); left: 0; right: 0;
 }
 
-/* ── the 4x4 wall ─────────────────────────────────────────────────────────── */
-.sel-prompt {
-  text-align: center;
-  margin-bottom: clamp(var(--s-3), 2vh, var(--s-5));
-  transition: opacity var(--t-base) var(--ease-out);
-}
-.sel-prompt h2 {
-  margin: 0;
-  font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(20px, 1.9vw, 34px);
-  letter-spacing: .1em; text-transform: uppercase;
-  background-image: linear-gradient(178deg, var(--arcane-100) 0%, var(--arcane-200) 34%, var(--arcane-400) 100%);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 2px 8px color-mix(in srgb, var(--ink-900) 90%, transparent));
-}
-.sel-prompt p {
-  margin: 4px auto 0; max-width: 52ch;
-  font-size: var(--fs-sm); font-style: italic;
-  color: var(--text-lo);
-}
-.scene--select:not([data-mode="grid"]) .sel-prompt { opacity: 0; }
+/* ── the Menagerie board ──────────────────────────────────────────────────────
+   The screen IS UI/selectCompanion.png. Two prepared copies of that one
+   painting do all the work (see tools/prep_board.py):
 
-.sel__gridwrap {
+     .sel__plate     `menagerie-empty.png`, the whole sheet with every frame
+                     emptied to a dark recess. Wordmark, candles, cobwebs and
+                     sixteen empty frames.
+     .tile__art      a sprite of `menagerie-board.png` cut to one measured frame
+                     rect, one per AVAILABLE Companion, laid back into its own
+                     hole in the wall.
+
+   So an un-freed Companion has no element, no pixels and no alt text: hidden
+   is hidden. And because both layers are the same painting at the same size,
+   the sprites seat into the wall with no seam — the rects even carry 4px of
+   black gutter on every side so a lifted frame never shows a cut edge.
+   ──────────────────────────────────────────────────────────────────────────── */
+.sel__boardwrap {
   position: absolute; left: 50%; top: 50%;
-  transition: transform var(--t-scene) var(--ease-out), opacity var(--t-base) var(--ease-out);
-  width: var(--grid-w);
-  transform: translate(-50%, -50%) translateX(var(--gx)) scale(var(--gs));
+  width: var(--board-w);
+  transform: translate(-50%, -50%) translate(var(--gx), var(--gy)) scale(var(--gs));
   transform-origin: 50% 50%;
   transition: transform var(--t-scene) var(--ease-out),
               opacity var(--t-base) var(--ease-out),
               visibility 0s linear 0s;
   will-change: transform;
 }
-.sel__grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: clamp(6px, .62vw, 11px);
+.sel__board {
+  position: relative;
+  isolation: isolate;          /* the candle screens onto the painting, not the room */
+  border-radius: var(--radius-sm);
+  box-shadow: 0 30px 76px -22px color-mix(in srgb, var(--ink-900) 94%, transparent);
 }
-.sel__gridcount {
-  margin-top: var(--s-3);
-  text-align: center;
-  font-size: calc(var(--fs-xs) * var(--plate-fs));
+.sel__plate {
+  display: block; width: 100%; height: auto;
+  border-radius: inherit;
+  -webkit-user-drag: none; user-select: none;
+  transition: filter var(--t-scene) var(--ease-out);
+}
+/* Once a pick is made the wall is scenery: it goes back into the dark and the
+   dossier owns the eye. The chosen frame stays lit — see .is-selected below. */
+.scene--select:not([data-mode="grid"]) .sel__plate { filter: brightness(.62) saturate(.78); }
+
+/* ── one frame ────────────────────────────────────────────────────────────── */
+.companion-tile {
+  position: absolute;
+  left: calc(var(--cx) * 100%); top: calc(var(--cy) * 100%);
+  width: calc(var(--cw) * 100%); height: calc(var(--ch) * 100%);
+  padding: 0; border: 0; background: none;
+  cursor: pointer; z-index: 1;
+  -webkit-tap-highlight-color: transparent;
+}
+.companion-tile:focus-visible { outline: none; }   /* the ring is on .tile__art::after */
+
+.tile__art {
+  position: absolute; inset: 0;
+  /* The whole board, scaled so that exactly this one cell fills the button.
+     --px/--py are worked out in ui/portrait.js:boardCellVars(). */
+  background-image: var(--board-img, url("../../assets/ui/menagerie-board.png"));
+  background-repeat: no-repeat;
+  background-size: calc(100% / var(--cw)) calc(100% / var(--ch));
+  background-position: var(--px) var(--py);
+  /* At rest the wall is unlit. The portraits are on it; the candle is not near
+     them yet. This is what makes the hover read as light rather than as a
+     border appearing. */
+  filter: brightness(.88) saturate(.92);
+  transition: transform var(--t-base) var(--ease-out),
+              filter var(--t-base) var(--ease-out),
+              box-shadow var(--t-base) var(--ease-out);
+  will-change: transform, filter;
+}
+/* The painted gold rail, one bleed-width in from the sprite's edge. */
+.tile__art::after {
+  content: ''; position: absolute;
+  inset: calc(.319% / var(--ch)) calc(.319% / var(--cw));
+  border-radius: 2px;
+  transition: box-shadow var(--t-base) var(--ease-out);
+}
+
+/* Hover and keyboard focus are ONE state, set from JS, so they cannot drift. */
+.companion-tile.is-lit { z-index: 3; }
+.companion-tile.is-lit .tile__art {
+  transform: scale(1.07) translateY(-1.6%);
+  filter: brightness(1.34) saturate(1.2) contrast(1.03);
+  box-shadow:
+    0 20px 36px -10px color-mix(in srgb, var(--ink-900) 94%, transparent),
+    0 0 44px color-mix(in srgb, var(--flame-glow) 30%, transparent);
+}
+.companion-tile.is-lit .tile__art::after {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--brass-100) 68%, transparent),
+    inset 0 0 22px color-mix(in srgb, var(--flame-glow) 26%, transparent);
+}
+/* Everything the candle is not near falls further back. */
+.sel__board[data-lit] .companion-tile:not(.is-lit) .tile__art {
+  filter: brightness(.66) saturate(.62);
+}
+.companion-tile:focus-visible .tile__art::after {
+  box-shadow:
+    inset 0 0 0 2px var(--flame-300),
+    inset 0 0 20px color-mix(in srgb, var(--flame-glow) 26%, transparent);
+}
+.companion-tile.is-selected .tile__art {
+  filter: brightness(1.22) saturate(1.16);
+}
+.companion-tile.is-selected .tile__art::after {
+  box-shadow:
+    inset 0 0 0 2px color-mix(in srgb, var(--brass-100) 78%, transparent),
+    inset 0 0 24px color-mix(in srgb, var(--flame-glow) 30%, transparent);
+}
+.scene--select:not([data-mode="grid"]) .companion-tile { pointer-events: none; }
+.scene--select:not([data-mode="grid"]) .companion-tile:not(.is-selected) .tile__art {
+  filter: brightness(.5) saturate(.6);
+  transform: none;
+  box-shadow: none;
+}
+
+/* ── the candle ───────────────────────────────────────────────────────────────
+   One warm light for the whole wall rather than a glow baked into each frame,
+   because the point is the SPILL: the frames either side of the lit one catch a
+   little of it, and the empty ones catch it too. `screen` over this painting is
+   very close to additive and is cheaper and better supported than plus-lighter.
+
+   It is moved with a transform, never with left/top: --lxe/--lye come out of
+   select.js already divided by --glow-w, so travelling from one frame to the
+   next is a composited transform and costs no layout. */
+.sel__candlelight {
+  position: absolute; left: 0; top: 0;
+  width: var(--glow-w, 74%); aspect-ratio: 1;
+  transform: translate(var(--lxe, 0%), var(--lye, 0%));
+  pointer-events: none; z-index: 4;
+  mix-blend-mode: screen;
+  opacity: 0;
+  background: radial-gradient(closest-side,
+    color-mix(in srgb, var(--flame-100) 46%, transparent) 0%,
+    color-mix(in srgb, var(--flame-200) 30%, transparent) 17%,
+    color-mix(in srgb, var(--flame-400) 15%, transparent) 34%,
+    color-mix(in srgb, var(--flame-500) 6%, transparent) 55%,
+    color-mix(in srgb, var(--flame-500) 1.5%, transparent) 72%,
+    transparent 84%);
+  transition: transform var(--t-base) var(--ease-out),
+              opacity var(--t-base) var(--ease-out);
+  will-change: transform, opacity;
+}
+.sel__board[data-lit] .sel__candlelight {
+  opacity: 1;
+  animation: sel-candleflicker 3.6s ease-in-out infinite;
+}
+@keyframes sel-candleflicker {
+  0%, 100% { opacity: 1; }
+  28%      { opacity: .9; }
+  44%      { opacity: 1; }
+  67%      { opacity: .93; }
+}
+.mm-reduce-motion .sel__candlelight { animation: none !important; }
+
+/* ── caption ──────────────────────────────────────────────────────────────── */
+.sel__boardcap {
+  height: var(--cap-h);
+  display: flex; align-items: center; justify-content: center;
+  gap: clamp(10px, 1.4vw, 22px);
+  transition: opacity var(--t-base) var(--ease-out);
+}
+.scene--select:not([data-mode="grid"]) .sel__boardcap { opacity: 0; }
+.sel__boardhint {
+  font-size: var(--fs-md); font-style: italic;
+  color: color-mix(in oklab, var(--text-mid) 72%, var(--spectre-200));
+}
+.sel__boardhint::after {
+  content: ''; display: inline-block;
+  width: 1px; height: 1em; margin-left: clamp(10px, 1.4vw, 22px);
+  vertical-align: -.16em;
+  background: color-mix(in srgb, var(--brass-400) 40%, transparent);
+}
+.sel__boardcount {
+  font-size: var(--fs-xs);
   letter-spacing: .18em; text-transform: uppercase;
   color: var(--text-lo);
 }
-.sel__gridcount b { color: var(--brass-200); font-family: var(--font-num); }
+.sel__boardcount b { color: var(--brass-200); font-family: var(--font-num); }
 /* The starters are pickable but were never in the house, so they are named
    beside the count instead of being folded into it. */
-.sel__gridcount em {
+.sel__boardcount i {
   font-style: italic; text-transform: none; letter-spacing: .02em;
   color: color-mix(in oklab, var(--text-lo) 76%, var(--brass-400));
 }
-.sel__gridcount em::before { content: " ·  "; }
-
-.companion-tile {
-  position: relative;
-  display: grid; grid-template-rows: 1fr auto;
-  padding: 0;
-  border-radius: var(--radius-md);
-  background: linear-gradient(180deg, color-mix(in oklab, var(--ink-700) 80%, var(--arcane-700)), var(--ink-900));
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--brass-400) 30%, transparent),
-    var(--shadow-2);
-  transition: transform var(--t-quick) var(--ease-out), box-shadow var(--t-base) var(--ease-out), filter var(--t-base) var(--ease-out);
-  will-change: transform;
-  isolation: isolate;
-}
-.tile__frame { position: relative; aspect-ratio: 828 / 516; overflow: hidden; border-radius: var(--radius-md) var(--radius-md) 0 0; }
-.tile__frame .pf { position: absolute; inset: 0; border-radius: inherit; }
-.tile__inner-edge {
-  position: absolute; inset: 3px; border-radius: 5px; pointer-events: none;
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--brass-300) 26%, transparent),
-    inset 0 0 22px color-mix(in srgb, var(--ink-900) 70%, transparent);
-}
-.tile__plate {
-  display: grid; gap: 1px;
-  padding: calc(6px * var(--plate-fs)) 4px calc(7px * var(--plate-fs));
-  text-align: center;
-  background:
-    linear-gradient(180deg, color-mix(in oklab, var(--ink-700) 70%, var(--brass-600)), var(--ink-900));
-  border-top: 1px solid color-mix(in srgb, var(--brass-400) 34%, transparent);
-  border-radius: 0 0 var(--radius-md) var(--radius-md);
-}
-.tile__name {
-  font-family: var(--font-display); font-weight: 600;
-  font-size: calc(clamp(11px, .92vw, 15px) * var(--plate-fs));
-  letter-spacing: .04em;
-  color: var(--brass-100);
-  text-shadow: 0 1px 0 color-mix(in srgb, var(--ink-900) 90%, transparent);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.tile__title {
-  font-size: calc(clamp(9px, .68vw, 11px) * var(--plate-fs));
-  font-style: italic;
-  color: color-mix(in oklab, var(--text-mid) 78%, var(--brass-300));
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-
-.companion-tile:hover, .companion-tile:focus-visible {
-  outline: none;
-  transform: translateY(-5px);
-  box-shadow:
-    0 0 0 1px var(--brass-300),
-    0 0 26px color-mix(in srgb, var(--spectre-300) 26%, transparent),
-    var(--shadow-3);
-  z-index: 2;
-}
-.companion-tile:focus-visible { box-shadow: 0 0 0 2px var(--flame-300), var(--shadow-3); }
-.companion-tile.is-selected {
-  transform: translateY(-4px);
-  box-shadow:
-    0 0 0 2px var(--brass-200),
-    0 0 32px color-mix(in srgb, var(--flame-glow) 42%, transparent),
-    var(--shadow-3);
-  z-index: 3;
-}
-.companion-tile.is-selected .tile__plate { background: linear-gradient(180deg, color-mix(in oklab, var(--flame-500) 46%, var(--ink-800)), var(--ink-900)); }
-.companion-tile.is-selected .tile__name { color: var(--flame-100); }
-
-.companion-tile.is-locked { filter: saturate(.5); }
-.companion-tile.is-locked .tile__name { color: var(--text-lo); font-style: italic; font-family: var(--font-body); letter-spacing: .06em; }
-.companion-tile.is-locked .tile__title { color: color-mix(in oklab, var(--text-lo) 70%, var(--arcane-300)); }
-.companion-tile.is-locked:hover { transform: none; box-shadow: 0 0 0 1px color-mix(in srgb, var(--arcane-400) 46%, transparent), var(--shadow-2); }
-.companion-tile.is-nudging { animation: sel-nudge .34s var(--ease-out) 1; }
-@keyframes sel-nudge {
-  0%,100% { transform: translateX(0); } 20% { transform: translateX(-5px); }
-  45% { transform: translateX(4px); } 70% { transform: translateX(-2px); }
-}
-
-/* wall dims a little once a pick is made so the dossier owns the eye */
-.scene--select[data-mode="hero"] .companion-tile:not(.is-selected),
-.scene--select[data-mode="kid"]  .companion-tile:not(.is-selected) { filter: saturate(.62) brightness(.72); }
-.scene--select[data-mode="kid"] .tile__plate { opacity: 0; }
+.sel__boardcount i::before { content: " ·  "; }
 
 /* ── hero dossier ─────────────────────────────────────────────────────────── */
 .sel__hero {

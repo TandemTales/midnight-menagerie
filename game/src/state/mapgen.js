@@ -204,16 +204,69 @@ export function regionMeta(regionId) {
   return REGIONS[regionId] || REGIONS['foyer'];
 }
 export function blueprintSectionUrl(regionId) {
-  const n = regionMeta(regionId).section;
-  return `assets/blueprint/section${String(n).padStart(2, '0')}.png`;
+  return `assets/blueprint/section${String(sectionNo(regionId)).padStart(2, '0')}.png`;
+}
+/** The traced vector plan for a section — see tools/blueprint_trace.py. */
+export function blueprintTraceUrl(regionId) {
+  return `assets/blueprint/section${String(sectionNo(regionId)).padStart(2, '0')}.plan.json`;
+}
+function sectionNo(regionId) { return regionMeta(regionId).section; }
+
+/**
+ * Pixel size of each of the seventeen section drawings.  Recorded here rather
+ * than read off the decoded image because the sheet has to be FRAMED before the
+ * PNG lands, and because the aspect ratios vary enormously — 713x237 for the
+ * glass complex, 165x470 for the bathhouse — and the framing decision below
+ * needs them all at once.
+ */
+export const SECTION_PX = [null,
+  { w: 273, h: 195 }, { w: 273, h: 292 }, { w: 312, h: 250 }, { w: 301, h: 287 },
+  { w: 713, h: 237 }, { w: 278, h: 237 }, { w: 291, h: 266 }, { w: 392, h: 169 },
+  { w: 410, h: 396 }, { w: 419, h: 285 }, { w: 243, h: 340 }, { w: 363, h: 255 },
+  { w: 230, h: 570 }, { w: 165, h: 470 }, { w: 220, h: 370 }, { w: 274, h: 539 },
+  { w: 243, h: 380 },
+];
+
+/**
+ * How this wing's sheet frames its own section drawing.
+ *
+ * Seven of the seventeen wings are drawn TALL — the bathhouse is 165x470, the
+ * secret passages 230x570 — and the plan window on a 16:9 sheet is 2.4:1.  Cover
+ * -fitting a 0.35 plan into a 2.4 window shows one seventeenth of the wing;
+ * contain-fitting it leaves five sixths of the paper blank.  Neither is a
+ * survey of that wing.
+ *
+ * So the sheet turns the plan, the way a real drawing does when the building
+ * does not suit the paper — and says so, with the compass rose turned to match.
+ * The bathhouse then reads 470x165, an 85% fit against the window instead of a
+ * 15% one, and at 4.7x instead of 11.4x.  `rot` is computed, not authored, so
+ * the framing follows the window if the window ever changes.
+ *
+ * The margin exists because turning the sheet is a real cost to the reader: a
+ * wing only turns when turning is clearly better, never when it is a coin toss.
+ */
+export function blueprintSection(regionId, aspect = 2.43) {
+  const n = sectionNo(regionId);
+  const s = SECTION_PX[n] || SECTION_PX[1];
+  const miss = (a) => Math.abs(Math.log(a / aspect));
+  const rot = miss(s.h / s.w) + 0.25 < miss(s.w / s.h);
+  return {
+    n, rot,
+    url: blueprintSectionUrl(regionId),
+    traceUrl: blueprintTraceUrl(regionId),
+    w: s.w, h: s.h,
+    // what the sheet actually has to fit
+    pw: rot ? s.h : s.w,
+    ph: rot ? s.w : s.h,
+  };
 }
 
 /**
  * Where each region sits on the master estate drawing (1448 x 1086).
- * Centres were recovered by matching each cut-out section against the master;
- * the map screen crops here rather than blowing the 273px sections up 7x, which
- * turns the linework to mush.  Width is authored per region so a vertical shaft
- * reads as a tight detail and a glass complex reads as a broad one.
+ * Centres were recovered by matching each cut-out section against the master.
+ * The MAP no longer reads this — every wing is drawn from its own section via
+ * `blueprintSection` — but the run-end sheet (`scenes/gameover.js`, owned by
+ * meta-run) shows the estate as a whole and still crops here.
  */
 export const MASTER = { url: 'assets/blueprint/mansion.png', w: 1448, h: 1086 };
 const PLAN_CROP = {

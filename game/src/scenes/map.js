@@ -15,7 +15,7 @@ import { clock, Clock } from '../core/clock.js';
 import { RNG, hashSeed } from '../core/rng.js';
 import { NodeType } from '../data/schema.js';
 import {
-  generateRegionMap, regionMeta, blueprintPlan,
+  generateRegionMap, regionMeta, blueprintSection,
   NODE_INFO, sceneForNode, legalNextIds, reachableFrom, hazardById,
 } from '../state/mapgen.js';
 import { createMapNode, nodeSymbol, hazardSymbol, hazardGlyphMarkup, pencilStroke, seedOf, escapeHtml } from '../ui/mapnode.js';
@@ -46,6 +46,89 @@ const ENTRY = '__in';
 /** Node icons stop shrinking with the sheet below this effective scale. */
 const MIN_ICON_SCALE = 0.86;
 
+/* ── The wing's own plan, re-inked ──────────────────────────────────────────
+   The section drawings are small (165x470 up to 713x237) and the plan window is
+   1882x776, so printing one means a 3.3x to 8.2x blow-up.  We do not blow one
+   up: `tools/blueprint_trace.py` has already reduced each section to the two
+   marks it is actually made of — WALL RUNS and PIER DOTS — and the sheet inks
+   those at whatever size it is.  Magnification then moves the architecture
+   apart without touching the pen, which is what a large-scale survey looks
+   like, and there is no resampled pixel anywhere on the drawing.
+
+   The weights below are the pen, in sheet px, and they are deliberately not
+   proportional to the blow-up.  A draughtsman does not change pens when the
+   scale changes; 8x a 2px line is a 16px pipe, and a wing drawn in pipes is not
+   a survey.  Width still carries the source's own hierarchy (a load-bearing
+   wall traced fat stays fatter than a partition), just compressed into a range
+   a drafting pen could hold. */
+const PLAN = {
+  /* Ink-to-paper ratio the pen is solved for.  The seventeen drawings are not
+     remotely alike: per unit of paper the Impossible Greenhouse carries 3.6x
+     the line length of the Grand Study, and it is shown at half the
+     magnification.  One authored stroke weight leaves the Study faint and turns
+     the Greenhouse into a solid blue field — which is how you end up with
+     sixteen wings that look like an afterthought and one that looks right.  So
+     the sheet asks for a COVERAGE and works back to the pen it needs.  Same
+     drawing weight on all seventeen; the pen changes, as it would in a real
+     drawing office. */
+  cover: 0.034,
+  pen:   { min: 1.35, max: 5.20 },     // and the pen box it may solve inside
+  /* How far a single stroke may depart from that pen for its own traced weight.
+     The source does have a hierarchy — envelope walls are drawn heavier than
+     partitions — and flattening it loses the plan's structure. */
+  vary:  0.52,
+  pierR: 0.62,        // pier radius as a fraction of the pen
+  fineR: 0.40,        // and the drawing's small change, smaller and lighter
+  fineA: 0.70,
+  ink:   0.74,        // the linework's weight against the paper
+  bleed: 0.19,        // the same drawing again, offset — ink soaking into paper
+  wash:  0.09,        // the SOURCE bitmap under it all: grain, ornament, tone
+};
+/** Traced plans, kept across scene entries — the map is re-entered constantly. */
+const PLAN_CACHE = new Map();
+function loadPlanTrace(url) {
+  let p = PLAN_CACHE.get(url);
+  if (!p) {
+    p = fetch(url).then(r => (r.ok ? r.json() : null)).catch(() => null);
+    PLAN_CACHE.set(url, p);
+  }
+  return p;
+}
+
+/**
+ * The wash layer: the section PNG with its paper dissolved away, so what is
+ * left is ink-on-nothing and laying it over OUR parchment does not print a
+ * beige rectangle across the window.  Same extraction the map used to run on
+ * the master crop — blue against warm paper — at native size, because this
+ * layer is tone and ornament, never linework.  Cached: it costs one pass over
+ * ~50k pixels and the map is re-entered every single room.
+ */
+const WASH_CACHE = new Map();
+function washOf(img, url, ink) {
+  const key = url + '|' + ink;
+  let c = WASH_CACHE.get(key);
+  if (c) return c;
+  const sw = img.naturalWidth || img.width, sh = img.naturalHeight || img.height;
+  if (!sw || !sh) return null;
+  c = document.createElement('canvas'); c.width = sw; c.height = sh;
+  const cg = c.getContext('2d', { willReadFrequently: true });
+  cg.drawImage(img, 0, 0);
+  const d = cg.getImageData(0, 0, sw, sh), p = d.data;
+  const rgb = hexToRgb(ink);
+  for (let i = 0; i < p.length; i += 4) {
+    const r = p[i], gg = p[i + 1], b = p[i + 2];
+    const blue = (b - r) / 255;
+    const dark = 1 - (r * 0.299 + gg * 0.587 + b * 0.114) / 255;
+    let v = blue * 2.6 + Math.max(0, dark - 0.42) * 1.1;
+    v = v <= 0 ? 0 : v >= 1 ? 1 : v;
+    p[i] = rgb[0]; p[i + 1] = rgb[1]; p[i + 2] = rgb[2];
+    p[i + 3] = (v * 255) | 0;
+  }
+  cg.putImageData(d, 0, 0);
+  WASH_CACHE.set(key, c);
+  return c;
+}
+
 export class MapScene extends Scene {
   constructor(ctx) {
     super(ctx);
@@ -69,9 +152,16 @@ export class MapScene extends Scene {
     await this._css();
 
     this._buildModel(params);
-    this._crop = blueprintPlan(this.model.regionId, WIN.w / WIN.h);
-    try { this._section = await ctx.assets.image(this._crop.url); }
-    catch { this._section = null; }
+    // The wing's own section drawing: the traced linework is what gets inked,
+    // the PNG is only the wash under it.  Both are optional — a missing file
+    // costs the plan, never the screen.
+    const sec = this._sec = blueprintSection(this.model.regionId, WIN.w / WIN.h);
+    const [trace, img] = await Promise.all([
+      loadPlanTrace(sec.traceUrl),
+      ctx.assets.image(sec.url).catch(() => null),
+    ]);
+    this._trace = trace;
+    this._section = img;
     this._sheetSize();
     this._buildDom();
 
@@ -253,7 +343,7 @@ export class MapScene extends Scene {
     const cv = this.el.paper;
     // 1.25 is the point past which the parchment stops looking any better and
     // starts costing whole frames: at 1.6 this canvas is 3248x1616 = 5.2M px.
-    const q = Math.min(1.25, Math.max(1, (devicePixelRatio || 1) * 1.1));
+    const q = this._paperQ = Math.min(1.25, Math.max(1, (devicePixelRatio || 1) * 1.1));
     const W = Math.round(this.SW * q), H = Math.round(this.SH * q);
     cv.width = W; cv.height = H;
     cv.style.width = this.SW + 'px'; cv.style.height = this.SH + 'px';
@@ -344,82 +434,168 @@ export class MapScene extends Scene {
     };
     edge(0, 0, 120, 0); edge(w, 0, w - 130, 0); edge(0, 0, 0, 100); edge(0, h, 0, h - 110);
 
-    // 8. the ink — lifted off the region's blueprint section
-    await this._layInk(g, w, h, ink);
+    // 8. the ink — this wing's own section drawing, re-inked
+    this._layPlan(g, ink);
 
     // 9. drawn border, title block, compass, scale bar
     this._drawFurniture(g, w, h, ink, rng);
   }
 
-  /** Extract blue linework from the section PNG and re-lay it on our parchment. */
-  async _layInk(g, w, h, ink) {
-    const img = this._section, crop = this._crop;
-    if (!img || !img.width || !crop) return;
-
-    const sw = crop.sw, sh = crop.sh;
-    // a) native-res alpha extraction, over this region's window on the master
-    const a = document.createElement('canvas'); a.width = sw; a.height = sh;
-    const ag = a.getContext('2d', { willReadFrequently: true });
-    ag.drawImage(img, crop.sx, crop.sy, sw, sh, 0, 0, sw, sh);
-    const d = ag.getImageData(0, 0, sw, sh);
-    const p = d.data;
-    const rgb = hexToRgb(ink);
-    for (let i = 0; i < p.length; i += 4) {
-      const r = p[i], gg = p[i + 1], b = p[i + 2];
-      const blue = (b - r) / 255;                       // blue ink against warm paper
-      const dark = 1 - (r * 0.299 + gg * 0.587 + b * 0.114) / 255;
-      let v = blue * 2.6 + Math.max(0, dark - 0.42) * 1.1;
-      v = v <= 0 ? 0 : v >= 1 ? 1 : v;
-      v = v * v * (3 - 2 * v);                          // smoothstep: tighten the edge
-      p[i] = rgb[0]; p[i + 1] = rgb[1]; p[i + 2] = rgb[2];
-      p[i + 3] = Math.round(v * 255);
+  /**
+   * Where the wing's plan sits inside the drawn window, and how big.
+   *
+   * Cover-fit: the plan runs to the window's edges and is cut by them.  The
+   * window is a drawn frame with registration ticks on it, so a wing running
+   * off it reads as "this sheet shows this much of the wing" — which is what a
+   * survey sheet says — rather than as a cropped picture.  Contain-fitting
+   * instead would leave a tall wing as a ribbon of architecture down the middle
+   * of an otherwise empty sheet, with two thirds of the route floating over
+   * blank paper.
+   */
+  _planFit() {
+    const s = this._sec, t = this._trace;
+    // Fit the DRAWING, not the file.  Every section PNG carries 3-20% of blank
+    // parchment round its plan, and fitting the file frames that margin instead
+    // of the wing — most visibly on the secret passages, where it left a band of
+    // bare paper along the foot of the sheet.  The tracer records the ink's
+    // bounding box for exactly this.
+    let bx = 0, by = 0, bw = s.w, bh = s.h;
+    if (t && t.box) {
+      const q = t.q || 1;
+      bx = t.box[0] / q; by = t.box[1] / q;
+      bw = Math.max(1, t.box[2] / q - bx); bh = Math.max(1, t.box[3] / q - by);
     }
-    ag.putImageData(d, 0, 0);
+    // in sheet-facing orientation
+    const pw = s.rot ? bh : bw, ph = s.rot ? bw : bh;
+    const scale = Math.max(WIN.w / pw, WIN.h / ph);
+    const dw = pw * scale, dh = ph * scale;
 
-    // b) Upscale near the final size, then re-threshold the alpha.  A smooth
-    //    6-7x upscale turns 1px lines into grey mush; pushing the alpha back
-    //    through a steep smoothstep recovers a hard edge, so what lands on the
-    //    paper is crisp ink with a slightly irregular contour — which is what
-    //    old drafting ink actually looks like.
-    const k = 2;
-    const b1 = document.createElement('canvas'); b1.width = sw * k; b1.height = sh * k;
-    const bg = b1.getContext('2d', { willReadFrequently: true });
-    bg.imageSmoothingEnabled = true; bg.imageSmoothingQuality = 'high';
-    bg.drawImage(a, 0, 0, sw * k, sh * k);
-    const d2 = bg.getImageData(0, 0, b1.width, b1.height); const p2 = d2.data;
-    const e0 = 0.16, e1 = 0.68, inv = 1 / (e1 - e0);
-    for (let i = 3; i < p2.length; i += 4) {
-      let v = (p2[i] / 255 - e0) * inv;
-      v = v <= 0 ? 0 : v >= 1 ? 1 : v * v * (3 - 2 * v);
-      p2[i] = (v * 255) | 0;
+    // Solve the pen for the coverage we want.  Cover-fitting means the window
+    // IS the visible plan, so drawn-line area / window area reduces to
+    // len * pen / (area * scale) with everything in the section's own units —
+    // no need to know which part of the wing the window happens to be showing.
+    let pen = 3.2;
+    if (t && t.len > 0 && t.area > 0) {
+      pen = clampN(PLAN.cover * t.area * scale / t.len, PLAN.pen.min, PLAN.pen.max);
     }
-    bg.putImageData(d2, 0, 0);
+    return {
+      scale, dw, dh, bx, by, bw, bh, pen,
+      dx: WIN.x + (WIN.w - dw) / 2,
+      dy: WIN.y + (WIN.h - dh) / 2,
+    };
+  }
 
-    // c) cover-fit into the plan window and clip.  The window is a drawn frame,
-    //    so a wing running off the edge reads as "this sheet shows this much"
-    //    rather than as a cropped image.  The plan is GROUND, not figure — it
-    //    sits under the pencilled route, never competing with it.
-    const scale = Math.max(WIN.w / (sw * k), WIN.h / (sh * k));
-    const dw = sw * k * scale, dh = sh * k * scale;
-    const dx = WIN.x + (WIN.w - dw) / 2;
-    const dy = WIN.y + (WIN.h - dh) / 2;
+  /**
+   * Ink this wing's section onto the parchment.
+   *
+   * Three passes, all off ONE offscreen canvas that is then composited once:
+   * every stroke overlaps its neighbours at the piers, and multiplying six
+   * hundred translucent strokes onto the paper directly would turn every
+   * junction into a black knot.  Drawn opaque, composited once, the drawing
+   * holds a single even weight the way printed ink does.
+   *
+   *   wash    the source PNG, very faint.  It is not the linework — the vectors
+   *           are — it is the drawing's tone, foxing and the fine ornament the
+   *           trace does not carry (the greenhouse's planting, mostly).
+   *   bleed   the vectors again, offset and pale: ink soaking into the paper.
+   *   line    the vectors.  Sharp at any size, because there is nothing to
+   *           resample: it is drawn at the size it is asked for.
+   */
+  _layPlan(g, ink) {
+    const t = this._trace, sec = this._sec;
+    const fit = this._plan = this._planFit();
+    if (!t && !this._section) return;
+
+    const q = this._paperQ || 1;
+    const cw = Math.max(1, Math.round(WIN.w * q)), ch = Math.max(1, Math.round(WIN.h * q));
+    const off = document.createElement('canvas');
+    off.width = cw; off.height = ch;
+    const o = off.getContext('2d');
+    o.scale(q, q);
+    o.translate(-WIN.x, -WIN.y);            // offscreen shares the sheet's coords
+
+    // The whole plan lives in one transform: sheet px -> section px, turned if
+    // this wing's sheet turns it.  Everything below is authored in section px.
+    o.save();
+    o.translate(fit.dx, fit.dy);
+    o.scale(fit.scale, fit.scale);
+    if (sec.rot) { o.translate(fit.by + fit.bh, -fit.bx); o.rotate(Math.PI / 2); }
+    else { o.translate(-fit.bx, -fit.by); }
+
+    const wash = this._section && washOf(this._section, sec.url, ink);
+    if (wash) {
+      o.save();
+      o.globalAlpha = PLAN.wash / PLAN.ink;   // relative: the composite scales it
+      o.imageSmoothingQuality = 'high';
+      o.drawImage(wash, 0, 0, sec.w, sec.h);
+      o.restore();
+    }
+
+    if (t) {
+      const inv = 1 / fit.scale;
+      const Qn = (t.q || 1);
+      o.lineCap = 'round'; o.lineJoin = 'round';
+      o.strokeStyle = ink; o.fillStyle = ink;
+
+      // Every mark is the solved pen, times how heavy the tracer found THIS
+      // mark against the drawing's own median — held inside +-52% so the
+      // hierarchy survives without any one line running away with the sheet.
+      const pen = fit.pen;
+      const wm = (t.wm || 2 * Qn) / Qn, pm = (t.pr || Qn) / Qn;
+      const rel = (v, med) => clampN(v / med, 1 - PLAN.vary, 1 + PLAN.vary);
+
+      // Strokes are bucketed by width and each bucket is ONE path with one
+      // stroke() call: six hundred stroke calls each with its own lineWidth is
+      // six hundred state changes, and this runs while the veil is still down.
+      const pens = new Map();
+      for (const s of t.s) {
+        const key = Math.round(pen * rel(s[0] / Qn, wm) * 4);      // quarter-px pens
+        let path = pens.get(key);
+        if (!path) pens.set(key, path = new Path2D());
+        path.moveTo(s[1] / Qn, s[2] / Qn);
+        for (let i = 3; i < s.length; i += 2) path.lineTo(s[i] / Qn, s[i + 1] / Qn);
+      }
+      const piers = new Path2D();
+      const pierBase = pen * PLAN.pierR;
+      for (const p of t.p) {
+        const r = (pierBase * rel(p[2] / Qn, pm)) * inv;
+        piers.moveTo(p[0] / Qn + r, p[1] / Qn);
+        piers.arc(p[0] / Qn, p[1] / Qn, r, 0, 6.2832);
+      }
+      // The drawing's small change — door swings, dashes, hatch ticks — a
+      // couple of hundred marks the walls and piers do not account for.  Drawn
+      // lighter, because on the original they ARE lighter.
+      const fine = new Path2D();
+      const fineBase = pen * PLAN.fineR;
+      for (const p of (t.f || [])) {
+        const r = (fineBase * clampN(p[2] / Qn, 0.5, 1.8)) * inv;
+        fine.moveTo(p[0] / Qn + r, p[1] / Qn);
+        fine.arc(p[0] / Qn, p[1] / Qn, r, 0, 6.2832);
+      }
+
+      // bleed first, under everything, so the drawing sits ON the paper
+      o.save();
+      o.globalAlpha = PLAN.bleed / PLAN.ink;
+      o.translate(-1.6 * inv, 1.6 * inv);
+      for (const [key, path] of pens) { o.lineWidth = (key / 4 + 1.1) * inv; o.stroke(path); }
+      o.fill(piers);
+      o.restore();
+
+      for (const [key, path] of pens) { o.lineWidth = (key / 4) * inv; o.stroke(path); }
+      o.fill(piers);
+      o.save(); o.globalAlpha = PLAN.fineA; o.fill(fine); o.restore();
+    }
+    o.restore();
+
+    // One composite, clipped to the drawn window.  GROUND, not figure: the
+    // route is graphite laid over a printed survey and the survey has to sit
+    // back or the pencil loses on line count (see the note over the route).
     g.save();
     g.beginPath(); g.rect(WIN.x, WIN.y, WIN.w, WIN.h); g.clip();
     g.globalCompositeOperation = 'multiply';
-    g.imageSmoothingQuality = 'high';
-    // GROUND, not figure — and 0.74 was not ground.  The plan is several hundred
-    // navy lines at roughly the weight of a pencil route drawn in a near-navy
-    // graphite, so the two competed on equal terms and the route lost on count.
-    // Making the pencil heavier alone does not fix that; the architecture has to
-    // sit back.  At 0.52 the wing is still completely legible as a building —
-    // rooms, doors, stairs, the lot — and the marks and the route now read as
-    // something laid ON it rather than as more of it.
-    g.globalAlpha = 0.16;                                     // soft under-bleed
-    g.drawImage(b1, dx - 1.8, dy + 1.8, dw, dh);
-    g.globalAlpha = 0.52;                                     // the linework itself
-    g.drawImage(b1, dx, dy, dw, dh);
+    g.globalAlpha = PLAN.ink;
+    g.drawImage(off, WIN.x, WIN.y, WIN.w, WIN.h);
     g.restore();
-    this._plan = { dx, dy, dw, dh };
   }
 
   /** Border rules, corner flourishes, title block, compass rose, scale bar. */
@@ -495,6 +671,13 @@ export class MapScene extends Scene {
     cell(4, 'SURVEY REF.', 'MM-' + String(this.model.seed).toUpperCase());
 
     // ── compass rose, top right of the plan
+    //
+    // Seven of the seventeen wings are drawn on their side, because they are
+    // tall and the sheet is not (see `blueprintSection`).  A survey that turns
+    // its plan turns its NORTH with it and says so on the sheet — the rose is
+    // the reader's only handle on which way the building is facing, and a rose
+    // that keeps pointing up while the plan has been rotated is simply wrong.
+    const turned = !!this._sec?.rot;
     const cx = WIN.x + WIN.w - 84, cy = WIN.y + 88, rr = 48;
     g.save(); g.translate(cx, cy);
     g.strokeStyle = hexA(ink, 0.6); g.lineWidth = 1.4;
@@ -513,11 +696,18 @@ export class MapScene extends Scene {
       if (fill) { g.fillStyle = hexA(ink, 0.8); g.fill(); } else { g.stroke(); }
       g.restore();
     };
+    const N = turned ? Math.PI / 2 : 0;         // the plan's own north, on the sheet
     g.lineWidth = 1.2;
-    spike(0, rr - 12, 9, true); spike(Math.PI, rr - 12, 9, false);
-    spike(Math.PI / 2, rr - 20, 7, false); spike(-Math.PI / 2, rr - 20, 7, false);
+    spike(N, rr - 12, 9, true); spike(N + Math.PI, rr - 12, 9, false);
+    spike(N + Math.PI / 2, rr - 20, 7, false); spike(N - Math.PI / 2, rr - 20, 7, false);
     g.fillStyle = hexA(ink, 0.85); g.font = '600 15px Cinzel, Georgia, serif';
-    g.textAlign = 'center'; g.fillText('N', 0, -rr - 13);
+    g.textAlign = 'center';
+    g.fillText('N', Math.sin(N) * (rr + 14), -Math.cos(N) * (rr + 13));
+    if (turned) {
+      g.font = '400 10px Grenze, Georgia, serif';
+      g.fillStyle = hexA(ink, 0.6);
+      g.fillText('PLAN TURNED 90°', 0, rr + 16);
+    }
     g.restore(); g.textAlign = 'left';
 
     // ── scale bar, sitting just above the title bar

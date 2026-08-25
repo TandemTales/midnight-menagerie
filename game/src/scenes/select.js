@@ -1,8 +1,10 @@
 /**
  * Companion Select — the heart of the pre-run experience.
  *
- * Three steps in one scene, each a transform on the same living 4x4 plate wall:
- *   1. COMPANION  the 4x4 Menagerie grid from UI/selectCompanion.png, alive.
+ * Three steps in one scene, each a transform on the same living wall:
+ *   1. COMPANION  `UI/selectCompanion.png` itself — the painted Menagerie
+ *                 board, wordmark, candles, cobwebs and all. Not a grid rebuilt
+ *                 out of sliced portraits: the painting, lit.
  *                 Choosing one shrinks the wall to a rail and blows the pick up
  *                 into a hero dossier: identity, signature mechanics, starting
  *                 deck, strengths/weaknesses, archetypes.
@@ -24,6 +26,7 @@ import {
   el, svg, rovingFocus, setReduceMotion, reduceMotion, formatSeed,
   REGION_NAMES, COMPANION_BY_SLUG, heroSrc, cobweb, candle,
   freedCompanions, availableCompanions, STARTER_COMPANIONS, parseSeed, warmFaces,
+  boardSrc, boardCellVars, BOARD_CELLS,
 } from '../ui/portrait.js';
 import { pauseStageFor } from './_stage.js';
 import { fitCardToSlot } from './_cardfit.js';
@@ -503,6 +506,17 @@ const HAUNTS = [
 
 const TYPE_LABEL = { attack: 'Attack', skill: 'Skill', power: 'Power' };
 
+/**
+ * How wide the candle's pool of light is, as a fraction of the board.
+ *
+ * Owned here rather than in the stylesheet because the same number appears in
+ * two places that must agree: it sizes `.sel__candlelight`, and it is the
+ * divisor that turns a position on the board into that element's own transform
+ * percentage. Split across two files they would drift and the light would sit
+ * off the frame it is supposed to be lighting.
+ */
+const GLOW = 0.62;
+
 /** Companion species, for Kid/Companion pairing flavour. */
 const COMPANION_SPECIES = {
   marmalade: 'cat', wisp: null, crumbula: 'rodent', boggle: null, bones: 'dog',
@@ -535,8 +549,8 @@ export class SelectScene extends Scene {
   constructor(ctx) {
     super(ctx);
     this._offs = [];
-    this._portraits = [];
     this._deckCards = [];
+    this._lit = null;
     this.state = { mode: 'grid', companion: null, kid: null, seed: 0, haunt: 0 };
   }
 
@@ -578,7 +592,7 @@ export class SelectScene extends Scene {
 
     root.appendChild(this._buildHeader());
     const stage = el('div', 'sel__stage');
-    stage.appendChild(this._buildGrid());
+    stage.appendChild(this._buildBoard());
     stage.appendChild(this._buildHero());
     stage.appendChild(this._buildKidStep());
     root.appendChild(stage);
@@ -586,7 +600,11 @@ export class SelectScene extends Scene {
 
     this._wire();
 
-    await fontsReady();
+    /* The painting is the screen, so `select:ready` must not fire while it is
+       still a blank square — a reviewer screenshotting the moment the scene
+       says it is ready would catch an empty wall. Both waits are races against
+       a timeout and neither can reject. */
+    await Promise.all([fontsReady(), this._plateReady()]);
     if (params.companion && this.unlocked.has(params.companion)) this._pickCompanion(params.companion, true);
     if (params.kid && KID_CODEX[params.kid]) { this._pickKid(params.kid, true); this._setMode('kid'); }
     bus.emit('select:ready');
@@ -619,57 +637,129 @@ export class SelectScene extends Scene {
     return h;
   }
 
-  /* ── the 4x4 wall ───────────────────────────────────────────────────────── */
-  _buildGrid() {
-    const wrap = el('div', 'sel__gridwrap');
-    // the wall used to arrive with no instruction at all
-    wrap.appendChild(el('div', 'sel-prompt',
-      `<h2>Choose a Companion</h2>` +
-      `<p>Sixteen animals the house kept. The ones you have freed walk back in with you.</p>`));
-    const grid = el('div', 'sel__grid');
-    grid.setAttribute('role', 'listbox');
-    grid.setAttribute('aria-label', 'The Menagerie — sixteen Companions');
+  /* ── the Menagerie board ────────────────────────────────────────────────── */
+  /**
+   * The screen is the painting.
+   *
+   * Base layer: `menagerie-empty.png` — the whole sheet with every frame emptied
+   * to a dark recess. Over it, one sprite per AVAILABLE Companion, cut from
+   * `menagerie-board.png` at that frame's measured rect. Both images are the
+   * same painting at the same size, so the sprites seat into the wall exactly.
+   *
+   * An un-freed Companion gets no element at all — no portrait, no name, no
+   * region hint, nothing in the accessibility tree. "Hidden" here means the
+   * player cannot find out who is missing, not that they are drawn in grey.
+   * (This screen used to print "Not yet rescued — somewhere in the Ballroom" on
+   * twelve tiles, which told you both that there were twelve and where each one
+   * was.)
+   */
+  _buildBoard() {
+    const wrap = el('div', 'sel__boardwrap');
+
+    const board = el('div', 'sel__board');
+    board.style.setProperty('--board-img', `url("${boardSrc('board')}")`);
+    board.setAttribute('role', 'listbox');
+    board.setAttribute('aria-label',
+      `The Menagerie — ${this.unlocked.size} of ${COMPANIONS.length} Companions can come with you`);
+
+    /* The painting itself. `alt=""` on purpose — it makes the image
+       presentational, which is what keeps this listbox's only exposed children
+       the sixteen options. Everything it says in words is said again for
+       assistive tech: the wall by the listbox label below, and every frame that
+       holds a Companion by its own button's aria-label. */
+    const plate = document.createElement('img');
+    plate.className = 'sel__plate';
+    plate.src = boardSrc('empty');
+    plate.alt = '';
+    plate.width = 1254;
+    plate.height = 1254;
+    plate.decoding = 'async';
+    plate.fetchPriority = 'high';
+    plate.draggable = false;
+    board.appendChild(plate);
+    this._plate = plate;
+
+    /* One candle for the whole wall. It moves to whichever frame is lit and
+       spills onto its neighbours — which is why it is a single element above the
+       sprites rather than a glow baked into each one. */
+    const flame = el('div', 'sel__candlelight');
+    flame.setAttribute('aria-hidden', 'true');
+    flame.style.setProperty('--glow-w', `${(GLOW * 100).toFixed(2)}%`);
+    board.appendChild(flame);
+    this._flame = flame;
 
     for (const c of COMPANIONS) {
-      const locked = !this.unlocked.has(c.slug);
-      const tile = el('button', 'companion-tile' + (locked ? ' is-locked' : ''));
+      if (!this.unlocked.has(c.slug)) continue;
+      /* The sheet has exactly sixteen painted frames and schema.js has exactly
+         sixteen Companions. If those two ever diverge the Companion without a
+         frame would just quietly stop being pickable, so say so out loud. */
+      if (!BOARD_CELLS[c.slug]) {
+        console.warn(`select: no frame on the Menagerie board for "${c.slug}" — ` +
+          'add it to UI/selectCompanion.png and re-run tools/prep_board.py');
+        continue;
+      }
+      const tile = el('button', 'companion-tile');
       tile.type = 'button';
       tile.dataset.slug = c.slug;
+      tile.style.cssText = boardCellVars(c.slug);
       tile.setAttribute('role', 'option');
       tile.setAttribute('aria-selected', 'false');
-      tile.disabled = false;   // locked tiles stay focusable so they can explain themselves
-
-      const frame = el('div', 'tile__frame');
-      const p = companionPortrait({ slug: c.slug, variant: '@2x', locked, parallax: 1 });
-      this._portraits.push(p);
-      frame.appendChild(p.el);
-      frame.appendChild(el('div', 'tile__inner-edge'));
-      tile.appendChild(frame);
-
-      const plate = el('div', 'tile__plate');
-      if (locked) {
-        plate.innerHTML =
-          `<span class="tile__name">Not yet rescued</span>` +
-          `<span class="tile__title">Somewhere in ${REGION_NAMES[c.region] ?? c.region}</span>`;
-        tile.setAttribute('aria-label', `Locked slot. A Companion is bound somewhere in ${REGION_NAMES[c.region] ?? c.region}.`);
-      } else {
-        plate.innerHTML =
-          `<span class="tile__name">${c.name}</span>` +
-          `<span class="tile__title">${c.title}</span>`;
-        tile.setAttribute('aria-label', `${c.name}, ${c.title}. Found in ${REGION_NAMES[c.region] ?? c.region}.`);
-      }
-      tile.appendChild(plate);
-      grid.appendChild(tile);
+      tile.setAttribute('aria-label',
+        `${c.name}, ${c.title}. Found in ${REGION_NAMES[c.region] ?? c.region}.`);
+      tile.appendChild(el('span', 'tile__art'));
+      board.appendChild(tile);
     }
-    wrap.appendChild(grid);
-    this._grid = grid;
 
-    const count = el('div', 'sel__gridcount');
+    wrap.appendChild(board);
+    this._grid = board;
+
+    const cap = el('div', 'sel__boardcap');
     const withYou = this.unlocked.size - this.freed.size;
-    count.innerHTML = `<b>${this.freed.size}</b> / ${COMPANIONS.length} freed`
-      + (withYou > 0 ? `<em>${withYou} already with you</em>` : '');
-    wrap.appendChild(count);
+    cap.innerHTML =
+      `<em class="sel__boardhint">Choose the one who walks back in with you</em>` +
+      `<span class="sel__boardcount"><b>${this.freed.size}</b> / ${COMPANIONS.length} freed` +
+      (withYou > 0 ? `<i>${withYou} already with you</i>` : '') + `</span>`;
+    wrap.appendChild(cap);
     return wrap;
+  }
+
+  /** The painted board, decoded and ready to paint. Never rejects, never hangs. */
+  _plateReady(timeout = 2500) {
+    const img = this._plate;
+    if (!img) return Promise.resolve();
+    return Promise.race([
+      (img.decode?.() ?? Promise.resolve()).catch(() => {}),
+      new Promise((r) => setTimeout(r, timeout)),
+    ]);
+  }
+
+  /**
+   * Bring the candle to one frame. `slug` null puts the wall back in the dark.
+   * Hover and keyboard focus both land here, so the two states are the same
+   * state and cannot drift.
+   */
+  _light(slug) {
+    if (this._lit === slug) return false;
+    this._lit = slug;
+    const board = this._grid;
+    if (!board) return false;
+    for (const t of board.querySelectorAll('.companion-tile')) {
+      t.classList.toggle('is-lit', t.dataset.slug === slug);
+    }
+    if (slug && BOARD_CELLS[slug]) {
+      /* The candle is `GLOW` wide, anchored at the board's top-left corner, and
+         moved with a transform in units of ITS OWN width — so the offset that
+         centres it on this frame is (centre - GLOW/2) / GLOW. Composited: the
+         light slides from frame to frame without touching layout. */
+      const [x, y, w, h] = BOARD_CELLS[slug];
+      const at = (v) => `${(((v - GLOW / 2) / GLOW) * 100).toFixed(3)}%`;
+      this._flame?.style.setProperty('--lxe', at(x + w / 2));
+      this._flame?.style.setProperty('--lye', at(y + h / 2));
+      board.dataset.lit = slug;
+    } else {
+      delete board.dataset.lit;
+    }
+    return true;
   }
 
   /* ── hero dossier ───────────────────────────────────────────────────────── */
@@ -856,19 +946,46 @@ export class SelectScene extends Scene {
     root.addEventListener('pointerdown', unlockOnce, { once: true });
     this._offs.push(() => root.removeEventListener('pointerdown', unlockOnce));
 
-    // companion grid
+    /* The board. Hover and focus both LIGHT a frame; click and Enter CHOOSE it.
+       One delegated listener per event for all sixteen, and the light itself is
+       a CSS transition on two custom properties — nothing here runs per frame. */
+    const board = this._grid;
     const onGrid = (e) => {
       const t = e.target.closest('.companion-tile');
       if (!t) return;
       unlockOnce();
-      if (t.classList.contains('is-locked')) { this._nudgeLocked(t); return; }
       this._pickCompanion(t.dataset.slug);
     };
-    this._grid.addEventListener('click', onGrid);
-    this._offs.push(() => this._grid.removeEventListener('click', onGrid));
-    this._offs.push(rovingFocus(this._grid, '.companion-tile', {
-      cols: 4,
-      onActivate: (t) => t.classList.contains('is-locked') ? this._nudgeLocked(t) : this._pickCompanion(t.dataset.slug),
+    /* Moving onto the wall between the frames — or onto an empty one — takes
+       the candle away again. Leaving it burning on the last frame you touched
+       while the pointer is somewhere else reads as a stuck highlight. */
+    const onOver = (e) => {
+      const t = e.target.closest?.('.companion-tile');
+      const moved = this._light(t ? t.dataset.slug : this.state.companion);
+      if (moved && t) { try { this.ctx.audio?.play?.('ui:hover'); } catch {} }
+    };
+    const onOut = () => this._light(this.state.companion);
+    const onBlur = (e) => { if (!board.contains(e.relatedTarget)) onOut(); };
+    board.addEventListener('click', onGrid);
+    board.addEventListener('pointerover', onOver);
+    board.addEventListener('pointerleave', onOut);
+    board.addEventListener('focusin', onOver);
+    board.addEventListener('focusout', onBlur);
+    this._offs.push(() => {
+      board.removeEventListener('click', onGrid);
+      board.removeEventListener('pointerover', onOver);
+      board.removeEventListener('pointerleave', onOut);
+      board.removeEventListener('focusin', onOver);
+      board.removeEventListener('focusout', onBlur);
+    });
+    /* Linear, not `cols: 4`. Only the Companions you can actually take are on
+       the wall, so on a fresh save the four sit at (0,0), (1,0), (1,1) and
+       (1,2) — arrow keys that step by four rows would land on empty frames that
+       have no element. Left/Right and Up/Down both walk the roster in reading
+       order instead. */
+    this._offs.push(rovingFocus(board, '.companion-tile', {
+      cols: 0,
+      onActivate: (t) => this._pickCompanion(t.dataset.slug),
     }));
 
     // hero buttons
@@ -966,13 +1083,6 @@ export class SelectScene extends Scene {
     this._offs.push(() => removeEventListener('keydown', onKey));
   }
 
-  _nudgeLocked(tile) {
-    tile.classList.remove('is-nudging');
-    void tile.offsetWidth;              // one forced reflow, only on a locked click
-    tile.classList.add('is-nudging');
-    try { this.ctx.audio?.play?.('ui:denied'); } catch {}
-  }
-
   /* ── selection ──────────────────────────────────────────────────────────── */
   _pickCompanion(slug, instant = false) {
     const c = COMPANION_BY_SLUG[slug];
@@ -987,6 +1097,7 @@ export class SelectScene extends Scene {
       t.classList.toggle('is-selected', on);
       t.setAttribute('aria-selected', String(on));
     }
+    this._light(slug);   // the candle stays with the one you took
 
     const h = this._hero;
     const img = h.querySelector('.hero__img');
@@ -1121,6 +1232,7 @@ export class SelectScene extends Scene {
       t.classList.remove('is-selected');
       t.setAttribute('aria-selected', 'false');
     }
+    this._light(null);
     this._setChip('companion', null);
     this._setMode('grid');
     this._syncGo();
@@ -1260,7 +1372,7 @@ export class SelectScene extends Scene {
     requestAnimationFrame(() => {
       if (mode === 'hero') this._hero.querySelector('[data-act="tokid"]')?.focus();
       else if (mode === 'kid') (this._kidStep.querySelector('.kid-tile.is-selected') || this._kidStep.querySelector('.kid-tile'))?.focus();
-      else (this._grid.querySelector('.companion-tile.is-selected') || this._grid.querySelector('.companion-tile:not(.is-locked)'))?.focus();
+      else (this._grid.querySelector('.companion-tile.is-selected') || this._grid.querySelector('.companion-tile'))?.focus();
     });
   }
 
@@ -1295,11 +1407,10 @@ export class SelectScene extends Scene {
     this._unpauseStage = null;
     for (const off of this._offs) { try { off(); } catch {} }
     this._offs.length = 0;
-    for (const p of this._portraits) { try { p.destroy(); } catch {} }
-    this._portraits.length = 0;
     this._killDeckCards();
     try { this._pairPf?.destroy?.(); } catch {}
     this._pairPf = null;
+    this._lit = this._flame = this._plate = null;
     this._grid = this._hero = this._kidStep = this._foot = this._go = this._rail = null;
     this.root.innerHTML = '';
   }
