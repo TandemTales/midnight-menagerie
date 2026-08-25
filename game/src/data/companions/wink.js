@@ -974,7 +974,7 @@ const rares = [
     flavor: 'She has lived here longer than the house has.',
     nums: { n: 2 },
     effect: eff(async c => {
-      const ks = await U.pickCards(c, { pile: 'discard', count: N(c).n, prompt: 'Re-Set from discard', filter: (x) => ((x.def?.keywords) || []).includes('set') });
+      const ks = await U.pickCards(c, { pile: 'discard', count: N(c).n, prompt: 'Re-Set from discard', filter: (x) => ((x.def?.keywords) || []).includes('set'), optional: true });
       for (const k of ks) { if (!setRoom(c)) break; activeSets(c).push({ card: k, enemyId: null, global: true, trigger: () => false, fire: () => {}, vanish: true }); U.moveCard(c, k, 'limbo', { set: true }); }
     }),
     upgrade: { cost: 1, nums: { n: 2 } },

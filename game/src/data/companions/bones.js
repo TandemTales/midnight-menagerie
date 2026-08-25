@@ -505,7 +505,7 @@ const uncommons = [
     text: 'Choose up to {n} non-[Slobbered] Tricks in your discard pile. Put one on top of your draw pile and the other on the bottom.',
     flavor: 'He has an entire map of this house and none of it is visual.',
     nums: { n: 2 },
-    effect: eff(async c => { const ks = await U.pickCards(c, { pile: 'discard', count: N(c).n, prompt: 'Order two Tricks', filter: canFetch }); if (ks[0]) U.toDrawTop(c, ks[0]); if (ks[1]) U.toDrawBottom(c, ks[1]); }),
+    effect: eff(async c => { const ks = await U.pickCards(c, { pile: 'discard', count: N(c).n, prompt: 'Order two Tricks', filter: canFetch, optional: true }); if (ks[0]) U.toDrawTop(c, ks[0]); if (ks[1]) U.toDrawBottom(c, ks[1]); }),
     upgrade: { cost: 0, nums: { n: 2 } },
   },
   {
@@ -514,7 +514,7 @@ const uncommons = [
     text: '[Bury] up to {n} other Tricks from your hand. Draw {m0} Trick for each.',
     flavor: 'A filing system with soil in it.',
     nums: { n: 2, m0: 1 },
-    effect: eff(async c => { const ks = await U.pickCards(c, { pile: 'hand', count: N(c).n, prompt: 'Bury Tricks' }); for (const k of ks) { bury(c, k); U.draw(c, N(c).m0); } }),
+    effect: eff(async c => { const ks = await U.pickCards(c, { pile: 'hand', count: N(c).n, prompt: 'Bury Tricks', optional: true }); for (const k of ks) { bury(c, k); U.draw(c, N(c).m0); } }),
     upgrade: { nums: { n: 3, m0: 1 } },
   },
   {
@@ -523,7 +523,7 @@ const uncommons = [
     text: '[Dig Up] up to {n} Tricks, then discard {m0} Trick.',
     flavor: 'Soil everywhere. Regret nowhere.',
     nums: { n: 2, m0: 1 },
-    effect: eff(async c => { const ks = await U.pickCards(c, { pile: 'stash', count: N(c).n, prompt: 'Dig Up', filter: (x) => U.counter(x, 'buried') > 0 }); for (const k of ks) digUp(c, k); c.discard(N(c).m0, { choose: true }); }),
+    effect: eff(async c => { const ks = await U.pickCards(c, { pile: 'stash', count: N(c).n, prompt: 'Dig Up', filter: (x) => U.counter(x, 'buried') > 0, optional: true }); for (const k of ks) digUp(c, k); c.discard(N(c).m0, { choose: true }); }),
     upgrade: { nums: { n: 3, m0: 1 } },
   },
   {
@@ -541,7 +541,7 @@ const uncommons = [
     text: 'Remove [Slobbered] from up to {n} Tricks in your discard pile and shuffle them into your draw pile. [Shed] {m0} Bone.',
     flavor: 'Somewhere between a spin cycle and a small weather event.',
     nums: { n: 2, m0: 1 },
-    effect: eff(async c => { const ks = await U.pickCards(c, { pile: 'discard', count: N(c).n, prompt: 'Clean off', filter: (x) => U.flag(x, 'slobbered') }); for (const k of ks) { unslobber(c, k); U.moveCard(c, k, 'draw', { shuffle: true }); } shed(c, N(c).m0); }),
+    effect: eff(async c => { const ks = await U.pickCards(c, { pile: 'discard', count: N(c).n, prompt: 'Clean off', filter: (x) => U.flag(x, 'slobbered'), optional: true }); for (const k of ks) { unslobber(c, k); U.moveCard(c, k, 'draw', { shuffle: true }); } shed(c, N(c).m0); }),
     upgrade: { nums: { n: 3, m0: 1 } },
   },
   {
@@ -842,7 +842,7 @@ const rares = [
     text: 'Remove [Slobbered] from up to {n} Tricks in your discard pile and shuffle them into your draw pile. They cannot be [Fetch]ed until your next turn. Draw {m0} Trick. [Vanish].',
     flavor: 'The dog resets. The room does not.',
     nums: { n: 3, m0: 1 },
-    effect: eff(async c => { const ks = await U.pickCards(c, { pile: 'discard', count: N(c).n, prompt: 'Clean off', filter: (x) => U.flag(x, 'slobbered') }); for (const k of ks) { unslobber(c, k); U.moveCard(c, k, 'draw', { shuffle: true }); } U.draw(c, N(c).m0); }),
+    effect: eff(async c => { const ks = await U.pickCards(c, { pile: 'discard', count: N(c).n, prompt: 'Clean off', filter: (x) => U.flag(x, 'slobbered'), optional: true }); for (const k of ks) { unslobber(c, k); U.moveCard(c, k, 'draw', { shuffle: true }); } U.draw(c, N(c).m0); }),
     upgrade: { nums: { n: 4, m0: 2 } },
   },
   {

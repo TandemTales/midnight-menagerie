@@ -480,7 +480,7 @@ const uncommons = [
     text: '[Absorb] up to {n} Tricks from your hand, respecting [Belly] capacity. Draw {m0} Trick for each.',
     flavor: 'Filing, by mouth.',
     nums: { n: 2, m0: 1 },
-    effect: eff(async c => { const ks = await U.pickCards(c, { pile: 'hand', count: N(c).n, prompt: 'Absorb Tricks' }); for (const k of ks) if (absorb(c, k)) U.draw(c, N(c).m0); }),
+    effect: eff(async c => { const ks = await U.pickCards(c, { pile: 'hand', count: N(c).n, prompt: 'Absorb Tricks', optional: true }); for (const k of ks) if (absorb(c, k)) U.draw(c, N(c).m0); }),
     upgrade: { nums: { n: 3, m0: 1 } },
   },
   {
@@ -798,7 +798,7 @@ const rares = [
     flavor: 'The economics of the hand, redrawn by a slime.',
     nums: { n: 3 },
     effect: eff(async c => {
-      const ks = await U.pickCards(c, { pile: 'hand', count: N(c).n, prompt: 'Rearrange costs', filter: (x) => !U.flag(x, 'gummy') });
+      const ks = await U.pickCards(c, { pile: 'hand', count: N(c).n, prompt: 'Rearrange costs', filter: (x) => !U.flag(x, 'gummy'), optional: true });
       if (ks.length < 2) return;
       const costs = ks.map(U.nowCost).sort((a, b) => a - b);
       const order = ks.slice().sort((a, b) => (U.printedCost(b) - U.printedCost(a)));
@@ -812,7 +812,7 @@ const rares = [
     text: 'Increase [Belly] capacity by {n} for the rest of combat, then [Absorb] up to {m0} Tricks from your hand and draw the same number.',
     flavor: 'There was always more room. She was being polite.',
     nums: { n: 2, m0: 2 },
-    effect: eff(async c => { U.mm(c).bellyCap += N(c).n; const ks = await U.pickCards(c, { pile: 'hand', count: N(c).m0, prompt: 'Absorb Tricks' }); let got = 0; for (const k of ks) if (absorb(c, k)) got++; U.draw(c, got); }),
+    effect: eff(async c => { U.mm(c).bellyCap += N(c).n; const ks = await U.pickCards(c, { pile: 'hand', count: N(c).m0, prompt: 'Absorb Tricks', optional: true }); let got = 0; for (const k of ks) if (absorb(c, k)) got++; U.draw(c, got); }),
     upgrade: { cost: 0, nums: { n: 2, m0: 2 } },
   },
   {

@@ -1,9 +1,9 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-24T23:39:43",
+ "updated": "2026-08-24T23:53:32",
  "wave": 7,
  "waveLabel": "Closing the last five",
- "headline": "Four builders on the remaining dimension losses: juice, card feel, visual craft, and route readability.",
+ "headline": "All four builders back. Attacker animates, hover at 33ms, pets have faces, the route reads as a route.",
  "pieces": [
   {
    "id": "engine",
@@ -45,10 +45,10 @@
    "id": "scene",
    "name": "Combat presentation",
    "desc": "Battlefield staging, enemy rigs, damage numbers, hit reactions, VFX",
-   "status": "rework",
+   "status": "reviewing",
    "round": 5,
-   "verdict": "Render seam closed, player counters, House Rule docked, boss scale fixed, Guard-aware damage preview.",
-   "gap": "Nothing animates when it attacks: the enemy sprite is byte-identical across all 14 frames of its attack, and the player has no body in the scene.",
+   "verdict": "Attacker displacement 0px to 90px, per silhouette family. The player has a body. Chooser cancels. Intent prints the real Clutter count.",
+   "gap": null,
    "builder": null,
    "critic": null,
    "log": []
@@ -105,10 +105,10 @@
    "id": "frontend",
    "name": "Title / Select / Clubhouse",
    "desc": "Front end, Companion select, investigation board",
-   "status": "rework",
-   "round": 4,
-   "verdict": "Rescue is its own screen: the painted portrait behind a door that opens. Run-end raw ids resolved, counters agree, seed notation unified.",
-   "gap": "The missing pets have no faces: one hard-coded cat SVG for every animal, and eight empty polaroids. The single image the whole game is about is a placeholder.",
+   "status": "reviewing",
+   "round": 5,
+   "verdict": "Eight pets and eight kids are real generated photographs with eyeshine, flash falloff and date imprints. Fresh save reads 0/16 freed.",
+   "gap": null,
    "builder": null,
    "critic": null,
    "log": []
@@ -498,6 +498,14 @@
   {
    "t": "2026-08-24T23:39:43",
    "msg": "Silhouette coverage was worse than reported: 286 of 429 cards fell through to a 4-shape fallback pool. Now 0 unmatched."
+  },
+  {
+   "t": "2026-08-24T23:53:31",
+   "msg": "Combat juice: the pose was applied inside an SVG viewBox that fits into a 170px stage, so a full lunge was worth 12 on-screen pixels - and it was spring-chased, so it never arrived. Now explicit ramps in screen pixels."
+  },
+  {
+   "t": "2026-08-24T23:53:32",
+   "msg": "petKind in schema.js was invented during scaffolding and wrong for five of eight pets. Orbit was listed as a parrot; the design doc says he is a black cat with a white chest patch."
   }
  ]
 }

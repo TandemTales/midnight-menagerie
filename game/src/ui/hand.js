@@ -118,7 +118,7 @@ export const TUNE = {
   discard: 0.40, discardStagger: 0.035,
   exhaust: 0.38, exhaustRise: 96,
   // play
-  playTo: 0.26, playHold: 0.20, playArc: 0.44, playScale: 1.30, playY: 0.62,
+  playTo: 0.26, playHold: 0.20, playArc: 0.44, playScale: 1.30, playY: 0.84,   /* was 0.62: the played card covered 58% of the creature it was hitting */
   playOvershoot: 0.11,
   // drag
   dragFollow: 0.075, dragScale: 1.10, dragTiltMax: 14, dragTiltGain: 0.85,
