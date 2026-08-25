@@ -230,16 +230,16 @@ export const SECTION_PX = [null,
 /**
  * How this wing's sheet frames its own section drawing.
  *
- * Seven of the seventeen wings are drawn TALL — the bathhouse is 165x470, the
- * secret passages 230x570 — and the plan window on a 16:9 sheet is 2.4:1.  Cover
- * -fitting a 0.35 plan into a 2.4 window shows one seventeenth of the wing;
+ * Six of the seventeen wings are drawn TALL — the bathhouse is 165x470, the
+ * secret passages 230x570 — and the plan window on a 16:9 sheet is 2.4:1.
+ * Cover-fitting a 0.35 plan into a 2.4 window shows a seventh of the wing;
  * contain-fitting it leaves five sixths of the paper blank.  Neither is a
  * survey of that wing.
  *
  * So the sheet turns the plan, the way a real drawing does when the building
  * does not suit the paper — and says so, with the compass rose turned to match.
- * The bathhouse then reads 470x165, an 85% fit against the window instead of a
- * 15% one, and at 4.7x instead of 11.4x.  `rot` is computed, not authored, so
+ * The bathhouse then reads 470x165: 90% of the wing on the sheet instead of
+ * 15% of it, at 4.9x instead of 11.8x.  `rot` is computed, not authored, so
  * the framing follows the window if the window ever changes.
  *
  * The margin exists because turning the sheet is a real cost to the reader: a

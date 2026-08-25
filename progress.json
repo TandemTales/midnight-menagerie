@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-25T14:36:40",
+ "updated": "2026-08-25T15:26:53",
  "wave": 9,
  "waveLabel": "The player's half",
  "headline": "Every screen except the one you play on is finished. The Companion you chose is a generic cat in combat, and the Backpack does nothing.",
@@ -105,9 +105,9 @@
    "id": "frontend",
    "name": "Title / Select / Clubhouse",
    "desc": "Front end, Companion select, investigation board",
-   "status": "reviewing",
-   "round": 5,
-   "verdict": "Eight pets and eight kids are real generated photographs with eyeshine, flash falloff and date imprints. Fresh save reads 0/16 freed.",
+   "status": "done",
+   "round": 6,
+   "verdict": "Companion select is now UI/selectCompanion.png itself. Unrescued frames are empty recesses with no element and no aria-label; hover moves a candle to the frame.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -554,6 +554,10 @@
   {
    "t": "2026-08-25T14:36:40",
    "msg": "USER REPORT: combat lights flashing on and off, unplayable. Flicker dipped 30% across three octaves and fired 75%-deep gutters 0.35 times a second per light. Frame-to-frame swing 9.6% to 1.7%."
+  },
+  {
+   "t": "2026-08-25T15:26:53",
+   "msg": "Select screen rebuilt on the source painting. The documented slice grid was wrong - the frames are not on a regular pitch (row 0 is 257px, row 2 is 235px), which had been clipping Wink's nameplate."
   }
  ]
 }

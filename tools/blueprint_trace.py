@@ -14,7 +14,7 @@ WHY THIS EXISTS
 ---------------
 The map screen used to crop the master estate drawing instead of using the
 section, because the sections are small (165x470 up to 713x237) and the plan
-window is 1882x776 — a 3.4x to 8.2x blow-up, which a smooth filter turns into
+window is 1882x776 — a 3.5x to 7.8x blow-up, which a smooth filter turns into
 grey mush.  The answer is not a different source; it is to stop resampling a
 bitmap.  These drawings have exactly two marks in them — WALL RUNS and PIER
 DOTS — so they can be reduced to those marks and re-inked at whatever size the
@@ -30,13 +30,17 @@ THE PIPELINE
                   lines between piers (walls come apart into beads) or picks up
                   paper grain.  This keeps faint ink only where it continues
                   real ink.
-3. closing        r = 2.5 supersampled px.  The source is a printed drawing
-                  photographed small: its walls are BEADED, and a 1px gap that
-                  the eye integrates at 1x is an 8px hole at 8x.  Closing knits
-                  the beads back into the runs they were drawn as.
-4. piers          anything whose half-width is >= 1.20px is a pier, not a wall.
-                  Recorded as a centre and a radius so the map can ink them at
-                  a chosen size rather than whatever the pixels happened to be.
+3. piers          measured on the RAW mask: anything whose half-width is
+                  >= 1.05px is a pier, not a wall.  Recorded as a centre and a
+                  radius so the map can ink them at a chosen size rather than
+                  whatever the pixels happened to be.
+4. closing        r = 2.5 supersampled px, and ONLY for the walls.  The source
+                  is a printed drawing photographed small: its walls are BEADED,
+                  and a 1px gap the eye integrates at 1x is an 8px hole at 8x.
+                  Closing knits the beads back into the runs they were drawn as
+                  — and, if you let it, swallows the drawing's dot rhythm too
+                  (443 piers down to 113 on the Foyer), which is why step 3
+                  measures the mask before this one touches it.
 5. thinning       Zhang-Suen to the centreline, split at junctions, then chained
                   back together by direction so a wall that crosses three others
                   stays ONE polyline instead of four stubs.
@@ -45,8 +49,18 @@ THE PIPELINE
                   is the pixel grid, not the draughtsman.
 7. bridge         join stroke ends that face each other across < 2.2px.  Closing
                   gets most breaks; this gets the rest without fattening ink.
+8. fine marks     rasterise everything above and diff it against the source.
+                  Walls and piers account for ~90% of the ink; the remaining
+                  10% is the drawing's small change — door swings, dashes, hatch
+                  ticks — a couple of hundred marks a sheet, kept as dots the
+                  map inks lighter.  Without them the plan looks swept clean.
 
-Output is ~9-40 KB per section (JSON, integers quantised to 1/4 px).
+Also recorded per section: total line length and the ink's bounding box, so the
+map can solve its pen for a target ink-to-paper ratio instead of using one
+authored weight across seventeen drawings that differ by 4x in line density.
+
+Output is 17-160 KB per section (JSON, integers quantised to 1/4 px); the map
+fetches exactly one of them.
 """
 import argparse
 import json

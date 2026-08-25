@@ -48,7 +48,7 @@ const MIN_ICON_SCALE = 0.86;
 
 /* ── The wing's own plan, re-inked ──────────────────────────────────────────
    The section drawings are small (165x470 up to 713x237) and the plan window is
-   1882x776, so printing one means a 3.3x to 8.2x blow-up.  We do not blow one
+   1882x776, so printing one means a 3.5x to 7.8x blow-up.  We do not blow one
    up: `tools/blueprint_trace.py` has already reduced each section to the two
    marks it is actually made of — WALL RUNS and PIER DOTS — and the sheet inks
    those at whatever size it is.  Magnification then moves the architecture
@@ -63,9 +63,9 @@ const MIN_ICON_SCALE = 0.86;
    a drafting pen could hold. */
 const PLAN = {
   /* Ink-to-paper ratio the pen is solved for.  The seventeen drawings are not
-     remotely alike: per unit of paper the Impossible Greenhouse carries 3.6x
-     the line length of the Grand Study, and it is shown at half the
-     magnification.  One authored stroke weight leaves the Study faint and turns
+     remotely alike: per unit of paper the Impossible Greenhouse carries three
+     times the line length of the Grand Study, and it is shown at half the
+     magnification (3.5x against 6.5x).  One authored stroke weight leaves the Study faint and turns
      the Greenhouse into a solid blue field — which is how you end up with
      sixteen wings that look like an afterthought and one that looks right.  So
      the sheet asks for a COVERAGE and works back to the pen it needs.  Same
@@ -84,15 +84,33 @@ const PLAN = {
   bleed: 0.19,        // the same drawing again, offset — ink soaking into paper
   wash:  0.09,        // the SOURCE bitmap under it all: grain, ornament, tone
 };
-/** Traced plans, kept across scene entries — the map is re-entered constantly. */
+/**
+ * Small LRU, shared by the two per-section caches below.
+ *
+ * The map is re-entered on every single room, so recomputing either of these
+ * each time is wasteful — but holding all seventeen forever is worse: the
+ * parsed traces alone would be tens of megabytes of number arrays for wings the
+ * run left two hours ago.  A run walks the wings in order and only ever needs
+ * the one it is standing in, so three is generous.
+ */
+const KEEP = 3;
+function lru(map, key, make) {
+  if (map.has(key)) {
+    const v = map.get(key);
+    map.delete(key); map.set(key, v);            // touch
+    return v;
+  }
+  const v = make();
+  map.set(key, v);
+  while (map.size > KEEP) map.delete(map.keys().next().value);
+  return v;
+}
+
+/** Traced plans — see tools/blueprint_trace.py. */
 const PLAN_CACHE = new Map();
 function loadPlanTrace(url) {
-  let p = PLAN_CACHE.get(url);
-  if (!p) {
-    p = fetch(url).then(r => (r.ok ? r.json() : null)).catch(() => null);
-    PLAN_CACHE.set(url, p);
-  }
-  return p;
+  return lru(PLAN_CACHE, url,
+    () => fetch(url).then(r => (r.ok ? r.json() : null)).catch(() => null));
 }
 
 /**
@@ -105,28 +123,26 @@ function loadPlanTrace(url) {
  */
 const WASH_CACHE = new Map();
 function washOf(img, url, ink) {
-  const key = url + '|' + ink;
-  let c = WASH_CACHE.get(key);
-  if (c) return c;
   const sw = img.naturalWidth || img.width, sh = img.naturalHeight || img.height;
   if (!sw || !sh) return null;
-  c = document.createElement('canvas'); c.width = sw; c.height = sh;
-  const cg = c.getContext('2d', { willReadFrequently: true });
-  cg.drawImage(img, 0, 0);
-  const d = cg.getImageData(0, 0, sw, sh), p = d.data;
-  const rgb = hexToRgb(ink);
-  for (let i = 0; i < p.length; i += 4) {
-    const r = p[i], gg = p[i + 1], b = p[i + 2];
-    const blue = (b - r) / 255;
-    const dark = 1 - (r * 0.299 + gg * 0.587 + b * 0.114) / 255;
-    let v = blue * 2.6 + Math.max(0, dark - 0.42) * 1.1;
-    v = v <= 0 ? 0 : v >= 1 ? 1 : v;
-    p[i] = rgb[0]; p[i + 1] = rgb[1]; p[i + 2] = rgb[2];
-    p[i + 3] = (v * 255) | 0;
-  }
-  cg.putImageData(d, 0, 0);
-  WASH_CACHE.set(key, c);
-  return c;
+  return lru(WASH_CACHE, url + '|' + ink, () => {
+    const c = document.createElement('canvas'); c.width = sw; c.height = sh;
+    const cg = c.getContext('2d', { willReadFrequently: true });
+    cg.drawImage(img, 0, 0);
+    const d = cg.getImageData(0, 0, sw, sh), p = d.data;
+    const rgb = hexToRgb(ink);
+    for (let i = 0; i < p.length; i += 4) {
+      const r = p[i], gg = p[i + 1], b = p[i + 2];
+      const blue = (b - r) / 255;
+      const dark = 1 - (r * 0.299 + gg * 0.587 + b * 0.114) / 255;
+      let v = blue * 2.6 + Math.max(0, dark - 0.42) * 1.1;
+      v = v <= 0 ? 0 : v >= 1 ? 1 : v;
+      p[i] = rgb[0]; p[i + 1] = rgb[1]; p[i + 2] = rgb[2];
+      p[i + 3] = (v * 255) | 0;
+    }
+    cg.putImageData(d, 0, 0);
+    return c;
+  });
 }
 
 export class MapScene extends Scene {
@@ -525,7 +541,11 @@ export class MapScene extends Scene {
     const wash = this._section && washOf(this._section, sec.url, ink);
     if (wash) {
       o.save();
-      o.globalAlpha = PLAN.wash / PLAN.ink;   // relative: the composite scales it
+      // Relative, because the composite below scales the whole layer.  With no
+      // trace — the JSON missing, a fetch refused — the wash IS the plan and
+      // carries full weight: a soft drawing beats a blank window, and this is
+      // the only path by which the sheet can still show the right wing.
+      o.globalAlpha = t ? PLAN.wash / PLAN.ink : 1;
       o.imageSmoothingQuality = 'high';
       o.drawImage(wash, 0, 0, sec.w, sec.h);
       o.restore();
@@ -672,7 +692,7 @@ export class MapScene extends Scene {
 
     // ── compass rose, top right of the plan
     //
-    // Seven of the seventeen wings are drawn on their side, because they are
+    // Six of the seventeen wings are drawn on their side, because they are
     // tall and the sheet is not (see `blueprintSection`).  A survey that turns
     // its plan turns its NORTH with it and says so on the sheet — the rose is
     // the reader's only handle on which way the building is facing, and a rose
