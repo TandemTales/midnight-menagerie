@@ -1068,8 +1068,10 @@
    the board reads through them. A FILTER, not `opacity`: the Hand writes the
    opacity property inline during the discard arc and inline wins the cascade,
    whereas a filter composes with it. */
-.cb-handhost .mm-card { transition: filter 90ms linear; }
-.cb-handhost.is-impact .mm-card { filter: opacity(.3); }
+.cb-handhost .mm-card { transition: filter 170ms linear; }
+/* down instantly, back up gently: a transition on the way IN means the card is
+   still at full opacity on the one frame that matters, the contact frame. */
+.cb-handhost.is-impact .mm-card { filter: opacity(.22); transition: none; }
 @media (prefers-reduced-motion: reduce) {
   .cb-handhost.is-impact .mm-card { filter: none; }
 }

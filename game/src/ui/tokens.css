@@ -104,7 +104,12 @@
   /* Numerals. NOT Cinzel: it draws `1` as a Roman I and `0` narrow, so the Nerve orb,
      Courage counters, intent chips and pile counts all read as letters. Grenze's figures
      are old-style, so lining+tabular is mandatory wherever this is used. */
-  --font-num: 'Grenze', 'Palatino Linotype', Georgia, serif;
+  /* Deliberately the same stack as --font-body. It is kept as a separate token because
+     numerals are the one thing in this game that must never be swapped for a display face
+     on a whim: Cinzel, the obvious candidate, draws `1` as a Roman I and made the Nerve orb
+     and every counter read as letters. Change --font-body freely; change this only after
+     checking `0`, `1` and `7` at 12px against `o`, `I` and `/`. */
+  --font-num: var(--font-body);
   --num-feat: lining-nums tabular-nums;
 
   --type-scale: 1;

@@ -998,7 +998,7 @@ const PETS = {
   },
   pixel: {
     kid: 'priya', scene: 'vivarium', paint: paintGecko, date: '19 08 2021', shine: null,
-    frame: { z: 1.2, dx: 0.06, dy: -0.04, rot: 0.05, blur: 0 }, key: [0.3, 0.28], dark: 0.44,
+    frame: { z: 1.12, dx: -0.02, dy: -0.02, rot: 0.05, blur: 0 }, key: [0.26, 0.28], dark: 0.44,
   },
   scout: {
     kid: 'jordan', scene: 'garden', paint: paintBeagle, date: '30 04 2020', shine: '#8fd66a',
@@ -1111,129 +1111,164 @@ function paintCat(g, w, h, R) {
   eye(g, cx + 66 * s, cy - 92 * s, er, { iris: PELT.jade, pupil: 'slit', glow: '#7ad6a8', R, tilt: -0.14, lidCol: lo });
 }
 
-/* ── Pepper: green-cheek conure ──────────────────────────────────────────── */
+/* ── Pepper: green-cheek conure ───────────────────────────── */
+/* Round 1 gave him a small head on a big scalloped chest and he read as a
+   knitted jumper with a beak. A conure is mostly head: the skull is nearly as
+   wide as the body, the eye is enormous and ringed in bare white skin, and the
+   grey breast scalloping is a fine texture rather than a pattern of scales. */
 function paintConure(g, w, h, R) {
-  const cx = w * 0.5, cy = h * 0.52, s = h / 480;
+  const cx = w * 0.46, cy = h * 0.56, s = h / 480;
 
   // perch
-  g.strokeStyle = rgba(sink(PELT.wood, 0.2), 1);
-  g.lineWidth = 22 * s;
+  g.save();
+  g.strokeStyle = rgba(sink(PELT.wood, 0.25), 1);
+  g.lineWidth = 26 * s;
   g.lineCap = 'round';
-  g.beginPath(); g.moveTo(-20, h * 0.94); g.lineTo(w + 20, h * 0.86); g.stroke();
+  g.beginPath(); g.moveTo(-30, h * 0.98); g.lineTo(w + 30, h * 0.9); g.stroke();
+  g.strokeStyle = rgba(lift(PELT.wood, 0.25), 0.4);
+  g.lineWidth = 5 * s;
+  g.beginPath(); g.moveTo(-30, h * 0.955); g.lineTo(w + 30, h * 0.875); g.stroke();
+  g.restore();
 
+  // body: a teardrop leaning back, tail dropping off the bottom right
   const body = loop([
-    [cx - 96 * s, cy + 20 * s], [cx - 118 * s, cy + 150 * s], [cx - 60 * s, cy + 236 * s],
-    [cx + 46 * s, cy + 250 * s], [cx + 122 * s, cy + 160 * s], [cx + 112 * s, cy + 30 * s],
-    [cx + 40 * s, cy - 40 * s], [cx - 44 * s, cy - 34 * s],
-  ], 10);
-  plumage(g, body, { base: PELT.fern, dark: PELT.fernLo, light: PELT.fernHi, R, size: 20 * s, rows: 8 });
-  // the grey scalloped breast a green-cheek actually has
+    [cx - 104 * s, cy + 26 * s], [cx - 128 * s, cy + 138 * s], [cx - 74 * s, cy + 232 * s],
+    [cx + 42 * s, cy + 250 * s], [cx + 130 * s, cy + 168 * s], [cx + 122 * s, cy + 40 * s],
+    [cx + 46 * s, cy - 26 * s], [cx - 48 * s, cy - 20 * s],
+  ], 11);
+  plumage(g, body, { base: PELT.fern, dark: PELT.fernLo, light: PELT.fernHi, R,
+    size: 15 * s, rows: 9, round: 0.26 });
   g.save();
   trace(g, body); g.clip();
-  for (let r = 0; r < 6; r++) {
-    for (let i = 0; i < 9; i++) {
-      const bx = cx - 90 * s + i * 24 * s + (r % 2 ? 12 * s : 0);
-      const by = cy + 40 * s + r * 22 * s;
-      g.strokeStyle = rgba(mix(PELT.slate, PELT.cream, 0.55), 0.4);
-      g.lineWidth = 4 * s;
-      g.beginPath(); g.arc(bx, by, 12 * s, 0.15, Math.PI - 0.15); g.stroke();
+  // the grey scalloped breast: fine, low contrast, only on the upper chest
+  for (let r = 0; r < 5; r++) {
+    for (let i = 0; i < 13; i++) {
+      const bx = cx - 100 * s + i * 18 * s + (r % 2 ? 9 * s : 0);
+      const by = cy + 34 * s + r * 17 * s;
+      g.strokeStyle = rgba(mix(PELT.slate, PELT.cream, 0.5), 0.22);
+      g.lineWidth = 3 * s;
+      g.beginPath(); g.arc(bx, by, 9 * s, 0.2, Math.PI - 0.2); g.stroke();
     }
   }
+  // a warm rust wash low on the belly, which a green-cheek has
+  const bel = g.createRadialGradient(cx + 6 * s, cy + 210 * s, 0, cx + 6 * s, cy + 210 * s, 130 * s);
+  bel.addColorStop(0, rgba(mix(PELT.chilli, PELT.cocoa, 0.4), 0.55));
+  bel.addColorStop(1, rgba(PELT.chilli, 0));
+  g.fillStyle = bel;
+  g.fillRect(cx - 140 * s, cy + 60 * s, 280 * s, 220 * s);
   g.restore();
   fuzz(g, body, { colors: [PELT.fernHi, PELT.fern, PELT.lime], len: 9 * s, R, step: 3, arc: 0.35 });
 
-  // maroon tail sweeping out of frame
+  // maroon tail, long, running out of the bottom of the frame
   const tail = loop([
-    [cx + 84 * s, cy + 130 * s], [cx + 190 * s, cy + 190 * s], [cx + 250 * s, h + 60],
-    [cx + 150 * s, h + 60], [cx + 60 * s, cy + 214 * s],
+    [cx + 78 * s, cy + 176 * s], [cx + 176 * s, cy + 222 * s], [cx + 226 * s, h + 60],
+    [cx + 120 * s, h + 60], [cx + 44 * s, cy + 244 * s],
   ], 9);
-  plumage(g, tail, { base: mix(PELT.chilli, PELT.cocoa, 0.35), dark: sink(PELT.chilli, 0.55),
-    light: PELT.chilliHi, R, size: 26 * s, rows: 4, dir: 0.3 });
+  plumage(g, tail, { base: mix(PELT.chilli, PELT.cocoa, 0.4), dark: sink(PELT.chilli, 0.6),
+    light: PELT.chilliHi, R, size: 26 * s, rows: 4, dir: 0.28, round: 0.2 });
   g.save();
   trace(g, tail); g.clip();
-  for (let i = 0; i < 5; i++) {                     // tail-feather shafts
-    g.strokeStyle = rgba(lift(PELT.chilliHi, 0.3), 0.3);
-    g.lineWidth = 2.4 * s;
+  for (let i = 0; i < 5; i++) {
+    g.strokeStyle = rgba(lift(PELT.chilliHi, 0.3), 0.28);
+    g.lineWidth = 2.6 * s;
     g.beginPath();
-    g.moveTo(cx + 70 * s + i * 12 * s, cy + 150 * s);
-    g.lineTo(cx + 160 * s + i * 22 * s, h + 40);
+    g.moveTo(cx + 62 * s + i * 12 * s, cy + 196 * s);
+    g.lineTo(cx + 150 * s + i * 20 * s, h + 40);
     g.stroke();
   }
   g.restore();
 
-  // wing coverts
+  // folded wing with a blue flight edge
   const wing = loop([
-    [cx - 96 * s, cy + 30 * s], [cx - 130 * s, cy + 130 * s], [cx - 86 * s, cy + 220 * s],
-    [cx - 30 * s, cy + 190 * s], [cx - 34 * s, cy + 60 * s],
-  ], 9);
-  plumage(g, wing, { base: sink(PELT.fern, 0.2), dark: PELT.fernLo, light: PELT.fern, R, size: 17 * s, rows: 6 });
+    [cx - 104 * s, cy + 34 * s], [cx - 138 * s, cy + 132 * s], [cx - 92 * s, cy + 226 * s],
+    [cx - 26 * s, cy + 194 * s], [cx - 34 * s, cy + 62 * s],
+  ], 10);
+  plumage(g, wing, { base: sink(PELT.fern, 0.22), dark: PELT.fernLo, light: PELT.fern,
+    R, size: 17 * s, rows: 6, round: 0.28 });
   g.save();
   trace(g, wing); g.clip();
-  g.fillStyle = rgba(mix(PELT.teal, '#2b5fbf', 0.5), 0.4);     // the blue flight edge
-  g.fillRect(cx - 132 * s, cy + 120 * s, 40 * s, 120 * s);
+  const blue = g.createLinearGradient(cx - 140 * s, 0, cx - 86 * s, 0);
+  blue.addColorStop(0, rgba(mix(PELT.teal, '#2f5fc0', 0.55), 0.75));
+  blue.addColorStop(1, rgba(PELT.teal, 0));
+  g.fillStyle = blue;
+  g.fillRect(cx - 145 * s, cy + 90 * s, 62 * s, 150 * s);
   g.restore();
 
-  // head, with the dark cap and red cheek smudge
+  /* The head. Big — a conure skull is nearly the width of its chest — set
+     forward and overlapping the shoulders, with the dark olive cap and the
+     rust cheek patch that name the species. */
   const head = loop([
-    [cx - 86 * s, cy - 42 * s], [cx - 96 * s, cy - 120 * s], [cx - 42 * s, cy - 176 * s],
-    [cx + 44 * s, cy - 172 * s], [cx + 96 * s, cy - 108 * s], [cx + 86 * s, cy - 30 * s],
-    [cx + 20 * s, cy + 2 * s], [cx - 30 * s, cy - 2 * s],
-  ], 10);
-  plumage(g, head, { base: sink(PELT.cocoa, 0.35), dark: sink(PELT.soot, 0.1),
-    light: mix(PELT.cocoa, PELT.slate, 0.4), R, size: 9 * s, rows: 8, dir: 0.42 });
+    [cx - 118 * s, cy - 36 * s], [cx - 130 * s, cy - 132 * s], [cx - 76 * s, cy - 204 * s],
+    [cx + 28 * s, cy - 216 * s], [cx + 112 * s, cy - 156 * s], [cx + 122 * s, cy - 52 * s],
+    [cx + 56 * s, cy + 10 * s], [cx - 46 * s, cy + 8 * s],
+  ], 11);
+  plumage(g, head, { base: mix(PELT.cocoa, PELT.soot, 0.35), dark: sink(PELT.soot, 0.15),
+    light: mix(PELT.cocoa, PELT.slate, 0.35), R, size: 8 * s, rows: 9, dir: 0.42, round: 0.22 });
   g.save();
   trace(g, head); g.clip();
-  const ck = g.createRadialGradient(cx - 44 * s, cy - 66 * s, 0, cx - 44 * s, cy - 66 * s, 62 * s);
-  ck.addColorStop(0, rgba(PELT.chilliHi, 0.7));
+  const ck = g.createRadialGradient(cx - 54 * s, cy - 72 * s, 0, cx - 54 * s, cy - 72 * s, 80 * s);
+  ck.addColorStop(0, rgba(PELT.chilliHi, 0.62));
+  ck.addColorStop(0.55, rgba(PELT.chilli, 0.3));
   ck.addColorStop(1, rgba(PELT.chilli, 0));
-  g.fillStyle = ck; g.fillRect(cx - 120 * s, cy - 160 * s, 200 * s, 180 * s);
-  const nk = g.createLinearGradient(0, cy - 40 * s, 0, cy + 10 * s);
+  g.fillStyle = ck;
+  g.fillRect(cx - 140 * s, cy - 200 * s, 240 * s, 220 * s);
+  const nk = g.createLinearGradient(0, cy - 58 * s, 0, cy + 14 * s);
   nk.addColorStop(0, rgba(PELT.fern, 0));
-  nk.addColorStop(1, rgba(PELT.fernHi, 0.75));
-  g.fillStyle = nk; g.fillRect(cx - 100 * s, cy - 50 * s, 200 * s, 70 * s);
+  nk.addColorStop(1, rgba(PELT.fernHi, 0.8));
+  g.fillStyle = nk;
+  g.fillRect(cx - 130 * s, cy - 66 * s, 260 * s, 90 * s);
   g.restore();
-  fuzz(g, head, { colors: [mix(PELT.cocoa, PELT.slate, 0.5), PELT.fernHi], len: 7 * s, R, step: 3, arc: 0.4 });
+  fuzz(g, head, { colors: [mix(PELT.cocoa, PELT.slate, 0.5), PELT.fernHi, PELT.chilliHi],
+    len: 8 * s, R, step: 3, arc: 0.4 });
+  occlude(g, body, head, { dx: 0, dy: 16 * s, blur: 20 * s, a: 0.45 });
 
-  // beak: horn, curved, with a highlight down the culmen
+  // beak: horn grey, hooked, with a highlight down the culmen and a cere above
   g.save();
   const bk = loop([
-    [cx + 4 * s, cy - 96 * s], [cx + 52 * s, cy - 90 * s], [cx + 62 * s, cy - 44 * s],
-    [cx + 26 * s, cy - 2 * s], [cx - 6 * s, cy - 30 * s],
-  ], 9);
+    [cx + 26 * s, cy - 128 * s], [cx + 78 * s, cy - 112 * s], [cx + 86 * s, cy - 60 * s],
+    [cx + 42 * s, cy - 6 * s], [cx + 16 * s, cy - 52 * s],
+  ], 10);
   trace(g, bk);
-  const bg = g.createLinearGradient(cx, cy - 100 * s, cx + 40 * s, cy);
-  bg.addColorStop(0, lift(PELT.slate, 0.5));
-  bg.addColorStop(0.5, PELT.slate);
-  bg.addColorStop(1, sink(PELT.slate, 0.6));
+  const bg = g.createLinearGradient(cx + 10 * s, cy - 140 * s, cx + 70 * s, cy + 10 * s);
+  bg.addColorStop(0, mix(PELT.slate, PELT.leather, 0.35));
+  bg.addColorStop(0.45, sink(PELT.slate, 0.4));
+  bg.addColorStop(1, sink(PELT.leather, 0.2));
   g.fillStyle = bg; g.fill();
-  g.strokeStyle = rgba(sink(PELT.slate, 0.6), 0.7); g.lineWidth = 2 * s; g.stroke();
-  g.fillStyle = rgba(lift(PELT.creamHi, 0.2), 0.55);
-  g.beginPath(); g.ellipse(cx + 26 * s, cy - 78 * s, 16 * s, 7 * s, -0.5, 0, 7); g.fill();
-  g.fillStyle = 'rgba(10,8,10,0.55)';
-  g.beginPath(); g.arc(cx + 16 * s, cy - 84 * s, 4.4 * s, 0, 7); g.fill();
+  g.strokeStyle = rgba(sink(PELT.slate, 0.65), 0.6); g.lineWidth = 2.4 * s; g.stroke();
+  g.fillStyle = rgba(lift(PELT.slate, 0.55), 0.5);
+  g.beginPath(); g.ellipse(cx + 48 * s, cy - 100 * s, 15 * s, 6 * s, -0.5, 0, 7); g.fill();
   g.restore();
+  // cere: a narrow band of bare skin over the beak, not a second beak
+  g.fillStyle = rgba(mix(PELT.slate, PELT.cocoa, 0.55), 0.85);
+  g.beginPath(); g.ellipse(cx + 34 * s, cy - 130 * s, 18 * s, 9 * s, -0.2, 0, 7); g.fill();
+  g.fillStyle = 'rgba(10,8,10,0.7)';
+  g.beginPath(); g.arc(cx + 32 * s, cy - 130 * s, 4 * s, 0, 7); g.fill();
 
-  // the bare white eye-ring a conure has, then the eye inside it
-  const ex = cx - 34 * s, ey = cy - 100 * s;
-  g.fillStyle = rgba(lift(PELT.creamHi, 0.2), 0.85);
-  g.beginPath(); g.arc(ex, ey, 34 * s, 0, 7); g.fill();
-  g.strokeStyle = rgba(sink(PELT.tan, 0.35), 0.4);
+  // the bare white eye ring, then the eye inside it
+  const ex = cx - 44 * s, ey = cy - 122 * s;
+  g.strokeStyle = rgba(lift(PELT.creamHi, 0.2), 0.92);
+  g.lineWidth = 9 * s;
+  g.beginPath(); g.arc(ex, ey, 32 * s, 0, 7); g.stroke();
+  g.strokeStyle = rgba(sink(PELT.tan, 0.45), 0.4);
   g.lineWidth = 2 * s;
-  g.beginPath(); g.arc(ex, ey, 34 * s, 0, 7); g.stroke();
-  eye(g, ex, ey, 23 * s, { iris: sink(PELT.cocoa, 0.35), pupil: 'wide', glow: '#c05a4a',
+  g.beginPath(); g.arc(ex, ey, 37 * s, 0, 7); g.stroke();
+  eye(g, ex, ey, 27 * s, { iris: sink(PELT.cocoa, 0.4), pupil: 'wide', glow: '#c05a4a',
     shine: '#ffffff', R, lidCol: PELT.leather });
 
   // feet gripping the perch
   for (const o of [-1, 1]) {
-    g.strokeStyle = rgba(mix(PELT.slate, PELT.pinkLo, 0.4), 0.95);
-    g.lineWidth = 9 * s;
+    g.save();
+    g.strokeStyle = rgba(mix(PELT.slate, PELT.pinkLo, 0.42), 0.95);
+    g.lineWidth = 10 * s;
     g.lineCap = 'round';
     for (let t2 = -1; t2 <= 1; t2++) {
       g.beginPath();
-      g.moveTo(cx + o * 40 * s, cy + 224 * s);
-      g.quadraticCurveTo(cx + o * 50 * s + t2 * 16 * s, cy + 262 * s, cx + o * 44 * s + t2 * 30 * s, cy + 286 * s);
+      g.moveTo(cx + o * 42 * s, cy + 226 * s);
+      g.quadraticCurveTo(cx + o * 54 * s + t2 * 18 * s, cy + 268 * s,
+        cx + o * 48 * s + t2 * 34 * s, cy + 296 * s);
       g.stroke();
     }
+    g.restore();
   }
 }
 

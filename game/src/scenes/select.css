@@ -16,7 +16,14 @@
 .scene--select[data-mode="hero"],
 .scene--select[data-mode="kid"] { --gx: -33.5vw; --gs: .482; --plate-fs: 1.72; }
 .scene--select[data-mode="kid"] { --gx: -46vw; --gs: .34; }
-.scene--select[data-mode="kid"] .sel__gridwrap { opacity: 0; pointer-events: none; }
+/* Sixteen Companion portraits behind a Kid dossier that covers them: same
+   deal as .sel__kidstep below. */
+.scene--select[data-mode="kid"] .sel__gridwrap {
+  opacity: 0; pointer-events: none; visibility: hidden;
+  transition: transform var(--t-scene) var(--ease-out),
+              opacity var(--t-base) var(--ease-out),
+              visibility 0s linear var(--t-scene);
+}
 
 /* ── ground ───────────────────────────────────────────────────────────────── */
 .sel-bg {
@@ -127,7 +134,9 @@
   width: var(--grid-w);
   transform: translate(-50%, -50%) translateX(var(--gx)) scale(var(--gs));
   transform-origin: 50% 50%;
-  transition: transform var(--t-scene) var(--ease-out);
+  transition: transform var(--t-scene) var(--ease-out),
+              opacity var(--t-base) var(--ease-out),
+              visibility 0s linear 0s;
   will-change: transform;
 }
 .sel__grid {
@@ -248,12 +257,19 @@
     linear-gradient(180deg, color-mix(in oklab, var(--ink-700) 86%, var(--arcane-700)), color-mix(in oklab, var(--ink-900) 92%, var(--arcane-700)));
   border: 1px solid color-mix(in srgb, var(--brass-400) 30%, transparent);
   box-shadow: var(--shadow-4), inset 0 1px 0 color-mix(in srgb, var(--brass-200) 12%, transparent);
-  opacity: 0; pointer-events: none;
+  opacity: 0; pointer-events: none; visibility: hidden;
   transform: translateX(28px) scale(.985);
-  transition: opacity var(--t-base) var(--ease-out), transform var(--t-scene) var(--ease-out);
+  transition: opacity var(--t-base) var(--ease-out),
+              transform var(--t-scene) var(--ease-out),
+              visibility 0s linear var(--t-scene);
   overflow: hidden;
 }
-.scene--select[data-mode="hero"] .sel__hero { opacity: 1; pointer-events: auto; transform: none; }
+.scene--select[data-mode="hero"] .sel__hero {
+  opacity: 1; pointer-events: auto; transform: none; visibility: visible;
+  transition: opacity var(--t-base) var(--ease-out),
+              transform var(--t-scene) var(--ease-out),
+              visibility 0s linear 0s;
+}
 
 .hero__side {
   grid-column: 1; grid-row: 1;
@@ -490,17 +506,32 @@
 .btn--ghost { background: transparent; }
 
 /* ── kid step ─────────────────────────────────────────────────────────────── */
+/* THE INACTIVE STEP IS NOT JUST TRANSPARENT, IT IS NOT RENDERED.
+   `opacity: 0` still costs a full paint and composite of the subtree every
+   frame. That was survivable when the Kid step held eight flat SVG
+   silhouettes; with eight photographs and a full-height portrait behind it,
+   the Companion grid measured 32-54 fps while the panel it was covering was
+   invisible. `visibility: hidden`, delayed by the length of the fade so it
+   only lands once the panel has finished disappearing, takes the whole subtree
+   out of the frame and gives the grid its 61 back. */
 .sel__kidstep {
   position: absolute;
   left: clamp(20px, 2.4vw, 44px); right: clamp(20px, 2.4vw, 44px);
   top: clamp(6px, 1.4vh, 18px); bottom: clamp(6px, 1.4vh, 18px);
   display: grid; grid-template-rows: 1fr auto;
   gap: clamp(8px, 1.2vh, 16px);
-  opacity: 0; pointer-events: none;
+  opacity: 0; pointer-events: none; visibility: hidden;
   transform: translateY(22px);
-  transition: opacity var(--t-base) var(--ease-out), transform var(--t-scene) var(--ease-out);
+  transition: opacity var(--t-base) var(--ease-out),
+              transform var(--t-scene) var(--ease-out),
+              visibility 0s linear var(--t-scene);
 }
-.scene--select[data-mode="kid"] .sel__kidstep { opacity: 1; pointer-events: auto; transform: none; }
+.scene--select[data-mode="kid"] .sel__kidstep {
+  opacity: 1; pointer-events: auto; transform: none; visibility: visible;
+  transition: opacity var(--t-base) var(--ease-out),
+              transform var(--t-scene) var(--ease-out),
+              visibility 0s linear 0s;
+}
 
 .kid__detail {
   display: grid; grid-template-columns: minmax(200px, 20%) minmax(230px, 24%) 1fr;

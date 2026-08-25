@@ -179,13 +179,18 @@ const SUBJECT_RULES = [
      Ordering inside the block is significance order: the more specific noun
      wins ("Skeleton Key" is a key, "Skeleton Stampede" is bones).           */
   [/(key|keyhole|lock|unlock|latch)/, 'key'],
-  [/(collar|leash|heel|jingle|obey|\bsit\b|\bstay\b|good (boy|dog)|best dog|play dead|go get|leave it|come here|\bcall\b|whistle|recall)/, 'collar'],
+  /* Dog obedience is a big slice of the Bones vocabulary, so it is split three
+     ways rather than piled onto one shape: a hand of five really can hold
+     "Sit Pretty", "Go Get It!" and "Good Boy!" at once. */
+  [/(play dead|flop over|roll over|lie down)/, 'curl'],
+  [/(good (boy|dog)|best dog|well done|praise|proud)/, 'paw'],
+  [/(collar|leash|jingle|heel|obey|\bsit\b|\bstay\b|leave it|come here|\bcall\b|whistle|recall)/, 'collar'],
   [/(emergency|panic|desperate|last resort|wrong|mistake|misfire|broken|busted)/, 'crack'],
   [/\bcat\b|kitty|meow|hiss|purr|whisker|catastrophe|poltercat|curiosit/, 'cat'],
   [/(skeleton|femur|\brib\b|spine|tailbone|vertebra|headless|burie)/, 'bone'],
   [/(come back|brought it back|not dead|dead yet|undying|still works)/, 'ninelives'],
   [/(predator|hunter|\bhunt\b|patien|\bprey\b|quarry|gotcha|grab|snatch|seize)/, 'claw'],
-  [/(ball|\btoy\b|throw|toss|chase|catch|bounce|ricochet|rebound|fling|hurl)/, 'ball'],
+  [/(ball|\btoy\b|throw|toss|chase|catch|bounce|ricochet|rebound|fling|hurl|go get)/, 'ball'],
   [/(hop|jump|boing|vault|hurdle|catapult|frogapult|pogo|springs?)/, 'coil'],
   [/(stretch|elastic|pull|taut|overstretch|orbit|tension|long pull|snap back)/, 'coil'],
   [/(zoomie|dash|sprint|scurry|frenzy|stampede|scramble|circles|flurry|whirl)/, 'coil'],

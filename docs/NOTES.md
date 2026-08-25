@@ -42,4 +42,6 @@ to concurrent whole-file writes, so this is now structural rather than a convent
 | [2026-08-20-seam-audit-silent-no-ops-at-module-joins](notes/2026-08-20-seam-audit-silent-no-ops-at-module-joins.md) | 9 KB |
 | [2026-08-20-ui-chrome](notes/2026-08-20-ui-chrome.md) | 15 KB |
 | [2026-08-24-map-round-4-graphite-over-ink](notes/2026-08-24-map-round-4-graphite-over-ink.md) | 23 KB |
+| [2026-08-24-card-feel-round-4-snappier-hover-a-hand-that-spreads](notes/2026-08-24-card-feel-round-4-snappier-hover-a-hand-that-spreads.md) | 19 KB |
+| [2026-08-24-frontend-round-5-the-lost-pets-get-faces](notes/2026-08-24-frontend-round-5-the-lost-pets-get-faces.md) | 14 KB |
 | [build-notes](notes/build-notes.md) | 1 KB |

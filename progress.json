@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-24T23:28:51",
+ "updated": "2026-08-24T23:39:43",
  "wave": 7,
  "waveLabel": "Closing the last five",
  "headline": "Four builders on the remaining dimension losses: juice, card feel, visual craft, and route readability.",
@@ -33,10 +33,10 @@
    "id": "card",
    "name": "Card feel",
    "desc": "Hover, drag, arc-fan hand, play arc, impact, re-fan easing",
-   "status": "rework",
+   "status": "reviewing",
    "round": 5,
-   "verdict": "Hand no longer covers the board, card art distinct across all pools, lining figures throughout.",
-   "gap": "Hover is 168ms against a 120ms bar; the hand does not spread when small, so cards clip each other's rules text with 1136px of empty screen beside them.",
+   "verdict": "Hover 168ms to 33ms event-to-settled, lift 116px to 45-54px, scale 1.180x. Hand spreads: zero text occlusions at 3 and 5 cards. Aiming card held at z700 with 0 cards over it.",
+   "gap": null,
    "builder": null,
    "critic": null,
    "log": []
@@ -490,6 +490,14 @@
   {
    "t": "2026-08-24T23:28:51",
    "msg": "That round also found 149 rooms across 85 sheets whose every exit was a Big Scare. The earlier 'all elites avoidable' rule was only a global property, not a local one."
+  },
+  {
+   "t": "2026-08-24T23:39:43",
+   "msg": "Card feel round 4: the 116px hover lift was a real bug - the card anchors at its bottom centre, so a 1.19x scale added the whole 0.19x height on top of the 46px lift."
+  },
+  {
+   "t": "2026-08-24T23:39:43",
+   "msg": "Silhouette coverage was worse than reported: 286 of 429 cards fell through to a 4-shape fallback pool. Now 0 unmatched."
   }
  ]
 }

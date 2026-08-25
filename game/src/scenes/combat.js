@@ -1443,7 +1443,7 @@ export class CombatScene extends Scene {
         const c = this._pointOf(ev.actorId);
         this.fx.shimmer(c.x, c.y, this.fx.col.guard);
         this.fx.number(c.x, c.y - 14, `+${ev.amount}`, { kind: 'block', mag: ev.amount });
-        if (ev.actorId === E.player.id) this.$pl.classList.add('is-guarding');
+        if (ev.actorId === E.player.id) { this.$pl.classList.add('is-guarding'); this.hero?.guard(); }
         else this.views.get(ev.actorId)?.shimmer();
         this.ctx.audio?.play?.('combat:block-gain');
         await this._wait(this._d(0.13));
@@ -1724,6 +1724,18 @@ export class CombatScene extends Scene {
     const src = this.views.get(ev.sourceId);
     const tgt = isPlayer ? null : this.views.get(ev.targetId);
 
+    /* GET THE CARD OFF THE CREATURE — armed BEFORE the attacker commits, so it
+       is already down by the contact frame rather than starting to fade on it.
+       Measured at the contact frame, round 3: the played card occupied
+       y 230-560 while the target occupied y 330-450, covering 58.2% of it, so
+       the flinch, the shards and GUARD BROKEN all played behind a piece of
+       cardboard. STS2-REFERENCE §1 wants the effect to resolve WHILE the card
+       is presented, so the card is meant to be there — it just may not be
+       opaque. `filter: opacity()` and not the opacity PROPERTY, because
+       `ui/hand.js` writes that inline during the discard arc and inline always
+       wins the cascade; a filter composes with it instead of fighting it. */
+    this._impactVeil();
+
     // the attacker commits — this is the contact beat
     if (src && !src.dying) await src.strike();
     // STS2-REFERENCE §4: "Characters animate their attacks: StS2 explicitly
@@ -1735,16 +1747,6 @@ export class CombatScene extends Scene {
     const c = this._pointOf(ev.targetId);
     const hpLoss = ev.hpLoss || 0;
     const blockedAll = hpLoss <= 0 && ev.blocked > 0;
-
-    /* GET THE CARD OFF THE CREATURE.
-       Measured at the contact frame: the played card occupied y 230-560 while
-       the target occupied y 330-450, covering 57.8% of it, so the flinch, the
-       shards and GUARD BROKEN all played behind a piece of cardboard.
-       `PLAY_RESOLVE` moved the beat to the end of the presentation hold; this
-       is the guarantee. `filter: opacity()` rather than the opacity PROPERTY
-       because `ui/hand.js` writes that inline during the discard arc and inline
-       always wins — a filter composes with it instead of fighting it. */
-    this._impactVeil();
 
     // impact
     const dir = isPlayer ? Math.PI * 0.85 : -0.5;
@@ -2370,6 +2372,10 @@ export class CombatScene extends Scene {
   /** Layer-local point for FX, from an actor id. */
   _pointOf(id) {
     if (id === this.engine?.player?.id) {
+      /* The Kid's BODY, not her portrait. Sparks, Guard shimmer and the damage
+         numeral used to land on the framed picture in the corner while the
+         thing being hit stood somewhere else entirely. */
+      if (this.hero) { const c = this.hero.centre(); return this.fx.toLocal(c.x, c.y); }
       const r = this.$pl.querySelector('.cb-player__figure').getBoundingClientRect();
       return this.fx.toLocal(r.left + r.width / 2, r.top + r.height * 0.5);
     }
