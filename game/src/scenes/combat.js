@@ -1959,20 +1959,16 @@ export class CombatScene extends Scene {
        ones") and multiplied by the Flashes slider, which Reduced motion drives
        to zero. At zero the flare and ring vanish and the sparks stay — the
        hit is still legible, it just stops washing the room. */
-    const bloom = this._bloomGain();
+    /* `impact()` now separates the two things this used to conflate: `strength` is HIT
+       SIZE and is never gated, `light` is the photosensitive channel and is gated inside
+       Atmosphere against the Flashes slider and Reduced motion. So the scene states the
+       hit honestly and the accessibility rule lives in one place. */
     const dmgK = Math.min(1, hpLoss / 20);
-    const strength = bloom * (0.12 + 1.38 * dmgK * dmgK);
     this.ctx.atmosphere?.impact?.(c, {
-      // 0.001, not 0: `impact()` is also the ground-truth position for the ring.
-      strength: Math.max(0.001, strength),
+      strength: 0.12 + 1.38 * dmgK * dmgK,
+      light: 0.12 + 1.38 * dmgK * dmgK,
       color: blockedAll ? 0x8fb7d9 : (isPlayer ? 0xf26d78 : 0xffb64a),
       shake: false,
-      /* The atmosphere's own spark burst is additive geometry inside the bloom
-         pass, so it lifts the whole room even when the flare is at zero — it
-         measured as the larger half of the remaining wash. Below a fifth of
-         the slider it is dropped, and `fx.burst` on the 2D layer (which is
-         alpha-scaled, not removed) carries the hit on its own. */
-      burst: bloom > 0.2,
     });
     this.ctx.audio?.play?.(hpLoss >= 12 ? 'combat:hit-heavy'
       : isPlayer ? 'combat:player-hurt' : 'combat:hit-light');

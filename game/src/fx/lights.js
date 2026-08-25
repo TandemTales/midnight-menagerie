@@ -60,12 +60,47 @@ export class Flicker {
 
 let _uid = 0;
 
+/**
+ * THREE.PointLight intensity per unit of AtmoLight intensity, per m^2 of radius.
+ *
+ * The backdrop shaders use `I / (1 + k^2(1 + 1.55k))` with `k = d/r`; three uses
+ * `I / d^2`. Round 2 equated the two at `d = r/2`, giving 0.17 — and every mesh
+ * an agent added still came out dark, because equating at half a radius ignores
+ * the fact that EVERY backdrop surface then multiplies its result by a `uGain`
+ * of 1.9-3.4 that a MeshStandardMaterial never sees. Measured in the 17-region
+ * showcase: the mid-brown stand-in's mean luma was 6.0 in `heart` and 10.3 in
+ * `bathhouse` while the props around it ran 88-138 — the actor was the darkest
+ * object in a room full of lit furniture, which is the bimodality seen from the
+ * other side.
+ *
+ * The missing factor is Lambert. three's standard material applies
+ * `BRDF_Lambert` = albedo * 1/PI to every light's irradiance; the backdrop
+ * shaders do not. So the constant is three factors, not one:
+ *
+ *     0.26   equate I/(1+k^2(1+1.55k)) with I/d^2 at d = 0.8r
+ *   x PI     undo three's 1/PI Lambert normalisation
+ *   x 1.15   the share of `uGain` a lit surface in this scene carries
+ *   = 0.94
+ *
+ * The ambient and hemisphere terms lose the same 1/PI and are scaled to match
+ * in Atmosphere._buildLights.
+ */
+const MESH_K = 0.95;
+
 export class AtmoLight {
   /** kind: 'warm' | 'cold' */
   constructor(scene, { kind = 'warm', pos, color, intensity = 1, radius = 6, flicker = true,
-                       glow = null, glowSize = null } = {}) {
+                       glow = null, glowSize = null, cine = false } = {}) {
     this.id = ++_uid;
     this.kind = kind;
+    /* CINEMATIC vs PRACTICAL. A practical is a lamp that exists in the room and
+       lights everything in it. A cinematic light (the key and the fill, both
+       parked between the camera and the actors) exists to shape the SUBJECT and
+       nothing else — it is invisible, it casts no flame, and the set should not
+       light up as if a candle had been placed two metres from the lens. Round 2
+       lit props with it at full strength, which is why a shallow room's props
+       came out five times brighter than a deep room's. */
+    this.cine = !!cine;
     /* Is this lamp a THING IN THE ROOM or a cinematic light? A candle you can see
        is what puts real highlights in the frame and gives bloom something honest
        to bloom; a key light is invisible. Round 1 had no visible sources at all,
@@ -88,7 +123,7 @@ export class AtmoLight {
        Equating the two at d = r/2 gives I_three = 0.17 * I * r^2. Round 1 used a
        flat `intensity * 6`, which under-lit every wide-radius lamp by 3-5x — a
        MeshStandardMaterial actor standing in a bright room came out black. */
-    this.point = new THREE.PointLight(this.color.getHex(), intensity * radius * radius * 0.17, radius * 3.4, 2);
+    this.point = new THREE.PointLight(this.color.getHex(), intensity * radius * radius * MESH_K, radius * 3.4, 2);
     this.point.position.copy(this.pos);
     scene.add(this.point);
     this._scene = scene;
@@ -98,7 +133,7 @@ export class AtmoLight {
     if (!this.enabled) { this.live = 0; this.point.intensity = 0; return; }
     const f = this.flicker ? 1 - (1 - this.flicker.update(dt, t)) * motionScale : 1;
     this.live = this.base * f;
-    this.point.intensity = this.live * this.radius * this.radius * 0.17;
+    this.point.intensity = this.live * this.radius * this.radius * MESH_K;
   }
   dispose() { this._scene.remove(this.point); this.point.dispose?.(); }
 }
@@ -123,6 +158,7 @@ export class LightRig {
     this.colors   = Array.from({ length: this.slots }, () => new THREE.Color());
     this.inten    = new Array(this.slots).fill(0);
     this.active   = new Array(this.slots).fill(null);
+    this.cine     = new Array(this.slots).fill(false);
 
     this.keyDir = new THREE.Vector2(0, 1);   // 2D direction toward the key light
     this.keyColor = new THREE.Color(0xffb64a);
@@ -176,9 +212,11 @@ export class LightRig {
         this.worldPos[s].set(l.pos.x, l.pos.y, l.pos.z, l.radius);
         this.colors[s].copy(l.color);
         this.inten[s] = l.live;
+        this.cine[s] = l.cine;
         if (l.kind === 'warm' && (!bestWarm || l.live > bestWarm.live)) bestWarm = l;
       } else {
         this.inten[s] = 0;
+        this.cine[s] = false;
         this.worldPos[s].set(0, 0, 0, 1);
       }
     }

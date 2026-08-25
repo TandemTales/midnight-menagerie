@@ -51,9 +51,11 @@ const SHAPE_H = [0.85, 0.50, 1.00, 0.62, 0.80, 1.05, 1.25, 1.00, 0.66, 0.80,
 const SHAPE_W = [1.15, 0.55, 1.00, 0.95, 1.20, 0.80, 0.34, 0.85, 1.10, 1.35,
                  1.30, 1.20, 1.60, 1.00, 0.42, 0.60, 1.50, 1.30, 0.34, 0.62];
 // Which shapes hang from the ceiling rather than stand on the floor.
-const HANGING = { 4: 1, 7: 1 };
+export const HANGING = { 4: 1, 7: 1 };
 
 const NLIGHT = 5;
+/** How much of a cinematic (key/fill) light reaches a PROP. See syncLights. */
+const CINE_PROP = 0.26;
 function v4arr(n = NLIGHT) { return Array.from({ length: n }, () => new THREE.Vector4()); }
 function colArr(n = NLIGHT) { return Array.from({ length: n }, () => new THREE.Color()); }
 /**
@@ -208,6 +210,10 @@ export class Backdrop {
         uCamera: { value: new THREE.Vector3(0, 2.2, 12) },
         uLights: { value: v4arr() }, uLightCol: { value: colArr() },
         uLightInt: { value: new Array(NLIGHT).fill(0) },
+        uMatMix: { value: new THREE.Vector4(0.30, 0.10, 0.24, 0.05) },
+        uMatFreq: { value: new THREE.Vector2(0.55, 1.30) },
+        uAO: { value: 1.0 },
+        uPropKnee: { value: 0.30 }, uPropMax: { value: 0.55 },
       },
       vertexShader: PROP_VERT, fragmentShader: PROP_FRAG,
       transparent: true, depthWrite: false, side: THREE.DoubleSide, fog: false,
@@ -454,22 +460,106 @@ export class Backdrop {
     /* Keep props inside the lens. A prop at x = +-halfW in a 34 m ballroom is
        simply off-screen, which is how round 1 ended up with a props crop that
        contained almost no prop: the layout spread across the ROOM, not across
-       the FRAME. Clamp to the visible half-width at that depth. */
+       the FRAME. Clamp to the visible half-width at that depth.
+       `aspect` is the live viewport aspect, floored at 16:9. Round 2 hard-coded
+       16/9 here, so the clamp was a lie on any other window shape — and it is
+       floored rather than used raw because a WIDER window must not be allowed to
+       push a prop outward: the placement is computed once at setMood() and a
+       later resize never re-runs it. */
     const cam = pal.cam || {};
-    const camZ = cam.z ?? 9.6;
-    const tanH = Math.tan(((cam.fov ?? 42) * Math.PI) / 360) * (16 / 9);
-    const frameX = (z) => Math.max((camZ - z) * tanH * 0.94, 1.2);
-    const push = (shape, x, z, scale, tone) => {
-      const lim = Math.min(halfW * 0.98, frameX(z));
-      if (Math.abs(x) > lim) x = Math.sign(x || 1) * lim * (0.60 + 0.36 * rand());
-      const { h, w } = sized(shape, scale);
-      const hang = HANGING[shape] === 1;
-      out.push({
-        x, z, w, h, shape, seed: rand() * 10, tone,
-        y: hang ? ceil - h : 0.02,
-      });
-    };
+    const camZ = cam.z ?? 9.6, camY = cam.y ?? 2.3, look = cam.look ?? 2.4;
+    const aspect = Math.min(pal.aspect || (16 / 9), 16 / 9);
+    const tanH = Math.tan(((cam.fov ?? 42) * Math.PI) / 360) * aspect;
+    /* Half the visible width at a point, in metres.
+       The camera is PITCHED (it looks at `cam.look`, not at its own eye height),
+       so the perspective divide uses view-space depth, not the z-distance. Round
+       2 used `camZ - z`, which over-estimates the frame for anything high up and
+       under-estimates it for anything low — and a prop clamped against a frame
+       width that is not the frame's is how a curtain ends up cut by the viewport
+       edge. No roll and no yaw, so the horizontal axis is still world X. */
+    const fy = look - camY, fl = Math.hypot(fy, camZ) || 1;
+    const tanV = Math.tan(((cam.fov ?? 42) * Math.PI) / 360);
+    const depth = (y, z) => Math.max(((y - camY) * fy + (camZ - z) * camZ) / fl, 0.6);
+    const frameX = (z, y = camY) => Math.max(depth(y, z) * tanH * 0.94, 1.2);
+    // signed height above the frame centre line, same view basis (no roll)
+    const vert = (y, z) => ((y - camY) * camZ - (camZ - z) * fy) / fl;
+    const inFrameY = (y, z) => Math.abs(vert(y, z)) < depth(y, z) * tanV * 0.93;
     const halfW = room.w / 2;
+    const openSky = room.h <= 0.01;
+    const floorFallback = shapes.find((s) => HANGING[s] !== 1) ?? 5;
+
+    const push = (shape, x, z, scale, tone, atY) => {
+      /* Nothing hangs from an open sky. The Graveyard, the Hedge Maze and the
+         Pumpkin Grounds have no ceiling at all; a drape or a chandelier placed
+         there is a rectangle floating against the stars. */
+      let s = (HANGING[shape] === 1 && openSky) ? floorFallback : shape;
+      const hang = HANGING[s] === 1;
+      let { h, w } = sized(s, scale);
+      /* A curtain is as long as the wall it is on. Sized by the region's generic
+         prop height a Nursery drape came out 1.3 m in a 4.8 m room — a small
+         pale rectangle stuck to the wall, which is a large part of why they read
+         as debris rather than as soft furnishing. */
+      if (s === 7) {
+        h = Math.min(Math.max(h, ceil * 0.58), ceil * 0.86);
+        w = h * (SHAPE_W[7] ?? 0.85) * (0.62 + rand() * 0.30);
+      }
+      let y = atY ?? 0.02;
+      /* Half the frame at this prop's own depth, measured at BOTH ends of it —
+         a tall prop's head and its foot are at different view depths under a
+         pitched camera, and the narrower of the two is the one that cuts. */
+      const limAt = (zz) => Math.max(
+        Math.min(halfW * 0.98, frameX(zz, y), frameX(zz, y + h)) - w * 0.5, 0.4);
+      if (hang) {
+        /* A DRAPE HANGS ON A WALL. Meeting the ceiling plane exactly is not
+           enough: a curtain panel in the middle of an open floor reads as a
+           floating slab, and a reviewer counted two of them in the Nursery. Rail
+           shapes go to the back wall or a side wall; a chandelier may hang
+           anywhere, because it now draws its own ceiling rose. Either way the
+           top overlaps the ceiling by 4 cm so perspective can never open a
+           sliver of gap. */
+        y = Math.max(ceil - h + 0.04, 0.35);
+        if (s === 7) {
+          /* ...on the NEAREST wall. Sending every curtain to the back wall
+             anchored them and also deleted the near-frame verticals that told
+             four of these rooms apart — structural cross-correlation went 0.30
+             to 0.37 the moment they all moved to the same place. A side wall is
+             still a wall, and it keeps the silhouette in the mid-frame.
+             `limAt` and not a separate calculation, so the general clamp below
+             cannot then pull the curtain back off its wall and into mid-air —
+             which is exactly what three of them did. */
+          const side = limAt(z);
+          if (Math.abs(x) > room.w * 0.30 && side > room.w * 0.34) {
+            x = Math.sign(x || 1) * side;
+          } else {
+            z = -room.d + 0.35 + rand() * 0.8;
+          }
+        }
+        /* THE ANCHOR HAS TO BE IN SHOT. A chandelier hanging 3.7 m from a
+           ballroom camera has its ceiling rose above the top of the frame, and
+           an anchor you cannot see is not an anchor — it reads exactly like the
+           floating panels this round is fixing. Walk it back until the fixing
+           is inside the frame. */
+        let guard = 0;
+        while (guard++ < 30 && !inFrameY(y + h, z) && z > -room.d + 0.5) {
+          z = Math.max(z - 0.55, -room.d + 0.4);
+        }
+      }
+      /* Clamp on the prop's OWN EXTENT, not on its centre. Round 2 clamped the
+         centre, so anything wider than nothing could still hang half of itself
+         past the edge of frame — which is exactly how the Nursery shipped a
+         curtain cut in two by the viewport edge. */
+      const lim = limAt(z);
+      if (Math.abs(x) > lim) x = Math.sign(x || 1) * lim * (0.62 + 0.34 * rand());
+      out.push({ x, z, w, h, shape: s, seed: rand() * 10, tone, y, hang });
+    };
+    /** Architecture: sized directly, allowed to run off the frame edges.
+     *  Does not count against the region's authored prop budget. */
+    let archN = 0;
+    const pushArch = (shape, x, z, w, h, tone) => {
+      archN++;
+      out.push({ x, z, w, h, shape, seed: rand() * 10, tone, y: 0.02,
+                 hang: false, arch: true });
+    };
     const layout = P.layout || 'wings';
 
     if (layout === 'colonnade') {
@@ -534,18 +624,34 @@ export class Backdrop {
       }
 
     } else if (layout === 'terrace') {
-      // Three stepped tiers rising toward the back wall.
+      /* Three stepped PLANTING BEDS rising toward the back wall. Round 2 lifted
+         the plants by `f * room.h * 0.20` with nothing whatsoever beneath them:
+         20 of the Greenhouse's 30 props were measurably airborne. Each tier now
+         stands on a real masonry bed that runs the full width of the frame —
+         architecture, so it is allowed to reach the edges — and the lift is
+         capped at 1.25 m, because a 2.1 m "step" is a wall. */
       const tiers = 3;
       const per = Math.ceil(n / tiers);
-      for (let t = 0; t < tiers && out.length < n; t++) {
+      const bedShape = 16;   // the chest SDF: a masonry planting bed
+      for (let t = 0; t < tiers && out.length - archN < n; t++) {
         const f = t / (tiers - 1);
         const z = -3.0 - f * (room.d - 4.5);
-        const lift = f * room.h * 0.20;
-        for (let i = 0; i < per && out.length < n; i++) {
+        const lift = f * Math.min((room.h > 0 ? room.h : 8) * 0.16, 1.25);
+        if (lift > 0.22) {
+          const span = Math.min(halfW * 0.98, frameX(z + 0.6, lift));
+          /* Enough beds that each one keeps roughly its own shape's proportions.
+             Three beds across a 30 m greenhouse meant one 9 m x 1.2 m quad, and
+             a chest SDF stretched 7:1 reads as a green blob, not as masonry. */
+          const beds = Math.max(3, Math.round((span * 2) / Math.max(lift * 2.0, 1.2)));
+          for (let i = 0; i < beds; i++) {
+            pushArch(bedShape, ((i + 0.5) / beds - 0.5) * 2 * span,
+                     z + 0.6, (span * 2) / beds + 0.25, lift, 0.30 + f * 0.42);
+          }
+        }
+        for (let i = 0; i < per && out.length - archN < n; i++) {
           const x = ((i + 0.5) / per - 0.5) * 2 * halfW * 0.88 + (rand() - 0.5) * 0.9;
-          const before = out.length;
-          push(pick(), x, z + (rand() - 0.5) * 0.8, 1.15 - f * 0.18, 0.20 + f * 0.66);
-          if (out.length > before && out[before].y < 1) out[before].y = 0.02 + lift;
+          push(pick(), x, z + (rand() - 0.5) * 0.8, 1.15 - f * 0.18, 0.20 + f * 0.66,
+               0.02 + lift);
         }
       }
 
@@ -598,7 +704,7 @@ export class Backdrop {
         }
       }
     }
-    return out.slice(0, n);
+    return out.slice(0, MAX_PROPS);
   }
 
   /** Rebuild props, contact shadows and shafts for a region. */
@@ -620,9 +726,14 @@ export class Backdrop {
       off[k * 3 + 0] = p.x; off[k * 3 + 1] = p.y; off[k * 3 + 2] = p.z;
       sc[k * 2 + 0] = p.w; sc[k * 2 + 1] = p.h;
       sh[k] = p.shape; sd[k] = p.seed; tn[k] = p.tone;
-      if (p.y < 1.2) {                       // standing on the floor -> contact shadow
+      /* Contact shadow for anything that STANDS on something. `p.y < 1.2` was a
+         proxy for that and it was wrong at both ends: it gave a terrace plant
+         lifted 1.1 m a shadow on the floor 1.1 m below it, and it silently
+         dropped the shadow of anything standing higher. The shadow now sits at
+         the prop's own base, and hanging props do not get one. */
+      if (!p.hang) {
         const i = shadowN++;
-        so2[i * 3 + 0] = p.x; so2[i * 3 + 1] = 0.015; so2[i * 3 + 2] = p.z;
+        so2[i * 3 + 0] = p.x; so2[i * 3 + 1] = p.y + 0.015; so2[i * 3 + 2] = p.z;
         ss2[i * 2 + 0] = p.w * 2.0; ss2[i * 2 + 1] = p.w * 1.15;
         st2[i] = 0.52 + 0.26 * (1 - p.tone);
       }
@@ -630,6 +741,12 @@ export class Backdrop {
     this._propOffset.needsUpdate = this._propScale.needsUpdate = true;
     this._propShape.needsUpdate = this._propSeed.needsUpdate = this._propTone.needsUpdate = true;
     this.propGeo.instanceCount = placed.length;
+    /* Kept for the placement audit (tools/lookmetrics.py --audit). Round 3 shipped
+       two curtain panels hanging in the ceiling void of the Nursery and one cut by
+       the viewport edge; nothing in the build could see that, because the placement
+       existed only inside this function. It is a reference to plain objects that
+       are already alive — no copy, no per-frame cost. */
+    this.placed = placed;
     this._shdOffset.needsUpdate = this._shdScale.needsUpdate = this._shdStr.needsUpdate = true;
     this._propShadowN = shadowN;
     this.shadowGeo.instanceCount = shadowN;
@@ -759,6 +876,16 @@ export class Backdrop {
     pr.uRimAmt.value = p.rim ?? 1.0;
     pr.uGain.value = (p.gain ?? 3.4) * (p.propGain ?? 1.0);
     pr.uGloss.value = p.propGloss ?? 0.55;
+    /* THE PROP LUMINANCE CEILING, in pre-grade units. The grade multiplies by
+       uExposure before ACES, so a fixed post-grade target is a MOVING pre-grade
+       one: `heart` runs exposure 1.11 and `attic` 2.80, and a single hard clamp
+       would either kill the dark rooms or do nothing in the bright ones. Divide
+       the target through by the region's own exposure and every room lands on
+       the same ceiling. */
+    const ex = Math.max(p.exposure ?? 2.0, 0.4);
+    const max = (p.propCeil ?? 0.80) / ex;
+    pr.uPropMax.value = max;
+    pr.uPropKnee.value = max * 0.55;
 
     for (let i = 0; i < 2; i++) {
       const su = this.sides[i].material.uniforms;
@@ -782,6 +909,19 @@ export class Backdrop {
       m.material.uniforms.uRim.value.copy(p._rim);
       m.material.uniforms.uAmount.value = p.frameAmount ?? 0.92;
     }
+  }
+
+  /**
+   * The region's prop MATERIAL. Structural, not a colour — it swaps with the
+   * geometry at build time rather than cross-fading, because a cabinet does not
+   * gradually stop being oak.
+   */
+  applyPropMaterial(m) {
+    if (!m) return;
+    const u = this.propMat.uniforms;
+    u.uMatMix.value.set(m.mix[0], m.mix[1], m.mix[2], m.mix[3]);
+    u.uMatFreq.value.set(m.freq[0], m.freq[1]);
+    u.uAO.value = m.ao;
   }
 
   /** Pack the light rig into wall- and floor-local coordinates. */
@@ -817,7 +957,17 @@ export class Backdrop {
     const pl = this.propMat.uniforms.uLights.value, pc = this.propMat.uniforms.uLightCol.value;
     const pi = this.propMat.uniforms.uLightInt.value;
     for (let i = 0; i < NLIGHT; i++) {
-      pl[i].copy(rig.worldPos[i]); pc[i].copy(rig.colors[i]); pi[i] = rig.inten[i];
+      pl[i].copy(rig.worldPos[i]); pc[i].copy(rig.colors[i]);
+      /* A KEY LIGHT LIGHTS THE SUBJECT, NOT THE SET.
+         The key and fill sit in front of the action plane, a couple of metres
+         from the camera. In a deep room laid out on the perimeter (the Crypt)
+         nothing is within their reach and the props look right. In a shallow
+         room with a clutter layout (the Nursery, 12.5 m deep) props land 3 m
+         from a 7.5 m-radius key and take it at near-full strength — which is
+         the entire difference between the two halves of the bimodal split a
+         reviewer found. Practical lamps light props; cinematic lights barely
+         do. */
+      pi[i] = rig.inten[i] * (rig.cine[i] ? CINE_PROP : 1);
     }
     this.propMat.uniforms.uKeyDir.value.copy(rig.keyDir);
   }

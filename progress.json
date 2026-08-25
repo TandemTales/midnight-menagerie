@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-25T07:09:59",
+ "updated": "2026-08-25T09:56:47",
  "wave": 9,
  "waveLabel": "The player's half",
  "headline": "Every screen except the one you play on is finished. The Companion you chose is a generic cat in combat, and the Backpack does nothing.",
@@ -45,10 +45,10 @@
    "id": "scene",
    "name": "Combat presentation",
    "desc": "Battlefield staging, enemy rigs, damage numbers, hit reactions, VFX",
-   "status": "rework",
-   "round": 6,
-   "verdict": "Attacker displacement 0px to 90px, per silhouette family. The player has a body. Chooser cancels. Intent prints the real Clutter count.",
-   "gap": "The player's half of the combat scene is placeholder: your chosen Companion renders as the same generic cat whichever of the sixteen you picked, and the Kid's name is printed under the Companion's portrait.",
+   "status": "done",
+   "round": 5,
+   "verdict": "16 hand-authored Companion silhouettes, a real Kid with a torch and stride, counters clear at three resolutions, bloom gated and scaled to damage.",
+   "gap": null,
    "builder": null,
    "critic": null,
    "log": []
@@ -131,7 +131,7 @@
    "desc": "Lighting, fog, post FX, dust, candle flicker, transitions",
    "status": "done",
    "round": 3,
-   "verdict": "61fps on every scene at 1600x900 and 1920x1080, with the look metrics improved: mid-tones 24.9%, median luma 38.6, cross-correlation 0.30.",
+   "verdict": "Props stop outshining the cast: 17/17 prop-wins to 0/17 at both resolutions. Unanchored props 31 to 0. Photosensitivity gate now real.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -534,6 +534,22 @@
   {
    "t": "2026-08-25T07:09:59",
    "msg": "Kid pronouns are now data. The run-end line hardcoded 'She' and printed it for Mateo, Eli and Jordan; the doc states she/her for three kids and nothing for the rest."
+  },
+  {
+   "t": "2026-08-25T07:58:41",
+   "msg": "The player's half is built: Bones has a muzzle and a bone tail, Marmalade a spectral drape, Taffy a candy dome. Marmalade had been painted pumpkin-orange when she is a blue-white ghost."
+  },
+  {
+   "t": "2026-08-25T07:58:41",
+   "msg": "A pre-existing CSS bug surfaced: a keyframe ending on 'transform: none' with fill-mode both permanently overrode the enemy plate's pose cancellation and the intent stack's centring."
+  },
+  {
+   "t": "2026-08-25T09:56:47",
+   "msg": "Bimodal room quality had one cause: the cinematic key light reached props in shallow rooms (Nursery, 3m from a 7.5m key) and not in deep ones (Crypt, 25m). Same lighting, opposite result."
+  },
+  {
+   "t": "2026-08-25T09:56:47",
+   "msg": "Accessibility gate finished: a big hit now lifts frame luminance +60.7% by default, +1.7% at Flashes 0%, +0.6% on Reduced motion. The spark burst had a 0.16 brightness floor that survived any gate."
   }
  ]
 }

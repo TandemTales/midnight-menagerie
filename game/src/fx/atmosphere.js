@@ -8,7 +8,14 @@
  *                                                `seed` is WHICH ROOM this is — pass the
  *                                                room name or node id and two rooms that
  *                                                share a space stop being the same room.
- *   atmosphere.impact(pos, { strength, color })  hit feedback at a world or screen point
+ *   atmosphere.impact(pos, { strength, light, color, shake, burst })
+ *                                                hit feedback at a world or screen point.
+ *                                                `strength` is HOW BIG the hit is (sparks,
+ *                                                ring, shake); `light` 0..1 is how much it
+ *                                                may LIGHT THE ROOM (flare, screen flash,
+ *                                                spark brightness) and is the only
+ *                                                photosensitive channel. The accessibility
+ *                                                gate lives here, not at the call site.
  *   atmosphere.dread(0..1, seconds)              scary-moment desaturate + edge crush
  *   atmosphere.pulse(color, amount)              soft coloured wash
  *   atmosphere.light(spec) / atmosphere.rig      add or reach your own lights
@@ -59,6 +66,36 @@ import { ParticleField, PTYPE } from './particles.js';
 
 /* ------------------------------------------------------------------ palettes */
 
+/**
+ * PROP MATERIALS (round 3).
+ *
+ * Two reviewers called room quality bimodal and both named the same cause: the
+ * props in several regions were "flat untextured cuboids" that read as debug
+ * geometry. They were not a different shader from the good rooms — they were the
+ * same shader with one low-amplitude fbm and a pale albedo, which is enough to
+ * hide the noise entirely. Every region now names a material, and the prop
+ * shader builds its surface from four weighted terms:
+ *
+ *   grain   directional fibre, along x — wood, cloth folds, brushed metal
+ *   blotch  low-frequency patches — stone mottle, foliage mass, patina, damp
+ *   joint   periodic lines at `freq` joints per METRE — planks, drawer fronts,
+ *           stone courses, tile grout, cage staves
+ *   speck   per-cell hash grit — sand, lichen, rust, dust in a weave
+ *
+ * `ao` scales the base-contact and inside-the-silhouette darkening; soft
+ * materials occlude more than polished ones.
+ */
+const PROP_MATERIAL = {
+  //          grain blotch joint speck        joints/m x, y      ao
+  wood:    { mix: [0.34, 0.12, 0.26, 0.05], freq: [0.55, 1.35], ao: 1.00 },
+  paint:   { mix: [0.16, 0.16, 0.30, 0.04], freq: [0.70, 1.10], ao: 1.00 },
+  stone:   { mix: [0.09, 0.36, 0.22, 0.18], freq: [0.75, 0.55], ao: 0.92 },
+  tile:    { mix: [0.07, 0.20, 0.42, 0.08], freq: [1.60, 1.60], ao: 0.86 },
+  cloth:   { mix: [0.38, 0.15, 0.07, 0.03], freq: [2.10, 0.28], ao: 1.12 },
+  metal:   { mix: [0.15, 0.11, 0.32, 0.05], freq: [0.32, 1.95], ao: 0.84 },
+  foliage: { mix: [0.20, 0.44, 0.05, 0.16], freq: [2.60, 2.60], ao: 1.06 },
+};
+
 const D = {
   arch: 0, floorPattern: 0, ceil: 6.4,
   coolFill: 0.85, grime: 0.72, openGlow: 0.5, wallFog: 0.16, gloss: 0.5,
@@ -67,7 +104,16 @@ const D = {
   open: '#3aa0bd', floorDeep: '#120d18', floorMid: '#33232a', ambient: '#171225',
   propAlb: '#3a2a2c', propHi: '#6a4f45',
   rimCol: '#ffb64a', shaft: '#ffcf8a', frame: '#05040a',
-  gain: 1.85, propGain: 1.42, propGloss: 0.62,
+  /* propGain went 1.42 -> 0.80 in round 3 and the shader dropped its `diff *
+     1.45`, so the diffuse term a prop receives fell from 3.81x to 1.48x. That
+     3.81 was a lift no MeshStandardMaterial in the scene ever got, and it is
+     why the prop layer's peak luminance beat the actor's in 17 regions of 17.
+     The BODY of a prop is then brought back up with propGain while the CEILING
+     holds the peak down — brighter mid-tones, lower highlights, which is the
+     shape the round-2 mid-tone target wanted anyway.
+     `propCeil` is the post-exposure luminance a prop may asymptotically
+     approach and never reach; backdrop.js divides it by the region exposure. */
+  gain: 1.85, propGain: 1.55, propGloss: 0.62, propCeil: 0.62, propMat: 'wood',
   bloom: 0.72, bloomThreshold: 0.86, warmTone: 0.10, halation: 0.30, exposure: 2.05,
   vignette: 1.26, grain: 0.026, saturate: 1.24, contrast: 1.26,
   fogDensity: 0.014,
@@ -105,6 +151,7 @@ export const REGIONS = {
      round 1 shipped it with zero lights, zero shafts and zero particles. */
   foyer: {
     label: 'The Forgotten Foyer',
+    propMat: 'wood', propCeil: 0.6,
     arch: 0, floorPattern: 0,
     room: { w: 26, d: 21, h: 8.6, side: 0.03, ceilPattern: 7, wallPad: 6.0 },
     cam: { y: 2.55, z: 9.4, look: 2.9, fov: 40 },
@@ -116,7 +163,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.DUST, 0.80], [PTYPE.WISP, 0.12], [PTYPE.EMBER, 0.08]],
                  tint: '#ffe6bc', wispTint: '#7fd9ec', emberTint: '#ffb64a',
                  speed: 0.85, scale: 1.05, wind: 0.7, density: 0.85 },
-    exposure: 2.10, contrast: 1.21,
+    exposure: 2.10, vignette: 1.3, contrast: 1.21,
     key:  { glow: 0, kind: 'warm', x: -4.6, y: 3.6, z: 2.6, color: '#ffc06a', intensity: 2.40, radius: 9.5 },
     fill: { glow: 0, kind: 'cold', x: 5.6, y: 2.6, z: 1.2, color: '#6fd9ec', intensity: 1.19, radius: 9.0, flicker: false },
     lights: [
@@ -133,9 +180,10 @@ export const REGIONS = {
      Small, low, cluttered with toys at knee height. Wide lens, low eye. */
   nursery: {
     label: 'The Forgotten Nursery',
+    propMat: 'paint', propCeil: 0.56,
     arch: 0, floorPattern: 0,
     room: { w: 15, d: 12.5, h: 4.8, side: 0.0, ceilPattern: 3, wallPad: 4.0 },
-    cam: { y: 1.85, z: 6.6, look: 1.95, fov: 48 },
+    cam: { y: 1.62, z: 5.6, look: 1.76, fov: 44 },
     deep: '#2a1a30', mid: '#54334c', hi: '#8f566a', accent: '#6f9fc4',
     rimCol: '#ffd0aa', shaft: '#f2ddec', floorDeep: '#1a1220', floorMid: '#3c2c36',
     ambient: '#231a30', propAlb: '#5b3b48', propHi: '#a8737a',
@@ -144,7 +192,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.DUST, 0.68], [PTYPE.ASH, 0.20], [PTYPE.WISP, 0.12]],
                  tint: '#ffdfe4', wispTint: '#a8ecf7', emberTint: '#ffc7a0',
                  speed: 0.8, scale: 1.1, wind: 0.6, density: 0.9 },
-    exposure: 1.96, contrast: 1.62,
+    exposure: 2.05, vignette: 1.08, contrast: 1.62,
     key:  { glow: 0, kind: 'warm', x: -3.4, y: 2.9, z: 2.2, color: '#ffc79a', intensity: 2.10, radius: 7.5 },
     fill: { glow: 0, kind: 'cold', x: 4.4, y: 2.4, z: 1.4, color: '#9fd4ee', intensity: 1.19, radius: 7.5, flicker: false },
     lights: [
@@ -161,9 +209,10 @@ export const REGIONS = {
      moonlit floor. Cold, blue, still. */
   sleeping: {
     label: 'The Sleeping Quarters',
+    propMat: 'cloth', propCeil: 0.48,
     arch: 0, floorPattern: 0,
     room: { w: 18, d: 16, h: 5.6, side: 0.06, ceilPattern: 3, wallPad: 4.6 },
-    cam: { y: 2.05, z: 8.0, look: 2.15, fov: 43 },
+    cam: { y: 2.30, z: 9.0, look: 2.05, fov: 39 },
     nookSide: -1,
     deep: '#181633', mid: '#312e5c', hi: '#4d4a86', accent: '#5f80c4',
     shaft: '#c7d8ff', floorDeep: '#0e0d1c', floorMid: '#262742', ambient: '#1a1836',
@@ -189,9 +238,10 @@ export const REGIONS = {
      Long, low, hot. A working aisle with ranges and crates crowding the frame. */
   kitchens: {
     label: 'The Kitchens and Cellars',
+    propMat: 'metal', propCeil: 0.6,
     arch: 4, floorPattern: 2,
     room: { w: 22, d: 11, h: 4.4, side: 0.0, ceilPattern: 6, wallPad: 3.6 },
-    cam: { y: 1.72, z: 6.2, look: 1.95, fov: 50 },
+    cam: { y: 1.92, z: 7.0, look: 2.25, fov: 47 },
     deep: '#2a150e', mid: '#5b3320', hi: '#8f5525', accent: '#8fa855',
     rimCol: '#ff9440', shaft: '#ffa855', floorDeep: '#160d09', floorMid: '#3f281a',
     ambient: '#241309', propAlb: '#4a3020', propHi: '#8f5f30',
@@ -200,7 +250,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.EMBER, 0.46], [PTYPE.DUST, 0.40], [PTYPE.PLASTER, 0.14]],
                  tint: '#ffcf9a', wispTint: '#8fd9a8', emberTint: '#ff7a28',
                  speed: 1.2, scale: 1.05, wind: 1.3, density: 0.95 },
-    exposure: 2.11, contrast: 1.55,
+    exposure: 2.11, vignette: 1.42, contrast: 1.55,
     key:  { glow: 0, kind: 'warm', x: -3.6, y: 2.8, z: 2.0, color: '#ff9640', intensity: 2.60, radius: 8.0 },
     fill: { glow: 0, kind: 'cold', x: 5.0, y: 2.2, z: 1.2, color: '#8fd0a8', intensity: 0.94, radius: 7.0, flicker: false },
     lights: [
@@ -217,6 +267,7 @@ export const REGIONS = {
      Enormous, glazed, stepped planting terraces climbing away from the camera. */
   greenhouse: {
     label: 'The Impossible Greenhouse',
+    propMat: 'foliage', propCeil: 0.62,
     arch: 1, floorPattern: 2,
     room: { w: 30, d: 26, h: 10.5, side: 0.10, ceilPattern: 5, wallPad: 5.0 },
     cam: { y: 2.75, z: 11.2, look: 3.4, fov: 39 },
@@ -228,7 +279,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.SPORE, 0.52], [PTYPE.DUST, 0.30], [PTYPE.WISP, 0.18]],
                  tint: '#d9ffcf', wispTint: '#7fffc9', emberTint: '#cfff6a',
                  speed: 0.85, scale: 1.35, wind: 0.7, density: 0.95 },
-    exposure: 1.71, contrast: 1.62,
+    exposure: 1.82, vignette: 0.88, contrast: 1.62,
     key:  { glow: 0, kind: 'warm', x: -4.4, y: 3.8, z: 2.8, color: '#ffc98a', intensity: 2.20, radius: 9.5 },
     fill: { glow: 0, kind: 'cold', x: 6.0, y: 3.0, z: 1.6, color: '#6fdcf2', intensity: 1.50, radius: 9.5, flicker: false },
     lights: [
@@ -246,6 +297,7 @@ export const REGIONS = {
      roofline, and five staggered ranks of headstones marching to the horizon. */
   graveyard: {
     label: 'The Mansion Graveyard',
+    propMat: 'stone', propCeil: 0.56,
     sides: false, arch: 5, floorPattern: 2,
     room: { w: 52, d: 32, h: 0, side: 0, ceilPattern: 0, wallPad: 0 },
     cam: { y: 3.10, z: 12.0, look: 3.1, fov: 41 },
@@ -273,6 +325,7 @@ export const REGIONS = {
      Tall walls of shelving lining every edge, a clear reading floor. */
   study: {
     label: 'The Grand Study and Library',
+    propMat: 'wood', propCeil: 0.6,
     arch: 0, floorPattern: 0,
     room: { w: 19, d: 17, h: 8.2, side: 0.04, ceilPattern: 3, wallPad: 5.0 },
     cam: { y: 2.20, z: 8.4, look: 2.7, fov: 43 },
@@ -284,7 +337,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.DUST, 0.86], [PTYPE.EMBER, 0.08], [PTYPE.WISP, 0.06]],
                  tint: '#ffe6bc', wispTint: '#8fd9ec', emberTint: '#ffb64a',
                  speed: 0.7, scale: 0.95, wind: 0.5, density: 1.0 },
-    exposure: 2.74, contrast: 1.67,
+    exposure: 2.74, vignette: 1.34, contrast: 1.67,
     key:  { glow: 0, kind: 'warm', x: -3.8, y: 3.2, z: 2.2, color: '#ffc06a', intensity: 2.35, radius: 8.5 },
     fill: { glow: 0, kind: 'cold', x: 5.0, y: 3.4, z: 1.2, color: '#6fb4d4', intensity: 1.12, radius: 8.0, flicker: false },
     lights: [
@@ -301,6 +354,7 @@ export const REGIONS = {
      Steeply raked walls (big side toe-in), the mass of the room hanging overhead. */
   attic: {
     label: 'The Moonlit Attic and Observatory',
+    propMat: 'wood', propCeil: 0.48,
     arch: 4, floorPattern: 0,
     room: { w: 24, d: 19, h: 7.2, side: 0.20, ceilPattern: 6, wallPad: 4.4 },
     cam: { y: 1.95, z: 8.6, look: 2.6, fov: 45 },
@@ -312,7 +366,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.DUST, 0.62], [PTYPE.WISP, 0.26], [PTYPE.ASH, 0.12]],
                  tint: '#d8dcf5', wispTint: '#b0b8ff', emberTint: '#ffcf7a',
                  speed: 0.6, scale: 1.0, wind: 0.4, density: 0.95 },
-    exposure: 2.80, contrast: 1.65,
+    exposure: 2.80, vignette: 1.2, contrast: 1.65,
     key:  { glow: 0, kind: 'warm', x: -4.0, y: 3.2, z: 2.4, color: '#ffc890', intensity: 2.00, radius: 8.5 },
     fill: { glow: 0, kind: 'cold', x: 5.4, y: 2.8, z: 1.4, color: '#9fb0ff', intensity: 1.44, radius: 8.5, flicker: false },
     lights: [
@@ -327,6 +381,7 @@ export const REGIONS = {
      A cold industrial hall: two files of lamp standards marching to the back. */
   lampworks: {
     label: 'The Lampworks',
+    propMat: 'metal', propCeil: 0.40,
     arch: 4, floorPattern: 2,
     room: { w: 27, d: 23, h: 7.4, side: 0.0, ceilPattern: 8, wallPad: 4.8 },
     cam: { y: 2.40, z: 10.0, look: 2.6, fov: 42 },
@@ -338,7 +393,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.EMBER, 0.42], [PTYPE.WISP, 0.30], [PTYPE.DUST, 0.28]],
                  tint: '#cfe8ff', wispTint: '#6fd9ec', emberTint: '#ff9e3c',
                  speed: 1.1, scale: 1.1, wind: 1.0, density: 1.0 },
-    exposure: 2.04, contrast: 1.41,
+    exposure: 2.38, vignette: 0.96, contrast: 1.41,
     key:  { glow: 0, kind: 'warm', x: -4.2, y: 3.2, z: 2.2, color: '#ffa858', intensity: 2.30, radius: 9.0 },
     fill: { glow: 0, kind: 'cold', x: 6.2, y: 3.2, z: 1.4, color: '#7fe0f5', intensity: 1.69, radius: 9.5, flicker: false },
     lights: [
@@ -356,9 +411,10 @@ export const REGIONS = {
      colonnade of statuary and a mirror-polished checker floor. */
   ballroom: {
     label: 'The Ballroom and Velvet Suites',
+    propMat: 'cloth', propCeil: 0.52,
     arch: 0, floorPattern: 1,
     room: { w: 34, d: 26, h: 10.5, side: 0.05, ceilPattern: 7, wallPad: 5.4 },
-    cam: { y: 2.65, z: 11.0, look: 3.3, fov: 40 },
+    cam: { y: 3.15, z: 9.2, look: 3.5, fov: 47 },
     deep: '#2a1220', mid: '#5c2334', hi: '#94414b', accent: '#b077c4',
     rimCol: '#ffd97a', shaft: '#ffe8b4', floorDeep: '#160a16', floorMid: '#452a38',
     ambient: '#26101c', propAlb: '#5e3040', propHi: '#a8697a',
@@ -385,6 +441,7 @@ export const REGIONS = {
      line the two long walls and the eye is pulled straight down the axis. */
   crypt: {
     label: 'The Crypt and Ossuary',
+    propMat: 'stone', propCeil: 0.5,
     arch: 2, floorPattern: 2,
     room: { w: 14, d: 25, h: 4.9, side: 0.0, ceilPattern: 4, wallPad: 3.4 },
     cam: { y: 1.90, z: 8.0, look: 2.0, fov: 46 },
@@ -412,6 +469,7 @@ export const REGIONS = {
      Open air, no ceiling, foliage walls. Dense low scrub across the whole floor. */
   hedge: {
     label: 'The Withered Hedge Maze',
+    propMat: 'foliage', propCeil: 0.58,
     sides: false, arch: 3, floorPattern: 2,
     room: { w: 38, d: 28, h: 0, side: 0, ceilPattern: 0, wallPad: 0 },
     cam: { y: 2.35, z: 9.2, look: 2.5, fov: 47 },
@@ -423,7 +481,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.SPORE, 0.44], [PTYPE.ASH, 0.30], [PTYPE.DUST, 0.26]],
                  tint: '#e0d8a8', wispTint: '#b08fd8', emberTint: '#d8a04a',
                  speed: 0.75, scale: 1.3, wind: 1.4, density: 0.95 },
-    exposure: 2.55, contrast: 1.21,
+    exposure: 2.55, vignette: 1.38, contrast: 1.21,
     key:  { glow: 0, kind: 'cold', x: -4.2, y: 5.6, z: 3.0, color: '#cfd8f0', intensity: 1.95, radius: 15.0, flicker: false },
     fill: { glow: 0, kind: 'warm', x: 5.0, y: 1.6, z: 1.6, color: '#ffb04a', intensity: 1.44, radius: 6.5 },
     lights: [
@@ -439,6 +497,7 @@ export const REGIONS = {
      the frame is almost filled by them. Round 1 rendered this at mean luma 1.8. */
   passages: {
     label: 'The Secret Passages',
+    propMat: 'wood', propCeil: 0.46,
     arch: 2, floorPattern: 0,
     room: { w: 7.5, d: 20, h: 3.4, side: 0.0, ceilPattern: 3, wallPad: 2.4 },
     cam: { y: 1.70, z: 6.8, look: 1.75, fov: 52 },
@@ -466,9 +525,10 @@ export const REGIONS = {
      Glazed, wet, checker-tiled; the mass sits to one side under falling water. */
   bathhouse: {
     label: 'The Bathhouse and Rain Wing',
+    propMat: 'tile', propCeil: 0.36,
     arch: 1, floorPattern: 1,
     room: { w: 21, d: 17, h: 7.0, side: 0.08, ceilPattern: 5, wallPad: 4.4 },
-    cam: { y: 2.20, z: 8.8, look: 2.5, fov: 44 },
+    cam: { y: 2.62, z: 7.4, look: 2.45, fov: 52 },
     nookSide: 1,
     deep: '#0f2229', mid: '#1e4550', hi: '#357380', accent: '#5fd8ee',
     rimCol: '#d8f4ff', shaft: '#b8ecff', floorDeep: '#0a171c', floorMid: '#1a353c',
@@ -478,7 +538,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.RAIN, 0.58], [PTYPE.DUST, 0.26], [PTYPE.WISP, 0.16]],
                  tint: '#bfe8f5', wispTint: '#6fd9ec', emberTint: '#ffb64a',
                  speed: 1.0, scale: 1.0, wind: 1.2, density: 1.0 },
-    exposure: 1.33, contrast: 1.69,
+    exposure: 1.94, vignette: 1.02, contrast: 1.69,
     key:  { glow: 0, kind: 'warm', x: -3.8, y: 3.2, z: 2.2, color: '#ffc98c', intensity: 2.00, radius: 8.5 },
     fill: { glow: 0, kind: 'cold', x: 5.8, y: 3.0, z: 1.4, color: '#8fe8ff', intensity: 1.71, radius: 9.0, flicker: false },
     lights: [
@@ -494,9 +554,10 @@ export const REGIONS = {
      Wide, very low, ranks of cages across the floor. Lowest eye in the game. */
   kennels: {
     label: 'The Kennels and Animal Ward',
+    propMat: 'wood', propCeil: 0.27,
     arch: 0, floorPattern: 2,
-    room: { w: 20, d: 11, h: 4.0, side: 0.0, ceilPattern: 6, wallPad: 3.2 },
-    cam: { y: 1.58, z: 6.0, look: 1.75, fov: 50 },
+    room: { w: 20, d: 11, h: 4.0, side: 0.0, ceilPattern: 8, wallPad: 3.2 },
+    cam: { y: 2.55, z: 5.4, look: 1.05, fov: 52 },
     deep: '#241610', mid: '#4a3320', hi: '#7a5730', accent: '#7f9faf',
     rimCol: '#ffcf84', shaft: '#ffdda6', floorDeep: '#130d08', floorMid: '#3a2a18',
     ambient: '#1e1409', propAlb: '#4c3421', propHi: '#8a6338',
@@ -505,7 +566,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.DUST, 0.70], [PTYPE.ASH, 0.20], [PTYPE.EMBER, 0.10]],
                  tint: '#ffdfae', wispTint: '#8fd9ec', emberTint: '#ffb64a',
                  speed: 0.8, scale: 1.1, wind: 0.6, density: 0.95 },
-    exposure: 2.12, contrast: 1.54,
+    exposure: 2.34, vignette: 1.46, contrast: 1.54,
     key:  { glow: 0, kind: 'warm', x: -3.4, y: 2.6, z: 2.0, color: '#ffc27a', intensity: 2.25, radius: 7.5 },
     fill: { glow: 0, kind: 'cold', x: 5.0, y: 2.2, z: 1.2, color: '#7fbcd4', intensity: 1.12, radius: 7.5, flicker: false },
     lights: [
@@ -521,9 +582,10 @@ export const REGIONS = {
      Open air under the moon, a wide field of pumpkins and lamp posts. */
   pumpkin: {
     label: 'The Moon Courtyard and Pumpkin Grounds',
+    propMat: 'foliage', propCeil: 0.58,
     sides: false, arch: 5, floorPattern: 2,
     room: { w: 48, d: 30, h: 0, side: 0, ceilPattern: 0, wallPad: 0 },
-    cam: { y: 2.80, z: 10.8, look: 2.9, fov: 43 },
+    cam: { y: 2.05, z: 8.2, look: 2.2, fov: 51 },
     deep: '#111c22', mid: '#28403c', hi: '#436655', accent: '#7fbcd8',
     rimCol: '#ffa44a', shaft: '#d6e8f7', floorDeep: '#0d1414', floorMid: '#243029',
     ambient: '#141f24', propAlb: '#4a3a20', propHi: '#93693a',
@@ -532,7 +594,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.DUST, 0.40], [PTYPE.SPORE, 0.30], [PTYPE.EMBER, 0.30]],
                  tint: '#cfe0e8', wispTint: '#8fe8c0', emberTint: '#ff8a28',
                  speed: 0.9, scale: 1.25, wind: 1.1, density: 1.0 },
-    exposure: 1.69, contrast: 1.52,
+    exposure: 1.80, vignette: 0.9, contrast: 1.52,
     key:  { glow: 0, kind: 'cold', x: -5.0, y: 6.4, z: 3.0, color: '#cfe0ff', intensity: 2.10, radius: 18.0, flicker: false },
     fill: { glow: 0, kind: 'warm', x: 5.2, y: 1.2, z: 1.8, color: '#ff9034', intensity: 1.71, radius: 6.0 },
     lights: [
@@ -550,9 +612,10 @@ export const REGIONS = {
      converging on the light in the far wall. */
   heart: {
     label: 'The Heart of the House',
+    propMat: 'stone', propCeil: 0.66,
     arch: 0, floorPattern: 0,
     room: { w: 24, d: 24, h: 9.5, side: 0.02, ceilPattern: 4, wallPad: 5.0 },
-    cam: { y: 2.45, z: 10.4, look: 3.0, fov: 39 },
+    cam: { y: 2.30, z: 13.0, look: 3.3, fov: 33 },
     deep: '#2b2014', mid: '#553f26', hi: '#8f6d42', accent: '#e0bb78',
     rimCol: '#fff2d0', shaft: '#fff0d8', floorDeep: '#1a1209', floorMid: '#463523',
     ambient: '#251b0f', propAlb: '#5c452a', propHi: '#a8834f',
@@ -561,7 +624,7 @@ export const REGIONS = {
     particles: { mix: [[PTYPE.DUST, 0.54], [PTYPE.WISP, 0.30], [PTYPE.EMBER, 0.16]],
                  tint: '#fff2d8', wispTint: '#ffd9a8', emberTint: '#ffcf7a',
                  speed: 0.55, scale: 1.15, wind: 0.35, density: 1.0 },
-    exposure: 1.11, contrast: 1.67,
+    exposure: 1.92, contrast: 1.67,
     key:  { glow: 0, kind: 'warm', x: -4.4, y: 3.6, z: 2.6, color: '#ffdaa0', intensity: 2.35, radius: 10.0 },
     fill: { glow: 0, kind: 'cold', x: 5.6, y: 2.6, z: 1.4, color: '#8fd9ec', intensity: 1.06, radius: 8.5, flicker: false },
     lights: [
@@ -583,6 +646,7 @@ export const REGIONS = {
      hand-off note in docs/NOTES.md. */
   title: {
     label: 'Midnight Menagerie',
+    propMat: 'stone', propCeil: 0.58,
     sides: false, arch: 5, floorPattern: 2,
     room: { w: 56, d: 34, h: 0, side: 0, ceilPattern: 0, wallPad: 0 },
     cam: { y: 2.6, z: 12.5, look: 3.6, fov: 44 },
@@ -677,6 +741,7 @@ function resolve(name) {
   out.key = Object.assign({}, D.key, src.key);
   out.fill = Object.assign({}, D.fill, src.fill);
   out.regionKey = key;
+  out._mat = PROP_MATERIAL[out.propMat] || PROP_MATERIAL.wood;
   for (const [hex, dst] of COLOR_KEYS) out[dst] = new THREE.Color(out[hex]);
   return out;
 }
@@ -782,7 +847,14 @@ export class Atmosphere {
       this._vary(pal, hashSeed(`${pal.regionKey}|${this.roomSeed}`));
     }
 
+    /* The lens the props have to fit inside. Round 2 hard-coded 16/9 in the
+       layout clamp, so on any other window shape a prop's "visible half-width"
+       was fiction. */
+    pal.aspect = this.ctx.stage.camera.aspect || (16 / 9);
     this.backdrop.build(pal, () => this._rand());
+    // material is structural, like the geometry: it swaps with the room rather
+    // than cross-fading, because a cabinet does not gradually stop being oak.
+    this.backdrop.applyPropMaterial(pal._mat);
     this._buildLights(pal);
     this.particles.setConfig(pal.particles);
     // the drift volume follows the room, so a corridor is not full of dust that
@@ -830,32 +902,91 @@ export class Atmosphere {
   }
 
   /**
-   * Hit feedback. `pos` may be a THREE.Vector3 (world) or {x, y} in CSS pixels.
-   * opts: { strength 0..2, color, shake, burst }
+   * How much PHOTOSENSITIVE brightness is allowed right now, 0..1.
+   *
+   * One place, so no caller has to know the rule. `flashes` is a 0..1 slider and
+   * `reduceMotion` says in its own hint that it overrides the settings above, so
+   * it caps the slider rather than scaling it.
+   */
+  _lightGate() {
+    const s = Save.settings || {};
+    const f = Math.max(0, Math.min(1, s.flashes ?? 1));
+    /* 0.05, not 0.2. At 0.2 the flare still sits at `2.2 * 0.2 = 0.44` intensity and a big
+       hit measured a +15.5% whole-frame luminance lift with Reduced motion ON — which is
+       not what "Overrides the settings above" promises to someone who turned it on for
+       photosensitivity. At 0.05 the sparks still read (they are shaped by `strength`,
+       which is never gated) and the room stops washing. */
+    return s.reduceMotion ? Math.min(f, 0.05) : f;
+  }
+
+  /**
+   * Hit feedback.
+   *
+   * `pos` may be a THREE.Vector3 (world) or {x, y} in CSS pixels.
+   *
+   * @param {object} [opts]
+   * @param {number} [opts.strength=1]  HOW BIG THE HIT IS, 0..2. Sparks, ring
+   *        radius and shake magnitude. Never gated — a 26-damage hit must read
+   *        as a 26-damage hit at every accessibility setting.
+   * @param {number} [opts.light]       HOW MUCH IT LIGHTS THE ROOM, 0..1. The
+   *        point-light flare, the screen flash and the spark brightness — every
+   *        photosensitive channel, and nothing else. Defaults to
+   *        `min(strength, 1)` so existing callers are unchanged. Pass 0 for
+   *        "this is a big hit, but do not flash the screen".
+   *
+   *        The accessibility gate is applied HERE, to this number, and to
+   *        nothing a caller has to remember: `Save.settings.flashes` scales it
+   *        and `reduceMotion` caps it at 0.2. Round 4 of combat-scene had to
+   *        hand-gate three separate leaks (the ungated flare, the additive spark
+   *        burst, and `strength` doing double duty) because `strength` conflated
+   *        the two jobs — a 6-damage Bite lifted whole-frame mean luminance +22%
+   *        with Flashes at 0%.
+   * @param {number|string} [opts.color]
+   * @param {boolean} [opts.shake=true]
+   * @param {boolean} [opts.burst=true] emit sparks at all (shape, not brightness)
    */
   impact(pos, opts = {}) {
     if (!this.ready) return this;
     const strength = opts.strength ?? 1;
+    const light = Math.max(0, Math.min(1, opts.light ?? Math.min(strength, 1)))
+                * this._lightGate();
     const colorHex = typeof opts.color === 'string'
       ? new THREE.Color(opts.color).getHex()
       : (opts.color ?? 0xffd75e);
 
     const w = this._toWorld(pos, this._v3);
-    // particles
+    /* Sparks. Count and spread follow `strength` so the hit stays legible with
+       every light channel at zero; brightness follows `light`, because additive
+       geometry inside the bloom pass is a photosensitive channel like any
+       other. Below a tenth of the gate they are dropped entirely. */
     if (opts.burst !== false) {
-      this.particles.burst(w.x, w.y, w.z, colorHex, 1.1 + strength * 1.3, 0.62);
+      /* No brightness floor. `0.16 + 0.84 * light` meant the sparks were never dimmer than
+         16% however hard the gate clamped, and since they are additive geometry inside the
+         bloom pass they were the bulk of the remaining wash: measured, a big hit with
+         Reduced motion ON still lifted whole-frame luminance +17.3%, and +2.0% with the
+         burst suppressed. Brightness now follows `light` exactly and the sparks are dropped
+         below a tenth of it. The hit stays legible because the SHAPE is driven by
+         `strength` (never gated) and because combat-scene's own 2D burst is alpha-scaled
+         rather than removed. */
+      if (light > 0.10) {
+        this.particles.burst(w.x, w.y, w.z, colorHex,
+          1.1 + strength * 1.3, 0.62 * light);
+      }
     }
-    // a real light flash at the hit point
+    // a real light flash at the hit point — a photosensitive channel
     this.flare.setPos(w.x, w.y, w.z);
     this.flare.color.set(colorHex);
     this.flare.point.color.set(colorHex);
-    this.flare.base = 2.2 * strength;
-    this._flareDecay = 1;
-    // screen-space ring + shake
+    this.flare.base = 2.2 * light;
+    this._flareDecay = light > 0.001 ? 1 : 0;
+    if (light <= 0.001) this.flare.base = 0;
+    // screen-space ring + shake: geometry and motion, gated by their own settings
     this._v3b.copy(w).project(this.ctx.stage.camera);
     this.ctx.stage.ripple(this._v3b.x * 0.5 + 0.5, this._v3b.y * 0.5 + 0.5, Math.min(strength, 1.6));
     if (opts.shake !== false) this.ctx.stage.shake(0.07 + 0.10 * strength, 10);
-    if (strength >= 0.8) this.ctx.stage.flash(colorHex, 0.05 * Math.min(strength, 2), 0.14);
+    // stage.flash re-checks the settings itself; `light` is already gated, so a
+    // caller that asked for no flash gets none even with the slider at 100%.
+    if (light >= 0.35) this.ctx.stage.flash(colorHex, 0.05 * Math.min(light * 2, 2), 0.14);
     return this;
   }
 
@@ -979,10 +1110,14 @@ export class Atmosphere {
     this.rig.clear();
     // KEY first, then FILL, then the room's own lamps. The rig keeps the five
     // with the highest authored intensity, so the key can never be dropped.
-    for (const L of [pal.key, pal.fill].concat(pal.lights)) {
+    // The first two are CINEMATIC: they shape the actors and barely touch the
+    // set. Everything after them is a lamp that exists in the room.
+    const src = [pal.key, pal.fill].concat(pal.lights);
+    for (let i = 0; i < src.length; i++) {
+      const L = src[i];
       this.rig.add({
         kind: L.kind, color: L.color, intensity: L.intensity, radius: L.radius,
-        flicker: L.flicker !== false,
+        flicker: L.flicker !== false, cine: i < 2,
         pos: this._v3b.set(L.x, L.y, L.z),
       });
     }
@@ -990,7 +1125,11 @@ export class Atmosphere {
     this._flareDecay = 0;
     // ambient bounce keyed to the region's own bounce colour so nothing is dead
     // black — but low enough that the pools still read as pools
-    this.rig.setAmbient(pal._ambient.getHex(), 0.85, pal._accent.getHex(), pal._deep.getHex(), 0.55);
+    /* Ambient and hemisphere feed MESHES only (the backdrop shaders carry their
+       own uAmbient), and they lose the same 1/PI Lambert normalisation the
+       punctual lights do. Scaled to match MESH_K so an actor's shadow side is
+       lifted by the room's bounce instead of crushing to black. */
+    this.rig.setAmbient(pal._ambient.getHex(), 2.10, pal._accent.getHex(), pal._deep.getHex(), 1.30);
   }
 
   _applyGrade(pal, k) {

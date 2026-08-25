@@ -421,10 +421,15 @@ attribute float aSeed;
 attribute float aTone;
 varying vec2  vUv;
 varying vec3  vWorld;
+varying vec2  vSize;
 varying float vShape, vSeed, vTone, vFog;
 uniform float uFogNear, uFogFar, uSway, uTime;
 void main(){
   vUv = uv; vShape = aShape; vSeed = aSeed; vTone = aTone;
+  /* The prop's size in METRES. Grain, joints and speckle are authored per metre
+     from this, so a 0.6 m stool and a 3 m wardrobe carry the same physical
+     texel density instead of the same number of stripes. */
+  vSize = aScale;
   vec3 pos = vec3(position.xy * aScale, 0.0);
   pos.x += sin(uTime*0.55 + aSeed*31.0) * uSway * (0.25 + uv.y*0.75) * aScale.y * 0.018;
   vec3 wp = pos + aOffset;
@@ -443,9 +448,23 @@ uniform float uRimAmt, uDread, uGain, uGloss;
 uniform vec2  uKeyDir;   // screen-space direction toward the key light
 uniform vec4  uLights[5];      // xyz world, w radius
 uniform vec3  uLightCol[5];
-uniform float uLightInt[5];
+uniform float uLightInt[5];    // ALREADY scaled: cinematic key/fill are damped
+                               // here, because a key light lights the SUBJECT,
+                               // not the set. See Backdrop.syncLights.
+/* Material identity. uMatMix weights (grain, blotch, joint, speckle) and
+   uMatFreq is (joints per metre horizontally, vertically). Four numbers turn one
+   silhouette shader into wood / stone / fabric / metal / foliage without a
+   branch and without a second program. */
+uniform vec4  uMatMix;
+uniform vec2  uMatFreq;
+uniform float uAO;             // how hard the base and silhouette occlude
+/* The prop luminance ceiling. Above uPropKnee the response compresses and can
+   never reach uPropMax, so a prop physically cannot become the brightest thing
+   in frame however bright the room gets. */
+uniform float uPropKnee, uPropMax;
 varying vec2  vUv;
 varying vec3  vWorld;
+varying vec2  vSize;
 varying float vShape, vSeed, vTone, vFog;
 
 /* Soft coverage field in local uv space; > 0 is inside the silhouette. */
@@ -478,6 +497,9 @@ float shapeField(vec2 uv, float shape, float seed){
     d = min(d, mmBox(p - vec2(0.0,0.06), vec2(0.34,0.06), 0.02));
   } else if (shape < 4.5) {               // 4 — chandelier, hangs from the top
     d = mmBox(g + vec2(0.0,0.20), vec2(0.016,0.20), 0.01);
+    // ceiling rose: the chain has to visibly come OUT of something
+    d = min(d, mmBox(g + vec2(0.0,0.020), vec2(0.105,0.022), 0.012));
+    d = min(d, mmBox(g + vec2(0.0,0.055), vec2(0.055,0.020), 0.010));
     d = min(d, mmCircle(g + vec2(0.0,0.46), 0.09));
     for (int i = 0; i < 6; i++){
       float a = float(i)/6.0*6.2831 + seed;
@@ -494,10 +516,19 @@ float shapeField(vec2 uv, float shape, float seed){
     d = mmBox(p - vec2(0.0,0.48), vec2(0.14 + 0.022*sin(uv.y*3.0), 0.48), 0.02);
     d = min(d, mmBox(p - vec2(0.0,0.06), vec2(0.23,0.06), 0.02));
     d = min(d, mmBox(p - vec2(0.0,0.94), vec2(0.25,0.07), 0.03));
-  } else if (shape < 7.5) {               // 7 — hanging drape
+  } else if (shape < 7.5) {               // 7 — drape on a rail
     float fold = 0.085*sin(uv.x*19.0 + seed*9.0)*uv.y;
     d = mmBox(g + vec2(fold, 0.48), vec2(0.30, 0.50), 0.05);
     d = mmSmin(d, mmCircle(g - vec2(-fold, -1.00), 0.15), 0.22);
+    /* THE RAIL. A curtain that simply stops at the top of its quad reads as a
+       floating slab however exactly it meets the ceiling — a reviewer counted
+       two of them "hanging unanchored in the ceiling void" in the Nursery. A rod
+       with finials and two brackets gives the eye the thing it hangs FROM. */
+    d = min(d, mmBox(g + vec2(0.0, 0.030), vec2(0.42, 0.028), 0.018));
+    d = min(d, mmCircle(g + vec2(-0.42, 0.030), 0.055));
+    d = min(d, mmCircle(g + vec2( 0.42, 0.030), 0.055));
+    d = min(d, mmBox(g + vec2(-0.30, 0.006), vec2(0.020, 0.040), 0.008));
+    d = min(d, mmBox(g + vec2( 0.30, 0.006), vec2(0.020, 0.040), 0.008));
   } else if (shape < 8.5) {               // 8 — crate stack
     d = mmBox(p - vec2(-0.10,0.22), vec2(0.24,0.22), 0.02);
     d = min(d, mmBox(p - vec2(0.16,0.62), vec2(0.19,0.19), 0.02));
@@ -615,7 +646,31 @@ void main(){
   /* --- albedo: a real material, not near-black ---------------------------- */
   vec3 albedo = mix(uAlbedo, uAlbedoHi, clamp(vUv.y*0.85 + 0.10, 0.0, 1.0));
   albedo *= 0.70 + 0.60*vTone;
-  albedo *= 0.84 + 0.34*mmFbm3(vUv*7.0 + vSeed*5.0);
+
+  /* --- SURFACE ------------------------------------------------------------
+     Round 2 gave the body one low-amplitude fbm and nothing else, so a cabinet
+     was a flat slab of colour and three reviewers independently called the
+     props "untextured cuboids" and "debug geometry". Four terms, all in metres:
+     directional grain (wood / cloth folds), blotch (stone, foliage, patina),
+     periodic joints (planks, drawer lines, courses, staves) and a fine speckle.
+     Each is weighted per region by uMatMix, so one program covers every
+     material in the house. */
+  vec2  sp     = vUv * vSize;
+  float grain  = mmFbm3(vec2(sp.x*8.0, sp.y*1.1) + vSeed*3.7);
+  float blotch = mmFbm3(sp*2.6 + vSeed*11.3);
+  float speck  = mmHash21(floor(sp*16.0) + vSeed);
+  float jy = abs(fract(sp.y*uMatFreq.y + vSeed*0.7) - 0.5);
+  float jx = abs(fract(sp.x*uMatFreq.x + vSeed*0.3) - 0.5);
+  float joint = max(1.0 - smoothstep(0.0, 0.06, jy), 1.0 - smoothstep(0.0, 0.05, jx));
+  albedo *= 1.0 + (grain - 0.5)*uMatMix.x + (blotch - 0.5)*uMatMix.y
+                - joint*uMatMix.z + (speck - 0.5)*uMatMix.w;
+
+  /* Occlusion. A prop is a volume: it is darker where it meets the floor and
+     darker in the last few millimetres before its own silhouette. Without these
+     two the lit face is one even wash, which is the other half of "cuboid". */
+  float inner = smoothstep(0.0, 0.09, f);
+  albedo *= mix(1.0 - 0.44*uAO, 1.0, smoothstep(0.0, 0.26, vUv.y));
+  albedo *= mix(1.0 - 0.30*uAO, 1.0, inner);
 
   /* --- per-pixel candlelight ---------------------------------------------- */
   vec3 V = normalize(uCamera - vWorld);
@@ -632,12 +687,32 @@ void main(){
     spec += mmSpec(N, ldir, V, uLightCol[i], att, uGloss, 34.0);
   }
 
-  vec3 col = albedo * (uAmbient + uAccent * 0.13 + diff * 1.45) + spec * 0.85;
+  /* Round 2 shipped "diff * 1.45" on top of a 2.6x authored gain — a lift no
+     actual mesh in the scene gets. A MeshStandardMaterial with the same albedo
+     under the same lamp measured ~5x darker, which is precisely why the props
+     outshone the creatures in all seventeen regions. The diffuse term is now
+     unmultiplied; brightness is carried by uGain alone, where it can be
+     calibrated in one place. */
+  vec3 col = albedo * (uAmbient + uAccent * 0.13 + diff) + spec * 0.85;
   col *= uGain;
 
   /* --- rim: the edge that separates a prop from the wall behind it -------- */
   float rim = pow(band, 1.5) * (0.12 + 0.88*pow(facing, 1.4)) * mask;
   col += (uRim * 0.07 + raw * 0.09) * rim * uRimAmt;
+
+  /* --- THE CEILING --------------------------------------------------------
+     Everything above still scales with the room's lamps, so a bright room could
+     always push a prop back into clipping. This shoulder makes that impossible:
+     luminance above uPropKnee compresses asymptotically toward uPropMax and
+     never reaches it. Hue is preserved (the whole colour is scaled by the
+     luminance ratio), so a compressed prop desaturates the way film does rather
+     than shifting toward white. */
+  float Lp = mmLum(col);
+  if (Lp > uPropKnee) {
+    float over = Lp - uPropKnee;
+    float span = max(uPropMax - uPropKnee, 1e-3);
+    col *= (uPropKnee + span * over / (over + span)) / max(Lp, 1e-4);
+  }
 
   col = mix(col, uFog, vFog);
   col = mmDesat(col, uDread*0.5) * (1.0 - uDread*0.22);
