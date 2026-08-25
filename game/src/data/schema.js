@@ -193,15 +193,20 @@ export const COMPANIONS = [
   { slug: 'brambleboo', name: 'Brambleboo',     title: 'the Haunted Houseplant',   region: 'greenhouse' },
 ];
 
+/**
+ * The eight kids and the pets they are looking for.
+ * `petKind`/`petBreed` are the design doc's own words — five of these were invented
+ * during scaffolding and wrong for months (Orbit was listed as a parrot; he is a cat).
+ */
 export const KIDS = [
-  { slug: 'maya',   name: 'Maya Chen',       pet: 'Orbit',    petKind: 'parrot' },
-  { slug: 'mateo',  name: 'Mateo Alvarez',   pet: 'Pepper',   petKind: 'dog' },
-  { slug: 'amina',  name: 'Amina Okafor',    pet: 'Mochi',    petKind: 'rabbit' },
-  { slug: 'eli',    name: 'Eli Rosen',       pet: 'Sprocket', petKind: 'ferret' },
-  { slug: 'priya',  name: 'Priya Shah',      pet: 'Pixel',    petKind: 'cat' },
-  { slug: 'jordan', name: 'Jordan Brooks',   pet: 'Scout',    petKind: 'dog' },
-  { slug: 'lena',   name: 'Lena Yazzie',     pet: 'Mooncake', petKind: 'cat' },
-  { slug: 'lucy',   name: 'Lucy',            pet: 'Biscuit',  petKind: 'guinea pig' },
+  { slug: 'maya',   name: 'Maya Chen',       pet: 'Orbit',    petKind: 'cat',        petBreed: 'black domestic cat, white chest patch' },
+  { slug: 'mateo',  name: 'Mateo Alvarez',   pet: 'Pepper',   petKind: 'parrot',     petBreed: 'green cheek conure' },
+  { slug: 'amina',  name: 'Amina Okafor',    pet: 'Mochi',    petKind: 'rabbit',     petBreed: 'cream lop-eared rabbit' },
+  { slug: 'eli',    name: 'Eli Rosen',       pet: 'Sprocket', petKind: 'rat',        petBreed: 'black and white fancy rat' },
+  { slug: 'priya',  name: 'Priya Shah',      pet: 'Pixel',    petKind: 'gecko',      petBreed: 'leopard gecko' },
+  { slug: 'jordan', name: 'Jordan Brooks',   pet: 'Scout',    petKind: 'dog',        petBreed: 'beagle mix' },
+  { slug: 'lena',   name: 'Lena Yazzie',     pet: 'Mooncake', petKind: 'hamster',    petBreed: 'Syrian hamster' },
+  { slug: 'lucy',   name: 'Lucy',            pet: 'Biscuit',  petKind: 'guinea pig', petBreed: 'tricolour guinea pig' },
 ];
 
 /** In-fiction names for the universal resources. Use these strings in all UI. */
