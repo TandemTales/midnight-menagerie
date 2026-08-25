@@ -74,6 +74,12 @@ function smoothClosed(pts) {
 }
 const f = (v) => (Math.round(v * 10) / 10);
 
+/** The Flashes slider as a gain. Missing means full; anything else clamps. */
+function clamp01(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : 1;
+}
+
 /**
  * An organic trunk. Centre is (0, -ry); the base sits on y = 0.
  * `flat` pins the bottom vertices to the floor so it reads as standing.
@@ -154,6 +160,9 @@ const MOTIF = {
   'patchwork-giant': 'slam', bedframe: 'slam', snuffer: 'slam',
 };
 const BODY_MOTIF = { squat: 'pounce', 'tall-thin': 'stoop', sprawling: 'ripple', floating: 'drift' };
+
+/** How far `setPlateLimit` may lift a plate before it starts hiding the body. */
+const PLATE_LIFT_MAX = 92;
 
 /* ── silhouette props ──────────────────────────────────────────────────────── */
 /**
@@ -672,11 +681,13 @@ let VSEQ = 0;
 export class EnemyView {
   /**
    * @param {object} snap  engine enemy snapshot (+ `def` for palette/shape if given)
-   * @param {object} [o]   { clock, reduceMotion, def, index, count }
+   * @param {object} [o]   { clock, reduceMotion, flashes, def, index, count }
    */
   constructor(snap, o = {}) {
     this.clock = o.clock || null;
     this.reduceMotion = !!o.reduceMotion;
+    /** Flashes slider, 0..1. Zero means "no bloom", never "no feedback". */
+    this.flashes = clamp01(o.flashes);
     this.id = snap.id;
     this.name = snap.name;
     this.def = o.def || snap.def || null;
@@ -820,6 +831,14 @@ export class EnemyView {
         <div class="cb-enemy__flash"></div>
       </div>
       <div class="cb-enemy__plate">
+        <!-- COUNTERS FIRST. Measured round 4 at 1280x720, 1600x900 and
+             1920x1080: the House Bell's Resonance 0/4 and The Butler's
+             Flustered chip sat UNDER the player's own hand — elementFromPoint
+             at each chip's centre returned DIV.mm-card — and those chips are
+             the exact mechanic each of those fights is built to teach. They
+             now sit at the top of the plate, and combat.js additionally lifts
+             the whole plate clear of the fan (see setPlateLimit below). -->
+        <div class="cb-enemy__counters"></div>
         <div class="cb-enemy__name"></div>
         <div class="cb-enemy__bar">
           <div class="cb-enemy__ghost"></div>
@@ -827,7 +846,6 @@ export class EnemyView {
           <div class="cb-enemy__hp"><span class="cb-enemy__hpn"></span><span class="cb-enemy__hpm"></span></div>
         </div>
         <div class="cb-enemy__guard" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 L21 5.5 C21 14 17 20 12 22.5 C7 20 3 14 3 5.5 Z"/></svg><span></span></div>
-        <div class="cb-enemy__counters"></div>
         <div class="cb-enemy__statuses"></div>
       </div>
       <div class="cb-enemy__preview" hidden></div>`;
@@ -855,6 +873,7 @@ export class EnemyView {
     this.$alts = el.querySelector('.cb-enemy__alts');
     this.$queue = el.querySelector('.cb-enemy__queue');
     this.$preview = el.querySelector('.cb-enemy__preview');
+    this.$plate = el.querySelector('.cb-enemy__plate');
     this.$eyes = Array.from(el.querySelectorAll('.rg-eye'));
     this.$pupils = Array.from(el.querySelectorAll('.rg-pupil'));
     this.$lids = Array.from(el.querySelectorAll('.rg-lid'));
@@ -867,6 +886,34 @@ export class EnemyView {
     this._statusKey = '';
     this.setState(snap);
     this.a.spawn = 1;
+  }
+
+  /**
+   * Keep this creature's plate — counters, name, Courage bar, statuses —
+   * entirely above `limitY` (a viewport y in CSS pixels, normally the top edge
+   * of the player's hand minus a gap). Returns the lift actually applied.
+   *
+   * WHY THIS IS NOT PURE CSS: the overlap depends on the creature's rendered
+   * height, which depends on tier, arena, `--e-scale` and the viewport, and on
+   * where card-feel's fan happens to sit. Round 4's `--e-h: min(..., 100vh -
+   * 500px)` budget forgot the 104px the intent stack reserves above the
+   * creature, so at 1600x900 the plate ended 26px BELOW the arena floor and
+   * the fan covered it. Measured, not modelled.
+   *
+   * Called from the scene on resize / turn boundaries only — never per frame.
+   */
+  setPlateLimit(limitY) {
+    if (!this.$plate || !Number.isFinite(limitY)) return 0;
+    const prev = this._plift || 0;
+    if (prev) this.$plate.style.setProperty('--e-plift', '0px');
+    const bottom = this.$plate.getBoundingClientRect().bottom;
+    const over = bottom - limitY;
+    // Capped: a plate that climbs onto the creature's shoulders is worse than
+    // one that clips a card corner.
+    const lift = over > 0 ? -Math.min(Math.round(over), PLATE_LIFT_MAX) : 0;
+    this._plift = lift;
+    this.$plate.style.setProperty('--e-plift', lift + 'px');
+    return lift;
   }
 
   _limbs(b, n, back) {
@@ -1274,8 +1321,13 @@ export class EnemyView {
     this.el.classList.remove('is-hit');
     void this.el.offsetWidth;
     this.el.classList.add('is-hit');
-    this.$flash.style.opacity = String(Math.min(0.6, 0.24 + k * 0.28));
-    this._flashDecay = 1;
+    /* Gated by the Flashes slider (0..1), which Reduced motion drives to zero.
+       Round 4 lit this at full strength no matter what the settings said. */
+    const g = this.flashes;
+    if (g > 0) {
+      this.$flash.style.opacity = String(g * Math.min(0.6, 0.24 + k * 0.28));
+      this._flashDecay = g;
+    }
   }
 
   /** Guard absorbed the hit — a firmer, duller reaction. */
@@ -1525,16 +1577,254 @@ const f2 = (v) => (Math.round(v * 1000) / 1000);
  * exchange are written once and read the same.
  * ═══════════════════════════════════════════════════════════════════════════ */
 
-/** Companion accents. Presentation only — the data layer carries no palette. */
+/**
+ * Companion accents. Presentation only — the data layer carries no palette.
+ * Re-keyed against `game/assets/portraits/<slug>.png`, which is the reference
+ * for what each Companion actually looks like. Round 4 had Marmalade painted
+ * pumpkin-orange (she is a translucent blue-white GHOST cat), Crinkle gold
+ * (a black paper crow) and Boggle mint green (navy fur, yellow eyes), so the
+ * board and the portrait disagreed about the same creature.
+ *   [0] body   [1] highlight / belly / carved light   [2] outline + shadow
+ */
 const PALS = {
-  marmalade: ['#f2a44a', '#ffd7a3', '#7a3c12'], wisp: ['#8fd7ff', '#dff4ff', '#2a5f80'],
-  crumbula: ['#c9b28a', '#efe2c6', '#5b4a2e'], boggle: ['#8fd18a', '#dcf3d6', '#33552f'],
-  bones: ['#e8e2d2', '#ffffff', '#6b6455'], pipkin: ['#f2c14e', '#ffe9b0', '#7a5a12'],
-  taffy: ['#f0a3c8', '#ffdcec', '#7d3a58'], hush: ['#a9a0d8', '#e2dcff', '#443a70'],
-  truffle: ['#b98a5e', '#e8cfae', '#5c3d22'], mopsy: ['#dcd6ef', '#f6f3ff', '#6a6188'],
-  drizzle: ['#7fb6e6', '#d6ecff', '#2f5878'], pudding: ['#d8a26a', '#f6dcbd', '#6b452a'],
-  wink: ['#9d8ad4', '#ded3ff', '#453a6e'], mossbit: ['#7fae72', '#d3ecc9', '#31502c'],
-  brambleboo: ['#a2c46a', '#e0f0bd', '#425a25'], crinkle: ['#e9c46a', '#fff0c4', '#7a5c1c'],
+  marmalade: ['#a6dff2', '#ecfbff', '#3c7b96'], wisp: ['#8fd7ff', '#dff4ff', '#2a5f80'],
+  crumbula: ['#bab7c6', '#efeaf5', '#6d2331'], boggle: ['#3f4674', '#f2d06b', '#1a1e35'],
+  bones: ['#e8e2d2', '#ffffff', '#6b6455'], pipkin: ['#f2932e', '#ffd980', '#6a3a10'],
+  taffy: ['#f0a3c8', '#ffdcec', '#7d3a58'], hush: ['#4b3f74', '#d8c8ff', '#191231'],
+  truffle: ['#9d81c2', '#dcecc6', '#3f3060'], mopsy: ['#d9c49b', '#f4e7c9', '#6d5533'],
+  drizzle: ['#9dc4e8', '#e8f4ff', '#3c5f80'], pudding: ['#cfe3ea', '#f6fdff', '#5b7a86'],
+  wink: ['#9d8ad4', '#ded3ff', '#453a6e'], mossbit: ['#8d9c80', '#cfe6b6', '#3b4435'],
+  brambleboo: ['#a2c46a', '#e0f0bd', '#425a25'], crinkle: ['#7b829a', '#dfe4f2', '#24242f'],
+};
+
+/* ══ PER-COMPANION SILHOUETTES ═══════════════════════════════════════════════
+ * Round 4 drew ONE cat head — pointed ears, whiskers, curled tail — for all
+ * sixteen Companions and changed only the fill. `shots/p6-74-pal-compare.png`
+ * put Bones the Skeleton Puppy, Marmalade the Ghost Cat and Taffy the Candy
+ * Slime side by side and they were the same image three times. Enemies have
+ * had per-silhouette PROPS since round 2; the player's own Companion had a
+ * colour and nothing else.
+ *
+ * Body space: origin at the Companion's centre, +x toward the creatures (she
+ * faces right), −y up. Everything lives inside roughly x ∈ [-38, 40],
+ * y ∈ [-40, 30] so the drop-in translate is the same for all sixteen.
+ *
+ * Materials — every one of these is a class, never a literal, so the three
+ * accents in PALS above are the only colour decision:
+ *   pp-body   accent 1, outlined      pp-light  accent 2 (belly, muzzle, glaze)
+ *   pp-dark   accent 3 (cape, pot)    pp-line / pp-thin  accent-3 strokes
+ *   pp-eye    ink                     pp-glint  spec highlight
+ *   pp-glow   spectral halo           pp-hot    carved lantern light
+ *   pp-sclera white of a big eye      pp-pink   tongue
+ */
+let HERO_UID = 0;
+
+/* A soft halo without a filter or a gradient id: three rings of falling
+   opacity. A single flat ellipse read as a grey DISC behind Marmalade — the
+   same "debug bounding box" note the reviewer made about the Kid. */
+const PP_GLOW = (rx, ry) =>
+  `<ellipse class="pp-glow pp-glow--3" cx="0" cy="0" rx="${f(rx * 1.55)}" ry="${f(ry * 1.55)}"/>`
+  + `<ellipse class="pp-glow pp-glow--2" cx="0" cy="0" rx="${f(rx * 1.26)}" ry="${f(ry * 1.26)}"/>`
+  + `<ellipse class="pp-glow" cx="0" cy="0" rx="${f(rx)}" ry="${f(ry)}"/>`;
+
+const PP_EYES = (x, y, r) =>
+  `<circle class="pp-eye" cx="${-x}" cy="${y}" r="${r}"/>`
+  + `<circle class="pp-eye" cx="${x}" cy="${y}" r="${r}"/>`
+  + `<circle class="pp-glint" cx="${-x - r * 0.4}" cy="${y - r * 0.45}" r="${f(r * 0.36)}"/>`
+  + `<circle class="pp-glint" cx="${x - r * 0.4}" cy="${y - r * 0.45}" r="${f(r * 0.36)}"/>`;
+
+const PAL_ART = {
+  /* Ghost Cat — pointed ears and whiskers, but the body ENDS in a scalloped
+     spectral drape instead of legs. She is the only cat left in the set. */
+  marmalade:
+    PP_GLOW(29, 28)
+    + '<path class="pp-body" d="M-20,-17 l-5,-19 l19,9 Z"/>'
+    + '<path class="pp-body" d="M20,-17 l5,-19 l-19,9 Z"/>'
+    + '<path class="pp-body" d="M-22,-4 a22,21 0 1 1 44,0 q0,20 -3,29 q-7,-8 -10,0 q-4,-8 -8,0'
+    + ' q-4,-8 -8,0 q-4,-8 -9,-1 q-6,-9 -6,-28 Z"/>'
+    + '<ellipse class="pp-light" cx="0" cy="4" rx="11" ry="7"/>'
+    + '<path class="pp-thin" d="M-21,3 h-14 M21,3 h14"/>'
+    + PP_EYES(10, -7, 4.4),
+
+  /* Baby Will-o'-Wisp — a teardrop of flame. No ears, no limbs, no tail. */
+  wisp:
+    PP_GLOW(26, 30)
+    + '<path class="pp-body" d="M0,-34 q18,22 18,36 a18,18 0 0 1 -36,0 q0,-14 18,-36 Z"/>'
+    + '<path class="pp-light" d="M0,-13 q9,12 9,20 a9,9 0 0 1 -18,0 q0,-8 9,-20 Z"/>'
+    + PP_EYES(7, 3, 3.4)
+    + '<path class="pp-thin" d="M-4,13 q4,-4 8,0"/>',
+
+  /* Vampire Chinchilla — saucer ears, high collar with a red-lined cape, one
+     fluffy tail the size of the rest of him. */
+  crumbula:
+    '<path class="pp-dark" d="M-25,-3 q-16,20 -9,33 q19,9 36,0 q6,-13 -9,-33 Z"/>'
+    + '<path class="pp-body" d="M23,7 q19,-7 17,-24 q-3,-15 -15,-11 q11,7 6,20 q-3,10 -8,15 Z"/>'
+    + '<circle class="pp-body" cx="-20" cy="-19" r="13"/><circle class="pp-body" cx="20" cy="-19" r="13"/>'
+    + '<circle class="pp-light" cx="-20" cy="-19" r="7"/><circle class="pp-light" cx="20" cy="-19" r="7"/>'
+    + '<ellipse class="pp-body" cx="0" cy="-1" rx="19" ry="17"/>'
+    + '<ellipse class="pp-light" cx="0" cy="7" rx="9" ry="6"/>'
+    + '<path class="pp-glint" d="M-5,11 l2,7 l2,-7 Z M3,11 l2,7 l2,-7 Z"/>'
+    + '<path class="pp-line" d="M-15,15 q15,9 30,0"/>'
+    + PP_EYES(9, -5, 4.2),
+
+  /* Monster Under the Bed — a ragged tuft of navy fur, two lamp-yellow eyes
+     and three claws. No face beyond the eyes; that is the joke. */
+  boggle:
+    '<path class="pp-body" d="M-31,2 l7,-11 l-5,-13 l12,5 l2,-14 l10,9 l6,-12 l6,12 l10,-9 l2,14'
+    + ' l12,-5 l-5,13 l7,11 q-9,17 -32,17 q-23,0 -32,-17 Z"/>'
+    + '<path class="pp-line" d="M-15,17 l-3,9 M0,20 l0,9 M15,17 l3,9"/>'
+    + '<circle class="pp-light" cx="-10" cy="-3" r="9"/><circle class="pp-light" cx="11" cy="-3" r="9"/>'
+    + '<ellipse class="pp-eye" cx="-9" cy="-3" rx="3.6" ry="6"/><ellipse class="pp-eye" cx="12" cy="-3" rx="3.6" ry="6"/>'
+    + '<circle class="pp-glint" cx="-12" cy="-7" r="2"/><circle class="pp-glint" cx="9" cy="-7" r="2"/>',
+
+  /* Skeleton Puppy — floppy ears, a MUZZLE (not whiskers), a hinged jaw,
+     eye sockets, a rib cage and a tail made of two bones. */
+  bones:
+    '<path class="pp-body" d="M-40,10 q-6,-5 -1,-9 q5,-4 9,1 l14,-9 q6,-4 9,1 q3,6 -3,9 l-15,9'
+    + ' q1,7 -5,8 q-7,0 -8,-6 Z"/>'
+    + '<path class="pp-body" d="M-19,-14 q-14,-2 -15,13 q-1,14 10,16 q6,-13 5,-29 Z"/>'
+    + '<path class="pp-body" d="M18,-14 q14,-2 15,13 q1,14 -10,16 q-6,-13 -5,-29 Z"/>'
+    + '<path class="pp-body" d="M-19,-7 q0,-19 19,-19 q19,0 19,19 q0,10 -6,14 l0,7 q-13,7 -26,0 l0,-7 q-6,-4 -6,-14 Z"/>'
+    + '<path class="pp-light" d="M7,0 q22,-2 24,8 q0,10 -24,9 Z"/>'
+    + '<ellipse class="pp-eye" cx="30" cy="7" rx="5" ry="4"/>'
+    + '<path class="pp-thin" d="M8,15 h20 M13,15 v4 M19,15 v4 M25,15 v4"/>'
+    + '<circle class="pp-eye" cx="-9" cy="-7" r="6.4"/><circle class="pp-eye" cx="9" cy="-7" r="6.4"/>'
+    + '<circle class="pp-glint" cx="-11" cy="-10" r="2"/><circle class="pp-glint" cx="7" cy="-10" r="2"/>'
+    + '<path class="pp-thin" d="M-13,16 q7,4 14,1 M-14,21 q8,4 15,0"/>',
+
+  /* Pumpkin Frog — a carved gourd for a head, a curl of vine, and the wide
+     splayed feet of a frog under it. */
+  pipkin:
+    '<path class="pp-line" d="M-17,17 q-10,7 -3,12 M17,17 q10,7 3,12"/>'
+    + '<ellipse class="pp-body" cx="0" cy="0" rx="25" ry="22"/>'
+    + '<path class="pp-thin" d="M-13,-19 q-5,19 0,39 M13,-19 q5,19 0,39"/>'
+    + '<path class="pp-dark" d="M-5,-22 l3,-12 l8,0 l-2,12 Z"/>'
+    + '<path class="pp-line" d="M5,-32 q11,-7 9,3 q-2,8 -9,3"/>'
+    + '<path class="pp-hot" d="M-16,-7 l11,-7 l2,11 Z M16,-7 l-11,-7 l-2,11 Z"/>'
+    + '<path class="pp-hot" d="M-13,5 l5,7 l4,-5 l5,7 l4,-5 l5,5 q-11,9 -23,-9 Z"/>',
+
+  /* Candy Slime — a glossy dome under a poured glaze that drips over the
+     edge, sitting in its own puddle. No ears, no eyes but two dots. */
+  taffy:
+    '<ellipse class="pp-body" cx="0" cy="19" rx="31" ry="6"/>'
+    + '<path class="pp-body" d="M-27,20 q-2,-32 27,-32 q29,0 27,32 Z"/>'
+    + '<path class="pp-light" d="M-25,3 q4,-25 25,-25 q21,0 25,25 q-5,5 -8,-3 q-3,10 -7,1'
+    + ' q-4,11 -8,0 q-4,10 -8,-1 q-3,9 -7,-1 q-4,8 -12,4 Z"/>'
+    + PP_EYES(9, 6, 3.2)
+    + '<path class="pp-thin" d="M-4,13 q4,4 8,0"/>'
+    + '<ellipse class="pp-glint" cx="-10" cy="-6" rx="4" ry="7" transform="rotate(-22 -10 -6)"/>',
+
+  /* Zombie Hedgehog — a fan of quills over a stitched, patched body and a
+     small pointed snout. */
+  truffle:
+    '<path class="pp-body" d="M-28,2 l-7,-15 l12,4 l-3,-17 l12,9 l3,-17 l9,13 l8,-15 l6,16'
+    + ' l11,-9 l1,16 l12,-5 l-5,15 Z"/>'
+    + '<ellipse class="pp-light" cx="6" cy="6" rx="22" ry="16"/>'
+    + '<path class="pp-dark" d="M24,4 q9,0 9,6 q0,6 -9,6 Z"/>'
+    + '<circle class="pp-eye" cx="30" cy="10" r="3"/>'
+    + '<path class="pp-thin" d="M-6,-2 l6,6 M0,-2 l-6,6 M12,16 h9 M16,13 v6"/>'
+    + PP_EYES(8, 2, 4),
+
+  /* Shadow Ferret — long low body pointed at the creatures, tiny round ears,
+     a ribbon of smoke where the tail should be, eyes that are the only light. */
+  hush:
+    '<path class="pp-smoke" d="M-24,10 q-17,-4 -14,-19 q3,-13 13,-8 q-7,8 -1,15 q4,6 12,7 Z"/>'
+    + '<circle class="pp-body" cx="-2" cy="-17" r="6"/><circle class="pp-body" cx="14" cy="-19" r="6"/>'
+    + '<path class="pp-body" d="M-25,10 q-7,-15 8,-19 q5,-13 19,-13 q17,0 20,15 q2,15 -12,19'
+    + ' q-20,6 -35,-2 Z"/>'
+    + '<path class="pp-body" d="M26,-4 q13,1 13,7 q0,7 -14,7 Z"/>'
+    + '<circle class="pp-eye" cx="34" cy="3" r="2.6"/>'
+    + '<ellipse class="pp-light" cx="7" cy="-9" rx="6.5" ry="5.5"/>'
+    + '<ellipse class="pp-light" cx="23" cy="-10" rx="6" ry="5"/>'
+    + '<ellipse class="pp-eye" cx="8" cy="-9" rx="2.6" ry="4"/><ellipse class="pp-eye" cx="24" cy="-10" rx="2.4" ry="3.8"/>'
+    + '<circle class="pp-glint" cx="5" cy="-11" r="1.5"/><circle class="pp-glint" cx="21" cy="-12" r="1.4"/>',
+
+  /* Rag Doll Bunny — two long stitched ears, one button eye, one X of thread
+     where the other used to be, and a bow at the throat. */
+  mopsy:
+    '<path class="pp-body" d="M-13,-15 q-10,-23 -3,-32 q8,-8 11,2 q3,11 0,30 Z"/>'
+    + '<path class="pp-body" d="M12,-15 q12,-21 6,-31 q-7,-9 -12,1 q-4,11 -2,30 Z"/>'
+    + '<path class="pp-light" d="M-10,-18 q-6,-16 -2,-22 q4,-4 5,2 q1,8 0,20 Z"/>'
+    + '<path class="pp-light" d="M9,-18 q7,-15 4,-21 q-4,-5 -7,1 q-2,8 -1,20 Z"/>'
+    + '<ellipse class="pp-body" cx="0" cy="0" rx="22" ry="19"/>'
+    + '<path class="pp-thin" d="M0,-19 v38 M-9,-9 l7,7 M-2,-9 l-7,7"/>'
+    + '<circle class="pp-eye" cx="10" cy="-5" r="4.6"/><circle class="pp-light" cx="10" cy="-5" r="1.6"/>'
+    + '<ellipse class="pp-light" cx="1" cy="7" rx="8" ry="6"/>'
+    + '<path class="pp-thin" d="M1,7 v5 M1,12 q-4,3 -6,0 M1,12 q4,3 6,0"/>'
+    + '<path class="pp-dark" d="M-16,16 l-10,-6 l0,13 Z M-8,16 l10,-6 l0,13 Z"/>'
+    + '<circle class="pp-dark" cx="-12" cy="17" r="4"/>',
+
+  /* Tombstone Turtle — the shell IS a headstone, moss along the shoulder,
+     head out to the right, four stumpy feet. */
+  mossbit:
+    '<path class="pp-body" d="M-25,19 v-17 q0,-19 25,-19 q25,0 25,19 v17 Z"/>'
+    + '<path class="pp-thin" d="M-9,-7 h18 M-9,1 h12"/>'
+    + '<path class="pp-line" d="M-25,3 q8,-7 15,2 q8,-7 15,2 q8,-7 13,1"/>'
+    + '<ellipse class="pp-light" cx="30" cy="12" rx="11" ry="9"/>'
+    + '<circle class="pp-eye" cx="34" cy="10" r="2.8"/>'
+    + '<circle class="pp-glint" cx="33" cy="8.5" r="1.1"/>'
+    + '<ellipse class="pp-light" cx="-16" cy="21" rx="8" ry="5"/><ellipse class="pp-light" cx="12" cy="21" rx="8" ry="5"/>',
+
+  /* Graveyard Pug — flat wrinkled face, folded ears, tongue out, corkscrew
+     tail, and translucent all through. */
+  pudding:
+    PP_GLOW(29, 25)
+    + '<path class="pp-line" d="M-24,3 q-13,-2 -11,-11 q2,-8 9,-3 q6,4 -1,9"/>'
+    + '<ellipse class="pp-body" cx="0" cy="-2" rx="23" ry="20"/>'
+    + '<path class="pp-dark" d="M-20,-14 q-8,-4 -8,7 q0,9 9,9 Z M20,-14 q8,-4 8,7 q0,9 -9,9 Z"/>'
+    + '<ellipse class="pp-light" cx="2" cy="8" rx="14" ry="10"/>'
+    + '<path class="pp-thin" d="M-10,-1 q10,6 20,0"/>'
+    + '<ellipse class="pp-eye" cx="2" cy="4" rx="5" ry="4"/>'
+    + '<path class="pp-pink" d="M-3,12 q7,0 8,8 q-5,6 -9,0 Z"/>'
+    + PP_EYES(11, -6, 5),
+
+  /* Eyeball Spider — one enormous eye, eight legs. Nothing else needed. */
+  wink:
+    '<path class="pp-line" d="M-16,-4 q-14,-12 -20,-18 M-18,2 q-16,-4 -24,-4'
+    + ' M-17,9 q-15,5 -21,12 M-13,15 q-10,11 -13,19'
+    + ' M16,-4 q14,-12 20,-18 M18,2 q16,-4 24,-4'
+    + ' M17,9 q15,5 21,12 M13,15 q10,11 13,19"/>'
+    + '<ellipse class="pp-body" cx="0" cy="0" rx="21" ry="19"/>'
+    + '<path class="pp-thin" d="M-19,-9 l-6,-5 M0,-19 l0,-7 M19,-9 l6,-5"/>'
+    + '<circle class="pp-sclera" cx="0" cy="-1" r="13"/>'
+    + '<circle class="pp-light" cx="0" cy="-1" r="8"/>'
+    + '<circle class="pp-eye" cx="0" cy="-1" r="4"/>'
+    + '<circle class="pp-glint" cx="-4" cy="-6" r="2.4"/>',
+
+  /* Raincloud Ghost — a bumpy cloud with rain still falling out of it. */
+  drizzle:
+    '<path class="pp-body" d="M-29,9 a12,12 0 0 1 3,-22 a14,14 0 0 1 23,-9 a13,13 0 0 1 21,7'
+    + ' a12,12 0 0 1 4,24 Z"/>'
+    + '<path class="pp-light" d="M-24,-6 a11,11 0 0 1 18,-10 a12,12 0 0 1 17,4 q-16,10 -35,6 Z"/>'
+    + '<path class="pp-light" d="M-14,12 q4,7 0,10 q-5,2 -5,-3 q0,-3 5,-7 Z'
+    + ' M2,15 q4,8 0,11 q-6,2 -6,-3 q0,-3 6,-8 Z M16,11 q4,7 0,10 q-5,2 -5,-3 q0,-3 5,-7 Z"/>'
+    + PP_EYES(9, -3, 4)
+    + '<path class="pp-thin" d="M-4,5 q4,4 8,0"/>',
+
+  /* Haunted Houseplant — a carved gourd growing out of a cracked pot, with
+     two leaves and a tendril. */
+  brambleboo:
+    '<path class="pp-dark" d="M-16,7 h32 l-5,23 h-22 Z"/>'
+    + '<path class="pp-dark" d="M-19,3 h38 v7 h-38 Z"/>'
+    + '<path class="pp-thin" d="M-4,12 l3,14 M7,12 l-2,14"/>'
+    + '<path class="pp-light" d="M-7,-23 q-18,-13 -24,2 q17,9 24,-2 Z"/>'
+    + '<path class="pp-light" d="M7,-25 q17,-14 23,0 q-16,10 -23,0 Z"/>'
+    + '<path class="pp-line" d="M2,-25 q5,-13 13,-9 q7,4 0,9"/>'
+    + '<ellipse class="pp-body" cx="0" cy="-6" rx="20" ry="18"/>'
+    + '<path class="pp-hot" d="M-13,-11 l9,-6 l1,10 Z M13,-11 l-9,-6 l-1,10 Z"/>'
+    + '<path class="pp-hot" d="M-11,0 l4,6 l4,-4 l4,6 l4,-5 q-4,9 -16,-3 Z"/>',
+
+  /* Paper Crow — folded, not drawn. Every edge is straight, every plane is a
+     flat facet, and the fold lines are the only interior detail. */
+  crinkle:
+    '<path class="pp-dark" d="M-38,16 l18,-20 l9,17 Z"/>'
+    + '<path class="pp-body" d="M-22,10 l13,-26 l23,-9 l16,18 l-11,24 Z"/>'
+    + '<path class="pp-light" d="M-17,-2 l26,-13 l6,24 Z"/>'
+    + '<path class="pp-body" d="M9,-19 l19,-11 l9,13 l-13,11 Z"/>'
+    + '<path class="pp-dark" d="M31,-13 l19,7 l-18,9 Z"/>'
+    + '<path class="pp-thin" d="M-9,-16 l5,26 M14,-17 l5,24 M9,-19 l19,7"/>'
+    + '<circle class="pp-glint" cx="23" cy="-16" r="4"/>'
+    + '<circle class="pp-eye" cx="23" cy="-16" r="2.6"/>',
 };
 
 export class PlayerView {
@@ -1542,6 +1832,8 @@ export class PlayerView {
   constructor(o = {}) {
     this.clock = o.clock || null;
     this.reduceMotion = !!o.reduceMotion;
+    /** Flashes slider, 0..1. Zero means "no bloom", never "no feedback". */
+    this.flashes = clamp01(o.flashes);
     this.slug = String(o.companion || 'marmalade');
     this.rnd = mulberry(hash32(this.slug));
     this.a = {
@@ -1557,47 +1849,109 @@ export class PlayerView {
 
   _build() {
     const pal = PALS[this.slug] || PALS.marmalade;
+    const art = PAL_ART[this.slug] || PAL_ART.marmalade;
+    const gid = 'kd' + (++HERO_UID);
     const el = document.createElement('div');
     el.className = 'cb-hero';
     el.setAttribute('aria-hidden', 'true');   // the .cb-player panel is the label
     el.style.setProperty('--c1', pal[0]);
     el.style.setProperty('--c2', pal[1]);
     el.style.setProperty('--c3', pal[2]);
-    // Body space: feet on y=0, up is −y, facing +x (the creatures are to the right).
+    /* Body space: feet on y=0, up is minus-y, facing +x (the creatures are to
+       the right).
+       ROUND 4 WAS A FLAT TWO-TONE DOLL: one fill for the coat, one for the
+       face, no form, no light, and both legs welded into a single static
+       group, so the strike beat was pure translation. The reviewer's bar is
+       that the strike silhouette reads at 44px of displacement WITHOUT the
+       motion selling it, which needs the shape itself to change. So:
+         - the coat, face and hair are shaded off the torch (a warm key on the
+           right, a cold spectral rim on the left) rather than flat-filled;
+         - the legs are two independent groups that stride;
+         - the off arm counterweights, the scarf tail and coat hem trail;
+         - she casts a real contact shadow on the floor line instead of
+           standing inside a light-blue ring. */
     el.innerHTML = `
       <svg class="cb-hero__rig" viewBox="-120 -270 260 285" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+        <defs>
+          <linearGradient id="${gid}c" x1="0" y1="0.1" x2="1" y2="0.5">
+            <stop offset="0" class="pr-c1"/><stop offset="0.5" class="pr-c2"/><stop offset="1" class="pr-c3"/>
+          </linearGradient>
+          <radialGradient id="${gid}f" cx="0.74" cy="0.3" r="0.95">
+            <stop offset="0" class="pr-f1"/><stop offset="1" class="pr-f2"/>
+          </radialGradient>
+          <linearGradient id="${gid}h" x1="0" y1="0" x2="1" y2="0.6">
+            <stop offset="0" class="pr-h1"/><stop offset="1" class="pr-h2"/>
+          </linearGradient>
+          <radialGradient id="${gid}s" cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0" class="pr-s1"/><stop offset="0.5" class="pr-s2"/><stop offset="1" class="pr-s3"/>
+          </radialGradient>
+          <radialGradient id="${gid}p" cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0" class="pr-p1"/><stop offset="1" class="pr-p2"/>
+          </radialGradient>
+        </defs>
+        <!-- THE CONTACT SHADOW, in rig units so it is always exactly under the
+             boots. It sits OUTSIDE pr-root on purpose: the rig's internal lean
+             is her body leaning over her feet, and a shadow does not lean. The
+             lunge itself does move it, because her feet move with it. -->
+        <g class="pr-cast">
+          <ellipse class="pr-pool" cx="4" cy="6" rx="104" ry="30" fill="url(#${gid}p)"/>
+          <ellipse class="pr-shadow" cx="4" cy="6" rx="62" ry="16" fill="url(#${gid}s)"/>
+        </g>
         <g class="pr-root">
+          <g class="pr-legb">
+            <path class="pr-leg pr-leg--back" d="M-5,-70 q-13,30 -11,58"/>
+            <path class="pr-boot pr-boot--back" d="M-32,-13 h23 q5,0 5,6 v8 h-34 q-7,-6 6,-14 Z"/>
+          </g>
+          <g class="pr-armb">
+            <path class="pr-arm pr-arm--back" d="M-24,-148 q-24,16 -26,46"/>
+            <circle class="pr-hand pr-hand--back" cx="-50" cy="-102" r="8"/>
+          </g>
           <g class="pr-pack">
             <path class="pr-packbag" d="M-46,-146 q-22,6 -20,40 q2,30 22,36 l12,-7 v-66 Z"/>
             <path class="pr-packflap" d="M-46,-146 q-22,6 -20,26 q14,10 32,4 v-28 Z"/>
+            <path class="pr-packbuckle" d="M-44,-118 l16,-2 l0,7 l-16,2 Z"/>
             <path class="pr-strap" d="M-26,-152 q-12,40 -4,78"/>
           </g>
-          <g class="pr-legs">
-            <path class="pr-leg" d="M-16,-66 q-6,34 -2,62"/>
-            <path class="pr-leg" d="M16,-66 q8,32 4,62"/>
-            <path class="pr-boot" d="M-26,-6 h30 v12 h-38 q-4,-8 8,-12 Z"/>
-            <path class="pr-boot" d="M8,-6 h30 v12 h-38 q-4,-8 8,-12 Z"/>
+          <g class="pr-legf">
+            <path class="pr-leg" d="M9,-70 q11,30 9,58"/>
+            <path class="pr-boot" d="M4,-13 h23 q5,0 5,6 v8 h-34 q-7,-6 6,-14 Z"/>
           </g>
           <g class="pr-body">
-            <path class="pr-coat" d="M-36,-158 q36,-16 72,0 q18,26 20,62 l6,42 q-42,16 -84,0 l4,-42 q4,-38 18,-62 Z"/>
+            <path class="pr-coat" d="M-36,-158 q36,-16 72,0 q18,26 20,62 l6,42 q-42,16 -84,0 l4,-42 q4,-38 18,-62 Z"
+                  fill="url(#${gid}c)"/>
+            <!-- the hem panel that swings out behind her on the lunge -->
+            <path class="pr-tail" d="M-40,-96 q-16,20 -22,50 q16,10 26,4 q-2,-30 -4,-54 Z"/>
+            <path class="pr-fold" d="M-14,-150 q-10,44 -8,92 M14,-152 q10,44 10,92"/>
             <path class="pr-hem" d="M-42,-56 q42,16 84,0"/>
+            <path class="pr-rim" d="M36,-158 q18,26 20,62 l6,42"/>
+            <path class="pr-scarf" d="M-26,-162 q28,12 54,-2 q4,10 -2,16 q-26,10 -50,-2 Z"/>
+            <path class="pr-scarftail" d="M-24,-152 q-18,10 -26,28 q11,5 18,-4 q7,-11 12,-20 Z"/>
             <circle class="pr-btn" cx="6" cy="-118" r="4"/>
             <circle class="pr-btn" cx="8" cy="-98" r="4"/>
           </g>
           <!-- the swinging arm and the torch; pr-swing is rotated by update() -->
           <g class="pr-swing">
             <path class="pr-arm" d="M22,-150 q38,8 54,40"/>
+            <circle class="pr-hand" cx="72" cy="-108" r="9"/>
             <g class="pr-torch">
               <path class="pr-beam" d="M98,-116 L206,-160 L214,-64 L104,-90 Z"/>
               <path class="pr-torchbody" d="M60,-98 l38,-18 l11,20 l-38,18 Z"/>
+              <path class="pr-torchband" d="M84,-106 l14,-7 l4,7 l-14,7 Z"/>
               <circle class="pr-flame" cx="110" cy="-96" r="17"/>
               <circle class="pr-flamehot" cx="110" cy="-99" r="8"/>
             </g>
           </g>
           <g class="pr-head">
-            <path class="pr-hair" d="M-34,-186 q4,-42 36,-42 q34,0 38,42 q-16,-16 -38,-14 q-22,-2 -36,14 Z"/>
-            <ellipse class="pr-face" cx="4" cy="-182" rx="32" ry="30"/>
-            <path class="pr-hair" d="M-32,-190 q6,-38 36,-38 q32,0 36,34 q-18,-20 -40,-14 q-20,4 -32,18 Z"/>
+            <path class="pr-hair" d="M-34,-186 q4,-42 36,-42 q34,0 38,42 q-16,-16 -38,-14 q-22,-2 -36,14 Z"
+                  fill="url(#${gid}h)"/>
+            <ellipse class="pr-ear" cx="-26" cy="-178" rx="6" ry="8"/>
+            <ellipse class="pr-face" cx="4" cy="-182" rx="32" ry="30" fill="url(#${gid}f)"/>
+            <path class="pr-jaw" d="M-24,-172 q6,26 28,26 q22,0 28,-26 q-14,20 -28,20 q-16,0 -28,-20 Z"/>
+            <path class="pr-hair" d="M-32,-190 q6,-38 36,-38 q32,0 36,34 q-18,-20 -40,-14 q-20,4 -32,18 Z"
+                  fill="url(#${gid}h)"/>
+            <path class="pr-hairlit" d="M8,-224 q22,4 26,26 q-10,-14 -28,-16 Z"/>
+            <path class="pr-strand" d="M-30,-192 q-8,16 -4,30 M36,-196 q10,14 8,30"/>
+            <path class="pr-brow" d="M-11,-192 q7,-4 14,-1 M14,-193 q7,-3 13,1"/>
             <g class="pr-eyes">
               <g class="pr-eye"><ellipse class="pr-sclera" cx="-2" cy="-180" rx="8" ry="9"/>
                 <circle class="pr-pupil" cx="0" cy="-179" r="4"/>
@@ -1608,19 +1962,14 @@ export class PlayerView {
                 <circle class="pr-glint" cx="18" cy="-182" r="1.8"/>
                 <ellipse class="pr-lid" cx="20" cy="-180" rx="9.5" ry="10.5"/></g>
             </g>
-            <path class="pr-mouth" d="M4,-168 q7,7 14,0"/>
+            <path class="pr-nose" d="M11,-176 q4,4 -1,7"/>
+            <ellipse class="pr-blush" cx="-10" cy="-168" rx="7" ry="4"/>
+            <ellipse class="pr-blush" cx="28" cy="-168" rx="7" ry="4"/>
+            <path class="pr-mouth" d="M4,-166 q7,7 14,0"/>
           </g>
-          <!-- the companion, floating at her shoulder -->
-          <g class="pr-pal">
-            <path class="pr-paltail" d="M-96,-196 q-26,-6 -22,-30 q4,-20 22,-12"/>
-            <path class="pr-palear" d="M-92,-224 l-6,-22 l22,10 Z"/>
-            <path class="pr-palear" d="M-56,-224 l6,-22 l-22,10 Z"/>
-            <ellipse class="pr-palbody" cx="-74" cy="-206" rx="26" ry="23"/>
-            <ellipse class="pr-palmuzzle" cx="-74" cy="-197" rx="11" ry="8"/>
-            <circle class="pr-paleye" cx="-84" cy="-210" r="4.5"/>
-            <circle class="pr-paleye" cx="-64" cy="-210" r="4.5"/>
-            <path class="pr-palwhisk" d="M-96,-198 h-13 M-52,-198 h13"/>
-          </g>
+          <!-- The Companion, at her shoulder. One silhouette per Companion:
+               PAL_ART above, keyed the way MOTIF keys the creatures. -->
+          <g class="pr-pal"><g class="pr-palset" transform="translate(-72 -204)">${art}</g></g>
         </g>
       </svg>
       <div class="cb-hero__flash"></div>`;
@@ -1629,7 +1978,13 @@ export class PlayerView {
     this.$body = el.querySelector('.pr-body');
     this.$head = el.querySelector('.pr-head');
     this.$swing = el.querySelector('.pr-swing');
+    this.$legF = el.querySelector('.pr-legf');
+    this.$legB = el.querySelector('.pr-legb');
+    this.$armB = el.querySelector('.pr-armb');
+    this.$tail = el.querySelector('.pr-tail');
+    this.$scarf = el.querySelector('.pr-scarftail');
     this.$pal = el.querySelector('.pr-pal');
+    this.$cast = el.querySelector('.pr-cast');
     this.$flash = el.querySelector('.cb-hero__flash');
     this.$lids = Array.from(el.querySelectorAll('.pr-lid'));
   }
@@ -1688,7 +2043,11 @@ export class PlayerView {
     this.el.classList.remove('is-hit', 'is-clank');
     void this.el.offsetWidth;
     this.el.classList.add(blocked ? 'is-clank' : 'is-hit');
-    if (!blocked) { this.$flash.style.opacity = String(Math.min(0.75, 0.3 + k * 0.36)); this._flash = 1; }
+    const g = this.flashes;
+    if (!blocked && g > 0) {
+      this.$flash.style.opacity = String(g * Math.min(0.75, 0.3 + k * 0.36));
+      this._flash = g;
+    }
   }
 
   guard() {
@@ -1742,7 +2101,29 @@ export class PlayerView {
     this.$head.setAttribute('transform', `translate(${f(a.lean * 6)} ${f(breath * 1.6)})`);
     // the torch arm: −24° drawn back, +64° at the bottom of the swing
     this.$swing.setAttribute('transform', `rotate(${f(a.swing * (a.swing < 0 ? 24 : 64))} 20 -150)`);
+    /* THE STRIDE. These four are what make the strike read as a shape and not
+       as the same doll 44px to the right: the front leg plants forward, the
+       back leg pushes out behind, the off arm counterweights and the coat tail
+       and scarf trail the body. Hips at (0,-72), off shoulder at (-24,-148). */
+    const st = a.swing;
+    this.$legF.setAttribute('transform', `rotate(${f(st * 21 + a.lean * 5)} 0 -72)`);
+    this.$legB.setAttribute('transform', `rotate(${f(st * -26 + a.lean * 5)} 0 -72)`);
+    this.$armB.setAttribute('transform', `rotate(${f(st * -46)} -24 -148)`);
+    const trail = -st * 26 - a.lean * 10;
+    this.$tail.setAttribute('transform', `rotate(${f(trail)} -38 -96)`);
+    this.$scarf.setAttribute('transform', `rotate(${f(trail * 1.25 + bob * 3)} -24 -152)`);
     this.$pal.setAttribute('transform', `translate(${f(bob * 3 - a.lean * 4)} ${f(bob * 5)})`);
+    /* The contact shadow is ON THE FLOOR, so it does not travel with her: it
+       slides a fraction of the lean, stretches as she commits and tightens
+       when she plants. Round 4 had a 1px light-blue ellipse around the whole
+       figure instead, which read as a debug bounding box. */
+    if (this.$cast) {
+      const sx = 1 + Math.abs(a.lean) * 0.20 + a.squash * 0.16;
+      const sy = 1 - Math.abs(a.lean) * 0.12 + a.squash * 0.1;
+      this.$cast.setAttribute('transform',
+        `translate(${f(a.lean * 10 - a.shove * 0.4)} 0) scale(${f2(sx)} ${f2(sy)})`);
+      this.$cast.style.opacity = f2(Math.max(0.25, 0.9 + a.squash * 0.2 - Math.abs(a.lean) * 0.18));
+    }
     const lid = a.blink > 0 ? Math.sin(Math.min(1, a.blink) * Math.PI) : 0;
     // `.pr-lid` is `transform-box: fill-box; transform-origin: 50% 0%` in CSS,
     // so a plain vertical scale closes it from the brow down.

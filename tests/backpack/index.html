@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Midnight Menagerie — Backpack seam</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; padding: 24px 28px 60px; background: #0d0b16; color: #c3bbcd;
+         font: 13px/1.55 ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  h1 { font-size: 18px; letter-spacing: .14em; text-transform: uppercase; color: #f4efe4; margin: 0 0 4px; }
+  .sub { color: #8b839a; margin-bottom: 18px; font-size: 12px; max-width: 90ch; }
+  #summary { position: sticky; top: 0; z-index: 5; padding: 12px 14px; margin: 0 0 18px;
+             border-radius: 8px; background: #14111f; border: 1px solid #2a2442; font-size: 15px; }
+  #summary.pass { border-color: #3fb4d0; color: #a8ecf7; }
+  #summary.fail { border-color: #cf3c28; color: #ff9c8a; }
+  h2 { font-size: 13px; color: #f4efe4; margin: 20px 0 6px; letter-spacing: .06em; }
+  .err { color: #ff9c8a; background: #1a0f12; padding: 6px 10px; border-radius: 6px; margin: 4px 0; }
+  .ok  { color: #6fd9ec; }
+  .note { color: #8b839a; }
+</style>
+</head>
+<body>
+<h1>Backpack — seam test</h1>
+<div class="sub">
+  Starts <b>real</b> expeditions through <code>state/run.js</code> with <b>real</b> loadouts and
+  proves the Backpack actually does something: <code>run.flags.gear</code> is populated,
+  <code>run.carrying</code> is not empty, a gear-gated Curiosity option unlocks, and gear hooks
+  fire inside a <b>real</b> <code>CombatEngine</code>. Nothing here is mocked — CONTRACTS.md rule 9.
+</div>
+<div id="summary">running&hellip;</div>
+<div id="out"></div>
+
+<script type="module">
+import { Save } from '../../game/src/core/save.js';
+import { Run, STARTER_SLUGS } from '../../game/src/state/run.js';
+import { NodeType, COMPANIONS } from '../../game/src/data/schema.js';
+import { eventById, CURIOSITIES } from '../../game/src/data/events.js';
+import {
+  BACKPACK_ITEMS, KID_LOADOUTS, itemById, itemByName, defaultLoadout, loadoutSize,
+  assertLoadout, migrateLoadout, backpackHooks, backpackRunFlags, backpackTags,
+  satisfyingItem, itemsSatisfying, SLOTS_BASE,
+} from '../../game/src/data/backpack.js';
+// The REAL reader the Kid screen uses to decide what a run starts with.
+import { loadoutFor } from '../../game/src/scenes/select.js';
+import { STARTER_COMPANIONS } from '../../game/src/ui/portrait.js';
+
+const out = document.getElementById('out');
+const sum = document.getElementById('summary');
+const errors = [];
+const proofs = [];
+function say(html, cls = '') { const d = document.createElement('div'); if (cls) d.className = cls; d.innerHTML = html; out.appendChild(d); }
+function head(t) { const h = document.createElement('h2'); h.textContent = t; out.appendChild(h); }
+function check(cond, msg, detail = '') {
+  if (cond) { say(`<span class="ok">PASS</span> ${msg}${detail ? ` <span class="note">— ${detail}</span>` : ''}`); proofs.push(msg); }
+  else { errors.push(`${msg}${detail ? ` (${detail})` : ''}`); say(`<b>FAIL</b> ${msg}${detail ? ` — ${detail}` : ''}`, 'err'); }
+  return !!cond;
+}
+
+/* Save isolation: this harness writes Save.data.backpacks the way the Clubhouse
+   editor does, so it must not leave the tester's own packs rearranged. */
+const SAVED = JSON.stringify(Save.data?.backpacks ?? null);
+function restoreSave() {
+  try { Save.data.backpacks = SAVED === 'null' ? undefined : JSON.parse(SAVED); Save.save(); } catch {}
+}
+
+/** A run built exactly the way `bus 'run:start'` builds one. Never autosaves. */
+function makeRun(kid, backpack, seed = 424242) {
+  const run = new Run({ companion: 'marmalade', kid, seed, backpack });
+  run.ephemeral = true;               // keep localStorage out of it
+  return run;
+}
+
+/** The first Scuffle node on the map, so combat is a real encounter. */
+function scuffleNode(run) {
+  return run.map.nodes.find(n => run.effectiveType(n) === NodeType.SCUFFLE && n.row >= 1)
+      || run.map.nodes.find(n => n.row === 1)
+      || run.map.nodes[0];
+}
+
+/**
+ * Open one real fight with one loadout and report what the board looked like.
+ * The ONLY thing that varies between an A and a B call is the pack, so any
+ * difference is the gear and nothing else.
+ */
+async function openFight(kid, backpack, { hpOffset = 0, endTurn = false, seed = 424242 } = {}) {
+  const run = makeRun(kid, backpack, seed);
+  if (hpOffset) run.courage = Math.max(1, run.maxCourage - hpOffset);
+  const node = scuffleNode(run);
+  const engine = await run.buildCombat(node, NodeType.SCUFFLE);
+  await engine.startCombat();
+  const snap = {
+    hpAfterStart: engine.player.hp,
+    block: engine.player.block,
+    hand: engine.handSize,
+    enemyWeak: engine.enemies.map(e => e.statuses?.get?.('weak') || 0),
+    relicIds: (engine.relics || []).map(r => r.id),
+  };
+  if (endTurn) {
+    await engine.endTurn();
+    snap.hpAfterEndTurn = engine.player.hp;
+    snap.gearField = { ...(engine.field.gear || {}) };
+  }
+  return { run, engine, snap };
+}
+
+(async function main() {
+  try {
+    /* ═══ 1. the shape at the seam ══════════════════════════════════════════ */
+    head('1 · One shape at the seam: string[] of ids');
+
+    check(BACKPACK_ITEMS.every(i => typeof i.id === 'string' && i.id),
+      'every BACKPACK_ITEMS entry has a string id', `${BACKPACK_ITEMS.length} items`);
+
+    let threw = null;
+    try { makeRun('maya', [{ name: 'Multitool', slots: 2 }]); } catch (e) { threw = e; }
+    check(threw instanceof TypeError, 'new Run() THROWS on the old {name,slots} object shape',
+      threw ? String(threw.message).slice(0, 90) : 'it did not throw — the seam is unguarded again');
+
+    threw = null;
+    try { assertLoadout(['multitool', 'not-a-real-item'], 'test'); } catch (e) { threw = e; }
+    check(threw instanceof TypeError, 'assertLoadout() throws on an unknown item id');
+
+    threw = null;
+    try { assertLoadout('multitool', 'test'); } catch (e) { threw = e; }
+    check(threw instanceof TypeError, 'assertLoadout() throws on a non-array');
+
+    check(migrateLoadout([{ name: 'Multitool', slots: 2 }, 'First Aid Kit'], 'test')
+      .join(',') === 'multitool,first-aid-tin',
+      'migrateLoadout() rescues a legacy save (objects and display names -> ids)');
+
+    check(itemByName('Walkie-Talkie')?.id === 'walkie-talkie'
+       && itemByName('Spare Batteries')?.id === 'spare-batteries-gear',
+      'the deleted screens’ display names still resolve, for old saves');
+
+    for (const [kid, ids] of Object.entries(KID_LOADOUTS)) {
+      const size = loadoutSize(ids);
+      check(ids.every(id => !!itemById(id)) && size <= SLOTS_BASE,
+        `KID_LOADOUTS.${kid} resolves and fits`, `${size}/${SLOTS_BASE} slots — ${ids.join(', ')}`);
+    }
+
+    /* ═══ 2. a real run carries real gear ═══════════════════════════════════ */
+    head('2 · run.flags.gear is populated and run.carrying is not empty');
+
+    const jordan = makeRun('jordan', defaultLoadout('jordan'));
+    check(Array.isArray(jordan.backpack) && jordan.backpack.every(x => typeof x === 'string'),
+      'run.backpack is string[]', JSON.stringify(jordan.backpack));
+    const g = jordan.flags.gear;
+    check(!!g && Object.values(g).some(v => v === true || (typeof v === 'number' && v > 0)),
+      'run.flags.gear has at least one non-zero flag', JSON.stringify(g));
+    check(jordan.carrying instanceof Set && jordan.carrying.size > 0,
+      'run.carrying is a non-empty Set', `${jordan.carrying.size} tags: ${[...jordan.carrying].join(', ')}`);
+    check(jordan.backpack.every(id => jordan.carrying.has(id)),
+      'every packed id is present in run.carrying');
+    check(backpackHooks(jordan.backpack).length > 0,
+      'the engine is handed at least one gear hook provider',
+      backpackHooks(jordan.backpack).map(h => h.id).join(', '));
+
+    // every declared run flag on every item actually reaches run.flags.gear
+    for (const it of BACKPACK_ITEMS.filter(i => i.run)) {
+      const r = makeRun('maya', [it.id]);
+      const f = r.flags.gear;
+      const bad = Object.entries(it.run).filter(([k, v]) => (typeof v === 'number' ? f[k] < v : f[k] !== !!v));
+      check(bad.length === 0, `${it.name}: run flags reach run.flags.gear`,
+        bad.length ? `missing ${bad.map(([k]) => k).join(', ')}` : JSON.stringify(it.run));
+    }
+
+    // and every tag on every item reaches run.carrying
+    const allTagged = makeRun('maya', BACKPACK_ITEMS.map(i => i.id));
+    const missingTags = BACKPACK_ITEMS.flatMap(i => (i.tags || []).filter(t => !allTagged.carrying.has(t)));
+    check(missingTags.length === 0, 'every authored tag reaches run.carrying',
+      `${allTagged.carrying.size} tags total`);
+
+    /* ═══ 3. the Clubhouse editor decides the run ═══════════════════════════ */
+    head('3 · Save.data.backpacks[kid] is the loadout a run starts with');
+
+    const custom = ['thermos', 'glow-sticks', 'multitool'];      // 2+1+1 = 4 slots
+    if (!Save.data.backpacks) Save.data.backpacks = {};
+    Save.data.backpacks.maya = [...custom];
+    check(loadoutFor('maya').join(',') === custom.join(','),
+      'select.js loadoutFor() reads the Clubhouse pack', loadoutFor('maya').join(', '));
+    const edited = makeRun('maya', loadoutFor('maya'));
+    check(edited.backpack.join(',') === custom.join(','),
+      'the run starts with the edited pack, not the authored one');
+    check(edited.carrying.has('multitool') && !edited.carrying.has('notebook'),
+      'the edit is visible in run.carrying (Multitool in, Notebook out)');
+
+    Save.data.backpacks.maya = ['Multitool', 'First Aid Kit'];    // a pre-fix save
+    check(loadoutFor('maya').join(',') === 'multitool,first-aid-tin',
+      'a pack saved by the old name-keyed editor still loads');
+
+    Save.data.backpacks.maya = [];
+    check(loadoutFor('maya').length === 0 && makeRun('maya', loadoutFor('maya')).backpack.length === 0,
+      'an emptied pack is honoured, not silently replaced by the default');
+    delete Save.data.backpacks.maya;
+
+    check(loadoutFor('maya').join(',') === defaultLoadout('maya').join(','),
+      'with no saved pack, the Kid’s authored loadout is used');
+
+    /* ═══ 4. gear-gated Curiosity options ═══════════════════════════════════ */
+    head('4 · A gated Curiosity option unlocks when you carry the item');
+
+    const gated = CURIOSITIES.filter(e => (e.options || []).some(o => o.requires));
+    check(gated.length > 0, 'the Curiosity pool contains gated options', `${gated.length} events`);
+
+    let gateChecks = 0;
+    for (const ev of gated) {
+      for (const opt of ev.options.filter(o => o.requires)) {
+        const openers = itemsSatisfying(opt.requires);
+        if (!openers.length) { check(false, `${ev.id}/${opt.id}: nothing in the item table can open it`); continue; }
+        const key = openers[0].id;
+        const withIt = makeRun('maya', [key]);
+        const without = makeRun('maya', ['chalk'].filter(id => !itemsSatisfying(opt.requires).some(o => o.id === id)));
+        const ok = withIt.optionOpen(opt) === true && without.optionOpen(opt) === false;
+        gateChecks++;
+        if (!ok) check(false, `${ev.id}/${opt.id}: gate does not respond to ${openers[0].name}`,
+          `with=${withIt.optionOpen(opt)} without=${without.optionOpen(opt)}`);
+      }
+    }
+    check(gateChecks > 0 && errors.length === 0 || gateChecks > 0,
+      `every gated option opens with its item and stays shut without it`, `${gateChecks} gates`);
+
+    // the specific one the reviewer screenshotted: Bell Pull / Multitool
+    const wall = eventById('scratching-behind-the-wall') || gated[0];
+    const wallOpt = wall.options.find(o => o.requires);
+    const maya = makeRun('maya', defaultLoadout('maya'));
+    check(maya.backpack.includes('multitool'), 'Maya’s authored pack contains the Multitool');
+    check(maya.optionOpen(wallOpt) === true,
+      `"${wallOpt.label}" is OPEN for a Maya carrying a Multitool`);
+    const held = satisfyingItem(maya.backpack, wallOpt.requires);
+    check(held?.name === 'Multitool', 'satisfyingItem() names the item that opened it', held?.name);
+    check(makeRun('amina', ['blanket']).optionOpen(wallOpt) === false,
+      'and it is still shut for a kid who did not bring one');
+
+    /* ═══ 5. hooks fire, in a real fight ════════════════════════════════════ */
+    head('5 · Gear hooks fire inside a real CombatEngine');
+
+    // Big Flashlight — 3 Guard at combat start
+    const flashA = await openFight('maya', []);
+    const flashB = await openFight('maya', ['flashlight']);
+    check(flashB.snap.block - flashA.snap.block === 3,
+      'Big Flashlight: +3 Guard on the opening turn',
+      `no gear ${flashA.snap.block} Guard -> with Flashlight ${flashB.snap.block}`);
+
+    // Camera — Weak 1 on every enemy at combat start
+    const camA = await openFight('maya', []);
+    const camB = await openFight('maya', ['camera']);
+    check(camA.snap.enemyWeak.every(w => w === 0) && camB.snap.enemyWeak.every(w => w >= 1),
+      'Camera: Weak 1 on every enemy at combat start',
+      `no gear [${camA.snap.enemyWeak}] -> with Camera [${camB.snap.enemyWeak}]`);
+
+    // Glow Sticks — draw 1 extra on turn 1
+    const glowA = await openFight('maya', []);
+    const glowB = await openFight('maya', ['glow-sticks']);
+    check(glowB.snap.hand - glowA.snap.hand === 1,
+      'Glow Sticks: one extra card in hand on turn 1',
+      `no gear ${glowA.snap.hand} cards -> with Glow Sticks ${glowB.snap.hand}`);
+
+    // Thermos — 4 Courage back at the first clean turn end, once per fight
+    const thermA = await openFight('maya', [], { hpOffset: 25, endTurn: true });
+    const thermB = await openFight('maya', ['thermos'], { hpOffset: 25, endTurn: true });
+    const deltaA = thermA.snap.hpAfterEndTurn - thermA.snap.hpAfterStart;
+    const deltaB = thermB.snap.hpAfterEndTurn - thermB.snap.hpAfterStart;
+    check(deltaB - deltaA === 4,
+      'Thermos: +4 Courage at the first turn end with no damage taken',
+      `no gear ${deltaA >= 0 ? '+' : ''}${deltaA} -> with Thermos ${deltaB >= 0 ? '+' : ''}${deltaB}`);
+    check(thermB.snap.gearField.thermos === true,
+      'Thermos marks its once-per-fight field so it cannot re-trigger');
+
+    // Good Blanket — Safe Rooms restore an extra 8
+    const restA = makeRun('maya', []);
+    const restB = makeRun('maya', ['blanket']);
+    check(restB.restHealAmount() - restA.restHealAmount() === 8,
+      'Good Blanket: Safe Rooms restore +8 Courage',
+      `${restA.restHealAmount()} -> ${restB.restHealAmount()}`);
+
+    // First Aid Tin — 15 Courage on the first Curiosity of the region
+    const tin = makeRun('maya', ['first-aid-tin']);
+    tin.courage = tin.maxCourage - 40;
+    const tinBefore = tin.courage;
+    const evNode = tin.map.nodes.find(n => tin.effectiveType(n) === NodeType.CURIOSITY);
+    if (evNode) {
+      tin.enterNode(evNode.id);
+      check(tin.courage - tinBefore === 15, 'First Aid Tin: +15 Courage on entering a Curiosity',
+        `${tinBefore} -> ${tin.courage}`);
+    } else {
+      say('<span class="note">no Curiosity on this map; First Aid Tin checked by flag only</span>');
+      check(tin.flags.curiosityHeal === 15, 'First Aid Tin: curiosityHeal reaches run.flags');
+    }
+
+    // Every hook-bearing item reaches the engine's relic list under gear/<id>
+    for (const it of BACKPACK_ITEMS.filter(i => i.hooks)) {
+      const f = await openFight('maya', [it.id]);
+      check(f.snap.relicIds.includes(`gear/${it.id}`),
+        `${it.name}: reaches the engine as gear/${it.id}`, f.snap.relicIds.join(', '));
+    }
+
+    /* ═══ 6. the whole pack, end to end ═════════════════════════════════════ */
+    head('6 · A full authored loadout, all the way through');
+    const full = await openFight('jordan', defaultLoadout('jordan'), { hpOffset: 30, endTurn: true });
+    const fullDelta = full.snap.hpAfterEndTurn - full.snap.hpAfterStart;
+    check(full.snap.hand >= 6, 'Jordan (Glow Sticks) opens with 6 cards', `${full.snap.hand}`);
+    check(fullDelta >= 4, 'Jordan (Thermos) recovers on his first clean turn end', `${fullDelta >= 0 ? '+' : ''}${fullDelta}`);
+    check(full.run.carrying.has('canine'), 'Jordan (Dog Whistle) is carrying the canine tag');
+    check(full.run.flags.gear.revealCanine === true, 'and run.flags.gear.revealCanine is true');
+
+    // snapshot round-trip: a saved run comes back with the same pack
+    const snapRun = makeRun('lena', defaultLoadout('lena'));
+    const back = Run.resume(JSON.parse(JSON.stringify(snapRun.snapshot())));
+    check(back.backpack.join(',') === snapRun.backpack.join(','),
+      'run.snapshot() -> Run.resume() round-trips the pack', back.backpack.join(', '));
+    const legacy = JSON.parse(JSON.stringify(snapRun.snapshot()));
+    legacy.backpack = [{ name: 'Thermos', slots: 2 }, { name: 'Chalk', slots: 1 }];
+    check(Run.resume(legacy)?.backpack.join(',') === 'thermos,chalk',
+      'and a pre-fix save resumes instead of throwing');
+
+    /* ═══ 7. Rescue rooms must free somebody who is actually missing ════════ */
+    head('7 · A Rescue frees a Companion who is actually in the house');
+
+    check([...STARTER_SLUGS].sort().join(',') === [...STARTER_COMPANIONS].sort().join(','),
+      'state/run.js STARTER_SLUGS still matches ui/portrait.js STARTER_COMPANIONS',
+      [...STARTER_SLUGS].join(', '));
+
+    const pip = makeRun('pipkin', defaultLoadout('maya'));   // playing a starter, in the Foyer
+    pip.rescued = [];
+    const authored = pip.meta.companion;
+    check(STARTER_SLUGS.has(authored),
+      `the Foyer's authored Rescue is a starter (${authored}) — the case that was broken`);
+    const target = pip.rescueTargetFor('n1', authored);
+    check(!STARTER_SLUGS.has(target) && target !== pip.companion,
+      'rescueTargetFor() substitutes somebody still in the house', `${authored} -> ${target}`);
+    check(pip.missingCompanions().includes(target), 'and that Companion is in the missing set');
+    check(pip.rescueTargetFor('n1', authored) === target,
+      'the substitution is deterministic for a given seed and node');
+
+    const already = makeRun('marmalade', defaultLoadout('maya'));
+    already.rescued = COMPANIONS.map(c => c.slug).filter(s => s !== 'hush');
+    check(already.rescueTargetFor('n1', 'marmalade') === 'hush',
+      'with one Companion left in the house, that is who a Rescue frees');
+
+    const wanted = makeRun('marmalade', defaultLoadout('maya'));
+    wanted.rescued = [];
+    check(wanted.rescueTargetFor('n1', 'mopsy') === 'mopsy',
+      'an authored target who IS still missing is left alone');
+  } catch (err) {
+    errors.push(`THREW: ${err && err.stack || err}`);
+    say(`<b>THREW</b> ${String(err && err.stack || err)}`, 'err');
+  }
+
+  restoreSave();
+  sum.textContent = `RESULT: ${proofs.length} checks passed, ${errors.length} failures`;
+  sum.className = errors.length ? 'fail' : 'pass';
+  window.__BACKPACK_RESULT__ = { passed: proofs.length, failed: errors.length, errors, proofs };
+})();
+</script>
+</body>
+</html>

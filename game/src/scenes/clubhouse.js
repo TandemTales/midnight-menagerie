@@ -21,35 +21,22 @@ import {
   el, svg, rovingFocus, setReduceMotion, REGION_NAMES,
   freedCompanions, availableCompanions, warmFaces,
 } from '../ui/portrait.js';
-import { KID_CODEX } from './select.js';
+import { KID_CODEX, loadoutFor } from './select.js';
 import { pauseStageFor } from './_stage.js';
+import {
+  BACKPACK_ITEMS, itemById, loadoutSize, assertLoadout, SLOTS_BASE,
+} from '../data/backpack.js';
 
 const CSS_KIT  = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_CLUB = new URL('./clubhouse.css', import.meta.url).href;
 
-/** Backpack Gear, from design doc §18–20. [name, slots, description] */
-export const GEAR = [
-  ['Flashlight',     1, 'The basic one. Reveals a little more of every dark room.'],
-  ['Spare Batteries', 1, 'Refreshes one exhausted piece of Gear mid-expedition.'],
-  ['First Aid Kit',  2, `Restores ${TERMS.hp} once per expedition.`],
-  ['Walkie-Talkie',  2, 'Warns you what is waiting two rooms ahead.'],
-  ['Camera',         2, 'Photographs supernatural clues. Sees things you cannot.'],
-  ['Pocket Mirror',  1, 'Shows what is behind you, and occasionally what is not.'],
-  ['Multitool',      2, 'Opens things the house would rather stayed shut.'],
-  ['Rope',           2, 'Turns a drop into a route.'],
-  ['Chalk',          1, 'Marks a room so the house cannot move it on you.'],
-  ['Glow Sticks',    1, 'One room stays lit no matter what the house does.'],
-  ['Compass',        1, 'Points toward the Heart. Usually.'],
-  ['Dog Whistle',    1, 'Reveals hidden canine creatures. Bones and Pudding both answer.'],
-  ['Notebook',       1, 'Keeps a Clue you would otherwise lose on a failed expedition.'],
-  ['Pet Treats',     1, 'Calms a frightened ordinary animal. Opens kinder Curiosity endings.'],
-  ['Blanket',        2, 'Builds a better Safe Room.'],
-  ['Thermos',        2, 'One warm drink. It matters more than it should.'],
-  ['Familiar Toy',   1, 'Something of your pet’s. Certain rooms react to it.'],
-  ['Collar Tag',     1, 'Interacts with whatever the house uses to keep track of its animals.'],
-];
-const GEAR_BY_NAME = Object.fromEntries(GEAR.map((g) => [g[0], g]));
-const BACKPACK_SLOTS = 5;
+/* Backpack Gear.  There is ONE item table and it is `data/backpack.js` — this
+   screen used to carry a third hard-coded copy (names and slot counts that
+   matched neither the Kid dossier's nor the real definitions), and it stored
+   display names into `Save.data.backpacks`, which nothing downstream could
+   resolve. The editor is now a view over the real table, storing ids, and what
+   it saves is the loadout the next expedition genuinely starts with. */
+const BACKPACK_SLOTS = SLOTS_BASE;
 
 const HAUNTS = [
   [0, 'Standard', 'The mansion as it is.'],
@@ -399,22 +386,28 @@ export class ClubhouseScene extends Scene {
     return p;
   }
 
+  /** The pack this Kid would leave with right now, as item ids. */
   _loadPack(kidSlug) {
-    const saved = Save?.data?.backpacks?.[kidSlug];
-    if (Array.isArray(saved) && saved.length) return saved.filter((n) => GEAR_BY_NAME[n]);
-    return (KID_CODEX[kidSlug]?.pack ?? []).map(([name]) => name).filter((n) => GEAR_BY_NAME[n]);
+    return loadoutFor(kidSlug);
   }
 
+  /**
+   * Write the pack where the run layer reads it: `Save.data.backpacks[kid]`,
+   * as `string[]` of item ids. `select.js loadoutFor()` picks this up and hands
+   * it to `new Run`, so the editor changes the expedition — which it did not do
+   * at all while this file stored display names from its own private table.
+   */
   _savePack() {
     try {
+      assertLoadout(this.pack, `clubhouse _savePack(kid:'${this.activeKid}')`);
       if (!Save.data.backpacks) Save.data.backpacks = {};
       Save.data.backpacks[this.activeKid] = [...this.pack];
       Save.data.activeKid = this.activeKid;
       Save.save();
-    } catch {}
+    } catch (err) { console.error(err); }
   }
 
-  _packUsed() { return this.pack.reduce((s, n) => s + (GEAR_BY_NAME[n]?.[1] ?? 0), 0); }
+  _packUsed() { return loadoutSize(this.pack); }
 
   _renderPack() {
     const p = this._packPanel;
@@ -423,22 +416,23 @@ export class ClubhouseScene extends Scene {
     p.querySelector('.packbag__slots').textContent = `${used} / ${BACKPACK_SLOTS} slots`;
 
     const pips = (n) => `<span class="slots" aria-hidden="true">${'■'.repeat(n)}</span>`;
+    const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
     p.querySelector('.packbag__list').innerHTML = this.pack.length
-      ? this.pack.map((name) => {
-          const g = GEAR_BY_NAME[name];
-          return `<li><button type="button" class="gear gear--in" data-remove="${name}">
-            ${pips(g[1])}<b>${name}</b><em>${g[2]}</em><span class="gear__x" aria-hidden="true">&#215;</span>
-            <span class="sr-only">Remove ${name} from the backpack</span></button></li>`;
+      ? this.pack.map((id) => {
+          const g = itemById(id);
+          return `<li><button type="button" class="gear gear--in" data-remove="${esc(id)}">
+            ${pips(g.size)}<b>${esc(g.name)}</b><em>${esc(g.desc)}</em><span class="gear__x" aria-hidden="true">&#215;</span>
+            <span class="sr-only">Remove ${esc(g.name)} from the backpack</span></button></li>`;
         }).join('')
       : '<li class="packbag__empty">Nothing packed. That is a choice, technically.</li>';
 
-    p.querySelector('.packshelf__list').innerHTML = GEAR
-      .filter(([name]) => !this.pack.includes(name))
-      .map(([name, slots, desc]) => {
-        const fits = used + slots <= BACKPACK_SLOTS;
-        return `<li><button type="button" class="gear${fits ? '' : ' is-toobig'}" data-add="${name}" ${fits ? '' : 'disabled'}>
-          ${pips(slots)}<b>${name}</b><em>${desc}</em>
-          <span class="sr-only">${fits ? `Add ${name} to the backpack` : `${name} does not fit`}</span></button></li>`;
+    p.querySelector('.packshelf__list').innerHTML = BACKPACK_ITEMS
+      .filter((g) => !this.pack.includes(g.id))
+      .map((g) => {
+        const fits = used + g.size <= BACKPACK_SLOTS;
+        return `<li><button type="button" class="gear${fits ? '' : ' is-toobig'}" data-add="${esc(g.id)}" ${fits ? '' : 'disabled'}>
+          ${pips(g.size)}<b>${esc(g.name)}</b><em>${esc(g.desc)}</em>
+          <span class="sr-only">${fits ? `Add ${esc(g.name)} to the backpack` : `${esc(g.name)} does not fit`}</span></button></li>`;
       }).join('');
   }
 
@@ -523,13 +517,13 @@ export class ClubhouseScene extends Scene {
       }
       const add = e.target.closest('[data-add]');
       if (add && !add.disabled) {
-        const g = GEAR_BY_NAME[add.dataset.add];
-        if (g && this._packUsed() + g[1] <= BACKPACK_SLOTS) { this.pack.push(g[0]); this._renderPack(); this._savePack(); }
+        const g = itemById(add.dataset.add);
+        if (g && this._packUsed() + g.size <= BACKPACK_SLOTS) { this.pack.push(g.id); this._renderPack(); this._savePack(); }
         return;
       }
       const rem = e.target.closest('[data-remove]');
       if (rem) {
-        this.pack = this.pack.filter((n) => n !== rem.dataset.remove);
+        this.pack = this.pack.filter((id) => id !== rem.dataset.remove);
         this._renderPack(); this._savePack();
       }
     };

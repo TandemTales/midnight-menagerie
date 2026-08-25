@@ -75,7 +75,10 @@ import { encountersFor, rollEncounter, buildEncounter } from '../data/encounters
 import {
   makeRelic, relicById, rollKeepsake, rollKeepsakeRarity, relicRunFlags, starterKeepsake,
 } from '../data/relics.js';
-import { defaultLoadout, backpackHooks, backpackRunFlags, backpackTags } from '../data/backpack.js';
+import {
+  defaultLoadout, backpackHooks, backpackRunFlags, backpackTags,
+  assertLoadout, migrateLoadout,
+} from '../data/backpack.js';
 import { rollEvent, eventById, rollOutcome } from '../data/events.js';
 
 /**
@@ -84,6 +87,18 @@ import { rollEvent, eventById, rollOutcome } from '../data/events.js';
  * constant is the only thing holding it to one.
  */
 export const RUN_LENGTH_REGIONS = 2;
+
+/**
+ * The four Companions who start at the clubhouse and were never in the house.
+ * They are therefore never a meaningful Rescue — see `missingCompanions()`.
+ *
+ * `ui/portrait.js` exports the same list as `STARTER_COMPANIONS` for the
+ * Title, Select and Clubhouse screens. It is duplicated rather than imported
+ * because `state/run.js` must stay headless (tests/run/index.html imports it
+ * with no DOM at all) and portrait.js is a UI kit. `tests/backpack/index.html`
+ * asserts the two lists are identical, so they cannot drift in silence.
+ */
+export const STARTER_SLUGS = new Set(['marmalade', 'bones', 'pipkin', 'taffy']);
 
 /** Courage is topped up to this fraction of max when a new wing opens. See advanceRegion(). */
 const REGION_ENTRY_FLOOR = 0.85;
@@ -157,8 +172,19 @@ export class Run {
     this.companion = companion;
     this.kid = kid;
     this.hauntLevel = Math.max(0, Number(cfg.hauntLevel ?? cfg.haunt ?? 0) || 0);
-    this.backpack = Array.isArray(cfg.backpack) && cfg.backpack.length
-      ? cfg.backpack.slice() : defaultLoadout(kid);
+    /* The Backpack seam. `cfg.backpack` is `string[]` of ids from
+       data/backpack.js — never names, never `{name,slots}` objects. A wrong
+       shape here does not throw on its own: it produces an empty tag Set, zeroed
+       gear flags, no hooks and permanently locked Curiosity options, which is
+       exactly how this pillar of the game sat dead for a whole build. So it is
+       asserted at the join instead (CONTRACTS.md rule 8). Old saves come in
+       through `Run.resume`, which migrates before it gets here. */
+    /* An EMPTY array is honoured, not replaced: the Clubhouse lets you unpack
+       the whole bag, and "I brought nothing" is a loadout decision the design
+       doc explicitly makes available (§19). Only `null`/absent falls back. */
+    this.backpack = cfg.backpack == null
+      ? defaultLoadout(kid)
+      : assertLoadout(cfg.backpack, `new Run({kid:'${kid}'})`).slice();
 
     /** The master stream. Content never draws from it directly — see `fork`. */
     this.rng = new RNG(this.seed);
@@ -1333,7 +1359,11 @@ export class Run {
   _prepareEvent(node, type) {
     const rng = this.fork(`event:${node.id}`);
     if (type === NodeType.RESCUE) {
-      this.pendingEvent = { rescue: true, nodeId: node.id, companion: node.payload?.companion || this.meta.companion, resolved: null };
+      const authored = node.payload?.companion || this.meta.companion;
+      this.pendingEvent = {
+        rescue: true, nodeId: node.id, resolved: null,
+        companion: this.rescueTargetFor(node.id, authored),
+      };
       this.save();
       return this.pendingEvent;
     }
@@ -1449,6 +1479,46 @@ export class Run {
     return this._goto('combat', { node: node.id, region: this.region });
   }
 
+  /**
+   * Who is genuinely still lost in the house.
+   *
+   * Three kinds of Companion are NOT: the one walking beside you, anyone this
+   * save has already freed, and the four starters — the starters were never in
+   * the house at all, they are at the clubhouse from the first expedition.
+   * A reviewer freed Marmalade in Wing 1 while playing Pipkin and the screen
+   * read "FREE - 1 OF 16" for a Companion already on the roster: the run's
+   * emotional peak spent on nothing.
+   */
+  missingCompanions() {
+    return COMPANIONS.map(c => c.slug).filter(s =>
+      s !== this.companion && !this.rescued.includes(s) && !STARTER_SLUGS.has(s));
+  }
+
+  /**
+   * Which Companion a Rescue room should actually free. The authored one when
+   * they are still missing; otherwise a deterministic pick from whoever is.
+   *
+   * The authored table (`state/mapgen.js REGIONS`) points four wings at starter
+   * Companions — Foyer/marmalade, crypt/bones, kitchens-cellars/taffy,
+   * pumpkin-grounds/pipkin — so following it literally spends Wing 1's rescue on
+   * somebody who is already home. Substituting here rather than in mapgen keeps
+   * the map agent's table intact and makes the decision at the moment the run
+   * knows who is actually missing. Reported to the map owner too.
+   *
+   * Deterministic: the choice comes from the run seed via `fork`, so a seed
+   * still reproduces the run exactly.
+   */
+  rescueTargetFor(nodeId, authored) {
+    const pool = this.missingCompanions();
+    if (authored && pool.includes(authored)) return authored;
+    if (!pool.length) return authored || null;   // everyone is already free
+    // Prefer somebody whose own wing this is; the house should feel like it
+    // keeps its animals where they belong.
+    const local = pool.filter(s => COMPANIONS.find(c => c.slug === s)?.region === this.region);
+    const from = local.length ? local : pool;
+    return from[this.fork(`rescue:${nodeId}`).int(from.length)];
+  }
+
   /** Free a Companion. The point of the whole exercise. */
   rescueCompanion(slug) {
     if (!slug || this.rescued.includes(slug)) return false;
@@ -1467,7 +1537,10 @@ export class Run {
   /** Boss down. Either the next wing opens, or the expedition is over. */
   completeRegion() {
     const meta = this.meta;
-    if (!this.rescued.includes(meta.companion) && meta.companion) this.rescueCompanion(meta.companion);
+    // Same substitution as a Rescue room: a boss kill must not "free" one of the
+    // four starters, who were never in the house. See rescueTargetFor().
+    const freed = this.rescueTargetFor(`boss:${this.region}`, meta.companion);
+    if (freed && !this.rescued.includes(freed)) this.rescueCompanion(freed);
     if (this.isLastRegion || this.regionIndex + 1 >= REGION_ORDER.length) return this.end(true, null);
     return this.advanceRegion();
   }
@@ -1636,9 +1709,14 @@ export class Run {
   /** Rebuild a run from `Save.loadRun()`. Mid-map fidelity, not mid-combat. */
   static resume(saved) {
     if (!saved || !saved.seed) return null;
+    /* A save written before the Backpack seam was fixed holds `{name,slots}`
+       objects or display names. Migrate rather than throw — refusing to load
+       somebody's expedition is a worse outcome than a console warning. */
+    const packed = saved.backpack == null
+      ? null : migrateLoadout(saved.backpack, `Run.resume(kid:'${saved.kid}')`);
     const run = new Run({
       companion: saved.companion, kid: saved.kid, seed: saved.seed,
-      hauntLevel: saved.hauntLevel, backpack: saved.backpack,
+      hauntLevel: saved.hauntLevel, backpack: packed,
     });
     UID = Math.max(UID, saved.uidSeq || 0);
 
@@ -1776,6 +1854,9 @@ export function installRunLayer() {
   bus.on('run:start', (p) => {
     const ctx = window.MM?.ctx;
     warmCombatContent();
+    // The one seam a screen can get wrong. Assert here so the stack names the
+    // emitter, not `new Run` three frames later. See data/backpack.js.
+    if (p?.backpack != null) assertLoadout(p.backpack, "bus 'run:start'.backpack");
     const run = new Run({
       companion: p?.companion, kid: p?.kid, seed: p?.seed,
       hauntLevel: p?.haunt ?? p?.hauntLevel, backpack: p?.backpack,

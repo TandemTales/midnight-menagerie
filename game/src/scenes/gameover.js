@@ -72,6 +72,7 @@ const KILLERS = {
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => (
   { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const cap = (t) => String(t || '').charAt(0).toUpperCase() + String(t || '').slice(1);
 
 /**
  * Normalise one deck entry to `{def, upgraded}`.
@@ -243,6 +244,9 @@ export class GameOverScene extends Scene {
     const c = COMPANION_BY_SLUG[s.companion] ?? COMPANIONS[0];
     const k = KID_BY_SLUG[s.kid] ?? KIDS[0];
     const first = k.name.split(' ')[0];
+    // Pronouns come from the Kid record (schema.js KIDS[].pronouns) — never inferred from a
+    // name. This line used to hardcode "She" and printed it for every Kid.
+    const pr = k.pronouns || { s: 'they', o: 'them', p: 'their', r: 'themselves', plural: true };
     const region = REGION_NAMES[s.regionId] ?? s.meta.name;
 
     const beat = el('section', 'go-beat');
@@ -320,7 +324,7 @@ export class GameOverScene extends Scene {
         ? `<b>${esc(k.pet)}</b> is still in there. But ${esc(c.name)} knows which door,
            and ${esc(first)} is already re-packing the backpack.`
         : `<b>${esc(k.pet)}</b> is still in there. ${esc(first)} does not say anything on the walk back.
-           She is working out what to bring next time.`;
+           ${esc(cap(pr.s))} ${pr.plural ? 'are' : 'is'} working out what to bring next time.`;
     const pet = el('div', `go-stanza go-stanza--pet${s.petHome ? ' is-home' : ''}`);
     pet.innerHTML =
       `<h2 class="go-sh">${s.petHome ? 'The pet you reached' : 'The pet you did not reach'}</h2>` +

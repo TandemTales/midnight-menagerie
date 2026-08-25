@@ -1,9 +1,9 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-24T23:53:32",
- "wave": 7,
- "waveLabel": "Closing the last five",
- "headline": "All four builders back. Attacker animates, hover at 33ms, pets have faces, the route reads as a route.",
+ "updated": "2026-08-25T07:09:59",
+ "wave": 9,
+ "waveLabel": "The player's half",
+ "headline": "Every screen except the one you play on is finished. The Companion you chose is a generic cat in combat, and the Backpack does nothing.",
  "pieces": [
   {
    "id": "engine",
@@ -45,10 +45,10 @@
    "id": "scene",
    "name": "Combat presentation",
    "desc": "Battlefield staging, enemy rigs, damage numbers, hit reactions, VFX",
-   "status": "reviewing",
-   "round": 5,
+   "status": "rework",
+   "round": 6,
    "verdict": "Attacker displacement 0px to 90px, per silhouette family. The player has a body. Chooser cancels. Intent prints the real Clutter count.",
-   "gap": null,
+   "gap": "The player's half of the combat scene is placeholder: your chosen Companion renders as the same generic cat whichever of the sixteen you picked, and the Kid's name is printed under the Companion's portrait.",
    "builder": null,
    "critic": null,
    "log": []
@@ -93,9 +93,9 @@
    "id": "meta",
    "name": "Run layer",
    "desc": "Rewards, shops, rest, Curiosities, Keepsakes, Backpack",
-   "status": "done",
-   "round": 4,
-   "verdict": "Two-region runs validated: whole-run survival 50%, Governess 73.7% when reached, boss 9.4 turns. Courage floor on wing entry.",
+   "status": "reviewing",
+   "round": 6,
+   "verdict": "Backpack works end to end: 8 hooks proved firing by A/B, gated Curiosity options unlock, Clubhouse editor reaches runs. 77 checks, 0 failures.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -506,6 +506,34 @@
   {
    "t": "2026-08-24T23:53:32",
    "msg": "petKind in schema.js was invented during scaffolding and wrong for five of eight pets. Orbit was listed as a parrot; the design doc says he is a black cat with a white chest patch."
+  },
+  {
+   "t": "2026-08-25T04:22:56",
+   "msg": "Every 'up to' chooser now accepts fewer cards - 9 cards across 3 Companions were demanding the exact count, which read as a soft-lock."
+  },
+  {
+   "t": "2026-08-25T04:22:56",
+   "msg": "Fifth blind playthrough started."
+  },
+  {
+   "t": "2026-08-25T06:23:19",
+   "msg": "PLAYTHROUGH 5: zero console errors across ten scenes, 60fps at 1080p, flat heap, exact seed reproduction, working mid-run resume. The engineering is clean."
+  },
+  {
+   "t": "2026-08-25T06:23:19",
+   "msg": "But: two cold-boot runs on the easiest setting with the intended starter Companions died at room 3 and room 8 of 13 - partly because the Backpack never fires."
+  },
+  {
+   "t": "2026-08-25T07:09:58",
+   "msg": "The Backpack was dead at a data-shape seam - select emitted objects, backpack.js keyed by id. One item table now, ids at every join, plus a boot assertion that throws naming the caller."
+  },
+  {
+   "t": "2026-08-25T07:09:59",
+   "msg": "That A/B caught a second bug: Big Flashlight granted Guard at combat start, which _beginPlayerTurn wipes at step 2. Welcome Mat had it too."
+  },
+  {
+   "t": "2026-08-25T07:09:59",
+   "msg": "Kid pronouns are now data. The run-end line hardcoded 'She' and printed it for Mateo, Eli and Jordan; the doc states she/her for three kids and nothing for the rest."
   }
  ]
 }

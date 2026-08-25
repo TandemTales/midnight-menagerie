@@ -411,8 +411,14 @@
 /* the plate under an enemy */
 .cb-enemy__plate {
   position: relative; z-index: 4;
-  /* cancels the attack pose: the creature commits, the numbers hold still */
-  transform: translate3d(calc(var(--e-lx, 0px) * -1), calc(var(--e-ly, 0px) * -1), 0);
+  /* Cancels the attack pose (the creature commits, the numbers hold still),
+     and carries `--e-plift`: the measured lift that keeps counters, name, bar
+     and statuses clear of the player's hand. See EnemyView#setPlateLimit —
+     round 4's Resonance 0/4 chip failed elementFromPoint at 720p, 900p and
+     1080p because the plate hung below the arena floor into the fan. */
+  --e-plift: 0px;
+  transform: translate3d(calc(var(--e-lx, 0px) * -1),
+                         calc(var(--e-ly, 0px) * -1 + var(--e-plift)), 0);
   width: min(230px, 100%);
   display: flex; flex-direction: column; align-items: center; gap: 3px;
   margin-top: 4px;
@@ -800,6 +806,21 @@
   filter: drop-shadow(0 10px 18px color-mix(in srgb, var(--ink-900) 78%, transparent));
 }
 .cb-hero__rig { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+/* ── THE CONTACT SHADOW ────────────────────────────────────────────────────
+   Round 4 stood her inside a 1px light-blue ellipse that read as a debug
+   bounding box, and nothing tied her boots to the floor — she hovered. This is
+   what the creatures already have (`.cb-enemy__pool`): a soft shadow under the
+   feet, plus the warm pool the torch throws around it. It lives on the FLOOR,
+   so `PlayerView#update` slides and stretches it a fraction of her lean rather
+   than moving it with her. */
+.pr-s1 { stop-color: var(--ink-900); stop-opacity: .92; }
+.pr-s2 { stop-color: var(--ink-900); stop-opacity: .55; }
+.pr-s3 { stop-color: var(--ink-900); stop-opacity: 0; }
+.pr-p1 { stop-color: var(--flame-400); stop-opacity: .3; }
+.pr-p2 { stop-color: var(--flame-400); stop-opacity: 0; }
+.pr-pool { mix-blend-mode: screen; }
+
 .cb-hero__flash {
   position: absolute; inset: -8%;
   border-radius: 50%;
@@ -807,14 +828,64 @@
     color-mix(in srgb, var(--threat-100) 90%, transparent) 0%, transparent 68%);
   opacity: 0; pointer-events: none; mix-blend-mode: screen;
 }
-.pr-coat {
-  fill: color-mix(in srgb, var(--spectre-500) 62%, var(--ink-900));
-  stroke: color-mix(in srgb, var(--spectre-200) 44%, transparent); stroke-width: 2.4;
+/* ── THE KID'S MATERIALS ───────────────────────────────────────────────────
+   Round 4 was two flat fills. Everything below is LIT: the torch is a warm key
+   on her right (+x, the side facing the creatures), the room's spectral light
+   is a cold rim on her left, and the gradients are named as stop classes so
+   the tokens stay the only colour decision (CONTRACTS §2). */
+.pr-c1 { stop-color: color-mix(in srgb, var(--spectre-500) 30%, var(--ink-900)); }
+.pr-c2 { stop-color: color-mix(in srgb, var(--spectre-500) 66%, var(--ink-900)); }
+.pr-c3 { stop-color: color-mix(in srgb, var(--flame-500) 42%, var(--spectre-400)); }
+.pr-f1 { stop-color: var(--flame-100); }
+.pr-f2 { stop-color: color-mix(in srgb, var(--flame-300) 40%, var(--spectre-400)); }
+.pr-h1 { stop-color: color-mix(in srgb, var(--ink-800) 92%, var(--ink-900)); }
+.pr-h2 { stop-color: color-mix(in srgb, var(--ink-500) 70%, var(--flame-500)); }
+
+.pr-coat { stroke: color-mix(in srgb, var(--spectre-200) 34%, transparent); stroke-width: 2.2; }
+/* the coat panel that trails the lunge — see PlayerView#update */
+.pr-tail {
+  fill: color-mix(in srgb, var(--spectre-500) 40%, var(--ink-900));
+  stroke: color-mix(in srgb, var(--spectre-200) 22%, transparent); stroke-width: 2;
+}
+.pr-fold {
+  fill: none; stroke: color-mix(in srgb, var(--ink-900) 46%, transparent);
+  stroke-width: 3; stroke-linecap: round;
 }
 .pr-hem { fill: none; stroke: color-mix(in srgb, var(--spectre-200) 32%, transparent); stroke-width: 2.4; }
+/* the torch-side rim: the single line that stops her reading as a paper doll */
+.pr-rim {
+  fill: none; stroke: color-mix(in srgb, var(--flame-200) 78%, transparent);
+  stroke-width: 3.4; stroke-linecap: round;
+}
+.pr-scarf {
+  fill: color-mix(in srgb, var(--pluck-500) 76%, var(--ink-900));
+  stroke: color-mix(in srgb, var(--pluck-300) 40%, transparent); stroke-width: 1.6;
+}
+.pr-scarftail { fill: color-mix(in srgb, var(--pluck-500) 60%, var(--ink-900)); }
 .pr-btn { fill: var(--flame-300); opacity: .85; }
 .pr-leg { fill: none; stroke: color-mix(in srgb, var(--ink-500) 90%, var(--ink-900)); stroke-width: 14; stroke-linecap: round; }
+.pr-leg--back { stroke: color-mix(in srgb, var(--ink-600) 88%, var(--ink-900)); stroke-width: 13; }
 .pr-boot { fill: color-mix(in srgb, var(--ink-400) 80%, var(--ink-900)); }
+.pr-boot--back { fill: color-mix(in srgb, var(--ink-500) 78%, var(--ink-900)); }
+.pr-hand { fill: color-mix(in srgb, var(--flame-100) 88%, var(--flame-300)); }
+.pr-hand--back { fill: color-mix(in srgb, var(--flame-200) 62%, var(--spectre-400)); }
+.pr-arm--back { stroke: color-mix(in srgb, var(--spectre-500) 52%, var(--ink-900)); stroke-width: 12; }
+.pr-packbuckle { fill: color-mix(in srgb, var(--flame-400) 70%, var(--ink-900)); }
+.pr-torchband { fill: color-mix(in srgb, var(--flame-400) 80%, var(--ink-900)); }
+/* head modelling */
+.pr-ear { fill: color-mix(in srgb, var(--flame-200) 76%, var(--spectre-400)); }
+.pr-jaw { fill: color-mix(in srgb, var(--flame-400) 34%, transparent); }
+.pr-hairlit { fill: color-mix(in srgb, var(--flame-300) 34%, transparent); }
+.pr-strand {
+  fill: none; stroke: color-mix(in srgb, var(--ink-800) 90%, var(--ink-900));
+  stroke-width: 5; stroke-linecap: round;
+}
+.pr-brow {
+  fill: none; stroke: color-mix(in srgb, var(--ink-800) 88%, var(--ink-900));
+  stroke-width: 3.2; stroke-linecap: round;
+}
+.pr-nose { fill: none; stroke: color-mix(in srgb, var(--ink-700) 60%, transparent); stroke-width: 2.6; stroke-linecap: round; }
+.pr-blush { fill: color-mix(in srgb, var(--threat-200) 30%, transparent); }
 /* the pack is LEATHER, not the companion's accent — painted in --c1 it sat
    right beside the companion and the two read as one lumpy orange mass */
 .pr-packbag { fill: color-mix(in srgb, var(--ink-400) 78%, var(--ink-900)); }
@@ -839,29 +910,48 @@
   filter: blur(9px);
   mix-blend-mode: screen;
 }
-/* the companion, in its own accent */
-.pr-palbody { fill: var(--c1); stroke: var(--c3); stroke-width: 2.4; }
-.pr-palear { fill: var(--c1); stroke: var(--c3); stroke-width: 2; }
-.pr-palmuzzle { fill: var(--c2); opacity: .85; }
-.pr-paleye { fill: var(--ink-900); }
-.pr-paltail { fill: none; stroke: var(--c1); stroke-width: 9; stroke-linecap: round; }
-.pr-palwhisk { fill: none; stroke: var(--c3); stroke-width: 1.8; opacity: .7; }
+/* ── THE COMPANION ─────────────────────────────────────────────────────────
+   Sixteen silhouettes, one per Companion (`PAL_ART` in ui/enemy.js). These are
+   the only materials any of them may use, so a new Companion is a shape and
+   three accents and nothing else. --c1/--c2/--c3 come from PALS. */
+.pp-body { fill: var(--c1); stroke: var(--c3); stroke-width: 2.4; stroke-linejoin: round; }
+.pp-light { fill: var(--c2); }
+.pp-dark { fill: var(--c3); }
+.pp-line { fill: none; stroke: var(--c3); stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; }
+.pp-thin { fill: none; stroke: var(--c3); stroke-width: 1.9; stroke-linecap: round; opacity: .78; }
+.pp-eye { fill: var(--ink-900); }
+.pp-glint { fill: var(--text-hi); }
+.pp-sclera { fill: var(--text-hi); }
+/* Three rings of falling opacity make a soft halo with no filter and no
+   gradient id to keep unique. One flat ellipse read as a grey disc. */
+.pp-glow { fill: var(--c2); opacity: .13; mix-blend-mode: screen; }
+.pp-glow--2 { opacity: .07; }
+.pp-glow--3 { opacity: .035; }
+.pp-smoke { fill: var(--c2); opacity: .3; mix-blend-mode: screen; }
+.pp-hot { fill: var(--flame-100); }
+.pp-pink { fill: color-mix(in srgb, var(--threat-200) 82%, var(--text-hi)); }
+/* the Companion catches the torch when she swings */
+.cb-hero.is-striking .pp-light { fill: color-mix(in srgb, var(--c2) 72%, var(--flame-100)); }
 .cb-hero.is-striking .pr-flame { fill: var(--flame-100); }
 .cb-hero.is-striking .pr-beam { fill: color-mix(in srgb, var(--flame-100) 40%, transparent); }
+/* GUARD. Round 4 drew a 2px light-blue ellipse around the whole figure, which
+   is the "debug bounding box" the reviewer saw. A guard is a thing she does,
+   not a box she is in: the coat's rim goes cold and hard for half a second and
+   the contact shadow tightens under her. */
 @keyframes cb-heroguard {
-  0% { opacity: 0; transform: scale(.8); }
-  40% { opacity: 1; }
-  100% { opacity: 0; transform: scale(1.28); }
+  0% { stroke: color-mix(in srgb, var(--flame-200) 78%, transparent); stroke-width: 3.4; }
+  25% { stroke: var(--guard-300); stroke-width: 7; }
+  100% { stroke: color-mix(in srgb, var(--flame-200) 78%, transparent); stroke-width: 3.4; }
 }
-.cb-hero.is-guarding::after {
-  content: ''; position: absolute; inset: 4% 10%;
-  border-radius: 50%;
-  border: 2px solid color-mix(in srgb, var(--guard-300) 78%, transparent);
-  animation: cb-heroguard .5s var(--ease-out);
-  pointer-events: none;
+@keyframes cb-herobrace {
+  0%, 100% { transform: scale(1); }
+  30% { transform: scale(.86, 1.1); }
 }
+.cb-hero.is-guarding .pr-rim { animation: cb-heroguard .5s var(--ease-out); }
+.cb-hero.is-guarding .pr-shadow { animation: cb-herobrace .5s var(--ease-out); transform-box: fill-box; transform-origin: 50% 50%; }
 @media (prefers-reduced-motion: reduce) {
-  .cb-hero.is-guarding::after { animation: none; }
+  .cb-hero.is-guarding .pr-rim,
+  .cb-hero.is-guarding .pr-shadow { animation: none; }
 }
 
 /* ───────────────────────────────────────────── the player ──────────────── */
@@ -906,9 +996,53 @@
   background: radial-gradient(60% 60% at 50% 50%, var(--threat-200), transparent 72%);
   mix-blend-mode: screen; opacity: 0; pointer-events: none;
 }
+/* ── YOUR VITALS, IN ONE BLOCK ─────────────────────────────────────────────
+   STS2-REFERENCE §1 draws the player's block shield, HP bar and status row
+   stacked together on the player. Round 4 had Courage as a pill at x=168 in
+   the top bar and Guard as a badge at x≈255, y≈700 on the portrait: 850px
+   apart, and the block-versus-Courage decision is made every single turn. */
+.cb-player__vitals {
+  display: flex; align-items: center; gap: 6px;
+  width: 100%;
+  pointer-events: auto;
+}
+.cb-player__bar {
+  position: relative; flex: 1 1 auto;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--ink-800);
+  border: 1px solid var(--ink-400);
+  box-shadow: inset 0 2px 5px color-mix(in srgb, var(--ink-900) 90%, transparent);
+  overflow: hidden;
+  cursor: help;
+}
+.cb-player__ghost, .cb-player__fill {
+  position: absolute; inset: 1px;
+  border-radius: 999px;
+  transform-origin: left center;
+  will-change: transform;
+}
+.cb-player__ghost { background: color-mix(in srgb, var(--threat-100) 65%, transparent); }
+.cb-player__fill {
+  background: linear-gradient(180deg, var(--pluck-300), var(--flame-400) 58%, var(--flame-500));
+  transition: transform var(--t-quick) var(--ease-out);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--flame-300) 45%, transparent);
+}
+.cb-player.is-low .cb-player__fill {
+  background: linear-gradient(180deg, var(--threat-200), var(--threat-500));
+}
+.cb-player__hp {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center; gap: 1px;
+  font-family: var(--font-num); font-size: 12px; letter-spacing: .04em;
+  color: var(--text-hi);
+  text-shadow: 0 1px 2px var(--ink-900), 0 0 5px var(--ink-900);
+}
+.cb-player__hpm { color: color-mix(in srgb, var(--text-hi) 65%, transparent); }
+
 .cb-player__guard {
-  position: absolute; right: 6px; bottom: 6px;
-  width: 52px; height: 56px;
+  position: relative; flex: 0 0 auto;
+  width: 38px; height: 42px;
   display: flex; align-items: center; justify-content: center;
   filter: drop-shadow(0 3px 8px var(--ink-900));
   pointer-events: auto;
@@ -927,17 +1061,17 @@
 }
 .cb-player__guard.is-preview svg { stroke: var(--flame-200); stroke-width: 1.8; }
 
-/* ── YOUR resource gauges, beside the Guard shield ─────────────────────────
+/* ── YOUR resource gauges, on the portrait ─────────────────────────────────
    `state.counters` has always shipped Loose Bones 0/6 with `ownerId:'player'`
    and the scene walked only `en.counters`, so Bones's Sit Pretty and Put
    Yourself Back Together keyed off a number that was never on screen. Same
-   widget as the enemies' DUST 0/4, mirrored to the other bottom corner of the
-   portrait so the two read as a pair. */
+   widget as the enemies' DUST 0/4. The Guard shield used to share this corner;
+   it has moved down into the vitals row beside Courage, so the gauges now have
+   the full width of the portrait's foot. */
 .cb-player__counters {
-  position: absolute; left: 6px; bottom: 6px;
+  position: absolute; left: 6px; right: 6px; bottom: 6px;
   display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
   pointer-events: auto;
-  max-width: calc(100% - 66px);
 }
 .cb-count--mine {
   padding: 1px 7px 1px 7px;
@@ -1000,21 +1134,28 @@
 .cb-player.is-preview .cb-player__figure { border-color: var(--flame-400); }
 .cb-player.is-lethal .cb-player__figure { border-color: var(--threat-300); }
 
-/* The plate used to be a panel because it held a Courage bar. It no longer
-   holds one, and an empty bordered box under the portrait reads as a broken
-   input field — so the chrome is gone and only real content draws. */
+/* The plate carries the whole of your side of the board: who you are, your
+   Guard, your Courage, your conditions and what is about to hit you — in that
+   order, top to bottom, per STS2-REFERENCE §1. */
 .cb-player__plate {
-  display: flex; flex-direction: column; align-items: center; gap: 5px;
-  padding: 5px 0 0;
+  display: flex; flex-direction: column; align-items: stretch; gap: 5px;
+  padding: 6px 0 0;
+}
+.cb-player__id {
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
 }
 .cb-player__name {
-  font-family: var(--font-display); font-size: var(--fs-xs);
-  letter-spacing: .2em; text-transform: uppercase; color: var(--text-lo);
-  text-shadow: 0 2px 6px var(--ink-900);
+  font-family: var(--font-display); font-size: var(--fs-sm);
+  letter-spacing: .2em; text-transform: uppercase; color: var(--text-hi);
+  text-shadow: 0 2px 6px var(--ink-900), 0 0 12px var(--ink-900);
 }
-/* NO Courage bar here. `ui/hud.js` owns the one on this screen, top-right.
-   What stays is the low-Courage tell on the portrait, which is a mood cue and
-   not a second copy of the number. */
+.cb-player__title {
+  font-size: 10px; letter-spacing: .1em; color: var(--text-lo);
+  font-style: italic;
+  text-shadow: 0 1px 4px var(--ink-900);
+}
+/* The low-Courage tell on the portrait stays: it is a mood cue, and now it
+   agrees with a bar that is six pixels away instead of 850. */
 .cb-player.is-low .cb-player__figure {
   border-color: var(--threat-400);
   animation: cb-lowpulse 1.5s var(--ease-soft) infinite;
@@ -1643,7 +1784,17 @@
 .cb-enemy.has-entered .cb-enemy__plate {
   animation: cb-plate-in .42s var(--ease-out) both;
 }
-@keyframes cb-plate-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+/* THE `to { transform: none }` HERE WAS EATING TWO OTHER TRANSFORMS.
+   `animation-fill-mode: both` leaves the last keyframe applied forever, so
+   from the moment a creature finished entering:
+     - `.cb-enemy__plate`'s pose cancellation (`--e-lx`/`--e-ly`, and now
+       `--e-plift`) was overwritten with `none` — the plate rode the lunge it
+       was written to hold still against, and the measured lift did nothing;
+     - `.cb-enemy__above`'s `translateX(-50%)` was overwritten too, so the
+       intent stack was left half its own width off centre.
+   The individual `translate` property composes with `transform` instead of
+   replacing it, which is what an entrance animation actually wants. */
+@keyframes cb-plate-in { from { opacity: 0; translate: 0 -8px; } to { opacity: 1; translate: 0 0; } }
 .cb-enemy .rg-body, .cb-enemy .rg-limbs-back, .cb-enemy .rg-limbs-front {
   transition: filter var(--t-slow) var(--ease-soft);
 }

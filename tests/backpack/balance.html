@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Midnight Menagerie — Backpack A/B</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; padding: 24px 28px 60px; background: #0d0b16; color: #c3bbcd;
+         font: 13px/1.55 ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  h1 { font-size: 17px; letter-spacing: .12em; text-transform: uppercase; color: #f4efe4; margin: 0 0 4px; }
+  .sub { color: #8b839a; margin-bottom: 16px; font-size: 12px; max-width: 96ch; }
+  pre { margin: 0; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h1>Backpack — survival A/B</h1>
+<div class="sub">
+  The same expeditions, twice, through the same real <code>Run</code> and <code>CombatEngine</code> and
+  the same <code>tests/critic-design/lib/expedition.js</code> bot the balance simulator uses.
+  Arm A packs nothing — what a real run actually carried while the seam was broken.
+  Arm B packs the Kid's authored loadout. Same seeds, same companion, same bot, so the
+  only difference is the Gear.
+</div>
+<pre id="out">running…</pre>
+
+<script type="module">
+import { expedition } from '../critic-design/lib/expedition.js';
+import { KID_LOADOUTS, defaultLoadout } from '../../game/src/data/backpack.js';
+import { Save } from '../../game/src/core/save.js';
+
+const Q = new URLSearchParams(location.search);
+const N = +(Q.get('n') || 60);
+const SEED0 = +(Q.get('seed') || 90000);
+const BOT = Q.get('bot') || 'competent';
+const COMPANION = Q.get('companion') || 'marmalade';
+
+const out = document.getElementById('out');
+const line = (s) => { out.textContent += s + '\n'; };
+
+// The bot builds `new Run({companion, seed, haunt})`, so the Kid is Maya and the
+// pack is `defaultLoadout('maya')`. KID_LOADOUTS is the live table both sides of
+// that call share, so swapping it here is the one honest way to hold everything
+// else identical.
+const REAL = defaultLoadout('maya');
+
+async function arm(label, pack) {
+  KID_LOADOUTS.maya = pack.slice();
+  const rows = [];
+  for (let i = 0; i < N; i++) {
+    try {
+      const r = await expedition({ seed: SEED0 + i * 7, bot: BOT, policy: 'balanced', companion: COMPANION, haunt: 0 });
+      rows.push({ seed: r.seed, result: r.result, rooms: r.nodes.length, regions: r.regionsCleared,
+                  endCourage: r.endCourage, reachedBoss: r.reachedBoss, bossWin: r.bossWin,
+                  deathRegion: r.deathRegion });
+    } catch (err) {
+      rows.push({ seed: SEED0 + i * 7, result: 'error', rooms: 0, regions: 0, error: String(err && err.message || err) });
+    }
+    if (i % 10 === 9) line(`  ${label}: ${i + 1}/${N}`);
+  }
+  const wins = rows.filter(r => r.result === 'victory').length;
+  const boss = rows.filter(r => r.reachedBoss).length;
+  const errs = rows.filter(r => r.result === 'error').length;
+  const rooms = rows.map(r => r.rooms).sort((a, b) => a - b);
+  const mean = (a) => a.reduce((s, x) => s + x, 0) / (a.length || 1);
+  return {
+    label, pack, n: rows.length, wins, boss, errs,
+    winPct: 100 * wins / (rows.length || 1),
+    bossPct: 100 * boss / (rows.length || 1),
+    meanRooms: +mean(rooms).toFixed(2),
+    medianRooms: rooms[Math.floor(rooms.length / 2)] ?? 0,
+    meanRegions: +mean(rows.map(r => r.regions)).toFixed(2),
+    rows,
+  };
+}
+
+(async () => {
+  out.textContent = '';
+  line(`n=${N}  bot=${BOT}  companion=${COMPANION}  seeds ${SEED0}..${SEED0 + (N - 1) * 7}`);
+  line(`arm A pack: (nothing)`);
+  line(`arm B pack: ${REAL.join(', ')}`);
+  line('');
+  const A = await arm('A no gear', []);
+  const B = await arm('B real pack', REAL);
+  KID_LOADOUTS.maya = REAL.slice();
+  line('');
+  const fmt = (r) => `${r.label.padEnd(12)} win ${r.winPct.toFixed(1).padStart(5)}%  reached boss ${r.bossPct.toFixed(1).padStart(5)}%  `
+    + `rooms mean ${String(r.meanRooms).padStart(5)} median ${String(r.medianRooms).padStart(3)}  regions ${r.meanRegions}  errors ${r.errs}`;
+  line(fmt(A));
+  line(fmt(B));
+  line('');
+  line(`delta       win ${(B.winPct - A.winPct >= 0 ? '+' : '')}${(B.winPct - A.winPct).toFixed(1)}pp  `
+     + `boss ${(B.bossPct - A.bossPct >= 0 ? '+' : '')}${(B.bossPct - A.bossPct).toFixed(1)}pp  `
+     + `rooms ${(B.meanRooms - A.meanRooms >= 0 ? '+' : '')}${(B.meanRooms - A.meanRooms).toFixed(2)}`);
+  window.__AB__ = { A, B };
+  window.__DONE__ = true;
+})();
+</script>
+</body>
+</html>

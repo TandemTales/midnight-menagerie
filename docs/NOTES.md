@@ -45,4 +45,5 @@ to concurrent whole-file writes, so this is now structural rather than a convent
 | [2026-08-24-card-feel-round-4-snappier-hover-a-hand-that-spreads](notes/2026-08-24-card-feel-round-4-snappier-hover-a-hand-that-spreads.md) | 19 KB |
 | [2026-08-24-frontend-round-5-the-lost-pets-get-faces](notes/2026-08-24-frontend-round-5-the-lost-pets-get-faces.md) | 14 KB |
 | [2026-08-24-combat-scene-round-4](notes/2026-08-24-combat-scene-round-4.md) | 18 KB |
+| [2026-08-25-meta-run-the-backpack-end-to-end](notes/2026-08-25-meta-run-the-backpack-end-to-end.md) | 17 KB |
 | [build-notes](notes/build-notes.md) | 1 KB |

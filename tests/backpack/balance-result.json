@@ -1,0 +1,1237 @@
+{
+ "A": {
+  "label": "A no gear",
+  "pack": [],
+  "n": 60,
+  "wins": 32,
+  "boss": 55,
+  "errs": 0,
+  "winPct": 53.333333333333336,
+  "bossPct": 91.66666666666667,
+  "meanRooms": 21.18,
+  "medianRooms": 25,
+  "meanRegions": 1.28,
+  "rows": [
+   {
+    "seed": 90000,
+    "result": "defeat",
+    "rooms": 11,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90007,
+    "result": "defeat",
+    "rooms": 1,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": false,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90014,
+    "result": "victory",
+    "rooms": 24,
+    "regions": 2,
+    "endCourage": 62,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90021,
+    "result": "defeat",
+    "rooms": 11,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90028,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 12,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90035,
+    "result": "defeat",
+    "rooms": 11,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90042,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 78,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90049,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 49,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90056,
+    "result": "defeat",
+    "rooms": 25,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90063,
+    "result": "defeat",
+    "rooms": 12,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90070,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 75,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90077,
+    "result": "defeat",
+    "rooms": 11,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90084,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 17,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90091,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 14,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90098,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 59,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90105,
+    "result": "defeat",
+    "rooms": 8,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": false,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90112,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 45,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90119,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 11,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90126,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 33,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90133,
+    "result": "victory",
+    "rooms": 24,
+    "regions": 2,
+    "endCourage": 30,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90140,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 26,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90147,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 79,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90154,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 12,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90161,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 63,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90168,
+    "result": "victory",
+    "rooms": 24,
+    "regions": 2,
+    "endCourage": 49,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90175,
+    "result": "defeat",
+    "rooms": 23,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90182,
+    "result": "defeat",
+    "rooms": 25,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90189,
+    "result": "defeat",
+    "rooms": 24,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90196,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 25,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90203,
+    "result": "defeat",
+    "rooms": 24,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90210,
+    "result": "defeat",
+    "rooms": 11,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90217,
+    "result": "defeat",
+    "rooms": 10,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90224,
+    "result": "defeat",
+    "rooms": 24,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90231,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 10,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90238,
+    "result": "defeat",
+    "rooms": 12,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90245,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 36,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90252,
+    "result": "defeat",
+    "rooms": 10,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": false,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90259,
+    "result": "defeat",
+    "rooms": 25,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90266,
+    "result": "defeat",
+    "rooms": 25,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90273,
+    "result": "defeat",
+    "rooms": 10,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90280,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 27,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90287,
+    "result": "defeat",
+    "rooms": 25,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90294,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 9,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90301,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 45,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90308,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 43,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90315,
+    "result": "defeat",
+    "rooms": 25,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90322,
+    "result": "defeat",
+    "rooms": 24,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90329,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 77,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90336,
+    "result": "defeat",
+    "rooms": 22,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90343,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 35,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90350,
+    "result": "defeat",
+    "rooms": 10,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": false,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90357,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 58,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90364,
+    "result": "defeat",
+    "rooms": 23,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90371,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 46,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90378,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 47,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90385,
+    "result": "defeat",
+    "rooms": 4,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": false,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90392,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 8,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90399,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 30,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90406,
+    "result": "defeat",
+    "rooms": 11,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90413,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 33,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   }
+  ]
+ },
+ "B": {
+  "label": "B real pack",
+  "pack": [
+   "flashlight",
+   "spare-batteries-gear",
+   "multitool",
+   "notebook"
+  ],
+  "n": 60,
+  "wins": 34,
+  "boss": 58,
+  "errs": 0,
+  "winPct": 56.666666666666664,
+  "bossPct": 96.66666666666667,
+  "meanRooms": 21.75,
+  "medianRooms": 25,
+  "meanRegions": 1.33,
+  "rows": [
+   {
+    "seed": 90000,
+    "result": "defeat",
+    "rooms": 11,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90007,
+    "result": "defeat",
+    "rooms": 24,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90014,
+    "result": "defeat",
+    "rooms": 11,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90021,
+    "result": "defeat",
+    "rooms": 11,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90028,
+    "result": "defeat",
+    "rooms": 25,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90035,
+    "result": "defeat",
+    "rooms": 11,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90042,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 78,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90049,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 43,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90056,
+    "result": "defeat",
+    "rooms": 25,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90063,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 7,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90070,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 71,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90077,
+    "result": "defeat",
+    "rooms": 11,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90084,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 10,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90091,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 12,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90098,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 47,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90105,
+    "result": "defeat",
+    "rooms": 8,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": false,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90112,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 45,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90119,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 29,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90126,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 36,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90133,
+    "result": "victory",
+    "rooms": 24,
+    "regions": 2,
+    "endCourage": 38,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90140,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 26,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90147,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 79,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90154,
+    "result": "defeat",
+    "rooms": 24,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90161,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 63,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90168,
+    "result": "victory",
+    "rooms": 24,
+    "regions": 2,
+    "endCourage": 42,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90175,
+    "result": "defeat",
+    "rooms": 23,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90182,
+    "result": "defeat",
+    "rooms": 25,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90189,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 17,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90196,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 18,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90203,
+    "result": "defeat",
+    "rooms": 24,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90210,
+    "result": "defeat",
+    "rooms": 11,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90217,
+    "result": "defeat",
+    "rooms": 10,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90224,
+    "result": "defeat",
+    "rooms": 24,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90231,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 10,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90238,
+    "result": "defeat",
+    "rooms": 12,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90245,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 61,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90252,
+    "result": "defeat",
+    "rooms": 10,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": false,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90259,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 10,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90266,
+    "result": "defeat",
+    "rooms": 25,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90273,
+    "result": "victory",
+    "rooms": 23,
+    "regions": 2,
+    "endCourage": 18,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90280,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 52,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90287,
+    "result": "defeat",
+    "rooms": 12,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90294,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 14,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90301,
+    "result": "defeat",
+    "rooms": 24,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90308,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 60,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90315,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 34,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90322,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 26,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90329,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 77,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90336,
+    "result": "defeat",
+    "rooms": 22,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90343,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 35,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90350,
+    "result": "defeat",
+    "rooms": 12,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90357,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 13,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90364,
+    "result": "defeat",
+    "rooms": 23,
+    "regions": 1,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "nursery"
+   },
+   {
+    "seed": 90371,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 28,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90378,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 47,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90385,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 47,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90392,
+    "result": "victory",
+    "rooms": 26,
+    "regions": 2,
+    "endCourage": 11,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90399,
+    "result": "victory",
+    "rooms": 25,
+    "regions": 2,
+    "endCourage": 42,
+    "reachedBoss": true,
+    "bossWin": true,
+    "deathRegion": null
+   },
+   {
+    "seed": 90406,
+    "result": "defeat",
+    "rooms": 11,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   },
+   {
+    "seed": 90413,
+    "result": "defeat",
+    "rooms": 12,
+    "regions": 0,
+    "endCourage": 0,
+    "reachedBoss": true,
+    "bossWin": false,
+    "deathRegion": "foyer"
+   }
+  ]
+ }
+}

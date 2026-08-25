@@ -19,7 +19,7 @@ import { bus } from '../core/bus.js';
 import { TERMS, NodeType, COMPANIONS } from '../data/schema.js';
 import { cardById } from '../data/cards.js';
 import { relicById, relicSigil } from '../data/relics.js';
-import { satisfyingItem, itemById } from '../data/backpack.js';
+import { satisfyingItem, itemsSatisfying } from '../data/backpack.js';
 import { RoomScene, esc, chip } from './reward.js';
 import {
   el, ensureCss, rovingFocus, fullSrc, thumbSrc, freedCompanions,
@@ -153,14 +153,22 @@ export class EventScene extends RoomScene {
     requestAnimationFrame(() => this.$options.querySelector('.ev-opt:not(:disabled)')?.focus());
   }
 
-  /** Say exactly what would have opened this door. */
+  /**
+   * Say exactly what would have opened this door.
+   *
+   * `requires` may be a tag (`'canine'`, `'pry'`) rather than an item id, and
+   * `itemById` alone returns nothing for those — so the gate used to read "you
+   * would need something with a blade" with no hint as to what that is.
+   * `itemsSatisfying` answers for both, which is the whole point of a locked
+   * option: it teaches you what to pack next time.
+   */
   _gateLine(o) {
-    if (o.gateText) {
-      const names = (Array.isArray(o.requires) ? o.requires : [o.requires])
-        .map(k => itemById(k)?.name).filter(Boolean);
-      return names.length ? `${o.gateText} (${names.join(' or ')})` : o.gateText;
-    }
-    return 'You did not bring what this needs.';
+    if (!o.gateText) return 'You did not bring what this needs.';
+    const items = itemsSatisfying(o.requires);
+    if (!items.length) return o.gateText;
+    const names = items.slice(0, 3).map(i => i.name);
+    const more = items.length > names.length ? `, or ${items.length - names.length} more` : '';
+    return `${o.gateText} (${names.join(' or ')}${more})`;
   }
 
   /* ── choosing ─────────────────────────────────────────────────────────── */

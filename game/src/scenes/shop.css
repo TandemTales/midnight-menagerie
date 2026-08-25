@@ -3,10 +3,17 @@
    Shared chrome lives in reward.css (.rm-*).  Tokens only.
    =========================================================================== */
 
+/* The shelf is one scrolling column. `padding-bottom` is deliberately generous:
+   the last row must always be able to clear the "Back to the Blueprint" footer.
+   At 1600x900 the third Snack's BUY button used to sit at y 824-844 while
+   `.rm-foot` starts at 828, so `document.elementFromPoint` at the button's
+   centre returned the footer — visible, and unclickable. See the short-viewport
+   block at the bottom of this file, which is the other half of the fix. */
 .scene--shop .rm-body {
   justify-content: flex-start; align-items: stretch;
-  padding-top: var(--s-2); padding-bottom: var(--s-2);
-  overflow-y: auto; scrollbar-color: var(--brass-400) var(--ink-800);
+  padding-top: var(--s-2); padding-bottom: clamp(18px, 3vh, 40px);
+  overflow-y: auto; scroll-padding-block-end: clamp(18px, 3vh, 40px);
+  scrollbar-color: var(--brass-400) var(--ink-800);
 }
 
 .sh-floor {
@@ -223,4 +230,24 @@
   .sh-floor { grid-template-columns: minmax(0, 1fr); }
   .sh-side { flex-direction: row; flex-wrap: wrap; }
   .sh-side > .sh-counter { flex: 1 1 300px; }
+}
+
+/* ── Short viewports: 1600x900, and every laptop ─────────────────────────────
+   Padding alone only makes the bottom row reachable by scrolling, and a shop
+   whose third Snack has to be discovered by scrolling is still a shop that
+   hides a third of its stock. At 900px the shelf overran its scroll box by
+   ~40px, so the counters give that back: a little less padding, a slightly
+   narrower Mr. Moth, tighter gaps. Nothing here changes the layout above
+   960px, where there was never a problem. */
+@media (max-height: 960px) {
+  .scene--shop .sh-counter { padding: var(--s-2) var(--s-3) var(--s-3); }
+  .scene--shop .sh-counter--moth {
+    grid-template-columns: clamp(104px, 8.5vw, 152px) minmax(0, 1fr) clamp(210px, 18vw, 300px);
+  }
+  .scene--shop .sh-moth__line { font-size: var(--fs-sm); margin-bottom: var(--s-2); }
+  .scene--shop .sh-moth__say { padding-bottom: var(--s-2); }
+  .scene--shop .sh-h { margin-bottom: var(--s-2); }
+  .scene--shop .sh-left { gap: clamp(8px, 1vh, 14px); }
+  .scene--shop .sh-side { gap: clamp(8px, 1vh, 14px); }
+  .scene--shop .sh-service { padding: var(--s-2) 0 var(--s-2) var(--s-3); }
 }

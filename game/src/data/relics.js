@@ -151,7 +151,12 @@ export const RELICS = [
     desc: `Gain 4 ${TERMS.block} at the start of every ${TERMS.combat}.`,
     flavor: 'It still says WELCOME. Nobody has changed it in ninety years.',
     hooks: {
-      onCombatStart(h) { h.e.gainBlock(player(h), 4, { fromCard: false, source: 'relic' }); pop(h, 'guard'); },
+      /* onTurnStart, not onCombatStart: `_beginPlayerTurn` wipes Guard at step 2, so Guard
+         granted at combat start is gone before the player is dealt a card. */
+      onTurnStart(h) {
+        if (h.e.turn !== 1) return;
+        h.e.gainBlock(player(h), 4, { fromCard: false, source: 'relic' }); pop(h, 'guard');
+      },
     },
   },
   {

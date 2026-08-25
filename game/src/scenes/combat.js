@@ -22,7 +22,7 @@ import { RNG } from '../core/rng.js';
 import { CombatEngine } from '../combat/engine.js';
 import { makeDummyCombat } from '../combat/dummy.js';
 import { previewIncoming } from '../combat/preview.js';
-import { TERMS } from '../data/schema.js';
+import { TERMS, COMPANIONS } from '../data/schema.js';
 import { Hand } from '../ui/hand.js';
 import { CardView, ART_W, ART_H, CARD_SS } from '../ui/card.js';
 import { warmArt } from '../ui/cardart.js';
@@ -35,6 +35,9 @@ const CSS = new URL('./combat.css', import.meta.url).href;
 const CARD_CSS = new URL('../ui/card.css', import.meta.url).href;
 const HAND_CSS = new URL('../ui/hand.css', import.meta.url).href;
 const PORTRAITS = new URL('../../assets/portraits/', import.meta.url).href;
+
+/** Clearance kept between the bottom of a creature's plate and the hand. */
+const PLATE_GAP = 24;
 
 /** Seconds from `card:play` to the effect resolving. See `_onPlay`. */
 const PLAY_RESOLVE = 0.44;
@@ -329,6 +332,21 @@ export class CombatScene extends Scene {
   _d(sec) { return this.reduceMotion ? 0.001 : sec / this.speed; }
 
   /**
+   * How bright anything that BLOOMS is allowed to be, 0..1.
+   *
+   * The Flashes slider is a 0..1 range (`ui/settings.js`), not a boolean, and
+   * Reduced motion's hint says "Overrides the settings above" — so it has to
+   * actually override this one. Round 4 read `flashes` as truthy/falsy in two
+   * places and ignored it entirely in a third, which is how a 6-damage Bite
+   * came to raise whole-room luminance by 42% with Flashes at 0%.
+   */
+  _bloomGain() {
+    if (this.reduceMotion) return 0;
+    const v = Number(this.flashes);
+    return Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : 1;
+  }
+
+  /**
    * An OPENING duration. Everything the engine emits between `startCombat()`
    * and the first player turn is set-up, not play: statuses the encounter
    * builder applied, the opening shuffle, the first intent roll. Round 1 gave
@@ -480,31 +498,46 @@ export class CombatScene extends Scene {
              HUD. This rail starts below the HUD and can never leave the screen. -->
         <div class="cb-rules" role="list" aria-label="House Rules in play" hidden></div>
 
+        <!-- YOUR HALF OF THE BOARD.
+             STS2-REFERENCE §1 stacks the player's block shield, HP bar and
+             status row together, on the player. Round 4 had Courage as an 80px
+             pill at x=168 in the top bar and Guard as a shield badge at
+             x=255,y=700 on the portrait - 850px apart, so the two numbers that
+             decide every turn were never in the same glance. They are one
+             block now; ui/hud.js keeps its pill as the run-level echo. -->
         <section class="cb-player" aria-label="You">
           <div class="cb-player__figure">
             <div class="cb-player__glow"></div>
             <img class="cb-player__art" alt="" draggable="false">
             <div class="cb-player__flash"></div>
-            <div class="cb-player__guard" hidden>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5 L21.5 5.2 C21.5 14 17.3 20.2 12 22.8 C6.7 20.2 2.5 14 2.5 5.2 Z"/></svg>
-              <b>0</b>
-            </div>
             <!-- YOUR counters. engine.state.counters has always shipped the
                  player's resource tracks (Loose Bones, Nine Lives, Glow, Web…)
                  and round 3 rendered only en.counters, so Bones's Sit Pretty
                  and Put Yourself Back Together keyed off a number the player
-                 could not see. Same widget as the enemies' DUST 0/4, beside
-                 the Guard shield. -->
+                 could not see. -->
             <div class="cb-player__counters" role="list" aria-label="Your resources"></div>
           </div>
           <div class="cb-player__plate">
-            <div class="cb-player__name"></div>
-            <!-- No Courage bar here: ui/hud.js owns exactly one, top-right,
-                 and two of the same number on one screen is a bug, not
-                 reassurance. What is NOT duplicated - how much of it you are
-                 about to lose - stays, and is the panel below. -->
-            <div class="cb-incoming" hidden></div>
+            <!-- The portrait is a painting of the COMPANION, so the name under
+                 it is the Companion's. Round 4 printed the Kid's name under a
+                 picture of a dog. -->
+            <div class="cb-player__id">
+              <span class="cb-player__name"></span>
+              <span class="cb-player__title"></span>
+            </div>
+            <div class="cb-player__vitals">
+              <div class="cb-player__guard" hidden>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5 L21.5 5.2 C21.5 14 17.3 20.2 12 22.8 C6.7 20.2 2.5 14 2.5 5.2 Z"/></svg>
+                <b>0</b>
+              </div>
+              <div class="cb-player__bar" tabindex="0">
+                <div class="cb-player__ghost"></div>
+                <div class="cb-player__fill"></div>
+                <div class="cb-player__hp"><span class="cb-player__hpn"></span><span class="cb-player__hpm"></span></div>
+              </div>
+            </div>
             <div class="cb-statuses" role="list" aria-label="Your conditions"></div>
+            <div class="cb-incoming" hidden></div>
           </div>
         </section>
 
@@ -565,10 +598,16 @@ export class CombatScene extends Scene {
     this.$pl = $('.cb-player');
     this.$plArt = $('.cb-player__art');
     this.$plName = $('.cb-player__name');
+    this.$plTitle = $('.cb-player__title');
     this.$plFlash = $('.cb-player__flash');
     this.$plGuard = $('.cb-player__guard');
     this.$plGuardN = $('.cb-player__guard b');
     this.$plCounters = $('.cb-player__counters');
+    this.$plBar = $('.cb-player__bar');
+    this.$plFill = $('.cb-player__fill');
+    this.$plGhost = $('.cb-player__ghost');
+    this.$plHpN = $('.cb-player__hpn');
+    this.$plHpM = $('.cb-player__hpm');
     this.$inc = $('.cb-incoming');
     this.$statuses = $('.cb-statuses');
     this.$handHost = $('.cb-handhost');
@@ -591,11 +630,25 @@ export class CombatScene extends Scene {
     this.root.classList.toggle('is-large', this.largeText);
     const slug = String(params.companion || this.ctx.run?.companion || 'marmalade');
     this.hero = new PlayerView({
-      clock: this.ctx.clock, reduceMotion: this.reduceMotion, companion: slug,
+      clock: this.ctx.clock, reduceMotion: this.reduceMotion,
+      flashes: this._bloomGain(), companion: slug,
     });
     $('.cb-herohost').appendChild(this.hero.el);
     this.$plArt.src = `${PORTRAITS}${slug}.png`;
     this.$plArt.addEventListener('error', () => { this.$plArt.style.display = 'none'; }, { once: true });
+
+    /* WHOSE NAME GOES UNDER THE PAINTING. Round 4 printed JORDAN BROOKS under
+       a portrait of a dog, because `.cb-player__name` took the engine player's
+       name and the picture above it is the Companion's. The label belongs to
+       the thing it is under; the Kid is on the board, with her own body, and
+       her name is on the panel's accessible name and the hero's tooltip. */
+    const meta = COMPANIONS.find(c => c.slug === slug);
+    this.$plName.textContent = (meta && meta.name) || slug;
+    this.$plTitle.textContent = (meta && meta.title) || '';
+    const kidName = this.ctx.run?.kidName || '';
+    this.$pl.setAttribute('aria-label',
+      kidName ? `You — ${kidName} and ${(meta && meta.name) || slug}` : 'You');
+    this._kidName = kidName;
 
     // CardView positions by its BOTTOM CENTRE, so any static card needs a real
     // transform rather than a CSS scale.
@@ -649,7 +702,8 @@ export class CombatScene extends Scene {
       if (e.alive === false || e.hp <= 0) continue;
       const def = this.engine.actor(e.id)?.def || null;
       const v = new EnemyView(e, {
-        clock: this.ctx.clock, reduceMotion: this.reduceMotion, def,
+        clock: this.ctx.clock, reduceMotion: this.reduceMotion,
+        flashes: this._bloomGain(), def,
       });
       this._attachTips(v);
       this.views.set(e.id, v);
@@ -661,6 +715,57 @@ export class CombatScene extends Scene {
   _layoutEnemies() {
     const n = this.$enemies.children.length;
     this.$enemies.dataset.n = String(n);
+    this._fitPlates();
+  }
+
+  /**
+   * KEEP THE CREATURES' NUMBERS OUT FROM BEHIND THE HAND.
+   *
+   * Measured round 4, at 1280x720, 1600x900 and 1920x1080: the House Bell's
+   * `Resonance 0/4` chip and The Butler's `Flustered 1` chip sat under the
+   * player's own fan — `document.elementFromPoint` at each chip's centre
+   * returned `DIV.mm-card` (and at 1080p `DIV.mm-hand__hit`, the fan's
+   * invisible catcher, which eats the tooltip just as thoroughly). Those chips
+   * are the exact mechanic each of those fights is built to teach.
+   *
+   * Two halves. The counters moved to the TOP of the plate (`ui/enemy.js`), and
+   * this measures where the fan actually is and lifts any plate that still
+   * reaches into it. Measured rather than modelled because the overlap depends
+   * on tier, arena, `--e-scale`, the viewport AND on where card-feel's fan
+   * settles — round 4's `--e-h: min(..., 100vh - 500px)` budget was a model,
+   * and it forgot the 104px the intent stack reserves above every creature.
+   *
+   * Runs on layout changes only (resize, spawn, death), never per frame.
+   */
+  /** Re-measure once the fan's re-lay-out has settled, not on the frame that
+   *  starts it. Coalesced: a draw of five cards is one measurement. */
+  _scheduleFit() {
+    clearTimeout(this._fitT);
+    clearTimeout(this._fitT2);
+    // Two passes: the fan is still easing at 360ms, so the first measurement
+    // can read a hand that has not finished arriving. The second is the one
+    // that holds. Both are cheap and both are idempotent.
+    this._fitT = setTimeout(() => this._fitPlates(), 360);
+    this._fitT2 = setTimeout(() => this._fitPlates(), 1000);
+  }
+
+  _fitPlates() {
+    if (!this.views || !this.views.size || !this.$handHost) return;
+    let top = window.innerHeight;
+    // the visible cards…
+    for (const c of this.$handHost.querySelectorAll('.mm-card')) {
+      const r = c.getBoundingClientRect();
+      if (r.height > 0 && r.top > 0) top = Math.min(top, r.top);
+    }
+    // …and the fan's pointer catcher, which occludes for the mouse either way
+    const hit = this.$handHost.querySelector('.mm-hand__hit');
+    if (hit) {
+      const r = hit.getBoundingClientRect();
+      if (r.height > 0 && r.top > 0) top = Math.min(top, r.top);
+    }
+    if (top >= window.innerHeight) top = window.innerHeight * 0.78;   // no hand yet
+    const limit = top - PLATE_GAP;
+    for (const v of this.views.values()) v.setPlateLimit(limit);
   }
 
   /**
@@ -745,6 +850,7 @@ export class CombatScene extends Scene {
     }
     this._syncHandPlayability();
     this._updatePilePositions();
+    this._scheduleFit();
 
     this._offs.push(ctx.bus.on('card:hover', (p) => this._hoverPreview(p.uid)));
     this._offs.push(ctx.bus.on('card:unhover', () => this._clearPreview()));
@@ -780,8 +886,10 @@ export class CombatScene extends Scene {
     this._offs.push(ctx.bus.on('settings:changed', () => {
       this._readSettings();
       this.root.classList.toggle('is-large', this.largeText);
-      for (const v of this.views.values()) v.reduceMotion = this.reduceMotion;
-      if (this.hero) this.hero.reduceMotion = this.reduceMotion;
+      const bloom = this._bloomGain();
+      for (const v of this.views.values()) { v.reduceMotion = this.reduceMotion; v.flashes = bloom; }
+      if (this.hero) { this.hero.reduceMotion = this.reduceMotion; this.hero.flashes = bloom; }
+      if (this.fx) this.fx.setFlashes(bloom, this.reduceMotion);
     }));
   }
 
@@ -1351,6 +1459,7 @@ export class CombatScene extends Scene {
           this.$turnN.textContent = `Turn ${ev.turn}`;
           this._banner(`Your Turn ${ev.turn}`, 'player');
           this.ctx.audio?.play?.('combat:turn-start');
+          this._scheduleFit();
           await this._wait(this._o(0.22));
           // Everything queued before this point was set-up, not play. From here
           // the fight animates at full weight.
@@ -1715,6 +1824,9 @@ export class CombatScene extends Scene {
     }
     this.hand.setCards(want.map(c => this._handCard(this.engine.cardSnap(c))));
     this._syncHandPlayability();
+    // The fan's top edge moves with the card count. Re-measure once the
+    // re-lay-out has settled, not on the frame that starts it.
+    this._scheduleFit();
   }
 
   /* ── damage ──────────────────────────────────────────────────────────── */
@@ -1785,8 +1897,31 @@ export class CombatScene extends Scene {
 
     // shake scaled to Courage actually lost, never to the raw number
     this._addShake(Math.min(1.5, hpLoss / 9 + (blockedAll ? 0.10 : 0.22)));
+    /* ── THE IMPACT BLOOM ──────────────────────────────────────────────────
+       MEASURED, round 4: a basic 6-damage Bite lifted whole-room mean
+       luminance 78 -> 110 (+42%), and it did that IDENTICALLY with Flashes at
+       0% (77.8 -> 110.3) and with Reduced motion ON (78.6 -> 110.3) — even
+       though that setting's own hint says "Overrides the settings above".
+       This is photosensitivity-relevant and the UI promised otherwise.
+
+       Two bugs in one call. `atmosphere.impact()` gates `stage.flash` and
+       `stage.ripple` on the settings but its point-light flare (base = 2.2 x
+       strength, straight into the bloom pass) is ungated, so the room lit up
+       regardless; and `0.2 + hpLoss/22` is nearly flat over the damage range a
+       Foyer fight actually deals, so a 6 and a 26 bloomed the same.
+
+       `strength` is the only lever this scene has on someone else's flare, so
+       it carries both jobs: it is now proportional to Courage actually lost
+       (STS2-REFERENCE §4, "screen shake scaled to damage… never on small
+       ones") and multiplied by the Flashes slider, which Reduced motion drives
+       to zero. At zero the flare and ring vanish and the sparks stay — the
+       hit is still legible, it just stops washing the room. */
+    const bloom = this._bloomGain();
+    const dmgK = Math.min(1, hpLoss / 20);
+    const strength = bloom * (0.12 + 1.38 * dmgK * dmgK);
     this.ctx.atmosphere?.impact?.(c, {
-      strength: Math.min(1.5, 0.2 + hpLoss / 22),
+      // 0.001, not 0: `impact()` still owes us its particle burst.
+      strength: Math.max(0.001, strength),
       color: blockedAll ? 0x8fb7d9 : (isPlayer ? 0xf26d78 : 0xffb64a),
       shake: false,
     });
@@ -1882,9 +2017,10 @@ export class CombatScene extends Scene {
     this.$pl.classList.remove('is-hit', 'is-clank');
     void this.$pl.offsetWidth;
     this.$pl.classList.add(blocked ? 'is-clank' : 'is-hit');
-    if (this.flashes && !blocked) {
-      this.$plFlash.style.opacity = String(Math.min(0.9, 0.35 + hpLoss / 22));
-      this._plFlash = 1;
+    const bloom = this._bloomGain();
+    if (bloom > 0 && !blocked) {
+      this.$plFlash.style.opacity = String(bloom * Math.min(0.9, 0.35 + hpLoss / 22));
+      this._plFlash = bloom;
     }
   }
 
@@ -2043,10 +2179,23 @@ export class CombatScene extends Scene {
 
   _syncPlayer() {
     const p = this._light(this.engine.player);
-    p.name = this.engine.player.name;
-    const pct = Math.max(0, Math.min(1, p.hp / (p.maxHp || 1)));
-    this.$plName.textContent = p.name || 'You';
+    const maxHp = p.maxHp || 1;
+    const pct = Math.max(0, Math.min(1, p.hp / maxHp));
     this.$pl.classList.toggle('is-low', pct <= 0.3);
+
+    /* COURAGE, ON THE PLAYER. STS2-REFERENCE §1: block shield, HP bar and
+       status row live together on the player's own block. The bar drains with
+       the same lagging ghost the creatures use, so a hit reads the same on
+       both sides of the exchange. */
+    this.$plFill.style.transform = `scaleX(${pct.toFixed(4)})`;
+    const gp = this._plGhostV === undefined ? pct : this._plGhostV;
+    if (gp < pct) { this._plGhostV = pct; this.$plGhost.style.transform = `scaleX(${pct.toFixed(4)})`; }
+    else if (gp > pct) { this._plGhostV = gp; this._plGhostFrom = performance.now(); }
+    this.$plHpN.textContent = String(Math.max(0, Math.round(p.hp)));
+    this.$plHpM.textContent = '/' + maxHp;
+    this.$plBar.dataset.tip = `${TERMS.hp}|${Math.max(0, Math.round(p.hp))} of ${maxHp} left.`
+      + `|Guard soaks damage before Courage does, and it is gone at the start of your turn.`;
+    this.$plBar.setAttribute('aria-label', `${TERMS.hp} ${Math.max(0, Math.round(p.hp))} of ${maxHp}`);
 
     if (!this.$plGuard.classList.contains('is-preview')) {
       if (p.block > 0) { this.$plGuard.hidden = false; this.$plGuardN.textContent = String(p.block); }
@@ -2054,6 +2203,18 @@ export class CombatScene extends Scene {
     }
     this._renderPlayerCounters();
     this._renderStatusRow(p.statuses || []);
+  }
+
+  /** The lagging half of the Courage bar, ticked from the scene's frame loop. */
+  _drainCourage(dt) {
+    const pct = Math.max(0, Math.min(1,
+      this.engine.player.hp / (this.engine.player.maxHp || 1)));
+    const gp = this._plGhostV;
+    if (gp === undefined || gp <= pct) return;
+    const held = this._plGhostFrom && performance.now() - this._plGhostFrom < 260;
+    const next = held ? gp : Math.max(pct, gp - dt * 0.85);
+    this._plGhostV = next;
+    this.$plGhost.style.transform = `scaleX(${next.toFixed(4)})`;
   }
 
   /**
@@ -2217,7 +2378,10 @@ export class CombatScene extends Scene {
   _addEnemyView(en) {
     const snap = this.engine.state.enemies.find(e => e.id === en.id);
     if (!snap || this.views.has(en.id)) return;
-    const v = new EnemyView(snap, { clock: this.ctx.clock, reduceMotion: this.reduceMotion, def: en.def });
+    const v = new EnemyView(snap, {
+      clock: this.ctx.clock, reduceMotion: this.reduceMotion,
+      flashes: this._bloomGain(), def: en.def,
+    });
     this._attachTips(v);
     this.views.set(en.id, v);
     this.$enemies.appendChild(v.el);
@@ -2423,6 +2587,7 @@ export class CombatScene extends Scene {
     for (const v of this.views.values()) v.update(dt, t);
     this.hero?.update(dt, t);
     this.fx?.update(dt);
+    this._drainCourage(dt);
 
     // screen shake on the DOM layer (stage.shake only moves the 3D camera)
     const s = this._shake;
@@ -2450,6 +2615,7 @@ export class CombatScene extends Scene {
   /* ══ teardown ═══════════════════════════════════════════════════════════ */
   async exit() {
     clearTimeout(this._veilT);
+    clearTimeout(this._fitT); clearTimeout(this._fitT2);
     this._offFrame?.();
     this.hero?.destroy();
     this.hero = null;

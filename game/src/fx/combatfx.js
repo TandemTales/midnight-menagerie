@@ -41,7 +41,15 @@ export class CombatFX {
     this.ctx = ctx || {};
     this.clock = this.ctx.clock || null;
     this.reduceMotion = !!this.ctx.Save?.settings?.reduceMotion;
-    this.flashes = this.ctx.Save?.settings?.flashes !== 0;
+    /* THE FLASHES SLIDER IS A 0..1 RANGE, not a boolean (`ui/settings.js`
+       declares it `type:'range', min:0, max:1, step:0.1`). Round 4 read it as
+       `!== 0`, so 10% and 100% were the same picture and the only value that
+       did anything was exactly zero. `glow` is the additive gain every
+       lit particle is drawn through; `setFlashes` keeps it live when the
+       player moves the slider mid-fight. */
+    this.flashes = 1;
+    this.glow = 1;
+    this.setFlashes(this.ctx.Save?.settings?.flashes, this.reduceMotion);
     this.showNumbers = this.ctx.Save?.settings?.showDamageNumbers !== false;
 
     const layer = document.createElement('div');
@@ -116,7 +124,7 @@ export class CombatFX {
   /** An impact: a hot spark burst plus a shock ring. */
   burst(x, y, o = {}) {
     if (this.reduceMotion) return this;
-    const n = Math.round((o.count ?? 16) * (this.flashes ? 1 : 0.5));
+    const n = Math.round((o.count ?? 16) * (0.55 + 0.45 * this.flashes));
     const sp = o.speed ?? 300;
     const col = o.color || this.col.flame;
     const spread = o.spread ?? TAU;
@@ -291,13 +299,18 @@ export class CombatFX {
     }
     this.n = n;
 
-    // draw — grouped by blend mode to keep state changes down
+    /* draw — grouped by blend mode to keep state changes down.
+       `glow` is the Flashes slider: additive particles are the part of a hit
+       that actually raises room luminance, so the slider scales their alpha
+       rather than removing them. At 0% the sparks are still there, they just
+       stop washing the frame. */
+    const glow = this.glow;
     g.globalCompositeOperation = 'lighter';
     for (let i = 0; i < n; i++) {
       const k = this.pk[i];
       if (k === K_DUST) continue;
       const a = this.pl[i] / this.pL[i];
-      g.globalAlpha = k === K_RING ? a * a * 0.65 : Math.min(1, a * 1.5);
+      g.globalAlpha = glow * (k === K_RING ? a * a * 0.65 : Math.min(1, a * 1.5));
       g.fillStyle = this.pc[i];
       const x = this.px[i], y = this.py[i];
       if (k === K_RING) {
@@ -359,6 +372,22 @@ export class CombatFX {
       s.el.style.transform =
         `translate3d(${(s.x + s.drift * rise).toFixed(1)}px,${(s.y - s.rise * rise).toFixed(1)}px,0) scale(${sc.toFixed(3)})`;
     }
+    return this;
+  }
+
+  /**
+   * Live update from `settings:changed`. Reduced motion's own hint promises it
+   * "Overrides the settings above", so it pins the gain to zero regardless of
+   * where the Flashes slider is sitting.
+   */
+  setFlashes(v, reduceMotion) {
+    if (reduceMotion !== undefined) this.reduceMotion = !!reduceMotion;
+    const n = Number(v);
+    const g = this.reduceMotion ? 0 : (Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : 1);
+    this.flashes = g;
+    // Never fully black: a spark you cannot see is not an accessibility win,
+    // it is a missing hit. 0.3 keeps the shape and drops the bloom.
+    this.glow = 0.3 + 0.7 * g;
     return this;
   }
 

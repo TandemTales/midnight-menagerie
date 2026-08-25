@@ -1,0 +1,1 @@
+[{"op": "eval", "js": "[window.MM.state().scene, window.MM.ctx.run.currentNodeId, window.MM.ctx.run.courage]"}, {"op": "goto", "url": "http://localhost:8777/game/index.html", "wait": 9.0}, {"op": "eval", "js": "[window.MM.state().scene, window.MM.ctx.run? window.MM.ctx.run.currentNodeId : null]"}, {"op": "text"}, {"op": "errors"}]

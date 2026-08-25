@@ -27,6 +27,9 @@ import {
 } from '../ui/portrait.js';
 import { pauseStageFor } from './_stage.js';
 import { fitCardToSlot } from './_cardfit.js';
+import {
+  itemById, defaultLoadout, loadoutSize, migrateLoadout, assertLoadout, SLOTS_BASE,
+} from '../data/backpack.js';
 
 const CSS_KIT  = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_SEL  = new URL('./select.css', import.meta.url).href;
@@ -380,6 +383,13 @@ export const CODEX = {
    Kid codex. Species and circumstances come from docs/design/kids/*.md; the
    slugs, names and pet names come from data/schema.js. Where the two disagree
    the design doc wins for player-facing text — see docs/NOTES.md.
+
+   No `pack` here. This screen used to carry its own `[[name, slots], …]` Gear
+   table, the Clubhouse carried a third one, and `data/backpack.js` — the file
+   that actually resolves Gear into tags, hooks and run flags — keyed everything
+   by id, so none of the three ever met. The loadout is now read from
+   `loadoutFor(kid)` below: the Clubhouse's saved pack if there is one, the
+   authored `KID_LOADOUTS` if there is not, ids either way.
    ═══════════════════════════════════════════════════════════════════════════ */
 export const KID_CODEX = {
   maya: {
@@ -389,7 +399,6 @@ export const KID_CODEX = {
     trait: 'Practical, organised, observant, stubborn, dryly funny. Uses forearm crutches.',
     perk: ['Checked the Batteries', 'Backpack Gear has one extra use per expedition, and Gear never breaks in the first region.'],
     focus: 'Backpack preparation and equipment specialisation',
-    pack: [['Flashlight', 1], ['Spare Batteries', 1], ['Multitool', 2], ['Notebook', 1]],
   },
   mateo: {
     age: 12, species: 'Green-cheek conure',
@@ -398,7 +407,6 @@ export const KID_CODEX = {
     trait: 'Talkative, warm, keeps every scrap of evidence in order.',
     perk: ['Cross-Reference', 'Start each expedition already holding one Clue, and Clue rooms reveal one extra detail.'],
     focus: 'Clues, persistent investigation, interpreting old evidence',
-    pack: [['Notebook', 1], ['Camera', 2], ['Walkie-Talkie', 2]],
   },
   amina: {
     age: 11, species: 'Lop-eared rabbit',
@@ -407,7 +415,6 @@ export const KID_CODEX = {
     trait: 'Gentle, patient, the one who notices when someone needs to stop.',
     perk: ['Blanket Fort Builder', 'Safe Rooms restore an extra chunk of Courage and let you keep one Snack.'],
     focus: 'Courage recovery, long expeditions, animal Curiosities',
-    pack: [['Blanket', 2], ['First Aid Kit', 2], ['Pet Treats', 1]],
   },
   eli: {
     age: 13, species: 'Black and white fancy rat',
@@ -416,7 +423,6 @@ export const KID_CODEX = {
     trait: 'Inventive, funny, cannot walk past a mechanism without opening it.',
     perk: ['Jimmy the Latch', 'Locked doors and mechanical Curiosities always offer one extra option.'],
     focus: 'Mechanical Curiosities, utility Gear, Connectors and Secrets',
-    pack: [['Multitool', 2], ['Rope', 2], ['Chalk', 1]],
   },
   priya: {
     age: 12, species: 'Leopard gecko',
@@ -425,7 +431,6 @@ export const KID_CODEX = {
     trait: 'Methodical, competitive, plans three rooms ahead.',
     perk: ['Read the Room', 'See one extra Trick in every reward, and upgrades cost less at Safe Rooms.'],
     focus: 'Trick rewards, upgrade decisions, long-range planning',
-    pack: [['Notebook', 1], ['Pocket Mirror', 1], ['Compass', 1], ['Glow Sticks', 2]],
   },
   jordan: {
     age: 12, species: 'Beagle mix',
@@ -434,7 +439,6 @@ export const KID_CODEX = {
     trait: 'Loud, brave, improvises constantly, apologises later.',
     perk: ['Whatever Works', 'Start with one extra Snack and find Lost Things more often.'],
     focus: 'Consumables, temporary resources, Treasure, improvisation',
-    pack: [['Dog Whistle', 1], ['Pet Treats', 1], ['Thermos', 2], ['Glow Sticks', 1]],
   },
   lena: {
     age: 13, species: 'Syrian hamster',
@@ -443,7 +447,6 @@ export const KID_CODEX = {
     trait: 'Quiet, watchful, records everything, misses nothing.',
     perk: ['Look Again', 'Secret rooms appear more often, and every Secret you find is recorded permanently.'],
     focus: 'Secrets, evidence, environmental observation',
-    pack: [['Flashlight', 1], ['Camera', 2], ['Pocket Mirror', 1], ['Chalk', 1]],
   },
   lucy: {
     age: 11, species: 'Tricolour guinea pig',
@@ -452,9 +455,42 @@ export const KID_CODEX = {
     trait: 'Peacemaker, endlessly stubborn about the things that matter.',
     perk: ['Say It Properly', 'Animal Curiosities always offer a kind option, and it always works.'],
     focus: 'Curiosity outcomes, animal handling, group morale',
-    pack: [['Pet Treats', 1], ['Familiar Toy', 1], ['Blanket', 2], ['Flashlight', 1]],
   },
 };
+
+/**
+ * The loadout a run will actually start with, as `string[]` of item ids.
+ *
+ * The Clubhouse Backpack editor writes `Save.data.backpacks[kid]`; if the
+ * player has been in there, that IS the pack, and this screen must show it or
+ * the editor is decoration. Otherwise the Kid's authored `KID_LOADOUTS` entry.
+ * `migrateLoadout` covers saves written before the seam was ids.
+ *
+ * Exported because clubhouse.js needs the same answer for its own preview.
+ */
+export function loadoutFor(kidSlug) {
+  const saved = Save?.data?.backpacks?.[kidSlug];
+  if (Array.isArray(saved)) {
+    const ids = migrateLoadout(saved, `Save.data.backpacks.${kidSlug}`);
+    if (ids.length) return ids;
+    // An explicitly emptied pack is a choice, not a missing value.
+    if (saved.length === 0) return [];
+  }
+  return defaultLoadout(kidSlug);
+}
+
+/** Authored Gear copy goes through innerHTML; it is content, so it is escaped. */
+const escHtml = (s) => String(s).replace(/[&<>"]/g, (c) => (
+  { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+/** Is this loadout the Clubhouse's doing, or the one the Kid came with? */
+function loadoutIsCustom(kidSlug) {
+  const saved = Save?.data?.backpacks?.[kidSlug];
+  if (!Array.isArray(saved)) return false;
+  const a = loadoutFor(kidSlug).join('|');
+  const b = defaultLoadout(kidSlug).join('|');
+  return a !== b;
+}
 
 const HAUNTS = [
   [0, 'Standard', 'The mansion as it is.'],
@@ -1148,11 +1184,28 @@ export class SelectScene extends Scene {
       }
     }
 
-    const used = info.pack.reduce((s, [, n]) => s + n, 0);
-    step.querySelector('.kid__slots').textContent = `${used} / 5 slots`;
-    step.querySelector('.kid__packlist').innerHTML = info.pack.map(([name, n]) =>
-      `<li class="packitem"><span class="packitem__slots" aria-hidden="true">${'■'.repeat(n)}</span>` +
-      `<span class="packitem__name">${name}</span><span class="packitem__n">${n} slot${n > 1 ? 's' : ''}</span></li>`).join('');
+    /* The Backpack, read from the one item table and from the Clubhouse's saved
+       pack. This is the loadout `_begin` hands to the run — the same array, from
+       the same call — so what is printed here is what the kid walks in with. */
+    const ids = loadoutFor(slug);
+    const used = loadoutSize(ids);
+    const custom = loadoutIsCustom(slug);
+    const slots = step.querySelector('.kid__slots');
+    slots.textContent = `${used} / ${SLOTS_BASE} slots${custom ? ' · packed at the Clubhouse' : ''}`;
+    slots.classList.toggle('is-custom', custom);
+    step.querySelector('.kid__packlist').innerHTML = ids.length
+      ? ids.map((id) => {
+        const it = itemById(id);
+        const n = it.size;
+        /* The description rides a tooltip rather than a fourth cell: `.packitem`
+           is a three-column grid in select.css, which this scene does not own. */
+        return `<li class="packitem" tabindex="0" data-tip-title="${escHtml(it.name)}" ` +
+          `data-tip="${escHtml(it.desc)}" data-tip-placement="top">` +
+          `<span class="packitem__slots" aria-hidden="true">${'■'.repeat(n)}</span>` +
+          `<span class="packitem__name">${escHtml(it.name)}</span>` +
+          `<span class="packitem__n">${n} slot${n > 1 ? 's' : ''}</span></li>`;
+      }).join('')
+      : '<li class="packitem packitem--empty">Nothing packed. Every Curiosity that asks for Gear will be closed.</li>';
 
     step.dataset.chosen = '1';
   }
@@ -1220,7 +1273,10 @@ export class SelectScene extends Scene {
   _begin() {
     const { companion, kid, seed, haunt } = this.state;
     if (!companion || !kid) return;
-    const backpack = (KID_CODEX[kid]?.pack ?? []).map(([name, slots]) => ({ name, slots }));
+    /* `string[]` of ids — the shape `state/run.js` and `data/backpack.js` both
+       consume. This used to emit `[{name:'Multitool', slots:2}]`, which nothing
+       downstream could read, and it silently disabled the entire Backpack. */
+    const backpack = assertLoadout(loadoutFor(kid), `select.js _begin(kid:'${kid}')`);
     const payload = { companion, kid, seed, haunt, backpack };
     try { this.ctx.audio?.play?.('ui:begin'); } catch {}
     bus.emit('run:start', payload);

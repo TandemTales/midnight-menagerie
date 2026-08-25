@@ -36,7 +36,7 @@
 <script type="module">
 import { RNG, hashSeed } from '../../game/src/core/rng.js';
 import { Save } from '../../game/src/core/save.js';
-import { Run } from '../../game/src/state/run.js';
+import { Run, STARTER_SLUGS } from '../../game/src/state/run.js';
 import { NodeType, REGION_ORDER } from '../../game/src/data/schema.js';
 import { cardById } from '../../game/src/data/cards.js';
 
@@ -405,8 +405,18 @@ async function main() {
     check(!!bossReward && bossReward.kind === 'boss', 'boss path: boss reward was not kind="boss"');
     check(!!bossReward?.keepsake, 'boss path: boss dropped no Keepsake');
     check(run.result === 'victory', `boss path: expected victory, got ${run.result}`);
-    check(run.rescued.includes('marmalade'), 'boss path: the region Companion was not freed');
-    check((Save.data.companionsRescued || []).includes('marmalade'),
+    /* This used to assert `rescued.includes('marmalade')` — the Foyer's authored
+       Companion. Marmalade is one of the four starters: she is at the clubhouse
+       from the first expedition and was never in the house, so "freeing" her
+       spent the run's emotional peak on nothing, and the assertion froze that
+       into the suite. `Run.rescueTargetFor()` now substitutes somebody actually
+       missing, and this checks the property that matters instead of the name. */
+    const freedByBoss = run.companionsFreed[0];
+    check(!!freedByBoss && run.rescued.includes(freedByBoss),
+      `boss path: no Companion was freed (freed ${JSON.stringify(run.companionsFreed)})`);
+    check(freedByBoss !== run.companion && !STARTER_SLUGS.has(freedByBoss),
+      `boss path: freed ${freedByBoss}, who was never in the house`);
+    check((Save.data.companionsRescued || []).includes(freedByBoss),
       'boss path: the rescue did not reach the meta save');
     check(Save.loadRun() === null, 'boss path: a finished run is still resumable');
     say('<pre class="ok">'

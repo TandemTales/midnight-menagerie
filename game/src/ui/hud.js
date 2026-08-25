@@ -578,24 +578,54 @@ function keepsakeChip(k) {
   return chip;
 }
 
+/* ── Gear glyphs ─────────────────────────────────────────────────────────────
+   One drawing per item, keyed by the `icon` name authored in data/backpack.js.
+   Four identical knapsacks in a row told the player they were carrying four
+   things and nothing about which four — the bar existed but did not inform, and
+   a HUD that has to be hovered to be read is not surfacing anything.
+
+   These live here rather than in `ui/icons.js` because that module owns intents,
+   statuses, resources, nodes, types, rarities and chrome, and Gear is none of
+   those; it is also another owner's file. Same stroke language as the Keepsake
+   sigils: 24x24, no fill, `stroke-width: 1.6` from the CSS above.
+   HAND-OFF: fold into ui/icons.js when it grows a Backpack set. */
+const GEAR_GLYPHS = {
+  whistle:    ['M4 10.2h8.4a2.9 2.9 0 0 1 0 5.8H4z', 'M16 9.6a5.2 5.2 0 0 1 0 7', 'M18.8 7a9 9 0 0 1 0 12.2'],
+  treats:     ['M9.2 12h5.6', 'M7 9.4a2.6 2.6 0 1 0 0 5.2 2.6 2.6 0 0 0 0-5.2z', 'M17 9.4a2.6 2.6 0 1 1 0 5.2 2.6 2.6 0 0 1 0-5.2z'],
+  camera:     ['M3 8.6h4.2L8.6 6.4h6.8l1.4 2.2H21v10.2H3z', 'M12 10.6a3 3 0 1 0 0 6 3 3 0 0 0 0-6z', 'M18.4 10.6h.8'],
+  toy:        ['M12 4.8a7.2 7.2 0 1 0 0 14.4 7.2 7.2 0 0 0 0-14.4z', 'M5.4 9.6c4.2 2.1 9 2.1 13.2 0', 'M5.4 14.4c4.2-2.1 9-2.1 13.2 0'],
+  tag:        ['M4.4 10.2a7.6 7.6 0 0 1 15.2 0', 'M12 10.6v2.2', 'M12 12.8l2.7 2.7L12 18.2l-2.7-2.7z'],
+  flashlight: ['M3.2 9.8h6.6v4.4H3.2z', 'M9.8 8.2l4.2-2.4v12.4l-4.2-2.4z', 'M15.6 7.6l5-2.2', 'M15.6 16.4l5 2.2', 'M16.4 12h4.4'],
+  radio:      ['M7 8.4h9.4v11.8H7z', 'M14.6 8.4V4.2', 'M9.6 11.6h4.2', 'M9.6 14.6h4.2', 'M9.6 17.4h4.2'],
+  mirror:     ['M12 4.4a4.6 5.6 0 1 0 0 11.2 4.6 5.6 0 0 0 0-11.2z', 'M12 15.6v4', 'M9.8 19.6h4.4'],
+  tool:       ['M16.4 3.6a5 5 0 0 0-4.6 6.9L4 18.3a2 2 0 0 0 2.8 2.8l7.8-7.8a5 5 0 0 0 6.9-4.6c0-.6-.1-1.2-.3-1.7l-3 3-2.6-.6-.6-2.6 3-3a5 5 0 0 0-1.6-.2z'],
+  rope:       ['M12 5.2c3.3 0 6 1.2 6 2.6s-2.7 2.6-6 2.6-6-1.2-6-2.6S8.7 5.2 12 5.2z', 'M6 7.8v4c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6v-4', 'M6 11.8v4c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6v-4'],
+  chalkbox:   ['M4 11.4h16v8H4z', 'M7.2 11.4V5.8', 'M11.2 11.4V7.4', 'M15.2 11.4V6.4', 'M4 15h16'],
+  glow:       ['M8.6 19l6.8-13.4', 'M4.8 12.6l-2-1', 'M19.2 11.4l2 1', 'M12 4.6V2.4', 'M12 21.6v-2'],
+  compass:    ['M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16z', 'M15.4 8.6l-2 4.8-4.8 2 2-4.8z'],
+  notebook:   ['M6 4h12.4v16H6z', 'M9.2 4v16', 'M11.8 8.6h4.2', 'M11.8 12h4.2', 'M11.8 15.4h4.2'],
+  blanket:    ['M3.6 8.4c2.6-2 5.6-2 8.4 0s5.8 2 8.4 0v8.6c-2.6 2-5.6 2-8.4 0s-5.8-2-8.4 0z', 'M3.6 12.8c2.6-2 5.6-2 8.4 0s5.8 2 8.4 0'],
+  thermos2:   ['M8.4 3.4h7.2v2.4H8.4z', 'M9.4 5.8h5.2v14.8H9.4z', 'M9.4 11.4h5.2', 'M11 3.4V2'],
+  battery2:   ['M3 9h13.6v6H3z', 'M16.6 10.8h2.6v2.4h-2.6z', 'M6.2 11.4v1.2', 'M9 11.4v1.2', 'M11.8 11.4v1.2'],
+  tin2:       ['M3.8 8.2h16.4v11.6H3.8z', 'M9 8.2V5.4h6v2.8', 'M12 11v6', 'M9 14h6'],
+};
+
 /**
- * One piece of Backpack Gear: a cool, round pack. Deliberately the opposite of
+ * One piece of Backpack Gear: a cool, round chip. Deliberately the opposite of
  * the Keepsake chip on both axes a player reads first — shape and temperature —
  * so the two bars never have to be told apart by reading them.
  *
- * The glyph is the same pack for every item because `ui/icons.js` has no
- * Backpack art yet (it owns intents, statuses, resources, nodes, types,
- * rarities and chrome, and Gear is none of those). `data-gear` carries the
- * item's authored icon name so per-item drawings can land here later without
- * touching this function. Reported to the icons owner, not fixed here.
+ * `data-gear` still carries the item's authored icon name, so a future art pass
+ * can restyle a single item without touching this function.
  */
 function gearChip(g) {
   const chip = document.createElement('button');
   chip.type = 'button';
   chip.className = 'mm-hud__gearchip';
   chip.setAttribute('role', 'listitem');
-  chip.dataset.gear = String(g.icon || g.id || '').replace(/^gear\//, '');
-  chip.appendChild(packGlyph());
+  const icon = String(g.icon || g.id || '').replace(/^gear\//, '');
+  chip.dataset.gear = icon;
+  chip.appendChild(packGlyph(GEAR_GLYPHS[icon]));
   if (g.counter != null) {
     const c = document.createElement('b');
     c.className = 'mm-hud__relicn';
@@ -614,14 +644,17 @@ function gearChip(g) {
   return chip;
 }
 
-/** A stroked knapsack: lid seam and front pocket, drawn like the relic sigils. */
-function packGlyph() {
+/**
+ * The item's own drawing, or a stroked knapsack when nothing is authored for it
+ * — a new item shows a pack rather than an empty circle.
+ */
+function packGlyph(paths = null) {
   const span = document.createElement('span');
   span.className = 'mm-icon';
   span.setAttribute('aria-hidden', 'true');
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('viewBox', '0 0 24 24');
-  for (const d of [
+  for (const d of paths && paths.length ? paths : [
     'M7.5 8V6.2A3.2 3.2 0 0 1 10.7 3h2.6a3.2 3.2 0 0 1 3.2 3.2V8',
     'M5.4 8h13.2a2.4 2.4 0 0 1 2.4 2.4v8.2a2.4 2.4 0 0 1-2.4 2.4H5.4A2.4 2.4 0 0 1 3 18.6v-8.2A2.4 2.4 0 0 1 5.4 8z',
     'M3 13.2h18',
