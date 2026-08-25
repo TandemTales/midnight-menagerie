@@ -1049,8 +1049,8 @@
 }
 .cb-player__guard svg { position: absolute; inset: 0; width: 100%; height: 100%; fill: var(--guard-500); stroke: var(--spectre-200); stroke-width: 1.1; }
 .cb-player__guard b {
-  position: relative; font-family: var(--font-num); font-size: var(--fs-md);
-  color: var(--spectre-100); text-shadow: 0 1px 3px var(--ink-900); padding-bottom: 4px;
+  position: relative; font-family: var(--font-num); font-size: var(--fs-sm);
+  color: var(--spectre-100); text-shadow: 0 1px 3px var(--ink-900); padding-bottom: 3px;
 }
 .cb-player__guard.is-preview::after {
   content: attr(data-plus);

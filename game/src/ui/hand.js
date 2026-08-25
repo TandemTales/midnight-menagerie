@@ -136,7 +136,10 @@ export const TUNE = {
      `aimZ`, above every card in the hand, and it only goes translucent when it
      would genuinely cover the target (`_aimPark` reports that). */
   parkScaleAimed: 0.86, aimClear: 22,
-  aimLift: 0.55,        // card-heights the held card floats above the fan line
+  aimLift: 0.40,        // card-heights the held card floats above the fan line
+                        // (was 0.55: at 1600x900 the held card still clipped 14% of the
+                        //  target's Courage bar. Held high enough to read as held, low
+                        //  enough to leave the thing you are aiming at visible.)
   aimMinY: 0.42,        // never higher than this fraction of the host
   aimZ: 700,            // above hover (500) and every fan card (20..~40)
   // fan hit backstop: slack around the fan's own bounding box, px

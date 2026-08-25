@@ -426,7 +426,23 @@ export const doorGreeter = {
     'mind-your-manners': {
       id: 'mind-your-manners', name: 'Mind Your Manners', intent: Intent.DEBUFF,
       tell: 'It clears a throat it does not have. A rule appears in the air beside it.',
-      rule: 'no-running',
+      /**
+       * `ruleFn` rather than a static `rule` id, because from Haunt 2 this move alternates
+       * between two rules and a static id names the wrong one half the time. The engine
+       * prefers ruleFn, so the intent tooltip states the rule the Greeter is *about* to
+       * announce, with its real text and its live Reprimand number — a player should never
+       * have to break a rule to learn what it was.
+       */
+      ruleFn(c) {
+        const dmg = flag(c, 'reprimand', 6);
+        const alt = flag(c, 'altRules') && countMoves(c, 'mind-your-manners') % 2 === 1;
+        return alt
+          ? { id: 'greeter-one-at-a-time', name: 'ONE AT A TIME',
+              text: 'Playing two Tricks of the same type in a row breaks the rule. '
+                  + 'Reprimand: every enemy gains 6 Guard.' }
+          : { id: 'no-running', name: 'NO RUNNING',
+              text: `Playing a fourth Trick this turn breaks the rule. Reprimand: ${dmg} damage.` };
+      },
       /**
        * Haunt 2 (design doc §30, "Door Greeter occasionally announces One at a Time
        * instead of only No Running"): it alternates between two different rules.

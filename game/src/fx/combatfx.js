@@ -124,7 +124,7 @@ export class CombatFX {
   /** An impact: a hot spark burst plus a shock ring. */
   burst(x, y, o = {}) {
     if (this.reduceMotion) return this;
-    const n = Math.round((o.count ?? 16) * (0.55 + 0.45 * this.flashes));
+    const n = Math.round((o.count ?? 16) * (0.4 + 0.6 * this.flashes));
     const sp = o.speed ?? 300;
     const col = o.color || this.col.flame;
     const spread = o.spread ?? TAU;
@@ -385,9 +385,9 @@ export class CombatFX {
     const n = Number(v);
     const g = this.reduceMotion ? 0 : (Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : 1);
     this.flashes = g;
-    // Never fully black: a spark you cannot see is not an accessibility win,
-    // it is a missing hit. 0.3 keeps the shape and drops the bloom.
-    this.glow = 0.3 + 0.7 * g;
+    // Never fully dark: a spark you cannot see is not an accessibility win,
+    // it is a missing hit. 0.22 keeps the shape and drops the bloom.
+    this.glow = 0.22 + 0.78 * g;
     return this;
   }
 

@@ -39,6 +39,48 @@ const PORTRAITS = new URL('../../assets/portraits/', import.meta.url).href;
 /** Clearance kept between the bottom of a creature's plate and the hand. */
 const PLATE_GAP = 24;
 
+/**
+ * HOUSE RULE TEXTS, so an intent can say what the rule DOES before it lands.
+ *
+ * The Door Greeter's intent tooltip read "Announces the House Rule NO RUNNING."
+ * and stopped there, which tells the player a rule is coming and nothing about
+ * how to avoid breaking it. The Butler's version reads in full, because his has
+ * already been announced and `announceRule()` teaches the engine the text on the
+ * way past. Before the first announcement `engine.resolveRule('no-running')` can
+ * only humanise the id, so `intent.rule.text` is empty and `ui/intent.js` — which
+ * already prints the text when it has one — has nothing to print.
+ *
+ * `engine.registerRules()` exists for exactly this and nobody was calling it.
+ *
+ * THIS TABLE IS IN THE WRONG FILE and is flagged as such in the round-5 note:
+ * the rule text lives in `data/enemies/foyer.js` inside `mind-your-manners`'s
+ * `effect()`, where nothing can read it until it fires. The right fix is one
+ * line in the enemies agent's court — give the move a `ruleFn(c)` returning the
+ * whole `{id, name, text}` object (the engine already prefers `ruleFn` over
+ * `rule`, see `combat/intents.js:233`) — and then this function deletes itself.
+ * Until then the reprimand number is read off the live Haunt flag rather than
+ * hard-coded, so Haunt 3's 8 does not display as 6.
+ */
+function houseRuleCatalogue(engine) {
+  const flagOf = (defId, key, dflt) => {
+    const en = (engine.enemies || []).find(e => e.defId === defId);
+    const v = en && en.flags ? en.flags[key] : undefined;
+    return v === undefined ? dflt : v;
+  };
+  const reprimand = flagOf('door-greeter', 'reprimand', 6);
+  return [
+    {
+      id: 'no-running', name: 'NO RUNNING',
+      text: `Playing a fourth Trick this turn breaks the rule. Reprimand: ${reprimand} damage.`,
+    },
+    {
+      id: 'greeter-one-at-a-time', name: 'ONE AT A TIME',
+      text: 'Playing two Tricks of the same type in a row breaks the rule. '
+          + 'Reprimand: every enemy gains 6 Guard.',
+    },
+  ];
+}
+
 /** Seconds from `card:play` to the effect resolving. See `_onPlay`. */
 const PLAY_RESOLVE = 0.44;
 
@@ -460,6 +502,7 @@ export class CombatScene extends Scene {
         engine.registerCards(lib.STATUS_TRICK_DEFS || []);
       } catch { /* nothing to register */ }
       try { engine.registerEnemies(this._enemyDefs || []); } catch { /* none */ }
+      try { engine.registerRules(houseRuleCatalogue(engine)); } catch { /* none */ }
 
       this.usingRealContent = true;
       return engine;
@@ -1920,10 +1963,16 @@ export class CombatScene extends Scene {
     const dmgK = Math.min(1, hpLoss / 20);
     const strength = bloom * (0.12 + 1.38 * dmgK * dmgK);
     this.ctx.atmosphere?.impact?.(c, {
-      // 0.001, not 0: `impact()` still owes us its particle burst.
+      // 0.001, not 0: `impact()` is also the ground-truth position for the ring.
       strength: Math.max(0.001, strength),
       color: blockedAll ? 0x8fb7d9 : (isPlayer ? 0xf26d78 : 0xffb64a),
       shake: false,
+      /* The atmosphere's own spark burst is additive geometry inside the bloom
+         pass, so it lifts the whole room even when the flare is at zero — it
+         measured as the larger half of the remaining wash. Below a fifth of
+         the slider it is dropped, and `fx.burst` on the 2D layer (which is
+         alpha-scaled, not removed) carries the hit on its own. */
+      burst: bloom > 0.2,
     });
     this.ctx.audio?.play?.(hpLoss >= 12 ? 'combat:hit-heavy'
       : isPlayer ? 'combat:player-hurt' : 'combat:hit-light');
