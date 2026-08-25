@@ -588,15 +588,39 @@
   transition: opacity var(--t-quick) var(--ease-soft);
 }
 .mm-card.is-hover .mm-card__sheen { opacity: 1; }
-/* A hovered card is lifted off the table, so it casts a bigger, softer shadow. */
+
+/* ── lifted off the table ────────────────────────────────────────────────
+   A hovered, dragged or held card casts a bigger, softer shadow. Round 3 got
+   that by SWAPPING `box-shadow` on `__frame`, which repaints a ~60px-blur
+   shadow across the whole card in the very frame the pointer moved — inside
+   the one interaction that has a 120 ms budget (STS2 §1), and the frame the
+   critic's rAF sampler catches as a 33 ms hitch. The extra shadow now lives
+   on its own always-present layer and only its OPACITY changes, which the
+   compositor does without a repaint. Outer box-shadows are clipped to outside
+   the border box, so an empty layer at inset:0 adds nothing to the card face.
+   `border-radius: inherit` picks up the per-type frame radius (attacks are
+   square-shouldered, skills fully rounded) with no duplication.            */
+.mm-card__lift {
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--t-quick) var(--ease-soft);
+  box-shadow:
+    0 calc(10 * var(--u)) calc(20 * var(--u)) rgba(0,0,0,.62),
+    0 calc(26 * var(--u)) calc(54 * var(--u)) rgba(0,0,0,.55),
+    0 0 calc(30 * var(--u)) color-mix(in srgb, var(--frame) 30%, transparent);
+}
+.mm-card.is-hover .mm-card__lift,
+.mm-card.is-dragging .mm-card__lift { opacity: 1; }
+.mm-reduce .mm-card__lift { transition: none; }
+/* the frame keeps only its INSET rings on hover — those are unblurred and
+   effectively free to repaint */
 .mm-card.is-hover .mm-card__frame,
 .mm-card.is-dragging .mm-card__frame {
   box-shadow:
     inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb, var(--frame-deep) 80%, transparent),
-    inset 0 0 0 calc(2.5 * var(--u)) color-mix(in srgb, var(--frame-hi) 34%, transparent),
-    0 calc(10 * var(--u)) calc(20 * var(--u)) rgba(0,0,0,.62),
-    0 calc(26 * var(--u)) calc(54 * var(--u)) rgba(0,0,0,.55),
-    0 0 calc(30 * var(--u)) color-mix(in srgb, var(--frame) 30%, transparent);
+    inset 0 0 0 calc(2.5 * var(--u)) color-mix(in srgb, var(--frame-hi) 34%, transparent);
 }
 
 .mm-card__flash {
@@ -673,17 +697,38 @@
 .mm-card.is-ghost { opacity: .28; }
 
 /* ── held, and aimed at something ────────────────────────────────────────
-   The card you are holding is the least important thing on screen once a
-   target is locked: you chose it a second ago, and what you now need to read
-   is the ENEMY — its HP bar, its Guard badge, the damage preview above it.
-   Full-size and fully opaque, the held card sat straight on top of all three.
-   `Hand` also shrinks it and slides it clear of the target's box; this is the
-   part that stops it being a wall even when there is nowhere to slide to.   */
+   Two different states, and round 3 collapsed them into one.
+
+   `.is-aiming` is the card you are STILL HOLDING while you choose a target.
+   It is lifted clear of the fan by `Hand#_aimPark`, its rotation is zeroed and
+   it sits above every other card, so it must LOOK held: full opacity and a
+   deep drop shadow that separates it from the table. Faded to 42% in its fan
+   slot it read as "I dropped it" — the reviewer saw two neighbours through it.
+
+   `.is-over-target` is the narrower case round 3 was actually fixing: the
+   parked card would still cover the enemy it is aimed at, and STS2 §2 needs
+   that enemy readable ("hovering a target while holding a card previews the
+   outcome on that target"). `Hand` slides the card clear first and only sets
+   this class when there was nowhere to slide to.                            */
 .mm-card.is-aiming {
-  opacity: .42;
   transition: opacity var(--t-quick) var(--ease-soft);
 }
-.mm-card.is-aiming .mm-card__frame { box-shadow: none; }
+.mm-card.is-aiming .mm-card__frame {
+  box-shadow:
+    inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb, var(--frame-deep) 80%, transparent),
+    inset 0 0 0 calc(2.5 * var(--u)) color-mix(in srgb, var(--frame-hi) 40%, transparent);
+}
+/* deeper than hover — this card is floating well above the fan */
+.mm-card.is-aiming .mm-card__lift {
+  opacity: 1;
+  box-shadow:
+    0 calc(16 * var(--u)) calc(30 * var(--u)) rgba(0,0,0,.66),
+    0 calc(34 * var(--u)) calc(62 * var(--u)) rgba(0,0,0,.5),
+    0 0 calc(34 * var(--u)) color-mix(in srgb, var(--frame) 34%, transparent);
+}
+.mm-card.is-aiming.is-over-target { opacity: .42; }
+.mm-card.is-aiming.is-over-target .mm-card__frame { box-shadow: none; }
+.mm-card.is-aiming.is-over-target .mm-card__lift { opacity: 0; }
 .mm-reduce .mm-card.is-aiming { transition: none; }
 
 /* ── ember dissolve (exhaust) ───────────────────────────────────────────── */

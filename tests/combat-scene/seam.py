@@ -95,6 +95,35 @@ PLAY = r"""
 }
 """
 
+# ── "up to N" must MEAN up to N ─────────────────────────────────────────────
+# `bones/backyard-cache` prints "Bury up to 2 other Tricks", the chooser said
+# "Pick 2", CONFIRM was `disabled:true` with one card selected and Escape did
+# nothing — a card whose own text promises a range, refused by the screen that
+# is supposed to render it (shots/p5-48-chooser-one.png).
+#
+# This is a seam claim in both directions: the SCREEN must accept 0..N, and the
+# ENGINE must accept what the screen hands back. `combat/choice.js#sanitise`
+# takes any subset, so one pick was always a legal resolution.
+UPTO = r"""
+() => {
+  const sc = window.MM.ctx.scenes.current;
+  const E = sc.engine;
+  const def = E.resolveCardDef('bones/backyard-cache');
+  if (!def) return { ok: false, why: 'bones/backyard-cache is not registered' };
+  // it needs at least two OTHER Tricks in hand to offer a real range
+  while (E.piles.hand.length < 4) {
+    const spare = E.piles.draw[0] || E.piles.discard[0];
+    if (!spare) break;
+    E.piles.move(spare, 'hand', { reason: 'seamtest' });
+  }
+  const c = E.addCard(def, 'hand', { reason: 'seamtest' });
+  if (!c) return { ok: false, why: 'addCard returned nothing' };
+  E.player.energy = Math.max(E.player.energy, 2);
+  sc.hand.playCard(c.uid);
+  return { ok: true, uid: c.uid, text: def.text, hand: E.piles.hand.length };
+}
+"""
+
 # Is the deny message actually the thing PAINTED at its own centre?
 #
 # `elementFromPoint` skips `pointer-events:none` elements and the deny is one,
@@ -193,11 +222,14 @@ async def main(a):
             await page.wait_for_selector(".cb-chooser:not([hidden]) .cb-choice", timeout=10000)
 
             # ── 3. the deny paints ABOVE the modal that provoked it ─────────
-            await page.keyboard.press("Escape")
+            # Provoked directly, because as of round 4 Escape CLOSES the panel
+            # (see below) and a deny raised on the way out would be measured
+            # against a chooser that is already gone.
+            await page.evaluate(f"() => {SCENE}._deny('seam: stacking probe')")
             await page.wait_for_timeout(140)
             deny = await page.evaluate(DENY_HIT)
             check(deny.get("chooserOpen") is True,
-                  "Escape does not dismiss a mandatory chooser")
+                  "the chooser is still open while the deny is measured")
             check(deny.get("z", 0) > deny.get("chooserZ", 0),
                   "deny stacks above the chooser",
                   f"deny z {deny.get('z')} vs chooser z {deny.get('chooserZ')}")
@@ -210,7 +242,24 @@ async def main(a):
                 "() => document.querySelector('.cb-chooser__sub').textContent")
             check("lick" in sub, "chooser sub-line names the mouse action", repr(sub))
 
-            await page.click(".cb-chooser:not([hidden]) .cb-choice", timeout=5000)
+            # ── 3b. EVERY CHOOSER CANCELS ───────────────────────────────────
+            # Round 3: Escape dismissed the Fetch picker and did nothing at all
+            # on the Bury picker, so two panels in the same scene behaved
+            # differently and the reviewer filed the second as a soft-lock
+            # (shots/p5-46-SOFTLOCK.png). Escape now closes every chooser, and
+            # the engine is never left blocked: `combat/choice.js#sanitise`
+            # substitutes the first entry when a mandatory request resolves
+            # empty, so a cancel costs the choice and not the run. That is a
+            # SEAM claim, so it is proved against the real engine here — the
+            # fetched Trick still has to arrive on screen below.
+            await page.keyboard.press("Escape")
+            await page.wait_for_timeout(160)
+            closed = await page.evaluate(
+                "() => document.querySelector('.cb-chooser').hidden === true")
+            check(closed, "Escape dismisses a mandatory chooser")
+            check(await page.evaluate(f"() => !{SCENE}._choice"),
+                  "the cancelled choice is released, not left pending")
+
             await page.wait_for_function("window.__seam !== null", timeout=12000)
             seam = await page.evaluate("window.__seam")
 
@@ -224,6 +273,9 @@ async def main(a):
             check(0 <= ms <= 250,
                   "fetched Trick on screen within 250 ms of the chooser closing",
                   f"{ms:.0f} ms" if ms >= 0 else "never")
+            check(ms >= 0,
+                  "a CANCELLED mandatory choice still resolves the engine",
+                  "the Fetch completed and rendered after Escape")
 
             # ── 4. and it is actually playable, not decoration ──────────────
             held = await page.evaluate(f"""() => {{
@@ -242,6 +294,60 @@ async def main(a):
             check(any(c["ok"] for c in held),
                   "the hand on screen is playable",
                   f"{sum(1 for c in held if c['ok'])}/{len(held)} playable")
+
+        # ── 4b. "up to N" accepts fewer than N ──────────────────────────────
+        try:
+            await page.wait_for_function(
+                f"{SCENE} && !{SCENE}._resolving && {SCENE}.engine && !{SCENE}._draining",
+                timeout=20000)
+            up = await page.evaluate(UPTO)
+        except Exception as e:                                   # noqa: BLE001
+            up = {"ok": False, "why": f"{type(e).__name__}"}
+        if not up.get("ok"):
+            notes.append(("SKIP", '"up to N" chooser accepts fewer than N', up.get("why", "")))
+        else:
+            try:
+                await page.wait_for_selector(".cb-chooser:not([hidden]) .cb-choice", timeout=10000)
+                bar = await page.evaluate("""() => ({
+                  sub: document.querySelector('.cb-chooser__sub').textContent,
+                  okHidden: document.querySelector('.cb-chooser__ok').hidden,
+                  okDisabled: document.querySelector('.cb-chooser__ok').disabled,
+                  cancel: document.querySelector('.cb-chooser__skip').textContent,
+                  cancelHidden: document.querySelector('.cb-chooser__skip').hidden,
+                  n: document.querySelectorAll('.cb-chooser .cb-choice').length,
+                })""")
+                check("up to" in bar["sub"].lower(),
+                      'the chooser says what the card says ("up to N")', repr(bar["sub"]))
+                check(bar["cancelHidden"] is False,
+                      "every chooser shows a cancel control", repr(bar["cancel"]))
+                # pick ONE of the two and assert CONFIRM goes live
+                await page.click(".cb-chooser:not([hidden]) .cb-choice", timeout=5000)
+                await page.wait_for_timeout(120)
+                one = await page.evaluate("""() => ({
+                  picked: document.querySelectorAll('.cb-chooser .cb-choice.is-picked').length,
+                  okDisabled: document.querySelector('.cb-chooser__ok').disabled,
+                  label: document.querySelector('.cb-chooser__ok').textContent,
+                })""")
+                check(one["picked"] == 1, "one Trick selected", str(one["picked"]))
+                check(one["okDisabled"] is False,
+                      'CONFIRM is enabled with 1 of 2 picked on an "up to 2" chooser',
+                      f"label {one['label']!r}")
+                buried_before = await page.evaluate(
+                    f"() => {SCENE}.engine.piles.all().filter("
+                    "  c => c.meta && (c.meta['#buried'] | 0) > 0).length")
+                await page.click(".cb-chooser__ok", timeout=5000)
+                await page.wait_for_function(
+                    "() => document.querySelector('.cb-chooser').hidden === true", timeout=8000)
+                await page.wait_for_timeout(700)
+                after_b = await page.evaluate(
+                    f"() => {SCENE}.engine.piles.all().filter("
+                    "  c => c.meta && (c.meta['#buried'] | 0) > 0).length")
+                check(after_b - buried_before == 1,
+                      "the engine applied exactly the one Trick that was picked",
+                      f"buried {buried_before} -> {after_b}")
+            except Exception as e:                               # noqa: BLE001
+                check(False, '"up to N" chooser accepts fewer than N',
+                      f"{type(e).__name__}: {e}")
 
         # ── 5. survives a full turn cycle ───────────────────────────────────
         try:

@@ -62,13 +62,30 @@
   --e2: var(--ink-300);
   --e3: var(--ink-900);
   --e-scale: 1;
+  /* ── THE ATTACK POSE ─────────────────────────────────────────────────────
+     Written per frame by `EnemyView#update` in SCREEN pixels. Round 3 kept the
+     whole pose inside the SVG viewBox, where a full-commitment lunge came to
+     about twelve on-screen pixels and fourteen captured frames of an enemy
+     attack were byte-identical. Translating the creature itself is what makes
+     `.cb-enemy`'s own rect move, which is the thing a reviewer can measure.
+     `.cb-enemy__plate` below cancels the same offset so the Courage bar and
+     the name stay nailed down while the body commits. */
+  --e-lx: 0px; --e-ly: 0px; --e-lr: 0deg;
   position: relative;
+  z-index: 1;
   display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
   margin-top: auto;
   cursor: pointer;
   outline: none;
+  transform: translate3d(var(--e-lx), var(--e-ly), 0);
   transition: filter var(--t-base) var(--ease-soft), opacity var(--t-base) var(--ease-soft);
 }
+/* Transforming `.cb-enemy` makes it a stacking context, so an intent badge can
+   no longer paint over a NEIGHBOUR's body for free. Whoever is acting, aimed at
+   or hovered is the one you are reading, so that is who comes forward. */
+.cb-enemy.is-acting, .cb-enemy.is-striking { z-index: 9; }
+.cb-enemy:hover, .cb-enemy:focus-visible, .cb-enemy.is-aimed,
+.cb-enemy.is-targeted, .cb-enemy.is-focus, .cb-enemy.is-hit { z-index: 6; }
 .cb-enemy.is-removed { display: none; }
 .cb-enemies.is-focusing .cb-enemy:not(.is-focus) { filter: brightness(.55) saturate(.7); }
 .cb-enemy.is-focus { filter: brightness(1.12); }
@@ -240,7 +257,17 @@
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   overflow: visible;
+  /* the tip of a lunge/swing. Kept OFF `.cb-enemy__stage` on purpose: the hit
+     reactions (`cb-hitshake`, `cb-clank`) are keyframed on the stage and a CSS
+     animation beats an inline transform, so putting the attack rotation there
+     would have it silently vanish for the 220ms after any hit. */
+  transform: rotate(var(--e-lr, 0deg));
+  transform-origin: 50% 92%;
 }
+/* the impact flash belongs to the body, so it travels with it */
+.cb-enemy__flash { transform: rotate(var(--e-lr, 0deg)); transform-origin: 50% 92%; }
+/* the shadow on the floor does NOT lunge — it is the floor. It only shortens. */
+.cb-enemy.is-striking .cb-enemy__pool { opacity: .55; }
 .cb-enemy__flash {
   position: absolute; inset: -6%;
   border-radius: 50%;
@@ -281,8 +308,7 @@
 .rg-crack { fill: none; stroke: var(--ink-900); stroke-width: 2.6; stroke-linecap: round; opacity: .75; }
 .rg-stitch { fill: none; stroke: var(--e2); stroke-width: 2.4; stroke-dasharray: 7 6; opacity: .7; }
 .rg-spring { fill: none; stroke: var(--e2); stroke-width: 5; stroke-linecap: round; }
-.rg-lid2, .rg-lid-plate { fill: var(--e2); }
-.rg-hat, .rg-lid { }
+.rg-lid2, .rg-lid-plate, .rg-chestlid { fill: var(--e2); }
 .rg-hat { fill: var(--e3); }
 .rg-mane, .rg-hair, .rg-bun { fill: var(--e3); }
 .rg-dress { fill: var(--e2); opacity: .92; }
@@ -295,6 +321,44 @@
 .rg-neck { fill: none; stroke: var(--e1); stroke-width: 16; stroke-linecap: round; }
 .rg-head { fill: var(--e1); }
 .rg-mouth { fill: none; stroke: var(--ink-900); stroke-width: 4; stroke-linecap: round; opacity: .8; }
+
+/* ── materials added in round 4, so a creature is a CREATURE ────────────────
+   Round 3 shipped seven of the named enemies as the same rounded blob with two
+   white eyes because their props were either tiny, hidden inside their own
+   trunk outline, or drawn in a class no stylesheet declared. Each of these is
+   a distinct read at 40px in pure silhouette. */
+.rg-foot { fill: color-mix(in srgb, var(--e3) 82%, var(--ink-900)); opacity: .9; }
+.rg-mote { fill: var(--e2); opacity: .5; }
+.rg-coat { fill: color-mix(in srgb, var(--e1) 78%, var(--ink-900)); stroke: color-mix(in srgb, var(--e3) 45%, transparent); stroke-width: 2; }
+.rg-sleeve { fill: none; stroke: color-mix(in srgb, var(--e1) 62%, var(--ink-900)); stroke-width: 13; stroke-linecap: round; }
+.rg-umb { fill: color-mix(in srgb, var(--e3) 88%, var(--ink-900)); stroke: var(--e2); stroke-width: 2; }
+.rg-plate { fill: color-mix(in srgb, var(--e3) 90%, var(--ink-900)); stroke: var(--e2); stroke-width: 2; }
+.rg-ring { fill: none; stroke: var(--e2); stroke-width: 4; stroke-linecap: round; opacity: .55; }
+.rg-beam { fill: color-mix(in srgb, var(--e3) 78%, var(--ink-900)); }
+.rg-rope { fill: none; stroke: color-mix(in srgb, var(--e3) 70%, var(--ink-900)); stroke-width: 5; stroke-linecap: round; opacity: .8; }
+.rg-band { fill: none; stroke: color-mix(in srgb, var(--e3) 74%, transparent); stroke-width: 4; }
+.rg-band2 { fill: none; stroke: color-mix(in srgb, var(--ink-900) 80%, transparent); stroke-width: 7; }
+.rg-lapel { fill: color-mix(in srgb, var(--e2) 60%, var(--ink-900)); }
+.rg-glove, .rg-glove2 { fill: var(--e3); opacity: .94; }
+.rg-neck2 { fill: color-mix(in srgb, var(--e1) 70%, var(--ink-900)); }
+.rg-wrongshadow { fill: var(--ink-900); opacity: .45; }
+.rg-head2 { fill: color-mix(in srgb, var(--e2) 55%, var(--e3)); }
+.rg-tail { fill: color-mix(in srgb, var(--e1) 88%, var(--ink-900)); }
+.rg-tray { fill: var(--e3); opacity: .5; }
+.rg-trayrim { fill: none; stroke: var(--flame-200); stroke-width: 3; }
+.rg-arm { fill: none; stroke: color-mix(in srgb, var(--e1) 84%, var(--ink-900)); stroke-width: 12; stroke-linecap: round; }
+.rg-cuff { fill: var(--e3); }
+/* "her fingers taper into silver needles" — literally, eight of them */
+.rg-needle { fill: none; stroke: var(--text-hi); stroke-width: 3; stroke-linecap: round; opacity: .92; }
+/* "a measuring tape moves around her neck like a snake" */
+.rg-tape { fill: none; stroke: var(--flame-300); stroke-width: 10; stroke-linecap: round; opacity: .95; }
+.rg-tapetick { fill: none; stroke: var(--ink-900); stroke-width: 1.8; opacity: .75; }
+/* hair that is actually darker than the face it frames, whatever slot of the
+   palette happens to hold the light value for this creature */
+.rg-updo { fill: color-mix(in srgb, var(--e1) 82%, var(--ink-900)); }
+/* garment silhouettes keep their colour to the hem — see `props.grad` */
+.cb-enemy[data-grad="dark"] .rg-g3 { stop-color: color-mix(in srgb, var(--e1) 74%, var(--ink-900)); }
+.cb-enemy[data-grad="dark"] .rg-g1 { stop-color: color-mix(in srgb, var(--e2) 82%, var(--ink-900)); }
 
 /* eyes — the charm lives here */
 .rg-sclera { fill: var(--flame-100); }
@@ -347,6 +411,8 @@
 /* the plate under an enemy */
 .cb-enemy__plate {
   position: relative; z-index: 4;
+  /* cancels the attack pose: the creature commits, the numbers hold still */
+  transform: translate3d(calc(var(--e-lx, 0px) * -1), calc(var(--e-ly, 0px) * -1), 0);
   width: min(230px, 100%);
   display: flex; flex-direction: column; align-items: center; gap: 3px;
   margin-top: 4px;
@@ -620,12 +686,18 @@
   background: linear-gradient(180deg,
     color-mix(in srgb, var(--rarity-curse) 42%, var(--ink-900)), var(--ink-900));
 }
+/* the COUNT is the numeral now, and the card name is the label beside it —
+   the same grammar as `[7 ×3]`, so "1 CLUTTER to discard" cannot be misread */
 .cb-intent__chip[data-role="cards"] b {
-  font-family: var(--font-display); font-size: 10px; font-weight: 400;
-  letter-spacing: .12em; text-transform: uppercase;
+  font-family: var(--font-num); font-size: var(--fs-sm); font-weight: 700;
+  letter-spacing: 0; text-transform: none;
   color: var(--text-hi);
 }
-.cb-intent__chip[data-role="cards"] span { color: var(--text-lo); font-size: 9px; }
+.cb-intent__chip[data-role="cards"] span {
+  font-family: var(--font-display); font-size: 9px;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text-mid);
+}
 .cb-intent__chip[data-role="rule"] {
   padding: 0 8px; height: 18px;
   border-color: color-mix(in srgb, var(--ink-900) 45%, transparent);
@@ -653,12 +725,27 @@
   border-color: var(--threat-200); height: 24px;
 }
 
+/* ── WHAT IT DOES TO YOUR DECK GETS ITS OWN LINE ───────────────────────────
+   The Lost Luggage's Pack Wrong drew `[🛡5][CLUTTER to discard]` as a single
+   strip, and at 1:1 a 10px shield glyph reads as a bullet, so the whole badge
+   scanned as "5 Clutter". Both halves of that are wrong: the 5 is Guard and the
+   real Clutter count is 1. Guard/damage are what the move does to the board and
+   stay on the badge's own line; cards and House Rules are what it does to your
+   DECK and now sit on a second line under it, at a different height, in a
+   different colour, with the count printed. They can no longer be read as one
+   number because they are no longer on one line. */
+.cb-intent__extras {
+  position: absolute; left: 50%; top: calc(100% + 2px);
+  transform: translateX(-50%);
+  display: flex; gap: 3px; white-space: nowrap;
+}
 /* status pips: an ICON and a stack count. A name is never truncated. */
 .cb-intent__pips {
   position: absolute; left: 50%; top: calc(100% + 1px);
   transform: translateX(-50%);
   display: flex; gap: 2px;
 }
+.cb-intent.has-extras .cb-intent__pips { top: calc(100% + 23px); }
 .cb-intent__pip {
   display: inline-flex; align-items: center; gap: 1px;
   height: 16px; padding: 0 4px 0 3px;
@@ -690,6 +777,92 @@
 .cb-intent.is-flip-down .cb-intent__vals { animation: cb-flipdn .34s var(--ease-snap); }
 .cb-intent.is-flip-up .cb-intent__chip b { color: var(--threat-100); }
 .cb-intent.is-flip-down .cb-intent__chip b { color: var(--spectre-200); }
+
+/* ═══ THE KID, ON THE BOARD ══════════════════════════════════════════════════
+   Round 3's player was a framed portrait in the corner captioned KID — a
+   picture on a wall, not a participant, and STS2-REFERENCE §4 names exactly
+   this ("characters animate their attacks") as the StS1 complaint StS2 set out
+   to fix. She now stands on the creatures' own floor line, faces them, and
+   swings a torch. The portrait panel below keeps Guard, the counters and the
+   INCOMING readout, none of which should ride on a moving body.  ui/enemy.js
+   `PlayerView` builds the rig; the pose arrives as --p-lx/--p-ly/--p-lr. */
+.cb-hero {
+  position: absolute;
+  left: clamp(8px, 5.5vw, 120px);
+  bottom: 0;
+  width: clamp(168px, 17vw, 280px);
+  height: clamp(200px, 34vh, 360px);
+  z-index: 3;
+  pointer-events: none;
+  --p-lx: 0px; --p-ly: 0px; --p-lr: 0deg;
+  transform: translate3d(var(--p-lx), var(--p-ly), 0) rotate(var(--p-lr));
+  transform-origin: 50% 96%;
+  filter: drop-shadow(0 10px 18px color-mix(in srgb, var(--ink-900) 78%, transparent));
+}
+.cb-hero__rig { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.cb-hero__flash {
+  position: absolute; inset: -8%;
+  border-radius: 50%;
+  background: radial-gradient(50% 50% at 46% 48%,
+    color-mix(in srgb, var(--threat-100) 90%, transparent) 0%, transparent 68%);
+  opacity: 0; pointer-events: none; mix-blend-mode: screen;
+}
+.pr-coat {
+  fill: color-mix(in srgb, var(--spectre-500) 62%, var(--ink-900));
+  stroke: color-mix(in srgb, var(--spectre-200) 44%, transparent); stroke-width: 2.4;
+}
+.pr-hem { fill: none; stroke: color-mix(in srgb, var(--spectre-200) 32%, transparent); stroke-width: 2.4; }
+.pr-btn { fill: var(--flame-300); opacity: .85; }
+.pr-leg { fill: none; stroke: color-mix(in srgb, var(--ink-500) 90%, var(--ink-900)); stroke-width: 14; stroke-linecap: round; }
+.pr-boot { fill: color-mix(in srgb, var(--ink-400) 80%, var(--ink-900)); }
+/* the pack is LEATHER, not the companion's accent — painted in --c1 it sat
+   right beside the companion and the two read as one lumpy orange mass */
+.pr-packbag { fill: color-mix(in srgb, var(--ink-400) 78%, var(--ink-900)); }
+.pr-packflap { fill: var(--c3); }
+.pr-strap { fill: none; stroke: color-mix(in srgb, var(--ink-300) 70%, var(--ink-900)); stroke-width: 6; stroke-linecap: round; }
+.pr-arm { fill: none; stroke: color-mix(in srgb, var(--spectre-500) 70%, var(--ink-900)); stroke-width: 13; stroke-linecap: round; }
+.pr-face { fill: var(--flame-100); }
+.pr-hair { fill: color-mix(in srgb, var(--ink-700) 84%, var(--ink-900)); }
+.pr-sclera { fill: var(--text-hi); }
+.pr-pupil { fill: var(--ink-900); }
+.pr-glint { fill: var(--text-hi); }
+/* fill-box origin, so the eyelid shuts from the brow down without the JS
+   having to know where on the face the eye happens to sit */
+.pr-lid { fill: var(--flame-100); transform-box: fill-box; transform-origin: 50% 0%; }
+.pr-mouth { fill: none; stroke: var(--ink-800); stroke-width: 3; stroke-linecap: round; }
+/* the torch: the one warm light source she carries into a cold house */
+.pr-torchbody { fill: var(--ink-500); stroke: var(--ink-300); stroke-width: 2; }
+.pr-flame { fill: var(--flame-300); }
+.pr-flamehot { fill: var(--flame-100); }
+.pr-beam {
+  fill: color-mix(in srgb, var(--flame-200) 34%, transparent);
+  filter: blur(9px);
+  mix-blend-mode: screen;
+}
+/* the companion, in its own accent */
+.pr-palbody { fill: var(--c1); stroke: var(--c3); stroke-width: 2.4; }
+.pr-palear { fill: var(--c1); stroke: var(--c3); stroke-width: 2; }
+.pr-palmuzzle { fill: var(--c2); opacity: .85; }
+.pr-paleye { fill: var(--ink-900); }
+.pr-paltail { fill: none; stroke: var(--c1); stroke-width: 9; stroke-linecap: round; }
+.pr-palwhisk { fill: none; stroke: var(--c3); stroke-width: 1.8; opacity: .7; }
+.cb-hero.is-striking .pr-flame { fill: var(--flame-100); }
+.cb-hero.is-striking .pr-beam { fill: color-mix(in srgb, var(--flame-100) 40%, transparent); }
+@keyframes cb-heroguard {
+  0% { opacity: 0; transform: scale(.8); }
+  40% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.28); }
+}
+.cb-hero.is-guarding::after {
+  content: ''; position: absolute; inset: 4% 10%;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--guard-300) 78%, transparent);
+  animation: cb-heroguard .5s var(--ease-out);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cb-hero.is-guarding::after { animation: none; }
+}
 
 /* ───────────────────────────────────────────── the player ──────────────── */
 .cb-player {
@@ -887,6 +1060,19 @@
 
 /* ───────────────────────────────────────────── the hand ────────────────── */
 .cb-handhost { position: absolute; inset: 0; z-index: 200; }
+/* ── the hand never hides the hit ──────────────────────────────────────────
+   The played card is presented at 0.62 of the board height (ui/hand.js TUNE
+   .playY) which puts a 226x314 card straight across the creature band; at the
+   contact frame it covered 57.8% of the target and the entire receiving-side
+   animation played behind it. For the length of one impact the cards fade so
+   the board reads through them. A FILTER, not `opacity`: the Hand writes the
+   opacity property inline during the discard arc and inline wins the cascade,
+   whereas a filter composes with it. */
+.cb-handhost .mm-card { transition: filter 90ms linear; }
+.cb-handhost.is-impact .mm-card { filter: opacity(.3); }
+@media (prefers-reduced-motion: reduce) {
+  .cb-handhost.is-impact .mm-card { filter: none; }
+}
 
 /* ───────────────────────────────────────────── bottom corners ──────────── */
 .cb-bl, .cb-br {

@@ -280,15 +280,21 @@
 .go-num { font-family: var(--font-num); color: var(--flame-200); }
 
 .go-pet { display: grid; grid-template-columns: auto 1fr; gap: var(--s-4); align-items: center; }
-.go-pet__tag {
-  display: grid; place-items: center;
-  width: 46px; height: 46px; border-radius: 50%;
-  background: radial-gradient(circle at 36% 30%, var(--brass-200), var(--brass-400));
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--brass-100) 50%, transparent), var(--shadow-1);
+/* The photograph of the pet, pinned to the run-end page like a polaroid the
+   kids carry: white border, a small tilt, a real shadow. */
+.go-pet__snap {
+  display: block; width: 132px;
+  padding: 6px 6px 5px;
+  background: linear-gradient(180deg, var(--paper), color-mix(in oklab, var(--paper) 88%, var(--parchment-shade)));
+  box-shadow: var(--shadow-2);
+  transform: rotate(-2.6deg);
   animation: go-tag-swing 5.4s var(--ease-soft) infinite;
+  transform-origin: 50% 0;
 }
-.go-pet__tag svg { width: 60%; height: 60%; fill: color-mix(in oklab, var(--brass-600) 84%, var(--ink-900)); }
-@keyframes go-tag-swing { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+/* Cold, not dark: the photograph still has to be readable of a black cat in
+   an unlit hallway at 116 px. */
+.go-stanza--pet:not(.is-home) .go-pet__snap .petpic { filter: saturate(.72) brightness(1.06) contrast(1.05); }
+@keyframes go-tag-swing { 0%,100% { transform: rotate(-3.4deg); } 50% { transform: rotate(1.6deg); } }
 .go-pet__text { margin: 0; font-size: var(--fs-md); line-height: 1.5; color: var(--text-mid); font-style: italic; }
 .go-pet__text b { font-style: normal; color: var(--flame-200); }
 .go-stanza--pet.is-home .go-pet__text b { color: var(--spectre-200); }
@@ -356,7 +362,6 @@
   border-bottom: 1px solid color-mix(in srgb, var(--brass-400) 24%, transparent);
 }
 .go-who__kid { width: 62px; border-radius: var(--radius-sm); overflow: hidden; box-shadow: var(--shadow-1); }
-.go-who__kid .kidpf { width: 100%; height: auto; display: block; }
 .go-who__txt { display: grid; gap: 2px; min-width: 0; }
 .go-who__txt b { font-family: var(--font-display); font-size: var(--fs-lg); color: var(--text-hi); }
 .go-who__txt span { font-size: var(--fs-sm); font-style: italic; color: var(--text-lo); }

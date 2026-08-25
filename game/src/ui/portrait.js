@@ -14,6 +14,11 @@
 
 import { COMPANIONS, KIDS } from '../data/schema.js';
 import { Save } from '../core/save.js';
+import { petImg, kidImg, petPhoto, kidPhoto, warmFaces, petKey } from './petart.js';
+
+// The pet photographs and Kid portraits live in ui/petart.js. Re-exported here
+// so scenes keep importing their art from one place.
+export { petImg, kidImg, petPhoto, kidPhoto, warmFaces, petKey };
 
 // ── stylesheet loading ──────────────────────────────────────────────────────
 // index.html is owned by the lead and only links tokens.css + base.css, so scene
@@ -75,12 +80,26 @@ export const KID_BY_SLUG = Object.fromEntries(KIDS.map((k) => [k.slug, k]));
 export const STARTER_COMPANIONS = ['marmalade', 'bones', 'pipkin', 'taffy'];
 
 /**
- * **The** Companion count. One function, because three screens each computed
- * their own and disagreed on the same save in the same session: the Title said
- * "0 / 16 freed" off the raw save array while Select and the Clubhouse said
- * "4 / 16" off starters-plus-saves. The four starters ARE out of the house —
- * they are on the corkboard and they are pickable — so they count, and the
- * lifetime rescues join them.
+ * AVAILABLE is not FREED, and treating them as one number put a lie on the
+ * counter the whole game is about.
+ *
+ * There are two questions here and three screens used to answer both with the
+ * same set:
+ *
+ *   available — may I take this Companion in?   starters + lifetime rescues
+ *   freed     — did I get this one out of that house?         rescues only
+ *
+ * An earlier round unified them because the Title said "0 / 16 freed" while
+ * Select and the Clubhouse said "4 / 16" on the same save. That was a real bug,
+ * but it got unified in the wrong direction: a brand-new save then opened on
+ * "4 / 16 MENAGERIE COMPANIONS FREED" with an empty localStorage, claiming four
+ * rescues that never happened — and it flattens every real one, because the
+ * first Companion you actually free moves the number to five. The four starters
+ * were never in the house. They live at the clubhouse; that is why you have
+ * them.
+ *
+ * So `availableCompanions()` decides what is pickable and whose portrait is
+ * unlocked, `freedCompanions()` is the score, and a fresh save reads 0 / 16.
  *
  * @param {Iterable<string>} [alsoFreed] slugs freed this session that the save
  *        has not been asked for yet (a just-finished run, mid-expedition).
@@ -89,10 +108,27 @@ export const STARTER_COMPANIONS = ['marmalade', 'bones', 'pipkin', 'taffy'];
 export function freedCompanions(alsoFreed) {
   const known = new Set(COMPANIONS.map((c) => c.slug));
   const out = new Set();
-  for (const slug of [...STARTER_COMPANIONS, ...(Save?.data?.companionsRescued ?? []), ...(alsoFreed ?? [])]) {
+  for (const slug of [...(Save?.data?.companionsRescued ?? []), ...(alsoFreed ?? [])]) {
     if (known.has(slug)) out.add(slug);
   }
   return out;
+}
+
+/** Everyone you may take into the house: the four starters plus everyone freed. */
+export function availableCompanions(alsoFreed) {
+  const out = freedCompanions(alsoFreed);
+  const known = new Set(COMPANIONS.map((c) => c.slug));
+  for (const slug of STARTER_COMPANIONS) if (known.has(slug)) out.add(slug);
+  return out;
+}
+
+/** True for a Companion who is only pickable because they started with you. */
+export function isStarter(slug) { return STARTER_COMPANIONS.includes(slug); }
+
+/** How many of the four starters are not (yet) also lifetime rescues. */
+export function starterCount(alsoFreed) {
+  const freed = freedCompanions(alsoFreed);
+  return STARTER_COMPANIONS.filter((s) => !freed.has(s)).length;
 }
 
 /** Region slug -> the name the fiction uses. */
@@ -427,147 +463,69 @@ export function logoLockup({ size = 'hero', plaque = null, id = 'mm-logo' } = {}
   return node;
 }
 
-// ── procedural Kid portraits ────────────────────────────────────────────────
+// ── Kid portraits and pet photographs ───────────────────────────────────────
 /**
- * No kid art exists. Each Kid gets a hand-tuned procedural portrait: a torch beam
- * cutting the dark, a distinct silhouette (hair shape, headgear, crutches, glasses),
- * a signature colour, and their missing pet's collar tag hanging in the beam.
- * Deterministic — the same kid always draws the same portrait.
+ * Both used to be drawn here as flat SVG: one shared body silhouette recoloured
+ * per Kid, and one grey glyph per rough species for the pets. A reviewer put it
+ * exactly right — "the lost pets have no faces", "the single image the whole
+ * game is about is a placeholder" — so both are now real generated photographs
+ * from `ui/petart.js`, and this file just adapts them to the shapes the scenes
+ * already ask for.
  */
+
+/** Their signature torch colour, for anything that still wants just the hue. */
 export const KID_LOOKS = {
-  maya:   { hue: 'var(--kid-maya)',   hair: 'bob',      gear: 'crutch',   beam: 0.90 },
-  mateo:  { hue: 'var(--kid-mateo)',  hair: 'curls',    gear: 'cap',      beam: 0.72 },
-  amina:  { hue: 'var(--kid-amina)',  hair: 'puffs',    gear: 'scarf',    beam: 0.80 },
-  eli:    { hue: 'var(--kid-eli)',    hair: 'shag',     gear: 'goggles',  beam: 0.66 },
-  priya:  { hue: 'var(--kid-priya)',  hair: 'braid',    gear: 'glasses',  beam: 0.86 },
-  jordan: { hue: 'var(--kid-jordan)', hair: 'fade',     gear: 'hoodie',   beam: 0.74 },
-  lena:   { hue: 'var(--kid-lena)',   hair: 'longtie',  gear: 'headlamp', beam: 0.95 },
-  lucy:   { hue: 'var(--kid-lucy)',   hair: 'pigtails', gear: 'backpack', beam: 0.62 },
+  maya:   { hue: 'var(--kid-maya)' },
+  mateo:  { hue: 'var(--kid-mateo)' },
+  amina:  { hue: 'var(--kid-amina)' },
+  eli:    { hue: 'var(--kid-eli)' },
+  priya:  { hue: 'var(--kid-priya)' },
+  jordan: { hue: 'var(--kid-jordan)' },
+  lena:   { hue: 'var(--kid-lena)' },
+  lucy:   { hue: 'var(--kid-lucy)' },
 };
 
-const HAIR = {
-  bob:      'M100 78c0-26 18-44 44-44s44 18 44 44c0 10-2 18-4 26-2-14-10-22-22-24-14-3-30-3-44 2-12 4-18 12-18 24-1-9 0-19 0-28Z',
-  curls:    'M100 80c-2-24 16-46 44-46s46 20 44 46c-1 8-4 12-8 6-3-5-8-4-11 1-2 4-7 4-9-1-3-6-9-6-12 0-2 5-8 5-10 0-3-6-9-6-12 0-3 5-8 6-11 1-3-5-9-11-15-7Z',
-  puffs:    'M112 74c0-22 14-40 32-40s32 18 32 40c0 6-1 11-3 16-1-12-8-19-19-21-11-3-24-3-35 1-5 2-7 5-7 10v-6Zm-24 8a17 17 0 1 1 34 0 17 17 0 0 1-34 0Zm112 0a17 17 0 1 1 34 0 17 17 0 0 1-34 0Z',
-  shag:     'M98 86c-3-28 16-52 46-52s49 22 46 52c-1 8-5 9-8 3-3-7-8-9-11-3-3 5-8 5-11-1-3-7-9-7-13-1-4 5-10 4-13-2-3-7-10-8-14-2-3 5-9 8-13 3-3-4-8-3-9 3Z',
-  braid:    'M104 78c0-24 17-44 40-44s40 20 40 44c0 8-1 15-3 21-2-15-9-23-22-26-13-2-27-2-39 3-9 4-14 10-16 19v-17Zm74 24c8 12 10 28 8 44-1 10-4 18-9 24 6-22 5-46-3-66l4-2Z',
-  fade:     'M104 82c0-26 16-48 40-48s40 22 40 48c0 4 0 8-1 12-3-16-12-24-27-26-14-2-30-1-42 5-6 3-9 7-10 13v-4Z',
-  longtie:  'M100 80c0-25 18-46 44-46s44 21 44 46v20c-3-18-11-28-26-31-16-3-33-2-46 4-9 4-14 11-16 20V80Zm-4 34c-4 26-4 54 2 80 2 8 6 14 10 17-9-30-11-64-6-95l-6-2Zm96 2c5 31 3 65-6 95 4-3 8-9 10-17 6-26 6-54 2-80l-6 2Z',
-  pigtails: 'M108 78c0-24 16-44 38-44s38 20 38 44v14c-3-14-10-21-22-24-13-3-27-2-38 3-8 4-13 9-16 16V78Zm-22 16a20 20 0 1 1 40 0 20 20 0 0 1-40 0Zm120 0a20 20 0 1 1 40 0 20 20 0 0 1-40 0Z',
-};
-
-const GEAR = {
-  crutch:   '<path class="kg" d="M232 176v96m-10-96h20m-16 30h12m-6 0v66"/><circle class="kg-d" cx="232" cy="176" r="7"/>',
-  cap:      '<path class="kg-f" d="M96 74c4-24 24-40 48-40s44 16 48 40c1 6-2 9-8 9h-80c-6 0-9-3-8-9Z"/><path class="kg-f" d="M192 76h44c4 0 6 3 5 7-1 5-6 8-12 8h-37Z"/>',
-  scarf:    '<path class="kg-f" d="M104 156c26 14 60 14 86 0l8 22c-32 18-70 18-102 0Z"/>',
-  goggles:  '<path class="kg" d="M104 96h80"/><circle class="kg-l" cx="122" cy="98" r="15"/><circle class="kg-l" cx="166" cy="98" r="15"/><path class="kg" d="M137 98h14"/>',
-  glasses:  '<circle class="kg-l" cx="124" cy="104" r="14"/><circle class="kg-l" cx="164" cy="104" r="14"/><path class="kg" d="M138 104h12m-40-4-14-6m82 6 14-6"/>',
-  hoodie:   '<path class="kg-f" d="M78 190c6-40 30-62 66-62s60 22 66 62c-20-16-42-24-66-24s-46 8-66 24Z"/>',
-  headlamp: '<path class="kg" d="M100 84h88"/><rect class="kg-d2" x="128" y="70" width="32" height="20" rx="5"/>',
-  backpack: '<path class="kg-f" d="M64 208c0-22 12-36 28-40l6 44Zm160 0c0-22-12-36-28-40l-6 44Z"/>',
-};
-
-const PET_GLYPH = {
-  // head silhouettes in a 0..32 box — legible down to ~16px
-  cat:      'M5 13 3.5 3.5 11 7.5h10l7.5-4L27 13c1.8 2 2.8 4.6 2.8 7.2 0 5.6-5.2 9.3-13.8 9.3S2.2 25.8 2.2 20.2C2.2 17.6 3.2 15 5 13Z',
-  dog:      'M8.5 6.5C5 6.5 3 10 3 14.5c0 3.4 1.2 5.6 3 6.6.8 4.7 5 8 10 8s9.2-3.3 10-8c1.8-1 3-3.2 3-6.6C29 10 27 6.5 23.5 6.5c-1.6 0-2.8.8-3.6 2A9.6 9.6 0 0 0 16 7.6c-1.4 0-2.7.3-3.9.9-.8-1.2-2-2-3.6-2Z',
-  rabbit:   'M10.5 15C8.2 10.4 7 5.6 8.6 3.4c1.6-2.2 4 .2 4.6 4l.6 5.2h4.4l.6-5.2c.6-3.8 3-6.2 4.6-4C25 5.6 23.8 10.4 21.5 15c2.6 1.8 4.2 4.4 4.2 7 0 4.6-4 7.4-9.7 7.4S6.3 26.6 6.3 22c0-2.6 1.6-5.2 4.2-7Z',
-  bird:     'M4.5 17.5C4.5 10.6 9.8 5 16.6 5c3.8 0 7 1.7 9.1 4.3L31 8l-2.3 4.4c.5 1.5.8 3.2.8 5 0 6.9-5.3 12.1-12.1 12.1S4.5 24.4 4.5 17.5Z',
-  rat:      'M7.5 12.5a5 5 0 1 1 4.6-6.9A11 11 0 0 1 16 5c1.4 0 2.7.2 3.9.6a5 5 0 1 1 4.6 6.9c1.8 1.9 2.8 4.3 2.8 6.9 0 5.5-4.9 9.1-11.3 9.1S4.7 24.9 4.7 19.4c0-2.6 1-5 2.8-6.9Z',
-  gecko:    'M5 18c0-6.1 4.9-11 11-11s11 4.9 11 11c0 3.3-1.5 6.2-3.8 8.2l1.9 3.6-4.3-1.9-2.4 2.1-2.4-2.1-4.3 1.9 1.9-3.6C6.5 24.2 5 21.3 5 18Z',
-  hamster:  'M8.5 11a4.6 4.6 0 1 1 4.4-6 12 12 0 0 1 6.2 0 4.6 4.6 0 1 1 4.4 6c2 2 3.2 4.7 3.2 7.6 0 6-5 10-10.7 10S5.3 24.6 5.3 18.6c0-2.9 1.2-5.6 3.2-7.6Z',
-  'guinea pig': 'M16 4.5c7.4 0 12.6 5 12.6 11.8S23.4 29.5 16 29.5 3.4 23.1 3.4 16.3 8.6 4.5 16 4.5Zm-8.6 4.2L4.6 4.2 9.9 5.9Zm17.2 0L27.4 4.2 22.1 5.9Z',
-  plant:    'M15 30V17c-4 0-7-3-7-7 4 0 7 3 7 7V9c0-3 1-6 1-6s1 3 1 6v8c0-4 3-7 7-7 0 4-3 7-7 7v13Z',
-  spider:   'M16 10a6 6 0 1 1 0 12 6 6 0 0 1 0-12Zm-6 1L3 6m19 5 7-5M9 16H2m21 0h7m-21 5-6 6m19-6 6 6',
-};
-export function petGlyph(kind) {
-  const k = String(kind || '').toLowerCase();
-  if (PET_GLYPH[k]) return PET_GLYPH[k];
-  if (k.includes('parrot') || k.includes('conure') || k.includes('bird')) return PET_GLYPH.bird;
-  if (k.includes('cat')) return PET_GLYPH.cat;
-  if (k.includes('dog') || k.includes('beagle')) return PET_GLYPH.dog;
-  if (k.includes('rabbit')) return PET_GLYPH.rabbit;
-  if (k.includes('rat') || k.includes('ferret')) return PET_GLYPH.rat;
-  if (k.includes('gecko') || k.includes('lizard')) return PET_GLYPH.gecko;
-  if (k.includes('hamster')) return PET_GLYPH.hamster;
-  if (k.includes('guinea')) return PET_GLYPH['guinea pig'];
-  if (k.includes('spider')) return PET_GLYPH.spider;
-  if (k.includes('plant')) return PET_GLYPH.plant;
-  return PET_GLYPH.cat;
+/**
+ * A Kid portrait, sized so the box it lands in never reflows.
+ * Same signature as the SVG version it replaces — every caller passes
+ * `{ ...kid, petKind }` and a `{ w, h }` — and it still carries the `kidpf`
+ * class the four scene stylesheets already target.
+ *
+ * `tag` used to hang the pet's collar tag in the beam. The pet now has an
+ * actual photograph of its own on the same screen, so the tag was a second,
+ * worse picture of the same animal; the option is accepted and ignored.
+ */
+export function kidPortrait(kid, { w = 260, h = 300 } = {}) {
+  const img = kidImg(kid?.slug);
+  /* `w`/`h` become a MAX, not a fixed size, and they are set as attributes
+     rather than inline styles. Inline width/height beat the stylesheet, and
+     every one of the four boxes these land in already sizes them in CSS —
+     the select dossier stretches its portrait to the full height of the panel
+     and an inline `height:auto` silently vetoed that. */
+  img.style.maxWidth = '100%';
+  if (w) img.dataset.w = String(w);
+  if (h) img.dataset.h = String(h);
+  return img;
 }
 
 /**
- * Build a Kid portrait SVG.
- *  kid  the record from KIDS, plus `petKind` and optional `look` overrides
+ * The photograph of one missing pet, as an <img class="petpic">.
+ * `any` accepts a kid slug, a pet slug, or a pet name.
  */
-export function kidPortrait(kid, { w = 260, h = 300, tag = true } = {}) {
-  const look = KID_LOOKS[kid.slug] || KID_LOOKS.maya;
-  const hair = HAIR[look.hair] || HAIR.bob;
-  const gear = GEAR[look.gear] || '';
-  const uid = `kp-${kid.slug}`;
-  return svg(`
-<svg class="kidpf" viewBox="0 0 288 320" width="${w}" height="${h}" preserveAspectRatio="xMidYMid slice" role="img"
-     aria-label="${kid.name}, searching with a flashlight" style="--kid-hue:${look.hue}">
-  <defs>
-    <radialGradient id="${uid}-room" cx="50%" cy="34%" r="72%">
-      <stop offset="0%" class="kp-room-in"/><stop offset="100%" class="kp-room-out"/>
-    </radialGradient>
-    <linearGradient id="${uid}-beam" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%"   class="kp-beam-a" stop-opacity="${look.beam * 0.72}"/>
-      <stop offset="55%"  class="kp-beam-b" stop-opacity="${look.beam * 0.26}"/>
-      <stop offset="100%" class="kp-beam-b" stop-opacity="0"/>
-    </linearGradient>
-    <linearGradient id="${uid}-rim" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" class="kp-rim-a"/><stop offset="100%" class="kp-rim-b"/>
-    </linearGradient>
-    <clipPath id="${uid}-clip"><rect x="0" y="0" width="288" height="320" rx="10"/></clipPath>
-  </defs>
+export function petPortrait(any, { alt } = {}) {
+  return petImg(any, { alt });
+}
 
-  <g clip-path="url(#${uid}-clip)">
-    <rect width="288" height="320" fill="url(#${uid}-room)"/>
-    <!-- wallpaper stripes so the dark has depth -->
-    <g class="kp-paper">
-      ${Array.from({ length: 9 }, (_, i) => `<rect x="${i * 34}" y="0" width="15" height="320"/>`).join('')}
-    </g>
-    <!-- floorboards -->
-    <g class="kp-floor"><rect x="0" y="252" width="288" height="68"/>
-      <path d="M0 252h288M0 272h288M0 294h288"/></g>
-
-    <!-- torch beam -->
-    <path class="kp-beam" d="M258 150 L288 96 L288 300 L150 320 Z" fill="url(#${uid}-beam)"/>
-
-    <!-- the kid, backlit -->
-    <g class="kp-figure" transform="translate(-6,10)">
-      <path class="kp-body" d="M78 300c2-52 28-84 66-84s64 32 66 84Z"/>
-      <path class="kp-body" d="M118 186h52v34h-52Z"/>
-      <ellipse class="kp-head" cx="144" cy="122" rx="46" ry="52"/>
-      <path class="kp-hair" d="${hair}"/>
-      <ellipse class="kp-eye" cx="127" cy="128" rx="5.5" ry="6.5"/>
-      <ellipse class="kp-eye" cx="161" cy="128" rx="5.5" ry="6.5"/>
-      <path class="kp-rim" d="M186 92c14 12 22 30 22 48s-8 36-22 48" fill="none" stroke="url(#${uid}-rim)"/>
-      ${gear}
-    </g>
-
-    <!-- flashlight -->
-    <g class="kp-torch" transform="translate(224,150) rotate(-24)">
-      <rect class="kp-torch-b" x="-8" y="0" width="20" height="44" rx="4"/>
-      <rect class="kp-torch-h" x="-12" y="-14" width="28" height="18" rx="4"/>
-      <circle class="kp-torch-l" cx="2" cy="-6" r="6"/>
-    </g>
-    <circle class="kp-glow" cx="226" cy="142" r="26"/>
-
-    ${tag ? `
-    <!-- the pet's collar tag, kept in the backpack -->
-    <g class="kp-tag" transform="translate(44,214)">
-      <path class="kp-tag-str" d="M18 -46c-6 14-4 28 2 40" fill="none"/>
-      <circle class="kp-tag-d" cx="20" cy="0" r="20"/>
-      <circle class="kp-tag-r" cx="20" cy="0" r="20"/>
-      <circle class="kp-tag-h" cx="20" cy="-14" r="3.2"/>
-      <g class="kp-tag-g" transform="translate(4,-16) scale(1.0)"><path d="${petGlyph(kid.petKind)}"/></g>
-    </g>` : ''}
-  </g>
-  <rect class="kp-edge" x="1" y="1" width="286" height="318" rx="10" fill="none"/>
-</svg>`);
+/**
+ * DEPRECATED — the flat species glyph. The MISSING poster used one fixed cat
+ * path for every pet including Lucy's guinea pig, which is precisely the thing
+ * this round was sent to fix. Kept only so nothing outside `scenes/{title,
+ * select,clubhouse,gameover}` breaks at import time; every caller in those four
+ * now uses `petPortrait`. It returns the cat path and it is meant to be unused.
+ */
+export function petGlyph() {
+  return 'M5 13 3.5 3.5 11 7.5h10l7.5-4L27 13c1.8 2 2.8 4.6 2.8 7.2 0 5.6-5.2 9.3-13.8 9.3'
+    + 'S2.2 25.8 2.2 20.2C2.2 17.6 3.2 15 5 13Z';
 }
 
 // ── keyboard roving focus ───────────────────────────────────────────────────

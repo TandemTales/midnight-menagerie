@@ -288,30 +288,41 @@ export function sceneForNode(node) {
 // into one is always a choice you made.  Two of the eight are boons, so the
 // player is sometimes routing *towards* a condition, not only away from one.
 // ─────────────────────────────────────────────────────────────────────────────
+//
+// A NOTE ON THE WORD "WING".  These rules used to say "any room in this wing",
+// while the banner over the sheet says "Wing 1 of 17" meaning the whole region.
+// One word, two scopes, and a playtester read "The Floor Sags — entering any
+// room in this wing costs 3 Courage" as a tax on the entire Foyer, then found
+// only a handful of rooms carrying `data-hazard="sagging"` and concluded the
+// tooltip was lying.  It was not; it was ambiguous, which on a rules screen is
+// the same thing.  The region keeps "wing" (the banner, the HUD, gameover and
+// run.js all use it).  A hazard now occupies a **marked area** — which is also
+// what it looks like: a hatched, bounded region of the plan with a keyed
+// roundel, exactly the way a real survey flags a condition.
 export const HAZARDS = [
   { id: 'lights-out',   kind: 'hazard', name: 'The Lights Are Out',
-    rule: 'Enemies here start every Scuffle with 2 Unseen. You cannot read an intent until Unseen breaks.',
-    note: 'sconces dry · no gas to this wing', glyph: 'lamp' },
+    rule: 'Enemies inside the marked area start every Scuffle with 2 Unseen. You cannot read an intent until Unseen breaks.',
+    note: 'sconces dry · no gas to these rooms', glyph: 'lamp' },
   { id: 'sagging',      kind: 'hazard', name: 'The Floor Sags',
-    rule: 'Entering any room in this wing costs 3 Courage. The boards remember your weight.',
+    rule: 'Entering any room inside the marked area costs 3 Courage. The boards remember your weight.',
     note: 'joists unsound — do not crowd', glyph: 'beam' },
   { id: 'dust-sheets',  kind: 'hazard', name: 'Under Dust Sheets',
-    rule: 'Enemy intents are hidden on the first turn of every Scuffle in this wing.',
-    note: 'furniture covered · room closed', glyph: 'sheet' },
+    rule: 'Enemy intents are hidden on the first turn of every Scuffle inside the marked area.',
+    note: 'furniture covered · rooms closed', glyph: 'sheet' },
   { id: 'cold-draught', kind: 'hazard', name: 'A Cold Draught',
-    rule: 'You begin every Scuffle here with 2 Chill: your first Trick each turn costs 1 more Nerve.',
+    rule: 'You begin every Scuffle inside the marked area with 2 Chill: your first Trick each turn costs 1 more Nerve.',
     note: 'window sashes never seated', glyph: 'draught' },
   { id: 'pipes',        kind: 'hazard', name: 'The Pipes Rattle',
-    rule: 'Noise carries. Every Scuffle in this wing brings one extra small enemy.',
+    rule: 'Noise carries. Every Scuffle inside the marked area brings one extra small enemy.',
     note: 'service risers pass behind', glyph: 'pipe' },
   { id: 'long-shadows', kind: 'hazard', name: 'Long Shadows',
-    rule: 'Guard is halved at the start of each of your turns while you are in this wing.',
+    rule: 'Guard is halved at the start of each of your turns while you are inside the marked area.',
     note: 'no daylight reaches these rooms', glyph: 'shadow' },
-  { id: 'moonlit',      kind: 'boon',   name: 'Moonlit Wing',
-    rule: 'Moonlight through the roof lights. Leaving this wing restores 8 Courage.',
+  { id: 'moonlit',      kind: 'boon',   name: 'Moonlit Rooms',
+    rule: 'Moonlight through the roof lights. Leaving the marked area restores 8 Courage.',
     note: 'glazed roof · full moon aspect', glyph: 'moon' },
   { id: 'paw-prints',   kind: 'boon',   name: 'Fresh Paw Prints',
-    rule: 'A trail runs through here. Every room in this wing also yields a Clue for your Kid.',
+    rule: 'A trail runs through here. Every room inside the marked area also yields a Clue for your Kid.',
     note: 'tracks logged, not yet followed', glyph: 'paw' },
 ];
 
@@ -622,35 +633,93 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
     [NodeType.CURIOSITY]: (n) => n.row >= 2,
   };
 
-  // ── The guaranteed Safe Room at the boss's door ───────────────────────────
+  // ── The boss's door row: a guaranteed rest, and a real choice ─────────────
   //
-  // This used to be an 80% chance on the row two before the boss, so it could be
-  // routed past, and 20% of sheets simply did not have one.  The balance sim
-  // then played whole regions with real decks and put the entire survival gap on
-  // that one line: 0.7 Safe Room rests per expedition, region survival 46.7%
-  // against a 60-75% target, and the boss won 15% of the time at the Courage the
-  // player actually arrived with.  Handing the player one extra rest's worth of
-  // Courage at the door — and nothing else — moved the boss to 45.8%.
+  // History, because both halves of this were learned the hard way.
   //
-  // So it is now a guarantee and not a gift: EVERY room on the last walkable row
-  // is a Safe Room, which is exactly what Slay the Spire does with the floor
-  // before an act boss.  Every node on that row feeds the boss and nothing else
-  // does, so there is no route that misses it and no routing decision to get
-  // wrong.  Two consequences, both deliberate:
+  // It began as an 80% chance on the row two before the boss, so it could be
+  // routed past and one sheet in five had none at all.  The balance sim put the
+  // whole survival gap on that line: 0.7 rests per expedition, and the boss won
+  // 15% of the time at the Courage the player actually arrived with.  So round 3
+  // made EVERY room on the last walkable row a Safe Room, which bought +9 points
+  // of reach-the-boss and 1 guaranteed rest on the worst path.
+  //
+  // And it over-corrected into a fake choice.  Measured across five seeds and
+  // three regions: the door row was 4/4 (or 3/3) Safe Rooms on every single
+  // sheet.  Four branches, four identical rooms — the last decision of the wing
+  // was not a decision, it was a corridor drawn four times.
+  //
+  // What survives is the part that was load-bearing: **there is always a rest at
+  // the boss's door.**  Exactly one room on the row is guaranteed Safe, so no
+  // route can be denied it; the others carry something worth walking past a rest
+  // for.  That is Slay the Spire's actual pre-boss shape — you may take the
+  // campfire, and taking it costs you whatever the other branch held.
+  //
+  // Two consequences, both deliberate:
   //   · the row-14 taboo does not apply here.  In a 15-row wing the pre-boss row
   //     IS row index 13; a superstition about numbering does not get to cost the
   //     player the run.
-  //   · two Safe Rooms may sit side by side on this row.  The rule that matters
-  //     is "never two rests in a row along a PATH", and that still holds: the
-  //     rooms on this row are alternatives, never a sequence, and the general
-  //     rules below keep any Safe Room off the row that feeds it.
-  // The door row is IN ADDITION to the wing's own Safe Rooms, not instead of one
-  // of them.  Slay the Spire gives you two to three campfires an act AND the
-  // rest before the boss; taking the guarantee out of the quota measured as one
-  // extra rest per expedition instead of two, and left the boss's door as the
-  // only deep place to sit down.
+  //   · a Big Scare may sit on this row.  It is the one place a named horror is
+  //     trivially avoidable — every room on the row is an alternative to every
+  //     other — so it is a genuine risk/reward and not the unavoidable toll that
+  //     round 3 correctly banned.  It is registered in `scares` below so the
+  //     avoidability BFS counts it.
+  // The rest is IN ADDITION to the wing's own Safe quota, not instead of one.
   const doorRow = rowsOf[lastWalk] || [];
-  for (const n of doorRow) n.type = NodeType.SAFE;
+  const scares = new Set();
+  if (doorRow.length) {
+    // The guaranteed rest sits on a lane chosen by the seed, not always the
+    // middle: which branch the safe one is on is itself information the player
+    // reads off the sheet.
+    const restIdx = rng.int(doorRow.length);
+    // What the other doors hold.  Weighted so the row reads as a choice between
+    // real things: a shop or a treasure most of the time, a named horror often
+    // enough to matter, and a plain Scuffle as the "nothing special, keep your
+    // Courage" option.  Drawn WITHOUT replacement so three doors are never the
+    // same door again.
+    const others = rng.shuffle([
+      NodeType.TREASURE, NodeType.SHOP, NodeType.BIG_SCARE, NodeType.SCUFFLE,
+      NodeType.CURIOSITY, NodeType.UNKNOWN,
+    ]).slice(0, Math.max(0, doorRow.length - 1));
+    let k = 0;
+    doorRow.forEach((n, i) => {
+      if (i === restIdx) { n.type = NodeType.SAFE; return; }
+      n.type = others[k++] || NodeType.SCUFFLE;
+      if (n.type === NodeType.BIG_SCARE) scares.add(n.id);
+    });
+  }
+
+  /**
+   * Would making `n` a Big Scare leave some room whose every exit is one?
+   *
+   * "Every Big Scare must be avoidable" was implemented in round 3 as a GLOBAL
+   * property: there exists a root-to-boss path that meets none of them.  That is
+   * necessary and it is not sufficient, because a player does not route from the
+   * door with the whole sheet in front of them — they stand in a room and pick
+   * an exit, and a global guarantee says nothing about the room they are
+   * standing in.  `tests/run/run.py`'s boss-path bot walked into exactly that:
+   * at row 7 of 13 every legal exit was a named horror, so a test that
+   * deliberately routes around them had to fight one, and lost the run.
+   * The local rule is the one that matters at the moment of the decision.
+   */
+  const forcesAScare = (n) => {
+    for (const pid of n.prev || []) {
+      const p = byId[pid];
+      if (!p || !p.next.length) continue;
+      if (p.next.every(id => id === n.id || scares.has(id) ||
+                             byId[id]?.type === NodeType.BIG_SCARE)) return true;
+    }
+    return false;
+  };
+
+  // The door row is typed before anything else, so its horrors get the same
+  // test: a room on the row that feeds it must always have somewhere else to go.
+  for (const n of doorRow) {
+    if (n.type === NodeType.BIG_SCARE && forcesAScare(n)) {
+      n.type = NodeType.SCUFFLE;
+      scares.delete(n.id);
+    }
+  }
 
   /**
    * Is the boss still reachable from the door if you refuse to enter any room
@@ -675,7 +744,6 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
   // Place scarce, heavily-constrained types first.
   const order = [NodeType.RESCUE, NodeType.BIG_SCARE, NodeType.SAFE, NodeType.TREASURE,
                  NodeType.SHOP, NodeType.UNKNOWN, NodeType.CURIOSITY];
-  const scares = new Set();
   for (const type of order) {
     let need = quota[type] || 0;
     if (!need) continue;
@@ -694,8 +762,9 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
       // Elite win rate fell 69% -> 54% and whole-region survival went DOWN.
       // A named horror you cannot route around is not a decision, it is a toll.
       if (type === NodeType.BIG_SCARE) {
+        if (forcesAScare(n)) continue;                     // local: an exit that is not this
         scares.add(n.id);
-        if (!bossReachableAvoiding(scares)) { scares.delete(n.id); continue; }
+        if (!bossReachableAvoiding(scares)) { scares.delete(n.id); continue; }  // global
       }
       n.type = type; need--;
     }
@@ -788,58 +857,102 @@ const PREFERRED = {
   [NodeType.BOSS]:      ['bo'],
 };
 
+/**
+ * How a second Parlor gets its name.
+ *
+ * The old ladder was ' — West', ' — Lower', ' — Far End', ' — Back', and the
+ * playtester's verdict was exact: "the authored room names are good; the
+ * disambiguation suffixes make them look generated."  They are right, and the
+ * reason is that no house has a room called "Parlor — Far End".  A house has a
+ * Parlor and a Second Parlor and a Little Parlor and the Old Parlor, and those
+ * are four different real rooms rather than one room wearing an index.
+ *
+ * So the qualifier is a PREFIX drawn from the vocabulary a floorplan actually
+ * uses, chosen from where the room sits: compass first (it is a survey), then
+ * storey, then the words that distinguish two rooms of the same use.
+ */
+/**
+ * The first repeat is placed, because this is a survey: which side of the wing
+ * it is on.  Only ONE positional word, and it has to be the one derived from
+ * the LANE.  A word derived from the row is identical for every room on that
+ * row, so a depth-based qualifier printed "Upper Visitor Cloakroom / Upper Bell
+ * Pull Gallery / Upper Grand Staircase / Upper Drawing Room" across the four
+ * doors of the boss's row — the same tell as the old suffix ladder, one word
+ * further along.  ("Upper" was also just wrong: depth on this sheet runs west
+ * to east, not up.)
+ */
+const ROOM_PLACE = [(west) => (west ? 'West ' : 'East ')];
+/** After that: the words a house uses for two rooms of the same kind. */
+const ROOM_KIND = ['Second ', 'Little ', 'Old ', 'Back ', 'Front ', 'Inner ', 'Far '];
+
 function assignRoomNames(regionId, all, boss, rng, lanes, rows) {
   const rooms = ROOMS[regionId] || ROOMS['foyer'];
-  const pools = {};
-  for (const t of ['sc','bs','cu','cl','se','tr','bf','mk','cn','bo','st']) {
-    pools[t] = rng.shuffle(rooms.filter(r => r.tag === t));
-  }
+  const usable = rooms.filter(r => r.tag !== 'bo');
   const uses = new Map();      // room name -> times used
   const taken = new Set();     // final display names
-
-  const qualifier = (n, i) => {
-    const west = n.col < (lanes - 1) / 2;
-    const lower = n.row < rows / 2;
-    const list = [
-      '',
-      west ? ' — West' : ' — East',
-      lower ? ' — Lower' : ' — Upper',
-      ' — Far End',
-      ' — Back',
-      west ? ' — North' : ' — South',
-    ];
-    return list[Math.min(i, list.length - 1)];
+  // stable, seed-free tie-break so two equally-unused rooms are not always
+  // resolved the same way (which is what put four Umbrella Galleries on a sheet)
+  const jitter = (a, b) => {
+    let h = 2166136261;
+    const s = a + '|' + b;
+    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return (h >>> 0) % 11;
   };
+  const shuffled = rng.shuffle(usable.slice());
 
   for (const n of all) {
+    if (n.type === NodeType.BOSS) continue;
     const prefs = PREFERRED[n.type] || ['sc'];
-    let room = null;
-    // Least-used room across the WHOLE preference list, not just the first
-    // non-empty tag.  Safe Rooms prefer 'bf' and most wings author exactly one
-    // blanket fort, so first-tag-wins put four rooms called "Blanket Room —
-    // West / Lower / Far End / Back" on one sheet — and with the guaranteed
-    // pre-boss row, two of them side by side at the boss's door.  Falling
-    // through to the next tag once a pool is used up keeps the names varied.
-    for (const tag of prefs) {
-      const pool = pools[tag];
-      if (!pool || !pool.length) continue;
-      const best = pool.reduce((b, r) =>
-        (uses.get(r.name) || 0) < (uses.get(b.name) || 0) ? r : b, pool[0]);
-      if (!room || (uses.get(best.name) || 0) < (uses.get(room.name) || 0)) room = best;
-      if ((uses.get(room.name) || 0) === 0) break;      // an unused room wins outright
+    // Use MORE of the region's twenty rooms before reusing any of them.  The
+    // score is dominated by how often a name is already on this sheet, so an
+    // unused room of the "wrong" tag beats a preferred room that is already
+    // there — which is exactly what the playtester asked for.  Tag affinity and
+    // the jitter only decide between rooms with the same use count.
+    let room = null, bestScore = Infinity;
+    for (const r of shuffled) {
+      const pi = prefs.indexOf(r.tag);
+      const score = (uses.get(r.name) || 0) * 1000
+                  + (pi >= 0 ? pi * 17 : 420)
+                  + jitter(n.id, r.name);
+      if (score < bestScore) { bestScore = score; room = r; }
     }
-    if (!room) room = rooms[0];
+    if (!room) room = usable[0] || rooms[0];
+
     const u = uses.get(room.name) || 0;
     uses.set(room.name, u + 1);
-    let display = room.name + qualifier(n, u);
-    let bump = u;
-    while (taken.has(display) && bump < 8) display = room.name + qualifier(n, ++bump);
+    const west = n.col < (lanes - 1) / 2;
+    let bump = u, display = qualify(room.name, bump, west, n.id);
+    while (taken.has(display) && bump < ROOM_PLACE.length + ROOM_KIND.length) {
+      display = qualify(room.name, ++bump, west, n.id);
+    }
     taken.add(display);
     n.roomName = display;
     n.roomTag = room.tag;
   }
   boss.roomName = (ROOMS[regionId] || ROOMS['foyer']).find(r => r.tag === 'bo')?.name || 'Boss Room';
   boss.roomTag = 'bo';
+}
+
+function qualify(name, i, west, id) {
+  if (i <= 0) return name;
+  // Never "West East Reception Hall" or "Lower Lower Attic": a wing that already
+  // authored a compass or a storey into a room's name does not get a second one.
+  const lead = name.split(' ')[0].toLowerCase();
+  const ok = q => q.trim().toLowerCase() !== lead;
+  const place = ROOM_PLACE.map(f => f(west)).filter(ok);
+  if (i <= place.length) return place[i - 1] + name;
+  // Past the two positional words the index alone is not enough: on a late row
+  // every room is already on the sheet twice, so keying off the use count put
+  // "Second Entry Hall / Second Umbrella Gallery / Second Visitor Cloakroom /
+  // Second Receiving Room" side by side at the boss's door — a different tell
+  // for the same fault the suffix ladder had.  Which word a room gets is a
+  // property of the ROOM, chosen deterministically from its id.
+  const kind = ROOM_KIND.filter(ok);
+  if (!kind.length) return name + ' ' + (i + 1);
+  let h = 2166136261;
+  const s = String(id) + '|' + name;
+  for (let j = 0; j < s.length; j++) { h ^= s.charCodeAt(j); h = Math.imul(h, 16777619); }
+  return kind[((h >>> 0) + i - place.length - 1) % kind.length] + name;
 }
 
 // ── hazard wings ─────────────────────────────────────────────────────────────

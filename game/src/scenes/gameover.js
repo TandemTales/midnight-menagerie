@@ -26,7 +26,7 @@ import { RNG, hashSeed } from '../core/rng.js';
 import { COMPANIONS, KIDS, TERMS, REGION_ORDER } from '../data/schema.js';
 import { regionMeta, blueprintPlan, MASTER } from '../state/mapgen.js';
 import {
-  ensureCss, fontsReady, companionPortrait, kidPortrait, petGlyph, candle, cobweb,
+  ensureCss, fontsReady, companionPortrait, kidPortrait, petPortrait, candle, cobweb,
   el, svg, rovingFocus, setReduceMotion, reduceMotion, formatSeed,
   REGION_NAMES, COMPANION_BY_SLUG, KID_BY_SLUG, blueprintSrc,
 } from '../ui/portrait.js';
@@ -325,11 +325,13 @@ export class GameOverScene extends Scene {
     pet.innerHTML =
       `<h2 class="go-sh">${s.petHome ? 'The pet you reached' : 'The pet you did not reach'}</h2>` +
       `<div class="go-pet">
-         <span class="go-pet__tag" aria-hidden="true">
-           <svg viewBox="0 0 32 32"><path d="${petGlyph(k.petKind)}"/></svg>
-         </span>
+         <span class="go-pet__snap"></span>
          <p class="go-pet__text">${petLine}</p>
        </div>`;
+    /* The brass collar tag with a species glyph on it was a symbol standing in
+       for a picture. On the one beat in the whole game that is about this
+       animal specifically, the photograph goes here instead. */
+    pet.querySelector('.go-pet__snap').appendChild(petPortrait(k.slug));
     stanzas.appendChild(pet);
 
     beat.appendChild(stanzas);
@@ -400,7 +402,7 @@ export class GameOverScene extends Scene {
         <span class="go-who__wing">${esc(region)} &middot; Wing ${s.wing}</span>
       </div>`);
     who.querySelector('.go-who__kid')
-      .appendChild(kidPortrait({ ...k, petKind: k.petKind }, { w: 92, h: 102, tag: false }));
+      .appendChild(kidPortrait({ ...k, petKind: k.petKind }, { w: 92, h: 102 }));
     led.appendChild(who);
 
     /* --- the numbers ------------------------------------------------------ */

@@ -166,13 +166,86 @@ const SUBJECT_RULES = [
   [/(hush|whisper|silence|veil|swirl|shroud|fade)/, 'swirl'],
   [/(stitch|patch|mend|sew|plush|seam)/, 'stitch'],
   [/(moon|midnight|night|dusk|dark|shadow)/, 'moon'],
+
+  /* ── round 4: the rules table only covered a third of the roster ─────────
+     286 of the 429 shipped companion cards fell straight through to
+     `TYPE_POOL`, which is why ~40 skills per companion shared four shapes and
+     why two of three reward cards could show the same paw. The block below is
+     the actual printed vocabulary of the five companions — dog gear, cat
+     zoomies, frog hops, blob squish, spider probability — matched against the
+     card's own words. Everything above this line is untouched, so every
+     subject that already resolved still resolves to the same shape; these
+     rules can only claim cards that used to be a coin toss.
+     Ordering inside the block is significance order: the more specific noun
+     wins ("Skeleton Key" is a key, "Skeleton Stampede" is bones).           */
+  [/(key|keyhole|lock|unlock|latch)/, 'key'],
+  [/(collar|leash|heel|jingle|obey|\bsit\b|\bstay\b|good (boy|dog)|best dog|play dead|go get|leave it|come here|\bcall\b|whistle|recall)/, 'collar'],
+  [/(emergency|panic|desperate|last resort|wrong|mistake|misfire|broken|busted)/, 'crack'],
+  [/\bcat\b|kitty|meow|hiss|purr|whisker|catastrophe|poltercat|curiosit/, 'cat'],
+  [/(skeleton|femur|\brib\b|spine|tailbone|vertebra|headless|burie)/, 'bone'],
+  [/(come back|brought it back|not dead|dead yet|undying|still works)/, 'ninelives'],
+  [/(predator|hunter|\bhunt\b|patien|\bprey\b|quarry|gotcha|grab|snatch|seize)/, 'claw'],
+  [/(ball|\btoy\b|throw|toss|chase|catch|bounce|ricochet|rebound|fling|hurl)/, 'ball'],
+  [/(hop|jump|boing|vault|hurdle|catapult|frogapult|pogo|springs?)/, 'coil'],
+  [/(stretch|elastic|pull|taut|overstretch|orbit|tension|long pull|snap back)/, 'coil'],
+  [/(zoomie|dash|sprint|scurry|frenzy|stampede|scramble|circles|flurry|whirl)/, 'coil'],
+  [/(crouch|squat|brace up|wind up|hold your|deep breath|big breath|breathing)/, 'coil'],
+  [/(squish|squash|smoosh|blob|glob|plump|inflate|deflate|puff|swell|wobble|sag|melt|goo|slime|jiggle|pffft?)/, 'blob'],
+  [/(chew|jaw|mouth|gulp|swallow|regurgitate|belly|tummy|stomach|digest)/, 'blob'],
+  [/(croak|frog|ribbit|tongue|toad)/, 'blob'],
+  [/(split|unsplit|pinch|apart|halve|half|recombin|remake|reassembl|whole|together|multipack|family size)/, 'stitch'],
+  [/(spare part|missing piece|piece|fragment|scatter|shard|fall apart|take me apart|anatomy)/, 'pawbone'],
+  [/(land|feet|fall|\bdrop\b|crater|cannonball|impact|slam|smack|punch|tackle|crash|thud|bellyflop|flop)/, 'crack'],
+  [/(knock|topple|shove|bump|\bbop\b|kick|nudge|barrage|splat)/, 'ball'],
+  [/(stash|hoard|store|save|keep|pocket|pantry|larder|supper|picnic|basket|jar|wrapper|wrapped)/, 'flask'],
+  [/(sniff|scent|smell|nose|track|trail|whiff)/, 'cloud'],
+  [/(pond|puddle|water|pool|splash|skim|soak|damp|wet)/, 'cloud'],
+  [/(yard|\bmap\b|treasure|hoardings|excavat|unearth)/, 'tomb'],
+  [/(harvest|plant|garden|ripe|rind|grow|fertile|crop|sprout|replant)/, 'sprig'],
+  [/(treat|snack|dinner|lunch|meal|feed|eat|taste|flavou?r|sample|serving|licorice|jawbreaker|wrapper)/, 'candy'],
+  [/(hide|hidden|seek|disappear|vanish|phase|slip|sneak|untouchable|nope|elsewhere|now you see)/, 'swirl'],
+  [/(perch|rafter|ceiling|lampshade|high|above|overhead|aloft|window|sill|sunbeam|warm)/, 'moon'],
+  [/(wall|through|between|room|doorway|doorframe|threshold|corner|squeeze|floor|table|shelf|mantel)/, 'key'],
+  [/(again|later|second|another|encore|repeat|postpone|stall|deadline|inevitable|future|predict|foresee|tense|forked|script|rewind|turn back|\btime\b|clock|moment)/, 'hourglass'],
+  [/(odds|\bbet\b|chance|random|guess|luck|dice|gamble|coin|probabilit|blindside|long shot|choose|\bpick\b|price|\bcost)/, 'dice'],
+  [/(mirror|replica|copy|duplicate|clone|twin|same again|copycat|reflect)/, 'eye'],
+  [/(blink|wink|glimpse|glance|sight|vision|\bsee\b|seen|look|observe|examin|survey|inspect|check|read the|tell)/, 'eye'],
+  [/(sticky|\bstick\b|glue|adhere|palm|snare|cling|tripline|\btrip\b|\btrap\b)/, 'webbing'],
+  [/(spider|eight|angle|lattice|string|geometr|silk)/, 'webbing'],
+  [/(pattern|loom|weav|library|catalogue)/, 'stitch'],
+  [/(shake|wag|wiggle|\broll\b|tumble|spin|twitch|shiver|shudder|rush|charge|loop|cycle)/, 'coil'],
+  [/(snip|\bcut\b|scissor|sever|shear)/, 'crack'],
+  [/(pile|heap|\bstack\b|swarm|horde|crowd|dogpile)/, 'pawbone'],
+  [/(couch|\brug\b|cushion|sofa|\bbed\b|carpet|blanket)/, 'curl'],
+  [/(steal|thief|pilfer|filch|borrow)/, 'key'],
+  [/(spit|drool|slobber|spray)/, 'drip'],
+  [/(nibble|\bnip\b|munch)/, 'fang'],
+  [/(startle|jolt|flinch|shock)/, 'ghost'],
+  [/(lost|found|\bfind\b|misplace)/, 'cloud'],
+  [/(reach|distance|\bfar\b|retreat|back up|back off|meant|on purpose|deliberate)/, 'paw'],
+  [/(house|mansion|manor|parlour|foyer)/, 'key'],
+  [/(\btail\b|\bear\b|\bears\b|fluff|\bfur\b|hair)/, 'quill'],
+  [/(nine|eight|three|triple|double|all of|every)/, 'ninelives'],
 ];
 
-/** Fallback pools, so even an unmatched card gets a shape that suits its type. */
+/**
+ * Fallback pools, for a card whose own words match nothing above.
+ *
+ * Round 3 shipped four shapes per type. With two thirds of the roster falling
+ * through, that meant ~40 skills per companion sharing `ward / curl / swirl /
+ * paw` — so two cards in one hand, or two of three cards in a reward triple,
+ * routinely drew the same silhouette. Both the rules table above and these
+ * pools are widened; the pools are the safety net, not the main mechanism.
+ *
+ * Only shapes that read for ANY companion are listed. The family-specific
+ * silhouettes (`cat`, `pumpkin`, `candy`, `drip`) stay out of the fallbacks so
+ * a Bones card can never be a random pumpkin — those are reached by name only.
+ */
 const TYPE_POOL = {
-  attack: ['claw', 'fang', 'pounce', 'bone'],
-  skill:  ['ward', 'curl', 'swirl', 'paw'],
-  power:  ['eye', 'moon', 'ninelives', 'flask'],
+  attack: ['claw', 'fang', 'pounce', 'bone', 'flame', 'ball', 'crack', 'quill', 'thorn'],
+  skill:  ['ward', 'curl', 'swirl', 'paw', 'feather', 'cloud', 'flask', 'stitch',
+           'webbing', 'key', 'collar', 'coil', 'blob', 'sprig', 'tomb'],
+  power:  ['eye', 'moon', 'ninelives', 'flask', 'ghost', 'hourglass', 'dice', 'flame', 'sprig'],
   status: ['sick'],
   curse:  ['thorn'],
 };
@@ -709,6 +782,16 @@ function drawScene(g, w, h, f, kind, R) {
 function drawMotif(g, cx, cy, r, f, kind, R, big) {
   g.save();
   g.translate(cx, cy);
+  /* Per-card variation of the SILHOUETTE, not just the palette. Even with the
+     widened rules table two cards in one hand can legitimately land on the
+     same subject (a Bones deck really is mostly bones). A mirror and a few
+     degrees of tilt, both keyed off the card's own seed, change the outline
+     itself, so "same subject" never reads as "same picture". Consumes two
+     draws from R, deliberately before any shape is laid out. */
+  if (typeof R === 'function') {
+    g.rotate((R() - 0.5) * 0.22);
+    if (R() < 0.5) g.scale(-1, 1);
+  }
   const fill = mix(f.key, f.glow, 0.35);
   const line = sink(f.sky[0], 0.35);
   g.lineJoin = 'round'; g.lineCap = 'round';
@@ -1191,6 +1274,125 @@ function drawMotif(g, cx, cy, r, f, kind, R, big) {
         const y = r * (0.7 - i * 0.36), sx = i % 2 ? 1 : -1;
         leaf(g, sx * r * 0.34, y, r * 0.36, sx * 0.7, mix(PIGMENT.leaf, f.glow, 0.25));
       }
+      break;
+    }
+    /* ── round 4: eight shapes so the fallback pools are not four ──────────
+       `TYPE_POOL.skill` had `ward / curl / swirl / paw` for ~40 unmatched
+       skills per companion, so two cards in one hand — or two of three in a
+       reward triple — routinely drew the same picture. These are deliberately
+       companion-NEUTRAL: a spring, a key, a die and an hourglass suit a dog,
+       a cat, a frog, a blob or a spider equally, which is what a fallback has
+       to do. Family-specific shapes (cat, pumpkin, candy, drip) stay out of
+       the pools and are only ever reached by a card's own name.            */
+    case 'ball': {                              // a toy ball: seam + highlight
+      shade();
+      g.beginPath(); g.arc(0, 0, r * 0.72, 0, 7); g.fill(); g.stroke();
+      g.strokeStyle = line; g.lineWidth = r * 0.09;
+      g.beginPath(); g.ellipse(0, 0, r * 0.30, r * 0.72, 0, 0, 7); g.stroke();
+      g.beginPath(); g.arc(0, 0, r * 0.72, -2.5, -0.7); g.stroke();
+      g.fillStyle = lift(f.key, 0.55); g.globalAlpha = 0.75;
+      g.beginPath(); g.ellipse(-r * 0.28, -r * 0.34, r * 0.17, r * 0.11, -0.5, 0, 7); g.fill();
+      g.globalAlpha = 1;
+      break;
+    }
+    case 'collar': {                            // a banded collar with a tag
+      g.strokeStyle = fill; g.lineWidth = r * 0.30;
+      g.beginPath(); g.arc(0, -r * 0.18, r * 0.62, 0.18, Math.PI - 0.18); g.stroke();
+      g.strokeStyle = line; g.lineWidth = r * 0.06;
+      g.beginPath(); g.arc(0, -r * 0.18, r * 0.47, 0.18, Math.PI - 0.18); g.stroke();
+      g.beginPath(); g.arc(0, -r * 0.18, r * 0.77, 0.18, Math.PI - 0.18); g.stroke();
+      shade();
+      g.beginPath(); g.arc(0, r * 0.64, r * 0.30, 0, 7); g.fill(); g.stroke();
+      g.strokeStyle = line; g.lineWidth = r * 0.07;
+      g.beginPath(); g.moveTo(0, r * 0.44); g.lineTo(0, r * 0.34); g.stroke();
+      break;
+    }
+    case 'key': {                               // a skeleton key
+      shade();
+      g.beginPath(); g.arc(0, -r * 0.52, r * 0.34, 0, 7); g.fill(); g.stroke();
+      g.fillStyle = sink(f.sky[0], 0.42);
+      g.beginPath(); g.arc(0, -r * 0.52, r * 0.14, 0, 7); g.fill();
+      shade();
+      g.beginPath(); g.rect(-r * 0.10, -r * 0.24, r * 0.20, r * 1.06); g.fill(); g.stroke();
+      g.beginPath(); g.rect(r * 0.06, r * 0.42, r * 0.32, r * 0.16); g.fill(); g.stroke();
+      g.beginPath(); g.rect(r * 0.06, r * 0.68, r * 0.22, r * 0.14); g.fill(); g.stroke();
+      break;
+    }
+    case 'coil': {                              // a spring, wound and ready
+      g.strokeStyle = fill; g.lineWidth = r * 0.16;
+      g.beginPath();
+      for (let i = 0; i <= 48; i++) {
+        const t = i / 48, a = t * Math.PI * 6;
+        const x = Math.cos(a) * r * 0.56;
+        const y = -r * 0.74 + t * r * 1.48 + Math.sin(a) * r * 0.10;
+        if (i) g.lineTo(x, y); else g.moveTo(x, y);
+      }
+      g.stroke();
+      g.strokeStyle = line; g.lineWidth = r * 0.06;
+      g.beginPath(); g.moveTo(-r * 0.58, -r * 0.82); g.lineTo(r * 0.58, -r * 0.82); g.stroke();
+      g.beginPath(); g.moveTo(-r * 0.58, r * 0.82); g.lineTo(r * 0.58, r * 0.82); g.stroke();
+      break;
+    }
+    case 'blob': {                              // an amorphous, wobbling mass
+      shade();
+      g.beginPath();
+      g.moveTo(-r * 0.86, r * 0.30);
+      g.bezierCurveTo(-r * 0.98, -r * 0.34, -r * 0.46, -r * 0.86, r * 0.06, -r * 0.72);
+      g.bezierCurveTo(r * 0.58, -r * 0.60, r * 0.96, -r * 0.10, r * 0.84, r * 0.34);
+      g.bezierCurveTo(r * 0.74, r * 0.74, r * 0.24, r * 0.88, -r * 0.20, r * 0.80);
+      g.bezierCurveTo(-r * 0.62, r * 0.74, -r * 0.78, r * 0.62, -r * 0.86, r * 0.30);
+      g.closePath(); g.fill(); g.stroke();
+      g.fillStyle = lift(f.key, 0.5); g.globalAlpha = 0.7;
+      g.beginPath(); g.ellipse(-r * 0.30, -r * 0.32, r * 0.22, r * 0.13, -0.4, 0, 7); g.fill();
+      g.globalAlpha = 1;
+      break;
+    }
+    case 'crack': {                             // impact: a starburst fracture
+      g.fillStyle = fill; g.strokeStyle = line; g.lineWidth = r * 0.06;
+      g.beginPath();
+      for (let i = 0; i < 14; i++) {
+        const a = (i / 14) * Math.PI * 2;
+        const rr = r * (i % 2 ? 0.30 : 0.86);
+        const x = Math.cos(a) * rr, y = Math.sin(a) * rr;
+        if (i) g.lineTo(x, y); else g.moveTo(x, y);
+      }
+      g.closePath(); g.fill(); g.stroke();
+      g.strokeStyle = sink(f.sky[0], 0.45); g.lineWidth = r * 0.08;
+      for (let i = 0; i < 4; i++) {
+        const a = (i / 4) * Math.PI * 2 + 0.4;
+        g.beginPath(); g.moveTo(0, 0);
+        g.lineTo(Math.cos(a) * r * 0.74, Math.sin(a) * r * 0.74); g.stroke();
+      }
+      break;
+    }
+    case 'hourglass': {                         // time, running out
+      shade();
+      g.beginPath();
+      g.moveTo(-r * 0.58, -r * 0.78); g.lineTo(r * 0.58, -r * 0.78);
+      g.lineTo(r * 0.08, 0); g.lineTo(r * 0.58, r * 0.78); g.lineTo(-r * 0.58, r * 0.78);
+      g.lineTo(-r * 0.08, 0); g.closePath(); g.fill(); g.stroke();
+      g.strokeStyle = line; g.lineWidth = r * 0.14;
+      g.beginPath(); g.moveTo(-r * 0.74, -r * 0.84); g.lineTo(r * 0.74, -r * 0.84); g.stroke();
+      g.beginPath(); g.moveTo(-r * 0.74, r * 0.84); g.lineTo(r * 0.74, r * 0.84); g.stroke();
+      g.fillStyle = lift(f.key, 0.4);
+      g.beginPath(); g.moveTo(-r * 0.40, -r * 0.60); g.lineTo(r * 0.40, -r * 0.60);
+      g.lineTo(0, -r * 0.06); g.closePath(); g.fill();
+      g.beginPath(); g.ellipse(0, r * 0.60, r * 0.30, r * 0.16, 0, 0, 7); g.fill();
+      break;
+    }
+    case 'dice': {                              // chance, on a tilted die
+      shade();
+      const ds = r * 0.62;
+      g.save(); g.rotate(0.22);
+      g.beginPath();
+      if (g.roundRect) g.roundRect(-ds, -ds, ds * 2, ds * 2, r * 0.16);
+      else g.rect(-ds, -ds, ds * 2, ds * 2);
+      g.fill(); g.stroke();
+      g.fillStyle = sink(f.sky[0], 0.42);
+      for (const p of [[-0.55, -0.55], [0.55, -0.55], [0, 0], [-0.55, 0.55], [0.55, 0.55]]) {
+        g.beginPath(); g.arc(p[0] * ds, p[1] * ds, r * 0.11, 0, 7); g.fill();
+      }
+      g.restore();
       break;
     }
     case 'sick': {

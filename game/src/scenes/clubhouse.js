@@ -17,8 +17,9 @@ import { bus } from '../core/bus.js';
 import { Save } from '../core/save.js';
 import { COMPANIONS, KIDS, TERMS, REGION_ORDER } from '../data/schema.js';
 import {
-  ensureCss, fontsReady, companionPortrait, kidPortrait, petGlyph, blueprintSrc,
-  el, svg, rovingFocus, setReduceMotion, REGION_NAMES, freedCompanions,
+  ensureCss, fontsReady, companionPortrait, kidPortrait, petPortrait, blueprintSrc,
+  el, svg, rovingFocus, setReduceMotion, REGION_NAMES,
+  freedCompanions, availableCompanions, warmFaces,
 } from '../ui/portrait.js';
 import { KID_CODEX } from './select.js';
 import { pauseStageFor } from './_stage.js';
@@ -88,8 +89,17 @@ export class ClubhouseScene extends Scene {
     // The canvas measures 0.00% visible behind this screen — stop drawing it.
     this._unpauseStage = pauseStageFor(ctx);
 
+    // Every pet photograph and Kid portrait on this screen. Warmed, not awaited
+    // — Scene.enter() runs behind the transition veil (CONTRACTS trap 4) and a
+    // cold set is ~0.6 s of black. On the normal route in from the Title they
+    // are already cached and this is a no-op.
+    warmFaces({ sync: true });
+
     const data = Save?.data ?? {};
-    this.rescued = freedCompanions();   // the shared count — see ui/portrait.js
+    /* available (pickable, portrait unlocked) vs freed (the score). The four
+       starters are available and were never in the house. See ui/portrait.js. */
+    this.available = availableCompanions();
+    this.rescued = freedCompanions();
     this.petsRescued = new Set(data.petsRescued ?? []);
     this.revealed = new Set(data.blueprint?.revealed ?? ['foyer']);
     this.haunt = Math.max(0, Number(data.hauntLevel ?? 0));
@@ -203,10 +213,12 @@ export class ClubhouseScene extends Scene {
       card.dataset.anchor = k.slug;
       card.innerHTML = `
         <span class="pin" aria-hidden="true"></span>
-        <span class="polaroid__photo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="${petGlyph(info.species || k.petKind)}"/></svg></span>
+        <span class="polaroid__photo"></span>
         <span class="polaroid__cap">${k.pet}</span>
         <span class="polaroid__sub">${k.name.split(' ')[0]}&rsquo;s</span>
         ${found ? '<span class="polaroid__stamp">Home</span>' : ''}`;
+      card.querySelector('.polaroid__photo').appendChild(
+        petPortrait(k.slug, { alt: `${k.pet}, ${(info.species || k.petKind).toLowerCase()}` }));
       cork.appendChild(card);
     });
 
@@ -224,7 +236,12 @@ export class ClubhouseScene extends Scene {
     const cluePos = [[63, 44], [80, 50], [63, 68], [80, 74], [43, 73]];
     BOARD_CLUES.forEach((c, i) => {
       const [title, text, known] = c;
-      const note = el('div', 'note' + (known ? '' : ' is-unknown'));
+      /* `ch-note`, not `note`. The class was renamed in clubhouse.css to get out
+         of another scene's way and the JS was not, so every clue on the board
+         lost `position:absolute` and the five of them stacked in the top-left
+         corner underneath the polaroids. Exactly the failure the scene-css gate
+         exists for, one level down: same name, different file. */
+      const note = el('div', 'ch-note' + (known ? '' : ' is-unknown'));
       note.style.cssText = `left:${cluePos[i][0]}%;top:${cluePos[i][1]}%;--rot:${(i % 2 ? 1.8 : -2.2)}deg`;
       note.innerHTML = known
         ? `<span class="ch-tape" aria-hidden="true"></span><b>${title}</b><p>${text}</p>`
@@ -278,19 +295,25 @@ export class ClubhouseScene extends Scene {
     p.appendChild(el('div', 'cl-panel__head', `
       <h2>The Menagerie</h2>
       <p>Sixteen animals the house kept. Free every one and they will show us the way to the Heart.</p>
-      <div class="tally"><b>${this.rescued.size}</b> / ${COMPANIONS.length} freed</div>`));
+      <div class="tally"><b>${this.rescued.size}</b> / ${COMPANIONS.length} freed<em>${
+        this.available.size - this.rescued.size} already with us</em></div>`));
 
     const scrap = el('div', 'scrapgrid');
     for (const c of COMPANIONS) {
+      /* Here is exactly why available and freed had to come apart. A starter is
+         on this board with their portrait showing, because they live here — but
+         they are not one of the ones we got out, and the tally above must not
+         claim them. */
+      const here = this.available.has(c.slug);
       const got = this.rescued.has(c.slug);
-      const cell = el('div', 'scrapcell' + (got ? '' : ' is-empty'));
-      const pf = companionPortrait({ slug: c.slug, variant: '@1x', locked: !got, parallax: 0, shimmer: false });
+      const cell = el('div', 'scrapcell' + (here ? '' : ' is-empty') + (here && !got ? ' is-starter' : ''));
+      const pf = companionPortrait({ slug: c.slug, variant: '@1x', locked: !here, parallax: 0, shimmer: false });
       this._portraits.push(pf);
       cell.appendChild(pf.el);
       cell.appendChild(el('div', 'scrapcell__cap',
-        got ? `<b>${c.name}</b><span>${c.title}</span>`
-            : `<b>&mdash;</b><span>still in ${REGION_NAMES[c.region] ?? c.region}</span>`));
-      if (got) cell.appendChild(el('span', 'scrapcell__tape'));
+        here ? `<b>${c.name}</b><span>${got ? c.title : 'never in the house'}</span>`
+             : `<b>&mdash;</b><span>still in ${REGION_NAMES[c.region] ?? c.region}</span>`));
+      if (here) cell.appendChild(el('span', 'scrapcell__tape'));
       scrap.appendChild(cell);
     }
     p.appendChild(scrap);
@@ -314,7 +337,7 @@ export class ClubhouseScene extends Scene {
       const home = this.petsRescued.has(k.slug);
       const card = el('article', 'petcard' + (home ? ' is-home' : ''));
       card.innerHTML = `
-        <div class="petcard__kid"></div>
+        <div class="petcard__pet"><div class="petcard__kid"></div></div>
         <div class="petcard__body">
           <h3>${k.pet}</h3>
           <p class="petcard__sp">${info.species ?? k.petKind}</p>
@@ -325,8 +348,10 @@ export class ClubhouseScene extends Scene {
             <span>${home ? 'home' : 'stage 1 — still an ordinary animal'}</span>
           </div>
         </div>`;
+      card.querySelector('.petcard__pet').appendChild(
+        petPortrait(k.slug, { alt: `${k.pet}, ${(info.species || k.petKind).toLowerCase()}` }));
       card.querySelector('.petcard__kid').appendChild(
-        kidPortrait({ ...k, petKind: info.species || k.petKind }, { w: 120, h: 134, tag: false }));
+        kidPortrait({ ...k, petKind: info.species || k.petKind }, { w: 120, h: 134 }));
       grid.appendChild(card);
     }
     p.appendChild(grid);

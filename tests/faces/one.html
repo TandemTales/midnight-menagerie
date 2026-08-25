@@ -1,0 +1,8 @@
+<!doctype html><meta charset=utf-8>
+<link rel=stylesheet href="/game/src/ui/tokens.css"><link rel=stylesheet href="/game/src/ui/portrait.css">
+<body style="margin:0;background:#0b0a10;display:grid;grid-template-columns:repeat(4,1fr);gap:4px">
+<script type=module>
+const m = await import('/game/src/ui/petart.js');
+for (const k of ['pepper','biscuit','mooncake','pixel']) { const w=document.createElement('div'); w.style.cssText='aspect-ratio:4/3;overflow:hidden'; w.appendChild(m.petImg(k)); document.body.appendChild(w); }
+for (const s of ['marmalade','mopsy','pudding','crinkle']) { const i=document.createElement('img'); i.src='/game/assets/portraits/'+s+'.png'; i.style.cssText='width:100%;height:auto'; document.body.appendChild(i); }
+</script>

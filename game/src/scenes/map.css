@@ -10,9 +10,18 @@
   color: var(--blueprint-ink);
   --ink: var(--blueprint-ink);
   --ink-soft: color-mix(in srgb, var(--blueprint-ink) 58%, transparent);
-  /* Graphite. The plan is printed in blue; everything the kids added is pencil,
-     so figure and ground never compete. */
-  --pencil: color-mix(in srgb, var(--ink-900) 74%, var(--blueprint-ink));
+  /* GRAPHITE, and it has to actually be graphite.
+     The plan is printed: cold blue, laid into the paper at 0.52 alpha, which
+     lands on parchment around rgb(134,144,155) — light and cool.  Everything
+     the kids added is pencil: warm, neutral, dark, sitting on top.  --pencil
+     used to be a mix of ink-900 with the BLUEPRINT INK, i.e. a very dark navy,
+     which is why "raise the weight" never separated the route from the
+     building — they were the same colour family at different strengths.
+     Mixing the same black with the PAPER instead gives a warm carbon grey that
+     no printed line on this sheet shares. */
+  --pencil:        color-mix(in srgb, var(--ink-900) 84%, var(--parchment-shade));
+  --graphite:      color-mix(in srgb, var(--ink-900) 70%, var(--parchment-shade));
+  --graphite-soft: color-mix(in srgb, var(--ink-900) 42%, var(--parchment-shade));
   --mark: color-mix(in srgb, var(--flame-500) 88%, var(--ink-900));
   --mark-hot: var(--flame-400);
 }
@@ -111,74 +120,114 @@
   background-repeat: repeat;
 }
 
-/* ── route ink ──────────────────────────────────────────────────────────── */
-/* THE ROUTE GRAPH IS THE MAP.  This block was the single biggest defect on the
-   screen and it is worth writing down why, because the mistake is an easy one
-   to make again.
-   Slay the Spire's map rule has two halves and we had only implemented one:
-   "available next nodes are highlighted" — yes — "and everything else is
-   dimmed" — which we read as "and everything else is erased".  A corridor you
-   may not walk *this turn* is not noise; it is the entire reason the screen is
-   a graph and not a list of two buttons.  Every route decision a player makes
-   is made three or four rooms early, and it is made by reading the dashed
-   lines.  At .34 / 2.4px (still-ahead) and .15 / 1.8px (cut off) over the
-   plan's own navy linework, at the 0.76x the sheet fits the screen at, both
-   tiers were simply not there: 102 edges, of which a player could see the two
-   or three they were standing on.  You could not plan.  You could only step.
-   So the tiers are now separated by WEIGHT and TREATMENT, not by fading to
-   nothing:
-     walked   heavy unbroken pencil, the trail you have inked
-     open     flame, solid, arrowheaded, haloed — unmistakably the live choice
-     ahead    full-strength dashed pencil — the plan.  READABLE.  A survey draws
-              a corridor it has not measured as a dashed line, not as a rumour.
-     cut off  the same dashed pencil at survey weight: still on the sheet,
-              because the sheet is a drawing of a building, but obviously not
-              part of any route you still have.
-   The unmistakable-ness of "where you may go" is carried by colour + solidity +
-   arrowhead + the breathing pencil ring on the node, which is a far stronger
-   signal than being the only visible line on the paper. */
+/* ── the route: GRAPHITE OVER INK ────────────────────────────────────────────
+   THE ROUTE GRAPH IS THE MAP, and it took four rounds to draw because the first
+   three fixed the wrong variable.  Writing the whole diagnosis down so nobody
+   fixes the wrong variable again.
+
+   Round 2 and round 3 raised the route's stroke-width and dropped the printed
+   plan's alpha from 0.74 to 0.52, and both rounds MEASURED an improvement — the
+   numbers moved, a bot could plan three rooms ahead.  A reviewer playing
+   normally still said: "I could never see which node leads where — the
+   connective strokes are the same dashed vocabulary as the architectural
+   line-work."  That sentence is the diagnosis.  Weight and alpha are the only
+   knobs you have left once two marks are the same KIND of mark, and no setting
+   of them separates a dashed blue-grey line from three hundred dashed blue-grey
+   lines.  It is camouflage, and camouflage does not care how thick you are.
+
+   The route is somebody's pencil drawn OVER a printed survey, so it is now
+   drawn like one — five differences at once, none of them "stronger":
+
+     colour    warm graphite ≈ rgb(66,60,54) against the plan's cold, pale
+               rgb(134,144,155).  Different hue AND 2.4x the contrast against
+               paper.  This is the single biggest one.
+     texture   ONE CONTINUOUS DEPOSIT.  The dash is the architect's word for
+               "proposed" and the printed plan owns it; the route has given it
+               back.  Nothing in this file may reintroduce a dasharray on a
+               route stroke — that is what made the previous three rounds fail.
+     join      smooth curves through a real hand's tremble.  The plan is mitred
+               right angles and hard corners; graphite has neither.
+     pass      every leg is stroked twice, slightly apart, because nobody rules
+               a route in one go.  (.mi-edge is the firm pass, .mi-ghost the
+               overdraw.)
+     relief    .mi-shade is the same stroke offset 1.2/2.4px and very pale, so
+               the mark casts a shade and reads as sitting ON the paper rather
+               than being part of it.
+
+   Tier separation is then free, because the route no longer has to fight the
+   building for the same visual channel:
+     open     flame, heaviest, arrowheaded — unmistakably the live choice
+     walked   full-strength graphite, gone over hard: the trail you have inked
+     ahead    graphite at plan weight — READABLE.  This is the layer you plan on
+     cut off  pale graphite: still on the sheet, because the sheet is a drawing
+              of a building, but obviously not part of any route you still have
+   Slay the Spire draws its whole graph at full strength too. */
 
 /* the halo: a wipe of clean paper under every pencil line.  This is what keeps
    a pencil route legible where it crosses the plan's own dense linework, so it
    scales WITH the tier rather than being thrown away on the quiet ones. */
 .mi-halo {
   fill: none; stroke: var(--parchment);
-  stroke-width: 9; stroke-linecap: round; stroke-linejoin: round;
-  opacity: .55;
+  stroke-width: 10; stroke-linecap: round; stroke-linejoin: round;
+  opacity: .58;
   transition: opacity var(--t-base), stroke-width var(--t-base);
 }
-.mi-halo.is-open   { stroke-width: 18; opacity: .96; }
-.mi-halo.is-walked { stroke-width: 18; opacity: .92; }
-.mi-halo.is-dead   { stroke-width: 13; opacity: .7; }
-.mi-halo.is-cold   { stroke-width: 8;  opacity: .38; }
+.mi-halo.is-open   { stroke-width: 19; opacity: .96; }
+.mi-halo.is-walked { stroke-width: 19; opacity: .94; }
+.mi-halo.is-dead   { stroke-width: 14; opacity: .74; }
+.mi-halo.is-cold   { stroke-width: 9;  opacity: .40; }
+
+/* the relief.  Offset in userSpace on the group, not a CSS filter: a filter on
+   112 paths inside the layer the entrance sweep clips would re-raster the whole
+   ink layer every frame of the sweep, which is the exact class of bug the
+   @keyframes mm-wipe note below was written about. */
+.mi-shades { transform: translate(1.2px, 2.4px); }
+.mi-shade {
+  fill: none; stroke: var(--ink-900);
+  stroke-width: 5; stroke-linecap: round; stroke-linejoin: round;
+  opacity: .11;
+  transition: opacity var(--t-base), stroke-width var(--t-base);
+}
+.mi-shade.is-open   { stroke-width: 8; opacity: .20; }
+.mi-shade.is-walked { stroke-width: 8; opacity: .19; }
+.mi-shade.is-dead   { stroke-width: 5; opacity: .11; }
+.mi-shade.is-cold   { stroke-width: 3.4; opacity: .05; }
+
+/* the overdraw: the second pass of the same pencil, a pixel or two off line */
+.mi-ghost {
+  fill: none; stroke: var(--graphite);
+  stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round;
+  opacity: .46;
+  transition: opacity var(--t-base), stroke-width var(--t-base);
+}
+.mi-ghost.is-open   { stroke: var(--mark); stroke-width: 3.6; opacity: .62; }
+.mi-ghost.is-walked { stroke-width: 4.2; opacity: .70; }
+.mi-ghost.is-dead   { stroke-width: 2.6; opacity: .46; }
+.mi-ghost.is-cold   { stroke-width: 1.8; opacity: .22; }
 
 .mi-edge {
-  fill: none; stroke: var(--pencil);
-  stroke-width: 4; stroke-linecap: round; stroke-linejoin: round;
-  stroke-dasharray: 23 13;                   /* architect's dashed = possible */
-  opacity: .78;
+  fill: none; stroke: var(--graphite);
+  stroke-width: 4.6; stroke-linecap: round; stroke-linejoin: round;
+  opacity: .86;
   transition: opacity var(--t-base) var(--ease-out), stroke-width var(--t-base);
 }
 .mi-edge.is-open {                            /* inked in: you can walk this now */
-  stroke: var(--mark); stroke-width: 6.4; stroke-dasharray: none; opacity: 1;
-  filter: drop-shadow(0 1px 1px rgba(255,255,255,.55));
+  stroke: var(--mark); stroke-width: 7; opacity: 1;
 }
-.mi-edge.is-walked {                          /* already walked: heavy pen */
-  stroke: var(--pencil); stroke-width: 6.4; stroke-dasharray: none; opacity: .95;
-  filter: drop-shadow(0 1px 0 rgba(255,255,255,.4));
+.mi-edge.is-walked {                          /* already walked: gone over hard */
+  stroke: var(--pencil); stroke-width: 6.6; opacity: 1;
 }
 /* still ahead of you on some route — the layer you plan on */
-.mi-edge.is-dead { opacity: .72; stroke-width: 4; }
-/* no route from where you are standing — survey weight, never invisible */
-.mi-edge.is-cold { opacity: .38; stroke-width: 2.8; }
+.mi-edge.is-dead { opacity: .86; stroke-width: 4.6; }
+/* no route from where you are standing — pale graphite, never invisible */
+.mi-edge.is-cold { stroke: var(--graphite-soft); opacity: .62; stroke-width: 3; }
 
-/* a passage that skips a row: drawn as one long unbroken run */
-.mi-edge--long { stroke-dasharray: 34 12; }
-.mi-edge--long.is-dead { stroke-dasharray: 34 12; }
+/* a passage that skips a row: the same pencil, leaning further off the straight */
+.mi-edge--long { stroke-width: 4.8; }
 
 /* the way in: the doorway edges read as arrivals, not as route legs */
-.mi-edge--entry { stroke: var(--mark); stroke-dasharray: 12 9; opacity: .85; }
-.mi-edge--entry.is-dead { stroke: var(--pencil); opacity: .2; }
+.mi-edge--entry { stroke: var(--mark); opacity: .9; }
+.mi-edge--entry.is-dead { stroke: var(--graphite-soft); opacity: .3; }
 .mi-in {
   font-family: var(--font-display); font-size: 27px; font-weight: 600;
   letter-spacing: .3em; text-anchor: middle;
@@ -186,6 +235,8 @@
 }
 .map-screen.is-underway .mi-entries { opacity: 0; }
 .mi-entries { transition: opacity var(--t-base); }
+
+.mi-arrowhead { fill: var(--mark); }
 
 .mi-here-a, .mi-here-b {
   fill: none; stroke: var(--pencil); stroke-width: 3; opacity: .85;
@@ -296,14 +347,26 @@
   filter: drop-shadow(0 0 3px var(--parchment)) drop-shadow(0 0 2px var(--parchment));
 }
 
+/* the drafting leader tying a displaced name back to its room */
+.mn-lead {
+  fill: none; stroke: var(--graphite-soft);
+  stroke-width: 1.8; stroke-linecap: round;
+  stroke-dasharray: 2 4.5;                  /* a leader IS dotted on a real drawing */
+  opacity: .85;
+}
+.map-node.is-cold .mn-lead { opacity: .4; }
+
 .mn-label {
   /* clear of the pencil ring: the ring's lower arc reaches ~98% of the box and
      was sitting straight through the room's name.
-     --mn-dy is written by the scene's collision pass (`_layoutLabels`): a chip
-     that would land on a neighbouring mark is nudged down or flipped above its
-     own.  Zero for almost every chip on almost every sheet. */
+     --mn-dy and --mn-dx are written by the scene's collision pass
+     (`_layoutLabels`): a chip that would land on a neighbouring mark is nudged
+     down, flipped above its own, or moved sideways, and --mn-dx also holds the
+     shove that keeps a wide name inside the drawn plan window.  Zero for almost
+     every chip on almost every sheet; when it is not, `.mn-lead` draws the
+     leader back to the mark. */
   position: absolute; top: calc(100% + 3px + var(--mn-dy, 0px)); left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(calc(-50% + var(--mn-dx, 0px)));
   font-family: var(--font-body); font-size: 16.5px; font-weight: 600;
   letter-spacing: .01em; white-space: nowrap; line-height: 1.15;
   max-width: 244px; overflow: hidden; text-overflow: ellipsis;
@@ -328,11 +391,17 @@
    room is dim but no longer what kind of room it is, which is the opposite of
    the point.  Instead the pencil goes pale and the paper stays paper, so a
    dimmed sheet is still a sheet you can plan two rows ahead on. */
-.map-node.is-dim  { color: color-mix(in srgb, var(--pencil) 40%, transparent); }
-.map-node.is-dim  .mn-pool  { opacity: .5; }
+/* Marks stay the FIGURES.  Round 4 gave the route a mark of its own — dark warm
+   graphite instead of a thin blue dash — and at the old dim levels (40% / 48%)
+   that inverted the hierarchy on the first screenshot: the connective strokes
+   became the darkest thing on the sheet and sixty rooms went pale behind them.
+   Dimming answers "may I walk here", it must never answer "is there a room
+   here".  The route sits a step below a room it does not reach. */
+.map-node.is-dim  { color: color-mix(in srgb, var(--pencil) 60%, transparent); }
+.map-node.is-dim  .mn-pool  { opacity: .55; }
 .map-node.is-dim  .mn-label { opacity: 0; }
-.map-node.is-far  { color: color-mix(in srgb, var(--pencil) 48%, transparent); }
-.map-node.is-cold { color: color-mix(in srgb, var(--pencil) 24%, transparent); }
+.map-node.is-far  { color: color-mix(in srgb, var(--pencil) 66%, transparent); }
+.map-node.is-cold { color: color-mix(in srgb, var(--pencil) 34%, transparent); }
 .map-node.is-cold .mn-pool { opacity: .3; }
 /* The boss is the landmark of the wing and stays findable from the first row,
    the way Slay the Spire shows it at the top of the act from the start. */
@@ -385,11 +454,16 @@
 .map-node--boss .mn-label {
   font-family: var(--font-display); font-size: 25px; letter-spacing: .09em;
   text-transform: uppercase;
+  /* "RECEIVIN…".  The boss's name is 341px of Cinzel and the shared 244px cap
+     ellipsised it on every seed whose boss has more than one word — the one
+     label on the sheet that names the thing you are walking towards.  It gets
+     the room it needs; `_layoutLabels` keeps it inside the frame rule. */
+  max-width: 520px;
 }
 /* The boss is announced from the moment the sheet opens, the way an act's boss
    is in Slay the Spire.  Never dimmed out of existence, always labelled. */
 .mn-boss-tag {
-  position: absolute; top: calc(100% + 35px); left: 50%;
+  position: absolute; top: calc(100% + 35px + var(--mn-dy, 0px)); left: 50%;
   transform: translateX(-50%);
   font-family: var(--font-display); font-size: 13px; font-weight: 700;
   letter-spacing: .34em; text-indent: .34em; white-space: nowrap;

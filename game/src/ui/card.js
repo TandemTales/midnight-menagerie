@@ -119,6 +119,7 @@ export class CardView {
         <div class="mm-card__pip mm-card__pip2 mm-card__pip--l"></div>
         <div class="mm-card__pip mm-card__pip2 mm-card__pip--r"></div>
         <div class="mm-card__frame">
+          <div class="mm-card__lift"></div>
           <div class="mm-card__rivets"><i></i><i></i><i></i><i></i></div>
           <div class="mm-card__flourish"><i></i><i></i><i></i><i></i></div>
           <div class="mm-card__setgem"></div>
@@ -402,7 +403,15 @@ export class CardView {
     cl.toggle('is-dragging', s.dragging);
     cl.toggle('is-ghost', s.ghost);
     cl.toggle('is-largetext', s.largeText);
-    this.el.setAttribute('aria-disabled', String(!!s.disabled));
+    /* `aria-disabled` follows PLAYABILITY, not just the explicit `disabled`
+       flag. `disabled` is never set by the Hand — it tracks `playable` — so an
+       unaffordable card carrying `is-unaffordable is-unplayable`, desaturated,
+       dropped 24px and shaking when you try to play it, was still announcing
+       `aria-disabled="false"`. Everything a sighted player can see said "no";
+       the accessibility tree said "yes". The visible state and the announced
+       state are now the same state. (The label also ends with "cannot be
+       played right now" — see `_ariaLabel` — so the reason is spoken too.) */
+    this.el.setAttribute('aria-disabled', String(!s.playable || !!s.disabled));
   }
 
   // ── public API ───────────────────────────────────────────────────────────

@@ -110,7 +110,20 @@
   transform: none !important;
 }
 
-/* ── commit threshold (non-targeted cards) ──────────────────────────────── */
+/* ── commit threshold (non-targeted cards) ──────────────────────────────
+   The hairline below is the ORIGINAL treatment, kept because it is what the
+   element degrades to without `.is-band`. `.is-band` — which `Hand#_buildDom`
+   always applies — turns the same element into a soft field whose BOTTOM EDGE
+   is the line the release is measured against, because a 2px hairline is not
+   a drop zone: a player who releases in the middle of the field got a silent
+   return and no idea what they had missed.
+
+   HANDOVER CLOSED (round 2 → round 4): the `.is-band` rules used to be
+   injected from `hand.js` as a `<style id="mm-hand-band-css">` tag because
+   hand.css belonged to another agent. It does not any more, so they are
+   authored here, verbatim, and `ensureBandCss()` is gone. Every `.is-band`
+   rule is written AFTER the plain rule it overrides, so the cascade decides
+   it rather than an injected stylesheet's load order.                       */
 .mm-hand__threshold {
   position: absolute;
   left: 7%; right: 7%;
@@ -157,6 +170,51 @@
   content: 'Not enough Nerve';
   color: var(--ink-300); opacity: 1;
 }
+
+/* ── the band (always on — see the note above) ──────────────────────────── */
+.mm-hand__threshold.is-band {
+  transform: none;                 /* the bottom edge IS the line */
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  background:
+    repeating-linear-gradient(90deg,
+      color-mix(in srgb, var(--spectre-200) 70%, transparent) 0 14px,
+      transparent 14px 26px) left bottom / 100% 2px no-repeat,
+    linear-gradient(to top,
+      color-mix(in srgb, var(--spectre-500) 26%, transparent),
+      transparent 82%);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--spectre-300) 26%, transparent);
+}
+/* The label hangs BELOW the line and at its LEFT end. Centred and inside the
+   band it sat straight on top of the enemy name plates and their health bars,
+   which are the one thing on this screen that has to stay readable; the floor
+   at the left end of the line is empty in every room. */
+.mm-hand__threshold.is-band::after {
+  left: 1.2em; top: 100%; bottom: auto;
+  transform: translate(0, .35em);
+}
+.mm-hand__threshold.is-band.is-on { opacity: .9; }
+.mm-hand__threshold.is-band.is-on.is-armed {
+  opacity: 1;
+  background:
+    repeating-linear-gradient(90deg,
+      var(--flame-200) 0 20px, transparent 20px 30px) left bottom / 100% 3px no-repeat,
+    linear-gradient(to top,
+      color-mix(in srgb, var(--flame-glow) 26%, transparent),
+      transparent 84%);
+  box-shadow: 0 0 26px color-mix(in srgb, var(--flame-glow) 55%, transparent);
+}
+.mm-hand__threshold.is-band.is-on.is-blocked {
+  opacity: .92;
+  background:
+    repeating-linear-gradient(90deg,
+      color-mix(in srgb, var(--ink-300) 80%, transparent) 0 10px,
+      transparent 10px 22px) left bottom / 100% 2px no-repeat,
+    linear-gradient(to top,
+      color-mix(in srgb, var(--ink-500) 30%, transparent),
+      transparent 84%);
+  box-shadow: none;
+}
+.mm-reduce .mm-hand__threshold.is-band { transition: none; }
 
 /* ── drag arrow ─────────────────────────────────────────────────────────── */
 .mm-hand__arrow {

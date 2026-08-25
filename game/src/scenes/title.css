@@ -369,6 +369,9 @@
 }
 .ti-foot b { color: var(--brass-200); font-family: var(--font-num); font-size: 1.15em; }
 .ti-foot__dot { width: 4px; height: 4px; border-radius: 50%; background: color-mix(in srgb, var(--brass-400) 60%, transparent); }
+/* The four who live at the clubhouse. Named next to the count rather than
+   folded into it, so a fresh save reads "0 / 16 freed" and means it. */
+.ti-foot__with { color: color-mix(in oklab, var(--text-lo) 74%, var(--brass-400)); }
 
 /* ── entrance ─────────────────────────────────────────────────────────────── */
 .scene--title.is-entering .ti-logo    { animation: ti-in-logo 1.15s var(--ease-out) both; }

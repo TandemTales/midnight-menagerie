@@ -213,6 +213,14 @@
   color: color-mix(in oklab, var(--parchment) 66%, var(--flame-300));
 }
 .tally b { font-size: 1.5em; color: var(--flame-200); }
+/* "already with us" — the four who live here and were never in the house, so
+   the headline number can be an honest count of rescues. */
+.tally em {
+  display: block; margin-top: 1px;
+  font-family: var(--font-body); font-style: italic; text-transform: none;
+  letter-spacing: .02em; font-size: var(--fs-xs);
+  color: color-mix(in oklab, var(--parchment) 52%, var(--flame-500));
+}
 .cl-h {
   margin: 0 0 var(--s-2);
   font-family: var(--font-display); font-size: var(--fs-xs);
@@ -276,7 +284,7 @@
   background: linear-gradient(160deg, color-mix(in oklab, var(--ink-700) 82%, var(--flame-500)), var(--ink-900));
   border: 1px solid color-mix(in srgb, var(--text-ink) 22%, transparent);
 }
-.polaroid__photo svg { width: 56%; height: auto; fill: color-mix(in oklab, var(--flame-200) 62%, var(--ink-500)); }
+.polaroid__photo { overflow: hidden; }
 .polaroid__cap { font-family: var(--font-body); font-style: italic; font-size: var(--fs-md); color: var(--text-ink); line-height: 1.1; }
 .polaroid__sub { font-size: var(--fs-xs); color: color-mix(in oklab, var(--text-ink) 62%, var(--parchment-shade)); letter-spacing: .06em; text-transform: uppercase; }
 .polaroid__stamp {
@@ -287,8 +295,11 @@
   border: 2px solid currentColor; border-radius: 3px;
   transform: rotate(-9deg); opacity: .78;
 }
-.polaroid.is-found .polaroid__photo { filter: none; }
-.polaroid:not(.is-found) .polaroid__photo svg { opacity: .55; }
+/* A pet still in the house: the photograph is the only thing they have of them,
+   so it stays sharp — but it goes cold and slightly faded, the way a picture
+   you have looked at nine hundred times does. Home again, it is warm. */
+.polaroid:not(.is-found) .polaroid__photo .petpic { filter: saturate(.62) brightness(.86) contrast(1.04); }
+.polaroid.is-found .polaroid__photo .petpic { filter: saturate(1.06); }
 
 .ch-note {
   width: clamp(120px, 12vw, 176px);
@@ -355,6 +366,9 @@
 .scrapcell__cap { display: grid; gap: 0; padding-top: 5px; text-align: center; color: var(--text-ink); }
 .scrapcell__cap b { font-family: var(--font-display); font-size: var(--fs-sm); line-height: 1.15; }
 .scrapcell__cap span { font-size: var(--fs-xs); font-style: italic; color: color-mix(in oklab, var(--text-ink) 62%, var(--parchment-shade)); }
+/* A starter is here and pickable but is not one you freed, and the board has to
+   say so or the roster and the tally read as contradicting each other. */
+.scrapcell.is-starter .scrapcell__cap span { color: color-mix(in oklab, var(--text-ink) 46%, var(--flame-500)); }
 .scrapcell.is-empty { background: color-mix(in oklab, var(--parchment-shade) 62%, var(--ink-700)); opacity: .72; }
 .scrapcell__tape {
   position: absolute; top: -8px; left: 50%; width: 46px; height: 16px;
@@ -363,17 +377,45 @@
 }
 
 /* ── missing pets ─────────────────────────────────────────────────────────── */
-.petgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: clamp(8px, 1vw, 14px); }
+/* Four across, two rows, and the rows SHARE THE HEIGHT of the panel. The
+   previous layout was a row of small horizontal cards with ~440 px of empty
+   board under them — the same half-empty-screen fault the reviewer called out
+   elsewhere — and it also wasted the one thing this round exists to add. The
+   photograph now leads the card at full width and the kid looking for them is
+   an inset over its corner. */
+.petgrid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: minmax(0, 1fr); gap: clamp(10px, 1.1vw, 18px);
+  flex: 1; min-height: 0;
+}
+/* the panel is the flex parent the grid stretches inside */
+.cl-panel--pets { display: flex; flex-direction: column; gap: var(--s-4); overflow: hidden; }
 .petcard {
-  display: grid; grid-template-columns: auto 1fr; gap: var(--s-3);
-  padding: var(--s-3);
+  position: relative;
+  display: grid; grid-template-rows: minmax(0, 1fr) auto;
+  padding: 0; overflow: hidden; min-height: 0;
   border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--ink-800) 72%, transparent);
   border: 1px solid color-mix(in srgb, var(--flame-300) 18%, transparent);
 }
 .petcard.is-home { border-color: color-mix(in srgb, var(--spectre-300) 46%, transparent); }
-.petcard__kid { width: 78px; border-radius: var(--radius-sm); overflow: hidden; align-self: start; }
-.petcard__kid .kidpf { width: 100%; height: auto; display: block; }
+/* The photograph of the pet leads, full width, because the pet is what is
+   missing. The kid looking for them sits over its bottom-left corner. */
+.petcard__pet { position: relative; min-height: 0; overflow: hidden; }
+.petcard__pet::after {
+  content: ''; position: absolute; inset: auto 0 0 0; height: 42%;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--ink-900) 88%, transparent));
+  pointer-events: none;
+}
+.petcard__kid {
+  position: absolute; left: 8px; bottom: 8px; z-index: 2;
+  width: 46px; height: 46px; border-radius: 50%; overflow: hidden;
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--flame-300) 60%, var(--ink-900)), var(--shadow-1);
+}
+.petcard__kid .kidpf { object-position: 46% 28%; }
+.petcard:not(.is-home) .petcard__pet .petpic { filter: saturate(.7) brightness(.9); }
+.petcard.is-home .petcard__pet .petpic { filter: saturate(1.05); }
+.petcard__body { padding: var(--s-3); display: flex; flex-direction: column; gap: 2px; }
 .petcard__body h3 { margin: 0; font-family: var(--font-display); font-size: var(--fs-lg); color: var(--flame-100); }
 .petcard__sp { margin: 0; font-size: var(--fs-xs); letter-spacing: .1em; text-transform: uppercase; color: color-mix(in oklab, var(--parchment) 60%, var(--flame-400)); }
 .petcard__lost { margin: var(--s-2) 0 0; font-size: var(--fs-sm); font-style: italic; color: var(--text-mid); }

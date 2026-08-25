@@ -31,15 +31,70 @@ import { CardView, CARD_SS } from './card.js';
 
 /** Every tuned number in one place. Milliseconds are seconds here. */
 export const TUNE = {
-  // hover — the single most-felt interaction. STS2 §1: "under 120ms".
-  hoverIn: 0.105, hoverOut: 0.090,
-  hoverLift: 46, hoverScale: 1.19, hoverNudge: 30,
+  /* ── hover: the single most-felt interaction ────────────────────────────
+     STS2 §1: "raises the card ~40–60px, scales it ~1.15–1.25x … in under
+     120ms … snappy, not floaty."
+
+     TIMING. Round 3 measured 82 ms *from the pointermove event to settled* and
+     called it done. A reviewer measured the thing a player actually feels —
+     from the mouse moving — and got 168 ms, of which 67 ms passed before the
+     first pixel moved. Three changes close that:
+       1. `_setHover` now applies the first `kick` of the tween SYNCHRONOUSLY,
+          inside the event handler, instead of waiting for the next frame.
+       2. the `card:hover` bus event is emitted AFTER the motion is committed,
+          so no subscriber (tooltip, preview, keyword panel) can sit between
+          the pointer moving and the card moving.
+       3. the tween itself is shorter — with (1) landing 1/60 s of easeOutCubic
+          in the same task, `hoverIn` is the budget for the remaining ~78 %.
+
+     GEOMETRY. `hoverLift` is the rise of the card's own anchor. The card is
+     anchored at its BOTTOM CENTRE, so a bottom-anchored 1.19x also pushed the
+     top edge up by the full 0.19·height — 59 px on top of the 46 px lift, and
+     the reviewer measured the resulting 116 px against StS2's 40–60. The
+     growth is now centred on the card (`grow`, applied in `_layout`), so the
+     measured rise is `hoverLift + height·(scale-1)/2` ≈ 50 px at 1.18x. */
+  hoverIn: 0.078, hoverOut: 0.070,
+  hoverLift: 26, hoverScale: 1.18, hoverNudge: 30,
+  kick: 1 / 60,          // sub-frame advance applied in the event handler
   // fan
   refan: 0.30, refanStagger: 0.010,
   rotPerCard: 3.1, maxFanDeg: 15,
   stepRatio: 0.82, arcDip: 5.4, arcDipMax: 62,
   unplayableDrop: 24, unplayableScale: 0.965,
   bottomPad: 20,
+
+  /* ── spread: the hand must not eat its own rules text ───────────────────
+     STS2 §1: "With few cards the arc flattens; with many, cards overlap and
+     the arc tightens."  Round 3 spaced every hand at a flat `stepRatio` of a
+     card width, so a five-card hand on a 1920 screen overlapped 44 px, hid a
+     slice of every neighbour's rules text, and left 1136 px of empty table.
+
+     `textClearFrac` and `textTiltFrac` come straight out of the card anatomy
+     in card.css: the rules box spans 12u..212u of the 224u grid and sits
+     15u..126u above the card's bottom edge, and a card rotates about that
+     bottom edge — so a tilt of θ slides the far corner of the text box
+     sideways 111u·sinθ further than it slides the neighbour's edge. The step
+     that clears the text is therefore
+         cw · (textClearFrac·cosθ + textTiltFrac·|sinθ|)
+     `spreadAir` is the extra breathing room taken when the band allows it, so
+     a small hand reads as separate cards rather than as cards that just touch.
+     Everything here is a TARGET: the safe-band cap still wins, which is why
+     n >= 8 is byte-identical to round 3. */
+  /* Hands up to this size open up for text clearance. SIX, not seven, and the
+     reason is the frame after: at seven cards with the largest card width the
+     band cannot hold both the clearance and the bend, so the solver below
+     would flatten the fan to ±0.5° — and then an eighth card, which cannot be
+     cleared at any angle, would snap it straight back to ±10.9°. A fan that
+     collapses when you draw and springs open when you draw again is worse
+     than either state. At six the solver never has to fire on any viewport
+     this game supports, so every rotation from n=1 to n=12 stays monotone and
+     identical to round 3, and seven still gains the widest step the band
+     allows (1920: 184 → 202 px). "Below about 7 cards" — the review's words. */
+  spreadMax: 6,
+  textClearFrac: 214 / 224,
+  textTiltFrac: 111 / 224,
+  spreadAir: 0.10,        // extra gap, in card widths, when there is room
+  flatFrom: 4,            // rotation reaches full strength at n = flatFrom + 1
 
   // ── fit: how the hand stays on screen ──────────────────────────────────
   // StS shrinks the cards as the hand grows. A fixed 224x312 box never fit:
@@ -74,7 +129,16 @@ export const TUNE = {
   // preview — you could not see the thing you were about to hit. Once a target
   // is snapped the card gets out of the way: smaller, translucent, and slid
   // clear of the target's box if it would still overlap it.
+  /* …but it must still be the card you are HOLDING. Parked at `parkY` it sat
+     with its top edge level with its neighbours' and, at 42 % opacity, read as
+     "I dropped it" — the reviewer's words — with two fan cards visible through
+     it. It now floats `aimLift` card-heights clear of the fan's base line at
+     `aimZ`, above every card in the hand, and it only goes translucent when it
+     would genuinely cover the target (`_aimPark` reports that). */
   parkScaleAimed: 0.86, aimClear: 22,
+  aimLift: 0.55,        // card-heights the held card floats above the fan line
+  aimMinY: 0.42,        // never higher than this fraction of the host
+  aimZ: 700,            // above hover (500) and every fan card (20..~40)
   // fan hit backstop: slack around the fan's own bounding box, px
   hitPad: 22,
   // ── the commit threshold ───────────────────────────────────────────────
@@ -104,77 +168,6 @@ function hash(s) {
   let h = 5381;
   for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
   return Math.abs(h);
-}
-
-/* ── the commit band ─────────────────────────────────────────────────────────
-   `.mm-hand__threshold` is authored in ui/hand.css as a 2px hairline centred on
-   its own `top`. A hairline is not a drop zone: a player who releases a card in
-   the middle of the field gets a silent return and no idea what they missed. So
-   the same element becomes a BAND — a soft field whose BOTTOM EDGE is the line
-   the release is measured against — and it arms on pointerdown, not part-way
-   through a drag.
-
-   This block belongs beside the hairline in ui/hand.css; it is here only
-   because that file is another owner's and this change was scoped to hand.js.
-   One idempotent <style> tag per document, tokens only, and every rule carries
-   `.is-band` so the hairline styling is untouched for anyone still using it.
-   The armed/blocked rules are 3 classes deep so they beat hand.css's 2-class
-   `.is-armed` regardless of which stylesheet the document ends up loading last.
-   HAND-OFF: whoever owns hand.css next should lift this in verbatim and delete
-   `ensureBandCss()`. Noted in docs/NOTES.md. */
-const BAND_CSS = `
-.mm-hand__threshold.is-band {
-  transform: none;                 /* the bottom edge IS the line */
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
-  background:
-    repeating-linear-gradient(90deg,
-      color-mix(in srgb, var(--spectre-200) 70%, transparent) 0 14px,
-      transparent 14px 26px) left bottom / 100% 2px no-repeat,
-    linear-gradient(to top,
-      color-mix(in srgb, var(--spectre-500) 26%, transparent),
-      transparent 82%);
-  box-shadow: 0 0 18px color-mix(in srgb, var(--spectre-300) 26%, transparent);
-}
-/* The label hangs BELOW the line and at its LEFT end. Centred and inside the
-   band it sat straight on top of the enemy name plates and their health bars,
-   which are the one thing on this screen that has to stay readable; the floor
-   at the left end of the line is empty in every room. */
-.mm-hand__threshold.is-band::after {
-  left: 1.2em; top: 100%; bottom: auto;
-  transform: translate(0, .35em);
-}
-.mm-hand__threshold.is-band.is-on { opacity: .9; }
-.mm-hand__threshold.is-band.is-on.is-armed {
-  opacity: 1;
-  background:
-    repeating-linear-gradient(90deg,
-      var(--flame-200) 0 20px, transparent 20px 30px) left bottom / 100% 3px no-repeat,
-    linear-gradient(to top,
-      color-mix(in srgb, var(--flame-glow) 26%, transparent),
-      transparent 84%);
-  box-shadow: 0 0 26px color-mix(in srgb, var(--flame-glow) 55%, transparent);
-}
-.mm-hand__threshold.is-band.is-on.is-blocked {
-  opacity: .92;
-  background:
-    repeating-linear-gradient(90deg,
-      color-mix(in srgb, var(--ink-300) 80%, transparent) 0 10px,
-      transparent 10px 22px) left bottom / 100% 2px no-repeat,
-    linear-gradient(to top,
-      color-mix(in srgb, var(--ink-500) 30%, transparent),
-      transparent 84%);
-  box-shadow: none;
-}
-.mm-reduce .mm-hand__threshold.is-band { transition: none; }
-`;
-
-function ensureBandCss() {
-  if (typeof document === 'undefined') return;
-  if (document.getElementById('mm-hand-band-css')) return;
-  const st = document.createElement('style');
-  st.id = 'mm-hand-band-css';
-  st.textContent = BAND_CSS;
-  document.head.appendChild(st);
 }
 
 let UID = 0;
@@ -273,7 +266,9 @@ export class Hand {
     this.$head = el.querySelector('.mm-arrow__head');
     this.$ret = el.querySelector('.mm-arrow__reticle');
     this.$thresh = el.querySelector('.mm-hand__threshold');
-    ensureBandCss();
+    // `.is-band` turns the hairline into the soft commit field. Its styling
+    // used to be injected from here as a <style> tag because hand.css was
+    // another agent's file; it now lives in ui/hand.css beside the hairline.
     this.$thresh.classList.add('is-band');
     if (this.reduceMotion) el.classList.add('mm-reduce');
 
@@ -437,10 +432,37 @@ export class Hand {
     return out;
   }
 
+  /**
+   * How hard the arc is allowed to bend at this hand size. STS2 §1: "With few
+   * cards the arc flattens." Round 3 used a constant 3.1°/card, so a hand of
+   * three sat at ±3.1° with a 22 px dip and read as a tight little clump
+   * rather than a flat spread. Full strength from n = flatFrom + 1 (5) up, so
+   * every rotation the critic has measured at n >= 5 is unchanged.
+   */
+  _flat(n) { return n <= 1 ? 0 : Math.min(1, (n - 1) / TUNE.flatFrom); }
+
+  /** Fan half-angle in radians for n cards. */
+  _fanTh(n) {
+    if (n <= 1) return 0;
+    const c = (n - 1) / 2;
+    return Math.min(TUNE.rotPerCard * this._flat(n) * c, TUNE.maxFanDeg) * Math.PI / 180;
+  }
+
+  /** Horizontal reach of a card tilted `th` past its anchor. */
+  _overhangAt(th, cw, ch) { return cw * Math.cos(th) / 2 + ch * Math.sin(th); }
+
   /** Horizontal reach of the outermost card past its anchor, at scale `s`. */
   _overhang(n, s) {
-    const th = (n <= 1 ? 0 : Math.min(TUNE.rotPerCard * (n - 1) / 2, TUNE.maxFanDeg)) * Math.PI / 180;
-    return s * (this.cw * Math.cos(th) / 2 + this.chh * Math.sin(th));
+    return this._overhangAt(this._fanTh(n), this.cw * s, this.chh * s);
+  }
+
+  /**
+   * The anchor-to-anchor step at which card i+1 stops covering card i's RULES
+   * TEXT. Derived from the card anatomy, not tuned by eye — see the
+   * `textClearFrac` / `textTiltFrac` note in TUNE.
+   */
+  _clearStep(cw, th) {
+    return cw * (TUNE.textClearFrac * Math.cos(th) + TUNE.textTiltFrac * Math.abs(Math.sin(th)));
   }
 
   /** Where cards fly to/from. Combat scene should call this with real pile positions. */
@@ -762,6 +784,11 @@ export class Hand {
    * nothing to clean up on the way out.
    */
   _takeOff(slot) {
+    // A card that has left the fan cannot still be the card you are aiming.
+    // `_layout` now re-parks `this.aim.slot` on every pass, so a stale aim
+    // left pointing at a played/discarded/exhausted card would have `_goal`
+    // and `_drawArrow` working on a view that is on its way to the bin.
+    if (this.aim && this.aim.slot === slot) { this.aim = null; this._showArrow(false); }
     this.flying.add(slot);
     slot.view.el.classList.add('is-flying');
   }
@@ -801,6 +828,12 @@ export class Hand {
    */
   _fan(n) {
     const T = TUNE;
+    // `_baseGeo` calls this once per card on every hit test, and the spread
+    // solver below runs a bisection, so memoise on everything it depends on.
+    const key = n + '|' + this.w + '|' + this.h + '|' + this.cw + '|' + this.chh
+              + '|' + (this._anyUnplayable ? 1 : 0);
+    if (this._fanKey === key && this._fanTmp) { this.fit = this._fanTmp.fit; return this._fanTmp; }
+
     const c = (n - 1) / 2;
     const fit = this._fit(n);
     const cw = this.cw * fit, ch = this.chh * fit;
@@ -808,21 +841,53 @@ export class Hand {
 
     const f = this._fanTmp || (this._fanTmp = {});
     f.fit = fit; f.cw = cw; f.ch = ch; f.c = c;
-    f.overhang = this._overhang(n, fit);
-    // The widest step the safe band allows, capped so cards never separate.
-    f.step = n > 1 ? Math.max(8, Math.min(cw * T.stepRatio, (band - 2 * f.overhang) / (n - 1))) : 0;
-    f.rotPer = n <= 1 ? 0 : Math.min(T.rotPerCard, T.maxFanDeg / c);
-    f.dip = Math.min(T.arcDipMax, 6 + n * T.arcDip) * fit;
+
+    /* ── how wide, and how bent ────────────────────────────────────────────
+       Two wants, in priority order:
+         1. no card covers a neighbour's rules text  (`_clearStep`)
+         2. the arc keeps its ±3.1°/card bend
+       and one hard constraint: the whole fan, rotated bounding boxes and all,
+       stays inside the safe band. Where all three fit, take all three. Where
+       they cannot, give up the BEND before the text — a flatter fan you can
+       read beats a prettier one you cannot. Where even a dead-flat fan cannot
+       clear the text (any hand of 8+, and the biggest cards at 7), keep the
+       full arc and take the widest step the band allows: that is round 3's
+       behaviour exactly, which is why nothing at n >= 8 moves. */
+    let th = this._fanTh(n);
+    const roomFor = (t) => (band - 2 * this._overhangAt(t, cw, ch)) / (n - 1);
+    if (n > 1 && n <= T.spreadMax
+        && roomFor(th) < this._clearStep(cw, th)
+        && roomFor(0) >= this._clearStep(cw, 0)) {
+      let lo = 0, hi = th;                       // both sides monotone in θ
+      for (let k = 0; k < 18; k++) {
+        const mid = (lo + hi) / 2;
+        if (roomFor(mid) >= this._clearStep(cw, mid)) lo = mid; else hi = mid;
+      }
+      th = lo;
+    }
+    f.rotPer = c ? th * 180 / Math.PI / c : 0;
+    f.overhang = this._overhangAt(th, cw, ch);
+    if (n > 1) {
+      const want = this._clearStep(cw, th) + (n <= T.spreadMax ? cw * T.spreadAir : 0);
+      f.step = Math.max(8, Math.min(Math.max(want, cw * T.stepRatio), roomFor(th)));
+    } else f.step = 0;
+
+    f.dip = Math.min(T.arcDipMax, 6 + n * T.arcDip) * fit * this._flat(n);
     // A rotated card's bounding box hangs (w/2)·sin(rot) below its anchor, and
     // an unaffordable one drops another 24px. Both are reserved here, so
     // max(card.bottom) == h - bottomPad for EVERY n. Nothing is ever clipped.
-    f.sag = Math.abs(Math.sin(f.rotPer * c * Math.PI / 180)) * cw / 2;
+    f.sag = Math.abs(Math.sin(th)) * cw / 2;
     f.drop = this._anyUnplayable ? T.unplayableDrop * fit : 0;
     f.baseY = this.h - T.bottomPad - f.dip - f.sag - f.drop;
     f.cx = this.w / 2;
     f.lift = T.hoverLift * fit;
+    // Hover growth is centred on the card, not on its bottom edge: see the
+    // GEOMETRY note in TUNE. `_layout` pushes the anchor back down by this so
+    // the card grows equally in both directions.
+    f.grow = ch * (T.hoverScale - 1) / 2;
     f.nudge = T.hoverNudge * fit;
     this.fit = fit;
+    this._fanKey = key;
     return f;
   }
 
@@ -850,6 +915,13 @@ export class Hand {
     const hover = this.hoverSlot;
     const hoverIdx = hover ? this.slots.indexOf(hover) : -1;
     const dragSlot = this.drag ? this.drag.slot : null;
+    /* A card that is being AIMED is not part of the fan any more. `_layout`
+       had no idea the aim existed, so on the keyboard path every relayout —
+       a target cycle, a playability refresh, a settings change, a resize —
+       dropped the held card straight back into its fan slot at z 20+i, behind
+       two of its neighbours, in the middle of the decision. It read as "I
+       dropped it". The aim owns this slot until the aim ends. */
+    const aimSlot = this.aim ? this.aim.slot : null;
 
     for (let i = 0; i < n; i++) {
       const s = this.slots[i];
@@ -871,11 +943,15 @@ export class Hand {
         y += 4 * fall;
       }
       if (i === hoverIdx) {
-        y = F.baseY - F.lift;
+        // + F.grow: the card grows about its own CENTRE, not its bottom edge.
+        // Bottom-anchored, a 1.18x card pushes its top edge up by the whole
+        // 0.18·height on top of the lift, and a 26 px lift measures as 82.
+        y = F.baseY - F.lift + F.grow;
         rot = 0; scale = fit * T.hoverScale; z = 500;
       }
 
       if (s === dragSlot) continue;               // drag owns its own goal
+      if (s === aimSlot) { this._reparkAim(); continue; }   // the aim owns it
 
       let dur = o.dur ?? this._d(TUNE.refan);
       let delay = 0;
@@ -905,6 +981,24 @@ export class Hand {
 
   // ── frame loop ───────────────────────────────────────────────────────────
   _tick(dt) {
+    this._stepSlots(dt);
+    if (this.aim) this._drawArrow();
+  }
+
+  /**
+   * Integrate every slot's tween by `dt`.
+   *
+   * Split out of `_tick` so `_setHover` can run ONE sub-frame step
+   * synchronously, inside the pointer event handler. Without it the earliest
+   * a hovered card can move is the next animation frame — and the frame the
+   * event lands in has already run its callbacks about half the time, so the
+   * lift began up to a frame and a half after the mouse did. Now the first
+   * ~22 % of the lift (easeOutCubic of 1/60 s against a 78 ms tween) is on
+   * screen in the same task as the event, and the tween carries the rest.
+   * Called exactly once per hover change, never per pointermove, so it cannot
+   * make in-flight animations run fast.
+   */
+  _stepSlots(dt) {
     const slots = this.slots;
     for (let i = 0; i < slots.length; i++) {
       const s = slots[i];
@@ -925,7 +1019,6 @@ export class Hand {
       s.view.setTransform(cu);
       if (p >= 1) { s.flick = 0; s.arc = 0; this._landed(s); }
     }
-    if (this.aim) this._drawArrow();
   }
 
   /** An arriving card has reached the fan: it becomes a hit target again. */
@@ -1014,21 +1107,32 @@ export class Hand {
     return g;
   }
 
+  /**
+   * MOTION FIRST, EVENTS SECOND — and the first frame of it right now.
+   *
+   * The old order was: set state, shout on the bus, then lay out. Every
+   * `card:hover` subscriber in the game (tooltip, damage preview, keyword
+   * panel) therefore ran BEFORE the card was told where to go, and the lift
+   * waited on all of them and then on the next animation frame. Measured
+   * mousemove-to-settled was 168 ms, 67 ms of which was over before a single
+   * pixel moved. The layout is committed first, one sub-frame of it is applied
+   * synchronously (`_stepSlots`), and only then does anyone else get told.
+   */
   _setHover(slot) {
     if (this.locked || this.drag) return;
     if (slot === this.hoverSlot) return;
     const prev = this.hoverSlot;
     this.hoverSlot = slot;
-    if (prev) {
-      prev.view.setState({ hover: false });
-      this.bus.emit('card:unhover', { uid: prev.card.uid, cardId: prev.card.def.id });
-    }
+    if (prev) prev.view.setState({ hover: false });
     if (slot) {
       slot.view.setState({ hover: true });
       this.selIdx = this.slots.indexOf(slot);
-      this.bus.emit('card:hover', { uid: slot.card.uid, cardId: slot.card.def.id, view: slot.view });
     }
     this._layout({ dur: this._d(slot ? TUNE.hoverIn : TUNE.hoverOut) });
+    if (!this.reduceMotion) this._stepSlots(TUNE.kick);
+
+    if (prev) this.bus.emit('card:unhover', { uid: prev.card.uid, cardId: prev.card.def.id });
+    if (slot) this.bus.emit('card:hover', { uid: slot.card.uid, cardId: slot.card.def.id, view: slot.view });
   }
   _clearHover() {
     if (this.hoverSlot) { this.hoverSlot.view.setState({ hover: false }); this.hoverSlot = null; }
@@ -1085,8 +1189,8 @@ export class Hand {
     if (d.needsTarget && (above || d.snap)) {
       // Card parks out of the way; the arrow does the aiming.
       const g = this._aimPark(p.x, d.snap, fit);
-      this._setAimGhost(s, !!d.snap);
-      this._goal(s, g.x, g.y, 0, g.scale, 600, this._d(0.16), 0, Clock.easeOutCubic);
+      this._setAimGhost(s, true, g.over);
+      this._goal(s, g.x, g.y, 0, g.scale, TUNE.aimZ, this._d(0.16), 0, Clock.easeOutCubic);
       this.aim = { slot: s, x: p.x, y: p.y, snap: d.snap, valid: !!d.snap && s.playable !== false };
       this._showArrow(true);
     } else {
@@ -1199,16 +1303,25 @@ export class Hand {
    * @returns {{x:number,y:number,scale:number}} reused object — do not retain.
    */
   _aimPark(px, snap, fit) {
-    const g = this._parkTmp || (this._parkTmp = { x: 0, y: 0, scale: 1 });
+    const g = this._parkTmp || (this._parkTmp = { x: 0, y: 0, scale: 1, over: false });
     g.scale = fit * (snap ? TUNE.parkScaleAimed : TUNE.parkScale);
-    g.y = this.parkY;
+    /* OUT OF THE FAN. `parkY` put the held card's top edge level with its
+       neighbours', so a translucent card sitting between two solid ones read
+       as dropped rather than held. It now floats `aimLift` fan-card-heights
+       above the fan's base line — high enough that its whole body is clear of
+       every card in the hand, low enough that it stays under the enemy row. */
+    const fanH = this.chh * (this.fit || 1);
+    g.y = Math.round(clamp(this.baseY - fanH * TUNE.aimLift,
+                           this.h * TUNE.aimMinY, this.parkY));
     g.x = lerp(this.w / 2, px, 0.18);
+    g.over = false;
     if (!snap) return g;
     const hw = this.cw * g.scale / 2;
     const ch = this.chh * g.scale;
+    const hits = () => g.y > snap.y && g.y - ch < snap.y + snap.h
+                    && g.x + hw > snap.x && g.x - hw < snap.x + snap.w;
     // Only dodge if the parked card would actually sit over the target's box.
-    if (g.y > snap.y && g.y - ch < snap.y + snap.h
-        && g.x + hw > snap.x && g.x - hw < snap.x + snap.w) {
+    if (hits()) {
       const pad = TUNE.aimClear;
       const lx = snap.x - pad - hw, rx = snap.x + snap.w + pad + hw;
       const lo = hw + 8, hi = this.w - hw - 8;
@@ -1218,15 +1331,27 @@ export class Hand {
       else if (okR) g.x = rx;
       // Neither side has room (a very wide target): the fade and the shrink
       // are what keep the enemy readable, so leave x alone.
+      g.over = hits();
     }
     return g;
   }
 
-  /** Translucent held card while a target is locked. See `_aimPark`. */
-  _setAimGhost(slot, on) {
-    if (!slot || slot._aimGhost === !!on) return;
-    slot._aimGhost = !!on;
-    slot.view.el.classList.toggle('is-aiming', !!on);
+  /**
+   * The held card while a target is locked.
+   *
+   * `is-aiming` is now the *held* state — full opacity, a lifted shadow, the
+   * card you are clearly still holding. `is-over-target` is the part that
+   * fades it, and it is only set when the park could NOT slide the card clear
+   * of the thing you are aiming at; that is the case round 3 added the fade
+   * for (STS2 §2 — you have to be able to see the target you are previewing).
+   * Fading it in the common case, where it is nowhere near the enemy, is what
+   * made it look like a card lying in the hand.
+   */
+  _setAimGhost(slot, on, over) {
+    if (!slot) return;
+    const cl = slot.view.el.classList;
+    cl.toggle('is-aiming', !!on);
+    cl.toggle('is-over-target', !!on && !!over);
   }
 
   /** Put the card's numbers back to their printed values. */
@@ -1590,7 +1715,7 @@ export class Hand {
     if (this._needsTarget(s.card.def)) {
       this._readTargets();
       if (!this.targets.length) { s.view.shake(8, 0.28); return; }
-      this.aim = { slot: s, x: 0, y: 0, snap: this.targets[0], valid: true, key: true };
+      this.aim = { slot: s, x: s.cur.x, y: 0, snap: this.targets[0], valid: true, key: true };
       this._applyPreview(this.targets[0].id);
       this.bus.emit('card:target', { uid: s.card.uid, targetId: this.targets[0].id });
       this._showArrow(true);
@@ -1601,13 +1726,24 @@ export class Hand {
     this._commit(s, undefined);
   }
 
-  /** Keyboard aiming: keep the held card clear of whatever is now targeted. */
+  /**
+   * Put the held card back where the aim wants it: lifted clear of the fan,
+   * rotation zeroed, above every other card, and slid clear of the target.
+   *
+   * Called both from the keyboard path (Enter / Tab / arrow target cycling)
+   * and from `_layout`, so a relayout that happens mid-aim cannot drop the
+   * card back into the hand. The mouse path re-parks itself on every
+   * pointermove and its slot is skipped by `_layout` before this is reached.
+   */
   _reparkAim() {
-    if (!this.aim || !this.aim.key) return;
+    if (!this.aim) return;
     const s = this.aim.slot;
-    const g = this._aimPark(s.cur.x, this.aim.snap, this.fit);
-    this._setAimGhost(s, !!this.aim.snap);
-    this._goal(s, g.x, g.y, 0, g.scale, 600, this._d(0.18), 0, Clock.easeOutCubic);
+    // `aim.x` is fixed for the life of the aim. Re-reading `s.cur.x` here made
+    // the park chase the card it was moving, so every relayout nudged it a
+    // little further toward centre.
+    const g = this._aimPark(this.aim.x, this.aim.snap, this.fit);
+    this._setAimGhost(s, true, g.over);
+    this._goal(s, g.x, g.y, 0, g.scale, TUNE.aimZ, this._d(0.18), 0, Clock.easeOutCubic);
   }
 
   _cycleTarget(dir) {

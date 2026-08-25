@@ -1,0 +1,93 @@
+<!doctype html>
+<!--
+  Contact sheet for ui/petart.js. OWNER: frontend agent.
+
+  The eight pet photographs and the eight Kid portraits, at review size, on one
+  page, so they can be judged against game/assets/portraits/*.png without
+  clicking through three screens to see them. Dev tool only; nothing in the game
+  links here.
+
+      python tools/shot.py faces --hash "" --w 1800 --h 1100
+      open http://localhost:8777/tests/faces/index.html
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Midnight Menagerie — faces contact sheet</title>
+  <link rel="stylesheet" href="/game/src/ui/tokens.css">
+  <link rel="stylesheet" href="/game/src/ui/base.css">
+  <link rel="stylesheet" href="/game/src/ui/portrait.css">
+  <style>
+    body { margin: 0; background: #0b0a10; color: #e9e4f2; font: 13px/1.4 system-ui, sans-serif; }
+    h1 { font: 600 15px/1 system-ui; letter-spacing: .14em; text-transform: uppercase; margin: 14px 12px 8px; color: #b6a9d6; }
+    .sheet { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; padding: 0 12px 16px; }
+    .cell { background: #14111f; border: 1px solid #2a2442; border-radius: 4px; overflow: hidden; }
+    .cell img { width: 100%; height: auto; display: block; }
+    .cap { padding: 4px 6px 6px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: #9b8fc0; }
+    .ref { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; padding: 0 12px 20px; }
+    .ref img { width: 100%; height: auto; display: block; border-radius: 4px; }
+    .polaroids { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; padding: 0 12px 20px; }
+    .pol { background: #efe9dc; padding: 7px 7px 6px; box-shadow: 0 4px 10px #0008; }
+    .pol span { display: block; aspect-ratio: 1; overflow: hidden; background: #14111f; }
+    .pol img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pol b { display: block; text-align: center; color: #2a2118; font: italic 13px/1.3 Georgia, serif; padding-top: 3px; }
+  </style>
+</head>
+<body>
+  <h1>Pets — the missing eight</h1>
+  <div class="sheet" id="pets"></div>
+  <h1>Pets, at polaroid size, in the polaroid frame</h1>
+  <div class="polaroids" id="pols"></div>
+  <h1>Kids — the eight going in</h1>
+  <div class="sheet" id="kids"></div>
+  <h1>The bar: painted Companion portraits</h1>
+  <div class="ref" id="ref"></div>
+
+  <script type="module">
+    import { petImg, kidImg, PET_KEYS, KID_KEYS } from '/game/src/ui/petart.js';
+    import { KIDS } from '/game/src/data/schema.js';
+
+    const byKid = Object.fromEntries(KIDS.map((k) => [k.pet.toLowerCase(), k]));
+    const t0 = performance.now();
+
+    for (const k of PET_KEYS) {
+      const c = document.createElement('div');
+      c.className = 'cell';
+      c.appendChild(petImg(k));
+      const cap = document.createElement('div');
+      cap.className = 'cap';
+      cap.textContent = k;
+      c.appendChild(cap);
+      document.getElementById('pets').appendChild(c);
+    }
+    for (const k of PET_KEYS) {
+      const p = document.createElement('div');
+      p.className = 'pol';
+      const s = document.createElement('span');
+      s.appendChild(petImg(k));
+      p.appendChild(s);
+      const b = document.createElement('b');
+      b.textContent = byKid[k] ? byKid[k].pet : k;
+      p.appendChild(b);
+      document.getElementById('pols').appendChild(p);
+    }
+    for (const k of KID_KEYS) {
+      const c = document.createElement('div');
+      c.className = 'cell';
+      c.appendChild(kidImg(k));
+      const cap = document.createElement('div');
+      cap.className = 'cap';
+      cap.textContent = k;
+      c.appendChild(cap);
+      document.getElementById('kids').appendChild(c);
+    }
+    for (const s of ['marmalade', 'bones', 'pipkin', 'taffy', 'mopsy', 'crinkle', 'hush', 'wink']) {
+      const i = document.createElement('img');
+      i.src = '/game/assets/portraits/' + s + '.png';
+      document.getElementById('ref').appendChild(i);
+    }
+    window.__facesMs = performance.now() - t0;
+    console.log('faces rendered in', Math.round(window.__facesMs), 'ms');
+  </script>
+</body>
+</html>

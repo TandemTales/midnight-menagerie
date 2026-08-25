@@ -242,12 +242,14 @@ export class IntentView {
         <g class="cb-intent__glyph" transform="translate(50 50) scale(0.56) translate(-50 -50)"></g>
       </svg>
       <div class="cb-intent__vals"></div>
+      <div class="cb-intent__extras"></div>
       <div class="cb-intent__pips"></div>`;
     this.el = el;
     this.$frame = el.querySelector('.cb-intent__frame');
     this.$frameline = el.querySelector('.cb-intent__frameline');
     this.$glyph = el.querySelector('.cb-intent__glyph');
     this.$vals = el.querySelector('.cb-intent__vals');
+    this.$extras = el.querySelector('.cb-intent__extras');
     this.$pips = el.querySelector('.cb-intent__pips');
     this.$halo = el.querySelector('.cb-intent__halo');
   }
@@ -307,15 +309,27 @@ export class IntentView {
     if (key !== this._valKey) {
       this._valKey = key;
       this.$vals.textContent = '';
+      this.$extras.textContent = '';
       if (hasDmg) this.$vals.appendChild(this._chip('damage', String(dmg), hits > 1 ? `×${hits}` : ''));
       if (hasBlk) this.$vals.appendChild(this._chip('guard', String(blk), ''));
-      for (const e of extras) this.$vals.appendChild(this._chip(e.role, e.text, e.sub));
+      /* A SEPARATE ROW, not the same one. The Lost Luggage rendered
+         `[🛡5][CLUTTER to discard]` as one strip and at 1:1 the 10px shield
+         reads as a bullet, so the whole thing scans as "5 Clutter" — which is
+         wrong twice over, because the 5 is Guard and the Clutter count is 1.
+         Guard and damage are what the move does to the BOARD; cards and rules
+         are what it does to YOUR DECK, and they no longer share a line. */
+      for (const e of extras) this.$extras.appendChild(this._chip(e.role, e.text, e.sub));
       // The word chip names the family when no number does — and also when the
       // only number on a NON-defense intent is its Guard, which otherwise reads
       // as damage under a debuff frame.
       if (!extras.length && !hasDmg && (!hasBlk || fam !== 'defense')) {
         this.$vals.appendChild(this._chip('word', WORD[type] || FAMILY_WORD[fam] || 'Acts', ''));
+      } else if (hasBlk && !hasDmg && fam !== 'defense') {
+        // …and when it IS a debuff carrying only Guard, the shield needs a word
+        // beside it or the number is orphaned under the wrong frame.
+        this.$vals.appendChild(this._chip('word', 'Guard', ''));
       }
+      this.el.classList.toggle('has-extras', extras.length > 0);
     }
     this.el.classList.toggle('has-num', hasDmg || hasBlk);
     this.el.classList.toggle('is-multi', hasDmg && hits > 1);
@@ -374,6 +388,13 @@ export class IntentView {
     const i = this.intent;
     if (!i) return [];
     const m = (this.info.def && this.info.def.moves && this.info.def.moves[i.moveId]) || null;
+    /* The ENGINE is the source now. `combat/intents.js#groupCards` resolves
+       `addsCardsFn` and collapses the result to `[{id, name, pile, count}]`,
+       and `resolveRule` turns a rule ref into `{id, name, text}`. Both are
+       preferred; the raw EnemyDef move is only the fallback for a def the
+       engine has not been taught. Round 3 read the def, threw the count away
+       on purpose, and printed a bare `CLUTTER` beside the move's `5` Guard —
+       at 1:1 that scans as "5 Clutter" when the real answer is 1. */
     const adds = i.addsCards || (m && m.addsCards);
     const rule = i.rule || (m && m.rule);
     const out = [];
@@ -382,19 +403,29 @@ export class IntentView {
       for (const a of adds) {
         const id = (typeof a === 'string' ? a : a && a.id) || '';
         if (!id) continue;
-        const pile = (typeof a === 'object' && a.pile) || 'discard';
-        seen.set(id + '/' + pile, { id, pile });
+        const o = typeof a === 'object' ? a : {};
+        const pile = o.pile || 'discard';
+        const key = id + '/' + pile;
+        const hit = seen.get(key);
+        const n = Math.max(1, o.count ?? 1);
+        if (hit) hit.count += n;
+        else seen.set(key, { id, pile, count: n, name: o.name || words(id) });
       }
       for (const a of seen.values()) {
         out.push({
-          role: 'cards', k: `c:${a.id}:${a.pile}`,
-          // No count: several moves scale how many they add on the first use or
-          // with Haunt, and a confident wrong number is worse than none.
-          text: words(a.id), sub: PILE_WORD[a.pile] || ('to ' + a.pile),
+          role: 'cards', k: `c:${a.id}:${a.pile}:${a.count}`,
+          count: a.count, name: a.name, pile: a.pile,
+          text: String(a.count), sub: `${a.name} ${PILE_WORD[a.pile] || 'to ' + a.pile}`,
         });
       }
     }
-    if (rule) out.push({ role: 'rule', k: 'r:' + rule, text: 'House Rule', sub: '' });
+    if (rule) {
+      const name = (typeof rule === 'object' && (rule.name || rule.id)) || String(rule);
+      out.push({
+        role: 'rule', k: 'r:' + name, text: 'House Rule', sub: '',
+        ruleName: name, ruleText: (typeof rule === 'object' && rule.text) || '',
+      });
+    }
     return out;
   }
 
@@ -414,12 +445,17 @@ export class IntentView {
     return d;
   }
 
+  /** The spoken form of this intent. Also used by EnemyView's own aria-label. */
+  ariaLabel() { return this.intent ? this._ariaLabel(this.intent) : 'No plan yet.'; }
+
   _ariaLabel(i) {
     const bits = [i.name || 'Intent'];
     if (i.damage > 0) bits.push(i.hits > 1 ? `${i.damage} damage, ${i.hits} times` : `${i.damage} damage`);
     if (i.block > 0) bits.push(`${i.block} Guard`);
     for (const e of this._extras()) {
-      bits.push(e.role === 'cards' ? `puts ${e.text} ${e.sub}` : 'announces a House Rule');
+      bits.push(e.role === 'cards'
+        ? `puts ${e.count} ${e.name} ${e.sub}`
+        : `announces the House Rule ${e.ruleName || ''}`.trim());
     }
     for (const s of i.statuses || []) bits.push(`${s.stacks} ${s.name}`);
     return bits.join('. ') + '.';
@@ -459,8 +495,15 @@ export class IntentView {
     }
     if (i.block > 0) lines.push(`Gains ${i.block} Guard.`);
     for (const e of this._extras()) {
-      if (e.role === 'cards') lines.push(`Puts ${e.text} ${PILE_LINE[e.sub] || 'into your discard pile'}.`);
-      else if (e.role === 'rule') lines.push('Announces a House Rule you then have to play around.');
+      if (e.role === 'cards') {
+        // The COUNT, spelled out. The panel used to say "Puts Clutter into your
+        // discard pile" — the one number a deck-pollution move is about was
+        // missing from the badge AND from here.
+        const where = PILE_LINE[PILE_WORD[e.pile] || ''] || 'into your discard pile';
+        lines.push(`Puts ${e.count} ${e.name}${e.count > 1 ? 's' : ''} ${where}.`);
+      } else if (e.role === 'rule') {
+        lines.push(`Announces the House Rule ${e.ruleName}.${e.ruleText ? ' ' + e.ruleText : ''}`);
+      }
     }
     for (const s of i.statuses || []) {
       const who = s.to === 'self' ? (o.selfName || 'itself')

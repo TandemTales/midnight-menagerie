@@ -11,7 +11,8 @@ import { Save } from '../core/save.js';
 import { COMPANIONS } from '../data/schema.js';
 import {
   ensureCss, fontsReady, logoLockup, candle, cobweb, bat,
-  el, svg, rovingFocus, setReduceMotion, reduceMotion, freedCompanions,
+  el, svg, rovingFocus, setReduceMotion, reduceMotion,
+  freedCompanions, starterCount, warmFaces,
 } from '../ui/portrait.js';
 import { pauseStageFor } from './_stage.js';
 import { openSettings } from '../ui/settings.js';
@@ -286,10 +287,15 @@ export class TitleScene extends Scene {
       'Sixteen lost pets became something else inside that house.<br>' +
       '<span>Eight kids are going in to bring the rest home.</span>'));
 
-    // `freedCompanions()` is the shared count — see ui/portrait.js. This screen
-    // used the raw save array and so said "0 / 16 freed" on the same save where
-    // Select and the Clubhouse both said "4 / 16".
+    /* FREED means freed. On a completely empty localStorage this line said
+       "4 / 16 MENAGERIE COMPANIONS FREED" — the four starters were being
+       counted as rescues — which is a lie on a fresh save and it flattens the
+       counter you spend the entire game raising: your first real rescue moved
+       it from four to five. The starters are named separately now, because
+       they are real and pickable, but they are not rescues.
+       `freedCompanions()` / `starterCount()` — see ui/portrait.js. */
     const rescued = freedCompanions();
+    const starters = starterCount();
     const nav = el('nav', 'ti-menu');
     nav.setAttribute('aria-label', 'Main menu');
     const items = menuItems(!!Save?.hasRun?.());
@@ -311,6 +317,8 @@ export class TitleScene extends Scene {
     const foot = el('div', 'ti-foot');
     foot.innerHTML =
       `<span class="ti-foot__prog"><b>${rescued.size}</b> / ${COMPANIONS.length} Menagerie Companions freed</span>` +
+      (starters ? `<span class="ti-foot__dot" aria-hidden="true"></span>` +
+        `<span class="ti-foot__with">${starters} already at the clubhouse</span>` : '') +
       `<span class="ti-foot__dot" aria-hidden="true"></span>` +
       `<span class="ti-foot__ver">Midnight Menagerie &middot; build ${window.MM?.version ?? '0.1.0'}</span>`;
     root.appendChild(foot);
@@ -363,6 +371,14 @@ export class TitleScene extends Scene {
   _activate(id) {
     const { ctx } = this;
     try { ctx.audio?.play?.('ui:confirm'); } catch {}
+    /* Start the sixteen Kid portraits and pet photographs the instant the
+       player commits, so they render under the transition veil that is coming
+       down anyway rather than in front of anybody. Fire and forget, chunked
+       across frames; whatever is unfinished when the destination scene builds
+       is finished synchronously there, still behind the veil.
+       An earlier version warmed on requestIdleCallback while the Title was on
+       screen and measured 6 fps. See ui/petart.js. */
+    if (id === 'new' || id === 'menagerie' || id === 'continue') warmFaces();
     switch (id) {
       case 'continue': {
         const run = Save?.loadRun?.();

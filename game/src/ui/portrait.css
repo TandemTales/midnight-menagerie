@@ -285,48 +285,34 @@
 }
 .mm-logo__plaque span { color: var(--brass-200); font-size: .8em; }
 
-/* ── procedural kid portrait ──────────────────────────────────────────────── */
-.kidpf { display: block; width: 100%; height: auto; }
-.kp-room-in  { stop-color: color-mix(in oklab, var(--ink-700) 76%, var(--kid-hue)); }
-.kp-room-out { stop-color: var(--ink-900); }
-.kp-paper rect { fill: color-mix(in srgb, var(--kid-hue) 7%, transparent); }
-.kp-floor rect { fill: color-mix(in oklab, var(--ink-900) 74%, var(--flame-500)); }
-.kp-floor path { stroke: color-mix(in srgb, var(--ink-900) 70%, transparent); stroke-width: 1.4; fill: none; }
-.kp-beam-a { stop-color: var(--kid-hue); }
-.kp-beam-b { stop-color: var(--kid-hue); }
-.kp-beam   { mix-blend-mode: screen; animation: beam-drift 6.5s var(--ease-soft) infinite; transform-origin: 88% 40%; }
-@keyframes beam-drift { 0%,100% { transform: rotate(0deg);} 50% { transform: rotate(-2.2deg);} }
+/* ── generated photographs: the eight Kids and the eight missing pets ─────────
+   Both were flat SVG here (one recoloured body silhouette per Kid, one grey
+   species glyph per pet) and both are now bitmaps out of ui/petart.js. The
+   `.kidpf` class name is kept because select/clubhouse/gameover all size their
+   portrait boxes with it.
 
-.kp-body { fill: color-mix(in oklab, var(--ink-900) 82%, var(--kid-hue)); }
-.kp-head { fill: color-mix(in oklab, var(--ink-900) 80%, var(--kid-hue)); }
-.kp-hair { fill: color-mix(in oklab, var(--ink-900) 90%, var(--kid-hue)); }
-.kp-eye  { fill: color-mix(in oklab, var(--kid-hue) 70%, white); opacity: .9; }
-.kp-rim  { stroke-width: 4; stroke-linecap: round; opacity: .85; }
-.kp-rim-a { stop-color: var(--kid-hue); }
-.kp-rim-b { stop-color: color-mix(in oklab, var(--kid-hue) 40%, var(--flame-300)); }
-
-.kp-figure .kg    { stroke: color-mix(in oklab, var(--kid-hue) 55%, var(--text-mid)); stroke-width: 3; fill: none; stroke-linecap: round; }
-.kp-figure .kg-f  { fill: color-mix(in oklab, var(--ink-900) 72%, var(--kid-hue)); }
-.kp-figure .kg-l  { fill: color-mix(in srgb, var(--kid-hue) 22%, transparent); stroke: color-mix(in oklab, var(--kid-hue) 62%, var(--text-hi)); stroke-width: 2.6; }
-.kp-figure .kg-d  { fill: color-mix(in oklab, var(--kid-hue) 40%, var(--ink-700)); }
-.kp-figure .kg-d2 { fill: color-mix(in oklab, var(--kid-hue) 50%, var(--ink-600)); }
-
-.kp-torch-b { fill: color-mix(in oklab, var(--ink-800) 70%, var(--kid-hue)); }
-.kp-torch-h { fill: var(--brass-400); }
-.kp-torch-l { fill: color-mix(in oklab, var(--kid-hue) 30%, white); }
-.kp-glow {
-  fill: radial-gradient(var(--kid-hue), transparent);
-  fill: color-mix(in srgb, var(--kid-hue) 34%, transparent);
-  filter: blur(9px);
-  animation: flame-breathe 4.1s var(--ease-soft) infinite;
+   `object-fit: cover` matters: the polaroid crops a 4:3 photograph to a square
+   and the run-end ledger crops it again. Without it the pet is letterboxed
+   inside its own frame, which is the one thing a photograph must never look
+   like. The intrinsic width/height are set on the element in JS so the box is
+   the right shape before the bitmap arrives — no layout shift on first paint. */
+.kidpf, .petpic {
+  display: block;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: 50% 42%;
+  background: var(--ink-900);
 }
 
-.kp-tag-d   { fill: var(--brass-300); }
-.kp-tag-r   { fill: none; stroke: color-mix(in oklab, var(--brass-100) 70%, white); stroke-width: 1.6; opacity: .7; }
-.kp-tag-h   { fill: var(--ink-900); opacity: .6; }
-.kp-tag-g   { fill: color-mix(in oklab, var(--brass-600) 82%, var(--ink-900)); }
-.kp-tag-str { stroke: color-mix(in oklab, var(--parchment-shade) 70%, var(--ink-700)); stroke-width: 2; }
-.kp-tag     { animation: tag-swing 5.4s var(--ease-soft) infinite; transform-origin: 64px 168px; }
-@keyframes tag-swing { 0%,100% { transform: translate(44px,214px) rotate(-2deg);} 50% { transform: translate(44px,214px) rotate(2.6deg);} }
-
-.kp-edge { stroke: color-mix(in srgb, var(--brass-400) 40%, transparent); stroke-width: 2; }
+/* SIZE THE BOX, NOT THE PICTURE.
+   `.kidpf` and `.petpic` are shared components used by four scenes, so their
+   own geometry is declared here and nowhere else. When clubhouse.css said
+   `height: 100%` and gameover.css said `height: auto` for the same class, the
+   scene loaded second silently reformatted the other one — the exact shape of
+   the `.rs-door` bug the scene-css gate was written for, and the gate catches
+   it. A scene gives its container a size (or an aspect-ratio) and the picture
+   fills it; a scene never touches these two classes' layout again. Filters and
+   object-position for a particular frame are fine: neither is layout. */
+.kid-tile__pf, .go-who__kid { aspect-ratio: 416 / 462; overflow: hidden; }
+.go-pet__snap  { aspect-ratio: auto; }
+.go-pet__snap .petpic { aspect-ratio: 4 / 3; }

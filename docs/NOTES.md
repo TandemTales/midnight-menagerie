@@ -41,4 +41,5 @@ to concurrent whole-file writes, so this is now structural rather than a convent
 | [2026-08-20-scene-perf-title-stall-stage-pause-card-sizing-ge](notes/2026-08-20-scene-perf-title-stall-stage-pause-card-sizing-ge.md) | 13 KB |
 | [2026-08-20-seam-audit-silent-no-ops-at-module-joins](notes/2026-08-20-seam-audit-silent-no-ops-at-module-joins.md) | 9 KB |
 | [2026-08-20-ui-chrome](notes/2026-08-20-ui-chrome.md) | 15 KB |
+| [2026-08-24-map-round-4-graphite-over-ink](notes/2026-08-24-map-round-4-graphite-over-ink.md) | 23 KB |
 | [build-notes](notes/build-notes.md) | 1 KB |

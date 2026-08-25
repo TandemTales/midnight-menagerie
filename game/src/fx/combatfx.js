@@ -27,6 +27,10 @@ const K_SHARD = 1;   // rotating quad — block shatter
 const K_MOTE = 2;    // slow riser — death
 const K_RING = 3;    // expanding stroked circle
 const K_DUST = 4;    // soft round puff, no additive
+/* A WEAPON TRAIL. px,py = pivot, pw = radius, pr = start angle, pg = sweep.
+   STS2-REFERENCE §4 asks for a strike that swings something, and a burst at
+   the point of contact has no travel in it — this is the travel. */
+const K_ARC = 5;
 
 export class CombatFX {
   /**
@@ -195,6 +199,24 @@ export class CombatFX {
     return this;
   }
 
+  /**
+   * A WEAPON TRAIL: a crescent that sweeps through an arc and fades from the
+   * tail. STS2-REFERENCE §4 — "a strike swings a weapon" — is about the swing
+   * having a PATH, not about a burst appearing at the end of one. `slash` marks
+   * the contact; this is the travel that caused it.
+   *
+   * @param {number} x @param {number} y  centre of the arc, layer-local px
+   * @param {number} r      radius of the swing
+   * @param {number} a0     start angle, radians
+   * @param {number} sweep  signed sweep, radians
+   */
+  swing(x, y, r = 90, a0 = -1.2, sweep = 1.9, color, life = 0.26) {
+    if (this.reduceMotion) return this;
+    const i = this._spawn(K_ARC, x, y, 0, 0, life, 7, color || this.col.flame, 0, 0);
+    if (i >= 0) { this.pw[i] = r; this.pr[i] = a0; this.pg[i] = sweep; }
+    return this;
+  }
+
   /* ── floating numbers ───────────────────────────────────────────────────── */
   /**
    * @param {number} x @param {number} y  layer-local px
@@ -259,7 +281,7 @@ export class CombatFX {
         i--; continue;
       }
       const k = this.pk[i];
-      if (k !== K_RING) {
+      if (k !== K_RING && k !== K_ARC) {
         this.vy[i] += this.pg[i] * dt;
         this.vx[i] *= 1 - Math.min(1, dt * (k === K_MOTE ? 1.2 : 2.4));
         this.px[i] += this.vx[i] * dt;
@@ -283,6 +305,21 @@ export class CombatFX {
         g.strokeStyle = this.pc[i];
         g.lineWidth = Math.max(1, this.ps[i] * a);
         g.beginPath(); g.arc(x, y, Math.max(0.5, r), 0, TAU); g.stroke();
+      } else if (k === K_ARC) {
+        /* The crescent leads with its head and dissolves from the tail: the
+           swept fraction grows with time while the drawn tail shortens, which
+           is what makes it read as a moving edge and not a static arc. */
+        const p = 1 - a;
+        const sweep = this.pg[i];
+        const head = this.pr[i] + sweep * Math.min(1, p * 1.35);
+        const tail = this.pr[i] + sweep * Math.max(0, p * 1.35 - 0.55);
+        g.strokeStyle = this.pc[i];
+        g.lineCap = 'round';
+        g.lineWidth = Math.max(1, this.ps[i] * (0.4 + a * 0.9));
+        g.beginPath();
+        g.arc(x, y, Math.max(1, this.pw[i]), tail, head, sweep < 0);
+        g.stroke();
+        g.lineCap = 'butt';
       } else if (k === K_SHARD) {
         const s = this.ps[i];
         g.save(); g.translate(x, y); g.rotate(this.pr[i]);

@@ -1,9 +1,9 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-20T23:31:06",
- "wave": 6,
- "waveLabel": "Fourth playthrough",
- "headline": "Score improved to 7 ties, 5 losses, 0 outright wins for StS2's side on ties. The biggest gap was a two-word CSS collision.",
+ "updated": "2026-08-24T23:28:51",
+ "wave": 7,
+ "waveLabel": "Closing the last five",
+ "headline": "Four builders on the remaining dimension losses: juice, card feel, visual craft, and route readability.",
  "pieces": [
   {
    "id": "engine",
@@ -33,10 +33,10 @@
    "id": "card",
    "name": "Card feel",
    "desc": "Hover, drag, arc-fan hand, play arc, impact, re-fan easing",
-   "status": "done",
-   "round": 4,
+   "status": "rework",
+   "round": 5,
    "verdict": "Hand no longer covers the board, card art distinct across all pools, lining figures throughout.",
-   "gap": null,
+   "gap": "Hover is 168ms against a 120ms bar; the hand does not spread when small, so cards clip each other's rules text with 1136px of empty screen beside them.",
    "builder": null,
    "critic": null,
    "log": []
@@ -45,10 +45,10 @@
    "id": "scene",
    "name": "Combat presentation",
    "desc": "Battlefield staging, enemy rigs, damage numbers, hit reactions, VFX",
-   "status": "done",
-   "round": 4,
+   "status": "rework",
+   "round": 5,
    "verdict": "Render seam closed, player counters, House Rule docked, boss scale fixed, Guard-aware damage preview.",
-   "gap": null,
+   "gap": "Nothing animates when it attacks: the enemy sprite is byte-identical across all 14 frames of its attack, and the player has no body in the scene.",
    "builder": null,
    "critic": null,
    "log": []
@@ -69,9 +69,9 @@
    "id": "map",
    "name": "Blueprint routes",
    "desc": "Branching route map drawn on the mansion blueprint sections",
-   "status": "done",
-   "round": 3,
-   "verdict": "Safe Room guaranteed before the boss: region survival 40% to 50%, boss reached 58% to 68%. Route now readable three rooms ahead; 0 label collisions.",
+   "status": "reviewing",
+   "round": 4,
+   "verdict": "Route redrawn as graphite over print: warm, continuous, curved, double-passed with a relief stroke. Row 11 now one Safe Room plus real alternatives across 85 sheets.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -105,10 +105,10 @@
    "id": "frontend",
    "name": "Title / Select / Clubhouse",
    "desc": "Front end, Companion select, investigation board",
-   "status": "done",
-   "round": 3,
+   "status": "rework",
+   "round": 4,
    "verdict": "Rescue is its own screen: the painted portrait behind a door that opens. Run-end raw ids resolved, counters agree, seed notation unified.",
-   "gap": null,
+   "gap": "The missing pets have no faces: one hard-coded cat SVG for every animal, and eight empty polaroids. The single image the whole game is about is a placeholder.",
    "builder": null,
    "critic": null,
    "log": []
@@ -482,6 +482,14 @@
   {
    "t": "2026-08-20T23:31:06",
    "msg": "New gate: tests/scene-css/check.py fails the build if two scenes declare the same class with conflicting layout. Now at 0 conflicts."
+  },
+  {
+   "t": "2026-08-24T23:28:51",
+   "msg": "Map round 4: rounds 2 and 3 both measured an improvement to route visibility and neither could work - route and building were the same kind of mark, so weight was the only free variable."
+  },
+  {
+   "t": "2026-08-24T23:28:51",
+   "msg": "That round also found 149 rooms across 85 sheets whose every exit was a Big Scare. The earlier 'all elites avoidable' rule was only a global property, not a local one."
   }
  ]
 }

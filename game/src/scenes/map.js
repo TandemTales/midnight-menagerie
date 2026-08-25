@@ -18,7 +18,7 @@ import {
   generateRegionMap, regionMeta, blueprintPlan,
   NODE_INFO, sceneForNode, legalNextIds, reachableFrom, hazardById,
 } from '../state/mapgen.js';
-import { createMapNode, nodeSymbol, hazardSymbol, hazardGlyphMarkup, inkLine, seedOf, escapeHtml } from '../ui/mapnode.js';
+import { createMapNode, nodeSymbol, hazardSymbol, hazardGlyphMarkup, pencilStroke, seedOf, escapeHtml } from '../ui/mapnode.js';
 import { HUD } from '../ui/hud.js';
 import { pauseStageFor } from './_stage.js';
 
@@ -557,9 +557,13 @@ export class MapScene extends Scene {
         <circle cx="3" cy="3" r="1.7" fill="currentColor" opacity=".5"/>
         <circle cx="9.5" cy="9.5" r="1.2" fill="currentColor" opacity=".35"/>
       </pattern>
+      <!-- The arrowhead is on the LIVE choice, so it wears the live choice's
+           colour.  currentColor inside a marker resolves against the marker's
+           own inherited colour, which on this layer is the blueprint's blue —
+           so the one mark that had to be flame was quietly navy. -->
       <marker id="mm-arrow" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="7" markerHeight="7"
               orient="auto-start-reverse">
-        <path d="M1 1 L11 6 L1 11 L3.6 6 Z" fill="currentColor"/>
+        <path class="mi-arrowhead" d="M1 1 L11 6 L1 11 L3.6 6 Z"/>
       </marker>
     </defs>`);
 
@@ -622,22 +626,62 @@ export class MapScene extends Scene {
     }
     parts.push('</g>');
 
-    // route edges.  Each one is drawn twice: a parchment halo underneath so the
-    // pencil line stays legible over dense architecture, then the line itself.
-    const halos = [], lines = [];
-    const put = (from, to, d, row, extra = '') => {
-      halos.push(`<path class="mi-halo" data-from="${from}" data-to="${to}" d="${d}"/>`);
-      lines.push(`<path class="mi-edge${extra}" data-from="${from}" data-to="${to}" d="${d}"/>`);
+    // ── the route: GRAPHITE OVER INK ────────────────────────────────────────
+    //
+    // Rounds 2 and 3 tried to make the route readable by raising its weight and
+    // dropping the plan's alpha, and measured that it worked.  It did not: a
+    // reviewer playing normally still reported "I could never see which node
+    // leads where — the connective strokes are the same dashed vocabulary as the
+    // architectural line-work."  They are right, and the sentence contains the
+    // diagnosis.  Both were thin dashed blue-grey lines on parchment, so the
+    // only variable left was strength, and strength cannot separate two marks
+    // that are the same KIND of mark.  A heavier dashed navy line among three
+    // hundred dashed navy lines is still camouflage.
+    //
+    // The route is a pencil drawn OVER a printed survey.  It is now drawn like
+    // one, on five axes at once (see `pencilStroke` in ui/mapnode.js):
+    //
+    //   colour   warm graphite (--graphite ≈ rgb 66,60,54) against the plan's
+    //            cold blue, which lands on paper at roughly rgb 134,144,155
+    //   texture  one continuous deposit.  The dash is the ARCHITECT's word for
+    //            "proposed"; the plan owns it and the route has given it back
+    //   join     smooth curves through the hand's tremble.  The plan is mitred
+    //            right angles; graphite has no corners
+    //   pass     two overlapping strokes, because nobody rules a route once
+    //   relief   the same stroke again, offset 1.2/2.4px and very pale, so the
+    //            mark casts a shade and sits ON the paper rather than in it
+    //
+    // Four paths per leg instead of one, all static — no filters, nothing
+    // animated per frame.  Order matters: every parchment halo is laid before
+    // any graphite, or one leg's clear channel erases the leg it crosses.
+    const halos = [], shades = [], ghosts = [], lines = [];
+    const put = (from, to, geo, extra = '') => {
+      const at = `data-from="${from}" data-to="${to}"`;
+      halos .push(`<path class="mi-halo"   ${at} d="${geo.a}"/>`);
+      shades.push(`<path class="mi-shade"  ${at} d="${geo.a}"/>`);
+      ghosts.push(`<path class="mi-ghost"  ${at} d="${geo.b}"/>`);
+      lines .push(`<path class="mi-edge${extra}" ${at} d="${geo.a}"/>`);
     };
     for (const e of map.edges) {
       const a = m.byId.get(e.from), b = m.byId.get(e.to);
       if (!a || !b) continue;
       const ra = a.type === NodeType.BOSS ? BOSS_R : NODE_R;
       const rb = b.type === NodeType.BOSS ? BOSS_R : NODE_R;
-      const [x1, y1, x2, y2] = trim(a.x * this.SW, a.y * this.SH, b.x * this.SW, b.y * this.SH, ra + 4, rb + 7);
+      // Trim proportionally, not by a flat mark radius.  Rows sit ~135 sheet-px
+      // apart and lanes ~129, so a typical leg is 150-190px long; taking 48 off
+      // one end and 51 off the other left 60px of drawn line floating in the
+      // middle with a 22px gap at each mark.  With a dashed line nobody noticed;
+      // with a continuous pencil the sheet turned into a field of unattached
+      // arcs, which is a WORSE answer to "which node leads where" than the one
+      // it replaced.  A route has to touch the rooms it joins.
+      const L = Math.hypot((b.x - a.x) * this.SW, (b.y - a.y) * this.SH) || 1;
+      const t1 = Math.min(ra + 4, L * 0.21), t2 = Math.min(rb + 7, L * 0.23);
+      const [x1, y1, x2, y2] = trim(a.x * this.SW, a.y * this.SH, b.x * this.SW, b.y * this.SH, t1, t2);
       const long = b.row - a.row > 1;
-      put(e.from, e.to, inkLine(seedOf(e.from + e.to), x1, y1, x2, y2, long ? 15 : 11, long ? 12 : 9),
-        a.row, long ? ' mi-edge--long' : '');
+      put(e.from, e.to,
+        pencilStroke(seedOf(e.from + e.to), x1, y1, x2, y2,
+          { bow: long ? 15 : 9, tremble: 1.5, step: long ? 34 : 26 }),
+        long ? ' mi-edge--long' : '');
     }
 
     // The way in.  These are real edges from the doorway marker, not decoration:
@@ -646,10 +690,15 @@ export class MapScene extends Scene {
       const n = m.byId.get(id); if (!n) continue;
       const x = n.x * this.SW, y = n.y * this.SH;
       const x0 = WIN.x + 16;
-      put(ENTRY, id, inkLine(seedOf('in' + id), x0, y + 14, x - NODE_R - 14, y, 5, 6), 0, ' mi-edge--entry');
+      put(ENTRY, id,
+        pencilStroke(seedOf('in' + id), x0, y + 14, x - NODE_R - 14, y,
+          { bow: 9, tremble: 1.2, step: 22 }),
+        ' mi-edge--entry');
     }
-    parts.push('<g class="mi-halos">' + halos.join('') + '</g>');
-    parts.push('<g class="mi-edges">' + lines.join('') + '</g>');
+    parts.push('<g class="mi-halos">'  + halos.join('')  + '</g>');
+    parts.push('<g class="mi-shades">' + shades.join('') + '</g>');
+    parts.push('<g class="mi-ghosts">' + ghosts.join('') + '</g>');
+    parts.push('<g class="mi-edges">'  + lines.join('')  + '</g>');
 
     const sx = map.startIds.map(i => m.byId.get(i)).filter(Boolean);
     if (sx.length) {
@@ -663,9 +712,14 @@ export class MapScene extends Scene {
     this.el.ink.innerHTML = parts.join('');
     this.el.ink.style.color = this._inkColor || '#2d4a7a';
     this._edges = [...this.el.ink.querySelectorAll('.mi-edge')];
-    this._halos = new Map();
-    for (const p of this.el.ink.querySelectorAll('.mi-halo')) {
-      this._halos.set(p.dataset.from + '>' + p.dataset.to, p);
+    // Every leg's four strokes, keyed once so the state pass is four writes per
+    // leg and not four queries per leg.
+    this._legs = new Map();
+    for (const p of this.el.ink.querySelectorAll('.mi-halo, .mi-shade, .mi-ghost')) {
+      const k = p.dataset.from + '>' + p.dataset.to;
+      let list = this._legs.get(k);
+      if (!list) this._legs.set(k, list = []);
+      list.push(p);
     }
   }
 
@@ -749,42 +803,115 @@ export class MapScene extends Scene {
     });
 
     const placed = [];
-    const boxOf = (L, dy) => {
+    /**
+     * The chip's box in sheet coordinates for a candidate offset — and the
+     * offset it actually ended up at, because the box is clamped into the drawn
+     * plan window here rather than after the fact.  That clamp is the boss
+     * label fix: "RECEIVING CHAMBER" is 341 sheet-px of Cinzel centred on a
+     * room at x=0.905, which puts half of it past the right-hand frame rule and
+     * off the paper.  Clamping inside boxOf means the collision pass scores the
+     * position the chip will really occupy, not the one it asked for.
+     */
+    const boxOf = (L, dx, dy) => {
       const cx = L.n.x * this.SW, cy = L.n.y * this.SH;
-      const top = cy + (L.box / 2 + 3 + dy) * k;
       const hw = (L.w / 2 + 4) * k, hh = LABEL_H * k;
-      return { left: cx - hw, right: cx + hw, top, bottom: top + hh };
+      const lo = WIN.x + 10 + hw, hi = WIN.x + WIN.w - 10 - hw;
+      const c = hi > lo ? clampN(cx + dx * k, lo, hi) : cx;
+      const top = cy + (L.box / 2 + 3 + dy) * k;
+      return { left: c - hw, right: c + hw, top, bottom: top + hh,
+               dx: (c - cx) / k, dy };
     };
-    const cost = (L, b) => {
+    // Overlap and travel are scored separately on purpose.  Travel is only a
+    // tie-break — "all else equal, stay near your own mark" — and must never
+    // reach the drop decision, or a chip that found perfectly clear paper two
+    // rungs down gets deleted for the crime of having moved.  (It did: folding
+    // the two together took the sheet from 9 dropped names to 20.)
+    // Chips are tested against each other with a breathing gap around them, not
+    // edge to edge.  Two names 3px apart do not overlap by any measure and read
+    // as one pile — which is precisely what the playtester photographed and
+    // called an overlap.  "Formal Dining Room" and "East Reception Hall" in
+    // `p5-42z.png` are 17 screen px apart and touch nothing.
+    const GAP = 7 * k;
+    const clash = (L, b) => {
       let c = 0;
-      for (const p of placed) c += rectOverlap(b, p) * 4;
+      const g = { left: b.left - GAP, right: b.right + GAP,
+                  top: b.top - GAP, bottom: b.bottom + GAP };
+      for (const p of placed) c += rectOverlap(g, p) * 4;
       for (let i = 0; i < discs.length; i++) {
         if (this._labels[i] !== L) c += discOverlap(b, discs[i]);
       }
       return c;
     };
+    const travel = (b) => (Math.abs(b.dx) + Math.abs(b.dy)) * 0.6;
 
     // `lab-off` means "the pass could not find clear paper", never "the CSS
     // was going to hide this anyway" — otherwise the class stops meaning
     // anything and the next person to read it is misled.
-    for (const L of this._labels) { L.dy = 0; L.off = false; }
+    for (const L of this._labels) { L.dx = 0; L.dy = 0; L.off = false; }
     for (const L of shown.sort((a, b) => rank(a) - rank(b))) {
-      const ladder = [0, 26, -(L.box + 26), 54, -(L.box + 54), 82, -(L.box + 82)];
-      let best = null;
-      for (const dy of ladder) {
-        const b = boxOf(L, dy);
-        const c = cost(L, b);
-        if (!best || c < best.c) best = { dy, c, b };
-        if (c === 0) break;
+      // The old ladder was vertical only, and vertical-only is why the
+      // playtester saw "Formal Dining Room" and "East Reception Hall" stacked
+      // against each other: two rooms one lane apart have nowhere to go up or
+      // down that is not the other one's mark, and a chip that cannot move
+      // sideways has to settle for the least-bad pile.  Sideways is where the
+      // clear paper is on a plan whose depth runs west to east.
+      const side = L.w / 2 + 34;
+      const cands = [];
+      for (const dy of [0, 26, -(L.box + 26), 54, -(L.box + 54), 82, -(L.box + 82)]) {
+        cands.push([0, dy]);
+        if (Math.abs(dy) <= 56) { cands.push([side, dy], [-side, dy]); }
       }
-      if (best.c > 0 && rank(L) === 3) { L.off = true; continue; }
-      L.dy = best.dy;
+      // nearest first, so the first slot that clears is also the closest one
+      cands.sort((p, q) => (Math.abs(p[0]) + Math.abs(p[1])) - (Math.abs(q[0]) + Math.abs(q[1])));
+      let best = null;
+      for (const [dx, dy] of cands) {
+        const b = boxOf(L, dx, dy);
+        const hit = clash(L, b);
+        const score = hit + travel(b);
+        if (!best || score < best.score) best = { score, hit, b };
+        if (hit === 0) break;
+      }
+      // A chip may only be dropped when nothing clears AND it is one of the
+      // rooms you cannot enter this turn: an unreadable name is worse than no
+      // name, but a missing name on a legal room is worse than either.
+      if (best.hit > 0 && rank(L) === 3) { L.off = true; continue; }
+      L.dx = best.b.dx; L.dy = best.b.dy;
       placed.push(best.b);
     }
     for (const L of this._labels) {
-      L.el.style.setProperty('--mn-dy', L.dy ? L.dy + 'px' : '0px');
+      L.el.style.setProperty('--mn-dx', L.dx ? L.dx.toFixed(1) + 'px' : '0px');
+      L.el.style.setProperty('--mn-dy', L.dy ? L.dy.toFixed(1) + 'px' : '0px');
       L.el.classList.toggle('lab-off', !!L.off);
+      this._drawLeader(L);
     }
+  }
+
+  /**
+   * Tie a displaced name back to its room with a drafting leader.
+   *
+   * Moving a chip solves the collision and creates a worse problem: the
+   * playtester's two labels were perfectly legible, they just did not say which
+   * room they belonged to.  On a real survey a note that will not fit beside its
+   * subject gets a leader line, so this one does too.  Drawn inside the node's
+   * own SVG, which shares the mark's coordinate space and its counter-scale.
+   */
+  _drawLeader(L) {
+    const path = L.lead || (L.lead = L.el.querySelector('.mn-lead'));
+    if (!path) return;
+    const far = Math.abs(L.dy) > 20 || Math.abs(L.dx) > 12;
+    if (!far || L.off) { path.setAttribute('d', ''); return; }
+    const b = L.box, hw = L.w / 2 + 4, hh = LABEL_H / 2;
+    const ox = b / 2, oy = b / 2;                       // the mark's centre
+    const tx = b / 2 + L.dx, ty = b + 3 + L.dy + hh;    // the chip's centre
+    const vx = tx - ox, vy = ty - oy, len = Math.hypot(vx, vy) || 1;
+    const ux = vx / len, uy = vy / len;
+    const r0 = (L.n.type === NodeType.BOSS ? 0.44 : 0.34) * b;
+    // stop on the chip's edge, not inside it
+    const tin = Math.min(Math.abs(hw / (ux || 1e-6)), Math.abs(hh / (uy || 1e-6))) + 2;
+    const l1 = Math.max(r0 + 3, len - tin);
+    if (l1 <= r0 + 3) { path.setAttribute('d', ''); return; }
+    path.setAttribute('d', `M${(ox + ux * r0).toFixed(1)} ${(oy + uy * r0).toFixed(1)}`
+                         + `L${(ox + ux * l1).toFixed(1)} ${(oy + uy * l1).toFixed(1)}`);
   }
 
   _buildMarginalia() {
@@ -876,12 +1003,11 @@ export class MapScene extends Scene {
       p.classList.toggle('is-dead', dead);
       p.classList.toggle('is-cold', cold);
       p.setAttribute('marker-end', open ? 'url(#mm-arrow)' : '');
-      const halo = this._halos.get(f + '>' + t);
-      if (halo) {
-        halo.classList.toggle('is-walked', walked);
-        halo.classList.toggle('is-open', open);
-        halo.classList.toggle('is-dead', dead);
-        halo.classList.toggle('is-cold', cold);
+      for (const q of this._legs.get(f + '>' + t) || []) {
+        q.classList.toggle('is-walked', walked);
+        q.classList.toggle('is-open', open);
+        q.classList.toggle('is-dead', dead);
+        q.classList.toggle('is-cold', cold);
       }
     }
 
@@ -898,13 +1024,16 @@ export class MapScene extends Scene {
     // Row counter in the header, so "Wing 1 of 17" and "Row 4 of 13" are visibly
     // the same two-level address and not two unrelated numbers — same case, same
     // bold numeral, same "N of M".
+    // Before you step inside there is no row number, and "Row — of 13" printed
+    // an em dash where the player expected a number and read as a bug.  Say the
+    // true thing instead: you are at the door, and here is how deep the wing is.
     if (this.el.rowNum) {
       const at = m.currentId && m.byId.get(m.currentId);
       this.el.rowNum.innerHTML = at
         ? (at.type === NodeType.BOSS
             ? `Row <b>${m.map.rows}</b> of ${m.map.rows} — the boss`
             : `Row <b>${at.row + 1}</b> of ${m.map.rows}`)
-        : `Row <b>—</b> of ${m.map.rows} — at the door`;
+        : `<b>At the door</b> · ${m.map.rows} rows deep`;
     }
 
     if (!this._focusId || !legal.has(this._focusId)) this._focusId = this._legalIds[0] || null;
@@ -1243,11 +1372,25 @@ export class MapScene extends Scene {
     // what a side would occlude; this is that idea applied to the real thing
     // that matters here, the `.mi-edge` paths leaving this node.  (Their panel
     // itself is not adopted — see the note in docs/notes.)
+    // Avoid the edges leaving this room AND every other room you may enter.
+    // Measured over the five entry rooms of the Foyer at seed 42, the card was
+    // landing on another legal mark four times out of five (worst: 6,316 px²) —
+    // it fitted, it missed the corridors, and it sat squarely on the two other
+    // doors.  A card explaining one choice must not hide the alternatives; a
+    // legal mark and its name are as load-bearing as an outgoing corridor.
     const avoid = [r];
     for (const p of this._edges) {
       if (p.dataset.from !== id) continue;
       const b = p.getBoundingClientRect();
       if (b.width && b.height) avoid.push(b);
+    }
+    for (const lid of (this._legalIds || [])) {
+      if (lid === id) continue;
+      const el = this._nodeEls.get(lid); if (!el) continue;
+      const nb = el.getBoundingClientRect();
+      if (nb.width && nb.height) avoid.push(nb);
+      const lb = el.querySelector('.mn-label');
+      if (lb) { const q = lb.getBoundingClientRect(); if (q.width) avoid.push(q); }
     }
     const cands = [
       { side: 'left',  x: r.left - gap - tw,  y: centreY },
@@ -1373,7 +1516,7 @@ export class MapScene extends Scene {
     this._edges = null;
     if (this.el?.paper) { this.el.paper.width = this.el.paper.height = 0; }
     this._cssLink?.remove(); this._cssLink = null;
-    this._cs = null; this._vp = null; this._halos = null;
+    this._cs = null; this._vp = null; this._legs = null;
     this.el = null; this.model = null;
   }
 }

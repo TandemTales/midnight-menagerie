@@ -1,0 +1,22 @@
+<!doctype html><meta charset=utf-8>
+<link rel=stylesheet href="/game/src/ui/tokens.css">
+<link rel=stylesheet href="/game/src/ui/portrait.css">
+<body><script type=module>
+const m = await import('/game/src/ui/petart.js');
+m.petPhoto('orbit');
+const t={}; const mark=(k,f)=>{const a=performance.now();f();t[k]=Math.round(performance.now()-a);};
+const C=m.CTX2D;
+const cv=document.createElement('canvas');cv.width=512;cv.height=384;
+const g=cv.getContext('2d',C);
+const flush=()=>g.getImageData(0,0,1,1);
+g.fillStyle='#333';g.fillRect(0,0,512,384);flush();
+mark('enc jpeg x8',()=>{for(let i=0;i<8;i++)cv.toDataURL('image/jpeg',0.9);});
+mark('6000 strokes x8',()=>{for(let j=0;j<8;j++){for(let i=0;i<6000;i++){g.strokeStyle='rgba(200,180,150,0.2)';g.lineWidth=1;g.beginPath();g.moveTo(i%500,(i*7)%380);g.quadraticCurveTo(i%500+4,(i*7)%380+4,i%500+8,(i*7)%380+9);g.stroke();}flush();}});
+mark('12 filtered fills x8',()=>{for(let j=0;j<8;j++){for(let i=0;i<12;i++){g.save();g.beginPath();g.rect(50,50,300,200);g.clip();g.filter='blur(8px)';g.beginPath();g.ellipse(200,150,120,90,0,0,7);g.fillStyle='#a44';g.fill();g.filter='none';g.restore();}flush();}});
+mark('24 clip+grad x8',()=>{for(let j=0;j<8;j++){for(let i=0;i<24;i++){g.save();g.beginPath();g.ellipse(300,240,200,160,0,0,7);g.clip();const gr=g.createLinearGradient(0,0,512,384);gr.addColorStop(0,'#fff');gr.addColorStop(1,'#000');g.fillStyle=gr;g.fillRect(0,0,512,384);g.restore();}flush();}});
+mark('3 layer blurs x8',()=>{const c2=document.createElement('canvas');c2.width=512;c2.height=384;const x=c2.getContext('2d',C);for(let j=0;j<8;j++){for(let i=0;i<3;i++){x.filter='blur(3.2px)';x.drawImage(cv,0,0);}x.getImageData(0,0,1,1);}});
+m.clearFaceCache();
+mark('8 pets',()=>{for(const k of m.PET_KEYS) m.petPhoto(k);});
+mark('8 kids',()=>{for(const k of m.KID_KEYS) m.kidPhoto(k);});
+console.log('PROF '+JSON.stringify(t));
+</script>

@@ -55,6 +55,80 @@ export function inkLine(seed, x1, y1, x2, y2, amp = 3, segs = 8) {
   return d;
 }
 
+/**
+ * Catmull-Rom through the points, emitted as cubics.  Graphite has no corners:
+ * a hand pulling a pencil along a straightedge-less line curves through its own
+ * wobble.  The printed plan under it is all hard right angles and mitred joins,
+ * so "smooth" is one of the four things separating the route from the building.
+ */
+function smoothPath(p) {
+  if (p.length < 2) return '';
+  if (p.length === 2) {
+    return `M${p[0][0].toFixed(1)} ${p[0][1].toFixed(1)}L${p[1][0].toFixed(1)} ${p[1][1].toFixed(1)}`;
+  }
+  let d = `M${p[0][0].toFixed(1)} ${p[0][1].toFixed(1)}`;
+  for (let i = 0; i < p.length - 1; i++) {
+    const p0 = p[i - 1] || p[i], p1 = p[i], p2 = p[i + 1], p3 = p[i + 2] || p[i + 1];
+    d += `C${(p1[0] + (p2[0] - p0[0]) / 6).toFixed(1)} ${(p1[1] + (p2[1] - p0[1]) / 6).toFixed(1)}`
+       + ` ${(p2[0] - (p3[0] - p1[0]) / 6).toFixed(1)} ${(p2[1] - (p3[1] - p1[1]) / 6).toFixed(1)}`
+       + ` ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+  }
+  return d;
+}
+
+/**
+ * A route leg drawn as GRAPHITE OVER INK, not as more ink.
+ *
+ * The map's one decision is pathing, and for four rounds it was invisible for a
+ * reason no amount of stroke-width could fix: the route and the building were
+ * the same kind of mark.  Both were thin dashed blue-grey lines on parchment,
+ * so raising the route's weight and dropping the plan's alpha only ever moved a
+ * measurement — a heavier dashed navy line among three hundred dashed navy
+ * lines is still camouflage.  What separates a pencil route from a printed
+ * survey is not strength, it is KIND:
+ *
+ *   colour   warm graphite against the plan's cold blue (see --graphite)
+ *   texture  one continuous deposit, never the architect's dash
+ *   join     smooth curves through a real hand's tremble, not mitred corners
+ *   pass     drawn twice, because nobody rules a route in one stroke
+ *   relief   a soft offset shade, so the mark sits ON the paper not IN it
+ *
+ * Returns the two passes.  `a` is the firm one, `b` the lighter overdraw that
+ * shadows it a pixel or two away; the caller strokes `a` again, offset and very
+ * pale, for the relief.  Both share one low-frequency bow so they read as one
+ * line gone over twice rather than as two routes.
+ */
+export function pencilStroke(seed, x1, y1, x2, y2, opt = {}) {
+  const { bow = 20, tremble = 1.6, step = 30 } = opt;
+  const dx = x2 - x1, dy = y2 - y1;
+  const len = Math.hypot(dx, dy) || 1;
+  const nx = -dy / len, ny = dx / len;
+  const ux = dx / len, uy = dy / len;
+  const segs = Math.max(5, Math.min(26, Math.round(len / step)));
+
+  // one arc for both passes: the hand committed to a curve before it drew it
+  const arcRng = wobbler(seed);
+  const lean = arcRng() * bow;
+
+  const pass = (jitSeed, drift) => {
+    const w = wobbler(jitSeed);
+    const pts = [];
+    for (let i = 0; i <= segs; i++) {
+      const t = i / segs;
+      const arc = Math.sin(t * Math.PI) * lean + drift * Math.sin(t * Math.PI * 0.86);
+      const jit = w() * tremble * 2;
+      const slip = w() * tremble;              // the hand varies its speed too
+      pts.push([x1 + dx * t + nx * (arc + jit) + ux * slip,
+                y1 + dy * t + ny * (arc + jit) + uy * slip]);
+    }
+    // land on the marks: a route that misses its own room is not a route
+    pts[0] = [x1, y1]; pts[segs] = [x2, y2];
+    return smoothPath(pts);
+  };
+
+  return { a: pass(seed ^ 0x5f37, 0), b: pass(seed ^ 0x2b91, 1.5) };
+}
+
 // ── the nine glyphs, viewBox 0 0 48 48 ───────────────────────────────────────
 // `S` = stroked path, `F` = filled path.  Kept as data so states can restyle.
 const G = {
@@ -258,6 +332,13 @@ export function createMapNode(node, info, hazardName = '') {
         <g transform="translate(${off} ${off}) scale(${gs / 48})">${glyphMarkup(node.type)}</g>
         <path class="mn-tick" d="${tickD}"/>
         <path class="mn-kbd"  d="${kbdD}"/>
+        <!-- A drafting leader.  The collision pass moves a name chip off its own
+             mark when there is no clear paper beside it, and a displaced name
+             with nothing tying it back is worse than the collision was: the
+             playtester's two overlapping labels were readable, they just did
+             not say which room they belonged to.  The scene writes this path
+             whenever it has moved a chip more than a mark's width. -->
+        <path class="mn-lead" d=""/>
       </svg>
       <span class="mn-label">${escapeHtml(shortName(node.roomName || info.label))}</span>
       ${big ? '<span class="mn-boss-tag">BOSS</span>' : ''}

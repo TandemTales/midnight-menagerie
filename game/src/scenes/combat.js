@@ -26,7 +26,7 @@ import { TERMS } from '../data/schema.js';
 import { Hand } from '../ui/hand.js';
 import { CardView, ART_W, ART_H, CARD_SS } from '../ui/card.js';
 import { warmArt } from '../ui/cardart.js';
-import { EnemyView, statusGlyph } from '../ui/enemy.js';
+import { EnemyView, PlayerView, statusGlyph } from '../ui/enemy.js';
 import { CombatFX } from '../fx/combatfx.js';
 import { HUD } from '../ui/hud.js';
 import { openPile } from '../ui/deckview.js';
@@ -35,6 +35,9 @@ const CSS = new URL('./combat.css', import.meta.url).href;
 const CARD_CSS = new URL('../ui/card.css', import.meta.url).href;
 const HAND_CSS = new URL('../ui/hand.css', import.meta.url).href;
 const PORTRAITS = new URL('../../assets/portraits/', import.meta.url).href;
+
+/** Seconds from `card:play` to the effect resolving. See `_onPlay`. */
+const PLAY_RESOLVE = 0.44;
 
 /* ─────────────────────────────────────────────────────────────────────────────
  * WHICH ROOM ARE WE IN?
@@ -462,6 +465,12 @@ export class CombatScene extends Scene {
             <div class="cb-arena__floor"></div>
           </div>
           <div class="cb-enemies" role="group" aria-label="Enemies"></div>
+          <!-- THE KID STANDS HERE. See PlayerView in ui/enemy.js and the
+               .cb-hero block in combat.css: round 3 had no player body on the
+               board at all, only the framed portrait below.
+               (No backticks in this comment — CONTRACTS.md trap 1: one inside a
+               template literal ends the template and blanks the whole app.) -->
+          <div class="cb-herohost"></div>
         </div>
         <div class="cb-room" hidden></div>
         <!-- HOUSE RULES live in a docked rail, not pinned over the creature's
@@ -581,6 +590,10 @@ export class CombatScene extends Scene {
 
     this.root.classList.toggle('is-large', this.largeText);
     const slug = String(params.companion || this.ctx.run?.companion || 'marmalade');
+    this.hero = new PlayerView({
+      clock: this.ctx.clock, reduceMotion: this.reduceMotion, companion: slug,
+    });
+    $('.cb-herohost').appendChild(this.hero.el);
     this.$plArt.src = `${PORTRAITS}${slug}.png`;
     this.$plArt.addEventListener('error', () => { this.$plArt.style.display = 'none'; }, { once: true });
 
@@ -670,6 +683,17 @@ export class CombatScene extends Scene {
   _attachTips(v) {
     const tip = this.ctx.tooltip;
     if (!tip || !tip.attach) return;
+    /* NEVER COVER THE CREATURE YOU ARE DESCRIBING.
+       `ui/tooltip.js` already places the panel fully outside its ANCHOR, but the
+       anchor here is the flex box, and a boss rig draws far outside that box —
+       the SVG is `overflow: visible` and `meet`-fits a 1.5-scale creature into
+       it. So the panel sat squarely on top of The Butler while explaining him
+       (shots/p5-103-butler-intent.png). `data-tip-avoid` is the documented hook
+       for exactly this: score every side by how much of the listed elements it
+       would occlude. Every enemy STAGE on the board is listed, so the panel also
+       stops covering the creature's neighbours on its way past. */
+    v.el.dataset.tipAvoid = '.cb-enemy__stage, .cb-enemy__plate';
+    v.intentView.el.dataset.tipAvoid = '.cb-enemy__stage, .cb-enemy__plate';
     this._tipOffs.push(tip.attach(v.intentView.el, () => v.intentView.describe()));
     this._tipOffs.push(tip.attach(v.el, () => this._enemyDesc(v)));
   }
@@ -757,6 +781,7 @@ export class CombatScene extends Scene {
       this._readSettings();
       this.root.classList.toggle('is-large', this.largeText);
       for (const v of this.views.values()) v.reduceMotion = this.reduceMotion;
+      if (this.hero) this.hero.reduceMotion = this.reduceMotion;
     }));
   }
 
@@ -807,9 +832,24 @@ export class CombatScene extends Scene {
     /* No `card:play` re-emit here: `ui/hand.js` already emits it (now carrying `type`),
        and this method is the handler for that very event. Emitting again made every
        play appear twice on the bus. */
-    // resolve on the "hold" beat of the Hand's play animation, so the effect
-    // lands while the card is presented rather than the instant it leaves
-    this.ctx.clock.wait(this._d(0.20)).then(async () => {
+    /* ── WHEN THE EFFECT LANDS, relative to the card ───────────────────────
+       Round 3 resolved 200 ms in, which is BEFORE the card has even finished
+       flying to the play position (`ui/hand.js` TUNE.playTo is 260 ms). So the
+       impact happened behind a 226x314 card sitting dead centre: measured, the
+       card occupied y 230-560 while the enemy occupied y 330-450, and the whole
+       reaction — flinch, shards, GUARD BROKEN — played underneath it.
+
+       PLAY_RESOLVE is now the end of the Hand's presentation hold
+       (playTo 0.26 + playHold 0.20), so the card is already arcing away to the
+       discard pile when contact lands and the creature is uncovered. It costs
+       ~220 ms of latency once per card and buys back the entire receiving-side
+       animation the reviewer praised, which was being played to nobody.
+
+       The complete fix is one number in a file this agent does not own —
+       `ui/hand.js` TUNE.playY, 0.62 of the board height, which is what puts the
+       presented card across the creature band in the first place. That ask is
+       in the report. */
+    this.ctx.clock.wait(this._d(PLAY_RESOLVE)).then(async () => {
       try { await this.engine.playCard(uid, tid); } catch (e) { console.error('[combat] playCard', e); }
       await this._settle();
       this._playedUid = null;
@@ -875,9 +915,45 @@ export class CombatScene extends Scene {
    */
   _resolveChoice(req) {
     return new Promise((resolve) => {
-      this._choice = { req, picked: [], resolve, done: false };
+      const upTo = this._isUpTo(req);
+      this._choice = {
+        req, picked: [], resolve, done: false, upTo,
+        /* THE FEWEST PICKS THAT MAY CONFIRM.
+           Round 3 required `req.count` and disabled CONFIRM below it. The engine
+           has never wanted that: `combat/choice.js#sanitise` accepts ANY subset
+           of the pool and only forces a single index when a non-optional request
+           comes back completely empty. So "Bury up to 2 other Tricks" with one
+           card selected was a legal resolution the whole time, and the screen
+           refused it — with Escape swallowed as well, which is a soft-lock by
+           any other name (shots/p5-46-SOFTLOCK.png). */
+        min: (req.optional || upTo) ? 0 : 1,
+      };
       this._openChooser(req);
     });
+  }
+
+  /**
+   * Does the card that raised this request print "up to N"?
+   *
+   * `Backyard Cache` reads "Bury up to 2 other Tricks" and the chooser said
+   * "Pick 2" — the card and the UI disagreed, and the card is the promise the
+   * player was given. The request carries `meta.cardId`, so the scene can read
+   * the printed text and honour it rather than contradict it.
+   *
+   * This is a RENDERING decision, not a rules one: whatever count comes back,
+   * the engine is what applies it. The data-side fix (passing `optional:true`
+   * from those cards) belongs to companion-cards and is in the report; this
+   * stops the screen lying in the meantime, and is harmless once it lands.
+   */
+  _isUpTo(req) {
+    if (!req || !req.meta) return false;
+    try {
+      const uid = req.meta.cardUid;
+      const card = uid != null ? this.engine.card(uid) : null;
+      const def = (card && card.def) || (req.meta.cardId && this.engine.resolveCardDef(req.meta.cardId));
+      const text = String((def && (def.text || def.desc)) || '');
+      return /\bup to\b/i.test(text);
+    } catch { return false; }
   }
 
   _openChooser(req) {
@@ -892,10 +968,18 @@ export class CombatScene extends Scene {
     const how = req.kind === 'enemy'
       ? 'Click one here or on the board, or use the arrow keys and Enter.'
       : 'Click one, or use the arrow keys and Enter.';
+    /* SAY THE SAME THING THE CARD SAYS. "Bury up to 2" printed "Pick 2." here
+       and then refused Confirm at one — the sub-line now matches the range the
+       chooser will actually accept, which for `up to N` is 0..N. */
+    const range = ch.upTo || req.optional ? `up to ${req.count}` : String(req.count);
     this.$chSub.textContent = many
-      ? `Pick ${req.count}.${req.optional ? ' You may pick fewer.' : ''} Click them, then Confirm.`
-      : (req.optional ? `You may skip this. ${how}` : `Pick ${noun}. ${how}`);
-    this.$chSkip.hidden = !req.optional;
+      ? `Pick ${range}. Click them, then Confirm.`
+      : (ch.min === 0 ? `You may skip this. ${how}` : `Pick ${noun}. ${how}`);
+    /* EVERY CHOOSER CANCELS, AND THEY ALL CANCEL THE SAME WAY. Escape dismissed
+       the Fetch picker and did nothing at all on the Bury picker, so two panels
+       in one scene behaved differently and one of them read as frozen. */
+    this.$chSkip.hidden = false;
+    this.$chSkip.textContent = ch.min === 0 ? 'Skip' : 'Cancel';
     this.$chOk.hidden = !many;
     this.$chPool.textContent = '';
     this.$chPool.dataset.kind = req.kind;
@@ -950,6 +1034,7 @@ export class CombatScene extends Scene {
     }
 
     this.$chooser.hidden = false;
+    this._syncChooserBar();
     this.ctx.audio?.play?.('ui:open-panel');
     ch.cursor = 0;
     this._focusChoice(0);
@@ -977,16 +1062,39 @@ export class CombatScene extends Scene {
       ch.nodes[i].classList.add('is-picked');
     }
     this.ctx.audio?.play?.('ui:click');
-    this.$chOk.disabled = !req.optional && ch.picked.length < req.count;
+    this._syncChooserBar();
     if (req.count === 1 && ch.picked.length === 1) this._commitChoice();
   }
 
+  /** CONFIRM is live the moment the selection is legal — see `_resolveChoice`. */
+  _syncChooserBar() {
+    const ch = this._choice;
+    if (!ch) return;
+    const n = ch.picked.length;
+    this.$chOk.disabled = n < ch.min;
+    this.$chOk.textContent = n === 0 && ch.min === 0 ? 'Confirm none'
+      : n < ch.req.count ? `Confirm ${n}` : 'Confirm';
+  }
+
+  /**
+   * Close the chooser and hand the engine what was picked.
+   *
+   * `skip` means the player cancelled. It NEVER refuses to close: a blocking
+   * modal the player cannot dismiss is a soft-lock whatever the reason for it,
+   * and the engine is built for this — `combat/choice.js#sanitise` takes any
+   * subset and substitutes the first entry if a mandatory request comes back
+   * empty, so cancelling a mandatory pick costs you the choice, not the run.
+   * When that substitution is what is about to happen, say so out loud.
+   */
   _commitChoice(skip) {
     const ch = this._choice;
     if (!ch || ch.done) return;
-    if (!skip && !ch.req.optional && ch.picked.length < ch.req.count) {
-      this._deny(`Pick ${ch.req.count - ch.picked.length} more.`);
+    if (!skip && ch.picked.length < ch.min) {
+      this._deny(`Pick at least ${ch.min}.`);
       return;
+    }
+    if (skip && ch.min > 0 && ch.picked.length === 0) {
+      this._deny('Cancelled — the House picks for you.');
     }
     ch.done = true;
     this.$chooser.hidden = true;
@@ -996,7 +1104,10 @@ export class CombatScene extends Scene {
     this._chViews = [];
     this.$chPool.textContent = '';
     this.ctx.audio?.play?.(skip ? 'ui:back' : 'ui:confirm');
-    const picked = skip ? [] : ch.picked.slice();
+    // Cancelling an OPTIONAL pick means "none". Cancelling a mandatory one with
+    // something already selected means "just these" — throwing the selection
+    // away would make Cancel destructive rather than an exit.
+    const picked = (skip && ch.min === 0) ? [] : ch.picked.slice();
     this._choice = null;
     ch.resolve(picked);
   }
@@ -1146,12 +1257,20 @@ export class CombatScene extends Scene {
     const need = Math.max(0, inc.total - (inc.block || 0));
     this.$inc.hidden = false;
     this.$inc.dataset.state = lethal ? 'lethal' : through > 0 ? 'through' : 'safe';
+    /* WITH NO GUARD THERE IS NO ARITHMETIC. At 0 Guard the panel printed
+       `INCOMING 12 -> 12`: an arrow, a second copy of the same number, and no
+       Guard term anywhere to explain what the arrow was supposed to have done.
+       The arrow earns its place only when something actually changes the
+       number, so it now appears exactly when a Guard term does. */
+    const shown = block > 0;
     this.$inc.innerHTML =
       `<span class="cb-inc__k">Incoming</span>`
       + `<b class="cb-inc__n">${inc.total}</b>`
-      + (block > 0 ? `<span class="cb-inc__blk">&minus;${block} Guard</span>` : '')
-      + `<span class="cb-inc__arrow">&rarr;</span>`
-      + `<b class="cb-inc__t">${through}</b>`
+      + (shown
+        ? `<span class="cb-inc__blk">&minus;${block} Guard</span>`
+          + `<span class="cb-inc__arrow">&rarr;</span>`
+          + `<b class="cb-inc__t">${through}</b>`
+        : '')
       + (lethal ? `<span class="cb-inc__lethal">LETHAL</span>`
         : through > 0 ? `<span class="cb-inc__need">${need} more Guard to stop it all</span>`
           : `<span class="cb-inc__safe">Fully blocked</span>`);
@@ -1374,7 +1493,10 @@ export class CombatScene extends Scene {
 
       case 'intent': {
         const v = this.views.get(ev.enemyId);
-        if (v) v.setIntent(ev.intent, { playerHp: E.player.hp, playerBlock: E.player.block });
+        if (v) {
+          v.setIntent(ev.intent, { playerHp: E.player.hp, playerBlock: E.player.block });
+          this._refreshTip(v);
+        }
         this._renderIncoming(0);
         return;
       }
@@ -1411,10 +1533,17 @@ export class CombatScene extends Scene {
         // The PLAYER owns counters too (Loose Bones, Nine Lives, Glow, Web…) and
         // round 3 only floated a word for enemies, so every change to your own
         // resource track happened in silence.
-        if (ev.delta) {
+        /* NEVER PRINT `undefined`. A counter event with neither `name` nor `id`
+           floated the literal string "+1 undefined" over the board mid-play —
+           `${a || b}` is not a guard when both sides can be missing. Anything
+           without a readable label is a number the player cannot act on, so it
+           does not get a word at all; the counter chip under the creature is
+           still updated by `_syncActor`. */
+        const label = ev.name || (ev.id ? titleCase(ev.id) : '');
+        if (ev.delta && label) {
           const c = this._pointOf(ev.ownerId);
           this.fx.word(c.x + (ev.ownerId === E.player.id ? 64 : 0), c.y - 56,
-            `${ev.delta > 0 ? '+' : ''}${ev.delta} ${ev.name || ev.id}`, 'counter');
+            `${ev.delta > 0 ? '+' : ''}${ev.delta} ${label}`, 'counter');
         }
         if (ev.ownerId === E.player.id) this._syncPlayer();
         return;
@@ -1424,7 +1553,7 @@ export class CombatScene extends Scene {
         const v = this.views.get(ev.enemyId);
         if (v) {
           v.setQueue(ev.queue || []);
-          if (ev.action && ev.action !== 'preview') {
+          if (ev.action && typeof ev.action === 'string' && ev.action !== 'preview') {
             const c = this._pointOf(ev.enemyId);
             this.fx.word(c.x, c.y - 70, ev.action.toUpperCase(), 'counter');
             this.ctx.audio?.play?.('ui:confirm');
@@ -1607,6 +1736,16 @@ export class CombatScene extends Scene {
     const hpLoss = ev.hpLoss || 0;
     const blockedAll = hpLoss <= 0 && ev.blocked > 0;
 
+    /* GET THE CARD OFF THE CREATURE.
+       Measured at the contact frame: the played card occupied y 230-560 while
+       the target occupied y 330-450, covering 57.8% of it, so the flinch, the
+       shards and GUARD BROKEN all played behind a piece of cardboard.
+       `PLAY_RESOLVE` moved the beat to the end of the presentation hold; this
+       is the guarantee. `filter: opacity()` rather than the opacity PROPERTY
+       because `ui/hand.js` writes that inline during the discard arc and inline
+       always wins — a filter composes with it instead of fighting it. */
+    this._impactVeil();
+
     // impact
     const dir = isPlayer ? Math.PI * 0.85 : -0.5;
     this.fx.slash(c.x, c.y, dir, blockedAll ? this.fx.col.guard : this.fx.col.threat);
@@ -1680,16 +1819,27 @@ export class CombatScene extends Scene {
     return { x: c.x + dx, y: c.y - 6, rise };
   }
 
-  /** Wind-up: the Kid coils before the Trick lands. Armed by `_onPlay`. */
+  /**
+   * Wind-up: the Kid coils before the Trick lands. Armed by `_onPlay`.
+   *
+   * It drives the BODY on the board (`ui/enemy.js` PlayerView) and the portrait
+   * panel together. Round 3 only had the panel, and the reviewer's note was not
+   * "the portrait animation is too small" — it was "the player has no body in
+   * the scene at all", which no amount of animating a picture frame fixes.
+   */
   _playerWindup() {
     if (this.reduceMotion) return;
+    this.hero?.windup();
     const el = this.$pl;
     el.classList.remove('is-windup', 'is-striking');
     void el.offsetWidth;
     el.classList.add('is-windup');
     clearTimeout(this._windT);
     // an attack that never produces a damage event must not leave the pose held
-    this._windT = setTimeout(() => el.classList.remove('is-windup'), 900);
+    this._windT = setTimeout(() => {
+      el.classList.remove('is-windup');
+      this.hero?.settle();
+    }, 900);
   }
 
   /** Contact + follow-through. Resolves on the contact frame, like `EnemyView#strike`. */
@@ -1701,10 +1851,32 @@ export class CombatScene extends Scene {
     void el.offsetWidth;
     el.classList.add('is-striking');
     this.ctx.clock.wait(this._d(0.36)).then(() => el.classList.remove('is-striking'));
+    /* The torch arc is drawn from the tip of the torch to the target, so the
+       hit has a visible CAUSE rather than a number appearing on a creature. */
+    if (this.hero) {
+      const c = this.hero.centre();
+      const from = this.hero.reach();
+      const o = this.fx.toLocal(c.x, c.y);
+      const r = Math.max(60, Math.hypot(from.x - c.x, from.y - c.y));
+      this.fx.swing(o.x, o.y, r, -1.5, 1.9, this.fx.col.flame, 0.3);
+      await this.hero.strike();
+      this.ctx.clock.wait(this._d(0.5)).then(() => this.hero?.settle());
+      return;
+    }
     await this._wait(this._d(0.085));
   }
 
+  /** Cards go translucent for the length of one impact. See `_animDamage`. */
+  _impactVeil() {
+    if (this.reduceMotion) return;
+    this.$handHost.classList.add('is-impact');
+    clearTimeout(this._veilT);
+    this._veilT = setTimeout(() => this.$handHost.classList.remove('is-impact'),
+      Math.round(340 / this.speed));
+  }
+
   _playerHit(hpLoss, blocked) {
+    this.hero?.flinch(hpLoss, blocked);
     this.$pl.classList.remove('is-hit', 'is-clank');
     void this.$pl.offsetWidth;
     this.$pl.classList.add(blocked ? 'is-clank' : 'is-hit');
@@ -1786,11 +1958,27 @@ export class CombatScene extends Scene {
 
   /** Per-event refresh. Reads the actor directly — `engine.state` is a
    *  serialising snapshot and this runs once per hit of a multi-hit attack. */
+  /**
+   * An open tooltip is a LIVE readout, not a snapshot.
+   *
+   * The enemy panel read `COURAGE 30/30` while the bar four pixels under it
+   * read 24/30, and again 175/175 against 169/175 — the panel is built once on
+   * show and the fight had moved on underneath it. `ui/tooltip.js#refresh(el)`
+   * re-runs the descriptor for exactly one anchor and does nothing at all when
+   * that anchor is not the open one, so this is safe to call on every sync.
+   */
+  _refreshTip(v) {
+    const tip = this.ctx.tooltip;
+    if (!tip || !tip.refresh || !v) return;
+    tip.refresh(v.el);
+    tip.refresh(v.intentView.el);
+  }
+
   _syncActor(id) {
     if (id === this.engine.player.id) { this._syncPlayer(); return; }
     const en = this.engine.actor(id);
     const v = this.views.get(id);
-    if (en && v) { v.setState(this._light(en)); this._syncEnemyExtras(id); }
+    if (en && v) { v.setState(this._light(en)); this._syncEnemyExtras(id); this._refreshTip(v); }
   }
 
   _light(a) {
@@ -2078,12 +2266,10 @@ export class CombatScene extends Scene {
           e.preventDefault();
           this._focusChoice(ch.cursor + (e.shiftKey ? -1 : 1));
         } else if (e.key === 'Escape') {
+          // ESCAPE ALWAYS DISMISSES. Every chooser in this scene, mandatory or
+          // not, the same key with the same result — see `_commitChoice`.
           e.preventDefault();
-          if (ch.req.optional) this._commitChoice(true);
-          // A mandatory choice cannot be dismissed — the engine is blocked on
-          // it. Round 1 swallowed Escape in silence, which reads as a frozen
-          // game. Say why, and point at the key that does work.
-          else this._deny(`You have to pick ${ch.req.count === 1 ? 'one' : ch.req.count}. Use the arrow keys, then Enter.`);
+          this._commitChoice(true);
         } else if (e.key >= '1' && e.key <= '9') {
           const i = +e.key - 1;
           if (i < ch.nodes.length) { e.preventDefault(); this._pickChoice(i); }
@@ -2229,6 +2415,7 @@ export class CombatScene extends Scene {
   _frame(dt, t) {
     if (!this.engine) return;
     for (const v of this.views.values()) v.update(dt, t);
+    this.hero?.update(dt, t);
     this.fx?.update(dt);
 
     // screen shake on the DOM layer (stage.shake only moves the 3D camera)
@@ -2256,7 +2443,10 @@ export class CombatScene extends Scene {
 
   /* ══ teardown ═══════════════════════════════════════════════════════════ */
   async exit() {
+    clearTimeout(this._veilT);
     this._offFrame?.();
+    this.hero?.destroy();
+    this.hero = null;
     this._ro?.disconnect();
     for (const off of this._offs) { try { off(); } catch {} }
     for (const off of this._engineOffs) { try { off(); } catch {} }

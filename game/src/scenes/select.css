@@ -143,6 +143,13 @@
   color: var(--text-lo);
 }
 .sel__gridcount b { color: var(--brass-200); font-family: var(--font-num); }
+/* The starters are pickable but were never in the house, so they are named
+   beside the count instead of being folded into it. */
+.sel__gridcount em {
+  font-style: italic; text-transform: none; letter-spacing: .02em;
+  color: color-mix(in oklab, var(--text-lo) 76%, var(--brass-400));
+}
+.sel__gridcount em::before { content: " ·  "; }
 
 .companion-tile {
   position: relative;
@@ -507,8 +514,16 @@
 }
 .sel__kidstep:not([data-chosen]) .kid__detail { opacity: .4; }
 
-.kid__portrait { align-self: start; aspect-ratio: 288 / 320; border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-2); }
-.kid__portrait .kidpf { width: 100%; height: 100%; display: block; }
+/* The portrait runs the full height of the dossier. It used to be a small
+   288x320 card pinned to the top-left with ~380 px of empty black under it —
+   the same "700 px of text in a 1920 px field" the reviewer called out on the
+   other screens. A tall shot of one kid alone in a dark corridor is also just
+   a better picture than a stamp of one. */
+.kid__portrait {
+  align-self: stretch; min-height: 0;
+  border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-2);
+}
+.kid__portrait .kidpf { object-position: 50% 28%; }
 
 /* the missing-pet poster: paper, tape, and a kid's handwriting */
 .kid__poster {
@@ -544,13 +559,17 @@
   background: color-mix(in oklab, var(--parchment-shade) 70%, var(--ink-700));
   border: 1px solid color-mix(in srgb, var(--text-ink) 30%, transparent);
 }
-.poster__photo svg { width: 56%; height: auto; fill: color-mix(in oklab, var(--text-ink) 76%, var(--parchment)); }
+/* The photograph is taped on, not printed: a white border, a shadow, and the
+   paper of the poster showing round it. */
+.poster__photo { overflow: hidden; padding: 0; background: var(--ink-900); box-shadow: inset 0 0 0 3px var(--paper), 0 2px 6px color-mix(in srgb, var(--ink-900) 40%, transparent); }
 .poster__pet { font-family: var(--font-display); font-size: var(--fs-lg); color: var(--text-ink); }
 .poster__species { font-size: var(--fs-xs); letter-spacing: .1em; text-transform: uppercase; color: color-mix(in oklab, var(--text-ink) 70%, var(--parchment-shade)); }
 .poster__lost { margin: var(--s-2) 0 0; font-size: var(--fs-sm); color: color-mix(in oklab, var(--text-ink) 86%, var(--parchment)); }
 .poster__note { margin: var(--s-2) 0 0; font-size: var(--fs-sm); font-style: italic; color: color-mix(in oklab, var(--text-ink) 74%, var(--parchment)); }
 
-.kid__info { display: flex; flex-direction: column; gap: var(--s-3); min-height: 0; overflow: auto; }
+/* space-between, so the perk, the loadout and the pairing spread down the
+   column instead of bunching at the top of a tall panel. */
+.kid__info { display: flex; flex-direction: column; gap: var(--s-3); min-height: 0; overflow: auto; justify-content: space-between; }
 .kid__name {
   margin: 0;
   font-family: var(--font-display); font-size: clamp(24px, 2.2vw, 40px);
@@ -603,7 +622,6 @@
   will-change: transform;
 }
 .kid-tile__pf { overflow: hidden; }
-.kid-tile__pf .kidpf { width: 100%; height: auto; display: block; }
 .kid-tile__plate { display: grid; gap: 0; padding: 4px 4px 6px; text-align: center; background: linear-gradient(180deg, color-mix(in oklab, var(--ink-700) 70%, var(--brass-600)), var(--ink-900)); }
 .kid-tile__name { font-family: var(--font-display); font-size: var(--fs-sm); color: var(--brass-100); }
 .kid-tile__pet { font-size: var(--fs-xs); font-style: italic; color: var(--text-lo); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

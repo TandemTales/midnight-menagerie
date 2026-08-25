@@ -20,6 +20,21 @@
  *   v.setState(snap);  v.setIntent(intent, { playerHp });
  *   await v.windup('attack');  await v.strike();  v.flinch(9);  await v.die();
  *   v.update(dt, t);   // once per frame from the scene
+ *
+ * ── DELIVERING a hit, not just receiving one ────────────────────────────────
+ * Round 3's receiving side was strong (flinch, flash, shards, HP drain lag, a
+ * real dissolve) and its delivering side did not exist: measured across a full
+ * enemy attack the sprite moved 8.2 px, all of it idle sway, and the fourteen
+ * captured frames were byte-identical. The cause was that the whole pose lived
+ * in RIG SPACE — `lean * -26` inside a viewBox that `meet`-fits into a ~170 px
+ * stage, so a full-commitment lunge was worth about twelve screen pixels, and a
+ * critically-damped spring chasing a 85 ms target never reached even that.
+ *
+ * The attack pose is now driven in SCREEN PIXELS by explicit ramps (never a
+ * spring — a spring cannot promise it arrives), published as `--e-lx/--e-ly` on
+ * the creature's own element so `.cb-enemy`'s rect genuinely moves and can be
+ * measured, and shaped per silhouette family: a bell SWINGS, a suitcase LUNGES,
+ * a carpet RIPPLES.  See `MOTIF` / `MOTIFS` below.
  */
 
 import { Clock } from '../core/clock.js';
@@ -92,35 +107,176 @@ const BODY = {
   floating: (rnd) => ({ path: blob(rnd, 62, 68, { wob: 0.07, n: 20, flat: false }), w: 62, h: 68, lift: 30 }),
 };
 
+/* ── how a creature COMMITS to a hit ────────────────────────────────────────
+ * Screen pixels, not rig units. The player stands bottom-LEFT, so forward is
+ * −x / +y. Every motif has the same three beats and differs only in shape:
+ *
+ *   b*  the wind-up pose        held ~120 ms before the move resolves
+ *   f*  the contact pose        reached in ~90 ms, exactly on the damage event
+ *   s*  the follow-through      drifted back over ~250 ms
+ *
+ * `mass` scales the travel down for heavy things (a bolted bell does not leap
+ * across the room) and up for light ones, so weight reads without any text.
+ */
+const MOTIFS = {
+  // a thrown suitcase of a hit: back, then the whole body goes
+  lunge:  { bx: 20, by: -6, br: -5, fx: -50, fy: 12, fr: 10, sx: -12, sy: 3, sr: 3 },
+  // hops: leaves the floor on the way in
+  pounce: { bx: 16, by: 12, br: 2, fx: -56, fy: -30, fr: -8, sx: -10, sy: -4, sr: -2 },
+  // a bell does not travel, it SWINGS — nearly all of the read is rotation
+  swing:  { bx: 12, by: -3, br: -19, fx: -26, fy: 2, fr: 24, sx: -4, sy: 0, sr: -7 },
+  // a tall formal thing stoops over you
+  stoop:  { bx: 16, by: -8, br: -6, fx: -44, fy: 14, fr: 13, sx: -11, sy: 4, sr: 4 },
+  // heavy: gathers high, comes down
+  slam:   { bx: 10, by: -20, br: -3, fx: -30, fy: 26, fr: 7, sx: -6, sy: 6, sr: 2 },
+  // a rug/blanket travels flat and fast, and rolls rather than tips
+  ripple: { bx: 26, by: 2, br: 4, fx: -58, fy: 0, fr: -6, sx: -14, sy: 0, sr: -2 },
+  // a jack-in-the-box is a coil release
+  spring: { bx: 4, by: 18, br: 0, fx: -36, fy: -42, fr: -14, sx: -8, sy: -6, sr: -4 },
+  // something that has no feet slides in
+  drift:  { bx: 14, by: -12, br: -4, fx: -40, fy: 8, fr: 8, sx: -10, sy: 2, sr: 3 },
+};
+
+/** silhouette -> motif. Anything unlisted falls back to its body archetype. */
+const MOTIF = {
+  'service-bell': 'swing', 'great-bell': 'swing',
+  'rug-serpent': 'ripple', 'blanket-pile': 'ripple', 'blanket-crawl': 'ripple',
+  'blanket-hydra': 'ripple', pillow: 'ripple', slippers: 'ripple',
+  suitcase: 'lunge', door: 'lunge', wardrobe: 'lunge', 'wardrobe-door': 'lunge',
+  'wardrobe-arm': 'lunge', 'toy-chest': 'lunge',
+  jackbox: 'spring',
+  dustball: 'pounce', 'under-bed-claws': 'pounce', 'rocking-horse': 'pounce',
+  'hydra-head': 'pounce',
+  'shadow-shape': 'drift', 'faceless-guest': 'drift',
+  butler: 'stoop', governess: 'stoop', coatrack: 'stoop', 'coat-rack-mass': 'stoop',
+  'toy-soldier': 'stoop', 'porcelain-doll': 'stoop', 'porcelain-twin': 'stoop',
+  'favorite-doll': 'stoop', 'button-doll': 'stoop',
+  'patchwork-giant': 'slam', bedframe: 'slam', snuffer: 'slam',
+};
+const BODY_MOTIF = { squat: 'pounce', 'tall-thin': 'stoop', sprawling: 'ripple', floating: 'drift' };
+
 /* ── silhouette props ──────────────────────────────────────────────────────── */
 /**
  * Each returns { back, front, faceY, faceScale, override } in body space
  * (origin at the base centre, up is negative y).  `override` replaces the trunk.
+ *
+ * `front` draws over the trunk and under the face; `over` draws over the FACE,
+ * which is the only way to put a hat brim, a veil or a held prop in front of a
+ * creature's own eyes.  Anything in `back` that does not extend past the trunk
+ * outline is invisible — that is how The Governess's bun, cape and collar all
+ * ended up inside her own silhouette and she shipped as a brown oval.
  */
 const PROPS = {
+  /**
+   * The Dust Bunny. It shipped as a grey egg with a few hairs and it is the
+   * FIRST creature in the game, so it is the one that has to say "this is a
+   * mansion full of cute-spooky junk" in one silhouette. It is now a ragged
+   * lint ball: a spiked trunk, a long trailing wisp on each side, three stubby
+   * feet and a lint crest.
+   */
   dustball: (b, rnd) => {
-    let s = '';
-    for (let i = 0; i < 9; i++) {
-      const a = -Math.PI * 0.95 + (i / 8) * Math.PI * 0.9;
-      const x = Math.cos(a) * b.w * 1.0, y = -b.h + Math.sin(a) * b.h * 1.02;
-      const l = 12 + rnd() * 12;
-      s += `<path class="rg-tuft" d="M${f(x)},${f(y)} l${f(Math.cos(a) * l)},${f(Math.sin(a) * l)}"/>`;
+    // a genuinely ragged outline: alternate long and short spikes
+    const pts = [];
+    const n = 26;
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * TAU - Math.PI / 2;
+      const spike = i % 2 ? 1.24 + rnd() * 0.2 : 0.92;
+      let x = Math.cos(a) * b.w * spike;
+      let y = -b.h + Math.sin(a) * b.h * spike;
+      if (y > -b.h * 0.14) y = Math.min(y, 0) * 0.3;
+      pts.push([x, y]);
     }
-    return { back: s, faceY: -0.52 };
+    let tufts = '';
+    for (let i = 0; i < 11; i++) {
+      const a = -Math.PI * 0.98 + (i / 10) * Math.PI * 1.06;
+      const x = Math.cos(a) * b.w * 1.12, y = -b.h + Math.sin(a) * b.h * 1.16;
+      const l = 14 + rnd() * 20;
+      tufts += `<path class="rg-tuft" d="M${f(x)},${f(y)} q${f(Math.cos(a) * l * 0.6)},${f(Math.sin(a) * l * 0.5 - 6)}`
+        + ` ${f(Math.cos(a) * l)},${f(Math.sin(a) * l)}"/>`;
+    }
+    // two long wisps trailing off the sides, the thing that makes it read as DUST
+    tufts += `<path class="rg-tuft" d="M${f(-b.w * 1.05)},${f(-b.h * 0.5)} q${f(-b.w * 0.5)},6 ${f(-b.w * 0.86)},${f(-b.h * 0.34)}"/>`
+      + `<path class="rg-tuft" d="M${f(b.w * 1.05)},${f(-b.h * 0.42)} q${f(b.w * 0.52)},10 ${f(b.w * 0.9)},${f(-b.h * 0.2)}"/>`;
+    // three stubby feet so it stands rather than floats
+    let feet = '';
+    for (let i = 0; i < 3; i++) {
+      const x = (i - 1) * b.w * 0.52;
+      feet += `<ellipse class="rg-foot" cx="${f(x)}" cy="-5" rx="${f(b.w * 0.19)}" ry="8"/>`;
+    }
+    return {
+      override: smoothClosed(pts),
+      back: tufts + feet,
+      // motes orbiting it, because a dust bunny sheds
+      front: `<circle class="rg-mote" cx="${f(-b.w * 1.25)}" cy="${f(-b.h * 1.35)}" r="4"/>`
+        + `<circle class="rg-mote" cx="${f(b.w * 1.18)}" cy="${f(-b.h * 1.6)}" r="3"/>`
+        + `<circle class="rg-mote" cx="${f(b.w * 0.5)}" cy="${f(-b.h * 1.9)}" r="2.6"/>`,
+      faceY: -0.54,
+    };
   },
+  /**
+   * Coatrack Crawler — "six carved legs, four brass hooks, and one very old
+   * umbrella it has never once put down." All three of those are now on screen.
+   * The trunk becomes a turned post so it is not a blob with a stick on it.
+   */
   coatrack: (b) => ({
-    back: `<path class="rg-ln" d="M0,${-b.h * 1.05} V${-b.h * 1.9}"/>`
-      + `<path class="rg-ln" d="M${-34},${-b.h * 1.78} H34"/>`
-      + hooks(-b.h * 1.78, 3),
-    front: `<path class="rg-shade" d="M-26,${-b.h * 1.7} q26,26 0,64 q-26,-34 0,-64Z"/>`,
-    faceY: -0.62,
+    override: `M${-b.w * 0.42},0 L${-b.w * 0.3},${-b.h * 0.5}`
+      + ` q${-b.w * 0.28},${-b.h * 0.12} ${-b.w * 0.02},${-b.h * 0.26}`      // lower knop
+      + ` L${-b.w * 0.26},${-b.h * 1.15}`
+      + ` q${-b.w * 0.3},${-b.h * 0.1} ${0},${-b.h * 0.24}`                   // upper knop
+      + ` L${-b.w * 0.2},${-b.h * 1.72} H${b.w * 0.2}`
+      + ` L${b.w * 0.26},${-b.h * 1.39} q${b.w * 0.3},${-b.h * 0.1} ${0},${b.h * 0.24}`
+      + ` L${b.w * 0.3},${-b.h * 0.76} q${b.w * 0.28},${-b.h * 0.12} ${b.w * 0.02},${b.h * 0.26}`
+      + ` L${b.w * 0.42},0 Z`,
+    back: `<path class="rg-ln" d="M${-b.w * 1.5},${-b.h * 1.66} H${b.w * 1.5}"/>`   // the hook bar
+      + hooks(-b.h * 1.66, 4, b.w * 1.34)
+      + `<ellipse class="rg-foot" cx="0" cy="-4" rx="${f(b.w * 1.1)}" ry="10"/>`,
+    // the coat, and the umbrella held out to one side
+    front: `<path class="rg-coat" d="M${-b.w * 1.16},${-b.h * 1.58} q${b.w * 0.5},${b.h * 0.18} ${b.w * 0.44},${b.h * 0.62}`
+      + ` l${-b.w * 0.16},${b.h * 0.76} h${-b.w * 0.62} q${-b.w * 0.24},${-b.h * 0.7} ${b.w * 0.34},${-b.h * 1.38} Z"/>`
+      + `<path class="rg-ln2" d="M${b.w * 1.28},${-b.h * 1.56} L${b.w * 1.06},${-b.h * 0.12}"/>`
+      + `<path class="rg-umb" d="M${b.w * 1.28},${-b.h * 1.56} q${-b.w * 0.3},${b.h * 0.26} ${-b.w * 0.16},${b.h * 0.78}`
+      + ` q${b.w * 0.2},${b.h * 0.1} ${b.w * 0.34},${-b.h * 0.06} q${b.w * 0.06},${-b.h * 0.5} ${-b.w * 0.18},${-b.h * 0.72} Z"/>`
+      + `<path class="rg-hook" d="M${b.w * 1.06},${-b.h * 0.12} q0,${b.h * 0.14} ${-b.w * 0.24},${b.h * 0.1}"/>`,
+    faceY: -1.44, faceScale: 0.62,
   }),
-  'coat-rack-mass': (b) => ({
-    back: `<path class="rg-ln" d="M-40,${-b.h * 1.1} V${-b.h * 1.7} M40,${-b.h * 1.1} V${-b.h * 1.7}"/>`
-      + hooks(-b.h * 1.6, 5),
-    front: `<path class="rg-shade" d="M-70,${-b.h * 0.9} q22,60 0,86 M-24,${-b.h} q20,66 0,92 M28,${-b.h * 0.95} q22,60 0,88 M70,${-b.h * 0.85} q20,54 0,80"/>`,
-    faceY: -0.66,
-  }),
+  /**
+   * The Grand Coatcheck (Big Scare) — "every coat left behind since the house
+   * opened, and it has learned to wear all of them at once." A rail, five
+   * hangers, and a mountain of overlapping coats with a ragged hem.
+   */
+  'coat-rack-mass': (b) => {
+    /* `sprawling` is 100 wide by 46 tall, and a MOUNTAIN of coats measured in
+       units of 46 came out as a squashed pancake. Everything vertical here is
+       measured in `H` instead, so the archetype sets the footprint and the prop
+       sets the height. */
+    const H = Math.max(b.h, b.w * 0.86);
+    let coats = '', bar = '';
+    const N = 5;
+    for (let i = 0; i < N; i++) {
+      const t = i / (N - 1);
+      const x = (t - 0.5) * b.w * 1.62;
+      const drop = H * (1.5 + (i % 2) * 0.3);
+      const wide = b.w * (0.34 + (i % 2) * 0.06);
+      bar += `<path class="rg-hook" d="M${f(x)},${f(-H * 2.5)} v${f(H * 0.16)}"/>`
+        + `<path class="rg-hook" d="M${f(x - wide * 0.8)},${f(-H * 2.3)} L${f(x)},${f(-H * 2.38)} L${f(x + wide * 0.8)},${f(-H * 2.3)}"/>`;
+      // one coat: shoulders, body, ragged hem
+      coats += `<path class="rg-coat" d="M${f(x - wide)},${f(-H * 2.26)}`
+        + ` q${f(wide)},${f(-H * 0.2)} ${f(wide * 2)},0`
+        + ` l${f(wide * 0.34)},${f(drop)}`
+        + ` q${f(-wide)},${f(H * 0.16)} ${f(-wide * 2.68)},0 Z" opacity="${(0.74 + i * 0.05).toFixed(2)}"/>`
+        // a sleeve hanging off it
+        + `<path class="rg-sleeve" d="M${f(x - wide * 0.9)},${f(-H * 2.1)}`
+        + ` q${f(-wide * 0.5)},${f(H * 0.4)} ${f(-wide * 0.2)},${f(H * 0.8)}"/>`;
+    }
+    return {
+      override: `M${-b.w * 1.12},0 q${-b.w * 0.04},${-H * 1.6} ${b.w * 0.36},${-H * 2.32}`
+        + ` q${b.w * 0.76},${-H * 0.4} ${b.w * 1.52},0`
+        + ` q${b.w * 0.4},${H * 0.72} ${b.w * 0.36},${H * 2.32} Z`,
+      back: `<path class="rg-ln" d="M${-b.w * 1.3},${-H * 2.52} H${b.w * 1.3}"/>` + bar,
+      front: coats,
+      faceY: -H * 1.66 / b.h, faceScale: 1.05,
+    };
+  },
   suitcase: (b) => ({
     override: roundRect(-b.w, -b.h * 1.5, b.w * 2, b.h * 1.5, 10),
     back: `<path class="rg-ln" d="M-18,${-b.h * 1.5} v-12 a18,12 0 0 1 36,0 v12"/>`,
@@ -131,18 +287,45 @@ const PROPS = {
     faceY: -0.42,
   }),
   'service-bell': (b) => ({
-    override: `M${-b.w},0 h${b.w * 2} v-14 h${-b.w * 2} Z`
-      + ` M0,${-b.h * 1.6} a${b.w * 0.92},${b.h * 1.45} 0 0 0 ${-b.w * 0.92},${b.h * 1.45} h${b.w * 1.84} a${b.w * 0.92},${b.h * 1.45} 0 0 0 ${-b.w * 0.92},${-b.h * 1.45} Z`,
-    back: `<circle class="rg-metal" cx="0" cy="${-b.h * 1.72}" r="11"/>`,
-    faceY: -0.72, faceScale: 0.85,
+    override: `M0,${-b.h * 1.6} a${b.w * 0.92},${b.h * 1.45} 0 0 0 ${-b.w * 0.92},${b.h * 1.45} h${b.w * 1.84} a${b.w * 0.92},${b.h * 1.45} 0 0 0 ${-b.w * 0.92},${-b.h * 1.45} Z`,
+    // a hexagonal desk plate under it, and the plunger it rings itself with
+    back: `<path class="rg-plate" d="M${-b.w * 1.24},-8 l${b.w * 0.28},-13 h${b.w * 1.92} l${b.w * 0.28},13`
+      + ` l${-b.w * 0.28},13 h${-b.w * 1.92} Z"/>`
+      + `<path class="rg-ln" d="M0,${-b.h * 1.56} v${-b.h * 0.34}"/>`
+      + `<circle class="rg-metal" cx="0" cy="${-b.h * 1.98}" r="13"/>`,
+    // the sound: two faint arcs well clear of the dome, so they read as RINGING
+    // rather than as a pair of arms
+    front: `<path class="rg-ring" d="M${-b.w * 1.5},${-b.h * 1.9} a${b.w * 0.62},${b.h * 0.62} 0 0 0 0,${b.h * 0.9}"/>`
+      + `<path class="rg-ring" d="M${b.w * 1.5},${-b.h * 1.9} a${b.w * 0.62},${b.h * 0.62} 0 0 1 0,${b.h * 0.9}"/>`,
+    faceY: -0.7, faceScale: 0.85,
   }),
+  /**
+   * The House Bell (Big Scare) — "bolted to the house itself." A real church
+   * bell: a headstock beam across the top with two brackets, a rope, banded
+   * inscription rings, a flared lip, and the clapper hanging inside it.
+   */
   'great-bell': (b) => ({
-    override: `M0,${-b.h * 1.85} c${-b.w * 0.8},0 ${-b.w * 1.05},${b.h * 0.9} ${-b.w * 1.12},${b.h * 1.85}`
-      + ` h${b.w * 2.24} c${-0.07 * b.w},${-b.h * 0.95} ${-b.w * 0.32},${-b.h * 1.85} ${-b.w * 1.12},${-b.h * 1.85} Z`,
-    back: `<path class="rg-ln" d="M0,${-b.h * 2.35} v${b.h * 0.5}"/><circle class="rg-metal" cx="0" cy="${-b.h * 2.45}" r="13"/>`,
-    front: `<path class="rg-crack" d="M${-b.w * 0.5},${-b.h * 1.2} l14,26 l-9,22"/>`
-      + `<ellipse class="rg-metal" cx="6" cy="${-b.h * 0.16}" rx="15" ry="19"/>`,
-    faceY: -0.86, faceScale: 0.9,
+    // symmetric by construction: left flank mirrors the right, so the mouth of
+    // the bell is level. Hand-written `c` pairs came out visibly lopsided.
+    override: `M${-b.w * 0.52},${-b.h * 2.2} H${b.w * 0.52}`
+      + ` C${b.w * 0.62},${-b.h * 1.7} ${b.w * 1.12},${-b.h * 0.9} ${b.w * 1.2},${-b.h * 0.2}`
+      + ` H${b.w * 1.34} V0 H${-b.w * 1.34} V${-b.h * 0.2} H${-b.w * 1.2}`
+      + ` C${-b.w * 1.12},${-b.h * 0.9} ${-b.w * 0.62},${-b.h * 1.7} ${-b.w * 0.52},${-b.h * 2.2} Z`,
+    // headstock beam + brackets + rope: it hangs, it is not standing there
+    back: `<path class="rg-beam" d="M${-b.w * 1.5},${-b.h * 2.72} h${b.w * 3} v${b.h * 0.3} h${-b.w * 3} Z"/>`
+      + `<path class="rg-ln" d="M${-b.w * 0.62},${-b.h * 2.42} v${b.h * 0.26} M${b.w * 0.62},${-b.h * 2.42} v${b.h * 0.26}"/>`
+      + `<circle class="rg-metal" cx="${f(-b.w * 1.5)}" cy="${f(-b.h * 2.57)}" r="10"/>`
+      + `<circle class="rg-metal" cx="${f(b.w * 1.5)}" cy="${f(-b.h * 2.57)}" r="10"/>`
+      + `<path class="rg-rope" d="M${b.w * 1.5},${-b.h * 2.5} q${b.w * 0.3},${b.h * 0.9} ${b.w * 0.1},${b.h * 1.9}`
+      + ` q${-b.w * 0.16},${b.h * 0.6} ${b.w * 0.06},${b.h * 0.9}"/>`,
+    front: `<path class="rg-band" d="M${-b.w * 0.86},${-b.h * 1.16} q${b.w * 0.86},${-b.h * 0.16} ${b.w * 1.72},0"/>`
+      + `<path class="rg-band" d="M${-b.w * 1.06},${-b.h * 0.62} q${b.w * 1.06},${-b.h * 0.16} ${b.w * 2.12},0"/>`
+      // the crack lives DOWN the flank, not beside the eyes — at eye height a
+      // three-segment jag reads as whiskers and the bell reads as a cat
+      + `<path class="rg-crack" d="M${-b.w * 0.86},${-b.h * 1.06} l16,30 l-11,26 l9,22"/>`
+      + `<path class="rg-ln" d="M0,${-b.h * 0.86} v${b.h * 0.58}"/>`
+      + `<ellipse class="rg-metal" cx="0" cy="${-b.h * 0.2}" rx="17" ry="21"/>`,
+    faceY: -1.44, faceScale: 0.94,
   }),
   'rug-serpent': (b) => ({
     override: `M${-b.w * 1.15},0 q${b.w * 0.28},${-b.h * 1.5} ${b.w * 0.62},${-b.h * 1.05}`
@@ -160,12 +343,43 @@ const PROPS = {
       + `<circle class="rg-metal" cx="${b.w * 0.66}" cy="${-b.h}" r="9"/>`,
     faceY: -1.5, faceScale: 0.8,
   }),
+  /**
+   * The Unwelcome Guest (Big Scare) — "its coat hangs incorrectly, its shadow
+   * faces the wrong way, nobody remembers seeing it come in." It is a HAT, a
+   * long overcoat with lapels, gloved hands and no face. Round 3 drew a shade
+   * wedge and a 48px void inside a plain tall blob and it read as a blob.
+   */
   'faceless-guest': (b) => ({
-    back: `<path class="rg-shade" d="M${-b.w * 0.9},${-b.h * 0.9} q${b.w * 0.9},${b.h * 0.5} ${b.w * 1.8},0 l${-b.w * 0.2},${b.h * 0.9} h${-b.w * 1.4} Z"/>`,
-    front: `<path class="rg-ln" d="M${-b.w * 0.5},${-b.h * 1.55} l${b.w * 0.5},${b.h * 0.34} l${b.w * 0.5},${-b.h * 0.34}"/>`
-      + `<path class="rg-void" d="M0,${-b.h * 1.62} a${b.w * 0.52},${b.h * 0.4} 0 1 0 0.1,0 Z"/>`
-      + `<path class="rg-ln2" d="M${-b.w * 0.72},${-b.h * 1.9} h${b.w * 1.44}"/>`,
-    faceY: -1.6, faceScale: 0.9,
+    // the coat IS the body: narrow shoulders, long flared hem
+    override: `M${-b.w * 0.52},${-b.h * 1.86}`
+      + ` q${b.w * 0.52},${-b.h * 0.2} ${b.w * 1.04},0`
+      + ` q${b.w * 0.46},${b.h * 0.24} ${b.w * 0.56},${b.h * 0.86}`
+      + ` L${b.w * 1.24},0 H${-b.w * 1.24}`
+      + ` L${-b.w * 1.08},${-b.h} q${b.w * 0.1},${-b.h * 0.62} ${b.w * 0.56},${-b.h * 0.86} Z`,
+    // the wrong-way shadow, cast to the same side as the light
+    back: `<ellipse class="rg-wrongshadow" cx="${f(b.w * 1.5)}" cy="-6" rx="${f(b.w * 0.9)}" ry="12"/>`,
+    front:
+      // A NECK. Round 4's first pass put it in `back`, behind the very trunk
+      // hiding it, and the hat floated 30px clear of the shoulders with a gap.
+      `<path class="rg-neck2" d="M${-b.w * 0.26},${-b.h * 1.78} h${b.w * 0.52} v${-b.h * 0.34} h${-b.w * 0.52} Z"/>`
+      + `<ellipse class="rg-void" cx="0" cy="${f(-b.h * 2.16)}" rx="${f(b.w * 0.46)}" ry="${f(b.h * 0.32)}"/>`
+      +
+      // lapels — the single clearest "this is a coat" mark
+      `<path class="rg-lapel" d="M${-b.w * 0.5},${-b.h * 1.84} L0,${-b.h * 1.28} L${-b.w * 0.16},${-b.h * 0.9} Z"/>`
+      + `<path class="rg-lapel" d="M${b.w * 0.5},${-b.h * 1.84} L0,${-b.h * 1.28} L${b.w * 0.16},${-b.h * 0.9} Z"/>`
+      + `<path class="rg-ln2" d="M0,${-b.h * 1.28} V${-b.h * 0.12}"/>`
+      + `<circle class="rg-metal" cx="0" cy="${-b.h * 0.98}" r="5"/>`
+      + `<circle class="rg-metal" cx="0" cy="${-b.h * 0.66}" r="5"/>`
+      // gloved hands, one of them a little too far forward
+      + `<ellipse class="rg-glove" cx="${f(-b.w * 1.12)}" cy="${f(-b.h * 0.6)}" rx="13" ry="17"/>`
+      + `<ellipse class="rg-glove" cx="${f(b.w * 1.06)}" cy="${f(-b.h * 0.78)}" rx="13" ry="17"/>`,
+    // the hat draws OVER everything, so its brim cuts the void where a face is
+    over: `<path class="rg-hat" d="M${-b.w * 1.04},${-b.h * 2.36} q${b.w * 1.04},${b.h * 0.2} ${b.w * 2.08},0`
+      + ` q${-b.w * 1.04},${-b.h * 0.22} ${-b.w * 2.08},0 Z"/>`
+      + `<path class="rg-hat" d="M${-b.w * 0.58},${-b.h * 2.38} q0,${-b.h * 0.5} ${b.w * 0.58},${-b.h * 0.48}`
+      + ` q${b.w * 0.58},${-b.h * 0.02} ${b.w * 0.58},${b.h * 0.48} Z"/>`
+      + `<path class="rg-band2" d="M${-b.w * 0.58},${-b.h * 2.42} h${b.w * 1.16}"/>`,
+    faceY: -2.16, faceScale: 0.9, grad: 'dark',
   }),
   bedframe: (b) => ({
     back: `<path class="rg-ln" d="M${-b.w},${-b.h * 1.1} V${-b.h * 2.2} M${b.w},${-b.h * 1.1} V${-b.h * 2.2} M${-b.w},${-b.h * 2.1} H${b.w}"/>`
@@ -189,7 +403,10 @@ const PROPS = {
   }),
   'toy-chest': (b) => ({
     override: roundRect(-b.w, -b.h * 1.25, b.w * 2, b.h * 1.25, 7),
-    back: `<path class="rg-lid" d="M${-b.w - 5},${-b.h * 1.25} h${b.w * 2 + 10} l-8,-22 h${-b.w * 2 + 6} Z"/>`,
+    /* `rg-lid` is the EYELID class — `_eyes()` emits one per eye and `update()`
+       scales every `.rg-lid` it finds to blink them. The chest's lid was in the
+       same class, so the Toy Chest's lid folded flat every time it blinked. */
+    back: `<path class="rg-chestlid" d="M${-b.w - 5},${-b.h * 1.25} h${b.w * 2 + 10} l-8,-22 h${-b.w * 2 + 6} Z"/>`,
     front: `<rect class="rg-metal" x="-13" y="${-b.h * 0.92}" width="26" height="20" rx="4"/>`,
     faceY: -0.5,
   }),
@@ -260,30 +477,110 @@ const PROPS = {
    * a black tie — so all three are now full-size and in contrasting fills.
    */
   butler: (b) => ({
-    back: `<path class="rg-shade" d="M${-b.w * 1.02},${-b.h * 1.46} q${b.w * 1.02},${b.h * 0.62} ${b.w * 2.04},0 l${-b.w * 0.2},${b.h * 1.46} h${-b.w * 1.64} Z"/>`
-      // coat tails, so the silhouette says "formal" from across the room
-      + `<path class="rg-shade" d="M${-b.w * 0.62},${-b.h * 0.62} q${-b.w * 0.34},${b.h * 0.5} ${-b.w * 0.18},${b.h * 0.62} l${b.w * 0.5},${-b.h * 0.16} Z"/>`
-      + `<path class="rg-shade" d="M${b.w * 0.62},${-b.h * 0.62} q${b.w * 0.34},${b.h * 0.5} ${b.w * 0.18},${b.h * 0.62} l${-b.w * 0.5},${-b.h * 0.16} Z"/>`,
-    // a starched shirt front: the one bright shape on an otherwise black rig
-    front: `<path class="rg-shirt" d="M${-b.w * 0.3},${-b.h * 1.5} L0,${-b.h * 1.16} L${b.w * 0.3},${-b.h * 1.5} L${b.w * 0.22},${-b.h * 0.5} h${-b.w * 0.44} Z"/>`
-      + `<path class="rg-collar" d="M${-b.w * 0.42},${-b.h * 1.62} l${b.w * 0.42},${b.h * 0.46} l${b.w * 0.42},${-b.h * 0.46} l${-b.w * 0.16},${-b.h * 0.2} h${-b.w * 0.52} Z"/>`
-      + `<path class="rg-bow" d="M${-b.w * 0.3},${-b.h * 1.2} l${b.w * 0.3},${b.h * 0.13} l${b.w * 0.3},${-b.h * 0.13} l${-b.w * 0.3},${-b.h * 0.13} Z"/>`
-      + `<circle class="rg-metal" cx="0" cy="${-b.h * 0.92}" r="5"/>`
-      + `<circle class="rg-metal" cx="0" cy="${-b.h * 0.72}" r="5"/>`,
-    faceY: -1.76, faceScale: 0.9,
+    // tailcoat: narrow shoulders, a nipped waist, and two tails past the knee
+    override: `M${-b.w * 0.44},${-b.h * 2.24}`
+      + ` q${b.w * 0.44},${-b.h * 0.16} ${b.w * 0.88},0`
+      + ` q${b.w * 0.62},${b.h * 0.2} ${b.w * 0.72},${b.h * 0.9}`      // right shoulder
+      + ` L${b.w * 0.92},${-b.h * 0.66} L${b.w * 0.7},0 H${b.w * 0.2}`
+      + ` L${b.w * 0.28},${-b.h * 0.66} H${-b.w * 0.28} L${-b.w * 0.2},0 H${-b.w * 0.7}`
+      + ` L${-b.w * 0.92},${-b.h * 0.66} L${-b.w * 1.16},${-b.h * 1.34}`
+      + ` q${b.w * 0.1},${-b.h * 0.7} ${b.w * 0.72},${-b.h * 0.9} Z`,
+    // head on a real neck, hair parted, plus the coat tails behind the legs
+    back: `<ellipse class="rg-head2" cx="0" cy="${f(-b.h * 2.54)}" rx="${f(b.w * 0.56)}" ry="${f(b.h * 0.36)}"/>`
+      // combed flat and parted, in HAIR colour: `.rg-hair` is `--e3`, which on
+      // his palette is the same cream as his own face, so round 4's first pass
+      // gave him a white cap on a white head.
+      + `<path class="rg-updo" d="M${-b.w * 0.6},${-b.h * 2.66} q${b.w * 0.16},${-b.h * 0.32} ${b.w * 0.6},${-b.h * 0.26}`
+      + ` q${b.w * 0.46},${-b.h * 0.04} ${b.w * 0.6},${b.h * 0.26} q${-b.w * 0.34},${-b.h * 0.14} ${-b.w * 0.62},${b.h * 0.06}`
+      + ` q${-b.w * 0.28},${-b.h * 0.14} ${-b.w * 0.58},${-b.h * 0.06} Z"/>`
+      + `<path class="rg-tail" d="M${-b.w * 0.62},${-b.h * 0.8} q${-b.w * 0.4},${b.h * 0.5} ${-b.w * 0.22},${b.h * 0.86} l${b.w * 0.56},${-b.h * 0.2} Z"/>`
+      + `<path class="rg-tail" d="M${b.w * 0.62},${-b.h * 0.8} q${b.w * 0.4},${b.h * 0.5} ${b.w * 0.22},${b.h * 0.86} l${-b.w * 0.56},${-b.h * 0.2} Z"/>`,
+    // a starched shirt front, a wing collar, a black tie — and the SILVER TRAY,
+    // held out flat. It is the shape you recognise a butler by at 40px.
+    front: `<path class="rg-shirt" d="M${-b.w * 0.26},${-b.h * 2.2} L0,${-b.h * 1.9} L${b.w * 0.26},${-b.h * 2.2} L${b.w * 0.2},${-b.h * 1.1} h${-b.w * 0.4} Z"/>`
+      + `<path class="rg-collar" d="M${-b.w * 0.38},${-b.h * 2.3} l${b.w * 0.38},${b.h * 0.42} l${b.w * 0.38},${-b.h * 0.42} l${-b.w * 0.14},${-b.h * 0.18} h${-b.w * 0.48} Z"/>`
+      + `<path class="rg-bow" d="M${-b.w * 0.28},${-b.h * 1.9} l${b.w * 0.28},${b.h * 0.12} l${b.w * 0.28},${-b.h * 0.12} l${-b.w * 0.28},${-b.h * 0.12} Z"/>`
+      + `<circle class="rg-metal" cx="0" cy="${-b.h * 1.6}" r="5"/>`
+      + `<circle class="rg-metal" cx="0" cy="${-b.h * 1.38}" r="5"/>`
+      // the arm that holds the tray, drawn in FRONT — behind the trunk it was
+      // invisible and the tray floated unsupported beside him
+      + `<path class="rg-arm" d="M${-b.w * 0.8},${-b.h * 1.96} q${-b.w * 0.44},${b.h * 0.32} ${-b.w * 0.32},${b.h * 0.5}"/>`
+      + `<ellipse class="rg-glove2" cx="${f(-b.w * 1.12)}" cy="${f(-b.h * 1.44)}" rx="12" ry="10"/>`
+      + `<ellipse class="rg-tray" cx="${f(-b.w * 1.6)}" cy="${f(-b.h * 1.52)}" rx="${f(b.w * 0.8)}" ry="${f(b.h * 0.13)}"/>`
+      + `<ellipse class="rg-trayrim" cx="${f(-b.w * 1.6)}" cy="${f(-b.h * 1.52)}" rx="${f(b.w * 0.8)}" ry="${f(b.h * 0.13)}"/>`,
+    faceY: -2.56, faceScale: 0.72, grad: 'dark',
   }),
-  governess: (b) => ({
-    back: `<path class="rg-bun" d="M0,${-b.h * 1.98} a24,20 0 1 0 0.1,0 Z"/>`
-      + `<path class="rg-shade" d="M${-b.w * 0.9},${-b.h * 1.3} q${b.w * 0.9},${b.h * 0.7} ${b.w * 1.8},0 l${-b.w * 0.2},${b.h * 1.3} h${-b.w * 1.4} Z"/>`,
-    front: `<path class="rg-collar" d="M${-26},${-b.h * 1.68} q26,20 52,0 l-8,-18 h-36 Z"/>`,
-    faceY: -1.76, faceScale: 0.84,
-  }),
+  /**
+   * The Governess. Her own flavour text is the brief and round 3 met none of
+   * it: "her fingers taper into silver needles, and a measuring tape moves
+   * around her neck like a snake." She shipped as a brown oval because her
+   * only props were a 24px bun and a 52px collar, both inside her own trunk
+   * outline and both in the `back` layer, i.e. behind the very shape hiding
+   * them. She is now a floor-length high-collared dress, a severe bun on a
+   * real head, EIGHT needle fingers, and the tape.
+   */
+  governess: (b) => {
+    // the needles — four per hand, tapering to a point, at the end of each arm
+    const hand = (hx, hy, dir) => {
+      let s = `<path class="rg-cuff" d="M${f(hx - 13)},${f(hy - 13)} h26 v20 h-26 Z"/>`;
+      for (let i = 0; i < 4; i++) {
+        const a = (-0.5 + i * 0.34) * dir;
+        const L = 40 + (i === 1 || i === 2 ? 12 : 0);
+        s += `<path class="rg-needle" d="M${f(hx)},${f(hy + 4)} L${f(hx + Math.sin(a) * L)},${f(hy + Math.cos(a) * L)}"/>`;
+      }
+      return s;
+    };
+    return {
+      // dress: high narrow shoulders down to a wide floor-length skirt
+      override: `M${-b.w * 0.4},${-b.h * 2.16}`
+        + ` q${b.w * 0.4},${-b.h * 0.14} ${b.w * 0.8},0`
+        + ` q${b.w * 0.3},${b.h * 0.16} ${b.w * 0.34},${b.h * 0.66}`
+        + ` L${b.w * 1.66},0 H${-b.w * 1.66}`
+        + ` L${-b.w * 0.74},${-b.h * 1.5} q${b.w * 0.04},${-b.h * 0.5} ${b.w * 0.34},${-b.h * 0.66} Z`,
+      back: `<ellipse class="rg-head2" cx="0" cy="${f(-b.h * 2.44)}" rx="${f(b.w * 0.5)}" ry="${f(b.h * 0.34)}"/>`
+        // A SEVERE BUN, in hair colour and clearly separate from the skull.
+        // `--e3` on her palette is cream — the same value as her face — so a bun
+        // painted with it merged with her head into one pale lozenge.
+        + `<path class="rg-updo" d="M0,${f(-b.h * 3.0)} a${f(b.w * 0.36)},${f(b.h * 0.22)} 0 1 0 0.1,0 Z"/>`
+        + `<path class="rg-updo" d="M${-b.w * 0.54},${-b.h * 2.6} q${b.w * 0.04},${-b.h * 0.44} ${b.w * 0.54},${-b.h * 0.42}`
+        + ` q${b.w * 0.5},${-b.h * 0.02} ${b.w * 0.54},${b.h * 0.42} q${-b.w * 0.2},${-b.h * 0.2} ${-b.w * 0.54},${-b.h * 0.16}`
+        + ` q${-b.w * 0.34},${-b.h * 0.04} ${-b.w * 0.54},${b.h * 0.16} Z"/>`
+        ,
+      front:
+        // a high lace collar, tight to the throat
+        `<path class="rg-collar" d="M${-b.w * 0.42},${-b.h * 2.3} q${b.w * 0.42},${b.h * 0.3} ${b.w * 0.84},0`
+        + ` l${-b.w * 0.08},${-b.h * 0.22} q${-b.w * 0.34},${-b.h * 0.1} ${-b.w * 0.68},0 Z"/>`
+        // a row of tiny buttons down the bodice
+        + `<circle class="rg-metal" cx="0" cy="${-b.h * 1.9}" r="4"/>`
+        + `<circle class="rg-metal" cx="0" cy="${-b.h * 1.66}" r="4"/>`
+        + `<circle class="rg-metal" cx="0" cy="${-b.h * 1.42}" r="4"/>`
+        // pleats in the skirt
+        + `<path class="rg-ln2" d="M${-b.w * 0.5},${-b.h * 1.1} L${-b.w * 1.2},${-b.h * 0.08}`
+        + ` M0,${-b.h * 1.14} V${-b.h * 0.06} M${b.w * 0.5},${-b.h * 1.1} L${b.w * 1.2},${-b.h * 0.08}"/>`
+        // the arms, thin and long, reaching down past the waist. In FRONT: the
+        // trunk is an opaque dress, so anything behind it does not exist.
+        + `<path class="rg-arm" d="M${-b.w * 0.58},${-b.h * 2.02} q${-b.w * 0.56},${b.h * 0.42} ${-b.w * 0.56},${b.h * 1.02}"/>`
+        + `<path class="rg-arm" d="M${b.w * 0.58},${-b.h * 2.02} q${b.w * 0.56},${b.h * 0.42} ${b.w * 0.56},${b.h * 1.02}"/>`
+        + hand(-b.w * 1.14, -b.h * 1.0, -1) + hand(b.w * 1.14, -b.h * 1.0, 1),
+      // THE MEASURING TAPE — over the face layer, because it moves "around her
+      // neck like a snake" and a snake is in front of you. It loops the throat
+      // and drapes down ONE side; drawn down the centre it read as a bib.
+      over: `<path class="rg-tape" d="M${-b.w * 0.54},${-b.h * 2.24}`
+        + ` q${b.w * 0.54},${b.h * 0.3} ${b.w * 1.08},0`
+        + ` q${b.w * 0.3},${b.h * 0.42} ${b.w * 0.06},${b.h * 0.82}`
+        + ` q${-b.w * 0.36},${b.h * 0.34} ${b.w * 0.1},${b.h * 0.56}"/>`
+        + `<path class="rg-tapetick" d="M${-b.w * 0.3},${-b.h * 2.2} v9 M0,${-b.h * 2.13} v9`
+        + ` M${b.w * 0.3},${-b.h * 2.2} v9 M${b.w * 0.78},${-b.h * 1.6} h9`
+        + ` M${b.w * 0.86},${-b.h * 1.2} h9"/>`,
+      faceY: -2.46, faceScale: 0.64, grad: 'dark',
+    };
+  },
 };
 
-function hooks(y, n) {
+function hooks(y, n, span = 34) {
   let s = '';
   for (let i = 0; i < n; i++) {
-    const x = -34 + (i / (n - 1)) * 68;
+    const x = -span + (i / (n - 1)) * span * 2;
     s += `<path class="rg-hook" d="M${f(x)},${f(y)} v14 q0,10 10,10"/>`;
   }
   return s;
@@ -408,7 +705,11 @@ export class EnemyView {
       dead: 0, spawn: 0,
       glow: 0,
       entrance: 0,     // 1 = fully off-frame below, 0 = standing. Boss entrance.
+      // the ATTACK pose, in SCREEN PIXELS. Published as --e-lx/--e-ly/--e-lr.
+      px: 0, py: 0, pr: 0,
     };
+    this._poseToken = 0;
+    this._poseWrote = false;
 
     this._build(snap, o);
   }
@@ -428,11 +729,25 @@ export class EnemyView {
     const props = (PROPS[sil] || (() => ({})))(b, this.rnd) || {};
     this.props = props;
 
+    /* HOW IT COMMITS. A bell swings, a suitcase lunges, a carpet ripples —
+       chosen by silhouette, and by body archetype for anything not named. */
+    this.motifKey = MOTIF[sil] || BODY_MOTIF[bodyKind] || 'lunge';
+    this.motif = MOTIFS[this.motifKey];
+    /* Heavier things travel less and rotate more. A 1.7-scale bolted bell that
+       leapt 50 px would read as weightless; a 0.8-scale dust bunny that only
+       managed 30 would read as bored. */
+    this.mass = 1 / (0.62 + 0.38 * Math.min(1.9, Math.max(0.6, scale)));
+
     const el = document.createElement('div');
     el.className = 'enemy cb-enemy';
     el.dataset.id = this.id;
     el.dataset.body = bodyKind;
     el.dataset.tier = this.tier;
+    /* The trunk gradient runs `--e2 -> --e1 -> --e3` top to bottom, and the
+       EnemyDef palettes are not consistent about which slot is the dark one:
+       The Butler's `--e3` is cream, so his tailcoat faded to white trousers at
+       the hem. A garment silhouette can opt out and stay dark all the way down. */
+    if (props.grad) el.dataset.grad = props.grad;
     /* ROLE, not just tier. The Governess's Favorite Doll is `tier:'boss'`,
        `role:'bossPart'`, 50 Courage — and the stylesheet's boss-arena size rule
        applied to every rig on the board, so she staged at 258x420 while her own
@@ -442,6 +757,12 @@ export class EnemyView {
     el.dataset.role = this.role;
     el.tabIndex = 0;
     el.setAttribute('role', 'button');
+    /* A NAME FOR THE CREATURE. This element is `role="button"`, focusable, and
+       every readable thing inside it is either `aria-hidden` (the rig) or a
+       bare numeral, so a screen reader announced it as "button" and nothing
+       else — on the four most important objects on the screen. `_syncAria`
+       keeps it current with Courage, Guard and what it is about to do. */
+    el.setAttribute('aria-label', this.name);
     el.style.setProperty('--e-scale', String(scale));
     if (pal) {
       el.style.setProperty('--e1', pal[0]);
@@ -489,8 +810,9 @@ export class EnemyView {
               <g class="rg-front">${props.front || ''}</g>
               <g class="rg-face" transform="translate(${f(faceX)} ${f(faceY)}) scale(${faceS})">
                 ${this._eyes(eyes, props.buttons)}
-                ${eyes === 0 ? `<path class="rg-mouth" d="M-20,14 q20,12 40,0"/>` : ''}
+                ${eyes === 0 && !props.over ? `<path class="rg-mouth" d="M-20,14 q20,12 40,0"/>` : ''}
               </g>
+              <g class="rg-over">${props.over || ''}</g>
             </g>
             <g class="rg-limbs-front">${this._limbs(b, limbs, false)}</g>
           </g>
@@ -610,7 +932,20 @@ export class EnemyView {
       this.$guard.hidden = true;
     }
     this._renderStatuses(snap.statuses || []);
+    this._syncAria();
     return this;
+  }
+
+  /** The one spoken sentence for this creature. Cheap, and only on change. */
+  _syncAria() {
+    const tier = this.tier === 'boss' ? 'Boss' : this.tier === 'elite' ? 'Big Scare' : 'Enemy';
+    let s = `${this.name}. ${tier}. ${Math.max(0, this.hp)} of ${this.maxHp} Courage`;
+    if (this.block > 0) s += `, ${this.block} Guard`;
+    if (this.lastIntent) s += `. Next: ${this.intentView.ariaLabel()}`;
+    else s += '.';
+    if (s === this._ariaKey) return;
+    this._ariaKey = s;
+    this.el.setAttribute('aria-label', s);
   }
 
   _renderStatuses(list) {
@@ -645,6 +980,7 @@ export class EnemyView {
   setIntent(intent, o) {
     this.intentView.set(intent, { ...(o || {}), def: this.def, selfName: this.name });
     this.lastIntent = intent;
+    this._syncAria();
     return this;
   }
 
@@ -838,35 +1174,82 @@ export class EnemyView {
   /* ── acting ─────────────────────────────────────────────────────────────── */
   _d(s) { return this.reduceMotion ? 0.001 : s; }
 
+  /**
+   * Ramp the screen-space attack pose to an absolute target.
+   *
+   * NOT a spring. `a.lean` was spring-chased at k=13, which over an 85 ms
+   * contact beat only ever covers 70% of the distance and then gets retargeted
+   * — the pose never once arrived at the value the code asked for. An explicit
+   * ramp is the only thing that can promise "at the end of this await the
+   * creature is exactly `x,y,r` from home", which is what a contact frame is.
+   *
+   * `reduceMotion` collapses the whole pose to zero rather than merely making
+   * it fast: a 50 px snap is worse for a motion-sensitive player than no move.
+   */
+  _pose(x, y, r, dur, ease) {
+    const a = this.a;
+    if (this.reduceMotion || !this.clock) {
+      a.px = a.py = a.pr = 0;
+      return Promise.resolve();
+    }
+    const m = this.mass;
+    const tx = x * m, ty = y * m, tr = r;
+    const x0 = a.px, y0 = a.py, r0 = a.pr;
+    this._posing = (this._posing || 0) + 1;
+    const token = ++this._poseToken;
+    return this.clock.ramp(dur, (v) => {
+      if (token !== this._poseToken) return;
+      a.px = x0 + (tx - x0) * v;
+      a.py = y0 + (ty - y0) * v;
+      a.pr = r0 + (tr - r0) * v;
+    }, ease).then(() => { this._posing--; });
+  }
+
   /** Telegraph before the move resolves. Resolves when the pose is held. */
   async windup(type = 'attack') {
     if (this.dying) return;
     this.el.classList.add('is-acting');
     const a = this.a;
     const fam = String(type || '');
+    const m = this.motif;
+    let posed = null;
     if (fam.startsWith('attack')) {
-      a.leanT = -1; a.squashT = 0.18;
+      a.leanT = -0.7; a.squashT = 0.2;
       a.lookTX = -1; a.lookTY = 0.35;
+      // the coil: back and slightly up, ~120 ms, then HELD until damage lands
+      posed = this._pose(m.bx, m.by, m.br, this._d(0.12), Clock.easeOutCubic);
     } else if (fam.startsWith('defend')) {
       a.leanT = 0; a.squashT = 0.55; a.lookTY = 0.6;
+      posed = this._pose(0, 7, 0, this._d(0.16), Clock.easeOutCubic);
     } else if (fam === 'buff' || fam === 'defendBuff') {
       a.riseT = 1; a.leanT = -0.25; a.lookTY = -0.7;
+      posed = this._pose(0, -14, 0, this._d(0.2), Clock.easeOutCubic);
     } else if (fam.includes('ebuff')) {
       a.leanT = 0.3; a.squashT = -0.2; a.lookTX = -1;
+      posed = this._pose(m.bx * 0.5, -6, m.br * 0.4, this._d(0.16), Clock.easeOutCubic);
     } else {
       a.squashT = 0.3; a.shiver = 1;
     }
-    await this.clock?.ramp(this._d(0.34), () => {}, Clock.easeOutCubic);
+    await Promise.all([posed, this.clock?.ramp(this._d(0.2), () => {}, Clock.easeOutCubic)]);
   }
 
-  /** The contact beat: a fast lunge toward the player. */
+  /**
+   * The contact beat. Resolves ON CONTACT — the caller lands damage, particles
+   * and shake on the same frame the pose reaches `f*`. The follow-through is
+   * deliberately NOT awaited, so the impact is not gated behind 250 ms of
+   * recovery.
+   */
   async strike() {
     if (this.dying) return;
     const a = this.a;
-    a.leanT = 1.15;
-    await this.clock?.ramp(this._d(0.085), () => {}, Clock.easeInCubic);
-    a.leanT = 0.15;
-    await this.clock?.ramp(this._d(0.13), () => {}, Clock.easeOutCubic);
+    const m = this.motif;
+    a.leanT = 1.0;
+    this.el.classList.add('is-striking');
+    await this._pose(m.fx, m.fy, m.fr, this._d(0.09), Clock.easeInCubic);
+    // follow-through: past the contact pose, then drifting home. Fire and forget.
+    a.leanT = 0.12;
+    const tail = this._pose(m.sx, m.sy, m.sr, this._d(0.25), Clock.easeOutCubic);
+    tail.then(() => this.el.classList.remove('is-striking'));
   }
 
   /** Back to the idle pose. */
@@ -874,8 +1257,11 @@ export class EnemyView {
     const a = this.a;
     a.leanT = 0; a.squashT = 0; a.riseT = 0; a.shiver = 0;
     a.lookTX = 0; a.lookTY = 0;
-    this.el.classList.remove('is-acting');
-    await this.clock?.ramp(this._d(0.2), () => {}, Clock.easeOutCubic);
+    this.el.classList.remove('is-acting', 'is-striking');
+    await Promise.all([
+      this._pose(0, 0, 0, this._d(0.22), Clock.easeOutCubic),
+      this.clock?.ramp(this._d(0.2), () => {}, Clock.easeOutCubic),
+    ]);
   }
 
   /** Hit reaction. `mag` is hpLoss — drives how hard it is thrown. */
@@ -1068,6 +1454,22 @@ export class EnemyView {
       }
     }
 
+    /* ── the ATTACK POSE, in screen pixels ─────────────────────────────────
+       Published as custom properties so the creature (and its intent) move as
+       one on the compositor, while `.cb-enemy__plate` cancels the same offset
+       and the Courage bar stays where the eye left it. This is what makes
+       `.cb-enemy`'s own rect move — the previous pose lived inside the SVG
+       viewBox and was worth ~12 px on screen at full commitment.
+       Written only while the pose is non-zero: idle enemies cost nothing. */
+    const posed = a.px !== 0 || a.py !== 0 || a.pr !== 0;
+    if (posed || this._poseWrote) {
+      const st = this.el.style;
+      st.setProperty('--e-lx', f2(a.px) + 'px');
+      st.setProperty('--e-ly', f2(a.py) + 'px');
+      st.setProperty('--e-lr', f2(a.pr) + 'deg');
+      this._poseWrote = posed;
+    }
+
     // dissolve
     if (a.dead > 0) {
       const d = a.dead;
@@ -1100,6 +1502,266 @@ export class EnemyView {
 }
 
 const f2 = (v) => (Math.round(v * 1000) / 1000);
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * THE KID — the player's body on the board.  OWNER: combat-scene.
+ *
+ * Round 3 had no player character in the Scuffle at all: the "player" was a
+ * framed portrait pinned to the bottom-left corner, captioned KID, which is a
+ * picture hanging on a wall and not a participant. Every hit you dealt was a
+ * number appearing on an enemy with nothing to have caused it, and
+ * STS2-REFERENCE §4 is explicit that this is the exact StS1 complaint Slay the
+ * Spire 2 set out to fix: "characters animate their attacks… a strike swings
+ * a weapon."
+ *
+ * So the Kid now STANDS IN THE ROOM, on the same floor line as the creatures,
+ * facing them, with the companion at her shoulder — and she winds up, swings
+ * the torch, flinches and braces. The portrait panel stays exactly where it
+ * was, because it carries Guard, the resource counters and the INCOMING
+ * readout, and none of that belongs on a moving body.
+ *
+ * Same rig machinery as EnemyView, same pose contract (`windup` / `strike` /
+ * `settle` / `flinch`), same screen-pixel publication, so the two sides of an
+ * exchange are written once and read the same.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/** Companion accents. Presentation only — the data layer carries no palette. */
+const PALS = {
+  marmalade: ['#f2a44a', '#ffd7a3', '#7a3c12'], wisp: ['#8fd7ff', '#dff4ff', '#2a5f80'],
+  crumbula: ['#c9b28a', '#efe2c6', '#5b4a2e'], boggle: ['#8fd18a', '#dcf3d6', '#33552f'],
+  bones: ['#e8e2d2', '#ffffff', '#6b6455'], pipkin: ['#f2c14e', '#ffe9b0', '#7a5a12'],
+  taffy: ['#f0a3c8', '#ffdcec', '#7d3a58'], hush: ['#a9a0d8', '#e2dcff', '#443a70'],
+  truffle: ['#b98a5e', '#e8cfae', '#5c3d22'], mopsy: ['#dcd6ef', '#f6f3ff', '#6a6188'],
+  drizzle: ['#7fb6e6', '#d6ecff', '#2f5878'], pudding: ['#d8a26a', '#f6dcbd', '#6b452a'],
+  wink: ['#9d8ad4', '#ded3ff', '#453a6e'], mossbit: ['#7fae72', '#d3ecc9', '#31502c'],
+  brambleboo: ['#a2c46a', '#e0f0bd', '#425a25'], crinkle: ['#e9c46a', '#fff0c4', '#7a5c1c'],
+};
+
+export class PlayerView {
+  /** @param {object} o { clock, reduceMotion, companion, name } */
+  constructor(o = {}) {
+    this.clock = o.clock || null;
+    this.reduceMotion = !!o.reduceMotion;
+    this.slug = String(o.companion || 'marmalade');
+    this.rnd = mulberry(hash32(this.slug));
+    this.a = {
+      breathPh: 0, bobPh: 0, lean: 0, leanT: 0, squash: 0, squashT: 0,
+      swing: 0, swingT: 0, shove: 0,
+      blink: 0, nextBlink: 1.4 + this.rnd() * 3,
+      px: 0, py: 0, pr: 0,
+    };
+    this._poseToken = 0;
+    this._poseWrote = false;
+    this._build();
+  }
+
+  _build() {
+    const pal = PALS[this.slug] || PALS.marmalade;
+    const el = document.createElement('div');
+    el.className = 'cb-hero';
+    el.setAttribute('aria-hidden', 'true');   // the .cb-player panel is the label
+    el.style.setProperty('--c1', pal[0]);
+    el.style.setProperty('--c2', pal[1]);
+    el.style.setProperty('--c3', pal[2]);
+    // Body space: feet on y=0, up is −y, facing +x (the creatures are to the right).
+    el.innerHTML = `
+      <svg class="cb-hero__rig" viewBox="-120 -270 260 285" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+        <g class="pr-root">
+          <g class="pr-pack">
+            <path class="pr-packbag" d="M-46,-146 q-22,6 -20,40 q2,30 22,36 l12,-7 v-66 Z"/>
+            <path class="pr-packflap" d="M-46,-146 q-22,6 -20,26 q14,10 32,4 v-28 Z"/>
+            <path class="pr-strap" d="M-26,-152 q-12,40 -4,78"/>
+          </g>
+          <g class="pr-legs">
+            <path class="pr-leg" d="M-16,-66 q-6,34 -2,62"/>
+            <path class="pr-leg" d="M16,-66 q8,32 4,62"/>
+            <path class="pr-boot" d="M-26,-6 h30 v12 h-38 q-4,-8 8,-12 Z"/>
+            <path class="pr-boot" d="M8,-6 h30 v12 h-38 q-4,-8 8,-12 Z"/>
+          </g>
+          <g class="pr-body">
+            <path class="pr-coat" d="M-36,-158 q36,-16 72,0 q18,26 20,62 l6,42 q-42,16 -84,0 l4,-42 q4,-38 18,-62 Z"/>
+            <path class="pr-hem" d="M-42,-56 q42,16 84,0"/>
+            <circle class="pr-btn" cx="6" cy="-118" r="4"/>
+            <circle class="pr-btn" cx="8" cy="-98" r="4"/>
+          </g>
+          <!-- the swinging arm and the torch; pr-swing is rotated by update() -->
+          <g class="pr-swing">
+            <path class="pr-arm" d="M22,-150 q38,8 54,40"/>
+            <g class="pr-torch">
+              <path class="pr-beam" d="M98,-116 L206,-160 L214,-64 L104,-90 Z"/>
+              <path class="pr-torchbody" d="M60,-98 l38,-18 l11,20 l-38,18 Z"/>
+              <circle class="pr-flame" cx="110" cy="-96" r="17"/>
+              <circle class="pr-flamehot" cx="110" cy="-99" r="8"/>
+            </g>
+          </g>
+          <g class="pr-head">
+            <path class="pr-hair" d="M-34,-186 q4,-42 36,-42 q34,0 38,42 q-16,-16 -38,-14 q-22,-2 -36,14 Z"/>
+            <ellipse class="pr-face" cx="4" cy="-182" rx="32" ry="30"/>
+            <path class="pr-hair" d="M-32,-190 q6,-38 36,-38 q32,0 36,34 q-18,-20 -40,-14 q-20,4 -32,18 Z"/>
+            <g class="pr-eyes">
+              <g class="pr-eye"><ellipse class="pr-sclera" cx="-2" cy="-180" rx="8" ry="9"/>
+                <circle class="pr-pupil" cx="0" cy="-179" r="4"/>
+                <circle class="pr-glint" cx="-2" cy="-182" r="1.8"/>
+                <ellipse class="pr-lid" cx="-2" cy="-180" rx="9.5" ry="10.5"/></g>
+              <g class="pr-eye"><ellipse class="pr-sclera" cx="20" cy="-180" rx="8" ry="9"/>
+                <circle class="pr-pupil" cx="22" cy="-179" r="4"/>
+                <circle class="pr-glint" cx="18" cy="-182" r="1.8"/>
+                <ellipse class="pr-lid" cx="20" cy="-180" rx="9.5" ry="10.5"/></g>
+            </g>
+            <path class="pr-mouth" d="M4,-168 q7,7 14,0"/>
+          </g>
+          <!-- the companion, floating at her shoulder -->
+          <g class="pr-pal">
+            <path class="pr-paltail" d="M-96,-196 q-26,-6 -22,-30 q4,-20 22,-12"/>
+            <path class="pr-palear" d="M-92,-224 l-6,-22 l22,10 Z"/>
+            <path class="pr-palear" d="M-56,-224 l6,-22 l-22,10 Z"/>
+            <ellipse class="pr-palbody" cx="-74" cy="-206" rx="26" ry="23"/>
+            <ellipse class="pr-palmuzzle" cx="-74" cy="-197" rx="11" ry="8"/>
+            <circle class="pr-paleye" cx="-84" cy="-210" r="4.5"/>
+            <circle class="pr-paleye" cx="-64" cy="-210" r="4.5"/>
+            <path class="pr-palwhisk" d="M-96,-198 h-13 M-52,-198 h13"/>
+          </g>
+        </g>
+      </svg>
+      <div class="cb-hero__flash"></div>`;
+    this.el = el;
+    this.$root = el.querySelector('.pr-root');
+    this.$body = el.querySelector('.pr-body');
+    this.$head = el.querySelector('.pr-head');
+    this.$swing = el.querySelector('.pr-swing');
+    this.$pal = el.querySelector('.pr-pal');
+    this.$flash = el.querySelector('.cb-hero__flash');
+    this.$lids = Array.from(el.querySelectorAll('.pr-lid'));
+  }
+
+  _d(s) { return this.reduceMotion ? 0.001 : s; }
+
+  /** Same contract as EnemyView#_pose — absolute screen-pixel ramp, never a spring. */
+  _pose(x, y, r, dur, ease) {
+    const a = this.a;
+    if (this.reduceMotion || !this.clock) { a.px = a.py = a.pr = 0; return Promise.resolve(); }
+    const x0 = a.px, y0 = a.py, r0 = a.pr;
+    const token = ++this._poseToken;
+    return this.clock.ramp(dur, (v) => {
+      if (token !== this._poseToken) return;
+      a.px = x0 + (x - x0) * v;
+      a.py = y0 + (y - y0) * v;
+      a.pr = r0 + (r - r0) * v;
+    }, ease);
+  }
+
+  /** She coils: weight back onto the heel, torch drawn up and behind. */
+  async windup() {
+    if (this._dead) return;
+    this.el.classList.add('is-acting');
+    this.a.leanT = -0.8; this.a.squashT = 0.2; this.a.swingT = -1;
+    await this._pose(-16, -5, -5, this._d(0.12), Clock.easeOutCubic);
+  }
+
+  /**
+   * Contact. Resolves ON the contact frame — the caller lands damage, sparks
+   * and shake on the same tick the torch reaches the bottom of its arc.
+   */
+  async strike() {
+    if (this._dead) return;
+    this.el.classList.add('is-striking');
+    this.a.leanT = 1.1; this.a.squashT = -0.1; this.a.swingT = 1;
+    await this._pose(44, 10, 8, this._d(0.09), Clock.easeInCubic);
+    this.a.leanT = 0.2; this.a.swingT = 0.25;
+    this._pose(12, 2, 2, this._d(0.26), Clock.easeOutCubic)
+      .then(() => this.el.classList.remove('is-striking'));
+  }
+
+  async settle() {
+    this.a.leanT = 0; this.a.squashT = 0; this.a.swingT = 0;
+    this.el.classList.remove('is-acting', 'is-striking');
+    await this._pose(0, 0, 0, this._d(0.24), Clock.easeOutCubic);
+  }
+
+  /** Took a hit. `mag` is Courage actually lost. */
+  flinch(mag = 4, blocked = false) {
+    const k = Math.min(1.3, 0.35 + mag / 22);
+    this.a.shove = Math.max(this.a.shove, (blocked ? 7 : 20) * k);
+    this.a.squashT = blocked ? 0.12 : 0.3;
+    this.a.blink = 1;
+    this.clock?.wait(0.18).then(() => { this.a.squashT = 0; });
+    this.el.classList.remove('is-hit', 'is-clank');
+    void this.el.offsetWidth;
+    this.el.classList.add(blocked ? 'is-clank' : 'is-hit');
+    if (!blocked) { this.$flash.style.opacity = String(Math.min(0.75, 0.3 + k * 0.36)); this._flash = 1; }
+  }
+
+  guard() {
+    this.el.classList.remove('is-guarding');
+    void this.el.offsetWidth;
+    this.el.classList.add('is-guarding');
+  }
+
+  /** Where FX should land on her. */
+  centre() {
+    const r = this.el.getBoundingClientRect();
+    return { x: r.left + r.width * 0.52, y: r.top + r.height * 0.46, w: r.width, h: r.height };
+  }
+  /** The tip of the torch — where a swing's arc should start. */
+  reach() {
+    const r = this.el.getBoundingClientRect();
+    return { x: r.left + r.width * 0.86, y: r.top + r.height * 0.42 };
+  }
+
+  update(dt, t) {
+    const a = this.a;
+    const rm = this.reduceMotion;
+    const sp = (cur, target, k) => cur + (target - cur) * Math.min(1, k * dt);
+    a.lean = sp(a.lean, a.leanT, 13);
+    a.squash = sp(a.squash, a.squashT, 11);
+    a.swing = sp(a.swing, a.swingT, 16);
+    a.shove *= Math.max(0, 1 - dt * 9);
+
+    let breath = 0, bob = 0;
+    if (!rm) {
+      a.breathPh += dt * 0.8;
+      a.bobPh += dt * 1.15;
+      breath = Math.sin(a.breathPh * TAU * 0.5);
+      bob = Math.sin(a.bobPh * TAU * 0.5);
+      a.nextBlink -= dt;
+      if (a.nextBlink <= 0) { a.nextBlink = 2.4 + this.rnd() * 4; a.blink = 1; }
+      if (a.blink > 0) a.blink -= dt * 7.5;
+    }
+
+    if (this._flash > 0) {
+      this._flash -= dt * 5;
+      this.$flash.style.opacity = String(Math.max(0, this._flash * 0.7));
+    }
+
+    // rig-space life, on top of the screen-space attack pose
+    const dx = a.lean * 9 - a.shove;
+    const dy = Math.abs(a.lean) * -3;
+    this.$root.setAttribute('transform', `translate(${f(dx)} ${f(dy)}) rotate(${f(a.lean * 3)} 0 0)`);
+    this.$body.setAttribute('transform',
+      `scale(${f2(1 - breath * 0.012 + a.squash * 0.14)} ${f2(1 + breath * 0.018 - a.squash * 0.16)})`);
+    this.$head.setAttribute('transform', `translate(${f(a.lean * 6)} ${f(breath * 1.6)})`);
+    // the torch arm: −24° drawn back, +64° at the bottom of the swing
+    this.$swing.setAttribute('transform', `rotate(${f(a.swing * (a.swing < 0 ? 24 : 64))} 20 -150)`);
+    this.$pal.setAttribute('transform', `translate(${f(bob * 3 - a.lean * 4)} ${f(bob * 5)})`);
+    const lid = a.blink > 0 ? Math.sin(Math.min(1, a.blink) * Math.PI) : 0;
+    // `.pr-lid` is `transform-box: fill-box; transform-origin: 50% 0%` in CSS,
+    // so a plain vertical scale closes it from the brow down.
+    for (let i = 0; i < this.$lids.length; i++) {
+      this.$lids[i].setAttribute('transform', `scale(1 ${f2(lid)})`);
+    }
+
+    const posed = a.px !== 0 || a.py !== 0 || a.pr !== 0;
+    if (posed || this._poseWrote) {
+      const st = this.el.style;
+      st.setProperty('--p-lx', f2(a.px) + 'px');
+      st.setProperty('--p-ly', f2(a.py) + 'px');
+      st.setProperty('--p-lr', f2(a.pr) + 'deg');
+      this._poseWrote = posed;
+    }
+  }
+
+  destroy() { this._dead = true; this.el.remove(); }
+}
 
 function statusTip(s) {
   return `${s.name}|${s.desc || ''}|${s.decay === 'turnEnd' ? 'Wears off at the end of its turn.' : s.decay === 'turnStart' ? 'Ticks at the start of its turn.' : 'Lasts the whole Scuffle.'}`;

@@ -20,10 +20,10 @@ import { Save } from '../core/save.js';
 import { clock, Clock } from '../core/clock.js';
 import { COMPANIONS, KIDS, TERMS } from '../data/schema.js';
 import {
-  ensureCss, fontsReady, companionPortrait, kidPortrait, logoLockup, petGlyph,
+  ensureCss, fontsReady, companionPortrait, kidPortrait, logoLockup, petPortrait,
   el, svg, rovingFocus, setReduceMotion, reduceMotion, formatSeed,
   REGION_NAMES, COMPANION_BY_SLUG, heroSrc, cobweb, candle,
-  freedCompanions, STARTER_COMPANIONS, parseSeed,
+  freedCompanions, availableCompanions, STARTER_COMPANIONS, parseSeed, warmFaces,
 } from '../ui/portrait.js';
 import { pauseStageFor } from './_stage.js';
 import { fitCardToSlot } from './_cardfit.js';
@@ -516,11 +516,15 @@ export class SelectScene extends Scene {
     // The canvas measures 0.00% visible behind this screen — stop drawing it.
     this._unpauseStage = pauseStageFor(ctx);
 
-    // unlocked set: the shared freed count, plus ?all=1 for review
+    warmFaces({ sync: true });   // behind the veil. See ui/petart.js.
+
+    // Who is pickable, plus ?all=1 for review.
     const revealAll = params.all === '1' || params.all === true;
-    this.unlocked = revealAll ? new Set(COMPANIONS.map((c) => c.slug)) : freedCompanions();
+    this.unlocked = revealAll ? new Set(COMPANIONS.map((c) => c.slug)) : availableCompanions();
     /* The grid tally must never move with `?all=1`: that flag is a review door,
-       not progress. It counts what you actually freed either way. */
+       not progress. It counts what you actually freed either way — and the four
+       starters are pickable without being freed, so this is a different set
+       from `unlocked` and not just a copy of it. See ui/portrait.js. */
     this.freed = freedCompanions();
 
     this.state.seed = Number(params.seed) || (Date.now() % 0x7fffffff);
@@ -625,7 +629,9 @@ export class SelectScene extends Scene {
     this._grid = grid;
 
     const count = el('div', 'sel__gridcount');
-    count.innerHTML = `<b>${this.freed.size}</b> / ${COMPANIONS.length} freed`;
+    const withYou = this.unlocked.size - this.freed.size;
+    count.innerHTML = `<b>${this.freed.size}</b> / ${COMPANIONS.length} freed`
+      + (withYou > 0 ? `<em>${withYou} already with you</em>` : '');
     wrap.appendChild(count);
     return wrap;
   }
@@ -735,7 +741,7 @@ export class SelectScene extends Scene {
       b.setAttribute('role', 'option');
       b.setAttribute('aria-selected', 'false');
       const pw = el('div', 'kid-tile__pf');
-      pw.appendChild(kidPortrait({ ...k, petKind: info.species || k.petKind }, { w: 150, h: 166, tag: true }));
+      pw.appendChild(kidPortrait({ ...k, petKind: info.species || k.petKind }, { w: 150, h: 166 }));
       b.appendChild(pw);
       b.appendChild(el('div', 'kid-tile__plate',
         `<span class="kid-tile__name">${k.name.split(' ')[0]}</span>` +
@@ -1107,14 +1113,18 @@ export class SelectScene extends Scene {
 
     const pf = step.querySelector('.kid__portrait');
     pf.innerHTML = '';
-    pf.appendChild(kidPortrait({ ...k, petKind: info.species }, { w: 300, h: 334, tag: true }));
+    pf.appendChild(kidPortrait({ ...k, petKind: info.species }, { w: 300, h: 334 }));
 
     step.querySelector('.poster__pet').textContent = k.pet;
     step.querySelector('.poster__species').textContent = info.species;
     step.querySelector('.poster__lost').textContent = info.lost;
     step.querySelector('.poster__note').textContent = info.note;
-    step.querySelector('.poster__photo').innerHTML =
-      `<svg viewBox="0 0 34 34" aria-hidden="true"><path d="${petGlyph(info.species)}"/></svg>`;
+    /* The actual photograph of the actual animal. This box used to hold one
+       hard-coded cat-shaped path shown for every pet on the roster, Lucy's
+       guinea pig included — the single image the whole game is about. */
+    const photo = step.querySelector('.poster__photo');
+    photo.innerHTML = '';
+    photo.appendChild(petPortrait(k.slug, { alt: `${k.pet}, ${info.species.toLowerCase()}` }));
 
     step.querySelector('.kid__name').textContent = k.name;
     step.querySelector('.kid__trait').textContent = info.trait;
