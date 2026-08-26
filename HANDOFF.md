@@ -247,6 +247,32 @@ instead of quietly resolving to seat 0. Running a real 2-player fight produced
 the port list one throw at a time. A shipped build still degrades to seat 0
 rather than throwing at a player mid-run.
 
+### MEASURED, and it needs a designer decision
+
+`tests/coop/balance.py` plays real fights at every party size. Foyer, starting
+decks, competent bot on every seat.
+
+| | 1p | 2p | 3p | 4p |
+|---|---|---|---|---|
+| Scuffle win% | 80 | 80 | 92 | **100** |
+| Scuffle Courage left | 22% | 46% | 57% | **63%** |
+| Elite win% | 53 | 53 | 33 | **0** |
+| Elite fallen/fight | 0.5 | 0.9 | 2.0 | **4.0** |
+
+**Scuffles get easier with more Kids; elites become unwinnable.** No single
+constant fixes both. Scaling enemy Courage scales fight LENGTH, and length is
+what decides total incoming damage — while enemy OUTPUT does not scale at all,
+because each enemy marks one seat and swings at it. A short fight ends before
+attrition matters and the party's 4x action economy wins outright; a long one
+runs ~5x the enemy turns against only 4x the Courage pool, and seats fall one at
+a time.
+
+§9 records the rule as "enemies threaten all players at all times". The Courage
+curve is built; **the threat side is not**. Levers: scale enemy COUNT, give
+enemies extra targets/attacks in a party, or lower the curve and raise per-turn
+threat. That is a design call, so it is measured and written down, not tuned
+silently. Full numbers and caveats in `docs/notes/2026-08-26-multiplayer-engine.md` §5b.
+
 ### NOT built — this is the honest list
 
 1. **No co-op run layer and no co-op UI.** `state/run.js` is single-player and

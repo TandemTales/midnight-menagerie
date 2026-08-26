@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Midnight Menagerie — party balance</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; padding: 24px 28px 60px; background: #0d0b16; color: #c3bbcd;
+         font: 13px/1.55 ui-monospace, Menlo, Consolas, monospace; }
+  h1 { font-size: 17px; letter-spacing: .14em; text-transform: uppercase; color: #f4efe4; margin: 0 0 4px; }
+  .sub { color: #8b839a; margin-bottom: 18px; font-size: 12px; }
+  pre { white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h1>Party balance</h1>
+<div class="sub">Real party engines, real Companion decks, the competent bot driving every seat.</div>
+<pre id="out">running…</pre>
+
+<script type="module">
+/**
+ * Does the enemy Courage curve (1p 100% / 2p 220% / 3p 360% / 4p 520%) actually
+ * hold up in THIS game?
+ *
+ * The curve is Slay the Spire 2's, adopted on the strength of the quality bar
+ * rather than measured here. This plays real fights at every party size with
+ * the same competent bot driving every seat and reports what actually happens.
+ *
+ * Each seat is driven independently and ends its OWN turn, which is also the
+ * only end-to-end exercise of simultaneous turns, per-seat piles, per-seat
+ * trackers and enemy seat-marking that exists.
+ */
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import { RNG } from '../../game/src/core/rng.js';
+import { loadContentRegistries } from '../../game/src/data/keywords.js';
+import { startingDeckFor } from '../../game/src/data/cards.js';
+import { competentTurn } from '../critic-design/lib/bot.js';
+import { rollEncounter, buildEncounter } from '../../game/src/data/encounters.js';
+import { getEnemy } from '../../game/src/data/enemies/index.js';
+
+const Q = new URLSearchParams(location.search);
+const N = +(Q.get('n') || 20);
+const SEED0 = +(Q.get('seed') || 5000);
+const TIER = Q.get('tier') || 'standard';
+const REGION = Q.get('region') || 'foyer';
+const MAX_TURNS = 40;
+const SLUGS = ['marmalade', 'bones', 'pipkin', 'taffy'];
+
+const out = document.getElementById('out');
+const lines = [];
+const say = (s) => { lines.push(s); out.textContent = lines.join('\n'); };
+
+/** A real authored formation, built exactly the way state/run.js builds one. */
+function pickEnemies(rng) {
+  const enc = rollEncounter(REGION, TIER, rng, []);
+  const members = buildEncounter(enc.id, rng, 0);
+  return members.map((m, i) => {
+    const def = getEnemy(m.enemyId);
+    return def ? { def, hp: Math.max(1, m.hp), id: `e${i}` } : null;
+  }).filter(Boolean);
+}
+
+async function oneFight(size, seed) {
+  const rng = new RNG(seed);
+  const enemies = pickEnemies(rng);
+  if (!enemies.length) return null;
+  const players = [];
+  for (let i = 0; i < size; i++) {
+    const slug = SLUGS[i % SLUGS.length];
+    players.push({
+      name: `Kid${i}`, companion: slug, maxHp: 70, hp: 70,
+      energyMax: 3, drawPerTurn: 5, deck: startingDeckFor(slug),
+    });
+  }
+  const e = new CombatEngine({
+    rng, players,
+    enemies,
+    // Guard OFF here on purpose: this is a measurement run, not a correctness
+    // run, and a throw mid-fight would silently bias the win rate toward
+    // whichever party size happened to trip it. tests/coop is where the guard
+    // is armed.
+    strictCtx: false,
+  });
+  await e.startCombat();
+
+  let turns = 0;
+  while (!e.over && turns < MAX_TURNS) {
+    turns++;
+    // Every seat plans and ends its own turn — simultaneous turns for real.
+    for (const pl of e.livingPlayers()) {
+      try { await competentTurn(e, { seat: pl }); } catch (err) { /* keep the fight going */ }
+      if (e.over) break;
+      await e.endTurn(pl);
+      if (e.over) break;
+    }
+    if (!e.over && !e.tableReady && e.phase === 'player') await e.endTurn();
+  }
+
+  const hp = e.players.reduce((n, p) => n + p.hp, 0);
+  const maxHp = e.players.reduce((n, p) => n + p.maxHp, 0);
+  return {
+    size, win: !!e.victory, turns, stalled: turns >= MAX_TURNS && !e.over,
+    fallen: e.players.filter(p => p.fallen).length,
+    courageFrac: maxHp ? hp / maxHp : 0,
+    enemyHp: e.enemies.reduce((n, x) => n + x.maxHp, 0),
+  };
+}
+
+const mean = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0);
+
+(async () => {
+  await loadContentRegistries(null);
+  say(`region ${REGION} · tier ${TIER} · ${N} fights per party size · seed ${SEED0}`);
+  say('');
+  say('party   fights   win%   turns   Courage left   fallen/fight   enemy Courage');
+  say('─────────────────────────────────────────────────────────────────────────────');
+  const rows = [];
+  for (const size of [1, 2, 3, 4]) {
+    const res = [];
+    for (let i = 0; i < N; i++) {
+      const r = await oneFight(size, SEED0 + i * 13);
+      if (r) res.push(r);
+      if (i % 5 === 0) out.textContent = lines.join('\n') + `\n  … ${size}p ${i + 1}/${N}`;
+    }
+    if (!res.length) { say(`${size}p      no encounters found`); continue; }
+    const wins = res.filter(r => r.win);
+    const row = {
+      size, n: res.length,
+      win: 100 * wins.length / res.length,
+      turns: mean(wins.map(r => r.turns)),
+      left: 100 * mean(wins.map(r => r.courageFrac)),
+      fallen: mean(res.map(r => r.fallen)),
+      ehp: mean(res.map(r => r.enemyHp)),
+    };
+    rows.push(row);
+    say(`${size}p      ${String(row.n).padStart(4)}   ${row.win.toFixed(0).padStart(4)}%   `
+      + `${row.turns.toFixed(1).padStart(5)}   ${row.left.toFixed(0).padStart(9)}%   `
+      + `${row.fallen.toFixed(2).padStart(10)}   ${row.ehp.toFixed(0).padStart(11)}`);
+  }
+  say('');
+  const solo = rows.find(r => r.size === 1);
+  if (solo) {
+    say('Reading it: if the curve is right, win% and Courage left should stay FLAT');
+    say('across party sizes. A rising line means co-op is too easy; a falling one');
+    say('means the curve is too steep and more Kids is a punishment.');
+    say('');
+    for (const r of rows) {
+      const dW = r.win - solo.win, dC = r.left - solo.left;
+      say(`  ${r.size}p vs solo: win ${dW >= 0 ? '+' : ''}${dW.toFixed(0)} pts · `
+        + `Courage left ${dC >= 0 ? '+' : ''}${dC.toFixed(0)} pts · `
+        + `enemy Courage x${(r.ehp / solo.ehp).toFixed(2)}`);
+    }
+  }
+  window.__BALANCE__ = { rows };
+  say('');
+  say('DONE');
+})().catch(err => {
+  say('CRASHED: ' + (err && err.stack || err));
+  window.__BALANCE__ = { error: String(err) };
+});
+</script>
+</body>
+</html>

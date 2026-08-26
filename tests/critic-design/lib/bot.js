@@ -62,7 +62,7 @@ export function applySnack(E, snack, targetId = null) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** What the intents PROMISE this enemy turn — the number the HUD shows. */
-export function shownIncoming(e) {
+export function shownIncoming(e, seat = null) {
   let t = 0;
   for (const en of e.enemies) {
     if (!en.alive || !en.intent) continue;
@@ -71,15 +71,24 @@ export function shownIncoming(e) {
   return t;
 }
 
-const handOf = (e) => e.piles.hand.filter(c => !c.unplayable);
+/**
+ * The seat this bot is currently driving.
+ *
+ * `e.player` and `e.piles` THROW in a party with the guard armed, on purpose —
+ * a bot that silently drove seat 0 for all four Kids would produce win rates
+ * that mean nothing. Every reader below goes through `seatOf`, so the party
+ * harness passes `{ seat }` and solo passes nothing.
+ */
+const seatOf = (e, seat) => seat || e.players[0];
+const handOf = (e, seat) => seatOf(e, seat).piles.hand.filter(c => !c.unplayable);
 const stacksOf = (a, id) => a.statuses.get(id) || 0;
 
 /** Legal (card, target) pairs, deduped so five identical Scratches cost one probe. */
-function options(e, cap) {
+function options(e, cap, seat = null) {
   const out = [];
   const seen = new Set();
   const living = e.livingEnemies();
-  for (const card of handOf(e)) {
+  for (const card of handOf(e, seat)) {
     const key = `${card.id}|${card.upgraded ? 1 : 0}|${e.costOf(card)}`;
     if (card.target === Target.ENEMY) {
       for (const en of living) {
@@ -191,9 +200,9 @@ function projectedValue(t, before, guarded, fc) {
 }
 
 /** Cheap score used only to shape the beam — no enemy turn simulated. */
-function staticScore(s, before) {
+function staticScore(s, before, seat = null) {
   const pool = enemyPool(s);
-  const useful = Math.min(s.player.block, shownIncoming(s));
+  const useful = Math.min(seatOf(s, seat).block, shownIncoming(s, seat));
   return s.player.hp
        + 1.0 * useful + 0.06 * (s.player.block - useful)
        - 0.9 * pool.hp - 0.4 * pool.block
@@ -203,8 +212,8 @@ function staticScore(s, before) {
 }
 
 /** Simulate "stop here, end the turn" and score what the enemies leave behind. */
-async function endTurnValue(e, before, fc) {
-  const guarded = e.player.block;
+async function endTurnValue(e, before, fc, seat = null) {
+  const guarded = seatOf(e, seat).block;
   let t;
   try { t = e.clone(); await t.endTurn(); }
   catch { return -1e5; }
@@ -214,15 +223,16 @@ async function endTurnValue(e, before, fc) {
 // ─────────────────────────────────────────────────────────────────────────────
 // NAIVE
 // ─────────────────────────────────────────────────────────────────────────────
-export async function naiveTurn(e) {
+export async function naiveTurn(e, opts = {}) {
+  const seat = opts.seat || null;
   for (let guard = 0; guard < 40; guard++) {
     if (e.over || e.phase !== 'player') break;
     const living = e.livingEnemies();
     const tid = living[0] ? living[0].id : null;
-    const hand = handOf(e).filter(c => e.canPlay(c.uid, null).ok
+    const hand = handOf(e, seat).filter(c => e.canPlay(c.uid, null).ok
       || living.some(en => e.canPlay(c.uid, en.id).ok));
     if (!hand.length) break;
-    const need = Math.max(0, shownIncoming(e) - e.player.block);
+    const need = Math.max(0, shownIncoming(e, seat) - seatOf(e, seat).block);
     const snap = (c) => e.cardSnap(c, tid);
 
     let pick = null;
@@ -257,22 +267,22 @@ export async function naiveTurn(e) {
 // COMPETENT
 // ─────────────────────────────────────────────────────────────────────────────
 export async function competentTurn(e, opts = {}) {
-  const { snacks = null, onSnack = null, beam = 3, depth = 6, cap = 12, fc = null, debug = null } = opts;
+  const { snacks = null, onSnack = null, beam = 3, depth = 6, cap = 12, fc = null, debug = null, seat = null } = opts;
   const pool0 = enemyPool(e);
   const before = { living: pool0.living, enemyHp: pool0.hp };
   const F = fc || { dps: 10, threat: 8, guard: 4, peak: 0, turns: 0 };
-  const shown = shownIncoming(e);
+  const shown = shownIncoming(e, seat);
   F.peak = Math.max(F.peak || 0, shown);
   F.threat = F.turns === 0 ? Math.max(4, shown) : (F.threat * F.turns + shown) / (F.turns + 1);
 
-  let baseline = await planTurn(e, before, { beam, depth, cap, fc: F, debug });
+  let baseline = await planTurn(e, before, { beam, depth, cap, fc: F, debug, seat });
 
   // A competent player also knows the simple heuristic. Score "just block the
   // telegraph and swing the rest" as one more candidate and take it when it
   // wins, so the competent bot is never worse than the naive one by
   // construction. Without this the beam occasionally talks itself into a
   // long grind against a boss whose Courage pool it cannot actually finish.
-  const heur = await naivePlan(e, before, F);
+  const heur = await naivePlan(e, before, F, seat);
   if (heur && heur.score > baseline.score) baseline = heur;
 
   // A Snack is a limited resource: eat one only when it is worth ~12 Courage of
@@ -284,7 +294,7 @@ export async function competentTurn(e, opts = {}) {
       let trial;
       try { trial = e.clone(); applySnack(trial, snacks[i], e.livingEnemies()[0]?.id || null); }
       catch { continue; }
-      const plan = await planTurn(trial, before, { beam, depth, cap, fc: F });
+      const plan = await planTurn(trial, before, { beam, depth, cap, fc: F, seat });
       if (plan.score > baseline.score + (desperate ? 0 : 12)
           && (!bestSnack || plan.score > bestSnack.score)) {
         bestSnack = { index: i, snack: snacks[i], score: plan.score, seq: plan.seq };
@@ -294,15 +304,15 @@ export async function competentTurn(e, opts = {}) {
       applySnack(e, bestSnack.snack, e.livingEnemies()[0]?.id || null);
       onSnack?.(bestSnack.index, bestSnack.snack);
       await replay(e, bestSnack.seq);
-      return bookkeep(e, before, F);
+      return bookkeep(e, before, F, seat);
     }
   }
   await replay(e, baseline.seq);
-  return bookkeep(e, before, F);
+  return bookkeep(e, before, F, seat);
 }
 
 /** Play the naive heuristic on a clone and score the result like any other plan. */
-async function naivePlan(e, before, fc) {
+async function naivePlan(e, before, fc, seat = null) {
   let c;
   try { c = e.clone(); } catch { return null; }
   const seq = [];
@@ -311,13 +321,13 @@ async function naivePlan(e, before, fc) {
   try { await naiveTurn(c); } catch { return null; }
   if (!seq.length) return null;
   if (c.over) return { seq, score: c.victory ? 1e4 + c.player.hp + 200 : -1e6 };
-  return { seq, score: await endTurnValue(c, before, fc) };
+  return { seq, score: await endTurnValue(c, before, fc, seat) };
 }
 
 /** Fold what the turn actually achieved back into the running estimates. */
-function bookkeep(e, before, F) {
+function bookkeep(e, before, F, seat = null) {
   const dealt = Math.max(0, before.enemyHp - enemyPool(e).hp);
-  const guard = e.player.block;
+  const guard = seatOf(e, seat).block;
   F.dps = F.turns === 0 ? Math.max(4, dealt) : (F.dps * F.turns + dealt) / (F.turns + 1);
   F.guard = F.turns === 0 ? guard : (F.guard * F.turns + guard) / (F.turns + 1);
   F.turns++;
@@ -342,7 +352,7 @@ async function replay(e, seq) {
     let uid = mv.uid;
     if (!e.canPlay(uid, mv.targetId).ok) {
       const want = e.card(uid);
-      const alt = want && e.piles.hand.find(c => c.id === want.id && c.upgraded === want.upgraded
+      const alt = want && seatOf(e, seat).piles.hand.find(c => c.id === want.id && c.upgraded === want.upgraded
         && e.canPlay(c.uid, mv.targetId).ok);
       if (!alt) continue;
       uid = alt.uid;
@@ -355,16 +365,16 @@ async function replay(e, seq) {
  * Beam search over one player turn. Returns the best `[{uid,targetId}]`
  * sequence and the score of the board after the enemies have answered it.
  */
-async function planTurn(e0, before, { beam, depth, cap, fc, debug = null }) {
+async function planTurn(e0, before, { beam, depth, cap, fc, debug = null, seat = null }) {
   let frontier = [{ e: e0, seq: [] }];
-  let best = { seq: [], score: await endTurnValue(e0, before, fc) };
+  let best = { seq: [], score: await endTurnValue(e0, before, fc, seat) };
   if (debug) debug.push({ d: -1, names: ['(pass)'], score: +best.score.toFixed(1), guarded: e0.player.block });
 
   for (let d = 0; d < depth; d++) {
     const next = [];
     for (const st of frontier) {
       if (st.e.over || st.e.phase !== 'player') continue;
-      for (const opt of options(st.e, cap)) {
+      for (const opt of options(st.e, cap, seat)) {
         const sim = await step(st.e, opt.uid, opt.targetId);
         if (!sim) continue;
         const seq = st.seq.concat([opt]);
@@ -373,7 +383,7 @@ async function planTurn(e0, before, { beam, depth, cap, fc, debug = null }) {
           if (s > best.score) best = { seq, score: s };
           continue;
         }
-        next.push({ e: sim, seq, s: staticScore(sim, before) });
+        next.push({ e: sim, seq, s: staticScore(sim, before, seat) });
       }
     }
     if (!next.length) break;
@@ -381,10 +391,10 @@ async function planTurn(e0, before, { beam, depth, cap, fc, debug = null }) {
     frontier = next.slice(0, beam);
     // Only the surviving frontier pays for a full enemy-turn simulation.
     for (const st of frontier) {
-      const score = await endTurnValue(st.e, before, fc);
+      const score = await endTurnValue(st.e, before, fc, seat);
       if (debug) {
         debug.push({ d, names: st.seq.map(x => e0.card(x.uid)?.name || x.uid),
-                     score: +score.toFixed(1), guarded: st.e.player.block,
+                     score: +score.toFixed(1), guarded: seatOf(st.e, seat).block,
                      ehp: enemyPool(st.e).hp });
       }
       if (score > best.score) best = { seq: st.seq, score };

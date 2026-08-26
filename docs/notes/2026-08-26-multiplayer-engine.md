@@ -175,6 +175,60 @@ bot benefited more from correct trackers than the competent one did.
 
 ---
 
+## 5b. MEASURED: the party Courage curve is wrong, and not by a constant
+
+`tests/coop/balance.py` plays real fights at every party size with the competent
+bot driving every seat independently, each ending its own turn. Foyer, starting
+decks, no Keepsakes, no Snacks.
+
+**Standard Scuffles (n=25 per size)**
+
+| party | win% | Courage left after a win | fallen/fight | enemy Courage |
+|---|---|---|---|---|
+| 1p | 80% | 22% | 0.20 | 51 |
+| 2p | 80% | 46% | 0.48 | 113 |
+| 3p | 92% | 57% | 0.24 | 184 |
+| 4p | **100%** | **63%** | 0.00 | 266 |
+
+**Elites (n=15 per size)**
+
+| party | win% | Courage left after a win | fallen/fight | enemy Courage |
+|---|---|---|---|---|
+| 1p | 53% | 40% | 0.47 | 95 |
+| 2p | 53% | 60% | 0.93 | 210 |
+| 3p | 33% | 70% | 2.00 | 343 |
+| 4p | **0%** | — | **4.00** | 496 |
+
+Scuffles get EASIER with more Kids; elites become unwinnable. A single scalar
+cannot fix both, because the two are the same mechanism seen from opposite ends.
+
+**Why.** Scaling enemy Courage scales fight LENGTH, and length is what decides
+total incoming damage. Enemy *output* does not scale at all: each enemy marks
+one seat and swings at it, so a 4-player party faces the same damage per turn as
+a solo Kid while holding 4x the Courage and taking 4x the actions.
+
+- A short fight ends before attrition matters, so the party's 4x action economy
+  wins outright and everyone walks away healthy.
+- A long fight (5.2x Courage on an elite) runs ~5x as many enemy turns, so the
+  party absorbs ~5x the total damage against only 4x the pool — and the damage
+  concentrates, because each enemy keeps its mark. Seats fall one at a time.
+
+HANDOFF §9 records the StS2 rule as "**enemies threaten all players at all
+times**". The Courage curve is implemented; **the threat side is not**. That is
+the actual gap, and it is a design decision, so it is written down rather than
+quietly tuned. The three obvious levers:
+
+1. scale enemy COUNT with party size (StS2 adds bodies, not just Courage),
+2. give each enemy extra targets or extra attacks in a party,
+3. lower the Courage curve and raise per-turn threat instead.
+
+**Caveats, so nobody over-reads this.** One bot drives every seat, so there is no
+coordination cost and no human error. The decks are starting decks — the co-op
+Tricks are not in them, and those are all party-force-multipliers, which would
+push the Scuffle numbers further toward "too easy". Every seat starts on a fresh
+70 Courage; a real run carries damage forward, and solo carrying 22% into the
+next room is far worse off than a party carrying 63%.
+
 ## 6. What is NOT done
 
 - **No co-op run layer or UI.** `state/run.js` is single-player; there is no way
