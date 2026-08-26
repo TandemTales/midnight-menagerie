@@ -347,11 +347,19 @@ export class Stage {
          tasks as there are materials, and each task yields to the event loop. */
       const objs = [];
       this.scene.traverse((o) => { if (o.isMesh || o.isPoints || o.isSprite) objs.push(o); });
-      for (const o of objs) {
-        try { await this.renderer.compileAsync(o, this.camera, this.scene); }
-        catch (e) { /* keep warming */ }
-        await yield_();
+      /* Both render targets. The same material compiled for the canvas and for the composer
+         has a different program cache key, so warming only one left phase C to relink the
+         entire scene in a single 2.0-2.9 s task. */
+      const prevRT = this.renderer.getRenderTarget();
+      for (const rt of [null, this.composer.renderTarget1]) {
+        this.renderer.setRenderTarget(rt);
+        for (const o of objs) {
+          try { await this.renderer.compileAsync(o, this.camera, this.scene); }
+          catch (e) { /* keep warming */ }
+          await yield_();
+        }
       }
+      this.renderer.setRenderTarget(prevRT);
 
       /* ---- phase B: show the room. Bloom and the grade are still cold, so let
          RenderPass be the last enabled pass and go straight to the canvas — three
@@ -517,7 +525,12 @@ export class Stage {
        The player sees the room immediately (un-graded, un-bloomed) instead of a
        black screen for the length of the compile, and this path needs only the
        programs the scene itself uses. */
-    if (this._warming) { this.renderer.render(this.scene, this.camera); return; }
+    /* Draw NOTHING while the post chain is cold. This used to render the scene to the
+       canvas so the player saw the room during the compile — but it landed 6 ms after
+       phase A created its first program and forced the driver to link every program
+       synchronously inside `setProgram`, which is the entire boot stall it was meant
+       to paper over. Phase B puts the picture up as soon as it is genuinely ready. */
+    if (this._warming) return;
     this.composer.render(dt);
   }
 

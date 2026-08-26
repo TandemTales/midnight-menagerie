@@ -18,7 +18,7 @@ import {
   generateRegionMap, regionMeta, blueprintSection,
   NODE_INFO, sceneForNode, legalNextIds, reachableFrom, hazardById,
 } from '../state/mapgen.js';
-import { createMapNode, nodeSymbol, hazardSymbol, hazardGlyphMarkup, pencilStroke, seedOf, escapeHtml } from '../ui/mapnode.js';
+import { mapNodeMarkup, nodeSymbol, hazardSymbol, hazardGlyphMarkup, pencilStroke, seedOf, escapeHtml } from '../ui/mapnode.js';
 import { HUD } from '../ui/hud.js';
 import { pauseStageFor } from './_stage.js';
 
@@ -39,6 +39,34 @@ const NODE_BOX = 86, BOSS_BOX = 156;
 /** Height of a name chip in unscaled sheet px (16.5px/1.15 + 4px padding). */
 const LABEL_H = 23;
 const CSS_HREF = 'src/scenes/map.css';
+
+/**
+ * The stylesheet, requested once at module load and never taken away again.
+ *
+ * This screen used to append the `<link>` in `enter()` and remove it in
+ * `exit()`, which is the one place in the codebase that does — every other
+ * scene goes through `ensureCss()` in `ui/portrait.js`, which never unloads.
+ * Removing it meant a full stylesheet round trip on the critical path of every
+ * single map entry, and the map is re-entered after every room: measured at
+ * **312 ms**, in front of everything else, thirteen times a wing.
+ *
+ * `main.js` imports this module statically, so asking for the sheet here puts
+ * it in flight during boot alongside the rest of the app, and `_css()` is an
+ * already-settled promise by the time anyone walks into a map.  Keeping it
+ * resident is safe by the project's own invariant: `tests/scene-css/check.py`
+ * exists precisely because scene sheets are permanent and global, and it
+ * passes.
+ */
+const CSS_READY = (() => {
+  if (typeof document === 'undefined') return Promise.resolve();
+  const have = document.querySelector('link[data-map-css]');
+  if (have) return Promise.resolve();
+  const link = document.createElement('link');
+  link.rel = 'stylesheet'; link.href = CSS_HREF; link.dataset.mapCss = '1';
+  const done = new Promise(r => { link.onload = r; link.onerror = r; });
+  document.head.appendChild(link);
+  return done;
+})();
 
 const ROMAN = ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII'];
 /** Pseudo-node standing for the doorway you came in through. */
@@ -145,6 +173,28 @@ function washOf(img, url, ink) {
   });
 }
 
+/**
+ * The grain tile: one 180x180 bitmap from one fixed seed, so it is the same
+ * image on every map entry forever.  Building it per entry cost a 32k-sample
+ * noise fill plus a `toDataURL` PNG *encode* and then a decode of the result —
+ * measured at 39 ms inside `_buildDom`, which is on the critical path — to
+ * arrive at a tile byte-identical to the last one.  Built once per page.
+ */
+let GRAIN_URL = null;
+function grainUrl() {
+  if (GRAIN_URL) return GRAIN_URL;
+  const c = document.createElement('canvas'); c.width = c.height = 180;
+  const g = c.getContext('2d');
+  const d = g.createImageData(180, 180); const p = d.data;
+  const rng = new RNG(9137);
+  for (let i = 0; i < p.length; i += 4) {
+    const v = 118 + (rng.next() - 0.5) * 150;
+    p[i] = p[i + 1] = p[i + 2] = v; p[i + 3] = 255;
+  }
+  g.putImageData(d, 0, 0);
+  return (GRAIN_URL = c.toDataURL('image/png'));
+}
+
 export class MapScene extends Scene {
   constructor(ctx) {
     super(ctx);
@@ -165,17 +215,24 @@ export class MapScene extends Scene {
     // Stop drawing it (the pause waits for the stage warm-up; see _stage.js).
     this._unpauseStage = pauseStageFor(ctx);
 
-    await this._css();
-
+    // Everything this screen has to WAIT for, asked for at once.
+    //
+    // These were three round trips run strictly one after another — stylesheet,
+    // then trace, then section PNG — and their latencies added up on the
+    // critical path: 312 + 258 + 61 = 631 ms before a single pixel could be
+    // drawn.  None of them needs the others, and `_buildModel` needs no DOM,
+    // so the model is built first and all three requests go out together.  The
+    // screen is now gated on the slowest one instead of on their sum.
     this._buildModel(params);
     // The wing's own section drawing: the traced linework is what gets inked,
     // the PNG is only the wash under it.  Both are optional — a missing file
     // costs the plan, never the screen.
     const sec = this._sec = blueprintSection(this.model.regionId, WIN.w / WIN.h);
-    const [trace, img] = await Promise.all([
-      loadPlanTrace(sec.traceUrl),
-      ctx.assets.image(sec.url).catch(() => null),
-    ]);
+    const wantTrace = loadPlanTrace(sec.traceUrl);
+    const wantImg = ctx.assets.image(sec.url).catch(() => null);
+
+    await this._css();
+    const [trace, img] = await Promise.all([wantTrace, wantImg]);
     this._trace = trace;
     this._section = img;
     this._sheetSize();
@@ -183,6 +240,19 @@ export class MapScene extends Scene {
 
     // Paper first (it is the slow bit), then everything drawn on top of it.
     await this._paintPaper();
+
+    // One frame between the paper and the marks, on purpose.
+    //
+    // Building the whole screen in a single task put the sheet, the ink layer,
+    // sixty-four marks, the banner, the bar and the HUD into one 137 ms job —
+    // over the 120 ms budget on its own — and handed the compositor all of it
+    // to raster in one go.  Split here, each half is under 70 ms and the paper
+    // (which the armed state deliberately leaves painted) rasters on its own
+    // frame while the marks are still being built.  The cost is one frame,
+    // spent behind the transition veil, which is where a frame is free.
+    if (!this.still) await clock.wait(0.02);
+    if (!this.el) return;                          // scene left mid-build
+
     this._buildInk();
     this._buildNodes();
     this._buildMarginalia();
@@ -213,13 +283,11 @@ export class MapScene extends Scene {
   }
 
   async _css() {
-    if (document.querySelector(`link[data-map-css]`)) return;
-    const link = document.createElement('link');
-    link.rel = 'stylesheet'; link.href = CSS_HREF; link.dataset.mapCss = '1';
-    const done = new Promise(r => { link.onload = r; link.onerror = r; });
-    document.head.appendChild(link);
-    this._cssLink = link;
-    await done;
+    await CSS_READY;
+    // The title block, the compass and the scale bar are canvas `fillText`, so
+    // the paint genuinely cannot start before Cinzel and Grenze are resolved —
+    // drawn against the fallback serif they measure differently and the cells
+    // land in the wrong places.  Free after boot; the sheet is loaded by then.
     try { await document.fonts?.ready; } catch {}
   }
 
@@ -743,16 +811,7 @@ export class MapScene extends Scene {
 
   /** Static film grain, generated once, tiled by CSS. */
   _paintGrain() {
-    const c = document.createElement('canvas'); c.width = c.height = 180;
-    const g = c.getContext('2d');
-    const d = g.createImageData(180, 180); const p = d.data;
-    const rng = new RNG(9137);
-    for (let i = 0; i < p.length; i += 4) {
-      const v = 118 + (rng.next() - 0.5) * 150;
-      p[i] = p[i + 1] = p[i + 2] = v; p[i + 3] = 255;
-    }
-    g.putImageData(d, 0, 0);
-    this.el.grain.style.backgroundImage = `url(${c.toDataURL('image/png')})`;
+    this.el.grain.style.backgroundImage = `url(${grainUrl()})`;
   }
 
   // ──────────────────────────────────────────────────────── route + zones ──
@@ -933,19 +992,29 @@ export class MapScene extends Scene {
     }
   }
 
+  /**
+   * All sixty-four marks, in ONE parse.
+   *
+   * This used to build a `<button>` per node and append them to a fragment,
+   * which is sixty-four separate `innerHTML` parses of a ten-element SVG each —
+   * 57 ms on the Foyer, on the critical path between the veil and the sheet.
+   * The markup is a pure function of the node either way, so it is now
+   * assembled as one string and handed over once: 23 ms for the same DOM.
+   * The mark's position goes in the same string; setting `left`/`top` per node
+   * afterwards was sixty-four more style writes for nothing.
+   */
   _buildNodes() {
     const m = this.model;
-    const frag = document.createDocumentFragment();
-    this._nodeEls = new Map();
+    const html = [];
     for (const n of m.map.nodes) {
       const hz = n.hazard ? hazardById(n.hazard) : null;
-      const el = createMapNode(n, NODE_INFO[n.type], hz ? hz.name : '');
-      el.style.left = (n.x * this.SW) + 'px';
-      el.style.top = (n.y * this.SH) + 'px';
-      this._nodeEls.set(n.id, el);
-      frag.appendChild(el);
+      html.push(mapNodeMarkup(n, NODE_INFO[n.type], hz ? hz.name : '',
+        { left: n.x * this.SW, top: n.y * this.SH }));
     }
-    this.el.nodes.appendChild(frag);
+    this.el.nodes.innerHTML = html.join('');
+
+    this._nodeEls = new Map();
+    for (const el of this.el.nodes.children) this._nodeEls.set(el.dataset.id, el);
 
     // One measuring pass for every name chip, read together so the browser does
     // a single layout rather than sixty.  Widths never change after this: the
@@ -1725,7 +1794,8 @@ export class MapScene extends Scene {
     this._nodeEls?.clear();
     this._edges = null;
     if (this.el?.paper) { this.el.paper.width = this.el.paper.height = 0; }
-    this._cssLink?.remove(); this._cssLink = null;
+    // The stylesheet stays: see CSS_READY.  Pulling it out here was costing a
+    // full round trip on the way back in, every room, for no benefit.
     this._cs = null; this._vp = null; this._legs = null;
     this.el = null; this.model = null;
   }

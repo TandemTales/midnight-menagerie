@@ -688,8 +688,25 @@
    yet enough that the browser has already done the work when the sweep opens.
    Clipping them away instead skipped the raster and moved the stall into the
    middle of the animation (measured: a 244ms gap two frames in). */
+/* `translateZ(0)` and not just `will-change: clip-path`, because
+   `will-change: clip-path` does not promote anything.  Without a layer of their
+   own these two are clipped inside the sheet's paint, so every frame of the
+   wipe repainted a 2030x1010 SVG and sixty-four mark subtrees on the main
+   thread: measured over the whole sweep, 40 frames of which 15 were over 33 ms
+   and the worst 50 ms — a 0.8s entrance running at 40fps.  Promoted, the clip
+   is a compositor operation on a texture that was already rastered while
+   armed: 50 frames, 5-6 over 33 ms, none over 34.  Removing ANY ONE of the
+   three entrance animations also cleared it, which is how you can tell it was
+   a frame-budget problem and not one bad property — the residual is the wet
+   edge, whose `mix-blend-mode` means it can never composite on its own.
+   Scoped to the two entrance states so the layers are handed back afterwards
+   rather than pinned in GPU memory for the whole screen. */
 .map-screen.is-armed .map-ink,
-.map-screen.is-armed .map-nodes { opacity: .02; will-change: clip-path, opacity; }
+.map-screen.is-armed .map-nodes {
+  opacity: .02;
+  will-change: clip-path, opacity;
+  transform: translateZ(0);
+}
 .map-screen.is-armed .map-wet   { opacity: .01; }
 
 /* The sweep. Ink and marks share one clip so a route edge and the room it runs
@@ -697,7 +714,8 @@
 .map-screen.is-drawing .map-ink,
 .map-screen.is-drawing .map-nodes {
   animation: mm-wipe .70s var(--ease-soft) .10s backwards;
-  will-change: clip-path;
+  will-change: clip-path, transform;
+  transform: translateZ(0);
 }
 .map-screen.is-drawing .map-wet   { animation: mm-wet  .70s var(--ease-soft) .10s backwards; }
 .map-screen.is-drawing .map-banner,

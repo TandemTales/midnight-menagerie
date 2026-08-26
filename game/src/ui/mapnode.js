@@ -285,27 +285,36 @@ export function hazardGlyphMarkup(glyph) { return HG[glyph] || HG.beam; }
  * @param {object} info  NODE_INFO[type]
  */
 export function createMapNode(node, info, hazardName = '') {
-  const el = document.createElement('button');
-  el.type = 'button';
-  el.className = `map-node map-node--${node.type}`;
-  el.dataset.id = node.id;
-  el.dataset.type = node.type;
-  el.dataset.row = String(node.row);
-  el.dataset.col = String(node.col);
-  if (node.hazard) el.dataset.hazard = node.hazard;
-  el.tabIndex = -1;
+  const t = document.createElement('template');
+  t.innerHTML = mapNodeMarkup(node, info, hazardName);
+  return t.content.firstElementChild;
+}
+
+/**
+ * The same node as a markup string.
+ *
+ * A wing is up to sixty-four marks and the scene builds all of them at once, so
+ * it wants ONE parse, not sixty-four: handing the browser a single string for
+ * the whole layer took `_buildNodes` from 57 ms to 23 ms on the Foyer, and that
+ * time sits squarely on the critical path between the veil and the sheet.
+ * `createMapNode` above is the single-element form, kept for anything that
+ * genuinely needs one node.
+ *
+ * @param {object} node  MapNode from mapgen
+ * @param {object} info  NODE_INFO[type]
+ * @param {{left:number,top:number}} [at]  sheet-px placement, written inline
+ */
+export function mapNodeMarkup(node, info, hazardName = '', at = null) {
   // The wing condition is named here too: the plan itself now carries only the
   // wing's keyed symbol, and a symbol is not a thing a screen reader can key.
-  el.setAttribute('aria-label',
-    `${node.roomName || info.label}. ${info.label}.${hazardName ? ` In ${hazardName}.` : ''} Row ${node.row + 1}.`);
+  const aria =
+    `${node.roomName || info.label}. ${info.label}.${hazardName ? ` In ${hazardName}.` : ''} Row ${node.row + 1}.`;
 
   const s = seedOf(node.id);
   const big = node.type === NodeType.BOSS;
   const box = big ? 156 : 86;
   const gs = big ? 112 : 52;                      // glyph size inside the box
   const off = (box - gs) / 2;
-
-  el.style.setProperty('--mn-box', box + 'px');
 
   // A pencil ring for "you may go here", drawn once and revealed by CSS.
   const ringD = pencilRing(s ^ 0x9e37, box / 2, box / 2,
@@ -323,7 +332,12 @@ export function createMapNode(node, info, hazardName = '') {
                 M${f} ${f - a} L${f} ${f} L${f - a} ${f}
                 M${i + a} ${f} L${i} ${f} L${i} ${f - a}`;
 
-  el.innerHTML = `
+  return `<button type="button" class="map-node map-node--${node.type}" tabindex="-1"
+      data-id="${escapeHtml(node.id)}" data-type="${escapeHtml(node.type)}"
+      data-row="${node.row}" data-col="${node.col}"${
+        node.hazard ? ` data-hazard="${escapeHtml(node.hazard)}"` : ''}
+      style="--mn-box:${box}px${at ? `;left:${at.left}px;top:${at.top}px` : ''}"
+      aria-label="${escapeHtml(aria)}">
     <span class="mn-in" aria-hidden="true">
       <span class="mn-pool"></span>
       <svg class="mn-art" viewBox="0 0 ${box} ${box}" width="${box}" height="${box}">
@@ -342,8 +356,8 @@ export function createMapNode(node, info, hazardName = '') {
       </svg>
       <span class="mn-label">${escapeHtml(shortName(node.roomName || info.label))}</span>
       ${big ? '<span class="mn-boss-tag">BOSS</span>' : ''}
-    </span>`;
-  return el;
+    </span>
+  </button>`;
 }
 
 function shortName(n) {
