@@ -114,9 +114,18 @@ function pick(up, def, key, dflt) {
 }
 
 export class Piles {
-  /** @param {import('./engine.js').CombatEngine} engine */
-  constructor(engine) {
+  /**
+   * One pile set per seat. In solo there is exactly one and `engine.piles` is
+   * it; in a party each player shuffles, draws and discards their own deck,
+   * which is the whole reason this is no longer a singleton on the engine.
+   *
+   * @param {import('./engine.js').CombatEngine} engine
+   * @param {import('./actor.js').Player} [owner] the seat these piles belong to
+   */
+  constructor(engine, owner = null) {
     this.e = engine;
+    /** @type {import('./actor.js').Player|null} */
+    this.owner = owner;
     /** @type {Card[]} index 0 = top of the draw pile */
     this.draw = [];
     /** @type {Card[]} */

@@ -313,15 +313,19 @@ export async function run() {
     eq(e3.canPlay(skl.uid, null).ok, true, 'Entangle still allows Skills');
   });
 
-  test('status registry: all thirteen universal statuses exist with the right shape', () => {
+  test('status registry: all fourteen universal statuses exist with the right shape', () => {
+    // Racket is the fourteenth and the only co-op one: it makes enemies target
+    // the seat that has it. Counted here rather than treated as a special case,
+    // because a status the registry does not know about is a status the display
+    // order silently drops.
     const want = ['strength', 'dexterity', 'weak', 'vulnerable', 'frail', 'dread',
-      'charm', 'regen', 'bristle', 'faint', 'confusion', 'entangle', 'focus'];
+      'charm', 'regen', 'bristle', 'faint', 'confusion', 'entangle', 'focus', 'racket'];
     for (const id of want) {
       const d = getStatus(id);
       ok(d && !d._missing && d.name && d.desc && d.kind, `status "${id}" is registered (${d?.name})`);
     }
-    eq(Object.keys(UNIVERSAL_STATUSES).length, 13, 'exactly thirteen universal statuses');
-    eq(STATUS_ORDER.length, 13, 'display order covers all of them');
+    eq(Object.keys(UNIVERSAL_STATUSES).length, 14, 'exactly fourteen universal statuses');
+    eq(STATUS_ORDER.length, 14, 'display order covers all of them');
     ok(getStatus('nope-not-real')._missing, 'unknown status ids degrade instead of throwing');
     registerStatus({ id: 'test/ghoststep', name: 'Ghoststep', kind: 'buff', desc: 'x' });
     eq(getStatus('test/ghoststep').name, 'Ghoststep', 'content agents can register their own statuses');

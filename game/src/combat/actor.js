@@ -101,7 +101,24 @@ export class Actor {
 
 export class Player extends Actor {
   constructor(o) {
-    super({ ...o, side: 'player', id: o.id || 'player', slot: 0 });
+    const seat = o.seat | 0;
+    super({ ...o, side: 'player', id: o.id || (seat ? `player${seat}` : 'player'), slot: seat });
+    /**
+     * Which seat at the table, 0-based. Solo is always seat 0, so nothing about
+     * the single-player game changes. In a party the seat is the stable
+     * identity: it orders simultaneous resolution, it is what a thrown Snack
+     * and a Taunt name, and it is what the network layer will address.
+     */
+    this.seat = seat;
+    /**
+     * A fallen player is at 0 Courage: still at the table, still targetable by
+     * nothing, unable to act for the rest of the fight, and back at 1 Courage
+     * if the team wins. Distinct from `alive` because a fallen player is NOT
+     * removed from the party — `players` keeps its length for the whole fight.
+     */
+    this.fallen = false;
+    /** @type {Piles|null} this seat's own draw/hand/discard. Set by the engine. */
+    this.piles = null;
     this.companion = o.companion || 'neutral';
     this.kid = o.kid || null;
     this.energy = o.energy ?? 0;
@@ -114,10 +131,11 @@ export class Player extends Actor {
 
   clone() {
     const p = new Player({
-      id: this.id, name: this.name, maxHp: this.maxHp, hp: this.hp,
+      id: this.id, name: this.name, maxHp: this.maxHp, hp: this.hp, seat: this.seat,
       companion: this.companion, kid: this.kid, energy: this.energy,
       energyMax: this.energyMax, drawPerTurn: this.drawPerTurn, handCap: this.handCap,
     });
+    p.fallen = this.fallen;
     p.block = this.block;
     p.keepBlock = this.keepBlock;
     p.alive = this.alive;
@@ -138,7 +156,7 @@ export class Player extends Actor {
   snapshot() {
     return {
       ...super.snapshot(),
-      companion: this.companion, kid: this.kid,
+      companion: this.companion, kid: this.kid, seat: this.seat, fallen: this.fallen,
       energy: this.energy, energyMax: this.energyMax,
       drawPerTurn: this.drawPerTurn, handCap: this.handCap,
       keepBlock: this.keepBlock,
@@ -172,6 +190,13 @@ export class Enemy extends Actor {
     /** @type {Object[]} plain snapshot of the revealed queue, for the renderer */
     this.queue = [];
     this.turnsAlive = 0;
+    /**
+     * The seat this enemy has marked, in a party. Held across intent refreshes
+     * so the arrow the player reads while planning is the one that resolves;
+     * cleared when that seat falls. Always null in solo.
+     * @type {string|null}
+     */
+    this.targetSeatId = null;
   }
 
   timesUsed(moveId) {
@@ -212,6 +237,7 @@ export class Enemy extends Actor {
     e.previewDepth = this.previewDepth;
     e.queue = this.queue.map(q => ({ ...q }));
     e.turnsAlive = this.turnsAlive;
+    e.targetSeatId = this.targetSeatId;
     e.damageTakenThisTurn = this.damageTakenThisTurn;
     e.damageTakenLastTurn = this.damageTakenLastTurn;
     e.hitsTakenThisTurn = this.hitsTakenThisTurn;
@@ -231,6 +257,7 @@ export class Enemy extends Actor {
       moveId: this.pendingMove?.id || null,
       history: this.history.slice(),
       turnsAlive: this.turnsAlive,
+      targetSeatId: this.targetSeatId,
       lore: this.def?.lore || '',
     };
   }

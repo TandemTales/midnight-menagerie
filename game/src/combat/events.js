@@ -148,6 +148,10 @@ export const EV = /** @type {const} */ ({
   STATUS_TRIGGER: 'status:trigger',
 
   DEATH: 'death',
+  /** A seat hit 0 Courage in a party. Solo never emits these — it emits DEATH. */
+  PLAYER_FALL: 'player:fall',
+  /** A fallen seat is back at 1 Courage because the team won the fight. */
+  PLAYER_REVIVE: 'player:revive',
   INTENT: 'intent',
 
   COUNTER: 'counter',
@@ -182,6 +186,6 @@ export const EVENT_TYPES = Object.freeze(Object.values(EV));
 export const ANIMATED_EVENTS = Object.freeze([
   EV.DAMAGE, EV.BLOCK, EV.BLOCK_BREAK, EV.HEAL, EV.STATUS, EV.STATUS_TRIGGER,
   EV.DRAW, EV.DISCARD, EV.EXHAUST, EV.SHUFFLE, EV.CARD_PLAY, EV.CARD_MOVE,
-  EV.DEATH, EV.SUMMON, EV.COUNTER, EV.TIMER_FIRE, EV.ENERGY,
+  EV.DEATH, EV.PLAYER_FALL, EV.PLAYER_REVIVE, EV.SUMMON, EV.COUNTER, EV.TIMER_FIRE, EV.ENERGY,
   EV.INTENT_QUEUE, EV.CHOICE, EV.RULE_BROKEN, EV.SNACK,
 ]);

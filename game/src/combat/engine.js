@@ -75,6 +75,17 @@ import { detectStrict, guardFactory } from './strict.js';
 
 const MAX_LOG = 400;
 
+/**
+ * Enemy Courage multiplier by party size, indexed 0-based (1p..4p).
+ *
+ * Deliberately NOT linear. Four players do far more than four times one
+ * player's damage because they buff, Guard and revive each other, so a linear
+ * 400% enemy would melt. These are Slay the Spire 2's numbers, which is the
+ * quality bar this project is built to; per-enemy overrides from each region
+ * chapter compose on top via `EnemyDef.partyHp`.
+ */
+const PARTY_HP_SCALE = [1, 2.2, 3.6, 5.2];
+
 
 export class CombatEngine {
   /**
@@ -177,7 +188,14 @@ export class CombatEngine {
     this._timerUid = 0;
     this._buildingState = false;
 
-    this.piles = new Piles(this);
+    /**
+     * The party, in seat order. ALWAYS at least one; solo is a party of one,
+     * which is why nothing below has a separate single-player path. Seats are
+     * never removed during a fight — a player at 0 Courage is `fallen`, still
+     * in this array (see Player.fallen).
+     * @type {Player[]}
+     */
+    this.players = [];
 
     if (!cfg._bare) this._build(cfg);
   }
@@ -185,10 +203,26 @@ export class CombatEngine {
   // ── construction ──────────────────────────────────────────────────────────
 
   _build(cfg) {
-    const p = cfg.player || {};
-    this.player = new Player({
-      id: p.id || 'player',
+    // `cfg.players` is the party form and `cfg.player` is the solo form; solo is
+    // exactly a party of one. Both land in `this.players`, so no code past this
+    // point has to ask which one it was handed.
+    const roster = cfg.players && cfg.players.length ? cfg.players : [cfg.player || {}];
+    this.players = roster.map((raw, seat) => this._makePlayer(raw || {}, seat, cfg));
+
+    /** @type {Enemy[]} */
+    this.enemies = [];
+    let slot = 0;
+    for (const raw of (cfg.enemies || [])) {
+      this.enemies.push(this._makeEnemy(raw, slot++));
+    }
+  }
+
+  /** One seat: the Player, its own pile set, and its own deck. */
+  _makePlayer(p, seat, cfg) {
+    const pl = new Player({
+      id: p.id || (seat ? `player${seat}` : 'player'),
       name: p.name || 'Kid',
+      seat,
       maxHp: p.maxHp ?? 70,
       hp: p.hp ?? p.maxHp ?? 70,
       energyMax: p.energyMax ?? 3,
@@ -197,22 +231,31 @@ export class CombatEngine {
       companion: p.companion || 'neutral',
       kid: p.kid || null,
     });
+    pl.piles = new Piles(this, pl);
 
-    /** @type {Enemy[]} */
-    this.enemies = [];
-    let slot = 0;
-    for (const raw of (cfg.enemies || [])) {
-      this.enemies.push(this._makeEnemy(raw, slot++));
-    }
-
-    // Build the runtime deck. Deck order is irrelevant — startCombat shuffles.
-    this._deckSource = (p.deck || cfg.deck || []);
-    for (const entry of this._deckSource) {
+    // Deck order is irrelevant — startCombat shuffles. `cfg.deck` is the old
+    // solo spelling and only ever applies to seat 0.
+    const deck = p.deck || (seat === 0 ? cfg.deck : null) || [];
+    if (seat === 0) this._deckSource = deck;
+    for (const entry of deck) {
       const def = entry.def || entry;
       const card = new Card(def, { upgraded: !!entry.upgraded, meta: entry.meta });
-      this.piles.draw.push(card);
+      pl.piles.draw.push(card);
       card.pile = Pile.DRAW;
     }
+    return pl;
+  }
+
+  /**
+   * The enemy Courage multiplier for the current party size — 1 in solo.
+   *
+   * Applied in `_makeEnemy`, to the rolled Courage, so `maxHp` and `hp` are
+   * scaled together and a fight never opens looking pre-damaged. It lives on
+   * the engine rather than in `_build` because an enemy summoned mid-fight has
+   * to be scaled the same way.
+   */
+  get partyHpScale() {
+    return PARTY_HP_SCALE[Math.min(this.players.length, PARTY_HP_SCALE.length) - 1] ?? 1;
   }
 
   /**
@@ -227,11 +270,18 @@ export class CombatEngine {
     const hp = (wrapped && typeof raw.hp === 'number')
       ? raw.hp
       : (Array.isArray(range) ? this.rng.range(range[0], range[1]) : (range | 0));
+    // A per-enemy override from its region chapter wins over the party curve;
+    // otherwise the curve applies. Rolled Courage is scaled AFTER the roll so a
+    // seeded fight keeps the same roll at every party size.
+    const f = (typeof def.partyHp === 'function')
+      ? (def.partyHp(this.players.length) ?? this.partyHpScale)
+      : this.partyHpScale;
+    const scaled = f === 1 ? hp : Math.max(1, Math.round(hp * f));
     return new Enemy({
       id: (wrapped && raw.id) || `e${slot}`,
       name: def.name || 'Something',
       def, slot,
-      maxHp: hp, hp,
+      maxHp: scaled, hp: scaled,
       tier: def.tier || 'normal',
       side: 'enemy',
     });
@@ -304,20 +354,122 @@ export class CombatEngine {
     try { return this._buildState(rev); } finally { this._buildingState = false; }
   }
 
+  // ── the party ─────────────────────────────────────────────────────────────
+
+  /**
+   * Seat 0.
+   *
+   * In solo this IS the player and every reader is correct. In a party it is
+   * almost always a bug — content that says `engine.player` nearly always means
+   * "the player who played this card", and silently handing back seat 0 is
+   * precisely the shape of failure CONTRACTS rule 8 exists to stop (Haunt dealt
+   * zero damage for a whole build through one silent `?.`). So in a party, with
+   * the dev guard armed, this THROWS and names the fix; a shipped build still
+   * gets seat 0 rather than an exception in someone's run.
+   *
+   * Port a site by taking the seat from what you already have: `ctx.self`, the
+   * card's `owner`, `engine.playerOf(actor)`, or an explicit seat argument.
+   */
+  get player() {
+    if (this.players.length > 1 && this.strictCtx) {
+      throw new Error(
+        '[combat] engine.player is seat 0, but this fight has ' + this.players.length +
+        ' seats. Say which one: engine.playerOf(actor), ctx.self, or pass a seat.');
+    }
+    return this.players[0];
+  }
+
+  /** Seat 0's piles. Same reasoning, same guard, as `player` above. */
+  get piles() {
+    if (this.players.length > 1 && this.strictCtx) {
+      throw new Error(
+        '[combat] engine.piles is the pile set for seat 0, but this fight has ' +
+        this.players.length + ' seats. Use engine.pilesOf(player) or player.piles.');
+    }
+    return this.players[0].piles;
+  }
+
+  /**
+   * The seat whose action is resolving RIGHT NOW, or null between actions.
+   *
+   * Almost every helper here — `drawCards`, `gainEnergy`, `costOf`,
+   * `discardCard` — is implicitly about "the player doing this". In solo there
+   * was only one, so they read `this.player`. In a party they read
+   * `this.current`, and `_asSeat()` is what makes that answer right: card
+   * resolution, each seat's turn opening and each seat's turn end all run
+   * inside one.
+   *
+   * A stack discipline, not a mode: `_asSeat` restores whoever was acting
+   * before, so a card that makes a TEAMMATE draw (Marmalade's Follow My Tail)
+   * nests correctly instead of leaving the engine pointed at the wrong Kid.
+   * @type {Player|null}
+   */
+  acting = null;
+
+  /** The acting seat, or seat 0 when nothing in particular is acting. */
+  get current() { return this.acting || this.players[0]; }
+
+  /** Run `fn` with `pl` as the acting seat, then put back whoever was acting. */
+  _asSeat(pl, fn) {
+    const prev = this.acting;
+    if (pl) this.acting = pl;
+    try { return fn(); } finally { this.acting = prev; }
+  }
+
+  /** Which seat is holding this card. A card never moves between seats. */
+  seatOfCard(card) {
+    if (!card) return null;
+    for (const pl of this.players) if (pl.piles.pileOf(card)) return pl;
+    return null;
+  }
+
+  /** How many seats at the table. 1 in solo. */
+  get partySize() { return this.players.length; }
+  /** True when this is a co-op fight. */
+  get isParty() { return this.players.length > 1; }
+
+  /** Seat by index. */
+  seat(n) { return this.players[n] || null; }
+
+  /**
+   * Players who can still act. A fallen player is NOT here — they are still in
+   * `players` (their deck and relics stay inspectable, and they come back at
+   * 1 Courage if the team wins) but they take no turn and draw no cards.
+   */
+  livingPlayers() {
+    const out = [];
+    for (const p of this.players) if (p.alive && !p.fallen) out.push(p);
+    return out;
+  }
+
+  /** The seat an actor belongs to, or null. A Player is its own seat. */
+  playerOf(actor) {
+    if (!actor) return null;
+    if (actor.side === 'player') return actor;
+    return null;
+  }
+
+  /** A seat's pile set, tolerating being handed the piles already. */
+  pilesOf(who) {
+    if (!who) return null;
+    if (who.draw && who.hand) return who;
+    return who.piles || null;
+  }
+
   /** Cheap, allocation-free reads that are always safe from inside a card effect. */
-  get energy() { return this.player ? this.player.energy : 0; }
-  get energyMax() { return this.player ? this.player.energyMax : 0; }
-  get handSize() { return this.piles.hand.length; }
+  get energy() { return this.current ? this.current.energy : 0; }
+  get energyMax() { return this.current ? this.current.energyMax : 0; }
+  get handSize() { return this.current.piles.hand.length; }
   get cardsPlayedThisTurn() { return this.stats.cardsPlayedThisTurn; }
 
   _minimalState() {
     return {
       turn: this.turn, phase: this.phase, over: this.over, victory: this.victory,
       seed: this.seed, partial: true,
-      player: this.player ? this.player.snapshot() : null,
+      player: this.players[0] ? this.players[0].snapshot() : null,
       enemies: this.enemies.map(e => e.snapshot()),
       allies: [], piles: { draw: [], hand: [], discard: [], exhaust: [], limbo: [], stash: [] },
-      counts: this.piles.snapshotCounts(), counters: [], timers: [], objects: [],
+      counts: this.players[0].piles.snapshotCounts(), counters: [], timers: [], objects: [],
       relics: [], stats: { ...this.stats },
     };
   }
@@ -329,22 +481,18 @@ export class CombatEngine {
       over: this.over,
       victory: this.victory,
       seed: this.seed,
-      player: {
-        ...this.player.snapshot(),
-        statuses: this.statusList(this.player),
-      },
+      // `player` and `piles` are seat 0, kept flat because the whole renderer
+      // reads them and solo is the only shape that existed until now. `players`
+      // is the party, seat 0 included, and is what co-op UI reads. Both are
+      // built from the same snapshot so they can never disagree.
+      player: this._seatState(this.players[0]),
+      players: this.players.map(pl => this._seatState(pl)),
+      partySize: this.players.length,
       enemies: this.enemies.map(e => ({ ...e.snapshot(), statuses: this.statusList(e) })),
       allies: this.allies.map(a => ({ ...a.snapshot(), statuses: this.statusList(a) })),
-      piles: {
-        draw: this.piles.draw.map(c => this.cardSnap(c)),
-        hand: this.piles.hand.map(c => this.cardSnap(c)),
-        discard: this.piles.discard.map(c => this.cardSnap(c)),
-        exhaust: this.piles.exhaust.map(c => this.cardSnap(c)),
-        limbo: this.piles.limbo.map(c => this.cardSnap(c)),
-        stash: this.piles.stash.map(c => this.cardSnap(c)),
-      },
-      counts: this.piles.snapshotCounts(),
-      stashCap: this.piles.stashCap,
+      piles: this._pileState(this.players[0]),
+      counts: this.players[0].piles.snapshotCounts(),
+      stashCap: this.players[0].piles.stashCap,
       rules: this.rules.map(r => ({ id: r.id, name: r.name, text: r.text, sourceId: r.sourceId || null })),
       field: JSON.parse(JSON.stringify(this.field)),
       playedThisTurn: this.playedThisTurn.map(x => ({ ...x })),
@@ -368,6 +516,29 @@ export class CombatEngine {
     // Only clean if nothing mutated while we were snapshotting.
     this._dirty = (rev !== undefined) && (this._rev !== rev);
     return s;
+  }
+
+  /** One seat, fully snapshotted: the actor, its statuses, and its own piles. */
+  _seatState(pl) {
+    return {
+      ...pl.snapshot(),
+      statuses: this.statusList(pl),
+      piles: this._pileState(pl),
+      counts: pl.piles.snapshotCounts(),
+      stashCap: pl.piles.stashCap,
+    };
+  }
+
+  _pileState(pl) {
+    const q = pl.piles;
+    return {
+      draw: q.draw.map(c => this.cardSnap(c)),
+      hand: q.hand.map(c => this.cardSnap(c)),
+      discard: q.discard.map(c => this.cardSnap(c)),
+      exhaust: q.exhaust.map(c => this.cardSnap(c)),
+      limbo: q.limbo.map(c => this.cardSnap(c)),
+      stash: q.stash.map(c => this.cardSnap(c)),
+    };
   }
 
   statusList(actor) {
@@ -405,8 +576,8 @@ export class CombatEngine {
         const base = card.nums[k];
         if (typeof base !== 'number') { display[k] = { value: base, base, dir: 'same' }; continue; }
         let value = base;
-        if (k === 'd') value = previewDamageValue(this, this.player, target, base, { kind: 'attack' });
-        else if (k === 'b') value = this.previewBlockValue(this.player, base);
+        if (k === 'd') value = previewDamageValue(this, this.current, target, base, { kind: 'attack' });
+        else if (k === 'b') value = this.previewBlockValue(this.current, base);
         display[k] = { value, base, dir: value > base ? 'up' : value < base ? 'down' : 'same' };
       }
     }
@@ -428,10 +599,22 @@ export class CombatEngine {
 
   actor(id) {
     if (!id) return null;
-    if (this.player && this.player.id === id) return this.player;
+    for (const pl of this.players) if (pl.id === id) return pl;
     return this.enemies.find(e => e.id === id) || this.allies.find(a => a.id === id) || null;
   }
-  card(uid) { return this.piles.find(uid); }
+  /**
+   * A card by uid, from ANY seat. Card uids are unique across the whole fight,
+   * so a lookup that stopped at seat 0 would simply fail to find a teammate's
+   * card rather than return the wrong one — but "not found" is how a thrown
+   * Snack or a Clone would silently do nothing, so it searches the party.
+   */
+  card(uid) {
+    for (const pl of this.players) {
+      const c = pl.piles.find(uid);
+      if (c) return c;
+    }
+    return null;
+  }
   statusDef(id) { return getStatus(id); }
   livingEnemies() { return this.enemies.filter(e => e.alive); }
   firstLivingEnemy() { return this.enemies.find(e => e.alive) || null; }
@@ -439,7 +622,7 @@ export class CombatEngine {
     const alive = this.livingEnemies();
     return alive.length ? alive[this.rng.int(alive.length)] : null;
   }
-  handCap() { return this.hooks.reduce('modifyHandCap', this.player.handCap, {}, this.hooks.actorHooks(this.player, 'modifyHandCap')); }
+  handCap() { return this.hooks.reduce('modifyHandCap', this.current.handCap, {}, this.hooks.actorHooks(this.current, 'modifyHandCap')); }
 
   /** Cards in a zone, by the zone name or the content agents' aliases. */
   cardsIn(pile) {
@@ -448,7 +631,7 @@ export class CombatEngine {
       discardPile: 'discard', exhaust: 'exhaust', exhaustPile: 'exhaust',
       vanished: 'exhaust', limbo: 'limbo', stash: 'stash',
     };
-    return this.piles[map[pile] || pile] || [];
+    return this.current.piles[map[pile] || pile] || [];
   }
 
   /** StatusDef.untargetableBy: ['attack'] — Hidden blocks Attack Tricks only. */
@@ -590,7 +773,7 @@ export class CombatEngine {
         cardsPlayedThisTurn: this.playedThisTurn.map(x => ({ ...x })),
         card: extra.card || null,
         prevCard: this.playedThisTurn.length > 1 ? this.playedThisTurn[this.playedThisTurn.length - 2] : null,
-        playerBlock: this.player.block,
+        playerBlock: this.current.block,
         damageDealtThisTurn: this.stats.damageDealtThisTurn,
         turn: this.turn, e: this,
       };
@@ -630,10 +813,38 @@ export class CombatEngine {
     }
   }
 
-  /** Who an enemy is aiming at. Ally summons can pull aggro by setting `taunt`. */
+  /**
+   * Who an enemy is aiming at.
+   *
+   * Order, highest priority first:
+   *   1. an ally summon pulling aggro (`flags.taunt`) — unchanged from solo,
+   *   2. a seat with Racket on it (the co-op taunt),
+   *   3. the seat this enemy already marked, if it can still act,
+   *   4. a seeded random living seat, which then becomes its mark.
+   *
+   * Step 3 matters more than it looks: without a held mark an enemy would
+   * re-roll its target every time intents refreshed, so the arrow the player
+   * read during planning would not be the one that resolved. "Who Did That?"
+   * (Marmalade, multiplayer-only) reads this target directly, so it has to be
+   * stable between preview and resolution.
+   */
   intentTargetFor(enemy) {
-    const taunting = this.allies.find(a => a.alive && a.flags.taunt);
-    return taunting || this.player;
+    const ally = this.allies.find(a => a.alive && a.flags.taunt);
+    if (ally) return ally;
+
+    const living = this.livingPlayers();
+    if (living.length === 0) return this.players[0];
+    if (living.length === 1) return living[0];
+
+    const loud = living.filter(pl => pl.hasStatus('racket'));
+    if (loud.length) return loud.length === 1 ? loud[0] : loud[enemy.slot % loud.length];
+
+    const held = enemy.targetSeatId && living.find(pl => pl.id === enemy.targetSeatId);
+    if (held) return held;
+
+    const pick = living[this.rng.int(living.length)];
+    enemy.targetSeatId = pick.id;
+    return pick;
   }
 
   // ── cost ──────────────────────────────────────────────────────────────────
@@ -672,7 +883,7 @@ export class CombatEngine {
     }
     const raw = card.rawCost(printed);
     if (raw < 0) return raw;
-    return Math.max(0, this.hooks.reduce('modifyCardCost', raw, { card }, this.hooks.actorHooks(this.player, 'modifyCardCost')));
+    return Math.max(0, this.hooks.reduce('modifyCardCost', raw, { card }, this.hooks.actorHooks(this.seatOfCard(card) || this.current, 'modifyCardCost')));
   }
 
   /**
@@ -778,22 +989,24 @@ export class CombatEngine {
   gainEnergy(n, reason = 'effect') {
     if (n === 0) return 0;
     const add = n > 0
-      ? this.hooks.reduce('modifyEnergyGain', n, { reason }, this.hooks.actorHooks(this.player, 'modifyEnergyGain'))
+      ? this.hooks.reduce('modifyEnergyGain', n, { reason }, this.hooks.actorHooks(this.current, 'modifyEnergyGain'))
       : n;
-    const before = this.player.energy;
-    this.player.energy = Math.max(0, this.player.energy + add);
+    const me = this.current;
+    const before = me.energy;
+    me.energy = Math.max(0, me.energy + add);
     this._emit(EV.ENERGY, {
-      before, after: this.player.energy, delta: this.player.energy - before,
-      max: this.player.energyMax, reason,
+      actorId: me.id, seat: me.seat,
+      before, after: me.energy, delta: me.energy - before, max: me.energyMax, reason,
     });
-    return this.player.energy - before;
+    return me.energy - before;
   }
   loseEnergy(n, reason = 'effect') { return this.gainEnergy(-Math.abs(n), reason); }
 
   setEnergy(v, reason = 'refill') {
-    const before = this.player.energy;
-    this.player.energy = Math.max(0, v | 0);
-    this._emit(EV.ENERGY, { before, after: this.player.energy, delta: this.player.energy - before, max: this.player.energyMax, reason });
+    const me = this.current;
+    const before = me.energy;
+    me.energy = Math.max(0, v | 0);
+    this._emit(EV.ENERGY, { actorId: me.id, seat: me.seat, before, after: me.energy, delta: me.energy - before, max: me.energyMax, reason });
   }
 
   // ── statuses ──────────────────────────────────────────────────────────────
@@ -904,7 +1117,7 @@ export class CombatEngine {
     const c = {
       id: o.id, name: o.name || o.id, icon: o.icon || o.id, desc: o.desc || '',
       min: o.min ?? 0, max: o.max ?? 99, value: o.start ?? 0,
-      ownerId: o.ownerId || this.player.id, focusable: !!o.focusable,
+      ownerId: o.ownerId || this.current.id, focusable: !!o.focusable,
       onChange: o.onChange || null, resetEachTurn: !!o.resetEachTurn,
       /**
        * Named bands on the track, so the renderer never parses `desc` to find
@@ -940,7 +1153,7 @@ export class CombatEngine {
     let d = delta;
     if (d > 0) {
       d = this.hooks.reduce('modifyCounterGain', d, { id, owner: c.ownerId, focusable: c.focusable },
-        this.hooks.actorHooks(this.actor(c.ownerId) || this.player, 'modifyCounterGain'));
+        this.hooks.actorHooks(this.actor(c.ownerId) || this.current, 'modifyCounterGain'));
     }
     const before = c.value;
     c.value = Math.max(c.min, Math.min(c.max, c.value + d));
@@ -983,7 +1196,7 @@ export class CombatEngine {
       label: o.label || o.id || 'countdown',
       turnsLeft: Math.max(0, o.turns ?? 1),
       when: o.when || 'playerTurnStart',
-      ownerId: o.ownerId || this.player.id,
+      ownerId: o.ownerId || this.current.id,
       run: o.run,
       repeat: o.repeat ?? 0,
       data: o.data || {},
@@ -1121,9 +1334,34 @@ export class CombatEngine {
     this.clearRules(actor.id);
     this._enemyLifecycle('onAllyDeath', { dead: actor, deadId: actor.id },
       [...this.enemies, ...this.allies].filter(x => x !== actor));
-    if (actor === this.player) this._endCombat(false);
+    if (actor.side === 'player') this._fall(actor, killerId);
     else if (actor.side === 'enemy' && this.livingEnemies().length === 0) this._endCombat(true);
     return true;
+  }
+
+  /**
+   * A player has hit 0 Courage.
+   *
+   * Solo: that is the run, exactly as before. In a party the seat FALLS — it
+   * keeps its place in `players` (its deck and Keepsakes stay inspectable, and
+   * teammates can still read what it was holding), takes no further turn, draws
+   * nothing, and is not a legal target for anything. If the team wins the
+   * fight, it comes back at 1 Courage. Only when every seat has fallen is the
+   * run over.
+   */
+  _fall(pl, killerId) {
+    pl.fallen = true;
+    pl.block = 0;
+    // A fallen seat stops holding cards: its hand goes to its own discard, so a
+    // teammate's Clone can still reach the deck and nothing is stranded.
+    for (const c of [...pl.piles.hand]) pl.piles.move(c, Pile.DISCARD, { reason: 'fallen' });
+    this._emit(EV.PLAYER_FALL, { actorId: pl.id, seat: pl.seat, name: pl.name, killerId: killerId || null });
+    this.hooks.dispatch('onPlayerFall', { actor: pl, player: pl, killerId });
+    // Enemies aiming at a seat that can no longer act must re-aim, or their
+    // intent would point at nobody for the rest of the fight.
+    for (const en of this.enemies) if (en.targetSeatId === pl.id) en.targetSeatId = null;
+    if (this.livingPlayers().length === 0) this._endCombat(false);
+    else this.refreshIntents('fallen');
   }
 
   _endCombat(victory) {
@@ -1131,9 +1369,25 @@ export class CombatEngine {
     this.over = true;
     this.victory = victory;
     this.phase = 'over';
+    // Win the fight and everyone who fell gets back up at 1 Courage. Done
+    // BEFORE onCombatEnd so a Keepsake that reads the party sees the revived
+    // seat, and before COMBAT_END so the reward screen never opens on a corpse.
+    if (victory) {
+      for (const pl of this.players) {
+        if (!pl.fallen) continue;
+        pl.fallen = false;
+        pl.alive = true;
+        pl.hp = 1;
+        this._emit(EV.PLAYER_REVIVE, { actorId: pl.id, seat: pl.seat, name: pl.name, hp: 1 });
+      }
+    }
     this._invalidate();
     this.hooks.dispatch('onCombatEnd', { victory });
-    this._emit(EV.COMBAT_END, { victory, turn: this.turn, playerHp: this.player.hp });
+    this._emit(EV.COMBAT_END, {
+      victory, turn: this.turn,
+      playerHp: this.players[0].hp,
+      partyHp: this.players.map(pl => ({ seat: pl.seat, id: pl.id, hp: pl.hp, fallen: pl.fallen })),
+    });
   }
 
   // ── intents ───────────────────────────────────────────────────────────────
@@ -1161,12 +1415,16 @@ export class CombatEngine {
   enemyCtx(enemy, move, extra = {}) {
     const e = this;
     const target = () => e.intentTargetFor(enemy);
+    const aim = target();
     return this._guardCtx({
       e, engine: e, self: enemy, enemy, move,
       rng: extra.rng || e.rng,
       turn: e.turn,
-      player: e.player,
-      target: target(),
+      // For an enemy, "the player" IS the seat it is aimed at. In solo those
+      // are the same thing; in a party, reading seat 0 here would make every
+      // enemy debuff land on the host no matter who it was swinging at.
+      player: aim,
+      target: aim,
       field: e.field,
       history: extra.history || enemy.history,
       lastMove: enemy.lastMove,
@@ -1276,8 +1534,8 @@ export class CombatEngine {
       if (opts.ethereal) card.ethereal = true;
       if (opts.retain) card.retain = true;
       let dest = pile;
-      if (dest === Pile.HAND && this.piles.hand.length >= this.handCap()) dest = Pile.DISCARD;
-      const idx = this.piles._push(card, dest, opts.position ?? (dest === Pile.DRAW ? 'top' : 'bottom'));
+      if (dest === Pile.HAND && this.current.piles.hand.length >= this.handCap()) dest = Pile.DISCARD;
+      const idx = this.current.piles._push(card, dest, opts.position ?? (dest === Pile.DRAW ? 'top' : 'bottom'));
       this._emit(EV.CARD_ADD, {
         cardUid: card.uid, card: this.cardSnap(card), pile: dest,
         position: idx, reason: opts.reason || 'effect',
@@ -1287,33 +1545,33 @@ export class CombatEngine {
     return n === 1 ? made[0] : made;
   }
 
-  moveCard(card, pile, opts = {}) { return this.piles.move(card, pile, opts); }
+  moveCard(card, pile, opts = {}) { return this.current.piles.move(card, pile, opts); }
 
   drawCards(n, reason = 'draw') {
-    const want = this.hooks.reduce('modifyDraw', n, { reason }, this.hooks.actorHooks(this.player, 'modifyDraw'));
-    return this.piles.drawN(Math.max(0, want), reason);
+    const want = this.hooks.reduce('modifyDraw', n, { reason }, this.hooks.actorHooks(this.current, 'modifyDraw'));
+    return this.current.piles.drawN(Math.max(0, want), reason);
   }
 
   discardCard(card, reason = 'effect') {
-    const from = this.piles._pull(card);
-    this.piles._push(card, Pile.DISCARD, 'bottom');
+    const from = this.current.piles._pull(card);
+    this.current.piles._push(card, Pile.DISCARD, 'bottom');
     this.stats.cardsDiscardedThisTurn++;
     this._emit(EV.DISCARD, {
       cardUid: card.uid, card: this.cardSnap(card), from, to: Pile.DISCARD, reason,
-      handSize: this.piles.hand.length, discardCount: this.piles.discard.length,
+      handSize: this.current.piles.hand.length, discardCount: this.current.piles.discard.length,
     });
     this.hooks.dispatch('onCardDiscarded', { card, reason });
     return card;
   }
 
   exhaustCard(card, reason = 'effect') {
-    const from = this.piles._pull(card);
-    this.piles._push(card, Pile.EXHAUST, 'bottom');
+    const from = this.current.piles._pull(card);
+    this.current.piles._push(card, Pile.EXHAUST, 'bottom');
     this.stats.cardsExhaustedThisTurn++;
     this.stats.cardsExhaustedThisCombat++;
     this._emit(EV.EXHAUST, {
       cardUid: card.uid, card: this.cardSnap(card), from, reason,
-      exhaustCount: this.piles.exhaust.length,
+      exhaustCount: this.current.piles.exhaust.length,
     });
     this.hooks.dispatch('onCardExhausted', { card, reason });
     return card;
@@ -1323,7 +1581,7 @@ export class CombatEngine {
   discardRandom(n, reason = 'effect', exclude = null) {
     const out = [];
     for (let i = 0; i < n; i++) {
-      const pool = this.piles.hand.filter(c => c !== exclude);
+      const pool = this.current.piles.hand.filter(c => c !== exclude);
       if (!pool.length) break;
       out.push(this.discardCard(pool[this.rng.int(pool.length)], reason));
     }
@@ -1334,7 +1592,11 @@ export class CombatEngine {
 
   ctxFor(card, target, x = 0) {
     const e = this;
-    const self = this.player;
+    // `self` is whoever is HOLDING this card, not seat 0. Every companion card
+    // in the game reads `ctx.self` for its own Guard, statuses and Courage, so
+    // getting this wrong would quietly apply a teammate's Curl Up to the host.
+    // Falls back to the acting seat for engine-made ctx that carries no card.
+    const self = this.seatOfCard(card) || this.current;
     return this._guardCtx({
       e, engine: e, self, player: self, target, card, x,
       rng: e.rng, turn: e.turn,
@@ -1372,11 +1634,11 @@ export class CombatEngine {
       discard: (n, opts = {}) => {
         const why = card ? card.id : 'effect';
         if (opts.cards) return opts.cards.map(c => e.discardCard(c, why));
-        if (opts.all) return e.piles.hand.slice().map(c => e.discardCard(c, why));
+        if (opts.all) return self.piles.hand.slice().map(c => e.discardCard(c, why));
         if (opts.choose) {
           // async: resolves to the discarded cards once the player has picked
           return (async () => {
-            const pool = e.piles.hand.filter(k => k !== card && (!opts.filter || opts.filter(k)));
+            const pool = self.piles.hand.filter(k => k !== card && (!opts.filter || opts.filter(k)));
             if (!pool.length) return [];
             const picked = await e.choices.ask({
               kind: 'card', pool, count: Math.min(n, pool.length), optional: !!opts.optional,
@@ -1442,11 +1704,11 @@ export class CombatEngine {
       returnToHand: (c2) => {
         const k = c2 || card;
         if (!k) return false;
-        if (e.piles.hand.length >= e.handCap()) return false;
-        return e.piles.move(k, Pile.HAND, { reason: 'returned' });
+        if (self.piles.hand.length >= e.handCap()) return false;
+        return self.piles.move(k, Pile.HAND, { reason: 'returned' });
       },
       /** Shuffle the draw pile in place. */
-      shuffleDraw: () => e.piles.shuffleDraw('effect'),
+      shuffleDraw: () => self.piles.shuffleDraw('effect'),
       /** Change how many Tricks you draw at the start of your NEXT turn. */
       modifyDraw: (n) => { e.drawDeltaNextTurn += n; e._dirty = true; return e.drawDeltaNextTurn; },
       cardsIn: (pile) => e.cardsIn(pile),
@@ -1475,12 +1737,12 @@ export class CombatEngine {
       livingEnemies: () => e.livingEnemies(),
       enemies: e.enemies,
       allies: e.allies,
-      hand: e.piles.hand,
-      drawPile: e.piles.draw,
-      discardPile: e.piles.discard,
-      exhaustPile: e.piles.exhaust,
-      limbo: e.piles.limbo,
-      stash: e.piles.stash,
+      hand: self.piles.hand,
+      drawPile: self.piles.draw,
+      discardPile: self.piles.discard,
+      exhaustPile: self.piles.exhaust,
+      limbo: self.piles.limbo,
+      stash: self.piles.stash,
 
       // companion systems
       counter: (id) => e.counter(id),
@@ -1536,9 +1798,14 @@ export class CombatEngine {
    * therefore injected ahead of time rather than imported here.
    */
   _installCompanionTrackers() {
+    // Every seat's Companion. A party of Marmalade + Bones needs BOTH sets of
+    // trackers installed or the second Kid's counters do not exist and every
+    // card that reads one silently does nothing.
     const slugs = [];
-    if (this.player && this.player.companion && this.player.companion !== 'neutral') {
-      slugs.push(this.player.companion);
+    for (const pl of this.players) {
+      if (pl.companion && pl.companion !== 'neutral' && !slugs.includes(pl.companion)) {
+        slugs.push(pl.companion);
+      }
     }
     for (const s of (this._cfg.companions || [])) if (!slugs.includes(s)) slugs.push(s);
     if (!slugs.length) return;
@@ -1573,22 +1840,29 @@ export class CombatEngine {
       this.phase = 'setup';
       this._installCompanionTrackers();
       this._emit(EV.COMBAT_START, {
-        seed: this.seed, playerId: this.player.id,
+        seed: this.seed, playerId: this.players[0].id,
+        seats: this.players.map(pl => ({ id: pl.id, seat: pl.seat, name: pl.name, companion: pl.companion })),
+        partySize: this.players.length,
         enemies: this.enemies.map(e => ({ id: e.id, name: e.name, hp: e.hp, maxHp: e.maxHp, slot: e.slot, tier: e.tier })),
       });
 
       this.hooks.dispatch('onCombatStart', {});
 
       // shuffle, then lift Innate cards to the top in deck order
-      this.piles.draw = this.rng.shuffle(this.piles.draw);
-      const innate = this.piles.draw.filter(c => c.innate);
-      if (innate.length) {
-        this.piles.draw = innate.concat(this.piles.draw.filter(c => !c.innate));
+      // Each seat shuffles its OWN deck, in seat order, off the one shared RNG.
+      // Seat order matters for determinism: the same seed must deal the same
+      // opening hands to the same Kids, or a replay of a co-op fight diverges
+      // on the first card.
+      for (const pl of this.players) {
+        const q = pl.piles;
+        q.draw = this.rng.shuffle(q.draw);
+        const innate = q.draw.filter(c => c.innate);
+        if (innate.length) q.draw = innate.concat(q.draw.filter(c => !c.innate));
+        this._emit(EV.SHUFFLE, {
+          into: Pile.DRAW, from: 'deck', count: q.draw.length, actorId: pl.id, seat: pl.seat,
+          order: q.draw.map(c => c.uid), reason: 'combatStart',
+        });
       }
-      this._emit(EV.SHUFFLE, {
-        into: Pile.DRAW, from: 'deck', count: this.piles.draw.length,
-        order: this.piles.draw.map(c => c.uid), reason: 'combatStart',
-      });
 
       for (const en of this.enemies) {
         if (en.def) this.enemyDefs.set(en.def.id, en.def);
@@ -1625,62 +1899,88 @@ export class CombatEngine {
     // accumulates through the player turn and is STILL READABLE during the enemy
     // turn that follows — several enemies key their whole design off
     // "was I hit last turn?". (data/enemies/_lib.js dmgTaken / wasHit.)
-    for (const a of [this.player, ...this.enemies, ...this.allies]) {
+    for (const a of [...this.players, ...this.enemies, ...this.allies]) {
       a.damageTakenLastTurn = a.damageTakenThisTurn;
       a.damageTakenThisTurn = 0;
       a.hitsTakenThisTurn = 0;
       a.unblockedHitsThisTurn = 0;
     }
 
-    // turn-scoped card cost changes expire
-    for (const c of this.piles.all()) { c.costTurnDelta = 0; c.costOverrideTurn = null; }
+    // turn-scoped card cost changes expire, in every seat
+    for (const pl of this.players) {
+      for (const c of pl.piles.all()) { c.costTurnDelta = 0; c.costOverrideTurn = null; }
+    }
     this._invalidate();
 
     this._emit(EV.PHASE, { phase: 'player', turn: this.turn });
-    this._emit(EV.TURN_START, { actor: 'player', actorId: this.player.id, turn: this.turn, side: 'player' });
+    this._emit(EV.TURN_START, {
+      actor: 'player', actorId: this.players[0].id, turn: this.turn, side: 'player',
+      seats: this.livingPlayers().map(pl => ({ id: pl.id, seat: pl.seat })),
+    });
 
-    // Draw penalties are measured BEFORE the start-of-turn decay, so a status
-    // that says "draw N fewer next turn" and expires at turn start still bites
-    // on the turn it was aimed at. (Smothered, and any StatusDef.drawDelta.)
-    this._drawPenalty = 0;
-    for (const [id, stacks] of this.player.statuses) {
-      const d = getStatus(id);
-      const per = d.drawDelta ?? (id === 'smothered' ? -1 : 0);
-      if (per) this._drawPenalty += per * stacks;
-    }
+    // 2/3 — every seat wipes Guard and ticks its start-of-turn statuses BEFORE
+    //        any seat draws. Interleaving them would let one Kid's Dread tick
+    //        land between another Kid's Guard wipe and their draw, which is
+    //        visible: a teammate would watch their Guard vanish mid-draw.
+    for (const pl of this.livingPlayers()) this._openSeatTurn(pl);
+    if (this.over) return;
 
-    // 2 — Guard wipe
-    const keep = Math.min(this.player.keepBlock, this.player.block);
-    if (this.player.block > keep) {
-      const before = this.player.block;
-      this.player.block = keep;
-      this._emit(EV.BLOCK_LOSE, { actorId: this.player.id, before, after: keep, reason: 'turnStart' });
-    }
-    this.player.keepBlock = 0;
-
-    // 3 — start-of-turn statuses
-    this._tickStatuses(this.player, 'turnStart');
-
-    // 4 — countdowns
+    // 4 — countdowns (shared: the board has one clock, not one per seat)
     this._tickTimers('playerTurnStart');
     for (const c of this.counters.values()) if (c.resetEachTurn) this.setCounter(c.id, c.min, 'turnStart');
 
     this._enemyLifecycle('onPlayerTurnStart');
     if (this.over) return;
 
-    // 5 — draw. Smothered (and any StatusDef with `drawDelta`) reduces it, never
-    //     below 3; ctx.modifyDraw() adds a one-shot delta for this turn only.
-    let want = this.player.drawPerTurn + this.drawDeltaNextTurn;
-    this.drawDeltaNextTurn = 0;
-    if (this._drawPenalty < 0) want = Math.max(3, want + this._drawPenalty);
-    this._drawPenalty = 0;
-    this.drawCards(Math.max(0, want), 'turnStart');
-
-    // 6 — energy
-    this.setEnergy(this.player.energyMax, 'turnStart');
+    // 5/6 — draw and Nerve, per seat, after every start-of-turn effect has run
+    for (const pl of this.livingPlayers()) this._dealSeatTurn(pl);
 
     // 7 — intents
     this.refreshIntents('turnStart');
+  }
+
+  /** One seat's turn opening: draw penalty, Guard wipe, start-of-turn statuses. */
+  _openSeatTurn(pl) {
+    this._asSeat(pl, () => {
+      // Draw penalties are measured BEFORE the start-of-turn decay, so a status
+      // that says "draw N fewer next turn" and expires at turn start still bites
+      // on the turn it was aimed at. (Smothered, and any StatusDef.drawDelta.)
+      pl._drawPenalty = 0;
+      for (const [id, stacks] of pl.statuses) {
+        const d = getStatus(id);
+        const per = d.drawDelta ?? (id === 'smothered' ? -1 : 0);
+        if (per) pl._drawPenalty += per * stacks;
+      }
+
+      const keep = Math.min(pl.keepBlock, pl.block);
+      if (pl.block > keep) {
+        const before = pl.block;
+        pl.block = keep;
+        this._emit(EV.BLOCK_LOSE, { actorId: pl.id, seat: pl.seat, before, after: keep, reason: 'turnStart' });
+      }
+      pl.keepBlock = 0;
+
+      this._tickStatuses(pl, 'turnStart');
+    });
+  }
+
+  /**
+   * One seat's draw and Nerve refill.
+   *
+   * `drawDeltaNextTurn` is engine-wide and one-shot, so it is consumed by the
+   * FIRST seat dealt and not handed to the rest — "draw 2 more next turn" is a
+   * promise to the Kid who earned it, not to the whole table.
+   */
+  _dealSeatTurn(pl) {
+    this._asSeat(pl, () => {
+      let want = pl.drawPerTurn + this.drawDeltaNextTurn;
+      this.drawDeltaNextTurn = 0;
+      const pen = pl._drawPenalty || 0;
+      if (pen < 0) want = Math.max(3, want + pen);
+      pl._drawPenalty = 0;
+      this.drawCards(Math.max(0, want), 'turnStart');
+      this.setEnergy(pl.energyMax, 'turnStart');
+    });
   }
 
   /**
@@ -1719,13 +2019,19 @@ export class CombatEngine {
     if (card.pile !== Pile.HAND && card.pile !== Pile.STASH) return { ok: false, reason: 'That Trick is not in your hand.' };
     if (card.unplayable) return { ok: false, reason: 'This Trick cannot be played.' };
 
-    if (card.type === CardType.ATTACK && this.player.hasStatus('entangle')) {
+    // Every check below is about the seat HOLDING the card, not seat 0 — a
+    // teammate's Entangle must not stop you playing an Attack, and your Nerve
+    // is yours.
+    const who = this.seatOfCard(card) || this.current;
+    if (who.fallen) return { ok: false, reason: `${who.name} has fallen.` };
+
+    if (card.type === CardType.ATTACK && who.hasStatus('entangle')) {
       return { ok: false, reason: 'Entangled — you cannot play Attacks this turn.' };
     }
 
     const cost = this.costOf(card);
     const need = cost === -1 ? 0 : cost;
-    if (this.player.energy < need) return { ok: false, reason: `Not enough Nerve (needs ${need}).` };
+    if (who.energy < need) return { ok: false, reason: `Not enough Nerve (needs ${need}).` };
 
     if (card.target === Target.ENEMY) {
       const t = this.actor(targetId);
@@ -1743,7 +2049,7 @@ export class CombatEngine {
       if (!card.def.playable(this.ctxFor(card, t))) return { ok: false, reason: card.def.playableReason || 'Conditions are not met.' };
     }
 
-    if (this.hooks.any('vetoPlay', { card }, this.hooks.actorHooks(this.player, 'vetoPlay'))) {
+    if (this.hooks.any('vetoPlay', { card }, this.hooks.actorHooks(who, 'vetoPlay'))) {
       return { ok: false, reason: 'Something is stopping you.' };
     }
     return { ok: true, reason: '' };
@@ -1770,16 +2076,21 @@ export class CombatEngine {
     const card = this.card(cardUid);
     const target = this.actor(targetId) || (card.target === Target.ENEMY ? this.firstLivingEnemy() : null);
 
+    // The whole resolution runs AS the seat holding the card, so every helper
+    // it reaches — costOf, gainEnergy, the piles, ctxFor's `self` — answers for
+    // the right Kid without any of them taking a seat argument.
+    const owner = this.seatOfCard(card) || this.current;
+
     let pending = null;
-    const events = this._capture(() => {
+    const events = this._capture(() => this._asSeat(owner, () => {
       const cost = this.costOf(card);
-      const x = cost === -1 ? this.player.energy : 0;
-      const spend = cost === -1 ? this.player.energy : cost;
-      const energyBefore = this.player.energy;
+      const x = cost === -1 ? owner.energy : 0;
+      const spend = cost === -1 ? owner.energy : cost;
+      const energyBefore = owner.energy;
 
       // 1. leave the hand immediately so effects that look at the hand are right
-      this.piles._pull(card);
-      this.piles._push(card, Pile.LIMBO, 'bottom');
+      this.current.piles._pull(card);
+      this.current.piles._push(card, Pile.LIMBO, 'bottom');
 
       // 2. pay
       if (spend > 0) this.gainEnergy(-spend, 'play');
@@ -1792,7 +2103,8 @@ export class CombatEngine {
       if (card.type === CardType.SKILL) this.stats.skillsPlayedThisTurn++;
       this._emit(EV.CARD_PLAY, {
         cardUid: card.uid, card: this.cardSnap(card, targetId), targetId: target ? target.id : null,
-        cost: spend, energyBefore, energyAfter: this.player.energy,
+        cost: spend, energyBefore, energyAfter: owner.energy,
+        actorId: owner.id, seat: owner.seat,
         cardsPlayedThisTurn: this.stats.cardsPlayedThisTurn,
       });
 
@@ -1812,7 +2124,7 @@ export class CombatEngine {
       const finish = () => {
         this.hooks.dispatch('onCardPlayed', { card, target, index: this.stats.cardsPlayedThisTurn });
         if (card.type === CardType.ATTACK) {
-          this.hooks.dispatch('onAttackDealt', { card, target }, this.hooks.actorHooks(this.player, 'onAttackDealt'));
+          this.hooks.dispatch('onAttackDealt', { card, target }, this.hooks.actorHooks(owner, 'onAttackDealt'));
         }
         this._enemyLifecycle('onPlayerCard', { card: { id: card.id, type: card.type, uid: card.uid }, playedCard: card });
         this._enemyLifecycle('onCardPlayed', { card: { id: card.id, type: card.type, uid: card.uid }, playedCard: card });
@@ -1821,33 +2133,33 @@ export class CombatEngine {
           // Powers leave play entirely once resolved. They are parked in limbo
           // tagged `meta.zone='power'` rather than in exhaust, so effects that
           // count Vanished Tricks do not silently count every Power too.
-          this.piles._pull(card);
+          this.current.piles._pull(card);
           card.meta.zone = 'power';
-          this.piles._push(card, Pile.LIMBO, 'bottom');
+          this.current.piles._push(card, Pile.LIMBO, 'bottom');
           this._emit(EV.CARD_RESOLVED, { cardUid: card.uid, card: this.cardSnap(card), destination: 'power' });
-        } else if (this.piles.pileOf(card) === Pile.LIMBO) {
+        } else if (this.current.piles.pileOf(card) === Pile.LIMBO) {
           const toExhaust = card.exhaust || card._exhaustAfterPlay || opts.exhaust;
-          this.piles._pull(card);
+          this.current.piles._pull(card);
           if (toExhaust) {
-            this.piles._push(card, Pile.EXHAUST, 'bottom');
+            this.current.piles._push(card, Pile.EXHAUST, 'bottom');
             this.stats.cardsExhaustedThisTurn++;
             this.stats.cardsExhaustedThisCombat++;
             this._emit(EV.EXHAUST, {
               cardUid: card.uid, card: this.cardSnap(card), from: Pile.LIMBO,
-              reason: 'played', exhaustCount: this.piles.exhaust.length,
+              reason: 'played', exhaustCount: this.current.piles.exhaust.length,
             });
             this.hooks.dispatch('onCardExhausted', { card, reason: 'played' });
           } else {
-            this.piles._push(card, Pile.DISCARD, 'bottom');
+            this.current.piles._push(card, Pile.DISCARD, 'bottom');
             this._emit(EV.DISCARD, {
               cardUid: card.uid, card: this.cardSnap(card), from: Pile.LIMBO, to: Pile.DISCARD,
-              reason: 'played', handSize: this.piles.hand.length, discardCount: this.piles.discard.length,
+              reason: 'played', handSize: this.current.piles.hand.length, discardCount: this.current.piles.discard.length,
             });
           }
           this._emit(EV.CARD_RESOLVED, { cardUid: card.uid, card: this.cardSnap(card), destination: card.pile });
         } else {
           // an effect moved the card somewhere itself (Stash, draw pile, hand)
-          this._emit(EV.CARD_RESOLVED, { cardUid: card.uid, card: this.cardSnap(card), destination: this.piles.pileOf(card) });
+          this._emit(EV.CARD_RESOLVED, { cardUid: card.uid, card: this.cardSnap(card), destination: this.current.piles.pileOf(card) });
         }
         card._exhaustAfterPlay = false;
         this.refreshIntents('cardPlayed');
@@ -1855,11 +2167,14 @@ export class CombatEngine {
       };
 
       if (ret && typeof ret.then === 'function') {
-        pending = ret.then(() => this._capture(finish));
+        // The deferred half has to resolve as the SAME seat. Without the
+        // _asSeat here the finish would run with whatever seat happened to be
+        // acting when the promise settled, which in a party is nobody.
+        pending = ret.then(() => this._capture(() => this._asSeat(owner, finish)));
       } else {
         finish();
       }
-    });
+    }));
     return { events, pending };
   }
 
@@ -1905,7 +2220,7 @@ export class CombatEngine {
   /** The numbers a Snack would actually apply, after every relic modifier. */
   snackPotency(snack) {
     const fx = snack.effect || {};
-    const provs = (f) => this.hooks.actorHooks(this.player, 'modifySnackPotency');
+    const provs = (f) => this.hooks.actorHooks(this.current, 'modifySnackPotency');
     const scale = (field, v) => Math.max(0, Math.round(
       this.hooks.reduce('modifySnackPotency', v, { snack, field }, provs(field))));
     const out = {};
@@ -1919,12 +2234,19 @@ export class CombatEngine {
   }
 
   /**
-   * Eat a Snack. Returns the events it caused, exactly like `playCard`.
+   * Eat a Snack — or throw one to a teammate.
+   *
+   * Slay the Spire 2 co-op lets a potion be drunk OR thrown to another player,
+   * and that is the whole difference here: `opts.to` names the seat it lands
+   * on. Left out, it lands on whoever reached into the Backpack, which is what
+   * solo has always done.
+   *
    * @param {Object} snack   a SnackDef ({ id, name, desc, effect })
-   * @param {string|null} targetId
+   * @param {string|null} targetId  the ENEMY a damaging Snack is aimed at
+   * @param {{to?: import('./actor.js').Player}} [opts]  `to` = the seat it is thrown to
    * @returns {Promise<Event[]>}
    */
-  async useSnack(snack, targetId = null) {
+  async useSnack(snack, targetId = null, opts = {}) {
     const check = this.canUseSnack(snack, targetId);
     if (!check.ok) {
       return this._capture(() => this._emit(EV.CARD_INVALID, {
@@ -1951,7 +2273,9 @@ export class CombatEngine {
     }
 
     const potency = this.snackPotency(snack);
-    const me = this.player;
+    // A thrown Snack lands on a TEAMMATE: `opts.to` names the seat it is
+    // thrown at, and defaults to whoever reached into the Backpack.
+    const me = opts.to || this.current;
 
     return this._capture(() => {
       this._emit(EV.SNACK, {
@@ -1992,18 +2316,26 @@ export class CombatEngine {
     if (this.over || this.phase !== 'player') return [];
     return this._capture(() => {
       // 1
-      this._emit(EV.TURN_END, { actor: 'player', actorId: this.player.id, turn: this.turn, side: 'player' });
+      this._emit(EV.TURN_END, {
+        actor: 'player', actorId: this.players[0].id, turn: this.turn, side: 'player',
+        seats: this.livingPlayers().map(pl => ({ id: pl.id, seat: pl.seat })),
+      });
 
-      // 2 — hand resolution
-      for (const card of [...this.piles.hand]) {
-        if (card.ethereal) { this.exhaustCard(card, 'ethereal'); continue; }
-        if (card.retain || card.retainThisTurn) { card.retainThisTurn = false; continue; }
-        this.discardCard(card, 'endTurn');
+      // 2 — hand resolution, per seat, each as its own acting seat so Ethereal
+      //     and Retain resolve against the right pile set.
+      for (const pl of this.livingPlayers()) {
+        this._asSeat(pl, () => {
+          for (const card of [...pl.piles.hand]) {
+            if (card.ethereal) { this.exhaustCard(card, 'ethereal'); continue; }
+            if (card.retain || card.retainThisTurn) { card.retainThisTurn = false; continue; }
+            this.discardCard(card, 'endTurn');
+          }
+        });
       }
 
-      // 3 — player end-of-turn statuses
+      // 3 — end-of-turn statuses, per seat (Regen heals each Kid its own amount)
       this._checkRules('turnEnd');
-      this._tickStatuses(this.player, 'turnEnd');
+      for (const pl of this.livingPlayers()) this._tickStatuses(pl, 'turnEnd');
       this._enemyLifecycle('onPlayerTurnEnd');
       if (this.over) return;
 
@@ -2015,7 +2347,10 @@ export class CombatEngine {
       this.phase = 'enemy';
       this._invalidate();
       this._emit(EV.PHASE, { phase: 'enemy', turn: this.turn });
-      const before = this.player.damageTakenThisTurn;
+      // Summed across the party: `damageTakenLastEnemyTurn` is a board-level
+      // stat that House Rules and several enemies key off ("did the party get
+      // through that untouched?"), so in co-op it has to mean the whole table.
+      const before = this.players.reduce((n, pl) => n + pl.damageTakenThisTurn, 0);
 
       for (const en of [...this.enemies]) {
         if (this.over) break;
@@ -2045,7 +2380,8 @@ export class CombatEngine {
         this._emit(EV.TURN_END, { actor: en.id, actorId: en.id, turn: this.turn, side: 'enemy' });
       }
 
-      this.stats.damageTakenLastEnemyTurn = this.player.damageTakenThisTurn - before;
+      this.stats.damageTakenLastEnemyTurn =
+        this.players.reduce((n, pl) => n + pl.damageTakenThisTurn, 0) - before;
       if (this.over) return;
 
       // 6a — per-enemy end-of-turn statuses.
@@ -2057,7 +2393,7 @@ export class CombatEngine {
       // 6b — the shared `enemyTurnEnd` decay bucket, for EVERY actor. This is
       //      what Marmalade's Ghoststep expires on: gone once the enemies have
       //      finished swinging, used or not.
-      this._decayBucket(this.player, 'enemyTurnEnd');
+      for (const pl of this.players) if (pl.alive) this._decayBucket(pl, 'enemyTurnEnd');
       for (const a of this.allies) if (a.alive) this._decayBucket(a, 'enemyTurnEnd');
       for (const en of this.enemies) if (en.alive) this._decayBucket(en, 'enemyTurnEnd');
 
@@ -2103,7 +2439,7 @@ export class CombatEngine {
     const card = this.card(cardUid);
     if (!card) return 0;
     const t = this.actor(targetId) || this.firstLivingEnemy();
-    return previewDamageValue(this, this.player, t, card.nums?.[key] ?? 0, { kind: 'attack' });
+    return previewDamageValue(this, this.seatOfCard(card) || this.current, t, card.nums?.[key] ?? 0, { kind: 'attack' });
   }
 
   // ── cloning (for preview) ─────────────────────────────────────────────────
@@ -2114,14 +2450,18 @@ export class CombatEngine {
       started: this.started, seq: this._seq,
       stats: { ...this.stats },
       rng: this.rng.snapshot(),
-      player: this.player,
+      // Every seat, each with its own pile set. Solo is a one-element array, so
+      // the clone below has no separate single-player path either.
+      players: this.players.map(pl => ({
+        actor: pl,
+        piles: {
+          draw: pl.piles.draw, hand: pl.piles.hand, discard: pl.piles.discard,
+          exhaust: pl.piles.exhaust, limbo: pl.piles.limbo, stash: pl.piles.stash,
+        },
+        stashCap: pl.piles.stashCap,
+      })),
       enemies: this.enemies,
       allies: this.allies,
-      piles: {
-        draw: this.piles.draw, hand: this.piles.hand, discard: this.piles.discard,
-        exhaust: this.piles.exhaust, limbo: this.piles.limbo, stash: this.piles.stash,
-      },
-      stashCap: this.piles.stashCap,
       counters: this.counters,
       timers: this.timers,
       objects: this.objects,
@@ -2144,7 +2484,6 @@ export class CombatEngine {
     c.stats = { ...s.stats };
     c.rng = new RNG(this.seed);
     c.rng.restore(s.rng);
-    c.player = s.player.clone();
     c.enemies = s.enemies.map(e => e.clone());
     c.allies = s.allies.map(e => e.clone());
 
@@ -2155,13 +2494,21 @@ export class CombatEngine {
       map.set(card.uid, cc);
       return cc;
     });
-    c.piles.draw = cloneList(s.piles.draw, Pile.DRAW);
-    c.piles.hand = cloneList(s.piles.hand, Pile.HAND);
-    c.piles.discard = cloneList(s.piles.discard, Pile.DISCARD);
-    c.piles.exhaust = cloneList(s.piles.exhaust, Pile.EXHAUST);
-    c.piles.limbo = cloneList(s.piles.limbo, Pile.LIMBO);
-    c.piles.stash = cloneList(s.piles.stash, Pile.STASH);
-    c.piles.stashCap = s.stashCap;
+    // Seats are cloned with their piles attached. `c.players` is assigned
+    // directly rather than through `c.player`, which is a getter now — the
+    // preview engine is built `_bare`, so it has no seats of its own yet.
+    c.players = s.players.map(seat => {
+      const pl = seat.actor.clone();
+      pl.piles = new Piles(c, pl);
+      pl.piles.draw = cloneList(seat.piles.draw, Pile.DRAW);
+      pl.piles.hand = cloneList(seat.piles.hand, Pile.HAND);
+      pl.piles.discard = cloneList(seat.piles.discard, Pile.DISCARD);
+      pl.piles.exhaust = cloneList(seat.piles.exhaust, Pile.EXHAUST);
+      pl.piles.limbo = cloneList(seat.piles.limbo, Pile.LIMBO);
+      pl.piles.stash = cloneList(seat.piles.stash, Pile.STASH);
+      pl.piles.stashCap = seat.stashCap;
+      return pl;
+    });
 
     c.counters = new Map();
     for (const [k, v] of s.counters) c.counters.set(k, { ...v, states: (v.states || []).map(x => ({ ...x })) });
@@ -2258,7 +2605,7 @@ function statusMeta(opts) {
 function _cfgLite(cfg) {
   // Strip everything the clone rebuilds itself; keeping cfg.hooks would register
   // every ad-hoc hook twice.
-  const { player, enemies, deck, hooks, bus, relics, rng, ...rest } = cfg || {};
+  const { player, players, enemies, deck, hooks, bus, relics, rng, ...rest } = cfg || {};
   return rest;
 }
 

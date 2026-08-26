@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Midnight Menagerie — co-op combat tests</title>
+<style>
+  :root { color-scheme: dark; }
+  body {
+    margin: 0; padding: 24px 28px 60px;
+    background: #0d0b16; color: #c3bbcd;
+    font: 14px/1.55 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  h1 { font-size: 18px; letter-spacing: .14em; text-transform: uppercase; color: #f4efe4; margin: 0 0 4px; }
+  .sub { color: #8b839a; margin-bottom: 20px; font-size: 12px; }
+  #summary { position: sticky; top: 0; z-index: 5; padding: 12px 14px; margin: 0 0 18px;
+             border-radius: 8px; background: #14111f; border: 1px solid #2a2442; font-size: 16px; }
+  #summary.pass { border-color: #3fb4d0; color: #a8ecf7; }
+  #summary.fail { border-color: #cf3c28; color: #ff9c8a; }
+  .grp { margin: 0 0 14px; border-left: 2px solid #2a2442; padding-left: 12px; }
+  .grp.bad { border-left-color: #cf3c28; }
+  .grp > h2 { font-size: 13px; margin: 0 0 4px; color: #f4efe4; font-weight: 600; letter-spacing: .02em; }
+  .a { padding-left: 18px; text-indent: -18px; }
+  .a.p::before { content: "PASS  "; color: #6fd9ec; }
+  .a.f::before { content: "FAIL  "; color: #f2654c; }
+  .a.f { color: #ff9c8a; }
+  .a.p { color: #7f7891; }
+  pre.err { color: #ff9c8a; background: #1a0f12; padding: 8px 10px; border-radius: 6px;
+            white-space: pre-wrap; font-size: 12px; margin: 6px 0 0; }
+</style>
+</head>
+<body>
+<h1>Co-op combat — assertion suite</h1>
+<div class="sub">2-4 seats at one table. Strict seat guard ARMED: reading engine.player in a party throws.</div>
+<div id="summary">running…</div>
+<div id="out"></div>
+
+<script type="module">
+import { run } from './suite.js';
+
+const out = document.getElementById('out');
+const summary = document.getElementById('summary');
+
+function esc(s) { return String(s).replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c])); }
+
+(async () => {
+  let r;
+  try {
+    r = await run();
+  } catch (e) {
+    summary.className = 'fail';
+    summary.textContent = 'RESULT: 0 passed, 1 failed  (suite crashed)';
+    out.innerHTML = `<pre class="err">${esc(e && e.stack || e)}</pre>`;
+    console.log('RESULT: 0 passed, 1 failed');
+    console.error(e);
+    window.__TEST_RESULT__ = { passed: 0, failed: 1, crashed: String(e && e.stack || e) };
+    return;
+  }
+
+  const lines = [];
+  for (const t of r.results) {
+    const bad = t.failed > 0;
+    lines.push(`<div class="grp${bad ? ' bad' : ''}"><h2>${esc(t.name)}</h2>` +
+      t.asserts.map(a => `<div class="a ${a.pass ? 'p' : 'f'}">${esc(a.label)}</div>`).join('') +
+      (t.error ? `<pre class="err">${esc(t.error)}</pre>` : '') +
+      `</div>`);
+    console.log(`${bad ? 'FAIL' : 'PASS'}  ${t.name}  (${t.asserts.filter(a => a.pass).length}/${t.asserts.length})`);
+    for (const a of t.asserts) if (!a.pass) console.log(`   FAIL  ${a.label}`);
+    if (t.error) console.log('   ERROR ' + t.error);
+  }
+  out.innerHTML = lines.join('');
+
+  const line = `RESULT: ${r.passed} passed, ${r.failed} failed`;
+  summary.className = r.failed === 0 ? 'pass' : 'fail';
+  summary.textContent = line;
+  console.log(line);
+  window.__TEST_RESULT__ = { passed: r.passed, failed: r.failed };
+})();
+</script>
+</body>
+</html>

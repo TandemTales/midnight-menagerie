@@ -167,6 +167,48 @@ export function makeDummySetup(rng = new RNG(1), o = {}) {
 }
 
 /**
+ * The same scenario with N seats at the table.
+ *
+ * Each seat gets its OWN copy of the starter deck — decks are per-player in
+ * co-op, so handing every seat the same array would have them share card
+ * instances and a discard by one would empty another's hand.
+ *
+ * @param {RNG} rng
+ * @param {number} n  seats, 1..4
+ */
+export function makeDummyParty(rng = new RNG(1), n = 2, o = {}) {
+  const names = ['Samir', 'Maya', 'Mateo', 'Amina'];
+  const players = [];
+  for (let i = 0; i < n; i++) {
+    players.push({
+      name: o.names?.[i] || names[i] || `Kid ${i + 1}`,
+      companion: o.companion || 'neutral',
+      maxHp: o.maxHp ?? 70,
+      hp: o.hp ?? o.maxHp ?? 70,
+      energyMax: o.energyMax ?? 3,
+      drawPerTurn: o.drawPerTurn ?? 5,
+      deck: (o.decks && o.decks[i]) || makeDummyDeck(),
+    });
+  }
+  return new CombatEngine({
+    rng, players,
+    enemies: o.enemies || [DUST_BUNNY, COATRACK],
+    relics: o.relics || [],
+    // Armed on purpose: a co-op test that silently read seat 0 everywhere would
+    // pass while proving nothing. See engine.player.
+    strictCtx: o.strictCtx ?? true,
+    bus: o.bus || null,
+  });
+}
+
+/** Convenience: build a party and start the fight. */
+export async function startDummyParty(rng = new RNG(1), n = 2, o = {}) {
+  const e = makeDummyParty(rng, n, o);
+  await e.startCombat();
+  return e;
+}
+
+/**
  * A ready-to-start CombatEngine. Call `await engine.startCombat()` yourself so
  * you can attach listeners first.
  * @param {RNG} rng

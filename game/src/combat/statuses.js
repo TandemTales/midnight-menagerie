@@ -1,7 +1,8 @@
 /**
  * The universal status set. OWNER: combat-engine.
  *
- * These thirteen exist in every fight regardless of Companion. Companion-specific
+ * These fourteen exist in every fight regardless of Companion (Racket, the co-op
+ * taunt, is the only one solo never uses). Companion-specific
  * conditions (Ghoststep, Haunt, Soaked, Web, Vines, Slobbered, Unseen…) are
  * registered by the content agents through `registerStatus()` — they use the same
  * shape and the same hook names, so the engine needs no changes to support them.
@@ -108,6 +109,23 @@ export const UNIVERSAL_STATUSES = {
     },
   },
 
+  racket: {
+    id: 'racket', name: 'Racket', kind: 'buff', icon: 'racket',
+    // The co-op taunt. Multiplayer only in practice — with one seat at the
+    // table there is nobody to pull attention away FROM, so it reads as a dead
+    // status in solo and no solo card grants it.
+    //
+    // Named rather than borrowed: this game renames every universal condition
+    // it has fiction for (Poison -> Dread, Thorns -> Bristle), and "Taunt" is a
+    // genre word, not a Menagerie one. A kid making a racket in a dark house so
+    // the thing looks at them instead of their friend is the actual fiction.
+    //
+    // Read in `engine.intentTargetFor`, not through a hook: targeting has to be
+    // decided in one place or a preview and its resolution can disagree.
+    desc: 'Enemies attack you instead of your friends. Lose 1 Racket at the end of your turn.',
+    decay: 'turnEnd', stacks: true,
+  },
+
   charm: {
     id: 'charm', name: 'Charm', kind: 'buff', icon: 'charm',
     desc: 'Prevent the next {n} negative conditions applied to you.',
@@ -208,6 +226,6 @@ export function statusDesc(id, stacks) {
 
 /** Ids in the order the status row should display them: buffs, then debuffs. */
 export const STATUS_ORDER = Object.freeze([
-  'strength', 'dexterity', 'focus', 'regen', 'bristle', 'faint', 'charm',
+  'strength', 'dexterity', 'focus', 'regen', 'bristle', 'faint', 'charm', 'racket',
   'weak', 'vulnerable', 'frail', 'dread', 'confusion', 'entangle',
 ]);

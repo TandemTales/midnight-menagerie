@@ -203,7 +203,10 @@ export class Hooks {
   globalHooks(name) {
     const out = [];
     this._relicProviders(name, out);
-    this._actorProviders(this.e.player, name, out);
+    // Every seat, in seat order. Dispatch order is the reason this is a loop
+    // and not just seat 0: hook order has to be deterministic across a party
+    // or two clients replaying the same seed diverge.
+    for (const pl of this.e.players) this._actorProviders(pl, name, out);
     for (const a of this.e.allies) this._actorProviders(a, name, out);
     for (const en of this.e.enemies) this._actorProviders(en, name, out);
     this._objectProviders(name, out);
@@ -245,7 +248,11 @@ export class Hooks {
       // Statuses legitimately need to move Courage and stacks around. Haunt is
       // the whole reason these are here: it called `loseHp` on a payload that
       // did not have it and the optional chain ate the damage silently.
-      player: e.player,
+      // The seat this hook belongs to. A status on a Kid answers with that Kid;
+      // anything else (a relic, an enemy status) answers with the seat currently
+      // acting. Handing back seat 0 unconditionally is how a teammate Regen
+      // would have healed the host instead.
+      player: (owner && owner.side === "player") ? owner : e.current,
       loseHp: (a, n) => e.loseHp(a || owner, n, p.id),
       heal: (a, n) => e.heal(a || owner, n, p.id),
       applyStatus: (a, id, n, opts) => e.applyStatus(a || owner, id, n, { reason: p.id, ...(opts || {}) }),
