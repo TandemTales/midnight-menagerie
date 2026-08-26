@@ -977,6 +977,133 @@ const rares = [
 ];
 
 // ════════════════════════════════════════════════════════════════════════════
+// ── MULTIPLAYER ONLY TRICKS ─────────────────────────────────────────────────
+/**
+ * The five co-op Tricks from this companion's design chapter, kept OUTSIDE the
+ * 80 in a separate `coopCards` pool so a solo run can never draft one.
+ *
+ * A NOTE ON THE ONES THAT ASK A TEAMMATE TO CHOOSE. Several of these say
+ * "that player chooses a Trick from their hand/discard". The choice broker
+ * raises one request to whoever is driving the engine, and there is no client
+ * routing yet to put that request in front of a DIFFERENT player. Until there
+ * is, those picks resolve deterministically (cheapest first, then hand order)
+ * and are marked with `// TEAMMATE PICK` below. The effect is right; who makes
+ * the decision is not, and it is a networking task, not a card task.
+ */
+const coopCards = [
+  {
+    id: 'taffy/hold-this-for-me', name: 'Hold This for Me', companion: SLUG,
+    type: SKILL, rarity: UNCOMMON, cost: 1, target: NONE, coop: true,
+    text: 'Choose a friend. They put a Trick in Taffy\'s Belly and draw {n}. At the start of their next turn it returns costing 0.',
+    flavor: 'It is safe in there. It is not comfortable in there.',
+    nums: { n: 1 },
+    effect: eff(async (c) => {
+      const ally = await c.chooseAlly({ prompt: 'Who needs a hand free?' });
+      if (!ally) return;
+      // TEAMMATE PICK — first card in their hand.
+      const card = c.allyCards(ally, 'hand')[0];
+      if (!card) return;
+      c.e._asSeat(ally, () => c.e.moveCard(card, 'limbo', { reason: 'taffy/hold-this-for-me' }));
+      U.setFlag(card, 'belly', true);
+      c.giveDraw(ally, N(c).n);
+      c.e.schedule({
+        turns: 1, when: 'playerTurnStart', label: 'Hold This for Me', ownerId: ally.id,
+        run: () => c.e._asSeat(ally, () => {
+          U.clearFlag(card, 'belly');
+          c.e.moveCard(card, 'hand', { reason: 'taffy/hold-this-for-me' });
+          card.costOverrideTurn = 0;
+        }),
+      });
+    }),
+    upgrade: { nums: { n: 2 } },
+  },
+  {
+    id: 'taffy/second-helping', name: 'Second Helping', companion: SLUG,
+    type: SKILL, rarity: UNCOMMON, cost: 1, target: NONE, coop: true,
+    text: 'Choose a friend. The next Trick they play this turn leaves a Gummy copy in THEIR discard, costing {n} more.',
+    flavor: 'There is always more. That is the problem with Taffy.',
+    nums: { n: 1 },
+    effect: eff(async (c) => {
+      const ally = await c.chooseAlly({ prompt: 'Who wants seconds?' });
+      if (!ally) return;
+      const more = N(c).n;
+      let used = false;
+      const off = c.e.on('card:play', (ev) => {
+        if (used) return;
+        const card = c.e.card(ev.cardUid);
+        if (!card || c.e.seatOfCard(card) !== ally || card.temporary) return;
+        used = true; off();
+        c.e._asSeat(ally, () => gummy(c, card, 'discard', more));
+      });
+      U.atTurnEnd(c, () => off());
+    }),
+    upgrade: { nums: { n: 0 } },
+  },
+  {
+    id: 'taffy/pass-the-piece', name: 'Pass the Piece', companion: SLUG,
+    type: SKILL, rarity: UNCOMMON, cost: 1, target: NONE, coop: true,
+    text: 'Recombine up to 2 Globs. A friend gains {b} Guard per Glob spent, and draws {n} if you spent two.',
+    flavor: 'A piece of her, handed over, still slightly warm.',
+    nums: { b: 7, n: 1 },
+    effect: eff(async (c) => {
+      const ally = await c.chooseAlly({ prompt: 'Who are you passing to?' });
+      const spent = recombine(c, Math.min(2, globs(c)));
+      if (!ally || !spent) return;
+      c.giveBlock(ally, N(c).b * spent);
+      if (spent >= 2) c.giveDraw(ally, N(c).n);
+    }),
+    upgrade: { nums: { b: 10, n: 1 } },
+  },
+  {
+    id: 'taffy/family-pack', name: 'Family Pack', companion: SLUG,
+    type: POWER, rarity: RARE, cost: 2, target: SELF, coop: true,
+    text: 'Once each round, the first Trick each player plays leaves a Gummy copy in THEIR OWN discard, costing {n} more.',
+    flavor: 'Economy size. Nobody remembers agreeing to it.',
+    nums: { n: 1 },
+    effect: eff((c) => {
+      power(c, 'taffy/family-pack', 1, () => {
+        const more = N(c).n;
+        let done = new Set();
+        U.onPlayerTurn(c.e, 'start', () => { done = new Set(); });
+        c.e.on('card:play', (ev) => {
+          const card = c.e.card(ev.cardUid);
+          const who = card && c.e.seatOfCard(card);
+          if (!who || card.temporary || done.has(who.id)) return;
+          done.add(who.id);
+          c.e._asSeat(who, () => gummy(c, card, 'discard', more));
+        });
+      });
+    }),
+    upgrade: { nums: { n: 0 } },
+  },
+  {
+    id: 'taffy/everybody-squeeze-in', name: 'Everybody Squeeze In', companion: SLUG,
+    type: SKILL, rarity: RARE, cost: 2, target: NONE, coop: true,
+    text: 'EVERY player sets aside a Trick and draws {n}. It returns costing 0 at the start of their next turn. Split 1 per friend who joined in.',
+    flavor: 'The cupboard was not designed for four children and a confectionery.',
+    nums: { n: 1 },
+    effect: eff((c) => {
+      let joined = 0;
+      for (const pl of c.party()) {
+        const card = (pl === c.self) ? U.handOthers(c)[0] : c.allyCards(pl, 'hand')[0];
+        if (!card) continue;
+        if (pl !== c.self) joined++;
+        c.e._asSeat(pl, () => c.e.moveCard(card, 'limbo', { reason: 'taffy/everybody-squeeze-in' }));
+        c.e.schedule({
+          turns: 1, when: 'playerTurnStart', label: 'Everybody Squeeze In', ownerId: pl.id,
+          run: () => c.e._asSeat(pl, () => {
+            c.e.moveCard(card, 'hand', { reason: 'taffy/everybody-squeeze-in' });
+            card.costOverrideTurn = 0;
+          }),
+        });
+        if (pl === c.self) U.draw(c, N(c).n); else c.giveDraw(pl, N(c).n);
+      }
+      if (joined) split(c, joined);
+    }),
+    upgrade: { nums: { n: 2 } },
+  },
+];
+
 export default {
   slug: SLUG,
   name: 'Taffy',
@@ -1022,6 +1149,8 @@ export default {
     'taffy/pinch-off', 'taffy/long-pull',
   ],
   cards: [...basics, ...commons, ...uncommons, ...rares],
+  /** Multiplayer-only Tricks. Outside the 80; drafted only in a party. */
+  coopCards,
   archetypes: [
     { name: 'Puddle Cycle', desc: 'Split aggressively, exploit the dispersed state, then Recombine before Runny becomes dangerous. The real question is where in the Glob cycle you want to end each turn — some cards want 0, some want 2, some want 4, some want Runny.', coreCards: ['taffy/split-splat', 'taffy/pinch-a-piece', 'taffy/blob-barrage', 'taffy/recombination-slam', 'taffy/sugar-sling', 'taffy/surface-tension', 'taffy/sweet-spot', 'taffy/whole-body-slam', 'taffy/splattershot', 'taffy/unsplit'] },
     { name: 'Long Pull', desc: 'Stretch a small number of high-value Tricks and let them mature while the rest of the deck handles the turn. The difficulty is deciding how much present hand space future power is worth.', coreCards: ['taffy/long-pull', 'taffy/pull-it-long', 'taffy/stretch-punch', 'taffy/elastic-reversal', 'taffy/overstretch', 'taffy/let-it-sag', 'taffy/stretch-transfer', 'taffy/elastic-memory', 'taffy/slow-pull', 'taffy/jawbreaker-drop', 'taffy/pull-to-the-moon'] },

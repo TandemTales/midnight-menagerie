@@ -700,8 +700,12 @@ class Checker:
         """Status ids something actually queries (`count('x')`, `stacks(…, 'x')`,
         `hasStatus('x')`, engine-side `status('x')`)."""
         self.readers = set()
+        # `onHook(evt, statusId, fn)` IS a reader: U.fire only calls a handler
+        # when `stacks(c, c.self, h.statusId) > 0`, so the status id gates the
+        # whole Power. Without this, a status whose only consumer is an onHook
+        # gate reads as inert — which it is not.
         pat = re.compile(r"\b(?:count|stacks|has|hasStatus|status|res|spendRes|removeStatus"
-                         r"|statusMeta|addRes|setRes)\s*\(([^)]*)\)")
+                         r"|statusMeta|addRes|setRes|onHook)\s*\(([^)]*)\)")
         for p in js_files():
             s = strip_comments_keep_strings(read(p))
             for m in pat.finditer(s):

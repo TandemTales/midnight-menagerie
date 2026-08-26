@@ -24,6 +24,7 @@
 
 <script type="module">
 import { CardType, Rarity, Target, COMPANIONS as ROSTER } from '../../game/src/data/schema.js';
+import { UNIVERSAL_STATUSES } from '../../game/src/combat/statuses.js';
 import { KEYWORD_IDS, COMPANION_KEYWORDS, COMPANION_STATUSES, ENGINE_HOOKS_REQUIRED } from '../../game/src/data/companions/keywords.js';
 import * as CARDS from '../../game/src/data/cards.js';
 import { RNG } from '../../game/src/core/rng.js';
@@ -40,8 +41,20 @@ const W = (id, msg) => warns.push(`${id}: ${msg}`);
 const TYPES = new Set(Object.values(CardType));
 const RARITIES = new Set(Object.values(Rarity));
 const TARGETS = new Set(Object.values(Target));
-// keywords the combat engine owns; ours are in companions/keywords.js
-const ENGINE_KEYWORDS = new Set(['exhaust','weak','vulnerable','frail','strength','dexterity','poison','brittle','momentum','echo','linger','artifact','regen','intangible','thorns']);
+// Keywords the combat engine owns; ours are in companions/keywords.js.
+//
+// GENERATED from UNIVERSAL_STATUSES, not typed out. The hand-written list this
+// replaces still held the pre-rename names (poison / artifact / thorns /
+// intangible) and had never gained the Menagerie ones, so no card could write
+// [Dread], [Charm], [Bristle] or [Faint] in its text without this suite
+// reporting a keyword that does exist. Deriving it means the list cannot drift
+// from the registry again — the same reason keywords.js generates its own.
+const LEGACY_ALIASES = ['poison', 'artifact', 'thorns', 'intangible'];
+const ENGINE_KEYWORDS = new Set([
+  'exhaust', 'brittle', 'momentum', 'echo', 'linger',
+  ...Object.keys(UNIVERSAL_STATUSES),
+  ...LEGACY_ALIASES,
+]);
 const KNOWN_KEYWORDS = new Set([...KEYWORD_IDS, ...ENGINE_KEYWORDS]);
 const UPGRADE_KEYS = new Set(['nums','cost','text','name','flavor','type','target','rarity','keywords','exhaust','ethereal','innate','retain','unplayable','effect','previewFn','playable','dynamicCost','art']);
 const PLACEHOLDER = /\{([a-zA-Z][a-zA-Z0-9]*)\}/g;

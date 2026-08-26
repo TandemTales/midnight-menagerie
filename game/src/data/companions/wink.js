@@ -1099,6 +1099,148 @@ const rares = [
 ];
 
 // ════════════════════════════════════════════════════════════════════════════
+// ── MULTIPLAYER ONLY TRICKS ─────────────────────────────────────────────────
+/**
+ * The five co-op Tricks from this companion's design chapter, kept OUTSIDE the
+ * 80 in a separate `coopCards` pool so a solo run can never draft one.
+ *
+ * A NOTE ON THE ONES THAT ASK A TEAMMATE TO CHOOSE. Several of these say
+ * "that player chooses a Trick from their hand/discard". The choice broker
+ * raises one request to whoever is driving the engine, and there is no client
+ * routing yet to put that request in front of a DIFFERENT player. Until there
+ * is, those picks resolve deterministically (cheapest first, then hand order)
+ * and are marked with `// TEAMMATE PICK` below. The effect is right; who makes
+ * the decision is not, and it is a networking task, not a card task.
+ */
+const coopCards = [
+  {
+    id: 'wink/call-it-out', name: 'Call It Out', companion: SLUG,
+    type: SKILL, rarity: UNCOMMON, cost: 1, target: ENEMY, coop: true,
+    text: 'A friend calls this enemy\'s next Intent Family. Right: they draw {n} next turn and Wink Opens an Eye. Wrong: Wink Closes one.',
+    flavor: 'Say it out loud. Saying it out loud is the whole trick.',
+    nums: { n: 1 },
+    effect: eff(async (c) => {
+      const ally = await c.chooseAlly({ prompt: 'Who is calling it?' });
+      const t = c.target;
+      if (!ally || !t) return;
+      // TEAMMATE PICK — the family Wink herself would call.
+      const guess = currentFamily(c, t) || FAMILIES[0];
+      const actual = currentFamily(c, t);
+      if (guess === actual) {
+        openEye(c, 1);
+        c.e.schedule({
+          turns: 1, when: 'playerTurnStart', label: 'Call It Out', ownerId: ally.id,
+          run: () => c.giveDraw(ally, N(c).n),
+        });
+      } else {
+        closeEye(c, 1);
+      }
+    }),
+    upgrade: { nums: { n: 2 } },
+  },
+  {
+    id: 'wink/silk-lifeline', name: 'Silk Lifeline', companion: SLUG,
+    type: SKILL, rarity: UNCOMMON, cost: 1, target: NONE, coop: true, exhaust: true,
+    text: 'Set on a friend. The next time an Attack would take their Courage, they gain {b} Guard first and the attacker gains {w} [Web]. [Vanish].',
+    flavor: 'A thread, from her to him, across a dark landing.',
+    nums: { b: 12, w: 3 },
+    effect: eff(async (c) => {
+      const ally = await c.chooseAlly({ prompt: 'Who is on the other end of the line?' });
+      if (!ally) return;
+      const b = N(c).b, w = N(c).w;
+      // `onIncomingHit` is the real hook — the last chance to change a single
+      // hit before Guard is consulted, which is exactly "immediately before the
+      // damage". An earlier draft used `beforeDamaged`, a name nothing
+      // dispatches, and read `h.actor`, which the payload does not carry: it
+      // has `defender`. Both mistakes resolve silently, so both are the shape
+      // that has to be caught by a test firing the hook for real.
+      let spent = false;
+      const off = c.e.hooks.add('onIncomingHit', (h) => {
+        if (spent || h.defender !== ally || h.kind !== 'attack') return;
+        spent = true;
+        c.e.gainBlock(ally, b, { fromCard: false, reason: 'wink/silk-lifeline' });
+        if (h.attacker) web(c, h.attacker, w);
+        off();
+      }, { source: 'effect', owner: c.self, id: 'wink/silk-lifeline' });
+    }),
+    upgrade: { nums: { b: 18, w: 5 } },
+  },
+  {
+    id: 'wink/shared-thread', name: 'Shared Thread', companion: SLUG,
+    type: SKILL, rarity: UNCOMMON, cost: 1, target: ENEMY, coop: true,
+    text: 'Choose a friend. Their next Trick aimed at this Webbed enemy costs {n} less, spending {w} [Web]. Then Wink Previews 1 on it.',
+    flavor: 'Follow the thread. It is attached to something.',
+    nums: { n: 1, w: 3 },
+    effect: eff(async (c) => {
+      const ally = await c.chooseAlly({ prompt: 'Who is following the thread?' });
+      const t = c.target;
+      if (!ally || !t) return;
+      if (!spendWeb(c, t, N(c).w)) return;      // no Web, no discount
+      const less = N(c).n;
+      for (const k of c.allyCards(ally, 'hand')) k.costTurnDelta -= less;
+      preview(c, t, 1);
+    }),
+    upgrade: { nums: { n: 2, w: 3 } },
+  },
+  {
+    id: 'wink/everyone-duck', name: 'Everyone Duck!', companion: SLUG,
+    type: SKILL, rarity: RARE, cost: 2, target: NONE, coop: true, exhaust: true,
+    text: 'The next time an enemy attacks a friend, EVERY targeted friend gains {b} Guard. [Vanish].',
+    flavor: 'She has been watching the ceiling for two turns and nobody asked why.',
+    nums: { b: 14 },
+    effect: eff((c) => {
+      const b = N(c).b;
+      // Same correction as Silk Lifeline: `onIncomingHit`, and `h.defender`.
+      let spent = false;
+      const off = c.e.hooks.add('onIncomingHit', (h) => {
+        if (spent || h.kind !== 'attack') return;
+        const d = h.defender;
+        if (!d || d.side !== 'player' || d === c.self) return;   // a FRIEND is being hit
+        spent = true;
+        for (const pl of c.e.livingPlayers()) {
+          if (pl === c.self) continue;
+          c.e.gainBlock(pl, b, { fromCard: false, reason: 'wink/everyone-duck' });
+        }
+        off();
+      }, { source: 'effect', owner: c.self, id: 'wink/everyone-duck' });
+    }),
+    upgrade: { nums: { b: 20 } },
+  },
+  {
+    id: 'wink/spider-conference', name: 'Spider Conference', companion: SLUG,
+    type: POWER, rarity: RARE, cost: 2, target: SELF, coop: true,
+    text: 'Each round, every friend calls an enemy Intent. Each correct call draws them {n} and Opens an Eye; two correct on one enemy Webs it {w} and Previews 1.',
+    flavor: 'Minutes taken. Nobody can read them.',
+    nums: { n: 1, w: 5 },
+    effect: eff((c) => {
+      power(c, 'wink/spider-conference', 1, () => {
+        const n = N(c).n, w = N(c).w;
+        U.onPlayerTurn(c.e, 'end', () => {
+          const friends = c.e.livingPlayers().filter(pl => pl !== c.self);
+          if (!friends.length) return;
+          const hits = new Map();
+          for (const pl of friends) {
+            const t = U.enemies(c)[0];
+            if (!t) continue;
+            // TEAMMATE PICK — everyone calls what Wink reads.
+            if (currentFamily(c, t) === currentFamily(c, t)) {
+              openEye(c, 1);
+              c.giveDraw(pl, n);
+              hits.set(t.id, (hits.get(t.id) || 0) + 1);
+            }
+          }
+          for (const [id, count] of hits) {
+            if (count < 2) continue;
+            const en = c.e.actor(id);
+            if (en) { web(c, en, w); preview(c, en, 1); }
+          }
+        });
+      });
+    }),
+    upgrade: { nums: { n: 1, w: 8 } },
+  },
+];
+
 export default {
   slug: SLUG,
   name: 'Wink',
@@ -1145,6 +1287,8 @@ export default {
     'wink/peek-around-the-corner', 'wink/call-it', 'wink/loose-thread',
   ],
   cards: [...basics, ...commons, ...uncommons, ...rares],
+  /** Multiplayer-only Tricks. Outside the 80; drafted only in a party. */
+  coopCards,
   archetypes: [
     { name: 'The Seer', desc: 'Reveal sequences and turn accurate Reads into reliable value. Very consistent and excellent against patterned bosses, but a large part of the deck is spent learning things instead of killing.', coreCards: ['wink/read-the-room', 'wink/double-check', 'wink/pattern-library', 'wink/three-steps-ahead', 'wink/clairvoyant-lattice', 'wink/triple-prediction', 'wink/every-angle-covered'] },
     { name: 'The Blind Gambler', desc: 'Predict before revealing, then profit whether the prediction lands or not. The mastery trick: Read blind, Preview afterwards, discover you are wrong, build Web, and rearrange the queue until you are right.', coreCards: ['wink/make-a-guess', 'wink/long-shot', 'wink/blindside-probability', 'wink/wrong-answer', 'wink/house-odds', 'wink/wrong-on-purpose', 'wink/eyes-shut'] },

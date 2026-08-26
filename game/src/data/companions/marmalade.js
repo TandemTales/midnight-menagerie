@@ -930,6 +930,110 @@ const rares = [
 ];
 
 // ════════════════════════════════════════════════════════════════════════════
+// ── MULTIPLAYER ONLY TRICKS ─────────────────────────────────────────────────
+/**
+ * The five co-op Tricks from `docs/design/companions/01-marmalade.md`.
+ *
+ * Deliberately OUTSIDE the 80: `coopCards` is a separate pool, so a solo run
+ * can never draft one and the solo card counts in tests/cards stay exactly as
+ * they were. They only enter the reward pool when the party has more than one
+ * seat.
+ *
+ * Every one of them acts on a teammate through the engine's cross-player
+ * surface (`c.giveBlock`, `c.giveDraw`, `c.chooseAlly`, ...), which resolves
+ * inside the RECIPIENT's seat — their Dexterity, their deck, their hooks.
+ */
+const coopCards = [
+  {
+    id: 'marmalade/share-the-shadows', name: 'Share the Shadows', companion: SLUG,
+    type: SKILL, rarity: UNCOMMON, cost: 1, target: NONE, keywords: [GHOST], coop: true,
+    text: 'Choose a friend. They gain {g} [Ghoststep] and {b} Guard.',
+    flavor: 'There is room under the sideboard for two, if nobody breathes.',
+    nums: { g: 2, b: 5 },
+    effect: eff(async (c) => {
+      const ally = await c.chooseAlly({ prompt: 'Who hides with you?' });
+      if (!ally) return;                       // solo: honestly does nothing
+      c.giveStatus(ally, GHOST, N(c).g);
+      c.giveBlock(ally, N(c).b);
+    }),
+    upgrade: { nums: { g: 3, b: 8 } },
+  },
+  {
+    id: 'marmalade/follow-my-tail', name: 'Follow My Tail', companion: SLUG,
+    type: SKILL, rarity: UNCOMMON, cost: 1, target: NONE, keywords: [GHOST], coop: true,
+    text: 'Choose a friend. They draw {n} Trick. If neither of you loses Courage this enemy turn, you each gain {g} [Ghoststep].',
+    flavor: 'Stay behind the tail. The tail knows where the floorboards creak.',
+    nums: { n: 1, g: 2 },
+    effect: eff(async (c) => {
+      const ally = await c.chooseAlly({ prompt: 'Who follows you?' });
+      if (!ally) return;
+      c.giveDraw(ally, N(c).n);
+      // Courage is sampled NOW and compared at the end of the enemy turn. Both
+      // Kids have to come through clean, which is the whole point of the card —
+      // checking only the caster would make it a solo card with extra steps.
+      const before = { me: c.self.hp, ally: ally.hp };
+      const g = N(c).g;
+      c.e.schedule({
+        turns: 1, when: 'enemyTurnEnd', label: 'Follow My Tail',
+        ownerId: c.self.id,
+        run: () => {
+          if (c.self.hp < before.me || ally.hp < before.ally) return;
+          c.e.applyStatus(c.self, GHOST, g, { reason: 'marmalade/follow-my-tail' });
+          c.e.applyStatus(ally, GHOST, g, { reason: 'marmalade/follow-my-tail' });
+        },
+      });
+    }),
+    upgrade: { nums: { n: 2, g: 2 } },
+  },
+  {
+    id: 'marmalade/who-did-that', name: 'Who Did That?', companion: SLUG,
+    type: SKILL, rarity: UNCOMMON, cost: 1, target: ENEMY, keywords: [HAUNT], coop: true,
+    text: 'Apply {h} [Haunt]. Apply it twice instead if that enemy is aiming at a friend.',
+    flavor: 'It was the cat. It is always the cat. Nobody can prove it was the cat.',
+    nums: { h: 4 },
+    effect: eff((c) => {
+      const t = c.target;
+      if (!t) return;
+      // The doc says "trigger the Haunt twice". Doubling the stack is the same
+      // burst on the swing and reads on the card face without a second rule,
+      // so that is what it does — noted here because it IS a reading, not a
+      // transcription.
+      const aimedAtFriend = c.isParty() && c.e.intentTargetFor(t) !== c.self;
+      haunt(c, t, N(c).h * (aimedAtFriend ? 2 : 1));
+    }),
+    upgrade: { nums: { h: 6 } },
+  },
+  {
+    id: 'marmalade/a-life-to-spare', name: 'A Life to Spare', companion: SLUG,
+    type: SKILL, rarity: RARE, cost: 1, target: NONE, keywords: ['lives'], coop: true,
+    text: 'Spend a Life. Choose a friend: they gain {b} Guard and {f} [Faint].',
+    flavor: 'She has eight left. He has one body. The maths is not close.',
+    nums: { b: 12, f: 1 },
+    effect: eff(async (c) => {
+      const ally = await c.chooseAlly({ prompt: 'Whose life are you spending it on?' });
+      if (!ally) return;
+      if (!spendLife(c, 1)) return;            // no Life, no effect — and no Guard
+      c.giveBlock(ally, N(c).b);
+      c.giveStatus(ally, 'faint', N(c).f);
+    }),
+    upgrade: { nums: { b: 18, f: 1 } },
+  },
+  {
+    id: 'marmalade/everybody-hide', name: 'Everybody Hide!', companion: SLUG,
+    type: SKILL, rarity: RARE, cost: 1, target: NONE, keywords: [GHOST], coop: true,
+    exhaust: true,
+    text: 'EVERY player gains {g} [Ghoststep]. [Vanish].',
+    flavor: 'Eight seconds of absolute silence, and one very loud grandfather clock.',
+    nums: { g: 2 },
+    effect: eff((c) => {
+      // `party()` includes the caster, so this is the one card here that does
+      // something in solo — it is just a worse Ghoststep with one Kid at the table.
+      for (const pl of c.party()) c.e.applyStatus(pl, GHOST, N(c).g, { reason: 'marmalade/everybody-hide' });
+    }),
+    upgrade: { nums: { g: 3 } },
+  },
+];
+
 export default {
   slug: SLUG,
   name: 'Marmalade',
@@ -991,6 +1095,8 @@ export default {
     'marmalade/boo',
   ],
   cards: [...basics, ...commons, ...uncommons, ...rares],
+  /** Multiplayer-only Tricks. Outside the 80; drafted only in a party. */
+  coopCards,
   archetypes: [
     {
       name: 'Ghoststep & Untouched',

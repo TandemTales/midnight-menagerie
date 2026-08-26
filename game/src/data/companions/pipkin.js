@@ -124,6 +124,19 @@ U.onTracker(SLUG, (e, s, seat) => {
 });
 
 // ── Power hooks ─────────────────────────────────────────────────────────────
+U.onHook('land', 'leapfrog', (c) => {
+  const s = U.mm(c);
+  const ally = c.e.actor(s.leapfrogAlly);
+  if (ally) c.giveBlock(ally, s.leapfrogGuard || 6);
+  U.unapply(c, c.self, 'leapfrog', 1);
+  s.leapfrogAlly = null;
+});
+U.onHook('harvest', 'pipkin/community-garden', (c) => {
+  // First Harvest each turn only. `U.once` is the established per-turn guard.
+  if (!U.once(c, 'communityGarden')) return;
+  const friend = c.e.livingPlayers().find(pl => pl !== c.self);
+  if (friend) c.giveBlock(friend, 7);
+});
 U.onHook('land', 'pipkin/fertile-footprints', (c) => { if (U.once(c, 'fertileFootprints')) plant(c, U.stacks(c, c.self, 'pipkin/fertile-footprints')); });
 U.onHook('ripen', 'pipkin/prize-pumpkin', (c) => { if (U.once(c, 'prizePumpkin')) { const n = U.stacks(c, c.self, 'pipkin/prize-pumpkin'); U.nextTurn(c, (x) => U.energy(x, n)); } });
 U.onHook('plump', 'pipkin/big-frog-energy', (c) => U.guard(c, 5 + (U.stacks(c, c.self, 'pipkin/big-frog-energy') - 1) * 2));
@@ -1004,6 +1017,138 @@ const rares = [
 ];
 
 // ════════════════════════════════════════════════════════════════════════════
+// ── MULTIPLAYER ONLY TRICKS ─────────────────────────────────────────────────
+/**
+ * The five co-op Tricks from this companion's design chapter, kept OUTSIDE the
+ * 80 in a separate `coopCards` pool so a solo run can never draft one.
+ *
+ * A NOTE ON THE ONES THAT ASK A TEAMMATE TO CHOOSE. Several of these say
+ * "that player chooses a Trick from their hand/discard". The choice broker
+ * raises one request to whoever is driving the engine, and there is no client
+ * routing yet to put that request in front of a DIFFERENT player. Until there
+ * is, those picks resolve deterministically (cheapest first, then hand order)
+ * and are marked with `// TEAMMATE PICK` below. The effect is right; who makes
+ * the decision is not, and it is a networking task, not a card task.
+ */
+const coopCards = [
+  {
+    id: 'pipkin/gourd-to-go', name: 'Gourd to Go', companion: SLUG,
+    type: SKILL, rarity: UNCOMMON, cost: 1, target: NONE, coop: true,
+    text: 'Harvest 1. Choose a friend: they gain {b} Guard and draw {n}. Then Plant 1 Seed.',
+    flavor: 'It is still warm. Do not ask what from.',
+    nums: { b: 9, n: 1 },
+    effect: eff(async (c) => {
+      const ally = await c.chooseAlly({ prompt: 'Who gets the gourd?' });
+      harvest(c, 1);
+      if (ally) { c.giveBlock(ally, N(c).b); c.giveDraw(ally, N(c).n); }
+      plant(c, 1);
+    }),
+    upgrade: { nums: { b: 13, n: 1 } },
+  },
+  {
+    id: 'pipkin/leapfrog-literally', name: 'Leapfrog, Literally', companion: SLUG,
+    type: SKILL, rarity: UNCOMMON, cost: 1, target: NONE, coop: true,
+    text: 'Choose a friend. The next Attack they play this turn makes Pipkin Hop and gives them {b} Guard. If Pipkin Lands later this turn, they gain {b} Guard again.',
+    flavor: 'The frog is load-bearing.',
+    nums: { b: 6 },
+    effect: eff(async (c) => {
+      const ally = await c.chooseAlly({ prompt: 'Who are you vaulting over?' });
+      if (!ally) return;
+      const b = N(c).b;
+      let used = false;
+      const off = c.e.on('card:play', (ev) => {
+        if (used || ev.actorId !== ally.id) return;
+        // Same correction: the type lives on the card, not on the event.
+        const card = c.e.card(ev.cardUid);
+        if (!card || card.type !== 'attack') return;
+        used = true; off();
+        hop(c, 1);
+        c.giveBlock(ally, b);
+        // The second helping is on a LATER Land, per the card. Calling `land()`
+        // here instead lands IMMEDIATELY — it spends the Hop that was just
+        // made and pays both halves at once, which is a different (and
+        // strictly better) card than the one the text describes.
+        const s2 = U.mm(c);
+        s2.leapfrogAlly = ally.id;
+        s2.leapfrogGuard = b;
+        U.applySelf(c, 'leapfrog', 1);
+      });
+      U.atTurnEnd(c, () => off());
+    }),
+    upgrade: { nums: { b: 9 } },
+  },
+  {
+    id: 'pipkin/community-garden', name: 'Community Garden', companion: SLUG,
+    type: POWER, rarity: UNCOMMON, cost: 2, target: SELF, coop: true,
+    text: 'Once each turn, when a friend plays a Trick, Plant 1 Seed. The first time you Harvest each turn, a friend gains {b} Guard.',
+    flavor: 'Everyone waters it. Nobody agrees what it is.',
+    nums: { b: 7 },
+    effect: eff((c) => {
+      // The Harvest payout is a MODULE-SCOPE U.onHook below, not a listener
+      // registered here: companion Powers fire through `U.fire`, and an
+      // `engine.hooks.add('harvested', ...)` — which is what this first did —
+      // registers for a hook name the engine never dispatches. It resolved
+      // cleanly and did nothing, which is precisely CONTRACTS rule 8.
+      power(c, 'pipkin/community-garden', 1, () => {
+        c.e.on('card:play', (ev) => {
+          const s = U.mm({ e: c.e, self: c.self });
+          if (s.gardenPlantedTurn === c.e.turn) return;
+          // The event carries `card` (a snapshot), `actorId` and `seat` — NOT
+          // a bare `type`. Reading `ev.type` made this silently never fire.
+          const card = c.e.card(ev.cardUid);
+          if (!card || card.type !== 'skill') return;
+          if (!ev.actorId || ev.actorId === c.self.id) return;   // a FRIEND's Skill
+          s.gardenPlantedTurn = c.e.turn;
+          plant(c, 1);
+        });
+      });
+    }),
+    upgrade: { nums: { b: 10 } },
+  },
+  {
+    id: 'pipkin/everybody-jump', name: 'Everybody Jump', companion: SLUG,
+    type: SKILL, rarity: RARE, cost: 2, target: NONE, coop: true,
+    text: 'Every friend\'s next Trick this turn costs {n} less. Each discount used makes Pipkin Hop.',
+    flavor: 'On three. THREE. Not on the word three. On three.',
+    nums: { n: 1 },
+    effect: eff((c) => {
+      const less = N(c).n;
+      const marked = new Set();
+      for (const pl of c.party()) {
+        if (pl === c.self) continue;
+        for (const k of c.allyCards(pl, 'hand')) { k.costTurnDelta -= less; marked.add(k.uid); }
+      }
+      const off = c.e.on('card:play', (ev) => {
+        if (!marked.has(ev.cardUid)) return;
+        marked.clear();                    // one discount per friend's next Trick
+        hop(c, 1);
+        off();
+      });
+      U.atTurnEnd(c, () => off());
+    }),
+    upgrade: { nums: { n: 2 } },
+  },
+  {
+    id: 'pipkin/harvest-festival', name: 'Harvest Festival', companion: SLUG,
+    type: SKILL, rarity: RARE, cost: 2, target: NONE, coop: true,
+    text: 'Harvest up to one Pumpkin per player. For each one, a different player draws {n} and gains {b} Guard.',
+    flavor: 'The lanterns are all slightly wrong and it is perfect.',
+    nums: { n: 1, b: 6 },
+    effect: eff((c) => {
+      const party = c.party();
+      let i = 0;
+      for (const pl of party) {
+        if (!harvest(c, 1)) break;         // out of Pumpkins: stop cleanly
+        const who = party[i % party.length];
+        i++;
+        if (who === c.self) { U.draw(c, N(c).n); U.block(c, N(c).b); }
+        else { c.giveDraw(who, N(c).n); c.giveBlock(who, N(c).b); }
+      }
+    }),
+    upgrade: { nums: { n: 1, b: 9 } },
+  },
+];
+
 export default {
   slug: SLUG,
   name: 'Pipkin',
@@ -1047,6 +1192,8 @@ export default {
     'pipkin/puddle-hop', 'pipkin/belly-drop', 'pipkin/plant-a-little-one', 'pipkin/puff-up',
   ],
   cards: [...basics, ...commons, ...uncommons, ...rares],
+  /** Multiplayer-only Tricks. Outside the 80; drafted only in a party. */
+  coopCards,
   archetypes: [
     { name: 'The Hopper', desc: 'Treat the hand as a sequence puzzle: build Height efficiently, then decide which Trick is the one that finally brings him down. Landing Tricks are mediocre without Hop support, and Heavy Feet can wreck the whole plan.', coreCards: ['pipkin/puddle-jumper', 'pipkin/drop-in', 'pipkin/soft-landing', 'pipkin/hopscotch', 'pipkin/cannonball', 'pipkin/three-hop-combo', 'pipkin/springboard', 'pipkin/leapfrog', 'pipkin/triple-jump', 'pipkin/spring-eternal', 'pipkin/boing-without-end'] },
     { name: 'Pumpkin Farmer', desc: 'Plant early, watch the Patch mature, then convert Pumpkins into whatever the turn needs — damage, draw, Courage or Nerve. Exceptional long-fight scaling, terrible opening turns.', coreCards: ['pipkin/pocket-seeds', 'pipkin/damp-corner', 'pipkin/pumpkin-pitch', 'pipkin/little-harvest', 'pipkin/warm-windowsill', 'pipkin/no-room-no-problem', 'pipkin/moonbeam-on-the-patch', 'pipkin/pantry-raid', 'pipkin/prize-pumpkin', 'pipkin/garden-in-motion', 'pipkin/overnight-miracle', 'pipkin/perfect-harvest', 'pipkin/moonlit-garden', 'pipkin/heirloom-seeds'] },

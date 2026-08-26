@@ -42,6 +42,13 @@ export function registerCompanion(def) {
     if (BY_ID.has(card.id)) REGISTER_ERRORS.push(`duplicate card id: ${card.id}`);
     BY_ID.set(card.id, card);
   }
+  // Multiplayer-only Tricks are indexed by id — a save, a replay or a deck view
+  // has to be able to look one up — but they are NOT in `def.cards`, so they
+  // never reach a solo reward roll and the 80-card pool counts are untouched.
+  for (const card of def.coopCards || []) {
+    if (BY_ID.has(card.id)) REGISTER_ERRORS.push(`duplicate card id: ${card.id}`);
+    BY_ID.set(card.id, card);
+  }
   return def;
 }
 
@@ -80,6 +87,28 @@ export function poolFor(slug, rarity) {
 
 /** Cards a companion owns at a given rarity, including Basic and Special. */
 export function cardsOf(slug) { return (COMPANIONS.get(slug)?.cards) || []; }
+
+/**
+ * A companion's multiplayer-only Tricks — three Uncommon and two Rare, outside
+ * the 80, mirroring what Slay the Spire 2 does. Empty for a companion that has
+ * not had its pool authored yet, which is deliberate: a missing pool should
+ * mean "no co-op cards from this Kid yet", not a crash mid-draft.
+ */
+export function coopCardsOf(slug) { return (COMPANIONS.get(slug)?.coopCards) || []; }
+
+/**
+ * The draft pool for a rarity.
+ *
+ * `opts.coop` folds in the multiplayer-only Tricks. It is OFF by default so
+ * every existing solo caller — reward rolls, the shop, the balance sim — keeps
+ * exactly the pool it had.
+ */
+export function poolWithCoop(slug, rarity, opts = {}) {
+  const base = poolFor(slug, rarity);
+  if (!opts.coop) return base;
+  const extra = coopCardsOf(slug).filter(c => !rarity || c.rarity === rarity);
+  return base.concat(extra);
+}
 
 /** The exact starting deck, as CardDefs, in the order the companion declares. */
 export function startingDeckFor(slug) {

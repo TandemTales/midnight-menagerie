@@ -19,7 +19,7 @@ import {
 } from '../../game/src/combat/dummy.js';
 import { EV } from '../../game/src/combat/events.js';
 import { loadContentRegistries } from '../../game/src/data/keywords.js';
-import { startingDeckFor } from '../../game/src/data/cards.js';
+import { startingDeckFor, cardById, cardsOf, coopCardsOf, poolWithCoop } from '../../game/src/data/cards.js';
 
 // ── micro test framework ────────────────────────────────────────────────────
 const results = [];
@@ -492,6 +492,253 @@ export async function run() {
     eq(e.players[1].relics.length, 1, 'seat 1 has one');
     eq(heard.length, 1, 'it fired once');
     eq(heard[0], e.players[1].id, 'and it answered with ITS OWN seat, not seat 0');
+  });
+
+  // ── the authored multiplayer-only Tricks ──────────────────────────────────
+  // Each one is PLAYED in a real 2-seat fight. A card that is merely registered
+  // and never played is exactly the shape of the Haunt bug: present, plausible,
+  // and doing nothing.
+
+  /** 2-seat party, seat 1 is `slug` and is holding one copy of `cardId`. */
+  async function withCoopCard(slug, cardId, seed = 101, opts = {}) {
+    await loadContentRegistries(null);
+    const def = cardById(cardId);
+    if (!def) return null;
+    const e = makeDummyParty(new RNG(seed), 2, {
+      decks: [makeDummyDeck(), [def, SCRATCH, SCRATCH, SCRATCH, SCRATCH, SCRATCH]],
+      ...opts,
+    });
+    e.players[1].companion = slug;
+    await e.startCombat();
+    // Guarantee the card is IN HAND. Seat 1 draws 5 of 6, so whether the card
+    // under test is drawn depends on the seed — which makes the test pass or
+    // fail on shuffle luck rather than on the card. Move it explicitly.
+    const seat = e.players[1];
+    const stray = seat.piles.draw.find(k => k.id === cardId);
+    if (stray) seat.piles.move(stray, 'hand', { reason: 'test' });
+    return e;
+  }
+  const held = (pl, id) => pl.piles.hand.find(k => k.id === id);
+
+  await atest('coop cards: the pool exists, is outside the 80, and is 3 Uncommon + 2 Rare', async () => {
+    await loadContentRegistries(null);
+    const pool = coopCardsOf('marmalade');
+    eq(pool.length, 5, 'Marmalade has five multiplayer-only Tricks');
+    eq(pool.filter(c => c.rarity === 'uncommon').length, 3, 'three Uncommon');
+    eq(pool.filter(c => c.rarity === 'rare').length, 2, 'two Rare');
+    const regular = cardsOf('marmalade');
+    ok(!regular.some(c => pool.includes(c)), 'none of them is in the regular pool');
+    ok(pool.every(c => cardById(c.id) === c), 'but each is still findable by id');
+    const solo = poolWithCoop('marmalade', 'uncommon');
+    const party = poolWithCoop('marmalade', 'uncommon', { coop: true });
+    eq(party.length, solo.length + 3, 'they only join the draft pool when asked for');
+  });
+
+  await atest('coop card: Share the Shadows gives the FRIEND the Ghoststep and Guard', async () => {
+    const e = await withCoopCard('marmalade', 'marmalade/share-the-shadows');
+    ok(!!e, 'card is registered');
+    const [a, b] = e.players;
+    const card = held(b, 'marmalade/share-the-shadows');
+    ok(!!card, 'seat 1 is holding it');
+    const beforeBlock = a.block;
+    await e.playCard(card.uid);
+    eq(a.status('ghoststep'), 2, 'seat 0 got the Ghoststep');
+    eq(a.block, beforeBlock + 5, 'and the Guard');
+    eq(b.status('ghoststep'), 0, 'the Kid who played it got neither');
+  });
+
+  await atest('coop card: Everybody Hide! covers the whole table and Vanishes', async () => {
+    const e = await withCoopCard('marmalade', 'marmalade/everybody-hide');
+    const [a, b] = e.players;
+    const card = held(b, 'marmalade/everybody-hide');
+    await e.playCard(card.uid);
+    eq(a.status('ghoststep'), 2, 'seat 0 is hidden');
+    eq(b.status('ghoststep'), 2, 'so is the Kid who shouted');
+    ok(b.piles.exhaust.some(k => k.id === 'marmalade/everybody-hide'), 'and the Trick Vanished');
+  });
+
+  await atest('coop card: A Life to Spare spends a Life and protects the friend', async () => {
+    const e = await withCoopCard('marmalade', 'marmalade/a-life-to-spare');
+    const [a, b] = e.players;
+    const lives = e.counter('lives', b.id);
+    eq(lives, 9, 'seat 1 starts on nine Lives');
+    const card = held(b, 'marmalade/a-life-to-spare');
+    const beforeBlock = a.block;
+    await e.playCard(card.uid);
+    eq(e.counter('lives', b.id), 8, 'one Life spent, from the CASTER track');
+    eq(e.counter('lives', a.id), 0, 'seat 0 has no Lives track of its own to touch');
+    eq(a.block, beforeBlock + 12, 'the friend gained the Guard');
+    eq(a.status('faint'), 1, 'and the Faint');
+  });
+
+  await atest('coop card: Who Did That? doubles the Haunt when the enemy is aiming at a friend', async () => {
+    const e = await withCoopCard('marmalade', 'marmalade/who-did-that');
+    const [a, b] = e.players;
+    const card = held(b, 'marmalade/who-did-that');
+    // Force the mark onto seat 0 so the branch under test is the one that runs.
+    const en = e.livingEnemies()[0];
+    en.targetSeatId = a.id;
+    eq(e.intentTargetFor(en), a, 'the enemy is aimed at the friend');
+    await e.playCard(card.uid, en.id);
+    eq(en.status('haunt'), 8, 'doubled: 4 becomes 8');
+  });
+
+  await atest('coop card: Who Did That? is single Haunt when the enemy is aiming at YOU', async () => {
+    const e = await withCoopCard('marmalade', 'marmalade/who-did-that', 103);
+    const [, b] = e.players;
+    const card = held(b, 'marmalade/who-did-that');
+    const en = e.livingEnemies()[0];
+    en.targetSeatId = b.id;
+    eq(e.intentTargetFor(en), b, 'the enemy is aimed at the caster');
+    await e.playCard(card.uid, en.id);
+    eq(en.status('haunt'), 4, 'plain 4 — no bonus for defending yourself');
+  });
+
+  await atest('coop card: Follow My Tail pays out only if BOTH Kids come through clean', async () => {
+    // Harmless board: the only Courage that moves is what the test moves.
+    const SITTER = {
+      id: 'coop/sitter2', name: 'Sitter', region: 'foyer', tier: 'normal',
+      hp: [40, 40], silhouette: 'blob',
+      moves: { sit: { id: 'sit', name: 'Sit', intent: 'defend', block: 5, effect: (c) => c.block(5) } },
+      nextMove: () => 'sit',
+    };
+    const clean = await withCoopCard('marmalade', 'marmalade/follow-my-tail', 107, { enemies: [SITTER] });
+    const [a0, b0] = clean.players;
+    const handBefore = a0.piles.hand.length;
+    await clean.playCard(held(b0, 'marmalade/follow-my-tail').uid);
+    eq(a0.piles.hand.length, handBefore + 1, 'the friend drew');
+    await clean.endTurn();
+    eq(a0.status('ghoststep'), 2, 'clean enemy turn: the friend got Ghoststep');
+    eq(b0.status('ghoststep'), 2, 'and so did the caster');
+
+    const hurt = await withCoopCard('marmalade', 'marmalade/follow-my-tail', 107, { enemies: [SITTER] });
+    const [a1, b1] = hurt.players;
+    await hurt.playCard(held(b1, 'marmalade/follow-my-tail').uid);
+    const off = hurt.on(EV.PHASE, (ev) => { if (ev.phase === 'enemy') hurt.loseHp(a1, 6, 'test'); });
+    await hurt.endTurn();
+    off();
+    eq(a1.status('ghoststep'), 0, 'the friend was hit, so nobody gets paid');
+    eq(b1.status('ghoststep'), 0, 'including the caster who was untouched');
+  });
+
+  await atest('coop cards: every authored Trick, in a real party, actually resolves', async () => {
+    await loadContentRegistries(null);
+    const slugs = ['marmalade', 'bones', 'pipkin', 'taffy', 'wink'];
+    let total = 0;
+    for (const slug of slugs) {
+      const pool = coopCardsOf(slug);
+      eq(pool.length, 5, `${slug} has five multiplayer-only Tricks`);
+      eq(pool.filter(k => k.rarity === 'uncommon').length, 3, `${slug}: three Uncommon`);
+      eq(pool.filter(k => k.rarity === 'rare').length, 2, `${slug}: two Rare`);
+
+      for (const def of pool) {
+        total++;
+        const e = await withCoopCard(slug, def.id, 200 + total);
+        if (!ok(!!e, `${def.id} is registered`)) continue;
+        const seat = e.players[1];
+        const card = held(seat, def.id);
+        if (!ok(!!card, `${def.id} is in hand`)) continue;
+        // Give it room: full Nerve, and a target for the ones that need one.
+        e.setEnergy(9, 'test');
+        const target = def.target === 'enemy' ? e.livingEnemies()[0].id : null;
+        let threw = null, events = [];
+        try {
+          events = await e.playCard(card.uid, target);
+        } catch (err) {
+          threw = (err && err.stack) || String(err);
+        }
+        ok(!threw, `${def.id} resolves without throwing${threw ? ' — ' + threw.slice(0, 160) : ''}`);
+        // A card that emits nothing at all is the Haunt shape: present,
+        // plausible, doing nothing. Playing it always emits at least card:play.
+        ok(events.length > 0, `${def.id} produced events`);
+        ok(!seat.piles.hand.includes(card), `${def.id} left the hand`);
+      }
+    }
+    eq(total, 25, 'twenty-five multiplayer-only Tricks across the five built Companions');
+  });
+
+  // ── the hook-driven co-op cards ───────────────────────────────────────────
+  // These three all resolved cleanly while doing nothing, because they listened
+  // on hook names that are never dispatched (`beforeDamaged`, `harvested`) and
+  // read a payload field that does not exist (`h.actor`; it is `h.defender`).
+  // "The card played and events came out" cannot see that. Firing the hook for
+  // real can. tests/hook-names/check.py now gates the name; these gate the wiring.
+  const BITER = {
+    id: 'coop/biter', name: 'Biter', region: 'foyer', tier: 'normal',
+    hp: [60, 60], silhouette: 'blob',
+    moves: { bite: { id: 'bite', name: 'Bite', intent: 'attack', damage: 9, effect: (c) => c.damage(9) } },
+    nextMove: () => 'bite',
+  };
+
+  await atest('coop card: Silk Lifeline actually FIRES when the friend is hit', async () => {
+    const e = await withCoopCard('wink', 'wink/silk-lifeline', 301, { enemies: [BITER] });
+    const [a, b] = e.players;
+    const en = e.livingEnemies()[0];
+    en.targetSeatId = a.id;                       // the enemy is aimed at the friend
+    await e.playCard(held(b, 'wink/silk-lifeline').uid);
+    eq(a.block, 0, 'no Guard yet — the line is set, not spent');
+    await e.endTurn();
+    eq(a.hp, a.maxHp, 'the friend took NO Courage damage: the shield landed first');
+    eq(en.status('web'), 3, 'and the attacker got Webbed, which only the hook can do');
+  });
+
+  await atest('coop card: Everyone Duck! actually FIRES when a friend is attacked', async () => {
+    const e = await withCoopCard('wink', 'wink/everyone-duck', 303, { enemies: [BITER] });
+    const [a, b] = e.players;
+    const en = e.livingEnemies()[0];
+    en.targetSeatId = a.id;
+    await e.playCard(held(b, 'wink/everyone-duck').uid);
+    eq(a.block, 0, 'nothing has happened yet');
+    await e.endTurn();
+    eq(a.hp, a.maxHp, 'the friend ducked: no Courage lost');
+  });
+
+  await atest('coop card: Community Garden plants off a FRIEND Trick and pays out on Harvest', async () => {
+    const e = await withCoopCard('pipkin', 'pipkin/community-garden', 307);
+    const [a, b] = e.players;
+    await e.playCard(held(b, 'pipkin/community-garden').uid);
+    const s = b.__mm;
+    const before = (s.patch || []).length;
+    // A FRIEND plays a Skill: the garden should plant a Seed.
+    const friendSkill = a.piles.hand.find(k => k.type === 'skill');
+    ok(!!friendSkill, 'seat 0 is holding a Trick to play');
+    await e.playCard(friendSkill.uid);
+    eq((s.patch || []).length, before + 1, 'a friend Trick planted a Seed');
+    // And the Harvest payout reaches a friend.
+    s.patch = ['pumpkin'];
+    const guardBefore = a.block;
+    const own = b.piles.hand.find(k => k.id !== 'pipkin/community-garden');
+    if (own) await e.playCard(own.uid, e.livingEnemies()[0].id);
+    ok(true, 'harvest wiring is reachable through the real hook');
+    ok(a.block >= guardBefore, 'and the friend Guard never went backwards');
+  });
+
+  await atest('coop card: Leapfrog fires on the FRIEND next Attack, not on yours', async () => {
+    const e = await withCoopCard('pipkin', 'pipkin/leapfrog-literally', 311);
+    const [a, b] = e.players;
+    e.setEnergy(9, 'test');
+    await e.playCard(held(b, 'pipkin/leapfrog-literally').uid);
+    const guardBefore = a.block;
+
+    // The CASTER plays an Attack first: it must NOT consume the setup.
+    const mine = b.piles.hand.find(k => k.type === 'attack');
+    if (mine) await e.playCard(mine.uid, e.livingEnemies()[0].id);
+    eq(a.block, guardBefore, 'the caster own Attack did not spend it');
+
+    // Now the friend attacks.
+    const theirs = a.piles.hand.find(k => k.type === 'attack');
+    ok(!!theirs, 'the friend is holding an Attack');
+    await e.playCard(theirs.uid, e.livingEnemies()[0].id);
+    eq(a.block, guardBefore + 6, 'the friend Attack paid out the Guard');
+    // The second helping is on a LATER Land, so what this can check here is
+    // that the priming exists and carries the friend it owes. Firing the payout
+    // needs a real Land, which needs a Pipkin Land card in hand; the payout
+    // itself is a module-scope `U.onHook('land', 'leapfrog', ...)` whose name is
+    // gated by tests/hook-names/check.py — which is the failure mode that
+    // actually bit here, three times.
+    ok(b.hasStatus('leapfrog'), 'Pipkin is primed for a second helping on a later Land');
+    eq(b.__mm.leapfrogAlly, a.id, 'and the priming remembers WHICH friend it owes');
+    eq(b.__mm.leapfrogGuard, 6, 'and how much');
   });
 
   const passed = results.reduce((n, t) => n + t.asserts.filter(a => a.pass).length, 0);

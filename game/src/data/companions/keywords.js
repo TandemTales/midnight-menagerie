@@ -310,6 +310,10 @@ export const COMPANION_STATUSES = [
     desc: 'Your next Land effect this turn treats the Height spent as {n} higher, to a maximum of 3.',
   },
   {
+    id: 'leapfrog', name: 'Leapfrog', kind: 'buff', icon: 'height', decay: 'turnEnd', stacks: false,
+    desc: 'The next time Pipkin Lands this turn, a friend gains Guard.',
+  },
+  {
     id: 'double-land', name: 'Double Landing', kind: 'buff', icon: 'height', decay: 'turnEnd', stacks: false,
     desc: 'Your next Land effect this turn resolves its Land clause twice.',
   },

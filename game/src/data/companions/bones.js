@@ -116,6 +116,17 @@ U.onTracker(SLUG, (e, s, seat) => {
 
 // ── Power hooks ─────────────────────────────────────────────────────────────
 U.onHook('rattle', 'bones/rattletrap', (c) => { if (U.once(c, 'rattletrap')) U.hitAll(c, 5 + (U.stacks(c, c.self, 'bones/rattletrap') - 1) * 3); });
+/**
+ * Tail a Mile a Minute: the first Attack after a Fetch or a Dig Up each turn is
+ * Empowered. Scales by stacks the same way Rattletrap does, because a second
+ * copy of a Power has to be worth something.
+ */
+const tailAMile = (c) => {
+  if (!U.once(c, 'tailAMileAMinute')) return;
+  U.empower(c, 7 + (U.stacks(c, c.self, 'bones/tail-a-mile-a-minute') - 1) * 3);
+};
+U.onHook('fetch', 'bones/tail-a-mile-a-minute', tailAMile);
+U.onHook('dugUp', 'bones/tail-a-mile-a-minute', tailAMile);
 U.onHook('fetch', 'bones/scent-memory', (c) => { if (U.once(c, 'scentMemory')) U.draw(c, U.stacks(c, c.self, 'bones/scent-memory')); });
 U.onHook('becameScattered', 'bones/spare-parts-everywhere', (c) => { if (U.once(c, 'sparePartsEverywhere')) spawnSpare(c, U.stacks(c, c.self, 'bones/spare-parts-everywhere')); });
 U.onHook('becameWhole', 'bones/tighten-the-collar', (c) => {
@@ -701,9 +712,12 @@ const uncommons = [
     text: 'The first Attack you play after [Fetch]ing or [Dig Up]ping each turn is [Empowered] {n}.',
     flavor: 'Nine tail bones at approximately forty hertz.',
     nums: { n: 7 },
-    effect: eff(c => power(c, 'bones/tail-a-mile-a-minute', 1, (x) => {
-      U.onHook('retrieved', 'bones/tail-a-mile-a-minute', () => {});
-    })),
+    // This Power did NOTHING. It registered an EMPTY handler on 'retrieved', a
+    // hook name nothing in the game fires — so the card was a Rare that cost 1
+    // Nerve and had no effect whatsoever. Found by tests/hook-names/check.py.
+    // The hooks Bones actually fires are 'fetch' and 'dugUp'; the wiring is
+    // module-scope below, next to the other Bones Powers.
+    effect: eff(c => power(c, 'bones/tail-a-mile-a-minute', 1)),
     upgrade: { nums: { n: 10 } },
   },
 ];
@@ -997,6 +1011,159 @@ const rares = [
 ];
 
 // ════════════════════════════════════════════════════════════════════════════
+// ── MULTIPLAYER ONLY TRICKS ─────────────────────────────────────────────────
+/**
+ * The five co-op Tricks from this companion's design chapter, kept OUTSIDE the
+ * 80 in a separate `coopCards` pool so a solo run can never draft one.
+ *
+ * A NOTE ON THE ONES THAT ASK A TEAMMATE TO CHOOSE. Several of these say
+ * "that player chooses a Trick from their hand/discard". The choice broker
+ * raises one request to whoever is driving the engine, and there is no client
+ * routing yet to put that request in front of a DIFFERENT player. Until there
+ * is, those picks resolve deterministically (cheapest first, then hand order)
+ * and are marked with `// TEAMMATE PICK` below. The effect is right; who makes
+ * the decision is not, and it is a networking task, not a card task.
+ */
+const coopCards = [
+  {
+    id: 'bones/bring-it-back-friend', name: 'Bring It Back, Friend!', companion: SLUG,
+    type: SKILL, rarity: UNCOMMON, cost: 1, target: NONE, coop: true,
+    text: 'Choose a friend. They return a Trick costing {n} or less from their discard to their hand. If they play it this turn, Reattach {b} Bone.',
+    flavor: 'He has brought back a stick, a shoe, and someone else\'s idea.',
+    nums: { n: 1, b: 1 },
+    effect: eff(async (c) => {
+      const ally = await c.chooseAlly({ prompt: 'Whose discard are you digging in?' });
+      if (!ally) return;
+      const pool = c.allyCards(ally, 'discard')
+        .filter(k => (k.baseCost ?? 99) <= N(c).n && !U.flag(k, 'noReturnThisCombat'));
+      if (!pool.length) return;
+      // TEAMMATE PICK — cheapest first, ties by discard order.
+      const pick = pool.slice().sort((x, y) => (x.baseCost ?? 99) - (y.baseCost ?? 99))[0];
+      U.setFlag(pick, 'noReturnThisCombat', true);   // once per combat, per the doc
+      c.e._asSeat(ally, () => c.e.moveCard(pick, 'hand', { reason: 'bones/bring-it-back-friend' }));
+      // "If they play it this turn" — one-shot, torn down at end of turn either way.
+      const b = N(c).b;
+      const off = c.e.on('card:play', (ev) => {
+        if (ev.cardUid !== pick.uid) return;
+        off(); reattach(c, b);
+      });
+      U.atTurnEnd(c, () => off());
+    }),
+    upgrade: { nums: { n: 2, b: 1 } },
+  },
+  {
+    id: 'bones/burial-buddy', name: 'Burial Buddy', companion: SLUG,
+    type: SKILL, rarity: UNCOMMON, cost: 1, target: NONE, coop: true,
+    text: 'Choose a friend. You each set aside a Trick. At the start of your next turns they return costing {n} less. Yours counts as Buried and Dug Up.',
+    flavor: 'Two dogs, one hole, entirely different plans for it.',
+    nums: { n: 1 },
+    effect: eff(async (c) => {
+      const ally = await c.chooseAlly({ prompt: 'Who is burying with you?' });
+      if (!ally) return;
+      const mine = U.handOthers(c)[0];
+      // TEAMMATE PICK — first card in their hand.
+      const theirs = c.allyCards(ally, 'hand')[0];
+      const less = N(c).n;
+      const stash = (seat, card) => {
+        if (!card) return;
+        c.e._asSeat(seat, () => c.e.moveCard(card, 'limbo', { reason: 'bones/burial-buddy' }));
+        c.e.schedule({
+          turns: 1, when: 'playerTurnStart', label: 'Burial Buddy', ownerId: seat.id,
+          run: () => {
+            c.e._asSeat(seat, () => {
+              c.e.moveCard(card, 'hand', { reason: 'bones/burial-buddy' });
+              card.costTurnDelta -= less;
+            });
+          },
+        });
+      };
+      stash(c.self, mine);
+      stash(ally, theirs);
+      if (mine) { U.fire(c, 'buried', { card: mine }); U.fire(c, 'dugUp', { card: mine }); }
+    }),
+    upgrade: { nums: { n: 2 } },
+  },
+  {
+    id: 'bones/tug-of-war', name: 'Tug of War', companion: SLUG,
+    type: SKILL, rarity: UNCOMMON, cost: 0, target: NONE, coop: true,
+    text: 'Choose a friend. You each discard a Trick; if you both do, you each draw {n}. Then Shed 1 and Reattach 1.',
+    flavor: 'Nobody wins. Everybody is delighted.',
+    nums: { n: 2 },
+    effect: eff(async (c) => {
+      const ally = await c.chooseAlly({ prompt: 'Who is on the other end?' });
+      if (!ally) return;
+      const mine = U.handOthers(c)[0];
+      // TEAMMATE PICK — first card in their hand.
+      const theirs = c.allyCards(ally, 'hand')[0];
+      if (!mine || !theirs) return;                 // both, or neither
+      // `discardCard` is an ENGINE method, not part of the card ctx surface —
+      // the strict guard caught this reaching for a member that does not exist.
+      // Each discard resolves as its own seat so the count lands on that Kid.
+      c.e._asSeat(c.self, () => c.e.discardCard(mine, 'bones/tug-of-war'));
+      c.e._asSeat(ally, () => c.e.discardCard(theirs, 'bones/tug-of-war'));
+      U.draw(c, N(c).n);
+      c.giveDraw(ally, N(c).n);
+      shed(c, 1); reattach(c, 1);                   // two Rattles, per the doc
+    }),
+    upgrade: { nums: { n: 3 } },
+  },
+  {
+    id: 'bones/fetch-relay', name: 'Fetch Relay', companion: SLUG,
+    type: SKILL, rarity: RARE, cost: 1, target: NONE, coop: true,
+    text: 'Choose a friend. You each take a Trick from your own discard into the OTHER\'s hand this turn, costing {n} less. They return at end of turn.',
+    flavor: 'The relay works. What arrives is never quite what was sent.',
+    nums: { n: 1 },
+    effect: eff(async (c) => {
+      const ally = await c.chooseAlly({ prompt: 'Who are you relaying with?' });
+      if (!ally) return;
+      const mine = c.discardPile.filter(k => !U.flag(k, 'noReturnThisCombat'))[0];
+      // TEAMMATE PICK — first eligible card in their discard.
+      const theirs = c.allyCards(ally, 'discard').filter(k => !U.flag(k, 'noReturnThisCombat'))[0];
+      const less = N(c).n;
+      const lend = (from, to, card) => {
+        if (!card) return;
+        c.e._asSeat(to, () => c.e.moveCard(card, 'hand', { reason: 'bones/fetch-relay' }));
+        card.costTurnDelta -= less;
+        U.setFlag(card, 'borrowed', from.id);
+        // Borrowed Tricks go home at end of turn, played or not.
+        U.atTurnEnd(c, () => {
+          if (!U.flag(card, 'borrowed')) return;
+          U.clearFlag(card, 'borrowed');
+          c.e._asSeat(from, () => c.e.moveCard(card, 'discard', { reason: 'bones/fetch-relay' }));
+        });
+      };
+      lend(c.self, ally, mine);
+      lend(ally, c.self, theirs);
+      if (mine) U.setFlag(mine, 'slobbered', true);              // per the doc
+      if (theirs) U.setFlag(theirs, 'noReturnThisCombat', true);
+    }),
+    upgrade: { nums: { n: 2 } },
+  },
+  {
+    id: 'bones/pack-stash', name: 'Pack Stash', companion: SLUG,
+    type: SKILL, rarity: RARE, cost: 2, target: NONE, coop: true, exhaust: true,
+    text: 'EVERY player may set aside a Trick. At the start of their next turn it returns costing 0. Yours counts as Buried and Dug Up. [Vanish].',
+    flavor: 'A communal hole. Contributions welcome. Withdrawals negotiable.',
+    nums: {},
+    effect: eff((c) => {
+      for (const pl of c.party()) {
+        const card = (pl === c.self) ? U.handOthers(c)[0] : c.allyCards(pl, 'hand')[0];
+        if (!card) continue;
+        c.e._asSeat(pl, () => c.e.moveCard(card, 'limbo', { reason: 'bones/pack-stash' }));
+        c.e.schedule({
+          turns: 1, when: 'playerTurnStart', label: 'Pack Stash', ownerId: pl.id,
+          run: () => c.e._asSeat(pl, () => {
+            c.e.moveCard(card, 'hand', { reason: 'bones/pack-stash' });
+            card.costOverrideTurn = 0;
+          }),
+        });
+        if (pl === c.self) { U.fire(c, 'buried', { card }); U.fire(c, 'dugUp', { card }); }
+      }
+    }),
+    upgrade: { cost: 1 },
+  },
+];
+
 export default {
   slug: SLUG,
   name: 'Bones',
@@ -1043,6 +1210,8 @@ export default {
     'bones/shake-boy', 'bones/put-yourself-back-together', 'bones/go-get-it',
   ],
   cards: [...basics, SPARE_BONE, ...commons, ...uncommons, ...rares],
+  /** Multiplayer-only Tricks. Outside the 80; drafted only in a party. */
+  coopCards,
   archetypes: [
     { name: 'The Rattle Engine', desc: 'Repeatedly Shed and Reattach small numbers. The objective is not to reach 6 — it is to keep moving. Stalls at either extreme, so the deck needs both directions.', coreCards: ['bones/shake-it-loose', 'bones/fetch', 'bones/reassemble', 'bones/spare-parts', 'bones/off-leash', 'bones/jingle-collar', 'bones/rattletrap', 'bones/spare-parts-everywhere', 'bones/skeleton-stampede', 'bones/built-wrong'] },
     { name: 'Scattered Puppy', desc: 'Deliberately reach high Loose Bones and turn the missing anatomy into pressure. High burst and excellent multi-enemy damage, but permanently sitting at 6 starves its own engines.', coreCards: ['bones/clatter-pounce', 'bones/scattershot-skeleton', 'bones/take-me-apart', 'bones/flop-over', 'bones/spare-parts-everywhere', 'bones/every-bone-at-once', 'bones/headless-rush', 'bones/play-dead', 'bones/anatomy-is-optional'] },

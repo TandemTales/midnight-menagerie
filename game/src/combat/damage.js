@@ -152,13 +152,25 @@ export function applyDamage(engine, o) {
       });
       return { ...t, final: 0, blocked: 0, hpLoss: 0, lethal: false, prevented: true, dead: false };
     }
-    if (box.amount !== t.final) {
-      t.final = Math.max(0, Math.floor(box.amount));
-      const skipBlock2 = !!(o.pierce || o.ignoreBlock);
-      t.blocked = skipBlock2 ? 0 : Math.min(t.final, defender.block);
-      t.hpLoss = Math.max(0, t.final - t.blocked);
-      t.lethal = (defender.hp - t.hpLoss) <= 0;
-    }
+    if (box.amount !== t.final) t.final = Math.max(0, Math.floor(box.amount));
+
+    // Recompute against the defender's CURRENT Guard, always — not only when
+    // the hook changed the amount.
+    //
+    // `computeDamage` ran BEFORE this dispatch, so `t.blocked` and `t.hpLoss`
+    // are stale the instant a hook moves anything. That made it impossible for
+    // a hook to gain the defender Guard, even though `onIncomingHit` is
+    // documented as the last chance to act "before Guard is even consulted" —
+    // Wink's Silk Lifeline gains a teammate Guard immediately before the
+    // damage, and it was silently doing nothing while the Web it also applied
+    // landed fine, which is what made the bug visible at all.
+    //
+    // With no hook touching anything this recomputes the identical numbers, so
+    // nothing that worked before changes.
+    const skipBlock2 = !!(o.pierce || o.ignoreBlock);
+    t.blocked = skipBlock2 ? 0 : Math.min(t.final, defender.block);
+    t.hpLoss = Math.max(0, t.final - t.blocked);
+    t.lethal = (defender.hp - t.hpLoss) <= 0;
   }
 
   // 7b. onLethal — the one place a Companion can refuse to die.
