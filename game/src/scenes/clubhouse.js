@@ -76,10 +76,11 @@ export class ClubhouseScene extends Scene {
     // The canvas measures 0.00% visible behind this screen — stop drawing it.
     this._unpauseStage = pauseStageFor(ctx);
 
-    // Every pet photograph and Kid portrait on this screen. Warmed, not awaited
-    // — Scene.enter() runs behind the transition veil (CONTRACTS trap 4) and a
-    // cold set is ~0.6 s of black. On the normal route in from the Title they
-    // are already cached and this is a no-op.
+    // Every pet photograph on this screen. Warmed, not awaited — Scene.enter()
+    // runs behind the transition veil (CONTRACTS trap 4) and a cold set is
+    // ~0.6 s of black. On the normal route in from the Title they are already
+    // cached and this is a no-op. The Kid portraits are files on disk and need
+    // no warming.
     warmFaces({ sync: true });
 
     const data = Save?.data ?? {};
