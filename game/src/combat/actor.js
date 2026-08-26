@@ -117,6 +117,12 @@ export class Player extends Actor {
      * removed from the party — `players` keeps its length for the whole fight.
      */
     this.fallen = false;
+    /**
+     * Has this seat ended its turn? Turns are SIMULTANEOUS: everyone plans in
+     * the same window and the enemy phase waits for the last seat to be ready.
+     * Reset for every seat at the start of each player turn.
+     */
+    this.ended = false;
     /** @type {Piles|null} this seat's own draw/hand/discard. Set by the engine. */
     this.piles = null;
     this.companion = o.companion || 'neutral';
@@ -136,6 +142,7 @@ export class Player extends Actor {
       energyMax: this.energyMax, drawPerTurn: this.drawPerTurn, handCap: this.handCap,
     });
     p.fallen = this.fallen;
+    p.ended = this.ended;
     p.block = this.block;
     p.keepBlock = this.keepBlock;
     p.alive = this.alive;
@@ -156,7 +163,7 @@ export class Player extends Actor {
   snapshot() {
     return {
       ...super.snapshot(),
-      companion: this.companion, kid: this.kid, seat: this.seat, fallen: this.fallen,
+      companion: this.companion, kid: this.kid, seat: this.seat, fallen: this.fallen, ended: this.ended,
       energy: this.energy, energyMax: this.energyMax,
       drawPerTurn: this.drawPerTurn, handCap: this.handCap,
       keepBlock: this.keepBlock,

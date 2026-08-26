@@ -226,6 +226,64 @@ export async function run() {
     ok(!seat1.piles.hand.includes(card), 'the card left seat 1 hand');
   });
 
+  await atest('turns: one seat ending does not end the table', async () => {
+    const e = await startDummyParty(new RNG(29), 2);
+    const [a, b] = e.players;
+    eq(e.turn, 1, 'turn 1');
+    await e.endTurn(a);
+    ok(a.ended, 'seat 0 is ready');
+    ok(!b.ended, 'seat 1 is not');
+    ok(!e.tableReady, 'the table is not ready');
+    eq(e.phase, 'player', 'still the player phase — the enemies have NOT moved');
+    eq(e.turn, 1, 'still turn 1');
+    eq(a.piles.hand.length, 0, 'the ready seat discarded its hand');
+    ok(b.piles.hand.length > 0, 'the seat still thinking keeps its hand');
+  });
+
+  await atest('turns: the seat still thinking can keep playing', async () => {
+    const e = await startDummyParty(new RNG(31), 2);
+    const [a, b] = e.players;
+    await e.endTurn(a);
+    const stale = a.piles.discard[0];
+    ok(!!stale, 'seat 0 has something in its discard');
+    eq(e.canPlay(stale && stale.uid).ok, false, 'a seat that ended cannot play');
+    const card = b.piles.hand[0];
+    eq(e.canPlay(card.uid, e.livingEnemies()[0].id).ok, true, 'the other seat still can');
+    await e.playCard(card.uid, e.livingEnemies()[0].id);
+    ok(!b.piles.hand.includes(card), 'and it actually resolved');
+  });
+
+  await atest('turns: the last seat ending runs the enemy phase and opens a new turn', async () => {
+    const e = await startDummyParty(new RNG(37), 2);
+    const [a, b] = e.players;
+    await e.endTurn(a);
+    eq(e.turn, 1, 'still turn 1 after the first seat');
+    await e.endTurn(b);
+    eq(e.turn, 2, 'turn 2 once the last seat ended');
+    eq(e.phase, 'player', 'back to the player phase');
+    for (const pl of e.players) {
+      ok(!pl.ended, `seat ${pl.seat} is no longer marked ready`);
+      eq(pl.piles.hand.length, 5, `seat ${pl.seat} drew a fresh hand`);
+      eq(pl.energy, pl.energyMax, `seat ${pl.seat} has full Nerve again`);
+    }
+  });
+
+  await atest('turns: ending with no seat named ends the whole table at once', async () => {
+    const e = await startDummyParty(new RNG(41), 3);
+    await e.endTurn();
+    eq(e.turn, 2, 'one call moved the whole table on');
+    ok(e.players.every(pl => !pl.ended), 'and every seat is fresh');
+  });
+
+  await atest('turns: a fallen seat does not hold the table hostage', async () => {
+    const e = await startDummyParty(new RNG(43), 2);
+    e.loseHp(e.players[0], 999, 'test');
+    ok(e.players[0].fallen, 'seat 0 is down');
+    await e.endTurn(e.players[1]);
+    eq(e.turn, 2, 'the one living seat ending was enough to move the turn on');
+    ok(!e.over, 'and the fight continues');
+  });
+
   const passed = results.reduce((n, t) => n + t.asserts.filter(a => a.pass).length, 0);
   const failed = results.reduce((n, t) => n + t.failed, 0);
   return { results, passed, failed };

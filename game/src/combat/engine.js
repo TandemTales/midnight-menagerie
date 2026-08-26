@@ -1899,6 +1899,8 @@ export class CombatEngine {
     // accumulates through the player turn and is STILL READABLE during the enemy
     // turn that follows — several enemies key their whole design off
     // "was I hit last turn?". (data/enemies/_lib.js dmgTaken / wasHit.)
+    // Nobody has ended the new turn yet.
+    for (const pl of this.players) pl.ended = false;
     for (const a of [...this.players, ...this.enemies, ...this.allies]) {
       a.damageTakenLastTurn = a.damageTakenThisTurn;
       a.damageTakenThisTurn = 0;
@@ -2024,6 +2026,7 @@ export class CombatEngine {
     // is yours.
     const who = this.seatOfCard(card) || this.current;
     if (who.fallen) return { ok: false, reason: `${who.name} has fallen.` };
+    if (who.ended) return { ok: false, reason: 'You have already ended your turn.' };
 
     if (card.type === CardType.ATTACK && who.hasStatus('entangle')) {
       return { ok: false, reason: 'Entangled — you cannot play Attacks this turn.' };
@@ -2309,28 +2312,69 @@ export class CombatEngine {
     });
   }
 
-  /** @returns {Promise<Event[]>} */
-  async endTurn() { return this._endTurn(); }
+  /**
+   * End a turn.
+   *
+   * SIMULTANEOUS TURNS. Every seat plans in the same window and each one ends
+   * its OWN turn; the enemy phase waits until the last living seat has ended.
+   * That is the Slay the Spire 2 shape and it is why this takes a seat: a Kid
+   * who is done should be able to stop without freezing the table, and a Kid
+   * still thinking must not have their hand discarded out from under them.
+   *
+   * Solo passes nothing and behaves exactly as it always has.
+   *
+   * @param {Player|string|null} [who] the seat ending its turn; omit for solo,
+   *   or to end the turn for the whole table (the host's "everyone is ready").
+   * @returns {Promise<Event[]>}
+   */
+  async endTurn(who = null) { return this._endTurn(who); }
 
-  _endTurn() {
+  /** True once every living seat has ended its turn. */
+  get tableReady() { return this.livingPlayers().every(pl => pl.ended); }
+
+  /** Accept a Player, an actor id, or a seat index. */
+  _resolveSeat(who) {
+    if (who == null) return null;
+    if (who.side === 'player') return who;
+    if (typeof who === 'number') return this.seat(who);
+    const a = this.actor(who);
+    return (a && a.side === 'player') ? a : null;
+  }
+
+  /**
+   * One seat stops acting: its hand resolves and it is marked ready.
+   * Statuses do NOT tick here — those run once the whole table is ready, so a
+   * teammate's Regen cannot heal before another Kid has finished playing.
+   */
+  _closeSeatHand(pl) {
+    pl.ended = true;
+    this._emit(EV.TURN_END, {
+      actor: 'player', actorId: pl.id, seat: pl.seat, turn: this.turn, side: 'player',
+      seats: this.livingPlayers().map(x => ({ id: x.id, seat: x.seat, ended: !!x.ended })),
+    });
+    this._asSeat(pl, () => {
+      for (const card of [...pl.piles.hand]) {
+        if (card.ethereal) { this.exhaustCard(card, 'ethereal'); continue; }
+        if (card.retain || card.retainThisTurn) { card.retainThisTurn = false; continue; }
+        this.discardCard(card, 'endTurn');
+      }
+    });
+  }
+
+  _endTurn(who = null) {
     if (this.over || this.phase !== 'player') return [];
     return this._capture(() => {
-      // 1
-      this._emit(EV.TURN_END, {
-        actor: 'player', actorId: this.players[0].id, turn: this.turn, side: 'player',
-        seats: this.livingPlayers().map(pl => ({ id: pl.id, seat: pl.seat })),
-      });
+      const seat = this._resolveSeat(who);
 
-      // 2 — hand resolution, per seat, each as its own acting seat so Ethereal
-      //     and Retain resolve against the right pile set.
-      for (const pl of this.livingPlayers()) {
-        this._asSeat(pl, () => {
-          for (const card of [...pl.piles.hand]) {
-            if (card.ethereal) { this.exhaustCard(card, 'ethereal'); continue; }
-            if (card.retain || card.retainThisTurn) { card.retainThisTurn = false; continue; }
-            this.discardCard(card, 'endTurn');
-          }
-        });
+      // 1 + 2 — close whoever is ending. With no seat named, the whole table
+      //         ends at once, which is both the solo path and the host's
+      //         "everyone is ready" button.
+      if (seat) {
+        if (seat.ended || seat.fallen) return;
+        this._closeSeatHand(seat);
+        if (!this.tableReady) return;            // still waiting on a teammate
+      } else {
+        for (const pl of this.livingPlayers()) if (!pl.ended) this._closeSeatHand(pl);
       }
 
       // 3 — end-of-turn statuses, per seat (Regen heals each Kid its own amount)
