@@ -50,4 +50,5 @@ to concurrent whole-file writes, so this is now structural rather than a convent
 | [2026-08-25-atmosphere-round-3-props-stop-outshining-the-cast](notes/2026-08-25-atmosphere-round-3-props-stop-outshining-the-cast.md) | 21 KB |
 | [2026-08-25-frontend-round-6-companion-select-is-the-painting](notes/2026-08-25-frontend-round-6-companion-select-is-the-painting.md) | 11 KB |
 | [2026-08-25-map-round-5-every-wing-draws-its-own-section](notes/2026-08-25-map-round-5-every-wing-draws-its-own-section.md) | 12 KB |
+| [2026-08-25-frontend-round-7-the-main-menu-is-the-painting](notes/2026-08-25-frontend-round-7-the-main-menu-is-the-painting.md) | 13 KB |
 | [build-notes](notes/build-notes.md) | 1 KB |

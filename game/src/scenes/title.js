@@ -1,7 +1,20 @@
 /**
  * Title — the game's first impression.
- * The mansion at night: parallax sky, drifting motes, a lit house, candles on the sill,
- * the MIDNIGHT MENAGERIE cartouche, and a menu with real character.
+ *
+ * The screen IS `UI/mainMenu.png`. Not a reference for one: the painting, full
+ * bleed, with `UI/title.png` composited over it and the menu standing in the
+ * dark at the left of the gate.
+ *
+ * This scene used to build its own mansion out of SVG — roofline, spire,
+ * chimneys, sixteen procedural windows, a fence, dead trees, a moon, cobwebs
+ * and two candles — plus a `logoLockup()` wordmark and a slate plinth for the
+ * menu. All of it was a stand-in for art that now exists, so all of it is gone
+ * rather than layered under the art. What survives from that pass is one hard-
+ * won performance rule (see `.ti-lamp` in title.css: animate opacity on a
+ * promoted CSS box, never a filter on an SVG child) and one hard-won taste rule
+ * (a previous round's window flicker was violent enough that the designer
+ * called the game unplayable — the lights here breathe, they do not flicker,
+ * and the whole idle screen moves less than 1% in mean luminance).
  *
  * OWNER: frontend agent.
  */
@@ -10,7 +23,7 @@ import { bus } from '../core/bus.js';
 import { Save } from '../core/save.js';
 import { COMPANIONS } from '../data/schema.js';
 import {
-  ensureCss, fontsReady, logoLockup, candle, cobweb, bat,
+  ensureCss, fontsReady, menuArtSrc, bat, parallax,
   el, svg, rovingFocus, setReduceMotion, reduceMotion,
   freedCompanions, starterCount, warmFaces,
 } from '../ui/portrait.js';
@@ -20,160 +33,45 @@ import { openSettings } from '../ui/settings.js';
 const CSS_KIT   = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_TITLE = new URL('./title.css', import.meta.url).href;
 
-/* ── the house ─────────────────────────────────────────────────────────────
-   Built from a small spec rather than hand-authored path soup so the windows,
-   pickets and treeline stay editable. Deterministic: the same house every boot.
+/* ── the lights in the painting ─────────────────────────────────────────────
+   The house lights itself: a lantern on the left gate post, a wall lamp either
+   side of the front door, and a gilt crest on the balcony above it. Measured
+   off the plate (the flame centre, as a fraction of the image), so a halo sits
+   on the light the painter put there instead of inventing a new one.
 
-   Returns an ORDERED LIST of sibling <svg> layers rather than one SVG, because
-   the warm glow has to live outside the mansion markup. See the `.ti-glow` note
-   in title.css: a blurred SVG *child* whose opacity animates cannot be promoted
-   to its own compositor layer, so Chromium re-rasterises the blur on the main
-   thread every single frame — measured here as a 3.3 s long task on entry. As
-   sibling <svg> elements they are ordinary HTML boxes, so the blur is rasterised
-   once into a texture and the flicker is a pure compositor opacity animation.
+   `w` is the halo diameter as a fraction of plate WIDTH — the layer is
+   cover-fit exactly like the plate, so one number scales at every resolution.
+   The durations are coprime-ish and the delays negative so the four are
+   already out of phase on the first frame; nothing on this screen ever pulses
+   in unison. */
+const LAMPS = [
+  { id: 'gate',  x: 10.4, y: 63.3, w: 7.6, dur: 9.4,  delay: -0.0 },
+  { id: 'door',  x: 45.6, y: 61.4, w: 5.0, dur: 7.7,  delay: -2.9 },
+  { id: 'door',  x: 54.6, y: 61.4, w: 5.0, dur: 8.6,  delay: -5.3 },
+  { id: 'crest', x: 50.1, y: 54.1, w: 3.8, dur: 11.3, delay: -1.7 },
+];
 
-   The layers keep the original paint order: base house -> door glow -> door ->
-   window bloom. Nothing that used to sit above the glow overlaps it (the fence
-   and the dead trees are well below and outside the lit windows), so the stack
-   renders identically. */
-function mansionSVG() {
-  const W = 1600, H = 960, DROP = 200;   // DROP pushes the house down under the logo
-  const layer = (cls, inner) =>
-    `<svg class="${cls}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" aria-hidden="true">`
-    + `<g transform="translate(0 ${DROP})">${inner}</g></svg>`;
-  let s = '';
-
-  // --- far treeline ---------------------------------------------------------
-  const tree = (x, base, h, w) =>
-    `M${x - w} ${base}L${x} ${base - h}L${x + w} ${base}Z` +
-    `M${x - w * 0.82} ${base - h * 0.3}L${x} ${base - h * 1.12}L${x + w * 0.82} ${base - h * 0.3}Z`;
-  let trees = '';
-  let tseed = 7;
-  const rnd = () => (tseed = (tseed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
-  for (let x = -40; x < W + 40; x += 34) {
-    trees += tree(x + rnd() * 16, 640 + rnd() * 14, 90 + rnd() * 130, 20 + rnd() * 16);
-  }
-  s += `<path class="ms-trees" d="${trees}"/>`;
-
-  // --- the mansion ----------------------------------------------------------
-  const body = [
-    // left wing
-    'M300 640V430l40-34 40 34v210Z',
-    'M380 640V392l104-76 104 76v248Z',
-    // main block
-    'M588 640V300l212-142 212 142v340Z',
-    // right wing
-    'M1012 640V392l104-76 104 76v248Z',
-    'M1220 640V430l40-34 40 34v210Z',
-  ].join('');
-  s += `<path class="ms-body" d="${body}"/>`;
-
-  // roof planes catch a little moonlight
-  s += `<path class="ms-roof" d="M300 434l40-34 40 34-40 12Z
-        M376 396l108-80 108 80-108 22Z
-        M584 304l216-146 216 146-216 30Z
-        M1008 396l108-80 108 80-108 22Z
-        M1216 434l40-34 40 34-40 12Z"/>`;
-
-  // --- the tower ------------------------------------------------------------
-  s += `<path class="ms-body" d="M726 300V132h148v168Z"/>`;
-  s += `<path class="ms-spire" d="M714 136 800 20l86 116Z"/>`;
-  s += `<path class="ms-spire-hi" d="M800 20l86 116h-30Z"/>`;
-  s += `<path class="ms-finial" d="M797 24h6v-16h-6Zm-8-16h22v-5h-22Z"/>`;
-  // weather vane bat
-  s += `<g class="ms-vane" transform="translate(770,-24) scale(.6)">${bat()}</g>`;
-
-  // --- chimneys -------------------------------------------------------------
-  s += `<path class="ms-chim" d="M470 316h44v-70h-44Zm-6-70h56v-14h-56Z
-        M1090 316h44v-70h-44Zm-6-70h56v-14h-56Z
-        M636 232h40v-56h-40Zm-6-56h52v-13h-52Z"/>`;
-
-  // --- porch ----------------------------------------------------------------
-  s += `<path class="ms-porch" d="M690 640V520h220v120Z"/>`;
-  s += `<path class="ms-porch-roof" d="M666 524l134-58 134 58Z"/>`;
-  s += `<path class="ms-col" d="M700 640V528h14v112Zm186 0V528h14v112Z"/>`;
-  s += `<path class="ms-steps" d="M676 640h248l14 18H662Zm-16 18h280l14 18H646Z"/>`;
-
-  // the door: the one warm rectangle in a cold house. Its halo is a layer of its
-  // own (below the door, above the porch) so the blur can be promoted; see below.
-  const doorGlow = `<path class="ms-doorglow" d="M756 640V556a44 44 0 0 1 88 0v84Z"/>`;
-  const door =
-    `<path class="ms-door" d="M760 640V558a40 40 0 0 1 80 0v82Z"/>`
-    + `<path class="ms-doorsplit" d="M800 566v74"/>`;
-
-  // --- windows --------------------------------------------------------------
-  // [x, y, w, h, lit]
-  const wins = [];
-  const arch = (x, y, w, h) =>
-    `M${x} ${y + h}V${y + w / 2}a${w / 2} ${w / 2} 0 0 1 ${w} 0V${y + h}Z`;
-  const rows = [
-    { y: 344, xs: [612, 676, 740, 804, 868, 932], w: 40, h: 78 },
-    { y: 458, xs: [612, 676, 740, 804, 868, 932], w: 40, h: 78 },
-    { y: 250, xs: [700, 764, 828], w: 36, h: 62 },
-    { y: 176, xs: [758], w: 44, h: 74 },   // tower
-    { y: 430, xs: [406, 456, 506, 1054, 1104, 1154], w: 34, h: 66 },
-    { y: 528, xs: [406, 456, 506, 1054, 1104, 1154], w: 34, h: 66 },
-    { y: 470, xs: [316, 1236], w: 30, h: 58 },
-    { y: 556, xs: [316, 1236], w: 30, h: 58 },
+/** Faint twinkles laid on the painted stars in the upper sky. Seeded. */
+function starField() {
+  const wrap = el('div', 'ti-stars');
+  wrap.setAttribute('aria-hidden', 'true');
+  let s = 11;
+  const r = () => (s = (s * 48271) % 2147483647) / 2147483647;
+  const at = [
+    [4.8, 6.2], [19.6, 3.4], [34.1, 9.8], [62.4, 4.1],
+    [71.8, 11.2], [83.6, 6.7], [92.2, 14.6], [58.2, 16.1],
   ];
-  let lseed = 19;
-  const lr = () => (lseed = (lseed * 48271) % 2147483647) / 2147483647;
-  let dark = '', frames = '';
-  for (const r of rows) {
-    for (const x of r.xs) {
-      const litRoll = lr();
-      const lit = litRoll > 0.58;
-      const d = arch(x, r.y, r.w, r.h);
-      if (lit) wins.push({ d, x: x + r.w / 2, y: r.y + r.h / 2, s: 0.7 + lr() * 0.6, delay: (lr() * 6).toFixed(2) });
-      else dark += d;
-      frames += `M${x + r.w / 2} ${r.y + 4}V${r.y + r.h}M${x} ${r.y + r.h * 0.62}h${r.w}`;
-    }
+  for (const [x, y] of at) {
+    const i = el('i');
+    i.style.cssText =
+      `left:${x}%;top:${y}%;` +
+      `--sz:${(1.4 + r() * 1.5).toFixed(2)}px;` +
+      `--dur:${(5.5 + r() * 5).toFixed(1)}s;` +
+      `--del:-${(r() * 9).toFixed(1)}s;` +
+      `--op:${(0.3 + r() * 0.45).toFixed(2)}`;
+    wrap.appendChild(i);
   }
-  s += `<path class="ms-win-dark" d="${dark}"/>`;
-  s += `<g class="ms-win-lit">${wins.map((w) =>
-    `<path d="${w.d}" style="--fl:${w.s};animation-delay:-${w.delay}s"/>`).join('')}</g>`;
-  s += `<path class="ms-win-bar" d="${frames}"/>`;
-
-  /* Warm bloom pooling out of the lit windows. Split across three promoted layers
-     rather than one so the halos still flicker out of phase with each other — the
-     per-ellipse animation-delay that used to do that is gone, because the whole
-     point is that opacity now animates on the layer, not on its children. Three
-     phases reads the same as sixteen; one would read as the house blinking. */
-  const BLOOM_LAYERS = 3;
-  const bloomGroups = Array.from({ length: BLOOM_LAYERS }, () => '');
-  wins.forEach((w, i) => {
-    bloomGroups[i % BLOOM_LAYERS] += `<ellipse cx="${w.x}" cy="${w.y}" rx="52" ry="46"/>`;
-  });
-
-  // --- fence ----------------------------------------------------------------
-  let pickets = '';
-  for (let x = -20; x < W + 20; x += 26) {
-    pickets += `M${x} 760V666l7-12 7 12v94Z`;
-  }
-  s += `<path class="ms-fence" d="${pickets}M0 690h1600v10H0ZM0 726h1600v10H0Z"/>`;
-
-  // --- dead trees, foreground ----------------------------------------------
-  const branch = (x, y, a, len, depth) => {
-    if (depth === 0 || len < 8) return '';
-    const x2 = x + Math.cos(a) * len, y2 = y + Math.sin(a) * len;
-    return `M${x.toFixed(1)} ${y.toFixed(1)}L${x2.toFixed(1)} ${y2.toFixed(1)}`
-      + branch(x2, y2, a - 0.45 - depth * 0.03, len * 0.7, depth - 1)
-      + branch(x2, y2, a + 0.42 + depth * 0.02, len * 0.66, depth - 1);
-  };
-  s += `<path class="ms-deadtree" d="${branch(96, 764, -Math.PI / 2 - 0.14, 132, 6)}"/>`;
-  s += `<path class="ms-deadtree" d="${branch(1512, 764, -Math.PI / 2 + 0.16, 118, 6)}"/>`;
-
-  // --- ground ---------------------------------------------------------------
-  const ground = `<path class="ms-ground" d="M0 700c180-26 320 10 480 4s300-32 470-22 300 40 470 26 180-8 180-8v100H-40Z"/>`;
-
-  return [
-    layer('mansion', ground + s),
-    layer('ti-glow ti-glow--door', doorGlow),
-    layer('mansion mansion--door', door),
-    ...bloomGroups
-      .filter(Boolean)
-      .map((g, i) => layer(`ti-glow ti-glow--bloom ti-glow--b${i}`, g)),
-  ];
+  return wrap;
 }
 
 /* ── menu definition ───────────────────────────────────────────────────────── */
@@ -208,16 +106,13 @@ export class TitleScene extends Scene {
     // screen's two local mirrors follow, so a change is visible behind the modal.
     this._offs.push(bus.on('settings:changed', applyLocal));
 
-    /* The authored exterior-night region, not the Foyer. Nothing on this screen
-       shows it: `.ti-sky` is an opaque gradient and the canvas measures 0.00%
-       visible, and the previous owner already rendered the transparent-sky
-       version (shots/ti_fix.png) and rejected it — the WebGL gold horizon fights
-       the purple SVG night and you get two moons. So the SVG art stays the
-       visible layer and the stage is paused below. The region is still set
-       correctly rather than left on 'foyer', because 'foyer' is a lie: it is the
-       colour the CSS custom properties get published from (`_publishCss`), it is
-       what the stage holds if anything ever un-pauses it mid-title, and leaving a
-       screen pointing at the wrong room is how the next person inherits a bug. */
+    /* The authored exterior-night region, not the Foyer. Nothing of the canvas
+       reaches the screen here — the painting is opaque and full bleed — but the
+       region is still set correctly rather than left on 'foyer', because
+       'foyer' is a lie: it is the colour the CSS custom properties get
+       published from (`_publishCss`), it is what the stage holds if anything
+       ever un-pauses it mid-title, and leaving a screen pointing at the wrong
+       room is how the next person inherits a bug. */
     try { ctx.atmosphere?.setMood?.('title'); } catch {}
 
     // Nothing of the canvas reaches the screen here — stop drawing it.
@@ -226,76 +121,118 @@ export class TitleScene extends Scene {
     const root = this.root;
     root.innerHTML = '';
 
-    // ── backdrop layers ────────────────────────────────────────────────────
-    const sky = el('div', 'ti-sky');
-    sky.appendChild(el('div', 'ti-stars'));
-    sky.appendChild(el('div', 'ti-stars ti-stars--b'));
-    sky.appendChild(el('div', 'ti-moon'));
-    sky.appendChild(el('div', 'ti-clouds'));
-    root.appendChild(sky);
+    /* ── the painting ─────────────────────────────────────────────────────
+       Two <img> of the same file. One request, one decode, one bitmap: the
+       browser shares it, and both layers are therefore guaranteed to be the
+       same painting at the same rendered size, so the near-field copy seats
+       back into the sharp one with nothing to line up. (Same argument as the
+       Menagerie board's two plates in scenes/select.js.) */
+    const scene = el('div', 'ti-scene');
+    const plate = document.createElement('img');
+    plate.className = 'ti-plate';
+    plate.src = menuArtSrc('menu');
+    plate.alt = '';
+    plate.width = 1672;
+    plate.height = 941;
+    plate.decoding = 'async';
+    plate.fetchPriority = 'high';
+    plate.draggable = false;
+    scene.appendChild(plate);
+    this._plate = plate;
 
-    const house = el('div', 'ti-house');
-    for (const markup of mansionSVG()) house.appendChild(svg(markup));
-    root.appendChild(house);
+    /* The near ground, out of focus. The same plate blurred and dimmed, masked
+       to a soft pool in the bottom-left corner where the menu stands.
 
-    root.appendChild(el('div', 'ti-fog'));
-    root.appendChild(el('div', 'ti-fog ti-fog--b'));
+       This is the menu's ground and it is deliberately NOT a panel. A slate
+       plinth was the previous fix for menu-over-lit-windows and it worked, but
+       it sat on the painting as an object from another game. Depth of field
+       belongs to the picture: the cobbles nearest the camera go soft, the words
+       sit in front of them, and nothing has an edge.
 
-    // drifting motes: pure CSS animation, composited, zero JS per frame
-    const motes = el('div', 'ti-motes');
-    const N = 34;
-    let ms = 3;
-    const mr = () => (ms = (ms * 48271) % 2147483647) / 2147483647;
-    for (let i = 0; i < N; i++) {
-      const m = el('i');
-      const size = (1 + mr() * 2.6).toFixed(2);
-      m.style.cssText =
-        `left:${(mr() * 100).toFixed(2)}%;` +
-        `--sz:${size}px;` +
-        `--dur:${(13 + mr() * 20).toFixed(1)}s;` +
-        `--del:-${(mr() * 30).toFixed(1)}s;` +
-        `--dx:${(mr() * 90 - 45).toFixed(0)}px;` +
-        `--op:${(0.18 + mr() * 0.6).toFixed(2)};` +
-        `--y0:${(60 + mr() * 40).toFixed(0)}vh`;
-      motes.appendChild(m);
+       It costs nothing per frame. `filter` on a static element rasterises once
+       into that element's texture; the parallax that moves it is a transform on
+       the PARENT, which does not re-run the filter. (The 3.3s long task that
+       the old SVG mansion caused came from animating opacity on a blurred SVG
+       *child*, which is not a CSS box and cannot be promoted. Nothing here
+       animates a filtered layer's own opacity.) */
+    const dof = document.createElement('img');
+    dof.className = 'ti-plate ti-plate--dof';
+    dof.src = menuArtSrc('menu');
+    dof.alt = '';
+    dof.setAttribute('aria-hidden', 'true');
+    dof.decoding = 'async';
+    dof.draggable = false;
+    scene.appendChild(dof);
+    root.appendChild(scene);
+
+    /* The measured half of the ground: a pool of shadow under the menu column.
+       Its strength is not a taste decision — it is set by the worst pixel
+       behind any menu glyph. See the round-7 note for the numbers. */
+    const ground = el('div', 'ti-ground');
+    ground.setAttribute('aria-hidden', 'true');
+    root.appendChild(ground);
+
+    /* Lamps sit ABOVE the shadow pool, on `screen`, because a light source is
+       not dimmed by the shadow it casts. It is what keeps the gate lantern lit
+       right next to the darkest part of the screen. */
+    const lights = el('div', 'ti-lights');
+    lights.setAttribute('aria-hidden', 'true');
+    for (const L of LAMPS) {
+      const i = el('i', `ti-lamp ti-lamp--${L.id}`);
+      i.style.cssText =
+        `left:${L.x}%;top:${L.y}%;--w:${L.w}%;` +
+        `--dur:${L.dur}s;animation-delay:${L.delay}s`;
+      lights.appendChild(i);
     }
-    root.appendChild(motes);
+    root.appendChild(lights);
 
-    // corner cobwebs + candles, straight from the source art
-    root.appendChild(svg(`<div class="ti-web ti-web--l">${cobweb()}</div>`));
-    root.appendChild(svg(`<div class="ti-web ti-web--r">${cobweb()}</div>`));
-    root.appendChild(svg(`<div class="ti-candle ti-candle--l">${candle()}</div>`));
-    root.appendChild(svg(`<div class="ti-candle ti-candle--r">${candle()}</div>`));
+    root.appendChild(el('div', 'ti-mist'));
+    root.appendChild(el('div', 'ti-mist ti-mist--b'));
+    root.appendChild(starField());
+
+    // Two bats crossing the sky, answering the ones painted into the wordmark.
+    const bats = el('div', 'ti-bats');
+    bats.setAttribute('aria-hidden', 'true');
+    for (const [cls, delay] of [['ti-bat--a', '-9s'], ['ti-bat--b', '-31s']]) {
+      const b = svg(`<svg class="ti-bat ${cls}" viewBox="0 0 100 36" aria-hidden="true">${bat()}</svg>`);
+      b.style.animationDelay = delay;
+      bats.appendChild(b);
+    }
+    root.appendChild(bats);
+
     root.appendChild(el('div', 'ti-vignette'));
-    root.appendChild(el('div', 'ti-scrim'));   // keeps the menu legible over lit windows
 
-    // ── foreground: logo + menu ────────────────────────────────────────────
-    const stage = el('div', 'ti-stage');
+    // ── the wordmark ───────────────────────────────────────────────────────
+    const mark = el('h1', 'ti-mark');
+    const logo = document.createElement('img');
+    logo.className = 'ti-logo';
+    logo.src = menuArtSrc('title');
+    logo.alt = 'Midnight Menagerie';
+    logo.width = 2102;
+    logo.height = 688;
+    logo.decoding = 'async';
+    logo.fetchPriority = 'high';
+    logo.draggable = false;
+    mark.appendChild(logo);
+    root.appendChild(mark);
 
-    const logo = logoLockup({ size: 'hero' });
-    logo.classList.add('ti-logo');
-    stage.appendChild(logo);
-
-    /* The menu used to float straight over the lit windows, which made the
-       words fight the house. It now sits on a slate plinth: a framed, blurred
-       panel of its own, so the type always has an unambiguous ground and the
-       tagline reads at a glance. */
-    const plinth = el('div', 'ti-plinth');
-    plinth.appendChild(el('div', 'ti-plinth__glass'));
-
-    plinth.appendChild(el('p', 'ti-tagline',
-      'Sixteen lost pets became something else inside that house.<br>' +
-      '<span>Eight kids are going in to bring the rest home.</span>'));
-
+    // ── the menu ───────────────────────────────────────────────────────────
     /* FREED means freed. On a completely empty localStorage this line said
        "4 / 16 MENAGERIE COMPANIONS FREED" — the four starters were being
        counted as rescues — which is a lie on a fresh save and it flattens the
        counter you spend the entire game raising: your first real rescue moved
-       it from four to five. The starters are named separately now, because
-       they are real and pickable, but they are not rescues.
+       it from four to five. The starters are named separately, because they are
+       real and pickable, but they are not rescues.
        `freedCompanions()` / `starterCount()` — see ui/portrait.js. */
     const rescued = freedCompanions();
     const starters = starterCount();
+
+    const panel = el('div', 'ti-panel');
+    panel.appendChild(el('p', 'ti-tagline',
+      'Sixteen lost pets became something else inside that house.<br>' +
+      '<span>Eight kids are going in to bring the rest home.</span>'));
+    panel.appendChild(el('div', 'ti-rule'));
+
     const nav = el('nav', 'ti-menu');
     nav.setAttribute('aria-label', 'Main menu');
     const items = menuItems(!!Save?.hasRun?.());
@@ -309,19 +246,22 @@ export class TitleScene extends Scene {
         `<span class="ti-item__hint">${it.hint}</span>`;
       nav.appendChild(b);
     }
-    plinth.appendChild(nav);
-    stage.appendChild(plinth);
-    root.appendChild(stage);
+    panel.appendChild(nav);
 
-    // ── footer chrome ──────────────────────────────────────────────────────
-    const foot = el('div', 'ti-foot');
-    foot.innerHTML =
-      `<span class="ti-foot__prog"><b>${rescued.size}</b> / ${COMPANIONS.length} Menagerie Companions freed</span>` +
-      (starters ? `<span class="ti-foot__dot" aria-hidden="true"></span>` +
-        `<span class="ti-foot__with">${starters} already at the clubhouse</span>` : '') +
-      `<span class="ti-foot__dot" aria-hidden="true"></span>` +
-      `<span class="ti-foot__ver">Midnight Menagerie &middot; build ${window.MM?.version ?? '0.1.0'}</span>`;
-    root.appendChild(foot);
+    panel.appendChild(el('div', 'ti-rule ti-rule--foot'));
+    /* Shorter than the old footer's "N / 16 Menagerie Companions freed - N
+       already at the clubhouse", which needed 490px at 1920 and wrapped inside
+       the menu column, putting the number alone on its own line. Same two
+       facts, same separation of the two, one line at every resolution. */
+    panel.appendChild(el('div', 'ti-count',
+      `<b>${rescued.size}</b> / ${COMPANIONS.length} Companions freed` +
+      (starters ? `<span class="ti-count__dot"></span>` +
+        `<span class="ti-count__with">${starters} at the clubhouse</span>` : '')));
+    root.appendChild(panel);
+
+    const build = el('div', 'ti-build',
+      `Midnight Menagerie &middot; build ${window.MM?.version ?? '0.1.0'}`);
+    root.appendChild(build);
 
     // ── behaviour ──────────────────────────────────────────────────────────
     const unlockOnce = () => { try { this.ctx.audio?.unlock?.(); } catch {} };
@@ -357,15 +297,45 @@ export class TitleScene extends Scene {
     addEventListener('keydown', onKey);
     this._offs.push(() => removeEventListener('keydown', onKey));
 
+    /* A very slow parallax on pointer. The painting is far, so it barely moves;
+       the wordmark hangs in front of it, so it moves about twice as much and
+       the house separates from the sign. The scale on the plate is what buys
+       the room to translate without showing the frame edge, and it is applied
+       BY the parallax manager rather than in CSS, because the manager writes
+       `style.transform` wholesale — a CSS transform on the same element would
+       be overwritten on the first pointer move. Under reduceMotion nothing is
+       registered at all, so the plate sits at exactly 1.0 and cover-fits the
+       viewport with no crop of its own. */
+    if (!reduceMotion()) {
+      this._offs.push(parallax.add(scene, 0.7, 1.045));
+      this._offs.push(parallax.add(lights, 0.7, 1.045));
+      this._offs.push(parallax.add(mark, 1.5, 1));
+    }
+
     await fontsReady();
-    // stagger the entrance; skipped entirely under reduceMotion
+    /* The painting IS the screen. `Scene.enter()` is awaited behind the
+       transition veil (CONTRACTS trap #4), so waiting for the plate to decode
+       here costs black frames rather than showing a blank navy rectangle with
+       a menu floating on it. Capped hard, and it cannot reject. */
+    await this._plateReady();
+
     root.classList.add('is-live');
     if (!reduceMotion()) {
       root.classList.add('is-entering');
-      this._entTimer = setTimeout(() => root.classList.remove('is-entering'), 2200);
+      this._entTimer = setTimeout(() => root.classList.remove('is-entering'), 2000);
     }
     nav.querySelector('.ti-item')?.setAttribute('data-first', '');
     bus.emit('title:ready');
+  }
+
+  /** The plate, decoded and ready to paint. Never rejects, never hangs. */
+  _plateReady(timeout = 1800) {
+    const img = this._plate;
+    if (!img) return Promise.resolve();
+    return Promise.race([
+      (img.decode?.() ?? Promise.resolve()).catch(() => {}),
+      new Promise((r) => setTimeout(r, timeout)),
+    ]);
   }
 
   _activate(id) {
@@ -421,6 +391,7 @@ export class TitleScene extends Scene {
         sixteen transformed pets, and a house that confused protecting someone with keeping them.</p>
         <dl>
           <dt>Design</dt><dd>Midnight Menagerie design document</dd>
+          <dt>Menu art</dt><dd>The mansion at midnight, and the wordmark</dd>
           <dt>Companion art</dt><dd>The Menagerie plates &mdash; sixteen portraits</dd>
           <dt>Blueprint</dt><dd>The mansion floor plan, seventeen wings</dd>
           <dt>Soundtrack</dt><dd>Ten tracks for the house and the clubhouse</dd>
@@ -474,6 +445,7 @@ export class TitleScene extends Scene {
     for (const off of this._offs) { try { off(); } catch {} }
     this._offs.length = 0;
     this._hovered = null;
+    this._plate = null;
     this.root.innerHTML = '';
   }
 }

@@ -139,6 +139,28 @@ export function heroSrc(slug) {
 }
 export function blueprintSrc(name = 'mansion') { return `${ASSETS}blueprint/${name}.png`; }
 
+// ── the Title screen ────────────────────────────────────────────────────────
+/**
+ * The Title screen is two authored paintings, prepared by
+ * `python tools/prep_menu_art.py` and committed (no build step, CONTRACTS #1):
+ *
+ *   'menu'   `UI/mainMenu.png` — the mansion exterior at night, 1672x941, ~16:9.
+ *            The whole screen. Cover-fit; the front door and the cobbled path
+ *            are the composition's centre of gravity, so the crop anchors low.
+ *   'title'  `UI/title.png` — the MIDNIGHT MENAGERIE wordmark. Its black field
+ *            is keyed to alpha on LUMINANCE (not a chroma key, which would eat
+ *            the cartouche interior and the shadow inside the letter bevels)
+ *            and trimmed to its own ink, 2102x688. The plate interior stays at
+ *            partial alpha on purpose: the house shows through it, so it reads
+ *            as a lit sign hung over the gate rather than a sticker.
+ *
+ * `select-kid.jpg` is prepared from `UI/selectKid.png` by the same script and
+ * is NOT wired to anything yet — the designer has not asked for it.
+ */
+export function menuArtSrc(which = 'menu') {
+  return which === 'title' ? `${ASSETS}ui/title.png` : `${ASSETS}ui/main-menu.jpg`;
+}
+
 export const COMPANION_BY_SLUG = Object.fromEntries(COMPANIONS.map((c) => [c.slug, c]));
 export const KID_BY_SLUG = Object.fromEntries(KIDS.map((k) => [k.slug, k]));
 

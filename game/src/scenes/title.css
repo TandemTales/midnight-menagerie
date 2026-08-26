@@ -1,326 +1,345 @@
 /* ===========================================================================
    Title screen. OWNER: frontend agent.
    Colour/motion from ui/tokens.css (+ derived ramps in ui/portrait.css).
+
+   The screen is `UI/mainMenu.png` with `UI/title.png` over it. There is no
+   drawn scenery in here any more — the old procedural mansion, moon, fence,
+   cobwebs, candles and slate plinth all went when the art arrived.
    =========================================================================== */
 
 .scene--title {
   position: absolute; inset: 0;
   overflow: hidden;
-  --ti-ground: 78%;                 /* where the fence meets the frame */
+  background: var(--ink-900);   /* behind the plate for the first frame only */
 }
 
-/* ── sky ──────────────────────────────────────────────────────────────────── */
-.ti-sky {
+/* ── the painting ─────────────────────────────────────────────────────────────
+   `.ti-scene` is what the parallax manager moves. Promoting it means both
+   plates rasterise into ONE texture once and the pointer parallax is a pure
+   compositor transform — the whole 1920x1080 painting plus its blurred copy
+   costs the main thread nothing per frame. */
+.ti-scene { position: absolute; inset: 0; will-change: transform; }
+
+.ti-plate {
   position: absolute; inset: 0;
-  background:
-    radial-gradient(120% 78% at 50% 96%, color-mix(in oklab, var(--arcane-700) 62%, var(--ink-900)) 0%, transparent 62%),
-    radial-gradient(70% 52% at 74% 8%,  color-mix(in oklab, var(--spectre-500) 26%, var(--ink-900)) 0%, transparent 70%),
-    linear-gradient(180deg, var(--ink-900) 0%, color-mix(in oklab, var(--ink-800) 76%, var(--arcane-700)) 46%, color-mix(in oklab, var(--ink-900) 72%, var(--arcane-600)) 100%);
+  width: 100%; height: 100%;
+  object-fit: cover;
+  /* The house is centred and the path runs up the middle, so the crop never
+     needs to move sideways. Vertically it holds the low half: at 16:9 the
+     plate is a 0.06% taller fit than the viewport and this does nothing, but
+     on a squarer window it keeps the front door, the steps and the cobbles and
+     gives up sky, which is the only part of this painting that repeats. */
+  object-position: 50% 64%;
+  user-select: none; -webkit-user-drag: none;
 }
-.ti-stars {
+
+/* The near ground, out of focus: the same plate, blurred and dimmed, masked to
+   a pool in the corner the menu stands in. This is the menu's ground. It is
+   not a panel on purpose — depth of field belongs to the picture, a slate
+   plinth belongs to a different game.
+
+   Cost is zero per frame: `filter` on a static element bakes into that
+   element's texture once, and the transform that moves it lives on the parent. */
+.ti-plate--dof {
+  /* More blur, less dim. Dimming here is the blunt instrument — at .66 the
+     gate scrollwork, the fountain and the left rose bed all disappeared while
+     the right-hand garden kept its own, and half the frame's furniture went
+     missing for no contrast the panel's own pool was not already providing. */
+  filter: blur(10px) brightness(.78) saturate(.84);
+  /* The pool stops at x=44%. Further right and it eats the cobbled path, which
+     is the composition's centre of gravity — measured at 0.17x the source's
+     luminance there on the first attempt, i.e. the runway up to the front door
+     had been deleted to make room for five words. */
+  -webkit-mask-image: radial-gradient(30% 46% at 17% 100%,
+    black 0%, black 38%, rgb(0 0 0 / .5) 64%, transparent 90%);
+          mask-image: radial-gradient(30% 46% at 17% 100%,
+    black 0%, black 38%, rgb(0 0 0 / .5) 64%, transparent 90%);
+}
+
+/* The measured half of the ground. Its strength is set by the worst pixel
+   behind any menu glyph, not by eye — every item clears 4.5:1 against what is
+   actually rendered behind it. The second layer is a shallow full-width fade
+   that seats the whole frame and carries the build string in the far corner. */
+.ti-ground {
   position: absolute; inset: 0;
-  background-image:
-    radial-gradient(1.4px 1.4px at 12% 14%, var(--spectre-100), transparent),
-    radial-gradient(1.1px 1.1px at 27% 8%,  var(--text-hi), transparent),
-    radial-gradient(1.6px 1.6px at 41% 22%, var(--spectre-200), transparent),
-    radial-gradient(1.0px 1.0px at 58% 6%,  var(--text-hi), transparent),
-    radial-gradient(1.5px 1.5px at 69% 18%, var(--spectre-100), transparent),
-    radial-gradient(1.2px 1.2px at 83% 11%, var(--text-hi), transparent),
-    radial-gradient(1.3px 1.3px at 92% 26%, var(--spectre-200), transparent),
-    radial-gradient(1.1px 1.1px at 6%  30%, var(--text-hi), transparent),
-    radial-gradient(1.4px 1.4px at 35% 34%, var(--spectre-100), transparent),
-    radial-gradient(1.0px 1.0px at 76% 33%, var(--text-hi), transparent);
-  opacity: .8;
-  animation: ti-tw 6.5s ease-in-out infinite;
-}
-.ti-stars--b {
-  background-image:
-    radial-gradient(1.2px 1.2px at 19% 20%, var(--spectre-200), transparent),
-    radial-gradient(1.5px 1.5px at 49% 12%, var(--text-hi), transparent),
-    radial-gradient(1.0px 1.0px at 64% 28%, var(--spectre-100), transparent),
-    radial-gradient(1.3px 1.3px at 88% 6%,  var(--text-hi), transparent),
-    radial-gradient(1.1px 1.1px at 3%  9%,  var(--spectre-200), transparent),
-    radial-gradient(1.4px 1.4px at 55% 37%, var(--text-hi), transparent);
-  animation-delay: -3.2s; opacity: .55;
-}
-@keyframes ti-tw { 0%,100% { opacity: .38; } 50% { opacity: .92; } }
-
-.ti-moon {
-  position: absolute; right: 5.5%; top: 4%;
-  width: min(12vw, 162px); aspect-ratio: 1;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 38% 34%, color-mix(in oklab, var(--flame-100) 88%, var(--spectre-100)) 0%, color-mix(in oklab, var(--parchment) 82%, var(--spectre-200)) 58%, color-mix(in oklab, var(--parchment-shade) 70%, var(--arcane-300)) 100%);
-  box-shadow:
-    0 0 80px 30px color-mix(in srgb, var(--flame-200) 12%, transparent),
-    0 0 220px 90px color-mix(in srgb, var(--spectre-300) 9%, transparent);
-}
-.ti-moon::after {                    /* craters */
-  content: ''; position: absolute; inset: 0; border-radius: 50%;
-  background:
-    radial-gradient(circle at 62% 30%, color-mix(in srgb, var(--parchment-shade) 45%, transparent) 0 7%, transparent 8%),
-    radial-gradient(circle at 40% 62%, color-mix(in srgb, var(--parchment-shade) 40%, transparent) 0 10%, transparent 11%),
-    radial-gradient(circle at 72% 66%, color-mix(in srgb, var(--parchment-shade) 34%, transparent) 0 5%, transparent 6%);
-  opacity: .7;
-}
-.ti-clouds {
-  position: absolute; left: -25%; right: -25%; top: 4%; height: 34%;
-  background:
-    radial-gradient(46% 60% at 20% 60%, color-mix(in srgb, var(--ink-700) 74%, transparent), transparent 70%),
-    radial-gradient(38% 52% at 52% 40%, color-mix(in srgb, var(--ink-800) 82%, transparent), transparent 72%),
-    radial-gradient(52% 64% at 82% 66%, color-mix(in srgb, var(--ink-700) 64%, transparent), transparent 70%);
-  filter: blur(14px);
-  animation: ti-drift 92s linear infinite;
-  will-change: transform;
-}
-@keyframes ti-drift { from { transform: translate3d(-4%,0,0); } to { transform: translate3d(4%,0,0); } }
-
-/* ── the house ────────────────────────────────────────────────────────────── */
-.ti-house { position: absolute; inset: 0; }
-.mansion  { position: absolute; inset: 0; width: 100%; height: 100%; }
-
-.ms-trees    { fill: color-mix(in oklab, var(--ink-900) 80%, var(--arcane-700)); opacity: .9; }
-.ms-body     { fill: color-mix(in oklab, var(--ink-900) 84%, var(--arcane-600)); }
-.ms-roof     { fill: color-mix(in oklab, var(--ink-700) 62%, var(--spectre-500)); opacity: .72; }
-.ms-spire    { fill: color-mix(in oklab, var(--ink-900) 86%, var(--arcane-600)); }
-.ms-spire-hi { fill: color-mix(in oklab, var(--ink-800) 70%, var(--spectre-500)); opacity: .5; }
-.ms-finial   { fill: var(--brass-500); }
-.ms-chim     { fill: color-mix(in oklab, var(--ink-900) 88%, var(--arcane-600)); }
-.ms-porch    { fill: color-mix(in oklab, var(--ink-900) 94%, var(--arcane-600)); }
-.ms-porch-roof, .ms-steps { fill: color-mix(in oklab, var(--ink-800) 84%, var(--arcane-600)); }
-.ms-col      { fill: color-mix(in oklab, var(--ink-800) 62%, var(--spectre-500)); opacity: .7; }
-
-.ms-vane  { color: color-mix(in oklab, var(--ink-900) 60%, var(--arcane-600)); animation: ti-vane 7s var(--ease-soft) infinite; transform-box: fill-box; transform-origin: 50% 100%; }
-@keyframes ti-vane { 0%,100% { transform: translate(770px,-24px) scale(.6) rotate(-3deg);} 50% { transform: translate(770px,-24px) scale(.6) rotate(4deg);} }
-
-.ms-win-dark { fill: color-mix(in oklab, var(--ink-900) 62%, var(--spectre-500)); opacity: .55; }
-.ms-win-bar  { stroke: color-mix(in oklab, var(--ink-900) 80%, var(--arcane-600)); stroke-width: 2.4; fill: none; }
-.ms-win-lit path {
-  fill: color-mix(in oklab, var(--flame-200) 82%, var(--flame-glow));
-  animation: ti-flicker calc(3.4s * var(--fl, 1)) ease-in-out infinite;
-  transform-box: fill-box; transform-origin: 50% 50%;
-}
-@keyframes ti-flicker {
-  0%,100% { opacity: .82; } 21% { opacity: 1; } 44% { opacity: .68; } 63% { opacity: .95; } 81% { opacity: .76; }
-}
-/* ── the warm glow ────────────────────────────────────────────────────────────
-   PERF, and it is worth the paragraph. The window bloom and the door halo used
-   to be blurred children *inside* the mansion SVG whose opacity animated:
-
-       .ms-win-bloom ellipse { filter: blur(13px); animation: ti-flicker ... }
-
-   An SVG child is not a CSS box, so Chromium cannot promote it to its own
-   compositor layer. Animating its opacity therefore re-runs the blur — over
-   sixteen ellipses and a door path, at full layer size — on the main thread on
-   every frame. Profiled at a 3.3 s long task on title entry; blanking the two
-   filters alone took it to ~0.4 s.
-
-   They are now sibling <svg> elements of .mansion inside .ti-house. An <svg>
-   root IS a CSS box: `will-change: opacity` gives each one a texture, the blur
-   bakes into that texture once, and the flicker becomes a compositor-side
-   opacity animation that costs the main thread nothing. Same viewBox and same
-   preserveAspectRatio as .mansion, so they register pixel-for-pixel, and they
-   are ordered to keep the original paint order (glow under the door, bloom over
-   the window bars). */
-.ti-glow {
-  position: absolute; inset: 0; width: 100%; height: 100%;
   pointer-events: none;
-  will-change: opacity;
-  animation: ti-flicker 4.1s ease-in-out infinite;
+  background:
+    radial-gradient(28% 34% at 11% 97%,
+      color-mix(in srgb, var(--ink-900) 24%, transparent) 0%,
+      color-mix(in srgb, var(--ink-900) 15%, transparent) 50%,
+      color-mix(in srgb, var(--ink-900) 8%, transparent) 76%,
+      transparent 94%),
+    linear-gradient(to top,
+      color-mix(in srgb, var(--ink-900) 30%, transparent) 0%,
+      color-mix(in srgb, var(--ink-900) 10%, transparent) 18%,
+      transparent 34%);
 }
-.ti-glow--bloom { filter: blur(13px); }
-.ti-glow--bloom ellipse { fill: color-mix(in srgb, var(--flame-glow) 17%, transparent); }
-.ti-glow--b1 { animation-delay: -1.4s; }   /* three phases so the halos de-sync */
-.ti-glow--b2 { animation-delay: -2.7s; }
-.ti-glow--door { filter: blur(15px); animation-duration: 3.1s; }
-/* Nothing is animating, so do not hold four promoted textures for it. */
-.mm-reduce-motion .ti-glow { animation: none; will-change: auto; }
 
-.ms-doorglow { fill: color-mix(in srgb, var(--flame-glow) 34%, transparent); }
-.ms-door     { fill: color-mix(in oklab, var(--flame-300) 74%, var(--flame-500)); }
-.ms-doorsplit{ stroke: color-mix(in oklab, var(--flame-500) 70%, var(--ink-900)); stroke-width: 2.5; }
+/* ── the lights the painter put there ─────────────────────────────────────────
+   A lantern on the gate post, a wall lamp either side of the door, the gilt
+   crest on the balcony. They sit ABOVE `.ti-ground`, because a light source is
+   not dimmed by the shadow it casts — it is what keeps the gate lantern lit
+   with the darkest part of the screen right beside it.
 
-.ms-ground { fill: color-mix(in oklab, var(--ink-900) 82%, var(--arcane-600)); }
-.ms-fence { fill: color-mix(in oklab, var(--ink-900) 96%, var(--arcane-600)); }
-.ms-deadtree {
-  fill: none; stroke: color-mix(in oklab, var(--ink-900) 94%, var(--arcane-600));
-  stroke-width: 5; stroke-linecap: round;
+   PERF, and it is the one rule this file kept from the SVG mansion it
+   replaced: opacity is animated on a promoted CSS BOX. The old window bloom
+   animated opacity on blurred SVG *children*, which are not CSS boxes and
+   cannot be promoted, so Chromium re-ran the blur on the main thread every
+   frame — profiled at a 3.3s long task on entry. These are <i> elements with a
+   gradient background: the texture is made once and the breath is compositor
+   work.
+
+   TASTE, and it is the other rule: they BREATHE, they do not flicker. A
+   previous round shipped a flicker aggressive enough that the designer called
+   the game unplayable. Amplitude .66 -> 1 over 8-11s on four small halos moves
+   the whole screen well under 1% in mean luminance. */
+.ti-lights { position: absolute; inset: 0; pointer-events: none; will-change: transform; }
+.ti-lamp {
+  position: absolute;
+  width: var(--w); aspect-ratio: 1;
+  margin: calc(var(--w) / -2) 0 0 calc(var(--w) / -2);
+  border-radius: 50%;
+  animation: ti-breathe var(--dur, 9s) var(--ease-soft) infinite;
+  will-change: opacity;
+}
+@keyframes ti-breathe { 0%, 100% { opacity: .66; } 50% { opacity: 1; } }
+
+.ti-lamp--gate {
+  background: radial-gradient(closest-side,
+    color-mix(in srgb, var(--flame-200) 34%, transparent) 0%,
+    color-mix(in srgb, var(--flame-glow) 20%, transparent) 34%,
+    color-mix(in srgb, var(--flame-500) 10%, transparent) 62%,
+    transparent 100%);
+}
+.ti-lamp--door {
+  background: radial-gradient(closest-side,
+    color-mix(in srgb, var(--flame-200) 40%, transparent) 0%,
+    color-mix(in srgb, var(--flame-glow) 22%, transparent) 36%,
+    transparent 100%);
+}
+.ti-lamp--crest {
+  background: radial-gradient(closest-side,
+    color-mix(in srgb, var(--flame-300) 26%, transparent) 0%,
+    color-mix(in srgb, var(--flame-400) 12%, transparent) 46%,
+    transparent 100%);
 }
 
 /* ── weather ──────────────────────────────────────────────────────────────── */
-.ti-fog {
-  position: absolute; left: -30%; right: -30%; bottom: 8%; height: 34%;
+.ti-mist {
+  position: absolute; left: -24%; right: -24%; bottom: -3%; height: 26%;
   pointer-events: none;
-  background: radial-gradient(60% 100% at 50% 100%, color-mix(in srgb, var(--spectre-300) 11%, transparent), transparent 72%);
-  filter: blur(18px);
-  animation: ti-drift 64s linear infinite alternate;
+  background: radial-gradient(48% 100% at 52% 100%,
+    color-mix(in srgb, var(--spectre-300) 9%, transparent), transparent 72%);
+  filter: blur(20px);
+  animation: ti-drift 86s linear infinite alternate;
   will-change: transform;
 }
-.ti-fog--b { bottom: -2%; height: 28%; animation-duration: 47s; animation-direction: alternate-reverse;
-  background: radial-gradient(70% 100% at 40% 100%, color-mix(in srgb, var(--arcane-300) 10%, transparent), transparent 74%); }
+.ti-mist--b {
+  bottom: 6%; height: 18%;
+  animation-duration: 63s; animation-direction: alternate-reverse;
+  background: radial-gradient(56% 100% at 44% 100%,
+    color-mix(in srgb, var(--arcane-300) 7%, transparent), transparent 74%);
+}
+@keyframes ti-drift { from { transform: translate3d(-3%, 0, 0); } to { transform: translate3d(3%, 0, 0); } }
 
-.ti-motes { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-.ti-motes i {
-  position: absolute; bottom: -12px;
+/* Twinkles laid on the stars the painting already has, up in the clear sky. */
+.ti-stars { position: absolute; inset: 0; pointer-events: none; }
+.ti-stars i {
+  position: absolute;
   width: var(--sz); height: var(--sz);
   border-radius: 50%;
-  background: var(--flame-200);
-  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--flame-glow) 55%, transparent);
+  background: var(--spectre-100);
+  box-shadow: 0 0 5px 1px color-mix(in srgb, var(--spectre-200) 45%, transparent);
   opacity: 0;
-  animation: ti-rise var(--dur) linear var(--del) infinite;
-  will-change: transform, opacity;
+  animation: ti-tw var(--dur) var(--ease-soft) var(--del) infinite;
+  will-change: opacity;
 }
-@keyframes ti-rise {
-  0%   { transform: translate3d(0,0,0) scale(.6); opacity: 0; }
-  12%  { opacity: var(--op); }
-  80%  { opacity: var(--op); }
-  100% { transform: translate3d(var(--dx), calc(-1 * var(--y0)), 0) scale(1); opacity: 0; }
+@keyframes ti-tw { 0%, 100% { opacity: 0; } 50% { opacity: var(--op); } }
+
+/* Two bats crossing the sky, answering the ones painted into the wordmark.
+   They pass behind it — the sign is nearer than they are. */
+.ti-bats { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.ti-bat {
+  position: absolute; left: 0;
+  width: clamp(16px, 1.5vw, 28px); height: auto;
+  color: color-mix(in oklab, var(--arcane-500) 78%, var(--ink-900));
+  opacity: .6;
+  will-change: transform;
+}
+.ti-bat--a { top: 7%;  animation: ti-fly-a 46s linear infinite; }
+.ti-bat--b { top: 15%; animation: ti-fly-b 68s linear infinite; }
+.ti-bat .orn-bat { animation: ti-flap 1.1s var(--ease-soft) infinite; transform-box: fill-box; transform-origin: 50% 40%; }
+@keyframes ti-flap { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(.42); } }
+@keyframes ti-fly-a {
+  0%   { transform: translate3d(-8vw, 0, 0); }
+  50%  { transform: translate3d(52vw, -3vh, 0); }
+  100% { transform: translate3d(112vw, 1vh, 0); }
+}
+@keyframes ti-fly-b {
+  0%   { transform: translate3d(108vw, 0, 0) scaleX(-1); }
+  50%  { transform: translate3d(46vw, 4vh, 0) scaleX(-1); }
+  100% { transform: translate3d(-10vw, -2vh, 0) scaleX(-1); }
 }
 
-/* ── candles + webs ───────────────────────────────────────────────────────── */
-.ti-candle { position: absolute; bottom: 4%; width: clamp(46px, 4.4vw, 74px); height: auto; }
-.ti-candle .orn-candle { width: 100%; height: auto; aspect-ratio: 60/190; }
-.ti-candle--l { left: 5.5%; }
-.ti-candle--r { right: 5.5%; bottom: 6%; transform: scaleX(-1); }
-
-.ti-web { position: absolute; width: clamp(150px, 15vw, 260px); aspect-ratio: 1; pointer-events: none; opacity: .55; }
-.ti-web--l { left: 0; top: 0; }
-.ti-web--r { right: 0; top: 0; transform: scaleX(-1); }
-.ti-web svg { width: 100%; height: 100%; }
-
+/* Barely there. The painting arrived with its own vignette already in it; a
+   second one on top cost the dead tree, the rose beds and the headstones a
+   fifth of their luminance apiece and the frame started to look like a
+   keyhole. This only seats the very top edge, where the sky meets the bezel. */
 .ti-vignette {
   position: absolute; inset: 0; pointer-events: none;
   background:
-    radial-gradient(140% 110% at 50% 44%, transparent 38%, color-mix(in srgb, var(--ink-900) 72%, transparent) 100%),
-    linear-gradient(to bottom, color-mix(in srgb, var(--ink-900) 62%, transparent) 0%, transparent 22%, transparent 70%, color-mix(in srgb, var(--ink-900) 78%, transparent) 100%);
+    radial-gradient(132% 110% at 50% 48%, transparent 56%,
+      color-mix(in srgb, var(--ink-900) 26%, transparent) 100%),
+    linear-gradient(to bottom, color-mix(in srgb, var(--ink-900) 22%, transparent) 0%,
+      transparent 13%);
 }
 
-/* a soft pillar of shadow so the house sits back behind the plinth */
-.ti-scrim {
-  position: absolute; left: 50%; top: 22%;
-  width: min(1000px, 70vw); height: 66%;
-  transform: translateX(-50%);
+/* ── the wordmark ─────────────────────────────────────────────────────────────
+   `.ti-mark` is a full-width flex row rather than a `left:50%` + translate,
+   because the parallax manager writes `style.transform` wholesale and would
+   overwrite the centring translate on the first pointer move. */
+.ti-mark {
+  position: absolute; left: 0; right: 0;
+  top: clamp(4px, 2.2vh, 30px);
+  margin: 0;
+  display: flex; justify-content: center;
   pointer-events: none;
-  background: radial-gradient(50% 52% at 50% 48%,
-    color-mix(in srgb, var(--ink-900) 82%, transparent) 0%,
-    color-mix(in srgb, var(--ink-900) 60%, transparent) 46%,
-    transparent 80%);
+  will-change: transform;
+}
+.ti-logo {
+  display: block;
+  /* ~62% of the width, which is where it sits in the designer's composite, but
+     also capped against HEIGHT: the plate is 3.06:1, so 110vh of width is 36vh
+     of wordmark. On a 16:9 screen the two caps land within a per-cent of each
+     other; on anything squarer the height cap is what stops it swallowing the
+     roofline. */
+  width: min(62vw, 110vh, 1280px);
+  height: auto;
+  filter: drop-shadow(0 14px 30px color-mix(in srgb, var(--ink-900) 76%, transparent));
+  user-select: none; -webkit-user-drag: none;
 }
 
-/* ── foreground stage ─────────────────────────────────────────────────────── */
-.ti-stage {
-  position: absolute; inset: 0;
-  display: flex; flex-direction: column; align-items: center;
-  padding-top: clamp(var(--s-2), 1.8vh, var(--s-5));
-  gap: clamp(var(--s-3), 2vh, var(--s-6));
-}
-.ti-logo { --logo-w: clamp(440px, 52vw, 860px); filter: drop-shadow(0 18px 40px color-mix(in srgb, var(--ink-900) 80%, transparent)); }
-
-/* ── the plinth: the menu's own ground ────────────────────────────────────── */
-.ti-plinth {
-  position: relative;
-  display: flex; flex-direction: column; align-items: stretch;
-  width: min(534px, 43vw);
-  padding: clamp(var(--s-4), 2.2vh, var(--s-6)) clamp(var(--s-4), 1.9vw, var(--s-6))
-           clamp(var(--s-4), 2vh, var(--s-6));
-  border-radius: var(--radius-lg);
+/* ── the menu ─────────────────────────────────────────────────────────────────
+   Bottom-left, in the dark beside the gate. Centred, it buried the door, the
+   steps and both cat statues under its own ground — the entire centre of the
+   composition — so it stands where the painting is already quiet and leaves the
+   axis the painter built alone. Wide enough for its longest label and no wider,
+   so the two brass rules measure the type instead of an arbitrary box. */
+.ti-panel {
+  position: absolute;
+  left: clamp(24px, 13vw, 262px);
+  bottom: clamp(22px, 4.2vh, 52px);
+  width: max-content;
+  min-width: min(300px, 25vw);
+  max-width: min(440px, 34vw);
+  display: flex; flex-direction: column;
+  /* Holds the shadow pool below at `z-index: -1` instead of letting it fall
+     back behind the painting. */
   isolation: isolate;
 }
-/* The blurred, framed slate. Separate from the plinth so the frame can carry a
-   feathered edge without the type inheriting any of it. */
-.ti-plinth__glass {
-  position: absolute; inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background:
-    linear-gradient(180deg,
-      color-mix(in srgb, var(--ink-900) 93%, transparent) 0%,
-      color-mix(in srgb, color-mix(in oklab, var(--ink-800) 62%, var(--arcane-700)) 92%, transparent) 44%,
-      color-mix(in srgb, var(--ink-900) 96%, transparent) 100%);
-  border: 1px solid color-mix(in srgb, var(--brass-400) 34%, transparent);
-  box-shadow:
-    var(--shadow-4),
-    inset 0 1px 0 color-mix(in srgb, var(--brass-200) 16%, transparent),
-    inset 0 0 60px color-mix(in srgb, var(--ink-900) 70%, transparent);
+
+/* The measured ground, and the reason it is a pseudo-element on the panel
+   rather than a corner-anchored gradient in the scene: a corner gradient has to
+   be *guessed* into position and it guessed wrong. Aimed at the bottom-left of
+   the frame it darkened the cobbled path to 0.17x its painted luminance while
+   still leaving a 29.6% specular highlight on the fountain finial sitting
+   directly behind the tagline — 2.23:1, unreadable, in the same pass that had
+   crushed the best part of the picture. Anchored to the panel it is over the
+   type by construction, at every resolution, whatever the menu is holding.
+
+   A blurred, rounded, radially-graded box: soft on all four edges, organic
+   enough not to read as a card, and static, so the filter bakes into its
+   texture once and costs nothing per frame. */
+.ti-panel::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  top: calc(-1 * clamp(24px, 4.4vh, 52px));
+  bottom: calc(-1 * clamp(22px, 3.8vh, 44px));
+  left: calc(-1 * clamp(38px, 5vw, 88px));
+  right: calc(-1 * clamp(32px, 4.6vw, 84px));
+  border-radius: 42% / 34%;
+  /* Wide plateau, then a long fade. The corners are where this fails: with a
+     tighter ellipse the counter's last two words sat past the falloff and on
+     to the lit cobbles at 3.69:1 under `largeText`, which is exactly the reader
+     this setting exists for. */
+  background: radial-gradient(84% 78% at 45% 47%,
+    color-mix(in srgb, var(--ink-900) 66%, transparent) 0%,
+    color-mix(in srgb, var(--ink-900) 60%, transparent) 56%,
+    color-mix(in srgb, var(--ink-900) 26%, transparent) 80%,
+    transparent 97%);
+  filter: blur(22px);
 }
-/* brass hairline + diamond, top and bottom, so it reads as an object */
-.ti-plinth__glass::before,
-.ti-plinth__glass::after {
-  content: ''; position: absolute; left: 9%; right: 9%; height: 9px;
-  background:
-    linear-gradient(90deg, transparent,
-      color-mix(in srgb, var(--brass-300) 60%, transparent) 24%,
-      color-mix(in srgb, var(--brass-300) 60%, transparent) 76%, transparent) center/100% 1px no-repeat,
-    conic-gradient(from 45deg at 50% 50%, var(--brass-200) 0 25%, transparent 0 100%) center/9px 9px no-repeat;
-}
-.ti-plinth__glass::before { top: 7px; }
-.ti-plinth__glass::after  { bottom: 7px; }
 
 .ti-tagline {
-  margin: 0 0 clamp(var(--s-3), 1.6vh, var(--s-5));
+  margin: 0 0 clamp(8px, 1.3vh, 16px);
   font-family: var(--font-body);
-  font-size: clamp(15px, 1.18vw, 20px);
+  font-size: clamp(14px, 1.02vw, 18px);
   font-style: italic;
   line-height: 1.5;
-  text-align: center;
-  color: color-mix(in oklab, var(--parchment) 76%, var(--arcane-200));
-  text-shadow: 0 1px 0 var(--ink-900), 0 2px 14px color-mix(in srgb, var(--ink-900) 92%, transparent);
+  color: var(--parchment);
+  text-shadow: 0 1px 0 var(--ink-900), 0 2px 12px color-mix(in srgb, var(--ink-900) 94%, transparent);
 }
-.ti-tagline span { color: color-mix(in oklab, var(--flame-200) 58%, var(--parchment)); }
+.ti-tagline span { color: color-mix(in oklab, var(--flame-200) 66%, var(--parchment)); }
 
-/* ── menu ─────────────────────────────────────────────────────────────────── */
-.ti-menu {
+.ti-rule {
   position: relative;
-  display: flex; flex-direction: column;
-  gap: clamp(2px, .5vh, 7px);
-  width: fit-content;
-  min-width: 64%;
-  align-self: center;
+  height: 8px;
+  margin: 0 0 clamp(6px, 1.1vh, 13px);
+  background: linear-gradient(90deg,
+      color-mix(in srgb, var(--brass-300) 66%, transparent) 0%,
+      color-mix(in srgb, var(--brass-400) 42%, transparent) 58%,
+      transparent 100%) left center / 100% 1px no-repeat;
 }
+.ti-rule::before {
+  content: ''; position: absolute; left: -1px; top: 50%;
+  width: 7px; height: 7px; margin-top: -3.5px;
+  background: var(--brass-200);
+  transform: rotate(45deg);
+}
+.ti-rule--foot { margin: clamp(5px, .9vh, 11px) 0 clamp(5px, .9vh, 10px); }
+
+.ti-menu { display: flex; flex-direction: column; gap: clamp(1px, .35vh, 6px); }
+
 .ti-item {
   position: relative;
   display: grid;
-  grid-template-columns: 30px 1fr;
-  grid-template-areas: 'g label' 'g hint';
+  grid-template-columns: 1fr;
+  grid-template-areas: 'label' 'hint';
   align-items: center;
-  column-gap: var(--s-3);
-  padding: clamp(7px, 1.15vh, 14px) var(--s-4);
+  padding: clamp(6px, 1vh, 12px) 0;
   text-align: left;
   border-radius: var(--radius-sm);
-  color: var(--text-mid);
-  background: linear-gradient(90deg,
-    color-mix(in srgb, var(--ink-800) 0%, transparent),
-    color-mix(in srgb, var(--ink-800) 0%, transparent));
-  transition:
-    background var(--t-quick) var(--ease-out),
-    color var(--t-quick) var(--ease-out),
-    transform var(--t-quick) var(--ease-out);
+  background: none;
+  /* The hover wash is a `z-index: -1` pseudo. Without a stacking context of its
+     own it would fall all the way back past `.ti-ground` and the plate and
+     never be seen — the old slate plinth was isolating it by accident. */
+  isolation: isolate;
+  transition: transform var(--t-quick) var(--ease-out);
   will-change: transform;
 }
-.ti-item::before {                  /* the lit runner behind the item */
-  content: ''; position: absolute; inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    color-mix(in srgb, var(--arcane-600) 62%, transparent) 18%,
-    color-mix(in srgb, var(--arcane-500) 34%, transparent) 50%,
-    color-mix(in srgb, var(--arcane-600) 62%, transparent) 82%,
-    transparent 100%);
+/* The lantern brought closer: a warm glow spilling in from the light's side,
+   not a purple UI runner. An ELLIPSE, not a left-to-right ramp — a linear
+   gradient reaches the top, bottom and right edges of its box at full strength
+   and the hover read as a rectangular chip pasted on the painting, which is
+   the one thing this screen cannot have. Deliberately dark enough that a
+   hovered label still measures above 4.5:1 against it. */
+.ti-item::before {
+  content: ''; position: absolute; inset: -9px -22px -9px -38px;
+  background: radial-gradient(74% 60% at 5% 50%,
+    color-mix(in srgb, var(--flame-500) 44%, transparent) 0%,
+    color-mix(in srgb, var(--flame-500) 19%, transparent) 46%,
+    transparent 84%);
   opacity: 0;
-  transform: scaleX(.86);
+  transform: scaleX(.9); transform-origin: left center;
   transition: opacity var(--t-quick) var(--ease-out), transform var(--t-base) var(--ease-out);
   z-index: -1;
 }
-.ti-item::after {                   /* hairline rule under each item */
-  content: ''; position: absolute; left: 10%; right: 10%; bottom: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--brass-400) 26%, transparent), transparent);
-}
-.ti-item:last-child::after { display: none; }
 
+/* The caret lives in the margin OUTSIDE the column, so every label, the
+   tagline and the two rules share one flush left edge and the hover marker
+   points in at the item from the dark. */
 .ti-item__glyph {
-  grid-area: g;
-  width: 22px; height: 22px;
-  justify-self: center;
+  position: absolute; left: -27px; top: 50%;
+  width: 20px; height: 20px; margin-top: -10px;
   opacity: 0;
   transform: translateX(-8px) rotate(-25deg) scaleX(-1);
   transition: opacity var(--t-quick) var(--ease-out), transform var(--t-base) var(--ease-snap);
@@ -330,66 +349,99 @@
 .ti-item__label {
   grid-area: label;
   font-family: var(--font-display);
-  font-size: clamp(19px, 1.62vw, 29px);
+  font-size: clamp(19px, 1.68vw, 31px);
   font-weight: 600;
   letter-spacing: .10em;
   text-transform: uppercase;
-  color: color-mix(in oklab, var(--text-hi) 88%, var(--arcane-200));
-  text-shadow: 0 1px 0 var(--ink-900), 0 2px 10px color-mix(in srgb, var(--ink-900) 90%, transparent);
+  color: var(--text-hi);
+  text-shadow: 0 1px 0 var(--ink-900), 0 2px 12px color-mix(in srgb, var(--ink-900) 94%, transparent);
   transition: color var(--t-quick) var(--ease-out), text-shadow var(--t-quick) var(--ease-out);
 }
 .ti-item__hint {
   grid-area: hint;
   font-size: var(--fs-sm);
   font-style: italic;
-  color: var(--text-lo);
+  color: var(--parchment-shade);
+  text-shadow: 0 1px 8px color-mix(in srgb, var(--ink-900) 96%, transparent);
   max-height: 0; opacity: 0; overflow: hidden;
   transition: max-height var(--t-base) var(--ease-out), opacity var(--t-quick) var(--ease-out);
 }
 
-.ti-item:hover, .ti-item:focus-visible { outline: none; transform: translateX(6px); }
+.ti-item:hover, .ti-item:focus-visible { outline: none; transform: translateX(5px); }
 .ti-item:hover::before, .ti-item:focus-visible::before { opacity: 1; transform: scaleX(1); }
 .ti-item:hover .ti-item__glyph, .ti-item:focus-visible .ti-item__glyph { opacity: 1; transform: translateX(0) rotate(0deg) scaleX(-1); }
 .ti-item:hover .ti-item__label, .ti-item:focus-visible .ti-item__label {
   color: var(--flame-100);
-  text-shadow: 0 0 18px color-mix(in srgb, var(--flame-glow) 55%, transparent), 0 2px 8px color-mix(in srgb, var(--ink-900) 90%, transparent);
+  text-shadow: 0 0 18px color-mix(in srgb, var(--flame-glow) 52%, transparent),
+               0 2px 10px color-mix(in srgb, var(--ink-900) 94%, transparent);
 }
-.ti-item:hover .ti-item__hint, .ti-item:focus-visible .ti-item__hint { max-height: 3em; opacity: 1; }
-.ti-item:focus-visible { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--flame-300) 70%, transparent); }
-.ti-item:active { transform: translateX(6px) scale(.985); }
+.ti-item:hover .ti-item__hint, .ti-item:focus-visible .ti-item__hint { max-height: 3.4em; opacity: 1; }
+.ti-item:focus-visible { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--flame-300) 72%, transparent); }
+.ti-item:active { transform: translateX(5px) scale(.985); }
 
-/* ── footer ───────────────────────────────────────────────────────────────── */
-.ti-foot {
-  position: absolute; left: 0; right: 0; bottom: clamp(10px, 1.8vh, 22px);
-  display: flex; align-items: center; justify-content: center; gap: var(--s-4);
+/* ── the counter ──────────────────────────────────────────────────────────────
+   `--text-lo` was the old footer colour. Measured from rendered pixels against
+   the cobbles it does not reach 4.5:1 without making the shadow pool a black
+   box, so the row sits on `--text-mid` and keeps its hierarchy from the size
+   and the letterspacing instead. */
+.ti-count {
+  display: flex; align-items: center; gap: var(--s-2);
+  align-self: flex-start;
+  /* One line, always. Wrapped, it puts the number on its own row and the count
+     stops reading as a count. The wording is short enough to fit inside the
+     panel's own width at 1280 as well as 1920, which is what keeps it inside
+     the measured shadow pool. */
+  white-space: nowrap;
   font-size: var(--fs-xs);
   letter-spacing: .14em;
   text-transform: uppercase;
-  color: var(--text-lo);
+  color: var(--text-mid);
+  text-shadow: 0 1px 0 var(--ink-900), 0 1px 10px color-mix(in srgb, var(--ink-900) 96%, transparent);
 }
-.ti-foot b { color: var(--brass-200); font-family: var(--font-num); font-size: 1.15em; }
-.ti-foot__dot { width: 4px; height: 4px; border-radius: 50%; background: color-mix(in srgb, var(--brass-400) 60%, transparent); }
+.ti-count b { color: var(--brass-200); font-family: var(--font-num); font-size: 1.2em; }
+.ti-count__dot { width: 3px; height: 3px; border-radius: 50%; background: color-mix(in srgb, var(--brass-300) 70%, transparent); }
 /* The four who live at the clubhouse. Named next to the count rather than
    folded into it, so a fresh save reads "0 / 16 freed" and means it. */
-.ti-foot__with { color: color-mix(in oklab, var(--text-lo) 74%, var(--brass-400)); }
+.ti-count__with { color: color-mix(in oklab, var(--text-mid) 70%, var(--brass-200)); }
 
-/* ── entrance ─────────────────────────────────────────────────────────────── */
-.scene--title.is-entering .ti-logo    { animation: ti-in-logo 1.15s var(--ease-out) both; }
-.scene--title.is-entering .ti-plinth  { animation: ti-in-up .8s var(--ease-out) .42s both; }
+.ti-build {
+  position: absolute; right: clamp(12px, 1.6vw, 28px); bottom: clamp(10px, 1.5vh, 20px);
+  font-size: var(--fs-xs);
+  letter-spacing: .14em; text-transform: uppercase;
+  /* A hair above `--text-lo`: measured against the cobbles in the far corner
+     the flat token lands at 4.59:1, and at 4.46:1 once `largeText` grows the
+     glyphs into brighter stones. This clears 5:1 in every case, which is the
+     margin the quietest line on the screen should have rather than the least. */
+  color: color-mix(in oklab, var(--text-lo) 58%, var(--text-mid));
+  text-shadow: 0 1px 8px color-mix(in srgb, var(--ink-900) 96%, transparent);
+  pointer-events: none;
+}
+
+/* ── entrance ─────────────────────────────────────────────────────────────────
+   Opacity only on the two plates: they are inside the parallax-owned layer and
+   a transform here would be overwritten, and animating a transform on the
+   blurred copy would ask for its filter back. */
+.scene--title.is-entering .ti-plate   { animation: ti-in-fade 1s var(--ease-out) both; }
+.scene--title.is-entering .ti-logo    { animation: ti-in-logo 1.1s var(--ease-out) .12s both; }
+.scene--title.is-entering .ti-tagline { animation: ti-in-up .7s var(--ease-out) .5s both; }
+.scene--title.is-entering .ti-rule    { animation: ti-in-wipe .7s var(--ease-out) .56s both; }
 .scene--title.is-entering .ti-item    { animation: ti-in-up .6s var(--ease-out) both; }
-.scene--title.is-entering .ti-item:nth-child(1) { animation-delay: .62s; }
-.scene--title.is-entering .ti-item:nth-child(2) { animation-delay: .70s; }
-.scene--title.is-entering .ti-item:nth-child(3) { animation-delay: .78s; }
-.scene--title.is-entering .ti-item:nth-child(4) { animation-delay: .86s; }
-.scene--title.is-entering .ti-item:nth-child(5) { animation-delay: .94s; }
-.scene--title.is-entering .ti-foot    { animation: ti-in-up .7s var(--ease-out) 1.1s both; }
+.scene--title.is-entering .ti-item:nth-child(1) { animation-delay: .64s; }
+.scene--title.is-entering .ti-item:nth-child(2) { animation-delay: .72s; }
+.scene--title.is-entering .ti-item:nth-child(3) { animation-delay: .80s; }
+.scene--title.is-entering .ti-item:nth-child(4) { animation-delay: .88s; }
+.scene--title.is-entering .ti-item:nth-child(5) { animation-delay: .96s; }
+.scene--title.is-entering .ti-count   { animation: ti-in-up .7s var(--ease-out) 1.06s both; }
+.scene--title.is-entering .ti-build   { animation: ti-in-fade .7s var(--ease-out) 1.2s both; }
+@keyframes ti-in-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes ti-in-logo {
-  from { opacity: 0; transform: translateY(-16px) scale(.965); filter: blur(6px); }
+  from { opacity: 0; transform: translateY(-14px) scale(.972); filter: blur(5px); }
   to   { opacity: 1; transform: none; filter: none; }
 }
-@keyframes ti-in-up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes ti-in-up   { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes ti-in-wipe { from { opacity: 0; transform: scaleX(.2); transform-origin: left center; } to { opacity: 1; transform: none; } }
 
-/* ── overlay (settings / credits) ─────────────────────────────────────────── */
+/* ── overlay (credits) ────────────────────────────────────────────────────── */
 .ti-ov {
   position: absolute; inset: 0;
   display: grid; place-items: center;
@@ -422,36 +474,6 @@
 }
 .ti-ov__body { display: flex; flex-direction: column; gap: var(--s-3); }
 
-.ti-set {
-  display: grid; grid-template-columns: 1fr 180px 44px;
-  align-items: center; gap: var(--s-4);
-  padding: var(--s-2) var(--s-3);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-}
-.ti-set:hover { background: color-mix(in srgb, var(--ink-600) 60%, transparent); }
-.ti-set__label { font-size: var(--fs-md); color: var(--text-hi); display: grid; gap: 2px; }
-.ti-set__label em { font-size: var(--fs-xs); font-style: italic; color: var(--text-lo); }
-.ti-set__out { font-family: var(--font-num); color: var(--brass-200); text-align: right; }
-.ti-set__range { accent-color: var(--flame-300); width: 100%; }
-.ti-set--toggle { grid-template-columns: 1fr 44px; }
-.ti-set__check { position: absolute; opacity: 0; width: 0; height: 0; }
-.ti-set__sw {
-  width: 44px; height: 24px; border-radius: 12px;
-  background: color-mix(in srgb, var(--ink-500) 90%, transparent);
-  border: 1px solid color-mix(in srgb, var(--brass-400) 26%, transparent);
-  position: relative; transition: background var(--t-quick) var(--ease-out);
-}
-.ti-set__sw::after {
-  content: ''; position: absolute; top: 2px; left: 2px;
-  width: 18px; height: 18px; border-radius: 50%;
-  background: var(--text-mid);
-  transition: transform var(--t-quick) var(--ease-snap), background var(--t-quick) var(--ease-out);
-}
-.ti-set__check:checked ~ .ti-set__sw { background: color-mix(in oklab, var(--flame-500) 74%, var(--flame-300)); }
-.ti-set__check:checked ~ .ti-set__sw::after { transform: translateX(20px); background: var(--flame-100); }
-.ti-set__check:focus-visible ~ .ti-set__sw { outline: 2px solid var(--flame-300); outline-offset: 2px; }
-
 .ti-credits { font-size: var(--fs-md); color: var(--text-mid); line-height: 1.6; }
 .ti-credits__lead { margin: 0 0 var(--s-4); font-style: italic; color: var(--text-hi); }
 .ti-credits dl { display: grid; grid-template-columns: 10em 1fr; gap: var(--s-2) var(--s-4); margin: 0; }
@@ -472,16 +494,40 @@
 }
 .ti-ov__close:hover { background: color-mix(in oklab, var(--flame-500) 40%, var(--ink-600)); border-color: var(--brass-300); }
 
-/* ── readability ──────────────────────────────────────────────────────────── */
-.mm-large-text .ti-item__hint,
-.mm-large-text .ti-credits { font-size: calc(var(--fs-md) * 1.18); }
-.mm-large-text .ti-foot { font-size: var(--fs-sm); }
+/* ── reduced motion ───────────────────────────────────────────────────────────
+   Nothing on this screen moves, so nothing holds a promoted texture for it
+   either. The parallax is not registered at all in JS, so the plate sits at
+   exactly 1.0 and cover-fits with no crop of its own. */
+.mm-reduce-motion .ti-lamp,
+.mm-reduce-motion .ti-mist,
+.mm-reduce-motion .ti-stars i,
+.mm-reduce-motion .ti-bat,
+.mm-reduce-motion .ti-bat .orn-bat { animation: none; will-change: auto; }
+.mm-reduce-motion .ti-scene,
+.mm-reduce-motion .ti-lights,
+.mm-reduce-motion .ti-mark,
+.mm-reduce-motion .ti-item { will-change: auto; }
+.mm-reduce-motion .ti-lamp   { opacity: .84; }
+.mm-reduce-motion .ti-stars i { opacity: var(--op); }
+.mm-reduce-motion .ti-bats   { display: none; }
 
-@media (max-width: 900px) {
-  .ti-plinth { width: min(92vw, 520px); }
-  .ti-candle { display: none; }
+/* ── readability ──────────────────────────────────────────────────────────── */
+.mm-large-text .ti-item__hint { font-size: var(--fs-md); }
+.mm-large-text .ti-tagline    { font-size: clamp(16px, 1.2vw, 21px); }
+.mm-large-text .ti-panel      { max-width: min(520px, 40vw); }
+/* `--fs-xs` already carries the 1.22 `--type-scale`, so the count and the build
+   string grow on their own. Bumping them a step further on top of that pushed
+   the count 20% wider and straight out of its own shadow pool. */
+
+/* Short screens: the block has to clear the front door, so the tagline and the
+   items give up their generous padding before the menu starts climbing. */
+@media (max-height: 800px) {
+  .ti-tagline { margin-bottom: 7px; line-height: 1.42; }
+  .ti-item    { padding-top: 5px; padding-bottom: 5px; }
+  .ti-logo    { width: min(58vw, 104vh, 1120px); }
 }
-@media (max-height: 760px) {
-  .ti-logo { --logo-w: clamp(380px, 42vw, 660px); }
-  .ti-tagline { font-size: var(--fs-md); }
+@media (max-width: 900px) {
+  .ti-panel { left: clamp(18px, 5vw, 40px); max-width: min(88vw, 420px); }
+  .ti-logo  { width: min(86vw, 104vh); }
+  .ti-mark  { top: 2.4vh; }
 }
