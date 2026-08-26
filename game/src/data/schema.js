@@ -195,8 +195,10 @@ export const COMPANIONS = [
 
 /**
  * The eight kids and the pets they are looking for.
- * `pronouns` is stated where the doc states it (Maya, Amina, Lena) and they/them where it
- * does not — never inferred from a name. Copy must read this, never hardcode a pronoun.
+ * `pronouns` is AUTHORITATIVE and set by the designer. Do not re-derive it from the design
+ * doc: a pass over the doc's possessives read Mateo as he/him from "Mateo shakes his head",
+ * and that is wrong — Mateo is they/them. Eli and Jordan are he/him even though the doc
+ * never says so directly. Copy must read this field and never hardcode or guess a pronoun.
  * `petKind`/`petBreed` are the design doc's own words — five of these were invented
  * during scaffolding and wrong for months (Orbit was listed as a parrot; he is a cat).
  */
@@ -204,15 +206,15 @@ export const KIDS = [
   { slug: 'maya',   name: 'Maya Chen',       pet: 'Orbit',    petKind: 'cat',        petBreed: 'black domestic cat, white chest patch',
     pronouns: { s: 'she',  o: 'her',  p: 'her',   r: 'herself',    plural: false } },
   { slug: 'mateo',  name: 'Mateo Alvarez',   pet: 'Pepper',   petKind: 'parrot',     petBreed: 'green cheek conure',
-    pronouns: { s: 'he',   o: 'him',  p: 'his',   r: 'himself',    plural: false } },
+    pronouns: { s: 'they', o: 'them', p: 'their', r: 'themselves', plural: true  } },
   { slug: 'amina',  name: 'Amina Okafor',    pet: 'Mochi',    petKind: 'rabbit',     petBreed: 'cream lop-eared rabbit',
     pronouns: { s: 'she',  o: 'her',  p: 'her',   r: 'herself',    plural: false } },
   { slug: 'eli',    name: 'Eli Rosen',       pet: 'Sprocket', petKind: 'rat',        petBreed: 'black and white fancy rat',
-    pronouns: { s: 'they', o: 'them', p: 'their', r: 'themselves', plural: true  } },
+    pronouns: { s: 'he',   o: 'him',  p: 'his',   r: 'himself',    plural: false } },
   { slug: 'priya',  name: 'Priya Shah',      pet: 'Pixel',    petKind: 'gecko',      petBreed: 'leopard gecko',
     pronouns: { s: 'she',  o: 'her',  p: 'her',   r: 'herself',    plural: false } },
   { slug: 'jordan', name: 'Jordan Brooks',   pet: 'Scout',    petKind: 'dog',        petBreed: 'beagle mix',
-    pronouns: { s: 'they', o: 'them', p: 'their', r: 'themselves', plural: true  } },
+    pronouns: { s: 'he',   o: 'him',  p: 'his',   r: 'himself',    plural: false } },
   { slug: 'lena',   name: 'Lena Yazzie',     pet: 'Mooncake', petKind: 'hamster',    petBreed: 'Syrian hamster',
     pronouns: { s: 'she',  o: 'her',  p: 'her',   r: 'herself',    plural: false } },
   { slug: 'samir',  name: 'Samir Haddad',    pet: 'Bean',     petKind: 'guinea pig', petBreed: 'tricolour guinea pig',

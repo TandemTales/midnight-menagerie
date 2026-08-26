@@ -451,13 +451,18 @@ export const KID_CODEX = {
     perk: ['Look Again', 'Secret rooms appear more often, and every Secret you find is recorded permanently.'],
     focus: 'Secrets, evidence, environmental observation',
   },
-  lucy: {
-    age: 11, species: 'Tricolour guinea pig',
-    lost: 'Wandered out through an unlatched door during a family party.',
-    note: '"He answers when I call him properly. Nobody else says it right."',
-    trait: 'Peacemaker, endlessly stubborn about the things that matter.',
-    perk: ['Say It Properly', 'Animal Curiosities always offer a kind option, and it always works.'],
-    focus: 'Curiosity outcomes, animal handling, group morale',
+  /* Samir Haddad and Bean, from docs/design/kids/08-kid-08.md — every line
+     below is the doc's, not an invention. He was scaffolded as "Lucy" with a
+     pet "Biscuit" and stayed wrong for months while the doc named him 628
+     times. His register is deadpan and precise: he does not get angry at the
+     House, he cross-examines it. "He ate lettuce. That is not a contract." */
+  samir: {
+    age: 12, species: 'Tricolour guinea pig, brown patch over his right eye',
+    lost: 'Wandered out of an unlatched hutch during a family gathering. A cousin saw a tiny man in a red coat carry him through the wall.',
+    note: '"Bean would accept lettuce from a burglar. That is not the same as agreeing to live somewhere."',
+    trait: 'Deadpan, exact about words, will negotiate with anything that talks back. Wants everybody comfortable, and is finding out that is not always the answer.',
+    perk: ['Ask What It Means', 'Every Curiosity adds one option that asks what accepting actually costs, and the house has to answer before you choose.'],
+    focus: 'Curiosities, information over loot, reading the terms before you agree to them',
   },
 };
 

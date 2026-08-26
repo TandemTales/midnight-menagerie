@@ -153,7 +153,7 @@ export function makeDummySetup(rng = new RNG(1), o = {}) {
   return {
     rng,
     player: {
-      name: o.name || 'Lucy',
+      name: o.name || 'Samir',
       companion: o.companion || 'neutral',
       maxHp: o.maxHp ?? 70,
       hp: o.hp ?? o.maxHp ?? 70,

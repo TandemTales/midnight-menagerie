@@ -272,8 +272,9 @@ export const KID_LOADOUTS = {
   jordan: ['dog-whistle', 'pet-treats', 'thermos', 'glow-sticks'],
   // Mooncake, a hamster. Secrets and evidence. (Chalk trimmed: 6 -> 5.)  2+2+1
   lena:   ['flashlight', 'camera', 'pocket-mirror'],
-  // Bean, a guinea pig. Animal handling. (Flashlight -> First Aid Tin: 6 -> 5.)
-  lucy:   ['pet-treats', 'familiar-toy', 'blanket', 'first-aid-tin'],
+  // Bean, a guinea pig. Talks to things; the Walkie-Talkie is his signature
+  // Gear in the design doc, and Bean answers "Bean Bean" over it.   2+1+1+1 = 5
+  samir:  ['walkie-talkie', 'pet-treats', 'familiar-toy', 'notebook'],
 };
 
 export function defaultLoadout(kidSlug = 'maya') {

@@ -14,11 +14,12 @@
 
 import { COMPANIONS, KIDS } from '../data/schema.js';
 import { Save } from '../core/save.js';
-import { petImg, kidImg, petPhoto, kidPhoto, warmFaces, petKey } from './petart.js';
+import { petImg, petPhoto, warmFaces, petKey } from './petart.js';
 
-// The pet photographs and Kid portraits live in ui/petart.js. Re-exported here
-// so scenes keep importing their art from one place.
-export { petImg, kidImg, petPhoto, kidPhoto, warmFaces, petKey };
+// The pet photographs are generated in ui/petart.js. Re-exported here so scenes
+// keep importing all their art from one place. The Kids are NOT generated —
+// they are authored paintings, loaded by `kidImg` further down this file.
+export { petImg, petPhoto, warmFaces, petKey };
 
 // ── stylesheet loading ──────────────────────────────────────────────────────
 // index.html is owned by the lead and only links tokens.css + base.css, so scene
@@ -552,45 +553,75 @@ export function logoLockup({ size = 'hero', plaque = null, id = 'mm-logo' } = {}
   return node;
 }
 
-// ── Kid portraits and pet photographs ───────────────────────────────────────
+// ── the eight Kids ──────────────────────────────────────────────────────────
 /**
- * Both used to be drawn here as flat SVG: one shared body silhouette recoloured
- * per Kid, and one grey glyph per rough species for the pets. A reviewer put it
- * exactly right — "the lost pets have no faces", "the single image the whole
- * game is about is a placeholder" — so both are now real generated photographs
- * from `ui/petart.js`, and this file just adapts them to the shapes the scenes
- * already ask for.
+ * Authored paintings, prepared by `python tools/prep_kid_art.py` and committed
+ * (no build step, CONTRACTS #1). Two crops of the same painting per Kid:
+ *
+ *   portrait  assets/kids/<slug>.jpg        720x960, 3:4.  The whole figure in
+ *             their own lamplit corner of the house. The dossier hero and any
+ *             other slot big enough to be looked at rather than glanced at.
+ *   thumb     assets/kids/<slug>-thumb.jpg  192x192, 1:1.  Head and shoulders,
+ *             framed the same way for all eight so a row of them reads as a
+ *             roster and not as eight unrelated crops. Tiles and rosters.
+ *
+ * Before this they were generated in `ui/petart.js` — one body silhouette
+ * recoloured per Kid, no faces — and a reviewer named it next to the painted
+ * Companions. That generator is deleted, not disabled: two systems for one
+ * picture is how a screen ends up showing the wrong one.
+ *
+ * The pets are still generated, and should stay that way. There is no authored
+ * pet art, and a snapshot taken by a frightened child is a thing a generator
+ * can genuinely nail; a child's face is not.
  */
+export const KID_PORTRAIT_W = 720, KID_PORTRAIT_H = 960;
+export const KID_THUMB_PX = 192;
 
-/** Their signature torch colour, for anything that still wants just the hue. */
-export const KID_LOOKS = {
-  maya:   { hue: 'var(--kid-maya)' },
-  mateo:  { hue: 'var(--kid-mateo)' },
-  amina:  { hue: 'var(--kid-amina)' },
-  eli:    { hue: 'var(--kid-eli)' },
-  priya:  { hue: 'var(--kid-priya)' },
-  jordan: { hue: 'var(--kid-jordan)' },
-  lena:   { hue: 'var(--kid-lena)' },
-  lucy:   { hue: 'var(--kid-lucy)' },
-};
+/** `variant`: 'portrait' (3:4 painting) | 'thumb' (192px square head). */
+export function kidSrc(slug, variant = 'portrait') {
+  const s = String(slug || '');
+  return variant === 'thumb' ? `${ASSETS}kids/${s}-thumb.jpg` : `${ASSETS}kids/${s}.jpg`;
+}
+
+/**
+ * An <img> for one Kid, class `kidpf` so the scene stylesheets that already
+ * size these boxes keep working. Intrinsic width/height are on the element
+ * before the src is, so the box is the right shape on the first frame and
+ * nothing reflows when the file lands.
+ */
+export function kidImg(slug, { alt, className = 'kidpf', variant = 'portrait' } = {}) {
+  const k = KID_BY_SLUG[slug];
+  const thumb = variant === 'thumb';
+  const img = document.createElement('img');
+  img.className = className + (thumb ? ' kidpf--thumb' : '');
+  img.decoding = 'async';
+  img.draggable = false;
+  img.width = thumb ? KID_THUMB_PX : KID_PORTRAIT_W;
+  img.height = thumb ? KID_THUMB_PX : KID_PORTRAIT_H;
+  img.alt = alt ?? (k ? `${k.name}, looking for ${k.pet}` : 'One of the kids');
+  img.src = kidSrc(slug, variant);
+  /* A missing thumbnail falls back to the full painting, never to a broken
+     image: the crop is then wrong, but the right child is still on screen. */
+  if (thumb) {
+    img.addEventListener('error', () => { img.src = kidSrc(slug, 'portrait'); }, { once: true });
+  }
+  return img;
+}
 
 /**
  * A Kid portrait, sized so the box it lands in never reflows.
- * Same signature as the SVG version it replaces — every caller passes
- * `{ ...kid, petKind }` and a `{ w, h }` — and it still carries the `kidpf`
- * class the four scene stylesheets already target.
  *
- * `tag` used to hang the pet's collar tag in the beam. The pet now has an
- * actual photograph of its own on the same screen, so the tag was a second,
- * worse picture of the same animal; the option is accepted and ignored.
+ * Signature kept from the generated version every caller already uses — they
+ * pass `{ ...kid, petKind }` and a `{ w, h }`. `variant` is the one addition:
+ * pass 'thumb' for a tile or a roster row, leave it for a hero slot.
  */
-export function kidPortrait(kid, { w = 260, h = 300 } = {}) {
-  const img = kidImg(kid?.slug);
-  /* `w`/`h` become a MAX, not a fixed size, and they are set as attributes
+export function kidPortrait(kid, { w = 260, h = 300, variant = 'portrait' } = {}) {
+  const img = kidImg(kid?.slug, { variant });
+  /* `w`/`h` become a MAX, not a fixed size, and they are set as data attributes
      rather than inline styles. Inline width/height beat the stylesheet, and
-     every one of the four boxes these land in already sizes them in CSS —
-     the select dossier stretches its portrait to the full height of the panel
-     and an inline `height:auto` silently vetoed that. */
+     every one of the boxes these land in already sizes them in CSS — the
+     select dossier stretches its portrait to the full height of the panel and
+     an inline `height:auto` silently vetoed that. */
   img.style.maxWidth = '100%';
   if (w) img.dataset.w = String(w);
   if (h) img.dataset.h = String(h);
@@ -607,8 +638,8 @@ export function petPortrait(any, { alt } = {}) {
 
 /**
  * DEPRECATED — the flat species glyph. The MISSING poster used one fixed cat
- * path for every pet including Lucy's guinea pig, which is precisely the thing
- * this round was sent to fix. Kept only so nothing outside `scenes/{title,
+ * path for every pet including Samir's guinea pig, which is precisely the thing
+ * that round was sent to fix. Kept only so nothing outside `scenes/{title,
  * select,clubhouse,gameover}` breaks at import time; every caller in those four
  * now uses `petPortrait`. It returns the cat path and it is meant to be unused.
  */

@@ -1,13 +1,20 @@
 /**
- * Photographs. OWNER: frontend agent (new file; pairs with ui/portrait.js).
+ * The eight missing pets, photographed. OWNER: frontend agent (pairs with
+ * ui/portrait.js).
  *
- * The eight missing pets and the eight Kids had no art. What they had was a
- * flat grey silhouette each — one shared body shape for the Kids, one glyph
- * per rough species for the pets — while the Companions next to them have
- * painted portraits. The single image the whole game is about was a
- * placeholder, and a reviewer said so.
+ * The eight pets had no art: one grey glyph per rough species, while the
+ * Companions next to them have painted portraits. The single image the whole
+ * game is about was a placeholder, and a reviewer said so.
  *
- * There is no budget to commission sixteen paintings, so these are generated.
+ * THE KIDS ARE NOT HERE ANY MORE. This file used to generate their faces too —
+ * one body silhouette recoloured eight times, which drew the same review — and
+ * the eight of them are now authored paintings on disk, loaded by
+ * `ui/portrait.js` (`kidImg` / `kidPortrait`, assets/kids/*.jpg). The pets
+ * stayed generated because no pet art was commissioned and, more importantly,
+ * because generating them is the RIGHT answer here: see the framing below.
+ * Do not add a second Kid pipeline back into this file.
+ *
+ * There is no pet art to commission against, so these are generated.
  * The trick that makes that survivable is the framing: a missing-pet picture is
  * a PHOTOGRAPH taken by a child on a phone or a disposable camera, and a
  * convincingly bad snapshot is far easier to make beautiful than a portrait.
@@ -18,7 +25,7 @@
  *   the bright edges, film grain, an orange date imprint in the corner, and an
  *   animal that is slightly too close to the lens and not quite centred.
  *
- * Every one is deterministic: the pet's slug seeds the RNG, so Biscuit is the
+ * Every one is deterministic: the pet's slug seeds the RNG, so Bean is the
  * same guinea pig in the same kitchen forever.
  *
  * ── how a picture is built ─────────────────────────────────────────────────
@@ -44,10 +51,10 @@
  * is not a UI state and must never become a token.
  *
  * ── cost ──────────────────────────────────────────────────────────────────
- * One pet is ~9 ms, one Kid ~11 ms, and each is cached as a single canonical
- * bitmap reused at every size (the polaroid, the poster, the run-end ledger all
- * share one decode). `warmFaces()` renders the set a couple per frame off the
- * critical path; call it on scene entry and never await it.
+ * One pet is ~9 ms, and each is cached as a single canonical bitmap reused at
+ * every size (the polaroid, the poster, the run-end ledger all share one
+ * decode). `warmFaces()` renders the set a couple per frame off the critical
+ * path; call it on scene entry and never await it.
  */
 
 import { KIDS } from '../data/schema.js';
@@ -601,19 +608,6 @@ const SKIN = {
   deep: ['#6d4227', '#9a6741', '#3d2113'],
   rich: ['#4e2e1c', '#7a4e30', '#2a160c'],
 };
-/* Hair reads BLACK in a photograph and still has to be visible in one. These
-   are deliberately two stops lighter than "correct": at RGB 20 the fill, the
-   fur strokes and the rim light all clip to the same value and every kid whose
-   hair was not a big blunt bob came out bald. */
-const HAIRCOL = {
-  jet: ['#2e2839', '#635a78', '#14121c'],
-  ink: ['#38292c', '#725c5f', '#181113'],
-  darkbrown: ['#52321f', '#8a5c3a', '#26150a'],
-  chestnut: ['#71401f', '#a86e40', '#3a1b0b'],
-  auburn: ['#93482040', '#c87c46', '#4c220a'],
-  black: ['#282232', '#5c5468', '#111017'],
-};
-HAIRCOL.auburn[0] = '#934820';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    camera — flash, halation, grade, grain
@@ -939,7 +933,7 @@ function room(g, w, h, kind, R) {
         x.beginPath(); x.moveTo(w * 0.78, h * 0.1); x.lineTo(w * 1.1, h * 0.5); x.stroke();
         break;
       }
-      default: {                              // Biscuit: kitchen lino, a bowl
+      default: {                              // Bean: kitchen lino, a bowl
         wall(mix(PELT.lino, t.ink700, 0.4), sink(PELT.lino, 0.6));
         x.fillStyle = rgba(sink(PELT.lino, 0.2), 0.5);
         for (let i = -1; i < 8; i++) {
@@ -960,7 +954,7 @@ function room(g, w, h, kind, R) {
 
 /**
  * Each entry is one animal, not one species: Orbit's white chest patch, the
- * brown patch over Biscuit's right eye and Sprocket's hood are named in
+ * brown patch over Bean's right eye and Sprocket's hood are named in
  * docs/design/kids/*.md and they are the things the kids would recognise them
  * by, so they are the things the photographs have to show.
  *
@@ -1008,8 +1002,8 @@ const PETS = {
     kid: 'lena', scene: 'bedding', paint: paintHamster, date: '15 11 2022', shine: '#e77a6a',
     frame: { z: 1.02, dx: 0.02, dy: 0.02, rot: 0.1, blur: 0 }, key: [0.4, 0.3], dark: 0.42,
   },
-  biscuit: {
-    kid: 'lucy', scene: 'lino', paint: paintGuinea, date: '05 12 2022', shine: '#e0736b',
+  bean: {
+    kid: 'samir', scene: 'lino', paint: paintGuinea, date: '05 12 2022', shine: '#e0736b',
     frame: { z: 1.05, dx: -0.06, dy: 0.03, rot: 0.04, blur: 0 }, key: [0.32, 0.32], dark: 0.48,
   },
 };
@@ -1785,7 +1779,7 @@ function paintHamster(g, w, h, R) {
   }
 }
 
-/* ── Biscuit: tricolour guinea pig ───────────────────────────────────────── */
+/* ── Bean: tricolour guinea pig ──────────────────────────────────────────── */
 function paintGuinea(g, w, h, R) {
   const cx = w * 0.48, cy = h * 0.56, s = h / 480;
   const white = PELT.cream, wHi = PELT.creamHi, wLo = PELT.creamLo;
@@ -1820,7 +1814,7 @@ function paintGuinea(g, w, h, R) {
   for (const o of [-1, 1]) {
     const ex = cx + o * 168 * s, ey = cy - 58 * s;
     // small, low, folded-over petals — NOT the round high ears of a hamster
-    // and not a dog's flap. Wrong ears turned Biscuit into a puppy last round.
+    // and not a dog's flap. Wrong ears turned Bean into a puppy last round.
     const ear = loop([
       [ex - o * 40 * s, ey - 30 * s], [ex + o * 10 * s, ey - 34 * s],
       [ex + o * 34 * s, ey + 6 * s], [ex + o * 12 * s, ey + 38 * s],
@@ -2004,893 +1998,6 @@ function paintPet(g, w, h, key, R) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   the eight Kids
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-/**
- * Eight specific children, not one silhouette recoloured eight times.
- * Age, background and the things the design docs actually name (Maya's forearm
- * crutches, Mateo's round glasses, Eli's rectangular ones, Lena's hair tie) do
- * the identifying work; the torch does the lighting.
- *
- *   skin/hair   pigment keys from SKIN / HAIRCOL
- *   cut         hair silhouette
- *   gear        the prop that is theirs alone
- *   torch       hue of their beam, from the --kid-* ramp in ui/portrait.css
- *   face        the small dials — brow angle, mouth, face width, freckles
- */
-const KID_FACES = {
-  maya: {
-    skin: 'olive', hair: 'jet', cut: 'bob', gear: 'crutch', torchVar: '--kid-maya',
-    face: { wide: 0.96, brow: -0.2, mouth: 'set', chin: 1.04, freckle: 0, eye: 0.94 },
-    frame: { z: 0.98, dx: -0.05, dy: 0.01, rot: -0.03 },
-  },
-  mateo: {
-    skin: 'tan', hair: 'darkbrown', cut: 'crop', gear: 'roundglasses', torchVar: '--kid-mateo',
-    face: { wide: 1.05, brow: 0.12, mouth: 'open', chin: 0.9, freckle: 0.3, eye: 1.0 },
-    frame: { z: 1.04, dx: 0.05, dy: 0.05, rot: 0.05 },
-  },
-  amina: {
-    skin: 'deep', hair: 'black', cut: 'puffs', gear: 'scarf', torchVar: '--kid-amina',
-    face: { wide: 0.99, brow: 0.06, mouth: 'soft', chin: 1.0, freckle: 0, eye: 1.02 },
-    frame: { z: 0.92, dx: 0.04, dy: 0.02, rot: 0.02 },
-  },
-  eli: {
-    skin: 'fair', hair: 'auburn', cut: 'shag', gear: 'rectglasses', torchVar: '--kid-eli',
-    face: { wide: 0.92, brow: 0.24, mouth: 'grin', chin: 0.96, freckle: 0.9, eye: 0.92 },
-    frame: { z: 1.0, dx: -0.06, dy: 0.05, rot: 0.06 },
-  },
-  priya: {
-    skin: 'brown', hair: 'jet', cut: 'braid', gear: 'headband', torchVar: '--kid-priya',
-    face: { wide: 0.93, brow: -0.24, mouth: 'set', chin: 1.08, freckle: 0, eye: 0.96 },
-    frame: { z: 0.96, dx: 0.06, dy: 0.04, rot: -0.05 },
-  },
-  jordan: {
-    skin: 'rich', hair: 'black', cut: 'fade', gear: 'hood', torchVar: '--kid-jordan',
-    face: { wide: 1.06, brow: -0.08, mouth: 'grin', chin: 1.04, freckle: 0, eye: 1.0 },
-    frame: { z: 1.02, dx: -0.02, dy: 0.05, rot: 0.03 },
-  },
-  lena: {
-    skin: 'tan', hair: 'ink', cut: 'longtie', gear: 'camera', torchVar: '--kid-lena',
-    face: { wide: 0.95, brow: 0.02, mouth: 'soft', chin: 0.94, freckle: 0, eye: 1.04 },
-    frame: { z: 0.9, dx: 0.02, dy: 0.0, rot: -0.02 },
-  },
-  lucy: {
-    skin: 'fair', hair: 'chestnut', cut: 'bunches', gear: 'straps', torchVar: '--kid-lucy',
-    face: { wide: 1.0, brow: 0.16, mouth: 'soft', chin: 0.88, freckle: 0.6, eye: 1.06 },
-    frame: { z: 1.06, dx: -0.03, dy: 0.06, rot: 0.04 },
-  },
-};
-
-/** Read one --kid-* colour out of the live stylesheet as a hex string. */
-const _kidHue = new Map();
-function kidHue(varName) {
-  if (_kidHue.has(varName)) return _kidHue.get(varName);
-  let out = '#f8c96b';
-  try {
-    const probe = document.createElement('span');
-    probe.style.cssText = 'position:absolute;left:-9999px;color:var(' + varName + ')';
-    document.body.appendChild(probe);
-    const c = getComputedStyle(probe).color;
-    probe.remove();
-    const m = c.match(/(\d+(?:\.\d+)?)/g);
-    if (m && m.length >= 3) out = rgb2hex([+m[0], +m[1], +m[2]]);
-  } catch { /* stylesheet not up yet — the flame default is a fine torch */ }
-  _kidHue.set(varName, out);
-  return out;
-}
-
-const KID_W = 416, KID_H = 462;
-
-function paintKid(g, w, h, slug, R) {
-  const spec = KID_FACES[slug] || KID_FACES.maya;
-  const t = tokens();
-  const s = h / 672;
-  const sk = SKIN[spec.skin], hc = HAIRCOL[spec.hair], F = spec.face;
-  const torch = kidHue(spec.torchVar);
-  const fr = spec.frame;
-  const cx = w * 0.45, cy = h * 0.47;
-
-  /* — the house behind them: wallpaper, a doorway, floorboards, all blurred.
-       The beam has to LAND on something for the room to exist, so the torch
-       throws a lit ellipse on the wall and a hard-edged bar of light across
-       the door frame; without those the background was brown soup. — */
-  blurred(g, w, h, 16, (x) => {
-    const gr = x.createLinearGradient(w, 0, w * 0.1, h);
-    gr.addColorStop(0, mix(t.ink700, PELT.cocoa, 0.34));
-    gr.addColorStop(0.55, mix(t.ink800, PELT.cocoa, 0.12));
-    gr.addColorStop(1, t.ink900);
-    x.fillStyle = gr; x.fillRect(0, 0, w, h);
-    // the pool of torchlight on the far wall
-    const pool = x.createRadialGradient(w * 0.82, h * 0.3, 0, w * 0.82, h * 0.3, w * 0.62);
-    pool.addColorStop(0, rgba(mix(torch, PELT.cream, 0.45), 0.6));
-    pool.addColorStop(0.4, rgba(torch, 0.22));
-    pool.addColorStop(1, rgba(torch, 0));
-    x.fillStyle = pool; x.fillRect(0, 0, w, h);
-    for (let i = 0; i < 11; i++) {              // striped wallpaper, damp
-      x.fillStyle = rgba(mix(PELT.cocoa, t.ink600, 0.4), 0.42);
-      x.fillRect(w * (i * 0.098), 0, w * 0.042, h);
-    }
-    x.fillStyle = rgba(sink(PELT.wood, 0.3), 1);    // a door standing open
-    x.fillRect(w * 0.0, h * 0.03, w * 0.3, h * 0.8);
-    x.fillStyle = rgba(t.ink900, 0.97);
-    x.fillRect(w * 0.04, h * 0.07, w * 0.22, h * 0.76);
-    x.fillStyle = rgba(sink(PELT.wood, 0.62), 1);   // floor
-    x.fillRect(0, h * 0.82, w, h * 0.2);
-    x.strokeStyle = rgba(t.ink900, 0.8); x.lineWidth = 3;
-    for (let i = 1; i < 5; i++) { x.beginPath(); x.moveTo(0, h * (0.82 + i * 0.045)); x.lineTo(w, h * (0.82 + i * 0.045)); x.stroke(); }
-    // a picture rail and one crooked frame, so the wall has furniture
-    x.fillStyle = rgba(sink(PELT.wood, 0.4), 0.9);
-    x.fillRect(0, h * 0.1, w, h * 0.016);
-    x.save(); x.translate(w * 0.62, h * 0.24); x.rotate(0.08);
-    x.fillStyle = rgba(sink(PELT.wood, 0.15), 0.95);
-    x.fillRect(-w * 0.1, -h * 0.09, w * 0.2, h * 0.18);
-    x.fillStyle = rgba(t.ink900, 0.85);
-    x.fillRect(-w * 0.08, -h * 0.07, w * 0.16, h * 0.14);
-    x.restore();
-    // the beam itself, hanging in the dust
-    const bm = x.createLinearGradient(w * 0.96, h * 0.24, w * 0.24, h);
-    bm.addColorStop(0, rgba(torch, 0.42));
-    bm.addColorStop(1, rgba(torch, 0));
-    x.fillStyle = bm;
-    x.beginPath();
-    x.moveTo(w * 1.05, h * 0.12); x.lineTo(w * 1.05, h * 0.72);
-    x.lineTo(w * 0.06, h * 1.05); x.lineTo(w * 0.28, h * 0.2);
-    x.closePath(); x.fill();
-  });
-
-  // Camera framing, same idea as the pets: the eight of them must not all be
-  // the same head at the same size in the middle of the same rectangle.
-  g.save();
-  g.translate(w * (0.5 + fr.dx), h * (0.5 + fr.dy));
-  g.rotate(fr.rot);
-  g.scale(fr.z, fr.z);
-  g.translate(-w * 0.5, -h * 0.5);
-
-  /* — shoulders and torso, lit from the side — */
-  const torso = loop([
-    [cx - 290 * s, h + 40], [cx - 258 * s, cy + 230 * s], [cx - 150 * s, cy + 150 * s],
-    [cx - 30 * s, cy + 126 * s], [cx + 120 * s, cy + 152 * s], [cx + 250 * s, cy + 236 * s],
-    [cx + 286 * s, h + 40],
-  ], 10);
-  g.save();
-  trace(g, torso);
-  const tg = g.createLinearGradient(cx + 200 * s, cy + 120 * s, cx - 220 * s, h);
-  const coat = spec.gear === 'hood' ? mix(t.spec500, t.ink700, 0.4)
-    : spec.gear === 'scarf' ? mix(PELT.chilli, t.ink700, 0.45)
-      : spec.gear === 'camera' ? mix(PELT.teal, t.ink800, 0.4)
-        : spec.gear === 'straps' ? mix(PELT.gold, t.ink700, 0.55)
-          : mix(t.ink600, PELT.cocoa, 0.3);
-  tg.addColorStop(0, mix(coat, torch, 0.4));
-  tg.addColorStop(0.35, coat);
-  tg.addColorStop(1, sink(coat, 0.72));
-  g.fillStyle = tg; g.fill();
-  g.restore();
-  // fabric folds
-  g.save();
-  trace(g, torso); g.clip();
-  for (let i = 0; i < 26; i++) {
-    const x0 = cx - 280 * s + R() * 560 * s;
-    g.strokeStyle = rgba(R() < 0.5 ? lift(coat, 0.35) : sink(coat, 0.5), 0.16 + R() * 0.2);
-    g.lineWidth = 1 + R() * 3;
-    g.beginPath();
-    g.moveTo(x0, cy + 140 * s);
-    g.quadraticCurveTo(x0 + (R() - 0.5) * 60 * s, cy + 300 * s, x0 + (R() - 0.5) * 90 * s, h);
-    g.stroke();
-  }
-  g.restore();
-
-  /* — neck — */
-  g.save();
-  const neck = loop([
-    [cx - 52 * s, cy + 40 * s], [cx + 52 * s, cy + 40 * s],
-    [cx + 62 * s, cy + 160 * s], [cx - 62 * s, cy + 160 * s],
-  ], 8);
-  trace(g, neck);
-  g.fillStyle = sink(sk[0], 0.42);
-  g.fill();
-  g.restore();
-
-  /* — the face — */
-  const fw = 126 * s * F.wide, fh = 202 * s;
-  const head = loop([
-    [cx - fw, cy - 90 * s], [cx - fw * 1.02, cy + 10 * s], [cx - fw * 0.82, cy + fh * 0.6],
-    [cx - fw * 0.34, cy + fh * 0.98 * F.chin], [cx, cy + fh * 1.06 * F.chin],
-    [cx + fw * 0.36, cy + fh * 0.96 * F.chin], [cx + fw * 0.84, cy + fh * 0.58],
-    [cx + fw * 1.02, cy + 8 * s], [cx + fw, cy - 92 * s],
-    [cx + fw * 0.6, cy - 168 * s], [cx, cy - 190 * s], [cx - fw * 0.6, cy - 166 * s],
-  ], 10);
-  g.save();
-  trace(g, head);
-  const fg = g.createLinearGradient(cx + fw * 0.7, cy - 140 * s, cx - fw * 0.9, cy + fh);
-  fg.addColorStop(0, mix(sk[1], torch, 0.3));
-  fg.addColorStop(0.3, sk[1]);
-  fg.addColorStop(0.62, sk[0]);
-  fg.addColorStop(1, sink(sk[2], 0.35));
-  g.fillStyle = fg; g.fill();
-  g.restore();
-
-  // modelling: cheek, temple, jaw, and the underside shadow the torch leaves
-  g.save();
-  trace(g, head); g.clip();
-  const shade = (x, y, rx, ry, col, a, rot) => {
-    const sg = g.createRadialGradient(x, y, 0, x, y, Math.max(rx, ry));
-    sg.addColorStop(0, rgba(col, a));
-    sg.addColorStop(1, rgba(col, 0));
-    g.save(); g.translate(x, y); g.rotate(rot || 0); g.scale(rx / Math.max(rx, ry), ry / Math.max(rx, ry));
-    g.translate(-x, -y);
-    g.fillStyle = sg;
-    g.beginPath(); g.arc(x, y, Math.max(rx, ry), 0, 7); g.fill();
-    g.restore();
-  };
-  shade(cx - fw * 0.95, cy + 10 * s, fw * 0.6, fh * 0.7, sink(sk[2], 0.4), 0.62);
-  shade(cx + fw * 0.55, cy - 30 * s, fw * 0.5, fh * 0.5, lift(sk[1], 0.35), 0.4);
-  shade(cx, cy + fh * 0.95, fw * 0.9, fh * 0.28, sink(sk[2], 0.5), 0.5);
-  shade(cx - fw * 0.1, cy + 96 * s, fw * 0.36, fh * 0.2, sink(sk[2], 0.2), 0.28);  // under the nose
-  // cheeks
-  shade(cx - fw * 0.56, cy + 60 * s, fw * 0.34, fh * 0.2, mix(PELT.chilli, sk[0], 0.6), 0.3);
-  shade(cx + fw * 0.58, cy + 56 * s, fw * 0.32, fh * 0.2, mix(PELT.chilli, sk[0], 0.6), 0.26);
-  // skin texture
-  for (let i = 0; i < 900; i++) {
-    const x = cx - fw + R() * fw * 2, y = cy - 190 * s + R() * (fh * 1.3 + 190 * s);
-    g.fillStyle = rgba(R() < 0.5 ? sk[1] : sk[2], 0.03 + R() * 0.05);
-    g.fillRect(x, y, 1.4, 1.4);
-  }
-  if (F.freckle) {
-    for (let i = 0; i < 90 * F.freckle; i++) {
-      const a = R() * Math.PI * 2, rr = R() * fw * 0.8;
-      const x = cx + Math.cos(a) * rr, y = cy + 44 * s + Math.sin(a) * rr * 0.42;
-      g.fillStyle = rgba(sink(sk[2], 0.15), 0.12 + R() * 0.3);
-      g.beginPath(); g.arc(x, y, 1 + R() * 1.8, 0, 7); g.fill();
-    }
-  }
-  g.restore();
-
-  /* — ears — */
-  for (const o of [-1, 1]) {
-    const ex = cx + o * fw * 0.98, ey = cy + 20 * s;
-    g.save();
-    const ear = oval(ex, ey, 26 * s, 42 * s, o * 0.15);
-    trace(g, ear);
-    const eg = g.createRadialGradient(ex, ey, 0, ex, ey, 44 * s);
-    eg.addColorStop(0, mix(sk[0], PELT.pinkSkin, 0.4));
-    eg.addColorStop(1, sink(sk[2], 0.3));
-    g.fillStyle = eg; g.fill();
-    g.strokeStyle = rgba(sink(sk[2], 0.4), 0.5);
-    g.lineWidth = 2 * s;
-    g.beginPath(); g.arc(ex, ey, 14 * s, o < 0 ? -1.2 : 2.0, o < 0 ? 1.6 : 4.6); g.stroke();
-    g.restore();
-  }
-
-  /* — brows, eyes, nose, mouth — */
-  const eyY = cy + 10 * s, eyX = fw * 0.46, er = 22 * s * (F.eye || 1);
-  // brows: the single biggest lever on "who is this"
-  for (const o of [-1, 1]) {
-    g.save();
-    g.strokeStyle = rgba(hc[0], 0.92);
-    g.lineWidth = 11 * s;
-    g.lineCap = 'round';
-    g.beginPath();
-    g.moveTo(cx + o * (eyX + 34 * s), eyY - 54 * s + o * F.brow * 26 * s);
-    g.quadraticCurveTo(cx + o * eyX, eyY - 68 * s - Math.abs(F.brow) * 12 * s,
-      cx + o * (eyX - 32 * s), eyY - 50 * s - o * F.brow * 20 * s);
-    g.stroke();
-    g.restore();
-  }
-  eye(g, cx - eyX, eyY, er, { iris: mix(hc[1], PELT.cocoa, 0.5), pupil: 'round',
-    aspect: 0.72, shine: lift(torch, 0.5), R, lidCol: sink(sk[2], 0.3), tilt: 0.06 });
-  eye(g, cx + eyX, eyY, er, { iris: mix(hc[1], PELT.cocoa, 0.5), pupil: 'round',
-    aspect: 0.72, shine: lift(torch, 0.5), R, lidCol: sink(sk[2], 0.3), tilt: -0.06 });
-  // lashes
-  for (const o of [-1, 1]) {
-    g.save();
-    g.strokeStyle = rgba(hc[2], 0.8);
-    g.lineWidth = 3.4 * s;
-    g.lineCap = 'round';
-    g.beginPath();
-    g.moveTo(cx + o * (eyX + er), eyY - er * 0.5);
-    g.quadraticCurveTo(cx + o * eyX, eyY - er * 1.05, cx + o * (eyX - er), eyY - er * 0.42);
-    g.stroke();
-    g.restore();
-  }
-
-  // nose
-  g.save();
-  g.strokeStyle = rgba(sink(sk[2], 0.25), 0.55);
-  g.lineWidth = 4 * s;
-  g.lineCap = 'round';
-  g.beginPath();
-  g.moveTo(cx - 6 * s, cy + 30 * s);
-  g.quadraticCurveTo(cx - 18 * s, cy + 88 * s, cx - 2 * s, cy + 96 * s);
-  g.stroke();
-  g.fillStyle = rgba(sink(sk[2], 0.35), 0.4);
-  g.beginPath(); g.ellipse(cx - 18 * s, cy + 98 * s, 6 * s, 4 * s, 0.3, 0, 7); g.fill();
-  g.beginPath(); g.ellipse(cx + 16 * s, cy + 98 * s, 6 * s, 4 * s, -0.3, 0, 7); g.fill();
-  g.fillStyle = rgba(lift(sk[1], 0.5), 0.35);
-  g.beginPath(); g.ellipse(cx + 2 * s, cy + 82 * s, 10 * s, 7 * s, -0.2, 0, 7); g.fill();
-  g.restore();
-
-  // mouth
-  g.save();
-  const my = cy + 140 * s;
-  g.lineCap = 'round';
-  if (F.mouth === 'open') {
-    g.fillStyle = rgba(sink(PELT.leather, 0.2), 0.9);
-    g.beginPath(); g.ellipse(cx, my, 26 * s, 16 * s, 0, 0, 7); g.fill();
-    g.fillStyle = rgba(PELT.creamHi, 0.85);
-    g.fillRect(cx - 22 * s, my - 14 * s, 44 * s, 9 * s);
-  } else if (F.mouth === 'grin') {
-    g.strokeStyle = rgba(sink(sk[2], 0.35), 0.85);
-    g.lineWidth = 5 * s;
-    g.beginPath();
-    g.moveTo(cx - 34 * s, my - 8 * s);
-    g.quadraticCurveTo(cx, my + 20 * s, cx + 34 * s, my - 8 * s);
-    g.stroke();
-    g.fillStyle = rgba(PELT.creamHi, 0.55);
-    g.beginPath();
-    g.moveTo(cx - 26 * s, my - 2 * s);
-    g.quadraticCurveTo(cx, my + 14 * s, cx + 26 * s, my - 2 * s);
-    g.quadraticCurveTo(cx, my + 2 * s, cx - 26 * s, my - 2 * s);
-    g.fill();
-  } else if (F.mouth === 'set') {
-    g.strokeStyle = rgba(sink(sk[2], 0.4), 0.85);
-    g.lineWidth = 5 * s;
-    g.beginPath();
-    g.moveTo(cx - 32 * s, my); g.quadraticCurveTo(cx, my + 5 * s, cx + 32 * s, my - 3 * s);
-    g.stroke();
-  } else {
-    g.strokeStyle = rgba(sink(sk[2], 0.35), 0.75);
-    g.lineWidth = 4.4 * s;
-    g.beginPath();
-    g.moveTo(cx - 28 * s, my - 2 * s); g.quadraticCurveTo(cx, my + 12 * s, cx + 28 * s, my - 2 * s);
-    g.stroke();
-  }
-  g.fillStyle = rgba(mix(PELT.chilli, sk[0], 0.55), 0.35);
-  g.beginPath(); g.ellipse(cx, my + 2 * s, 32 * s, 15 * s, 0, 0, 7); g.fill();
-  g.restore();
-
-  /* — hair, and the shadow its hairline throws down the forehead — */
-  paintHair(g, cx, cy, fw, fh, s, spec.cut, hc, torch, R);
-  g.save();
-  trace(g, head); g.clip();
-  const hl = g.createLinearGradient(0, cy - 96 * s, 0, cy - 20 * s);
-  hl.addColorStop(0, 'rgba(6,4,9,0.5)');
-  hl.addColorStop(1, 'rgba(6,4,9,0)');
-  g.fillStyle = hl;
-  g.fillRect(cx - fw * 1.2, cy - 100 * s, fw * 2.4, 90 * s);
-  g.restore();
-
-  /* — the prop that is theirs alone — */
-  paintGear(g, w, h, cx, cy, fw, fh, s, spec.gear, hc, torch, sk, R, coat);
-
-  /* — the arm and the hand holding the torch up beside their face — */
-  const tx = w * 0.86, ty = h * 0.44;
-  g.save();
-  // sleeve
-  g.strokeStyle = sink(coat, 0.4);
-  g.lineWidth = 58 * s;
-  g.lineCap = 'round';
-  g.beginPath();
-  g.moveTo(cx + 250 * s, h + 30);
-  g.quadraticCurveTo(cx + 330 * s, cy + 210 * s, tx + 6 * s, ty + 74 * s);
-  g.stroke();
-  g.strokeStyle = rgba(mix(coat, torch, 0.45), 0.5);
-  g.lineWidth = 14 * s;
-  g.beginPath();
-  g.moveTo(cx + 272 * s, h + 10);
-  g.quadraticCurveTo(cx + 350 * s, cy + 205 * s, tx + 22 * s, ty + 74 * s);
-  g.stroke();
-  // the fist round the barrel
-  const fist = oval(tx + 2 * s, ty + 56 * s, 40 * s, 34 * s, -0.35);
-  trace(g, fist);
-  const hg = g.createLinearGradient(tx - 30 * s, ty + 20 * s, tx + 40 * s, ty + 90 * s);
-  hg.addColorStop(0, mix(sk[1], torch, 0.45));
-  hg.addColorStop(0.5, sk[0]);
-  hg.addColorStop(1, sink(sk[2], 0.4));
-  g.fillStyle = hg; g.fill();
-  for (let i = 0; i < 3; i++) {                    // knuckles
-    g.strokeStyle = rgba(sink(sk[2], 0.3), 0.4);
-    g.lineWidth = 3 * s;
-    g.beginPath();
-    g.arc(tx - 20 * s + i * 18 * s, ty + 46 * s, 12 * s, 0.4, 2.6);
-    g.stroke();
-  }
-  roundOff(g, fist, { dark: sink(sk[2], 0.5), a: 0.5, width: 0.3, lightCol: lift(sk[1], 0.4), lightA: 0.3 });
-  g.restore();
-
-  /* — the torch itself — */
-  g.save();
-  g.translate(tx, ty);
-  g.rotate(-0.5);
-  g.fillStyle = mix(t.ink700, PELT.slate, 0.35);
-  g.beginPath(); g.roundRect(-18 * s, 0, 38 * s, 126 * s, 9 * s); g.fill();
-  g.strokeStyle = rgba(lift(PELT.slate, 0.4), 0.4);
-  g.lineWidth = 2.5 * s;
-  g.beginPath(); g.moveTo(-12 * s, 8 * s); g.lineTo(-12 * s, 118 * s); g.stroke();
-  g.fillStyle = mix(PELT.slate, t.flame500, 0.45);
-  g.beginPath(); g.roundRect(-30 * s, -40 * s, 62 * s, 50 * s, 9 * s); g.fill();
-  const lg = g.createRadialGradient(0, -14 * s, 0, 0, -14 * s, 72 * s);
-  lg.addColorStop(0, 'rgba(255,255,255,1)');
-  lg.addColorStop(0.18, rgba(lift(torch, 0.8), 0.95));
-  lg.addColorStop(0.45, rgba(torch, 0.7));
-  lg.addColorStop(1, rgba(torch, 0));
-  g.fillStyle = lg;
-  g.beginPath(); g.arc(0, -14 * s, 72 * s, 0, 7); g.fill();
-  g.restore();
-
-  // the beam leaving the lens, over everything
-  g.save();
-  g.globalCompositeOperation = 'screen';
-  const beam = g.createLinearGradient(tx, ty, w * 0.05, h * 1.0);
-  beam.addColorStop(0, rgba(torch, 0.36));
-  beam.addColorStop(1, rgba(torch, 0));
-  g.fillStyle = beam;
-  g.beginPath();
-  g.moveTo(tx, ty - 14 * s); g.lineTo(w * 1.1, h * 1.1); g.lineTo(w * 0.0, h * 1.1);
-  g.closePath(); g.fill();
-  g.restore();
-
-  // cold rim light down the far side, so the figure separates from the dark
-  g.save();
-  g.globalCompositeOperation = 'screen';
-  g.strokeStyle = rgba(mix(torch, t.spec200, 0.4), 0.6);
-  g.lineWidth = 7 * s;
-  g.lineCap = 'round';
-  g.filter = 'blur(3px)';
-  g.beginPath();
-  g.moveTo(cx + fw * 0.98, cy - 130 * s);
-  g.quadraticCurveTo(cx + fw * 1.2, cy + 40 * s, cx + fw * 0.7, cy + fh * 0.9);
-  g.stroke();
-  g.beginPath();
-  g.moveTo(cx + 150 * s, cy + 150 * s);
-  g.quadraticCurveTo(cx + 264 * s, cy + 250 * s, cx + 290 * s, h);
-  g.stroke();
-  g.restore();
-
-  g.restore();   // ── end camera framing ──
-
-  /* One key light for the whole figure. The torch is up and to the right of
-     their face, so that is where the light comes from and everything away
-     from it goes down into the house. Before this, every kid was lit evenly
-     from the front like a passport photo and they read as dolls. */
-  flashLight(g, w, h, 0.7 + fr.dx * 0.5, 0.4 + fr.dy * 0.5, 0.6);
-
-  return { torch };
-}
-
-function paintHair(g, cx, cy, fw, fh, s, cut, hc, torch, R) {
-  /* Hair was disappearing into the room. Real hair under a torch is mostly
-     black with a hard specular band where the beam grazes it, so the fill
-     stays dark, the highlight is pushed all the way to the torch side, and a
-     screen-mode rim runs along the lit edge afterwards. Without that band the
-     kids came out bald in anything but a bob. */
-  const key = [0.8, 0.12];
-  const strand = (d, dens, len, dir) => {
-    fur(g, d, { base: hc[0], dark: hc[2], light: mix(hc[1], torch, 0.55), R,
-      len, dens, dir, key });
-    fuzz(g, d, { colors: [mix(hc[1], torch, 0.4), hc[0], lift(mix(hc[1], torch, 0.6), 0.25)],
-      len: len * 1.5, R, step: 2, arc: 0.5, alpha: 0.85 });
-    // the specular band
-    const b = bbox(d);
-    g.save();
-    trace(g, d); g.clip();
-    g.globalCompositeOperation = 'screen';
-    const sp = g.createRadialGradient(b.x + b.w * 0.82, b.y + b.h * 0.16, 0,
-      b.x + b.w * 0.82, b.y + b.h * 0.16, Math.max(b.w, b.h) * 0.6);
-    sp.addColorStop(0, rgba(mix(torch, '#ffffff', 0.5), 0.42));
-    sp.addColorStop(0.45, rgba(torch, 0.14));
-    sp.addColorStop(1, rgba(torch, 0));
-    g.fillStyle = sp;
-    g.fillRect(b.x - 4, b.y - 4, b.w + 8, b.h + 8);
-    g.restore();
-  };
-  /* A SOLID dome down to a curved hairline, not a band. The first version
-     traced the outline and then traced a second arc back along the inside of
-     it, which under nonzero winding is a ring: five of the eight kids got a
-     hairband across an otherwise bare skull. The bottom edge here is the
-     hairline itself, so the forehead below it is simply outside the shape. */
-  const crown = [
-    [cx - fw * 1.18, cy + 74 * s], [cx - fw * 1.24, cy - 120 * s],
-    [cx - fw * 0.7, cy - 250 * s], [cx, cy - 278 * s],
-    [cx + fw * 0.7, cy - 248 * s], [cx + fw * 1.24, cy - 118 * s],
-    [cx + fw * 1.18, cy + 76 * s], [cx + fw * 0.8, cy + 6 * s],
-    [cx, cy - 84 * s], [cx - fw * 0.8, cy + 4 * s],
-  ];
-  const down = (x, y) => Math.PI * 0.5 + (x - cx) / (fw * 3);
-
-  /* The dome goes down for EVERY cut before the cut-specific mass. Four of the
-     styles are rings — a bob and a curtain of long hair are genuinely a shape
-     with a face-hole in it — and a ring alone leaves the crown bare. Painting
-     the solid dome first means no kid can come out bald however the silhouette
-     on top is built. */
-  strand(loop(crown, 10), 0.015, 11 * s, (x, y) => Math.atan2(y - (cy - 268 * s), x - cx));
-
-  switch (cut) {
-    case 'bob': {
-      strand(loop([
-        [cx - fw * 1.2, cy + fh * 0.34], [cx - fw * 1.24, cy - 90 * s],
-        [cx - fw * 0.7, cy - 226 * s], [cx, cy - 250 * s],
-        [cx + fw * 0.7, cy - 224 * s], [cx + fw * 1.24, cy - 88 * s],
-        [cx + fw * 1.2, cy + fh * 0.32], [cx + fw * 0.98, cy + fh * 0.36],
-        [cx + fw * 1.0, cy - 60 * s], [cx + fw * 0.44, cy - 150 * s],
-        [cx - fw * 0.5, cy - 152 * s], [cx - fw * 1.0, cy - 62 * s],
-        [cx - fw * 0.98, cy + fh * 0.36],
-      ], 10), 0.012, 15 * s, down);
-      // a blunt fringe
-      strand(loop([
-        [cx - fw * 1.0, cy - 130 * s], [cx - fw * 0.3, cy - 200 * s],
-        [cx + fw * 0.66, cy - 178 * s], [cx + fw * 1.0, cy - 100 * s],
-        [cx + fw * 0.5, cy - 56 * s], [cx - fw * 0.6, cy - 66 * s],
-      ], 10), 0.014, 16 * s, () => Math.PI * 0.55);
-      break;
-    }
-    case 'crop': {
-      // short curls, scattered across the whole cap and spilling a little past
-      // it. Placed on a ring they read as a beaded headband, which is what the
-      // first attempt looked like.
-      g.save();
-      for (let i = 0; i < 420; i++) {
-        const a = -Math.PI * (0.02 + R() * 0.96);
-        const rr = 0.72 + R() * 0.34;
-        const x = cx + Math.cos(a) * fw * 1.06 * rr;
-        const y = cy - 90 * s + Math.sin(a) * fh * 0.92 * rr;
-        g.strokeStyle = rgba(R() < 0.35 ? mix(hc[1], torch, 0.45) : hc[2], 0.2 + R() * 0.45);
-        g.lineWidth = 1.3 + R() * 1.5;
-        g.beginPath();
-        g.arc(x, y, (2.6 + R() * 5) * s, R() * 6, R() * 6 + 3.6);
-        g.stroke();
-      }
-      g.restore();
-      break;
-    }
-    case 'puffs': {
-      for (const o of [-1, 1]) {
-        const px = cx + o * fw * 1.16, py = cy - 158 * s;
-        const puff = oval(px, py, 78 * s, 74 * s, 0, 16);
-        strand(puff, 0.012, 12 * s, (x, y) => Math.atan2(y - py, x - px));
-        for (let i = 0; i < 260; i++) {        // coil texture
-          const a = R() * Math.PI * 2, rr = R() * 76 * s;
-          const x = px + Math.cos(a) * rr, y = py + Math.sin(a) * rr * 0.96;
-          g.strokeStyle = rgba(R() < 0.45 ? mix(hc[1], torch, 0.35) : hc[2], 0.2 + R() * 0.5);
-          g.lineWidth = 1.4 + R() * 1.8;
-          g.beginPath(); g.arc(x, y, (3 + R() * 6) * s, R() * 6, R() * 6 + 3.8); g.stroke();
-        }
-      }
-      break;
-    }
-    case 'shag': {
-      strand(loop([
-        [cx - fw * 1.16, cy + 40 * s], [cx - fw * 1.2, cy - 120 * s],
-        [cx - fw * 0.6, cy - 244 * s], [cx + fw * 0.2, cy - 250 * s],
-        [cx + fw * 1.06, cy - 150 * s], [cx + fw * 1.18, cy + 30 * s],
-        [cx + fw * 0.9, cy - 40 * s], [cx + fw * 0.5, cy - 120 * s],
-        [cx - fw * 0.2, cy - 96 * s], [cx - fw * 0.8, cy - 130 * s],
-        [cx - fw * 0.96, cy - 20 * s],
-      ], 10), 0.014, 20 * s, (x) => Math.PI * 0.52 + (x - cx) / (fw * 2));
-      // spikes over the brow
-      for (let i = 0; i < 16; i++) {
-        const x0 = cx - fw * 0.95 + (i / 15) * fw * 1.9;
-        g.strokeStyle = rgba(i % 2 ? hc[1] : hc[0], 0.7);
-        g.lineWidth = (5 + R() * 6) * s;
-        g.lineCap = 'round';
-        g.beginPath();
-        g.moveTo(x0, cy - 140 * s);
-        g.quadraticCurveTo(x0 + (R() - 0.5) * 40 * s, cy - 90 * s, x0 + (R() - 0.5) * 60 * s, cy - 40 * s - R() * 40 * s);
-        g.stroke();
-      }
-      break;
-    }
-    case 'braid': {
-      // a centre part
-      g.strokeStyle = rgba(hc[2], 0.7);
-      g.lineWidth = 5 * s;
-      g.beginPath(); g.moveTo(cx - 6 * s, cy - 236 * s); g.lineTo(cx - 14 * s, cy - 150 * s); g.stroke();
-      // the braid over one shoulder, drawn as interlocking lobes
-      let bx = cx - fw * 1.02, by = cy + 20 * s;
-      for (let i = 0; i < 11; i++) {
-        const rr = (30 - i * 1.6) * s;
-        const o = i % 2 ? 1 : -1;
-        g.save();
-        const lobe = oval(bx + o * rr * 0.4, by, rr, rr * 0.8, o * 0.5, 12);
-        fur(g, lobe, { base: hc[0], dark: hc[2], light: mix(hc[1], torch, 0.35), R,
-          len: 9 * s, dens: 0.02, dir: () => o * 0.7, key: [0.4, 0.3] });
-        fuzz(g, lobe, { colors: [hc[1], hc[0]], len: 7 * s, R, step: 4, alpha: 0.7 });
-        g.restore();
-        bx -= 4 * s; by += rr * 1.35;
-      }
-      g.strokeStyle = rgba(PELT.chilli, 0.85);
-      g.lineWidth = 8 * s;
-      g.beginPath(); g.arc(bx, by, 12 * s, 0, 7); g.stroke();
-      break;
-    }
-    case 'fade': {
-      // tight coils on top, a hard line, and a taper that dissolves into skin
-      g.save();
-      trace(g, loop(crown, 10)); g.clip();
-      for (let i = 0; i < 900; i++) {
-        const x = cx - fw * 1.2 + R() * fw * 2.4, y = cy - 280 * s + R() * 360 * s;
-        g.strokeStyle = rgba(R() < 0.4 ? mix(hc[1], torch, 0.5) : hc[2], 0.24 + R() * 0.5);
-        g.lineWidth = 1.4 + R() * 1.6;
-        g.beginPath(); g.arc(x, y, (2.4 + R() * 4) * s, R() * 6, R() * 6 + 4); g.stroke();
-      }
-      g.restore();
-      g.save();
-      for (const o of [-1, 1]) {
-        const gg = g.createLinearGradient(cx + o * fw * 1.16, cy - 130 * s, cx + o * fw * 0.92, cy + 60 * s);
-        gg.addColorStop(0, rgba(hc[0], 0.8));
-        gg.addColorStop(1, rgba(hc[0], 0));
-        g.fillStyle = gg;
-        g.fillRect(cx + o * fw * 1.2 - (o > 0 ? 0 : 46 * s), cy - 150 * s, 46 * s, 230 * s);
-      }
-      g.restore();
-      break;
-    }
-    case 'longtie': {
-      strand(loop([
-        [cx - fw * 1.3, cy + fh * 1.1], [cx - fw * 1.28, cy - 100 * s],
-        [cx - fw * 0.66, cy - 244 * s], [cx, cy - 262 * s],
-        [cx + fw * 0.66, cy - 242 * s], [cx + fw * 1.28, cy - 98 * s],
-        [cx + fw * 1.3, cy + fh * 1.1], [cx + fw * 1.02, cy + fh * 1.12],
-        [cx + fw * 1.0, cy - 66 * s], [cx + fw * 0.44, cy - 156 * s],
-        [cx - fw * 0.48, cy - 158 * s], [cx - fw * 1.0, cy - 68 * s],
-        [cx - fw * 1.02, cy + fh * 1.12],
-      ], 10), 0.011, 24 * s, down);
-      // the hair tie the design doc keeps as evidence
-      g.save();
-      g.strokeStyle = rgba(mix(PELT.chilli, torch, 0.3), 0.9);
-      g.lineWidth = 10 * s;
-      g.beginPath(); g.ellipse(cx + fw * 1.12, cy + fh * 0.6, 20 * s, 13 * s, 0.3, 0, 7); g.stroke();
-      g.restore();
-      break;
-    }
-    default: {                                  // 'bunches'
-      for (const o of [-1, 1]) {
-        const px = cx + o * fw * 1.2, py = cy - 60 * s;
-        const bun = loop([
-          [px - 54 * s, py - 60 * s], [px + 56 * s, py - 56 * s],
-          [px + 66 * s, py + 60 * s], [px + o * 20 * s, py + 116 * s],
-          [px - 62 * s, py + 56 * s],
-        ], 10);
-        strand(bun, 0.012, 15 * s, () => Math.PI * 0.52);
-        g.save();
-        g.strokeStyle = rgba(mix(PELT.teal, torch, 0.35), 0.9);
-        g.lineWidth = 9 * s;
-        g.beginPath(); g.ellipse(px, py - 62 * s, 30 * s, 12 * s, 0, 0, 7); g.stroke();
-        g.restore();
-      }
-      // a fringe
-      strand(loop([
-        [cx - fw * 0.98, cy - 140 * s], [cx - fw * 0.2, cy - 206 * s],
-        [cx + fw * 0.72, cy - 182 * s], [cx + fw * 0.98, cy - 116 * s],
-        [cx + fw * 0.3, cy - 84 * s], [cx - fw * 0.5, cy - 96 * s],
-      ], 10), 0.014, 14 * s, () => Math.PI * 0.6);
-      break;
-    }
-  }
-}
-
-function paintGear(g, w, h, cx, cy, fw, fh, s, gear, hc, torch, sk, R, coat) {
-  const t = tokens();
-  const lens = (x, y, rx, ry, rect) => {
-    g.save();
-    g.beginPath();
-    if (rect) g.roundRect(x - rx, y - ry, rx * 2, ry * 2, 6 * s);
-    else g.ellipse(x, y, rx, ry, 0, 0, 7);
-    const gg = g.createLinearGradient(x - rx, y - ry, x + rx, y + ry);
-    gg.addColorStop(0, rgba(lift(torch, 0.6), 0.42));
-    gg.addColorStop(0.45, rgba(t.spec200, 0.1));
-    gg.addColorStop(1, rgba(t.ink900, 0.22));
-    g.fillStyle = gg; g.fill();
-    g.strokeStyle = rgba(mix(t.flame400, hc[0], 0.4), 0.95);
-    g.lineWidth = 5 * s;
-    g.stroke();
-    // the reflection of the torch across the glass
-    g.save();
-    g.beginPath();
-    if (rect) g.roundRect(x - rx, y - ry, rx * 2, ry * 2, 6 * s);
-    else g.ellipse(x, y, rx, ry, 0, 0, 7);
-    g.clip();
-    g.strokeStyle = rgba(lift(torch, 0.75), 0.7);
-    g.lineWidth = 7 * s;
-    g.beginPath();
-    g.moveTo(x - rx, y + ry * 0.7); g.lineTo(x + rx * 1.2, y - ry * 1.1);
-    g.stroke();
-    g.restore();
-    g.restore();
-  };
-
-  switch (gear) {
-    case 'roundglasses': {
-      g.save();
-      g.strokeStyle = rgba(mix(t.flame400, hc[0], 0.4), 0.95);
-      g.lineWidth = 5 * s;
-      g.beginPath();
-      g.moveTo(cx - fw * 0.16, cy + 8 * s); g.lineTo(cx + fw * 0.16, cy + 8 * s);
-      g.moveTo(cx - fw * 0.7, cy + 4 * s); g.lineTo(cx - fw * 1.04, cy - 6 * s);
-      g.moveTo(cx + fw * 0.7, cy + 4 * s); g.lineTo(cx + fw * 1.04, cy - 6 * s);
-      g.stroke();
-      g.restore();
-      lens(cx - fw * 0.42, cy + 8 * s, 40 * s, 40 * s, false);
-      lens(cx + fw * 0.42, cy + 8 * s, 40 * s, 40 * s, false);
-      break;
-    }
-    case 'rectglasses': {
-      g.save();
-      g.strokeStyle = rgba(mix(t.spec300, hc[0], 0.45), 0.95);
-      g.lineWidth = 5 * s;
-      g.beginPath();
-      g.moveTo(cx - fw * 0.14, cy + 6 * s); g.lineTo(cx + fw * 0.14, cy + 6 * s);
-      g.moveTo(cx - fw * 0.72, cy + 2 * s); g.lineTo(cx - fw * 1.04, cy - 8 * s);
-      g.moveTo(cx + fw * 0.72, cy + 2 * s); g.lineTo(cx + fw * 1.04, cy - 8 * s);
-      g.stroke();
-      g.restore();
-      lens(cx - fw * 0.44, cy + 6 * s, 44 * s, 32 * s, true);
-      lens(cx + fw * 0.44, cy + 6 * s, 44 * s, 32 * s, true);
-      break;
-    }
-    case 'crutch': {
-      // a forearm crutch, cuff at the elbow — Maya's, named in the design doc
-      g.save();
-      g.strokeStyle = mix(t.ink600, PELT.slate, 0.5);
-      g.lineWidth = 15 * s;
-      g.lineCap = 'round';
-      g.beginPath(); g.moveTo(cx - 290 * s, cy + 190 * s); g.lineTo(cx - 262 * s, h + 20); g.stroke();
-      g.strokeStyle = rgba(lift(PELT.slate, 0.4), 0.55);
-      g.lineWidth = 4 * s;
-      g.beginPath(); g.moveTo(cx - 294 * s, cy + 200 * s); g.lineTo(cx - 268 * s, h); g.stroke();
-      g.strokeStyle = mix(t.ink700, PELT.slate, 0.3);
-      g.lineWidth = 13 * s;
-      g.beginPath(); g.arc(cx - 292 * s, cy + 176 * s, 30 * s, -0.4, 3.5); g.stroke();
-      g.strokeStyle = mix(t.ink800, t.ink600, 0.5);
-      g.lineWidth = 17 * s;
-      g.beginPath(); g.moveTo(cx - 292 * s, cy + 206 * s); g.lineTo(cx - 236 * s, cy + 214 * s); g.stroke();
-      g.restore();
-      break;
-    }
-    case 'scarf': {
-      g.save();
-      const sc = loop([
-        [cx - 210 * s, cy + 168 * s], [cx - 60 * s, cy + 132 * s], [cx + 110 * s, cy + 150 * s],
-        [cx + 226 * s, cy + 206 * s], [cx + 200 * s, cy + 290 * s], [cx - 40 * s, cy + 250 * s],
-        [cx - 214 * s, cy + 258 * s],
-      ], 10);
-      trace(g, sc);
-      const sg = g.createLinearGradient(cx + 200 * s, cy + 140 * s, cx - 200 * s, cy + 300 * s);
-      sg.addColorStop(0, mix(PELT.chilliHi, torch, 0.3));
-      sg.addColorStop(1, sink(PELT.chilli, 0.55));
-      g.fillStyle = sg; g.fill();
-      g.save(); trace(g, sc); g.clip();
-      for (let i = 0; i < 16; i++) {
-        g.strokeStyle = rgba(sink(PELT.chilli, 0.55), 0.3);
-        g.lineWidth = 4 * s;
-        g.beginPath();
-        g.moveTo(cx - 240 * s + i * 34 * s, cy + 110 * s);
-        g.lineTo(cx - 260 * s + i * 34 * s, cy + 310 * s);
-        g.stroke();
-      }
-      g.restore();
-      fuzz(g, sc, { colors: [PELT.chilliHi, PELT.chilli], len: 12 * s, R, step: 3, alpha: 0.6 });
-      g.restore();
-      break;
-    }
-    case 'hood': {
-      g.save();
-      const hd = loop([
-        [cx - fw * 1.5, cy + fh * 0.7], [cx - fw * 1.56, cy - 120 * s],
-        [cx - fw * 0.8, cy - 300 * s], [cx, cy - 336 * s],
-        [cx + fw * 0.8, cy - 298 * s], [cx + fw * 1.56, cy - 118 * s],
-        [cx + fw * 1.5, cy + fh * 0.7], [cx + fw * 1.06, cy + fh * 0.4],
-        [cx + fw * 1.12, cy - 120 * s], [cx + fw * 0.5, cy - 214 * s],
-        [cx - fw * 0.52, cy - 216 * s], [cx - fw * 1.12, cy - 122 * s],
-        [cx - fw * 1.06, cy + fh * 0.4],
-      ], 10);
-      trace(g, hd);
-      const hg = g.createLinearGradient(cx + fw, cy - 300 * s, cx - fw, cy + fh);
-      hg.addColorStop(0, mix(coat, torch, 0.35));
-      hg.addColorStop(0.4, coat);
-      hg.addColorStop(1, sink(coat, 0.7));
-      g.fillStyle = hg; g.fill();
-      g.save(); trace(g, hd); g.clip();
-      for (let i = 0; i < 22; i++) {
-        g.strokeStyle = rgba(R() < 0.5 ? lift(coat, 0.3) : sink(coat, 0.5), 0.2);
-        g.lineWidth = 1 + R() * 3;
-        const a = -Math.PI * (0.05 + R() * 0.9);
-        g.beginPath();
-        g.moveTo(cx + Math.cos(a) * fw * 1.5, cy - 60 * s + Math.sin(a) * fh * 1.4);
-        g.lineTo(cx + Math.cos(a) * fw * 1.1, cy - 60 * s + Math.sin(a) * fh * 1.0);
-        g.stroke();
-      }
-      g.restore();
-      fuzz(g, hd, { colors: [lift(coat, 0.3), coat], len: 9 * s, R, step: 3, alpha: 0.5 });
-      // the shadow the hood throws over the brow
-      g.save();
-      const sh = g.createLinearGradient(0, cy - 200 * s, 0, cy - 20 * s);
-      sh.addColorStop(0, 'rgba(4,3,7,0.7)');
-      sh.addColorStop(1, 'rgba(4,3,7,0)');
-      g.fillStyle = sh;
-      g.fillRect(cx - fw, cy - 210 * s, fw * 2, 200 * s);
-      g.restore();
-      g.restore();
-      break;
-    }
-    case 'headband': {
-      g.save();
-      g.strokeStyle = rgba(mix(PELT.teal, torch, 0.3), 0.95);
-      g.lineWidth = 22 * s;
-      g.lineCap = 'butt';
-      g.beginPath();
-      g.moveTo(cx - fw * 1.06, cy - 130 * s);
-      g.quadraticCurveTo(cx, cy - 208 * s, cx + fw * 1.06, cy - 128 * s);
-      g.stroke();
-      g.strokeStyle = rgba(lift(PELT.teal, 0.5), 0.4);
-      g.lineWidth = 5 * s;
-      g.beginPath();
-      g.moveTo(cx - fw * 1.0, cy - 142 * s);
-      g.quadraticCurveTo(cx, cy - 214 * s, cx + fw * 1.0, cy - 140 * s);
-      g.stroke();
-      g.restore();
-      break;
-    }
-    case 'camera': {
-      // a compact camera held at chest height, flash ready
-      g.save();
-      g.translate(cx - 170 * s, cy + 250 * s);
-      g.rotate(-0.16);
-      g.fillStyle = mix(t.ink700, PELT.slate, 0.3);
-      g.beginPath(); g.roundRect(-64 * s, -44 * s, 128 * s, 88 * s, 9 * s); g.fill();
-      g.strokeStyle = rgba(lift(PELT.slate, 0.4), 0.5);
-      g.lineWidth = 2.4 * s; g.stroke();
-      g.fillStyle = sink(t.ink900, 0);
-      g.beginPath(); g.arc(-10 * s, 4 * s, 27 * s, 0, 7); g.fill();
-      const lgd = g.createRadialGradient(-16 * s, -4 * s, 0, -10 * s, 4 * s, 27 * s);
-      lgd.addColorStop(0, rgba(lift(torch, 0.5), 0.55));
-      lgd.addColorStop(0.6, rgba(t.spec500, 0.3));
-      lgd.addColorStop(1, rgba(t.ink900, 0.9));
-      g.fillStyle = lgd;
-      g.beginPath(); g.arc(-10 * s, 4 * s, 27 * s, 0, 7); g.fill();
-      g.fillStyle = rgba(lift(torch, 0.8), 0.9);
-      g.beginPath(); g.roundRect(30 * s, -32 * s, 24 * s, 15 * s, 3 * s); g.fill();
-      g.restore();
-      // the strap round the neck
-      g.save();
-      g.strokeStyle = rgba(mix(PELT.teal, t.ink800, 0.4), 0.9);
-      g.lineWidth = 9 * s;
-      g.beginPath();
-      g.moveTo(cx - 70 * s, cy + 150 * s);
-      g.quadraticCurveTo(cx - 140 * s, cy + 200 * s, cx - 176 * s, cy + 210 * s);
-      g.moveTo(cx + 40 * s, cy + 152 * s);
-      g.quadraticCurveTo(cx - 60 * s, cy + 236 * s, cx - 150 * s, cy + 216 * s);
-      g.stroke();
-      g.restore();
-      break;
-    }
-    default: {                                   // 'straps' — backpack over both shoulders
-      g.save();
-      for (const o of [-1, 1]) {
-        g.strokeStyle = rgba(mix(PELT.cocoa, torch, 0.2), 0.95);
-        g.lineWidth = 30 * s;
-        g.lineCap = 'round';
-        g.beginPath();
-        g.moveTo(cx + o * 96 * s, cy + 150 * s);
-        g.quadraticCurveTo(cx + o * 150 * s, cy + 280 * s, cx + o * 132 * s, h);
-        g.stroke();
-        g.strokeStyle = rgba(lift(PELT.cocoa, 0.35), 0.35);
-        g.lineWidth = 5 * s;
-        g.beginPath();
-        g.moveTo(cx + o * 84 * s, cy + 156 * s);
-        g.quadraticCurveTo(cx + o * 138 * s, cy + 280 * s, cx + o * 120 * s, h);
-        g.stroke();
-        // the buckle
-        g.fillStyle = rgba(mix(t.flame400, PELT.slate, 0.4), 0.95);
-        g.beginPath(); g.roundRect(cx + o * 128 * s - 14 * s, cy + 268 * s, 28 * s, 20 * s, 4 * s); g.fill();
-      }
-      g.restore();
-      break;
-    }
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
    public API
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -2924,20 +2031,6 @@ function renderPet(key) {
   return encode(cv);
 }
 
-function renderKid(slug) {
-  const cv = document.createElement('canvas');
-  cv.width = KID_W; cv.height = KID_H;
-  const g = cv.getContext('2d', CTX2D);
-  const R = mulberry(hash32('kid:' + slug));
-  const o = paintKid(g, KID_W, KID_H, slug, R);
-  grade(g, cv, KID_W, KID_H, R, {
-    warm: 0.3, cast: mix(tokens().ink800, o.torch, 0.3),
-    liftA: 0.22, grain: 0.07, bloom: 0.36, vig: 0.8,
-    flashX: 0.72, flashY: 0.42, date: null,
-  });
-  return encode(cv);
-}
-
 /** Data URL for one pet. `any` = pet slug, kid slug, or pet name. */
 export function petPhoto(any) {
   const key = petKey(any);
@@ -2945,16 +2038,6 @@ export function petPhoto(any) {
   const ck = 'pet:' + key;
   let hit = CACHE.get(ck);
   if (!hit) { hit = renderPet(key); CACHE.set(ck, hit); }
-  return hit;
-}
-
-/** Data URL for one Kid. */
-export function kidPhoto(slug) {
-  const s = String(slug || '').toLowerCase();
-  if (!KID_FACES[s]) return null;
-  const ck = 'kid:' + s;
-  let hit = CACHE.get(ck);
-  if (!hit) { hit = renderKid(s); CACHE.set(ck, hit); }
   return hit;
 }
 
@@ -2976,22 +2059,8 @@ export function petImg(any, { alt, className = 'petpic' } = {}) {
   return img;
 }
 
-/** An <img> for a Kid, class `kidpf` so the existing scene CSS still applies. */
-export function kidImg(slug, { alt, className = 'kidpf' } = {}) {
-  const img = document.createElement('img');
-  img.className = className;
-  img.decoding = 'async';
-  img.draggable = false;
-  img.width = KID_W; img.height = KID_H;
-  const k = KIDS.find((x) => x.slug === slug);
-  img.alt = alt ?? ((k ? k.name : 'A kid') + ', searching the house with a torch');
-  const src = kidPhoto(slug);
-  if (src) img.src = src;
-  return img;
-}
-
 /**
- * Render the sixteen photographs. Two modes, and picking the wrong one is a
+ * Render the eight photographs. Two modes, and picking the wrong one is a
  * measurable frame-rate bug either way:
  *
  *   default (rAF chunks)  — for a caller that is about to leave the screen.
@@ -3011,7 +2080,6 @@ let _warming = false;
 export function warmFaces({ budgetMs = 8, sync = false } = {}) {
   const jobs = [];
   for (const key of Object.keys(PETS)) if (!CACHE.has('pet:' + key)) jobs.push(['pet', key]);
-  for (const slug of Object.keys(KID_FACES)) if (!CACHE.has('kid:' + slug)) jobs.push(['kid', slug]);
   if (!jobs.length) return Promise.resolve(0);
 
   /* Synchronous is the mode scenes use, because a scene calls this from
@@ -3021,7 +2089,7 @@ export function warmFaces({ budgetMs = 8, sync = false } = {}) {
      and one photograph is ~35 ms — enough to halve the frame rate of whatever
      screen you just opened. Behind the veil, blocking is the cheap option. */
   if (sync) {
-    for (const [kind, key] of jobs) { if (kind === 'pet') petPhoto(key); else kidPhoto(key); }
+    for (const [, key] of jobs) petPhoto(key);
     return Promise.resolve(jobs.length);
   }
 
@@ -3032,8 +2100,8 @@ export function warmFaces({ budgetMs = 8, sync = false } = {}) {
     const step = () => {
       const t0 = performance.now();
       while (jobs.length) {
-        const [kind, key] = jobs.shift();
-        if (kind === 'pet') petPhoto(key); else kidPhoto(key);
+        const [, key] = jobs.shift();
+        petPhoto(key);
         done++;
         if (performance.now() - t0 > budgetMs) break;
       }
@@ -3049,4 +2117,3 @@ export function warmFaces({ budgetMs = 8, sync = false } = {}) {
 export function faceCacheSize() { return CACHE.size; }
 export function clearFaceCache() { CACHE.clear(); }
 export const PET_KEYS = Object.keys(PETS);
-export const KID_KEYS = Object.keys(KID_FACES);

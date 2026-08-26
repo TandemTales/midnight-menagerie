@@ -3,12 +3,20 @@
 The audio agent cannot listen to the ten licensed music tracks, so it measures
 them instead and assigns music cues from the measurements.
 
-    python game/src/audio/analyze.py            # analyse + write map
+    python game/src/audio/analyze.py            # analyse + write map + manifest
     python game/src/audio/analyze.py --json     # just dump the raw numbers
+    python game/src/audio/analyze.py --manifest # ONLY rewrite the runtime manifest
+                                                # (no decoding, no numpy needed)
 
 Outputs
-    game/src/audio/analysis.json   raw per-track measurements (machine readable)
-    docs/AUDIO-MAP.md              human readable findings + the cue assignment
+    game/assets/audio/manifest.json  the track list music.js discovers at runtime
+    game/src/audio/analysis.json     raw per-track measurements (machine readable)
+    docs/AUDIO-MAP.md                human readable findings + the cue weighting
+
+`--manifest` exists so a new mp3 can join the rotation the moment it is copied,
+without waiting for anyone to re-run the (slow, dependency-heavy) analysis.
+tools/prep_assets.py should write the same file when it copies the mp3s; see
+docs/notes/2026-08-25-audio-round-2-random-soundtrack.md.
 
 Decode strategy, in order of preference:
     1. soundfile (libsndfile >= 1.1 decodes mp3 natively)  -- no external binary
@@ -29,12 +37,16 @@ import wave
 import subprocess
 import tempfile
 
-import numpy as np
+try:                                     # --manifest must work on a bare python
+    import numpy as np
+except ImportError:                      # pragma: no cover
+    np = None
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 AUDIO_DIR = os.path.join(ROOT, "game", "assets", "audio")
 OUT_JSON = os.path.join(os.path.dirname(os.path.abspath(__file__)), "analysis.json")
 OUT_MD = os.path.join(ROOT, "docs", "AUDIO-MAP.md")
+OUT_MANIFEST = os.path.join(AUDIO_DIR, "manifest.json")
 
 TARGET_SR = 22050          # everything is analysed at this rate
 SILENCE_DB = -50.0         # threshold used to find loop head/tail

@@ -21,15 +21,11 @@
   --brass-500: color-mix(in oklab, var(--flame-500) 55%, var(--ink-900));
   --brass-600: color-mix(in oklab, var(--flame-500) 24%, var(--ink-900));
 
-  /* --- the eight Kids' signature colours, all pulled off the token ramps -- */
-  --kid-maya:   var(--spectre-300);
-  --kid-mateo:  var(--flame-300);
-  --kid-amina:  color-mix(in oklab, var(--threat-200) 70%, var(--flame-200));
-  --kid-eli:    color-mix(in oklab, var(--guard-300) 76%, var(--spectre-200));
-  --kid-priya:  var(--type-power);
-  --kid-jordan: color-mix(in oklab, var(--flame-400) 60%, var(--threat-300));
-  --kid-lena:   color-mix(in oklab, var(--spectre-200) 60%, var(--type-power));
-  --kid-lucy:   color-mix(in oklab, var(--pluck-300) 74%, var(--threat-200));
+  /* The eight `--kid-*` torch hues used to live here. They existed to tint the
+     generated Kid silhouettes — one recoloured body each — and nothing else
+     ever read them. The Kids are painted art now (assets/kids/*.jpg) and their
+     colour comes from the paintings, so the ramp is gone rather than kept
+     around to rot. */
 
   --veil: color-mix(in srgb, var(--ink-900) 78%, transparent);
   --glass: color-mix(in srgb, var(--ink-700) 74%, transparent);
@@ -285,11 +281,12 @@
 }
 .mm-logo__plaque span { color: var(--brass-200); font-size: .8em; }
 
-/* ── generated photographs: the eight Kids and the eight missing pets ─────────
-   Both were flat SVG here (one recoloured body silhouette per Kid, one grey
-   species glyph per pet) and both are now bitmaps out of ui/petart.js. The
-   `.kidpf` class name is kept because select/clubhouse/gameover all size their
-   portrait boxes with it.
+/* ── the eight Kids and the eight missing pets ────────────────────────────────
+   `.kidpf` is an authored painting from assets/kids/ (ui/portrait.js kidImg);
+   `.petpic` is a generated photograph from ui/petart.js. Both were flat SVG
+   here once — one recoloured body silhouette per Kid, one grey species glyph
+   per pet. The class names are kept because select/clubhouse/gameover all size
+   their boxes with them.
 
    `object-fit: cover` matters: the polaroid crops a 4:3 photograph to a square
    and the run-end ledger crops it again. Without it the pet is letterboxed
@@ -303,6 +300,11 @@
   object-position: 50% 42%;
   background: var(--ink-900);
 }
+/* The full painting is 3:4 and the child stands in the upper two thirds of it;
+   any box shorter than 3:4 must crop off the floor, not the face. The square
+   thumbnail is already a head crop and wants no further bias. */
+.kidpf { object-position: 50% 26%; }
+.kidpf--thumb { object-position: 50% 50%; }
 
 /* SIZE THE BOX, NOT THE PICTURE.
    `.kidpf` and `.petpic` are shared components used by four scenes, so their
@@ -313,6 +315,6 @@
    it. A scene gives its container a size (or an aspect-ratio) and the picture
    fills it; a scene never touches these two classes' layout again. Filters and
    object-position for a particular frame are fine: neither is layout. */
-.kid-tile__pf, .go-who__kid { aspect-ratio: 416 / 462; overflow: hidden; }
+.kid-tile__pf, .go-who__kid { aspect-ratio: 1; overflow: hidden; }
 .go-pet__snap  { aspect-ratio: auto; }
 .go-pet__snap .petpic { aspect-ratio: 4 / 3; }
