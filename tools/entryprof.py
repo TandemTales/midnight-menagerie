@@ -54,6 +54,29 @@ SETTLE = """(boot) => new Promise(res => {
   })();
 })"""
 
+# Records every class change on a selector as a mark, so a stall can be pinned
+# to the state that caused it instead of guessed at from its timestamp.
+WATCH = """(sel) => {
+  const seen = new WeakMap();
+  const obs = new MutationObserver(rs => {
+    for (const r of rs) {
+      const el = r.target, now = el.className;
+      const was = seen.get(el) || '';
+      if (now === was) continue;
+      seen.set(el, now);
+      const a = new Set(was.split(" ").filter(Boolean));
+      const b = new Set(now.split(" ").filter(Boolean));
+      const add = [...b].filter(c => !a.has(c)).map(c => '+' + c);
+      const rem = [...a].filter(c => !b.has(c)).map(c => '-' + c);
+      if (add.length || rem.length)
+        window.__marks.push(['class', performance.now(), [...add, ...rem].join(' ')]);
+    }
+  });
+  // subtree:true so it catches the element even when it is built after arming.
+  obs.observe(document.body, { attributes: true, attributeFilter: ['class'], subtree: true });
+  window.__watchSel = sel;
+}"""
+
 ARM = """(scene) => {
   const bus = window.MM.bus;
   window.__marks = [];
@@ -63,7 +86,7 @@ ARM = """(scene) => {
 }"""
 
 
-async def one(p, url, hold, quiet, goto=None, boot="title"):
+async def one(p, url, hold, quiet, goto=None, boot="title", watch=None):
     browser = await p.chromium.launch(args=[
         "--use-gl=angle", "--use-angle=default", "--enable-unsafe-swiftshader",
         "--force-color-profile=srgb", "--autoplay-policy=no-user-gesture-required",
@@ -89,6 +112,8 @@ async def one(p, url, hold, quiet, goto=None, boot="title"):
         if settled < 0:
             print("  !! boot never settled; numbers below are not attributable")
         await page.evaluate(ARM, goto[0])
+        if watch:
+            await page.evaluate(WATCH, watch)
         t0 = await page.evaluate("() => { window.__gotoAt = performance.now(); return window.__gotoAt; }")
         # fire-and-forget: `void` so Playwright cannot await go()'s promise and
         # collapse the very frames being measured (see CONTRACTS trap 3).
@@ -145,7 +170,7 @@ async def main(a):
     async with async_playwright() as p:
         for r in range(a.runs):
             frames, renderer, errors, marks, t0 = await one(
-                p, url, a.hold, a.quiet, goto, a.boot)
+                p, url, a.hold, a.quiet, goto, a.boot, a.watch)
             gaps, blocked = analyse(frames, a.gap)
             totals.append(blocked)
             worsts.append(max((d for _, d in gaps), default=0.0))
@@ -159,10 +184,13 @@ async def main(a):
                   f"{len(gaps)} gaps >= {a.gap:.0f}ms, blocked {blocked:.0f}ms, "
                   f"worst {worsts[-1]:.0f}ms")
             if not a.quiet:
-                for at, d in gaps:
-                    print(f"    t+{at - t0:7.0f}ms   {d:6.0f}ms blocked")
+                rows = [(at, f"{d:6.0f}ms blocked") for at, d in gaps]
                 for kind, at, who in marks:
-                    print(f"    t+{at - t0:7.0f}ms   <{kind} {who}>")
+                    if kind == "class" and a.watch and a.watch not in who:
+                        continue
+                    rows.append((at, f"       <{kind} {who}>"))
+                for at, txt in sorted(rows):
+                    print(f"    t+{at - t0:7.0f}ms   {txt}")
 
     med = statistics.median(totals)
     print(f"\nRESULT: median blocked {med:.0f}ms over {a.runs} run(s) "
@@ -184,6 +212,8 @@ if __name__ == "__main__":
     ap.add_argument("--runs", type=int, default=1)
     ap.add_argument("--goto", default=None,
                     help="boot elsewhere, settle, then MM.goto(this) -- isolates ONE scene entry")
+    ap.add_argument("--watch", default=None,
+                    help="record class changes matching this substring as marks")
     ap.add_argument("--boot", default="title", help="scene to boot into for --goto mode")
     ap.add_argument("--base", default=BASE_DEFAULT, help="page URL to load (for A/B against a second server)")
     ap.add_argument("--quiet", action="store_true", help="totals only, no per-gap lines")
