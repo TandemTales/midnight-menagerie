@@ -285,6 +285,14 @@
   border: 1px solid color-mix(in srgb, var(--text-ink) 22%, transparent);
 }
 .polaroid__photo { overflow: hidden; }
+/* The kid whose animal this is, tucked into the top-left of the snapshot the
+   way a second photo gets tucked into the frame of the first. Top-LEFT because
+   the pin owns the top centre and the HOME stamp owns the bottom band. */
+.polaroid__who {
+  position: absolute; left: 12px; top: 12px; z-index: 3;
+  width: 30%; aspect-ratio: 1; border-radius: 50%; overflow: hidden;
+  box-shadow: 0 0 0 2px var(--paper), var(--shadow-1);
+}
 .polaroid__cap { font-family: var(--font-body); font-style: italic; font-size: var(--fs-md); color: var(--text-ink); line-height: 1.1; }
 .polaroid__sub { font-size: var(--fs-xs); color: color-mix(in oklab, var(--text-ink) 62%, var(--parchment-shade)); letter-spacing: .06em; text-transform: uppercase; }
 .polaroid__stamp {
@@ -428,15 +436,21 @@
 .stagebar span { margin-left: var(--s-2); font-size: var(--fs-xs); font-style: italic; color: var(--text-lo); }
 
 /* ── backpack ─────────────────────────────────────────────────────────────── */
-.packwho { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: var(--s-4); }
+.packwho { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: var(--s-4); }
 .packwho__b {
-  padding: 5px var(--s-4);
+  display: flex; align-items: center; gap: var(--s-2);
+  padding: 3px var(--s-4) 3px 3px;
   font-family: var(--font-display); font-size: var(--fs-xs);
   letter-spacing: .1em; text-transform: uppercase;
   color: color-mix(in oklab, var(--parchment) 70%, var(--flame-300));
   border: 1px solid color-mix(in srgb, var(--flame-300) 22%, transparent);
   border-radius: 999px;
   transition: all var(--t-quick) var(--ease-out);
+}
+.packwho__pf {
+  flex: none; width: 26px; height: 26px;
+  border-radius: 50%; overflow: hidden;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--flame-300) 34%, transparent);
 }
 .packwho__b:hover { color: var(--flame-100); border-color: var(--flame-300); }
 .packwho__b[aria-checked="true"] { color: var(--ink-900); background: linear-gradient(180deg, var(--flame-200), var(--flame-400)); border-color: var(--flame-200); }

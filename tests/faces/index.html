@@ -2,7 +2,8 @@
 <!--
   Contact sheet for ui/petart.js. OWNER: frontend agent.
 
-  The eight pet photographs and the eight Kid portraits, at review size, on one
+  The eight generated pet photographs (ui/petart.js) and the eight authored Kid
+  paintings (assets/kids/, loaded by ui/portrait.js), at review size, on one
   page, so they can be judged against game/assets/portraits/*.png without
   clicking through three screens to see them. Dev tool only; nothing in the game
   links here.
@@ -38,13 +39,15 @@
   <div class="sheet" id="pets"></div>
   <h1>Pets, at polaroid size, in the polaroid frame</h1>
   <div class="polaroids" id="pols"></div>
-  <h1>Kids — the eight going in</h1>
+  <h1>Kids — the eight going in (painting, then thumbnail)</h1>
   <div class="sheet" id="kids"></div>
+  <div class="sheet" id="kidthumbs"></div>
   <h1>The bar: painted Companion portraits</h1>
   <div class="ref" id="ref"></div>
 
   <script type="module">
-    import { petImg, kidImg, PET_KEYS, KID_KEYS } from '/game/src/ui/petart.js';
+    import { petImg, PET_KEYS } from '/game/src/ui/petart.js';
+    import { kidImg } from '/game/src/ui/portrait.js';
     import { KIDS } from '/game/src/data/schema.js';
 
     const byKid = Object.fromEntries(KIDS.map((k) => [k.pet.toLowerCase(), k]));
@@ -71,15 +74,17 @@
       p.appendChild(b);
       document.getElementById('pols').appendChild(p);
     }
-    for (const k of KID_KEYS) {
-      const c = document.createElement('div');
-      c.className = 'cell';
-      c.appendChild(kidImg(k));
-      const cap = document.createElement('div');
-      cap.className = 'cap';
-      cap.textContent = k;
-      c.appendChild(cap);
-      document.getElementById('kids').appendChild(c);
+    for (const k of KIDS) {
+      for (const [host, variant] of [['kids', 'portrait'], ['kidthumbs', 'thumb']]) {
+        const c = document.createElement('div');
+        c.className = 'cell';
+        c.appendChild(kidImg(k.slug, { variant }));
+        const cap = document.createElement('div');
+        cap.className = 'cap';
+        cap.textContent = k.slug + (variant === 'thumb' ? ' · thumb' : '');
+        c.appendChild(cap);
+        document.getElementById(host).appendChild(c);
+      }
     }
     for (const s of ['marmalade', 'bones', 'pipkin', 'taffy', 'mopsy', 'crinkle', 'hush', 'wink']) {
       const i = document.createElement('img');

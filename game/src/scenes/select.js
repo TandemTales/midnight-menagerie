@@ -457,7 +457,7 @@ export const KID_CODEX = {
      times. His register is deadpan and precise: he does not get angry at the
      House, he cross-examines it. "He ate lettuce. That is not a contract." */
   samir: {
-    age: 12, species: 'Tricolour guinea pig, brown patch over his right eye',
+    age: 12, species: 'Tricolour guinea pig, brown patch over one eye',
     lost: 'Wandered out of an unlatched hutch during a family gathering. A cousin saw a tiny man in a red coat carry him through the wall.',
     note: '"Bean would accept lettuce from a burglar. That is not the same as agreeing to live somewhere."',
     trait: 'Deadpan, exact about words, will negotiate with anything that talks back. Wants everybody comfortable, and is finding out that is not always the answer.',

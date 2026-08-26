@@ -3,20 +3,12 @@
 The audio agent cannot listen to the ten licensed music tracks, so it measures
 them instead and assigns music cues from the measurements.
 
-    python game/src/audio/analyze.py            # analyse + write map + manifest
+    python game/src/audio/analyze.py            # analyse + write map
     python game/src/audio/analyze.py --json     # just dump the raw numbers
-    python game/src/audio/analyze.py --manifest # ONLY rewrite the runtime manifest
-                                                # (no decoding, no numpy needed)
 
 Outputs
-    game/assets/audio/manifest.json  the track list music.js discovers at runtime
-    game/src/audio/analysis.json     raw per-track measurements (machine readable)
-    docs/AUDIO-MAP.md                human readable findings + the cue weighting
-
-`--manifest` exists so a new mp3 can join the rotation the moment it is copied,
-without waiting for anyone to re-run the (slow, dependency-heavy) analysis.
-tools/prep_assets.py should write the same file when it copies the mp3s; see
-docs/notes/2026-08-25-audio-round-2-random-soundtrack.md.
+    game/src/audio/analysis.json   raw per-track measurements (machine readable)
+    docs/AUDIO-MAP.md              human readable findings + the cue assignment
 
 Decode strategy, in order of preference:
     1. soundfile (libsndfile >= 1.1 decodes mp3 natively)  -- no external binary
@@ -37,16 +29,12 @@ import wave
 import subprocess
 import tempfile
 
-try:                                     # --manifest must work on a bare python
-    import numpy as np
-except ImportError:                      # pragma: no cover
-    np = None
+import numpy as np
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 AUDIO_DIR = os.path.join(ROOT, "game", "assets", "audio")
 OUT_JSON = os.path.join(os.path.dirname(os.path.abspath(__file__)), "analysis.json")
 OUT_MD = os.path.join(ROOT, "docs", "AUDIO-MAP.md")
-OUT_MANIFEST = os.path.join(AUDIO_DIR, "manifest.json")
 
 TARGET_SR = 22050          # everything is analysed at this rate
 SILENCE_DB = -50.0         # threshold used to find loop head/tail
@@ -333,40 +321,14 @@ CUE_NOTES = {
     "title":     "menu bed, first thing anyone hears — mid-bright, calm, loops forever",
     "map":       "blueprint navigation — sparse, curious, low pressure",
     "combat":    "the default Scuffle — driving, mid-bright, needs a pulse",
-    "combatAlt": "a brighter second Scuffle colour; nothing routes here by default",
-    "boss":      "Big Scare / boss — the darkest, heaviest, longest bed available",
+    "combatAlt": "second Scuffle bed so back-to-back fights do not repeat",
+    "boss":      "Big Scare / boss — the darkest, heaviest, longest bed we have",
     "safe":      "Safe Room — warmest and quietest, high crest, breathes",
     "shop":      "Lost Things — playful, bright, a bit jaunty",
     "rescue":    "companion rescue — brightest and most sparkly, short is fine",
     "victory":   "run won — big and bright",
     "defeat":    "run lost — dark and slow, but not ugly",
 }
-
-# Draw weights over z-scored features. MIRRORS `MUSIC_CUES[cue].w` in music.js —
-# change both together. An `abs` key weights |z| (avoid an extreme, don't seek one).
-CUE_W = {
-    "title":     {"longer": 1.2, "crest": 0.9, "bright": 0.5, "abstempo": -0.6},
-    "map":       {"crest": 1.0, "longer": 0.8, "loud": -0.9, "air": 0.4},
-    "combat":    {"tempo": 1.3, "loud": 1.0, "longer": 0.8, "absbright": -0.3},
-    "combatAlt": {"tempo": 1.1, "loud": 0.9, "longer": 0.6, "bright": 0.3},
-    "boss":      {"lowend": 1.5, "longer": 1.2, "loud": 0.8, "bright": -1.4},
-    "safe":      {"crest": 1.4, "loud": -1.2, "dyn": 0.6, "tempo": -0.4},
-    "shop":      {"bright": 1.2, "tempo": 0.9, "lowend": -0.5},
-    "rescue":    {"air": 1.6, "bright": 1.1, "longer": -0.6},
-    "victory":   {"bright": 1.2, "loud": 1.0, "longer": -0.4},
-    "defeat":    {"lowend": 1.3, "tempo": -1.1, "bright": -0.8, "crest": 0.5},
-}
-
-# Mix-role level offset per cue, dB. Mirrors `MUSIC_CUES[cue].trimDb` in music.js.
-CUE_TRIM = {
-    "title": 0.0, "map": -1.5, "combat": -2.0, "combatAlt": -2.0, "boss": -1.0,
-    "safe": -2.5, "shop": -2.0, "rescue": -0.5, "victory": 0.0, "defeat": -0.5,
-}
-
-LEVEL_REF_DB = -15.7       # per-track trim is a level match to this
-MUSIC_FIT = 0.5            # mirrors MUSIC_FIT in music.js
-FIT_SCALE = 1.1
-FIT_CLAMP = 2.5
 
 
 def z(vals):
@@ -376,77 +338,9 @@ def z(vals):
     return (a - a.mean()) / a.std()
 
 
-def features(tracks):
-    """z-scored feature table over the analysed tracks. Mirrors `fitTable` in music.js."""
-    ok = [t for t in tracks if t.get("analysed")]
-    if not ok:
-        return {}
-    cols = {
-        "bright": [t["centroidHz"] for t in ok],
-        "longer": [t["duration"] for t in ok],
-        "lowend": [t["lowRatio"] for t in ok],
-        "loud":   [t["rmsDb"] for t in ok],
-        "crest":  [t["crestDb"] for t in ok],
-        "tempo":  [t["bpm"] or 100 for t in ok],
-        "air":    [t["highRatio"] for t in ok],
-        "dyn":    [t["dynamicRangeDb"] for t in ok],
-    }
-    zs = {k: z(v) for k, v in cols.items()}
-    return {t["file"]: {k: float(zs[k][i]) for k in zs} for i, t in enumerate(ok)}
-
-
-def cue_score(v, cue):
-    """Raw fitness of one feature vector for one cue."""
-    s = 0.0
-    for k, w in CUE_W[cue].items():
-        s += w * (abs(v[k[3:]]) if k.startswith("abs") else v[k])
-    return s
-
-
-def fit_matrix(tracks, fit=MUSIC_FIT):
-    """P(track | cue) for a single draw from a full bag. Mirrors `fitTable` in music.js.
-
-    Scores are standardised PER CUE against the analysed set and clamped, so
-    `fit` means the same thing for every cue however discriminating its weights
-    are, and a pool of any size behaves the same way."""
-    F = features(tracks)
-    files = [t["file"] for t in tracks]
-    out = {}
-    for cue in CUES:
-        raw = {f: (cue_score(F[f], cue) if f in F else 0.0) for f in files}
-        vals = [raw[f] for f in F]
-        m = sum(vals) / len(vals) if vals else 0.0
-        sd = (sum((x - m) ** 2 for x in vals) / len(vals)) ** 0.5 if vals else 1.0
-        sd = sd or 1.0
-        w = {f: math.exp(max(-FIT_CLAMP, min(FIT_CLAMP, (raw[f] - m) / sd)) * fit * FIT_SCALE)
-             for f in files}
-        tot = sum(w.values()) or 1.0
-        out[cue] = {f: w[f] / tot for f in files}
-    return out
-
-
-def write_manifest(files):
-    """The list music.js discovers at runtime, so nothing hardcodes a count.
-
-    Deliberately just names: loop points and levels are measurements and live in
-    music.js / analysis.json, not in a file a copy script has to keep correct."""
-    payload = {
-        "note": "Generated. Track list for game/src/audio/music.js — see docs/AUDIO-MAP.md.",
-        "count": len(files),
-        "tracks": list(files),
-    }
-    os.makedirs(os.path.dirname(OUT_MANIFEST), exist_ok=True)
-    open(OUT_MANIFEST, "w", encoding="utf-8").write(json.dumps(payload, indent=1) + "\n")
-    return OUT_MANIFEST
-
-
 def assign(tracks):
     """Greedy best-fit: score every (track, cue) pair, then assign cues in a
-    fixed priority order taking the best remaining track each time.
-
-    music.js no longer uses this — selection is a weighted shuffle bag. It is
-    kept because "the single best fit per cue" is still the clearest way to read
-    the measurements, and it is what the doc's `most likely` column reports."""
+    fixed priority order taking the best remaining track each time."""
     ok = [t for t in tracks if t.get("analysed")]
     if not ok:
         # header-only fallback: order by duration alone
@@ -455,10 +349,43 @@ def assign(tracks):
                 "shop", "victory", "defeat", "rescue"]
         return {c: order[i % len(order)]["file"] for i, c in enumerate(prio)}
 
-    F = features(tracks)
+    bright = z([t["centroidHz"] for t in ok])
+    longer = z([t["duration"] for t in ok])
+    lowend = z([t["lowRatio"] for t in ok])
+    loud = z([t["rmsDb"] for t in ok])
+    crest = z([t["crestDb"] for t in ok])
+    tempo = z([t["bpm"] or 100 for t in ok])
+    air = z([t["highRatio"] for t in ok])
+    dyn = z([t["dynamicRangeDb"] for t in ok])
+
+    F = {t["file"]: dict(bright=bright[i], longer=longer[i], lowend=lowend[i],
+                         loud=loud[i], crest=crest[i], tempo=tempo[i],
+                         air=air[i], dyn=dyn[i])
+         for i, t in enumerate(ok)}
 
     def score(f, cue):
-        return cue_score(F[f], cue)
+        v = F[f]
+        if cue == "boss":
+            return 1.5 * v["lowend"] + 1.2 * v["longer"] + 0.8 * v["loud"] - 1.4 * v["bright"]
+        if cue == "combat":
+            return 1.3 * v["tempo"] + 1.0 * v["loud"] + 0.8 * v["longer"] - 0.3 * abs(v["bright"])
+        if cue == "combatAlt":
+            return 1.1 * v["tempo"] + 0.9 * v["loud"] + 0.6 * v["longer"] + 0.3 * v["bright"]
+        if cue == "title":
+            return 1.2 * v["longer"] + 0.9 * v["crest"] + 0.5 * v["bright"] - 0.6 * abs(v["tempo"])
+        if cue == "map":
+            return 1.0 * v["crest"] + 0.8 * v["longer"] - 0.9 * v["loud"] + 0.4 * v["air"]
+        if cue == "safe":
+            return 1.4 * v["crest"] - 1.2 * v["loud"] + 0.6 * v["dyn"] - 0.4 * v["tempo"]
+        if cue == "shop":
+            return 1.2 * v["bright"] + 0.9 * v["tempo"] - 0.5 * v["lowend"]
+        if cue == "rescue":
+            return 1.6 * v["air"] + 1.1 * v["bright"] - 0.6 * v["longer"]
+        if cue == "victory":
+            return 1.2 * v["bright"] + 1.0 * v["loud"] - 0.4 * v["longer"]
+        if cue == "defeat":
+            return 1.3 * v["lowend"] - 1.1 * v["tempo"] - 0.8 * v["bright"] + 0.5 * v["crest"]
+        return 0.0
 
     # cues that must get a *unique* track first, in importance order
     priority = ["boss", "combat", "title", "safe", "map", "shop",
@@ -493,34 +420,10 @@ def write_md(tracks, cuemap):
             f"{t['bodyStart']:.1f}–{t['bodyEnd']:.1f}s | "
             f"{t['fadeInSec']:.1f}/{t['fadeOutSec']:.1f}s |")
 
+    inv = {}
+    for cue, f in cuemap.items():
+        inv.setdefault(f, []).append(cue)
     by_file = {t["file"]: t for t in tracks}
-    files = [t["file"] for t in tracks]
-    P = fit_matrix(tracks)
-
-    # per-track trim = level match to the reference; the cue adds its mix role
-    trim_rows = []
-    for t in tracks:
-        if not t.get("analysed"):
-            trim_rows.append(f"| `{t['file']}` | 0.00 (not analysed) | 0 – "
-                             f"{max(0.0, t['headerDuration'] - 2.6):.1f}s (estimated) |")
-            continue
-        trim_rows.append(
-            f"| `{t['file']}` | {LEVEL_REF_DB - t['rmsDb']:+.2f} | "
-            f"{max(t['loopStart'], t['bodyStart']):.2f} – "
-            f"{min(t['loopEnd'], t['bodyEnd']):.1f}s |")
-
-    short = [f[5:8] for f in files]
-    prob_hdr = "| cue | mix dB | " + " | ".join(short) + " |"
-    prob_sep = "|---|---|" + "---|" * len(files)
-    prob_rows = []
-    for cue in CUES:
-        row = P[cue]
-        best = max(files, key=lambda f: row[f])
-        cells = []
-        for f in files:
-            p = f"{row[f] * 100:.0f}%"
-            cells.append(f"**{p}**" if f == best else p)
-        prob_rows.append(f"| `{cue}` | {CUE_TRIM[cue]:+.1f} | " + " | ".join(cells) + " |")
 
     cue_rows = []
     for cue in CUES:
@@ -539,18 +442,9 @@ def write_md(tracks, cuemap):
 
 Generated by `game/src/audio/analyze.py`. Do not hand-edit: re-run the script.
 
-The soundtrack lives in `audio/soundtrack/` and is copied to
-`game/assets/audio/track###.mp3`. **{len(tracks)} tracks** were measured here; nothing in
-the runtime hardcodes that number (see *Discovering the pool*).
-
-The audio agent cannot listen to the tracks, so everything below is measurement.
-Decode path used: **{tracks[0].get('decoder','?')}** (analysis rate {TARGET_SR} Hz mono).
-
-> **What changed in round 2.** The designer asked for the soundtrack to play
-> *randomly*. A cue no longer owns a track: every cue draws from a shuffle bag
-> over the whole pool. The measurements did not stop being true, so they now
-> *weight* the draw instead of deciding it — a boss fight leans dark, a shop
-> leans bright, and every track stays possible everywhere.
+The audio agent cannot listen to the ten licensed tracks, so every cue assignment
+below is derived from measurement. Decode path used: **{tracks[0].get('decoder','?')}**
+(analysis rate {TARGET_SR} Hz mono).
 
 ## What was measured
 

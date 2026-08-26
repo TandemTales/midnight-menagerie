@@ -341,13 +341,15 @@ export class TitleScene extends Scene {
   _activate(id) {
     const { ctx } = this;
     try { ctx.audio?.play?.('ui:confirm'); } catch {}
-    /* Start the sixteen Kid portraits and pet photographs the instant the
-       player commits, so they render under the transition veil that is coming
-       down anyway rather than in front of anybody. Fire and forget, chunked
-       across frames; whatever is unfinished when the destination scene builds
-       is finished synchronously there, still behind the veil.
+    /* Start the eight pet photographs the instant the player commits, so they
+       render under the transition veil that is coming down anyway rather than
+       in front of anybody. Fire and forget, chunked across frames; whatever is
+       unfinished when the destination scene builds is finished synchronously
+       there, still behind the veil.
        An earlier version warmed on requestIdleCallback while the Title was on
-       screen and measured 6 fps. See ui/petart.js. */
+       screen and measured 6 fps. See ui/petart.js.
+       The Kids are not in here any more: they are files on disk now, decoded by
+       the browser off the main thread, so there is nothing to pre-render. */
     if (id === 'new' || id === 'menagerie' || id === 'continue') warmFaces();
     switch (id) {
       case 'continue': {

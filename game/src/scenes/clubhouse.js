@@ -201,11 +201,20 @@ export class ClubhouseScene extends Scene {
       card.innerHTML = `
         <span class="pin" aria-hidden="true"></span>
         <span class="polaroid__photo"></span>
+        <span class="polaroid__who" aria-hidden="true"></span>
         <span class="polaroid__cap">${k.pet}</span>
         <span class="polaroid__sub">${k.name.split(' ')[0]}&rsquo;s</span>
         ${found ? '<span class="polaroid__stamp">Home</span>' : ''}`;
       card.querySelector('.polaroid__photo').appendChild(
         petPortrait(k.slug, { alt: `${k.pet}, ${(info.species || k.petKind).toLowerCase()}` }));
+      /* Whose animal this is, as a face rather than only as the word under the
+         photograph. The board is eight small animals and one line of text each;
+         with the kids painted there is no reason the owner stays anonymous.
+         aria-hidden because `.polaroid__sub` already says the same thing to a
+         screen reader, and two of them is noise. */
+      card.querySelector('.polaroid__who').appendChild(
+        kidPortrait({ ...k, petKind: info.species || k.petKind },
+          { w: 192, h: 192, variant: 'thumb' }));
       cork.appendChild(card);
     });
 
@@ -365,7 +374,14 @@ export class ClubhouseScene extends Scene {
       b.dataset.kid = k.slug;
       b.setAttribute('role', 'radio');
       b.setAttribute('aria-checked', String(k.slug === this.activeKid));
-      b.textContent = k.name.split(' ')[0];
+      /* A face on the pill, not just a first name. Eight identical brass
+         lozenges reading MAYA MATEO AMINA… is a dropdown; eight faces is a
+         roster, and this is the screen where you pack somebody's bag. */
+      const face = el('span', 'packwho__pf');
+      face.appendChild(kidPortrait(k, { w: 192, h: 192, variant: 'thumb' }));
+      face.firstChild.alt = '';
+      b.appendChild(face);
+      b.appendChild(el('span', 'packwho__n', k.name.split(' ')[0]));
       who.appendChild(b);
     }
     p.appendChild(who);
