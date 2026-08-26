@@ -303,11 +303,11 @@ export async function competentTurn(e, opts = {}) {
     if (bestSnack) {
       applySnack(e, bestSnack.snack, e.livingEnemies()[0]?.id || null);
       onSnack?.(bestSnack.index, bestSnack.snack);
-      await replay(e, bestSnack.seq);
+      await replay(e, bestSnack.seq, seat);
       return bookkeep(e, before, F, seat);
     }
   }
-  await replay(e, baseline.seq);
+  await replay(e, baseline.seq, seat);
   return bookkeep(e, before, F, seat);
 }
 
@@ -346,7 +346,7 @@ function bookkeep(e, before, F, seat = null) {
  * So: skip a step that no longer applies, keep the rest, and accept an
  * equivalent copy of the same Trick if the specific uid has moved on.
  */
-async function replay(e, seq) {
+async function replay(e, seq, seat = null) {
   for (const mv of seq) {
     if (e.over || e.phase !== 'player') break;
     let uid = mv.uid;
