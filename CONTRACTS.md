@@ -81,6 +81,18 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    before believing a low number. `tools/shot.py` prints the GL renderer so you can also confirm
    you are on the real GPU and not a software rasteriser.
 
+8. **A `fetch()` that 404s is a console error, even if you handle it.** Playwright's
+   `page.on("console")` reports "Failed to load resource: 404" as type `error` for a GET *or* a
+   HEAD, so any probe-until-404 asset discovery trips the zero-console-errors gate on every load.
+   Ship a generated manifest instead. Measured while building soundtrack discovery; applies to
+   any future asset-discovery work here.
+9. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
+   now reported their in-flight work being swallowed by an unrelated commit — one had a whole
+   `music.js` rewrite land inside a commit titled "Pronouns per the designer", which then made a
+   later revert restore the wrong version. Commit **explicit paths** for your own work. If you
+   genuinely need to checkpoint everything, title the commit as a checkpoint so nobody reads it
+   as authorship, and never do it while a rewrite is mid-flight.
+
 ## Quality bar
 
 Slay the Spire 2. Not "a good web game" — that specific bar. Concretely:
