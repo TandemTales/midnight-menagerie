@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-25T15:26:53",
+ "updated": "2026-08-25T20:46:25",
  "wave": 9,
  "waveLabel": "The player's half",
  "headline": "Every screen except the one you play on is finished. The Companion you chose is a generic cat in combat, and the Backpack does nothing.",
@@ -106,8 +106,8 @@
    "name": "Title / Select / Clubhouse",
    "desc": "Front end, Companion select, investigation board",
    "status": "done",
-   "round": 6,
-   "verdict": "Companion select is now UI/selectCompanion.png itself. Unrescued frames are empty recesses with no element and no aria-label; hover moves a candle to the frame.",
+   "round": 7,
+   "verdict": "Main menu is the authored painting: mansion plate, keyed wordmark, menu on a panel-anchored ground at 5.3:1 worst contrast, idle swing 0.29%.",
    "gap": null,
    "builder": null,
    "critic": null,
@@ -558,6 +558,10 @@
   {
    "t": "2026-08-25T15:26:53",
    "msg": "Select screen rebuilt on the source painting. The documented slice grid was wrong - the frames are not on a regular pitch (row 0 is 257px, row 2 is 235px), which had been clipping Wink's nameplate."
+  },
+  {
+   "t": "2026-08-25T20:46:25",
+   "msg": "Main menu rebuilt on UI/mainMenu.png and UI/title.png. Menu moved bottom-left after a centred mock buried the door, the steps, both cat statues and the path."
   }
  ]
 }

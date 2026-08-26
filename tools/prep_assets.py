@@ -23,10 +23,12 @@ for n in ["bones", "pipkin", "taffy"]:
         im.save(f"game/assets/hero/{n}.jpg", quality=88, optimize=True)
 
 # Audio
-for f in sorted(os.listdir("audio")):
+# The soundtrack lives in audio/soundtrack/ (it used to sit loose in audio/).
+SRC = "audio/soundtrack" if os.path.isdir("audio/soundtrack") else "audio"
+for f in sorted(os.listdir(SRC)):
     if f.lower().endswith(".mp3"):
         n = f.replace("MM soundtrack ", "track").replace(" ", "_")
-        shutil.copy(f"audio/{f}", f"game/assets/audio/{n}")
+        shutil.copy(f"{SRC}/{f}", f"game/assets/audio/{n}")
 
 print("blueprint:", len(os.listdir("game/assets/blueprint")))
 print("hero:", os.listdir("game/assets/hero"))

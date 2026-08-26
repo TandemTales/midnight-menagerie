@@ -204,19 +204,19 @@ export const KIDS = [
   { slug: 'maya',   name: 'Maya Chen',       pet: 'Orbit',    petKind: 'cat',        petBreed: 'black domestic cat, white chest patch',
     pronouns: { s: 'she',  o: 'her',  p: 'her',   r: 'herself',    plural: false } },
   { slug: 'mateo',  name: 'Mateo Alvarez',   pet: 'Pepper',   petKind: 'parrot',     petBreed: 'green cheek conure',
-    pronouns: { s: 'they', o: 'them', p: 'their', r: 'themselves', plural: true  } },
+    pronouns: { s: 'he',   o: 'him',  p: 'his',   r: 'himself',    plural: false } },
   { slug: 'amina',  name: 'Amina Okafor',    pet: 'Mochi',    petKind: 'rabbit',     petBreed: 'cream lop-eared rabbit',
     pronouns: { s: 'she',  o: 'her',  p: 'her',   r: 'herself',    plural: false } },
   { slug: 'eli',    name: 'Eli Rosen',       pet: 'Sprocket', petKind: 'rat',        petBreed: 'black and white fancy rat',
     pronouns: { s: 'they', o: 'them', p: 'their', r: 'themselves', plural: true  } },
   { slug: 'priya',  name: 'Priya Shah',      pet: 'Pixel',    petKind: 'gecko',      petBreed: 'leopard gecko',
-    pronouns: { s: 'they', o: 'them', p: 'their', r: 'themselves', plural: true  } },
+    pronouns: { s: 'she',  o: 'her',  p: 'her',   r: 'herself',    plural: false } },
   { slug: 'jordan', name: 'Jordan Brooks',   pet: 'Scout',    petKind: 'dog',        petBreed: 'beagle mix',
     pronouns: { s: 'they', o: 'them', p: 'their', r: 'themselves', plural: true  } },
   { slug: 'lena',   name: 'Lena Yazzie',     pet: 'Mooncake', petKind: 'hamster',    petBreed: 'Syrian hamster',
     pronouns: { s: 'she',  o: 'her',  p: 'her',   r: 'herself',    plural: false } },
-  { slug: 'lucy',   name: 'Lucy',            pet: 'Biscuit',  petKind: 'guinea pig', petBreed: 'tricolour guinea pig',
-    pronouns: { s: 'they', o: 'them', p: 'their', r: 'themselves', plural: true  } },
+  { slug: 'samir',  name: 'Samir Haddad',    pet: 'Bean',     petKind: 'guinea pig', petBreed: 'tricolour guinea pig',
+    pronouns: { s: 'he',   o: 'him',  p: 'his',   r: 'himself',    plural: false } },
 ];
 
 /** In-fiction names for the universal resources. Use these strings in all UI. */
