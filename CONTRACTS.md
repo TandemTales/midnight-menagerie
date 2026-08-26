@@ -86,7 +86,43 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    HEAD, so any probe-until-404 asset discovery trips the zero-console-errors gate on every load.
    Ship a generated manifest instead. Measured while building soundtrack discovery; applies to
    any future asset-discovery work here.
-9. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
+9. **`turn:start` and `turn:end` fire for EVERY ENEMY too, not just the player.**
+   Every Companion tracker in this build listened to the raw event, so with two enemies on
+   the board each one ran three times a round. Marmalade's Untouched was decided by whichever
+   enemy swung LAST — take 9 from the first and have the second merely block, and you were
+   still "Untouched"; the archetype did nothing in any fight with more than one enemy. Bones'
+   Buried countdown, Pipkin's Patch growth and Taffy's Stretch all ticked at ~3x. No console
+   error, no failing test, no symptom except wrong numbers. Use
+   `U.onPlayerTurn(e, 'start'|'end', fn, seat)`. Gated by `tests/turn-events/check.py`.
+
+10. **A hook registered under a name nothing dispatches is completely silent.** The card
+   plays, the events come out, the suite goes green, and the effect never happens — rule 8's
+   shape with a hook name instead of a `?.`. Four cards shipped or nearly shipped this way,
+   including `bones/tail-a-mile-a-minute`, a Rare Power whose whole implementation was an
+   EMPTY handler on `'retrieved'`, a hook that does not exist. There are two registries:
+   engine hooks (`engine.hooks.add`) must match a `hooks.dispatch/reduce/any` name; companion
+   hooks (`U.onHook`) must match a `U.fire` name. Gated by `tests/hook-names/check.py`.
+
+11. **Read the event payload before reading a field off it.** `card:play` carries `card`,
+   `actorId` and `seat` — there is no `ev.type`. `onIncomingHit` carries `defender`, not
+   `actor`. Both mistakes are silent: the listener runs and returns early forever.
+
+12. **A card that "resolves without throwing" is not a card that works.** A smoke test that
+   plays every card and checks for exceptions passed all four dead cards above. Assert the
+   EFFECT — the teammate's Guard went up, the enemy got Webbed — or you have tested nothing.
+
+13. **Two Claude SESSIONS in one repo destroy each other's work, not just two agents.** Trap
+   9 below is about agents inside one session; on 2026-08-26 a second interactive session
+   committed while this one was mid-edit and swallowed two in-flight files. Run `ListAgents`
+   and check for a live peer before committing. Measurements are worse: half a run's samples
+   were of different code than the other half, and the A/B silently became meaningless.
+
+14. **An A/B across two filesystems is not an A/B.** Comparing the OneDrive working tree
+   against a git worktree on local Temp reported a 330 ms "win" for byte-identical code. Both
+   sides must sit on the same disk, and an identical-code control must run alongside the real
+   comparison every time.
+
+15. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
    now reported their in-flight work being swallowed by an unrelated commit — one had a whole
    `music.js` rewrite land inside a commit titled "Pronouns per the designer", which then made a
    later revert restore the wrong version. Commit **explicit paths** for your own work. If you
@@ -160,3 +196,26 @@ engine.on(event, fn)    // 'damage','block','status','draw','discard','death',
 ```
 Events are the *only* thing the renderer reacts to. Every event carries enough
 data to animate it without querying engine internals.
+
+### Co-op: the engine has N players
+
+`engine.players[]` is the source of truth and **solo is a party of one**, so there is no
+separate single-player path below construction.
+
+- `engine.player` / `.piles` / `.relics` are SEAT 0. In a party with the dev guard armed they
+  **throw** and name the fix, rather than quietly resolving to seat 0 — which is how a
+  teammate's Curl Up would silently guard the host. A shipped build degrades to seat 0 rather
+  than throwing at a player mid-run.
+- `engine._asSeat(seat, fn)` sets the acting seat for a scope and restores the previous one.
+  Card resolution runs as the card's owner; every cross-player helper resolves inside the
+  RECIPIENT's seat, so their Dexterity, their deck and their hooks respond.
+- `ctx.self` is whoever HOLDS the card, not seat 0.
+- Cross-player surface, and the only sanctioned way to act on a teammate: `c.party()`,
+  `c.teammates()`, `c.isParty()`, `await c.chooseAlly()`, `c.giveBlock/giveDraw/giveEnergy/
+  giveStatus/giveHeal/allyCards/giveCard`. `chooseAlly` returns **null** in solo.
+- Per seat: deck, all six piles, Nerve, Courage, Guard, statuses, Keepsakes, Companion
+  trackers and counters (two Marmalades get two independent Lives tracks).
+- Turns are SIMULTANEOUS. `endTurn(seat)` closes one seat; `endTurn()` closes the table.
+- Multiplayer-only Tricks live in `def.coopCards`, OUTSIDE the 80, and are never drafted solo.
+
+See `docs/notes/2026-08-26-multiplayer-engine.md`.

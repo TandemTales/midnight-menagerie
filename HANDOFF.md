@@ -43,6 +43,7 @@ python tools/devserver.py 8777
 | Tool | What it does |
 |---|---|
 | `python tools/shot.py <name> [--scene s] [--wait n] [--steps ...] [--strip N]` | Screenshots and drives the real game. Prints fps **and the GL renderer**, flags software rasterisation. Writes `shots/<name>.state.json` with console errors. **Read its docstring.** |
+| `python tools/entryprof.py --goto <scene> [--watch cls]` | Blocked main-thread time on ONE scene entry. Samples every rAF and reports GAPS — an average cannot see a stall. `--goto` boots elsewhere, waits for the app to settle, then walks in, so the cost is attributable instead of buried in ~6 s of boot. |
 | `python tools/progress.py event/wave/piece ...` | Updates the live progress page |
 | `python tools/prep_assets.py` | Copies soundtrack + blueprint art into `game/assets/`, emits `audio/manifest.json` |
 | `python tools/prep_kid_art.py` | Kid portraits/thumbnails + 13 Companion portraits |
@@ -59,7 +60,8 @@ tests/combat/run.py        649 assertions      tests/seams/check.py     1607 sit
 tests/cards/run.py         445 cards, 0 err    tests/seams/proof.py     52 passed
 tests/enemies/run.py       37 enemies, 0 err   tests/scene-css/check.py 0 conflicts
 tests/enemies/audit.py     ~2400 turns, 0 err  tests/run/run.py         50 runs, 0 errors
-tests/map/run.py           23 passed           tests/chrome/run.py      27 checks
+tests/coop/run.py          324 assertions   tests/hook-names/check.py  0 unknown hooks
+tests/turn-events/check.py 0 unguarded      tests/map/run.py           23 passed           tests/chrome/run.py      27 checks
 tests/backpack/run.py      77 checks           tests/audio/run.py       46 cues, 0 errors
 tests/combat-scene/seam.py 22 passed           tests/critic-design/sim.py  balance simulator
 ```
@@ -128,6 +130,18 @@ so visiting one Curiosity **permanently deleted every Safe Room** — all healin
 upgrading — with zero console output. It survived three playthroughs and made the balance
 simulator disagree with the real game. `tests/scene-css/check.py` gates it.
 
+**Listeners that fire too often, or never.** `turn:start` / `turn:end` are emitted for the
+player AND for every enemy, so every Companion tracker in this build ran ~3x a round:
+Marmalade's Untouched was decided by whichever enemy swung LAST and her whole archetype did
+nothing in any multi-enemy fight, Bones' Buried countdown ticked 3x, Pipkin's Patch grew 3x.
+Separately, a hook registered under a name nothing dispatches is completely silent — four
+cards were written that way, one of them (`bones/tail-a-mile-a-minute`, a Rare) already
+shipping with an empty handler on a hook that does not exist. `tests/turn-events/check.py`
+and `tests/hook-names/check.py` gate both. See CONTRACTS traps 9-12.
+
+**A card that "resolves without throwing" is not a card that works.** A smoke test that plays
+every card and checks for exceptions passed all four dead cards above. Assert the EFFECT.
+
 **Measurement traps that produced wrong conclusions.** An averaged fps hides an entry stall. A
 mock that implements the mechanic it tests proves nothing. `gl.finish()` is not a fence under
 ANGLE. `page.evaluate` awaits returned promises, which makes every motion-strip frame land on the
@@ -186,60 +200,78 @@ are open: `data/keywords.js` costs 88–107 ms of module eval on the boot path v
 three ~120–160 ms tasks from `atmosphere.setMood('blueprint')` now surface after the sweep.
 Full detail in `docs/notes/2026-08-26-map-round-6-the-entry-stall-is-shader-linking.md`.
 
-## 9. The next major piece: MULTIPLAYER
+**Verified from fresh context afterwards** (`docs/notes/2026-08-26-entry-stall-verification.md`),
+with a same-filesystem A/B and an identical-code control: map entry 1078 ms -> 765 ms (-29%) and
+worst frame gap 650 ms -> 450 ms (-30%) both hold. There is a cost the round-6 commit does not
+record: **~400 ms of blocked main thread now lands ~800 ms AFTER the sweep finishes**, where
+pre-fix had exactly zero — four frames of 100-220 ms on a settled map the player is already
+reading. Best guess, unproven: warm-up phases B/C now overlap the map entrance because the map
+enters 313 ms sooner. Same driver work, later. Worth a look before anyone calls this closed.
 
-The designer has said this ships on **Steam** and needs multiplayer **at parity with Slay the
-Spire 2**. Currently there is **none** — no networking, no second player, nothing. I scoped it out
-early ("single-player build") and should have flagged it; the original brief did say "solo and
-cooperative".
+## 9. MULTIPLAYER — the engine is done, nothing above it is
 
-### What StS2 co-op actually is (researched 2026-08-26 — this is the spec to hit)
+The designer's decision on 2026-08-26: **defer the Steam wrapper** and build the
+transport-independent work first. That is what is below. The wrapper choice
+(Electron vs Tauri vs NW.js; Steamworks P2P vs a relay) is still open and still
+shapes the transport layer.
 
-- **Up to 4 players, online only, Steam friend invites.** No public matchmaking, no local co-op,
-  no mid-game join or drop. Host controls save/load.
-- **Simultaneous turns.** All players act in the same planning window; cards queue and resolve in
-  order. Debuffs resolve first, benefiting teammates who act after. Semi-transparent cursors show
-  teammate intent. Any teammate's full deck and relics are inspectable at any time.
-- **Shared:** map and route, enemies and their buffs/debuffs.
-- **Per-player:** deck, gold, energy, HP, relics, card rewards, shop inventory.
-- **Potions:** drink-on-self, or **thrown to a teammate**.
-- **Enemy HP scales non-linearly:** 1p 100% · 2p ~220% · 3p ~360% · 4p ~520%. Bosses get co-op
-  specific adjustments. Enemies threaten all players at all times.
-- **Death:** at 0 HP a player falls and cannot act for the rest of the fight; revives at 1 HP if
-  the team wins. All dead = run over. Act transitions restore some HP.
-- **Route disagreement:** vote, weighted random on ties.
-- **Map drawing/ping** for suggesting routes.
-- **Co-op-only cards** per character: team Block, team buffs, **Aggro/Taunt** (force enemy
-  targeting for a turn), cross-player synergy, mid-combat revival.
-- **Camp/rest additions:** *Mend* (heal a teammate 30%, sacrificing your own camp action) and
-  *Clone* (copy a card from a teammate's deck).
+Full detail: `docs/notes/2026-08-26-multiplayer-engine.md`. Contract summary:
+CONTRACTS.md § "Co-op: the engine has N players".
 
-### What this game's own design doc already specifies
+### Built and tested (324 co-op assertions, real party engines, no mocks)
 
-214 multiplayer mentions. Every Companion chapter has a **"MULTIPLAYER ONLY TRICKS"** section
-(3 Uncommon + 2 Rare each — ~5 cards × 16 Companions) which I explicitly told the content agent to
-skip. Every region chapter has per-enemy **multiplayer scaling** notes, also skipped.
-`docs/design/03-content-architecture.md` specifies a multiplayer **content-ownership model** —
-players may own different expansions, so Companion validation and reward substitution for
-non-owners are already designed.
+`engine.players[]` is the source of truth. **Solo is a party of one**, so there
+is no separate single-player path below construction — the solo suite is
+unchanged at 651 assertions through the entire refactor.
 
-### The one decision that blocks the rest
+- per seat: deck, all six piles, Nerve, Courage, Guard, statuses, Keepsakes,
+  Companion trackers and counters. Two Marmalades get two independent Lives
+  tracks, not one shared one.
+- enemy Courage on the StS2 curve: 2p 220%, 3p 360%, 4p 520%, with a per-enemy
+  `EnemyDef.partyHp` override for the region chapters.
+- enemies MARK a seat and hold that mark across intent refreshes, so the arrow
+  read while planning is the one that resolves.
+- **Racket**, the co-op taunt — fourteenth universal status.
+- **simultaneous turns**: everyone plans in one window, each seat ends its own
+  turn, the enemy phase waits for the last living seat.
+- **fallen**: at 0 Courage a seat keeps its place, drops its hand, takes no turn;
+  back at 1 Courage if the team wins; all fallen = run over.
+- thrown Snacks: `useSnack(snack, targetId, { to: seat })`.
+- the **25 authored multiplayer-only Tricks** — 3 Uncommon + 2 Rare for each of
+  the five built Companions, from their own design chapters, in `def.coopCards`
+  OUTSIDE the 80. Every one is played in a real 2-seat fight by the suite.
 
-**The game is a browser ES-module app with no build step. Steam needs a desktop wrapper and
-Steamworks.** That choice (Electron vs Tauri vs NW.js; Steamworks P2P/`ISteamNetworkingMessages`
-vs a relay) shapes the transport layer and should be made deliberately with the designer — do not
-pick it silently.
+**How the refactor was kept safe, and worth reusing:** in a party with the dev
+guard armed, `engine.player` / `.piles` / `.relics` **throw** and name the fix
+instead of quietly resolving to seat 0. Running a real 2-player fight produced
+the port list one throw at a time. A shipped build still degrades to seat 0
+rather than throwing at a player mid-run.
 
-**Work that does NOT depend on it and can start immediately:**
-1. Generalise the engine's actor model from one player to N (`src/combat/`). The deterministic
-   RNG, `choiceLog` and `setChoiceScript` replay are a genuinely good foundation for lockstep.
-2. Author the ~5 co-op cards per built Companion from the doc's own MULTIPLAYER ONLY pools.
-3. Per-enemy party scaling from each region chapter, plus the HP curve above.
-4. Simultaneous-turn resolution order, taunt/aggro targeting, fallen-player state, teammate
-   potion throwing, Mend and Clone at the Safe Room.
-5. Extend `tests/critic-design/sim.py` to simulate 2–4 player parties.
+### NOT built — this is the honest list
 
----
+1. **No co-op run layer and no co-op UI.** `state/run.js` is single-player and
+   there is no way to start a 2-player game from inside the game. The engine is
+   ready; nothing above it is. This is the next piece.
+2. **No networking**, per the deferred wrapper decision.
+3. Per-player gold, card rewards and shop inventory — specified, but they live
+   in the run layer, so untouched.
+4. **Mend** and **Clone** at the Safe Room.
+5. Per-enemy `partyHp` overrides from the region chapters: the engine supports
+   them, nobody has authored them.
+6. The other 11 Companions' co-op pools (they are unbuilt Companions).
+7. **Cards that need a teammate to choose.** Several say "that player chooses a
+   Trick from their hand". The choice broker raises ONE request to whoever is
+   driving the engine; there is no client routing to put a request in front of a
+   different player. Those picks currently resolve deterministically and are
+   marked `// TEAMMATE PICK` in the source. The effect is right; who decides is
+   not. It is a networking task, not a card task.
+
+### Lockstep foundation
+
+The deterministic RNG, `choiceLog` and `setChoiceScript` replay are a genuinely
+good base — the run layer already uses them to reconstruct an interrupted fight
+and verify it against a board digest. Seats shuffle in seat order off the one
+shared RNG, so the same seed deals the same opening hands to the same Kids.
 
 ## 10. Where things are
 
