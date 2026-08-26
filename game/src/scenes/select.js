@@ -531,7 +531,7 @@ const COMPANION_SPECIES = {
 };
 const PET_SPECIES = {
   maya: 'cat', mateo: 'bird', amina: 'rabbit', eli: 'rodent',
-  priya: 'reptile', jordan: 'dog', lena: 'rodent', lucy: 'rodent',
+  priya: 'reptile', jordan: 'dog', lena: 'rodent', samir: 'rodent',
 };
 
 /** One line about what happens when this Kid walks in with this Companion. */
@@ -544,8 +544,14 @@ function pairingNote(compSlug, kidSlug) {
     return `${c.name} keeps looking at ${k.name.split(' ')[0]}'s collar tag. ` +
       `Whatever ${k.pet} is now, ${c.name} was once the same kind of animal — and remembers being found.`;
   }
+  /* Pronoun from the Kid record (schema.js KIDS[].pronouns) and NEVER from the
+     name or the design doc — the field is the designer's and is authoritative.
+     This line printed a hardcoded "she" for all eight, which is wrong for five
+     of them. `plural` carries the verb agreement with it: they KNOW, she KNOWS. */
+  const pr = k.pronouns || { s: 'they', plural: true };
   return `${c.name} does not know ${k.pet}. But ${c.name} knows the house, ` +
-    `and ${k.name.split(' ')[0]} knows what she is looking for. That is enough to get through the door.`;
+    `and ${k.name.split(' ')[0]} knows what ${pr.s} ${pr.plural ? 'are' : 'is'} looking for. ` +
+    `That is enough to get through the door.`;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════ */
@@ -872,7 +878,11 @@ export class SelectScene extends Scene {
       b.setAttribute('role', 'option');
       b.setAttribute('aria-selected', 'false');
       const pw = el('div', 'kid-tile__pf');
-      pw.appendChild(kidPortrait({ ...k, petKind: info.species || k.petKind }, { w: 150, h: 166 }));
+      /* The square head-and-shoulders crop, not the full painting. Eight full
+         3:4 portraits squeezed into a strip of eight columns puts every face
+         about 40 px tall and the row stops being a roster you can read. */
+      pw.appendChild(kidPortrait({ ...k, petKind: info.species || k.petKind },
+        { w: 192, h: 192, variant: 'thumb' }));
       b.appendChild(pw);
       b.appendChild(el('div', 'kid-tile__plate',
         `<span class="kid-tile__name">${k.name.split(' ')[0]}</span>` +
@@ -1264,16 +1274,19 @@ export class SelectScene extends Scene {
       b.classList.toggle('is-shown', b.dataset.slug === slug);
     }
 
+    /* The hero slot: the whole painting, full height of the dossier. This is
+       the one place a Kid is looked at rather than glanced at, so it gets the
+       720x960 file and not the thumbnail crop. */
     const pf = step.querySelector('.kid__portrait');
     pf.innerHTML = '';
-    pf.appendChild(kidPortrait({ ...k, petKind: info.species }, { w: 300, h: 334 }));
+    pf.appendChild(kidPortrait({ ...k, petKind: info.species }, { w: 360, h: 480 }));
 
     step.querySelector('.poster__pet').textContent = k.pet;
     step.querySelector('.poster__species').textContent = info.species;
     step.querySelector('.poster__lost').textContent = info.lost;
     step.querySelector('.poster__note').textContent = info.note;
     /* The actual photograph of the actual animal. This box used to hold one
-       hard-coded cat-shaped path shown for every pet on the roster, Lucy's
+       hard-coded cat-shaped path shown for every pet on the roster, Samir's
        guinea pig included — the single image the whole game is about. */
     const photo = step.querySelector('.poster__photo');
     photo.innerHTML = '';

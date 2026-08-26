@@ -409,10 +409,12 @@
 }
 .petcard__kid {
   position: absolute; left: 8px; bottom: 8px; z-index: 2;
-  width: 46px; height: 46px; border-radius: 50%; overflow: hidden;
+  width: 54px; height: 54px; border-radius: 50%; overflow: hidden;
   box-shadow: 0 0 0 2px color-mix(in oklab, var(--flame-300) 60%, var(--ink-900)), var(--shadow-1);
 }
-.petcard__kid .kidpf { object-position: 46% 28%; }
+/* Dead centre. The 46%/28% bias existed to hunt a face out of a generated
+   full-body silhouette; the thumbnail IS the face, already framed. */
+.petcard__kid .kidpf { object-position: 50% 50%; }
 .petcard:not(.is-home) .petcard__pet .petpic { filter: saturate(.7) brightness(.9); }
 .petcard.is-home .petcard__pet .petpic { filter: saturate(1.05); }
 .petcard__body { padding: var(--s-3); display: flex; flex-direction: column; gap: 2px; }

@@ -406,7 +406,8 @@ export class GameOverScene extends Scene {
         <span class="go-who__wing">${esc(region)} &middot; Wing ${s.wing}</span>
       </div>`);
     who.querySelector('.go-who__kid')
-      .appendChild(kidPortrait({ ...k, petKind: k.petKind }, { w: 92, h: 102 }));
+      .appendChild(kidPortrait({ ...k, petKind: k.petKind },
+        { w: 192, h: 192, variant: 'thumb' }));
     led.appendChild(who);
 
     /* --- the numbers ------------------------------------------------------ */

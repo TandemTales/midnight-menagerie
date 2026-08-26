@@ -338,7 +338,8 @@ export class ClubhouseScene extends Scene {
       card.querySelector('.petcard__pet').appendChild(
         petPortrait(k.slug, { alt: `${k.pet}, ${(info.species || k.petKind).toLowerCase()}` }));
       card.querySelector('.petcard__kid').appendChild(
-        kidPortrait({ ...k, petKind: info.species || k.petKind }, { w: 120, h: 134 }));
+        kidPortrait({ ...k, petKind: info.species || k.petKind },
+          { w: 192, h: 192, variant: 'thumb' }));
       grid.appendChild(card);
     }
     p.appendChild(grid);

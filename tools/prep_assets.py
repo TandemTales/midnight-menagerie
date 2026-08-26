@@ -30,6 +30,14 @@ for f in sorted(os.listdir(SRC)):
         n = f.replace("MM soundtrack ", "track").replace(" ", "_")
         shutil.copy(f"{SRC}/{f}", f"game/assets/audio/{n}")
 
+# A manifest, so the music system can discover the pool without hardcoding a count or
+# probing for 404s. Adding a track to audio/soundtrack/ and re-running this is the whole
+# job of shipping new music.
+import json
+_tracks = sorted(f for f in os.listdir("game/assets/audio") if f.lower().endswith(".mp3"))
+json.dump({"tracks": _tracks}, open("game/assets/audio/manifest.json", "w"), indent=1)
+print("manifest:", len(_tracks), "tracks")
+
 print("blueprint:", len(os.listdir("game/assets/blueprint")))
 print("hero:", os.listdir("game/assets/hero"))
 print("audio:", sorted(os.listdir("game/assets/audio")))
