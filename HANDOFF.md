@@ -153,25 +153,38 @@ infer a pronoun from a name; never re-derive from the doc. Copy must read the fi
 
 ---
 
-## 8. In flight right now
+## 8. Recently closed — the boot stall
 
-**One agent running** (id `ab4d724936e4c1431`) on the **map entry stall**. It owns
-`scenes/map.js`, `map.css`, `ui/mapnode.js`, `core/clock.js` — those three are the uncommitted
-files in the working tree. Resume it with `SendMessage` or let it finish.
+**No agents are running. Working tree is clean.**
 
-The defect, measured by sampling every rAF from page load on `#scene=map&seed=42&region=foyer`:
+The map "audio" problem is diagnosed and fixed. It was neither audio nor map-specific: a cold
+boot blocked the main thread for ~5.5 s on **shader linking**, and `#scene=gameover` measured the
+same 5283 ms. A CDP profile put 4975 ms in three.js `onFirstUse`, of which
+**`gl.getProgramInfoLog` was 4194 ms** — on this ANGLE/D3D11 Intel UHD stack that call forces the
+driver's deferred link at **400–750 ms per program**.
 
-```
-t+ 6005ms   1872ms blocked
-t+ 7924ms   1938ms blocked
-t+10012ms    905ms blocked      ≈ 4.7s of blocked main thread on map entry
-```
+The warm-up was racing itself. `core/renderer.js` drew the scene straight to the canvas while
+`_warming` was true, landing 6 ms after phase A created its first program and forcing every
+subsequent program to link synchronously inside `setProgram`. The warm-up was dead code in
+practice. Fixed by drawing nothing while warming, and by warming **both** program variants
+(canvas-target and composer-target have different cache keys).
 
-**Steady state is 61 fps** — which is why every averaged measurement passed. An earlier report
-blamed the audio layer; **that is wrong and I disproved it**: audio running 61, AudioContext
-suspended 61, all decks paused 61, on map, combat and the victory screen alike.
+**Worst frame 1938 ms → 564 ms; total blocked ~5.5 s → ~2.2 s.** All scenes 61 fps, zero console
+errors, look unchanged (0.023% of pixels differ, max channel delta 15/255).
 
----
+The map itself also got: stylesheet no longer re-fetched on every entry (it was the only scene
+that unloaded its `<link>`), grain tile cached instead of re-encoded, 64 `innerHTML` parses → 1,
+three serial round trips made concurrent, and the entrance sweep promoted to a compositor op.
+Route visible at **1.66 s**.
+
+**What remains, and why 120 ms is not reachable on this hardware:** ~520 ms of the residue is
+Chrome's own GPU rasteriser compiling Skia shaders on first paint — no script attribution, does
+not scale with viewport, and `--disable-gpu-rasterization` drops it to 250 ms. Removing it needs
+the map's paint-op vocabulary rendered once somewhere invisible during boot. Two smaller leads
+are open: `data/keywords.js` costs 88–107 ms of module eval on the boot path via
+`ui/hud.js` → `ui/tooltip.js` (a dynamic import in tooltip's first `show()` would remove it), and
+three ~120–160 ms tasks from `atmosphere.setMood('blueprint')` now surface after the sweep.
+Full detail in `docs/notes/2026-08-26-map-round-6-the-entry-stall-is-shader-linking.md`.
 
 ## 9. The next major piece: MULTIPLAYER
 
