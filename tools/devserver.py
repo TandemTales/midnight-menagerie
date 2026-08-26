@@ -5,6 +5,12 @@ types for ES modules, and a tiny /api/progress endpoint the live progress page p
 """
 import http.server, socketserver, os, sys, json, threading
 
+# Windows consoles default to cp1252; a non-ASCII byte in a print() kills the server
+# before it ever binds.  Measured: the arrow below crashed a background launch.
+for _s in (sys.stdout, sys.stderr):
+    try: _s.reconfigure(encoding='utf-8', errors='replace')
+    except Exception: pass
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8777
 
