@@ -19,11 +19,28 @@
 
 // ── engine scratch namespace ────────────────────────────────────────────────
 /** Per-combat state owned by companion-cards. Created lazily on the engine. */
+/**
+ * The companion scratch space, per SEAT.
+ *
+ * It used to live on the engine, which is right up until two Kids are playing.
+ * Wink's Set Tricks, Bones' Buried pile, Pipkin's Patch and Marmalade's
+ * Untouched bookkeeping are all per-player state; sharing one object across a
+ * party would have two Kids planting in the same Patch and one Kid's perfect
+ * turn marking the other Untouched.
+ *
+ * Resolution order: the seat holding the card (`c.self`), then the acting seat,
+ * then the engine itself for a call with no ctx at all. Solo is unaffected —
+ * there is one seat and it owns the only scratch there has ever been.
+ */
 export function mm(c) {
   const e = c?.e || c;
   if (!e) return FALLBACK_SCRATCH;
-  if (!e.__mm) {
-    e.__mm = {
+  const seat = (c && c.self && c.self.side === 'player') ? c.self
+             : (e.current && e.current.side === 'player') ? e.current
+             : null;
+  const host = seat || e;
+  if (!host.__mm) {
+    host.__mm = {
       onceTurn: -1, once: {},          // "first time each turn" guards
       played: 0,                       // cards played this turn (fallback counter)
       patch: [],                       // pipkin: array of 'seed'|'sprout'|'pumpkin'
@@ -41,7 +58,7 @@ export function mm(c) {
       maxPlump: 3,
     };
   }
-  return e.__mm;
+  return host.__mm;
 }
 const FALLBACK_SCRATCH = { onceTurn: -1, once: {}, played: 0, patch: [], patchCap: 6, sets: [], setCap: 3, bellyCap: 2, buried: [], reads: [], previewed: {}, turnFlags: {}, lastTurnEndHp: null, untouched: true, installed: false, maxPlump: 3 };
 
@@ -138,7 +155,18 @@ const COMMON_DEBUFFS = ['weak', 'vulnerable', 'frail', 'poison', 'haunt', 'web',
 
 // ── companion resources (Lives, Loose Bones, Height, Plump, Globs, Eyes) ────
 /** True when the engine is tracking this id as a first-class counter track. */
-export function hasCounter(c, id) { const m = c?.e?.counters; return !!(m && typeof m.has === 'function' && m.has(id)); }
+/**
+ * Is this counter defined for the seat asking?
+ *
+ * Goes through the engine rather than poking `engine.counters` directly,
+ * because in a party the map is keyed by seat — two Marmalades have two
+ * independent Lives tracks — and a raw `.has(id)` would miss both.
+ */
+export function hasCounter(c, id) {
+  const e = c?.e;
+  if (!e || typeof e.hasCounter !== 'function') return false;
+  return e.hasCounter(id, c?.self?.id);
+}
 /** Read a resource.  Prefers the engine counter track, falls back to a status. */
 export function res(c, id) { return hasCounter(c, id) ? (c.counter(id) | 0) : stacks(c, c.self, id); }
 /** Add to a resource with a floor/ceiling.  Returns the amount actually changed. */
@@ -167,7 +195,7 @@ export function spendRes(c, id, n) {
  */
 export function defineCounters(engine, defs) {
   if (!engine || !engine.defineCounter) return;
-  for (const d of defs) if (!engine.counters?.has?.(d.id)) engine.defineCounter(d);
+  for (const d of defs) if (!engine.hasCounter(d.id)) engine.defineCounter(d);
 }
 
 // ── card zones and card objects ─────────────────────────────────────────────
@@ -273,13 +301,58 @@ export async function chooseOne(c, options, n = 1) {
   return out;
 }
 
+// ── turn boundaries ─────────────────────────────────────────────────────────
+/**
+ * Listen to the PLAYER's turn boundary.
+ *
+ * `engine.on('turn:start')` is NOT the player's turn starting — the engine
+ * emits `turn:start` and `turn:end` for every enemy as well, with
+ * `side: 'enemy'`. Every Companion tracker in this build listened to the raw
+ * event, so with two enemies on the board each of them fired three times a
+ * round instead of once. Measured consequences, all of them shipped:
+ *
+ *   - Marmalade's Untouched was decided by whichever enemy swung LAST, because
+ *     the baseline Courage was overwritten mid-enemy-phase. Take 9 damage from
+ *     the first enemy, have the second one merely block, and you were still
+ *     "Untouched" — the archetype simply did not work in any fight with more
+ *     than one enemy.
+ *   - Bones' Buried countdown ticked once per enemy, so cards resurfaced in
+ *     roughly a third of the turns they were meant to.
+ *   - Pipkin's Patch ran a growth step per enemy, and zeroed Height repeatedly.
+ *   - Taffy's Stretch counters climbed on every enemy turn end.
+ *
+ * `state/run.js` already had this right (`if (ev.side !== 'player') return`),
+ * which is what made the pattern visible. Use this, not `e.on`.
+ *
+ * @param {object} e     the engine
+ * @param {'start'|'end'} when
+ * @param {(ev:object)=>void} fn
+ * @param {object|null} [seat]  in a party, only fire for THIS seat. Turn START
+ *   is one table-wide event so the seat is not used there; turn END is emitted
+ *   per seat, because seats end their turns independently.
+ */
+export function onPlayerTurn(e, when, fn, seat = null) {
+  if (!e || !e.on) return () => {};
+  const type = when === 'start' ? 'turn:start' : 'turn:end';
+  return e.on(type, (ev) => {
+    if (!ev || ev.side !== 'player') return;
+    if (when === 'end' && seat && ev.actorId && ev.actorId !== seat.id) return;
+    fn(ev);
+  });
+}
+
 // ── delayed effects ─────────────────────────────────────────────────────────
 /** Run `fn` at the start of the player's next turn. */
 export function nextTurn(c, fn) {
   if (c.schedule) return c.schedule({ turns: 1, when: 'playerTurnStart', label: 'next turn', run: () => { try { fn(c); } catch (_) {} } });
   const e = c.e; if (!e?.on) return;
+  // side-filtered: without it this fired on the FIRST ENEMY's turn start, so
+  // "at the start of your next turn" actually happened during the enemy phase.
   let done = false;
-  const h = () => { if (done) return; done = true; try { fn(c); } catch (_) {} e.off('turn:start', h); };
+  const h = (ev) => {
+    if (done || !ev || ev.side !== 'player') return;
+    done = true; try { fn(c); } catch (_) {} e.off('turn:start', h);
+  };
   e.on('turn:start', h);
 }
 /** Run `fn` at the end of the current player turn. */
@@ -287,7 +360,10 @@ export function atTurnEnd(c, fn) {
   if (c.schedule) return c.schedule({ turns: 1, when: 'playerTurnEnd', label: 'end of turn', run: () => { try { fn(c); } catch (_) {} } });
   const e = c.e; if (!e?.on) return;
   let done = false;
-  const h = () => { if (done) return; done = true; try { fn(c); } catch (_) {} e.off('turn:end', h); };
+  const h = (ev) => {
+    if (done || !ev || ev.side !== 'player') return;
+    done = true; try { fn(c); } catch (_) {} e.off('turn:end', h);
+  };
   e.on('turn:end', h);
 }
 
@@ -351,27 +427,38 @@ export function onTracker(slug, fn) { TRACKERS.set(slug, fn); }
  * than once.  combat-engine should call this at combat start; every card effect
  * also calls it defensively so nothing breaks if it does not.
  */
-export function installTrackers(engine, slug) {
+/**
+ * Install one Companion's per-combat trackers for one seat.
+ *
+ * `installed` lives on the seat's own scratch, so a party of two Marmalades
+ * installs twice — once per Kid, each closing over its own `s` and its own
+ * seat — rather than once for the table. The tracker function receives the seat
+ * as a third argument precisely so it never has to ask the engine who the
+ * player is.
+ */
+export function installTrackers(engine, slug, seat = null) {
   if (!engine) return;
-  const s = mm({ e: engine });
+  const who = seat || (engine.current && engine.current.side === 'player' ? engine.current : null);
+  const s = mm(who ? { e: engine, self: who } : { e: engine });
   if (s.installed) return;
   s.installed = true;
   const fn = TRACKERS.get(slug);
-  if (fn && engine.on) fn(engine, s);
+  if (fn && engine.on) fn(engine, s, who || engine.players?.[0] || null);
 }
 /** Called at the top of every card effect. */
-export function ensure(c, slug) { installTrackers(c?.e, slug); return c; }
+export function ensure(c, slug) { installTrackers(c?.e, slug, c?.self); return c; }
 
 /**
  * A ctx for code that runs outside a card: turn trackers, timers and Power
  * listeners.  It is the engine's own card ctx with no card attached, so every
  * helper in this module behaves identically inside and outside a card effect.
  */
-export function trackerCtx(engine) {
+export function trackerCtx(engine, seat = null) {
   if (!engine || !engine.ctxFor) return null;
-  const c = engine.ctxFor(null, null, 0);
-  c.card = null;
-  return c;
+  // Built AS the seat these trackers belong to, so every helper reached from
+  // inside a tracker (piles, counters, statuses) answers for the right Kid.
+  const build = () => { const c = engine.ctxFor(null, null, 0); c.card = null; return c; };
+  return (seat && engine._asSeat) ? engine._asSeat(seat, build) : build();
 }
 
 // ── clamps used by the balance validator ────────────────────────────────────

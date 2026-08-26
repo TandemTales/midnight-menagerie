@@ -106,20 +106,21 @@ function power(c, id, n, install) {
 }
 
 // ── per-combat bookkeeping ──────────────────────────────────────────────────
-U.onTracker(SLUG, (e, s) => {
+U.onTracker(SLUG, (e, s, seat) => {
   U.defineCounters(e, [
     { id: 'height', name: 'Height', icon: 'height', desc: 'How far off the ground Pipkin has bounced. Land spends all of it at once. Unused Height disappears at the end of your turn.', min: 0, max: 3, start: 0 },
     { id: 'plump', name: 'Plump', icon: 'plump', desc: 'How round Pipkin is. Persists between turns. At maximum Plump, Heavy Feet makes Hop Tricks cost 1 more.', min: 0, max: 5, start: 0 },
   ]);
-  const fake = () => U.trackerCtx(e);
-  e.on('turn:end', () => {
+  const fake = () => U.trackerCtx(e, seat);
+  // Player turn end ONLY — this used to run a growth step per enemy.
+  U.onPlayerTurn(e, 'end', () => {
     const c = fake();
     const steps = U.stacks(c, c.self, 'pipkin/moonlit-garden') > 0 ? 2 : 1;
     for (let i = 0; i < steps; i++) growthStep(c);
     // Height evaporates unless something is holding it up
     if (U.stacks(c, c.self, 'hang-time') === 0 && U.stacks(c, c.self, 'pipkin/spring-eternal') === 0) U.setRes(c, HEIGHT, 0, 0, 3);
   });
-  e.on('turn:start', () => { s.played = 0; });
+  U.onPlayerTurn(e, 'start', () => { s.played = 0; });
 });
 
 // ── Power hooks ─────────────────────────────────────────────────────────────

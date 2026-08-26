@@ -95,13 +95,15 @@ const SPARE_BONE = {
 const spawnSpare = (c, n) => { for (let i = 0; i < n; i++) U.spawn(c, SPARE_BONE, 'hand', { temporary: true }); };
 
 // ── per-combat bookkeeping ──────────────────────────────────────────────────
-U.onTracker(SLUG, (e, s) => {
+U.onTracker(SLUG, (e, s, seat) => {
   U.defineCounters(e, [
     { id: 'loose-bones', name: 'Loose Bones', icon: 'loose-bones', desc: 'How much of Bones is currently detached. Whole at 0, Scattered at 4 or more.', min: 0, max: 6, start: 0 },
   ]);
-  e.on('turn:start', () => {
+  // Player turn start ONLY: the raw event also fires for every enemy, which
+  // made the Buried countdown tick two or three times a round.
+  U.onPlayerTurn(e, 'start', () => {
     s.played = 0;
-    const c = U.trackerCtx(e);
+    const c = U.trackerCtx(e, seat);
     for (const k of U.cardsIn(c, 'stash')) {
       if (U.counter(k, 'buried') > 0) {
         U.addCounter(k, 'buried', -1);

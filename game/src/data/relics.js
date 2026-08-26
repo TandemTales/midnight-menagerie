@@ -78,7 +78,9 @@ function fire(h, reason = '') {
 /** Trigger + counter in one call. */
 function pop(h, reason) { bump(h); fire(h, reason); }
 
-const player = (h) => h.e.player;
+// The seat this Keepsake belongs to. The hook payload already resolves it
+// per-seat (hooks.js _payload), so a teammate Keepsake never answers with the host.
+const player = (h) => h.player || h.e.current;
 
 /**
  * Grant extra Nerve for a turn.
@@ -321,7 +323,7 @@ export const RELICS = [
     hooks: {
       onTurnStart(h) {
         if (h.side !== 'player' || h.turn !== 1) return;
-        const hand = h.e.piles?.hand || [];
+        const hand = (h.player || h.e.current)?.piles?.hand || [];
         if (hand.length < 2) return;
         let worst = null;
         for (const c of hand) {

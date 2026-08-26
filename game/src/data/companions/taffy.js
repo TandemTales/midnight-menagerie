@@ -103,12 +103,13 @@ function power(c, id, n, install) {
 }
 
 // ── per-combat bookkeeping ──────────────────────────────────────────────────
-U.onTracker(SLUG, (e, s) => {
+U.onTracker(SLUG, (e, s, seat) => {
   U.defineCounters(e, [
     { id: 'globs', name: 'Globs', icon: 'globs', desc: 'Pieces of Taffy separated from her body. Runny at 5 or more, which costs Courage at the end of each enemy turn.', min: 0, max: 6, start: 0 },
   ]);
-  const fake = () => U.trackerCtx(e);
-  e.on('turn:end', () => {
+  const fake = () => U.trackerCtx(e, seat);
+  // Player turn end ONLY — Stretch used to climb on every enemy turn end too.
+  U.onPlayerTurn(e, 'end', () => {
     const c = fake();
     const extra = U.stacks(c, c.self, 'taffy/slow-pull') > 0 ? 2 : 1;
     for (const k of U.cardsIn(c, 'hand')) if (U.counter(k, 'stretch') > 0) U.setCounter(k, 'stretch', Math.min(3, U.counter(k, 'stretch') + extra));
@@ -122,7 +123,7 @@ U.onTracker(SLUG, (e, s) => {
   };
   if (e.schedule) e.schedule({ turns: 1, repeat: 1, when: 'enemyTurnEnd', label: 'Runny', run: runnyTick });
   else e.on('enemyTurn:end', runnyTick);
-  e.on('turn:start', () => { s.played = 0; });
+  U.onPlayerTurn(e, 'start', () => { s.played = 0; });
 });
 
 // ── Power hooks ─────────────────────────────────────────────────────────────

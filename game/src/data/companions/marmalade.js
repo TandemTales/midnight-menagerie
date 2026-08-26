@@ -53,18 +53,23 @@ const SPOOKED = STATUS_CARDS.find(k => k.id === 'status/spooked');
 const WRONG_SIDE = STATUS_CARDS.find(k => k.id === 'status/wrong-side');
 
 // ── per-combat bookkeeping ──────────────────────────────────────────────────
-U.onTracker(SLUG, (e, s) => {
+U.onTracker(SLUG, (e, s, seat) => {
   U.defineCounters(e, [
     { id: 'lives', name: 'Lives', icon: 'lives', desc: 'Marmalade begins every combat with 9 Lives. Tricks spend them for bursts of power; they do not return until the next battle.', min: 0, max: 9, start: 9 },
   ]);
-  const hp = () => (e.player?.hp ?? 0);
+  // `seat` is the Kid these trackers belong to, handed in by installTrackers.
+  // Reading `e.player` here would be seat 0 in a party, so in co-op ONE Kid
+  // taking a hit would end everyone's Untouched streak and the wrong Kid's
+  // exhaust pile would be measured.
+  const me = () => seat || e.current;
+  const hp = () => (me()?.hp ?? 0);
   s.lastTurnEndHp = null;
-  e.on('turn:start', () => {
+  U.onPlayerTurn(e, 'start', () => {
     s.untouched = (s.lastTurnEndHp == null) ? true : hp() >= s.lastTurnEndHp;
     s.played = 0;
-    s.exhaustAtTurnStart = (e.piles?.exhaust || e.exhaust || []).length;
+    s.exhaustAtTurnStart = (me()?.piles?.exhaust || []).length;
   });
-  e.on('turn:end', () => { s.lastTurnEndHp = hp(); });
+  U.onPlayerTurn(e, 'end', () => { s.lastTurnEndHp = hp(); }, seat);
   // "I Meant to Do That" counts everything that left the hand this turn.
   e.on('discard', (ev) => { s.turnFlags.gone = (s.turnFlags.gone || 0) + (ev?.count || 1); });
 });

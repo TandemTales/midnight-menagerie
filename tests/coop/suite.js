@@ -18,6 +18,8 @@ import {
   makeDummyParty, startDummyParty, makeDummyCombat, SCRATCH,
 } from '../../game/src/combat/dummy.js';
 import { EV } from '../../game/src/combat/events.js';
+import { loadContentRegistries } from '../../game/src/data/keywords.js';
+import { startingDeckFor } from '../../game/src/data/cards.js';
 
 // ── micro test framework ────────────────────────────────────────────────────
 const results = [];
@@ -282,6 +284,92 @@ export async function run() {
     await e.endTurn(e.players[1]);
     eq(e.turn, 2, 'the one living seat ending was enough to move the turn on');
     ok(!e.over, 'and the fight continues');
+  });
+
+  // ── real Companions, not the neutral dummy ────────────────────────────────
+  // Rule 9: everything above runs the real engine, but with `companion:
+  // 'neutral'` it never installs a tracker, so it proves nothing about the
+  // Companion mechanics — which are the part with per-player state.
+  await atest('companions: two DIFFERENT Companions each get their own trackers', async () => {
+    await loadContentRegistries(null);
+    const e = makeDummyParty(new RNG(51), 2, {
+      decks: [startingDeckFor('marmalade'), startingDeckFor('bones')],
+    });
+    e.players[0].companion = 'marmalade';
+    e.players[1].companion = 'bones';
+    await e.startCombat();
+    ok(e.hasCounter('lives', e.players[0].id), 'seat 0 (Marmalade) has a Lives track');
+    ok(!e.hasCounter('lives', e.players[1].id), 'seat 1 (Bones) does not');
+    ok((e.trackersInstalled || []).includes('marmalade'), 'Marmalade trackers installed');
+    ok((e.trackersInstalled || []).includes('bones'), 'Bones trackers installed too');
+  });
+
+  await atest('companions: two of the SAME Companion do not share one track', async () => {
+    await loadContentRegistries(null);
+    const e = makeDummyParty(new RNG(53), 2, {
+      decks: [startingDeckFor('marmalade'), startingDeckFor('marmalade')],
+    });
+    e.players[0].companion = 'marmalade';
+    e.players[1].companion = 'marmalade';
+    await e.startCombat();
+    const [a, b] = e.players;
+    eq(e.counter('lives', a.id), 9, 'seat 0 starts on 9 Lives');
+    eq(e.counter('lives', b.id), 9, 'seat 1 starts on 9 Lives');
+    e.addCounter('lives', -4, 'test', b.id);
+    eq(e.counter('lives', b.id), 5, 'seat 1 spent four');
+    eq(e.counter('lives', a.id), 9, 'and seat 0 still has all nine — the tracks are separate');
+  });
+
+  await atest('companions: per-combat scratch is per seat, not per table', async () => {
+    await loadContentRegistries(null);
+    const e = makeDummyParty(new RNG(59), 2, {
+      decks: [startingDeckFor('marmalade'), startingDeckFor('marmalade')],
+    });
+    e.players[0].companion = 'marmalade';
+    e.players[1].companion = 'marmalade';
+    await e.startCombat();
+    const [a, b] = e.players;
+    ok(a.__mm && b.__mm, 'both seats have their own scratch object');
+    ok(a.__mm !== b.__mm, 'and they are NOT the same object');
+    a.__mm.turnFlags.marker = 'seat0';
+    ok(!b.__mm.turnFlags.marker, 'writing seat 0 scratch does not touch seat 1');
+  });
+
+  await atest('companions: one Kid taking a hit does not end the other Kid Untouched streak', async () => {
+    await loadContentRegistries(null);
+    // Harmless enemies on purpose. With the normal dummy pair, each enemy marks
+    // a seat and swings, so seat 1 could be hit by the board rather than by the
+    // test — the assertion would then pass or fail depending on the seed, which
+    // is not a test, it is a coin flip. The only damage in this fight is the
+    // 10 the test deals to seat 0.
+    const SITTER = {
+      id: 'coop/sitter', name: 'Sitter', region: 'foyer', tier: 'normal',
+      hp: [40, 40], silhouette: 'blob',
+      moves: { sit: { id: 'sit', name: 'Sit', intent: 'defend', block: 5, effect: (c) => c.block(5) } },
+      nextMove: () => 'sit',
+    };
+    const e = makeDummyParty(new RNG(61), 2, {
+      decks: [startingDeckFor('marmalade'), startingDeckFor('marmalade')],
+      enemies: [SITTER, SITTER],
+    });
+    e.players[0].companion = 'marmalade';
+    e.players[1].companion = 'marmalade';
+    await e.startCombat();
+    const [a, b] = e.players;
+    // Untouched measures the ENEMY phase, not your own turn: it compares the
+    // Courage you ended on with the Courage you start the next turn with. So
+    // the hit has to land once the enemies are swinging — hurting a Kid during
+    // their own turn is not what the mechanic is about, and a test that did
+    // that would be asserting the wrong thing and passing for the wrong reason.
+    const off = e.on(EV.PHASE, (ev) => { if (ev.phase === 'enemy') e.loseHp(a, 10, 'test'); });
+    await e.endTurn();
+    off();
+    eq(a.__mm.untouched, false, 'the Kid who was hit is no longer Untouched');
+    eq(b.__mm.untouched, true, 'the Kid who was not hit still is');
+    eq(a.__mm.lastTurnEndHp, 70, 'seat 0 recorded the Courage it ENDED its turn on');
+    eq(b.__mm.lastTurnEndHp, 70, 'so did seat 1');
+    eq(a.hp, 60, 'and only seat 0 actually lost any');
+    eq(b.hp, 70, 'seat 1 was never touched');
   });
 
   const passed = results.reduce((n, t) => n + t.asserts.filter(a => a.pass).length, 0);

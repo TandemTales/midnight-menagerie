@@ -186,7 +186,7 @@ function power(c, id, n, install) {
 }
 
 // ── per-combat bookkeeping ──────────────────────────────────────────────────
-U.onTracker(SLUG, (e, s) => {
+U.onTracker(SLUG, (e, s, seat) => {
   U.defineCounters(e, [
     { id: 'open-eyes', name: 'Open Eyes', icon: 'open-eyes', desc: 'Wink has eight eyes and begins combat with 3 Open. Full Gaze at 8. Eyes persist between turns.', min: 0, max: 8, start: 3 },
   ]);
@@ -211,7 +211,7 @@ U.onTracker(SLUG, (e, s) => {
     const dead = ev.actorId || null;
     for (let i = s.sets.length - 1; i >= 0; i--) if (s.sets[i].enemyId && s.sets[i].enemyId === dead) { U.moveCard(c, s.sets[i].card, 'discard'); s.sets.splice(i, 1); }
   });
-  e.on('turn:start', () => { s.played = 0; });
+  U.onPlayerTurn(e, 'start', () => { s.played = 0; });
 });
 
 // ── Power hooks ─────────────────────────────────────────────────────────────

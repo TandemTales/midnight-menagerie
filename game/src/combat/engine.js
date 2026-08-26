@@ -1113,6 +1113,22 @@ export class CombatEngine {
    * Globs, Loyalty, Compost, Web, Open Eyes, Plump… all use this.
    * `focusable:true` makes Focus boost gains to it.
    */
+  /**
+   * The key a counter is stored under.
+   *
+   * Companion counters are named for the mechanic, not the Kid — Marmalade's
+   * track is `lives` — so a party with two Marmalades would collide on one
+   * shared track and spend each other's Lives. In a party the key is scoped by
+   * seat; in solo it is the bare id, so nothing about a single-player save or
+   * any existing content changes. `c.id` stays the display id either way.
+   */
+  _ckey(id, ownerId) {
+    return this.isParty ? `${ownerId || this.current.id}/${id}` : id;
+  }
+
+  /** Is this counter defined for the seat that would be asked? */
+  hasCounter(id, ownerId = null) { return this.counters.has(this._ckey(id, ownerId)); }
+
   defineCounter(o) {
     const c = {
       id: o.id, name: o.name || o.id, icon: o.icon || o.id, desc: o.desc || '',
@@ -1130,12 +1146,13 @@ export class CombatEngine {
       states: normaliseStates(o.states),
     };
     c.value = Math.max(c.min, Math.min(c.max, c.value));
-    this.counters.set(c.id, c);
+    c.key = this._ckey(c.id, c.ownerId);
+    this.counters.set(c.key, c);
     this._dirty = true;
     return c;
   }
 
-  counter(id) { return this.counters.get(id)?.value ?? 0; }
+  counter(id, ownerId = null) { return this.counters.get(this._ckey(id, ownerId))?.value ?? 0; }
   /** The label of the band the counter is currently in, or null. */
   counterState(id) {
     const c = this.counters.get(id);
@@ -1144,11 +1161,11 @@ export class CombatEngine {
   counterDef(id) { return this.counters.get(id) || null; }
   counterMax(id) { return this.counters.get(id)?.max ?? 0; }
   /** True if `n` can actually be spent — used by `canPlay` for Life costs. */
-  canSpend(id, n) { return this.counter(id) >= n; }
+  canSpend(id, n, ownerId = null) { return this.counter(id, ownerId) >= n; }
 
   /** @returns {number} the actual delta applied (0 if capped/floored) */
-  addCounter(id, delta, reason = 'effect') {
-    const c = this.counters.get(id);
+  addCounter(id, delta, reason = 'effect', ownerId = null) {
+    const c = this.counters.get(this._ckey(id, ownerId));
     if (!c || delta === 0) return 0;
     let d = delta;
     if (d > 0) {
@@ -1170,16 +1187,16 @@ export class CombatEngine {
     return applied;
   }
 
-  setCounter(id, value, reason = 'effect') {
-    const c = this.counters.get(id);
+  setCounter(id, value, reason = 'effect', ownerId = null) {
+    const c = this.counters.get(this._ckey(id, ownerId));
     if (!c) return 0;
-    return this.addCounter(id, Math.max(c.min, Math.min(c.max, value)) - c.value, reason);
+    return this.addCounter(id, Math.max(c.min, Math.min(c.max, value)) - c.value, reason, ownerId);
   }
 
   /** Spend from a counter. Returns false and changes nothing if there isn't enough. */
-  spendCounter(id, n, reason = 'spend') {
-    if (!this.canSpend(id, n)) return false;
-    this.addCounter(id, -n, reason);
+  spendCounter(id, n, reason = 'spend', ownerId = null) {
+    if (!this.canSpend(id, n, ownerId)) return false;
+    this.addCounter(id, -n, reason, ownerId);
     return true;
   }
 
@@ -1745,10 +1762,10 @@ export class CombatEngine {
       stash: self.piles.stash,
 
       // companion systems
-      counter: (id) => e.counter(id),
-      addCounter: (id, n) => e.addCounter(id, n, card ? card.id : 'effect'),
-      spendCounter: (id, n) => e.spendCounter(id, n, card ? card.id : 'effect'),
-      canSpend: (id, n) => e.canSpend(id, n),
+      counter: (id) => e.counter(id, self.id),
+      addCounter: (id, n) => e.addCounter(id, n, card ? card.id : 'effect', self.id),
+      spendCounter: (id, n) => e.spendCounter(id, n, card ? card.id : 'effect', self.id),
+      canSpend: (id, n) => e.canSpend(id, n, self.id),
       defineCounter: (o) => e.defineCounter(o),
       schedule: (o) => e.schedule({ ...o, cardUid: card?.uid }),
       adjustTimer: (id, d) => e.adjustTimer(id, d),
@@ -1798,17 +1815,18 @@ export class CombatEngine {
    * therefore injected ahead of time rather than imported here.
    */
   _installCompanionTrackers() {
-    // Every seat's Companion. A party of Marmalade + Bones needs BOTH sets of
-    // trackers installed or the second Kid's counters do not exist and every
-    // card that reads one silently does nothing.
-    const slugs = [];
+    // Every seat's Companion, installed AS that seat. A party of Marmalade +
+    // Bones needs both sets of trackers or the second Kid's counters do not
+    // exist and every card that reads one silently does nothing; two
+    // Marmalades need two independent Lives tracks, which is what installing
+    // per seat (rather than per slug) gets us.
+    const jobs = [];
     for (const pl of this.players) {
-      if (pl.companion && pl.companion !== 'neutral' && !slugs.includes(pl.companion)) {
-        slugs.push(pl.companion);
-      }
+      if (pl.companion && pl.companion !== 'neutral') jobs.push([pl.companion, pl]);
     }
-    for (const s of (this._cfg.companions || [])) if (!slugs.includes(s)) slugs.push(s);
-    if (!slugs.length) return;
+    for (const s of (this._cfg.companions || [])) jobs.push([s, this.players[0]]);
+    const slugs = [...new Set(jobs.map(j => j[0]))];
+    if (!jobs.length) return;
 
     const install = this._trackerInstaller || TRACKER_INSTALLER;
     if (typeof install !== 'function') {
@@ -1819,8 +1837,8 @@ export class CombatEngine {
         + 'or `engine.setTrackerInstaller(installTrackers)` before startCombat().');
       return;
     }
-    for (const slug of slugs) {
-      try { install(this, slug); }
+    for (const [slug, seat] of jobs) {
+      try { this._asSeat(seat, () => install(this, slug, seat)); }
       catch (err) { console.error(`[combat] installing trackers for "${slug}" threw`, err); }
     }
     this.trackersInstalled = slugs.slice();
@@ -1929,7 +1947,7 @@ export class CombatEngine {
 
     // 4 — countdowns (shared: the board has one clock, not one per seat)
     this._tickTimers('playerTurnStart');
-    for (const c of this.counters.values()) if (c.resetEachTurn) this.setCounter(c.id, c.min, 'turnStart');
+    for (const c of this.counters.values()) if (c.resetEachTurn) this.setCounter(c.id, c.min, 'turnStart', c.ownerId);
 
     this._enemyLifecycle('onPlayerTurnStart');
     if (this.over) return;

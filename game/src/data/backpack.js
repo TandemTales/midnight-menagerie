@@ -118,7 +118,7 @@ export const BACKPACK_ITEMS = [
          on the safe side of the wipe. */
       onTurnStart(h) {
         if (h.side !== 'player' || h.turn !== 1) return;
-        h.e.gainBlock(h.e.player, 3, { fromCard: false, source: 'gear' });
+        h.e.gainBlock(h.player, 3, { fromCard: false, source: 'gear' });
       },
     },
   },
@@ -193,11 +193,11 @@ export const BACKPACK_ITEMS = [
     hooks: {
       onTurnEnd(h) {
         if (h.side !== 'player') return;
-        if ((h.e.player.damageTakenThisTurn || 0) > 0) return;
+        if ((h.player.damageTakenThisTurn || 0) > 0) return;
         const f = (h.e.field.gear || (h.e.field.gear = {}));
         if (f.thermos) return;
         f.thermos = true;
-        h.e.heal(h.e.player, 4, 'gear');
+        h.e.heal(h.player, 4, 'gear');
       },
     },
   },
