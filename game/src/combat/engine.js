@@ -101,7 +101,10 @@ export class CombatEngine {
     this._cfg = cfg;
     this.rng = cfg.rng instanceof RNG ? cfg.rng : new RNG(cfg.seed ?? 1);
     this.seed = this.rng.seed;
-    this.relics = (cfg.relics || []).slice();
+    // Keepsakes are PER PLAYER — `cfg.relics` is the solo spelling and lands on
+    // seat 0. Held here only until `_build` hands them to their seat, because a
+    // `_bare` engine (the preview clone) never runs `_build`.
+    this._seedRelics = (cfg.relics || []).slice();
     this.bus = cfg.bus || null;
     this.isPreview = !!cfg.isPreview;
 
@@ -232,6 +235,10 @@ export class CombatEngine {
       kid: p.kid || null,
     });
     pl.piles = new Piles(this, pl);
+    /** This Kid's Keepsakes. Per seat: co-op parity, and `_relicProviders`
+     *  dispatches each one with its owner so a teammate's Keepsake can never
+     *  fire for the wrong Kid. */
+    pl.relics = (p.relics || (seat === 0 ? this._seedRelics : null) || []).slice();
 
     // Deck order is irrelevant — startCombat shuffles. `cfg.deck` is the old
     // solo spelling and only ever applies to seat 0.
@@ -379,7 +386,25 @@ export class CombatEngine {
     return this.players[0];
   }
 
-  /** Seat 0's piles. Same reasoning, same guard, as `player` above. */
+  /** Seat 0's Keepsakes. Same reasoning, same guard, as `player` below. */
+  get relics() {
+    if (this.players.length > 1 && this.strictCtx) {
+      throw new Error(
+        '[combat] engine.relics is the Keepsake list for seat 0, but this fight has ' +
+        this.players.length + ' seats. Use player.relics, or engine.allRelics().');
+    }
+    return this.players[0].relics;
+  }
+  set relics(v) { if (this.players[0]) this.players[0].relics = (v || []).slice(); }
+
+  /** Every Keepsake at the table, each paired with the seat that owns it. */
+  allRelics() {
+    const out = [];
+    for (const pl of this.players) for (const r of (pl.relics || [])) out.push({ relic: r, seat: pl });
+    return out;
+  }
+
+  /** Seat 0's piles. Same reasoning, same guard, as `player` below. */
   get piles() {
     if (this.players.length > 1 && this.strictCtx) {
       throw new Error(
@@ -509,7 +534,7 @@ export class CombatEngine {
         id: o.id, kind: o.kind, slot: o.slot, name: o.name,
         data: JSON.parse(JSON.stringify(o.data || {})),
       })),
-      relics: this.relics.map(r => ({ id: r.id, name: r.name, counter: r.counter ?? null, icon: r.icon || r.id })),
+      relics: this.players[0].relics.map(r => ({ id: r.id, name: r.name, counter: r.counter ?? null, icon: r.icon || r.id })),
       stats: { ...this.stats },
     };
     this._stateCache = s;
@@ -523,6 +548,7 @@ export class CombatEngine {
     return {
       ...pl.snapshot(),
       statuses: this.statusList(pl),
+      relics: (pl.relics || []).map(r => ({ id: r.id, name: r.name, counter: r.counter ?? null, icon: r.icon || r.id })),
       piles: this._pileState(pl),
       counts: pl.piles.snapshotCounts(),
       stashCap: pl.piles.stashCap,
@@ -1763,6 +1789,52 @@ export class CombatEngine {
 
       // companion systems
       counter: (id) => e.counter(id, self.id),
+      // ── the party (co-op) ──────────────────────────────────────────────
+      // These are the whole cross-player surface. Everything a multiplayer-only
+      // Trick does to a teammate goes through one of them, so there is exactly
+      // one place where "act on someone else" is implemented — and each one
+      // resolves inside `_asSeat`, so the recipient's OWN piles, Nerve and
+      // hooks are what respond. Reaching for `e.player` from a card effect
+      // would silently act on seat 0 instead.
+      party: () => e.livingPlayers(),
+      /** Everyone but the Kid playing this card. Empty in solo. */
+      teammates: () => e.livingPlayers().filter(pl => pl !== self),
+      isParty: () => e.isParty,
+      /**
+       * Ask for a teammate. Resolves to null in solo, so a card can read
+       * `const ally = await c.chooseAlly(); if (!ally) return;` and be honest
+       * about doing nothing rather than silently targeting the caller.
+       */
+      chooseAlly: async (o = {}) => {
+        const pool = e.livingPlayers().filter(pl => pl !== self);
+        if (!pool.length) return null;
+        if (pool.length === 1) return pool[0];
+        const picked = await e.choices.ask({
+          kind: 'option', prompt: o.prompt || 'Choose a friend.',
+          cardId: card ? card.id : null,
+          options: pool.map(pl => ({ id: pl.id, label: pl.name })),
+          min: 1, max: 1,
+        });
+        const i = Array.isArray(picked) ? picked[0] : picked;
+        return pool[i] ?? pool[0];
+      },
+      /** Guard onto a teammate, counted as theirs (their Dexterity, their Frail). */
+      giveBlock: (pl, n) => (pl ? e._asSeat(pl, () =>
+        e.gainBlock(pl, n, { fromCard: true, reason: card ? card.id : 'ally' })) : 0),
+      /** A teammate draws from THEIR deck into THEIR hand. */
+      giveDraw: (pl, n) => (pl && n > 0
+        ? e._asSeat(pl, () => e.drawCards(n, card ? card.id : 'ally')) : 0),
+      giveEnergy: (pl, n) => (pl && n
+        ? e._asSeat(pl, () => e.gainEnergy(n, card ? card.id : 'ally')) : 0),
+      giveStatus: (pl, id, n, opts) => (pl
+        ? e.applyStatus(pl, id, n, { reason: card ? card.id : 'ally', ...(opts || {}) }) : 0),
+      giveHeal: (pl, n) => (pl ? e.heal(pl, n, card ? card.id : 'ally') : 0),
+      /** Cards in a teammate's pile — for Clone, Fetch Relay, Bring It Back. */
+      allyCards: (pl, pile = 'hand') => (pl && pl.piles ? pl.piles.list(pile).slice() : []),
+      /** Put a card into a teammate's hand (or any of their piles). */
+      giveCard: (pl, def, o = {}) => (pl
+        ? e._asSeat(pl, () => e.addCard(def, o.pile || Pile.HAND, o)) : null),
+
       addCounter: (id, n) => e.addCounter(id, n, card ? card.id : 'effect', self.id),
       spendCounter: (id, n) => e.spendCounter(id, n, card ? card.id : 'effect', self.id),
       canSpend: (id, n) => e.canSpend(id, n, self.id),
@@ -2539,7 +2611,7 @@ export class CombatEngine {
   /** Deep-ish clone: runtime state copied, definitions shared by reference. */
   clone() {
     const c = new CombatEngine({ ..._cfgLite(this._cfg), _bare: true, rng: new RNG(this.seed), isPreview: true });
-    c.relics = this.relics;
+    // seats carry their own Keepsakes; copied with the seats below
     const s = this.snapshotRuntime();
     c.turn = s.turn; c.phase = s.phase; c.over = s.over; c.victory = s.victory;
     c.started = s.started; c._seq = s.seq;
@@ -2561,6 +2633,7 @@ export class CombatEngine {
     // preview engine is built `_bare`, so it has no seats of its own yet.
     c.players = s.players.map(seat => {
       const pl = seat.actor.clone();
+      pl.relics = (seat.actor.relics || []).slice();
       pl.piles = new Piles(c, pl);
       pl.piles.draw = cloneList(seat.piles.draw, Pile.DRAW);
       pl.piles.hand = cloneList(seat.piles.hand, Pile.HAND);

@@ -15,7 +15,7 @@
 import { RNG } from '../../game/src/core/rng.js';
 import { _resetUid } from '../../game/src/combat/piles.js';
 import {
-  makeDummyParty, startDummyParty, makeDummyCombat, SCRATCH,
+  makeDummyParty, startDummyParty, makeDummyCombat, makeDummyDeck, SCRATCH,
 } from '../../game/src/combat/dummy.js';
 import { EV } from '../../game/src/combat/events.js';
 import { loadContentRegistries } from '../../game/src/data/keywords.js';
@@ -370,6 +370,128 @@ export async function run() {
     eq(b.__mm.lastTurnEndHp, 70, 'so did seat 1');
     eq(a.hp, 60, 'and only seat 0 actually lost any');
     eq(b.hp, 70, 'seat 1 was never touched');
+  });
+
+  // ── the cross-player surface ──────────────────────────────────────────────
+  // Every multiplayer-only Trick acts on a teammate through one of these, so
+  // they are the one place "act on someone else" is implemented. Each is
+  // exercised through a REAL card played by a REAL seat, not by calling ctxFor
+  // directly — the thing that has to be right is what a card sees.
+  const coopCard = (id, effect, target = 'none') => ({
+    id: 'test/' + id, name: id, companion: 'neutral',
+    type: 'skill', rarity: 'common', cost: 0, target,
+    text: 'test', nums: {}, effect,
+  });
+
+  /** Build a 2-seat party where seat 1 holds exactly one copy of `def`. */
+  async function withCard(def, seed = 71) {
+    // Seat 0 gets a FULL deck on purpose: with a one-card deck it draws its
+    // whole library on turn one and `giveDraw` would have nothing left to pull,
+    // which reads as "the helper does nothing" when the helper is fine.
+    const filler = makeDummyParty(new RNG(seed), 2, {
+      decks: [makeDummyDeck(), [def, SCRATCH, SCRATCH, SCRATCH, SCRATCH, SCRATCH]],
+    });
+    await filler.startCombat();
+    return filler;
+  }
+
+  await atest('party ctx: teammates() is everyone but the Kid playing the card', async () => {
+    let seen = null, iAm = null;
+    const e = await withCard(coopCard('who', (c) => { seen = c.teammates(); iAm = c.self; }));
+    const card = e.players[1].piles.hand.find(k => k.id === 'test/who');
+    ok(!!card, 'seat 1 drew the test card');
+    await e.playCard(card.uid);
+    eq(iAm, e.players[1], 'ctx.self is the seat that played it, not seat 0');
+    eq(seen.length, 1, 'one teammate');
+    eq(seen[0], e.players[0], 'and it is the OTHER seat');
+  });
+
+  await atest('party ctx: teammates() is empty in solo, and chooseAlly gives null', async () => {
+    let mates = null, ally = 'unset';
+    const def = coopCard('solo', async (c) => { mates = c.teammates(); ally = await c.chooseAlly(); });
+    const e = makeDummyCombat(new RNG(73), { deck: [def, SCRATCH, SCRATCH, SCRATCH, SCRATCH] });
+    await e.startCombat();
+    const card = e.piles.hand.find(k => k.id === 'test/solo');
+    ok(!!card, 'the solo Kid drew it');
+    await e.playCard(card.uid);
+    eq(mates.length, 0, 'nobody to help');
+    eq(ally, null, 'chooseAlly is null rather than silently returning yourself');
+  });
+
+  await atest('party ctx: giveBlock lands on the teammate, not the caller', async () => {
+    const e = await withCard(coopCard('shield', (c) => { c.giveBlock(c.teammates()[0], 7); }));
+    const [a, b] = e.players;
+    const before = { a: a.block, b: b.block };
+    const card = b.piles.hand.find(k => k.id === 'test/shield');
+    await e.playCard(card.uid);
+    eq(a.block, before.a + 7, 'seat 0 gained the Guard');
+    eq(b.block, before.b, 'seat 1, who played it, gained none');
+  });
+
+  await atest('party ctx: giveBlock uses the RECIPIENT Dexterity, not the caller', async () => {
+    const e = await withCard(coopCard('shield2', (c) => { c.giveBlock(c.teammates()[0], 5); }));
+    const [a, b] = e.players;
+    e.applyStatus(a, 'dexterity', 3, { reason: 'test' });   // on the recipient
+    const before = a.block;
+    const card = b.piles.hand.find(k => k.id === 'test/shield2');
+    await e.playCard(card.uid);
+    eq(a.block, before + 8, 'Guard resolved as the recipient: 5 + their 3 Dexterity');
+  });
+
+  await atest('party ctx: giveDraw pulls from the teammate own deck into their hand', async () => {
+    const e = await withCard(coopCard('deal', (c) => { c.giveDraw(c.teammates()[0], 2); }));
+    const [a, b] = e.players;
+    const aHand = a.piles.hand.length, aDraw = a.piles.draw.length;
+    const bHand = b.piles.hand.length;
+    const card = b.piles.hand.find(k => k.id === 'test/deal');
+    await e.playCard(card.uid);
+    eq(a.piles.hand.length, aHand + 2, 'seat 0 drew two');
+    eq(a.piles.draw.length, aDraw - 2, 'out of seat 0 OWN draw pile');
+    eq(b.piles.hand.length, bHand - 1, 'seat 1 only lost the card it played');
+  });
+
+  await atest('party ctx: giveEnergy, giveStatus and giveHeal all land on the teammate', async () => {
+    const e = await withCard(coopCard('boost', (c) => {
+      const ally = c.teammates()[0];
+      c.giveEnergy(ally, 2);
+      c.giveStatus(ally, 'strength', 2);
+      c.giveHeal(ally, 5);
+    }));
+    const [a, b] = e.players;
+    e.loseHp(a, 20, 'test');
+    const hp = a.hp, nerve = a.energy, myNerve = b.energy;
+    const card = b.piles.hand.find(k => k.id === 'test/boost');
+    await e.playCard(card.uid);
+    eq(a.energy, nerve + 2, 'seat 0 gained the Nerve');
+    eq(a.status('strength'), 2, 'seat 0 gained the Strength');
+    eq(a.hp, hp + 5, 'seat 0 was healed');
+    eq(b.status('strength'), 0, 'seat 1 gained no Strength of its own');
+    ok(b.energy <= myNerve, 'and seat 1 did not gain Nerve from its own card');
+  });
+
+  await atest('party ctx: giveCard puts a Trick into the teammate hand', async () => {
+    const e = await withCard(coopCard('hand-off', (c) => { c.giveCard(c.teammates()[0], SCRATCH); }));
+    const [a, b] = e.players;
+    const aHand = a.piles.hand.length;
+    const card = b.piles.hand.find(k => k.id === 'test/hand-off');
+    await e.playCard(card.uid);
+    eq(a.piles.hand.length, aHand + 1, 'seat 0 is holding one more');
+    ok(a.piles.hand.some(k => k.id === SCRATCH.id), 'and it is the Trick that was handed over');
+  });
+
+  await atest('keepsakes: each seat has its own, and they fire for their owner', async () => {
+    const heard = [];
+    const KEEPSAKE = {
+      id: 'test/whistle', name: 'Whistle', icon: 'whistle',
+      hooks: { onCombatStart: (h) => { heard.push(h.player && h.player.id); } },
+    };
+    const e = makeDummyParty(new RNG(79), 2);
+    e.players[1].relics = [KEEPSAKE];
+    await e.startCombat();
+    eq(e.players[0].relics.length, 0, 'seat 0 has no Keepsakes');
+    eq(e.players[1].relics.length, 1, 'seat 1 has one');
+    eq(heard.length, 1, 'it fired once');
+    eq(heard[0], e.players[1].id, 'and it answered with ITS OWN seat, not seat 0');
   });
 
   const passed = results.reduce((n, t) => n + t.asserts.filter(a => a.pass).length, 0);

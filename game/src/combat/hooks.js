@@ -154,11 +154,14 @@ export class Hooks {
   // ── provider collection ───────────────────────────────────────────────────
 
   _relicProviders(name, out) {
-    const relics = this.e.relics;
-    if (!relics) return;
-    for (const r of relics) {
-      const fn = r?.hooks?.[name];
-      if (fn) out.push({ fn, owner: r, source: 'relic', stacks: r.counter ?? 0, id: r.id });
+    // Every seat's Keepsakes, each tagged with the seat that owns it. Without
+    // the tag a teammate's Keepsake would fire against seat 0 — `_payload`
+    // reads `seat` to answer `h.player` correctly.
+    for (const pl of this.e.players) {
+      for (const r of (pl.relics || [])) {
+        const fn = r?.hooks?.[name];
+        if (fn) out.push({ fn, owner: r, seat: pl, source: 'relic', stacks: r.counter ?? 0, id: r.id });
+      }
     }
   }
 
@@ -252,7 +255,7 @@ export class Hooks {
       // anything else (a relic, an enemy status) answers with the seat currently
       // acting. Handing back seat 0 unconditionally is how a teammate Regen
       // would have healed the host instead.
-      player: (owner && owner.side === "player") ? owner : e.current,
+      player: p.seat || ((owner && owner.side === "player") ? owner : e.current),
       loseHp: (a, n) => e.loseHp(a || owner, n, p.id),
       heal: (a, n) => e.heal(a || owner, n, p.id),
       applyStatus: (a, id, n, opts) => e.applyStatus(a || owner, id, n, { reason: p.id, ...(opts || {}) }),
