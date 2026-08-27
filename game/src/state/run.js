@@ -410,6 +410,21 @@ export class Run {
   roomDoneBy(kid) { return !!kid && kid.roomDone === this.currentNodeId; }
 
   /**
+   * Back to the lowest living seat.
+   *
+   * Called on the way OUT of a room as well as on the way in. The blueprint is
+   * shared but the HUD on it is not — Courage, Tricks and the Gear row all
+   * belong to whoever the screen currently is — so coming back from a room on
+   * seat 1 and flipping to seat 0 on the next door is a visible twitch of
+   * "whose numbers are these". The map always shows the first Kid.
+   */
+  resetSeat() {
+    const first = this.kids.findIndex(k => k.courage > 0);
+    if (first >= 0) this.setLocalSeat(first);
+    return this.local;
+  }
+
+  /**
    * The next Kid, in seat order after the local one, that `needs()` says still
    * has something to do. Wraps, and never returns the local Kid.
    *
@@ -714,8 +729,7 @@ export class Run {
      * a thing the players have to work out fresh at every door. It is the same
      * rule combat uses for the top of a round.
      */
-    const first = this.kids.findIndex(k => k.courage > 0);
-    if (first >= 0) this.setLocalSeat(first);
+    this.resetSeat();
     this.save();
     bus.emit('run:enterNode', { node, type, scene, run: this });
 
@@ -752,6 +766,7 @@ export class Run {
 
   /** Leave a non-combat room and go back to the blueprint. */
   leaveNode() {
+    this.resetSeat();
     this.clearOffers();
     this.pendingEvent = null;
     this.pendingShop = null;
@@ -1465,6 +1480,7 @@ export class Run {
     this.local.pendingReward = null;
     if (!close) { this.save(); return true; }
     const wasBoss = r.kind === 'boss';
+    this.resetSeat();
     this.clearOffers();
     this._markCleared(r.nodeId || this.currentNodeId);
     this.save();
