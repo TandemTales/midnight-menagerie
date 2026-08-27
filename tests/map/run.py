@@ -135,7 +135,17 @@ async def main(a):
 
         await page.goto(BASE + "#scene=map&seed=42&region=foyer", wait_until="load", timeout=45000)
         await page.wait_for_selector(".map-node", timeout=20000)
-        await page.wait_for_timeout(1400)
+        # WAIT FOR THE SWEEP TO FINISH, not for a number of milliseconds.
+        #
+        # The survey draws itself on in one 820 ms wipe, and `_whenVisible()`
+        # holds that back until the veil is up and three frames have come in
+        # under 40 ms — up to 2.5 s on a cold boot. A flat 1400 ms therefore
+        # clicked mid-draw two runs in three on this machine, and the mouse half
+        # of this suite went red while the keyboard half stayed green, which
+        # reads exactly like the pointer-capture regression it exists to catch.
+        # `.is-drawn` is the real signal.
+        await page.wait_for_selector(".map-screen.is-drawn", timeout=20000)
+        await page.wait_for_timeout(300)
 
         start = await page.evaluate(PROBE)
 
@@ -200,7 +210,8 @@ async def main(a):
         # ── 5. wheel zoom ───────────────────────────────────────────────────
         await page.goto(BASE + "#scene=map&seed=42&region=foyer", wait_until="load", timeout=45000)
         await page.wait_for_selector(".map-node", timeout=20000)
-        await page.wait_for_timeout(1400)
+        await page.wait_for_selector(".map-screen.is-drawn", timeout=20000)
+        await page.wait_for_timeout(300)
         vp = await (await page.query_selector(".map-viewport")).bounding_box()
         z0 = (await page.evaluate(PROBE))["zoom"]
         await page.mouse.move(vp["x"] + vp["width"] / 2, vp["y"] + vp["height"] / 2)
