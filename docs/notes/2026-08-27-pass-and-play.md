@@ -48,6 +48,12 @@ the existing `Modal`, with two deliberate departures:
 - **It cannot be dismissed by accident.** No Escape, no backdrop click. Enter or
   Space, because the player is looking away from the mouse while they hand the
   machine over.
+- **The swap happens BEHIND it.** `onReady` runs after they say they are ready
+  and before the cover lifts, and is awaited — combat switches the seat and
+  redresses the screen there, a room rebuilds itself there. The first version
+  closed the veil first and did the work after, so for a frame or two what
+  appeared was the previous Kid's hand: the exact thing the screen exists to
+  prevent, reintroduced by the order of two statements.
 
 `shouldHandOff(run)` is the single place that decides whether any of this
 happens. Nothing tests `run.partySize` itself, so a session that owns one seat
@@ -106,6 +112,11 @@ went first in the Safe Room. Nobody gains anything by the order — the shelves 
 the offers are separate — but it should not be something the players work out
 fresh at every door.
 
+`resetSeat()` is called on the way OUT as well as in. The blueprint is shared but
+the HUD on it is not — Courage, Tricks and the Gear row belong to whoever the
+screen currently is — so coming back from a room on seat 1 and flipping on the
+next door read as a twitch of "whose numbers are these".
+
 ### A Curiosity is one room, answered twice
 
 Settled against Slay the Spire 2, which shares the map and the node in co-op and
@@ -149,6 +160,29 @@ was invisible to an object test:
 | `tests/coop/rooms.py` | all four rooms hand over: seat 1's reward is a different Keepsake and Bones Tricks, seat 1's shelf is a different shelf, seat 1's Safe Room offers to Mend Maya, seat 1's Curiosity is unanswered — and a Rescue does NOT hand over |
 | `tests/coop/playthrough.py` | a two-Kid expedition walked the way two people would: map nodes, fights with both hands, every veil, every room |
 
-The pattern this project keeps re-learning holds again: `run.localSeat` moving is
-one line and was right immediately; the screen following it was a dozen places
-each set once at entry, and every one of them had to be driven to be believed.
+### …and two traps on the way
+
+**A fixed sleep racing an animation.** The hotseat test waited 6 s for the enemy
+phase, which takes about 7 s here with two Kids being attacked, so it passed or
+failed by what the enemies rolled. It waits for the CONDITION now. That is
+CONTRACTS' measurement trap in miniature, and it cost twenty minutes of chasing
+a bug that was not there.
+
+**An audio cue that had been failing quietly.** Driving the handoff fast enough
+surfaced `setTargetAtTime(0, 3.048, …) overlaps setValueCurveAtTime(…, 3.0213,
+0.03)` from `fmBell`, which failed to build the whole cue.
+`setValueCurveAtTime` does not start where you ask — the start is quantised to a
+128-sample block — so the curve can end after `t + idur`, and the 2 ms guard the
+code had was smaller than one block at any rate this runs at. A whole quantum
+now, computed from the real sample rate.
+
+---
+
+## 8. The pattern, again
+
+`run.localSeat` moving is one line and was right immediately. The screen
+following it was a dozen places each set once at entry, and **every single one
+had to be driven to be believed**: the round order, the rooms closing on
+everybody, the Curiosity answered for both, `engine.localSeat` left behind, the
+frame of the wrong hand. Not one of them was visible to an object test, and the
+object tests were green the whole time.
