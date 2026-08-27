@@ -22,6 +22,7 @@ import { RNG } from '../core/rng.js';
 import { CombatEngine } from '../combat/engine.js';
 import { makeDummyCombat } from '../combat/dummy.js';
 import { previewIncoming } from '../combat/preview.js';
+import { passTo, shouldHandOff } from '../ui/handoff.js';
 import { TERMS, COMPANIONS } from '../data/schema.js';
 import { Hand } from '../ui/hand.js';
 import { CardView, ART_W, ART_H, CARD_SS } from '../ui/card.js';
@@ -2695,6 +2696,15 @@ export class CombatScene extends Scene {
     this._offs.push(() => window.removeEventListener('keydown', this._onKey));
   }
 
+  /**
+   * End the turn.
+   *
+   * SOLO, and any client that owns its seat over a wire, ends the table:
+   * there is nobody else here to wait for. Pass-and-play ends only MY seat —
+   * which is what `endTurn(seat)` has always meant — and then covers the board
+   * and hands the machine to whoever has not gone yet. The enemy phase runs
+   * itself when the last seat closes, exactly as it did before.
+   */
   async _endTurn() {
     if (this._resolving || !this.engine || this.engine.over) return;
     if (this.engine.phase !== 'player') return;
@@ -2702,12 +2712,88 @@ export class CombatScene extends Scene {
     this._clearPreview();
     this.hand.lock();
     this.ctx.audio?.play?.('ui:confirm');
-    try { await this.engine.endTurn(); } catch (e) { console.error('[combat] endTurn', e); }
+    const hotseat = shouldHandOff(this.ctx.run);
+    try {
+      await this.engine.endTurn(hotseat ? this.me : undefined);
+    } catch (e) { console.error('[combat] endTurn', e); }
     await this._settle();
     this._resolving = false;
     if (!this.engine) return;                     // the fight ended and we left
+    if (hotseat) await this._handOff();
+    if (!this.engine) return;
     if (!this.engine.over && this.engine.phase === 'player') this.hand.unlock();
     this._syncEndTurn();
+  }
+
+  /**
+   * Whose go is it now?
+   *
+   * ALWAYS the lowest living seat that has not ended — seat order, for the same
+   * reason every seat choice in combat ties on seat index rather than the RNG.
+   * Returns null when that is already this seat.
+   *
+   * "Lowest waiting", and not "stay put if I have not gone yet": when the last
+   * seat ends, the enemy phase runs and a fresh turn opens with every seat
+   * waiting again. Staying put left the Kid who happened to end last holding
+   * the screen into the next round, so the two of them swapped who went first
+   * every turn. A round starts with seat 0, every time.
+   */
+  _seatToPlay() {
+    const e = this.engine;
+    if (!e || e.over || e.phase !== 'player') return null;
+    const waiting = e.livingPlayers().filter(pl => !pl.ended).sort((a, b) => a.seat - b.seat);
+    if (!waiting.length) return null;
+    return waiting[0].seat === this.seatIndex ? null : waiting[0];
+  }
+
+  /** Cover the board and give it to the next Kid. */
+  async _handOff() {
+    const run = this.ctx.run;
+    const next = this._seatToPlay();
+    if (!next || !run) return;
+    const kid = run.kids[next.seat];
+    if (!kid) return;
+    this._resolving = true;
+    try {
+      await passTo({
+        name: run.kidNameOf(kid),
+        companion: kid.companion,
+        line: this.engine.turn > 1 ? 'Your turn.' : 'Your turn. The house is waiting.',
+        sub: 'Do not look yet.',
+      });
+      run.setLocalSeat(next.seat);
+      this._takeSeat();
+    } finally {
+      this._resolving = false;
+    }
+  }
+
+  /**
+   * Redress the screen for whoever just picked it up.
+   *
+   * Everything below `this.me` follows the Run's seat on its own, so this is
+   * the chrome that was set ONCE at entry and has to be set again: the
+   * Companion's portrait, their name under it, the body on the board, and the
+   * accessible label naming the Kid. `_reconcileHand` swaps the fan because
+   * the uids no longer match, which is the same path a draw takes.
+   */
+  _takeSeat() {
+    const run = this.ctx.run;
+    const me = this.me;
+    if (!run || !me) return;
+    const slug = String(me.companion || 'marmalade');
+    if (this.hero && this.hero.setCompanion) this.hero.setCompanion(slug);
+    if (this.$plArt) this.$plArt.src = `${PORTRAITS}${slug}.png`;
+    const meta = COMPANIONS.find(c => c.slug === slug);
+    if (this.$plName) this.$plName.textContent = (meta && meta.name) || slug;
+    if (this.$plTitle) this.$plTitle.textContent = (meta && meta.title) || '';
+    this._kidName = run.kidName || '';
+    this.$pl.setAttribute('aria-label',
+      this._kidName ? `You — ${this._kidName} and ${(meta && meta.name) || slug}` : 'You');
+    this._plGhostV = undefined;               // the bar belongs to a different Kid
+    this._syncAll();
+    this._syncMate();
+    this.hand.unlock();
   }
 
   _focusEnemy(id) {

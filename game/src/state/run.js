@@ -368,6 +368,46 @@ export class Run {
 
   /** The Kid this client is playing. */
   get local() { return this.kids[this.localSeat] || this.kids[0]; }
+
+  /**
+   * Hand the game to another Kid AT THIS SCREEN.
+   *
+   * Every per-Kid thing in this file — deck, Keepsakes, the shop shelf, the
+   * card offer, the Safe Room's options — is reached through `this.local`, so
+   * moving the seat moves all of it at once. That is the whole of pass-and-play,
+   * and it is the exact call a transport removes: with a wire, each client sets
+   * its seat once at the start and never moves it again.
+   *
+   * Emits `run:seat` so a screen already on the board can redraw for whoever
+   * just picked up the controller rather than being torn down and rebuilt.
+   */
+  setLocalSeat(n) {
+    const seat = Math.max(0, Math.min(this.kids.length - 1, n | 0));
+    if (seat === this.localSeat) return this.local;
+    const from = this.localSeat;
+    this.localSeat = seat;
+    bus.emit('run:seat', { seat, from, kid: this.local, name: this.kidNameOf(this.local) });
+    this.save();
+    return this.local;
+  }
+
+  /**
+   * The next Kid, in seat order after the local one, that `needs()` says still
+   * has something to do. Wraps, and never returns the local Kid.
+   *
+   * Seat order and not "whoever is left" so a three-Kid table hands over in the
+   * same order every time — the same reason every seat choice in combat ties on
+   * seat index.
+   */
+  nextSeatNeeding(needs) {
+    const n = this.kids.length;
+    for (let i = 1; i < n; i++) {
+      const seat = (this.localSeat + i) % n;
+      const k = this.kids[seat];
+      if (k && needs(k, seat)) return seat;
+    }
+    return -1;
+  }
   /** Every Kid on the expedition, in seat order. */
   get party() { return this.kids; }
   /** How many Kids went in. */

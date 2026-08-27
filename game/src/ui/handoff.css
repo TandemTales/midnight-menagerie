@@ -1,0 +1,102 @@
+/* ══ Pass it over ═════════════════════════════════════════════════════════
+   Two Kids, one screen. This is the veil between one Kid finishing and the
+   next one starting, and its whole job is that the board behind it CANNOT be
+   read — a hand of Tricks is the one private thing in this game.
+
+   So the scrim is opaque, not a tint. `--scrim` is a translucent overlay and
+   would leave the outgoing player's hand legible through it, which defeats the
+   entire point of the screen.
+   ────────────────────────────────────────────────────────────────────────── */
+.mm-modal.mm-handoff .mm-modal__scrim {
+  background: var(--ink-900);
+  opacity: 1;
+}
+.mm-modal.mm-handoff .mm-modal__dialog {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  display: grid;
+  place-items: center;
+}
+/* The dialog chrome has nothing to say here. The head's bottom rule survives
+   `display:none` on the head itself when the body carries its own, so both are
+   named — a hairline across an otherwise empty black screen reads as a seam in
+   the veil, which is precisely the thing this screen must not look like. */
+.mm-modal.mm-handoff .mm-modal__head,
+.mm-modal.mm-handoff .mm-modal__close { display: none; }
+.mm-modal.mm-handoff .mm-modal__body,
+.mm-modal.mm-handoff .mm-modal__foot {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.hoff {
+  text-align: center;
+  display: grid;
+  gap: var(--s-2);
+  justify-items: center;
+  padding: var(--s-6) var(--s-4);
+}
+.hoff__k {
+  margin: 0;
+  font-size: var(--fs-xs);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--text-lo);
+}
+.hoff__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-3xl);
+  line-height: 1.05;
+  color: var(--text-hi);
+  text-shadow: 0 2px 18px var(--ink-900);
+}
+.hoff__comp {
+  margin: 0;
+  font-style: italic;
+  color: var(--flame-200);
+  font-size: var(--fs-md);
+}
+.hoff__line {
+  margin: var(--s-2) 0 0;
+  color: var(--text-mid);
+  font-size: var(--fs-lg);
+}
+.hoff__sub {
+  margin: 0;
+  color: var(--text-lo);
+  font-size: var(--fs-sm);
+  max-width: 46ch;
+}
+.hoff__go {
+  margin-top: var(--s-4);
+  display: inline-flex; align-items: center; gap: var(--s-2);
+  padding: var(--s-3) var(--s-5);
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  letter-spacing: .06em;
+  color: var(--text-hi);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--flame-500) 34%, var(--ink-900)), var(--ink-900));
+  border: 1px solid var(--flame-300);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-2);
+  cursor: pointer;
+}
+.hoff__go:hover,
+.hoff__go:focus-visible {
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--flame-500) 52%, var(--ink-900)), var(--ink-900));
+  outline: none;
+}
+.hoff__key {
+  font-family: var(--font-num);
+  font-size: var(--fs-xs);
+  letter-spacing: .08em;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid color-mix(in srgb, var(--flame-300) 55%, transparent);
+  color: var(--flame-200);
+}

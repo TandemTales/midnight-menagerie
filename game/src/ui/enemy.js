@@ -1847,6 +1847,29 @@ export class PlayerView {
     this._build();
   }
 
+  /**
+   * Become a different Companion, in place.
+   *
+   * Pass-and-play swaps the seat this screen belongs to mid-fight, and the body
+   * on the board is the Companion's — leaving Marmalade's silhouette standing
+   * there while Bones takes his turn is the kind of wrong nobody reports and
+   * everybody notices. Rebuilds rather than re-tints: the palette AND the art
+   * are per Companion.
+   */
+  setCompanion(slug) {
+    const next = String(slug || 'marmalade');
+    if (next === this.slug) return this;
+    const host = this.el && this.el.parentNode;
+    const before = this.el;
+    this.slug = next;
+    this.rnd = mulberry(hash32(this.slug));
+    this._poseToken = 0;
+    this._poseWrote = false;
+    this._build();
+    if (host && before) host.replaceChild(this.el, before);
+    return this;
+  }
+
   _build() {
     const pal = PALS[this.slug] || PALS.marmalade;
     const art = PAL_ART[this.slug] || PAL_ART.marmalade;
