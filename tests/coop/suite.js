@@ -14,6 +14,7 @@
 
 import { RNG } from '../../game/src/core/rng.js';
 import { MAX_PARTY } from '../../game/src/combat/engine.js';
+import { Run } from '../../game/src/state/run.js';
 import { _resetUid } from '../../game/src/combat/piles.js';
 import {
   makeDummyParty, startDummyParty, makeDummyCombat, makeDummyDeck, SCRATCH,
@@ -821,6 +822,166 @@ export async function run() {
     const duo = makeDummyParty(new RNG(407), 2);
     eq(solo.perPlayer(18), 18, 'solo threshold is the printed number');
     eq(duo.perPlayer(18), 36, 'two Kids doubles it — foyer §27 Snag');
+  });
+
+  // ── the run layer with two Kids ───────────────────────────────────────────
+  // Shared route and rooms; per-Kid deck, Courage, Lost Things, Keepsakes,
+  // Backpack. Same split as Slay the Spire 2, and the reason two Kids feel like
+  // two runs played side by side rather than one run with two cursors.
+  test('run: two Kids share a route and own everything else', () => {
+    const run = new Run({
+      seed: 900,
+      kids: [
+        { companion: 'marmalade', kid: 'maya' },
+        { companion: 'bones', kid: 'eli' },
+      ],
+    });
+    eq(run.partySize, 2, 'two Kids');
+    ok(run.isParty, 'isParty');
+    eq(run.localSeat, 0, 'this client is seat 0');
+    eq(run.local, run.kids[0], 'local is seat 0');
+    eq(run.partner, run.kids[1], 'partner is the other Kid');
+
+    // The un-suffixed fields are the LOCAL Kid's, so every screen reads right.
+    eq(run.companion, 'marmalade', 'run.companion is mine');
+    eq(run.kid, 'maya', 'run.kid is mine');
+    ok(run.deck.length > 0, 'I have a deck');
+    ok(run.kids[1].deck.length > 0, 'so does my friend');
+    ok(run.deck !== run.kids[1].deck, 'and they are NOT the same deck');
+    ok(!run.deck.some(c => run.kids[1].deck.includes(c)), 'no card instance is shared');
+    ok(run.keepsakes !== run.kids[1].keepsakes, 'Keepsakes are per Kid');
+    ok(run.backpack !== run.kids[1].backpack, 'so is the Backpack');
+
+    // Shared: one route, one seed, one Haunt level.
+    ok(!!run.map, 'there is a map');
+    eq(run.region, 'foyer', 'both Kids are in the same wing');
+
+    // Switching the local seat re-points every accessor, with no copying.
+    run.localSeat = 1;
+    eq(run.companion, 'bones', 'seat 1 sees their own Companion');
+    eq(run.kid, 'eli', 'and their own Kid');
+    run.localSeat = 0;
+    eq(run.companion, 'marmalade', 'and back');
+  });
+
+  test('run: solo is a party of one and is completely unchanged', () => {
+    const run = new Run({ companion: 'taffy', kid: 'priya', seed: 901 });
+    eq(run.partySize, 1, 'one Kid');
+    ok(!run.isParty, 'not a party');
+    eq(run.partner, null, 'no partner');
+    eq(run.companion, 'taffy', 'the flat fields still work');
+    eq(run.kid, 'priya', 'both of them');
+    ok(run.deck.length > 0, 'and there is a deck');
+    ok(run.alive, 'and the expedition is on');
+  });
+
+  test('run: the expedition ends only when EVERY Kid is down', () => {
+    const run = new Run({
+      seed: 902,
+      kids: [{ companion: 'marmalade', kid: 'maya' }, { companion: 'bones', kid: 'eli' }],
+    });
+    run.kids[0].courage = 0;
+    ok(run.alive, 'one Kid down is NOT the end of the run');
+    ok(!run.localAlive, 'though the local Kid knows they are down');
+    run.kids[1].courage = 0;
+    ok(!run.alive, 'both down ends it');
+  });
+
+  test('run: a two-Kid expedition survives a save and resume', () => {
+    const run = new Run({
+      seed: 903,
+      kids: [{ companion: 'marmalade', kid: 'maya' }, { companion: 'pipkin', kid: 'jordan' }],
+    });
+    run.kids[1].courage = 41;
+    run.kids[1].lostThings = 137;
+    run.localSeat = 1;
+    const saved = JSON.parse(JSON.stringify(run.snapshot()));
+    eq(saved.kids.length, 2, 'the save carries both Kids');
+    eq(saved.localSeat, 1, 'and which seat this client is');
+
+    const back = Run.resume(saved);
+    ok(!!back, 'it resumes');
+    eq(back.partySize, 2, 'still two Kids');
+    eq(back.localSeat, 1, 'still seat 1');
+    eq(back.kids[1].companion, 'pipkin', 'seat 1 kept its Companion');
+    eq(back.kids[1].courage, 41, 'and its Courage');
+    eq(back.kids[1].lostThings, 137, 'and its Lost Things');
+    eq(back.kids[0].companion, 'marmalade', 'seat 0 kept its Companion too');
+    ok(back.kids[0].deck.length > 0 && back.kids[1].deck.length > 0, 'both decks came back');
+  });
+
+  test('run: an OLD single-player save still loads', () => {
+    // No `kids` array at all — the shape every save written before co-op has.
+    const legacy = new Run({ companion: 'wink', kid: 'lena', seed: 904 }).snapshot();
+    delete legacy.kids;
+    delete legacy.localSeat;
+    const back = Run.resume(legacy);
+    ok(!!back, 'it resumes');
+    eq(back.partySize, 1, 'as a party of one');
+    eq(back.companion, 'wink', 'with its Companion intact');
+    ok(back.deck.length > 0, 'and its deck');
+  });
+
+  test('run: more than two Kids is capped, not half-supported', () => {
+    const run = new Run({
+      seed: 905,
+      kids: [
+        { companion: 'marmalade', kid: 'maya' }, { companion: 'bones', kid: 'eli' },
+        { companion: 'pipkin', kid: 'jordan' }, { companion: 'taffy', kid: 'priya' },
+      ],
+    });
+    eq(run.partySize, MAX_PARTY, 'capped to two');
+  });
+
+  // ── the Safe Room's two co-op options ─────────────────────────────────────
+  test('safe room: Mend heals the FRIEND 30% of their maximum', () => {
+    const run = new Run({
+      seed: 906,
+      kids: [{ companion: 'marmalade', kid: 'maya' }, { companion: 'bones', kid: 'eli' }],
+    });
+    const [me, mate] = run.kids;
+    mate.courage = 10;
+    const mine = me.courage;
+    const amt = Math.max(1, Math.round(mate.maxCourage * 0.30));
+    const healed = run.healKid(mate, amt);
+    eq(healed, amt, 'the friend got 30% of their maximum');
+    eq(mate.courage, 10 + amt, 'and it landed on them');
+    eq(me.courage, mine, 'and cost me none of my own Courage');
+  });
+
+  test('safe room: Mend never overheals past the friend maximum', () => {
+    const run = new Run({
+      seed: 907,
+      kids: [{ companion: 'marmalade', kid: 'maya' }, { companion: 'bones', kid: 'eli' }],
+    });
+    const mate = run.kids[1];
+    mate.courage = mate.maxCourage - 2;
+    eq(run.healKid(mate, 999), 2, 'only the missing two');
+    eq(mate.courage, mate.maxCourage, 'and stops at full');
+  });
+
+  test('safe room: Clone gives a COPY — the friend keeps theirs', () => {
+    const run = new Run({
+      seed: 908,
+      kids: [{ companion: 'marmalade', kid: 'maya' }, { companion: 'bones', kid: 'eli' }],
+    });
+    const [me, mate] = run.kids;
+    const src = mate.deck[0];
+    const mineBefore = me.deck.length;
+    const theirsBefore = mate.deck.length;
+    run.addCard(src.id);
+    eq(me.deck.length, mineBefore + 1, 'I gained one');
+    eq(mate.deck.length, theirsBefore, 'they lost none');
+    const copy = me.deck[me.deck.length - 1];
+    eq(copy.id, src.id, 'it is the same Trick');
+    ok(copy.uid !== src.uid, 'but a different INSTANCE — sharing one would be the silent kind of wrong');
+    ok(!mate.deck.includes(copy), 'and it is not in their deck');
+  });
+
+  test('safe room: the co-op options do not exist in solo', () => {
+    const run = new Run({ companion: 'marmalade', kid: 'maya', seed: 909 });
+    eq(run.partner, null, 'there is nobody to Mend or copy from');
+    eq(run.healKid(null, 20), 0, 'and healing nobody is a no-op, not a throw');
   });
 
   const passed = results.reduce((n, t) => n + t.asserts.filter(a => a.pass).length, 0);

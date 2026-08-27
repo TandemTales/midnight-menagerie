@@ -141,6 +141,13 @@ export class RestScene extends RoomScene {
     const forgeCost = r.forgeCost?.() ?? 8;
     const forgeAffordable = r.maxCourage - forgeCost >= 10;
 
+    // The other Kid, in a two-Kid expedition. Null in solo, which is what makes
+    // the two co-op options below disappear rather than sit there greyed out.
+    const mate = r.partner || null;
+    const mateName = mate ? r.kidNameOf(mate) : '';
+    const mendAmt = mate ? Math.max(1, Math.round(mate.maxCourage * 0.30)) : 0;
+    const mateDeck = mate ? r.deckViewsOf(mate) : [];
+
     const wrap = el('div', 'rs-room');
     wrap.innerHTML = `
       <div class="rs-art">${FORT_SVG}</div>
@@ -181,6 +188,37 @@ export class RestScene extends RoomScene {
           : !forgeAffordable ? 'You cannot spare the Courage.' : '',
         run: () => this._doForge(),
       },
+      // ── co-op only ────────────────────────────────────────────────────
+      // Slay the Spire 2's two camp additions, and they cost you your own camp
+      // action — that trade is the whole design. Mend is theirs: heal a friend
+      // 30% of their maximum instead of resting yourself. Clone is a copy of
+      // one of their Tricks, so the two decks can grow toward each other.
+      // Both are hidden entirely in solo rather than shown greyed out: an
+      // option that can never be taken is noise on a screen that is asking you
+      // to make one careful choice.
+      ...(mate ? [{
+        id: 'mend', name: `Mend ${mateName}`,
+        blurb: `Sit up with them instead of sleeping. You will feel it tomorrow.`,
+        readout: `${TERMS.hp} ${mate.courage} <b>&rarr;</b> ${Math.min(mate.maxCourage, mate.courage + mendAmt)}`,
+        note: mate.courage >= mate.maxCourage
+          ? `${mateName} is already at full ${TERMS.hp}.`
+          : `Recovers ${mendAmt} — 30% of their maximum. You get no rest.`,
+        can: mendAmt > 0 && mate.courage < mate.maxCourage,
+        why: mate.courage >= mate.maxCourage ? `${mateName} does not need it.` : '',
+        run: () => {
+          const n = r.healKid(mate, mendAmt);
+          return `You keep watch. ${mateName} gets ${n} ${TERMS.hp} back.`;
+        },
+      }] : []),
+      ...(mate ? [{
+        id: 'clone', name: `Copy one of ${mateName}'s ${TERMS.deck}`,
+        blurb: `Watch them do it until you can do it too.`,
+        readout: `${plural(mateDeck.length, TERMS.card)} to copy`,
+        note: `The copy is yours for the rest of the expedition. They keep theirs.`,
+        can: mateDeck.length > 0,
+        why: mateDeck.length ? '' : `${mateName} has nothing you can learn.`,
+        run: () => this._doClone(mate),
+      }] : []),
       {
         id: 'sit', name: 'Sit with your Companion',
         blurb: `Nothing useful. Ask them something.`,
@@ -259,6 +297,35 @@ export class RestScene extends RoomScene {
     const c = this.run.upgradeCard(uid);
     if (!c) return null;
     return `${cardById(c.id)?.name}+ for the rest of the expedition.`;
+  }
+
+  /**
+   * Clone: take a copy of one of your friend's Tricks.
+   *
+   * A COPY — they keep theirs. Two Kids sharing one card instance would be the
+   * quiet kind of wrong this codebase keeps finding, so `run.addCard` mints a
+   * fresh instance into the local deck and the friend's deck is never touched.
+   * Upgrades do not come across: you learned the Trick, not their practice.
+   */
+  async _doClone(mate) {
+    if (!mate) return null;
+    const cards = this.run.deckViewsOf(mate).map(c => ({
+      uid: c.uid, def: c.def, upgraded: c.upgraded,
+    })).filter(c => c.def);
+    if (!cards.length) return null;
+    const name = this.run.kidNameOf(mate);
+    const uid = await this.pickCard({
+      title: `Which of ${name}'s ${TERMS.deck} do you want to learn?`,
+      sub: 'You get a copy. They keep theirs.',
+      cards, confirmLabel: 'Learn it',
+    });
+    if (!uid) return null;
+    const src = cards.find(c => c.uid === uid);
+    if (!src) return null;
+    const before = this.run.cardCount();
+    this.run.addCard(src.def.id);
+    if (this.run.cardCount() === before) return null;
+    return `You watched ${name} until you had it. ${src.def.name} is yours now.`;
   }
 
   async _doForge() {
@@ -399,6 +466,10 @@ const DOOR_GLYPH = {
   upgrade: '<svg viewBox="0 0 24 24"><path d="M12 3l2.4 5.6L20 11l-5.6 2.4L12 19l-2.4-5.6L4 11l5.6-2.4ZM19 3v4M17 5h4"/></svg>',
   forge: '<svg viewBox="0 0 24 24"><path d="M12 3c3.6 4.6 1.6 7 0 9.4C9.6 10 8.4 7.6 12 3ZM6 14h12l-1.6 7H7.6Z"/></svg>',
   sit: '<svg viewBox="0 0 24 24"><path d="M8 20c0-4 2-6 4-6s4 2 4 6ZM12 11a3 3 0 1 1 0-.01M4 20c0-2.4 1.4-4 3-4M20 20c0-2.4-1.4-4-3-4"/></svg>',
+  // Co-op. Mend is a bandaged heart — you spend your own night on it. Clone is
+  // two overlapping cards, the second traced from the first.
+  mend: '<svg viewBox="0 0 24 24"><path d="M12 20S4 14.5 4 9.5A4 4 0 0 1 12 7a4 4 0 0 1 8 2.5c0 5-8 10.5-8 10.5ZM7 12h4l1-2 1.5 4 1-2h2.5"/></svg>',
+  clone: '<svg viewBox="0 0 24 24"><path d="M9 3h9a2 2 0 0 1 2 2v11M6 7h9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2ZM8 13h6M8 16h4"/></svg>',
 };
 
 export default RestScene;

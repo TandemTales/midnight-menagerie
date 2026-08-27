@@ -72,6 +72,7 @@ import {
   cardById, startingDeckFor, poolFor, companion as companionDef, allCards,
 } from '../data/cards.js';
 import { encountersFor, rollEncounter, buildEncounter } from '../data/encounters.js';
+import { MAX_PARTY } from '../combat/engine.js';
 import {
   makeRelic, relicById, rollKeepsake, rollKeepsakeRarity, relicRunFlags, starterKeepsake,
 } from '../data/relics.js';
@@ -164,47 +165,40 @@ export class Run {
    *          hauntLevel?:number, backpack?:string[]}} cfg
    */
   constructor(cfg = {}) {
-    const companion = cfg.companion || 'marmalade';
-    const kid = cfg.kid || 'maya';
-
     this.version = 1;
     this.seed = Number.isFinite(+cfg.seed) ? (+cfg.seed >>> 0) : (hashSeed(String(cfg.seed ?? Date.now())));
-    this.companion = companion;
-    this.kid = kid;
     this.hauntLevel = Math.max(0, Number(cfg.hauntLevel ?? cfg.haunt ?? 0) || 0);
-    /* The Backpack seam. `cfg.backpack` is `string[]` of ids from
-       data/backpack.js — never names, never `{name,slots}` objects. A wrong
-       shape here does not throw on its own: it produces an empty tag Set, zeroed
-       gear flags, no hooks and permanently locked Curiosity options, which is
-       exactly how this pillar of the game sat dead for a whole build. So it is
-       asserted at the join instead (CONTRACTS.md rule 8). Old saves come in
-       through `Run.resume`, which migrates before it gets here. */
-    /* An EMPTY array is honoured, not replaced: the Clubhouse lets you unpack
-       the whole bag, and "I brought nothing" is a loadout decision the design
-       doc explicitly makes available (§19). Only `null`/absent falls back. */
-    this.backpack = cfg.backpack == null
-      ? defaultLoadout(kid)
-      : assertLoadout(cfg.backpack, `new Run({kid:'${kid}'})`).slice();
 
+    /**
+     * The Kids on this expedition, in seat order. ALWAYS at least one; solo is
+     * a party of one, exactly as in the combat engine, so nothing below this
+     * has a separate single-player path.
+     *
+     * Shared across the party: the route, the rooms, the enemies, the Haunt
+     * level, the seed. Per Kid: deck, Courage, Lost Things, Keepsakes, Backpack,
+     * Snacks, card rewards, shop prices. That split is Slay the Spire 2's
+     * ("shared map and enemies; per-player deck, gold, energy, HP, relics, card
+     * rewards, shop inventory") and it is what makes two Kids feel like two
+     * runs being played side by side rather than one run with two cursors.
+     * @type {RunKid[]}
+     */
+    this.kids = [];
+    /**
+     * The seat THIS client is playing. Every un-suffixed per-Kid field on the
+     * Run — `run.deck`, `run.courage`, `run.lostThings` — reads through it, so
+     * every screen already shows "my deck" without knowing co-op exists.
+     */
+    this.localSeat = 0;
+
+    const roster = (cfg.kids && cfg.kids.length ? cfg.kids : [{
+      companion: cfg.companion || 'marmalade', kid: cfg.kid || 'maya', backpack: cfg.backpack,
+    }]).slice(0, MAX_PARTY);
+    for (let i = 0; i < roster.length; i++) this.kids.push(this._makeKid(roster[i] || {}, i));
+
+    const companion = this.companion;
+    const kid = this.kid;
     /** The master stream. Content never draws from it directly — see `fork`. */
     this.rng = new RNG(this.seed);
-
-    // ── resources ───────────────────────────────────────────────────────────
-    const comp = companionDef(companion);
-    this.maxCourage = comp?.startingHp ?? 70;
-    this.courage = this.maxCourage;
-    this.energyMax = comp?.startingEnergy ?? 3;
-    this.lostThings = 99;
-    this.snacks = [];
-    this.snackCap = 3;
-
-    // ── deck ────────────────────────────────────────────────────────────────
-    this.deck = startingDeckFor(companion).map(def => this._instance(def));
-
-    // ── Keepsakes ───────────────────────────────────────────────────────────
-    this.keepsakes = [];
-    const starter = starterKeepsake(companion);
-    if (starter) this.keepsakes.push(starter);
 
     // ── progression ─────────────────────────────────────────────────────────
     this.regionIndex = 0;
@@ -215,9 +209,7 @@ export class Run {
     this.cluesFound = 0;
     this.seenEvents = [];
     this.encounterHistory = [];
-    this.removalPrice = 65;          // Mr. Moth's card-removal service
     this.shopsVisited = 0;
-    this.pity = 0;                   // rare-card pity counter (STS2 §6 "luck")
     this.startedAt = Date.now();
     this.result = null;              // 'victory' | 'defeat' | null
     this.killedBy = null;
@@ -237,7 +229,6 @@ export class Run {
     this.currentNodeId = null;
     this.visitedIds = [];
     this.pathIds = [];
-    this.pendingReward = null;
     this.pendingEvent = null;
     this.combat = null;
     /** The recipe + action log for a fight that has not resolved yet. */
@@ -276,9 +267,23 @@ export class Run {
   get relics() { return this.keepsakes; }
   /** @deprecated alias of `snacks`. */
   get potions() { return this.snacks; }
-  get alive() { return this.courage > 0 && this.result !== 'defeat'; }
+  /**
+   * Is the expedition still going?
+   *
+   * In co-op the run ends only when EVERY Kid is down — one Kid at 0 Courage
+   * has fallen, not lost, and comes back at 1 Courage when the team wins the
+   * fight they fell in. Reading only the local Kid here would end the run for
+   * both players the moment one of them went down.
+   */
+  get alive() { return this.kids.some(k => k.courage > 0) && this.result !== 'defeat'; }
+  /** Is the LOCAL Kid still standing? The HUD asks this, not `alive`. */
+  get localAlive() { return this.courage > 0; }
   get companionName() { return COMPANIONS.find(c => c.slug === this.companion)?.name || this.companion; }
-  get kidName() { return KIDS.find(k => k.slug === this.kid)?.name || this.kid; }
+  get kidName() { return this.kidNameOf(this.local); }
+  /** A named Kid's display name — the party form of `kidName`. */
+  kidNameOf(k) { return (k && k.name) || KIDS.find(x => x.slug === (k ? k.kid : this.kid))?.name || (k ? k.kid : this.kid); }
+  /** A named Kid's Companion display name. */
+  companionNameOf(k) { return COMPANIONS.find(c => c.slug === k.companion)?.name || k.companion; }
   get petName() { return KIDS.find(k => k.slug === this.kid)?.pet || 'your pet'; }
   get currentNode() { return this.nodeById(this.currentNodeId); }
   get isLastRegion() { return this.regionIndex >= Math.min(RUN_LENGTH_REGIONS, REGION_ORDER.length) - 1; }
@@ -312,6 +317,72 @@ export class Run {
   get ctx() { return this._ctx || (typeof window !== 'undefined' ? window.MM?.ctx : null) || null; }
 
   // ══ deck ═════════════════════════════════════════════════════════════════
+  /**
+   * One Kid's whole run-state.
+   *
+   * `seat` is the stable identity: it orders simultaneous turns in combat, it
+   * is what a thrown Snack and a Mend name, and it is what the network layer
+   * will address. Seat 0 keeps every default so a solo run is byte-identical to
+   * what it was before the party existed.
+   */
+  _makeKid(cfg, seat) {
+    const companion = cfg.companion || 'marmalade';
+    const kid = cfg.kid || 'maya';
+    const comp = companionDef(companion);
+    const maxCourage = comp?.startingHp ?? 70;
+    const k = {
+      seat, companion, kid,
+      name: cfg.name || null,
+      /* The Backpack seam. `cfg.backpack` is `string[]` of ids from
+         data/backpack.js — never names, never `{name,slots}` objects. A wrong
+         shape here does not throw on its own: it produces an empty tag Set,
+         zeroed gear flags, no hooks and permanently locked Curiosity options,
+         which is exactly how this pillar of the game sat dead for a whole
+         build. So it is asserted at the join instead (CONTRACTS.md rule 8).
+         An EMPTY array is honoured, not replaced: "I brought nothing" is a
+         loadout decision the design doc makes available (§19). */
+      backpack: cfg.backpack == null
+        ? defaultLoadout(kid)
+        : assertLoadout(cfg.backpack, `new Run({kid:'${kid}'})`).slice(),
+      maxCourage,
+      courage: maxCourage,
+      energyMax: comp?.startingEnergy ?? 3,
+      lostThings: 99,
+      snacks: [],
+      snackCap: 3,
+      deck: [],
+      keepsakes: [],
+      pity: 0,                   // rare-card pity counter (STS2 §6 "luck")
+      removalPrice: 65,          // Mr. Moth's card-removal service, per Kid
+      pendingReward: null,       // each Kid drafts their own card reward
+    };
+    k.deck = startingDeckFor(companion).map(def => this._instance(def));
+    const starter = starterKeepsake(companion);
+    if (starter) k.keepsakes.push(starter);
+    return k;
+  }
+
+  /** The Kid this client is playing. */
+  get local() { return this.kids[this.localSeat] || this.kids[0]; }
+  /** Every Kid on the expedition, in seat order. */
+  get party() { return this.kids; }
+  /** How many Kids went in. */
+  get partySize() { return this.kids.length; }
+  /** True when this is a co-op expedition. */
+  get isParty() { return this.kids.length > 1; }
+  /** A Kid by seat, or null. */
+  kidAt(n) { return this.kids[n] || null; }
+  /** The other Kid, in a two-Kid expedition. Null in solo. */
+  get partner() { return this.kids.length > 1 ? this.kids[1 - this.localSeat] : null; }
+
+  /** Heal a NAMED Kid. `heal()` heals the local one. */
+  healKid(k, n) {
+    if (!k || n <= 0) return 0;
+    const before = k.courage;
+    k.courage = Math.min(k.maxCourage, k.courage + Math.round(n));
+    return k.courage - before;
+  }
+
   _instance(def, upgraded = false) {
     if (!def) return null;
     return { uid: nextUid(), id: def.id, upgraded: !!upgraded };
@@ -319,8 +390,10 @@ export class Run {
   /** The CardDef behind a deck entry. */
   defOf(entry) { return entry ? cardById(entry.id) : undefined; }
   /** Deck as `[{def, upgraded, uid}]` — what CardView and the engine want. */
-  deckViews() {
-    return this.deck.map(c => ({ uid: c.uid, upgraded: c.upgraded, def: cardById(c.id) }))
+  deckViews() { return this.deckViewsOf(this.local); }
+  /** The same, for a named Kid — the party form. */
+  deckViewsOf(k) {
+    return (k ? k.deck : []).map(c => ({ uid: c.uid, upgraded: c.upgraded, def: cardById(c.id) }))
       .filter(c => !!c.def);
   }
   cardCount() { return this.deck.length; }
@@ -670,16 +743,19 @@ export class Run {
       return def ? { def, hp: Math.max(1, Math.round(m.hp * hpMul)), id: `e${i}` } : null;
     }).filter(Boolean);
 
+    // One seat per Kid, each with their OWN deck and Keepsakes. Solo builds a
+    // one-element array and the engine treats it exactly as it always did.
+    const seats = this.kids.map(k => ({
+      name: this.kidNameOf(k), companion: k.companion, kid: k.kid,
+      maxHp: k.maxCourage, hp: k.courage,
+      energyMax: k.energyMax, drawPerTurn: 5,
+      deck: this.deckViewsOf(k).map(c => ({ def: c.def, upgraded: c.upgraded })),
+      relics: [...k.keepsakes, ...backpackHooks(k.backpack)],
+    }));
     const engine = new CombatEngine({
       rng,
-      player: {
-        name: this.kidName, companion: this.companion, kid: this.kid,
-        maxHp: this.maxCourage, hp: this.courage,
-        energyMax: this.energyMax, drawPerTurn: 5,
-        deck: this.deckViews().map(c => ({ def: c.def, upgraded: c.upgraded })),
-      },
+      players: seats,
       enemies,
-      relics: [...this.keepsakes, ...backpackHooks(this.backpack)],
       bus,
     });
 
@@ -762,7 +838,12 @@ export class Run {
     const byUid = new Map();
     const byKey = new Map();
     const put = (uid, key) => { byUid.set(uid, key); byKey.set(key, uid); };
-    engine.piles.draw.forEach((c, i) => put(c.uid, `d${i}`));
+    // Every seat's opening draw pile, keyed by seat so a replay can tell two
+    // Kids' cards apart. Solo produces exactly the old `d0..dN` keys, so an
+    // in-flight single-player save still replays.
+    engine.players.forEach((pl, seat) => {
+      pl.piles.draw.forEach((c, i) => put(c.uid, seat === 0 ? `d${i}` : `d${seat}_${i}`));
+    });
     let extra = 0;
     const off = engine.on('card:add', (ev) => {
       if (ev && ev.cardUid && !byUid.has(ev.cardUid)) put(ev.cardUid, `x${extra++}`);
@@ -781,9 +862,12 @@ export class Run {
 
     // "DAMAGE DEALT 0" lived here: nothing ever added combat damage to the run.
     // The engine's own counter is per-turn, so the run watches the events.
-    const playerId = engine.player.id;
+    // Any seat's damage counts toward the run, and damage BETWEEN seats never
+    // does. Reading `engine.player.id` here was seat 0 only — and throws
+    // outright in a party with the dev guard armed.
+    const seatIds = new Set(engine.players.map(pl => pl.id));
     offs.push(engine.on('damage', (ev) => {
-      if (!ev || ev.sourceId !== playerId || ev.targetId === playerId) return;
+      if (!ev || !seatIds.has(ev.sourceId) || seatIds.has(ev.targetId)) return;
       const n = Math.max(0, Number(ev.hpLoss) || 0);
       if (!n) return;
       this.stats.damageDealt += n;
@@ -846,10 +930,14 @@ export class Run {
     if (!e) return null;
     return [
       e.turn, e.phase, e.over ? 1 : 0,
-      e.player.hp, e.player.block, e.player.energy,
+      // Every seat, in seat order. A digest that only covered seat 0 would call
+      // a replay "identical" while the other Kid's board had diverged.
+      e.players.map(pl => [
+        pl.hp, pl.block, pl.energy, pl.fallen ? 1 : 0,
+        pl.piles.hand.map(c => `${c.id}${c.upgraded ? '+' : ''}`).join('|'),
+        pl.piles.draw.length, pl.piles.discard.length, pl.piles.exhaust.length,
+      ].join(':')).join(';'),
       e.enemies.map(x => `${x.id}:${x.hp}:${x.block}:${x.alive ? 1 : 0}`).join(','),
-      e.piles.hand.map(c => `${c.id}${c.upgraded ? '+' : ''}`).join('|'),
-      e.piles.draw.length, e.piles.discard.length, e.piles.exhaust.length,
     ].join('~');
   }
 
@@ -1057,7 +1145,13 @@ export class Run {
     this._unwireCombat();
     this.pendingCombat = null;             // the fight resolved; nothing to resume
 
-    this.courage = Math.max(0, engine.player?.hp ?? this.courage);
+    // Every Kid carries their own Courage out of the fight. A fallen Kid was
+    // already revived to 1 by the engine if the team won, so this reads the
+    // post-revival number and the Safe Room sees a Kid who is up again.
+    for (const k of this.kids) {
+      const seat = engine.players[k.seat];
+      if (seat) k.courage = Math.max(0, seat.hp);
+    }
     this.stats.cardsPlayed += engine.stats?.cardsPlayedThisCombat || 0;
     this.stats.turns += engine.stats?.turnsTaken || 0;
 
@@ -1650,6 +1744,12 @@ export class Run {
       encounterHistory: this.encounterHistory.slice(),
       removalPrice: this.removalPrice, shopsVisited: this.shopsVisited, pity: this.pity,
 
+      // Every Kid, in seat order. The flat fields above are seat 0's and are
+      // kept so an older save still loads and a solo save is unchanged in
+      // shape; `kids` is what a co-op resume actually reads.
+      kids: this.kids.map(k => this._kidSnapshot(k)),
+      localSeat: this.localSeat,
+
       pendingReward: this.pendingReward,
       pendingEvent: this.pendingEvent,
       pendingShop: this.pendingShop || null,
@@ -1668,6 +1768,54 @@ export class Run {
     };
   }
 
+  /** One Kid, serialised. Mirrors the flat fields exactly. */
+  _kidSnapshot(k) {
+    return {
+      seat: k.seat, companion: k.companion, kid: k.kid, name: k.name || null,
+      backpack: k.backpack.slice(),
+      courage: k.courage, maxCourage: k.maxCourage, energyMax: k.energyMax,
+      lostThings: k.lostThings,
+      snacks: k.snacks.map(x => ({ ...x })),
+      snackCap: k.snackCap,
+      deck: k.deck.map(c => ({ uid: c.uid, id: c.id, upgraded: c.upgraded, name: cardById(c.id)?.name || c.id })),
+      keepsakes: k.keepsakes.map(r => ({
+        id: r.id, name: r.name, desc: r.desc, rarity: r.rarity,
+        counter: r.counter ?? null, forged: !!r.forged, icon: r.icon,
+      })),
+      pity: k.pity, removalPrice: k.removalPrice,
+      pendingReward: k.pendingReward || null,
+    };
+  }
+
+  /** Restore one Kid from `_kidSnapshot`. */
+  _restoreKid(saved, seat) {
+    const k = this._makeKid({
+      companion: saved.companion, kid: saved.kid, name: saved.name,
+      backpack: saved.backpack == null ? null
+        : migrateLoadout(saved.backpack, `Run.resume(seat:${seat})`),
+    }, seat);
+    k.courage = saved.courage ?? k.courage;
+    k.maxCourage = saved.maxCourage ?? k.maxCourage;
+    k.energyMax = saved.energyMax ?? k.energyMax;
+    k.lostThings = saved.lostThings ?? k.lostThings;
+    k.snacks = (saved.snacks || []).map(x => ({ ...x }));
+    k.snackCap = saved.snackCap ?? k.snackCap;
+    k.deck = (saved.deck || []).map(c => ({ uid: c.uid || nextUid(), id: c.id, upgraded: !!c.upgraded }))
+      .filter(c => !!cardById(c.id));
+    k.keepsakes = (saved.keepsakes || []).map(r => {
+      const inst = makeRelic(r.id);
+      if (!inst) return null;
+      inst.counter = r.counter ?? inst.counter;
+      inst.forged = !!r.forged;
+      if (inst.forged) this._applyForge(inst);
+      return inst;
+    }).filter(Boolean);
+    k.pity = saved.pity || 0;
+    k.removalPrice = saved.removalPrice ?? k.removalPrice;
+    k.pendingReward = saved.pendingReward || null;
+    return k;
+  }
+
   save() {
     if (this.result) return;          // a finished run is not resumable
     if (this.ephemeral) return;       // deep-link mocks must not clobber a real save
@@ -1680,8 +1828,8 @@ export class Run {
    * fixed seed, not a bag of fake numbers, so the review screens exercise the
    * same code the game does.  `ephemeral` keeps it out of localStorage.
    */
-  static mock({ seed = 20260820, companion = 'marmalade', kid = 'maya', node = null } = {}) {
-    const run = new Run({ companion, kid, seed });
+  static mock({ seed = 20260820, companion = 'marmalade', kid = 'maya', node = null, kids = null } = {}) {
+    const run = new Run(kids ? { seed, kids } : { companion, kid, seed });
     run.ephemeral = true;
     run.lostThings = 246;
     run.courage = Math.round(run.maxCourage * 0.62);
@@ -1692,11 +1840,22 @@ export class Run {
     for (const id of ['welcome-mat', 'chewed-tennis-ball', 'nightlight', 'butterfly-net']) {
       const k = makeRelic(id); if (k) run.keepsakes.push(k);
     }
-    const pool = poolFor(companion);
     const r = run.fork('mock:deck');
-    for (let i = 0; i < 6 && pool.length; i++) {
-      const def = pool[r.int(pool.length)];
-      run.deck.push({ uid: nextUid(), id: def.id, upgraded: i % 3 === 0 });
+    // Every Kid gets a plausible mid-run deck, not just seat 0 — a co-op review
+    // screen with one full deck and one starter deck tells you nothing.
+    for (const k of run.kids) {
+      const pool = poolFor(k.companion);
+      for (let i = 0; i < 6 && pool.length; i++) {
+        const def = pool[r.int(pool.length)];
+        k.deck.push({ uid: nextUid(), id: def.id, upgraded: i % 3 === 0 });
+      }
+      if (k !== run.local) {
+        k.courage = Math.round(k.maxCourage * 0.48);
+        k.lostThings = 180;
+        for (const id of ['nightlight', 'butterfly-net']) {
+          const rel = makeRelic(id); if (rel) k.keepsakes.push(rel);
+        }
+      }
     }
     // stand somewhere sensible: two rows in, on a node of the requested kind
     const want = node ? run.map.nodes.find(n => run.effectiveType(n) === node) : null;
@@ -1719,6 +1878,15 @@ export class Run {
       hauntLevel: saved.hauntLevel, backpack: packed,
     });
     UID = Math.max(UID, saved.uidSeq || 0);
+
+    // A co-op save carries every Kid. A solo save (and every save written
+    // before the party existed) carries only the flat fields, and falls through
+    // to the single-Kid path below — which is why `kids` is checked rather than
+    // assumed.
+    if (Array.isArray(saved.kids) && saved.kids.length) {
+      run.kids = saved.kids.slice(0, MAX_PARTY).map((k, i) => run._restoreKid(k, i));
+      run.localSeat = Math.min(saved.localSeat || 0, run.kids.length - 1);
+    }
 
     run.courage = saved.courage ?? saved.hp ?? run.courage;
     run.maxCourage = saved.maxCourage ?? saved.maxHp ?? run.maxCourage;
@@ -1860,6 +2028,10 @@ export function installRunLayer() {
     const run = new Run({
       companion: p?.companion, kid: p?.kid, seed: p?.seed,
       hauntLevel: p?.haunt ?? p?.hauntLevel, backpack: p?.backpack,
+      // A co-op expedition comes in through the SAME seam as a solo one, so
+      // there is no second start path to keep in step. `kids` is an array of
+      // { companion, kid, name, backpack }; absent means a party of one.
+      kids: p?.kids,
     });
     run.attach(ctx);
     run.save();
@@ -1894,5 +2066,30 @@ export function installRunLayer() {
 }
 
 installRunLayer();
+
+/**
+ * Per-Kid fields, exposed on the Run as the LOCAL Kid's.
+ *
+ * `run.deck`, `run.courage`, `run.lostThings` and the rest keep meaning exactly
+ * what they always meant — "mine" — so every screen, Keepsake and Curiosity in
+ * the game reads correctly in co-op without knowing co-op exists. The party is
+ * reached deliberately through `run.kids`, `run.partner` or `run.kidAt(n)`.
+ *
+ * Defined as accessors rather than copied on seat switch: a copy would let a
+ * screen hold a stale reference to the other Kid's deck, which is the silent
+ * kind of wrong this project keeps getting bitten by.
+ */
+const PER_KID = [
+  'companion', 'kid', 'backpack', 'maxCourage', 'courage', 'energyMax',
+  'lostThings', 'snacks', 'snackCap', 'deck', 'keepsakes', 'pity',
+  'removalPrice', 'pendingReward',
+];
+for (const key of PER_KID) {
+  Object.defineProperty(Run.prototype, key, {
+    get() { const k = this.local; return k ? k[key] : undefined; },
+    set(v) { const k = this.local; if (k) k[key] = v; },
+    enumerable: false, configurable: true,
+  });
+}
 
 export default Run;

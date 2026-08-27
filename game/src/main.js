@@ -67,13 +67,31 @@ const hash = new URLSearchParams(location.hash.slice(1));
 const startScene = hash.get('scene') || 'title';
 const startParams = Object.fromEntries(hash.entries());
 
-ctx.scenes.go(startScene, startParams, { instant: true });
-
-// Debug surface (used by automated critics + the dev overlay)
+// Debug surface (used by automated critics + the dev overlay).
+//
+// Assigned BEFORE the first scene opens, because `run:start` reaches the ctx
+// through `window.MM.ctx` — starting an expedition before this line attaches
+// the Run to nothing, and the screen then quietly falls back to its standalone
+// mock. Nothing here needs a scene to exist.
 window.MM = {
   ctx, bus, clock, Save,
   version: '0.1.0',
   goto: (s, p) => ctx.scenes.go(s, p || {}),
   state: () => ({ scene: ctx.scenes.currentName, run: ctx.run ? ctx.run.snapshot() : null }),
 };
+
+// `&kids=2` stands up a two-Kid expedition before the scene opens, so every
+// screen can be deep-linked in co-op exactly the way it can in solo. Review
+// only — the real path is the Companion/Kid select emitting `run:start`.
+if (startParams.kids === '2' && startScene !== 'title') {
+  bus.emit('run:start', {
+    seed: Number(startParams.seed) || 20260826,
+    kids: [
+      { companion: startParams.companion || 'marmalade', kid: startParams.kid || 'maya' },
+      { companion: startParams.companion2 || 'bones', kid: startParams.kid2 || 'eli' },
+    ],
+  });
+}
+
+ctx.scenes.go(startScene, startParams, { instant: true });
 bus.emit('boot');
