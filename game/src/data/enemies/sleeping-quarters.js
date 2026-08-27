@@ -42,6 +42,9 @@ export const pillowPuff = {
   moves: {
     'feather-cloud': {
       id: 'feather-cloud', name: 'Feather Cloud', intent: Intent.DEBUFF, block: 5,
+      // MULTIPLAYER: the Kid with the FATTEST draw pile, so the Drowsy is
+      // most likely to come round again and matter (sleeping-quarters §37).
+      partyPick: 'mostDraw',
       tell: 'It shakes itself out and the whole room goes soft at the edges.',
       addsCards: [{ id: 'drowsy', pile: 'discard' }],
       effect(c) {
@@ -514,6 +517,8 @@ export const thingBeneath = {
     },
     'under-the-bed': {
       id: 'under-the-bed', name: 'UNDER THE BED', intent: Intent.ATTACK_BIG, damage: 8, hits: 1,
+      // MULTIPLAYER: "The target is therefore the whole team." (§42)
+      partyTarget: 'all',
       tell: 'Every noise in the room stops at once.',
       damageFn: (c) => 8 + 6 * thingBeneath.projectedScare(c),
       effect(c) {
@@ -766,6 +771,10 @@ export const hydraHeadBiting = hydraHead(
     moves: {
       'chomp': {
         id: 'chomp', name: 'Chomp', intent: Intent.ATTACK, damage: 5, hits: 1,
+        // MULTIPLAYER: "Biting Head attacks the player with the lowest Guard."
+        // (§44). Each Head chooses separately, which the seat-marking already
+        // gives us — they are separate enemies.
+        partyPick: 'lowestGuard',
         tell: 'It bites without any particular malice, the way a dog bites a stick.',
         effect(c) { hitPlayer(c, 5); },
       },

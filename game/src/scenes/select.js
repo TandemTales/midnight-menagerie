@@ -562,7 +562,13 @@ export class SelectScene extends Scene {
     this._offs = [];
     this._deckCards = [];
     this._lit = null;
-    this.state = { mode: 'grid', companion: null, kid: null, seed: 0, haunt: 0 };
+    this.state = {
+      mode: 'grid', companion: null, kid: null, seed: 0, haunt: 0,
+      /** Going in with a friend. Two Kids is the cap (engine MAX_PARTY). */
+      coop: false,
+      /** Kids already confirmed this session, in seat order. */
+      party: [],
+    };
   }
 
   async enter(params = {}) {
@@ -942,6 +948,21 @@ export class SelectScene extends Scene {
       `<button type="button" class="seed__roll" aria-label="Roll a new seed">&#8635;</button>`;
     f.appendChild(seed);
 
+    /* GOING IN TOGETHER.
+       Two Kids is the cap. The flow is deliberately the SAME screen twice
+       rather than a split view: you pick your Kid, then your friend picks
+       theirs, and the second pass is exactly the seam a network layer will
+       replace — player two's choice arriving from the wire instead of from the
+       chair next to you. Nothing else about the screen changes. */
+    const pair = el('label', 'sel-pair');
+    pair.innerHTML =
+      `<input type="checkbox" class="sel-pair__box">` +
+      `<span class="sel-pair__mark" aria-hidden="true"></span>` +
+      `<span class="sel-pair__txt"><b>Go in together</b><em>two Kids, one house</em></span>`;
+    f.appendChild(pair);
+    this._pair = pair;
+    this._pairBox = pair.querySelector('.sel-pair__box');
+
     const go = el('button', 'btn btn--go');
     go.type = 'button';
     go.disabled = true;
@@ -1077,6 +1098,17 @@ export class SelectScene extends Scene {
       seedIn.removeEventListener('blur', onSeedCommit);
       seedIn.removeEventListener('keydown', onSeedKey);
     });
+
+    // go in together
+    const onPair = () => {
+      this.state.coop = !!this._pairBox.checked;
+      // Turning it off mid-flow drops anyone already confirmed, rather than
+      // leaving a half-built party nobody can see.
+      if (!this.state.coop) this.state.party = [];
+      this._syncGo();
+    };
+    this._pairBox.addEventListener('change', onPair);
+    this._offs.push(() => this._pairBox.removeEventListener('change', onPair));
 
     // go
     const onGo = () => this._begin();
@@ -1369,6 +1401,16 @@ export class SelectScene extends Scene {
     const ready = !!(this.state.companion && this.state.kid);
     this._go.disabled = !ready;
     this._go.classList.toggle('is-ready', ready);
+
+    const waiting = this.state.coop && this.state.party.length === 0;
+    this._go.innerHTML = waiting ? 'Lock in &amp; pass it over' : 'Begin Expedition';
+    // Who is already locked in, so the second player can see whose turn it is.
+    if (this._pair) {
+      const first = this.state.party[0];
+      this._pair.classList.toggle('is-armed', !!this.state.coop);
+      const fname = first ? (KIDS.find(x => x.slug === first.kid)?.name || first.kid) : '';
+      this._pair.dataset.first = first ? `${fname.split(" ")[0]} is in` : '';
+    }
   }
 
   _setMode(mode, instant = false) {
@@ -1407,7 +1449,26 @@ export class SelectScene extends Scene {
        consume. This used to emit `[{name:'Multitool', slots:2}]`, which nothing
        downstream could read, and it silently disabled the entire Backpack. */
     const backpack = assertLoadout(loadoutFor(kid), `select.js _begin(kid:'${kid}')`);
-    const payload = { companion, kid, seed, haunt, backpack };
+
+    // FIRST of two. Lock this Kid in, wipe the picks, and hand the screen over.
+    // The expedition does not start until the second Kid is chosen.
+    if (this.state.coop && this.state.party.length === 0) {
+      this.state.party.push({ companion, kid, backpack });
+      this.state.companion = null;
+      this.state.kid = null;
+      // 'ui:confirm', not the expedition's 'ui:begin' — locking a Kid in is a
+      // step, not the door opening.
+      try { this.ctx.audio?.play?.('ui:confirm'); } catch {}
+      this._setChip('companion', null);
+      this._setChip('kid', null);
+      this._syncGo();
+      this._setMode('grid');
+      return;
+    }
+
+    const payload = this.state.coop
+      ? { seed, haunt, kids: [...this.state.party, { companion, kid, backpack }] }
+      : { companion, kid, seed, haunt, backpack };
     try { this.ctx.audio?.play?.('ui:begin'); } catch {}
     bus.emit('run:start', payload);
     this.root.classList.add('is-leaving');

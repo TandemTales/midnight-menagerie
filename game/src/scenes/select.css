@@ -889,3 +889,48 @@
   .kid__detail { grid-template-columns: minmax(150px, 24%) 1fr; }
   .kid__poster { display: none; }
 }
+
+/* ── GO IN TOGETHER ─────────────────────────────────────────────────────────
+   Two Kids is the cap. The flow is the same screen twice — you lock your Kid
+   in, then your friend picks theirs — so this is a single quiet toggle beside
+   the seed rather than a mode switch that reshapes the board. */
+.sel-pair {
+  display: inline-flex; align-items: center; gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--surface-line);
+  background: color-mix(in oklab, var(--surface-2) 72%, transparent);
+  cursor: pointer; user-select: none;
+  font-family: var(--font-body);
+}
+.sel-pair:hover { border-color: var(--surface-line-hi); }
+.sel-pair__box { position: absolute; opacity: 0; width: 0; height: 0; }
+.sel-pair__mark {
+  width: 16px; height: 16px; flex: 0 0 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--surface-line-hi);
+  background: color-mix(in oklab, var(--ink-800) 80%, transparent);
+  position: relative;
+}
+.sel-pair__box:checked + .sel-pair__mark {
+  background: var(--flame-500);
+  border-color: var(--flame-400);
+}
+.sel-pair__box:checked + .sel-pair__mark::after {
+  content: ''; position: absolute; left: 4px; top: 1px;
+  width: 5px; height: 9px;
+  border: solid var(--ink-900); border-width: 0 2px 2px 0;
+  transform: rotate(42deg);
+}
+.sel-pair__box:focus-visible + .sel-pair__mark { outline: var(--focus-ring); outline-offset: 2px; }
+.sel-pair__txt { display: flex; flex-direction: column; line-height: 1.15; }
+.sel-pair__txt b { font-size: var(--fs-sm); color: var(--text-hi); }
+.sel-pair__txt em { font-size: var(--fs-xs); color: var(--text-lo); font-style: normal; }
+
+/* Once a Kid is locked in, the toggle says whose turn it is. */
+.sel-pair.is-armed[data-first]:not([data-first=""])::after {
+  content: attr(data-first);
+  margin-left: var(--s-2);
+  font-size: var(--fs-xs); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--good-300);
+}
