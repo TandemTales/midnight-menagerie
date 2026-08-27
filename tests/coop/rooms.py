@@ -32,6 +32,9 @@ WHO = """() => {
     kid: r.kidName,
     comp: r.companion,
     veil: !!document.querySelector('.mm-handoff'),
+    veils: document.querySelectorAll('.mm-handoff').length,
+    goDisabled: (() => { const b = document.querySelector('.hoff__go');
+                         return b ? !!b.disabled : null; })(),
     veilName: (document.querySelector('.hoff__name') || {}).textContent || null,
     offer: r.local.pendingReward ? {
       cards: (r.local.pendingReward.cards || []).map(c => c.id),
@@ -43,9 +46,42 @@ WHO = """() => {
   };
 }"""
 
+async def settle(page, timeout=30000):
+    """Wait until the game is idle, or a player is being waited on.
+
+    Never a fixed sleep. A room rebuild is a scene transition and the enemy
+    phase behind it can run for seconds; every fixed wait in the first version
+    of this file eventually raced something and failed on a busy machine while
+    passing on a quiet one.
+    """
+    try:
+        await page.wait_for_function("""() => {
+          const MM = window.MM;
+          if (!MM || !MM.ctx.scenes.current) return false;
+          if (document.querySelector('.mm-handoff')) return true;
+          return !MM.ctx.scenes.busy;
+        }""", timeout=timeout)
+    except Exception:
+        pass
+    await page.wait_for_timeout(500)
+
+
+async def scene_is(page, name, timeout=30000):
+    try:
+        await page.wait_for_function(
+            "(n) => window.MM.ctx.scenes.currentName === n", arg=name, timeout=timeout)
+    except Exception:
+        pass
+    await page.wait_for_timeout(400)
+
+
 fails = []
 def check(cond, label, detail=""):
-    print(("  PASS  " if cond else "  FAIL  ") + label + (f" — {detail}" if detail else ""))
+    # flush: stdout is block-buffered to a file while a traceback goes straight
+    # out on stderr, so without this the log claims the run died several checks
+    # earlier than it did — which sent me hunting the wrong screen.
+    print(("  PASS  " if cond else "  FAIL  ") + label + (f" — {detail}" if detail else ""),
+          flush=True)
     if not cond:
         fails.append(label)
 
@@ -80,7 +116,7 @@ async def main():
           r.currentNodeId = 'x-bigscare';
           r._prepareReward({ id: 'x-bigscare' }, 'bigScare', { navigate: true });
         }""")
-        await page.wait_for_timeout(5000)
+        await settle(page)
         a = await page.evaluate(WHO)
         check(a["scene"] == "reward", "the reward screen is up", a["scene"])
         check(a["seat"] == 0, "seat 0 first", str(a["seat"]))
@@ -97,13 +133,13 @@ async def main():
             if (t.startsWith('back to the blueprint') || t.startsWith('leave')) { el.click(); return; }
           }
         }""")
-        await page.wait_for_timeout(2200)
+        await settle(page)
         v = await page.evaluate(WHO)
         check(v["veil"], "the screen is covered before the next Kid sees it")
         check("Eli" in (v["veilName"] or ""), "and it names them", v["veilName"])
 
         await page.click(".hoff__go")
-        await page.wait_for_timeout(4000)
+        await settle(page)
         c = await page.evaluate(WHO)
         check(c["scene"] == "reward", "the reward screen opens again", c["scene"])
         check(c["seat"] == 1, "as seat 1", str(c["seat"]))
@@ -124,7 +160,7 @@ async def main():
             if (t.startsWith('back to the blueprint') || t.startsWith('leave')) { el.click(); return; }
           }
         }""")
-        await page.wait_for_timeout(5000)
+        await settle(page)
         d = await page.evaluate(WHO)
         check(d["scene"] == "map", "the last Kid out closes the room", d["scene"])
         check(d["keeps"][1] == keeps0[1] + 1, "and seat 1 banked theirs too",
@@ -141,7 +177,7 @@ async def main():
           r.setLocalSeat(0);                 // as walking into the room would
           r._goto('rest', { node: n.id, region: r.region });
         }""")
-        await page.wait_for_timeout(5000)
+        await settle(page)
         e = await page.evaluate(WHO)
         check(e["scene"] == "rest", "the Safe Room is up", e["scene"])
         check(e["seat"] == 0, "seat 0 first", str(e["seat"]))
@@ -152,11 +188,11 @@ async def main():
             if (t.startsWith('pack up')) { el.click(); return; }
           }
         }""")
-        await page.wait_for_timeout(2200)
+        await settle(page)
         f = await page.evaluate(WHO)
         check(f["veil"], "a Kid leaving hands it over rather than closing it")
         await page.click(".hoff__go")
-        await page.wait_for_timeout(4000)
+        await settle(page)
         g = await page.evaluate(WHO)
         check(g["scene"] == "rest", "the Safe Room opens again", g["scene"])
         check(g["seat"] == 1, "as seat 1", str(g["seat"]))
@@ -169,7 +205,7 @@ async def main():
             if (t.startsWith('pack up')) { el.click(); return; }
           }
         }""")
-        await page.wait_for_timeout(5000)
+        await settle(page)
         h = await page.evaluate(WHO)
         check(h["scene"] == "map", "and the second one out closes it", h["scene"])
 
@@ -186,7 +222,7 @@ async def main():
           r.setLocalSeat(0);
           r._goto('shop', { node: n.id, region: r.region });
         }""")
-        await page.wait_for_timeout(5500)
+        await settle(page)
         s0 = await page.evaluate(WHO)
         shelf0 = await page.evaluate(
             "() => [...document.querySelectorAll('[data-card-id]')].map(e => e.dataset.cardId)")
@@ -201,11 +237,12 @@ async def main():
             if (t.startsWith('back to the blueprint')) { el.click(); return; }
           }
         }""")
-        await page.wait_for_timeout(2200)
+        await settle(page)
         sv = await page.evaluate(WHO)
         check(sv["veil"], "leaving hands the shop over rather than shutting it")
+        print("      veil state:", sv["veils"], "disabled:", sv["goDisabled"])
         await page.click(".hoff__go")
-        await page.wait_for_timeout(5000)
+        await settle(page)
         s1 = await page.evaluate(WHO)
         shelf1 = await page.evaluate(
             "() => [...document.querySelectorAll('[data-card-id]')].map(e => e.dataset.cardId)")
@@ -222,7 +259,7 @@ async def main():
             if (t.startsWith('back to the blueprint')) { el.click(); return; }
           }
         }""")
-        await page.wait_for_timeout(5000)
+        await settle(page)
         s2 = await page.evaluate(WHO)
         check(s2["scene"] == "map", "and the second one out closes it", s2["scene"])
 
@@ -243,7 +280,7 @@ async def main():
           r.setLocalSeat(0);
           r._goto('event', { node: n.id, region: r.region });
         }""")
-        await page.wait_for_timeout(5000)
+        await settle(page)
         c0 = await page.evaluate(WHO)
         opts0 = await page.evaluate(
             "() => [...document.querySelectorAll('.ev-opt')].map(e => e.dataset.opt)")
@@ -264,11 +301,11 @@ async def main():
                 || t.startsWith('go on') || t.startsWith('move on')) { el.click(); return; }
           }
         }""")
-        await page.wait_for_timeout(2200)
+        await settle(page)
         cv = await page.evaluate(WHO)
         check(cv["veil"], "and it passes to the other Kid rather than closing")
         await page.click(".hoff__go")
-        await page.wait_for_timeout(4500)
+        await settle(page)
         c1 = await page.evaluate(WHO)
         opts1 = await page.evaluate(
             "() => [...document.querySelectorAll('.ev-opt:not([disabled])')].map(e => e.dataset.opt)")
@@ -295,7 +332,7 @@ async def main():
           r.setLocalSeat(0);
           r._goto('event', { node: n.id, region: r.region });
         }""")
-        await page.wait_for_timeout(5000)
+        await settle(page)
         rs = await page.evaluate(WHO)
         check(rs["scene"] == "event", "the Rescue is up", rs["scene"])
         await page.evaluate("""() => {
@@ -305,7 +342,7 @@ async def main():
                 || t.startsWith('go on') || t.startsWith('move on')) { el.click(); return; }
           }
         }""")
-        await page.wait_for_timeout(4500)
+        await settle(page)
         rv = await page.evaluate(WHO)
         check(not rv["veil"], "leaving does NOT hand it over", f"veil {rv['veil']}")
         check(rv["scene"] == "map", "it just closes", rv["scene"])

@@ -44,7 +44,11 @@ WHO = """() => {
 
 fails = []
 def check(cond, label, detail=""):
-    print(("  PASS  " if cond else "  FAIL  ") + label + (f" — {detail}" if detail else ""))
+    # flush: stdout is block-buffered to a file while a traceback goes straight
+    # out on stderr, so without this the log claims the run died several checks
+    # earlier than it did — which sent me hunting the wrong screen.
+    print(("  PASS  " if cond else "  FAIL  ") + label + (f" — {detail}" if detail else ""),
+          flush=True)
     if not cond:
         fails.append(label)
 

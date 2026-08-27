@@ -95,7 +95,11 @@ export async function passTo(o = {}) {
   const ready = async () => {
     if (handing) return;
     handing = true;
-    go.disabled = true;
+    // `handing` is the guard, NOT `disabled`. A disabled button is one a player
+    // cannot press again if `onReady` somehow never settles, and it is one
+    // Playwright waits on forever rather than reporting. The class is for the
+    // look of it.
+    go.classList.add('is-going');
     try { if (typeof o.onReady === 'function') await o.onReady(); }
     catch (err) { console.error('[handoff] onReady threw', err); }
     finally { m.close(); }

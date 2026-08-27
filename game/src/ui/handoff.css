@@ -85,6 +85,7 @@
   box-shadow: var(--shadow-2);
   cursor: pointer;
 }
+.hoff__go.is-going { opacity: .55; }
 .hoff__go:hover,
 .hoff__go:focus-visible {
   background: linear-gradient(180deg,
