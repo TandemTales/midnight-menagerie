@@ -76,6 +76,13 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
 5. **A mock that implements the mechanic it is testing proves nothing.** An enemy suite whose mock
    applied multi-hit itself hid a bug where every multi-hit attack dealt `hits²` damage — and the
    suite was green. Test against the real implementation at least once (rule 9).
+5b. **A duplicate key in an object literal silently wins, and a def method with no caller
+   is not a mechanic.** `butler.js` declared `onTurnEnd` twice and lost the half that
+   expires Discomposed; the Governess's `redirect()`, her `advancePatch()` and the
+   Bedframe Beast's `modifyIncoming()` were finished-looking def methods that nothing in
+   the engine ever called, so two bosses shipped without the defensive mechanic their
+   whole fight is built on. `tests/dup-keys/check.py` gates the first. For the second:
+   when you add a method to a def, grep for its caller before you call it done.
 6. **`--wait 4.5` can catch the map mid-draw.** Its entrance sweep runs ~800 ms; use `--wait 9`.
 7. **fps collapses when two Playwright runs overlap on this machine.** Re-measure in isolation
    before believing a low number. `tools/shot.py` prints the GL renderer so you can also confirm
@@ -214,7 +221,22 @@ there is no separate single-player path below construction. `MAX_PARTY` is **2**
   `c.teammates()`, `c.isParty()`, `await c.chooseAlly()`, `c.giveBlock/giveDraw/giveEnergy/
   giveStatus/giveHeal/allyCards/giveCard`. `chooseAlly` returns **null** in solo.
 - Per seat: deck, all six piles, Nerve, Courage, Guard, statuses, Keepsakes, Companion
-  trackers and counters (two Marmalades get two independent Lives tracks).
+  trackers and counters (two Marmalades get two independent Lives tracks), and the
+  per-turn counters. `engine.stats` / `engine.playedThisTurn` are the TEAM mirror and
+  stay team-wide on purpose — an elite threshold worded "16 damage per player, all team
+  damage during the round contributes" wants the table. Anything a Kid's own Trick,
+  Keepsake or House Rule reads comes from `e.seatStats(seat)` / `e.seatPlayed(seat)`, or
+  one Kid's turn spends another Kid's resources. Zoomies and Untouched both did.
+- **House Rules are judged seat by seat**, `once` is per seat, and a Reprimand resolves
+  inside the breaker's seat and aimed at them. "One player's actions do not punish
+  another player." (foyer §26.)
+- **Deck pollution takes a seat.** `addCard(def, pile, { to })` — nothing is acting
+  during the enemy phase, so without `to` it all lands on seat 0.
+- **"The first N damage from each player"** is the chapters' recurring shape (nursery
+  §32, sq §38, and both bosses). Key the allowance with `seatKey(attacker)` from
+  `enemies/_lib.js`. **"N per player"** thresholds use `c.perPlayer(n)`.
+- A move whose main number belongs to ONE Kid while other seats also take damage must
+  declare `splash` / `splashFn(c)`, or the intent is lying to the seats with no arrow.
 - Turns are SIMULTANEOUS. `endTurn(seat)` closes one seat; `endTurn()` closes the table.
 - Multiplayer-only Tricks live in `def.coopCards`, OUTSIDE the 80, and are never drafted solo.
 - Enemy **damage never scales** with party size. The extra threat is TARGETING: a move declares

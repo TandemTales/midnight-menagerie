@@ -189,7 +189,7 @@ export const governess = {
     c.addPower({
       id: 'stitched-together',
       name: 'Stitched Together',
-      icon: 'stitch',
+      icon: 'needle',
       desc: `The first ${STITCH_PER_TURN} damage each Kid deals her every round goes into Favorite Doll instead.`,
       hooks: {
         onIncomingHit(h) {

@@ -68,7 +68,7 @@ export const bedframeBeast = {
     c.addPower({
       id: 'under-the-covers',
       name: 'Under the Covers',
-      icon: 'shield',
+      icon: 'blanket',
       desc: `While Covered, the first ${COVER_SOFTEN} damage each Kid deals it every round is halved.`,
       hooks: {
         onIncomingHit(h) { bedframeBeast.soften(h); },

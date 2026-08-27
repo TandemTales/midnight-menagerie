@@ -56,12 +56,13 @@ All prep scripts are **one-off and commit their output** — there is no runtime
 ### Test suites — all must stay green
 
 ```
-tests/combat/run.py        649 assertions      tests/seams/check.py     1607 sites, 0 problems
+tests/combat/run.py        677 assertions      tests/seams/check.py     1794 sites, 0 problems
 tests/cards/run.py         445 cards, 0 err    tests/seams/proof.py     52 passed
 tests/enemies/run.py       37 enemies, 0 err   tests/scene-css/check.py 0 conflicts
 tests/enemies/audit.py     ~2400 turns, 0 err  tests/run/run.py         50 runs, 0 errors
-tests/coop/run.py          324 assertions   tests/hook-names/check.py  0 unknown hooks
-tests/turn-events/check.py 0 unguarded      tests/map/run.py           23 passed           tests/chrome/run.py      27 checks
+tests/coop/run.py          510 assertions   tests/hook-names/check.py  0 unknown hooks
+tests/turn-events/check.py 0 unguarded      tests/dup-keys/check.py    0 duplicate keys
+tests/map/run.py           23 passed        tests/chrome/run.py        27 checks
 tests/backpack/run.py      77 checks           tests/audio/run.py       46 cues, 0 errors
 tests/combat-scene/seam.py 22 passed           tests/critic-design/sim.py  balance simulator
 ```
@@ -138,6 +139,22 @@ Separately, a hook registered under a name nothing dispatches is completely sile
 cards were written that way, one of them (`bones/tail-a-mile-a-minute`, a Rare) already
 shipping with an empty handler on a hook that does not exist. `tests/turn-events/check.py`
 and `tests/hook-names/check.py` gate both. See CONTRACTS traps 9-12.
+
+**A duplicate key in an object literal silently wins.** `butler.js` declared `onTurnEnd`
+TWICE; the second replaced the first with no error, no warning, and a green suite. The
+half that expires his Discomposed status was dead for the whole build, and `discomposed`
+never decays — so the first time a player earned the window he stayed Discomposed
+forever, permanently taking 25% more and permanently unable to announce another House
+Rule. `tests/dup-keys/check.py` gates it.
+
+**A def method with no caller is not a mechanic.** Three of them shipped: the
+Governess's `redirect()` (Stitched Together, her whole phase one), her `advancePatch()`
+(the phase-two Patch cycle), and the Bedframe Beast's `modifyIncoming()` (its Covered
+state). All three read as finished, tested content. `governess.doll()` additionally
+looked up an actor `id` that is really a `defId`, so she could not see her own Doll.
+This is the seams class again, arriving from the OTHER side — `tests/seams/check.py`
+checks that call sites are real, and nothing checks that a def's own surface is called.
+When you write a def method, grep for its caller.
 
 **A card that "resolves without throwing" is not a card that works.** A smoke test that plays
 every card and checks for exceptions passed all four dead cards above. Assert the EFFECT.
@@ -242,6 +259,18 @@ unchanged through the entire refactor.
   Companion, OUTSIDE the 80 and never drafted solo
 - the combat screen shows the other Kid: Courage, Guard, statuses, whether they
   are ready, and which enemy is winding up at them
+- **per-seat turn counters.** `engine.stats` / `engine.playedThisTurn` are the
+  TEAM mirror (an elite threshold worded "16 damage per player, all team damage
+  contributes" wants it); a Kid's own cards, Keepsakes and House Rules read
+  `e.seatStats(seat)` / `e.seatPlayed(seat)`
+- **all three bosses' multiplayer rules**, from their region chapters: the
+  Butler's per-Kid House Rules, thresholds and Flustered cap (§28), the
+  Governess's per-Kid Stitched Together, repair windows and Doll Courage
+  (§35), the Bedframe Beast's marked Kid across BOO and all three Bed
+  Positions (§46)
+- **per-player thresholds and per-Kid allowances** across the built Big Scares
+  and ordinary enemies — Grand Coatcheck, Unwelcome Guest, Toy Chest, Blanket
+  Blob, Blanket Creeper, Slipper Skitter, Thing Beneath
 
 **The technique worth reusing.** In a party with the dev guard armed,
 `engine.player` / `.piles` / `.relics` THROW and name the fix rather than quietly
@@ -263,6 +292,16 @@ call overtuned: duo wins 60% vs 80%). 220% is the parity point:
 | Elite win% (n=20) | 55 | **55** |
 | falls per fight | 0.27 | 0.57 |
 
+Re-measured unchanged after the boss and per-player work on 2026-08-26.
+
+**Solo boss Courage is now a live question.** Wiring the Governess's Stitched
+Together moved her from 95% player wins at every Courage scale — the flat line
+of a boss with no defence — to 54.2% and 10.1 turns, inside the 45–65% / 8–12
+band for the first time, at the Courage she already had. The Butler moved the
+other way on length: a true A/B at x1.0 reads 75% → 66.7% and 12.4 → 13.5 turns
+(median 13 → 15). "He is not dangerous, he is long" is still true and the lever
+is his Courage pool. That is a designer's call, so nothing was re-tuned.
+
 Enemy DAMAGE never scales. The extra threat is targeting — AoE moves and
 per-move seat preferences, wired from each region chapter. That half was missing
 from the first pass and it broke the game at both ends: Scuffles got easier with
@@ -281,9 +320,18 @@ co-op pool.
 3. Per-Kid shop inventory (prices and pity are already per Kid; the screen shows
    one inventory).
 4. The other 11 Companions' co-op pools — they are unbuilt Companions.
-5. Boss multiplayer adjustments from the region chapters (the Butler's per-Kid
-   House Rules and Flustered thresholds, the Governess's per-Kid Stitched
-   Together and repair windows) are designed but not built.
+5. **The combat scene does not render the intent's `splash`.** A move whose main
+   number belongs to one Kid can now declare what every OTHER seat takes
+   (`splashFn`, used by the Bedframe Beast's BOO). The engine carries it; the
+   screen does not draw it, so the other Kid sees the mark and not their own
+   smaller number.
+6. **Summon caps by party size** (nursery §34 Toy Chest, sq §45 the Wardrobe).
+   Both use their solo cap, which is the correct number at one AND two Kids and
+   only diverges at three — unreachable while `MAX_PARTY` is 2.
+
+Boss multiplayer adjustments are **done** — see
+`docs/notes/2026-08-26-multiplayer-bosses.md`. Building them turned up three
+shipped mechanics that no code path ever called; that note is the record.
 
 ### Lockstep foundation
 
