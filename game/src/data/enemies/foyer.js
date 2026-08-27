@@ -74,6 +74,8 @@ export const dustBunny = {
       // seeded runs — a free encounter. The Slay the Spire Act-1 norm is 8-12. Base
       // raised to 7; the Dust scaling and the whole disruption read are unchanged.
       id: 'tumble', name: 'Tumble', intent: Intent.ATTACK, damage: 7, hits: 1,
+      // MULTIPLAYER: prefers the Kid with the least Guard up (foyer §26).
+      partyPick: 'lowestGuard',
       tell: 'It gathers itself up into something much too large for a clump of dust.',
       damageFn: (c) => 7 + 3 * dustBunny.projectedDust(c),
       intentFn: (c) => (dustBunny.projectedDust(c) >= 3 ? Intent.ATTACK_BIG : Intent.ATTACK),
@@ -198,6 +200,9 @@ export const lostLuggage = {
   moves: {
     'pack-wrong': {
       id: 'pack-wrong', name: 'Pack Wrong', intent: Intent.DEBUFF, block: 5,
+      // MULTIPLAYER: the Kid with the thinnest draw pile, so the Clutter
+      // actually gets drawn soon (foyer §26).
+      partyPick: 'fewestDraw',
       tell: 'It yawns open and starts repacking itself with things that are not yours.',
       addsCards: [{ id: 'clutter', pile: 'discard' }],
       effect(c) {
@@ -378,6 +383,9 @@ export const redCarpetRunner = {
     },
     'run-the-hall': {
       id: 'run-the-hall', name: 'Run the Hall', intent: Intent.ATTACK_BIG, damage: 8, hits: 1,
+      // MULTIPLAYER: hits EVERY Kid — "This makes disrupting Momentum a
+      // genuinely cooperative responsibility." (foyer §26)
+      partyTarget: 'all',
       tell: 'Every inch of carpet snaps taut, pointed directly at you.',
       damageFn: (c) => 8 + flag(c, 'momentumDamage', 7) * redCarpetRunner.projectedMomentum(c),
       effect(c) {
@@ -862,6 +870,8 @@ export const houseBell = {
     },
     'midnight-toll': {
       id: 'midnight-toll', name: 'MIDNIGHT TOLL', intent: Intent.ATTACK_BIG, damage: 20, hits: 1,
+      // MULTIPLAYER: hits all players (foyer §27).
+      partyTarget: 'all',
       tell: 'The whole house leans toward the sound. This is going to be very loud.',
       damageFn: (c) => flag(c, 'tollDamage', 20),
       effect(c) { hitPlayer(c, flag(c, 'tollDamage', 20)); setCnt(c, 'resonance', 0); },

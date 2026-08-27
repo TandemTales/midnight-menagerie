@@ -13,6 +13,7 @@
  */
 
 import { RNG } from '../../game/src/core/rng.js';
+import { MAX_PARTY } from '../../game/src/combat/engine.js';
 import { _resetUid } from '../../game/src/combat/piles.js';
 import {
   makeDummyParty, startDummyParty, makeDummyCombat, makeDummyDeck, SCRATCH,
@@ -69,11 +70,11 @@ export async function run() {
 
   test('party: seats exist, each with its own identity and its own deck', () => {
     _resetUid(0);
-    const e = makeDummyParty(new RNG(7), 3);
-    eq(e.partySize, 3, 'three seats');
+    const e = makeDummyParty(new RNG(7), 2);
+    eq(e.partySize, 2, 'two seats');
     ok(e.isParty, 'isParty is true');
     eq(e.players[0].seat, 0, 'seat 0 knows its index');
-    eq(e.players[2].seat, 2, 'seat 2 knows its index');
+    eq(e.players[1].seat, 1, 'seat 1 knows its index');
     eq(e.players[0].id, 'player', 'seat 0 keeps the solo id so saves stay readable');
     eq(e.players[1].id, 'player1', 'seat 1 gets its own id');
     ok(e.players[0].piles !== e.players[1].piles, 'seats do not share a pile set');
@@ -83,6 +84,7 @@ export async function run() {
     ok(!shared, 'no card INSTANCE is in two seats at once');
     eq(e.seat(1), e.players[1], 'seat(n) addresses a seat');
     eq(e.seat(9), null, 'seat(n) out of range is null, not undefined');
+    eq(MAX_PARTY, 2, 'two Kids is the cap');
   });
 
   test('party: engine.player and engine.piles throw rather than silently mean seat 0', () => {
@@ -97,19 +99,23 @@ export async function run() {
     eq(loose.player, loose.players[0], 'with the guard off it degrades to seat 0, never an exception');
   });
 
-  test('party: enemy Courage follows the non-linear curve, not the party size', () => {
+  test('party: enemy Courage is the measured 220%, and the party caps at two', () => {
     const solo = makeDummyCombat(new RNG(42));
     const duo = makeDummyParty(new RNG(42), 2);
-    const trio = makeDummyParty(new RNG(42), 3);
-    const quad = makeDummyParty(new RNG(42), 4);
     const hp = (e, i) => e.enemies[i].maxHp;
     // Same seed rolls the same base Courage, so the ratio is the curve alone.
+    // 220% is the MEASURED parity point (see PARTY_HP_SCALE): the design doc's
+    // 160% measures far too easy, and StS2's own 250% reproduces the mode its
+    // players call overtuned. Both were tried; this one is where duo and solo
+    // win at the same rate on Scuffles and Elites alike.
     eq(hp(duo, 0), Math.round(hp(solo, 0) * 2.2), '2 players -> 220% Courage');
-    eq(hp(trio, 0), Math.round(hp(solo, 0) * 3.6), '3 players -> 360% Courage');
-    eq(hp(quad, 0), Math.round(hp(solo, 0) * 5.2), '4 players -> 520% Courage');
-    ok(hp(quad, 0) < hp(solo, 0) * 4 * 1.35, '4p is well under a linear 4x plus a third');
     eq(duo.enemies[0].hp, duo.enemies[0].maxHp, 'a scaled fight does not open pre-damaged');
     eq(solo.partyHpScale, 1, 'solo is never scaled');
+
+    // Asking for more than two seats is capped rather than half-supported.
+    const over = makeDummyParty(new RNG(42), 4);
+    eq(over.partySize, MAX_PARTY, 'a party of four is capped to two');
+    eq(hp(over, 0), hp(duo, 0), 'and is scaled as the two-Kid party it became');
   });
 
   await atest('party: a real fight starts, and every seat draws its own hand', async () => {
@@ -126,7 +132,7 @@ export async function run() {
   });
 
   await atest('party: an enemy marks one seat and keeps that mark across refreshes', async () => {
-    const e = await startDummyParty(new RNG(3), 3);
+    const e = await startDummyParty(new RNG(3), 2);
     const en = e.enemies[0];
     const first = e.intentTargetFor(en);
     ok(first && first.side === 'player', 'an enemy aims at a seat');
@@ -137,8 +143,8 @@ export async function run() {
   });
 
   await atest('party: Racket pulls every enemy onto the seat that made it', async () => {
-    const e = await startDummyParty(new RNG(5), 3);
-    const loud = e.players[2];
+    const e = await startDummyParty(new RNG(5), 2);
+    const loud = e.players[1];
     e.applyStatus(loud, 'racket', 1, { reason: 'test' });
     for (const en of e.enemies) {
       eq(e.intentTargetFor(en), loud, `enemy ${en.id} is pulled onto the loud seat`);
@@ -189,10 +195,10 @@ export async function run() {
   });
 
   await atest('party: state snapshot carries every seat and stays serialisable', async () => {
-    const e = await startDummyParty(new RNG(17), 3);
+    const e = await startDummyParty(new RNG(17), 2);
     const st = e.state;
-    eq(st.partySize, 3, 'snapshot reports the party size');
-    eq(st.players.length, 3, 'snapshot carries every seat');
+    eq(st.partySize, 2, 'snapshot reports the party size');
+    eq(st.players.length, 2, 'snapshot carries every seat');
     eq(st.players[1].seat, 1, 'each seat snapshot knows its index');
     eq(st.players[1].piles.hand.length, 5, 'each seat snapshot carries its own hand');
     eq(st.player.seat, 0, 'the flat player field is seat 0 for the solo renderer');
@@ -200,7 +206,7 @@ export async function run() {
     let round = null;
     try { round = JSON.parse(JSON.stringify(st)); } catch (err) { /* fall through */ }
     ok(round !== null, 'the snapshot survives a JSON round trip');
-    eq(round.players.length, 3, 'and still has every seat afterwards');
+    eq(round.players.length, 2, 'and still has every seat afterwards');
   });
 
   await atest('party: a preview clone copies every seat, not just seat 0', async () => {
@@ -271,7 +277,7 @@ export async function run() {
   });
 
   await atest('turns: ending with no seat named ends the whole table at once', async () => {
-    const e = await startDummyParty(new RNG(41), 3);
+    const e = await startDummyParty(new RNG(41), 2);
     await e.endTurn();
     eq(e.turn, 2, 'one call moved the whole table on');
     ok(e.players.every(pl => !pl.ended), 'and every seat is fresh');
@@ -739,6 +745,82 @@ export async function run() {
     ok(b.hasStatus('leapfrog'), 'Pipkin is primed for a second helping on a later Land');
     eq(b.__mm.leapfrogAlly, a.id, 'and the priming remembers WHICH friend it owes');
     eq(b.__mm.leapfrogGuard, 6, 'and how much');
+  });
+
+  // ── enemy multiplayer targeting ───────────────────────────────────────────
+  // The half of co-op scaling that is NOT Courage. docs/design/regions §26:
+  // "Damage values normally remain unchanged. Enemy effects gain multiplayer
+  // targeting logic instead." Measured proof that this is the half that matters
+  // is in balance.py; these prove the mechanism is actually wired.
+  const AOE = {
+    id: 'coop/sweeper', name: 'Sweeper', region: 'foyer', tier: 'normal',
+    hp: [80, 80], silhouette: 'blob',
+    moves: {
+      sweep: {
+        id: 'sweep', name: 'Sweep', intent: 'attackBig', damage: 6, partyTarget: 'all',
+        effect: (c) => c.damage(6),
+      },
+    },
+    nextMove: () => 'sweep',
+  };
+  const PICKY = {
+    id: 'coop/picky', name: 'Picky', region: 'foyer', tier: 'normal',
+    hp: [80, 80], silhouette: 'blob',
+    moves: {
+      jab: {
+        id: 'jab', name: 'Jab', intent: 'attack', damage: 5, partyPick: 'lowestGuard',
+        effect: (c) => c.damage(5),
+      },
+    },
+    nextMove: () => 'jab',
+  };
+
+  await atest('targeting: a partyTarget:all move hits BOTH Kids', async () => {
+    const e = await startDummyParty(new RNG(401), 2, { enemies: [AOE] });
+    const [a, b] = e.players;
+    const hp0 = { a: a.hp, b: b.hp };
+    await e.endTurn();
+    ok(a.hp < hp0.a, 'seat 0 was hit');
+    ok(b.hp < hp0.b, 'seat 1 was hit by the SAME swing');
+    // Damage per hit does not scale — each Kid takes the printed number.
+    eq(hp0.a - a.hp, hp0.b - b.hp, 'both took the same amount');
+  });
+
+  await atest('targeting: the same move in solo hits the one player once', async () => {
+    const e = makeDummyCombat(new RNG(401), { enemies: [AOE] });
+    await e.startCombat();
+    const hp0 = e.player.hp;
+    await e.endTurn();
+    eq(hp0 - e.player.hp, 6, 'solo takes exactly the printed 6 — no party path leaked in');
+  });
+
+  await atest('targeting: partyPick lowestGuard goes for the unguarded Kid', async () => {
+    const e = await startDummyParty(new RNG(403), 2, { enemies: [PICKY] });
+    const [a, b] = e.players;
+    e.gainBlock(a, 30, { fromCard: false, reason: 'test' });   // seat 0 is covered
+    e.refreshIntents('test');
+    eq(e.intentTargetFor(e.enemies[0]), b, 'it aims at the Kid with no Guard');
+    e.gainBlock(b, 60, { fromCard: false, reason: 'test' });   // now seat 1 is safer
+    eq(e.intentTargetFor(e.enemies[0]), a, 'and re-aims when the Guard moves');
+  });
+
+  test('targeting: pickSeat is deterministic and breaks ties on seat order', () => {
+    const e = makeDummyParty(new RNG(405), 2);
+    const [a, b] = e.players;
+    eq(e.pickSeat('lowestGuard'), a, 'a tie goes to the lower seat, never the RNG');
+    e.gainBlock(a, 5, { fromCard: false, reason: 'test' });
+    eq(e.pickSeat('lowestGuard'), b, 'and follows the Guard');
+    e.loseHp(b, 30, 'test');
+    eq(e.pickSeat('lowestCourage'), b, 'lowestCourage finds the hurt Kid');
+    eq(e.pickSeat('highestCourage'), a, 'highestCourage finds the healthy one');
+    eq(e.pickSeat('nonsense'), null, 'an unknown preference is null, not a wrong guess');
+  });
+
+  test('targeting: perPlayer scales a threshold with the party', () => {
+    const solo = makeDummyCombat(new RNG(407));
+    const duo = makeDummyParty(new RNG(407), 2);
+    eq(solo.perPlayer(18), 18, 'solo threshold is the printed number');
+    eq(duo.perPlayer(18), 36, 'two Kids doubles it — foyer §27 Snag');
   });
 
   const passed = results.reduce((n, t) => n + t.asserts.filter(a => a.pass).length, 0);

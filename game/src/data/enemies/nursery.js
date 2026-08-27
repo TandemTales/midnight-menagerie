@@ -178,6 +178,9 @@ export const jackInTheBox = {
     },
     pop: {
       id: 'pop', name: 'POP!', intent: Intent.ATTACK_BIG, damage: 7, hits: 1,
+      // MULTIPLAYER: at 2 Wound Up it goes for the Kid on the least Courage
+      // (nursery §29). Below that it just keeps its mark.
+      partyPick: 'lowestCourage',
       tell: 'The catch is not going to hold.',
       damageFn: (c) => POP_DAMAGE[jackInTheBox.projectedWoundUp(c)] ?? 7,
       effect(c) {
@@ -370,6 +373,9 @@ export const rockingHorse = {
     },
     gallop: {
       id: 'gallop', name: 'Gallop', intent: Intent.ATTACK_BIG, damage: 7, hits: 1,
+      // MULTIPLAYER: one Kid at 0-1 Excitement, EVERY Kid at 2+ — "This turns
+      // enemy support actions into a shared threat." (nursery §31)
+      partyTarget: (en) => ((en.counters?.excitement | 0) >= 2 ? 'all' : null),
       tell: 'It is not rocking any more. It is running.',
       damageFn: (c) => 7 + 4 * cnt(c, 'excitement'),
       effect(c) {
@@ -597,6 +603,11 @@ export const porcelainDoll = {
     },
     'sharp-little-hands': {
       id: 'sharp-little-hands', name: 'Sharp Little Hands', intent: Intent.ATTACK, damage: 4, hits: 2,
+      // MULTIPLAYER: once Shattered the two hits land on two DIFFERENT Kids;
+      // with one Kid left both hits land on them (nursery §33).
+      // Shattered is DERIVED from Courage (crackState), not a flag — checking
+      // `en.flags.shattered` would have been true never, and silently.
+      partyTarget: (en) => (crackState(en) === 'shattered' ? 'two' : null),
       tell: 'Its fingers have gone to points somewhere along the way.',
       damageFn: (c) => 4 + porcelainDoll.bonus(c),
       hitsFn: () => 2,

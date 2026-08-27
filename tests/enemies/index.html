@@ -86,7 +86,19 @@ class MockCombat {
       cardsPlayedThisTurn: self.cardsPlayedThisTurn,
       enemies: () => self.living(),
       allies: () => self.living().filter(a => a !== actor),
-      damage: (t, n, o) => self.damage(actor, t, n, o),
+      // Mirrors the ENGINE's overload exactly: damage(target, amount, opts) or
+      // damage(amount, opts). This shim previously accepted only the first
+      // form, so when `hitPlayer` stopped naming a target — so that a move's
+      // `partyTarget` could decide who it lands on — the harness passed the
+      // damage NUMBER where the victim goes. CONTRACTS trap 5: a mock that
+      // drifts from the thing it stands in for tests nothing.
+      damage: (t, n, o) => {
+        if (typeof t === 'number') {
+          const opts = (n && typeof n === 'object') ? n : o;
+          return self.damage(actor, self.player, t, opts);
+        }
+        return self.damage(actor, t, n, o);
+      },
       loseHp: (t, n) => { t.hp = Math.max(0, t.hp - n); if (t.hp === 0 && t !== self.player) t.alive = false; },
       block: (a, n, o) => {
         if (!a || a.alive === false) return;
@@ -1139,7 +1151,9 @@ head('5b. Intent number vs damage actually dealt (all moves)');
 head('5c. hitPlayer hands the hit count to the engine exactly once');
 {
   const calls = [];
-  const fakeCtx = { player: { id: 'player' }, damage: (t, n, o) => calls.push({ n, hits: (o && o.hits) || 1 }) };
+  // `hitPlayer` names no target now, so the amount arrives first and the opts
+  // second — the engine's `damage(amount, opts)` overload.
+  const fakeCtx = { player: { id: 'player' }, damage: (n, o) => calls.push({ n, hits: (o && o.hits) || 1 }) };
   LIB.hitPlayer(fakeCtx, 7, 3);
   const totalHits = calls.reduce((s, c) => s + c.hits, 0);
   if (calls.length !== 1) fail(`hitPlayer(·,7,3) made ${calls.length} ctx.damage calls, expected exactly 1 — the engine does the looping`);

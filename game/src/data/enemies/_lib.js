@@ -130,8 +130,22 @@ export function hpFrac(a) { return (a && a.maxHp) ? (a.hp || 0) / a.maxHp : 1; }
  * times — a 7x3 intent silently dealing 63. Hand the count to the engine exactly once.
  * The intent number is the contract; this function is the only place enemies can break it.
  */
+/**
+ * Hit the player this move is aimed at.
+ *
+ * Deliberately does NOT pass an explicit target: the move's own `partyTarget`
+ * decides who it lands on, so a move flagged `partyTarget: 'all'` becomes real
+ * co-op AoE without its effect body changing at all. In solo, and for any move
+ * that declares nothing, this is exactly the single aimed seat it always was.
+ *
+ * Enemy attack damage is NOT scaled by party size anywhere — that is the
+ * design doc's rule ("Damage values normally remain unchanged. Enemy effects
+ * gain multiplayer targeting logic instead.", regions/01-foyer.md §26) and it
+ * matches Slay the Spire 2, whose co-op guides say attack damage does not scale
+ * and name AoE as the primary co-op danger.
+ */
 export function hitPlayer(c, n, hits = 1) {
-  c.damage(c.player, n, { hits });
+  c.damage(n, { hits });
 }
 
 /** Shared per-combat scratch (Darkness, Bed Positions, House Rules…). */

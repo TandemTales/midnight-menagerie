@@ -76,15 +76,53 @@ import { detectStrict, guardFactory } from './strict.js';
 const MAX_LOG = 400;
 
 /**
+ * The most Kids that can go in together.
+ *
+ * Two, by the designer's decision on 2026-08-26. The engine is written for N and
+ * the Courage table below carries the designed 3p and 4p numbers, so lifting
+ * this is a one-line change plus a re-measure — but nothing above the engine is
+ * built or balanced for more than two, and a party of three would silently draw
+ * on numbers nobody has played.
+ */
+export const MAX_PARTY = 2;
+
+/**
  * Enemy Courage multiplier by party size, indexed 0-based (1p..4p).
  *
- * Deliberately NOT linear. Four players do far more than four times one
- * player's damage because they buff, Guard and revive each other, so a linear
- * 400% enemy would melt. These are Slay the Spire 2's numbers, which is the
- * quality bar this project is built to; per-enemy overrides from each region
- * chapter compose on top via `EnemyDef.partyHp`.
+ * 2p = 220%, and it is a MEASURED number, not a quoted one.
+ *
+ * Slay the Spire 2 is the model — same game shape, same problem — and its
+ * structure is adopted wholesale: enemy Courage scales, enemy DAMAGE never
+ * does, and the extra threat comes from targeting (AoE moves, per-move seat
+ * preferences). See `partyTargets` / `pickSeat`, and the per-enemy notes in
+ * each region chapter.
+ *
+ * The NUMBER took three measurements, because the sources disagree wildly:
+ *
+ *   1.60x  `docs/design/regions/01-foyer.md` §26 (and the Nursery and Sleeping
+ *          Quarters chapters). Measured here: duo wins 92% against solo's 80%
+ *          and finishes on 64% Courage against 22%. Far too easy.
+ *   2.50x  What StS2 actually uses, per two independent Steam threads
+ *          ("1p: 1x hp, 2p: 2.5x hp, 3p: 3.5x, 4p: 4.5x"). Measured here: duo
+ *          wins 60% against solo's 80%, with four times the falls. That
+ *          reproduces StS2's own signature — "2 player is the hardest way to
+ *          play the game" — which their players complain about at length. A
+ *          cute-spooky game about kids and their pets should not ship the one
+ *          number the reference game is criticised for.
+ *   2.20x  The parity point, measured: Scuffles 73% solo vs 77% duo (+3 pts,
+ *          n=30); Elites 55% vs 55% (+0 pts, n=20). Falls roughly double
+ *          (0.27 -> 0.57 a fight), which is the point — a Kid going down is a
+ *          co-op moment, and they get back up at 1 Courage when the team wins.
+ *
+ * Note the guide sites that say 1.5-1.8x for 2p are simply wrong; they do not
+ * match play reports and they do not match what this engine measures.
+ *
+ * Re-measure with `python tests/coop/balance.py` after ANY change to enemy
+ * damage, starting decks, or the co-op card pool. Per-enemy overrides compose
+ * on top via `EnemyDef.partyHp`. 3p/4p are unreachable while MAX_PARTY is 2 and
+ * are extrapolated, not measured.
  */
-const PARTY_HP_SCALE = [1, 2.2, 3.6, 5.2];
+const PARTY_HP_SCALE = [1, 2.2, 3.1, 4.0];
 
 
 export class CombatEngine {
@@ -209,7 +247,13 @@ export class CombatEngine {
     // `cfg.players` is the party form and `cfg.player` is the solo form; solo is
     // exactly a party of one. Both land in `this.players`, so no code past this
     // point has to ask which one it was handed.
-    const roster = cfg.players && cfg.players.length ? cfg.players : [cfg.player || {}];
+    let roster = cfg.players && cfg.players.length ? cfg.players : [cfg.player || {}];
+    if (roster.length > MAX_PARTY) {
+      // Loud, not silent: quietly dropping a seat would show up as a Kid who
+      // joined and then never got a turn.
+      console.warn(`[combat] party of ${roster.length} capped to ${MAX_PARTY}; extra seats dropped`);
+      roster = roster.slice(0, MAX_PARTY);
+    }
     this.players = roster.map((raw, seat) => this._makePlayer(raw || {}, seat, cfg));
 
     /** @type {Enemy[]} */
@@ -865,13 +909,85 @@ export class CombatEngine {
     const loud = living.filter(pl => pl.hasStatus('racket'));
     if (loud.length) return loud.length === 1 ? loud[0] : loud[enemy.slot % loud.length];
 
+    // The move's own preference, authored in the region chapter. This is the
+    // half of co-op scaling that is NOT Courage: "Damage values normally remain
+    // unchanged. Enemy effects gain multiplayer targeting logic instead."
+    // (docs/design/regions/01-foyer.md §26.)
+    const pick = enemy.pendingMove && enemy.pendingMove.partyPick;
+    if (pick) {
+      const chosen = this.pickSeat(pick, living);
+      if (chosen) return chosen;
+    }
+
     const held = enemy.targetSeatId && living.find(pl => pl.id === enemy.targetSeatId);
     if (held) return held;
 
-    const pick = living[this.rng.int(living.length)];
-    enemy.targetSeatId = pick.id;
-    return pick;
+    const rolled = living[this.rng.int(living.length)];
+    enemy.targetSeatId = rolled.id;
+    return rolled;
   }
+
+  /**
+   * Choose a seat by a named preference.
+   *
+   * Every tie breaks on seat index, never on the RNG: the player is SHOWN this
+   * target before they act ("The target is shown clearly before players act" —
+   * Nursery §29), so it has to be reproducible between the intent and the
+   * resolution, and identical on two clients replaying the same seed.
+   *
+   * @param {'lowestGuard'|'lowestCourage'|'highestCourage'|'fewestDraw'|'mostDraw'} how
+   */
+  pickSeat(how, pool = null) {
+    const living = pool || this.livingPlayers();
+    if (!living.length) return null;
+    if (living.length === 1) return living[0];
+    const by = (f) => [...living].sort((a, b) => (f(a) - f(b)) || (a.seat - b.seat))[0];
+    switch (how) {
+      case 'lowestGuard':    return by(p => p.block);
+      case 'lowestCourage':  return by(p => p.hpFrac);
+      case 'highestCourage': return by(p => -p.hpFrac);
+      case 'fewestDraw':     return by(p => p.piles.draw.length);
+      case 'mostDraw':       return by(p => -p.piles.draw.length);
+      default:               return null;
+    }
+  }
+
+  /**
+   * Every seat an enemy move lands on.
+   *
+   * `partyTarget: 'all'` is the AoE shape the region chapters give to specific
+   * moves — Red Carpet Runner's Run the Hall, House Bell's Midnight Toll,
+   * Rocking Horse's Gallop at 2+ Excitement. Slay the Spire 2's own co-op guides
+   * name AoE as "the primary danger in co-op", and it is the only thing that
+   * makes a bigger party genuinely more dangerous to be in, since damage per hit
+   * deliberately does not scale.
+   *
+   * `partyTarget: 'two'` is Porcelain Doll's Shattered Sharp Little Hands: two
+   * DIFFERENT seats, or the same one twice if only one is left.
+   */
+  partyTargets(enemy, move) {
+    const m = move || enemy.pendingMove;
+    // A function, because several are conditional: Rocking Horse's Gallop only
+    // hits the whole party at 2+ Excitement, Porcelain Doll's Sharp Little Hands
+    // only splits once Shattered. Handed the enemy and the engine rather than a
+    // ctx, so it can be called from intent building without constructing one.
+    let mode = m && m.partyTarget;
+    if (typeof mode === 'function') {
+      try { mode = mode(enemy, this); } catch (err) { mode = null; }
+    }
+    const living = this.livingPlayers();
+    if (!mode || !this.isParty || !living.length) return [this.intentTargetFor(enemy)];
+    if (mode === 'all') return living;
+    if (mode === 'two') {
+      const first = this.intentTargetFor(enemy);
+      const second = living.find(p => p !== first) || first;
+      return [first, second];
+    }
+    return [this.intentTargetFor(enemy)];
+  }
+
+  /** A per-player threshold: "18 damage times number of players" (Foyer §27). */
+  perPlayer(n) { return (n | 0) * this.players.length; }
 
   // ── cost ──────────────────────────────────────────────────────────────────
 
@@ -1489,14 +1605,42 @@ export class CombatEngine {
 
       // damage / health
       damage: (t, n, opts = {}) => {
-        const d = (t && t.id) ? t : target();
-        const amount = (t && t.id) ? n : t;
-        const hits = opts.hits ?? 1;
-        for (let i = 0; i < hits; i++) {
-          if (e.over || !d.alive) break;
-          e.dealDamage({ attacker: enemy, defender: d, amount, kind: 'attack', hits, hitIndex: i, ...opts });
+        // Overloads, all of which exist in the enemy content:
+        //   damage(target, amount, opts)   an explicit victim
+        //   damage(amount)                 whoever the move is aimed at
+        //   damage(amount, opts)           ditto, with { hits }
+        let victim = null, amount = 0, o = opts;
+        if (t && t.id) { victim = t; amount = n; }
+        else if (typeof t === 'number') { amount = t; if (n && typeof n === 'object') o = n; }
+        else { amount = n; }
+        const hits = o.hits ?? 1;
+        // An explicit target wins. Otherwise the move's own `partyTarget`
+        // decides: one seat, all of them, or two different ones. In solo every
+        // branch collapses to the single player, so nothing changes.
+        const targets = victim ? [victim] : e.partyTargets(enemy, move);
+        for (const d of targets) {
+          if (!d) continue;
+          for (let i = 0; i < hits; i++) {
+            if (e.over || !d.alive) break;
+            e.dealDamage({ attacker: enemy, defender: d, amount, kind: 'attack', hits, hitIndex: i, ...o });
+          }
         }
       },
+      /** Every living seat, whatever the move declares. */
+      damageParty: (n, opts = {}) => {
+        for (const d of e.livingPlayers()) {
+          if (e.over) break;
+          e.dealDamage({ attacker: enemy, defender: d, amount: n, kind: 'attack', ...opts });
+        }
+      },
+      /** The seats this move lands on, for a def that wants to look first. */
+      targets: () => e.partyTargets(enemy, move),
+      players: () => e.livingPlayers(),
+      partySize: () => e.players.length,
+      /** "N damage times number of players", the region chapters' threshold shape. */
+      perPlayer: (n) => e.perPlayer(n),
+      /** Pick a seat by preference: lowestGuard | lowestCourage | fewestDraw | ... */
+      pickSeat: (how) => e.pickSeat(how),
       damageMulti: (amount, hits, opts = {}) => {
         for (let i = 0; i < hits; i++) {
           if (e.over) break;

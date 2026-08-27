@@ -44,7 +44,7 @@ const SEED0 = +(Q.get('seed') || 5000);
 const TIER = Q.get('tier') || 'standard';
 const REGION = Q.get('region') || 'foyer';
 const MAX_TURNS = 40;
-const SLUGS = ['marmalade', 'bones', 'pipkin', 'taffy'];
+const SLUGS = ['marmalade', 'bones'];
 
 const out = document.getElementById('out');
 const lines = [];
@@ -115,7 +115,8 @@ const mean = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0);
   say('party   fights   win%   turns   Courage left   fallen/fight   enemy Courage');
   say('─────────────────────────────────────────────────────────────────────────────');
   const rows = [];
-  for (const size of [1, 2, 3, 4]) {
+  // Two is the cap (engine MAX_PARTY). Anything above it is the same fight.
+  for (const size of [1, 2]) {
     const res = [];
     for (let i = 0; i < N; i++) {
       const r = await oneFight(size, SEED0 + i * 13);
