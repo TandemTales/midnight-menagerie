@@ -237,6 +237,23 @@ there is no separate single-player path below construction. `MAX_PARTY` is **2**
   `enemies/_lib.js`. **"N per player"** thresholds use `c.perPlayer(n)`.
 - A move whose main number belongs to ONE Kid while other seats also take damage must
   declare `splash` / `splashFn(c)`, or the intent is lying to the seats with no arrow.
+- **Pass-and-play.** `run.setLocalSeat(n)` moves which Kid this screen belongs to, and
+  every per-Kid thing follows because they are all reached through `run.local`. Between
+  Kids, `ui/handoff.js passTo()` covers the board with an OPAQUE scrim — a hand of Tricks
+  is the one private thing in this game. `shouldHandOff(run)` is the ONE place that
+  decides whether to hand over at all, so a networked session turns all of it off by
+  answering false: never test `run.partySize` yourself.
+  - A round, and a room, starts with the lowest living seat. Not "whoever has not gone
+    yet": the Kid who ended last would keep the screen into the next round and the two of
+    them would swap who goes first every turn.
+  - A screen built once at `enter()` from `run.local` must redress itself on a handoff —
+    the Companion's portrait, their name, the body on the board. `_takeSeat()` in
+    combat.js is the list.
+  - `engine.localSeat` has to move with the Run's, or a seat-addressed choice opens the
+    picker in front of the wrong player.
+  - A per-Kid room hands over and the LAST Kid out closes it (`_leaveRoom`); a room there
+    is only one of passes `perKid: false`. "Had their turn" is marked on leaving, not on
+    using it — a Kid may look at the shelf and buy nothing.
 - **A choice belongs to a seat.** `engine.choices.ask({ seat })` reaches the picker only
   when the seat is `engine.localSeat`; every other seat's request resolves from its own
   `prefer` rule and is logged with the seat so a replay can tell two Kids apart. Cards

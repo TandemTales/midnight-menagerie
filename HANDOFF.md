@@ -60,7 +60,9 @@ tests/combat/run.py        677 assertions      tests/seams/check.py     1806 sit
 tests/cards/run.py         445 cards, 0 err    tests/seams/proof.py     52 passed
 tests/enemies/run.py       37 enemies, 0 err   tests/scene-css/check.py 0 conflicts
 tests/enemies/audit.py     ~2400 turns, 0 err  tests/run/run.py         50 runs, 0 errors
-tests/coop/run.py          587 assertions   tests/hook-names/check.py  0 unknown hooks
+tests/coop/run.py          591 assertions   tests/coop/hotseat.py    the seat really moves
+tests/coop/rooms.py        every room hands over  tests/coop/playthrough.py  a two-Kid expedition
+tests/hook-names/check.py  0 unknown hooks
 tests/turn-events/check.py 0 unguarded      tests/dup-keys/check.py    0 duplicate keys
 tests/css-tokens/check.py  0 undefined tokens
 tests/map/run.py           23 passed        tests/chrome/run.py        27 checks
@@ -287,6 +289,12 @@ unchanged through the entire refactor.
   and is logged with its seat, so a replay can tell the two Kids apart
 - **`Incoming` is one Kid's** — what is aimed at them plus anything splashing
   off a move aimed at their friend, against their own Guard
+- **pass-and-play.** `run.setLocalSeat(n)` moves the seat and every per-Kid
+  thing with it; `ui/handoff.js` covers the board with an OPAQUE veil between
+  Kids, because a hand of Tricks is the one private thing in this game.
+  Combat ends one seat at a time and the enemy phase waits, as it always did;
+  the reward, Mr. Moth's, the Safe Room and Curiosities each hand over and the
+  last Kid out closes the room. A round, and a room, always starts with seat 0
 
 **The technique worth reusing.** In a party with the dev guard armed,
 `engine.player` / `.piles` / `.relics` THROW and name the fix rather than quietly
@@ -327,30 +335,39 @@ co-op pool.
 
 ### NOT built
 
-1. **Networking**, per the deferred wrapper. Everything below it is built, and
-   every one of these is a seam waiting for a transport rather than a hole:
+**Two people can play the whole game on one machine.** Pass-and-play is built:
+combat turns, the reward, Mr. Moth's, the Safe Room and Curiosities all hand the
+screen over with an opaque veil between them, and `run.setLocalSeat(n)` moves
+every per-Kid thing at once. `tests/coop/playthrough.py` walks an expedition the
+way two people would.
+
+1. **Networking**, per the deferred wrapper — and it is now the ONLY item, with
+   a smaller job than it had. Everything is playable; the wire moves a seat to
+   another machine rather than filling a hole.
 
    | Seam | Today | With a wire |
    |---|---|---|
+   | `ui/handoff.js` `shouldHandOff()` | true in a party, so the screen is passed | false — each client owns its seat |
    | the two-Kid **select** | player two picks on the same screen | they pick on theirs |
-   | **card reward** | `k.pendingReward` is rolled for every Kid; this screen shows the local one | each screen shows its own |
-   | **Keepsake reward** | the same, one per Kid, none repeated across the party | ditto, plus StS2's rock-paper-scissors when two reach for one |
-   | **Mr. Moth's** | `shopStock(node, kid)` per Kid; this screen shows the local shelf | each shelf on its own screen |
+   | **card + Keepsake reward** | rolled per Kid; each takes theirs in turn | each screen shows its own |
+   | **Mr. Moth's** | a shelf per Kid, taken in turn | each shelf on its own screen |
+   | **Curiosities** | one room, each Kid answers it in turn | answered at the same time |
    | the **choice broker** | a request for another seat resolves from its `prefer` rule | it reaches that player's picker |
 
-   The pattern is the same everywhere: the DATA is per Kid and correct, and one
-   screen shows one seat. The choice broker's fallback is not a placeholder —
-   handing one player the other Kid's deck would be worse than a stable rule, so
-   it stays as the offline path.
+   `shouldHandOff()` is the single switch: a session that owns one seat answers
+   false and every handoff above stops happening. The choice broker's fallback
+   is not a placeholder — one player rummaging in the other Kid's hand would be
+   worse than a stable rule — so it stays as the offline path.
 2. **The other 11 Companions' co-op pools** — they are unbuilt Companions, so
    there is nothing to write co-op Tricks for yet.
 3. **Two players reaching for the same Keepsake.** StS2 resolves that with
-   rock-paper-scissors. Every Kid now gets their own offer and nobody can reach
-   for somebody else's, so there is nothing to resolve until the wire exists.
+   rock-paper-scissors. Every Kid gets their own offer and nobody can reach for
+   somebody else's, so there is nothing to resolve until the wire exists.
 
 Everything else that was on this list is built — see
 `docs/notes/2026-08-26-multiplayer-bosses.md`, which is also the record of the
 five shipped mechanics that no code path ever called.
+
 
 ### Lockstep foundation
 
