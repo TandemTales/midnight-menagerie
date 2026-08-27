@@ -1215,17 +1215,43 @@ export class Run {
       taken: [],
       encounter: this.combatMeta?.name || null,
     };
-    // EVERY Kid drafts their own three, from their OWN Companion's pool and
-    // off their OWN forked stream — sharing one roll would offer a Bones player
-    // three Marmalade Tricks, and sharing one stream would make the second
-    // Kid's offer depend on the order the two were rolled.
+    /**
+     * EVERY Kid drafts their own three, from their OWN Companion's pool and off
+     * their OWN forked stream — sharing one roll would offer a Bones player
+     * three Marmalade Tricks, and sharing one stream would make the second
+     * Kid's offer depend on the order the two were rolled.
+     *
+     * The KEEPSAKE is theirs too, which it was not: it was rolled once against
+     * the local Kid's collection and the local Kid's luck, while the cards
+     * beside it were per Kid. Slay the Spire 2 settles it — a relic reward
+     * screen there "presents four different relics simultaneously, one per
+     * player", and a treasure chest offers one relic per player. Nothing about
+     * a relic is shared.
+     *
+     * "Four DIFFERENT relics" is the part that needs the running set: each Kid
+     * is rolled against what they already own AND against what the other Kids
+     * have just been offered, so the team is never looking at one Keepsake
+     * twice. Their own luck decides their own rarity.
+     *
+     * Not built, and it needs the wire: StS2 resolves two players reaching for
+     * the same relic with rock-paper-scissors. Here nobody can reach for
+     * somebody else's, so there is nothing to resolve yet.
+     */
+    const offered = new Set(keepsake ? [keepsake.id] : []);
     for (const k of this.kids) {
       if (k === this.local) continue;
       const kRng = this.fork(`reward:${node?.id || 'x'}:seat${k.seat}`);
+      const kOwned = new Set([...(k.keepsakes || []).map(x => x.id), ...offered]);
+      const kLuck = this.flagsOf(k).luck;
+      let kKeep = null;
+      if (type === NodeType.BIG_SCARE) kKeep = rollKeepsake(kRng, { owned: kOwned, rarity: rollKeepsakeRarity(kRng, kLuck) });
+      if (type === NodeType.BOSS) kKeep = rollKeepsake(kRng, { owned: kOwned, rarity: 'boss' }) || rollKeepsake(kRng, { owned: kOwned, rarity: 'rare' });
+      if (kKeep) offered.add(kKeep.id);
       k.pendingReward = {
         ...this.pendingReward,
         cards: this.rollCardReward(kRng, { count: 3, eliteBonus, forKid: k })
           .map(def => ({ id: def.id, rarity: def.rarity })),
+        keepsake: kKeep ? kKeep.id : null,
         taken: [],
       };
     }
@@ -1246,6 +1272,22 @@ export class Run {
       lostThings: rng.range(20, 45), cards: [], keepsake: k ? k.id : null,
       clues: 0, taken: [],
     };
+    // "Treasure chests offer one relic per player" — Slay the Spire 2. One
+    // chest, one Keepsake each, and never the same one twice across the party.
+    const offered = new Set(k ? [k.id] : []);
+    for (const kid of this.kids) {
+      if (kid === this.local) continue;
+      const kRng = this.fork(`treasure:${node.id}:seat${kid.seat}`);
+      const kOwned = new Set([...(kid.keepsakes || []).map(x => x.id), ...offered]);
+      const kk = rollKeepsake(kRng, { owned: kOwned, rarity: rollKeepsakeRarity(kRng, this.flagsOf(kid).luck) });
+      if (kk) offered.add(kk.id);
+      kid.pendingReward = {
+        ...this.pendingReward,
+        keepsake: kk ? kk.id : null,
+        lostThings: kRng.range(20, 45),
+        taken: [],
+      };
+    }
     bus.emit('run:reward', { reward: this.pendingReward, node, type: NodeType.TREASURE });
     this.save();
   }
@@ -1267,7 +1309,10 @@ export class Run {
   rollCardReward(rng, { count = 3, eliteBonus = 0, forKid = null, coop = null } = {}) {
     const who = forKid || this.local;
     const asParty = coop == null ? this.isParty : !!coop;
-    const luck = this.flags.luck + eliteBonus;
+    // THEIR luck, not the local Kid's. Rarity odds come off Keepsakes and pity,
+    // both of which are per Kid, so reading `this.flags` here had seat 1's card
+    // rarities decided by seat 0's collection.
+    const luck = this.flagsOf(who).luck + eliteBonus;
     const out = [];
     const seen = new Set(out.map(c => c.id));
     for (let i = 0; i < count; i++) {

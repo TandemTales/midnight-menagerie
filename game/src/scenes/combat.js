@@ -1746,7 +1746,7 @@ export class CombatScene extends Scene {
       case 'intent': {
         const v = this.views.get(ev.enemyId);
         if (v) {
-          v.setIntent(ev.intent, { playerHp: this.me.hp, playerBlock: this.me.block });
+          v.setIntent(ev.intent, { playerHp: this.me.hp, playerBlock: this.me.block, meId: this.me.id });
           this._refreshTip(v);
         }
         this._renderIncoming(0);

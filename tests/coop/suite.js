@@ -1748,6 +1748,93 @@ export async function run() {
     ok(after < before, 'and calling what it is doing NOW, when it turns next, closes an eye');
   });
 
+  // ── one Keepsake each ─────────────────────────────────────────────────────
+  // Cards were drafted per Kid; the Keepsake beside them was rolled once, off
+  // the local Kid's collection and the local Kid's luck. Slay the Spire 2
+  // settles it — a relic reward "presents four different relics simultaneously,
+  // one per player", and a treasure chest offers one relic per player. Nothing
+  // about a relic is shared.
+
+  function rewardRun(seed = 950) {
+    return new Run({
+      seed,
+      kids: [
+        { kid: 'maya', companion: 'marmalade' },
+        { kid: 'eli', companion: 'bones' },
+      ],
+    });
+  }
+
+  test('rewards: a Big Scare hands each Kid their own Keepsake', () => {
+    const run = rewardRun(951);
+    run._prepareReward({ id: 'foyer-3-2' }, 'bigScare', { navigate: false });
+    const a = run.kids[0].pendingReward;
+    const b = run.kids[1].pendingReward;
+    ok(!!a && !!b, 'both Kids were handed a reward');
+    ok(!!a.keepsake, 'seat 0 has a Keepsake to take');
+    ok(!!b.keepsake, 'seat 1 has one too — not just the host');
+    ok(a.keepsake !== b.keepsake, 'and they are DIFFERENT ones, as StS2 shows them');
+  });
+
+  test('rewards: a boss hands each Kid their own too', () => {
+    const run = rewardRun(953);
+    run._prepareReward({ id: 'foyer-boss' }, 'boss', { navigate: false });
+    const a = run.kids[0].pendingReward;
+    const b = run.kids[1].pendingReward;
+    ok(!!a.keepsake && !!b.keepsake, 'two Keepsakes');
+    ok(a.keepsake !== b.keepsake, 'and not the same one twice');
+  });
+
+  test('rewards: a Kid is never offered something they already own', () => {
+    const run = rewardRun(955);
+    run._prepareReward({ id: 'foyer-3-3' }, 'bigScare', { navigate: false });
+    const first = run.kids[1].pendingReward.keepsake;
+    ok(!!first, 'seat 1 was offered one');
+    run.kids[1].keepsakes.push({ id: first });
+    run.kids[1].pendingReward = null;
+    run.pendingReward = null;
+    run._prepareReward({ id: 'foyer-3-4' }, 'bigScare', { navigate: false });
+    const second = run.kids[1].pendingReward.keepsake;
+    ok(second !== first, 'the one they now own is not offered again');
+  });
+
+  test('rewards: a treasure chest is one Keepsake per Kid', () => {
+    const run = rewardRun(957);
+    run._prepareTreasure({ id: 'foyer-2-2' });
+    const a = run.kids[0].pendingReward;
+    const b = run.kids[1].pendingReward;
+    eq(a.kind, 'treasure', 'seat 0 got the chest');
+    eq(b.kind, 'treasure', 'so did seat 1');
+    ok(!!a.keepsake && !!b.keepsake, 'both have something in it');
+    ok(a.keepsake !== b.keepsake, 'and it is not the same thing twice');
+  });
+
+  test('rewards: card rarity is rolled on THEIR luck, not the host\'s', () => {
+    const run = rewardRun(959);
+    run.kids[0].pity = 0;
+    run.kids[1].pity = 40;                    // seat 1 is very overdue
+    eq(run.flagsOf(run.kids[1]).luck - run.flagsOf(run.kids[0]).luck, 40,
+       'the luck really is different between the two');
+    const rngA = run.fork('luck-test:a');
+    const rngB = run.fork('luck-test:b');
+    const lucky = run.rollCardReward(rngB, { count: 3, forKid: run.kids[1] });
+    const plain = run.rollCardReward(rngA, { count: 3, forKid: run.kids[0] });
+    ok(lucky.length === 3 && plain.length === 3, 'both drafted three');
+    // Not asserting WHICH rarities — that is the roll's business. Asserting
+    // that the function reads the Kid it was handed.
+    ok(lucky.every(c => c.id.startsWith('bones/')), 'seat 1 got Bones Tricks');
+    ok(plain.every(c => c.id.startsWith('marmalade/')), 'seat 0 got Marmalade ones');
+  });
+
+  test('rewards: solo rolls exactly the reward it always rolled', () => {
+    const solo = new Run({ seed: 961, companion: 'marmalade', kid: 'maya' });
+    solo._prepareReward({ id: 'foyer-3-2' }, 'bigScare', { navigate: false });
+    const r = solo.pendingReward;
+    ok(!!r.keepsake, 'solo still gets its Keepsake');
+    eq(r.cards.length, 3, 'and its three Tricks');
+    eq(solo.kids.length, 1, 'with nobody else to roll for');
+  });
+
   // ── the run layer with two Kids ───────────────────────────────────────────
   // Shared route and rooms; per-Kid deck, Courage, Lost Things, Keepsakes,
   // Backpack. Same split as Slay the Spire 2, and the reason two Kids feel like

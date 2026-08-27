@@ -296,6 +296,23 @@ export class IntentView {
     const blk = intent.block | 0;
     const hasDmg = dmg > 0 && hits > 0;
     const hasBlk = blk > 0;
+    /**
+     * SPLASH — the number for the seat this move is NOT aimed at.
+     *
+     * The Bedframe Beast's BOO is the case: the marked Kid takes the whole
+     * thing and everybody else takes 4 plus 3 per Scare. One `damage` and one
+     * `targetId` cannot say that, and a chip that shows only the headline
+     * number is lying to whichever seat is not on the arrow.
+     *
+     * `aimedAtMe` decides whose number the headline is. When the arrow is on
+     * me, the extra chip is what my FRIEND takes; when it is on them, the extra
+     * chip is what reaches ME — which is the more urgent of the two and is why
+     * it says so in words rather than leaving the reader to work it out.
+     */
+    const splash = intent.splash | 0;
+    const meId = o.meId || null;
+    const aimedAtMe = !meId || !intent.targetId || intent.targetId === meId;
+    const hasSplash = splash > 0;
     /* WHAT IT ACTUALLY DOES TO YOU. The Lost Luggage's Pack Wrong is
        `intent: DEBUFF, block: 5, addsCards:[{id:'clutter',pile:'discard'}]`, so
        round 3 drew a `5` under a debuff frame and labelled it "Pack Wrong.
@@ -305,12 +322,20 @@ export class IntentView {
        both are in the EnemyDef's move, which the scene already hands us. */
     const extras = this._extras();
     const ek = extras.map(e => e.k).join(',');
-    const key = `${hasDmg ? dmg + 'x' + hits : ''}|${hasBlk ? blk : ''}|${type}|${ek}`;
+    const key = `${hasDmg ? dmg + 'x' + hits : ''}|${hasBlk ? blk : ''}|${type}|${ek}`
+      + `|${hasSplash ? splash + (aimedAtMe ? 'f' : 'y') : ''}`;
     if (key !== this._valKey) {
       this._valKey = key;
       this.$vals.textContent = '';
       this.$extras.textContent = '';
       if (hasDmg) this.$vals.appendChild(this._chip('damage', String(dmg), hits > 1 ? `×${hits}` : ''));
+      if (hasSplash) {
+        const chip = this._chip('splash', String(splash), aimedAtMe ? 'friend' : 'you');
+        chip.dataset.tip = aimedAtMe
+          ? `It is aimed at you.|Your friend still takes ${splash} from it.`
+          : `It is aimed at your friend.|${splash} of it reaches you.`;
+        this.$vals.appendChild(chip);
+      }
       if (hasBlk) this.$vals.appendChild(this._chip('guard', String(blk), ''));
       /* A SEPARATE ROW, not the same one. The Lost Luggage rendered
          `[🛡5][CLUTTER to discard]` as one strip and at 1:1 the 10px shield
@@ -362,11 +387,15 @@ export class IntentView {
 
     // ── "a big incoming hit should be felt" ────────────────────────────────
     const total = intent.totalDamage || dmg * Math.max(1, hits);
+    // What reaches ME. An enemy winding up at the other Kid was flashing
+    // LETHAL against MY Courage, which is the loudest thing this component can
+    // say and it was saying it about somebody else's fight.
+    const mine = aimedAtMe ? total : splash;
     const hp = o.playerHp || 0;
-    const heavy = type === Intent.ATTACK_BIG
-      || (hp > 0 && total >= Math.max(12, hp * 0.34))
-      || total >= 18;
-    const lethal = hp > 0 && total - (o.playerBlock || 0) >= hp;
+    const heavy = (aimedAtMe && type === Intent.ATTACK_BIG)
+      || (hp > 0 && mine >= Math.max(12, hp * 0.34))
+      || mine >= 18;
+    const lethal = hp > 0 && mine > 0 && mine - (o.playerBlock || 0) >= hp;
     this.el.classList.toggle('is-heavy', !!heavy);
     this.el.classList.toggle('is-lethal', !!lethal);
 
