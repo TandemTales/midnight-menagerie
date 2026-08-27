@@ -56,11 +56,11 @@ All prep scripts are **one-off and commit their output** — there is no runtime
 ### Test suites — all must stay green
 
 ```
-tests/combat/run.py        677 assertions      tests/seams/check.py     1805 sites, 0 problems
+tests/combat/run.py        677 assertions      tests/seams/check.py     1806 sites, 0 problems
 tests/cards/run.py         445 cards, 0 err    tests/seams/proof.py     52 passed
 tests/enemies/run.py       37 enemies, 0 err   tests/scene-css/check.py 0 conflicts
 tests/enemies/audit.py     ~2400 turns, 0 err  tests/run/run.py         50 runs, 0 errors
-tests/coop/run.py          584 assertions   tests/hook-names/check.py  0 unknown hooks
+tests/coop/run.py          587 assertions   tests/hook-names/check.py  0 unknown hooks
 tests/turn-events/check.py 0 unguarded      tests/dup-keys/check.py    0 duplicate keys
 tests/css-tokens/check.py  0 undefined tokens
 tests/map/run.py           23 passed        tests/chrome/run.py        27 checks
