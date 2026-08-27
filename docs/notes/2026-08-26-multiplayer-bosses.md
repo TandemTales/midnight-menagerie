@@ -407,17 +407,57 @@ and Wink loses an eye for it.
 
 ---
 
-## 10. What is still not built
+## 10. Third pass — the last of the list
 
-1. **Networking**, per the deferred wrapper. Two seams wait for it and nothing
-   else does: the two-Kid select, and the choice broker's seat routing.
+### The splash chip
+
+`intent.splash` was carried and drawn nowhere. It has a chip now — hollow and
+dashed so it can never be read as the headline number, labelled `6 FRIEND` when
+the arrow is on me and `6 YOU` when it is on my teammate. Checked on the running
+game: `[12] [6 FRIEND] [10 Guard]`.
+
+The same read fixed something louder. `is-lethal` was computed from the enemy's
+headline damage regardless of who it was aimed at, so an enemy winding up at the
+OTHER Kid flashed **LETHAL** against my Courage — the loudest thing that
+component can say, said about somebody else's fight.
+
+### A Keepsake each, per Slay the Spire 2
+
+The last asymmetry: cards were drafted per Kid and the Keepsake beside them was
+rolled once, off the local Kid's collection and the local Kid's luck. StS2
+settles it — a relic reward there *"presents four different relics
+simultaneously, one per player"*, and a treasure chest offers one relic per
+player. Nothing about a relic is shared.
+
+Each Kid is now rolled against what they own AND against what the others have
+just been offered, so the party never looks at one Keepsake twice, and their own
+luck picks their own rarity. Big Scares, bosses and treasure rooms alike.
+`rollCardReward` had the same bug one layer down: it took a `forKid` and then
+read `this.flags.luck`.
+
+### A gate for invented CSS tokens
+
+`var(--text-low)` when the token is `--text-lo` — CSS drops the declaration, the
+element keeps what it inherited, and nothing appears in the console. This
+project has been bitten twice: sixteen of them in the two-Kid Safe Room, and one
+in the splash chip above, written by the same hand that had just read the trap
+in HANDOFF §6. `tests/css-tokens/check.py` knows about the properties JS hands
+to elements at runtime, which took 61 false positives to zero across 4080
+references, and it names the near-miss because the answer is always one letter
+away.
+
+---
+
+## 11. What is still not built
+
+1. **Networking**, per the deferred wrapper. Every remaining gap is one shape:
+   the DATA is per Kid and correct, and one screen shows one seat. The select,
+   the card reward, the Keepsake reward, Mr. Moth's shelf and the choice broker
+   are all waiting on the same thing. HANDOFF §9 has the table.
 2. **The other 11 Companions' co-op pools** — they are unbuilt Companions.
-3. The combat scene does not draw a second number on an enemy's intent chip for
-   a seat that is only splashed. That seat IS told (`Incoming` counts it, the
-   teammate line says "catches them too"); the chip itself has one number.
-4. A Big Scare's **Keepsake** reward is rolled once, off the local Kid's luck,
-   while the cards beside it are drafted per Kid. Possibly the intent; never
-   decided.
+3. **Two Kids reaching for the same Keepsake.** StS2 settles that with
+   rock-paper-scissors. Nobody here can reach for somebody else's yet.
 
 ~~Boss multiplayer adjustments~~, ~~per-Kid shop inventory~~, ~~teammate
-choices~~ and ~~summon caps~~ are built — §1–§9 above.
+choices~~, ~~summon caps~~, ~~the splash chip~~ and ~~per-Kid Keepsakes~~ are
+built — §1–§11.
