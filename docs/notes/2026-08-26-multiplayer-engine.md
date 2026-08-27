@@ -175,77 +175,100 @@ bot benefited more from correct trackers than the competent one did.
 
 ---
 
-## 5b. MEASURED: the party Courage curve is wrong, and not by a constant
+## 5b. Two Kids, and the curve that took three measurements
 
-`tests/coop/balance.py` plays real fights at every party size with the competent
-bot driving every seat independently, each ending its own turn. Foyer, starting
-decks, no Keepsakes, no Snacks.
+**The party caps at two** (`MAX_PARTY`), by the designer's decision. The engine
+is written for N and the Courage table keeps the designed 3p/4p rows, so lifting
+the cap is one line plus a re-measure — but nothing above the engine is balanced
+for more, and a party of three would silently draw on numbers nobody has played.
 
-**Standard Scuffles (n=25 per size)**
+### The number
 
-| party | win% | Courage left after a win | fallen/fight | enemy Courage |
-|---|---|---|---|---|
-| 1p | 80% | 22% | 0.20 | 51 |
-| 2p | 80% | 46% | 0.48 | 113 |
-| 3p | 92% | 57% | 0.24 | 184 |
-| 4p | **100%** | **63%** | 0.00 | 266 |
+Slay the Spire 2 is the model, and its STRUCTURE was adopted wholesale: enemy
+Courage scales, enemy **damage never does**, and the extra threat comes from
+targeting. The number took three measurements, because the sources disagree
+wildly and two of them are wrong for this game.
 
-**Elites (n=15 per size)**
+| | source | measured here |
+|---|---|---|
+| **1.60x** | our own `regions/01-foyer.md` §26 | duo wins 92% vs solo 80%, ends on 64% Courage vs 22%. Far too easy. |
+| **2.50x** | what StS2 actually uses — two independent Steam threads agree on "1p 1x, 2p 2.5x, 3p 3.5x, 4p 4.5x" | duo wins 60% vs solo 80%, four times the falls. Faithfully reproduces StS2's own signature ("2 player is the hardest way to play the game") — which is the exact thing their players complain about at length. |
+| **2.20x** | measured parity | **Scuffles 73% solo vs 77% duo (+3, n=30). Elites 55% vs 55% (+0, n=20).** Falls roughly double, 0.27 -> 0.57 a fight. |
 
-| party | win% | Courage left after a win | fallen/fight | enemy Courage |
-|---|---|---|---|---|
-| 1p | 53% | 40% | 0.47 | 95 |
-| 2p | 53% | 60% | 0.93 | 210 |
-| 3p | 33% | 70% | 2.00 | 343 |
-| 4p | **0%** | — | **4.00** | 496 |
+Falls doubling is the point, not a problem: a Kid going down is a co-op moment,
+and they get back up at 1 Courage when the team wins the fight they fell in.
 
-Scuffles get EASIER with more Kids; elites become unwinnable. A single scalar
-cannot fix both, because the two are the same mechanism seen from opposite ends.
+The guide sites claiming 1.5–1.8x for 2p are simply wrong — they match neither
+play reports nor this engine.
 
-**Why.** Scaling enemy Courage scales fight LENGTH, and length is what decides
-total incoming damage. Enemy *output* does not scale at all: each enemy marks
-one seat and swings at it, so a 4-player party faces the same damage per turn as
-a solo Kid while holding 4x the Courage and taking 4x the actions.
+### The threat side, which the first pass was missing entirely
 
-- A short fight ends before attrition matters, so the party's 4x action economy
-  wins outright and everyone walks away healthy.
-- A long fight (5.2x Courage on an elite) runs ~5x as many enemy turns, so the
-  party absorbs ~5x the total damage against only 4x the pool — and the damage
-  concentrates, because each enemy keeps its mark. Seats fall one at a time.
+Both StS2's guides and our own design doc say the same thing, and it is the
+half that actually matters:
 
-HANDOFF §9 records the StS2 rule as "**enemies threaten all players at all
-times**". The Courage curve is implemented; **the threat side is not**. That is
-the actual gap, and it is a design decision, so it is written down rather than
-quietly tuned. The three obvious levers:
+> Damage values normally remain unchanged. Enemy effects gain multiplayer
+> targeting logic instead. — `regions/01-foyer.md` §26
 
-1. scale enemy COUNT with party size (StS2 adds bodies, not just Courage),
-2. give each enemy extra targets or extra attacks in a party,
-3. lower the Courage curve and raise per-turn threat instead.
+> Attack damage does NOT scale with player count. AoE enemy attacks hit all
+> players. This is the primary danger in co-op. — StS2 co-op guide
 
-**Caveats, so nobody over-reads this.** One bot drives every seat, so there is no
-coordination cost and no human error. The decks are starting decks — the co-op
-Tricks are not in them, and those are all party-force-multipliers, which would
-push the Scuffle numbers further toward "too easy". Every seat starts on a fresh
-70 Courage; a real run carries damage forward, and solo carrying 22% into the
-next room is far worse off than a party carrying 63%.
+Scaling Courage scales fight LENGTH, and length is what decides total incoming
+damage; enemy output does not scale at all. Without a threat side, a short fight
+ends before attrition matters and the party's extra action economy wins
+outright, while a long one runs many more enemy turns against a pool that grew
+far less. That is why the first pass made Scuffles easier AND Elites unwinnable
+with one constant.
+
+Built:
+
+```
+partyTarget: 'all' | 'two' | fn(enemy, engine)   AoE and split attacks
+partyPick:   'lowestGuard' | 'lowestCourage' | 'fewestDraw' | 'mostDraw' | ...
+engine.perPlayer(n)                              "N damage times players"
+```
+
+Wired from the region chapters — Dust Bunny's Tumble takes the least Guard, Lost
+Luggage's Pack Wrong the thinnest draw pile, Red Carpet Runner's Run the Hall and
+House Bell's Midnight Toll hit EVERY Kid, Jack in the Box's POP! the lowest
+Courage, Rocking Horse's Gallop everyone at 2+ Excitement, Porcelain Doll's Sharp
+Little Hands splits once Shattered, Pillow Puff's Feather Cloud takes the fattest
+draw pile, Thing Beneath's UNDER THE BED hits the team, the Hydra's Biting Head
+takes the least Guard.
+
+Seat choice **always ties on seat index, never the RNG**: the target is shown
+before the players act, so it has to survive both the preview and a replay.
+
+`hitPlayer` no longer names a target, so a move's own `partyTarget` decides —
+which is what let AoE exist without touching a single effect body.
+
+Re-measure with `python tests/coop/balance.py` after any change to enemy damage,
+starting decks or the co-op pool.
 
 ## 6. What is NOT done
 
-- **No co-op run layer or UI.** `state/run.js` is single-player; there is no way
-  to start a 2-player game from the game itself. The engine is ready; nothing
-  above it is.
-- **No networking**, by the designer's decision to defer the wrapper.
-- Per-player gold, card rewards and shop inventory are specified in HANDOFF §9
-  but live in the run layer, not the engine, so they are untouched.
-- Mend and Clone at the Safe Room are not built.
-- The other 11 Companions' co-op pools are unwritten (they are unbuilt companions).
-- Per-enemy `partyHp` overrides from the region chapters are supported by the
-  engine but not authored.
+1. **Networking.** Deferred by the designer along with the Steam wrapper. The
+   two-Kid select is the seam it replaces: player two picks on the same screen
+   today, and picks over the wire later.
+2. **Cards that ask a TEAMMATE to choose.** Several say "that player chooses a
+   Trick from their hand". The choice broker raises one request to whoever is
+   driving the engine and there is no routing to put it in front of a different
+   player, so those picks resolve deterministically and are marked
+   `// TEAMMATE PICK` in the source. The effect is right; who decides is not.
+3. **Per-Kid shops.** `removalPrice` and `pity` are already per Kid; the shop
+   screen itself still shows one inventory.
+4. The other 11 Companions' co-op pools — they are unbuilt Companions.
+5. Per-enemy `partyHp` overrides: the engine supports them, nobody has authored
+   any, and the measured 2.2x makes them optional rather than needed.
+6. Boss multiplayer adjustments from the region chapters (the Butler's per-Kid
+   House Rules and Flustered thresholds, the Governess's per-Kid Stitched
+   Together and repair windows) are designed but not built.
 
 ## 7. Tests
 
 ```
-tests/coop/run.py          324 assertions, real party engines, no mocks
+tests/coop/run.py          401 assertions, real party engines, no mocks
+tests/coop/select.py       the entry point, driven as a player drives it
+tests/coop/balance.py      party balance, 1p vs 2p, real fights
 tests/hook-names/check.py  90 files, 39 listeners, 0 unknown hook names
 tests/turn-events/check.py 78 files, 0 unguarded turn listeners
 tests/combat/run.py        651 (unchanged through the whole refactor)

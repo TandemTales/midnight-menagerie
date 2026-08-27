@@ -208,96 +208,90 @@ pre-fix had exactly zero — four frames of 100-220 ms on a settled map the play
 reading. Best guess, unproven: warm-up phases B/C now overlap the map entrance because the map
 enters 313 ms sooner. Same driver work, later. Worth a look before anyone calls this closed.
 
-## 9. MULTIPLAYER — the engine is done, nothing above it is
+## 9. MULTIPLAYER — playable end to end for two Kids
 
-The designer's decision on 2026-08-26: **defer the Steam wrapper** and build the
-transport-independent work first. That is what is below. The wrapper choice
-(Electron vs Tauri vs NW.js; Steamworks P2P vs a relay) is still open and still
-shapes the transport layer.
+**Two Kids** (`MAX_PARTY`), by the designer's decision on 2026-08-26. The Steam
+wrapper is still deferred, so everything here is transport-independent.
 
-Full detail: `docs/notes/2026-08-26-multiplayer-engine.md`. Contract summary:
+You can start a co-op expedition from inside the game: "Go in together" on the
+Companion/Kid select, pick your Kid, "Lock in & pass it over", your friend picks
+theirs. From there the whole loop runs — shared route, per-Kid decks, real
+fights, per-Kid rewards, the Safe Room's Mend and Clone.
+
+Detail: `docs/notes/2026-08-26-multiplayer-engine.md`. Contract summary:
 CONTRACTS.md § "Co-op: the engine has N players".
 
-### Built and tested (324 co-op assertions, real party engines, no mocks)
+### Built and tested
 
-`engine.players[]` is the source of truth. **Solo is a party of one**, so there
-is no separate single-player path below construction — the solo suite is
-unchanged at 651 assertions through the entire refactor.
+`engine.players[]` and `run.kids[]` are the sources of truth. **Solo is a party
+of one**, so there is no separate single-player path below construction — the
+solo suite is unchanged at 651 assertions and the 50-run determinism sim is
+unchanged through the entire refactor.
 
-- per seat: deck, all six piles, Nerve, Courage, Guard, statuses, Keepsakes,
-  Companion trackers and counters. Two Marmalades get two independent Lives
-  tracks, not one shared one.
-- enemy Courage on the StS2 curve: 2p 220%, 3p 360%, 4p 520%, with a per-enemy
-  `EnemyDef.partyHp` override for the region chapters.
-- enemies MARK a seat and hold that mark across intent refreshes, so the arrow
-  read while planning is the one that resolves.
-- **Racket**, the co-op taunt — fourteenth universal status.
-- **simultaneous turns**: everyone plans in one window, each seat ends its own
-  turn, the enemy phase waits for the last living seat.
-- **fallen**: at 0 Courage a seat keeps its place, drops its hand, takes no turn;
-  back at 1 Courage if the team wins; all fallen = run over.
-- thrown Snacks: `useSnack(snack, targetId, { to: seat })`.
-- the **25 authored multiplayer-only Tricks** — 3 Uncommon + 2 Rare for each of
-  the five built Companions, from their own design chapters, in `def.coopCards`
-  OUTSIDE the 80. Every one is played in a real 2-seat fight by the suite.
+- **shared**: the route, the rooms, the enemies, the Haunt level, the seed
+- **per Kid**: deck, Courage, Nerve, Guard, statuses, Keepsakes, Backpack,
+  Snacks, Companion trackers and counters, card rewards, shop prices
+- **simultaneous turns** — each seat ends its own; the enemy phase waits
+- **fallen** at 0 Courage: keeps its seat, drops its hand, takes no turn, and
+  comes back at 1 Courage if the team wins. All fallen = run over.
+- **Racket**, the co-op taunt (fourteenth universal status)
+- **thrown Snacks**: `useSnack(snack, targetId, { to: seat })`
+- **Safe Room**: Mend (heal your friend 30% of their maximum instead of your own
+  rest) and Clone (copy one of their Tricks — a copy; they keep theirs)
+- **25 authored multiplayer-only Tricks**, 3 Uncommon + 2 Rare for each built
+  Companion, OUTSIDE the 80 and never drafted solo
+- the combat screen shows the other Kid: Courage, Guard, statuses, whether they
+  are ready, and which enemy is winding up at them
 
-**How the refactor was kept safe, and worth reusing:** in a party with the dev
-guard armed, `engine.player` / `.piles` / `.relics` **throw** and name the fix
-instead of quietly resolving to seat 0. Running a real 2-player fight produced
-the port list one throw at a time. A shipped build still degrades to seat 0
-rather than throwing at a player mid-run.
+**The technique worth reusing.** In a party with the dev guard armed,
+`engine.player` / `.piles` / `.relics` THROW and name the fix rather than quietly
+resolving to seat 0. Running a real two-player fight produced the port list one
+throw at a time — engine, then trackers, then the run layer, then the scene, then
+the HUD, then a Keepsake. A shipped build still degrades to seat 0 rather than
+throwing at a player mid-run.
 
-### MEASURED, and it needs a designer decision
+### Balance: measured, not quoted
 
-`tests/coop/balance.py` plays real fights at every party size. Foyer, starting
-decks, competent bot on every seat.
+Enemy Courage at 2p is **220%**, and it took three measurements because the
+sources disagree. Our own design doc says 160% (measures far too easy: duo wins
+92% vs solo 80%). StS2 actually uses 250% (measures as the mode its own players
+call overtuned: duo wins 60% vs 80%). 220% is the parity point:
 
-| | 1p | 2p | 3p | 4p |
-|---|---|---|---|---|
-| Scuffle win% | 80 | 80 | 92 | **100** |
-| Scuffle Courage left | 22% | 46% | 57% | **63%** |
-| Elite win% | 53 | 53 | 33 | **0** |
-| Elite fallen/fight | 0.5 | 0.9 | 2.0 | **4.0** |
+| | 1p | 2p |
+|---|---|---|
+| Scuffle win% (n=30) | 73 | **77** |
+| Elite win% (n=20) | 55 | **55** |
+| falls per fight | 0.27 | 0.57 |
 
-**Scuffles get easier with more Kids; elites become unwinnable.** No single
-constant fixes both. Scaling enemy Courage scales fight LENGTH, and length is
-what decides total incoming damage — while enemy OUTPUT does not scale at all,
-because each enemy marks one seat and swings at it. A short fight ends before
-attrition matters and the party's 4x action economy wins outright; a long one
-runs ~5x the enemy turns against only 4x the Courage pool, and seats fall one at
-a time.
+Enemy DAMAGE never scales. The extra threat is targeting — AoE moves and
+per-move seat preferences, wired from each region chapter. That half was missing
+from the first pass and it broke the game at both ends: Scuffles got easier with
+more Kids while Elites became unwinnable. `python tests/coop/balance.py`
+re-measures; re-run it after any change to enemy damage, starting decks or the
+co-op pool.
 
-§9 records the rule as "enemies threaten all players at all times". The Courage
-curve is built; **the threat side is not**. Levers: scale enemy COUNT, give
-enemies extra targets/attacks in a party, or lower the curve and raise per-turn
-threat. That is a design call, so it is measured and written down, not tuned
-silently. Full numbers and caveats in `docs/notes/2026-08-26-multiplayer-engine.md` §5b.
+### NOT built
 
-### NOT built — this is the honest list
-
-1. **No co-op run layer and no co-op UI.** `state/run.js` is single-player and
-   there is no way to start a 2-player game from inside the game. The engine is
-   ready; nothing above it is. This is the next piece.
-2. **No networking**, per the deferred wrapper decision.
-3. Per-player gold, card rewards and shop inventory — specified, but they live
-   in the run layer, so untouched.
-4. **Mend** and **Clone** at the Safe Room.
-5. Per-enemy `partyHp` overrides from the region chapters: the engine supports
-   them, nobody has authored them.
-6. The other 11 Companions' co-op pools (they are unbuilt Companions).
-7. **Cards that need a teammate to choose.** Several say "that player chooses a
-   Trick from their hand". The choice broker raises ONE request to whoever is
-   driving the engine; there is no client routing to put a request in front of a
-   different player. Those picks currently resolve deterministically and are
-   marked `// TEAMMATE PICK` in the source. The effect is right; who decides is
-   not. It is a networking task, not a card task.
+1. **Networking**, per the deferred wrapper. The two-Kid select is the seam it
+   replaces: player two picks on the same screen today, over the wire later.
+2. **Cards that ask a TEAMMATE to choose.** The choice broker raises one request
+   to whoever drives the engine and cannot put it in front of a different
+   player, so those picks resolve deterministically and are marked
+   `// TEAMMATE PICK`. The effect is right; who decides is not.
+3. Per-Kid shop inventory (prices and pity are already per Kid; the screen shows
+   one inventory).
+4. The other 11 Companions' co-op pools — they are unbuilt Companions.
+5. Boss multiplayer adjustments from the region chapters (the Butler's per-Kid
+   House Rules and Flustered thresholds, the Governess's per-Kid Stitched
+   Together and repair windows) are designed but not built.
 
 ### Lockstep foundation
 
 The deterministic RNG, `choiceLog` and `setChoiceScript` replay are a genuinely
 good base — the run layer already uses them to reconstruct an interrupted fight
-and verify it against a board digest. Seats shuffle in seat order off the one
-shared RNG, so the same seed deals the same opening hands to the same Kids.
+and verify it against a board digest, and that digest now covers every seat.
+Seats shuffle in seat order off the one shared RNG, so the same seed deals the
+same opening hands to the same Kids.
 
 ## 10. Where things are
 

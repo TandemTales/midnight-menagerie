@@ -197,10 +197,10 @@ engine.on(event, fn)    // 'damage','block','status','draw','discard','death',
 Events are the *only* thing the renderer reacts to. Every event carries enough
 data to animate it without querying engine internals.
 
-### Co-op: the engine has N players
+### Co-op: two Kids
 
-`engine.players[]` is the source of truth and **solo is a party of one**, so there is no
-separate single-player path below construction.
+`engine.players[]` and `run.kids[]` are the sources of truth and **solo is a party of one**, so
+there is no separate single-player path below construction. `MAX_PARTY` is **2**.
 
 - `engine.player` / `.piles` / `.relics` are SEAT 0. In a party with the dev guard armed they
   **throw** and name the fix, rather than quietly resolving to seat 0 — which is how a
@@ -217,5 +217,17 @@ separate single-player path below construction.
   trackers and counters (two Marmalades get two independent Lives tracks).
 - Turns are SIMULTANEOUS. `endTurn(seat)` closes one seat; `endTurn()` closes the table.
 - Multiplayer-only Tricks live in `def.coopCards`, OUTSIDE the 80, and are never drafted solo.
+- Enemy **damage never scales** with party size. The extra threat is TARGETING: a move declares
+  `partyTarget: 'all' | 'two' | fn(enemy, engine)` for AoE, and `partyPick: 'lowestGuard' |
+  'lowestCourage' | 'fewestDraw' | 'mostDraw'` for who it singles out. Both are authored per
+  enemy in the region chapters. Seat choice ALWAYS ties on seat index, never the RNG — the
+  target is shown before the players act and has to survive a replay.
+- Enemy Courage at 2p is 220%, and it is MEASURED (`tests/coop/balance.py`), not quoted. The
+  design doc's 160% is far too easy and StS2's own 250% is the mode their players call
+  overtuned. Re-measure after any change to enemy damage, starting decks or the co-op pool.
+- A screen renders ONE seat's view. `scenes/combat.js` reads `this.me` / `this.mePiles`, never
+  `engine.player`. The seat comes from `run.localSeat`.
+- Per Kid: deck, Courage, Nerve, Keepsakes, Backpack, Snacks, trackers, counters, card rewards.
+  Shared: the route, the rooms, the enemies, the Haunt level, the seed.
 
 See `docs/notes/2026-08-26-multiplayer-engine.md`.
