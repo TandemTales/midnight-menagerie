@@ -60,8 +60,9 @@ tests/combat/run.py        677 assertions      tests/seams/check.py     1805 sit
 tests/cards/run.py         445 cards, 0 err    tests/seams/proof.py     52 passed
 tests/enemies/run.py       37 enemies, 0 err   tests/scene-css/check.py 0 conflicts
 tests/enemies/audit.py     ~2400 turns, 0 err  tests/run/run.py         50 runs, 0 errors
-tests/coop/run.py          565 assertions   tests/hook-names/check.py  0 unknown hooks
+tests/coop/run.py          584 assertions   tests/hook-names/check.py  0 unknown hooks
 tests/turn-events/check.py 0 unguarded      tests/dup-keys/check.py    0 duplicate keys
+tests/css-tokens/check.py  0 undefined tokens
 tests/map/run.py           23 passed        tests/chrome/run.py        27 checks
 tests/backpack/run.py      77 checks           tests/audio/run.py       46 cues, 0 errors
 tests/combat-scene/seam.py 22 passed           tests/critic-design/sim.py  balance simulator
@@ -130,6 +131,13 @@ Guard" passed `{pierceBlock}` where the pipeline read `pierce`. `tests/seams/che
 so visiting one Curiosity **permanently deleted every Safe Room** — all healing and all card
 upgrading — with zero console output. It survived three playthroughs and made the balance
 simulator disagree with the real game. `tests/scene-css/check.py` gates it.
+
+**An invented CSS token is silent.** `var(--text-low)` when the token is
+`--text-lo`: the declaration is dropped, the element keeps what it inherited,
+and nothing appears in the console. The two-Kid Safe Room shipped with SIXTEEN
+of them and rendered as unstyled text — caught only by looking at the screen.
+`tests/css-tokens/check.py` gates it, and knows about the properties JS hands to
+elements at runtime so `setProperty('--i', …)` is not a false positive.
 
 **Listeners that fire too often, or never.** `turn:start` / `turn:end` are emitted for the
 player AND for every enemy, so every Companion tracker in this build ran ~3x a round:
@@ -331,15 +339,9 @@ co-op pool.
      LOCAL behaviour and stays as the offline path.
 2. **The other 11 Companions' co-op pools** — they are unbuilt Companions, so
    there is nothing to write co-op Tricks for yet.
-3. **The combat scene does not draw the `splash` number itself.** A seat that is
-   only splashed IS told — `Incoming` counts it and the teammate line says
-   "catches them too" — but there is no second number on the enemy's own intent
-   chip. Everything needed for one is on `intent.splash`.
-4. **A Big Scare's Keepsake reward is rolled once, off the local Kid's luck.**
-   Cards are drafted per Kid; the Keepsake is not. That may well be the intent —
-   one Keepsake per Big Scare, for the team — but it has never been decided, and
-   `rollCardReward` taking a `forKid` while the Keepsake roll beside it does not
-   is the kind of asymmetry that turns into a bug report.
+3. **Two players reaching for the same Keepsake.** StS2 resolves that with
+   rock-paper-scissors. Every Kid now gets their own offer and nobody can reach
+   for somebody else's, so there is nothing to resolve until the wire exists.
 
 Everything else that was on this list is built — see
 `docs/notes/2026-08-26-multiplayer-bosses.md`, which is also the record of the
