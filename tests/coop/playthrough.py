@@ -52,20 +52,41 @@ STATE = """() => {
   };
 }"""
 
-# Play out both hands, then end MY seat. The veil is handled outside.
-FIGHT = """async () => {
+# Play out this seat's hand. FIRE AND FORGET, on purpose.
+#
+# `page.evaluate` awaits a returned promise (CONTRACTS trap 3), and a Trick that
+# asks the player to choose parks `playCard` until somebody answers the picker —
+# so awaiting this deadlocks the walk the first time a Bones card wants a pick.
+# It is kicked off and left running; `settle()` answers any chooser that opens.
+FIGHT = """() => {
   const sc = window.MM.ctx.scenes.current;
   const e = sc && sc.engine;
   if (!e || e.over) return 'over';
-  const foe = e.livingEnemies()[0];
-  if (!foe) return 'over';
+  if (!e.livingEnemies()[0]) return 'over';
   const me = sc.me;
-  for (const c of [...me.piles.hand]) {
-    const t = e.livingEnemies()[0];
-    if (!t) break;
-    if (e.canPlay(c.uid, t.id).ok) await e.playCard(c.uid, t.id);
-  }
-  return 'played';
+  (async () => {
+    for (const c of [...me.piles.hand]) {
+      const t = e.livingEnemies()[0];
+      if (!t) break;
+      try { if (e.canPlay(c.uid, t.id).ok) await e.playCard(c.uid, t.id); }
+      catch (err) { console.warn('[walk] play', err); }
+    }
+  })();
+  return 'started';
+}"""
+
+# Answer whatever the picker is asking. A walk that cannot answer a choice is a
+# walk that stops at the first Trick worth playing.
+ANSWER = """() => {
+  const ch = document.querySelector('.cb-chooser');
+  if (!ch || ch.hidden) return null;
+  const first = ch.querySelector('.cb-choice:not([disabled])');
+  if (first) first.click();
+  const ok = ch.querySelector('.cb-chooser__ok');
+  if (ok && !ok.disabled) { ok.click(); return 'confirmed'; }
+  const skip = ch.querySelector('.cb-chooser__skip');
+  if (skip && !skip.hidden) { skip.click(); return 'skipped'; }
+  return 'picked';
 }"""
 
 LEAVE = """() => {
@@ -90,6 +111,8 @@ SETTLED = """() => {
   const MM = window.MM;
   if (!MM || !MM.ctx.scenes.current) return false;
   if (document.querySelector('.mm-handoff')) return true;      // waiting on a player
+  const ch = document.querySelector('.cb-chooser');
+  if (ch && !ch.hidden) return true;                           // waiting on a pick
   const sc = MM.ctx.scenes.current;
   if (MM.ctx.scenes.busy) return false;                        // mid transition
   if (sc.engine && sc._resolving) return false;                // mid animation
@@ -110,6 +133,18 @@ async def main():
         walk that is wedged.
         """
         await page.wait_for_timeout(400)
+        # Answer the picker as many times as it asks — a card can raise more
+        # than one, and each answer lets the next beat run.
+        for _ in range(8):
+            try:
+                await page.wait_for_function(SETTLED, timeout=timeout)
+            except Exception:
+                break
+            got = await page.evaluate(ANSWER)
+            if not got:
+                break
+            print("      … chose:", got, flush=True)
+            await page.wait_for_timeout(700)
         try:
             await page.wait_for_function(SETTLED, timeout=timeout)
         except Exception:
@@ -155,7 +190,13 @@ async def main():
             if st["veil"]:
                 handoffs += 1
                 print("      … pass it over", flush=True)
-                await page.click(".hoff__go")
+                try:
+                    await page.click(".hoff__go", timeout=10000)
+                except Exception:
+                    # It can go on its own if something else answered it; never
+                    # let a missing button end the walk without a report.
+                    await page.evaluate(
+                        "() => { const b = document.querySelector('.hoff__go'); if (b) b.click(); }")
                 await settle(page)
                 continue
 
