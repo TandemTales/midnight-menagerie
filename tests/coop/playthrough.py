@@ -17,15 +17,14 @@ Waits on CONDITIONS, never on fixed sleeps. The enemy phase for two Kids runs
 about seven seconds on this machine and a six-second wait passed or failed by
 what the enemies rolled — the measurement trap in CONTRACTS, in miniature.
 
-SLOW ON PURPOSE — it plays real fights at real speed. The default 12 steps is a
-Scuffle and its handoffs in a few minutes; `24` walks the reward and back out to
-the blueprint and takes about ten. It prints each step as it happens rather than
-at the end, because a walk that reports nothing for six minutes is
-indistinguishable from a wedged one, which is exactly how the first version of
-it looked while I was waiting on it.
+It plays real fights at real speed. The default 12 steps is a Scuffle and its
+handoffs in about 90 seconds, which is battery-sized; `24` walks the reward and
+back out to the blueprint and takes several minutes.
 
-Not part of the quick battery for that reason. Run it after anything that
-touches the co-op loop.
+It prints each step as it happens rather than at the end, because a walk that
+reports nothing for minutes is indistinguishable from a wedged one — which is
+exactly how it looked while it really was wedged, on a Trick that asks the
+player to choose.
 """
 import asyncio, json, os, sys
 
