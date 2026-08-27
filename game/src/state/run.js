@@ -392,6 +392,24 @@ export class Run {
   }
 
   /**
+   * Has this Kid finished with the room they are standing in?
+   *
+   * A Safe Room or a shop is per Kid and each one gets a turn at it, but
+   * "finished" cannot mean "used it" — a Kid may look at Mr. Moth's shelf and
+   * buy nothing, and they must not then be handed the screen forever. So the
+   * marker is the NODE they were last done with, set when their turn at it
+   * ends either way, and it rides on the seat so it survives a save.
+   */
+  markRoomDone(kid = null) {
+    const k = kid || this.local;
+    if (k) k.roomDone = this.currentNodeId;
+    this.save();
+    return k;
+  }
+  /** Has this Kid had their turn in the room we are standing in? */
+  roomDoneBy(kid) { return !!kid && kid.roomDone === this.currentNodeId; }
+
+  /**
    * The next Kid, in seat order after the local one, that `needs()` says still
    * has something to do. Wraps, and never returns the local Kid.
    *
@@ -686,6 +704,18 @@ export class Run {
 
     const type = this.effectiveType(node);
     const scene = this.sceneFor(node);
+    /**
+     * A room starts with the lowest living seat, every time.
+     *
+     * Without this the seat stays wherever the previous room left it, so
+     * whoever happened to go last at Mr. Moth's goes first in the Safe Room and
+     * the order flips from room to room. Nobody gains anything by it — the
+     * shelves and the offers are separate — but "who goes first" should not be
+     * a thing the players have to work out fresh at every door. It is the same
+     * rule combat uses for the top of a round.
+     */
+    const first = this.kids.findIndex(k => k.courage > 0);
+    if (first >= 0) this.setLocalSeat(first);
     this.save();
     bus.emit('run:enterNode', { node, type, scene, run: this });
 
@@ -1414,16 +1444,26 @@ export class Run {
     this.addLostThings(12, { raw: true });
     this.save();
   }
-  /** Collect the purse + Keepsake and go back to the blueprint. */
-  claimReward() {
+  /**
+   * Collect the purse + Keepsake and go back to the blueprint.
+   *
+   * `close: false` takes only the LOCAL Kid's half and leaves the room open,
+   * which is what pass-and-play needs: each Kid claims their own spoils in
+   * turn and the last one out shuts the door. Every caller that is not handing
+   * the screen over wants the default.
+   */
+  claimReward({ close = true } = {}) {
     const r = this.pendingReward;
-    if (!r) return this.leaveNode();
+    if (!r) return close ? this.leaveNode() : false;
     if (r.lostThings) this.addLostThings(r.lostThings, { raw: true });
     if (r.keepsake) this.addKeepsake(r.keepsake);
     if (r.clues) this.addClues(r.clues);
     if (r.keepsake && this.flags.maxHpOnMilestone && r.kind === 'bigScare') {
       this.addMaxCourage(this.flags.maxHpOnMilestone);
     }
+    // Just mine. `clearOffers()` below is the job of the Kid who closes it.
+    this.local.pendingReward = null;
+    if (!close) { this.save(); return true; }
     const wasBoss = r.kind === 'boss';
     this.clearOffers();
     this._markCleared(r.nodeId || this.currentNodeId);
@@ -1953,6 +1993,7 @@ export class Run {
       })),
       pity: k.pity, removalPrice: k.removalPrice,
       pendingReward: k.pendingReward || null,
+      roomDone: k.roomDone || null,
     };
   }
 
@@ -1982,6 +2023,7 @@ export class Run {
     k.pity = saved.pity || 0;
     k.removalPrice = saved.removalPrice ?? k.removalPrice;
     k.pendingReward = saved.pendingReward || null;
+    k.roomDone = saved.roomDone || null;
     return k;
   }
 

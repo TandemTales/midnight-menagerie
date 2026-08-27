@@ -20,6 +20,7 @@
 import { Scene } from '../core/scenes.js';
 import { bus } from '../core/bus.js';
 import { clock } from '../core/clock.js';
+import { passTo, shouldHandOff } from '../ui/handoff.js';
 import { TERMS, NodeType } from '../data/schema.js';
 import { cardById } from '../data/cards.js';
 import { relicById, relicSigil } from '../data/relics.js';
@@ -219,6 +220,62 @@ export class RoomScene extends Scene {
   _leave() {
     if (this.mock) { this.ctx.scenes?.go?.('map', { region: this.run.region, seed: this.run.seed }); return; }
     this.run.leaveNode?.();
+  }
+
+  /**
+   * Leave a per-Kid room — but only once every Kid has had their turn in it.
+   *
+   * Mr. Moth stocks a shelf each and the Safe Room offers each Kid their own
+   * night, so one Kid walking out would take the room with them. "Had their
+   * turn" is marked when they leave, not when they use it: a Kid is allowed to
+   * look at the shelf and buy nothing.
+   */
+  async _leaveRoom() {
+    if (this._leaving) return;
+    const run = this.run;
+    if (run && !this.mock) run.markRoomDone();
+    const next = this._seatStillOwed(k => !run.roomDoneBy(k));
+    if (next >= 0) {
+      this._leaving = true;
+      const done = await this._passRoomTo(next, 'Your turn in here.',
+        'The room is yours for a moment.');
+      if (done) return;
+      this._leaving = false;
+    }
+    this._leaving = true;
+    this._leave();
+  }
+
+  /**
+   * Is another Kid still owed a turn in THIS room?
+   *
+   * Every room that is per Kid asks the same question — the reward's offer,
+   * Mr. Moth's shelf, the Safe Room's night. `needs(kid)` says what "owed"
+   * means here. Returns the seat, or -1.
+   */
+  _seatStillOwed(needs) {
+    const run = this.run;
+    if (!run || this.mock || !shouldHandOff(run)) return -1;
+    return run.nextSeatNeeding(needs);
+  }
+
+  /**
+   * Cover the screen, give it to that Kid, and open this room again as theirs.
+   *
+   * Re-entering rather than re-rendering in place: a room screen is built once
+   * from `run.local` at `enter()`, and there are a dozen places that read it.
+   * The veil is already covering everything, so the rebuild is free.
+   */
+  async _passRoomTo(seat, line, sub) {
+    const run = this.run;
+    const kid = run.kids[seat];
+    if (!kid) return false;
+    await passTo({ name: run.kidNameOf(kid), companion: kid.companion, line, sub });
+    run.setLocalSeat(seat);
+    await this.ctx.scenes.go(this.ctx.scenes.currentName, {
+      node: run.currentNodeId, region: run.region, seed: run.seed,
+    }, { instant: true });
+    return true;
   }
 
   /**
@@ -586,8 +643,24 @@ export class RewardScene extends RoomScene {
     live.textContent = text;
   }
 
-  _finish() {
+  /**
+   * Take the spoils.
+   *
+   * In a party the room stays open until every Kid has taken theirs — the
+   * offers were all rolled when the fight ended, and one Kid leaving with the
+   * Lost Things would strand the other's three Tricks.
+   */
+  async _finish() {
     if (this._leaving) return;
+    const run = this.run;
+    const next = this._seatStillOwed(k => k !== run.local && !!k.pendingReward);
+    if (next >= 0) {
+      this._leaving = true;                 // no double-claim while the veil is up
+      run.claimReward({ close: false });
+      const done = await this._passRoomTo(next, 'Your spoils.', 'Take a Trick, or take none.');
+      if (done) return;                     // the room is theirs now
+      this._leaving = false;
+    }
     this._leaving = true;
     this.run.claimReward ? this.run.claimReward() : this._leave();
     if (this.mock) this.ctx.scenes?.go?.('map', { region: this.run.region, seed: this.run.seed });

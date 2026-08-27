@@ -396,7 +396,7 @@ export class ShopScene extends RoomScene {
   _buildFoot() {
     this._say('&nbsp;');
     // Escape belongs to Settings now, everywhere in a run — the HUD owns it.
-    this._primary('Back to the blueprint', () => this._leave(), { key: 'Enter' });
+    this._primary('Back to the blueprint', () => this._leaveRoom(), { key: 'Enter' });
     this.$go.classList.add('is-ready');
   }
 
@@ -405,7 +405,7 @@ export class ShopScene extends RoomScene {
       if (e.defaultPrevented || this.root.querySelector('.rm-picker')) return;
       // Enter leaves, unless something that answers to Enter itself has focus.
       if (e.key === 'Enter' && !document.activeElement?.closest?.('.sh-buy, .sh-deck, .rm-go, .mm-hud')) {
-        e.preventDefault(); this._leave();
+        e.preventDefault(); this._leaveRoom();
       }
     });
   }

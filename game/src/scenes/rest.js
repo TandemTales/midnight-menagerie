@@ -432,7 +432,7 @@ export class RestScene extends RoomScene {
 
   _buildFoot() {
     this._say('');
-    this._primary('Pack up and go on', () => this._leave(), {
+    this._primary('Pack up and go on', () => this._leaveRoom(), {
       hint: 'you have not used the fort yet', key: 'Enter',
     });
     this._syncFoot = () => {
@@ -451,7 +451,7 @@ export class RestScene extends RoomScene {
       // option; once the fort has been used there is nothing left to do here.
       if (e.key === 'Enter'
           && (this.used || !document.activeElement?.closest?.('[data-opt], .rm-go, .mm-hud'))) {
-        e.preventDefault(); this._leave(); return;
+        e.preventDefault(); this._leaveRoom(); return;
       }
       if (e.key >= '1' && e.key <= '4') {
         const o = this._options?.[Number(e.key) - 1];
