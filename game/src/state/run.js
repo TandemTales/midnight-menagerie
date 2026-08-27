@@ -1886,6 +1886,12 @@ export class Run {
     if (Array.isArray(saved.kids) && saved.kids.length) {
       run.kids = saved.kids.slice(0, MAX_PARTY).map((k, i) => run._restoreKid(k, i));
       run.localSeat = Math.min(saved.localSeat || 0, run.kids.length - 1);
+      // The flat `backpack` is the LOCAL seat's by definition (that is what
+      // snapshot writes), and it is the field a pre-fix save carries in the old
+      // `{name, slots}` shape. Applying the migrated version after the seats
+      // are built keeps both paths working: without this, a save that has both
+      // silently kept the un-migrated seat copy and the migration was dead.
+      if (packed) run.local.backpack = packed.slice();
     }
 
     run.courage = saved.courage ?? saved.hp ?? run.courage;
