@@ -289,12 +289,16 @@ export class Run {
   get isLastRegion() { return this.regionIndex >= Math.min(RUN_LENGTH_REGIONS, REGION_ORDER.length) - 1; }
 
   /** Aggregated Keepsake + Gear flags. Scenes read this, never a relic by name. */
-  get flags() {
-    const a = relicRunFlags(this.keepsakes);
-    const b = backpackRunFlags(this.backpack);
+  get flags() { return this.flagsOf(this.local); }
+
+  /** The same, for a NAMED Kid — the party form. Flags are per Kid: they come
+   *  from that Kid's own Keepsakes and their own Backpack. */
+  flagsOf(k) {
+    const a = relicRunFlags(k ? k.keepsakes : []);
+    const b = backpackRunFlags(k ? k.backpack : []);
     return {
       ...a,
-      luck: a.luck + this.pity,
+      luck: a.luck + ((k && k.pity) || 0),
       restBonus: a.restBonus + b.restBonus,
       revealUnknown: a.revealUnknown || b.revealUnknown,
       clueBonus: b.clueBonus,
@@ -1391,29 +1395,44 @@ export class Run {
   }
 
   // ══ Mr. Moth's ═══════════════════════════════════════════════════════════
-  /** Deterministic stock for one shop node. */
-  shopStock(node = this.currentNode) {
+  /**
+   * Deterministic stock for one shop node, for ONE Kid.
+   *
+   * Every shelf is that Kid's: their Companion's card pool, Keepsakes they do
+   * not already own, prices bent by their own Keepsake and Gear flags, and
+   * their own rising removal price. Two Kids on the same Companion get
+   * DIFFERENT shelves, because the roll is forked per seat — otherwise they
+   * would stand in front of one shop looking at two identical lists and race
+   * for the same card.
+   *
+   * The fork key for seat 0 is unchanged (`shop:<node>`), so every existing
+   * seed still rolls the shop it always rolled and the 50-run determinism sim
+   * does not move.
+   */
+  shopStock(node = this.currentNode, who = null) {
+    const kid = who || this.local;
+    const seat = this.kids.indexOf(kid);
     const id = node?.id || `shop-${this.shopsVisited}`;
-    const rng = this.fork(`shop:${id}`);
-    const f = this.flags;
+    const rng = this.fork(seat > 0 ? `shop:${id}:${seat}` : `shop:${id}`);
+    const f = this.flagsOf(kid);
     const disc = f.shopDiscount || 1;
     const price = (base, spread) => Math.max(5, Math.round((base + rng.range(-spread, spread)) * disc));
 
     const cards = [];
-    const seen = new Set(this.deck.map(c => c.id));
+    const seen = new Set((kid.deck || []).map(c => c.id));
     const wants = [
       ['common', 55], ['common', 55], ['uncommon', 85],
       ['uncommon', 85], [f.shopRare ? 'rare' : 'uncommon', f.shopRare ? 145 : 90],
     ];
     for (const [rarity, base] of wants) {
-      let pool = poolFor(this.companion, rarity).filter(c => !cards.some(x => x.id === c.id));
-      if (!pool.length) pool = poolFor(this.companion).filter(c => !cards.some(x => x.id === c.id));
+      let pool = poolFor(kid.companion, rarity).filter(c => !cards.some(x => x.id === c.id));
+      if (!pool.length) pool = poolFor(kid.companion).filter(c => !cards.some(x => x.id === c.id));
       if (!pool.length) continue;
       const def = pool[rng.int(pool.length)];
       cards.push({ id: def.id, rarity: def.rarity, price: price(base, 12), owned: seen.has(def.id) });
     }
 
-    const owned = this.ownedKeepsakeIds();
+    const owned = new Set((kid.keepsakes || []).map(k => k.id));
     const keepsakes = [];
     for (const rarity of ['common', 'uncommon', 'shop']) {
       const k = rollKeepsake(rng, { owned: new Set([...owned, ...keepsakes.map(x => x.id)]), rarity });
@@ -1427,7 +1446,10 @@ export class Run {
       offered.push({ ...s, price: price(s.base, 8) });
     }
 
-    return { nodeId: id, cards, keepsakes, snacks: offered, removal: this.removalPrice };
+    return {
+      nodeId: id, seat: Math.max(0, seat),
+      cards, keepsakes, snacks: offered, removal: kid.removalPrice,
+    };
   }
 
   /** One shop visit: the rolled stock plus what has already been bought. */
@@ -1435,15 +1457,36 @@ export class Run {
     if (this.pendingShop?.nodeId === node.id) return this.pendingShop;
     this.shopsVisited++;
     this.stats.shops++;
-    this.pendingShop = { nodeId: node.id, sold: [] };
+    this.pendingShop = { nodeId: node.id, sold: [], soldBy: {} };
     this.save();
     return this.pendingShop;
   }
-  shopSold() { return this.pendingShop?.sold || []; }
+
+  /**
+   * What has already been bought off ONE Kid's shelf.
+   *
+   * Per seat, because the shelves are per seat: a shared list meant the other
+   * Kid buying a Keepsake struck the same row off YOUR shop, which is a
+   * different Keepsake at a different price and possibly one you had been
+   * saving for. `sold` is kept alongside as seat 0's list so an older save
+   * migrates without losing what the solo player had already bought.
+   */
+  shopSold(who = null) {
+    const p = this.pendingShop;
+    if (!p) return [];
+    const seat = Math.max(0, this.kids.indexOf(who || this.local));
+    if (p.soldBy && p.soldBy[seat]) return p.soldBy[seat];
+    return seat === 0 ? (p.sold || []) : [];
+  }
   _markSold(key) {
     if (!key) return;
-    if (!this.pendingShop) this.pendingShop = { nodeId: this.currentNodeId, sold: [] };
-    if (!this.pendingShop.sold.includes(key)) this.pendingShop.sold.push(key);
+    if (!this.pendingShop) this.pendingShop = { nodeId: this.currentNodeId, sold: [], soldBy: {} };
+    const p = this.pendingShop;
+    const seat = Math.max(0, this.kids.indexOf(this.local));
+    if (!p.soldBy) p.soldBy = {};
+    const list = p.soldBy[seat] || (p.soldBy[seat] = (seat === 0 ? (p.sold || []).slice() : []));
+    if (!list.includes(key)) list.push(key);
+    if (seat === 0) p.sold = list;      // the solo spelling, kept in step
   }
 
   buyCard(id, price, key = null) {

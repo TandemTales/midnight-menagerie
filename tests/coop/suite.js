@@ -1533,6 +1533,104 @@ export async function run() {
     ok(previewIncoming(e, a).total > 0, 'and it is not zero');
   });
 
+  // ── Mr. Moth's, per Kid ───────────────────────────────────────────────────
+  // Prices and pity were already per Kid; the SHELF was not. Two Kids stood in
+  // front of one shop looking at one list, and one of them buying the last
+  // Keepsake struck it off the other's shop too.
+
+  function shopRun(seed = 900, kids = null) {
+    return new Run({
+      seed,
+      kids: kids || [
+        { kid: 'maya', companion: 'marmalade' },
+        { kid: 'eli', companion: 'bones' },
+      ],
+    });
+  }
+  const shopNode = { id: 'foyer-2-1' };
+
+  test('shop: each Kid gets their own Companion on the shelf', () => {
+    const run = shopRun(901);
+    const a = run.shopStock(shopNode, run.kids[0]);
+    const b = run.shopStock(shopNode, run.kids[1]);
+    eq(a.seat, 0, 'seat 0 stock is tagged');
+    eq(b.seat, 1, 'seat 1 stock is tagged');
+    ok(a.cards.length > 0 && b.cards.length > 0, 'both shelves have Tricks');
+    ok(a.cards.every(c => c.id.startsWith('marmalade/')),
+       'seat 0 is offered Marmalade Tricks');
+    ok(b.cards.every(c => c.id.startsWith('bones/')),
+       'seat 1 is offered BONES Tricks — not the host Companion');
+  });
+
+  test('shop: two Kids on the SAME Companion still see different shelves', () => {
+    const run = shopRun(903, [
+      { kid: 'maya', companion: 'marmalade' },
+      { kid: 'eli', companion: 'marmalade' },
+    ]);
+    const a = run.shopStock(shopNode, run.kids[0]);
+    const b = run.shopStock(shopNode, run.kids[1]);
+    const ids = (s) => s.cards.map(c => c.id).join(',');
+    ok(ids(a) !== ids(b), 'the two rolls are forked apart, not the same list twice');
+  });
+
+  test('shop: the stock is stable — asking twice gives the same shelf', () => {
+    const run = shopRun(905);
+    const one = run.shopStock(shopNode, run.kids[1]);
+    const two = run.shopStock(shopNode, run.kids[1]);
+    eq(one.cards.map(c => c.id + ':' + c.price).join('|'),
+       two.cards.map(c => c.id + ':' + c.price).join('|'),
+       'same seed, same node, same seat, same shop');
+  });
+
+  test('shop: solo rolls exactly the shop it always rolled', () => {
+    const solo = new Run({ seed: 907, companion: 'marmalade', kid: 'maya' });
+    const party = shopRun(907, [
+      { kid: 'maya', companion: 'marmalade' },
+      { kid: 'eli', companion: 'bones' },
+    ]);
+    const s = solo.shopStock(shopNode);
+    const p = party.shopStock(shopNode, party.kids[0]);
+    eq(s.cards.map(c => c.id + ':' + c.price).join('|'),
+       p.cards.map(c => c.id + ':' + c.price).join('|'),
+       'seat 0 fork key is unchanged, so no existing seed moved');
+  });
+
+  test('shop: buying is bookkept per Kid', () => {
+    const run = shopRun(909);
+    run.currentNodeId = shopNode.id;
+    run._prepareShop(shopNode);
+
+    run.localSeat = 1;
+    run.lostThings = 999;
+    const theirs = run.shopStock(shopNode, run.kids[1]);
+    const item = theirs.keepsakes[0];
+    ok(!!item, 'seat 1 has a Keepsake on the shelf');
+    ok(!!run.buyKeepsake(item.id, item.price, `keep:${item.id}`), 'and can buy it');
+    ok(run.shopSold(run.kids[1]).includes(`keep:${item.id}`), 'their shelf records it sold');
+    eq(run.shopSold(run.kids[0]).length, 0, 'and seat 0 shelf is untouched');
+
+    run.localSeat = 0;
+    eq(run.shopSold().length, 0, 'the local view follows the seat');
+  });
+
+  test('shop: each Kid pays their own rising removal price', () => {
+    const run = shopRun(911);
+    run.kids[0].removalPrice = 65;
+    run.kids[1].removalPrice = 140;
+    eq(run.shopStock(shopNode, run.kids[0]).removal, 65, 'seat 0 price');
+    eq(run.shopStock(shopNode, run.kids[1]).removal, 140, 'seat 1 has already used the service');
+  });
+
+  test('shop: a Kid Keepsake flags bend their OWN prices, not the party', () => {
+    const run = shopRun(913);
+    const f0 = run.flagsOf(run.kids[0]);
+    const f1 = run.flagsOf(run.kids[1]);
+    ok(f0 && f1, 'both Kids have a flag set');
+    run.kids[1].pity = 7;
+    eq(run.flagsOf(run.kids[1]).luck - run.flagsOf(run.kids[0]).luck, 7,
+       'pity is read off the Kid asked about, not off whoever is local');
+  });
+
   // ── the run layer with two Kids ───────────────────────────────────────────
   // Shared route and rooms; per-Kid deck, Courage, Lost Things, Keepsakes,
   // Backpack. Same split as Slay the Spire 2, and the reason two Kids feel like

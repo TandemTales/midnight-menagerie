@@ -91,9 +91,14 @@ export class ShopScene extends RoomScene {
     await ensureCss(CSS_SHOP);
     if (this._dead) return;
 
-    if (!this.run.pendingShop && this.run.currentNode) this.run._prepareShop?.(this.run.currentNode);
+    if (!this.run.pendingShop && this.run.currentNode) this.run._prepareShop(this.run.currentNode);
+    // Both default to the LOCAL Kid: the shelf is theirs, rolled off their
+    // Companion and their Keepsakes, and so is the record of what they have
+    // already bought off it. `shopSold` is a documented Run API — no `?.` on
+    // it (CONTRACTS rule 8); if it ever goes missing that must be a loud
+    // TypeError here rather than a shop that silently forgets every purchase.
     this.stock = this.run.shopStock();
-    this.sold = new Set(this.run.shopSold?.() || []);
+    this.sold = new Set(this.run.shopSold());
 
     const g = this.run.fork(`shopline:${this.stock.nodeId}`);
     this._greeting = GREETING[g.int(GREETING.length)];
