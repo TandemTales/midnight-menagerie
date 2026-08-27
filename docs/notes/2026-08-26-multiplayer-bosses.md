@@ -236,6 +236,35 @@ is long" was the finding that set his Courage at 165, and it is still true. The
 lever is his Courage pool, and it is a balance decision rather than a
 correctness one, so it has been left alone.
 
+### The Butler: Courage is the wrong lever, and here is the proof
+
+The obvious next move after the A/B was "bring his Courage down until the length
+lands in the 8-12 band". Swept it, 24 fights a step, same harness:
+
+| scale | Courage | win% | turns mean | median |
+|---|---|---|---|---|
+| 1.00 | 165 | 66.7 | 13.54 | 15 |
+| 0.90 | 149 | 75.0 | 11.25 | 11 |
+| 0.80 | 132 | 70.8 | 10.33 | 10 |
+| 0.72 | 119 | 79.2 | 9.92 | 10 |
+| 0.65 | 107 | 75.0 | 8.50 | 8 |
+
+**No Courage total satisfies both bands.** Every cut that pulls the length into
+8-12 pushes the win rate UP, out of 45-65 the other way — 0.9x is 11.25 turns
+and 75%, 0.65x is 8.5 turns and 75%. He is closest to the win-rate band at the
+Courage he already has, and furthest from the length band there.
+
+That is the same finding as 2026-08-20, arriving with better evidence: *"he is
+not dangerous, he is long"*. A boss you cannot lose to does not become
+threatening by ending sooner; it just ends sooner. The lever that reaches both
+bands is **damage per turn** — more of it, with the Courage pool coming down to
+hold the length — and that is a redesign of his phase-two numbers rather than a
+tuning nudge, so it has not been made here.
+
+The one thing that DID move the win rate in the right direction this round was
+giving him a mechanic back: closing the Discomposed window took 75% to 66.7%.
+The remaining gap is likelier to be found the same way than in the pool.
+
 ### The Governess
 
 | | before | after |

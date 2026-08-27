@@ -1,0 +1,86 @@
+{
+ "config": {
+  "TIER": "boss",
+  "ENC": null,
+  "REGION": "foyer",
+  "N": 24,
+  "GEN": 8,
+  "BOTS": [
+   "competent"
+  ],
+  "POL": "balanced",
+  "SCALES": [
+   1,
+   0.9,
+   0.8,
+   0.72,
+   0.65
+  ],
+  "HAUNT": 0,
+  "HEAL": 0
+ },
+ "loadouts": 8,
+ "table": [
+  {
+   "bot": "competent",
+   "hpScale": 1,
+   "win": 66.7,
+   "turnsMean": 13.54,
+   "turnsMed": 15,
+   "costMean": 48.75,
+   "hpAfterWinMean": 35.06,
+   "courageAtDoor": 63.25,
+   "timeouts": 0,
+   "n": 24
+  },
+  {
+   "bot": "competent",
+   "hpScale": 0.9,
+   "win": 75,
+   "turnsMean": 11.25,
+   "turnsMed": 11,
+   "costMean": 42,
+   "hpAfterWinMean": 39,
+   "courageAtDoor": 63.25,
+   "timeouts": 0,
+   "n": 24
+  },
+  {
+   "bot": "competent",
+   "hpScale": 0.8,
+   "win": 70.8,
+   "turnsMean": 10.33,
+   "turnsMed": 10,
+   "costMean": 42.79,
+   "hpAfterWinMean": 39.65,
+   "courageAtDoor": 63.25,
+   "timeouts": 0,
+   "n": 24
+  },
+  {
+   "bot": "competent",
+   "hpScale": 0.72,
+   "win": 79.2,
+   "turnsMean": 9.92,
+   "turnsMed": 10,
+   "costMean": 44,
+   "hpAfterWinMean": 34.47,
+   "courageAtDoor": 63.25,
+   "timeouts": 0,
+   "n": 24
+  },
+  {
+   "bot": "competent",
+   "hpScale": 0.65,
+   "win": 75,
+   "turnsMean": 8.5,
+   "turnsMed": 8,
+   "costMean": 43.58,
+   "hpAfterWinMean": 37.28,
+   "courageAtDoor": 63.25,
+   "timeouts": 0,
+   "n": 24
+  }
+ ],
+ "errors": []
+}
