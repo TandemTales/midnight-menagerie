@@ -190,6 +190,19 @@ When you write a def method, grep for its caller.
 **A card that "resolves without throwing" is not a card that works.** A smoke test that plays
 every card and checks for exceptions passed all four dead cards above. Assert the EFFECT.
 
+**A fixed sleep racing an animation is a test that lies both ways.** Four suites in
+one day, all pre-existing, all surfaced by unrelated work shifting the timing
+around them: `tests/map/run.py` waited 1400 ms for an 820 ms sweep that
+`_whenVisible()` can hold back 2.5 s, and failed its MOUSE checks while the
+keyboard ones passed — which reads exactly like the pointer-capture regression it
+was written to catch. `tests/combat-scene/seam.py` waited for `.mm-hand__warm` to
+be ABSENT, and it is also absent in the 60 ms gap between rehearsal waves, so it
+counted the next wave's cards. Wait for a real signal — `.is-drawn`,
+`hand.warming`, a scene name, `scenes.busy` — never for a number of milliseconds.
+And `flush=True` on test output: stdout is block-buffered to a file while a
+traceback is not, so an unflushed log claims the run died several checks before
+it did.
+
 **Measurement traps that produced wrong conclusions.** An averaged fps hides an entry stall. A
 mock that implements the mechanic it tests proves nothing. `gl.finish()` is not a fence under
 ANGLE. `page.evaluate` awaits returned promises, which makes every motion-strip frame land on the
