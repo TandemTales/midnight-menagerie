@@ -129,6 +129,14 @@ export const bedframeBeast = {
     return BED_POSITIONS[(Math.max(0, base) + steps) % BED_POSITIONS.length];
   },
 
+  /**
+   * "The first 12 damage EACH PLAYER TURN is halved" — so the allowance has to
+   * come back every round. Without this it is once per Kid per COMBAT, and
+   * Covered stops meaning anything from the second time it pulls the blankets
+   * up.
+   */
+  onPlayerTurnStart(c) { mem(c).softenedBySeat = {}; },
+
   onPlayerTurnEnd(c) {
     // Bank the steered position so it persists into the ambush.
     if (bedframeBeast.phase(c) >= 2) field(c).bedPosition = bedframeBeast.rattling(c);

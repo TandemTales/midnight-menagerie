@@ -1285,6 +1285,23 @@ export async function run() {
     eq(hp - b.hp, 6, 'seat 1 has their OWN allowance — one Kid cannot clear the covers for both');
   });
 
+  await atest('beast: the covers soften again next round', async () => {
+    const { beast, e, b } = await beastParty(715);
+    const [a] = e.players;
+    doMove(beast, e, b, 'pull-the-covers-up');
+    b.block = 0;
+    e.dealDamage({ attacker: a, defender: b, amount: 12, kind: 'attack' });
+    e.dealDamage({ attacker: a, defender: b, amount: 12, kind: 'attack' });
+    await e.endTurn();
+    b.mem.state = 'covered';          // it stays under the covers
+    b.block = 0;
+    const hp = b.hp;
+    e.dealDamage({ attacker: a, defender: b, amount: 12, kind: 'attack' });
+    // "the first 12 damage EACH PLAYER TURN" — once per combat would make
+    // Covered meaningless from the second time it pulls the blankets up.
+    eq(hp - b.hp, 6, 'a fresh allowance every round');
+  });
+
   await atest('beast: standing up again stops softening anything', async () => {
     const { beast, e, b } = await beastParty(713);
     const [a] = e.players;
