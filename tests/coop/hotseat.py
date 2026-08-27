@@ -101,9 +101,24 @@ async def main():
         check(c["turn"] == 1, "still turn 1 — the enemies have not moved", str(c["turn"]))
         await page.screenshot(path=os.path.join(SHOTS, "hotseat-seat1.png"))
 
-        # seat 1 ends too: the table is ready, the enemy phase runs, turn 2 opens
+        # Seat 1 ends too: the table is ready, the enemy phase runs, turn 2 opens
+        # and the round comes back round to seat 0.
+        #
+        # WAIT FOR THE CONDITION, never a fixed sleep. The enemy phase animates
+        # two Kids being attacked and takes ~7s on this machine; a 6s wait
+        # passed and failed on alternate runs depending on what the enemies
+        # rolled. That is the measurement trap in CONTRACTS, in miniature.
         await page.click("#end-turn")
-        await page.wait_for_timeout(6000)
+        try:
+            await page.wait_for_function("""() => {
+              const sc = window.MM.ctx.scenes.current;
+              const e = sc && sc.engine;
+              if (!e || e.over) return true;
+              return !!document.querySelector('.mm-handoff')
+                  || window.MM.ctx.run.localSeat === 0;
+            }""", timeout=30000)
+        except Exception:
+            pass
         d = await page.evaluate(WHO)
         check(d["turn"] == 2 or d["phase"] == "over", "the enemy phase ran and turn 2 opened",
               f"turn {d['turn']} phase {d['phase']}")

@@ -273,11 +273,18 @@ export class RoomScene extends Scene {
     const run = this.run;
     const kid = run.kids[seat];
     if (!kid) return false;
-    await passTo({ name: run.kidNameOf(kid), companion: kid.companion, line, sub });
-    run.setLocalSeat(seat);
-    await this.ctx.scenes.go(this.ctx.scenes.currentName, {
-      node: run.currentNodeId, region: run.region, seed: run.seed,
-    }, { instant: true });
+    const name = this.ctx.scenes.currentName;
+    await passTo({
+      name: run.kidNameOf(kid), companion: kid.companion, line, sub,
+      // The room is rebuilt as theirs while the veil is still down, so what
+      // lifts is their screen and never a frame of the last Kid's.
+      onReady: async () => {
+        run.setLocalSeat(seat);
+        await this.ctx.scenes.go(name, {
+          node: run.currentNodeId, region: run.region, seed: run.seed,
+        }, { instant: true });
+      },
+    });
     return true;
   }
 

@@ -502,8 +502,19 @@ export function fmBell(ac, dest, t, o = {}) {
   }
   c[n - 1] = freq * indexEnd;
   mg.gain.setValueCurveAtTime(c, t, idur);
-  // +2 ms so the target event never lands inside the curve's own time range
-  mg.gain.setTargetAtTime(0, t + idur + 0.002, Math.max(0.02, dur * 0.25));
+  /**
+   * Clear of the curve by a whole RENDER QUANTUM, not 2 ms.
+   *
+   * `setValueCurveAtTime` does not start where you asked: the implementation
+   * quantises the start to a 128-sample block, so the curve really occupies
+   * [ceil(t), ceil(t) + idur] and can end AFTER `t + idur`. A 2 ms guard is
+   * smaller than one block at any sample rate this runs at (2.67 ms at 48 kHz),
+   * so a cue triggered at the wrong moment threw
+   * `setTargetAtTime(0, 3.048, …) overlaps setValueCurveAtTime(…, 3.0213, 0.03)`
+   * and the whole cue failed to build — measured on a real ui:hover.
+   */
+  const quantum = 128 / (ac.sampleRate || 48000);
+  mg.gain.setTargetAtTime(0, t + idur + quantum * 2, Math.max(0.02, dur * 0.25));
 
   env(vg.gain, t, dur, envFn, g0);
   run(car, ac, t, t + dur + 0.02);

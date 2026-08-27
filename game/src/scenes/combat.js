@@ -2760,9 +2760,9 @@ export class CombatScene extends Scene {
         companion: kid.companion,
         line: this.engine.turn > 1 ? 'Your turn.' : 'Your turn. The house is waiting.',
         sub: 'Do not look yet.',
+        // Behind the veil, so the board is already theirs when it lifts.
+        onReady: () => { run.setLocalSeat(next.seat); this._takeSeat(); },
       });
-      run.setLocalSeat(next.seat);
-      this._takeSeat();
     } finally {
       this._resolving = false;
     }

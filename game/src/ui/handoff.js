@@ -56,7 +56,14 @@ export function shouldHandOff(run) {
 /**
  * Cover the screen and wait for the next player.
  *
- * @param {{name:string, companion?:string, line?:string, sub?:string}} o
+ * `onReady` runs AFTER they say they are ready but BEFORE the veil lifts, and
+ * is awaited. That ordering is the whole point: switch the seat and redraw
+ * behind the cover, so what appears when it comes down is already the new Kid's
+ * screen. Doing it after the close shows a frame of the previous Kid's hand,
+ * which is precisely what this screen exists to prevent.
+ *
+ * @param {{name:string, companion?:string, line?:string, sub?:string,
+ *          onReady?:() => (void|Promise<void>)}} o
  * @returns {Promise<void>}
  */
 export async function passTo(o = {}) {
@@ -84,12 +91,21 @@ export async function passTo(o = {}) {
 
   m.body.appendChild(wrap);
   const go = wrap.querySelector('.hoff__go');
-  go.addEventListener('click', () => m.close());
+  let handing = false;
+  const ready = async () => {
+    if (handing) return;
+    handing = true;
+    go.disabled = true;
+    try { if (typeof o.onReady === 'function') await o.onReady(); }
+    catch (err) { console.error('[handoff] onReady threw', err); }
+    finally { m.close(); }
+  };
+  go.addEventListener('click', ready);
 
   // Enter and Space, because this is the one screen where a player is looking
   // away from the mouse while they hand the machine across.
   const onKey = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); m.close(); }
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ready(); }
   };
   document.addEventListener('keydown', onKey);
 
