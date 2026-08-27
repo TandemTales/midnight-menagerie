@@ -1826,6 +1826,19 @@ export async function run() {
     ok(plain.every(c => c.id.startsWith('marmalade/')), 'seat 0 got Marmalade ones');
   });
 
+  test('rewards: leaving a room puts BOTH Kids offers away', () => {
+    const run = rewardRun(963);
+    run.currentNodeId = 'foyer-3-5';
+    run._prepareReward({ id: 'foyer-3-5' }, 'bigScare', { navigate: false });
+    ok(!!run.kids[0].pendingReward && !!run.kids[1].pendingReward, 'both Kids are holding an offer');
+    run.claimReward();
+    // `pendingReward` is per Kid, so clearing the local one left seat 1 holding
+    // an offer for a room already behind them — which is saved, and comes back
+    // on resume as an unclaimed reward on a cleared node.
+    eq(run.kids[0].pendingReward, null, 'seat 0 offer is put away');
+    eq(run.kids[1].pendingReward, null, 'and so is seat 1');
+  });
+
   test('rewards: solo rolls exactly the reward it always rolled', () => {
     const solo = new Run({ seed: 961, companion: 'marmalade', kid: 'maya' });
     solo._prepareReward({ id: 'foyer-3-2' }, 'bigScare', { navigate: false });

@@ -487,6 +487,19 @@ export class Run {
     this.save();
     return true;
   }
+  /**
+   * Put away EVERY Kid's offer for the room being left, not just the local
+   * one's.
+   *
+   * `pendingReward` is per Kid, so clearing `this.pendingReward` clears the
+   * local Kid's and leaves the other seat holding an offer for a room that is
+   * already behind them — which is then saved, and comes back on resume as an
+   * unclaimed reward on a cleared node.
+   */
+  clearOffers() {
+    for (const k of this.kids) k.pendingReward = null;
+  }
+
   addKeepsake(defOrId) {
     const inst = typeof defOrId === 'string' ? makeRelic(defOrId) : (defOrId?.id ? defOrId : null);
     if (!inst) return null;
@@ -669,7 +682,7 @@ export class Run {
 
   /** Leave a non-combat room and go back to the blueprint. */
   leaveNode() {
-    this.pendingReward = null;
+    this.clearOffers();
     this.pendingEvent = null;
     this.pendingShop = null;
     this._roomDone = true;
@@ -990,7 +1003,7 @@ export class Run {
     // The room is not cleared and the reward does not exist. Say it out loud
     // here too, in case a save from an older build claimed otherwise.
     this._markEntered(pc.nodeId);
-    this.pendingReward = null;
+    this.clearOffers();
     this.currentNodeId = pc.nodeId;
     this.courage = Math.max(1, Math.min(this.maxCourage, pc.courageOnEntry ?? this.courage));
 
@@ -1372,7 +1385,7 @@ export class Run {
       this.addMaxCourage(this.flags.maxHpOnMilestone);
     }
     const wasBoss = r.kind === 'boss';
-    this.pendingReward = null;
+    this.clearOffers();
     this._markCleared(r.nodeId || this.currentNodeId);
     this.save();
     if (wasBoss) return this.completeRegion();
@@ -2061,7 +2074,7 @@ export class Run {
     // An unfinished fight must never be resumable as a cleared room, whatever
     // an older save claimed.
     if (run.pendingCombat && run.pendingCombat.nodeId) {
-      run.pendingReward = null;
+      run.clearOffers();
       run._markEntered(run.pendingCombat.nodeId);
     }
     return run;
