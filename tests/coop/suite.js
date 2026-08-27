@@ -984,6 +984,38 @@ export async function run() {
     eq(run.healKid(null, 20), 0, 'and healing nobody is a no-op, not a throw');
   });
 
+  test('rewards: each Kid drafts from their OWN Companion pool', () => {
+    const run = new Run({
+      seed: 910,
+      kids: [{ companion: 'marmalade', kid: 'maya' }, { companion: 'bones', kid: 'eli' }],
+    });
+    const node = run.map.nodes.find(n => n.row === 0) || run.map.nodes[0];
+    run._prepareReward(node, 'scuffle', { navigate: false });
+
+    const [a, b] = run.kids;
+    ok(!!a.pendingReward, 'seat 0 has a reward');
+    ok(!!b.pendingReward, 'seat 1 has one too — not just the host');
+    const ids = (k) => (k.pendingReward.cards || []).map(c => c.id);
+    eq(ids(a).length, 3, 'three Tricks for seat 0');
+    eq(ids(b).length, 3, 'three for seat 1');
+    ok(ids(a).every(id => id.startsWith('marmalade/')),
+      'seat 0 is offered Marmalade Tricks');
+    ok(ids(b).every(id => id.startsWith('bones/')),
+      'seat 1 is offered BONES Tricks — offering them Marmalade cards is not a reward');
+    ok(ids(a).join() !== ids(b).join(), 'and the two offers are different');
+  });
+
+  test('rewards: solo drafts exactly as it always did, with no co-op cards', () => {
+    const run = new Run({ companion: 'marmalade', kid: 'maya', seed: 911 });
+    const node = run.map.nodes.find(n => n.row === 0) || run.map.nodes[0];
+    run._prepareReward(node, 'scuffle', { navigate: false });
+    const ids = (run.pendingReward.cards || []).map(c => c.id);
+    eq(ids.length, 3, 'three Tricks');
+    const coopIds = new Set(coopCardsOf('marmalade').map(c => c.id));
+    ok(!ids.some(id => coopIds.has(id)),
+      'and NONE of them is a multiplayer-only Trick');
+  });
+
   const passed = results.reduce((n, t) => n + t.asserts.filter(a => a.pass).length, 0);
   const failed = results.reduce((n, t) => n + t.failed, 0);
   return { results, passed, failed };

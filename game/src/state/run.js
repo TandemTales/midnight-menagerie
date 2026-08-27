@@ -69,7 +69,7 @@ import { bus } from '../core/bus.js';
 import { NodeType, REGION_ORDER, TERMS, COMPANIONS, KIDS } from '../data/schema.js';
 import { generateRegionMap, legalNextIds, regionMeta, sceneForNode } from './mapgen.js';
 import {
-  cardById, startingDeckFor, poolFor, companion as companionDef, allCards,
+  cardById, startingDeckFor, poolFor, poolWithCoop, companion as companionDef, allCards,
 } from '../data/cards.js';
 import { encountersFor, rollEncounter, buildEncounter } from '../data/encounters.js';
 import { MAX_PARTY } from '../combat/engine.js';
@@ -1188,10 +1188,8 @@ export class Run {
     const purse = PURSE[type] || PURSE[NodeType.SCUFFLE];
     const lost = rng.range(purse[0], purse[1]);
 
-    const cards = this.rollCardReward(rng, {
-      count: 3,
-      eliteBonus: type === NodeType.BIG_SCARE ? 5 : type === NodeType.BOSS ? 10 : 0,
-    });
+    const eliteBonus = type === NodeType.BIG_SCARE ? 5 : type === NodeType.BOSS ? 10 : 0;
+    const cards = this.rollCardReward(rng, { count: 3, eliteBonus, forKid: this.local });
 
     const owned = this.ownedKeepsakeIds();
     let keepsake = null;
@@ -1210,6 +1208,21 @@ export class Run {
       taken: [],
       encounter: this.combatMeta?.name || null,
     };
+    // EVERY Kid drafts their own three, from their OWN Companion's pool and
+    // off their OWN forked stream — sharing one roll would offer a Bones player
+    // three Marmalade Tricks, and sharing one stream would make the second
+    // Kid's offer depend on the order the two were rolled.
+    for (const k of this.kids) {
+      if (k === this.local) continue;
+      const kRng = this.fork(`reward:${node?.id || 'x'}:seat${k.seat}`);
+      k.pendingReward = {
+        ...this.pendingReward,
+        cards: this.rollCardReward(kRng, { count: 3, eliteBonus, forKid: k })
+          .map(def => ({ id: def.id, rarity: def.rarity })),
+        taken: [],
+      };
+    }
+
     bus.emit('run:reward', { reward: this.pendingReward, node, type });
     this.save();
     return navigate ? this._goto('reward', { node: node?.id, region: this.region }) : this.pendingReward;
@@ -1234,14 +1247,26 @@ export class Run {
    * Three distinct Tricks from this Companion's pool.
    * Base ladder mirrors StS: 60 / 37 / 3, rare shifted by luck + pity.
    */
-  rollCardReward(rng, { count = 3, eliteBonus = 0 } = {}) {
+  /**
+   * Three Tricks to choose from.
+   *
+   * `forKid` is which Kid is being offered them, because the pool is their
+   * COMPANION'S — offering a Bones player three Marmalade Tricks is not a
+   * reward, it is a bug. Defaults to the local Kid, which is what solo means.
+   *
+   * `coop` folds in that Companion's multiplayer-only Tricks, which are outside
+   * the 80 and must never appear in a solo draft.
+   */
+  rollCardReward(rng, { count = 3, eliteBonus = 0, forKid = null, coop = null } = {}) {
+    const who = forKid || this.local;
+    const asParty = coop == null ? this.isParty : !!coop;
     const luck = this.flags.luck + eliteBonus;
     const out = [];
     const seen = new Set(out.map(c => c.id));
     for (let i = 0; i < count; i++) {
       const rarity = this._rollRarity(rng, luck);
-      let pool = poolFor(this.companion, rarity).filter(c => !seen.has(c.id));
-      if (!pool.length) pool = poolFor(this.companion).filter(c => !seen.has(c.id));
+      let pool = poolWithCoop(who.companion, rarity, { coop: asParty }).filter(c => !seen.has(c.id));
+      if (!pool.length) pool = poolWithCoop(who.companion, null, { coop: asParty }).filter(c => !seen.has(c.id));
       if (!pool.length) break;
       const pick = pool[rng.int(pool.length)];
       seen.add(pick.id);
