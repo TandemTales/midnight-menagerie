@@ -170,12 +170,29 @@ export const butler = {
     mem(c).ruleHistory = [];
     mem(c).retaliation = 0;
     mem(c).retaliationPending = 0;
+    mem(c).flusteredTurn = {};          // seat -> turn, one Flustered per Kid per round
     // Haunt 10: he opens with a rule already standing, so Formal Welcome is no longer free.
     if (flag(c, 'openWithRule')) butler.announceNext(c);
   },
 
   phase(c) { return mem(c).phase || 1; },
-  flusterThreshold(c) { return butler.phase(c) >= 2 ? 2 : 3; },
+
+  /**
+   * How much Flustered makes him Discomposed. Solo: 3, then 2 in phase two.
+   *
+   * "With multiple players: phase one requires 2 plus number of players
+   * Flustered. Phase two requires 1 plus number of players. For example, with
+   * two players: phase one threshold is 4, phase two is 3. This prevents a four
+   * player party from instantly forcing Discomposed every round."
+   * (docs/design/regions/01-foyer.md §28.)
+   *
+   * The formula reproduces the solo numbers exactly at one player, so there is
+   * no separate single-player branch — the same arithmetic all the way down.
+   */
+  flusterThreshold(c) {
+    const n = typeof c.partySize === 'function' ? Math.max(1, c.partySize()) : 1;
+    return butler.phase(c) >= 2 ? 1 + n : 2 + n;
+  },
 
   /**
    * Announce the standing House Rule(s).
@@ -226,8 +243,34 @@ export const butler = {
     return flag(c, 'fifthRule') ? RULE_IDS.concat('no-dawdling') : RULE_IDS;
   },
 
-  /** Engine hook: any House Rule of his was broken this turn. */
+  /**
+   * Engine hook: one of his House Rules was broken — by ONE Kid, who is
+   * `c.player`. The engine judges every rule seat by seat and resolves the
+   * Reprimand inside the breaker's seat (see `_checkRules`).
+   *
+   * "Each player can generate at most 1 Flustered per round." (§28.) Without
+   * that cap a two-Kid party in phase two, where two rules stand at once, can
+   * hand him four Flustered in a single round off one careless burst turn and
+   * force Discomposed every round for free — which is the exact failure the
+   * higher thresholds exist to prevent, arriving by the other door.
+   *
+   * The cap is NOT party-only, because solo is a party of one everywhere else
+   * in this build and a second code path here would be the thing that rots. It
+   * does change the solo boss: phase two stands two rules at once, so a burst
+   * turn used to hand him 2 Flustered against a threshold of 2 and open the
+   * window every single turn. Measured either way at scale 1.0 before it
+   * shipped — see docs/notes/2026-08-26-multiplayer-bosses.md.
+   *
+   * The Reprimand itself is NOT capped. Break three rules and you take three
+   * consequences; you just do not get three Flustered for it.
+   */
   onRuleBroken(c) {
+    const seat = c.player && c.player.side === 'player' ? c.player.seat : 0;
+    const m = mem(c);
+    const seen = m.flusteredTurn || (m.flusteredTurn = {});
+    if (seen[seat] === c.turn) return;
+    seen[seat] = c.turn;
+
     const n = addCnt(c, 'flustered', 1, 9);
     if (n >= butler.flusterThreshold(c)) {
       setCnt(c, 'flustered', 0);
@@ -242,26 +285,6 @@ export const butler = {
     if (butler.phase(c) >= 2 && !c.has('discomposed', c.self)) butler.announceNext(c);
   },
 
-  /**
-   * Close the Discomposed window.
-   *
-   * `discomposed` is `decay: 'never'` so it can span a player turn — the status
-   * decay buckets all fire inside the enemy phase, so any of them would have
-   * expired it before the player ever got to swing (and did: it was measurably
-   * worth zero). He clears it himself on the first of his own turns AFTER the
-   * one he wasted collecting himself, which makes the window exactly one full
-   * player turn: break the third rule, watch him tidy his cuffs, then hit him
-   * for 25% more.
-   */
-  onTurnEnd(c) {
-    const m = mem(c);
-    if (!c.has('discomposed', c.self)) return;
-    if (m.windowTurn != null && c.turn > m.windowTurn) {
-      c.removeStatus(c.self, 'discomposed');
-      m.windowTurn = null;
-    }
-  },
-
   /** Roused armed by Service, Please lands here, after every enemy has acted. */
   onEnemyPhaseEnd(c) {
     if (!mem(c).rousePending) return;
@@ -270,12 +293,34 @@ export const butler = {
     if (other) c.applyStatus(other, 'roused', 1);
   },
 
-  /** Promote a Reprimand banked this turn so the NEXT intent shows it. */
+  /**
+   * His own turn end does TWO things, and it used to do neither reliably: this
+   * def declared `onTurnEnd` twice, and in a JS object literal the second key
+   * silently wins. The Discomposed half below was dead for the whole build —
+   * `discomposed` is `decay: 'never'`, so once he became Discomposed he STAYED
+   * Discomposed: permanently taking 25% more, and permanently unable to
+   * announce another House Rule (`announceNext` refuses while Discomposed), so
+   * the Flustered economy the entire boss is built on shut down the first time
+   * the player won it. `tests/dup-keys/check.py` now gates the class.
+   *
+   * 1. Close the Discomposed window. The decay buckets all fire inside the
+   *    enemy phase, so any of them would have expired it before the player got
+   *    to swing. He clears it himself on the first of his own turns AFTER the
+   *    one he wasted collecting himself, which makes the window exactly one
+   *    full player turn: break the last rule, watch him tidy his cuffs, then
+   *    hit him for 25% more.
+   * 2. Promote a Reprimand banked this turn so the NEXT intent shows it.
+   */
   onTurnEnd(c) {
-    const pending = mem(c).retaliationPending || 0;
+    const m = mem(c);
+    if (c.has('discomposed', c.self) && m.windowTurn != null && c.turn > m.windowTurn) {
+      c.removeStatus(c.self, 'discomposed');
+      m.windowTurn = null;
+    }
+    const pending = m.retaliationPending || 0;
     if (pending) {
-      mem(c).retaliation = (mem(c).retaliation || 0) + pending;
-      mem(c).retaliationPending = 0;
+      m.retaliation = (m.retaliation || 0) + pending;
+      m.retaliationPending = 0;
     }
   },
 

@@ -824,6 +824,358 @@ export async function run() {
     eq(duo.perPlayer(18), 36, 'two Kids doubles it — foyer §27 Snag');
   });
 
+  // ── per-seat turn counters, and the House Rules built on them ─────────────
+  // Every field a House Rule reads used to be the TABLE's: `engine.stats` and
+  // `engine.playedThisTurn` count the whole party. Two Kids playing two Tricks
+  // each therefore broke "a fourth Trick this turn", which neither of them
+  // broke, and the Reprimand landed on whoever the enemy was aiming at rather
+  // than on the Kid who earned it. Design: "One player's actions do not punish
+  // another player. This prevents multiplayer resentment." (foyer §26/§28.)
+
+  /** Play `n` Tricks out of one seat's hand. Returns how many actually went. */
+  async function playN(e, seat, n, targetId = null) {
+    let done = 0;
+    for (let i = 0; i < n; i++) {
+      const card = seat.piles.hand.find(c => e.canPlay(c.uid, targetId).ok);
+      if (!card) break;
+      await e.playCard(card.uid, targetId);
+      done++;
+    }
+    return done;
+  }
+
+  await atest('seat stats: a Kid counts their OWN Tricks, the engine counts the table', async () => {
+    const e = await startDummyParty(new RNG(451), 2, { maxHp: 90, drawPerTurn: 6, energyMax: 9 });
+    const [a, b] = e.players;
+    const foe = e.livingEnemies()[0];
+    eq(await playN(e, a, 2, foe.id), 2, 'seat 0 played two');
+    eq(await playN(e, b, 3, foe.id), 3, 'seat 1 played three');
+    eq(a.stats.cardsPlayedThisTurn, 2, 'seat 0 counted two');
+    eq(b.stats.cardsPlayedThisTurn, 3, 'seat 1 counted three');
+    eq(e.stats.cardsPlayedThisTurn, 5, 'the TEAM mirror still counts all five');
+    eq(e.seatStats(a).cardsPlayedThisTurn, 2, 'seatStats(seat) answers for that seat');
+    eq(e.seatPlayed(b).length, 3, 'seatPlayed(seat) lists that seat only');
+    eq(e.playedThisTurn.length, 5, 'engine.playedThisTurn is still the whole round');
+  });
+
+  await atest('seat stats: they reset every turn and the combat total does not', async () => {
+    const e = await startDummyParty(new RNG(453), 2, { maxHp: 90, drawPerTurn: 6, energyMax: 9 });
+    const [a] = e.players;
+    await playN(e, a, 2, e.livingEnemies()[0].id);
+    eq(a.stats.cardsPlayedThisTurn, 2, 'two this turn');
+    await e.endTurn();
+    eq(a.stats.cardsPlayedThisTurn, 0, 'a new turn starts the count over');
+    ok(a.stats.cardsPlayedThisCombat >= 2, 'the combat total is cumulative');
+  });
+
+  await atest('seat stats: damage dealt is credited to the Kid who dealt it', async () => {
+    const e = await startDummyParty(new RNG(455), 2, { maxHp: 90, drawPerTurn: 6, energyMax: 9 });
+    const [a, b] = e.players;
+    const foe = e.livingEnemies()[0];
+    const hit = a.piles.hand.find(c => c.id === SCRATCH.id);
+    ok(!!hit, 'seat 0 is holding a Scratch');
+    await e.playCard(hit.uid, foe.id);
+    ok(a.stats.damageDealtThisTurn > 0, 'seat 0 is credited');
+    eq(b.stats.damageDealtThisTurn, 0, 'seat 1 is not credited for it');
+    eq(e.stats.damageDealtThisTurn, a.stats.damageDealtThisTurn, 'the team mirror has the same total');
+  });
+
+  await atest('seat stats: a teammate being hit does not end YOUR Untouched', async () => {
+    const e = await startDummyParty(new RNG(457), 2, { enemies: [PICKY], maxHp: 90 });
+    const [a, b] = e.players;
+    e.gainBlock(a, 40, { fromCard: false, reason: 'test' });   // seat 0 is covered
+    e.refreshIntents('test');
+    await e.endTurn();
+    ok(b.stats.damageTakenLastEnemyTurn > 0, 'seat 1 took the hit');
+    eq(a.stats.damageTakenLastEnemyTurn, 0, 'seat 0 came through untouched');
+    ok(e.stats.damageTakenLastEnemyTurn > 0, 'the team mirror still sees the party was hit');
+  });
+
+  // A House Rule with the exact shape of the Butler's GUESTS DO NOT RUSH.
+  const NO_RUSH = () => ({
+    id: 'test-no-running', name: 'GUESTS DO NOT RUSH',
+    text: 'Playing a fourth Trick this turn breaks the rule. Reprimand: 6 damage.',
+    when: 'cardPlayed', once: true,
+    broken: (rc) => (rc.cardsPlayedThisTurn || []).length >= 4,
+    // Ignores Guard on purpose: these tests are about WHICH Kid the Reprimand
+    // lands on, and a seat that happened to draw a Curl Up would absorb it and
+    // make the assertion say nothing.
+    onBreak: (c) => c.damage(6, { ignoreBlock: true }),
+  });
+
+  /** Does nothing at all, so the enemy phase cannot muddy a Reprimand assertion. */
+  const PASSIVE = {
+    id: 'coop/passive', name: 'Statue', region: 'foyer', tier: 'normal',
+    hp: [90, 90], silhouette: 'blob',
+    moves: { wait: { id: 'wait', name: 'Wait', intent: 'unknown', tell: 'It waits.', effect: () => {} } },
+    nextMove: () => 'wait',
+  };
+
+  await atest('house rules: two Kids playing two Tricks each break nothing', async () => {
+    const e = await startDummyParty(new RNG(461), 2, { maxHp: 90, drawPerTurn: 6, energyMax: 9 });
+    const [a, b] = e.players;
+    const foe = e.livingEnemies()[0];
+    e.announceRule(NO_RUSH(), foe.id);
+    const broken = [];
+    e.on(EV.RULE_BROKEN, (ev) => broken.push(ev));
+    const hp = { a: a.hp, b: b.hp };
+    eq(await playN(e, a, 2, foe.id), 2, 'seat 0 played two');
+    eq(await playN(e, b, 2, foe.id), 2, 'seat 1 played two');
+    eq(broken.length, 0, 'four Tricks across two Kids is not a fourth Trick by either');
+    eq(a.hp, hp.a, 'seat 0 was not Reprimanded');
+    eq(b.hp, hp.b, 'seat 1 was not Reprimanded');
+  });
+
+  await atest('house rules: the Kid who breaks it is the Kid who pays', async () => {
+    const e = await startDummyParty(new RNG(463), 2, { maxHp: 90, drawPerTurn: 6, energyMax: 9 });
+    const [a, b] = e.players;
+    const foe = e.livingEnemies()[0];
+    e.announceRule(NO_RUSH(), foe.id);
+    const broken = [];
+    e.on(EV.RULE_BROKEN, (ev) => broken.push(ev));
+    const hp = { a: a.hp, b: b.hp };
+    eq(await playN(e, b, 4, foe.id), 4, 'seat 1 got four Tricks out');
+    eq(broken.length, 1, 'the rule broke exactly once');
+    eq(broken[0].seat, 1, 'and the event names the seat that broke it');
+    eq(hp.b - b.hp, 6, 'seat 1 took the Reprimand, all 6 of it');
+    eq(a.hp, hp.a, 'seat 0, who did nothing, took nothing');
+  });
+
+  await atest('house rules: one Kid breaking it buys the other Kid no immunity', async () => {
+    const e = await startDummyParty(new RNG(465), 2, { maxHp: 90, drawPerTurn: 6, energyMax: 9 });
+    const [a, b] = e.players;
+    const foe = e.livingEnemies()[0];
+    e.announceRule(NO_RUSH(), foe.id);
+    const broken = [];
+    e.on(EV.RULE_BROKEN, (ev) => broken.push(ev));
+    eq(await playN(e, a, 4, foe.id), 4, 'seat 0 played four');
+    eq(broken.length, 1, 'seat 0 broke it');
+    eq(await playN(e, b, 4, foe.id), 4, 'seat 1 played four');
+    eq(broken.length, 2, 'and seat 1 breaking it is a SECOND break, not immunity');
+    eq(broken[1].seat, 1, 'credited to seat 1');
+  });
+
+  await atest('house rules: a turnEnd rule is judged seat by seat', async () => {
+    const e = await startDummyParty(new RNG(467), 2, { maxHp: 90, enemies: [PASSIVE] });
+    const [a, b] = e.players;
+    const foe = e.livingEnemies()[0];
+    e.announceRule({
+      id: 'test-hall-clear', name: 'GUESTS DO NOT CLUTTER THE HALL',
+      text: 'Ending your turn with 12 or more Guard breaks the rule.',
+      when: 'turnEnd', once: true,
+      broken: (rc) => (rc.playerBlock || 0) >= 12,
+      onBreak: (c) => c.damage(4, { ignoreBlock: true }),
+    }, foe.id);
+    const broken = [];
+    e.on(EV.RULE_BROKEN, (ev) => broken.push(ev));
+    e.gainBlock(a, 20, { fromCard: false, reason: 'test' });   // only seat 0 is over the line
+    const hp = { a: a.hp, b: b.hp };
+    await e.endTurn();
+    eq(broken.length, 1, 'exactly one seat broke it');
+    eq(broken[0].seat, 0, 'the one holding 20 Guard');
+    eq(hp.a - a.hp, 4, 'seat 0 paid for it');
+    eq(b.hp, hp.b, 'and the other Kid was not touched for it');
+  });
+
+  await atest('house rules: a Reprimand that adds a card adds it to the BREAKER pile', async () => {
+    const e = await startDummyParty(new RNG(469), 2, { maxHp: 90, drawPerTurn: 6, energyMax: 9 });
+    const [a, b] = e.players;
+    const foe = e.livingEnemies()[0];
+    e.registerCards([SCRATCH]);
+    e.announceRule({
+      id: 'test-dawdle', name: 'GUESTS DO NOT DAWDLE',
+      text: 'Playing a fourth Trick this turn breaks the rule. Reprimand: a card into your discard.',
+      when: 'cardPlayed', once: true,
+      broken: (rc) => (rc.cardsPlayedThisTurn || []).length >= 4,
+      onBreak: (c) => { c.addCard(SCRATCH.id, 'discard'); },
+    }, foe.id);
+    const before = { a: a.piles.discard.length, b: b.piles.discard.length };
+    eq(await playN(e, b, 4, foe.id), 4, 'seat 1 played four');
+    eq(b.piles.discard.length - before.b, 5, 'seat 1 got the Reprimand card on top of their four spent Tricks');
+    eq(a.piles.discard.length, before.a, 'seat 0 discard pile was never touched');
+  });
+
+  await atest('house rules: previewing a card does not use up the rule the real play needs', async () => {
+    const e = await startDummyParty(new RNG(471), 2, { maxHp: 90, drawPerTurn: 6, energyMax: 9 });
+    const [, b] = e.players;
+    const foe = e.livingEnemies()[0];
+    e.announceRule(NO_RUSH(), foe.id);
+    eq(await playN(e, b, 3, foe.id), 3, 'seat 1 played three');
+    const fourth = b.piles.hand.find(c => e.canPlay(c.uid, foe.id).ok);
+    ok(!!fourth, 'seat 1 is holding a fourth Trick');
+    const clone = e.clone();
+    const mirror = clone.card(fourth.uid);
+    await clone.playCard(mirror.uid, foe.id);          // preview it first
+    const broken = [];
+    e.on(EV.RULE_BROKEN, (ev) => broken.push(ev));
+    const hp = b.hp;
+    await e.playCard(fourth.uid, foe.id);
+    eq(broken.length, 1, 'the real play still breaks the rule');
+    // Not an exact number: the Reprimand is an enemy attack, so a Boo played
+    // earlier in the turn legitimately Weakens it.
+    ok(hp - b.hp > 0, 'and the Reprimand still lands');
+  });
+
+  // ── the Butler with two Kids (foyer §28) ──────────────────────────────────
+  // "House Rules apply to each player individually… Each player can generate at
+  // most 1 Flustered per round… Phase one requires 2 plus number of players
+  // Flustered. Phase two requires 1 plus number of players." The formula
+  // reproduces the solo 3 / 2 at one player, so there is no separate
+  // single-player branch to drift.
+
+  async function butlerParty(seed = 501, n = 2) {
+    const { butler, HOUSE_RULES } = await import('../../game/src/data/bosses/butler.js');
+    const e = await startDummyParty(new RNG(seed), n, {
+      enemies: [butler], maxHp: 90, drawPerTurn: 6, energyMax: 9,
+    });
+    loadContentRegistries(e);
+    return { butler, HOUSE_RULES, e, b: e.enemies[0] };
+  }
+  const breakRuleAs = (butler, e, b, pl) =>
+    butler.onRuleBroken(e.enemyCtx(b, null, { rule: { id: 'test-rule' }, aimAt: pl }));
+
+  await atest('butler: two Kids raise the Flustered threshold to 4, then 3', async () => {
+    const { butler, e, b } = await butlerParty(501);
+    const c = () => e.enemyCtx(b, null);
+    eq(butler.flusterThreshold(c()), 4, 'phase one with two Kids: 2 + 2');
+    b.mem.phase = 2;
+    eq(butler.flusterThreshold(c()), 3, 'phase two: 1 + 2');
+  });
+
+  await atest('butler: each Kid can hand him one Flustered a round, and only one', async () => {
+    const { butler, e, b } = await butlerParty(503);
+    const [a, d] = e.players;
+    b.counters.flustered = 0;
+    breakRuleAs(butler, e, b, a);
+    breakRuleAs(butler, e, b, a);
+    eq(b.counters.flustered, 1, 'seat 0 breaking two rules is still one Flustered');
+    breakRuleAs(butler, e, b, d);
+    eq(b.counters.flustered, 2, 'but the OTHER Kid can add their own');
+    breakRuleAs(butler, e, b, d);
+    eq(b.counters.flustered, 2, 'and no more than one each');
+    ok(!b.hasStatus('discomposed'), 'two is short of the four a duo needs in phase one');
+  });
+
+  await atest('butler: his real House Rule punishes only the Kid who broke it', async () => {
+    const { butler, HOUSE_RULES, e, b } = await butlerParty(505);
+    const [a, d] = e.players;
+    const foe = b;
+    e.clearRules();
+    e.announceRule(HOUSE_RULES['no-running'](false), foe.id);   // a fourth Trick: 6 damage
+    const broken = [];
+    e.on(EV.RULE_BROKEN, (ev) => broken.push(ev));
+    // On the damage EVENT, not on Courage: whether a Curl Up happened to be in
+    // the hand decides how much of the Reprimand reaches Courage, and that is
+    // not what this test is about.
+    const hits = [];
+    e.on(EV.DAMAGE, (ev) => { if (ev.sourceId === foe.id) hits.push(ev); });
+    eq(await playN(e, a, 4, foe.id), 4, 'seat 0 played a fourth Trick');
+    eq(await playN(e, d, 3, foe.id), 3, 'seat 1 stopped at three');
+    eq(broken.length, 1, 'exactly one Kid broke GUESTS DO NOT RUSH');
+    eq(broken[0].seat, 0, 'the one who played four');
+    eq(hits.filter(h => h.targetId === a.id).length, 1, 'seat 0 was Reprimanded, once');
+    eq(hits.filter(h => h.targetId === d.id).length, 0, 'seat 1, who respected it, was not touched');
+    eq(b.counters.flustered, 1, 'and he is one Flustered, not two');
+  });
+
+  // ── the Governess with two Kids (nursery §35) ─────────────────────────────
+  // "The first damage redirected from each player every round is 10. So with
+  // four players, each player can independently trigger the thread. This
+  // prevents player order from determining who gets punished by the mechanic."
+  // A single shared allowance would mean whoever swings second hits her
+  // directly, and the right play would be "wait for your friend to go first",
+  // which is not a decision anyone should have to make.
+
+  async function govParty(seed = 601, n = 2) {
+    const { governess, favoriteDoll } = await import('../../game/src/data/bosses/governess.js');
+    const e = await startDummyParty(new RNG(seed), n, {
+      enemies: [governess, favoriteDoll], maxHp: 90, drawPerTurn: 6, energyMax: 9,
+    });
+    loadContentRegistries(e);
+    return {
+      governess, e,
+      gov: e.enemies.find(x => x.defId === 'governess'),
+      doll: e.enemies.find(x => x.defId === 'favorite-doll'),
+    };
+  }
+  const swing = (e, by, at, n) => {
+    const before = at.hp;
+    e.dealDamage({ attacker: by, defender: at, amount: n, kind: 'attack' });
+    return before - at.hp;
+  };
+
+  await atest('governess: every Kid gets their OWN Stitched Together allowance', async () => {
+    const { e, gov, doll } = await govParty(601);
+    const [a, b] = e.players;
+    let d0 = doll.hp;
+    swing(e, a, gov, 30);
+    eq(d0 - doll.hp, 10, 'seat 0 put 10 into the Doll');
+    d0 = doll.hp;
+    swing(e, b, gov, 30);
+    eq(d0 - doll.hp, 10, 'and seat 1 put their OWN 10 in — not a shared pool');
+    d0 = doll.hp;
+    swing(e, a, gov, 30);
+    eq(d0 - doll.hp, 0, 'seat 0 has spent theirs; the next swing reaches her');
+  });
+
+  await atest('governess: the allowances all come back at the top of the round', async () => {
+    const { e, gov, doll } = await govParty(603);
+    const [a, b] = e.players;
+    swing(e, a, gov, 30);
+    swing(e, b, gov, 30);
+    await e.endTurn();
+    const d0 = doll.hp;
+    swing(e, a, gov, 30);
+    eq(d0 - doll.hp, 10, 'seat 0 has a fresh 10 next round');
+  });
+
+  // Its rolled Patch can add 10 maximum Courage, so both of these measure the
+  // pool WITHOUT the Patch rather than depending on the roll.
+  const stuffing = (d) => ((d.mem.patches || []).includes('stuffed-patch') ? 10 : 0);
+
+  await atest('governess: Favorite Doll is 80 Courage with two Kids, not 110', async () => {
+    const { doll } = await govParty(605);
+    eq(doll.maxHp - stuffing(doll), 80, 'the region chapter number, not the 2.2x party curve');
+  });
+
+  await atest('governess: solo, the Doll is the printed 50', async () => {
+    const { favoriteDoll } = await import('../../game/src/data/bosses/governess.js');
+    const e = makeDummyCombat(new RNG(607), { enemies: [favoriteDoll] });
+    await e.startCombat();
+    const d = e.enemies[0];
+    eq(d.maxHp - stuffing(d), 50, 'no party path leaked into solo');
+  });
+
+  await atest('governess: tearing a Patch takes 20 per Kid, contributed by anyone', async () => {
+    const { e } = await govParty(609);
+    eq(e.perPlayer(20), 40, 'two Kids, 40 damage across the team round');
+  });
+
+  await atest('governess: the repair window waits for a Kid who had already finished', async () => {
+    const { governess, e, gov, doll } = await govParty(611);
+    const [a, b] = e.players;
+    await e.endTurn(b);                       // seat 1 is done for the round
+    ok(b.ended, 'seat 1 has ended their turn');
+    e.dealDamage({ attacker: a, defender: doll, amount: 999, kind: 'attack' });
+    ok(doll.mem.torn, 'seat 0 tore the Doll after that');
+    const tornOn = doll.mem.tornOnTurn;
+    eq(doll.mem.tornWindowUntil, tornOn + 1, 'the window owes seat 1 a round they can act in');
+
+    await e.endTurn();                        // finish the round seat 1 sat out
+    eq(governess.canMend(e.enemyCtx(gov, null)), false,
+       'she still cannot mend — seat 1 has not had a turn with the Doll down');
+    await e.endTurn();                        // now seat 1 has had one
+    eq(governess.canMend(e.enemyCtx(gov, null)), true, 'now every Kid has had their window');
+  });
+
+  await atest('governess: a Kid still holding their turn does not extend the window', async () => {
+    const { e, doll } = await govParty(613);
+    const [a] = e.players;
+    e.dealDamage({ attacker: a, defender: doll, amount: 999, kind: 'attack' });
+    eq(doll.mem.tornWindowUntil, doll.mem.tornOnTurn,
+       'both Kids can still act this round, so the window is the ordinary one');
+  });
+
   // ── the run layer with two Kids ───────────────────────────────────────────
   // Shared route and rooms; per-Kid deck, Courage, Lost Things, Keepsakes,
   // Backpack. Same split as Slay the Spire 2, and the reason two Kids feel like

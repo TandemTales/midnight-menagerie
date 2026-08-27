@@ -378,7 +378,12 @@ export function empower(c, n) { applySelf(c, 'empowered', n); }
 /** Cards played so far this turn, including the one currently resolving. */
 export function playedThisTurn(c) {
   if (typeof c?.cardsPlayedThisTurn === 'function') return c.cardsPlayedThisTurn() | 0;
-  const n = c?.e?.stats?.cardsPlayedThisTurn ?? c?.e?.cardsPlayedThisTurn;
+  // THIS Kid's count, not the table's — `e.stats` is the team mirror and would
+  // give Zoomies away for a teammate's turn. `seatStats` falls back to the
+  // acting seat, which in solo is the only seat there is.
+  const n = (typeof c?.e?.seatStats === 'function')
+    ? c.e.seatStats(c.self && c.self.side === 'player' ? c.self : null).cardsPlayedThisTurn
+    : (c?.e?.stats?.cardsPlayedThisTurn ?? c?.e?.cardsPlayedThisTurn);
   return typeof n === 'number' ? n : mm(c).played;
 }
 /** Marmalade: this is the third or later Trick played this turn. */
@@ -387,7 +392,11 @@ export function zoomies(c) { return playedThisTurn(c) >= 3; }
 export function isUntouched(c) {
   if (typeof c?.untouched === 'function') return !!c.untouched();
   if (stacks(c, c.self, 'untouched') > 0) return true;
-  const d = c?.e?.stats?.damageTakenLastEnemyTurn;
+  // This seat's own Courage loss. A teammate getting hit does not end YOUR
+  // Untouched — Marmalade's whole archetype is a claim about one Kid's turn.
+  const d = (typeof c?.e?.seatStats === 'function')
+    ? c.e.seatStats(c.self && c.self.side === 'player' ? c.self : null).damageTakenLastEnemyTurn
+    : c?.e?.stats?.damageTakenLastEnemyTurn;
   if (typeof d === 'number') return d === 0;
   return mm(c).untouched;
 }

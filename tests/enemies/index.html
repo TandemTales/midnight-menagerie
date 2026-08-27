@@ -132,6 +132,33 @@ class MockCombat {
       },
       summon: (enemyId, o = {}) => self.summon(actor, enemyId, o),
       despawn: (a) => { a.alive = false; a.despawned = true; },
+      /**
+       * Powers and ad-hoc hooks are RECORDED, not simulated.
+       *
+       * The Governess hangs Stitched Together on a Power with an
+       * `onIncomingHit` hook, so this harness has to accept one or her spawn
+       * throws. It deliberately does not run the hook: a harness that
+       * implements the mechanic it is checking proves nothing (CONTRACTS rule
+       * 9, and the multi-hit bug this project already shipped behind a green
+       * suite). The behaviour is asserted against the real engine in
+       * tests/combat/suite.js and tests/coop/suite.js.
+       */
+      addPower: (p, a) => {
+        const owner = a || actor;
+        (owner.powers ||= {})[p && p.id] = p;
+        (self.powerLog ||= []).push({ actor: owner.uid || owner.id, id: p && p.id });
+        return p;
+      },
+      addHook: (name, fn) => { (self.hookLog ||= []).push({ actor: actor.uid || actor.id, name }); return () => {}; },
+      // This harness is a SOLO board, so every per-player threshold is the
+      // printed number — the same answer the real engine gives a party of one.
+      // The co-op suite proves the multiplied form.
+      perPlayer: (n) => (n | 0),
+      partySize: () => 1,
+      players: () => [self.player],
+      pickSeat: () => self.player,
+      seatStats: () => self.stats || {},
+      seatPlayed: () => self.cardsPlayedThisTurn || [],
       setCounter: (k, v) => { actor.counters[k] = v; },
       counter: (k) => actor.counters[k],
       // Mirrors engine.js announceRule: a rule replaces only the rule with the SAME id.

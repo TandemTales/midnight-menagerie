@@ -212,9 +212,16 @@ export function applyDamage(engine, o) {
   if (defender.side === 'player') {
     st.damageTakenThisTurn += t.hpLoss;
     st.damageTakenThisCombat += t.hpLoss;
+    // …and the seat's own copy. The team mirror above is what an elite's
+    // "16 damage per player, all team damage contributes" threshold reads;
+    // this is what a Kid's own card and the Butler's House Rules read.
+    defender.stats.damageTakenThisTurn += t.hpLoss;
+    defender.stats.damageTakenThisCombat += t.hpLoss;
   } else if (attacker && attacker.side === 'player') {
     st.damageDealtThisTurn += t.hpLoss;
     st.damageDealtThisCombat += t.hpLoss;
+    attacker.stats.damageDealtThisTurn += t.hpLoss;
+    attacker.stats.damageDealtThisCombat += t.hpLoss;
   }
 
   engine._emit(EV.DAMAGE, {

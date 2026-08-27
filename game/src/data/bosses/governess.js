@@ -29,6 +29,20 @@ import {
 
 const PHASE2_AT = 100;
 
+/**
+ * Stitched Together: how much damage Favorite Doll eats before she feels any,
+ * PER KID, PER ROUND.
+ *
+ * "The first damage redirected from each player every round is 10. So with four
+ * players, each player can independently trigger the thread. This prevents
+ * player order from determining who gets punished by the mechanic."
+ * (docs/design/regions/02-nursery.md §35.) A single shared 10 would mean the
+ * first Kid to swing spends the whole allowance and the second Kid's opening
+ * Trick hits her directly — the mechanic would reward acting last, which is
+ * not a decision anybody should be making.
+ */
+const STITCH_PER_TURN = 10;
+
 /** Favorite Doll's random Patch, visible before the first player turn. */
 export const DOLL_PATCHES = {
   'stuffed-patch': { id: 'stuffed-patch', name: 'Stuffed Patch', desc: 'Favorite Doll has 10 additional maximum Courage.' },
@@ -54,6 +68,16 @@ export const favoriteDoll = {
   passive: true,
   lore: 'She has repaired it so many times that none of the original doll is left. She has never once considered that this might matter.',
 
+  /**
+   * "Favorite Doll scales to: 2 players 80 Courage, 3 players 105, 4 players
+   * 128." (docs/design/regions/02-nursery.md §35.) That is a shallower curve
+   * than the party default of 2.2x, which would put it at 110 — and the Doll is
+   * not a health bar, it is a timer on a window the party is trying to open.
+   * Scaling it like an enemy would make the vulnerability window arrive later
+   * with more Kids, which is backwards.
+   */
+  partyHp: (n) => [1, 1.6, 2.1, 2.56][Math.min(n, 4) - 1] ?? 1,
+
   onSpawn(c) {
     // One Patch, rolled from the run seed and shown before the first player turn.
     const n = flag(c, 'patchCount', 1);
@@ -71,9 +95,30 @@ export const favoriteDoll = {
   /** Torn: still on the battlefield, no longer redirecting, no longer targetable. */
   isTorn(c) { return !!mem(c).torn; },
 
+  /**
+   * Torn. It keeps its place on the board — Mend My Darling has to find it
+   * again, and `governess.doll()` therefore searches the whole board rather
+   * than the living enemies.
+   */
   onDeath(c) {
     mem(c).torn = true;
     mem(c).tornOnTurn = c.turn;
+    /**
+     * The repair window has to be one every Kid can actually use.
+     *
+     * "When Favorite Doll becomes Torn, it remains Torn until every player has
+     * completed at least one player turn before The Governess can use Mend My
+     * Darling. Every player therefore receives access to the vulnerability
+     * window." (docs/design/regions/02-nursery.md §35.)
+     *
+     * Turns here are simultaneous, so one turn IS everybody's turn — unless a
+     * teammate had already ended theirs when the Doll came apart, in which case
+     * they never got to swing at an undefended Governess and the window owes
+     * them one more round. Solo always takes the first branch, which is exactly
+     * the `turn > tornOnTurn` this used to be.
+     */
+    const seats = c.e.livingPlayers();
+    mem(c).tornWindowUntil = c.turn + (seats.some(pl => pl.ended) ? 1 : 0);
   },
 
   moves: {
@@ -123,50 +168,170 @@ export const governess = {
     mem(c).phase = 1;
     mem(c).emergencyRepairs = 0;
     mem(c).cycle = 0;
+    mem(c).redirectedBySeat = {};
     setCnt(c, 'repair-patch', 0);
+
+    /**
+     * Stitched Together and the Reinforced Patch are hung on a Power here.
+     *
+     * They were written as plain def methods — `governess.redirect()` and
+     * `governess.modifyIncoming()` — that NOTHING in the engine ever called,
+     * so her entire phase-one mechanic was inert: 30 damage aimed at her landed
+     * 30 on her and 0 on the Doll, and the Doll was a decorative 60-Courage
+     * bystander. That is the silent-no-op class CONTRACTS rule 8 exists for,
+     * and it is why her Courage sweep measured 95% player wins at every pool
+     * size — she was not defended, only long.
+     *
+     * A Power is how the rest of this codebase does it (Blanket Blob's Cover is
+     * a status with the same shape), so `hooks.actorHooks(defender)` finds it
+     * with no new engine surface.
+     */
+    c.addPower({
+      id: 'stitched-together',
+      name: 'Stitched Together',
+      icon: 'stitch',
+      desc: `The first ${STITCH_PER_TURN} damage each Kid deals her every round goes into Favorite Doll instead.`,
+      hooks: {
+        onIncomingHit(h) {
+          governess.reinforce(h);
+          governess.absorb(h);
+        },
+      },
+    });
   },
 
   phase(c) { return mem(c).phase || 1; },
 
-  doll(c) { return allies(c).find(a => a.id === 'favorite-doll') || null; },
+  /**
+   * Favorite Doll, torn or whole.
+   *
+   * By DEF id, and across the WHOLE board rather than `allies()`.
+   *
+   * This read `allies(c).find(a => a.id === 'favorite-doll')`, and an actor's
+   * `id` is its board slot — `e1` — while `favorite-doll` is its `defId`. She
+   * could therefore never see her own Doll: Stitched Together redirected
+   * nothing, Inspect the Nursery never covered it, and Mend My Darling was
+   * never once selected in a full simulated fight. `allies()` is living
+   * enemies only, so it also could not have found a Torn Doll to mend.
+   */
+  doll(c) {
+    const board = (c.e && c.e.enemies) || [];
+    return board.find(a => a.defId === 'favorite-doll') || null;
+  },
   dollActive(c) {
     const d = governess.doll(c);
     return !!d && !(d.mem && d.mem.torn) && (d.hp || 0) > 0;
   },
 
   /**
-   * Stitched Together. The engine calls this before applying damage to her, once per
-   * player turn's worth of redirection, and it returns how much to divert into the Doll.
+   * How much of THIS hit the Doll eats. Pure, so a test and the intent preview
+   * can both ask without moving anything.
+   *
+   * @param {Object} c        her enemy ctx
+   * @param {number} incoming the post-modifier, pre-Guard damage
+   * @param {Object} attacker the Kid swinging, or null
    */
-  redirect(c, incoming) {
+  redirect(c, incoming, attacker = null) {
     if (governess.phase(c) >= 2 || !governess.dollActive(c)) return 0;
-    const used = mem(c).redirectedThisTurn || 0;
-    const take = Math.max(0, Math.min(incoming, 10 - used));
-    if (take > 0) {
-      mem(c).redirectedThisTurn = used + take;
+    const used = governess.redirectedBy(c, attacker);
+    return Math.max(0, Math.min(incoming, STITCH_PER_TURN - used));
+  },
+
+  /** This Kid's spent Stitched Together allowance this round. */
+  redirectedBy(c, attacker) {
+    const key = (attacker && attacker.side === 'player') ? attacker.seat : 'x';
+    return (mem(c).redirectedBySeat || {})[key] || 0;
+  },
+
+  /**
+   * The live half: move the damage into the Doll and take it off the hit.
+   * Runs inside `onIncomingHit`, which is the last point before Guard is
+   * consulted — the Doll eats the swing before her own Guard sees it.
+   */
+  absorb(h) {
+    const gov = h.owner;
+    const e = h.e;
+    if (!gov || !e || h.amount <= 0) return;
+    const c = e.enemyCtx(gov, null);
+    const m = mem(c);
+    // The Doll's own hit is dealt from inside this hook. Without the latch it
+    // would re-enter and redirect itself.
+    if (m._absorbing) return;
+    const take = governess.redirect(c, h.amount, h.attacker);
+    if (take <= 0) return;
+
+    const key = (h.attacker && h.attacker.side === 'player') ? h.attacker.seat : 'x';
+    (m.redirectedBySeat || (m.redirectedBySeat = {}))[key] =
+      governess.redirectedBy(c, h.attacker) + take;
+    h.setAmount(h.amount - take);
+
+    m._absorbing = true;
+    try {
       const d = governess.doll(c);
-      c.damage(d, take, { cause: 'redirected' });
-      // Button Patch: she profits from being protected. Capped at 6 Guard per turn.
-      if (d && d.mem?.patches?.includes('button-patch')) {
-        const gained = mem(c).buttonGuardThisTurn || 0;
-        if (gained < 6) { c.block(c.self, 2); mem(c).buttonGuardThisTurn = gained + 2; }
+      // skipModifiers: this number has already been through the whole pipeline
+      // once. Running it again would apply Vulnerable and Strength twice.
+      e.dealDamage({
+        attacker: h.attacker, defender: d, amount: take,
+        kind: h.kind || 'attack', cause: 'redirected', skipModifiers: true,
+      });
+      // Button Patch: she profits from being protected. Capped at 6 Guard per
+      // turn — a TEAM cap, because it is her Guard and not a per-Kid allowance.
+      if (d && d.mem && (d.mem.patches || []).includes('button-patch')) {
+        const gained = m.buttonGuardThisTurn || 0;
+        if (gained < 6) { e.gainBlock(gov, 2, { fromCard: false, reason: 'button-patch' }); m.buttonGuardThisTurn = gained + 2; }
       }
+    } finally {
+      m._absorbing = false;
     }
-    return take;
+  },
+
+  /**
+   * Reinforced Patch, phase two: the first damaging Trick each round deals 6
+   * less. The FIRST HIT, not every hit of a multi-hit Trick — spreading it over
+   * three hits of Snip Snip would be an 18-point patch, and the same reasoning
+   * the Butler's Reprimand rider settled on applies here.
+   *
+   * One reduction per ROUND, not per Kid: it is one patch on one dress, and the
+   * team can choose who spends it.
+   */
+  reinforce(h) {
+    const gov = h.owner;
+    const e = h.e;
+    if (!gov || !e || h.amount <= 0) return;
+    const c = e.enemyCtx(gov, null);
+    if (governess.activePatch(c) !== 'reinforced') return;
+    const m = mem(c);
+    if (m.reinforcedTurn === e.turn) return;
+    m.reinforcedTurn = e.turn;
+    h.setAmount(governess.modifyIncoming(c, h.amount, true));
   },
 
   onPlayerTurnStart(c) {
-    mem(c).redirectedThisTurn = 0;
+    // Each Kid's Stitched Together allowance comes back every round.
+    mem(c).redirectedBySeat = {};
     mem(c).buttonGuardThisTurn = 0;
   },
 
   onPlayerTurnEnd(c) {
     if (governess.phase(c) < 2) return;
-    // Tearing a Repair Patch: 20+ damage in one player turn kills the active one outright.
-    if (dmgTaken(c) >= 20) mem(c).patchTorn = true;
-    // Stuffed Patch: she recovers if you were too gentle.
-    if (governess.activePatch(c) === 'stuffed' && dmgTaken(c) < 12) c.heal(c.self, 5);
+    // Tearing a Repair Patch: "20 damage per player across the entire team
+    // round. All players can contribute." (§35.) `dmgTaken` is already the
+    // whole round's damage to her, so only the threshold moves.
+    if (dmgTaken(c) >= c.perPlayer(20)) mem(c).patchTorn = true;
+    // Stuffed Patch: she recovers if you were too gentle. Scales the same way,
+    // or two Kids doing 8 each would count as gentle and hand her the heal.
+    if (governess.activePatch(c) === 'stuffed' && dmgTaken(c) < c.perPlayer(12)) c.heal(c.self, 5);
   },
+
+  /**
+   * Her Patch cycle turns over after every one of her turns.
+   *
+   * `advancePatch` existed and nothing called it, so `repair-patch` sat on 0
+   * for the whole of phase two and the cycle the fight is built around —
+   * Reinforced, then Stuffed, then Buttoned — never happened. Measured over a
+   * full simulated fight: the counter finished on 0.
+   */
+  onTurnEnd(c) { governess.advancePatch(c); },
 
   /** Active phase-two Repair Patch, or null while torn. Cycle is always the same. */
   activePatch(c) {
@@ -192,11 +357,15 @@ export const governess = {
     mem(c).patchTorn = false;
   },
 
-  /** Mend My Darling is legal only once the player has had a turn with the Doll Torn. */
+  /**
+   * Mend My Darling is legal only once EVERY Kid has had a turn with the Doll
+   * Torn. See `favoriteDoll.onDeath` for how the window is measured.
+   */
   canMend(c) {
     const d = governess.doll(c);
-    if (governess.phase(c) >= 2 || !d || !d.mem?.torn) return false;
-    return (c.turn || 0) > (d.mem.tornOnTurn || 0);
+    if (governess.phase(c) >= 2 || !d || !d.mem || !d.mem.torn) return false;
+    const until = (d.mem.tornWindowUntil != null) ? d.mem.tornWindowUntil : (d.mem.tornOnTurn || 0);
+    return (c.turn || 0) > until;
   },
 
   moves: {
@@ -230,8 +399,9 @@ export const governess = {
       effect(c) {
         const d = governess.doll(c);
         if (d) {
-          const bonus = d.mem?.patches?.includes('lace-patch') ? 6 : 0;
+          const bonus = (d.mem.patches || []).includes('lace-patch') ? 6 : 0;
           d.mem.torn = false;
+          d.mem.tornWindowUntil = null;      // a second tearing measures its own window
           d.alive = true;
           d.hp = Math.min(d.maxHp, 28 + bonus);
         }

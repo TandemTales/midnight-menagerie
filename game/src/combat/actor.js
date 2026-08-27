@@ -99,6 +99,38 @@ export class Actor {
   }
 }
 
+/**
+ * A seat's own per-turn bookkeeping.
+ *
+ * `engine.stats` is the TEAM mirror and stays team-wide on purpose: several
+ * enemies key off the whole table ("all team damage during the round
+ * contributes" — Nursery §34, Foyer §27). Anything a Kid's own Tricks,
+ * Keepsakes or a House Rule reads must come from HERE instead, or one Kid's
+ * turn quietly spends another Kid's resources — which is precisely what the
+ * Butler's GUESTS DO NOT RUSH did before this existed: two Tricks each and the
+ * team was Reprimanded for a rule neither Kid broke.
+ *
+ * ThisTurn fields reset at the top of each player turn and stay readable
+ * through the enemy phase that follows — the same lifecycle as
+ * `damageTakenThisTurn`. ThisCombat fields never reset.
+ */
+export function newTurnStats() {
+  return {
+    cardsPlayedThisTurn: 0,
+    cardsPlayedThisCombat: 0,
+    attacksPlayedThisTurn: 0,
+    skillsPlayedThisTurn: 0,
+    cardsDiscardedThisTurn: 0,
+    cardsExhaustedThisTurn: 0,
+    cardsExhaustedThisCombat: 0,
+    damageDealtThisTurn: 0,
+    damageDealtThisCombat: 0,
+    damageTakenThisTurn: 0,
+    damageTakenThisCombat: 0,
+    damageTakenLastEnemyTurn: 0,
+  };
+}
+
 export class Player extends Actor {
   constructor(o) {
     const seat = o.seat | 0;
@@ -133,6 +165,10 @@ export class Player extends Actor {
     this.handCap = o.handCap ?? 10;
     /** Guard that survives the start-of-turn wipe (Grave Moss Harvest, Barricade shapes). */
     this.keepBlock = 0;
+    /** This seat's OWN turn bookkeeping — see newTurnStats(). */
+    this.stats = newTurnStats();
+    /** {id,type,uid,name}[] — the Tricks THIS seat played this turn, in order. */
+    this.playedThisTurn = [];
   }
 
   clone() {
@@ -157,6 +193,11 @@ export class Player extends Actor {
     p.damageTakenLastTurn = this.damageTakenLastTurn;
     p.hitsTakenThisTurn = this.hitsTakenThisTurn;
     p.unblockedHitsThisTurn = this.unblockedHitsThisTurn;
+    // The preview clones the engine to resolve a card without committing it, so
+    // a seat's own counters have to come along or "your third Trick this turn"
+    // previews as your first.
+    p.stats = { ...this.stats };
+    p.playedThisTurn = this.playedThisTurn.map(x => ({ ...x }));
     return p;
   }
 

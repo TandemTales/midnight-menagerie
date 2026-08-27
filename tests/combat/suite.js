@@ -2320,6 +2320,173 @@ export async function run() {
     ok(e.state.piles.hand.some(c => c.uid === kept.uid), 'and it is still there a second turn later');
   });
 
+  // ── the REAL Butler, not a stand-in ───────────────────────────────────────
+  // Everything above tests the rules ENGINE against a hand-written boss. These
+  // run the shipped `data/bosses/butler.js`, because the bug that motivated
+  // them was in the def, not the engine: it declared `onTurnEnd` twice, and in
+  // a JS object literal the second key silently replaces the first. The half
+  // that closes the Discomposed window was dead for the whole build — and
+  // `discomposed` is `decay: 'never'`, so he stayed Discomposed forever the
+  // first time a player earned it: permanently taking 25% more, and
+  // permanently unable to announce another House Rule, which shuts down the
+  // Flustered economy the entire boss is built on. `tests/dup-keys/check.py`
+  // gates the class; these two assert the behaviour.
+
+  async function butlerFight(seed = 11) {
+    const { butler } = await import('../../game/src/data/bosses/butler.js');
+    const e = mk({ enemies: [butler], maxHp: 200, seed });
+    loadContentRegistries(e);
+    await e.startCombat();
+    return { butler, e, b: e.enemies[0] };
+  }
+  /** Break one of his rules, without caring which — the count is the point. */
+  const breakRule = (butler, e, b) =>
+    butler.onRuleBroken(e.enemyCtx(b, null, { rule: { id: 'test-rule' }, aimAt: e.player }));
+
+  await atest('butler: Discomposed opens for one player turn and then closes', async () => {
+    const { butler, e, b } = await butlerFight(11);
+    b.counters.flustered = butler.flusterThreshold(e.enemyCtx(b, null)) - 1;
+    breakRule(butler, e, b);
+    ok(b.hasStatus('discomposed'), 'the last Flustered made him Discomposed');
+    ok(b.mem.collectHimself, 'and his next action is spent collecting himself');
+    eq(e.rules.length, 0, 'his standing House Rule was cleared');
+
+    // He still swings the move he had already telegraphed; Collect Himself is
+    // the turn after, and THAT is what opens the window the player is promised.
+    let guard = 0;
+    while (!b.history.includes('collect-himself') && guard++ < 6) await e.endTurn();
+    ok(b.history.includes('collect-himself'), 'he spent a turn putting himself back together');
+    ok(b.hasStatus('discomposed'), 'the window is open across the player turn that follows');
+    await e.endTurn();                       // the player has now had that whole turn
+    ok(!b.hasStatus('discomposed'), 'and it closes on his next turn — exactly one turn wide');
+  });
+
+  await atest('butler: once the window closes he can hold a House Rule again', async () => {
+    const { butler, e, b } = await butlerFight(13);
+    b.counters.flustered = butler.flusterThreshold(e.enemyCtx(b, null)) - 1;
+    breakRule(butler, e, b);
+    let guard = 0;
+    while (!b.history.includes('collect-himself') && guard++ < 6) await e.endTurn();
+    await e.endTurn();
+    ok(!b.hasStatus('discomposed'), 'the window closed');
+    butler.announceNext(e.enemyCtx(b, null));
+    eq(e.rules.length, 1, 'and the fight has an economy again — he is enforcing something');
+  });
+
+  await atest('butler: one Flustered per round, however many rules you break', async () => {
+    const { butler, e, b } = await butlerFight(17);
+    b.counters.flustered = 0;
+    breakRule(butler, e, b);
+    breakRule(butler, e, b);
+    breakRule(butler, e, b);
+    eq(b.counters.flustered, 1, 'three broken rules in one turn are still one Flustered');
+    await e.endTurn();
+    breakRule(butler, e, b);
+    eq(b.counters.flustered, 2, 'and the next round can earn another');
+  });
+
+  await atest('butler: the solo Flustered thresholds are the printed 3, then 2', async () => {
+    const { butler, e, b } = await butlerFight(19);
+    const c = () => e.enemyCtx(b, null);
+    eq(butler.flusterThreshold(c()), 3, 'phase one: three Flustered');
+    b.mem.phase = 2;
+    eq(butler.flusterThreshold(c()), 2, 'phase two: two');
+  });
+
+  // ── the REAL Governess: Stitched Together ─────────────────────────────────
+  // `governess.redirect()` and `governess.modifyIncoming()` were def methods
+  // that nothing in the engine ever called, and `governess.doll()` looked up
+  // `a.id === 'favorite-doll'` when an actor's `id` is its board slot (`e1`).
+  // The result: 30 damage aimed at her landed 30 on her and 0 on the Doll, Mend
+  // My Darling was never selected once in a full simulated fight, and the
+  // phase-two Repair Patch counter finished on 0. Her whole defensive design
+  // was decoration. These assert the mechanic, not the absence of a throw.
+
+  async function govFight(seed = 21, hp = 400) {
+    const { governess, favoriteDoll } = await import('../../game/src/data/bosses/governess.js');
+    // `mk` defaults hp to 60 whatever maxHp says, and a 12-turn boss test that
+    // quietly ends on turn 3 proves nothing at all.
+    const e = mk({ enemies: [governess, favoriteDoll], maxHp: hp, hp, seed });
+    loadContentRegistries(e);
+    await e.startCombat();
+    return {
+      governess, e,
+      gov: e.enemies.find(x => x.defId === 'governess'),
+      doll: e.enemies.find(x => x.defId === 'favorite-doll'),
+    };
+  }
+  const hit = (e, foe, n) => {
+    const before = foe.hp;
+    e.dealDamage({ attacker: e.player, defender: foe, amount: n, kind: 'attack' });
+    return before - foe.hp;
+  };
+
+  await atest('governess: Favorite Doll eats the first 10 damage of the turn', async () => {
+    const { e, gov, doll } = await govFight(21);
+    ok(!!doll, 'the Doll is on the board');
+    const dollBefore = doll.hp;
+    const took = hit(e, gov, 30);
+    eq(dollBefore - doll.hp, 10, 'the Doll took the first 10');
+    eq(took, 30 - 10 - gov.block, 'and she took the rest');
+  });
+
+  await atest('governess: the allowance runs out — the second swing reaches her', async () => {
+    const { e, gov, doll } = await govFight(23);
+    hit(e, gov, 30);
+    const dollBefore = doll.hp;
+    const govBefore = gov.hp;
+    e.dealDamage({ attacker: e.player, defender: gov, amount: 30, kind: 'attack' });
+    eq(doll.hp, dollBefore, 'the Doll absorbed nothing more this turn');
+    ok(govBefore - gov.hp > 20, 'she took the swing herself');
+  });
+
+  await atest('governess: the allowance comes back next round', async () => {
+    const { e, gov, doll } = await govFight(25);
+    hit(e, gov, 30);
+    await e.endTurn();
+    const dollBefore = doll.hp;
+    hit(e, gov, 30);
+    eq(dollBefore - doll.hp, 10, 'a fresh 10 goes into the Doll');
+  });
+
+  await atest('governess: tearing the Doll opens a window, then she mends it', async () => {
+    const { governess, e, gov, doll } = await govFight(27);
+    e.dealDamage({ attacker: e.player, defender: doll, amount: 999, kind: 'attack' });
+    ok(doll.mem.torn, 'the Doll is Torn');
+    eq(governess.canMend(e.enemyCtx(gov, null)), false, 'she cannot mend it on the turn it tore');
+
+    const dollBefore = doll.hp;
+    hit(e, gov, 30);
+    eq(doll.hp, dollBefore, 'a Torn Doll absorbs nothing — that is the window');
+
+    let guard = 0;
+    while (!gov.history.includes('mend-my-darling') && guard++ < 12 && !e.over) await e.endTurn();
+    ok(gov.history.includes('mend-my-darling'), 'she spends a turn putting the Doll back together');
+    ok(!doll.mem.torn, 'and it is whole again');
+    ok(doll.hp > 0, 'with Courage on it');
+  });
+
+  await atest('governess: the phase-two Repair Patch cycle actually turns over', async () => {
+    const { e, gov } = await govFight(29, 900);
+    // Down to the transition, then stop hitting her — the point is her cycle,
+    // not how fast she dies.
+    let guard = 0;
+    while (gov.mem.phase !== 2 && guard++ < 30 && !e.over) {
+      // ignoreBlock so the setup is not a second test of her Guard.
+      if (gov.hp > 95) {
+        e.dealDamage({ attacker: e.player, defender: gov, amount: 30, kind: 'attack', ignoreBlock: true });
+      }
+      await e.endTurn();
+    }
+    eq(gov.mem.phase, 2, 'she reached phase two');
+    const seen = new Set();
+    for (let i = 0; i < 6 && !e.over; i++) {
+      seen.add(gov.counters['repair-patch']);
+      await e.endTurn();
+    }
+    ok(seen.size >= 2, `the Patch counter moves (saw ${[...seen].join(',')}) — it used to sit on 0 forever`);
+  });
+
   // ── report ---------------------------------------------------------------
   let passed = 0, failed = 0;
   for (const r of results) {

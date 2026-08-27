@@ -50,11 +50,18 @@ function hasKw(card, id) {
 }
 
 /** Hooks for a "your next matching Trick costs {n} less" status. */
+/**
+ * `applies` is handed the hook payload as well as the card and the engine, so a
+ * discount that depends on how much has been played can ask about the SEAT that
+ * owns it (`h.player`) rather than the table. Midnight Zoomies read
+ * `e.stats.cardsPlayedThisTurn` and therefore switched itself on in co-op when
+ * the OTHER Kid played two Tricks.
+ */
 function discountHooks(applies) {
   return {
-    modifyCardCost: (cost, h) => (h.card && applies(h.card, h.e)
+    modifyCardCost: (cost, h) => (h.card && applies(h.card, h.e, h)
       ? Math.max(0, cost - (h.stacks || 0)) : cost),
-    onCardPlayed: (h) => { if (h.card && applies(h.card, h.e)) h.remove(); },
+    onCardPlayed: (h) => { if (h.card && applies(h.card, h.e, h)) h.remove(); },
   };
 }
 
@@ -181,7 +188,7 @@ export const COMPANION_STATUSES = [
   {
     id: 'zoomies-discount', name: 'Midnight Zoomies', kind: 'buff', icon: 'energy', decay: 'turnEnd', stacks: true,
     desc: 'The first Trick each turn that activates Zoomies costs {n} less.',
-    hooks: discountHooks((card, e) => hasKw(card, 'zoomies') && e.stats.cardsPlayedThisTurn >= 2),
+    hooks: discountHooks((card, e, h) => hasKw(card, 'zoomies') && e.seatStats(h.player).cardsPlayedThisTurn >= 2),
   },
 
   // ── Marmalade ─────────────────────────────────────────────────────────────

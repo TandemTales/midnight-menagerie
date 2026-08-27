@@ -503,7 +503,7 @@ export const RELICS = [
       // discount, and whichever one you play first is the one that gets it —
       // so the number on the card is never a lie.
       modifyCardCost(cost, h) {
-        return (h.e.stats?.cardsPlayedThisTurn || 0) === 0 ? Math.max(0, cost - 1) : cost;
+        return (h.e.seatStats(player(h)).cardsPlayedThisTurn || 0) === 0 ? Math.max(0, cost - 1) : cost;
       },
       onCardPlayed(h) { if ((h.index ?? 1) === 1) pop(h, 'light'); },
     },

@@ -478,6 +478,25 @@ export class CombatEngine {
   /** The acting seat, or seat 0 when nothing in particular is acting. */
   get current() { return this.acting || this.players[0]; }
 
+  /**
+   * The per-turn counters for one seat — the acting seat by default.
+   *
+   * Content reads this, not `engine.stats`. `engine.stats` is the TEAM mirror:
+   * identical to seat 0 in solo, and the sum of the table in co-op, which is
+   * what an elite threshold worded "16 damage per player, all team damage
+   * during the round contributes" wants and what a Kid's own card never does.
+   */
+  seatStats(who = null) {
+    const pl = who ? this._resolveSeat(who) : this.current;
+    return (pl && pl.stats) || this.stats;
+  }
+
+  /** The Tricks ONE seat played this turn. `engine.playedThisTurn` is the table's. */
+  seatPlayed(who = null) {
+    const pl = who ? this._resolveSeat(who) : this.current;
+    return (pl && pl.playedThisTurn) || this.playedThisTurn;
+  }
+
   /** Run `fn` with `pl` as the acting seat, then put back whoever was acting. */
   _asSeat(pl, fn) {
     const prev = this.acting;
@@ -834,29 +853,67 @@ export class CombatEngine {
   clearRules(sourceId = null) {
     for (const r of [...this.rules]) if (sourceId == null || r.sourceId === sourceId) this.clearRule(r.id);
   }
-  /** A House Rule never forbids an action — it attaches a consequence. */
+  /**
+   * A House Rule never forbids an action — it attaches a consequence.
+   *
+   * Rules are judged SEAT BY SEAT, and a Reprimand lands on the Kid who earned
+   * it. "House Rules apply to each player individually. Player A can play six
+   * Tricks and receive their Reprimand. Player B can still play three Tricks
+   * without consequence… One player's actions do not punish another player.
+   * This prevents multiplayer resentment." (docs/design/regions/01-foyer.md
+   * §26 Door Greeter and §28 The Butler.)
+   *
+   * Before this, every field a rule reads was the TABLE's: two Kids playing two
+   * Tricks each tripped GUESTS DO NOT RUSH ("a fourth Trick"), which neither of
+   * them broke, and the damage went to whoever the Butler was aiming at. The
+   * `once` guard is per seat for the same reason — one Kid breaking a rule must
+   * not buy the other one immunity for the rest of the turn.
+   *
+   * `extra.seat` narrows to one seat: a card play only ever exposes the seat
+   * that played it. `turnEnd` sweeps every living seat, in seat order, so the
+   * order of Reprimands is reproducible on a replay.
+   */
   _checkRules(when, extra = {}) {
+    const only = extra.seat ? this._resolveSeat(extra.seat) : null;
+    const seats = only ? [only] : this.livingPlayers();
+    if (!seats.length) return;
     for (const r of [...this.rules]) {
       if (r.when !== when) continue;
-      if (r.once && r._firedTurn === this.turn) continue;
-      const rc = {
-        cardsPlayedThisTurn: this.playedThisTurn.map(x => ({ ...x })),
-        card: extra.card || null,
-        prevCard: this.playedThisTurn.length > 1 ? this.playedThisTurn[this.playedThisTurn.length - 2] : null,
-        playerBlock: this.current.block,
-        damageDealtThisTurn: this.stats.damageDealtThisTurn,
-        turn: this.turn, e: this,
-      };
-      let broken = false;
-      try { broken = !!r.broken?.(rc); } catch (err) { console.error(`[combat] rule ${r.id}.broken threw`, err); }
-      if (!broken) continue;
-      r._firedTurn = this.turn;
-      const src = this.actor(r.sourceId);
-      this._emit(EV.RULE_BROKEN, { ruleId: r.id, name: r.name, sourceId: r.sourceId || null, cardUid: extra.card?.uid || null });
-      try { r.onBreak?.(src ? this.enemyCtx(src, null, { rule: r }) : this.ctxFor(null, null)); }
-      catch (err) { console.error(`[combat] rule ${r.id}.onBreak threw`, err); }
-      if (src?.def?.onRuleBroken) {
-        try { src.def.onRuleBroken(this.enemyCtx(src, null, { rule: r })); } catch (err) { console.error(err); }
+      for (const pl of seats) {
+        if (r.once) {
+          if (!r._firedTurn || typeof r._firedTurn !== 'object') r._firedTurn = {};
+          if (r._firedTurn[pl.seat] === this.turn) continue;
+        }
+        const played = pl.playedThisTurn;
+        const rc = {
+          cardsPlayedThisTurn: played.map(x => ({ ...x })),
+          card: extra.card || null,
+          prevCard: played.length > 1 ? played[played.length - 2] : null,
+          playerBlock: pl.block,
+          damageDealtThisTurn: pl.stats.damageDealtThisTurn,
+          turn: this.turn, e: this,
+          // The seat being judged. Content that wants the table asks `e.stats`.
+          seat: pl.seat, player: pl,
+        };
+        let broken = false;
+        try { broken = !!r.broken?.(rc); } catch (err) { console.error(`[combat] rule ${r.id}.broken threw`, err); }
+        if (!broken) continue;
+        if (r.once) r._firedTurn[pl.seat] = this.turn;
+        const src = this.actor(r.sourceId);
+        this._emit(EV.RULE_BROKEN, {
+          ruleId: r.id, name: r.name, sourceId: r.sourceId || null,
+          cardUid: extra.card?.uid || null, actorId: pl.id, seat: pl.seat,
+        });
+        // Inside the breaker's seat AND aimed at them: `c.addCard('clutter')`
+        // has to reach their discard pile and `hitPlayer` has to hit them.
+        this._asSeat(pl, () => {
+          try { r.onBreak?.(src ? this.enemyCtx(src, null, { rule: r, aimAt: pl }) : this.ctxFor(null, null)); }
+          catch (err) { console.error(`[combat] rule ${r.id}.onBreak threw`, err); }
+          if (src?.def?.onRuleBroken) {
+            try { src.def.onRuleBroken(this.enemyCtx(src, null, { rule: r, aimAt: pl })); }
+            catch (err) { console.error(err); }
+          }
+        });
       }
     }
   }
@@ -1573,7 +1630,18 @@ export class CombatEngine {
    */
   enemyCtx(enemy, move, extra = {}) {
     const e = this;
-    const target = () => e.intentTargetFor(enemy);
+    /**
+     * `extra.aimAt` pins this ctx to ONE seat, whatever the enemy's pending
+     * move is aimed at.
+     *
+     * A House Rule's Reprimand belongs to the Kid who broke it — not to
+     * whoever the Butler happens to be swinging at. Without the pin the
+     * Reprimand resolves through `partyTargets`, which reads the enemy's
+     * PENDING move, so a Reprimand landed on the wrong Kid and, if that
+     * pending move was `partyTarget: 'all'`, went out as AoE.
+     */
+    const pinned = extra.aimAt || null;
+    const target = () => pinned || e.intentTargetFor(enemy);
     const aim = target();
     return this._guardCtx({
       e, engine: e, self: enemy, enemy, move,
@@ -1617,7 +1685,7 @@ export class CombatEngine {
         // An explicit target wins. Otherwise the move's own `partyTarget`
         // decides: one seat, all of them, or two different ones. In solo every
         // branch collapses to the single player, so nothing changes.
-        const targets = victim ? [victim] : e.partyTargets(enemy, move);
+        const targets = victim ? [victim] : (pinned ? [pinned] : e.partyTargets(enemy, move));
         for (const d of targets) {
           if (!d) continue;
           for (let i = 0; i < hits; i++) {
@@ -1639,6 +1707,10 @@ export class CombatEngine {
       partySize: () => e.players.length,
       /** "N damage times number of players", the region chapters' threshold shape. */
       perPlayer: (n) => e.perPlayer(n),
+      /** ONE seat's Tricks this turn. `c.cardsPlayedThisTurn` is the whole table's. */
+      seatPlayed: (who) => e.seatPlayed(who),
+      /** ONE seat's per-turn counters. `c.e.stats` is the whole table's. */
+      seatStats: (who) => e.seatStats(who),
       /** Pick a seat by preference: lowestGuard | lowestCourage | fewestDraw | ... */
       pickSeat: (how) => e.pickSeat(how),
       damageMulti: (amount, hits, opts = {}) => {
@@ -1664,6 +1736,20 @@ export class CombatEngine {
       statusMeta: (a, id) => e.statusMeta(a || enemy, id),
       count: (id, a) => (a || enemy).status(id),
       has: (id, a) => (a || enemy).hasStatus(id),
+
+      /**
+       * A Power on an enemy, with hooks.
+       *
+       * The card ctx has had this since the beginning; the enemy ctx did not,
+       * and an enemy whose defence is "damage aimed at me goes somewhere else"
+       * has nowhere else to hang it. The Governess's Stitched Together was
+       * written as a def method nothing called for exactly this reason.
+       * `hooks.actorHooks(defender)` finds an enemy's Powers already — the only
+       * thing missing was a way for the enemy to install one.
+       */
+      addPower: (p, actor) => e.addPower(actor || enemy, p),
+      /** An ad-hoc hook owned by this enemy. Removed with the enemy. */
+      addHook: (name, fn, opts) => e.hooks.add(name, fn, { owner: enemy, source: 'enemy', ...(opts || {}) }),
 
       // per-enemy displayed counters
       counter: (key) => (enemy.counters[key] ?? 0),
@@ -1743,6 +1829,7 @@ export class CombatEngine {
     const from = this.current.piles._pull(card);
     this.current.piles._push(card, Pile.DISCARD, 'bottom');
     this.stats.cardsDiscardedThisTurn++;
+    this.current.stats.cardsDiscardedThisTurn++;
     this._emit(EV.DISCARD, {
       cardUid: card.uid, card: this.cardSnap(card), from, to: Pile.DISCARD, reason,
       handSize: this.current.piles.hand.length, discardCount: this.current.piles.discard.length,
@@ -1756,6 +1843,8 @@ export class CombatEngine {
     this.current.piles._push(card, Pile.EXHAUST, 'bottom');
     this.stats.cardsExhaustedThisTurn++;
     this.stats.cardsExhaustedThisCombat++;
+    this.current.stats.cardsExhaustedThisTurn++;
+    this.current.stats.cardsExhaustedThisCombat++;
     this._emit(EV.EXHAUST, {
       cardUid: card.uid, card: this.cardSnap(card), from, reason,
       exhaustCount: this.current.piles.exhaust.length,
@@ -1993,12 +2082,16 @@ export class CombatEngine {
       addPower: (p, actor) => e.addPower(actor || self, p),
       addHook: (name, fn, opts) => e.hooks.add(name, fn, opts),
 
-      // stats the Companions read
-      cardsPlayedThisTurn: () => e.stats.cardsPlayedThisTurn,
-      cardsPlayedThisCombat: () => e.stats.cardsPlayedThisCombat,
-      exhaustedThisCombat: () => e.stats.cardsExhaustedThisCombat,
-      damageTakenLastEnemyTurn: () => e.stats.damageTakenLastEnemyTurn,
-      untouched: () => e.stats.damageTakenLastEnemyTurn === 0,
+      // Stats the Companions read — THIS SEAT's, never the table's. A Kid's
+      // Zoomies must not switch on because their friend played three Tricks,
+      // and a teammate taking a hit must not end their Untouched. `e.stats` is
+      // still there for anything that genuinely means the whole party.
+      cardsPlayedThisTurn: () => e.seatStats().cardsPlayedThisTurn,
+      cardsPlayedThisCombat: () => e.seatStats().cardsPlayedThisCombat,
+      exhaustedThisCombat: () => e.seatStats().cardsExhaustedThisCombat,
+      damageTakenLastEnemyTurn: () => e.seatStats().damageTakenLastEnemyTurn,
+      untouched: () => e.seatStats().damageTakenLastEnemyTurn === 0,
+      teamStats: () => e.stats,
       n: (key) => card?.nums?.[key] ?? 0,
       upgraded: !!card?.upgraded,
       say: (text, tone) => e.say(text, tone),
@@ -2129,6 +2222,22 @@ export class CombatEngine {
     this.stats.damageDealtThisTurn = 0;
     this.stats.damageTakenThisTurn = 0;
     this.playedThisTurn = [];
+    // Every seat's OWN copy of the same counters. `this.stats` above is the
+    // TEAM mirror and stays team-wide because several enemies want the table
+    // ("all team damage during the round contributes"); a Kid's own Tricks,
+    // Keepsakes and House Rules read their seat instead. See actor.js
+    // newTurnStats().
+    for (const pl of this.players) {
+      const st = pl.stats;
+      st.cardsPlayedThisTurn = 0;
+      st.attacksPlayedThisTurn = 0;
+      st.skillsPlayedThisTurn = 0;
+      st.cardsDiscardedThisTurn = 0;
+      st.cardsExhaustedThisTurn = 0;
+      st.damageDealtThisTurn = 0;
+      st.damageTakenThisTurn = 0;
+      pl.playedThisTurn = [];
+    }
     // `damageTakenThisTurn` resets HERE and only here, for every actor. It then
     // accumulates through the player turn and is STILL READABLE during the enemy
     // turn that follows — several enemies key their whole design off
@@ -2333,11 +2442,15 @@ export class CombatEngine {
       if (spend > 0) this.gainEnergy(-spend, 'play');
 
       // 3. announce
+      const rec = { id: card.id, type: card.type, uid: card.uid, name: card.name, seat: owner.seat };
       this.stats.cardsPlayedThisTurn++;
       this.stats.cardsPlayedThisCombat++;
-      this.playedThisTurn.push({ id: card.id, type: card.type, uid: card.uid, name: card.name });
-      if (card.type === CardType.ATTACK) this.stats.attacksPlayedThisTurn++;
-      if (card.type === CardType.SKILL) this.stats.skillsPlayedThisTurn++;
+      this.playedThisTurn.push(rec);
+      owner.stats.cardsPlayedThisTurn++;
+      owner.stats.cardsPlayedThisCombat++;
+      owner.playedThisTurn.push({ ...rec });
+      if (card.type === CardType.ATTACK) { this.stats.attacksPlayedThisTurn++; owner.stats.attacksPlayedThisTurn++; }
+      if (card.type === CardType.SKILL) { this.stats.skillsPlayedThisTurn++; owner.stats.skillsPlayedThisTurn++; }
       this._emit(EV.CARD_PLAY, {
         cardUid: card.uid, card: this.cardSnap(card, targetId), targetId: target ? target.id : null,
         cost: spend, energyBefore, energyAfter: owner.energy,
@@ -2365,7 +2478,7 @@ export class CombatEngine {
         }
         this._enemyLifecycle('onPlayerCard', { card: { id: card.id, type: card.type, uid: card.uid }, playedCard: card });
         this._enemyLifecycle('onCardPlayed', { card: { id: card.id, type: card.type, uid: card.uid }, playedCard: card });
-        this._checkRules('cardPlayed', { card });
+        this._checkRules('cardPlayed', { card, seat: owner });
         if (card.type === CardType.POWER) {
           // Powers leave play entirely once resolved. They are parked in limbo
           // tagged `meta.zone='power'` rather than in exhaust, so effects that
@@ -2381,6 +2494,8 @@ export class CombatEngine {
             this.current.piles._push(card, Pile.EXHAUST, 'bottom');
             this.stats.cardsExhaustedThisTurn++;
             this.stats.cardsExhaustedThisCombat++;
+            owner.stats.cardsExhaustedThisTurn++;
+            owner.stats.cardsExhaustedThisCombat++;
             this._emit(EV.EXHAUST, {
               cardUid: card.uid, card: this.cardSnap(card), from: Pile.LIMBO,
               reason: 'played', exhaustCount: this.current.piles.exhaust.length,
@@ -2628,7 +2743,8 @@ export class CombatEngine {
       // Summed across the party: `damageTakenLastEnemyTurn` is a board-level
       // stat that House Rules and several enemies key off ("did the party get
       // through that untouched?"), so in co-op it has to mean the whole table.
-      const before = this.players.reduce((n, pl) => n + pl.damageTakenThisTurn, 0);
+      const beforeSeat = this.players.map(pl => pl.damageTakenThisTurn);
+      const before = beforeSeat.reduce((n, x) => n + x, 0);
 
       for (const en of [...this.enemies]) {
         if (this.over) break;
@@ -2660,6 +2776,12 @@ export class CombatEngine {
 
       this.stats.damageTakenLastEnemyTurn =
         this.players.reduce((n, pl) => n + pl.damageTakenThisTurn, 0) - before;
+      // Per seat as well. "Untouched" is a claim about ONE Kid — a teammate
+      // taking a hit must not switch off your Untouched cards, which is what
+      // the team mirror alone would do.
+      this.players.forEach((pl, i) => {
+        pl.stats.damageTakenLastEnemyTurn = pl.damageTakenThisTurn - (beforeSeat[i] || 0);
+      });
       if (this.over) return;
 
       // 6a — per-enemy end-of-turn statuses.
@@ -2794,7 +2916,11 @@ export class CombatEngine {
     c.timers = s.timers.map(t => ({ ...t, data: { ...t.data } }));
     c.objects = s.objects.map(o => ({ ...o, data: JSON.parse(JSON.stringify(o.data || {})) }));
     c.field = JSON.parse(JSON.stringify(s.field));
-    c.rules = s.rules.map(r => ({ ...r }));
+    // `_firedTurn` is a per-seat map, so a shallow spread would leave the
+    // preview and the real fight writing into the SAME object — previewing a
+    // card that trips a House Rule would then mark it fired and the real play
+    // would silently escape its Reprimand.
+    c.rules = s.rules.map(r => ({ ...r, _firedTurn: { ...(r._firedTurn || {}) } }));
     c.playedThisTurn = s.playedThisTurn.map(x => ({ ...x }));
     c.drawDeltaNextTurn = s.drawDeltaNextTurn;
     c.cardDefs = this.cardDefs;
