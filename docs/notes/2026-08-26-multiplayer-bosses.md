@@ -294,17 +294,101 @@ spends it on a preview. Scurry now avoids it; Cover does not. Worth a look.
 
 ---
 
-## 9. What is still not built
+## 9. Second pass — the rest of the list
 
-Unchanged from HANDOFF §9 except where noted:
+### Cover was disarmed by hovering your hand
 
-1. **Networking**, per the deferred wrapper.
-2. **Cards that ask a TEAMMATE to choose** — the choice broker still cannot put
-   a request in front of a different player.
-3. **Per-Kid shop inventory.**
-4. **The other 11 Companions' co-op pools** — they are unbuilt Companions.
-5. ~~Boss multiplayer adjustments~~ — built, this note.
-6. **New:** the combat scene does not render the intent's `splash`.
-7. **New:** the Wardrobe's and Toy Chest's *summon caps* by party size (nursery
-   §34, sq §45) are not wired — both currently use their solo cap, which is the
-   correct number at one and two Kids and only diverges at three.
+Recorded in §8 as a lead. Measured, and worse than the lead said:
+`computeDamage` runs the `modifyDamageTaken` hooks for the live number on a card
+in the player's HAND as well as for a real hit, and Cover did its bookkeeping
+there. Reading one Scratch twice:
+
+```
+previewed        0      then 4
+allowance        {s0: 8}          <- spent, by looking
+_coverPending    8                <- the Blob billed for damage it never ate
+real swing       8 Courage        <- and the swing lands in full
+```
+
+Cover works the way Scurry does now: `modifyDamageTaken` is pure and parks the
+absorption, `onIncomingHit` books it, and that only ever runs on a hit that is
+really landing. The Ghoststep note in `companions/keywords.js` already described
+this exact trap — worth reading before writing any hook that consumes something.
+
+The enemy harness had to learn step 6b to see it at all; it stopped at
+`modifyDamageTaken`, which reads the reduction and never the spend. While in
+there, the harness's direct call to `target.def.redirect(...)` came out: nothing
+in the real engine ever made that call, so the harness was the ONLY place
+Stitched Together ran. A mock inventing a call site is how a dead mechanic looks
+tested.
+
+### `Incoming` was the whole board, measured against seat 0
+
+`previewIncoming` read `engine.player` and summed every intent, so the swing
+aimed at your teammate counted as coming at you. In a party with the dev guard
+armed it threw — and the scene swallows that throw, so the readout simply
+vanished instead of being loudly wrong. It answers for one seat now, including
+anything splashing off a move aimed at the other Kid, which is what closes the
+`splash` gap §5 opened.
+
+### Mr. Moth stocks a shelf each
+
+Prices and pity were already per Kid; the shelf was not, so two Kids looked at
+one list rolled off the host's Companion, and one of them buying the last
+Keepsake struck it off the other's shop. `shopStock(node, kid)` rolls that Kid's
+pool, skips what they own, uses their flags and their removal price, and forks
+per seat so two Kids on the same Companion do not race for one card. Seat 0's
+fork key is deliberately unchanged, asserted against a solo Run — no existing
+seed moved.
+
+### A choice knows whose it is
+
+`ask({ seat })` reaches the picker only for `engine.localSeat`; anyone else's
+resolves from the request's `prefer` rule, and the seat goes in `choiceLog` so a
+replay can tell two Kids apart. The fifteen `// TEAMMATE PICK` comments and
+their five files of slightly different inline sorts are gone; cards say
+`c.askAlly(ally, { pool, prefer })`.
+
+**Local play always takes the fallback branch, and that is the right answer, not
+a stopgap.** Putting one player in charge of the other Kid's deck would be worse
+than a stable rule. Networking replaces the branch, not the mechanism.
+
+### Wink's calls could not be wrong
+
+Two of the `// TEAMMATE PICK` sites were not deterministic picks at all. `Call
+It Out` computed the guess FROM the answer:
+
+```js
+const guess  = currentFamily(c, t) || FAMILIES[0];
+const actual = currentFamily(c, t);
+if (guess === actual) { …open an eye… } else { …closeEye… }   // unreachable
+```
+
+A card whose entire text is "Right: … / Wrong: …" had one half. It also scored
+against the enemy's CURRENT intent while the card says *next* Intent Family. The
+call is the friend's now, taken against `intentFamily(t, 1)`, with a fallible
+fallback — the family it is showing right now, which is right when it repeats
+and wrong when it turns. Spider Conference keeps calling itself (it ticks every
+round for every friend; a modal each time would be miserable) but is scored the
+same way, so it can miss too.
+
+The co-op suite proves it behaviourally rather than by reading the source: a
+Dust Bunny attacks then defends, so calling what it shows on turn 1 is wrong,
+and Wink loses an eye for it.
+
+---
+
+## 10. What is still not built
+
+1. **Networking**, per the deferred wrapper. Two seams wait for it and nothing
+   else does: the two-Kid select, and the choice broker's seat routing.
+2. **The other 11 Companions' co-op pools** — they are unbuilt Companions.
+3. The combat scene does not draw a second number on an enemy's intent chip for
+   a seat that is only splashed. That seat IS told (`Incoming` counts it, the
+   teammate line says "catches them too"); the chip itself has one number.
+4. A Big Scare's **Keepsake** reward is rolled once, off the local Kid's luck,
+   while the cards beside it are drafted per Kid. Possibly the intent; never
+   decided.
+
+~~Boss multiplayer adjustments~~, ~~per-Kid shop inventory~~, ~~teammate
+choices~~ and ~~summon caps~~ are built — §1–§9 above.

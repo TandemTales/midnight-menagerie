@@ -56,11 +56,11 @@ All prep scripts are **one-off and commit their output** — there is no runtime
 ### Test suites — all must stay green
 
 ```
-tests/combat/run.py        677 assertions      tests/seams/check.py     1794 sites, 0 problems
+tests/combat/run.py        677 assertions      tests/seams/check.py     1804 sites, 0 problems
 tests/cards/run.py         445 cards, 0 err    tests/seams/proof.py     52 passed
 tests/enemies/run.py       37 enemies, 0 err   tests/scene-css/check.py 0 conflicts
 tests/enemies/audit.py     ~2400 turns, 0 err  tests/run/run.py         50 runs, 0 errors
-tests/coop/run.py          510 assertions   tests/hook-names/check.py  0 unknown hooks
+tests/coop/run.py          564 assertions   tests/hook-names/check.py  0 unknown hooks
 tests/turn-events/check.py 0 unguarded      tests/dup-keys/check.py    0 duplicate keys
 tests/map/run.py           23 passed        tests/chrome/run.py        27 checks
 tests/backpack/run.py      77 checks           tests/audio/run.py       46 cues, 0 errors
@@ -271,6 +271,14 @@ unchanged through the entire refactor.
 - **per-player thresholds and per-Kid allowances** across the built Big Scares
   and ordinary enemies — Grand Coatcheck, Unwelcome Guest, Toy Chest, Blanket
   Blob, Blanket Creeper, Slipper Skitter, Thing Beneath
+- **a shelf each at Mr. Moth's** — their Companion's pool, Keepsakes they do
+  not own, their own prices and removal price, forked per seat so two Kids on
+  one Companion do not race for the same card
+- **choices know whose they are.** `ask({ seat })` reaches the picker only for
+  `engine.localSeat`; anyone else's resolves from the request's `prefer` rule
+  and is logged with its seat, so a replay can tell the two Kids apart
+- **`Incoming` is one Kid's** — what is aimed at them plus anything splashing
+  off a move aimed at their friend, against their own Guard
 
 **The technique worth reusing.** In a party with the dev guard armed,
 `engine.player` / `.piles` / `.relics` THROW and name the fix rather than quietly
@@ -311,27 +319,31 @@ co-op pool.
 
 ### NOT built
 
-1. **Networking**, per the deferred wrapper. The two-Kid select is the seam it
-   replaces: player two picks on the same screen today, over the wire later.
-2. **Cards that ask a TEAMMATE to choose.** The choice broker raises one request
-   to whoever drives the engine and cannot put it in front of a different
-   player, so those picks resolve deterministically and are marked
-   `// TEAMMATE PICK`. The effect is right; who decides is not.
-3. Per-Kid shop inventory (prices and pity are already per Kid; the screen shows
-   one inventory).
-4. The other 11 Companions' co-op pools — they are unbuilt Companions.
-5. **The combat scene does not render the intent's `splash`.** A move whose main
-   number belongs to one Kid can now declare what every OTHER seat takes
-   (`splashFn`, used by the Bedframe Beast's BOO). The engine carries it; the
-   screen does not draw it, so the other Kid sees the mark and not their own
-   smaller number.
-6. **Summon caps by party size** (nursery §34 Toy Chest, sq §45 the Wardrobe).
-   Both use their solo cap, which is the correct number at one AND two Kids and
-   only diverges at three — unreachable while `MAX_PARTY` is 2.
+1. **Networking**, per the deferred wrapper. Two seams are built and waiting for
+   it, and nothing else is:
+   - the two-Kid **select** — player two picks on the same screen today, over the
+     wire later;
+   - the **choice broker's seat routing** — a request addressed to a seat that is
+     not `engine.localSeat` resolves from its own `prefer` rule instead of being
+     put in front of the person sitting here. A transport makes that branch reach
+     the other client. It is not a placeholder: handing one player the other
+     Kid's deck would be worse than a stable rule, so the fallback is the correct
+     LOCAL behaviour and stays as the offline path.
+2. **The other 11 Companions' co-op pools** — they are unbuilt Companions, so
+   there is nothing to write co-op Tricks for yet.
+3. **The combat scene does not draw the `splash` number itself.** A seat that is
+   only splashed IS told — `Incoming` counts it and the teammate line says
+   "catches them too" — but there is no second number on the enemy's own intent
+   chip. Everything needed for one is on `intent.splash`.
+4. **A Big Scare's Keepsake reward is rolled once, off the local Kid's luck.**
+   Cards are drafted per Kid; the Keepsake is not. That may well be the intent —
+   one Keepsake per Big Scare, for the team — but it has never been decided, and
+   `rollCardReward` taking a `forKid` while the Keepsake roll beside it does not
+   is the kind of asymmetry that turns into a bug report.
 
-Boss multiplayer adjustments are **done** — see
-`docs/notes/2026-08-26-multiplayer-bosses.md`. Building them turned up three
-shipped mechanics that no code path ever called; that note is the record.
+Everything else that was on this list is built — see
+`docs/notes/2026-08-26-multiplayer-bosses.md`, which is also the record of the
+five shipped mechanics that no code path ever called.
 
 ### Lockstep foundation
 

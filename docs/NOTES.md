@@ -56,4 +56,4 @@ to concurrent whole-file writes, so this is now structural rather than a convent
 | [2026-08-26-map-round-6-the-entry-stall-is-shader-linking](notes/2026-08-26-map-round-6-the-entry-stall-is-shader-linking.md) | 15 KB |
 | [2026-08-26-entry-stall-verification](notes/2026-08-26-entry-stall-verification.md) | 4 KB |
 | [2026-08-26-multiplayer-engine](notes/2026-08-26-multiplayer-engine.md) | 9 KB |
-| [2026-08-26-multiplayer-bosses](notes/2026-08-26-multiplayer-bosses.md) | 14 KB |
+| [2026-08-26-multiplayer-bosses](notes/2026-08-26-multiplayer-bosses.md) | 18 KB |

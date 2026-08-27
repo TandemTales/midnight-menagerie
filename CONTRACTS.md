@@ -237,6 +237,17 @@ there is no separate single-player path below construction. `MAX_PARTY` is **2**
   `enemies/_lib.js`. **"N per player"** thresholds use `c.perPlayer(n)`.
 - A move whose main number belongs to ONE Kid while other seats also take damage must
   declare `splash` / `splashFn(c)`, or the intent is lying to the seats with no arrow.
+- **A choice belongs to a seat.** `engine.choices.ask({ seat })` reaches the picker only
+  when the seat is `engine.localSeat`; every other seat's request resolves from its own
+  `prefer` rule and is logged with the seat so a replay can tell two Kids apart. Cards
+  say `c.askAlly(ally, { pool, prefer })` — never hand-roll "the teammate would pick the
+  cheapest" inside an effect. Local play always takes the fallback branch ON PURPOSE:
+  putting one player in charge of the other Kid's deck is worse than a stable rule.
+- **A number a player is scored against must not be computed from the answer.** Wink's
+  Call It Out did `currentFamily(c,t) === currentFamily(c,t)`, so a card whose text reads
+  "Right: … / Wrong: …" could never be wrong and half of it was unreachable.
+- Anything a screen shows about "what is coming at me" is per seat:
+  `previewIncoming(engine, seat)`, never `engine.player`.
 - Turns are SIMULTANEOUS. `endTurn(seat)` closes one seat; `endTurn()` closes the table.
 - Multiplayer-only Tricks live in `def.coopCards`, OUTSIDE the 80, and are never drafted solo.
 - Enemy **damage never scales** with party size. The extra threat is TARGETING: a move declares
@@ -249,7 +260,9 @@ there is no separate single-player path below construction. `MAX_PARTY` is **2**
   overtuned. Re-measure after any change to enemy damage, starting decks or the co-op pool.
 - A screen renders ONE seat's view. `scenes/combat.js` reads `this.me` / `this.mePiles`, never
   `engine.player`. The seat comes from `run.localSeat`.
-- Per Kid: deck, Courage, Nerve, Keepsakes, Backpack, Snacks, trackers, counters, card rewards.
-  Shared: the route, the rooms, the enemies, the Haunt level, the seed.
+- Per Kid: deck, Courage, Nerve, Keepsakes, Backpack, Snacks, trackers, counters, card
+  rewards, and Mr. Moth's shelf (`shopStock(node, kid)`, forked per seat; seat 0's fork
+  key is unchanged so no existing seed moved). Shared: the route, the rooms, the enemies,
+  the Haunt level, the seed.
 
 See `docs/notes/2026-08-26-multiplayer-engine.md`.
