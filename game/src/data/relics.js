@@ -141,7 +141,10 @@ export const RELICS = [
     hooks: {
       onTurnStart(h) {
         if (h.side !== 'player') return;
-        const n = (h.e.relics || []).length;
+        // MY Keepsakes, not seat 0's. `h.player` is the seat this Keepsake
+        // belongs to (hooks.js resolves it per-seat), and `e.relics` throws
+        // in a party.
+        const n = (player(h)?.relics || []).length;
         if (n > 0) { h.e.gainBlock(player(h), n, { fromCard: false, source: 'relic' }); fire(h, 'guard'); }
       },
     },

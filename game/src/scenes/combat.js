@@ -303,7 +303,7 @@ export class CombatScene extends Scene {
   _warmDeck() {
     const defs = [];
     const seen = new Set();
-    const piles = this.engine.piles || {};
+    const piles = this.mePiles || {};
     for (const key of ['draw', 'hand', 'discard', 'exhaust']) {
       for (const c of piles[key] || []) {
         const def = c.def || c;
@@ -402,6 +402,28 @@ export class CombatScene extends Scene {
   _o(sec) { return this._opening ? this._d(sec * 0.34) : this._d(sec); }
 
   /* ── engine construction ─────────────────────────────────────────────── */
+  /**
+   * The seat this screen is showing.
+   *
+   * A combat screen is always ONE player's view — my hand, my Nerve, my
+   * Courage — so every reader below goes through here instead of
+   * `engine.player`, which is seat 0 and throws outright in a party. The seat
+   * comes from the Run, so a second client showing seat 1 needs no other change.
+   */
+  get me() {
+    const e = this.engine;
+    if (!e || !e.players) return null;
+    return e.players[this.seatIndex] || e.players[0];
+  }
+  get mePiles() { const m = this.me; return m ? m.piles : null; }
+  get seatIndex() { return this.ctx?.run?.localSeat || 0; }
+  /** The other Kid's seat, or null in solo. */
+  get mate() {
+    const e = this.engine;
+    if (!e || !e.players || e.players.length < 2) return null;
+    return e.players[1 - this.seatIndex] || null;
+  }
+
   async _makeEngine(params) {
     const ctx = this.ctx;
     if (ctx.run?.combat instanceof CombatEngine) {
@@ -475,15 +497,44 @@ export class CombatScene extends Scene {
     } catch (e) { /* enemy content not present yet */ }
 
     if (deck && enemies) {
-      const engine = new CombatEngine({
-        rng,
-        player: {
-          name: 'Kid', companion: this.companion,
-          maxHp: hp || 70, hp: hp || 70,
-          energyMax, drawPerTurn: 5, deck,
-        },
-        enemies, relics,
-      });
+      // A deep link into an expedition that has a PARTY builds a party engine.
+      // Reading only `this.companion` here gave a two-Kid run a one-seat fight,
+      // so the enemies were solo-scaled and the second Kid simply did not
+      // exist — the screen looked completely fine, which is the problem.
+      const party = (ctx.run?.kids?.length > 1)
+        ? await Promise.all(ctx.run.kids.map(async (k) => {
+          let kDeck = deck, kHp = hp, kEnergy = energyMax;
+          try {
+            const cards = await import('../data/cards.js');
+            const d = cards.startingDeckFor(k.companion);
+            if (d && d.length >= 5) kDeck = d;
+            const comp = cards.companion?.(k.companion);
+            if (comp?.startingHp) kHp = comp.startingHp;
+            if (comp?.startingEnergy) kEnergy = comp.startingEnergy;
+          } catch (e) { /* content not present yet */ }
+          return {
+            name: ctx.run.kidNameOf(k), companion: k.companion, kid: k.kid,
+            maxHp: k.maxCourage || kHp || 70, hp: k.courage || kHp || 70,
+            energyMax: k.energyMax || kEnergy, drawPerTurn: 5,
+            deck: (ctx.run.deckViewsOf(k).length
+              ? ctx.run.deckViewsOf(k).map(c => ({ def: c.def, upgraded: c.upgraded }))
+              : kDeck),
+            relics: Array.isArray(k.keepsakes) ? k.keepsakes : [],
+          };
+        }))
+        : null;
+
+      const engine = party
+        ? new CombatEngine({ rng, players: party, enemies })
+        : new CombatEngine({
+          rng,
+          player: {
+            name: 'Kid', companion: this.companion,
+            maxHp: hp || 70, hp: hp || 70,
+            energyMax, drawPerTurn: 5, deck,
+          },
+          enemies, relics,
+        });
       // Haunt counters / behavioural flags the encounter builder produced.
       if (this._members) {
         engine.enemies.forEach((en, i) => {
@@ -584,6 +635,35 @@ export class CombatScene extends Scene {
           </div>
         </section>
 
+        <!-- THE OTHER KID. Hidden entirely in solo.
+             Deliberately compact and deliberately NOT interactive: it answers
+             the three questions you actually ask about a teammate mid-fight —
+             are they alive, are they covered, and are they done — and nothing
+             else. Their hand is their business. It sits opposite your own
+             panel so the two Kids read as two sides of the same table. -->
+        <section class="cb-mate" aria-label="Your friend" hidden>
+          <div class="cb-mate__top">
+            <img class="cb-mate__art" alt="" draggable="false">
+            <div class="cb-mate__id">
+              <span class="cb-mate__name"></span>
+              <span class="cb-mate__comp"></span>
+            </div>
+            <span class="cb-mate__ready" hidden>ready</span>
+          </div>
+          <div class="cb-mate__vitals">
+            <div class="cb-mate__guard" hidden>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5 L21.5 5.2 C21.5 14 17.3 20.2 12 22.8 C6.7 20.2 2.5 14 2.5 5.2 Z"/></svg>
+              <b>0</b>
+            </div>
+            <div class="cb-mate__bar" tabindex="0">
+              <div class="cb-mate__fill"></div>
+              <div class="cb-mate__hp"></div>
+            </div>
+          </div>
+          <div class="cb-mate__statuses" role="list" aria-label="Your friend's conditions"></div>
+          <div class="cb-mate__aim" hidden></div>
+        </section>
+
         <div class="cb-handhost"></div>
 
         <div class="cb-bl">
@@ -647,6 +727,18 @@ export class CombatScene extends Scene {
     this.$plGuardN = $('.cb-player__guard b');
     this.$plCounters = $('.cb-player__counters');
     this.$plBar = $('.cb-player__bar');
+    this.$mate = $('.cb-mate');
+    this.$mateArt = $('.cb-mate__art');
+    this.$mateName = $('.cb-mate__name');
+    this.$mateComp = $('.cb-mate__comp');
+    this.$mateReady = $('.cb-mate__ready');
+    this.$mateGuard = $('.cb-mate__guard');
+    this.$mateGuardN = $('.cb-mate__guard b');
+    this.$mateBar = $('.cb-mate__bar');
+    this.$mateFill = $('.cb-mate__fill');
+    this.$mateHp = $('.cb-mate__hp');
+    this.$mateSt = $('.cb-mate__statuses');
+    this.$mateAim = $('.cb-mate__aim');
     this.$plFill = $('.cb-player__fill');
     this.$plGhost = $('.cb-player__ghost');
     this.$plHpN = $('.cb-player__hpn');
@@ -720,8 +812,10 @@ export class CombatScene extends Scene {
       variant: 'combat',
       useSnacks: true,                       // §6: Snacks are a tactical layer
       escape: false,                         // this scene owns Escape (see _bindUi)
-      courage: () => [this.engine?.player?.hp ?? 0, this.engine?.player?.maxHp ?? 1],
-      relics: () => this.engine?.relics || [],
+      // The HUD shows MY Courage and MY Keepsakes. `engine.player` and
+      // `engine.relics` are seat 0 and throw in a party.
+      courage: () => [this.me?.hp ?? 0, this.me?.maxHp ?? 1],
+      relics: () => this.me?.relics || [],
       onUseSnack: (i, s) => this._useSnack(i, s),
     });
 
@@ -885,7 +979,7 @@ export class CombatScene extends Scene {
        Seed from the pile when the fight is already under way. `engine.started`
        is the flag; a fresh engine is false here and draws normally. */
     if (this.engine.started && !this.engine.over) {
-      const held = (this.engine.piles && this.engine.piles.hand) || [];
+      const held = (this.mePiles && this.mePiles.hand) || [];
       if (held.length) {
         this.hand.setCards(held.map(c => this._handCard(this.engine.cardSnap(c))));
         this._opening = false;              // a resumed fight is not opening
@@ -1359,18 +1453,18 @@ export class CombatScene extends Scene {
     }
     // statuses landing on an untargeted enemy (AoE debuffs) still show
     for (const s of p.statuses || []) {
-      if (s.actorId === this.engine.player.id) continue;
+      if (s.actorId === this.me.id) continue;
       const v = this.views.get(s.actorId);
       if (v && v.alive && v.$preview.hidden) v.showPreview({ damage: 0, statuses: [s] });
     }
 
-    const selfSt = (p.statuses || []).filter(s => s.actorId === this.engine.player.id);
+    const selfSt = (p.statuses || []).filter(s => s.actorId === this.me.id);
     const gain = p.block || 0;
     this.$pl.classList.toggle('is-preview', gain > 0 || selfSt.length > 0 || p.heal > 0);
     if (gain > 0) {
       this.$plGuard.hidden = false;
       this.$plGuard.classList.add('is-preview');
-      this.$plGuardN.textContent = String(this.engine.player.block + gain);
+      this.$plGuardN.textContent = String(this.me.block + gain);
       this.$plGuard.dataset.plus = '+' + gain;
     }
     this._renderIncoming(gain);
@@ -1403,7 +1497,7 @@ export class CombatScene extends Scene {
       this.$pl.classList.remove('is-lethal');
       return;
     }
-    const hp = this.engine.player.hp;
+    const hp = this.me.hp;
     const lethal = through >= hp;
     const need = Math.max(0, inc.total - (inc.block || 0));
     this.$inc.hidden = false;
@@ -1582,7 +1676,7 @@ export class CombatScene extends Scene {
         return;
 
       case 'energy':
-        this._syncNerve(ev.after, ev.max ?? E.player.energyMax);
+        this._syncNerve(ev.after, ev.max ?? this.me.energyMax);
         return;
 
       case 'damage':
@@ -1595,11 +1689,11 @@ export class CombatScene extends Scene {
         const c = this._pointOf(ev.actorId);
         this.fx.shimmer(c.x, c.y, this.fx.col.guard);
         this.fx.number(c.x, c.y - 14, `+${ev.amount}`, { kind: 'block', mag: ev.amount });
-        if (ev.actorId === E.player.id) { this.$pl.classList.add('is-guarding'); this.hero?.guard(); }
+        if (ev.actorId === this.me.id) { this.$pl.classList.add('is-guarding'); this.hero?.guard(); }
         else this.views.get(ev.actorId)?.shimmer();
         this.ctx.audio?.play?.('combat:block-gain');
         await this._wait(this._d(0.13));
-        if (ev.actorId === E.player.id) this.$pl.classList.remove('is-guarding');
+        if (ev.actorId === this.me.id) this.$pl.classList.remove('is-guarding');
         this._renderIncoming(0);
         return;
       }
@@ -1646,7 +1740,7 @@ export class CombatScene extends Scene {
       case 'intent': {
         const v = this.views.get(ev.enemyId);
         if (v) {
-          v.setIntent(ev.intent, { playerHp: E.player.hp, playerBlock: E.player.block });
+          v.setIntent(ev.intent, { playerHp: this.me.hp, playerBlock: this.me.block });
           this._refreshTip(v);
         }
         this._renderIncoming(0);
@@ -1665,7 +1759,7 @@ export class CombatScene extends Scene {
         // Emitted BEFORE the effects land, which is the whole point: the eat
         // plays first, then heal / Guard / Nerve arrive as their own events.
         this._banner(ev.name || 'Snack', 'good', 0.9);
-        const c = this._pointOf(E.player.id);
+        const c = this._pointOf(this.me.id);
         this.fx.shimmer(c.x, c.y, this.fx.col.flame);
         this.fx.ring(c.x, c.y, this.fx.col.pluck, 54);
         this.ctx.audio?.play?.('ui:confirm');
@@ -1694,10 +1788,10 @@ export class CombatScene extends Scene {
         const label = ev.name || (ev.id ? titleCase(ev.id) : '');
         if (ev.delta && label) {
           const c = this._pointOf(ev.ownerId);
-          this.fx.word(c.x + (ev.ownerId === E.player.id ? 64 : 0), c.y - 56,
+          this.fx.word(c.x + (ev.ownerId === this.me.id ? 64 : 0), c.y - 56,
             `${ev.delta > 0 ? '+' : ''}${ev.delta} ${label}`, 'counter');
         }
-        if (ev.ownerId === E.player.id) this._syncPlayer();
+        if (ev.ownerId === this.me.id) this._syncPlayer();
         return;
       }
 
@@ -1730,7 +1824,7 @@ export class CombatScene extends Scene {
         const v = ev.sourceId ? this.views.get(ev.sourceId) : null;
         v?.el.classList.add('rule-broken');
         this._banner(`${ev.name} BROKEN`, 'rulebreak', 1.3);
-        const c = this._pointOf(ev.sourceId || this.engine.player.id);
+        const c = this._pointOf(ev.sourceId || this.me.id);
         this.fx.burst(c.x, c.y, { color: this.fx.col.threatHi, count: 22, speed: 320 });
         this._addShake(0.7);
         this.ctx.audio?.play?.('ui:deny');
@@ -1856,7 +1950,7 @@ export class CombatScene extends Scene {
    */
   _reconcileHand() {
     if (!this.hand || !this.engine || this.engine.over) return;
-    const want = (this.engine.piles && this.engine.piles.hand) || [];
+    const want = (this.mePiles && this.mePiles.hand) || [];
     const have = this.hand.cards();
     if (want.length === have.length) {
       let same = true;
@@ -1875,7 +1969,7 @@ export class CombatScene extends Scene {
   /* ── damage ──────────────────────────────────────────────────────────── */
   async _animDamage(ev) {
     const E = this.engine;
-    const isPlayer = ev.targetId === E.player.id;
+    const isPlayer = ev.targetId === this.me.id;
     const src = this.views.get(ev.sourceId);
     const tgt = isPlayer ? null : this.views.get(ev.targetId);
 
@@ -1897,7 +1991,7 @@ export class CombatScene extends Scene {
     // fixed the StS1 complaint that the player figure just twitched." Round 3
     // had the player as a framed portrait that never moved at all. Wind-up is
     // armed in `_onPlay`; this is contact and follow-through.
-    else if (ev.sourceId === E.player.id) await this._playerStrike();
+    else if (ev.sourceId === this.me.id) await this._playerStrike();
 
     const c = this._pointOf(ev.targetId);
     const hpLoss = ev.hpLoss || 0;
@@ -1934,7 +2028,7 @@ export class CombatScene extends Scene {
       this._playerHit(hpLoss, blockedAll);
     } else if (tgt) {
       if (blockedAll) tgt.clank(ev.amount);
-      else tgt.flinch(hpLoss, ev.sourceId === E.player.id ? 1 : -1);
+      else tgt.flinch(hpLoss, ev.sourceId === this.me.id ? 1 : -1);
       tgt.setState(E.state.enemies.find(x => x.id === ev.targetId) || {});
     }
 
@@ -2130,7 +2224,7 @@ export class CombatScene extends Scene {
     }
     this._renderRules();
     this._syncPiles();
-    this._syncNerve(this.engine.energy, this.engine.player.energyMax);
+    this._syncNerve(this.me.energy, this.me.energyMax);
     this.hud?.refresh();
     // The fan and `piles.hand` agree at the end of every beat, or this fixes it.
     this._reconcileHand();
@@ -2158,7 +2252,7 @@ export class CombatScene extends Scene {
   }
 
   _syncActor(id) {
-    if (id === this.engine.player.id) { this._syncPlayer(); return; }
+    if (id === this.me.id) { this._syncPlayer(); return; }
     const en = this.engine.actor(id);
     const v = this.views.get(id);
     if (en && v) { v.setState(this._light(en)); this._syncEnemyExtras(id); this._refreshTip(v); }
@@ -2223,7 +2317,7 @@ export class CombatScene extends Scene {
   }
 
   _syncPlayer() {
-    const p = this._light(this.engine.player);
+    const p = this._light(this.me);
     const maxHp = p.maxHp || 1;
     const pct = Math.max(0, Math.min(1, p.hp / maxHp));
     this.$pl.classList.toggle('is-low', pct <= 0.3);
@@ -2248,12 +2342,85 @@ export class CombatScene extends Scene {
     }
     this._renderPlayerCounters();
     this._renderStatusRow(p.statuses || []);
+    this._syncMate();
+  }
+
+  /**
+   * The other Kid's panel.
+   *
+   * Driven off the same events as your own — piggybacking on `_syncPlayer`
+   * rather than adding a second subscription, because two listeners on one
+   * event stream drift the moment somebody adds a third.
+   */
+  _syncMate() {
+    const m = this.mate;
+    if (!this.$mate) return;
+    if (!m) { this.$mate.hidden = true; return; }
+    this.$mate.hidden = false;
+
+    // Their Companion's portrait, sourced exactly like your own. Set once —
+    // re-assigning `src` every sync would re-request the image on every event.
+    if (this._mateArtFor !== m.companion) {
+      this._mateArtFor = m.companion;
+      const slug = m.companion && m.companion !== 'neutral' ? m.companion : null;
+      if (slug) {
+        this.$mateArt.style.display = '';
+        this.$mateArt.src = `${PORTRAITS}${slug}.png`;
+        this.$mateArt.addEventListener('error',
+          () => { this.$mateArt.style.display = 'none'; }, { once: true });
+      } else this.$mateArt.style.display = 'none';
+    }
+
+    const maxHp = m.maxHp || 1;
+    const pct = Math.max(0, Math.min(1, m.hp / maxHp));
+    const hp = Math.max(0, Math.round(m.hp));
+    this.$mate.classList.toggle('is-low', pct <= 0.3 && !m.fallen);
+    this.$mate.classList.toggle('is-fallen', !!m.fallen);
+
+    this.$mateName.textContent = m.name || 'Your friend';
+    this.$mateComp.textContent = m.companion && m.companion !== 'neutral' ? m.companion : '';
+    this.$mateFill.style.transform = `scaleX(${pct.toFixed(4)})`;
+    this.$mateHp.textContent = m.fallen ? 'down' : `${hp}/${maxHp}`;
+    this.$mateBar.dataset.tip = m.fallen
+      ? `${m.name} has fallen|They cannot act for the rest of this Scuffle.|They get back up at 1 ${TERMS.hp} if you win it.`
+      : `${m.name}|${hp} of ${maxHp} ${TERMS.hp} left.`;
+    this.$mateBar.setAttribute('aria-label',
+      m.fallen ? `${m.name} has fallen` : `${m.name}, ${TERMS.hp} ${hp} of ${maxHp}`);
+
+    if (m.block > 0 && !m.fallen) { this.$mateGuard.hidden = false; this.$mateGuardN.textContent = String(m.block); }
+    else this.$mateGuard.hidden = true;
+
+    // "Ready" is the simultaneous-turn read: they have ended their turn and the
+    // enemies are waiting on YOU.
+    this.$mateReady.hidden = !m.ended || m.fallen;
+
+    // Which enemies are winding up at them. The single most useful thing to
+    // know about a teammate you cannot otherwise see.
+    const aimed = this.engine.enemies.filter(en => en.alive && en.intent
+      && this.engine.intentTargetFor(en) === m);
+    if (aimed.length && !m.fallen) {
+      this.$mateAim.hidden = false;
+      this.$mateAim.textContent = aimed.length === 1
+        ? `${aimed[0].name} is aiming at them`
+        : `${aimed.length} of them are aiming at them`;
+    } else this.$mateAim.hidden = true;
+
+    const st = (m.statuses instanceof Map) ? [...m.statuses.entries()] : [];
+    this.$mateSt.textContent = '';
+    for (const [id, stacks] of st) {
+      if (!stacks) continue;
+      const chip = document.createElement('span');
+      chip.className = 'cb-mate__st';
+      chip.setAttribute('role', 'listitem');
+      chip.textContent = `${this.engine.statusDef(id)?.name || id} ${stacks}`;
+      this.$mateSt.appendChild(chip);
+    }
   }
 
   /** The lagging half of the Courage bar, ticked from the scene's frame loop. */
   _drainCourage(dt) {
     const pct = Math.max(0, Math.min(1,
-      this.engine.player.hp / (this.engine.player.maxHp || 1)));
+      this.me.hp / (this.me.maxHp || 1)));
     const gp = this._plGhostV;
     if (gp === undefined || gp <= pct) return;
     const held = this._plGhostFrom && performance.now() - this._plGhostFrom < 260;
@@ -2275,7 +2442,7 @@ export class CombatScene extends Scene {
    * entire fight and this runs once per damage event.
    */
   _renderPlayerCounters() {
-    const pid = this.engine.player.id;
+    const pid = this.me.id;
     const out = [];
     for (const c of this.engine.counters.values()) {
       if (c.ownerId !== pid) continue;
@@ -2355,14 +2522,14 @@ export class CombatScene extends Scene {
   }
 
   _syncPiles() {
-    const pl = this.engine.piles;
+    const pl = this.mePiles;
     this.$drawPile.querySelector('b').textContent = String(pl?.draw?.length ?? 0);
     this.$discardPile.querySelector('b').textContent = String(pl?.discard?.length ?? 0);
   }
 
   _syncNerve(cur, max) {
     const c = cur ?? this.engine.energy;
-    const m = max ?? this.engine.player.energyMax;
+    const m = max ?? this.me.energyMax;
     if (this._nerveV === c && this._nerveM === m) return;
     const dropped = this._nerveV !== undefined && c < this._nerveV;
     this._nerveV = c; this._nerveM = m;
@@ -2391,7 +2558,7 @@ export class CombatScene extends Scene {
     if (!this.engine || !this.hand) return;
     const playerTurn = this.engine.phase === 'player' && !this.engine.over;
     // `engine.state` serialises the whole fight — never touch it in a hot path.
-    const any = (this.engine.piles?.hand || []).some(c =>
+    const any = (this.mePiles?.hand || []).some(c =>
       this.engine.canPlay(c.uid, this._defaultTargetFor(c.uid)).ok);
     this.$endTurn.disabled = !playerTurn;
     this.$endTurn.classList.toggle('is-ready', playerTurn && !any);
@@ -2580,7 +2747,7 @@ export class CombatScene extends Scene {
 
   /** Layer-local point for FX, from an actor id. */
   _pointOf(id) {
-    if (id === this.engine?.player?.id) {
+    if (id === this.me?.id) {
       /* The Kid's BODY, not her portrait. Sparks, Guard shimmer and the damage
          numeral used to land on the framed picture in the corner while the
          thing being hit stood somewhere else entirely. */

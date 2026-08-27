@@ -1812,3 +1812,99 @@
   .cb-enemy.has-entered .cb-enemy__above,
   .cb-enemy.has-entered .cb-enemy__plate { animation: none; }
 }
+
+/* ── THE OTHER KID ──────────────────────────────────────────────────────────
+   Hidden entirely in solo (the scene sets [hidden]), so this costs a
+   single-player fight nothing at all.
+
+   Top-left, under the HUD and above your own panel, so the two Kids read as
+   two sides of one table without the teammate ever competing with your hand
+   for attention. It answers three questions and stops: alive, covered, done.
+   Every colour is a token — CONTRACTS non-negotiable #2. */
+.cb-mate {
+  position: absolute;
+  left: var(--s-4); top: calc(var(--hud-h, 44px) + var(--s-3));
+  width: 244px; z-index: 6;
+  padding: var(--s-3);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--ink-900) 76%, transparent);
+  border: 1px solid color-mix(in srgb, var(--surface-line) 70%, transparent);
+  box-shadow: var(--shadow-3);
+  backdrop-filter: blur(6px);
+  font-family: var(--font-body);
+  pointer-events: auto;
+}
+.cb-mate[hidden] { display: none; }
+
+.cb-mate__top { display: flex; align-items: center; gap: var(--s-2); }
+.cb-mate__art {
+  width: 34px; height: 34px; flex: 0 0 34px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: color-mix(in srgb, var(--ink-700) 80%, transparent);
+}
+.cb-mate__id { display: flex; flex-direction: column; min-width: 0; flex: 1 1 auto; }
+.cb-mate__name {
+  font-size: var(--fs-sm); color: var(--parchment);
+  letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cb-mate__comp {
+  font-size: var(--fs-xs); color: var(--ink-300);
+  text-transform: capitalize; letter-spacing: .06em;
+}
+.cb-mate__ready {
+  font-size: var(--fs-xs); letter-spacing: .12em; text-transform: uppercase;
+  color: var(--spectre-200);
+  border: 1px solid color-mix(in srgb, var(--spectre-400) 55%, transparent);
+  border-radius: var(--radius-lg); padding: 1px 7px;
+}
+.cb-mate__ready[hidden] { display: none; }
+
+.cb-mate__vitals { display: flex; align-items: center; gap: var(--s-2); margin-top: var(--s-2); }
+.cb-mate__guard {
+  position: relative; width: 22px; height: 22px; flex: 0 0 22px;
+  display: grid; place-items: center; color: var(--guard-300);
+}
+.cb-mate__guard[hidden] { display: none; }
+.cb-mate__guard svg { position: absolute; inset: 0; width: 100%; height: 100%; fill: color-mix(in srgb, var(--guard-500) 34%, transparent); stroke: var(--guard-300); stroke-width: 1.4; }
+.cb-mate__guard b { position: relative; font-size: var(--fs-xs); color: var(--parchment); }
+
+.cb-mate__bar {
+  position: relative; flex: 1 1 auto; height: 14px;
+  border-radius: var(--radius-lg); overflow: hidden;
+  background: color-mix(in srgb, var(--ink-700) 85%, transparent);
+  border: 1px solid color-mix(in srgb, var(--surface-line) 60%, transparent);
+}
+.cb-mate__fill {
+  position: absolute; inset: 0; transform-origin: left center;
+  /* The same gradient as your OWN Courage bar, not the HUD pill's red. Two
+     Kids' Courage should read as the same kind of thing at a glance. */
+  background: linear-gradient(180deg, var(--pluck-300), var(--flame-400) 58%, var(--flame-500));
+  transition: transform var(--t-base) var(--ease-out);
+}
+.cb-mate__hp {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  font-size: var(--fs-xs); color: var(--parchment);
+  text-shadow: 0 1px 2px color-mix(in srgb, var(--ink-900) 80%, transparent);
+}
+.cb-mate.is-low .cb-mate__fill { background: linear-gradient(90deg, var(--threat-500), var(--threat-300)); }
+.cb-mate.is-fallen { opacity: .58; }
+.cb-mate.is-fallen .cb-mate__fill { background: var(--ink-500); transform: scaleX(0) !important; }
+
+.cb-mate__statuses { display: flex; flex-wrap: wrap; gap: 4px; margin-top: var(--s-2); }
+.cb-mate__statuses:empty { display: none; }
+.cb-mate__st {
+  font-size: var(--fs-xs); color: var(--text-mid);
+  border: 1px solid color-mix(in srgb, var(--surface-line) 55%, transparent);
+  border-radius: var(--radius-lg); padding: 1px 6px;
+}
+.cb-mate__aim {
+  margin-top: var(--s-2);
+  font-size: var(--fs-xs); color: var(--threat-300);
+  letter-spacing: .02em;
+}
+.cb-mate__aim[hidden] { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cb-mate__fill { transition: none; }
+}
