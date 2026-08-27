@@ -17,10 +17,15 @@ Waits on CONDITIONS, never on fixed sleeps. The enemy phase for two Kids runs
 about seven seconds on this machine and a six-second wait passed or failed by
 what the enemies rolled — the measurement trap in CONTRACTS, in miniature.
 
-SLOW ON PURPOSE: it plays real fights at real speed, so 24 steps is minutes,
-not seconds. It prints each step as it happens rather than at the end, because
-a walk that reports nothing for six minutes is indistinguishable from a wedged
-one — which is exactly how the first version of it looked.
+SLOW ON PURPOSE — it plays real fights at real speed. The default 12 steps is a
+Scuffle and its handoffs in a few minutes; `24` walks the reward and back out to
+the blueprint and takes about ten. It prints each step as it happens rather than
+at the end, because a walk that reports nothing for six minutes is
+indistinguishable from a wedged one, which is exactly how the first version of
+it looked while I was waiting on it.
+
+Not part of the quick battery for that reason. Run it after anything that
+touches the co-op loop.
 """
 import asyncio, json, os, sys
 
@@ -31,7 +36,7 @@ except Exception:
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SHOTS = os.path.join(ROOT, "shots")
-STEPS = int(sys.argv[1]) if len(sys.argv) > 1 else 24
+STEPS = int(sys.argv[1]) if len(sys.argv) > 1 else 12
 
 STATE = """() => {
   const MM = window.MM, r = MM.ctx.run;
@@ -98,12 +103,29 @@ async def main():
     from playwright.async_api import async_playwright
 
     async def settle(page, timeout=40000):
-        """Wait until the game is idle — or a player is being waited on."""
+        """Wait until the game is idle — or a player is being waited on.
+
+        Says so when it gives up. A settle that times out silently turns into
+        "the walk is slow", and a walk that is slow for the wrong reason is a
+        walk that is wedged.
+        """
         await page.wait_for_timeout(400)
         try:
             await page.wait_for_function(SETTLED, timeout=timeout)
         except Exception:
-            pass
+            try:
+                why = await page.evaluate("""() => {
+                  const MM = window.MM, sc = MM && MM.ctx.scenes.current;
+                  return { scene: MM && MM.ctx.scenes.currentName,
+                           busy: !!(MM && MM.ctx.scenes.busy),
+                           resolving: !!(sc && sc._resolving),
+                           veil: !!document.querySelector('.mm-handoff'),
+                           phase: sc && sc.engine ? sc.engine.phase : null,
+                           over: sc && sc.engine ? sc.engine.over : null };
+                }""")
+            except Exception:
+                why = "unreadable"
+            print("      !! settle gave up:", json.dumps(why), flush=True)
         await page.wait_for_timeout(400)
 
     async with async_playwright() as p:

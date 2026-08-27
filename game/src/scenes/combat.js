@@ -2717,9 +2717,14 @@ export class CombatScene extends Scene {
       await this.engine.endTurn(hotseat ? this.me : undefined);
     } catch (e) { console.error('[combat] endTurn', e); }
     await this._settle();
-    this._resolving = false;
-    if (!this.engine) return;                     // the fight ended and we left
+    if (!this.engine) { this._resolving = false; return; }   // the fight ended
+    // `_resolving` stays TRUE across the handoff. Clearing it here and letting
+    // `_handOff` set it again left a tick where the scene claimed to be idle
+    // with the veil not yet up — long enough for a second END TURN to be
+    // accepted, and long enough for a driver watching `_resolving` to decide
+    // the turn was over and play again into a locked hand.
     if (hotseat) await this._handOff();
+    this._resolving = false;
     if (!this.engine) return;
     if (!this.engine.over && this.engine.phase === 'player') this.hand.unlock();
     this._syncEndTurn();
@@ -2753,7 +2758,6 @@ export class CombatScene extends Scene {
     if (!next || !run) return;
     const kid = run.kids[next.seat];
     if (!kid) return;
-    this._resolving = true;
     try {
       await passTo({
         name: run.kidNameOf(kid),
@@ -2763,8 +2767,8 @@ export class CombatScene extends Scene {
         // Behind the veil, so the board is already theirs when it lifts.
         onReady: () => { run.setLocalSeat(next.seat); this._takeSeat(); },
       });
-    } finally {
-      this._resolving = false;
+    } catch (err) {
+      console.error('[combat] handoff', err);
     }
   }
 
