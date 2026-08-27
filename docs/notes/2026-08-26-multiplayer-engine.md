@@ -246,22 +246,20 @@ starting decks or the co-op pool.
 
 ## 6. What is NOT done
 
-1. **Networking.** Deferred by the designer along with the Steam wrapper. The
-   two-Kid select is the seam it replaces: player two picks on the same screen
-   today, and picks over the wire later.
-2. **Cards that ask a TEAMMATE to choose.** Several say "that player chooses a
-   Trick from their hand". The choice broker raises one request to whoever is
-   driving the engine and there is no routing to put it in front of a different
-   player, so those picks resolve deterministically and are marked
-   `// TEAMMATE PICK` in the source. The effect is right; who decides is not.
-3. **Per-Kid shops.** `removalPrice` and `pity` are already per Kid; the shop
-   screen itself still shows one inventory.
-4. The other 11 Companions' co-op pools — they are unbuilt Companions.
-5. Per-enemy `partyHp` overrides: the engine supports them, nobody has authored
-   any, and the measured 2.2x makes them optional rather than needed.
-6. Boss multiplayer adjustments from the region chapters (the Butler's per-Kid
-   House Rules and Flustered thresholds, the Governess's per-Kid Stitched
-   Together and repair windows) are designed but not built.
+**Superseded — read HANDOFF §9 for the live list.** Everything numbered here on
+2026-08-26 has since been built except the first item:
+
+1. **Networking.** Still deferred with the Steam wrapper, and now the only thing
+   outstanding. Two people can play the whole game on one machine —
+   `docs/notes/2026-08-27-pass-and-play.md`.
+2. ~~Cards that ask a TEAMMATE to choose~~ — choice requests are addressed to a
+   seat now (`ask({ seat })`).
+3. ~~Per-Kid shops~~ — `shopStock(node, kid)`.
+4. **The other 11 Companions' co-op pools** — they are unbuilt Companions.
+5. Per-enemy `partyHp` overrides: the engine supports them and the Governess's
+   Favorite Doll now uses one (80 Courage at 2p, per the Nursery chapter).
+6. ~~Boss multiplayer adjustments~~ — all three bosses, and the Big Scares —
+   `docs/notes/2026-08-26-multiplayer-bosses.md`.
 
 ## 7. Tests
 

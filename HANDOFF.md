@@ -240,13 +240,15 @@ enters 313 ms sooner. Same driver work, later. Worth a look before anyone calls 
 **Two Kids** (`MAX_PARTY`), by the designer's decision on 2026-08-26. The Steam
 wrapper is still deferred, so everything here is transport-independent.
 
-You can start a co-op expedition from inside the game: "Go in together" on the
+**Two people can play the whole game on one machine.** "Go in together" on the
 Companion/Kid select, pick your Kid, "Lock in & pass it over", your friend picks
-theirs. From there the whole loop runs — shared route, per-Kid decks, real
-fights, per-Kid rewards, the Safe Room's Mend and Clone.
+theirs — and from there the screen keeps changing hands: combat turns, the
+reward, Mr. Moth's, the Safe Room and Curiosities all pass over with an opaque
+veil between them. Shared route, per-Kid everything.
 
-Detail: `docs/notes/2026-08-26-multiplayer-engine.md`. Contract summary:
-CONTRACTS.md § "Co-op: the engine has N players".
+Detail: `docs/notes/2026-08-26-multiplayer-engine.md` (the engine),
+`2026-08-26-multiplayer-bosses.md` (the content), `2026-08-27-pass-and-play.md`
+(two Kids at one screen). Contract summary: CONTRACTS.md § "Co-op: two Kids".
 
 ### Built and tested
 
