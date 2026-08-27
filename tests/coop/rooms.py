@@ -280,6 +280,36 @@ async def main():
         check(len(opts1) > 0, "with the options live again", str(len(opts1)))
         await page.screenshot(path=os.path.join(SHOTS, "rooms-event-seat1.png"))
 
+        # ── a Rescue is NOT per Kid ─────────────────────────────────────────
+        # One pet comes home. Handing the screen on would show the second Kid a
+        # Companion already rescued and nothing to do about it.
+        print("")
+        print("A Rescue")
+        await page.evaluate("""() => {
+          const r = window.MM.ctx.run;
+          const n = r.map.nodes.find(x => (x.kind || x.type) === 'rescue');
+          r.currentNodeId = n.id;
+          for (const k of r.kids) k.roomDone = null;
+          r.pendingEvent = null;
+          r._prepareEvent(n, 'rescue');
+          r.setLocalSeat(0);
+          r._goto('event', { node: n.id, region: r.region });
+        }""")
+        await page.wait_for_timeout(5000)
+        rs = await page.evaluate(WHO)
+        check(rs["scene"] == "event", "the Rescue is up", rs["scene"])
+        await page.evaluate("""() => {
+          for (const el of document.querySelectorAll('button, .btn, .rm-go')) {
+            const t = (el.textContent || '').trim().toLowerCase();
+            if (t.startsWith('back to the blueprint') || t.startsWith('leave')
+                || t.startsWith('go on') || t.startsWith('move on')) { el.click(); return; }
+          }
+        }""")
+        await page.wait_for_timeout(4500)
+        rv = await page.evaluate(WHO)
+        check(not rv["veil"], "leaving does NOT hand it over", f"veil {rv['veil']}")
+        check(rv["scene"] == "map", "it just closes", rv["scene"])
+
         await b.close()
 
     print("\nconsole errors:", len(errors))

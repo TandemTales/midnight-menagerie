@@ -296,7 +296,8 @@ export class EventScene extends RoomScene {
       return;
     }
 
-    this._leaveRoom();
+    // A Curiosity is answered by each Kid; a Rescue is one pet.
+    this._leaveRoom({ perKid: !this.rescue });
   }
 
   /* ── a Companion rescue ───────────────────────────────────────────────────

@@ -230,11 +230,14 @@ export class RoomScene extends Scene {
    * turn" is marked when they leave, not when they use it: a Kid is allowed to
    * look at the shelf and buy nothing.
    */
-  async _leaveRoom() {
+  async _leaveRoom({ perKid = true } = {}) {
     if (this._leaving) return;
     const run = this.run;
     if (run && !this.mock) run.markRoomDone();
-    const next = this._seatStillOwed(k => !run.roomDoneBy(k));
+    // `perKid: false` for a room there is only one of. A Rescue is one pet
+    // coming home — handing the screen on would show the second Kid a
+    // Companion already rescued and nothing to do about it.
+    const next = perKid ? this._seatStillOwed(k => !run.roomDoneBy(k)) : -1;
     if (next >= 0) {
       this._leaving = true;
       const done = await this._passRoomTo(next, 'Your turn in here.',
