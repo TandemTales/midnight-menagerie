@@ -660,7 +660,15 @@ export const toyChest = {
   scale: 1.55,
   lore: 'Everything the nursery ever lost is in here, and all of it has been awake the whole time.',
 
+  /**
+   * "Maximum summoned enemies becomes 2 with one or two players, 3 with three
+   * or four." (docs/design/regions/02-nursery.md §34.) Identical at one and two
+   * Kids, so nothing about the reachable game changes — it is here so the
+   * number lives with the rule rather than being rediscovered when MAX_PARTY
+   * grows.
+   */
   maxSummons: 2,
+  maxSummonsFor(c) { return c.partySize() >= 3 ? 3 : 2; },
 
   onSpawn(c) { setCnt(c, 'contents', flag(c, 'contents', 6)); },
 
@@ -674,7 +682,7 @@ export const toyChest = {
   canSpill(c) {
     return !mem(c).slammed
       && cnt(c, 'contents') > 0
-      && allies(c).filter(a => a.summonedBy === (c.self.uid ?? c.self.id)).length < toyChest.maxSummons;
+      && allies(c).filter(a => a.summonedBy === (c.self.uid ?? c.self.id)).length < toyChest.maxSummonsFor(c);
   },
 
   moves: {

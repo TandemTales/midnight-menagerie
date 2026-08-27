@@ -963,7 +963,13 @@ export const theWardrobe = {
   lore: 'Its doors lead somewhere considerably larger than the piece of furniture should contain.',
 
   doors: ['wardrobe-door-left', 'wardrobe-door-right'],
+  /**
+   * "Maximum summons: 2 with one or two players, 3 with three, 4 with four."
+   * (docs/design/regions/03-sleeping-quarters.md §45.) Same number at one and
+   * two Kids; only reachable if MAX_PARTY ever grows.
+   */
   maxSummons: 2,
+  maxSummonsFor(c) { return Math.max(2, Math.min(4, c.partySize())); },
 
   doorActors(c) { return allies(c).filter(a => theWardrobe.doors.includes(a.id)); },
   brokenDoors(c) { return (mem(c).doorsBroken || 0); },
@@ -987,7 +993,7 @@ export const theWardrobe = {
         const shut = theWardrobe.doorActors(c).filter(d => !d.mem?.open && !d.mem?.broken);
         if (shut.length) (shut[0].mem ||= {}).open = true;
         const own = allies(c).filter(a => a.summonedBy === (c.self.uid ?? c.self.id));
-        if (own.length < theWardrobe.maxSummons) {
+        if (own.length < theWardrobe.maxSummonsFor(c)) {
           const pick = WARDROBE_SUMMONS[c.rng.int(WARDROBE_SUMMONS.length)];
           c.summon(pick.enemyId, { hpMul: pick.hpMul });
         }

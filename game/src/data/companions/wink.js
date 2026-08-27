@@ -25,6 +25,38 @@ export const FAMILY = { ATTACK: 'Attack', DEFENSE: 'Defense', SCHEME: 'Scheme', 
 const FAMILIES = [FAMILY.ATTACK, FAMILY.DEFENSE, FAMILY.SCHEME, FAMILY.SPECIAL];
 const ATTACK_INTENTS = new Set(['attack', 'attackBig', 'attackDefend', 'attackBuff', 'attackDebuff']);
 const DEFENSE_INTENTS = new Set(['defend', 'defendBuff']);
+/**
+ * A friend's call on an enemy's NEXT Intent Family, asked of their own seat.
+ *
+ * Their client's picker answers; anyone else resolves it from the fallback,
+ * which is the family the enemy is showing RIGHT NOW — a real read that is
+ * right when the enemy repeats itself and wrong when it turns. That matters:
+ * both of these cards used to compute the guess FROM the answer
+ * (`currentFamily(c, t) === currentFamily(c, t)`), so the call could not be
+ * wrong, `closeEye` was dead code, and a card whose whole text is "Right: … /
+ * Wrong: …" only ever had one half.
+ */
+async function callFamily(c, ally, enemy) {
+  const now = currentFamily(c, enemy) || FAMILIES[0];
+  const pool = FAMILIES.map(f => ({ label: f, family: f }));
+  const start = Math.max(0, pool.findIndex(p => p.family === now));
+  const order = pool.slice(start).concat(pool.slice(0, start));
+  const picked = await c.e.choices.ask({
+    kind: 'option', prompt: 'Call its next move.', count: 1,
+    pool: order, seat: ally,
+    meta: { cardId: c.card ? c.card.id : null },
+  });
+  const chosen = order[picked[0]] || order[0];
+  return chosen.family;
+}
+
+/** What the enemy will ACTUALLY do next — the thing a call is scored against. */
+function nextFamily(c, e) {
+  if (!e) return null;
+  if (c.intentFamily) { const f = c.intentFamily(e, 1); if (f) return f; }
+  return currentFamily(c, e);
+}
+
 /** The Intent Family of an enemy's current action. */
 function currentFamily(c, e) {
   if (!e) return null;
@@ -1105,12 +1137,14 @@ const rares = [
  * 80 in a separate `coopCards` pool so a solo run can never draft one.
  *
  * A NOTE ON THE ONES THAT ASK A TEAMMATE TO CHOOSE. Several of these say
- * "that player chooses a Trick from their hand/discard". The choice broker
- * raises one request to whoever is driving the engine, and there is no client
- * routing yet to put that request in front of a DIFFERENT player. Until there
- * is, those picks resolve deterministically (cheapest first, then hand order)
- * and are marked with `// TEAMMATE PICK` below. The effect is right; who makes
- * the decision is not, and it is a networking task, not a card task.
+ * "that player chooses a Trick from their hand/discard". They go through
+ * `c.askAlly(ally, {...})`, which raises a real choice request ADDRESSED TO
+ * THAT KID'S SEAT: their own client's picker answers it, everyone else resolves
+ * it from the request's `prefer` rule and reads the outcome off the choice log.
+ * Local play always takes the second branch on purpose — handing one player the
+ * other Kid's deck would be worse than a stable rule, not better — so the
+ * transport is the only piece still missing, and the pick is no longer five
+ * files' worth of slightly different inline sorts.
  */
 const coopCards = [
   {
@@ -1123,9 +1157,8 @@ const coopCards = [
       const ally = await c.chooseAlly({ prompt: 'Who is calling it?' });
       const t = c.target;
       if (!ally || !t) return;
-      // TEAMMATE PICK — the family Wink herself would call.
-      const guess = currentFamily(c, t) || FAMILIES[0];
-      const actual = currentFamily(c, t);
+      const guess = await callFamily(c, ally, t);
+      const actual = nextFamily(c, t);
       if (guess === actual) {
         openEye(c, 1);
         c.e.schedule({
@@ -1222,8 +1255,12 @@ const coopCards = [
           for (const pl of friends) {
             const t = U.enemies(c)[0];
             if (!t) continue;
-            // TEAMMATE PICK — everyone calls what Wink reads.
-            if (currentFamily(c, t) === currentFamily(c, t)) {
+            // Spider Conference calls itself, every round, with no request:
+            // it is a Power that ticks at every turn end, and a modal per
+            // friend per enemy per round would be miserable to sit through.
+            // The call is what the enemy is showing NOW, scored against what
+            // it does NEXT — right when it repeats, wrong when it turns.
+            if (currentFamily(c, t) === nextFamily(c, t)) {
               openEye(c, 1);
               c.giveDraw(pl, n);
               hits.set(t.id, (hits.get(t.id) || 0) + 1);

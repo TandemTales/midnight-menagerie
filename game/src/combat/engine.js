@@ -183,6 +183,13 @@ export class CombatEngine {
     /** id -> { id, name, text } for House Rules, so an intent can name a rule it
      *  has not announced yet. Seeded by registerRules() and by announceRule(). */
     this.ruleDefs = new Map();
+    /**
+     * Which seat this client is playing. The ChoiceBroker consults it: a
+     * request addressed to somebody else's seat is never put in front of the
+     * person sitting here. Set from `run.localSeat` when the run builds a
+     * fight; 0 everywhere else, which is the whole answer in solo.
+     */
+    this.localSeat = cfg.localSeat | 0;
     this.choices = new ChoiceBroker(this);
     this._trackerInstaller = cfg.trackerInstaller || null;
 
@@ -2083,6 +2090,43 @@ export class CombatEngine {
       giveHeal: (pl, n) => (pl ? e.heal(pl, n, card ? card.id : 'ally') : 0),
       /** Cards in a teammate's pile — for Clone, Fetch Relay, Bring It Back. */
       allyCards: (pl, pile = 'hand') => (pl && pl.piles ? pl.piles.list(pile).slice() : []),
+      /**
+       * "That player chooses a Trick from their hand." — ask the KID WHOSE
+       * CARDS THEY ARE, not whoever is driving.
+       *
+       * ~15 multiplayer-only Tricks are worded this way. Each one used to
+       * inline its own deterministic rule beside a `// TEAMMATE PICK` comment,
+       * five files' worth of slightly different sorts with no shared contract
+       * and nothing a transport could intercept. This raises a real request
+       * addressed to their seat: their own client's picker answers it, and
+       * every other client resolves it with `prefer` and reads the outcome off
+       * the choice log. Local play always takes the second branch, on purpose
+       * — putting one player in charge of another Kid's deck would be worse
+       * than a stable rule, not better.
+       *
+       * @param {Object}   ally         the teammate
+       * @param {Object}   o
+       * @param {Array}    o.pool       their cards to choose from
+       * @param {number}   [o.count]    how many, default 1
+       * @param {string}   [o.prompt]
+       * @param {'cheapest'|'priciest'|Function} [o.prefer]  the fallback rule
+       * @returns {Promise<Array>} the chosen cards, in pool order
+       */
+      askAlly: async (ally, o = {}) => {
+        const pool = (o.pool || []).filter(Boolean);
+        if (!ally || !pool.length) return [];
+        const picked = await e.choices.ask({
+          kind: 'card',
+          prompt: o.prompt || 'Choose a Trick.',
+          count: Math.max(1, o.count ?? 1),
+          optional: !!o.optional,
+          pool,
+          prefer: o.prefer || null,
+          seat: ally,
+          meta: { cardId: card ? card.id : null, cardUid: card ? card.uid : null, pile: o.pile || null },
+        });
+        return picked.map(i => pool[i]).filter(Boolean);
+      },
       /** Put a card into a teammate's hand (or any of their piles). */
       giveCard: (pl, def, o = {}) => (pl
         ? e._asSeat(pl, () => e.addCard(def, o.pile || Pile.HAND, o)) : null),
@@ -2902,6 +2946,7 @@ export class CombatEngine {
     const c = new CombatEngine({ ..._cfgLite(this._cfg), _bare: true, rng: new RNG(this.seed), isPreview: true });
     // seats carry their own Keepsakes; copied with the seats below
     const s = this.snapshotRuntime();
+    c.localSeat = this.localSeat | 0;
     c.turn = s.turn; c.phase = s.phase; c.over = s.over; c.victory = s.victory;
     c.started = s.started; c._seq = s.seq;
     c.stats = { ...s.stats };

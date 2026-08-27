@@ -1631,6 +1631,106 @@ export async function run() {
        'pity is read off the Kid asked about, not off whoever is local');
   });
 
+  // ── whose choice is it? ───────────────────────────────────────────────────
+  // ~15 multiplayer-only Tricks say "that player chooses a Trick from their
+  // hand". The broker had no idea which Kid a request belonged to, so each card
+  // inlined its own deterministic rule beside a `// TEAMMATE PICK` comment.
+  // Requests are addressed to a seat now: this client's picker answers its own,
+  // and never gets handed the other Kid's deck.
+
+  await atest('choice: a request for MY seat reaches the resolver', async () => {
+    const e = await startDummyParty(new RNG(841), 2, { maxHp: 90 });
+    const [a] = e.players;
+    e.localSeat = 0;
+    const seen = [];
+    e.choices.setResolver(async (req) => { seen.push(req); return [1]; });
+    const picked = await e.choices.ask({
+      kind: 'card', count: 1, pool: a.piles.hand.slice(0, 3), seat: a,
+    });
+    eq(seen.length, 1, 'the picker was opened');
+    eq(picked[0], 1, 'and what it chose is what came back');
+  });
+
+  await atest('choice: a request for the OTHER seat never opens my picker', async () => {
+    const e = await startDummyParty(new RNG(843), 2, { maxHp: 90 });
+    const [, b] = e.players;
+    e.localSeat = 0;
+    const seen = [];
+    e.choices.setResolver(async (req) => { seen.push(req); return [2]; });
+    const picked = await e.choices.ask({
+      kind: 'card', count: 1, pool: b.piles.hand.slice(0, 3), seat: b,
+    });
+    eq(seen.length, 0, 'I was not asked to make their decision');
+    eq(picked[0], 0, 'it resolved from the request own rule');
+  });
+
+  await atest('choice: prefer decides how somebody else seat resolves', async () => {
+    const e = await startDummyParty(new RNG(845), 2, { maxHp: 90 });
+    const [, b] = e.players;
+    e.localSeat = 0;
+    const pool = b.piles.hand.slice(0, 4);
+    ok(pool.length >= 2, 'seat 1 is holding a few Tricks');
+    const cheapest = await e.choices.ask({ kind: 'card', count: 1, pool, seat: b, prefer: 'cheapest' });
+    const priciest = await e.choices.ask({ kind: 'card', count: 1, pool, seat: b, prefer: 'priciest' });
+    const cost = (i) => pool[i].baseCost ?? 99;
+    ok(cost(cheapest[0]) <= cost(priciest[0]), 'cheapest is not pricier than priciest');
+    eq(cheapest[0], pool.indexOf(pool.slice().sort((x, y) => (x.baseCost ?? 99) - (y.baseCost ?? 99))[0]),
+       'and it really is the cheapest one on the table');
+  });
+
+  await atest('choice: the log records WHOSE decision it was', async () => {
+    const e = await startDummyParty(new RNG(847), 2, { maxHp: 90 });
+    const [a, b] = e.players;
+    e.localSeat = 0;
+    await e.choices.ask({ kind: 'card', count: 1, pool: a.piles.hand.slice(0, 2), seat: a });
+    await e.choices.ask({ kind: 'card', count: 1, pool: b.piles.hand.slice(0, 2), seat: b });
+    const log = e.choiceLog;
+    ok(log.length >= 2, 'both were logged');
+    eq(log[log.length - 2].seat, 0, 'seat 0 decision is attributed to seat 0');
+    eq(log[log.length - 1].seat, 1, 'and seat 1 to seat 1 — a replay can tell them apart');
+  });
+
+  await atest('choice: an unaddressed request behaves exactly as it always did', async () => {
+    const e = makeDummyCombat(new RNG(849));
+    await e.startCombat();
+    let asked = 0;
+    e.choices.setResolver(async () => { asked++; return [1]; });
+    const picked = await e.choices.ask({ kind: 'card', count: 1, pool: e.piles.hand.slice(0, 3) });
+    eq(asked, 1, 'solo still opens the picker');
+    eq(picked[0], 1, 'and honours it');
+  });
+
+  await atest('wink: Call It Out can actually be wrong', async () => {
+    // Both of Wink's co-op calls computed the guess FROM the answer
+    // (`currentFamily(c,t) === currentFamily(c,t)`), so the call could not miss
+    // and `closeEye` was unreachable — on a card whose whole text is
+    // "Right: … / Wrong: …". The Dust Bunny's cycle is puff / settle / scatter,
+    // so on turn 1 it is ATTACKING now and DEFENDING next: calling what it is
+    // showing is the wrong answer, and Wink should lose an eye for it.
+    const { cardById } = await import('../../game/src/data/cards.js');
+    const def = cardById('wink/call-it-out');
+    ok(!!def, 'the card exists');
+
+    const e = await startDummyParty(new RNG(851), 2, { companion: 'wink', maxHp: 90 });
+    await loadContentRegistries(e);
+    const [a, b] = e.players;
+    const foe = e.livingEnemies()[0];
+    // Wink's Eyes are an engine counter track keyed by the owning seat.
+    const eyesOf = (pl) => e.counter('open-eyes', pl.id) | 0;
+
+    // Give Wink eyes to lose, then play the call out of seat 0.
+    e.addCounter('open-eyes', 3, 'test', a.id);
+    const before = eyesOf(a);
+    ok(before > 0, `seat 0 has ${before} eyes open to risk`);
+
+    const card = e.addCard(def, 'hand', { to: a });
+    ok(!!card, 'the Trick is in seat 0 hand');
+    await e.playCard(card.uid, foe.id);
+    const after = eyesOf(a);
+    ok(after !== before, `the call resolved one way or the other (${before} -> ${after})`);
+    ok(after < before, 'and calling what it is doing NOW, when it turns next, closes an eye');
+  });
+
   // ── the run layer with two Kids ───────────────────────────────────────────
   // Shared route and rooms; per-Kid deck, Courage, Lost Things, Keepsakes,
   // Backpack. Same split as Slay the Spire 2, and the reason two Kids feel like

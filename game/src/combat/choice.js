@@ -32,6 +32,23 @@
  * `uncertain` means "this is one possible outcome, not a promise". The card face
  * should show the number with a trailing `?` rather than a hard prediction —
  * lying is worse than admitting the number depends on what you pick.
+ *
+ * ── Whose choice is it? ─────────────────────────────────────────────────────
+ * A request may name a SEAT (`ask({ seat })`). ~15 multiplayer-only Tricks say
+ * "that player chooses a Trick from their hand", and the decision belongs to
+ * the Kid holding the cards, not to whoever happens to be driving the engine.
+ *
+ *   seat is this client's (`engine.localSeat`) → the resolver, i.e. the picker UI
+ *   seat is somebody else's                    → resolved WITHOUT asking, using
+ *                                                the request's own `prefer` rule
+ *
+ * That second branch is the seam a transport replaces: today it resolves
+ * deterministically rather than putting a request in front of a player who is
+ * not at this screen, and every resolution — including who it was for — is
+ * appended to `choiceLog`, so a replay reconstructs the fight whichever way it
+ * was answered. Handing one player control of another Kid's deck would be worse
+ * than a deterministic pick, not better, so the fallback is not a bug to be
+ * suffered until the wire exists; it is the correct local behaviour.
  */
 
 import { EV } from './events.js';
@@ -71,12 +88,28 @@ export class ChoiceBroker {
   /** Replay a recorded `engine.choiceLog`. */
   setScript(log) { this.script = log ? log.slice() : null; this.scriptPos = 0; }
 
-  /** Lowest indices first — stable, seed-independent, and never surprising in a test. */
+  /**
+   * Nobody is answering this one. Stable, seed-independent, and never
+   * surprising in a test.
+   *
+   * `req.prefer` lets the card say which end it wants when the pick is not its
+   * player's to make — "cheapest", "priciest", or a comparator. Without it the
+   * rule is lowest index first, which is what every request used before seats
+   * existed and what the replay log is full of.
+   */
   auto(req) {
     const n = Math.min(req.count, req.pool.length);
-    const out = [];
-    for (let i = 0; i < n; i++) out.push(i);
-    return out;
+    let order = req.pool.map((_, i) => i);
+    const p = req.prefer;
+    if (p === 'cheapest' || p === 'priciest') {
+      const cost = (i) => (req.pool[i] && req.pool[i].baseCost != null) ? req.pool[i].baseCost : 99;
+      const dir = p === 'cheapest' ? 1 : -1;
+      order = order.sort((x, y) => (cost(x) - cost(y)) * dir || (x - y));
+    } else if (typeof p === 'function') {
+      try { order = order.sort((x, y) => p(req.pool[x], req.pool[y]) || (x - y)); }
+      catch { order = req.pool.map((_, i) => i); }
+    }
+    return order.slice(0, n);
   }
 
   /**
@@ -92,8 +125,15 @@ export class ChoiceBroker {
       optional: !!o.optional,
       pool: o.pool || [],
       meta: o.meta || {},
+      /** The Player this decision belongs to, or null for "whoever is driving". */
+      seat: o.seat || null,
+      prefer: o.prefer || null,
     };
     if (req.pool.length === 0 || req.count === 0) return [];
+    // Whose call is it? A request addressed to a seat that is not this client's
+    // is never put in front of the person sitting here.
+    const seatIndex = req.seat ? (req.seat.seat | 0) : null;
+    const mine = seatIndex == null || seatIndex === (this.e.localSeat | 0);
 
     this.e._emit(EV.CHOICE, {
       requestId: req.id, kind: req.kind, prompt: req.prompt,
@@ -101,12 +141,13 @@ export class ChoiceBroker {
       pool: req.pool.map((p, i) => describe(this.e, req.kind, p, i)),
       cardUid: req.meta.cardUid || null, cardId: req.meta.cardId || null,
       pile: req.meta.pile || null,
+      seat: seatIndex, forMe: mine,
     });
 
     let picked;
     if (this.script && this.scriptPos < this.script.length) {
       picked = this.script[this.scriptPos++].picked;
-    } else if (this.resolver && !this.autoOnly) {
+    } else if (this.resolver && !this.autoOnly && mine) {
       this.pending++;
       try { picked = await this.resolver(req); }
       finally { this.pending--; }
@@ -115,12 +156,18 @@ export class ChoiceBroker {
     }
 
     picked = sanitise(picked, req);
-    this.log.push({ seq: this.e._seq, kind: req.kind, cardId: req.meta.cardId || null, picked: picked.slice() });
+    // The seat goes in the log: a replay has to reconstruct WHOSE decision this
+    // was, not only what was decided, or a two-Kid fight replays with both
+    // seats' picks attributed to one of them.
+    this.log.push({
+      seq: this.e._seq, kind: req.kind, cardId: req.meta.cardId || null,
+      seat: seatIndex, picked: picked.slice(),
+    });
 
     this.e._emit(EV.CHOICE_RESOLVED, {
       requestId: req.id, kind: req.kind, picked: picked.slice(),
       chosen: picked.map(i => describe(this.e, req.kind, req.pool[i], i)),
-      cardUid: req.meta.cardUid || null,
+      cardUid: req.meta.cardUid || null, seat: seatIndex, forMe: mine,
     });
     return picked;
   }

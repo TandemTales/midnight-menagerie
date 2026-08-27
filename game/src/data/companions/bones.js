@@ -1017,12 +1017,14 @@ const rares = [
  * 80 in a separate `coopCards` pool so a solo run can never draft one.
  *
  * A NOTE ON THE ONES THAT ASK A TEAMMATE TO CHOOSE. Several of these say
- * "that player chooses a Trick from their hand/discard". The choice broker
- * raises one request to whoever is driving the engine, and there is no client
- * routing yet to put that request in front of a DIFFERENT player. Until there
- * is, those picks resolve deterministically (cheapest first, then hand order)
- * and are marked with `// TEAMMATE PICK` below. The effect is right; who makes
- * the decision is not, and it is a networking task, not a card task.
+ * "that player chooses a Trick from their hand/discard". They go through
+ * `c.askAlly(ally, {...})`, which raises a real choice request ADDRESSED TO
+ * THAT KID'S SEAT: their own client's picker answers it, everyone else resolves
+ * it from the request's `prefer` rule and reads the outcome off the choice log.
+ * Local play always takes the second branch on purpose — handing one player the
+ * other Kid's deck would be worse than a stable rule, not better — so the
+ * transport is the only piece still missing, and the pick is no longer five
+ * files' worth of slightly different inline sorts.
  */
 const coopCards = [
   {
@@ -1037,8 +1039,11 @@ const coopCards = [
       const pool = c.allyCards(ally, 'discard')
         .filter(k => (k.baseCost ?? 99) <= N(c).n && !U.flag(k, 'noReturnThisCombat'));
       if (!pool.length) return;
-      // TEAMMATE PICK — cheapest first, ties by discard order.
-      const pick = pool.slice().sort((x, y) => (x.baseCost ?? 99) - (y.baseCost ?? 99))[0];
+      const pick = (await c.askAlly(ally, {
+        pool, pile: 'discard', prefer: 'cheapest',
+        prompt: 'Bring one back from your discard.',
+      }))[0];
+      if (!pick) return;
       U.setFlag(pick, 'noReturnThisCombat', true);   // once per combat, per the doc
       c.e._asSeat(ally, () => c.e.moveCard(pick, 'hand', { reason: 'bones/bring-it-back-friend' }));
       // "If they play it this turn" — one-shot, torn down at end of turn either way.
@@ -1061,8 +1066,10 @@ const coopCards = [
       const ally = await c.chooseAlly({ prompt: 'Who is burying with you?' });
       if (!ally) return;
       const mine = U.handOthers(c)[0];
-      // TEAMMATE PICK — first card in their hand.
-      const theirs = c.allyCards(ally, 'hand')[0];
+      const theirs = (await c.askAlly(ally, {
+        pool: c.allyCards(ally, 'hand'), pile: 'hand',
+        prompt: 'Set one aside to bury.',
+      }))[0];
       const less = N(c).n;
       const stash = (seat, card) => {
         if (!card) return;
@@ -1093,8 +1100,10 @@ const coopCards = [
       const ally = await c.chooseAlly({ prompt: 'Who is on the other end?' });
       if (!ally) return;
       const mine = U.handOthers(c)[0];
-      // TEAMMATE PICK — first card in their hand.
-      const theirs = c.allyCards(ally, 'hand')[0];
+      const theirs = (await c.askAlly(ally, {
+        pool: c.allyCards(ally, 'hand'), pile: 'hand',
+        prompt: 'Which one are you handing over?',
+      }))[0];
       if (!mine || !theirs) return;                 // both, or neither
       // `discardCard` is an ENGINE method, not part of the card ctx surface —
       // the strict guard caught this reaching for a member that does not exist.
@@ -1117,8 +1126,10 @@ const coopCards = [
       const ally = await c.chooseAlly({ prompt: 'Who are you relaying with?' });
       if (!ally) return;
       const mine = c.discardPile.filter(k => !U.flag(k, 'noReturnThisCombat'))[0];
-      // TEAMMATE PICK — first eligible card in their discard.
-      const theirs = c.allyCards(ally, 'discard').filter(k => !U.flag(k, 'noReturnThisCombat'))[0];
+      const theirs = (await c.askAlly(ally, {
+        pool: c.allyCards(ally, 'discard').filter(k => !U.flag(k, 'noReturnThisCombat')),
+        pile: 'discard', prompt: 'Which one are you lending?',
+      }))[0];
       const less = N(c).n;
       const lend = (from, to, card) => {
         if (!card) return;

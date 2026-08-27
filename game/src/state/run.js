@@ -761,6 +761,9 @@ export class Run {
       players: seats,
       enemies,
       bus,
+      // Which Kid is at THIS screen. The choice broker will not ask the person
+      // sitting here to make the other Kid's decisions.
+      localSeat: this.localSeat | 0,
     });
 
     // Haunt counters / behavioural flags the encounter builder produced.
