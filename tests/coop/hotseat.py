@@ -20,7 +20,7 @@ Exit code 1 on any failure or console error.
 import asyncio, json, os, sys
 from playwright.async_api import async_playwright
 
-ROOT = r"C:\Users\Josh\OneDrive\Desktop\Tandem Tales\Midnight Menagerie"
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SHOTS = os.path.join(ROOT, "shots")
 
 WHO = """() => {
