@@ -2127,6 +2127,22 @@ export class CombatEngine {
         });
         return picked.map(i => pool[i]).filter(Boolean);
       },
+      /**
+       * The same, for a call rather than a card: "a friend names an Intent
+       * Family". `options` is `[{ label, ...anything }]` and the chosen entry
+       * comes back. Ordering IS the fallback — put the answer this Kid would
+       * give without being asked first, and make sure it can be wrong.
+       */
+      askAllyOption: async (ally, o = {}) => {
+        const pool = (o.options || []).filter(Boolean);
+        if (!ally || !pool.length) return null;
+        const picked = await e.choices.ask({
+          kind: 'option', prompt: o.prompt || 'Choose one.', count: 1,
+          pool, seat: ally,
+          meta: { cardId: card ? card.id : null, cardUid: card ? card.uid : null },
+        });
+        return pool[picked[0]] ?? pool[0];
+      },
       /** Put a card into a teammate's hand (or any of their piles). */
       giveCard: (pl, def, o = {}) => (pl
         ? e._asSeat(pl, () => e.addCard(def, o.pile || Pile.HAND, o)) : null),

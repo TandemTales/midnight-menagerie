@@ -41,13 +41,8 @@ async function callFamily(c, ally, enemy) {
   const pool = FAMILIES.map(f => ({ label: f, family: f }));
   const start = Math.max(0, pool.findIndex(p => p.family === now));
   const order = pool.slice(start).concat(pool.slice(0, start));
-  const picked = await c.e.choices.ask({
-    kind: 'option', prompt: 'Call its next move.', count: 1,
-    pool: order, seat: ally,
-    meta: { cardId: c.card ? c.card.id : null },
-  });
-  const chosen = order[picked[0]] || order[0];
-  return chosen.family;
+  const chosen = await c.askAllyOption(ally, { options: order, prompt: 'Call its next move.' });
+  return (chosen || order[0]).family;
 }
 
 /** What the enemy will ACTUALLY do next — the thing a call is scored against. */
@@ -1136,15 +1131,15 @@ const rares = [
  * The five co-op Tricks from this companion's design chapter, kept OUTSIDE the
  * 80 in a separate `coopCards` pool so a solo run can never draft one.
  *
- * A NOTE ON THE ONES THAT ASK A TEAMMATE TO CHOOSE. Several of these say
- * "that player chooses a Trick from their hand/discard". They go through
- * `c.askAlly(ally, {...})`, which raises a real choice request ADDRESSED TO
- * THAT KID'S SEAT: their own client's picker answers it, everyone else resolves
- * it from the request's `prefer` rule and reads the outcome off the choice log.
- * Local play always takes the second branch on purpose — handing one player the
- * other Kid's deck would be worse than a stable rule, not better — so the
- * transport is the only piece still missing, and the pick is no longer five
- * files' worth of slightly different inline sorts.
+ * A NOTE ON ANY THAT ASK A TEAMMATE TO CHOOSE. Where one of these says "that
+ * player chooses a Trick from their hand/discard", it goes through
+ * `c.askAlly(ally, {...})` (or `c.askAllyOption` for a call rather than a
+ * card), which raises a real choice request ADDRESSED TO THAT KID'S SEAT: their
+ * own client's picker answers it, and everyone else resolves it from the
+ * request's `prefer` rule and reads the outcome off the choice log. Local play
+ * always takes the second branch on purpose — handing one player the other
+ * Kid's deck would be worse than a stable rule, not better — so a transport is
+ * the only piece still missing. Never hand-roll the pick inside an effect.
  */
 const coopCards = [
   {
