@@ -327,16 +327,21 @@ co-op pool.
 
 ### NOT built
 
-1. **Networking**, per the deferred wrapper. Two seams are built and waiting for
-   it, and nothing else is:
-   - the two-Kid **select** — player two picks on the same screen today, over the
-     wire later;
-   - the **choice broker's seat routing** — a request addressed to a seat that is
-     not `engine.localSeat` resolves from its own `prefer` rule instead of being
-     put in front of the person sitting here. A transport makes that branch reach
-     the other client. It is not a placeholder: handing one player the other
-     Kid's deck would be worse than a stable rule, so the fallback is the correct
-     LOCAL behaviour and stays as the offline path.
+1. **Networking**, per the deferred wrapper. Everything below it is built, and
+   every one of these is a seam waiting for a transport rather than a hole:
+
+   | Seam | Today | With a wire |
+   |---|---|---|
+   | the two-Kid **select** | player two picks on the same screen | they pick on theirs |
+   | **card reward** | `k.pendingReward` is rolled for every Kid; this screen shows the local one | each screen shows its own |
+   | **Keepsake reward** | the same, one per Kid, none repeated across the party | ditto, plus StS2's rock-paper-scissors when two reach for one |
+   | **Mr. Moth's** | `shopStock(node, kid)` per Kid; this screen shows the local shelf | each shelf on its own screen |
+   | the **choice broker** | a request for another seat resolves from its `prefer` rule | it reaches that player's picker |
+
+   The pattern is the same everywhere: the DATA is per Kid and correct, and one
+   screen shows one seat. The choice broker's fallback is not a placeholder —
+   handing one player the other Kid's deck would be worse than a stable rule, so
+   it stays as the offline path.
 2. **The other 11 Companions' co-op pools** — they are unbuilt Companions, so
    there is nothing to write co-op Tricks for yet.
 3. **Two players reaching for the same Keepsake.** StS2 resolves that with
