@@ -1366,6 +1366,33 @@ export async function run() {
     eq(hp - foe.hp, 0, 'seat 1 has their OWN — one Kid cannot strip the blanket for both');
   });
 
+  await atest('cover: LOOKING at a Trick does not spend the allowance', async () => {
+    const e = await startDummyParty(new RNG(817), 2, { maxHp: 90 });
+    const [a] = e.players;
+    const foe = e.livingEnemies()[0];
+    foe.block = 0;
+    foe._coverAmount = 8;
+    foe._coverUsedBySeat = {};
+    e.applyStatus(foe, 'covered', 1);
+    const atk = a.piles.hand.find(c => c.type === 'attack') || a.piles.draw.find(c => c.type === 'attack');
+    ok(!!atk, 'seat 0 has an Attack to look at');
+
+    // `computeDamage` runs the modifyDamageTaken hooks for the live number on a
+    // card in HAND as well as for a real hit. With the spend in that hook,
+    // looking at one Scratch twice read 0 then 4, emptied the 8-point
+    // allowance and billed the Blob 8 Courage it had never absorbed.
+    const first = e.cardDamageFor(atk.uid, foe.id);
+    const second = e.cardDamageFor(atk.uid, foe.id);
+    eq(second, first, 'the number on the card does not change just from being read');
+    eq(Object.keys(foe._coverUsedBySeat || {}).length, 0, 'and nothing was spent');
+    eq(foe._coverPending || 0, 0, 'and the Blob owes nothing');
+
+    const hp = foe.hp;
+    e.dealDamage({ attacker: a, defender: foe, amount: 8, kind: 'attack' });
+    eq(hp - foe.hp, 0, 'the real swing is still fully absorbed');
+    eq(foe._coverPending, 8, 'and NOW the Blob owes it');
+  });
+
   await atest('thresholds: "N damage per player" scales with the table', async () => {
     const solo = makeDummyCombat(new RNG(809));
     const duo = makeDummyParty(new RNG(809), 2);

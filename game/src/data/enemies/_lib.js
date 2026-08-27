@@ -356,6 +356,22 @@ export const ENEMY_STATUSES = [
      * `_coverAmount` and the per-turn allowance are stamped by Tuck In.
      */
     hooks: {
+      /**
+       * PURE. It works out the absorption and parks it; it must not write the
+       * allowance.
+       *
+       * `computeDamage` runs `modifyDamageTaken` for the live number on a Trick
+       * in the player's HAND as well as for a real hit — the same trap the
+       * Ghoststep note in companions/keywords.js describes. Measured with the
+       * spend in here: looking at one Scratch twice showed 0 and then 4, spent
+       * the whole 8-point allowance, and billed the Blob 8 Courage it had never
+       * absorbed. Then the real swing landed in full.
+       *
+       * The parked value is consumed by `onIncomingHit` below, which only ever
+       * runs on a hit that is really landing. `computeDamage` is called
+       * immediately before that dispatch for the same hit, so the last thing
+       * parked is always this hit's.
+       */
       modifyDamageTaken: (amt, ctx) => {
         const a = ctx && ctx.self;
         if (!a || amt <= 0) return amt;
@@ -363,13 +379,20 @@ export const ENEMY_STATUSES = [
         // Per Kid — nursery §32. Solo is one seat and therefore one allowance,
         // which is the printed rule.
         const key = seatKey(ctx.attacker);
-        const spent = a._coverUsedBySeat || (a._coverUsedBySeat = {});
-        const used = spent[key] || 0;
+        const used = (a._coverUsedBySeat || {})[key] || 0;
         const take = Math.max(0, Math.min(amt, cap - used));
-        if (take <= 0) return amt;
-        spent[key] = used + take;
-        a._coverPending = (a._coverPending || 0) + take;
+        a._coverTake = take > 0 ? { key, take } : null;
         return amt - take;
+      },
+      /** The booking half. The amount has already been reduced above. */
+      onIncomingHit: (ctx) => {
+        const a = ctx.defender || ctx.owner;
+        const pending = a && a._coverTake;
+        if (a) a._coverTake = null;
+        if (!pending) return;
+        const spent = a._coverUsedBySeat || (a._coverUsedBySeat = {});
+        spent[pending.key] = (spent[pending.key] || 0) + pending.take;
+        a._coverPending = (a._coverPending || 0) + pending.take;
       },
     },
   },

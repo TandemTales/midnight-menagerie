@@ -212,13 +212,16 @@ class MockCombat {
     n = Math.max(0, Math.round(n));
     if (!target) return;
     this.damageLog.push({ source: source === this.player ? 'player' : source.id, target: target === this.player ? 'player' : target.id, amount: n });
-    // The Governess's thread redirects before anything else touches her.
-    if (!o?.redirected && target !== this.player && target.def?.redirect && source === this.player) {
-      n -= target.def.redirect(this.ctx(target), n);
-    }
     // Defender-side status hooks, mirroring combat/damage.js. Cover, Scurry and
     // Discomposed all live here — the harness must NOT reimplement them, or it would
     // pass with the real mechanic completely inert (which is how Cover shipped broken).
+    //
+    // The Governess used to be special-cased here with a direct call to
+    // `target.def.redirect(...)`. Nothing in the real engine ever made that
+    // call, so this harness was the ONLY place Stitched Together ran — a mock
+    // inventing a call site is exactly how a dead mechanic looks tested. Her
+    // redirect is a Power hook now, and Powers are skipped below because their
+    // hooks need a real engine.
     if (!o?.redirected) {
       for (const [sid, stacks] of Object.entries(target.statuses || {})) {
         const def = STATUS_BY_ID[sid];
@@ -227,6 +230,28 @@ class MockCombat {
         }
       }
       n = Math.max(0, Math.round(n));
+      // Step 6b, in the real pipeline's order. Cover parks its absorption in
+      // `modifyDamageTaken` and books it HERE, so that a card merely being
+      // looked at cannot spend the allowance. A harness that stops at
+      // `modifyDamageTaken` would read the reduction and never the spend.
+      const box = { amount: n, prevented: false };
+      const inc = {
+        amount: n, base: n, attacker: source, defender: target, self: target, owner: target,
+        kind: o?.kind || 'attack', card: o?.card || null, cause: o?.cause || null,
+        hits: 1, hitIndex: 0,
+        e: { livingPlayers: () => [this.player] },
+        prevent: () => { box.prevented = true; },
+        setAmount: (v) => { box.amount = Math.max(0, v | 0); },
+      };
+      for (const [sid] of Object.entries(target.statuses || {})) {
+        const def = STATUS_BY_ID[sid];
+        if (def?.hooks?.onIncomingHit) {
+          inc.remove = () => { delete target.statuses[sid]; };
+          def.hooks.onIncomingHit(inc);
+        }
+      }
+      if (box.prevented) return;
+      n = Math.max(0, Math.round(box.amount));
     }
     if (n <= 0) return;
     // statuses that modify damage dealt (roused, darkness, buttons)
