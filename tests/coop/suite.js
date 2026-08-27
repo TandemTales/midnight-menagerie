@@ -1028,7 +1028,7 @@ export async function run() {
     const e = await startDummyParty(new RNG(seed), n, {
       enemies: [butler], maxHp: 90, drawPerTurn: 6, energyMax: 9,
     });
-    loadContentRegistries(e);
+    await loadContentRegistries(e);
     return { butler, HOUSE_RULES, e, b: e.enemies[0] };
   }
   const breakRuleAs = (butler, e, b, pl) =>
@@ -1091,7 +1091,7 @@ export async function run() {
     const e = await startDummyParty(new RNG(seed), n, {
       enemies: [governess, favoriteDoll], maxHp: 90, drawPerTurn: 6, energyMax: 9,
     });
-    loadContentRegistries(e);
+    await loadContentRegistries(e);
     return {
       governess, e,
       gov: e.enemies.find(x => x.defId === 'governess'),
@@ -1174,6 +1174,264 @@ export async function run() {
     e.dealDamage({ attacker: a, defender: doll, amount: 999, kind: 'attack' });
     eq(doll.mem.tornWindowUntil, doll.mem.tornOnTurn,
        'both Kids can still act this round, so the window is the ordinary one');
+  });
+
+  // ── the Bedframe Beast with two Kids (sleeping quarters §46) ──────────────
+  // "Instead of one giant hit to everyone, the Beast selects one player as The
+  // One Looking Under the Bed. That player receives the full BOO. All other
+  // players receive 4 plus 3 per Scare damage. The targeted player is shown one
+  // full round in advance. This encourages teammates to protect the threatened
+  // player."
+
+  async function beastParty(seed = 701, n = 2) {
+    const { bedframeBeast } = await import('../../game/src/data/bosses/bedframe-beast.js');
+    const e = await startDummyParty(new RNG(seed), n, {
+      enemies: [bedframeBeast], maxHp: 200, drawPerTurn: 6, energyMax: 9,
+    });
+    await loadContentRegistries(e);
+    return { beast: bedframeBeast, e, b: e.enemies[0] };
+  }
+  /** Resolve one of its moves directly, so the test is about the move. */
+  const doMove = (beast, e, b, id) => {
+    const move = beast.moves[id];
+    move.effect(e.enemyCtx(b, move));
+  };
+
+  await atest('beast: it marks the least-guarded Kid when it hides', async () => {
+    const { beast, e, b } = await beastParty(701);
+    const [a, d] = e.players;
+    e.gainBlock(a, 30, { fromCard: false, reason: 'test' });      // seat 0 is covered
+    doMove(beast, e, b, 'retreat-underneath');
+    const c = e.enemyCtx(b, null);
+    eq(beast.marked(c), d, 'it went for the Kid with no Guard');
+    eq(e.field.markedSeat, 1, 'and the seat is on the board for the screen to show');
+
+    // The mark is frozen: covering up afterwards must not move it, or the whole
+    // "protect the threatened player" plan would be impossible to make.
+    e.gainBlock(d, 60, { fromCard: false, reason: 'test' });
+    eq(beast.marked(e.enemyCtx(b, null)), d, 'and it does not re-aim when they take cover');
+  });
+
+  await atest('beast: BOO lands in full on the marked Kid and splashes the other', async () => {
+    const { beast, e, b } = await beastParty(703);
+    const [a, d] = e.players;
+    b.counters.scare = 2;
+    e.gainBlock(a, 30, { fromCard: false, reason: 'test' });
+    doMove(beast, e, b, 'retreat-underneath');
+    const marked = beast.marked(e.enemyCtx(b, null));
+    const other = e.players.find(pl => pl !== marked);
+    marked.block = 0; other.block = 0;
+    const hp = { marked: marked.hp, other: other.hp };
+    doMove(beast, e, b, 'boo');
+    eq(hp.marked - marked.hp, 9 + 7 * 2, 'the marked Kid took the whole BOO');
+    eq(hp.other - other.hp, 4 + 3 * 2, 'the other Kid took 4 plus 3 per Scare');
+    ok(hp.marked - marked.hp > hp.other - other.hp, 'and being the one looking is much worse');
+  });
+
+  await atest('beast: solo BOO is exactly the move it always was', async () => {
+    const { bedframeBeast } = await import('../../game/src/data/bosses/bedframe-beast.js');
+    const e = makeDummyCombat(new RNG(705), { enemies: [bedframeBeast], maxHp: 200, hp: 200 });
+    await loadContentRegistries(e);
+    await e.startCombat();
+    const b = e.enemies[0];
+    b.counters.scare = 2;
+    e.player.block = 0;
+    const hp = e.player.hp;
+    bedframeBeast.moves.boo.effect(e.enemyCtx(b, bedframeBeast.moves.boo));
+    eq(hp - e.player.hp, 9 + 7 * 2, 'the printed number, with no party path in it');
+  });
+
+  await atest('beast: Claw Ambush spreads its three hits and keeps two for the mark', async () => {
+    const { beast, e, b } = await beastParty(707);
+    b.mem.phase = 2;
+    doMove(beast, e, b, 'dive-under');
+    const marked = beast.marked(e.enemyCtx(b, null));
+    const other = e.players.find(pl => pl !== marked);
+    for (const pl of e.players) pl.block = 0;
+    const hp = { marked: marked.hp, other: other.hp };
+    doMove(beast, e, b, 'claw-ambush');
+    eq(hp.marked - marked.hp, 14, 'two of the three sets of claws found the marked Kid');
+    eq(hp.other - other.hp, 7, 'and one found their friend');
+  });
+
+  await atest('beast: Grab and Drag Drowses everyone and Frightens the marked Kid', async () => {
+    const { beast, e, b } = await beastParty(709);
+    b.mem.phase = 2;
+    doMove(beast, e, b, 'dive-under');
+    const marked = beast.marked(e.enemyCtx(b, null));
+    const other = e.players.find(pl => pl !== marked);
+    const before = { marked: marked.piles.discard.length, other: other.piles.discard.length };
+    doMove(beast, e, b, 'grab-and-drag');
+    eq(marked.piles.discard.length - before.marked, 2, 'the marked Kid got their Drowsy');
+    eq(other.piles.discard.length - before.other, 2, 'and so did their friend — it costs the team');
+    ok(marked.hasStatus('frightened'), 'the marked Kid is Frightened');
+    ok(!other.hasStatus('frightened'), 'the other Kid is not');
+  });
+
+  await atest('beast: Covered halves the first 12 damage from EACH Kid', async () => {
+    const { beast, e, b } = await beastParty(711);
+    const [a, d] = e.players;
+    doMove(beast, e, b, 'pull-the-covers-up');
+    eq(beast.isCovered(e.enemyCtx(b, null)), true, 'it is under the covers');
+    b.block = 0;
+    let hp = b.hp;
+    e.dealDamage({ attacker: a, defender: b, amount: 12, kind: 'attack' });
+    eq(hp - b.hp, 6, 'seat 0 first 12 is halved');
+    hp = b.hp;
+    e.dealDamage({ attacker: a, defender: b, amount: 12, kind: 'attack' });
+    eq(hp - b.hp, 12, 'seat 0 has spent their allowance');
+    hp = b.hp;
+    e.dealDamage({ attacker: d, defender: b, amount: 12, kind: 'attack' });
+    eq(hp - b.hp, 6, 'seat 1 has their OWN allowance — one Kid cannot clear the covers for both');
+  });
+
+  await atest('beast: standing up again stops softening anything', async () => {
+    const { beast, e, b } = await beastParty(713);
+    const [a] = e.players;
+    doMove(beast, e, b, 'pull-the-covers-up');
+    b.mem.state = 'standing';
+    b.block = 0;
+    const hp = b.hp;
+    e.dealDamage({ attacker: a, defender: b, amount: 12, kind: 'attack' });
+    eq(hp - b.hp, 12, 'out in the open it takes the whole swing');
+  });
+
+  // ── "the first N from EACH player", and "N per player" ────────────────────
+  // Two shapes the region chapters use over and over, both for the same stated
+  // reason: "This prevents one player from trivially clearing the entire
+  // protection mechanic for everyone else" (nursery §32), and "All team damage
+  // during the round contributes" (nursery §34, foyer §27).
+
+  const ATTACK_CARD = { id: 'test/swing', type: 'attack' };
+
+  await atest('scurry: each Kid gets their own halved first Attack', async () => {
+    const e = await startDummyParty(new RNG(801), 2, { maxHp: 90 });
+    const [a, b] = e.players;
+    const foe = e.livingEnemies()[0];
+    foe.block = 0;
+    e.applyStatus(foe, 'scurry', 1);
+
+    let hp = foe.hp;
+    e.dealDamage({ attacker: a, defender: foe, amount: 10, kind: 'attack', card: ATTACK_CARD });
+    eq(hp - foe.hp, 5, 'seat 0 first Attack is halved');
+    ok(foe.hasStatus('scurry'), 'and one Kid swinging does NOT clear it for the team');
+
+    hp = foe.hp;
+    e.dealDamage({ attacker: b, defender: foe, amount: 10, kind: 'attack', card: ATTACK_CARD });
+    eq(hp - foe.hp, 5, 'seat 1 first Attack is halved too');
+    ok(!foe.hasStatus('scurry'), 'now that everyone has swung, Scurry is gone');
+  });
+
+  await atest('scurry: a Kid who already swung does not get a second discount', async () => {
+    const e = await startDummyParty(new RNG(803), 2, { maxHp: 90 });
+    const [a] = e.players;
+    const foe = e.livingEnemies()[0];
+    foe.block = 0;
+    e.applyStatus(foe, 'scurry', 1);
+    e.dealDamage({ attacker: a, defender: foe, amount: 10, kind: 'attack', card: ATTACK_CARD });
+    const hp = foe.hp;
+    e.dealDamage({ attacker: a, defender: foe, amount: 10, kind: 'attack', card: ATTACK_CARD });
+    eq(hp - foe.hp, 10, 'seat 0 second Attack lands in full');
+  });
+
+  await atest('scurry: solo is the printed rule — one Attack, then it ends', async () => {
+    const e = makeDummyCombat(new RNG(805));
+    await e.startCombat();
+    const foe = e.livingEnemies()[0];
+    foe.block = 0;
+    e.applyStatus(foe, 'scurry', 1);
+    const hp = foe.hp;
+    e.dealDamage({ attacker: e.player, defender: foe, amount: 10, kind: 'attack', card: ATTACK_CARD });
+    eq(hp - foe.hp, 5, 'halved');
+    ok(!foe.hasStatus('scurry'), 'and over, with no party path in it');
+  });
+
+  await atest('cover: each Kid has their own Cover allowance', async () => {
+    const e = await startDummyParty(new RNG(807), 2, { maxHp: 90 });
+    const [a, b] = e.players;
+    const foe = e.livingEnemies()[0];
+    foe.block = 0;
+    foe._coverAmount = 8;
+    foe._coverUsedBySeat = {};
+    e.applyStatus(foe, 'covered', 1);
+
+    let hp = foe.hp;
+    e.dealDamage({ attacker: a, defender: foe, amount: 8, kind: 'attack' });
+    eq(hp - foe.hp, 0, 'seat 0 first 8 went onto the blanket');
+    hp = foe.hp;
+    e.dealDamage({ attacker: a, defender: foe, amount: 8, kind: 'attack' });
+    eq(hp - foe.hp, 8, 'seat 0 has spent theirs');
+    hp = foe.hp;
+    e.dealDamage({ attacker: b, defender: foe, amount: 8, kind: 'attack' });
+    eq(hp - foe.hp, 0, 'seat 1 has their OWN — one Kid cannot strip the blanket for both');
+  });
+
+  await atest('thresholds: "N damage per player" scales with the table', async () => {
+    const solo = makeDummyCombat(new RNG(809));
+    const duo = makeDummyParty(new RNG(809), 2);
+    eq(solo.perPlayer(18), 18, 'Grand Coatcheck Snag, solo');
+    eq(duo.perPlayer(18), 36, 'and with two Kids — foyer §27');
+    eq(duo.perPlayer(16), 32, 'Toy Chest Slam the Lid — nursery §34');
+    eq(duo.perPlayer(10), 20, 'Blanket Creeper Layers — sleeping quarters §40');
+  });
+
+  await atest('familiarity: the Unwelcome Guest counts each Kid separately', async () => {
+    const { unwelcomeGuest } = await import('../../game/src/data/enemies/foyer.js');
+    const e = await startDummyParty(new RNG(811), 2, {
+      enemies: [unwelcomeGuest], maxHp: 90, drawPerTurn: 6, energyMax: 9,
+    });
+    await loadContentRegistries(e);
+    const [a, b] = e.players;
+    const foe = e.livingEnemies()[0];
+    foe.mem.familiar = 'attack';               // Attacks are Familiar right now
+
+    const hits = [];
+    e.on(EV.DAMAGE, (ev) => { if (ev.sourceId === foe.id) hits.push(ev); });
+    // Two Attacks each: four across the table, three by neither.
+    for (const seat of [a, b, a, b]) {
+      const card = seat.piles.hand.find(c => c.type === 'attack' && e.canPlay(c.uid, foe.id).ok);
+      if (card) await e.playCard(card.uid, foe.id);
+    }
+    eq(hits.length, 0, 'four Attacks across two Kids is not a third Attack by either');
+  });
+
+  await atest('familiarity: the Kid who leans on it is the Kid it hits', async () => {
+    const { unwelcomeGuest } = await import('../../game/src/data/enemies/foyer.js');
+    const e = await startDummyParty(new RNG(813), 2, {
+      enemies: [unwelcomeGuest], maxHp: 90, drawPerTurn: 8, energyMax: 12,
+    });
+    await loadContentRegistries(e);
+    const [a, b] = e.players;
+    const foe = e.livingEnemies()[0];
+    foe.mem.familiar = 'attack';
+    const hits = [];
+    e.on(EV.DAMAGE, (ev) => { if (ev.sourceId === foe.id) hits.push(ev); });
+    let played = 0;
+    for (let i = 0; i < 3; i++) {
+      const card = b.piles.hand.find(c => c.type === 'attack' && e.canPlay(c.uid, foe.id).ok);
+      if (card) { await e.playCard(card.uid, foe.id); played++; }
+    }
+    eq(played, 3, 'seat 1 played three Attacks in front of it');
+    eq(hits.length, 1, 'and it reacted once');
+    eq(hits[0].targetId, b.id, 'at seat 1, who did it — not at seat 0');
+  });
+
+  await atest('deck pollution lands in the pile of the Kid it was aimed at', async () => {
+    const { lostLuggage } = await import('../../game/src/data/enemies/foyer.js');
+    const e = await startDummyParty(new RNG(815), 2, { enemies: [lostLuggage], maxHp: 90 });
+    await loadContentRegistries(e);
+    const [a, b] = e.players;
+    // Pack Wrong prefers the Kid with the fewest Tricks in their draw pile.
+    while (a.piles.draw.length > 1) a.piles.draw.pop();
+    e.refreshIntents('test');
+    const foe = e.livingEnemies()[0];
+    eq(e.intentTargetFor(foe), a, 'it has picked the Kid with the thinnest draw pile');
+    // Resolve Pack Wrong itself rather than waiting for its cycle to come round.
+    const move = lostLuggage.moves['pack-wrong'];
+    move.effect(e.enemyCtx(foe, move));
+    const clutter = (pl) => pl.piles.discard.filter(c => c.id === 'clutter').length;
+    ok(clutter(a) > 0, 'the Clutter went into the thin draw pile Kid discard');
+    eq(clutter(b), 0, 'and none of it went to the Kid it was not aimed at');
   });
 
   // ── the run layer with two Kids ───────────────────────────────────────────

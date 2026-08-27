@@ -267,7 +267,7 @@ class MockCombat {
     this.damageDealtThisTurn = 0;
     for (const a of this.actors) a.damageTakenThisTurn = 0;
 
-    for (const a of this.actors) a._coverUsedThisTurn = 0;
+    for (const a of this.actors) { a._coverUsedThisTurn = 0; a._coverUsedBySeat = {}; }
     for (const a of this.living()) this.hook(a, 'onPlayerTurnStart');
 
     const nCards = profile.cards ?? this.rng.range(0, 6);

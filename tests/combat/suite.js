@@ -2335,7 +2335,7 @@ export async function run() {
   async function butlerFight(seed = 11) {
     const { butler } = await import('../../game/src/data/bosses/butler.js');
     const e = mk({ enemies: [butler], maxHp: 200, seed });
-    loadContentRegistries(e);
+    await loadContentRegistries(e);
     await e.startCombat();
     return { butler, e, b: e.enemies[0] };
   }
@@ -2407,7 +2407,7 @@ export async function run() {
     // `mk` defaults hp to 60 whatever maxHp says, and a 12-turn boss test that
     // quietly ends on turn 3 proves nothing at all.
     const e = mk({ enemies: [governess, favoriteDoll], maxHp: hp, hp, seed });
-    loadContentRegistries(e);
+    await loadContentRegistries(e);
     await e.startCombat();
     return {
       governess, e,

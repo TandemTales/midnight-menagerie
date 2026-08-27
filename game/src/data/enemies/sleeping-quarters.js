@@ -253,7 +253,10 @@ export const blanketCreeper = {
 
   onPlayerTurnEnd(c) {
     // One Layer per turn, at 10+ damage. Slow, deliberate, and completely readable.
-    if (cnt(c, 'layers') > 0 && dmgTaken(c) >= 10) {
+    // "Layer removal threshold becomes 10 damage per player across the team
+    // round. All players contribute. Only one Layer can still be removed per
+    // round." (sleeping quarters §40.)
+    if (cnt(c, 'layers') > 0 && dmgTaken(c) >= c.perPlayer(10)) {
       addCnt(c, 'layers', -1, 9, 0);
       mem(c).idleTurns = 0;
       return;
@@ -470,7 +473,7 @@ export const thingBeneath = {
   /** Scare it will actually swing with, accounting for an interrupt already earned. */
   projectedScare(c) {
     const s = cnt(c, 'scare');
-    const interrupting = !mem(c).interruptedThisTurn && dmgTaken(c) >= 15;
+    const interrupting = !mem(c).interruptedThisTurn && dmgTaken(c) >= c.perPlayer(15);
     return Math.max(0, s - (interrupting ? 1 : 0));
   },
 
@@ -489,7 +492,10 @@ export const thingBeneath = {
 
   onPlayerTurnEnd(c) {
     // "If Thing Beneath loses at least 15 Courage during a single player turn, remove 1 Scare."
-    if (!mem(c).interruptedThisTurn && dmgTaken(c) >= 15) {
+    // Per player, like every other "damage in one round" threshold in these
+    // chapters. §42 does not name this one, but a duo would otherwise strip a
+    // Scare every single round and UNDER THE BED would never reach 3.
+    if (!mem(c).interruptedThisTurn && dmgTaken(c) >= c.perPlayer(15)) {
       addCnt(c, 'scare', -1, thingBeneath.maxScare(c), 0);
       mem(c).interruptedThisTurn = true;
     }

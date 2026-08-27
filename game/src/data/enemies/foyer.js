@@ -571,7 +571,9 @@ export const grandCoatcheck = {
 
   onPlayerTurnEnd(c) {
     // Snag: 18+ damage during one player turn shuts the current Garment off until it changes.
-    if (dmgTaken(c) >= flag(c, 'snagThreshold', 18)) mem(c).snagged = true;
+    // "Snag threshold becomes 18 damage times number of players. The damage
+    // may be contributed by everyone during the round." (foyer §27.)
+    if (dmgTaken(c) >= c.perPlayer(flag(c, 'snagThreshold', 18))) mem(c).snagged = true;
     mem(c).clutteredThisTurn = false;
   },
 
@@ -678,31 +680,66 @@ export const unwelcomeGuest = {
   scale: 1.35,
   lore: 'Its coat hangs incorrectly. Its shadow faces the wrong way. Nobody remembers seeing it come in.',
 
-  onSpawn(c) { mem(c).familiar = null; mem(c).familiarPlayed = 0; mem(c).reactedThisTurn = false; },
-
-  /** How many Familiar Tricks the player has committed this turn. */
-  familiarPlayedThisTurn(c) {
-    const f = mem(c).familiar;
-    if (!f) return 0;
-    return played(c).filter(p => p && p.type === f).length;
+  onSpawn(c) {
+    mem(c).familiar = null;
+    mem(c).familiarPlayed = 0;
+    mem(c).reacted = {};
   },
 
-  /** Engine hook: called after each player card. Drives the Familiarity reaction. */
+  /**
+   * How many Familiar Tricks ONE Kid has committed this turn.
+   *
+   * "Tracks Familiarity separately for every player. Its Too Familiar attack
+   * targets whichever player became most Familiar during that round."
+   * (docs/design/regions/01-foyer.md §27.) Counted off the whole table, two
+   * Kids playing two Attacks each would hand the third-Trick punishment to
+   * whoever happened to go second, for a line neither of them crossed.
+   */
+  familiarPlayedThisTurn(c, who = null) {
+    const f = mem(c).familiar;
+    if (!f) return 0;
+    const list = who ? c.seatPlayed(who) : played(c);
+    return list.filter(p => p && p.type === f).length;
+  },
+
+  /** The Kid who leaned hardest on the Familiar type this round. Ties go to seat order. */
+  mostFamiliar(c) {
+    const seats = c.players();
+    if (seats.length <= 1) return seats[0] || null;
+    let best = seats[0], bestN = -1;
+    for (const pl of seats) {
+      const n = unwelcomeGuest.familiarPlayedThisTurn(c, pl);
+      if (n > bestN) { best = pl; bestN = n; }
+    }
+    return best;
+  },
+
+  /**
+   * Engine hook: called after each player card, with `c.player` set to the Kid
+   * who played it. The Guard and the reaction both belong to THAT Kid's count.
+   */
   onPlayerCard(c) {
     const f = mem(c).familiar;
     if (!f) return;
-    const n = unwelcomeGuest.familiarPlayedThisTurn(c);
+    const who = (c.player && c.player.side === 'player') ? c.player : null;
+    const n = unwelcomeGuest.familiarPlayedThisTurn(c, who);
     if (n === 2) c.block(c.self, 6);
-    if (n === 3 && !mem(c).reactedThisTurn) {
-      mem(c).reactedThisTurn = true;
-      hitPlayer(c, mem(c).bigReaction ? 10 : flag(c, 'familiarityDamage', 7));
+    const key = who ? who.id : 'solo';
+    const reacted = mem(c).reacted || (mem(c).reacted = {});
+    if (n === 3 && !reacted[key]) {
+      reacted[key] = true;
+      c.damage(who || c.player, mem(c).bigReaction ? 10 : flag(c, 'familiarityDamage', 7));
       mem(c).bigReaction = false;
     }
   },
 
   onPlayerTurnEnd(c) {
-    // Remember how Familiar the player just got — Too Familiar reads this.
-    mem(c).familiarPlayed = unwelcomeGuest.familiarPlayedThisTurn(c);
+    // Remember how Familiar the player just got — Too Familiar reads this. In a
+    // party that is the HIGHEST single Kid's count, and Too Familiar goes for
+    // them: "targets whichever player became most Familiar during that round".
+    const worst = unwelcomeGuest.mostFamiliar(c);
+    mem(c).familiarPlayed = unwelcomeGuest.familiarPlayedThisTurn(c, worst);
+    if (worst) c.self.targetSeatId = worst.id;
     // Observe the most-used type; ties favour whichever was played last.
     const counts = { attack: 0, skill: 0, power: 0 };
     let last = null;
@@ -714,7 +751,7 @@ export const unwelcomeGuest = {
       if (counts[t] > bestN || (counts[t] === bestN && counts[t] > 0 && t === last)) { best = t; bestN = counts[t]; }
     }
     mem(c).familiar = best;
-    mem(c).reactedThisTurn = false;
+    mem(c).reacted = {};
   },
 
   moves: {
@@ -731,8 +768,11 @@ export const unwelcomeGuest = {
       // next turn's type — so the effect must use the count latched at turn end, not a
       // fresh live count against the new type. Reading it live here made Too Familiar
       // deal 15 while its intent promised 12.
-      damageFn: (c) => Math.min(20, 13 + 3 * unwelcomeGuest.familiarPlayedThisTurn(c)),
-      intentFn: (c) => (unwelcomeGuest.familiarPlayedThisTurn(c) >= 2 ? Intent.ATTACK_BIG : Intent.ATTACK),
+      // Counted against the Kid it is aiming at — the one who has leaned
+      // hardest on the Familiar type this round (foyer §27). In solo that is
+      // the only Kid there is, so the number is the one it always was.
+      damageFn: (c) => Math.min(20, 13 + 3 * unwelcomeGuest.familiarPlayedThisTurn(c, unwelcomeGuest.mostFamiliar(c))),
+      intentFn: (c) => (unwelcomeGuest.familiarPlayedThisTurn(c, unwelcomeGuest.mostFamiliar(c)) >= 2 ? Intent.ATTACK_BIG : Intent.ATTACK),
       effect(c) { hitPlayer(c, Math.min(20, 13 + 3 * (mem(c).familiarPlayed || 0))); },
     },
     'wrong-face': {

@@ -711,7 +711,10 @@ export class CombatEngine {
     const alive = this.livingEnemies();
     return alive.length ? alive[this.rng.int(alive.length)] : null;
   }
-  handCap() { return this.hooks.reduce('modifyHandCap', this.current.handCap, {}, this.hooks.actorHooks(this.current, 'modifyHandCap')); }
+  handCap(who = null) {
+    const pl = (who && this._resolveSeat(who)) || this.current;
+    return this.hooks.reduce('modifyHandCap', pl.handCap, {}, this.hooks.actorHooks(pl, 'modifyHandCap'));
+  }
 
   /** Cards in a zone, by the zone name or the content agents' aliases. */
   cardsIn(pile) {
@@ -1769,10 +1772,15 @@ export class CombatEngine {
       },
 
       // cards and spawns, by id or by def
+      /**
+       * Deck pollution goes to the seat this move is AIMED at, unless the move
+       * names one with `{ to }`. Nothing is acting during the enemy phase, so
+       * without this it all landed in seat 0's pile.
+       */
       addCard: (idOrDef, pile = Pile.DISCARD, opts) => {
         const def = e.resolveCardDef(idOrDef);
         if (!def) { console.warn(`[combat] unknown card "${idOrDef}"`); return null; }
-        return e.addCard(def, pile, { reason: enemy.id, ...(opts || {}) });
+        return e.addCard(def, pile, { reason: enemy.id, to: aim, ...(opts || {}) });
       },
       summon: (idOrDef, opts = {}) => {
         const def = e.resolveEnemyDef(idOrDef);
@@ -1797,9 +1805,19 @@ export class CombatEngine {
   // ── card helpers ──────────────────────────────────────────────────────────
 
   /** Create a new card instance and put it somewhere. Returns the Card(s). */
+  /**
+   * Put a new card into somebody's pile.
+   *
+   * `opts.to` names the SEAT. It has to, because an enemy adding a card runs
+   * with nobody acting, and `this.current` falls back to seat 0 — so every
+   * enemy that pollutes "the player's" deck was pouring it into the host's,
+   * whatever seat the move was aimed at. Lost Luggage picks the Kid with the
+   * fewest Tricks in their draw pile and then handed the Clutter to seat 0.
+   */
   addCard(def, pile = Pile.HAND, opts = {}) {
     const n = opts.count ?? 1;
     const made = [];
+    const seat = (opts.to && this._resolveSeat(opts.to)) || this.current;
     for (let i = 0; i < n; i++) {
       const card = new Card(def, { upgraded: !!opts.upgraded, meta: opts.meta });
       if (opts.cost !== undefined) card.costOverrideCombat = opts.cost;
@@ -1807,11 +1825,12 @@ export class CombatEngine {
       if (opts.ethereal) card.ethereal = true;
       if (opts.retain) card.retain = true;
       let dest = pile;
-      if (dest === Pile.HAND && this.current.piles.hand.length >= this.handCap()) dest = Pile.DISCARD;
-      const idx = this.current.piles._push(card, dest, opts.position ?? (dest === Pile.DRAW ? 'top' : 'bottom'));
+      if (dest === Pile.HAND && seat.piles.hand.length >= this.handCap(seat)) dest = Pile.DISCARD;
+      const idx = seat.piles._push(card, dest, opts.position ?? (dest === Pile.DRAW ? 'top' : 'bottom'));
       this._emit(EV.CARD_ADD, {
         cardUid: card.uid, card: this.cardSnap(card), pile: dest,
         position: idx, reason: opts.reason || 'effect',
+        actorId: seat.id, seat: seat.seat,
       });
       made.push(card);
     }
@@ -2476,8 +2495,12 @@ export class CombatEngine {
         if (card.type === CardType.ATTACK) {
           this.hooks.dispatch('onAttackDealt', { card, target }, this.hooks.actorHooks(owner, 'onAttackDealt'));
         }
-        this._enemyLifecycle('onPlayerCard', { card: { id: card.id, type: card.type, uid: card.uid }, playedCard: card });
-        this._enemyLifecycle('onCardPlayed', { card: { id: card.id, type: card.type, uid: card.uid }, playedCard: card });
+        // `by` and `aimAt` name the Kid who played it. An enemy that REACTS to
+        // a card — Unwelcome Guest's Familiarity is the whole enemy — has to
+        // react at that Kid, not at whoever it happened to be facing.
+        const cardInfo = { card: { id: card.id, type: card.type, uid: card.uid }, playedCard: card, by: owner, aimAt: owner };
+        this._enemyLifecycle('onPlayerCard', cardInfo);
+        this._enemyLifecycle('onCardPlayed', cardInfo);
         this._checkRules('cardPlayed', { card, seat: owner });
         if (card.type === CardType.POWER) {
           // Powers leave play entirely once resolved. They are parked in limbo

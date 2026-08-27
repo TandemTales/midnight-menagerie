@@ -7,7 +7,7 @@
  * post-relic, post-Faint, and it re-renders the instant anything moves it.
  *
  * ── Dynamic moves win ───────────────────────────────────────────────────────
- * A MoveDef may carry `damageFn(c)`, `hitsFn(c)`, `blockFn(c)`, `intentFn(c)`,
+ * A MoveDef may carry `damageFn(c)`, `hitsFn(c)`, `blockFn(c)`, `splashFn(c)`, `intentFn(c)`,
  * `appliesFn(c)`, `addsCardsFn(c)`, `ruleFn(c)` and `alternatives(c)`. The engine
  * PREFERS them over the static `damage`/`hits`/`block`/`intent`/`applies`/
  * `addsCards`/`rule`. Most region enemies put their whole design in those functions
@@ -205,6 +205,20 @@ export function buildIntent(engine, enemy, move, opts = {}) {
 
   const block = blockRaw > 0 ? engine.previewBlockValue(enemy, blockRaw, { fromCard: false }) : 0;
 
+  /**
+   * `splash` — what EVERY OTHER seat takes from a move whose main number
+   * belongs to one Kid.
+   *
+   * The Bedframe Beast's BOO is the case the field exists for: "That player
+   * receives the full BOO. All other players receive 4 plus 3 per Scare
+   * damage." One `damage` and one `targetId` cannot say that, and a move that
+   * quietly hits a seat with no arrow on it breaks the promise the whole intent
+   * system exists to keep. Zero — and absent from the intent — in solo and for
+   * every move that does not declare it, so nothing that reads an intent today
+   * sees a new field unless a party is on the board.
+   */
+  const splashRaw = pick(move.splashFn, c, move.splash) ?? 0;
+
   const applies = (typeof move.appliesFn === 'function' ? safe(move.appliesFn, c) : move.applies) || [];
   // Carry `icon` through with name/kind. The renderer draws the pip straight
   // from this; without the icon Roused (icon `bell-small`) fell back to a `?`,
@@ -247,6 +261,7 @@ export function buildIntent(engine, enemy, move, opts = {}) {
     revealed: opts.revealed !== false,
     tooltip: '',
   };
+  if (splashRaw > 0) intent.splash = splashRaw;
   intent.tooltip = intentTooltip(intent, enemy);
   return intent;
 }

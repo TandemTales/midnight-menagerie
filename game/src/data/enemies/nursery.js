@@ -446,7 +446,7 @@ export const blanketBlob = {
 
   /** "The first 8 damage ... each player turn." One fresh allowance per round. */
   rearmCover(c) {
-    for (const a of allies(c)) if (c.has('covered', a)) a._coverUsedThisTurn = 0;
+    for (const a of allies(c)) if (c.has('covered', a)) a._coverUsedBySeat = {};
   },
 
   onPlayerTurnEnd(c) { blanketBlob.settleCover(c); },
@@ -472,7 +472,7 @@ export const blanketBlob = {
       if (!c.has('covered', a)) continue;
       c.removeStatus(a, 'covered');
       a._coverPending = 0;
-      a._coverUsedThisTurn = 0;
+      a._coverUsedBySeat = {};
     }
   },
 
@@ -486,14 +486,14 @@ export const blanketBlob = {
         // Moving the blanket first frees the ally that no longer needs it.
         if (flag(c, 'mobileCover') && blanketBlob.shouldMoveCover(c)) {
           const old = blanketBlob.coveredAlly(c);
-          if (old) { c.removeStatus(old, 'covered'); old._coverPending = 0; old._coverUsedThisTurn = 0; }
+          if (old) { c.removeStatus(old, 'covered'); old._coverPending = 0; old._coverUsedBySeat = {}; }
         }
         const t = blanketBlob.coverTarget(c);
         if (t) {
           // The engine's enemy ctx drops extra applyStatus args, so the size of the Cover
           // is stamped straight onto the actor where the status hook can read it.
           t._coverAmount = blanketBlob.coverAmount(c);
-          t._coverUsedThisTurn = 0;
+          t._coverUsedBySeat = {};
           t._coverPending = 0;
           c.applyStatus(t, 'covered', 1);
         }
@@ -666,7 +666,9 @@ export const toyChest = {
 
   onPlayerTurnEnd(c) {
     // Slam the Lid: 16+ damage in one player turn holds it shut for a turn.
-    if (dmgTaken(c) >= 16) mem(c).slammed = true;
+    // "Slam the Lid threshold: 16 damage per player. All team damage during
+    // the round contributes." (nursery §34.)
+    if (dmgTaken(c) >= c.perPlayer(16)) mem(c).slammed = true;
   },
 
   canSpill(c) {

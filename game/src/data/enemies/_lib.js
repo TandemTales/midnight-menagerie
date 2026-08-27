@@ -52,6 +52,24 @@ export function mem(c) {
   return (s.mem ||= {});
 }
 
+/**
+ * Which Kid an allowance belongs to.
+ *
+ * Several enemy mechanics are worded "the first N damage from EACH player" —
+ * Blanket Blob's Cover (nursery §32), Slipper Skitter's Scurry (sleeping
+ * quarters §38), the Bedframe Beast under the covers. The chapters give the
+ * same reason every time: "This prevents one player from trivially clearing the
+ * entire protection mechanic for everyone else." A shared allowance also makes
+ * the correct play "let your friend swing first", which is not a decision
+ * anybody should be making.
+ *
+ * `'x'` covers damage with no player behind it (a status, the house itself), so
+ * those share one allowance rather than getting a free one each.
+ */
+export function seatKey(actor) {
+  return (actor && actor.side === 'player') ? `s${actor.seat}` : 'x';
+}
+
 /** Read a displayed enemy counter (Dust, Momentum, Scare, Resonance…). */
 export function cnt(c, key, dflt = 0) {
   if (typeof c.counter === 'function') { const v = c.counter(key); if (v != null) return v; }
@@ -342,10 +360,14 @@ export const ENEMY_STATUSES = [
         const a = ctx && ctx.self;
         if (!a || amt <= 0) return amt;
         const cap = a._coverAmount || 8;
-        const used = a._coverUsedThisTurn || 0;
+        // Per Kid — nursery §32. Solo is one seat and therefore one allowance,
+        // which is the printed rule.
+        const key = seatKey(ctx.attacker);
+        const spent = a._coverUsedBySeat || (a._coverUsedBySeat = {});
+        const used = spent[key] || 0;
         const take = Math.max(0, Math.min(amt, cap - used));
         if (take <= 0) return amt;
-        a._coverUsedThisTurn = used + take;
+        spent[key] = used + take;
         a._coverPending = (a._coverPending || 0) + take;
         return amt - take;
       },
@@ -353,11 +375,33 @@ export const ENEMY_STATUSES = [
   },
   {
     id: 'scurry', name: 'Scurry', kind: 'buff', icon: 'scurry',
-    desc: 'The first Attack targeting it this turn deals 50% damage, then Scurry ends.',
+    desc: 'The first Attack from each Kid deals 50% damage. Scurry ends once everyone has swung.',
     decay: 'never', stacks: false, max: 1,
+    /**
+     * "Scurry applies separately to each player. The first Attack from each
+     * player is reduced by 50 percent. One player cannot remove Scurry for the
+     * entire team." (docs/design/regions/03-sleeping-quarters.md §38.)
+     *
+     * The spend is booked in `onAttacked`, which only fires on real resolution
+     * — `modifyDamageTaken` also runs for the live numbers on a card in hand,
+     * and a Kid hovering a Trick must not use up their halving.
+     */
     hooks: {
-      modifyDamageTaken: (amt, ctx) => (ctx.card?.type === 'attack' ? Math.ceil(amt * 0.5) : amt),
-      onAttacked: (ctx) => { if (ctx.card?.type === 'attack') ctx.remove(); },
+      modifyDamageTaken: (amt, ctx) => {
+        if (ctx.card?.type !== 'attack') return amt;
+        const a = ctx.self;
+        const spent = (a && a._scurrySpent) || {};
+        return spent[seatKey(ctx.attacker)] ? amt : Math.ceil(amt * 0.5);
+      },
+      onAttacked: (ctx) => {
+        if (ctx.card?.type !== 'attack') return;
+        const a = ctx.self || ctx.defender;
+        if (!a) return;
+        const spent = a._scurrySpent || (a._scurrySpent = {});
+        spent[seatKey(ctx.attacker)] = true;
+        const seats = ctx.e.livingPlayers();
+        if (seats.every(pl => spent[seatKey(pl)])) { a._scurrySpent = {}; ctx.remove(); }
+      },
     },
   },
   {

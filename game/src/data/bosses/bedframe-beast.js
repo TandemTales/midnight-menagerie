@@ -25,6 +25,9 @@ import {
 
 const PHASE2_AT = 160;
 
+/** Covered halves the first this-much damage from each Kid, each round. */
+const COVER_SOFTEN = 12;
+
 /** Left → Center → Right → Left. The rotation the player can push it around. */
 export const BED_POSITIONS = ['left', 'center', 'right'];
 export const BED_AMBUSH = { left: 'claw-ambush', center: 'giant-scare', right: 'grab-and-drag' };
@@ -49,8 +52,54 @@ export const bedframeBeast = {
   onSpawn(c) {
     mem(c).phase = 1;
     mem(c).state = 'standing';
+    mem(c).softenedBySeat = {};
     setCnt(c, 'scare', flag(c, 'startScare', 0));
     field(c).bedPosition = 'left';
+    field(c).markedSeat = null;
+
+    /**
+     * Covered, on a Power, because nothing called `modifyIncoming`.
+     *
+     * It was a def method with no caller — the same shape as the Governess's
+     * Stitched Together — so one of the three exposure states this whole boss
+     * is built on ("Standing → Covered → Underneath") did nothing at all. Pull
+     * the Covers Up gave it 10 Guard and a label.
+     */
+    c.addPower({
+      id: 'under-the-covers',
+      name: 'Under the Covers',
+      icon: 'shield',
+      desc: `While Covered, the first ${COVER_SOFTEN} damage each Kid deals it every round is halved.`,
+      hooks: {
+        onIncomingHit(h) { bedframeBeast.soften(h); },
+      },
+    });
+  },
+
+  /**
+   * Covered: the first 12 damage each Kid deals it every round is halved.
+   *
+   * Per KID, following the Nursery's ruling on the same shape — "Cover
+   * redirects the first N damage per player… Each player therefore has an
+   * individual Cover allowance. This prevents one player from trivially
+   * clearing the entire protection mechanic for everyone else."
+   * (docs/design/regions/02-nursery.md §32.) Solo is one allowance, which is
+   * the printed rule.
+   */
+  soften(h) {
+    const self = h.owner;
+    const e = h.e;
+    if (!self || !e || h.amount <= 0) return;
+    const c = e.enemyCtx(self, null);
+    if (!bedframeBeast.isCovered(c)) return;
+    const m = mem(c);
+    const key = (h.attacker && h.attacker.side === 'player') ? h.attacker.seat : 'x';
+    const used = (m.softenedBySeat || (m.softenedBySeat = {}))[key] || 0;
+    const remaining = Math.max(0, COVER_SOFTEN - used);
+    if (remaining <= 0) return;
+    const softened = Math.min(h.amount, remaining);
+    m.softenedBySeat[key] = used + softened;
+    h.setAmount(Math.round(h.amount - softened * 0.5));
   },
 
   phase(c) { return mem(c).phase || 1; },
@@ -94,6 +143,44 @@ export const bedframeBeast = {
 
   maxScareNow(c) { return flag(c, 'maxScare', 3); },
 
+  /**
+   * "The One Looking Under the Bed."
+   *
+   * "Instead of one giant hit to everyone, the Beast selects one player as The
+   * One Looking Under the Bed… The targeted player is shown one full round in
+   * advance. This encourages teammates to protect the threatened player."
+   * (docs/design/regions/03-sleeping-quarters.md §46.)
+   *
+   * Chosen the moment it hides, and FROZEN there — the whole point is that the
+   * team can see it coming and cover that Kid, which a mark that re-evaluates
+   * as they play would destroy. It goes for the least-guarded Kid, so covering
+   * them is a real answer rather than a coin flip.
+   *
+   * `enemy.targetSeatId` is the engine's own held mark, so the arrow the scene
+   * draws and the seat the ambush lands on are the same field.
+   */
+  markOne(c) {
+    const seats = c.players();
+    if (seats.length <= 1) { field(c).markedSeat = seats.length ? seats[0].seat : null; return; }
+    const pick = c.pickSeat('lowestGuard') || seats[0];
+    c.self.targetSeatId = pick.id;
+    field(c).markedSeat = pick.seat;
+  },
+
+  /** The marked Kid, or the only one there is. Never null in a live fight. */
+  marked(c) {
+    const seats = c.players();
+    if (!seats.length) return null;
+    const id = c.self.targetSeatId;
+    return seats.find(pl => pl.id === id) || seats[0];
+  },
+
+  /** Everyone else at the table. Empty in solo, which is why solo is unchanged. */
+  bystanders(c) {
+    const it = bedframeBeast.marked(c);
+    return c.players().filter(pl => pl !== it);
+  },
+
   moves: {
     // ── Standing, phase one ──────────────────────────────────────────────────
     'bedpost-swipe': {
@@ -124,7 +211,7 @@ export const bedframeBeast = {
     'retreat-underneath': {
       id: 'retreat-underneath', name: 'Retreat Underneath', intent: Intent.UNKNOWN,
       tell: 'The bed goes underneath itself. The architecture is impossible.',
-      effect(c) { mem(c).state = 'underneath'; },
+      effect(c) { mem(c).state = 'underneath'; bedframeBeast.markOne(c); },
     },
 
     // ── Underneath ───────────────────────────────────────────────────────────
@@ -144,12 +231,23 @@ export const bedframeBeast = {
       },
     },
     boo: {
+      /**
+       * "That player receives the full BOO. All other players receive 4 plus 3
+       * per Scare damage." (§46.) The marked Kid is the one the intent points
+       * at and the one the number on the arrow belongs to; `splash` carries
+       * what everyone else takes, so the intent is not quietly understating the
+       * board. In solo there IS nobody else and this is the move it always was.
+       */
       id: 'boo', name: 'BOO', intent: Intent.ATTACK_BIG, damage: 9, hits: 1,
       tell: 'It has been quiet for a while now.',
       damageFn: (c) => 9 + 7 * cnt(c, 'scare') + bossDmg(c),
+      splashFn: (c) => (c.partySize() > 1 ? 4 + 3 * cnt(c, 'scare') : 0),
       effect(c) {
         mem(c).state = 'standing';
-        hitPlayer(c, 9 + 7 * cnt(c, 'scare') + bossDmg(c));
+        const full = 9 + 7 * cnt(c, 'scare') + bossDmg(c);
+        const rest = 4 + 3 * cnt(c, 'scare');
+        c.damage(bedframeBeast.marked(c), full);
+        for (const pl of bedframeBeast.bystanders(c)) c.damage(pl, rest);
         setCnt(c, 'scare', 0);
       },
     },
@@ -203,24 +301,43 @@ export const bedframeBeast = {
     'dive-under': {
       id: 'dive-under', name: 'Dive Under', intent: Intent.UNKNOWN,
       tell: 'It is gone. One of the three beds is going to rattle.',
-      effect(c) { mem(c).state = 'underneath'; },
+      effect(c) { mem(c).state = 'underneath'; bedframeBeast.markOne(c); },
     },
 
     // ── Phase two ambushes, one per Bed Position ─────────────────────────────
     'claw-ambush': {
+      /**
+       * "Left Bed: three hits distributed among players, with at least one hit
+       * targeting the marked player." (§46.)
+       *
+       * Distributed by SEAT, not by the RNG: one hit for each other Kid and the
+       * remainder to the marked one, which with two Kids is two and one. The
+       * chapter says "randomly", but the target is on screen before the player
+       * commits and has to survive a replay, so every seat choice in this build
+       * ties on seat index instead (CONTRACTS, co-op targeting).
+       */
       id: 'claw-ambush', name: 'Claw Ambush', intent: Intent.ATTACK, damage: 7, hits: 3,
       tell: 'The LEFT bed is rattling. Three sets of claws, one after another.',
       damageFn: (c) => 7 + bossDmg(c),
-      hitsFn: () => 3,
-      effect(c) { mem(c).state = 'standing'; hitPlayer(c, 7 + bossDmg(c), 3); setCnt(c, 'scare', 0); },
+      hitsFn: (c) => Math.max(1, 3 - Math.max(0, c.partySize() - 1)),
+      splashFn: (c) => (c.partySize() > 1 ? 7 + bossDmg(c) : 0),
+      effect(c) {
+        mem(c).state = 'standing';
+        const per = 7 + bossDmg(c);
+        const others = bedframeBeast.bystanders(c);
+        for (const pl of others) c.damage(pl, per);
+        c.damage(bedframeBeast.marked(c), per, { hits: Math.max(1, 3 - others.length) });
+        setCnt(c, 'scare', 0);
+      },
     },
     'giant-scare': {
       id: 'giant-scare', name: 'Giant Scare', intent: Intent.ATTACK_BIG, damage: 13, hits: 1,
       tell: 'The CENTER bed is rattling. This is the big one.',
       damageFn: (c) => 13 + 5 * cnt(c, 'scare') + bossDmg(c),
+      /** "Center Bed: one large hit against the marked player." (§46.) */
       effect(c) {
         mem(c).state = 'standing';
-        hitPlayer(c, 13 + 5 * cnt(c, 'scare') + bossDmg(c));
+        c.damage(bedframeBeast.marked(c), 13 + 5 * cnt(c, 'scare') + bossDmg(c));
         setCnt(c, 'scare', 0);
       },
     },
@@ -230,12 +347,21 @@ export const bedframeBeast = {
       addsCards: [{ id: 'drowsy', pile: 'discard' }, { id: 'drowsy', pile: 'discard' }],
       applies: [{ id: 'frightened', stacks: 1, to: 'player' }],
       damageFn: (c) => 10 + bossDmg(c),
+      /**
+       * "Right Bed: all players receive 1 Drowsy. The marked player also
+       * becomes Frightened." (§46.) The Drowsy is the shared half — it is the
+       * one ambush that costs the whole team something — and the Frightened
+       * and the damage stay on the Kid who was looking under the bed.
+       */
       effect(c) {
         mem(c).state = 'standing';
-        hitPlayer(c, 10 + bossDmg(c));
-        c.addCard('drowsy', 'discard');
-        c.addCard('drowsy', 'discard');
-        c.applyStatus(c.player, 'frightened', 1);
+        const it = bedframeBeast.marked(c);
+        c.damage(it, 10 + bossDmg(c));
+        for (const pl of c.players()) {
+          c.addCard('drowsy', 'discard', { to: pl });
+          c.addCard('drowsy', 'discard', { to: pl });
+        }
+        c.applyStatus(it, 'frightened', 1);
         setCnt(c, 'scare', 0);
       },
     },
