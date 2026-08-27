@@ -1,6 +1,6 @@
 {
  "title": "Midnight Menagerie",
- "updated": "2026-08-25T20:46:25",
+ "updated": "2026-08-27T08:46:39",
  "wave": 9,
  "waveLabel": "The player's half",
  "headline": "Every screen except the one you play on is finished. The Companion you chose is a generic cat in combat, and the Backpack does nothing.",
@@ -562,6 +562,14 @@
   {
    "t": "2026-08-25T20:46:25",
    "msg": "Main menu rebuilt on UI/mainMenu.png and UI/title.png. Menu moved bottom-left after a centred mock buried the door, the steps, both cat statues and the path."
+  },
+  {
+   "t": "2026-08-27T08:46:39",
+   "msg": "Co-op: pass-and-play. Two people can play the whole game on one machine \u2014 combat turns, the reward, Mr Moth's, the Safe Room and Curiosities all hand the screen over behind an opaque veil. Networking is the only item left on HANDOFF \u00a79."
+  },
+  {
+   "t": "2026-08-27T08:46:39",
+   "msg": "Co-op bosses: the Butler's per-Kid House Rules, the Governess's Stitched Together (which had never once run), the Bedframe Beast's marked Kid. Five shipped mechanics found that no code path ever called; three new gates (dup-keys, css-tokens, and the enemy harness's step 6b) cover the classes."
   }
  ]
 }
