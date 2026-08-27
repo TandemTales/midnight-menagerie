@@ -1664,14 +1664,16 @@ export class Run {
     if (type === NodeType.RESCUE) {
       const authored = node.payload?.companion || this.meta.companion;
       this.pendingEvent = {
-        rescue: true, nodeId: node.id, resolved: null,
+        rescue: true, nodeId: node.id, resolved: null, resolvedBy: {}, pendingBy: {},
         companion: this.rescueTargetFor(node.id, authored),
       };
       this.save();
       return this.pendingEvent;
     }
     const def = rollEvent(rng, this.region, { depth: node.row, seen: this.seenEvents });
-    this.pendingEvent = { id: def.id, nodeId: node.id, resolved: null };
+    // `resolvedBy` is per seat: the room is shared and each Kid answers it for
+    // themselves. `resolved` stays as the solo spelling and as seat 0's answer.
+    this.pendingEvent = { id: def.id, nodeId: node.id, resolved: null, resolvedBy: {}, pendingBy: {} };
     this.stats.curiosities++;
     if (this.flags.curiosityHeal && !this._curiosityHealUsed) {
       this._curiosityHealUsed = true;
@@ -1698,6 +1700,22 @@ export class Run {
   }
 
   /** Take a Curiosity option. Returns the authored outcome, effects applied. */
+  /**
+   * What THIS Kid answered, if they have. Each Kid answers the room for
+   * themselves; the room itself is shared.
+   */
+  eventAnswerFor(kid = null) {
+    const p = this.pendingEvent;
+    if (!p) return null;
+    const seat = Math.max(0, this.kids.indexOf(kid || this.local));
+    if (p.resolvedBy && p.resolvedBy[seat]) {
+      return { resolved: p.resolvedBy[seat], pending: (p.pendingBy || {})[seat] || null };
+    }
+    // An older save, or solo: `resolved` alone is seat 0's answer.
+    if (seat === 0 && p.resolved) return { resolved: p.resolved, pending: p.pending || null };
+    return null;
+  }
+
   chooseEventOption(optionId) {
     const p = this.pendingEvent;
     const def = this.currentEvent();
@@ -1706,12 +1724,26 @@ export class Run {
     if (!option || !this.optionOpen(option)) return null;
     if (option.cost?.lostThings && !this.spendLostThings(option.cost.lostThings)) return null;
 
-    const rng = this.fork(`event:${p.nodeId}:${optionId}`);
+    /**
+     * Forked per SEAT as well as per option.
+     *
+     * The room is shared and each Kid answers it themselves — Slay the Spire 2
+     * co-op shares the map and the node, and "individual choices within events
+     * may differ". Two Kids picking the same option must not therefore get the
+     * same roll off the same stream, or the second one is just watching a
+     * replay of the first.
+     */
+    const seat = Math.max(0, this.kids.indexOf(this.local));
+    const rng = this.fork(seat > 0 ? `event:${p.nodeId}:${optionId}:seat${seat}`
+                                   : `event:${p.nodeId}:${optionId}`);
     const outcome = rollOutcome(rng, option);
     if (!this.seenEvents.includes(def.id)) this.seenEvents.push(def.id);
-    p.resolved = { option: optionId, title: outcome.title, text: outcome.text };
+    const answer = { option: optionId, title: outcome.title, text: outcome.text };
+    p.resolved = answer;                       // the local Kid's, the solo spelling
+    (p.resolvedBy || (p.resolvedBy = {}))[seat] = answer;
     const pending = this.applyEffects(outcome.effects || {}, rng, `event:${p.nodeId}`);
     p.pending = pending;
+    (p.pendingBy || (p.pendingBy = {}))[seat] = pending;
     this.save();
     bus.emit('run:event', { event: def.id, option: optionId, outcome, pending });
     return { outcome, pending };

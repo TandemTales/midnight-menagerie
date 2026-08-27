@@ -1717,6 +1717,37 @@ export async function run() {
     eq(picked[0], 1, 'and honours it');
   });
 
+  await atest('choice: the engine follows the seat, or a pick goes to the wrong person', async () => {
+    // `engine.localSeat` decides whether a seat-addressed request reaches the
+    // picker. It is set once when the fight is built, so pass-and-play has to
+    // move it too: after a handoff, a Trick played by seat 1 that asks SEAT 0
+    // to choose would otherwise open the picker in front of seat 1 — one player
+    // going through the other Kid's hand.
+    const e = await startDummyParty(new RNG(871), 2, { maxHp: 90 });
+    const [a, b] = e.players;
+
+    e.localSeat = 0;
+    let askedOf = [];
+    e.choices.setResolver(async (req) => { askedOf.push(req.seat); return [0]; });
+
+    await e.choices.ask({ kind: 'card', count: 1, pool: a.piles.hand.slice(0, 2), seat: a });
+    eq(askedOf.length, 1, 'seat 0 at the screen: their own pick opens the picker');
+
+    askedOf = [];
+    await e.choices.ask({ kind: 'card', count: 1, pool: b.piles.hand.slice(0, 2), seat: b });
+    eq(askedOf.length, 0, 'and seat 1 pick does not');
+
+    // …the machine is handed over.
+    e.localSeat = 1;
+    askedOf = [];
+    await e.choices.ask({ kind: 'card', count: 1, pool: b.piles.hand.slice(0, 2), seat: b });
+    eq(askedOf.length, 1, 'now seat 1 own pick opens the picker');
+
+    askedOf = [];
+    await e.choices.ask({ kind: 'card', count: 1, pool: a.piles.hand.slice(0, 2), seat: a });
+    eq(askedOf.length, 0, 'and seat 0 pick does not — nobody rummages in the other hand');
+  });
+
   await atest('wink: Call It Out can actually be wrong', async () => {
     // Both of Wink's co-op calls computed the guess FROM the answer
     // (`currentFamily(c,t) === currentFamily(c,t)`), so the call could not miss

@@ -92,7 +92,12 @@ export class EventScene extends RoomScene {
     this._bindKeys();
 
     // Resuming into an already-answered Curiosity: show what happened.
-    if (r.pendingEvent?.resolved) this._showOutcome(r.pendingEvent.resolved, r.pendingEvent.pending, false);
+    // THIS Kid's answer. The Curiosity is the same room for both of them and
+    // each one answers it for themselves, so seat 1 walking in must see the
+    // options rather than seat 0's outcome.
+    const mine = r.eventAnswerFor ? r.eventAnswerFor() : (r.pendingEvent?.resolved
+      ? { resolved: r.pendingEvent.resolved, pending: r.pendingEvent.pending } : null);
+    if (mine) this._showOutcome(mine.resolved, mine.pending, false);
     bus.emit('event:ready', { id: this.def.id });
   }
 
@@ -291,8 +296,7 @@ export class EventScene extends RoomScene {
       return;
     }
 
-    this._leaving = true;
-    this._leave();
+    this._leaveRoom();
   }
 
   /* ── a Companion rescue ───────────────────────────────────────────────────

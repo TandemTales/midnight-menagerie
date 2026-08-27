@@ -226,6 +226,60 @@ async def main():
         s2 = await page.evaluate(WHO)
         check(s2["scene"] == "map", "and the second one out closes it", s2["scene"])
 
+        # ── a Curiosity ─────────────────────────────────────────────────────
+        # Slay the Spire 2 shares the map and the node in co-op, and
+        # "individual choices within events may differ" — so the room is the
+        # same room and each Kid answers it themselves.
+        print("")
+        print("A Curiosity")
+        await page.evaluate("""() => {
+          const r = window.MM.ctx.run;
+          const n = r.map.nodes.find(x => (x.kind || x.type) === 'curiosity')
+                 || r.map.nodes.find(x => (x.kind || x.type) === 'unknown');
+          r.currentNodeId = n.id;
+          for (const k of r.kids) k.roomDone = null;
+          r.pendingEvent = null;
+          r._prepareEvent(n, 'curiosity');
+          r.setLocalSeat(0);
+          r._goto('event', { node: n.id, region: r.region });
+        }""")
+        await page.wait_for_timeout(5000)
+        c0 = await page.evaluate(WHO)
+        opts0 = await page.evaluate(
+            "() => [...document.querySelectorAll('.ev-opt')].map(e => e.dataset.opt)")
+        check(c0["scene"] == "event", "the Curiosity is up", c0["scene"])
+        check(c0["seat"] == 0, "seat 0 first", str(c0["seat"]))
+        check(len(opts0) > 0, "with options to answer", str(len(opts0)))
+
+        await page.click(".ev-opt:not([disabled])")
+        await page.wait_for_timeout(1500)
+        answered = await page.evaluate(
+            "() => !!document.querySelector('.ev-page.is-answered, .is-answered')")
+        check(answered, "seat 0 answers it")
+
+        await page.evaluate("""() => {
+          for (const el of document.querySelectorAll('button, .btn, .rm-go')) {
+            const t = (el.textContent || '').trim().toLowerCase();
+            if (t.startsWith('back to the blueprint') || t.startsWith('leave')
+                || t.startsWith('go on') || t.startsWith('move on')) { el.click(); return; }
+          }
+        }""")
+        await page.wait_for_timeout(2200)
+        cv = await page.evaluate(WHO)
+        check(cv["veil"], "and it passes to the other Kid rather than closing")
+        await page.click(".hoff__go")
+        await page.wait_for_timeout(4500)
+        c1 = await page.evaluate(WHO)
+        opts1 = await page.evaluate(
+            "() => [...document.querySelectorAll('.ev-opt:not([disabled])')].map(e => e.dataset.opt)")
+        answered1 = await page.evaluate(
+            "() => !!document.querySelector('.ev-page.is-answered, .is-answered')")
+        check(c1["scene"] == "event", "the Curiosity opens again", c1["scene"])
+        check(c1["seat"] == 1, "as seat 1", str(c1["seat"]))
+        check(not answered1, "and it is UNanswered for them — the choice is theirs")
+        check(len(opts1) > 0, "with the options live again", str(len(opts1)))
+        await page.screenshot(path=os.path.join(SHOTS, "rooms-event-seat1.png"))
+
         await b.close()
 
     print("\nconsole errors:", len(errors))

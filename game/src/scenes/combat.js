@@ -2781,6 +2781,17 @@ export class CombatScene extends Scene {
     const run = this.ctx.run;
     const me = this.me;
     if (!run || !me) return;
+    /**
+     * The engine has to be told too, or a choice goes to the wrong person.
+     *
+     * `engine.localSeat` decides whether a seat-addressed request reaches the
+     * picker or resolves from its `prefer` rule. It was set once when the fight
+     * was built, so after a handoff a Trick played by seat 1 that asks SEAT 0
+     * to choose would have opened the picker in front of seat 1 — one player
+     * rummaging through the other Kid's hand, which is the exact thing the
+     * seat addressing exists to prevent.
+     */
+    this.engine.localSeat = this.seatIndex | 0;
     const slug = String(me.companion || 'marmalade');
     if (this.hero && this.hero.setCompanion) this.hero.setCompanion(slug);
     if (this.$plArt) this.$plArt.src = `${PORTRAITS}${slug}.png`;
