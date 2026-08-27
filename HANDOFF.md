@@ -55,20 +55,41 @@ All prep scripts are **one-off and commit their output** — there is no runtime
 
 ### Test suites — all must stay green
 
-```
-tests/combat/run.py        677 assertions      tests/seams/check.py     1806 sites, 0 problems
-tests/cards/run.py         445 cards, 0 err    tests/seams/proof.py     52 passed
-tests/enemies/run.py       37 enemies, 0 err   tests/scene-css/check.py 0 conflicts
-tests/enemies/audit.py     ~2400 turns, 0 err  tests/run/run.py         50 runs, 0 errors
-tests/coop/run.py          591 assertions   tests/coop/hotseat.py    the seat really moves
-tests/coop/rooms.py        every room hands over  tests/coop/playthrough.py  a two-Kid expedition
-tests/hook-names/check.py  0 unknown hooks
-tests/turn-events/check.py 0 unguarded      tests/dup-keys/check.py    0 duplicate keys
-tests/css-tokens/check.py  0 undefined tokens
-tests/map/run.py           23 passed        tests/chrome/run.py        27 checks
-tests/backpack/run.py      77 checks           tests/audio/run.py       46 cues, 0 errors
-tests/combat-scene/seam.py 22 passed           tests/critic-design/sim.py  balance simulator
-```
+| Suite | What it says when it is happy |
+|---|---|
+| `tests/combat/run.py` | 677 assertions |
+| `tests/coop/run.py` | 591 assertions |
+| `tests/cards/run.py` | 470 cards, 0 errors |
+| `tests/enemies/run.py` | 37 enemies, 0 errors |
+| `tests/enemies/audit.py` | ~2060 turns, intent === delivered |
+| `tests/run/run.py` | 50 runs, 0 errors |
+| `tests/backpack/run.py` | 77 checks |
+| `tests/map/run.py` · `tests/chrome/run.py` | 23 passed · 27 checks |
+| `tests/combat-scene/seam.py` · `tests/audio/run.py` | 22 passed · 46 cues |
+| `tests/critic-design/sim.py` · `sweep.py` | the balance simulator |
+
+**Co-op drives the real screens** — everything else about co-op is asserted
+against objects, and the thing that breaks is always the screen:
+
+| | |
+|---|---|
+| `tests/coop/select.py` | the entry point: "Go in together" through to two Kids on one route |
+| `tests/coop/hotseat.py` | END TURN, the veil, and the screen really being the other Kid's |
+| `tests/coop/rooms.py` | all four per-Kid rooms handing over, and a Rescue not |
+| `tests/coop/playthrough.py` | a two-Kid expedition, walked the way two people would |
+| `tests/coop/balance.py` | the party Courage curve — numbers to read, not a gate |
+
+**Gates against whole bug classes.** Never let one regress; each cost a round to
+learn. See §6.
+
+| | |
+|---|---|
+| `tests/seams/check.py` · `proof.py` | 1806 call sites · 52 passed — silent no-ops at module joins |
+| `tests/scene-css/check.py` | 0 conflicts — a class meaning two things in two scenes |
+| `tests/css-tokens/check.py` | 0 undefined tokens — `var(--text-low)` when it is `--text-lo` |
+| `tests/dup-keys/check.py` | 0 duplicate keys — the second one silently wins |
+| `tests/hook-names/check.py` | 0 unknown hooks — a handler nothing dispatches |
+| `tests/turn-events/check.py` | 0 unguarded — `turn:start` fires for every enemy too |
 
 `tests/seams/check.py` and `tests/scene-css/check.py` are **gates against whole bug classes** —
 never let them regress. See §6.
