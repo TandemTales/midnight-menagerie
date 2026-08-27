@@ -300,16 +300,29 @@ function rederive(out, sim, engine, targetId) {
  * "incoming damage" readout under the player's Guard.
  * Pure: sums every living enemy's current attack intent.
  */
-export function previewIncoming(engine) {
+export function previewIncoming(engine, who = null) {
+  // ONE seat's answer. Reading `engine.player` here meant the readout showed
+  // the whole board's damage to both Kids — including the swing aimed at the
+  // teammate — and measured it against seat 0's Guard and Courage. In a party
+  // with the dev guard armed it threw, and the scene swallowed the throw, so
+  // the readout simply vanished.
+  const me = (who && engine._resolveSeat(who)) || engine.current;
   let total = 0;
   const parts = [];
   for (const en of engine.enemies) {
     if (!en.alive || !en.intent) continue;
-    const t = en.intent.damage * en.intent.hits;
-    if (t > 0) { total += t; parts.push({ enemyId: en.id, damage: en.intent.damage, hits: en.intent.hits, total: t }); }
+    let aimed = [me];
+    try { aimed = engine.partyTargets(en, en.pendingMove); } catch { aimed = [me]; }
+    const onMe = aimed.includes(me);
+    // Not the primary target, but the move splashes onto every other seat —
+    // the Bedframe Beast's BOO is the shape this exists for. Splash lands once.
+    const damage = onMe ? en.intent.damage : (en.intent.splash || 0);
+    const hits = onMe ? en.intent.hits : (en.intent.splash > 0 ? 1 : 0);
+    const t = damage * hits;
+    if (t > 0) { total += t; parts.push({ enemyId: en.id, damage, hits, total: t, splash: !onMe }); }
   }
-  const block = engine.player.block;
-  return { total, parts, block, unblocked: Math.max(0, total - block), lethal: total - block >= engine.player.hp };
+  const block = me.block;
+  return { total, parts, block, unblocked: Math.max(0, total - block), lethal: total - block >= me.hp };
 }
 
 export default previewCard;

@@ -1489,7 +1489,9 @@ export class CombatScene extends Scene {
   _renderIncoming(extraBlock = 0) {
     if (!this.engine || this.engine.over) { this.$inc.hidden = true; return; }
     let inc;
-    try { inc = previewIncoming(this.engine); } catch { return; }
+    // THIS seat's incoming, not the board's — including anything splashing off
+    // a move aimed at the other Kid.
+    try { inc = previewIncoming(this.engine, this.me); } catch { return; }
     const block = (inc.block || 0) + extraBlock;
     const through = Math.max(0, inc.total - block);
     if (inc.total <= 0) {
@@ -1519,7 +1521,11 @@ export class CombatScene extends Scene {
       + (lethal ? `<span class="cb-inc__lethal">LETHAL</span>`
         : through > 0 ? `<span class="cb-inc__need">${need} more Guard to stop it all</span>`
           : `<span class="cb-inc__safe">Fully blocked</span>`);
-    this.$inc.dataset.tip = `Incoming this turn|Every living enemy's intent added up: ${inc.total} damage.|`
+    const splashing = inc.parts.filter(p => p.splash).length;
+    this.$inc.dataset.tip = `Incoming this turn|Every enemy aimed at you, added up: ${inc.total} damage.|`
+      + (splashing
+        ? `${splashing === 1 ? 'One of them is' : `${splashing} of them are`} aimed at your friend and catches you too.|`
+        : '')
       + (through > 0 ? `Your ${block} Guard stops ${Math.min(block, inc.total)}; ${through} reaches your Courage.`
         : `Your ${block} Guard stops all of it.`);
     this.$inc.tabIndex = 0;
@@ -2396,12 +2402,21 @@ export class CombatScene extends Scene {
 
     // Which enemies are winding up at them. The single most useful thing to
     // know about a teammate you cannot otherwise see.
-    const aimed = this.engine.enemies.filter(en => en.alive && en.intent
-      && this.engine.intentTargetFor(en) === m);
+    // `partyTargets`, not `intentTargetFor`: an AoE move lands on every seat,
+    // and a move with `splash` reaches them even while it is aimed at you.
+    const aimed = [];
+    let splashOnly = 0;
+    for (const en of this.engine.enemies) {
+      if (!en.alive || !en.intent) continue;
+      let targets = [];
+      try { targets = this.engine.partyTargets(en, en.pendingMove); } catch { targets = []; }
+      if (targets.includes(m)) aimed.push(en);
+      else if (en.intent.splash > 0) { aimed.push(en); splashOnly++; }
+    }
     if (aimed.length && !m.fallen) {
       this.$mateAim.hidden = false;
       this.$mateAim.textContent = aimed.length === 1
-        ? `${aimed[0].name} is aiming at them`
+        ? (splashOnly === 1 ? `${aimed[0].name} catches them too` : `${aimed[0].name} is aiming at them`)
         : `${aimed.length} of them are aiming at them`;
     } else this.$mateAim.hidden = true;
 

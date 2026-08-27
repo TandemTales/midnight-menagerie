@@ -1461,6 +1461,78 @@ export async function run() {
     eq(clutter(b), 0, 'and none of it went to the Kid it was not aimed at');
   });
 
+  // ── the incoming readout is ONE seat's ────────────────────────────────────
+  // `previewIncoming` read `engine.player`, so it added up the whole board and
+  // measured it against seat 0's Guard and Courage: the swing aimed at your
+  // teammate counted as coming at you, and seat 1's readout was seat 0's. In a
+  // party with the dev guard armed it threw, and the scene swallows the throw,
+  // so the readout simply disappeared.
+
+  const SPLASHER = {
+    id: 'coop/splasher', name: 'Splasher', region: 'foyer', tier: 'normal',
+    hp: [90, 90], silhouette: 'blob',
+    moves: {
+      boom: {
+        id: 'boom', name: 'Boom', intent: 'attackBig', damage: 20, hits: 1,
+        splashFn: (c) => (c.partySize() > 1 ? 6 : 0),
+        tell: 'It swells.',
+        effect: (c) => { c.damage(20); },
+      },
+    },
+    nextMove: () => 'boom',
+  };
+
+  await atest('incoming: each Kid is told what is coming at THEM', async () => {
+    const { previewIncoming } = await import('../../game/src/combat/preview.js');
+    const e = await startDummyParty(new RNG(821), 2, { enemies: [PICKY], maxHp: 90 });
+    const [a, b] = e.players;
+    e.gainBlock(a, 30, { fromCard: false, reason: 'test' });   // it will aim at seat 1
+    e.refreshIntents('test');
+    eq(e.intentTargetFor(e.enemies[0]), b, 'it is aimed at seat 1');
+
+    const forA = previewIncoming(e, a);
+    const forB = previewIncoming(e, b);
+    eq(forA.total, 0, 'seat 0 has nothing coming at them');
+    ok(forB.total > 0, 'seat 1 does');
+    eq(forB.block, b.block, 'and it is measured against THEIR Guard');
+    eq(forA.block, a.block, 'as is seat 0 own readout');
+  });
+
+  await atest('incoming: splash shows up on the seat it is not aimed at', async () => {
+    const { previewIncoming } = await import('../../game/src/combat/preview.js');
+    const e = await startDummyParty(new RNG(823), 2, { enemies: [SPLASHER], maxHp: 90 });
+    const [a, b] = e.players;
+    e.refreshIntents('test');
+    const primary = e.intentTargetFor(e.enemies[0]);
+    const other = e.players.find(pl => pl !== primary);
+    const onPrimary = previewIncoming(e, primary);
+    const onOther = previewIncoming(e, other);
+    eq(onPrimary.total, 20, 'the Kid it is aimed at sees the whole swing');
+    eq(onOther.total, 6, 'and their friend is told about the 6 that catches them');
+    ok(onOther.parts[0] && onOther.parts[0].splash, 'flagged as splash, so the screen can say so');
+    ok(a !== b, 'two seats');
+  });
+
+  await atest('incoming: solo reads exactly as it always did', async () => {
+    const { previewIncoming } = await import('../../game/src/combat/preview.js');
+    const e = makeDummyCombat(new RNG(825), { enemies: [SPLASHER] });
+    await e.startCombat();
+    const inc = previewIncoming(e);
+    eq(inc.total, 20, 'the printed number, with no splash invented');
+    eq(inc.parts.length, 1, 'one part');
+    ok(!inc.parts[0].splash, 'and it is not splash');
+  });
+
+  await atest('incoming: an AoE move counts for both Kids', async () => {
+    const { previewIncoming } = await import('../../game/src/combat/preview.js');
+    const e = await startDummyParty(new RNG(827), 2, { enemies: [AOE], maxHp: 90 });
+    const [a, b] = e.players;
+    e.refreshIntents('test');
+    eq(previewIncoming(e, a).total, previewIncoming(e, b).total,
+       'partyTarget:all is coming at everybody, equally');
+    ok(previewIncoming(e, a).total > 0, 'and it is not zero');
+  });
+
   // ── the run layer with two Kids ───────────────────────────────────────────
   // Shared route and rooms; per-Kid deck, Courage, Lost Things, Keepsakes,
   // Backpack. Same split as Slay the Spire 2, and the reason two Kids feel like
