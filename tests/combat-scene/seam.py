@@ -192,8 +192,13 @@ async def main(a):
         # draw has finished animating — wait for the event queue to go idle too.
         await page.wait_for_function(
             f"{SCENE} && !{SCENE}._draining && {SCENE}._q.length === 0", timeout=20000)
-        # the raster rehearsal paints throwaway cards; wait it out before counting
-        await page.wait_for_function("!document.querySelector('.mm-hand__warm')", timeout=20000)
+        # The raster rehearsal paints throwaway cards; wait it out before
+        # counting. On the FLAG, not on the host element: there is a 60 ms gap
+        # between waves where `.mm-hand__warm` does not exist, so its absence
+        # meant "the coast is clear" two runs in three and the next wave's six
+        # cards got counted with the real five.
+        await page.wait_for_function(
+            f"{SCENE} && {SCENE}.hand && !{SCENE}.hand.warming", timeout=20000)
         await page.wait_for_timeout(500)
 
         # ── 1. the fan and the engine agree before we touch anything ────────

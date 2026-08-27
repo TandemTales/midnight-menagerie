@@ -517,7 +517,19 @@ export class Hand {
       if (i + 1 >= scales.length) return scales.length * count;
       return new Promise((r) => setTimeout(r, 60)).then(() => run(i + 1));
     });
-    return fonts.then(() => settled).then(() => run(0));
+    /**
+     * `warming` is the signal for "the rehearsal is still going".
+     *
+     * There is a 60 ms gap between waves where the `.mm-hand__warm` host does
+     * not exist, so its ABSENCE does not mean the rehearsal has finished —
+     * anything watching the DOM for it sees the gap, decides the coast is
+     * clear, and then counts the next wave's throwaway cards along with the
+     * real hand. That made `tests/combat-scene/seam.py` fail two runs in three
+     * with a consistent 11 cards where 5 were expected.
+     */
+    this.warming = true;
+    return fonts.then(() => settled).then(() => run(0))
+      .finally(() => { this.warming = false; });
   }
 
   /** Paints one throwaway wave. Resolves with its worst frame time in ms. */
