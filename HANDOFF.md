@@ -69,7 +69,13 @@ All prep scripts are **one-off and commit their output** — there is no runtime
 | `tests/critic-design/sim.py` · `sweep.py` | the balance simulator |
 
 **Co-op drives the real screens** — everything else about co-op is asserted
-against objects, and the thing that breaks is always the screen:
+against objects, and the thing that breaks is always the screen.
+
+**Run these one at a time.** They click through real transitions with real
+timings, and two Playwright runs overlapping on this machine make them fail in
+ways that look like bugs and are not — the same trap CONTRACTS trap 7 records
+for fps. Every "failure" of these suites during the pass-and-play round turned
+out to be a second browser I had left running.
 
 | | |
 |---|---|
