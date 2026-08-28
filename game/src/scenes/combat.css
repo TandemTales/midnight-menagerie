@@ -1835,10 +1835,32 @@
    two sides of one table without the teammate ever competing with your hand
    for attention. It answers three questions and stops: alive, covered, done.
    Every colour is a token — CONTRACTS non-negotiable #2. */
-.cb-mate {
+/* ONE COLUMN, one panel per teammate. The panel used to be positioned
+   absolutely on its own because there was only ever one of them; a party of
+   four needs three, so the COLUMN holds the position and the panels stack. */
+.cb-mates {
   position: absolute;
   left: var(--s-4); top: calc(var(--hud-h, 44px) + var(--s-3));
-  width: 244px; z-index: 6;
+  z-index: 6;
+  display: flex; flex-direction: column; gap: var(--s-2);
+  pointer-events: none;
+}
+.cb-mates[hidden] { display: none; }
+.cb-mates > * { pointer-events: auto; }
+
+/* Three friends is a tall column, and the bottom of it reaches the local
+   Companion's own plate. At three or more the panels lose their padding and
+   their Companion sub-label — the name and the Courage bar are what a
+   teammate panel is actually for. */
+.cb-mates.is-crowded { gap: var(--s-1); }
+.cb-mates.is-crowded .cb-mate { padding: var(--s-2); width: 214px; }
+.cb-mates.is-crowded .cb-mate__comp { display: none; }
+.cb-mates.is-crowded .cb-mate__art { width: 26px; height: 26px; flex: 0 0 26px; }
+
+
+.cb-mate {
+  position: relative;
+  width: 244px;
   padding: var(--s-3);
   border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--ink-900) 76%, transparent);

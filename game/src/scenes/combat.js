@@ -420,9 +420,21 @@ export class CombatScene extends Scene {
   get seatIndex() { return this.ctx?.run?.localSeat || 0; }
   /** The other Kid's seat, or null in solo. */
   get mate() {
+    return this.mates[0] || null;
+  }
+
+  /**
+   * Every OTHER Kid at the table, in seat order.
+   *
+   * This used to be a single `mate`, `players[1 - seatIndex]`, which is "the
+   * other one of two" written as arithmetic. At a party of four it answered
+   * seat 1 and the screen silently never mentioned seats 2 and 3 — they were
+   * in the fight, being attacked, and invisible.
+   */
+  get mates() {
     const e = this.engine;
-    if (!e || !e.players || e.players.length < 2) return null;
-    return e.players[1 - this.seatIndex] || null;
+    if (!e || !e.players || e.players.length < 2) return [];
+    return e.players.filter((_, i) => i !== this.seatIndex);
   }
 
   async _makeEngine(params) {
@@ -636,12 +648,20 @@ export class CombatScene extends Scene {
           </div>
         </section>
 
-        <!-- THE OTHER KID. Hidden entirely in solo.
-             Deliberately compact and deliberately NOT interactive: it answers
+        <!-- THE OTHER KIDS. Hidden entirely in solo.
+             Deliberately compact and deliberately NOT interactive: each answers
              the three questions you actually ask about a teammate mid-fight —
              are they alive, are they covered, and are they done — and nothing
-             else. Their hand is their business. It sits opposite your own
-             panel so the two Kids read as two sides of the same table. -->
+             else. Their hands are their business.
+
+             ONE PANEL PER TEAMMATE. This was a single panel and the mate getter
+             was players[1 - seatIndex] — literally "the other one of two" — so a
+             party of four showed one of its three friends and silently hid the
+             rest. The first is the template; the rest are cloned.
+             (No backticks in here. This is inside a template literal and one
+             backtick ends it, which takes the whole app down with a syntax
+             error reported hundreds of lines away. CONTRACTS trap 1.) -->
+        <div class="cb-mates" aria-label="Your friends">
         <section class="cb-mate" aria-label="Your friend" hidden>
           <div class="cb-mate__top">
             <img class="cb-mate__art" alt="" draggable="false">
@@ -664,6 +684,7 @@ export class CombatScene extends Scene {
           <div class="cb-mate__statuses" role="list" aria-label="Your friend's conditions"></div>
           <div class="cb-mate__aim" hidden></div>
         </section>
+        </div>
 
         <div class="cb-handhost"></div>
 
@@ -732,18 +753,11 @@ export class CombatScene extends Scene {
     this.$plGuardN = $('.cb-player__guard b');
     this.$plCounters = $('.cb-player__counters');
     this.$plBar = $('.cb-player__bar');
+    this.$mates = $('.cb-mates');
     this.$mate = $('.cb-mate');
-    this.$mateArt = $('.cb-mate__art');
-    this.$mateName = $('.cb-mate__name');
-    this.$mateComp = $('.cb-mate__comp');
-    this.$mateReady = $('.cb-mate__ready');
-    this.$mateGuard = $('.cb-mate__guard');
-    this.$mateGuardN = $('.cb-mate__guard b');
-    this.$mateBar = $('.cb-mate__bar');
-    this.$mateFill = $('.cb-mate__fill');
-    this.$mateHp = $('.cb-mate__hp');
-    this.$mateSt = $('.cb-mate__statuses');
-    this.$mateAim = $('.cb-mate__aim');
+    /* No per-element handles for the teammate panel: there is one panel PER
+       teammate now and they are cloned, so a single `$mateName` would only
+       ever address the first friend. `_syncMate` keeps its own list. */
     this.$plFill = $('.cb-player__fill');
     this.$plGhost = $('.cb-player__ghost');
     this.$plHpN = $('.cb-player__hpn');
@@ -1583,6 +1597,24 @@ export class CombatScene extends Scene {
   async _animate(ev) {
     const E = this.engine;
     if (!E) return;                    // torn down while this event was queued
+
+    /* SOMEBODY ELSE'S PILES.
+     *
+     * A screen renders ONE seat's view, but the engine emits every seat's
+     * draws, discards, shuffles and moves — and `_dealSeatTurn` deals all of
+     * them at the opening of a round. These handlers used to take whatever
+     * arrived, so a four-Kid fight opened with the local Kid's fan holding
+     * cards belonging to three different seats. It was invisible at two
+     * because the fan is rebuilt on the first handoff, and it was
+     * unfixable in the scene until `piles.js` started saying whose event it
+     * is: none of those five events carried an owner at all.
+     *
+     * `seatId == null` is solo, or an engine-level event with no seat, and
+     * both belong to whoever is looking. */
+    if (ev.seatId && this.me && ev.seatId !== this.me.id) {
+      if (PILE_EVENTS.has(ev.type)) { this._syncPiles(); return; }
+    }
+
     switch (ev.type) {
 
       case 'combat:start':
@@ -2365,46 +2397,80 @@ export class CombatScene extends Scene {
    * event stream drift the moment somebody adds a third.
    */
   _syncMate() {
-    const m = this.mate;
-    if (!this.$mate) return;
-    if (!m) { this.$mate.hidden = true; return; }
-    this.$mate.hidden = false;
+    if (!this.$mates || !this.$mate) return;
+    const list = this.mates;
+    if (!list.length) { this.$mates.hidden = true; return; }
+    this.$mates.hidden = false;
+    this.$mates.classList.toggle('is-crowded', list.length >= 3);
+
+    /* One panel per teammate, cloned from the one in the markup. Built to
+       match the party ONCE — rebuilding them every event would re-request
+       every portrait and throw away focus. */
+    if (this._matePanels?.length !== list.length) {
+      this._matePanels = [];
+      this.$mates.textContent = '';
+      for (let i = 0; i < list.length; i++) {
+        const panel = i === 0 ? this.$mate : this.$mate.cloneNode(true);
+        panel.hidden = false;
+        this.$mates.appendChild(panel);
+        this._matePanels.push({
+          root: panel,
+          art: panel.querySelector('.cb-mate__art'),
+          name: panel.querySelector('.cb-mate__name'),
+          comp: panel.querySelector('.cb-mate__comp'),
+          ready: panel.querySelector('.cb-mate__ready'),
+          guard: panel.querySelector('.cb-mate__guard'),
+          guardN: panel.querySelector('.cb-mate__guard b'),
+          bar: panel.querySelector('.cb-mate__bar'),
+          fill: panel.querySelector('.cb-mate__fill'),
+          hp: panel.querySelector('.cb-mate__hp'),
+          st: panel.querySelector('.cb-mate__statuses'),
+          aim: panel.querySelector('.cb-mate__aim'),
+          artFor: null,
+        });
+      }
+    }
+    for (let i = 0; i < list.length; i++) this._paintMate(this._matePanels[i], list[i]);
+  }
+
+  /** One teammate's panel. */
+  _paintMate(el, m) {
+    if (!el || !m) return;
 
     // Their Companion's portrait, sourced exactly like your own. Set once —
     // re-assigning `src` every sync would re-request the image on every event.
-    if (this._mateArtFor !== m.companion) {
-      this._mateArtFor = m.companion;
+    if (el.artFor !== m.companion) {
+      el.artFor = m.companion;
       const slug = m.companion && m.companion !== 'neutral' ? m.companion : null;
       if (slug) {
-        this.$mateArt.style.display = '';
-        this.$mateArt.src = `${PORTRAITS}${slug}.png`;
-        this.$mateArt.addEventListener('error',
-          () => { this.$mateArt.style.display = 'none'; }, { once: true });
-      } else this.$mateArt.style.display = 'none';
+        el.art.style.display = '';
+        el.art.src = `${PORTRAITS}${slug}.png`;
+        el.art.addEventListener('error', () => { el.art.style.display = 'none'; }, { once: true });
+      } else el.art.style.display = 'none';
     }
 
     const maxHp = m.maxHp || 1;
     const pct = Math.max(0, Math.min(1, m.hp / maxHp));
     const hp = Math.max(0, Math.round(m.hp));
-    this.$mate.classList.toggle('is-low', pct <= 0.3 && !m.fallen);
-    this.$mate.classList.toggle('is-fallen', !!m.fallen);
+    el.root.classList.toggle('is-low', pct <= 0.3 && !m.fallen);
+    el.root.classList.toggle('is-fallen', !!m.fallen);
 
-    this.$mateName.textContent = m.name || 'Your friend';
-    this.$mateComp.textContent = m.companion && m.companion !== 'neutral' ? m.companion : '';
-    this.$mateFill.style.transform = `scaleX(${pct.toFixed(4)})`;
-    this.$mateHp.textContent = m.fallen ? 'down' : `${hp}/${maxHp}`;
-    this.$mateBar.dataset.tip = m.fallen
+    el.name.textContent = m.name || 'Your friend';
+    el.comp.textContent = m.companion && m.companion !== 'neutral' ? m.companion : '';
+    el.fill.style.transform = `scaleX(${pct.toFixed(4)})`;
+    el.hp.textContent = m.fallen ? 'down' : `${hp}/${maxHp}`;
+    el.bar.dataset.tip = m.fallen
       ? `${m.name} has fallen|They cannot act for the rest of this Scuffle.|They get back up at 1 ${TERMS.hp} if you win it.`
       : `${m.name}|${hp} of ${maxHp} ${TERMS.hp} left.`;
-    this.$mateBar.setAttribute('aria-label',
+    el.bar.setAttribute('aria-label',
       m.fallen ? `${m.name} has fallen` : `${m.name}, ${TERMS.hp} ${hp} of ${maxHp}`);
 
-    if (m.block > 0 && !m.fallen) { this.$mateGuard.hidden = false; this.$mateGuardN.textContent = String(m.block); }
-    else this.$mateGuard.hidden = true;
+    if (m.block > 0 && !m.fallen) { el.guard.hidden = false; el.guardN.textContent = String(m.block); }
+    else el.guard.hidden = true;
 
     // "Ready" is the simultaneous-turn read: they have ended their turn and the
     // enemies are waiting on YOU.
-    this.$mateReady.hidden = !m.ended || m.fallen;
+    el.ready.hidden = !m.ended || m.fallen;
 
     // Which enemies are winding up at them. The single most useful thing to
     // know about a teammate you cannot otherwise see.
@@ -2420,21 +2486,21 @@ export class CombatScene extends Scene {
       else if (en.intent.splash > 0) { aimed.push(en); splashOnly++; }
     }
     if (aimed.length && !m.fallen) {
-      this.$mateAim.hidden = false;
-      this.$mateAim.textContent = aimed.length === 1
+      el.aim.hidden = false;
+      el.aim.textContent = aimed.length === 1
         ? (splashOnly === 1 ? `${aimed[0].name} catches them too` : `${aimed[0].name} is aiming at them`)
         : `${aimed.length} of them are aiming at them`;
-    } else this.$mateAim.hidden = true;
+    } else el.aim.hidden = true;
 
     const st = (m.statuses instanceof Map) ? [...m.statuses.entries()] : [];
-    this.$mateSt.textContent = '';
+    el.st.textContent = '';
     for (const [id, stacks] of st) {
       if (!stacks) continue;
       const chip = document.createElement('span');
       chip.className = 'cb-mate__st';
       chip.setAttribute('role', 'listitem');
       chip.textContent = `${this.engine.statusDef(id)?.name || id} ${stacks}`;
-      this.$mateSt.appendChild(chip);
+      el.st.appendChild(chip);
     }
   }
 
@@ -3181,6 +3247,13 @@ const STASH_PILE = {
   },
   default: { label: 'Stash', tip: 'Stash|Tricks set aside outside your hand and deck.' },
 };
+
+/**
+ * Events that describe ONE seat's piles, and are therefore only this screen's
+ * business when they belong to the seat it is rendering. See `_animate`.
+ * They all carry `seatId` from `piles.js`.
+ */
+const PILE_EVENTS = new Set(['draw', 'discard', 'exhaust', 'card:move', 'shuffle', 'hand:full']);
 
 const GARMENTS = { raincoat: 'Raincoat', 'evening-coat': 'Evening Coat', 'mourning-coat': 'Mourning Coat' };
 

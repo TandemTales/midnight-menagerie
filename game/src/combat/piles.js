@@ -141,6 +141,17 @@ export class Piles {
     this.stashCap = 3;
   }
 
+  /**
+   * WHOSE pile set this is.
+   *
+   * Every event below carries it. Without it a party's draws, discards and
+   * shuffles are indistinguishable from each other, and `scenes/combat.js`
+   * consumes them all — so at the opening of a four-Kid fight the local Kid's
+   * fan was dealt cards belonging to three different seats. The scene renders
+   * ONE seat's view; it cannot honour that if the events do not say who.
+   */
+  seatId() { return this.owner ? this.owner.id : null; }
+
   list(name) { return this[name] || []; }
   all() { return [...this.draw, ...this.hand, ...this.discard, ...this.exhaust, ...this.limbo, ...this.stash]; }
   find(uid) {
@@ -195,7 +206,7 @@ export class Piles {
     const from = this._pull(card);
     const idx = this._push(card, toPile, position);
     this.e._emit(EV.CARD_MOVE, {
-      cardUid: card.uid, card: this.e.cardSnap(card),
+      cardUid: card.uid, card: this.e.cardSnap(card), seatId: this.seatId(),
       from, to: toPile, position: idx, reason: opts.reason || 'effect',
     });
     return true;
@@ -210,7 +221,7 @@ export class Piles {
     this.draw = shuffled;
     for (const c of this.draw) c.pile = Pile.DRAW;
     this.e._emit(EV.SHUFFLE, {
-      into: Pile.DRAW, from: Pile.DISCARD, count: this.draw.length,
+      into: Pile.DRAW, from: Pile.DISCARD, count: this.draw.length, seatId: this.seatId(),
       order: this.draw.map(c => c.uid), reason,
     });
     this.e.hooks.dispatch('onShuffle', { pile: Pile.DRAW, count: this.draw.length });
@@ -221,7 +232,7 @@ export class Piles {
   shuffleDraw(reason = 'effect') {
     this.draw = this.e.rng.shuffle(this.draw);
     this.e._emit(EV.SHUFFLE, {
-      into: Pile.DRAW, from: Pile.DRAW, count: this.draw.length,
+      into: Pile.DRAW, from: Pile.DRAW, count: this.draw.length, seatId: this.seatId(),
       order: this.draw.map(c => c.uid), reason,
     });
     this.e.hooks.dispatch('onShuffle', { pile: Pile.DRAW, count: this.draw.length });
@@ -242,10 +253,11 @@ export class Piles {
 
     if (this.hand.length >= cap) {
       this._push(card, Pile.DISCARD, 'bottom');
-      this.e._emit(EV.HAND_FULL, { cardUid: card.uid, card: this.e.cardSnap(card), cap });
+      this.e._emit(EV.HAND_FULL, { cardUid: card.uid, card: this.e.cardSnap(card), cap, seatId: this.seatId() });
       this.e._emit(EV.DISCARD, {
         cardUid: card.uid, card: this.e.cardSnap(card), from: Pile.DRAW, to: Pile.DISCARD,
         reason: 'handFull', handSize: this.hand.length, discardCount: this.discard.length,
+        seatId: this.seatId(),
       });
       return null;
     }
@@ -254,7 +266,7 @@ export class Piles {
     this.e._emit(EV.DRAW, {
       cardUid: card.uid, card: this.e.cardSnap(card), from: Pile.DRAW, to: Pile.HAND,
       handSize: this.hand.length, drawCount: this.draw.length,
-      discardCount: this.discard.length, reason,
+      discardCount: this.discard.length, reason, seatId: this.seatId(),
     });
     this.e.hooks.dispatch('onCardDrawn', { card, reason });
     return card;

@@ -79,13 +79,15 @@ const MAX_LOG = 400;
 /**
  * The most Kids that can go in together.
  *
- * Two, by the designer's decision on 2026-08-26. The engine is written for N and
- * the Courage table below carries the designed 3p and 4p numbers, so lifting
- * this is a one-line change plus a re-measure — but nothing above the engine is
- * built or balanced for more than two, and a party of three would silently draw
- * on numbers nobody has played.
+ * FOUR, by the designer's decision on 2026-08-27, live from 2026-08-28.
+ *
+ * This was deliberately held at 2 while `scenes/select.js` was hard-wired to
+ * exactly two Kids: raising it alone would have let a run start that the select
+ * screen could not set up. The screen now offers 1..MAX_PARTY and reads this
+ * constant rather than a literal of its own, so the two cannot drift apart in
+ * either direction. The scaling below is measured, not extrapolated.
  */
-export const MAX_PARTY = 2;
+export const MAX_PARTY = 4;
 
 /**
  * Enemy Courage multiplier by party size, indexed 0-based (1p..4p).
@@ -118,12 +120,49 @@ export const MAX_PARTY = 2;
  * Note the guide sites that say 1.5-1.8x for 2p are simply wrong; they do not
  * match play reports and they do not match what this engine measures.
  *
+ * ── 3p and 4p, MEASURED for the first time on 2026-08-28 ───────────────────
+ *
+ * They used to read 3.1 and 4.0 and the comment here said, correctly, that they
+ * were "extrapolated, not measured". They were also badly wrong. The first
+ * measurement (Foyer, standard tier, 24 fights a size) read:
+ *
+ *     1p 79% win · 2p 75% · 3p 96% · 4p 96%
+ *
+ * — seventeen points of free win rate for bringing friends, with 64% and 73% of
+ * the party's Courage still on the table at the end. The curve is supposed to be
+ * FLAT; that is a rising line, and it is rising hard.
+ *
+ * The reason is structural and worth writing down. Enemy DAMAGE never scales,
+ * by design. Adding a Kid therefore multiplies the party's output AND its total
+ * Courage, while the incoming damage per Kid falls. Both halves of the ledger
+ * improve at once, so the Courage multiplier has to grow faster than the party
+ * does. StS2's own formula is linear in player count and would give 3.3 / 4.4
+ * here; measured against this engine, linear is nowhere near enough.
+ *
+ * Four passes, each 24-36 real fights with the competent bot on every seat:
+ *
+ *     3p: 3.1 -> 96%   4.2 -> 71%   4.0 -> 75%    (2p reads 75%: parity)
+ *     4p: 4.0 -> 96%   6.2 -> 54%   5.3 -> 88%   5.7 -> 72%
+ *
+ * Confirmed at a fresh seed with n=36: 1p 64% · 2p 78% · 3p 67% · 4p 72%, a
+ * ~14-point spread across all four sizes where the noise on n=36 is about +/-8
+ * points each. Falls per fight go 0.39 / 0.44 / 1.00 / 1.11 — more Kids go down
+ * in a bigger party, which is the intended co-op texture, and they come back at
+ * 1 Courage when the team wins.
+ *
+ * WHAT IS STILL OPEN: the residual is that bigger parties finish with more
+ * Courage left (26% solo, 62% at 4p) even at matched win rates. Raising Courage
+ * further would fix the number and make fights long instead of dangerous — 4p
+ * at 6.2 already ran 7.7 turns. The real lever is AoE coverage: the compensation
+ * for "damage never scales" is supposed to be TARGETING, and the Foyer's
+ * standard tier is thin on moves that hit everybody. That is an enemy-content
+ * question, not a constant, and it is a designer's call.
+ *
  * Re-measure with `python tests/coop/balance.py` after ANY change to enemy
  * damage, starting decks, or the co-op card pool. Per-enemy overrides compose
- * on top via `EnemyDef.partyHp`. 3p/4p are unreachable while MAX_PARTY is 2 and
- * are extrapolated, not measured.
+ * on top via `EnemyDef.partyHp`.
  */
-const PARTY_HP_SCALE = [1, 2.2, 3.1, 4.0];
+const PARTY_HP_SCALE = [1, 2.2, 4.0, 5.7];
 
 
 export class CombatEngine {

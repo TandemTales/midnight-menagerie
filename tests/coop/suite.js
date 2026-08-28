@@ -85,7 +85,7 @@ export async function run() {
     ok(!shared, 'no card INSTANCE is in two seats at once');
     eq(e.seat(1), e.players[1], 'seat(n) addresses a seat');
     eq(e.seat(9), null, 'seat(n) out of range is null, not undefined');
-    eq(MAX_PARTY, 2, 'two Kids is the cap');
+    eq(MAX_PARTY, 4, 'four Kids is the cap');
   });
 
   test('party: engine.player and engine.piles throw rather than silently mean seat 0', () => {
@@ -100,7 +100,7 @@ export async function run() {
     eq(loose.player, loose.players[0], 'with the guard off it degrades to seat 0, never an exception');
   });
 
-  test('party: enemy Courage is the measured 220%, and the party caps at two', () => {
+  test('party: enemy Courage is the measured curve, and the party caps at four', () => {
     const solo = makeDummyCombat(new RNG(42));
     const duo = makeDummyParty(new RNG(42), 2);
     const hp = (e, i) => e.enemies[i].maxHp;
@@ -113,10 +113,17 @@ export async function run() {
     eq(duo.enemies[0].hp, duo.enemies[0].maxHp, 'a scaled fight does not open pre-damaged');
     eq(solo.partyHpScale, 1, 'solo is never scaled');
 
-    // Asking for more than two seats is capped rather than half-supported.
-    const over = makeDummyParty(new RNG(42), 4);
-    eq(over.partySize, MAX_PARTY, 'a party of four is capped to two');
-    eq(hp(over, 0), hp(duo, 0), 'and is scaled as the two-Kid party it became');
+    // Every size the cap allows is really scaled, and the curve really rises.
+    const trio = makeDummyParty(new RNG(42), 3);
+    const quad = makeDummyParty(new RNG(42), 4);
+    eq(hp(trio, 0), Math.round(hp(solo, 0) * 4.0), '3 players -> 400% Courage');
+    eq(hp(quad, 0), Math.round(hp(solo, 0) * 5.7), '4 players -> 570% Courage');
+    ok(hp(quad, 0) > hp(trio, 0) && hp(trio, 0) > hp(duo, 0), 'the curve is monotonic');
+
+    // Asking for more seats than the cap is capped rather than half-supported.
+    const over = makeDummyParty(new RNG(42), 6);
+    eq(over.partySize, MAX_PARTY, 'a party of six is capped to four');
+    eq(hp(over, 0), hp(quad, 0), 'and is scaled as the four-Kid party it became');
   });
 
   await atest('party: a real fight starts, and every seat draws its own hand', async () => {

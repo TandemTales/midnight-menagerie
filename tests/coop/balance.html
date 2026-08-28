@@ -30,7 +30,7 @@
  * only end-to-end exercise of simultaneous turns, per-seat piles, per-seat
  * trackers and enemy seat-marking that exists.
  */
-import { CombatEngine } from '../../game/src/combat/engine.js';
+import { CombatEngine, MAX_PARTY } from '../../game/src/combat/engine.js';
 import { RNG } from '../../game/src/core/rng.js';
 import { loadContentRegistries } from '../../game/src/data/keywords.js';
 import { startingDeckFor } from '../../game/src/data/cards.js';
@@ -115,8 +115,11 @@ const mean = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0);
   say('party   fights   win%   turns   Courage left   fallen/fight   enemy Courage');
   say('─────────────────────────────────────────────────────────────────────────────');
   const rows = [];
-  // Two is the cap (engine MAX_PARTY). Anything above it is the same fight.
-  for (const size of [1, 2]) {
+  /* Every size the engine will actually accept, read from MAX_PARTY rather
+     than a literal — this loop said `[1, 2]` while the cap was 2, so raising
+     the cap would have left the measurement silently covering half of it. */
+  const SIZES = Array.from({ length: MAX_PARTY }, (_, i) => i + 1);
+  for (const size of SIZES) {
     const res = [];
     for (let i = 0; i < N; i++) {
       const r = await oneFight(size, SEED0 + i * 13);

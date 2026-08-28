@@ -170,7 +170,9 @@ async def main():
 
         await page.goto("http://localhost:8777/game/index.html#scene=select", wait_until="load", timeout=45000)
         await page.wait_for_timeout(2500)
-        await page.click(".sel-pair"); await page.wait_for_timeout(200)
+        # The party-size control replaced the two-state checkbox on 2026-08-28;
+        # these screens are still driven as a pair.
+        await page.click('.sel-pair__size[data-n="2"]'); await page.wait_for_timeout(200)
 
         async def pick(comp, kid):
             await page.click('.companion-tile[data-slug="%s"]' % comp); await page.wait_for_timeout(600)

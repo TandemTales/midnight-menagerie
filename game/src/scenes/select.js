@@ -21,6 +21,10 @@ import { bus } from '../core/bus.js';
 import { Save } from '../core/save.js';
 import { clock, Clock } from '../core/clock.js';
 import { COMPANIONS, KIDS, TERMS } from '../data/schema.js';
+/* The cap comes from the ENGINE, never from a literal here. A screen that can
+   set up a bigger party than the engine accepts is exactly the failure the old
+   "just flip the constant" plan would have produced, in the other direction. */
+import { MAX_PARTY } from '../combat/engine.js';
 import {
   ensureCss, fontsReady, companionPortrait, kidPortrait, logoLockup, petPortrait,
   el, svg, rovingFocus, setReduceMotion, reduceMotion, formatSeed,
@@ -564,7 +568,11 @@ export class SelectScene extends Scene {
     this._lit = null;
     this.state = {
       mode: 'grid', companion: null, kid: null, seed: 0, haunt: 0,
-      /** Going in with a friend. Two Kids is the cap (engine MAX_PARTY). */
+      /**
+       * How many Kids go in. 1 to `MAX_PARTY`, chosen on this screen.
+       * `coop` is derived and kept only because several call sites read it.
+       */
+      partySize: 1,
       coop: false,
       /** Kids already confirmed this session, in seat order. */
       party: [],
@@ -949,19 +957,32 @@ export class SelectScene extends Scene {
     f.appendChild(seed);
 
     /* GOING IN TOGETHER.
-       Two Kids is the cap. The flow is deliberately the SAME screen twice
-       rather than a split view: you pick your Kid, then your friend picks
-       theirs, and the second pass is exactly the seam a network layer will
-       replace — player two's choice arriving from the wire instead of from the
-       chair next to you. Nothing else about the screen changes. */
-    const pair = el('label', 'sel-pair');
+       The flow is deliberately the SAME screen N times rather than a split
+       view: you pick your Kid, then the next player picks theirs, and each
+       pass after the first is exactly the seam a network layer will replace —
+       another player's choice arriving from the wire instead of from the chair
+       next to you. Nothing else about the screen changes.
+
+       The count is a segmented control rather than a checkbox because the cap
+       is four, and it is capped by MAX_PARTY itself rather than by a literal:
+       the screen must never be able to set up a party the engine will refuse,
+       which is precisely the failure mode the old "flip the constant" plan
+       would have produced. */
+    const pair = el('div', 'sel-pair');
+    pair.setAttribute('role', 'group');
+    pair.setAttribute('aria-label', 'How many Kids go in');
+    const sizes = [];
+    for (let n = 1; n <= MAX_PARTY; n++) {
+      sizes.push(`<button type="button" class="sel-pair__size${n === 1 ? ' is-on' : ''}" `
+        + `data-n="${n}" aria-pressed="${n === 1}" `
+        + `aria-label="${n === 1 ? 'Go in alone' : `Go in with ${n - 1} friend${n > 2 ? 's' : ''}`}">${n}</button>`);
+    }
     pair.innerHTML =
-      `<input type="checkbox" class="sel-pair__box">` +
-      `<span class="sel-pair__mark" aria-hidden="true"></span>` +
-      `<span class="sel-pair__txt"><b>Go in together</b><em>two Kids, one house</em></span>`;
+      `<span class="sel-pair__txt"><b>Kids going in</b><em>one house, up to ${MAX_PARTY}</em></span>`
+      + `<span class="sel-pair__sizes">${sizes.join('')}</span>`;
     f.appendChild(pair);
     this._pair = pair;
-    this._pairBox = pair.querySelector('.sel-pair__box');
+    this._sizeBtns = [...pair.querySelectorAll('.sel-pair__size')];
 
     const go = el('button', 'btn btn--go');
     go.type = 'button';
@@ -1099,16 +1120,27 @@ export class SelectScene extends Scene {
       seedIn.removeEventListener('keydown', onSeedKey);
     });
 
-    // go in together
-    const onPair = () => {
-      this.state.coop = !!this._pairBox.checked;
-      // Turning it off mid-flow drops anyone already confirmed, rather than
-      // leaving a half-built party nobody can see.
-      if (!this.state.coop) this.state.party = [];
+    // how many Kids go in
+    const onSize = (ev) => {
+      const btn = ev.currentTarget;
+      const n = Math.max(1, Math.min(MAX_PARTY, Number(btn.dataset.n) || 1));
+      this.state.partySize = n;
+      this.state.coop = n > 1;
+      /* Shrinking the party mid-flow drops anyone already locked in beyond the
+         new size, rather than leaving Kids nobody can see waiting for a slot
+         that no longer exists. */
+      if (this.state.party.length > n - 1) this.state.party.length = Math.max(0, n - 1);
+      for (const b of this._sizeBtns) {
+        const on = Number(b.dataset.n) === n;
+        b.classList.toggle('is-on', on);
+        b.setAttribute('aria-pressed', String(on));
+      }
       this._syncGo();
     };
-    this._pairBox.addEventListener('change', onPair);
-    this._offs.push(() => this._pairBox.removeEventListener('change', onPair));
+    for (const b of this._sizeBtns) {
+      b.addEventListener('click', onSize);
+      this._offs.push(() => b.removeEventListener('click', onSize));
+    }
 
     // go
     const onGo = () => this._begin();
@@ -1402,14 +1434,26 @@ export class SelectScene extends Scene {
     this._go.disabled = !ready;
     this._go.classList.toggle('is-ready', ready);
 
-    const waiting = this.state.coop && this.state.party.length === 0;
+    /* More Kids still to pick than the one being picked right now. */
+    const want = this.state.partySize || 1;
+    const waiting = this.state.party.length < want - 1;
     this._go.innerHTML = waiting ? 'Lock in &amp; pass it over' : 'Begin Expedition';
-    // Who is already locked in, so the second player can see whose turn it is.
+
+    // Who is already locked in, so the next player can see whose turn it is.
     if (this._pair) {
-      const first = this.state.party[0];
-      this._pair.classList.toggle('is-armed', !!this.state.coop);
-      const fname = first ? (KIDS.find(x => x.slug === first.kid)?.name || first.kid) : '';
-      this._pair.dataset.first = first ? `${fname.split(" ")[0]} is in` : '';
+      const inAlready = this.state.party;
+      this._pair.classList.toggle('is-armed', want > 1);
+      if (!inAlready.length) {
+        this._pair.dataset.first = '';
+      } else {
+        const names = inAlready.map(p => {
+          const k = KIDS.find(x => x.slug === p.kid);
+          return (k ? k.name : p.kid).split(' ')[0];
+        });
+        this._pair.dataset.first = want > 2
+          ? `${names.join(', ')} in — ${want - inAlready.length} to go`
+          : `${names[0]} is in`;
+      }
     }
   }
 
@@ -1450,9 +1494,12 @@ export class SelectScene extends Scene {
        downstream could read, and it silently disabled the entire Backpack. */
     const backpack = assertLoadout(loadoutFor(kid), `select.js _begin(kid:'${kid}')`);
 
-    // FIRST of two. Lock this Kid in, wipe the picks, and hand the screen over.
-    // The expedition does not start until the second Kid is chosen.
-    if (this.state.coop && this.state.party.length === 0) {
+    /* Not the LAST of the party. Lock this Kid in, wipe the picks, and hand the
+       screen over. The expedition does not start until everybody has chosen —
+       this is the same branch that used to hard-code "of two", and the only
+       thing that changed is what it counts against. */
+    const want = this.state.partySize || 1;
+    if (this.state.party.length < want - 1) {
       this.state.party.push({ companion, kid, backpack });
       this.state.companion = null;
       this.state.kid = null;
@@ -1466,7 +1513,7 @@ export class SelectScene extends Scene {
       return;
     }
 
-    const payload = this.state.coop
+    const payload = want > 1
       ? { seed, haunt, kids: [...this.state.party, { companion, kid, backpack }] }
       : { companion, kid, seed, haunt, backpack };
     try { this.ctx.audio?.play?.('ui:begin'); } catch {}

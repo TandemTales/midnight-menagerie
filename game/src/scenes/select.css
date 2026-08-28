@@ -891,38 +891,39 @@
 }
 
 /* ── GO IN TOGETHER ─────────────────────────────────────────────────────────
-   Two Kids is the cap. The flow is the same screen twice — you lock your Kid
-   in, then your friend picks theirs — so this is a single quiet toggle beside
-   the seed rather than a mode switch that reshapes the board. */
+   Up to four Kids. The flow is the same screen once per Kid — you lock yours
+   in, then the next player picks theirs — so this is a quiet segmented count
+   beside the seed rather than a mode switch that reshapes the board. It used to
+   be a two-state checkbox; the cap now comes from the engine's MAX_PARTY and
+   the buttons are generated to match it. */
 .sel-pair {
   display: inline-flex; align-items: center; gap: var(--s-2);
   padding: var(--s-2) var(--s-3);
   border-radius: var(--radius-md);
   border: 1px solid var(--surface-line);
   background: color-mix(in oklab, var(--surface-2) 72%, transparent);
-  cursor: pointer; user-select: none;
+  user-select: none;
   font-family: var(--font-body);
 }
 .sel-pair:hover { border-color: var(--surface-line-hi); }
-.sel-pair__box { position: absolute; opacity: 0; width: 0; height: 0; }
-.sel-pair__mark {
-  width: 16px; height: 16px; flex: 0 0 16px;
+.sel-pair__sizes { display: inline-flex; gap: 2px; margin-left: var(--s-1); }
+.sel-pair__size {
+  min-width: 26px; height: 26px; padding: 0 var(--s-1);
   border-radius: var(--radius-sm);
   border: 1px solid var(--surface-line-hi);
   background: color-mix(in oklab, var(--ink-800) 80%, transparent);
-  position: relative;
+  color: var(--text-lo);
+  font: inherit; font-size: var(--fs-sm); font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background var(--t-base), color var(--t-base), border-color var(--t-base);
 }
-.sel-pair__box:checked + .sel-pair__mark {
+.sel-pair__size:hover { border-color: var(--flame-400); color: var(--text-hi); }
+.sel-pair__size.is-on {
   background: var(--flame-500);
   border-color: var(--flame-400);
+  color: var(--ink-900);
 }
-.sel-pair__box:checked + .sel-pair__mark::after {
-  content: ''; position: absolute; left: 4px; top: 1px;
-  width: 5px; height: 9px;
-  border: solid var(--ink-900); border-width: 0 2px 2px 0;
-  transform: rotate(42deg);
-}
-.sel-pair__box:focus-visible + .sel-pair__mark { outline: var(--focus-ring); outline-offset: 2px; }
+.sel-pair__size:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
 .sel-pair__txt { display: flex; flex-direction: column; line-height: 1.15; }
 .sel-pair__txt b { font-size: var(--fs-sm); color: var(--text-hi); }
 .sel-pair__txt em { font-size: var(--fs-xs); color: var(--text-lo); font-style: normal; }
