@@ -169,7 +169,16 @@ export function hasCounter(c, id) {
 }
 /** Read a resource.  Prefers the engine counter track, falls back to a status. */
 export function res(c, id) { return hasCounter(c, id) ? (c.counter(id) | 0) : stacks(c, c.self, id); }
-/** Add to a resource with a floor/ceiling.  Returns the amount actually changed. */
+/**
+ * Add to a resource with a floor/ceiling.  Returns the amount actually changed.
+ *
+ * CAREFUL: `min`/`max` apply ONLY to the status-backed fallback. When the
+ * resource has an engine counter track (`defineCounters`), the whole delta goes
+ * to `addCounter` and the counter's OWN declared max is the only ceiling — the
+ * arguments here are silently ignored. If a Companion's effective cap can move
+ * during a fight (Boggle's Lurk, 5 normally and 7 under Underbed Kingdom),
+ * declare the counter at the HIGHER value and clamp at the call site.
+ */
 export function addRes(c, id, n, min = 0, max = 99) {
   if (n === 0) return 0;
   if (hasCounter(c, id)) return c.addCounter(id, n) | 0;

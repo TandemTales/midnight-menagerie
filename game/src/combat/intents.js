@@ -97,10 +97,16 @@ export function rebuildPlan(engine, enemy, depth = MAX_PLAN) {
   const id = enemy.plan[0];
   const raw = id && enemy.def?.moves ? enemy.def.moves[id] : null;
   enemy.pendingMove = raw ? { id, ...raw } : null;
+  // An override replaces the CURRENT action only, and it is not in def.moves —
+  // it is supplied whole by whoever substituted it (Boggle's Search). It is
+  // applied after the derive so a rebuild cannot quietly undo it, and cleared
+  // by consumePlan once it has resolved.
+  if (enemy.intentOverride) enemy.pendingMove = { ...enemy.intentOverride };
 }
 
 /** Advance the plan by one after a move resolves. */
 export function consumePlan(enemy) {
+  enemy.intentOverride = null;
   enemy.plan.shift();
   enemy.plan.push(null);
   enemy.planLocked = Math.max(0, enemy.planLocked - 1);
@@ -490,6 +496,36 @@ export function deleteIntent(engine, enemy) {
   // the very next rebuild would derive the deleted action straight back in.
   enemy.planLocked = Math.max(enemy.planLocked, enemy.plan.filter(Boolean).length);
   afterQueueEdit(engine, enemy, 'delete');
+  return true;
+}
+
+/**
+ * Replace the CURRENT action with a supplied move, for this turn only.
+ *
+ * Unlike swap/postpone/delete this does not reorder anything: the original
+ * action is spent, exactly as `deleteIntent` spends it, and something else
+ * happens in its place. Boggle's Search is the reason it exists — an Unaware
+ * enemy with a directed Attack aimed only at him stops attacking and looks for
+ * him instead, and the design requires the intent display to change the moment
+ * he hides rather than when the enemy acts.
+ *
+ * `move` is a whole move object ({ id, name, intent, effect }), NOT an id:
+ * Search is not in any enemy's `def.moves` and must not have to be.
+ * Anchored actions refuse, like every other edit.
+ */
+export function overrideIntent(engine, enemy, move) {
+  if (!enemy || !move) return false;
+  if (isAnchored(enemy, 0)) return false;
+  enemy.intentOverride = { ...move };
+  afterQueueEdit(engine, enemy, 'override');
+  return true;
+}
+
+/** Drop a pending override without resolving it (the enemy stopped being Unaware). */
+export function clearIntentOverride(engine, enemy) {
+  if (!enemy || !enemy.intentOverride) return false;
+  enemy.intentOverride = null;
+  afterQueueEdit(engine, enemy, 'override-clear');
   return true;
 }
 

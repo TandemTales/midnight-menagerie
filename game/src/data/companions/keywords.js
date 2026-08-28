@@ -137,6 +137,15 @@ export const COMPANION_KEYWORDS = [
   K('set', 'Set', 'Place this Trick face up outside your deck, in one of 3 Set slots. It resolves automatically and for free when its trigger occurs.', { companion: 'wink' }),
   K('anchored', 'Anchored', 'An Anchored Intent can be Previewed and Read, but never swapped, postponed or deleted.', { companion: 'wink' }),
   K('reorder', 'Reorder', 'Change when an enemy action happens. Reordering never erases the action.', { companion: 'wink' }),
+
+  K('awareness', 'Awareness', 'Every enemy is Aware, Unaware or Suspicious of Boggle, one state each, tracked separately per enemy.', { companion: 'boggle' }),
+  K('unaware', 'Unaware', 'This enemy does not know where Boggle is. A directed Attack aimed only at him becomes [Search] instead. Room-wide Attacks still land, and non-Attack actions do not break it.', { companion: 'boggle' }),
+  K('suspicious', 'Suspicious', 'This enemy is watching for Boggle and cannot be made Unaware. It stops being Suspicious after it takes its next action.', { companion: 'boggle' }),
+  K('search', 'Search', 'What an Unaware enemy does instead of a directed Attack: no Courage damage, the whole Attack is replaced, it gains 2 [Fright], and it becomes [Suspicious].', { companion: 'boggle' }),
+  K('ambush', 'Ambush', 'This bonus applies if the target is [Unaware] when the Trick begins. It stays Unaware until the whole Trick has finished resolving, and normally becomes [Suspicious] afterwards.', { companion: 'boggle' }),
+  K('fright', 'Fright', 'A persistent resource stored on an enemy. Fright does nothing by itself and never expires — it is spent by [Scare] clauses.', { companion: 'boggle' }),
+  K('scare', 'Scare', 'Scare N checks the target for at least N [Fright]. If it has that much, remove N and resolve the Scare effect; if not, the rest of the Trick still happens.', { companion: 'boggle' }),
+  K('lurk', 'Lurk', 'Boggle gains 1 Lurk at the end of his turn if any living enemy is [Unaware]. It starts at 0, caps at 5, and never decays on its own.', { companion: 'boggle' }),
 ];
 
 export const KEYWORD_IDS = COMPANION_KEYWORDS.map(k => k.id);
@@ -145,6 +154,11 @@ export const KEYWORD_IDS = COMPANION_KEYWORDS.map(k => k.id);
 /** A plain visible counter with no behaviour of its own. */
 const counterStatus = (id, name, desc, max, kind = 'neutral') => ({
   id, name, kind, icon: id, desc, decay: 'never', stacks: true, max, resource: true,
+});
+
+/** One of Boggle's Powers, held on Boggle himself and stacking if taken twice. */
+const bogglePower = (id, name, desc) => ({
+  id, name, kind: 'buff', icon: 'unaware', decay: 'never', stacks: true, desc,
 });
 
 export const COMPANION_STATUSES = [
@@ -361,6 +375,43 @@ export const COMPANION_STATUSES = [
     id: 'free-web', name: 'Master of the Web', kind: 'buff', icon: 'web', decay: 'never', stacks: false,
     desc: 'The first time each turn you spend Web to reorder or delete an Intent, the Web is not actually removed.',
   },
+
+  // ── Boggle ────────────────────────────────────────────────────────────────
+  // Awareness is one state per enemy, so `unaware` and `suspicious` are both
+  // stacks:false and are kept mutually exclusive by boggle.js, never by two
+  // separate cards racing each other.
+  {
+    id: 'fright', name: 'Fright', kind: 'debuff', icon: 'fright', decay: 'never', stacks: true,
+    desc: '{n} Fright. Fright does nothing on its own and never wears off — Boggle spends it with Scare clauses.',
+  },
+  {
+    id: 'unaware', name: 'Unaware', kind: 'debuff', icon: 'unaware', decay: 'never', stacks: false,
+    desc: 'This one has lost track of Boggle. A directed Attack aimed only at him becomes Search instead.',
+  },
+  {
+    id: 'suspicious', name: 'Suspicious', kind: 'buff', icon: 'suspicious', decay: 'never', stacks: false,
+    desc: 'It knows something is under there. It cannot be made Unaware, and stops being Suspicious after its next action.',
+  },
+  counterStatus('lurk', 'Lurk', 'Boggle has been still for a while. {n} Lurk.', 7, 'buff'),
+
+  // Boggle's Powers. Registered rather than left to getStatus()'s placeholder,
+  // so the status row reads as words instead of an unnamed chip.
+  bogglePower('boggle/the-house-settles', 'The House Settles', 'Whenever an enemy becomes Unaware, apply {n} Fright to it. At most three times a turn.'),
+  bogglePower('boggle/quiet-as-dust', 'Quiet as Dust', 'The first Ambush Attack each turn leaves its target Aware instead of Suspicious.'),
+  bogglePower('boggle/underbed-kingdom', 'Underbed Kingdom', 'Maximum Lurk is 7 this combat.'),
+  bogglePower('boggle/imagination-does-the-rest', 'Imagination Does the Rest', 'Whenever a Scare triggers, apply {n} Fright to a different enemy.'),
+  bogglePower('boggle/one-eye-open', 'One Eye Open', 'At the end of your turn, gain Guard for each Suspicious enemy.'),
+  bogglePower('boggle/creaks-have-teeth', 'Creaks Have Teeth', 'Whenever an enemy Searches, deal damage to it and give it 1 more Fright.'),
+  bogglePower('boggle/practice-your-scream', 'Practice Your Scream', 'Your first Scare each turn needs and spends {n} less Fright, minimum 1.'),
+  bogglePower('boggle/beneath-every-bed', 'Beneath Every Bed', 'If every living enemy is Unaware at the end of your turn, gain 1 extra Lurk and draw an extra Trick next turn.'),
+  bogglePower('boggle/fear-of-the-dark', 'Fear of the Dark', 'The first Scare against each enemy each turn does not spend its Fright. It still needs the full amount.'),
+  bogglePower('boggle/nobodys-here', 'Nobody\u2019s Here', 'Once a turn, an Aware enemy with 6 or more Fright that aims a directed Attack at Boggle becomes Unaware first.'),
+  bogglePower('boggle/monster-under-every-bed', 'Monster Under Every Bed', 'When you gain your end-of-turn Lurk, apply 2 Fright to all enemies, or 3 if every enemy is Unaware.'),
+  bogglePower('boggle/bedframe-geography', 'Bedframe Geography', 'The first time each turn an enemy becomes Suspicious, make a different Aware enemy Unaware.'),
+  bogglePower('boggle/bigger-in-your-head', 'Bigger in Your Head', 'When a Scare spends Fright, half of it comes back to that enemy at the end of your turn.'),
+  bogglePower('boggle/feed-the-imagination', 'Feed the Imagination', 'Whenever an enemy becomes Suspicious, apply 2 Fright, or 3 if Boggle Ambushed it.'),
+  bogglePower('boggle/you-didnt-see-anything', 'You Didn\u2019t See Anything', 'Hiding Tricks may target Suspicious enemies. The first each turn costs 2 Lurk to succeed.'),
+  bogglePower('boggle/good-night-sleep-tight', 'Good Night, Sleep Tight', 'At the end of your turn, if every living enemy has 8 or more Fright, make every Aware enemy Unaware and gain 1 Lurk.'),
 ];
 
 export const STATUS_IDS = COMPANION_STATUSES.map(s => s.id);

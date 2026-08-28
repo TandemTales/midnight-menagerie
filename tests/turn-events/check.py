@@ -51,7 +51,12 @@ SKIP_DIRS = {os.path.join(SRC, "combat")}
 
 LISTEN = re.compile(r"""\.on\(\s*['"]turn:(start|end)['"]""")
 # A guard counts if it inspects `side` in the handler body that follows.
-GUARD = re.compile(r"\bside\s*!==?\s*['\"]player['\"]|\bside\s*===?\s*['\"]player['\"]")
+# Either literal counts. The rule is that a listener must SAY which side it
+# means, and an `ev.side !== 'enemy'` guard says it exactly as clearly as the
+# player form -- Boggle's Suspicious timer is an enemy-turn listener on
+# purpose, and matching only the player literal called it unguarded when it
+# is not.
+GUARD = re.compile(r"\bside\s*!==?\s*['\"](player|enemy)['\"]|\bside\s*===?\s*['\"](player|enemy)['\"]")
 HELPER = re.compile(r"\bonPlayerTurn\s*\(")
 
 # Lines around the listener searched for a side check. Both directions, because

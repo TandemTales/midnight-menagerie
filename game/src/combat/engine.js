@@ -67,6 +67,7 @@ import {
   queueSnapshot, consumePlan, rebuildPlan, moveAt, isAnchored,
   previewIntent, previewDepthOf, previewedFamilies,
   swapIntents, postponeIntent, deleteIntent, forkFuture, setIntentControl, MAX_PLAN,
+  overrideIntent, clearIntentOverride,
 } from './intents.js';
 import { previewCard, previewCardAsync } from './preview.js';
 import { ChoiceBroker } from './choice.js';
@@ -814,6 +815,13 @@ export class CombatEngine {
   deleteIntent(enemy) { return deleteIntent(this, enemy); }
   /** Cancel the current action outright. Alias of deleteIntent, named for cards. */
   cancelIntent(enemy) { return deleteIntent(this, enemy); }
+  /**
+   * Boggle: swap this enemy's current action for a supplied one (Search).
+   * The original action is spent, not postponed. `move` is a whole move object.
+   */
+  overrideIntent(enemy, move) { return overrideIntent(this, enemy, move); }
+  /** Drop a pending override without resolving it. */
+  clearIntentOverride(enemy) { return clearIntentOverride(this, enemy); }
   /** Wink: the player picks which of the two Previewed futures comes next. */
   forkFuture(enemy) { return forkFuture(this, enemy); }
   /** Wink: reveal and lock an enemy's whole plan — no more re-derivation. */
@@ -2027,6 +2035,9 @@ export class CombatEngine {
       forkFuture: (en) => e.forkFuture(en),
       controlEnemyChoice: (en, on) => e.controlEnemyChoice(en, on !== false),
       postponeIntent: (en) => e.postponeIntent(en),
+      /** Replace what this enemy is about to do with a supplied move (Boggle's Search). */
+      overrideIntent: (en, move) => e.overrideIntent(en, move),
+      clearIntentOverride: (en) => e.clearIntentOverride(en),
       deleteIntent: (en) => e.deleteIntent(en),
       /** Cancel what this enemy is about to do; the next planned action steps up. */
       cancelIntent: (en) => e.cancelIntent(en),

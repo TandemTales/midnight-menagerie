@@ -1,0 +1,218 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Boggle — Awareness, Search, Ambush, Fright, Scare, Lurk</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+  li { margin: 2px 0; }
+</style>
+<h1>Boggle</h1>
+<div id="out"></div>
+<script type="module">
+import { RNG } from '../../game/src/core/rng.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import { makeDummySetup } from '../../game/src/combat/dummy.js';
+import { installTrackers } from '../../game/src/data/companions/_util.js';
+import * as CARDS from '../../game/src/data/cards.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+function check(ok, what, detail = '') {
+  (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+}
+function say(html, cls) { const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; out.appendChild(d); }
+
+/**
+ * A real engine with Boggle's real deck and real enemies. No mocks: CONTRACTS
+ * rule 9 and trap 5 — a harness that implements Awareness itself would prove
+ * nothing about whether Awareness works.
+ */
+async function boggle(opts = {}) {
+  const setup = makeDummySetup(new RNG(opts.seed || 4242), {
+    companion: 'boggle',
+    deck: CARDS.startingDeckFor('boggle'),
+    maxHp: 68,
+  });
+  const e = new CombatEngine(setup);
+  await e.startCombat();
+  installTrackers(e, 'boggle');
+  return e;
+}
+
+/** Put a specific card in hand and play it at `target`. */
+async function play(e, id, target) {
+  const def = CARDS.cardById(id);
+  if (!def) throw new Error('no such card ' + id);
+  e.addCard(def, 'hand', {});
+  const card = e.piles.hand[e.piles.hand.length - 1];
+  e.player.energy = 9;
+  return e.playCard(card.uid, target ? target.id : undefined);
+}
+
+const stacks = (e, actor, id) => e.countStatus ? e.countStatus(actor, id) : (actor.statuses.get(id) || 0);
+
+try {
+  // ── 1. hiding ────────────────────────────────────────────────────────────
+  {
+    const e = await boggle();
+    const t = e.livingEnemies()[0];
+    check(stacks(e, t, 'unaware') === 0, 'an enemy starts Aware');
+    await play(e, 'boggle/under-the-bed', t);
+    check(stacks(e, t, 'unaware') === 1, 'Under the Bed makes it Unaware',
+      `unaware=${stacks(e, t, 'unaware')}`);
+  }
+
+  // ── 2. Search replaces a directed Attack ─────────────────────────────────
+  {
+    const e = await boggle();
+    const t = e.livingEnemies().find(x => x.pendingMove && String(x.pendingMove.intent).startsWith('attack'));
+    if (!t) { check(false, 'a test enemy is aiming an Attack at Boggle (setup)'); }
+    else {
+      const before = t.pendingMove.id;
+      await play(e, 'boggle/under-the-bed', t);
+      check(t.pendingMove && t.pendingMove.id === 'boggle-search',
+        'an Unaware enemy aiming at Boggle switches its Intent to Search',
+        `${before} -> ${t.pendingMove && t.pendingMove.id}`);
+
+      const hpBefore = e.player.hp;
+      await e.endTurn();
+      check(e.player.hp === hpBefore, 'a Search costs Boggle no Courage',
+        `${hpBefore} -> ${e.player.hp}`);
+      check(stacks(e, t, 'fright') >= 2, 'a Search gives the searcher 2 Fright',
+        `fright=${stacks(e, t, 'fright')}`);
+      check(stacks(e, t, 'unaware') === 0, 'a Search ends Unaware');
+      check(stacks(e, t, 'suspicious') === 1, 'a Search leaves it Suspicious',
+        `suspicious=${stacks(e, t, 'suspicious')}`);
+    }
+  }
+
+  // ── 3. Suspicious refuses to be hidden from, then lapses ─────────────────
+  {
+    const e = await boggle();
+    const t = e.livingEnemies()[0];
+    e.applyStatus(t, 'suspicious', 1);
+    await play(e, 'boggle/hide-under-something', t);
+    check(stacks(e, t, 'unaware') === 0, 'a Suspicious enemy cannot be made Unaware');
+    await e.endTurn();
+    check(stacks(e, t, 'suspicious') === 0, 'Suspicious lapses once it has taken an action',
+      `suspicious=${stacks(e, t, 'suspicious')}`);
+  }
+
+  // ── 4. Ambush, and the target staying Unaware for the WHOLE Trick ────────
+  {
+    const e = await boggle();
+    const t = e.livingEnemies()[0];
+    e.applyStatus(t, 'unaware', 1);
+    const hp = t.hp;
+    await play(e, 'boggle/underbed-uppercut', t);
+    const dealt = hp - t.hp;
+    check(dealt >= 17, 'Underbed Uppercut gets its Ambush bonus against an Unaware target',
+      `dealt ${dealt} (12 + 5 ambush)`);
+    check(stacks(e, t, 'suspicious') === 1, 'and the target is Suspicious once the Trick has finished');
+    check(stacks(e, t, 'unaware') === 0, 'and no longer Unaware');
+  }
+  {
+    // multi-hit: every hit must see the target still Unaware
+    const e = await boggle();
+    const t = e.livingEnemies()[0];
+    e.applyStatus(t, 'unaware', 1);
+    e.applyStatus(t, 'fright', 9);
+    const hp = t.hp;
+    await play(e, 'boggle/scritch-scratch-scritch', t);
+    const dealt = hp - t.hp;
+    check(dealt === 21, 'Scritch Scratch Scritch upgrades all three hits at 9 Fright',
+      `dealt ${dealt}, expected 21 (3x7)`);
+    check(stacks(e, t, 'fright') === 9, 'and does not spend the Fright',
+      `fright=${stacks(e, t, 'fright')}`);
+  }
+
+  // ── 5. Scare spends Fright, and fails softly ─────────────────────────────
+  {
+    const e = await boggle();
+    const t = e.livingEnemies()[0];
+    e.applyStatus(t, 'fright', 3);
+    const guard0 = e.player.block;
+    await play(e, 'boggle/ankle-grab', t);
+    check(e.player.block > guard0, 'Scare 3 fires with exactly 3 Fright and gives Guard',
+      `guard ${guard0} -> ${e.player.block}`);
+    check(stacks(e, t, 'fright') === 0, 'and spends it', `fright=${stacks(e, t, 'fright')}`);
+  }
+  {
+    const e = await boggle();
+    const t = e.livingEnemies()[0];
+    e.applyStatus(t, 'fright', 2);
+    const hp = t.hp, guard0 = e.player.block;
+    await play(e, 'boggle/ankle-grab', t);
+    check(hp - t.hp === 7, 'below the threshold the Attack half still resolves',
+      `dealt ${hp - t.hp}`);
+    check(e.player.block === guard0, 'but the Scare half does not');
+    check(stacks(e, t, 'fright') === 2, 'and no Fright is spent');
+  }
+
+  // ── 6. Lurk ──────────────────────────────────────────────────────────────
+  {
+    const e = await boggle();
+    const t = e.livingEnemies()[0];
+    check(e.counter('lurk') === 0, 'Lurk starts at 0');
+    await e.endTurn();
+    check(e.counter('lurk') === 0, 'no Lurk with nobody Unaware', `lurk=${e.counter('lurk')}`);
+    e.applyStatus(t, 'unaware', 1);
+    await e.endTurn();
+    check(e.counter('lurk') === 1, 'ending a turn with someone Unaware gains 1 Lurk',
+      `lurk=${e.counter('lurk')}`);
+  }
+  {
+    const e = await boggle();
+    e.setCounter('lurk', 5, 'test');
+    const t = e.livingEnemies()[0];
+    e.applyStatus(t, 'unaware', 1);
+    await e.endTurn();
+    check(e.counter('lurk') === 5, 'Lurk caps at 5', `lurk=${e.counter('lurk')}`);
+  }
+
+  {
+    // the HUD reads the counter's declared max, so the cap must be REAL, not
+    // just clamped in code — it showed "LURK 0 / 7" to a player capped at 5.
+    const e = await boggle();
+    check(e.counterMax('lurk') === 5, 'the Lurk track is declared at its true cap of 5',
+      `max=${e.counterMax('lurk')}`);
+    e.setCounter('lurk', 4, 'test');
+    await play(e, 'boggle/underbed-kingdom', null);
+    check(e.counterMax('lurk') === 7, 'Underbed Kingdom raises the declared cap to 7',
+      `max=${e.counterMax('lurk')}`);
+    check(e.counter('lurk') >= 5, 'and the Lurk already banked survives the change',
+      `lurk=${e.counter('lurk')} (4 + 1 from the Power)`);
+  }
+
+  // ── 7. "You cannot play Attacks this turn" really stops them ─────────────
+  {
+    const e = await boggle();
+    await play(e, 'boggle/wait-for-it', null);
+    const atk = e.piles.hand.find(k => String((k.type || (k.def && k.def.type)) || '').toLowerCase() === 'attack');
+    if (!atk) check(false, 'an Attack is in hand to be forbidden (setup)');
+    else {
+      const can = e.canPlay(atk.uid, e.livingEnemies()[0].id);
+      check(!can.ok, 'after Wait For It an Attack in hand is unplayable', `reason: ${can.reason}`);
+    }
+  }
+
+  // ── 8. Fright never decays on its own ────────────────────────────────────
+  {
+    const e = await boggle();
+    const t = e.livingEnemies()[0];
+    e.applyStatus(t, 'fright', 4);
+    await e.endTurn();
+    check(stacks(e, t, 'fright') >= 4, 'Fright survives a full round',
+      `fright=${stacks(e, t, 'fright')}`);
+  }
+} catch (err) {
+  fails.push('THREW: ' + (err && err.stack || err));
+}
+
+say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`, fails.length ? 'fail' : 'pass');
+say('<ul class="pass">' + passes.map(p => `<li>PASS ${p}</li>`).join('') + '</ul>');
+if (fails.length) say('<ul class="fail">' + fails.map(f => `<li>FAIL ${f}</li>`).join('') + '</ul>');
+
+window.__RESULT = { passed: passes.length, failed: fails.length, fails, passes };
+window.__DONE = true;
+</script>
