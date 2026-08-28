@@ -127,8 +127,17 @@ def match_brace(s, i, open_ch="{", close_ch="}"):
 
 
 def top_level_keys(obj_src):
-    """Top-level `key:` names of an object literal `{...}` (source with comments
-    already stripped).  Ignores nested objects, arrays and function bodies."""
+    """Top-level key names of an object literal `{...}` (source with comments
+    already stripped).  Ignores nested objects, arrays and function bodies.
+
+    Both `key: value` and ES6 shorthand `key,` count. Shorthand used to be
+    invisible, which made the gate believe the `damage` event never carries
+    `kind` -- it is emitted as a bare `kind,` -- and report every honest reader
+    of it as reading a field that does not exist.
+
+    Reading shorthand means the scanner has to skip past VALUES as well, or
+    `{ defender: enemy, amount: d }` reports `enemy` and `d` as keys too.
+    """
     keys = []
     depth = 0
     i = 1
@@ -137,18 +146,45 @@ def top_level_keys(obj_src):
         c = obj_src[i]
         if c in "{[(":
             depth += 1
-        elif c in "}])":
+            i += 1
+            continue
+        if c in "}])":
             depth -= 1
-        elif depth == 0:
-            m = re.match(r"(?:\.\.\.)?(" + IDENT + r"|'[^']*'|\"[^\"]*\")\s*:", obj_src[i:])
-            if m and (i == 1 or obj_src[i - 1] in " \t\n,{"):
-                keys.append(m.group(1).strip("'\""))
-                i += m.end() - 1
-            elif obj_src[i:i + 3] == "...":
-                keys.append("...")
+            i += 1
+            continue
+        if depth != 0 or (i != 1 and obj_src[i - 1] not in " \t\n,{"):
+            i += 1
+            continue
+        m = re.match(r"(?:\.\.\.)?(" + IDENT + r"|'[^']*'|\"[^\"]*\")\s*:", obj_src[i:])
+        if m:
+            keys.append(m.group(1).strip("'\""))
+            # step over the value, or its identifier is read as a key as well
+            j = i + m.end()
+            d2 = 0
+            while j < n:
+                ch = obj_src[j]
+                if ch in "{[(":
+                    d2 += 1
+                elif ch in "}])":
+                    if d2 == 0:
+                        break
+                    d2 -= 1
+                elif ch == "," and d2 == 0:
+                    break
+                j += 1
+            i = j
+            continue
+        sh = re.match(r"(" + IDENT + r")\s*(?=[,}])", obj_src[i:])
+        if sh:
+            keys.append(sh.group(1))
+            i += sh.end()
+            continue
+        if obj_src[i:i + 3] == "...":
+            keys.append("...")
+            i += 3
+            continue
         i += 1
     return keys
-
 
 def call_args(s, open_paren):
     """Split the argument list of a call whose '(' is at `open_paren`.

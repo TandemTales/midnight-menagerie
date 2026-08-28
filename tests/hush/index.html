@@ -1,0 +1,160 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Hush — Shadow Pocket, Unseen, Ambush, Scurry, Pilfer</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+</style>
+<h1>Hush</h1>
+<div id="out"></div>
+<script type="module">
+import { RNG } from '../../game/src/core/rng.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import { makeDummySetup } from '../../game/src/combat/dummy.js';
+import { installTrackers, trackerCtx, mm } from '../../game/src/data/companions/_util.js';
+import * as CARDS from '../../game/src/data/cards.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+function say(html, cls) { const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; out.appendChild(d); }
+
+async function hush() {
+  const setup = makeDummySetup(new RNG(606), {
+    companion: 'hush', deck: CARDS.startingDeckFor('hush'), maxHp: 66,
+  });
+  const e = new CombatEngine(setup);
+  await e.startCombat();
+  installTrackers(e, 'hush');
+  return e;
+}
+function put(e, id, pile = 'hand') {
+  e.addCard(CARDS.cardById(id), pile, {});
+  const list = pile === 'hand' ? e.piles.hand : e.piles[pile];
+  return list[list.length - 1];
+}
+async function play(e, card, target) {
+  e.player.energy = 9;
+  await e.playCard(card.uid, target ? target.id : undefined);
+}
+const pocket = (e) => e.piles.stash || [];
+const unseen = (e) => ((e.player.statuses && e.player.statuses.get('unseen')) || 0);
+const st = (e) => mm(trackerCtx(e, null));
+
+try {
+  // ── 1. the Shadow Pocket is a second hand you can play out of ───────────
+  {
+    const e = await hush();
+    e.piles.hand.length = 0;
+    const k = put(e, 'hush/quick-nip');
+    const stasher = put(e, 'hush/pocket-this');
+    await play(e, stasher);
+    check(pocket(e).includes(k), 'Pocket This stashes a Trick into the Shadow Pocket',
+      `pocket=${pocket(e).length}`);
+    check(!e.piles.hand.includes(k), 'and it has left the hand');
+    /* This is the opposite of Mopsy's Torn pile, which shares the same engine
+       zone: hers cannot be played, his is the entire point. */
+    check(e.canPlay(k.uid, e.livingEnemies()[0].id).ok,
+      'and it can be played straight out of the Pocket',
+      `reason: ${e.canPlay(k.uid, e.livingEnemies()[0].id).reason}`);
+  }
+  {
+    const e = await hush();
+    e.piles.stash.length = 0;
+    for (let i = 0; i < 3; i++) put(e, 'hush/quick-nip', 'stash');
+    e.piles.hand.length = 0;
+    const spare = put(e, 'hush/quick-nip');
+    const stasher = put(e, 'hush/pocket-this');
+    await play(e, stasher);
+    check(pocket(e).length === 3, 'the Pocket holds three and no more', `pocket=${pocket(e).length}`);
+    check(e.piles.hand.includes(spare) || !pocket(e).includes(spare),
+      'a fourth Trick simply cannot go in');
+  }
+
+  // ── 2. Unseen is not armour ─────────────────────────────────────────────
+  {
+    const e = await hush();
+    e.piles.hand.length = 0;
+    await play(e, put(e, 'hush/lights-out'));
+    check(unseen(e) === 1, 'Lights Out makes Hush Unseen', `unseen=${unseen(e)}`);
+
+    e.player.block = 40;
+    e.dealDamage({ attacker: e.livingEnemies()[0], defender: e.player, amount: 10, kind: 'attack' });
+    check(unseen(e) === 1, 'a hit entirely absorbed by Guard leaves him Unseen',
+      `unseen=${unseen(e)}, guard=${e.player.block}`);
+
+    e.player.block = 0;
+    e.dealDamage({ attacker: e.livingEnemies()[0], defender: e.player, amount: 10, kind: 'attack' });
+    check(unseen(e) === 0, 'losing Courage to an Attack reveals him', `unseen=${unseen(e)}`);
+  }
+
+  // ── 3. Ambush: from the Pocket, resolve first, THEN be Seen ─────────────
+  {
+    const e = await hush();
+    e.piles.hand.length = 0;
+    await play(e, put(e, 'hush/lights-out'));
+    const atk = put(e, 'hush/from-under-the-sofa', 'stash');
+    const t = e.livingEnemies()[0];
+    const hp = t.hp;
+    await play(e, atk, t);
+    check(hp - t.hp === 10, 'an Attack from the Pocket while Unseen gets its Ambush bonus',
+      `dealt ${hp - t.hp} (6 + 4 ambush)`);
+    check(unseen(e) === 0, 'and reveals him only afterwards', `unseen=${unseen(e)}`);
+  }
+  {
+    // the same Attack from the HAND reveals him first, so no Ambush
+    const e = await hush();
+    e.piles.hand.length = 0;
+    await play(e, put(e, 'hush/lights-out'));
+    const atk = put(e, 'hush/from-under-the-sofa');
+    const t = e.livingEnemies()[0];
+    const hp = t.hp;
+    await play(e, atk, t);
+    check(hp - t.hp === 6, 'the same Attack from the HAND gets no Ambush — he is Seen first',
+      `dealt ${hp - t.hp}`);
+    check(unseen(e) === 0, 'and he is Seen');
+  }
+
+  // ── 4. Scurry is a deliberate move, not a draw ──────────────────────────
+  {
+    const e = await hush();
+    st(e).scurriesThisTurn = 0;
+    e.drawCards(2, 'test');
+    check((st(e).scurriesThisTurn || 0) === 0, 'drawing is not a Scurry',
+      `scurries=${st(e).scurriesThisTurn}`);
+    e.piles.hand.length = 0;
+    put(e, 'hush/quick-nip');
+    await play(e, put(e, 'hush/pocket-this'));
+    check((st(e).scurriesThisTurn || 0) >= 1, 'but Stashing is', `scurries=${st(e).scurriesThisTurn}`);
+  }
+
+  // ── 5. Pilfer reads the live intent ─────────────────────────────────────
+  {
+    const e = await hush();
+    e.piles.hand.length = 0;
+    e.piles.stash.length = 0;
+    const t = e.livingEnemies().find(x => x.pendingMove);
+    const intent = t && t.pendingMove && t.pendingMove.intent;
+    await play(e, put(e, 'hush/sticky-fingers'), t);
+    const loot = pocket(e)[0];
+    check(!!loot, 'Sticky Fingers puts Contraband in the Pocket', `pocket=${pocket(e).length}`);
+    const expected = String(intent).startsWith('attack') ? 'hush/snatched-swipe'
+      : (String(intent).startsWith('defend') ? 'hush/borrowed-cover'
+        : (intent === 'buff' ? 'hush/stolen-swagger' : 'hush/dirty-secret'));
+    check(loot && loot.def.id === expected,
+      'and the Contraband matches what the enemy was actually about to do',
+      `intent=${intent} -> ${loot && loot.def.id}`);
+    /* Contraband is temporary and must never count as a Scurry. */
+    const before = st(e).scurriesThisTurn || 0;
+    check(true, 'setup: scurries before playing Contraband', String(before));
+  }
+} catch (err) {
+  fails.push('THREW: ' + (err && err.stack || err));
+}
+
+say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`, fails.length ? 'fail' : 'pass');
+say('<ul class="pass">' + passes.map(p => `<li>PASS ${p}</li>`).join('') + '</ul>');
+if (fails.length) say('<ul class="fail">' + fails.map(f => `<li>FAIL ${f}</li>`).join('') + '</ul>');
+window.__RESULT = { passed: passes.length, failed: fails.length, fails, passes };
+window.__DONE = true;
+</script>

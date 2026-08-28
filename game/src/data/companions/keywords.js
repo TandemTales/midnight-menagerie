@@ -179,6 +179,13 @@ export const COMPANION_KEYWORDS = [
   K('queasy', 'Queasy', 'Eating past maximum [Appetite]. One per Feed however far past it goes, stacking to 2, and it costs that much Nerve next turn.', { companion: 'crumbula' }),
   K('indulge', 'Indulge', 'Voluntarily lose Courage. It ignores Guard, it counts as Courage lost, it is not enemy damage, and it can never take him below 1.', { companion: 'crumbula' }),
   K('leftover', 'Leftover', 'A temporary 0-Nerve Trick that [Feed]s 1 with no enemy needed. It Retains, then [Vanish]es.', { companion: 'crumbula' }),
+
+  K('shadow-pocket', 'Shadow Pocket', 'Hush’s second zone. Three Tricks, they survive the end of the turn, they do not count as hand size, and he can play them straight out of it.', { companion: 'hush' }),
+  K('stash', 'Stash', 'Move a Trick from your hand into the [Shadow Pocket]. Stashing is not playing it.', { companion: 'hush' }),
+  K('scurry', 'Scurry', 'A deliberate move of one of your Tricks between hand, draw pile, discard pile and [Shadow Pocket]. Drawing is not a Scurry, and neither is ordinary discarding.', { companion: 'hush' }),
+  K('unseen', 'Unseen', 'It is not armour. It breaks when Hush loses Courage to an Attack — Guard absorbing the whole hit leaves him hidden — or when he plays an Attack.', { companion: 'hush' }),
+  K('pilfer', 'Pilfer', 'Read an enemy’s current Intent and put the matching temporary [Contraband] into your [Shadow Pocket].', { companion: 'hush' }),
+  K('contraband', 'Contraband', 'A temporary Trick stolen from an enemy’s Intent. It ceases to exist once played, and it never [Scurry]s.', { companion: 'hush' }),
 ];
 
 export const KEYWORD_IDS = COMPANION_KEYWORDS.map(k => k.id);
@@ -590,6 +597,25 @@ export const COMPANION_STATUSES = [
   powerStatus('crumbula/feast-and-famine', 'Feast and Famine', 'Swinging between Hungry and Sated pays Nerve and a card.', 'appetite'),
   powerStatus('crumbula/everybody-gets-a-cape', 'Everybody Gets a Cape', 'Becoming Sated Guards the party; becoming Hungry draws for them.', 'appetite'),
   powerStatus('crumbula/the-counts-hospitality', 'The Count’s Hospitality', 'Your first Feed each round also heals the weakest Kid, and costs extra Appetite.', 'appetite'),
+
+  // ── Hush ──────────────────────────────────────────────────────────────────
+  {
+    id: 'unseen', name: 'Unseen', kind: 'buff', icon: 'hidden', decay: 'never', stacks: false,
+    desc: 'Nothing in the room knows where Hush is. Lost when he takes Courage damage or plays an Attack.',
+  },
+  powerStatus('hush/hidey-hole', 'Hidey Hole', 'A bigger Shadow Pocket, and the first Stash each turn draws.', 'hidden'),
+  powerStatus('hush/light-sleeper', 'Light Sleeper', 'Starting a turn Unseen gains Nerve.', 'hidden'),
+  powerStatus('hush/kleptomaniac', 'Kleptomaniac', 'The first Pilfer each turn is doubled.', 'scurry'),
+  powerStatus('hush/hallway-phantom', 'Hallway Phantom', 'The first Scurry each turn gains Guard.', 'scurry'),
+  powerStatus('hush/no-fixed-address', 'No Fixed Address', 'A full Shadow Pocket at end of turn makes him Unseen.', 'hidden'),
+  powerStatus('hush/inside-job', 'Inside Job', 'The first Contraband each turn pockets your top discard.', 'scurry'),
+  powerStatus('hush/soft-footfalls', 'Soft Footfalls', 'The first Ambush Attack from the Pocket each turn costs less.', 'hidden'),
+  powerStatus('hush/bigger-on-the-inside', 'Bigger on the Inside', 'The Shadow Pocket holds five.', 'hidden'),
+  powerStatus('hush/professional-nuisance', 'Professional Nuisance', 'Being revealed by an Ambush pockets your top draw.', 'scurry'),
+  powerStatus('hush/the-house-has-corners', 'The House Has Corners', 'Starting a turn Seen with a stocked Pocket makes him Unseen.', 'hidden'),
+  powerStatus('hush/sticky-little-legend', 'Sticky Little Legend', 'Contraband comes back to the Pocket, costing more each time.', 'scurry'),
+  powerStatus('hush/now-you-see-me', 'Now You See Me', 'The first Ambush Attack each turn does not reveal him.', 'hidden'),
+  powerStatus('hush/now-you-dont', 'Now You Don’t', 'Emptying the Shadow Pocket hides him, draws and pays Nerve.', 'hidden'),
 ];
 
 export const STATUS_IDS = COMPANION_STATUSES.map(s => s.id);

@@ -309,9 +309,70 @@ boggle 30 · mopsy 27 · wisp 25 · wink 5 · six gates · 57 fps, no console er
 
 ---
 
+## 5. Hush, the Shadow Ferret  ✅
+
+`secret-passages`. 5 basics + 4 Contraband + Dust Bunny + 20 commons + 35
+uncommons + 25 rares + 5 co-op. Shadow Pocket, Stash, Scurry, Unseen, Ambush,
+Pilfer.
+
+### The Pocket is what `stash` was built for
+
+The engine's `canPlay` already accepted `Pile.STASH` — the zone exists precisely
+so a Companion can have a second, playable hand. Mopsy's Torn pile borrows the
+same pile for the **opposite** job, which is why hers are flagged unplayable and
+his are not, and why the pile button now takes its name from whoever holds it:
+**Torn** for Mopsy, **Pocket** for Hush, **Stash** for anyone else.
+
+### Unseen is not armour
+
+It breaks on Courage actually lost — a hit entirely absorbed by Guard leaves him
+hidden — and on playing an Attack. **The ordering is the whole Companion**: from
+the hand he is Seen *before* the Attack resolves, so no Ambush; from the Pocket
+the Attack resolves *first*, Ambush and all, and he is Seen after. Both halves
+live in the `eff()` wrapper so no individual card can implement only one, and
+the suite asserts the same Attack dealing 10 from the Pocket and 6 from the hand.
+
+### One new engine field: `card._playedFrom`
+
+By the time an effect runs its card is already in LIMBO, so "can only be played
+from the Shadow Pocket" and every Ambush clause had no way to ask where it came
+from. The engine keeps the pile it pulled the card out of, exposed as
+`ctx.playedFrom`.
+
+### The seams gate could not see ES6 shorthand
+
+It reported Hush reading `ev.kind` off the `damage` event as a field the event
+"never carries". The event does carry it — as a bare `kind,` — and
+`top_level_keys()` only matched `key:` with a colon, so every shorthand property
+in every event payload was invisible.
+
+Teaching it shorthand immediately produced 25 **false** positives, because the
+key branch never skipped past its VALUE either: `{ defender: enemy, amount: d }`
+read `enemy` and `d` as keys as well. The scanner now steps over values, reads
+both forms, and was negative-tested — a deliberately bogus field still fires,
+and the gate's own "carries:" list now includes `kind`.
+
+### A stale test of my own
+
+`tests/backpack` named `hush` as its example of an unbuilt Companion, and broke
+the moment Hush was built — the same way it had named `mopsy` before. It derives
+the built and unbuilt sets from the registry now, so it cannot go stale again.
+
+### Verification
+
+`tests/hush/run.py` — **17 checks**: the Pocket takes three and no more, a Trick
+in it can be played (unlike Mopsy's Torn), Guard-absorbed damage does not reveal
+him, Courage loss does, the Ambush ordering both ways, drawing is not a Scurry
+but Stashing is, and Pilfer produces the Contraband matching the enemy's live
+intent.
+
+cards 925/0/0 · combat 677 · run 50 · coop 591 · backpack 80 · chrome 27 ·
+boggle 30 · mopsy 28 · wisp 25 · crumbula 25 · wink 5 · six gates · 61 fps.
+
+---
+
 ## Still to come
 
-**Designed, not built (8):** Wisp, Crumbula, Truffle, Hush, Drizzle, Pudding,
-Mossbit, Brambleboo.
+**Designed, not built (5):** Truffle, Drizzle, Pudding, Mossbit, Brambleboo.
 
 **Not designed (1): Crinkle.** Blocked on a designer pass — he has no chapter.

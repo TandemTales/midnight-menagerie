@@ -1970,6 +1970,8 @@ export class CombatEngine {
 
       // energy
       gainEnergy: (n) => e.gainEnergy(n, card ? card.id : 'effect'),
+      /** Which pile this Trick was played out of: 'hand' or 'stash'. */
+      playedFrom: card ? (card._playedFrom || Pile.HAND) : null,
       loseEnergy: (n) => e.loseEnergy(n, card ? card.id : 'effect'),
 
       // ── player choice (async) ───────────────────────────────────────────
@@ -2533,8 +2535,12 @@ export class CombatEngine {
       const spend = cost === -1 ? owner.energy : cost;
       const energyBefore = owner.energy;
 
-      // 1. leave the hand immediately so effects that look at the hand are right
-      this.current.piles._pull(card);
+      // 1. leave the hand immediately so effects that look at the hand are right.
+      //    `_playedFrom` is kept because by the time an effect runs the card is
+      //    already in LIMBO, so "can only be played from the Shadow Pocket" and
+      //    every Ambush clause have no other way to ask. `canPlay` accepts HAND
+      //    and STASH, so this is HAND or STASH in practice.
+      card._playedFrom = this.current.piles._pull(card) || Pile.HAND;
       this.current.piles._push(card, Pile.LIMBO, 'bottom');
 
       // 2. pay

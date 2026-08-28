@@ -333,13 +333,15 @@ async function openFight(kid, backpack, { hpOffset = 0, endTurn = false, seed = 
     check(pip.rescueTargetFor('n1', authored) === target,
       'the substitution is deterministic for a given seed and node');
 
-    /* These two used 'hush' and 'mopsy', who are on the roster in schema.js but
-       have no card pool, and missingCompanions() now excludes anyone unbuilt -
-       freeing one wrote it to the lifetime save and handed the player an empty
-       deck. The rules under test are unchanged; the example just has to be a
-       Companion you can actually play. 'wink' is the only built non-starter, so
-       it is the whole of the pool until the next Companion lands. */
-    const LAST_IN_HOUSE = 'wink';
+    /* These used to name slugs -- 'hush', 'mopsy', 'wink' -- and every one of
+       them went stale the moment that Companion was built. They are DERIVED
+       now: the rules under test are about built vs unbuilt, not about any
+       particular animal, and a test that hard-codes the roster has to be
+       edited every time the roster grows. */
+    const BUILT = COMPANIONS.map(c => c.slug).filter(s => !!companionDef(s));
+    const UNBUILT = COMPANIONS.map(c => c.slug).filter(s => !companionDef(s));
+    const LAST_IN_HOUSE = BUILT.find(s => !STARTER_SLUGS.has(s));
+    check(!!LAST_IN_HOUSE, 'there is a built non-starter to Rescue', LAST_IN_HOUSE || '(none)');
     const already = makeRun('marmalade', defaultLoadout('maya'));
     already.rescued = COMPANIONS.map(c => c.slug).filter(s => s !== LAST_IN_HOUSE);
     check(already.rescueTargetFor('n1', 'marmalade') === LAST_IN_HOUSE,
@@ -352,9 +354,9 @@ async function openFight(kid, backpack, { hpOffset = 0, endTurn = false, seed = 
 
     const unbuilt = makeRun('marmalade', defaultLoadout('maya'));
     unbuilt.rescued = [];
-    check(!unbuilt.missingCompanions().includes('hush'),
-      'a Companion with no card pool is never offered as a Rescue',
-      'hush is on the roster and unbuilt');
+    check(UNBUILT.every(s => !unbuilt.missingCompanions().includes(s)),
+      'no Companion without a card pool is ever offered as a Rescue',
+      UNBUILT.length ? `unbuilt: ${UNBUILT.join(', ')}` : 'every Companion on the roster is built');
     check(unbuilt.missingCompanions().every(s => !!companionDef(s)),
       'every Companion a Rescue can free has a registered deck',
       unbuilt.missingCompanions().join(', ') || '(none)');

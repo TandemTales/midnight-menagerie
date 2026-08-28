@@ -695,8 +695,7 @@ export class CombatScene extends Scene {
             <svg viewBox="0 0 34 44" aria-hidden="true"><rect x="1" y="1" width="24" height="34" rx="3"/><rect x="6" y="5" width="24" height="34" rx="3"/><rect x="9" y="9" width="24" height="34" rx="3" class="top"/></svg>
             <b>0</b><span class="cb-pile__lbl">Discard</span>
           </button>
-          <button class="cb-pile cb-pile--torn" id="torn-pile" type="button" hidden
-                  data-tip="Torn pile|Tricks Mopsy has torn out of her deck.|They keep their Patches, they have not Vanished, and they come back after the Scuffle.">
+          <button class="cb-pile cb-pile--torn" id="torn-pile" type="button" hidden>
             <svg viewBox="0 0 34 44" aria-hidden="true"><rect x="1" y="1" width="24" height="34" rx="3"/><rect x="9" y="9" width="24" height="34" rx="3" class="top"/></svg>
             <b>0</b><span class="cb-pile__lbl">Torn</span>
           </button>
@@ -2554,6 +2553,13 @@ export class CombatScene extends Scene {
     const torn = pl?.stash?.length ?? 0;
     this.$tornPile.hidden = torn === 0;
     this.$tornPile.querySelector('b').textContent = String(torn);
+    /* The same engine pile means two different things to two Companions, so it
+       is named by whoever is holding it: Mopsy TEARS Tricks out of her deck and
+       cannot play them, Hush STASHES them and plays them from there. Anyone
+       else who ever stashes a card gets the neutral word. */
+    const stash = STASH_PILE[this.me?.companion] || STASH_PILE.default;
+    this.$tornPile.querySelector('.cb-pile__lbl').textContent = stash.label;
+    this.$tornPile.dataset.tip = stash.tip;
   }
 
   _syncNerve(cur, max) {
@@ -2914,8 +2920,8 @@ export class CombatScene extends Scene {
     try {
       await openPile({
         mode: which === 'torn' ? 'deck' : which,
-        title: which === 'torn' ? 'Torn' : undefined,
-        subtitle: which === 'torn' ? 'Torn out of the deck for the rest of this Scuffle. They keep their Patches.' : undefined,
+        title: which === 'torn' ? (STASH_PILE[this.me?.companion] || STASH_PILE.default).label : undefined,
+        subtitle: which === 'torn' ? (STASH_PILE[this.me?.companion] || STASH_PILE.default).tip.split('|').slice(1).join(' ') : undefined,
         cards, ctx: this.ctx, host: this.ctx.dom,
       });
     } finally {
@@ -3084,6 +3090,23 @@ function counterState(c) {
   }
   return hit;
 }
+
+/**
+ * The engine's `stash` pile, named by the Companion using it. Mopsy's Torn pile
+ * and Hush's Shadow Pocket are the same zone doing opposite jobs — hers is
+ * where Tricks go to be unavailable, his is a second hand he plays out of.
+ */
+const STASH_PILE = {
+  mopsy: {
+    label: 'Torn',
+    tip: 'Torn pile|Tricks Mopsy has torn out of her deck.|They keep their Patches, they have not Vanished, and they come back after the Scuffle.',
+  },
+  hush: {
+    label: 'Pocket',
+    tip: 'Shadow Pocket|Tricks Hush has stashed away, up to three.|They stay between turns and he can play them straight out of here.',
+  },
+  default: { label: 'Stash', tip: 'Stash|Tricks set aside outside your hand and deck.' },
+};
 
 const GARMENTS = { raincoat: 'Raincoat', 'evening-coat': 'Evening Coat', 'mourning-coat': 'Mourning Coat' };
 
