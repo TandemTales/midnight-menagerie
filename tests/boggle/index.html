@@ -196,6 +196,21 @@ try {
     }
   }
 
+  {
+    /* Wait For It is "playable only if you have played no Attack this turn",
+       and `attackedThisTurn` is set by a card:play listener whose seat guard
+       compared a number against an actor — so it never fired and the condition
+       was permanently true. Assert the restriction, not just the card. */
+    const e = await boggle();
+    const wait = CARDS.cardById('boggle/wait-for-it');
+    e.addCard(wait, 'hand', {});
+    const w = e.piles.hand[e.piles.hand.length - 1];
+    check(e.canPlay(w.uid).ok, 'Wait For It is playable before you attack');
+    await play(e, 'boggle/little-chomp', e.livingEnemies()[0]);
+    check(!e.canPlay(w.uid).ok, 'and NOT playable once an Attack has been played',
+      `reason: ${e.canPlay(w.uid).reason}`);
+  }
+
   // ── 8. Fright never decays on its own ────────────────────────────────────
   {
     const e = await boggle();

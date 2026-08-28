@@ -116,3 +116,93 @@ means*; it now matches either literal.
 Full pass: cards 559/0/0 · combat 677 · run 50 · coop 591 · backpack 79 ·
 enemies 37 · audit 2061 · all six gates · 61 fps on the real GPU, no console
 errors, Boggle on screen with his portrait, his Lurk track and his keywords.
+
+---
+
+## 2. Mopsy, the Rag Doll Bunny  ✅
+
+`nursery`. 6 basics + Scrap + 20 commons + 35 uncommons + 25 rares + 5 co-op.
+The other Companion whose region actually ships, and much deeper engine work
+than Boggle: she needed a new damage-pipeline step, a fifth pile made visible,
+and card-instance modification.
+
+### One new pipeline step: `onCourageLoss`
+
+Cushion is defined as "when an Attack would cost her Courage **after Guard is
+applied**, halve it". `onIncomingHit` fires *before* Guard is consulted, and
+`onLethal` only fires on a killing blow — so no point in `damage.js` could see
+the number Cushion is defined against, let alone change it. A reducer would not
+have worked either: Cushion has to be able to *decline*, because it costs
+Stuffing and it is once per enemy turn.
+
+`onCourageLoss` is a void hook with a mutable payload, dispatched where `hpLoss`
+is computed and **before** `onLethal`, so halving a killing blow can save you.
+
+### The Torn pile was already in the engine and nothing drew it
+
+`stash` has always been a real pile with a real cap, snapshotted into
+`engine.state` — no scene had ever rendered it. `scenes/combat.js` grew a Torn
+button beside Draw and Discard, hidden while the pile is empty rather than gated
+on the Companion, so anything that ever stashes a Trick gets a visible pile
+instead of cards silently leaving the game.
+
+### The bug that ate every Patch
+
+The `card:play` listener guarded its seat with `ev.seat !== seat`. The tracker's
+third argument is the **actor**; `ev.seat` is a **number**. The comparison was
+never equal, so the listener returned on its first line every single time and
+**every Patch was inert** — the card played, the events came out, the suite was
+green, and nothing happened. Boggle had the identical bug in the listener that
+sets `attackedThisTurn`, which silently made "playable only if you have played
+no Attack this turn" always true. Both now compare `ev.actorId` to `seat.id`,
+the way `U.onPlayerTurn` already did, and both have a test that asserts the
+restriction rather than the card.
+
+Related, same family: `card:play` carries a **snapshot** in `ev.card`, not the
+runtime card, so Patches stored on `card.meta` were invisible to it. Look the
+card up by `ev.cardUid`. CONTRACTS trap 11, twice in one listener.
+
+### Two more the screen caught
+
+- Cushion and the Patch cost rule were two separate inherent statuses, so Mopsy
+  opened combat with a mystery chip in her status row explaining nothing. The
+  cost hook now rides on the Cushion status, which is one thing the player can
+  actually be told about.
+- `unaware`, `suspicious`, `lurk` and `stuffing` had **no icons** and were all
+  drawing the fallback lozenge. Four glyphs added (`unaware` deliberately reuses
+  `hidden` — same idea, and a second glyph would only make the row harder to
+  read).
+
+### One stated design deviation
+
+The doc gives Quick Patch (Common) the identical line to Beginner's Patch
+(Basic), which makes the Common a strictly redundant copy of a Basic — and the
+cards suite catches it as "2 cards share one effect shape". Quick Patch reaches
+the discard pile as well as the hand: the smallest change that earns it its slot
+in the 80. Flagged per CONTRACTS rule 8.
+
+### Verification
+
+`tests/mopsy/run.py` — **27 checks**, all asserting effects: Cushion halves 13 to
+7 and spends exactly one Stuffing, the *second* hit in one enemy turn is not
+Cushioned, a Hollow Mopsy cannot Cushion at all, and 16 into 6 Guard becomes 5
+(proving the after-Guard ordering). Patches attach with the right Stitches, fire
+on play, spend a Stitch, survive being Torn, and the cost Patch really changes
+the cost. A Torn Trick is in the Torn pile and **not** in exhaust — Tear is not
+Vanish.
+
+The suites' auto-resolver takes the lowest index, so the tests empty the hand and
+leave exactly one candidate rather than scripting chooser indices that would move
+the moment the deck changed.
+
+Full pass: cards 651/0/0 · combat 677 · run 50 · coop 591 · backpack 79 ·
+enemies 37 · audit 2061 · chrome 27 · six gates · 61 fps, no console errors.
+
+---
+
+## Still to come
+
+**Designed, not built (8):** Wisp, Crumbula, Truffle, Hush, Drizzle, Pudding,
+Mossbit, Brambleboo.
+
+**Not designed (1): Crinkle.** Blocked on a designer pass — he has no chapter.

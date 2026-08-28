@@ -695,6 +695,11 @@ export class CombatScene extends Scene {
             <svg viewBox="0 0 34 44" aria-hidden="true"><rect x="1" y="1" width="24" height="34" rx="3"/><rect x="6" y="5" width="24" height="34" rx="3"/><rect x="9" y="9" width="24" height="34" rx="3" class="top"/></svg>
             <b>0</b><span class="cb-pile__lbl">Discard</span>
           </button>
+          <button class="cb-pile cb-pile--torn" id="torn-pile" type="button" hidden
+                  data-tip="Torn pile|Tricks Mopsy has torn out of her deck.|They keep their Patches, they have not Vanished, and they come back after the Scuffle.">
+            <svg viewBox="0 0 34 44" aria-hidden="true"><rect x="1" y="1" width="24" height="34" rx="3"/><rect x="9" y="9" width="24" height="34" rx="3" class="top"/></svg>
+            <b>0</b><span class="cb-pile__lbl">Torn</span>
+          </button>
         </div>
 
         <div class="cb-banner" aria-live="polite"></div>
@@ -753,6 +758,7 @@ export class CombatScene extends Scene {
     this.$nerve = $('.cb-nerve');
     this.$drawPile = $('#draw-pile');
     this.$discardPile = $('#discard-pile');
+    this.$tornPile = $('#torn-pile');
     this.$endTurn = $('#end-turn');
     this.$banner = $('.cb-banner');
     this.$deny = $('.cb-deny');
@@ -2541,6 +2547,13 @@ export class CombatScene extends Scene {
     const pl = this.mePiles;
     this.$drawPile.querySelector('b').textContent = String(pl?.draw?.length ?? 0);
     this.$discardPile.querySelector('b').textContent = String(pl?.discard?.length ?? 0);
+    /* The engine has always had a `stash` pile; nothing rendered it until Mopsy
+       needed somewhere to Tear Tricks to. It stays hidden while empty rather
+       than being gated on the Companion, so anything that ever stashes a Trick
+       gets a visible pile instead of cards silently leaving the game. */
+    const torn = pl?.stash?.length ?? 0;
+    this.$tornPile.hidden = torn === 0;
+    this.$tornPile.querySelector('b').textContent = String(torn);
   }
 
   _syncNerve(cur, max) {
@@ -2623,6 +2636,7 @@ export class CombatScene extends Scene {
     on(this.$endTurn, 'click', () => this._endTurn());
     on(this.$drawPile, 'click', () => this._openPile('draw'));
     on(this.$discardPile, 'click', () => this._openPile('discard'));
+    on(this.$tornPile, 'click', () => this._openPile('torn'));
     on(this.$chOk, 'click', () => this._commitChoice());
     on(this.$chSkip, 'click', () => this._commitChoice(true));
 
@@ -2685,6 +2699,7 @@ export class CombatScene extends Scene {
       if (k === 'e') { e.preventDefault(); this._endTurn(); }
       else if (k === 'q') { e.preventDefault(); this._openPile('draw'); }
       else if (k === 'w') { e.preventDefault(); this._openPile('discard'); }
+      else if (k === 'r' && !this.$tornPile.hidden) { e.preventDefault(); this._openPile('torn'); }
       else if (k === 'd') { e.preventDefault(); this.hud?.openDeck(); }
       // Escape reaches Settings from inside a Scuffle, the same as everywhere
       // else in a run. The Modal owns Escape whenever one is already open.
@@ -2888,14 +2903,21 @@ export class CombatScene extends Scene {
   async _openPile(which) {
     if (!this.engine || this._pileOpen) return;
     const st = this.engine.state;
-    const raw = which === 'draw' ? st.piles.draw : st.piles.discard.slice().reverse();
+    const raw = which === 'draw' ? st.piles.draw
+      : which === 'torn' ? (st.piles.stash || []).slice()
+        : st.piles.discard.slice().reverse();
     const cards = raw.map(c => ({
       uid: c.uid, def: this.engine.card(c.uid)?.def || c, upgraded: c.upgraded, cost: c.cost,
     }));
     this._pileOpen = true;
     this.ctx.audio?.play?.('ui:open-panel');
     try {
-      await openPile({ mode: which, cards, ctx: this.ctx, host: this.ctx.dom });
+      await openPile({
+        mode: which === 'torn' ? 'deck' : which,
+        title: which === 'torn' ? 'Torn' : undefined,
+        subtitle: which === 'torn' ? 'Torn out of the deck for the rest of this Scuffle. They keep their Patches.' : undefined,
+        cards, ctx: this.ctx, host: this.ctx.dom,
+      });
     } finally {
       this._pileOpen = false;
       this.ctx.audio?.play?.('ui:close-panel');

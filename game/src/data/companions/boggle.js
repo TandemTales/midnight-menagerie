@@ -353,7 +353,12 @@ U.onTracker(SLUG, (e, s, seat) => {
 
   // "have I played an Attack yet this turn", for Wait For It and The Long Wait.
   e.on('card:play', (ev) => {
-    if (seat != null && ev.seat != null && ev.seat !== seat) return;
+    /* `seat` here is the ACTOR the tracker was installed for, the way
+       U.onPlayerTurn takes it -- while `ev.seat` is a NUMBER. Comparing the
+       two was always unequal, so this listener returned on its first line
+       every single time and every Patch was silently inert. `card:play`
+       carries `actorId`; compare that. (CONTRACTS trap 11.) */
+    if (seat && ev.actorId && ev.actorId !== seat.id) return;
     const card = ev.card;
     if (isAttackCard(card)) U.mm(fake()).attackedThisTurn = true;
   });
@@ -749,8 +754,9 @@ const uncommons = [
   },
   {
     id: 'boggle/that-was-my-foot', name: 'That Was My Foot', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 0, target: ENEMY, keywords: ['suspicious', 'fright'],
-    text: 'Deal {d} damage. If the target is [Suspicious], apply {n} [Fright]. Vanish.',
+    cost: 0, target: ENEMY, keywords: ['suspicious', 'fright', 'vanish'],
+    exhaust: true,
+    text: 'Deal {d} damage. If the target is [Suspicious], apply {n} [Fright]. [Vanish].',
     flavor: 'An accident, he insists.',
     nums: { d: 4, n: 2 },
     effect: eff((c) => {
@@ -758,7 +764,6 @@ const uncommons = [
       ambush(c, c.target);
       U.hit(c, N(c).d);
       if (sus) fright(c, c.target, N(c).n);
-      U.makeVanish(c, c.card); c.exhaust(c.card);
     }),
     upgrade: { nums: { d: 7, n: 3 } },
   },
@@ -1290,8 +1295,9 @@ const rares = [
   },
   {
     id: 'boggle/the-long-wait', name: 'The Long Wait', companion: SLUG, type: SKILL, rarity: RARE,
-    cost: 2, target: SELF, keywords: ['lurk'],
-    text: 'Playable only if you have played no Attack this turn. Gain {l} [Lurk]. No Attacks this turn. Draw {n} extra next turn. Vanish.',
+    cost: 2, target: SELF, keywords: ['lurk', 'vanish'],
+    exhaust: true,
+    text: 'Playable only if you have played no Attack this turn. Gain {l} [Lurk]. No Attacks this turn. Draw {n} extra next turn. [Vanish].',
     flavor: 'He can wait longer than you can.',
     nums: { l: 2, n: 2 },
     effect: eff((c) => {
@@ -1299,7 +1305,6 @@ const rares = [
       const st = U.mm(c);
       forbidAttacks(c);
       st.bedTimeDraw = (st.bedTimeDraw || 0) + N(c).n;
-      U.makeVanish(c, c.card); c.exhaust(c.card);
     }),
     playable: (c) => !U.mm(c).attackedThisTurn,
     playableReason: 'You have already played an Attack this turn.',
@@ -1343,15 +1348,15 @@ const rares = [
   },
   {
     id: 'boggle/dont-scream-yet', name: 'Don’t Scream Yet', companion: SLUG, type: SKILL, rarity: RARE,
-    cost: 0, target: SELF, keywords: ['scare', 'fright'],
-    text: 'The next {n} [Scare] clauses this turn still need their [Fright] but do not spend it. Vanish.',
+    cost: 0, target: SELF, keywords: ['scare', 'fright', 'vanish'],
+    exhaust: true,
+    text: 'The next {n} [Scare] clauses this turn still need their [Fright] but do not spend it. [Vanish].',
     flavor: 'Save it. Save it. Now.',
     nums: { n: 2 },
     effect: eff((c) => {
       const st = U.mm(c);
       st.fearOfDark = true;
       st.noScreamYet = (st.noScreamYet || 0) + N(c).n;
-      U.makeVanish(c, c.card); c.exhaust(c.card);
     }),
     upgrade: { nums: { n: 3 } },
   },

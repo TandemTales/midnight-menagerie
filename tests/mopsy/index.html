@@ -1,0 +1,207 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Mopsy — Stuffing, Cushion, Patches, Tear and Mend</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+  li { margin: 2px 0; }
+</style>
+<h1>Mopsy</h1>
+<div id="out"></div>
+<script type="module">
+import { RNG } from '../../game/src/core/rng.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import { makeDummySetup } from '../../game/src/combat/dummy.js';
+import { installTrackers } from '../../game/src/data/companions/_util.js';
+import * as CARDS from '../../game/src/data/cards.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+function say(html, cls) { const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; out.appendChild(d); }
+
+/** A real engine, Mopsy's real deck, real enemies. Nothing about her is mocked. */
+async function mopsy() {
+  const setup = makeDummySetup(new RNG(90210), {
+    companion: 'mopsy', deck: CARDS.startingDeckFor('mopsy'), maxHp: 72,
+  });
+  const e = new CombatEngine(setup);
+  await e.startCombat();
+  installTrackers(e, 'mopsy');
+  return e;
+}
+
+/**
+ * Put a card in hand and play it. Any chooser it opens resolves through
+ * engine.choices, whose auto-resolver is deterministic and takes the lowest
+ * index — so the tests below EMPTY THE HAND and leave exactly one candidate
+ * rather than trying to script indices that would move if the deck changed.
+ */
+async function play(e, id, target) {
+  const def = CARDS.cardById(id);
+  if (!def) throw new Error('no such card ' + id);
+  e.addCard(def, 'hand', {});
+  const card = e.piles.hand[e.piles.hand.length - 1];
+  e.player.energy = 9;
+  await e.playCard(card.uid, target ? target.id : undefined);
+  return card;
+}
+
+const hand = (e) => e.piles.hand;
+const torn = (e) => e.piles.stash || [];
+/** Patches are stored with U.setFlag, which writes to card.meta. */
+const patchesOf = (k) => (k && k.meta && k.meta.patches) || [];
+
+/** Leave exactly one Trick in hand, so a chooser has exactly one answer. */
+function onlyInHand(e, id) {
+  e.piles.hand.length = 0;
+  e.addCard(CARDS.cardById(id), 'hand', {});
+  return e.piles.hand[e.piles.hand.length - 1];
+}
+
+try {
+  // ── 1. Stuffing, Plump, Hollow ───────────────────────────────────────────
+  {
+    const e = await mopsy();
+    check(e.counter('stuffing') === 3, 'Stuffing starts at 3', `stuffing=${e.counter('stuffing')}`);
+    check(e.counterMax('stuffing') === 6, 'and caps at 6', `max=${e.counterMax('stuffing')}`);
+    e.setCounter('stuffing', 6, 'test');
+    await play(e, 'mopsy/loose-stuffing', null);
+    check(e.counter('stuffing') === 6, 'gaining Stuffing at 6 does not overflow', `stuffing=${e.counter('stuffing')}`);
+  }
+
+  // ── 2. Cushion ───────────────────────────────────────────────────────────
+  {
+    const e = await mopsy();
+    e.setCounter('stuffing', 3, 'test');
+    const hp0 = e.player.hp;
+    e.dealDamage({ attacker: e.livingEnemies()[0], defender: e.player, amount: 13, kind: 'attack' });
+    const lost = hp0 - e.player.hp;
+    check(lost === 7, 'Cushion halves a 13-point hit to 7, rounding up', `lost ${lost}`);
+    check(e.counter('stuffing') === 2, 'and it cost 1 Stuffing', `stuffing=${e.counter('stuffing')}`);
+  }
+  {
+    const e = await mopsy();
+    e.setCounter('stuffing', 3, 'test');
+    e.dealDamage({ attacker: e.livingEnemies()[0], defender: e.player, amount: 10, kind: 'attack' });
+    const hp1 = e.player.hp;
+    e.dealDamage({ attacker: e.livingEnemies()[0], defender: e.player, amount: 10, kind: 'attack' });
+    check(hp1 - e.player.hp === 10, 'the SECOND hit in one enemy turn is not Cushioned',
+      `second hit cost ${hp1 - e.player.hp}`);
+    check(e.counter('stuffing') === 2, 'and only one Stuffing was spent all turn',
+      `stuffing=${e.counter('stuffing')}`);
+  }
+  {
+    const e = await mopsy();
+    e.setCounter('stuffing', 0, 'test');
+    const hp0 = e.player.hp;
+    e.dealDamage({ attacker: e.livingEnemies()[0], defender: e.player, amount: 12, kind: 'attack' });
+    check(hp0 - e.player.hp === 12, 'a Hollow Mopsy cannot Cushion at all', `lost ${hp0 - e.player.hp}`);
+  }
+  {
+    // Guard first, then Cushion on what is left — the order the spec states
+    const e = await mopsy();
+    e.setCounter('stuffing', 3, 'test');
+    e.player.block = 6;
+    const hp0 = e.player.hp;
+    e.dealDamage({ attacker: e.livingEnemies()[0], defender: e.player, amount: 16, kind: 'attack' });
+    check(hp0 - e.player.hp === 5, 'Cushion applies AFTER Guard: 16 - 6 Guard = 10, halved to 5',
+      `lost ${hp0 - e.player.hp}`);
+  }
+
+  // ── 3. Patches ───────────────────────────────────────────────────────────
+  {
+    const e = await mopsy();
+    const target = onlyInHand(e, 'mopsy/sock-kick');
+    await play(e, 'mopsy/beginners-patch', null);
+    const p = patchesOf(target);
+    check(p.length === 1 && p[0].id === 'guard', 'Beginner’s Patch attaches a Guard Patch',
+      JSON.stringify(p));
+    check(p[0] && p[0].stitches === 2, 'with 2 Stitches', `stitches=${p[0] && p[0].stitches}`);
+
+    const guard0 = e.player.block;
+    e.player.energy = 9;
+    await e.playCard(target.uid, e.livingEnemies()[0].id);
+    check(e.player.block > guard0, 'and the Patch fires when the Trick is played',
+      `guard ${guard0} -> ${e.player.block}`);
+    const after = patchesOf(target);
+    check(after.length === 1 && after[0].stitches === 1, 'spending one Stitch',
+      `stitches=${after[0] && after[0].stitches}`);
+  }
+  {
+    // a Patch on its last Stitch falls off
+    const e = await mopsy();
+    const target = onlyInHand(e, 'mopsy/sock-kick');
+    await play(e, 'mopsy/temporary-fix', null);
+    check(patchesOf(target).length === 1, 'Temporary Fix attaches with 1 Stitch',
+      JSON.stringify(patchesOf(target)));
+    check(e.costOf(target) === Math.max(0, (target.def.cost || 0) - 1),
+      'and the cost Patch really makes the Trick cheaper',
+      `cost=${e.costOf(target)} of a printed ${target.def.cost}`);
+  }
+
+  // ── 4. Tear and Mend ─────────────────────────────────────────────────────
+  {
+    const e = await mopsy();
+    const before = torn(e).length;
+    const target = onlyInHand(e, 'mopsy/sock-kick');
+    await play(e, 'mopsy/snip-and-save', null);
+    check(torn(e).length === before + 1, 'Snip and Save Tears a Trick to the Torn pile',
+      `torn ${before} -> ${torn(e).length}`);
+    check(!hand(e).includes(target), 'and it has left the hand');
+    check(e.counter('stuffing') >= 3, 'and it paid a Stuffing', `stuffing=${e.counter('stuffing')}`);
+
+    const tornCard = torn(e)[0];
+    await play(e, 'mopsy/little-repair', null);
+    check(!torn(e).includes(tornCard), 'Little Repair Mends it back out of the Torn pile');
+    check(e.piles.discard.includes(tornCard), 'to the discard pile');
+  }
+  {
+    // A Torn Trick has NOT Vanished — it comes back to the deck after combat,
+    // which is the whole difference between Tear and Exhaust.
+    const e = await mopsy();
+    const target = onlyInHand(e, 'mopsy/sock-kick');
+    await play(e, 'mopsy/snip-and-save', null);
+    check(torn(e).includes(target), 'a Torn Trick is in the Torn pile');
+    check(!e.piles.exhaust.includes(target), 'and NOT in the exhaust pile — Tear is not Vanish');
+  }
+  {
+    // Patches ride with the Trick when it is Torn, which is what makes Tear a
+    // storage mechanic rather than a cost.
+    const e = await mopsy();
+    const target = onlyInHand(e, 'mopsy/sock-kick');
+    await play(e, 'mopsy/beginners-patch', null);
+    check(patchesOf(target).length === 1, 'setup: the Trick is patched');
+    e.piles.hand.length = 0;
+    e.piles.hand.push(target);
+    await play(e, 'mopsy/snip-and-save', null);
+    check(torn(e).includes(target), 'setup: and then Torn');
+    check(patchesOf(target).length === 1, 'a Torn Trick keeps its Patch',
+      JSON.stringify(patchesOf(target)));
+  }
+
+  // ── 5. Scrap ─────────────────────────────────────────────────────────────
+  {
+    const e = await mopsy();
+    const n0 = hand(e).length;
+    await play(e, 'mopsy/save-the-scraps', null);
+    const scraps = hand(e).filter(k => (k.def && k.def.id) === 'mopsy/scrap');
+    check(scraps.length >= 1, 'Save the Scraps puts a real Scrap in hand',
+      `hand went ${n0} -> ${hand(e).length}`);
+    const st0 = e.counter('stuffing');
+    e.player.energy = 9;
+    await e.playCard(scraps[0].uid);
+    check(e.counter('stuffing') === st0 + 1, 'and playing a Scrap gains 1 Stuffing',
+      `stuffing ${st0} -> ${e.counter('stuffing')}`);
+  }
+} catch (err) {
+  fails.push('THREW: ' + (err && err.stack || err));
+}
+
+say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`, fails.length ? 'fail' : 'pass');
+say('<ul class="pass">' + passes.map(p => `<li>PASS ${p}</li>`).join('') + '</ul>');
+if (fails.length) say('<ul class="fail">' + fails.map(f => `<li>FAIL ${f}</li>`).join('') + '</ul>');
+
+window.__RESULT = { passed: passes.length, failed: fails.length, fails, passes };
+window.__DONE = true;
+</script>

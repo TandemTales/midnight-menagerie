@@ -38,7 +38,8 @@
  * identically whether an engine counter track or a status is backing it.
  */
 
-import { trackerCtx, fire as fireCompanionHook, res, addRes, spendRes } from './_util.js';
+import { trackerCtx, fire as fireCompanionHook, res, addRes, spendRes,
+  flag as cardFlag, stacks, apply as applyTo, unapply as unapplyFrom } from './_util.js';
 
 /** A card-shaped ctx for a hook, so the `_util` resource helpers work in here. */
 function uctx(h) { return trackerCtx(h.e); }
@@ -146,6 +147,18 @@ export const COMPANION_KEYWORDS = [
   K('fright', 'Fright', 'A persistent resource stored on an enemy. Fright does nothing by itself and never expires — it is spent by [Scare] clauses.', { companion: 'boggle' }),
   K('scare', 'Scare', 'Scare N checks the target for at least N [Fright]. If it has that much, remove N and resolve the Scare effect; if not, the rest of the Trick still happens.', { companion: 'boggle' }),
   K('lurk', 'Lurk', 'Boggle gains 1 Lurk at the end of his turn if any living enemy is [Unaware]. It starts at 0, caps at 5, and never decays on its own.', { companion: 'boggle' }),
+
+  K('stuffing', 'Stuffing', 'Mopsy starts each combat with 3 and holds at most 6. It is both her crafting material and her armour, and spending it aggressively is what makes her fragile.', { companion: 'mopsy' }),
+  K('cushion', 'Cushion', 'Once each enemy turn, when an Attack would cost Mopsy Courage after Guard, she may spend 1 [Stuffing] to halve that loss, rounding up. Much better against one big hit than against several small ones, and unavailable while [Hollow].', { companion: 'mopsy' }),
+  K('plump', 'Plump', 'A condition, not a buff: Mopsy is Plump at 5 or 6 [Stuffing].', { companion: 'mopsy' }),
+  K('hollow', 'Hollow', 'A condition, not a buff: Mopsy is Hollow at 0 [Stuffing]. Several Tricks want it, but she cannot [Cushion] while empty.', { companion: 'mopsy' }),
+  K('patch', 'Patch', 'A modification sewn onto one Trick, adding a line of rules text. It rides with the Trick between every pile, and it is gone when combat ends.', { companion: 'mopsy' }),
+  K('stitch', 'Stitches', 'What holds a [Patch] on. A new Patch has 2, loses 1 each time it triggers, and falls off at 0. Four is the most any Patch can hold.', { companion: 'mopsy' }),
+  K('reinforce', 'Reinforce', 'Add 1 [Stitch] to a Patch, to a maximum of 4.', { companion: 'mopsy' }),
+  K('tear', 'Tear', 'Move a Trick to your [Torn] pile for the rest of combat. It keeps its [Patch]es, it has not Vanished, and it comes back to your deck after the fight.', { companion: 'mopsy' }),
+  K('mend', 'Mend', 'Bring a Trick back from the [Torn] pile — to your discard pile unless the Trick says otherwise. The same Trick cannot be Mended twice in one turn.', { companion: 'mopsy' }),
+  K('torn', 'Torn', 'Mopsy\u2019s fifth pile. Torn Tricks cannot be drawn or played until something [Mend]s them.', { companion: 'mopsy' }),
+  K('scrap', 'Scrap', 'A temporary 0-Nerve Trick: gain 1 [Stuffing], or [Reinforce] a Patch in your hand. [Vanish].', { companion: 'mopsy' }),
 ];
 
 export const KEYWORD_IDS = COMPANION_KEYWORDS.map(k => k.id);
@@ -156,9 +169,13 @@ const counterStatus = (id, name, desc, max, kind = 'neutral') => ({
   id, name, kind, icon: id, desc, decay: 'never', stacks: true, max, resource: true,
 });
 
-/** One of Boggle's Powers, held on Boggle himself and stacking if taken twice. */
-const bogglePower = (id, name, desc) => ({
-  id, name, kind: 'buff', icon: 'unaware', decay: 'never', stacks: true, desc,
+/**
+ * A Companion Power held on its owner, stacking if the Power is taken twice.
+ * Registered rather than left to getStatus()'s placeholder, so the status row
+ * reads as words instead of an unnamed chip.
+ */
+const powerStatus = (id, name, desc, icon) => ({
+  id, name, kind: 'buff', icon: icon || 'hidden', decay: 'never', stacks: true, desc,
 });
 
 export const COMPANION_STATUSES = [
@@ -385,7 +402,7 @@ export const COMPANION_STATUSES = [
     desc: '{n} Fright. Fright does nothing on its own and never wears off — Boggle spends it with Scare clauses.',
   },
   {
-    id: 'unaware', name: 'Unaware', kind: 'debuff', icon: 'unaware', decay: 'never', stacks: false,
+    id: 'unaware', name: 'Unaware', kind: 'debuff', icon: 'hidden', decay: 'never', stacks: false,
     desc: 'This one has lost track of Boggle. A directed Attack aimed only at him becomes Search instead.',
   },
   {
@@ -396,22 +413,105 @@ export const COMPANION_STATUSES = [
 
   // Boggle's Powers. Registered rather than left to getStatus()'s placeholder,
   // so the status row reads as words instead of an unnamed chip.
-  bogglePower('boggle/the-house-settles', 'The House Settles', 'Whenever an enemy becomes Unaware, apply {n} Fright to it. At most three times a turn.'),
-  bogglePower('boggle/quiet-as-dust', 'Quiet as Dust', 'The first Ambush Attack each turn leaves its target Aware instead of Suspicious.'),
-  bogglePower('boggle/underbed-kingdom', 'Underbed Kingdom', 'Maximum Lurk is 7 this combat.'),
-  bogglePower('boggle/imagination-does-the-rest', 'Imagination Does the Rest', 'Whenever a Scare triggers, apply {n} Fright to a different enemy.'),
-  bogglePower('boggle/one-eye-open', 'One Eye Open', 'At the end of your turn, gain Guard for each Suspicious enemy.'),
-  bogglePower('boggle/creaks-have-teeth', 'Creaks Have Teeth', 'Whenever an enemy Searches, deal damage to it and give it 1 more Fright.'),
-  bogglePower('boggle/practice-your-scream', 'Practice Your Scream', 'Your first Scare each turn needs and spends {n} less Fright, minimum 1.'),
-  bogglePower('boggle/beneath-every-bed', 'Beneath Every Bed', 'If every living enemy is Unaware at the end of your turn, gain 1 extra Lurk and draw an extra Trick next turn.'),
-  bogglePower('boggle/fear-of-the-dark', 'Fear of the Dark', 'The first Scare against each enemy each turn does not spend its Fright. It still needs the full amount.'),
-  bogglePower('boggle/nobodys-here', 'Nobody\u2019s Here', 'Once a turn, an Aware enemy with 6 or more Fright that aims a directed Attack at Boggle becomes Unaware first.'),
-  bogglePower('boggle/monster-under-every-bed', 'Monster Under Every Bed', 'When you gain your end-of-turn Lurk, apply 2 Fright to all enemies, or 3 if every enemy is Unaware.'),
-  bogglePower('boggle/bedframe-geography', 'Bedframe Geography', 'The first time each turn an enemy becomes Suspicious, make a different Aware enemy Unaware.'),
-  bogglePower('boggle/bigger-in-your-head', 'Bigger in Your Head', 'When a Scare spends Fright, half of it comes back to that enemy at the end of your turn.'),
-  bogglePower('boggle/feed-the-imagination', 'Feed the Imagination', 'Whenever an enemy becomes Suspicious, apply 2 Fright, or 3 if Boggle Ambushed it.'),
-  bogglePower('boggle/you-didnt-see-anything', 'You Didn\u2019t See Anything', 'Hiding Tricks may target Suspicious enemies. The first each turn costs 2 Lurk to succeed.'),
-  bogglePower('boggle/good-night-sleep-tight', 'Good Night, Sleep Tight', 'At the end of your turn, if every living enemy has 8 or more Fright, make every Aware enemy Unaware and gain 1 Lurk.'),
+  powerStatus('boggle/the-house-settles', 'The House Settles', 'Whenever an enemy becomes Unaware, apply {n} Fright to it. At most three times a turn.'),
+  powerStatus('boggle/quiet-as-dust', 'Quiet as Dust', 'The first Ambush Attack each turn leaves its target Aware instead of Suspicious.'),
+  powerStatus('boggle/underbed-kingdom', 'Underbed Kingdom', 'Maximum Lurk is 7 this combat.'),
+  powerStatus('boggle/imagination-does-the-rest', 'Imagination Does the Rest', 'Whenever a Scare triggers, apply {n} Fright to a different enemy.'),
+  powerStatus('boggle/one-eye-open', 'One Eye Open', 'At the end of your turn, gain Guard for each Suspicious enemy.'),
+  powerStatus('boggle/creaks-have-teeth', 'Creaks Have Teeth', 'Whenever an enemy Searches, deal damage to it and give it 1 more Fright.'),
+  powerStatus('boggle/practice-your-scream', 'Practice Your Scream', 'Your first Scare each turn needs and spends {n} less Fright, minimum 1.'),
+  powerStatus('boggle/beneath-every-bed', 'Beneath Every Bed', 'If every living enemy is Unaware at the end of your turn, gain 1 extra Lurk and draw an extra Trick next turn.'),
+  powerStatus('boggle/fear-of-the-dark', 'Fear of the Dark', 'The first Scare against each enemy each turn does not spend its Fright. It still needs the full amount.'),
+  powerStatus('boggle/nobodys-here', 'Nobody\u2019s Here', 'Once a turn, an Aware enemy with 6 or more Fright that aims a directed Attack at Boggle becomes Unaware first.'),
+  powerStatus('boggle/monster-under-every-bed', 'Monster Under Every Bed', 'When you gain your end-of-turn Lurk, apply 2 Fright to all enemies, or 3 if every enemy is Unaware.'),
+  powerStatus('boggle/bedframe-geography', 'Bedframe Geography', 'The first time each turn an enemy becomes Suspicious, make a different Aware enemy Unaware.'),
+  powerStatus('boggle/bigger-in-your-head', 'Bigger in Your Head', 'When a Scare spends Fright, half of it comes back to that enemy at the end of your turn.'),
+  powerStatus('boggle/feed-the-imagination', 'Feed the Imagination', 'Whenever an enemy becomes Suspicious, apply 2 Fright, or 3 if Boggle Ambushed it.'),
+  powerStatus('boggle/you-didnt-see-anything', 'You Didn\u2019t See Anything', 'Hiding Tricks may target Suspicious enemies. The first each turn costs 2 Lurk to succeed.'),
+  powerStatus('boggle/good-night-sleep-tight', 'Good Night, Sleep Tight', 'At the end of your turn, if every living enemy has 8 or more Fright, make every Aware enemy Unaware and gain 1 Lurk.'),
+
+  // ── Mopsy ─────────────────────────────────────────────────────────────────
+  counterStatus('stuffing', 'Stuffing', 'Mopsy is holding {n} Stuffing. Plump at 5, Hollow at 0.', 6, 'buff'),
+  {
+    /**
+     * Cushion. Inherent rather than bought, applied once by Mopsy's tracker, and
+     * a status rather than a hidden rule so the player can see it sitting there
+     * and so the once-per-enemy-turn allowance has somewhere to live.
+     *
+     * `onCourageLoss` is a pipeline step added for this: the spec says "after
+     * Guard is applied", and `onIncomingHit` fires before Guard is consulted, so
+     * nothing in damage.js could see the number Cushion is defined against. It
+     * is a VOID hook with a mutable payload — read `h.amount`, call
+     * `h.setAmount(n)` — and CONTRACTS trap: writing it as `(amt, h)` makes `h`
+     * undefined and it throws on its first line, which is how Play Dead broke.
+     */
+    id: 'cushion', name: 'Cushion', kind: 'buff', icon: 'stuffing', decay: 'never', stacks: false,
+    desc: 'Once each enemy turn, spend 1 Stuffing to halve a Courage loss after Guard, rounding up. Not while Hollow.',
+    hooks: {
+      onCourageLoss: (h) => {
+        const c = trackerCtx(h.e, h.defender);
+        const free = stacks(c, c.self, 'cushion-free') > 0;
+        if (!free && res(c, 'stuffing') <= 0) return;          // Hollow cannot Cushion
+        const noLimit = stacks(c, c.self, 'cushion-fort') > 0;
+        if (!noLimit) {
+          const used = stacks(c, c.self, 'cushion-used');
+          const allowance = 1 + stacks(c, c.self, 'cushion-extra');
+          if (used >= allowance) return;
+        }
+        if (free) unapplyFrom(c, c.self, 'cushion-free', 1);
+        else addRes(c, 'stuffing', -1, 0, 6);
+        applyTo(c, c.self, 'cushion-used', 1);
+        h.setAmount(Math.ceil(h.amount / 2));
+      },
+      /**
+       * Mopsy's "While attached, this Trick costs 1 less" Patch rides here too.
+       * It cannot be a `dynamicCost` because the Patch can be sewn onto ANY
+       * Trick, including one this Companion did not write, and hooks are found
+       * on the ACTOR — so it needs a status Mopsy is already holding rather
+       * than a second inherent chip in her status row explaining nothing.
+       *
+       * `modifyCardCost` must stay PURE — the engine re-runs it every repaint.
+       */
+      modifyCardCost: (cost, h) => {
+        const list = h.card ? cardFlag(h.card, 'patches') : null;
+        if (!Array.isArray(list)) return cost;
+        return list.some((x) => x && x.id === 'cheaper') ? Math.max(0, cost - 1) : cost;
+      },
+    },
+  },
+  {
+    id: 'cushion-used', name: 'Cushioned', kind: 'buff', icon: 'stuffing', decay: 'enemyTurnEnd', stacks: true,
+    desc: 'Cushion has been used {n} times during this enemy turn.',
+  },
+
+  {
+    id: 'cushion-extra', name: 'Cushion Check', kind: 'buff', icon: 'stuffing', decay: 'turnStart', stacks: true,
+    desc: 'Cushion may be used against {n} more hits during the next enemy turn. Each still costs 1 Stuffing.',
+  },
+  {
+    id: 'cushion-free', name: 'Full Restuffing', kind: 'buff', icon: 'stuffing', decay: 'never', stacks: true,
+    desc: 'Your next {n} uses of Cushion cost no Stuffing.',
+  },
+  {
+    id: 'cushion-fort', name: 'Cushion Fort', kind: 'buff', icon: 'stuffing', decay: 'turnStart', stacks: false,
+    desc: 'Cushion has no usage limit until the start of your next turn. Each use still costs 1 Stuffing.',
+  },
+  powerStatus('mopsy/sewing-kit', 'Sewing Kit', 'The first Patch you apply each turn starts with {n} more Stitches.', 'patch'),
+  powerStatus('mopsy/rag-bag', 'Rag Bag', 'The first Trick you Tear each turn gives you {n} Stuffing.', 'patch'),
+  powerStatus('mopsy/memory-foam', 'Memory Foam', 'The first time each turn you spend Stuffing, your next Trick costs 1 less.', 'patch'),
+  powerStatus('mopsy/loose-ends', 'Loose Ends', 'The first time a Patch breaks each turn, draw a Trick and add a Scrap to your discard pile.', 'patch'),
+  powerStatus('mopsy/well-loved', 'Well Loved', 'The first Trick you Mend each turn gains you Guard and Reinforces one of its Patches.', 'patch'),
+  powerStatus('mopsy/pattern-book', 'Pattern Book', 'Once a turn, after playing Tricks carrying two differently worded Patches, gain 1 Stuffing.', 'patch'),
+  powerStatus('mopsy/safety-pins', 'Safety Pins', 'At the end of your turn, Reinforce one Patch on a Trick you are Retaining.', 'patch'),
+  powerStatus('mopsy/master-seamstress', 'Master Seamstress', 'Every eligible Trick can hold one more Patch for the rest of combat.', 'patch'),
+  powerStatus('mopsy/heirloom-quilt', 'Heirloom Quilt', 'Once a turn, a breaking Patch moves to a different unpatched Trick with 1 Stitch instead of being lost.', 'patch'),
+  powerStatus('mopsy/ship-of-mopsy', 'Ship of Mopsy', 'The first Trick you Tear each turn leaves a temporary 0-Nerve copy in your hand.', 'patch'),
+  powerStatus('mopsy/heart-on-her-sleeve', 'Heart on Her Sleeve', 'The first time each enemy turn Mopsy actually loses Courage, gain 1 Stuffing and Reinforce every Patch in hand.', 'patch'),
+  powerStatus('mopsy/stuffing-economy', 'Stuffing Economy', 'Plump: your first Patch trigger each turn keeps its Stitch. Hollow: your first Tear or Mend Skill each turn costs 1 less.', 'patch'),
+  powerStatus('mopsy/the-whole-pattern', 'The Whole Pattern', 'At the end of your turn, with 3 differently worded Patches attached, gain 1 Nerve and 1 card next turn.', 'patch'),
+  powerStatus('mopsy/threadbare-and-thriving', 'Threadbare and Thriving', 'While Hollow, the first patched Trick you play each turn triggers one Patch an extra time.', 'patch'),
+  powerStatus('mopsy/held-together-by-love', 'Held Together by Love', 'Once per combat, lethal damage leaves Mopsy at 1 Courage; she Tears her hand and cashes every Patch for Stuffing.', 'patch'),
+  powerStatus('mopsy/family-quilt', 'Family Quilt', 'Once a round per Kid, a teammate playing a Trick you Patched draws a card and gives you 1 Stuffing.', 'patch'),
 ];
 
 export const STATUS_IDS = COMPANION_STATUSES.map(s => s.id);
@@ -426,6 +526,7 @@ export const ENGINE_HOOKS_REQUIRED = [
   { hook: 'onAttackDealt', when: 'The player finishes resolving an Attack card.', neededBy: ['empowered'] },
   { hook: 'onIncomingHit', when: 'Per individual attack hit against the player, before mitigation.', neededBy: ['play-dead'] },
   { hook: 'onLethal', when: 'A hit is about to reduce the player to 0 Courage.', neededBy: ['not-dead-yet'] },
+  { hook: 'onCourageLoss', when: 'A hit has been through Guard and is about to cost Courage. Mutable via setAmount, and it runs BEFORE onLethal so halving a killing blow can save you.', neededBy: ['cushion'] },
   { hook: 'onDebuffIncoming', when: 'A debuff is about to land on the player.', neededBy: ['nope'] },
   { hook: 'enemyTurnEnd decay', when: 'Decay bucket that expires at the end of the enemy turn.', neededBy: ['ghoststep'] },
 ];

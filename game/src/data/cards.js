@@ -29,6 +29,7 @@ import pipkin from './companions/pipkin.js';
 import taffy from './companions/taffy.js';
 import wink from './companions/wink.js';
 import boggle from './companions/boggle.js';
+import mopsy from './companions/mopsy.js';
 
 // ── registry ────────────────────────────────────────────────────────────────
 const COMPANIONS = new Map();
@@ -62,7 +63,7 @@ export function registerCards(list) {
   return list;
 }
 
-[marmalade, bones, pipkin, taffy, wink, boggle].forEach(registerCompanion);
+[marmalade, bones, pipkin, taffy, wink, boggle, mopsy].forEach(registerCompanion);
 registerCards(NEUTRAL_CARDS);
 
 // ── lookups ─────────────────────────────────────────────────────────────────

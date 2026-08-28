@@ -173,6 +173,33 @@ export function applyDamage(engine, o) {
     t.lethal = (defender.hp - t.hpLoss) <= 0;
   }
 
+  // 7a-bis. onCourageLoss — the last look at what actually reaches Courage.
+  //
+  // `onIncomingHit` is BEFORE Guard: it sees the swing, not the wound. Mopsy's
+  // Cushion is defined the other way round — "when an Attack would cause her to
+  // lose Courage AFTER Guard is applied, halve that loss" — and there was no
+  // point in this pipeline that could see that number, let alone change it. A
+  // reducer would not do either: Cushion has to be able to decline (it costs
+  // Stuffing, and it is once per enemy turn), which means it needs to read the
+  // final figure and then decide.
+  //
+  // It runs BEFORE onLethal on purpose, so halving a killing blow can save you.
+  if (t.hpLoss > 0 && !o.skipModifiers) {
+    const cbox = { amount: t.hpLoss };
+    const cl = {
+      attacker, defender, target: defender, kind, card: o.card || null,
+      amount: t.hpLoss, blocked: t.blocked, base: t.base, cause: o.cause || null,
+      hits: o.hits ?? 1, hitIndex: o.hitIndex ?? 0,
+      setAmount: (n) => { cbox.amount = Math.max(0, n | 0); },
+    };
+    engine.hooks.dispatch('onCourageLoss', cl, engine.hooks.actorHooks(defender, 'onCourageLoss'));
+    if (cbox.amount !== t.hpLoss) {
+      t.hpLoss = Math.max(0, Math.floor(cbox.amount));
+      t.final = t.blocked + t.hpLoss;
+      t.lethal = (defender.hp - t.hpLoss) <= 0;
+    }
+  }
+
   // 7b. onLethal — the one place a Companion can refuse to die.
   if (t.lethal && t.hpLoss > 0) {
     const lbox = { prevented: false, survivesAt: null };
