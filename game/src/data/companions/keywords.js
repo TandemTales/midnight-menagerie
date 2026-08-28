@@ -239,6 +239,14 @@ export const COMPANION_KEYWORDS = [
   K('snare', 'Snare', 'At the start of an enemy\'s Attack, if it has 4 or more [Vines], four are consumed and the Attack is Snared: a multi-hit loses its last hit, a single hit is reduced but NEVER cancelled. Once per enemy each turn.', { companion: 'brambleboo' }),
   K('overgrown', 'Overgrown', 'All four Plots holding Mature Plants. Several Tricks are dramatically stronger for it — and every Overgrown turn ends by adding a [Weed] to your discard pile. A hazard you choose, not a reward.', { companion: 'brambleboo' }),
   K('weed', 'Weed', 'An unplayable Trick that just takes up room in your hand and is discarded normally. Weeds vanish after the Scuffle, and several of Brambleboo\'s Tricks turn them back into [Compost].', { companion: 'brambleboo' }),
+
+  // ── Crinkle ───────────────────────────────────────────────────────────────
+  K('paper', 'Paper', 'Crinkle holds up to 8. Gained whenever one of his Tricks [Vanish]es, and spent on [Trace] and [Refold].', { companion: 'crinkle' }),
+  K('fold', 'Fold X', 'Put X [Crease]s on a Trick in your hand. A Trick holds three.', { companion: 'crinkle' }),
+  K('crease', 'Crease', 'PERMANENT. Each Crease on a Trick takes a Nerve off its cost and adds a third to its printed numbers — and it stays there through the discard pile, the shuffle and back into your hand. A folded piece of paper is folded. At three it is [Overfolded].', { companion: 'crinkle' }),
+  K('overfolded', 'Overfolded', 'A Trick at three [Crease]s: twice its printed size, costs nothing, and removed from the Scuffle the moment you play it. The payoff and the price are the same event.', { companion: 'crinkle' }),
+  K('trace', 'Trace', 'Put a Paper Copy of a Trick into your hand. It costs 0, keeps the original\'s [Crease]s, [Vanish]es when played, and cannot itself be Traced.', { companion: 'crinkle' }),
+  K('refold', 'Refold', 'Turn a Trick in your hand into a DIFFERENT Trick of the same type from Crinkle\'s pool, keeping its [Crease]s. Transformation, not selection — what comes out is not up to you.', { companion: 'crinkle' }),
 ];
 
 export const KEYWORD_IDS = COMPANION_KEYWORDS.map(k => k.id);
@@ -850,6 +858,28 @@ export const COMPANION_STATUSES = [
   powerStatus('brambleboo/no-more-empty-rooms', 'No More Empty Rooms', 'While Overgrown, everything happens twice.', 'overgrown'),
   powerStatus('brambleboo/safe-under-the-leaves', 'Safe Under the Leaves', 'Spend an attacker’s Vines to Guard a friend first.', 'vines'),
   powerStatus('brambleboo/one-big-conservatory', 'One Big Conservatory', 'Every friend’s turn starts with a choice.', 'garden'),
+
+  // ── Crinkle ───────────────────────────────────────────────────────────────
+  powerStatus('crinkle/paper-trail', 'Paper Trail', 'The first Vanish each turn gives extra Paper.', 'paper'),
+  powerStatus('crinkle/practised-hands', 'Practised Hands', 'The first Fold each turn goes one deeper.', 'fold'),
+  powerStatus('crinkle/marginalia', 'Marginalia', 'The first Paper Copy each turn draws.', 'trace'),
+  powerStatus('crinkle/standing-order', 'Standing Order', 'A random Trick in hand is Folded each turn.', 'fold'),
+  powerStatus('crinkle/under-the-blotter', 'Under the Blotter', 'Overfolded Tricks pay extra Paper when they go.', 'overfolded'),
+  powerStatus('crinkle/cheap-reproduction', 'Cheap Reproduction', 'Tracing costs a Paper less.', 'trace'),
+  powerStatus('crinkle/reading-aloud', 'Reading Aloud', 'The first Trick drawn each turn arrives Folded.', 'fold'),
+  powerStatus('crinkle/the-second-draft', 'The Second Draft', 'The first Refold each turn is Traced.', 'refold'),
+  powerStatus('crinkle/pressed-flat', 'Pressed Flat', 'Reaching two Creases gains Guard.', 'crease'),
+  powerStatus('crinkle/paper-doors', 'Paper Doors', 'A Paper Copy Vanishing gives Paper.', 'paper'),
+  powerStatus('crinkle/collated', 'Collated', 'A Creased Trick returns to the top of your deck.', 'crease'),
+  powerStatus('crinkle/deckle-edge', 'Deckle Edge', 'Every Crease is worth twice as much.', 'crease'),
+  powerStatus('crinkle/never-unfolds', 'Never Unfolds', 'Overfolded Tricks no longer Vanish.', 'overfolded'),
+  powerStatus('crinkle/paper-everything', 'Paper Everything', 'Maximum Paper 16.', 'paper'),
+  powerStatus('crinkle/fourth-crease', 'Fourth Crease', 'Tricks hold a fourth Crease.', 'crease'),
+  powerStatus('crinkle/the-archive', 'The Archive', 'Vanished Tricks go to the bottom of your deck.', 'paper'),
+  powerStatus('crinkle/mass-production', 'Mass Production', 'The first Trick each turn is Traced after it resolves.', 'trace'),
+  powerStatus('crinkle/everything-is-paper', 'Everything Is Paper', 'Overflowing Paper becomes damage.', 'paper'),
+  powerStatus('crinkle/the-crow-remembers', 'The Crow Remembers', 'A Vanished Trick comes back each turn.', 'paper'),
+  powerStatus('crinkle/shared-library', 'Shared Library', 'A friend’s expensive Trick gives you Paper.', 'paper'),
 ];
 
 export const STATUS_IDS = COMPANION_STATUSES.map(s => s.id);

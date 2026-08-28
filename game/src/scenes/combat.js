@@ -2632,6 +2632,30 @@ export class CombatScene extends Scene {
       const t = this._defaultTargetFor(card.uid);
       return this.engine.canPlay(card.uid, t).ok;
     });
+    this._syncCardNumbers();
+  }
+
+  /**
+   * A Trick whose PRINTED numbers changed mid-combat.
+   *
+   * Rules text is rendered once when a CardView is built, so a Trick that is
+   * genuinely rewritten while it sits in the hand — Crinkle folds one and it
+   * permanently deals twice as much — would keep showing the old number until
+   * it was next redrawn, which is to say until after it had been played looking
+   * wrong. Cheap: one identity comparison per card in hand, and `setBaseNumbers`
+   * returns immediately when nothing moved.
+   */
+  _syncCardNumbers() {
+    if (!this.hand || !this.mePiles) return;
+    for (const c of this.mePiles.hand || []) {
+      const v = this.hand.viewOf(c.uid);
+      if (!v) continue;
+      if (c.nums) v.setBaseNumbers(c.nums);
+      // The pip too: a Crease takes a Nerve off, and so does every other
+      // discount in the game that lands while the card is already in hand.
+      const cost = this.engine.costOf(c);
+      if (typeof cost === 'number' && v.cost !== cost) v.setState({ cost });
+    }
   }
 
   /** STS2 §1: End Turn *changes state* when the hand has nothing playable. */

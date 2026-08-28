@@ -1,0 +1,343 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Crinkle — Paper, Fold, Crease, Overfolded, Trace, Refold</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+</style>
+<h1>Crinkle</h1>
+<div id="out"></div>
+<script type="module">
+import { RNG } from '../../game/src/core/rng.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import { makeDummySetup } from '../../game/src/combat/dummy.js';
+import { installTrackers, mm as MM, counter as CARDCOUNTER } from '../../game/src/data/companions/_util.js';
+import * as CARDS from '../../game/src/data/cards.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+function say(html, cls) { const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; out.appendChild(d); }
+
+async function crinkle(o = {}) {
+  const e = new CombatEngine(makeDummySetup(new RNG(o.seed || 1616), {
+    companion: 'crinkle', deck: CARDS.startingDeckFor('crinkle'), maxHp: 68, ...o,
+  }));
+  await e.startCombat();
+  installTrackers(e, 'crinkle');
+  return e;
+}
+function give(e, id) { e.addCard(CARDS.cardById(id), 'hand', {}); return e.piles.hand[e.piles.hand.length - 1]; }
+async function playCard(e, k, target) { e.player.energy = 9; await e.playCard(k.uid, target ? target.id : undefined); return k; }
+async function play(e, id, target) { return playCard(e, give(e, id), target); }
+/** Empty the hand so a chooser has exactly one candidate. */
+function onlyInHand(e, ...keep) {
+  for (const k of e.piles.hand.slice()) if (!keep.includes(k)) e.moveCard(k, 'discard', {});
+}
+const creases = (k) => CARDCOUNTER(k, 'crease');
+const scratch = (e) => MM({ e, self: e.player });
+function pileOf(e, card) {
+  for (const n of ['draw', 'hand', 'discard', 'exhaust', 'limbo', 'stash']) {
+    if ((e.piles[n] || []).includes(card)) return n;
+  }
+  return 'nowhere';
+}
+function watchDamage(e) {
+  const box = { total: 0, hits: 0 };
+  e.on('damage', (ev) => {
+    if (!ev || !ev.targetId || ev.targetId === e.player.id) return;
+    box.total += (ev.amount | 0); box.hits++;
+  });
+  return box;
+}
+
+try {
+  // ══ 1. A Crease makes a Trick cheaper AND bigger ════════════════════════
+  {
+    const e = await crinkle();
+    const k = give(e, 'crinkle/sharp-edge');
+    check(e.costOf(k) === 1, 'Sharp Edge costs 1 unfolded', `cost=${e.costOf(k)}`);
+    const fold = give(e, 'crinkle/first-fold');
+    onlyInHand(e, k, fold);
+    await playCard(e, fold);
+    check(creases(k) === 1, 'First Fold really puts a Crease on it', `creases=${creases(k)}`);
+    check(e.costOf(k) === 0, 'and a Crease really takes a Nerve off', `cost=${e.costOf(k)}`);
+
+    // ...and the damage really goes up. Measured against an unfolded control.
+    const dmg = watchDamage(e);
+    await playCard(e, k, e.livingEnemies()[0]);
+    const folded = dmg.total;
+
+    const e2 = await crinkle();
+    const d2 = watchDamage(e2);
+    await play(e2, 'crinkle/sharp-edge', e2.livingEnemies()[0]);
+    check(folded > d2.total, 'a Creased Trick really hits harder',
+      `folded ${folded} vs printed ${d2.total}`);
+  }
+  {
+    /* The number ON THE CARD has to change, not just the damage it deals.
+       Computing the Creased value inside the effect works and is invisible: the
+       card would print "Deal 6" and deal 12, which fails the tactical-clarity
+       bar the whole project is held to. `Card.nums` is what the renderer
+       substitutes `{d}` from, so that is where the Creased numbers live. */
+    const e = await crinkle();
+    const k = give(e, 'crinkle/paper-cut');
+    check(k.nums.d === 6, 'Paper Cut prints 6 unfolded', `d=${k.nums.d}`);
+    const third = give(e, 'crinkle/third-crease');
+    onlyInHand(e, k, third);
+    await playCard(e, third);
+    check(k.nums.d === 12, 'and an Overfolded one PRINTS 12 — the card says what it does',
+      `d=${k.nums.d}`);
+    const snap = e.state;
+    const shown = [...snap.piles.hand].find(x => x.uid === k.uid);
+    check(shown && shown.nums && shown.nums.d === 12,
+      'and the snapshot the screen renders from agrees',
+      `d=${shown && shown.nums ? shown.nums.d : '?'}`);
+  }
+  {
+    // Creases are PERMANENT — through the discard pile and back.
+    const e = await crinkle();
+    const k = give(e, 'crinkle/paper-cut');
+    const fold = give(e, 'crinkle/first-fold');
+    onlyInHand(e, k, fold);
+    await playCard(e, fold);
+    check(creases(k) === 1, 'one Crease on it');
+    e.moveCard(k, 'discard', {});
+    e.moveCard(k, 'draw', {});
+    e.moveCard(k, 'hand', {});
+    check(creases(k) === 1, 'and it is STILL folded after a trip through the piles',
+      `creases=${creases(k)}`);
+  }
+  {
+    // Three Creases: free, double, and it leaves the fight.
+    const e = await crinkle();
+    const k = give(e, 'crinkle/paper-cut');
+    const third = give(e, 'crinkle/third-crease');
+    onlyInHand(e, k, third);
+    await playCard(e, third);
+    check(creases(k) === 3, 'Third Crease really Overfolds it', `creases=${creases(k)}`);
+    check(e.costOf(k) === 0, 'an Overfolded Trick is free', `cost=${e.costOf(k)}`);
+
+    const dmg = watchDamage(e);
+    await playCard(e, k, e.livingEnemies()[0]);
+    check(dmg.total === 12, 'and deals exactly double its printed 6', `dealt ${dmg.total}`);
+    check(pileOf(e, k) === 'exhaust', 'and it really leaves the combat when played',
+      `it is in ${pileOf(e, k)}`);
+  }
+  {
+    // Never Unfolds keeps it.
+    const e = await crinkle();
+    await play(e, 'crinkle/never-unfolds', null);
+    const k = give(e, 'crinkle/paper-cut');
+    const third = give(e, 'crinkle/third-crease');
+    onlyInHand(e, k, third);
+    await playCard(e, third);
+    await playCard(e, k, e.livingEnemies()[0]);
+    check(pileOf(e, k) === 'discard', 'Never Unfolds really keeps an Overfolded Trick',
+      `it is in ${pileOf(e, k)}`);
+  }
+  {
+    // A Trick cannot hold more than three, until Fourth Crease.
+    const e = await crinkle();
+    const k = give(e, 'crinkle/paper-cut');
+    for (let i = 0; i < 3; i++) {
+      const f = give(e, 'crinkle/double-crease');
+      onlyInHand(e, k, f);
+      await playCard(e, f);
+    }
+    check(creases(k) === 3, 'Creases cap at three', `creases=${creases(k)}`);
+    await play(e, 'crinkle/fourth-crease', null);
+    const f = give(e, 'crinkle/first-fold');
+    onlyInHand(e, k, f);
+    await playCard(e, f);
+    check(creases(k) === 4, 'and Fourth Crease really opens a fourth', `creases=${creases(k)}`);
+  }
+
+  // ══ 2. Trace ════════════════════════════════════════════════════════════
+  {
+    const e = await crinkle();
+    const k = give(e, 'crinkle/sharp-edge');
+    const t = give(e, 'crinkle/trace-it');
+    onlyInHand(e, k, t);
+    const before = e.piles.hand.length;
+    await playCard(e, t);
+    check(e.piles.hand.length === before, 'Trace It puts a copy in hand as it leaves',
+      `hand ${before} -> ${e.piles.hand.length}`);
+    const copy = e.piles.hand.find(x => x !== k && (x.def ? x.def.id : x.id) === 'crinkle/sharp-edge');
+    check(!!copy, 'and the copy is really the same Trick');
+    if (copy) {
+      check(e.costOf(copy) === 0, 'a Paper Copy costs nothing', `cost=${e.costOf(copy)}`);
+      check(copy.meta.noTrace === true, 'and cannot itself be Traced');
+      await playCard(e, copy, e.livingEnemies()[0]);
+      check(pileOf(e, copy) === 'exhaust', 'and it Vanishes when played',
+        `it is in ${pileOf(e, copy)}`);
+    }
+  }
+  {
+    // A copy carries the original's Creases — the reason Deep Folds works.
+    const e = await crinkle();
+    const k = give(e, 'crinkle/paper-cut');
+    const third = give(e, 'crinkle/third-crease');
+    onlyInHand(e, k, third);
+    await playCard(e, third);
+    const t = give(e, 'crinkle/trace-it');
+    onlyInHand(e, k, t);
+    await playCard(e, t);
+    const copy = e.piles.hand.find(x => x !== k && x.meta && x.meta.paperCopy);
+    check(!!copy && creases(copy) === 3, 'a Paper Copy of an Overfolded Trick is Overfolded too',
+      `creases=${copy ? creases(copy) : 'no copy'}`);
+  }
+  {
+    // Paper Mirror's copy does NOT Vanish.
+    const e = await crinkle();
+    const k = give(e, 'crinkle/sharp-edge');
+    const m = give(e, 'crinkle/paper-mirror');
+    onlyInHand(e, k, m);
+    await playCard(e, m);
+    const copy = e.piles.hand.find(x => x !== k && x.meta && x.meta.paperCopy);
+    check(!!copy, 'Paper Mirror made a copy');
+    if (copy) {
+      await playCard(e, copy, e.livingEnemies()[0]);
+      check(pileOf(e, copy) === 'discard', 'and it really does NOT Vanish',
+        `it is in ${pileOf(e, copy)}`);
+    }
+  }
+
+  // ══ 3. Refold ═══════════════════════════════════════════════════════════
+  {
+    const e = await crinkle();
+    const k = give(e, 'crinkle/paper-cut');
+    const r = give(e, 'crinkle/refold-it');
+    onlyInHand(e, k, r);
+    await playCard(e, r);
+    check(pileOf(e, k) !== 'hand', 'Refold really consumes the original',
+      `it is in ${pileOf(e, k)}`);
+    const made = e.piles.hand[e.piles.hand.length - 1];
+    check(!!made && made !== k, 'and really puts something else in its place');
+    check(made && made.type === 'attack', 'of the same TYPE', `type=${made && made.type}`);
+    check(made && (made.def ? made.def.id : made.id) !== 'crinkle/paper-cut',
+      'and genuinely a different Trick');
+  }
+  {
+    // Refold keeps the Creases — the answer to folding the wrong card.
+    const e = await crinkle();
+    const k = give(e, 'crinkle/paper-cut');
+    const third = give(e, 'crinkle/third-crease');
+    onlyInHand(e, k, third);
+    await playCard(e, third);
+    const r = give(e, 'crinkle/refold-it');
+    onlyInHand(e, k, r);
+    await playCard(e, r);
+    const made = e.piles.hand[e.piles.hand.length - 1];
+    check(made && creases(made) === 3, 'a Refolded Trick keeps every Crease',
+      `creases=${made ? creases(made) : 'none'}`);
+  }
+
+  // ══ 4. Paper ════════════════════════════════════════════════════════════
+  {
+    const e = await crinkle();
+    check(e.counterMax('paper') === 8, 'Paper holds 8', `max=${e.counterMax('paper')}`);
+    check(e.counter('paper') === 0, 'and starts empty');
+    await play(e, 'crinkle/scrap-paper', null);
+    check(e.counter('paper') >= 3,
+      'Scrap Paper gives 2 and Vanishing itself gives another', `paper=${e.counter('paper')}`);
+
+    e.setCounter('paper', 8, 'test');
+    await play(e, 'crinkle/paper-everything', null);
+    check(e.counterMax('paper') === 16, 'Paper Everything widens the GAUGE',
+      `max=${e.counterMax('paper')}`);
+    check(e.counter('paper') === 8, 'and the banked Paper survives the redefine',
+      `paper=${e.counter('paper')}`);
+  }
+  {
+    // Every Vanish is Paper.
+    const e = await crinkle();
+    const before = e.counter('paper');
+    const k = give(e, 'crinkle/paper-cut');
+    const p = give(e, 'crinkle/pulp');
+    onlyInHand(e, k, p);
+    await playCard(e, p);
+    check(pileOf(e, k) === 'exhaust', 'Pulp really Vanishes the chosen Trick');
+    check(e.counter('paper') > before, 'and really pays Paper for it',
+      `paper ${before} -> ${e.counter('paper')}`);
+  }
+  {
+    // Second Copy cannot be paid for without Paper.
+    const e = await crinkle();
+    e.setCounter('paper', 0, 'test');
+    const k = give(e, 'crinkle/sharp-edge');
+    const s = give(e, 'crinkle/second-copy');
+    onlyInHand(e, k, s);
+    const hand = e.piles.hand.length;
+    await playCard(e, s);
+    check(e.piles.hand.length === hand - 1,
+      'Second Copy with no Paper really makes no copy',
+      `hand ${hand} -> ${e.piles.hand.length}`);
+  }
+
+  // ══ 5. The Powers that change the rules ═════════════════════════════════
+  {
+    const e = await crinkle();
+    await play(e, 'crinkle/deckle-edge', null);
+    const k = give(e, 'crinkle/paper-cut');
+    const f = give(e, 'crinkle/first-fold');
+    onlyInHand(e, k, f);
+    await playCard(e, f);
+    const dmg = watchDamage(e);
+    await playCard(e, k, e.livingEnemies()[0]);
+    check(dmg.total === 10, 'Deckle Edge makes one Crease worth two thirds, not one',
+      `printed 6, dealt ${dmg.total}`);
+  }
+  {
+    // The Archive recycles instead of losing them, Creases intact.
+    const e = await crinkle();
+    await play(e, 'crinkle/the-archive', null);
+    const k = give(e, 'crinkle/paper-cut');
+    const third = give(e, 'crinkle/third-crease');
+    onlyInHand(e, k, third);
+    await playCard(e, third);
+    await playCard(e, k, e.livingEnemies()[0]);
+    check(pileOf(e, k) === 'draw', 'The Archive really sends it to the deck instead of the void',
+      `it is in ${pileOf(e, k)}`);
+    check(creases(k) === 3, 'and it keeps its Creases', `creases=${creases(k)}`);
+  }
+  {
+    const e = await crinkle();
+    await play(e, 'crinkle/practised-hands', null);
+    const k = give(e, 'crinkle/paper-cut');
+    const f = give(e, 'crinkle/first-fold');
+    onlyInHand(e, k, f);
+    await playCard(e, f);
+    check(creases(k) === 2, 'Practised Hands makes the first Fold of the turn go deeper',
+      `creases=${creases(k)}`);
+    const k2 = give(e, 'crinkle/flatten');
+    const f2 = give(e, 'crinkle/first-fold');
+    onlyInHand(e, k2, f2);
+    await playCard(e, f2);
+    check(creases(k2) === 1, 'and only the first', `creases=${creases(k2)}`);
+  }
+  {
+    // Unfold is the only card that takes Creases off, and it pays for it.
+    const e = await crinkle();
+    const k = give(e, 'crinkle/paper-cut');
+    const third = give(e, 'crinkle/third-crease');
+    onlyInHand(e, k, third);
+    await playCard(e, third);
+    const paperBefore = e.counter('paper');
+    const u = give(e, 'crinkle/unfold');
+    onlyInHand(e, k, u);
+    await playCard(e, u);
+    check(creases(k) === 0, 'Unfold really takes every Crease off', `creases=${creases(k)}`);
+    check(e.counter('paper') >= paperBefore + 6, 'and really pays 2 Paper for each',
+      `paper ${paperBefore} -> ${e.counter('paper')}`);
+  }
+} catch (err) {
+  fails.push('THREW: ' + (err && err.stack || err));
+}
+
+say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`, fails.length ? 'fail' : 'pass');
+say('<ul class="pass">' + passes.map(p => `<li>PASS ${p}</li>`).join('') + '</ul>');
+if (fails.length) say('<ul class="fail">' + fails.map(f => `<li>FAIL ${f}</li>`).join('') + '</ul>');
+window.__RESULT = { passed: passes.length, failed: fails.length, fails, passes };
+window.__DONE = true;
+</script>

@@ -199,13 +199,28 @@ export class CardView {
     }
   }
 
-  /** Values the text placeholders resolve to right now (base, pre-preview). */
+  /**
+   * Values the text placeholders resolve to right now (base, pre-preview).
+   *
+   * `state.nums` wins when it is set. It exists because a RUNTIME card can have
+   * numbers its def does not — Crinkle's Creases permanently rewrite a Trick's
+   * printed damage — and `setState` has always had an `if ('nums' in patch)`
+   * branch that re-rendered the rules text and then read this getter, which
+   * ignored `state.nums` entirely. That branch has been dead the whole time.
+   *
+   * Note this used to return `def.nums` BY REFERENCE for an unupgraded card, so
+   * anything that "updated a card's numbers" by mutating what this returned was
+   * editing the shared definition and changing every copy of that Trick in the
+   * game. It returns a copy now.
+   */
   get nums() {
     const base = this.def.nums || {};
+    const own = this.state.nums;
     if (this.state.upgraded && this.def.upgrade && this.def.upgrade.nums) {
-      return Object.assign({}, base, this.def.upgrade.nums);
+      return Object.assign({}, base, this.def.upgrade.nums, own || {});
     }
-    return base;
+    if (own) return Object.assign({}, base, own);
+    return Object.assign({}, base);
   }
 
   get text() {
@@ -432,6 +447,35 @@ export class CardView {
     if ('nums' in patch) this._renderRules();
     this._applyClasses();
     if ('playable' in patch || this.cost !== before.cost) this._updateAria();
+    return this;
+  }
+
+  /**
+   * Replace the card's OWN numbers, permanently.
+   *
+   * `setPreviewNumbers` is a temporary overlay that always falls back to
+   * `this.nums`; this changes `this.nums` itself, for a Trick whose printed
+   * values have genuinely been rewritten mid-combat. Crinkle's Creases are the
+   * case: a folded Trick really does deal twice its printed damage for the rest
+   * of the fight, and a card that keeps saying 6 while dealing 12 fails the
+   * tactical-clarity bar the whole build is held to.
+   *
+   * Rules text is rendered ONCE at construction, so without this the new number
+   * only appears the next time the card is rebuilt — which is to say, after it
+   * has already been played at the wrong-looking value.
+   */
+  setBaseNumbers(nums) {
+    if (!nums || !this._numEls) return this;
+    const now = this.nums;
+    let changed = false;
+    for (const k of Object.keys(nums)) if (now[k] !== nums[k]) { changed = true; break; }
+    if (!changed) return this;
+    /* Written to `state.nums`, NOT onto what `get nums` returns — that used to
+       hand back the shared def object, so mutating it rewrote every copy of the
+       Trick in the game. */
+    this.state.nums = Object.assign({}, this.state.nums, nums);
+    // Re-runs the same DOM pass the preview uses, against the new base.
+    this.setPreviewNumbers(this._preview);
     return this;
   }
 

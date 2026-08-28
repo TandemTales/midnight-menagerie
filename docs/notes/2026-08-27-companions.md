@@ -744,7 +744,86 @@ truffle 27 · boggle 30 · mopsy 28 · wisp 25 · crumbula 25 · hush 17 · wink
 
 ---
 
-## Still to come
+## 11. Crinkle, the Paper Crow  ✅ — designed, then built
 
-**Not designed (1): Crinkle, the Paper Crow.** No chapter anywhere, including the
-source `.docx`. Fifteen of sixteen are now playable and he is the only gap.
+`study-library`. 5 basics + 20 commons + 35 uncommons + 25 rares + 5 co-op.
+Paper, Fold, Crease, Overfolded, Trace, Refold. **The roster is complete: 16 of
+16 playable, 1468 cards.**
+
+### He had no chapter, so one was written
+
+Every other Companion is built from a chapter carved out of the design doc.
+Crinkle's entire specification in the source is one line in
+`00-core-overview.md`: *"card duplication, folding, transformations and fragile
+high power effects."* `docs/design/companions/16-crinkle.md` is a
+**reconstruction** from that line plus everything else the doc already says about
+him — the Grand Study and Library, the Archivist, "paper doors can appear after
+his rescue", "knows how the house changes its floor plan", "interprets maps,
+written clues, hidden documents and paper mechanisms", and the settled art
+direction "every edge straight, every plane a flat facet". Its header says so in
+as many words. **The designer should read it as a proposal**; the implementation
+follows the chapter, so editing the chapter is how to change him.
+
+The design resolves the one line into: Creases that permanently make a Trick
+cheaper and bigger and, at three, destroy it when used; Paper Copies that carry
+those Creases and Vanish; and Refold, which transforms a Trick into a different
+one while keeping the Creases. One sentence holds it together — *a folded Trick
+is the best card in your deck, right up until the fold you cannot take back.*
+
+### Two UI bugs, one of them shared by every card in the game
+
+Creases were first implemented as a read-time scaler, which works and is
+**invisible**: a folded Paper Cut printed "Deal 6 damage" and dealt 12. The whole
+project is held to "the player can always see exactly what will happen", so the
+Creased numbers are written onto the runtime card's own `nums` instead —
+`Card.nums` is a per-instance copy and the renderer substitutes `{d}` from it.
+That also deletes a bug class: with no second numbers accessor there is no wrong
+one to write a card against.
+
+Making that visible turned up two real problems in `ui/card.js`:
+
+- **`CardView.setState({ nums })` was dead.** The branch existed and re-rendered
+  the rules text, but `get nums` derived from the DEF and never looked at
+  `state.nums`, so the re-render produced the same numbers. It has presumably
+  been dead since it was written.
+- **`get nums` returned `def.nums` BY REFERENCE** for an unupgraded card. The
+  first version of the fix mutated what it returned — which was editing the
+  shared definition and would have changed *every copy of that Trick in the
+  game*. It returns a copy now, and `state.nums` wins when set.
+
+`scenes/combat.js` pushes both the numbers and the cost into the hand's card
+views on every playability sync, so a discount that lands while a card is already
+in hand is visible too — not only Crinkle's.
+
+### A note on fps
+
+`tests/chrome` fails its 60fps check at 51–52. Measured against the session's
+starting commit on the same filesystem: **47 there**, so the shortfall predates
+tonight's work and is marginally better now, not worse. Trap 7's advice was
+followed — it was re-measured in isolation, twice, before drawing that
+conclusion. Worth a look by somebody, but it is not from the Companions.
+
+### Verification
+
+`tests/crinkle/run.py` — **44 checks**: a Crease really makes a Trick cheaper AND
+bigger, really survives a trip through the discard pile and back, and really
+caps at three until Fourth Crease; an Overfolded Trick really costs 0, really
+deals exactly double, really leaves the combat, and really does not under Never
+Unfolds; a Paper Copy really costs 0, really carries the original's Creases,
+really Vanishes, and really does not under Paper Mirror; a Refold really consumes
+the original, really produces a different Trick of the same type, and really
+keeps the Creases; Second Copy with no Paper really makes no copy; Unfold really
+strips them and really pays; and the card really PRINTS 12 in the snapshot the
+screen renders from.
+
+cards 1468/0/0 · combat 677 · coop 591 · run 50 · backpack 80 · enemies 37 ·
+six gates · combat-scene 22 · brambleboo 52 · mossbit 55 · pudding 46 ·
+drizzle 70 · truffle 27 · and the rest.
+
+---
+
+## The roster is complete
+
+**16 of 16 playable.** 1468 cards, 0 errors, 0 warnings. Fifteen built from the
+design doc; Crinkle built from a chapter written here on 2026-08-28 and clearly
+marked as a reconstruction awaiting the designer's review.
