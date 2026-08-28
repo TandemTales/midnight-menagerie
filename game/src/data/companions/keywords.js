@@ -223,6 +223,22 @@ export const COMPANION_KEYWORDS = [
   K('patience', 'Patience', 'Holds 3, or 5 under Longer Memory. One is paid whenever an [Epitaph] reaches zero from its own scheduled tick — never from being hurried along. That difference is the whole of Mossbit.', { companion: 'mossbit' }),
   K('weathering', 'Weathering', 'A Trick with Weathering left unplayed in your hand at the end of your turn is kept in hand and loses 1. At 0 it is Weathered for the rest of the fight and uses its better half. Leaving your hand before then resets it to its printed number — the progress is the reward for NOT playing it.', { companion: 'mossbit' }),
   K('buried-harm', 'Buried Harm', 'Attack damage postponed rather than prevented. At the END of your next turn you lose that much Courage — not as an Attack, so Guard cannot stop it and it cannot be postponed again. Burying buys exactly one turn to do something about it.', { companion: 'mossbit' }),
+
+  // ── Brambleboo ────────────────────────────────────────────────────────────
+  K('garden', 'Garden', 'Four Plots beside your deck, each holding one Plant. Plants are not Tricks and never enter any pile. A new Plant has 0 Growth, gains 1 at the end of each of your turns, and is Mature at 2. PLANT puts one in an empty Plot; PROPAGATE copies one into another.', { companion: 'brambleboo' }),
+  K('ivy', 'Creeping Ivy', 'Mature: [Entwine] 1 at the start of your turn. [Harvest]: [Entwine] 3, split as you like. The Vine engine.', { companion: 'brambleboo' }),
+  K('briar', 'Briar', 'Mature: after each enemy Attacks you, it deals light damage back and [Entwine]s 1. [Harvest]: hit every enemy, harder if they are [Vine]d. Retaliation that becomes control.', { companion: 'brambleboo' }),
+  K('moonflower', 'Moonflower', 'Mature: at the start of your turn draw 1, then put a Trick back on top of your deck. [Harvest]: draw 2, put one back, and make a Trick in hand cost 1 less. Consistency, not damage.', { companion: 'brambleboo' }),
+  K('grave-moss', 'Grave Moss', 'Mature: Guard at the start of your turn. [Harvest]: a lot of Guard that does NOT expire next turn. It buys the time everything else needs.', { companion: 'brambleboo' }),
+  K('harvest', 'Harvest', 'Resolve a Mature Plant\'s payoff and remove it from the [Garden]. Gain 1 [Compost]. It is both the reward and the cost — the engine that made the payoff worth having is what you spend.', { companion: 'brambleboo' }),
+  K('uproot', 'Uproot', 'Remove any Plant, Mature or not, WITHOUT its [Harvest] effect. Still gains 1 [Compost]. Deliberately worse than Harvesting, and several Tricks pay you for doing it anyway.', { companion: 'brambleboo' }),
+  K('propagate', 'Propagate', 'Put a new Plant of the same Cultivar into an empty Plot at 0 Growth. The original is untouched.', { companion: 'brambleboo' }),
+  K('compost', 'Compost', 'Gained whenever a Plant leaves the [Garden] by any route. Once each turn, Fertilize for free: spend 1 to give an immature Plant 1 Growth. Yesterday\'s garden paying for tomorrow\'s.', { companion: 'brambleboo' }),
+  K('vines', 'Vines', 'Up to 6 on an enemy. They do NOTHING by existing — they are not poison. They exist to be spent on [Snare], or by Tricks that convert them into damage.', { companion: 'brambleboo' }),
+  K('entwine', 'Entwine X', 'Put X [Vines] on the chosen enemy or enemies, up to the cap of 6.', { companion: 'brambleboo' }),
+  K('snare', 'Snare', 'At the start of an enemy\'s Attack, if it has 4 or more [Vines], four are consumed and the Attack is Snared: a multi-hit loses its last hit, a single hit is reduced but NEVER cancelled. Once per enemy each turn.', { companion: 'brambleboo' }),
+  K('overgrown', 'Overgrown', 'All four Plots holding Mature Plants. Several Tricks are dramatically stronger for it — and every Overgrown turn ends by adding a [Weed] to your discard pile. A hazard you choose, not a reward.', { companion: 'brambleboo' }),
+  K('weed', 'Weed', 'An unplayable Trick that just takes up room in your hand and is discarded normally. Weeds vanish after the Scuffle, and several of Brambleboo\'s Tricks turn them back into [Compost].', { companion: 'brambleboo' }),
 ];
 
 export const KEYWORD_IDS = COMPANION_KEYWORDS.map(k => k.id);
@@ -809,6 +825,31 @@ export const COMPANION_STATUSES = [
   powerStatus('mossbit/already-written', 'Already Written', 'Two more Epitaph slots.', 'epitaph'),
   powerStatus('mossbit/death-can-wait', 'Death Can Wait', 'Once a fight, lethal Buried Harm is cleared and everything fires.', 'buried-harm'),
   powerStatus('mossbit/family-plot', 'Family Plot', 'The first Epitaph to mature each turn Guards every friend.', 'epitaph'),
+
+  // ── Brambleboo ────────────────────────────────────────────────────────────
+  /* Vines carry no behaviour at all, on purpose: everything that happens
+     because of them is Snare, which lives in Brambleboo's own hit hook. A
+     status that quietly did damage would make them poison, which the chapter
+     is explicit they are not. */
+  {
+    id: 'vines', name: 'Vines', kind: 'debuff', icon: 'vines', decay: 'never', stacks: true, max: 6,
+    desc: '{n} Vines. Four of them are spent to Snare this enemy’s next Attack.',
+  },
+  powerStatus('brambleboo/house-takes-root', 'House Takes Root', 'The first Entwine each turn reaches a second enemy.', 'entwine'),
+  powerStatus('brambleboo/perennial-problem', 'Perennial Problem', 'The first Plant to leave each turn comes straight back.', 'garden'),
+  powerStatus('brambleboo/thorny-disposition', 'Thorny Disposition', 'A Snared enemy takes a hit from every Mature Briar.', 'briar'),
+  powerStatus('brambleboo/closed-terrarium', 'Closed Terrarium', 'Uproot one to keep an Overgrown turn’s Weed out.', 'overgrown'),
+  powerStatus('brambleboo/creeping-through-the-walls', 'Creeping Through the Walls', 'A Plant maturing Entwines every enemy.', 'garden'),
+  powerStatus('brambleboo/kitchen-compost', 'Kitchen Compost', 'Removing a Weed makes your next Planting Trick free.', 'compost'),
+  powerStatus('brambleboo/the-mansion-is-my-trellis', 'The Mansion Is My Trellis', 'Snare at 3 Vines, and it takes all of them.', 'snare'),
+  powerStatus('brambleboo/ancient-houseplant', 'Ancient Houseplant', 'Plants Mature at 1 Growth, and bring a Weed.', 'garden'),
+  powerStatus('brambleboo/never-stop-growing', 'Never Stop Growing', 'An empty Plot fills itself at the end of your turn.', 'garden'),
+  powerStatus('brambleboo/bloom-after-midnight', 'Bloom After Midnight', 'The first Harvest each turn leaves the Plant standing.', 'harvest'),
+  powerStatus('brambleboo/green-in-every-room', 'Green in Every Room', 'Overgrown at 3 Mature Plants, for two Weeds a turn.', 'overgrown'),
+  powerStatus('brambleboo/the-garden-remembers', 'The Garden Remembers', 'A Cultivar you have Harvested replants further on.', 'garden'),
+  powerStatus('brambleboo/no-more-empty-rooms', 'No More Empty Rooms', 'While Overgrown, everything happens twice.', 'overgrown'),
+  powerStatus('brambleboo/safe-under-the-leaves', 'Safe Under the Leaves', 'Spend an attacker’s Vines to Guard a friend first.', 'vines'),
+  powerStatus('brambleboo/one-big-conservatory', 'One Big Conservatory', 'Every friend’s turn starts with a choice.', 'garden'),
 ];
 
 export const STATUS_IDS = COMPANION_STATUSES.map(s => s.id);

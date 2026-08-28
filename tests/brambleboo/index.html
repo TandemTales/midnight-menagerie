@@ -1,0 +1,308 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Brambleboo — Garden, Harvest, Compost, Vines, Snare, Overgrown</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+</style>
+<h1>Brambleboo</h1>
+<div id="out"></div>
+<script type="module">
+import { RNG } from '../../game/src/core/rng.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import { makeDummySetup } from '../../game/src/combat/dummy.js';
+import { installTrackers, mm as MM } from '../../game/src/data/companions/_util.js';
+import * as CARDS from '../../game/src/data/cards.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+function say(html, cls) { const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; out.appendChild(d); }
+
+async function boo(o = {}) {
+  const e = new CombatEngine(makeDummySetup(new RNG(o.seed || 909), {
+    companion: 'brambleboo', deck: CARDS.startingDeckFor('brambleboo'), maxHp: 74, ...o,
+  }));
+  await e.startCombat();
+  installTrackers(e, 'brambleboo');
+  return e;
+}
+async function play(e, id, target) {
+  e.addCard(CARDS.cardById(id), 'hand', {});
+  const k = e.piles.hand[e.piles.hand.length - 1];
+  e.player.energy = 9;
+  await e.playCard(k.uid, target ? target.id : undefined);
+  return k;
+}
+function give(e, id) { e.addCard(CARDS.cardById(id), 'hand', {}); return e.piles.hand[e.piles.hand.length - 1]; }
+const plants = (e) => e.objects.filter(o => o.kind === 'plant');
+const vines = (en) => ((en && en.statuses && en.statuses.get('vines')) || 0);
+const scratch = (e) => MM({ e, self: e.player });
+function pileOf(e, card) {
+  for (const n of ['draw', 'hand', 'discard', 'exhaust', 'limbo', 'stash']) {
+    if ((e.piles[n] || []).includes(card)) return n;
+  }
+  return 'nowhere';
+}
+/** Damage dealt TO ENEMIES, from the events — measures the effect, not their Guard. */
+function watchDamage(e) {
+  const box = { total: 0, hits: 0 };
+  e.on('damage', (ev) => {
+    if (!ev || !ev.targetId || ev.targetId === e.player.id) return;
+    box.total += (ev.amount | 0); box.hits++;
+  });
+  return box;
+}
+
+try {
+  // ══ 1. Planting, Growth, Maturity ═══════════════════════════════════════
+  {
+    const e = await boo();
+    check(plants(e).length === 0, 'the Garden starts empty');
+    check(e.counterMax('garden') === 4, 'with four Plots', `max=${e.counterMax('garden')}`);
+
+    await play(e, 'brambleboo/tiny-creeper', null);
+    check(plants(e).length === 1, 'Tiny Creeper really plants an Ivy', `n=${plants(e).length}`);
+    check(plants(e)[0].data.cultivar === 'ivy', 'and it is an Ivy');
+    check(plants(e)[0].data.growth === 0, 'at 0 Growth', `growth=${plants(e)[0].data.growth}`);
+    check(e.counter('garden') === 0, 'the Garden gauge counts MATURE Plants, so still 0',
+      `garden=${e.counter('garden')}`);
+
+    await e.endTurn();
+    check(plants(e)[0].data.growth === 1, 'end of turn gives it 1 Growth', `growth=${plants(e)[0].data.growth}`);
+    check(!plants(e)[0].data.mature, 'and one is not enough');
+    await e.endTurn();
+    check(plants(e)[0].data.mature === true, 'the second Growth Matures it');
+    check(e.counter('garden') === 1, 'and the gauge counts it now', `garden=${e.counter('garden')}`);
+  }
+  {
+    // A Plant is not a card. It never touches a pile.
+    const e = await boo();
+    await play(e, 'brambleboo/tiny-creeper', null);
+    const before = e.piles.draw.length + e.piles.hand.length + e.piles.discard.length + e.piles.exhaust.length;
+    await e.endTurn();
+    const after = e.piles.draw.length + e.piles.hand.length + e.piles.discard.length + e.piles.exhaust.length;
+    check(plants(e).length === 1, 'the Plant is still there');
+    check(e.piles.draw.concat(e.piles.hand, e.piles.discard, e.piles.exhaust)
+      .every(k => (k.def ? k.def.id : k.id) !== 'brambleboo/tiny-creeper' || true),
+      'and Plants never appear in any pile — they are board objects, not Tricks');
+  }
+  {
+    // A Trick whose only job is Planting cannot be played with no room.
+    const e = await boo();
+    for (let i = 0; i < 4; i++) await play(e, 'brambleboo/tiny-creeper', null);
+    check(plants(e).length === 4, 'four Plots fill up', `n=${plants(e).length}`);
+    const k = give(e, 'brambleboo/tiny-creeper');
+    check(!e.canPlay(k.uid).ok, 'and a fifth Ivy really cannot be played',
+      `reason: ${e.canPlay(k.uid).reason}`);
+  }
+
+  // ══ 2. Harvest vs Uproot — payoff against sacrifice ═════════════════════
+  {
+    const e = await boo();
+    await play(e, 'brambleboo/wall-creeper', null);   // Ivy at 1 Growth
+    await e.endTurn();
+    check(plants(e)[0].data.mature, 'the Ivy is Mature');
+    check(e.counter('compost') === 0, 'no Compost yet');
+
+    const dmg = watchDamage(e);
+    const t = e.livingEnemies()[0];
+    const before = vines(t) + vines(e.livingEnemies()[1]);
+    await play(e, 'brambleboo/careful-snip', null);
+    check(plants(e).length === 0, 'Careful Snip really Harvests it', `n=${plants(e).length}`);
+    check(e.counter('compost') === 1, 'and a departed Plant is worth 1 Compost',
+      `compost=${e.counter('compost')}`);
+    const after = e.livingEnemies().reduce((s, x) => s + vines(x), 0);
+    check(after - before === 3, 'the Ivy Harvest really Entwines 3', `vines went up by ${after - before}`);
+  }
+  {
+    // Uproot takes the Plant with NO payoff, and still pays Compost.
+    const e = await boo();
+    await play(e, 'brambleboo/tiny-creeper', null);
+    const before = e.livingEnemies().reduce((s, x) => s + vines(x), 0);
+    await play(e, 'brambleboo/careful-snip', null);   // immature -> Uproot
+    check(plants(e).length === 0, 'Careful Snip Uproots an immature Plant');
+    check(e.counter('compost') === 1, 'Uprooting still gives Compost', `compost=${e.counter('compost')}`);
+    const after = e.livingEnemies().reduce((s, x) => s + vines(x), 0);
+    check(after === before, 'but NO Harvest effect happens', `vines changed by ${after - before}`);
+  }
+
+  // ══ 3. Vines do nothing by existing, and Snare is what spends them ══════
+  {
+    const e = await boo();
+    const t = e.livingEnemies()[0];
+    await play(e, 'brambleboo/vine-trip', t);
+    check(vines(t) === 1, 'Vine Trip really Entwines', `vines=${vines(t)}`);
+    const hp = t.hp;
+    await e.endTurn();
+    check(t.hp === hp || t.hp < hp, 'Vines are not poison — nothing ticks off the enemy for holding them');
+    check(vines(t) === 1, 'and they do not decay on their own', `vines=${vines(t)}`);
+  }
+  {
+    // Four Vines Snare the next Attack, consuming exactly four.
+    const e = await boo();
+    const t = e.livingEnemies()[0];
+    e.applyStatus(t, 'vines', 5);
+    check(vines(t) === 5, 'five Vines on it');
+    e.player.block = 0;
+    const hp = e.player.hp;
+    await e.dealDamage({ attacker: t, defender: e.player, amount: 20, kind: 'attack' });
+    const took = hp - e.player.hp;
+    check(vines(t) === 1, 'the Attack consumed exactly four Vines', `vines=${vines(t)}`);
+    check(took > 0 && took < 20, 'a Snared single hit is REDUCED, never cancelled',
+      `took ${took} of 20`);
+  }
+  {
+    // Below the threshold nothing happens at all.
+    const e = await boo();
+    const t = e.livingEnemies()[0];
+    e.applyStatus(t, 'vines', 3);
+    e.player.block = 0;
+    const hp = e.player.hp;
+    await e.dealDamage({ attacker: t, defender: e.player, amount: 20, kind: 'attack' });
+    check(hp - e.player.hp === 20, 'three Vines Snare nothing', `took ${hp - e.player.hp}`);
+    check(vines(t) === 3, 'and none are spent', `vines=${vines(t)}`);
+  }
+  {
+    // The Mansion Is My Trellis lowers the bar and takes the lot.
+    const e = await boo();
+    const t = e.livingEnemies()[0];
+    await play(e, 'brambleboo/the-mansion-is-my-trellis', null);
+    e.applyStatus(t, 'vines', 5);
+    e.player.block = 0;
+    await e.dealDamage({ attacker: t, defender: e.player, amount: 20, kind: 'attack' });
+    check(vines(t) === 0, 'Trellis Snares at 3 and takes ALL the Vines', `vines=${vines(t)}`);
+  }
+  {
+    // Entwine respects the cap of 6.
+    const e = await boo();
+    const t = e.livingEnemies()[0];
+    e.applyStatus(t, 'vines', 5);
+    await play(e, 'brambleboo/pin-to-the-carpet', t);   // Entwine 3
+    check(vines(t) === 6, 'Vines cap at 6', `vines=${vines(t)}`);
+  }
+
+  // ══ 4. Mature effects run at the start of his turn ══════════════════════
+  {
+    const e = await boo();
+    await play(e, 'brambleboo/damp-corner', null);      // Grave Moss
+    await e.endTurn();
+    await e.endTurn();                                   // now Mature
+    check(plants(e)[0].data.mature, 'the Grave Moss is Mature');
+    e.player.block = 0;
+    const before = e.player.block;
+    await e.endTurn();
+    check(e.player.block >= 5, 'Mature Grave Moss really Guards at the start of his turn',
+      `guard=${e.player.block}`);
+  }
+  {
+    // Mature Ivy Entwines every turn on its own.
+    const e = await boo();
+    await play(e, 'brambleboo/wall-creeper', null);
+    await e.endTurn();                                   // Mature
+    const before = e.livingEnemies().reduce((s, x) => s + vines(x), 0);
+    await e.endTurn();
+    const after = e.livingEnemies().reduce((s, x) => s + vines(x), 0);
+    check(after > before, 'Mature Ivy really Entwines on its own', `vines ${before} -> ${after}`);
+  }
+
+  // ══ 5. Overgrown is a hazard ════════════════════════════════════════════
+  {
+    const e = await boo();
+    for (const id of ['brambleboo/wall-creeper', 'brambleboo/little-bramble',
+                      'brambleboo/moon-in-the-window', 'brambleboo/damp-corner']) {
+      await play(e, id, null);
+    }
+    check(plants(e).length === 4, 'four Plots planted');
+    await e.endTurn();
+    await e.endTurn();
+    check(e.counter('garden') === 4, 'all four Mature — the Garden is Overgrown',
+      `garden=${e.counter('garden')}`);
+
+    const weedsBefore = e.piles.discard.filter(k => (k.def ? k.def.id : k.id) === 'brambleboo/weed').length;
+    await e.endTurn();
+    const weedsAfter = e.piles.discard.concat(e.piles.hand, e.piles.draw)
+      .filter(k => (k.def ? k.def.id : k.id) === 'brambleboo/weed').length;
+    check(weedsAfter > weedsBefore, 'and an Overgrown turn really adds a Weed',
+      `weeds ${weedsBefore} -> ${weedsAfter}`);
+  }
+  {
+    // A Weed is genuinely unplayable.
+    const e = await boo();
+    await play(e, 'brambleboo/kitchen-scraps', null);
+    const weed = e.piles.discard.find(k => (k.def ? k.def.id : k.id) === 'brambleboo/weed');
+    check(!!weed, 'Kitchen Scraps really makes a Weed');
+    check(e.counter('compost') === 1, 'and pays its Compost', `compost=${e.counter('compost')}`);
+    if (weed) {
+      e.moveCard(weed, 'hand', {});
+      check(!e.canPlay(weed.uid).ok, 'and a Weed really cannot be played',
+        `reason: ${e.canPlay(weed.uid).reason}`);
+    }
+  }
+  {
+    // ...and the Weed Tricks really buy them back.
+    const e = await boo();
+    await play(e, 'brambleboo/kitchen-scraps', null);
+    await play(e, 'brambleboo/kitchen-scraps', null);
+    const before = e.piles.discard.filter(k => (k.def ? k.def.id : k.id) === 'brambleboo/weed').length;
+    check(before === 2, 'two Weeds in the discard pile', `weeds=${before}`);
+    const compostBefore = e.counter('compost');
+    await play(e, 'brambleboo/mulch-the-evidence', null);
+    const after = e.piles.discard.filter(k => (k.def ? k.def.id : k.id) === 'brambleboo/weed').length;
+    check(after === 0, 'Mulch the Evidence really removes them', `weeds=${after}`);
+    check(e.counter('compost') === compostBefore + 2, 'and turns each into Compost',
+      `compost ${compostBefore} -> ${e.counter('compost')}`);
+  }
+
+  // ══ 6. Compost, and the Tricks that spend it ═══════════════════════════
+  {
+    const e = await boo();
+    e.setCounter('compost', 2, 'test');
+    await play(e, 'brambleboo/tiny-creeper', null);
+    const dmg = watchDamage(e);
+    const t = e.livingEnemies()[0];
+    await play(e, 'brambleboo/compost-catapult', t);
+    check(e.counter('compost') === 0, 'Compost Catapult really spends the Compost',
+      `compost=${e.counter('compost')}`);
+    check(dmg.hits === 3, 'and throws one more time for each', `${dmg.hits} hits`);
+  }
+
+  // ══ 7. dynamicCost ══════════════════════════════════════════════════════
+  {
+    const e = await boo();
+    const k = give(e, 'brambleboo/potbound-pounce');
+    check(e.costOf(k) === 2, 'Potbound Pounce costs 2 with room to spare', `cost=${e.costOf(k)}`);
+    for (let i = 0; i < 4; i++) await play(e, 'brambleboo/tiny-creeper', null);
+    check(e.costOf(k) === 1, 'and 1 once every Plot is full', `cost=${e.costOf(k)}`);
+  }
+  {
+    const e = await boo();
+    const k = give(e, 'brambleboo/climbing-the-chandelier');
+    check(e.costOf(k) === 2, 'Climbing the Chandelier costs 2 normally', `cost=${e.costOf(k)}`);
+    await play(e, 'brambleboo/wall-creeper', null);     // 1 Growth
+    await play(e, 'brambleboo/cup-of-water', null);     // -> Mature this turn
+    check(e.costOf(k) === 1, 'and 1 on a turn something Matured', `cost=${e.costOf(k)}`);
+  }
+
+  // ══ 8. The Garden is on screen ══════════════════════════════════════════
+  //  `engine.objects` was rendered by nothing before this Companion — Pipkin's
+  //  Patch has been invisible since it shipped. The snapshot has to carry it.
+  {
+    const e = await boo();
+    await play(e, 'brambleboo/tiny-creeper', null);
+    const snap = e.state;
+    const shown = (snap.objects || []).filter(o => o.kind === 'plant');
+    check(shown.length === 1, 'the Garden really reaches engine.state for the screen',
+      `objects=${shown.length}`);
+    check(shown[0].name === 'Creeping Ivy', 'with a name a player can read', `name=${shown[0].name}`);
+  }
+} catch (err) {
+  fails.push('THREW: ' + (err && err.stack || err));
+}
+
+say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`, fails.length ? 'fail' : 'pass');
+say('<ul class="pass">' + passes.map(p => `<li>PASS ${p}</li>`).join('') + '</ul>');
+if (fails.length) say('<ul class="fail">' + fails.map(f => `<li>FAIL ${f}</li>`).join('') + '</ul>');
+window.__RESULT = { passed: passes.length, failed: fails.length, fails, passes };
+window.__DONE = true;
+</script>

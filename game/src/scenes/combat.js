@@ -2475,13 +2475,32 @@ export class CombatScene extends Scene {
       if (!c.value && !gauge) continue;
       out.push({ c, gauge, state: counterState(c) });
     }
-    const key = out.map(o => `${o.c.id}:${o.c.value}/${o.c.max}:${o.state || ''}`).join('|');
+    /**
+     * BOARD OBJECTS, beside the counters.
+     *
+     * `engine.objects` has existed since the engine did — it documents itself as
+     * the home for "Plants, Plots, Pumpkins, Graves" — and nothing in the build
+     * ever drew it. Pipkin's Patch has therefore been invisible since it
+     * shipped: the mechanic works and the player cannot see it, which is the
+     * Torn-pile bug wearing a different hat. Brambleboo's Garden IS his board
+     * state, so it is rendered here, in the same chips as the counters so no new
+     * CSS class can collide with another scene.
+     */
+    for (const o of this.engine.objects) {
+      if (!o || !o.data || o.data.seat !== pid) continue;
+      out.push({ obj: o, gauge: false, state: null });
+    }
+
+    const key = out.map(o => (o.obj
+      ? `${o.obj.id}:${o.obj.data.growth}:${o.obj.data.mature ? 'M' : ''}`
+      : `${o.c.id}:${o.c.value}/${o.c.max}:${o.state || ''}`)).join('|');
     if (key === this._plCounterKey) return;
     const prev = this._plCounterPrev;
     this._plCounterKey = key;
-    this._plCounterPrev = new Map(out.map(o => [o.c.id, o.c.value]));
+    this._plCounterPrev = new Map(out.filter(o => o.c).map(o => [o.c.id, o.c.value]));
     this.$plCounters.textContent = '';
-    for (const { c, gauge, state } of out) {
+    for (const { c, gauge, state, obj } of out) {
+      if (obj) { this.$plCounters.appendChild(this._objectChip(obj)); continue; }
       const bumped = prev && prev.has(c.id) && prev.get(c.id) !== c.value;
       const d = document.createElement('span');
       d.className = 'cb-count cb-count--mine' + (bumped ? ' is-bumped' : '');
@@ -2495,6 +2514,30 @@ export class CombatScene extends Scene {
         + (state ? `<em>${esc(state)}</em>` : '');
       this.$plCounters.appendChild(d);
     }
+  }
+
+  /**
+   * One board object as a counter-shaped chip.
+   *
+   * An immature Plant reads "IVY 1/2" so the player can count the turns; a
+   * Mature one reads "IVY ✿" with its band word, because at that point what
+   * matters is that it is working, not the number it stopped at.
+   */
+  _objectChip(o) {
+    const d = document.createElement('span');
+    const ripe = !!o.data.mature;
+    d.className = 'cb-count cb-count--mine';
+    d.setAttribute('role', 'listitem');
+    d.tabIndex = 0;
+    const growth = o.data.growth | 0;
+    const need = o.data.matureAt || 2;
+    const state = ripe ? 'Mature' : 'Growing';
+    d.dataset.tip = `${o.name}|${o.data.desc || `${o.name}, in your Garden.`}|`
+      + (ripe ? 'Mature — its effect runs at the start of your turn, and it can be Harvested.'
+              : `Growing — ${need - growth} more turn${need - growth === 1 ? '' : 's'} until it Matures.`);
+    d.setAttribute('aria-label', `${o.name}, ${ripe ? 'Mature' : `growth ${growth} of ${need}`}`);
+    d.innerHTML = `<i>${esc(o.name)}</i><b>${ripe ? '✿' : `${growth}<u>/${need}</u>`}</b><em>${state}</em>`;
+    return d;
   }
 
   /**

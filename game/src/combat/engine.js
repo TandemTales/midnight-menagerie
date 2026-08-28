@@ -2417,6 +2417,20 @@ export class CombatEngine {
     // 5/6 — draw and Nerve, per seat, after every start-of-turn effect has run
     for (const pl of this.livingPlayers()) this._dealSeatTurn(pl);
 
+    /* 6b — the turn is now actually OPEN, and this is the only point at which
+       that is true. `turn:start` fires at step 1, before `_openSeatTurn` wipes
+       Guard and before `_dealSeatTurn` SETS Nerve and deals the hand, so
+       anything granted from it is erased seconds later — the bug that killed
+       five Truffle cards and Drizzle's Silver Lining. A `playerTurnStart` timer
+       lands after the wipe but still before the deal, which is wrong for
+       anything that has to see the opening hand: Brambleboo's Moonflower is
+       specified as "at the start of your turn AFTER your normal draw", and
+       sculpting the top of the deck before drawing five would just hand the
+       card straight back.
+       Emitted as a PHASE value rather than a new event so existing listeners,
+       which all test for 'player' or 'enemy' specifically, fall through it. */
+    this._emit(EV.PHASE, { phase: 'playerReady', turn: this.turn });
+
     // 7 — intents
     this.refreshIntents('turnStart');
   }

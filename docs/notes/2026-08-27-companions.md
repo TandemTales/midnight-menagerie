@@ -669,8 +669,82 @@ boggle 30 · mopsy 28 · wisp 25 · crumbula 25 · hush 17 · wink 5 · 59 fps.
 
 ---
 
+## 10. Brambleboo, the Haunted Houseplant  ✅
+
+`greenhouse`. 5 basics + 20 commons + 35 uncommons + 25 rares + 1 Weed + 4
+Borrowed Cuttings + 5 co-op. Garden, Cultivars, Harvest, Uproot, Compost, Vines,
+Snare, Overgrown. **The last Companion with a design chapter.**
+
+### The first Companion to use `engine.objects` — and the first to render them
+
+`addObject` documents itself as the home for "Plants, Plots, Pumpkins, Graves".
+Nothing had ever used it, and — worse — **nothing had ever DRAWN it**. Pipkin's
+Patch is stored in his own scratch array and has been invisible to the player
+since it shipped: the mechanic works, the board state it produces cannot be seen,
+which is the Torn-pile bug wearing a different hat.
+
+Plants are engine objects (they are explicitly not Tricks and never touch a
+pile, so a shuffle cannot lose one), and `_renderPlayerCounters` now walks
+`engine.objects` alongside the counters. It reuses the existing `.cb-count` chip
+rather than inventing a class, so no new CSS could collide with another scene.
+The screenshot shows what the change is for: **CREEPING IVY ✿ MATURE · BRIAR 1/2
+GROWING · MOONFLOWER 0/2 GROWING · GRAVE MOSS 0/2 GROWING**.
+
+### There was no "the turn has actually started" moment
+
+Grave Moss Guards at the start of his turn and Moonflower is specified as
+running "at the start of your turn **after your normal draw**". Neither is
+expressible from `turn:start`, which fires at step 1 — before `_openSeatTurn`
+wipes Guard and before `_dealSeatTurn` deals the hand. A `playerTurnStart` timer
+lands after the wipe but still before the deal, so Moonflower would put a card
+on top of the draw pile and then immediately draw it back.
+
+The engine now emits `phase: 'playerReady'` after the deal. It is a new PHASE
+value rather than a new event precisely because every existing listener tests
+for `'player'` or `'enemy'` specifically and falls straight through it. **This is
+the fourth Companion tonight to want a turn-start seam that actually works**, and
+the suite caught me reintroducing the exact Guard-wipe bug I had fixed for
+Truffle six hours earlier.
+
+### Vines are not poison, and the tests say so
+
+They do nothing at all by existing. Four are consumed at the start of an Attack
+to Snare it: a multi-hit loses its last hit, a single hit is reduced and **never**
+cancelled. Asserted three ways — five Vines become one and the hit lands for
+less than its full size; three Vines Snare nothing and none are spent; and The
+Mansion Is My Trellis Snares at three and takes the lot.
+
+### Housekeeping the cards suite caught
+
+Ten errors on the first run, all real: `[Grave Moss]` and `[Vine]` were written
+as brackets whose ids did not exist (the registry has `grave-moss` and `vines`),
+the Weed and the four Borrowed Cuttings had no `upgrade` entry, and The Mansion
+Waters Back's upgrade changed nothing. Two Rares were over their damage bands —
+Pruning Frenzy at 30 for 1 Nerve and Very Hungry Houseplant at 48 for 2 — and
+both came down rather than being silenced. A console error the suite surfaced
+but did not fail on: `snaredThisTurn` was only created at turn start, and an
+enemy can swing before this seat has ever opened a turn.
+
+### Verification
+
+`tests/brambleboo/run.py` — **52 checks**: a Plant really takes two turns to
+Mature, really never appears in any pile, and a fifth really cannot be planted;
+Harvest really pays its effect AND takes the Plant, Uproot really takes it with
+no effect at all, and both really give Compost; Vines really do nothing on their
+own; four really Snare and really reduce without cancelling; Mature Grave Moss
+really Guards and Mature Ivy really Entwines unprompted; an Overgrown turn really
+adds a Weed; a Weed really cannot be played and Mulch the Evidence really turns
+it back into Compost; both dynamic costs really move; and the Garden really
+reaches `engine.state` where the screen can find it.
+
+cards 1378/0/0 · combat 677 · coop 591 · run 50 · backpack 80 · enemies 37 ·
+audit 2061 · chrome 27 · six gates · mossbit 55 · pudding 46 · drizzle 70 ·
+truffle 27 · boggle 30 · mopsy 28 · wisp 25 · crumbula 25 · hush 17 · wink 5 ·
+57 fps, no console errors.
+
+---
+
 ## Still to come
 
-**Designed, not built (1):** Brambleboo.
-
-**Not designed (1): Crinkle.** No chapter anywhere, including the source `.docx`.
+**Not designed (1): Crinkle, the Paper Crow.** No chapter anywhere, including the
+source `.docx`. Fifteen of sixteen are now playable and he is the only gap.
