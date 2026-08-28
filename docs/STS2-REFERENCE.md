@@ -7,6 +7,9 @@ Sources consulted 2026-08-19: GamesRadar EA review, PCGamesN roadmap + art-direc
 piece, xmodhub mechanics guide, GAMES.GG mechanics explainer, sts2front roadmap.
 Launched EA 2026-03-05, $24.99, 5 characters, art director Marlowe Dobbe.
 
+Sections 1-7 are single-player only. **Co-op multiplayer is section 8**, researched
+separately on 2026-08-27, with its own source list and reliability notes.
+
 ---
 
 ## 1. Combat screen layout (the thing we are copying the *feel* of)
@@ -107,6 +110,7 @@ is dimmed — you can never be confused about where you may go. Hovering a node
 previews what it is. Boss is shown at the top from the start of the act.
 StS2 adds **environmental hazards**: nodes carrying global modifiers that make
 pathing a real decision.
+In co-op the party does not choose the route so much as **vote** on it — see 8.5.
 
 ## 6. Structure and pacing
 
@@ -138,6 +142,278 @@ pathing a real decision.
 
 Midnight Menagerie's design doc already has analogues for most of these
 (Companion signature systems). The bar is that ours read as clearly and land as hard.
+
+## 8. Co-op multiplayer — the mode our co-op is judged against
+
+Researched 2026-08-27, because sections 1–7 were written from single-player coverage and
+said **nothing** about co-op, while three rounds of our multiplayer work were nominally
+judged against this file. Authority order used below, and it matters — the fan guides
+contradict each other and two of them contradict the game:
+
+1. `slaythespire.wiki.gg` *Slay the Spire 2:Multiplayer* and its per-card pages — the only
+   source carrying formulas and patch numbers. **Where anything below disagrees, the wiki wins.**
+2. GameSpot's co-op feature, allthings.how's mechanics explainer, sts2guides, PC Gamer's
+   co-op piece, Steam community discussion threads.
+3. **`sts2front` is not reliable on co-op.** It reports 2p enemy HP as "roughly 1.5x" and
+   claims death eliminates a player for the rest of the run. Both are flatly wrong per the
+   wiki. It is cited in this document's header for single-player; do not extend that trust.
+
+Anything marked *(unconfirmed)* appears in secondary sources only.
+
+### 8.1 The shape of the mode
+
+- **Up to 4 players.** Online only, through the Steam friends list. **No public
+  matchmaking and no local/couch co-op.** Every player must own the game.
+- One player **hosts**; the save belongs to the host, and the group can resume a run
+  together later. Players can start their own solo runs without disturbing it.
+- The host picks the **Ascension level, capped by the lowest player's own maximum**.
+  Multiplayer Ascension is tracked **separately** from single-player, and on a won run
+  **the entire lobby earns the next level**.
+- Crossplay covers the PC ecosystem (Windows/Mac/Linux/Steam Deck). No console crossplay.
+
+> **For us:** our Haunt ladder has no notion of a party — nothing in `state/run.js` keys
+> Haunt progression to party size. StS2 answers the question explicitly: separate ladder,
+> gated by the weakest player, credited to everyone. We have not answered it at all.
+
+### 8.2 Turn structure — simultaneous window, sequential resolution
+
+- **All players act in the same turn window.** There is no turn order between players and
+  nobody waits for anybody else to finish before acting.
+- Everyone queues actions at once; **the game resolves them in the order they were played.**
+- **That order is load-bearing and the players know it**: apply Vulnerable first and every
+  teammate who attacks afterwards gets the bonus. Resolution order is a coordination
+  mechanic, not an implementation detail.
+
+> **For us:** this matches `endTurn(seat)` closing one seat while `endTurn()` closes the
+> table — our engine is already the right shape. What we lack is the *shared window*.
+> Pass-and-play makes the window sequential, so the debuff-ordering play above cannot
+> happen offline at all.
+
+### 8.3 Enemy scaling — the formula, verbatim
+
+```
+MultiplayerMonsterHP = MonsterHP * PlayerCount * ActScaling
+```
+
+| ActScaling | value |
+|---|---|
+| Act 1 | ×1.1 |
+| Act 2 | ×1.2 |
+| Act 3 hallway | ×1.2 |
+| Act 3 boss | ×1.3 |
+
+Which resolves to:
+
+| Players | Act 1 | Act 2 / Act 3 hallway | Act 3 boss |
+|---|---|---|---|
+| 2 | **×2.2** | ×2.4 | ×2.6 |
+| 3 | ×3.3 | ×3.6 | ×3.9 |
+| 4 | ×4.4 | ×4.8 | ×5.2 |
+
+**Enemy attack damage does not scale at all.** The added threat is that AoE moves land on
+every player, so party-wide damage taken rises even though no single number does.
+
+Enemy defensive buffs scale on their own separate curves:
+
+| Buff | Scaling |
+|---|---|
+| Block (2p) | flat ×2 — *changed from* ×2.2/×2.4/×2.6, i.e. deliberately decoupled from the HP curve |
+| Plating | `Amount * ((PlayerCount - 1) * 2 + 1)` |
+| Artifact | `Amount + PlayerCount - 1` |
+| Slippery | `Amount * PlayerCount` |
+| Skittish | `Amount * ((PlayerCount - 1) * 0.5 + 1)`, rounded down |
+
+> **For us — and this corrects the record.** HANDOFF §9 states that "StS2 actually uses
+> 250%" and that our 220% is a deliberate divergence to a parity point. **StS2's real Act 1
+> two-player figure is 220%** — `2 × 1.1` — which is the number we independently measured
+> and shipped. We did not diverge from them; we converged on them. Three things follow:
+> - Their curve **rises by act** (×1.1 → ×1.2 → ×1.3 for the final boss). Ours is flat.
+>   A Nursery / Sleeping-Quarters ramp is an untried lever, and it is the one that would
+>   most directly address the Butler being "not dangerous, just long".
+> - **The curve is LINEAR in party size.** `ActScaling` is a function of the act ALONE, not
+>   of the player count, so per-player HP is a flat 110% in Act 1 whether there are two
+>   players or four: 2p ×2.2, 3p ×3.3, 4p ×4.4. It does not get proportionally harder as
+>   the party grows — a fourth player adds exactly what the second one did. **Open decision
+>   2's 3p/4p curve is no longer an extrapolation**: at a party of four our Courage figure
+>   is 440% of solo in the Foyer, by the same measurement that produced 220% at two.
+> - Enemy damage not scaling **matches what we shipped**, and our "the extra threat is
+>   targeting" is the same design reached independently. Keep it; it needs no defending.
+
+### 8.4 Presence — what you can see of the other player
+
+This is the part of StS2 co-op that reviewers single out, and the part we have least of.
+
+- **A semi-translucent hand per teammate, mirroring their cursor in real time.** You watch
+  which cards and which targets they are hovering while they are still deciding. It exists
+  so a group can coordinate *without voice chat*.
+- **You can inspect any teammate's full deck and relics at any time**, for the whole run.
+- **A shared map drawing tool**: colour-coded markers drawn on the map to flag an elite or
+  argue for a route. Visible to the whole group and **persists for the act**.
+
+> **For us:** the hovering hand needs a live wire and should wait for open decision 1 —
+> offline, while you are aiming, the other Kid is behind an opaque veil and has not chosen
+> anything, so there is no state to draw. Building it now would ship a mechanic no code
+> path can call, which is the failure class that has already cost this project two rounds.
+> **Inspecting a teammate's deck and Keepsakes does not need the wire.** A deck list is not
+> a hand — our veil exists because a hand of Tricks is private, while StS2 treats the deck
+> as open information for the whole run. That is a real, buildable gap that was on none of
+> our lists.
+
+### 8.5 The map — one route, voted
+
+- One shared path. **At every fork, every player votes.**
+- **A roulette-style randomiser then picks the winning path, weighted by the votes.** It is
+  not majority-rules: a minority vote can win, proportionally to how many wanted it.
+- **Ties are broken randomly.**
+- **The host has no special authority.** The stated design goal is that nobody drags the
+  team around and everyone has a voice even without voice chat.
+- *(unconfirmed)* the vote happens after each cleared room, i.e. at every step, not only at
+  visually branching forks.
+
+> **For us:** `scenes/map.js` has no seat concept whatsoever — a grep for
+> `seat|party|kids|handOff|local` returns one prose comment — and `run.chooseNode(node)`
+> asks nobody, so seat 0 picks the entire route for the whole expedition. This is the
+> largest co-op gap we have and the only one on this list that is both buildable today and
+> unaffected by the transport decision.
+>
+> The weighted roulette is **reproducible for us where it is not for them**: routed through
+> `ctx.run.rng` it satisfies determinism, so we can take the mechanic whole without
+> breaking replay. CONTRACTS' "seat choice ALWAYS ties on seat index, never the RNG" is a
+> rule about enemy *targeting*, which is shown before the players act and must survive a
+> replay unchanged; a vote resolved after everyone has committed is a different case.
+
+### 8.6 What is shared and what is each player's own
+
+| | StS2 | Ours today |
+|---|---|---|
+| Map, route, floor progression | shared | shared |
+| Enemy encounters, events | shared | shared |
+| Enemy buffs/debuffs | apply to everyone equally | same |
+| Deck | own | own |
+| Gold / currency | own | own (Lost Things) |
+| Energy | own, explicitly no sharing | own (Nerve) |
+| HP | own | own (Courage) |
+| Relics / Keepsakes | own | own |
+| Potions / Snacks | own, **throwable at another player** | own, thrown via `useSnack(…, { to: seat })` |
+| Card rewards | own, different options per player | own |
+| Merchants | **entirely separate stock per player** | own shelf per Kid |
+| Rest sites | every option independently available to each player | same |
+
+### 8.7 Rewards, and the one place players actually contend
+
+Almost nothing is contested — with one exception:
+
+- **Treasure chests offer one relic per player, and no two players may take the same one.**
+- When two players want the same relic, the game runs **an automated rock-paper-scissors
+  duel** between them. The winner takes it; the loser picks something else.
+
+> **For us:** every Kid gets their own offer and nobody can reach into somebody else's, so
+> there is nothing to resolve — HANDOFF already files this as pending the wire. Worth
+> noting the shape they chose: contention is treated as *entertainment*, not arbitration.
+> They made the collision into a moment rather than designing it away.
+
+### 8.8 Falling over, and getting back up
+
+- HP to 0 → **out for the remainder of that fight**, not the run.
+- **As long as one player survives the fight, the downed player returns at 1 HP** afterwards.
+- Everyone is restored to full at the start of an act.
+- Rest sites add **Mend: heal another player for 30% of their max HP** instead of resting.
+- *(unconfirmed — secondary sources only)* rare co-op relics granting one free mid-combat
+  revive; a rest-site revive costing a percentage of the survivors' max HP; a "Clone" camp
+  action copying a teammate's card. The wiki lists only Mend.
+
+> **For us:** our fallen rule and our Mend at 30% are **exact matches**, arrived at
+> independently. Our Clone is not confirmed to exist in StS2 — treat it as ours, not as
+> something to check against them.
+
+### 8.9 Multiplayer-only cards
+
+They are **Colorless** and multiplayer-exclusive, plus a five-card set per character.
+
+**Colorless:** Believe in You · Coordinate · Gang Up · Huddle Up · Intercept · Lift ·
+Tag Team · The Ball · Beacon of Hope · Knockdown · Mimic · Rally
+
+**Per character (5 each):**
+
+| Character | Cards |
+|---|---|
+| Ironclad | Blaze · Demonic Shield · Outrage · Midnight · Tank |
+| Silent | Blade Symphony · Concoct · Fade · Flanking · Sneaky |
+| Regent | Constellation · Largesse · Plot · Hammer Time · Tutor |
+| Necrobinder | Legion of Bone · Soulbound · Underworld · Cacophony · Glimpse Beyond |
+| Defect | Energy Surge · Hibernate · Ignition · Imitation Learning · One for All |
+
+Exact texts, for the shape of the design space:
+
+| Card | Cost | Type | Text | Upgraded |
+|---|---|---|---|---|
+| **Gang Up** | 1 | Attack, Uncommon | Deal 5 damage. Deals 5 additional damage for each time another player has attacked the enemy this turn. | 7 additional |
+| **Tag Team** | 2 | Attack, Uncommon | Deal 11 damage. The next Attack another player plays on the enemy is played an extra time. | 15 damage |
+| **Huddle Up** | 1 | Skill, Uncommon | ALL allies draw 2 cards. Exhaust. | draw 3 |
+
+**Huddle Up gained `Exhaust` as a nerf in v0.100.0 (2026-03-19)** — a repeatable team-wide
+draw skill was too strong. Worth knowing before we balance our own team-draw Tricks.
+
+Some cards are explicitly documented as **not** affecting other players: Cruelty, Accuracy,
+Tracking, Shadow Step, Lethality, Reaper Form, Claw, Maul. They wrote down the negative
+space too.
+
+> **For us:** 25 authored co-op Tricks, 5 per built Companion, outside the 80 and never
+> drafted solo — the **same architecture** they used. The three design shapes to compare
+> ours against: *pays off a teammate having acted first* (Gang Up), *makes a teammate's next
+> card better* (Tag Team), *hands the whole team a resource* (Huddle Up).
+
+### 8.10 Structural changes co-op makes to the run
+
+- **Every act is one floor shorter in multiplayer.** Boss floors move to 16 / 31 / 45.
+- Golden Compass replaces the Act 2 map with a single path plus a 2-floor extension, for
+  everyone.
+- Neow's offers change: Silver Crucible and Winged Boots are replaced by Massive Scroll.
+
+> **For us:** shortening the route in co-op is a pacing lever we have never considered. Two
+> Kids taking turns at one screen makes a wing take roughly twice as long in wall-clock
+> time, which is exactly the problem this solves.
+
+### 8.11 Where StS2 co-op is actually weak — the opening
+
+Their loudest technical complaint, by a wide margin, is **disconnects**:
+
+- Players report dropping every 3–20 minutes; endless "Connecting…"; "Connection
+  Interrupted (Poor Connection)"; whole runs desyncing.
+- **You cannot rejoin.** A disconnect effectively ends the run for the group. There are
+  open Steam threads titled, in as many words, asking to be allowed to rejoin.
+- The netcode is strongly **host-dependent** — the host's connection quality determines
+  everyone's experience.
+- The community workaround is save-and-quit, then re-host from the save.
+
+> **For us:** this is open decision 3, and it is the one place where beating them is
+> realistic rather than aspirational. Our lockstep foundation — deterministic RNG,
+> `choiceLog`, `setChoiceScript` replay, per-seat board digests, and a run layer that
+> already reconstructs an interrupted fight and verifies it against a digest — is
+> *precisely* the machinery a rejoin needs, and we have it before writing a line of
+> transport. It shapes the protocol rather than being retrofittable, so it wants deciding
+> before decision 1 is built, not after.
+
+### 8.12 Scorecard — where we stand against this section
+
+| Dimension | Verdict |
+|---|---|
+| Enemy HP scaling at 2p | **Level** — 220%, independently measured, same number |
+| Enemy damage not scaling | **Level** — same design, same reasoning |
+| Per-player decks / currency / rewards / shops | **Level** |
+| Fallen and revival | **Level** — same rule, same 30% Mend |
+| Co-op-only card architecture | **Level** — 5 per character, held out of the solo pool |
+| Route voting | **Behind, buildable now** — seat 0 picks our entire route |
+| Inspecting a teammate's deck and Keepsakes | **Behind, buildable now** |
+| Simultaneous turn window | **Behind, transport-blocked** — our window is sequential |
+| Resolution order as a coordination mechanic | **Behind, transport-blocked** |
+| Teammate cursor / hovering hand | **Behind, transport-blocked** |
+| Map drawing markers | **Absent** — needs a wire to be worth anything |
+| Relic contention | **N/A until the wire** — no shared offer exists to contend over |
+| Scaling curve rising by act | **Absent** — ours is flat; untried lever |
+| Co-op acts shortened | **Absent** — untried pacing lever |
+| Haunt / Ascension ladder in a party | **Absent** — we have not answered the question |
+| Reconnection after a drop | **Ahead on foundation, behind on product** — we have the lockstep machinery and no wire; they have the wire and no rejoin |
 
 ---
 
