@@ -1,0 +1,172 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Count Crumbula — Appetite, Bite Marks, Feed, Queasy, Indulge</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+</style>
+<h1>Count Crumbula</h1>
+<div id="out"></div>
+<script type="module">
+import { RNG } from '../../game/src/core/rng.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import { makeDummySetup } from '../../game/src/combat/dummy.js';
+import { installTrackers } from '../../game/src/data/companions/_util.js';
+import * as CARDS from '../../game/src/data/cards.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+function say(html, cls) { const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; out.appendChild(d); }
+
+async function count() {
+  const setup = makeDummySetup(new RNG(1899), {
+    companion: 'crumbula', deck: CARDS.startingDeckFor('crumbula'), maxHp: 74,
+  });
+  const e = new CombatEngine(setup);
+  await e.startCombat();
+  installTrackers(e, 'crumbula');
+  return e;
+}
+async function play(e, id, target) {
+  e.addCard(CARDS.cardById(id), 'hand', {});
+  const card = e.piles.hand[e.piles.hand.length - 1];
+  e.player.energy = 9;
+  await e.playCard(card.uid, target ? target.id : undefined);
+  return card;
+}
+/** Statuses live on the actor; the engine has no countStatus(). */
+const stacks = (actor, id) => ((actor && actor.statuses && actor.statuses.get(id)) || 0);
+const marks = (e, en) => stacks(en, 'bite-mark');
+const queasy = (e) => stacks(e.player, 'queasy');
+
+try {
+  // ── 1. Appetite ─────────────────────────────────────────────────────────
+  {
+    const e = await count();
+    check(e.counter('appetite') === 2, 'Appetite starts at 2', `appetite=${e.counter('appetite')}`);
+    check(e.counterMax('appetite') === 6, 'and the track is declared at 6', `max=${e.counterMax('appetite')}`);
+    await e.endTurn();
+    check(e.counter('appetite') === 1, 'and drops by 1 at the end of every turn',
+      `appetite=${e.counter('appetite')}`);
+  }
+
+  // ── 2. Bite Marks and Feed ──────────────────────────────────────────────
+  {
+    const e = await count();
+    const t = e.livingEnemies()[0];
+    await play(e, 'crumbula/tiny-nibble', t);
+    check(marks(e, t) === 1, 'Tiny Nibble leaves a Bite Mark', `marks=${marks(e, t)}`);
+
+    e.player.hp = 50;
+    e.setCounter('appetite', 2, 'test');
+    await play(e, 'crumbula/one-tiny-sip', t);
+    check(marks(e, t) === 0, 'Feeding eats the Bite Mark', `marks=${marks(e, t)}`);
+    check(e.player.hp > 50, 'and restores Courage', `hp 50 -> ${e.player.hp}`);
+    check(e.counter('appetite') === 3, 'and raises Appetite by 1', `appetite=${e.counter('appetite')}`);
+  }
+  {
+    // Feed with nothing to eat does nothing at all
+    const e = await count();
+    const t = e.livingEnemies()[0];
+    e.player.hp = 50;
+    const ap = e.counter('appetite');
+    await play(e, 'crumbula/one-tiny-sip', t);
+    check(e.player.hp === 50, 'Feeding an unmarked enemy heals nothing', `hp=${e.player.hp}`);
+    check(e.counter('appetite') === ap, 'and does not raise Appetite', `appetite=${e.counter('appetite')}`);
+  }
+
+  // ── 3. ONE Queasy per Feed effect, however far past full ────────────────
+  {
+    const e = await count();
+    const t = e.livingEnemies()[0];
+    e.applyStatus(t, 'bite-mark', 3);
+    e.setCounter('appetite', 6, 'test');
+    check(queasy(e) === 0, 'setup: not Queasy yet');
+    await play(e, 'crumbula/clean-plate-club', t);   // Feed up to 3, already full
+    check(queasy(e) === 1, 'a Feed that runs past full gives exactly ONE Queasy, not one per mark',
+      `queasy=${queasy(e)}`);
+  }
+  {
+    // and it costs Nerve at the start of the next turn, then clears
+    const e = await count();
+    e.applyStatus(e.player, 'queasy', 2);
+    await e.endTurn();
+    check(queasy(e) === 0, 'Queasy clears at the start of your turn', `queasy=${queasy(e)}`);
+    check(e.player.energy <= e.player.energyMax - 2, 'after costing that much Nerve',
+      `nerve=${e.player.energy} of ${e.player.energyMax}`);
+  }
+
+  // ── 4. Hungry and Sated gate what they say they gate ────────────────────
+  {
+    const e = await count();
+    const t = e.livingEnemies()[0];
+    e.setCounter('appetite', 0, 'test');
+    await play(e, 'crumbula/velvet-nibble', t);
+    check(marks(e, t) === 2, 'Velvet Nibble marks twice while Hungry', `marks=${marks(e, t)}`);
+  }
+  {
+    const e = await count();
+    const t = e.livingEnemies()[0];
+    e.setCounter('appetite', 3, 'test');
+    await play(e, 'crumbula/velvet-nibble', t);
+    check(marks(e, t) === 1, 'and once when he is not', `marks=${marks(e, t)}`);
+  }
+  {
+    const e = await count();
+    e.setCounter('appetite', 5, 'test');
+    const first = CARDS.cardById('crumbula/first-course');
+    e.addCard(first, 'hand', {});
+    const k = e.piles.hand[e.piles.hand.length - 1];
+    check(!e.canPlay(k.uid, e.livingEnemies()[0].id).ok, 'First Course refuses while Sated',
+      `reason: ${e.canPlay(k.uid, e.livingEnemies()[0].id).reason}`);
+    e.setCounter('appetite', 1, 'test');
+    check(e.canPlay(k.uid, e.livingEnemies()[0].id).ok, 'and is playable while Hungry');
+  }
+
+  // ── 5. Indulge is not damage ────────────────────────────────────────────
+  {
+    const e = await count();
+    const t = e.livingEnemies()[0];
+    e.player.block = 20;
+    const hp = e.player.hp;
+    await play(e, 'crumbula/bad-idea-delicious', t);
+    check(e.player.hp === hp - 3, 'Indulge goes straight through Guard', `hp ${hp} -> ${e.player.hp}`);
+    check(e.player.block === 20, 'and does not touch the Guard itself', `guard=${e.player.block}`);
+    check(marks(e, t) === 2, 'and it bought the Bite Marks', `marks=${marks(e, t)}`);
+  }
+  {
+    // it can never take him below 1
+    const e = await count();
+    const t = e.livingEnemies()[0];
+    e.player.hp = 2;
+    await play(e, 'crumbula/bad-idea-delicious', t);
+    check(e.player.hp >= 1, 'Indulge never takes the Count below 1 Courage', `hp=${e.player.hp}`);
+    check(marks(e, t) === 0, 'and an Indulge he cannot pay simply does not happen',
+      `marks=${marks(e, t)}`);
+  }
+
+  // ── 6. Leftovers feed with no enemy at all ──────────────────────────────
+  {
+    const e = await count();
+    const t = e.livingEnemies()[0];
+    e.applyStatus(t, 'bite-mark', 1);
+    await play(e, 'crumbula/pocket-snack', t);
+    const left = e.piles.hand.filter(k => (k.def && k.def.id) === 'crumbula/leftover');
+    check(left.length === 1, 'Pocket Snack turns a Bite Mark into a Leftover', `leftovers=${left.length}`);
+    check(marks(e, t) === 0, 'and the mark is gone without healing anything');
+    e.player.hp = 50;
+    e.player.energy = 9;
+    await e.playCard(left[0].uid);
+    check(e.player.hp > 50, 'and the Leftover Feeds with no enemy needed', `hp 50 -> ${e.player.hp}`);
+  }
+} catch (err) {
+  fails.push('THREW: ' + (err && err.stack || err));
+}
+
+say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`, fails.length ? 'fail' : 'pass');
+say('<ul class="pass">' + passes.map(p => `<li>PASS ${p}</li>`).join('') + '</ul>');
+if (fails.length) say('<ul class="fail">' + fails.map(f => `<li>FAIL ${f}</li>`).join('') + '</ul>');
+window.__RESULT = { passed: passes.length, failed: fails.length, fails, passes };
+window.__DONE = true;
+</script>

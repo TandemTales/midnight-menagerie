@@ -2381,10 +2381,17 @@ export class CombatEngine {
       // that says "draw N fewer next turn" and expires at turn start still bites
       // on the turn it was aimed at. (Smothered, and any StatusDef.drawDelta.)
       pl._drawPenalty = 0;
+      pl._energyPenalty = 0;
       for (const [id, stacks] of pl.statuses) {
         const d = getStatus(id);
         const per = d.drawDelta ?? (id === 'smothered' ? -1 : 0);
         if (per) pl._drawPenalty += per * stacks;
+        /* `energyDelta` is drawDelta's twin, and it has to be measured HERE for
+           the same reason: the Nerve refill happens in `_dealSeatTurn`, several
+           steps later, and it SETS Nerve to the maximum. A status that spends
+           Nerve from an onTurnStart hook is silently overwritten a moment
+           afterwards — which is exactly what Crumbula's Queasy did. */
+        if (d.energyDelta) pl._energyPenalty += d.energyDelta * stacks;
       }
 
       const keep = Math.min(pl.keepBlock, pl.block);
@@ -2414,7 +2421,9 @@ export class CombatEngine {
       if (pen < 0) want = Math.max(3, want + pen);
       pl._drawPenalty = 0;
       this.drawCards(Math.max(0, want), 'turnStart');
-      this.setEnergy(pl.energyMax, 'turnStart');
+      const epen = pl._energyPenalty || 0;
+      pl._energyPenalty = 0;
+      this.setEnergy(Math.max(0, pl.energyMax + epen), 'turnStart');
     });
   }
 

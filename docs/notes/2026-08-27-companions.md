@@ -254,6 +254,61 @@ gates · 61 fps, no console errors.
 
 ---
 
+## 4. Count Crumbula, the Vampire Chinchilla  ✅
+
+`ballroom`. 4 basics + Leftover + 20 commons + 35 uncommons + 25 rares + 5 co-op.
+Appetite (Hungry / Sated), Bite Marks, Feed X, Queasy, Indulge, Leftovers.
+
+The point of him is that **feeding is not automatically good**: Appetite pays at
+both ends, so healing out of Hungry switches off half the deck.
+
+### Three rules the code has to hold
+
+- **Feed resolves one Bite Mark at a time**, because cards ask whether he became
+  Sated *partway through* a large Feed.
+- **One Queasy per Feed effect**, however far past maximum it runs. Counting per
+  mark would make a single overfull Feed 3 cost three turns of Nerve. Asserted.
+- **Indulge is not damage**: through Guard, counts as Courage lost, never below
+  1, and an Indulge he cannot pay simply does not happen. All three asserted.
+
+### A new engine capability: `StatusDef.energyDelta`
+
+"Start your next turn with 1 less Nerve" could not be written. Three placements
+were all silently wiped: a `turn:start` listener runs before the refill; an
+`onTurnStart` status hook *also* runs before it; and `_dealSeatTurn` then **sets**
+Nerve to the maximum, erasing anything taken beforehand.
+
+`energyDelta` is the twin of the `drawDelta` the engine already had — measured in
+`_openSeatTurn` alongside the draw penalties and applied to the refill itself,
+which is the only point where a "start with less Nerve" status can work at all.
+
+### The gauge said STARTS
+
+`scenes/combat.js` derived a counter's band word by **regexing its description**
+(`/([A-Z]...) at (\d+)/`), and its own comment said the clean fix was upstream.
+The upstream fix already existed — `defineCounter` normalises a `states` array
+and ships it in the snapshot — but nothing read it. So Crumbula's description,
+"Starts at 2 and drops by 1...", matched, and his gauge read **APPETITE 2/6 |
+STARTS**.
+
+`counterState()` reads declared bands now and keeps the regex only as the
+fallback for counters that predate them. Crumbula gained the middle band the
+design names (Peckish), and Boggle's Lurk gained bands too — its description
+ends "Caps at 5", which would have printed CAPS on the gauge at 5 Lurk.
+
+### Verification
+
+`tests/crumbula/run.py` — **25 checks**, all effects: the mark is really eaten,
+the Courage really comes back, Appetite really rises, an unmarked enemy really
+feeds nothing, the overfull Feed gives exactly one Queasy, Queasy really costs
+the Nerve, Hungry and Sated really gate First Course and Velvet Nibble, Indulge
+really goes through 20 Guard without touching it.
+
+cards 830/0/0 · combat 677 · run 50 · coop 591 · chrome 27 · combat-scene 22 ·
+boggle 30 · mopsy 27 · wisp 25 · wink 5 · six gates · 57 fps, no console errors.
+
+---
+
 ## Still to come
 
 **Designed, not built (8):** Wisp, Crumbula, Truffle, Hush, Drizzle, Pudding,

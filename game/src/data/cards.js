@@ -31,6 +31,7 @@ import wink from './companions/wink.js';
 import boggle from './companions/boggle.js';
 import mopsy from './companions/mopsy.js';
 import wisp from './companions/wisp.js';
+import crumbula from './companions/crumbula.js';
 
 // ── registry ────────────────────────────────────────────────────────────────
 const COMPANIONS = new Map();
@@ -64,7 +65,7 @@ export function registerCards(list) {
   return list;
 }
 
-[marmalade, bones, pipkin, taffy, wink, boggle, mopsy, wisp].forEach(registerCompanion);
+[marmalade, bones, pipkin, taffy, wink, boggle, mopsy, wisp, crumbula].forEach(registerCompanion);
 registerCards(NEUTRAL_CARDS);
 
 // ── lookups ─────────────────────────────────────────────────────────────────

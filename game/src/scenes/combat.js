@@ -3045,12 +3045,27 @@ const NUM_HEADROOM = 34;
  * away from the card text the moment Bones is rebalanced. If a counter's `desc`
  * is not written in that shape, it simply shows its number.
  *
- * The clean fix is upstream — see the note to the engine: a counter could carry
- * `states: [{at:0,label:'Whole'},{from:4,label:'Scattered'}]`.
+ * That upstream fix now exists: `defineCounter` normalises a `states` array and
+ * ships it in the snapshot, so a counter that declares its bands is read from
+ * them and the regex is only the fallback for counters that predate it.
+ *
+ * The fallback is not harmless, which is why declaring the bands matters: it
+ * matched "Starts at 2" in Crumbula's Appetite description and printed the
+ * word STARTS on his gauge.
  */
 const STATE_RE = /\b([A-Z][A-Za-z' -]{1,22}?)\s+at\s+(\d+)(\s+or\s+more)?/g;
 const _stateCache = new Map();
 function counterState(c) {
+  // A declared band always wins. First match, exact `at` entries first.
+  if (Array.isArray(c.states) && c.states.length) {
+    for (const st of c.states) {
+      if (st.at !== undefined) { if (c.value === st.at) return st.label; continue; }
+      if (st.from !== undefined && c.value < st.from) continue;
+      if (st.to !== undefined && c.value > st.to) continue;
+      return st.label;
+    }
+    return null;
+  }
   const desc = c.desc || '';
   if (!desc) return null;
   let parsed = _stateCache.get(desc);

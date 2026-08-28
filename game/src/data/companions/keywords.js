@@ -170,6 +170,15 @@ export const COMPANION_KEYWORDS = [
   K('hasten', 'Hasten X', 'Reduce a [Linger]ing Trick’s countdown by X. At 0 its [Afterglow] resolves.', { companion: 'wisp' }),
   K('delay', 'Delay X', 'Increase a countdown by X. Not a penalty — several of Wisp’s Tricks want the extra time.', { companion: 'wisp' }),
   K('flare', 'Flare X', 'You may spend X [Glow] for the listed extra effect. Optional unless the Trick says otherwise.', { companion: 'wisp' }),
+
+  K('appetite', 'Appetite', 'A 0-6 track. It starts at 2 and drops by 1 at the end of every turn. Both ends of it pay.', { companion: 'crumbula' }),
+  K('hungry', 'Hungry', 'A condition, not a buff: 0 or 1 [Appetite]. Where the aggressive half of the Count lives.', { companion: 'crumbula' }),
+  K('sated', 'Sated', 'A condition, not a buff: 4 or more [Appetite]. Where the safe half lives.', { companion: 'crumbula' }),
+  K('bite-mark', 'Bite Mark', 'A stacking enemy status that does nothing by itself — a prepared meal waiting to be eaten. Lost if the enemy dies.', { companion: 'crumbula' }),
+  K('feed', 'Feed X', 'Remove up to X [Bite Mark]s from an enemy. Each restores Courage and raises [Appetite] by 1, one mark at a time.', { companion: 'crumbula' }),
+  K('queasy', 'Queasy', 'Eating past maximum [Appetite]. One per Feed however far past it goes, stacking to 2, and it costs that much Nerve next turn.', { companion: 'crumbula' }),
+  K('indulge', 'Indulge', 'Voluntarily lose Courage. It ignores Guard, it counts as Courage lost, it is not enemy damage, and it can never take him below 1.', { companion: 'crumbula' }),
+  K('leftover', 'Leftover', 'A temporary 0-Nerve Trick that [Feed]s 1 with no enemy needed. It Retains, then [Vanish]es.', { companion: 'crumbula' }),
 ];
 
 export const KEYWORD_IDS = COMPANION_KEYWORDS.map(k => k.id);
@@ -544,6 +553,43 @@ export const COMPANION_STATUSES = [
   powerStatus('wisp/too-bright-for-bedtime', 'Too Bright for Bedtime', 'Blazing at turn start makes your first two Tricks cheaper, then costs 2 Glow.', 'glow'),
   powerStatus('wisp/tiny-star-long-shadow', 'Tiny Star, Long Shadow', 'Once a turn, a Convergence repeats one of its Afterglows.', 'glow'),
   powerStatus('wisp/follow-my-light', 'Follow My Light!', 'A teammate’s third Trick Hastens one of yours; your Afterglows make theirs cheaper.', 'glow'),
+
+  // ── Count Crumbula ────────────────────────────────────────────────────────
+  counterStatus('appetite', 'Appetite', 'The Count is at {n} Appetite. Hungry at 0-1, Sated at 4 or more.', 9, 'buff'),
+  {
+    id: 'bite-mark', name: 'Bite Mark', kind: 'debuff', icon: 'bite-mark', decay: 'never', stacks: true,
+    desc: '{n} Bite Marks. They do nothing on their own — the Count is saving them for later.',
+  },
+  {
+    /**
+     * Queasy costs Nerve through `energyDelta`, not by spending it.
+     *
+     * Two earlier attempts were both silently wiped. `turn:start` is emitted
+     * BEFORE the refill, and even an `onTurnStart` status hook runs before it —
+     * `_dealSeatTurn` SETS Nerve to the maximum several steps later, so any
+     * deduction taken beforehand simply disappears. `energyDelta` is measured
+     * with the draw penalties and applied to that refill, which is the only
+     * place a "start with less Nerve" status can actually work.
+     */
+    id: 'queasy', name: 'Queasy', kind: 'debuff', icon: 'appetite', decay: 'turnStart', stacks: true, max: 2,
+    desc: 'Ate past full. Start your next turn with {n} less Nerve, then this clears.',
+    energyDelta: -1,
+    decayAll: true,
+  },
+  powerStatus('crumbula/velvet-appetite', 'Velvet Appetite', 'Becoming Hungry, and becoming Sated, each draw once a turn.', 'appetite'),
+  powerStatus('crumbula/house-rules', 'House Rules', 'Bite Marks on a dying enemy move to the living instead of being lost.', 'bite-mark'),
+  powerStatus('crumbula/connoisseur', 'Connoisseur', 'Playing a Leftover also gains Guard.', 'appetite'),
+  powerStatus('crumbula/the-counts-cut', 'The Count’s Cut', 'Your first Indulge each turn marks every enemy.', 'bite-mark'),
+  powerStatus('crumbula/hunger-pangs', 'Hunger Pangs', 'Your first Attack each turn while Hungry costs 1 less.', 'appetite'),
+  powerStatus('crumbula/well-fed-well-dressed', 'Well Fed, Well Dressed', 'Feeding while already Sated gains Guard, once a turn.', 'appetite'),
+  powerStatus('crumbula/eternal-hunger', 'Eternal Hunger', 'Appetite is locked at 0. Feeding heals but never fills.', 'appetite'),
+  powerStatus('crumbula/bottomless-tummy', 'Bottomless Tummy', 'Maximum Appetite is 9. Above 6, Attacks cost more and your first Skill costs less.', 'appetite'),
+  powerStatus('crumbula/on-the-house', 'On the House', 'Your first Indulge each turn goes on the Tab.', 'appetite'),
+  powerStatus('crumbula/endless-pantry', 'Endless Pantry', 'Leftovers cost 1 and cycle through the deck instead of Vanishing.', 'appetite'),
+  powerStatus('crumbula/not-dead-just-napping', 'Not Dead, Just Napping', 'Once per combat, lethal damage leaves the Count at 1 Courage.', 'appetite'),
+  powerStatus('crumbula/feast-and-famine', 'Feast and Famine', 'Swinging between Hungry and Sated pays Nerve and a card.', 'appetite'),
+  powerStatus('crumbula/everybody-gets-a-cape', 'Everybody Gets a Cape', 'Becoming Sated Guards the party; becoming Hungry draws for them.', 'appetite'),
+  powerStatus('crumbula/the-counts-hospitality', 'The Count’s Hospitality', 'Your first Feed each round also heals the weakest Kid, and costs extra Appetite.', 'appetite'),
 ];
 
 export const STATUS_IDS = COMPANION_STATUSES.map(s => s.id);

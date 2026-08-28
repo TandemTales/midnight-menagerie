@@ -323,7 +323,10 @@ const power = (c, id, n, install) => {
 // ── per-combat bookkeeping ──────────────────────────────────────────────────
 U.onTracker(SLUG, (e, s, seat) => {
   U.defineCounters(e, [
-    { id: LURK, name: 'Lurk', icon: 'lurk', desc: LURK_DESC, min: 0, max: BASE_LURK_CAP, start: 0 },
+    { id: LURK, name: 'Lurk', icon: 'lurk', desc: LURK_DESC, min: 0, max: BASE_LURK_CAP, start: 0,
+      // Declared, not left to the renderer's description regex — that would
+      // have matched "Caps at 5" and printed CAPS on the gauge.
+      states: [{ at: 0, label: 'Still' }, { from: BASE_LURK_CAP, to: BIG_LURK_CAP, label: 'Coiled' }] },
   ]);
   const fake = () => U.trackerCtx(e, seat);
 
