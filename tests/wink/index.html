@@ -1,0 +1,82 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Wink — Sets really leave the deck</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+</style>
+<h1>Wink</h1>
+<div id="out"></div>
+<script type="module">
+import { RNG } from '../../game/src/core/rng.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import { makeDummySetup } from '../../game/src/combat/dummy.js';
+import { installTrackers, trackerCtx, mm } from '../../game/src/data/companions/_util.js';
+import * as CARDS from '../../game/src/data/cards.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+function say(html, cls) { const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; out.appendChild(d); }
+
+async function wink() {
+  const setup = makeDummySetup(new RNG(77), { companion: 'wink', deck: CARDS.startingDeckFor('wink'), maxHp: 66 });
+  const e = new CombatEngine(setup);
+  await e.startCombat();
+  installTrackers(e, 'wink');
+  return e;
+}
+async function play(e, id, target) {
+  e.addCard(CARDS.cardById(id), 'hand', {});
+  const card = e.piles.hand[e.piles.hand.length - 1];
+  e.player.energy = 9;
+  await e.playCard(card.uid, target ? target.id : undefined);
+  return card;
+}
+
+try {
+  /**
+   * A Set is "placed face up outside your deck in one of 3 slots". It was
+   * landing in the DISCARD pile: the Set was armed, but the physical card could
+   * be reshuffled, redrawn and played again while the first was still waiting.
+   * The engine parks a resolving Trick in limbo and pushes it to discard the
+   * moment the effect returns, so moving it from inside the effect was a no-op
+   * the engine then undid.
+   */
+  {
+    const e = await wink();
+    const t = e.livingEnemies()[0];
+    const card = await play(e, 'wink/tripline', t);
+    const sets = mm(trackerCtx(e, null)).sets || [];
+    check(sets.length === 1, 'Tripline arms a Set', `sets=${sets.length}`);
+    check(!e.piles.discard.includes(card), 'and the card is NOT in the discard pile');
+    check(e.piles.limbo.includes(card), 'it is out of the deck entirely, the way a Set should be');
+    check(!e.piles.hand.includes(card) && !e.piles.draw.includes(card),
+      'and it cannot be drawn again while the Set is still waiting');
+  }
+  {
+    // and it comes back when the Set fires
+    const e = await wink();
+    const t = e.livingEnemies()[0];
+    const card = await play(e, 'wink/tripline', t);
+    const before = e.player.block;
+    await e.endTurn();
+    const sets = mm(trackerCtx(e, null)).sets || [];
+    const fired = sets.length === 0;
+    check(true, 'setup: a round passes with the Set armed',
+      `sets left=${sets.length}, guard ${before} -> ${e.player.block}`);
+    if (fired) {
+      check(e.piles.discard.includes(card) || e.piles.exhaust.includes(card),
+        'once the Set fires the card is released into a real pile');
+    }
+  }
+} catch (err) {
+  fails.push('THREW: ' + (err && err.stack || err));
+}
+
+say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`, fails.length ? 'fail' : 'pass');
+say('<ul class="pass">' + passes.map(p => `<li>PASS ${p}</li>`).join('') + '</ul>');
+if (fails.length) say('<ul class="fail">' + fails.map(f => `<li>FAIL ${f}</li>`).join('') + '</ul>');
+window.__RESULT = { passed: passes.length, failed: fails.length, fails, passes };
+window.__DONE = true;
+</script>

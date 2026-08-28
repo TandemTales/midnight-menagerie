@@ -1,0 +1,182 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Wisp — Glow, the Gloaming, Afterglow, Converge</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+  li { margin: 2px 0; }
+</style>
+<h1>Wisp</h1>
+<div id="out"></div>
+<script type="module">
+import { RNG } from '../../game/src/core/rng.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import { makeDummySetup } from '../../game/src/combat/dummy.js';
+import { installTrackers, trackerCtx, mm } from '../../game/src/data/companions/_util.js';
+import * as CARDS from '../../game/src/data/cards.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+function say(html, cls) { const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; out.appendChild(d); }
+
+async function wisp() {
+  const setup = makeDummySetup(new RNG(1312), {
+    companion: 'wisp', deck: CARDS.startingDeckFor('wisp'), maxHp: 64,
+  });
+  const e = new CombatEngine(setup);
+  await e.startCombat();
+  installTrackers(e, 'wisp');
+  return e;
+}
+
+async function play(e, id, target) {
+  const def = CARDS.cardById(id);
+  if (!def) throw new Error('no such card ' + id);
+  e.addCard(def, 'hand', {});
+  const card = e.piles.hand[e.piles.hand.length - 1];
+  e.player.energy = 9;
+  await e.playCard(card.uid, target ? target.id : undefined);
+  return card;
+}
+
+const gloaming = (e) => (mm(trackerCtx(e, null)).gloaming || []);
+const st = (e) => mm(trackerCtx(e, null));
+
+try {
+  // ── 1. Linger puts the Trick in the Gloaming, not the discard ────────────
+  {
+    const e = await wisp();
+    const card = await play(e, 'wisp/wait-wait', e.livingEnemies()[0]);
+    check(gloaming(e).length === 1, 'a Lingering Trick enters the Gloaming',
+      `gloaming=${gloaming(e).length}`);
+    check(gloaming(e)[0].count === 1, 'with its printed countdown',
+      `count=${gloaming(e)[0].count}`);
+    check(!e.piles.discard.includes(card), 'and NOT the discard pile');
+    check(e.piles.limbo.includes(card), 'it is really out of circulation (limbo)');
+  }
+
+  // ── 2. It ticks, resolves, and lands in the discard ──────────────────────
+  {
+    const e = await wisp();
+    const t = e.livingEnemies()[0];
+    const card = await play(e, 'wisp/wait-wait', t);
+    const hp = e.livingEnemies().reduce((n, x) => n + x.hp, 0);
+    await e.endTurn();
+    const after = e.livingEnemies().reduce((n, x) => n + x.hp, 0);
+    check(gloaming(e).length === 0, 'the countdown reaches 0 and it leaves the Gloaming',
+      `gloaming=${gloaming(e).length}`);
+    check(after < hp, 'the Afterglow really happened', `enemy Courage ${hp} -> ${after}`);
+    check(e.piles.discard.includes(card), 'and the Trick is in the discard pile now');
+  }
+
+  // ── 3. ONE Convergence per batch, however many land ──────────────────────
+  {
+    const e = await wisp();
+    const t = e.livingEnemies()[0];
+    let converges = 0;
+    e.on('*', () => {});
+    await play(e, 'wisp/bonk-from-later', t);
+    await play(e, 'wisp/bonk-from-later', t);
+    check(gloaming(e).length === 2, 'setup: two Tricks Lingering on the same countdown');
+    const before = st(e).convergedThisTurn || 0;
+    await e.endTurn();
+    const now = (st(e).convergedThisTurn || 0) - before;
+    check(now === 1, 'two Afterglows in one batch make exactly ONE Convergence',
+      `convergences=${now}`);
+  }
+  {
+    const e = await wisp();
+    const t = e.livingEnemies()[0];
+    await play(e, 'wisp/wait-wait', t);
+    await e.endTurn();
+    check((st(e).convergedThisTurn || 0) === 0, 'one Afterglow alone is not a Convergence',
+      `convergences=${st(e).convergedThisTurn}`);
+  }
+
+  // ── 4. Hasten and Delay ─────────────────────────────────────────────────
+  {
+    const e = await wisp();
+    const t = e.livingEnemies()[0];
+    await play(e, 'wisp/two-rooms-over', t);       // Linger 2
+    check(gloaming(e)[0].count === 2, 'setup: countdown 2');
+    await play(e, 'wisp/one-more-second', null);   // Delay 1
+    check(gloaming(e)[0].count === 3, 'Delay pushes the countdown up', `count=${gloaming(e)[0].count}`);
+    await play(e, 'wisp/not-yet', null);           // Hasten 1
+    check(gloaming(e)[0].count === 2, 'Hasten pulls it down', `count=${gloaming(e)[0].count}`);
+  }
+  {
+    const e = await wisp();
+    const t = e.livingEnemies()[0];
+    await play(e, 'wisp/wait-wait', t);            // Linger 1
+    const hp = t.hp;
+    await play(e, 'wisp/not-yet', null);           // Hasten 1 -> resolves NOW
+    check(gloaming(e).length === 0, 'Hastening to 0 resolves the Afterglow immediately');
+    check(t.hp < hp || e.livingEnemies().some(x => x.hp < 30),
+      'and its damage really landed', `target ${hp} -> ${t.hp}`);
+  }
+
+  // ── 5. Glow, Bright, Blazing, Flare ─────────────────────────────────────
+  {
+    const e = await wisp();
+    check(e.counter('glow') === 0, 'Glow starts at 0');
+    check(e.counterMax('glow') === 6, 'and the track is declared at its real cap of 6',
+      `max=${e.counterMax('glow')}`);
+    await play(e, 'wisp/pocket-the-spark', null);
+    check(e.counter('glow') === 1, 'Pocket the Spark gains 1 Glow', `glow=${e.counter('glow')}`);
+  }
+  {
+    const e = await wisp();
+    const t = e.livingEnemies()[0];
+    e.setCounter('glow', 0, 'test');
+    const hp0 = t.hp;
+    await play(e, 'wisp/firefly-tackle', t);
+    check(hp0 - t.hp === 7, 'with no Glow, Flare simply does not happen', `dealt ${hp0 - t.hp}`);
+    e.setCounter('glow', 3, 'test');
+    const hp1 = e.livingEnemies()[0].hp;
+    await play(e, 'wisp/firefly-tackle', e.livingEnemies()[0]);
+    check(e.counter('glow') === 2, 'with Glow it is spent', `glow=${e.counter('glow')}`);
+    check(hp1 - e.livingEnemies()[0].hp === 11, 'and the Flare bonus lands', `dealt ${hp1 - e.livingEnemies()[0].hp}`);
+  }
+  {
+    const e = await wisp();
+    const t = e.livingEnemies()[0];
+    e.setCounter('glow', 3, 'test');
+    const hp = t.hp;
+    await play(e, 'wisp/pop', t);
+    check(hp - t.hp === 11, 'Bright at 3 Glow makes Pop! hit harder', `dealt ${hp - t.hp}`);
+  }
+  {
+    const e = await wisp();
+    e.setCounter('glow', 6, 'test');
+    const one = CARDS.cardById('wisp/one-bright-problem');
+    e.addCard(one, 'hand', {});
+    const k = e.piles.hand[e.piles.hand.length - 1];
+    check(e.canPlay(k.uid, e.livingEnemies()[0].id).ok, 'One Bright Problem is playable while Blazing');
+    e.setCounter('glow', 2, 'test');
+    check(!e.canPlay(k.uid, e.livingEnemies()[0].id).ok, 'and refuses below Blazing',
+      `reason: ${e.canPlay(k.uid, e.livingEnemies()[0].id).reason}`);
+  }
+
+  // ── 6. An Afterglow is not a Trick being played ─────────────────────────
+  {
+    const e = await wisp();
+    const t = e.livingEnemies()[0];
+    await play(e, 'wisp/wait-wait', t);
+    const before = e.stats.cardsPlayedThisTurn;
+    await e.endTurn();
+    check(e.stats.cardsPlayedThisTurn <= before,
+      'an Afterglow does not count as playing a Trick',
+      `cardsPlayedThisTurn ${before} -> ${e.stats.cardsPlayedThisTurn}`);
+  }
+} catch (err) {
+  fails.push('THREW: ' + (err && err.stack || err));
+}
+
+say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`, fails.length ? 'fail' : 'pass');
+say('<ul class="pass">' + passes.map(p => `<li>PASS ${p}</li>`).join('') + '</ul>');
+if (fails.length) say('<ul class="fail">' + fails.map(f => `<li>FAIL ${f}</li>`).join('') + '</ul>');
+
+window.__RESULT = { passed: passes.length, failed: fails.length, fails, passes };
+window.__DONE = true;
+</script>

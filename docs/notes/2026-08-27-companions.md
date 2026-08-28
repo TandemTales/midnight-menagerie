@@ -200,6 +200,60 @@ enemies 37 · audit 2061 · chrome 27 · six gates · 61 fps, no console errors.
 
 ---
 
+## 3. Wisp, the Baby Will-o'-Wisp  ✅
+
+`lampworks`. 4 basics + 20 commons + 35 uncommons + 25 rares + 5 co-op. Glow,
+Bright/Blazing, Linger X, the Gloaming, Afterglow, Converge, Hasten/Delay, Flare.
+
+### A batch is ONE batch
+
+Every countdown ticks simultaneously and everything reaching 0 resolves together
+as a single batch with **at most one Convergence, however many are involved**.
+Ticking in a loop and resolving each Trick on its own would fire Converge once
+per card and quietly turn every archetype into the Convergence one. The suite
+asserts exactly this: two Afterglows in one batch produce one Convergence, and
+one alone produces none.
+
+An Afterglow is also **not a Trick being played** — it never goes through
+`playCard`, so nothing that rewards playing Tricks sees it. Asserted.
+
+### The bug that was also in Wink, shipped
+
+`Linger` moved the card to `limbo` from inside the effect and it kept ending up
+in the discard pile. The engine parks a resolving Trick in LIMBO and, the moment
+the effect returns, checks whether it is still there and pushes it to discard —
+so moving it to limbo from inside the effect is a no-op the engine then undoes.
+
+**Wink's Sets have done this since they shipped.** A Set is specified as "placed
+face up outside your deck in one of 3 slots"; the card was going to the discard
+pile, where it could be reshuffled, redrawn and played again while the original
+Set was still armed. Both now finish the move on `card:resolved`, which is
+emitted after the engine's placement, and `tests/wink/run.py` exists to keep it
+that way.
+
+### Four cards that were one card
+
+The doc gives Wait... Wait..., Boo! Eventually, Two Rooms Over and Long Fuse the
+same line at four rarities, and the cards suite is right that a pool should not
+be four copies of a Basic. Each keeps its printed numbers and countdown and
+gains one thing pointing where its own flavour already pointed: the Basics drop
+their Glow (a Basic should teach the mechanic, not run the engine), Two Rooms
+Over lands on the strongest enemy because it is happening somewhere else, and
+Long Fuse pays Guard as well after three turns of waiting. Same for Nightlight
+Practice against Put It Somewhere Safe. Stated per CONTRACTS rule 8.
+
+### Verification
+
+`tests/wisp/run.py` — **25 checks**: the Trick really leaves circulation, the
+countdown really ticks, Hasten to 0 resolves immediately, Delay pushes it back,
+Flare spends Glow only when there is Glow to spend, Bright and Blazing gate what
+they say they gate. `tests/wink/run.py` — 5 checks on Set placement.
+
+cards 740/0/0 · combat 677 · run 50 · coop 591 · boggle 30 · mopsy 27 · six
+gates · 61 fps, no console errors.
+
+---
+
 ## Still to come
 
 **Designed, not built (8):** Wisp, Crumbula, Truffle, Hush, Drizzle, Pudding,

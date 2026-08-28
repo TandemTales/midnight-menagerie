@@ -159,6 +159,17 @@ export const COMPANION_KEYWORDS = [
   K('mend', 'Mend', 'Bring a Trick back from the [Torn] pile — to your discard pile unless the Trick says otherwise. The same Trick cannot be Mended twice in one turn.', { companion: 'mopsy' }),
   K('torn', 'Torn', 'Mopsy\u2019s fifth pile. Torn Tricks cannot be drawn or played until something [Mend]s them.', { companion: 'mopsy' }),
   K('scrap', 'Scrap', 'A temporary 0-Nerve Trick: gain 1 [Stuffing], or [Reinforce] a Patch in your hand. [Vanish].', { companion: 'mopsy' }),
+
+  K('glow', 'Glow', 'Wisp starts each combat with 0 and holds at most 6. It is not Nerve and cannot pay costs.', { companion: 'wisp' }),
+  K('bright', 'Bright', 'A condition, not a buff: Wisp is Bright at 3 or more [Glow].', { companion: 'wisp' }),
+  K('blazing', 'Blazing', 'A condition, not a buff: Wisp is Blazing at 6 or more [Glow] — as much as she can normally hold.', { companion: 'wisp' }),
+  K('linger', 'Linger X', 'Instead of being discarded, this Trick goes face up into the [Gloaming] with X countdown counters.', { companion: 'wisp' }),
+  K('gloaming', 'The Gloaming', 'Wisp’s delayed-Trick zone, outside hand, draw pile and discard. Anything there is out of circulation.', { companion: 'wisp' }),
+  K('afterglow', 'Afterglow', 'The delayed effect on a [Linger]ing Trick. It resolves when the countdown hits 0, and it is NOT a Trick being played.', { companion: 'wisp' }),
+  K('converge', 'Converge', 'Two or more [Afterglow]s resolving in the same batch. One Convergence per batch, however many are involved.', { companion: 'wisp' }),
+  K('hasten', 'Hasten X', 'Reduce a [Linger]ing Trick’s countdown by X. At 0 its [Afterglow] resolves.', { companion: 'wisp' }),
+  K('delay', 'Delay X', 'Increase a countdown by X. Not a penalty — several of Wisp’s Tricks want the extra time.', { companion: 'wisp' }),
+  K('flare', 'Flare X', 'You may spend X [Glow] for the listed extra effect. Optional unless the Trick says otherwise.', { companion: 'wisp' }),
 ];
 
 export const KEYWORD_IDS = COMPANION_KEYWORDS.map(k => k.id);
@@ -512,6 +523,27 @@ export const COMPANION_STATUSES = [
   powerStatus('mopsy/threadbare-and-thriving', 'Threadbare and Thriving', 'While Hollow, the first patched Trick you play each turn triggers one Patch an extra time.', 'patch'),
   powerStatus('mopsy/held-together-by-love', 'Held Together by Love', 'Once per combat, lethal damage leaves Mopsy at 1 Courage; she Tears her hand and cashes every Patch for Stuffing.', 'patch'),
   powerStatus('mopsy/family-quilt', 'Family Quilt', 'Once a round per Kid, a teammate playing a Trick you Patched draws a card and gives you 1 Stuffing.', 'patch'),
+
+  // ── Wisp ──────────────────────────────────────────────────────────────────
+  counterStatus('glow', 'Glow', 'Wisp is carrying {n} Glow. Bright at 3, Blazing at 6.', 9, 'buff'),
+  powerStatus('wisp/home-in-the-dark', 'Home in the Dark', 'The first Afterglow each turn gains you Guard.', 'glow'),
+  powerStatus('wisp/static-in-the-wallpaper', 'Static in the Wallpaper', 'The first Flare each turn hits a random enemy.', 'glow'),
+  powerStatus('wisp/getting-excited', 'Getting Excited', 'The first Convergence each turn gains Glow.', 'glow'),
+  powerStatus('wisp/brighter-every-minute', 'Brighter Every Minute', 'The first Trick into the Gloaming each turn gains Guard.', 'glow'),
+  powerStatus('wisp/constellation-practice', 'Constellation Practice', 'The first Convergence each turn draws and gains Glow.', 'glow'),
+  powerStatus('wisp/hallway-aurora', 'Hallway Aurora', 'Bright: damaging Afterglows hit harder. Blazing: defensive ones give more Guard.', 'glow'),
+  powerStatus('wisp/i-can-wait', 'I Can Wait', 'The first deliberate Delay each turn gains Guard.', 'glow'),
+  powerStatus('wisp/cant-wait', 'Can’t Wait!', 'The first Hasten to 0 each turn hits a random enemy.', 'glow'),
+  powerStatus('wisp/flicker-feedback', 'Flicker Feedback', 'The first Flare each turn Hastens a random Lingering Trick.', 'glow'),
+  powerStatus('wisp/three-little-lights', 'Three Little Lights', 'Exactly three in the Gloaming at end of turn gains Glow and a card.', 'glow'),
+  powerStatus('wisp/bigger-than-a-nightlight', 'Bigger Than a Nightlight', 'Maximum Glow is 9, and above 6 every Afterglow does more.', 'glow'),
+  powerStatus('wisp/falling-dominoes', 'Falling Dominoes', 'The first Afterglow each turn Hastens everything else.', 'glow'),
+  powerStatus('wisp/good-things-come', 'Good Things Come to Tiny Ghosts', 'Once a turn, a Delayed Trick resolves its Afterglow twice.', 'glow'),
+  powerStatus('wisp/never-goes-out', 'Never Goes Out', 'The first Glow you spend each turn partly comes back.', 'glow'),
+  powerStatus('wisp/gloaming-gets-crowded', 'Gloaming Gets Crowded', 'Four in the Gloaming draws two and gains a Nerve.', 'glow'),
+  powerStatus('wisp/too-bright-for-bedtime', 'Too Bright for Bedtime', 'Blazing at turn start makes your first two Tricks cheaper, then costs 2 Glow.', 'glow'),
+  powerStatus('wisp/tiny-star-long-shadow', 'Tiny Star, Long Shadow', 'Once a turn, a Convergence repeats one of its Afterglows.', 'glow'),
+  powerStatus('wisp/follow-my-light', 'Follow My Light!', 'A teammate’s third Trick Hastens one of yours; your Afterglows make theirs cheaper.', 'glow'),
 ];
 
 export const STATUS_IDS = COMPANION_STATUSES.map(s => s.id);

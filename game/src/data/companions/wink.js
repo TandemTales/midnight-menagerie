@@ -187,7 +187,13 @@ const setRoom = (c) => activeSets(c).length < setSlots(c);
 function placeSet(c, trigger, fire, opts = {}) {
   if (!setRoom(c)) return false;
   activeSets(c).push({ card: c.card, enemyId: opts.enemy ? eid(opts.enemy) : null, global: !!opts.global, trigger, fire, vanish: !!opts.vanish });
-  U.moveCard(c, c.card, 'limbo', { set: true });
+  /* The card cannot be moved from here. While a Trick resolves the engine parks
+     it in LIMBO and, the moment the effect returns, pushes it to the discard
+     pile if that is still where it is — so this move was a no-op the engine
+     immediately undid, and every Set card sat in the discard pile, drawable and
+     playable again while its Set was still armed. The move is finished on
+     `card:resolved`, which is emitted after that placement. */
+  U.mm(c).awaitingSet = c.card;
   U.fire(c, 'setPlaced', {});
   return true;
 }
@@ -218,6 +224,15 @@ U.onTracker(SLUG, (e, s, seat) => {
     { id: 'open-eyes', name: 'Open Eyes', icon: 'open-eyes', desc: 'Wink has eight eyes and begins combat with 3 Open. Full Gaze at 8. Eyes persist between turns.', min: 0, max: 8, start: 3 },
   ]);
   const fake = () => U.trackerCtx(e);
+  // Finish placing a Set. See placeSet: this is the first moment the card can
+  // actually leave circulation.
+  e.on('card:resolved', (ev) => {
+    const c = fake();
+    const want = U.mm(c).awaitingSet;
+    if (!want || ev.cardUid !== want.uid) return;
+    U.mm(c).awaitingSet = null;
+    U.moveCard(c, want, 'limbo', { set: true });
+  });
   // an Intent becoming current resolves the Read on that position and fires Sets
   e.on('intent', (ev) => {
     const c = fake();
