@@ -164,6 +164,11 @@ try {
     await play(e, 'mopsy/snip-and-save', null);
     check(torn(e).includes(target), 'a Torn Trick is in the Torn pile');
     check(!e.piles.exhaust.includes(target), 'and NOT in the exhaust pile — Tear is not Vanish');
+    /* The engine permits playing out of `stash` because that zone exists for
+       Hush's Shadow Pocket. Mopsy's Torn pile is the opposite. */
+    check(!e.canPlay(target.uid, e.livingEnemies()[0].id).ok,
+      'and a Torn Trick cannot be played out of the Torn pile',
+      `reason: ${e.canPlay(target.uid, e.livingEnemies()[0].id).reason}`);
   }
   {
     // Patches ride with the Trick when it is Torn, which is what makes Tear a

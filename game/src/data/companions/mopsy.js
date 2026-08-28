@@ -193,6 +193,11 @@ function breakPatch(c, card, entry) {
 function tear(c, card) {
   if (!card || card === c.card) return false;
   U.moveCard(c, card, TORN, { torn: true });
+  /* The engine lets a Trick be played out of `stash` — that zone exists for
+     Hush's Shadow Pocket, which is a second hand. Mopsy's Torn pile is the
+     opposite: "cannot normally be drawn or played until something Mends it".
+     Without this flag a Torn Trick was fully playable from the Torn pile. */
+  card.unplayable = true;
   const s = U.mm(c);
   s.toreThisTurn = (s.toreThisTurn || 0) + 1;
   if (s.ragBag && U.once(c, 'ragBag')) gainStuffing(c, U.stacks(c, c.self, 'mopsy/rag-bag'));
@@ -211,6 +216,7 @@ function mend(c, card, pile = 'discard') {
   const uid = card.uid || card.id;
   if (s.mendedThisTurn.includes(uid)) return false;   // no trivial recursion
   s.mendedThisTurn.push(uid);
+  card.unplayable = false;
   U.moveCard(c, card, pile, {});
   if (s.wellLoved && U.once(c, 'wellLoved')) {
     U.guard(c, 6 * U.stacks(c, c.self, 'mopsy/well-loved'));
@@ -1200,6 +1206,7 @@ const rares = [
     nums: { c1: 2 },
     effect: eff((c) => {
       for (const k of tornCards(c).slice()) {
+        k.unplayable = false;
         U.moveCard(c, k, 'discard', {});
         if (patchesOn(k).length) reinforce(c, k, 1);
       }
