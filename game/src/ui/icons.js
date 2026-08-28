@@ -141,6 +141,15 @@ const STATUS = {
   unearthed: 'M12 1.8 14.2 7l5.6.4-4.3 3.6 1.4 5.4L12 13.5l-4.9 2.9 1.4-5.4L4.2 7.4 9.8 7zM4.4 19.2h15.2v2.2H4.4z',
   loyalty: 'M9.2 2.4h5.6l1.2 3.4h4.2v2.4H3.8V5.8H8zM6.6 9.4h10.8l-1 8.2a4.6 4.6 0 0 1-4.4 4 4.6 4.6 0 0 1-4.4-4zm5.4 3a2.3 2.3 0 1 0 0 4.6 2.3 2.3 0 0 0 0-4.6z',
   'best-friend': 'M12 21.2C6.6 17 3.2 13.8 3.2 9.8A4.8 4.8 0 0 1 8 5c1.7 0 3.2.8 4 2.1A4.8 4.8 0 0 1 16 5a4.8 4.8 0 0 1 4.8 4.8c0 4-3.4 7.2-8.8 11.4z',
+  /* Mossbit. `epitaph` is a rounded stone with lines of writing on it — close
+     enough to Pudding's `plot` to read as the same graveyard, different enough
+     that the two never appear on one row anyway. `patience` is an hourglass,
+     `weathering` a stone losing its edge to three falling marks, `buried-harm`
+     a weight sitting under the ground line. */
+  epitaph: 'M6.6 4.4a5.4 5.4 0 0 1 10.8 0v13.2H6.6zm2.2 3h6.4v1.8H8.8zm0 3.6h6.4v1.8H8.8zm0 3.6h4.2v1.8H8.8zM3.4 19h17.2v2.2H3.4z',
+  patience: 'M5.4 2.2h13.2v2.2h-1.4v2.2c0 2.2-1.5 4.1-3.4 5.4 1.9 1.3 3.4 3.2 3.4 5.4v2.2h1.4v2.2H5.4v-2.2h1.4v-2.2c0-2.2 1.5-4.1 3.4-5.4-1.9-1.3-3.4-3.2-3.4-5.4V4.4H5.4zM9 17.4v2.2h6v-2.2c0-1.5-1.3-2.7-3-3.6-1.7.9-3 2.1-3 3.6z',
+  weathering: 'M7 7.2a5 5 0 0 1 10 0v8.4H7zM2.8 2.6l1.8-1.2 2 3-1.8 1.2zm16.6-1.2 1.8 1.2-2 3-1.8-1.2zM11.2.4h1.6v3.2h-1.6zM4 17.8h16v2.2H4zm-1.4 3.4h18.8v2.2H2.6z',
+  'buried-harm': 'M2.6 9.4h18.8v2.2H2.6zm4.6 4.2h9.6l1.6 7.8H5.6zm2-11.2h5.6v2.2H9.2zm.6 3.2h4.4l.8 2.6H9z',
   /* Count Crumbula: a goblet for Appetite, two fangs for a Bite Mark. */
   appetite: 'M6 2.4h12l-.8 6.4c-.3 2.4-2 4.3-4.2 4.9v5.9h3.4v2.2H7.6v-2.2H11v-5.9c-2.2-.6-3.9-2.5-4.2-4.9zm2.3 2.2.5 4c.2 1.5 1.6 2.6 3.2 2.6s3-1.1 3.2-2.6l.5-4z',
   'bite-mark': 'M7.2 2.6c1.2 1.8 1.8 3.6 1.8 5.4 0 2.1-.8 3.9-1.8 5.4-1-1.5-1.8-3.3-1.8-5.4 0-1.8.6-3.6 1.8-5.4zm9.6 0c1.2 1.8 1.8 3.6 1.8 5.4 0 2.1-.8 3.9-1.8 5.4-1-1.5-1.8-3.3-1.8-5.4 0-1.8.6-3.6 1.8-5.4zM4.6 17.4h14.8v2.2H4.6zm2.6 3.4h9.6V23H7.2z',

@@ -1,0 +1,352 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Mossbit — Epitaphs, Patience, Weathering, Buried Harm</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+</style>
+<h1>Mossbit</h1>
+<div id="out"></div>
+<script type="module">
+import { RNG } from '../../game/src/core/rng.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import { makeDummySetup } from '../../game/src/combat/dummy.js';
+import { installTrackers, mm as MM } from '../../game/src/data/companions/_util.js';
+import * as CARDS from '../../game/src/data/cards.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+function say(html, cls) { const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; out.appendChild(d); }
+
+async function mossbit(o = {}) {
+  const e = new CombatEngine(makeDummySetup(new RNG(o.seed || 77), {
+    companion: 'mossbit', deck: CARDS.startingDeckFor('mossbit'), maxHp: 80, ...o,
+  }));
+  await e.startCombat();
+  installTrackers(e, 'mossbit');
+  return e;
+}
+async function play(e, id, target) {
+  e.addCard(CARDS.cardById(id), 'hand', {});
+  const k = e.piles.hand[e.piles.hand.length - 1];
+  e.player.energy = 9;
+  await e.playCard(k.uid, target ? target.id : undefined);
+  return k;
+}
+function give(e, id) { e.addCard(CARDS.cardById(id), 'hand', {}); return e.piles.hand[e.piles.hand.length - 1]; }
+function pileOf(e, card) {
+  for (const n of ['draw', 'hand', 'discard', 'exhaust', 'limbo', 'stash']) {
+    if ((e.piles[n] || []).includes(card)) return n;
+  }
+  return 'nowhere';
+}
+const eps = (e) => e.timers.filter(t => t.data && t.data.mossbit);
+/** Quiet the enemy phase so a Courage measurement is about the thing under test. */
+function calm(e) { for (const en of e.livingEnemies()) { en.hp = 999; en.maxHp = 999; } }
+/**
+ * Total damage dealt TO ENEMIES, from the events.
+ *
+ * An Epitaph resolves at the start of Mossbit's turn — after the enemy phase it
+ * just sat through — so the enemy is usually holding fresh Guard by then and a
+ * naive hp before/after reads "the Epitaph dealt 1". Reading the events measures
+ * the effect instead of the enemy's armour.
+ */
+function watchDamage(e) {
+  const box = { total: 0, hits: 0 };
+  e.on('damage', (ev) => {
+    if (!ev || !ev.targetId || ev.targetId === e.player.id) return;
+    box.total += (ev.amount | 0);
+    box.hits++;
+  });
+  return box;
+}
+/** Mossbit's own scratch, for the numbers no counter shows. */
+const scratch = (e) => MM({ e, self: e.player });
+
+try {
+  // ══ 1. Epitaphs tick, resolve, and pay Patience ═════════════════════════
+  {
+    const e = await mossbit();
+    const t = e.livingEnemies()[0];
+    check(e.counter('epitaphs') === 0, 'the shell starts blank');
+    check(e.counterMax('epitaphs') === 5, 'with five slots', `max=${e.counterMax('epitaphs')}`);
+
+    await play(e, 'mossbit/written-in-stone', t);
+    check(eps(e).length === 1, 'Written in Stone really writes one', `n=${eps(e).length}`);
+    check(e.counter('epitaphs') === 1, 'and the gauge shows it');
+    check(eps(e)[0].turnsLeft === 2, 'at a countdown of 2', `left=${eps(e)[0].turnsLeft}`);
+
+    const hp0 = t.hp;
+    await e.endTurn();
+    check(eps(e)[0].turnsLeft === 1, 'one scheduled tick takes it to 1', `left=${eps(e)[0].turnsLeft}`);
+    check(t.hp === hp0, 'and nothing has happened to the enemy yet');
+    check(e.counter('patience') === 0, 'no Patience yet either');
+
+    const dmg = watchDamage(e);
+    await e.endTurn();
+    check(eps(e).length === 0, 'the second tick resolves it', `n=${eps(e).length}`);
+    /* Printed 10, and it lands as 7 — the enemy turn it sat through left Weak on
+       Mossbit, which is real and correct. The assertion is that the inscription
+       fired once for about its printed size, not that the board was pristine. */
+    check(dmg.hits === 1 && dmg.total >= 7, 'and it really deals its damage',
+      `${dmg.hits} hit for ${dmg.total}`);
+    check(e.counter('patience') === 1, 'maturing on its own pays 1 Patience',
+      `patience=${e.counter('patience')}`);
+  }
+  {
+    // ...and hurrying one along pays NOTHING. This is the whole character.
+    const e = await mossbit();
+    const t = e.livingEnemies()[0];
+    await play(e, 'mossbit/written-in-stone', t);
+    const hp = t.hp;
+    await play(e, 'mossbit/chip-the-clock', null);   // 2 -> 1
+    check(eps(e)[0].turnsLeft === 1, 'Chip the Clock hurries it along', `left=${eps(e)[0].turnsLeft}`);
+    await play(e, 'mossbit/chip-the-clock', null);   // 1 -> 0, resolves
+    check(eps(e).length === 0, 'and a second one forces it to resolve', `n=${eps(e).length}`);
+    check(hp - t.hp >= 10, 'the effect really happened', `enemy lost ${hp - t.hp}`);
+    check(e.counter('patience') === 0,
+      'but a FORCED resolution pays no Patience — Advancing forfeits it',
+      `patience=${e.counter('patience')}`);
+  }
+  {
+    // Delay pushes it back, Erase removes it unresolved.
+    const e = await mossbit();
+    const t = e.livingEnemies()[0];
+    await play(e, 'mossbit/written-in-stone', t);
+    await play(e, 'mossbit/one-more-minute', null);
+    check(eps(e)[0].turnsLeft === 3, 'One More Minute puts it back', `left=${eps(e)[0].turnsLeft}`);
+
+    const hp = t.hp;
+    await play(e, 'mossbit/scratch-it-out', null);
+    check(eps(e).length === 0, 'Scratch It Out erases it', `n=${eps(e).length}`);
+    check(t.hp === hp, 'and it does NOT resolve on the way out', `enemy lost ${hp - t.hp}`);
+    check(e.counter('patience') === 0, 'nor pay Patience');
+  }
+  {
+    // Five slots, and the sixth is refused.
+    const e = await mossbit();
+    const t = e.livingEnemies()[0];
+    for (let i = 0; i < 6; i++) await play(e, 'mossbit/written-in-stone', t);
+    check(eps(e).length === 5, 'five inscriptions fill the shell', `n=${eps(e).length}`);
+    await play(e, 'mossbit/already-written', null);
+    check(e.counterMax('epitaphs') === 7, 'Already Written widens the GAUGE too',
+      `max=${e.counterMax('epitaphs')}`);
+    check(eps(e).length === 6, 'and writes its own on the way in', `n=${eps(e).length}`);
+  }
+  {
+    // An aimed Epitaph fizzles when its enemy is gone.
+    const e = await mossbit();
+    const t = e.livingEnemies()[0];
+    await play(e, 'mossbit/written-in-stone', t);
+    t.hp = 0; t.alive = false;
+    await e.endTurn();
+    await e.endTurn();
+    check(eps(e).length === 0, 'an aimed Epitaph whose target is gone clears its slot');
+    check(e.counter('epitaphs') === 0, 'and the gauge agrees', `n=${e.counter('epitaphs')}`);
+  }
+
+  // ══ 2. Patience caps, and Longer Memory widens the gauge ════════════════
+  {
+    const e = await mossbit();
+    check(e.counterMax('patience') === 3, 'Patience holds 3', `max=${e.counterMax('patience')}`);
+    e.setCounter('patience', 3, 'test');
+    await play(e, 'mossbit/longer-memory', null);
+    check(e.counterMax('patience') === 5, 'Longer Memory widens it to 5',
+      `max=${e.counterMax('patience')}`);
+    check(e.counter('patience') === 3, 'and the banked Patience survives the redefine',
+      `patience=${e.counter('patience')}`);
+  }
+  {
+    const e = await mossbit();
+    e.setCounter('patience', 2, 'test');
+    const [a, b] = e.livingEnemies();
+    a.block = 0; b.block = 0;
+    const hp = a.hp;
+    await play(e, 'mossbit/shell-rattle', a);
+    check(e.counter('patience') === 1, 'Shell Rattle spends its Patience', `patience=${e.counter('patience')}`);
+    check(hp - a.hp === 10, 'and really hits twice', `dealt ${hp - a.hp}`);
+  }
+  {
+    const e = await mossbit();
+    e.setCounter('patience', 0, 'test');
+    const a = e.livingEnemies()[0];
+    a.block = 0;
+    const hp = a.hp;
+    await play(e, 'mossbit/shell-rattle', a);
+    check(hp - a.hp === 5, 'with no Patience it hits once and takes nothing', `dealt ${hp - a.hp}`);
+  }
+
+  // ══ 3. Buried Harm is postponement, not prevention ══════════════════════
+  {
+    /* Driven through the REAL enemy phase rather than a hand-dealt hit: the
+       whole mechanic is about which turn the damage lands on, so a test that
+       manufactures the hit at the wrong point measures the wrong thing. An
+       earlier version of this suite did exactly that and passed for the wrong
+       reason — the "bill" it saw was just the enemy attacking again. */
+    const e = await mossbit();
+    calm(e);
+    const hp0 = e.player.hp;
+    await play(e, 'mossbit/not-yet', null);
+    await e.endTurn();                       // the enemy swings into the Burial
+    check(e.player.hp === hp0, 'a Buried enemy turn costs no Courage at the time',
+      `hp ${hp0} -> ${e.player.hp}`);
+    const owed = scratch(e).buriedHarm;
+    check(owed > 0, 'and the damage really became Buried Harm', `harm=${owed}`);
+
+    const carrying = e.player.hp;
+    await e.endTurn();                       // the bill lands at the END of that turn
+    check(e.player.hp <= carrying - owed, 'and the bill really arrives a turn later',
+      `hp ${carrying} -> ${e.player.hp}, owed ${owed}`);
+  }
+  {
+    // Guard does NOT stop the bill — it is not Attack damage.
+    const e = await mossbit();
+    calm(e);
+    await play(e, 'mossbit/not-yet', null);
+    await e.endTurn();
+    const owed = scratch(e).buriedHarm;
+    e.player.block = 200;                    // more than anything could ask for
+    const hp = e.player.hp;
+    await e.endTurn();
+    check(owed > 0 && e.player.hp === hp - owed,
+      'Guard cannot stop the Buried Harm coming due',
+      `hp ${hp} -> ${e.player.hp} with 200 Guard up, owed ${owed}`);
+  }
+  {
+    // ...and clearing it first means no bill at all.
+    const e = await mossbit();
+    calm(e);
+    await play(e, 'mossbit/not-yet', null);
+    await e.endTurn();
+    check(scratch(e).buriedHarm > 0, 'carrying Buried Harm into his turn');
+    await play(e, 'mossbit/steady-little-heart', null);
+    await play(e, 'mossbit/steady-little-heart', null);
+    check(scratch(e).buriedHarm === 0, 'Steady Little Heart really clears it',
+      `harm=${scratch(e).buriedHarm}`);
+    e.player.block = 200;
+    const hp = e.player.hp;
+    await e.endTurn();
+    check(e.player.hp === hp, 'clearing Buried Harm in time means no bill at all',
+      `hp ${hp} -> ${e.player.hp}`);
+  }
+  {
+    // The Burial window is ONE enemy turn; unused capacity expires.
+    const e = await mossbit();
+    calm(e);
+    await play(e, 'mossbit/not-yet', null);
+    await e.endTurn();          // window opens and closes
+    await e.endTurn();          // and a second enemy turn goes by
+    e.player.block = 0;
+    const hp = e.player.hp;
+    await e.dealDamage({ attacker: e.livingEnemies()[0], defender: e.player, amount: 7, kind: 'attack' });
+    check(e.player.hp === hp - 7, 'an expired Burial window really does nothing',
+      `hp ${hp} -> ${e.player.hp}`);
+  }
+
+  // ══ 4. Weathering ═══════════════════════════════════════════════════════
+  {
+    const e = await mossbit();
+    const k = give(e, 'mossbit/old-reliable');
+    check(!k.meta.weathered, 'Old Reliable starts unweathered');
+    await e.endTurn();
+    check(pileOf(e, k) === 'hand', 'an unplayed Weathering Trick is KEPT in hand',
+      `it is in ${pileOf(e, k)}`);
+    check(k.meta.weathered === true, 'and one turn of Weathering 1 finishes it');
+
+    e.player.block = 0;
+    e.player.energy = 9;
+    await e.playCard(k.uid);
+    check(e.player.block >= 13, 'a Weathered Old Reliable uses its better half',
+      `guard=${e.player.block}`);
+  }
+  {
+    // Leaving the hand resets the progress — that is the whole cost of Weather.
+    const e = await mossbit();
+    const k = give(e, 'mossbit/warm-flagstone');   // Weathering 2
+    await e.endTurn();
+    check(k.meta.weatherLeft === 1, 'Warm Flagstone is one turn along', `left=${k.meta.weatherLeft}`);
+    e.moveCard(k, 'discard', {});
+    k.meta.weatherLeft = null;                     // as leaving the hand does
+    e.moveCard(k, 'hand', {});
+    await e.endTurn();
+    check(k.meta.weatherLeft === 1 && !k.meta.weathered,
+      'and a Trick that left the hand starts its Weathering again',
+      `left=${k.meta.weatherLeft}`);
+  }
+  {
+    // Weatherproofing finishes a Trick but seals it for the turn.
+    const e = await mossbit();
+    const k = give(e, 'mossbit/old-reliable');
+    await play(e, 'mossbit/weatherproofing', null);
+    check(k.meta.weathered === true, 'Weatherproofing really finishes it');
+    check(!e.canPlay(k.uid).ok, 'and it really cannot be played this turn');
+    await e.endTurn();
+    /* A Weathered Trick is no longer auto-retained, so it is in the discard pile
+       by now — put it back in hand before asking, or `canPlay` refuses it for
+       being in the wrong pile and the seal looks permanent when it is not. */
+    e.moveCard(k, 'hand', {});
+    check(e.canPlay(k.uid).ok, 'but the seal is lifted next turn',
+      `reason: ${e.canPlay(k.uid).reason}`);
+  }
+
+  // ══ 5. Powers that pay ══════════════════════════════════════════════════
+  {
+    const e = await mossbit();
+    const t = e.livingEnemies()[0];
+    await play(e, 'mossbit/quiet-monument', null);
+    const g = e.player.block;
+    await play(e, 'mossbit/written-in-stone', t);
+    check(e.player.block - g >= 5, 'Quiet Monument pays on the first Epitaph of the turn',
+      `gained ${e.player.block - g}`);
+    const g2 = e.player.block;
+    await play(e, 'mossbit/written-in-stone', t);
+    check(e.player.block - g2 === 0, 'and only on the first', `gained ${e.player.block - g2}`);
+  }
+  {
+    const e = await mossbit();
+    const t = e.livingEnemies()[0];
+    await play(e, 'mossbit/set-in-stone', null);
+    await play(e, 'mossbit/written-in-stone', t);
+    check(eps(e)[0].turnsLeft === 3, 'Set in Stone makes new Epitaphs take a turn longer',
+      `left=${eps(e)[0].turnsLeft}`);
+    check(eps(e)[0].data.bonus >= 5, 'and locks a damage bonus into them at creation',
+      `bonus=${eps(e)[0].data.bonus}`);
+  }
+  {
+    // A Very Long Nap ticks twice, and BOTH count as maturing.
+    const e = await mossbit();
+    const t = e.livingEnemies()[0];
+    await play(e, 'mossbit/written-in-stone', t);
+    await play(e, 'mossbit/a-very-long-nap', null);
+    t.block = 0;
+    await e.endTurn();
+    check(eps(e).length === 0, 'A Very Long Nap ticks the whole shell twice', `n=${eps(e).length}`);
+    check(e.counter('patience') === 1, 'and both ticks still count as maturing',
+      `patience=${e.counter('patience')}`);
+  }
+  {
+    // Read the Fine Print resolves it twice for one Patience.
+    const e = await mossbit();
+    const t = e.livingEnemies()[0];
+    t.hp = 999; t.maxHp = 999;
+    await play(e, 'mossbit/written-in-stone', t);
+    await play(e, 'mossbit/read-the-fine-print', null);
+    const dmg = watchDamage(e);
+    await e.endTurn();
+    await e.endTurn();
+    check(dmg.hits === 2 && dmg.total >= 14, 'Read the Fine Print really resolves the effect twice',
+      `${dmg.hits} hits for ${dmg.total}`);
+    check(e.counter('patience') === 1, 'and still pays only one Patience',
+      `patience=${e.counter('patience')}`);
+  }
+} catch (err) {
+  fails.push('THREW: ' + (err && err.stack || err));
+}
+
+say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`, fails.length ? 'fail' : 'pass');
+say('<ul class="pass">' + passes.map(p => `<li>PASS ${p}</li>`).join('') + '</ul>');
+if (fails.length) say('<ul class="fail">' + fails.map(f => `<li>FAIL ${f}</li>`).join('') + '</ul>');
+window.__RESULT = { passed: passes.length, failed: fails.length, fails, passes };
+window.__DONE = true;
+</script>

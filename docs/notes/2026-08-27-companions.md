@@ -599,8 +599,78 @@ mopsy 28 · wisp 25 · crumbula 25 · hush 17 · wink 5 · 61 fps, no console er
 
 ---
 
+## 9. Mossbit, the Tombstone Turtle  ✅
+
+`kennels`. 5 basics + 20 commons + 35 uncommons + 25 rares + 5 co-op. Epitaph,
+Patience, Weathering, Buried Harm.
+
+He survives because he has time, not because he is armoured, and he runs four
+overlapping clocks at once. Almost all of it fell out of machinery the engine
+already had — with one exception that made the character unwritable.
+
+### The timer knew why it fired and did not say
+
+Patience is paid when an Epitaph runs its countdown out on its own, and NOT when
+a Trick Advances it to zero. That difference is the whole character — tempo now
+against the currency that buys the big turns later — and it was unaskable.
+`_fireTimers` has always taken a `reason` ('tick' for a scheduled tick, the
+caller's word for a forced one) and emitted it on `TIMER_FIRE`, but the handler
+it invoked never received it. One argument; the entire archetype.
+
+Epitaphs are otherwise **the engine's timers, unmodified**: countdown, per-seat
+owner, `adjustTimer` for Advance and Delay, `cancelTimer` for Erase, and a
+snapshot the HUD already renders. A private array would have been a second clock
+the screen could not see. A Very Long Nap gets its "both ticks count as natural"
+for free by passing `'tick'` as the reason — the same word the scheduler uses.
+
+### Three keyword ids were already taken
+
+The chapter's mechanics are called **Weather** and **Bury**. Both ids belong to
+Companions built earlier this round — `weather` is Drizzle's global combat state,
+`bury` is Pudding's cemetery — and keyword ids are global while Companions are
+not, so `[Bury]` on a Mossbit card would have opened Pudding's tooltip. His are
+`weathering` and `buried-harm`, and the printed word matches the tooltip it
+opens. Advance / Delay / Erase are deliberately not keywords at all: they are
+defined inside `[Epitaph]`, which avoids a third collision (with Drizzle's
+`advance`) and is one good tooltip instead of three thin ones. Stated per rule 8.
+
+### A test that passed for the wrong reason
+
+The Buried Harm suite manufactured a hit during Mossbit's own turn instead of
+letting the enemy phase deliver it. Two checks failed and a third **passed while
+proving nothing** — the "bill" it measured was just the enemy attacking again on
+the following turn. Rewritten to drive the real path and read the harm off his
+own scratch, it also exposed a genuine implementation bug: harm Buried mid-turn
+was billed at the end of that same turn, with no grace at all. The spec gives him
+a whole turn, so the debt now carries a due-turn stamp.
+
+Two more failures were the same shape as Pudding's: an Epitaph resolves at the
+start of the turn AFTER the enemy phase it sat through, so the enemy is holding
+fresh Guard and Mossbit is wearing Weak. Both "failures" were the mechanic
+working perfectly — 10 printed damage landing as 7 — and the assertions were
+reading the board's armour rather than the effect. They read the damage events
+now.
+
+### Verification
+
+`tests/mossbit/run.py` — **55 checks**: an Epitaph really ticks, really resolves
+on schedule and really pays a Patience; hurrying one along really resolves it and
+really pays NOTHING; Erase really removes it without resolving; an aimed Epitaph
+whose enemy is gone really clears its slot; five slots really fill and Already
+Written really widens the gauge; a Buried enemy turn really costs no Courage at
+the time and really bills a turn later THROUGH 200 Guard; clearing it in time
+really means no bill; an unplayed Weathering Trick is really kept in hand, really
+finishes, and really resets if it leaves; Weatherproofing really seals it for the
+turn and really releases it after.
+
+cards 1283/0/0 · combat 677 · coop 591 · run 50 · backpack 80 · enemies 37 ·
+audit 2061 · chrome 27 · six gates · pudding 46 · drizzle 70 · truffle 27 ·
+boggle 30 · mopsy 28 · wisp 25 · crumbula 25 · hush 17 · wink 5 · 59 fps.
+
+---
+
 ## Still to come
 
-**Designed, not built (2):** Mossbit, Brambleboo.
+**Designed, not built (1):** Brambleboo.
 
 **Not designed (1): Crinkle.** No chapter anywhere, including the source `.docx`.

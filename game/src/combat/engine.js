@@ -1502,7 +1502,13 @@ export class CombatEngine {
       else this.timers.splice(i, 1);
       this._emit(EV.TIMER_FIRE, { id: t.id, label: t.label, ownerId: t.ownerId, batchSize: batch.length, reason });
       try {
-        t.run?.({ e: this, engine: this, timer: t, batch, batchSize: batch.length, data: t.data });
+        /* `reason` distinguishes a countdown that ran out on its own ('tick')
+           from one somebody forced to zero. The TIMER_FIRE event has always
+           carried it and the handler never saw it, which made "resolved
+           naturally" unaskable — and that is the whole of Mossbit's Patience:
+           Advancing an Epitaph to 0 deliberately forfeits the Patience that
+           letting it mature would have paid. */
+        t.run?.({ e: this, engine: this, timer: t, batch, batchSize: batch.length, data: t.data, reason });
       } catch (err) { console.error(`[combat] timer ${t.id} threw`, err); }
     }
   }

@@ -213,6 +213,16 @@ export const COMPANION_KEYWORDS = [
   K('dig-up', 'Dig Up', 'Take a Buried Trick out of a [Plot] and into your hand. It becomes [Unearthed] and that Plot is used for the turn.', { companion: 'pudding' }),
   K('unearthed', 'Unearthed', 'A Trick that was [Dig Up]-ed THIS turn. Some Tricks do more when played that way. It expires at end of turn even if the Trick is retained — unless Warm Spot by the Headstones is out.', { companion: 'pudding' }),
   K('graveside', 'Graveside', 'True whenever two or more [Plot]s are occupied, checked the moment an effect resolves. This is the whole tension: digging your Tricks up for value can switch it off.', { companion: 'pudding' }),
+
+  // ── Mossbit ───────────────────────────────────────────────────────────────
+  /* Advance / Delay / Erase live inside this one entry on purpose. As separate
+     keywords, `advance` would collide with Drizzle's Weather verb — ids are
+     global while Companions are not — and three thin tooltips read worse than
+     one that explains the whole clock. */
+  K('epitaph', 'Epitaph', 'A delayed effect with a countdown, in one of five slots. Every Epitaph ticks down once at the start of your turn, oldest first, and resolves at zero. HURRY one along to bring it forward — but only a countdown that runs out ON ITS OWN pays [Patience]. PUT ONE BACK to push it later. ERASE one to clear the slot without resolving it. An Epitaph aimed at an enemy remembers that enemy, and fizzles if it is gone.', { companion: 'mossbit' }),
+  K('patience', 'Patience', 'Holds 3, or 5 under Longer Memory. One is paid whenever an [Epitaph] reaches zero from its own scheduled tick — never from being hurried along. That difference is the whole of Mossbit.', { companion: 'mossbit' }),
+  K('weathering', 'Weathering', 'A Trick with Weathering left unplayed in your hand at the end of your turn is kept in hand and loses 1. At 0 it is Weathered for the rest of the fight and uses its better half. Leaving your hand before then resets it to its printed number — the progress is the reward for NOT playing it.', { companion: 'mossbit' }),
+  K('buried-harm', 'Buried Harm', 'Attack damage postponed rather than prevented. At the END of your next turn you lose that much Courage — not as an Attack, so Guard cannot stop it and it cannot be postponed again. Burying buys exactly one turn to do something about it.', { companion: 'mossbit' }),
 ];
 
 export const KEYWORD_IDS = COMPANION_KEYWORDS.map(k => k.id);
@@ -779,6 +789,26 @@ export const COMPANION_STATUSES = [
   powerStatus('pudding/graveyard-choir', 'Graveyard Choir', 'Graveside turns end with the residents singing.', 'graveside'),
   powerStatus('pudding/home-is-where-you-are', 'Home Is Where You Are', 'Once a combat, your Best Friend survives at 1 Courage.', 'best-friend'),
   powerStatus('pudding/the-whole-pack', 'The Whole Pack', 'Change Best Friend once a turn; Loyalty watches everyone.', 'best-friend'),
+
+  // ── Mossbit ───────────────────────────────────────────────────────────────
+  powerStatus('mossbit/quiet-monument', 'Quiet Monument', 'The first Epitaph each turn also Guards on creation.', 'epitaph'),
+  powerStatus('mossbit/moss-grows-anyway', 'Moss Grows Anyway', 'The first Epitaph to mature each turn also Guards.', 'epitaph'),
+  powerStatus('mossbit/longer-memory', 'Longer Memory', 'Maximum Patience 5.', 'patience'),
+  powerStatus('mossbit/set-in-stone', 'Set in Stone', 'Epitaphs take 1 longer and hit harder.', 'epitaph'),
+  powerStatus('mossbit/grave-moss', 'Grave Moss', 'Erasing an Epitaph Guards and eases Buried Harm.', 'epitaph'),
+  powerStatus('mossbit/cemetery-shift', 'Cemetery Shift', 'Buried Harm becomes an Epitaph at the start of your turn.', 'buried-harm'),
+  powerStatus('mossbit/small-monument', 'Small Monument', 'Weathering something arms your next Epitaph with Guard.', 'weathering'),
+  powerStatus('mossbit/no-rush', 'No Rush', 'The first Epitaph you put back each turn draws.', 'epitaph'),
+  powerStatus('mossbit/lichen-clock', 'Lichen Clock', 'The first Epitaph to mature hurries the next one.', 'epitaph'),
+  powerStatus('mossbit/keep-the-appointment', 'Keep the Appointment', 'An aimed Epitaph finds a new target instead of fizzling.', 'epitaph'),
+  powerStatus('mossbit/geological-patience', 'Geological Patience', 'Patience you cannot hold becomes damage and Guard.', 'patience'),
+  powerStatus('mossbit/house-never-forgets', 'House Never Forgets', 'A matured Epitaph writes itself again at 3.', 'epitaph'),
+  powerStatus('mossbit/weathered-beyond', 'Weathered Beyond Recognition', 'Weathered Tricks cost less; unfinished ones cost more.', 'weathering'),
+  powerStatus('mossbit/monument-to-small-things', 'Monument to Small Things', 'Clearing Buried Harm makes Epitaphs stronger, cumulatively.', 'buried-harm'),
+  powerStatus('mossbit/mansion-moves', 'The Mansion Moves Around Me', 'A quiet turn advances Weathering and delays your oldest Epitaph.', 'weathering'),
+  powerStatus('mossbit/already-written', 'Already Written', 'Two more Epitaph slots.', 'epitaph'),
+  powerStatus('mossbit/death-can-wait', 'Death Can Wait', 'Once a fight, lethal Buried Harm is cleared and everything fires.', 'buried-harm'),
+  powerStatus('mossbit/family-plot', 'Family Plot', 'The first Epitaph to mature each turn Guards every friend.', 'epitaph'),
 ];
 
 export const STATUS_IDS = COMPANION_STATUSES.map(s => s.id);

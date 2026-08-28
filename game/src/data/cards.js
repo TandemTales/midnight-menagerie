@@ -36,6 +36,7 @@ import hush from './companions/hush.js';
 import truffle from './companions/truffle.js';
 import drizzle from './companions/drizzle.js';
 import pudding from './companions/pudding.js';
+import mossbit from './companions/mossbit.js';
 
 // ── registry ────────────────────────────────────────────────────────────────
 const COMPANIONS = new Map();
@@ -69,7 +70,7 @@ export function registerCards(list) {
   return list;
 }
 
-[marmalade, bones, pipkin, taffy, wink, boggle, mopsy, wisp, crumbula, hush, truffle, drizzle, pudding].forEach(registerCompanion);
+[marmalade, bones, pipkin, taffy, wink, boggle, mopsy, wisp, crumbula, hush, truffle, drizzle, pudding, mossbit].forEach(registerCompanion);
 registerCards(NEUTRAL_CARDS);
 
 // ── lookups ─────────────────────────────────────────────────────────────────
