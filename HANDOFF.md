@@ -1,7 +1,8 @@
 # Midnight Menagerie — handoff
 
-Written 2026-08-26. Everything a fresh conversation needs to pick this up.
-Read this, then `CONTRACTS.md`, then `docs/STS2-REFERENCE.md`. Nothing else is required reading.
+Written 2026-08-26, last updated 2026-08-27. Everything a fresh conversation needs to pick
+this up. Read this, then `CONTRACTS.md`, then `docs/STS2-REFERENCE.md`. Nothing else is
+required reading.
 
 ---
 
@@ -14,7 +15,7 @@ that transforms animals; you pick a Kid and a Companion (your deck) and go in. B
 Design source of truth: `Midnight Menagerie Design.docx` (1.6M chars), carved into 45 readable
 files under `docs/design/`. Read only what you need — the full doc will not fit in context.
 
-**~63,000 lines** across `game/src/`. Currently on branch **`dev`**, pushed to
+**~57,700 lines** across `game/src/`. Currently on branch **`dev`**, pushed to
 `github.com/TandemTales/midnight-menagerie`. `main` is untouched and stale.
 
 ---
@@ -234,9 +235,10 @@ infer a pronoun from a name; never re-derive from the doc. Copy must read the fi
 
 ---
 
-## 8. Recently closed — the boot stall
+## 8. Earlier — the boot stall
 
-**No agents are running. Working tree is clean.**
+**No agents are running. Working tree is clean.** The most recent round is §9 (co-op);
+this section is the round before it and is kept for the leads at the end of it.
 
 The map "audio" problem is diagnosed and fixed. It was neither audio nor map-specific: a cold
 boot blocked the main thread for ~5.5 s on **shader linking**, and `#scene=gameover` measured the
