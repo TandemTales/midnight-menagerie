@@ -1,0 +1,286 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Net — lockstep, ordering, divergence, rejoin</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+</style>
+<h1>Net</h1>
+<div id="out"></div>
+<script type="module">
+import { RNG } from '../../game/src/core/rng.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import { makeDummyParty } from '../../game/src/combat/dummy.js';
+import { installTrackers } from '../../game/src/data/companions/_util.js';
+import { startingDeckFor } from '../../game/src/data/cards.js';
+import { LoopbackHub, ChannelTransport, canChannel } from '../../game/src/net/transport.js';
+import { Session, INPUT, cardRef, refCard } from '../../game/src/net/session.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+function say(html, cls) { const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; out.appendChild(d); }
+
+const SEED = 9182;
+
+/**
+ * A Run-shaped stand-in.
+ *
+ * The Session only ever touches `run.combat`, `run._combatDigest`,
+ * `run.session` and `run.localSeat`, so this is the whole surface. Using the
+ * REAL digest function matters — a mock of the thing under test proves nothing
+ * (CONTRACTS trap 5), so it is imported behaviour, copied verbatim from
+ * `state/run.js`, not a simplification.
+ */
+function combatDigest(e) {
+  if (!e) return null;
+  return [
+    e.turn, e.phase, e.over ? 1 : 0,
+    e.players.map(pl => [
+      pl.hp, pl.block, pl.energy, pl.fallen ? 1 : 0,
+      pl.piles.hand.map(c => `${c.id}${c.upgraded ? '+' : ''}`).join('|'),
+      pl.piles.draw.length, pl.piles.discard.length, pl.piles.exhaust.length,
+    ].join(':')).join(';'),
+    e.enemies.map(x => `${x.id}:${x.hp}:${x.block}:${x.alive ? 1 : 0}`).join(','),
+  ].join('~');
+}
+
+async function makeClient(hub, seat, seats, id) {
+  const deck = startingDeckFor('marmalade');
+  const decks = Array.from({ length: seats }, () => deck.slice());
+  const e = makeDummyParty(new RNG(SEED), seats, { companion: 'marmalade', decks, maxHp: 70 });
+  e.setTrackerInstaller(installTrackers);
+  await e.startCombat();
+
+  const run = { combat: e, _combatDigest: combatDigest, localSeat: seat, session: null };
+  const session = new Session({ transport: hub.peer(id), seat, seats, seed: SEED, host: seat === 0 });
+  session.attach(run);
+
+  /* Every input — ours and theirs — goes through the SAME path. That is the
+     point: an ordering bug shows up in a one-machine test instead of only over
+     a real wire, where it would look like latency. */
+  session.on('input', async (msg) => {
+    if (msg.t === INPUT.END) await e.endTurn(e.players[msg.seat]);
+    if (msg.t === INPUT.PLAY) {
+      const pl = e.players[msg.seat];
+      // Resolved by POSITION, never by uid — see `cardRef` in net/session.js.
+      const card = refCard(e, msg);
+      if (card) await e.playCard(card.uid, msg.target || undefined);
+    }
+  });
+  return { e, run, session };
+}
+
+try {
+  // ══ 1. Two clients, the same seed, the same board ═══════════════════════
+  {
+    const hub = new LoopbackHub();
+    const a = await makeClient(hub, 0, 2, 'A');
+    const b = await makeClient(hub, 1, 2, 'B');
+    check(combatDigest(a.e) === combatDigest(b.e),
+      'the same seed deals both clients the same board');
+    check(a.session.seat === 0 && b.session.seat === 1, 'each client owns one seat');
+    check(a.session.remote && b.session.remote,
+      'a networked session reports remote, so shouldHandOff answers false');
+  }
+
+  // ══ 2. An input crosses, and both boards move together ══════════════════
+  {
+    const hub = new LoopbackHub();
+    const a = await makeClient(hub, 0, 2, 'A');
+    const b = await makeClient(hub, 1, 2, 'B');
+
+    const card = a.e.players[0].piles.hand[0];
+    const target = a.e.livingEnemies()[0];
+    a.session.input({ t: INPUT.PLAY, ...cardRef(a.e, card), target: target.id });
+    // `settled()` waits for the application QUEUE, not for a guessed number
+    // of milliseconds — a fixed sleep racing an animation is a test that lies
+    // both ways (CONTRACTS).
+    await new Promise(r => setTimeout(r, 30));
+    await a.session.settled(); await b.session.settled();
+
+    check(a.session.log.length === 1 && b.session.log.length === 1,
+      'the input is in both logs exactly once',
+      `${a.session.log.length} / ${b.session.log.length}`);
+    check(combatDigest(a.e) === combatDigest(b.e),
+      'and both boards are still identical after it resolved');
+    check(a.e.players[0].piles.hand.length === b.e.players[0].piles.hand.length,
+      "seat 0's hand shrank on BOTH machines",
+      `${a.e.players[0].piles.hand.length} / ${b.e.players[0].piles.hand.length}`);
+  }
+
+  // ══ 2b. A card's UID is not a network identity ══════════════════════════
+  //  The first version of this protocol put `uid` on the wire. It looks right:
+  //  unique, stable locally, round-trips cleanly. The remote client then failed
+  //  to find the card and silently did nothing, and the board drifted by exactly
+  //  one Trick — caught a turn later by the digest, a long way from the cause.
+  {
+    const hub = new LoopbackHub();
+    const a = await makeClient(hub, 0, 2, 'A');
+    const b = await makeClient(hub, 1, 2, 'B');
+    const ca = a.e.players[0].piles.hand[0];
+    const cb = b.e.players[0].piles.hand[0];
+    check(ca.id === cb.id, "both clients hold the same Trick at the top of seat 0's hand",
+      `${ca.id} / ${cb.id}`);
+    check(ca.uid !== cb.uid,
+      'and its uid is DIFFERENT on the two clients — uids are per page, not per game',
+      `${ca.uid} vs ${cb.uid}`);
+
+    const ref = cardRef(a.e, ca);
+    check(!!ref && ref.pile === 'hand' && ref.seat === 0,
+      'cardRef names it by seat, pile and position', JSON.stringify(ref));
+    check(refCard(b.e, ref) === cb,
+      'and that ref resolves to the SAME Trick on the other client');
+    check(refCard(a.e, ref) === ca, 'and to the original on this one');
+  }
+
+  // ══ 3. A client may only speak for its own seat ═════════════════════════
+  {
+    const hub = new LoopbackHub();
+    const a = await makeClient(hub, 0, 2, 'A');
+    const b = await makeClient(hub, 1, 2, 'B');
+    const bad = a.session.input({ t: INPUT.END, seat: 1 });
+    check(bad === null, 'seat 0 cannot issue an input for seat 1');
+    check(a.session.log.length === 0 && b.session.log.length === 0,
+      'and nothing reached either log');
+  }
+
+  // ══ 4. ORDER is total, and it is not arrival order ══════════════════════
+  //  Two seats act "at the same time" and the messages arrive in opposite
+  //  orders on the two machines. Both must end up with the same sequence.
+  {
+    const hub = new LoopbackHub();
+    const a = await makeClient(hub, 0, 2, 'A');
+    const b = await makeClient(hub, 1, 2, 'B');
+
+    // Hand-built inputs, delivered deliberately out of order to each side.
+    const i0 = { t: INPUT.READY, seat: 0, turn: 1, seq: 1 };
+    const i1 = { t: INPUT.READY, seat: 1, turn: 1, seq: 1 };
+    a.session._accept(i1, 'B'); a.session._accept(i0);
+    b.session._accept(i0, 'A'); b.session._accept(i1);
+
+    const seq = (s) => s.log.map(m => `${m.turn}.${m.seat}.${m.seq}`).join(' ');
+    check(seq(a.session) === seq(b.session),
+      'both clients agree on the order despite opposite arrival',
+      `${seq(a.session)}  vs  ${seq(b.session)}`);
+    check(seq(a.session) === '1.0.1 1.1.1',
+      'and the order is (turn, seat, seq) — seat breaks the tie, never arrival',
+      seq(a.session));
+  }
+  {
+    // A later turn always sorts after an earlier one, whenever it arrives.
+    const hub = new LoopbackHub();
+    const a = await makeClient(hub, 0, 2, 'A');
+    a.session._accept({ t: INPUT.READY, seat: 1, turn: 4, seq: 1 }, 'B');
+    a.session._accept({ t: INPUT.READY, seat: 1, turn: 2, seq: 1 }, 'B');
+    a.session._accept({ t: INPUT.READY, seat: 0, turn: 2, seq: 1 });
+    check(a.session.log.map(m => `${m.turn}.${m.seat}`).join(' ') === '2.0 2.1 4.1',
+      'a late-arriving early turn still sorts into its place',
+      a.session.log.map(m => `${m.turn}.${m.seat}`).join(' '));
+  }
+
+  // ══ 5. DIVERGENCE is reported, loudly, once ═════════════════════════════
+  {
+    const hub = new LoopbackHub();
+    const a = await makeClient(hub, 0, 2, 'A');
+    const b = await makeClient(hub, 1, 2, 'B');
+    let told = 0;
+    a.session.on('diverge', () => told++);
+
+    a.session.publishDigest();
+    b.session.publishDigest();
+    check(a.session.inSync && b.session.inSync,
+      'identical boards report no divergence');
+
+    // Now break one board behind the other's back, exactly as a stray
+    // Math.random() in a card would.
+    b.e.enemies[0].hp -= 7;
+    b.session.publishDigest();
+    check(!a.session.inSync, 'a board that has drifted IS caught');
+    check(told === 1, 'and reported once, not once per message', String(told));
+    b.session.publishDigest();
+    check(told === 1, 'still once after another mismatching report', String(told));
+  }
+  {
+    // A different seed is a divergence you can catch before a card is played.
+    const hub = new LoopbackHub();
+    const a = await makeClient(hub, 0, 2, 'A');
+    let told = 0;
+    a.session.on('diverge', (d) => { if (d.reason === 'seed') told++; });
+    const wrong = new Session({ transport: hub.peer('C'), seat: 1, seats: 2, seed: SEED + 1 });
+    check(told === 1, 'a peer on a different seed is caught at hello', String(told));
+    wrong.close();
+  }
+
+  // ══ 6. REJOIN: the log IS the save ══════════════════════════════════════
+  {
+    const hub = new LoopbackHub();
+    const a = await makeClient(hub, 0, 2, 'A');      // host
+    const b = await makeClient(hub, 1, 2, 'B');
+
+    // Three inputs happen while B is present.
+    for (let i = 0; i < 3; i++) a.session.input({ t: INPUT.READY });
+    await new Promise(r => setTimeout(r, 20));
+    check(b.session.log.length === 3, 'B saw all three', String(b.session.log.length));
+
+    // B drops. Two more happen without them.
+    b.session.transport.close();
+    for (let i = 0; i < 2; i++) a.session.input({ t: INPUT.READY });
+    check(a.session.log.length === 5, 'the host kept going', String(a.session.log.length));
+    check(b.session.log.length === 3, 'and B missed the last two', String(b.session.log.length));
+
+    // B comes back on a fresh transport and asks for everything after what it has.
+    const back = new Session({ transport: hub.peer('B2'), seat: 1, seats: 2, seed: SEED });
+    back.absorb(a.session.log);
+    check(back.log.length === 5, 'a rejoining client catches up from the log',
+      String(back.log.length));
+    check(back.log.map(m => m.seq).join(',') === '1,2,3,4,5',
+      'in order, with nothing duplicated', back.log.map(m => m.seq).join(','));
+
+    const again = back.absorb(a.session.log);
+    check(again === 0, 'and absorbing the same log twice adds nothing', String(again));
+  }
+
+  // ══ 7. An ASYNCHRONOUS wire, which a real one is ════════════════════════
+  {
+    const hub = new LoopbackHub({ async: true });
+    const a = await makeClient(hub, 0, 2, 'A');
+    const b = await makeClient(hub, 1, 2, 'B');
+    const card = a.e.players[0].piles.hand[0];
+    a.session.input({ t: INPUT.PLAY, ...cardRef(a.e, card), target: a.e.livingEnemies()[0].id });
+    check(b.session.log.length === 0, 'nothing has arrived yet on an async wire');
+    await new Promise(r => setTimeout(r, 60));
+    check(b.session.log.length === 1, 'and it arrives on the next tick');
+    await a.session.settled(); await b.session.settled();
+    check(combatDigest(a.e) === combatDigest(b.e),
+      'the two boards agree once it has landed');
+  }
+
+  // ══ 8. The two-tab transport exists and obeys the contract ══════════════
+  {
+    check(canChannel(), 'a BroadcastChannel wire is available in this browser');
+    if (canChannel()) {
+      const room = 'mm-test-' + Math.random().toString(36).slice(2);
+      const t1 = new ChannelTransport(room, 'T1');
+      const t2 = new ChannelTransport(room, 'T2');
+      let mine = 0, theirs = 0;
+      t1.onMessage(() => mine++);
+      t2.onMessage(() => theirs++);
+      t1.send({ hello: true });
+      await new Promise(r => setTimeout(r, 120));
+      check(theirs === 1, 'the other tab receives it', String(theirs));
+      check(mine === 0, 'and the sender never receives its own — lockstep rule 2',
+        String(mine));
+      t1.close(); t2.close();
+    }
+  }
+} catch (err) {
+  fails.push('THREW: ' + (err && err.stack || err));
+}
+
+say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`, fails.length ? 'fail' : 'pass');
+say('<ul class="pass">' + passes.map(p => `<li>PASS ${p}</li>`).join('') + '</ul>');
+if (fails.length) say('<ul class="fail">' + fails.map(f => `<li>FAIL ${f}</li>`).join('') + '</ul>');
+window.__RESULT = { passed: passes.length, failed: fails.length, fails, passes };
+window.__DONE = true;
+</script>
