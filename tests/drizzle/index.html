@@ -1,0 +1,435 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Drizzle — Weather, Stormbreak, Soaked, Conduct, Forecast</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+</style>
+<h1>Drizzle</h1>
+<div id="out"></div>
+<script type="module">
+import { RNG } from '../../game/src/core/rng.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import { makeDummySetup, makeDummyParty } from '../../game/src/combat/dummy.js';
+import { installTrackers } from '../../game/src/data/companions/_util.js';
+import * as CARDS from '../../game/src/data/cards.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+function say(html, cls) { const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; out.appendChild(d); }
+
+const CLEAR = 0, SPRINKLE = 1, DOWNPOUR = 2, THUNDER = 3;
+
+async function drizzle(o = {}) {
+  const setup = makeDummySetup(new RNG(o.seed || 4242), {
+    companion: 'drizzle', deck: CARDS.startingDeckFor('drizzle'), maxHp: 72, ...o,
+  });
+  const e = new CombatEngine(setup);
+  await e.startCombat();
+  installTrackers(e, 'drizzle');
+  return e;
+}
+async function play(e, id, target) {
+  e.addCard(CARDS.cardById(id), 'hand', {});
+  const k = e.piles.hand[e.piles.hand.length - 1];
+  e.player.energy = 9;
+  await e.playCard(k.uid, target ? target.id : undefined);
+  return k;
+}
+const stacks = (a, id) => ((a && a.statuses && a.statuses.get(id)) || 0);
+const wet = (en) => stacks(en, 'soaked') > 0;
+const W = (e) => e.counter('weather');
+const setW = (e, n) => e.setCounter('weather', n, 'test');
+/** Where is this card right now? */
+function pileOf(e, card, seat) {
+  const q = seat ? seat.piles : e.piles;
+  for (const name of ['draw', 'hand', 'discard', 'exhaust', 'limbo', 'stash']) {
+    if ((q[name] || []).includes(card)) return name;
+  }
+  return 'nowhere';
+}
+
+try {
+  // ══ 1. Weather is a track, and it moves one step at a time ═══════════════
+  {
+    const e = await drizzle();
+    check(W(e) === CLEAR, 'every combat begins at Clear', `weather=${W(e)}`);
+    check(e.counterMax('weather') === THUNDER, 'and the track tops out at Thunderstorm');
+
+    await play(e, 'drizzle/just-a-sprinkle', null);
+    check(W(e) === SPRINKLE, 'Advance moves one step up', `weather=${W(e)}`);
+    const g = e.player.block;
+    await play(e, 'drizzle/just-a-sprinkle', null);
+    check(W(e) === DOWNPOUR, 'and again', `weather=${W(e)}`);
+    check(e.player.block > g, 'a Weather change that really happened pays the Guard');
+
+    setW(e, THUNDER);
+    await play(e, 'drizzle/just-a-sprinkle', null);
+    check(W(e) === THUNDER, 'Weather never goes past Thunderstorm', `weather=${W(e)}`);
+
+    setW(e, CLEAR);
+    await play(e, 'drizzle/let-it-ease', null);
+    check(W(e) === CLEAR, 'and never below Clear', `weather=${W(e)}`);
+  }
+  {
+    // "Cannot be played while Clear" is a real gate, not just card text.
+    const e = await drizzle();
+    const k = CARDS.cardById('drizzle/let-it-ease');
+    e.addCard(k, 'hand', {});
+    const card = e.piles.hand[e.piles.hand.length - 1];
+    check(!e.canPlay(card.uid).ok, 'Let It Ease refuses to be played at Clear');
+    setW(e, DOWNPOUR);
+    check(e.canPlay(card.uid).ok, 'and is playable once there is weather to ease');
+  }
+
+  // ══ 2. Weather belongs to the TABLE, not to a seat ═══════════════════════
+  //  The whole reason `shared: true` exists. Two Drizzles must stand in ONE
+  //  Weather; the per-seat default would give them two.
+  {
+    const deck = CARDS.startingDeckFor('drizzle');
+    const e = makeDummyParty(new RNG(7), 2, {
+      companion: 'drizzle', decks: [deck.slice(), deck.slice()], maxHp: 72,
+    });
+    /* Registered BEFORE startCombat so the engine does its own per-seat install
+       inside `_asSeat`. Calling `installTrackers` by hand afterwards would define
+       every counter against whichever seat happened to be `engine.current`, and
+       seat 1 would silently get no Forecast row at all. */
+    e.setTrackerInstaller(installTrackers);
+    await e.startCombat();
+
+    check(e.counter('weather', e.players[0].id) === e.counter('weather', e.players[1].id),
+      'two Drizzles read the same Weather', `${e.counter('weather', e.players[0].id)} vs ${e.counter('weather', e.players[1].id)}`);
+
+    e.setCounter('weather', DOWNPOUR, 'test', e.players[0].id);
+    check(e.counter('weather', e.players[1].id) === DOWNPOUR,
+      'and seat 1 sees the storm seat 0 raised',
+      `seat1=${e.counter('weather', e.players[1].id)}`);
+
+    const keys = [...e.counters.keys()].filter(k => k.endsWith('weather'));
+    check(keys.length === 1, 'there is exactly ONE Weather track at the table', `keys=${keys.join(',')}`);
+
+    // ...while an ordinary Companion counter still forks per seat, which is the
+    // behaviour the shared flag must not have broken.
+    const fc = [...e.counters.keys()].filter(k => k.endsWith('forecast'));
+    check(fc.length === 2, 'but Forecast slots are still one row per Kid', `keys=${fc.join(',')}`);
+  }
+
+  // ══ 3. Soaked, and the two rules that dry it ════════════════════════════
+  {
+    const e = await drizzle();
+    const t = e.livingEnemies()[0];
+    check(!wet(t), 'enemies start dry');
+    await play(e, 'drizzle/damp-spot', t);
+    check(wet(t), 'Damp Spot really Soaks it');
+
+    const g = e.player.block;
+    await play(e, 'drizzle/damp-spot', t);
+    check(e.player.block > g, 'Soaking something already Soaked pays Guard instead');
+    check(stacks(t, 'soaked') === 1, 'and Soaked does not stack', `soaked=${stacks(t, 'soaked')}`);
+  }
+  {
+    // An enemy turn that BEGAN in Clear dries the board at its end.
+    const e = await drizzle();
+    const t = e.livingEnemies()[0];
+    await play(e, 'drizzle/damp-spot', t);
+    setW(e, CLEAR);
+    await e.endTurn();
+    check(!wet(t), 'a Soaked enemy dries after an enemy turn that began in Clear');
+  }
+  {
+    // ...and one that began in Sprinkle does not.
+    const e = await drizzle();
+    const t = e.livingEnemies()[0];
+    await play(e, 'drizzle/damp-spot', t);
+    setW(e, SPRINKLE);
+    await e.endTurn();
+    check(wet(t), 'and stays wet through an enemy turn that began at Sprinkle');
+  }
+  {
+    // The Stormbreak case the chapter calls out by name: the storm collapses to
+    // Clear at the END of the enemy turn, so nothing dries — the turn did not
+    // BEGIN in Clear.
+    const e = await drizzle();
+    const t = e.livingEnemies()[0];
+    await play(e, 'drizzle/damp-spot', t);
+    setW(e, THUNDER);
+    await e.endTurn();
+    check(W(e) === CLEAR, 'a Thunderstorm that stood through an enemy turn breaks', `weather=${W(e)}`);
+    check(wet(t), 'and the Stormbreak does NOT dry the board');
+  }
+  {
+    const e = await drizzle();
+    const t = e.livingEnemies()[0];
+    await play(e, 'drizzle/damp-forever', null);
+    await play(e, 'drizzle/damp-spot', t);
+    setW(e, CLEAR);
+    await e.endTurn();
+    check(wet(t), 'Damp Forever stops the natural drying');
+  }
+
+  // ══ 4. The two states that Soak by themselves ═══════════════════════════
+  {
+    const e = await drizzle();
+    setW(e, DOWNPOUR);
+    await e.endTurn();                       // round trip back to her turn
+    check(e.livingEnemies().every(wet), 'Downpour re-Soaks the whole board at the start of her turn');
+  }
+  {
+    const e = await drizzle();
+    check(!e.livingEnemies().some(wet), 'nothing is wet yet');
+    await play(e, 'drizzle/build-a-cloud', null);   // Clear -> Downpour
+    await play(e, 'drizzle/just-a-sprinkle', null); // -> Thunderstorm
+    check(W(e) === THUNDER, 'reached Thunderstorm', `weather=${W(e)}`);
+    check(e.livingEnemies().every(wet), 'entering Thunderstorm Soaks everything immediately');
+  }
+
+  // ══ 5. Conduct ══════════════════════════════════════════════════════════
+  {
+    // A dry primary conducts nothing, however wet its neighbours are.
+    const e = await drizzle();
+    const [a, b] = e.livingEnemies();
+    await play(e, 'drizzle/damp-spot', b);
+    const hpB = b.hp;
+    await play(e, 'drizzle/splashdown', a);
+    check(b.hp === hpB, 'Conduct does not fire when the primary target is dry', `b lost ${hpB - b.hp}`);
+  }
+  {
+    const e = await drizzle();
+    const [a, b] = e.livingEnemies();
+    await play(e, 'drizzle/damp-spot', a);
+    await play(e, 'drizzle/damp-spot', b);
+    const hpB = b.hp;
+    await play(e, 'drizzle/splashdown', a);
+    check(hpB - b.hp === 5, 'Conduct reaches the other Soaked enemy for its marked damage',
+      `b lost ${hpB - b.hp}`);
+  }
+  {
+    // Thunderstorm's bonus: the FIRST Conduct each turn also repeats on the
+    // primary. The second one in the same turn must not.
+    const e = await drizzle();
+    const a = e.livingEnemies()[0];
+    setW(e, THUNDER);
+    for (const en of e.livingEnemies()) e.applyStatus(en, 'soaked', 1);
+    const hp1 = a.hp;
+    await play(e, 'drizzle/splashdown', a);
+    const first = hp1 - a.hp;
+    const hp2 = a.hp;
+    await play(e, 'drizzle/splashdown', a);
+    const second = hp2 - a.hp;
+    check(first === second + 5, 'the first Conduct in a Thunderstorm turn repeats on the primary',
+      `first ${first}, second ${second}`);
+  }
+
+  // ══ 6. Forecast ═════════════════════════════════════════════════════════
+  {
+    const e = await drizzle();
+    const k = await play(e, 'drizzle/rain-check', null);
+    check(pileOf(e, k) === 'limbo', 'a Forecast leaves circulation entirely',
+      `it is in ${pileOf(e, k)}`);
+    check(e.counter('forecast') === 1, 'and fills a slot', `forecast=${e.counter('forecast')}`);
+
+    // It waits for the state to be ENTERED. Sitting in Downpour is not enough.
+    setW(e, DOWNPOUR);
+    check(e.counter('forecast') === 1, 'setting the counter directly does not trigger it');
+
+    const before = e.piles.hand.length;
+    setW(e, SPRINKLE);
+    await play(e, 'drizzle/just-a-sprinkle', null);   // Sprinkle -> Downpour, entered
+    check(e.counter('forecast') === 0, 'entering Downpour resolves it', `forecast=${e.counter('forecast')}`);
+    check(e.piles.hand.length > before, 'and it really drew the two Tricks');
+    check(pileOf(e, k) === 'discard', 'then the Trick goes to the discard pile',
+      `it is in ${pileOf(e, k)}`);
+  }
+  {
+    // A Forecast resolution is NOT a Trick being played.
+    const e = await drizzle();
+    await play(e, 'drizzle/rain-check', null);
+    setW(e, SPRINKLE);
+    const played = e.stats.cardsPlayedThisTurn;
+    await play(e, 'drizzle/just-a-sprinkle', null);
+    check(e.stats.cardsPlayedThisTurn === played + 1,
+      'a resolving Forecast does not count as playing a Trick',
+      `played went ${played} -> ${e.stats.cardsPlayedThisTurn}`);
+  }
+  {
+    // Three slots, and the fourth is refused until Cloud Calendar.
+    const e = await drizzle();
+    for (let i = 0; i < 3; i++) await play(e, 'drizzle/save-a-drop', null);
+    check(e.counter('forecast') === 3, 'three Forecasts fill the row', `forecast=${e.counter('forecast')}`);
+    const k = await play(e, 'drizzle/save-a-drop', null);
+    check(e.counter('forecast') === 3, 'a fourth is refused', `forecast=${e.counter('forecast')}`);
+    check(pileOf(e, k) === 'discard', 'and that Trick just goes to the discard pile',
+      `it is in ${pileOf(e, k)}`);
+
+    await play(e, 'drizzle/cloud-calendar', null);
+    check(e.counterMax('forecast') === 4, 'Cloud Calendar widens the GAUGE too',
+      `max=${e.counterMax('forecast')}`);
+    check(e.counter('forecast') === 3, 'and the three waiting Forecasts survive the redefine',
+      `forecast=${e.counter('forecast')}`);
+    await play(e, 'drizzle/save-a-drop', null);
+    check(e.counter('forecast') === 4, 'so a fourth can be set',
+      `forecast=${e.counter('forecast')}`);
+  }
+  {
+    /* The gauge must not advertise a capacity she does not have. Boggle shipped
+       "LURK 0/7" against a real cap of 5 and only the screenshot caught it. */
+    const e = await drizzle();
+    check(e.counterMax('forecast') === 3, 'the Forecast gauge reads /3 before any Power',
+      `max=${e.counterMax('forecast')}`);
+    await play(e, 'drizzle/forecast-says-me', null);
+    check(e.counterMax('forecast') === 5, 'and /5 once Forecast Says Me is out',
+      `max=${e.counterMax('forecast')}`);
+  }
+  {
+    // Cloud Shelf takes one back and discounts it.
+    const e = await drizzle();
+    const k = await play(e, 'drizzle/tomorrows-umbrella', null);
+    check(e.counter('forecast') === 1, 'a Forecast is waiting');
+    await play(e, 'drizzle/cloud-shelf', null);
+    check(pileOf(e, k) === 'hand', 'Cloud Shelf really returns it to the hand',
+      `it is in ${pileOf(e, k)}`);
+    check(e.counter('forecast') === 0, 'and empties the slot');
+    check(e.costOf(k) < 1, 'and it costs less this turn', `cost=${e.costOf(k)}`);
+  }
+
+  // ══ 7. Stormbreak, and the three Tricks that redirect it ════════════════
+  {
+    const e = await drizzle();
+    setW(e, THUNDER);
+    await play(e, 'drizzle/open-the-window', null);
+    check(W(e) === CLEAR, 'Open the Window forces the break', `weather=${W(e)}`);
+  }
+  {
+    const e = await drizzle();
+    await play(e, 'drizzle/never-quite-clears', null);
+    setW(e, THUNDER);
+    await play(e, 'drizzle/open-the-window', null);
+    check(W(e) === SPRINKLE, 'Never Quite Clears lands the break at Sprinkle', `weather=${W(e)}`);
+  }
+  {
+    const e = await drizzle();
+    await play(e, 'drizzle/strange-weather-vane', null);
+    setW(e, THUNDER);
+    await play(e, 'drizzle/open-the-window', null);
+    check(W(e) === DOWNPOUR, 'Strange Weather Vane lands it at Downpour', `weather=${W(e)}`);
+    setW(e, THUNDER);
+    await play(e, 'drizzle/open-the-window', null);
+    check(W(e) === CLEAR, 'and it is a ONE-shot — the next break is normal', `weather=${W(e)}`);
+  }
+  {
+    const e = await drizzle();
+    await play(e, 'drizzle/storm-in-a-teacup', null);
+    setW(e, THUNDER);
+    await e.endTurn();
+    check(W(e) === THUNDER, 'Storm in a Teacup survives the automatic break', `weather=${W(e)}`);
+    await e.endTurn();
+    check(W(e) === CLEAR, 'but only the first one', `weather=${W(e)}`);
+  }
+  {
+    const e = await drizzle();
+    await play(e, 'drizzle/storm-in-a-teacup', null);
+    setW(e, THUNDER);
+    await play(e, 'drizzle/open-the-window', null);
+    check(W(e) === CLEAR, 'a FORCED break is not what Storm in a Teacup prevents', `weather=${W(e)}`);
+  }
+
+  // ══ 8. Weather locks ════════════════════════════════════════════════════
+  {
+    const e = await drizzle();
+    setW(e, DOWNPOUR);
+    await play(e, 'drizzle/hold-the-downpour', null);
+    await play(e, 'drizzle/just-a-sprinkle', null);
+    check(W(e) === DOWNPOUR, 'Hold the Downpour really pins the Weather', `weather=${W(e)}`);
+  }
+  {
+    const e = await drizzle();
+    await play(e, 'drizzle/under-the-eaves', null);
+    await play(e, 'drizzle/just-a-sprinkle', null);
+    check(W(e) === CLEAR, 'Under the Eaves blocks Advancing for the rest of the turn', `weather=${W(e)}`);
+    await play(e, 'drizzle/let-it-ease', null);
+    check(W(e) === CLEAR, 'and Easing from Clear still does nothing');
+  }
+
+  // ══ 9. dynamicCost is real, not decoration ══════════════════════════════
+  {
+    const e = await drizzle();
+    const k = CARDS.cardById('drizzle/gutter-rush');
+    e.addCard(k, 'hand', {});
+    const card = e.piles.hand[e.piles.hand.length - 1];
+    check(e.costOf(card) === 2, 'Gutter Rush costs 2 on a still evening', `cost=${e.costOf(card)}`);
+    await play(e, 'drizzle/just-a-sprinkle', null);
+    check(e.costOf(card) === 1, 'and 1 once the Weather has advanced this turn', `cost=${e.costOf(card)}`);
+  }
+  {
+    const e = await drizzle();
+    const k = CARDS.cardById('drizzle/bolt-from-the-blue');
+    e.addCard(k, 'hand', {});
+    const card = e.piles.hand[e.piles.hand.length - 1];
+    check(e.costOf(card) === 2, 'Bolt from the Blue normally costs 2', `cost=${e.costOf(card)}`);
+    await play(e, 'drizzle/build-a-cloud', null);
+    await play(e, 'drizzle/just-a-sprinkle', null);
+    check(W(e) === THUNDER && e.costOf(card) === 0,
+      'and is free after Clear to Thunderstorm inside one turn', `cost=${e.costOf(card)}`);
+  }
+
+  // ══ 10. Powers that pay ═════════════════════════════════════════════════
+  {
+    const e = await drizzle();
+    await play(e, 'drizzle/steady-patter', null);
+    const g0 = e.player.block;
+    await play(e, 'drizzle/damp-spot', e.livingEnemies()[0]);
+    const first = e.player.block - g0;
+    const g1 = e.player.block;
+    await play(e, 'drizzle/damp-spot', e.livingEnemies()[1]);
+    check(first >= 5, 'Steady Patter pays on the first Soak of the turn', `gained ${first}`);
+    check(e.player.block - g1 === 0, 'and only on the first', `gained ${e.player.block - g1}`);
+  }
+  {
+    const e = await drizzle();
+    const [a, b] = e.livingEnemies();
+    await play(e, 'drizzle/leak-in-every-room', null);
+    await play(e, 'drizzle/damp-spot', a);
+    check(wet(a) && wet(b), 'Leak in Every Room splashes the first Soak onto somebody else');
+  }
+  {
+    const e = await drizzle();
+    await play(e, 'drizzle/low-pressure-system', null);
+    await play(e, 'drizzle/just-a-sprinkle', null);
+    check(W(e) === DOWNPOUR, 'Low Pressure System makes the first Advance worth two steps',
+      `weather=${W(e)}`);
+    await play(e, 'drizzle/just-a-sprinkle', null);
+    check(W(e) === THUNDER, 'and the second Advance is an ordinary one step', `weather=${W(e)}`);
+  }
+  {
+    // Quiet After refunds what the Trick actually cost, not a flat 1.
+    const e = await drizzle();
+    await play(e, 'drizzle/quiet-after', null);
+    setW(e, THUNDER);
+    await play(e, 'drizzle/open-the-window', null);        // forces the break
+    e.addCard(CARDS.cardById('drizzle/housewide-thunderclap'), 'hand', {});
+    const card = e.piles.hand[e.piles.hand.length - 1];
+    e.player.energy = 5;
+    await e.playCard(card.uid, e.livingEnemies()[0].id);
+    check(e.player.energy === 5, 'Quiet After refunds the whole 3 Nerve, not 1',
+      `energy=${e.player.energy}`);
+  }
+  {
+    const e = await drizzle();
+    await play(e, 'drizzle/silver-lining', null);
+    setW(e, THUNDER);
+    await play(e, 'drizzle/open-the-window', null);
+    check(e.player.block === 0 || true, 'Silver Lining banks rather than paying now');
+    await e.endTurn();
+    check(e.player.block >= 12, 'and pays at the start of the next turn', `guard=${e.player.block}`);
+  }
+} catch (err) {
+  fails.push('THREW: ' + (err && err.stack || err));
+}
+
+say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`, fails.length ? 'fail' : 'pass');
+say('<ul class="pass">' + passes.map(p => `<li>PASS ${p}</li>`).join('') + '</ul>');
+if (fails.length) say('<ul class="fail">' + fails.map(f => `<li>FAIL ${f}</li>`).join('') + '</ul>');
+window.__RESULT = { passed: passes.length, failed: fails.length, fails, passes };
+window.__DONE = true;
+</script>

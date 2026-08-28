@@ -164,6 +164,16 @@ export class CombatEngine {
 
     /** @type {Map<string, Object>} per-combat resource tracks */
     this.counters = new Map();
+    /**
+     * Counter ids that belong to the TABLE rather than to a seat, so
+     * `_ckey` does not prefix them and every seat reads the one value.
+     * Drizzle's Weather is the case this exists for: her chapter defines
+     * it as a global combat state and it acts on the shared enemies, so a
+     * per-seat Weather would have two Drizzles soaking and drying the same
+     * board out of two different states.
+     * @type {Set<string>}
+     */
+    this._sharedCounters = new Set();
     /** @type {Object[]} countdown triggers */
     this.timers = [];
     /** @type {Object[]} board objects (Plants, Plots, Pumpkins, Graves) */
@@ -595,6 +605,7 @@ export class CombatEngine {
       counters: [...this.counters.values()].map(c => ({
         id: c.id, name: c.name, value: c.value, min: c.min, max: c.max,
         ownerId: c.ownerId, icon: c.icon, desc: c.desc, focusable: !!c.focusable,
+        shared: !!c.shared,
         states: c.states.map(x => ({ ...x })),
         state: stateFor(c, c.value),
       })),
@@ -1340,6 +1351,7 @@ export class CombatEngine {
    * any existing content changes. `c.id` stays the display id either way.
    */
   _ckey(id, ownerId) {
+    if (this._sharedCounters.has(id)) return id;
     return this.isParty ? `${ownerId || this.current.id}/${id}` : id;
   }
 
@@ -1347,6 +1359,9 @@ export class CombatEngine {
   hasCounter(id, ownerId = null) { return this.counters.has(this._ckey(id, ownerId)); }
 
   defineCounter(o) {
+    // Registered before `_ckey` runs below, or the first definition would
+    // still land under a seat-prefixed key and every later read would miss it.
+    if (o.shared) this._sharedCounters.add(o.id);
     const c = {
       id: o.id, name: o.name || o.id, icon: o.icon || o.id, desc: o.desc || '',
       min: o.min ?? 0, max: o.max ?? 99, value: o.start ?? 0,
@@ -1361,6 +1376,8 @@ export class CombatEngine {
        * be omitted. The FIRST matching entry wins, so list exact values first.
        */
       states: normaliseStates(o.states),
+      /** One value for the whole table — see `_sharedCounters`. */
+      shared: !!o.shared,
     };
     c.value = Math.max(c.min, Math.min(c.max, c.value));
     c.key = this._ckey(c.id, c.ownerId);
@@ -1371,8 +1388,8 @@ export class CombatEngine {
 
   counter(id, ownerId = null) { return this.counters.get(this._ckey(id, ownerId))?.value ?? 0; }
   /** The label of the band the counter is currently in, or null. */
-  counterState(id) {
-    const c = this.counters.get(id);
+  counterState(id, ownerId = null) {
+    const c = this.counters.get(this._ckey(id, ownerId));
     return c ? stateFor(c, c.value) : null;
   }
   counterDef(id) { return this.counters.get(id) || null; }
@@ -1973,6 +1990,18 @@ export class CombatEngine {
       /** Which pile this Trick was played out of: 'hand' or 'stash'. */
       playedFrom: card ? (card._playedFrom || Pile.HAND) : null,
       loseEnergy: (n) => e.loseEnergy(n, card ? card.id : 'effect'),
+      /**
+       * Nerve at the START OF A LATER TURN. The only way to express it: the
+       * refill in `_dealSeatTurn` SETS Nerve, so gaining it from a turn-start
+       * listener, hook or timer is wiped a moment later. Twin of `energyDelta`
+       * (trap 21), pointing the other way.
+       */
+      bankEnergy: (n, pl) => {
+        const who = pl || self;
+        who.flags.energyNextTurn = (who.flags.energyNextTurn || 0) + n;
+        e._dirty = true;
+        return who.flags.energyNextTurn;
+      },
 
       // ── player choice (async) ───────────────────────────────────────────
       /** Ask the player to pick cards. Resolves to an array of runtime Cards. */
@@ -2425,7 +2454,19 @@ export class CombatEngine {
       this.drawCards(Math.max(0, want), 'turnStart');
       const epen = pl._energyPenalty || 0;
       pl._energyPenalty = 0;
-      this.setEnergy(Math.max(0, pl.energyMax + epen), 'turnStart');
+      /* Nerve BANKED for this turn by a card played earlier ("gain 1 Nerve at
+         the start of your next turn"). It has to be added to the refill itself,
+         for the same reason `energyDelta` does (trap 21): this line SETS Nerve,
+         so anything granted beforehand — by a `turn:start` listener, by an
+         `onTurnStart` hook, or by a scheduled `playerTurnStart` timer — is
+         erased a moment later. Five shipped Truffle cards banked Nerve that way
+         and none of them ever delivered it.
+         Per SEAT, on `flags` so it survives `Player.clone()`, unlike the
+         engine-wide `drawDeltaNextTurn` above, which in a party is consumed by
+         whichever seat happens to be dealt first. */
+      const bank = pl.flags.energyNextTurn || 0;
+      pl.flags.energyNextTurn = 0;
+      this.setEnergy(Math.max(0, pl.energyMax + epen + bank), 'turnStart');
     });
   }
 
@@ -3021,6 +3062,7 @@ export class CombatEngine {
       return pl;
     });
 
+    c._sharedCounters = new Set(s._sharedCounters);
     c.counters = new Map();
     for (const [k, v] of s.counters) c.counters.set(k, { ...v, states: (v.states || []).map(x => ({ ...x })) });
     c.timers = s.timers.map(t => ({ ...t, data: { ...t.data } }));

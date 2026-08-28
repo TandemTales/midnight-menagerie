@@ -415,8 +415,115 @@ cards 1015/0/0 · combat 677 · run 50 · coop 591 · backpack 80 · six gates �
 
 ---
 
+## 7. Drizzle, the Raincloud Ghost  ✅
+
+`bathhouse`. 4 basics + 20 commons + 35 uncommons + 25 rares + 5 co-op. Weather,
+Stormbreak, Soaked, Conduct, Forecast.
+
+She is the first Companion whose signature mechanic belongs to the **table**
+rather than to a seat, and that was the thing to settle before writing a card.
+
+### Weather is a shared counter, and it had to become possible
+
+Her chapter opens "Weather is a global combat state", and it acts on the shared
+enemies — Downpour re-Soaks all of them, Clear dries all of them. Every counter
+in this engine is keyed per seat in a party (`_ckey` prefixes the owner id), and
+`scenes/combat.js` skips any counter whose `ownerId` is not the local seat. So
+the obvious implementation gives two Drizzles **two Weathers**, both soaking and
+drying the same board out of different states, and passes every solo test.
+
+`defineCounter` takes `shared: true` now: `_ckey` does not prefix it, the scene
+shows it to every seat, the snapshot carries the flag, and — the part that would
+have been a silent no-op — `_clone` copies the shared-id set, or the preview
+engine re-prefixes every shared id and the cloned counter becomes unreachable.
+`counterState(id)` also gained an owner argument; it was looking up the raw id,
+which misses every seat-prefixed counter in a party.
+
+The suite asserts the point directly: two Drizzles read one Weather, seat 1 sees
+the storm seat 0 raised, there is exactly ONE `weather` key at the table — and
+**two** `forecast` keys, because the Forecast row is still one per Kid and the
+shared flag must not have leaked.
+
+### "At the start of your next turn" did not work, for anybody
+
+Silver Lining banks Guard for next turn. It never arrived. `turn:start` is
+emitted **before** `_openSeatTurn` wipes Guard, so Guard handed out from a
+turn-start listener is deleted a few lines later, silently.
+
+**Truffle shipped five cards on that path** — Hard to Finish, Refuse to Stay
+Down, Carpet Check, Sweep the Floor, Still Wiggling — banking Guard or Nerve
+that was erased before the player ever saw it, with a green suite. Measured on a
+scratch probe rather than argued from line numbers: 40 banked Guard arrives as
+**0**; the same 40 through a scheduled `playerTurnStart` timer arrives as 40.
+
+Nerve is worse and needed engine surface. `_dealSeatTurn` **sets** Nerve to the
+maximum after every start-of-turn effect has run, so even a timer is wiped —
+trap 21 pointing the other way. `ctx.bankEnergy(n, seat)` adds to the refill
+itself, per seat on `flags` so it survives `clone()`, unlike the engine-wide
+`drawDeltaNextTurn` beside it which in a party is consumed by whichever seat is
+dealt first.
+
+Both fixes live in `_util` as `guardNextTurn` / `energyNextTurn` so the next
+Companion reaches for the working idiom, and `tests/truffle` now asserts both —
+Hard to Finish really pays its 4 Guard, Carpet Check's Nerve really survives the
+refill at 4 against a maximum of 3.
+
+### Three things the engine does not do that I nearly assumed it did
+
+- **`costMod` on a CardDef is read by nothing.** Gutter Rush and Bolt from the
+  Blue were written with it and would have been silently uncosted. The real seam
+  is `CardDef.dynamicCost(ctx)`, which computes the printed cost and still lets
+  discounts compose on top. Asserted both ways: Gutter Rush is 2 on a still
+  evening and 1 once the Weather has advanced.
+- **The `damage` event carries `sourceId`/`targetId`, not `attacker`/
+  `defender`.** Damp House and the lent-Conduct listener both read the wrong
+  fields. The seams gate caught both — this is trap 11 and the gate is why it
+  cost ten minutes instead of a round.
+- **`U.removeOneDebuff` removes a debuff.** Wash It All Away strips a *buff* off
+  enemies, so it would have removed Drizzle's own Weak from the target.
+
+### One stated deviation, and one card the doc under-specified
+
+Drip Drip Drip (Common) is printed with the identical line to the Basic Just a
+Sprinkle; it draws a Trick as well, which is where its own name already pointed.
+
+Housewide Thunderclap is printed identically to Splashdown, a Common — and the
+doc also calls it "deliberately one of Drizzle's strongest Thunderstorm payoff
+Tricks", which it was not: the Thunderstorm bonus Conduct is universal, so at 3
+Nerve it was Splashdown with bigger numbers. It Soaks the room first during
+Thunderstorm, so the Conduct is guaranteed to reach the whole board. Both stated
+per CONTRACTS rule 8.
+
+### The bug only the screen could show, again
+
+`FORECAST 0/5` to a player whose real capacity is 3 — the HUD prints the
+*declared* max, and trap 20 says to declare a counter at its highest reachable
+value. That is right about not losing gains and wrong about the gauge. Boggle's
+Lurk shipped the identical bug ("LURK 0/7" against a cap of 5). The track is
+declared at 3 and Cloud Calendar / Forecast Says Me **redefine** it at 4 and 5,
+carrying the waiting Forecasts across as `start`. Two checks now assert the
+gauge, not just the capacity.
+
+### Verification
+
+`tests/drizzle/run.py` — **70 checks**, all effects: the Stormbreak really does
+not dry the board while an enemy turn that *began* in Clear does; Conduct really
+does not fire on a dry primary and really reaches the other Soaked enemy for
+exactly its marked damage; Thunderstorm's bonus really repeats on the primary
+once and not twice; a Forecast really leaves circulation, really waits for the
+state to be *entered* rather than occupied, really does not count as a Trick
+played, and really lands in the discard afterwards; Strange Weather Vane really
+is a one-shot; Storm in a Teacup really prevents the automatic break and not a
+forced one; Quiet After really refunds all 3 Nerve rather than 1.
+
+cards 1104/0/0 · combat 677 · coop 591 · run 50 · backpack 80 · enemies 37 ·
+audit 2061 · six gates · truffle 27 · boggle 30 · mopsy 28 · wisp 25 ·
+crumbula 25 · hush 17 · wink 5 · 60 fps, no console errors.
+
+---
+
 ## Still to come
 
-**Designed, not built (4):** Drizzle, Pudding, Mossbit, Brambleboo.
+**Designed, not built (3):** Pudding, Mossbit, Brambleboo.
 
-**Not designed (1): Crinkle.** Blocked on a designer pass — he has no chapter.
+**Not designed (1): Crinkle.** No chapter anywhere, including the source `.docx`.

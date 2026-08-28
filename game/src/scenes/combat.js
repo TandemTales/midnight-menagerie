@@ -2466,7 +2466,10 @@ export class CombatScene extends Scene {
     const pid = this.me.id;
     const out = [];
     for (const c of this.engine.counters.values()) {
-      if (c.ownerId !== pid) continue;
+      // A shared counter belongs to the table, not to a seat: Drizzle's
+      // Weather is one state everybody is standing in, so it shows on
+      // every seat's rail regardless of who happened to define it.
+      if (c.ownerId !== pid && !c.shared) continue;
       const gauge = c.max > 0 && c.max <= GAUGE_MAX;
       // A gauge reads as 0/6 and that is information. A bare track at zero is not.
       if (!c.value && !gauge) continue;

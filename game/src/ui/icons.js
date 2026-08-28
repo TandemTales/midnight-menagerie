@@ -119,6 +119,16 @@ const STATUS = {
   /* Truffle: a spined back for Quills, three fallen ones for the floor. */
   quills: 'M12 2.2 14 8.4h-4zM6.4 5.2 9 10.6l-3.6-1.2zm11.2 0 1 4.2L15 10.6zM2.6 10.4l3.2 2.6-3.4.6zm18.8 0 .2 3.2-3.4-.6zM4.4 15.2h15.2a7.6 7.6 0 0 1-15.2 0z',
   'loose-quills': 'M3.4 5.6 5 4.2l6.4 7.4-1.6 1.4zM20.6 5.6 19 4.2l-6.4 7.4 1.6 1.4zM11 14.2h2v6.2h-2zM2.6 18.4h18.8v2.2H2.6z',
+  /* Drizzle. A cloud is the shared spine of the set so the whole Weather family
+     reads as one system at a glance: `weather` is the cloud with rain under it,
+     `stormbreak` the cloud splitting, `forecast` the cloud over a filed row.
+     `soaked` is a single heavy drop and `conduct` a bolt travelling sideways,
+     because those two are about the ENEMIES rather than about the sky. */
+  weather: 'M7.4 4.2a5.2 5.2 0 0 1 9.7 1.4 3.9 3.9 0 0 1-.7 7.7H7.2a4.3 4.3 0 0 1-.6-8.5zm-.9 11.6 1.9.7-1.4 3.9-1.9-.7zm4.6 0 1.9.7-1.4 3.9-1.9-.7zm4.6 0 1.9.7-1.4 3.9-1.9-.7z',
+  stormbreak: 'M7.4 3.4a5.2 5.2 0 0 1 9.7 1.4 3.9 3.9 0 0 1-.7 7.7H7.2a4.3 4.3 0 0 1-.6-8.5zm5.9 10.8h3.9l-3.2 3.6h2.8L10.4 23l1.3-4.4H8.9z',
+  forecast: 'M7.6 2.8a5 5 0 0 1 9.3 1.3 3.7 3.7 0 0 1-.7 7.4H7.4a4.1 4.1 0 0 1-.6-8.1zM3.2 14.4h17.6v2.2H3.2zm0 3.8h17.6v2.2H3.2zm0 3.8h11.4V24H3.2z',
+  soaked: 'M12 1.8c3.6 4.8 6.4 8.4 6.4 11.8A6.4 6.4 0 0 1 12 20a6.4 6.4 0 0 1-6.4-6.4C5.6 10.2 8.4 6.6 12 1.8zm0 4.6c-2.2 3-3.8 5.3-3.8 7.2a3.8 3.8 0 0 0 7.6 0c0-1.9-1.6-4.2-3.8-7.2z',
+  conduct: 'M2.4 11h4.2L4.4 6.2 9.8 9.6 8.6 4.2l4 4.4 1.2-5 2.2 5.2 3.4-3.4-1 4.8h3.2v2.4h-3.2l1 4.8-3.4-3.4-2.2 5.2-1.2-5-4 4.4 1.2-5.4-5.4 3.4 2.2-4.8H2.4z',
   /* Count Crumbula: a goblet for Appetite, two fangs for a Bite Mark. */
   appetite: 'M6 2.4h12l-.8 6.4c-.3 2.4-2 4.3-4.2 4.9v5.9h3.4v2.2H7.6v-2.2H11v-5.9c-2.2-.6-3.9-2.5-4.2-4.9zm2.3 2.2.5 4c.2 1.5 1.6 2.6 3.2 2.6s3-1.1 3.2-2.6l.5-4z',
   'bite-mark': 'M7.2 2.6c1.2 1.8 1.8 3.6 1.8 5.4 0 2.1-.8 3.9-1.8 5.4-1-1.5-1.8-3.3-1.8-5.4 0-1.8.6-3.6 1.8-5.4zm9.6 0c1.2 1.8 1.8 3.6 1.8 5.4 0 2.1-.8 3.9-1.8 5.4-1-1.5-1.8-3.3-1.8-5.4 0-1.8.6-3.6 1.8-5.4zM4.6 17.4h14.8v2.2H4.6zm2.6 3.4h9.6V23H7.2z',

@@ -194,6 +194,16 @@ export const COMPANION_KEYWORDS = [
   K('regrow', 'Regrow X', 'Grow up to X new [Quills]. It does not consume [Loose Quill]s and cannot exceed his maximum.', { companion: 'truffle' }),
   K('bristle', 'Bristle X', 'NOT "when attacked". When an enemy Attack actually costs Truffle Courage after Guard: consume 1, [Shed] 1, and hit that attacker back. One Attack action triggers it once, however many hits it has.', { companion: 'truffle' }),
   K('ragged', 'Ragged', 'At or below half his maximum Courage. No benefit on its own — individual Tricks are stronger for it.', { companion: 'truffle' }),
+
+  // ── Drizzle ───────────────────────────────────────────────────────────────
+  K('weather', 'Weather', 'One state for the WHOLE combat, not for one Kid: Clear → Sprinkle → Downpour → Thunderstorm. Downpour re-[Soak]s every enemy at the start of her turn; Thunderstorm [Soak]s on entry and collapses on its own.', { companion: 'drizzle' }),
+  K('advance', 'Advance', 'Move [Weather] one step toward Thunderstorm. It never goes past it.', { companion: 'drizzle' }),
+  K('ease', 'Ease', 'Move [Weather] one step back toward Clear. Letting up is often the correct play.', { companion: 'drizzle' }),
+  K('stormbreak', 'Stormbreak', 'Thunderstorm collapsing to Clear — automatically at the end of an enemy turn spent in it, or forced by a Trick. It counts as [Weather] changing and as entering Clear, and it does NOT dry anything, because that enemy turn did not begin in Clear.', { companion: 'drizzle' }),
+  K('soaked', 'Soaked', 'A yes-or-no condition on an enemy that does nothing by itself. It is what makes an enemy part of the weather. It dries at the end of an enemy turn that BEGAN in Clear.', { companion: 'drizzle' }),
+  K('soak', 'Soak', 'Make an enemy [Soaked]. Soaking something already [Soaked] changes nothing — several Tricks pay you for finding it that way.', { companion: 'drizzle' }),
+  K('conduct', 'Conduct', 'A marked effect that fires only if the primary target is [Soaked], then repeats against every OTHER [Soaked] enemy. During Thunderstorm the first Conduct of your turn also repeats once on the primary.', { companion: 'drizzle' }),
+  K('forecast', 'Forecast', 'Park this Trick face up outside your deck in one of three slots, waiting for a [Weather] state or a [Stormbreak]. It resolves for free when that state is ENTERED — being in it already is not enough — and resolving is not playing a Trick.', { companion: 'drizzle' }),
 ];
 
 export const KEYWORD_IDS = COMPANION_KEYWORDS.map(k => k.id);
@@ -683,6 +693,48 @@ export const COMPANION_STATUSES = [
   powerStatus('truffle/permanent-bad-hair-day', 'Permanent Bad Hair Day', 'Bristle no longer expires.', 'quills'),
   powerStatus('truffle/still-wiggling', 'Still Wiggling', 'Ending a turn Ragged, bare and bristling pays Nerve and a card.', 'quills'),
   powerStatus('truffle/shared-pincushion', 'Shared Pincushion', 'You may Shed to retaliate when a teammate is hurt.', 'quills'),
+
+  // ── Drizzle ───────────────────────────────────────────────────────────────
+  /**
+   * Soaked is deliberately `stacks: false` and carries no behaviour of its own.
+   * The chapter is explicit that it neither damages nor weakens: it exists so an
+   * enemy is part of the weather, and every consequence lives in Drizzle's own
+   * cards. `decay: 'never'` because drying is a Weather rule (end of an enemy
+   * turn that BEGAN in Clear), not a duration.
+   */
+  {
+    id: 'soaked', name: 'Soaked', kind: 'debuff', icon: 'soaked', decay: 'never', stacks: false,
+    desc: 'Wet through. Nothing on its own — but Drizzle’s Conduct travels between anything that is.',
+  },
+  /**
+   * The Conduct one Kid lends another (Pass the Puddle, Thunder Buddies). The
+   * chip is display only; the effect is driven from Drizzle’s own `damage`
+   * listener, because what is lent is "when your Attack lands on something wet",
+   * which is precisely what that event reports.
+   */
+  {
+    id: 'lent-conduct', name: 'Lent Conduct', kind: 'buff', icon: 'conduct', decay: 'never', stacks: false,
+    desc: 'Your Attack on a [Soaked] enemy carries Drizzle’s [Conduct] through the rest of them.',
+  },
+  powerStatus('drizzle/steady-patter', 'Steady Patter', 'The first Soak each turn gains Guard.', 'soaked'),
+  powerStatus('drizzle/damp-house', 'Damp House', 'The first Soaked attacker each enemy turn gains you Guard.', 'soaked'),
+  powerStatus('drizzle/barometer', 'Barometer', 'The first Weather change each turn draws next turn.', 'weather'),
+  powerStatus('drizzle/leak-in-every-room', 'Leak in Every Room', 'The first Soak each turn splashes onto somebody else.', 'soaked'),
+  powerStatus('drizzle/low-pressure-system', 'Low Pressure System', 'The first Advance each turn moves two steps.', 'weather'),
+  powerStatus('drizzle/downpour-darling', 'Downpour Darling', 'Downpour turns start with Guard and a cheaper Attack.', 'weather'),
+  powerStatus('drizzle/storm-chaser', 'Storm Chaser', 'Entering Thunderstorm draws, then discards one.', 'weather'),
+  powerStatus('drizzle/silver-lining', 'Silver Lining', 'Every Stormbreak Guards you next turn.', 'stormbreak'),
+  powerStatus('drizzle/damp-forever', 'Damp Forever', 'Soaked enemies no longer dry on their own in Clear.', 'soaked'),
+  powerStatus('drizzle/cloud-calendar', 'Cloud Calendar', 'A fourth Forecast slot.', 'forecast'),
+  powerStatus('drizzle/weather-station', 'Weather Station', 'Setting a Forecast Guards; resolving one draws next turn.', 'forecast'),
+  powerStatus('drizzle/quiet-after', 'Quiet After', 'The first Trick after each Stormbreak refunds its Nerve.', 'stormbreak'),
+  powerStatus('drizzle/never-quite-clears', 'Never Quite Clears', 'Stormbreak returns to Sprinkle instead of Clear.', 'stormbreak'),
+  powerStatus('drizzle/storm-in-a-teacup', 'Storm in a Teacup', 'The first automatic Stormbreak each combat is prevented.', 'stormbreak'),
+  powerStatus('drizzle/forecast-says-me', 'Forecast Says Me', 'Two more Forecast slots; the first to resolve each turn draws.', 'forecast'),
+  powerStatus('drizzle/i-am-the-weather', 'I Am the Weather', 'One free Advance or Ease each turn after playing a Trick.', 'weather'),
+  powerStatus('drizzle/electric-house', 'Electric House', 'A wide Conduct arcs once more, at random.', 'conduct'),
+  powerStatus('drizzle/weather-has-memory', 'Weather Has Memory', 'The first Forecast each turn resolves twice in familiar Weather.', 'forecast'),
+  powerStatus('drizzle/thunder-buddies', 'Thunder Buddies', 'Every friend’s first Attack on a Soaked enemy Conducts.', 'conduct'),
 ];
 
 export const STATUS_IDS = COMPANION_STATUSES.map(s => s.id);

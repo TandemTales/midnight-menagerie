@@ -364,6 +364,30 @@ export function nextTurn(c, fn) {
   };
   e.on('turn:start', h);
 }
+/**
+ * Guard at the start of your next turn.
+ *
+ * NOT a `turn:start` listener, and this is not a style preference. The engine
+ * emits `turn:start` and THEN calls `_openSeatTurn`, which wipes Guard — so
+ * Guard handed out from a turn-start listener is deleted a few lines later,
+ * silently, with a green suite. A scheduled `playerTurnStart` timer ticks after
+ * that wipe, which is why this goes through `nextTurn`. Measured, not assumed:
+ * banked-in-a-listener 40 Guard arrives as 0, the same 40 through a timer
+ * arrives as 40. Truffle's Hard to Finish and Refuse to Stay Down shipped on
+ * the broken path.
+ */
+export function guardNextTurn(c, n) { if (n > 0) nextTurn(c, (x) => guard(x, n)); }
+
+/**
+ * Nerve at the start of your next turn.
+ *
+ * A timer is NOT enough here — `_dealSeatTurn` SETS Nerve to the maximum after
+ * every start-of-turn effect has run, so even a scheduled gain is erased. It
+ * has to ride the refill itself, which is what `ctx.bankEnergy` does. Trap 21
+ * pointing the other way.
+ */
+export function energyNextTurn(c, n) { if (n > 0) c.bankEnergy(n); }
+
 /** Run `fn` at the end of the current player turn. */
 export function atTurnEnd(c, fn) {
   if (c.schedule) return c.schedule({ turns: 1, when: 'playerTurnEnd', label: 'end of turn', run: () => { try { fn(c); } catch (_) {} } });

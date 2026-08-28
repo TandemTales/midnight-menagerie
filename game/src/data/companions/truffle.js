@@ -143,8 +143,12 @@ U.onTracker(SLUG, (e, s, seat) => {
     // Bristle expires unless Permanent Bad Hair Day says otherwise.
     if (!st.permanentBristle) { const n = bristleOn(c); if (n > 0) unbristle(c, n); }
     if (st.regrowNextTurn) { regrow(c, st.regrowNextTurn); st.regrowNextTurn = 0; }
-    if (st.guardNextTurn) { U.guard(c, st.guardNextTurn); st.guardNextTurn = 0; }
-    if (st.nerveNextTurn) { U.energy(c, st.nerveNextTurn); st.nerveNextTurn = 0; }
+    /* Guard and Nerve are NOT banked here. `turn:start` is emitted before
+       `_openSeatTurn` wipes Guard and before `_dealSeatTurn` SETS Nerve, so
+       both were deleted a moment after they were granted — five Truffle cards
+       shipped that way and delivered nothing. `U.guardNextTurn` schedules a
+       timer that ticks after the wipe; `U.energyNextTurn` rides the refill
+       itself. Draw is fine here: the turn-start deal ADDS to the hand. */
     if (st.drawNextTurn) { U.draw(c, st.drawNextTurn); st.drawNextTurn = 0; }
     if (!st.raggedSeen && isRagged(c)) { st.raggedSeen = true; if (st.barelyHolding) U.draw(c, 2); }
   }, seat);
@@ -155,7 +159,7 @@ U.onTracker(SLUG, (e, s, seat) => {
     if (st.quillCarpet && loose(c) >= 4) U.hitAll(c, 4);
     if (st.wretchedMiracle && isRagged(c) && c.self.block === 0) bristle(c, 1);
     if (st.stillWiggling && isRagged(c) && c.self.block === 0 && bristleOn(c) >= 1) {
-      st.nerveNextTurn = (st.nerveNextTurn || 0) + 1;
+      U.energyNextTurn(c, 1);
       st.drawNextTurn = (st.drawNextTurn || 0) + 1;
     }
     // Grows Back Wrong: anything above the normal cap falls off overnight.
@@ -175,7 +179,7 @@ U.onTracker(SLUG, (e, s, seat) => {
 U.onHook('shed', 'truffle/shed-cycle', () => {});
 U.onHook('gather', 'truffle/more-where-that-came-from', () => {});
 U.onHook('bristled', 'truffle/hard-to-finish', (c) => {
-  U.mm(c).guardNextTurn = (U.mm(c).guardNextTurn || 0) + 4;
+  U.guardNextTurn(c, 4);
 });
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -406,7 +410,7 @@ const commons = [
     flavor: 'A quick audit of the floor.',
     nums: { n: 3, c1: 1, e: 1, b: 4 },
     effect: eff((c) => {
-      if (loose(c) >= N(c).n) { U.draw(c, N(c).c1); U.mm(c).nerveNextTurn = (U.mm(c).nerveNextTurn || 0) + N(c).e; }
+      if (loose(c) >= N(c).n) { U.draw(c, N(c).c1); U.energyNextTurn(c, N(c).e); }
       else { shed(c, 1); U.guard(c, N(c).b); }
     }),
     upgrade: { nums: { n: 3, c1: 2, e: 1, b: 7 } },
@@ -623,7 +627,7 @@ const uncommons = [
     effect: eff((c) => {
       let got = 0;
       for (let i = 0; i < 2; i++) { if (spendLoose(c, N(c).n) >= N(c).n) got += N(c).e; }
-      if (got) U.mm(c).nerveNextTurn = (U.mm(c).nerveNextTurn || 0) + got;
+      if (got) U.energyNextTurn(c, got);
     }),
     upgrade: { nums: { n: 2, e: 2 } },
   },

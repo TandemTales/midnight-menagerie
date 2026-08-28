@@ -152,6 +152,34 @@ try {
     e.player.hp = 20;
     check(e.canPlay(card.uid, e.livingEnemies()[0].id).ok, 'and is playable while Ragged');
   }
+  // ── "at the start of your next turn" actually ARRIVES ────────────────────
+  //  Five Truffle cards banked Guard or Nerve into the tracker's `turn:start`
+  //  listener, which runs BEFORE `_openSeatTurn` wipes Guard and before
+  //  `_dealSeatTurn` SETS Nerve — so every one of them delivered nothing, in
+  //  silence, with this suite green. Both halves are asserted now.
+  {
+    const e = await truffle();
+    await play(e, 'truffle/hard-to-finish', null);
+    await play(e, 'truffle/prickle-up', null);
+    const t = e.livingEnemies()[0];
+    e.player.block = 0;
+    // A hit that really costs Courage is what Bristle needs.
+    await e.dealDamage({ attacker: t, defender: e.player, amount: 12, kind: 'attack' });
+    check(stacks(e.player, 'bristle') === 0, 'the Bristle was spent by a hit that cost Courage');
+    await e.endTurn();
+    check(e.player.block >= 4, 'Hard to Finish really pays its Guard next turn',
+      `guard=${e.player.block}`);
+  }
+  {
+    const e = await truffle();
+    e.setCounter('loose-quills', 4, 'test');
+    await play(e, 'truffle/carpet-check', null);
+    check(e.player.energy <= 9, 'Carpet Check banked its Nerve rather than spending it now');
+    await e.endTurn();
+    check(e.player.energy === e.player.energyMax + 1,
+      'and the banked Nerve survives the start-of-turn refill',
+      `energy=${e.player.energy} max=${e.player.energyMax}`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }
