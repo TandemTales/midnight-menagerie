@@ -1,6 +1,6 @@
 # Midnight Menagerie — handoff
 
-Written 2026-08-26, last updated 2026-08-27. Everything a fresh conversation needs to pick
+Written 2026-08-26, last updated 2026-08-28. Everything a fresh conversation needs to pick
 this up. Read this, then `CONTRACTS.md`, then `docs/STS2-REFERENCE.md`. Nothing else is
 required reading.
 
@@ -13,11 +13,32 @@ that transforms animals; you pick a Kid and a Companion (your deck) and go in. B
 **Slay the Spire 2** quality bar, in Three.js + plain ES modules, **no build step**.
 
 Design source of truth: `Midnight Menagerie Design.docx` (1.6M chars), carved into 44 readable
-files under `docs/design/`. **Crinkle, the Paper Crow has no chapter** — 15 of the 16 Companions
-are designed and he is not, so he cannot be built until somebody designs him. Read only what you need — the full doc will not fit in context.
+files under `docs/design/`. Read only what you need — the full doc will not fit in context.
+
+**One chapter is not from the doc.** Crinkle, the Paper Crow never had one — his entire
+specification in the source is a single line, "card duplication, folding, transformations and
+fragile high power effects". `docs/design/companions/16-crinkle.md` is a RECONSTRUCTION written
+on 2026-08-28 to unblock him, clearly marked as such in its own header, and **the designer has
+not reviewed it**. The implementation follows the chapter, so editing the chapter is how to
+change him.
 
 **~65,500 lines** across `game/src/`. Currently on branch **`dev`**, pushed to
 `github.com/TandemTales/midnight-menagerie`. `main` is untouched and stale.
+
+### Where it stands, 2026-08-28
+
+- **The Companion roster is COMPLETE.** All 16 playable, 1468 cards, 0 errors, 0
+  warnings, each with its own effect-asserting suite. Crinkle's design chapter is a
+  reconstruction and is **awaiting the designer's review** — see §1 above.
+- **A party of four plays end to end on one machine.** `MAX_PARTY` is 4 and the
+  enemy Courage curve is measured at every size for the first time.
+- **Networking has a foundation and a proof, not a feature.** The lockstep session,
+  the protocol and two working transports exist; a transport that reaches another
+  machine does not. §9 says exactly what is left.
+- **One known failing check.** `tests/chrome` wants 60 fps and measures 51–54. It
+  read **47 at the start of the 2026-08-28 session**, on the same filesystem, so it
+  predates that work rather than coming from it — but it IS failing and nobody has
+  chased it. Re-measure in isolation before believing any number here (trap 7).
 
 ---
 
@@ -60,8 +81,9 @@ All prep scripts are **one-off and commit their output** — there is no runtime
 | Suite | What it says when it is happy |
 |---|---|
 | `tests/combat/run.py` | 677 assertions |
-| `tests/coop/run.py` | 591 assertions |
-| `tests/cards/run.py` | 925 cards, 0 errors, 0 warnings |
+| `tests/coop/run.py` | 594 assertions |
+| `tests/net/run.py` | 33 — the lockstep session, two Sessions over a loopback wire |
+| `tests/cards/run.py` | 1468 cards, 0 errors, 0 warnings |
 | `tests/enemies/run.py` | 37 enemies, 0 errors |
 | `tests/enemies/audit.py` | ~2060 turns, intent === delivered |
 | `tests/run/run.py` | 50 runs, 0 errors |
@@ -83,6 +105,12 @@ drive a real engine with real enemies and mock none of the mechanic under test.
 | `tests/crumbula/run.py` | 25 — one Queasy per Feed, Indulge goes through Guard |
 | `tests/hush/run.py` | 17 — the Ambush ordering, both ways round |
 | `tests/wink/run.py` | 5 — a Set really leaves the deck |
+| `tests/truffle/run.py` | 27 — one Attack ACTION triggers Bristle once, banked Guard arrives |
+| `tests/drizzle/run.py` | 70 — a Stormbreak does not dry the board, a Forecast waits to be ENTERED |
+| `tests/pudding/run.py` | 46 — a Plot refuses a second operation in one turn, Unearthed doubles |
+| `tests/mossbit/run.py` | 55 — hurrying an Epitaph forfeits the Patience, the bill lands through Guard |
+| `tests/brambleboo/run.py` | 52 — four Vines Snare and REDUCE, never cancel |
+| `tests/crinkle/run.py` | 44 — a Crease survives the discard pile, and the card PRINTS the new number |
 
 **Co-op drives the real screens** — everything else about co-op is asserted
 against objects, and the thing that breaks is always the screen.
@@ -143,8 +171,10 @@ autosave and mid-combat resume.
 - **Combat engine** (`src/combat/`) — headless, deterministic, 649 assertions. Player choice with
   a replay log, first-class intent queue, House Rules, `onEnemyPhaseEnd`, preview by cloning the
   engine so it cannot drift from resolution.
-- **Content** — 925 cards across **10 of the 16 Companions** (Marmalade, Bones, Pipkin, Taffy,
-  Wink, and from 2026-08-27 Boggle, Mopsy, Wisp, Crumbula, Hush); 37 enemies
+- **Content** — **1468 cards across all 16 Companions.** The roster is COMPLETE as of
+  2026-08-28 (Marmalade, Bones, Pipkin, Taffy, Wink · Boggle, Mopsy, Wisp, Crumbula, Hush,
+  Truffle · Drizzle, Pudding, Mossbit, Brambleboo, Crinkle), each with its own
+  effect-asserting suite; 37 enemies
   across Foyer / Nursery / Sleeping Quarters with 3 multi-phase bosses; 38 Keepsakes; 16
   Curiosities; 18 Backpack items; a 10-level Haunt ladder with real behavioural upgrades.
 - **Art** — all authored art is wired: the main menu (`UI/mainMenu.png` + keyed `UI/title.png`),
@@ -301,31 +331,40 @@ Three of the four open decisions below are now made:
 
 1. **Transport: Steam P2P.** This ends the no-build rule — it needs a wrapper
    shell. `shouldHandOff()` is still the single switch.
-2. **Party size: FOUR.** `MAX_PARTY` is still **2 in the code** and flipping the
-   constant is NOT the job — see "What a party of four actually needs" below.
+2. **Party size: FOUR.** `MAX_PARTY` is **4**, live from 2026-08-28. Done —
+   see "A party of four, built" below.
 3. **Reconnection is in scope and shapes the protocol**, decided up front rather
    than retrofitted, because mid-run disconnects are StS2's loudest complaint and
    the lockstep foundation already has what a rejoin needs.
 
 Decision 4 (the Butler's Courage pool) is still the designer's and still open.
 
-### What a party of four actually needs
+### A party of four, built
 
-The engine is genuinely N-ready and `run.js` already slices to `MAX_PARTY`. The
-SCREENS are not:
+Done on 2026-08-28, in the order this section used to prescribe: **the screen
+first, then the constant, then the measurement.** `docs/notes/2026-08-28-party-of-four.md`.
 
-- `scenes/select.js` is hard-wired to exactly two. `state.party.length === 0`
-  is what puts it in "waiting for the other Kid", and the second pick launches
-  the run. It needs a party-size choice and a loop, not a bigger constant.
-- 3p/4p enemy Courage has never been measured. StS2's own curve is **linear** —
-  `MonsterHP × PlayerCount × ActScaling`, with ActScaling depending on the act
-  alone — so a party of four is 440% of solo in the Foyer, not something
-  steeper. See `docs/STS2-REFERENCE.md` §8.3.
-- Everything else (rooms handing over, the last Kid closing a room, per-seat
-  everything) is already written against N rather than 2.
+- `scenes/select.js` offers 1..`MAX_PARTY` as a segmented count, **generated from
+  the engine's constant**, so the screen and the engine cannot drift apart in
+  either direction. The launch path generalised rather than branching:
+  `party.length === 0` ("first of two") became `party.length < want - 1`.
+- **3p/4p enemy Courage is now measured.** It was `[1, 2.2, 3.1, 4.0]`,
+  extrapolated, and 3p and 4p both won **96%** against solo's 79%. StS2's curve
+  is linear and that is nowhere near enough here, because enemy damage never
+  scales: each added Kid multiplies the party's output AND its Courage while
+  incoming damage per Kid falls. Measured parity is `[1, 2.2, 4.0, 5.7]`,
+  confirmed at n=36 as 64 / 78 / 67 / 72%.
+- Two bugs only four seats could show, both now fixed: `piles.js` emitted every
+  pile event with **no owner**, so a four-Kid fight opened with the local Kid's
+  fan holding cards from three different seats; and `get mate()` was
+  `players[1 - seatIndex]`, so three friends showed as one.
 
-Flipping `MAX_PARTY` on its own would let a run start that the select screen
-cannot set up. Do the screen first.
+**Still open, and a designer's call:** bigger parties finish with far more
+Courage left even at matched win rates (26% solo → 62% at 4p). Raising Courage
+further fixes the number and makes fights long rather than dangerous. The real
+lever is **AoE coverage** — the compensation for "damage never scales" is
+supposed to be targeting, and the Foyer's standard tier is thin on moves that
+hit everybody. That is enemy content, not a constant.
 
 **Two people can play the whole game on one machine.** "Go in together" on the
 Companion/Kid select, pick your Kid, "Lock in & pass it over", your friend picks
@@ -429,44 +468,60 @@ more Kids while Elites became unwinnable. `python tests/coop/balance.py`
 re-measures; re-run it after any change to enemy damage, starting decks or the
 co-op pool.
 
-### NOT built
+### NOT built — and it is one thing
 
-**Two people can play the whole game on one machine.** Pass-and-play is built:
-combat turns, the reward, Mr. Moth's, the Safe Room and Curiosities all hand the
-screen over with an opaque veil between them, and `run.setLocalSeat(n)` moves
-every per-Kid thing at once. `tests/coop/playthrough.py` walks an expedition the
-way two people would.
+**Up to four Kids can play the whole game on one machine.** Pass-and-play is
+built: combat turns, the reward, Mr. Moth's, the Safe Room and Curiosities all
+hand the screen over with an opaque veil between them, and `run.setLocalSeat(n)`
+moves every per-Kid thing at once. `tests/coop/hotseat.py --party 4` drives four
+Kids passing the screen around; `tests/coop/playthrough.py` walks an expedition.
 
-1. **Networking**, per the deferred wrapper — and it is now the ONLY item, with
-   a smaller job than it had. Everything is playable; the wire moves a seat to
-   another machine rather than filling a hole.
+**Networking is the only remaining item, and half of it now exists.**
+`docs/notes/2026-08-28-netcode.md`.
+
+BUILT on 2026-08-28 — the transport-agnostic session (`game/src/net/`):
+
+- inputs on the wire, never state, on top of the deterministic RNG + choiceLog +
+  digest that were already here
+- a total order of `(turn, seat, seq)` — seat breaks the tie, never arrival time
+- board-digest divergence detection, reported loudly and once
+- reconnection by replaying the input log, which is what a local resume already
+  does
+- two working transports: an in-page `LoopbackHub`, and a `ChannelTransport` on
+  `BroadcastChannel` that makes two browser TABS two independent instances
+- `tests/net/run.py` — 33 checks driving two complete Sessions against each other
+
+NOT built:
+
+1. **A transport that reaches another machine.** Steam P2P per the decision,
+   which needs the wrapper shell and ends the no-build rule. One file, five
+   methods, and the two rules the interface spells out (ordered per sender,
+   never delivered back to the sender).
+2. **Routing each screen's actions through `session.input()`.** Combat is
+   exercised; the reward, Mr. Moth's, the Safe Room and Curiosities still act
+   locally. Each is a call-site change, not a design question.
 
    | Seam | Today | With a wire |
    |---|---|---|
-   | `ui/handoff.js` `shouldHandOff()` | true in a party, so the screen is passed | false — each client owns its seat |
-   | the two-Kid **select** | player two picks on the same screen | they pick on theirs |
+   | `ui/handoff.js` `shouldHandOff()` | true in a party, so the screen is passed | **already answers false** for a session with `remote` |
+   | the **select** | the next player picks on the same screen | they pick on theirs |
    | **card + Keepsake reward** | rolled per Kid; each takes theirs in turn | each screen shows its own |
    | **Mr. Moth's** | a shelf per Kid, taken in turn | each shelf on its own screen |
    | **Curiosities** | one room, each Kid answers it in turn | answered at the same time |
    | the **choice broker** | a request for another seat resolves from its `prefer` rule | it reaches that player's picker |
 
-   `shouldHandOff()` is the single switch: a session that owns one seat answers
-   false and every handoff above stops happening. The choice broker's fallback
-   is not a placeholder — one player rummaging in the other Kid's hand would be
-   worse than a stable rule — so it stays as the offline path.
-2. **The remaining 6 Companions' co-op pools.** Five of the eleven are built as
-   of 2026-08-27 and shipped their co-op Tricks with them. This entry used to say
-   "there is nothing to write co-op Tricks for yet" — that was never true: every
-   companion chapter under `docs/design/companions/` carries a MULTIPLAYER ONLY
-   TRICKS section, so the pools are designed and waiting for the Companion.
-3. **Two players reaching for the same Keepsake.** StS2 resolves that with
+   The choice broker's fallback is not a placeholder — one player rummaging in
+   another Kid's hand would be worse than a stable rule — so it stays as the
+   offline path.
+3. **Lobby and seat assignment.** Who is seat 0, who hosts, how the seed is
+   agreed. `Session` takes all three as constructor arguments today.
+4. **Two players reaching for the same Keepsake.** StS2 resolves that with
    rock-paper-scissors. Every Kid gets their own offer and nobody can reach for
    somebody else's, so there is nothing to resolve until the wire exists.
 
-Everything else that was on this list is built — see
-`docs/notes/2026-08-26-multiplayer-bosses.md`, which is also the record of the
-five shipped mechanics that no code path ever called.
-
+**Every Companion's co-op pool is written.** All 16 shipped their three Uncommon
+and two Rare multiplayer-only Tricks with them, in `def.coopCards`, outside the
+80 and never drafted solo.
 
 ### Lockstep foundation
 

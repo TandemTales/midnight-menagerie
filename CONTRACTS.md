@@ -178,6 +178,70 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    `tests/backpack` used 'mopsy', then 'wink', then 'hush' as its example of an unbuilt
    Companion, and broke each time. Derive the built and unbuilt sets from the registry.
 
+24. **`turn:start` fires BEFORE Guard is wiped and BEFORE Nerve is refilled, so
+   anything banked "for next turn" is deleted seconds later.** The order in
+   `_startPlayerTurn` is: emit `turn:start` → `_openSeatTurn` wipes Guard →
+   timers tick → `_dealSeatTurn` deals the hand and SETS Nerve to maximum. A
+   turn-start listener handing out Guard is undone by the wipe; one handing out
+   Nerve is undone by the refill. **Truffle shipped FIVE cards on that path** —
+   Hard to Finish, Refuse to Stay Down, Carpet Check, Sweep the Floor, Still
+   Wiggling — all delivering nothing, in silence, with a green suite. Measured,
+   not argued: 40 banked Guard arrives as 0.
+   Use `U.guardNextTurn(c, n)` (a scheduled `playerTurnStart` timer, which ticks
+   after the wipe) and `U.energyNextTurn(c, n)` (`ctx.bankEnergy`, which rides
+   the refill itself — a timer is not enough). And if you need the moment the
+   turn has ACTUALLY opened, with the hand dealt, listen for
+   `phase: 'playerReady'`.
+
+25. **`costMod` on a CardDef is read by nothing.** Two Drizzle cards were written
+   with it and would have been silently uncosted. The engine's one
+   conditional-cost seam is `CardDef.dynamicCost(ctx)`, which computes the
+   PRINTED cost and still lets discounts compose on top (`costOf` step 1).
+
+26. **The `damage` event carries `sourceId` and `targetId`, NOT `attacker` and
+   `defender`.** Those names belong to the `onCourageLoss` / `onIncomingHit`
+   HOOK payloads, which is what makes the mistake so easy. Two listeners were
+   written the wrong way in one session; `tests/seams/check.py` caught both, and
+   it is the reason that gate exists.
+
+27. **A counter's DECLARED max is what the HUD prints, so trap 20 has a cost.**
+   Declaring a track at its highest reachable value stops gains being lost and
+   shows the player a ceiling they do not have: "LURK 0/7" against a real cap of
+   5, "FORECAST 0/5" against 3, "LOYALTY 0/8" against 5. Declare it at the REAL
+   current cap and have the Power that widens it **redefine** the counter,
+   passing the banked value as `start`. Every suite is green while that is on
+   screen; only a screenshot finds it.
+
+28. **Keyword ids are GLOBAL while Companions are not.** By the sixteenth
+   Companion there were real collisions: Mossbit's chapter calls its mechanics
+   "Weather" and "Bury", both already taken by Drizzle and Pudding, so `[Bury]`
+   on a Mossbit card would have opened Pudding's tooltip. Check
+   `companions/keywords.js` before naming one, and prefer folding related verbs
+   into one good entry (Mossbit's Advance / Delay / Erase all live inside
+   `[Epitaph]`) over minting three thin ones.
+
+29. **An event a consumer has to filter on must CARRY the field.** `piles.js`
+   emitted `draw`, `discard`, `shuffle`, `card:move` and `hand:full` with no
+   owner, though `Piles` has known its seat since it stopped being a singleton.
+   `scenes/combat.js` renders one seat's view and consumed all of them, so a
+   four-Kid fight opened with the local Kid's fan holding cards belonging to
+   three different seats. Invisible at two seats. They carry `seatId` now. This
+   is rule 8's shape with a missing field instead of a `?.`.
+
+30. **A card's `uid` is NOT a network identity.** Uids come from a counter that
+   runs per PAGE, not per game: two clients building their own engine from the
+   same seed produce the same cards in the same order with different uids. A
+   uid on the wire looks correct and makes the remote client silently fail to
+   find the card. Use `cardRef` / `refCard` from `net/session.js`, which name a
+   card by `{ seat, pile, index }`.
+
+31. **`CardView.get nums` used to return `def.nums` BY REFERENCE.** Anything that
+   "updated a card's numbers" by mutating what it returned was editing the
+   shared definition and changing every copy of that Trick in the game. It
+   returns a copy now and honours `state.nums`; use `setBaseNumbers(nums)`.
+   Its `setState({ nums })` branch had been dead since it was written, for the
+   same reason — it re-rendered and then read the def again.
+
 15. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
    now reported their in-flight work being swallowed by an unrelated commit — one had a whole
    `music.js` rewrite land inside a commit titled "Pronouns per the designer", which then made a
@@ -265,10 +329,25 @@ you are about to add another, check the card genuinely cannot be expressed first
 | `StatusDef.energyDelta` | Reduces the start-of-turn Nerve refill, measured with the draw penalties. See trap 21. |
 | `ctx.playedFrom` | Which pile a Trick was played out of, `'hand'` or `'stash'`. By the time an effect runs the card is in LIMBO, so Hush's Ambush had no way to ask. |
 
-### Co-op: two Kids
+### Added for the last five Companions, 2026-08-28
+
+| | |
+|---|---|
+| `defineCounter({ shared: true })` | A counter that belongs to the TABLE, not a seat: `_ckey` does not prefix it and every seat's HUD shows it. Drizzle's Weather is one global state acting on the shared enemies, so a per-seat counter gave two Drizzles two Weathers. `_clone` copies the shared-id set or a preview engine loses the counter entirely. |
+| `ctx.bankEnergy(n, seat)` | Nerve at the start of a LATER turn. `_dealSeatTurn` SETS Nerve, so a gain from a listener, a hook or a timer is all wiped. Twin of `StatusDef.energyDelta`, pointing the other way. See trap 24. |
+| timer `run({ reason })` | Whether a countdown ran out on its own (`'tick'`) or was forced to zero. `TIMER_FIRE` always carried it and the handler never received it, which made "resolved naturally" unaskable — and that is the whole of Mossbit's Patience. |
+| `phase: 'playerReady'` | Emitted after the turn-start deal: the only moment at which the turn has ACTUALLY opened. `turn:start` is before the Guard wipe and before the hand exists. A new PHASE value rather than a new event, because every existing listener tests for `'player'` or `'enemy'` and falls through it. |
+| `ctx.allyMoveCard(pl, card, pile, opts)` | Move a card a TEAMMATE already owns between their own piles. `moveCard` acts on the acting seat's piles and silently moves nothing; `giveCard` is no help because the card exists already. |
+| `CardView.setBaseNumbers(nums)` | Rewrite a card's printed numbers mid-combat, so the text says what it will do. Crinkle's Creases permanently double a Trick's damage; computing that at read time works and is invisible. See trap 31. |
+| `engine.objects` **is rendered now** | It documented itself as the home for "Plants, Plots, Pumpkins, Graves" and nothing had ever drawn it — Pipkin's Patch has been invisible since it shipped. `_renderPlayerCounters` walks it beside the counters. |
+
+### Co-op: up to four Kids
 
 `engine.players[]` and `run.kids[]` are the sources of truth and **solo is a party of one**, so
-there is no separate single-player path below construction. `MAX_PARTY` is **2**.
+there is no separate single-player path below construction. `MAX_PARTY` is **4** as of
+2026-08-28. `scenes/select.js` reads that constant and generates its party-size control from
+it, so the screen can never offer a party the engine refuses or refuse one it accepts —
+**never write a party-size literal anywhere.**
 
 - `engine.player` / `.piles` / `.relics` are SEAT 0. In a party with the dev guard armed they
   **throw** and name the fix, rather than quietly resolving to seat 0 — which is how a
@@ -333,9 +412,13 @@ there is no separate single-player path below construction. `MAX_PARTY` is **2**
   'lowestCourage' | 'fewestDraw' | 'mostDraw'` for who it singles out. Both are authored per
   enemy in the region chapters. Seat choice ALWAYS ties on seat index, never the RNG — the
   target is shown before the players act and has to survive a replay.
-- Enemy Courage at 2p is 220%, and it is MEASURED (`tests/coop/balance.py`), not quoted. The
-  design doc's 160% is far too easy and StS2's own 250% is the mode their players call
-  overtuned. Re-measure after any change to enemy damage, starting decks or the co-op pool.
+- Enemy Courage is `[1, 2.2, 4.0, 5.7]` and every number is MEASURED
+  (`tests/coop/balance.py`), not quoted. 3p and 4p used to read 3.1 and 4.0, extrapolated,
+  and both won **96%** against solo's 79%. The curve has to grow FASTER than the party
+  does, because enemy damage never scales: each added Kid multiplies the party's output
+  AND its Courage while incoming damage per Kid falls. StS2's linear formula is nowhere
+  near enough here. Re-measure after any change to enemy damage, starting decks or the
+  co-op pool.
 - A screen renders ONE seat's view. `scenes/combat.js` reads `this.me` / `this.mePiles`, never
   `engine.player`. The seat comes from `run.localSeat`.
 - Per Kid: deck, Courage, Nerve, Keepsakes, Backpack, Snacks, trackers, counters, card
