@@ -186,6 +186,14 @@ export const COMPANION_KEYWORDS = [
   K('unseen', 'Unseen', 'It is not armour. It breaks when Hush loses Courage to an Attack — Guard absorbing the whole hit leaves him hidden — or when he plays an Attack.', { companion: 'hush' }),
   K('pilfer', 'Pilfer', 'Read an enemy’s current Intent and put the matching temporary [Contraband] into your [Shadow Pocket].', { companion: 'hush' }),
   K('contraband', 'Contraband', 'A temporary Trick stolen from an enemy’s Intent. It ceases to exist once played, and it never [Scurry]s.', { companion: 'hush' }),
+
+  K('quills', 'Quills', 'The spines actually attached to Truffle. He starts each combat with 6 and holds 12.', { companion: 'truffle' }),
+  K('loose-quill', 'Loose Quills', 'Shed Quills, lying about the room with no maximum. [Gather] picks them up; several Tricks fire them.', { companion: 'truffle' }),
+  K('shed', 'Shed X', 'Move X [Quills] off Truffle and onto the floor as [Loose Quill]s.', { companion: 'truffle' }),
+  K('gather', 'Gather X', 'Pick up to X [Loose Quill]s back onto Truffle. Never past his maximum; the rest stay on the floor.', { companion: 'truffle' }),
+  K('regrow', 'Regrow X', 'Grow up to X new [Quills]. It does not consume [Loose Quill]s and cannot exceed his maximum.', { companion: 'truffle' }),
+  K('bristle', 'Bristle X', 'NOT "when attacked". When an enemy Attack actually costs Truffle Courage after Guard: consume 1, [Shed] 1, and hit that attacker back. One Attack action triggers it once, however many hits it has.', { companion: 'truffle' }),
+  K('ragged', 'Ragged', 'At or below half his maximum Courage. No benefit on its own — individual Tricks are stronger for it.', { companion: 'truffle' }),
 ];
 
 export const KEYWORD_IDS = COMPANION_KEYWORDS.map(k => k.id);
@@ -616,6 +624,65 @@ export const COMPANION_STATUSES = [
   powerStatus('hush/sticky-little-legend', 'Sticky Little Legend', 'Contraband comes back to the Pocket, costing more each time.', 'scurry'),
   powerStatus('hush/now-you-see-me', 'Now You See Me', 'The first Ambush Attack each turn does not reveal him.', 'hidden'),
   powerStatus('hush/now-you-dont', 'Now You Don’t', 'Emptying the Shadow Pocket hides him, draws and pays Nerve.', 'hidden'),
+
+  // ── Truffle ───────────────────────────────────────────────────────────────
+  counterStatus('quills', 'Quills', 'Truffle has {n} spines still attached.', 18, 'buff'),
+  counterStatus('loose-quills', 'Loose Quills', '{n} Quills on the floor, waiting to be Gathered or fired.', 99, 'neutral'),
+  {
+    /**
+     * Bristle. It fires on `onCourageLoss` -- the step added for Mopsy's Cushion
+     * -- because the spec is explicit that being ATTACKED is not enough: the
+     * Attack has to actually reduce Courage after Guard and every other
+     * prevention. A hit the Guard eats does nothing at all.
+     *
+     * `bristle-used` on the attacker is what makes one Attack ACTION trigger it
+     * once however many individual hits it contains; it decays at enemyTurnEnd,
+     * and each enemy acts once per turn, so that is exactly per-action.
+     *
+     * Unlike Cushion this hook does NOT call setAmount: Truffle is hitting back,
+     * not reducing what he takes.
+     */
+    id: 'bristle', name: 'Bristle', kind: 'buff', icon: 'quills', decay: 'never', stacks: true,
+    desc: '{n} Bristle. When an Attack costs you Courage, spend 1, Shed 1 Quill and hit that attacker back.',
+    hooks: {
+      onCourageLoss: (h) => {
+        const c = trackerCtx(h.e, h.defender);
+        if (!c || stacks(c, c.self, 'bristle') <= 0) return;
+        const from = h.attacker;
+        if (!from || !from.alive) return;
+        if (stacks(c, from, 'bristle-used') > 0) return;
+        applyTo(c, from, 'bristle-used', 1);
+        unapplyFrom(c, c.self, 'bristle', 1);
+        const quills = res(c, 'quills');
+        if (quills <= 0) return;               // the Bristle is spent either way
+        addRes(c, 'quills', -1, 0, 18);
+        addRes(c, 'loose-quills', 1, 0, 99);
+        h.e.dealDamage({ attacker: c.self, defender: from, amount: 7, kind: 'attack', cause: 'bristle' });
+        fireCompanionHook(c, 'bristled', { enemy: from });
+      },
+    },
+  },
+  {
+    id: 'bristle-used', name: 'Bristled', kind: 'debuff', icon: 'quills', decay: 'enemyTurnEnd', stacks: false,
+    desc: 'Truffle has already bristled at this one during this enemy turn.',
+  },
+  powerStatus('truffle/shed-cycle', 'Shed Cycle', 'Your first Shed each turn Regrows next turn.', 'quills'),
+  powerStatus('truffle/quill-carpet', 'Quill Carpet', 'A well-stocked floor damages the room at end of turn.', 'loose-quills'),
+  powerStatus('truffle/wretched-little-miracle', 'Wretched Little Miracle', 'Ending a turn Ragged with no Guard gains Bristle.', 'quills'),
+  powerStatus('truffle/built-wrong', 'Built Wrong', 'The first Attack each enemy turn that hurts you makes you Regrow.', 'quills'),
+  powerStatus('truffle/hard-to-finish', 'Hard to Finish', 'Every Bristle trigger pays Guard next turn.', 'quills'),
+  powerStatus('truffle/more-where-that-came-from', 'More Where That Came From', 'Gathering two at once gains Bristle.', 'loose-quills'),
+  powerStatus('truffle/comfortable-in-pieces', 'Comfortable in Pieces', 'While Ragged, Guard Tricks give less and also give Bristle.', 'quills'),
+  powerStatus('truffle/the-floor-is-mine', 'The Floor Is Mine', 'Spending or Gathering Loose Quills draws.', 'loose-quills'),
+  powerStatus('truffle/unpleasant-geometry', 'Unpleasant Geometry', 'The first Quills you Gather each turn hit something.', 'loose-quills'),
+  powerStatus('truffle/the-carpet-remembers', 'The Carpet Remembers', 'Your first Loose Quill spend each turn is free.', 'loose-quills'),
+  powerStatus('truffle/double-barbed', 'Double Barbed', 'Bristle Sheds more and retaliates more for the same stack.', 'quills'),
+  powerStatus('truffle/close-enough-to-dead', 'Close Enough to Dead', 'Ragged begins at 75% Courage.', 'quills'),
+  powerStatus('truffle/dead-hedgehog-theory', 'Dead Hedgehog Theory', 'Being hurt pays Quills, Nerve and a card.', 'quills'),
+  powerStatus('truffle/grows-back-wrong', 'Grows Back Wrong', 'Regrow can overfill him; the excess falls off at end of turn.', 'quills'),
+  powerStatus('truffle/permanent-bad-hair-day', 'Permanent Bad Hair Day', 'Bristle no longer expires.', 'quills'),
+  powerStatus('truffle/still-wiggling', 'Still Wiggling', 'Ending a turn Ragged, bare and bristling pays Nerve and a card.', 'quills'),
+  powerStatus('truffle/shared-pincushion', 'Shared Pincushion', 'You may Shed to retaliate when a teammate is hurt.', 'quills'),
 ];
 
 export const STATUS_IDS = COMPANION_STATUSES.map(s => s.id);

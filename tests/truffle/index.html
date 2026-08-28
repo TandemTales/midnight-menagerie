@@ -1,0 +1,164 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Truffle — Quills, Shed, Gather, Bristle, Ragged</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+</style>
+<h1>Truffle</h1>
+<div id="out"></div>
+<script type="module">
+import { RNG } from '../../game/src/core/rng.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import { makeDummySetup } from '../../game/src/combat/dummy.js';
+import { installTrackers } from '../../game/src/data/companions/_util.js';
+import * as CARDS from '../../game/src/data/cards.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+function say(html, cls) { const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; out.appendChild(d); }
+
+async function truffle() {
+  const setup = makeDummySetup(new RNG(4242), {
+    companion: 'truffle', deck: CARDS.startingDeckFor('truffle'), maxHp: 78,
+  });
+  const e = new CombatEngine(setup);
+  await e.startCombat();
+  installTrackers(e, 'truffle');
+  return e;
+}
+async function play(e, id, target) {
+  e.addCard(CARDS.cardById(id), 'hand', {});
+  const k = e.piles.hand[e.piles.hand.length - 1];
+  e.player.energy = 9;
+  await e.playCard(k.uid, target ? target.id : undefined);
+  return k;
+}
+const stacks = (a, id) => ((a && a.statuses && a.statuses.get(id)) || 0);
+
+try {
+  // ── 1. Quills, Shed, Gather, Regrow ─────────────────────────────────────
+  {
+    const e = await truffle();
+    check(e.counter('quills') === 6, 'Truffle starts with 6 Quills', `quills=${e.counter('quills')}`);
+    check(e.counterMax('quills') === 12, 'and holds 12', `max=${e.counterMax('quills')}`);
+    check(e.counter('loose-quills') === 0, 'with nothing on the floor yet');
+
+    await play(e, 'truffle/oops-a-quill', e.livingEnemies()[0]);
+    check(e.counter('quills') === 5, 'Shedding takes one off him', `quills=${e.counter('quills')}`);
+    check(e.counter('loose-quills') === 1, 'and puts it on the floor', `loose=${e.counter('loose-quills')}`);
+
+    await play(e, 'truffle/found-it', null);
+    check(e.counter('quills') === 6, 'Gathering picks it back up', `quills=${e.counter('quills')}`);
+    check(e.counter('loose-quills') === 0, 'and clears the floor');
+  }
+  {
+    const e = await truffle();
+    e.setCounter('quills', 12, 'test');
+    await play(e, 'truffle/grow-back-weird', null);
+    check(e.counter('quills') === 12, 'Regrow cannot take him past his maximum',
+      `quills=${e.counter('quills')}`);
+  }
+  {
+    // Gather cannot overfill either — the rest stays down
+    const e = await truffle();
+    e.setCounter('quills', 12, 'test');
+    e.setCounter('loose-quills', 3, 'test');
+    await play(e, 'truffle/found-it', null);
+    check(e.counter('loose-quills') === 3, 'a full Truffle leaves Loose Quills where they are',
+      `loose=${e.counter('loose-quills')}`);
+  }
+
+  // ── 2. Bristle is NOT "when attacked" ───────────────────────────────────
+  {
+    const e = await truffle();
+    await play(e, 'truffle/prickle-up', null);
+    check(stacks(e.player, 'bristle') === 1, 'Prickle Up gains a Bristle',
+      `bristle=${stacks(e.player, 'bristle')}`);
+
+    const t = e.livingEnemies()[0];
+    const hp = t.hp;
+    e.player.block = 40;
+    e.dealDamage({ attacker: t, defender: e.player, amount: 10, kind: 'attack' });
+    check(t.hp === hp, 'a hit the Guard eats does NOT retaliate', `enemy ${hp} -> ${t.hp}`);
+    check(stacks(e.player, 'bristle') === 1, 'and does not consume the Bristle');
+  }
+  {
+    const e = await truffle();
+    await play(e, 'truffle/prickle-up', null);
+    const t = e.livingEnemies()[0];
+    const hp = t.hp;
+    e.player.block = 0;
+    e.dealDamage({ attacker: t, defender: e.player, amount: 10, kind: 'attack' });
+    check(t.hp < hp, 'an Attack that costs Courage really hits back', `enemy ${hp} -> ${t.hp}`);
+    check(stacks(e.player, 'bristle') === 0, 'and spends the Bristle', `bristle=${stacks(e.player, 'bristle')}`);
+    check(e.counter('quills') < 7, 'and Sheds a Quill doing it', `quills=${e.counter('quills')}`);
+    check(e.counter('loose-quills') >= 1, 'which lands on the floor', `loose=${e.counter('loose-quills')}`);
+  }
+  {
+    // ONE Attack action triggers it once, however many hits
+    const e = await truffle();
+    e.applyStatus(e.player, 'bristle', 3);
+    const t = e.livingEnemies()[0];
+    const hp = t.hp;
+    for (let i = 0; i < 3; i++) {
+      e.player.block = 0;
+      e.dealDamage({ attacker: t, defender: e.player, amount: 6, kind: 'attack', hits: 3, hitIndex: i });
+    }
+    check(stacks(e.player, 'bristle') === 2, 'three hits from one attacker consume ONE Bristle',
+      `bristle=${stacks(e.player, 'bristle')}`);
+    check(hp - t.hp <= 8, 'and retaliate once', `dealt back ${hp - t.hp}`);
+  }
+  {
+    // no Quill to Shed: the Bristle still goes, no retaliation
+    const e = await truffle();
+    e.applyStatus(e.player, 'bristle', 1);
+    e.setCounter('quills', 0, 'test');
+    const t = e.livingEnemies()[0];
+    const hp = t.hp;
+    e.player.block = 0;
+    e.dealDamage({ attacker: t, defender: e.player, amount: 8, kind: 'attack' });
+    check(stacks(e.player, 'bristle') === 0, 'with no Quill the Bristle is still consumed');
+    check(t.hp === hp, 'but nothing is thrown back', `enemy ${hp} -> ${t.hp}`);
+  }
+
+  // ── 3. Ragged ───────────────────────────────────────────────────────────
+  {
+    const e = await truffle();
+    const t = e.livingEnemies()[0];
+    e.player.hp = 78;
+    const hp1 = t.hp;
+    await play(e, 'truffle/gnaw-through-it', t);
+    const healthy = hp1 - t.hp;
+
+    const e2 = await truffle();
+    const t2 = e2.livingEnemies()[0];
+    e2.player.hp = 30;              // at or below half of 78
+    const hp2 = t2.hp;
+    await play(e2, 'truffle/gnaw-through-it', t2);
+    const ragged = hp2 - t2.hp;
+    check(ragged > healthy, 'Gnaw Through It hits harder while Ragged',
+      `healthy ${healthy} vs ragged ${ragged}`);
+  }
+  {
+    const e = await truffle();
+    e.player.hp = 78;
+    const k = CARDS.cardById('truffle/tiny-disaster');
+    e.addCard(k, 'hand', {});
+    const card = e.piles.hand[e.piles.hand.length - 1];
+    check(!e.canPlay(card.uid, e.livingEnemies()[0].id).ok, 'Tiny Disaster refuses at full Courage',
+      `reason: ${e.canPlay(card.uid, e.livingEnemies()[0].id).reason}`);
+    e.player.hp = 20;
+    check(e.canPlay(card.uid, e.livingEnemies()[0].id).ok, 'and is playable while Ragged');
+  }
+} catch (err) {
+  fails.push('THREW: ' + (err && err.stack || err));
+}
+
+say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`, fails.length ? 'fail' : 'pass');
+say('<ul class="pass">' + passes.map(p => `<li>PASS ${p}</li>`).join('') + '</ul>');
+if (fails.length) say('<ul class="fail">' + fails.map(f => `<li>FAIL ${f}</li>`).join('') + '</ul>');
+window.__RESULT = { passed: passes.length, failed: fails.length, fails, passes };
+window.__DONE = true;
+</script>

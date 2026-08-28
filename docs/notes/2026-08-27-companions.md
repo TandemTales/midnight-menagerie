@@ -371,8 +371,52 @@ boggle 30 · mopsy 28 · wisp 25 · crumbula 25 · wink 5 · six gates · 61 fps
 
 ---
 
+## 6. Truffle, the Zombie Hedgehog  ✅
+
+`hedge-maze`. 5 basics + 20 commons + 35 uncommons + 25 rares + 5 co-op. Quills,
+Shed, Loose Quills, Gather, Regrow, Bristle, Ragged.
+
+### Bristle is not "when attacked"
+
+It fires only when an Attack **actually costs Courage** after Guard and every
+other prevention, so a hit the Guard eats does nothing and a Bristle turn is one
+where he lets a manageable hit land on purpose. It runs on the `onCourageLoss`
+step added for Mopsy's Cushion — the third Companion to need that point in the
+pipeline, which is a good sign it was the right place.
+
+**One Attack ACTION triggers it once**, however many hits it contains. A
+`bristle-used` marker on the attacker decaying at `enemyTurnEnd` is what enforces
+that; counting per hit would let a four-hit move eat four Bristle. Asserted with
+a three-hit attack consuming exactly one.
+
+With no Quill to Shed the Bristle is still consumed and nothing is thrown back —
+also asserted, because the spec says so explicitly and the tempting
+implementation is to bail out early and keep the stack.
+
+### Two Quill pools
+
+Attached Quills and Loose Quills are separate counters, and Gather refuses to
+overfill him — the remainder stays on the floor rather than evaporating. Both
+directions asserted.
+
+### One stated balance deviation
+
+The doc gives Tiny Disaster "very heavy damage" at 0 Nerve, which lands at 21 and
+outside the cards suite's 3–12 band for a 0-cost Rare — and that band exists
+precisely to catch a free finisher. Held at the ceiling instead: still 12 for
+nothing while Ragged, and it costs two Quills and the card.
+
+### Verification
+
+`tests/truffle/run.py` — **23 checks**, all effects.
+
+cards 1015/0/0 · combat 677 · run 50 · coop 591 · backpack 80 · six gates ·
+58 fps, no console errors.
+
+---
+
 ## Still to come
 
-**Designed, not built (5):** Truffle, Drizzle, Pudding, Mossbit, Brambleboo.
+**Designed, not built (4):** Drizzle, Pudding, Mossbit, Brambleboo.
 
 **Not designed (1): Crinkle.** Blocked on a designer pass — he has no chapter.
