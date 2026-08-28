@@ -129,6 +129,55 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    sides must sit on the same disk, and an identical-code control must run alongside the real
    comparison every time.
 
+16. **A played Trick is already in LIMBO, so moving it there from inside the effect
+   does nothing.** The engine pulls a Trick into `Pile.LIMBO` while it resolves and,
+   the moment the effect returns, checks whether it is still there and pushes it to
+   the discard pile. So `U.moveCard(c, c.card, 'limbo', …)` inside an effect is a
+   no-op the engine immediately undoes. **Wink's Sets shipped this way** — a Set is
+   specified as "placed face up outside your deck" and the card was sitting in the
+   discard pile, reshufflable and replayable while the Set was still armed. Wisp's
+   Linger had it too. Finish the move on `card:resolved`, which is emitted after the
+   engine's own placement. Gated by `tests/wink/run.py` and `tests/wisp/run.py`.
+
+17. **`Pile.STASH` is PLAYABLE.** `canPlay` accepts hand and stash, because the zone
+   exists for Hush's Shadow Pocket — a second hand you play out of. Mopsy's Torn pile
+   reuses the same pile for the OPPOSITE purpose, so every Trick she Tore was still
+   fully playable out of the Torn pile until it was flagged `unplayable`. If you put
+   cards somewhere they are not meant to come back from, say so explicitly.
+
+18. **A tracker's `seat` is an ACTOR; `ev.seat` is a NUMBER.** `installTrackers` passes
+   the seat's actor as the third argument, the way `U.onPlayerTurn` takes it. A
+   listener written `if (ev.seat !== seat) return;` is therefore never equal and
+   returns on its first line, every time, in silence. **Every Mopsy Patch was inert
+   this way**, and Boggle's "playable only if you have played no Attack this turn" was
+   permanently true. Compare `ev.actorId` against `seat.id`.
+
+19. **`card:play` carries a SNAPSHOT in `ev.card`.** Anything you stored on the runtime
+   card — flags, counters, Patches — is not on it. Look the card up with
+   `e.card(ev.cardUid)`. This is trap 11 wearing a different hat.
+
+20. **`U.addRes`'s `min`/`max` are ignored for counter-backed resources.** When the
+   resource has an engine counter track, the whole delta goes to `addCounter` and only
+   the counter's OWN declared max applies. Boggle's Lurk reached 6 against a cap of 5.
+   If the effective cap can move during a fight, declare the counter at the HIGHER
+   value and clamp at the call site.
+
+21. **The Nerve refill SETS Nerve, so nothing can spend it beforehand.** `turn:start`
+   is emitted before the refill; `onTurnStart` status hooks also run before it; and
+   `_dealSeatTurn` then calls `setEnergy(energyMax)`. Crumbula's Queasy was wiped by
+   this three times over. A status that means "start your turn with less Nerve"
+   declares `StatusDef.energyDelta`, the twin of the existing `drawDelta`.
+
+22. **A counter's band label is DECLARED, not parsed.** `defineCounter` takes
+   `states: [{at|from|to, label}]`. Before this round the renderer regexed the counter's
+   own description instead, and printed **STARTS** on Crumbula's gauge because his
+   description begins "Starts at 2". Declare the bands; the regex survives only as a
+   fallback for counters that predate them.
+
+23. **A test that names a slug goes stale the moment that Companion is built.**
+   `tests/backpack` used 'mopsy', then 'wink', then 'hush' as its example of an unbuilt
+   Companion, and broke each time. Derive the built and unbuilt sets from the registry.
+
 15. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
    now reported their in-flight work being swallowed by an unrelated commit — one had a whole
    `music.js` rewrite land inside a commit titled "Pronouns per the designer", which then made a
@@ -203,6 +252,18 @@ engine.on(event, fn)    // 'damage','block','status','draw','discard','death',
 ```
 Events are the *only* thing the renderer reacts to. Every event carries enough
 data to animate it without querying engine internals.
+
+### Engine surface added for Companions, 2026-08-27
+
+Each of these exists because a designed card could not otherwise be written. If
+you are about to add another, check the card genuinely cannot be expressed first.
+
+| | |
+|---|---|
+| `engine.overrideIntent(enemy, move)` | Replace an enemy's CURRENT action with a supplied move object. The original is spent, as `deleteIntent` spends it. Boggle's Search, which belongs to no enemy's `def.moves`. `clearIntentOverride` drops one unresolved. |
+| `onCourageLoss` hook | A damage-pipeline step AFTER Guard and BEFORE `onLethal`, with a mutable `amount`. `onIncomingHit` fires before Guard is consulted, so nothing could see the number Mopsy's Cushion is defined against. |
+| `StatusDef.energyDelta` | Reduces the start-of-turn Nerve refill, measured with the draw penalties. See trap 21. |
+| `ctx.playedFrom` | Which pile a Trick was played out of, `'hand'` or `'stash'`. By the time an effect runs the card is in LIMBO, so Hush's Ambush had no way to ask. |
 
 ### Co-op: two Kids
 

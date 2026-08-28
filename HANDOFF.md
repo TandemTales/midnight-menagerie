@@ -12,10 +12,11 @@ A cute-spooky deckbuilding roguelike. Kids whose pets have gone missing enter a 
 that transforms animals; you pick a Kid and a Companion (your deck) and go in. Built to a
 **Slay the Spire 2** quality bar, in Three.js + plain ES modules, **no build step**.
 
-Design source of truth: `Midnight Menagerie Design.docx` (1.6M chars), carved into 45 readable
-files under `docs/design/`. Read only what you need — the full doc will not fit in context.
+Design source of truth: `Midnight Menagerie Design.docx` (1.6M chars), carved into 44 readable
+files under `docs/design/`. **Crinkle, the Paper Crow has no chapter** — 15 of the 16 Companions
+are designed and he is not, so he cannot be built until somebody designs him. Read only what you need — the full doc will not fit in context.
 
-**~57,700 lines** across `game/src/`. Currently on branch **`dev`**, pushed to
+**~65,500 lines** across `game/src/`. Currently on branch **`dev`**, pushed to
 `github.com/TandemTales/midnight-menagerie`. `main` is untouched and stale.
 
 ---
@@ -60,7 +61,7 @@ All prep scripts are **one-off and commit their output** — there is no runtime
 |---|---|
 | `tests/combat/run.py` | 677 assertions |
 | `tests/coop/run.py` | 591 assertions |
-| `tests/cards/run.py` | 470 cards, 0 errors |
+| `tests/cards/run.py` | 925 cards, 0 errors, 0 warnings |
 | `tests/enemies/run.py` | 37 enemies, 0 errors |
 | `tests/enemies/audit.py` | ~2060 turns, intent === delivered |
 | `tests/run/run.py` | 50 runs, 0 errors |
@@ -68,6 +69,20 @@ All prep scripts are **one-off and commit their output** — there is no runtime
 | `tests/map/run.py` · `tests/chrome/run.py` | 23 passed · 27 checks |
 | `tests/combat-scene/seam.py` · `tests/audio/run.py` | 22 passed · 46 cues |
 | `tests/critic-design/sim.py` · `sweep.py` | the balance simulator |
+
+**One suite per Companion, and every check asserts an EFFECT.** `tests/cards`
+proves only that a card resolves without throwing, which CONTRACTS trap 12 is
+explicit is worth nothing — four dead cards passed exactly that check. These
+drive a real engine with real enemies and mock none of the mechanic under test.
+
+| | |
+|---|---|
+| `tests/boggle/run.py` | 30 — Search really replaces the Attack, Scare really spends the Fright |
+| `tests/mopsy/run.py` | 28 — Cushion halves AFTER Guard, a Torn Trick cannot be played |
+| `tests/wisp/run.py` | 25 — two Afterglows in one batch are ONE Convergence |
+| `tests/crumbula/run.py` | 25 — one Queasy per Feed, Indulge goes through Guard |
+| `tests/hush/run.py` | 17 — the Ambush ordering, both ways round |
+| `tests/wink/run.py` | 5 — a Set really leaves the deck |
 
 **Co-op drives the real screens** — everything else about co-op is asserted
 against objects, and the thing that breaks is always the screen.
@@ -128,7 +143,8 @@ autosave and mid-combat resume.
 - **Combat engine** (`src/combat/`) — headless, deterministic, 649 assertions. Player choice with
   a replay log, first-class intent queue, House Rules, `onEnemyPhaseEnd`, preview by cloning the
   engine so it cannot drift from resolution.
-- **Content** — 445 cards across 5 Companions (Marmalade, Bones, Pipkin, Taffy, Wink); 37 enemies
+- **Content** — 925 cards across **10 of the 16 Companions** (Marmalade, Bones, Pipkin, Taffy,
+  Wink, and from 2026-08-27 Boggle, Mopsy, Wisp, Crumbula, Hush); 37 enemies
   across Foyer / Nursery / Sleeping Quarters with 3 multi-phase bosses; 38 Keepsakes; 16
   Curiosities; 18 Backpack items; a 10-level Haunt ladder with real behavioural upgrades.
 - **Art** — all authored art is wired: the main menu (`UI/mainMenu.png` + keyed `UI/title.png`),
@@ -279,8 +295,37 @@ enters 313 ms sooner. Same driver work, later. Worth a look before anyone calls 
 
 ## 9. MULTIPLAYER — playable end to end for two Kids
 
-**Two Kids** (`MAX_PARTY`), by the designer's decision on 2026-08-26. The Steam
-wrapper is still deferred, so everything here is transport-independent.
+### The designer's decisions, 2026-08-27
+
+Three of the four open decisions below are now made:
+
+1. **Transport: Steam P2P.** This ends the no-build rule — it needs a wrapper
+   shell. `shouldHandOff()` is still the single switch.
+2. **Party size: FOUR.** `MAX_PARTY` is still **2 in the code** and flipping the
+   constant is NOT the job — see "What a party of four actually needs" below.
+3. **Reconnection is in scope and shapes the protocol**, decided up front rather
+   than retrofitted, because mid-run disconnects are StS2's loudest complaint and
+   the lockstep foundation already has what a rejoin needs.
+
+Decision 4 (the Butler's Courage pool) is still the designer's and still open.
+
+### What a party of four actually needs
+
+The engine is genuinely N-ready and `run.js` already slices to `MAX_PARTY`. The
+SCREENS are not:
+
+- `scenes/select.js` is hard-wired to exactly two. `state.party.length === 0`
+  is what puts it in "waiting for the other Kid", and the second pick launches
+  the run. It needs a party-size choice and a loop, not a bigger constant.
+- 3p/4p enemy Courage has never been measured. StS2's own curve is **linear** —
+  `MonsterHP × PlayerCount × ActScaling`, with ActScaling depending on the act
+  alone — so a party of four is 440% of solo in the Foyer, not something
+  steeper. See `docs/STS2-REFERENCE.md` §8.3.
+- Everything else (rooms handing over, the last Kid closing a room, per-seat
+  everything) is already written against N rather than 2.
+
+Flipping `MAX_PARTY` on its own would let a run start that the select screen
+cannot set up. Do the screen first.
 
 **Two people can play the whole game on one machine.** "Go in together" on the
 Companion/Kid select, pick your Kid, "Lock in & pass it over", your friend picks
@@ -351,8 +396,15 @@ throwing at a player mid-run.
 
 Enemy Courage at 2p is **220%**, and it took three measurements because the
 sources disagree. Our own design doc says 160% (measures far too easy: duo wins
-92% vs solo 80%). StS2 actually uses 250% (measures as the mode its own players
-call overtuned: duo wins 60% vs 80%). 220% is the parity point:
+92% vs solo 80%).
+
+**CORRECTED 2026-08-27:** this section used to say "StS2 actually uses 250%" and
+frame our 220% as a deliberate divergence. That was wrong. StS2's published
+formula is `MonsterHP × PlayerCount × ActScaling` with ActScaling ×1.1 in Act 1,
+so their real two-player figure **is 220%** — we converged on them rather than
+away from them, and there is no divergence to defend. Their scaling is also
+linear in party size, which is what makes 3p/4p answerable. See
+`docs/STS2-REFERENCE.md` §8.3 for the formula and its sources.
 
 | | 1p | 2p |
 |---|---|---|
@@ -402,8 +454,11 @@ way two people would.
    false and every handoff above stops happening. The choice broker's fallback
    is not a placeholder — one player rummaging in the other Kid's hand would be
    worse than a stable rule — so it stays as the offline path.
-2. **The other 11 Companions' co-op pools** — they are unbuilt Companions, so
-   there is nothing to write co-op Tricks for yet.
+2. **The remaining 6 Companions' co-op pools.** Five of the eleven are built as
+   of 2026-08-27 and shipped their co-op Tricks with them. This entry used to say
+   "there is nothing to write co-op Tricks for yet" — that was never true: every
+   companion chapter under `docs/design/companions/` carries a MULTIPLAYER ONLY
+   TRICKS section, so the pools are designed and waiting for the Companion.
 3. **Two players reaching for the same Keepsake.** StS2 resolves that with
    rock-paper-scissors. Every Kid gets their own offer and nobody can reach for
    somebody else's, so there is nothing to resolve until the wire exists.
