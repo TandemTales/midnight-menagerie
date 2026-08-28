@@ -73,6 +73,7 @@ import {
 } from '../data/cards.js';
 import { encountersFor, rollEncounter, buildEncounter } from '../data/encounters.js';
 import { MAX_PARTY } from '../combat/engine.js';
+import { detectStrict } from '../combat/strict.js';
 import {
   makeRelic, relicById, rollKeepsake, rollKeepsakeRarity, relicRunFlags, starterKeepsake,
 } from '../data/relics.js';
@@ -333,6 +334,18 @@ export class Run {
     const companion = cfg.companion || 'marmalade';
     const kid = cfg.kid || 'maya';
     const comp = companionDef(companion);
+    /* A Companion with no registered def is not a hard-mode Companion, it is a
+       run with no cards: `startingDeckFor()` answers `[]` and nothing throws.
+       A save written before `missingCompanions()` gated the rescue pool can
+       still name one, and a shipped build must not throw at a player mid-run
+       (CONTRACTS: degrade rather than throw), so this is fatal in dev and loud
+       everywhere. */
+    if (!comp) {
+      const msg = `[run] no registered Companion "${companion}" - data/cards.js does not `
+        + 'import it, so this Kid would start with an empty deck. Build it, or pick another.';
+      if (detectStrict()) throw new Error(msg);
+      console.error(msg);
+    }
     const maxCourage = comp?.startingHp ?? 70;
     const k = {
       seat, companion, kid,
@@ -1839,10 +1852,23 @@ export class Run {
    * A reviewer freed Marmalade in Wing 1 while playing Pipkin and the screen
    * read "FREE - 1 OF 16" for a Companion already on the roster: the run's
    * emotional peak spent on nothing.
+   *
+   * A FOURTH kind is not: a Companion with no registered card pool. `schema.js`
+   * lists all sixteen because sixteen is the design target, but only the ones
+   * `data/cards.js` imports can actually be played. Freeing an unbuilt one
+   * writes it to the lifetime save at `end()`, `availableCompanions()` then
+   * makes it pickable, and `startingDeckFor()` answers `[]` - a run that begins
+   * with an EMPTY DECK, no throw and no console output. Measured before this
+   * gate existed: 178 of 200 seeds had the Foyer boss free an unbuilt
+   * Companion, because the authored table points Wing 1 at Marmalade, a starter
+   * who is already home, so `rescueTargetFor()` substitutes on nearly every run.
+   * `companionDef` IS the registry, so this gate opens by itself as each
+   * Companion is built - there is no second list to keep in step.
    */
   missingCompanions() {
     return COMPANIONS.map(c => c.slug).filter(s =>
-      s !== this.companion && !this.rescued.includes(s) && !STARTER_SLUGS.has(s));
+      s !== this.companion && !this.rescued.includes(s) && !STARTER_SLUGS.has(s)
+      && !!companionDef(s));
   }
 
   /**

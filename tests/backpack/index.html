@@ -34,6 +34,7 @@
 import { Save } from '../../game/src/core/save.js';
 import { Run, STARTER_SLUGS } from '../../game/src/state/run.js';
 import { NodeType, COMPANIONS } from '../../game/src/data/schema.js';
+import { companion as companionDef } from '../../game/src/data/cards.js';
 import { eventById, CURIOSITIES } from '../../game/src/data/events.js';
 import {
   BACKPACK_ITEMS, KID_LOADOUTS, itemById, itemByName, defaultLoadout, loadoutSize,
@@ -332,15 +333,31 @@ async function openFight(kid, backpack, { hpOffset = 0, endTurn = false, seed = 
     check(pip.rescueTargetFor('n1', authored) === target,
       'the substitution is deterministic for a given seed and node');
 
+    /* These two used 'hush' and 'mopsy', who are on the roster in schema.js but
+       have no card pool, and missingCompanions() now excludes anyone unbuilt -
+       freeing one wrote it to the lifetime save and handed the player an empty
+       deck. The rules under test are unchanged; the example just has to be a
+       Companion you can actually play. 'wink' is the only built non-starter, so
+       it is the whole of the pool until the next Companion lands. */
+    const LAST_IN_HOUSE = 'wink';
     const already = makeRun('marmalade', defaultLoadout('maya'));
-    already.rescued = COMPANIONS.map(c => c.slug).filter(s => s !== 'hush');
-    check(already.rescueTargetFor('n1', 'marmalade') === 'hush',
+    already.rescued = COMPANIONS.map(c => c.slug).filter(s => s !== LAST_IN_HOUSE);
+    check(already.rescueTargetFor('n1', 'marmalade') === LAST_IN_HOUSE,
       'with one Companion left in the house, that is who a Rescue frees');
 
     const wanted = makeRun('marmalade', defaultLoadout('maya'));
     wanted.rescued = [];
-    check(wanted.rescueTargetFor('n1', 'mopsy') === 'mopsy',
+    check(wanted.rescueTargetFor('n1', LAST_IN_HOUSE) === LAST_IN_HOUSE,
       'an authored target who IS still missing is left alone');
+
+    const unbuilt = makeRun('marmalade', defaultLoadout('maya'));
+    unbuilt.rescued = [];
+    check(!unbuilt.missingCompanions().includes('hush'),
+      'a Companion with no card pool is never offered as a Rescue',
+      'hush is on the roster and unbuilt');
+    check(unbuilt.missingCompanions().every(s => !!companionDef(s)),
+      'every Companion a Rescue can free has a registered deck',
+      unbuilt.missingCompanions().join(', ') || '(none)');
   } catch (err) {
     errors.push(`THREW: ${err && err.stack || err}`);
     say(`<b>THREW</b> ${String(err && err.stack || err)}`, 'err');
