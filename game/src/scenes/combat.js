@@ -3108,6 +3108,10 @@ const STASH_PILE = {
     label: 'Pocket',
     tip: 'Shadow Pocket|Tricks Hush has stashed away, up to three.|They stay between turns and he can play them straight out of here.',
   },
+  pudding: {
+    label: 'Plots',
+    tip: 'Cemetery Plots|Tricks Pudding has Buried, one per Plot.|They cannot be played from here, they have not Vanished, and two or more occupied Plots make him Graveside.',
+  },
   default: { label: 'Stash', tip: 'Stash|Tricks set aside outside your hand and deck.' },
 };
 

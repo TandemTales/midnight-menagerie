@@ -1,0 +1,383 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Pudding — Best Friend, Loyalty, Plots, Unearthed, Graveside</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+</style>
+<h1>Pudding</h1>
+<div id="out"></div>
+<script type="module">
+import { RNG } from '../../game/src/core/rng.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import { makeDummySetup, makeDummyParty } from '../../game/src/combat/dummy.js';
+import { installTrackers } from '../../game/src/data/companions/_util.js';
+import * as CARDS from '../../game/src/data/cards.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+function say(html, cls) { const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; out.appendChild(d); }
+
+async function pudding(o = {}) {
+  const e = new CombatEngine(makeDummySetup(new RNG(o.seed || 313), {
+    companion: 'pudding', deck: CARDS.startingDeckFor('pudding'), maxHp: 74, ...o,
+  }));
+  await e.startCombat();
+  installTrackers(e, 'pudding');
+  return e;
+}
+async function play(e, id, target) {
+  e.addCard(CARDS.cardById(id), 'hand', {});
+  const k = e.piles.hand[e.piles.hand.length - 1];
+  e.player.energy = 9;
+  await e.playCard(k.uid, target ? target.id : undefined);
+  return k;
+}
+/** Put a specific card in hand without playing it. */
+function give(e, id) {
+  e.addCard(CARDS.cardById(id), 'hand', {});
+  return e.piles.hand[e.piles.hand.length - 1];
+}
+const stacks = (a, id) => ((a && a.statuses && a.statuses.get(id)) || 0);
+function pileOf(e, card) {
+  for (const n of ['draw', 'hand', 'discard', 'exhaust', 'limbo', 'stash']) {
+    if ((e.piles[n] || []).includes(card)) return n;
+  }
+  return 'nowhere';
+}
+/** Empty the hand so a chooser has exactly one candidate. */
+function onlyInHand(e, keep) {
+  for (const k of e.piles.hand.slice()) if (k !== keep) e.moveCard(k, 'discard', {});
+}
+
+try {
+  // ══ 1. Plots, Bury, Dig Up ══════════════════════════════════════════════
+  {
+    const e = await pudding();
+    check(e.counter('plots') === 0, 'no Plot is occupied at the start');
+    check(e.counterMax('plots') === 3, 'and there are three of them', `max=${e.counterMax('plots')}`);
+
+    const victim = give(e, 'pudding/little-chomp');
+    const burier = give(e, 'pudding/bury-this');
+    onlyInHand(e, burier);
+    e.addCard(CARDS.cardById('pudding/little-chomp'), 'hand', {});
+    const target = e.piles.hand.find(k => k !== burier);
+    e.player.energy = 9;
+    await e.playCard(burier.uid);
+    check(e.counter('plots') === 1, 'Bury This! really fills a Plot', `plots=${e.counter('plots')}`);
+    check(pileOf(e, target) === 'stash', 'and the Trick is really in the cemetery',
+      `it is in ${pileOf(e, target)}`);
+    check(target.unplayable === true,
+      'a Buried Trick is UNPLAYABLE — the stash is playable by default (trap 17)');
+    check(!e.canPlay(target.uid, e.livingEnemies()[0].id).ok, 'and canPlay really refuses it');
+    check(pileOf(e, target) !== 'exhaust', 'Bury is not Vanish');
+  }
+  {
+    // A Plot performs ONE operation a turn.
+    const e = await pudding();
+    const k = give(e, 'pudding/little-chomp');
+    const b = give(e, 'pudding/bury-this');
+    onlyInHand(e, b);
+    e.addCard(CARDS.cardById('pudding/little-chomp'), 'hand', {});
+    e.player.energy = 9;
+    await e.playCard(b.uid);
+    check(e.counter('plots') === 1, 'one Trick buried');
+    await play(e, 'pudding/dig-it-up', null);
+    check(e.counter('plots') === 1,
+      'the Plot just used cannot also be dug this turn', `plots=${e.counter('plots')}`);
+    await e.endTurn();
+    await play(e, 'pudding/dig-it-up', null);
+    check(e.counter('plots') === 0, 'but it can next turn', `plots=${e.counter('plots')}`);
+  }
+  {
+    // With nothing to dig, Dig It Up! Guards instead.
+    const e = await pudding();
+    const g = e.player.block;
+    await play(e, 'pudding/dig-it-up', null);
+    check(e.player.block > g, 'Dig It Up! Guards when there is no Plot to dig',
+      `guard ${g} -> ${e.player.block}`);
+  }
+
+  // ══ 2. Graveside is TWO occupied Plots ══════════════════════════════════
+  {
+    const e = await pudding();
+    const t = e.livingEnemies()[0];
+    let hp = t.hp;
+    await play(e, 'pudding/headstone-hop', t);
+    const g0 = e.player.block;
+    check(g0 === 0, 'Headstone Hop gives no Guard with an empty cemetery', `guard=${g0}`);
+
+    // Fill two Plots by hand, which is what Graveside actually reads.
+    for (let i = 0; i < 2; i++) {
+      const k = give(e, 'pudding/little-chomp');
+      const b = give(e, 'pudding/bury-it-better');
+      onlyInHand(e, b);
+      e.addCard(CARDS.cardById('pudding/little-chomp'), 'hand', {});
+      e.player.energy = 9;
+      await e.playCard(b.uid);
+    }
+    check(e.counter('plots') === 2, 'two Plots occupied', `plots=${e.counter('plots')}`);
+    const g1 = e.player.block;
+    await play(e, 'pudding/headstone-hop', t);
+    check(e.player.block > g1, 'and now Headstone Hop pays its Graveside Guard',
+      `guard ${g1} -> ${e.player.block}`);
+  }
+
+  // ══ 3. Unearthed is "dug up THIS turn" ══════════════════════════════════
+  {
+    const e = await pudding();
+    // Bury a Dug Up Trouble, then dig it and play it the same turn.
+    const trouble = give(e, 'pudding/dug-up-trouble');
+    const b = give(e, 'pudding/bury-this');
+    onlyInHand(e, b);
+    e.addCard(CARDS.cardById('pudding/dug-up-trouble'), 'hand', {});
+    const buried = e.piles.hand.find(k => k !== b);
+    e.player.energy = 9;
+    await e.playCard(b.uid);
+    check(pileOf(e, buried) === 'stash', 'Dug Up Trouble is in a Plot');
+
+    await e.endTurn();               // free the Plot
+    await play(e, 'pudding/dig-it-up', null);
+    check(pileOf(e, buried) === 'hand', 'and comes back to the hand');
+
+    const t = e.livingEnemies()[0];
+    /* Reaching Unearthed costs a whole enemy turn, and that turn leaves Weak on
+       Pudding and Guard on the enemy — so a naive before/after reads 2 hits of 6
+       against 1 hit of 9 and calls the mechanic broken. Both sides of this
+       comparison have to be measured in the same conditions. */
+    t.block = 0;
+    e.player.statuses.clear();
+    const hp = t.hp;
+    e.player.energy = 9;
+    await e.playCard(buried.uid, t.id);
+    const unearthedDmg = hp - t.hp;
+
+    // ...and the same card played WITHOUT being dug up.
+    const e2 = await pudding();
+    const t2 = e2.livingEnemies()[0];
+    t2.block = 0;
+    const hp2 = t2.hp;
+    await play(e2, 'pudding/dug-up-trouble', t2);
+    const plainDmg = hp2 - t2.hp;
+    check(unearthedDmg === plainDmg * 2, 'Unearthed really doubles Dug Up Trouble',
+      `unearthed ${unearthedDmg} vs plain ${plainDmg}`);
+  }
+  {
+    // Unearthed expires with the turn even if the Trick is retained.
+    const e = await pudding();
+    const trouble = give(e, 'pudding/dug-up-trouble');
+    const b = give(e, 'pudding/bury-this');
+    onlyInHand(e, b);
+    e.addCard(CARDS.cardById('pudding/dug-up-trouble'), 'hand', {});
+    const buried = e.piles.hand.find(k => k !== b);
+    e.player.energy = 9;
+    await e.playCard(b.uid);
+    await e.endTurn();
+    await play(e, 'pudding/dig-it-up', null);
+    const wasTurn = e.turn;
+    await e.endTurn();
+    check(buried.meta.unearthedTurn === wasTurn && e.turn !== wasTurn,
+      'the Unearthed stamp is the turn it was dug, so a new turn drops it',
+      `stamped ${buried.meta.unearthedTurn}, now turn ${e.turn}`);
+  }
+
+  // ══ 4. Loyalty ═════════════════════════════════════════════════════════
+  {
+    const e = await pudding();
+    check(e.counterMax('loyalty') === 5, 'Loyalty holds 5 to begin with',
+      `max=${e.counterMax('loyalty')}`);
+    e.setCounter('loyalty', 5, 'test');
+    await play(e, 'pudding/tail-on-watch', null);
+    check(e.counter('loyalty') === 5, 'Tail on Watch cannot overfill Loyalty',
+      `loyalty=${e.counter('loyalty')}`);
+
+    await play(e, 'pudding/forever-home', null);
+    check(e.counterMax('loyalty') === 8, 'Forever Home widens the GAUGE, not just the cap',
+      `max=${e.counterMax('loyalty')}`);
+    check(e.counter('loyalty') === 5, 'and the banked Loyalty survives the redefine',
+      `loyalty=${e.counter('loyalty')}`);
+  }
+  {
+    const e = await pudding();
+    e.setCounter('loyalty', 3, 'test');
+    const g = e.player.block;
+    await play(e, 'pudding/good-dog-emergency', null);
+    check(e.counter('loyalty') === 1, 'Good Dog Emergency spends exactly 2 Loyalty',
+      `loyalty=${e.counter('loyalty')}`);
+    check(e.player.block - g === 18, 'and Guards for each one spent', `gained ${e.player.block - g}`);
+  }
+  {
+    // An outlet you cannot pay for does nothing at all.
+    const e = await pudding();
+    e.setCounter('loyalty', 0, 'test');
+    const k = give(e, 'pudding/good-dog-reserve');
+    check(!e.canPlay(k.uid).ok, 'Good Dog Reserve refuses with no Loyalty to spend');
+    e.setCounter('loyalty', 1, 'test');
+    check(e.canPlay(k.uid).ok, 'and is playable with one');
+  }
+  {
+    const e = await pudding();
+    e.setCounter('loyalty', 2, 'test');
+    const t = e.livingEnemies()[0];
+    const hp = t.hp;
+    await play(e, 'pudding/collar-snap', t);
+    check(e.counter('loyalty') === 1, 'Collar Snap spends its Loyalty for the third hit',
+      `loyalty=${e.counter('loyalty')}`);
+    check(hp - t.hp === 15, 'and really hits three times', `dealt ${hp - t.hp}`);
+  }
+  {
+    const e = await pudding();
+    e.setCounter('loyalty', 0, 'test');
+    const t = e.livingEnemies()[0];
+    const hp = t.hp;
+    await play(e, 'pudding/collar-snap', t);
+    check(hp - t.hp === 10, 'with no Loyalty it hits twice and takes nothing',
+      `dealt ${hp - t.hp}`);
+  }
+
+  // ══ 5. dynamicCost, which is the only conditional-cost seam ═════════════
+  {
+    const e = await pudding();
+    const k = give(e, 'pudding/collar-charge');
+    check(e.costOf(k) === 2, 'Collar Charge costs 2 by default', `cost=${e.costOf(k)}`);
+    e.setCounter('loyalty', 2, 'test');
+    await play(e, 'pudding/good-dog-reserve', null);
+    check(e.costOf(k) === 1, 'and 1 once Loyalty has been spent this turn', `cost=${e.costOf(k)}`);
+  }
+  {
+    const e = await pudding();
+    const k = give(e, 'pudding/ghost-hound-charge');
+    check(e.costOf(k) === 3, 'Ghost Hound Charge costs 3 cold', `cost=${e.costOf(k)}`);
+    e.setCounter('loyalty', 5, 'test');
+    check(e.costOf(k) === 2, 'maximum Loyalty takes one off', `cost=${e.costOf(k)}`);
+    e.setCounter('plots', 2, 'test');   // the counter is display; graveside reads the row
+    const b1 = give(e, 'pudding/little-chomp');
+    const b2 = give(e, 'pudding/little-chomp');
+    for (const card of [b1, b2]) {
+      const bur = give(e, 'pudding/bury-it-better');
+      onlyInHand(e, bur);
+      e.addCard(CARDS.cardById('pudding/little-chomp'), 'hand', {});
+      e.player.energy = 9;
+      await e.playCard(bur.uid);
+    }
+    const k2 = give(e, 'pudding/ghost-hound-charge');
+    check(e.costOf(k2) === 1, 'Graveside AND max Loyalty floors it at 1', `cost=${e.costOf(k2)}`);
+  }
+
+  // ══ 6. Best Friend is Pudding himself in solo ═══════════════════════════
+  {
+    const e = await pudding();
+    const g = e.player.block;
+    await play(e, 'pudding/guard-the-ankles', null);
+    check(e.player.block - g === 5, 'alone, "your Best Friend" is Pudding',
+      `gained ${e.player.block - g}`);
+  }
+  {
+    // Share the Blanket names both, and must NOT pay twice in solo.
+    const e = await pudding();
+    const g = e.player.block;
+    await play(e, 'pudding/share-the-blanket', null);
+    check(e.player.block - g === 14,
+      'a Trick naming you AND your Best Friend pays the solo amount once, not twice',
+      `gained ${e.player.block - g}`);
+  }
+  {
+    // ...and in a party it really reaches the other Kid.
+    const deck = CARDS.startingDeckFor('pudding');
+    const e = makeDummyParty(new RNG(11), 2, {
+      companion: 'pudding', decks: [deck.slice(), deck.slice()], maxHp: 74,
+    });
+    e.setTrackerInstaller(installTrackers);
+    await e.startCombat();
+    const [me, mate] = e.players;
+    e._asSeat(me, () => {
+      const k = e.addCard(CARDS.cardById('pudding/guard-the-ankles'), 'hand', {});
+    });
+    const card = me.piles.hand[me.piles.hand.length - 1];
+    me.energy = 9;
+    // Pudding is still his own Best Friend until told otherwise.
+    const before = { me: me.block, mate: mate.block };
+    await e.playCard(card.uid);
+    check(me.block > before.me && mate.block === before.mate,
+      'in a party he defaults to protecting himself until somebody says otherwise',
+      `me ${before.me}->${me.block}, mate ${before.mate}->${mate.block}`);
+  }
+
+  // ══ 7. Powers that pay ═════════════════════════════════════════════════
+  {
+    const e = await pudding();
+    await play(e, 'pudding/haunted-headstones', null);
+    const g = e.player.block;
+    const k = give(e, 'pudding/little-chomp');
+    const b = give(e, 'pudding/bury-this');
+    onlyInHand(e, b);
+    e.addCard(CARDS.cardById('pudding/little-chomp'), 'hand', {});
+    e.player.energy = 9;
+    await e.playCard(b.uid);
+    check(e.player.block - g >= 5, 'Haunted Headstones pays on the first Bury',
+      `gained ${e.player.block - g}`);
+  }
+  {
+    const e = await pudding();
+    await play(e, 'pudding/family-plot', null);
+    check(e.counterMax('plots') === 4, 'Family Plot really opens a fourth Plot',
+      `max=${e.counterMax('plots')}`);
+    check(e.player.piles.stashCap === 4, 'and the cemetery itself holds four',
+      `stashCap=${e.player.piles.stashCap}`);
+  }
+  {
+    // Graveyard Choir hits once per occupied Plot, at end of turn.
+    const e = await pudding();
+    for (let i = 0; i < 2; i++) {
+      const bur = give(e, 'pudding/bury-it-better');
+      onlyInHand(e, bur);
+      e.addCard(CARDS.cardById('pudding/little-chomp'), 'hand', {});
+      e.player.energy = 9;
+      await e.playCard(bur.uid);
+    }
+    await play(e, 'pudding/graveyard-choir', null);
+    const t = e.livingEnemies()[0];
+    const hp = t.hp;
+    await e.endTurn();
+    check(hp - t.hp >= 10, 'Graveyard Choir sings once for each occupied Plot',
+      `enemy lost ${hp - t.hp} (2 plots x 5, plus whatever it did back)`);
+  }
+
+  // ══ 8. Treat for Later never returns to the hand ═══════════════════════
+  {
+    const e = await pudding();
+    const treat = await play(e, 'pudding/treat-for-later', null);
+    check(pileOf(e, treat) === 'stash', 'Treat for Later buries ITSELF',
+      `it is in ${pileOf(e, treat)}`);
+    await e.endTurn();
+    const nerve = e.player.energy;
+    const hand = e.piles.hand.length;
+    await play(e, 'pudding/dig-it-up', null);
+    check(pileOf(e, treat) === 'exhaust',
+      'and digging it up Vanishes it instead of returning it to hand',
+      `it is in ${pileOf(e, treat)}`);
+    check(e.player.energy > nerve, 'paying its Nerve', `${nerve} -> ${e.player.energy}`);
+  }
+
+  // ══ 9. Never Drop the Ball buries itself AFTER resolving ═══════════════
+  //  Trap 16: the played Trick is already in LIMBO, so it cannot move itself.
+  {
+    const e = await pudding();
+    const t = e.livingEnemies()[0];
+    const k = await play(e, 'pudding/never-drop-the-ball', t);
+    check(pileOf(e, k) === 'stash',
+      'Never Drop the Ball really ends up in a Plot rather than the discard',
+      `it is in ${pileOf(e, k)}`);
+    check(e.counter('plots') === 1, 'and the Plot counts it', `plots=${e.counter('plots')}`);
+  }
+} catch (err) {
+  fails.push('THREW: ' + (err && err.stack || err));
+}
+
+say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`, fails.length ? 'fail' : 'pass');
+say('<ul class="pass">' + passes.map(p => `<li>PASS ${p}</li>`).join('') + '</ul>');
+if (fails.length) say('<ul class="fail">' + fails.map(f => `<li>FAIL ${f}</li>`).join('') + '</ul>');
+window.__RESULT = { passed: passes.length, failed: fails.length, fails, passes };
+window.__DONE = true;
+</script>

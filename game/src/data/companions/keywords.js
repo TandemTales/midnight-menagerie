@@ -204,6 +204,15 @@ export const COMPANION_KEYWORDS = [
   K('soak', 'Soak', 'Make an enemy [Soaked]. Soaking something already [Soaked] changes nothing — several Tricks pay you for finding it that way.', { companion: 'drizzle' }),
   K('conduct', 'Conduct', 'A marked effect that fires only if the primary target is [Soaked], then repeats against every OTHER [Soaked] enemy. During Thunderstorm the first Conduct of your turn also repeats once on the primary.', { companion: 'drizzle' }),
   K('forecast', 'Forecast', 'Park this Trick face up outside your deck in one of three slots, waiting for a [Weather] state or a [Stormbreak]. It resolves for free when that state is ENTERED — being in it already is not enough — and resolving is not playing a Trick.', { companion: 'drizzle' }),
+
+  // ── Pudding ───────────────────────────────────────────────────────────────
+  K('best-friend', 'Best Friend', 'Whoever Pudding has decided he is protecting. Alone, that is himself — and a Trick naming both you and your Best Friend does not then pay twice. In a party he chooses, and a few Tricks can change his mind.', { companion: 'pudding' }),
+  K('loyalty', 'Loyalty', 'Earned when something is winding up at his [Best Friend] — one a turn from that rule however many enemies there are. Holds 5. Spent on protection, retaliation and tempo, and it keeps between turns.', { companion: 'pudding' }),
+  K('plot', 'Plot', 'One of three cemetery Plots. Each holds a single Buried Trick and performs ONE operation per turn: burying into it or digging out of it uses it up until your next turn.', { companion: 'pudding' }),
+  K('bury', 'Bury', 'Move a Trick from your hand into an empty [Plot]. It leaves draw and discard entirely, cannot be played, has not Vanished, and comes back after the Scuffle.', { companion: 'pudding' }),
+  K('dig-up', 'Dig Up', 'Take a Buried Trick out of a [Plot] and into your hand. It becomes [Unearthed] and that Plot is used for the turn.', { companion: 'pudding' }),
+  K('unearthed', 'Unearthed', 'A Trick that was [Dig Up]-ed THIS turn. Some Tricks do more when played that way. It expires at end of turn even if the Trick is retained — unless Warm Spot by the Headstones is out.', { companion: 'pudding' }),
+  K('graveside', 'Graveside', 'True whenever two or more [Plot]s are occupied, checked the moment an effect resolves. This is the whole tension: digging your Tricks up for value can switch it off.', { companion: 'pudding' }),
 ];
 
 export const KEYWORD_IDS = COMPANION_KEYWORDS.map(k => k.id);
@@ -735,6 +744,41 @@ export const COMPANION_STATUSES = [
   powerStatus('drizzle/electric-house', 'Electric House', 'A wide Conduct arcs once more, at random.', 'conduct'),
   powerStatus('drizzle/weather-has-memory', 'Weather Has Memory', 'The first Forecast each turn resolves twice in familiar Weather.', 'forecast'),
   powerStatus('drizzle/thunder-buddies', 'Thunder Buddies', 'Every friend’s first Attack on a Soaked enemy Conducts.', 'conduct'),
+
+  // ── Pudding ───────────────────────────────────────────────────────────────
+  /**
+   * Stay With Me caps a single Attack. It runs on `onCourageLoss` — the step
+   * added for Mopsy's Cushion — because the cap is defined AFTER Guard, which is
+   * the one place in the pipeline that number exists.
+   */
+  {
+    id: 'stay-with-me', name: 'Stay With Me', kind: 'buff', icon: 'loyalty', decay: 'never', stacks: false,
+    desc: 'No single Attack can cost more than {n} Courage after Guard.',
+    hooks: {
+      onCourageLoss: (h) => {
+        const cap = stacks({ e: h.e, self: h.defender }, h.defender, 'stay-with-me');
+        if (!cap || !h.setAmount) return;
+        if (h.amount > cap) h.setAmount(cap);
+      },
+    },
+  },
+  powerStatus('pudding/haunted-headstones', 'Haunted Headstones', 'The first Bury each turn Guards your Best Friend.', 'plot'),
+  powerStatus('pudding/graveyard-rules', 'Graveyard Rules', 'While Graveside, your first Attack on a threat hits harder.', 'graveside'),
+  powerStatus('pudding/hallowed-ground', 'Hallowed Ground', 'Graveside turns end with Guard for your Best Friend.', 'graveside'),
+  powerStatus('pudding/dog-eared-epitaph', 'Dog Eared Epitaph', 'The first Unearthed Trick each turn draws.', 'unearthed'),
+  powerStatus('pudding/never-off-duty', 'Never Off Duty', 'The first Loyalty spent each turn Guards your Best Friend.', 'loyalty'),
+  powerStatus('pudding/keeper-of-the-yard', 'Keeper of the Yard', 'The first Trick Dug Up each turn costs less.', 'plot'),
+  powerStatus('pudding/little-ghost-escort', 'Little Ghost Escort', 'The first Attack after a Bury hits harder.', 'plot'),
+  powerStatus('pudding/cemetery-shift-supervisor', 'Cemetery Shift Supervisor', 'Graveside turns start with Loyalty.', 'loyalty'),
+  powerStatus('pudding/warm-spot', 'Warm Spot by the Headstones', 'Unearthed lasts until the Trick is played.', 'unearthed'),
+  powerStatus('pudding/family-plot', 'Family Plot', 'A fourth cemetery Plot.', 'plot'),
+  powerStatus('pudding/cemetery-gates', 'Cemetery Gates', 'Once a turn, swap a Trick in hand for a Buried one.', 'plot'),
+  powerStatus('pudding/forever-home', 'Forever Home', 'Maximum Loyalty 8; the overflow becomes Guard.', 'loyalty'),
+  powerStatus('pudding/the-goodest-ghost', 'The Goodest Ghost', 'The first Unearthed Trick each turn leaves a free copy.', 'unearthed'),
+  powerStatus('pudding/all-dogs-go-somewhere', 'All Dogs Go Somewhere', 'Once a combat, a Vanishing Trick is Buried instead.', 'plot'),
+  powerStatus('pudding/graveyard-choir', 'Graveyard Choir', 'Graveside turns end with the residents singing.', 'graveside'),
+  powerStatus('pudding/home-is-where-you-are', 'Home Is Where You Are', 'Once a combat, your Best Friend survives at 1 Courage.', 'best-friend'),
+  powerStatus('pudding/the-whole-pack', 'The Whole Pack', 'Change Best Friend once a turn; Loyalty watches everyone.', 'best-friend'),
 ];
 
 export const STATUS_IDS = COMPANION_STATUSES.map(s => s.id);

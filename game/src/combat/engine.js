@@ -2188,6 +2188,16 @@ export class CombatEngine {
       /** Put a card into a teammate's hand (or any of their piles). */
       giveCard: (pl, def, o = {}) => (pl
         ? e._asSeat(pl, () => e.addCard(def, o.pile || Pile.HAND, o)) : null),
+      /**
+       * Move a card a teammate ALREADY OWNS between their own piles.
+       *
+       * `moveCard` acts on `this.current.piles`, so calling it on a teammate's
+       * card looks right and silently moves nothing (their card is not in the
+       * acting seat's piles). Pudding's Bring It Here and Community Plot both
+       * need this; `giveCard` is no help because the card exists already.
+       */
+      allyMoveCard: (pl, c2, pile, o = {}) => (pl && c2
+        ? e._asSeat(pl, () => e.moveCard(c2, pile, o)) : false),
 
       addCounter: (id, n) => e.addCounter(id, n, card ? card.id : 'effect', self.id),
       spendCounter: (id, n) => e.spendCounter(id, n, card ? card.id : 'effect', self.id),

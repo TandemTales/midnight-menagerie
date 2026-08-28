@@ -522,8 +522,85 @@ crumbula 25 · hush 17 · wink 5 · 60 fps, no console errors.
 
 ---
 
+## 8. Pudding, the Graveyard Pug  ✅
+
+`graveyard`. 4 basics + 20 commons + 35 uncommons + 25 rares + 5 co-op. Best
+Friend, Loyalty, Plots, Bury, Dig Up, Unearthed, Graveside.
+
+Much less new engine than Drizzle — almost all of him lands on machinery three
+other Companions already proved — but two of the things he needs did not exist
+and three APIs I reached for were not what I assumed.
+
+### A Plot is a slot, and the stash is now doing four jobs
+
+Bones buries Tricks in `stash` with a countdown on the card; Mopsy tears them
+there; Hush plays out of it. Pudding's three Plots are the same pile again with
+slot semantics on top — each Plot performs ONE cemetery operation per turn, so
+"which Plot" is a real question and the plot has state the card cannot carry.
+The cards live in `stash` (the engine owns them, the pile renders, a save keeps
+them); a parallel row records which slot holds what and whether it has been
+turned over. `stashCap` was already 3, which is exactly three Plots; Family Plot
+raises it to 4.
+
+**Trap 17 again:** `Pile.STASH` is playable, because it exists for Hush's second
+hand. A Buried Trick explicitly cannot be played, so it is flagged `unplayable`
+the way Mopsy's Torn pile had to be. The suite asserts `canPlay` really refuses
+one, not merely that the flag is set. The pile button now reads **Plots** for
+him — Torn, Pocket, Plots and Stash are four names for one zone.
+
+### Three APIs that were not what I assumed
+
+- **`retargetMove` does not exist.** Take Me Instead redirects an Attack, and I
+  wrote it against a method I had invented. The engine's actual answer is the
+  `racket` status — `intentTargetFor` prefers a seat wearing it over the move's
+  own party preference. Better anyway: rewriting an enemy's pending move would
+  fight the intent display, which is shown before the players act and has to
+  survive a replay.
+- **`onLethal` names the victim `defender` and survives via `setHp(n)`.** I had
+  written `h.actor` and `h.survive?.()` — wrong field, invented method, and an
+  optional chain on a contract API, on the one Power whose entire job is not
+  being silent (CONTRACTS rule 8, three ways at once).
+- **`moveCard` acts on the ACTING seat's piles**, so moving a teammate's own
+  card looks right and moves nothing. `giveCard` is no help — the card already
+  exists. Added `ctx.allyMoveCard(pl, card, pile, opts)`, its twin, which two of
+  his co-op Tricks need.
+
+### "Once each turn you may" has no trigger
+
+Cemetery Gates and The Whole Pack are both optional actions with no Trick to
+hang off. They are offered at the top of the turn, and only when they could
+actually do something — a prompt for nothing every round is worse than the
+Power. Same shape as Drizzle's I Am the Weather.
+
+### The probe earned itself again
+
+`tests/pudding` failed one check: "Unearthed really doubles Dug Up Trouble —
+unearthed 12 vs plain 9". Two wrong diagnoses (Guard, then a mis-picked card)
+before probing it properly, which showed the mechanic was **perfect** — two hits
+really fired — and the TEST was wrong: reaching Unearthed costs a whole enemy
+turn, and that turn leaves Weak on Pudding, so it was comparing 2 hits of 6
+against 1 hit of 9. A control has to be measured in the same conditions as the
+thing it controls for. Cost about ten minutes; guessing had already cost more.
+
+### Verification
+
+`tests/pudding/run.py` — **46 checks**: a Buried Trick really cannot be played,
+a Plot really refuses a second operation in one turn and really allows one next
+turn, Graveside really needs two, Unearthed really doubles and really expires
+with the turn, Loyalty really caps and Forever Home really widens the gauge with
+the banked Loyalty intact, Collar Snap really takes the Loyalty for its third
+hit and really hits twice without it, all three dynamic costs really move, a
+Trick naming both "you" and "your Best Friend" really pays once in solo, and
+Never Drop the Ball really ends up in a Plot rather than the discard.
+
+cards 1193/0/0 · combat 677 · coop 591 · run 50 · backpack 80 · enemies 37 ·
+audit 2061 · chrome 27 · six gates · drizzle 70 · truffle 27 · boggle 30 ·
+mopsy 28 · wisp 25 · crumbula 25 · hush 17 · wink 5 · 61 fps, no console errors.
+
+---
+
 ## Still to come
 
-**Designed, not built (3):** Pudding, Mossbit, Brambleboo.
+**Designed, not built (2):** Mossbit, Brambleboo.
 
 **Not designed (1): Crinkle.** No chapter anywhere, including the source `.docx`.

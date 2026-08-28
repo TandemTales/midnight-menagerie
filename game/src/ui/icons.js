@@ -129,6 +129,18 @@ const STATUS = {
   forecast: 'M7.6 2.8a5 5 0 0 1 9.3 1.3 3.7 3.7 0 0 1-.7 7.4H7.4a4.1 4.1 0 0 1-.6-8.1zM3.2 14.4h17.6v2.2H3.2zm0 3.8h17.6v2.2H3.2zm0 3.8h11.4V24H3.2z',
   soaked: 'M12 1.8c3.6 4.8 6.4 8.4 6.4 11.8A6.4 6.4 0 0 1 12 20a6.4 6.4 0 0 1-6.4-6.4C5.6 10.2 8.4 6.6 12 1.8zm0 4.6c-2.2 3-3.8 5.3-3.8 7.2a3.8 3.8 0 0 0 7.6 0c0-1.9-1.6-4.2-3.8-7.2z',
   conduct: 'M2.4 11h4.2L4.4 6.2 9.8 9.6 8.6 4.2l4 4.4 1.2-5 2.2 5.2 3.4-3.4-1 4.8h3.2v2.4h-3.2l1 4.8-3.4-3.4-2.2 5.2-1.2-5-4 4.4 1.2-5.4-5.4 3.4 2.2-4.8H2.4z',
+  /* Pudding. A headstone is the spine of the cemetery set: `plot` is one stone
+     in its ground, `graveside` two of them together (the condition IS "two"),
+     `bury` a stone with the earth going down and `dig-up` the same coming out.
+     `loyalty` is a collar tag and `best-friend` a small heart, because those two
+     are about the person rather than the ground. */
+  plot: 'M8.4 3.2a3.6 3.6 0 0 1 7.2 0v11.4H8.4zm-4 12.6h15.2v2.2H4.4zm-1.8 3.6h18.8V22H2.6z',
+  graveside: 'M2.6 5.4a2.8 2.8 0 0 1 5.6 0v8.8H2.6zm7.6 2a2.9 2.9 0 0 1 5.8 0v6.8h-5.8zm7.4-2a2.8 2.8 0 0 1 5.6 0v8.8h-5.6zM1.6 15.6h20.8v2.2H1.6zm-.4 3.6h21.6v2.2H1.2z',
+  bury: 'M8.4 2.6a3.6 3.6 0 0 1 7.2 0v7.8H8.4zM12 12.2l3.4 3.6h-2.2v3.4h-2.4v-3.4H8.6zM2.6 20.4h18.8v2.2H2.6z',
+  'dig-up': 'M8.4 2.6a3.6 3.6 0 0 1 7.2 0v7.8H8.4zM12 19.4l-3.4-3.6h2.2v-3.4h2.4v3.4h2.2zM2.6 20.4h18.8v2.2H2.6z',
+  unearthed: 'M12 1.8 14.2 7l5.6.4-4.3 3.6 1.4 5.4L12 13.5l-4.9 2.9 1.4-5.4L4.2 7.4 9.8 7zM4.4 19.2h15.2v2.2H4.4z',
+  loyalty: 'M9.2 2.4h5.6l1.2 3.4h4.2v2.4H3.8V5.8H8zM6.6 9.4h10.8l-1 8.2a4.6 4.6 0 0 1-4.4 4 4.6 4.6 0 0 1-4.4-4zm5.4 3a2.3 2.3 0 1 0 0 4.6 2.3 2.3 0 0 0 0-4.6z',
+  'best-friend': 'M12 21.2C6.6 17 3.2 13.8 3.2 9.8A4.8 4.8 0 0 1 8 5c1.7 0 3.2.8 4 2.1A4.8 4.8 0 0 1 16 5a4.8 4.8 0 0 1 4.8 4.8c0 4-3.4 7.2-8.8 11.4z',
   /* Count Crumbula: a goblet for Appetite, two fangs for a Bite Mark. */
   appetite: 'M6 2.4h12l-.8 6.4c-.3 2.4-2 4.3-4.2 4.9v5.9h3.4v2.2H7.6v-2.2H11v-5.9c-2.2-.6-3.9-2.5-4.2-4.9zm2.3 2.2.5 4c.2 1.5 1.6 2.6 3.2 2.6s3-1.1 3.2-2.6l.5-4z',
   'bite-mark': 'M7.2 2.6c1.2 1.8 1.8 3.6 1.8 5.4 0 2.1-.8 3.9-1.8 5.4-1-1.5-1.8-3.3-1.8-5.4 0-1.8.6-3.6 1.8-5.4zm9.6 0c1.2 1.8 1.8 3.6 1.8 5.4 0 2.1-.8 3.9-1.8 5.4-1-1.5-1.8-3.3-1.8-5.4 0-1.8.6-3.6 1.8-5.4zM4.6 17.4h14.8v2.2H4.6zm2.6 3.4h9.6V23H7.2z',
