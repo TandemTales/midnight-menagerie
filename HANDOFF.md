@@ -42,28 +42,32 @@ control that was verified to FAIL without it.
 | Every Gummy Taffy made was unmarked, and she had no suite | `companions/taffy.js`, `tests/taffy/` |
 | The Twins' Joined and the Horse's Excitement were dead FOUR ways at once | `combat/engine.js`, CONTRACTS 50 |
 | After every resume, no card in hand had a replay key | `state/run.js` |
+| The map moved the whole party by ASSIGNING to the Run, down a bus name | `scenes/map.js`, CONTRACTS 52 |
 
 Instruments repaired: the bot's `turnsLeft` (47), `balance.html`'s missing
 `fc` (49), the ledger's `left%` — quantised to tens AND wins-only (51) — and
 `tests/seams/check.py`, which had been checking four of its five APIs against
 an empty set (5c). New gates: `tests/critic-design/party-turns.py`,
-`tests/bus-names/check.py`. New suite: `tests/taffy/`.
+`tests/bus-names/check.py`, and `tests/seams/check.py`'s sixth shape
+SHARED-WRITE. New suite: `tests/taffy/`.
 
 **WHAT IS OPEN, in the order I would take it:**
 
-1. **The map never reaches `net/actions.js`.** It writes the shared route
-   straight onto the Run — the one screen that decides where the whole party
-   goes. Harmless until a transport exists; a desync the moment one does.
-   HANDOFF's "EVERY SCREEN IS ON THE WIRE" is wrong about the map.
-2. **Party cost is still 15–30 points from solo.** Every encounter now beats
+1. **Party cost is still 15–30 points from solo.** Every encounter now beats
    the arithmetic baseline, but that baseline is "a contentless enemy", not
    parity. Closing it needs MOST of a fight's damage to pierce.
-3. **fps and the entry stall need a quiet machine.** Three claims in this
+2. **fps and the entry stall need a quiet machine.** Three claims in this
    document do not reproduce here today.
-4. **Six advisory dead bus names in the HUD's EVENTS list** —
+3. **Six advisory dead bus names in the HUD's EVENTS list** —
    `tests/bus-names/check.py` reports them and does not gate them.
-5. Steam P2P (designer, ends the no-build rule) and Crinkle's chapter
+4. Steam P2P (designer, ends the no-build rule) and Crinkle's chapter
    (designer review). Both unchanged.
+
+**Closed 2026-08-29 (third session):** the map is on the wire. It was the
+largest open item and it was worse than this list said — the `chooseNode`
+call that made the screen LOOK like it used the run layer's API had been a
+no-op on every click ever made, because the screen wrote `currentNodeId`
+first and that call's own guard reads it. CONTRACTS 52.
 
 
 - **THE 44-TURN ELITE GRIND WAS THE BOT.** So was "party damage output does not
@@ -320,12 +324,21 @@ an empty set (5c). New gates: `tests/critic-design/party-turns.py`,
   `stage.warmStage === 'done'` now. **No player was ever affected** — the
   warm-up finishes while they read the title menu — which is exactly why it
   survived. CONTRACTS trap 43.
-- **EVERY SCREEN IS ON THE WIRE.** `game/src/net/actions.js` is the game-side
-  half the netcode never had — one applier, one `act(run, input)` seam, and the
-  reward, Mr. Moth's, the Safe Room, the Curiosities and COMBAT all route
-  through it. Nothing in `game/src/` had ever called `session.input()`;
-  "combat is exercised" was true only of `tests/net`'s own harness. Netcode
-  item 2 is done. `docs/notes/2026-08-29-the-wire-reaches-the-screens.md`.
+- **EVERY SCREEN IS ON THE WIRE — including the map, since 2026-08-29 (third
+  session).** `game/src/net/actions.js` is the game-side half the netcode never
+  had — one applier, one `act(run, input)` seam, and the reward, Mr. Moth's,
+  the Safe Room, the Curiosities and COMBAT all route through it. Nothing in
+  `game/src/` had ever called `session.input()`; "combat is exercised" was true
+  only of `tests/net`'s own harness. Netcode item 2 is done.
+  `docs/notes/2026-08-29-the-wire-reaches-the-screens.md`.
+
+  **This sentence was false for two sessions and no gate could tell.** The map
+  screen reached the run layer by ASSIGNING to it — `run.currentNodeId = id`,
+  `run.pathIds = …` — and by emitting a bus name a listener in `state/run.js`
+  turned into `enterNode`. An assignment has no verb to be missing, so the
+  seam checker had nothing to see. `ACT.MAP_CHOOSE` now, and SHARED-WRITE in
+  `tests/seams/check.py` keeps it that way. CONTRACTS 52,
+  `docs/notes/2026-08-29-the-map-was-writing-the-run.md`.
 - **Ending a turn over a wire used to close the TABLE**, which would have shut
   three other people's turns from one keyboard. It ends one seat now.
 - **THE GOVERNESS IS MEASURED, and she was the opposite failure from the
@@ -564,7 +577,7 @@ learn. See §6.
 
 | | |
 |---|---|
-| `tests/seams/check.py` · `proof.py` | 1806 call sites · 52 passed — silent no-ops at module joins |
+| `tests/seams/check.py` · `proof.py` | 6165 call sites · 52 passed — silent no-ops at module joins, and a screen writing shared Run state |
 | `tests/scene-css/check.py` | 0 conflicts — a class meaning two things in two scenes |
 | `tests/css-tokens/check.py` | 0 undefined tokens — `var(--text-low)` when it is `--text-lo` |
 | `tests/dup-keys/check.py` | 0 duplicate keys — the second one silently wins |
