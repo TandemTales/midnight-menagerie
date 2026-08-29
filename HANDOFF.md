@@ -106,31 +106,38 @@ change him.
   5–7 of (the Reprimand's pierce on a House Rule violation). Both curves left
   where they are, deliberately; the comment in `butler.js` records why.
 
-- **`engine.boardEvent()` HAS NO CALLERS, so two nursery mechanics are dead.**
-  Trap 5b's fourth and fifth instances, found by repairing the seams gate.
-  `grep -rn 'boardEvent(' game/src` returns the definition and nothing else.
-  Both `onBoardEvent` defs in the game are therefore never invoked, and they
-  would not work if they were: the engine calls
-  `en.def.onBoardEvent(ctx)` with ONE argument while both defs are written
-  `onBoardEvent(c, ev)`, so `ev` would be undefined and every one of them
-  returns on its first line.
+- **`engine.boardEvent()` IS WIRED — it was dead FOUR ways at once.** Nothing
+  called it; it passed the event as two arguments while every def reads
+  `onBoardEvent(c, ev)`; `twinOf()` matched the ACTOR id, which
+  `buildEncounter` never sets; and the enemy ctx's `block: (a, n)` dropped its
+  third argument, so `{ source }` and `{ noJoin }` never reached `gainBlock`. A
+  fifth appeared once the others were fixed — the Guard mirror did not mark
+  itself, so Good Posture paid **15 each** against the 12 its own comment
+  warns about. CONTRACTS 50, and the tell was that `boardEvent`'s only caller
+  in the repo was a TEST inventing an event the game does not have.
 
-  What is dead:
+  Emitted now on block, heal and status. The Porcelain Twins' Joined and the
+  Rocking Horse's Excitement-from-support are both live, with a control per
+  layer.
 
-  - **The Porcelain Twins' entire Joined mechanic** — "Guard half-flows,
-    stackable debuffs copy across", the thing the encounter is named for.
-    There is no other implementation of it anywhere.
-  - **The Rocking Horse's Excitement from ally support** — nursery §31's
-    "This turns enemy support actions into a shared threat". It still gains
-    Excitement from its own Happy Clatter, which does `addCnt` directly in the
-    move, so the enemy looks like it works.
+- **THE PORCELAIN TWINS ARE THE SOFTEST THING IN THE MEASURED SET, and wiring
+  Joined made them softer.** `party-ledger.py --enc nursery-scare-twins`,
+  n=12, dead → wired:
 
-  **Not wired here, deliberately.** Wiring it means deciding where the engine
-  emits a board event (block, heal, status at minimum), fixing the call
-  signature, and then re-measuring the Nursery — the Twins get materially
-  stronger and the Horse Gallops more often. That is a scoped piece of work
-  with a balance tail, not a one-line repair, and it wants the instruments
-  this session has just finished making trustworthy.
+  | party | turns | left% |
+  |---|---|---|
+  | 1p | 11.3 → 10.4 | 70 → **90** |
+  | 2p | 8.3 → 8.3 | 90 → 90 |
+  | 3p | 7.4 → 6.8 | 100 → 90 |
+  | 4p | 8.3 → 7.5 | 100 → 90 |
+
+  Joined's debuff-copy half is a PLAYER tool and it outweighs its Guard-flow
+  half, which is what the encounter's own `teaches` line asks for. The
+  softness is pre-existing and is now the clearest balance item in the game:
+  an elite that leaves 70–100% of the party's Courage at every size. The
+  Nursery standard tier is byte-identical across 96 fights either way, so
+  there is no regression from the wiring — qualifying events exist there but
+  none co-occurred with the Horse in the sample.
 
 - **STILL OPEN, and now the honest headline for the party game: a party
   finishes too comfortable.** Elite `left%` is 60 solo against 80 at three and
