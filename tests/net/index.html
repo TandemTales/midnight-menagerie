@@ -495,7 +495,80 @@ try {
     A.session.close(); B.session.close();
   }
 
-  // ══ 11. Without a session, `act` is the direct call it replaced ═════════
+  // ══ 11. Combat through the shared applier, not the harness's own ═══════
+  /* §2 wires `session.on('input')` by hand, inside this file. That proves the
+     PROTOCOL and proves nothing about the game: until now no screen in
+     `game/src/` called `session.input()` at all. These clients use
+     `attachActions`, the same applier `scenes/combat.js` reaches through. */
+  {
+    const hub = new LoopbackHub();
+    const client = (seat, id) => {
+      const deck = startingDeckFor('marmalade');
+      const e = makeDummyParty(new RNG(SEED), 2, { companion: 'marmalade', decks: [deck.slice(), deck.slice()], maxHp: 70 });
+      e.setTrackerInstaller(installTrackers);
+      // What `run.buildCombat` does — "which Kid is at THIS screen", so the
+      // choice broker does not ask the person sitting here to make the other
+      // Kid's decisions.
+      e.localSeat = seat;
+      /* `asSeat` is the REAL one off `Run.prototype`, not a stub: it reads only
+         `kids`, `localSeat` and `combat`, all of which this stand-in has, and
+         it is one of the things under test here (rule 9 / trap 5). The first
+         version passed `(s, fn) => fn()` and the seat check below could not
+         have failed however wrong `asSeat` was. */
+      const run = { combat: e, _combatDigest: combatDigest, localSeat: seat, session: null,
+                    kids: [{}, {}], asSeat: Run.prototype.asSeat };
+      const session = new Session({ transport: hub.peer(id), seat, seats: 2, seed: SEED, host: seat === 0 });
+      attachActions(session, run);
+      return { e, run, session };
+    };
+    const A = client(0, 'A'); const B = client(1, 'B');
+    await A.e.startCombat(); await B.e.startCombat();
+    const settle = async () => { await new Promise(r => setTimeout(r, 40)); await A.session.settled(); await B.session.settled(); };
+
+    check(combatDigest(A.e) === combatDigest(B.e), 'the fight opens identically on both');
+
+    const card = B.e.players[1].piles.hand[0];
+    const enemy = B.e.livingEnemies()[0];
+    const hp = A.e.livingEnemies()[0].hp;
+    await act(B.run, { t: INPUT.PLAY, ...cardRef(B.e, card), target: enemy.id });
+    await settle();
+    check(combatDigest(A.e) === combatDigest(B.e),
+      'seat 1 plays a Trick and both boards still agree');
+    check(A.e.livingEnemies()[0].hp <= hp && A.e.livingEnemies()[0].hp === B.e.livingEnemies()[0].hp,
+      'and the enemy took it on both machines',
+      `${hp} -> ${A.e.livingEnemies()[0].hp} / ${B.e.livingEnemies()[0].hp}`);
+
+    /* END is per SEAT over a wire, not the table. Ending the table from here
+       would close three other people's turns from one machine. */
+    await act(B.run, { t: INPUT.END });
+    await settle();
+    check(B.e.players[1].ended && A.e.players[1].ended,
+      'ending my turn ends MY seat, on both machines');
+    check(!A.e.players[0].ended && !B.e.players[0].ended,
+      'and does NOT end the other Kid’s from here');
+    check(A.e.phase === 'player' && B.e.phase === 'player',
+      'so the enemy phase is still waiting for them', `${A.e.phase} / ${B.e.phase}`);
+
+    const turnBefore = A.e.turn;
+    await act(A.run, { t: INPUT.END });
+    await settle();
+    check(A.e.turn === turnBefore + 1 && B.e.turn === turnBefore + 1,
+      'the last seat closing runs the enemy phase on both, once',
+      `${turnBefore} -> ${A.e.turn} / ${B.e.turn}`);
+    check(combatDigest(A.e) === combatDigest(B.e),
+      'and a whole round later the two boards are still identical');
+
+    /* `run.asSeat` must not move `engine.localSeat`, or replaying a remote
+       Kid's Trick pops THEIR choice in front of me — on every client at once,
+       each answering separately. */
+    check(A.e.localSeat === 0 && B.e.localSeat === 1,
+      'replaying a remote seat left each engine’s own local seat alone',
+      `${A.e.localSeat} / ${B.e.localSeat}`);
+
+    A.session.close(); B.session.close();
+  }
+
+  // ══ 12. Without a session, `act` is the direct call it replaced ═════════
   /* Solo and pass-and-play must not pay for the wire. `act()` returns the run
      layer's own answer synchronously when there is nothing to send, so a screen
      that used to call `run.takeRewardCard()` keeps the timing it had. */

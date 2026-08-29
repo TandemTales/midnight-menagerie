@@ -135,6 +135,10 @@ function _apply(run, msg, seat) {
     case INPUT.END: {
       const e = run.combat;
       if (!e) return null;
+      // ONE seat, never the table: over a wire the other Kids are on other
+      // machines, and `endTurn()` with no seat would close their turns from
+      // here. Every client applies all four ENDs in the one agreed order and
+      // the enemy phase falls out of the last of them on every machine.
       return e.endTurn(e.players[msg.seat | 0]);
     }
     case INPUT.SNACK:

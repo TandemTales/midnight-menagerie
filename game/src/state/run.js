@@ -417,6 +417,15 @@ export class Run {
    * would repaint the local player's HUD as their friend every time their
    * friend bought a Snack. This moves the seat and puts it back, silently.
    *
+   * **`engine.localSeat` deliberately does NOT move with it.** CONTRACTS says
+   * the engine's seat follows the Run's, and that is right for a pass-and-play
+   * HANDOFF, where the screen has genuinely changed hands. This is the other
+   * case: the screen still belongs to whoever is looking at it, and a remote
+   * Kid's card is only being replayed. `choices.ask({ seat })` opens the picker
+   * when the seat matches `engine.localSeat`, so moving it here would pop a
+   * choice for their Trick in front of me — on every client at once, each
+   * answering it separately, which is a desync rather than a wrong screen.
+   *
    * Safe because `net/session.js` applies inputs strictly one at a time: there
    * is never a second action in flight to see the borrowed seat. If `fn` is
    * async the seat is restored when it settles, and the queue is what
@@ -425,17 +434,9 @@ export class Run {
   asSeat(seat, fn) {
     const n = Math.max(0, Math.min(this.kids.length - 1, seat | 0));
     const was = this.localSeat;
-    const wasEngine = this.combat ? this.combat.localSeat : null;
     if (n === was) return fn();
-    const restore = () => {
-      this.localSeat = was;
-      if (this.combat && wasEngine !== null) this.combat.localSeat = wasEngine;
-    };
+    const restore = () => { this.localSeat = was; };
     this.localSeat = n;
-    // A seat-addressed choice opens the picker in front of whoever the engine
-    // thinks is local, so the engine's seat moves with the Run's — CONTRACTS,
-    // "Co-op: up to four Kids".
-    if (this.combat) this.combat.localSeat = n;
     let out;
     try { out = fn(); } catch (err) { restore(); throw err; }
     if (out && typeof out.then === 'function') {

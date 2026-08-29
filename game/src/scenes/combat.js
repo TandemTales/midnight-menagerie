@@ -22,6 +22,8 @@ import { RNG } from '../core/rng.js';
 import { CombatEngine } from '../combat/engine.js';
 import { makeDummyCombat } from '../combat/dummy.js';
 import { previewIncoming } from '../combat/preview.js';
+import { act } from '../net/actions.js';
+import { INPUT, cardRef } from '../net/session.js';
 import { passTo, shouldHandOff } from '../ui/handoff.js';
 import { TERMS, COMPANIONS } from '../data/schema.js';
 import { Hand } from '../ui/hand.js';
@@ -1115,7 +1117,7 @@ export class CombatScene extends Scene {
        presented card across the creature band in the first place. That ask is
        in the report. */
     this.ctx.clock.wait(this._d(PLAY_RESOLVE)).then(async () => {
-      try { await this.engine.playCard(uid, tid); } catch (e) { console.error('[combat] playCard', e); }
+      try { await this._playThrough(uid, tid); } catch (e) { console.error('[combat] playCard', e); }
       await this._settle();
       this._playedUid = null;
       this._resolving = false;
@@ -1127,6 +1129,31 @@ export class CombatScene extends Scene {
       if (!this.engine.over && this.engine.phase === 'player') this.hand.unlock();
     });
     return true;
+  }
+
+  /**
+   * Play the card wherever this game is being played.
+   *
+   * Solo and pass-and-play go straight to the engine, which is what they always
+   * did. Over a wire the play becomes an input on the shared log, named by
+   * POSITION — `cardRef` — because a uid is not a network identity: uids come
+   * from a per-page counter, so the other client holds the same card under a
+   * different one and would silently find nothing (CONTRACTS trap 30).
+   *
+   * If the card cannot be located in a pile the play still goes through
+   * directly rather than vanishing, and says so — a Trick that quietly does
+   * not happen is the bug class this codebase keeps finding.
+   */
+  async _playThrough(uid, tid) {
+    const run = this.ctx.run;
+    if (!run || !run.session || !run.session.remote) return this.engine.playCard(uid, tid);
+    const card = this.engine.card(uid);
+    const ref = card ? cardRef(this.engine, card) : null;
+    if (!ref) {
+      console.error('[combat] no cardRef for', uid, '— playing it locally instead');
+      return this.engine.playCard(uid, tid);
+    }
+    return act(run, { t: INPUT.PLAY, ...ref, target: tid || null });
   }
 
   _defaultTargetFor(uid) {
@@ -1161,7 +1188,8 @@ export class CombatScene extends Scene {
 
     this._snacking = true;
     try {
-      if (run && typeof run.useSnack === 'function') await run.useSnack(index, null);
+      if (run && run.session && run.session.remote) await act(run, { t: INPUT.SNACK, index, target: null });
+      else if (run && typeof run.useSnack === 'function') await run.useSnack(index, null);
       else await this.engine.useSnack(snack, null);
     } catch (e) {
       console.error('[combat] useSnack', e);
@@ -2897,11 +2925,18 @@ export class CombatScene extends Scene {
   /**
    * End the turn.
    *
-   * SOLO, and any client that owns its seat over a wire, ends the table:
-   * there is nobody else here to wait for. Pass-and-play ends only MY seat —
-   * which is what `endTurn(seat)` has always meant — and then covers the board
-   * and hands the machine to whoever has not gone yet. The enemy phase runs
-   * itself when the last seat closes, exactly as it did before.
+   * SOLO ends the table: there is nobody else here to wait for. Pass-and-play
+   * ends only MY seat — which is what `endTurn(seat)` has always meant — and
+   * then covers the board and hands the machine to whoever has not gone yet.
+   * The enemy phase runs itself when the last seat closes.
+   *
+   * OVER A WIRE it ends my seat too, and as an INPUT. This used to end the
+   * table, on the reasoning that a client owning its seat has nobody to wait
+   * for — but there are three other Kids and they are on other machines, so
+   * ending the table would close their turns from here. Each client issues
+   * `END` for its own seat, every client applies all four in the one agreed
+   * order, and the enemy phase falls out of the last one on every machine at
+   * the same point in the log.
    */
   async _endTurn() {
     if (this._resolving || !this.engine || this.engine.over) return;
@@ -2910,9 +2945,12 @@ export class CombatScene extends Scene {
     this._clearPreview();
     this.hand.lock();
     this.ctx.audio?.play?.('ui:confirm');
-    const hotseat = shouldHandOff(this.ctx.run);
+    const run = this.ctx.run;
+    const hotseat = shouldHandOff(run);
+    const wired = !!(run && run.session && run.session.remote);
     try {
-      await this.engine.endTurn(hotseat ? this.me : undefined);
+      if (wired) await act(run, { t: INPUT.END });
+      else await this.engine.endTurn(hotseat ? this.me : undefined);
     } catch (e) { console.error('[combat] endTurn', e); }
     await this._settle();
     if (!this.engine) { this._resolving = false; return; }   // the fight ended
