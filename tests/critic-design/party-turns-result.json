@@ -11,14 +11,14 @@
  "four": {
   "size": 4,
   "n": 6,
-  "turns": 53.2,
-  "partyGuard": 2294.7,
-  "left": 60,
-  "fallen": 1.2,
+  "turns": 10,
+  "partyGuard": 576.2,
+  "left": 80,
+  "fallen": 0,
   "botErrors": 0
  },
- "tRatio": 7.94,
- "gRatio": 60.07,
+ "tRatio": 1.49,
+ "gRatio": 15.08,
  "checks": [
   {
    "ok": true,
@@ -31,17 +31,17 @@
    "detail": "0 / 0"
   },
   {
-   "ok": false,
+   "ok": true,
    "what": "four Kids finish within 2x the turns one Kid takes",
-   "detail": "53.2 / 6.7 = 7.94x"
+   "detail": "10 / 6.7 = 1.49x"
   },
   {
-   "ok": false,
+   "ok": true,
    "what": "and raise less than 20x the Guard doing it",
-   "detail": "2294.7 / 38.2 = 60.07x"
+   "detail": "576.2 / 38.2 = 15.08x"
   }
  ],
- "failed": 2,
- "passed": 2,
+ "failed": 0,
+ "passed": 4,
  "loadoutErrors": 0
 }

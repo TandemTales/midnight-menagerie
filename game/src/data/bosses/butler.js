@@ -240,10 +240,32 @@ export const butler = {
    * compensation. The targeting is now built, so the Courage can stop standing
    * in for it.
    *
-   * STILL WRONG, and honestly: the fight is LONG at three and four Kids (~25
-   * and ~40 turns against solo's 13) because party damage output does not scale
-   * with party size the way the Courage pool does. That is a structural problem
-   * this constant cannot fix — see the note, §8.
+   * ── 2026-08-29: THE TABLE ABOVE WAS MEASURED WITH A BROKEN BOT ────────────
+   *
+   * The 0% at three and four Kids that this whole curve was fitted to was
+   * `lib/bot.js` turtling, not this fight being unwinnable. It projected the
+   * rest of a fight as "enemy Courage remaining / MY damage rate" with the
+   * Courage party-scaled and the rate belonging to one seat, so four Kids
+   * valued Guard four times as highly as one Kid. CONTRACTS 47.
+   *
+   * Re-measured against a bot that attacks, n=24, solo anchor 66.7% at 13.2
+   * turns and 39% Courage left:
+   *
+   *     4p   x3.2 (this curve)  100% win   8.5 turns   84% left
+   *          x4.5               100% win  11.6 turns   76% left
+   *          x5.8 (the global)  100% win  15.0 turns   70% left
+   *
+   * **The number is not the lever and this curve is not the bug.** Four Kids
+   * win every time at every multiplier tried; Courage buys turns, not danger,
+   * and the same x1.8 that leaves 4p untouched takes SOLO from 66.7% to 4.2%.
+   * Raising it would punish one Kid to fix four.
+   *
+   * Left at [1, 2.2, 2.8, 3.2] deliberately, and it is now the shallowest
+   * honest reading rather than a compensation: at 3.2 the fight is at least
+   * SHORT (8.5 turns against solo's 13.2) instead of long and equally
+   * unloseable. What is actually missing is threat a party's Guard cannot
+   * answer — CONTRACTS 45, the shape the Governess's Sharp Correction proved.
+   * His only pierce is the Reprimand's 5-7 on a House Rule violation.
    */
   partyHp: (n) => [1, 2.2, 2.8, 3.2][Math.min(n, 4) - 1] ?? 1,
 

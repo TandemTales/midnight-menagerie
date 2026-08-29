@@ -69,6 +69,34 @@ change him.
   undeclared error AND on a declaration that never fires. Exit 0 for the first
   time. The third declaration was invisible until the other two were named.
 
+- **BOTH BOSSES WERE TUNED AGAINST THE TURTLING BOT, and re-measuring says the
+  Courage number is not the lever.** With a party that attacks, `party-boss.py
+  --n 24`:
+
+  | | solo | 4 Kids |
+  |---|---|---|
+  | Butler | 66.7% win · 13.2 turns · 39% left | **100%** · 8.5 turns · **84% left** · 0 falls |
+  | Governess | 66.7% win · 11.3 turns · 58% left | **100%** · 10.8 turns · 78% left · 0 falls |
+
+  The Butler's fight is now SHORTER at four Kids than solo, because his
+  `partyHp: [1, 2.2, 2.8, 3.2]` was cut from the global specifically to rescue
+  a party that could not win. **Bracketing both bosses says raising it back
+  does not help:**
+
+  | | ×1 | ×1.4 / ×1.3 | ×1.8 / ×1.6 |
+  |---|---|---|---|
+  | Butler 4p | 100% · 8.5t · 84% | 100% · 11.6t · 76% | 100% · 15.0t · 70% |
+  | Butler 1p | 66.7% | 33.3% | **4.2%** |
+  | Governess 4p | 100% · 10.8t · 78% | 95.8% · 13.3t · 76% | 79.2% · 16.2t · 75% |
+  | Governess 1p | 66.7% | 41.7% | 37.5% |
+
+  Four Kids win at every multiplier tried; Courage buys TURNS, not danger, and
+  the same multiplier that leaves 4p untouched destroys solo. **This is trap 45
+  proved twice more**: the lever is threat a party's Guard cannot answer, which
+  is what the Governess's Sharp Correction is and what the Butler has only
+  5–7 of (the Reprimand's pierce on a House Rule violation). Both curves left
+  where they are, deliberately; the comment in `butler.js` records why.
+
 - **STILL OPEN, and now the honest headline for the party game: a party
   finishes too comfortable.** Elite `left%` is 60 solo against 80 at three and
   four Kids; the standard tier is 61 against 84. Length is fixed, cost is not.
