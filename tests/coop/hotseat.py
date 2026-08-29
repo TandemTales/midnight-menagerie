@@ -43,6 +43,13 @@ WHO = """() => {
     phase: e ? e.phase : null,
     veil: !!document.querySelector('.mm-handoff'),
     veilName: (document.querySelector('.hoff__name') || {}).textContent || null,
+    /* What the draw-pile PANEL would actually show, off the real method the
+       panel calls, against what the button above it counts (this seat) and what
+       seat 0 is holding. These were the same expression for every Kid until
+       2026-08-29: the button showed mine and the panel opened the host's. */
+    panelDrawUids: (e && sc._pileCards) ? sc._pileCards('draw').map(c => c.uid).sort() : null,
+    seatDrawUids: sc.mePiles ? sc.mePiles.draw.map(c => c.uid).sort() : null,
+    seat0DrawUids: e ? e.state.piles.draw.map(c => c.uid).sort() : null,
   };
 }"""
 
@@ -141,6 +148,15 @@ async def main():
                 check(all(sorted(c["handUids"]) != sorted(h) for h in hands),
                       f"seat {seat + 1}'s hand is nobody else's")
                 hands.append(c["handUids"])
+                # The pile PANEL, off the real method it opens with. The button
+                # above it has always counted this seat; the panel used to open
+                # seat 0's cards for everybody else.
+                check(c["panelDrawUids"] == c["seatDrawUids"],
+                      f"the draw panel shows seat {seat + 1}'s own cards",
+                      f"{len(c['panelDrawUids'] or [])} shown vs "
+                      f"{len(c['seatDrawUids'] or [])} in the pile")
+                check(c["panelDrawUids"] != c["seat0DrawUids"],
+                      f"and NOT the host's — seat {seat + 1} is not seat 0")
                 check(c["turn"] == 1, "still turn 1 — the enemies have not moved", str(c["turn"]))
             else:
                 check(c["turn"] == 2 or c["phase"] == "over",

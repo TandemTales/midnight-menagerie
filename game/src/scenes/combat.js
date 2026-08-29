@@ -3140,15 +3140,46 @@ export class CombatScene extends Scene {
    * so looking is information and never an oracle. This screen used to carry a
    * private copy of a worse one; it does not any more.
    */
-  async _openPile(which) {
-    if (!this.engine || this._pileOpen) return;
+  /**
+   * The cards the pile panel will show, for THIS seat.
+   *
+   * Split out of `_openPile` so it can be asserted without driving a modal:
+   * `openPile()` is awaited until the player closes it, so a test that called
+   * it would hang, and a test that re-derived the list would be proving its own
+   * arithmetic. `tests/coop/hotseat.py` calls this one.
+   */
+  _pileCards(which) {
+    if (!this.engine) return [];
     const st = this.engine.state;
-    const raw = which === 'draw' ? st.piles.draw
-      : which === 'torn' ? (st.piles.stash || []).slice()
-        : st.piles.discard.slice().reverse();
-    const cards = raw.map(c => ({
+    /**
+     * THIS seat's piles, not seat 0's.
+     *
+     * `state.piles` is `_pileState(this.players[0])` — flat, seat 0's, and
+     * documented as such. Every other reader on this screen goes through
+     * `this.me` / `this.mePiles`, INCLUDING `_syncPiles`, which paints the
+     * counts on the three buttons that open this panel. So for any Kid not
+     * sitting at seat 0 the button read MY count and the panel opened the
+     * HOST'S cards — a different number of cards, belonging to a different
+     * Companion, with different names and different art. The Torn/Stash panel
+     * was worse still: its title and tooltip come from the LOCAL Kid's
+     * `STASH_PILE` entry, so Mopsy's "Torn" heading sat above Hush's stash.
+     *
+     * Same shape as the pile EVENTS that had every seat's draws landing in the
+     * local Kid's fan (trap 29) — the per-seat snapshot existed, and this was
+     * the reader still reaching for the flat one.
+     */
+    const mine = st.players?.[this.seatIndex]?.piles || st.piles;
+    const raw = which === 'draw' ? mine.draw
+      : which === 'torn' ? (mine.stash || []).slice()
+        : mine.discard.slice().reverse();
+    return raw.map(c => ({
       uid: c.uid, def: this.engine.card(c.uid)?.def || c, upgraded: c.upgraded, cost: c.cost,
     }));
+  }
+
+  async _openPile(which) {
+    if (!this.engine || this._pileOpen) return;
+    const cards = this._pileCards(which);
     this._pileOpen = true;
     this.ctx.audio?.play?.('ui:open-panel');
     try {
