@@ -25,6 +25,8 @@ import { cardById } from '../data/cards.js';
 import { plural } from '../util/plural.js';
 import { relicSigil } from '../data/relics.js';
 import { RoomScene, esc } from './reward.js';
+import { act, ACT, deckIndex } from '../net/actions.js';
+import { INPUT } from '../net/session.js';
 import { el, ensureCss, rovingFocus } from '../ui/portrait.js';
 
 const CSS_REST = new URL('./rest.css', import.meta.url).href;
@@ -167,7 +169,10 @@ export class RestScene extends RoomScene {
           : 'A Keepsake you are carrying will not let you.',
         can: healAmt > 0,
         why: healAmt > 0 ? '' : 'The White Glove does not permit resting.',
-        run: () => { const n = r.rest(); return `You sleep. ${n} ${TERMS.hp} back.`; },
+        run: async () => {
+          const n = await act(r, { t: INPUT.ROOM, act: ACT.REST_NIGHT });
+          return `You sleep. ${n} ${TERMS.hp} back.`;
+        },
       },
       {
         id: 'upgrade', name: `Sharpen a ${TERMS.card}`,
@@ -205,8 +210,11 @@ export class RestScene extends RoomScene {
           : `Recovers ${mendAmt} — 30% of their maximum. You get no rest.`,
         can: mendAmt > 0 && mate.courage < mate.maxCourage,
         why: mate.courage >= mate.maxCourage ? `${mateName} does not need it.` : '',
-        run: () => {
-          const n = r.healKid(mate, mendAmt);
+        run: async () => {
+          // `to`, not `seat`: `seat` is who ACTED and the wire refuses a
+          // message claiming to be somebody else. See net/actions.js.
+          const n = await act(r, { t: INPUT.ROOM, act: ACT.REST_MEND_ALLY,
+                                   to: r.kids.indexOf(mate), n: mendAmt });
           return `You keep watch. ${mateName} gets ${n} ${TERMS.hp} back.`;
         },
       }] : []),
@@ -294,7 +302,9 @@ export class RestScene extends RoomScene {
       cards, preview: 'upgrade', confirmLabel: 'Sharpen it',
     });
     if (!uid) return null;
-    const c = this.run.upgradeCard(uid);
+    const i = deckIndex(this.run, this.run.localSeat, uid);
+    if (i < 0) return null;
+    const c = await act(this.run, { t: INPUT.ROOM, act: ACT.REST_MEND, index: i });
     if (!c) return null;
     return `${cardById(c.id)?.name}+ for the rest of the expedition.`;
   }
@@ -322,8 +332,11 @@ export class RestScene extends RoomScene {
     if (!uid) return null;
     const src = cards.find(c => c.uid === uid);
     if (!src) return null;
+    const to = this.run.kids.indexOf(mate);
+    const i = deckIndex(this.run, to, uid);
+    if (i < 0) return null;
     const before = this.run.cardCount();
-    this.run.addCard(src.def.id);
+    await act(this.run, { t: INPUT.ROOM, act: ACT.REST_CLONE, to, index: i });
     if (this.run.cardCount() === before) return null;
     return `You watched ${name} until you had it. ${src.def.name} is yours now.`;
   }
@@ -331,16 +344,16 @@ export class RestScene extends RoomScene {
   async _doForge() {
     const id = await this._pickKeepsake();
     if (!id) return null;
-    const k = this.run.forgeKeepsake(id);
+    const k = await act(this.run, { t: INPUT.ROOM, act: ACT.REST_FORGE, id });
     if (!k) return null;
     return `${k.name} is forged. It costs you ${this.run.forgeCost()} maximum ${TERMS.hp} and it was worth it.`;
   }
 
-  _doSit() {
+  async _doSit() {
     const lines = COMPANION_TALK[this.run.companion] || GENERIC_TALK;
     const g = this.run.fork(`sit:${this.run.currentNodeId}`);
     const line = lines[g.int(lines.length)];
-    this.run.addClues(1);
+    await act(this.run, { t: INPUT.ROOM, act: ACT.REST_SIT });
     const name = COMPANIONS.find(c => c.slug === this.run.companion)?.name || 'They';
     return `${name}: ${line}`;
   }

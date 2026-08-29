@@ -38,9 +38,18 @@
  * Keepsake's `id`), which is the identity both clients genuinely share.
  * Converting uid → index is the CALL SITE's job, on the client that has the
  * uid; `cardAt()` converts back.
+ *
+ * ── `seat` is who ACTED; `to` is who it lands on ────────────────────────────
+ *
+ * `session.input()` rejects any message whose `seat` is not the sending
+ * client's, because a client may only speak for itself. So an action aimed at
+ * somebody else — mending a friend, copying one of their Tricks — names them
+ * with `to`, the same field `useSnack(snack, targetId, { to: seat })` already
+ * uses. Reusing `seat` for the target makes the wire refuse the message.
  */
 
 import { INPUT } from './session.js';
+import { SNACKS } from '../state/run.js';
 
 /**
  * What a Kid can do in a room. One verb per thing the run layer can be asked
@@ -53,21 +62,23 @@ export const ACT = Object.freeze({
   REWARD_CLAIM: 'reward.claim',     // { close }   bank the purse and the Keepsake
 
   /* Mr. Moth's */
-  SHOP_BUY: 'shop.buy',             // { kind:'card'|'keepsake'|'snack', key, id, price }
+  SHOP_BUY: 'shop.buy',             // { kind:'card'|'keepsake'|'snack', id, price, key }
   SHOP_REMOVE: 'shop.remove',       // { index }   a Trick in the buyer's own deck
 
   /* the Safe Room */
   REST_MEND: 'rest.mend',           // { index }   a Trick in their own deck
-  REST_CLONE: 'rest.clone',         // { seat, index }  one of a friend's
+  REST_CLONE: 'rest.clone',         // { to, index }  one of a friend's
   REST_FORGE: 'rest.forge',         // { id }      an authored Keepsake id
   REST_SIT: 'rest.sit',             // {}
-  REST_HEAL: 'rest.heal',           // { n }       the night's rest
-  REST_MEND_ALLY: 'rest.mendAlly',  // { seat, n } patch a friend up instead
+  REST_NIGHT: 'rest.night',         // {}          sleep — the amount is the run's
+  REST_MEND_ALLY: 'rest.mendAlly',  // { to, n }   sit up with a friend instead
 
   /* a Curiosity */
   EVENT_OPTION: 'event.option',     // { id }      an authored option id
   EVENT_MEND: 'event.mend',         // { index }
   EVENT_FORGET: 'event.forget',     // { index }
+  EVENT_RESCUE: 'event.rescue',     // { slug }    a Companion comes home
+  EVENT_LOOT: 'event.loot',         // { lostThings, clues }  the tidy pile
 
   /* every per-Kid room */
   ROOM_DONE: 'room.done',           // {}          this Kid's turn in here is over
@@ -165,7 +176,14 @@ function _room(run, msg, seat) {
 
     case ACT.SHOP_BUY: {
       if (msg.kind === 'keepsake') return run.buyKeepsake(msg.id, msg.price | 0, msg.key || null);
-      if (msg.kind === 'snack') return run.buySnack(msg.snack, msg.price | 0, msg.key || null);
+      if (msg.kind === 'snack') {
+        /* The shelf is NOT re-rolled to find the item. `shopStock` reads the
+           Kid's keepsakes to decide what to offer, so recomputing it after a
+           purchase answers a different shelf — the buyer names the Snack by its
+           AUTHORED id and the price it was standing under. */
+        const def = SNACKS.find(s => s.id === msg.id);
+        return def ? run.buySnack({ ...def, price: msg.price | 0 }, msg.price | 0, msg.key || null) : null;
+      }
       return run.buyCard(msg.id, msg.price | 0, msg.key || null);
     }
     case ACT.SHOP_REMOVE: {
@@ -178,7 +196,7 @@ function _room(run, msg, seat) {
       return c ? run.upgradeCard(c.uid) : null;
     }
     case ACT.REST_CLONE: {
-      const c = cardAt(run, msg.seat | 0, msg.index);
+      const c = cardAt(run, msg.to | 0, msg.index);
       // A COPY. `addCard` mints a fresh instance into the learner's deck and
       // the friend's deck is never touched — rest.js `_doClone`.
       return c ? run.addCard(c.id) : null;
@@ -187,10 +205,13 @@ function _room(run, msg, seat) {
       return run.forgeKeepsake(msg.id);
     case ACT.REST_SIT:
       return run.addClues(1);
-    case ACT.REST_HEAL:
-      return run.heal(msg.n | 0);
+    case ACT.REST_NIGHT:
+      // `run.rest()` and not `run.heal(n)`: the night also counts a Safe Room
+      // and fires every `onRestSite` Keepsake hook, and the amount it heals is
+      // the run's own answer rather than a number the screen computed.
+      return run.rest();
     case ACT.REST_MEND_ALLY:
-      return run.healKid(run.kids[msg.seat | 0], msg.n | 0);
+      return run.healKid(run.kids[msg.to | 0], msg.n | 0);
 
     case ACT.EVENT_OPTION:
       return run.chooseEventOption(msg.id);
@@ -201,6 +222,15 @@ function _room(run, msg, seat) {
     case ACT.EVENT_FORGET: {
       const c = cardAt(run, seat, msg.index);
       return c ? run.removeCard(c.uid) : null;
+    }
+    case ACT.EVENT_RESCUE:
+      // One pet comes home, for everybody: `rescued` is shared and it reaches
+      // the lifetime save. A Rescue is the one Curiosity that is not per Kid.
+      return run.rescueCompanion(msg.slug);
+    case ACT.EVENT_LOOT: {
+      if (msg.lostThings) run.addLostThings(msg.lostThings | 0);
+      if (msg.clues) run.addClues(msg.clues | 0);
+      return true;
     }
 
     case ACT.ROOM_DONE:

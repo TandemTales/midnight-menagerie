@@ -235,7 +235,10 @@ export class RoomScene extends Scene {
   async _leaveRoom({ perKid = true } = {}) {
     if (this._leaving) return;
     const run = this.run;
-    if (run && !this.mock) run.markRoomDone();
+    // On the wire, because `roomDoneBy` is what decides whether the room is
+    // still open — and every client has to agree about that or one of them
+    // shuts Mr. Moth's while somebody is still standing at the shelf.
+    if (run && !this.mock) await act(run, { t: INPUT.ROOM, act: ACT.ROOM_DONE });
     // `perKid: false` for a room there is only one of. A Rescue is one pet
     // coming home — handing the screen on would show the second Kid a
     // Companion already rescued and nothing to do about it.

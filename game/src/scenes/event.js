@@ -21,6 +21,8 @@ import { cardById } from '../data/cards.js';
 import { relicById, relicSigil } from '../data/relics.js';
 import { satisfyingItem, itemsSatisfying } from '../data/backpack.js';
 import { RoomScene, esc, chip } from './reward.js';
+import { act, ACT, deckIndex } from '../net/actions.js';
+import { INPUT } from '../net/session.js';
 import {
   el, ensureCss, rovingFocus, fullSrc, thumbSrc, freedCompanions,
   PORTRAIT_W, PORTRAIT_H,
@@ -177,9 +179,9 @@ export class EventScene extends RoomScene {
   }
 
   /* ── choosing ─────────────────────────────────────────────────────────── */
-  _choose(o) {
+  async _choose(o) {
     if (this._answered) return;
-    const res = this.run.chooseEventOption(o.id);
+    const res = await act(this.run, { t: INPUT.ROOM, act: ACT.EVENT_OPTION, id: o.id });
     if (!res) return;
     this._answered = true;
     this.ctx.audio?.play?.('ui:confirm');
@@ -265,7 +267,8 @@ export class EventScene extends RoomScene {
           title: `What gets mended?`, sub: 'It comes back stronger and slightly wrong.',
           cards, preview: 'upgrade', confirmLabel: 'Mend it', allowCancel: false,
         });
-        if (uid) this.run.upgradeCard(uid);
+        const i = uid ? deckIndex(this.run, this.run.localSeat, uid) : -1;
+        if (i >= 0) await act(this.run, { t: INPUT.ROOM, act: ACT.EVENT_MEND, index: i });
       }
       p.upgradeCard = Math.max(0, p.upgradeCard - 1);
       this._syncHud(); this._syncFoot();
@@ -280,7 +283,8 @@ export class EventScene extends RoomScene {
           title: `Which ${TERMS.card} goes?`, sub: 'You will not remember it afterwards.',
           cards, confirmLabel: 'Let it go', allowCancel: false,
         });
-        if (uid) this.run.removeCard(uid);
+        const i = uid ? deckIndex(this.run, this.run.localSeat, uid) : -1;
+        if (i >= 0) await act(this.run, { t: INPUT.ROOM, act: ACT.EVENT_FORGET, index: i });
       }
       p.removeCard = Math.max(0, p.removeCard - 1);
       this._syncHud(); this._syncFoot();
@@ -372,8 +376,7 @@ export class EventScene extends RoomScene {
     b.addEventListener('click', async () => {
       if (this._answered || this._opening) return;
       if (already) {
-        this.run.addLostThings(60);
-        this.run.addClues(1);
+        await act(this.run, { t: INPUT.ROOM, act: ACT.EVENT_LOOT, lostThings: 60, clues: 1 });
         this._showOutcome({ option: 'free', title: 'A tidy pile', text: 'Buttons, a bent spoon, a photograph of a door. Somebody meant these to be found.' },
           { gained: [{ kind: 'lostThings', n: 60 }, { kind: 'clues', n: 1 }] }, true);
         this._syncHud();
@@ -381,7 +384,7 @@ export class EventScene extends RoomScene {
       }
       this._opening = true;
       b.disabled = true;
-      this.run.rescueCompanion(slug);
+      await act(this.run, { t: INPUT.ROOM, act: ACT.EVENT_RESCUE, slug });
       this._openDoor(name);
       // The door opens, and *then* Marmalade walks out. Landing both in the same
       // frame threw away the beat the writing is built on.

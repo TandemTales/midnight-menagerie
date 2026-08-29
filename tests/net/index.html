@@ -374,7 +374,128 @@ try {
     A.session.close(); B.session.close();
   }
 
-  // ══ 10. Without a session, `act` is the direct call it replaced ═════════
+  // ══ 10. Mr. Moth's, the Safe Room and a Curiosity, all on the wire ═════
+  /* The same shape as §9 for the other three per-Kid rooms. Each is a screen
+     the HANDOFF listed as "still acts locally", and each one changes state the
+     next fight deals from. */
+  {
+    const PARTY = [{ companion: 'marmalade', kid: 'maya' }, { companion: 'bones', kid: 'eli' }];
+    const roomClient = (hub, seat, id) => {
+      const run = Run.mock({ seed: SEED, kids: PARTY });
+      const session = new Session({ transport: hub.peer(id), seat, seats: 2, seed: SEED, host: seat === 0 });
+      attachActions(session, run);
+      return { run, session };
+    };
+    const both = async () => { await new Promise(r => setTimeout(r, 30)); await A.session.settled(); await B.session.settled(); };
+    const deckOf = (c, s) => c.run.kids[s].deck.map(x => `${x.id}${x.upgraded ? '+' : ''}`).join('|');
+
+    const hub = new LoopbackHub();
+    const A = roomClient(hub, 0, 'A');
+    const B = roomClient(hub, 1, 'B');
+    for (const c of [A, B]) c.run.currentNodeId = 'x-shop';
+
+    // ── Mr. Moth's ───────────────────────────────────────────────────────
+    const shelf = B.run.shopStock({ id: 'x-shop' }, B.run.kids[1]);
+    check(JSON.stringify(shelf) === JSON.stringify(A.run.shopStock({ id: 'x-shop' }, A.run.kids[1])),
+      'both machines roll seat 1 the SAME shelf');
+    const item = shelf.cards[0];
+    B.run.kids[1].lostThings = 999; A.run.kids[1].lostThings = 999;
+    const shopBefore = deckOf(A, 1);
+    await act(B.run, { t: INPUT.ROOM, act: ACT.SHOP_BUY,
+                       kind: 'card', id: item.id, price: item.price, key: `card:${item.id}` });
+    await both();
+    check(deckOf(A, 1) === deckOf(B, 1) && deckOf(A, 1) !== shopBefore,
+      'a Trick bought at Mr. Moth’s lands in the same deck on both', item.id);
+    check(A.run.kids[1].lostThings === B.run.kids[1].lostThings
+       && A.run.kids[1].lostThings === 999 - item.price,
+      'and the purse was charged once, on both',
+      `${A.run.kids[1].lostThings} / ${B.run.kids[1].lostThings}`);
+
+    // The removal service names the card by INDEX, the way the screen converts it.
+    const doomed = A.run.kids[1].deck[3];
+    const idx = deckIndex(B.run, 1, B.run.kids[1].deck[3].uid);
+    await act(B.run, { t: INPUT.ROOM, act: ACT.SHOP_REMOVE, index: idx });
+    await both();
+    check(!A.run.kids[1].deck.some(c => c.uid === doomed.uid),
+      'a forgotten Trick is gone from seat 0’s copy of seat 1’s deck too');
+    check(deckOf(A, 1) === deckOf(B, 1), 'and the two decks still match');
+
+    // ── the Safe Room ────────────────────────────────────────────────────
+    const mendMe = A.run.kids[0].deck.findIndex(c => !c.upgraded);
+    await act(A.run, { t: INPUT.ROOM, act: ACT.REST_MEND, index: mendMe });
+    await both();
+    check(A.run.kids[0].deck[mendMe].upgraded && B.run.kids[0].deck[mendMe].upgraded,
+      'a Trick sharpened in the Safe Room is sharpened on both machines');
+
+    const cloneFrom = 1;                       // seat 0 learns one of seat 1's
+    const wantId = A.run.kids[1].deck[cloneFrom].id;
+    const growFrom = A.run.kids[0].deck.length;
+    const theirs = A.run.kids[1].deck.length;
+    await act(A.run, { t: INPUT.ROOM, act: ACT.REST_CLONE, to: 1, index: cloneFrom });
+    await both();
+    check(A.run.kids[0].deck.length === growFrom + 1 && B.run.kids[0].deck.length === growFrom + 1,
+      'a Clone grows the learner’s deck on both', `${growFrom} -> ${A.run.kids[0].deck.length}`);
+    check(A.run.kids[0].deck[growFrom].id === wantId, 'with the Trick they watched', wantId);
+    check(A.run.kids[1].deck.length === theirs && B.run.kids[1].deck.length === theirs,
+      'and THEY keep theirs — a copy, not a move');
+
+    // Mending a friend names them with `to`, because `seat` means who ACTED.
+    A.run.kids[1].courage = 20; B.run.kids[1].courage = 20;
+    await act(A.run, { t: INPUT.ROOM, act: ACT.REST_MEND_ALLY, to: 1, n: 15 });
+    await both();
+    check(A.run.kids[1].courage === 35 && B.run.kids[1].courage === 35,
+      'sitting up with a friend heals THEM, on both machines',
+      `${A.run.kids[1].courage} / ${B.run.kids[1].courage}`);
+    check(A.run.kids[0].courage === B.run.kids[0].courage,
+      'and the Kid who kept watch is unchanged on both');
+
+    // A whole night's sleep is the run's own number, not one the screen sent.
+    A.run.kids[0].courage = 30; B.run.kids[0].courage = 30;
+    const slept = await act(A.run, { t: INPUT.ROOM, act: ACT.REST_NIGHT });
+    await both();
+    check(slept > 0 && A.run.kids[0].courage === B.run.kids[0].courage,
+      'a night’s rest heals the same amount on both', `+${slept}`);
+
+    // ── a Curiosity ──────────────────────────────────────────────────────
+    for (const c of [A, B]) {
+      c.run.currentNodeId = 'x-curio';
+      c.run.pendingEvent = { id: 'the-portrait-that-follows', nodeId: 'x-curio',
+                             resolved: null, resolvedBy: {}, pendingBy: {} };
+    }
+    const keepsBefore = A.run.kids[0].keepsakes.length;
+    await act(A.run, { t: INPUT.ROOM, act: ACT.EVENT_OPTION, id: 'call' });
+    await both();
+    check(!!A.run.pendingEvent.resolvedBy[0] && !!B.run.pendingEvent.resolvedBy[0],
+      'seat 0’s answer to a Curiosity is recorded on both machines');
+    check(A.run.kids[0].keepsakes.length === keepsBefore + 1
+       && B.run.kids[0].keepsakes.length === keepsBefore + 1,
+      'and the Keepsake it paid out is in their bag on both',
+      `${keepsBefore} -> ${A.run.kids[0].keepsakes.length}`);
+    check(!A.run.pendingEvent.resolvedBy[1] && !B.run.pendingEvent.resolvedBy[1],
+      'while seat 1 has still not answered it — the choice is theirs');
+
+    await act(B.run, { t: INPUT.ROOM, act: ACT.EVENT_OPTION, id: 'straighten' });
+    await both();
+    check(A.run.pendingEvent.resolvedBy[1]?.option === 'straighten'
+       && B.run.pendingEvent.resolvedBy[1]?.option === 'straighten',
+      'and their own, different answer reaches both too');
+
+    // ── who is still owed a turn in here ─────────────────────────────────
+    await act(A.run, { t: INPUT.ROOM, act: ACT.ROOM_DONE });
+    await both();
+    check(A.run.roomDoneBy(A.run.kids[0]) && B.run.roomDoneBy(B.run.kids[0]),
+      'a Kid finishing with a room is known to both, or one shuts it on the other');
+    check(!A.run.roomDoneBy(A.run.kids[1]) && !B.run.roomDoneBy(B.run.kids[1]),
+      'and the other Kid is still owed their turn');
+
+    check(A.run.localSeat === 0 && B.run.localSeat === 1,
+      'through all of it, neither screen changed hands',
+      `${A.run.localSeat} / ${B.run.localSeat}`);
+
+    A.session.close(); B.session.close();
+  }
+
+  // ══ 11. Without a session, `act` is the direct call it replaced ═════════
   /* Solo and pass-and-play must not pay for the wire. `act()` returns the run
      layer's own answer synchronously when there is nothing to send, so a screen
      that used to call `run.takeRewardCard()` keeps the timing it had. */

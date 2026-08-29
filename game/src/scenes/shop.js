@@ -24,6 +24,8 @@ import { cardById } from '../data/cards.js';
 import { word } from '../util/plural.js';
 import { relicById, relicSigil } from '../data/relics.js';
 import { RoomScene, esc } from './reward.js';
+import { act, ACT, deckIndex } from '../net/actions.js';
+import { INPUT } from '../net/session.js';
 import { el, ensureCss, rovingFocus } from '../ui/portrait.js';
 import { iconSvg } from '../ui/icons.js';
 import { fitCardToSlot } from './_cardfit.js';
@@ -185,8 +187,9 @@ export class ShopScene extends RoomScene {
       slot.appendChild(face);
       // Owning one already is a *note*, not a lock — a second copy is often the play.
       if (item.owned) slot.appendChild(el('span', 'sh-card__own', 'already in your deck'));
-      slot.appendChild(this._priceTag(item.price, key, `Buy ${def.name}`, () => {
-        if (!this.run.buyCard(item.id, item.price, key)) return false;
+      slot.appendChild(this._priceTag(item.price, key, `Buy ${def.name}`, async () => {
+        if (!await act(this.run, { t: INPUT.ROOM, act: ACT.SHOP_BUY,
+                                   kind: 'card', id: item.id, price: item.price, key })) return false;
         return `${def.name} is yours.`;
       }));
       this.$cards.appendChild(slot);
@@ -210,8 +213,9 @@ export class ShopScene extends RoomScene {
           <b>${esc(def.name)}</b>
           <em>${esc(def.desc)}</em>
         </span>`;
-      row.appendChild(this._priceTag(item.price, key, `Buy ${def.name}`, () => {
-        if (!this.run.buyKeepsake(item.id, item.price, key)) return false;
+      row.appendChild(this._priceTag(item.price, key, `Buy ${def.name}`, async () => {
+        if (!await act(this.run, { t: INPUT.ROOM, act: ACT.SHOP_BUY,
+                                   kind: 'keepsake', id: item.id, price: item.price, key })) return false;
         return `${def.name} goes in the bag.`;
       }));
       this.$keeps.appendChild(row);
@@ -231,8 +235,9 @@ export class ShopScene extends RoomScene {
         <span class="sh-row__txt"><b>${esc(item.name)}</b><em>${esc(item.desc)}</em></span>`;
       // Fullness is recomputed in `_syncAffordable()`, not frozen here: buying
       // the last free slot has to lock the rows next to it immediately.
-      const tag = this._priceTag(item.price, key, `Buy ${item.name}`, () => {
-        if (!this.run.buySnack(item, item.price, key)) return false;
+      const tag = this._priceTag(item.price, key, `Buy ${item.name}`, async () => {
+        if (!await act(this.run, { t: INPUT.ROOM, act: ACT.SHOP_BUY,
+                                   kind: 'snack', id: item.id, price: item.price, key })) return false;
         return `${item.name} in the pocket.`;
       });
       tag.dataset.kind = 'snack';
@@ -273,7 +278,11 @@ export class ShopScene extends RoomScene {
         cards, confirmLabel: 'Hand it over',
       });
       if (!uid) return false;
-      const gone = this.run.buyRemoval(uid);
+      // uid → index HERE, on the client that has the uid. A uid is not a
+      // network identity (CONTRACTS trap 30) — `net/actions.js` says why.
+      const i = deckIndex(this.run, this.run.localSeat, uid);
+      if (i < 0) return false;
+      const gone = await act(this.run, { t: INPUT.ROOM, act: ACT.SHOP_REMOVE, index: i });
       if (!gone) return false;
       this._renderRemoval();
       this._syncAffordable();
