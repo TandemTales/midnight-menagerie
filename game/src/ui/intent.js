@@ -320,15 +320,27 @@ export class IntentView {
        mentioned anywhere on screen. The Door Greeter's rule announcement showed
        a chip reading just "DEBUFF". Neither of those is in the Intent payload;
        both are in the EnemyDef's move, which the scene already hands us. */
+    /* PIERCE — Guard will not stop this one, and the number alone cannot say so.
+       A 24 that ignores Guard drawn as a plain 24 invites the one response that
+       cannot work, which is the opposite of what an intent is for. */
+    const pierces = !!intent.pierce;
     const extras = this._extras();
     const ek = extras.map(e => e.k).join(',');
     const key = `${hasDmg ? dmg + 'x' + hits : ''}|${hasBlk ? blk : ''}|${type}|${ek}`
-      + `|${hasSplash ? splash + (aimedAtMe ? 'f' : 'y') : ''}`;
+      + `|${hasSplash ? splash + (aimedAtMe ? 'f' : 'y') : ''}${pierces ? '|p' : ''}`;
     if (key !== this._valKey) {
       this._valKey = key;
       this.$vals.textContent = '';
       this.$extras.textContent = '';
-      if (hasDmg) this.$vals.appendChild(this._chip('damage', String(dmg), hits > 1 ? `×${hits}` : ''));
+      if (hasDmg) {
+        const chip = this._chip('damage', String(dmg), hits > 1 ? `×${hits}` : '');
+        if (pierces) {
+          chip.dataset.pierce = '1';
+          chip.dataset.tip = 'Guard will not stop this.|It goes straight to Courage.';
+        }
+        this.$vals.appendChild(chip);
+      }
+      if (pierces) this.$vals.appendChild(this._chip('pierce', 'THROUGH GUARD', ''));
       if (hasSplash) {
         const chip = this._chip('splash', String(splash), aimedAtMe ? 'friend' : 'you');
         chip.dataset.tip = aimedAtMe

@@ -694,6 +694,25 @@
 }
 .cb-intent__chip[data-role="splash"] b { font-size: var(--fs-sm); color: var(--text-mid); }
 .cb-intent__chip[data-role="splash"] span { color: var(--text-lo); text-transform: uppercase; letter-spacing: .06em; }
+/* ── THROUGH GUARD ────────────────────────────────────────────────────────
+   The Governess's Sharp Correction ignores Guard in a party, because a table of
+   four generates Guard faster than any boss can spend it. The number alone
+   cannot say that, and a 24 that ignores Guard drawn as a plain 24 invites the
+   one response that cannot work. Warm rather than hollow: this is the headline
+   number's own warning, not a second number like `splash`, so it reads as part
+   of the threat instead of beside it. */
+.cb-intent__chip[data-role="pierce"] {
+  height: 18px; padding: 0 6px;
+  border-color: color-mix(in srgb, var(--threat-300) 60%, transparent);
+  background: color-mix(in srgb, var(--threat-300) 16%, transparent);
+}
+.cb-intent__chip[data-role="pierce"] b {
+  font-size: var(--fs-xs); color: var(--threat-200);
+  text-transform: uppercase; letter-spacing: .07em;
+}
+.cb-intent__chip[data-role="damage"][data-pierce] {
+  border-color: color-mix(in srgb, var(--threat-300) 60%, transparent);
+}
 .cb-intent__chipicon { width: 12px; height: 13px; color: var(--guard-300); display: block; }
 /* ── what the move does to your DECK, and the rule it announces ────────────
    Same chip, same row. `Pack Wrong` is `intent: DEBUFF, block: 5` plus

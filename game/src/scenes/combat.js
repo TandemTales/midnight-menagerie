@@ -1541,7 +1541,19 @@ export class CombatScene extends Scene {
     // a move aimed at the other Kid.
     try { inc = previewIncoming(this.engine, this.me); } catch { return; }
     const block = (inc.block || 0) + extraBlock;
-    const through = Math.max(0, inc.total - block);
+    /**
+     * Guard cannot be spent on the piercing share, so it is not in the
+     * arithmetic — it is added back on the far side of it.
+     *
+     * Without this the rail read "INCOMING 24 &minus; 9 Guard &rarr; 15" and
+     * "15 more Guard to stop it all" against the Governess's Sharp Correction,
+     * which ignores Guard in a party. Two false statements on the one widget
+     * whose whole job is to be believed, and every suite was green: a
+     * screenshot is what found it.
+     */
+    const pierced = inc.through || 0;
+    const blockable = Math.max(0, inc.total - pierced);
+    const through = pierced + Math.max(0, blockable - block);
     if (inc.total <= 0) {
       this.$inc.hidden = true;
       this.$pl.classList.remove('is-lethal');
@@ -1549,7 +1561,8 @@ export class CombatScene extends Scene {
     }
     const hp = this.me.hp;
     const lethal = through >= hp;
-    const need = Math.max(0, inc.total - (inc.block || 0));
+    // More Guard only ever helps against the blockable share.
+    const need = Math.max(0, blockable - (inc.block || 0));
     this.$inc.hidden = false;
     this.$inc.dataset.state = lethal ? 'lethal' : through > 0 ? 'through' : 'safe';
     /* WITH NO GUARD THERE IS NO ARITHMETIC. At 0 Guard the panel printed
@@ -1557,7 +1570,11 @@ export class CombatScene extends Scene {
        Guard term anywhere to explain what the arrow was supposed to have done.
        The arrow earns its place only when something actually changes the
        number, so it now appears exactly when a Guard term does. */
-    const shown = block > 0;
+    /* ...and Guard that cannot be spent changes nothing either. All-piercing
+       incoming printed `24 &minus; 9 Guard &rarr; 24`: a subtraction whose
+       answer is the number it started from, which is worse than no arithmetic
+       at all. Same rule, second cause. */
+    const shown = block > 0 && blockable > 0;
     this.$inc.innerHTML =
       `<span class="cb-inc__k">Incoming</span>`
       + `<b class="cb-inc__n">${inc.total}</b>`
@@ -1567,14 +1584,16 @@ export class CombatScene extends Scene {
           + `<b class="cb-inc__t">${through}</b>`
         : '')
       + (lethal ? `<span class="cb-inc__lethal">LETHAL</span>`
-        : through > 0 ? `<span class="cb-inc__need">${need} more Guard to stop it all</span>`
-          : `<span class="cb-inc__safe">Fully blocked</span>`);
+        : need > 0 ? `<span class="cb-inc__need">${need} more Guard to stop the rest</span>`
+          : pierced > 0 ? `<span class="cb-inc__need">${pierced} of it goes through Guard</span>`
+            : `<span class="cb-inc__safe">Fully blocked</span>`);
     const splashing = inc.parts.filter(p => p.splash).length;
     this.$inc.dataset.tip = `Incoming this turn|Every enemy aimed at you, added up: ${inc.total} damage.|`
       + (splashing
         ? `${splashing === 1 ? 'One of them is' : `${splashing} of them are`} aimed at your friend and catches you too.|`
         : '')
-      + (through > 0 ? `Your ${block} Guard stops ${Math.min(block, inc.total)}; ${through} reaches your Courage.`
+      + (pierced > 0 ? `${pierced} of it ignores Guard entirely.|` : '')
+      + (through > 0 ? `Your ${block} Guard stops ${Math.min(block, blockable)}; ${through} reaches your Courage.`
         : `Your ${block} Guard stops all of it.`);
     this.$inc.tabIndex = 0;
     this.$pl.classList.toggle('is-lethal', lethal);

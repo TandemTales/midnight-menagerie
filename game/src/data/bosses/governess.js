@@ -408,11 +408,47 @@ export const governess = {
        * start of every turn. Courage is not something a Kid can move inside the
        * turn they are shown the arrow, so the arrow holds still by itself.
        */
+      /**
+       * IN A PARTY IT IGNORES GUARD, and that is the whole co-op fight.
+       *
+       * Measured, with `tests/critic-design/party-ledger.py`: at four Kids she
+       * AIMED 565 Courage over a fight and landed 94, because the party's Guard
+       * ate 83% of it. Guard scales with the party and enemy damage deliberately
+       * does not, so a table of four generates Guard far faster than any boss
+       * can spend it — party Guard reached 2275 against her 565. Coverage does
+       * not fix that: AoE was authored onto her first and measured twice, and
+       * the leftover-Courage gap did not move (100% wins -> 87.5%, 90% left ->
+       * 89%).
+       *
+       * The Butler is the controlled comparison and the precedent. He aims LESS
+       * at four Kids (404) and lands nearly twice as much (173), and the only
+       * relevant difference is that two of his Reprimands bypass or remove
+       * Guard. So "targeting is the compensation for damage not scaling"
+       * (foyer §26) is necessary and not sufficient — targeting is answered by
+       * Guard.
+       *
+       * This move, and not one of the others, because it is the one that
+       * already picks the Kid closest to breaking. Piercing turns the party's
+       * decision from "stack Guard" into "nobody may be the lowest", which is
+       * what §26 asks a cooperative version to do — *"change tactical
+       * relationships"* — and it is what a sharp correction from a governess
+       * with silver needles for fingers has always meant. It is shown a turn
+       * ahead like everything else, so the counterplay is healing and
+       * distribution rather than blocking.
+       *
+       * SOLO IS UNTOUCHED, on purpose: solo already reads 62.5% at 11 turns,
+       * inside the 45-65% and 8-12 bands. Piercing it solo was measured too and
+       * took solo leftover Courage 60% -> 40%, which is a fight that does not
+       * need fixing.
+       */
       id: 'sharp-correction', name: 'Sharp Correction', intent: Intent.ATTACK, damage: 24, hits: 1,
       partyPick: 'lowestCourage',
+      pierceFn: (c) => c.partySize() > 1,
       tell: 'Her needles come together with a small, tidy click.',
       damageFn: (c) => 24 + bossDmg(c),
-      effect(c) { hitPlayer(c, 24 + bossDmg(c)); },
+      effect(c) {
+        c.damage(24 + bossDmg(c), { pierce: c.partySize() > 1 });
+      },
     },
     'mind-your-seams': {
       /**

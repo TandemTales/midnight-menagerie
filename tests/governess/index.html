@@ -26,6 +26,7 @@ import { makeDummyParty } from '../../game/src/combat/dummy.js';
 import { getEnemy } from '../../game/src/data/enemies/index.js';
 import { governess } from '../../game/src/data/bosses/governess.js';
 import { buildIntent } from '../../game/src/combat/intents.js';
+import { previewIncoming } from '../../game/src/combat/preview.js';
 
 const passes = [], fails = [];
 const out = document.getElementById('out');
@@ -130,6 +131,90 @@ function intentFor(e, id) {
     check(r.lost.filter(v => v > 0).length === 1, 'it really lands on one seat only',
           `lost ${r.lost.join(' / ')}`);
     check(r.lost[2] === 24, 'on that Kid, for the full 24', `lost ${r.lost.join(' / ')}`);
+  }
+
+  // ── Guard does not answer Sharp Correction in a party ─────────────────────
+  /* Measured with `party-ledger.py`: at four Kids she AIMED 565 and landed 94,
+     because the party's Guard ate 83% of it. Guard scales with the party and
+     enemy damage deliberately does not, so coverage alone cannot make her
+     dangerous — AoE was authored first and the leftover-Courage gap did not
+     move. The Butler is the control: he aims 404 at four Kids and lands 173,
+     and the only relevant difference is that two of his Reprimands bypass or
+     remove Guard. */
+  say('<h2>Sharp Correction — through Guard, in a party only</h2>');
+  {
+    const e = await fight(3);
+    for (const pl of e.players) e.gainBlock(pl, 60, { reason: 'test' });
+    e.players[2].hp = 40;                      // the one it will pick
+    boss(e).pendingMove = governess.moves['sharp-correction'];
+    boss(e).targetSeatId = e.players[0].id;
+    /* `blocked` off the damage event, not `player.block` after the fact: Guard
+       is wiped at the start of the next turn (CONTRACTS trap 24) and `useMove`
+       ends the turn, so reading the stat afterwards always answers 0 and says
+       nothing about what happened. */
+    let blocked = 0;
+    const off = e.on('damage', (ev) => { blocked += ev.blocked || 0; });
+    const r = await useMove(e, 'sharp-correction');
+    off();
+    check(r.lost[2] === 24, 'sixty Guard does not stop it — the full 24 reaches Courage',
+      `lost ${r.lost.join(' / ')}`);
+    check(blocked === 0, 'and NONE of it was blocked, so the Guard was never spent',
+      `blocked ${blocked}`);
+    check(r.lost[0] === 0 && r.lost[1] === 0, 'and it is still one seat only',
+      `lost ${r.lost.join(' / ')}`);
+
+    /* The player has to be TOLD. A 24 that ignores Guard drawn as a plain 24
+       invites the one response that cannot work. */
+    const it = intentFor(e, 'sharp-correction');
+    check(it.pierce === true, 'and the INTENT says it goes through Guard', String(it.pierce));
+  }
+  {
+    /**
+     * The "what is coming at me" rail, which is the one widget whose entire job
+     * is to be believed.
+     *
+     * Before this it read "INCOMING 24 − 9 Guard → 15" and "15 more Guard to
+     * stop it all" against a move that ignores Guard — two false statements at
+     * once. Every suite was green; a screenshot is what found it.
+     */
+    const e = await fight(3);
+    e.players[2].hp = 40;
+    boss(e).targetSeatId = e.players[0].id;
+    boss(e).pendingMove = governess.moves['sharp-correction'];
+    boss(e).intent = intentFor(e, 'sharp-correction');
+    e.gainBlock(e.players[2], 60, { reason: 'test' });
+
+    const inc = previewIncoming(e, e.players[2]);
+    check(inc.total === 24, 'the rail counts the whole 24 as incoming', String(inc.total));
+    check(inc.through === 24, 'and knows every point of it ignores Guard', String(inc.through));
+    check(inc.blockable === 0, 'so there is nothing for Guard to be spent on',
+      String(inc.blockable));
+    check(inc.unblocked === 24, 'and sixty Guard does not reduce what reaches Courage',
+      `unblocked ${inc.unblocked} behind ${inc.block} Guard`);
+  }
+  {
+    const e = await fight(1);
+    boss(e).pendingMove = governess.moves['sharp-correction'];
+    boss(e).intent = intentFor(e, 'sharp-correction');
+    e.gainBlock(e.players[0], 60, { reason: 'test' });
+    const inc = previewIncoming(e, e.players[0]);
+    check(!inc.through, 'a Kid alone is told nothing goes through Guard',
+      String(inc.through || 0));
+    check(inc.unblocked === 0, 'and that their Guard stops all of it', String(inc.unblocked));
+  }
+  {
+    const e = await fight(1);
+    e.gainBlock(e.players[0], 60, { reason: 'test' });
+    let blocked = 0;
+    const off = e.on('damage', (ev) => { blocked += ev.blocked || 0; });
+    const r = await useMove(e, 'sharp-correction');
+    off();
+    check(r.lost[0] === 0, 'a Kid ALONE blocks it exactly as they always did',
+      `lost ${r.lost[0]}`);
+    check(blocked === 24, 'and their Guard really ate all 24 of it', `blocked ${blocked}`);
+    const it = intentFor(e, 'sharp-correction');
+    check(!it.pierce, 'and solo is shown no such warning, because there is none',
+      String(!!it.pierce));
   }
 
   // ── the declared thread ───────────────────────────────────────────────────

@@ -204,9 +204,23 @@ export function buildIntent(engine, enemy, move, opts = {}) {
   if (hits == null) hits = base > 0 ? 1 : 0;
   hits = Math.max(0, hits | 0);
 
+  /**
+   * PIERCE — "Guard will not stop this", and the player has to be TOLD.
+   *
+   * `pierceFn` for the same reason `damageFn` and `splashFn` exist: whether a
+   * move ignores Guard can depend on the board. The Governess's Sharp
+   * Correction pierces only in a party, because a table of four generates Guard
+   * far faster than any boss can spend it — see the def.
+   *
+   * It goes ON the intent, not just into the preview arithmetic. A 24 that
+   * ignores Guard, shown as a plain 24, invites the one response that cannot
+   * work; "the player can always see exactly what will happen before it
+   * happens" is the first line of the quality bar.
+   */
+  const pierce = !!pick(move.pierceFn, c, move.pierce);
   const defender = engine.intentTargetFor(enemy);
   const damage = (hits > 0 && base > 0 && defender)
-    ? previewDamageValue(engine, enemy, defender, base, { kind: 'attack', pierce: !!move.pierce })
+    ? previewDamageValue(engine, enemy, defender, base, { kind: 'attack', pierce })
     : 0;
 
   const block = blockRaw > 0 ? engine.previewBlockValue(enemy, blockRaw, { fromCard: false }) : 0;
@@ -268,6 +282,8 @@ export function buildIntent(engine, enemy, move, opts = {}) {
     tooltip: '',
   };
   if (splashRaw > 0) intent.splash = splashRaw;
+  // Absent unless true, so nothing that reads an intent today sees a new field.
+  if (pierce && damage > 0) intent.pierce = true;
   intent.tooltip = intentTooltip(intent, enemy);
   return intent;
 }

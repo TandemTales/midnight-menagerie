@@ -331,6 +331,8 @@ export function previewIncoming(engine, who = null) {
   // the readout simply vanished.
   const me = (who && engine._resolveSeat(who)) || engine.current;
   let total = 0;
+  /** Of `total`, how much Guard cannot touch. */
+  let through = 0;
   const parts = [];
   for (const en of engine.enemies) {
     if (!en.alive || !en.intent) continue;
@@ -342,10 +344,28 @@ export function previewIncoming(engine, who = null) {
     const damage = onMe ? en.intent.damage : (en.intent.splash || 0);
     const hits = onMe ? en.intent.hits : (en.intent.splash > 0 ? 1 : 0);
     const t = damage * hits;
-    if (t > 0) { total += t; parts.push({ enemyId: en.id, damage, hits, total: t, splash: !onMe }); }
+    /**
+     * PIERCING damage is not part of what Guard can stop.
+     *
+     * The Governess's Sharp Correction ignores Guard in a party. Counted in
+     * `total` and then subtracted from `block` like everything else, the rail
+     * read "INCOMING 24 − 9 Guard → 15" and "15 more Guard to stop it all" —
+     * two statements that are both false, on the one widget whose entire job is
+     * to be believed. A screenshot found it; every suite was green.
+     */
+    const pierces = !!(onMe && en.intent.pierce);
+    if (t > 0) {
+      total += t;
+      if (pierces) through += t;
+      parts.push({ enemyId: en.id, damage, hits, total: t, splash: !onMe, pierce: pierces });
+    }
   }
   const block = me.block;
-  return { total, parts, block, unblocked: Math.max(0, total - block), lethal: total - block >= me.hp };
+  // Only the blockable share is worth spending Guard on, and only that share
+  // decides how much MORE Guard would help.
+  const blockable = Math.max(0, total - through);
+  const unblocked = through + Math.max(0, blockable - block);
+  return { total, parts, block, through, blockable, unblocked, lethal: unblocked >= me.hp };
 }
 
 export default previewCard;
