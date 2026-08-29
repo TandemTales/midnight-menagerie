@@ -502,6 +502,7 @@ async function main() {
        · the recorded actions replay onto the same board, or the identical
          encounter restarts from the top; never a skip either way            */
   say('<h2>quitting mid-Scuffle does not skip the fight</h2>');
+  let resumeKeyed = 0, resumeKeyedTried = 0;
   let combatResume = 0, combatResumeTried = 0, replayed = 0;
   for (const seed of [5150, 8128, 60613]) {
     combatResumeTried++;
@@ -594,8 +595,30 @@ async function main() {
     // Either way the fight is still ahead of the player, not behind them.
     check(back.combat.player.hp <= courageOnEntry,
       `seed ${seed}: THE BUG — resumed with more Courage than the room was entered with`);
+
+    /**
+     * AND THE RESUMED FIGHT CAN BE INTERRUPTED AGAIN.
+     *
+     * `_cardKeys` names every card from the DRAW PILE, which is the whole deck
+     * only before `startCombat()`. On the resume path `_wireCombat` was
+     * building a second map from a MID-FIGHT draw pile — the replay having
+     * already moved cards to hand, discard and exhaust — so the cards in hand
+     * had no key, and the first card played after a resume could not be
+     * recorded. A second interruption then lost the fight.
+     */
+    if (mode === 'replay') {
+      const keys = back._combatKeys;
+      const seat = back.combat.players[0];
+      const named = seat.piles.hand.filter(c => keys && keys.byUid.has(c.uid)).length;
+      check(named === seat.piles.hand.length,
+        `seed ${seed}: THE BUG — ${seat.piles.hand.length - named} of ${seat.piles.hand.length}`
+        + ' cards in hand have no replay key after a resume');
+      resumeKeyed += named === seat.piles.hand.length ? 1 : 0;
+      resumeKeyedTried++;
+    }
     combatResume++;
   }
+  say(`<pre class="ok">${resumeKeyed}/${resumeKeyedTried} resumed fights can be interrupted AGAIN — every card in hand still has a replay key</pre>`);
   say(`<pre class="ok">${combatResume}/${combatResumeTried} interrupted Scuffles resumed`
     + ` (${replayed} replayed onto the exact board, ${combatResume - replayed} restarted)</pre>`);
 

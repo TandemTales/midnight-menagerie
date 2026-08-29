@@ -1014,7 +1014,11 @@ export class Run {
   _wireCombat(engine) {
     this._unwireCombat();
     const offs = this._combatOffs;
-    const keys = this._cardKeys(engine);
+    /* A resumed fight hands over the map it built before replaying — see
+       `_replayCombat`. Building a fresh one here would read a depleted draw
+       pile and name almost nothing. */
+    const keys = this._resumeKeys || this._cardKeys(engine);
+    this._resumeKeys = null;
     offs.push(keys.off);
     this._combatKeys = keys;
 
@@ -1195,7 +1199,18 @@ export class Run {
    * @returns {Promise<boolean>} true only when the board matches the digest.
    */
   async _replayCombat(engine, pc) {
+    /**
+     * Built BEFORE `startCombat()`, while every card is still in the draw pile
+     * in run-deck order — which is the only moment `_cardKeys` is correct.
+     *
+     * It is handed to `_wireCombat` afterwards. `_wireCombat` builds its own
+     * map, and on the resume path it was building it from a MID-FIGHT draw
+     * pile: by then the replay has moved cards to hand, discard and exhaust, so
+     * they had no key at all, and the first card played after a resume could
+     * not be named. A second interruption then lost the fight entirely.
+     */
     const keys = this._cardKeys(engine);
+    this._resumeKeys = keys;
     try {
       engine.setChoiceScript(pc.choices || []);
       await engine.startCombat();
@@ -1217,7 +1232,10 @@ export class Run {
       if (engine.over) return false;
       return !pc.digest || this._combatDigest(engine) === pc.digest;
     } finally {
-      keys.off();
+      /* Kept alive when the replay SUCCEEDED — `_wireCombat` adopts it, and
+         its `card:add` listener has to keep numbering the `x<n>` cards. On a
+         failed replay nothing adopts it, so it is disposed here. */
+      if (this._resumeKeys !== keys) keys.off();
     }
   }
 
