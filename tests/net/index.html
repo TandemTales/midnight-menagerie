@@ -17,6 +17,8 @@ import { LoopbackHub, ChannelTransport, canChannel } from '../../game/src/net/tr
 import { Session, INPUT, cardRef, refCard } from '../../game/src/net/session.js';
 import { Run } from '../../game/src/state/run.js';
 import { act, ACT, attachActions, deckIndex } from '../../game/src/net/actions.js';
+import { Lobby, seedFromRoom } from '../../game/src/net/lobby.js';
+import { MAX_PARTY } from '../../game/src/combat/engine.js';
 
 const passes = [], fails = [];
 const out = document.getElementById('out');
@@ -568,7 +570,139 @@ try {
     A.session.close(); B.session.close();
   }
 
-  // ══ 12. Without a session, `act` is the direct call it replaced ═════════
+  // ══ 12. The lobby: seats, host and seed, with no election ══════════════
+  /* `Session` takes seat, seats, seed and host as constructor arguments and has
+     no opinion about where they come from. This is where they come from, and
+     the whole design is that NOTHING is negotiated: seat is position in the
+     sorted peer-id list, host is seat 0, and the seed is a hash of the room
+     code, so four clients compute four identical answers with no round trip. */
+  {
+    const hub = new LoopbackHub();
+    // Deliberately created in an order that does NOT match their sorted order,
+    // because "first to connect is seat 0" is the tempting wrong answer and
+    // arrival order is exactly what differs between machines.
+    const ids = ['zoe', 'amir', 'kit', 'bea'];
+    const ls = ids.map(id => new Lobby({ transport: hub.peer(id), room: 'mm-parlour' }));
+    const want = [...ids].sort();
+
+    check(ls.every(l => l.players.length === 4), 'every client sees all four players',
+      ls.map(l => l.players.length).join('/'));
+    check(ls.every(l => l.players.map(p => p.id).join(',') === want.join(',')),
+      'and every client sorts them into the SAME order', want.join(','));
+    check(ls.map(l => l.seat).join(',') === ids.map(id => want.indexOf(id)).join(','),
+      'each client works out its own seat with no message about it',
+      ls.map((l, i) => `${ids[i]}=${l.seat}`).join(' '));
+    check(new Set(ls.map(l => l.seat)).size === 4, 'and no two clients claim the same seat');
+    check(ls.filter(l => l.isHost).length === 1, 'exactly one of them is the host');
+    check(ls.every(l => l.hostId === want[0]), 'and all four name the same one', want[0]);
+
+    /* The seed is DERIVED, not proposed and agreed. `Session` already reports a
+       seed mismatch at hello; this makes the mismatch impossible instead. */
+    check(new Set(ls.map(l => l.seed)).size === 1, 'all four derive one seed from the room code',
+      String(ls[0].seed));
+    check(seedFromRoom('mm-parlour') === seedFromRoom('mm-parlour')
+       && seedFromRoom('mm-parlour') !== seedFromRoom('mm-cellar'),
+      'and a different room is a different run');
+    check(seedFromRoom('') !== 0, 'the empty room still gets a usable seed, not 0',
+      String(seedFromRoom('')));
+
+    // Choices cross, and a Kid change un-readies you.
+    ls.forEach((l, i) => l.setChoice({ companion: ['marmalade', 'bones', 'pipkin', 'taffy'][i],
+                                       kid: ['maya', 'eli', 'amina', 'jordan'][i] }));
+    check(ls[0].players.every(p => p.companion && p.kid),
+      'every client learns what everybody else brought');
+    check(!ls.every(l => l.allReady), 'and nobody is ready until they say so');
+    ls.forEach(l => l.setReady(true));
+    check(ls.every(l => l.allReady), 'once they all lock in, every client agrees they are ready');
+    ls[2].setChoice({ kid: 'lena' });
+    check(!ls[0].allReady, 'and changing your Kid un-readies you, on everybody\'s screen');
+    ls[2].setReady(true);
+
+    /* Every client calls `start()` and every client computes the same roster —
+       nothing is sent to agree it. `GO` only tells the others to call it too. */
+    const rosters = ls.map(l => l.start());
+    check(rosters.every(r => r.seats === 4), 'the frozen roster has four seats');
+    check(new Set(rosters.map(r => r.party.map(p => `${p.companion}/${p.kid}`).join('|'))).size === 1,
+      'and every client froze the SAME party, in the same seat order',
+      rosters[0].party.map(p => p.kid).join(','));
+    check(rosters.filter(r => r.host).length === 1, 'with one host in it');
+    check(rosters.every(r => r.seed === ls[0].seed), 'and the one seed');
+    check(rosters.every((r, i) => r.party[r.seat].kid === ls[i].me.kid),
+      'each client\'s own seat really holds its own Kid');
+
+    /* A late arrival is not a fifth Kid — and the id is 'aaa' ON PURPOSE,
+       because it sorts BEFORE every seat already at the table. An id that sorts
+       last cannot renumber anybody, so testing with one proves nothing: the
+       first version used 'zzz' and stayed green with the freeze removed. */
+    const seatsWere = ls.map(l => l.seat);
+    const late = new Lobby({ transport: hub.peer('aaa'), room: 'mm-parlour' });
+    check(ls[0].start().seats === 4, 'somebody arriving after the start does NOT renumber the seats',
+      String(ls[0].start().seats));
+    check(ls[0].roster.ids.indexOf('aaa') === -1, 'and is not in the frozen roster');
+    check(ls.map(l => l.seat).join(',') === seatsWere.join(','),
+      'and nobody\'s LIVE seat moved either, though that id sorts first',
+      `${seatsWere.join(',')} -> ${ls.map(l => l.seat).join(',')}`);
+    check(ls.every(l => l.players.length === 4), 'the room stopped listening when it started',
+      ls.map(l => l.players.length).join('/'));
+    late.close();
+    for (const l of ls) l.close();
+    hub.close();
+  }
+
+  // ══ 13. The lobby caps at MAX_PARTY, and reads it ══════════════════════
+  {
+    const hub = new LoopbackHub();
+    const ids = ['a', 'b', 'c', 'd', 'e', 'f'];
+    const ls = ids.map(id => new Lobby({ transport: hub.peer(id), room: 'mm-crowd' }));
+    check(ls[0].seats === MAX_PARTY, 'six people in the room still make a party of MAX_PARTY',
+      `${ls[0].seats} of ${ls[0].players.length}`);
+    check(ls[5].seat === -1, 'and the ones past the cap have no seat rather than seat 4',
+      String(ls[5].seat));
+    check(ls[0].isFull, 'the room reports itself full');
+    const r = ls[0].start();
+    check(r.party.length === MAX_PARTY, 'the frozen party is MAX_PARTY long', String(r.party.length));
+    for (const l of ls) l.close();
+    hub.close();
+  }
+
+  // ══ 14. Two real tabs agree on the same seats ══════════════════════════
+  /* A LoopbackHub delivers synchronously and cannot show a lobby racing itself.
+     `BroadcastChannel` is a genuine asynchronous wire between two independent
+     contexts, which is where "who is here yet" actually goes wrong. */
+  {
+    if (canChannel()) {
+      const room = 'mm-lobby-' + Math.random().toString(36).slice(2);
+      const A = new Lobby({ transport: new ChannelTransport(room, 'tab-b'), room });
+      await new Promise(r => setTimeout(r, 60));
+      const B = new Lobby({ transport: new ChannelTransport(room, 'tab-a'), room });
+      await new Promise(r => setTimeout(r, 200));
+
+      check(A.players.length === 2 && B.players.length === 2,
+        'the tab already sitting there learns about the newcomer, and vice versa',
+        `${A.players.length} / ${B.players.length}`);
+      /* 'tab-a' connected SECOND and is seat 0, because seats come from the
+         sorted ids and never from arrival. This is the check that would catch
+         somebody "fixing" it to first-come. */
+      check(B.seat === 0 && A.seat === 1,
+        'the tab that arrived SECOND is seat 0, because ids sort and arrivals do not',
+        `tab-a=${B.seat} tab-b=${A.seat}`);
+      check(A.hostId === B.hostId && A.hostId === 'tab-a',
+        'and both tabs name the same host', String(A.hostId));
+      check(A.seed === B.seed, 'both derived the same seed from the room code');
+
+      A.setChoice({ companion: 'marmalade', kid: 'maya' });
+      B.setChoice({ companion: 'bones', kid: 'eli' });
+      await new Promise(r => setTimeout(r, 200));
+      const ra = A.start(), rb = B.start();
+      check(ra.party.map(p => p.kid).join(',') === rb.party.map(p => p.kid).join(','),
+        'and both froze the same party across a real wire',
+        ra.party.map(p => p.kid).join(','));
+      A.close(); B.close();
+      A.transport.close(); B.transport.close();
+    }
+  }
+
+  // ══ 15. Without a session, `act` is the direct call it replaced ════════
   /* Solo and pass-and-play must not pay for the wire. `act()` returns the run
      layer's own answer synchronously when there is nothing to send, so a screen
      that used to call `run.takeRewardCard()` keeps the timing it had. */
