@@ -80,9 +80,26 @@ export const ACT = Object.freeze({
   EVENT_RESCUE: 'event.rescue',     // { slug }    a Companion comes home
   EVENT_LOOT: 'event.loot',         // { lostThings, clues }  the tidy pile
 
+  /* the blueprint */
+  MAP_CHOOSE: 'map.choose',         // { id }      the room the PARTY walks into
+
   /* every per-Kid room */
   ROOM_DONE: 'room.done',           // {}          this Kid's turn in here is over
 });
+
+/**
+ * The acts that are nobody's in particular.
+ *
+ * Everything else in `ACT` reads or writes `run.local`, so it has to be applied
+ * AS the Kid who sent it — which is what `asSeat` is for. `map.choose` is the
+ * one act that moves the WHOLE PARTY, and applying it as a seat is actively
+ * wrong: `enterNode` finishes by calling `resetSeat()` to hand the next room to
+ * the lowest living Kid, and `asSeat` would then silently put the borrowed seat
+ * back on top of it. Silently, because `asSeat` restores without emitting
+ * `run:seat` — so the HUD would keep showing the Kid `resetSeat` chose while
+ * `run.local` answered as whoever happened to click the map.
+ */
+const PARTY_ACTS = new Set([ACT.MAP_CHOOSE]);
 
 /**
  * The card at `index` in a Kid's deck, on THIS client.
@@ -119,6 +136,7 @@ export function applyInput(run, msg) {
   // than a `Run` (reward.js `_resolveRun`). It has one Kid and no seats, so
   // there is no seat to borrow — not a missing API, a degenerate case.
   if (typeof run.asSeat !== 'function') return _apply(run, msg, 0);
+  if (msg.t === INPUT.ROOM && PARTY_ACTS.has(msg.act)) return _apply(run, msg, seat);
   return run.asSeat(seat, () => _apply(run, msg, seat));
 }
 
@@ -230,6 +248,13 @@ function _room(run, msg, seat) {
       if (msg.clues) run.addClues(msg.clues | 0);
       return true;
     }
+
+    case ACT.MAP_CHOOSE:
+      /* By the node's AUTHORED id. Every client generates the same blueprint
+         from the same region and seed, so `foyer-0-1` means the same room on
+         all four — the shared identity the header asks for, and the reason this
+         is not "the third node from the left". */
+      return run.chooseNode(msg.id);
 
     case ACT.ROOM_DONE:
       return run.markRoomDone();

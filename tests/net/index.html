@@ -521,6 +521,79 @@ try {
       'through all of it, neither screen changed hands',
       `${A.run.localSeat} / ${B.run.localSeat}`);
 
+    // ── the blueprint, which is the one choice that is EVERYBODY'S ───────
+    /* Every check above moves one Kid's own things. This one moves the
+       party: whichever room is picked, all four clients walk into it and
+       deal the next fight from it. It was the last screen not on the wire —
+       `scenes/map.js` wrote `currentNodeId` and `pathIds` onto the Run by
+       hand and a `map:choose` BUS LISTENER called `enterNode`, so the route
+       never became an input and nothing here could have seen it.
+
+       Sent by SEAT 1 on purpose, because who SENT it must not decide
+       anything — see the sagging floor below. */
+    for (const c of [A, B]) { c.run.currentNodeId = null; c.run.pathIds = []; }
+    // A room that is not a fight, so this measures the ROUTE and not an
+    // engine build — and by AUTHORED id, the identity both maps share.
+    const doors = A.run.legalNextIds();
+    const room = doors.find(id => A.run.sceneFor(A.run.nodeById(id)) !== 'combat') || doors[0];
+    check(doors.length > 1, 'the blueprint offers the party a choice of rooms',
+      doors.join(','));
+
+    await act(B.run, { t: INPUT.ROOM, act: ACT.MAP_CHOOSE, id: room });
+    await both();
+    check(B.run.currentNodeId === room,
+      'seat 1 walks the party into a room on their own machine', String(B.run.currentNodeId));
+    check(A.run.currentNodeId === room,
+      "and seat 0's machine, which never saw the click, is in the SAME room",
+      `${A.run.currentNodeId} / ${room}`);
+    check(A.run.pathIds.join('>') === B.run.pathIds.join('>')
+       && A.run.pathIds.includes(room),
+      'and both walked the same route to it',
+      `${A.run.pathIds.join('>')} / ${B.run.pathIds.join('>')}`);
+    check(!A.run.visitedIds.includes(room) && !B.run.visitedIds.includes(room),
+      'entered, not cleared — the room is still owed on both');
+
+    // ── who the sagging floor sags under ─────────────────────────────────
+    /* The only OBSERVABLE consequence of applying a whole-party act as a
+       seat, and it took a control to find: `localSeat` proves nothing,
+       because `asSeat` restores the applying client's OWN seat, which
+       `resetSeat()` had just chosen anyway — so every client agrees either
+       way and the first version of this check passed with the guard deleted.
+
+       What does move is who pays. `enterNode` calls `this.hurt(3)` on a
+       sagging wing and `courage` is a PER_KID accessor, so the damage lands
+       on whoever the seat is. On a blueprint that is the first living Kid,
+       on every machine — never whoever reached for the mouse. Borrow the
+       sender's seat and it lands on the CLICKER instead: consistently on
+       all four clients, so no digest ever reports it, and the wrong Kid
+       quietly pays for the rest of the run. That is what `PARTY_ACTS` in
+       net/actions.js is for; delete that line and this pair is what fails.
+
+       The hazard is stamped rather than hunted for: mapgen rolls wings off
+       the seed and the legal set two rows in may hold none, and a check
+       that quietly does nothing on some seeds is not a check. Stamped on
+       BOTH maps, because both clients generate the same blueprint. */
+    const sag = A.run.legalNextIds()[0];
+    for (const c of [A, B]) {
+      const n = c.run.nodeById(sag);
+      n.payload = { ...(n.payload || {}), hazard: 'sagging' };
+    }
+    const courageBefore = A.run.kids.map(k => k.courage);
+    check(B.run.kids.map(k => k.courage).join('/') === courageBefore.join('/'),
+      'both machines agree on both Kids’ Courage before the wing',
+      courageBefore.join('/'));
+
+    await act(B.run, { t: INPUT.ROOM, act: ACT.MAP_CHOOSE, id: sag });
+    await both();
+    check(A.run.kids[0].courage === courageBefore[0] - 3
+       && A.run.kids[1].courage === courageBefore[1],
+      'the floor sags under the FIRST Kid, not the one who clicked',
+      `${courageBefore.join('/')} -> ${A.run.kids.map(k => k.courage).join('/')}`);
+    check(B.run.kids.map(k => k.courage).join('/')
+       === A.run.kids.map(k => k.courage).join('/'),
+      'and the same Kid pays on the machine that sent it',
+      `${A.run.kids.map(k => k.courage).join('/')} / ${B.run.kids.map(k => k.courage).join('/')}`);
+
     A.session.close(); B.session.close();
   }
 

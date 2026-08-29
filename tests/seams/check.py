@@ -18,6 +18,10 @@ five shapes that produce a silent no-op:
                      registers.
   5. UNKNOWN-METHOD  a method called on ctx / engine / run that the
                      implementation does not define.
+  6. SHARED-WRITE    a SCREEN assigning to a `Run` field.  Every client
+                     simulates the whole expedition, so a screen that writes
+                     shared state instead of sending an input through
+                     `net/actions.js` makes a change nobody else can see.
 
 The surfaces are READ OUT OF THE SOURCE, never hardcoded: ctxFor() and
 enemyCtx() in combat/engine.js, Hooks._payload() in combat/hooks.js, the CUES
@@ -586,6 +590,31 @@ HOOK_FILES = ("game/src/combat/statuses.js", "game/src/data/relics.js",
               "game/src/data/companions/keywords.js", "game/src/data/enemies/_lib.js")
 
 
+def run_fields():
+    """Every field a `Run` owns, read out of `state/run.js` itself.
+
+    The constructor's own `this.x =` assignments plus the PER_KID accessor list,
+    so the set cannot drift away from the class it is describing — the same rule
+    the other five surfaces here follow.  `_private` names are skipped: a screen
+    reaching for one of those is a different (louder) kind of wrong, and the
+    checker should not be the thing that finds it.
+    """
+    path = os.path.join(SRC, "state", "run.js")
+    code = strip_comments(read(path))            # comments AND string bodies out
+    lit = strip_comments_keep_strings(read(path))  # strings kept, for PER_KID
+    i = code.index("constructor(")
+    # NOT `code.index('{', i)` — the signature is `constructor(cfg = {})` and
+    # that finds the default argument's own braces, which produced a field set
+    # of exactly nothing and a check that passed by looking at an empty list.
+    body = code.index("{", match_brace(code, code.index("(", i), "(", ")") - 1)
+    ctor = code[body:match_brace(code, body)]
+    fields = set(re.findall(r"this\.(" + IDENT + r")\s*=", ctor))
+    per = re.search(r"const PER_KID\s*=\s*\[(.*?)\]", lit, re.S)
+    if per:
+        fields |= set(re.findall(r"'([A-Za-z_$][\w$]*)'", per.group(1)))
+    return {f for f in fields if not f.startswith("_")}
+
+
 def guarded(src, pos, recv, meth):
     """True when the call sits behind an explicit feature test — a legitimate
     `if (c.foo) c.foo(…)` fallback rather than a silent `c.foo?.()`."""
@@ -797,6 +826,63 @@ class Checker:
                          "status '%s' has no hook, no pipeline slot and no reader — "
                          "applying it is a no-op with a tooltip" % sid)
 
+    # -- 6. a screen writing shared state instead of sending an input --------
+    SCREEN_DIRS = ("game/src/scenes/", "game/src/ui/")
+
+    def check_shared_writes(self, path, src):
+        """A screen assigning to a `Run` field.
+
+        Every client simulates the WHOLE expedition, so nothing a screen does to
+        the Run is private — that is the argument `net/actions.js` opens with.
+        An assignment is the one shape that seam cannot see: `act()` is a call,
+        so a missing verb is loud, while `run.currentNodeId = id` is silent, has
+        no verb to be missing, and is invisible to every other check in this
+        file. The map screen wrote `currentNodeId` and `pathIds` by hand for
+        months and reached the run layer down a bus name instead of an input.
+
+        The receiver is `run`, anything ending `.run` (`this.run`, `ctx.run`,
+        `m.run`), or a local alias assigned from one (`const r = this.run`) —
+        rest.js and reward.js both use that alias, and a checker that missed it
+        would be checking the interesting files against nothing.
+        """
+        if not rel(path).startswith(self.SCREEN_DIRS):
+            return
+        if getattr(self, "_surface_reported", False):
+            return
+        if len(self.s.run_fields) < 20 and not getattr(self, "_surface_reported", False):
+            # `run_fields()` reads the constructor out of state/run.js, and the
+            # first version of it indexed to `constructor(cfg = {})`'s DEFAULT
+            # ARGUMENT and came back with an empty set — passing this whole
+            # check against nothing at all. The Run has ~39 fields; a surface
+            # that has collapsed is a failure of the checker, reported here
+            # rather than swallowed.
+            self.add("SHARED-WRITE", path, 1,
+                     "run_fields() returned only %d names — the extractor has "
+                     "come loose from state/run.js and this check is looking at "
+                     "an empty surface" % len(self.s.run_fields))
+            self._surface_reported = True        # report it once, not per file
+            return
+        aliases = {"run"} | set(re.findall(
+            r"(?:const|let|var)\s+(" + IDENT + r")\s*=\s*(?:[\w$.]+\.)?run\b", src))
+        pat = re.compile(r"((?:" + IDENT + r"\.)*" + IDENT + r")\.(" + IDENT
+                         + r")\s*(?:=[^=>]|\+=|-=)")
+        for m in pat.finditer(src):
+            recv, fld = m.group(1), m.group(2)
+            # Counted BEFORE the filters, so the printed total is evidence this
+            # looked at something. A gate whose site count only moves when it
+            # finds a problem reports zero sites and zero problems on a tree it
+            # never opened, and reads exactly like a clean one (CONTRACTS 5c).
+            self.sites += 1
+            if fld not in self.s.run_fields:
+                continue
+            if recv.rpartition(".")[2] not in aliases:
+                continue
+            self.add("SHARED-WRITE", path, line_of(src, m.start()),
+                     "`%s.%s = …` writes shared run state from a screen. Every "
+                     "client simulates the whole expedition, so this change "
+                     "exists on one machine only — send an input through "
+                     "net/actions.js instead" % (recv, fld))
+
     def _collect_readers(self):
         """Status ids something actually queries (`count('x')`, `stacks(…, 'x')`,
         `hasStatus('x')`, engine-side `status('x')`)."""
@@ -828,6 +914,7 @@ class Checker:
             self.check_methods(path, code)
             self.check_event_fields(path, lit)
             self.check_inert(path, lit)
+            self.check_shared_writes(path, code)
 
 
 def main():
@@ -838,6 +925,7 @@ def main():
     a = ap.parse_args()
 
     surf = Surfaces()
+    surf.run_fields = run_fields()
     ck = Checker(surf)
     ck.run_all()
 

@@ -643,6 +643,46 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    it still cost a round, because the table did not carry the warning where the
    number was.
 
+52. **An ASSIGNMENT to shared state has no verb to be missing, so no seam can
+   see it.** Every screen in this game reaches the run layer through
+   `act(run, {...})` in `net/actions.js`, and the reason that works as a gate is
+   that a call whose verb is absent SHOUTS — `_room`'s default arm logs
+   `unknown room act` and the suite goes red. `scenes/map.js` did not call
+   anything. It wrote `run.currentNodeId = id` and `run.pathIds = m.path.slice()`
+   and emitted a bus name, `map:choose`, that `state/run.js` listened for and
+   turned into `enterNode`. So the ONE screen that decides where the whole party
+   goes was the one screen not on the wire, and nothing could have noticed: there
+   was no missing verb, no optional call, no unknown option key.
+
+   Two things made it invisible for months rather than obvious:
+
+   - It also called `run.chooseNode(node)`, so the source read as if it went
+     through the run layer's API. But it wrote `currentNodeId` FIRST, which made
+     `chooseNode`'s own `id === this.currentNodeId` guard true — the call moved
+     nothing on any click ever measured, and `chooseNode`'s doc comment ("the
+     map screen calls this directly") described a guaranteed no-op. **A call
+     that is present is not a call that does anything.**
+   - The screen's route array was assigned back onto the Run whole, including
+     `__in`, the drawing's own pseudo-node for the doorway. A node id that
+     `nodeById` cannot resolve was in `run.pathIds` and in every save.
+
+   Gated now by `tests/seams/check.py` SHARED-WRITE, which flags any assignment
+   to a `Run` field from `game/src/scenes/` or `game/src/ui/`. The field list is
+   read out of `state/run.js`'s constructor plus `PER_KID` rather than
+   hardcoded — and the FIRST version of that extractor indexed to the `{}` in
+   `constructor(cfg = {})` and returned an empty set, passing the whole check
+   against nothing (rule 5c again). It now reports its own surface collapsing.
+
+   **And the guard for it needed two tries.** Applying a whole-party act through
+   `asSeat` looked obviously wrong, so `PARTY_ACTS` was added with a test that
+   both clients end on the same `localSeat`. That test passed with the guard
+   DELETED: `asSeat` restores the applying client's own seat, which
+   `enterNode`'s `resetSeat()` had just chosen anyway. The observable difference
+   is who PAYS — `enterNode` calls `this.hurt(3)` on a sagging wing and
+   `courage` is a PER_KID accessor, so borrowing the sender's seat moves the
+   damage onto whoever clicked, identically on all four clients, where no digest
+   will ever report it. `tests/net/index.html` asserts the Kid, not the seat.
+
 15. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
    now reported their in-flight work being swallowed by an unrelated commit — one had a whole
    `music.js` rewrite land inside a commit titled "Pronouns per the designer", which then made a

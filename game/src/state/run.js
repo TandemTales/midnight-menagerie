@@ -740,7 +740,7 @@ export class Run {
     return sceneForNode({ ...node, type: t });
   }
 
-  /** The map screen calls this directly (see scenes/map.js `_choose`). */
+  /** Where `ACT.MAP_CHOOSE` lands — `scenes/map.js` `_choose` sends it. */
   chooseNode(node) {
     const id = typeof node === 'string' ? node : node?.id;
     if (!id || id === this.currentNodeId) return;    // already handled by the bus
@@ -798,11 +798,12 @@ export class Run {
   /**
    * ENTERED, not cleared.
    *
-   * `scenes/map.js` optimistically writes the node into `run.visitedIds` before
-   * it calls `chooseNode` ("keeps the screen honest even before run.js exists"),
-   * so this actively takes it back out again.  A room only joins `visitedIds`
-   * when it *resolves* — see `_markCleared`.  That is the whole difference
-   * between quitting mid-fight and being handed the room for free.
+   * A room only joins `visitedIds` when it *resolves* — see `_markCleared` — so
+   * this actively takes an entry back out.  Not defensive: `Run.demo` stands the
+   * party on a node and marks it visited, and a save from an older build can
+   * claim a room was cleared when the fight in it was only interrupted
+   * (`restoreInterruptedCombat` calls this for exactly that).  The difference it
+   * keeps is between quitting mid-fight and being handed the room for free.
    */
   _markEntered(nodeId) {
     const node = this.nodeById(nodeId);
@@ -2420,14 +2421,16 @@ export function installRunLayer() {
     if (run.pendingCombat) run.restoreInterruptedCombat();
   });
 
-  // The map screen emits this before it calls `run.chooseNode`, which is a
-  // no-op once the node is already current — so the two paths never double-fire.
-  bus.on('map:choose', (node) => {
-    const run = window.MM?.ctx?.run;
-    if (!run || !(run instanceof Run)) return;
-    if (!node?.id || node.id === run.currentNodeId) return;
-    run.enterNode(node.id);
-  });
+  /**
+   * There was a `map:choose` listener here that called `run.enterNode`, and it
+   * was the ONLY thing a click on the blueprint actually did. `scenes/map.js`
+   * also called `chooseNode` — but it wrote `currentNodeId` first, which made
+   * that call's own guard true, so it moved nothing on any click ever measured.
+   * The whole party's route therefore reached the run layer down a BUS NAME,
+   * never as an input, and so could not cross a wire. It goes through
+   * `ACT.MAP_CHOOSE` now, like every other room action; `map:choose` is still
+   * emitted and is audio's alone.
+   */
 }
 
 installRunLayer();

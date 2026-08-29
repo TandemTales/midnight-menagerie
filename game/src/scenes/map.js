@@ -21,6 +21,8 @@ import {
 import { mapNodeMarkup, nodeSymbol, hazardSymbol, hazardGlyphMarkup, pencilStroke, seedOf, escapeHtml } from '../ui/mapnode.js';
 import { HUD } from '../ui/hud.js';
 import { pauseStageFor } from './_stage.js';
+import { act, ACT } from '../net/actions.js';
+import { INPUT } from '../net/session.js';
 
 /* The sheet is always the same height; its width follows the region's blueprint
    section, so a broad glass complex gets a broad sheet and a vertical shaft gets
@@ -71,6 +73,12 @@ const CSS_READY = (() => {
 const ROMAN = ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII'];
 /** Pseudo-node standing for the doorway you came in through. */
 const ENTRY = '__in';
+/** The walked route as this screen draws it: the doorway, then the rooms. */
+function _route(run) {
+  const ids = run?.pathIds?.length ? run.pathIds.slice() : [];
+  if (ids[0] !== ENTRY) ids.unshift(ENTRY);
+  return ids;
+}
 /** Node icons stop shrinking with the sheet below this effective scale. */
 const MIN_ICON_SCALE = 0.86;
 
@@ -310,7 +318,12 @@ export class MapScene extends Scene {
         hauntLevel, companion,
         rescued: ctx.Save?.data?.companionsRescued || [],
       });
-      if (run && !run.map) run.map = map;      // hand it back if run.js wants it
+      /* Generated for THIS SCREEN only, and deliberately not written back
+         onto the Run. `run._buildMap()` passes `companionsFreed` and this
+         call cannot, so handing it back would give the run a blueprint
+         subtly unlike the one it builds for itself — and a Run always has
+         a map by the time the screen opens (constructor, `advanceRegion`),
+         so the write-back only ever fired for a mock. */
     }
 
     this.model = {
@@ -322,7 +335,15 @@ export class MapScene extends Scene {
       // already forms a pair and inks the way-in arrow you actually walked.
       // Without it `path` holds one id, `walkedPairs` needs two, and the trail
       // stays invisible until the second room.
-      path: (run?.pathIds?.length ? run.pathIds.slice() : [ENTRY]),
+      //
+      // PREPENDED here rather than taken from the Run. `__in` is this
+      // screen's own sentinel — no such node exists, `nodeById` cannot
+      // resolve it — and it used to reach `run.pathIds` because `_choose`
+      // assigned this array back onto the Run, which put a fake id into
+      // every save. `enterNode` keeps the real route now; the doorway is
+      // the drawing's business. A resumed save from before this still
+      // starts with `__in`, so it is only added when it is missing.
+      path: _route(run),
       // Courage / Lost Things / Keepsakes are the shared HUD's business now.
       floor: run?.floor ?? (regionMeta(regionId).index),
       mock: !run,
@@ -1711,6 +1732,10 @@ export class MapScene extends Scene {
     const m = this.model;
     if (!(this._legalIds || []).includes(id)) { this._refuse(id); return; }
     const node = m.byId.get(id);
+    // Presentation only — audio.js plays the door on it. It used to be the
+    // route's actual path into the run layer, which is why the run layer's
+    // listener is gone: a bus name that MOVED THE PARTY was a way into the
+    // shared state that no seam gate could see.
     bus.emit('map:choose', node);
 
     // Local advance keeps the screen honest even before run.js exists.
@@ -1721,12 +1746,21 @@ export class MapScene extends Scene {
     m.currentId = id;
 
     if (m.run) {
-      m.run.currentNodeId = id;
-      // Deliberately NOT `run.visitedIds = [...m.visited]`. `visitedIds` is the
-      // *cleared* set now, and `run._markEntered()` had to actively splice this
-      // optimistic entry back out. Entering a room is not clearing it.
-      m.run.pathIds = m.path.slice();
-      if (typeof m.run.chooseNode === 'function') { m.run.chooseNode(node); return; }
+      /**
+       * The route is the one choice that is the WHOLE PARTY's, so it goes
+       * through the applier exactly like taking a Trick or buying a Snack.
+       * This screen used to write `currentNodeId` and `pathIds` straight
+       * onto the Run and then call `chooseNode`, which meant two things:
+       * the run layer never saw the choice as an INPUT and so it could
+       * never cross a wire, and the optimistic write made `chooseNode`'s
+       * own `id === currentNodeId` guard true, so that call moved nothing
+       * on any click ever measured. `run.pathIds` is the run's to keep —
+       * `enterNode` appends to it — and `m.path` is this screen's copy.
+       */
+      if (typeof m.run.chooseNode === 'function') {
+        act(m.run, { t: INPUT.ROOM, act: ACT.MAP_CHOOSE, id });
+        return;
+      }
       this.ctx.scenes?.go?.(sceneForNode(node), { node: id, region: m.regionId });
       return;
     }

@@ -207,6 +207,67 @@ async def main(a):
             S.check("the keyboard focus is marked on exactly one room", d2["kbd"] == 1,
                     f"kbd={d2['kbd']}")
 
+        # ── 7. the same route, with a REAL Run behind the screen ────────────
+        # Everything above runs the map STANDALONE, on its own mock model, and
+        # that is most of what this screen is. It is also why nothing here saw
+        # the map quietly become the one screen not on the wire: the route was
+        # written straight onto the Run and reached the run layer down a bus
+        # name. It goes through `ACT.MAP_CHOOSE` now, and the seam it crosses is
+        # only exercised when a Run is actually there.
+        #
+        # `__in` is the drawing's doorway sentinel — no such node exists. It
+        # used to be assigned onto `run.pathIds` with the rest of the screen's
+        # path and went into every save; the screen prepends it for itself now.
+        # Both halves are checked, because putting the route on the wire and
+        # keeping the way-in arrow inked are separate promises (trap 46).
+        await page.goto(BASE + "#scene=map&seed=42&region=foyer", wait_until="load", timeout=45000)
+        await page.wait_for_selector(".map-screen.is-drawn", timeout=20000)
+        await page.evaluate("""async () => {
+          const { bus } = await import('/game/src/core/bus.js');
+          bus.emit('run:start', { companion: 'marmalade', kid: 'maya', seed: 42 });
+          const r = window.MM.ctx.run;
+          await r._goto('map', { region: r.region, seed: r.seed });
+        }""")
+        await page.wait_for_selector(".map-screen.is-drawn", timeout=20000)
+        await page.wait_for_timeout(400)
+        live = await page.evaluate("() => !!(window.MM.ctx.run && window.MM.ctx.scenes.current.model.run)")
+        S.check("a real Run is behind the blueprint", live)
+
+        picked = await page.evaluate("""() => {
+          const el = document.querySelector('.map-node.is-legal');
+          if (!el) return null;
+          el.click();
+          return el.dataset.id;
+        }""")
+        await page.wait_for_timeout(2200)
+        after = await page.evaluate("""() => {
+          const r = window.MM.ctx.run;
+          return { current: r.currentNodeId, path: r.pathIds.slice(),
+                   visited: r.visitedIds.slice() };
+        }""")
+        S.check("clicking a room walks the RUN into it, not just the drawing",
+                after["current"] == picked, f"clicked {picked} -> {after['current']}")
+        S.check("and the screen's doorway sentinel stays out of the run's route",
+                "__in" not in after["path"], f"pathIds={after['path']}")
+        S.check("entered, not cleared — the room is still owed",
+                picked not in after["visited"], f"visitedIds={after['visited']}")
+
+        # back to the blueprint: the way-in arrow has to survive the rebuild,
+        # which is where dropping the sentinel from `pathIds` would show.
+        await page.evaluate("""async () => {
+          const r = window.MM.ctx.run;
+          await r._goto('map', { region: r.region, seed: r.seed });
+        }""")
+        await page.wait_for_selector(".map-screen.is-drawn", timeout=20000)
+        await page.wait_for_timeout(400)
+        back = await page.evaluate(MODEL)
+        d3 = await page.evaluate(PROBE)
+        S.check("coming back to the blueprint still draws the way-in arrow",
+                d3["edgeWalked"] >= 1, f"edgeWalked={d3['edgeWalked']} path={back['path']}")
+        S.check("and the drawing puts the doorway back on the front of the route",
+                back["path"][0] == "__in" and picked in back["path"],
+                f"path={back['path']}")
+
         # ── 5. wheel zoom ───────────────────────────────────────────────────
         await page.goto(BASE + "#scene=map&seed=42&region=foyer", wait_until="load", timeout=45000)
         await page.wait_for_selector(".map-node", timeout=20000)
