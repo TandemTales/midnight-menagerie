@@ -67,6 +67,34 @@ levers, and it is why no amount of `partyPick` closes the gap.
 68 → 77.4, which is the party's Guard doing its job, and `landed` still rises
 25.5 → 44.1.
 
+## 2b. Pierce is the lever; coverage is not
+
+The Giant's ladder above stopped at −2.0 with coverage alone. Running the same
+experiment on a SECOND encounter, and then adding the third rung to both,
+settles which lever does the work:
+
+| | Toy Chest | Patchwork Giant |
+|---|---|---|
+| no targeting | −3.9 | −9.9 |
+| + `partyPick` | | −7.3 |
+| + full-number AoE | −2.6 | −2.0 |
+| **+ pierce on the focused attack** | **+2.1** | **+7.5** |
+
+Coverage bought 1.3 points on the Chest and 7.9 on the Giant, and neither
+reached the baseline. **Pierce bought 4.7 and 9.5 and flipped the sign on
+both.** Solo is byte-identical at every rung of both ladders.
+
+The reason is visible in `%blocked`. Adding a full-number AoE to the Chest took
+`aimed` at four Kids from 53.8 to 96.1 — and `%blocked` from 70.4 to 78.8, so
+the party simply blocked the extra. Adding pierce took `%blocked` back down to
+64.3 and `landed` from 20.4 to 35.3. **A party's Guard budget scales with the
+party and with the length of the fight, so any output you add to a blockable
+move is absorbed; only damage Guard cannot touch is kept.**
+
+This is CONTRACTS 45 with a quantity attached, and it now rests on three
+independent encounters — the Governess's pierce toggle (+5.3 with, ~0 without),
+the Chest and the Giant.
+
 ## 3. What this means for the standing item
 
 - The gap is **not** an encounter-by-encounter mystery. It is one identity plus

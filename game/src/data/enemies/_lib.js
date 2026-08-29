@@ -162,8 +162,16 @@ export function hpFrac(a) { return (a && a.maxHp) ? (a.hp || 0) / a.maxHp : 1; }
  * matches Slay the Spire 2, whose co-op guides say attack damage does not scale
  * and name AoE as the primary co-op danger.
  */
-export function hitPlayer(c, n, hits = 1) {
-  c.damage(n, { hits });
+/**
+ * Damage the seat(s) this move is aimed at.
+ *
+ * `opts` is forwarded, so `{ pierce: true }` reaches the damage pipeline. It
+ * used to take only `(c, n, hits)` and a fourth argument was dropped in
+ * silence — the same shape as the enemy ctx's `block` helper, which swallowed
+ * `{ source }` and `{ noJoin }` at four call sites for as long as it existed.
+ */
+export function hitPlayer(c, n, hits = 1, opts = {}) {
+  c.damage(n, { hits, ...opts });
 }
 
 /**

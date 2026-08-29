@@ -725,11 +725,25 @@ export const toyChest = {
     },
     'lid-slam': {
       id: 'lid-slam', name: 'Lid Slam', intent: Intent.ATTACK, damage: 17, hits: 1,
+      /**
+       * MULTIPLAYER. §12 and §34 are silent on the Chest's targeting — §34 gives
+       * it the per-player Slam threshold and the 2/3 summon cap and nothing
+       * else — so this is §29's authored preference for the region, the same one
+       * the Patchwork Giant now uses. One heavy lid coming down is one Kid;
+       * the barrage below is the one that goes everywhere.
+       */
+      partyPick: 'lowestCourage',
+      pierceFn: (c) => c.partySize() > 1,
       tell: 'It rears up on its back edge to bring the whole lid down.',
-      effect(c) { hitPlayer(c, 17); },
+      effect(c) { hitPlayer(c, 17, 1, { pierce: c.partySize() > 1 }); },
     },
     'toy-barrage': {
       id: 'toy-barrage', name: 'Toy Barrage', intent: Intent.ATTACK, damage: 6, hits: 3,
+      // MULTIPLAYER: "it throws its own contents at you, one handful at a
+      // time" — in a party there are more of you to throw them at. The number
+      // does not move: "individual enemy attack damage generally remains close
+      // to solo values" (§27).
+      partyTarget: 'all',
       tell: 'It throws its own contents at you, one handful at a time.',
       effect(c) { hitPlayer(c, 6, 3); },
     },
@@ -892,6 +906,15 @@ export const patchworkGiant = {
        */
       partyPick: 'lowestCourage',
       tell: 'It winds up an arm that used to belong to a bear.',
+      /**
+       * Its one focused blow goes THROUGH Guard in a party — CONTRACTS 45's
+       * shape, and the only lever measured to beat a party's Guard budget.
+       * Coverage adds output the four Kids simply block; on the Toy Chest a
+       * full-number AoE bought 1.3 points against the arithmetic baseline and
+       * pierce on one move bought 4.7. The Wild Flail sweep stays the coverage
+       * half; this is the half a party cannot stack Guard against.
+       */
+      pierceFn: (c) => c.partySize() > 1,
       damageFn: (c) => {
         const d = 11 + patchworkGiant.atkBonus(c);
         return patchworkGiant.springs(c, 'stuffed-fist') ? pct(d, 0.6) : d;
@@ -900,8 +923,9 @@ export const patchworkGiant = {
       effect(c) {
         const d = 11 + patchworkGiant.atkBonus(c);
         mem(c).comingApart = false;
-        if (patchworkGiant.springs(c, 'stuffed-fist')) hitPlayer(c, pct(d, 0.6), 2);
-        else hitPlayer(c, d);
+        const thru = { pierce: c.partySize() > 1 };
+        if (patchworkGiant.springs(c, 'stuffed-fist')) hitPlayer(c, pct(d, 0.6), 2, thru);
+        else hitPlayer(c, d, 1, thru);
       },
     },
     'sit-down': {
@@ -1037,6 +1061,7 @@ export const porcelainTwinPrim = Object.assign(twinCommon('porcelain-twin-prim')
   moves: {
     'pointed-finger': {
       id: 'pointed-finger', name: 'Pointed Finger', intent: Intent.ATTACK, damage: 13, hits: 1,
+      partyPick: 'lowestCourage',
       tell: 'Prim points at you. It is not a friendly gesture.',
       damageFn: (c) => 13 + porcelainTwinPrim.bonus(c) + (mem(c).hushed ? 4 : 0),
       effect(c) {
@@ -1047,6 +1072,7 @@ export const porcelainTwinPrim = Object.assign(twinCommon('porcelain-twin-prim')
     },
     'little-slap': {
       id: 'little-slap', name: 'Little Slap', intent: Intent.ATTACK, damage: 7, hits: 2,
+      partyPick: 'lowestCourage',
       tell: 'Two small, extremely precise slaps.',
       damageFn: (c) => 7 + porcelainTwinPrim.bonus(c) + (mem(c).hushed ? 4 : 0),
       hitsFn: () => 2,

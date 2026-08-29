@@ -870,6 +870,72 @@ export async function run() {
     });
   };
 
+  /**
+   * Guard-ignoring damage on the two Nursery elites, the only lever measured to
+   * beat a party's Guard budget. Against the arithmetic baseline for four Kids
+   * (see docs/notes/2026-08-29-the-party-cost-gap-is-arithmetic.md) a full
+   * number AoE bought 1.3 points on the Toy Chest and pierce on one move bought
+   * 4.7; on the Giant, coverage bought 7.9 and pierce another 9.5.
+   *
+   * The EFFECT and the READOUT are asserted apart, because an intent that
+   * promises what the damage does not deliver has to fail either way round
+   * (trap 46), and CONTRACTS 45 is explicit that the player must be TOLD.
+   */
+  const pierceCases = [
+    { enemy: 'patchwork-giant', move: 'stuffed-fist', label: 'the Giant Stuffed Fist' },
+    { enemy: 'toy-chest',       move: 'lid-slam',     label: 'the Toy Chest Lid Slam' },
+  ];
+  for (const pc of pierceCases) {
+    await atest(`pierce: ${pc.label} goes through a party Guard`, async () => {
+      const { getEnemy } = await import('../../game/src/data/enemies/index.js');
+      const def = getEnemy(pc.enemy);
+      const e = await startDummyParty(new RNG(471), 4, {
+        enemies: [{ def, hp: 400, id: 'e0' }], maxHp: 200,
+      });
+      const en = e.enemies[0];
+      e.overrideIntent(en, def.moves[pc.move]);
+      const aimed = e.partyTargets(en, en.pendingMove)[0];
+      e.gainBlock(aimed, 200, { fromCard: false, reason: 'test' });
+      const hp0 = aimed.hp;
+      await e.endTurn();
+      ok(hp0 - aimed.hp > 0,
+        'it lands even behind 200 Guard', `${hp0} -> ${aimed.hp}`);
+    });
+
+    await atest(`pierce: and ${pc.label} SAYS so, to that seat`, async () => {
+      const { previewIncoming } = await import('../../game/src/combat/preview.js');
+      const { getEnemy } = await import('../../game/src/data/enemies/index.js');
+      const def = getEnemy(pc.enemy);
+      const e = await startDummyParty(new RNG(473), 4, {
+        enemies: [{ def, hp: 400, id: 'e0' }], maxHp: 200,
+      });
+      const en = e.enemies[0];
+      e.overrideIntent(en, def.moves[pc.move]);
+      const aimed = e.partyTargets(en, en.pendingMove)[0];
+      ok(en.intent.pierce === true, 'the intent carries pierce', String(en.intent.pierce));
+      const inc = previewIncoming(e, aimed);
+      ok(inc.through > 0, 'and the rail counts it as going THROUGH Guard',
+        `through=${inc.through} of ${inc.total}`);
+    });
+
+    await atest(`pierce: ${pc.label} does NOT pierce a Kid alone`, async () => {
+      const { getEnemy } = await import('../../game/src/data/enemies/index.js');
+      const def = getEnemy(pc.enemy);
+      const e = await startDummyParty(new RNG(475), 1, {
+        enemies: [{ def, hp: 400, id: 'e0' }], maxHp: 200,
+      });
+      const en = e.enemies[0];
+      e.overrideIntent(en, def.moves[pc.move]);
+      ok(!en.intent.pierce, 'solo is shown no such warning, because there is none',
+        String(!!en.intent.pierce));
+      const solo = e.players[0];
+      e.gainBlock(solo, 200, { fromCard: false, reason: 'test' });
+      const hp0 = solo.hp;
+      await e.endTurn();
+      eq(solo.hp, hp0, 'and Guard stops it completely, the way it always did');
+    });
+  }
+
   await atest('targeting: the Patchwork Giant aims at the Kid closest to breaking', async () => {
     const e = await giantParty(4, 461);
     const en = e.enemies[0];
