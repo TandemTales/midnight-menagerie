@@ -1,0 +1,974 @@
+{
+ "config": {
+  "TIER": "elite",
+  "ENC": "nursery-scare-chest",
+  "REGION": "nursery",
+  "LREGION": "nursery",
+  "N": 12,
+  "GEN": 8,
+  "SIZES": [
+   1,
+   4
+  ],
+  "SLUGS": [
+   "marmalade",
+   "bones"
+  ],
+  "SEED0": 90000
+ },
+ "rows": [
+  {
+   "nodeId": "bench-90000-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 1,
+   "seed": 90000,
+   "win": true,
+   "turns": 13,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.2727272727272727,
+   "courageCost": 49,
+   "takenBySeat": [
+    55
+   ],
+   "hitsBySeat": [
+    10
+   ],
+   "blockedBySeat": [
+    34
+   ],
+   "aimed": 89,
+   "blocked": 34,
+   "partyGuard": 54,
+   "spread": 1,
+   "enemyHp": 132,
+   "enemyGuard": 30,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013-1",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 2,
+   "size": 1,
+   "seed": 90013,
+   "win": true,
+   "turns": 13,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 1,
+   "courageCost": 0,
+   "takenBySeat": [
+    12
+   ],
+   "hitsBySeat": [
+    11
+   ],
+   "blockedBySeat": [
+    83
+   ],
+   "aimed": 95,
+   "blocked": 83,
+   "partyGuard": 225,
+   "spread": 1,
+   "enemyHp": 132,
+   "enemyGuard": 51,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026-3",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 4,
+   "size": 1,
+   "seed": 90026,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9552238805970149,
+   "courageCost": 1,
+   "takenBySeat": [
+    13
+   ],
+   "hitsBySeat": [
+    4
+   ],
+   "blockedBySeat": [
+    28
+   ],
+   "aimed": 41,
+   "blocked": 28,
+   "partyGuard": 43,
+   "spread": 1,
+   "enemyHp": 132,
+   "enemyGuard": 9,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039-3",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 4,
+   "size": 1,
+   "seed": 90039,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.918918918918919,
+   "courageCost": 6,
+   "takenBySeat": [
+    12
+   ],
+   "hitsBySeat": [
+    4
+   ],
+   "blockedBySeat": [
+    23
+   ],
+   "aimed": 35,
+   "blocked": 23,
+   "partyGuard": 51,
+   "spread": 1,
+   "enemyHp": 132,
+   "enemyGuard": 9,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052-2",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 3,
+   "size": 1,
+   "seed": 90052,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 1,
+   "courageCost": 0,
+   "takenBySeat": [
+    3
+   ],
+   "hitsBySeat": [
+    4
+   ],
+   "blockedBySeat": [
+    32
+   ],
+   "aimed": 35,
+   "blocked": 32,
+   "partyGuard": 67,
+   "spread": 1,
+   "enemyHp": 132,
+   "enemyGuard": 9,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90065,
+   "win": false,
+   "turns": 9,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 70,
+   "takenBySeat": [
+    70
+   ],
+   "hitsBySeat": [
+    10
+   ],
+   "blockedBySeat": [
+    22
+   ],
+   "aimed": 92,
+   "blocked": 22,
+   "partyGuard": 34,
+   "spread": 1,
+   "enemyHp": 132,
+   "enemyGuard": 30,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 1,
+   "seed": 90078,
+   "win": true,
+   "turns": 15,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 1,
+   "courageCost": 0,
+   "takenBySeat": [
+    5
+   ],
+   "hitsBySeat": [
+    13
+   ],
+   "blockedBySeat": [
+    122
+   ],
+   "aimed": 127,
+   "blocked": 122,
+   "partyGuard": 233,
+   "spread": 1,
+   "enemyHp": 132,
+   "enemyGuard": 54,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091-1",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 2,
+   "size": 1,
+   "seed": 90091,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8208955223880597,
+   "courageCost": 10,
+   "takenBySeat": [
+    22
+   ],
+   "hitsBySeat": [
+    5
+   ],
+   "blockedBySeat": [
+    18
+   ],
+   "aimed": 40,
+   "blocked": 18,
+   "partyGuard": 37,
+   "spread": 1,
+   "enemyHp": 132,
+   "enemyGuard": 9,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90104-1",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 2,
+   "size": 1,
+   "seed": 90104,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8783783783783784,
+   "courageCost": 9,
+   "takenBySeat": [
+    15
+   ],
+   "hitsBySeat": [
+    4
+   ],
+   "blockedBySeat": [
+    20
+   ],
+   "aimed": 35,
+   "blocked": 20,
+   "partyGuard": 48,
+   "spread": 1,
+   "enemyHp": 132,
+   "enemyGuard": 9,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90117-2",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 3,
+   "size": 1,
+   "seed": 90117,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9692307692307692,
+   "courageCost": 2,
+   "takenBySeat": [
+    11
+   ],
+   "hitsBySeat": [
+    4
+   ],
+   "blockedBySeat": [
+    24
+   ],
+   "aimed": 35,
+   "blocked": 24,
+   "partyGuard": 51,
+   "spread": 1,
+   "enemyHp": 132,
+   "enemyGuard": 9,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90130-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 1,
+   "seed": 90130,
+   "win": true,
+   "turns": 13,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.2597402597402597,
+   "courageCost": 50,
+   "takenBySeat": [
+    56
+   ],
+   "hitsBySeat": [
+    10
+   ],
+   "blockedBySeat": [
+    52
+   ],
+   "aimed": 108,
+   "blocked": 52,
+   "partyGuard": 64,
+   "spread": 1,
+   "enemyHp": 132,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90143-2",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 3,
+   "size": 1,
+   "seed": 90143,
+   "win": true,
+   "turns": 11,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8611111111111112,
+   "courageCost": 10,
+   "takenBySeat": [
+    25
+   ],
+   "hitsBySeat": [
+    9
+   ],
+   "blockedBySeat": [
+    50
+   ],
+   "aimed": 75,
+   "blocked": 50,
+   "partyGuard": 166,
+   "spread": 1,
+   "enemyHp": 132,
+   "enemyGuard": 30,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90000-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 4,
+   "seed": 90000,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9966996699669967,
+   "courageCost": -16,
+   "takenBySeat": [
+    0,
+    0,
+    5,
+    0
+   ],
+   "hitsBySeat": [
+    0,
+    0,
+    1,
+    5
+   ],
+   "blockedBySeat": [
+    0,
+    0,
+    0,
+    43
+   ],
+   "aimed": 48,
+   "blocked": 43,
+   "partyGuard": 928,
+   "spread": 0,
+   "enemyHp": 752,
+   "enemyGuard": 18,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013-1",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 2,
+   "size": 4,
+   "seed": 90013,
+   "win": true,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9149659863945578,
+   "courageCost": 4,
+   "takenBySeat": [
+    5,
+    5,
+    11,
+    5
+   ],
+   "hitsBySeat": [
+    2,
+    1,
+    3,
+    1
+   ],
+   "blockedBySeat": [
+    17,
+    0,
+    13,
+    0
+   ],
+   "aimed": 56,
+   "blocked": 30,
+   "partyGuard": 1137,
+   "spread": 0.7692307692307692,
+   "enemyHp": 752,
+   "enemyGuard": 32,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026-3",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 4,
+   "size": 4,
+   "seed": 90026,
+   "win": true,
+   "turns": 3,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9461279461279462,
+   "courageCost": -7,
+   "takenBySeat": [
+    5,
+    0,
+    0,
+    5
+   ],
+   "hitsBySeat": [
+    1,
+    0,
+    0,
+    2
+   ],
+   "blockedBySeat": [
+    0,
+    0,
+    0,
+    12
+   ],
+   "aimed": 22,
+   "blocked": 12,
+   "partyGuard": 508,
+   "spread": 0.33333333333333337,
+   "enemyHp": 752,
+   "enemyGuard": 9,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039-3",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 4,
+   "size": 4,
+   "seed": 90039,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.968944099378882,
+   "courageCost": -8,
+   "takenBySeat": [
+    0,
+    5,
+    9,
+    0
+   ],
+   "hitsBySeat": [
+    4,
+    2,
+    1,
+    0
+   ],
+   "blockedBySeat": [
+    35,
+    10,
+    0,
+    0
+   ],
+   "aimed": 59,
+   "blocked": 45,
+   "partyGuard": 795,
+   "spread": 0.33333333333333337,
+   "enemyHp": 752,
+   "enemyGuard": 21,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052-2",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 3,
+   "size": 4,
+   "seed": 90052,
+   "win": true,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9475409836065574,
+   "courageCost": -5,
+   "takenBySeat": [
+    0,
+    5,
+    5,
+    0
+   ],
+   "hitsBySeat": [
+    0,
+    7,
+    1,
+    0
+   ],
+   "blockedBySeat": [
+    0,
+    61,
+    0,
+    0
+   ],
+   "aimed": 71,
+   "blocked": 61,
+   "partyGuard": 1051,
+   "spread": 0.33333333333333337,
+   "enemyHp": 752,
+   "enemyGuard": 31,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90065,
+   "win": true,
+   "turns": 10,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9753086419753086,
+   "courageCost": -12,
+   "takenBySeat": [
+    0,
+    0,
+    5,
+    7
+   ],
+   "hitsBySeat": [
+    0,
+    0,
+    2,
+    8
+   ],
+   "blockedBySeat": [
+    0,
+    0,
+    13,
+    60
+   ],
+   "aimed": 85,
+   "blocked": 73,
+   "partyGuard": 1355,
+   "spread": 0.33333333333333337,
+   "enemyHp": 752,
+   "enemyGuard": 18,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 4,
+   "seed": 90078,
+   "win": true,
+   "turns": 9,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9448051948051948,
+   "courageCost": 9,
+   "takenBySeat": [
+    5,
+    0,
+    15,
+    0
+   ],
+   "hitsBySeat": [
+    2,
+    0,
+    5,
+    0
+   ],
+   "blockedBySeat": [
+    8,
+    0,
+    45,
+    0
+   ],
+   "aimed": 73,
+   "blocked": 53,
+   "partyGuard": 1290,
+   "spread": 0.33333333333333337,
+   "enemyHp": 752,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091-1",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 2,
+   "size": 4,
+   "seed": 90091,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9446366782006921,
+   "courageCost": -7,
+   "takenBySeat": [
+    5,
+    0,
+    0,
+    5
+   ],
+   "hitsBySeat": [
+    1,
+    1,
+    0,
+    5
+   ],
+   "blockedBySeat": [
+    0,
+    13,
+    0,
+    21
+   ],
+   "aimed": 44,
+   "blocked": 34,
+   "partyGuard": 907,
+   "spread": 0.33333333333333337,
+   "enemyHp": 752,
+   "enemyGuard": 22,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90104-1",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 2,
+   "size": 4,
+   "seed": 90104,
+   "win": true,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.867741935483871,
+   "courageCost": 26,
+   "takenBySeat": [
+    0,
+    0,
+    39,
+    0
+   ],
+   "hitsBySeat": [
+    0,
+    0,
+    5,
+    0
+   ],
+   "blockedBySeat": [
+    0,
+    0,
+    10,
+    0
+   ],
+   "aimed": 49,
+   "blocked": 10,
+   "partyGuard": 942,
+   "spread": 0,
+   "enemyHp": 752,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90117-2",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 3,
+   "size": 4,
+   "seed": 90117,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9298245614035088,
+   "courageCost": -1,
+   "takenBySeat": [
+    0,
+    5,
+    5,
+    5
+   ],
+   "hitsBySeat": [
+    0,
+    2,
+    1,
+    5
+   ],
+   "blockedBySeat": [
+    0,
+    7,
+    0,
+    27
+   ],
+   "aimed": 49,
+   "blocked": 34,
+   "partyGuard": 910,
+   "spread": 0.6666666666666667,
+   "enemyHp": 752,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90130-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 4,
+   "seed": 90130,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9352750809061489,
+   "courageCost": -10,
+   "takenBySeat": [
+    9,
+    0,
+    5,
+    5
+   ],
+   "hitsBySeat": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "blockedBySeat": [
+    5,
+    13,
+    0,
+    0
+   ],
+   "aimed": 37,
+   "blocked": 18,
+   "partyGuard": 620,
+   "spread": 0.6666666666666667,
+   "enemyHp": 752,
+   "enemyGuard": 17,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90143-2",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-chest",
+   "name": "The Toy Chest",
+   "region": "nursery",
+   "histLen": 3,
+   "size": 4,
+   "seed": 90143,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 1,
+   "courageCost": -11,
+   "takenBySeat": [
+    5,
+    5,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    1,
+    2,
+    4,
+    0
+   ],
+   "blockedBySeat": [
+    0,
+    7,
+    35,
+    0
+   ],
+   "aimed": 52,
+   "blocked": 42,
+   "partyGuard": 1323,
+   "spread": 0.33333333333333337,
+   "enemyHp": 752,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  }
+ ],
+ "table": [
+  {
+   "size": 1,
+   "n": 12,
+   "aimed": 67.3,
+   "landed": 24.9,
+   "blocked": 42.3,
+   "pctBlocked": 62.9,
+   "partyGuard": 89.4,
+   "turns": 8.8,
+   "aimedPerTurn": 7.6,
+   "left": 80,
+   "errs": 0
+  },
+  {
+   "size": 4,
+   "n": 12,
+   "aimed": 53.8,
+   "landed": 15.8,
+   "blocked": 37.9,
+   "pctBlocked": 70.4,
+   "partyGuard": 980.5,
+   "turns": 7,
+   "aimedPerTurn": 7.7,
+   "left": 90,
+   "errs": 0
+  }
+ ],
+ "errors": []
+}
