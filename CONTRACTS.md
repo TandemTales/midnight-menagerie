@@ -83,6 +83,25 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    the engine ever called, so two bosses shipped without the defensive mechanic their
    whole fight is built on. `tests/dup-keys/check.py` gates the first. For the second:
    when you add a method to a def, grep for its caller before you call it done.
+5c. **A GATE can be a def method with no caller too.** `tests/seams/check.py`
+   located each API's body as `src.index("{", m.end())` — the first brace after
+   the signature. Every API it guards ends its parameter list with a DEFAULT of
+   `{}` (`addCard(def, pile = Pile.HAND, opts = {})`), so that brace was the
+   default, the extracted "body" was the two characters `{}`, the allowed-key
+   set came back EMPTY, and `if not allowed: continue` skipped the API in
+   silence — while the run printed `3829 call sites checked, 0 problems`. Four
+   of its five option-key APIs were unchecked from the day it was written; only
+   the damage family, built by a separate regex, was ever really examined.
+
+   **A gate that reports a large confident number is not evidence it looked at
+   anything.** The control that matters is not "does it pass" but "does it
+   FAIL when I break something": injecting one bogus option key gives
+   `UNKNOWN-OPTION (1)` on the repaired gate and `0 problems` on the old one.
+   Run that control whenever a checker's scope is in doubt.
+
+   Repairing it found three real reports immediately, and one of them opened
+   trap 5b's fourth and fifth instances — see `engine.boardEvent()`.
+
 6. **`--wait 4.5` can catch the map mid-draw.** Its entrance sweep runs ~800 ms; use `--wait 9`.
    **Superseded 2026-08-29 — see trap 43.** A bigger number was the wrong
    treatment: `--wait` now waits for the stage to finish warming FIRST, so it is

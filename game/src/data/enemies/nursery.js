@@ -408,7 +408,10 @@ export const rockingHorse = {
       effect(c) {
         addCnt(c, 'excitement', 1, rockingHorse.maxExcitement(c));
         const other = allies(c)[0];
-        if (other) c.block(other, 4, { source: c.self, noExcite: true });
+        // `noExcite` used to ride along here and was read by nothing. It is also
+        // redundant: `onBoardEvent` already returns early on `ev.source === c.self`,
+        // so the Horse cannot excite itself off its own Clatter.
+        if (other) c.block(other, 4, { source: c.self });
       },
     },
   },

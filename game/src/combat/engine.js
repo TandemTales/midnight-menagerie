@@ -1264,12 +1264,12 @@ export class CombatEngine {
     if (!actor || !actor.alive) return 0;
     const gain = this.previewBlockValue(actor, amount, opts);
     if (gain <= 0 && amount > 0) {
-      this._emit(EV.BLOCK, { actorId: actor.id, amount: 0, before: actor.block, after: actor.block, reason: opts.reason || 'card' });
+      this._emit(EV.BLOCK, { actorId: actor.id, amount: 0, before: actor.block, after: actor.block, reason: opts.reason || 'card', noJoin: !!opts.noJoin });
       return 0;
     }
     const before = actor.block;
     actor.block += gain;
-    this._emit(EV.BLOCK, { actorId: actor.id, amount: gain, before, after: actor.block, reason: opts.reason || 'card' });
+    this._emit(EV.BLOCK, { actorId: actor.id, amount: gain, before, after: actor.block, reason: opts.reason || 'card', noJoin: !!opts.noJoin });
     this.hooks.dispatch('onBlockGained', { actor, amount: gain }, this.hooks.actorHooks(actor, 'onBlockGained'));
     return gain;
   }

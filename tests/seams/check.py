@@ -455,12 +455,68 @@ class Surfaces:
         }
 
     def _reads(self, src, sig, param):
+        """Which `param.key`s a method actually reads, from its real body.
+
+        This used to take `src.index("{", m.end())` as the start of the body.
+        Every one of these methods ends its parameter list with a DEFAULT of
+        `{}` — `addCard(def, pile = Pile.HAND, opts = {})`, `summon(def, o = {})`,
+        `gainBlock(actor, amount, opts = {})` — so the first brace after the
+        signature was that default, `match_brace` returned the two characters
+        `{}`, and the key set came back EMPTY. `check_option_keys` then does
+        `if not allowed: continue`, so four of the five APIs this gate advertises
+        were skipped in silence while it printed a confident four-figure
+        call-site count. Only the damage family, built separately from a plain
+        `o.` regex over damage.js, was ever really checked.
+
+        Walk the parameter list to its closing paren first; the body is the
+        brace after that.
+        """
         m = re.search(sig, src)
         if not m:
             return set()
-        b = src.index("{", m.end())
+        p = src.index("(", m.start())
+        depth, i = 0, p
+        while i < len(src):
+            if src[i] == "(":
+                depth += 1
+            elif src[i] == ")":
+                depth -= 1
+                if depth == 0:
+                    break
+            i += 1
+        b = src.index("{", i)
         body = src[b:match_brace(src, b)]
-        return set(re.findall(r"\b" + param + r"\.(" + IDENT + r")", body))
+        keys = set(re.findall(r"\b" + param + r"\.(" + IDENT + r")", body))
+
+        # An option FORWARDED whole to a helper is still read. `gainBlock` hands
+        # `opts` straight to `previewBlockValue`, which is where `fromCard` and
+        # `source` are consumed — without this, eight honest call sites are
+        # reported as passing keys nobody reads. One level is enough for every
+        # forward in this engine; a second would need a real call graph.
+        for fwd in re.findall(r"this\.(" + IDENT + r")\s*\([^()]*\b" + param + r"\s*\)", body):
+            m2 = re.search(r"\n  " + re.escape(fwd) + r"\s*\(", src)
+            if not m2 or fwd == sig:
+                continue
+            try:
+                p2 = src.index("(", m2.start())
+                d2, j = 0, p2
+                while j < len(src):
+                    if src[j] == "(":
+                        d2 += 1
+                    elif src[j] == ")":
+                        d2 -= 1
+                        if d2 == 0:
+                            break
+                    j += 1
+                b2 = src.index("{", j)
+                inner = src[b2:match_brace(src, b2)]
+                # The helper names its own parameter; take whatever it destructures
+                # or dots off the object in the same position.
+                for pn in set(re.findall(r"\b(" + IDENT + r")\s*=\s*\{\s*\}", src[p2:j])):
+                    keys |= set(re.findall(r"\b" + pn + r"\.(" + IDENT + r")", inner))
+            except ValueError:
+                continue
+        return keys
 
 
 def strip_comments_keep_strings(s):
@@ -611,6 +667,15 @@ class Checker:
     def check_option_keys(self, path, src):
         for api, allowed in self.s.option_keys.items():
             if not allowed:
+                continue
+            # A file that defines its OWN method of this name is not calling the
+            # engine's. `state/run.js` has `addCard(defOrId, { upgraded, quiet })`,
+            # a different method with a different contract, and matching its call
+            # sites against the engine's key set reports `quiet` — which run.js
+            # reads perfectly well — plus a phantom `false` off the destructured
+            # default. Checking a call against the wrong implementation is worse
+            # than not checking it.
+            if re.search(r"\n\s*" + re.escape(api) + r"\s*\([^)]*\)\s*\{", src):
                 continue
             for m in re.finditer(r"(?:^|[^A-Za-z0-9_$.])(?:" + IDENT + r"\.)?" +
                                  re.escape(api) + r"\??\.?\(", src):
