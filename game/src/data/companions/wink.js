@@ -889,7 +889,11 @@ const uncommons = [
     flavor: 'Watching is not a passive activity for a spider.',
     nums: { b: 6, n: 2 },
     effect: eff(c => power(c, 'wink/observe-and-interfere', 1, (x) => {
-      x.e.on('intent', (ev) => { const en = x.e.actor(ev.enemyId); if (!en) return; if (ev.intent && ev.intent.family === FAMILY.ATTACK) U.guard(x, 6); else web(x, en, 2); });
+      // `familyLabel`, not `family` — the same two vocabularies as the tracker.
+      // Against the lowercase key this comparison was false for every intent in
+      // the game, so the card only ever took its `else`: it read "gain 6 Guard
+      // if it is an Attack" and applied Web to attackers instead, always.
+      x.e.on('intent', (ev) => { const en = x.e.actor(ev.enemyId); if (!en) return; if (ev.intent && ev.intent.familyLabel === FAMILY.ATTACK) U.guard(x, 6); else web(x, en, 2); });
     })),
     upgrade: { nums: { b: 9, n: 3 } },
   },

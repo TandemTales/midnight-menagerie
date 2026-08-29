@@ -117,6 +117,25 @@ try {
       'and the card is released into a real pile');
   }
   /**
+   * Observe and Interfere reads the SAME two vocabularies, in a card rather
+   * than the tracker: "gain Guard if it is an Attack. If it is not, apply Web."
+   * Against the lowercase key the Attack branch was false for every intent in
+   * the game, so it always took the `else` and Webbed attackers.
+   *
+   * Asserted on the Web the enemy must NOT have, because the Guard it should
+   * gain instead is handed out during the enemy phase and the next turn's open
+   * wipes it (trap 24) — so Guard is not observable here and Web is.
+   */
+  {
+    const e = await winkVs(ATTACKER);
+    const t = e.livingEnemies()[0];
+    await play(e, 'wink/observe-and-interfere');
+    await e.endTurn();
+    check((t.statuses.get('web') || 0) === 0,
+      'Observe and Interfere takes its ATTACK branch, so an attacker is not Webbed',
+      `web=${t.statuses.get('web') || 0}`);
+  }
+  /**
    * TWO WINKS. Every listener in Wink's tracker ran as seat 0.
    *
    * `trackerCtx(e)` with no seat skips `_asSeat`, and the ctx then resolves
