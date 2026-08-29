@@ -1,0 +1,125 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Taffy — a Gummy is marked, and playing one counts</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+</style>
+<h1>Taffy</h1>
+<div id="out"></div>
+<script type="module">
+/**
+ * Taffy had no suite. She is the Companion whose whole archetype is COPIES, and
+ * two of the three things that make a copy a copy were not wired:
+ *
+ *   - `gummy()` spawned with `{ flags: { gummy: true } }` and `engine.addCard`
+ *     reads `meta`, never `flags` — so `U.flag(card, 'gummy')` was undefined on
+ *     every Gummy ever made. `copyable()` let a Gummy be copied and `gummy()`
+ *     would not refuse a Gummy source, which is the "cannot copy itself" rule
+ *     the archetype rests on.
+ *   - `gummyPlayed` is read by two cards and was incremented by exactly one
+ *     OTHER card, so both read a number that was almost always zero.
+ *
+ * CONTRACTS trap 12: a card that resolves without throwing is not a card that
+ * works. Nothing here asserts that an effect ran; each check asserts what it
+ * changed.
+ */
+import { RNG } from '../../game/src/core/rng.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import { makeDummySetup } from '../../game/src/combat/dummy.js';
+import { installTrackers, trackerCtx, flag, got } from '../../game/src/data/companions/_util.js';
+import * as CARDS from '../../game/src/data/cards.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+const say = (html, cls) => { const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; out.appendChild(d); };
+
+async function taffy() {
+  const e = new CombatEngine(makeDummySetup(new RNG(51), {
+    companion: 'taffy', deck: CARDS.startingDeckFor('taffy'), maxHp: 72,
+  }));
+  await e.startCombat();
+  installTrackers(e, 'taffy');
+  return e;
+}
+async function play(e, id, target) {
+  e.addCard(CARDS.cardById(id), 'hand', {});
+  const card = e.piles.hand[e.piles.hand.length - 1];
+  e.player.energy = 9;
+  await e.playCard(card.uid, target ? target.id : undefined);
+  return card;
+}
+/** Every card in hand that carries the Gummy marker. */
+const gummies = (e) => e.piles.hand.filter(c => flag(c, 'gummy'));
+
+try {
+  say('<h2>A Gummy is MARKED as one</h2>');
+  {
+    const e = await taffy();
+    const before = gummies(e).length;
+    // Sample Size copies a Common from hand into hand.
+    e.addCard(CARDS.cardById('taffy/gummy-jab'), 'hand', {});
+    await play(e, 'taffy/sample-size');
+    const made = gummies(e);
+    check(made.length > before,
+      'copying a Trick really puts a marked Gummy in hand',
+      `${before} -> ${made.length}`);
+    if (made.length) {
+      check(flag(made[0], 'gummy') === true,
+        'and the marker is on the CARD, not just in its keywords',
+        String(flag(made[0], 'gummy')));
+      check((made[0].def.keywords || []).includes('vanish'),
+        'and it vanishes, the way a copy should');
+    }
+  }
+
+  say('<h2>and playing one COUNTS</h2>');
+  {
+    const e = await taffy();
+    const c0 = trackerCtx(e, null);
+    check(got(c0, 'gummyPlayed') === 0, 'setup: nothing played yet',
+      String(got(c0, 'gummyPlayed')));
+
+    e.addCard(CARDS.cardById('taffy/gummy-jab'), 'hand', {});
+    await play(e, 'taffy/sample-size');
+    const g = gummies(e)[0];
+    check(!!g, 'setup: a Gummy is in hand');
+    if (g) {
+      const t = e.livingEnemies()[0];
+      e.player.energy = 9;
+      await e.playCard(g.uid, t.id);
+      check(got(trackerCtx(e, null), 'gummyPlayed') === 1,
+        'playing a Gummy really increments gummyPlayed',
+        String(got(trackerCtx(e, null), 'gummyPlayed')));
+    }
+  }
+
+  say('<h2>and a Gummy cannot be copied again</h2>');
+  {
+    const e = await taffy();
+    e.addCard(CARDS.cardById('taffy/gummy-jab'), 'hand', {});
+    await play(e, 'taffy/sample-size');
+    const g = gummies(e)[0];
+    check(!!g, 'setup: a Gummy exists');
+    if (g) {
+      const n = gummies(e).length;
+      // Sample Size filters on `copyable`, which refuses a Gummy. With the
+      // marker missing it accepted one, and a copy of a copy is unbounded.
+      e.piles.hand = e.piles.hand.filter(c => flag(c, 'gummy') || c.id === 'taffy/sample-size');
+      await play(e, 'taffy/sample-size');
+      check(gummies(e).length === n,
+        'a Gummy is not a legal source — no copy of a copy',
+        `${n} -> ${gummies(e).length}`);
+    }
+  }
+} catch (err) {
+  fails.push('THREW: ' + (err && err.stack || err));
+}
+
+say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`, fails.length ? 'fail' : 'pass');
+say('<ul class="pass">' + passes.map(p => `<li>PASS ${p}</li>`).join('') + '</ul>');
+if (fails.length) say('<ul class="fail">' + fails.map(f => `<li>FAIL ${f}</li>`).join('') + '</ul>');
+window.__RESULT = { passed: passes.length, failed: fails.length, fails, passes };
+window.__DONE = true;
+</script>

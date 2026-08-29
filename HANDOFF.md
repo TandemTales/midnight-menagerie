@@ -500,6 +500,7 @@ drive a real engine with real enemies and mock none of the mechanic under test.
 | `tests/crinkle/run.py` | 44 — a Crease survives the discard pile, and the card PRINTS the new number |
 | `tests/butler/run.py` | 24 — Dust Them Off really lands on all three Kids, Enough of This really DECLARES its splash, and the converted Reprimands really cost the player |
 | `tests/pipkin/run.py` | 18 — the Patch is really on the board, and really matches the array every turn |
+| `tests/taffy/run.py` | 8 — a Gummy is MARKED as one, playing it counts, and a Gummy is not a legal source for another. She had no suite until 2026-08-29 |
 | `tests/governess/run.py` | 25 — Mind Your Seams really Pinches every seat, Sharp Correction really picks the Kid closest to breaking and really does not move when they brace, and every attack deals a Kid alone exactly what it always did |
 
 **Co-op drives the real screens** — everything else about co-op is asserted

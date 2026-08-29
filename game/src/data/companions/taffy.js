@@ -89,7 +89,7 @@ function gummy(c, src, pile = 'hand', costDelta = 0, forcedCost) {
   if (U.got(c, 'wrapperDiscount') > 0) { delta -= 1; U.bump(c, 'wrapperDiscount', -1); }
   const def = gummyDef(src, delta, forcedCost);
   if (!def) return null;
-  U.spawn(c, def, pile, { gummy: true, exhaust: true, cost: def.cost, flags: { gummy: true } });
+  U.spawn(c, def, pile, { gummy: true, exhaust: true, cost: def.cost, meta: { gummy: true } });
   U.bump(c, 'gummyMade');
   U.fire(c, 'gummy', { src });
   return def;
@@ -108,6 +108,28 @@ U.onTracker(SLUG, (e, s, seat) => {
     { id: 'globs', name: 'Globs', icon: 'globs', desc: 'Pieces of Taffy separated from her body. Runny at 5 or more, which costs Courage at the end of each enemy turn.', min: 0, max: 6, start: 0 },
   ]);
   const fake = () => U.trackerCtx(e, seat);
+
+  /**
+   * `gummyPlayed` counts Gummies PLAYED this turn. Two cards read it — Sticky
+   * Fingers and Sugar Rush — and exactly ONE other card incremented it, so both
+   * were reading a number that was almost always zero.
+   *
+   * The marker also never reached the card. `gummy()` spawned with
+   * `{ flags: { gummy: true } }`, and `engine.addCard` reads `meta`, never
+   * `flags` — so `U.flag(card, 'gummy')` was undefined on every Gummy ever
+   * made. `copyable()` therefore let a Gummy be copied, and `gummy()` would not
+   * refuse a Gummy as its source, which is the "cannot copy itself" rule the
+   * archetype is built on.
+   *
+   * The `gummy` KEYWORD cannot stand in for the flag: Taffy's own Gummy-making
+   * Tricks carry it as a category marker, so it does not distinguish a copy
+   * from a card about copies. The meta flag is the only thing that does.
+   */
+  e.on('card:play', (ev) => {
+    /* trap 19: `ev.card` is a SNAPSHOT, so the runtime flag is not on it. */
+    const live = ev.cardUid != null ? e.card(ev.cardUid) : null;
+    if (U.flag(live || ev.card, 'gummy')) U.bump(fake(), 'gummyPlayed');
+  });
   // Player turn end ONLY — Stretch used to climb on every enemy turn end too.
   U.onPlayerTurn(e, 'end', () => {
     const c = fake();
@@ -759,7 +781,7 @@ const rares = [
       if (!k) return;
       const def = gummyDef(k, 0, 0);
       gummy(c, k, 'discard');
-      if (def) { U.spawn(c, def, 'hand', { gummy: true, exhaust: true, cost: 0, playImmediately: true }); U.bump(c, 'gummyPlayed'); }
+      if (def) { U.spawn(c, def, 'hand', { gummy: true, exhaust: true, cost: 0, playImmediately: true, meta: { gummy: true } }); }
     }),
     upgrade: { cost: 1 },
   },
