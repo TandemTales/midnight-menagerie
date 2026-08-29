@@ -10,7 +10,7 @@
 <script type="module">
 import { RNG } from '../../game/src/core/rng.js';
 import { CombatEngine } from '../../game/src/combat/engine.js';
-import { makeDummySetup } from '../../game/src/combat/dummy.js';
+import { makeDummySetup, startDummyParty } from '../../game/src/combat/dummy.js';
 import { installTrackers, trackerCtx, mm } from '../../game/src/data/companions/_util.js';
 import * as CARDS from '../../game/src/data/cards.js';
 
@@ -19,12 +19,46 @@ const out = document.getElementById('out');
 const check = (ok, what, detail = '') => (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
 function say(html, cls) { const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; out.appendChild(d); }
 
+/**
+ * An enemy that ONLY ever swings, so an Attack intent is a certainty rather
+ * than a roll. The stock dummy never shows one, which is exactly why a dead
+ * Set mechanic could sit behind an `if (fired)` and look like setup.
+ */
+const ATTACKER = {
+  id: 'wink/test-attacker', name: 'Attacker', region: 'foyer', tier: 'normal',
+  hp: [400, 400], silhouette: 'blob',
+  moves: {
+    swing: {
+      id: 'swing', name: 'Swing', intent: 'attack', damage: 3, hits: 1,
+      effect: (c) => c.damage(3),
+    },
+  },
+  nextMove: () => 'swing',
+};
+
 async function wink() {
   const setup = makeDummySetup(new RNG(77), { companion: 'wink', deck: CARDS.startingDeckFor('wink'), maxHp: 66 });
   const e = new CombatEngine(setup);
   await e.startCombat();
   installTrackers(e, 'wink');
   return e;
+}
+async function winkVs(enemy) {
+  const setup = makeDummySetup(new RNG(77), {
+    companion: 'wink', deck: CARDS.startingDeckFor('wink'), maxHp: 66, enemies: [enemy],
+  });
+  const e = new CombatEngine(setup);
+  await e.startCombat();
+  installTrackers(e, 'wink');
+  return e;
+}
+/** The party form: a named seat plays the card, so `_playCard` seats it. */
+async function playAs(e, seat, id, target) {
+  e.addCard(CARDS.cardById(id), 'hand', { to: seat });
+  const card = seat.piles.hand[seat.piles.hand.length - 1];
+  seat.energy = 9;
+  await e.playCard(card.uid, target ? target.id : undefined);
+  return card;
 }
 async function play(e, id, target) {
   e.addCard(CARDS.cardById(id), 'hand', {});
@@ -54,21 +88,82 @@ try {
     check(!e.piles.hand.includes(card) && !e.piles.draw.includes(card),
       'and it cannot be drawn again while the Set is still waiting');
   }
+  /**
+   * A Set really FIRES, and the card really comes back.
+   *
+   * This block used to read `check(true, 'setup: a round passes with the Set
+   * armed')` with the only real assertion behind `if (fired)` — so it passed
+   * while `fired` was false, every run, and no Set in this Companion had ever
+   * been observed to trigger. CONTRACTS trap 12, inside the suite whose whole
+   * job is to assert effects. It was hiding a dead mechanic: the tracker read
+   * `ev.intent.family` ('attack') against `FAMILY.ATTACK` ('Attack'), so no
+   * intent-triggered Set fired and every Read resolved WRONG.
+   *
+   * The enemy is NAMED and only ever swings, so the trigger is deterministic
+   * rather than rolled (trap 37) — the stock dummy never shows an Attack
+   * intent, which is why this looked like "setup" for as long as it did.
+   */
   {
-    // and it comes back when the Set fires
-    const e = await wink();
+    const e = await winkVs(ATTACKER);
     const t = e.livingEnemies()[0];
     const card = await play(e, 'wink/tripline', t);
-    const before = e.player.block;
     await e.endTurn();
     const sets = mm(trackerCtx(e, null)).sets || [];
-    const fired = sets.length === 0;
-    check(true, 'setup: a round passes with the Set armed',
-      `sets left=${sets.length}, guard ${before} -> ${e.player.block}`);
-    if (fired) {
-      check(e.piles.discard.includes(card) || e.piles.exhaust.includes(card),
-        'once the Set fires the card is released into a real pile');
+    check(sets.length === 0, 'a Set on an Attack intent really FIRES',
+      `sets left=${sets.length}`);
+    check((t.statuses.get('web') || 0) > 0, 'and really applies its Web',
+      `web=${t.statuses.get('web') || 0}`);
+    check(e.piles.discard.includes(card) || e.piles.exhaust.includes(card),
+      'and the card is released into a real pile');
+  }
+  /**
+   * TWO WINKS. Every listener in Wink's tracker ran as seat 0.
+   *
+   * `trackerCtx(e)` with no seat skips `_asSeat`, and the ctx then resolves
+   * `self` as `acting || players[0]` — and `acting` is null for the whole enemy
+   * phase, which is when `intent`, `damage` and `death` are emitted. `placeSet`
+   * writes to the OWNER's scratch (it runs inside `_playCard`'s `_asSeat`), so
+   * seat 1's Set went into seat 1's list and was read out of seat 0's.
+   *
+   * Two things broke and they are asserted apart: the Set never FIRED for
+   * anyone but the host, and its card never LEFT circulation — trap 16 all over
+   * again, with the Set armed and the card drawable at the same time.
+   */
+  {
+    const e = await startDummyParty(new RNG(79), 2, {
+      companion: 'wink', maxHp: 66, enemies: [ATTACKER],
+      decks: [CARDS.startingDeckFor('wink'), CARDS.startingDeckFor('wink')],
+    });
+    installTrackers(e, 'wink');
+    const [a, b] = e.players;
+    const t = e.livingEnemies()[0];
+    const card = await playAs(e, b, 'wink/tripline', t);
+
+    check((mm(trackerCtx(e, b)).sets || []).length === 1, 'seat 1 armed a Set',
+      `seat1=${(mm(trackerCtx(e, b)).sets || []).length}`);
+    check((mm(trackerCtx(e, a)).sets || []).length === 0,
+      'and seat 0 has none of it — a Set is per Kid');
+
+    /**
+     * Now let the ENEMY PHASE run, which is the half that was broken. Arming
+     * happens inside `_playCard`'s `_asSeat`, so `acting` is already seat 1 and
+     * a seatless ctx resolves correctly there — the placement half passed
+     * either way, and a test that stopped here would prove nothing. `intent`
+     * is emitted with `acting` null.
+     *
+     * Tripline fires when its enemy's Intent becomes an Attack, so give it up
+     * to four rounds to come round, and assert the WEB it applies rather than
+     * the Guard, which the next turn's wipe would eat (trap 24).
+     */
+    let fired = false, webbed = 0;
+    for (let i = 0; i < 4 && !fired && !e.over; i++) {
+      await e.endTurn();
+      fired = (mm(trackerCtx(e, b)).sets || []).length === 0;
+      webbed = t.statuses.get('web') || 0;
     }
+    check(fired, "seat 1's Set really FIRES during the enemy phase", `fired=${fired}`);
+    check(webbed > 0, 'and really applies its Web to the enemy it was set on',
+      `web=${webbed}`);
   }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));

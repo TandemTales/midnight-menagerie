@@ -223,7 +223,24 @@ U.onTracker(SLUG, (e, s, seat) => {
   U.defineCounters(e, [
     { id: 'open-eyes', name: 'Open Eyes', icon: 'open-eyes', desc: 'Wink has eight eyes and begins combat with 3 Open. Full Gaze at 8. Eyes persist between turns.', min: 0, max: 8, start: 3 },
   ]);
-  const fake = () => U.trackerCtx(e);
+  /**
+   * WITH the seat. This was `U.trackerCtx(e)` — the only one of the sixteen
+   * trackers that dropped it.
+   *
+   * Without a seat, `trackerCtx` skips `engine._asSeat`, so the ctx resolves
+   * `self` as `this.acting || this.players[0]`; `_endTurn` is not wrapped in
+   * `_asSeat`, so `acting` is null for the whole enemy phase — which is exactly
+   * when `intent`, `damage` and `death` are emitted. Every one of these
+   * listeners therefore ran as SEAT 0.
+   *
+   * `placeSet` runs inside `_playCard`'s `_asSeat(owner)` and writes to the
+   * owner's scratch, so a Set armed by seat 1 sat in seat 1's list while
+   * `checkSets` read seat 0's: the Set never fired. Worse, the `card:resolved`
+   * handler read seat 0's `awaitingSet`, so the card was never moved out of
+   * circulation either — trap 16's bug back again, for every Kid but the host,
+   * with the Set still armed and the card still drawable.
+   */
+  const fake = () => U.trackerCtx(e, seat);
   // Finish placing a Set. See placeSet: this is the first moment the card can
   // actually leave circulation.
   e.on('card:resolved', (ev) => {
@@ -237,7 +254,30 @@ U.onTracker(SLUG, (e, s, seat) => {
   e.on('intent', (ev) => {
     const c = fake();
     const en = e.actor(ev.enemyId);
-    const fam = (ev.intent && ev.intent.family) || currentFamily(c, en);
+    /**
+     * `familyLabel`, NOT `family` — they are different vocabularies.
+     *
+     * `intents.js` carries both: `family` is the lowercase key ('attack') and
+     * `familyLabel` is `FAMILY_LABEL[family]` ('Attack'). Every other read of a
+     * family in this file goes through `currentFamily`, which asks
+     * `c.intentFamily` — `engine.intentFamilyOf`, which returns the LABEL. So
+     * `FAMILY` here is the capitalised vocabulary, every Set predicate compares
+     * against `FAMILY.ATTACK`, and every Read stores `families` from the same
+     * constants.
+     *
+     * Reading `ev.intent.family` handed all of them 'attack' against 'Attack'.
+     * It is never falsy, so the `|| currentFamily(...)` fallback that would
+     * have papered over it never ran, and BOTH of Wink's signature mechanics
+     * were dead: no Set that triggers on an Intent family has ever fired, for
+     * anyone, at any party size, and every Read resolved as WRONG through
+     * `r.families.includes(actualFamily)`.
+     *
+     * Nothing caught it because the suite's one relevant check was written
+     * `check(true, 'setup: a round passes with the Set armed')` with the real
+     * assertion behind an `if (fired)` — CONTRACTS trap 12, in a suite that
+     * reported five green passes.
+     */
+    const fam = (ev.intent && ev.intent.familyLabel) || currentFamily(c, en);
     if (en) {
       const rs = s.reads.filter(r => r.enemyId === eid(en) && !r.resolved && r.pos === 1);
       for (const r of rs) resolveRead(c, r, fam, en);
