@@ -261,6 +261,28 @@ change him.
 - **Networking has a foundation and a proof, not a feature.** The lockstep session,
   the protocol and two working transports exist; a transport that reaches another
   machine does not. §9 says exactly what is left.
+- **fps: THE NUMBER DOES NOT REPRODUCE, 2026-08-29 second session. Re-measure
+  before spending a round on it.** No perf work was done and none is claimed.
+  `tests/chrome/run.py` read **median 52 of [52, 52, 53]** on the first battery
+  of this session and **median 61 of [61, 61, 61]** on the last, with two
+  further isolated runs also reading 61/61/61. `tools/shot.py` agrees on the
+  real game: **combat 61, map 61** at the documented settle, against the 52 / 52
+  the block below records. The GL renderer string is the same ANGLE / Intel UHD
+  device in both.
+
+  So the standing item below — "the product misses it, the fix is a
+  compositing pass" — is **not currently reproducible on this machine**, and
+  the compositing round it scopes would be design-affecting work aimed at a
+  number that is presently 61. Traps 7 and 35 are both about exactly this:
+  fps here depends on what else is running and drifts for seconds past the
+  nominal settle. Something about the machine differed between the two
+  batteries; a OneDrive-hosted working tree syncing is the obvious candidate
+  and was not controlled for.
+
+  **Do not close the item and do not move the threshold on this.** Re-measure
+  cold, on a quiet machine, before either believing 61 or spending a round on
+  52.
+
 - **THE 60 FPS REQUIREMENT IS MISSED BY THE GAME, not just by a test.** This
   was carried as "tests/chrome measures 51–54"; measured properly it is bigger
   than that. At 1920x1080 — the size CONTRACTS non-negotiable 3 names — six
