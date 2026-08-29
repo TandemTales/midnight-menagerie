@@ -550,6 +550,41 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    Re-measured after repair: 100% wins at every party size, turns
    5.4 / 5.9 / 6.9 / 7.2, Courage left 61 / 78 / 83 / 86.
 
+50. **A mechanic can be dead in more than one way AT ONCE, and fixing one layer
+   changes nothing.** The Porcelain Twins' Joined and the Rocking Horse's
+   Excitement-from-support were each broken FOUR independent ways, any one of
+   which was sufficient on its own:
+
+   1. `engine.boardEvent()` had **no callers** anywhere in `game/src/`.
+   2. It passed the event as `(event, data)` while every def is written
+      `onBoardEvent(c, ev)`, so a caller would have handed them `undefined`.
+   3. `twinOf()` matched `a.id === 'porcelain-twin-proper'` — the ACTOR id,
+      which `buildEncounter` never sets and `_makeEnemy` defaults to `e0`/`e1`.
+      Each Twin believed it was alone.
+   4. The enemy ctx's `block: (a, n)` **dropped its third argument**, so the
+      `{ source }` and `{ noJoin }` written at four nursery call sites never
+      reached `gainBlock`.
+
+   And a fifth appeared the moment the other four were fixed: the Guard mirror
+   did not mark itself `noJoin`, so the Twins bounced a halving grant off each
+   other and Good Posture paid **15 each** — worse than the 12 its own comment
+   warned about, and terminating rather than hanging, which is the version
+   nothing notices.
+
+   **The lesson is about evidence, not about these enemies.** A single fix here
+   moves no number, so "I changed it and nothing happened" is not evidence the
+   diagnosis was wrong — it is what a stack of independent breakages feels like.
+   Fix layers until a test that asserts the EFFECT goes green, and write one
+   test per layer: the four here fail under four different controls.
+
+   The tell that should have caught it years earlier: `boardEvent`'s only caller
+   in the whole repo was `tests/combat/suite.js`, which invented an event
+   (`e.boardEvent('lightsOut', { level: 2 })`) that the game does not have. So
+   the hook was PROVED TO FIRE while nothing in the game had ever fired it —
+   rule 9's shape, where driving another module's API yourself demonstrates the
+   API works rather than that the game uses it. **If a test is the only caller
+   of a production API, that is the finding.**
+
 15. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
    now reported their in-flight work being swallowed by an unrelated commit — one had a whole
    `music.js` rewrite land inside a commit titled "Pronouns per the designer", which then made a

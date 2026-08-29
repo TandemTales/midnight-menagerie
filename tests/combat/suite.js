@@ -1347,6 +1347,101 @@ export async function run() {
   });
 
   // ── enemy lifecycle hooks ────────────────────────────────────────────────
+  /**
+   * The two mechanics that were built on `onBoardEvent` and never once ran.
+   * `boardEvent()` had no callers outside the lifecycle test above, so the
+   * Porcelain Twins' Joined and the Rocking Horse's Excitement-from-support
+   * were finished-looking defs the engine never reached (trap 5b).
+   */
+  await atest('boardEvent: Joined really flows half a Twin Guard to the other', async () => {
+    const { getEnemy } = await import('/game/src/data/enemies/index.js');
+    const e = mk({ enemies: [
+      { def: getEnemy('porcelain-twin-prim'), hp: 60, id: 'prim' },
+      { def: getEnemy('porcelain-twin-proper'), hp: 60, id: 'proper' },
+    ] });
+    await e.startCombat();
+    const [prim, proper] = e.enemies;
+    prim.block = 0; proper.block = 0;
+    e.gainBlock(prim, 8, { fromCard: false, reason: 'test', source: prim });
+    eq(prim.block, 8, 'Prim has the Guard it was given');
+    eq(proper.block, 4, 'and half of it flowed to Proper, which is Joined');
+  });
+
+  await atest('boardEvent: a Joined mirror does not mirror itself', async () => {
+    const { getEnemy } = await import('/game/src/data/enemies/index.js');
+    const e = mk({ enemies: [
+      { def: getEnemy('porcelain-twin-prim'), hp: 60, id: 'prim' },
+      { def: getEnemy('porcelain-twin-proper'), hp: 60, id: 'proper' },
+    ] });
+    await e.startCombat();
+    const [prim, proper] = e.enemies;
+    prim.block = 0; proper.block = 0;
+    /* Good Posture's explicit dual grant: "it must not also re-trigger Joined,
+       or each would get 12." */
+    e.gainBlock(prim, 8, { fromCard: false, reason: 'test', source: prim, noJoin: true });
+    e.gainBlock(proper, 8, { fromCard: false, reason: 'test', source: proper, noJoin: true });
+    eq(prim.block, 8, 'Prim got exactly what it was granted, not 12');
+    eq(proper.block, 8, 'and so did Proper');
+  });
+
+  await atest('boardEvent: Good Posture grants 8 each, through the real move', async () => {
+    /**
+     * Resolves the actual move through the actual enemy ctx, because the thing
+     * under test is the ctx's `block` helper FORWARDING its third argument.
+     * `gainBlock` called directly would skip exactly the line that was broken:
+     * `block: (a, n)` dropped opts, so Good Posture's `{ noJoin: true }` never
+     * reached the engine and the Joined mirror fired on a grant whose own
+     * comment says "it must not also re-trigger Joined, or each would get 12".
+     */
+    const { getEnemy } = await import('/game/src/data/enemies/index.js');
+    const e = mk({ enemies: [
+      { def: getEnemy('porcelain-twin-prim'), hp: 60, id: 'prim' },
+      { def: getEnemy('porcelain-twin-proper'), hp: 60, id: 'proper' },
+    ] });
+    await e.startCombat();
+    const [prim, proper] = e.enemies;
+    prim.block = 0; proper.block = 0;
+    const move = proper.def.moves['good-posture'];
+    ok(!!move, 'Good Posture is on the def');
+    move.effect(e.enemyCtx(proper, move));
+    eq(prim.block, 8, 'Prim has 8, not 12');
+    eq(proper.block, 8, 'and Proper has 8, not 12');
+  });
+
+  await atest('boardEvent: the Rocking Horse is excited by another enemy Guard', async () => {
+    const { getEnemy } = await import('/game/src/data/enemies/index.js');
+    /* THREE enemies: the rule is "an ally gaining Guard FROM ANOTHER ENEMY",
+       so the giver and the receiver have to be different, and neither may be
+       the Horse itself. */
+    const e = mk({ enemies: [
+      { def: getEnemy('rocking-horse'), hp: 60, id: 'horse' },
+      { def: getEnemy('button-baby'), hp: 40, id: 'baby' },
+      { def: getEnemy('button-baby'), hp: 40, id: 'giver' },
+    ] });
+    await e.startCombat();
+    const [horse, baby, giver] = e.enemies;
+    const excitement = () => (horse.counters && horse.counters.excitement) | 0;
+    const before = excitement();
+    e.gainBlock(baby, 6, { fromCard: false, reason: 'test', source: giver });
+    ok(excitement() > before, 'an ally gaining Guard from another enemy excites it',
+       before + ' -> ' + excitement());
+  });
+
+  await atest('boardEvent: but not by its OWN Happy Clatter', async () => {
+    const { getEnemy } = await import('/game/src/data/enemies/index.js');
+    const e = mk({ enemies: [
+      { def: getEnemy('rocking-horse'), hp: 60, id: 'horse' },
+      { def: getEnemy('button-baby'), hp: 40, id: 'baby' },
+    ] });
+    await e.startCombat();
+    const [horse, baby] = e.enemies;
+    const excitement = () => (horse.counters && horse.counters.excitement) | 0;
+    const before = excitement();
+    /* The Horse blocking an ally: source is the HORSE, and its own guard skips it. */
+    e.gainBlock(baby, 4, { fromCard: false, reason: 'test', source: horse });
+    eq(excitement(), before, 'its own support does not double-count');
+  });
+
   await atest('EnemyDef: the ten lifecycle hooks all fire', async () => {
     const fired = [];
     const mkHook = (n) => (c) => fired.push(n + ':' + c.self.id);
@@ -1378,8 +1473,21 @@ export async function run() {
     ok(fired.some(x => x.startsWith('playerCard')), 'onPlayerCard');
     ok(fired.some(x => x.startsWith('damaged')), 'onDamaged');
 
-    e.boardEvent('lightsOut', { level: 2 });
-    ok(fired.some(x => x.startsWith('boardEvent')), 'onBoardEvent');
+    /**
+     * Through the REAL path, not by calling `boardEvent` directly.
+     *
+     * This used to be `e.boardEvent('lightsOut', { level: 2 })` — an event this
+     * game does not have, invented by the test — and it was the ONLY caller of
+     * `boardEvent` anywhere in the repo. So the hook was proved to fire while
+     * nothing in the game had ever fired it, and two nursery mechanics built on
+     * it were dead: rule 9's shape, where driving another module's API yourself
+     * proves the API works rather than that the game uses it.
+     */
+    const before = fired.length;
+    e.gainBlock(e.enemies[1], 5, { fromCard: false, reason: 'test', source: e.enemies[1] });
+    ok(fired.some(x => x.startsWith('boardEvent')), 'onBoardEvent — off a real Guard gain');
+    ok(fired.length > before, 'and it fired because of the gain, not earlier',
+      `${before} -> ${fired.length}`);
 
     await e.endTurn();
     ok(fired.some(x => x.startsWith('playerTurnEnd')), 'onPlayerTurnEnd');

@@ -925,9 +925,19 @@ export const patchworkGiant = {
  * landed on one is copied to the other. Push them into Shattered together, or split
  * them and eat the survivor's Alone bonus. Both are real plans.
  */
+/**
+ * The other Twin, found by DEF id.
+ *
+ * This matched `a.id`, which is the ACTOR's id — `buildEncounter` never assigns
+ * one and `_makeEnemy` falls back to `e0`, `e1`. So `a.id === 'porcelain-twin-
+ * proper'` was false in every real fight and each Twin believed it was alone.
+ * Joined was dead twice over: nothing called `boardEvent`, and this could not
+ * have found a sibling if anything had. `defId` is what the Governess already
+ * uses to find her Doll.
+ */
 function twinOf(c, myId) {
   const otherId = myId === 'porcelain-twin-prim' ? 'porcelain-twin-proper' : 'porcelain-twin-prim';
-  return allies(c).find(a => a.id === otherId) || null;
+  return allies(c).find(a => a.defId === otherId || a.id === otherId) || null;
 }
 
 /** Shared behaviour for both Twins. */
@@ -964,11 +974,24 @@ function twinCommon(id) {
 
     afterAttack(c) { if (crackState(c.self) === 'shattered') c.loseHp(c.self, 3); },
 
-    /** Joined: Guard half-flows, stackable debuffs copy across. */
+    /**
+     * Joined: Guard half-flows, stackable debuffs copy across.
+     *
+     * The mirror is marked `noJoin` so it cannot mirror itself. The status half
+     * always was; the Guard half was not, and once `boardEvent` was actually
+     * wired that made the two Twins bounce a halving Guard grant off each other
+     * — 8 to Prim gives Proper 4, which gives Prim 2, which gives Proper 1 —
+     * until the floor reached zero. It terminates, which is the worst version:
+     * no hang, just each Twin quietly ending up with more Guard than the
+     * mechanic describes. Good Posture's own comment already spelled out the
+     * rule ("it must not also re-trigger Joined, or each would get 12").
+     */
     onBoardEvent(c, ev) {
       const t = twinOf(c, id);
       if (!t || !ev || ev.actor !== t) return;
-      if (ev.type === 'block' && !ev.noJoin && ev.amount > 0) c.block(c.self, Math.floor(ev.amount / 2));
+      if (ev.type === 'block' && !ev.noJoin && ev.amount > 0) {
+        c.block(c.self, Math.floor(ev.amount / 2), { noJoin: true });
+      }
       if (ev.type === 'status' && ev.kind === 'debuff' && !ev.noJoin) {
         c.applyStatus(c.self, ev.id, 1, { noJoin: true });
       }

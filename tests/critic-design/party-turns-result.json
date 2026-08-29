@@ -2,23 +2,23 @@
  "solo": {
   "size": 1,
   "n": 6,
-  "turns": 6.7,
-  "partyGuard": 38.2,
-  "left": 60,
-  "fallen": 0.2,
+  "turns": 12.3,
+  "partyGuard": 114,
+  "left": 80,
+  "fallen": 0,
   "botErrors": 0
  },
  "four": {
   "size": 4,
   "n": 6,
-  "turns": 10,
-  "partyGuard": 576.2,
-  "left": 80,
+  "turns": 8.8,
+  "partyGuard": 1222.7,
+  "left": 90,
   "fallen": 0,
   "botErrors": 0
  },
- "tRatio": 1.49,
- "gRatio": 15.08,
+ "tRatio": 0.72,
+ "gRatio": 10.73,
  "checks": [
   {
    "ok": true,
@@ -33,12 +33,12 @@
   {
    "ok": true,
    "what": "four Kids finish within 2x the turns one Kid takes",
-   "detail": "10 / 6.7 = 1.49x"
+   "detail": "8.8 / 12.3 = 0.72x"
   },
   {
    "ok": true,
    "what": "and raise less than 20x the Guard doing it",
-   "detail": "576.2 / 38.2 = 15.08x"
+   "detail": "1222.7 / 114 = 10.73x"
   }
  ],
  "failed": 0,

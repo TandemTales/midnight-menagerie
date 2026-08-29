@@ -998,11 +998,43 @@ export class CombatEngine {
     }
   }
 
-  /** Broadcast an arbitrary board event to every EnemyDef.onBoardEvent. */
-  boardEvent(event, data = {}) {
-    for (const en of [...this.enemies, ...this.allies]) {
-      if (!en.alive || !en.def?.onBoardEvent) continue;
-      try { en.def.onBoardEvent(this.enemyCtx(en, null, { event, data })); } catch (err) { console.error(err); }
+  /**
+   * Broadcast a board event to every `EnemyDef.onBoardEvent`.
+   *
+   * This had NO CALLERS until 2026-08-29, and it took the event as two
+   * arguments while every def is written `onBoardEvent(c, ev)` — so even a
+   * caller would have handed them `ev === undefined` and every one of them
+   * would have returned on its first line. Trap 5b twice over: the Porcelain
+   * Twins' entire Joined mechanic and the Rocking Horse's Excitement from ally
+   * support were finished-looking defs that nothing in the engine ever reached.
+   *
+   * The shape is what those two defs already read:
+   *
+   *     { type: 'block',  actor, source, amount, noJoin }
+   *     { type: 'heal',   actor, source, amount }
+   *     { type: 'status', actor, source, id, kind, amount, noJoin }
+   *
+   * `actor` is who it happened TO; `source` is who caused it, as an ACTOR — the
+   * Horse's rule is "an ally gaining Guard FROM ANOTHER ENEMY" and it filters on
+   * `ev.source === c.self`, which an id could never satisfy.
+   *
+   * `_boardDepth` is a backstop, not a mechanism. A handler that reacts to a
+   * board event by causing one is legitimate — that is exactly what Joined is —
+   * but a def that forgets to mark its own reaction would otherwise hang the
+   * game rather than fail a test. Four is far above anything the content does.
+   */
+  boardEvent(ev) {
+    if (!ev || !ev.type) return;
+    if ((this._boardDepth | 0) >= 4) return;
+    this._boardDepth = (this._boardDepth | 0) + 1;
+    try {
+      for (const en of [...this.enemies, ...this.allies]) {
+        if (!en.alive || !en.def?.onBoardEvent) continue;
+        try { en.def.onBoardEvent(this.enemyCtx(en, null, { boardEvent: ev }), ev); }
+        catch (err) { console.error(err); }
+      }
+    } finally {
+      this._boardDepth -= 1;
     }
   }
 
@@ -1271,6 +1303,9 @@ export class CombatEngine {
     actor.block += gain;
     this._emit(EV.BLOCK, { actorId: actor.id, amount: gain, before, after: actor.block, reason: opts.reason || 'card', noJoin: !!opts.noJoin });
     this.hooks.dispatch('onBlockGained', { actor, amount: gain }, this.hooks.actorHooks(actor, 'onBlockGained'));
+    // Guard is the Rocking Horse's "an ally gaining Guard from another enemy"
+    // and the half the Porcelain Twins' Joined flows across.
+    this.boardEvent({ type: 'block', actor, source: opts.source || null, amount: gain, noJoin: !!opts.noJoin });
     return gain;
   }
 
@@ -1301,6 +1336,8 @@ export class CombatEngine {
     if (healed > 0) {
       this._emit(EV.HEAL, { actorId: actor.id, amount: healed, before, after: actor.hp, reason });
       this.hooks.dispatch('onHeal', { actor, amount: healed }, this.hooks.actorHooks(actor, 'onHeal'));
+      // "an ally recovering Courage" (nursery §31).
+      this.boardEvent({ type: 'heal', actor, source: null, amount: healed });
     }
     return healed;
   }
@@ -1391,6 +1428,14 @@ export class CombatEngine {
     if (after > before) {
       def.hooks?.onApply?.({ ...payload, e: this, engine: this, owner: actor });
       this.hooks.dispatch('onStatusApplied', payload);
+      // "an ally receiving a Button, an ally becoming Covered" (nursery §31),
+      // and the debuffs the Twins copy across. `source` is resolved to an ACTOR
+      // because both consumers compare it against `c.self`.
+      this.boardEvent({
+        type: 'status', actor, id, kind: def.kind, amount: after - before,
+        source: opts.source || (opts.sourceId ? this.actor(opts.sourceId) : null),
+        noJoin: !!opts.noJoin,
+      });
     } else if (after === 0) {
       def.hooks?.onRemove?.({ ...payload, e: this, engine: this, owner: actor });
     }
@@ -1859,10 +1904,21 @@ export class CombatEngine {
           e.dealDamage({ attacker: enemy, defender: opts.target || target(), amount, kind: 'attack', hits, hitIndex: i, ...opts });
         }
       },
-      block: (a, n) => {
-        // block(4) or block(actor, 4)
-        if (typeof a === 'number') return e.gainBlock(enemy, a, { fromCard: false, reason: 'enemy' });
-        return e.gainBlock(a || enemy, n, { fromCard: false, reason: 'enemy' });
+      /**
+       * block(4), block(actor, 4) or block(actor, 4, opts).
+       *
+       * The third argument used to be DROPPED, so `{ source: c.self }` and
+       * `{ noJoin: true }` — both written in the nursery, both meaning
+       * something — never reached `gainBlock` at all. `source` defaults to the
+       * acting enemy because that is what it always is: the Rocking Horse's
+       * rule is "an ally gaining Guard FROM ANOTHER ENEMY" (nursery §31), which
+       * needs a source to be there, and its own guard against exciting off its
+       * own Happy Clatter needs that source to be ITSELF.
+       */
+      block: (a, n, opts) => {
+        const o = { fromCard: false, reason: 'enemy', source: enemy, ...(opts || {}) };
+        if (typeof a === 'number') return e.gainBlock(enemy, a, o);
+        return e.gainBlock(a || enemy, n, o);
       },
       heal: (a, n) => (typeof a === 'number' ? e.heal(enemy, a, 'enemy') : e.heal(a || enemy, n, 'enemy')),
       /**
