@@ -58,8 +58,9 @@ export const INPUT = Object.freeze({
   PLAY: 'play',        // { pile, index, target }  a Trick played
   END: 'end',          // {}                       that seat ends its turn
   CHOICE: 'choice',    // { picked: [] }           an answer to engine.choices.ask
-  SNACK: 'snack',      // { snack, target }
+  SNACK: 'snack',      // { index, target }
   READY: 'ready',      // {}                       past a room / screen
+  ROOM: 'room',        // { act, ... }             a Kid acted in a room
 });
 
 /**

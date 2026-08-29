@@ -25,6 +25,8 @@ import { TERMS, NodeType } from '../data/schema.js';
 import { cardById } from '../data/cards.js';
 import { relicById, relicSigil } from '../data/relics.js';
 import { Run } from '../state/run.js';
+import { act, ACT } from '../net/actions.js';
+import { INPUT } from '../net/session.js';
 import { regionMeta } from '../state/mapgen.js';
 import { el, ensureCss, rovingFocus, reduceMotion as prefersReduced } from '../ui/portrait.js';
 import { plural, word } from '../util/plural.js';
@@ -598,11 +600,25 @@ export class RewardScene extends RoomScene {
   }
 
   /* ── actions ──────────────────────────────────────────────────────────── */
+  /**
+   * Which of the three this is, as every client counts them.
+   *
+   * The offer was rolled from the shared seed, so all four clients hold the
+   * same three Tricks in the same order and the INDEX is the identity. A uid
+   * is not — CONTRACTS trap 30.
+   */
+  _offerIndex(cardId) {
+    return (this.reward?.cards || []).findIndex(c => c.id === cardId);
+  }
+
   _take(cardId) {
     if (this.resolved) return;
-    this.run.takeRewardCard?.(cardId);
-    this.picked = cardId;
+    // Before anything can await: a second click while the input is on the wire
+    // would take a second Trick.
     this.resolved = true;
+    const i = this._offerIndex(cardId);
+    if (i >= 0) act(this.run, { t: INPUT.ROOM, act: ACT.REWARD_TAKE, index: i });
+    this.picked = cardId;
     this.ctx.audio?.play?.('card:pick');
     this._markTaken(cardId, true);
     this._syncFoot();
@@ -627,8 +643,8 @@ export class RewardScene extends RoomScene {
 
   _skip() {
     if (this.resolved) return;
-    this.run.skipRewardCards?.();
     this.resolved = true;
+    act(this.run, { t: INPUT.ROOM, act: ACT.REWARD_SKIP });
     this.ctx.audio?.play?.('ui:back');
     for (const { slot, view } of this._slots || []) {
       slot.classList.add('is-gone');
@@ -666,13 +682,17 @@ export class RewardScene extends RoomScene {
     const next = this._seatStillOwed(k => k !== run.local && !!k.pendingReward);
     if (next >= 0) {
       this._leaving = true;                 // no double-claim while the veil is up
-      run.claimReward({ close: false });
+      await act(run, { t: INPUT.ROOM, act: ACT.REWARD_CLAIM, close: false });
       const done = await this._passRoomTo(next, 'Your spoils.', 'Take a Trick, or take none.');
       if (done) return;                     // the room is theirs now
       this._leaving = false;
     }
     this._leaving = true;
-    this.run.claimReward ? this.run.claimReward() : this._leave();
+    // Closing the room is one Kid's action but everybody's consequence — the
+    // node is cleared and the blueprint comes back — so it goes on the wire
+    // like every other, and the mock path (no run layer) still falls through.
+    if (this.run.claimReward) await act(run, { t: INPUT.ROOM, act: ACT.REWARD_CLAIM, close: true });
+    else this._leave();
     if (this.mock) this.ctx.scenes?.go?.('map', { region: this.run.region, seed: this.run.seed });
   }
 

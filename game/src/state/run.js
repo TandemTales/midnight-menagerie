@@ -405,6 +405,47 @@ export class Run {
   }
 
   /**
+   * Do something AS another seat, without the screen following.
+   *
+   * The run-layer twin of `engine._asSeat`, and it exists for the same reason:
+   * `takeRewardCard`, `buyCard`, `forgeKeepsake` and every other room action
+   * act on `this.local`, so a remote Kid's action arriving over the wire has to
+   * be applied to THEIR Kid rather than to whoever is looking at this screen.
+   *
+   * `setLocalSeat` is the wrong tool for that — it emits `run:seat`, which is
+   * how a pass-and-play handoff redresses the whole screen, so using it here
+   * would repaint the local player's HUD as their friend every time their
+   * friend bought a Snack. This moves the seat and puts it back, silently.
+   *
+   * Safe because `net/session.js` applies inputs strictly one at a time: there
+   * is never a second action in flight to see the borrowed seat. If `fn` is
+   * async the seat is restored when it settles, and the queue is what
+   * guarantees nothing else ran in between.
+   */
+  asSeat(seat, fn) {
+    const n = Math.max(0, Math.min(this.kids.length - 1, seat | 0));
+    const was = this.localSeat;
+    const wasEngine = this.combat ? this.combat.localSeat : null;
+    if (n === was) return fn();
+    const restore = () => {
+      this.localSeat = was;
+      if (this.combat && wasEngine !== null) this.combat.localSeat = wasEngine;
+    };
+    this.localSeat = n;
+    // A seat-addressed choice opens the picker in front of whoever the engine
+    // thinks is local, so the engine's seat moves with the Run's — CONTRACTS,
+    // "Co-op: up to four Kids".
+    if (this.combat) this.combat.localSeat = n;
+    let out;
+    try { out = fn(); } catch (err) { restore(); throw err; }
+    if (out && typeof out.then === 'function') {
+      return out.then(v => { restore(); return v; }, e => { restore(); throw e; });
+    }
+    restore();
+    return out;
+  }
+
+  /**
    * Has this Kid finished with the room they are standing in?
    *
    * A Safe Room or a shop is per Kid and each one gets a turn at it, but

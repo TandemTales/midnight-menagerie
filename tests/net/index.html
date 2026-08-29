@@ -15,6 +15,8 @@ import { installTrackers } from '../../game/src/data/companions/_util.js';
 import { startingDeckFor } from '../../game/src/data/cards.js';
 import { LoopbackHub, ChannelTransport, canChannel } from '../../game/src/net/transport.js';
 import { Session, INPUT, cardRef, refCard } from '../../game/src/net/session.js';
+import { Run } from '../../game/src/state/run.js';
+import { act, ACT, attachActions, deckIndex } from '../../game/src/net/actions.js';
 
 const passes = [], fails = [];
 const out = document.getElementById('out');
@@ -273,6 +275,121 @@ try {
         String(mine));
       t1.close(); t2.close();
     }
+  }
+
+  // ══ 9. The rooms are on the wire too ═══════════════════════════════════
+  /* A per-Kid room is NOT a private act. Every client simulates the whole
+     expedition — `_combatDigest` fingerprints every seat's board and the next
+     fight deals from decks all four clients must agree about — so a Kid taking
+     a Trick on their own screen has to reach everybody's. These clients run
+     two REAL `Run`s, because a mock of the thing under test proves nothing
+     (CONTRACTS rule 9 / trap 5). */
+  {
+    const PARTY = [{ companion: 'marmalade', kid: 'maya' }, { companion: 'bones', kid: 'eli' }];
+    const roomClient = (hub, seat, id) => {
+      const run = Run.mock({ seed: SEED, kids: PARTY });
+      const session = new Session({ transport: hub.peer(id), seat, seats: 2, seed: SEED, host: seat === 0 });
+      attachActions(session, run);     // one listener, one applier, both ends
+      return { run, session };
+    };
+    const decks = (r) => r.kids.map(k => k.deck.map(c => c.id).join('|'));
+    const offer = (r, seat) => (r.kids[seat].pendingReward.cards || []).map(c => c.id).join('|');
+
+    const hub = new LoopbackHub();
+    const A = roomClient(hub, 0, 'A');
+    const B = roomClient(hub, 1, 'B');
+    for (const c of [A, B]) {
+      c.run.currentNodeId = 'x-bigscare';
+      // Rolled per Kid off the shared seed, on both machines, before anybody
+      // has clicked: `_prepareReward` forks on the node id.
+      for (let s = 0; s < 2; s++) c.run.asSeat(s, () => c.run._prepareReward({ id: 'x-bigscare' }, 'bigScare', { navigate: false }));
+    }
+    check(decks(A.run).join('#') === decks(B.run).join('#'),
+      'two real Runs on one seed hold the same decks');
+    check(offer(A.run, 1) === offer(B.run, 1),
+      "and rolled seat 1 the same three Tricks", offer(A.run, 1));
+
+    /* The reason a uid cannot go on the wire, measured rather than asserted:
+       `nextUid()` counts per PAGE, so these two Runs hold the same cards under
+       entirely different uids. CONTRACTS trap 30. */
+    const uidsA = A.run.kids[1].deck.map(c => c.uid).join(',');
+    const uidsB = B.run.kids[1].deck.map(c => c.uid).join(',');
+    check(uidsA !== uidsB, 'and the same cards under DIFFERENT uids, which is why index',
+      `${uidsA.slice(0, 18)}… / ${uidsB.slice(0, 18)}…`);
+
+    const beforeA = decks(A.run), beforeB = decks(B.run);
+    const wanted = B.run.kids[1].pendingReward.cards[1].id;
+
+    // Seat 1 takes their second Trick, on seat 1's machine.
+    await act(B.run, { t: INPUT.ROOM, act: ACT.REWARD_TAKE, index: 1 });
+    await new Promise(r => setTimeout(r, 30));
+    await A.session.settled(); await B.session.settled();
+
+    check(B.run.kids[1].deck.length === beforeB[1].split('|').length + 1,
+      'the Trick lands in seat 1’s deck on their own machine');
+    check(A.run.kids[1].deck.length === beforeA[1].split('|').length + 1,
+      "and on seat 0's machine, which never saw the click",
+      `${beforeA[1].split('|').length} -> ${A.run.kids[1].deck.length}`);
+    check(A.run.kids[1].deck[A.run.kids[1].deck.length - 1].id === wanted
+       && B.run.kids[1].deck[B.run.kids[1].deck.length - 1].id === wanted,
+      'and it is the same Trick on both', wanted);
+    check(A.run.kids[0].deck.length === beforeA[0].split('|').length
+       && B.run.kids[0].deck.length === beforeB[0].split('|').length,
+      "seat 0's own deck did not move");
+    check(decks(A.run).join('#') === decks(B.run).join('#'),
+      'so both machines still hold identical decks');
+    check(A.run.localSeat === 0 && B.run.localSeat === 1,
+      'and applying a remote seat’s action PUT THE SEAT BACK',
+      `${A.run.localSeat} / ${B.run.localSeat}`);
+
+    // Seat 0 skips theirs. The other half of the same screen.
+    const purseA = A.run.kids[0].lostThings;
+    await act(A.run, { t: INPUT.ROOM, act: ACT.REWARD_SKIP });
+    await new Promise(r => setTimeout(r, 30));
+    await A.session.settled(); await B.session.settled();
+    check(A.run.kids[0].lostThings > purseA,
+      'skipping pays seat 0 on their own machine',
+      `${purseA} -> ${A.run.kids[0].lostThings}`);
+    check(B.run.kids[0].lostThings === A.run.kids[0].lostThings,
+      "and on seat 1's, so the two purses cannot drift",
+      `${B.run.kids[0].lostThings} / ${A.run.kids[0].lostThings}`);
+    /* Per KID, and read as such. `pity` is one of the PER_KID accessors, so
+       `run.pity` means "the Kid this screen belongs to" and reading it off two
+       clients on two different seats compares two different Kids — which is
+       what the first version of this check did, and it reported a desync that
+       was entirely in the instrument. Seat 0 skipped (+2 on a mock's 3) and
+       seat 1 took a non-Rare (+1 on a seat that was never given the mock's 3). */
+    check(A.run.kids.map(k => k.pity).join('/') === B.run.kids.map(k => k.pity).join('/'),
+      'both Kids’ pity counters moved on both machines',
+      `${A.run.kids.map(k => k.pity).join('/')} vs ${B.run.kids.map(k => k.pity).join('/')}`);
+    check(A.run.kids[0].pity === 5 && A.run.kids[1].pity === 1,
+      'and each moved by its own Kid’s action, not the other’s',
+      A.run.kids.map(k => k.pity).join('/'));
+
+    // `deckIndex` is the uid → wire step every call site does.
+    const anyCard = A.run.kids[1].deck[2];
+    check(deckIndex(A.run, 1, anyCard.uid) === 2, 'deckIndex names a card by position');
+    check(deckIndex(A.run, 1, 'no-such-uid') === -1, 'and answers -1 rather than 0 for a stranger');
+
+    A.session.close(); B.session.close();
+  }
+
+  // ══ 10. Without a session, `act` is the direct call it replaced ═════════
+  /* Solo and pass-and-play must not pay for the wire. `act()` returns the run
+     layer's own answer synchronously when there is nothing to send, so a screen
+     that used to call `run.takeRewardCard()` keeps the timing it had. */
+  {
+    const run = Run.mock({ seed: SEED, kids: [{ companion: 'marmalade', kid: 'maya' }] });
+    run.currentNodeId = 'x-bigscare';
+    run._prepareReward({ id: 'x-bigscare' }, 'bigScare', { navigate: false });
+    const want = run.pendingReward.cards[0].id;
+    const before = run.deck.length;
+    const added = act(run, { t: INPUT.ROOM, act: ACT.REWARD_TAKE, index: 0 });
+    check(added && typeof added.then !== 'function',
+      'with no session the answer comes back at once, not as a promise');
+    check(added && added.id === want, 'and it is the card the run layer added', want);
+    check(run.deck.length === before + 1, 'which really went into the deck',
+      `${before} -> ${run.deck.length}`);
   }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
