@@ -315,6 +315,66 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    60 / canvas 57 / both 53. The missing frames are DOM compositing, spread
    across 739 elements, with no single property worth more than about one.
 
+36. **`seat` on a net input means WHO ACTED, and nothing else may use it.**
+   `session.input()` rejects any message whose `seat` is not the sending
+   client's, because a client may only speak for itself — so an action aimed at
+   somebody ELSE (Mend a friend, Clone their Trick) names them with `to`, the
+   field `useSnack(snack, targetId, { to: seat })` already uses. Reusing `seat`
+   for the target makes the wire silently refuse the message and the action
+   never happens on any machine.
+
+37. **A test that clicks by LABEL and matches nothing is silent, and the
+   failure it produces belongs to somebody else.** `tests/coop/rooms.py` rolled
+   its own Curiosity off an unseeded run and pressed the one button label it
+   knew; `event.js _syncFoot` puts three others on that button ("Face it",
+   "Choose a Trick to give up", "Choose what gets mended"), one per follow-up
+   `_continue()` has. On any launch that rolled a room with a follow-up, no
+   click was made and the missing veil printed as
+   `FAIL and it passes to the other Kid rather than closing` — word for word the
+   co-op handoff regression the file exists to catch. Its `press()` helper
+   RAISES now and names every button that was on screen. Content a test walks
+   into must be NAMED, not rolled.
+
+38. **An enemy with no `partyPick` picks one Kid and keeps them.**
+   `intentTargetFor` rolls a seat once and holds it in `enemy.targetSeatId`
+   until that Kid falls. That is fine for one enemy in a scuffle and it is a
+   whole missing fight for a BOSS: the Governess declared no `partyTarget`, no
+   `partyPick` and no `splash` on any of her five attacks, so at four Kids she
+   fought one Kid for eighteen turns while three stood untouched and hit her
+   freely — measured at 100% player wins, nobody ever falling, 90% of the
+   party's Courage left. When you write a boss, its targeting is content, and
+   `tests/enemies/audit.py` is SOLO so it cannot see any of it.
+
+39. **`c.player` in an enemy ctx is the AIMED seat, and it is fixed when the
+   ctx is built.** Which is correct and deliberate (`engine.js`: "reading seat 0
+   here would make every enemy debuff land on the host"), and it means a move
+   flagged `partyTarget: 'all'` sends its DAMAGE to everybody while a status
+   hung on `c.player` lands on one Kid. Use `c.targets()` — the seats this move
+   actually lands on — for anything that must follow the damage.
+
+40. **A per-head cut is not automatically the right trade for an AoE.** The
+   Butler's Dust Them Off buys coverage with damage (5x2 -> 3x2) because it
+   fires every third turn and the full number measured 0% wins. The Governess's
+   Mind Your Seams fires once in four and only in phase one, and the same cut
+   measured NOTHING — 100% -> 93.8% wins, 90% -> 87% Courage left, because the
+   cut number was small enough that four Kids' Guard ate it. Cadence decides it,
+   and the doc's default is that the number does not move (nursery §27).
+
+41. **A warning that only reaches the page reaches nobody.**
+   `tests/critic-design/party-boss.py` re-renders its table from
+   `window.__PARTY__` and never echoes the page's own `say()` header, so a
+   PROXY-decks banner printed in the browser was invisible in the terminal that
+   reads the numbers. If a harness has two output paths, the warning goes on the
+   one a human actually looks at.
+
+42. **`RUN_LENGTH_REGIONS` is 2, so the Sleeping Quarters never ships.** An
+   expedition is the Foyer and the Nursery and stops at `isLastRegion`. Asking
+   `party-boss.py --region sleeping-quarters` for loadouts answers "no loadouts
+   for 1p" four times, which reads as a broken harness and is really the game's
+   own length — `--lregion nursery` measures that content against what a party
+   carries when the run currently ends, and says PROXY. Do not tune region 3
+   against decks no player will have.
+
 15. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
    now reported their in-flight work being swallowed by an unrelated commit — one had a whole
    `music.js` rewrite land inside a commit titled "Pronouns per the designer", which then made a
@@ -353,6 +413,15 @@ report the request instead — the integrator applies it.
 | audio | `src/audio/**`, `game/assets/audio/**` |
 | atmosphere | `src/fx/atmosphere.js`, `src/fx/transition.js`, `src/fx/shaders/**`, `src/core/renderer.js` (co-owned with lead — coordinate) |
 | ui-chrome | `src/ui/tooltip.js`, `src/ui/hud.js`, `src/ui/modal.js`, `src/ui/settings.js`, `src/ui/deckview.js`, `src/ui/base.css`, `src/ui/tokens.css` |
+| netcode | `src/net/**` (`session.js`, `transport.js`, `actions.js`) |
+
+**`src/net/actions.js` is the ONE way a screen changes the run.** A scene calls
+`act(run, { t: INPUT.ROOM, act: ACT.…, … })`, never `run.takeRewardCard()` or
+`engine.playCard()` directly, because every client simulates the whole
+expedition and `_combatDigest` fingerprints every seat. With no session it
+applies straight through and returns the run layer's own answer synchronously,
+so solo and pass-and-play are unchanged; with one it goes out on the wire and
+comes back through the same applier. If you add a screen action, add a verb.
 
 Notes: write **your own file** at `docs/notes/<date>-<your-area>.md`, then add one row to the
 table in `docs/NOTES.md`. Never write to another agent's note file. A single shared append-only
@@ -497,6 +566,15 @@ it, so the screen can never offer a party the engine refuses or refuse one it ac
   cannot both track that state and stay still. The real answer is probably that anything
   telegraphed a turn ahead should prefer something the player cannot game inside the turn
   (`lowestCourage`, `fewestDraw`); that is a design decision, not a bug fix.
+  **2026-08-29: the Nursery already made that decision and it is authored.**
+  §29 gives Jack in the Box "the player with the lowest percentage Courage. The
+  target is shown clearly before players act", and `nursery.js` implements it as
+  `partyPick: 'lowestCourage'`. Courage is not something a Kid can move inside
+  the turn they are shown the arrow, so the pick holds still by itself with no
+  engine change. The Governess's Sharp Correction uses it, and
+  `tests/governess/run.py` asserts the arrow does NOT move when that Kid raises
+  40 Guard. `lowestGuard` remains the tracking one, on purpose, where the
+  chapter asks for it.
 - Enemy Courage is `[1, 2.2, 4.0, 5.7]`, and **it was derived from the STANDARD TIER
   only** — `tests/coop/balance.py` fights scuffles — then applied to every enemy in the
   game including bosses, which were never measured at any party size until 2026-08-28.

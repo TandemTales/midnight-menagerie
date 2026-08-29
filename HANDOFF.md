@@ -1,6 +1,6 @@
 # Midnight Menagerie — handoff
 
-Written 2026-08-26, last updated 2026-08-28. Everything a fresh conversation needs to pick
+Written 2026-08-26, last updated 2026-08-29. Everything a fresh conversation needs to pick
 this up. Read this, then `CONTRACTS.md`, then `docs/STS2-REFERENCE.md`. Nothing else is
 required reading.
 
@@ -25,7 +25,37 @@ change him.
 **~65,500 lines** across `game/src/`. Currently on branch **`dev`**, pushed to
 `github.com/TandemTales/midnight-menagerie`. `main` is untouched and stale.
 
-### Where it stands, 2026-08-28
+### Where it stands, 2026-08-29
+
+- **EVERY SCREEN IS ON THE WIRE.** `game/src/net/actions.js` is the game-side
+  half the netcode never had — one applier, one `act(run, input)` seam, and the
+  reward, Mr. Moth's, the Safe Room, the Curiosities and COMBAT all route
+  through it. Nothing in `game/src/` had ever called `session.input()`;
+  "combat is exercised" was true only of `tests/net`'s own harness. Netcode
+  item 2 is done. `docs/notes/2026-08-29-the-wire-reaches-the-screens.md`.
+- **Ending a turn over a wire used to close the TABLE**, which would have shut
+  three other people's turns from one keyboard. It ends one seat now.
+- **THE GOVERNESS IS MEASURED, and she was the opposite failure from the
+  Butler.** At four Kids she read **100% player wins, nobody ever falling, 90%
+  of the party's Courage left** — because she declared no `partyTarget`, no
+  `partyPick` and no `splash` on any of her five attacks, and an enemy with no
+  preference rolls ONE seat and holds it. She has targeting now, authored to the
+  Nursery's own §27/§29/§31/§33, and `tests/governess/` is her first
+  effect-asserting suite (25 checks, 11 fail without it). Solo is byte-identical.
+- **The Bedframe Beast is NOT REACHABLE.** `RUN_LENGTH_REGIONS` is 2 — the Foyer
+  and the Nursery — so there are no third-wing loadouts to capture and no
+  shipping fight to tune. `party-boss.py --lregion` measures it by proxy and
+  says PROXY in the terminal. It is also not untargeted: it implements §46's
+  marked Kid with its own held `markedSeat`.
+- **`partyPick`'s open question has an authored answer for the Nursery.**
+  §29 already chose `lowestCourage`, which is exactly the "preference the player
+  cannot game inside the turn" CONTRACTS asks for. Sharp Correction uses it.
+- **`tests/coop/rooms.py` was flaky, not the game.** It rolled its own Curiosity
+  off an unseeded run and pressed the one button label it knew, so any room with
+  a mend/removal/fight follow-up reported the co-op handoff regression it exists
+  to catch. Named room, and `press()` now RAISES when it matches nothing.
+
+### Where it stood, 2026-08-28
 
 - **The Companion roster is COMPLETE.** All 16 playable, 1468 cards, 0 errors, 0
   warnings, each with its own effect-asserting suite. Crinkle's design chapter is a
@@ -49,9 +79,12 @@ change him.
   The fix is on the BUTLER, not the global constant: `partyHp: [1, 2.2, 2.8,
   3.2]` via `EnemyDef.partyHp`, the per-enemy seam. The global curve still
   governs scuffles, whose win% is already flat and correct.
-- **The other two bosses have never been measured at any party size**, and they
-  are on the same global curve that read 0% for the Butler.
-  `tests/critic-design/party-boss.py --region nursery` is the instrument.
+- ~~The other two bosses have never been measured at any party size.~~
+  **MEASURED 2026-08-29, and it was the opposite problem.** The Governess read
+  100% player wins at four Kids with nobody ever falling and 90% Courage left,
+  because she had NO party targeting at all. She has it now. The Bedframe Beast
+  is not reachable at `RUN_LENGTH_REGIONS = 2` and was left alone. See the
+  2026-08-29 block at the top and `docs/notes/2026-08-29-…`.
 - **Party boss fights are still LONG** — 24 and 32 turns at three and four Kids
   against solo's 13 — because party output does not scale with the pool the way
   its Courage does. No multiplier fixes that. Note §8.
@@ -134,7 +167,7 @@ All prep scripts are **one-off and commit their output** — there is no runtime
 |---|---|
 | `tests/combat/run.py` | 677 assertions |
 | `tests/coop/run.py` | 594 assertions |
-| `tests/net/run.py` | 33 — the lockstep session, two Sessions over a loopback wire |
+| `tests/net/run.py` | 79 — the lockstep session, two Sessions over a loopback wire, and every room + combat through the REAL applier against two real `Run`s |
 | `tests/cards/run.py` | 1468 cards, 0 errors, 0 warnings |
 | `tests/enemies/run.py` | 37 enemies, 0 errors |
 | `tests/enemies/audit.py` | ~2060 turns, intent === delivered |
@@ -168,6 +201,7 @@ drive a real engine with real enemies and mock none of the mechanic under test.
 | `tests/crinkle/run.py` | 44 — a Crease survives the discard pile, and the card PRINTS the new number |
 | `tests/butler/run.py` | 24 — Dust Them Off really lands on all three Kids, Enough of This really DECLARES its splash, and the converted Reprimands really cost the player |
 | `tests/pipkin/run.py` | 18 — the Patch is really on the board, and really matches the array every turn |
+| `tests/governess/run.py` | 25 — Mind Your Seams really Pinches every seat, Sharp Correction really picks the Kid closest to breaking and really does not move when they brace, and every attack deals a Kid alone exactly what it always did |
 
 **Co-op drives the real screens** — everything else about co-op is asserted
 against objects, and the thing that breaks is always the screen.
@@ -565,15 +599,28 @@ BUILT on 2026-08-28 — the transport-agnostic session (`game/src/net/`):
   `BroadcastChannel` that makes two browser TABS two independent instances
 - `tests/net/run.py` — 33 checks driving two complete Sessions against each other
 
+BUILT on 2026-08-29 — the game-side half (`game/src/net/actions.js`):
+
+- **every screen routes through `act(run, input)`**: the reward, Mr. Moth's, the
+  Safe Room, the Curiosities and COMBAT. One applier for a local input and a
+  remote one alike, so an ordering bug shows up in a one-machine test.
+- `run.asSeat(seat, fn)`, the run-layer twin of `engine._asSeat` — and it
+  deliberately does NOT move `engine.localSeat`, or replaying a remote Kid's
+  Trick pops their choice in front of everybody at once.
+- nothing puts a uid on the wire: an index into an offer, a shelf or a deck, or
+  an authored id.
+- **`seat` on an input is who ACTED**; an action aimed at somebody else uses
+  `to`, because `session.input()` refuses a message claiming another seat.
+
 NOT built:
 
 1. **A transport that reaches another machine.** Steam P2P per the decision,
    which needs the wrapper shell and ends the no-build rule. One file, five
    methods, and the two rules the interface spells out (ordered per sender,
    never delivered back to the sender).
-2. **Routing each screen's actions through `session.input()`.** Combat is
-   exercised; the reward, Mr. Moth's, the Safe Room and Curiosities still act
-   locally. Each is a call-site change, not a design question.
+2. ~~Routing each screen's actions through `session.input()`.~~ **DONE
+   2026-08-29.** The table below is kept because it is still the right map of
+   what each seam means with a wire.
 
    | Seam | Today | With a wire |
    |---|---|---|
