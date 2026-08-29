@@ -1051,32 +1051,38 @@ export class CombatEngine {
     // unchanged. Enemy effects gain multiplayer targeting logic instead."
     // (docs/design/regions/01-foyer.md §26.)
     /**
-     * A `partyPick` is decided ONCE per move, then held.
+     * A `partyPick` is RE-DERIVED whenever intents refresh, and that is a real
+     * tension with the rule above it — worth writing down rather than "fixing"
+     * again.
      *
-     * `pickSeat` reads live board state — Guard, Courage, draw-pile size — and
-     * this used to re-derive it on every intent refresh. So the arrow moved the
-     * moment a Kid reacted to it: Walking Stick prefers `lowestGuard`, the Kid
-     * it was pointing at raises Guard, stops being lowest, and the swing
-     * silently transfers to their friend. Every seat then reads "not aimed at
-     * me", nobody blocks, and it lands on whoever happened to end lowest.
+     * `pickSeat` reads live board state, so the arrow moves when a Kid reacts
+     * to it: Walking Stick prefers `lowestGuard`, the Kid it points at raises
+     * Guard, stops being lowest, and the swing transfers to their friend. That
+     * reads like a straight violation of "the target is shown before the
+     * players act".
      *
-     * That is the thing the co-op contract forbids in as many words — the
-     * target is shown BEFORE the players act and has to survive a replay — and
-     * it made a party measurably worse at defending itself than a solo Kid:
-     * four Kids at 0.6x went from 83% to 33% once the bot started reading its
-     * own seat's incoming honestly instead of the whole board's.
+     * Holding the pick was TRIED (2026-08-28) and reverted, for two reasons the
+     * next person should not have to rediscover:
+     *   1. Player Guard is WIPED at the start of the player turn, after
+     *      `chooseMove` has run. So a pick held from the moment the turn opens
+     *      sees every seat on 0 Guard, ties, and resolves to seat 0 forever —
+     *      `lowestGuard` stops meaning anything at all.
+     *   2. It measured WORSE. Four Kids at 0.6x went 33% -> 17%, because the
+     *      seats that were not marked correctly stopped blocking and the marked
+     *      one could not absorb it alone.
+     * Six assertions in `tests/coop/suite.js` also encode the re-derived
+     * behaviour deliberately.
      *
-     * Keyed on turn AND move, so a new move next turn picks again, and a mark
-     * on a Kid who has since fallen falls through to a fresh pick.
+     * The honest position: a preference computed from state the player controls
+     * cannot both track that state and stay still. Which half to keep is a
+     * design decision, and the one it wants is probably a preference the player
+     * cannot game inside the turn (`lowestCourage`, `fewestDraw`) for anything
+     * telegraphed a turn ahead.
      */
     const pick = enemy.pendingMove && enemy.pendingMove.partyPick;
     if (pick) {
-      const key = `${this.turn}:${enemy.pendingMove.id}`;
-      const mark = enemy._pickMark;
-      const held = mark && mark.key === key && living.find(pl => pl.id === mark.id);
-      if (held) return held;
       const chosen = this.pickSeat(pick, living);
-      if (chosen) { enemy._pickMark = { key, id: chosen.id }; return chosen; }
+      if (chosen) return chosen;
     }
 
     const held = enemy.targetSeatId && living.find(pl => pl.id === enemy.targetSeatId);

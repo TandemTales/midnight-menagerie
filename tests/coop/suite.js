@@ -1599,6 +1599,49 @@ export async function run() {
     ok(previewIncoming(e, a).total > 0, 'and it is not zero');
   });
 
+  /**
+   * THE REAL Run the Hall, against the real def — CONTRACTS rule 9.
+   *
+   * The chapter is explicit that an AoE move buys its coverage with per-head
+   * damage: Run the Hall is "8 damage plus 7 per Momentum" for one Kid and
+   * "6 plus 5 per Momentum to each player" in multiplayer (regions/01-foyer.md
+   * §26). It shipped dealing the full solo number to EVERY Kid — 64 from one
+   * move at 2 Momentum across four seats, against the 22 a solo Kid takes.
+   *
+   * Nothing covered this: the enemies audit drives one player, and the mock
+   * AoE enemies above prove the ENGINE routes a `partyTarget`, not that any
+   * real move carries the number its chapter gives it.
+   */
+  await atest('AoE: Run the Hall costs each Kid LESS than it costs a solo Kid', async () => {
+    const { getEnemy } = await import('../../game/src/data/enemies/index.js');
+    const { previewIncoming } = await import('../../game/src/combat/preview.js');
+    const def = getEnemy('red-carpet-runner');
+    const move = def.moves['run-the-hall'];
+    ok(!!move, 'the move exists');
+
+    const solo = makeDummyCombat(new RNG(931), { enemies: [{ def, hp: 60, id: 'rcr' }] });
+    await solo.startCombat();
+    const en1 = solo.enemies[0];
+    solo.overrideIntent(en1, move);
+    const alone = previewIncoming(solo, solo.players[0]).total;
+
+    const party = await startDummyParty(new RNG(931), 4, {
+      enemies: [{ def, hp: 60, id: 'rcr' }], maxHp: 90,
+    });
+    const en4 = party.enemies[0];
+    party.overrideIntent(en4, move);
+    const each = party.players.map(pl => previewIncoming(party, pl).total);
+
+    ok(each.every(v => v === each[0]), 'every Kid is told the same number',
+      `[${each.join(', ')}]`);
+    ok(each[0] > 0, 'and it is aimed at all of them, not one');
+    ok(each[0] < alone, 'each Kid takes LESS than a solo Kid does — §26',
+      `${each[0]} each vs ${alone} alone`);
+    ok(each.reduce((a, b) => a + b, 0) > alone,
+      'while the TABLE takes more, which is what coverage is for',
+      `${each.reduce((a, b) => a + b, 0)} total vs ${alone} alone`);
+  });
+
   // ── Mr. Moth's, per Kid ───────────────────────────────────────────────────
   // Prices and pity were already per Kid; the SHELF was not. Two Kids stood in
   // front of one shop looking at one list, and one of them buying the last

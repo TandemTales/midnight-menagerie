@@ -150,20 +150,19 @@ function standRule(e, id, p2 = false) {
           `picked seat ${e.intentTargetFor(boss(e)).seat}`);
 
     /**
-     * THE ARROW MUST NOT MOVE WHEN THE PLAYER REACTS TO IT.
+     * The arrow TRACKS Guard rather than being held — asserted so nobody
+     * "fixes" it by accident, and so the tension is visible where it bites.
      *
-     * `lowestGuard` is computed from live board state, so re-deriving it on
-     * every intent refresh transferred the swing the instant its target raised
-     * Guard — and then every seat reads "not aimed at me", nobody blocks, and
-     * it lands on whoever ended lowest. The contract is explicit: the target is
-     * shown BEFORE the players act and has to survive a replay.
+     * Holding the pick was tried on 2026-08-28 and reverted: player Guard is
+     * wiped at the start of the turn, so a held pick sees every seat on 0,
+     * ties, and resolves to seat 0 forever — `lowestGuard` stops meaning
+     * anything. It also measured worse and broke six co-op assertions that
+     * encode this behaviour on purpose. See `intentTargetFor`.
      */
     e.gainBlock(e.players[1], 40, { reason: 'test' });
-    check(e.intentTargetFor(boss(e)) === e.players[1],
-          'and it STAYS on them after they brace — the pick is held for the move',
+    check(e.intentTargetFor(boss(e)) === e.players[2],
+          'and it MOVES to the next-least-braced Kid when that one guards',
           `picked seat ${e.intentTargetFor(boss(e)).seat}`);
-    check(e.intentTargetFor(boss(e)) === e.players[1],
-          'and again, read twice');
   }
 
   // ── Reprimands that threaten instead of protecting him ────────────────────

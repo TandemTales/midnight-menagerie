@@ -485,16 +485,18 @@ it, so the screen can never offer a party the engine refuses or refuse one it ac
   'lowestCourage' | 'fewestDraw' | 'mostDraw'` for who it singles out. Both are authored per
   enemy in the region chapters. Seat choice ALWAYS ties on seat index, never the RNG — the
   target is shown before the players act and has to survive a replay.
-- **A `partyPick` is decided ONCE per move and then HELD.** `pickSeat` reads live board
-  state — Guard, Courage, draw-pile size — so re-deriving it whenever intents refresh
-  moves the arrow the instant a Kid reacts to it. Walking Stick prefers `lowestGuard`,
-  the Kid it points at raises Guard, stops being lowest, and the swing silently transfers
-  to their friend; every seat then reads "not aimed at me", nobody blocks, and it lands on
-  whoever ended lowest. That made a party measurably WORSE at defending itself than a solo
-  Kid — four Kids went from 83% to 33% the moment the bot started reading its own seat's
-  incoming honestly instead of the whole board's. `intentTargetFor` holds the pick on
-  `enemy._pickMark`, keyed by turn AND move id, so next turn picks afresh and a mark on a
-  fallen Kid falls through. Gated by `tests/butler/run.py`.
+- **A `partyPick` TRACKS the board, and that fights the rule above it. Do not "fix" it
+  without reading this.** `pickSeat` reads live state, so the arrow moves when a Kid
+  reacts to it: Walking Stick prefers `lowestGuard`, its target raises Guard, stops being
+  lowest, and the swing transfers to their friend. Holding the pick was tried on
+  2026-08-28 and REVERTED, because (1) player Guard is wiped at the start of the turn,
+  after `chooseMove`, so a held pick sees every seat on 0, ties, and resolves to seat 0
+  forever — `lowestGuard` stops meaning anything; (2) it measured worse, four Kids at
+  0.6x going 33% -> 17%; and (3) six assertions in `tests/coop/suite.js` encode the
+  tracking behaviour deliberately. A preference computed from state the player controls
+  cannot both track that state and stay still. The real answer is probably that anything
+  telegraphed a turn ahead should prefer something the player cannot game inside the turn
+  (`lowestCourage`, `fewestDraw`); that is a design decision, not a bug fix.
 - Enemy Courage is `[1, 2.2, 4.0, 5.7]`, and **it was derived from the STANDARD TIER
   only** — `tests/coop/balance.py` fights scuffles — then applied to every enemy in the
   game including bosses, which were never measured at any party size until 2026-08-28.
