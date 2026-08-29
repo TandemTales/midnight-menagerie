@@ -30,15 +30,38 @@ change him.
 - **The Companion roster is COMPLETE.** All 16 playable, 1468 cards, 0 errors, 0
   warnings, each with its own effect-asserting suite. Crinkle's design chapter is a
   reconstruction and is **awaiting the designer's review** — see §1 above.
-- **A party of four plays end to end on one machine.** `MAX_PARTY` is 4 and the
-  enemy Courage curve is measured at every size for the first time.
+- **A party of four plays end to end on one machine.** `MAX_PARTY` is 4.
+- **The co-op Courage curve is NOT trustworthy, and one number will not fix
+  it.** Swept at four Kids: **4.0 matches the win rate** where the shipped 5.7
+  gives 0%, but even at 4.0 the boss runs **42 turns** against solo's 13, and
+  no multiplier matches both. It is a death spiral driven by length — four Kids
+  deal 1.3x one Kid's damage per turn, half the party is down in the long
+  fights, and the boss's Guard is per TURN so a bigger pool costs
+  super-linearly. Left unchanged on purpose: the constant governs every enemy,
+  and the standard tier's win% is already flat. Note §8.
+- **The curve's original numbers were measured wrongly.**
+  `[1, 2.2, 4.0, 5.7]` was measured against a harness with three defects, all
+  fixed on 2026-08-28: `tests/coop/balance.html` ran **two enemy phases every
+  round**, and `lib/bot.js` scored clones while reading the real board and never
+  took a seat in half its scoring function. Re-measured, the Foyer standard
+  tier wins **100% at every party size** with zero falls, against the
+  79/75/96/96% the broken harness reported. See
+  `docs/notes/2026-08-28-butler-aoe-and-a-broken-instrument.md` §1.
+- **The Butler is dangerous through AoE now**, per §9 decision 4. Solo
+  66.7% -> 60.4% win at n=48; at 2p/3p/4p the fight is shorter, costlier and
+  the damage is genuinely spread (spread 0.65 -> 0.90 at four Kids).
 - **Networking has a foundation and a proof, not a feature.** The lockstep session,
   the protocol and two working transports exist; a transport that reaches another
   machine does not. §9 says exactly what is left.
-- **One known failing check.** `tests/chrome` wants 60 fps and measures 51–54. It
-  read **47 at the start of the 2026-08-28 session**, on the same filesystem, so it
-  predates that work rather than coming from it — but it IS failing and nobody has
-  chased it. Re-measure in isolation before believing any number here (trap 7).
+- **One known failing check.** `tests/chrome` wants 60 fps and measures
+  **56 and 53** (was 51–54). Now diagnosed rather than guessed at: a blank page
+  measures 61–62 with the same flags, so it is the app and not the machine, and
+  a `PerformanceObserver` puts **923 ms of blocked main thread 5.0–6.3 s after
+  load**, largest single task 676 ms. Only 141 ms of that is attributable to a
+  rAF or timeout callback (`DeckView._schedulePlace`, since fixed); the rest is
+  synchronous work in a promise or event, most likely the fixture's 60-card
+  deck grid and its art. Note what the check measures: a FIXTURE that renders
+  every icon, keyword, the HUD and 60 cards at once. Details in the note, §7.
 
 ---
 
@@ -91,6 +114,9 @@ All prep scripts are **one-off and commit their output** — there is no runtime
 | `tests/map/run.py` · `tests/chrome/run.py` | 23 passed · 27 checks |
 | `tests/combat-scene/seam.py` · `tests/audio/run.py` | 22 passed · 46 cues |
 | `tests/critic-design/sim.py` · `sweep.py` | the balance simulator |
+| `tests/critic-design/party-boss.py` | a boss at 1..4 Kids against REAL pre-boss decks — the gap `sweep.py` (solo only) and `tests/coop/balance.py` (starting decks) both leave |
+| `tests/critic-design/anchor.py` | 5/5 — `partyBench()` at one Kid reproduces `bench()` fight for fight. The party rows mean nothing without it |
+| `tests/critic-design/butler-ledger.html` | where the Butler's length actually comes from |
 
 **One suite per Companion, and every check asserts an EFFECT.** `tests/cards`
 proves only that a card resolves without throwing, which CONTRACTS trap 12 is
@@ -111,6 +137,8 @@ drive a real engine with real enemies and mock none of the mechanic under test.
 | `tests/mossbit/run.py` | 55 — hurrying an Epitaph forfeits the Patience, the bill lands through Guard |
 | `tests/brambleboo/run.py` | 52 — four Vines Snare and REDUCE, never cancel |
 | `tests/crinkle/run.py` | 44 — a Crease survives the discard pile, and the card PRINTS the new number |
+| `tests/butler/run.py` | 24 — Dust Them Off really lands on all three Kids, Enough of This really DECLARES its splash, and the converted Reprimands really cost the player |
+| `tests/pipkin/run.py` | 18 — the Patch is really on the board, and really matches the array every turn |
 
 **Co-op drives the real screens** — everything else about co-op is asserted
 against objects, and the thing that breaks is always the screen.
@@ -140,6 +168,7 @@ learn. See §6.
 | `tests/dup-keys/check.py` | 0 duplicate keys — the second one silently wins |
 | `tests/hook-names/check.py` | 0 unknown hooks — a handler nothing dispatches |
 | `tests/turn-events/check.py` | 0 unguarded — `turn:start` fires for every enemy too |
+| `tests/stdlib-shadow/check.py` | 0 scripts named after a stdlib module. `tests/coop/select.py` **was** the `select` module for that whole directory, and all six scripts in it were broken |
 
 `tests/seams/check.py` and `tests/scene-css/check.py` are **gates against whole bug classes** —
 never let them regress. See §6.
@@ -337,7 +366,14 @@ Three of the four open decisions below are now made:
    than retrofitted, because mid-run disconnects are StS2's loudest complaint and
    the lockstep foundation already has what a rejoin needs.
 
-Decision 4 (the Butler's Courage pool) is still the designer's and still open.
+**Decision 4 is made and built, 2026-08-28: AoE coverage, not the Courage
+pool.** One AoE per phase (Dust Them Off hits every Kid; Enough of This carries
+a declared splash of 6), seat preferences on the two single-target moves, and
+the two House Rules whose Reprimand paid him GUARD now cost the player instead.
+Measured: `tests/butler/run.py` (24 effect assertions), the party A/B in the
+note §4, and a solo A/B at n=48. **His remaining LENGTH is the Courage pool**,
+which stays the designer's call — the sweep on record puts him in the 8–12 turn
+band at 0.65x.
 
 ### A party of four, built
 
@@ -432,6 +468,13 @@ the HUD, then a Keepsake. A shipped build still degrades to seat 0 rather than
 throwing at a player mid-run.
 
 ### Balance: measured, not quoted
+
+**CORRECTED 2026-08-28: every party number below was measured with a harness
+that ran TWO enemy phases a round and a bot that could not see its own plan.**
+They are kept for the record and for the reasoning, not as figures to build on.
+The re-measured curve is in
+`docs/notes/2026-08-28-butler-aoe-and-a-broken-instrument.md` §1, and it says
+the Foyer standard tier is a non-event at every party size.
 
 Enemy Courage at 2p is **220%**, and it took three measurements because the
 sources disagree. Our own design doc says 160% (measures far too easy: duo wins

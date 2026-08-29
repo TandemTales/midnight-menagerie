@@ -61,3 +61,4 @@ to concurrent whole-file writes, so this is now structural rather than a convent
 | [2026-08-27-companions](notes/2026-08-27-companions.md) | 19 KB |
 | [2026-08-28-party-of-four](notes/2026-08-28-party-of-four.md) | 8 KB |
 | [2026-08-28-netcode](notes/2026-08-28-netcode.md) | 8 KB |
+| [2026-08-28-butler-aoe-and-a-broken-instrument](notes/2026-08-28-butler-aoe-and-a-broken-instrument.md) | 13 KB |
