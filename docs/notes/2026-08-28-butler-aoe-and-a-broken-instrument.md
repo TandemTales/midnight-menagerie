@@ -248,11 +248,58 @@ threshold of 58. What is new:
   is synchronous work in a promise or an event — most likely the 60-card deck
   grid and its art.
 
-Worth saying plainly: this check measures a FIXTURE that renders every icon,
-every keyword, a HUD and a 60-card deck view at once, seconds after load, right
-after a long run of scripted screenshots. That is not a screen the game has.
-The remaining 780 ms is real and worth chasing; it belongs with card-feel and
-ui-chrome, and I have not guessed at it.
+A CPU profile then named the 676 ms task outright: **`render` in
+`ui/cardart.js:336`, 735 ms of self time across the load and 500 ms of it inside
+the window.** `render` paints a canvas and calls `toDataURL('image/png')`, and
+`paint` itself samples at 10 ms — so essentially all of it is PNG encoding, 60
+cards at roughly 12 ms each, all in one task because `DeckView` mounts them
+synchronously while the incremental `warmArt` queue sits unused beside it.
+
+### …and then the fixture turned out to be the smaller half
+
+The obvious next question is whether the GAME holds 60, and it does not.
+
+`tools/shot.py` reads one 1-second sample per process launch, and three launches
+at 1920x1080 gave **48, 38 and 17** — a spread that describes launching
+Chromium, not the scene. One browser, one load, six samples says:
+
+| scene (1920x1080) | samples | median |
+|---|---|---|
+| title | 61 61 60 60 61 | **61** |
+| gameover | 57 58 55 59 59 | 58 |
+| map | 53 47 55 49 52 | **52** |
+| combat | 52 44 52 52 56 | **52** |
+
+A blank page and a bare served page both measure 61-62 with the same flags, and
+the title scene reaches 61 — so the browser, the machine and the compositor can
+all do 60. **Combat and the map cannot**, at the exact resolution CONTRACTS
+non-negotiable 3 names.
+
+And it is not JS. Profiling six seconds of a settled, idle combat scene:
+**665 ms of JavaScript in six seconds** — about 1.85 ms per frame — against
+5592 ms of idle and program. Nor is it fill rate: 1280x720, 1600x900 and
+1920x1080 measure 55, 56 and 52, nearly flat across 2.25x the pixels.
+
+Nor is it the quality tiers. Auto-detection picks **medium** on this GPU
+(renderScale 0.8, dprCap 1.5, bloomScale 0.5, 6 halation taps, 1100 particles),
+which is the right call, and forcing each tier gives:
+
+```
+  high    [49, 50, 45, 45, 28]   median 45
+  medium  [54, 54, 56, 55, 60]   median 55
+  low     [ 1, 53, 55, 57, 57]   median 55
+```
+
+**Low buys nothing over medium.** Everything the tiers scale — render scale,
+bloom, halation taps, particle count — is already off the critical path at
+medium, so the remaining cost is fixed per frame and lives in the combat and map
+SCENE GRAPHS: draw calls and GL state changes, on an ANGLE/D3D11 Intel UHD stack
+this project has already caught being pathological about program switching
+(§8 of the round-6 note, `getProgramInfoLog` at 400-750 ms per program).
+
+That is where a graphics round should start, and it is not a guess I should make
+from here. What is now excluded, with numbers: JS per-frame cost, resolution,
+the post chain, the quality tiers, and the machine.
 
 ## 8. The party curve, swept — and why one number cannot fix it
 

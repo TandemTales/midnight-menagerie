@@ -53,15 +53,28 @@ change him.
 - **Networking has a foundation and a proof, not a feature.** The lockstep session,
   the protocol and two working transports exist; a transport that reaches another
   machine does not. §9 says exactly what is left.
-- **One known failing check.** `tests/chrome` wants 60 fps and measures
-  **56 and 53** (was 51–54). Now diagnosed rather than guessed at: a blank page
-  measures 61–62 with the same flags, so it is the app and not the machine, and
-  a `PerformanceObserver` puts **923 ms of blocked main thread 5.0–6.3 s after
-  load**, largest single task 676 ms. Only 141 ms of that is attributable to a
-  rAF or timeout callback (`DeckView._schedulePlace`, since fixed); the rest is
-  synchronous work in a promise or event, most likely the fixture's 60-card
-  deck grid and its art. Note what the check measures: a FIXTURE that renders
-  every icon, keyword, the HUD and 60 cards at once. Details in the note, §7.
+- **THE 60 FPS REQUIREMENT IS MISSED BY THE GAME, not just by a test.** This
+  was carried as "tests/chrome measures 51–54"; measured properly it is bigger
+  than that. At 1920x1080 — the size CONTRACTS non-negotiable 3 names — six
+  in-page samples per scene give **combat 52, map 52**, gameover 58,
+  **title 61**. A blank page gives 61–62, so the machine, the browser and the
+  compositor can all do 60; the two main gameplay screens cannot.
+
+  What is EXCLUDED, with numbers: it is not JS (665 ms of JavaScript in six
+  seconds of a settled combat scene, ~1.85 ms a frame); not fill rate (55 / 56 /
+  52 at 720p / 900p / 1080p, nearly flat across 2.25x the pixels); not the post
+  chain or the quality tiers (auto picks `medium` correctly, and **low buys
+  nothing over medium** — 55 either way, against high's 45); and not the
+  fixture. What is left is draw calls and GL state changes in the combat and map
+  scene graphs, on a stack this project has already caught being pathological
+  about program switching. That is where a graphics round starts.
+
+  Also real, and separate: `ui/cardart.js render` costs **735 ms** across the
+  chrome fixture's load — PNG encoding, 60 cards at ~12 ms each, in ONE task
+  because `DeckView` mounts synchronously while the incremental `warmArt` queue
+  sits unused beside it. `tests/chrome` still fails at 56/53 against 58, and it
+  now takes three samples and judges the median, because one sample on this
+  machine has a six-point spread. Full working in the note, §7.
 
 ---
 

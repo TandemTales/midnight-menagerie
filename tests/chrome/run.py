@@ -440,11 +440,27 @@ async def main(a):
         (ok if not nested.get("off") else bad)("second-level tooltip stays inside the viewport")
         await snap("chrome-nested")
 
-        perf = await page.evaluate("""(async()=>{let n=0;const t0=performance.now();
+        # THREE samples, and judge the median.
+        #
+        # One 1-second sample is a coin toss on this machine: the same build
+        # measured 51 and 54 on consecutive runs, which is a six-point spread on
+        # a check whose threshold is 58. Worse, the first sample lands straight
+        # after a long run of scripted screenshots, so it reads whatever the
+        # compositor is still finishing rather than what the page costs to keep
+        # on screen. All three are printed — a falling triple is a leak, a
+        # rising one is residue from the run itself, and only a flat low triple
+        # is the page being slow. (CONTRACTS trap 7 is the same lesson about
+        # believing a single fps number.)
+        FPS_JS = """(async()=>{let n=0;const t0=performance.now();
           await new Promise(r=>{const f=()=>{n++;performance.now()-t0<1000?requestAnimationFrame(f):r()};requestAnimationFrame(f)});
-          return n})()""")
-        print(f"  fps: {perf}")
-        (ok if perf >= 58 else bad)(f"60fps with the whole harness live (measured {perf})")
+          return n})()"""
+        samples = []
+        for _ in range(3):
+            samples.append(await page.evaluate(FPS_JS))
+        perf = sorted(samples)[1]
+        print(f"  fps: {perf}   (samples {samples})")
+        (ok if perf >= 58 else bad)(
+            f"60fps with the whole harness live (median {perf} of {samples})")
 
         real_errors = [e for e in errors if "favicon" not in e.lower()]
         if real_errors:
