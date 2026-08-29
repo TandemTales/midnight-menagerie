@@ -1,0 +1,675 @@
+{
+ "config": {
+  "TIER": "elite",
+  "ENC": "nursery-scare-giant",
+  "REGION": "nursery",
+  "LREGION": "nursery",
+  "N": 8,
+  "GEN": 8,
+  "SIZES": [
+   1,
+   4
+  ],
+  "SLUGS": [
+   "marmalade",
+   "bones"
+  ],
+  "SEED0": 90000
+ },
+ "rows": [
+  {
+   "nodeId": "bench-90000-2",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-giant",
+   "name": "The Patchwork Giant",
+   "region": "nursery",
+   "histLen": 3,
+   "size": 1,
+   "seed": 90000,
+   "win": false,
+   "turns": 11,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 70,
+   "takenBySeat": [
+    78
+   ],
+   "hitsBySeat": [
+    14
+   ],
+   "blockedBySeat": [
+    43
+   ],
+   "aimed": 121,
+   "blocked": 43,
+   "partyGuard": 49,
+   "spread": 1,
+   "enemyHp": 150,
+   "enemyGuard": 97,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-giant",
+   "name": "The Patchwork Giant",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90013,
+   "win": true,
+   "turns": 12,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.6805555555555556,
+   "courageCost": 23,
+   "takenBySeat": [
+    32
+   ],
+   "hitsBySeat": [
+    16
+   ],
+   "blockedBySeat": [
+    131
+   ],
+   "aimed": 163,
+   "blocked": 131,
+   "partyGuard": 243,
+   "spread": 1,
+   "enemyHp": 150,
+   "enemyGuard": 61,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-giant",
+   "name": "The Patchwork Giant",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90026,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.43283582089552236,
+   "courageCost": 36,
+   "takenBySeat": [
+    45
+   ],
+   "hitsBySeat": [
+    7
+   ],
+   "blockedBySeat": [
+    29
+   ],
+   "aimed": 74,
+   "blocked": 29,
+   "partyGuard": 61,
+   "spread": 1,
+   "enemyHp": 150,
+   "enemyGuard": 40,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-giant",
+   "name": "The Patchwork Giant",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90039,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9054054054054054,
+   "courageCost": 7,
+   "takenBySeat": [
+    13
+   ],
+   "hitsBySeat": [
+    5
+   ],
+   "blockedBySeat": [
+    30
+   ],
+   "aimed": 43,
+   "blocked": 30,
+   "partyGuard": 59,
+   "spread": 1,
+   "enemyHp": 150,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-giant",
+   "name": "The Patchwork Giant",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 1,
+   "seed": 90052,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9384615384615385,
+   "courageCost": 4,
+   "takenBySeat": [
+    13
+   ],
+   "hitsBySeat": [
+    6
+   ],
+   "blockedBySeat": [
+    52
+   ],
+   "aimed": 65,
+   "blocked": 52,
+   "partyGuard": 95,
+   "spread": 1,
+   "enemyHp": 150,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065-3",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-giant",
+   "name": "The Patchwork Giant",
+   "region": "nursery",
+   "histLen": 4,
+   "size": 1,
+   "seed": 90065,
+   "win": false,
+   "turns": 9,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 70,
+   "takenBySeat": [
+    86
+   ],
+   "hitsBySeat": [
+    11
+   ],
+   "blockedBySeat": [
+    33
+   ],
+   "aimed": 119,
+   "blocked": 33,
+   "partyGuard": 39,
+   "spread": 1,
+   "enemyHp": 150,
+   "enemyGuard": 48,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078-6",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-giant",
+   "name": "The Patchwork Giant",
+   "region": "nursery",
+   "histLen": 7,
+   "size": 1,
+   "seed": 90078,
+   "win": true,
+   "turns": 12,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.6666666666666666,
+   "courageCost": 24,
+   "takenBySeat": [
+    33
+   ],
+   "hitsBySeat": [
+    14
+   ],
+   "blockedBySeat": [
+    98
+   ],
+   "aimed": 131,
+   "blocked": 98,
+   "partyGuard": 217,
+   "spread": 1,
+   "enemyHp": 150,
+   "enemyGuard": 73,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-giant",
+   "name": "The Patchwork Giant",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 1,
+   "seed": 90091,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.7313432835820896,
+   "courageCost": 16,
+   "takenBySeat": [
+    25
+   ],
+   "hitsBySeat": [
+    6
+   ],
+   "blockedBySeat": [
+    25
+   ],
+   "aimed": 50,
+   "blocked": 25,
+   "partyGuard": 38,
+   "spread": 1,
+   "enemyHp": 150,
+   "enemyGuard": 21,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90000-2",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-giant",
+   "name": "The Patchwork Giant",
+   "region": "nursery",
+   "histLen": 3,
+   "size": 4,
+   "seed": 90000,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.7623762376237624,
+   "courageCost": 55,
+   "takenBySeat": [
+    15,
+    0,
+    52,
+    10
+   ],
+   "hitsBySeat": [
+    3,
+    3,
+    8,
+    3
+   ],
+   "blockedBySeat": [
+    12,
+    30,
+    25,
+    20
+   ],
+   "aimed": 164,
+   "blocked": 87,
+   "partyGuard": 984,
+   "spread": 0.4329004329004329,
+   "enemyHp": 855,
+   "enemyGuard": 40,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-giant",
+   "name": "The Patchwork Giant",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90013,
+   "win": true,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.6496598639455783,
+   "courageCost": 82,
+   "takenBySeat": [
+    5,
+    44,
+    22,
+    32
+   ],
+   "hitsBySeat": [
+    1,
+    11,
+    6,
+    7
+   ],
+   "blockedBySeat": [
+    0,
+    63,
+    41,
+    36
+   ],
+   "aimed": 243,
+   "blocked": 140,
+   "partyGuard": 1188,
+   "spread": 0.6828478964401294,
+   "enemyHp": 855,
+   "enemyGuard": 40,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-giant",
+   "name": "The Patchwork Giant",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90026,
+   "win": true,
+   "turns": 4,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8787878787878788,
+   "courageCost": 13,
+   "takenBySeat": [
+    5,
+    0,
+    0,
+    25
+   ],
+   "hitsBySeat": [
+    4,
+    3,
+    0,
+    6
+   ],
+   "blockedBySeat": [
+    24,
+    24,
+    0,
+    24
+   ],
+   "aimed": 102,
+   "blocked": 72,
+   "partyGuard": 698,
+   "spread": 0.2222222222222222,
+   "enemyHp": 855,
+   "enemyGuard": 13,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-giant",
+   "name": "The Patchwork Giant",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90039,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.7981366459627329,
+   "courageCost": 47,
+   "takenBySeat": [
+    0,
+    5,
+    61,
+    0
+   ],
+   "hitsBySeat": [
+    3,
+    4,
+    6,
+    3
+   ],
+   "blockedBySeat": [
+    30,
+    30,
+    5,
+    30
+   ],
+   "aimed": 161,
+   "blocked": 95,
+   "partyGuard": 931,
+   "spread": 0.101010101010101,
+   "enemyHp": 855,
+   "enemyGuard": 40,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-giant",
+   "name": "The Patchwork Giant",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 4,
+   "seed": 90052,
+   "win": true,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.780327868852459,
+   "courageCost": 46,
+   "takenBySeat": [
+    0,
+    47,
+    9,
+    6
+   ],
+   "hitsBySeat": [
+    1,
+    11,
+    7,
+    6
+   ],
+   "blockedBySeat": [
+    11,
+    54,
+    50,
+    48
+   ],
+   "aimed": 225,
+   "blocked": 163,
+   "partyGuard": 1081,
+   "spread": 0.32258064516129037,
+   "enemyHp": 855,
+   "enemyGuard": 40,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065-3",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-giant",
+   "name": "The Patchwork Giant",
+   "region": "nursery",
+   "histLen": 4,
+   "size": 4,
+   "seed": 90065,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8302469135802469,
+   "courageCost": 35,
+   "takenBySeat": [
+    2,
+    0,
+    47,
+    7
+   ],
+   "hitsBySeat": [
+    3,
+    3,
+    8,
+    3
+   ],
+   "blockedBySeat": [
+    19,
+    24,
+    24,
+    17
+   ],
+   "aimed": 140,
+   "blocked": 84,
+   "partyGuard": 1117,
+   "spread": 0.2142857142857143,
+   "enemyHp": 855,
+   "enemyGuard": 52,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078-6",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-giant",
+   "name": "The Patchwork Giant",
+   "region": "nursery",
+   "histLen": 7,
+   "size": 4,
+   "seed": 90078,
+   "win": true,
+   "turns": 10,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.7272727272727273,
+   "courageCost": 76,
+   "takenBySeat": [
+    17,
+    65,
+    9,
+    0
+   ],
+   "hitsBySeat": [
+    7,
+    11,
+    6,
+    6
+   ],
+   "blockedBySeat": [
+    42,
+    54,
+    45,
+    54
+   ],
+   "aimed": 286,
+   "blocked": 195,
+   "partyGuard": 1394,
+   "spread": 0.38095238095238093,
+   "enemyHp": 855,
+   "enemyGuard": 66,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-giant",
+   "name": "The Patchwork Giant",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 4,
+   "seed": 90091,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.7785467128027682,
+   "courageCost": 41,
+   "takenBySeat": [
+    6,
+    0,
+    0,
+    50
+   ],
+   "hitsBySeat": [
+    4,
+    3,
+    0,
+    7
+   ],
+   "blockedBySeat": [
+    29,
+    30,
+    0,
+    21
+   ],
+   "aimed": 136,
+   "blocked": 80,
+   "partyGuard": 903,
+   "spread": 0.1428571428571429,
+   "enemyHp": 855,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  }
+ ],
+ "table": [
+  {
+   "size": 1,
+   "n": 8,
+   "aimed": 95.8,
+   "landed": 40.6,
+   "blocked": 55.1,
+   "pctBlocked": 57.5,
+   "partyGuard": 100.1,
+   "turns": 8.4,
+   "aimedPerTurn": 11.4,
+   "winPct": 75,
+   "leftAll": 54.4,
+   "pool": 150,
+   "left": 72.6,
+   "errs": 0
+  },
+  {
+   "size": 4,
+   "n": 8,
+   "aimed": 182.1,
+   "landed": 67.6,
+   "blocked": 114.5,
+   "pctBlocked": 62.9,
+   "partyGuard": 1037,
+   "turns": 7.1,
+   "aimedPerTurn": 25.6,
+   "winPct": 100,
+   "leftAll": 77.6,
+   "pool": 855,
+   "left": 77.6,
+   "errs": 0,
+   "poolScale": 5.7,
+   "predictedLeft": 83.8,
+   "buys": 6.2
+  }
+ ],
+ "errors": []
+}

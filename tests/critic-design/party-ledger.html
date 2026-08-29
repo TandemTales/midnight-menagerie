@@ -101,6 +101,9 @@ const R = { config: { TIER, ENC, REGION, LREGION, N, GEN, SIZES, SLUGS, SEED0 },
        * 9-in-12. Win rate is the honest headline; `left%` describes the wins.
        */
       winPct: +(100 * wins.length / rows.length).toFixed(1),
+      /* UN-conditioned, for the baseline below. `left` is wins-only. */
+      leftAll: +(100 * (rows.reduce((a, r) => a + r.courageLeft, 0) / rows.length)).toFixed(1),
+      pool: +(rows.reduce((a, r) => a + (r.enemyHp || 0), 0) / rows.length).toFixed(1),
       left: +(100 * (wins.length
         ? wins.reduce((a, r) => a + r.courageLeft, 0) / wins.length
         : 0)).toFixed(1),
@@ -115,7 +118,47 @@ const R = { config: { TIER, ENC, REGION, LREGION, N, GEN, SIZES, SLUGS, SEED0 },
   }
 
   say('');
-  say('Read `%blocked` first. If it climbs with party size, the table\'s Guard budget');
+  /**
+   * THE ARITHMETIC BASELINE.
+   *
+   * At n Kids the party's Courage pool and its output both scale about n-fold,
+   * so a fight runs `poolScale / n` as long as a solo one and the enemy
+   * delivers that share of its solo total into n times the pool:
+   *
+   *     cost(n) = cost(1p) x (poolScale / n) / n      with NO content at all
+   *
+   * What an encounter costs BELOW that is what its targeting, splash and pierce
+   * actually buy. Printed here so nobody has to keep a scratch script: this is
+   * the number the whole 2026-08-29 party round was decided on, and it is
+   * computed off `leftAll`, NOT off `left%`, which is wins-only.
+   *
+   * `poolScale` is measured from the fights themselves rather than assumed, so
+   * a per-enemy `EnemyDef.partyHp` is accounted for automatically.
+   */
+  const solo = R.table.find(t => t.size === 1);
+  if (solo && solo.pool > 0 && R.table.length > 1) {
+    say('');
+    say('baseline: cost(n) = cost(1p) x (poolScale/n) / n   — an enemy with NO party content');
+    say('party  poolScale   predicted   measured   content buys');
+    for (const t of R.table) {
+      if (t.size === 1) continue;
+      const scale = t.pool / solo.pool;
+      const pred = 100 - (100 - solo.leftAll) * (scale / t.size) / t.size;
+      const buys = pred - t.leftAll;
+      t.poolScale = +scale.toFixed(2);
+      t.predictedLeft = +pred.toFixed(1);
+      t.buys = +buys.toFixed(1);
+      say(`${String(t.size + 'p').padEnd(7)}${String(t.poolScale).padStart(9)}`
+        + `${String(t.predictedLeft).padStart(12)}${String(t.leftAll).padStart(11)}`
+        + `${(buys >= 0 ? '+' : '') + buys.toFixed(1)}`.padStart(15));
+    }
+    say('');
+    say('POSITIVE means the encounter takes more than a contentless enemy would.');
+    say('Measured 2026-08-29: only pierce reliably gets there — a pick SPREADS');
+    say('damage, AoE ADDS damage a party then blocks, and only pierce is KEPT.');
+  }
+
+    say('Read `%blocked` first. If it climbs with party size, the table\'s Guard budget');
   say('is the lever and a bigger printed number will be eaten too. If `aimed/turn`');
   say('is flat while turns grow, the boss is simply not swinging enough per round.');
   window.__LEDGER__ = R;
