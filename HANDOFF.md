@@ -49,9 +49,17 @@ change him.
   and `%blocked` flat across party size. Solo byte-identical. That also closes
   "party boss fights are LONG" for her. CONTRACTS 44, 45 and 46.
 
-  **Still open:** the ELITE tier has the same untested shape — flat 100% win at
-  every party size with the cost wrong — and it is the obvious next place to
-  point the ledger.
+  **Still open, and now MEASURED: the ELITE tier at three and four Kids is a
+  44-turn grind.** `party-ledger.py --tier elite --region foyer` reads turns
+  **9.4 → 43.7** from one Kid to four, with `aimed/turn` nearly flat (8.7 →
+  12.6) and `%blocked` climbing 58 → 75. The cost is fine — `left%` is 60 at
+  every size, matching solo — so this is purely LENGTH, and it is the worst
+  player experience in the measured set. The cause is the global
+  `PARTY_HP_SCALE` doing to elites what it did to bosses. **Do not change the
+  global** (the brief is explicit, and it is correct on the standard tier); the
+  seam is per-enemy `EnemyDef.partyHp`, nine elite encounters, each wanting its
+  own bracketing sweep. Not attempted here because nine curves without nine
+  measurements is nine guesses.
 - **NETCODE ITEMS 2, 3 AND 4 ARE DONE. Only the transport is left.** Every
   screen routes through `net/actions.js`; `net/lobby.js` decides seats, host and
   seed with no election; a choice reaches the player whose choice it is.

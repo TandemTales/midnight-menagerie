@@ -451,8 +451,35 @@ is computed against the blockable share only, and the arithmetic is suppressed
 when Guard cannot be spent at all, because the second draft printed
 `24 − 9 Guard → 24`.
 
-**The elite tier has the same untested shape** and is the obvious next place to
-point the ledger.
+### The elite tier, pointed at and measured — a 44-turn grind
+
+```
+Foyer elite  aimed  landed  blocked  %blocked  partyGuard  turns  aimed/turn  left%
+  1p          82.1    34.8     47.3      57.6        63.8    9.4         8.7     60
+  2p         132.3    41.9     90.4      68.3       221.3   13.3         9.9     70
+  3p         426.4   112.2    314.3      73.7       796.2   35.5        12.0     60
+  4p         551.3   139.5    411.8      74.7      1942.6   43.7        12.6     60
+```
+
+Both of the ledger's diagnostics fire at once. `%blocked` climbs 58 → 75, the
+same Guard story as the bosses. And `aimed/turn` is nearly FLAT — 8.7 → 12.6 —
+while **turns go 9.4 → 43.7**. Four Kids grind an elite for forty-four turns and
+take 3.2 Courage a turn between them while doing it.
+
+The cost is not the problem here: `left%` sits at 60 at every size, matching
+solo. **The problem is that it takes 4.6x as long**, which is the worst player
+experience in the measured set and is the "party fights are LONG" item in its
+most extreme form.
+
+The cause is the global `PARTY_HP_SCALE` doing to elites what the Butler round
+found it doing to bosses: ×4.0 and ×5.7 Courage against party damage that does
+not scale that fast. **Not fixed here, and deliberately.** The brief is explicit
+that the global constant stays — it was measured on the standard tier, where the
+win rate is flat and correct — and the sanctioned seam is per-enemy
+`EnemyDef.partyHp`, which is nine elite encounters each wanting its own
+bracketing sweep. Shipping nine curves without measuring nine would be shipping
+guesses, which is the one thing this file keeps saying not to do. The
+measurement is the deliverable; the tuning is the next clearly-scoped piece.
 
 ### At four Kids every boss was a ONE-PHASE boss
 
