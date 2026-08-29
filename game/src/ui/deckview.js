@@ -293,12 +293,17 @@ export class DeckView {
     this._raf = requestAnimationFrame(() => {
       this._raf = 0;
       const sizes = this.cells.map(c => [c.clientWidth, c.clientHeight]);   // read
+      /* `_columns()` reads `offsetTop`, so it belongs in the READ pass. It sat
+         after the writes and forced a second layout on a grid that can hold
+         sixty cards — the one place this method broke its own rule. Card
+         transforms do not affect layout, so the answer is identical either
+         side; only the flush is saved. */
+      this._cols = this._columns();
       for (let i = 0; i < this.cells.length; i++) {                          // write
         const uid = this.cells[i].dataset.uid;
         const v = this.views.get(uid);
         if (v) v.setTransform({ x: sizes[i][0] / 2, y: sizes[i][1], rot: 0, scale: 1, z: 0 });
       }
-      this._cols = this._columns();
     });
   }
 

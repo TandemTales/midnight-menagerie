@@ -31,7 +31,7 @@ ap.add_argument("--slugs", default="marmalade,bones")
 ap.add_argument("--pol", default="balanced")
 ap.add_argument("--seed", type=int, default=90000)
 ap.add_argument("--haunt", type=int, default=0)
-ap.add_argument("--scale", type=float, default=1)
+ap.add_argument("--scales", default="1", help="comma-separated enemy-Courage multipliers, swept on one set of loadouts")
 ap.add_argument("--out", default="party-boss-result.json")
 ap.add_argument("--timeout", type=float, default=3600)
 a = ap.parse_args()
@@ -43,7 +43,7 @@ except Exception:
 
 URL = (f"http://localhost:8777/tests/critic-design/party-boss.html?tier={a.tier}&enc={a.enc}"
        f"&region={a.region}&n={a.n}&gen={a.gen}&sizes={a.sizes}&slugs={a.slugs}"
-       f"&pol={a.pol}&seed={a.seed}&haunt={a.haunt}&scale={a.scale}")
+       f"&pol={a.pol}&seed={a.seed}&haunt={a.haunt}&scales={a.scales}")
 
 with sync_playwright() as p:
     b = p.chromium.launch(args=["--enable-unsafe-swiftshader"])
@@ -66,20 +66,23 @@ if R.get("error"):
     sys.exit(2)
 
 (ROOT / "tests" / "critic-design" / a.out).write_text(json.dumps(R, indent=1), encoding="utf-8")
-print(f"== party {a.region}/{a.tier} {a.enc or '(rolled)'}  haunt {a.haunt}  xHP {a.scale}")
+print(f"== party {a.region}/{a.tier} {a.enc or '(rolled)'}  haunt {a.haunt}  xHP {a.scales}")
 print("   loadouts " + " · ".join(f"{k} {v}" for k, v in R["loadouts"].items()))
-print(f"{'party':<7}{'n':>4}{'win%':>7}{'turns':>7}{'med':>5}{'left%':>8}"
+print(f"{'xHP':<7}{'party':<7}{'n':>4}{'win%':>7}{'turns':>7}{'med':>5}{'left%':>8}"
       f"{'fallen':>8}{'spread':>8}{'enemyHP':>9}{'cost':>7}{'errs':>6}{'to':>4}")
 for r in R["table"]:
-    print(f"{str(r['size']) + 'p':<7}{r['n']:>4}{r['win']:>7}{r['turnsMean']:>7}{r['turnsMed']:>5}"
+    print(f"{r.get('scale', 1):<7}{str(r['size']) + 'p':<7}{r['n']:>4}{r['win']:>7}{r['turnsMean']:>7}{r['turnsMed']:>5}"
           f"{r['left']:>8}{r['fallen']:>8}{r['spread']:>8}{r['enemyHp']:>9}{r['cost']:>7}"
           f"{r['errs']:>6}{r['timeouts']:>4}")
 
+# The anchor is SOLO AT THE SHIPPED POOL: the question a scale sweep answers is
+# "which multiplier makes a party of N feel like one Kid does today", so every
+# row is compared against that one, not against solo at its own scale.
 solo = next((r for r in R["table"] if r["size"] == 1), None)
 if solo:
-    print("\nvs solo (flat is the target):")
+    print(f"\nvs solo at x{solo.get('scale', 1)} (flat is the target):")
     for r in R["table"]:
-        print(f"  {r['size']}p: win {r['win'] - solo['win']:+.0f} pts · "
+        print(f"  x{r.get('scale', 1)} {r['size']}p: win {r['win'] - solo['win']:+.0f} pts · "
               f"left {r['left'] - solo['left']:+.0f} pts · "
               f"turns {r['turnsMean'] - solo['turnsMean']:+.1f} · spread {r['spread']:.2f}")
 

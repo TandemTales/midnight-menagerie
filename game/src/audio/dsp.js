@@ -501,7 +501,18 @@ export function fmBell(ac, dest, t, o = {}) {
     c[i] = freq * (index * Math.exp(-4.5 * u) + indexEnd * 0.0);
   }
   c[n - 1] = freq * indexEnd;
-  mg.gain.setValueCurveAtTime(c, t, idur);
+  /**
+   * Re-clamp HERE, not only at the top of the function.
+   *
+   * `ac.currentTime` is the audio clock and it keeps running while JavaScript
+   * does: the entry clamp is a dozen node allocations ago, and on a heavy frame
+   * that is enough for `t` to fall into the past again. Chrome then starts the
+   * curve at the next render block while the event below is still computed from
+   * the older `t`, which is the shape of the reported crash. Both the curve and
+   * everything derived from it now come off the same freshly-clamped value.
+   */
+  const t0 = t < ac.currentTime ? ac.currentTime : t;
+  mg.gain.setValueCurveAtTime(c, t0, idur);
   /**
    * Clear of the curve by a whole RENDER QUANTUM, not 2 ms.
    *
@@ -514,7 +525,10 @@ export function fmBell(ac, dest, t, o = {}) {
    * and the whole cue failed to build — measured on a real ui:hover.
    */
   const quantum = 128 / (ac.sampleRate || 48000);
-  mg.gain.setTargetAtTime(0, t + idur + quantum * 2, Math.max(0.02, dur * 0.25));
+  // …and the clock may have moved again while the curve was being handed over,
+  // so the guard is measured from whichever is later.
+  const after = Math.max(t0 + idur, ac.currentTime) + quantum * 2;
+  mg.gain.setTargetAtTime(0, after, Math.max(0.02, dur * 0.25));
 
   env(vg.gain, t, dur, envFn, g0);
   run(car, ac, t, t + dur + 0.02);

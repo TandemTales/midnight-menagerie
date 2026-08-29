@@ -30,7 +30,12 @@ const SLUGS = (Q.get('slugs') || 'marmalade,bones').split(',').filter(Boolean);
 const POL = Q.get('pol') || 'balanced';
 const SEED0 = +(Q.get('seed') || 90000);
 const HAUNT = +(Q.get('haunt') || 0);
-const SCALE = +(Q.get('scale') || 1);
+/* `scales` sweeps the enemy Courage pool on ONE set of captured loadouts.
+   Generating them is the expensive half of this page — twelve full expeditions
+   — so re-deriving the party curve by running the whole page once per scale
+   paid for that twelve times over and compared runs that had different decks
+   in them. One generation, N scales, same decks throughout. */
+const SCALES = (Q.get('scales') || Q.get('scale') || '1').split(',').map(Number).filter(x => x > 0);
 
 const out = document.getElementById('out');
 const lines = [];
@@ -38,7 +43,7 @@ const say = (s) => { lines.push(s); out.textContent = lines.join('\n'); };
 const tick = (s) => { out.textContent = lines.join('\n') + '\n  … ' + s; };
 
 const R = {
-  config: { TIER, ENC, REGION, N, GEN, SIZES, SLUGS, POL, SEED0, HAUNT, SCALE },
+  config: { TIER, ENC, REGION, N, GEN, SIZES, SLUGS, POL, SEED0, HAUNT, SCALES },
   loadouts: {}, table: [], rows: [], errors: [],
 };
 
@@ -56,12 +61,13 @@ const med = (a) => {
   });
   R.errors.push(...errors);
   for (const s of SLUGS) R.loadouts[s] = (pools[s] || []).length;
-  say(`== party ${REGION}/${TIER}${ENC ? ' ' + ENC : ''}  haunt ${HAUNT}  xHP ${SCALE}`);
+  say(`== party ${REGION}/${TIER}${ENC ? ' ' + ENC : ''}  haunt ${HAUNT}  xHP ${SCALES.join(',')}`);
   say(`   loadouts ${SLUGS.map(s => `${s} ${(pools[s] || []).length}`).join(' · ')}`);
   say('');
-  say('party    n   win%   turns  med    left%   fallen   spread   enemyHP   cost   errs');
-  say('──────────────────────────────────────────────────────────────────────────────────');
+  say('xHP    party    n   win%   turns  med    left%   fallen   spread   enemyHP   cost   errs');
+  say('─────────────────────────────────────────────────────────────────────────────────────────');
 
+  for (const SCALE of SCALES) {
   for (const size of SIZES) {
     const rows = [];
     for (let i = 0; i < N; i++) {
@@ -80,7 +86,7 @@ const med = (a) => {
     if (!rows.length) { say(`${size}p       — no fights`); continue; }
     const wins = rows.filter(r => r.win);
     const row = {
-      size, n: rows.length,
+      scale: SCALE, size, n: rows.length,
       win: +(100 * wins.length / rows.length).toFixed(1),
       /* Turns and cost over EVERY fight, not just the wins. A row that wins
          nothing reported `turns 0`, which reads as "instant" when it means "no
@@ -97,11 +103,12 @@ const med = (a) => {
       timeouts: rows.filter(r => r.timeout).length,
     };
     R.table.push(row);
-    say(`${size}p  ${String(row.n).padStart(4)}  ${row.win.toFixed(1).padStart(5)}  `
+    say(`${String(SCALE).padEnd(6)} ${size}p  ${String(row.n).padStart(4)}  ${row.win.toFixed(1).padStart(5)}  `
       + `${row.turnsMean.toFixed(1).padStart(6)} ${String(row.turnsMed).padStart(4)}  `
       + `${row.left.toFixed(1).padStart(6)}  ${row.fallen.toFixed(2).padStart(6)}  `
       + `${row.spread.toFixed(2).padStart(7)}  ${String(row.enemyHp).padStart(7)}  `
       + `${row.cost.toFixed(1).padStart(5)}  ${String(row.errs).padStart(4)}`);
+  }
   }
 
   say('');
@@ -110,7 +117,7 @@ const med = (a) => {
     say('vs solo — a FLAT line is the target. Rising left% means friends still buy');
     say('safety the Courage curve is not charging for.');
     for (const r of R.table) {
-      say(`  ${r.size}p: win ${(r.win - solo.win >= 0 ? '+' : '')}${(r.win - solo.win).toFixed(0)} pts · `
+      say(`  x${r.scale} ${r.size}p: win ${(r.win - solo.win >= 0 ? '+' : '')}${(r.win - solo.win).toFixed(0)} pts · `
         + `left ${(r.left - solo.left >= 0 ? '+' : '')}${(r.left - solo.left).toFixed(0)} pts · `
         + `turns ${(r.turnsMean - solo.turnsMean >= 0 ? '+' : '')}${(r.turnsMean - solo.turnsMean).toFixed(1)} · `
         + `spread ${r.spread.toFixed(2)}`);

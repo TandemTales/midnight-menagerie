@@ -1,0 +1,88 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>audio — can a hover storm still break a cue?</title>
+<body><pre id="out" style="font:12px ui-monospace,monospace">running…</pre></body>
+<script type="module">
+/**
+ * Does the ui:hover cue still throw under main-thread pressure?
+ *
+ * The recorded failure was
+ *   setTargetAtTime(0, 0.646, 0.02) overlaps setValueCurveAtTime(…, 0.6213, 0.03)
+ * inside fmBell, intermittent on rapid hover, tripping the zero-console-errors
+ * assertion in the co-op screen suites.
+ *
+ * `SfxEngine.play` reads `ac.currentTime` ONCE and schedules everything at
+ * `now + 0.02`. `ac.currentTime` is the audio clock and keeps advancing while
+ * JavaScript runs, so a frame heavy enough to spend more than that 20 ms
+ * between the read and the automation calls leaves `t` in the past — Chrome
+ * then clamps the value curve forward to the next render block while a later
+ * event computed from the unclamped `t` lands inside it, and throws.
+ *
+ * So: fire the cue with the main thread deliberately busy, and count.
+ */
+import { CUES, SfxEngine } from '../../game/src/audio/sfx.js';
+import { createMasterBus } from '../../game/src/audio/dsp.js';
+
+const out = document.getElementById('out');
+const lines = [];
+const say = (s) => { lines.push(s); out.textContent = lines.join('\n'); };
+
+const errors = [];
+const realError = console.error.bind(console);
+console.error = (...a) => { errors.push(a.map(String).join(' ')); realError(...a); };
+
+/** Burn the main thread for `ms`, so the audio clock runs past the 20 ms lead. */
+function stall(ms) {
+  const end = performance.now() + ms;
+  while (performance.now() < end) { /* deliberately blocking */ }
+}
+
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+(async () => {
+  const ac = new (window.AudioContext || window.webkitAudioContext)();
+  await ac.resume().catch(() => {});
+  const mixer = createMasterBus(ac);
+  const eng = new SfxEngine(ac, mixer.sfxIn, { seed: 7, deterministic: false });
+  eng.muted = true;                       // silent; the scheduling is the subject
+
+  const ROUNDS = +(new URLSearchParams(location.search).get('n') || 240);
+  const STALL = +(new URLSearchParams(location.search).get('stall') || 45);
+  say(`ui:hover x${ROUNDS}, ${STALL} ms of blocked main thread inside the lead`);
+  say(`sampleRate ${ac.sampleRate} · render quantum ${(128 / ac.sampleRate * 1000).toFixed(2)} ms`);
+  say('');
+
+  let played = 0;
+  for (let i = 0; i < ROUNDS; i++) {
+    // minGap on ui:hover is 40 ms, so the cue is throttled below that.
+    await sleep(42);
+    // Stall INSIDE the frame that plays, so `now` is stale by the time the
+    // cue's own automation runs. Every third round is clean, for contrast.
+    if (i % 3 !== 0) {
+      const before = ac.currentTime;
+      stall(STALL);
+      if (i === 1) say(`  a ${STALL} ms stall moved the audio clock `
+        + `${((ac.currentTime - before) * 1000).toFixed(1)} ms — it does not wait for JS`);
+    }
+    if (eng.play('ui:hover', {})) played++;
+  }
+
+  say('');
+  say(`played ${played} of ${ROUNDS}`);
+  say(`cue build failures: ${errors.filter(e => /cue build failed/.test(e)).length}`);
+  say(`console errors total: ${errors.length}`);
+  for (const e of errors.slice(0, 5)) say('  ! ' + e.slice(0, 220));
+  window.__STORM__ = {
+    played, rounds: ROUNDS,
+    failures: errors.filter(e => /cue build failed/.test(e)).length,
+    errors: errors.slice(0, 8),
+  };
+  say('');
+  say('DONE');
+})().catch(err => {
+  say('CRASHED: ' + (err && err.stack || err));
+  window.__STORM__ = { error: String(err) };
+});
+</script>
+</body>
+</html>
