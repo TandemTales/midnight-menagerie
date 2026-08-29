@@ -27,6 +27,45 @@ change him.
 
 ### Where it stands, 2026-08-29 (second session)
 
+**Read this list first; the detail is underneath.** Nine defects, four of them
+in instruments this project was making decisions from, and every fix has a
+control that was verified to FAIL without it.
+
+| what was wrong | where |
+|---|---|
+| The 44-turn elite grind, and "party output does not scale" — both were the BOT | `lib/bot.js`, CONTRACTS 47 |
+| `tests/net/run.py` had exited 1 since the day it was written, printing "128 passed" | `tests/net/run.py` |
+| A last Kid standing took the Porcelain Doll's swing TWICE and was shown HALF | `combat/engine.js`, CONTRACTS 48 |
+| Every Kid but the host opened the HOST'S draw pile | `scenes/combat.js` |
+| No Wink Set had ever fired; every Read always resolved WRONG | `companions/wink.js` |
+| Three Kids in four crossed into the Nursery unhealed | `state/run.js` |
+| Every Gummy Taffy made was unmarked, and she had no suite | `companions/taffy.js`, `tests/taffy/` |
+| The Twins' Joined and the Horse's Excitement were dead FOUR ways at once | `combat/engine.js`, CONTRACTS 50 |
+| After every resume, no card in hand had a replay key | `state/run.js` |
+
+Instruments repaired: the bot's `turnsLeft` (47), `balance.html`'s missing
+`fc` (49), the ledger's `left%` — quantised to tens AND wins-only (51) — and
+`tests/seams/check.py`, which had been checking four of its five APIs against
+an empty set (5c). New gates: `tests/critic-design/party-turns.py`,
+`tests/bus-names/check.py`. New suite: `tests/taffy/`.
+
+**WHAT IS OPEN, in the order I would take it:**
+
+1. **The map never reaches `net/actions.js`.** It writes the shared route
+   straight onto the Run — the one screen that decides where the whole party
+   goes. Harmless until a transport exists; a desync the moment one does.
+   HANDOFF's "EVERY SCREEN IS ON THE WIRE" is wrong about the map.
+2. **Party cost is still 15–30 points from solo.** Every encounter now beats
+   the arithmetic baseline, but that baseline is "a contentless enemy", not
+   parity. Closing it needs MOST of a fight's damage to pierce.
+3. **fps and the entry stall need a quiet machine.** Three claims in this
+   document do not reproduce here today.
+4. **Six advisory dead bus names in the HUD's EVENTS list** —
+   `tests/bus-names/check.py` reports them and does not gate them.
+5. Steam P2P (designer, ends the no-build rule) and Crinkle's chapter
+   (designer review). Both unchanged.
+
+
 - **THE 44-TURN ELITE GRIND WAS THE BOT.** So was "party damage output does not
   scale with party size the way the Courage pool does", which this file, two
   session notes and the Butler's own source comment all recorded as a STRUCTURAL
