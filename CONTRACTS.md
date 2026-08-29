@@ -300,6 +300,21 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    harnesses disagreeing. If you are comparing two instruments, the node id is
    part of the experiment.
 
+35. **A perf baseline measured once, at the start, is not a baseline.** fps on
+   this machine keeps drifting for several seconds past the nominal settle. In
+   a CSS A/B on the combat screen the FIRST baseline read **52** and the SAME
+   baseline, re-measured four cases later, read **56** — so every variant in
+   between looked 4 fps better than it was, and `box-shadow` appeared to be
+   worth 4 fps when it is worth about one. Re-measure the baseline at the END
+   of the sweep and compare like with like. Trap 7 is the same lesson about
+   overlapping runs; this is the version that bites a single run.
+
+   The rest of that measurement is worth keeping too: the 3D scene graph is
+   **identical** in title, map and combat (14 drawables, 26 programs, 3 composer
+   passes — it is a shared backdrop), and hiding one layer at a time gives DOM
+   60 / canvas 57 / both 53. The missing frames are DOM compositing, spread
+   across 739 elements, with no single property worth more than about one.
+
 15. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
    now reported their in-flight work being swallowed by an unrelated commit — one had a whole
    `music.js` rewrite land inside a commit titled "Pronouns per the designer", which then made a

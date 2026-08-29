@@ -297,9 +297,52 @@ SCENE GRAPHS: draw calls and GL state changes, on an ANGLE/D3D11 Intel UHD stack
 this project has already caught being pathological about program switching
 (§8 of the round-6 note, `getProgramInfoLog` at 400-750 ms per program).
 
-That is where a graphics round should start, and it is not a guess I should make
-from here. What is now excluded, with numbers: JS per-frame cost, resolution,
-the post chain, the quality tiers, and the machine.
+### It is not the scene graph either — it is the DOM
+
+The obvious next suspect was the 3D scene, and it is innocent. `renderer.info`
+and a `scene.traverse` read **identical** in title, map and combat: 14
+drawables, 14 materials, 26-27 programs, 3 composer passes. The 3D stage is a
+shared backdrop; everything that makes combat *combat* — cards, enemies, the
+HUD, the rails — is DOM.
+
+So hide one layer at a time:
+
+| combat @1920x1080 | median |
+|---|---|
+| both layers | 53 |
+| DOM layer hidden (canvas only) | **60** |
+| canvas hidden (DOM only) | 57 |
+
+**The DOM costs about 9 fps and the canvas about 3.** That is where the missing
+frames are.
+
+And there is no single culprit in it. The combat screen carries 739 elements,
+66 with a `box-shadow`, 56 with `will-change`, 43 with a `filter` (5 of them a
+blur), 3 with `backdrop-filter`. Disabling each in turn, nine samples a case:
+
+```
+  baseline again              56      (the honest anchor — see below)
+  no box-shadow               56
+  no will-change              56
+  box-shadow + will-change    57
+```
+
+**About one frame between them.** The cost is the aggregate of a richly styled
+739-element tree being composited at 1920x1080, not one expensive property. So
+the fix is a compositing pass — fewer elements, fewer promoted layers — and
+that is a design-affecting piece of work, not a line to change.
+
+> **A trap worth writing down.** The FIRST baseline in that run read **52** and
+> the SAME baseline, re-measured four cases later, read **56**. Every "win"
+> measured against the early baseline was mostly the page still settling, and at
+> face value box-shadow looked worth 4 fps when it is worth about one. fps on
+> this machine drifts for several seconds past the nominal settle, so a perf A/B
+> has to re-measure its baseline at the END and compare like with like. This is
+> CONTRACTS trap 7 wearing a different hat.
+
+What is now excluded, with numbers: JS per-frame cost, resolution, the post
+chain, the quality tiers, the 3D scene graph, any single CSS property, and the
+machine. What is left is the DOM's aggregate compositing cost.
 
 ### The card-art stall, handed over with its dead ends closed
 
