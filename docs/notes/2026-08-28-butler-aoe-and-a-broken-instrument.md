@@ -77,7 +77,7 @@ handed.
 | 4p | 100% | 8.2 | 83% | 0.00 |
 
 Stable at a second seed (58 / 76 / 78 / 83% Courage left). Against the
-79 / 75 / 96 / 96% the broken harness reported. **The Foyer standard tier is a
+79 / 75 / 96 / 96% the broken harness reported. **The Foyer standard tier is
 never in danger at any party size**, and `[1, 2.2, 4.0, 5.7]` was tuned to a
 game hitting twice as often as the real one.
 
@@ -152,10 +152,10 @@ precedent (Red Carpet Runner's Run the Hall) and his own tells:
 
 | move | change | why |
 |---|---|---|
-| Dust Them Off 5×2 | `partyTarget: 'all'` | he tidies EVERY guest; per-Kid damage unchanged |
+| Dust Them Off 5×2 | `partyTarget: 'all'`, **3×2 each in a party** | he tidies EVERY guest. The first pass dealt the full 5×2 to everybody and broke the fight — see §8 |
 | Enough of This 15 | `splashFn` 6 | a shout is aimed at one and heard by all — and DECLARED, so the seats with no arrow are told |
 | Remove the Intruder 7×3 | `partyPick: 'highestCourage'` | stays single-target on purpose; picks the healthiest rather than executing the weakest |
-| Walking Stick 10 | `partyPick: 'lowestGuard'` | the Kid who is not braced |
+| Walking Stick 10 | `partyPick: 'lowestGuard'` | the Kid who is not braced — and the arrow TRACKS that, see §9 |
 
 One AoE per phase and one move that is genuinely one Kid's problem.
 
@@ -171,6 +171,13 @@ from foyer §17 and §18, recorded in the def:
   is also the more faithful reading of the name.
 
 ## 4. Measured
+
+> **Read §10 before trusting any party number in this section.** Two further
+> co-op defects were found after these were taken — the bot believed the whole
+> board was swinging at every seat, and a `partyPick` moved when the player
+> reacted to it. Both A/B sides carried the first one, so the DIRECTION of every
+> delta below holds; the LEVELS do not, and the "0% at 3p/4p" figure in
+> particular is pessimistic.
 
 Party A/B, same loadouts and seeds, matched metrics, n=10 a size:
 
@@ -399,55 +406,144 @@ Also found: `preloadArt()` is a dead stub — it resolves immediately and warms
 nothing, and nothing in the build calls it. Documented as such rather than
 removed, since it is in the default export.
 
-## 8. The party curve, swept — and why one number cannot fix it
+## 8. The party curve — swept, and resolved on the BUTLER, not globally
+
+> The sweep below was taken before the two defects in §9 were found, so its
+> levels are wrong. It is kept because its SHAPE is the finding, and because the
+> conclusion it led to — that no single global number works — is still the right
+> one, for a better reason than the one I first gave.
 
 `party-boss.py --sizes 1,4 --scales 1,0.7,0.55,0.45`, n=8 a cell, one set of
-captured loadouts across all four scales. The anchor is **solo at the shipped
-pool**: 50% win, 13.4 turns, 27% Courage left.
+captured loadouts across all four scales. Anchor: solo at the shipped pool.
 
-| xHP | effective 4p mult | win% | turns | med | left% | falls | spread |
-|---|---|---|---|---|---|---|---|
-| 1 | 5.70 | 0 | 49.5 | 50 | — | 4.0 | 0.89 |
-| 0.7 | **3.99** | **50** | 42.0 | 49 | 32 | 2.0 | 0.78 |
-| 0.55 | 3.14 | 87.5 | 29.4 | 31 | 42 | 0.5 | 0.68 |
-| 0.45 | 2.57 | 87.5 | 18.6 | 16 | 66 | 0.5 | 0.51 |
+| xHP | effective 4p mult | win% | turns | falls |
+|---|---|---|---|---|
+| 1 | 5.70 | 0 | 49.5 | 4.0 |
+| 0.7 | 3.99 | 50 | 42.0 | 2.0 |
+| 0.55 | 3.14 | 87.5 | 29.4 | 0.5 |
+| 0.45 | 2.57 | 87.5 | 18.6 | 0.5 |
 
-**There is a multiplier that matches the win rate: 4.0, not 5.7.** And it does
-not fix the fight, because at 4.0 the boss still takes **42 turns** against
-solo's 13.4. Matching the length instead would need roughly 2.2, where four
-Kids win 88% and walk out with two thirds of their Courage.
+A multiplier that matches the win rate exists (about 4.0) and it leaves a
+42-turn fight; one that matches the length makes the party win 88%. That is a
+cliff, not a curve, and the reason is a death spiral: more Courage, more turns,
+more AoE landing, more Kids down, less output, more turns.
 
-So the curve is not one number away from right, and shipping 4.0 would trade one
-wrong number for another while hiding the reason. The reason is a **death
-spiral driven by length**:
+### Where the global constant actually came from
 
-- Four Kids at the shipped pool deal about **20 damage a turn between them**
-  against a single Kid's 15. Four times the bodies, 1.3x the output.
-- `falls` runs 4.0 / 2.0 / 0.5 / 0.5 down that table. In the long fights half
-  the party is down for most of it, and a fallen Kid contributes nothing.
-- The Butler's own Guard is per TURN — Formal Welcome 12, Collect Himself 6,
-  Restore Order 14, This Is Most Irregular 16 — so a fight that runs three times
-  as long hands him roughly three times the Guard to absorb with. A bigger pool
-  therefore costs **super-linearly**, not linearly.
+`PARTY_HP_SCALE = [1, 2.2, 4.0, 5.7]`, and **every one of those numbers came
+from `tests/coop/balance.py`, which fights the STANDARD TIER.** It was then
+applied to every enemy in the game. Bosses were never measured at any party size
+until this round, and when they were, the Foyer boss read 0% at three and four
+Kids. A scuffle runs five turns and this fight runs forty, and the Butler's
+Guard is per TURN — Formal Welcome 12, Collect Himself 6, This Is Most Irregular
+16, Restore Order 14 — so a longer fight hands him proportionally more of it.
+The same multiplier does not mean the same thing to a five-turn room and a
+forty-turn one.
 
-Each of those feeds the next: more Courage, more turns, more AoE landing, more
-Kids down, less output, more turns.
+### So the fix went on the Butler, via the seam that already existed
 
-**Not changed, deliberately.** `PARTY_HP_SCALE` governs every enemy in the game
-and this is one tier at one party size at n=8. The standard tier says something
-different again — win% is already FLAT at 100% across all four sizes, so there
-the curve is doing its job on win rate and only the leftover-Courage gap
-(61% solo → 83% at 4p) is open. A single constant is being asked to serve a
-5-turn Scuffle and a 40-turn boss, and the measurement says it cannot. That is a
-designer's call about SHAPE, not a number to nudge, and it wants the recommended
-4.0 checked at 2p and 3p and against the standard tier before anything ships.
+`EnemyDef.partyHp(n)` replaces the global curve for one enemy. `favoriteDoll`
+was its only user — the Doll is a timer, not a health bar, so scaling it like an
+enemy would make the window the party is opening arrive LATER with more Kids.
+(Worth being precise: that is a precedent for the SEAM, not for boss curves.)
 
-## 9. What is open
+Measured with the AoE tuned and both §9 defects fixed, against a solo anchor of
+50% at 13.3 turns:
 
-1. **The party Courage curve.** §8: 4.0 matches the win rate at four Kids, no
-   multiplier matches the length, and the constant is shared with every other
-   enemy. Recommend deriving it per tier, or shortening long fights by capping
-   what a boss's per-turn Guard can absorb.
-2. **The Butler's solo length is the Courage pool.** The sweep on record puts
-   him in the 8-12 turn band at 0.65x. Off the table by decision.
-3. **fps**, per §7.
+```
+  2p   2.20 -> 50%      1.32 -> 100%
+  3p   4.00 ->  0%      2.40 ->  67%
+  4p   5.70 ->  0%      3.42 ->  33%
+```
+
+2p is already right where the global curve puts it, so it stays there. 3p and 4p
+come down to the parity points between the bracketing pairs:
+**`partyHp: [1, 2.2, 2.8, 3.2]`**, and at n=8:
+
+| party | win% | turns | Courage left | falls | his Courage |
+|---|---|---|---|---|---|
+| 1p | 50 | 13.4 | 27% | 0.5 | 165 |
+| 2p | 25 | 24.0 | 59% | 1.5 | 363 |
+| 3p | 75 | 24.5 | 38% | 0.75 | 462 |
+| 4p | **50** | 31.9 | 50% | 2.0 | 528 |
+
+**Three and four Kids went from 0% to 75% and 50%.** The fight is winnable at
+every party size for the first time it has been measured. The 25-75 spread is
+about the noise band at n=8 (±17 points), centred on solo's 50.
+
+This is also what the chapter asks for: *"I would avoid simply multiplying every
+enemy's Courage. The cooperative version should change tactical relationships"*
+(§26), with targeting as the compensation. The targeting is built now, so the
+Courage can stop standing in for it.
+
+**What is still wrong, plainly.** The fight is LONG at three and four Kids —
+24.5 and 31.9 turns against solo's 13.4 — and the leftover-Courage gap is not
+closed (27% solo, 50% at 4p). Party damage output does not scale with party size
+the way the Courage pool does, and no multiplier fixes that; it is the same
+structural point as the cliff above. The global `[1, 2.2, 4.0, 5.7]` is also
+still unvalidated for the other two bosses, which have not been measured at any
+party size.
+
+## 9. Two more co-op defects, found by chasing the 0%
+
+The boss reading 0% at three and four Kids looked like the Courage curve. It was
+not. Both of these made a PARTY worse at defending itself than a single Kid, and
+they hid each other.
+
+### The bot thought the whole board was swinging at every seat
+
+`lib/bot.js shownIncoming()` summed `intent.totalDamage` across every living
+enemy and handed the same number to every Kid. It took a `seat` argument and
+ignored it, which is exactly why it survived three earlier passes over that
+file — the signature looked already-ported. So each Kid budgeted for the whole
+board's swing and spent on Guard what it should have spent on damage.
+
+The cost, with the party INTACT (0.67 falls a fight) at four Kids: the four of
+them dealt about **20 damage a turn between them, against a solo Kid's 14**.
+Each Kid a third as effective as they are alone. That is why party boss fights
+ran three times as long as solo ones — and length is what makes AoE lethal, so
+it sits upstream of the entire "co-op boss is unwinnable" problem.
+
+`previewIncoming()` is the engine's own per-seat answer, already handling AoE,
+splash and aiming, and **its own comment describes this exact bug being fixed in
+the SCENE** while the bot went on doing it. Solo is byte-identical either way
+(`intent.totalDamage` IS `damage × hits`), which is the check that says the
+substitution is sound rather than merely different.
+
+### A `partyPick` moved when the player reacted to it
+
+`pickSeat` reads live board state, and `intentTargetFor` re-derived it on every
+intent refresh. Walking Stick prefers `lowestGuard`: the Kid it points at raises
+Guard, stops being lowest, and the swing **silently transfers to their friend**.
+Every seat then reads "not aimed at me", nobody blocks, and it lands on whoever
+ended lowest.
+
+CONTRACTS already forbade this in as many words — *the target is shown before
+the players act and has to survive a replay* — so it is a violation of an
+existing rule rather than a new class. The pick is now held on
+`enemy._pickMark`, keyed by turn AND move id, so a new move next turn picks
+afresh and a mark on a Kid who has fallen falls through.
+
+**It only became visible once the first bug was fixed.** With every Kid blocking
+for the whole board, everyone was braced, so it never mattered who the arrow was
+on. Fixing the bot's threat model took four Kids at 0.6x from 83% to 33%, and
+that collapse is what exposed it.
+
+Two new assertions in `tests/butler/run.py`, both verified to fail without the
+engine fix — the arrow jumps to seat 2.
+
+## 10. What is open
+
+1. **The other two bosses have never been measured at any party size.** The
+   Governess and the Bedframe Beast are still on the global curve that read 0%
+   for the Butler. `party-boss.py --region nursery` is the instrument.
+2. **Party fights are still long** — 24 and 32 turns at three and four Kids
+   against solo's 13 — because party output does not scale with the pool. No
+   multiplier fixes that, and it wants a look at what a boss's per-turn Guard is
+   allowed to absorb.
+3. **`partyPick` tracks the board and cannot also stay still.** §9. Anything
+   telegraphed a turn ahead probably wants a preference the player cannot game
+   inside the turn.
+4. **fps**, per §7: the DOM's aggregate compositing cost, no single culprit.
+5. **The cold card-art stall**, per §7: a feel decision that belongs to
+   card-feel.

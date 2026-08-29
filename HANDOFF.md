@@ -31,14 +31,30 @@ change him.
   warnings, each with its own effect-asserting suite. Crinkle's design chapter is a
   reconstruction and is **awaiting the designer's review** — see §1 above.
 - **A party of four plays end to end on one machine.** `MAX_PARTY` is 4.
-- **The co-op Courage curve is NOT trustworthy, and one number will not fix
-  it.** Swept at four Kids: **4.0 matches the win rate** where the shipped 5.7
-  gives 0%, but even at 4.0 the boss runs **42 turns** against solo's 13, and
-  no multiplier matches both. It is a death spiral driven by length — four Kids
-  deal 1.3x one Kid's damage per turn, half the party is down in the long
-  fights, and the boss's Guard is per TURN so a bigger pool costs
-  super-linearly. Left unchanged on purpose: the constant governs every enemy,
-  and the standard tier's win% is already flat. Note §8.
+- **THE FOYER BOSS IS WINNABLE IN CO-OP AGAIN — it was not.** Measured
+  properly for the first time, the Butler read **0% at three and four Kids**:
+  not hard, unwinnable. Three things were wrong and each hid the next.
+  `PARTY_HP_SCALE` was derived from `tests/coop/balance.py`, which fights the
+  STANDARD TIER, then applied to bosses that were never measured at any party
+  size; the AoE dealt each move's full SOLO number to every Kid; and the bot
+  gave every seat the whole board's incoming. Now, at n=8:
+
+  | party | win% | turns | Courage left | falls |
+  |---|---|---|---|---|
+  | 1p | 50 | 13.4 | 27% | 0.5 |
+  | 2p | 25 | 24.0 | 59% | 1.5 |
+  | 3p | 75 | 24.5 | 38% | 0.75 |
+  | 4p | 50 | 31.9 | 50% | 2.0 |
+
+  The fix is on the BUTLER, not the global constant: `partyHp: [1, 2.2, 2.8,
+  3.2]` via `EnemyDef.partyHp`, the per-enemy seam. The global curve still
+  governs scuffles, whose win% is already flat and correct.
+- **The other two bosses have never been measured at any party size**, and they
+  are on the same global curve that read 0% for the Butler.
+  `tests/critic-design/party-boss.py --region nursery` is the instrument.
+- **Party boss fights are still LONG** — 24 and 32 turns at three and four Kids
+  against solo's 13 — because party output does not scale with the pool the way
+  its Courage does. No multiplier fixes that. Note §8.
 - **The curve's original numbers were measured wrongly.**
   `[1, 2.2, 4.0, 5.7]` was measured against a harness with three defects, all
   fixed on 2026-08-28: `tests/coop/balance.html` ran **two enemy phases every

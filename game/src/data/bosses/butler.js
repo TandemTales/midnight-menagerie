@@ -206,6 +206,44 @@ export const butler = {
   scale: 1.5,
   lore: 'One of the oldest extensions of the house. His job is to decide who belongs inside, and his definition of hospitality has quietly become permanent.',
 
+  /**
+   * HIS OWN party curve, because the global one was never measured on a boss.
+   *
+   * `PARTY_HP_SCALE` is `[1, 2.2, 4.0, 5.7]` and every one of those numbers came
+   * from `tests/coop/balance.py`, which fights the STANDARD TIER. It was then
+   * applied to every enemy in the game. Bosses were never measured at any party
+   * size until 2026-08-28, and when they were, this fight read **0% at three
+   * and four Kids** — not hard, unwinnable.
+   *
+   * A scuffle runs five turns and this fight runs forty, and his Guard is per
+   * TURN (Formal Welcome 12, Collect Himself 6, This Is Most Irregular 16,
+   * Restore Order 14), so a longer fight hands him proportionally more of it.
+   * The same multiplier does not mean the same thing to a five-turn room and a
+   * forty-turn one, which is why `EnemyDef.partyHp` exists.
+   *
+   * Measured, with the AoE in and both co-op harness defects fixed, against a
+   * solo anchor of 50% at 13.3 turns:
+   *
+   *     2p   2.20 -> 50%      1.32 -> 100%
+   *     3p   4.00 ->  0%      2.40 ->  67%
+   *     4p   5.70 ->  0%      3.42 ->  33%
+   *
+   * So 2p is already right and is left exactly where the global curve puts it;
+   * 3p and 4p come down to the parity points between the bracketing pairs.
+   *
+   * This is also what the chapter asks for — "I would avoid simply multiplying
+   * every enemy's Courage. The cooperative version should change tactical
+   * relationships" (§26), with a 160/210/255% baseline and targeting as the
+   * compensation. The targeting is now built, so the Courage can stop standing
+   * in for it.
+   *
+   * STILL WRONG, and honestly: the fight is LONG at three and four Kids (~25
+   * and ~40 turns against solo's 13) because party damage output does not scale
+   * with party size the way the Courage pool does. That is a structural problem
+   * this constant cannot fix — see the note, §8.
+   */
+  partyHp: (n) => [1, 2.2, 2.8, 3.2][Math.min(n, 4) - 1] ?? 1,
+
   phases: 2,
   phaseThresholds: [PHASE2_AT],
 
