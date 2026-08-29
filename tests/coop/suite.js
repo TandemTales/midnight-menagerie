@@ -882,8 +882,10 @@ export async function run() {
    * (trap 46), and CONTRACTS 45 is explicit that the player must be TOLD.
    */
   const pierceCases = [
-    { enemy: 'patchwork-giant', move: 'stuffed-fist', label: 'the Giant Stuffed Fist' },
-    { enemy: 'toy-chest',       move: 'lid-slam',     label: 'the Toy Chest Lid Slam' },
+    { enemy: 'patchwork-giant',    move: 'stuffed-fist',      label: 'the Giant Stuffed Fist' },
+    { enemy: 'toy-chest',          move: 'lid-slam',          label: 'the Toy Chest Lid Slam' },
+    { enemy: 'grand-coatcheck',    move: 'everything-at-once', label: 'Everything at Once' },
+    { enemy: 'porcelain-twin-prim', move: 'pointed-finger',    label: 'Prim Pointed Finger' },
   ];
   for (const pc of pierceCases) {
     await atest(`pierce: ${pc.label} goes through a party Guard`, async () => {

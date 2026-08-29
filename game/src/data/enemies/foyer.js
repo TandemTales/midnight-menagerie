@@ -605,12 +605,25 @@ export const grandCoatcheck = {
     'umbrella-sweep': {
       // BALANCE 2026-08-20: 11 -> 13.
       id: 'umbrella-sweep', name: 'Umbrella Sweep', intent: Intent.ATTACK, damage: 13, hits: 1,
+      /**
+       * MULTIPLAYER. §27 gives the Coatcheck the per-player Snag threshold and
+       * nothing else, so its targeting is unauthored — and it had none at all,
+       * which measured at **-5.7 points against the arithmetic baseline** for
+       * four Kids: worse than having no multiplayer logic, because it held one
+       * Kid while three hit it freely (trap 38).
+       *
+       * "A dozen umbrellas open at once and swing in a single wide arc" is not
+       * a move that picks a Kid. The number does not move — §26's default for
+       * this region is "damage values normally remain unchanged".
+       */
+      partyTarget: 'all',
       tell: 'A dozen umbrellas open at once and swing in a single wide arc.',
       damageFn: (c) => 13 + grandCoatcheck.eveningBonus(c),
       effect(c) { hitPlayer(c, 13 + grandCoatcheck.eveningBonus(c)); },
     },
     'hanger-flurry': {
       id: 'hanger-flurry', name: 'Hanger Flurry', intent: Intent.ATTACK, damage: 4, hits: 3,
+      partyPick: 'lowestCourage',
       tell: 'Wire hangers come off the rail in a stinging, chattering wave.',
       damageFn: (c) => 4 + grandCoatcheck.eveningBonus(c),
       hitsFn: () => 3,
@@ -621,10 +634,19 @@ export const grandCoatcheck = {
       // than a turn of Guard or the whole "accept the Garment or spend 18 to
       // Snag it" decision never has to be made.
       id: 'everything-at-once', name: 'Everything at Once', intent: Intent.ATTACK_BIG, damage: 17, hits: 1,
+      /**
+       * The one blow a party's Guard cannot answer. Coverage ADDS damage that
+       * four Kids then block; only pierce is kept (CONTRACTS 45). `lowestCourage`
+       * and not `lowestGuard` — §26 gives the Dust Bunny the Guard preference,
+       * but this is the telegraphed big hit, and a preference computed from
+       * state the player controls cannot both track it and stay still.
+       */
+      partyPick: 'lowestCourage',
+      pierceFn: (c) => c.partySize() > 1,
       tell: 'Coats, hats, scarves and cases all lean toward you together.',
       damageFn: (c) => 17 + grandCoatcheck.eveningBonus(c),
       effect(c) {
-        hitPlayer(c, 17 + grandCoatcheck.eveningBonus(c));
+        hitPlayer(c, 17 + grandCoatcheck.eveningBonus(c), 1, { pierce: c.partySize() > 1 });
         grandCoatcheck.changeGarment(c);
       },
     },

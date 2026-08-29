@@ -179,8 +179,9 @@ change him.
   cost 61.6 → 21.6 — a third of the bill from `pierceFn`.
 
 - **A PICK SPREADS DAMAGE, AoE ADDS DAMAGE A PARTY THEN BLOCKS, AND ONLY
-  PIERCE IS KEPT.** Run one rung at a time on two encounters, solo
-  byte-identical at every step:
+  PIERCE IS KEPT — and every measured encounter is now at or above the
+  arithmetic baseline.** The ladder, run one rung at a time on two encounters
+  before the recipe was applied to the rest:
 
   | | Toy Chest | Patchwork Giant |
   |---|---|---|
@@ -192,29 +193,34 @@ change him.
   Coverage bought 1.3 and 7.9 points and reached the baseline on neither.
   Pierce bought 4.7 and 9.5 and flipped the sign on both. `%blocked` says why:
   the Chest's AoE took `aimed` at four Kids from 53.8 to 96.1 and `%blocked`
-  from 70.4 to 78.8 — the party simply blocked the addition. All shipped.
+  from 70.4 to 78.8 — the party simply blocked the addition.
 
-  **Where every measured encounter now sits:**
+  **Every measured encounter, before and after. Solo is byte-identical in all
+  of them:**
 
-  | encounter | before | after |
-  |---|---|---|
-  | Patchwork Giant | −9.9 | **+7.5** |
-  | Governess | +5.3 | +5.3 |
-  | Toy Chest | −3.9 | **+2.1** |
-  | Butler | +0.3 | +0.3 |
-  | Foyer elite tier | −0.8 | −0.8 |
-  | **Porcelain Twins** | −3.6 | **−4.5** |
+  | encounter | before | after | what it got |
+  |---|---|---|---|
+  | Grand Coatcheck | -5.7 | **+8.3** | sweep AoE, pick, pierce on Everything at Once |
+  | Patchwork Giant | -9.9 | **+7.5** | pick, flail AoE, pierce on Stuffed Fist |
+  | Governess | +5.3 | **+5.3** | already had pierce |
+  | Porcelain Twins | -3.6 | **+3.4** | pick, pierce on Pointed Finger |
+  | Toy Chest | -3.9 | **+2.1** | pick, barrage AoE, pierce on Lid Slam |
+  | Foyer elite tier | -0.8 | **+1.2** | the Coatcheck, in aggregate |
+  | Butler | +0.3 | **+0.3** | AoE and splash, no pierce |
 
-  **The Twins are the only encounter left clearly below the baseline.** Proper
-  deals no damage by design and Prim's attacks are flavoured precise and
-  single-target, so neither wants to be a sweep; the pick added to Prim moved
-  them −3.6 → −4.5, which is noise at n=12 and is recorded as a null result.
-  The honest options are pierce on one of Prim's attacks or something
-  offensive for Proper. Read §14 first — it is authored as a puzzle.
+  4p win rate is still 100% everywhere — the party always wins, it just PAYS
+  now, which was the goal. `left%` at four Kids went 90 → 76 on the Coatcheck,
+  93.7 → 76.3 on the Giant, 93.7 → 86.7 on the Twins.
 
   Also fixed on the way, and the reason the first pierce attempt did nothing:
   `hitPlayer(c, n, hits)` took no options, so a fourth argument was dropped in
   SILENCE — the same shape as the enemy ctx's `block`. It forwards `opts` now.
+
+  **The Butler is the only fight left without a Guard-ignoring move** (his
+  Reprimand pierces for 5–7 on a House Rule violation and nothing else does).
+  He reads +0.3, which is par rather than bad, and foyer §28's Flustered and
+  House Rule content is fully implemented — so he is a judgement call, not a
+  defect.
 
 ### Where it stands, 2026-08-29
 

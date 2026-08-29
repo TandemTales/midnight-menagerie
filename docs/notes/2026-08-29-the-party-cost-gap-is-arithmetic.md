@@ -113,27 +113,40 @@ the Chest and the Giant.
 
 ## 3b. Where every measured encounter now sits
 
+The ladder in §2b was run one rung at a time on two encounters; the recipe was
+then applied to the rest and measured. **Solo is byte-identical in all of them.**
+
 | encounter | before | after | what it got |
 |---|---|---|---|
-| Patchwork Giant | −9.9 | **+7.5** | pick, full-number AoE, pierce |
-| Governess | +5.3 | +5.3 | (already had pierce) |
-| Toy Chest | −3.9 | **+2.1** | pick, full-number AoE, pierce |
+| Grand Coatcheck | −5.7 | **+8.3** | sweep AoE, pick, pierce on Everything at Once |
+| Patchwork Giant | −9.9 | **+7.5** | pick, flail AoE, pierce on Stuffed Fist |
+| Governess | +5.3 | +5.3 | already had pierce |
+| Porcelain Twins | −3.6 | **+3.4** | pick, pierce on Pointed Finger |
+| Toy Chest | −3.9 | **+2.1** | pick, barrage AoE, pierce on Lid Slam |
+| Foyer elite tier | −0.8 | **+1.2** | the Coatcheck, in aggregate |
 | Butler | +0.3 | +0.3 | AoE and splash, no pierce |
-| Foyer elite tier | −0.8 | −0.8 | untouched |
-| **Porcelain Twins** | −3.6 | **−4.5** | a pick that bought nothing |
 
-**The Twins are the one encounter left that is clearly below the baseline**, and
-they are the interesting case: Proper deals NO damage by design ("Proper
-specializes in protection", §14), and Prim's two attacks are flavoured as
-precise and single-target — "Prim points at you", "two small, extremely precise
-slaps" — so neither wants to become a sweep. Adding a pick moved them −3.6 →
-−4.5, which is noise at n=12 and is recorded as a null result rather than
-dressed up as a win. Whoever takes them next should read §14 before reaching for
-a number: the encounter is authored as a puzzle, its `teaches` line is "effect
-transfer", and the honest options are pierce on one of Prim's attacks or giving
-Proper something offensive that Guard cannot answer.
+The Grand Coatcheck is worth calling out: the Foyer elite tier's aggregate of
+−0.8 was hiding it at −5.7, because the House Bell and the Unwelcome Guest —
+both of which implement their §27 multiplayer content in full — were carrying
+it. **An aggregate over a tier cannot tell you which enemy is at fault**, which
+is the same reason the elite grind had to be measured per encounter before it
+could be diagnosed.
 
-The Foyer elite tier at −0.8 is within noise of par and is not worth a round.
+Two things did NOT work and are recorded as null results rather than dressed up:
+
+- A `partyPick` on Prim bought nothing (−3.6 → −4.5, noise at n=12). Pierce on
+  the same move bought +7.9.
+- Halving the Twins' Tea Party sustain to the chapter's number made them EASIER,
+  because less healing ends the fight sooner.
+
+4p win rate is still 100% at every encounter. The party always wins; it PAYS
+now, which was the goal — cost parity, not difficulty parity.
+
+**The Butler is the only fight left with no Guard-ignoring move.** His Reprimand
+pierces for 5–7 on a House Rule violation and nothing else does. He reads +0.3,
+which is par rather than broken, and foyer §28's Flustered thresholds and House
+Rules are implemented in full, so he is a judgement call rather than a defect.
 
 ## 4. Instrument notes
 

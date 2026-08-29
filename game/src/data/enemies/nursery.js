@@ -1061,11 +1061,23 @@ export const porcelainTwinPrim = Object.assign(twinCommon('porcelain-twin-prim')
   moves: {
     'pointed-finger': {
       id: 'pointed-finger', name: 'Pointed Finger', intent: Intent.ATTACK, damage: 13, hits: 1,
+      /**
+       * The one Twin move a party's Guard cannot answer.
+       *
+       * §14 gives Proper no attack at all ("Proper specializes in protection")
+       * and Prim's two are flavoured precise and single-target, so neither
+       * wants to be a sweep — and coverage is the lever measured NOT to work
+       * anyway (CONTRACTS 45). A finger that singles one child out is exactly
+       * the Sharp Correction shape: the party's decision becomes "nobody may be
+       * the lowest" rather than "stack Guard".
+       */
       partyPick: 'lowestCourage',
+      pierceFn: (c) => c.partySize() > 1,
       tell: 'Prim points at you. It is not a friendly gesture.',
       damageFn: (c) => 13 + porcelainTwinPrim.bonus(c) + (mem(c).hushed ? 4 : 0),
       effect(c) {
-        hitPlayer(c, 13 + porcelainTwinPrim.bonus(c) + (mem(c).hushed ? 4 : 0));
+        hitPlayer(c, 13 + porcelainTwinPrim.bonus(c) + (mem(c).hushed ? 4 : 0),
+                  1, { pierce: c.partySize() > 1 });
         mem(c).hushed = false;
         porcelainTwinPrim.afterAttack(c);
       },
