@@ -111,10 +111,29 @@ the Chest and the Giant.
   ("individual enemy attack damage generally remains close to solo values"), so
   the full-number sweep is the doc's own default and it is what was used here.
 
-The remaining targets, in the order the table ranks them: the Toy Chest (−3.9)
-and the Porcelain Twins (−3.6) both declare no targeting on their attacks
-either. The Butler is at par and the Foyer elite tier is at par; neither is
-cheap to move, and both would need pierce rather than more coverage.
+## 3b. Where every measured encounter now sits
+
+| encounter | before | after | what it got |
+|---|---|---|---|
+| Patchwork Giant | −9.9 | **+7.5** | pick, full-number AoE, pierce |
+| Governess | +5.3 | +5.3 | (already had pierce) |
+| Toy Chest | −3.9 | **+2.1** | pick, full-number AoE, pierce |
+| Butler | +0.3 | +0.3 | AoE and splash, no pierce |
+| Foyer elite tier | −0.8 | −0.8 | untouched |
+| **Porcelain Twins** | −3.6 | **−4.5** | a pick that bought nothing |
+
+**The Twins are the one encounter left that is clearly below the baseline**, and
+they are the interesting case: Proper deals NO damage by design ("Proper
+specializes in protection", §14), and Prim's two attacks are flavoured as
+precise and single-target — "Prim points at you", "two small, extremely precise
+slaps" — so neither wants to become a sweep. Adding a pick moved them −3.6 →
+−4.5, which is noise at n=12 and is recorded as a null result rather than
+dressed up as a win. Whoever takes them next should read §14 before reaching for
+a number: the encounter is authored as a puzzle, its `teaches` line is "effect
+transfer", and the honest options are pierce on one of Prim's attacks or giving
+Proper something offensive that Guard cannot answer.
+
+The Foyer elite tier at −0.8 is within noise of par and is not worth a round.
 
 ## 4. Instrument notes
 

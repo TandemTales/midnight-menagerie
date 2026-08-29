@@ -178,25 +178,43 @@ change him.
   Sharp Correction's pierce off moves her 4p Courage-left 78% → 87% and her
   cost 61.6 → 21.6 — a third of the bill from `pierceFn`.
 
-- **A PICK SPREADS DAMAGE; AoE AND PIERCE ADD IT — measured, on the Patchwork
-  Giant.** It declared no targeting at all and was the worst row in the table.
-  Three states, one change at a time, solo byte-identical throughout:
+- **A PICK SPREADS DAMAGE, AoE ADDS DAMAGE A PARTY THEN BLOCKS, AND ONLY
+  PIERCE IS KEPT.** Run one rung at a time on two encounters, solo
+  byte-identical at every step:
 
-  | | 4p left | buys |
+  | | Toy Chest | Patchwork Giant |
   |---|---|---|
-  | no targeting | 93.7% | −9.9 |
-  | `partyPick: 'lowestCourage'` (§29) | 91.0% | −7.3 |
-  | + Wild Flail `partyTarget: 'all'` at the full number (§27) | 85.8% | **−2.0** |
+  | no targeting | −3.9 | −9.9 |
+  | + `partyPick` (§29) | | −7.3 |
+  | + full-number AoE (§27) | −2.6 | −2.0 |
+  | + **pierce** on the focused attack (CONTRACTS 45) | **+2.1** | **+7.5** |
 
-  Rotating the target recovered 2.6 points; making one of two attacks hit
-  everybody recovered 5.3 more. **An enemy that holds one Kid is worse against
-  a party than one with no multiplayer logic at all**, because its output lands
-  on a seat already over-Guarded or already down. Both changes shipped.
+  Coverage bought 1.3 and 7.9 points and reached the baseline on neither.
+  Pierce bought 4.7 and 9.5 and flipped the sign on both. `%blocked` says why:
+  the Chest's AoE took `aimed` at four Kids from 53.8 to 96.1 and `%blocked`
+  from 70.4 to 78.8 — the party simply blocked the addition. All shipped.
 
-  Next by the table's own ranking: the **Toy Chest (−3.9)** and the
-  **Porcelain Twins (−3.6)** declare no targeting on their attacks either. The
-  Butler and the Foyer elite tier are at par and would need PIERCE rather than
-  more coverage. `docs/notes/2026-08-29-the-party-cost-gap-is-arithmetic.md`.
+  **Where every measured encounter now sits:**
+
+  | encounter | before | after |
+  |---|---|---|
+  | Patchwork Giant | −9.9 | **+7.5** |
+  | Governess | +5.3 | +5.3 |
+  | Toy Chest | −3.9 | **+2.1** |
+  | Butler | +0.3 | +0.3 |
+  | Foyer elite tier | −0.8 | −0.8 |
+  | **Porcelain Twins** | −3.6 | **−4.5** |
+
+  **The Twins are the only encounter left clearly below the baseline.** Proper
+  deals no damage by design and Prim's attacks are flavoured precise and
+  single-target, so neither wants to be a sweep; the pick added to Prim moved
+  them −3.6 → −4.5, which is noise at n=12 and is recorded as a null result.
+  The honest options are pierce on one of Prim's attacks or something
+  offensive for Proper. Read §14 first — it is authored as a puzzle.
+
+  Also fixed on the way, and the reason the first pierce attempt did nothing:
+  `hitPlayer(c, n, hits)` took no options, so a fourth argument was dropped in
+  SILENCE — the same shape as the enemy ctx's `block`. It forwards `opts` now.
 
 ### Where it stands, 2026-08-29
 

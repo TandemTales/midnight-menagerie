@@ -454,6 +454,23 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    would help with. Getting the damage right and the readouts wrong is worse
    than not shipping it — see trap 46.
 
+   **QUANTIFIED 2026-08-29, and the ratio is the point.** Against the arithmetic
+   baseline for four Kids (`cost4 = costSolo x (poolScale/4) / 4`, no content at
+   all), the two levers were run one rung at a time on two encounters:
+
+   | | Toy Chest | Patchwork Giant |
+   |---|---|---|
+   | no targeting | -3.9 | -9.9 |
+   | + `partyPick` | | -7.3 |
+   | + full-number AoE | -2.6 | -2.0 |
+   | + **pierce** on the focused attack | **+2.1** | **+7.5** |
+
+   Coverage bought 1.3 and 7.9 points and reached the baseline on neither;
+   pierce bought 4.7 and 9.5 and flipped the sign on both. `%blocked` says why:
+   the Chest's AoE took `aimed` from 53.8 to 96.1 and `%blocked` from 70.4 to
+   78.8, so the party blocked the addition. **A pick SPREADS damage, AoE ADDS
+   damage a party's Guard then absorbs, and only pierce is KEPT.**
+
 46. **A new kind of damage needs a new READOUT, and there are three of them.**
    Sharp Correction was given `pierce` in a party and the intent chip was
    updated with it — and the incoming rail still read
