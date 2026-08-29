@@ -208,9 +208,23 @@ change him.
   | Foyer elite tier | -0.8 | **+1.2** | the Coatcheck, in aggregate |
   | Butler | +0.3 | **+0.3** | AoE and splash, no pierce |
 
-  4p win rate is still 100% everywhere — the party always wins, it just PAYS
-  now, which was the goal. `left%` at four Kids went 90 → 76 on the Coatcheck,
-  93.7 → 76.3 on the Giant, 93.7 → 86.7 on the Twins.
+  **THIS IS NOT COST PARITY AND SHOULD NOT BE READ AS ONE.** The baseline the
+  table scores against is "what a contentless enemy takes", not "what a solo
+  Kid pays". A party still finishes far healthier than one Kid does:
+
+  | encounter | solo left | 4p left | still apart |
+  |---|---|---|---|
+  | Grand Coatcheck | 56.0% | 76.0% | 20.0 pts |
+  | Patchwork Giant | 54.5% | 76.3% | 21.8 |
+  | Porcelain Twins | 72.0% | 86.7% | 14.6 |
+  | Toy Chest | 74.5% | 88.8% | 14.4 |
+  | Foyer elite tier | 49.5% | 80.8% | 31.2 |
+
+  4p win rate is 100% everywhere, before and after. What moved is the BILL —
+  `left%` at four Kids went 90 → 76 on the Coatcheck, 93.7 → 76.3 on the Giant,
+  93.7 → 86.7 on the Twins. Closing the remaining 15–30 points would need most
+  of an encounter's damage to pierce, not one move of it, and that is a much
+  larger design decision than the one taken here.
 
   Also fixed on the way, and the reason the first pierce attempt did nothing:
   `hitPlayer(c, n, hits)` took no options, so a fourth argument was dropped in
@@ -342,6 +356,26 @@ change him.
 - **Networking has a foundation and a proof, not a feature.** The lockstep session,
   the protocol and two working transports exist; a transport that reaches another
   machine does not. §9 says exactly what is left.
+- **THE CARD-ART HITCH DOES NOT REPRODUCE EITHER, AND ENTRY-STALL TIMINGS SWING
+  2x RUN TO RUN.** Three perf claims in this document now rest on timings this
+  machine will not reproduce today.
+
+  Instrumenting `cardart.js render` and walking into combat from a settled
+  title: **6 renders, 27.7 ms total, ZERO of them synchronous.** The 816 ms
+  block this document describes was measured on the CHROME FIXTURE, which
+  mounts a 60-card `DeckView` with no prior warm; the game calls `warmArt` in
+  `combat._warmDeck()` and `_paintArt` never hits a cold miss on that path.
+
+  `tools/entryprof.py --goto combat`, three runs on identical code:
+  **2033 / 1150 / 2217 ms** blocked, worst single gap 867 / 550 / 900 ms,
+  against a 1200 ms budget it passes once and fails twice. Whatever the worst
+  gap is, it is NOT card art.
+
+  **Do not chase any of the three on this machine as it currently is.** Traps 7
+  and 35 are exactly this, and the honest next step is a quiet machine and a
+  fresh baseline, not a compositing round aimed at numbers that move by 2x
+  between consecutive runs.
+
 - **fps: THE NUMBER DOES NOT REPRODUCE, 2026-08-29 second session. Re-measure
   before spending a round on it.** No perf work was done and none is claimed.
   `tests/chrome/run.py` read **median 52 of [52, 52, 53]** on the first battery
