@@ -132,6 +132,25 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    engine hooks (`engine.hooks.add`) must match a `hooks.dispatch/reduce/any` name; companion
    hooks (`U.onHook`) must match a `U.fire` name. Gated by `tests/hook-names/check.py`.
 
+   **THERE IS A THIRD REGISTRY, and it went ungated until 2026-08-29: the
+   BUS.** `ui/tooltip.js` subscribed to `scene:enter` and `scene:exit`;
+   `core/scenes.js` emits `scene:leaving` and `scene:entered`. Neither
+   subscribed name is emitted anywhere in the repo, so the shared tooltip's
+   ONLY cross-scene teardown had never once run — and the panel lives in
+   `#tooltip-layer`, a sibling of `#dom-layer`, so it is not carried away with
+   the scene root either. `ui/hud.js` carried the same dead name.
+
+   A mouse player was covered by accident (the capturing `pointerdown` hides
+   it, and any click that navigates is a pointerdown). A keyboard player was
+   not: `focusin` opens the panel at zero delay and removing a focused element
+   fires no `focusout`, so Tab to a HUD chip on the map, press Enter, and the
+   tooltip sits over the combat board until the next pointer move.
+
+   Gated by `tests/bus-names/check.py`. Its fatal half is literal
+   `bus.on('x')` with no emitter; names reached through a variable are
+   reported as ADVISORY and never fail, because a checker that fails on a
+   guess trains people to ignore it.
+
 11. **Read the event payload before reading a field off it.** `card:play` carries `card`,
    `actorId` and `seat` — there is no `ev.type`. `onIncomingHit` carries `defender`, not
    `actor`. Both mistakes are silent: the listener runs and returns early forever.

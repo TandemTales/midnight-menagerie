@@ -530,6 +530,7 @@ learn. See §6.
 | `tests/css-tokens/check.py` | 0 undefined tokens — `var(--text-low)` when it is `--text-lo` |
 | `tests/dup-keys/check.py` | 0 duplicate keys — the second one silently wins |
 | `tests/hook-names/check.py` | 0 unknown hooks — a handler nothing dispatches |
+| `tests/bus-names/check.py` | 0 dead subscriptions — the THIRD registry. `bus.on('x')` where nothing emits `'x'`. The shared tooltip's only cross-scene teardown was two such names |
 | `tests/turn-events/check.py` | 0 unguarded — `turn:start` fires for every enemy too |
 | `tests/stdlib-shadow/check.py` | 0 scripts named after a stdlib module. `tests/coop/select.py` **was** the `select` module for that whole directory, and all six scripts in it were broken |
 

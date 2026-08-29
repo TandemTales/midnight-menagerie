@@ -290,8 +290,28 @@ export class Tooltip {
     on(document, 'pointerdown', () => this.hide(), true);
     if (this.ctx.bus?.on) {
       const b = this.ctx.bus;
-      this._offs.push(b.on('scene:enter', () => this.hide()));
-      this._offs.push(b.on('scene:exit', () => this.hide()));
+      /**
+       * `scene:leaving` and `scene:entered` — the names the bus ACTUALLY emits.
+       *
+       * These read `scene:enter` and `scene:exit`, which nothing in the repo
+       * emits, so the only cross-scene teardown the shared tooltip has had was
+       * dead. The panel lives in `#tooltip-layer`, a SIBLING of `#dom-layer`,
+       * and `SceneManager` removes only the scene root — so an open tooltip is
+       * not carried away with the scene it belongs to.
+       *
+       * A mouse player is covered by accident: the capturing `pointerdown`
+       * above hides the panel, and any click that navigates is a pointerdown. A
+       * keyboard player is not. `focusin` opens the tooltip at zero delay, and
+       * removing a focused element does not fire `focusout`, so a panel opened
+       * by Tab survives into the next screen — Tab to a HUD chip on the map,
+       * press Enter, and it sits over the board until the next pointer move.
+       *
+       * This is trap 10's shape on a THIRD registry. `tests/hook-names/check.py`
+       * gates the engine and companion hook names and says so in its docstring;
+       * nothing gated the bus until `tests/bus-names/check.py`.
+       */
+      this._offs.push(b.on('scene:leaving', () => this.hide()));
+      this._offs.push(b.on('scene:entered', () => this.hide()));
       // CARDS IN HAND. `.mm-card` is `pointer-events:none` — the Hand hit-tests
       // itself — so the keyword chips on a card can never receive a pointerover.
       // Slay the Spire does not ask you to hover individual words anyway: it

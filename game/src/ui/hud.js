@@ -134,7 +134,7 @@ function ensureGearCss() {
 const EVENTS = [
   'run:start', 'run:enterNode', 'run:combatEnd', 'run:reward', 'run:update',
   'run:heal', 'run:damage', 'run:gold', 'run:relic', 'run:potion', 'run:deck',
-  'hud:refresh', 'settings:changed', 'scene:enter',
+  'hud:refresh', 'settings:changed', 'scene:entered',
 ];
 
 /** What the HUD shows when `ctx.run` does not exist yet. */
