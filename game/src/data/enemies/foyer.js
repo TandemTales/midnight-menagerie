@@ -387,9 +387,23 @@ export const redCarpetRunner = {
       // genuinely cooperative responsibility." (foyer §26)
       partyTarget: 'all',
       tell: 'Every inch of carpet snaps taut, pointed directly at you.',
-      damageFn: (c) => 8 + flag(c, 'momentumDamage', 7) * redCarpetRunner.projectedMomentum(c),
+      /**
+       * "Multiplayer damage becomes: 6 plus 5 per Momentum to each player."
+       * (§26.) This shipped dealing the full solo number — 8 + 7 per Momentum —
+       * to EVERY Kid, which at four seats is 64 from one move at 2 Momentum
+       * against the 22 a solo Kid takes. The chapter trades per-head damage for
+       * coverage and this did not.
+       *
+       * The Haunt bump rides the per-Momentum term either way, so a higher
+       * `momentumDamage` still makes it worse at every party size.
+       */
+      damageFn: (c) => (c.partySize() > 1
+        ? 6 + (flag(c, 'momentumDamage', 7) - 2) * redCarpetRunner.projectedMomentum(c)
+        : 8 + flag(c, 'momentumDamage', 7) * redCarpetRunner.projectedMomentum(c)),
       effect(c) {
-        hitPlayer(c, 8 + flag(c, 'momentumDamage', 7) * cnt(c, 'momentum'));
+        const solo = c.partySize() <= 1;
+        const per = flag(c, 'momentumDamage', 7) - (solo ? 0 : 2);
+        hitPlayer(c, (solo ? 8 : 6) + per * cnt(c, 'momentum'));
         setCnt(c, 'momentum', 0);
       },
     },

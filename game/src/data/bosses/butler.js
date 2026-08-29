@@ -442,9 +442,27 @@ export const butler = {
       id: 'dust-them-off', name: 'Dust Them Off', intent: Intent.ATTACK, damage: 5, hits: 2,
       partyTarget: 'all',
       tell: 'He produces a cloth and begins, briskly, to tidy you.',
-      damageFn: (c) => butler.strikeDisplay(c, 5, 2),
+      /**
+       * 5x2 alone, 3x2 EACH in a party — coverage bought with per-head damage,
+       * which is the doc's own shape for an AoE move: Run the Hall is 8 + 7 per
+       * Momentum solo and "6 plus 5 per Momentum to each player" in
+       * multiplayer (§26).
+       *
+       * The first version dealt the full 5x2 to every Kid and it broke the
+       * fight. This move comes up every third turn in phase one, so at four
+       * Kids the party was under pressure EVERY round, where a solo Kid gets
+       * free turns whenever he defends or summons. Every seat turtled, and four
+       * Kids ended up dealing about the same damage per turn as one — which
+       * made the fight three times longer, which gave the AoE three times as
+       * many chances to land. Measured at 0% wins for three and four Kids.
+       *
+       * 24 across four seats is still far more total threat than the 10 a solo
+       * Kid takes; what it stops being is a per-seat tax that leaves nobody
+       * able to attack.
+       */
+      damageFn: (c) => butler.strikeDisplay(c, c.partySize() > 1 ? 3 : 5, 2),
       hitsFn: () => 2,
-      effect(c) { butler.strike(c, 5, 2); butler.announceNext(c); },
+      effect(c) { butler.strike(c, c.partySize() > 1 ? 3 : 5, 2); butler.announceNext(c); },
     },
     'service-please': {
       id: 'service-please', name: 'Service, Please', intent: Intent.SUMMON,

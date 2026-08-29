@@ -72,15 +72,24 @@ function standRule(e, id, p2 = false) {
           `${targets.length} of 3`);
 
     const r = await useMove(e, 'dust-them-off');
-    check(r.lost.every(v => v === 10), 'every seat takes the full 5x2',
+    /* 3x2 EACH in a party against 5x2 alone — coverage bought with per-head
+       damage, the shape §26 gives Run the Hall (8 + 7 per Momentum solo,
+       "6 plus 5 per Momentum to each player" in multiplayer). Dealing the full
+       solo number to every Kid put the party under pressure every single round
+       and took three- and four-Kid win rates to zero. */
+    check(r.lost.every(v => v === 6), 'every seat takes the party number, 3x2',
           `lost ${r.lost.join(' / ')}`);
-    check(new Set(r.lost).size === 1, 'and takes the SAME number — damage never scales',
+    check(new Set(r.lost).size === 1, 'and every seat takes the SAME number',
           `lost ${r.lost.join(' / ')}`);
+    check(r.lost.reduce((a, b) => a + b, 0) === 18,
+          'so the TABLE takes more than a solo Kid would, which is the point',
+          `total ${r.lost.reduce((a, b) => a + b, 0)} vs solo 10`);
   }
   {
     const e = await fight(1);
     const r = await useMove(e, 'dust-them-off');
-    check(r.lost[0] === 10, 'solo is the move it always was', `lost ${r.lost[0]}`);
+    check(r.lost[0] === 10, 'solo is the move it always was — 5x2, untouched',
+          `lost ${r.lost[0]}`);
     const it = intentFor(await fight(1), 'dust-them-off');
     check(!it.splash, 'no splash declared: every seat has an arrow of its own',
           `splash ${it.splash ?? 0}`);
