@@ -377,9 +377,28 @@ export const rockingHorse = {
       // enemy support actions into a shared threat." (nursery §31)
       partyTarget: (en) => ((en.counters?.excitement | 0) >= 2 ? 'all' : null),
       tell: 'It is not rocking any more. It is running.',
-      damageFn: (c) => 7 + 4 * cnt(c, 'excitement'),
+      /**
+       * "Multiplayer damage becomes: 5 plus 3 per Excitement to each player.
+       * Maximum: 14 to each player." (nursery §31.)
+       *
+       * This shipped with only the targeting half: `partyTarget` was there and
+       * cited §31, and then it dealt the full SOLO number — 7 + 4 per
+       * Excitement — to every seat. At four Kids and 3 Excitement that is 19
+       * each, 76 across the table, out of a 60-Courage Scuffle enemy. The
+       * chapter trades per-head damage for coverage and this did not.
+       *
+       * Exactly the defect the Red Carpet Runner's Run the Hall already
+       * documents as found and fixed, one region file away, for the same
+       * reason. At the base cap of 3 Excitement the party number is 5 + 9 = 14,
+       * which is the maximum §31 names; the Haunt 7 stack rides the per-stack
+       * term the way it does in solo.
+       */
+      damageFn: (c) => (c.partySize() > 1
+        ? 5 + 3 * cnt(c, 'excitement')
+        : 7 + 4 * cnt(c, 'excitement')),
       effect(c) {
-        hitPlayer(c, 7 + 4 * cnt(c, 'excitement'));
+        const solo = c.partySize() <= 1;
+        hitPlayer(c, (solo ? 7 : 5) + (solo ? 4 : 3) * cnt(c, 'excitement'));
         setCnt(c, 'excitement', 0);
       },
     },

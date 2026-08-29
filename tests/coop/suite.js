@@ -802,6 +802,60 @@ export async function run() {
     nextMove: () => 'pair',
   };
 
+  /**
+   * The Rocking Horse's Gallop had the TARGETING half of nursery §31 and not
+   * the DAMAGE half: it cited the chapter, hit every Kid at 2+ Excitement, and
+   * handed each of them the full solo number. The chapter buys coverage with
+   * per-head damage — "5 plus 3 per Excitement to each player" against solo's
+   * 7 plus 4 — and this did not pay.
+   *
+   * Driven through a real fight rather than by calling `damageFn` with a
+   * hand-built ctx, which would be mocking the thing under test (rule 9). The
+   * move is chosen when the turn OPENS, so Excitement is set and the loop waits
+   * for the turn on which the enemy has actually decided to Gallop.
+   */
+  const HORSE_EXCITEMENT = 3;
+  async function gallopDamage(size) {
+    const { getEnemy } = await import('../../game/src/data/enemies/index.js');
+    const horse = getEnemy('rocking-horse');
+    const e = await startDummyParty(new RNG(451), size, {
+      enemies: [{ def: horse, hp: 400, id: 'e0' }], maxHp: 300,
+    });
+    const en = e.enemies[0];
+    for (let i = 0; i < 8 && !e.over; i++) {
+      en.counters = en.counters || {};
+      en.counters.excitement = HORSE_EXCITEMENT;
+      e.refreshIntents('test');
+      if (en.pendingMove && en.pendingMove.id === 'gallop') {
+        const before = e.players.map(p => p.hp);
+        const shown = en.intent ? en.intent.damage : null;
+        await e.endTurn();
+        const took = e.players.map((p, k) => before[k] - p.hp);
+        return { took, shown };
+      }
+      await e.endTurn();
+    }
+    return { took: null, shown: null };
+  }
+
+  await atest('targeting: Gallop pays for its coverage at four Kids', async () => {
+    const solo = await gallopDamage(1);
+    const four = await gallopDamage(4);
+    ok(solo.took && four.took, 'both fights reached a Gallop',
+      `${JSON.stringify(solo.took)} / ${JSON.stringify(four.took)}`);
+    // 7 + 4x3 alone; 5 + 3x3 each in a party — the maximum of 14 §31 names.
+    eq(solo.took[0], 19, 'a Kid alone takes the full 7 + 4 per Excitement');
+    ok(four.took.every(v => v === 14),
+      'and every Kid in a party takes 5 + 3 per Excitement, not the solo number',
+      JSON.stringify(four.took));
+  });
+
+  await atest('targeting: and the intent PROMISES the number it delivers', async () => {
+    // The readout half, apart from the effect half (trap 46).
+    const four = await gallopDamage(4);
+    eq(four.shown, 14, 'the intent shows the party number', String(four.shown));
+  });
+
   await atest('targeting: a two-target move never names the same Kid twice', async () => {
     const e = await startDummyParty(new RNG(431), 2, { enemies: [SPLITTER], maxHp: 200 });
     const [a, b] = e.players;
