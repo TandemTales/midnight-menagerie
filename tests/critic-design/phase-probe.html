@@ -1,0 +1,67 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>phase probe — how much of a boss fight is phase two?</title>
+<body><pre id="out" style="font:12px ui-monospace,monospace">running…</pre></body>
+<script type="module">
+/**
+ * A boss's phase threshold is an ABSOLUTE Courage number. Its pool is not.
+ * OWNER: balance.
+ *
+ * Every boss in this game turns to phase two at `hp <= PHASE2_AT` — 100 for the
+ * Governess, 92 for the Butler, 160 for the Bedframe Beast — while their pools
+ * are multiplied by the party curve. So the share of the fight spent in phase
+ * two shrinks as the party grows, and at four Kids a two-phase boss is very
+ * nearly a one-phase boss.
+ *
+ * The design doc prescribes the opposite, in the same chapter, for a Big Scare
+ * with the same shape: "Courage thresholds remain PROPORTIONAL to maximum
+ * Courage. Players therefore tear Patches at 75 / 50 / 25 percent. This keeps
+ * the mechanic stable regardless of party size." (nursery §34.)
+ *
+ * This measures the share rather than arguing it: build the real encounter at
+ * each party size and report `PHASE2_AT / maxHp`.
+ */
+import { getEnemy } from '../../game/src/data/enemies/index.js';
+
+// `PARTY_HP_SCALE` is module-private in `combat/engine.js`. Copied rather than
+// exported: this page only needs the curve to SHOW a share, and widening the
+// engine's public surface for a probe is the wrong trade. If the curve moves,
+// this line is wrong and the fix is one edit — the shipped behaviour is
+// `_makeEnemy`'s, not this one's.
+const PARTY_HP_SCALE = [1, 2.2, 4.0, 5.7];
+
+const out = document.getElementById('out');
+const lines = [];
+const say = (s) => { lines.push(s); out.textContent = lines.join('\n'); };
+
+const BOSSES = [
+  { id: 'governess', at: 100, doc: 'nursery §21 — "At 150 Courage" of 280 = 54%' },
+  { id: 'butler', at: 92, doc: 'foyer — phase two at 92 of 165' },
+  { id: 'bedframe-beast', at: 160, doc: 'sq — phase two at 160' },
+];
+
+const R = { rows: [] };
+say('boss              party   maxHp   phase2At   phase2 share of the pool');
+say('──────────────────────────────────────────────────────────────────────');
+for (const b of BOSSES) {
+  const def = getEnemy(b.id);
+  const base = Array.isArray(def.hp) ? def.hp[1] : def.hp;
+  for (const n of [1, 2, 3, 4]) {
+    // `_makeEnemy`: a per-enemy `partyHp` REPLACES the global curve.
+    const mul = typeof def.partyHp === 'function'
+      ? def.partyHp(n)
+      : (PARTY_HP_SCALE[Math.min(n, PARTY_HP_SCALE.length) - 1] ?? 1);
+    const maxHp = Math.round(base * mul);
+    const share = 100 * b.at / maxHp;
+    R.rows.push({ id: b.id, n, maxHp, at: b.at, share: +share.toFixed(1) });
+    say(`${b.id.padEnd(17)}${(n + 'p').padEnd(8)}${String(maxHp).padStart(6)}`
+      + `${String(b.at).padStart(11)}${(share.toFixed(1) + '%').padStart(25)}`);
+  }
+  say(`  ${b.doc}`);
+  say('');
+}
+say('A two-phase boss whose second phase is under about a fifth of its pool is a');
+say('one-phase boss with a coda. Everything authored for phase two — the Repair');
+say('Patches, Emergency Repair, the whole second move cycle — barely happens.');
+window.__PHASES__ = R;
+</script>

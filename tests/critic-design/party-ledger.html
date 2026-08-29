@@ -1,0 +1,103 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>party ledger — where does a party's Courage actually go?</title>
+<body><pre id="out" style="font:12px ui-monospace,monospace">running…</pre></body>
+<script type="module">
+/**
+ * "Four Kids finish this boss holding 89% of their Courage." WHY? OWNER: balance.
+ *
+ * The party form of `butler-ledger.html`, and it exists because the leftover-
+ * Courage gap has two explanations that want OPPOSITE fixes:
+ *
+ *   the boss is not SWINGING enough   -> content: too many DEFEND turns, too
+ *                                        little coverage, a cadence that gives
+ *                                        a party free rounds
+ *   it swings plenty and is BLOCKED   -> a Guard-budget problem, and no damage
+ *                                        number fixes it: four Kids generate
+ *                                        four Kids' worth of Guard while one or
+ *                                        two of them are being aimed at, so the
+ *                                        table's Guard grows faster than the
+ *                                        boss's output no matter what the
+ *                                        printed number is
+ *
+ * `aimed` (taken + blocked) is what the boss threw. `taken` is what it achieved.
+ * The ratio between them is the answer, and it is invisible in every other
+ * table this project has: `party-boss.py` reports `left%` and `cost`, which are
+ * both downstream of it.
+ *
+ *   ?enc=nursery-boss&region=nursery&n=12&gen=10&sizes=1,2,3,4
+ */
+import { generateLoadouts, seatLoadouts, partyBench } from './lib/partybench.js';
+
+const Q = new URLSearchParams(location.search);
+const TIER = Q.get('tier') || 'boss';
+const ENC = Q.get('enc') || null;
+const REGION = Q.get('region') || 'foyer';
+const LREGION = Q.get('lregion') || REGION;
+const N = +(Q.get('n') || 12);
+const GEN = +(Q.get('gen') || 8);
+const SIZES = (Q.get('sizes') || '1,2,3,4').split(',').map(Number).filter(Boolean);
+const SLUGS = (Q.get('slugs') || 'marmalade,bones').split(',').filter(Boolean);
+const SEED0 = +(Q.get('seed') || 90000);
+
+const out = document.getElementById('out');
+const lines = [];
+const say = (s) => { lines.push(s); out.textContent = lines.join('\n'); };
+const tick = (s) => { out.textContent = lines.join('\n') + '\n  … ' + s; };
+const mean = (a) => (a.length ? +(a.reduce((x, y) => x + y, 0) / a.length).toFixed(1) : 0);
+
+const R = { config: { TIER, ENC, REGION, LREGION, N, GEN, SIZES, SLUGS, SEED0 }, rows: [], table: [], errors: [] };
+
+(async () => {
+  const { pools, errors } = await generateLoadouts({
+    gen: GEN, seed: SEED0, slugs: SLUGS, region: LREGION, tier: TIER,
+    onProgress: (slug, i, total, got) => tick(`loadouts ${slug} ${i}/${total} (${got} kept)`),
+  });
+  R.errors.push(...errors);
+  say(`== ledger ${REGION}/${TIER}${ENC ? ' ' + ENC : ''}`);
+  say(`   loadouts ${SLUGS.map(s => `${s} ${(pools[s] || []).length}`).join(' · ')}`
+    + (LREGION === REGION ? '' : `   ** PROXY DECKS from the ${LREGION} boss`));
+  say('');
+  say('party    n   aimed  landed  blocked   %blocked   partyGuard  turns  aimed/turn  left%');
+  say('────────────────────────────────────────────────────────────────────────────────────');
+
+  for (const size of SIZES) {
+    const rows = [];
+    for (let i = 0; i < N; i++) {
+      const loadouts = seatLoadouts(pools, SLUGS, size, i);
+      if (!loadouts) { R.errors.push(`no loadouts for ${size}p`); break; }
+      try {
+        rows.push(await partyBench({ loadouts, size, seed: SEED0 + i * 13, region: REGION,
+                                     tier: TIER, encounterId: ENC }));
+      } catch (e) { R.errors.push(`${size}p ${i}: ${e && e.message || e}`); }
+      tick(`${size}p ${i + 1}/${N}`);
+    }
+    if (!rows.length) { say(`${size}p       — no fights`); continue; }
+    R.rows.push(...rows);
+    const aimed = mean(rows.map(r => r.aimed));
+    const landed = mean(rows.map(r => r.takenBySeat.reduce((a, b) => a + b, 0)));
+    const blocked = mean(rows.map(r => r.blocked));
+    const turns = mean(rows.map(r => r.turns));
+    const row = {
+      size, n: rows.length, aimed, landed, blocked,
+      pctBlocked: aimed ? +(100 * blocked / aimed).toFixed(1) : 0,
+      partyGuard: mean(rows.map(r => r.partyGuard)),
+      turns, aimedPerTurn: turns ? +(aimed / turns).toFixed(1) : 0,
+      left: +(100 * mean(rows.filter(r => r.win).map(r => r.courageLeft))).toFixed(1),
+      errs: rows.reduce((a, r) => a + (r.botErrors || 0), 0),
+    };
+    R.table.push(row);
+    say(`${(size + 'p').padEnd(9)}${String(row.n).padStart(2)}`
+      + `${String(row.aimed).padStart(8)}${String(row.landed).padStart(8)}`
+      + `${String(row.blocked).padStart(9)}${String(row.pctBlocked).padStart(11)}`
+      + `${String(row.partyGuard).padStart(13)}${String(row.turns).padStart(7)}`
+      + `${String(row.aimedPerTurn).padStart(12)}${String(row.left).padStart(7)}`);
+  }
+
+  say('');
+  say('Read `%blocked` first. If it climbs with party size, the table\'s Guard budget');
+  say('is the lever and a bigger printed number will be eaten too. If `aimed/turn`');
+  say('is flat while turns grow, the boss is simply not swinging enough per round.');
+  window.__LEDGER__ = R;
+})().catch(e => { R.error = String(e && e.stack || e); window.__LEDGER__ = R; say('CRASHED: ' + R.error); });
+</script>

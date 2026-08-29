@@ -169,15 +169,34 @@ export async function partyBench({ loadouts, size = 1, seed = 1, region = 'foyer
      payloads (CONTRACTS trap 26). */
   const takenBySeat = new Array(size).fill(0);
   const hitsBySeat = new Array(size).fill(0);
+  /**
+   * What the party's GUARD ate, per seat — the other half of `takenBySeat`.
+   *
+   * "Four Kids finish this boss holding 89% of their Courage" has two very
+   * different explanations and they want opposite fixes: the boss is not
+   * SWINGING enough (a content problem — too many DEFEND turns, too little
+   * coverage), or it is swinging plenty and every point is being blocked (a
+   * Guard-budget problem, which no damage number fixes because four Kids
+   * generate four Kids' worth of Guard while one or two are targeted).
+   * `blocked + taken` is what the boss actually aimed; `taken` alone is what it
+   * achieved. Without both, the difference is invisible and the leftover-Courage
+   * gap reads as "make the numbers bigger".
+   */
+  const blockedBySeat = new Array(size).fill(0);
   const seatIndexById = new Map(engine.players.map((p, i) => [p.id, i]));
   let enemyGuard = 0;
+  let partyGuard = 0;
   engine.on('damage', (ev) => {
     const i = seatIndexById.get(ev.targetId);
     if (i == null) return;
     takenBySeat[i] += ev.hpLoss || 0;
+    blockedBySeat[i] += ev.blocked || 0;
     if ((ev.hpLoss || 0) > 0 || (ev.blocked || 0) > 0) hitsBySeat[i]++;
   });
-  engine.on('block', (ev) => { if (!seatIndexById.has(ev.actorId)) enemyGuard += ev.amount || 0; });
+  engine.on('block', (ev) => {
+    if (seatIndexById.has(ev.actorId)) partyGuard += ev.amount || 0;
+    else enemyGuard += ev.amount || 0;
+  });
 
   await engine.startCombat();
 
@@ -248,7 +267,11 @@ export async function partyBench({ loadouts, size = 1, seed = 1, region = 'foyer
     fallen: engine.players.filter(p => p.fallen).length,
     courageLeft: maxHp ? hp / maxHp : 0,
     courageCost: courageAtDoor - hp,
-    takenBySeat, hitsBySeat,
+    takenBySeat, hitsBySeat, blockedBySeat,
+    /* What the boss AIMED at the party, and what its Guard budget stopped. */
+    aimed: takenBySeat.reduce((a, b) => a + b, 0) + blockedBySeat.reduce((a, b) => a + b, 0),
+    blocked: blockedBySeat.reduce((a, b) => a + b, 0),
+    partyGuard,
     /* The AoE reading. With every move single-target the damage piles onto one
        or two seats; spreading it is the whole point of the lever. */
     spread: spreadOf(takenBySeat),
