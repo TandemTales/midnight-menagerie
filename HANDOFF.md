@@ -106,6 +106,32 @@ change him.
   5–7 of (the Reprimand's pierce on a House Rule violation). Both curves left
   where they are, deliberately; the comment in `butler.js` records why.
 
+- **`engine.boardEvent()` HAS NO CALLERS, so two nursery mechanics are dead.**
+  Trap 5b's fourth and fifth instances, found by repairing the seams gate.
+  `grep -rn 'boardEvent(' game/src` returns the definition and nothing else.
+  Both `onBoardEvent` defs in the game are therefore never invoked, and they
+  would not work if they were: the engine calls
+  `en.def.onBoardEvent(ctx)` with ONE argument while both defs are written
+  `onBoardEvent(c, ev)`, so `ev` would be undefined and every one of them
+  returns on its first line.
+
+  What is dead:
+
+  - **The Porcelain Twins' entire Joined mechanic** — "Guard half-flows,
+    stackable debuffs copy across", the thing the encounter is named for.
+    There is no other implementation of it anywhere.
+  - **The Rocking Horse's Excitement from ally support** — nursery §31's
+    "This turns enemy support actions into a shared threat". It still gains
+    Excitement from its own Happy Clatter, which does `addCnt` directly in the
+    move, so the enemy looks like it works.
+
+  **Not wired here, deliberately.** Wiring it means deciding where the engine
+  emits a board event (block, heal, status at minimum), fixing the call
+  signature, and then re-measuring the Nursery — the Twins get materially
+  stronger and the Horse Gallops more often. That is a scoped piece of work
+  with a balance tail, not a one-line repair, and it wants the instruments
+  this session has just finished making trustworthy.
+
 - **STILL OPEN, and now the honest headline for the party game: a party
   finishes too comfortable.** Elite `left%` is 60 solo against 80 at three and
   four Kids; the standard tier is 61 against 86. Length is fixed, cost is not.
