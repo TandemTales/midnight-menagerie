@@ -843,7 +843,65 @@ try {
     A.session.close(); B.session.close();
   }
 
-  // ══ 17. Without a session, `act` is the direct call it replaced ════════
+  // ══ 17. A rejoin whose log contains a choice ═══════════════════════════
+  /* §16 proves the live path. This is the one that actually bites: a client
+     that was away comes back and absorbs a log holding both the play that ASKS
+     and the answer, and it has to replay them without opening a picker for a
+     question that was settled while it was gone. */
+  {
+    const hub = new LoopbackHub({ async: true });
+    const mk = (seat, id) => {
+      const deck = startingDeckFor('marmalade');
+      const e = makeDummyParty(new RNG(SEED), 2, { companion: 'marmalade', decks: [deck.slice(), deck.slice()], maxHp: 70 });
+      e.setTrackerInstaller(installTrackers);
+      e.localSeat = seat;
+      const run = { combat: e, _combatDigest: combatDigest, localSeat: seat, session: null,
+                    kids: [{}, {}], asSeat: Run.prototype.asSeat };
+      const session = new Session({ transport: hub.peer(id), seat, seats: 2, seed: SEED, host: seat === 0 });
+      session.attach(run);
+      attachChoices(session, e);
+      const seen = [];
+      session.on('input', async (msg) => {
+        if (msg.t !== INPUT.ROOM) return;
+        seen.push(await e.choices.ask({
+          kind: 'card', prompt: 'Rejoin', count: 1,
+          pool: e.players[1].piles.hand.slice(0, 3), seat: e.players[1],
+        }));
+      });
+      return { e, run, session, seen };
+    };
+    const A = mk(0, 'A'); const B = mk(1, 'B');
+    await A.e.startCombat(); await B.e.startCombat();
+    B.e.setChoiceResolver(async (req) => [req.pool.length - 1]);
+
+    A.session.input({ t: INPUT.ROOM, act: 'test.ask' });
+    await new Promise(r => setTimeout(r, 200));
+    await A.session.settled(); await B.session.settled();
+    check(A.seen.length === 1 && A.seen[0].join(',') === '2',
+      'the two that were present settled it between them', (A.seen[0] || []).join(','));
+
+    // Somebody who was away the whole time.
+    const C = mk(0, 'C');
+    await C.e.startCombat();
+    let pickerOpened = 0;
+    C.e.setChoiceResolver(async () => { pickerOpened++; return [0]; });
+    C.session.absorb(A.session.log);
+    const done = await Promise.race([
+      C.session.settled().then(() => 'done'),
+      new Promise(r => setTimeout(() => r('HUNG'), 2000)),
+    ]);
+    check(done === 'done', 'a rejoining client replays a log with a choice in it', String(done));
+    check(C.seen.length === 1 && C.seen[0].join(',') === '2',
+      'and reaches the SAME answer the other two agreed on',
+      (C.seen[0] || []).join(','));
+    check(pickerOpened === 0,
+      'without opening a picker for a question settled while it was away',
+      String(pickerOpened));
+
+    A.session.close(); B.session.close(); C.session.close();
+  }
+
+  // ══ 18. Without a session, `act` is the direct call it replaced ════════
   /* Solo and pass-and-play must not pay for the wire. `act()` returns the run
      layer's own answer synchronously when there is nothing to send, so a screen
      that used to call `run.takeRewardCard()` keeps the timing it had. */
