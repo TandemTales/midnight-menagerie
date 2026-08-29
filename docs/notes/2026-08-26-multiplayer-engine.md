@@ -265,7 +265,7 @@ starting decks or the co-op pool.
 
 ```
 tests/coop/run.py          401 assertions, real party engines, no mocks
-tests/coop/select.py       the entry point, driven as a player drives it
+tests/coop/selectscreen.py the entry point, driven as a player drives it
 tests/coop/balance.py      party balance, 1p vs 2p, real fights
 tests/hook-names/check.py  90 files, 39 listeners, 0 unknown hook names
 tests/turn-events/check.py 78 files, 0 unguarded turn listeners

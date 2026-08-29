@@ -242,6 +242,64 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    Its `setState({ nums })` branch had been dead since it was written, for the
    same reason — it re-rendered and then read the def again.
 
+32. **A measurement harness is CODE, and nobody had ever measured it.** Three
+   separate defects in `tests/coop/balance.html` + `lib/bot.js` meant the co-op
+   Courage curve — recorded here and in HANDOFF as "MEASURED, not quoted" — was
+   measured against a game that does not exist:
+
+   - **Two enemy phases every round.** The loop called `e.endTurn(pl)` for each
+     seat and then closed the table again with `if (!e.tableReady && e.phase ===
+     'player') await e.endTurn()`. But `endTurn(seat)` runs the enemy phase the
+     moment the LAST seat ends and then OPENS THE NEXT TURN, so by the time the
+     loop finished, `tableReady` was false again and `phase` was `'player'`
+     again — for the new round. The trailing line ended a turn nobody had
+     played. Counting `phase:'enemy'` per round: **[2,2,2,2] against [1,1,1,1]**
+     once guarded on `e.turn`, at 1p, 2p and 4p alike.
+   - **The bot scored clones while reading the real board.** `seatOf(e, seat)`
+     was `seat || e.players[0]` — an actor belonging to whichever engine the
+     CALLER was driving. The beam search evaluates clones, so `options()`
+     enumerated a hand that never emptied and `endTurnValue`'s `guarded` was the
+     Guard standing BEFORE the turn. The bot could not see its own plan, so it
+     never valued Guard — and only when a seat was passed, which is to say only
+     in co-op. Measured: one Kid took 41 Courage of damage where the same
+     loadout on the same seed took 10 through the solo path.
+   - **Half the scoring function never took a seat at all.** `residual`,
+     `projectedValue` and most of `staticScore` read `s.player` — seat 0 —
+     while `balance.html` disarmed the dev guard that would have thrown. Every
+     seat's plan was scored against seat 0's Courage, Guard, Nerve and hand.
+
+   Fixed, and `tests/critic-design/anchor.py` now holds the line: with ONE Kid,
+   `partyBench()` must reproduce `bench()` fight for fight. **Re-measured, the
+   Foyer standard tier reads 100% at every party size with zero falls**, against
+   the 79 / 75 / 96 / 96% the broken harness reported. The curve
+   `[1, 2.2, 4.0, 5.7]` was tuned to that harness and is not defensible as it
+   stands.
+
+33. **A script named after a stdlib module becomes that module.** Python puts a
+   script's own directory at the front of `sys.path`, so `tests/coop/select.py`
+   WAS the `select` module for everything run from `tests/coop/`. `balance.py`
+   imports `asyncio`, `asyncio` imports `select`, and the test script's own
+   argparse then ran against `balance.py`'s argv:
+
+   ```
+   $ python tests/coop/balance.py --n 24
+   usage: balance.py [-h] [--party PARTY]
+   balance.py: error: unrecognized arguments: --n 24
+   ```
+
+   **All six scripts in `tests/coop/` were affected**, and the two that take no
+   arguments were quietly running the select-screen test before their own. The
+   command HANDOFF documents could not run at all. Renamed to `selectscreen.py`;
+   gated by `tests/stdlib-shadow/check.py`.
+
+34. **`run.buildCombat` seeds the fight from the NODE ID.** It forks the run RNG
+   on `combat:<node.id>`, and that fork decides the shuffle, the opening hand
+   and every enemy roll — so two harnesses that name their bench node
+   differently play different
+   fights from the same seed and the same loadout — which reads as the two
+   harnesses disagreeing. If you are comparing two instruments, the node id is
+   part of the experiment.
+
 15. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
    now reported their in-flight work being swallowed by an unrelated commit — one had a whole
    `music.js` rewrite land inside a commit titled "Pronouns per the designer", which then made a

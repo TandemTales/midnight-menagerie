@@ -1,0 +1,127 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>party boss bench — a boss at 1..4 Kids, real decks</title>
+<body><pre id="out" style="font:12px ui-monospace,monospace">running…</pre></body>
+<script type="module">
+/**
+ * "Does this boss scale with the party the way the curve says?" OWNER: balance.
+ *
+ * `sweep.html` answers the SOLO question against captured loadouts and cannot
+ * seat a second Kid. `tests/coop/balance.html` seats four Kids and fights with
+ * STARTING decks, which at a boss's Courage pool measures a floor. This page is
+ * the intersection neither covers: real pre-boss decks, 1 to 4 seats.
+ *
+ *   ?tier=boss&enc=foyer-boss&n=16&gen=8&sizes=1,2,3,4&slugs=marmalade,bones
+ *
+ * Not a pass/fail gate. It prints numbers for a designer to read, and the one
+ * to read first is `left` — leftover Courage on a win. A rising line across
+ * party sizes is the open finding from the party-of-four round.
+ */
+import { generateLoadouts, seatLoadouts, partyBench } from './lib/partybench.js';
+
+const Q = new URLSearchParams(location.search);
+const TIER = Q.get('tier') || 'boss';
+const ENC = Q.get('enc') || null;
+const REGION = Q.get('region') || 'foyer';
+const N = +(Q.get('n') || 16);
+const GEN = +(Q.get('gen') || 8);
+const SIZES = (Q.get('sizes') || '1,2,3,4').split(',').map(Number).filter(Boolean);
+const SLUGS = (Q.get('slugs') || 'marmalade,bones').split(',').filter(Boolean);
+const POL = Q.get('pol') || 'balanced';
+const SEED0 = +(Q.get('seed') || 90000);
+const HAUNT = +(Q.get('haunt') || 0);
+const SCALE = +(Q.get('scale') || 1);
+
+const out = document.getElementById('out');
+const lines = [];
+const say = (s) => { lines.push(s); out.textContent = lines.join('\n'); };
+const tick = (s) => { out.textContent = lines.join('\n') + '\n  … ' + s; };
+
+const R = {
+  config: { TIER, ENC, REGION, N, GEN, SIZES, SLUGS, POL, SEED0, HAUNT, SCALE },
+  loadouts: {}, table: [], rows: [], errors: [],
+};
+
+const mean = (a) => (a.length ? +(a.reduce((x, y) => x + y, 0) / a.length).toFixed(2) : 0);
+const med = (a) => {
+  if (!a.length) return 0;
+  const s = [...a].sort((x, y) => x - y);
+  return s[Math.floor(s.length / 2)];
+};
+
+(async () => {
+  const { pools, errors } = await generateLoadouts({
+    gen: GEN, seed: SEED0, slugs: SLUGS, region: REGION, policy: POL, haunt: HAUNT, tier: TIER,
+    onProgress: (slug, i, total, got) => tick(`loadouts ${slug} ${i}/${total} (${got} kept)`),
+  });
+  R.errors.push(...errors);
+  for (const s of SLUGS) R.loadouts[s] = (pools[s] || []).length;
+  say(`== party ${REGION}/${TIER}${ENC ? ' ' + ENC : ''}  haunt ${HAUNT}  xHP ${SCALE}`);
+  say(`   loadouts ${SLUGS.map(s => `${s} ${(pools[s] || []).length}`).join(' · ')}`);
+  say('');
+  say('party    n   win%   turns  med    left%   fallen   spread   enemyHP   cost   errs');
+  say('──────────────────────────────────────────────────────────────────────────────────');
+
+  for (const size of SIZES) {
+    const rows = [];
+    for (let i = 0; i < N; i++) {
+      const loadouts = seatLoadouts(pools, SLUGS, size, i);
+      if (!loadouts) { R.errors.push(`no loadouts for ${size}p`); break; }
+      try {
+        const r = await partyBench({
+          loadouts, size, seed: SEED0 + i * 13, region: REGION, tier: TIER,
+          encounterId: ENC, haunt: HAUNT, hpScale: SCALE,
+        });
+        rows.push(r);
+        R.rows.push(r);
+      } catch (e) { R.errors.push(`${size}p ${i}: ${e && e.message || e}`); }
+      tick(`${size}p ${i + 1}/${N}`);
+    }
+    if (!rows.length) { say(`${size}p       — no fights`); continue; }
+    const wins = rows.filter(r => r.win);
+    const row = {
+      size, n: rows.length,
+      win: +(100 * wins.length / rows.length).toFixed(1),
+      turnsMean: mean(wins.map(r => r.turns)),
+      turnsMed: med(wins.map(r => r.turns)),
+      left: +(100 * mean(wins.map(r => r.courageLeft))).toFixed(1),
+      fallen: mean(rows.map(r => r.fallen)),
+      spread: +mean(rows.map(r => r.spread)).toFixed(2),
+      enemyHp: Math.round(mean(rows.map(r => r.enemyHp))),
+      cost: mean(wins.map(r => r.courageCost)),
+      errs: rows.reduce((n, r) => n + r.botErrors, 0),
+      timeouts: rows.filter(r => r.timeout).length,
+    };
+    R.table.push(row);
+    say(`${size}p  ${String(row.n).padStart(4)}  ${row.win.toFixed(1).padStart(5)}  `
+      + `${row.turnsMean.toFixed(1).padStart(6)} ${String(row.turnsMed).padStart(4)}  `
+      + `${row.left.toFixed(1).padStart(6)}  ${row.fallen.toFixed(2).padStart(6)}  `
+      + `${row.spread.toFixed(2).padStart(7)}  ${String(row.enemyHp).padStart(7)}  `
+      + `${row.cost.toFixed(1).padStart(5)}  ${String(row.errs).padStart(4)}`);
+  }
+
+  say('');
+  const solo = R.table.find(r => r.size === 1);
+  if (solo) {
+    say('vs solo — a FLAT line is the target. Rising left% means friends still buy');
+    say('safety the Courage curve is not charging for.');
+    for (const r of R.table) {
+      say(`  ${r.size}p: win ${(r.win - solo.win >= 0 ? '+' : '')}${(r.win - solo.win).toFixed(0)} pts · `
+        + `left ${(r.left - solo.left >= 0 ? '+' : '')}${(r.left - solo.left).toFixed(0)} pts · `
+        + `turns ${(r.turnsMean - solo.turnsMean >= 0 ? '+' : '')}${(r.turnsMean - solo.turnsMean).toFixed(1)} · `
+        + `spread ${r.spread.toFixed(2)}`);
+    }
+  }
+  const errs = R.table.reduce((n, r) => n + r.errs, 0);
+  if (errs) say(`\n!! ${errs} bot errors — this measurement is NOT trustworthy until they are zero.`);
+  if (R.errors.length) say('\nerrors: ' + R.errors.slice(0, 6).join(' | '));
+  window.__PARTY__ = R;
+  say('');
+  say('DONE');
+})().catch(err => {
+  say('CRASHED: ' + (err && err.stack || err));
+  window.__PARTY__ = { error: String(err) };
+});
+</script>
+</body>
+</html>

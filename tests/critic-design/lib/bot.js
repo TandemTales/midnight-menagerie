@@ -34,10 +34,10 @@ import { Target, CardType } from '/game/src/data/schema.js';
 // Snacks — mirrors scenes/combat.js `_useSnack` (the shipped behaviour: a Snack
 // costs no Nerve and resolves through the ordinary engine API).
 // ─────────────────────────────────────────────────────────────────────────────
-export function applySnack(E, snack, targetId = null) {
+export function applySnack(E, snack, targetId = null, seat = null) {
   const fx = snack?.effect;
   if (!fx) return false;
-  const me = E.player;
+  const me = seatOf(E, seat);
   let target = null;
   if (fx.target === 'enemy') {
     const living = E.livingEnemies();
@@ -72,14 +72,34 @@ export function shownIncoming(e, seat = null) {
 }
 
 /**
- * The seat this bot is currently driving.
+ * The seat this bot is currently driving, RESOLVED INSIDE `e`.
  *
  * `e.player` and `e.piles` THROW in a party with the guard armed, on purpose —
  * a bot that silently drove seat 0 for all four Kids would produce win rates
  * that mean nothing. Every reader below goes through `seatOf`, so the party
  * harness passes `{ seat }` and solo passes nothing.
+ *
+ * This used to be `seat || e.players[0]`, and that returned the actor belonging
+ * to whichever engine the CALLER was driving. The beam search scores CLONES, so
+ * every read went to the real board instead of the simulated one: `options()`
+ * enumerated a hand that never emptied however many cards the line played, and
+ * `endTurnValue`'s `guarded` was the Guard standing before the turn rather than
+ * after it. The bot could not see its own plan, so it never valued Guard, and
+ * it only did this when a seat was passed — which is to say, only in co-op.
+ * Measured: one Kid took 41 Courage of damage where the same loadout on the
+ * same seed took 10 through the solo path.
+ *
+ * Resolved by id first and seat index second, because a clone's players are
+ * different objects carrying the same identity.
  */
-const seatOf = (e, seat) => seat || e.players[0];
+const seatOf = (e, seat) => {
+  if (!seat) return e.players[0];
+  if (seat.id != null) {
+    const byId = e.players.find(p => p.id === seat.id);
+    if (byId) return byId;
+  }
+  return e.players[seat.seat | 0] || e.players[0];
+};
 const handOf = (e, seat) => seatOf(e, seat).piles.hand.filter(c => !c.unplayable);
 const stacksOf = (a, id) => a.statuses.get(id) || 0;
 
@@ -155,13 +175,14 @@ function enemyPool(s) {
 }
 
 /** Board value that does not depend on the projection. */
-function residual(s, before, pool) {
+function residual(s, before, pool, seat = null) {
+  const me = seatOf(s, seat);
   let v = 34 * Math.max(0, before.living - pool.living);
   v += 0.55 * pool.haunt + 1.2 * pool.weak + 1.5 * pool.vuln;
-  v += 1.4 * stacksOf(s.player, 'ghoststep');
-  v += 4.0 * stacksOf(s.player, 'strength');
-  v += 2.0 * stacksOf(s.player, 'dexterity');
-  v += 6.0 * (s.player.powers ? s.player.powers.size : 0);
+  v += 1.4 * stacksOf(me, 'ghoststep');
+  v += 4.0 * stacksOf(me, 'strength');
+  v += 2.0 * stacksOf(me, 'dexterity');
+  v += 6.0 * (me.powers ? me.powers.size : 0);
   return v;
 }
 
@@ -171,10 +192,11 @@ function residual(s, before, pool) {
  * @param {number} guarded Guard standing when the player ended the turn
  * @param {object} fc      per-fight running estimates {dps, threat, turns}
  */
-function projectedValue(t, before, guarded, fc) {
-  if (!t.player.alive) return -1e6;
+function projectedValue(t, before, guarded, fc, seat = null) {
+  const me = seatOf(t, seat);
+  if (!me.alive) return -1e6;
   const pool = enemyPool(t);
-  if (pool.living === 0) return 1e4 + t.player.hp;
+  if (pool.living === 0) return 1e4 + me.hp;
 
   // The projection describes THE REST of the fight, so both rates are dominated
   // by what the fight has actually been doing, not by the candidate turn. This
@@ -182,7 +204,7 @@ function projectedValue(t, before, guarded, fc) {
   // letting this turn's Guard move the *future* Guard estimate valued one point
   // of Curl Up at three or four points of Courage and the bot turtled itself to
   // death. What this turn's Guard is worth is the damage it stops this turn,
-  // and that is already inside `t.player.hp`.
+  // and that is already inside the driven seat's `hp`.
   const dealt = Math.max(0, before.enemyHp - pool.hp);
   const dps = Math.max(2.5, 0.15 * dealt + 0.85 * fc.dps);
   const sustain = 0.15 * guarded + 0.85 * fc.guard;
@@ -193,22 +215,23 @@ function projectedValue(t, before, guarded, fc) {
   const threat = Math.max(1, fc.threat, 0.65 * (fc.peak || 0));
   const lossPerTurn = Math.max(0, threat - sustain);
 
-  let v = t.player.hp - turnsLeft * lossPerTurn;
+  let v = me.hp - turnsLeft * lossPerTurn;
   v -= turnsLeft * 0.35;                        // a long fight is its own risk
-  v += residual(t, before, pool);
+  v += residual(t, before, pool, seat);
   return v;
 }
 
 /** Cheap score used only to shape the beam — no enemy turn simulated. */
 function staticScore(s, before, seat = null) {
   const pool = enemyPool(s);
-  const useful = Math.min(seatOf(s, seat).block, shownIncoming(s, seat));
-  return s.player.hp
-       + 1.0 * useful + 0.06 * (s.player.block - useful)
+  const me = seatOf(s, seat);
+  const useful = Math.min(me.block, shownIncoming(s, seat));
+  return me.hp
+       + 1.0 * useful + 0.06 * (me.block - useful)
        - 0.9 * pool.hp - 0.4 * pool.block
-       + residual(s, before, pool)
-       + 0.9 * s.player.energy              // do not dump for the sake of dumping
-       + 0.7 * s.piles.hand.length;         // cards in hand are options
+       + residual(s, before, pool, seat)
+       + 0.9 * me.energy                    // do not dump for the sake of dumping
+       + 0.7 * me.piles.hand.length;        // cards in hand are options
 }
 
 /** Simulate "stop here, end the turn" and score what the enemies leave behind. */
@@ -217,7 +240,7 @@ async function endTurnValue(e, before, fc, seat = null) {
   let t;
   try { t = e.clone(); await t.endTurn(); }
   catch { return -1e5; }
-  return projectedValue(t, before, guarded, fc);
+  return projectedValue(t, before, guarded, fc, seat);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -318,9 +341,9 @@ async function naivePlan(e, before, fc, seat = null) {
   const seq = [];
   const orig = c.playCard.bind(c);
   c.playCard = async (uid, tid) => { seq.push({ uid, targetId: tid }); return orig(uid, tid); };
-  try { await naiveTurn(c); } catch { return null; }
+  try { await naiveTurn(c, { seat }); } catch { return null; }
   if (!seq.length) return null;
-  if (c.over) return { seq, score: c.victory ? 1e4 + c.player.hp + 200 : -1e6 };
+  if (c.over) return { seq, score: c.victory ? 1e4 + seatOf(c, seat).hp + 200 : -1e6 };
   return { seq, score: await endTurnValue(c, before, fc, seat) };
 }
 
@@ -368,7 +391,7 @@ async function replay(e, seq, seat = null) {
 async function planTurn(e0, before, { beam, depth, cap, fc, debug = null, seat = null }) {
   let frontier = [{ e: e0, seq: [] }];
   let best = { seq: [], score: await endTurnValue(e0, before, fc, seat) };
-  if (debug) debug.push({ d: -1, names: ['(pass)'], score: +best.score.toFixed(1), guarded: e0.player.block });
+  if (debug) debug.push({ d: -1, names: ['(pass)'], score: +best.score.toFixed(1), guarded: seatOf(e0, seat).block });
 
   for (let d = 0; d < depth; d++) {
     const next = [];
@@ -379,7 +402,7 @@ async function planTurn(e0, before, { beam, depth, cap, fc, debug = null, seat =
         if (!sim) continue;
         const seq = st.seq.concat([opt]);
         if (sim.over) {
-          const s = sim.victory ? 1e4 + sim.player.hp + 200 : -1e6;
+          const s = sim.victory ? 1e4 + seatOf(sim, seat).hp + 200 : -1e6;
           if (s > best.score) best = { seq, score: s };
           continue;
         }

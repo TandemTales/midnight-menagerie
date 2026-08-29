@@ -1,6 +1,6 @@
 """The co-op entry point, driven as a player drives it.
 
-    python tests/coop/select.py [--party 4]
+    python tests/coop/selectscreen.py [--party 4]
 
 Picks the party size, then picks a Companion and a Kid and locks them in once
 per Kid, and starts the expedition — then asserts the Run that comes out is a

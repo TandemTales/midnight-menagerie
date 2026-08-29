@@ -1,0 +1,72 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>anchor — partyBench(size 1) must reproduce bench() exactly</title>
+<body><pre id="out" style="font:12px ui-monospace,monospace">running…</pre></body>
+<script type="module">
+/**
+ * The party harness's anchor. OWNER: balance.
+ *
+ * A measuring instrument that nothing checks is a story. With ONE Kid,
+ * `partyBench()` must reproduce `bench()` fight for fight — same win, same turn
+ * count, same damage taken — because at one seat they are meant to be the same
+ * fight. Everything the party rows claim rests on this row agreeing.
+ *
+ * It has already earned its place three times over. Building it caught:
+ *   1. `tests/coop/balance.html` running TWO enemy phases every round,
+ *   2. `lib/bot.js` reading the real board while scoring clones whenever a seat
+ *      was passed — so co-op plans were made blind, and only in co-op,
+ *   3. the node id seeding the fight (`fork('combat:' + node.id)`), which made
+ *      two harnesses look like they disagreed when they were simply playing
+ *      different cards.
+ *
+ * Each of those made the co-op numbers wrong in a way no suite could see.
+ */
+import { expedition, bench } from './lib/expedition.js';
+import { partyBench } from './lib/partybench.js';
+
+const Q = new URLSearchParams(location.search);
+const N = +(Q.get('n') || 6);
+const SEED0 = +(Q.get('seed') || 90000);
+
+const out = document.getElementById('out');
+const lines = [];
+const say = (s) => { lines.push(s); out.textContent = lines.join('\n'); };
+
+(async () => {
+  const pool = [];
+  for (let i = 0; i < N; i++) {
+    const r = await expedition({ seed: SEED0 + i * 7, bot: 'competent', policy: 'balanced', haunt: 0 });
+    const g = (r.regions || []).find(x => x.region === 'foyer');
+    if (g?.loadoutAtBoss) pool.push({ ...g.loadoutAtBoss, companion: 'marmalade' });
+    out.textContent = lines.join('\n') + `\n  … loadout ${i + 1}/${N}`;
+  }
+  say(`anchor: partyBench(size 1) vs bench(), ${pool.length} captured loadouts`);
+  say('');
+  let agree = 0;
+  const rows = [];
+  for (let i = 0; i < pool.length; i++) {
+    const seed = 700000 + i * 13;
+    const l = pool[i];
+    const B = await bench({ loadout: l, encounterTier: 'boss', encounterId: 'foyer-boss',
+                            region: 'foyer', seed, bot: 'competent', haunt: 0, maxTurns: 120 });
+    const P = await partyBench({ loadouts: [l], size: 1, seed, region: 'foyer', tier: 'boss',
+                                 encounterId: 'foyer-boss', haunt: 0, maxTurns: 120 });
+    const same = B.win === P.win && B.turns === P.turns && B.dmgTaken === P.takenBySeat[0];
+    if (same) agree++;
+    rows.push({ seed, same, bench: { win: B.win, turns: B.turns, dmg: B.dmgTaken },
+                party: { win: P.win, turns: P.turns, dmg: P.takenBySeat[0], errs: P.botErrors } });
+    say(`#${i} bench ${B.win ? 'W' : 'L'} ${String(B.turns).padStart(2)}t ${String(B.dmgTaken).padStart(3)}dmg`
+      + ` · party ${P.win ? 'W' : 'L'} ${String(P.turns).padStart(2)}t ${String(P.takenBySeat[0]).padStart(3)}dmg`
+      + `   ${same ? 'ok' : '*** DISAGREE ***'}   errs ${P.botErrors}`);
+  }
+  say('');
+  say(`${agree}/${pool.length} agree`);
+  window.__ANCHOR__ = { agree, n: pool.length, rows };
+  say(agree === pool.length && pool.length > 0 ? 'PASSED' : 'FAILED');
+})().catch(err => {
+  say('CRASHED: ' + (err && err.stack || err));
+  window.__ANCHOR__ = { error: String(err) };
+});
+</script>
+</body>
+</html>

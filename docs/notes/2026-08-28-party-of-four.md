@@ -127,7 +127,7 @@ says happens, in the words it uses. Ten minutes. The comment now says so.
 
 ## 4. Verification
 
-- `tests/coop/select.py --party 4` — drives four Kids through the real screen:
+- `tests/coop/selectscreen.py --party 4` — drives four Kids through the real screen:
   four separate ten-card decks, **no card instance in two decks**, four
   Backpacks, one shared route, and the count control offering exactly what
   `MAX_PARTY` allows. Companions are discovered from the board rather than

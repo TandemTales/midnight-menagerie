@@ -7,7 +7,7 @@ checks the screen really is seat 1's now — their Companion named under the
 painting, their hand in the fan, their Backpack in the top bar — ends again,
 and expects the enemy phase to have run and the round to come back to seat 0.
 
-This exists for the same reason `select.py` does. Everything else about co-op
+This exists for the same reason `selectscreen.py` does. Everything else about co-op
 is asserted against objects, and pass-and-play is the one part where the OBJECT
 being right proves nothing: `run.localSeat` moving is a one-line change, and the
 screen following it is a dozen places that were each set once at entry. The

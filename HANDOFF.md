@@ -123,7 +123,7 @@ out to be a second browser I had left running.
 
 | | |
 |---|---|
-| `tests/coop/select.py` | the entry point: "Go in together" through to two Kids on one route |
+| `tests/coop/selectscreen.py` | the entry point: "Go in together" through to two Kids on one route |
 | `tests/coop/hotseat.py` | END TURN, the veil, and the screen really being the other Kid's |
 | `tests/coop/rooms.py` | all four per-Kid rooms handing over, and a Rescue not |
 | `tests/coop/playthrough.py` | a two-Kid expedition, walked the way two people would |
