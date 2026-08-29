@@ -1875,6 +1875,53 @@ export async function run() {
       `${each.reduce((a, b) => a + b, 0)} total vs ${alone} alone`);
   });
 
+  // ── the breather between wings, for the WHOLE party ───────────────────────
+  /**
+   * `advanceRegion()` restores every Kid to a floor of their maximum Courage
+   * before the next wing. It was written against the un-suffixed aliases, which
+   * resolve to `this.local`, so in co-op exactly ONE seat got the floor and the
+   * others crossed on whatever they walked out of the boss with — including a
+   * Kid the engine had just revived at 1 Courage.
+   */
+  await atest('regions: every Kid gets the between-wings floor, not just the host', async () => {
+    const run = new Run({
+      seed: 991,
+      kids: [
+        { kid: 'maya', companion: 'marmalade' },
+        { kid: 'eli', companion: 'bones' },
+        { kid: 'amina', companion: 'mopsy' },
+      ],
+    });
+    for (const k of run.kids) k.courage = 1;          // everybody limped out
+    const before = run.kids.map(k => k.courage);
+    run.advanceRegion();
+    const after = run.kids.map(k => k.courage);
+    ok(before.every(v => v === 1), 'setup: all three walked out on 1 Courage');
+    for (let i = 0; i < run.kids.length; i++) {
+      const k = run.kids[i];
+      const floor = Math.round(k.maxCourage * 0.85);
+      eq(after[i], floor, `seat ${i} was restored to their own floor`,
+        `${after[i]} of ${k.maxCourage}, want ${floor}`);
+    }
+  });
+
+  await atest('regions: and a Kid already above the floor is left alone', async () => {
+    const run = new Run({
+      seed: 993,
+      kids: [
+        { kid: 'maya', companion: 'marmalade' },
+        { kid: 'eli', companion: 'bones' },
+      ],
+    });
+    run.kids[0].courage = run.kids[0].maxCourage;     // untouched
+    run.kids[1].courage = 3;
+    run.advanceRegion();
+    eq(run.kids[0].courage, run.kids[0].maxCourage,
+      'a healthy Kid is not clipped DOWN to the floor');
+    eq(run.kids[1].courage, Math.round(run.kids[1].maxCourage * 0.85),
+      'and the hurt one still comes up to it');
+  });
+
   // ── Mr. Moth's, per Kid ───────────────────────────────────────────────────
   // Prices and pity were already per Kid; the SHELF was not. Two Kids stood in
   // front of one shop looking at one list, and one of them buying the last

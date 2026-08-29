@@ -1976,12 +1976,26 @@ export class Run {
    * whole-run survival 46.7% -> 50.0%.
    */
   advanceRegion() {
-    const floor = Math.round(this.maxCourage * REGION_ENTRY_FLOOR);
-    if (this.courage < floor) {
-      const healed = floor - this.courage;
-      this.courage = floor;
-      bus.emit('run:heal', { amount: healed, reason: 'wing' });
+    /**
+     * THE BREATHER IS FOR THE WHOLE PARTY.
+     *
+     * This read `this.courage` and `this.maxCourage`, which are the un-suffixed
+     * aliases for `this.local` — so in co-op exactly ONE seat got the floor and
+     * every other Kid crossed into the Nursery on whatever they walked out of
+     * the boss fight with, including a Kid the engine had just revived at 1
+     * Courage. The measurement this whole mechanic exists for ("you started act
+     * two nearly dead") was being applied to a quarter of the party.
+     *
+     * The event still reports the TOTAL restored, which is what the HUD's
+     * heal readout wants; each Kid is floored against their OWN maximum,
+     * because Companions do not share a starting Courage.
+     */
+    let healed = 0;
+    for (const k of this.kids) {
+      const floor = Math.round((k.maxCourage || 0) * REGION_ENTRY_FLOOR);
+      if (k.courage < floor) { healed += floor - k.courage; k.courage = floor; }
     }
+    if (healed > 0) bus.emit('run:heal', { amount: healed, reason: 'wing' });
     this.regionIndex++;
     this.region = REGION_ORDER[this.regionIndex];
     this.encounterHistory = [];
