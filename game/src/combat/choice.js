@@ -42,13 +42,24 @@
  *   seat is somebody else's                    → resolved WITHOUT asking, using
  *                                                the request's own `prefer` rule
  *
- * That second branch is the seam a transport replaces: today it resolves
- * deterministically rather than putting a request in front of a player who is
- * not at this screen, and every resolution — including who it was for — is
- * appended to `choiceLog`, so a replay reconstructs the fight whichever way it
- * was answered. Handing one player control of another Kid's deck would be worse
- * than a deterministic pick, not better, so the fallback is not a bug to be
- * suffered until the wire exists; it is the correct local behaviour.
+ * That second branch is the seam a transport replaces, and `setRemote()` is
+ * where it plugs in. Locally it resolves deterministically rather than putting
+ * a request in front of a player who is not at this screen, and every
+ * resolution — including who it was for — is appended to `choiceLog`, so a
+ * replay reconstructs the fight whichever way it was answered. Handing one
+ * player control of another Kid's deck would be worse than a deterministic
+ * pick, not better, so the fallback is not a bug to be suffered until the wire
+ * exists; it is the correct LOCAL behaviour, and it stays.
+ *
+ * With a remote installed (`net/actions.js attachChoices`) the answer can be
+ * the real one: the owning seat's client opens its picker, publishes the answer
+ * as an input, and every other client — blocked in `ask()` at the same point of
+ * the same input — takes it. Two things about that are load-bearing and easy to
+ * undo, so both are written where they happen: the answer is delivered OUT OF
+ * BAND (`session._accept`), because queueing it behind the input that is
+ * waiting for it is a deadlock; and a request that names NO seat still belongs
+ * to one over a wire (`setRemote`), because otherwise all four clients answer
+ * it and answer it differently.
  */
 
 import { EV } from './events.js';
@@ -80,10 +91,39 @@ export class ChoiceBroker {
     /** Set while previewing — always auto-resolve, never ask a human. */
     this.autoOnly = false;
     this.pending = 0;
+    /** @type {((req:ChoiceRequest, info:object)=>Promise<number[]>)|null} */
+    this.remote = null;
+    /**
+     * Which request this is, counted from the start of the fight.
+     *
+     * The identity a wire names a request by, and it is NOT `req.id`: `REQ` is
+     * a module-level counter shared with every PREVIEW, so one player hovering
+     * a card bumps their numbering and the two clients stop agreeing — the same
+     * shape as a card uid on the wire (CONTRACTS trap 30). This counts only
+     * this broker's own asks, in the order the fight raises them, and a preview
+     * runs on a CLONE with its own broker.
+     */
+    this._askSeq = 0;
   }
 
   /** The renderer calls this once. `fn(req) -> Promise<number[]>` (indices into req.pool). */
   setResolver(fn) { this.resolver = fn || null; }
+
+  /**
+   * Install the wire. `fn(req, { seq, seat, mine }) -> Promise<number[]>`.
+   *
+   * With one installed, EVERY request goes through it — including the ones that
+   * name no seat. That is not over-reach, it is the whole difference between
+   * one engine and four: an unaddressed request means "whoever is driving", and
+   * over a wire all four clients are driving, so all four would open their own
+   * picker and answer it differently. `engine.acting` is who is really driving,
+   * so an unaddressed request belongs to that seat and everybody else waits for
+   * their answer.
+   *
+   * Without one, nothing here changes: the seat-addressed fallback below is the
+   * correct LOCAL behaviour and stays exactly as it was.
+   */
+  setRemote(fn) { this.remote = fn || null; }
 
   /** Replay a recorded `engine.choiceLog`. */
   setScript(log) { this.script = log ? log.slice() : null; this.scriptPos = 0; }
@@ -134,6 +174,13 @@ export class ChoiceBroker {
     // is never put in front of the person sitting here.
     const seatIndex = req.seat ? (req.seat.seat | 0) : null;
     const mine = seatIndex == null || seatIndex === (this.e.localSeat | 0);
+    const seq = this._askSeq++;
+    // Over a wire an unaddressed request still belongs to somebody: whoever is
+    // driving, which is `engine.acting`. See `setRemote`.
+    const owner = this.remote
+      ? (seatIndex != null ? seatIndex : ((this.e.current && this.e.current.seat) | 0))
+      : seatIndex;
+    const forOwner = owner == null || owner === (this.e.localSeat | 0);
 
     this.e._emit(EV.CHOICE, {
       requestId: req.id, kind: req.kind, prompt: req.prompt,
@@ -146,7 +193,13 @@ export class ChoiceBroker {
 
     let picked;
     if (this.script && this.scriptPos < this.script.length) {
+      // A REPLAY never goes to the wire. `setChoiceScript` is what a resume and
+      // a rejoin both use, and the answers are already in it.
       picked = this.script[this.scriptPos++].picked;
+    } else if (this.remote && !this.autoOnly) {
+      this.pending++;
+      try { picked = await this.remote(req, { seq, seat: owner, mine: forOwner }); }
+      finally { this.pending--; }
     } else if (this.resolver && !this.autoOnly && mine) {
       this.pending++;
       try { picked = await this.resolver(req); }

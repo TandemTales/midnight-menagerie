@@ -44,20 +44,25 @@
  *    seed, and checks the digest — which is precisely what `run._resumeCombat()`
  *    already does for a player who quit and came back.
  *
- * ── What this does NOT do yet ───────────────────────────────────────────────
+ * ── Where the rest of it lives ──────────────────────────────────────────────
  *
- * It is the foundation and the proof, not the finished feature. Not built:
- * routing every screen's actions through `input()` (combat is wired; the
- * reward, shop, Safe Room and Curiosity screens are not), the choice broker
- * reaching a remote picker rather than falling back to its `prefer` rule, and a
- * transport that reaches another machine. See `docs/notes/2026-08-28-netcode.md`.
+ * This file moves inputs and orders them and has no idea what any of them MEAN.
+ * The other halves, as of 2026-08-29:
+ *
+ *   `net/actions.js`  the applier every screen calls, and the choice bridge
+ *   `net/lobby.js`    where `seat`, `seats`, `seed` and `host` come from
+ *
+ * NOT built: a transport that reaches another machine. Steam P2P per the
+ * designer's decision, which needs a wrapper shell and ends the no-build rule —
+ * one file implementing the five methods in `net/transport.js`.
+ * See `docs/notes/2026-08-29-the-wire-reaches-the-screens.md`.
  */
 
 /** Input kinds the session understands. Anything else is rejected loudly. */
 export const INPUT = Object.freeze({
   PLAY: 'play',        // { pile, index, target }  a Trick played
   END: 'end',          // {}                       that seat ends its turn
-  CHOICE: 'choice',    // { picked: [] }           an answer to engine.choices.ask
+  CHOICE: 'choice',    // { seq2, forSeat, picked } an answer to engine.choices.ask
   SNACK: 'snack',      // { index, target }
   READY: 'ready',      // {}                       past a room / screen
   ROOM: 'room',        // { act, ... }             a Kid acted in a room
@@ -138,7 +143,7 @@ export class Session {
     this.peers = new Set();
     this.divergedAt = null;
     this._offs = [];
-    this._listeners = { input: new Set(), diverge: new Set(), peer: new Set() };
+    this._listeners = { input: new Set(), diverge: new Set(), peer: new Set(), answer: new Set() };
 
     if (this.transport) {
       this._offs.push(this.transport.onMessage((m, from) => this._onWire(m, from)));
@@ -267,6 +272,21 @@ export class Session {
     if (msg.seat === this.seat && from) return;   // our own, echoed: rule 2
     const at = this._insertAt(msg);
     this.log.splice(at, 0, msg);
+    /**
+     * A CHOICE answer is delivered OUT OF BAND, and it has to be.
+     *
+     * `engine.choices.ask()` is awaited from inside a card effect, which is
+     * inside an input the queue below is currently applying. Queue the answer
+     * behind that input and the two wait for each other forever: the play
+     * cannot finish until the choice arrives, and the choice cannot be applied
+     * until the play finishes. It is a deadlock, not a slow frame.
+     *
+     * Ordering survives anyway, which is the part that matters: an answer is
+     * not a new action in the sequence, it is the continuation of the one every
+     * client is already blocked on, at the same point in the same input. It
+     * still goes in the log, in its place, because a rejoin replays the log.
+     */
+    if (msg.t === INPUT.CHOICE) { this._emit('answer', msg); return; }
     this._run(msg);
   }
 

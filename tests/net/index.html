@@ -16,7 +16,7 @@ import { startingDeckFor } from '../../game/src/data/cards.js';
 import { LoopbackHub, ChannelTransport, canChannel } from '../../game/src/net/transport.js';
 import { Session, INPUT, cardRef, refCard } from '../../game/src/net/session.js';
 import { Run } from '../../game/src/state/run.js';
-import { act, ACT, attachActions, deckIndex } from '../../game/src/net/actions.js';
+import { act, ACT, attachActions, attachChoices, deckIndex } from '../../game/src/net/actions.js';
 import { Lobby, seedFromRoom } from '../../game/src/net/lobby.js';
 import { MAX_PARTY } from '../../game/src/combat/engine.js';
 
@@ -702,7 +702,148 @@ try {
     }
   }
 
-  // ══ 15. Without a session, `act` is the direct call it replaced ════════
+  // ══ 15. A choice reaches the player whose choice it is ═════════════════
+  /* The seat-addressed fallback is the correct LOCAL behaviour and stays. Over
+     a wire the answer can be the real one — and the thing that makes it hard is
+     that `ask()` is awaited from INSIDE an input the queue is applying, so the
+     answer cannot be queued behind it. */
+  {
+    const hub = new LoopbackHub({ async: true });
+    const client = (seat, id) => {
+      const deck = startingDeckFor('marmalade');
+      const e = makeDummyParty(new RNG(SEED), 2, { companion: 'marmalade', decks: [deck.slice(), deck.slice()], maxHp: 70 });
+      e.setTrackerInstaller(installTrackers);
+      e.localSeat = seat;
+      const run = { combat: e, _combatDigest: combatDigest, localSeat: seat, session: null,
+                    kids: [{}, {}], asSeat: Run.prototype.asSeat };
+      const session = new Session({ transport: hub.peer(id), seat, seats: 2, seed: SEED, host: seat === 0 });
+      attachActions(session, run);
+      attachChoices(session, e);
+      return { e, run, session };
+    };
+    const A = client(0, 'A'); const B = client(1, 'B');
+    await A.e.startCombat(); await B.e.startCombat();
+
+    // Only seat 1's client has a picker, and it always takes the LAST option —
+    // which the deterministic rule never would, so a board that shows it is a
+    // board that really used the answer.
+    let asked = 0;
+    B.e.setChoiceResolver(async (req) => { asked++; return [req.pool.length - 1]; });
+    let askedOnA = 0;
+    A.e.setChoiceResolver(async () => { askedOnA++; return [0]; });
+
+    const pool = () => A.e.players[1].piles.hand.slice(0, 3);
+    const ask = (e) => e.choices.ask({
+      kind: 'card', prompt: 'Choose', count: 1,
+      pool: e.players[1].piles.hand.slice(0, 3), seat: e.players[1],
+    });
+    const [pa, pb] = await Promise.all([ask(A.e), ask(B.e)]);
+
+    check(asked === 1, 'the picker opened on the client whose seat it is, once', String(asked));
+    check(askedOnA === 0, 'and NOT on the other one, which has no business answering it',
+      String(askedOnA));
+    check(pa.join(',') === pb.join(','), 'both clients resolved it the same way',
+      `${pa.join(',')} / ${pb.join(',')}`);
+    check(pa.join(',') === '2', 'with the answer the PLAYER gave, not the deterministic rule',
+      pa.join(','));
+    check(A.e.choiceLog.length === 1 && B.e.choiceLog.length === 1,
+      'and it is one entry in both choice logs',
+      `${A.e.choiceLog.length} / ${B.e.choiceLog.length}`);
+    check(A.e.choiceLog[0].seat === 1 && B.e.choiceLog[0].seat === 1,
+      'logged against the seat it belonged to, so a replay can tell them apart');
+
+    /* An UNADDRESSED request is the one that would quietly desync: it means
+       "whoever is driving", and over a wire all four clients are driving. */
+    let a2 = 0, b2 = 0;
+    A.e.setChoiceResolver(async (req) => { a2++; return [req.pool.length - 1]; });
+    B.e.setChoiceResolver(async () => { b2++; return [0]; });
+    const anyAsk = (e) => e._asSeat(e.players[0], () => e.choices.ask({
+      kind: 'card', prompt: 'Any', count: 1, pool: e.players[0].piles.hand.slice(0, 3),
+    }));
+    const [ua, ub] = await Promise.all([anyAsk(A.e), anyAsk(B.e)]);
+    check(a2 === 1 && b2 === 0,
+      'an unaddressed request is answered by whoever is ACTING, and only them',
+      `A ${a2} / B ${b2}`);
+    check(ua.join(',') === ub.join(',') && ua.join(',') === '2',
+      'so both clients take the same answer instead of one each',
+      `${ua.join(',')} / ${ub.join(',')}`);
+
+    /* An answer can arrive before the question: a fast peer, or a rejoining
+       client absorbing a log full of answers before it replays the plays that
+       ask them. Without the store, the replay hangs on the first one. */
+    let a3 = 0;
+    A.e.setChoiceResolver(async () => { a3++; return [0]; });
+    B.session.input({ t: INPUT.CHOICE, seq2: A.e.choices._askSeq, forSeat: 1, picked: [1] });
+    await new Promise(r => setTimeout(r, 40));
+    const early = await A.e.choices.ask({
+      kind: 'card', prompt: 'Late', count: 1,
+      pool: A.e.players[1].piles.hand.slice(0, 3), seat: A.e.players[1],
+    });
+    check(early.join(',') === '1', 'an answer that arrived FIRST is waiting when the question does',
+      early.join(','));
+    check(a3 === 0, 'and no picker opened for a question already answered', String(a3));
+
+    A.session.close(); B.session.close();
+  }
+
+  // ══ 16. The deadlock: a choice raised INSIDE an input ══════════════════
+  /* Every check above calls `ask()` from the outside, which is not where a card
+     asks. A card asks from inside its own effect, which is inside an input the
+     session's queue is applying — so if the ANSWER is queued too, the play
+     cannot finish until the answer arrives and the answer cannot be applied
+     until the play finishes. Neither ever happens. That is why
+     `session._accept` routes a CHOICE out of band, and this is the check that
+     fails if anybody puts it back in the queue. */
+  {
+    const hub = new LoopbackHub({ async: true });
+    const client = (seat, id) => {
+      const deck = startingDeckFor('marmalade');
+      const e = makeDummyParty(new RNG(SEED), 2, { companion: 'marmalade', decks: [deck.slice(), deck.slice()], maxHp: 70 });
+      e.setTrackerInstaller(installTrackers);
+      e.localSeat = seat;
+      const run = { combat: e, _combatDigest: combatDigest, localSeat: seat, session: null,
+                    kids: [{}, {}], asSeat: Run.prototype.asSeat };
+      const session = new Session({ transport: hub.peer(id), seat, seats: 2, seed: SEED, host: seat === 0 });
+      session.attach(run);
+      attachChoices(session, e);
+      /* The applier is the TEST's, not `attachActions`': this is about the
+         choice path, and a made-up verb reaching the real applier would only
+         earn a console error about an unknown act. */
+      session.on('input', async (msg) => {
+        if (msg.t !== INPUT.ROOM) return;
+        msg.answer = await e.choices.ask({
+          kind: 'card', prompt: 'Mid-input', count: 1,
+          pool: e.players[1].piles.hand.slice(0, 3), seat: e.players[1],
+        });
+      });
+      return { e, run, session };
+    };
+    const A = client(0, 'A'); const B = client(1, 'B');
+    await A.e.startCombat(); await B.e.startCombat();
+    B.e.setChoiceResolver(async (req) => [req.pool.length - 1]);
+
+    A.session.input({ t: INPUT.ROOM, act: 'test.ask' });
+    const settled = Promise.all([A.session.settled(), B.session.settled()]).then(() => 'done');
+    const raced = await Promise.race([
+      settled,
+      new Promise(r => setTimeout(() => r('DEADLOCK'), 2000)),
+    ]);
+    check(raced === 'done', 'a choice raised inside an applied input still resolves', String(raced));
+    if (raced === 'done') {
+      const la = A.session.log.filter(m => m.t === INPUT.ROOM)[0];
+      const lb = B.session.log.filter(m => m.t === INPUT.ROOM)[0];
+      check(la && lb && (la.answer || []).join(',') === (lb.answer || []).join(','),
+        'and both clients came out of it with the same answer',
+        `${(la && la.answer || []).join(',')} / ${(lb && lb.answer || []).join(',')}`);
+      check((la.answer || []).join(',') === '2',
+        'which is the one the owning seat\'s picker gave', (la.answer || []).join(','));
+      check(A.session.log.some(m => m.t === INPUT.CHOICE),
+        'the answer is in the log, in its place, because a rejoin replays it');
+    }
+    A.session.close(); B.session.close();
+  }
+
+  // ══ 17. Without a session, `act` is the direct call it replaced ════════
   /* Solo and pass-and-play must not pay for the wire. `act()` returns the run
      layer's own answer synchronously when there is nothing to send, so a screen
      that used to call `run.takeRewardCard()` keeps the timing it had. */

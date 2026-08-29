@@ -144,18 +144,12 @@ function _apply(run, msg, seat) {
     case INPUT.SNACK:
       return run.useSnack(msg.index | 0, msg.target || null);
     case INPUT.CHOICE:
-      // NOT BUILT. `ChoiceBroker` has `ask`, `setResolver` and `setScript` and
-      // no way to be answered from outside, because local play deliberately
-      // resolves another seat's request from its own `prefer` rule — one player
-      // rummaging in another Kid's hand would be worse than a stable rule. The
-      // remote picker is its own item and it needs a broker change, not a call
-      // site: docs/notes/2026-08-28-netcode.md §5.3.
-      //
-      // Loud rather than `?.`-swallowed (CONTRACTS rule 8): a choice that
-      // silently returned null here would desync the two clients by one answer
-      // and the digest would report it a turn later, a long way from the cause.
-      console.error('[net] INPUT.CHOICE has no applier yet — the remote picker '
-                  + 'is not built. See docs/notes/2026-08-28-netcode.md §5.3.', msg);
+      // Never reaches here. `session._accept` delivers a CHOICE out of band,
+      // straight to the `ask()` that is blocked on it, because queueing an
+      // answer behind the input that is waiting for it is a deadlock. See
+      // `attachChoices` below and `session._accept`.
+      console.error('[net] a CHOICE reached the input applier, which means '
+                  + 'session._accept stopped routing it out of band', msg);
       return null;
     case INPUT.READY:
     case INPUT.ROOM:
@@ -276,4 +270,79 @@ export function attachActions(session, run) {
   });
 }
 
-export default { ACT, act, applyInput, attachActions, cardAt, deckIndex };
+/**
+ * Put a seat's choices in front of that seat, on every client.
+ *
+ * `engine.choices` raises a request and awaits an answer. Locally the answer
+ * for anybody but the person at this screen comes from the request's own
+ * `prefer` rule — which is the RIGHT local behaviour, not a placeholder: one
+ * player rummaging in another Kid's hand would be worse than a stable rule.
+ * Over a wire the answer can be the real one, so it is.
+ *
+ * ── The shape ───────────────────────────────────────────────────────────────
+ *
+ * All four clients raise the SAME request at the same point of the same input,
+ * because that is what lockstep means. One of them owns it: it opens its
+ * picker, publishes the answer as `INPUT.CHOICE`, and the other three — blocked
+ * in `ask()` — take that answer and carry on. Everybody resolves the same
+ * request with the same picks and the boards stay identical.
+ *
+ * ── A request is named by its SEQUENCE, never by `req.id` ────────────────────
+ *
+ * `REQ` in `choice.js` is a module-level counter shared with every preview, so
+ * one player hovering a card bumps their numbering and the ids stop matching —
+ * a card uid's problem wearing a different hat (CONTRACTS trap 30). `seq`
+ * counts this fight's own asks in the order it raises them.
+ *
+ * ── An answer may arrive BEFORE the question ────────────────────────────────
+ *
+ * Which sounds impossible and is routine: a fast peer publishes while we are
+ * still applying an earlier input, and a rejoining client absorbs a log full of
+ * answers before it has replayed the plays that ask them. So answers are kept
+ * by seq and `ask()` takes a stored one immediately. Without that the replay
+ * hangs on the first choice it reaches.
+ */
+export function attachChoices(session, engine) {
+  if (!session || !engine || !engine.choices) return () => {};
+  const broker = engine.choices;
+  const answers = new Map();          // seq -> picked[]
+  const waiting = new Map();          // seq -> resolve
+
+  const off = session.on('answer', (msg) => {
+    const seq = msg.seq2 | 0;
+    answers.set(seq, msg.picked || []);
+    const w = waiting.get(seq);
+    if (w) { waiting.delete(seq); w(msg.picked || []); }
+  });
+
+  broker.setRemote(async (req, { seq, seat, mine }) => {
+    if (answers.has(seq)) return answers.get(seq);
+    if (mine) {
+      /* Our own call. The picker if there is one, the deterministic rule if
+         there is not — a headless client still has to answer, and it has to
+         answer the way every other client would if it were theirs. */
+      const picked = (broker.resolver && !broker.autoOnly)
+        ? await broker.resolver(req)
+        : broker.auto(req);
+      // `seq2`, not `seq`: `session.input()` stamps its own `seq` for ordering
+      // and would overwrite this one.
+      session.input({ t: INPUT.CHOICE, seq2: seq, forSeat: seat, picked });
+      return picked;
+    }
+    /**
+     * Somebody else's call, and we wait for it. If that seat is not at the
+     * table any more the wait would never end, so a seat that has FALLEN or
+     * does not exist falls back to the deterministic rule — the same answer on
+     * every client, which is the only kind of fallback lockstep can take. A
+     * seat that has merely DISCONNECTED is not this function's problem: the
+     * game waits, and `session.rejoin()` is what ends the wait.
+     */
+    const pl = engine.players[seat | 0];
+    if (!pl || pl.fallen || !pl.alive) return broker.auto(req);
+    return new Promise(res => waiting.set(seq, res));
+  });
+
+  return () => { off(); broker.setRemote(null); answers.clear(); waiting.clear(); };
+}
+
+export default { ACT, act, applyInput, attachActions, attachChoices, cardAt, deckIndex };
