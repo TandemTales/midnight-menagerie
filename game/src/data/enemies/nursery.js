@@ -872,6 +872,25 @@ export const patchworkGiant = {
   moves: {
     'stuffed-fist': {
       id: 'stuffed-fist', name: 'Stuffed Fist', intent: Intent.ATTACK, damage: 11, hits: 1,
+      /**
+       * MULTIPLAYER: it must not hold one Kid for the whole fight.
+       *
+       * The Giant declared no `partyTarget`, no `partyPick` and no `splash` on
+       * either attack, so `intentTargetFor` rolled ONE seat and kept it until
+       * that Kid fell — trap 38. Measured, that is WORSE for it than having no
+       * multiplayer content at all: against the arithmetic baseline for a
+       * four-Kid party (see the note) it took **9.9 points LESS** of the
+       * party's Courage than a contentless enemy would, because three Kids
+       * stood untouched and hit it freely for the whole fight.
+       *
+       * §13 and §34 are silent on its targeting — §34 gives it only the
+       * proportional Patch thresholds — so this takes the Nursery's own
+       * authored preference: "prefers the player with the lowest percentage
+       * Courage. The target is shown clearly before players act" (§29), which
+       * is also what CONTRACTS asks of a `partyPick`: a preference the player
+       * cannot game inside the turn they are shown the arrow.
+       */
+      partyPick: 'lowestCourage',
       tell: 'It winds up an arm that used to belong to a bear.',
       damageFn: (c) => {
         const d = 11 + patchworkGiant.atkBonus(c);
@@ -892,6 +911,11 @@ export const patchworkGiant = {
     },
     'wild-flail': {
       id: 'wild-flail', name: 'Wild Flail', intent: Intent.ATTACK, damage: 5, hits: 3,
+      // MULTIPLAYER: every limb goes a different way, so it goes at everybody.
+      // §27's default for this region is that the NUMBER does not move —
+      // "individual enemy attack damage generally remains close to solo values.
+      // Mechanics change to account for multiple players."
+      partyTarget: 'all',
       tell: 'Every mismatched limb goes in a different direction at once.',
       damageFn: (c) => 5 + patchworkGiant.atkBonus(c),
       hitsFn: () => 3,

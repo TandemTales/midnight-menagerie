@@ -155,14 +155,48 @@ change him.
   is output, not sustain; Prim is already at 13 and 7x2 against the chapter's
   10 and 5x2.
 
-- **STILL OPEN, and now the honest headline for the party game: a party
-  finishes too comfortable.** Elite `left%` is **59.5 solo against 78.9 and
-  82.8** at three and four Kids; the standard tier is 61 against 86. Length is fixed, cost is not.
-  This is trap 45's shape — Guard scales with the party and enemy damage does
-  not — and the lever is targeting, not Courage. The Grand Coatcheck is the one
-  Foyer elite whose attacks declare no `partyTarget`, no `partyPick` and no
-  `splash` (trap 38); the Unwelcome Guest and the House Bell both implement
-  their §27 adjustments in full, as do the Toy Chest and the Patchwork Giant.
+- **THE PARTY-COST GAP IS ARITHMETIC, and exactly one move in the game beats
+  it.** The standing "a party finishes too comfortable" item is not an
+  encounter-by-encounter mystery. At four Kids the pool is ~4x and the output
+  is ~4x, so a fight runs `poolScale/4` as long as solo and the enemy delivers
+  that share of its solo total into four times the pool:
+
+      cost4 = costSolo x (poolScale / 4) / 4        with NO content at all
+
+  What an encounter costs BELOW that is what its multiplayer content buys:
+
+  | encounter | solo left | 4p predicted | 4p measured | buys |
+  |---|---|---|---|---|
+  | Foyer elite tier | 49.5% | 82.0% | 82.8% | −0.8 |
+  | Butler | 15.7% | 83.1% | 82.8% | +0.3 |
+  | **Governess** | 41.0% | 81.6% | 76.2% | **+5.3** |
+  | Toy Chest | 74.5% | 90.9% | 94.8% | −3.9 |
+  | Patchwork Giant | 54.5% | 83.8% | 93.7% | −9.9 |
+  | Porcelain Twins | 72.0% | 90.0% | 93.7% | −3.6 |
+
+  **Only the Governess is positive, and it is one flag on one move.** Toggling
+  Sharp Correction's pierce off moves her 4p Courage-left 78% → 87% and her
+  cost 61.6 → 21.6 — a third of the bill from `pierceFn`.
+
+- **A PICK SPREADS DAMAGE; AoE AND PIERCE ADD IT — measured, on the Patchwork
+  Giant.** It declared no targeting at all and was the worst row in the table.
+  Three states, one change at a time, solo byte-identical throughout:
+
+  | | 4p left | buys |
+  |---|---|---|
+  | no targeting | 93.7% | −9.9 |
+  | `partyPick: 'lowestCourage'` (§29) | 91.0% | −7.3 |
+  | + Wild Flail `partyTarget: 'all'` at the full number (§27) | 85.8% | **−2.0** |
+
+  Rotating the target recovered 2.6 points; making one of two attacks hit
+  everybody recovered 5.3 more. **An enemy that holds one Kid is worse against
+  a party than one with no multiplayer logic at all**, because its output lands
+  on a seat already over-Guarded or already down. Both changes shipped.
+
+  Next by the table's own ranking: the **Toy Chest (−3.9)** and the
+  **Porcelain Twins (−3.6)** declare no targeting on their attacks either. The
+  Butler and the Foyer elite tier are at par and would need PIERCE rather than
+  more coverage. `docs/notes/2026-08-29-the-party-cost-gap-is-arithmetic.md`.
 
 ### Where it stands, 2026-08-29
 

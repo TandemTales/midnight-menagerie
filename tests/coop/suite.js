@@ -856,6 +856,46 @@ export async function run() {
     eq(four.shown, 14, 'the intent shows the party number', String(four.shown));
   });
 
+  /**
+   * The Patchwork Giant declared no targeting at all, so `intentTargetFor`
+   * rolled ONE seat and kept it (trap 38). Measured against the arithmetic
+   * baseline for four Kids that was WORSE than having no multiplayer content:
+   * it took 9.9 points less of the party's Courage than a contentless enemy
+   * would, because three Kids stood untouched and hit it freely.
+   */
+  const giantParty = async (size, seed) => {
+    const { getEnemy } = await import('../../game/src/data/enemies/index.js');
+    return startDummyParty(new RNG(seed), size, {
+      enemies: [{ def: getEnemy('patchwork-giant'), hp: 400, id: 'giant' }], maxHp: 200,
+    });
+  };
+
+  await atest('targeting: the Patchwork Giant aims at the Kid closest to breaking', async () => {
+    const e = await giantParty(4, 461);
+    const en = e.enemies[0];
+    const [, b, , d] = e.players;
+    b.hp = 40;
+    e.overrideIntent(en, en.def.moves['stuffed-fist']);
+    eq(e.partyTargets(en, en.pendingMove)[0], b, 'Stuffed Fist picks the lowest Courage');
+    b.hp = 200; d.hp = 30;
+    e.overrideIntent(en, en.def.moves['stuffed-fist']);
+    eq(e.partyTargets(en, en.pendingMove)[0], d,
+      'and it MOVES when somebody else is closest — it does not hold one Kid');
+  });
+
+  await atest('targeting: Wild Flail really goes at every Kid', async () => {
+    const e = await giantParty(4, 463);
+    const en = e.enemies[0];
+    e.overrideIntent(en, en.def.moves['wild-flail']);
+    const before = e.players.map(p => p.hp);
+    await e.endTurn();
+    const took = e.players.map((p, i) => before[i] - p.hp);
+    ok(took.every(v => v > 0), 'every seat took the flail', JSON.stringify(took));
+    // The number does not move in a party: nursery 27's default.
+    ok(took.every(v => v === took[0]), 'and every seat took the SAME amount',
+      JSON.stringify(took));
+  });
+
   await atest('targeting: a two-target move never names the same Kid twice', async () => {
     const e = await startDummyParty(new RNG(431), 2, { enemies: [SPLITTER], maxHp: 200 });
     const [a, b] = e.players;
