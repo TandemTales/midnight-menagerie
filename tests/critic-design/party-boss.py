@@ -24,6 +24,12 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--tier", default="boss")
 ap.add_argument("--enc", default="")
 ap.add_argument("--region", default="foyer")
+ap.add_argument("--lregion", default="",
+                help="where the DECKS come from, if not --region. A run is "
+                     "RUN_LENGTH_REGIONS=2 wings, so there are no Sleeping "
+                     "Quarters loadouts to capture; --lregion nursery measures "
+                     "the Bedframe Beast against what a party carries when the "
+                     "run currently ends. Every table using it says PROXY.")
 ap.add_argument("--n", type=int, default=16)
 ap.add_argument("--gen", type=int, default=8)
 ap.add_argument("--sizes", default="1,2,3,4")
@@ -42,7 +48,8 @@ except Exception:
     pass
 
 URL = (f"http://localhost:8777/tests/critic-design/party-boss.html?tier={a.tier}&enc={a.enc}"
-       f"&region={a.region}&n={a.n}&gen={a.gen}&sizes={a.sizes}&slugs={a.slugs}"
+       f"&region={a.region}&lregion={a.lregion or a.region}"
+       f"&n={a.n}&gen={a.gen}&sizes={a.sizes}&slugs={a.slugs}"
        f"&pol={a.pol}&seed={a.seed}&haunt={a.haunt}&scales={a.scales}")
 
 with sync_playwright() as p:
@@ -68,6 +75,14 @@ if R.get("error"):
 (ROOT / "tests" / "critic-design" / a.out).write_text(json.dumps(R, indent=1), encoding="utf-8")
 print(f"== party {a.region}/{a.tier} {a.enc or '(rolled)'}  haunt {a.haunt}  xHP {a.scales}")
 print("   loadouts " + " · ".join(f"{k} {v}" for k, v in R["loadouts"].items()))
+# This page `say()`s its own header and NOTHING reads it — the table below is
+# re-rendered here from `window.__PARTY__`. So a warning that only reaches the
+# page reaches nobody, and a proxy table would read as a real one.
+lreg = (R.get("config") or {}).get("LREGION") or a.region
+if lreg != a.region:
+    print(f"   ** PROXY DECKS: captured at the {lreg} boss. RUN_LENGTH_REGIONS is 2, so an")
+    print(f"      expedition never reaches {a.region} and there are no real loadouts for it.")
+    print(f"      These rows say what would happen if the run went one wing further.")
 print(f"{'xHP':<7}{'party':<7}{'n':>4}{'win%':>7}{'turns':>7}{'med':>5}{'left%':>8}"
       f"{'fallen':>8}{'spread':>8}{'enemyHP':>9}{'cost':>7}{'errs':>6}{'to':>4}")
 for r in R["table"]:

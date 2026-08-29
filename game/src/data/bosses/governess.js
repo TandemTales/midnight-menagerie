@@ -345,6 +345,19 @@ export const governess = {
     return amount;
   },
 
+  /**
+   * Every living Kid except the one this move is aimed at.
+   *
+   * The seats a declared `splash` is for. `c.player` is the aim and it is fixed
+   * when the ctx is built, so this is the honest complement of it — the same
+   * helper the Butler carries for Enough of This.
+   */
+  bystanders(c) {
+    const aim = c.player;
+    const all = typeof c.players === 'function' ? c.players() : [];
+    return all.filter(pl => pl && pl !== aim && pl.alive);
+  },
+
   /** Buttoned Patch: every Guard gain is 4 bigger. */
   gainGuard(c, n) {
     c.block(c.self, n + (governess.activePatch(c) === 'buttoned' ? 4 : 0));
@@ -380,18 +393,78 @@ export const governess = {
       },
     },
     'sharp-correction': {
+      /**
+       * MULTIPLAYER: single-target on purpose, and aimed at the Kid closest to
+       * breaking. §29 is the Nursery's own authored preference for a
+       * telegraphed pick — Jack in the Box "prefers the player with the lowest
+       * percentage Courage. The target is shown clearly before players act."
+       *
+       * `lowestCourage` and not `lowestGuard` for the reason CONTRACTS records
+       * under `partyPick`: a preference computed from state the player controls
+       * cannot both track that state and stay still, and Guard is wiped at the
+       * start of every turn. Courage is not something a Kid can move inside the
+       * turn they are shown the arrow, so the arrow holds still by itself.
+       */
       id: 'sharp-correction', name: 'Sharp Correction', intent: Intent.ATTACK, damage: 24, hits: 1,
+      partyPick: 'lowestCourage',
       tell: 'Her needles come together with a small, tidy click.',
       damageFn: (c) => 24 + bossDmg(c),
       effect(c) { hitPlayer(c, 24 + bossDmg(c)); },
     },
     'mind-your-seams': {
+      /**
+       * MULTIPLAYER: phase one's AoE. She takes in a seam on EVERY child.
+       *
+       * §35 covers the Doll's Courage, Stitched Together's per-Kid allowance
+       * and the repair windows, and says nothing about how her own attacks find
+       * a target — so this follows the region's own precedents: §31 sends
+       * Gallop at "all players" once the Rocking Horse is excited, restating
+       * the damage per head; §27 says "individual enemy attack damage generally
+       * remains close to solo values. Mechanics change to account for multiple
+       * players."
+       *
+       * Measured before this existed: she has no targeting at all, and an enemy
+       * with no `partyPick` rolls ONE seat at the start of the fight and holds
+       * it (`engine.intentTargetFor`). So at four Kids she fought one Kid for
+       * eighteen turns while three stood untouched and hit her freely — 100%
+       * player wins, nobody ever falling, 90% of the party's Courage left, at
+       * n=16, against a solo 62.5% at 11 turns.
+       *
+       * 12x2 EACH, and the number does not come down.
+       *
+       * The Butler's Dust Them Off trades per-head damage for coverage (5x2 to
+       * 3x2) and that is right for HIM: it comes up every third turn of phase
+       * one, so at four Kids the full number put the party under pressure every
+       * round and measured 0% wins. Hers comes up once in four turns and only
+       * in phase one. The reduced version was tried first and measured — at
+       * n=16 it moved four Kids from 100% wins to 93.8% and their leftover
+       * Courage from 90% to 87%, against a solo 62.5% and 56%. Which is to say
+       * it did nothing: her per-head number after the cut was small enough that
+       * four Kids' Guard simply ate it.
+       *
+       * So this follows §27 literally instead — "individual enemy attack damage
+       * generally remains close to solo values. Mechanics change to account for
+       * multiple players." The mechanic that changed is who it lands on.
+       */
       id: 'mind-your-seams', name: 'Mind Your Seams', intent: Intent.ATTACK_DEBUFF, damage: 12, hits: 2,
+      partyTarget: 'all',
       tell: 'She takes in a seam somewhere on you that you did not know you had.',
       applies: [{ id: 'seam-pinch', stacks: 1, to: 'player' }],
       damageFn: (c) => 12 + bossDmg(c),
       hitsFn: () => 2,
-      effect(c) { hitPlayer(c, 12 + bossDmg(c), 2); c.applyStatus(c.player, 'seam-pinch', 1); },
+      effect(c) {
+        hitPlayer(c, 12 + bossDmg(c), 2);
+        /**
+         * Every seat the damage reached, not `c.player`.
+         *
+         * `c.player` is the aimed seat and it is computed ONCE when the ctx is
+         * built, so on an AoE move the damage goes to everybody and a status
+         * hung on `c.player` lands on one Kid — the Pinched Seam would arrive
+         * on a single child while all four took the hit. `c.targets()` is the
+         * seats this move actually lands on, whatever it declares.
+         */
+        for (const pl of c.targets()) c.applyStatus(pl, 'seam-pinch', 1);
+      },
     },
     'mend-my-darling': {
       id: 'mend-my-darling', name: 'Mend My Darling', intent: Intent.BUFF,
@@ -449,15 +522,49 @@ export const governess = {
        * was the single largest reason 85% of her printed damage never landed. The thread
        * she is drawing tight is the seam Mind Your Seams took in on YOU, so it hurts.
        */
+      /**
+       * MULTIPLAYER: one thread, and it goes through everybody.
+       *
+       * The tell already says so — "through herself, and through you" — and in
+       * a nursery full of children the thread does not stop at the first one.
+       * A DECLARED `splashFn`, because CONTRACTS is explicit that a move whose
+       * main number belongs to one Kid while other seats also take damage must
+       * declare it or the intent lies to every seat with no arrow.
+       *
+       * This is PHASE TWO'S ONLY AoE, and phase two is the longer half — the
+       * cycle is Needle Point, Tighten the Stitch, Snip Snip, Needle Point, and
+       * without this the other three touch at most two Kids. 10 and not the
+       * Butler's 6 for that reason: his splash sits beside a phase-two move
+       * that already hits everybody, and hers does not.
+       */
       id: 'tighten-the-stitch', name: 'Tighten the Stitch', intent: Intent.ATTACK_DEFEND,
       damage: 17, hits: 1, block: 13,
       tell: 'She pulls a thread through herself, and through you, and draws it tight.',
       damageFn: (c) => 17 + bossDmg(c),
+      splashFn: (c) => (c.partySize() > 1 ? 10 : 0),
       blockFn: (c) => 13 + (governess.activePatch(c) === 'buttoned' ? 4 : 0),
-      effect(c) { hitPlayer(c, 17 + bossDmg(c)); governess.gainGuard(c, 13); mem(c).tightened = true; },
+      effect(c) {
+        hitPlayer(c, 17 + bossDmg(c));
+        for (const pl of governess.bystanders(c)) c.damage(pl, 10);
+        governess.gainGuard(c, 13);
+        mem(c).tightened = true;
+      },
     },
     'snip-snip': {
+      /**
+       * MULTIPLAYER: three quick cuts, across two children.
+       *
+       * §33 is the precedent and it is the same gesture: the Porcelain Doll's
+       * Sharp Little Hands "can target two different players" once Shattered,
+       * "if only one player remains available, both hits target that player" —
+       * which is exactly what `partyTarget: 'two'` does.
+       *
+       * 11x3 to each, per §27 — the number stays at its solo value and the
+       * change is who it reaches. Two seats is the coverage; cutting the number
+       * as well was tried and measured nothing (see Mind Your Seams).
+       */
       id: 'snip-snip', name: 'Snip Snip', intent: Intent.ATTACK, damage: 11, hits: 3,
+      partyTarget: 'two',
       tell: 'Three quick cuts, the way one trims a loose thread.',
       damageFn: (c) => 11 + bossDmg(c),
       hitsFn: () => 3,

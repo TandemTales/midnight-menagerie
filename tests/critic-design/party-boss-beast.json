@@ -1,0 +1,1087 @@
+{
+ "config": {
+  "TIER": "boss",
+  "ENC": "sq-boss",
+  "REGION": "sleeping-quarters",
+  "LREGION": "nursery",
+  "N": 8,
+  "GEN": 8,
+  "SIZES": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "SLUGS": [
+   "marmalade",
+   "bones"
+  ],
+  "POL": "balanced",
+  "SEED0": 90000,
+  "HAUNT": 0,
+  "SCALES": [
+   1
+  ]
+ },
+ "loadouts": {
+  "marmalade": 5,
+  "bones": 8
+ },
+ "table": [
+  {
+   "scale": 1,
+   "size": 1,
+   "n": 8,
+   "win": 100,
+   "turnsMean": 15.63,
+   "turnsMed": 19,
+   "left": 73,
+   "fallen": 0,
+   "spread": 1,
+   "enemyHp": 295,
+   "cost": 18.38,
+   "errs": 0,
+   "timeouts": 0
+  },
+  {
+   "scale": 1,
+   "size": 2,
+   "n": 8,
+   "win": 87.5,
+   "turnsMean": 24.5,
+   "turnsMed": 18,
+   "left": 89,
+   "fallen": 0.13,
+   "spread": 0.19,
+   "enemyHp": 649,
+   "cost": 23,
+   "errs": 0,
+   "timeouts": 1
+  },
+  {
+   "scale": 1,
+   "size": 3,
+   "n": 8,
+   "win": 100,
+   "turnsMean": 20,
+   "turnsMed": 24,
+   "left": 90,
+   "fallen": 0,
+   "spread": 0.34,
+   "enemyHp": 1180,
+   "cost": 11.13,
+   "errs": 0,
+   "timeouts": 0
+  },
+  {
+   "scale": 1,
+   "size": 4,
+   "n": 8,
+   "win": 87.5,
+   "turnsMean": 26.88,
+   "turnsMed": 23,
+   "left": 94,
+   "fallen": 0,
+   "spread": 0.41,
+   "enemyHp": 1682,
+   "cost": 8.75,
+   "errs": 0,
+   "timeouts": 1
+  }
+ ],
+ "rows": [
+  {
+   "nodeId": "bench-90000",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90000,
+   "win": true,
+   "turns": 20,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.18181818181818182,
+   "courageCost": 63,
+   "takenBySeat": [
+    69
+   ],
+   "hitsBySeat": [
+    12
+   ],
+   "spread": 1,
+   "enemyHp": 295,
+   "enemyGuard": 53,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90013,
+   "win": true,
+   "turns": 20,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9166666666666666,
+   "courageCost": 6,
+   "takenBySeat": [
+    15
+   ],
+   "hitsBySeat": [
+    13
+   ],
+   "spread": 1,
+   "enemyHp": 295,
+   "enemyGuard": 53,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90026,
+   "win": true,
+   "turns": 11,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8805970149253731,
+   "courageCost": 8,
+   "takenBySeat": [
+    17
+   ],
+   "hitsBySeat": [
+    8
+   ],
+   "spread": 1,
+   "enemyHp": 295,
+   "enemyGuard": 43,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90039,
+   "win": true,
+   "turns": 11,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9036144578313253,
+   "courageCost": -10,
+   "takenBySeat": [
+    8
+   ],
+   "hitsBySeat": [
+    8
+   ],
+   "spread": 1,
+   "enemyHp": 295,
+   "enemyGuard": 33,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90052,
+   "win": true,
+   "turns": 11,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 1,
+   "courageCost": 0,
+   "takenBySeat": [
+    0
+   ],
+   "hitsBySeat": [
+    7
+   ],
+   "spread": 1,
+   "enemyHp": 295,
+   "enemyGuard": 43,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90065,
+   "win": true,
+   "turns": 19,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.12987012987012986,
+   "courageCost": 67,
+   "takenBySeat": [
+    73
+   ],
+   "hitsBySeat": [
+    15
+   ],
+   "spread": 1,
+   "enemyHp": 295,
+   "enemyGuard": 53,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90078,
+   "win": true,
+   "turns": 21,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9305555555555556,
+   "courageCost": 5,
+   "takenBySeat": [
+    14
+   ],
+   "hitsBySeat": [
+    13
+   ],
+   "spread": 1,
+   "enemyHp": 295,
+   "enemyGuard": 53,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90091,
+   "win": true,
+   "turns": 12,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8805970149253731,
+   "courageCost": 8,
+   "takenBySeat": [
+    17
+   ],
+   "hitsBySeat": [
+    8
+   ],
+   "spread": 1,
+   "enemyHp": 295,
+   "enemyGuard": 43,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90000",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90000,
+   "win": false,
+   "turns": 60,
+   "timeout": true,
+   "fallen": 1,
+   "courageLeft": 0.2847682119205298,
+   "courageCost": 108,
+   "takenBySeat": [
+    93,
+    31
+   ],
+   "hitsBySeat": [
+    12,
+    25
+   ],
+   "spread": 0.5,
+   "enemyHp": 649,
+   "enemyGuard": 98,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90013,
+   "win": true,
+   "turns": 33,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8972602739726028,
+   "courageCost": 2,
+   "takenBySeat": [
+    5,
+    5
+   ],
+   "hitsBySeat": [
+    1,
+    8
+   ],
+   "spread": 1,
+   "enemyHp": 649,
+   "enemyGuard": 73,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90026,
+   "win": true,
+   "turns": 18,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.875,
+   "courageCost": 11,
+   "takenBySeat": [
+    23,
+    0
+   ],
+   "hitsBySeat": [
+    9,
+    1
+   ],
+   "spread": 0,
+   "enemyHp": 649,
+   "enemyGuard": 53,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90039,
+   "win": true,
+   "turns": 16,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.910828025477707,
+   "courageCost": -4,
+   "takenBySeat": [
+    0,
+    5
+   ],
+   "hitsBySeat": [
+    7,
+    3
+   ],
+   "spread": 0,
+   "enemyHp": 649,
+   "enemyGuard": 43,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90052,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9862068965517241,
+   "courageCost": 2,
+   "takenBySeat": [
+    0,
+    5
+   ],
+   "hitsBySeat": [
+    0,
+    4
+   ],
+   "spread": 0,
+   "enemyHp": 649,
+   "enemyGuard": 18,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90065,
+   "win": true,
+   "turns": 18,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8735632183908046,
+   "courageCost": 21,
+   "takenBySeat": [
+    28,
+    0
+   ],
+   "hitsBySeat": [
+    7,
+    4
+   ],
+   "spread": 0,
+   "enemyHp": 649,
+   "enemyGuard": 53,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90078,
+   "win": true,
+   "turns": 17,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.95,
+   "courageCost": 0,
+   "takenBySeat": [
+    5,
+    0
+   ],
+   "hitsBySeat": [
+    2,
+    7
+   ],
+   "spread": 0,
+   "enemyHp": 649,
+   "enemyGuard": 53,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90091,
+   "win": true,
+   "turns": 28,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.7066666666666667,
+   "courageCost": 44,
+   "takenBySeat": [
+    53,
+    0
+   ],
+   "hitsBySeat": [
+    14,
+    6
+   ],
+   "spread": 0,
+   "enemyHp": 649,
+   "enemyGuard": 63,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90000",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90000,
+   "win": true,
+   "turns": 17,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9724770642201835,
+   "courageCost": 6,
+   "takenBySeat": [
+    12,
+    0,
+    5
+   ],
+   "hitsBySeat": [
+    8,
+    2,
+    3
+   ],
+   "spread": 0.4411764705882353,
+   "enemyHp": 1180,
+   "enemyGuard": 43,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90013,
+   "win": true,
+   "turns": 33,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.777292576419214,
+   "courageCost": 20,
+   "takenBySeat": [
+    5,
+    5,
+    24
+   ],
+   "hitsBySeat": [
+    3,
+    8,
+    11
+   ],
+   "spread": 0.4411764705882353,
+   "enemyHp": 1180,
+   "enemyGuard": 73,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90026,
+   "win": true,
+   "turns": 24,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8018433179723502,
+   "courageCost": 35,
+   "takenBySeat": [
+    47,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    13,
+    2,
+    2
+   ],
+   "spread": 0,
+   "enemyHp": 1180,
+   "enemyGuard": 53,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90039,
+   "win": true,
+   "turns": 13,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8675213675213675,
+   "courageCost": 13,
+   "takenBySeat": [
+    17,
+    5,
+    0
+   ],
+   "hitsBySeat": [
+    4,
+    5,
+    1
+   ],
+   "spread": 0.34090909090909094,
+   "enemyHp": 1180,
+   "enemyGuard": 28,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90052,
+   "win": true,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9907834101382489,
+   "courageCost": 2,
+   "takenBySeat": [
+    0,
+    5,
+    5
+   ],
+   "hitsBySeat": [
+    0,
+    1,
+    4
+   ],
+   "spread": 0.5,
+   "enemyHp": 1180,
+   "enemyGuard": 18,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90065,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 1,
+   "courageCost": -1,
+   "takenBySeat": [
+    0,
+    0,
+    5
+   ],
+   "hitsBySeat": [
+    0,
+    0,
+    4
+   ],
+   "spread": 1.1102230246251565e-16,
+   "enemyHp": 1180,
+   "enemyGuard": 18,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90078,
+   "win": true,
+   "turns": 25,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9053497942386831,
+   "courageCost": -3,
+   "takenBySeat": [
+    5,
+    0,
+    3
+   ],
+   "hitsBySeat": [
+    6,
+    3,
+    10
+   ],
+   "spread": 0.4999999999999999,
+   "enemyHp": 1180,
+   "enemyGuard": 53,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90091,
+   "win": true,
+   "turns": 33,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9209302325581395,
+   "courageCost": 17,
+   "takenBySeat": [
+    24,
+    0,
+    11
+   ],
+   "hitsBySeat": [
+    11,
+    4,
+    11
+   ],
+   "spread": 0.4714285714285714,
+   "enemyHp": 1180,
+   "enemyGuard": 73,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90000",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90000,
+   "win": true,
+   "turns": 19,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9438943894389439,
+   "courageCost": 9,
+   "takenBySeat": [
+    22,
+    0,
+    5,
+    0
+   ],
+   "hitsBySeat": [
+    11,
+    2,
+    3,
+    2
+   ],
+   "spread": 0.24691358024691357,
+   "enemyHp": 1682,
+   "enemyGuard": 38,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90013,
+   "win": true,
+   "turns": 46,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8613861386138614,
+   "courageCost": 11,
+   "takenBySeat": [
+    5,
+    5,
+    14,
+    8
+   ],
+   "hitsBySeat": [
+    1,
+    10,
+    13,
+    10
+   ],
+   "spread": 0.75,
+   "enemyHp": 1682,
+   "enemyGuard": 83,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90026,
+   "win": true,
+   "turns": 9,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9831649831649831,
+   "courageCost": -3,
+   "takenBySeat": [
+    5,
+    0,
+    0,
+    5
+   ],
+   "hitsBySeat": [
+    4,
+    0,
+    0,
+    1
+   ],
+   "spread": 0.33333333333333337,
+   "enemyHp": 1682,
+   "enemyGuard": 33,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90039,
+   "win": true,
+   "turns": 12,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9939577039274925,
+   "courageCost": -17,
+   "takenBySeat": [
+    0,
+    5,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    4,
+    5,
+    1,
+    1
+   ],
+   "spread": 0,
+   "enemyHp": 1682,
+   "enemyGuard": 33,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90052,
+   "win": true,
+   "turns": 32,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9672131147540983,
+   "courageCost": 2,
+   "takenBySeat": [
+    2,
+    5,
+    8,
+    4
+   ],
+   "hitsBySeat": [
+    3,
+    5,
+    4,
+    12
+   ],
+   "spread": 0.7543859649122807,
+   "enemyHp": 1682,
+   "enemyGuard": 63,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90065,
+   "win": true,
+   "turns": 23,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8950617283950617,
+   "courageCost": 33,
+   "takenBySeat": [
+    33,
+    0,
+    16,
+    0
+   ],
+   "hitsBySeat": [
+    9,
+    3,
+    4,
+    6
+   ],
+   "spread": 0.33333333333333337,
+   "enemyHp": 1682,
+   "enemyGuard": 38,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90078,
+   "win": false,
+   "turns": 60,
+   "timeout": true,
+   "fallen": 0,
+   "courageLeft": 0.8012618296529969,
+   "courageCost": 37,
+   "takenBySeat": [
+    5,
+    0,
+    22,
+    10
+   ],
+   "hitsBySeat": [
+    4,
+    8,
+    17,
+    20
+   ],
+   "spread": 0.5135135135135135,
+   "enemyHp": 1682,
+   "enemyGuard": 98,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "sq-boss",
+   "name": "The Bedframe Beast",
+   "region": "sleeping-quarters",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90091,
+   "win": true,
+   "turns": 14,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9619377162629758,
+   "courageCost": -2,
+   "takenBySeat": [
+    5,
+    0,
+    0,
+    5
+   ],
+   "hitsBySeat": [
+    5,
+    1,
+    0,
+    5
+   ],
+   "spread": 0.33333333333333337,
+   "enemyHp": 1682,
+   "enemyGuard": 28,
+   "botErrors": 0,
+   "errors": []
+  }
+ ],
+ "errors": []
+}

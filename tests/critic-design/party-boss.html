@@ -23,6 +23,17 @@ const Q = new URLSearchParams(location.search);
 const TIER = Q.get('tier') || 'boss';
 const ENC = Q.get('enc') || null;
 const REGION = Q.get('region') || 'foyer';
+/**
+ * Where the DECKS come from, when that is not where the fight is.
+ *
+ * `RUN_LENGTH_REGIONS` is 2, so an expedition is the Foyer and the Nursery and
+ * stops. There are no Sleeping Quarters loadouts to capture because no run ever
+ * goes there — asking for them answers "no loadouts for 1p" four times, which
+ * reads as a broken harness and is really the game's own length. The Bedframe
+ * Beast can still be measured, against what a party is carrying when the run
+ * currently ENDS; that is a proxy and every table using it says so.
+ */
+const LREGION = Q.get('lregion') || REGION;
 const N = +(Q.get('n') || 16);
 const GEN = +(Q.get('gen') || 8);
 const SIZES = (Q.get('sizes') || '1,2,3,4').split(',').map(Number).filter(Boolean);
@@ -43,7 +54,7 @@ const say = (s) => { lines.push(s); out.textContent = lines.join('\n'); };
 const tick = (s) => { out.textContent = lines.join('\n') + '\n  … ' + s; };
 
 const R = {
-  config: { TIER, ENC, REGION, N, GEN, SIZES, SLUGS, POL, SEED0, HAUNT, SCALES },
+  config: { TIER, ENC, REGION, LREGION, N, GEN, SIZES, SLUGS, POL, SEED0, HAUNT, SCALES },
   loadouts: {}, table: [], rows: [], errors: [],
 };
 
@@ -56,13 +67,16 @@ const med = (a) => {
 
 (async () => {
   const { pools, errors } = await generateLoadouts({
-    gen: GEN, seed: SEED0, slugs: SLUGS, region: REGION, policy: POL, haunt: HAUNT, tier: TIER,
+    gen: GEN, seed: SEED0, slugs: SLUGS, region: LREGION, policy: POL, haunt: HAUNT, tier: TIER,
     onProgress: (slug, i, total, got) => tick(`loadouts ${slug} ${i}/${total} (${got} kept)`),
   });
   R.errors.push(...errors);
   for (const s of SLUGS) R.loadouts[s] = (pools[s] || []).length;
   say(`== party ${REGION}/${TIER}${ENC ? ' ' + ENC : ''}  haunt ${HAUNT}  xHP ${SCALES.join(',')}`);
-  say(`   loadouts ${SLUGS.map(s => `${s} ${(pools[s] || []).length}`).join(' · ')}`);
+  say(`   loadouts ${SLUGS.map(s => `${s} ${(pools[s] || []).length}`).join(' · ')}`
+    + (LREGION === REGION ? '' : `   ⚠ PROXY DECKS: captured at the ${LREGION} boss, `
+        + `because a run is ${LREGION === 'nursery' ? 'two wings' : 'shorter than this'} `
+        + `and never reaches ${REGION}`));
   say('');
   say('xHP    party    n   win%   turns  med    left%   fallen   spread   enemyHP   cost   errs');
   say('─────────────────────────────────────────────────────────────────────────────────────────');

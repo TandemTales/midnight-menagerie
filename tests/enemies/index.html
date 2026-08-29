@@ -165,6 +165,14 @@ class MockCombat {
       perPlayer: (n) => (n | 0),
       partySize: () => 1,
       players: () => [self.player],
+      // The seats this move lands on. The real ctx answers
+      // `e.partyTargets(enemy, move)`; on a solo board every branch of that
+      // collapses to the one player, which is the answer here. Missing
+      // entirely before the Governess's AoE reached for it, and a def method
+      // calling a ctx member this harness does not have throws HERE while
+      // resolving perfectly against the real engine — the same seam
+      // `loseBlock` was added for.
+      targets: () => [self.player],
       pickSeat: () => self.player,
       seatStats: () => self.stats || {},
       seatPlayed: () => self.cardsPlayedThisTurn || [],

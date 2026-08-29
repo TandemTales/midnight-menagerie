@@ -1,0 +1,208 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>The Governess — AoE coverage, an ungameable pick, a declared thread</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+</style>
+<h1>The Governess</h1>
+<div id="out"></div>
+<script type="module">
+/**
+ * Everything here asserts an EFFECT against the real engine and the real def.
+ *
+ * `tests/cards/run.py` proves only that a thing resolves without throwing —
+ * CONTRACTS trap 12 — and `tests/enemies/audit.py`, the one that checks intent
+ * === delivered on 2018 turns, is SOLO. So every line below was invisible to
+ * both, which is exactly how she shipped with no party targeting at all: an
+ * enemy that declares no `partyPick` rolls ONE seat at the start of the fight
+ * and holds it (`engine.intentTargetFor`), so at four Kids she fought one Kid
+ * for eighteen turns while three stood untouched. Measured at n=16 before this
+ * suite existed: 100% player wins, nobody ever falling, 90% of the party's
+ * Courage left, against a solo 62.5% and 56%.
+ */
+import { RNG } from '../../game/src/core/rng.js';
+import { makeDummyParty } from '../../game/src/combat/dummy.js';
+import { getEnemy } from '../../game/src/data/enemies/index.js';
+import { governess } from '../../game/src/data/bosses/governess.js';
+import { buildIntent } from '../../game/src/combat/intents.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+const say = (html, cls) => { const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; out.appendChild(d); };
+
+/** A real fight against the real Governess def, with `n` seats. */
+async function fight(n = 1, o = {}) {
+  const e = makeDummyParty(new RNG(o.seed ?? 5), n, {
+    maxHp: o.maxHp ?? 80,
+    enemies: [{ def: getEnemy('governess'), hp: o.bossHp ?? 175, id: 'governess' }],
+  });
+  await e.startCombat();
+  return e;
+}
+const boss = (e) => e.enemies[0];
+
+/** Force one specific move and let the enemy phase resolve it. */
+async function useMove(e, id) {
+  e.overrideIntent(boss(e), governess.moves[id]);
+  const hp = e.players.map(p => p.hp);
+  await e.endTurn();
+  return { lost: e.players.map((p, i) => hp[i] - p.hp) };
+}
+
+/** The intent the seats are SHOWN, built the way the engine builds it. */
+function intentFor(e, id) {
+  const en = boss(e);
+  en.pendingMove = governess.moves[id];
+  return buildIntent(e, en, governess.moves[id]);
+}
+
+(async () => {
+  // ── phase one's AoE ───────────────────────────────────────────────────────
+  say('<h2>Mind Your Seams — phase one\'s AoE</h2>');
+  {
+    const e = await fight(3);
+    const targets = e.partyTargets(boss(e), governess.moves['mind-your-seams']);
+    check(targets.length === 3, 'Mind Your Seams aims at every seat', `${targets.length} of 3`);
+
+    const r = await useMove(e, 'mind-your-seams');
+    check(r.lost.every(v => v === 24), 'every seat takes the full 12x2', `lost ${r.lost.join(' / ')}`);
+    check(new Set(r.lost).size === 1, 'and every seat takes the SAME number', `lost ${r.lost.join(' / ')}`);
+
+    /**
+     * The Pinched Seam on EVERY seat, not just the aimed one.
+     *
+     * `c.player` is the aim and it is computed ONCE when the enemy ctx is
+     * built, so a status hung on it lands on one Kid while an AoE's damage
+     * lands on all of them. The effect walks `c.targets()` for exactly this.
+     */
+    const pinched = e.players.map(pl => pl.status('seam-pinch'));
+    check(pinched.every(v => v >= 1), 'and every seat is really Pinched, not just the aimed one',
+          `stacks ${pinched.join(' / ')}`);
+  }
+  {
+    const e = await fight(1);
+    const r = await useMove(e, 'mind-your-seams');
+    check(r.lost[0] === 24, 'and a Kid alone takes the same 12x2 she always did', `lost ${r.lost[0]}`);
+  }
+
+  // ── the seat preference ───────────────────────────────────────────────────
+  say('<h2>Sharp Correction — the Kid closest to breaking</h2>');
+  {
+    const e = await fight(3);
+    // Lowest Courage by a long way, but not so low that a 24 kills them — a
+    // dead Kid loses only what they had left and the number reads 20.
+    e.players[2].hp = 40;
+    boss(e).pendingMove = governess.moves['sharp-correction'];
+    /**
+     * PIN the default first, or this check passes by luck.
+     *
+     * With no `partyPick`, `intentTargetFor` rolls one seat ONCE and holds it
+     * in `targetSeatId` — and on this seed that roll lands on seat 2 anyway, so
+     * the first version of these two checks stayed green with the preference
+     * deleted. Held on seat 0, the preference is the only thing that can move
+     * the arrow to seat 2.
+     */
+    boss(e).targetSeatId = e.players[0].id;
+    const first = e.intentTargetFor(boss(e));
+    check(first === e.players[2], 'Sharp Correction is aimed at the lowest Courage',
+          `seat ${first && first.seat}`);
+
+    /**
+     * The arrow HOLDS while the players react, which `lowestGuard` cannot do:
+     * Guard is wiped at the start of every turn, so a pick computed from it
+     * either moves when a Kid braces or ties on zero and resolves to seat 0
+     * forever. CONTRACTS records both halves of that. Courage is not something
+     * a Kid can move inside the turn they are shown the arrow.
+     */
+    boss(e).pendingMove = governess.moves['sharp-correction'];
+    e.gainBlock(e.players[2], 40, { reason: 'test' });
+    const after = e.intentTargetFor(boss(e));
+    check(after === e.players[2], 'and raising that Kid\'s Guard does NOT move it',
+          `seat ${after && after.seat}`);
+
+    // The 40 Guard above was to prove the arrow does not move; leave it on and
+    // the 24 is fully blocked and every seat reads 0, which is the test lying
+    // rather than the move missing.
+    e.players[2].block = 0;
+    const r = await useMove(e, 'sharp-correction');
+    check(r.lost.filter(v => v > 0).length === 1, 'it really lands on one seat only',
+          `lost ${r.lost.join(' / ')}`);
+    check(r.lost[2] === 24, 'on that Kid, for the full 24', `lost ${r.lost.join(' / ')}`);
+  }
+
+  // ── the declared thread ───────────────────────────────────────────────────
+  say('<h2>Tighten the Stitch — one thread, through everybody</h2>');
+  {
+    const e = await fight(3);
+    const it = intentFor(e, 'tighten-the-stitch');
+    check((it.splash | 0) === 10, 'the intent DECLARES its splash to the seats with no arrow',
+          `splash ${it.splash}`);
+
+    const r = await useMove(e, 'tighten-the-stitch');
+    const hit = r.lost.filter(v => v > 0);
+    check(hit.length === 3, 'and all three seats really take something', `lost ${r.lost.join(' / ')}`);
+    check(Math.max(...r.lost) === 17 && r.lost.filter(v => v === 10).length === 2,
+          'the aimed Kid takes 17 and the other two take the declared 10',
+          `lost ${r.lost.join(' / ')}`);
+  }
+  {
+    const e = await fight(1);
+    const it = intentFor(e, 'tighten-the-stitch');
+    check(!(it.splash | 0), 'a Kid alone is shown no splash, because there is nobody to splash onto',
+          `splash ${it.splash | 0}`);
+    const r = await useMove(e, 'tighten-the-stitch');
+    check(r.lost[0] === 17, 'and takes the 17 she always dealt', `lost ${r.lost[0]}`);
+  }
+
+  // ── two different children ────────────────────────────────────────────────
+  say('<h2>Snip Snip — three quick cuts, across two children</h2>');
+  {
+    const e = await fight(3);
+    const targets = e.partyTargets(boss(e), governess.moves['snip-snip']);
+    check(targets.length === 2, 'Snip Snip reaches two seats', `${targets.length}`);
+    check(targets[0] !== targets[1], 'and they are two DIFFERENT ones — Nursery §33',
+          `${targets[0] && targets[0].seat} / ${targets[1] && targets[1].seat}`);
+
+    const r = await useMove(e, 'snip-snip');
+    check(r.lost.filter(v => v > 0).length === 2, 'two seats really take it, and one does not',
+          `lost ${r.lost.join(' / ')}`);
+    check(r.lost.filter(v => v === 33).length === 2, 'each of them for the full 11x3',
+          `lost ${r.lost.join(' / ')}`);
+  }
+  {
+    const e = await fight(1);
+    const targets = e.partyTargets(boss(e), governess.moves['snip-snip']);
+    check(targets.length === 1, 'and with one Kid left there is only one seat to cut',
+          `${targets.length}`);
+    const r = await useMove(e, 'snip-snip');
+    check(r.lost[0] === 33, 'who takes the same 11x3 as ever', `lost ${r.lost[0]}`);
+  }
+
+  // ── solo is untouched, move by move ───────────────────────────────────────
+  /* The whole point of `partyTarget` / `partyPick` / `splashFn` is that they
+     are inert at one seat: `partyTargets` returns the single aim when
+     `!isParty`, and every number above is declared at its solo value. A
+     regression here is a regression to a shipping single-player game. */
+  say('<h2>Solo is the fight it always was</h2>');
+  {
+    const e = await fight(1);
+    const want = { 'sharp-correction': 24, 'mind-your-seams': 24, 'needle-point': 13,
+                   'tighten-the-stitch': 17, 'snip-snip': 33 };
+    for (const [id, n] of Object.entries(want)) {
+      const e1 = await fight(1);
+      const r = await useMove(e1, id);
+      check(r.lost[0] === n, `${id} deals ${n} to a Kid alone`, `lost ${r.lost[0]}`);
+    }
+  }
+})().catch(err => {
+  fails.push('THREW: ' + (err && err.stack || err));
+}).finally(() => {
+  say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`, fails.length ? 'fail' : 'pass');
+  say('<ul class="pass">' + passes.map(p => `<li>PASS ${p}</li>`).join('') + '</ul>');
+  if (fails.length) say('<ul class="fail">' + fails.map(f => `<li>FAIL ${f}</li>`).join('') + '</ul>');
+  window.__RESULT = { passed: passes.length, failed: fails.length, fails, passes };
+  window.__DONE = true;
+});
+</script>
