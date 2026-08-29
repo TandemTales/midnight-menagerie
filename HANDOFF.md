@@ -49,9 +49,18 @@ change him.
 
   **The nine per-enemy `partyHp` curves that were scoped as the next piece are
   not needed and would have been nine curves fitted to a bot that turtles.**
-  CONTRACTS 47. The standard tier re-measures at 100% wins at every party size
-  with 5.6 → 8.1 turns, so the global `PARTY_HP_SCALE` is defensible as it
-  stands and the brief's "do not change the global" holds.
+  CONTRACTS 47.
+
+  **The standard tier holds up, on a harness that was itself repaired first.**
+  `tests/coop/balance.html` called `competentTurn` with no `fc` at all — in
+  every commit it has ever had — so `bot.js` rebuilt the running estimates on
+  every call and threw away what `bookkeep` had just learned. Its bot had NO
+  memory of the fight it was in, at any party size, and this is the file
+  `engine.js` names as the instrument to re-measure `PARTY_HP_SCALE` against.
+  Repaired, then re-measured at n=24: **100% wins at every party size**, turns
+  5.4 / 5.9 / 6.9 / 7.2, zero falls. The global curve is defensible as it
+  stands and the brief's "do not change the global" holds — but the leftover
+  Courage reads 61 / 78 / 83 / **86**, which is the gap below.
 
 - **`tests/critic-design/party-turns.py` is the gate that was missing.**
   `anchor.py` holds the harness honest at ONE seat, where `partyBench` and
@@ -99,7 +108,7 @@ change him.
 
 - **STILL OPEN, and now the honest headline for the party game: a party
   finishes too comfortable.** Elite `left%` is 60 solo against 80 at three and
-  four Kids; the standard tier is 61 against 84. Length is fixed, cost is not.
+  four Kids; the standard tier is 61 against 86. Length is fixed, cost is not.
   This is trap 45's shape — Guard scales with the party and enemy damage does
   not — and the lever is targeting, not Courage. The Grand Coatcheck is the one
   Foyer elite whose attacks declare no `partyTarget`, no `partyPick` and no

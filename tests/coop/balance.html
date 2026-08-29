@@ -83,13 +83,32 @@ async function oneFight(size, seed) {
   });
   await e.startCombat();
 
+  /**
+   * ONE running estimate PER SEAT, held for the whole fight.
+   *
+   * `competentTurn` was called with no `fc` at all, so `bot.js` rebuilt
+   * `{ dps: 10, threat: 8, guard: 4, peak: 0, turns: 0 }` on every call and
+   * threw away the copy `bookkeep` had just updated. With `F.turns` stuck at 0
+   * the bot had NO memory of the fight it was in: `dps` pinned at the opening
+   * guess of 10, `guard` at 4, `threat` reduced to this turn's telegraph alone,
+   * and the `0.65 * fc.peak` spike term — the one written so a bot does not
+   * budget for the average of a 0 and a 21 — provably dead, since
+   * `0.65 * shown <= max(4, shown)`. Turn 6 was planned exactly like turn 1.
+   *
+   * `expedition.js` and `partybench.js` both do this correctly and say why;
+   * this harness never has, in any commit. That matters more here than
+   * anywhere: `engine.js` names THIS file as the instrument to re-measure
+   * `PARTY_HP_SCALE` against.
+   */
+  const fcs = e.players.map(() => ({ dps: 10, threat: 8, guard: 4, peak: 0, turns: 0 }));
+
   let turns = 0;
   while (!e.over && turns < MAX_TURNS) {
     turns++;
     const roundTurn = e.turn;
     // Every seat plans and ends its own turn — simultaneous turns for real.
     for (const pl of e.livingPlayers()) {
-      try { await competentTurn(e, { seat: pl }); } catch (err) { /* keep the fight going */ }
+      try { await competentTurn(e, { seat: pl, fc: fcs[pl.seat] || fcs[0] }); } catch (err) { /* keep the fight going */ }
       if (e.over) break;
       await e.endTurn(pl);
       if (e.over) break;

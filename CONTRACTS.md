@@ -510,6 +510,27 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    Gated by three checks in `tests/coop/suite.js`, and the effect and the
    readout are asserted SEPARATELY.
 
+49. **An accumulator passed as an OPTIONAL parameter is rebuilt every call by
+   whoever forgets it, and the code still runs.** `bot.js` takes a per-fight
+   `fc` — `{dps, threat, guard, peak, turns}` — and does
+   `const F = fc || { …defaults… }`. `tests/coop/balance.html` never passed
+   one, in any commit it has ever had, so `F.turns` was 0 on every call of
+   every seat and `bookkeep`'s updated copy was thrown away. The bot had NO
+   memory of the fight it was in: `dps` pinned at its opening guess of 10,
+   `guard` at 4, `threat` reduced to this turn's telegraph, and the
+   `0.65 * peak` spike term provably dead because `0.65·shown <= max(4,shown)`.
+   Turn 6 was planned exactly like turn 1.
+
+   It matters because `engine.js` names THAT file as the instrument to
+   re-measure `PARTY_HP_SCALE` against, so the shipped co-op Courage curve
+   was validated by a structurally different bot from the one every other
+   harness runs. `expedition.js` and `partybench.js` both do it correctly and
+   both say why — which is the tell: **when two of three callers document a
+   parameter and the third omits it silently, the third is the bug.** A
+   defaulted accumulator cannot announce that nobody is accumulating it.
+   Re-measured after repair: 100% wins at every party size, turns
+   5.4 / 5.9 / 6.9 / 7.2, Courage left 61 / 78 / 83 / 86.
+
 15. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
    now reported their in-flight work being swallowed by an unrelated commit — one had a whole
    `music.js` rewrite land inside a commit titled "Pronouns per the designer", which then made a
