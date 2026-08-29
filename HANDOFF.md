@@ -120,35 +120,40 @@ change him.
   Rocking Horse's Excitement-from-support are both live, with a control per
   layer.
 
-- **THE PORCELAIN TWINS ARE SOFT AT ONE KID, and the number that said so was
-  rounded to the nearest ten.** `party-ledger.py`'s `left%` went through a
-  `mean()` that rounds to ONE DECIMAL before the multiply — on a 0..1 fraction
-  that quantises the column to multiples of 10, so 0.849 and 0.851 print as 80
-  and 90. It is the number the file's own docstring calls the reason it exists.
-  Fixed; every `left%` in this document from that harness is re-measured.
+- **`left%` IS WINS ONLY, AND IT LIES ABOUT A BIMODAL FIGHT.** Two defects in
+  the same column, both fixed. It went through a `mean()` that rounds to one
+  decimal before the multiply, which on a 0..1 fraction quantised it to
+  multiples of TEN (0.849 and 0.851 print as 80 and 90). And it silently
+  conditions on winning while the table printed no win rate at all, so the
+  deadlier a fight's tail, the healthier its survivors look.
 
-  The three Nursery elites, n=12, same instrument, real precision:
+  That combination sent me to the wrong conclusion and it is worth the space:
+  the Porcelain Twins printed `left% 96` against the Toy Chest's 81 and read
+  as the softest encounter in the game. They are not. They win **9 fights in
+  12** at one Kid — the same as the Patchwork Giant, which prints 72.6 off the
+  same 9-in-12 — and the three losses are cut from the mean. The ledger prints
+  `win%` beside `left%` now so the pair cannot be read apart. CONTRACTS 51.
 
-  | encounter | 1p landed | 1p left% | 4p left% |
-  |---|---|---|---|
-  | Toy Chest | 24.9 | 81.2 | 94.8 |
-  | Patchwork Giant | 40.9 | 72.6 | 93.7 |
-  | **Porcelain Twins** | 26.5 | **96.0** | 93.7 |
+  The three Nursery elites, n=12, both columns:
 
-  At four Kids all three are the same (~94). The Twins are an outlier at ONE
-  Kid only. **Not tuned, deliberately**: the one lever tried — halving their
-  Tea Party sustain to the chapter's number — made them EASIER (left% 90 → 96),
-  because less healing just ends the fight sooner. Their problem is output
-  (`aimed/turn` 7.6, same as the Toy Chest) against a 160-Courage pool, and
-  Proper deals no damage at all by design. Prim is already at 13 and 7x2
-  against the chapter's 10 and 5x2, so the next move is NOT a bigger number on
-  Prim; it wants a reading of where the encounter's turns actually go.
+  | encounter | 1p win% | 1p left% | 4p win% | 4p left% |
+  |---|---|---|---|---|
+  | Toy Chest | 91.7 | 81.2 | 100 | 94.8 |
+  | Patchwork Giant | 75 | 72.6 | 100 | 93.7 |
+  | Porcelain Twins | 75 | 96.0 | 100 | 93.7 |
 
-  **A caveat on the instrument, not yet chased:** `landed` and `left%` do not
-  reconcile — the Twins land 26.5 on one Kid and that Kid finishes at 96% of
-  maximum. Either the Kid is healing ~24 Courage a fight from the deck and
-  Snacks, or one of the two numbers is wrong. Settle that before tuning
-  anything on the strength of `left%`.
+  **At one Kid the Nursery elite tier is fine.** At four Kids all three are
+  100% wins with ~94% of the party's Courage left — which is not a Twins
+  problem, it is the standing party problem below, and it is the same at every
+  encounter measured.
+
+  The Twins' Tea Party was separately restoring 10 to each of them against the
+  chapter's 5 (both defs carry the move, both fire on the same turn, and each
+  healed its sibling as well). Fixed, and it made them EASIER — left% 90 to 96
+  — because less healing just ends the fight sooner. Their `aimed/turn` is 7.6
+  and Proper deals no damage by design, so if anyone does tune them the lever
+  is output, not sustain; Prim is already at 13 and 7x2 against the chapter's
+  10 and 5x2.
 
 - **STILL OPEN, and now the honest headline for the party game: a party
   finishes too comfortable.** Elite `left%` is **59.5 solo against 78.9 and

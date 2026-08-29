@@ -585,6 +585,28 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    API works rather than that the game uses it. **If a test is the only caller
    of a production API, that is the finding.**
 
+51. **A statistic conditioned on WINNING is survivorship, and it moves the wrong
+   way as the fight gets deadlier.** `party-ledger.py`'s `left%` is the mean
+   leftover Courage over WINS ONLY, and the table printed no win rate beside it.
+   So the Porcelain Twins read `left% 96` against the Toy Chest's 81.2 and were
+   written up as the softest encounter in the game. They win **9 fights in 12**
+   at one Kid — the same as the Patchwork Giant, which reads 72.6 off the same
+   9-in-12 — and their three losses are cut from the mean. A bimodal fight (the
+   puzzle works and you cruise, or it does not and you die) reports as a
+   pushover, and the more it kills, the softer it looks.
+
+   Compounding it, `left` went through a `mean()` that rounds to one decimal
+   before the multiply. Right for Courage totals, fatal for a 0..1 FRACTION:
+   the column was quantised to multiples of TEN, so 0.849 and 0.851 printed as
+   80 and 90.
+
+   Both fixed, and `win%` prints beside `left%` now so they cannot be read
+   apart. **Never quote a conditioned mean without the condition next to it** —
+   the previous session's handoff already said this about the Governess ("left%
+   is wins-only... the win rate, turns and falls are the better readings") and
+   it still cost a round, because the table did not carry the warning where the
+   number was.
+
 15. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
    now reported their in-flight work being swallowed by an unrelated commit — one had a whole
    `music.js` rewrite land inside a commit titled "Pronouns per the designer", which then made a

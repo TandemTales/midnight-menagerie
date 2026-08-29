@@ -58,7 +58,7 @@ const R = { config: { TIER, ENC, REGION, LREGION, N, GEN, SIZES, SLUGS, SEED0 },
   say(`   loadouts ${SLUGS.map(s => `${s} ${(pools[s] || []).length}`).join(' · ')}`
     + (LREGION === REGION ? '' : `   ** PROXY DECKS from the ${LREGION} boss`));
   say('');
-  say('party    n   aimed  landed  blocked   %blocked   partyGuard  turns  aimed/turn  left%');
+  say('party    n   aimed  landed  blocked   %blocked   partyGuard  turns  aimed/turn  win%   left%');
   say('────────────────────────────────────────────────────────────────────────────────────');
 
   for (const size of SIZES) {
@@ -92,6 +92,15 @@ const R = { config: { TIER, ENC, REGION, LREGION, N, GEN, SIZES, SLUGS, SEED0 },
        * a point apart could read 80 against 90. It is the number this file's
        * own docstring calls the reason it exists.
        */
+      /**
+       * `left%` is WINS ONLY, so it must never be read without this beside it.
+       * The Porcelain Twins printed 96 against the Toy Chest's 81 and read as
+       * the softest encounter in the game; they are bimodal — 9 wins in 12,
+       * and the three losses are cut from the mean, so the survivors look
+       * healthier the DEADLIER the tail is. The Giant reads 72.6 on the same
+       * 9-in-12. Win rate is the honest headline; `left%` describes the wins.
+       */
+      winPct: +(100 * wins.length / rows.length).toFixed(1),
       left: +(100 * (wins.length
         ? wins.reduce((a, r) => a + r.courageLeft, 0) / wins.length
         : 0)).toFixed(1),
@@ -102,7 +111,7 @@ const R = { config: { TIER, ENC, REGION, LREGION, N, GEN, SIZES, SLUGS, SEED0 },
       + `${String(row.aimed).padStart(8)}${String(row.landed).padStart(8)}`
       + `${String(row.blocked).padStart(9)}${String(row.pctBlocked).padStart(11)}`
       + `${String(row.partyGuard).padStart(13)}${String(row.turns).padStart(7)}`
-      + `${String(row.aimedPerTurn).padStart(12)}${String(row.left).padStart(7)}`);
+      + `${String(row.aimedPerTurn).padStart(12)}${String(row.winPct).padStart(7)}${String(row.left).padStart(8)}`);
   }
 
   say('');
