@@ -1,0 +1,97 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>butler ledger — where does the length actually come from?</title>
+<body><pre id="out" style="font:12px ui-monospace,monospace">running…</pre></body>
+<script type="module">
+/**
+ * "He is not dangerous, he is long." WHY is he long? OWNER: balance.
+ *
+ * Two candidate answers, and they want different fixes:
+ *   - the Courage POOL is too big  -> the sweep already answers that, and the
+ *     designer has ruled it out as the lever;
+ *   - he ABSORBS too much          -> every point of Guard he gains is a point
+ *     the player has to deal twice, and two of his four House Rules pay their
+ *     Reprimand in Guard rather than in threat.
+ *
+ * `fight()` already collects `enemyGuard` (every point of Guard the enemy side
+ * gained) and `dmgBlockedByEnemies` (what that Guard actually ate). Against a
+ * 165 Courage pool, the second number IS the answer: it is the extra damage the
+ * player had to find, expressed in the same units as the pool.
+ */
+import { expedition, bench } from './lib/expedition.js';
+
+const Q = new URLSearchParams(location.search);
+const N = +(Q.get('n') || 24);
+const GEN = +(Q.get('gen') || 8);
+const SEED0 = +(Q.get('seed') || 90000);
+
+const out = document.getElementById('out');
+const lines = [];
+const say = (s) => { lines.push(s); out.textContent = lines.join('\n'); };
+const mean = (a) => (a.length ? +(a.reduce((x, y) => x + y, 0) / a.length).toFixed(1) : 0);
+
+(async () => {
+  const loadouts = [];
+  for (let i = 0; i < GEN; i++) {
+    const r = await expedition({ seed: SEED0 + i * 7, bot: 'competent', policy: 'balanced', haunt: 0 });
+    const g = (r.regions || []).find(x => x.region === 'foyer');
+    if (g?.loadoutAtBoss) loadouts.push(g.loadoutAtBoss);
+    out.textContent = lines.join('\n') + `\n  … loadout ${i + 1}/${GEN}`;
+  }
+  const rows = [];
+  for (let i = 0; i < N; i++) {
+    rows.push(await bench({ loadout: loadouts[i % loadouts.length], encounterTier: 'boss',
+                            encounterId: 'foyer-boss', region: 'foyer', seed: 700000 + i * 13,
+                            bot: 'competent', haunt: 0, maxTurns: 120 }));
+    out.textContent = lines.join('\n') + `\n  … fight ${i + 1}/${N}`;
+  }
+
+  const wins = rows.filter(r => r.win);
+  const pool = 165;
+  const guard = mean(rows.map(r => r.enemyGuard));
+  const blocked = mean(rows.map(r => r.dmgBlockedByEnemies));
+  const dealt = mean(rows.map(r => r.dmgDealt));
+
+  say(`The Butler, solo, competent bot, ${rows.length} fights over ${loadouts.length} real loadouts`);
+  say('');
+  say(`  win%                       ${(100 * wins.length / rows.length).toFixed(1)}`);
+  say(`  turns (mean / median)      ${mean(rows.map(r => r.turns))} / `
+    + `${[...rows.map(r => r.turns)].sort((a, b) => a - b)[Math.floor(rows.length / 2)]}`);
+  say(`  Courage cost to the player ${mean(rows.map(r => r.dmgTaken))}`);
+  say('');
+  say('  ── what the player had to get through ──');
+  say(`  his Courage pool           ${pool}`);
+  say(`  Guard he GAINED            ${guard}`);
+  say(`  damage that Guard ATE      ${blocked}     <- extra pool, in the same units`);
+  say(`  total damage dealt to him  ${dealt}`);
+  say(`  effective pool             ${(pool + blocked).toFixed(0)}  = ${((pool + blocked) / pool).toFixed(2)}x the printed 165`);
+  say('');
+  say('  ── which House Rules actually fire, and what they pay him ──');
+  const ruleTotals = {};
+  for (const r of rows) for (const [k, v] of Object.entries(r.rulesBroken || {})) {
+    ruleTotals[k] = (ruleTotals[k] || 0) + v;
+  }
+  const PAYS = {
+    'no-running': 'damage 6/8',
+    'one-at-a-time': 'GUARD 8/10',
+    'keep-the-hall-clear': 'GUARD 10/12',
+    'no-roughhousing': 'damage rider +5/7',
+    'no-dawdling': 'Clutter',
+  };
+  for (const [k, v] of Object.entries(ruleTotals).sort((a, b) => b[1] - a[1])) {
+    say(`  ${k.padEnd(22)} ${(v / rows.length).toFixed(2)} breaks/fight   pays him ${PAYS[k] || '?'}`);
+  }
+  const guardRules = ['one-at-a-time', 'keep-the-hall-clear']
+    .reduce((n, k) => n + (ruleTotals[k] || 0), 0);
+  const allRules = Object.values(ruleTotals).reduce((n, v) => n + v, 0);
+  say('');
+  say(`  Reprimands paid in GUARD: ${allRules ? (100 * guardRules / allRules).toFixed(0) : 0}% of all breaks`);
+  window.__LEDGER__ = { rows: rows.length, guard, blocked, dealt, ruleTotals,
+                        win: 100 * wins.length / rows.length,
+                        turns: mean(rows.map(r => r.turns)) };
+  say('');
+  say('DONE');
+})().catch(err => { say('CRASHED: ' + (err && err.stack || err)); window.__LEDGER__ = { error: String(err) }; });
+</script>
+</body>
+</html>

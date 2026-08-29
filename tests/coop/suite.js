@@ -17,7 +17,7 @@ import { MAX_PARTY } from '../../game/src/combat/engine.js';
 import { Run } from '../../game/src/state/run.js';
 import { _resetUid } from '../../game/src/combat/piles.js';
 import {
-  makeDummyParty, startDummyParty, makeDummyCombat, makeDummyDeck, SCRATCH,
+  makeDummyParty, startDummyParty, makeDummyCombat, makeDummyDeck, SCRATCH, CURL_UP,
 } from '../../game/src/combat/dummy.js';
 import { EV } from '../../game/src/combat/events.js';
 import { loadContentRegistries } from '../../game/src/data/keywords.js';
@@ -1535,6 +1535,48 @@ export async function run() {
     eq(onOther.total, 6, 'and their friend is told about the 6 that catches them');
     ok(onOther.parts[0] && onOther.parts[0].splash, 'flagged as splash, so the screen can say so');
     ok(a !== b, 'two seats');
+  });
+
+  /**
+   * `previewCard` read `sim.player` — seat 0 — for the acting seat, all through:
+   * the id it credited Guard and healing to, the Nerve it reported left, and
+   * `playerDies`. So in a party, the preview a Kid saw for their OWN Trick was
+   * computed against the HOST's board. Guard was the loudest of them: the Guard
+   * event is credited to the seat that gained it, the aggregation only counts
+   * events matching seat 0's id, and a teammate's Curl Up therefore previewed
+   * as **0 Guard** while really granting 5.
+   *
+   * Invisible in solo, where seat 0 is the only seat. `_playCard` has resolved
+   * the acting seat with `seatOfCard` since co-op landed; the preview, whose
+   * whole job is to say what `_playCard` will do, never got the same treatment.
+   */
+  await atest('preview: a Trick is previewed for the seat HOLDING it, not seat 0', async () => {
+    const e = await startDummyParty(new RNG(829), 2, { maxHp: 90 });
+    const [host, mate] = e.players;
+    e.addCard(CURL_UP, 'hand', { to: mate });
+    const hand = e.pilesOf(mate).hand;
+    const card = hand[hand.length - 1];
+
+    const out = e.preview(card.uid);
+    ok(out.ok, 'the preview resolved');
+    eq(out.block, CURL_UP.nums.b, 'it reports the Guard the CARD grants — read off seat 0 this was 0');
+    ok(host.block === 0 && mate.block === 0, 'and previewing changed neither real board');
+  });
+
+  await atest('preview: the Nerve left over is the holder\'s, not the host\'s', async () => {
+    const e = await startDummyParty(new RNG(831), 2, { maxHp: 90 });
+    const [host, mate] = e.players;
+    host.energy = 3;
+    mate.energy = 2;                       // deliberately different
+    e.addCard(CURL_UP, 'hand', { to: mate });
+    const hand = e.pilesOf(mate).hand;
+    const card = hand[hand.length - 1];
+
+    const out = e.preview(card.uid);
+    eq(out.energyAfter, mate.energy - out.cost,
+      'Nerve after is the holder\'s, minus what it cost them');
+    ok(out.energyAfter !== host.energy - out.cost || host.energy === mate.energy,
+      'and not the host\'s — the two seats were set apart on purpose');
   });
 
   await atest('incoming: solo reads exactly as it always did', async () => {

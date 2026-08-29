@@ -58,13 +58,85 @@ function deflate(c, n) {
 // ── The Patch ───────────────────────────────────────────────────────────────
 const SEED = 'seed', SPROUT = 'sprout', PUMPKIN = 'pumpkin';
 const patch = (c) => U.mm(c).patch;
+
+/**
+ * THE PATCH IS RENDERED NOW.
+ *
+ * It lives in `U.mm(c).patch` — a plain array of stages — and that is still the
+ * source of truth every Trick, hook and test reads. What it never did was
+ * appear anywhere the player could see it: `engine.objects` documents itself as
+ * the home for "Plants, Plots, Pumpkins, Graves" and nothing drew it until
+ * Brambleboo's Garden needed it, so Pipkin's whole signature mechanic has been
+ * invisible since he shipped. Every Trick that says "for each Pumpkin" was
+ * asking the player to count something the screen did not show.
+ *
+ * So the array is MIRRORED into `engine.objects`, one object per plot, keyed to
+ * the seat (`data.seat`) exactly as `_renderPlayerCounters` filters on. The
+ * array stays authoritative and the mirror is derived — the opposite way round
+ * would mean rewriting every one of his cards, and the mirror can be rebuilt
+ * from the array at any moment, which is what makes the safety-net sync below
+ * cheap and total.
+ */
+const PATCH_KIND = 'patch';
+
+/**
+ * ONE object for the whole Patch, not one per plot.
+ *
+ * A plot per object was the first shape and the screenshot killed it: at three
+ * plots the chips already covered Pipkin's portrait, and `patchCap` is SIX. It
+ * was also the wrong model. Brambleboo's Plants each have an identity — a
+ * Cultivar, its own growth, its own effect — so one chip each is information.
+ * Pipkin's plots are interchangeable, and every Trick he owns reads a COUNT:
+ * "[Harvest] 1", "for each Pumpkin", "if your Patch is full". So the chip
+ * shows the counts, which is the number the player is actually being asked
+ * about, and the breakdown rides in the tooltip.
+ */
+function patchObject(c) {
+  const seat = c.self && c.self.id;
+  return c.objectsOfKind(PATCH_KIND).find(o => o && o.data && o.data.seat === seat) || null;
+}
+
+/**
+ * Make the object match the array. Idempotent, and cheap enough to call after
+ * anything at all — which is the point: the array is mutated in nine places
+ * including inline inside three card effects, and a mirror maintained by
+ * remembering to update it at each of them is a mirror that goes stale.
+ */
+function syncPatch(c) {
+  if (typeof c.objectsOfKind !== 'function') return;   // preview engines and bare ctxs
+  const p = patch(c) || [];
+  const seat = c.self && c.self.id;
+  const obj = patchObject(c);
+
+  if (!p.length) { if (obj) c.removeObject(obj.id); return; }
+
+  const seeds = p.filter(x => x === SEED).length;
+  const sprouts = p.filter(x => x === SPROUT).length;
+  const pumpkins = p.filter(x => x === PUMPKIN).length;
+  const cap = patchCap(c);
+  const parts = [];
+  if (pumpkins) parts.push(pumpkins + ' ripe');
+  if (sprouts) parts.push(sprouts + ' sprouting');
+  if (seeds) parts.push(seeds + ' seeded');
+  const data = {
+    seat, seeds, sprouts, pumpkins, count: p.length, cap,
+    stateLabel: parts.join(' · '),
+    desc: 'Your Patch. Seeds become Sprouts and Sprouts ripen into Pumpkins at the '
+        + 'end of your turn; Harvest takes the Pumpkins.',
+    tipDetail: pumpkins
+      ? pumpkins + ' ripe and ready to Harvest.'
+      : 'Nothing ripe yet — a Sprout becomes a Pumpkin at the end of your turn.',
+  };
+  if (!obj) c.addObject({ kind: PATCH_KIND, name: 'Patch', slot: 0, data });
+  else c.updateObject(obj.id, data);
+}
 const patchCap = (c) => U.mm(c).patchCap;
 const countStage = (c, st) => patch(c).filter(x => x === st).length;
 function plant(c, n) {
   let added = 0;
   const p = patch(c);
   while (added < n && p.length < patchCap(c)) { p.push(SEED); added++; }
-  if (added) { U.bump(c, 'plantedThisTurn', added); U.fire(c, 'plant', { n: added }); }
+  if (added) { U.bump(c, 'plantedThisTurn', added); syncPatch(c); U.fire(c, 'plant', { n: added }); }
   return added;
 }
 /** Advance the earliest object of the given stage (or the earliest immature one). */
@@ -72,7 +144,10 @@ function advance(c, stage) {
   const p = patch(c);
   const i = stage ? p.indexOf(stage) : (p.indexOf(SPROUT) >= 0 ? p.indexOf(SPROUT) : p.indexOf(SEED));
   if (i < 0) return false;
-  if (p[i] === SEED) p[i] = SPROUT; else if (p[i] === SPROUT) { p[i] = PUMPKIN; U.fire(c, 'ripen', {}); } else return false;
+  if (p[i] === SEED) p[i] = SPROUT;
+  else if (p[i] === SPROUT) { p[i] = PUMPKIN; syncPatch(c); U.fire(c, 'ripen', {}); return true; }
+  else return false;
+  syncPatch(c);
   return true;
 }
 function regress(c) {
@@ -80,14 +155,19 @@ function regress(c) {
   const i = p.indexOf(PUMPKIN) >= 0 ? p.indexOf(PUMPKIN) : p.indexOf(SPROUT);
   if (i < 0) return false;
   p[i] = p[i] === PUMPKIN ? SPROUT : SEED;
+  syncPatch(c);
   return true;
 }
-function removeOne(c, stage) { const p = patch(c); const i = p.indexOf(stage); if (i < 0) return false; p.splice(i, 1); return true; }
+function removeOne(c, stage) {
+  const p = patch(c); const i = p.indexOf(stage);
+  if (i < 0) return false;
+  p.splice(i, 1); syncPatch(c); return true;
+}
 /** Harvest up to n Pumpkins. Returns how many were actually taken. */
 function harvest(c, n) {
   let took = 0;
   while (took < n && removeOne(c, PUMPKIN)) took++;
-  if (took) { U.bump(c, 'harvested', took); U.fire(c, 'harvest', { n: took }); }
+  if (took) { U.bump(c, 'harvested', took); syncPatch(c); U.fire(c, 'harvest', { n: took }); }
   return took;
 }
 /** One growth step: Sprouts ripen, Seeds sprout, all at once. */
@@ -96,6 +176,7 @@ function growthStep(c) {
   let ripened = 0;
   for (let i = 0; i < p.length; i++) { if (p[i] === SPROUT) { p[i] = PUMPKIN; ripened++; } else if (p[i] === SEED) p[i] = SEED + '*'; }
   for (let i = 0; i < p.length; i++) if (p[i] === SEED + '*') p[i] = SPROUT;
+  syncPatch(c);
   if (ripened) U.fire(c, 'ripen', { n: ripened });
   return ripened;
 }
@@ -120,7 +201,15 @@ U.onTracker(SLUG, (e, s, seat) => {
     // Height evaporates unless something is holding it up
     if (U.stacks(c, c.self, 'hang-time') === 0 && U.stacks(c, c.self, 'pipkin/spring-eternal') === 0) U.setRes(c, HEIGHT, 0, 0, 3);
   });
-  U.onPlayerTurn(e, 'start', () => { s.played = 0; });
+  U.onPlayerTurn(e, 'start', () => { s.played = 0; syncPatch(fake()); });
+  /**
+   * The safety net. Three of his Tricks reach into the array directly rather
+   * than through the helpers above (Moonbeam on the Patch rewrites every entry
+   * in place), so the mirror is rebuilt after any card resolves as well. It is
+   * a diff against an array that is at most `patchCap` long, so this is
+   * cheaper than remembering to be careful.
+   */
+  e.on('card:resolved', () => syncPatch(fake()));
 });
 
 // ── Power hooks ─────────────────────────────────────────────────────────────

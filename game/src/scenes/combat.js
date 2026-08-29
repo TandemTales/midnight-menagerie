@@ -1839,6 +1839,27 @@ export class CombatScene extends Scene {
         return;
       }
 
+      /**
+       * BOARD OBJECTS — Plants, Plots, Pumpkins, Graves.
+       *
+       * `_renderPlayerCounters` walks `engine.objects`, but nothing listened to
+       * the events that change it, so a plot only redrew when some UNRELATED
+       * player event happened to run the sync. Pipkin's Patch showed
+       * "SEED 0/2" over three objects the engine had already advanced to
+       * Sprouts, and Brambleboo's Garden had the same staleness the day it
+       * shipped — a Plant matured on the board and the chip kept printing the
+       * growth it had a turn ago.
+       *
+       * Every suite was green for both. The screenshot is what found it, which
+       * is the whole reason this project takes one every round.
+       */
+      case 'object:add':
+      case 'object:update':
+      case 'object:remove': {
+        if (!ev.data || ev.data.seat == null || ev.data.seat === this.me.id) this._syncPlayer();
+        return;
+      }
+
       case 'intent:queue': {
         const v = this.views.get(ev.enemyId);
         if (v) {
@@ -2597,10 +2618,30 @@ export class CombatScene extends Scene {
     d.tabIndex = 0;
     const growth = o.data.growth | 0;
     const need = o.data.matureAt || 2;
-    const state = ripe ? 'Mature' : 'Growing';
+    /* Two shapes of board object, because two Companions grow different things.
+       A COUNT (Pipkin's Patch: six interchangeable plots, and every Trick reads
+       how many) and a GROWTH TRACK (Brambleboo's Plants: each one an identity
+       with its own turns-to-Mature). The chip prints whichever the object
+       declares. */
+    if (o.data.count != null) {
+      const state = o.data.stateLabel || '';
+      d.dataset.tip = `${o.name}|${o.data.desc || `${o.name}.`}|`
+        + (o.data.tipDetail || '');
+      d.setAttribute('aria-label',
+        `${o.name} ${o.data.count} of ${o.data.cap}${state ? '. ' + state : ''}`);
+      d.innerHTML = `<i>${esc(o.name)}</i><b>${o.data.count}<u>/${o.data.cap}</u></b>`
+        + (state ? `<em>${esc(state)}</em>` : '');
+      return d;
+    }
+    /* Two Companions grow things now, and they do not share a vocabulary: a
+       Plant is Growing or Mature, a plot in Pipkin's Patch is a Seed, a Sprout
+       or a Pumpkin. The band word and the detail line are therefore the
+       object's to name, with the Garden's wording as the fallback. */
+    const state = o.data.stateLabel || (ripe ? 'Mature' : 'Growing');
     d.dataset.tip = `${o.name}|${o.data.desc || `${o.name}, in your Garden.`}|`
-      + (ripe ? 'Mature — its effect runs at the start of your turn, and it can be Harvested.'
-              : `Growing — ${need - growth} more turn${need - growth === 1 ? '' : 's'} until it Matures.`);
+      + (o.data.tipDetail
+        || (ripe ? 'Mature — its effect runs at the start of your turn, and it can be Harvested.'
+                 : `Growing — ${need - growth} more turn${need - growth === 1 ? '' : 's'} until it Matures.`));
     d.setAttribute('aria-label', `${o.name}, ${ripe ? 'Mature' : `growth ${growth} of ${need}`}`);
     d.innerHTML = `<i>${esc(o.name)}</i><b>${ripe ? '✿' : `${growth}<u>/${need}</u>`}</b><em>${state}</em>`;
     return d;

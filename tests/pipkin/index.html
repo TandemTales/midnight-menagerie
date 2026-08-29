@@ -1,0 +1,151 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Pipkin — the Patch, on the board where the player can see it</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+</style>
+<h1>Pipkin</h1>
+<div id="out"></div>
+<script type="module">
+/**
+ * The Patch has been INVISIBLE since Pipkin shipped.
+ *
+ * It lives in `U.mm(c).patch`, a plain array, and `engine.objects` — which
+ * documents itself as the home for "Plants, Plots, Pumpkins, Graves" — was
+ * never rendered by anything until Brambleboo's Garden needed it. So every
+ * Trick reading "for each Pumpkin" asked the player to count something the
+ * screen did not draw, and no suite could tell: the mechanic worked perfectly.
+ *
+ * These assert the MIRROR: the array is still the source of truth, and
+ * `engine.objects` now follows it exactly, per seat.
+ */
+import { RNG } from '../../game/src/core/rng.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import { makeDummySetup, startDummyParty } from '../../game/src/combat/dummy.js';
+import { installTrackers, mm as MM } from '../../game/src/data/companions/_util.js';
+import * as CARDS from '../../game/src/data/cards.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+const say = (html, cls) => { const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; out.appendChild(d); };
+
+async function pipkin(o = {}) {
+  const e = new CombatEngine(makeDummySetup(new RNG(o.seed || 31), {
+    companion: 'pipkin', deck: CARDS.startingDeckFor('pipkin'), maxHp: 80, ...o,
+  }));
+  await e.startCombat();
+  installTrackers(e, 'pipkin');
+  return e;
+}
+async function play(e, id, seat = null) {
+  const who = seat || e.players[0];
+  e.addCard(CARDS.cardById(id), 'hand', { to: who });
+  const hand = e.pilesOf(who).hand;
+  const card = hand[hand.length - 1];
+  who.energy = 9;
+  await e.playCard(card.uid, undefined);
+  return card;
+}
+/** The array — still the source of truth.
+ *  `mm()` takes a CTX and resolves the seat from `c.self`; handing it the bare
+ *  engine answers for `e.current`, which is whichever seat happens to be
+ *  acting — so both Kids would read the same store. */
+const arr = (e, seat = null) => MM({ e, self: seat || e.players[0] }).patch;
+/** The one object the player actually sees. */
+const obj = (e, seat = null) => e.objects
+  .find(o => o.kind === 'patch' && o.data.seat === (seat || e.players[0]).id) || null;
+const counts = (e, seat = null) => {
+  const o = obj(e, seat);
+  return o ? `${o.data.seeds}s/${o.data.sprouts}p/${o.data.pumpkins}P of ${o.data.count}` : 'none';
+};
+/** What the array itself says, in the same shape — the two must never disagree. */
+const fromArray = (e, seat = null) => {
+  const p = arr(e, seat) || [];
+  const n = (st) => p.filter(x => x === st).length;
+  return p.length ? `${n('seed')}s/${n('sprout')}p/${n('pumpkin')}P of ${p.length}` : 'none';
+};
+
+(async () => {
+  say('<h2>The array reaches the board</h2>');
+  {
+    const e = await pipkin();
+    check(arr(e).length === 0 && !obj(e), 'an empty Patch draws nothing');
+
+    await play(e, 'pipkin/plant-a-little-one');
+    check(arr(e).length === 1, 'the Trick planted a Seed', `array ${JSON.stringify(arr(e))}`);
+    check(!!obj(e), 'and the Patch is ON THE BOARD — there was no object at all before');
+    check(obj(e).data.seeds === 1 && obj(e).data.count === 1, 'reading one Seed', counts(e));
+    check(obj(e).data.cap === 6, 'against the real cap of 6', String(obj(e).data.cap));
+    check(obj(e).data.seat === e.players[0].id, 'keyed to the seat that planted it');
+  }
+
+  say('<h2>It follows the array, stage for stage</h2>');
+  {
+    const e = await pipkin();
+    await play(e, 'pipkin/plant-a-little-one');
+    await e.endTurn();                    // growth step: Seed -> Sprout
+    check(arr(e)[0] === 'sprout', 'the Seed became a Sprout', arr(e)[0]);
+    check(obj(e).data.sprouts === 1 && obj(e).data.seeds === 0,
+          'and the board says so', counts(e));
+
+    await e.endTurn();                    // Sprout -> Pumpkin
+    check(arr(e)[0] === 'pumpkin', 'the Sprout ripened', arr(e)[0]);
+    check(obj(e).data.pumpkins === 1, 'and the board ripened with it', counts(e));
+    check(/ripe/.test(obj(e).data.stateLabel), 'the chip says something is ripe',
+          obj(e).data.stateLabel);
+  }
+
+  say('<h2>Harvesting takes it off the board</h2>');
+  {
+    const e = await pipkin();
+    await play(e, 'pipkin/plant-a-little-one');
+    await e.endTurn(); await e.endTurn();
+    check(arr(e).length === 1 && obj(e), 'one ripe Pumpkin, drawn');
+    await play(e, 'pipkin/little-harvest');
+    check(arr(e).length === 0, 'Harvest took it', `array ${JSON.stringify(arr(e))}`);
+    check(!obj(e), 'and an empty Patch leaves the board entirely');
+  }
+
+  say('<h2>The invariant, across a whole fight</h2>');
+  {
+    const e = await pipkin();
+    let worst = '';
+    for (let turn = 0; turn < 6; turn++) {
+      await play(e, 'pipkin/plant-a-little-one');
+      if (turn % 2 === 1) await play(e, 'pipkin/little-harvest');
+      await e.endTurn();
+      if (counts(e) !== fromArray(e) && !worst) {
+        worst = `turn ${turn}: board ${counts(e)} vs array ${fromArray(e)}`;
+      }
+    }
+    check(!worst, 'the board matched the array on every turn of a six-turn fight', worst);
+  }
+
+  say('<h2>Two Pipkins, two Patches</h2>');
+  {
+    const e = await startDummyParty(new RNG(41), 2, {
+      companion: 'pipkin', maxHp: 80,
+      decks: [CARDS.startingDeckFor('pipkin'), CARDS.startingDeckFor('pipkin')],
+    });
+    installTrackers(e, 'pipkin');
+    const [a, b] = e.players;
+    await play(e, 'pipkin/plant-a-little-one', b);
+    check(arr(e, b).length === 1 && arr(e, a).length === 0,
+          'seat 1 planted; seat 0 did not');
+    check(!!obj(e, b), 'seat 1 has a Patch on the board');
+    check(!obj(e, a), 'and seat 0 has none of it — the Patch is per Kid');
+  }
+
+  for (const line of passes) say('PASS ' + line, 'pass');
+  for (const line of fails) say('FAIL ' + line, 'fail');
+  say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`);
+  window.__RESULT = { passes, fails, passed: passes.length, failed: fails.length };
+  window.__DONE = true;
+})().catch(err => {
+  say('CRASHED: ' + (err && err.stack || err), 'fail');
+  window.__RESULT = { passes, fails: fails.concat(['CRASHED ' + err]), passed: passes.length, failed: fails.length + 1 };
+  window.__DONE = true;
+});
+</script>

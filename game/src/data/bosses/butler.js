@@ -53,16 +53,43 @@ export const HOUSE_RULES = {
     broken: (rc) => (rc.cardsPlayedThisTurn || []).length >= 4,
     onBreak: (c) => hitPlayer(c, p2 ? 8 : 6),
   }),
+  /**
+   * BALANCE 2026-08-28: the Reprimand was +8/10 GUARD. It is now damage that
+   * ignores Guard.
+   *
+   * Measured over 24 boss fights with real pre-boss loadouts: this is the most
+   * broken rule in the fight by a distance, 1.75 breaks per fight against
+   * no-roughhousing's 0.92 and no-running's 0.13 — and **68% of every Reprimand
+   * he collected paid him in Guard**. His effective Courage pool measured 201
+   * against a printed 165, because 35.8 of the damage the player found went
+   * into Guard rather than into him. That is the arithmetic behind "he is not
+   * dangerous, he is long": the fight's central mechanic, the one the player is
+   * invited to trip on purpose, was paying him in LENGTH.
+   *
+   * The trigger and the fiction are untouched — he still objects to you taking
+   * two turns in a row, he just stops being safer for it. Ignoring Guard is
+   * what makes it distinct from GUESTS DO NOT RUSH, which deals ordinary
+   * damage: the deck that shrugs off a flat 6 is precisely the defensive deck
+   * that breaks this rule, and it should not be able to pay for the
+   * interruption with Guard it was keeping anyway.
+   *
+   * DEVIATION from docs/design/regions/01-foyer.md §17, which specifies 8
+   * Guard. Recorded here rather than absorbed. The chapter's reasoning for the
+   * Guard Reprimands ("they simply give the Butler additional protection in
+   * exchange") is exactly the exchange the measurement says is wrong.
+   */
   'one-at-a-time': (p2) => ({
     id: 'one-at-a-time',
     name: 'GUESTS WAIT THEIR TURN',
-    text: `Playing two Tricks of the same type in a row breaks the rule. Reprimand: The Butler gains ${p2 ? 10 : 8} Guard.`,
+    text: `Playing two Tricks of the same type in a row breaks the rule. Reprimand: ${p2 ? 7 : 5} damage, ignoring Guard.`,
     when: 'cardPlayed', once: true,
     broken: (rc) => {
       const h = rc.cardsPlayedThisTurn || [];
       return h.length >= 2 && h[h.length - 1]?.type === h[h.length - 2]?.type;
     },
-    onBreak: (c) => c.block(c.self, p2 ? 10 : 8),
+    // No explicit target: the engine pins a Reprimand's ctx to the Kid who
+    // broke it, so this reaches them and nobody else (foyer §26).
+    onBreak: (c) => c.damage(p2 ? 7 : 5, { pierce: true }),
   }),
   /**
    * BALANCE 2026-08-20 — thresholds lowered from 18 Guard and 20 damage.
@@ -84,10 +111,28 @@ export const HOUSE_RULES = {
   'keep-the-hall-clear': (p2) => ({
     id: 'keep-the-hall-clear',
     name: 'GUESTS DO NOT CLUTTER THE HALL',
-    text: `Ending your turn with 12 or more Guard breaks the rule. Reprimand: The Butler gains ${p2 ? 12 : 10} Guard.`,
+    /**
+     * BALANCE 2026-08-28: he gained 10/12 Guard; he now tidies 10/12 of YOURS
+     * away. The same number, moved from his side of the board to the player's.
+     *
+     * Damage would have been the wrong answer here and it is worth saying why:
+     * this rule fires at turn END on a player sitting behind 12+ Guard, so
+     * damage is exactly what they have already paid for. Removing the Guard is
+     * the consequence that lands — it strips the wall the instant before he
+     * swings, which is the same threat expressed against the deck that
+     * actually breaks the rule.
+     *
+     * It is also the more faithful reading of the name. He does not brace
+     * himself when the hall is cluttered; he clears it.
+     *
+     * DEVIATION from foyer §18 (10 Guard to him), same reasoning as §17 above.
+     */
+    text: `Ending your turn with 12 or more Guard breaks the rule. Reprimand: he tidies ${p2 ? 12 : 10} of your Guard away.`,
     when: 'turnEnd', once: true,
     broken: (rc) => (rc.playerBlock || 0) >= 12,
-    onBreak: (c) => c.block(c.self, p2 ? 12 : 10),
+    // `c.player` is the Kid who broke it — the engine pins a Reprimand's ctx
+    // to the breaker, so this reaches them and nobody else (foyer §26).
+    onBreak: (c) => c.loseBlock(c.player, p2 ? 12 : 10, 'reprimand'),
   }),
   /**
    * BALANCE 2026-08-20 (round 2): back to the plain `rc.damageDealtThisTurn`.
@@ -343,6 +388,17 @@ export const butler = {
     // so they buy their difficulty back per hit instead of per turn.
     return (bonus > 0 ? Math.ceil(bonus / Math.max(1, hits)) : 0) + bossDmg(c);
   },
+  /**
+   * Every living seat except the one this move is aimed at.
+   *
+   * Solo answers an empty array, so a move that splashes onto "everyone else"
+   * is exactly the move it always was for one Kid.
+   */
+  bystanders(c) {
+    const aim = c.player;
+    const all = typeof c.players === 'function' ? c.players() : [];
+    return all.filter(pl => pl && pl !== aim && pl.alive);
+  },
   strike(c, dmg, hits = 1) {
     const per = butler.perHitBonus(c, hits);
     mem(c).retaliation = 0;
@@ -359,12 +415,32 @@ export const butler = {
     },
     'walking-stick': {
       id: 'walking-stick', name: 'Walking Stick', intent: Intent.ATTACK, damage: 10, hits: 1,
+      // MULTIPLAYER: the Kid who is not braced. The region already teaches this
+      // preference with Dust Bunny's Tumble (foyer §26), and it is the half of
+      // co-op scaling that is not Courage. Ties break on seat index, never the
+      // RNG — the arrow is on screen before anybody commits.
+      partyPick: 'lowestGuard',
       tell: 'He adjusts his gloves.',
       damageFn: (c) => butler.strikeDisplay(c, 10),
       effect(c) { butler.strike(c, 10); butler.announceNext(c); },
     },
     'dust-them-off': {
+      /**
+       * MULTIPLAYER: phase one's AoE. He tidies EVERY guest.
+       *
+       * The design chapter is silent on the Butler's targeting — §28 covers his
+       * House Rules and Flustered thresholds and nothing else — so this is
+       * authored to §26's precedent (Red Carpet Runner's Run the Hall) and to
+       * his own tell, which is the one move in his phase-one cycle that is
+       * already a housekeeping chore rather than a blow. A cloth going briskly
+       * over four guests is the same gesture as over one.
+       *
+       * No `splash`: the main number lands in full on every seat, so every seat
+       * has an arrow and the intent is honest without one. Damage per Kid is
+       * unchanged at 5x2 — what scales is COVERAGE, never the number.
+       */
       id: 'dust-them-off', name: 'Dust Them Off', intent: Intent.ATTACK, damage: 5, hits: 2,
+      partyTarget: 'all',
       tell: 'He produces a cloth and begins, briskly, to tidy you.',
       damageFn: (c) => butler.strikeDisplay(c, 5, 2),
       hitsFn: () => 2,
@@ -416,17 +492,47 @@ export const butler = {
 
     // ── phase two ────────────────────────────────────────────────────────────
     'remove-the-intruder': {
+      /**
+       * MULTIPLAYER: singles out the HEALTHIEST Kid, and stays single-target.
+       *
+       * Deliberately not AoE: a phase needs one move that is one Kid's problem,
+       * or the party stops having anything to answer individually. And
+       * deliberately not `lowestCourage` — a boss that focuses whoever is
+       * nearest to falling executes the party one Kid at a time, which is the
+       * least interesting thing co-op can do. He is removing the guest most
+       * capable of resisting, which is both better play and better character.
+       */
       id: 'remove-the-intruder', name: 'Remove the Intruder', intent: Intent.ATTACK, damage: 7, hits: 3,
+      partyPick: 'highestCourage',
       tell: 'He takes hold of you the way one takes hold of a stray animal.',
       damageFn: (c) => butler.strikeDisplay(c, 7, 3),
       hitsFn: () => 3,
       effect(c) { butler.strike(c, 7, 3); },
     },
     'enough-of-this': {
+      /**
+       * MULTIPLAYER: phase two's AoE, and the only one shaped as a splash.
+       *
+       * "For the first time all evening, he raises his voice." A shout is aimed
+       * at somebody and heard by everybody, so the 15 belongs to one Kid and
+       * the rest of the table takes 6. That is the shape CONTRACTS requires to
+       * be declared: a move whose main number belongs to ONE Kid while other
+       * seats also take damage MUST carry `splash`, or the intent is lying to
+       * the seats with no arrow.
+       *
+       * The splash is flat and takes neither the Haunt bump nor the No
+       * Roughhousing rider, both of which belong to the blow he is actually
+       * aiming.
+       */
       id: 'enough-of-this', name: 'Enough of This', intent: Intent.ATTACK_BIG, damage: 15, hits: 1, block: 6,
       tell: 'For the first time all evening, he raises his voice.',
       damageFn: (c) => butler.strikeDisplay(c, 15),
-      effect(c) { butler.strike(c, 15); c.block(c.self, 6); },
+      splashFn: (c) => (c.partySize() > 1 ? 6 : 0),
+      effect(c) {
+        butler.strike(c, 15);
+        for (const pl of butler.bystanders(c)) c.damage(pl, 6);
+        c.block(c.self, 6);
+      },
     },
     'restore-order': {
       id: 'restore-order', name: 'Restore Order', intent: Intent.DEFEND_BUFF, block: 14,

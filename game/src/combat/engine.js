@@ -637,7 +637,19 @@ export class CombatEngine {
       allies: this.allies.map(a => ({ ...a.snapshot(), statuses: this.statusList(a) })),
       piles: this._pileState(this.players[0]),
       counts: this.players[0].piles.snapshotCounts(),
-      stashCap: this.players[0].piles.stashCap,
+      /**
+       * `stashCap` used to sit here too, as `players[0].piles.stashCap`: one
+       * seat-0 number loose in a snapshot that is otherwise per seat, with no
+       * reader anywhere in the build. Pudding's cemetery widens the cap per
+       * Kid, so the first screen to reach for the flat one would have shown
+       * every Kid the host's cemetery — the same shape as the pile events that
+       * had every seat's draws landing in the local Kid's fan, waiting for its
+       * first consumer.
+       *
+       * It is per seat only, in `_seatState`. `player`/`piles`/`counts` above
+       * stay flat on purpose: they are seat 0's by documented design and the
+       * whole renderer reads them.
+       */
       rules: this.rules.map(r => ({ id: r.id, name: r.name, text: r.text, sourceId: r.sourceId || null })),
       field: JSON.parse(JSON.stringify(this.field)),
       playedThisTurn: this.playedThisTurn.map(x => ({ ...x })),
@@ -1805,6 +1817,17 @@ export class CombatEngine {
         return e.gainBlock(a || enemy, n, { fromCard: false, reason: 'enemy' });
       },
       heal: (a, n) => (typeof a === 'number' ? e.heal(enemy, a, 'enemy') : e.heal(a || enemy, n, 'enemy')),
+      /**
+       * Take Guard OFF an actor — the twin of `block`, and the seam the
+       * Butler's GUESTS DO NOT CLUTTER THE HALL needs: its Reprimand tidies the
+       * PLAYER's Guard away instead of handing him more of his own.
+       *
+       * Added rather than reached for: `c.e.loseBlock(...)` resolves against
+       * the real engine and throws against `tests/enemies/index.html`, which
+       * builds its own ctx. An enemy def must not have to know which of the two
+       * it is talking to.
+       */
+      loseBlock: (a, n, reason) => e.loseBlock(a || target(), n, reason || 'enemy'),
       loseHp: (a, n) => (typeof a === 'number' ? e.loseHp(enemy, a, 'enemy') : e.loseHp(a || enemy, n, 'enemy')),
 
       // statuses. The 4th argument is options/content data and MUST be passed

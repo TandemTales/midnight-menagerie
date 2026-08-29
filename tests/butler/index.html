@@ -1,0 +1,240 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>The Butler — AoE coverage, seat preferences, Reprimands that threaten</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+</style>
+<h1>The Butler</h1>
+<div id="out"></div>
+<script type="module">
+/**
+ * Everything here asserts an EFFECT against the real engine and the real def.
+ * `tests/cards/run.py` proves a card resolves without throwing, which CONTRACTS
+ * trap 12 is explicit is worth nothing, and `tests/enemies/audit.py` is solo —
+ * so every AoE and seat-preference path below was invisible to both.
+ */
+import { RNG } from '../../game/src/core/rng.js';
+import { makeDummyParty, SCRATCH, CURL_UP } from '../../game/src/combat/dummy.js';
+import { getEnemy } from '../../game/src/data/enemies/index.js';
+import { butler, HOUSE_RULES } from '../../game/src/data/bosses/butler.js';
+import { buildIntent } from '../../game/src/combat/intents.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+const say = (html, cls) => { const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; out.appendChild(d); };
+
+/** A real fight against the real Butler def, with `n` seats. */
+async function fight(n = 1, o = {}) {
+  const e = makeDummyParty(new RNG(o.seed ?? 5), n, {
+    maxHp: o.maxHp ?? 80,
+    enemies: [{ def: getEnemy('butler'), hp: o.bossHp ?? 165, id: 'butler' }],
+  });
+  await e.startCombat();
+  return e;
+}
+const boss = (e) => e.enemies[0];
+
+/** Force one specific move and let the enemy phase resolve it. */
+async function useMove(e, id) {
+  e.overrideIntent(boss(e), butler.moves[id]);
+  const hp = e.players.map(p => p.hp);
+  const guardBefore = boss(e).block;
+  await e.endTurn();
+  return {
+    lost: e.players.map((p, i) => hp[i] - p.hp),
+    bossGuardGained: Math.max(0, boss(e).block - guardBefore),
+  };
+}
+
+/** The intent the seats are SHOWN, built the way the engine builds it. */
+function intentFor(e, id) {
+  const en = boss(e);
+  en.pendingMove = butler.moves[id];
+  return buildIntent(e, en, butler.moves[id]);
+}
+
+/** Put the named House Rule on the board, phase one or two. */
+function standRule(e, id, p2 = false) {
+  if (p2) boss(e).mem.phase = 2;
+  e.clearRules(boss(e).id);
+  e.announceRule(HOUSE_RULES[id](p2), boss(e).id);
+}
+
+(async () => {
+  // ── AoE coverage ──────────────────────────────────────────────────────────
+  say('<h2>Dust Them Off — phase one\'s AoE</h2>');
+  {
+    const e = await fight(3);
+    const targets = e.partyTargets(boss(e), butler.moves['dust-them-off']);
+    check(targets.length === 3, 'Dust Them Off aims at every seat',
+          `${targets.length} of 3`);
+
+    const r = await useMove(e, 'dust-them-off');
+    check(r.lost.every(v => v === 10), 'every seat takes the full 5x2',
+          `lost ${r.lost.join(' / ')}`);
+    check(new Set(r.lost).size === 1, 'and takes the SAME number — damage never scales',
+          `lost ${r.lost.join(' / ')}`);
+  }
+  {
+    const e = await fight(1);
+    const r = await useMove(e, 'dust-them-off');
+    check(r.lost[0] === 10, 'solo is the move it always was', `lost ${r.lost[0]}`);
+    const it = intentFor(await fight(1), 'dust-them-off');
+    check(!it.splash, 'no splash declared: every seat has an arrow of its own',
+          `splash ${it.splash ?? 0}`);
+  }
+
+  say('<h2>Enough of This — the shout carries</h2>');
+  {
+    const e = await fight(3);
+    const r = await useMove(e, 'enough-of-this');
+    const aimed = r.lost.filter(v => v === 15);
+    const rest = r.lost.filter(v => v === 6);
+    check(aimed.length === 1, 'exactly ONE seat takes the full 15', `lost ${r.lost.join(' / ')}`);
+    check(rest.length === 2, 'every other seat takes exactly the 6 splash', `lost ${r.lost.join(' / ')}`);
+
+    const it = intentFor(await fight(3), 'enough-of-this');
+    check(it.splash === 6, 'the intent DECLARES the splash, so the seats with no arrow are told',
+          `splash ${it.splash ?? 0}`);
+  }
+  {
+    const e = await fight(1);
+    const r = await useMove(e, 'enough-of-this');
+    check(r.lost[0] === 15, 'solo takes the 15 and nothing else exists', `lost ${r.lost[0]}`);
+    const it = intentFor(await fight(1), 'enough-of-this');
+    check(!it.splash, 'and no splash is declared in solo', `splash ${it.splash ?? 0}`);
+  }
+
+  // ── seat preferences ──────────────────────────────────────────────────────
+  say('<h2>Who he singles out</h2>');
+  {
+    const e = await fight(3);
+    e.players[0].hp = 40; e.players[1].hp = 80; e.players[2].hp = 60;
+    boss(e).pendingMove = butler.moves['remove-the-intruder'];
+    const t1 = e.intentTargetFor(boss(e));
+    const t2 = e.intentTargetFor(boss(e));
+    check(t1 === e.players[1], 'Remove the Intruder takes the HEALTHIEST Kid',
+          `picked seat ${t1.seat}`);
+    check(t1 === t2, 'and the same one twice — the arrow survives a replay');
+
+    const r = await useMove(e, 'remove-the-intruder');
+    check(r.lost[1] === 21 && r.lost[0] === 0 && r.lost[2] === 0,
+          'all three hits land on that one Kid, and nobody else is touched',
+          `lost ${r.lost.join(' / ')}`);
+  }
+  {
+    const e = await fight(3);
+    for (const p of e.players) p.hp = 60;         // a perfect tie
+    boss(e).pendingMove = butler.moves['remove-the-intruder'];
+    check(e.intentTargetFor(boss(e)) === e.players[0],
+          'a tie breaks on SEAT INDEX, never the RNG');
+  }
+  {
+    const e = await fight(3);
+    e.gainBlock(e.players[0], 12, { reason: 'test' });
+    e.gainBlock(e.players[2], 3, { reason: 'test' });
+    boss(e).pendingMove = butler.moves['walking-stick'];
+    check(e.intentTargetFor(boss(e)) === e.players[1],
+          'Walking Stick taps the Kid who is not braced',
+          `picked seat ${e.intentTargetFor(boss(e)).seat}`);
+  }
+
+  // ── Reprimands that threaten instead of protecting him ────────────────────
+  say('<h2>GUESTS WAIT THEIR TURN — damage, through Guard</h2>');
+  {
+    // The REAL path: a rule standing, and two Attacks played back to back.
+    const e = await fight(1);
+    standRule(e, 'one-at-a-time');
+    e.gainBlock(e.players[0], 20, { reason: 'test' });
+    const hp0 = e.players[0].hp, guard0 = e.players[0].block, bg0 = boss(e).block;
+    e.players[0].energy = 9;
+    for (let i = 0; i < 2; i++) {
+      e.addCard(SCRATCH, 'hand', {});
+      const c = e.piles.hand[e.piles.hand.length - 1];
+      await e.playCard(c.uid, boss(e).id);
+    }
+    check(hp0 - e.players[0].hp === 5, 'breaking it costs 5 Courage',
+          `lost ${hp0 - e.players[0].hp}`);
+    check(e.players[0].block === guard0, 'and it goes THROUGH Guard, which is untouched',
+          `Guard ${guard0} -> ${e.players[0].block}`);
+    check(boss(e).block === bg0, 'the Butler gains NO Guard for it — the whole point',
+          `his Guard ${bg0} -> ${boss(e).block}`);
+    /* The whole fight is built on farming Flustered, so the conversion must not
+       have cost the player the reason to break rules in the first place. */
+    check((boss(e).counters?.flustered | 0) === 1,
+          'and he still gets his 1 Flustered — the economy is untouched',
+          `flustered ${boss(e).counters?.flustered}`);
+  }
+  {
+    const e = await fight(1);
+    standRule(e, 'one-at-a-time', true);       // phase two
+    const hp0 = e.players[0].hp;
+    e.players[0].energy = 9;
+    for (let i = 0; i < 2; i++) {
+      e.addCard(SCRATCH, 'hand', {});
+      const c = e.piles.hand[e.piles.hand.length - 1];
+      await e.playCard(c.uid, boss(e).id);
+    }
+    check(hp0 - e.players[0].hp === 7, 'phase two costs 7', `lost ${hp0 - e.players[0].hp}`);
+  }
+
+  say('<h2>GUESTS DO NOT CLUTTER THE HALL — he tidies your Guard away</h2>');
+  {
+    /* Measured through the event stream, not off the board afterwards: Guard is
+       wiped at the start of the next player turn, so a before/after reading
+       would report the wipe and call it the Reprimand. `block:lose` carries the
+       reason, which separates the two. */
+    const e = await fight(1);
+    standRule(e, 'keep-the-hall-clear');
+    e.gainBlock(e.players[0], 18, { reason: 'test' });
+    const bg0 = boss(e).block;
+    let tidied = 0;
+    e.on('block:lose', (ev) => { if (ev.reason === 'reprimand') tidied += (ev.before - ev.after); });
+    e.overrideIntent(boss(e), butler.moves['restore-order']);
+    await e.endTurn();
+    check(tidied === 10, 'he tidies 10 of YOUR Guard away', `tidied ${tidied}`);
+    check(boss(e).block - bg0 === 14, 'and gains only what Restore Order itself grants (14)',
+          `his Guard +${boss(e).block - bg0}`);
+  }
+  {
+    const e = await fight(1);
+    standRule(e, 'keep-the-hall-clear', true);   // phase two
+    e.gainBlock(e.players[0], 18, { reason: 'test' });
+    let tidied = 0;
+    e.on('block:lose', (ev) => { if (ev.reason === 'reprimand') tidied += (ev.before - ev.after); });
+    e.overrideIntent(boss(e), butler.moves['restore-order']);
+    await e.endTurn();
+    check(tidied === 12, 'phase two tidies 12', `tidied ${tidied}`);
+  }
+
+  say('<h2>One player\'s actions do not punish another (foyer §26)</h2>');
+  {
+    const e = await fight(3);
+    standRule(e, 'one-at-a-time');
+    const hp0 = e.players.map(p => p.hp);
+    e.players[1].energy = 9;
+    for (let i = 0; i < 2; i++) {
+      e.addCard(SCRATCH, 'hand', { to: e.players[1] });
+      const hand = e.pilesOf(e.players[1]).hand;
+      const c = hand[hand.length - 1];
+      await e.playCard(c.uid, boss(e).id);
+    }
+    const lost = e.players.map((p, i) => hp0[i] - p.hp);
+    check(lost[1] === 5 && lost[0] === 0 && lost[2] === 0,
+          'the Reprimand lands on the breaker and on nobody else',
+          `lost ${lost.join(' / ')}`);
+  }
+
+  for (const line of passes) say('PASS ' + line, 'pass');
+  for (const line of fails) say('FAIL ' + line, 'fail');
+  say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`);
+  window.__RESULT = { passes, fails, passed: passes.length, failed: fails.length };
+  window.__DONE = true;
+})().catch(err => {
+  say('CRASHED: ' + (err && err.stack || err), 'fail');
+  window.__RESULT = { passes, fails: fails.concat(['CRASHED ' + err]), passed: passes.length, failed: fails.length + 1 };
+  window.__DONE = true;
+});
+</script>

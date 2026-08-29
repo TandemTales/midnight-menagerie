@@ -100,6 +100,15 @@ class MockCombat {
         return self.damage(actor, t, n, o);
       },
       loseHp: (t, n) => { t.hp = Math.max(0, t.hp - n); if (t.hp === 0 && t !== self.player) t.alive = false; },
+      // Mirrors the engine's `loseBlock`. CONTRACTS trap 5: a shim that does
+      // not implement what the real ctx implements tests nothing — and this one
+      // would have reported the Butler's Reprimand as working while it threw.
+      loseBlock: (a, n) => {
+        const t = a || self.player;
+        const before = t.block || 0;
+        t.block = Math.max(0, before - Math.max(0, n | 0));
+        return before - t.block;
+      },
       block: (a, n, o) => {
         if (!a || a.alive === false) return;
         a.block = (a.block || 0) + Math.max(0, n | 0);

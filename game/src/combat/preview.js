@@ -80,21 +80,39 @@ export function previewCard(engine, cardUid, targetId = null, opts = {}) {
   }
 
   const sim = engine.clone();
+  /**
+   * The seat that HOLDS this card, resolved INSIDE the clone.
+   *
+   * Every reading below used to come off `sim.player`, which is seat 0. In a
+   * party that meant the preview a Kid saw for their OWN Trick was computed
+   * against the host's Nerve, Guard, Courage and statuses: "you will be left on
+   * 3 Nerve" was the host's 3, and `playerDies` answered for the host. It is
+   * the same shape as the pile events that had every seat's draws landing in
+   * the local Kid's fan, and it is invisible in solo, where seat 0 is the only
+   * seat there is.
+   *
+   * `_playCard` has resolved the acting seat with `seatOfCard` since co-op
+   * landed — the preview, which exists to say exactly what `_playCard` will do,
+   * simply never got the same treatment. The dev guard would have caught it,
+   * but `engine.clone()` produces a preview engine and the bot harness disarms
+   * the guard to measure.
+   */
+  const me = sim.seatOfCard(sim.card(cardUid)) || sim.current;
   if (opts.assumeAffordable && onlyCost) {
-    sim.player.energy = Math.max(sim.player.energy, Math.max(0, sim.costOf(card)));
+    me.energy = Math.max(me.energy, Math.max(0, sim.costOf(card)));
   }
 
   const events = [];
   sim.on('*', (ev) => events.push(ev));
 
-  const playerId = sim.player.id;
+  const playerId = me.id;
   const hpBeforeMap = new Map();
   const blockBeforeMap = new Map();
-  for (const a of [sim.player, ...sim.enemies, ...sim.allies]) {
+  for (const a of [me, ...sim.enemies, ...sim.allies]) {
     hpBeforeMap.set(a.id, a.hp);
     blockBeforeMap.set(a.id, a.block);
   }
-  const energyBefore = sim.player.energy;
+  const energyBefore = me.energy;
 
   const res = sim._playCard(cardUid, targetId);
   out.partial = !!res.pending;
@@ -195,17 +213,20 @@ export function previewCard(engine, cardUid, targetId = null, opts = {}) {
   out.counters = [...counterMap.values()].filter(c => c.delta !== 0);
 
   out.cost = playCost;
-  out.energyAfter = sim.player.energy;
-  out.energyDelta = sim.player.energy - energyBefore;
+  out.energyAfter = me.energy;
+  out.energyDelta = me.energy - energyBefore;
 
   const chosen = targetId ? out.targets.find(t => t.id === targetId) : null;
   out.damage = chosen ? chosen.damage : out.targets.reduce((s, t) => s + t.damage, 0);
   out.killsTarget = chosen ? chosen.kills : (out.targets.length === 1 ? out.targets[0].kills : false);
   out.killsAny = out.targets.some(t => t.kills);
   out.killsAll = sim.livingEnemies().length === 0 && engine.livingEnemies().length > 0;
-  out.playerDies = !sim.player.alive;
+  out.playerDies = !me.alive;
   out.endsCombat = sim.over;
   if (out.partial) out.uncertain = true;
+  // `rederive` runs after the card has resolved, when the card has left the
+  // hand; carry the seat rather than looking it up again from a moved card.
+  out._meId = me.id;
 
   return out;
 }
@@ -218,23 +239,25 @@ export function previewCard(engine, cardUid, targetId = null, opts = {}) {
  */
 export async function previewCardAsync(engine, cardUid, targetId = null, opts = {}) {
   const out = previewCard(engine, cardUid, targetId, opts);
-  if (!out.ok || !out._pending) { delete out._sim; delete out._pending; return out; }
+  if (!out.ok || !out._pending) { delete out._sim; delete out._pending; delete out._meId; return out; }
   try { await out._pending; } catch (err) { console.error('[combat] async preview threw', err); }
-  const full = rederive(out, out._sim, engine, targetId);
-  delete full._sim; delete full._pending;
+  const full = rederive(out, out._sim, engine, targetId, out._meId);
+  delete full._sim; delete full._pending; delete full._meId;
   full.partial = false;
   full.uncertain = out.uncertain || out.pendingChoices > 0;
   return full;
 }
 
 /** Re-run the aggregation over the now-complete event list. */
-function rederive(out, sim, engine, targetId) {
+function rederive(out, sim, engine, targetId, meId = null) {
   const events = out.events;
   const fresh = EMPTY();
   fresh.ok = true;
   fresh.events = events;
   fresh.reason = out.reason;
-  const playerId = sim.player.id;
+  // The seat that played it, not seat 0. See `previewCard`.
+  const me = (meId && sim.actor(meId)) || sim.current;
+  const playerId = me.id;
   const tmap = new Map(), statusMap = new Map(), counterMap = new Map(), deaths = new Set();
   let playCost = 0;
   for (const ev of events) {
@@ -284,13 +307,13 @@ function rederive(out, sim, engine, targetId) {
   fresh.statuses = [...statusMap.values()].filter(x => x.stacks !== 0).map(x => ({ ...x, remove: x.stacks < 0 }));
   fresh.counters = [...counterMap.values()].filter(c => c.delta !== 0);
   fresh.cost = playCost;
-  fresh.energyAfter = sim.player.energy;
+  fresh.energyAfter = me.energy;
   const chosen = targetId ? fresh.targets.find(t => t.id === targetId) : null;
   fresh.damage = chosen ? chosen.damage : fresh.targets.reduce((sum, t) => sum + t.damage, 0);
   fresh.killsTarget = chosen ? chosen.kills : (fresh.targets.length === 1 ? fresh.targets[0].kills : false);
   fresh.killsAny = fresh.targets.some(t => t.kills);
   fresh.killsAll = sim.livingEnemies().length === 0 && engine.livingEnemies().length > 0;
-  fresh.playerDies = !sim.player.alive;
+  fresh.playerDies = !me.alive;
   fresh.endsCombat = sim.over;
   return fresh;
 }

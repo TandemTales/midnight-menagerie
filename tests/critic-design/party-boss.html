@@ -82,13 +82,17 @@ const med = (a) => {
     const row = {
       size, n: rows.length,
       win: +(100 * wins.length / rows.length).toFixed(1),
-      turnsMean: mean(wins.map(r => r.turns)),
-      turnsMed: med(wins.map(r => r.turns)),
+      /* Turns and cost over EVERY fight, not just the wins. A row that wins
+         nothing reported `turns 0`, which reads as "instant" when it means "no
+         sample" — and a party wiped at turn 9 is exactly the reading you want.
+         Leftover Courage stays wins-only: on a loss it is 0 by definition. */
+      turnsMean: mean(rows.map(r => r.turns)),
+      turnsMed: med(rows.map(r => r.turns)),
       left: +(100 * mean(wins.map(r => r.courageLeft))).toFixed(1),
       fallen: mean(rows.map(r => r.fallen)),
       spread: +mean(rows.map(r => r.spread)).toFixed(2),
       enemyHp: Math.round(mean(rows.map(r => r.enemyHp))),
-      cost: mean(wins.map(r => r.courageCost)),
+      cost: mean(rows.map(r => r.courageCost)),
       errs: rows.reduce((n, r) => n + r.botErrors, 0),
       timeouts: rows.filter(r => r.timeout).length,
     };
