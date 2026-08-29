@@ -1035,11 +1035,16 @@ export const porcelainTwinPrim = Object.assign(twinCommon('porcelain-twin-prim')
     'tea-party': {
       id: 'tea-party', name: 'Tea Party', intent: Intent.BUFF,
       tell: 'They pour for one another. Both of them look a great deal better afterwards.',
-      effect(c) {
-        c.heal(c.self, 5);
-        const t = twinOf(c, 'porcelain-twin-prim');
-        if (t) c.heal(t, 5);
-      },
+      /**
+       * Each Twin heals ITSELF. Both defs carry this move and both gate on the
+       * same `isTeaTurn` turn, so healing the sibling as well restored 10 to
+       * each of them per Tea Party — twice the chapter's number. "Every fourth
+       * turn: Tea Party. Each Twin recovers 5 Courage." (nursery §14.)
+       *
+       * It still stops the moment one Twin falls, because `isTeaTurn` is gated
+       * on `twinOf` — "If either Twin is defeated, Tea Party no longer occurs."
+       */
+      effect(c) { c.heal(c.self, 5); },
     },
   },
 
@@ -1088,11 +1093,16 @@ export const porcelainTwinProper = Object.assign(twinCommon('porcelain-twin-prop
     'tea-party': {
       id: 'tea-party', name: 'Tea Party', intent: Intent.BUFF,
       tell: 'They pour for one another. Both of them look a great deal better afterwards.',
-      effect(c) {
-        c.heal(c.self, 5);
-        const t = twinOf(c, 'porcelain-twin-proper');
-        if (t) c.heal(t, 5);
-      },
+      /**
+       * Each Twin heals ITSELF. Both defs carry this move and both gate on the
+       * same `isTeaTurn` turn, so healing the sibling as well restored 10 to
+       * each of them per Tea Party — twice the chapter's number. "Every fourth
+       * turn: Tea Party. Each Twin recovers 5 Courage." (nursery §14.)
+       *
+       * It still stops the moment one Twin falls, because `isTeaTurn` is gated
+       * on `twinOf` — "If either Twin is defeated, Tea Party no longer occurs."
+       */
+      effect(c) { c.heal(c.self, 5); },
     },
   },
 

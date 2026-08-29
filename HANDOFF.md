@@ -42,10 +42,10 @@ change him.
 
   | party | turns | %blocked | partyGuard | left% |
   |---|---|---|---|---|
-  | 1p | 9.4 → **9.4** | 57.6 → 57.6 | 63.8 → 63.8 | 60 → 60 |
-  | 2p | 13.3 → 11.3 | 68.3 → 66.9 | 221 → 204 | 70 → 70 |
-  | 3p | 35.5 → **12.5** | 73.7 → 66.7 | 796 → 308 | 60 → 80 |
-  | 4p | 43.7 → **13.0** | 74.7 → 68.8 | 1943 → 733 | 60 → 80 |
+  | 1p | 9.4 → **9.4** | 57.6 → 57.6 | 63.8 → 63.8 | 59.5 |
+  | 2p | 13.3 → 11.3 | 68.3 → 66.9 | 221 → 204 | 72.6 |
+  | 3p | 35.5 → **12.5** | 73.7 → 66.7 | 796 → 308 | 78.9 |
+  | 4p | 43.7 → **13.0** | 74.7 → 68.8 | 1943 → 733 | 82.8 |
 
   **The nine per-enemy `partyHp` curves that were scoped as the next piece are
   not needed and would have been nine curves fitted to a bot that turtles.**
@@ -120,28 +120,39 @@ change him.
   Rocking Horse's Excitement-from-support are both live, with a control per
   layer.
 
-- **THE PORCELAIN TWINS ARE THE SOFTEST THING IN THE MEASURED SET, and wiring
-  Joined made them softer.** `party-ledger.py --enc nursery-scare-twins`,
-  n=12, dead → wired:
+- **THE PORCELAIN TWINS ARE SOFT AT ONE KID, and the number that said so was
+  rounded to the nearest ten.** `party-ledger.py`'s `left%` went through a
+  `mean()` that rounds to ONE DECIMAL before the multiply — on a 0..1 fraction
+  that quantises the column to multiples of 10, so 0.849 and 0.851 print as 80
+  and 90. It is the number the file's own docstring calls the reason it exists.
+  Fixed; every `left%` in this document from that harness is re-measured.
 
-  | party | turns | left% |
-  |---|---|---|
-  | 1p | 11.3 → 10.4 | 70 → **90** |
-  | 2p | 8.3 → 8.3 | 90 → 90 |
-  | 3p | 7.4 → 6.8 | 100 → 90 |
-  | 4p | 8.3 → 7.5 | 100 → 90 |
+  The three Nursery elites, n=12, same instrument, real precision:
 
-  Joined's debuff-copy half is a PLAYER tool and it outweighs its Guard-flow
-  half, which is what the encounter's own `teaches` line asks for. The
-  softness is pre-existing and is now the clearest balance item in the game:
-  an elite that leaves 70–100% of the party's Courage at every size. The
-  Nursery standard tier is byte-identical across 96 fights either way, so
-  there is no regression from the wiring — qualifying events exist there but
-  none co-occurred with the Horse in the sample.
+  | encounter | 1p landed | 1p left% | 4p left% |
+  |---|---|---|---|
+  | Toy Chest | 24.9 | 81.2 | 94.8 |
+  | Patchwork Giant | 40.9 | 72.6 | 93.7 |
+  | **Porcelain Twins** | 26.5 | **96.0** | 93.7 |
+
+  At four Kids all three are the same (~94). The Twins are an outlier at ONE
+  Kid only. **Not tuned, deliberately**: the one lever tried — halving their
+  Tea Party sustain to the chapter's number — made them EASIER (left% 90 → 96),
+  because less healing just ends the fight sooner. Their problem is output
+  (`aimed/turn` 7.6, same as the Toy Chest) against a 160-Courage pool, and
+  Proper deals no damage at all by design. Prim is already at 13 and 7x2
+  against the chapter's 10 and 5x2, so the next move is NOT a bigger number on
+  Prim; it wants a reading of where the encounter's turns actually go.
+
+  **A caveat on the instrument, not yet chased:** `landed` and `left%` do not
+  reconcile — the Twins land 26.5 on one Kid and that Kid finishes at 96% of
+  maximum. Either the Kid is healing ~24 Courage a fight from the deck and
+  Snacks, or one of the two numbers is wrong. Settle that before tuning
+  anything on the strength of `left%`.
 
 - **STILL OPEN, and now the honest headline for the party game: a party
-  finishes too comfortable.** Elite `left%` is 60 solo against 80 at three and
-  four Kids; the standard tier is 61 against 86. Length is fixed, cost is not.
+  finishes too comfortable.** Elite `left%` is **59.5 solo against 78.9 and
+  82.8** at three and four Kids; the standard tier is 61 against 86. Length is fixed, cost is not.
   This is trap 45's shape — Guard scales with the party and enemy damage does
   not — and the lever is targeting, not Courage. The Grand Coatcheck is the one
   Foyer elite whose attacks declare no `partyTarget`, no `partyPick` and no

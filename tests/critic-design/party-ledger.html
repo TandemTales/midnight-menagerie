@@ -78,12 +78,23 @@ const R = { config: { TIER, ENC, REGION, LREGION, N, GEN, SIZES, SLUGS, SEED0 },
     const landed = mean(rows.map(r => r.takenBySeat.reduce((a, b) => a + b, 0)));
     const blocked = mean(rows.map(r => r.blocked));
     const turns = mean(rows.map(r => r.turns));
+    const wins = rows.filter(r => r.win);
     const row = {
       size, n: rows.length, aimed, landed, blocked,
       pctBlocked: aimed ? +(100 * blocked / aimed).toFixed(1) : 0,
       partyGuard: mean(rows.map(r => r.partyGuard)),
       turns, aimedPerTurn: turns ? +(aimed / turns).toFixed(1) : 0,
-      left: +(100 * mean(rows.filter(r => r.win).map(r => r.courageLeft))).toFixed(1),
+      /**
+       * NOT through `mean()`. `mean` rounds to one decimal before returning,
+       * which is right for Courage totals and destroys a 0..1 FRACTION: every
+       * `left%` this table has ever printed was quantised to a multiple of ten
+       * (0.849 -> 0.8 -> 80, 0.851 -> 0.9 -> 90), so two encounters a fifth of
+       * a point apart could read 80 against 90. It is the number this file's
+       * own docstring calls the reason it exists.
+       */
+      left: +(100 * (wins.length
+        ? wins.reduce((a, r) => a + r.courageLeft, 0) / wins.length
+        : 0)).toFixed(1),
       errs: rows.reduce((a, r) => a + (r.botErrors || 0), 0),
     };
     R.table.push(row);

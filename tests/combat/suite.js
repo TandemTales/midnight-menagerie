@@ -1408,6 +1408,32 @@ export async function run() {
     eq(proper.block, 8, 'and Proper has 8, not 12');
   });
 
+  await atest('Twins: a Tea Party restores 5 to each, not 10', async () => {
+    /**
+     * "Shared move. Every fourth turn: Tea Party. Each Twin recovers 5
+     * Courage." (nursery 14.)
+     *
+     * BOTH defs carry the move, BOTH gate on the same `isTeaTurn` turn, and
+     * each one healed ITSELF and its sibling — so every Tea Party restored 10
+     * to each Twin, twice what the chapter says, on a pair whose whole problem
+     * is that they cost the player almost nothing.
+     */
+    const { getEnemy } = await import('/game/src/data/enemies/index.js');
+    const e = mk({ enemies: [
+      { def: getEnemy('porcelain-twin-prim'), hp: 80, id: 'prim' },
+      { def: getEnemy('porcelain-twin-proper'), hp: 80, id: 'proper' },
+    ] });
+    await e.startCombat();
+    const [prim, proper] = e.enemies;
+    prim.hp = 40; proper.hp = 40;
+    for (const en of [prim, proper]) {
+      const move = en.def.moves['tea-party'];
+      move.effect(e.enemyCtx(en, move));
+    }
+    eq(prim.hp, 45, 'Prim recovered 5 across the whole Tea Party');
+    eq(proper.hp, 45, 'and so did Proper');
+  });
+
   await atest('boardEvent: the Rocking Horse is excited by another enemy Guard', async () => {
     const { getEnemy } = await import('/game/src/data/enemies/index.js');
     /* THREE enemies: the rule is "an ally gaining Guard FROM ANOTHER ENEMY",

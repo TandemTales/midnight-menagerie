@@ -1,0 +1,1926 @@
+{
+ "config": {
+  "TIER": "elite",
+  "ENC": "nursery-scare-twins",
+  "REGION": "nursery",
+  "LREGION": "nursery",
+  "N": 12,
+  "GEN": 8,
+  "SIZES": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "SLUGS": [
+   "marmalade",
+   "bones"
+  ],
+  "SEED0": 90000
+ },
+ "rows": [
+  {
+   "nodeId": "bench-90000",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90000,
+   "win": false,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 70,
+   "takenBySeat": [
+    72
+   ],
+   "hitsBySeat": [
+    8
+   ],
+   "blockedBySeat": [
+    43
+   ],
+   "aimed": 115,
+   "blocked": 43,
+   "partyGuard": 54,
+   "spread": 1,
+   "enemyHp": 160,
+   "enemyGuard": 102,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 1,
+   "seed": 90013,
+   "win": true,
+   "turns": 15,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9444444444444444,
+   "courageCost": 4,
+   "takenBySeat": [
+    16
+   ],
+   "hitsBySeat": [
+    9
+   ],
+   "blockedBySeat": [
+    82
+   ],
+   "aimed": 98,
+   "blocked": 82,
+   "partyGuard": 234,
+   "spread": 1,
+   "enemyHp": 160,
+   "enemyGuard": 186,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 1,
+   "seed": 90026,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 1,
+   "courageCost": -2,
+   "takenBySeat": [
+    10
+   ],
+   "hitsBySeat": [
+    2
+   ],
+   "blockedBySeat": [
+    11
+   ],
+   "aimed": 21,
+   "blocked": 11,
+   "partyGuard": 42,
+   "spread": 1,
+   "enemyHp": 160,
+   "enemyGuard": 54,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 1,
+   "seed": 90039,
+   "win": true,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9324324324324325,
+   "courageCost": 5,
+   "takenBySeat": [
+    11
+   ],
+   "hitsBySeat": [
+    3
+   ],
+   "blockedBySeat": [
+    25
+   ],
+   "aimed": 36,
+   "blocked": 25,
+   "partyGuard": 100,
+   "spread": 1,
+   "enemyHp": 160,
+   "enemyGuard": 77,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90052,
+   "win": true,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 1,
+   "courageCost": 0,
+   "takenBySeat": [
+    0
+   ],
+   "hitsBySeat": [
+    3
+   ],
+   "blockedBySeat": [
+    36
+   ],
+   "aimed": 36,
+   "blocked": 36,
+   "partyGuard": 101,
+   "spread": 1,
+   "enemyHp": 160,
+   "enemyGuard": 91,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 1,
+   "seed": 90065,
+   "win": false,
+   "turns": 10,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 70,
+   "takenBySeat": [
+    77
+   ],
+   "hitsBySeat": [
+    12
+   ],
+   "blockedBySeat": [
+    49
+   ],
+   "aimed": 126,
+   "blocked": 49,
+   "partyGuard": 59,
+   "spread": 1,
+   "enemyHp": 160,
+   "enemyGuard": 143,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90078,
+   "win": true,
+   "turns": 14,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 1,
+   "courageCost": 0,
+   "takenBySeat": [
+    5
+   ],
+   "hitsBySeat": [
+    6
+   ],
+   "blockedBySeat": [
+    75
+   ],
+   "aimed": 80,
+   "blocked": 75,
+   "partyGuard": 223,
+   "spread": 1,
+   "enemyHp": 160,
+   "enemyGuard": 152,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90091,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8208955223880597,
+   "courageCost": 10,
+   "takenBySeat": [
+    22
+   ],
+   "hitsBySeat": [
+    4
+   ],
+   "blockedBySeat": [
+    25
+   ],
+   "aimed": 47,
+   "blocked": 25,
+   "partyGuard": 42,
+   "spread": 1,
+   "enemyHp": 160,
+   "enemyGuard": 50,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90104",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90104,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9459459459459459,
+   "courageCost": 4,
+   "takenBySeat": [
+    10
+   ],
+   "hitsBySeat": [
+    3
+   ],
+   "blockedBySeat": [
+    23
+   ],
+   "aimed": 33,
+   "blocked": 23,
+   "partyGuard": 58,
+   "spread": 1,
+   "enemyHp": 160,
+   "enemyGuard": 69,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90117",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90117,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 1,
+   "courageCost": 0,
+   "takenBySeat": [
+    8
+   ],
+   "hitsBySeat": [
+    1
+   ],
+   "blockedBySeat": [
+    11
+   ],
+   "aimed": 19,
+   "blocked": 11,
+   "partyGuard": 43,
+   "spread": 1,
+   "enemyHp": 160,
+   "enemyGuard": 50,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90130",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90130,
+   "win": false,
+   "turns": 13,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 70,
+   "takenBySeat": [
+    76
+   ],
+   "hitsBySeat": [
+    14
+   ],
+   "blockedBySeat": [
+    89
+   ],
+   "aimed": 165,
+   "blocked": 89,
+   "partyGuard": 99,
+   "spread": 1,
+   "enemyHp": 160,
+   "enemyGuard": 218,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90143",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90143,
+   "win": true,
+   "turns": 15,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 1,
+   "courageCost": 0,
+   "takenBySeat": [
+    11
+   ],
+   "hitsBySeat": [
+    6
+   ],
+   "blockedBySeat": [
+    63
+   ],
+   "aimed": 74,
+   "blocked": 63,
+   "partyGuard": 212,
+   "spread": 1,
+   "enemyHp": 160,
+   "enemyGuard": 174,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90000",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90000,
+   "win": true,
+   "turns": 16,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.3509933774834437,
+   "courageCost": 91,
+   "takenBySeat": [
+    80,
+    28
+   ],
+   "hitsBySeat": [
+    10,
+    9
+   ],
+   "blockedBySeat": [
+    35,
+    110
+   ],
+   "aimed": 253,
+   "blocked": 145,
+   "partyGuard": 402,
+   "spread": 0.5185185185185186,
+   "enemyHp": 352,
+   "enemyGuard": 173,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 2,
+   "seed": 90013,
+   "win": true,
+   "turns": 12,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.863013698630137,
+   "courageCost": -1,
+   "takenBySeat": [
+    5,
+    5
+   ],
+   "hitsBySeat": [
+    2,
+    1
+   ],
+   "blockedBySeat": [
+    16,
+    0
+   ],
+   "aimed": 26,
+   "blocked": 16,
+   "partyGuard": 522,
+   "spread": 1,
+   "enemyHp": 352,
+   "enemyGuard": 125,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 2,
+   "seed": 90026,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.881578947368421,
+   "courageCost": 8,
+   "takenBySeat": [
+    26,
+    0
+   ],
+   "hitsBySeat": [
+    5,
+    0
+   ],
+   "blockedBySeat": [
+    38,
+    0
+   ],
+   "aimed": 64,
+   "blocked": 38,
+   "partyGuard": 186,
+   "spread": 0,
+   "enemyHp": 352,
+   "enemyGuard": 61,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 2,
+   "seed": 90039,
+   "win": true,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8918918918918919,
+   "courageCost": 16,
+   "takenBySeat": [
+    0,
+    22
+   ],
+   "hitsBySeat": [
+    0,
+    10
+   ],
+   "blockedBySeat": [
+    0,
+    95
+   ],
+   "aimed": 117,
+   "blocked": 95,
+   "partyGuard": 297,
+   "spread": 0,
+   "enemyHp": 352,
+   "enemyGuard": 75,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90052,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9103448275862069,
+   "courageCost": 0,
+   "takenBySeat": [
+    0,
+    6
+   ],
+   "hitsBySeat": [
+    0,
+    2
+   ],
+   "blockedBySeat": [
+    0,
+    15
+   ],
+   "aimed": 21,
+   "blocked": 15,
+   "partyGuard": 144,
+   "spread": 0,
+   "enemyHp": 352,
+   "enemyGuard": 46,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 2,
+   "seed": 90065,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8333333333333334,
+   "courageCost": 11,
+   "takenBySeat": [
+    26,
+    0
+   ],
+   "hitsBySeat": [
+    3,
+    0
+   ],
+   "blockedBySeat": [
+    13,
+    0
+   ],
+   "aimed": 39,
+   "blocked": 13,
+   "partyGuard": 227,
+   "spread": 0,
+   "enemyHp": 352,
+   "enemyGuard": 63,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90078,
+   "win": true,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.95,
+   "courageCost": 0,
+   "takenBySeat": [
+    5,
+    0
+   ],
+   "hitsBySeat": [
+    1,
+    4
+   ],
+   "blockedBySeat": [
+    0,
+    65
+   ],
+   "aimed": 70,
+   "blocked": 65,
+   "partyGuard": 305,
+   "spread": 0,
+   "enemyHp": 352,
+   "enemyGuard": 81,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90091,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9733333333333334,
+   "courageCost": 2,
+   "takenBySeat": [
+    5,
+    4
+   ],
+   "hitsBySeat": [
+    1,
+    4
+   ],
+   "blockedBySeat": [
+    0,
+    58
+   ],
+   "aimed": 67,
+   "blocked": 58,
+   "partyGuard": 240,
+   "spread": 0.8888888888888888,
+   "enemyHp": 352,
+   "enemyGuard": 83,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90104",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90104,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 1,
+   "courageCost": 0,
+   "takenBySeat": [
+    6,
+    0
+   ],
+   "hitsBySeat": [
+    3,
+    0
+   ],
+   "blockedBySeat": [
+    36,
+    0
+   ],
+   "aimed": 42,
+   "blocked": 36,
+   "partyGuard": 209,
+   "spread": 0,
+   "enemyHp": 352,
+   "enemyGuard": 63,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90117",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90117,
+   "win": true,
+   "turns": 4,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8561151079136691,
+   "courageCost": -1,
+   "takenBySeat": [
+    0,
+    5
+   ],
+   "hitsBySeat": [
+    0,
+    2
+   ],
+   "blockedBySeat": [
+    0,
+    13
+   ],
+   "aimed": 18,
+   "blocked": 13,
+   "partyGuard": 199,
+   "spread": 0,
+   "enemyHp": 352,
+   "enemyGuard": 40,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90130",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90130,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9814814814814815,
+   "courageCost": -12,
+   "takenBySeat": [
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    0,
+    3
+   ],
+   "blockedBySeat": [
+    0,
+    42
+   ],
+   "aimed": 42,
+   "blocked": 42,
+   "partyGuard": 188,
+   "spread": 1,
+   "enemyHp": 352,
+   "enemyGuard": 73,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90143",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90143,
+   "win": true,
+   "turns": 11,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 1,
+   "courageCost": 0,
+   "takenBySeat": [
+    5,
+    5
+   ],
+   "hitsBySeat": [
+    1,
+    1
+   ],
+   "blockedBySeat": [
+    0,
+    0
+   ],
+   "aimed": 10,
+   "blocked": 0,
+   "partyGuard": 396,
+   "spread": 1,
+   "enemyHp": 352,
+   "enemyGuard": 119,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90000",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90000,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8899082568807339,
+   "courageCost": 15,
+   "takenBySeat": [
+    23,
+    0,
+    5
+   ],
+   "hitsBySeat": [
+    4,
+    0,
+    1
+   ],
+   "blockedBySeat": [
+    30,
+    0,
+    0
+   ],
+   "aimed": 58,
+   "blocked": 30,
+   "partyGuard": 416,
+   "spread": 0.2678571428571428,
+   "enemyHp": 640,
+   "enemyGuard": 89,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 3,
+   "seed": 90013,
+   "win": true,
+   "turns": 9,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9045454545454545,
+   "courageCost": 0,
+   "takenBySeat": [
+    5,
+    6,
+    0
+   ],
+   "hitsBySeat": [
+    1,
+    5,
+    0
+   ],
+   "blockedBySeat": [
+    0,
+    55,
+    0
+   ],
+   "aimed": 66,
+   "blocked": 55,
+   "partyGuard": 692,
+   "spread": 0.4999999999999999,
+   "enemyHp": 640,
+   "enemyGuard": 101,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 3,
+   "seed": 90026,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9907834101382489,
+   "courageCost": -8,
+   "takenBySeat": [
+    5,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    1,
+    3,
+    0
+   ],
+   "blockedBySeat": [
+    0,
+    42,
+    0
+   ],
+   "aimed": 47,
+   "blocked": 42,
+   "partyGuard": 383,
+   "spread": 0,
+   "enemyHp": 640,
+   "enemyGuard": 63,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 3,
+   "seed": 90039,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9955555555555555,
+   "courageCost": -6,
+   "takenBySeat": [
+    0,
+    5,
+    0
+   ],
+   "hitsBySeat": [
+    0,
+    4,
+    0
+   ],
+   "blockedBySeat": [
+    0,
+    39,
+    0
+   ],
+   "aimed": 44,
+   "blocked": 39,
+   "partyGuard": 321,
+   "spread": 0,
+   "enemyHp": 640,
+   "enemyGuard": 69,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90052,
+   "win": true,
+   "turns": 4,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9447004608294931,
+   "courageCost": -1,
+   "takenBySeat": [
+    0,
+    5,
+    5
+   ],
+   "hitsBySeat": [
+    0,
+    1,
+    2
+   ],
+   "blockedBySeat": [
+    0,
+    0,
+    14
+   ],
+   "aimed": 24,
+   "blocked": 14,
+   "partyGuard": 250,
+   "spread": 0.5,
+   "enemyHp": 640,
+   "enemyGuard": 40,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 3,
+   "seed": 90065,
+   "win": true,
+   "turns": 4,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9875518672199171,
+   "courageCost": -17,
+   "takenBySeat": [
+    0,
+    0,
+    5
+   ],
+   "hitsBySeat": [
+    0,
+    1,
+    1
+   ],
+   "blockedBySeat": [
+    0,
+    16,
+    0
+   ],
+   "aimed": 21,
+   "blocked": 16,
+   "partyGuard": 342,
+   "spread": 1.1102230246251565e-16,
+   "enemyHp": 640,
+   "enemyGuard": 40,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90078,
+   "win": true,
+   "turns": 9,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9444444444444444,
+   "courageCost": 5,
+   "takenBySeat": [
+    5,
+    0,
+    11
+   ],
+   "hitsBySeat": [
+    1,
+    0,
+    4
+   ],
+   "blockedBySeat": [
+    0,
+    0,
+    48
+   ],
+   "aimed": 64,
+   "blocked": 48,
+   "partyGuard": 568,
+   "spread": 0.46875,
+   "enemyHp": 640,
+   "enemyGuard": 101,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90091,
+   "win": true,
+   "turns": 10,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9348837209302325,
+   "courageCost": 12,
+   "takenBySeat": [
+    5,
+    0,
+    26
+   ],
+   "hitsBySeat": [
+    1,
+    0,
+    5
+   ],
+   "blockedBySeat": [
+    0,
+    0,
+    36
+   ],
+   "aimed": 67,
+   "blocked": 36,
+   "partyGuard": 523,
+   "spread": 0.24193548387096775,
+   "enemyHp": 640,
+   "enemyGuard": 107,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90104",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90104,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.88,
+   "courageCost": 20,
+   "takenBySeat": [
+    0,
+    0,
+    26
+   ],
+   "hitsBySeat": [
+    0,
+    0,
+    6
+   ],
+   "blockedBySeat": [
+    0,
+    0,
+    44
+   ],
+   "aimed": 70,
+   "blocked": 44,
+   "partyGuard": 618,
+   "spread": 0,
+   "enemyHp": 640,
+   "enemyGuard": 94,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90117",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90117,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9052132701421801,
+   "courageCost": -1,
+   "takenBySeat": [
+    0,
+    5,
+    5
+   ],
+   "hitsBySeat": [
+    0,
+    1,
+    4
+   ],
+   "blockedBySeat": [
+    0,
+    0,
+    38
+   ],
+   "aimed": 48,
+   "blocked": 38,
+   "partyGuard": 471,
+   "spread": 0.5,
+   "enemyHp": 640,
+   "enemyGuard": 63,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90130",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90130,
+   "win": true,
+   "turns": 4,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9868995633187773,
+   "courageCost": -14,
+   "takenBySeat": [
+    0,
+    0,
+    5
+   ],
+   "hitsBySeat": [
+    0,
+    0,
+    2
+   ],
+   "blockedBySeat": [
+    0,
+    0,
+    16
+   ],
+   "aimed": 21,
+   "blocked": 16,
+   "partyGuard": 269,
+   "spread": 1.1102230246251565e-16,
+   "enemyHp": 640,
+   "enemyGuard": 40,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90143",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90143,
+   "win": true,
+   "turns": 9,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 1,
+   "courageCost": 0,
+   "takenBySeat": [
+    5,
+    5,
+    0
+   ],
+   "hitsBySeat": [
+    1,
+    4,
+    0
+   ],
+   "blockedBySeat": [
+    0,
+    39,
+    0
+   ],
+   "aimed": 49,
+   "blocked": 39,
+   "partyGuard": 477,
+   "spread": 0.5,
+   "enemyHp": 640,
+   "enemyGuard": 87,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90000",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90000,
+   "win": true,
+   "turns": 10,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8085808580858086,
+   "courageCost": 41,
+   "takenBySeat": [
+    57,
+    0,
+    5,
+    0
+   ],
+   "hitsBySeat": [
+    9,
+    0,
+    1,
+    0
+   ],
+   "blockedBySeat": [
+    53,
+    0,
+    0,
+    0
+   ],
+   "aimed": 115,
+   "blocked": 53,
+   "partyGuard": 1286,
+   "spread": 0.10752688172043012,
+   "enemyHp": 912,
+   "enemyGuard": 119,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 4,
+   "seed": 90013,
+   "win": true,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9319727891156463,
+   "courageCost": -1,
+   "takenBySeat": [
+    5,
+    5,
+    0,
+    5
+   ],
+   "hitsBySeat": [
+    1,
+    5,
+    0,
+    1
+   ],
+   "blockedBySeat": [
+    0,
+    62,
+    0,
+    0
+   ],
+   "aimed": 77,
+   "blocked": 62,
+   "partyGuard": 1152,
+   "spread": 0.6666666666666667,
+   "enemyHp": 912,
+   "enemyGuard": 81,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 4,
+   "seed": 90026,
+   "win": true,
+   "turns": 3,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9663299663299664,
+   "courageCost": -13,
+   "takenBySeat": [
+    5,
+    0,
+    0,
+    5
+   ],
+   "hitsBySeat": [
+    1,
+    1,
+    0,
+    1
+   ],
+   "blockedBySeat": [
+    0,
+    19,
+    0,
+    0
+   ],
+   "aimed": 29,
+   "blocked": 19,
+   "partyGuard": 547,
+   "spread": 0.33333333333333337,
+   "enemyHp": 912,
+   "enemyGuard": 28,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 4,
+   "seed": 90039,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9006211180124224,
+   "courageCost": 14,
+   "takenBySeat": [
+    0,
+    5,
+    31,
+    0
+   ],
+   "hitsBySeat": [
+    0,
+    1,
+    3,
+    0
+   ],
+   "blockedBySeat": [
+    0,
+    0,
+    8,
+    0
+   ],
+   "aimed": 44,
+   "blocked": 8,
+   "partyGuard": 872,
+   "spread": 0.18518518518518523,
+   "enemyHp": 912,
+   "enemyGuard": 63,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90052,
+   "win": true,
+   "turns": 10,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9475409836065574,
+   "courageCost": -5,
+   "takenBySeat": [
+    0,
+    5,
+    5,
+    0
+   ],
+   "hitsBySeat": [
+    0,
+    1,
+    1,
+    4
+   ],
+   "blockedBySeat": [
+    0,
+    0,
+    0,
+    53
+   ],
+   "aimed": 63,
+   "blocked": 53,
+   "partyGuard": 1255,
+   "spread": 0.33333333333333337,
+   "enemyHp": 912,
+   "enemyGuard": 109,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065-0",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 1,
+   "size": 4,
+   "seed": 90065,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9907407407407407,
+   "courageCost": -17,
+   "takenBySeat": [
+    0,
+    0,
+    5,
+    0
+   ],
+   "hitsBySeat": [
+    0,
+    3,
+    1,
+    0
+   ],
+   "blockedBySeat": [
+    0,
+    33,
+    0,
+    0
+   ],
+   "aimed": 38,
+   "blocked": 33,
+   "partyGuard": 969,
+   "spread": 0,
+   "enemyHp": 912,
+   "enemyGuard": 65,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90078,
+   "win": true,
+   "turns": 11,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9318181818181818,
+   "courageCost": 13,
+   "takenBySeat": [
+    5,
+    0,
+    0,
+    13
+   ],
+   "hitsBySeat": [
+    1,
+    0,
+    0,
+    6
+   ],
+   "blockedBySeat": [
+    0,
+    0,
+    0,
+    69
+   ],
+   "aimed": 87,
+   "blocked": 69,
+   "partyGuard": 1420,
+   "spread": 0.33333333333333337,
+   "enemyHp": 912,
+   "enemyGuard": 126,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90091,
+   "win": true,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.889273356401384,
+   "courageCost": 9,
+   "takenBySeat": [
+    5,
+    0,
+    0,
+    21
+   ],
+   "hitsBySeat": [
+    1,
+    0,
+    0,
+    10
+   ],
+   "blockedBySeat": [
+    0,
+    0,
+    0,
+    91
+   ],
+   "aimed": 117,
+   "blocked": 91,
+   "partyGuard": 1065,
+   "spread": 0.2564102564102564,
+   "enemyHp": 912,
+   "enemyGuard": 75,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90104",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90104,
+   "win": true,
+   "turns": 10,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9774193548387097,
+   "courageCost": -8,
+   "takenBySeat": [
+    0,
+    0,
+    0,
+    8
+   ],
+   "hitsBySeat": [
+    0,
+    0,
+    0,
+    6
+   ],
+   "blockedBySeat": [
+    0,
+    0,
+    0,
+    65
+   ],
+   "aimed": 73,
+   "blocked": 65,
+   "partyGuard": 1111,
+   "spread": 0,
+   "enemyHp": 912,
+   "enemyGuard": 128,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90117",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90117,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9298245614035088,
+   "courageCost": -1,
+   "takenBySeat": [
+    0,
+    5,
+    5,
+    10
+   ],
+   "hitsBySeat": [
+    0,
+    1,
+    1,
+    4
+   ],
+   "blockedBySeat": [
+    0,
+    0,
+    0,
+    30
+   ],
+   "aimed": 50,
+   "blocked": 30,
+   "partyGuard": 844,
+   "spread": 0.6666666666666667,
+   "enemyHp": 912,
+   "enemyGuard": 67,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90130",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90130,
+   "win": true,
+   "turns": 4,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9644012944983819,
+   "courageCost": -19,
+   "takenBySeat": [
+    0,
+    0,
+    5,
+    5
+   ],
+   "hitsBySeat": [
+    0,
+    0,
+    2,
+    1
+   ],
+   "blockedBySeat": [
+    0,
+    0,
+    16,
+    0
+   ],
+   "aimed": 26,
+   "blocked": 16,
+   "partyGuard": 549,
+   "spread": 0.33333333333333337,
+   "enemyHp": 912,
+   "enemyGuard": 40,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90143",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "nursery-scare-twins",
+   "name": "The Porcelain Twins",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90143,
+   "win": true,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 1,
+   "courageCost": -11,
+   "takenBySeat": [
+    5,
+    5,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    1,
+    4,
+    0,
+    0
+   ],
+   "blockedBySeat": [
+    0,
+    39,
+    0,
+    0
+   ],
+   "aimed": 49,
+   "blocked": 39,
+   "partyGuard": 1339,
+   "spread": 0.33333333333333337,
+   "enemyHp": 912,
+   "enemyGuard": 81,
+   "botErrors": 0,
+   "errors": []
+  }
+ ],
+ "table": [
+  {
+   "size": 1,
+   "n": 12,
+   "aimed": 70.8,
+   "landed": 26.5,
+   "blocked": 44.3,
+   "pctBlocked": 62.6,
+   "partyGuard": 105.6,
+   "turns": 9.3,
+   "aimedPerTurn": 7.6,
+   "left": 100,
+   "errs": 0
+  },
+  {
+   "size": 2,
+   "n": 12,
+   "aimed": 64.1,
+   "landed": 19.4,
+   "blocked": 44.7,
+   "pctBlocked": 69.7,
+   "partyGuard": 276.3,
+   "turns": 8,
+   "aimedPerTurn": 8,
+   "left": 90,
+   "errs": 0
+  },
+  {
+   "size": 3,
+   "n": 12,
+   "aimed": 48.3,
+   "landed": 13.5,
+   "blocked": 34.8,
+   "pctBlocked": 72,
+   "partyGuard": 444.2,
+   "turns": 6.8,
+   "aimedPerTurn": 7.1,
+   "left": 90,
+   "errs": 0
+  },
+  {
+   "size": 4,
+   "n": 12,
+   "aimed": 64,
+   "landed": 19.2,
+   "blocked": 44.8,
+   "pctBlocked": 70,
+   "partyGuard": 1034.1,
+   "turns": 7.5,
+   "aimedPerTurn": 8.5,
+   "left": 90,
+   "errs": 0
+  }
+ ],
+ "errors": []
+}
