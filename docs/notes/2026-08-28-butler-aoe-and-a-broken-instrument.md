@@ -301,6 +301,54 @@ That is where a graphics round should start, and it is not a guess I should make
 from here. What is now excluded, with numbers: JS per-frame cost, resolution,
 the post chain, the quality tiers, and the machine.
 
+### The card-art stall, handed over with its dead ends closed
+
+Separate from the frame rate, and worth its own fix: **60 cards cold costs
+816 ms, 13.6 ms each**, in one synchronous block. That is a real freeze for
+anyone opening a deck view with a large deck, and it grows with the deck.
+
+The encoder is not the lever, and here are the measurements so nobody spends a
+round finding out again. Per card, encode only:
+
+```
+  png        6.36 ms          webp .92   10.5 ms
+  jpeg .90   1.94 ms          webp .80    9.14 ms
+```
+
+JPEG is 3.3x faster and the art is **fully opaque** (alpha 255 across every
+pixel of 24 cards, so no transparency to lose) — and it still fails, on looks.
+Against the PNG, at the best quality tested:
+
+```
+  q0.98   22.58% of pixels differ, max channel delta 27
+  q0.94   38.21%, delta 33
+  q0.90   44.40%, delta 37
+```
+
+The renderer change this project *did* accept moved 0.023% of pixels with a max
+delta of 15. Card art is soft gradients, which is JPEG's worst case, so 22% at
+q0.98 is banding exactly where the art direction lives. WebP is slower than PNG
+outright. **The encoder is a closed door.**
+
+The open one is that the asynchronous plumbing already exists and nothing uses
+it. `warmArt()` is budgeted and incremental, `onArtReady()` fires when the queue
+drains, and `CardView` already subscribes to it (`card.js:88`) — but
+`_paintArt` calls `cardArt()`, which renders SYNCHRONOUSLY on a cache miss, so
+the subscription only ever helps a card that was already warm. `DeckView` mounts
+sixty of those in a row.
+
+Not changed, because the remaining decision is about FEEL and belongs to
+card-feel: a cold card can either freeze the UI (today) or appear without its
+art for a few frames while the queue catches up. That is fine for a deck view
+and probably wrong for a card being drawn in combat, and the card does not know
+which it is. Whoever takes it needs a "cached?" accessor out of `cardart.js`
+(the cache is module-private) and a call site that knows how many cards are
+arriving at once.
+
+Also found: `preloadArt()` is a dead stub — it resolves immediately and warms
+nothing, and nothing in the build calls it. Documented as such rather than
+removed, since it is in the default export.
+
 ## 8. The party curve, swept — and why one number cannot fix it
 
 `party-boss.py --sizes 1,4 --scales 1,0.7,0.55,0.45`, n=8 a cell, one set of

@@ -296,6 +296,14 @@ function fireReady() { for (const fn of [...readyFns]) { try { fn(); } catch (e)
  * there is nothing to preload. Kept so existing callers keep working.
  * Use `warmArt(defs, w, h)` instead — that is the one that matters for fps.
  */
+/**
+ * DEAD STUB — resolves immediately and warms nothing. Nothing in the build
+ * calls it, and anything that did would get a promise that means "done" while
+ * every card was still cold. Kept only because it is in the default export;
+ * use `warmArt` (budgeted, incremental) or `warmArtSync` (blocking, for tests
+ * and loading screens). CONTRACTS rule 8's shape: an API that answers
+ * successfully without doing the thing is worse than one that is missing.
+ */
 export function preloadArt() { return Promise.resolve([]); }
 
 // ── canvas plumbing ─────────────────────────────────────────────────────────
