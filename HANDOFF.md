@@ -34,15 +34,24 @@ change him.
   second move cycle were content a party never saw. Fixed with `phaseAt()` per
   nursery §34; solo byte-identical. **A correctness fix, not a balance one** —
   it moves her 4p leftover Courage 90% → 90%.
-- **A boss whose damage can be BLOCKED cannot threaten a party.**
-  `tests/critic-design/party-ledger.py` is the new instrument and it is decisive:
-  at four Kids the Governess aims 565 and lands 94 (83% blocked, party Guard
-  2275); the Butler aims 404 and lands 173 (57% blocked, 1293). He aims less and
-  hurts twice as much, and the only relevant difference is that two of his
-  Reprimands bypass or remove Guard. **AoE is necessary and not sufficient** —
-  targeting is answered by Guard, and Guard scales with the party. Whether every
-  boss gets a Guard answer in co-op is a DESIGN decision and it is open.
-  CONTRACTS 44 and 45.
+- **A boss whose damage can be BLOCKED cannot threaten a party — FIXED for the
+  Governess.** `tests/critic-design/party-ledger.py` is the new instrument and it
+  was decisive: at four Kids she aimed 565 and landed 94 (83% blocked, party
+  Guard 2275) while the Butler aimed 404 and landed 173 (57% blocked), and the
+  only relevant difference was that two of his Reprimands bypass or remove
+  Guard. **AoE is necessary and not sufficient** — targeting is answered by
+  Guard, and Guard scales with the party.
+
+  Her Sharp Correction ignores Guard in a party now, the move that already picks
+  the Kid closest to breaking, so the party's decision is "nobody may be the
+  lowest" rather than "stack Guard". At four Kids: **win 100% → 75%** (solo
+  62.5), **turns 18.4 → 12.4** (solo 11.0), **falls 0.0 → 1.0**, cost 17 → 93,
+  and `%blocked` flat across party size. Solo byte-identical. That also closes
+  "party boss fights are LONG" for her. CONTRACTS 44, 45 and 46.
+
+  **Still open:** the ELITE tier has the same untested shape — flat 100% win at
+  every party size with the cost wrong — and it is the obvious next place to
+  point the ledger.
 - **NETCODE ITEMS 2, 3 AND 4 ARE DONE. Only the transport is left.** Every
   screen routes through `net/actions.js`; `net/lobby.js` decides seats, host and
   seed with no election; a choice reaches the player whose choice it is.

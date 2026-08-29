@@ -247,6 +247,12 @@ export const butler = {
    */
   partyHp: (n) => [1, 2.2, 2.8, 3.2][Math.min(n, 4) - 1] ?? 1,
 
+  /**
+   * DECLARED, and read by nothing — documentation, not a mechanic. See the
+   * Governess's copy of this note; `phaseThresholds` is the AUTHORED SOLO
+   * number and the fight uses `phaseAt(c, PHASE2_AT, BASE_HP)`, which is the
+   * same SHARE of a bigger pool at every party size.
+   */
   phases: 2,
   phaseThresholds: [PHASE2_AT],
 

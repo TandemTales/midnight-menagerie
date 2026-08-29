@@ -411,9 +411,48 @@ Three levers, measured, all dead ends for COST:
 | the boss's own Guard (the handoff's suggestion) | hers is 5% of her effective pool against the Butler's 26% — his length lever, not her cost one |
 | her Courage pool | wrong direction by construction: a shorter fight lands LESS |
 
-What is left is damage Guard cannot answer. That changes all three bosses and
-the elite tier and contradicts the doc's stated compensation, so it goes to the
-designer rather than into a commit.
+What is left is damage Guard cannot answer.
+
+### Which is what she got, and it worked
+
+**Sharp Correction ignores Guard in a party.** That move and not another,
+because it is the one that already picks the Kid closest to breaking: piercing
+turns the party's decision from "stack Guard" into "nobody may be the lowest",
+which is what foyer §26 asks a cooperative version to do — *"change tactical
+relationships"*.
+
+| 4 Kids | before | after | solo |
+|---|---|---|---|
+| win% | 100 | **75** | 62.5 |
+| turns | 18.4 | **12.4** | 11.0 |
+| falls | 0.0 | **1.0** | 0.38 |
+| Courage cost | 17.2 | **92.8** | 42.9 |
+| %blocked | 84 | **51** | 63 |
+
+`%blocked` is the diagnostic and it is now flat across party size (63 / 43 / 54
+/ 51) where it climbed to 84. Party Guard fell 2316 → 1416: the table stops
+over-blocking because blocking stopped working, which is the tactical shift and
+not a side effect. **Turns 18.4 → 12.4 also closes "party boss fights are LONG"
+for her.** Solo is byte-identical, to the digit, in the ledger's 1p row.
+
+### And the screenshot caught the readout lying
+
+`pierceFn` joins `damageFn` and `splashFn`, the intent carries `pierce`, and the
+widget draws a THROUGH GUARD chip. Then the screenshot showed the incoming rail:
+
+```
+INCOMING 24  − 9 Guard  →  15        15 more Guard to stop it all
+```
+
+Two false statements at once, against a move that ignores Guard, on the one
+widget whose entire job is to be believed — with every suite green.
+`previewIncoming` returns `through` and `blockable` now, more-Guard-would-help
+is computed against the blockable share only, and the arithmetic is suppressed
+when Guard cannot be spent at all, because the second draft printed
+`24 − 9 Guard → 24`.
+
+**The elite tier has the same untested shape** and is the obvious next place to
+point the ledger.
 
 ### At four Kids every boss was a ONE-PHASE boss
 
@@ -446,10 +485,13 @@ a method.
 
 ## 7. What is open
 
-1. **Four Kids still finish the Governess holding 89-90%, and §6 says why.**
-   Her Guard-blocked share is 83% against the Butler's 57%. The lever is damage
-   Guard cannot answer, and that is a DESIGN decision affecting all three bosses
-   and the elite tier — the numbers to decide it with are in `party-ledger.py`.
+1. ~~Four Kids finish the Governess holding 89-90%.~~ **Largely closed** — §6.
+   Win 100% → 75% against solo's 62.5, turns 18.4 → 12.4 against 11.0, falls
+   0 → 1.0. Leftover Courage is still above solo (86% against 56%) and that is
+   the residual: `left%` is wins-only, so the fights she now wins are the ones a
+   healthy party won. **The ELITE tier has the same untested shape** — flat 100%
+   win at every party size with the cost wrong — and the ledger points at it
+   next.
 2. **Netcode: only the TRANSPORT is left.** Items 2, 3 and 4 are done. Steam P2P
    is one file implementing the five methods in `net/transport.js`, it needs a
    wrapper shell, and it ends the no-build rule — the designer's call. The

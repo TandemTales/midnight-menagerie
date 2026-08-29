@@ -419,8 +419,39 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    effects gain multiplayer targeting logic instead"* (foyer §26) — is necessary
    and NOT sufficient: targeting is answered by Guard. Adding AoE or raising a
    number is measured, twice, to do nothing to the leftover-Courage gap.
-   **Whether every boss should get a Guard answer in co-op is a DESIGN decision**
-   — it changes three bosses and the elite tier — and it is open.
+
+   **Resolved for the Governess on 2026-08-29, and the shape generalises.** Her
+   Sharp Correction ignores Guard in a party — the move that already picks the
+   Kid closest to breaking, so the party's decision becomes "nobody may be the
+   lowest" rather than "stack Guard". At four Kids: win 100% → 75% (solo 62.5),
+   turns 18.4 → 12.4 (solo 11.0), falls 0.0 → 1.0, cost 17 → 93, and `%blocked`
+   FLAT across party size instead of climbing to 84. Solo byte-identical.
+   **A boss needs at least one move a party's Guard cannot answer**, and the
+   elite tier has the same untested shape.
+
+   If you author one: `pierceFn(c)` on the move, and the player must be TOLD.
+   The intent carries `pierce` and the widget draws a THROUGH GUARD chip; the
+   incoming rail counts it in `through` and excludes it from what more Guard
+   would help with. Getting the damage right and the readouts wrong is worse
+   than not shipping it — see trap 46.
+
+46. **A new kind of damage needs a new READOUT, and there are three of them.**
+   Sharp Correction was given `pierce` in a party and the intent chip was
+   updated with it — and the incoming rail still read
+   `INCOMING 24 − 9 Guard → 15` and *"15 more Guard to stop it all"*: two false
+   statements at once, on the one widget whose entire job is to be believed,
+   with every suite green. A SCREENSHOT is what found it.
+
+   The three that must agree: `buildIntent` (what the enemy is about to do),
+   `previewIncoming` (what reaches THIS seat, and what Guard would help with),
+   and the chip that names it. The second draft then printed
+   `24 − 9 Guard → 24` — a subtraction whose answer is the number it started
+   from — so the arithmetic is suppressed when Guard cannot be spent at all,
+   which is the file's own existing rule meeting a second cause.
+
+   Assert the two halves SEPARATELY. `tests/governess` checks the intent/preview
+   and the damage independently, so an intent that promises what the effect does
+   not deliver fails either way round.
 
 15. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
    now reported their in-flight work being swallowed by an unrelated commit — one had a whole

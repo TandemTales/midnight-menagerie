@@ -163,6 +163,22 @@ export const governess = {
   scale: 1.55,
   lore: 'Her dress is made from nursery curtains, her fingers taper into silver needles, and a measuring tape moves around her neck like a snake.',
 
+  /**
+   * DECLARED, and read by nothing — documentation, not a mechanic.
+   *
+   * The transition is decided in `nextMove` and nowhere else, so these two
+   * describe the fight rather than drive it. They stay because they say
+   * something true at a glance, and they are LABELLED because a declared field
+   * that looks load-bearing and is not is exactly CONTRACTS trap 5b: the
+   * Governess's own `redirect()` and `advancePatch()` read as finished
+   * mechanics with no caller, and she shipped without the defensive mechanic
+   * her whole first phase is built on.
+   *
+   * `phaseThresholds` is the AUTHORED SOLO number. What the fight uses is
+   * `phaseAt(c, PHASE2_AT, BASE_HP)` — the same SHARE of a bigger pool at every
+   * party size, because an absolute threshold against a scaled pool made phase
+   * two 10% of the fight at four Kids.
+   */
   phases: 2,
   phaseThresholds: [PHASE2_AT],
   escort: [{ enemyId: 'favorite-doll' }],

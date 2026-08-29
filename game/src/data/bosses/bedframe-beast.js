@@ -48,6 +48,12 @@ export const bedframeBeast = {
   scale: 2.0,
   lore: 'The whole bed is the monster. It has been keeping something underneath itself, and it does not intend to give it back.',
 
+  /**
+   * DECLARED, and read by nothing — documentation, not a mechanic. See the
+   * Governess's copy of this note; `phaseThresholds` is the AUTHORED SOLO
+   * number and the fight uses `phaseAt(c, PHASE2_AT, BASE_HP)`, which is the
+   * same SHARE of a bigger pool at every party size.
+   */
   phases: 2,
   phaseThresholds: [PHASE2_AT],
   maxScare: 3,
