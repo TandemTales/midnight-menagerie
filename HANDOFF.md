@@ -487,7 +487,9 @@ that ran TWO enemy phases a round and a bot that could not see its own plan.**
 They are kept for the record and for the reasoning, not as figures to build on.
 The re-measured curve is in
 `docs/notes/2026-08-28-butler-aoe-and-a-broken-instrument.md` §1, and it says
-the Foyer standard tier is a non-event at every party size.
+the Foyer standard tier is never in danger at any party size — flat 100% win and
+zero falls, which is the curve doing its job on win rate. What is wrong is the
+COST: solo pays 39% of its Courage for a Scuffle and four Kids pay 17%.
 
 Enemy Courage at 2p is **220%**, and it took three measurements because the
 sources disagree. Our own design doc says 160% (measures far too easy: duo wins

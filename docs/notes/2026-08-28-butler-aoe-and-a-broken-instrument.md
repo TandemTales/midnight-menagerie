@@ -78,8 +78,15 @@ handed.
 
 Stable at a second seed (58 / 76 / 78 / 83% Courage left). Against the
 79 / 75 / 96 / 96% the broken harness reported. **The Foyer standard tier is a
-non-event at every party size**, and `[1, 2.2, 4.0, 5.7]` was tuned to a game
-hitting twice as often as the real one.
+never in danger at any party size**, and `[1, 2.2, 4.0, 5.7]` was tuned to a
+game hitting twice as often as the real one.
+
+Precisely, because the difference matters: a competent bot never LOSES a
+standard Scuffle at any size, and nobody ever falls — but solo still pays 39%
+of its Courage for one, which is a real drain across a region. So the win rate
+is flat and correct; what is wrong is that four Kids pay 17% for the same room.
+"Too easy" is the wrong reading of that table; "friends buy safety the curve is
+not charging for" is the right one.
 
 The open finding from the party-of-four round survives in sharper form: the gap
 is in **cost**, not win rate. A standard Scuffle costs a solo Kid **39%** of
