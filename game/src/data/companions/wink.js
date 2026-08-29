@@ -293,6 +293,32 @@ U.onTracker(SLUG, (e, s, seat) => {
     const dead = ev.actorId || null;
     for (let i = s.sets.length - 1; i >= 0; i--) if (s.sets[i].enemyId && s.sets[i].enemyId === dead) { U.moveCard(c, s.sets[i].card, 'discard'); s.sets.splice(i, 1); }
   });
+  /**
+   * `freeSet` HAD NO READER.
+   *
+   * Set the Table ("the next Set Trick you play this turn costs 0") and Blink
+   * Twice ("Set one Set Trick from your hand without paying its cost") both
+   * ended in `U.bump(c, 'freeSet')`, and a grep for `freeSet` found only those
+   * two WRITES. So Set the Table did literally nothing, and Blink Twice closed
+   * two Eyes and paid for nothing — CONTRACTS trap 12, in a Companion whose
+   * suite had five checks and asserted neither card.
+   *
+   * `modifyCardCost` is the seam; `CardDef.costMod` is read by nothing (trap
+   * 25). The flag is consumed when a Set Trick is actually PLAYED, not when the
+   * cost is queried, because the cost is queried for display on every render.
+   */
+  const isSet = (d) => ((d && d.keywords) || []).includes('set');
+  e.hooks.add('modifyCardCost', (cost, h) => {
+    const card = h && h.card;
+    if (!card || !isSet(card.def || card)) return cost;
+    return U.got(fake(), 'freeSet') > 0 ? 0 : cost;
+  });
+  e.on('card:play', (ev) => {
+    const c = fake();
+    if (U.got(c, 'freeSet') <= 0) return;
+    const def = (ev.card && (ev.card.def || ev.card)) || null;
+    if (isSet(def)) U.bump(c, 'freeSet', -1);
+  });
   U.onPlayerTurn(e, 'start', () => { s.played = 0; });
 });
 

@@ -184,6 +184,34 @@ try {
     check(webbed > 0, 'and really applies its Web to the enemy it was set on',
       `web=${webbed}`);
   }
+  /**
+   * Set the Table and Blink Twice both armed `freeSet` and NOTHING read it, so
+   * Set the Table did nothing at all and Blink Twice closed two Eyes to pay for
+   * nothing. Trap 12, in the suite whose job is to assert effects.
+   */
+  {
+    const e = await wink();
+    const t = e.livingEnemies()[0];
+    const before = e.costOf(
+      (e.addCard(CARDS.cardById('wink/tripline'), 'hand', {}), e.piles.hand[e.piles.hand.length - 1]));
+    check(before > 0, 'setup: a Set Trick normally costs something', String(before));
+
+    await play(e, 'wink/set-the-table');
+    e.addCard(CARDS.cardById('wink/tripline'), 'hand', {});
+    const armed = e.piles.hand[e.piles.hand.length - 1];
+    check(e.costOf(armed) === 0, 'Set the Table really makes the next Set Trick free',
+      String(e.costOf(armed)));
+
+    const energy = e.player.energy;
+    await e.playCard(armed.uid, t.id);
+    check(e.player.energy === energy, 'and playing it really costs no Nerve',
+      `${energy} -> ${e.player.energy}`);
+
+    e.addCard(CARDS.cardById('wink/tripline'), 'hand', {});
+    const after = e.piles.hand[e.piles.hand.length - 1];
+    check(e.costOf(after) === before, 'and only the NEXT one — the discount is spent',
+      `${e.costOf(after)} vs ${before}`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }
