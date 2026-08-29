@@ -25,6 +25,27 @@ const out = document.getElementById('out');
 const check = (ok, what, detail = '') => (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
 function say(html, cls) { const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; out.appendChild(d); }
 
+/**
+ * A console error this suite MEANS to provoke.
+ *
+ * `run.py` fails the suite on ANY console error, which is right: a 404, a
+ * TypeError inside a listener or a `[net] unknown input kind` is exactly the
+ * silent breakage this file exists to catch. But two checks below deliberately
+ * drift a board and deliberately hand a peer the wrong seed, and `session.js`
+ * reporting that loudly is the PRODUCT WORKING — so the suite has exited 1
+ * since the day it was written while printing "128 passed, 0 failed", and the
+ * exit code was believed by nobody and the summary line by everybody.
+ *
+ * Declaring one here lets the gate stay strict about everything else. The
+ * runner fails on an error that is not declared, AND on a declaration that
+ * never fired — because an expectation nothing matches means the report it
+ * stands for has gone silent, which is the regression the check next to it was
+ * written to notice. A whitelist that can only ever mute is CONTRACTS trap 12
+ * with a different hat on.
+ */
+const expectedErrors = [];
+const expectError = (substr, why) => expectedErrors.push({ substr, why });
+
 const SEED = 9182;
 
 /**
@@ -143,6 +164,8 @@ try {
     const hub = new LoopbackHub();
     const a = await makeClient(hub, 0, 2, 'A');
     const b = await makeClient(hub, 1, 2, 'B');
+    expectError('tried to act for seat',
+      'a client speaking for somebody else is refused loudly, not silently');
     const bad = a.session.input({ t: INPUT.END, seat: 1 });
     check(bad === null, 'seat 0 cannot issue an input for seat 1');
     check(a.session.log.length === 0 && b.session.log.length === 0,
@@ -198,6 +221,8 @@ try {
 
     // Now break one board behind the other's back, exactly as a stray
     // Math.random() in a card would.
+    expectError('DESYNC {reason: digest',
+      'a board that has drifted is reported on the console, once');
     b.e.enemies[0].hp -= 7;
     b.session.publishDigest();
     check(!a.session.inSync, 'a board that has drifted IS caught');
@@ -211,6 +236,8 @@ try {
     const a = await makeClient(hub, 0, 2, 'A');
     let told = 0;
     a.session.on('diverge', (d) => { if (d.reason === 'seed') told++; });
+    expectError('DESYNC {reason: seed',
+      'a peer on the wrong seed is reported on the console at hello');
     const wrong = new Session({ transport: hub.peer('C'), seat: 1, seats: 2, seed: SEED + 1 });
     check(told === 1, 'a peer on a different seed is caught at hello', String(told));
     wrong.close();
@@ -925,6 +952,6 @@ try {
 say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`, fails.length ? 'fail' : 'pass');
 say('<ul class="pass">' + passes.map(p => `<li>PASS ${p}</li>`).join('') + '</ul>');
 if (fails.length) say('<ul class="fail">' + fails.map(f => `<li>FAIL ${f}</li>`).join('') + '</ul>');
-window.__RESULT = { passed: passes.length, failed: fails.length, fails, passes };
+window.__RESULT = { passed: passes.length, failed: fails.length, fails, passes, expectedErrors };
 window.__DONE = true;
 </script>

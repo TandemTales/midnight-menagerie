@@ -15,6 +15,11 @@ It also exercises the BroadcastChannel transport, which is a genuine
 asynchronous wire between two independent contexts, to prove it obeys the
 two rules lockstep cannot recover from: ordered per sender, and never
 delivered back to the sender.
+
+A console error fails this suite. The two the page provokes on purpose — a
+drifted board and a peer on the wrong seed, both of which session.js is
+SUPPOSED to shout about — are declared in the page by `expectError()`, and a
+declaration that never fires fails as well as one that is missing.
 """
 import sys
 from playwright.sync_api import sync_playwright
@@ -45,15 +50,38 @@ def main():
         for line in r["fails"]:
             print("  FAIL ", line, flush=True)
 
-        bad = [c for c in console if "[error]" in c or "[pageerror]" in c]
-        if bad:
-            print("\n--- CONSOLE ---", flush=True)
-            for line in bad:
-                print(" ", line, flush=True)
+        # Console errors. Two checks in the page deliberately drift a board and
+        # deliberately hand a peer the wrong seed, and session.js reporting that
+        # loudly is the product working — so the page DECLARES those, via
+        # expectError(), and everything else still fails the suite.
+        #
+        # A declaration that never fires fails too. Muting an error is only safe
+        # if the mute also proves the error still happens; otherwise the day
+        # divergence stops being reported, this gate goes quiet with it.
+        errs = [c for c in console if "[error]" in c or "[pageerror]" in c]
+        expected = r.get("expectedErrors") or []
+        for exp in expected:
+            exp["seen"] = sum(1 for c in errs if exp["substr"] in c)
+        unexpected = [c for c in errs if not any(e["substr"] in c for e in expected)]
+        missing = [e for e in expected if not e["seen"]]
 
-        print(f"\nRESULT: {r['passed']} passed, {r['failed']} failed", flush=True)
+        for exp in expected:
+            print(f"  EXPECTED  {exp['seen']}x  {exp['substr']}  — {exp['why']}",
+                  flush=True)
+        if unexpected:
+            print("\n--- UNEXPECTED CONSOLE ERRORS ---", flush=True)
+            for line in unexpected:
+                print(" ", line, flush=True)
+        if missing:
+            print("\n--- DECLARED BUT NEVER REPORTED ---", flush=True)
+            for exp in missing:
+                print(f"  {exp['substr']}  — {exp['why']}", flush=True)
+
+        print(f"\nRESULT: {r['passed']} passed, {r['failed']} failed, "
+              f"{len(unexpected)} unexpected console errors, "
+              f"{len(missing)} declared-but-silent", flush=True)
         browser.close()
-        return 1 if (r["failed"] or bad) else 0
+        return 1 if (r["failed"] or unexpected or missing) else 0
 
 
 if __name__ == "__main__":
