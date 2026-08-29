@@ -300,13 +300,85 @@ would be tuning against decks no player will ever have.
 
 ---
 
-## 5. What is open
+## 5. The lobby, the choice broker, and a black void
+
+Three more pieces landed after the sections above.
+
+### `net/lobby.js` — nothing is elected
+
+`Session` takes `seat`, `seats`, `seed` and `host` as constructor arguments.
+This is where they come from, and the design is that none of them is negotiated:
+
+- **Seat is position in the sorted peer-id list.** Every client sees the same
+  set of ids and sorts it the same way. "First to connect is seat 0" is the
+  obvious alternative and it is the one thing lockstep cannot use, for the same
+  reason `_insertAt` orders by `(turn, seat, seq)` and never by arrival.
+  Compared by CODE UNIT, never `localeCompare` — that is locale-dependent and
+  would seat two players differently on two machines with different language
+  settings.
+- **The host is seat 0**, so there is nothing to elect.
+- **The seed is a hash of the room code.** `Session` already reports a seed
+  mismatch at hello; this makes the mismatch impossible instead.
+- **The roster freezes at `start()`**, because a seat index is what every input
+  is stamped with.
+
+Negative-controlled: seats made arrival-ordered gives `zoe=0 amir=0 kit=0
+bea=0`, every client believing it is seat 0. The freeze control found a hole in
+my own test first — it used a late id of 'zzz', which sorts last and therefore
+cannot renumber anybody.
+
+### The choice broker over a wire, and the deadlock
+
+`ChoiceBroker.setRemote()`. The local fallback is untouched. Two things are
+load-bearing:
+
+**The answer is delivered OUT OF BAND.** `ask()` is awaited from inside a card
+effect, which is inside an input the session's queue is applying. Queue the
+answer too and the play cannot finish until the answer arrives and the answer
+cannot be applied until the play finishes. Ordering survives anyway: an answer
+is not a new action in the sequence, it is the continuation of the one every
+client is already blocked on.
+
+**A request naming NO seat still belongs to one.** "Whoever is driving" is
+unambiguous with one engine and a silent desync with four. `engine.acting` is
+who is really driving. Control: both clients open a picker and answer
+differently (`2 / 0`).
+
+A request is named by its SEQUENCE, never `req.id` — `REQ` is a module-level
+counter shared with every preview, so one player hovering a card bumps their
+numbering. Answers are kept by seq because one can arrive before its question: a
+fast peer, or a rejoining client absorbing a log of answers before it replays
+the plays that ask them. Without that store the suite does not fail, **the page
+hangs**.
+
+### `tools/shot.py` was screenshotting a black void
+
+The tool whose own docstring says "this is how every critic SEES the real game".
+`--wait` was a fixed sleep after `load`, and `core/renderer.js` renders nothing
+while it warms — `_warming` is set before its first await on purpose — which on
+this GPU is about ten seconds cold. So the documented `--wait 9` produced a
+picture of the HUD floating on black with no room behind it. Measured: `--wait
+9` black, `--wait 12` a fully lit Foyer.
+
+**No player has ever seen it.** They boot to the title and the warm-up finishes
+while they read the menu; walking into combat from a settled title is lit in
+four seconds. That is the control that says the game is fine and the instrument
+was wrong, and it is why it survived — there was nothing broken to find.
+
+It waits for `stage.warmStage === 'done'` now. `--wait 2` gives what `--wait 9`
+could not. Trap 6 — "`--wait 4.5` can catch the map mid-draw, use `--wait 9`" —
+was this same bug being treated with a bigger number, and is marked superseded.
+
+## 6. What is open
 
 1. **Four Kids still finish the Governess holding 89%.** Structural, shared with
    the Butler: party output does not scale with the pool.
-2. **Netcode items 3 and 4** — the choice broker reaching a remote picker, and
-   lobby / seat assignment. Item 2 (routing the screens) is done; item 1 (Steam
-   P2P) still ends the no-build rule.
+2. **Netcode: only the TRANSPORT is left.** Items 2, 3 and 4 are done. Steam P2P
+   is one file implementing the five methods in `net/transport.js`, it needs a
+   wrapper shell, and it ends the no-build rule — the designer's call. The
+   **lobby SCREEN** is the other unbuilt half, and that is a design question:
+   what it looks like, how a code is shared, whether joining is a Steam invite
+   or a typed room name.
 3. **fps**, unchanged: the DOM's aggregate compositing cost, no single culprit.
 4. **The cold card-art stall**, unchanged: a feel decision for card-feel.
 5. **Crinkle's design chapter** is still an unreviewed reconstruction.

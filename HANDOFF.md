@@ -27,6 +27,20 @@ change him.
 
 ### Where it stands, 2026-08-29
 
+- **NETCODE ITEMS 2, 3 AND 4 ARE DONE. Only the transport is left.** Every
+  screen routes through `net/actions.js`; `net/lobby.js` decides seats, host and
+  seed with no election; a choice reaches the player whose choice it is.
+  `tests/net/run.py` is **128 checks**. What remains is Steam P2P — one file
+  implementing the five methods in `net/transport.js` — and it needs a wrapper
+  shell, so it ends the no-build rule and is the designer's call.
+- **`tools/shot.py` was screenshotting a BLACK VOID.** `--wait` was a fixed
+  sleep after `load`, and the 3D stage renders nothing while it links shaders —
+  about ten seconds cold on this GPU. So every deep-linked combat and map shot
+  at the documented `--wait 9` showed the HUD floating on nothing, which is what
+  critics have been judging the game from. It waits for
+  `stage.warmStage === 'done'` now. **No player was ever affected** — the
+  warm-up finishes while they read the title menu — which is exactly why it
+  survived. CONTRACTS trap 43.
 - **EVERY SCREEN IS ON THE WIRE.** `game/src/net/actions.js` is the game-side
   half the netcode never had — one applier, one `act(run, input)` seam, and the
   reward, Mr. Moth's, the Safe Room, the Curiosities and COMBAT all route
@@ -167,7 +181,7 @@ All prep scripts are **one-off and commit their output** — there is no runtime
 |---|---|
 | `tests/combat/run.py` | 677 assertions |
 | `tests/coop/run.py` | 594 assertions |
-| `tests/net/run.py` | 79 — the lockstep session, two Sessions over a loopback wire, and every room + combat through the REAL applier against two real `Run`s |
+| `tests/net/run.py` | 128 — the lockstep session; every room and combat through the REAL applier against two real `Run`s; the lobby's seats/host/seed including two tabs over `BroadcastChannel`; and a choice reaching the seat it belongs to, mid-input, without deadlocking |
 | `tests/cards/run.py` | 1468 cards, 0 errors, 0 warnings |
 | `tests/enemies/run.py` | 37 enemies, 0 errors |
 | `tests/enemies/audit.py` | ~2060 turns, intent === delivered |
@@ -633,9 +647,21 @@ NOT built:
 
    The choice broker's fallback is not a placeholder — one player rummaging in
    another Kid's hand would be worse than a stable rule — so it stays as the
-   offline path.
-3. **Lobby and seat assignment.** Who is seat 0, who hosts, how the seed is
-   agreed. `Session` takes all three as constructor arguments today.
+   offline path. **DONE 2026-08-29:** `ChoiceBroker.setRemote()` is where a wire
+   plugs in, and the fallback is untouched. Two things about it are load-bearing
+   and easy to undo: the answer is delivered OUT OF BAND (`session._accept`),
+   because `ask()` is awaited from inside the input the queue is applying and
+   queueing the answer behind it is a deadlock; and a request naming NO seat
+   still belongs to one over a wire (`engine.acting`), or all four clients
+   answer it and answer it differently.
+3. ~~**Lobby and seat assignment.**~~ **DONE 2026-08-29** — `net/lobby.js`.
+   Seat is position in the SORTED PEER-ID LIST, host is seat 0, and the seed is
+   a hash of the room code, so four clients compute four identical answers with
+   no election, no round trip and no tiebreak. "First to connect is seat 0" is
+   the tempting wrong answer and it is the one thing lockstep cannot use.
+   **The lobby SCREEN is not built and is a design question** — what it looks
+   like, how a code is shared, whether joining is a Steam invite or a typed room
+   name. `ChannelTransport` already makes two tabs a real two-player lobby.
 4. **Two players reaching for the same Keepsake.** StS2 resolves that with
    rock-paper-scissors. Every Kid gets their own offer and nobody can reach for
    somebody else's, so there is nothing to resolve until the wire exists.
