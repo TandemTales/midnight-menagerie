@@ -41,6 +41,7 @@ WHO = """() => {
       keepsake: r.local.pendingReward.keepsake } : null,
     keeps: r.kids.map(k => k.keepsakes.length),
     decks: r.kids.map(k => k.deck.length),
+    upgraded: r.kids.map(k => k.deck.filter(c => c.upgraded).length),
     shelfFirst: (document.querySelector('.shop-card .cardview, .shop-card') || {}).dataset || null,
     title: (document.querySelector('.rm-title, h1') || {}).textContent || null,
   };
@@ -73,6 +74,53 @@ async def scene_is(page, name, timeout=30000):
     except Exception:
         pass
     await page.wait_for_timeout(400)
+
+
+async def press(page, *starts):
+    """Press the one button whose label starts with any of `starts`.
+
+    RAISES when nothing matched, and names what was on screen instead. A click
+    that lands on nothing is silent, and the failure it produces two lines later
+    always belongs to somebody else: this file spent a run reporting "it passes
+    to the other Kid rather than closing" when what had really happened was that
+    the Curiosity's foot button read "Choose what gets mended" and no click had
+    ever been made. A test that clicks nothing has to say so.
+    """
+    hit = await page.evaluate("""(starts) => {
+      for (const el of document.querySelectorAll('button, .btn, .rm-go')) {
+        const t = (el.textContent || '').trim().toLowerCase();
+        if (starts.some(s => t.startsWith(s))) { el.click(); return t.slice(0, 60); }
+      }
+      return null;
+    }""", [s.lower() for s in starts])
+    if hit is None:
+        on = await page.evaluate(
+            "() => [...document.querySelectorAll('button, .btn, .rm-go')]"
+            ".map(e => (e.textContent||'').trim().replace(/\\s+/g, ' ').slice(0, 40))")
+        raise AssertionError("no button starting with %r — on screen: %r"
+                             % (" / ".join(starts), on))
+    return hit
+
+
+async def open_curiosity(page, ev_id):
+    """Stand the party in a Curiosity room running a NAMED Curiosity, seat 0 first.
+
+    Named and not rolled: `_prepareEvent` picks off the run's own RNG and the
+    run's seed comes from the select screen, so letting it roll means testing a
+    different room on every launch — including rooms whose answer opens a card
+    picker or turns into a fight, which take a different way out.
+    """
+    await page.evaluate("""(evId) => {
+      const r = window.MM.ctx.run;
+      const n = r.map.nodes.find(x => (x.kind || x.type) === 'curiosity')
+             || r.map.nodes.find(x => (x.kind || x.type) === 'unknown');
+      r.currentNodeId = n.id;
+      for (const k of r.kids) k.roomDone = null;
+      r.pendingEvent = { id: evId, nodeId: n.id, resolved: null, resolvedBy: {}, pendingBy: {} };
+      r.setLocalSeat(0);
+      r._goto('event', { node: n.id, region: r.region });
+    }""", ev_id)
+    await settle(page)
 
 
 fails = []
@@ -129,12 +177,7 @@ async def main():
 
         await page.click('.rw-fan [role="option"]')
         await page.wait_for_timeout(900)
-        await page.evaluate("""() => {
-          for (const el of document.querySelectorAll('button, .btn, .rm-go')) {
-            const t = (el.textContent || '').trim().toLowerCase();
-            if (t.startsWith('back to the blueprint') || t.startsWith('leave')) { el.click(); return; }
-          }
-        }""")
+        await press(page, "back to the blueprint", "leave")
         await settle(page)
         v = await page.evaluate(WHO)
         check(v["veil"], "the screen is covered before the next Kid sees it")
@@ -156,12 +199,7 @@ async def main():
 
         await page.click('.rw-fan [role="option"]')
         await page.wait_for_timeout(900)
-        await page.evaluate("""() => {
-          for (const el of document.querySelectorAll('button, .btn, .rm-go')) {
-            const t = (el.textContent || '').trim().toLowerCase();
-            if (t.startsWith('back to the blueprint') || t.startsWith('leave')) { el.click(); return; }
-          }
-        }""")
+        await press(page, "back to the blueprint", "leave")
         await settle(page)
         d = await page.evaluate(WHO)
         check(d["scene"] == "map", "the last Kid out closes the room", d["scene"])
@@ -184,12 +222,7 @@ async def main():
         check(e["scene"] == "rest", "the Safe Room is up", e["scene"])
         check(e["seat"] == 0, "seat 0 first", str(e["seat"]))
 
-        await page.evaluate("""() => {
-          for (const el of document.querySelectorAll('button, .btn, .rm-go')) {
-            const t = (el.textContent || '').trim().toLowerCase();
-            if (t.startsWith('pack up')) { el.click(); return; }
-          }
-        }""")
+        await press(page, "pack up")
         await settle(page)
         f = await page.evaluate(WHO)
         check(f["veil"], "a Kid leaving hands it over rather than closing it")
@@ -201,12 +234,7 @@ async def main():
         check(g["comp"] == "bones", "with their Companion", g["comp"])
         await page.screenshot(path=os.path.join(SHOTS, "rooms-rest-seat1.png"))
 
-        await page.evaluate("""() => {
-          for (const el of document.querySelectorAll('button, .btn, .rm-go')) {
-            const t = (el.textContent || '').trim().toLowerCase();
-            if (t.startsWith('pack up')) { el.click(); return; }
-          }
-        }""")
+        await press(page, "pack up")
         await settle(page)
         h = await page.evaluate(WHO)
         check(h["scene"] == "map", "and the second one out closes it", h["scene"])
@@ -233,12 +261,7 @@ async def main():
         check(any(x.startswith("marmalade/") for x in shelf0),
               "showing Marmalade Tricks", ", ".join(shelf0[:3]))
 
-        await page.evaluate("""() => {
-          for (const el of document.querySelectorAll('button, .btn, .rm-go')) {
-            const t = (el.textContent || '').trim().toLowerCase();
-            if (t.startsWith('back to the blueprint')) { el.click(); return; }
-          }
-        }""")
+        await press(page, "back to the blueprint")
         await settle(page)
         sv = await page.evaluate(WHO)
         check(sv["veil"], "leaving hands the shop over rather than shutting it")
@@ -255,12 +278,7 @@ async def main():
         check(sorted(shelf0) != sorted(shelf1), "a different shelf entirely")
         await page.screenshot(path=os.path.join(SHOTS, "rooms-shop-seat1.png"))
 
-        await page.evaluate("""() => {
-          for (const el of document.querySelectorAll('button, .btn, .rm-go')) {
-            const t = (el.textContent || '').trim().toLowerCase();
-            if (t.startsWith('back to the blueprint')) { el.click(); return; }
-          }
-        }""")
+        await press(page, "back to the blueprint")
         await settle(page)
         s2 = await page.evaluate(WHO)
         check(s2["scene"] == "map", "and the second one out closes it", s2["scene"])
@@ -269,20 +287,20 @@ async def main():
         # Slay the Spire 2 shares the map and the node in co-op, and
         # "individual choices within events may differ" — so the room is the
         # same room and each Kid answers it themselves.
+        #
+        # The Curiosity is NAMED. This step used to let `_prepareEvent` roll one
+        # off an unseeded run, so on any launch that rolled an option granting a
+        # mend, a removal or a fight the foot button read "Choose what gets
+        # mended" / "Choose a Trick to give up" / "Face it", the label matcher
+        # found nothing, no click was made — and the failure printed as "it
+        # passes to the other Kid rather than closing", which is word for word
+        # the co-op regression this file exists to catch. `press()` is loud
+        # about that now, and the follow-up path gets its own case below.
+        # The Painted Dog has one outcome per option and no follow-up, so here
+        # the way out is the way out.
         print("")
         print("A Curiosity")
-        await page.evaluate("""() => {
-          const r = window.MM.ctx.run;
-          const n = r.map.nodes.find(x => (x.kind || x.type) === 'curiosity')
-                 || r.map.nodes.find(x => (x.kind || x.type) === 'unknown');
-          r.currentNodeId = n.id;
-          for (const k of r.kids) k.roomDone = null;
-          r.pendingEvent = null;
-          r._prepareEvent(n, 'curiosity');
-          r.setLocalSeat(0);
-          r._goto('event', { node: n.id, region: r.region });
-        }""")
-        await settle(page)
+        await open_curiosity(page, "the-portrait-that-follows")
         c0 = await page.evaluate(WHO)
         opts0 = await page.evaluate(
             "() => [...document.querySelectorAll('.ev-opt')].map(e => e.dataset.opt)")
@@ -296,13 +314,7 @@ async def main():
             "() => !!document.querySelector('.ev-page.is-answered, .is-answered')")
         check(answered, "seat 0 answers it")
 
-        await page.evaluate("""() => {
-          for (const el of document.querySelectorAll('button, .btn, .rm-go')) {
-            const t = (el.textContent || '').trim().toLowerCase();
-            if (t.startsWith('back to the blueprint') || t.startsWith('leave')
-                || t.startsWith('go on') || t.startsWith('move on')) { el.click(); return; }
-          }
-        }""")
+        await press(page, "go on", "leave", "back to the blueprint", "move on")
         await settle(page)
         cv = await page.evaluate(WHO)
         check(cv["veil"], "and it passes to the other Kid rather than closing")
@@ -318,6 +330,55 @@ async def main():
         check(not answered1, "and it is UNanswered for them — the choice is theirs")
         check(len(opts1) > 0, "with the options live again", str(len(opts1)))
         await page.screenshot(path=os.path.join(SHOTS, "rooms-event-seat1.png"))
+
+        # ── a Curiosity whose answer opens a picker ─────────────────────────
+        # `_continue()` has three follow-ups before the way out — a mend, a
+        # removal and a fight — and until one of them resolves, this Kid's turn
+        # in the room is not over. Nothing asserted that the handoff waits for
+        # them, which is how the flake above hid: the step that was supposed to
+        # cover the Curiosity took whichever room the run happened to roll, and
+        # the follow-up path was only ever visited by accident. The Umbrella
+        # Fort's first option mends a Trick and has a single outcome.
+        print("")
+        print("A Curiosity with a follow-up")
+        await open_curiosity(page, "the-umbrella-fort")
+        u0 = await page.evaluate(WHO)
+        check(u0["scene"] == "event", "the room is up", u0["scene"])
+        check(u0["seat"] == 0, "seat 0 first", str(u0["seat"]))
+        before = u0["upgraded"][:]
+
+        await page.click(".ev-opt:not([disabled])")
+        await page.wait_for_timeout(1500)
+        lbl = await page.evaluate(
+            "() => ((document.querySelector('.rm-go span') || {}).textContent || '').trim()")
+        check("mended" in lbl.lower(), "the way out asks for the mend first", lbl)
+
+        await press(page, "choose what gets mended")
+        await page.wait_for_timeout(1200)
+        uv = await page.evaluate(WHO)
+        check(not uv["veil"], "and the Kid's turn is NOT over while the picker is open")
+        picked = await page.evaluate("""() => {
+          const cards = [...document.querySelectorAll('.rm-picker__grid [role="option"]')];
+          if (!cards.length) return 0;
+          cards[0].click();
+          return cards.length;
+        }""")
+        check(picked == u0["decks"][0], "the picker offers THEIR deck, all of it",
+              f"{picked} of {u0['decks']}")
+        await page.wait_for_timeout(600)
+        await press(page, "mend it")
+        await settle(page)
+        uw = await page.evaluate(WHO)
+        check(uw["upgraded"][0] == before[0] + 1, "the Trick really came back mended",
+              f"{before} -> {uw['upgraded']}")
+        check(uw["upgraded"][1] == before[1], "and it was their own deck, not their friend's",
+              str(uw["upgraded"]))
+        check(uw["veil"], "and only NOW does the room pass over")
+        await page.click(".hoff__go")
+        await settle(page)
+        u1 = await page.evaluate(WHO)
+        check(u1["scene"] == "event", "the same room opens for them", u1["scene"])
+        check(u1["seat"] == 1, "as seat 1", str(u1["seat"]))
 
         # ── a Rescue is NOT per Kid ─────────────────────────────────────────
         # One pet comes home. Handing the screen on would show the second Kid a
@@ -337,13 +398,7 @@ async def main():
         await settle(page)
         rs = await page.evaluate(WHO)
         check(rs["scene"] == "event", "the Rescue is up", rs["scene"])
-        await page.evaluate("""() => {
-          for (const el of document.querySelectorAll('button, .btn, .rm-go')) {
-            const t = (el.textContent || '').trim().toLowerCase();
-            if (t.startsWith('back to the blueprint') || t.startsWith('leave')
-                || t.startsWith('go on') || t.startsWith('move on')) { el.click(); return; }
-          }
-        }""")
+        await press(page, "go on", "leave", "back to the blueprint", "move on")
         await settle(page)
         rv = await page.evaluate(WHO)
         check(not rv["veil"], "leaving does NOT hand it over", f"veil {rv['veil']}")

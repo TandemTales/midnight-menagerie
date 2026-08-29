@@ -1,6 +1,6 @@
 {
- "agree": 4,
- "n": 4,
+ "agree": 6,
+ "n": 6,
  "rows": [
   {
    "seed": 700000,
@@ -59,6 +59,36 @@
     "win": false,
     "turns": 14,
     "dmg": 61,
+    "errs": 0
+   }
+  },
+  {
+   "seed": 700052,
+   "same": true,
+   "bench": {
+    "win": true,
+    "turns": 11,
+    "dmg": 79
+   },
+   "party": {
+    "win": true,
+    "turns": 11,
+    "dmg": 79,
+    "errs": 0
+   }
+  },
+  {
+   "seed": 700065,
+   "same": true,
+   "bench": {
+    "win": true,
+    "turns": 11,
+    "dmg": 32
+   },
+   "party": {
+    "win": true,
+    "turns": 11,
+    "dmg": 32,
     "errs": 0
    }
   }
