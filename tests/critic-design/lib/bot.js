@@ -27,7 +27,7 @@
  * resolution are the same code path, so a plan found on clones replays
  * move-for-move on the real engine (same seeded RNG state, restored).
  */
-import { previewCard } from '/game/src/combat/preview.js';
+import { previewCard, previewIncoming } from '/game/src/combat/preview.js';
 import { Target, CardType } from '/game/src/data/schema.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -61,14 +61,44 @@ export function applySnack(E, snack, targetId = null, seat = null) {
 // shared reads
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** What the intents PROMISE this enemy turn — the number the HUD shows. */
+/**
+ * What the intents PROMISE this enemy turn, FOR ONE SEAT.
+ *
+ * This used to sum `intent.totalDamage` across every living enemy and hand the
+ * same number to every Kid — it took a `seat` argument and ignored it, which is
+ * why it read as seat-aware for three rounds. So in a party each Kid planned as
+ * though the whole board were swinging at THEM: the Kid the Butler was not
+ * aiming at still budgeted for his full swing, and spent the Nerve on Guard it
+ * should have spent on damage.
+ *
+ * The cost was not subtle. At four Kids, with the party intact (0.67 falls a
+ * fight), the four of them were dealing about **20 damage a turn between them**
+ * against a solo Kid's 14 — each Kid a THIRD as effective as they are alone.
+ * That is what made party boss fights run three times as long as solo ones,
+ * and length is what makes AoE lethal, so it is upstream of the whole
+ * "co-op boss is unwinnable" problem.
+ *
+ * `previewIncoming` is the engine's own per-seat answer and already handles
+ * AoE, splash and who each move is aimed at — its comment describes this exact
+ * bug being fixed in the SCENE, while the bot kept doing it. The seat is
+ * resolved inside `e` first because the beam search runs on clones
+ * (`_resolveSeat` would hand back the caller's actor otherwise).
+ */
 export function shownIncoming(e, seat = null) {
-  let t = 0;
-  for (const en of e.enemies) {
-    if (!en.alive || !en.intent) continue;
-    t += (en.intent.totalDamage || 0);
+  try {
+    return previewIncoming(e, seatOf(e, seat)).total || 0;
+  } catch {
+    /* Fall back to the OLD whole-board sum, never to 0. A bot that believes
+       nothing is coming stops blocking entirely, so a swallowed throw here
+       would not degrade the measurement, it would invert it — the silent
+       no-op CONTRACTS rule 8 is about, wearing a catch block. */
+    let t = 0;
+    for (const en of e.enemies) {
+      if (!en.alive || !en.intent) continue;
+      t += (en.intent.totalDamage || 0);
+    }
+    return t;
   }
-  return t;
 }
 
 /**

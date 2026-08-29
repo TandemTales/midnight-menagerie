@@ -485,13 +485,33 @@ it, so the screen can never offer a party the engine refuses or refuse one it ac
   'lowestCourage' | 'fewestDraw' | 'mostDraw'` for who it singles out. Both are authored per
   enemy in the region chapters. Seat choice ALWAYS ties on seat index, never the RNG — the
   target is shown before the players act and has to survive a replay.
-- Enemy Courage is `[1, 2.2, 4.0, 5.7]` and every number is MEASURED
-  (`tests/coop/balance.py`), not quoted. 3p and 4p used to read 3.1 and 4.0, extrapolated,
-  and both won **96%** against solo's 79%. The curve has to grow FASTER than the party
-  does, because enemy damage never scales: each added Kid multiplies the party's output
-  AND its Courage while incoming damage per Kid falls. StS2's linear formula is nowhere
-  near enough here. Re-measure after any change to enemy damage, starting decks or the
-  co-op pool.
+- **A `partyPick` is decided ONCE per move and then HELD.** `pickSeat` reads live board
+  state — Guard, Courage, draw-pile size — so re-deriving it whenever intents refresh
+  moves the arrow the instant a Kid reacts to it. Walking Stick prefers `lowestGuard`,
+  the Kid it points at raises Guard, stops being lowest, and the swing silently transfers
+  to their friend; every seat then reads "not aimed at me", nobody blocks, and it lands on
+  whoever ended lowest. That made a party measurably WORSE at defending itself than a solo
+  Kid — four Kids went from 83% to 33% the moment the bot started reading its own seat's
+  incoming honestly instead of the whole board's. `intentTargetFor` holds the pick on
+  `enemy._pickMark`, keyed by turn AND move id, so next turn picks afresh and a mark on a
+  fallen Kid falls through. Gated by `tests/butler/run.py`.
+- Enemy Courage is `[1, 2.2, 4.0, 5.7]`, and **it was derived from the STANDARD TIER
+  only** — `tests/coop/balance.py` fights scuffles — then applied to every enemy in the
+  game including bosses, which were never measured at any party size until 2026-08-28.
+  When they were, the Foyer boss read **0% at 3p and 4p**. A scuffle lasts five turns
+  and a boss forty, and a boss's Guard is per TURN, so the same multiplier does not mean
+  the same thing to both. Re-measure after any change to enemy damage, starting decks or
+  the co-op pool — and re-measure BOSSES with `tests/critic-design/party-boss.py`, which
+  is the only harness that fights them with real pre-boss decks.
+- **A per-enemy curve is the sanctioned override, and it is barely known.**
+  `EnemyDef.partyHp(n)` returns a multiplier that REPLACES the global curve for that
+  enemy (`_makeEnemy`), and `favoriteDoll` is the only user — the Doll is a timer, not a
+  health bar, so scaling it like an enemy would make the window the party is trying to
+  open arrive LATER with more Kids. It is also how a boss escapes a curve fitted to
+  scuffles. The design doc asks for exactly this: *"I would avoid simply multiplying
+  every enemy's Courage. The cooperative version should change tactical relationships"*
+  (regions/01-foyer.md §26), with a baseline of 160% / 210% / 255% and "enemy effects
+  gain multiplayer targeting logic instead".
 - A screen renders ONE seat's view. `scenes/combat.js` reads `this.me` / `this.mePiles`, never
   `engine.player`. The seat comes from `run.localSeat`.
 - Per Kid: deck, Courage, Nerve, Keepsakes, Backpack, Snacks, trackers, counters, card

@@ -139,6 +139,22 @@ function standRule(e, id, p2 = false) {
     check(e.intentTargetFor(boss(e)) === e.players[1],
           'Walking Stick taps the Kid who is not braced',
           `picked seat ${e.intentTargetFor(boss(e)).seat}`);
+
+    /**
+     * THE ARROW MUST NOT MOVE WHEN THE PLAYER REACTS TO IT.
+     *
+     * `lowestGuard` is computed from live board state, so re-deriving it on
+     * every intent refresh transferred the swing the instant its target raised
+     * Guard — and then every seat reads "not aimed at me", nobody blocks, and
+     * it lands on whoever ended lowest. The contract is explicit: the target is
+     * shown BEFORE the players act and has to survive a replay.
+     */
+    e.gainBlock(e.players[1], 40, { reason: 'test' });
+    check(e.intentTargetFor(boss(e)) === e.players[1],
+          'and it STAYS on them after they brace — the pick is held for the move',
+          `picked seat ${e.intentTargetFor(boss(e)).seat}`);
+    check(e.intentTargetFor(boss(e)) === e.players[1],
+          'and again, read twice');
   }
 
   // ── Reprimands that threaten instead of protecting him ────────────────────

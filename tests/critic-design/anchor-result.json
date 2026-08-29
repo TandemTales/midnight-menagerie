@@ -1,19 +1,19 @@
 {
- "agree": 5,
- "n": 5,
+ "agree": 4,
+ "n": 4,
  "rows": [
   {
    "seed": 700000,
    "same": true,
    "bench": {
-    "win": true,
-    "turns": 16,
-    "dmg": 69
+    "win": false,
+    "turns": 13,
+    "dmg": 77
    },
    "party": {
-    "win": true,
-    "turns": 16,
-    "dmg": 69,
+    "win": false,
+    "turns": 13,
+    "dmg": 77,
     "errs": 0
    }
   },
@@ -23,12 +23,12 @@
    "bench": {
     "win": false,
     "turns": 13,
-    "dmg": 47
+    "dmg": 48
    },
    "party": {
     "win": false,
     "turns": 13,
-    "dmg": 47,
+    "dmg": 48,
     "errs": 0
    }
   },
@@ -37,13 +37,13 @@
    "same": true,
    "bench": {
     "win": true,
-    "turns": 14,
-    "dmg": 10
+    "turns": 15,
+    "dmg": 44
    },
    "party": {
     "win": true,
-    "turns": 14,
-    "dmg": 10,
+    "turns": 15,
+    "dmg": 44,
     "errs": 0
    }
   },
@@ -52,28 +52,13 @@
    "same": true,
    "bench": {
     "win": false,
-    "turns": 16,
+    "turns": 14,
     "dmg": 61
    },
    "party": {
     "win": false,
-    "turns": 16,
+    "turns": 14,
     "dmg": 61,
-    "errs": 0
-   }
-  },
-  {
-   "seed": 700052,
-   "same": true,
-   "bench": {
-    "win": true,
-    "turns": 11,
-    "dmg": 65
-   },
-   "party": {
-    "win": true,
-    "turns": 11,
-    "dmg": 65,
     "errs": 0
    }
   }
