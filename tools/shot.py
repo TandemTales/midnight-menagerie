@@ -10,6 +10,16 @@ This is how every critic agent SEES the real game. Never trust a builder's summa
 Writes shots/<name>.png (and shots/<name>.console.txt on JS errors, always a
 shots/<name>.state.json with window.MM.state()).  Exit code 1 if the page threw.
 
+**--wait is the settle AFTER the 3D stage has warmed, not after load.** The
+stage renders nothing while it is linking shaders (`core/renderer.js` sets
+`_warming` before its first await on purpose), and on this GPU that is about ten
+seconds from cold — so `--wait 9` used to produce a BLACK VOID with the HUD
+floating on it, which is what critics were judging combat and the map from. It
+waits for `stage.warmStage === 'done'` first now, and says so if that never
+happens. `--no-warm-wait` restores the old behaviour, for capturing the warm-up
+itself. A player never sees this: the warm-up finishes while they read the title
+menu, and walking into combat from there is lit in four seconds.
+
 --script  runs arbitrary JS in the page BEFORE the screenshot (after --wait).
 --steps   pipe-separated actions: click:SEL | hover:SEL | key:KEY | wait:SEC |
           drag:SELA>SELB | js:EXPR | jsawait:EXPR | shot:NAME
@@ -59,6 +69,36 @@ async def run(a):
         page.on("pageerror", lambda e: errors.append("PAGEERROR " + str(e)))
 
         await page.goto(url, wait_until="load", timeout=45000)
+
+        # ── wait for the STAGE, and only then for --wait ─────────────────────
+        # `--wait` alone is a number of milliseconds racing a cold boot, which is
+        # the trap this project has written down three times. The 3D stage
+        # renders NOTHING while it is warming — `core/renderer.js` sets
+        # `_warming` before its first await deliberately, so frame 1 cannot pay
+        # the whole shader-link cost — and on this GPU phase A takes about ten
+        # seconds cold. Every deep-linked combat shot at the documented
+        # `--wait 9` was therefore a BLACK VOID with the HUD floating on it, and
+        # that is what critics have been judging the game from.
+        #
+        # A real player never sees it: they boot to the title and the warm-up
+        # finishes while they read the menu — walking into combat from a settled
+        # title is lit in four seconds. So this is a TOOL problem, and the fix is
+        # the one the notes keep prescribing: wait for a signal, not a number.
+        # `warmStage` goes materials -> post -> done.
+        warm = None
+        if not a.no_warm_wait:
+            try:
+                await page.wait_for_function(
+                    "() => { const s = window.MM && window.MM.ctx && window.MM.ctx.stage;"
+                    "        return !s || s.warmStage === 'done'; }",
+                    timeout=int(a.warm_timeout * 1000))
+                warm = await page.evaluate(
+                    "() => { const s = window.MM && window.MM.ctx && window.MM.ctx.stage;"
+                    "        return s ? (s._warmed || 0) : null; }")
+            except Exception:
+                # Say so rather than shooting a half-warm stage in silence.
+                print("warn: the stage never finished warming within "
+                      f"{a.warm_timeout}s — this shot may be dark", flush=True)
         await page.wait_for_timeout(int(a.wait * 1000))
 
         async def snap(name, full=False):
@@ -166,7 +206,13 @@ if __name__ == "__main__":
     ap.add_argument("--scene"); ap.add_argument("--seed"); ap.add_argument("--companion")
     ap.add_argument("--kid"); ap.add_argument("--encounter"); ap.add_argument("--region")
     ap.add_argument("--node"); ap.add_argument("--hash")
-    ap.add_argument("--wait", type=float, default=2.2)
+    ap.add_argument("--wait", type=float, default=2.2,
+                    help="settle time AFTER the 3D stage has finished warming")
+    ap.add_argument("--warm-timeout", type=float, default=40,
+                    help="how long to give the stage's shader warm-up")
+    ap.add_argument("--no-warm-wait", action="store_true",
+                    help="shoot without waiting for the stage — for capturing "
+                         "the warm-up itself, or a page that has no stage")
     ap.add_argument("--w", type=int, default=1600)
     ap.add_argument("--h", type=int, default=900)
     ap.add_argument("--dpr", type=float, default=1.0)

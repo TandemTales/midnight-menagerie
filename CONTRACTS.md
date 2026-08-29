@@ -84,6 +84,9 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    whole fight is built on. `tests/dup-keys/check.py` gates the first. For the second:
    when you add a method to a def, grep for its caller before you call it done.
 6. **`--wait 4.5` can catch the map mid-draw.** Its entrance sweep runs ~800 ms; use `--wait 9`.
+   **Superseded 2026-08-29 — see trap 43.** A bigger number was the wrong
+   treatment: `--wait` now waits for the stage to finish warming FIRST, so it is
+   a settle rather than a race, and small values are correct again.
 7. **fps collapses when two Playwright runs overlap on this machine.** Re-measure in isolation
    before believing a low number. `tools/shot.py` prints the GL renderer so you can also confirm
    you are on the real GPU and not a software rasteriser.
@@ -374,6 +377,21 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    own length — `--lregion nursery` measures that content against what a party
    carries when the run currently ends, and says PROXY. Do not tune region 3
    against decks no player will have.
+
+43. **Every deep-linked combat and map screenshot was of a BLACK VOID, and that
+   is what critics were judging.** `core/renderer.js` renders nothing while it
+   warms — `_warming` is set before its first await on purpose, so frame 1
+   cannot pay the whole shader-link cost — and phase A takes about ten seconds
+   cold on this GPU. `tools/shot.py --wait` was a fixed sleep after `load`, so
+   the documented `--wait 9` fired while the stage was still dark and produced
+   a screenshot of the HUD floating on nothing. It waits for
+   `stage.warmStage === 'done'` first now.
+
+   **No player ever sees it** — the warm-up finishes while they read the title
+   menu, and walking into combat from a settled title is lit in four seconds —
+   which is exactly why it survived: the game is fine and only the instrument
+   was wrong. Trap 6 ("`--wait 4.5` can catch the map mid-draw, use `--wait 9`")
+   was this same bug being treated with a bigger number. Wait for a signal.
 
 15. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
    now reported their in-flight work being swallowed by an unrelated commit — one had a whole
