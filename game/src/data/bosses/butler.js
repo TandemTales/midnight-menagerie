@@ -210,64 +210,35 @@ export const butler = {
   lore: 'One of the oldest extensions of the house. His job is to decide who belongs inside, and his definition of hospitality has quietly become permanent.',
 
   /**
-   * HIS OWN party curve, because the global one was never measured on a boss.
+   * NO party curve. He rides the global `PARTY_HP_SCALE` like everything else.
    *
-   * `PARTY_HP_SCALE` is `[1, 2.2, 4.0, 5.7]` and every one of those numbers came
-   * from `tests/coop/balance.py`, which fights the STANDARD TIER. It was then
-   * applied to every enemy in the game. Bosses were never measured at any party
-   * size until 2026-08-28, and when they were, this fight read **0% at three
-   * and four Kids** — not hard, unwinnable.
+   * He carried his own `partyHp: [1, 2.2, 2.8, 3.2]` from 2026-08-28, cut from
+   * the global because the fight measured **0% at three and four Kids** — not
+   * hard, unwinnable. That 0% was `lib/bot.js` turtling: it projected the rest
+   * of a fight as "enemy Courage remaining / MY damage rate" with the Courage
+   * party-scaled and the rate belonging to ONE seat, so four Kids valued Guard
+   * four times as highly as one Kid. CONTRACTS 47. The curve was fitted to a
+   * broken instrument, which is trap 32 arriving a second time.
    *
-   * A scuffle runs five turns and this fight runs forty, and his Guard is per
-   * TURN (Formal Welcome 12, Collect Himself 6, This Is Most Irregular 16,
-   * Restore Order 14), so a longer fight hands him proportionally more of it.
-   * The same multiplier does not mean the same thing to a five-turn room and a
-   * forty-turn one, which is why `EnemyDef.partyHp` exists.
+   * With a bot that attacks, the cut curve made his party fight SHORTER than
+   * his solo one — 8.4 turns against 13.5 — and nearly free. Restoring the
+   * global, n=16:
    *
-   * Measured, with the AoE in and both co-op harness defects fixed, against a
-   * solo anchor of 50% at 13.3 turns:
+   *     4p   x3.2  100% win   8.4 turns   83% Courage left   cost 16.2
+   *          x5.7  100% win  14.8 turns   71% Courage left   cost 52.6
    *
-   *     2p   2.20 -> 50%      1.32 -> 100%
-   *     3p   4.00 ->  0%      2.40 ->  67%
-   *     4p   5.70 ->  0%      3.42 ->  33%
+   * **Solo is byte-identical** — 62.5% at 13.5 turns and 36% left in both —
+   * and it cannot be otherwise: `partyHp(1)` is 1 by construction. An earlier
+   * sweep in this session concluded that raising his Courage "punishes one Kid
+   * to fix four", and that was an artefact of `--scales`, which multiplies
+   * EVERY party size including solo. A `partyHp` curve cannot touch solo at
+   * all. The conclusion was wrong and the note records the correction.
    *
-   * So 2p is already right and is left exactly where the global curve puts it;
-   * 3p and 4p come down to the parity points between the bracketing pairs.
-   *
-   * This is also what the chapter asks for — "I would avoid simply multiplying
-   * every enemy's Courage. The cooperative version should change tactical
-   * relationships" (§26), with a 160/210/255% baseline and targeting as the
-   * compensation. The targeting is now built, so the Courage can stop standing
-   * in for it.
-   *
-   * ── 2026-08-29: THE TABLE ABOVE WAS MEASURED WITH A BROKEN BOT ────────────
-   *
-   * The 0% at three and four Kids that this whole curve was fitted to was
-   * `lib/bot.js` turtling, not this fight being unwinnable. It projected the
-   * rest of a fight as "enemy Courage remaining / MY damage rate" with the
-   * Courage party-scaled and the rate belonging to one seat, so four Kids
-   * valued Guard four times as highly as one Kid. CONTRACTS 47.
-   *
-   * Re-measured against a bot that attacks, n=24, solo anchor 66.7% at 13.2
-   * turns and 39% Courage left:
-   *
-   *     4p   x3.2 (this curve)  100% win   8.5 turns   84% left
-   *          x4.5               100% win  11.6 turns   76% left
-   *          x5.8 (the global)  100% win  15.0 turns   70% left
-   *
-   * **The number is not the lever and this curve is not the bug.** Four Kids
-   * win every time at every multiplier tried; Courage buys turns, not danger,
-   * and the same x1.8 that leaves 4p untouched takes SOLO from 66.7% to 4.2%.
-   * Raising it would punish one Kid to fix four.
-   *
-   * Left at [1, 2.2, 2.8, 3.2] deliberately, and it is now the shallowest
-   * honest reading rather than a compensation: at 3.2 the fight is at least
-   * SHORT (8.5 turns against solo's 13.2) instead of long and equally
-   * unloseable. What is actually missing is threat a party's Guard cannot
-   * answer — CONTRACTS 45, the shape the Governess's Sharp Correction proved.
-   * His only pierce is the Reprimand's 5-7 on a House Rule violation.
+   * The chapter's own baseline is shallower still (160/210/255%, foyer §26) and
+   * is not what ships: it was measured against this engine and does not hold
+   * the win rate. `EnemyDef.partyHp` remains the seam if a future measurement
+   * says otherwise — it is simply not needed here.
    */
-  partyHp: (n) => [1, 2.2, 2.8, 3.2][Math.min(n, 4) - 1] ?? 1,
 
   /**
    * DECLARED, and read by nothing — documentation, not a mechanic. See the

@@ -148,6 +148,36 @@ pierces for 5–7 on a House Rule violation and nothing else does. He reads +0.3
 which is par rather than broken, and foyer §28's Flustered thresholds and House
 Rules are implemented in full, so he is a judgement call rather than a defect.
 
+## 3c. A correction: `--scales` is not `partyHp`
+
+Earlier in this session I bracketed the Butler with `party-boss.py --scales` and
+concluded that raising his Courage "punishes one Kid to fix four", because ×1.8
+took his SOLO win rate from 66.7% to 4.2%. That conclusion was an artefact of
+the instrument. **`--scales` multiplies every party size including solo; a
+`partyHp` curve cannot touch solo at all**, because `partyHp(1)` is 1 by
+construction.
+
+His `partyHp: [1, 2.2, 2.8, 3.2]` was cut from the global on 2026-08-28 because
+the fight measured 0% at three and four Kids — and that 0% was the turtling bot.
+The curve was fitted to a broken instrument. Removed, so he rides the global
+like everything else:
+
+| party | before | after |
+|---|---|---|
+| 1p | 62.5% · 13.5t · 36% left | **identical** |
+| 2p | 100% · 13.3t · 57% | identical (2.2 either way) |
+| 3p | 100% · 10.7t · 62% | 100% · 14.0t · 62% |
+| 4p | 100% · 8.4t · 83% | 100% · **14.8t** · **71%** |
+
+The cut curve made his party fight SHORTER than his solo fight — 8.4 turns
+against 13.5 — and nearly free (cost 16.2 against solo's 47.4). Turn count is
+flat across party size now, and the bill at four Kids trebles to 52.6.
+
+**The lesson is about the instrument, not the Butler.** A sweep that scales an
+enemy's whole pool answers a different question from a per-enemy party curve,
+and reading one as the other cost a wrong conclusion that got as far as a source
+comment before it was caught.
+
 ## 4. Instrument notes
 
 `tests/critic-design/party-ledger.py` prints `win%` beside `left%` now. Two
