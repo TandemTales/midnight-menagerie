@@ -1146,8 +1146,27 @@ export class CombatEngine {
     if (mode === 'all') return living;
     if (mode === 'two') {
       const first = this.intentTargetFor(enemy);
-      const second = living.find(p => p !== first) || first;
-      return [first, second];
+      const second = living.find(p => p !== first);
+      /**
+       * NEVER the same seat twice.
+       *
+       * This used to fall back to `|| first`, and the damage loop in the enemy
+       * ctx runs the move's full `hits` count once PER ENTRY — so a party
+       * reduced to one Kid handed that Kid the whole move twice. A last Kid
+       * standing took DOUBLE what they would have taken with a friend beside
+       * them, which is backwards in the one moment the fight is already lost.
+       *
+       * `previewIncoming` could not see it either: it asks `aimed.includes(me)`,
+       * a boolean, and then counts `damage x hits` ONCE. So the incoming rail
+       * read exactly half of what was about to land, and its `lethal` flag was
+       * computed from the half — trap 46's shape on the widget whose entire job
+       * is to be believed, and fatal here rather than merely wrong.
+       *
+       * The chapter agrees: "If only one player remains available, both hits
+       * target that player" (nursery §33) — both hits, which is one move, not
+       * two. Returning one seat is what makes that sentence true.
+       */
+      return second ? [first, second] : [first];
     }
     return [this.intentTargetFor(enemy)];
   }

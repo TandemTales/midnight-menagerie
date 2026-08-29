@@ -783,6 +783,77 @@ export async function run() {
     nextMove: () => 'jab',
   };
 
+  /**
+   * Porcelain Doll's Shattered Sharp Little Hands: `partyTarget: 'two'`, and
+   * the shape that made a LAST KID STANDING take double.
+   */
+  const SPLITTER = {
+    id: 'coop/splitter', name: 'Splitter', region: 'foyer', tier: 'normal',
+    hp: [200, 200], silhouette: 'blob',
+    moves: {
+      pair: {
+        id: 'pair', name: 'Pair', intent: 'attack', damage: 4, hits: 2,
+        partyTarget: 'two',
+        damageFn: () => 4,
+        hitsFn: () => 2,
+        effect: (c) => c.damage(4, { hits: 2 }),
+      },
+    },
+    nextMove: () => 'pair',
+  };
+
+  await atest('targeting: a two-target move never names the same Kid twice', async () => {
+    const e = await startDummyParty(new RNG(431), 2, { enemies: [SPLITTER], maxHp: 200 });
+    const [a, b] = e.players;
+    e.refreshIntents('test');
+    eq(e.partyTargets(e.enemies[0], e.enemies[0].pendingMove).length, 2,
+      'two seats standing, two targets');
+    e.loseHp(b, 999, 'test');
+    ok(b.fallen, 'seat 1 is down');
+    e.refreshIntents('test');
+    const aimed = e.partyTargets(e.enemies[0], e.enemies[0].pendingMove);
+    eq(aimed.length, 1, 'one seat standing, ONE target — not the same Kid twice');
+    eq(aimed[0], a, 'and it is the Kid who is left');
+  });
+
+  await atest('targeting: the last Kid standing takes ONE move, not two', async () => {
+    // The effect half, measured in Courage rather than in target lists.
+    const both = await startDummyParty(new RNG(433), 2, { enemies: [SPLITTER], maxHp: 200 });
+    both.refreshIntents('test');
+    const primary = both.intentTargetFor(both.enemies[0]);
+    const hpBefore = primary.hp;
+    await both.endTurn();
+    const withAFriend = hpBefore - primary.hp;
+    ok(withAFriend > 0, 'a targeted Kid takes the move', String(withAFriend));
+
+    const alone = await startDummyParty(new RNG(433), 2, { enemies: [SPLITTER], maxHp: 200 });
+    const [x, y] = alone.players;
+    alone.loseHp(y, 999, 'test');
+    alone.refreshIntents('test');
+    const soloBefore = x.hp;
+    await alone.endTurn();
+    const asSurvivor = soloBefore - x.hp;
+    eq(asSurvivor, withAFriend,
+      'the survivor takes what a targeted Kid takes — losing a friend does not double the swing',
+      `${asSurvivor} vs ${withAFriend}`);
+  });
+
+  await atest('targeting: and the incoming rail tells the survivor the truth', async () => {
+    // The READOUT half, controlled separately — an intent that promises what
+    // the effect does not deliver has to fail either way round (trap 46).
+    const { previewIncoming } = await import('../../game/src/combat/preview.js');
+    const e = await startDummyParty(new RNG(437), 2, { enemies: [SPLITTER], maxHp: 200 });
+    const [a, b] = e.players;
+    e.loseHp(b, 999, 'test');
+    e.refreshIntents('test');
+    const shown = previewIncoming(e, a);
+    const hp0 = a.hp;
+    await e.endTurn();
+    const landed = hp0 - a.hp;
+    eq(shown.total, landed,
+      'what the rail promised is what arrived', `${shown.total} shown vs ${landed} landed`);
+  });
+
   await atest('targeting: a partyTarget:all move hits BOTH Kids', async () => {
     const e = await startDummyParty(new RNG(401), 2, { enemies: [AOE] });
     const [a, b] = e.players;

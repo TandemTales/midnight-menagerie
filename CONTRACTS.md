@@ -487,6 +487,29 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    Kids finish within 2.0x solo's turns and raise under 20x solo's Guard
    (measured 1.49x / 15.08x with the fix, 7.94x / 60.07x without).
 
+48. **A TARGET LIST that can hold the same seat twice deals the move twice, and
+   the incoming rail cannot see it.** `partyTargets()` for `partyTarget: 'two'`
+   fell back to `living.find(p => p !== first) || first`, so a party reduced to
+   ONE Kid got `[first, first]`. The enemy ctx's damage loop runs the move's
+   full `hits` count once per ENTRY, so the last Kid standing took the whole
+   move twice — **double what they would have taken with a friend beside them**,
+   in the one moment the fight is already going badly.
+
+   `previewIncoming` could not report it, because it asks `aimed.includes(me)`
+   — a boolean — and then counts `damage × hits` once. So the rail read exactly
+   HALF of what was about to land and its `lethal` flag was computed from the
+   half: Sharp Little Hands showed 8 and dealt 16. Trap 46's shape on the same
+   widget, and fatal here rather than merely wrong.
+
+   Two rules from it. **A list of targets is a SET** — if the same actor can
+   appear twice, the damage loop multiplies. And **anything that counts targets
+   with `includes()` is assuming that set**; the moment a list can repeat, every
+   consumer that asks "am I in it?" instead of "how many times?" understates.
+   The chapter had already settled it — *"If only one player remains available,
+   both hits target that player"* (nursery §33) — both hits, which is one move.
+   Gated by three checks in `tests/coop/suite.js`, and the effect and the
+   readout are asserted SEPARATELY.
+
 15. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
    now reported their in-flight work being swallowed by an unrelated commit — one had a whole
    `music.js` rewrite land inside a commit titled "Pronouns per the designer", which then made a
