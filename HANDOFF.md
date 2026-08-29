@@ -27,6 +27,22 @@ change him.
 
 ### Where it stands, 2026-08-29
 
+- **AT FOUR KIDS EVERY BOSS WAS A ONE-PHASE BOSS.** A phase threshold is an
+  absolute Courage number and a pool is not, so phase two went from ~55% of the
+  fight solo to **10 / 17 / 9.5%** at four Kids for the Governess, Butler and
+  Bedframe Beast. Her three Repair Patches, her Emergency Repair and her whole
+  second move cycle were content a party never saw. Fixed with `phaseAt()` per
+  nursery §34; solo byte-identical. **A correctness fix, not a balance one** —
+  it moves her 4p leftover Courage 90% → 90%.
+- **A boss whose damage can be BLOCKED cannot threaten a party.**
+  `tests/critic-design/party-ledger.py` is the new instrument and it is decisive:
+  at four Kids the Governess aims 565 and lands 94 (83% blocked, party Guard
+  2275); the Butler aims 404 and lands 173 (57% blocked, 1293). He aims less and
+  hurts twice as much, and the only relevant difference is that two of his
+  Reprimands bypass or remove Guard. **AoE is necessary and not sufficient** —
+  targeting is answered by Guard, and Guard scales with the party. Whether every
+  boss gets a Guard answer in co-op is a DESIGN decision and it is open.
+  CONTRACTS 44 and 45.
 - **NETCODE ITEMS 2, 3 AND 4 ARE DONE. Only the transport is left.** Every
   screen routes through `net/actions.js`; `net/lobby.js` decides seats, host and
   seed with no election; a choice reaches the player whose choice it is.
@@ -193,6 +209,8 @@ All prep scripts are **one-off and commit their output** — there is no runtime
 | `tests/critic-design/party-boss.py` | a boss at 1..4 Kids against REAL pre-boss decks — the gap `sweep.py` (solo only) and `tests/coop/balance.py` (starting decks) both leave |
 | `tests/critic-design/anchor.py` | 5/5 — `partyBench()` at one Kid reproduces `bench()` fight for fight. The party rows mean nothing without it |
 | `tests/critic-design/butler-ledger.html` | where the Butler's length actually comes from |
+| `tests/critic-design/party-ledger.py` | where a PARTY's Courage goes — what a boss aimed against what its target's Guard let through. The number `left%` and `cost` are both downstream of |
+| `tests/critic-design/phase-probe.html` | what share of a boss's pool is phase two, at each party size |
 
 **One suite per Companion, and every check asserts an EFFECT.** `tests/cards`
 proves only that a card resolves without throwing, which CONTRACTS trap 12 is

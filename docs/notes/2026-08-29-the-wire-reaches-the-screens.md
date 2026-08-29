@@ -369,10 +369,87 @@ It waits for `stage.warmStage === 'done'` now. `--wait 2` gives what `--wait 9`
 could not. Trap 6 — "`--wait 4.5` can catch the map mid-draw, use `--wait 9`" —
 was this same bug being treated with a bigger number, and is marked superseded.
 
-## 6. What is open
+## 6. Why four Kids finish a boss almost untouched
 
-1. **Four Kids still finish the Governess holding 89%.** Structural, shared with
-   the Butler: party output does not scale with the pool.
+Chasing the Governess's 89% leftover Courage produced an instrument, one clear
+bug, and one design question I did not take unilaterally.
+
+### The ledger
+
+`party-boss.py` reports `left%` and `cost`, and both are downstream of a number
+nothing measured: how much of what a boss AIMED its target's Guard ate.
+`partyBench` collects `blockedBySeat`, `aimed` and `partyGuard` now, and
+`party-ledger.py` reports them.
+
+```
+Governess    aimed  landed  blocked  %blocked  partyGuard  turns  left%
+  1p         149.3    55.1     94.3      63.2       156.2   11.2     60
+  4p         565.0    94.1    470.9      83.3      2275.0   22.4     90
+```
+
+The AoE work quadrupled what she throws and **what lands is flat**. Party Guard
+grows **14.6x for a 4x party**, because it is per seat and the fight is also
+twice as long.
+
+The controlled comparison settles it:
+
+```
+4p           aimed  landed  %blocked  partyGuard  left%
+  Butler     404.2   172.9      57.2      1293.1     50
+  Governess  565.0    94.1      83.3      2275.0     90
+```
+
+**He aims less and hurts nearly twice as much**, and the only relevant
+difference is that two of his Reprimands bypass or remove Guard — which is last
+session's Butler work validated retroactively with a number it did not have.
+
+Three levers, measured, all dead ends for COST:
+
+| lever | result |
+|---|---|
+| more AoE / more damage | eaten. Measured twice on her this session |
+| the boss's own Guard (the handoff's suggestion) | hers is 5% of her effective pool against the Butler's 26% — his length lever, not her cost one |
+| her Courage pool | wrong direction by construction: a shorter fight lands LESS |
+
+What is left is damage Guard cannot answer. That changes all three bosses and
+the elite tier and contradicts the doc's stated compensation, so it goes to the
+designer rather than into a commit.
+
+### At four Kids every boss was a ONE-PHASE boss
+
+Found while chasing the above, and unambiguous. A phase threshold is an absolute
+Courage number; a pool is not.
+
+| share of the pool that is phase two | 1p | 2p | 3p | 4p |
+|---|---|---|---|---|
+| Governess | 57.1% | 26.0% | 14.3% | **10.0%** |
+| Butler | 55.8% | 25.3% | 19.9% | **17.4%** |
+| Bedframe Beast | 54.2% | 24.7% | 13.6% | **9.5%** |
+
+All three read ~55% solo, matching the doc, so solo was right and only the party
+was wrong. The Governess's three Repair Patches, her Emergency Repair and her
+entire second move cycle were content a party of four essentially never saw.
+
+nursery §34 prescribes the fix for a Big Scare with the same shape — *"Courage
+thresholds remain PROPORTIONAL to maximum Courage… This keeps the mechanic
+stable regardless of party size."* `phaseAt()` does it for all three, and fixes
+the same silent shrink under Haunt.
+
+**It is a correctness fix, not a balance one, and the number says so**: at four
+Kids she reads landed 94.1 → 87.6 and 90% → 90% Courage left. A party now fights
+the boss that was designed. It does not find her harder, because the Guard
+budget above is what binds.
+
+`phaseThresholds` is declared by all three bosses and read by NOTHING — the
+transition has always been a local constant. Trap 5b wearing a field instead of
+a method.
+
+## 7. What is open
+
+1. **Four Kids still finish the Governess holding 89-90%, and §6 says why.**
+   Her Guard-blocked share is 83% against the Butler's 57%. The lever is damage
+   Guard cannot answer, and that is a DESIGN decision affecting all three bosses
+   and the elite tier — the numbers to decide it with are in `party-ledger.py`.
 2. **Netcode: only the TRANSPORT is left.** Items 2, 3 and 4 are done. Steam P2P
    is one file implementing the five methods in `net/transport.js`, it needs a
    wrapper shell, and it ends the no-build rule — the designer's call. The

@@ -393,6 +393,35 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    was wrong. Trap 6 ("`--wait 4.5` can catch the map mid-draw, use `--wait 9`")
    was this same bug being treated with a bigger number. Wait for a signal.
 
+44. **A threshold expressed as an ABSOLUTE Courage number shrinks to nothing as
+   the party grows.** Every boss turned to phase two at a fixed number — 100,
+   92, 160 — while their pools are multiplied by the party curve, so phase two
+   went from ~55% of the fight solo to 10-17% at four Kids on all three at once.
+   A party of four fought a one-phase boss with a coda: the Governess's three
+   Repair Patches, her Emergency Repair and her whole second move cycle were
+   authored content nobody in a party ever saw. The doc already prescribes the
+   fix and it is worth quoting because it generalises — *"Courage thresholds
+   remain PROPORTIONAL to maximum Courage… This keeps the mechanic stable
+   regardless of party size"* (nursery §34). `phaseAt(c, soloAt, soloMax)` in
+   `enemies/_lib.js`. The same shrink was happening under Haunt, which is ×1.06
+   on boss Courage. **When you write a number against a pool, write it as a
+   share of that pool.**
+
+45. **A boss whose damage can be BLOCKED cannot threaten a party, however much
+   of it there is.** `tests/critic-design/party-ledger.py` measures what a boss
+   aimed against what landed. At four Kids the Governess aims 565 and lands 94,
+   because party Guard reaches 2275 — it scales per seat AND with the length of
+   the fight, so it grows far faster than any enemy output. The Butler aims 404
+   and lands 173 on the same instrument, and the only relevant difference is
+   that two of his Reprimands bypass or remove Guard.
+
+   So the design doc's stated compensation for damage not scaling — *"enemy
+   effects gain multiplayer targeting logic instead"* (foyer §26) — is necessary
+   and NOT sufficient: targeting is answered by Guard. Adding AoE or raising a
+   number is measured, twice, to do nothing to the leftover-Courage gap.
+   **Whether every boss should get a Guard answer in co-op is a DESIGN decision**
+   — it changes three bosses and the elite tier — and it is open.
+
 15. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
    now reported their in-flight work being swallowed by an unrelated commit — one had a whole
    `music.js` rewrite land inside a commit titled "Pronouns per the designer", which then made a
