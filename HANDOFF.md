@@ -25,6 +25,59 @@ change him.
 **~65,500 lines** across `game/src/`. Currently on branch **`dev`**, pushed to
 `github.com/TandemTales/midnight-menagerie`. `main` is untouched and stale.
 
+### Where it stands, 2026-08-29 (second session)
+
+- **THE 44-TURN ELITE GRIND WAS THE BOT.** So was "party damage output does not
+  scale with party size the way the Courage pool does", which this file, two
+  session notes and the Butler's own source comment all recorded as a STRUCTURAL
+  fact that no constant could fix. `lib/bot.js projectedValue()` estimated the
+  rest of a fight as `enemy Courage remaining / MY damage rate` — the Courage
+  party-scaled, the rate belonging to one seat — so at four Kids `turnsLeft`
+  pinned to its 28-turn cap in every fight, and `turnsLeft` multiplies the Guard
+  term. Four Kids valued Guard four times as highly as one Kid while the damage
+  aimed at each of them had fallen fourfold. They turtled.
+
+  Foyer elite tier, `party-ledger.py --tier elite --region foyer`, n=12, one
+  line changed and the 1p row byte-identical:
+
+  | party | turns | %blocked | partyGuard | left% |
+  |---|---|---|---|---|
+  | 1p | 9.4 → **9.4** | 57.6 → 57.6 | 63.8 → 63.8 | 60 → 60 |
+  | 2p | 13.3 → 11.3 | 68.3 → 66.9 | 221 → 204 | 70 → 70 |
+  | 3p | 35.5 → **12.5** | 73.7 → 66.7 | 796 → 308 | 60 → 80 |
+  | 4p | 43.7 → **13.0** | 74.7 → 68.8 | 1943 → 733 | 60 → 80 |
+
+  **The nine per-enemy `partyHp` curves that were scoped as the next piece are
+  not needed and would have been nine curves fitted to a bot that turtles.**
+  CONTRACTS 47. The standard tier re-measures at 100% wins at every party size
+  with 5.6 → 8.1 turns, so the global `PARTY_HP_SCALE` is defensible as it
+  stands and the brief's "do not change the global" holds.
+
+- **`tests/critic-design/party-turns.py` is the gate that was missing.**
+  `anchor.py` holds the harness honest at ONE seat, where `partyBench` and
+  `bench` must agree; nothing held it honest at four, where there is nothing to
+  compare against — which is exactly why a four-seat bug survived two sessions
+  with anchor green throughout. Four Kids must finish within 2.0x solo's turns
+  and raise under 20x solo's Guard: 1.49x / 15.08x with the fix, 7.94x / 60.07x
+  without.
+
+- **`tests/net/run.py` had been red since the day it was written, and said
+  "128 passed, 0 failed".** It fails on any console error and three checks
+  provoke one deliberately — a drifted board, a peer on the wrong seed, and a
+  client speaking for another seat — all of which `session.js` is supposed to
+  shout about. The page declares those now and the runner fails on an
+  undeclared error AND on a declaration that never fires. Exit 0 for the first
+  time. The third declaration was invisible until the other two were named.
+
+- **STILL OPEN, and now the honest headline for the party game: a party
+  finishes too comfortable.** Elite `left%` is 60 solo against 80 at three and
+  four Kids; the standard tier is 61 against 84. Length is fixed, cost is not.
+  This is trap 45's shape — Guard scales with the party and enemy damage does
+  not — and the lever is targeting, not Courage. The Grand Coatcheck is the one
+  Foyer elite whose attacks declare no `partyTarget`, no `partyPick` and no
+  `splash` (trap 38); the Unwelcome Guest and the House Bell both implement
+  their §27 adjustments in full, as do the Toy Chest and the Patchwork Giant.
+
 ### Where it stands, 2026-08-29
 
 - **AT FOUR KIDS EVERY BOSS WAS A ONE-PHASE BOSS.** A phase threshold is an
@@ -49,17 +102,13 @@ change him.
   and `%blocked` flat across party size. Solo byte-identical. That also closes
   "party boss fights are LONG" for her. CONTRACTS 44, 45 and 46.
 
-  **Still open, and now MEASURED: the ELITE tier at three and four Kids is a
-  44-turn grind.** `party-ledger.py --tier elite --region foyer` reads turns
-  **9.4 → 43.7** from one Kid to four, with `aimed/turn` nearly flat (8.7 →
-  12.6) and `%blocked` climbing 58 → 75. The cost is fine — `left%` is 60 at
-  every size, matching solo — so this is purely LENGTH, and it is the worst
-  player experience in the measured set. The cause is the global
-  `PARTY_HP_SCALE` doing to elites what it did to bosses. **Do not change the
-  global** (the brief is explicit, and it is correct on the standard tier); the
-  seam is per-enemy `EnemyDef.partyHp`, nine elite encounters, each wanting its
-  own bracketing sweep. Not attempted here because nine curves without nine
-  measurements is nine guesses.
+  ~~**Still open, and now MEASURED: the ELITE tier at three and four Kids is a
+  44-turn grind.**~~ **RESOLVED the same day, and it was the instrument.** The
+  43.7 turns were `lib/bot.js` turtling at four seats, not the global
+  `PARTY_HP_SCALE`; the tier reads 13.0 turns at four Kids once the bot
+  projects the fight against the whole table. See the second-session block at
+  the top and CONTRACTS 47. The per-enemy `partyHp` sweep this bullet scoped is
+  not needed.
 - **NETCODE ITEMS 2, 3 AND 4 ARE DONE. Only the transport is left.** Every
   screen routes through `net/actions.js`; `net/lobby.js` decides seats, host and
   seed with no election; a choice reaches the player whose choice it is.
@@ -214,7 +263,7 @@ All prep scripts are **one-off and commit their output** — there is no runtime
 |---|---|
 | `tests/combat/run.py` | 677 assertions |
 | `tests/coop/run.py` | 594 assertions |
-| `tests/net/run.py` | 128 — the lockstep session; every room and combat through the REAL applier against two real `Run`s; the lobby's seats/host/seed including two tabs over `BroadcastChannel`; and a choice reaching the seat it belongs to, mid-input, without deadlocking |
+| `tests/net/run.py` | 128, and **exit 0 since 2026-08-29** — it had always exited 1 on the console errors its own checks provoke, while printing "128 passed, 0 failed". The page declares those three now; an undeclared error fails, and so does a declaration that never fires. The lockstep session; every room and combat through the REAL applier against two real `Run`s; the lobby's seats/host/seed including two tabs over `BroadcastChannel`; and a choice reaching the seat it belongs to, mid-input, without deadlocking |
 | `tests/cards/run.py` | 1468 cards, 0 errors, 0 warnings |
 | `tests/enemies/run.py` | 37 enemies, 0 errors |
 | `tests/enemies/audit.py` | ~2060 turns, intent === delivered |
@@ -224,7 +273,8 @@ All prep scripts are **one-off and commit their output** — there is no runtime
 | `tests/combat-scene/seam.py` · `tests/audio/run.py` | 22 passed · 46 cues |
 | `tests/critic-design/sim.py` · `sweep.py` | the balance simulator |
 | `tests/critic-design/party-boss.py` | a boss at 1..4 Kids against REAL pre-boss decks — the gap `sweep.py` (solo only) and `tests/coop/balance.py` (starting decks) both leave |
-| `tests/critic-design/anchor.py` | 5/5 — `partyBench()` at one Kid reproduces `bench()` fight for fight. The party rows mean nothing without it |
+| `tests/critic-design/anchor.py` | 6/6 — `partyBench()` at one Kid reproduces `bench()` fight for fight. The party rows mean nothing without it |
+| `tests/critic-design/party-turns.py` | 4 checks — its sibling at FOUR Kids, where there is nothing to compare against. Four Kids finish within 2.0x solo's turns and raise under 20x solo's Guard. A gate, not a reading |
 | `tests/critic-design/butler-ledger.html` | where the Butler's length actually comes from |
 | `tests/critic-design/party-ledger.py` | where a PARTY's Courage goes — what a boss aimed against what its target's Guard let through. The number `left%` and `cost` are both downstream of |
 | `tests/critic-design/phase-probe.html` | what share of a boss's pool is phase two, at each party size |

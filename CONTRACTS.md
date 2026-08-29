@@ -453,6 +453,40 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    and the damage independently, so an intent that promises what the effect does
    not deliver fails either way round.
 
+47. **A ONE-SEAT rate divided into a WHOLE-TABLE pool is a party-size bug, and
+   it reads as a fact about the game.** `lib/bot.js projectedValue()` estimated
+   the rest of a fight as `enemy Courage remaining / MY damage rate` — the
+   Courage party-scaled, the rate belonging to one seat. At four Kids that asks
+   "how long until I kill a 5.7x pool by myself?", and the answer is the
+   28-turn cap, on every seat, in every fight, from turn one. `turnsLeft`
+   multiplies the Guard term, so four Kids valued Guard FOUR TIMES as highly as
+   one Kid while the damage aimed at each of them had fallen fourfold.
+
+   Measured on the Grand Coatcheck at n=12, one line changed:
+
+   | party | turns | partyGuard |
+   |---|---|---|
+   | 1p | 6.9 → 6.9 | 49 → 49 |
+   | 3p | 23.3 → 8.8 | 578 → 217 |
+   | 4p | 49.7 → 8.6 | 1993 → 475 |
+
+   Four Kids were raising 1993 Guard to stop 483 damage. **What makes this the
+   expensive kind of instrument bug is that it was believed rather than
+   measured**: "party damage output does not scale with party size the way the
+   Courage pool does" is written into two session notes, HANDOFF and the
+   Butler's own source comment as a STRUCTURAL fact that no constant could fix,
+   and the elite tier's 43.7 turns was carried as the worst player experience in
+   the measured set. Both were this. The next scoped piece — nine per-enemy
+   `partyHp` curves — would have been nine curves fitted to a bot that turtles.
+
+   The general shape: **any quantity that scales with party size, divided by one
+   that does not, is a bug that only appears above two seats** — and two seats is
+   where a co-op harness is usually eyeballed. `anchor.py` cannot see it, because
+   at one Kid the expression is unchanged, which is exactly why it passed
+   throughout. `tests/critic-design/party-turns.py` is the gate that can: four
+   Kids finish within 2.0x solo's turns and raise under 20x solo's Guard
+   (measured 1.49x / 15.08x with the fix, 7.94x / 60.07x without).
+
 15. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
    now reported their in-flight work being swallowed by an unrelated commit — one had a whole
    `music.js` rewrite land inside a commit titled "Pronouns per the designer", which then made a
