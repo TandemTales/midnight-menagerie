@@ -21,9 +21,12 @@ import { Intent } from '../schema.js';
 import {
   mem, cnt, setCnt, addCnt, cyc, countMoves, lastMove, hitPlayer, dmgTaken,
   hauntBase, flag, field, played, bossDmg,
+  phaseAt,
 } from '../enemies/_lib.js';
 
 const PHASE2_AT = 160;
+/** The pool the threshold above was authored against. See `phaseAt`. */
+const BASE_HP = 295;
 
 /** Covered halves the first this-much damage from each Kid, each round. */
 const COVER_SOFTEN = 12;
@@ -380,7 +383,7 @@ export const bedframeBeast = {
     const hist = c.history || [];
     const phase = bedframeBeast.phase(c);
 
-    if (phase === 1 && hp <= PHASE2_AT && !hist.includes('no-more-hiding')) return 'no-more-hiding';
+    if (phase === 1 && hp <= phaseAt(c, PHASE2_AT, BASE_HP) && !hist.includes('no-more-hiding')) return 'no-more-hiding';
     if (mem(c).disoriented) return 'disoriented';
 
     if (phase === 1) {

@@ -25,9 +25,12 @@ import { Intent } from '../schema.js';
 import {
   mem, cnt, setCnt, addCnt, allies, cyc, countMoves, hitPlayer, dmgTaken,
   hauntBase, flag, isAlive, bossDmg,
+  phaseAt,
 } from '../enemies/_lib.js';
 
 const PHASE2_AT = 100;
+/** The pool the threshold above was authored against. See `phaseAt`. */
+const BASE_HP = 175;
 
 /**
  * Stitched Together: how much damage Favorite Doll eats before she feels any,
@@ -587,7 +590,7 @@ export const governess = {
     const hp = c.self.hp ?? 0;
     const hist = c.history || [];
 
-    if (governess.phase(c) === 1 && hp <= PHASE2_AT && !hist.includes('look-what-youve-done')) {
+    if (governess.phase(c) === 1 && hp <= phaseAt(c, PHASE2_AT, BASE_HP) && !hist.includes('look-what-youve-done')) {
       return 'look-what-youve-done';
     }
 

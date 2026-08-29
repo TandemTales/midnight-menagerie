@@ -251,6 +251,42 @@ function standRule(e, id, p2 = false) {
           `lost ${lost.join(' / ')}`);
   }
 
+  // ── phase two is the same SHARE of the fight at every party size ──────────
+  /* His phase threshold was an absolute 92 Courage while his pool is multiplied
+     by the party curve, so phase two was 56% of the fight solo and 17% at four
+     Kids. nursery §34 prescribes the fix for a Big Scare with the same shape:
+     "Courage thresholds remain PROPORTIONAL to maximum Courage… This keeps the
+     mechanic stable regardless of party size." */
+  say('<h2>Phase two — the same share of the fight at any party size</h2>');
+  {
+    /* Through the REAL fight, and TWO enemy phases: a move is chosen when the
+       turn OPENS, so the first phase after the Courage is set still resolves
+       the one he picked at full health. */
+    const turnsAt = async (n, hp) => {
+      const e = await fight(n);
+      boss(e).hp = hp;
+      await e.endTurn();
+      await e.endTurn();
+      return (boss(e).mem || {}).phase === 2;
+    };
+    const maxOf = async (n) => boss(await fight(n)).maxHp;
+
+    check((await maxOf(1)) === 165, 'a Kid alone faces the authored 165');
+    check(await turnsAt(1, 92), 'and turns him at exactly 92, as authored');
+    check(!(await turnsAt(1, 93)), 'and not a point above it');
+
+    for (const n of [2, 3, 4]) {
+      const max = await maxOf(n);
+      const want = Math.round(92 * (max / 165));
+      check(max > 165, `${n} Kids face a bigger pool`, String(max));
+      check(await turnsAt(n, want), `and he turns at the same SHARE of it`,
+        `${want} of ${max} = ${(100 * want / max).toFixed(1)}% vs solo 55.8%`);
+      check(await turnsAt(n, 140),
+        'and is ALREADY in phase two at 140, where the absolute 92 left him in phase one',
+        `threshold ${want} of ${max}`);
+    }
+  }
+
   for (const line of passes) say('PASS ' + line, 'pass');
   for (const line of fails) say('FAIL ' + line, 'fail');
   say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`);

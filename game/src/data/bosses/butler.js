@@ -19,6 +19,7 @@ import { Intent } from '../schema.js';
 import {
   mem, cnt, setCnt, addCnt, allies, board, cyc, countMoves, hitPlayer,
   hauntBase, flag, announce, isAlive, played, bossDmg,
+  phaseAt,
 } from '../enemies/_lib.js';
 
 /**
@@ -38,6 +39,8 @@ import {
  * runs that arrive in reasonable shape. See docs/NOTES.md for the table.
  */
 const PHASE2_AT = 92;
+/** The pool the threshold above was authored against. See `phaseAt`. */
+const BASE_HP = 165;
 
 // ── The four House Rules ─────────────────────────────────────────────────────
 /**
@@ -609,7 +612,7 @@ export const butler = {
     const hist = c.history || [];
 
     // Phase transition pre-empts everything, exactly once.
-    if (phase === 1 && hp <= PHASE2_AT && !hist.includes('this-is-most-irregular')) {
+    if (phase === 1 && hp <= phaseAt(c, PHASE2_AT, BASE_HP) && !hist.includes('this-is-most-irregular')) {
       return 'this-is-most-irregular';
     }
     // Discomposed: he spends the action putting himself back together.

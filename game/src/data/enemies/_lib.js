@@ -166,6 +166,46 @@ export function hitPlayer(c, n, hits = 1) {
   c.damage(n, { hits });
 }
 
+/**
+ * A phase threshold that means the same thing at every party size.
+ *
+ * Every boss in this game turned to phase two at an ABSOLUTE Courage number —
+ * 100 for the Governess, 92 for the Butler, 160 for the Bedframe Beast — while
+ * their POOLS are multiplied by the party curve. So the share of the fight
+ * spent in phase two collapsed as the party grew:
+ *
+ *   share of the pool that is phase two    1p      2p      3p      4p
+ *     Governess                          57.1%   26.0%   14.3%   10.0%
+ *     Butler                             55.8%   25.3%   19.9%   17.4%
+ *     Bedframe Beast                     54.2%   24.7%   13.6%    9.5%
+ *
+ * At four Kids a two-phase boss is a one-phase boss with a coda: the Governess's
+ * three Repair Patches, her Emergency Repair and her entire second move cycle
+ * are authored content a party of four essentially never sees. All three read
+ * ~55% solo, which is the doc's own shape ("From 280 through 151 Courage" is
+ * 46% of the Governess's phase one, nursery §21), so solo was right and only the
+ * party was wrong.
+ *
+ * The doc prescribes exactly this fix, in the same chapter, for a Big Scare with
+ * the same problem: *"Courage thresholds remain PROPORTIONAL to maximum Courage.
+ * Players therefore tear Patches at 75 / 50 / 25 percent. This keeps the
+ * mechanic stable regardless of party size."* (regions/02-nursery.md §34.)
+ *
+ * Pure, and safe to call from `nextMove`: it reads `maxHp`, which the party
+ * curve and the Haunt ladder both set before the first turn and no boss changes
+ * afterwards. Passing the solo pair keeps the def readable — "phase two at 100
+ * of 175" is still what the file says.
+ *
+ * @param {object} c        enemy ctx
+ * @param {number} soloAt   the authored threshold, at the authored pool
+ * @param {number} soloMax  the authored pool
+ */
+export function phaseAt(c, soloAt, soloMax) {
+  const max = (c && c.self && c.self.maxHp) || soloMax;
+  if (!soloMax) return soloAt;
+  return Math.round(soloAt * (max / soloMax));
+}
+
 /** Shared per-combat scratch (Darkness, Bed Positions, House Rules…). */
 export function field(c) { return (c.field ||= {}); }
 

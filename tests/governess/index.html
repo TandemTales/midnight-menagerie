@@ -180,6 +180,62 @@ function intentFor(e, id) {
     check(r.lost[0] === 33, 'who takes the same 11x3 as ever', `lost ${r.lost[0]}`);
   }
 
+  // ── phase two is the same SHARE of the fight at every party size ──────────
+  /* Her phase threshold was an absolute 100 Courage while her pool is
+     multiplied by the party curve, so phase two was 57% of the fight solo and
+     10% at four Kids — her three Repair Patches, her Emergency Repair and her
+     whole second move cycle are content a party of four essentially never saw.
+     nursery §34 prescribes the fix for a Big Scare with the same shape:
+     "Courage thresholds remain PROPORTIONAL to maximum Courage… This keeps the
+     mechanic stable regardless of party size." */
+  say('<h2>Phase two — the same share of the fight at any party size</h2>');
+  {
+    /**
+     * Asserted through the REAL fight, not by calling `nextMove` with a
+     * hand-built ctx — a mock of the thing under test proves nothing
+     * (CONTRACTS trap 5). Set her Courage, let an enemy phase run, and ask
+     * whether she turned.
+     */
+    const turnsAt = async (n, hp) => {
+      const e = await fight(n);
+      boss(e).hp = hp;
+      /* TWO enemy phases, not one. An enemy's move is chosen when the turn
+         OPENS, so the first phase after the Courage is set still resolves the
+         move she picked at full health; the transition can only be chosen on
+         the turn after. One phase here reported "she never turns" at every
+         party size, including solo, which is the harness and not the boss. */
+      await e.endTurn();
+      await e.endTurn();
+      return (boss(e).mem || {}).phase === 2;
+    };
+    const maxOf = async (n) => boss(await fight(n)).maxHp;
+
+    const soloMax = await maxOf(1);
+    check(soloMax === 175, 'a Kid alone faces the authored 175', String(soloMax));
+    check(await turnsAt(1, 100), 'and turns her at exactly 100, as authored');
+    check(!(await turnsAt(1, 101)), 'and not a point above it');
+
+    for (const n of [2, 3, 4]) {
+      const max = await maxOf(n);
+      const want = Math.round(100 * (max / 175));
+      check(max > 175, `${n} Kids face a bigger pool`, String(max));
+      check(await turnsAt(n, want),
+        `and she turns at the same SHARE of it — ${want} of ${max}`,
+        `${(100 * want / max).toFixed(1)}% vs solo 57.1%`);
+      check(!(await turnsAt(n, want + 30)),
+        'and is still in phase one above that', `${want + 30} of ${max}`);
+      /* The discriminating case, and the bug this replaces. 150 is comfortably
+         ABOVE the old absolute 100 — so the old code was still in phase one
+         here — and comfortably below the new proportional threshold at every
+         party size. At four Kids the old rule made phase two 10% of the fight,
+         and her three Repair Patches, her Emergency Repair and her whole second
+         move cycle were content a party essentially never saw. */
+      check(await turnsAt(n, 150),
+        'and is ALREADY in phase two at 150, where the absolute 100 left her in phase one',
+        `threshold ${want} of ${max}`);
+    }
+  }
+
   // ── solo is untouched, move by move ───────────────────────────────────────
   /* The whole point of `partyTarget` / `partyPick` / `splashFn` is that they
      are inert at one seat: `partyTargets` returns the single aim when
