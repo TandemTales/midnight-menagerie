@@ -337,6 +337,49 @@ function intentFor(e, id) {
       check(r.lost[0] === n, `${id} deals ${n} to a Kid alone`, `lost ${r.lost[0]}`);
     }
   }
+  // ── Mend My Darling restores a SHARE of the Doll ──────────────────
+  /**
+   * The Doll carries its OWN party curve — partyHp [1, 1.6, 2.1, 2.56], the
+   * 50 / 80 / 105 / 128 nursery §35 prescribes — and Mend put it back at a
+   * flat 28 against every one of them. That restored 56% of the Doll to one Kid
+   * and 21.9% to four, so her repair was worth less the bigger the party got.
+   * Trap 44, one file from phaseAt's own callers.
+   */
+  say('<h2>Mend My Darling — a share of the Doll, not 28 Courage</h2>');
+  {
+    const mended = async (n) => {
+      const e = makeDummyParty(new RNG(5), n, {
+        maxHp: 80,
+        enemies: [
+          { def: getEnemy('governess'), hp: 175, id: 'governess' },
+          { def: getEnemy('favorite-doll'), id: 'favorite-doll' },
+        ],
+      });
+      await e.startCombat();
+      const d = e.enemies.find(x => x.defId === 'favorite-doll');
+      d.mem = d.mem || {};
+      d.mem.torn = true;
+      d.hp = 0;
+      await useMove(e, 'mend-my-darling');
+      return { hp: d.hp, max: d.maxHp };
+    };
+    const one = await mended(1);
+    const four = await mended(4);
+    check(one.hp === 28, 'a Kid alone sees the Doll mended to the authored 28',
+      `${one.hp} of ${one.max}`);
+    check(four.hp === Math.round(28 * 2.56),
+      "and four Kids see it mended by the Doll's own party curve",
+      `${four.hp} of ${four.max}, want ${Math.round(28 * 2.56)}`);
+    /* Shares, with a wide tolerance on purpose: the Stuffed Patch adds a flat
+       +10 to maxHp at spawn and is not itself party-scaled, so the share drifts
+       a few points even once the Mend is right. The curve check above is the
+       exact one; this is the sanity check that the drift stays small. */
+    const shareOne = one.hp / one.max, shareFour = four.hp / four.max;
+    check(Math.abs(shareOne - shareFour) < 0.08,
+      'so roughly the same SHARE of the Doll comes back at either size',
+      `${(100 * shareOne).toFixed(1)}% vs ${(100 * shareFour).toFixed(1)}%`);
+  }
+
 })().catch(err => {
   fails.push('THREW: ' + (err && err.stack || err));
 }).finally(() => {

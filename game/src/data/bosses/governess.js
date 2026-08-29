@@ -531,7 +531,33 @@ export const governess = {
           d.mem.torn = false;
           d.mem.tornWindowUntil = null;      // a second tearing measures its own window
           d.alive = true;
-          d.hp = Math.min(d.maxHp, 28 + bonus);
+          /**
+           * A SHARE of the Doll's pool, not 28 Courage.
+           *
+           * The Doll carries its own party curve — `partyHp: [1, 1.6, 2.1,
+           * 2.56]`, the 50 / 80 / 105 / 128 nursery §35 prescribes — and this
+           * put it back at a flat 28 against all of them. The Mend restored 56%
+           * of the Doll to one Kid and 21.9% to four, so the harder the party,
+           * the less her repair was worth: 35 / 26.7 / 21.9%.
+           *
+           * Trap 44's shape, one file from `phaseAt`'s own callers. `phaseAt`
+           * cannot be used directly because it reads `c.self.maxHp` — the
+           * GOVERNESS's pool — and this number belongs to the Doll's, so the
+           * same arithmetic is written against `d.maxHp` here.
+           *
+           * The Lace Patch bonus scales with it: it is part of how much Doll
+           * comes back, not a flat rider on top of a share.
+           *
+           * Scaled by the Doll's OWN curve rather than by `d.maxHp / 50`,
+           * because the Stuffed Patch adds a flat +10 to `maxHp` at spawn and
+           * dividing by the def's roll would let that patch move the SOLO
+           * number — 28 became 34, which is precisely the kind of quiet change
+           * to one Kid's fight this whole session has been undoing.
+           */
+          const scale = typeof favoriteDoll.partyHp === 'function'
+            ? favoriteDoll.partyHp(c.partySize())
+            : 1;
+          d.hp = Math.min(d.maxHp, Math.round((28 + bonus) * scale));
         }
         c.block(c.self, 6);
       },
