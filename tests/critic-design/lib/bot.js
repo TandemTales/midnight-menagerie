@@ -238,7 +238,27 @@ function projectedValue(t, before, guarded, fc, seat = null) {
   const dealt = Math.max(0, before.enemyHp - pool.hp);
   const dps = Math.max(2.5, 0.15 * dealt + 0.85 * fc.dps);
   const sustain = 0.15 * guarded + 0.85 * fc.guard;
-  const turnsLeft = Math.min(28, (pool.hp + pool.block * 0.6) / dps);
+  /**
+   * The pool is chewed by the WHOLE TABLE, not by this seat alone.
+   *
+   * `dps` is one seat's rate and `pool.hp` is party-scaled, so dividing one by
+   * the other asks "how long until I kill this by myself?" — and the answer at
+   * four Kids is the 28-turn cap, on every seat, in every fight. `turnsLeft`
+   * multiplies the Guard term, so a bot that believes the fight has 28 turns
+   * left values Guard four times as highly as the same bot at one Kid, while
+   * the damage actually aimed at it has fallen fourfold. Four Kids therefore
+   * turtled against a threat aimed at one of them: measured on the Grand
+   * Coatcheck at 6.9 turns solo against 49.7 at four Kids, with the party
+   * raising 1993 Guard to stop 483 damage and finishing on 90% Courage.
+   *
+   * At one seat this is the expression it has always been, which is what
+   * `anchor.py` checks: `partyBench()` at one Kid must still reproduce
+   * `bench()` fight for fight.
+   */
+  const standing = t.players
+    ? Math.max(1, t.players.filter(p => p.alive && !p.fallen).length)
+    : 1;
+  const turnsLeft = Math.min(28, (pool.hp + pool.block * 0.6) / (dps * standing));
   // Plan for the spikes, not just the mean. The Butler alternates a 0-damage
   // turn with a 21, and a bot that budgets for the average of the two walks
   // into phase two with nothing standing.

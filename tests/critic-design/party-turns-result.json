@@ -1,0 +1,47 @@
+{
+ "solo": {
+  "size": 1,
+  "n": 6,
+  "turns": 6.7,
+  "partyGuard": 38.2,
+  "left": 60,
+  "fallen": 0.2,
+  "botErrors": 0
+ },
+ "four": {
+  "size": 4,
+  "n": 6,
+  "turns": 53.2,
+  "partyGuard": 2294.7,
+  "left": 60,
+  "fallen": 1.2,
+  "botErrors": 0
+ },
+ "tRatio": 7.94,
+ "gRatio": 60.07,
+ "checks": [
+  {
+   "ok": true,
+   "what": "both sizes actually ran",
+   "detail": "6 / 6"
+  },
+  {
+   "ok": true,
+   "what": "no bot errors \u2014 a measurement with throws in it is not a measurement",
+   "detail": "0 / 0"
+  },
+  {
+   "ok": false,
+   "what": "four Kids finish within 2x the turns one Kid takes",
+   "detail": "53.2 / 6.7 = 7.94x"
+  },
+  {
+   "ok": false,
+   "what": "and raise less than 20x the Guard doing it",
+   "detail": "2294.7 / 38.2 = 60.07x"
+  }
+ ],
+ "failed": 2,
+ "passed": 2,
+ "loadoutErrors": 0
+}

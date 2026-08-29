@@ -1,0 +1,138 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>party-turns — four Kids must not grind a fight one Kid finishes</title>
+<body><pre id="out" style="font:12px ui-monospace,monospace">running…</pre></body>
+<script type="module">
+/**
+ * Four Kids must not GRIND. OWNER: balance.
+ *
+ * The sibling of anchor.py. That one holds the party harness honest at ONE
+ * seat, where partyBench and bench must agree fight for fight. This one holds
+ * it honest at FOUR, where there is nothing to compare against and the harness
+ * was therefore free to be wrong for two sessions.
+ *
+ * What it was wrong about: lib/bot.js projected the rest of the fight as
+ * "enemy Courage remaining / MY damage rate", with the Courage party-scaled and
+ * the rate belonging to one seat. At four Kids that pinned turnsLeft to its
+ * 28-turn cap on every seat in every fight, and turnsLeft multiplies the Guard
+ * term — so four Kids valued Guard four times as highly as one Kid while the
+ * damage aimed at each of them had fallen fourfold. They turtled.
+ *
+ * Measured on the Grand Coatcheck, n=12, before and after, same seed:
+ *
+ *     party   turns          partyGuard
+ *      1p     6.9 -> 6.9      49 ->   49     (unchanged, as it must be)
+ *      2p     8.3 -> 8.4     145 ->  149
+ *      3p    23.3 -> 8.8     578 ->  217
+ *      4p    49.7 -> 8.6    1993 ->  475
+ *
+ * The 44-turn elite grind carried in HANDOFF as the game's worst player
+ * experience was this. So was "party damage output does not scale with party
+ * size the way the Courage pool does", which two notes and the Butler's own
+ * source comment recorded as a STRUCTURAL fact that no constant could fix.
+ *
+ * Two assertions, deliberately independent, because one number moving is a
+ * story and two moving together is a mechanism:
+ *
+ *   1. TURNS.  Four Kids against a 5.7x pool may take longer than one Kid.
+ *      They may not take SEVEN TIMES longer. The bound is 2.0x.
+ *   2. GUARD.  A party raises more Guard than a solo Kid — four seats, and a
+ *      slightly longer fight. It may not raise forty times as much. Bound 20x.
+ *
+ * Generous bounds on purpose. This is a gate against a whole bug class, not a
+ * balance target: it should fail only when the harness has stopped describing
+ * a game anybody would play. Before the fix it failed both at 7.2x and 40.5x.
+ */
+import { generateLoadouts, seatLoadouts, partyBench } from './lib/partybench.js';
+
+const Q = new URLSearchParams(location.search);
+const N = +(Q.get('n') || 6);
+const GEN = +(Q.get('gen') || 6);
+const ENC = Q.get('enc') || 'foyer-scare-coatcheck';
+const REGION = Q.get('region') || 'foyer';
+const TIER = Q.get('tier') || 'elite';
+const SLUGS = (Q.get('slugs') || 'marmalade,bones').split(',').filter(Boolean);
+const SEED0 = +(Q.get('seed') || 90000);
+const TURN_RATIO = +(Q.get('turnRatio') || 2.0);
+const GUARD_RATIO = +(Q.get('guardRatio') || 20);
+
+const out = document.getElementById('out');
+const lines = [];
+const say = (s) => { lines.push(s); out.textContent = lines.join('\n'); };
+const tick = (s) => { out.textContent = lines.join('\n') + '\n  … ' + s; };
+const mean = (a) => (a.length ? +(a.reduce((x, y) => x + y, 0) / a.length).toFixed(1) : 0);
+
+const checks = [];
+const check = (ok, what, detail) => checks.push({ ok: !!ok, what, detail: String(detail) });
+
+(async () => {
+  const { pools, errors } = await generateLoadouts({
+    gen: GEN, seed: SEED0, slugs: SLUGS, region: REGION, tier: TIER,
+    onProgress: (slug, i, total, got) => tick('loadouts ' + slug + ' ' + i + '/' + total + ' (' + got + ' kept)'),
+  });
+
+  say('party-turns: ' + REGION + '/' + TIER + ' ' + ENC);
+  say('   loadouts ' + SLUGS.map(s => s + ' ' + (pools[s] || []).length).join(' · '));
+  say('');
+  say('party    n   turns   partyGuard   left%   fallen   botErrs');
+
+  const rowFor = async (size) => {
+    const rows = [];
+    for (let i = 0; i < N; i++) {
+      const loadouts = seatLoadouts(pools, SLUGS, size, i);
+      if (!loadouts) continue;
+      tick(size + 'p fight ' + (i + 1) + '/' + N);
+      rows.push(await partyBench({
+        loadouts, size, seed: 700000 + i * 13, region: REGION,
+        tier: TIER, encounterId: ENC, haunt: 0,
+      }));
+    }
+    const r = {
+      size, n: rows.length,
+      turns: mean(rows.map(x => x.turns)),
+      partyGuard: mean(rows.map(x => x.partyGuard)),
+      left: Math.round(100 * mean(rows.map(x => x.courageLeft)) / 1),
+      fallen: mean(rows.map(x => x.fallen)),
+      botErrors: rows.reduce((a, x) => a + x.botErrors, 0),
+    };
+    say(String(size + 'p').padEnd(7) + String(r.n).padStart(3)
+      + String(r.turns).padStart(8) + String(r.partyGuard).padStart(13)
+      + String(r.left).padStart(8) + String(r.fallen).padStart(9)
+      + String(r.botErrors).padStart(10));
+    return r;
+  };
+
+  const solo = await rowFor(1);
+  const four = await rowFor(4);
+  say('');
+
+  check(solo.n > 0 && four.n > 0, 'both sizes actually ran', solo.n + ' / ' + four.n);
+  check(solo.botErrors === 0 && four.botErrors === 0,
+    'no bot errors — a measurement with throws in it is not a measurement',
+    solo.botErrors + ' / ' + four.botErrors);
+
+  const tRatio = solo.turns ? +(four.turns / solo.turns).toFixed(2) : 999;
+  check(tRatio <= TURN_RATIO,
+    'four Kids finish within ' + TURN_RATIO + 'x the turns one Kid takes',
+    four.turns + ' / ' + solo.turns + ' = ' + tRatio + 'x');
+
+  const gRatio = solo.partyGuard ? +(four.partyGuard / solo.partyGuard).toFixed(2) : 999;
+  check(gRatio <= GUARD_RATIO,
+    'and raise less than ' + GUARD_RATIO + 'x the Guard doing it',
+    four.partyGuard + ' / ' + solo.partyGuard + ' = ' + gRatio + 'x');
+
+  for (const c of checks) say((c.ok ? '  PASS  ' : '  FAIL  ') + c.what + ' — ' + c.detail);
+  const failed = checks.filter(c => !c.ok).length;
+  say('');
+  say('RESULT: ' + (checks.length - failed) + ' passed, ' + failed + ' failed');
+  window.__TURNS__ = {
+    solo, four, tRatio, gRatio, checks, failed,
+    passed: checks.length - failed, loadoutErrors: errors.length,
+  };
+})().catch(err => {
+  say('CRASHED: ' + (err && err.stack || err));
+  window.__TURNS__ = { error: String(err) };
+});
+</script>
+</body>
+</html>
