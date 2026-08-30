@@ -169,6 +169,22 @@ export async function loadContentRegistries(engine = null) {
   } catch (e) {
     console.warn('[keywords] enemy library not available yet', e?.message || e);
   }
+  /* The marked areas on the blueprint. `applyWing` registers these itself so a
+     headless harness needs no loader, but the KEYWORD registry is what puts a
+     tooltip under "Chill" when the player hovers it — a status with no tooltip
+     is a mystery, and these arrive without a card to explain them. */
+  try {
+    const w = await import('./wings.js');
+    const { registerStatuses } = await import('../combat/statuses.js');
+    registerStatuses(w.WING_STATUSES);
+    registerKeywords(w.WING_STATUSES.map(s2 => ({
+      id: s2.id, name: s2.name, desc: String(s2.desc || '').replace(/\{n\}/g, 'X'),
+      category: s2.kind === 'debuff' ? 'debuff' : 'buff', status: true, icon: s2.icon,
+    })));
+    done.wings = true;
+  } catch (e) {
+    console.warn('[keywords] wing conditions not available', e?.message || e);
+  }
   return done;
 }
 

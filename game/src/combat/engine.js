@@ -184,6 +184,18 @@ export class CombatEngine {
     // `_bare` engine (the preview clone) never runs `_build`.
     this._seedRelics = (cfg.relics || []).slice();
     this.bus = cfg.bus || null;
+    /**
+     * "You cannot read an intent." A predicate the CONTENT sets — `(enemy) =>
+     * boolean` — consulted by `buildIntent`. Null means every intent is
+     * readable, which is every fight that is not in a marked wing.
+     *
+     * A slot rather than a rule, for the same reason `choices.setRemote` is a
+     * slot: two of mapgen's wing conditions are about what can be read of an
+     * intent, and the engine has no business knowing what a wing is.
+     * `data/wings.js` installs it; `state/run.js` calls that before
+     * `startCombat()`, because the opening intents are rolled inside it.
+     */
+    this.concealIntent = null;
     this.isPreview = !!cfg.isPreview;
 
     // The dev seam guard (combat/strict.js). Resolved ONCE here, so the hot

@@ -183,6 +183,29 @@ export function isAnchored(enemy, k) {
  * Dynamic `*Fn` variants always win over the static fields.
  */
 export function buildIntent(engine, enemy, move, opts = {}) {
+  /**
+   * A wing that hides what things mean to do (`data/wings.js`: The Lights Are
+   * Out, Under Dust Sheets). Masked HERE, at the single point every displayed
+   * intent is constructed, so the forecast queue is hidden with the current
+   * one and nothing has to remember to check twice.
+   *
+   * The move still resolves normally — `enemy.pendingMove` is untouched. What
+   * is hidden is what the player is shown, which is the whole of the promise.
+   * A Trick that READS an intent reads this too, and that is deliberate: if you
+   * cannot see what it is about to do, neither can your Companion.
+   */
+  // An EXPLICIT test, not `engine.concealIntent?.(enemy)`: an optional call on
+  // a contract API is exactly what CONTRACTS rule 8 forbids and what
+  // tests/seams/check.py flags — the whole point is that a missing seam must
+  // be loud, and this seam is genuinely absent in most fights.
+  const conceal = engine && engine.concealIntent;
+  if (move && typeof conceal === 'function' && conceal(enemy)) {
+    return {
+      ...buildIntent(engine, enemy, null, opts),
+      revealed: false,
+      tooltip: 'You cannot make out what it is about to do.',
+    };
+  }
   if (!move) {
     return {
       type: Intent.UNKNOWN, family: 'special', familyLabel: 'Special', moveId: null, name: '???',

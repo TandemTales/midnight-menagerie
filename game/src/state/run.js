@@ -73,6 +73,7 @@ import {
   cardById, startingDeckFor, poolFor, poolWithCoop, companion as companionDef, allCards,
 } from '../data/cards.js';
 import { encountersFor, rollEncounter, buildEncounter } from '../data/encounters.js';
+import { applyWing, addPipesEnemy } from '../data/wings.js';
 import { MAX_PARTY } from '../combat/engine.js';
 import { detectStrict } from '../combat/strict.js';
 import {
@@ -1126,8 +1127,15 @@ export class Run {
     const histLen = Number.isInteger(opts.histLen) ? opts.histLen : this.encounterHistory.length;
     const history = this.encounterHistory.slice(0, histLen);
     const enc = rollEncounter(region, tier, rng, history);
-    const members = buildEncounter(enc.id, rng, this.hauntLevel);
+    let members = buildEncounter(enc.id, rng, this.hauntLevel);
     if (!opts.replay) this.encounterHistory.push(enc.id);
+
+    /* "The Pipes Rattle: noise carries. Every Scuffle inside the marked area
+       brings one extra small enemy." The ROSTER changes, so it has to happen
+       before the engine is built — every other wing is applied to the built
+       engine by `applyWing`. */
+    const wing = node?.payload?.hazard || null;
+    if (wing === 'pipes') members = addPipesEnemy(members);
 
     const hpMul = this.flags.enemyHpMul || 1;
     const enemies = members.map((m, i) => {
@@ -1169,6 +1177,11 @@ export class Run {
       // keyword/status registries were already loaded by warmCombatContent();
       // this is the only per-engine part of loadContentRegistries().
       if (C.lib && C.lib.STATUS_TRICK_DEFS) engine.registerCards(C.lib.STATUS_TRICK_DEFS);
+      /* The marked area this room sits in. BEFORE `startCombat()`, which rolls
+         the opening intents — two of the wings are about what can be read of
+         one. `applyWing` is a no-op for the three room-effect wings and for a
+         room in no wing at all. */
+      applyWing(engine, wing);
     } catch { /* registries are best-effort */ }
 
     this.combatMeta = {

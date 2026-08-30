@@ -368,8 +368,13 @@ export const HAZARDS = [
   { id: 'pipes',        kind: 'hazard', name: 'The Pipes Rattle',
     rule: 'Noise carries. Every Scuffle inside the marked area brings one extra small enemy.',
     note: 'service risers pass behind', glyph: 'pipe' },
+  // The rule used to read "Guard is halved at the start of each of your
+  // turns". Guard is already WIPED at the start of every player turn
+  // (`_beginPlayerTurn` step 2), so halving it there is a no-op — and a
+  // hazard that does nothing is the one thing it cannot be. Reworded to the
+  // threat it was plainly reaching for, and implemented in `data/wings.js`.
   { id: 'long-shadows', kind: 'hazard', name: 'Long Shadows',
-    rule: 'Guard is halved at the start of each of your turns while you are inside the marked area.',
+    rule: 'Guard you gain is halved while you are inside the marked area. Your defence is worth less in the dark.',
     note: 'no daylight reaches these rooms', glyph: 'shadow' },
   { id: 'moonlit',      kind: 'boon',   name: 'Moonlit Rooms',
     rule: 'Moonlight through the roof lights. Leaving the marked area restores 8 Courage.',

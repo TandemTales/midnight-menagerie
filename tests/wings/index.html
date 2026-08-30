@@ -49,14 +49,16 @@ const note = (t) => { const d = document.createElement('div'); d.className = 'ga
  * intent; nothing adds an enemy at build time; nothing halves Guard per turn).
  */
 const WIRED = {
-  'sagging':      'state/run.js enterNode — every living Kid pays 3 Courage',
-  'paw-prints':   'state/run.js enterNode — one shared Clue',
-  'moonlit':      'state/run.js enterNode — leaving the wing restores 8 to each Kid',
-  'lights-out':   null,
-  'dust-sheets':  null,
-  'cold-draught': null,
-  'pipes':        null,
-  'long-shadows': null,
+  /* ROOM effects — state/run.js enterNode */
+  'sagging':      'run.js enterNode — every living Kid pays 3 Courage',
+  'paw-prints':   'run.js enterNode — one shared Clue',
+  'moonlit':      'run.js enterNode — leaving the wing restores 8 to each Kid',
+  /* FIGHT effects — data/wings.js, applied before startCombat() */
+  'lights-out':   'wings.js — every enemy starts with 2 Unseen; intents unreadable',
+  'dust-sheets':  'wings.js — intents concealed on the first turn',
+  'cold-draught': 'wings.js — every Kid starts with 2 Chill',
+  'pipes':        'wings.js addPipesEnemy — one extra copy of the smallest enemy',
+  'long-shadows': 'wings.js — Guard GAINED is halved (see the note in wings.js)',
 };
 
 const PARTY = [{ companion: 'marmalade', kid: 'maya' },
@@ -86,12 +88,15 @@ async function main() {
 
   const live = Object.entries(WIRED).filter(([, v]) => v).map(([k]) => k);
   const dead = Object.entries(WIRED).filter(([, v]) => !v).map(([k]) => k);
-  check(live.length === 3, 'three of the eight are implemented', live.join(', '));
-  note(`   still doing nothing: ${dead.join(', ')} — each is drawn on the sheet, `
-     + `named in the footer and has its rule in the hover card`);
-  for (const id of dead) {
-    const h = HAZARDS.find(x => x.id === id);
-    note(`      ${h.name}: "${h.rule}"`);
+  check(live.length === 8 && dead.length === 0,
+    'ALL EIGHT are implemented — six of them were not, on the morning of '
+    + '2026-08-29', `${live.length} of 8`);
+  if (dead.length) {
+    note(`   still doing nothing: ${dead.join(', ')}`);
+    for (const id of dead) {
+      const h = HAZARDS.find(x => x.id === id);
+      note(`      ${h.name}: "${h.rule}"`);
+    }
   }
 
   // ── sagging ────────────────────────────────────────────────────────────
@@ -184,6 +189,151 @@ async function main() {
     check(run.kids.every((k, i) => k.courage === full[i] && k.courage <= k.maxCourage),
       'a Kid already at full Courage is not pushed over their maximum',
       run.kids.map(k => `${k.courage}/${k.maxCourage}`).join(' '));
+  }
+
+
+  // ── the five FIGHT wings ───────────────────────────────────────────────
+  /* Each is driven through `enterNode` into a real Scuffle rather than by
+     poking `applyWing` at a bare engine, because the thing that has broken
+     every previous version of a wing is the wiring, not the effect. */
+  async function fightIn(seed, hazard) {
+    const run = atTheDoor(seed);
+    const to = run.legalNextIds().find(id => run.sceneFor(run.nodeById(id)) === 'combat');
+    if (!to) return null;
+    stamp(run, to, hazard);
+    await run.enterNode(to);
+    /* `_startCombat` BUILDS the engine and hands it to the scene; the scene is
+       what calls `startCombat()`. Headless there is no scene, so the fight sits
+       at turn 0 with no hand and no intents — which is exactly how the first
+       version of this suite reported five failures that were all one missing
+       line. `applyWing` has already run by here, which is the ordering that
+       matters: the wing is installed before the opening intents are rolled. */
+    if (run.combat) await run.combat.startCombat();
+    return run;
+  }
+
+  head('The Lights Are Out');
+  {
+    const run = await fightIn(4242, 'lights-out');
+    check(!!run?.combat, 'the fight is built', String(!!run?.combat));
+    if (run?.combat) {
+      const e = run.combat;
+      check(e.enemies.every(en => (en.status('lurking') || 0) === 2),
+        'every creature starts with 2 Unseen',
+        e.enemies.map(en => en.status('lurking')).join('/'));
+      check(e.enemies.every(en => en.intent && en.intent.revealed === false),
+        'and not one of their intents can be read',
+        e.enemies.map(en => en.intent && en.intent.name).join(', '));
+
+      /* Two events bring it into the light. Hurting it is one of them. */
+      const first = e.enemies[0];
+      e.dealDamage({ attacker: e.players[0], defender: first, amount: 4,
+                     kind: 'attack', skipModifiers: true });
+      check(first.status('lurking') === 1, 'hurting one takes a stack off it',
+        String(first.status('lurking')));
+      e.dealDamage({ attacker: e.players[0], defender: first, amount: 4,
+                     kind: 'attack', skipModifiers: true });
+      check(first.status('lurking') === 0, 'and a second brings it into the light',
+        String(first.status('lurking')));
+      const { refreshIntents } = await import('../../game/src/combat/intents.js');
+      refreshIntents(e, 'test');
+      check(first.intent && first.intent.revealed !== false,
+        'so its intent is readable again',
+        String(first.intent && first.intent.name));
+      const others = e.enemies.slice(1).filter(en => en.alive);
+      if (others.length) {
+        check(others.every(en => en.intent && en.intent.revealed === false),
+          'while anything still hidden stays unreadable',
+          others.map(en => en.intent && en.intent.revealed).join(','));
+      }
+    }
+  }
+
+  head('Under Dust Sheets');
+  {
+    const run = await fightIn(4242, 'dust-sheets');
+    check(!!run?.combat, 'the fight is built', String(!!run?.combat));
+    if (run?.combat) {
+      const e = run.combat;
+      check(e.enemies.every(en => en.intent && en.intent.revealed === false),
+        'intents are hidden on turn 1', String(e.turn));
+      check(e.enemies.every(en => (en.status('lurking') || 0) === 0),
+        'and it is the TURN doing it, not a status on the creatures');
+      await e.endTurn();
+      const { refreshIntents } = await import('../../game/src/combat/intents.js');
+      refreshIntents(e, 'test');
+      check(e.turn > 1, 'the turn moved on', String(e.turn));
+      check(e.enemies.some(en => en.alive && en.intent && en.intent.revealed !== false),
+        'and from turn 2 the sheets are off');
+    }
+  }
+
+  head('A Cold Draught');
+  {
+    const run = await fightIn(4242, 'cold-draught');
+    check(!!run?.combat, 'the fight is built', String(!!run?.combat));
+    if (run?.combat) {
+      const e = run.combat;
+      const me = e.players[0];
+      check(e.players.every(pl => pl.status('chill') === 2),
+        'every Kid starts with 2 Chill',
+        e.players.map(pl => pl.status('chill')).join('/'));
+      const hand = me.piles.list('hand');
+      const card = hand.find(c => (c.def?.cost ?? 1) >= 1);
+      if (card) {
+        const base = card.def.cost;
+        check(e.costOf(card) === base + 1,
+          'the FIRST Trick of the turn costs 1 more Nerve',
+          `${base} -> ${e.costOf(card)}`);
+        me.stats.cardsPlayedThisTurn = 1;
+        check(e.costOf(card) === base,
+          'and the second costs what it says on it',
+          `${base} -> ${e.costOf(card)}`);
+      } else {
+        check(false, 'a costed Trick in hand to price', 'none — check did NOT run');
+      }
+    }
+  }
+
+  head('Long Shadows');
+  {
+    const run = await fightIn(4242, 'long-shadows');
+    check(!!run?.combat, 'the fight is built', String(!!run?.combat));
+    if (run?.combat) {
+      const e = run.combat;
+      const me = e.players[0];
+      check(me.status('long-shadows') > 0, 'the wing is on every Kid',
+        e.players.map(pl => pl.status('long-shadows')).join('/'));
+      check(e.previewBlockValue(me, 10) === 5,
+        'Guard gained is halved', `10 -> ${e.previewBlockValue(me, 10)}`);
+      check(e.previewBlockValue(me, 7) === 3,
+        'and it rounds DOWN, so odd Guard loses the remainder',
+        `7 -> ${e.previewBlockValue(me, 7)}`);
+      const other = await fightIn(4242, null);
+      check(other?.combat
+        && other.combat.previewBlockValue(other.combat.players[0], 10) === 10,
+        'the same fight outside the wing gains all of it',
+        String(other?.combat && other.combat.previewBlockValue(other.combat.players[0], 10)));
+    }
+  }
+
+  head('The Pipes Rattle');
+  {
+    const plain = await fightIn(4242, null);
+    const noisy = await fightIn(4242, 'pipes');
+    check(!!plain?.combat && !!noisy?.combat, 'both fights are built');
+    if (plain?.combat && noisy?.combat) {
+      check(noisy.combat.enemies.length === plain.combat.enemies.length + 1,
+        'the noise brings one more creature',
+        `${plain.combat.enemies.length} -> ${noisy.combat.enemies.length}`);
+      /* A COPY of the smallest thing already there — the encounter's own roster
+         is the only list guaranteed to be region- and tier-appropriate. */
+      const smallest = Math.min(...plain.combat.enemies.map(en => en.maxHp));
+      const extra = noisy.combat.enemies[noisy.combat.enemies.length - 1];
+      check(extra.maxHp === smallest,
+        'and it is a copy of the SMALLEST one already in the room',
+        `${extra.name} at ${extra.maxHp}, smallest was ${smallest}`);
+    }
   }
 
   // ── the cues those rooms play ──────────────────────────────────────────
