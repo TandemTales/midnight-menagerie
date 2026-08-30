@@ -13,17 +13,15 @@ Don't read the design doc whole; it is carved into docs/design/. And read §8 of
 docs/STS2-REFERENCE.md before deciding what to work on — see below.
 
 STATE: branch dev, tree clean, everything pushed. Do not trust a HEAD hash
-written here — naming one dates this file the moment it is committed, which
-is how the last two handoffs went stale. Run `git log --oneline -5`. What is
-durable: the last commit to touch CODE is 7b52920, and everything after it is
-this document, so the battery numbers below still stand. Pushing to origin/dev
-was authorised on 2026-08-29; ask again if that is no longer live. Dev server
-does not survive a restart:
+written here — naming one dates this file the moment it is committed, which is
+how two handoffs in a row went stale. Run `git log --oneline -12`. Pushing to
+origin/dev was authorised on 2026-08-29; ask again if that is no longer live.
+Dev server does not survive a restart:
 
   python tools/devserver.py 8777
 
-EVERYTHING IS GREEN. Not "green except one" — every suite and every gate below
-was run at 7b52920.
+EVERYTHING IS GREEN, and the battery below was RUN on 2026-08-30 rather than
+copied forward. Not "green except one".
 
 ━━ THE ONE THING TO UNDERSTAND BEFORE YOU CHANGE ANYTHING ━━
 
@@ -54,33 +52,58 @@ trust the number it prints.** `tests/bus-names/check.py` printed "0 dead
 subscriptions" while blind to the file holding thirty of them, because its regex
 needed a literal `bus.on('x')` and audio.js subscribes through a local alias.
 
+**Its sibling, CONTRACTS 55: the id namespace is not what the player reads.**
+The Lights Are Out correctly gave itself its own status id, because Hush owns
+`unseen` and it does not stack — then correctly named it "Unseen", because that
+is what the wing's rule promises. Two locally right decisions put two statuses
+behind one word, on one glyph, with two unrelated break rules. **No single file
+was wrong.** The collision existed only where they met, on screen, which is the
+one place no unit test was pointed. `tests/status-names/` gates the class, and
+reads the REGISTRY rather than the source because statuses are declared in three
+shapes and the browser finds 268 where a regex finds 256.
+
+**And a screenshot is not optional.** On 2026-08-30 `tests/chrome` (27 checks),
+scene-css, css-tokens, seams and stdlib-shadow ALL passed while `select.js` was
+a syntax error and the screen rendered nothing at all. One suite caught it, as a
+30-second Playwright timeout that reads like a flake. A browser probe for
+pageerrors named it in one line:
+
+  python tools/shot.py <name> --scene select --wait 4
+
 ━━ THE BATTERY ━━
 
-ONE Playwright run at a time, always (CONTRACTS trap 7). Numbers are from
-7b52920; if one differs, that is the finding.
+ONE Playwright run at a time, always (CONTRACTS trap 7). Every number below was
+RUN on 2026-08-30, not copied forward; if one differs, that is the finding.
 
   python tests/cards/run.py               1468 cards, 0 errors, 0 warnings
   python tests/combat/run.py              689
   python tests/coop/run.py                645
-  python tests/net/run.py                 152
+  python tests/net/run.py                 158     ← +6, the turn barrier
   python tests/enemies/run.py             37 enemies, 0 errors
-  python tests/enemies/audit.py           2093 turns, 0 errors
+  python tests/enemies/audit.py           2085 turns, 0 errors
   python tests/run/run.py                 50 runs, 0 errors
   python tests/backpack/run.py            80 checks, 0 failures
   python tests/map/run.py                 30
-  python tests/vote/run.py                30      ← the route ballot
-  python tests/wings/run.py               35      ← the eight wing conditions
+  python tests/vote/run.py                35      ← the route ballot
+  python tests/wings/run.py               44      ← the eight wing conditions
+  python tests/haunt/run.py               21      ← the two Haunt ladders
   python tests/combat-scene/seam.py       22
   python tests/audio/run.py               46 cues, 0 errors
   python tests/chrome/run.py              27 checks, 0 errors
   python tests/cards-feel/run.py          exit 0
   python tests/critic-design/anchor.py    6/6 agree
 
-  NINE gates, each must stay at zero:
-    tests/seams/check.py          6178 call sites, 0 problems
+  TEN gates, each must stay at zero:
+    tests/seams/check.py          6189 call sites, 0 problems
     tests/bus-names/check.py      0 dead subscriptions, 0 advisory
     tests/audio/cues.py           46 cues, 44 reachable, 2 known-silent
+    tests/status-names/check.py   268 statuses, 0 unwaived name collisions
     scene-css · css-tokens · dup-keys · hook-names · turn-events · stdlib-shadow
+
+  `tests/enemies/audit.py` reads 2085 and not the 2093 an older note quotes.
+  That is the Butler's pool going 165 → 149: a shorter boss is fewer audited
+  turns. It is the expected consequence of a committed change, not drift —
+  which is exactly the kind of thing this list exists to let you tell apart.
 
   fourteen effect-asserting Companion suites:
     boggle 30 · mopsy 28 · wisp 25 · crumbula 25 · hush 17 · wink 16
@@ -92,48 +115,68 @@ ONE Playwright run at a time, always (CONTRACTS trap 7). Numbers are from
 
 ━━ WHAT IS OPEN ━━
 
-HANDOFF.md carries this in full. In short, and honestly: **there is no defect on
-the list.** What is left is one measurement, one machine problem, and decisions
-that are the designer's.
+HANDOFF.md carries this in full. **Every design call the designer was holding
+was delegated back on 2026-08-29 — "fix as you deem fit, overrule anything
+previously written" — and all of them are resolved.** What is left is blocked
+on a person or a machine, or is a decision with the reason already written down.
 
-1. **Party cost is 15–30 points from solo, and it may not be a problem.** Read
-   §8.3 of the reference first: StS2 scales enemy HP linearly and does not scale
-   damage either, and its verdict on our matching design is "Keep it; it needs
-   no defending". Nobody has a figure for how much HP an StS2 party finishes a
-   fight with, so the 15–30 has no source behind it.
-   **What DOES need doing: re-measure.** The sagging wing charges every Kid now
-   instead of one, and five wings that did nothing now do something. Party
-   economy has moved and no table in the repo reflects it.
-       python tests/critic-design/party-ledger.py --tier elite --region foyer
-2. **fps and the entry stall need a quiet machine.** Several perf claims in
-   older notes do not reproduce. `tests/chrome` read 52 on one battery and 61 on
-   another with no perf work in between.
-3. Steam P2P (designer; ends the no-build rule) and Crinkle's chapter (designer
-   review — it is a reconstruction by Claude, marked as such, unreviewed).
+1. **Steam P2P is APPROVED and BLOCKED, and only Josh can unblock it.** It needs
+   a **Steam App ID**, which needs a Steamworks partner account, a fee and a
+   registered app. Nothing in this repo can produce one, so do not start
+   `SteamTransport` expecting to finish it. `net/transport.js` is ready — five
+   members, two working implementations, "a third file rather than a rewrite".
+   It also ends the no-build rule, which is a real change to how the project is
+   developed and not a side effect to absorb quietly.
 
-**Design calls waiting on a person.** None is a defect; each is a place the code
-chose and a person should confirm:
+2. **The same-turn netcode race.** The cross-turn half is CLOSED — the turn
+   barrier and idle heartbeats were built 2026-08-29 and never needed the
+   transport. What remains is two seats acting at once with their inputs
+   crossing, and closing it needs ROLLBACK (rewind to the top of the turn and
+   replay; `_resumeCombat` and the digests are most of that machinery) or a
+   SEQUENCER stamping a global order, which reintroduces the host-dependency
+   §8.11 calls StS2's loudest weakness. Both are named in `_heldByBarrier`.
+   The transport decides the latency budget that picks between them, so this
+   genuinely waits on item 1.
 
-- **Two authored rules could not be carried as written.** Long Shadows read
-  "Guard is halved at the start of each of your turns" — Guard is already WIPED
-  there, so it is "Guard you GAIN is halved" now and mapgen's text was reworded
-  to match the code. The Lights Are Out read "2 Unseen"; `unseen` is Hush's, it
-  does not stack and its break rules live in his card code, so the wing uses its
-  own status displayed as "Unseen".
-- A fork with only one legal exit still opens a ballot and resolves instantly.
-- The 1.5 s beat before the party walks into a voted room is unplaytested.
+3. **Foyer elites still win 0% of the time — that is, the PARTY wins 100%.** At
+   every party size, against 83.3% solo. Pierce fixed what it was aimed at
+   (`landed` 52.6 → 65.7 at four Kids, `%blocked` stopped climbing) and did not
+   move that. Deciding it is a question about how deadly a Big Scare should be,
+   and it must NOT be answered by piling on until a bot starts losing —
+   CONTRACTS 47 is this project having already done exactly that once.
 
-**Two cues are known-silent and need something built first**, listed with their
-reasons in `tests/audio/cues.py`: `combat:crit` (there is no crit in this game —
-the only crit flag in the repo is the soundboard's own test payload) and
-`card:retain` (no retain event is emitted).
+4. **The standard tier rises the same way and the cause is probably different.**
+   `tests/coop/balance.py` reads +16 / +20 / +23 Courage left over solo. Pierce
+   on the two normals that had no party content at all barely moved it, which is
+   evidence rather than failure: five of six Foyer normals are single-target, so
+   with four Kids most of the party is never touched and "Courage left" is an
+   average over Kids who were never in danger. If that reading is right the
+   lever here is AoE — the OPPOSITE of the elite answer — and it should be
+   measured before it is built.
 
-**One netcode case is left and it needs the transport.** `session._pump` applies
-the log in order now, so anything arriving in the same turn of the event loop is
-sorted first. An input arriving in a LATER task cannot be put back in its place.
-That is harmless for room inputs — see the commutativity rule below — and
-reported as a desync for a PLAY or a SNACK. Closing it needs a turn barrier and
-idle heartbeats, which belongs with Steam P2P.
+5. **fps and the entry stall need a quiet machine.** `tests/chrome` read 52 on
+   one battery and 61 on another with no perf work in between. Unchanged.
+
+6. **Two cues are known-silent and need something built first**, with their
+   reasons in `tests/audio/cues.py`: `combat:crit` (there is no crit in this
+   game — the only crit flag in the repo is the soundboard's own test payload)
+   and `card:retain` (no retain event is emitted).
+
+7. **The 1.5 s vote beat needs a person watching.** It is already conditional
+   — `_walkAfterVote` waits only when the roulette actually settled a split, so
+   solo and unanimous parties never pay it — and 1.5 clears a MEASURED 1.4 s for
+   the announcement to vanish. Whether a beat that clears its floor is the right
+   LENGTH cannot be settled by argument.
+
+**Resolved on 2026-08-29/30, so you do not re-open them:** both authored wing
+rules (Long Shadows is "Guard you GAIN is halved" — the literal reading is
+backwards, not merely inert; The Lights Are Out's status is **Lurking** now, not
+"Unseen", which was Hush's word); the single-exit ballot (a door is not a fork);
+Crinkle's chapter (ACCEPTED — 90 Tricks named against 90 built, zero drift);
+the Butler (in both halves of his brief for the first time, 64.6% at 11.5
+turns); the Haunt ladder (two ladders, and it advances at all now — it never
+did); and the two remaining §8 levers, DECLINED with reasons in the reference
+rather than left reading as oversights.
 
 ━━ THINGS THAT WILL SAVE YOU A ROUND ━━
 
@@ -195,6 +238,11 @@ idle heartbeats, which belongs with Steam P2P.
 - Do not re-wire audio's dead bus names. `scenes/combat.js` plays thirteen of
   those cues directly, timed to its FX, and reviving the handlers would stack a
   second voice on every one. The note in `_wireBus` says so.
-- Do not redesign Crinkle, and do not start Steam P2P, without the designer.
+- Do not redesign Crinkle — his chapter is accepted, checked against the build.
+- Do not start Steam P2P until Josh has a Steam App ID; see item 1.
+- Do not tune the Butler or the Foyer elites by feel. Both were measured this
+  session and both have a committed before/after in `tests/critic-design/`.
+- Do not build AoE for the ELITE tier. The ledger's own note is that AoE is
+  added damage a party then blocks, and only pierce is kept — measured.
 
 Start by telling me what you'd do first and why.
