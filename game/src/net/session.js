@@ -109,7 +109,19 @@ const WIRE = Object.freeze({
   REJOIN: 'r',         // "I am back, send me everything from n"
   LOG: 'l',            // the answer to a REJOIN
   HELLO: 'h',
+  BEAT: 'b',           // "I am at (turn, seq) and nothing older is coming"
 });
+
+/**
+ * The inputs that DO NOT COMMUTE, and so are the only ones worth a barrier.
+ *
+ * Every room input acts on the sender's own Kid or adds to a shared counter,
+ * and `map.vote` writes one seat's slot in a ballot whose resolution sorts the
+ * seats itself — apply them in either order and both boards land in the same
+ * state. Gating them would buy nothing and would stall a reward screen behind
+ * a peer who is reading a Curiosity.
+ */
+const COMBAT_INPUT = new Set(['play', 'snack', 'end']);
 
 export class Session {
   /**
@@ -139,6 +151,26 @@ export class Session {
     /** Digests other peers reported, by `${turn}:${peerSeat}`. */
     this._digests = new Map();
 
+    /**
+     * How far each OTHER seat has promised it will not speak before, by seat.
+     *
+     * An input carries the promise implicitly: `seq` is monotonic per author,
+     * so hearing `(T, n)` from a seat means nothing older is still in flight
+     * from it. That is enough while a seat is ACTING and useless the moment it
+     * stops — a player staring at their hand sends nothing at all, and silence
+     * is indistinguishable from a packet still on the way. The beat is that
+     * same promise made out loud, which is the half a barrier cannot work
+     * without and the reason this was never buildable as "just a barrier".
+     */
+    this._horizon = new Map();
+    /** When the pump first held something, so a missing beat is visible. */
+    this._heldSince = 0;
+    this._heldWarned = false;
+    /** The turn our last beat announced, so a turn change beats immediately. */
+    this._beatTurn = -1;
+    this._beatMs = o.beatMs === undefined ? 250 : (o.beatMs | 0);
+    this._beatTimer = null;
+
     this.run = null;
     this.peers = new Set();
     this.divergedAt = null;
@@ -149,6 +181,13 @@ export class Session {
       this._offs.push(this.transport.onMessage((m, from) => this._onWire(m, from)));
       this._offs.push(this.transport.onPeer((p) => this._onPeer(p)));
       this.transport.send({ k: WIRE.HELLO, seat: this.seat, seed: this.seed });
+      this.beat();
+      /* The IDLE half. Acting beats for itself; this covers the peer who is
+         thinking, and it is what stops a barrier turning a long deliberation
+         into a freeze on somebody else's screen. */
+      if (this._beatMs > 0 && typeof setInterval === 'function') {
+        this._beatTimer = setInterval(() => this.beat(), this._beatMs);
+      }
     }
   }
 
@@ -223,16 +262,134 @@ export class Session {
   _pump() {
     this._chain = (this._chain || Promise.resolve()).then(async () => {
       while (this._applied < this.log.length) {
-        const msg = this.log[this._applied++];
+        const msg = this.log[this._applied];
+        if (this._heldByBarrier(msg)) { this._noteHold(msg); break; }
+        this._applied++;
         // A CHOICE is delivered out of band by `_accept`; it is in the log so a
         // rejoin replays it, and it must not be applied as an input here.
         if (msg.t === INPUT.CHOICE) continue;
         for (const fn of this._listeners.input) {
           try { await fn(msg); } catch (err) { console.error('[net] applying input', msg, err); }
         }
+        this._maybeBeat();
       }
+      if (this._applied >= this.log.length) { this._heldSince = 0; this._heldWarned = false; }
     });
     return this._chain;
+  }
+
+  /**
+   * Tell every peer where this client is.
+   *
+   * Safe to call as often as you like: it is a statement of position, carries
+   * no game state, never enters the log and is never replayed.
+   */
+  beat() {
+    if (!this.transport) return null;
+    this._beatTurn = this.turn();
+    const b = { k: WIRE.BEAT, seat: this.seat, turn: this._beatTurn, seq: this._seq };
+    this.transport.send(b);
+    return b;
+  }
+
+  /** Beat the moment the turn moves, so a barrier costs a message and not a
+   *  timer interval. The idle timer is for the case where nothing moves. */
+  _maybeBeat() {
+    if (this.transport && this.turn() !== this._beatTurn) this.beat();
+  }
+
+  /**
+   * Record how far a seat has promised not to speak before.
+   *
+   * Never moves a horizon BACKWARDS: beats and inputs race each other, and a
+   * beat that set out before an input but arrived after it would otherwise
+   * un-promise something already promised, which reopens the barrier under an
+   * input that has already been cleared to apply.
+   */
+  _note(seat, turn, seq) {
+    const s = seat | 0;
+    if (s === this.seat) return;
+    const t = turn | 0, q = seq | 0;
+    const h = this._horizon.get(s);
+    if (h && (h.turn > t || (h.turn === t && h.seq >= q))) return;
+    this._horizon.set(s, { turn: t, seq: q });
+  }
+
+  /**
+   * The lowest combat turn any other seat might still be issuing input for.
+   *
+   * A seat at turn 0 is NOT IN THIS FIGHT — it is on a map, in a shop, or has
+   * not started — and cannot be about to send a combat input for a turn it is
+   * not in, so it does not hold the barrier. A seat never heard from is the
+   * same case. Holding for either would freeze a two-Kid game the moment one
+   * of them opened a Curiosity, which is the failure a naive barrier ships.
+   */
+  _barrierTurn() {
+    let low = Infinity;
+    /* OUR OWN POSITION COUNTS. A client still in turn 1 that applies a peer's
+       turn 2 input has the identical bug mirrored: its own turn 1 inputs are
+       still to come and every one of them sorts before what it just applied.
+       It cannot deadlock on itself — our turn N inputs are never held by our
+       own turn N, so a seat can always finish the turn it is in and advance. */
+    const own = this.turn() | 0;
+    if (own >= 1) low = own;
+    for (const [s, h] of this._horizon) {
+      if (s === this.seat) continue;
+      if (h.turn >= 1 && h.turn < low) low = h.turn;
+    }
+    return low;
+  }
+
+  /**
+   * Whether an input must wait for the rest of the table.
+   *
+   * ── WHAT THIS CLOSES ───────────────────────────────────────────────────
+   *
+   * A turn T-1 input sorts before EVERY turn T input, whatever the seats are.
+   * So a client that reaches turn T while a peer is still acting in T-1 is
+   * GUARANTEED to receive that straggler late and guaranteed to apply it out
+   * of order — not a race that might happen, a divergence that must. That is
+   * the compounding case, and this closes it: no combat input for turn T is
+   * applied until every seat in the fight has reported reaching turn T.
+   *
+   * Note it gates this client's OWN input too. That is the cost and it is the
+   * point — a barrier one seat may walk through is not a barrier.
+   *
+   * ── WHAT IT DOES NOT ───────────────────────────────────────────────────
+   *
+   * The same-turn race, where two seats act at once and their inputs cross.
+   * The microtask pump already covers the common form (everything delivered in
+   * one turn of the event loop is sorted before any of it is applied), and
+   * what remains needs either ROLLBACK — rewind to the top of the turn and
+   * replay the log, which this codebase has the machinery for in
+   * `_resumeCombat` and the digests — or a SEQUENCER stamping a global order,
+   * which reintroduces exactly the host-dependency §8.11 calls StS2's loudest
+   * weakness. Neither is free, and the choice belongs with the transport that
+   * decides the latency budget. `_accept` still reports that case when it
+   * happens; it no longer reports the case above, because it can no longer
+   * occur.
+   */
+  _heldByBarrier(msg) {
+    if (!msg) return false;
+    if (this.absorbing) return false;              // settled history, replaying
+    if (this.seats <= 1) return false;             // nobody to wait for
+    if (!COMBAT_INPUT.has(msg.t)) return false;    // room inputs commute
+    const t = msg.turn | 0;
+    if (t < 1) return false;
+    return t > this._barrierTurn();
+  }
+
+  /** A barrier that never lifts is a freeze. Say so rather than hang quietly. */
+  _noteHold(msg) {
+    const now = (typeof performance === 'object' && performance.now)
+      ? performance.now() : Date.now();
+    if (!this._heldSince) { this._heldSince = now; return; }
+    if (this._heldWarned || now - this._heldSince < 5000) return;
+    this._heldWarned = true;
+    console.warn('[net] the turn barrier has held for 5s — a seat has stopped '
+      + 'beating, or is still in an earlier turn',
+      { waitingFor: msg.turn, barrier: this._barrierTurn(),
+        horizon: [...this._horizon].map(([s, h]) => `${s}@${h.turn}`) });
   }
 
   /** Resolves when every input accepted so far has finished being applied. */
@@ -287,6 +444,10 @@ export class Session {
         }
         break;
       case WIRE.INPUT: this._accept(m.i, from); break;
+      case WIRE.BEAT:
+        this._note(m.seat, m.turn, m.seq);
+        this._pump();          // a beat can release what the barrier was holding
+        break;
       case WIRE.DIGEST: this._checkDigest(m, from); break;
       case WIRE.REJOIN:
         if (this.host) this.transport?.send({ k: WIRE.LOG, to: from, log: this.log.slice(m.from | 0) });
@@ -332,6 +493,10 @@ export class Session {
   _accept(msg, from) {
     if (!msg) return;
     if (msg.seat === this.seat && from) return;   // our own, echoed: rule 2
+    /* An input is itself a promise: `seq` is monotonic per author, so nothing
+       older is still coming from that seat. Recorded before anything is
+       applied, so an input can release the barrier it is itself queued behind. */
+    this._note(msg.seat, msg.turn, msg.seq);
     const at = this._insertAt(msg);
     this.log.splice(at, 0, msg);
     /**
@@ -483,6 +648,7 @@ export class Session {
   get inSync() { return !this.divergedAt; }
 
   close() {
+    if (this._beatTimer) { clearInterval(this._beatTimer); this._beatTimer = null; }
     for (const off of this._offs) { try { off(); } catch { /* already gone */ } }
     this._offs.length = 0;
     for (const s of Object.values(this._listeners)) s.clear();

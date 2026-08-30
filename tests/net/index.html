@@ -1174,6 +1174,84 @@ try {
     check(run.deck.length === before + 1, 'which really went into the deck',
       `${before} -> ${run.deck.length}`);
   }
+  // ══ 19. THE TURN BARRIER, and the beat that makes one possible ═════════
+  /* A turn T-1 input sorts before EVERY turn T input, whatever the seats are.
+     So a client that reaches turn T while a peer is still acting in T-1 does
+     not merely RISK applying the straggler out of order, it is GUARANTEED to:
+     the cursor has already passed the slot the straggler belongs in. That is
+     the compounding case `_accept` could report and could not prevent.
+
+     The barrier holds turn-T combat input until every seat in the fight has
+     said it reached turn T. The BEAT is what lets a seat say so while it is
+     thinking rather than acting, which is why these two were always one job. */
+  {
+    const hub = new LoopbackHub({ async: true });
+    const applied = [];
+    const mk = (seat, id, turn) => {
+      const run = { combat: { turn }, localSeat: seat, session: null };
+      /* beatMs 0 kills the idle timer, so every beat below is one this test
+         asked for and the assertions are about the barrier rather than about
+         a race with an interval. */
+      const s = new Session({ transport: hub.peer(id), seat, seats: 2,
+                              seed: SEED, beatMs: 0 });
+      s.attach(run);
+      s.on('input', (m) => applied.push(`${seat}<-${m.seat}@${m.turn}${m.t}`));
+      return { s, run };
+    };
+    const A = mk(0, 'A', 1);
+    const B = mk(1, 'B', 1);
+    const settle = async () => {
+      await new Promise(r => setTimeout(r, 40));
+      await A.s.settled(); await B.s.settled();
+    };
+    A.s.beat(); B.s.beat();
+    await settle();
+
+    /* THE CURRENT TURN IS NEVER HELD. A barrier that gated the turn everybody
+       is in would serialise the simultaneous window, which is the one thing it
+       must not do — that window is the co-op mechanic (§8.2). */
+    applied.length = 0;
+    A.s.input({ t: INPUT.PLAY, pile: 'hand', index: 0 });
+    await settle();
+    check(applied.includes('0<-0@1play'),
+      'a play in the CURRENT turn is applied at once — the barrier does not '
+      + 'serialise the window', applied.join(' ') || 'nothing');
+
+    /* A reaches turn 2 first. B is still in turn 1 and may yet act there. */
+    applied.length = 0;
+    A.run.combat.turn = 2;
+    A.s.input({ t: INPUT.PLAY, pile: 'hand', index: 1 });
+    await settle();
+    check(!applied.some(x => x.startsWith('0<-')),
+      'a play in turn 2 is HELD on its own client while the other seat is '
+      + 'still in turn 1', applied.join(' ') || 'nothing applied');
+    check(A.s.log.length === 2,
+      'it is in the log — held, not dropped', String(A.s.log.length));
+    check(!applied.some(x => x.startsWith('1<-')),
+      'and HELD on B too, whose own turn-1 inputs would still sort before it',
+      applied.join(' ') || 'nothing applied');
+
+    /* B says it reached turn 2. No input, just the promise. */
+    B.run.combat.turn = 2;
+    B.s.beat();
+    await settle();
+    check(applied.includes('0<-0@2play'),
+      'the BEAT alone releases it — a promise from a silent seat is what the '
+      + 'barrier was always missing', applied.join(' ') || 'nothing');
+
+    /* Room inputs commute, so gating them would buy nothing and would stall a
+       reward screen behind a peer who is reading a Curiosity. */
+    applied.length = 0;
+    A.run.combat.turn = 5;
+    A.s.input({ t: INPUT.ROOM, act: 'reward-take', index: 0 });
+    await settle();
+    check(applied.some(x => x === '0<-0@5room'),
+      'a ROOM input is never held, however far ahead its turn is',
+      applied.join(' ') || 'nothing');
+
+    A.s.close(); B.s.close();
+  }
+
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }
