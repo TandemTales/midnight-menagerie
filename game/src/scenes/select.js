@@ -37,6 +37,7 @@ import { fitCardToSlot } from './_cardfit.js';
 import {
   itemById, defaultLoadout, loadoutSize, migrateLoadout, assertLoadout, SLOTS_BASE,
 } from '../data/backpack.js';
+import { HAUNTS } from '../data/haunts.js';
 
 const CSS_KIT  = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_SEL  = new URL('./select.css', import.meta.url).href;
@@ -504,14 +505,6 @@ function loadoutIsCustom(kidSlug) {
   return a !== b;
 }
 
-const HAUNTS = [
-  [0, 'Standard', 'The mansion as it is.'],
-  [1, 'Stirred', 'Enemies hit harder and have more Courage.'],
-  [2, 'Watchful', 'Curiosities turn dangerous.'],
-  [3, 'Awake', 'Bosses gain an additional ability.'],
-  [4, 'Hungry', 'Far more dangerous room combinations.'],
-  [5, 'Possessive', 'The house actively works against you.'],
-];
 
 const TYPE_LABEL = { attack: 'Attack', skill: 'Skill', power: 'Power' };
 
@@ -603,7 +596,11 @@ export class SelectScene extends Scene {
     this.freed = freedCompanions();
 
     this.state.seed = Number(params.seed) || (Date.now() % 0x7fffffff);
-    this.state.haunt = Math.max(0, Math.min(HAUNTS.length - 1, Number(params.haunt ?? Save?.data?.hauntLevel ?? 0)));
+    /* Through the accessor, and against the ladder this party size is on.
+       `_syncHaunt()` clamps again once the foot is built and on every party
+       size change; this is the opening value, not the last word. */
+    this.state.haunt = Math.max(0, Math.min(HAUNTS.length - 1,
+      Number(params.haunt ?? Save.hauntLevelFor(this.state.partySize || 1))));
 
     const root = this.root;
     root.innerHTML = '';

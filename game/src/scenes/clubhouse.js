@@ -26,6 +26,7 @@ import { pauseStageFor } from './_stage.js';
 import {
   BACKPACK_ITEMS, itemById, loadoutSize, assertLoadout, SLOTS_BASE,
 } from '../data/backpack.js';
+import { HAUNTS } from '../data/haunts.js';
 
 const CSS_KIT  = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_CLUB = new URL('./clubhouse.css', import.meta.url).href;
@@ -38,14 +39,6 @@ const CSS_CLUB = new URL('./clubhouse.css', import.meta.url).href;
    it saves is the loadout the next expedition genuinely starts with. */
 const BACKPACK_SLOTS = SLOTS_BASE;
 
-const HAUNTS = [
-  [0, 'Standard', 'The mansion as it is.'],
-  [1, 'Stirred', 'Enemies hit harder and have more Courage.'],
-  [2, 'Watchful', 'Curiosities turn dangerous.'],
-  [3, 'Awake', 'Bosses gain an additional ability.'],
-  [4, 'Hungry', 'Far more dangerous room combinations.'],
-  [5, 'Possessive', 'The house actively works against you.'],
-];
 
 /** Clues the board shows once the corresponding thing has happened. */
 const BOARD_CLUES = [
@@ -476,7 +469,11 @@ export class ClubhouseScene extends Scene {
     const row = el('div', 'haunt__row');
     row.setAttribute('role', 'radiogroup');
     row.setAttribute('aria-label', TERMS.ascension);
-    const maxH = Math.max(0, Number(Save?.data?.hauntLevel ?? 0));
+    /* The SOLO ladder. The Clubhouse is the single-player meta screen — a
+       party is assembled on the select screen, which shows the party ladder.
+       Read through the accessor either way, so no screen holds an opinion
+       about which field a ladder lives in. */
+    const maxH = Save.hauntLevelFor(1);
     for (const [lvl, name, desc] of HAUNTS) {
       const b = el('button', 'haunt__pip');
       b.type = 'button';

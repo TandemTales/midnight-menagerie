@@ -67,6 +67,47 @@ async def main():
         check(sizes == [1, 2, 3, 4],
               "the screen offers every party size the engine allows", str(sizes))
 
+        # ── The Haunt ladder a party is on is not the solo one ─────────────
+        #
+        # Asserted through the DOM because that is where the bug would live: the
+        # pips are built ONCE in `_renderFoot`, so a screen that reads the right
+        # field at render time and never again shows a party the soloist's
+        # unlocks for the rest of the session. Two deliberately different
+        # ladders make the two readings distinguishable — one ladder at 1 and
+        # one at 4 cannot both be a coincidence.
+        unlocked = ("() => [...document.querySelectorAll('.haunt__pip')]"
+                    ".filter(b => !b.disabled).map(b => b.dataset.haunt).join(',')")
+        await page.evaluate("""() => {
+            const raw = JSON.parse(localStorage.getItem('mm.save.v1') || '{}');
+            raw.hauntLevel = 1; raw.partyHauntLevel = 4;
+            localStorage.setItem('mm.save.v1', JSON.stringify(raw));
+        }""")
+        await page.reload(wait_until="load")
+        await page.wait_for_timeout(2500)
+
+        check(await page.evaluate(unlocked) == "0,1",
+              "a soloist sees the SOLO ladder", await page.evaluate(unlocked))
+        await page.click('.sel-pair__size[data-n="4"]')
+        await page.wait_for_timeout(300)
+        check(await page.evaluate(unlocked) == "0,1,2,3,4",
+              "and a party of four sees the PARTY ladder, live, without a reload",
+              await page.evaluate(unlocked))
+        await page.click('.sel-pair__size[data-n="1"]')
+        await page.wait_for_timeout(300)
+        check(await page.evaluate(unlocked) == "0,1",
+              "going back to one Kid re-locks what the party had unlocked",
+              await page.evaluate(unlocked))
+        # And the SELECTED level comes back down with it. Leaving it stranded at
+        # a party Haunt would start a solo run at a level nothing in that
+        # ladder's history says the player has earned.
+        chosen = await page.evaluate(
+            "() => [...document.querySelectorAll('.haunt__pip')]"
+            ".filter(b => b.getAttribute('aria-checked') === 'true')"
+            ".map(b => Number(b.dataset.haunt))[0] ?? -1")
+        check(chosen <= 1,
+              "and the CHOSEN Haunt is clamped down with it, not left stranded",
+              str(chosen))
+
         await page.click(f'.sel-pair__size[data-n="{want}"]')
         await page.wait_for_timeout(200)
         check(await page.eval_on_selector(f'.sel-pair__size[data-n="{want}"]',

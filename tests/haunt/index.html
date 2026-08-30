@@ -24,6 +24,7 @@
  * and then offer a soloist a fight nothing in their history says they can take.
  */
 import { Save, MAX_HAUNT } from '../../game/src/core/save.js';
+import { HAUNTS } from '../../game/src/data/haunts.js';
 import { Run } from '../../game/src/state/run.js';
 
 const passes = [], fails = [];
@@ -40,6 +41,25 @@ const head = (t) => { const h = document.createElement('h2'); h.textContent = t;
 const fresh = () => { Save.reset(); return Save.data; };
 
 async function main() {
+  head('The cap and the table agree');
+  {
+    /* `core/` imports nothing from `data/`, so `MAX_HAUNT` cannot be derived
+       from the HAUNTS table without breaking that layering — the number lives
+       in the save and the table lives in data, and THIS is what stops them
+       drifting. The table itself used to exist twice, byte-identical, in
+       clubhouse.js and select.js; it is one module now, but the cap is still a
+       separate number and a separate number is a drift risk until something
+       checks it. */
+    check(MAX_HAUNT === HAUNTS.length - 1,
+      'MAX_HAUNT is the last rung of the HAUNTS table',
+      `MAX_HAUNT ${MAX_HAUNT} vs table top ${HAUNTS.length - 1}`);
+    check(HAUNTS.every((row, i) => row[0] === i),
+      'and every row is indexed by its own level',
+      HAUNTS.map(r => r[0]).join(','));
+    check(HAUNTS.every(r => typeof r[1] === 'string' && r[1] && typeof r[2] === 'string' && r[2]),
+      'every rung has a name and a description for the pips to print');
+  }
+
   head('Two ladders, not one');
   {
     const d = fresh();
