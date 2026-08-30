@@ -1401,6 +1401,9 @@ export class MapScene extends Scene {
    * than dressed up.  (It did not, once — see the note over @keyframes mm-wipe.)
    */
   _drawOn() {
+    // The survey riffling open. `world:blueprint-unfold` was authored for
+    // exactly this moment and nothing had ever asked for it.
+    this.ctx.audio?.play?.('world:blueprint-unfold');
     const scr = this.el.screen;
     scr.classList.remove('is-drawn');
     // Armed: the sheet is blank and the marks are clipped away, but nothing is

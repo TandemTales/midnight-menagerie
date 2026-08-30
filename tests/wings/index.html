@@ -1,0 +1,220 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Wing conditions — which of the eight actually do anything</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+  .gap { color: #f8c96b; }
+</style>
+<h1>Wing conditions</h1>
+<div id="out"></div>
+<script type="module">
+/**
+ * `state/mapgen.js` HAZARDS declares eight wing conditions. Every blueprint
+ * places two to four of them, `scenes/map.js` draws the marked area, names the
+ * wing in the footer, lists it in the legend and shows its `rule` text in the
+ * hover card.
+ *
+ * **On 2026-08-29 only two of the eight did anything at all.** A repo-wide
+ * search for each id found references in `state/mapgen.js` and nowhere else,
+ * for six of them. The player is told "Guard is halved at the start of each of
+ * your turns while you are inside the marked area" and nothing halves anything.
+ *
+ * This suite exists to (a) assert the ones that ARE implemented actually work,
+ * and (b) keep the list of which is which HONEST. The manifest below is
+ * asserted against a repo-wide search, so implementing one of the five without
+ * updating this file fails, and so does silently losing one of the three.
+ */
+import { Run } from '../../game/src/state/run.js';
+import { HAZARDS } from '../../game/src/state/mapgen.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => {
+  (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+  const d = document.createElement('div');
+  d.className = ok ? 'pass' : 'fail';
+  d.textContent = (ok ? 'PASS  ' : 'FAIL  ') + what + (detail ? ` — ${detail}` : '');
+  out.appendChild(d);
+};
+const head = (t) => { const h = document.createElement('h2'); h.textContent = t; out.appendChild(h); };
+const note = (t) => { const d = document.createElement('div'); d.className = 'gap'; d.textContent = t; out.appendChild(d); };
+
+/**
+ * What is actually wired, and where. Keep this true.
+ *
+ * The five `null`s are not a to-do list this file invented — they are what a
+ * search for each id returns today: mapgen and nothing else. Four of them need
+ * engine support that does not exist (`chill` is not a status; nothing hides an
+ * intent; nothing adds an enemy at build time; nothing halves Guard per turn).
+ */
+const WIRED = {
+  'sagging':      'state/run.js enterNode — every living Kid pays 3 Courage',
+  'paw-prints':   'state/run.js enterNode — one shared Clue',
+  'moonlit':      'state/run.js enterNode — leaving the wing restores 8 to each Kid',
+  'lights-out':   null,
+  'dust-sheets':  null,
+  'cold-draught': null,
+  'pipes':        null,
+  'long-shadows': null,
+};
+
+const PARTY = [{ companion: 'marmalade', kid: 'maya' },
+               { companion: 'bones', kid: 'eli' }];
+
+function atTheDoor(seed) {
+  const run = Run.mock({ seed, kids: PARTY });
+  run.currentNodeId = null; run.pathIds = []; run.visitedIds = [];
+  run.pendingVote = null;
+  for (const n of run.map.nodes) n.visited = false;
+  return run;
+}
+const stamp = (run, id, hazard) => {
+  const n = run.nodeById(id);
+  n.payload = { ...(n.payload || {}), hazard };
+  return n;
+};
+
+async function main() {
+
+  // ── the manifest ───────────────────────────────────────────────────────
+  head('Eight wings declared, and what each one does');
+  const declared = HAZARDS.map(h => h.id).sort();
+  check(declared.join(',') === Object.keys(WIRED).sort().join(','),
+    'this file knows about exactly the wings mapgen declares',
+    declared.join(','));
+
+  const live = Object.entries(WIRED).filter(([, v]) => v).map(([k]) => k);
+  const dead = Object.entries(WIRED).filter(([, v]) => !v).map(([k]) => k);
+  check(live.length === 3, 'three of the eight are implemented', live.join(', '));
+  note(`   still doing nothing: ${dead.join(', ')} — each is drawn on the sheet, `
+     + `named in the footer and has its rule in the hover card`);
+  for (const id of dead) {
+    const h = HAZARDS.find(x => x.id === id);
+    note(`      ${h.name}: "${h.rule}"`);
+  }
+
+  // ── sagging ────────────────────────────────────────────────────────────
+  head('The Floor Sags');
+  {
+    const run = atTheDoor(4242);
+    const to = run.legalNextIds()[0];
+    stamp(run, to, 'sagging');
+    const before = run.kids.map(k => k.courage);
+    await run.enterNode(to);
+    const after = run.kids.map(k => k.courage);
+    check(after.every((c, i) => c === before[i] - 3),
+      'EVERY Kid who walks in pays 3 — "do not crowd"',
+      `${before.join('/')} -> ${after.join('/')}`);
+    /* It used to charge `this.local`, which is whoever the screen was showing.
+       Once the route became a vote that was the Kid who voted LAST, and on a
+       wire each client charged a DIFFERENT Kid — a desync nothing reported. */
+    check(run.localSeat === 0,
+      'and the blueprint has handed the next room to the first Kid',
+      String(run.localSeat));
+  }
+
+  // ── paw-prints ─────────────────────────────────────────────────────────
+  head('Fresh Paw Prints');
+  {
+    const run = atTheDoor(4242);
+    const to = run.legalNextIds()[0];
+    stamp(run, to, 'paw-prints');
+    /* NOT `before + 1`. `addClues` applies `flags.clueBonus`, which the mock's
+       Keepsakes supply, so the wing pays 2 here — the first version of this
+       check asserted the literal 1 and failed on the run layer working. What
+       the wing must do is grant it ONCE, so it is measured against one direct
+       `addClues(1)` on an identical run rather than against a number. */
+    const yardstick = atTheDoor(4242);
+    const y0 = yardstick.cluesFound;
+    yardstick.addClues(1);
+    const oneGrant = yardstick.cluesFound - y0;
+    const before = run.cluesFound;
+    await run.enterNode(to);
+    check(run.cluesFound === before + oneGrant,
+      'one Clue, ONCE — Clues are shared, not per Kid',
+      `${before} -> ${run.cluesFound}, one grant is ${oneGrant}`);
+  }
+
+  // ── moonlit ────────────────────────────────────────────────────────────
+  head('Moonlit Rooms');
+  {
+    const run = atTheDoor(4242);
+    const inWing = run.legalNextIds()[0];
+    stamp(run, inWing, 'moonlit');
+    await run.enterNode(inWing);
+    for (const k of run.kids) k.courage = Math.max(1, k.maxCourage - 20);
+    const before = run.kids.map(k => k.courage);
+
+    const onward = run.legalNextIds()[0];
+    stamp(run, onward, null);
+    await run.enterNode(onward);
+    const after = run.kids.map(k => k.courage);
+    check(after.every((c, i) => c === before[i] + 8),
+      'LEAVING the wing restores 8 to every Kid',
+      `${before.join('/')} -> ${after.join('/')}`);
+  }
+  {
+    const run = atTheDoor(4242);
+    const a = run.legalNextIds()[0];
+    stamp(run, a, 'moonlit');
+    await run.enterNode(a);
+    for (const k of run.kids) k.courage = Math.max(1, k.maxCourage - 20);
+    const before = run.kids.map(k => k.courage);
+    const b = run.legalNextIds()[0];
+    stamp(run, b, 'moonlit');
+    await run.enterNode(b);
+    check(run.kids.every((k, i) => k.courage === before[i]),
+      'and moving WITHIN it pays nothing — it is leaving that is worth 8',
+      `${before.join('/')} -> ${run.kids.map(k => k.courage).join('/')}`);
+  }
+  {
+    const run = atTheDoor(4242);
+    const a = run.legalNextIds()[0];
+    stamp(run, a, 'moonlit');
+    await run.enterNode(a);
+    // `Run.mock` starts the Kids part-way down, so they have to be topped up
+    // deliberately — the first version of this check assumed "entered" meant
+    // "full" and was measuring nothing.
+    for (const k of run.kids) k.courage = k.maxCourage;
+    const full = run.kids.map(k => k.courage);
+    const b = run.legalNextIds()[0];
+    stamp(run, b, null);
+    await run.enterNode(b);
+    check(run.kids.every((k, i) => k.courage === full[i] && k.courage <= k.maxCourage),
+      'a Kid already at full Courage is not pushed over their maximum',
+      run.kids.map(k => `${k.courage}/${k.maxCourage}`).join(' '));
+  }
+
+  // ── the cues those rooms play ──────────────────────────────────────────
+  head('Sounds that had no caller');
+  {
+    const played = [];
+    const run = atTheDoor(77);
+    run.attach({ audio: { play: (id) => played.push(id),
+                          stinger: (id) => played.push('sting/' + id) } });
+    run.addLostThings(25);
+    check(played.includes('world:coin'), 'gaining Lost Things rings');
+    const n = played.filter(x => x === 'world:coin').length;
+    run.addLostThings(-5);
+    check(played.filter(x => x === 'world:coin').length === n,
+      'and SPENDING them does not — a coin sound is for getting paid');
+    const mendable = run.local.deck.find(c => !c.upgraded);
+    if (mendable) run.upgradeCard(mendable.uid);
+    check(played.includes('card:upgrade'), 'a mended Trick sounds mended');
+    run.rescueCompanion('pipkin');
+    check(played.includes('sting/sting:rescue'),
+      'and a Companion coming home gets its sting — the whole point of the game, '
+      + 'silent until now');
+  }
+
+  window.__RESULT = { passes, fails, passed: passes.length, failed: fails.length };
+  window.__DONE = true;
+}
+
+main().catch((e) => {
+  check(false, 'THREW', String(e && e.stack || e));
+  window.__RESULT = { passes, fails, passed: passes.length, failed: fails.length };
+  window.__DONE = true;
+});
+</script>

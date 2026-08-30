@@ -586,6 +586,7 @@ export class Run {
     if (!def?.upgrade) return null;      // not every Trick has a + form
     c.upgraded = true;
     bus.emit('run:deck', { action: 'upgrade', card: c, id: c.id });
+    this.ctx?.audio?.play?.('card:upgrade');   // in the bank since the sound pass, never called
     this.save();
     return c;
   }
@@ -635,6 +636,11 @@ export class Run {
     const mul = raw ? 1 : this.flags.lostThingsMul;
     const amount = Math.round(n > 0 ? n * mul : n);
     this.lostThings = Math.max(0, this.lostThings + amount);
+    // `world:coin` has been in the bank, tuned, since the sound pass, with no
+    // caller: the only thing that would have played it was a `on('gold')` bus
+    // handler listening for a name nothing emits. Gains only — spending is not
+    // a coin sound.
+    if (amount > 0) this.ctx?.audio?.play?.('world:coin');
     bus.emit('run:lostThings', { delta: amount, total: this.lostThings });
     this.save();
     return amount;
@@ -943,6 +949,10 @@ export class Run {
     // See `voteNode`: a null `currentNodeId` is a DOORWAY, not a wildcard.
     if (!this.isLegal(nodeId)) return null;
 
+    // Captured BEFORE `currentNodeId` moves — the moonlit boon below pays on
+    // the way OUT of its wing, so it needs the room the party is leaving.
+    const leaving = this.nodeById(this.currentNodeId);
+
     this._roomDone = false;
     this._markEntered(nodeId);
     if (this.currentNodeId && !this.pathIds.includes(this.currentNodeId)) this.pathIds.push(this.currentNodeId);
@@ -967,6 +977,27 @@ export class Run {
      * sagged under whoever clicked last.
      */
     this.resetSeat();
+
+    /**
+     * "Moonlit Rooms: moonlight through the roof lights. LEAVING the marked
+     * area restores 8 Courage."
+     *
+     * mapgen places exactly one boon wing per blueprint and this is it. It was
+     * drawn on the sheet, named in the footer, listed in the legend and
+     * described in its own hover card — and implemented nowhere, along with
+     * five of the six hazards. Every Kid is restored, for the same reason
+     * every Kid pays for the sagging floor: the wing is a property of the
+     * ROOMS, not of whoever is holding the controller.
+     *
+     * `leaving` is captured at the top of this method, because by here
+     * `currentNodeId` is already the room being ENTERED — which is how the
+     * first version of this silently paid out nothing at all.
+     */
+    if (leaving?.payload?.hazard === 'moonlit' && node.payload?.hazard !== 'moonlit') {
+      for (let i = 0; i < this.kids.length; i++) {
+        if (this.kids[i].courage > 0) this.asSeat(i, () => this.heal(8));
+      }
+    }
 
     // Hazard wings bite on entry (mapgen HAZARDS).
     //
@@ -1638,6 +1669,7 @@ export class Run {
 
   /** A treasure room: one Keepsake, no fight. */
   _prepareTreasure(node) {
+    this.ctx?.audio?.play?.('world:treasure');
     const rng = this.fork(`treasure:${node.id}`);
     const owned = this.ownedKeepsakeIds();
     const k = rollKeepsake(rng, { owned, rarity: rollKeepsakeRarity(rng, this.flags.luck) });
@@ -2169,6 +2201,10 @@ export class Run {
     this.companionsFreed.push(slug);
     this.addClues(2);
     if (this.flags.maxHpOnMilestone) this.addMaxCourage(this.flags.maxHpOnMilestone);
+    // The whole emotional beat of the game, and it was silent: `sting:rescue`
+    // is a rising five-note phrase nothing has ever played. `world:rescue-chime`
+    // is separate and already plays from scenes/combat.js.
+    this.ctx?.audio?.stinger?.('sting:rescue');
     bus.emit('run:rescue', { companion: slug });
     this.save();
     return true;
