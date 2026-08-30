@@ -242,6 +242,15 @@ Enemy defensive buffs scale on their own separate curves:
 > - Their curve **rises by act** (×1.1 → ×1.2 → ×1.3 for the final boss). Ours is flat.
 >   A Nursery / Sleeping-Quarters ramp is an untried lever, and it is the one that would
 >   most directly address the Butler being "not dangerous, just long".
+>   **DECLINED FOR NOW, 2026-08-29 — it cannot be validated yet.** A by-act curve is a
+>   claim about the SHAPE across acts, and one region has enemies built: the table lists
+>   seventeen. Fitting a ramp against a single act would tune the Foyer and call it a
+>   curve, which is how this project got `partyHp: [1, 2.2, 2.8, 3.2]` fitted to a broken
+>   bot (CONTRACTS 47). It also stopped being the answer to the Butler on the same day —
+>   he is in both halves of his brief now (8–12 turns, 45–65%) with no ramp at all, via a
+>   pool cut taken entirely out of phase one plus harsher phase-two Reprimands. Revisit
+>   when the Nursery's enemies are measurable against the Foyer's, which is the first
+>   point at which "rising" describes two things rather than one.
 > - **The curve is LINEAR in party size.** `ActScaling` is a function of the act ALONE, not
 >   of the player count, so per-player HP is a flat 110% in Act 1 whether there are two
 >   players or four: 2p ×2.2, 3p ×3.3, 4p ×4.4. It does not get proportionally harder as
@@ -397,9 +406,25 @@ space too.
   everyone.
 - Neow's offers change: Silver Crucible and Winged Boots are replaced by Massive Scroll.
 
-> **For us:** shortening the route in co-op is a pacing lever we have never considered. Two
-> Kids taking turns at one screen makes a wing take roughly twice as long in wall-clock
-> time, which is exactly the problem this solves.
+> **For us — MEASURED AND DECLINED, 2026-08-29, because the lever is aimed at the wrong
+> axis.** The pacing problem is real and now has a number: `tests/coop/playthrough.py`
+> walks ONE scuffle room with two Kids and reports **5 screen handoffs**. A Foyer wing is
+> `rows - 1` = 12 rooms plus the boss, so a two-Kid wing costs on the order of 60 passes,
+> and four Kids roughly doubles it. That is worth taking seriously.
+>
+> But it is not a PARTY-SIZE problem, it is a SHARED-SCREEN problem, and the two only look
+> alike today because pass-and-play is the only co-op we have. StS2's Golden Compass
+> shortens an act whose length is inherent — everyone is playing at once and it simply
+> takes a long time. Ours is the handoff ceremony, and `shouldHandOff()` already returns
+> false the moment `run.session.remote` is true, so **the transport deletes this problem
+> rather than mitigating it**. Shortening the route by party size would permanently remove
+> rooms, rewards and Companion rescues from the game to work around a cost that only
+> exists offline — and would weaken the party, which the elite ledger says is already the
+> side with too much slack.
+>
+> If a shortening is ever wanted, scope it to `shouldHandOff()` being true, not to party
+> size. That is a different change from the one this section proposed and the reason is
+> the useful part.
 
 ### 8.11 Where StS2 co-op is actually weak — the opening
 
@@ -437,8 +462,8 @@ Their loudest technical complaint, by a wide margin, is **disconnects**:
 | Teammate cursor / hovering hand | **Behind, transport-blocked** |
 | Map drawing markers | **Absent** — needs a wire to be worth anything |
 | Relic contention | **N/A until the wire** — no shared offer exists to contend over |
-| Scaling curve rising by act | **Absent** — ours is flat; untried lever |
-| Co-op acts shortened | **Absent** — untried pacing lever |
+| Scaling curve rising by act | **Declined for now, 2026-08-29** — cannot be validated against the one region whose enemies are built; see §8.3 |
+| Co-op acts shortened | **Declined 2026-08-29** — measured at 5 handoffs/room; it is a shared-screen cost the transport removes, not a party-size one (§8.10) |
 | Haunt / Ascension ladder in a party | **Answered 2026-08-29** — separate ladder, credited to everyone; "gated by the weakest" needs the lobby (§8.1) |
 | Reconnection after a drop | **Ahead on foundation, behind on product** — we have the lockstep machinery and no wire; they have the wire and no rejoin |
 

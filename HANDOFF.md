@@ -90,6 +90,30 @@ SHARED-WRITE. New suite: `tests/taffy/`.
    says a party eats the increase. Pierce is what survives four Kids' Guard.
    **Do not build AoE for this before reading §8.3 and that note.**
 
+   **FIXED, same day, by following that note instead of this list.** A search
+   found ONE `pierceFn` in the whole of `foyer.js` — the Grand Coatcheck's. The
+   Unwelcome Guest and the House Bell had none, and the Bell's MIDNIGHT TOLL
+   was already `partyTarget: 'all'`, which is the finding in miniature: being
+   the AoE was exactly what was not enough. Both now pierce in a party, each on
+   a tell that already existed. Re-measured, four Kids:
+
+   | | landed | %blocked | left% | content buys |
+   |---|---|---|---|---|
+   | before | 52.6 | 68.3 | 80.8 | +1.2 |
+   | after | **65.7** | **60.3** | 77.0 | **+5.0** |
+
+   `%blocked` no longer climbs with party size — 57.6 / 59.8 / 62.8 / 60.3 —
+   which was the diagnostic. Solo is byte-identical across both runs, which is
+   the check that `partySize() > 1` really gates it.
+
+   **What is still open here:** `win%` is still 100 at every party size. Moving
+   that is a question about how deadly a Big Scare should be, and it must not
+   be answered by piling on until a BOT starts losing — CONTRACTS 47 is this
+   project having already done exactly that once. Also measured and left alone:
+   `tests/coop/balance.py` shows the STANDARD tier rising the same way, Courage
+   left +16 / +21 / +24 over solo. Same shape, same likely lever, six enemies
+   rather than two.
+
    One number in the table is NOT evidence and is left out above on purpose:
    `partyGuard` reads 63.8 / 209.3 / 321.8 / 757.9, an 11.9x jump at 4p that no
    count of seats and turns explains. It is Guard GAINED, not Guard that
@@ -105,10 +129,27 @@ SHARED-WRITE. New suite: `tests/taffy/`.
    account** — an account, a fee and a registered app. Nothing in this repo can
    produce one. `net/transport.js` is ready for it: five members, two working
    implementations, "a third file rather than a rewrite".
-   **What is NOT blocked, and is the thing to build next:** the turn barrier and
-   idle heartbeats. They close the last netcode case below, they are protocol
-   rather than transport, and `LoopbackHub({ async: true })` already exists to
-   test them against without a wire, a shell or an App ID.
+   **The turn barrier and idle heartbeats are BUILT, 2026-08-29** — they were
+   the part that never needed the transport. A turn T-1 input sorts before
+   every turn T input whatever the seats are, so a client that reached turn T
+   while a peer was still in T-1 was GUARANTEED to apply the straggler out of
+   order, not merely at risk of it. No combat input for turn T is applied now
+   until every seat in the fight has reported reaching turn T, and a beat is
+   how a seat that is THINKING reports it — which is why these were always one
+   job rather than two. It gates this client's own input too; a barrier one
+   seat may walk through is not a barrier. `tests/net` 152 → 158.
+
+   It deliberately does not gate the CURRENT turn (that would serialise the
+   simultaneous window §8.2 is built on), does not gate ROOM inputs (they
+   commute), and is not held by a seat at turn 0 (it is not in the fight).
+
+   **What is left of that case:** the SAME-turn race, two seats acting at once
+   with their inputs crossing. Closing it needs ROLLBACK — rewind to the top of
+   the turn and replay, and `_resumeCombat` plus the digests are most of that
+   machinery already — or a SEQUENCER stamping a global order, which
+   reintroduces exactly the host-dependency §8.11 calls StS2's loudest
+   weakness. That choice belongs with the transport that sets the latency
+   budget. It is named in `_heldByBarrier` rather than left to be rediscovered.
 
 **Design calls — ALL RESOLVED 2026-08-29.** The designer took every one of these
 back with "fix as you deem fit, overrule anything previously written":
@@ -138,6 +179,32 @@ back with "fix as you deem fit, overrule anything previously written":
   the code's. Two absences are now recorded in the chapter itself — no
   per-mechanic "what stops this being universally optimal?" audit, and one-line
   pool summaries instead of full card text.
+- **The Butler is in BOTH halves of his brief for the first time** — 64.6% at
+  11.5 turns, median 11, against a brief of 45–65% and 8–12. The sweep is what
+  settled it: no pool value satisfies both at once, because cutting the pool
+  shortens him by making him SAFER and "not dangerous, he is long" is a
+  complaint about both numbers. So 165 → 149 with the 16 taken out of PHASE ONE
+  only (`BASE_HP` pinned to the new pool, so `phaseAt` cannot shrink the
+  dangerous half with it), and every phase-TWO Reprimand raised. Phase one is
+  untouched, so the fight he opens with is the fight he always opened with.
+- **The Haunt ladder has two ladders and, for the first time, moves at all.**
+  §8.1's question was never answered here — and building the answer found that
+  `hauntLevel` was written by its own default, read by two pickers, and
+  incremented by nothing, so every save sat on Haunt 0 permanently and the
+  whole ascension analogue was inert. Solo and party climb separately, because
+  a Haunt four Kids cleared is no evidence one Kid can clear it. "Credited to
+  everyone" falls out; "gated by the weakest" needs the lobby and
+  `Save.hauntLevelFor` is the seam. `tests/haunt/` is 18 checks.
+- **The two remaining §8 levers are DECLINED, with reasons in the reference.**
+  Shortening co-op acts: measured at 5 handoffs for one room with two Kids, so
+  ~60 per wing — real, but it is a SHARED-SCREEN cost that `shouldHandOff()`
+  deletes the moment a transport exists, not a party-size one. Shortening by
+  party size would permanently remove rooms and rewards to work around an
+  offline-only cost, and would weaken the side the ledger says has slack. A
+  rising-by-act curve: cannot be validated against the one region whose enemies
+  are built, and fitting a curve to a single act is how `partyHp` came to be
+  fitted to a broken bot. Both are recorded as decisions rather than left
+  reading as oversights.
 
 **Known-silent, each needing something built first.** `tests/audio/cues.py`
 carries the list and fails if one starts working and stays on it:
