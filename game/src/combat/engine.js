@@ -2022,6 +2022,40 @@ export class CombatEngine {
       },
       despawn: (a) => e.removeEntity(a || enemy, 'despawn'),
 
+      /* ── taking a Trick out of the fight, temporarily ────────────────────
+       * The Kitchens' Pantry Mimic swallows the top of your draw pile and
+       * gives it back when it dies. That is the softest deck attack in the
+       * game and it needed a seam that did not exist: enemies could ADD cards
+       * and could not touch the ones already there.
+       *
+       * LIMBO, not exhaust. The exhaust pile is "out of this Scuffle" and the
+       * player can see it in the Vanished viewer; a swallowed card is coming
+       * back and must not appear there. Limbo is the engine's existing staging
+       * pile for a card that is mid-flight and belongs to nobody.
+       *
+       * Nothing here touches `run.deck`, so a fight that ends with a card
+       * still swallowed costs the player nothing: the next Scuffle builds its
+       * piles from the run's deck again. That is why there is no
+       * combat-end restore — it would be a no-op with a comment on it.
+       */
+      takeFromDraw: (which = 'top') => {
+        const seat = aim || e.current;
+        const draw = seat.piles.draw;
+        if (!draw.length) return null;
+        const card = which === 'bottom' ? draw[draw.length - 1] : draw[0];
+        seat.piles.move(card, Pile.LIMBO, { reason: enemy.id });
+        return { uid: card.uid, id: card.id, name: card.name };
+      },
+      /** Put a taken Trick back. Accepts the object `takeFromDraw` returned, or a uid. */
+      returnToHand: (ref) => {
+        const uid = (ref && ref.uid) || ref;
+        const card = e.card(uid);
+        if (!card) return false;
+        const seat = e.seatOfCard(card) || aim || e.current;
+        seat.piles.move(card, Pile.HAND, { reason: enemy.id });
+        return true;
+      },
+
       // House Rules
       announceRule: (rule) => e.announceRule(rule, enemy.id),
       clearRules: (sourceId) => e.clearRules(sourceId ?? enemy.id),

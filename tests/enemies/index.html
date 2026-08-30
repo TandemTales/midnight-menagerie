@@ -12,6 +12,11 @@
 import { Intent } from '../../game/src/data/schema.js';
 import { RNG } from '../../game/src/core/rng.js';
 import { ENEMIES, ENEMY_LIST, getEnemy, ENEMY_STATUSES, STATUS_TRICK_DEFS } from '../../game/src/data/enemies/index.js';
+import { STATUS_CARDS, CURSE_CARDS } from '../../game/src/data/neutral.js';
+/* An enemy may hand the player any status card, not only the two that ship
+   inside the enemy library. Sticky lives in neutral.js with the other twelve
+   because it is a card, so the known set is both lists. */
+const KNOWN_CARDS = new Set([...STATUS_TRICK_DEFS, ...STATUS_CARDS, ...CURSE_CARDS].map(d => d.id));
 import * as LIB from '../../game/src/data/enemies/_lib.js';
 import {
   encountersFor, rollEncounter, buildEncounter, ENCOUNTER_LIST, REGION_RULES, scufflePool,
@@ -58,6 +63,13 @@ class MockCombat {
     this.statusLog = [];
     this.player = { id: 'player', name: 'Kid', hp: 80, maxHp: 80, block: 0, statuses: {}, damageTakenThisTurn: 0 };
     this.discard = [];
+    // Enough of a deck for the Kitchens' Pantry Mimic to steal from.
+    this.draw = [{ uid: 'd1', id: 'test/one', name: 'One' },
+                 { uid: 'd2', id: 'test/two', name: 'Two' },
+                 { uid: 'd3', id: 'test/three', name: 'Three' }];
+    this.hand = [];
+    this.limbo = [];
+    this.said = [];
     this.actors = defs.map(d => makeActor(d, opts.hp?.[d.id] ?? d.hp[0]));
     if (opts.haunt) {
       for (const a of this.actors) {
@@ -136,11 +148,38 @@ class MockCombat {
       count: (id, a) => ((a || actor).statuses[id] || 0),
       has: (id, a) => !!((a || actor).statuses[id]),
       addCard: (cardId, pile) => {
-        if (!STATUS_TRICK_DEFS.some(d => d.id === cardId)) self.unknownCard(cardId);
+        if (!KNOWN_CARDS.has(cardId)) self.unknownCard(cardId);
         self.discard.push({ id: cardId, pile: pile || 'discard' });
       },
       summon: (enemyId, o = {}) => self.summon(actor, enemyId, o),
       despawn: (a) => { a.alive = false; a.despawned = true; },
+      // Flavour narration. Recorded, not rendered: the enemy defs call it
+      // unguarded because `say` IS on the real enemy ctx, and hiding a
+      // contract API behind `?.` is what tests/seams/check.py exists to catch.
+      say: (text, tone) => self.said.push({ text, tone }),
+      /**
+       * A draw pile, only as real as it needs to be.
+       *
+       * The Kitchens' Pantry Mimic takes the top Trick out of the fight and
+       * gives it back when it dies. Guarding that call with `?.` in the enemy
+       * def would have made this suite pass while never once running the
+       * mechanic — the CONTRACTS 54 class, inside a test file. So the pile is
+       * three fake Tricks and the two calls move them between two arrays,
+       * which is enough to prove the take happens, happens once, and returns.
+       */
+      takeFromDraw: (which = 'top') => {
+        if (!self.draw.length) return null;
+        const card = which === 'bottom' ? self.draw.pop() : self.draw.shift();
+        self.limbo.push(card);
+        return card;
+      },
+      returnToHand: (ref) => {
+        const uid = (ref && ref.uid) || ref;
+        const i = self.limbo.findIndex(x => x.uid === uid);
+        if (i < 0) return false;
+        self.hand.push(self.limbo.splice(i, 1)[0]);
+        return true;
+      },
       /**
        * Powers and ad-hoc hooks are RECORDED, not simulated.
        *

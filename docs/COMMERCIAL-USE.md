@@ -4,8 +4,9 @@ Audited **2026-08-30**. Every claim here was measured against the files in this
 repo, not taken from a summary. Where something could not be established from the
 repo, it says so rather than guessing.
 
-**One item can stop the launch and only the owner can settle it: [the Suno
-subscription question](#the-one-that-can-stop-the-launch).**
+**RESOLVED 2026-08-30: the owner confirms the Suno account was on a paid tier
+when these tracks were generated, so the soundtrack ships.** The evidence trail
+is preserved below — keep the subscription receipts with the ten content IDs.
 
 ---
 
@@ -41,7 +42,7 @@ re-creates exactly the breach this pass closed.
 |---|---|---|---|
 | three.js r169 + jsm addons | 12 files | MIT | ✅ notice shipping |
 | Cinzel / Grenze / Rye | 10 `.woff2` | OFL 1.1 | ✅ notice shipping |
-| Music | 10 `.mp3` | Suno — **conditional** | ⚠️ see below |
+| Music | 10 `.mp3` | Suno — paid-tier output, owner-confirmed | ✅ clear to ship |
 | Images | 106 shipped | OpenAI — user owns output | ✅ clean |
 | Sound effects | 0 files | n/a | ✅ synthesised in code |
 
@@ -105,7 +106,7 @@ That needs their detector; it cannot be answered from these files. Assume it may
 
 ---
 
-## The one that can stop the launch
+## The soundtrack: resolved, with the trail kept
 
 **Suno grants commercial rights only for output generated while subscribed.**
 From Suno's Terms of Use: Suno assigns rights to output generated from your
@@ -113,20 +114,15 @@ submissions *"during the term of your paid-tier subscription"*. Free and Basic
 tier output is restricted to *"lawful, internal, personal and non-commercial
 purposes"*, with mandatory attribution to Suno.
 
-So the question is narrow and factual:
+The question was narrow and factual — *was the `jaroxby` account on a paid tier
+on 14 and 15 August 2026?* — and **the owner confirmed on 2026-08-30 that it
+was.** The soundtrack ships.
 
-> **Was the `jaroxby` Suno account on a paid tier on 14 and 15 August 2026?**
-
-* **Yes** → the soundtrack ships. Save the subscription receipts alongside the
-  ten content IDs (in the table above and in the manifests) and keep them with
-  the build records. That is the evidence if it is ever queried.
-* **No** → **48.5 MB of the build cannot ship** and the soundtrack must be
-  re-generated under a paid subscription or replaced. Every track is
-  individually timestamped and signed, so this is not a risk that can be
-  quietly carried.
-
-Nothing in this repository can answer it. Check the billing history on the
-account and settle it before the store page exists.
+One thing to do rather than assume: **export the Suno billing history covering
+both dates and keep it with the build records**, next to the ten content IDs in
+the table above. The tracks are individually timestamped and cryptographically
+signed, which cuts both ways — it is exactly the evidence a challenge would
+start from, and exactly the evidence that answers one.
 
 By contrast, **the images are clean**: OpenAI assigns output ownership to the
 user with no subscription condition, and commercial use is permitted.
@@ -195,8 +191,8 @@ would ship the unprocessed originals.
 
 ## Still open, and owned by a person rather than a file
 
-1. **The Suno subscription question above.** Highest priority; it is the only
-   item that can invalidate work already done.
+1. ~~The Suno subscription question.~~ **Settled 2026-08-30: paid tier
+   confirmed.** Remaining action is clerical — keep the billing export.
 2. **Replace the copyright holder placeholder.** `THIRD-PARTY-NOTICES.md` says
    "the Midnight Menagerie authors". That is not a rights holder. Put the legal
    name or entity there before the store page goes up.

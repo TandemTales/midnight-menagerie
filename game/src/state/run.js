@@ -88,9 +88,18 @@ import { rollEvent, eventById, rollOutcome } from '../data/events.js';
 /**
  * How many regions one expedition covers in this build.  The full campaign is
  * 17 (REGION_ORDER); the structure below walks the ladder properly, this
- * constant is the only thing holding it to one.
+ * constant is the only thing holding it short.
+ *
+ * 2 -> 4 on 2026-08-30, when the Kitchens and Cellars shipped.
+ *
+ * IT WAS HOLDING BACK A REGION THAT ALREADY EXISTED. The Sleeping Quarters has
+ * had a full roster, three Big Scares and the Bedframe Beast since 2026-08-2x,
+ * and at 2 the run ended after the Nursery, so no player could ever reach any
+ * of it. That is the same unreachable-content class the 2026-08-30 sweep spent
+ * a day on, one constant wide, and it is why this number moves with the content
+ * rather than after it.
  */
-export const RUN_LENGTH_REGIONS = 2;
+export const RUN_LENGTH_REGIONS = 4;
 
 /**
  * The four Companions who start at the clubhouse and were never in the house.

@@ -429,10 +429,131 @@ const SQ = [
   },
 ];
 
+
+// ─────────────────────────────────────────────────────────────────────────────
+// The Kitchens and Cellars — docs/design/regions/04-kitchens-cellars.md §8–§11
+// ─────────────────────────────────────────────────────────────────────────────
+const KC = [
+  // ── Early: one lesson each, in the order the design introduces them ───────
+  {
+    id: 'kc-1', region: 'kitchens-cellars', tier: 'early', name: 'Kitchen Imp',
+    members: [m('kitchen-imp')],
+    teaches: 'A visible, temporary modification to a familiar attack. You get a turn to plan against it.',
+  },
+  {
+    id: 'kc-2', region: 'kitchens-cellars', tier: 'early', name: 'Jam Jar',
+    members: [m('jam-jar')],
+    teaches: 'Introduces Sticky — interference that costs tempo rather than hand size.',
+  },
+  {
+    id: 'kc-3', region: 'kitchens-cellars', tier: 'early', name: 'Dough Blob',
+    members: [m('dough-blob')],
+    teaches: 'Introduces splitting. Killing it cleanly from above 16 is worth more than killing it efficiently.',
+  },
+  {
+    id: 'kc-4', region: 'kitchens-cellars', tier: 'early', name: 'Rising Batter',
+    members: [m('rising-batter')],
+    teaches: 'Introduces escalation that changes behaviour, not just numbers.',
+  },
+
+  // ── Standard ──────────────────────────────────────────────────────────────
+  {
+    id: 'kc-5', region: 'kitchens-cellars', tier: 'standard', name: 'Kitchen Imp + Jam Jar',
+    members: [m('kitchen-imp'), m('jam-jar')],
+    teaches: 'Simple pressure plus tempo interference.',
+  },
+  {
+    id: 'kc-6', region: 'kitchens-cellars', tier: 'standard', name: 'Dough Blob + Kitchen Imp',
+    members: [m('dough-blob'), m('kitchen-imp')],
+    teaches: 'The Imp pressures you while the Blob threatens to multiply.',
+  },
+  {
+    id: 'kc-7', region: 'kitchens-cellars', tier: 'standard', name: 'Candy Clump + Jam Jar',
+    members: [m('candy-clump'), m('jam-jar')],
+    teaches: 'Killing the Jar first improves the Clump\'s next attack. Order is the whole question.',
+  },
+  {
+    id: 'kc-8', region: 'kitchens-cellars', tier: 'standard', name: 'Rising Batter + Jam Jar',
+    members: [m('rising-batter'), m('jam-jar')],
+    teaches: 'Keep touching the Batter while Sticky eats the Nerve you wanted to touch it with.',
+  },
+
+  // ── Advanced ──────────────────────────────────────────────────────────────
+  {
+    id: 'kc-9', region: 'kitchens-cellars', tier: 'advanced', name: 'Candy Clump + Kitchen Imp',
+    members: [m('candy-clump'), m('kitchen-imp')],
+    teaches: 'Killing the Imp may hand its utensil straight to the Clump.',
+  },
+  {
+    id: 'kc-10', region: 'kitchens-cellars', tier: 'advanced', name: 'Dough Blob + Candy Clump',
+    members: [m('dough-blob'), m('candy-clump')],
+    teaches: 'If the Blob divides and the Doughlings die, the Clump eats dough repeatedly.',
+  },
+  {
+    id: 'kc-11', region: 'kitchens-cellars', tier: 'advanced', name: 'Pantry Mimic + Jam Jar',
+    members: [m('pantry-mimic'), m('jam-jar')],
+    teaches: 'One useful Trick goes behind the Mimic while the Jar degrades your tempo.',
+  },
+  {
+    id: 'kc-12', region: 'kitchens-cellars', tier: 'advanced',
+    name: 'Rising Batter + Kitchen Imp + Jam Jar',
+    members: [m('rising-batter'), m('kitchen-imp'), m('jam-jar')],
+    teaches: 'High tempo. Pressure on the Batter, small repeated hits, and Sticky throughout.',
+  },
+  {
+    id: 'kc-13', region: 'kitchens-cellars', tier: 'advanced', name: 'Pantry Mimic + Candy Clump',
+    members: [m('pantry-mimic'), m('candy-clump')],
+    teaches: 'Reveal and kill the Mimic first and the Clump takes 10 Guard off its corpse.',
+  },
+  {
+    id: 'kc-14', region: 'kitchens-cellars', tier: 'advanced',
+    name: 'Dough Blob + Candy Clump + Rising Batter',
+    members: [m('dough-blob'), m('candy-clump'), m('rising-batter')],
+    teaches: 'The Blob multiplies, the Clump grows on death, the Batter grows on neglect. Constant re-evaluation.',
+    advancedOnly: true, minScuffle: 1,
+  },
+
+  // ── Big Scares ────────────────────────────────────────────────────────────
+  {
+    id: 'kc-scare-oven', region: 'kitchens-cellars', tier: 'elite', name: 'The Oven Maw',
+    members: [m('oven-maw'), m('dough-blob'), m('jam-jar')],
+    teaches: 'Kill the ingredients, hit the Oven, or let it take one away and deal with what comes back.',
+  },
+  {
+    id: 'kc-scare-golem', region: 'kitchens-cellars', tier: 'elite', name: 'The Sugar Golem',
+    members: [m('sugar-golem')],
+    teaches: 'Three layers, read off its Courage. The last one is soft and hits hardest.',
+  },
+  {
+    id: 'kc-scare-poltergeist', region: 'kitchens-cellars', tier: 'elite',
+    name: 'The Pantry Poltergeist',
+    members: [m('pantry-poltergeist')],
+    teaches: 'Variable but never opaque — the objects are visible and each one is one line of rules.',
+  },
+
+  // ── Boss ──────────────────────────────────────────────────────────────────
+  {
+    id: 'kc-boss', region: 'kitchens-cellars', tier: 'boss', name: 'The Confectioner',
+    members: [m('confectioner')],
+    teaches: 'Read the Recipe Board. Hurt it hard enough in one turn and the last Ingredient is spilled.',
+  },
+];
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Per-region generation rules (design doc §10 "Encounter selection rules")
 // ─────────────────────────────────────────────────────────────────────────────
 export const REGION_RULES = {
+  /* docs/design/regions/04-kitchens-cellars.md §11. Every clause below is one
+     sentence from that section, and `noDuplicates` carries two of them because
+     the design bans a second Clump and a second Batter for different reasons —
+     the Clump because two absorbers compound, the Batter because two escalators
+     make the fight a stopwatch. */
+  'kitchens-cellars': {
+    bannedFirstScuffle: ['pantry-mimic', 'candy-clump'],
+    minScuffle: { 'candy-clump': 1, 'pantry-mimic': 1 },
+    noDuplicates: ['candy-clump', 'rising-batter'],
+    maxConsecutiveLead: 2,
+  },
   'sleeping-quarters': {
     bannedFirstScuffle: ['nightlight-snuffer', 'thing-beneath'],
     minScuffle: { 'thing-beneath': 1, 'nightlight-snuffer': 1 },
@@ -463,7 +584,7 @@ export const REGION_RULES = {
   },
 };
 
-const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ];
+const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC];
 
 /** id → EncounterDef */
 export const ENCOUNTERS = Object.freeze(

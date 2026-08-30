@@ -66,6 +66,39 @@ export const STATUS_CARDS = [
     upgrade: { nums: { n: 4 }, text: 'Unplayable. At the end of your turn, lose {n} Courage.' },
   },
   {
+    /* -- the Kitchens and Cellars -----------------------------------------
+     * Sticky is that region's signature interference and is deliberately NOT a
+     * dead card - the rule Drowsy follows. It replaces itself, so it never
+     * shrinks your hand. What it takes is a Nerve, and a Nerve in the Kitchens
+     * is the resource every escalating enemy is racing you for.
+     *
+     * It lives HERE rather than in the roster that generates it because it is a
+     * CARD: `ctx.draw()` is on the card context, and `tests/seams/check.py`
+     * reads a `ctx.` call inside `data/enemies/` as a call on the ENEMY context,
+     * where no `draw` exists. The gate is right to be suspicious - one home for
+     * status cards is better than two, and this is the one the others use. */
+    id: 'status/sticky', name: 'Sticky', companion: 'status', type: STATUS, rarity: Rarity.SPECIAL,
+    cost: 1, target: Target.NONE, exhaust: true, keywords: ['vanish'],
+    text: 'Draw {n} Trick. [Vanish].',
+    flavor: 'It comes away from the counter with a sound you feel in your teeth.',
+    nums: { n: 1 }, effect: (c) => draw(c, N(c).n),
+    upgrade: { text: 'Draw {n} Trick. [Vanish].' },
+  },
+  {
+    /* The Confectioner's three-Jam Dish and the Oven's Caramel Creeper make one
+     * that costs 2. A separate def rather than a runtime cost bump: a card's
+     * printed cost is rendered once when its CardView is built, so one whose
+     * cost changed after it was drawn would sit in the hand showing the wrong
+     * number until it was played. */
+    id: 'status/sticky-caramel', name: 'Caramel Sticky', companion: 'status', type: STATUS,
+    rarity: Rarity.SPECIAL,
+    cost: 2, target: Target.NONE, exhaust: true, keywords: ['vanish'],
+    text: 'Draw {n} Trick. [Vanish].',
+    flavor: 'Twice as much of it, and it has had time to set.',
+    nums: { n: 1 }, effect: (c) => draw(c, N(c).n),
+    upgrade: { text: 'Draw {n} Trick. [Vanish].' },
+  },
+  {
     id: 'status/scrape', name: 'Scrape', companion: 'status', type: STATUS, rarity: Rarity.SPECIAL,
     cost: -2, target: Target.NONE, unplayable: true,
     text: 'Unplayable.', flavor: 'A thin white line that stings when you think about it.',
