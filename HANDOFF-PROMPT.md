@@ -13,8 +13,9 @@ Don't read the design doc whole; it is carved into docs/design/. And read §8 of
 docs/STS2-REFERENCE.md before deciding what to work on — see below.
 
 STATE: branch dev, tree clean, everything pushed (origin/dev == HEAD ==
-7b52920). Pushing to origin/dev was authorised on 2026-08-29; ask again if that
-is no longer live. Dev server does not survive a restart:
+9d8151c, which is 7b52920 plus this document — no code moved). Pushing to
+origin/dev was authorised on 2026-08-29; ask again if that is no longer live.
+Dev server does not survive a restart:
 
   python tools/devserver.py 8777
 
