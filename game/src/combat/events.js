@@ -39,6 +39,8 @@
  * card:cost      { cardUid, before, after, scope:'turn'|'combat'|'permanent', reason }
  * card:meta      { cardUid, key, before, after }   // Stretch, Enchantment, Slobbered…
  * card:invalid   { cardUid, targetId, reason }     // play was rejected, no state change
+ * card:retain    { cardUid, card, reason:'retain'|'retainThisTurn', handSize }
+ *                                                 // kept through the end-of-turn sweep
  *
  * energy         { before, after, delta, max, reason }
  *
@@ -134,6 +136,7 @@ export const EV = /** @type {const} */ ({
   CARD_COST: 'card:cost',
   CARD_META: 'card:meta',
   CARD_INVALID: 'card:invalid',
+  CARD_RETAIN: 'card:retain',
 
   ENERGY: 'energy',
 

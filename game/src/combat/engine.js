@@ -3062,7 +3062,31 @@ export class CombatEngine {
     this._asSeat(pl, () => {
       for (const card of [...pl.piles.hand]) {
         if (card.ethereal) { this.exhaustCard(card, 'ethereal'); continue; }
-        if (card.retain || card.retainThisTurn) { card.retainThisTurn = false; continue; }
+        /**
+          * KEEPING a card is an event. It was not one until 2026-08-30, and
+          * the consequence was a cue in the bank that nothing could ever
+          * play: `tests/audio/cues.py` listed `card:retain` as unreachable
+          * with the reason "no `retain` event is emitted... wiring it means
+          * adding the event." The feature was fully built; only the moment
+          * was missing, which is the thin end of CONTRACTS 54 — a thing that
+          * happens with nothing published looks exactly like a thing that
+          * does not happen.
+          *
+          * `reason` separates the two kinds, because they are different
+          * promises: `retain` is printed on the card and holds every turn,
+          * `retainThisTurn` was granted by an effect and is being spent right
+          * here. Read the flag BEFORE clearing it or every retain reports as
+          * the permanent kind.
+          */
+         const why = card.retain ? 'retain' : 'retainThisTurn';
+         if (card.retain || card.retainThisTurn) {
+           card.retainThisTurn = false;
+           this._emit(EV.CARD_RETAIN, {
+             cardUid: card.uid, card: this.cardSnap(card), reason: why,
+             handSize: this.current.piles.hand.length,
+           });
+           continue;
+         }
         this.discardCard(card, 'endTurn');
       }
     });

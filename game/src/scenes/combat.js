@@ -1735,6 +1735,17 @@ export class CombatScene extends Scene {
         }
         return;
 
+      /* A kept card does not MOVE, so there is nothing to animate — but the
+         player should hear that the sweep passed it over. Once per burst, the
+         same shape `discard` uses above and for the same reason: this fires
+         inside the end-of-turn hand pass, and a hand holding three retains
+         would machine-gun the cue. */
+      case 'card:retain':
+        if (!this._q.length || this._q[0].type !== 'card:retain') {
+          this.ctx.audio?.play?.('card:retain');
+        }
+        return;
+
       case 'exhaust':
         this._syncPiles();
         this.ctx.audio?.play?.('card:exhaust');

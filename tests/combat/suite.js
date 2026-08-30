@@ -2454,6 +2454,35 @@ export async function run() {
     ok(e.state.piles.hand.some(c => c.uid === kept.uid), 'and it is still there a second turn later');
   });
 
+  await atest('retain: keeping a Trick EMITS card:retain, and says which kind of retain it was', async () => {
+    /* The feature was fully built and published NOTHING, so a cue sat in the
+       audio bank that no code path could reach: `tests/audio/cues.py` carried
+       `card:retain` on its unreachable list with the reason "no `retain` event
+       is emitted... wiring it means adding the event." A thing that happens
+       silently is indistinguishable from a thing that does not happen, which
+       is the thin end of CONTRACTS 54. */
+    const e = mk({ enemies: [dummyEnemy({ move: 'nothing' })], drawPerTurn: 5 });
+    await e.startCombat();
+    const printed = plant(e, { ...CURL_UP, id: 'x/printed', retain: true });
+    const granted = plant(e, { ...CURL_UP, id: 'x/granted' });
+    granted.retainThisTurn = true;
+    const doomed = plant(e, SCRATCH);
+
+    const seen = [];
+    e.on('card:retain', (ev) => seen.push(ev));
+    await e.endTurn();
+
+    eq(seen.length, 2, 'both kept Tricks announced themselves');
+    ok(seen.some(x => x.cardUid === printed.uid && x.reason === 'retain'),
+      'the one with retain PRINTED on it reports `retain`');
+    ok(seen.some(x => x.cardUid === granted.uid && x.reason === 'retainThisTurn'),
+      'and the one granted a single turn reports `retainThisTurn` \u2014 which only '
+      + 'works because the flag is read BEFORE it is cleared');
+    ok(!seen.some(x => x.cardUid === doomed.uid),
+      'a Trick that was discarded announces nothing');
+    ok(seen.every(x => x.card), 'each carries a card snapshot for a scene to read');
+  });
+
   // ── the REAL Butler, not a stand-in ───────────────────────────────────────
   // Everything above tests the rules ENGINE against a hand-written boss. These
   // run the shipped `data/bosses/butler.js`, because the bug that motivated

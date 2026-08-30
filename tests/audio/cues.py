@@ -55,11 +55,6 @@ UNREACHABLE = {
         "carries no crit field and nothing sets one; the single occurrence of a "
         "crit flag in the repo is this suite's own soundboard payload. Wiring "
         "it means designing critical hits first.",
-    "card:retain":
-        "no `retain` event is emitted. Retained cards are resolved inside the "
-        "engine's turn-end hand pass (engine.js) with nothing published, so "
-        "there is no moment for a scene to hang a sound on. Wiring it means "
-        "adding the event.",
 }
 
 
