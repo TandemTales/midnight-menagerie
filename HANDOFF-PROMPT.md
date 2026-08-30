@@ -12,10 +12,13 @@ last two sessions:
 Don't read the design doc whole; it is carved into docs/design/. And read §8 of
 docs/STS2-REFERENCE.md before deciding what to work on — see below.
 
-STATE: branch dev, tree clean, everything pushed (origin/dev == HEAD ==
-9d8151c, which is 7b52920 plus this document — no code moved). Pushing to
-origin/dev was authorised on 2026-08-29; ask again if that is no longer live.
-Dev server does not survive a restart:
+STATE: branch dev, tree clean, everything pushed. Do not trust a HEAD hash
+written here — naming one dates this file the moment it is committed, which
+is how the last two handoffs went stale. Run `git log --oneline -5`. What is
+durable: the last commit to touch CODE is 7b52920, and everything after it is
+this document, so the battery numbers below still stand. Pushing to origin/dev
+was authorised on 2026-08-29; ask again if that is no longer live. Dev server
+does not survive a restart:
 
   python tools/devserver.py 8777
 
