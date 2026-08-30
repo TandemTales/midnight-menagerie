@@ -171,9 +171,21 @@ Anything marked *(unconfirmed)* appears in secondary sources only.
   **the entire lobby earns the next level**.
 - Crossplay covers the PC ecosystem (Windows/Mac/Linux/Steam Deck). No console crossplay.
 
-> **For us:** our Haunt ladder has no notion of a party — nothing in `state/run.js` keys
-> Haunt progression to party size. StS2 answers the question explicitly: separate ladder,
-> gated by the weakest player, credited to everyone. We have not answered it at all.
+> **For us — ANSWERED, 2026-08-29.** This used to read "we have not answered it at all",
+> and building the answer turned up something worse than the gap: the ladder did not
+> advance on a WIN either, for anybody. `hauntLevel` was written by its own default in
+> `core/save.js` and read by two pickers, and nothing incremented it — every save sat on
+> Haunt 0 permanently and the entire ascension analogue was inert. CONTRACTS 54 again.
+>
+> There are two ladders now. `hauntLevel` is solo, `partyHauntLevel` is every party size,
+> and `Run.end(victory)` advances the one the run was played on, keyed off the Haunt it
+> was PLAYED at so a level cannot be farmed or walked backwards. Separate is the half
+> that matters: the party curve multiplies enemy Courage and never enemy damage, so a
+> Haunt four Kids cleared is no evidence a soloist can. **Credited to everyone** falls
+> out rather than being built — each client advances its own save on a shared win.
+> **Gated by the weakest** is the one piece left, and it is transport work: the lobby has
+> to compare saves across peers. `Save.hauntLevelFor(partySize)` is the seam it calls,
+> taking the MIN. `tests/haunt/` is 18 checks.
 
 ### 8.2 Turn structure — simultaneous window, sequential resolution
 
@@ -427,7 +439,7 @@ Their loudest technical complaint, by a wide margin, is **disconnects**:
 | Relic contention | **N/A until the wire** — no shared offer exists to contend over |
 | Scaling curve rising by act | **Absent** — ours is flat; untried lever |
 | Co-op acts shortened | **Absent** — untried pacing lever |
-| Haunt / Ascension ladder in a party | **Absent** — we have not answered the question |
+| Haunt / Ascension ladder in a party | **Answered 2026-08-29** — separate ladder, credited to everyone; "gated by the weakest" needs the lobby (§8.1) |
 | Reconnection after a drop | **Ahead on foundation, behind on product** — we have the lockstep machinery and no wire; they have the wire and no rejoin |
 
 ---

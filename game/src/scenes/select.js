@@ -923,7 +923,10 @@ export class SelectScene extends Scene {
     const hrow = el('div', 'haunt__row', '');
     hrow.setAttribute('role', 'radiogroup');
     hrow.setAttribute('aria-label', TERMS.ascension);
-    const maxHaunt = Math.max(0, Number(Save?.data?.hauntLevel ?? 0));
+    /* The PARTY ladder once more than one Kid is going in. Read through
+       `Save.hauntLevelFor` rather than off `Save.data`, so this screen cannot
+       hold an opinion about which field that is. */
+    const maxHaunt = Save.hauntLevelFor(this.state.partySize || 1);
     for (const [lvl, name, desc] of HAUNTS) {
       const b = el('button', 'haunt__pip');
       b.type = 'button';
@@ -1092,6 +1095,7 @@ export class SelectScene extends Scene {
     this._offs.push(rovingFocus(hrow, '.haunt__pip', { cols: 0, onActivate: (b) => b.click() }));
 
     // seed
+    this._syncHaunt();
     const roll = this._foot.querySelector('.seed__roll');
     const seedIn = this._foot.querySelector('.seed__val');
     const onRoll = () => {
@@ -1126,6 +1130,10 @@ export class SelectScene extends Scene {
       const n = Math.max(1, Math.min(MAX_PARTY, Number(btn.dataset.n) || 1));
       this.state.partySize = n;
       this.state.coop = n > 1;
+      /* Party size just changed which LADDER is on screen, and the pips were
+         built once. Without this the row keeps showing solo unlocks to a party
+         and a party's unlocks to a soloist. */
+      this._syncHaunt();
       /* Shrinking the party mid-flow drops anyone already locked in beyond the
          new size, rather than leaving Kids nobody can see waiting for a slot
          that no longer exists. */
@@ -1427,6 +1435,31 @@ export class SelectScene extends Scene {
     chip.classList.toggle('is-empty', !name);
     chip.querySelector('b').textContent = name ?? (which === 'kid' ? 'Kid' : 'Companion');
     chip.querySelector('em').textContent = name ? (sub ?? '') : 'not chosen';
+  }
+
+  /**
+   * Repaint the Haunt pips for the ladder this party size is on.
+   *
+   * Built once in `_renderFoot` and then never revisited, which was fine while
+   * there was one ladder. With two, the row has to be told when the party size
+   * moves — and the SELECTED level has to be clamped as well, or a soloist who
+   * had picked Haunt 4 on the party ladder starts a run at a Haunt they have
+   * not unlocked alone.
+   */
+  _syncHaunt() {
+    const row = this._foot && this._foot.querySelector('.haunt__row');
+    if (!row) return;
+    const max = Save.hauntLevelFor(this.state.partySize || 1);
+    if (this.state.haunt > max) this.state.haunt = max;
+    for (const b of row.querySelectorAll('.haunt__pip')) {
+      const lvl = Number(b.dataset.haunt) || 0;
+      const locked = lvl > max;
+      b.disabled = locked;
+      b.classList.toggle('is-locked', locked);
+      b.setAttribute('aria-checked', String(lvl === this.state.haunt));
+    }
+    const desc = this._foot.querySelector('.haunt__desc');
+    if (desc) desc.textContent = HAUNTS[this.state.haunt][1];
   }
 
   _syncGo() {

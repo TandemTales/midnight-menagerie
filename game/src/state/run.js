@@ -2305,7 +2305,14 @@ export class Run {
     const meta = Save.data;
     if (meta) {
       meta.stats.runs = (meta.stats.runs || 0) + 1;
-      if (victory) meta.stats.wins = (meta.stats.wins || 0) + 1;
+      if (victory) {
+        meta.stats.wins = (meta.stats.wins || 0) + 1;
+        /* The ladder moves HERE and nowhere else, and until 2026-08-29 it moved
+           nowhere at all — `hauntLevel` was written by the default and read by
+           two pickers, so every save sat on Haunt 0 for ever. A party climbs
+           its own ladder; see the note in `core/save.js`. */
+        Save.advanceHaunt(this.partySize, this.hauntLevel);
+      }
       // The Clubhouse's "Deepest floor" and Game Over's "REACHED Floor" are now
       // the same number, because both of them are `depth`.
       meta.stats.bestFloor = Math.max(meta.stats.bestFloor || 0, this.depth);

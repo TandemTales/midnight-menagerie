@@ -1,0 +1,149 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>The Haunt ladder — two of them, and one that moves</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+</style>
+<h1>The Haunt ladder</h1>
+<div id="out"></div>
+<script type="module">
+/**
+ * `docs/STS2-REFERENCE.md` §8.1, which we had never answered: Multiplayer
+ * Ascension is tracked SEPARATELY from single-player, gated by the weakest
+ * player, and on a won run the whole lobby earns the next level.
+ *
+ * Two things were wrong rather than one. Nothing keyed Haunt progression to
+ * party size — and nothing advanced the ladder on a win either, for anybody,
+ * so `hauntLevel` was a field written by its own default, read by two pickers,
+ * and mathematically incapable of ever being anything but 0.
+ *
+ * The separation is the part with teeth: a Haunt cleared by four Kids is not
+ * evidence one Kid can clear it, because the party curve multiplies enemy
+ * Courage and never enemy damage. One ladder would let a group unlock Haunt 5
+ * and then offer a soloist a fight nothing in their history says they can take.
+ */
+import { Save, MAX_HAUNT } from '../../game/src/core/save.js';
+import { Run } from '../../game/src/state/run.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => {
+  (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+  const d = document.createElement('div');
+  d.className = ok ? 'pass' : 'fail';
+  d.textContent = (ok ? 'PASS  ' : 'FAIL  ') + what + (detail ? ` — ${detail}` : '');
+  out.appendChild(d);
+};
+const head = (t) => { const h = document.createElement('h2'); h.textContent = t; out.appendChild(h); };
+
+const fresh = () => { Save.reset(); return Save.data; };
+
+async function main() {
+  head('Two ladders, not one');
+  {
+    const d = fresh();
+    check(d.hauntLevel === 0 && d.partyHauntLevel === 0,
+      'a new save starts both ladders at 0',
+      `${d.hauntLevel} / ${d.partyHauntLevel}`);
+    check(Save.hauntKey(1) === 'hauntLevel' && Save.hauntKey(4) === 'partyHauntLevel',
+      'a party and a soloist read different fields',
+      `${Save.hauntKey(1)} / ${Save.hauntKey(4)}`);
+  }
+
+  head('A win advances the ladder it was played on — and only that one');
+  {
+    fresh();
+    Save.advanceHaunt(1, 0);
+    check(Save.hauntLevelFor(1) === 1, 'a SOLO win at Haunt 0 unlocks Haunt 1',
+      String(Save.hauntLevelFor(1)));
+    check(Save.hauntLevelFor(4) === 0,
+      'and the party ladder has not moved — four Kids clearing it is not '
+      + 'evidence one Kid can', String(Save.hauntLevelFor(4)));
+  }
+  {
+    fresh();
+    Save.advanceHaunt(3, 0);
+    check(Save.hauntLevelFor(3) === 1, 'a PARTY win at Haunt 0 unlocks party Haunt 1',
+      String(Save.hauntLevelFor(3)));
+    check(Save.hauntLevelFor(1) === 0, 'and the solo ladder has not moved',
+      String(Save.hauntLevelFor(1)));
+    check(Save.hauntLevelFor(2) === 1 && Save.hauntLevelFor(4) === 1,
+      'every party size shares the one party ladder — the split is solo '
+      + 'against not-solo, not a ladder per size');
+  }
+
+  head('It cannot be walked backwards or farmed');
+  {
+    fresh();
+    Save.advanceHaunt(1, 0); Save.advanceHaunt(1, 1); Save.advanceHaunt(1, 2);
+    check(Save.hauntLevelFor(1) === 3, 'three wins up the ladder reach Haunt 3',
+      String(Save.hauntLevelFor(1)));
+    Save.advanceHaunt(1, 0);
+    check(Save.hauntLevelFor(1) === 3,
+      'and clearing Haunt 0 again does NOT drop you to 1 — it is keyed off the '
+      + 'Haunt the run was PLAYED at', String(Save.hauntLevelFor(1)));
+    Save.advanceHaunt(1, 1);
+    check(Save.hauntLevelFor(1) === 3,
+      'nor does re-clearing a level you already own move anything',
+      String(Save.hauntLevelFor(1)));
+  }
+  {
+    fresh();
+    Save.advanceHaunt(1, MAX_HAUNT);
+    check(Save.hauntLevelFor(1) === MAX_HAUNT,
+      `the ladder stops at MAX_HAUNT`, String(Save.hauntLevelFor(1)));
+    Save.advanceHaunt(1, MAX_HAUNT + 5);
+    check(Save.hauntLevelFor(1) === MAX_HAUNT,
+      'and a nonsense level cannot push it past the top',
+      String(Save.hauntLevelFor(1)));
+  }
+
+  head('Through a real Run, which is the wiring that was missing');
+  {
+    fresh();
+    const solo = Run.mock({ seed: 4242, kids: [{ companion: 'marmalade', kid: 'maya' }] });
+    solo.hauntLevel = 0;
+    solo.end(true, null, { navigate: false });
+    check(Save.hauntLevelFor(1) === 1,
+      'winning a solo run really advances the solo ladder',
+      String(Save.hauntLevelFor(1)));
+    check(Save.hauntLevelFor(4) === 0, 'and not the party one',
+      String(Save.hauntLevelFor(4)));
+  }
+  {
+    fresh();
+    const party = Run.mock({ seed: 4242, kids: [
+      { companion: 'marmalade', kid: 'maya' },
+      { companion: 'bones', kid: 'eli' },
+      { companion: 'pipkin', kid: 'nia' }] });
+    party.hauntLevel = 0;
+    check(party.partySize === 3, 'the run knows it is a party', String(party.partySize));
+    party.end(true, null, { navigate: false });
+    check(Save.hauntLevelFor(3) === 1,
+      'winning a PARTY run advances the party ladder',
+      String(Save.hauntLevelFor(3)));
+    check(Save.hauntLevelFor(1) === 0, 'and leaves the solo one alone',
+      String(Save.hauntLevelFor(1)));
+  }
+  {
+    fresh();
+    const lost = Run.mock({ seed: 99, kids: [{ companion: 'marmalade', kid: 'maya' }] });
+    lost.hauntLevel = 0;
+    lost.end(false, 'the Butler', { navigate: false });
+    check(Save.hauntLevelFor(1) === 0, 'LOSING advances nothing',
+      String(Save.hauntLevelFor(1)));
+  }
+
+  fresh();   // leave no unlocks behind for whatever runs next
+  head(`${passes.length} passed, ${fails.length} failed`);
+  window.__RESULT = { passes, fails, passed: passes.length, failed: fails.length };
+  window.__DONE = true;
+}
+
+main().catch((e) => {
+  check(false, 'suite threw', String(e && e.stack || e));
+  window.__RESULT = { passes, fails, passed: passes.length, failed: fails.length };
+  window.__DONE = true;
+});
+</script>
