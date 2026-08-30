@@ -283,8 +283,11 @@ This is the part of StS2 co-op that reviewers single out, and the part we have l
 > filters and sort for free. `tests/coop/matedeck.py`, 8 checks, and they compare the two
 > decks rather than counting cards: your deck is ten cards too.
 >
-> **KEEPSAKES are still not viewable**, which is the other half of this line and is
-> deliberately not claimed. StS2 shows relics as well.
+> **Their KEEPSAKES are named in the same header**, so the line is whole. Sigils were
+> not copied over: `ui/hud.js` draws those through a local `sigil()` and a second copy
+> of a Keepsake drawing is the drift that component exists to end. Their Backpack GEAR
+> is deliberately absent — the HUD keeps Gear and Keepsakes apart on purpose, and
+> flattening them for the one Kid you cannot see would undo that where it matters most.
 
 ### 8.5 The map — one route, voted
 
@@ -462,8 +465,7 @@ Their loudest technical complaint, by a wide margin, is **disconnects**:
 | Fallen and revival | **Level** — same rule, same 30% Mend |
 | Co-op-only card architecture | **Level** — 5 per character, held out of the solo pool |
 | Route voting | **Built 2026-08-29** — every Kid votes, weighted roulette settles a split (§8.5) |
-| Inspecting a teammate's DECK | **Built 2026-08-30** — their panel in the combat rail opens it (§8.4) |
-| Inspecting a teammate's KEEPSAKES | **Behind, buildable now** — the other half of §8.4, still unbuilt |
+| Inspecting a teammate's deck and Keepsakes | **Built 2026-08-30** — their panel in the combat rail opens both; Keepsakes are named in the header (§8.4). Their Backpack GEAR is deliberately not in it, because the HUD keeps Gear and Keepsakes visibly apart |
 | Hosting and joining a game at all | **Built 2026-08-30** — the Treehouse, `scenes/lobby.js`. `net/lobby.js` had been tested and unreachable since 2026-08-28: no host UI, no join UI, no code field. Works today over `ChannelTransport` (two tabs); Steam swaps one constructor |
 | Simultaneous turn window | **Behind, transport-blocked** — our window is sequential |
 | Resolution order as a coordination mechanic | **Behind, transport-blocked** |
