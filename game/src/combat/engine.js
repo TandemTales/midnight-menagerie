@@ -1362,12 +1362,19 @@ export class CombatEngine {
     this._emit(EV.HP_MAX, { actorId: actor.id, before, after: actor.maxHp, delta });
   }
 
-  gainEnergy(n, reason = 'effect') {
+  /**
+   * @param {Player} [who] the seat whose Nerve moves. Defaults to the acting
+   *   seat, which is right for a card being played and wrong for anything that
+   *   reaches a seat which is not currently acting — a Status card drawn into a
+   *   Kid's hand during someone else's go, for one. Callers that pass nothing
+   *   get exactly the old behaviour.
+   */
+  gainEnergy(n, reason = 'effect', who = null) {
     if (n === 0) return 0;
+    const me = who || this.current;
     const add = n > 0
-      ? this.hooks.reduce('modifyEnergyGain', n, { reason }, this.hooks.actorHooks(this.current, 'modifyEnergyGain'))
+      ? this.hooks.reduce('modifyEnergyGain', n, { reason }, this.hooks.actorHooks(me, 'modifyEnergyGain'))
       : n;
-    const me = this.current;
     const before = me.energy;
     me.energy = Math.max(0, me.energy + add);
     this._emit(EV.ENERGY, {
@@ -1376,7 +1383,7 @@ export class CombatEngine {
     });
     return me.energy - before;
   }
-  loseEnergy(n, reason = 'effect') { return this.gainEnergy(-Math.abs(n), reason); }
+  loseEnergy(n, reason = 'effect', who = null) { return this.gainEnergy(-Math.abs(n), reason, who); }
 
   setEnergy(v, reason = 'refill') {
     const me = this.current;
@@ -1423,6 +1430,12 @@ export class CombatEngine {
     if (after === before) return 0;
 
     actor._setStatus(id, after);
+    // `fresh`: applied during this actor's own end-of-turn step, so the decay
+    // that runs moments later must not spend the turn it has not had. See
+    // `_decayBucket`. Slay the Spire calls this `justApplied` and needs it for
+    // exactly the same reason: Doubt hands you 1 Weak at end of turn, and Weak
+    // also expires at end of turn.
+    if (opts.fresh && after > before) actor.freshStatuses.add(id);
     // Anything else on `opts` is content data (Cover's { by, amount }, a source
     // card, a tag). It rides along on the event as `meta` and reaches onApply as
     // `h.opts`, so a status can be parameterised at the moment it is applied.
@@ -2559,6 +2572,10 @@ export class CombatEngine {
     // "was I hit last turn?". (data/enemies/_lib.js dmgTaken / wasHit.)
     // Nobody has ended the new turn yet.
     for (const pl of this.players) pl.ended = false;
+    // The fresh-status reprieve is worth exactly one decay. Clearing it at the
+    // top of every turn means a stack that somehow escaped its bucket cannot
+    // ride the reprieve forever.
+    for (const a of [...this.players, ...this.enemies, ...this.allies]) a.freshStatuses.clear();
     for (const a of [...this.players, ...this.enemies, ...this.allies]) {
       a.damageTakenLastTurn = a.damageTakenThisTurn;
       a.damageTakenThisTurn = 0;
@@ -2700,6 +2717,10 @@ export class CombatEngine {
       if (stacks <= 0) continue;
       const def = getStatus(id);
       if (def.decay !== bucket) continue;
+      // Applied moments ago by this same end-of-turn step (a Curse in your hand
+      // handing you Weak). It has not been felt for a turn yet, so it does not
+      // spend one — otherwise the card's printed rule is inert by one tick.
+      if (actor.freshStatuses.delete(id)) continue;
       const all = def.decayAll || def.expiresFully;
       this.applyStatus(actor, id, all ? -stacks : -1, { reason: 'decay', ignoreCharm: true });
     }
@@ -2745,8 +2766,12 @@ export class CombatEngine {
       if (!card.def.playable(this.ctxFor(card, t))) return { ok: false, reason: card.def.playableReason || 'Conditions are not met.' };
     }
 
-    if (this.hooks.any('vetoPlay', { card }, this.hooks.actorHooks(who, 'vetoPlay'))) {
-      return { ok: false, reason: 'Something is stopping you.' };
+    // `veto` rather than `any`: a refuser that returns a string gets to print
+    // it. Lost Mitten knows exactly why it is saying no, and a card greyed out
+    // with no reason is the same silence CONTRACTS rule 8 is about.
+    const veto = this.hooks.veto('vetoPlay', { card }, this.hooks.actorHooks(who, 'vetoPlay'));
+    if (veto) {
+      return { ok: false, reason: typeof veto === 'string' ? veto : 'Something is stopping you.' };
     }
     return { ok: true, reason: '' };
   }
@@ -3060,6 +3085,20 @@ export class CombatEngine {
       seats: this.livingPlayers().map(x => ({ id: x.id, seat: x.seat, ended: !!x.ended })),
     });
     this._asSeat(pl, () => {
+      /* ── cards that DO something while they sit in your hand ─────────────
+       * "At the end of your turn, lose 2 Courage" is printed on Candle Burn,
+       * Heavy Heart, Regret, Bad Luck and Clingy Shadow, and none of it used to
+       * happen: a card's `effect` runs at exactly one place in this file,
+       * inside `_playCard`, behind a `canPlay` that refuses every `unplayable`
+       * card. `handHooks` (combat/hooks.js) is where that behaviour lives.
+       *
+       * IT HAS TO BE HERE AND NOT IN THE onTurnEnd TICK. That tick is step 3 of
+       * `_endTurn`; this method is step 1, and by step 3 the loop below has
+       * emptied the hand — so a card asking "am I still held?" would always
+       * hear no. `over` is re-checked because one of these can be lethal. */
+      this.hooks.dispatch('onHeldTurnEnd', { actor: pl, turn: this.turn, side: 'player' },
+        this.hooks.handHooks(pl, 'onHeldTurnEnd'));
+      if (this.over) return;
       for (const card of [...pl.piles.hand]) {
         if (card.ethereal) { this.exhaustCard(card, 'ethereal'); continue; }
         /**
@@ -3378,7 +3417,7 @@ function stateFor(c, value) {
 }
 
 /** Strip the engine's own bookkeeping keys; whatever remains is content data. */
-const STATUS_OPT_KEYS = new Set(['reason', 'sourceId', 'ignoreCharm', 'silentBlock']);
+const STATUS_OPT_KEYS = new Set(['reason', 'sourceId', 'ignoreCharm', 'silentBlock', 'fresh']);
 function statusMeta(opts) {
   if (!opts) return null;
   let out = null;

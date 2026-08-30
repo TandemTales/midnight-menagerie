@@ -363,7 +363,18 @@ async function main() {
     // node, boss reward, completeRegion, victory, meta write, save cleared.
     // It is not a balance test, so the Kid is given enough Courage that the
     // bot's play quality cannot make the structural assertions flaky.
-    run.maxCourage = 400; run.courage = 400;
+    //
+    // 400 STOPPED BEING ENOUGH ON 2026-08-30, when the Curses in data/neutral.js
+    // started doing what they print. The bot takes `open[0]` at every Curiosity,
+    // so it walks into the boss holding Night Terror ("lose 1 Courage whenever
+    // you play a Trick"), and a 34-turn boss fight at three Tricks a turn is a
+    // hundred Courage of self-inflicted damage that simply did not exist before.
+    // Measured on seed 777: 121 Courage to `curse/night-terror` across the run.
+    // That is the card working — Slay the Spire's Pain is the same card and the
+    // same price — but it is exactly the "play quality" noise this number exists
+    // to drown out, so the number moved. The 50-run batch above is where balance
+    // is actually observed; this block only ever cared about the chain.
+    run.maxCourage = 2000; run.courage = 2000;
     const pick = run.fork('sim:boss');
     let sawBoss = false, bossReward = null, steps = 0;
     const bossTrace = [];

@@ -57,6 +57,12 @@ export const Intent = /** @type {const} */ ({
  * @property {(c:Ctx)=>Preview}  [previewFn]  overrides the default preview
  * @property {(c:Ctx)=>boolean}  [playable]   extra play condition
  * @property {(c:Ctx)=>number}   [dynamicCost]
+ * @property {Object} [handHooks] behaviour that runs while the card sits in a
+ *   seat's HAND, dispatched by combat/hooks.js — the only place an `unplayable`
+ *   card can do anything at all, since `effect` is reached solely through
+ *   `_playCard` and `canPlay` refuses those. Same hook names as StatusDef.hooks
+ *   plus `onHeldTurnEnd(h)`, and one difference that matters: `h.owner` is the
+ *   CARD, so a hand hook names its actor explicitly (`h.loseHp(h.player, n)`).
  *
  * Text placeholders:
  *   {d}   → nums.d, recoloured live if modified by Strength/Weak/Vulnerable

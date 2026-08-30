@@ -6,9 +6,40 @@
  * colourless rewards.
  */
 import { CardType, Rarity, Target } from './schema.js';
-import { guard, draw, hit, hitAll, energy, N, cardsIn, handOthers, bleed, applySelf, removeOneDebuff } from './companions/_util.js';
+import { guard, draw, hit, hitAll, energy, N, handOthers, removeOneDebuff } from './companions/_util.js';
 
 const STATUS = CardType.STATUS, CURSE = CardType.CURSE, ATTACK = CardType.ATTACK, SKILL = CardType.SKILL;
+
+/* ── Cards that DO something while they are stuck in your hand ───────────────
+ *
+ * Nine of the cards below print a rule - "At the end of your turn, lose 2
+ * Courage", "When drawn, lose 1 Nerve", "you cannot play more than 3 Tricks
+ * each turn" - and not one of them used to do anything at all. A card's
+ * `effect` is invoked at exactly one place in the engine, inside `_playCard`,
+ * and that place is behind a `canPlay` that refuses every `unplayable` card. So
+ * the text was printed, the Curiosity that hands the card out was written, the
+ * card entered the deck, and the rule never once fired. Six of the nine come
+ * from real Curiosity outcomes.
+ *
+ * `handHooks` (combat/hooks.js) is the seam that reaches a held card. Two things
+ * about it differ from a status hook and both bite if forgotten:
+ *
+ *   h.owner is the CARD, not an actor. So every call names its actor:
+ *   `h.loseHp(h.player, n)`, never `h.loseHp(n)`.
+ *
+ *   Dispatch is global for `onCardDrawn` and `onCardPlayed`, so in a party a
+ *   Curse in YOUR hand hears about a teammate's draw. Each hook below checks
+ *   that what happened happened to its own holder.
+ *
+ * The `effect` on these cards is now an honest no-op rather than a second,
+ * unreachable copy of the rule. Two implementations of one sentence, one of
+ * them dead, is how they drift.
+ */
+
+/** This card's own live number - the INSTANCE's, so an upgrade is respected. */
+function hnum(h, key = 'n') { return (h.owner?.nums?.[key] ?? 0) | 0; }
+/** True when the thing that just happened happened to the Kid holding this card. */
+function mine(h) { return h.e.seatOfCard(h.card) === h.player; }
 
 // ── Status Tricks ───────────────────────────────────────────────────────────
 export const STATUS_CARDS = [
@@ -30,7 +61,9 @@ export const STATUS_CARDS = [
     cost: -2, target: Target.NONE, unplayable: true,
     text: 'Unplayable. At the end of your turn, lose {n} Courage.',
     flavor: 'Wax where wax should not be.',
-    nums: { n: 2 }, effect: (c) => bleed(c, N(c).n), upgrade: { nums: { n: 4 }, text: 'Unplayable. At the end of your turn, lose {n} Courage.' },
+    nums: { n: 2 }, effect: () => {},
+    handHooks: { onHeldTurnEnd(h) { h.loseHp(h.player, hnum(h)); } },
+    upgrade: { nums: { n: 4 }, text: 'Unplayable. At the end of your turn, lose {n} Courage.' },
   },
   {
     id: 'status/scrape', name: 'Scrape', companion: 'status', type: STATUS, rarity: Rarity.SPECIAL,
@@ -43,14 +76,24 @@ export const STATUS_CARDS = [
     cost: -2, target: Target.NONE, unplayable: true, ethereal: true, keywords: ['ethereal'],
     text: 'Unplayable. [Ethereal]. When drawn, lose {n} Nerve.',
     flavor: 'The room gets one shade dimmer.',
-    nums: { n: 1 }, effect: (c) => energy(c, -N(c).n), upgrade: { text: 'Unplayable. [Ethereal]. When drawn, lose {n} Nerve.' },
+    nums: { n: 1 }, effect: () => {},
+    // The seat is named because a Kid can be handed a card outside their own
+    // go, and `loseEnergy` with no seat moves whoever is currently acting.
+    handHooks: {
+      onCardDrawn(h) { if (h.card === h.owner) h.e.loseEnergy(hnum(h), 'gloom', h.player); },
+    },
+    upgrade: { text: 'Unplayable. [Ethereal]. When drawn, lose {n} Nerve.' },
   },
   {
     id: 'status/wrong-side', name: 'Wrong Side', companion: 'status', type: STATUS, rarity: Rarity.SPECIAL,
     cost: -2, target: Target.NONE, unplayable: true, ethereal: true, keywords: ['ethereal'],
     text: 'Unplayable. [Ethereal]. When drawn, lose {n} Courage.',
     flavor: 'You came back. Most of you.',
-    nums: { n: 3 }, effect: (c) => bleed(c, N(c).n), upgrade: { text: 'Unplayable. [Ethereal]. When drawn, lose {n} Courage.' },
+    nums: { n: 3 }, effect: () => {},
+    handHooks: {
+      onCardDrawn(h) { if (h.card === h.owner) h.loseHp(h.player, hnum(h)); },
+    },
+    upgrade: { text: 'Unplayable. [Ethereal]. When drawn, lose {n} Courage.' },
   },
 ];
 
@@ -61,21 +104,38 @@ export const CURSE_CARDS = [
     cost: -2, target: Target.NONE, unplayable: true,
     text: 'Unplayable. At the end of your turn, lose {n} Courage for each Trick in your hand.',
     flavor: 'You should have taken the other door.',
-    nums: { n: 1 }, effect: (c) => bleed(c, N(c).n * cardsIn(c, 'hand').length), upgrade: { text: 'Unplayable. At the end of your turn, lose {n} Courage for each Trick in your hand.' },
+    nums: { n: 1 }, effect: () => {},
+    // Counting itself is the printed rule read literally: Regret IS a Trick in
+    // your hand. It is also what makes it worth removing.
+    handHooks: {
+      onHeldTurnEnd(h) { h.loseHp(h.player, hnum(h) * h.player.piles.hand.length); },
+    },
+    upgrade: { text: 'Unplayable. At the end of your turn, lose {n} Courage for each Trick in your hand.' },
   },
   {
     id: 'curse/bad-luck', name: 'Bad Luck', companion: 'curse', type: CURSE, rarity: Rarity.CURSE,
     cost: -2, target: Target.NONE, unplayable: true,
     text: 'Unplayable. At the end of your turn, gain {n} Weak.',
     flavor: 'Thirteen stairs. Every time. You have counted.',
-    nums: { n: 1 }, effect: (c) => applySelf(c, 'weak', N(c).n), upgrade: { text: 'Unplayable. At the end of your turn, gain {n} Weak.' },
+    nums: { n: 1 }, effect: () => {},
+    // `fresh`: Weak's own decay bucket is 'turnEnd' and runs moments after this,
+    // so without it the stack expires in the same breath it arrives and the
+    // Curse is inert. See CombatEngine._decayBucket.
+    handHooks: {
+      onHeldTurnEnd(h) { h.applyStatus(h.player, 'weak', hnum(h), { fresh: true }); },
+    },
+    upgrade: { text: 'Unplayable. At the end of your turn, gain {n} Weak.' },
   },
   {
     id: 'curse/clingy-shadow', name: 'Clingy Shadow', companion: 'curse', type: CURSE, rarity: Rarity.CURSE,
     cost: -2, target: Target.NONE, unplayable: true,
     text: 'Unplayable. At the end of your turn, gain {n} Frail.',
     flavor: 'It is yours. It is just not doing what you are doing.',
-    nums: { n: 1 }, effect: (c) => applySelf(c, 'frail', N(c).n), upgrade: { text: 'Unplayable. At the end of your turn, gain {n} Frail.' },
+    nums: { n: 1 }, effect: () => {},
+    handHooks: {
+      onHeldTurnEnd(h) { h.applyStatus(h.player, 'frail', hnum(h), { fresh: true }); },
+    },
+    upgrade: { text: 'Unplayable. At the end of your turn, gain {n} Frail.' },
   },
   {
     id: 'curse/creaky-floorboard', name: 'Creaky Floorboard', companion: 'curse', type: CURSE, rarity: Rarity.CURSE,
@@ -88,21 +148,38 @@ export const CURSE_CARDS = [
     cost: -2, target: Target.NONE, unplayable: true,
     text: 'Unplayable. At the end of your turn, lose {n} Courage.',
     flavor: 'Not sad exactly. Just weighted.',
-    nums: { n: 2 }, effect: (c) => bleed(c, N(c).n), upgrade: { text: 'Unplayable. At the end of your turn, lose {n} Courage.' },
+    nums: { n: 2 }, effect: () => {},
+    handHooks: { onHeldTurnEnd(h) { h.loseHp(h.player, hnum(h)); } },
+    upgrade: { text: 'Unplayable. At the end of your turn, lose {n} Courage.' },
   },
   {
     id: 'curse/night-terror', name: 'Night Terror', companion: 'curse', type: CURSE, rarity: Rarity.CURSE,
     cost: -2, target: Target.NONE, unplayable: true,
     text: 'Unplayable. While this is in your hand, lose {n} Courage whenever you play a Trick.',
     flavor: 'It is under the bed and it is doing the breathing on purpose.',
-    nums: { n: 1 }, effect: (c) => bleed(c, N(c).n), upgrade: { text: 'Unplayable. While this is in your hand, lose {n} Courage whenever you play a Trick.' },
+    nums: { n: 1 }, effect: () => {},
+    handHooks: {
+      onCardPlayed(h) { if (h.card !== h.owner && mine(h)) h.loseHp(h.player, hnum(h)); },
+    },
+    upgrade: { text: 'Unplayable. While this is in your hand, lose {n} Courage whenever you play a Trick.' },
   },
   {
     id: 'curse/lost-mitten', name: 'Lost Mitten', companion: 'curse', type: CURSE, rarity: Rarity.CURSE,
     cost: -2, target: Target.NONE, unplayable: true, ethereal: true, keywords: ['ethereal'],
     text: 'Unplayable. [Ethereal]. While this is in your hand, you cannot play more than {n} Tricks each turn.',
     flavor: 'One mitten is worse than no mittens.',
-    nums: { n: 3 }, effect: () => {}, upgrade: { text: 'Unplayable. [Ethereal]. While this is in your hand, you cannot play more than {n} Tricks each turn.' },
+    nums: { n: 3 }, effect: () => {},
+    // A veto that returns a STRING prints it instead of the generic "Something
+    // is stopping you" - the Mitten knows exactly why it is saying no, and a
+    // card greyed out for no stated reason is its own small silence.
+    handHooks: {
+      vetoPlay(h) {
+        const cap = hnum(h);
+        const played = h.player.playedThisTurn ? h.player.playedThisTurn.length : 0;
+        return played >= cap ? `Lost Mitten - no more than ${cap} Tricks this turn.` : false;
+      },
+    },
+    upgrade: { text: 'Unplayable. [Ethereal]. While this is in your hand, you cannot play more than {n} Tricks each turn.' },
   },
 ];
 

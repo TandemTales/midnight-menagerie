@@ -19,13 +19,23 @@ were caught by this gate rather than by play:
   * `wink/silk-lifeline` and `wink/everyone-duck` registered `beforeDamaged`,
     which nothing dispatches. The real hook is `onIncomingHit`.
 
-TWO REGISTRIES
---------------
+THREE REGISTRIES
+----------------
   engine hooks  `engine.hooks.add(name, ...)` — must match a name the engine
-                dispatches via hooks.dispatch / hooks.reduce / hooks.any.
+                dispatches via hooks.dispatch / hooks.reduce / hooks.any /
+                hooks.veto.
   companion hooks
                 `U.onHook(name, statusId, fn)` — must match a name some
                 companion fires via `U.fire(c, name, ...)`.
+  declared hooks
+                `hooks: { name(h) {…} }` on a status, relic or enemy def, and
+                `handHooks: { … }` on a card. This is the BIGGEST registry by
+                far — 76 keys against 92 call-site listeners — and it was going
+                completely unchecked: the two regexes for it were written,
+                left unused at the top of this file, and the gate reported
+                green over them. A misspelling here is the same silence as
+                anywhere else, and it is the shape the 2026-08-30 sweep found
+                nine cards' worth of in data/neutral.js.
 
 Exit code 1 if any listener names a hook nothing fires.
 """
@@ -39,7 +49,14 @@ except Exception:
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SRC = os.path.join(ROOT, "game", "src")
 
-DISPATCH = re.compile(r"hooks\.(?:dispatch|reduce|any)\(\s*['\"]([A-Za-z][\w:]*)['\"]")
+DISPATCH = re.compile(r"hooks\.(?:dispatch|reduce|any|veto)\(\s*['\"]([A-Za-z][\w:]*)['\"]")
+# Dispatched under a COMPUTED name, so no literal sits at the call site.
+# `CombatEngine._tickStatuses` does
+#     const hookName = phase === 'turnStart' ? 'onTurnStart' : 'onTurnEnd';
+#     this.hooks.dispatch(hookName, ...)
+# Both are real. Anything added here needs its call site named beside it, or
+# the allowlist quietly becomes the place misspellings go to hide.
+COMPUTED_DISPATCH = {"onTurnStart", "onTurnEnd"}
 ADD = re.compile(r"hooks\.add\(\s*['\"]([A-Za-z][\w:]*)['\"]")
 # `fire(c, name)` and `fireCompanionHook(c, name)` are BOTH real dispatch sites.
 # Matching only the first made a live Marmalade Power (always-lands, listening on
@@ -48,9 +65,67 @@ ADD = re.compile(r"hooks\.add\(\s*['\"]([A-Za-z][\w:]*)['\"]")
 FIRE = re.compile(r"\bfire(?:CompanionHook)?\(\s*\w+\s*,\s*['\"]([A-Za-z][\w:]*)['\"]")
 COMMENT = re.compile(r"^\s*(//|\*|/\*)")
 ONHOOK = re.compile(r"\bonHook\(\s*['\"]([A-Za-z][\w:]*)['\"]")
-# Statuses declare their hooks as object keys under `hooks: { name: ... }`.
-HOOKS_BLOCK = re.compile(r"hooks:\s*\{", re.M)
-HOOK_KEY = re.compile(r"^\s*([A-Za-z]\w*)\s*:\s*(?:D\()?", re.M)
+# Statuses, relics and enemy defs declare their hooks as object keys under
+# `hooks: { name: ... }`; a card declares `handHooks: { ... }`.
+HOOKS_BLOCK = re.compile(r"\b(?:hooks|handHooks)\s*:\s*\{")
+HOOK_KEY = re.compile(r"([A-Za-z_]\w*)\s*(?:\(|:)")
+
+
+def declared_hooks(text, brace):
+    r"""Top-level keys of the object literal whose '{' is at `brace`.
+
+    A real (small) scan rather than a line regex, because the previous attempt
+    at this lived at the top of the file and was never called: hook bodies are
+    full of braces, strings and comments, and `^\s*name:` matches half the
+    fields of every def in the game. Strings, template literals and comments are
+    skipped so only structural braces move the depth.
+    """
+    i, depth, n, keys = brace, 0, len(text), []
+    while i < n:
+        ch = text[i]
+        if ch in "'\"`":
+            q, i = ch, i + 1
+            while i < n:
+                if text[i] == "\\":
+                    i += 2
+                    continue
+                if text[i] == q:
+                    break
+                i += 1
+            i += 1
+            continue
+        if ch == "/" and i + 1 < n and text[i + 1] == "/":
+            i = text.find("\n", i)
+            if i < 0:
+                break
+            continue
+        if ch == "/" and i + 1 < n and text[i + 1] == "*":
+            j = text.find("*/", i + 2)
+            i = (j + 2) if j >= 0 else n
+            continue
+        if ch == "{":
+            depth += 1
+            i += 1
+            continue
+        if ch == "}":
+            depth -= 1
+            i += 1
+            if depth == 0:
+                return keys
+            continue
+        if depth == 1 and (ch.isalpha() or ch == "_"):
+            m = HOOK_KEY.match(text, i)
+            if m:
+                k = i - 1
+                while k >= 0 and text[k] in " \t\r\n":
+                    k -= 1
+                # a KEY position: the first thing after '{' or after a ','
+                if k >= 0 and text[k] in "{,":
+                    keys.append((m.group(1), text.count("\n", 0, i) + 1))
+                i = m.end()
+                continue
+        i += 1
+    return keys
 
 
 def js_files():
@@ -62,7 +137,7 @@ def js_files():
 
 def main():
     dispatched, fired = set(), set()
-    listeners, companion_listeners = [], []
+    listeners, companion_listeners, declared = [], [], []
     files = list(js_files())
 
     for path in files:
@@ -79,11 +154,18 @@ def main():
                 listeners.append((rel, lineno, name, line.strip()))
             for name in ONHOOK.findall(line):
                 companion_listeners.append((rel, lineno, name, line.strip()))
+        for m in HOOKS_BLOCK.finditer(text):
+            for name, ln in declared_hooks(text, m.end() - 1):
+                declared.append((rel, ln, name, text.split("\n")[ln - 1].strip()))
 
+    dispatched |= COMPUTED_DISPATCH
     problems = []
     for rel, ln, name, line in listeners:
         if name not in dispatched:
             problems.append((rel, ln, name, line, "engine", sorted(dispatched)))
+    for rel, ln, name, line in declared:
+        if name not in dispatched:
+            problems.append((rel, ln, name, line, "declared", sorted(dispatched)))
     for rel, ln, name, line in companion_listeners:
         if name not in fired:
             problems.append((rel, ln, name, line, "companion", sorted(fired)))
@@ -95,7 +177,8 @@ def main():
         print(f"      -> nothing dispatches the {kind} hook \"{name}\". Did you mean: {', '.join(near[:6])}")
 
     print(f"RESULT: {len(files)} files, {len(dispatched)} engine hooks, {len(fired)} companion hooks, "
-          f"{len(listeners) + len(companion_listeners)} listeners, {len(problems)} unknown")
+          f"{len(listeners) + len(companion_listeners)} listeners, {len(declared)} declared, "
+          f"{len(problems)} unknown")
     return 1 if problems else 0
 
 

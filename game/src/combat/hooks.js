@@ -10,8 +10,9 @@
  *   1. relics                (engine.relics, array order)
  *   2. the relevant actor's statuses  (Map insertion order)
  *   3. the relevant actor's powers    (Map insertion order)
- *   4. board objects         (engine.objects, insertion order)
- *   5. engine.addHook(...)   registrations (insertion order)
+ *   4. the relevant SEAT's hand       (hand order) — see `handHooks` below
+ *   5. board objects         (engine.objects, insertion order)
+ *   6. engine.addHook(...)   registrations (insertion order)
  *
  * Scoped dispatch (`actorHooks`) only asks the one actor plus relics — used for
  * modifyDamageDealt (attacker), modifyDamageTaken (defender), modifyBlockGain,
@@ -21,6 +22,30 @@
  * Relics only apply to the player side. An enemy relic makes no sense and an
  * enemy inheriting the player's Keepsakes would be a bug factory.
  *
+ * ── handHooks: a CARD that acts while it sits in your hand ──────────────────
+ * A CardDef may declare `handHooks: { … }`, and those fire while the card is in
+ * a seat's HAND. This exists because a card's `effect` is invoked at exactly one
+ * place in the engine — inside `_playCard`, behind a `canPlay` that refuses
+ * every `unplayable` card — so nine Status and Curse cards in data/neutral.js
+ * printed rules ("At the end of your turn, lose 2 Courage", "When drawn, lose 1
+ * Nerve") that had never once run. Six of them are handed out by real Curiosity
+ * outcomes.
+ *
+ * `h.owner` is the CARD, not an actor, so a hand hook must name its actor
+ * explicitly — `h.loseHp(h.player, n)`, not `h.loseHp(n)`. `h.player` is the
+ * seat holding the card, tagged onto the provider the way relics tag theirs.
+ * The hooks are read off the DEF, so a preview fork sees the same providers as
+ * the real board.
+ *
+ * The names below are ordinary hook names and reach hand cards through the
+ * normal dispatch, with ONE addition that could not:
+ *
+ *   onHeldTurnEnd(h)  your turn is ending and this card is STILL IN YOUR HAND.
+ *                     `onTurnEnd` cannot serve: it is step 3 of `_endTurn` and
+ *                     step 1 has already discarded the hand, so a card asking
+ *                     "am I still held?" would always hear no. Dispatched from
+ *                     `_closeSeatHand`, per seat, before the hand resolves.
+ *
  * ── Hook names ──────────────────────────────────────────────────────────────
  * Void dispatch:
  *   onCombatStart(h)  onCombatEnd(h)
@@ -28,6 +53,7 @@
  *   onApply(h)        onRemove(h)           h.actor, h.id, h.delta
  *   onCardPlayed(h)   h.card, h.target, h.index
  *   onCardDrawn(h)    onCardDiscarded(h)    onCardExhausted(h)   h.card, h.reason
+ *   onHeldTurnEnd(h)  h.actor, h.turn, h.side — hand cards only, see above
  *   onShuffle(h)      h.pile, h.count
  *   onAttacked(h)     h.attacker, h.defender, h.hpLoss, h.blocked, h.kind
  *   onDamaged(h)      same payload, fires for every damage kind
@@ -192,11 +218,36 @@ export class Hooks {
     }
   }
 
-  /** Relics (player side only) + this actor's statuses/powers + objects + extras. */
+  /**
+   * Cards sitting in one seat's HAND.
+   *
+   * `seat` is tagged onto every record the way `_relicProviders` tags its own:
+   * `_payload` reads it to answer `h.player`, and a card — unlike a status —
+   * has no `.side` of its own to fall back on, so without the tag every hand
+   * hook in a party would answer with seat 0.
+   */
+  _handProviders(pl, name, out) {
+    const hand = pl && pl.piles && pl.piles.hand;
+    if (!hand) return;
+    for (const card of hand) {
+      const fn = card && card.def && card.def.handHooks && card.def.handHooks[name];
+      if (fn) out.push({ fn, owner: card, seat: pl, source: 'hand', stacks: 1, id: card.id, def: card.def });
+    }
+  }
+
+  /** Just the hand — for dispatch sites that are about held cards and nothing else. */
+  handHooks(pl, name) {
+    const out = [];
+    this._handProviders(pl, name, out);
+    return out;
+  }
+
+  /** Relics (player side only) + this actor's statuses/powers/hand + objects + extras. */
   actorHooks(actor, name) {
     const out = [];
     if (actor && actor.side === 'player') this._relicProviders(name, out);
     this._actorProviders(actor, name, out);
+    this._handProviders(actor, name, out);
     this._objectProviders(name, out);
     this._extraProviders(name, out);
     return out;
@@ -209,7 +260,7 @@ export class Hooks {
     // Every seat, in seat order. Dispatch order is the reason this is a loop
     // and not just seat 0: hook order has to be deterministic across a party
     // or two clients replaying the same seed diverge.
-    for (const pl of this.e.players) this._actorProviders(pl, name, out);
+    for (const pl of this.e.players) { this._actorProviders(pl, name, out); this._handProviders(pl, name, out); }
     for (const a of this.e.allies) this._actorProviders(a, name, out);
     for (const en of this.e.enemies) this._actorProviders(en, name, out);
     this._objectProviders(name, out);
@@ -283,6 +334,24 @@ export class Hooks {
       if (p.fn(this._payload(p, payload))) return true;
     }
     return false;
+  }
+
+  /**
+   * `any`, but the first refuser's ANSWER comes back instead of `true`.
+   *
+   * A veto that returns a string gets to say why, and the one caller
+   * (`canPlay`) prints it. Returning `true` still works and still lands on the
+   * generic sentence — "Something is stopping you" is the right thing to say
+   * about a mystery and the wrong thing to say about Lost Mitten, which knows
+   * exactly what it is doing and can tell you.
+   */
+  veto(name, payload = {}, providers = null) {
+    const list = providers || this.globalHooks(name);
+    for (const p of list) {
+      const answer = p.fn(this._payload(p, payload));
+      if (answer) return answer;
+    }
+    return null;
   }
 
   /** Snapshot for engine cloning — extras hold live fn refs so we copy the list. */
