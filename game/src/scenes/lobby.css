@@ -1,0 +1,252 @@
+/* The Treehouse — scenes/lobby.js. OWNER: frontend.
+ *
+ * Every class here is `lo__*` or `lo`, which no other sheet declares. Scene
+ * stylesheets are global and `ensureCss()` never unloads one, so a shared class
+ * name is a permanent, silent reformat of somebody else's screen — see
+ * tests/scene-css/check.py, which exists because `.rs-door` meant two different
+ * things and deleted every Safe Room in the game.
+ *
+ * A torch in a treehouse at night: one warm panel with everything on it, the
+ * dark left dark around the edges, and the title's flame palette for anything
+ * that is lit — ready, yours, or open. */
+
+.lo {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: clamp(16px, 4vw, 48px);
+  overflow-y: auto;
+  z-index: var(--z-scene);
+  font-family: var(--font-body);
+  color: var(--text-mid);
+}
+
+/* NIGHT. The 3D stage behind this screen is the inside of the mansion and this
+   screen is outside it, so the room is put out: a near-opaque cool wash with a
+   little warmth low and centre, where a torch would be. What survives is
+   silhouette and a suggestion of depth, which is what "outdoors, dark" looks
+   like. `pointer-events: none` so the whole panel above it stays clickable. */
+.lo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 80% at 50% 108%,
+      color-mix(in srgb, var(--flame-500) 20%, transparent) 0%,
+      transparent 58%),
+    linear-gradient(180deg,
+      rgb(6 7 14 / 0.94) 0%,
+      rgb(8 9 18 / 0.90) 45%,
+      rgb(5 6 12 / 0.95) 100%);
+}
+
+.lo__door,
+.lo__room { position: relative; }
+
+.lo__door,
+.lo__room {
+  width: min(720px, 100%);
+  background: var(--surface-2);
+  border: 1px solid var(--surface-line);
+  border-radius: 14px;
+  padding: clamp(20px, 3vw, 34px);
+  box-shadow: 0 24px 60px rgb(0 0 0 / 0.45);
+}
+
+.lo__title {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  color: var(--text-hi);
+  letter-spacing: 0.01em;
+}
+
+.lo__sub {
+  margin: 0 0 18px;
+  font-size: var(--fs-sm);
+  color: var(--text-lo);
+  line-height: 1.5;
+}
+
+.lo__warn {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--warn-500) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--warn-500) 40%, transparent);
+  color: var(--warn-300);
+  font-size: var(--fs-sm);
+}
+
+/* ── the door ─────────────────────────────────────────────────────────────── */
+
+.lo__form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.lo__code {
+  flex: 1 1 260px;
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: 9px;
+  border: 1px solid var(--surface-line-hi);
+  background: var(--surface-1);
+  color: var(--text-hi);
+  font-family: var(--font-num);
+  font-size: var(--fs-lg);
+  letter-spacing: 0.04em;
+}
+
+.lo__code:focus-visible { outline: var(--focus-ring); }
+
+.lo__roll,
+.lo__enter,
+.lo__ready,
+.lo__go,
+.lo__back {
+  padding: 12px 18px;
+  border-radius: 9px;
+  border: 1px solid var(--surface-line-hi);
+  background: var(--surface-3);
+  color: var(--text-hi);
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  cursor: pointer;
+  transition: background var(--t-quick) var(--ease-out),
+              border-color var(--t-quick) var(--ease-out);
+}
+
+.lo__roll:hover,
+.lo__enter:hover:not(:disabled),
+.lo__ready:hover,
+.lo__go:hover:not(:disabled),
+.lo__back:hover { border-color: var(--flame-400); }
+
+.lo__enter:disabled,
+.lo__go:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.lo__roll:focus-visible,
+.lo__enter:focus-visible,
+.lo__ready:focus-visible,
+.lo__go:focus-visible,
+.lo__back:focus-visible { outline: var(--focus-ring); }
+
+/* ── the room ─────────────────────────────────────────────────────────────── */
+
+.lo__head { margin-bottom: 16px; }
+
+.lo__code-out {
+  margin: 0 0 8px;
+  font-family: var(--font-num);
+  font-size: var(--fs-sm);
+  color: var(--text-lo);
+}
+
+.lo__code-out span {
+  color: var(--flame-300);
+  font-size: var(--fs-lg);
+  letter-spacing: 0.05em;
+}
+
+.lo__roster {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.lo__seat {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 9px;
+  background: var(--surface-1);
+  border: 1px solid var(--surface-line);
+  font-size: var(--fs-md);
+}
+
+.lo__seat.is-me { border-color: var(--flame-400); }
+.lo__seat.is-ready .lo__state { color: var(--good-300); }
+.lo__seat.is-empty { opacity: 0.4; font-style: italic; }
+
+.lo__n {
+  font-family: var(--font-num);
+  font-size: var(--fs-lg);
+  color: var(--text-lo);
+  text-align: center;
+}
+
+.lo__who { color: var(--text-hi); }
+.lo__who i { color: var(--text-lo); font-style: normal; }
+.lo__who b { color: var(--flame-300); font-weight: normal; }
+
+.lo__state {
+  font-size: var(--fs-sm);
+  color: var(--text-lo);
+}
+
+.lo__mine {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.lo__pick {
+  flex: 1 1 200px;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 9px;
+  border: 1px solid var(--surface-line-hi);
+  background: var(--surface-1);
+  color: var(--text-hi);
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+}
+
+.lo__pick:focus-visible { outline: var(--focus-ring); }
+
+.lo__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.lo__ready.is-on {
+  background: color-mix(in srgb, var(--good-500) 22%, var(--surface-3));
+  border-color: var(--good-500);
+}
+
+.lo__go {
+  background: color-mix(in srgb, var(--flame-500) 26%, var(--surface-3));
+  border-color: var(--flame-400);
+}
+
+.lo__wait {
+  margin: 0;
+  flex: 1 1 auto;
+  font-size: var(--fs-sm);
+  color: var(--text-lo);
+}
+
+.lo__back { margin-left: auto; }
+
+/* Matches the select screen's exit so the two doors feel like one game. */
+.lo.is-leaving {
+  opacity: 0;
+  transition: opacity var(--t-scene) var(--ease-in);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lo.is-leaving { transition: none; }
+  .lo__roll, .lo__enter, .lo__ready, .lo__go, .lo__back { transition: none; }
+}

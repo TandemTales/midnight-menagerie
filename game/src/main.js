@@ -19,6 +19,7 @@ import { Atmosphere } from './fx/atmosphere.js';
 import { TitleScene } from './scenes/title.js';
 import { ClubhouseScene } from './scenes/clubhouse.js';
 import { SelectScene } from './scenes/select.js';
+import { LobbyScene } from './scenes/lobby.js';
 import { MapScene } from './scenes/map.js';
 import { CombatScene } from './scenes/combat.js';
 import { RewardScene } from './scenes/reward.js';
@@ -51,6 +52,7 @@ ctx.scenes
   .register('title',      (c) => new TitleScene(c))
   .register('clubhouse',  (c) => new ClubhouseScene(c))
   .register('select',     (c) => new SelectScene(c))
+  .register('lobby',      (c) => new LobbyScene(c))
   .register('map',        (c) => new MapScene(c))
   .register('combat',     (c) => new CombatScene(c))
   .register('reward',     (c) => new RewardScene(c))

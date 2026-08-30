@@ -79,6 +79,10 @@ function menuItems(hasRun) {
   const items = [];
   if (hasRun) items.push({ id: 'continue', label: 'Continue', hint: 'Return to the expedition in progress' });
   items.push({ id: 'new',       label: 'New Expedition', hint: 'Choose a Kid, a Companion, and go in' });
+  /* The wire's front door. `net/lobby.js` has existed, tested, since 2026-08-28
+     with nothing to reach it from — this line is the whole difference between
+     a networked game somebody can start and one that only tests can. */
+  items.push({ id: 'together',  label: 'Play Together',  hint: 'Meet at the treehouse and go in with somebody else' });
   items.push({ id: 'menagerie', label: 'The Menagerie',  hint: 'The clubhouse, the board, the roster' });
   items.push({ id: 'settings',  label: 'Settings',       hint: 'Sound, motion, readability' });
   items.push({ id: 'credits',   label: 'Credits',        hint: 'Who built the house' });
@@ -350,7 +354,7 @@ export class TitleScene extends Scene {
        screen and measured 6 fps. See ui/petart.js.
        The Kids are not in here any more: they are files on disk now, decoded by
        the browser off the main thread, so there is nothing to pre-render. */
-    if (id === 'new' || id === 'menagerie' || id === 'continue') warmFaces();
+    if (id === 'new' || id === 'menagerie' || id === 'continue' || id === 'together') warmFaces();
     switch (id) {
       case 'continue': {
         const run = Save?.loadRun?.();
@@ -359,6 +363,7 @@ export class TitleScene extends Scene {
         break;
       }
       case 'new':       ctx.scenes?.go?.('select', {}); break;
+      case 'together':  ctx.scenes?.go?.('lobby', {}); break;
       case 'menagerie': ctx.scenes?.go?.('clubhouse', { panel: 'menagerie' }); break;
       case 'settings':  this._openSettings(); break;
       case 'credits':   this._openOverlay('credits'); break;
