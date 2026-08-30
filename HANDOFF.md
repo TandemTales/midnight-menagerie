@@ -213,12 +213,23 @@ is the soundboard's own test payload) and `card:retain` (no retain event is
 emitted; retained cards are resolved inside the engine's turn-end pass with
 nothing published).
 
-**One netcode case is left, and it needs the transport.** `_pump` applies the
-log in order now, so anything arriving in the same turn of the event loop is
-sorted first. An input arriving in a LATER task cannot be put back in its place;
-that is harmless for room inputs, which commute, and reported as a desync for a
-PLAY or a SNACK, which do not. Closing it needs a turn barrier and idle
-heartbeats — a protocol decision that belongs with Steam P2P.
+**The netcode case is HALF closed, 2026-08-29, and the half that is left is
+named.** `_pump` applies the log in order, so anything arriving in the same turn
+of the event loop is sorted first. An input arriving in a LATER task cannot be
+put back in its place — harmless for room inputs, which commute, a real
+divergence for a PLAY or a SNACK.
+
+The CROSS-TURN form of that is now impossible rather than merely reported: the
+turn barrier holds turn-T combat input until every seat in the fight has said it
+reached turn T, and `beat()` is how a seat that is thinking says so. That half
+never needed the transport, which is why this entry used to be wrong about it.
+
+What is left is the SAME-turn race, two seats acting at once with their inputs
+crossing. It needs rollback — `_resumeCombat` and the digests are most of that
+machinery — or a sequencer stamping a global order, which reintroduces the
+host-dependency §8.11 calls StS2's loudest weakness. THAT is the decision that
+belongs with Steam P2P, because the transport sets the latency budget that
+picks between them.
 
 **Closed 2026-08-29 (third session), and read this before picking the list
 above back up:**

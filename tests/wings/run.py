@@ -8,16 +8,26 @@ Needs the dev server on :8777 (python tools/devserver.py 8777).
 places two to four. The map draws the marked area, names the wing along the
 footer, lists it in the legend and shows its rule in the hover card.
 
-**Six of the eight were implemented nowhere.** A search for each id returned
-`state/mapgen.js` and nothing else. The player was told "Guard is halved at the
-start of each of your turns while you are inside the marked area" and nothing
-halved anything. `moonlit` is implemented as of 2026-08-29, which makes three.
+**ALL EIGHT DO SOMETHING, as of 2026-08-29.** Six of them did not, that
+morning: a search for each id returned `state/mapgen.js` and nothing else, and
+the player was told "Guard is halved at the start of each of your turns while
+you are inside the marked area" while nothing halved anything. That is
+CONTRACTS 54 — content that describes itself will be believed — and the history
+stays here because the manifest below is only interesting if you know what it
+is guarding against.
 
-The suite asserts the three that work AND keeps the manifest of which is which
-honest: implementing one of the five without updating `WIRED` fails, and so
-does losing one of the three. It also covers four sound cues that sat in the
-bank with no caller — the only thing that would have played them was a bus
+The suite asserts every wing's EFFECT and keeps the `WIRED` manifest honest in
+both directions: a wing that quietly stops doing anything fails, and so does one
+implemented without being recorded. It also covers four sound cues that sat in
+the bank with no caller — the only thing that would have played them was a bus
 handler listening for a name nothing emits.
+
+Two of the eight were also reinterpreted, and the designer confirmed both on
+2026-08-29. Long Shadows is "Guard you GAIN is halved", because Guard is already
+wiped at the start of a player turn so the authored reading is not merely inert
+but backwards. The Lights Are Out has its own stacking status, displayed as
+**Lurking** — it was "Unseen", which is Hush's, and `tests/status-names/` now
+gates that whole class.
 
 Exit code 0 only when every assertion passes and the page logs no error.
 """

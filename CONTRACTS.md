@@ -1062,7 +1062,10 @@ it, so the screen can never offer a party the engine refuses or refuse one it ac
   because reporting the rest shouts six times during an ordinary reward screen —
   both clients apply their own input as they issue it, so whichever seat acts
   second always sees the other's arrive late. And a full turn barrier is only
-  ever needed for combat, which is worth knowing before anyone designs one.
+  ever needed for combat — which is what `_heldByBarrier` does, built
+  2026-08-29: it gates PLAY/SNACK/END and nothing else, precisely because the
+  rest commute. Gating room inputs would stall a reward screen behind a peer
+  reading a Curiosity, for a guarantee those inputs do not need.
 - **The route is shared and therefore VOTED** (StS2-REFERENCE 8.5). `ACT.MAP_VOTE` is
   one seat's vote and is decisive only when it is the last one owed, the same shape as
   `ROOM_DONE`; `run.resolveVote()` then runs a weighted roulette on EVERY client, so

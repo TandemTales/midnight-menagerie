@@ -15,15 +15,17 @@
  * wing in the footer, lists it in the legend and shows its `rule` text in the
  * hover card.
  *
- * **On 2026-08-29 only two of the eight did anything at all.** A repo-wide
- * search for each id found references in `state/mapgen.js` and nowhere else,
- * for six of them. The player is told "Guard is halved at the start of each of
- * your turns while you are inside the marked area" and nothing halves anything.
+ * **On the morning of 2026-08-29 only two of the eight did anything at all.**
+ * A repo-wide search for each id found references in `state/mapgen.js` and
+ * nowhere else, for six of them. The player was told "Guard is halved at the
+ * start of each of your turns while you are inside the marked area" and nothing
+ * halved anything. All eight are wired now; the history stays because it is
+ * what this suite is for (CONTRACTS 54).
  *
- * This suite exists to (a) assert the ones that ARE implemented actually work,
- * and (b) keep the list of which is which HONEST. The manifest below is
- * asserted against a repo-wide search, so implementing one of the five without
- * updating this file fails, and so does silently losing one of the three.
+ * This suite exists to (a) assert every wing's EFFECT actually happens, and
+ * (b) keep the list of which is which HONEST. The manifest below is asserted
+ * against `HAZARDS`, so a wing that quietly stops doing anything fails, and so
+ * does one implemented without being recorded here.
  */
 import { Run } from '../../game/src/state/run.js';
 import { HAZARDS } from '../../game/src/state/mapgen.js';
@@ -43,10 +45,11 @@ const note = (t) => { const d = document.createElement('div'); d.className = 'ga
 /**
  * What is actually wired, and where. Keep this true.
  *
- * The five `null`s are not a to-do list this file invented — they are what a
- * search for each id returns today: mapgen and nothing else. Four of them need
- * engine support that does not exist (`chill` is not a status; nothing hides an
- * intent; nothing adds an enemy at build time; nothing halves Guard per turn).
+ * Every value is now a place, not a `null`. It used to hold five nulls — what a
+ * search for each id returned that morning: mapgen and nothing else. The shape
+ * is kept rather than simplified away, because a `null` here is the one thing
+ * that makes "declared but doing nothing" visible, and the assertion below
+ * still reads the count. If a wing is ever gutted, this is where it shows.
  */
 const WIRED = {
   /* ROOM effects — state/run.js enterNode */

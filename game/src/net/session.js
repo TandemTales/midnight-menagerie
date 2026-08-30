@@ -144,8 +144,6 @@ export class Session {
 
     /** Every input, in the total order every client agrees on. */
     this.log = [];
-    /** Inputs that arrived for a turn we have not reached yet. */
-    this._pending = [];
     /** Our own monotonic counter, so our inputs have a stable order. */
     this._seq = 0;
     /** Digests other peers reported, by `${turn}:${peerSeat}`. */
@@ -243,11 +241,15 @@ export class Session {
    * ── What it does NOT fix ────────────────────────────────────────────────
    *
    * An input that arrives in a LATER task, sorting before one already applied,
-   * cannot be put back in its place — the board has moved. That is a genuine
-   * divergence and `_accept` reports it as one rather than applying it out of
-   * order and leaving the digest to notice a turn later, a long way from the
-   * cause. Closing that needs a turn barrier and idle heartbeats, which is a
-   * protocol decision belonging with the transport work.
+   * cannot be put back in its place — the board has moved.
+   *
+   * The CROSS-TURN half of that is closed: `_heldByBarrier` will not let this
+   * client reach turn T at all until every seat in the fight has said it
+   * reached turn T, so the straggler from turn T-1 can no longer be a turn
+   * behind. What is left is the SAME-turn race, and `_accept` still reports it
+   * rather than applying it out of order and leaving the digest to notice a
+   * turn later, a long way from the cause. See `_heldByBarrier` for the two
+   * ways to close that and why the choice belongs with the transport.
    */
   /** One message, out of band, because the cursor has already passed it. */
   _runOne(msg) {
@@ -486,9 +488,11 @@ export class Session {
    * only when it is a COMBAT input, because room inputs commute and combat
    * inputs do not. See `_accept`.
    *
-   * Closing even that needs a turn barrier and idle heartbeats so a client
-   * knows when it is safe to advance — a protocol decision that belongs with
-   * the transport work, and there is no transport yet.
+   * The cross-turn form of it is closed — see `_heldByBarrier`, which is the
+   * turn barrier this comment used to ask for, and `beat()`, which is how a
+   * seat that is thinking says where it is. The SAME-turn race is what remains
+   * and it needs rollback or a sequencer, neither of which should be chosen
+   * before the transport sets the latency budget.
    */
   _accept(msg, from) {
     if (!msg) return;
