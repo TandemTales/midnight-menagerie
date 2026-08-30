@@ -29,6 +29,8 @@
  */
 import { Run } from '../../game/src/state/run.js';
 import { HAZARDS } from '../../game/src/state/mapgen.js';
+import { registerWingStatuses } from '../../game/src/data/wings.js';
+import { getStatus } from '../../game/src/combat/statuses.js';
 
 const passes = [], fails = [];
 const out = document.getElementById('out');
@@ -81,6 +83,49 @@ const stamp = (run, id, hazard) => {
 };
 
 async function main() {
+
+  // ── the rule text and the status it applies ────────────────────────────
+  /* The blueprint PROMISES a status by name and `applyWing` DELIVERS one by id,
+     and nothing tied the two together. That is how The Lights Are Out came to
+     promise "2 Unseen" while applying `lurking` — which was right, since
+     Hush owns `unseen` — and then display `lurking` AS "Unseen", which put two
+     statuses behind one word (CONTRACTS 55).
+
+     Renaming the status to Lurking fixed the collision and immediately created
+     the opposite risk: a rule sentence still saying "Unseen" while the chip on
+     the enemy says "Lurking". This is the check for that. It is narrow on
+     purpose — only wings that actually apply a status, only that status's own
+     display name — so it asserts a real correspondence rather than grepping
+     prose for capitalised words. */
+  head('Every wing that applies a status names it in its rule');
+  {
+    registerWingStatuses();
+    /* wing id -> the status id `applyWing` gives out. Keep this true; it is
+       three lines of manifest guarding a sentence the player reads. */
+    const APPLIES = {
+      'lights-out':   'lurking',
+      'cold-draught': 'chill',
+      'long-shadows': 'long-shadows',
+    };
+    for (const [wingId, statusId] of Object.entries(APPLIES)) {
+      const h = HAZARDS.find(x => x.id === wingId);
+      const name = getStatus(statusId).name;
+      check(!!h, `${wingId} is still a declared wing`);
+      check(!!name && !getStatus(statusId)._missing,
+        `${statusId} is a registered status`, String(name));
+      /* One legitimate exemption, STATED rather than skipped: when the status
+         IS the wing, the chip on your Kid already carries the wing's own name,
+         and a rule reading "Long Shadows: ... Long Shadows" is noise. The
+         correspondence still holds — it holds through the name instead of
+         through the sentence, and this branch says which one it took. */
+      const isTheWing = !!h && name === h.name;
+      check(!!h && (isTheWing || new RegExp(`\\b${name}\\b`, 'i').test(h.rule)),
+        isTheWing
+          ? `"${h.name}" IS its own status, so the chip already names it`
+          : `"${h ? h.name : wingId}" names ${name} in the rule the player reads`,
+        h ? h.rule : '(no such wing)');
+    }
+  }
 
   // ── the manifest ───────────────────────────────────────────────────────
   head('Eight wings declared, and what each one does');
