@@ -694,6 +694,9 @@ export class RewardScene extends RoomScene {
     // Closing the room is one Kid's action but everybody's consequence — the
     // node is cleared and the blueprint comes back — so it goes on the wire
     // like every other, and the mock path (no run layer) still falls through.
+    // `sting:reward` was authored for this moment and had no caller — the
+    // fight's own `sting:victory` plays at the end of combat, a screen earlier.
+    this.ctx.audio?.stinger?.('sting:reward');
     if (this.run.claimReward) await act(run, { t: INPUT.ROOM, act: ACT.REWARD_CLAIM, close: true });
     else this._leave();
     if (this.mock) this.ctx.scenes?.go?.('map', { region: this.run.region, seed: this.run.seed });

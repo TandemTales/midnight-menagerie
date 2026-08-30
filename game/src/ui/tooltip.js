@@ -375,6 +375,11 @@ export class Tooltip {
     // Re-showing the SAME anchor (see `refresh()`) must not blink the panel
     // back through opacity 0 — it is an update, not a new tooltip.
     const same = this._anchor === anchorEl && !this.el.hidden;
+    /* `ui:tooltip` has been in the sound bank since the sound pass with no
+       caller. Only on a NEW panel — `refresh()` re-shows the same anchor to
+       update its contents, and a tick on every update would chatter while the
+       player reads. */
+    if (!same) this.ctx?.audio?.play?.('ui:tooltip');
     this._anchor = anchorEl;
     this._render(this.inner, desc);
     this.el.dataset.kind = desc.kind || 'text';

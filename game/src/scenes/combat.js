@@ -1726,10 +1726,18 @@ export class CombatScene extends Scene {
         if (ev.cardUid === this._playedUid) { this._syncPiles(); return; }
         await this.hand.discard(ev.cardUid);
         this._syncPiles();
+        /* ONCE per burst, not once per card. The end-of-turn sweep discards a
+           whole hand and `card:discard` on each would machine-gun; this fires
+           on the last of a consecutive run, the same shape `draw` gets from
+           `_takeRun`. */
+        if (!this._q.length || this._q[0].type !== 'discard') {
+          this.ctx.audio?.play?.('card:discard');
+        }
         return;
 
       case 'exhaust':
         this._syncPiles();
+        this.ctx.audio?.play?.('card:exhaust');
         if (ev.cardUid === this._playedUid) return;
         await this.hand.exhaust(ev.cardUid);
         return;
@@ -1835,6 +1843,19 @@ export class CombatScene extends Scene {
           this._refreshTip(v);
         }
         this._renderIncoming(0);
+        /* A SPIKE OF DREAD when something is winding up to hurt THIS seat.
+           `audio.telegraph()` is public, was written for exactly this, and had
+           no caller in the whole repo. Measured against what is actually aimed
+           here, so an enormous swing at the other Kid does not make your music
+           lurch — `previewIncoming` is the same reading the incoming rail
+           shows, so what you hear and what you read agree. */
+        if (ev.intent && ev.intent.revealed !== false) {
+          try {
+            const inc = previewIncoming(this.engine, this.me);
+            const dmg = inc && inc.damage || 0;
+            if (dmg >= 15) this.ctx.audio?.telegraph?.(Math.min(1, dmg / 40));
+          } catch { /* a preview that throws is not worth a sound */ }
+        }
         return;
       }
 
@@ -2433,6 +2454,14 @@ export class CombatScene extends Scene {
     const maxHp = p.maxHp || 1;
     const pct = Math.max(0, Math.min(1, p.hp / maxHp));
     this.$pl.classList.toggle('is-low', pct <= 0.3);
+
+    /* THE BED DARKENS AS COURAGE FALLS, and under about a fifth a heartbeat
+       comes up under the music. Both have existed in `audio/audio.js` since the
+       sound pass and neither had ever run: the only thing that would have
+       driven them was `_hpTension`, reached from a bus handler listening for a
+       name nothing emits. `audio.tension()` is the public half and this is the
+       one place that knows the local Kid's Courage every time it changes. */
+    this.ctx.audio?.tension?.(1 - pct);
 
     /* COURAGE, ON THE PLAYER. STS2-REFERENCE §1: block shield, HP bar and
        status row live together on the player's own block. The bar drains with

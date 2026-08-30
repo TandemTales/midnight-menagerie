@@ -82,7 +82,13 @@ export class EventScene extends RoomScene {
       this.def = r.currentEvent();
     }
 
-    if (this.rescue) return this._enterRescue();
+    /* `music.js` has a `rescue` bed and `SCENE_MUSIC` maps the whole `event`
+       scene to `map`, so the one room the track was written for never played
+       it. A Rescue is not a Curiosity; it gets its own. */
+    if (this.rescue) {
+      this.ctx.audio?.music?.('rescue', { fade: 1.0 });
+      return this._enterRescue();
+    }
 
     this._shell({
       eyebrow: TERMS.event,

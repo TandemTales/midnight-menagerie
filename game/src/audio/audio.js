@@ -266,14 +266,12 @@ export class Audio {
     this.musicPlayer.tension(v);
   }
 
-  _hpTension(p) {
-    const hp = p?.hp ?? p?.courage ?? p?.target?.hp;
-    const max = p?.maxHp ?? p?.maxCourage ?? p?.target?.maxHp;
-    if (typeof hp === 'number' && typeof max === 'number' && max > 0) {
-      this._tensionBase = clamp(1 - hp / max, 0, 1);
-      this._pushTension(false);
-    }
-  }
+  /* `_hpTension(payload)` used to live here, reading `p.hp`/`p.maxHp` off a bus
+     event. No engine event ever carried those fields and no producer ever
+     emitted the names it was subscribed to, so it never ran once. The public
+     `tension(0..1)` above does the same job and `scenes/combat.js _syncPlayer`
+     calls it — one caller, at the one place that knows the local Kid's
+     Courage. */
 
   // ── bus auto-wiring ──────────────────────────────────────────────────────
 
