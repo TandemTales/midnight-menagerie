@@ -38,16 +38,17 @@ const CSS_KIT  = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_OVER = new URL('./gameover.css', import.meta.url).href;
 const CSS_CARD = new URL('../ui/card.css', import.meta.url).href;
 
-/** Keepsakes used only when data/relics.js has not shipped yet. */
-const FALLBACK_KEEPSAKES = [
-  ['chewed-tennis-ball', 'Chewed Tennis Ball', `Start every Scuffle with 1 extra ${TERMS.energy}. It squeaks. Everything hears it.`],
-  ['half-a-torch',       'Half a Torch',       `The first ${TERMS.card} you play each turn costs 1 less.`],
-  ['collar-tag',         'Collar Tag',         `Whenever a Companion is freed, gain 25 ${TERMS.gold}.`],
-  ['spare-batteries',    'Spare Batteries',    'Backpack Gear recharges once per region.'],
-  ['bent-house-key',     'Bent House Key',     `Locked rooms open. ${TERMS.shop} gives you a discount and a look.`],
-  ['mothbitten-ribbon',  'Moth-Bitten Ribbon', `Gain 3 ${TERMS.block} at the start of every enemy turn.`],
-  ['jar-of-nothing',     'Jar of Nothing',     'The house cannot take the last thing you are carrying.'],
-];
+/* The seven-entry FALLBACK_KEEPSAKES table that used to sit here is GONE.
+ *
+ * Its own comment said it was "used only when data/relics.js has not shipped
+ * yet".  relics.js shipped.  Five of its seven ids — half-a-torch, collar-tag,
+ * bent-house-key, mothbitten-ribbon, jar-of-nothing — never existed in the
+ * game at all, and the two that did were printed with invented rules: the
+ * shelf told you Chewed Tennis Ball starts you with a Nerve (it adds 8 damage
+ * to your first Attack) and that Spare Batteries recharge Gear (they draw you
+ * a Trick).  Worse, it was sampled for REAL runs too — see
+ * `_hydrateKeepsakes`.  The mock now comes off the real table, which is what
+ * this file's header claims for everything else on the screen. */
 
 /** How a run ends when the engine has not told us. Flavour only. */
 const KILLERS = {
@@ -216,7 +217,12 @@ export class GameOverScene extends Scene {
       haunt: Number(run?.hauntLevel ?? Save?.data?.hauntLevel ?? 0) || 0,
       killedBy: run?.killedBy || KILLERS[regionId] || 'the house',
       deck: Array.isArray(run?.deck) ? run.deck : null,          // filled by _hydrateCards
-      relics: Array.isArray(run?.relics) && run.relics.length ? run.relics : null,
+      /* `&& run.relics.length` used to be here, and it is why a real run that
+         ended carrying no Keepsakes had six invented for it: an empty shelf
+         collapsed to `null`, which downstream could not tell apart from "there
+         is no run at all". An empty array is an ANSWER — it says the pockets
+         were empty — so it is passed through as one, exactly as `deck` is. */
+      relics: Array.isArray(run?.relics) ? run.relics : null,
     };
   }
 
@@ -622,32 +628,69 @@ export class GameOverScene extends Scene {
   }
 
   /**
-   * Keepsakes come off `ctx.run.relics` — that is the seam meta-run owns. We do
-   * not reach into data/relics.js: it may not exist, and probing for it would
-   * put a 404 in the console. Without a run we show the authored fallback set.
+   * Keepsakes come off `ctx.run.relics` — that is the seam meta-run owns.
+   *
+   * WHAT THIS USED TO DO, and why it mattered. `s.relics` was null both when
+   * there was no run and when the run had simply kept nothing, and the `if
+   * (!list)` below then sampled the fallback table in BOTH cases. So a player
+   * who reached the Butler carrying nothing was shown a shelf of three to six
+   * Keepsakes they had never held, five of which did not exist in the game, on
+   * the one screen in the build whose whole job is to be the true account of
+   * the run. The mocked flag needed for the distinction was already computed
+   * one method up and simply never consulted.
+   *
+   * Now: a run's own list is printed, empty or not, and the mock is only ever
+   * reached on the standalone deep link.
    */
   async _hydrateKeepsakes() {
     const s = this.summary;
-    let list = s.relics;
-    if (!list) {
-      const rng = new RNG(hashSeed(`${s.seed}:keeps`));
-      const n = 3 + rng.int(4);
-      list = rng.sample(FALLBACK_KEEPSAKES, Math.min(n, FALLBACK_KEEPSAKES.length))
-        .map(([id, name, desc]) => ({ id, name, desc }));
-    }
+    let list = Array.isArray(s.relics) ? s.relics : null;
+    if (!list) list = s.mocked ? await this._mockKeepsakes() : [];
     if (this._dead || !this._keepHost) return;
 
-    this._keepHost.innerHTML = list.map((r) => `
-      <span class="go-keep" role="listitem" data-rarity="${esc(r.rarity || 'common')}">
-        <i class="go-keep__sigil" aria-hidden="true"></i>
-        <b>${esc(r.name ?? r.id)}</b>
-        <em>${esc(r.desc ?? r.text ?? '')}</em>
-      </span>`).join('');
-    if (this._keepTotal) this._keepTotal.textContent = `${list.length} kept`;
+    if (!list.length) {
+      // An empty shelf is a real outcome and gets a real sentence. It must not
+      // silently look like a section that failed to load.
+      this._keepHost.removeAttribute('role');
+      this._keepHost.innerHTML =
+        `<p class="go-keeps__none">Your pockets were empty. Nothing came out with you.</p>`;
+    } else {
+      this._keepHost.setAttribute('role', 'list');
+      this._keepHost.innerHTML = list.map((r) => `
+        <span class="go-keep" role="listitem" data-rarity="${esc(r.rarity || 'common')}">
+          <i class="go-keep__sigil" aria-hidden="true"></i>
+          <b>${esc(r.name ?? r.id)}</b>
+          <em>${esc(r.desc ?? r.text ?? '')}</em>
+        </span>`).join('');
+    }
+    if (this._keepTotal) this._keepTotal.textContent = list.length ? `${list.length} kept` : 'none kept';
     const el0 = this.root?.querySelector('[data-relic-count]');
     if (el0) el0.textContent = String(list.length);
     const noun = this.root?.querySelector('[data-relic-noun]');
     if (noun) noun.textContent = word(list.length, TERMS.relic);
+  }
+
+  /**
+   * The shelf for a deep link with no run behind it.
+   *
+   * Sourced from the REAL table, deterministically from the seed — the same
+   * move `_hydrateCards` makes for the deck one block up, and the same promise
+   * this file's header makes about everything on the screen ("the mock is
+   * generated from the same real card data the run would have used").
+   *
+   * The starter goes first because a real expedition always leaves with one,
+   * so a mock without it is a shelf no run could produce.
+   */
+  async _mockKeepsakes() {
+    let mod;
+    try { mod = await import('../data/relics.js'); } catch { return []; }
+    const s = this.summary;
+    const rng = new RNG(hashSeed(`${s.seed}:keeps`));
+    const start = mod.starterKeepsake?.(s.companion) || null;
+    const pool = (mod.RELICS || []).filter(
+      (r) => r.rarity !== 'starter' && r.id !== start?.id);
+    const rest = rng.sample(pool, Math.min(2 + rng.int(4), pool.length));
+    return [start, ...rest].filter(Boolean);
   }
 
   /* ═══ footer ═════════════════════════════════════════════════════════════ */

@@ -451,6 +451,13 @@
 
 /* --- keepsakes ------------------------------------------------------------ */
 .go-keeps { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 5px; }
+/* A run that kept nothing says so. It spans the whole grid so the sentence
+   reads as a sentence and not as a chip that lost its label. */
+.go-keeps__none {
+  grid-column: 1 / -1;
+  margin: 0; padding: 5px var(--s-3);
+  font-size: var(--fs-xs); font-style: italic; line-height: 1.35; color: var(--text-lo);
+}
 .go-keep {
   display: grid; grid-template-areas: 'i b' 'i e'; grid-template-columns: auto 1fr;
   gap: 0 var(--s-3); align-items: center;
@@ -566,7 +573,8 @@
 .mm-large-text .go-mvp__note { font-size: calc(var(--fs-md) * 1.14); }
 .mm-large-text .go-stanza li,
 .mm-large-text .go-trick__name,
-.mm-large-text .go-keep em { font-size: var(--fs-sm); }
+.mm-large-text .go-keep em,
+.mm-large-text .go-keeps__none { font-size: var(--fs-sm); }
 
 @media (max-width: 1280px) {
   .go-wrap { grid-template-columns: 1fr; overflow: auto; }
