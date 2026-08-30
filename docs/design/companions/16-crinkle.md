@@ -22,9 +22,31 @@ that line plus everything else the doc already says about him:_
 - The art direction already settled: "folded paper crow: every edge straight,
   every plane a flat facet."
 
-_It is therefore a reconstruction, not a transcription. The designer should read
-it as a proposal and is free to replace any of it; the implementation follows
-this file, so changing this file is how you change him._
+_It is therefore a reconstruction, not a transcription._
+
+_**The designer accepted it on 2026-08-29**, on a review that checked it against
+the build rather than only reading it. Every Trick named in this chapter is
+implemented, and nothing is implemented that this chapter does not name — 90
+against 90, zero drift in both directions, counting the five co-op Tricks. The
+numbers in §2 are the numbers in `data/companions/crinkle.js`: Paper caps at 8
+and at 16 under Paper Everything, the Crease multiplier is `1 + n/3` (so ×1⅓,
+×1⅔, ×2, and Deckle Edge doubles the step to give "an additional third"), cost
+is `max(0, cost - n)`, Overfolded is 3, and Fourth Crease raises the cap to 4
+while leaving "Overfolded" at three or more. `tests/crinkle/run.py` is 44 effect
+assertions and green._
+
+_Two things the designer-authored chapters carry that this one does not,
+recorded here so its brevity is not mistaken for completeness. There is no
+per-mechanic **"what stops this from becoming universally optimal?"** audit —
+compare Wink §144, Hush's four closing sections, Mossbit's final structural
+audit — which is where those chapters keep their balance reasoning. And the
+pools below are one-line summaries of each Trick's core effect rather than full
+card text with per-card design notes, which is most of why this chapter runs to
+369 lines where its siblings reach 700–800. Both are additions, not
+corrections: nothing here is known to be wrong._
+
+_The implementation follows this file, so changing this file is still how you
+change him._
 
 ---
 
