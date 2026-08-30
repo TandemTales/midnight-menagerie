@@ -278,8 +278,22 @@ async function openFight(kid, backpack, { hpOffset = 0, endTurn = false, seed = 
     const tin = makeRun('maya', ['first-aid-tin']);
     tin.courage = tin.maxCourage - 40;
     const tinBefore = tin.courage;
-    const evNode = tin.map.nodes.find(n => tin.effectiveType(n) === NodeType.CURIOSITY);
+    /* STAND NEXT DOOR FIRST. `enterNode` refuses a room that is not a legal
+       next step — it always did once the party was on the map, and since
+       2026-08-29 it does at a region DOORWAY too, where `currentNodeId` is null
+       and `legalNextIds()` is the first row. This fixture used to jump straight
+       to any Curiosity anywhere on the sheet, which the game cannot do, and the
+       tightening turned that into a silent no-move and a failing check.
+
+       So: find a Curiosity that something leads to, and put the party in the
+       room that leads to it. A first-row Curiosity has no predecessor and is
+       reachable from the doorway as it stands. */
+    const evNode = tin.map.nodes.find(n => tin.effectiveType(n) === NodeType.CURIOSITY
+      && (n.row === 0 || tin.map.nodes.some(x => (x.next || []).includes(n.id))));
     if (evNode) {
+      const from = evNode.row === 0 ? null
+        : (tin.map.nodes.find(x => (x.next || []).includes(evNode.id)) || {}).id;
+      tin.currentNodeId = from || null;
       tin.enterNode(evNode.id);
       check(tin.courage - tinBefore === 15, 'First Aid Tin: +15 Courage on entering a Curiosity',
         `${tinBefore} -> ${tin.courage}`);
