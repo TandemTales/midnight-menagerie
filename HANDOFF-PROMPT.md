@@ -145,14 +145,26 @@ on a person or a machine, or is a decision with the reason already written down.
    and it must NOT be answered by piling on until a bot starts losing —
    CONTRACTS 47 is this project having already done exactly that once.
 
-4. **The standard tier rises the same way and the cause is probably different.**
-   `tests/coop/balance.py` reads +16 / +20 / +23 Courage left over solo. Pierce
-   on the two normals that had no party content at all barely moved it, which is
-   evidence rather than failure: five of six Foyer normals are single-target, so
-   with four Kids most of the party is never touched and "Courage left" is an
-   average over Kids who were never in danger. If that reading is right the
-   lever here is AoE — the OPPOSITE of the elite answer — and it should be
-   measured before it is built.
+4. **ONE KID TAKES THE FIGHT AND THE REST WATCH — measured, both tiers, every
+   party size.** `spreadOf` is 0 when one seat takes all the damage and 1 when
+   it is shared evenly. Three ledger runs, 12 fights per cell:
+
+       elite, before pierce   2p 0.177   3p 0.203   4p 0.209
+       elite, after pierce    2p 0.181   3p 0.163   4p 0.259
+       standard tier          2p 0.144   3p 0.198   4p 0.278
+
+   Three Kids in four are spectators as far as incoming threat goes. It is one
+   cause for BOTH tiers' rising "Courage left" lines (+16 / +20 / +23 over solo
+   at the standard tier), and it makes those lines substantially an averaging
+   artefact — averaged over Kids who were never in danger. More importantly it
+   is a co-op FEEL problem no win rate would ever surface.
+
+   **It also reframes AoE.** "AoE is added damage a party then blocks" is true
+   and is why pierce was right for DIFFICULTY. But AoE's value here is
+   PARTICIPATION — it is what puts the other three Kids in the fight. Measure
+   `spread` for that and `%blocked`/`landed` for difficulty; they are different
+   problems. `spread` is in every ledger row and was never printed, which is
+   why nobody had looked at it.
 
 5. **fps and the entry stall need a quiet machine.** `tests/chrome` read 52 on
    one battery and 61 on another with no perf work in between. Unchanged.

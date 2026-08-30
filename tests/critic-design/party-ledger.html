@@ -58,8 +58,8 @@ const R = { config: { TIER, ENC, REGION, LREGION, N, GEN, SIZES, SLUGS, SEED0 },
   say(`   loadouts ${SLUGS.map(s => `${s} ${(pools[s] || []).length}`).join(' · ')}`
     + (LREGION === REGION ? '' : `   ** PROXY DECKS from the ${LREGION} boss`));
   say('');
-  say('party    n   aimed  landed  blocked   %blocked   partyGuard  turns  aimed/turn  win%   left%');
-  say('────────────────────────────────────────────────────────────────────────────────────');
+  say('party    n   aimed  landed  blocked   %blocked   partyGuard  turns  aimed/turn  win%   left%  spread');
+  say('────────────────────────────────────────────────────────────────────────────────────────────');
 
   for (const size of SIZES) {
     const rows = [];
@@ -83,6 +83,22 @@ const R = { config: { TIER, ENC, REGION, LREGION, N, GEN, SIZES, SLUGS, SEED0 },
       size, n: rows.length, aimed, landed, blocked,
       pctBlocked: aimed ? +(100 * blocked / aimed).toFixed(1) : 0,
       partyGuard: mean(rows.map(r => r.partyGuard)),
+      /**
+       * HOW EVENLY THE DAMAGE WAS SHARED, 0..1. Computed since this file was
+       * written and never once printed, which is exactly why nobody looked at
+       * it until 2026-08-30 — and it turned out to be the most interesting
+       * number in the table. Every Foyer fight reads 0.14–0.28 at every party
+       * size: one Kid takes the fight and the others watch.
+       *
+       * It separates the two questions this table gets asked. `%blocked` and
+       * `landed` are DIFFICULTY. `spread` is PARTICIPATION, and a party can be
+       * losing badly on the second while the first looks entirely healthy.
+       *
+       * Rounded here rather than through `mean()`, which rounds to one decimal
+       * and would flatten a 0..1 fraction into a handful of usable values — the
+       * same mistake `left%` is documented below as having made.
+       */
+      spread: +(rows.reduce((a, r) => a + (r.spread || 0), 0) / (rows.length || 1)).toFixed(3),
       turns, aimedPerTurn: turns ? +(aimed / turns).toFixed(1) : 0,
       /**
        * NOT through `mean()`. `mean` rounds to one decimal before returning,
@@ -114,7 +130,8 @@ const R = { config: { TIER, ENC, REGION, LREGION, N, GEN, SIZES, SLUGS, SEED0 },
       + `${String(row.aimed).padStart(8)}${String(row.landed).padStart(8)}`
       + `${String(row.blocked).padStart(9)}${String(row.pctBlocked).padStart(11)}`
       + `${String(row.partyGuard).padStart(13)}${String(row.turns).padStart(7)}`
-      + `${String(row.aimedPerTurn).padStart(12)}${String(row.winPct).padStart(7)}${String(row.left).padStart(8)}`);
+      + `${String(row.aimedPerTurn).padStart(12)}${String(row.winPct).padStart(7)}${String(row.left).padStart(8)}`
+      + `${String(row.spread).padStart(8)}`);
   }
 
   say('');

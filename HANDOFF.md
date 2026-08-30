@@ -109,10 +109,37 @@ SHARED-WRITE. New suite: `tests/taffy/`.
    **What is still open here:** `win%` is still 100 at every party size. Moving
    that is a question about how deadly a Big Scare should be, and it must not
    be answered by piling on until a BOT starts losing — CONTRACTS 47 is this
-   project having already done exactly that once. Also measured and left alone:
-   `tests/coop/balance.py` shows the STANDARD tier rising the same way, Courage
-   left +16 / +21 / +24 over solo. Same shape, same likely lever, six enemies
-   rather than two.
+   project having already done exactly that once.
+
+   **AND THE BIGGER FINDING, measured 2026-08-30: in every Foyer fight, at
+   every party size, the damage lands on ONE KID.** `spreadOf` is 0 when a
+   single seat takes everything and 1 when it is shared evenly. Three
+   independent ledger runs, 12 fights per cell:
+
+   | | 2p | 3p | 4p |
+   |---|---|---|---|
+   | elite, before pierce | 0.177 | 0.203 | 0.209 |
+   | elite, after pierce | 0.181 | 0.163 | 0.259 |
+   | standard tier | 0.144 | 0.198 | 0.278 |
+
+   Three Kids in four are SPECTATORS as far as incoming threat goes. That is
+   one cause for both tiers' rising "Courage left" lines — `tests/coop/
+   balance.py` reads +16 / +20 / +23 over solo at the standard tier — and it
+   means those lines are substantially an averaging artefact, because the
+   average is taken over Kids who were never in danger. It also means the co-op
+   FEEL is wrong in a way no win rate could show: an ordinary scuffle happens
+   to one person while everyone else watches.
+
+   **This reframes AoE.** The ledger's note that AoE is "added damage a party
+   then blocks" is true, and is why pierce was the right lever for DIFFICULTY.
+   But AoE's value here is not damage, it is PARTICIPATION — it is the
+   mechanism that puts the other three Kids in the fight. Two different
+   problems wanting two different measurements: `spread` for participation,
+   `%blocked` and `landed` for difficulty.
+
+   `spread` is in every ledger row and was simply never printed by
+   `party-ledger.html`, which is why nobody had looked at it. Data in
+   `tests/critic-design/party-ledger-normals.json` and the two elite files.
 
    One number in the table is NOT evidence and is left out above on purpose:
    `partyGuard` reads 63.8 / 209.3 / 321.8 / 757.9, an 11.9x jump at 4p that no
