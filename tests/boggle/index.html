@@ -197,6 +197,30 @@ try {
   }
 
   {
+    /* THE OTHER HALF OF THE BAN, and it had never once worked.
+       `forbidAttacks`'s own doc comment promises the flag lands "on anything
+       Attack-shaped drawn later this turn", and the `draw` listener that was
+       supposed to do it stamped `unplayable` onto `ev.card` — a SNAPSHOT
+       (CONTRACTS 19) — so the Attack that actually arrived in hand was left
+       playable and Wait For It was a one-line restriction wearing two.
+       The card is looked up by the uid that was NOT in hand beforehand: the
+       starting deck already holds a Little Chomp, and finding "a Little Chomp
+       in hand" would have found the pre-ban one and passed either way. */
+    const e = await boggle();
+    await play(e, 'boggle/wait-for-it', null);
+    const before = new Set(e.piles.hand.map(k => k.uid));
+    e.addCard(CARDS.cardById('boggle/little-chomp'), 'draw', { position: 'top' });
+    e.drawCards(1);
+    const drawn = e.piles.hand.find(k => !before.has(k.uid));
+    if (!drawn) check(false, 'an Attack was drawn after the ban went up (setup)');
+    else {
+      const can = e.canPlay(drawn.uid, e.livingEnemies()[0].id);
+      check(!can.ok, 'an Attack DRAWN after Wait For It is forbidden too',
+        can.ok ? 'it was playable — the ban never reached it' : `reason: ${can.reason}`);
+    }
+  }
+
+  {
     /* Wait For It is "playable only if you have played no Attack this turn",
        and `attackedThisTurn` is set by a card:play listener whose seat guard
        compared a number against an actor — so it never fired and the condition

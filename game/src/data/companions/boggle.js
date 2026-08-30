@@ -369,8 +369,13 @@ U.onTracker(SLUG, (e, s, seat) => {
   e.on('draw', (ev) => {
     const c = fake();
     if (!U.mm(c).noAttacks) return;
-    const card = ev.card;
-    if (isAttackCard(card)) card.unplayable = true;
+    /* CONTRACTS 19, silently. `ev.card` is a SNAPSHOT, so `card.unplayable`
+       was set on a copy and the Attack actually sitting in hand stayed
+       playable: the ban had never once reached a card drawn after it went up.
+       Line 300 above already does this correctly on the cards in hand — this
+       listener is the half that exists to cover the ones drawn later. */
+    const card = ev.cardUid ? e.card(ev.cardUid) : null;
+    if (card && isAttackCard(card)) card.unplayable = true;
   });
 
   U.onPlayerTurn(e, 'start', () => {

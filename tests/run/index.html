@@ -39,12 +39,22 @@ import { Save } from '../../game/src/core/save.js';
 import { Run, STARTER_SLUGS } from '../../game/src/state/run.js';
 import { NodeType, REGION_ORDER } from '../../game/src/data/schema.js';
 import { cardById } from '../../game/src/data/cards.js';
+import * as P from '../critic-design/lib/policy.js';
+import { competentTurn } from '../critic-design/lib/bot.js';
 
 const out = document.getElementById('out');
 const sum = document.getElementById('summary');
 const say = (html, cls = '') => { const d = document.createElement('div'); if (cls) d.className = cls; d.innerHTML = html; out.appendChild(d); };
 
 const errors = [];
+let ENDS_DETAIL = [], DEPTH_FRAC = 0;
+/* Which kinds of room the 50 expeditions actually enter. A deliberate router
+   is a better player and a WORSE sampler, and the trade is only acceptable if
+   it is watched: a harness that quietly stopped entering Big Scares would keep
+   printing green while covering less than the random one it replaced. */
+const VISITED = {};
+const REACH = [];
+let VICTORIES = null;
 const fail = (msg) => { errors.push(msg); };
 const check = (cond, msg) => { if (!cond) fail(msg); return !!cond; };
 
@@ -85,41 +95,75 @@ function useRealSave() {
 const PRISTINE_META = JSON.parse(JSON.stringify(Save.data));
 function resetMeta() { Save.data = JSON.parse(JSON.stringify(PRISTINE_META)); }
 
+/* ── deck-building ────────────────────────────────────────────────
+   The combat bot below scores every PLAY with the engine's own `preview()`.
+   Until 2026-08-30 it then built its DECK with a die: a random one of the three
+   offered cards 70% of the time, and three independent coin-flips at the shop.
+   So it played a considered game with a random pile — it reached the Butler on
+   about fourteen cards holding a mean of 177 unspent Lost Things, 46 of 50 runs
+   died inside the Foyer, and no content past region 1 was exercised by anything.
+
+   `tests/critic-design/lib/policy.js` is this project's existing answer to
+   "what would a player take": `draft`, `shopPlan`, `restChoice`, `pickUpgrade`
+   and `pickEventOption`, driven off each Companion's own declared archetypes.
+   `expedition.js` has drafted with it since the balance sim was built, so
+   reusing it here also stops the two harnesses disagreeing about what a run is.
+
+   It is a HEURISTIC and not a solver, which is exactly the bar this harness
+   needs: deck-building as considered as the combat already was, so that
+   reaching the Nursery is ordinary. It is not trying to be a good player.
+   Every function in it is pure, so the run stays reproducible off its seed.  */
+const POLICY = 'balanced';
+const draftCtx = (run) => ({
+  core: P.coreSets(run.companion), deckSize: run.deck.length, skipFloor: 4,
+});
+/** The card in `cards` a player would pay Mr. Moth to forget. */
+function leastValuable(run, cards) {
+  const ctx = draftCtx(run);
+  let worst = null;
+  for (const c of cards) {
+    const def = cardById(c.id);
+    if (!def) continue;
+    const v = P.cardValue(def, POLICY, ctx);
+    if (!worst || v < worst.v) worst = { uid: c.uid, v };
+  }
+  return worst?.uid || null;
+}
+
 /* ── the combat bot ─────────────────────────────────────────────────────────
-   Deterministic and only as clever as it needs to be: score every playable
-   card with the engine's own `preview()` — damage, lethality, and Guard valued
-   only up to the damage actually incoming this turn — then play the best one.
-   It is not trying to be a good player.  It is trying to reach the end of every
-   fight the run layer can produce, without dying so fast that the boss path
-   never gets exercised.                                                       */
-async function playCombat(engine, budgetTurns = 80) {
+   `competentTurn` from the balance harness — the SAME bot the Butler's 64.6%
+   and every tuned number in tests/critic-design were measured against.
+
+   Until 2026-08-30 this was a private greedy bot: score each card with
+   `preview()`, play the best, repeat. It won about one fight in six against
+   the Butler where the balance bot wins two in three, and it never ate a Snack,
+   so the run layer bought them, carried them and threw them away unopened. TWO
+   BOTS THAT DISAGREE ABOUT WHAT A PLAYER IS produce two pictures of the game
+   and neither can be believed over the other; this harness's was the
+   pessimistic one, which is how "46 of 50 runs die in the Foyer" came to read
+   as a fact about the content rather than about the harness.
+
+   It is a beam search that scores a whole turn by simulating the enemy phase
+   that follows it, so it is far slower per turn than what it replaces. That is
+   paid once, here, and it buys every region past the first.
+
+   `budgetTurns` stays at 80 rather than the balance harness's 60: this one has
+   to resolve every fight the run layer can produce, and an unresolved fight is
+   reported as a failure rather than hidden as a timeout.                      */
+async function playCombat(engine, budgetTurns = 80, run = null) {
   await engine.startCombat();
-  let guard = 0;
-  while (!engine.over && guard++ < budgetTurns) {
-    let inner = 0;
-    while (!engine.over && inner++ < 40) {
-      const incoming = incomingDamage(engine);
-      const need = Math.max(0, incoming - engine.player.block);
-      let best = null;
-      for (const card of [...engine.piles.hand]) {
-        const target = pickTarget(engine, card);
-        if (!engine.canPlay(card.uid, target).ok) continue;
-        let s = 0;
-        try {
-          const pv = engine.preview(card.uid, target);
-          s = (pv.damage || 0) * 1.0
-            + Math.min(pv.block || 0, Math.max(need, 0)) * 1.15
-            + (pv.block || 0) * 0.08
-            + (pv.killsAny ? 14 : 0)
-            + (pv.draw || 0) * 2
-            + (pv.heal || 0) * 0.8
-            + (pv.statuses?.length || 0) * 1.2;
-        } catch { s = 0.5; }              // an un-previewable card is still worth trying
-        if (!best || s > best.s) best = { card, target, s };
-      }
-      if (!best) break;
-      await engine.playCard(best.card.uid, best.target);
+  // Per-fight running estimates the bot projects the rest of the fight from.
+  // One object per fight, never shared between fights.
+  const fc = { dps: 10, threat: 8, guard: 4, peak: 0, turns: 0 };
+  const onSnack = (i, s) => {
+    if (run && Array.isArray(run.snacks)) {
+      const at = run.snacks.indexOf(s);
+      if (at >= 0) run.snacks.splice(at, 1);
     }
+  };
+  let turns = 0;
+  while (!engine.over && turns++ < budgetTurns) {
+    await competentTurn(engine, { snacks: run ? run.snacks : null, onSnack, fc });
     if (engine.over) break;
     await engine.endTurn();
   }
@@ -131,6 +175,21 @@ async function playCombat(engine, budgetTurns = 80) {
   return true;
 }
 
+/**
+ * Every fourth expedition hunts elites.
+ *
+ * `pickNode` scores a Big Scare at -40 below 82% Courage, which is a correct
+ * thing for a player to do and cost this harness most of its elite coverage
+ * the moment it started routing deliberately: Big Scares entered across 50
+ * runs went from roughly one a room to 10. A deliberate router is a better
+ * player and a WORSE sampler. This is the part of the old random sampler that
+ * is worth keeping, made explicit and counted rather than hoped for.
+ */
+function preferBigScare(run, nodes) {
+  if (run.courage / run.maxCourage < 0.5) return null;
+  return nodes.find(n => run.effectiveType(n) === NodeType.BIG_SCARE) || null;
+}
+
 /** Lowest-Courage living enemy, so the board actually thins out. */
 function pickTarget(engine, card) {
   const alive = engine.livingEnemies();
@@ -140,25 +199,20 @@ function pickTarget(engine, card) {
   return t.id;
 }
 
-function incomingDamage(engine) {
-  let total = 0;
-  for (const e of engine.livingEnemies()) {
-    const i = e.intent;
-    if (!i) continue;
-    total += (i.damage || 0) * (i.hits || 1);
-  }
-  return total;
-}
-
 /* ── drive one whole expedition ─────────────────────────────────────────── */
 async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0, trace = null,
-  shepherd = false } = {}) {
+  shepherd = false, elitist = false } = {}) {
   resetMeta();
   const run = new Run({ companion, kid, seed, hauntLevel: haunt });
   const pick = run.fork('sim:path');
   const dice = run.fork('sim:choices');
   const t = trace || [];
   let steps = 0;
+  /* WHERE a run ends is the whole diagnosis and the harness never recorded it.
+     "46 defeats in the Foyer" reads as a bot that cannot fight; the Foyer is
+     13 rows deep, so it mattered enormously whether those were row 3 or the
+     Butler on row 12, and nothing here could tell them apart. */
+  let lastRoom = null;
 
   const log = (s) => t.push(s);
   log(`seed ${run.seed} ${companion}/${kid} h${haunt}`);
@@ -169,18 +223,32 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
     // which a bot this crude would otherwise never reach.
     if (shepherd) run.courage = run.maxCourage;
 
-    const legal = run.legalNextIds();
-    if (!legal.length) { fail(`seed ${seed}: stranded with no legal nodes at ${run.currentNodeId}`); break; }
-    const id = legal[pick.int(legal.length)];
+    /* ROUTING. This was a uniform random pick over the legal nodes, which is
+       not what a player does and is the other half of why the bot never left
+       the Foyer: fifteen of thirty-eight Foyer defeats were at a Big Scare it
+       had walked into at whatever Courage it happened to have. `pickNode` is
+       the balance harness's own router — Safe Rooms deep in the region, shops
+       when rich, Big Scares only when healthy, and the boss when it appears.
+       The 50 maps are still 50 different maps, so path diversity survives; the
+       node-type census below is here to prove it rather than assume it. */
+    const legalNodes = run.legalNodes();
+    if (!legalNodes.length) { fail(`seed ${seed}: stranded with no legal nodes at ${run.currentNodeId}`); break; }
+    const chosen = (elitist ? preferBigScare(run, legalNodes) : null)
+      || P.pickNode(run, legalNodes)
+      || legalNodes[pick.int(legalNodes.length)];
+    const id = chosen.id;
     const node = run.nodeById(id);
     const type = run.effectiveType(node);
+    VISITED[type] = (VISITED[type] || 0) + 1;
+    lastRoom = { id, type, row: node?.row ?? -1, region: run.region,
+                 rows: run.map?.rows ?? 0, deck: run.deck.length };
     log(`> ${id} ${type}`);
 
     await run.enterNode(id);
 
     if (run.combat) {
       const engine = run.combat;
-      const ok = await playCombat(engine);
+      const ok = await playCombat(engine, 80, run);
       if (!ok) break;
       log(`  fight ${engine.victory ? 'won' : 'lost'} hp=${run.courage}`);
     }
@@ -189,13 +257,12 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
 
     if (run.pendingReward) {
       const r = run.pendingReward;
-      if (r.cards.length && dice.chance(0.7)) {
-        const c = r.cards[dice.int(r.cards.length)];
-        run.takeRewardCard(c.id);
-        log(`  took ${c.id}`);
-      } else if (r.cards.length) {
-        run.skipRewardCards();
-        log('  skipped');
+      if (r.cards.length) {
+        // `draft` returns null when the best of the three is worse than the
+        // dilution it costs, so skipping is still a live branch here.
+        const take = P.draft(r.cards, POLICY, draftCtx(run));
+        if (take) { run.takeRewardCard(take); log(`  took ${take}`); }
+        else { run.skipRewardCards(); log('  skipped'); }
       }
       run.claimReward();
       continue;
@@ -209,7 +276,10 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
         const open = (def?.options || []).filter(o => run.optionOpen(o)
           && !(o.cost?.lostThings > run.lostThings));
         if (open.length) {
-          const o = open[dice.int(open.length)];
+          // `pickEventOption` filters on `optionOpen` but not on the purse, so
+          // its answer is looked up in the affordable set rather than trusted.
+          const want = P.pickEventOption(run, def);
+          const o = open.find(x => x.id === want) || open[0];
           const res = run.chooseEventOption(o.id);
           log(`  curiosity ${def.id}/${o.id}`);
           const p = res?.pending;
@@ -225,7 +295,7 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
           }
           if (p?.combat) {
             await run.eventCombat(p.combat);
-            if (run.combat) { await playCombat(run.combat); }
+            if (run.combat) { await playCombat(run.combat, 80, run); }
             if (run.result) break;
             if (run.pendingReward) { run.claimReward(); continue; }
           }
@@ -237,13 +307,19 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
     }
 
     if (type === NodeType.SHOP) {
-      const stock = run.shopStock();
-      for (const c of stock.cards) if (run.lostThings >= c.price && dice.chance(0.35)) run.buyCard(c.id, c.price);
-      for (const k of stock.keepsakes) if (run.lostThings >= k.price && dice.chance(0.5)) run.buyKeepsake(k.id, k.price);
-      for (const s of stock.snacks) if (run.lostThings >= s.price && dice.chance(0.2)) run.buySnack(s, s.price);
-      if (run.lostThings >= run.removalPrice && dice.chance(0.5)) {
-        const rem = run.removableCards();
-        if (rem.length) run.buyRemoval(rem[dice.int(rem.length)].uid);
+      const { buys } = P.shopPlan(run, POLICY);
+      for (const b of buys) {
+        if (run.lostThings < b.price) continue;
+        if (b.kind === 'snack') run.buySnack(b.snack, b.price);
+        else if (b.kind === 'keepsake') run.buyKeepsake(b.id, b.price);
+        else if (b.kind === 'card') run.buyCard(b.id, b.price);
+      }
+      // Thinning is the other half of deck-building, and `shopPlan` does not
+      // cover it: once the deck is thick, a Basic forgotten is worth more than
+      // most cards bought. The price rises 25 a time, so this self-limits.
+      if (run.deck.length > 12 && run.lostThings >= run.removalPrice) {
+        const worst = leastValuable(run, run.removableCards());
+        if (worst) run.buyRemoval(worst);
       }
       log(`  shop, purse ${run.lostThings}`);
       run.leaveNode();
@@ -251,12 +327,25 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
     }
 
     if (type === NodeType.SAFE) {
-      const roll = dice.int(3);
-      if (roll === 0 && run.restHealAmount() > 0) run.rest();
-      else if (roll === 1 && run.upgradeableCards().length) run.upgradeCard(run.upgradeableCards()[0].uid);
-      else if (run.forgeableKeepsakes().length && run.maxCourage - run.forgeCost() >= 10) {
-        run.forgeKeepsake(run.forgeableKeepsakes()[0].id);
-      } else run.rest();
+      const choice = P.restChoice(run);
+      if (choice.kind === 'rest' && run.restHealAmount() > 0) run.rest();
+      else {
+        const uid = P.pickUpgrade(run, POLICY);
+        if (uid) run.upgradeCard(uid);
+        else run.rest();
+      }
+      /* Forging is still exercised, because it is a real Safe Room action and
+         a doubled opener pays every remaining fight. But it is paid for in
+         MAXIMUM Courage, which is the health pool: the old roll forged down to
+         a floor of 10, and forged Keepsakes with no opener to double, so it
+         bought nothing with the pool it spent. `forgePreview().worthwhile` is
+         the run layer's own answer to which ones those are. */
+      const worthForging = run.forgeableKeepsakes()
+        .find(k => run.forgePreview(k.id)?.worthwhile);
+      if (worthForging && run.courage / run.maxCourage > 0.8
+          && run.maxCourage - run.forgeCost() >= 40) {
+        run.forgeKeepsake(worthForging.id);
+      }
       log(`  safe room, hp ${run.courage}/${run.maxCourage}`);
       run.leaveNode();
       continue;
@@ -267,7 +356,7 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
   }
 
   if (!run.result && steps >= 400) fail(`seed ${seed}: run never terminated (400 steps)`);
-  return { run, trace: t, steps };
+  return { run, trace: t, steps, lastRoom };
 }
 
 /* ── a stable digest of everything a run ended up being ─────────────────── */
@@ -304,15 +393,17 @@ async function main() {
     // Every fifth expedition is shepherded, so ~10 of the 50 walk the full
     // ladder into the Butler and out the other side.
     const shepherd = i % 5 === 0;
+    const elitist = i % 4 === 1;
     let r;
     try {
-      r = await simulate(seed, { companion, kid, haunt, shepherd });
+      r = await simulate(seed, { companion, kid, haunt, shepherd, elitist });
     } catch (e) {
       fail(`seed ${seed} threw: ${e && e.stack ? e.stack.split('\n').slice(0, 3).join(' | ') : e}`);
       continue;
     }
     const run = r.run;
-    results.push({ seed, companion, kid, haunt, shepherd, run, steps: r.steps, trace: r.trace });
+    results.push({ seed, companion, kid, haunt, shepherd, elitist, run, steps: r.steps,
+                   trace: r.trace, lastRoom: r.lastRoom });
 
     // ── sanity ──────────────────────────────────────────────────────────────
     check(run.result === 'victory' || run.result === 'defeat',
@@ -344,6 +435,7 @@ async function main() {
     if (!r0) continue;
     const again = await simulate(r0.seed, {
       companion: r0.companion, kid: r0.kid, haunt: r0.haunt, shepherd: r0.shepherd,
+      elitist: r0.elitist,
     });
     const a = digest(r0.run), b = digest(again.run);
     if (a === b) { detOk++; }
@@ -393,7 +485,7 @@ async function main() {
       await run.enterNode(id);
       if (run.combat) {
         const eng = run.combat;
-        await playCombat(eng);
+        await playCombat(eng, 80, run);
         bossTrace.push(`${node.row}:${bt} ${eng.victory ? 'won' : 'LOST'} hp=${eng.player.hp}/${eng.player.maxHp}`);
       } else bossTrace.push(`${node.row}:${bt} hp=${run.courage}`);
       if (run.result) break;
@@ -451,7 +543,7 @@ async function main() {
       if (!legal.length) break;
       const id = legal[pick.int(legal.length)];
       await run.enterNode(id);
-      if (run.combat) { await playCombat(run.combat); if (run.pendingReward) run.claimReward(); }
+      if (run.combat) { await playCombat(run.combat, 80, run); if (run.pendingReward) run.claimReward(); }
       else if (run.pendingEvent || run.pendingShop) run.leaveNode();
       else run.leaveNode();
       if (run.result) break;
@@ -643,7 +735,7 @@ async function main() {
       const run = new Run({ companion: 'bones', kid: 'mateo', seed });
       const legal = run.legalNextIds();
       await run.enterNode(legal[0]);
-      if (run.combat) { await playCombat(run.combat); if (run.pendingReward) run.claimReward(); }
+      if (run.combat) { await playCombat(run.combat, 80, run); if (run.pendingReward) run.claimReward(); }
       else run.leaveNode();
       const raw = Save.loadRun();
       if (raw && raw.seed === run.seed && Array.isArray(raw.deck)) storeOk++;
@@ -666,6 +758,71 @@ async function main() {
   rows += '</table>';
   const avg = lengths.reduce((a, b) => a + b, 0) / (lengths.length || 1);
   say(rows + `<pre>mean ${avg.toFixed(1)} rooms, min ${Math.min(...lengths)}, max ${Math.max(...lengths)}</pre>`);
+
+  /* HOW FAR, not just how many. A defeat on row 3 and a defeat to the
+     region boss on row 12 are different failures with different fixes, and
+     "defeat/foyer 46" was hiding which of the two this harness was seeing. */
+  /* HOW DEEP, and whether the run needed help getting there. Every fifth
+     expedition is shepherded to full Courage each room so the back half of the
+     ladder is structurally exercised; those runs say nothing about whether the
+     game is reachable. Reporting one victory count over both kinds hid that. */
+  say('<h2>regions reached</h2>');
+  {
+    const deepest = (r) => (r.run.regionIndex ?? 0) + 1;
+    let rrows = '<table><tr><th>region</th><th>unaided</th><th>shepherded</th></tr>';
+    for (let k = 1; k <= Math.max(...results.map(deepest), 1); k++) {
+      const un = results.filter(r => !r.shepherd && deepest(r) >= k).length;
+      const sh = results.filter(r => r.shepherd && deepest(r) >= k).length;
+      rrows += `<tr><td>${k} ${REGION_ORDER[k - 1] || ''}</td><td>${un}</td><td>${sh}</td></tr>`;
+      REACH.push({ region: k, id: REGION_ORDER[k - 1] || '', unaided: un, shepherded: sh });
+    }
+    const vU = results.filter(r => !r.shepherd && r.run.result === 'victory').length;
+    const vS = results.filter(r => r.shepherd && r.run.result === 'victory').length;
+    VICTORIES = { unaided: vU, shepherded: vS,
+                  unaidedOf: results.filter(r => !r.shepherd).length,
+                  shepherdedOf: results.filter(r => r.shepherd).length };
+    say(rrows + '</table>'
+      + `<pre>victories: ${vU}/${VICTORIES.unaidedOf} unaided, ${vS}/${VICTORIES.shepherdedOf} shepherded</pre>`);
+  }
+
+  say('<h2>rooms entered, by kind</h2>');
+  {
+    let vrows = '<table><tr><th>kind</th><th>entered</th><th></th></tr>';
+    for (const [k, v] of Object.entries(VISITED).sort((a, b) => b[1] - a[1])) {
+      vrows += `<tr><td>${k}</td><td>${v}</td><td class="bar">${'#'.repeat(Math.ceil(v / 2))}</td></tr>`;
+    }
+    say(vrows + '</table>');
+  }
+
+  say('<h2>how far each run got</h2>');
+  {
+    const depth = [];
+    let drows = '<table><tr><th>outcome</th><th>room</th><th>depth</th><th>deck</th><th>runs</th></tr>';
+    const buckets = {};
+    for (const r of results) {
+      const L = r.lastRoom; if (!L) continue;
+      const frac = L.rows > 1 ? L.row / (L.rows - 1) : 0;
+      if (r.run.result !== 'victory') depth.push(frac);
+      const k = `${r.run.result === 'victory' ? 'victory' : 'defeat/' + L.region}|${L.type}`;
+      const b = buckets[k] || (buckets[k] = { n: 0, row: 0, rows: L.rows, deck: 0 });
+      b.n++; b.row += L.row; b.deck += L.deck;
+    }
+    for (const [k, b] of Object.entries(buckets).sort((a, c) => c[1].n - a[1].n)) {
+      const [end, type] = k.split('|');
+      drows += `<tr><td>${end}</td><td>${type}</td>`
+        + `<td>row ${(b.row / b.n).toFixed(1)} of ${b.rows - 1}</td>`
+        + `<td>${(b.deck / b.n).toFixed(1)}</td><td>${b.n}</td></tr>`;
+    }
+    const mean = depth.length ? depth.reduce((a, b) => a + b, 0) / depth.length : 0;
+    say(drows + '</table>'
+      + `<pre>a losing run gets ${(mean * 100).toFixed(0)}% of the way through its region</pre>`);
+    ENDS_DETAIL = Object.entries(buckets).map(([k, b]) => {
+      const [end, type] = k.split('|');
+      return { end, type, n: b.n, row: +(b.row / b.n).toFixed(1), rows: b.rows - 1,
+               deck: +(b.deck / b.n).toFixed(1) };
+    }).sort((a, b) => b.n - a.n);
+    DEPTH_FRAC = +(mean).toFixed(3);
+  }
 
   say('<h2>end state</h2>');
   let erows = '<table><tr><th>outcome</th><th>runs</th><th></th></tr>';
@@ -698,6 +855,8 @@ autosaves ${saveCount}</pre>`);
     runs: results.length, errors: errors.length, errorList: errors.slice(0, 60),
     ms, meanRooms: +avg.toFixed(1), ends,
     lengths, decks, purses, keeps, saveCount,
+    endsDetail: ENDS_DETAIL, depthFrac: DEPTH_FRAC, visited: VISITED,
+    reach: REACH, victories: VICTORIES,
     determinism: detOk, resume: resumeOk, storage: storeOk,
     combatResume: combatResume, combatResumeTried: combatResumeTried, replayed,
   };

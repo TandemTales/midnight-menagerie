@@ -69,6 +69,39 @@ async def main(a):
         print("  mean %.1f  min %d  max %d"
               % (sum(lengths) / len(lengths), min(lengths), max(lengths)))
 
+    reach = res.get("reach") or []
+    vic = res.get("victories") or {}
+    if reach:
+        print("")
+        print("regions reached (of 50; every 5th run is shepherded)")
+        print("  %-22s %-9s %s" % ("region", "unaided", "shepherded"))
+        for r in reach:
+            print("  %-22s %-9d %d"
+                  % ("%d %s" % (r["region"], r["id"]), r["unaided"], r["shepherded"]))
+        if vic:
+            print("  victories: %d/%d unaided, %d/%d shepherded"
+                  % (vic.get("unaided", 0), vic.get("unaidedOf", 0),
+                     vic.get("shepherded", 0), vic.get("shepherdedOf", 0)))
+
+    vis = res.get("visited") or {}
+    if vis:
+        print("\nrooms entered, by kind")
+        for k, v in sorted(vis.items(), key=lambda kv: -kv[1]):
+            print("  %-12s %3d  %s" % (k, v, bar(v, 2)))
+
+    detail = res.get("endsDetail") or []
+    if detail:
+        print("\nhow far each run got")
+        print("  %-18s %-13s %-17s %-6s %s"
+              % ("outcome", "last room", "depth", "deck", "runs"))
+        for d in detail:
+            print("  %-18s %-13s %-17s %-6s %d"
+                  % (d["end"], d["type"],
+                     "row %.1f of %d" % (d["row"], d["rows"]),
+                     d["deck"], d["n"]))
+        print("  a losing run gets %.0f%% of the way through its region"
+              % (100 * res.get("depthFrac", 0)))
+
     ends = res.get("ends") or {}
     if ends:
         print("\nend state")

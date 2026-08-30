@@ -982,7 +982,19 @@ const rares = [
     nums: {},
     effect: eff(c => power(c, 'bones/never-really-lost', 1, (x) => {
       x.e?.on?.('discard', (ev) => {
-        const k = ev?.card;
+        /* CONTRACTS 19, and it CRASHED rather than going quiet. `ev.card` is a
+           snapshot, and `cardSnap()` clones `meta` — so `U.flag(k,'slobbered')`
+           answered TRUE on the copy and everything after it ran against a dead
+           object: `unslobber` wrote to the clone, and `toDrawBottom` handed the
+           engine a card that was in no pile and had no `def`, which threw in
+           `costOf`. This Power took down any fight in which a Slobbered Trick
+           was played. Every DISCARD emitter pushes the card to the pile BEFORE
+           it emits, so the uid always resolves.
+           `reason` is filtered because the card prints "after being played",
+           and firing on Bones's own discard effects would make it quietly
+           better than its text. */
+        if (ev?.reason !== 'played') return;
+        const k = ev.cardUid ? x.e?.card?.(ev.cardUid) : null;
         if (!k || !U.flag(k, 'slobbered') || !U.once(x, 'neverReallyLost')) return;
         unslobber(x, k); U.toDrawBottom(x, k);
       });
