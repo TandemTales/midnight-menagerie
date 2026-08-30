@@ -1008,6 +1008,21 @@ it, so the screen can never offer a party the engine refuses or refuse one it ac
   rewards, and Mr. Moth's shelf (`shopStock(node, kid)`, forked per seat; seat 0's fork
   key is unchanged so no existing seed moved). Shared: the route, the rooms, the enemies,
   the Haunt level, the seed.
+- **ROOM inputs COMMUTE; COMBAT inputs do not.** This is the fact that makes the
+  wire tractable and it is not obvious. Every room act works on the sender's own
+  Kid — their deck, their purse, their Keepsakes — or adds to a shared counter,
+  and addition commutes; `map.vote` writes one seat's slot in a ballot whose
+  resolution sorts the seats itself; `room.done` is per Kid. Apply any of them in
+  either order and both boards land in the same state. `end` commutes too, because
+  the enemy phase falls out of the LAST seat to close, whichever that is.
+  **`play` and `snack` do not** — a Trick changes the board every other seat is
+  about to read.
+  Two consequences. `session._pump` sorts what it can (everything arriving in one
+  turn of the event loop) and reports what it cannot ONLY for `play` and `snack`,
+  because reporting the rest shouts six times during an ordinary reward screen —
+  both clients apply their own input as they issue it, so whichever seat acts
+  second always sees the other's arrive late. And a full turn barrier is only
+  ever needed for combat, which is worth knowing before anyone designs one.
 - **The route is shared and therefore VOTED** (StS2-REFERENCE 8.5). `ACT.MAP_VOTE` is
   one seat's vote and is decisive only when it is the last one owed, the same shape as
   `ROOM_DONE`; `run.resolveVote()` then runs a weighted roulette on EVERY client, so
