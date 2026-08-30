@@ -2,278 +2,195 @@ Midnight Menagerie — a cute-spooky deckbuilding roguelike (Three.js + plain ES
 modules, no build step) at
 C:\Users\Josh\OneDrive\Desktop\Tandem Tales\Midnight Menagerie
 
-Read HANDOFF.md first, then CONTRACTS.md. Both were brought up to date on
-2026-08-28 and are trustworthy — HANDOFF opens with a "Where it stands" block.
-Then read docs/notes/2026-08-28-butler-aoe-and-a-broken-instrument.md, which is
-the whole of the last session and the reason several numbers you will find in
-older notes are marked as untrustworthy. Don't read the design doc whole; it is
-carved into docs/design/.
+Read HANDOFF.md first — it opens with a "Where it stands" block and a numbered
+list of what is open. Then CONTRACTS.md, which is at 54 traps. Then, for the
+last two sessions:
 
-STATE: branch dev, tree clean. The last code commit is e239740, "The Foyer boss
-is winnable in co-op again"; anything after it is documentation. Dev server does
-not survive a restart:
-python tools/devserver.py 8777
+  docs/notes/2026-08-29-the-map-was-writing-the-run.md
+  docs/notes/2026-08-29-the-route-is-voted.md
 
-**88 commits are unpushed.** Every previous session pushed to dev at the end;
-the last one did not, and did not have permission to. Ask the designer before
-pushing.
+Don't read the design doc whole; it is carved into docs/design/. And read §8 of
+docs/STS2-REFERENCE.md before deciding what to work on — see below.
 
-Everything is green except ONE known failure: tests/chrome's 60fps check, at
-54–56 against a threshold of 58. That is real and diagnosed — see §4 below.
+STATE: branch dev, tree clean, everything pushed (origin/dev == HEAD ==
+7b52920). Pushing to origin/dev was authorised on 2026-08-29; ask again if that
+is no longer live. Dev server does not survive a restart:
 
-━━ THE JOB: A GAUNTLET LOOP TO FINISH THE GAME ━━
+  python tools/devserver.py 8777
 
-Work in a loop, not in a straight line. One pass of the gauntlet is:
+EVERYTHING IS GREEN. Not "green except one" — every suite and every gate below
+was run at 7b52920.
 
-  1. RUN THE BATTERY, one suite at a time, never two at once (CONTRACTS trap 7:
-     two overlapping Playwright runs make suites fail in ways that look like
-     bugs and are not).
-  2. Take the first real failure. Reproduce it before believing the list.
-  3. Fix it, with a test that asserts the EFFECT, and verify the test FAILS
-     without the fix. This is not optional — see the working method.
-  4. Re-run the affected suites, then the battery.
-  5. Commit with explicit paths and a message that carries the numbers.
-  6. Go again.
+━━ THE ONE THING TO UNDERSTAND BEFORE YOU CHANGE ANYTHING ━━
 
-The battery, in the order that finds things fastest:
+**Three separate systems were fully wired, fully documented, and doing nothing.**
+Not subtly wrong — inert, for months, while every suite stayed green:
 
-  python tests/cards/run.py            1468 cards, 0 errors, 0 warnings
-  python tests/combat/run.py           677
-  python tests/coop/run.py             604
-  python tests/net/run.py              33
-  python tests/enemies/run.py          37 enemies, 0 errors
-  python tests/enemies/audit.py        2018 turns, intent === delivered
-  python tests/run/run.py              50 runs, 0 errors
-  python tests/backpack/run.py         80
-  python tests/map/run.py              23
-  python tests/combat-scene/seam.py    22
-  python tests/audio/run.py            46 cues
-  python tests/chrome/run.py           27 checks, 1 error (the fps one)
-  python tests/critic-design/anchor.py 5/5   ← the party harness's own anchor
+- **Six of the eight WING CONDITIONS.** `state/mapgen.js` HAZARDS declares
+  eight, every blueprint places two to four, and the map shades the area, prints
+  the name along the footer, lists it in the legend and renders its rule in the
+  hover card. A search for each id returned mapgen and nothing else, for six.
+  The player was told "Guard is halved" and nothing halved anything.
+- **33 of audio.js's 38 BUS SUBSCRIPTIONS.** `combat/engine.js` forwards engine
+  events to the bus as `combat:<type>`; audio listened for the bare names. Two
+  `EV` entries are themselves `combat:start`/`combat:end`, so the bus literally
+  carried `combat:combat:start`. Twelve authored cues could be played by nothing.
+- **The whole audio MIX LAYER.** `tension()` and `telegraph()` are public, were
+  written in the sound pass, and had no caller anywhere, so `_effTension()` was
+  permanently 0. The bed never darkened as Courage fell and there was no warning
+  before a big hit.
 
-  seven gates, each must stay at zero:
-  tests/seams/check.py · scene-css/check.py · css-tokens/check.py
-  dup-keys/check.py · hook-names/check.py · turn-events/check.py
-  stdlib-shadow/check.py
+All three are fixed and gated. The lesson, now CONTRACTS 54: **content that
+describes itself will be believed.** A table with ids and rule sentences reads
+like an implementation. A note saying "audio.js listens on the bus and needs no
+calls from anyone" reads like a contract. Neither is a call.
 
-  sixteen effect-asserting Companion suites plus two boss/mechanic ones:
-  boggle 30 · mopsy 28 · wisp 25 · crumbula 25 · hush 17 · wink 5 · truffle 27
-  drizzle 70 · pudding 46 · mossbit 55 · brambleboo 52 · crinkle 44
-  butler 26 · pipkin 18
+**When you build a gate, prove it can SEE the file you care about before you
+trust the number it prints.** `tests/bus-names/check.py` printed "0 dead
+subscriptions" while blind to the file holding thirty of them, because its regex
+needed a literal `bus.on('x')` and audio.js subscribes through a local alias.
 
-  co-op screens, all "0 failures, 0 console errors":
-  tests/coop/selectscreen.py --party 4 · hotseat.py --party 4 · rooms.py
-  playthrough.py
+━━ THE BATTERY ━━
 
-━━ 1. MULTIPLAYER IS THE PRIORITY, AND IT IS FOUR THINGS ━━
+ONE Playwright run at a time, always (CONTRACTS trap 7). Numbers are from
+7b52920; if one differs, that is the finding.
 
-Networking has a foundation and a proof, not a feature.
-docs/notes/2026-08-28-netcode.md lists exactly what exists. Built: the
-transport-agnostic lockstep session, inputs-on-the-wire, a total order of
-(turn, seat, seq), board-digest divergence detection, reconnection by replaying
-the input log, and two working transports (an in-page LoopbackHub and a
-BroadcastChannel ChannelTransport that makes two browser TABS two independent
-instances). tests/net/run.py drives two complete Sessions against each other.
+  python tests/cards/run.py               1468 cards, 0 errors, 0 warnings
+  python tests/combat/run.py              689
+  python tests/coop/run.py                645
+  python tests/net/run.py                 152
+  python tests/enemies/run.py             37 enemies, 0 errors
+  python tests/enemies/audit.py           2093 turns, 0 errors
+  python tests/run/run.py                 50 runs, 0 errors
+  python tests/backpack/run.py            80 checks, 0 failures
+  python tests/map/run.py                 30
+  python tests/vote/run.py                30      ← the route ballot
+  python tests/wings/run.py               35      ← the eight wing conditions
+  python tests/combat-scene/seam.py       22
+  python tests/audio/run.py               46 cues, 0 errors
+  python tests/chrome/run.py              27 checks, 0 errors
+  python tests/cards-feel/run.py          exit 0
+  python tests/critic-design/anchor.py    6/6 agree
 
-What is left, in the order I would do it:
+  NINE gates, each must stay at zero:
+    tests/seams/check.py          6178 call sites, 0 problems
+    tests/bus-names/check.py      0 dead subscriptions, 0 advisory
+    tests/audio/cues.py           46 cues, 44 reachable, 2 known-silent
+    scene-css · css-tokens · dup-keys · hook-names · turn-events · stdlib-shadow
 
-  a) ROUTE THE REMAINING SCREENS THROUGH session.input(). Combat is exercised;
-     the card/Keepsake reward, Mr. Moth's, the Safe Room and Curiosities still
-     act locally. HANDOFF §9 has the seam-by-seam table. Each is a call-site
-     change, not a design question, and it is the largest remaining chunk that
-     can be done entirely in-repo. Do this first.
+  fourteen effect-asserting Companion suites:
+    boggle 30 · mopsy 28 · wisp 25 · crumbula 25 · hush 17 · wink 16
+    truffle 27 · drizzle 70 · pudding 46 · mossbit 55 · brambleboo 52
+    crinkle 44 · pipkin 18 · taffy 8      plus butler 38 · governess 56
 
-  b) LOBBY AND SEAT ASSIGNMENT. Who is seat 0, who hosts, how the seed is
-     agreed. `Session` takes all three as constructor arguments today.
+  four co-op screens, all "0 failures, 0 console errors":
+    tests/coop/selectscreen.py · hotseat.py · rooms.py · playthrough.py
 
-  c) THE CHOICE BROKER over a wire. A request for another seat currently
-     resolves from its `prefer` rule and is logged with the seat. That fallback
-     is deliberate for local play — one player rummaging in another Kid's hand
-     would be worse — so with a wire it should reach that player's picker and
-     keep the rule as the offline path.
+━━ WHAT IS OPEN ━━
 
-  d) STEAM P2P. One file, five methods, and the two rules the interface spells
-     out (ordered per sender, never delivered back to the sender). This ENDS THE
-     NO-BUILD RULE because it needs a wrapper shell, so do it last and expect
-     CONTRACTS non-negotiable 1 to need rewriting when you do.
+HANDOFF.md carries this in full. In short, and honestly: **there is no defect on
+the list.** What is left is one measurement, one machine problem, and decisions
+that are the designer's.
 
-`shouldHandOff(run)` is still the single switch: a session that owns one seat
-answers false and every pass-and-play handoff stops happening. Never test
-`run.partySize` yourself.
+1. **Party cost is 15–30 points from solo, and it may not be a problem.** Read
+   §8.3 of the reference first: StS2 scales enemy HP linearly and does not scale
+   damage either, and its verdict on our matching design is "Keep it; it needs
+   no defending". Nobody has a figure for how much HP an StS2 party finishes a
+   fight with, so the 15–30 has no source behind it.
+   **What DOES need doing: re-measure.** The sagging wing charges every Kid now
+   instead of one, and five wings that did nothing now do something. Party
+   economy has moved and no table in the repo reflects it.
+       python tests/critic-design/party-ledger.py --tier elite --region foyer
+2. **fps and the entry stall need a quiet machine.** Several perf claims in
+   older notes do not reproduce. `tests/chrome` read 52 on one battery and 61 on
+   another with no perf work in between.
+3. Steam P2P (designer; ends the no-build rule) and Crinkle's chapter (designer
+   review — it is a reconstruction by Claude, marked as such, unreviewed).
 
-━━ 2. MULTIPLAYER BALANCE IS HALF-MEASURED, AND THE HALF THAT IS NOT IS A BOSS ━━
+**Design calls waiting on a person.** None is a defect; each is a place the code
+chose and a person should confirm:
 
-Last session found the Foyer boss was **unwinnable at three and four Kids** —
-0%, not merely hard — and fixed it. Read §8 of the note before touching any of
-this. The short version:
+- **Two authored rules could not be carried as written.** Long Shadows read
+  "Guard is halved at the start of each of your turns" — Guard is already WIPED
+  there, so it is "Guard you GAIN is halved" now and mapgen's text was reworded
+  to match the code. The Lights Are Out read "2 Unseen"; `unseen` is Hush's, it
+  does not stack and its break rules live in his card code, so the wing uses its
+  own status displayed as "Unseen".
+- A fork with only one legal exit still opens a ballot and resolves instantly.
+- The 1.5 s beat before the party walks into a voted room is unplaytested.
 
-  - `PARTY_HP_SCALE = [1, 2.2, 4.0, 5.7]` was derived from tests/coop/balance.py,
-    which fights the STANDARD TIER, and then applied to every enemy in the game.
-  - Bosses had never been measured at any party size. When they were, the Butler
-    read 0% at 3p and 4p.
-  - The fix went on the BUTLER via `EnemyDef.partyHp` — the per-enemy seam,
-    `partyHp: [1, 2.2, 2.8, 3.2]` — not on the global constant, which still
-    governs scuffles and was measured on them.
+**Two cues are known-silent and need something built first**, listed with their
+reasons in `tests/audio/cues.py`: `combat:crit` (there is no crit in this game —
+the only crit flag in the repo is the soundboard's own test payload) and
+`card:retain` (no retain event is emitted).
 
-**THE GOVERNESS AND THE BEDFRAME BEAST HAVE STILL NEVER BEEN MEASURED AT ANY
-PARTY SIZE.** They are on the same global curve that read 0% for the Butler.
-This is the highest-value balance work left and the instrument now exists:
+**One netcode case is left and it needs the transport.** `session._pump` applies
+the log in order now, so anything arriving in the same turn of the event loop is
+sorted first. An input arriving in a LATER task cannot be put back in its place.
+That is harmless for room inputs — see the commutativity rule below — and
+reported as a desync for a PLAY or a SNACK. Closing it needs a turn barrier and
+idle heartbeats, which belongs with Steam P2P.
 
-  python tests/critic-design/party-boss.py --region nursery --enc nursery-boss \
-      --n 8 --gen 8 --sizes 1,2,3,4 --scales 1
+━━ THINGS THAT WILL SAVE YOU A ROUND ━━
 
-Expect to need a bigger --gen for region 2, because generating a Nursery loadout
-means surviving the Foyer first. If a boss reads near zero at 3p/4p, give it its
-own `partyHp` the way the Butler has one, derived from a bracketing sweep
-(`--scales 1,0.75,0.6`), and say in the def why.
+- **HANDOFF's open list is not the only open list.** `docs/STS2-REFERENCE.md` §8
+  carries its own "For us:" verdicts and nothing syncs them. On 2026-08-29 the
+  handoff's number-one item was a balance question while §8.5 had been calling
+  the map route "the largest co-op gap we have" since it was researched. When
+  you close one, update the reference's verdict too — it is a claim about the
+  code, and a stale one reads as a gap that is still open.
+- **ROOM inputs COMMUTE; COMBAT inputs do not.** Every room act works on the
+  sender's own Kid or adds to a shared counter; `map.vote` writes one seat's
+  slot in a ballot whose resolution sorts the seats itself; `end` commutes
+  because the enemy phase falls out of the LAST seat to close. Only `play` and
+  `snack` reorder the board. This is why a late-input warning must be narrow —
+  both clients apply their own input as they issue it, so whichever seat acts
+  second always sees the other's arrive late, and a guard that shouts about it
+  shouts six times during an ordinary reward screen.
+- **The route is VOTED.** A single click no longer moves the party: every living
+  Kid votes, and a weighted roulette settles a split so a minority vote can win.
+  Any harness that clicks a map node with a PARTY needs one vote per Kid with
+  `.hoff__go` between them — `tests/coop/hotseat.py` timed out at `#end-turn`
+  until it was taught to. Solo still resolves on its first vote, which is why
+  every solo driver was unaffected.
 
-Also still open, and structural rather than a number: **party boss fights are
-LONG** — 24 and 32 turns at three and four Kids against solo's 13 — because
-party damage output does not scale with the pool the way its Courage does. No
-multiplier fixes it. If you want to fix it, the lever is what a boss's per-turn
-Guard is allowed to absorb, not the curve.
-
-MEASURING TOOLS, and which question each answers:
-  tests/critic-design/sweep.py       SOLO, real pre-boss decks. Cannot seat a
-                                     second Kid.
-  tests/critic-design/party-boss.py  A boss at 1..4 Kids, real pre-boss decks.
-                                     `--scales a,b,c` sweeps on ONE loadout
-                                     generation.
-  tests/coop/balance.py              The party curve on the STANDARD tier, with
-                                     starting decks. Not a boss instrument.
-  tests/critic-design/anchor.py      Holds the above honest: at ONE Kid,
-                                     partyBench() must reproduce bench() fight
-                                     for fight. If this fails, no party number
-                                     means anything.
-  tests/critic-design/butler-ledger.html  Where a boss's length actually comes
-                                     from (Guard gained vs damage that Guard ate).
-
-━━ 3. THE SMALLER OPEN ITEMS ━━
-
-  - **`partyPick` tracks the board and cannot also stay still.** `pickSeat`
-    reads live Guard, so the intent arrow MOVES when a Kid raises Guard, which
-    reads like a violation of "the target is shown before the players act".
-    Holding it was tried on 2026-08-28 and REVERTED — Guard is wiped at turn
-    start, so a held pick ties and resolves to seat 0 forever, `lowestGuard`
-    stops meaning anything, it measured 33% → 17%, and it broke six co-op
-    assertions that encode the tracking behaviour on purpose. The reasoning is
-    in `intentTargetFor` and in CONTRACTS. If you want to resolve it properly:
-    anything telegraphed a turn ahead should probably prefer something the
-    player cannot game inside the turn (`lowestCourage`, `fewestDraw`). That is
-    a DESIGN decision — take it to the designer, don't "fix" it.
-
-  - **Cold card art freezes the UI.** 60 cards cold is 816 ms, 13.6 ms each, all
-    PNG encoding, in ONE synchronous block, because `DeckView` mounts them while
-    the incremental `warmArt` queue sits unused. The encoder is a CLOSED DOOR
-    and the numbers are in the note so nobody re-opens it: JPEG is 3.3x faster
-    and the art is fully opaque, but 22.6% of pixels differ at q0.98 against the
-    0.023% this project accepted for the renderer change; WebP is slower than
-    PNG. The open door is that `warmArt` + `onArtReady` already exist and
-    `CardView` already subscribes — `_paintArt` just renders synchronously on a
-    miss. The remaining decision is about FEEL (a cold card can freeze the UI or
-    appear art-less for a few frames) and belongs to card-feel.
-
-  - **Crinkle's design chapter is a RECONSTRUCTION** written by Claude from his
-    one-line spec, clearly marked as such, and the designer has not reviewed it.
-    docs/design/companions/16-crinkle.md. If they want changes, the chapter is
-    where they start; the implementation follows it.
-
-━━ 4. THE ONE FAILING CHECK, AND WHY IT IS NOT A TEST PROBLEM ━━
-
-tests/chrome wants 60 fps and measures 54–56. Do not "fix" the threshold: the
-GAME misses it too, and by more.
-
-Measured at 1920x1080 — the size CONTRACTS non-negotiable 3 names — six in-page
-samples per scene, one browser, one load:
-
-  title 61 · gameover 58 · map 52 · combat 52
-  blank page and a bare served page both 61–62
-
-So the machine, the browser and the compositor can all do 60; the two main
-gameplay screens cannot. What is EXCLUDED, with numbers:
-
-  - not JS         665 ms of JavaScript in six seconds of a settled combat
-                   scene, ~1.85 ms a frame, against 5592 ms idle
-  - not fill rate  55 / 56 / 52 at 720p / 900p / 1080p, flat across 2.25x pixels
-  - not the tiers  auto picks 'medium' correctly; high 45, medium 55, LOW 55 —
-                   low buys nothing, so render scale, bloom, halation taps and
-                   particles are all off the critical path
-  - not the scene graph  renderer.info and a scene.traverse read IDENTICAL in
-                   title, map and combat (14 drawables, 26 programs, 3 composer
-                   passes) — the 3D stage is a shared backdrop
-  - not one CSS property  hiding layers gives DOM 60 / canvas 57 / both 53, and
-                   disabling box-shadow, will-change, filters or backdrop-filter
-                   in turn moves about ONE frame each
-
-What is left is the DOM's aggregate compositing cost — 739 elements at
-1920x1080 — so the fix is a compositing pass (fewer elements, fewer promoted
-layers), which is design-affecting work and not a line to change. Do NOT guess
-at it; it is renderer/atmosphere and ui-chrome territory and the look is what a
-wrong guess costs.
-
-If you touch perf: CONTRACTS trap 35. A baseline measured once, at the start, is
-not a baseline. The first baseline in that sweep read 52 and the SAME baseline
-four cases later read 56, which made box-shadow look worth 4 fps when it is
-worth about one. Re-measure the baseline at the END and compare like with like.
-
-━━ THE WORKING METHOD THAT HAS BEEN EFFECTIVE ━━
+━━ THE WORKING METHOD ━━
 
 - Read the whole design chapter before writing anything.
-- Every fix gets a test that asserts the EFFECT, and **you verify the test fails
-  without the fix.** CONTRACTS trap 12: "it resolves without throwing" is worth
-  nothing. Four dead cards passed exactly that check. Every fix in the last
-  session was negative-controlled this way and two of them turned out to be
-  wrong because of it.
-- A measuring instrument is CODE and can be wrong. Last session found the co-op
-  harness running two enemy phases a round, a bot that scored clones while
-  reading the real board, a bot that gave every seat the whole board's incoming,
-  and six test scripts that could not run at all. **Every number that came out
-  of it before those fixes was wrong.** If a measurement surprises you, suspect
-  the instrument before the game.
-- Run tests/cards/run.py and fix every error and warning honestly — never
-  silence one.
-- ONE Playwright run at a time. Always.
-- TAKE A SCREENSHOT. Every single round it has caught something every green
-  suite missed — a gauge reading 0/5 against a cap of 3, a Garden nobody could
-  see, a card printing 6 while dealing 12, and last session a chip reading
-  "SEED 0/2" over three objects the engine had already advanced to Sprouts.
-  python tools/shot.py <name> --scene "combat&seed=42&companion=<slug>" --wait 9
-- Commit with explicit paths (never git add -A), writing the message to a file
-  and using git commit -F — backticks in a -m string get eaten by the shell.
-
-━━ TRAPS THAT COST TIME, ALL NOW IN CONTRACTS (1–35) ━━
-
-The full list is in CONTRACTS.md. The ones that bit most recently:
-
-- **A scripted edit that reads with read_text() and writes with
-  write_text(newline="") FLIPS THE FILE'S LINE ENDINGS** and turns a 20-line
-  change into a 956-line diff. This repo is genuinely mixed per file. Operate on
-  BYTES, and check `git diff --stat` after every scripted edit. It happened once
-  last session and was caught only by auditing.
-- Heredocs in the Bash tool mangle \n and backticks. Write patch scripts to the
-  scratchpad with the Write tool and run them with python <path>, or use Edit.
-- **A backtick in a comment inside a template literal ends the template** and
-  blanks every screen, with the syntax error reported hundreds of lines away.
-- A script named after a stdlib module BECOMES that module for everything in its
-  directory. `tests/coop/select.py` broke all six scripts in tests/coop for an
-  unknown period. Gated now by tests/stdlib-shadow/check.py.
-- `run.buildCombat` seeds the fight from `fork('combat:' + node.id)`, so two
-  harnesses that name their bench node differently play different fights and
-  look like they disagree.
-- `turn:start` fires BEFORE Guard is wiped and BEFORE Nerve is refilled. Use
-  U.guardNextTurn / U.energyNextTurn, or listen for `phase: 'playerReady'`.
-- The `damage` EVENT carries sourceId/targetId; the HOOKS carry
-  attacker/defender.
-- A card's uid is NOT a network identity. Use cardRef/refCard from net/session.js.
+- **Every fix gets a test that asserts the EFFECT, and you verify it FAILS
+  without the fix.** This is not ceremony. In the last two sessions it caught
+  four checks that could not fail — including one whose own comment named it as
+  the control for the line it could not test.
+- **A control has to be re-checked whenever the thing under it moves.** A
+  `PARTY_ACTS` control stopped failing when the route became a ballot, and
+  nothing said so; it kept passing. CONTRACTS 52 and two notes cited it.
+- For any "X is what protects Y": break X and watch Y break. If Y survives, the
+  credit belongs somewhere else and the check is decorative.
+- A measuring instrument is CODE and can be wrong. Suspect it first when a
+  measurement surprises you — and suspect your own analysis script: three
+  separate greps in one session produced three different wrong answers about the
+  audio wiring before a browser probe settled it.
+- **TAKE A SCREENSHOT.** It found a blank blueprint after every vote and an
+  announcement that was never once on screen, both with every suite green.
+      python tools/shot.py <name> --scene map --wait 2
+- ONE Playwright run at a time.
+- Commit with explicit paths, message via `git commit -F` — backticks in a `-m`
+  string get eaten.
+- Scripted edits: this repo is MIXED per file (CONTRACTS + HANDOFF are both
+  CRLF with bare-LF runs). Read with `newline=''`, convert to LF, patch, convert
+  back, and check `git diff --stat` — a 370-line diff for a two-paragraph edit
+  means the endings flipped. Heredocs in the Bash tool eat backslash escapes:
+  one of them wrote a literal 0x08 into a checked-in file that parsed clean.
+  Write patch scripts with the Write tool and run them with `python <path>`.
 
 ━━ NOT THE JOB ━━
 
-- Do not change `PARTY_HP_SCALE`. It governs every enemy, it was measured on the
-  standard tier where the win rate is flat and correct, and per-boss problems
-  belong on `EnemyDef.partyHp`.
-- Do not move the tests/chrome fps threshold. The product misses it.
-- Do not re-open the card-art encoder question. §3 has the numbers.
-- Do not redesign Crinkle without the designer.
-- Do not push to origin without asking.
+- Do not change `PARTY_HP_SCALE`; it was re-measured on a repaired harness.
+- Do not chase fps on this machine as it currently is.
+- Do not re-open the card-art encoder question — it does not reproduce.
+- Do not re-wire audio's dead bus names. `scenes/combat.js` plays thirteen of
+  those cues directly, timed to its FX, and reviving the handlers would stack a
+  second voice on every one. The note in `_wireBus` says so.
+- Do not redesign Crinkle, and do not start Steam P2P, without the designer.
 
 Start by telling me what you'd do first and why.
