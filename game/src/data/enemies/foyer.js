@@ -860,7 +860,33 @@ export const unwelcomeGuest = {
       },
     },
     'wrong-face': {
+      /**
+       * PARTY: it turns toward you, and KEEPS TURNING — so it reaches two.
+       *
+       * MEASURED 2026-08-30, and this is the number nobody had looked at
+       * because `party-ledger.html` computed it and never printed it:
+       * `spread` — how evenly incoming damage is shared, 0 when one seat takes
+       * everything — reads 0.14 to 0.28 in EVERY Foyer fight at EVERY party
+       * size. Three Kids in four are spectators as far as incoming threat
+       * goes, which no win rate would ever have surfaced.
+       *
+       * The Unwelcome Guest was the purest case at the elite tier: every one
+       * of its moves was single-target, so a party of four watched one Kid
+       * have the fight. `engine.partyTargets` says the design position
+       * outright — AoE "is the only thing that makes a bigger party genuinely
+       * more dangerous to be in, since damage per hit deliberately does not
+       * scale."
+       *
+       * `partyTarget: 'two'` and NOT `'all'`, and the number does not move:
+       * 9x2 to each, exactly the Governess's Snip Snip precedent (§27, §33) —
+       * "the number stays at its solo value and the change is who it reaches.
+       * Two seats is the coverage; cutting the number as well was tried and
+       * measured nothing." Two rather than all because this is the ordinary
+       * turn, not the telegraphed one; Too Familiar is still the big hit and
+       * it still pierces.
+       */
       id: 'wrong-face', name: 'Wrong Face', intent: Intent.ATTACK, damage: 9, hits: 2,
+      partyTarget: 'two',
       tell: 'It turns toward you, and keeps turning.',
       effect(c) { hitPlayer(c, 9, 2); },
     },
