@@ -23,6 +23,7 @@ import { HUD } from '../ui/hud.js';
 import { pauseStageFor } from './_stage.js';
 import { act, ACT } from '../net/actions.js';
 import { INPUT } from '../net/session.js';
+import { passTo, shouldHandOff } from '../ui/handoff.js';
 
 /* The sheet is always the same height; its width follows the region's blueprint
    section, so a broad glass complex gets a broad sheet and a vertical shaft gets
@@ -267,12 +268,40 @@ export class MapScene extends Scene {
 
     this._fitView();
     this._syncStates();
+    // The ballot belongs to the RUN, not to this screen, so a map rebuilt
+    // behind the handoff veil opens showing what the Kids before you chose.
+    this._paintBallot();
+    /**
+     * The roulette lands while this screen is still the one on the glass.
+     *
+     * `resolveVote` emits before it calls `enterNode`, so this runs before
+     * anything has asked for the next scene — which is the only moment the
+     * party can be told that a NUMBER chose their room and not the vote.
+     * CONTRACTS 45: a mechanic the player is not told about is a mechanic
+     * they will read as a bug.
+     */
+    this._off.push(bus.on('map:voted', (v) => this._announceVote(v)));
     this._bindEvents();
 
     const walk = parseInt(params.walk, 10);
     if (Number.isFinite(walk) && walk > 0) this._prewalk(walk);
 
-    const drawn = this.still
+    /**
+     * The survey sweep is for arriving at a wing, not for changing seats.
+     *
+     * `params.drawn` is the vote handoff (`_passVoteTo`): the same party at
+     * the same fork, one Kid later. Replaying the 820 ms draw-on there — on
+     * top of `_whenVisible()` waiting for three clean frames — left the
+     * sheet blank for about three and a half seconds after every single
+     * vote, which at four Kids is three blank sheets per fork. Measured at
+     * `is-armed` with the ink at 0.02 opacity, which is how it was found:
+     * as an empty blueprint in a screenshot.
+     *
+     * NOT folded into `this.still` (reduce-motion), which also stops the
+     * lamp, the pans and the visit stamp. This is one flourish, skipped in
+     * one place.
+     */
+    const drawn = (this.still || params.drawn)
       ? (this.el.screen.classList.add('is-drawn'), Promise.resolve())
       : this._drawOn();
 
@@ -411,6 +440,7 @@ export class MapScene extends Scene {
         <div class="map-bar">
           <div class="map-legend" aria-label="Blueprint key"></div>
           <div class="map-notes" aria-label="Wing conditions"></div>
+          <div class="map-ballot" aria-live="polite" hidden></div>
           <div class="map-hint" aria-hidden="true">
             <b>drag</b> pan · <b>scroll</b> zoom · <b>↑↓</b> choose · <b>⏎</b> go
           </div>
@@ -424,6 +454,7 @@ export class MapScene extends Scene {
       paper: q('.map-paper'), ink: q('.map-ink'), nodes: q('.map-nodes'),
       lamp: q('.map-lamp'), lampWarm: q('.map-lamp--warm'), grain: q('.map-grain'),
       tip: q('.map-tip'), notes: q('.map-notes'), legend: q('.map-legend'),
+      ballot: q('.map-ballot'),
       hudHost: q('.map-hudhost'), rowNum: q('.bn-row'),
     };
     // One HUD, one position: the shared strip along the top edge. Everything it
@@ -1738,12 +1769,18 @@ export class MapScene extends Scene {
     // shared state that no seam gate could see.
     bus.emit('map:choose', node);
 
-    // Local advance keeps the screen honest even before run.js exists.
-    m.visited.add(id);
-    node.visited = true;
-    if (!m.path.length) m.path.push(ENTRY);
-    m.path.push(id);
-    m.currentId = id;
+    // Local advance keeps the screen honest even before run.js exists —
+    // and ONLY then. With a run behind it a click is a vote, not an
+    // arrival: marking the room walked here would show the party standing
+    // in a room two other Kids have not agreed to yet, and the roulette
+    // might well send them somewhere else.
+    if (!m.run) {
+      m.visited.add(id);
+      node.visited = true;
+      if (!m.path.length) m.path.push(ENTRY);
+      m.path.push(id);
+      m.currentId = id;
+    }
 
     if (m.run) {
       /**
@@ -1757,10 +1794,7 @@ export class MapScene extends Scene {
        * on any click ever measured. `run.pathIds` is the run's to keep —
        * `enterNode` appends to it — and `m.path` is this screen's copy.
        */
-      if (typeof m.run.chooseNode === 'function') {
-        act(m.run, { t: INPUT.ROOM, act: ACT.MAP_CHOOSE, id });
-        return;
-      }
+      if (typeof m.run.voteNode === 'function') { this._vote(id); return; }
       this.ctx.scenes?.go?.(sceneForNode(node), { node: id, region: m.regionId });
       return;
     }
@@ -1770,6 +1804,162 @@ export class MapScene extends Scene {
     this._syncStates();
     this._stampVisit(id);
     this._lookAt(node);
+  }
+
+  /**
+   * One Kid commits, and the blueprint waits for the rest.
+   *
+   * STS2-REFERENCE 8.5. Before this the room went to whoever was holding
+   * the controller when the map opened — `resetSeat()` puts that on the
+   * lowest living seat — so one player chose the entire expedition's route
+   * and the others watched. Now everybody votes and a weighted roulette
+   * settles a split, which means a minority vote can win.
+   *
+   * `act()` is awaited because over a wire it is a promise for the answer
+   * that comes back once the vote has taken its place in the total order.
+   * Solo it resolves synchronously and this reads exactly as it always did.
+   */
+  async _vote(id) {
+    const run = this.model.run;
+    const wasAt = this.model.currentId;
+    if (this._voting) return;                  // one ballot, one click
+    // A Kid at zero Courage has no say in the route (`run.voters()`), so
+    // their click has to be refused HERE as well or the sheet accepts it
+    // and silently does nothing. Cannot happen at one keyboard, where
+    // `resetSeat()` only ever seats the living; it can on a wire, where
+    // each client sits in its own seat whatever has happened to it.
+    if (!run.voters().includes(run.localSeat)) { this._refuse(id); return; }
+    this._voting = true;
+    try {
+      await act(run, { t: INPUT.ROOM, act: ACT.MAP_VOTE, id });
+      // The last vote owed walks the party in, and by the time this
+      // resumes `enterNode` has asked for the next scene and `exit()` has
+      // NULLED this screen's model and elements. Reading `this.model`
+      // here threw a page error from a screen that no longer existed —
+      // invisible in play, because the room it walked into was already
+      // drawing over it.
+      if (!this.model || !this.el) return;
+      if (run.currentNodeId && run.currentNodeId !== wasAt) return;
+      const owed = run.votesPending();
+      if (!owed.length) return;
+      this._paintBallot();
+      this.ctx.audio?.play?.('ui:click');
+      // On a wire each Kid votes from their own machine and this screen
+      // just waits; at one keyboard it has to be handed over, and the veil
+      // is the same one every other per-Kid room uses.
+      if (shouldHandOff(run)) await this._passVoteTo(owed[0]);
+    } finally {
+      this._voting = false;
+    }
+  }
+
+  /** Cover the sheet, put the next voter in the seat, redraw as theirs. */
+  async _passVoteTo(seat) {
+    const run = this.model.run;
+    const kid = run.kids[seat];
+    if (!kid) return;
+    await passTo({
+      name: run.kidNameOf(kid), companion: kid.companion,
+      line: 'Where should we go?',
+      sub: 'Everyone gets a say in the route.',
+      onReady: async () => {
+        run.setLocalSeat(seat);
+        await this.ctx.scenes.go('map', {
+          region: run.region, seed: run.seed, drawn: true,
+        }, { instant: true });
+      },
+    });
+  }
+
+  /**
+   * Who has voted for what, on the sheet and in the footer.
+   *
+   * The pins are the point: a Kid about to vote can see what the others
+   * wanted, which is the whole reason StS2 votes rather than passing the
+   * pencil round. Painted from `run.pendingVote`, so it survives the
+   * handoff rebuild — the ballot belongs to the run, not to this screen.
+   */
+  _paintBallot() {
+    const run = this.model.run;
+    const bar = this.el?.ballot;
+    if (!bar) return;
+    const book = (run && typeof run.votesPending === 'function') ? run.pendingVote : null;
+    const votes = book && book.nodeId === (run.currentNodeId || null) ? book.votes : {};
+    const cast = Object.keys(votes).map(Number).sort((a, b) => a - b);
+
+    for (const [id, el] of this._nodeEls) {
+      const who = cast.filter(seat => votes[seat] === id);
+      let pin = el.querySelector('.mn-votes');
+      if (!who.length) { pin?.remove(); el.classList.remove('is-voted'); continue; }
+      if (!pin) {
+        pin = document.createElement('span');
+        pin.className = 'mn-votes';
+        el.querySelector('.mn-in')?.appendChild(pin);
+      }
+      pin.textContent = who.map(seat => this._kidTag(seat)).join(' ');
+      el.classList.add('is-voted');
+    }
+
+    if (!run || run.partySize < 2) { bar.hidden = true; return; }
+    const owed = run.votesPending();
+    bar.hidden = false;
+    const total = run.voters().length;
+    /* The last ballot is repeated here on the way back, because the
+       announcement it produced rode a scene transition and was gone inside
+       a second — and a party that came out of a room they did not choose
+       should be able to find out why without having caught one frame. */
+    const last = run.lastVote;
+    if (!cast.length && last && last.rolled && last.winner === run.currentNodeId) {
+      const want = last.tally?.[last.winner] || 0;
+      const of = Object.values(last.tally || {}).reduce((a, b) => a + b, 0);
+      bar.textContent = `the draw sent you here \u00b7 ${want} of ${of} wanted it`;
+      return;
+    }
+    bar.textContent = owed.length
+      ? `${cast.length} of ${total} have chosen · ${this._kidName(owed[0])} is deciding`
+      : `${total} of ${total} have chosen`;
+  }
+
+  /**
+   * "The house chose the Parlor." Shown only when a number decided it.
+   *
+   * Silent on a unanimous ballot, because "the roulette chose" is a lie
+   * when nobody disagreed — which is what `rolled` is on the result for.
+   * The room is named, and so is how many Kids wanted it, because "one of
+   * three wanted this" is the whole feeling the mechanic is for.
+   */
+  _announceVote(v) {
+    if (!v || !v.rolled || !this.el?.screen || !this.model) return;
+    const node = this.model.byId.get(v.winner);
+    const want = v.tally?.[v.winner] || 0;
+    const of = Object.values(v.tally || {}).reduce((a, b) => a + b, 0);
+    const el = document.createElement('div');
+    el.className = 'map-verdict';
+    el.setAttribute('role', 'status');
+    el.innerHTML = `<b>The house chose ${escapeHtml(node?.roomName || v.winner)}</b>`
+      + `<i>${want} of ${of} wanted it \u00b7 the rest were outvoted by the draw</i>`;
+    this.el.screen.appendChild(el);
+    if (this._nodeEls) {
+      const won = this._nodeEls.get(v.winner);
+      won?.classList.add('is-chosen');
+    }
+    this.ctx.audio?.play?.('ui:confirm');
+    // The strip still read "Priya is deciding" behind the verdict card,
+    // which is the sort of thing a screenshot finds and a test never will.
+    if (this.el.ballot) {
+      this.el.ballot.hidden = false;
+      this.el.ballot.textContent = `the draw chose · ${want} of ${of} wanted it`;
+    }
+  }
+
+  /** A Kid's initial, for a mark small enough to sit on a room. */
+  _kidTag(seat) {
+    return (this._kidName(seat) || '?').trim().charAt(0).toUpperCase() || '?';
+  }
+  _kidName(seat) {
+    const run = this.model.run;
+    const kid = run?.kids?.[seat];
+    return kid ? (run.kidNameOf(kid) || `Kid ${seat + 1}`) : `Kid ${seat + 1}`;
   }
 
   _refuse(id) {

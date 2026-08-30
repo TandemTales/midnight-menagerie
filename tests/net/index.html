@@ -529,29 +529,58 @@ try {
        hand and a `map:choose` BUS LISTENER called `enterNode`, so the route
        never became an input and nothing here could have seen it.
 
-       Sent by SEAT 1 on purpose, because who SENT it must not decide
-       anything — see the sagging floor below. */
+       ONE SHARED PATH, VOTED — StS2-REFERENCE 8.5. Every player votes at
+       every fork and a weighted roulette picks the winner; the host has no
+       special authority and a minority vote can win. Before this, whichever
+       seat `resetSeat()` handed the blueprint to chose the ENTIRE route for
+       everybody, which the reference calls the largest co-op gap we have. */
     for (const c of [A, B]) { c.run.currentNodeId = null; c.run.pathIds = []; }
-    // A room that is not a fight, so this measures the ROUTE and not an
-    // engine build — and by AUTHORED id, the identity both maps share.
+    // By AUTHORED id, the identity both maps share. A non-combat room is
+    // preferred so this measures the ROUTE rather than an engine build, but
+    // it FALLS BACK to any legal door — the first version filtered combat out
+    // and row 0 of this seed is all Scuffles, so `room` was `undefined`, no
+    // vote was cast at all, and `pendingVote.votes[1] === room` passed by
+    // comparing undefined to undefined. A fixture that can come back empty
+    // has to say so out loud.
     const doors = A.run.legalNextIds();
-    const room = doors.find(id => A.run.sceneFor(A.run.nodeById(id)) !== 'combat') || doors[0];
     check(doors.length > 1, 'the blueprint offers the party a choice of rooms',
       doors.join(','));
+    const room = doors.find(id => A.run.sceneFor(A.run.nodeById(id)) !== 'combat')
+              || doors[0];
+    check(typeof room === 'string' && doors.includes(room),
+      'and the fixture actually picked one of them', String(room));
 
-    await act(B.run, { t: INPUT.ROOM, act: ACT.MAP_CHOOSE, id: room });
+    // ONE seat is not the party. This is the whole point of the mechanic and
+    // it is the assertion that would have failed for the game's whole life.
+    await act(B.run, { t: INPUT.ROOM, act: ACT.MAP_VOTE, id: room });
     await both();
-    check(B.run.currentNodeId === room,
-      'seat 1 walks the party into a room on their own machine', String(B.run.currentNodeId));
-    check(A.run.currentNodeId === room,
-      "and seat 0's machine, which never saw the click, is in the SAME room",
-      `${A.run.currentNodeId} / ${room}`);
+    check(A.run.currentNodeId === null && B.run.currentNodeId === null,
+      'one seat voting does NOT move the party',
+      `${A.run.currentNodeId} / ${B.run.currentNodeId}`);
+    check(A.run.votesPending().join(',') === '0'
+       && B.run.votesPending().join(',') === '0',
+      'and both machines know it is seat 0 they are waiting on',
+      `${A.run.votesPending()} / ${B.run.votesPending()}`);
+    check(A.run.pendingVote.votes[1] === room && B.run.pendingVote.votes[1] === room,
+      "seat 1's vote is on the ballot on the machine that never saw the click");
+
+    // Seat 0 agrees, and now the party walks.
+    await act(A.run, { t: INPUT.ROOM, act: ACT.MAP_VOTE, id: room });
+    await both();
+    check(B.run.currentNodeId === room && A.run.currentNodeId === room,
+      'the last vote owed walks the party in, on both machines',
+      `${A.run.currentNodeId} / ${B.run.currentNodeId}`);
     check(A.run.pathIds.join('>') === B.run.pathIds.join('>')
        && A.run.pathIds.includes(room),
       'and both walked the same route to it',
       `${A.run.pathIds.join('>')} / ${B.run.pathIds.join('>')}`);
     check(!A.run.visitedIds.includes(room) && !B.run.visitedIds.includes(room),
       'entered, not cleared — the room is still owed on both');
+    check(A.run.pendingVote === null && B.run.pendingVote === null,
+      'and the ballot is closed behind them');
+    check(A.run.lastVote.rolled === false && B.run.lastVote.rolled === false,
+      'a UNANIMOUS ballot takes no number at all, which is what keeps a party '
+      + 'of one byte-identical to every seeded run ever recorded');
 
     // ── who the sagging floor sags under ─────────────────────────────────
     /* The only OBSERVABLE consequence of applying a whole-party act as a
@@ -583,7 +612,9 @@ try {
       'both machines agree on both Kids’ Courage before the wing',
       courageBefore.join('/'));
 
-    await act(B.run, { t: INPUT.ROOM, act: ACT.MAP_CHOOSE, id: sag });
+    await act(B.run, { t: INPUT.ROOM, act: ACT.MAP_VOTE, id: sag });
+    await both();
+    await act(A.run, { t: INPUT.ROOM, act: ACT.MAP_VOTE, id: sag });
     await both();
     check(A.run.kids[0].courage === courageBefore[0] - 3
        && A.run.kids[1].courage === courageBefore[1],
@@ -593,6 +624,44 @@ try {
        === A.run.kids.map(k => k.courage).join('/'),
       'and the same Kid pays on the machine that sent it',
       `${A.run.kids.map(k => k.courage).join('/')} / ${B.run.kids.map(k => k.courage).join('/')}`);
+
+    // ── a SPLIT ballot ──────────────────────────────────────────────────
+    /* The roulette is the one place this game resolves a shared decision with
+       a random number, so it is the one place a desync would be invisible
+       until the next digest. It is not published by a host and it is not an
+       input: every client draws it itself, from a fork keyed by the fork we
+       are standing on AND by the ballot, and must land on the same room.
+
+       Two seats voting differently is a 50/50, so this cannot assert WHICH
+       room wins without hardcoding the seed's answer. It asserts the thing
+       that actually matters — that the two machines agree — and the weight
+       proportions are measured over many ballots in tests/run instead. */
+    // Back to the doorway, where the blueprint offers five rooms. Two rows
+    // in there is often only ONE legal next node, and the first version of
+    // this check reported that it had not run rather than passing on a
+    // ballot that could not be split.
+    for (const c of [A, B]) { c.run.currentNodeId = null; c.run.pathIds = []; }
+    const split = A.run.legalNextIds();
+    if (split.length > 1) {
+      await act(A.run, { t: INPUT.ROOM, act: ACT.MAP_VOTE, id: split[0] });
+      await both();
+      await act(B.run, { t: INPUT.ROOM, act: ACT.MAP_VOTE, id: split[1] });
+      await both();
+      check(A.run.currentNodeId === B.run.currentNodeId,
+        'a SPLIT ballot lands both machines in the same room',
+        `${A.run.currentNodeId} / ${B.run.currentNodeId}`);
+      check(split.includes(A.run.currentNodeId),
+        'and it is one of the two rooms somebody actually voted for',
+        `${A.run.currentNodeId} of ${split[0]},${split[1]}`);
+      check(A.run.lastVote.rolled === true && B.run.lastVote.rolled === true,
+        'and both know a number was drawn for it');
+      check(JSON.stringify(A.run.lastVote.tally) === JSON.stringify(B.run.lastVote.tally),
+        'both hold the same tally, which is what the draw is weighted by',
+        JSON.stringify(A.run.lastVote.tally));
+    } else {
+      check(false, 'the split-ballot check needs two legal doors',
+        `only ${split.length} here — this check did NOT run`);
+    }
 
     A.session.close(); B.session.close();
   }

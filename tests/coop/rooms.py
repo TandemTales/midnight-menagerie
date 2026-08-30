@@ -47,6 +47,24 @@ WHO = """() => {
   };
 }"""
 
+VOTE = """() => {
+  const r = window.MM.ctx.run;
+  return {
+    scene: window.MM.ctx.scenes.currentName,
+    seat: r.localSeat,
+    current: r.currentNodeId,
+    votes: r.pendingVote ? { ...r.pendingVote.votes } : {},
+    pending: r.votesPending(),
+    legal: document.querySelectorAll('.map-node.is-legal').length,
+    pins: [...document.querySelectorAll('.mn-votes')].map(
+      e => e.closest('.map-node').dataset.id + '=' + e.textContent),
+    drawn: !!document.querySelector('.map-screen.is-drawn'),
+    veil: !!document.querySelector('.mm-handoff'),
+    veilName: (document.querySelector('.hoff__name') || {}).textContent || null,
+    rolled: r.lastVote ? r.lastVote.rolled : null,
+  };
+}"""
+
 async def settle(page, timeout=30000):
     """Wait until the game is idle, or a player is being waited on.
 
@@ -403,6 +421,72 @@ async def main():
         rv = await page.evaluate(WHO)
         check(not rv["veil"], "leaving does NOT hand it over", f"veil {rv['veil']}")
         check(rv["scene"] == "map", "it just closes", rv["scene"])
+
+
+        # ── the blueprint is a room too, now ────────────────────────────────
+        # STS2-REFERENCE 8.5: one shared path, VOTED. Every other check in this
+        # file is about a room that is per Kid; the map is the opposite — one
+        # decision for everybody — and it used to be made by whichever seat
+        # `resetSeat()` had handed the screen to. That seat chose the entire
+        # expedition's route while the other Kid watched.
+        #
+        # Asserted through the DOM, like everything else here, because what
+        # broke every previous version of a party screen was the screen.
+        print("")
+        print("The blueprint, voted")
+        await page.evaluate("""() => {
+          const r = window.MM.ctx.run;
+          r.currentNodeId = null; r.pathIds = []; r.visitedIds = [];
+          r.pendingVote = null; r.lastVote = null;
+          for (const n of r.map.nodes) n.visited = false;
+          for (const k of r.kids) k.roomDone = null;
+          r.setLocalSeat(0);
+          return r._goto('map', { region: r.region, seed: r.seed });
+        }""")
+        await settle(page)
+        await page.wait_for_selector(".map-screen.is-drawn", timeout=20000)
+        v0 = await page.evaluate(VOTE)
+        check(v0["scene"] == "map", "the blueprint is up", v0["scene"])
+        check(v0["legal"] > 1, "with more than one room to argue about", str(v0["legal"]))
+        check(v0["pending"] == [0, 1], "and both Kids owe a vote", str(v0["pending"]))
+
+        first = await page.evaluate("""() => {
+          const el = document.querySelector('.map-node.is-legal');
+          el.click(); return el.dataset.id;
+        }""")
+        await page.wait_for_timeout(1600)
+        v1 = await page.evaluate(VOTE)
+        check(v1["current"] is None,
+              "ONE Kid clicking does not move the party", str(v1["current"]))
+        check(v1["votes"].get("0") == first, "their vote is on the ballot",
+              f"{first} -> {v1['votes']}")
+        check(v1["pins"] == [f"{first}=M"], "and pinned to the room on the sheet",
+              str(v1["pins"]))
+        check(v1["veil"], "and the sheet passes to the other Kid")
+        check("Eli" in (v1["veilName"] or ""), "naming them", str(v1["veilName"]))
+
+        await page.click(".hoff__go")
+        await page.wait_for_timeout(1800)
+        v2 = await page.evaluate(VOTE)
+        check(v2["seat"] == 1, "the blueprint comes back as seat 1's", str(v2["seat"]))
+        check(v2["pins"] == [f"{first}=M"],
+              "still showing what the first Kid wanted — the whole reason to vote "
+              "rather than pass the pencil", str(v2["pins"]))
+        check(v2["drawn"], "and it does NOT redraw the survey to change seats",
+              str(v2["drawn"]))
+
+        # Seat 1 agrees, so no roulette: the party walks into the room both
+        # chose. A split is measured in tests/vote, where 150 of them run.
+        await page.evaluate("""(id) => {
+          document.querySelector(`.map-node[data-id="${id}"]`).click();
+        }""", first)
+        await page.wait_for_timeout(2200)
+        v3 = await page.evaluate(VOTE)
+        check(v3["current"] == first, "the second vote walks the party in",
+              f"{v3['current']} / {first}")
+        check(v3["scene"] != "map", "and the blueprint is behind them", v3["scene"])
+        check(v3["rolled"] is False,
+              "with no number drawn, because they agreed", str(v3["rolled"]))
 
         await b.close()
 

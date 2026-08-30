@@ -1,0 +1,269 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>The route is voted — the roulette, and what it must never disturb</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+</style>
+<h1>The blueprint, voted</h1>
+<div id="out"></div>
+<script type="module">
+/**
+ * One shared path, voted. STS2-REFERENCE 8.5, which calls the old behaviour —
+ * "`run.chooseNode(node)` asks nobody, so seat 0 picks the entire route for the
+ * whole expedition" — the largest co-op gap we have.
+ *
+ * The mechanic is: every player votes at every fork, a weighted roulette picks
+ * the winner, ties break randomly, and the host has no special authority. A
+ * MINORITY VOTE CAN WIN, proportionally to how many wanted it. That last part
+ * is what stops one loud player dragging the team around, and it is the part
+ * a two-seat test cannot see, because two seats voting differently is a coin
+ * flip whichever way the weights work. So it is measured here over many
+ * ballots at three seats.
+ *
+ * `tests/net/index.html` §9 covers the other half — that two machines resolve
+ * the SAME ballot to the SAME room — which is the property lockstep needs and
+ * this page cannot check, having only one Run at a time.
+ *
+ * The three things this must never disturb are checked first, because they are
+ * the ones that would be caught late and blamed on something else:
+ *   - a party of ONE must take no number, or every seeded solo run in the game
+ *     moves and every recorded expedition stops reproducing;
+ *   - the draw must come from a FORK, never the master stream;
+ *   - a ballot belongs to the fork it was cast at.
+ */
+import { Run } from '../../game/src/state/run.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => {
+  (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+  const d = document.createElement('div');
+  d.className = ok ? 'pass' : 'fail';
+  d.textContent = (ok ? 'PASS  ' : 'FAIL  ') + what + (detail ? ` — ${detail}` : '');
+  out.appendChild(d);
+};
+const head = (t) => { const h = document.createElement('h2'); h.textContent = t; out.appendChild(h); };
+
+const PARTY3 = [{ companion: 'marmalade', kid: 'maya' },
+                { companion: 'bones', kid: 'eli' },
+                { companion: 'pipkin', kid: 'nia' }];
+
+/** A party standing at the doorway of a fresh Foyer, with no room entered. */
+function atTheDoor(seed, kids = PARTY3) {
+  const run = Run.mock({ seed, kids });
+  run.currentNodeId = null;
+  run.pathIds = [];
+  run.visitedIds = [];
+  run.pendingVote = null;
+  for (const n of run.map.nodes) n.visited = false;
+  return run;
+}
+
+async function main() {
+
+  // ── 1. a party of one takes no number ──────────────────────────────────
+  head('A party of one');
+  {
+    const run = atTheDoor(4242, [{ companion: 'marmalade', kid: 'maya' }]);
+    const doors = run.legalNextIds();
+    check(doors.length > 1, 'the doorway offers a choice', doors.join(','));
+
+    /* The master stream is the run's spine — every reward, shelf and encounter
+       draws downstream of it. If the roulette took its number from there, a
+       party's disagreement would shift every later roll, and a solo run would
+       stop matching its own seed by simply having a vote at all.
+       `RNG.snapshot()` carries the call counter, which is the only way to see
+       a draw that was taken and thrown away.
+
+       The SPLIT case in §6b is the one that can fail: skipping the draw when
+       there is nothing to decide would hide a `this.rng` here from this check,
+       which is exactly what the first version of this suite did. */
+    const before = run.rng.snapshot();
+    const res = await run.voteNode(doors[0]);
+    const after = run.rng.snapshot();
+
+    check(!!res && res.winner === doors[0],
+      'one Kid voting resolves on their own vote', String(res && res.winner));
+    check(run.currentNodeId === doors[0],
+      'and the party walks straight in', String(run.currentNodeId));
+    check(res.rolled === false, 'with no number drawn for it — nobody disagreed');
+    check(after.calls === before.calls,
+      'and the master RNG has not moved a single call',
+      `${before.calls} -> ${after.calls}`);
+  }
+
+  // ── 2. a unanimous party is the same case ──────────────────────────────
+  head('A unanimous party');
+  {
+    const run = atTheDoor(4242);
+    const doors = run.legalNextIds();
+    const before = run.rng.snapshot();
+    await run.voteNode(doors[0], 0);
+    await run.voteNode(doors[0], 1);
+    const res = await run.voteNode(doors[0], 2);
+    check(!!res && res.winner === doors[0] && res.rolled === false,
+      'three Kids who agree get their room with no draw', String(res && res.winner));
+    check(run.rng.snapshot().calls === before.calls,
+      'and the master RNG still has not moved',
+      `${before.calls} -> ${run.rng.snapshot().calls}`);
+  }
+
+  // ── 3. the ballot belongs to the fork it was cast at ───────────────────
+  head('A ballot does not travel');
+  {
+    const run = atTheDoor(99);
+    const doors = run.legalNextIds();
+    await run.voteNode(doors[0], 0);
+    check(run.pendingVote.votes[0] === doors[0], 'a vote is on the ballot');
+    check(run.votesPending().join(',') === '1,2',
+      'and two seats are still owed', run.votesPending().join(','));
+
+    // The party is dragged into a room by something that is not the vote — a
+    // Curiosity that moves them, a resume, a test. The half-cast ballot must
+    // not follow, or seat 0 would arrive at the NEXT fork already committed to
+    // a room nobody there voted for.
+    await run.enterNode(doors[1]);
+    check(run.votesPending().length === 3,
+      'and after the party moves, nobody has voted at the new fork',
+      run.votesPending().join(','));
+    check(run.pendingVote.nodeId === doors[1],
+      'because the ballot is keyed to the fork it belongs to',
+      String(run.pendingVote.nodeId));
+  }
+
+  // ── 4. who may vote ────────────────────────────────────────────────────
+  head('Who may vote');
+  {
+    const run = atTheDoor(7);
+    const doors = run.legalNextIds();
+
+    check(run.voteNode('no-such-room', 0) === null,
+      'a room that is not on the blueprint is refused');
+    check(run.votesPending().length === 3, 'and nothing was recorded for it',
+      run.votesPending().join(','));
+
+    /* A fallen Kid is still on the expedition — the party carries them — but
+       they do not choose the route, and leaving them on the ballot would stall
+       the fork forever with nobody able to break it. */
+    run.kids[1].courage = 0;
+    check(run.voters().join(',') === '0,2',
+      'a Kid at zero Courage is off the ballot', run.voters().join(','));
+    check(run.voteNode(doors[0], 1) === null, 'and their vote is refused');
+    await run.voteNode(doors[0], 0);
+    const res = await run.voteNode(doors[0], 2);
+    check(!!res && run.currentNodeId === doors[0],
+      'so the two still standing settle it between them', String(run.currentNodeId));
+  }
+
+  // ── 5. changing your mind ──────────────────────────────────────────────
+  head('Changing your mind');
+  {
+    const run = atTheDoor(11);
+    const doors = run.legalNextIds();
+    await run.voteNode(doors[0], 0);
+    await run.voteNode(doors[1], 0);
+    check(run.pendingVote.votes[0] === doors[1],
+      'a seat that votes twice replaces its own vote', String(run.pendingVote.votes[0]));
+    check(run.votesPending().join(',') === '1,2',
+      'and does not vote for anybody else', run.votesPending().join(','));
+    check(run.currentNodeId === null,
+      'and re-voting cannot resolve a fork on its own');
+  }
+
+  // ── 6. THE ROULETTE ────────────────────────────────────────────────────
+  head('The roulette, over many ballots');
+  {
+    /* Two Kids want one room, one wants another. StS2's randomiser is weighted
+       by the votes, so the lone Kid should get their way about one time in
+       three — not never (which is majority rule wearing a costume) and not
+       half the time (which would make the second vote worthless).
+       measured across seeds, because the draw is a fork keyed by the seed, the
+       fork and the ballot: the same three Kids at the same door always get the
+       same answer, which is what a replay needs. */
+    const N = 150;
+    let minority = 0, usable = 0, agreed = 0;
+    for (let i = 0; i < N; i++) {
+      const run = atTheDoor(90000 + i * 37);
+      const doors = run.legalNextIds();
+      if (doors.length < 2) continue;
+      usable++;
+      const [A, B] = doors;
+      await run.voteNode(A, 0);
+      await run.voteNode(A, 1);
+      const res = await run.voteNode(B, 2);
+      if (!res) continue;
+      if (res.winner === B) minority++;
+      if (res.winner === A) agreed++;
+      if (!res.rolled) check(false, 'a split ballot must draw a number', `seed ${90000 + i * 37}`);
+    }
+    const pct = usable ? minority / usable : 0;
+    check(usable >= N * 0.9, 'nearly every seed gave a fork to vote at',
+      `${usable} of ${N}`);
+    check(minority + agreed === usable, 'and every ballot resolved to a room somebody voted for',
+      `${agreed} majority + ${minority} minority of ${usable}`);
+    check(minority > 0, 'THE MINORITY SOMETIMES WINS — this is not majority rule',
+      `${minority}/${usable}`);
+    check(agreed > 0, 'and the majority usually does', `${agreed}/${usable}`);
+    check(Math.abs(pct - 1 / 3) < 0.09,
+      'one vote in three wins about one fork in three',
+      `${(pct * 100).toFixed(1)}% against 33.3% expected, n=${usable}`);
+  }
+
+  // ── 6b. and a SPLIT ballot still does not touch the run's spine ────────
+  head('A disagreement does not move the run');
+  {
+    /* The check with teeth. §1 cannot fail on its own — a one-candidate ballot
+       skips the draw, so `this.rng` here would go unseen. A split ballot DOES
+       draw, and the draw still has to come out of a fork: point `resolveVote`
+       at `this.rng` instead and this is the assertion that goes red, while
+       every other check on this page stays green. */
+    const run = atTheDoor(20260829);
+    const doors = run.legalNextIds();
+    const before = run.rng.snapshot();
+    await run.voteNode(doors[0], 0);
+    await run.voteNode(doors[1], 1);
+    const res = await run.voteNode(doors[1], 2);
+    check(!!res && res.rolled === true, 'a split ballot draws a number',
+      JSON.stringify(res && res.tally));
+    const after = run.rng.snapshot();
+    check(after.calls === before.calls && after.s === before.s,
+      'and it comes out of a FORK — the master stream is untouched',
+      `calls ${before.calls} -> ${after.calls}, state ${before.s === after.s ? 'same' : 'MOVED'}`);
+  }
+
+  // ── 7. the same ballot is the same answer ──────────────────────────────
+  head('A replay gets the same room');
+  {
+    /* Determinism, without which none of the above is shippable: the draw has
+       to be a pure function of (seed, fork, ballot). Two independent Runs on
+       one seed, given the same votes in a DIFFERENT ORDER, must reach the same
+       room — the order votes arrive in is a wire artefact, not a decision. */
+    const one = atTheDoor(31337), two = atTheDoor(31337);
+    const doors = one.legalNextIds();
+    await one.voteNode(doors[0], 0); await one.voteNode(doors[1], 1);
+    const r1 = await one.voteNode(doors[1], 2);
+    await two.voteNode(doors[1], 2); await two.voteNode(doors[1], 1);
+    const r2 = await two.voteNode(doors[0], 0);
+    check(!!r1 && !!r2 && r1.winner === r2.winner,
+      'the same ballot in a different order is the same room',
+      `${r1 && r1.winner} / ${r2 && r2.winner}`);
+
+    const three = atTheDoor(31337);
+    await three.voteNode(doors[0], 0); await three.voteNode(doors[0], 1);
+    const r3 = await three.voteNode(doors[1], 2);
+    check(!!r3 && JSON.stringify(r3.tally) !== JSON.stringify(r1.tally),
+      'a DIFFERENT ballot at the same door is a different tally',
+      `${JSON.stringify(r1.tally)} / ${JSON.stringify(r3 && r3.tally)}`);
+  }
+
+  window.__RESULT = { passes, fails, passed: passes.length, failed: fails.length };
+  window.__DONE = true;
+}
+
+main().catch((e) => {
+  check(false, 'THREW', String(e && e.stack || e));
+  window.__RESULT = { passes, fails, passed: passes.length, failed: fails.length };
+  window.__DONE = true;
+});
+</script>

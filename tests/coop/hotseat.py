@@ -94,7 +94,24 @@ async def main():
             last = (i == len(KIDS_IN) - 1)
             await page.click(".btn--go")
             await page.wait_for_timeout(6500 if last else 1200)
-        await page.evaluate("() => { document.querySelector('.map-nodes').children[0].click(); }")
+        # ── into the first fight, which now takes a vote per Kid ────────────
+        # The route is voted (STS2-REFERENCE 8.5): one click used to walk the
+        # whole party in, and now it puts one Kid's pin on a room and hands the
+        # sheet over. This suite is about END TURN and the veil in COMBAT, so
+        # it votes everybody onto the SAME room — no roulette, one known fight
+        # — rather than testing the ballot here. That is tests/vote's job.
+        room = await page.evaluate(
+            "() => (document.querySelector('.map-node.is-legal') || {}).dataset?.id")
+        assert room, "no legal room on the blueprint to vote for"
+        for _ in range(WANT):
+            await page.evaluate(
+                """(id) => document.querySelector(`.map-node[data-id="${id}"]`).click()""",
+                room)
+            await page.wait_for_timeout(1700)
+            go = await page.query_selector(".hoff__go")
+            if go:
+                await go.click()
+                await page.wait_for_timeout(1800)
         await page.wait_for_timeout(9000)
 
         a = await page.evaluate(WHO)

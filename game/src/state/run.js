@@ -66,6 +66,7 @@
 import { RNG, hashSeed } from '../core/rng.js';
 import { Save } from '../core/save.js';
 import { bus } from '../core/bus.js';
+import { clock } from '../core/clock.js';
 import { NodeType, REGION_ORDER, TERMS, COMPANIONS, KIDS } from '../data/schema.js';
 import { generateRegionMap, legalNextIds, regionMeta, sceneForNode } from './mapgen.js';
 import {
@@ -232,6 +233,17 @@ export class Run {
     this.pathIds = [];
     this.pendingEvent = null;
     this.combat = null;
+    /**
+     * The blueprint's open vote: `{ nodeId, votes: { [seat]: id } }`.
+     *
+     * Deliberately NOT in `snapshot()`. Every other `pending*` on this class
+     * survives a save because losing it would lose something the player
+     * earned — an offer, a shelf, a fight in progress. A half-cast vote is
+     * none of those: quitting on the blueprint and coming back re-opens the
+     * fork with nobody committed, which is the honest thing to do anyway
+     * when the party has been away.
+     */
+    this.pendingVote = null;
     /** The recipe + action log for a fight that has not resolved yet. */
     this.pendingCombat = null;
     this._ctx = null;
@@ -740,7 +752,147 @@ export class Run {
     return sceneForNode({ ...node, type: t });
   }
 
-  /** Where `ACT.MAP_CHOOSE` lands — `scenes/map.js` `_choose` sends it. */
+  // ══ the route is voted ═══════════════════════════════════════════════════
+  /**
+   * Which seats owe a vote at this fork: everyone still standing.
+   *
+   * A fallen Kid does not vote. They are still on the expedition — the party
+   * carries them — but the route is a decision made by whoever can walk it,
+   * and leaving a dead seat in the tally would stall the fork forever.
+   */
+  voters() {
+    const out = [];
+    for (let i = 0; i < this.kids.length; i++) if (this.kids[i].courage > 0) out.push(i);
+    return out.length ? out : [0];
+  }
+
+  /** Seats that have not voted yet at the fork the party is standing on. */
+  votesPending() {
+    const v = this._voteBook();
+    return this.voters().filter(seat => v.votes[seat] === undefined);
+  }
+
+  /** The open ballot, opened (or re-opened at a new fork) on demand. */
+  _voteBook() {
+    const at = this.currentNodeId || null;
+    if (!this.pendingVote || this.pendingVote.nodeId !== at) {
+      // Keyed by the fork it belongs to, so a vote cast in the last room
+      // cannot be counted in this one. The party moves; the ballot does not
+      // move with it.
+      this.pendingVote = { nodeId: at, votes: {} };
+    }
+    return this.pendingVote;
+  }
+
+  /**
+   * One seat's vote for the next room. Where `ACT.MAP_VOTE` lands.
+   *
+   * StS2-REFERENCE 8.5: one shared path, every player votes at every fork,
+   * a weighted roulette picks the winner, and **the host has no special
+   * authority**. A minority vote can win, proportionally to how many wanted
+   * it. That last part is the mechanic, not a rough edge — it is what stops
+   * one loud player dragging the team around a whole expedition, which is
+   * exactly what this game did before: `resetSeat()` puts the blueprint on
+   * the lowest living seat and that seat chose the entire route.
+   *
+   * Decisive only when it is the LAST vote owed — the same shape as
+   * `ROOM_DONE`, where every Kid sends the same verb and the last one closes
+   * the room. A party of one is the degenerate case and resolves on its own
+   * first vote, walking into the room exactly as it always did.
+   */
+  voteNode(nodeId, seat = this.localSeat) {
+    const id = typeof nodeId === 'string' ? nodeId : nodeId?.id;
+    if (!id || !this.nodeById(id)) return null;
+    if (this.currentNodeId && !this.isLegal(id)) return null;
+    const n = seat | 0;
+    if (!this.voters().includes(n)) return null;   // a fallen seat has no say
+    const book = this._voteBook();
+    book.votes[n] = id;
+    bus.emit('map:vote', { seat: n, nodeId: id, run: this,
+                           pending: this.votesPending().slice() });
+    if (this.votesPending().length) return null;   // still someone to hear from
+    return this.resolveVote();
+  }
+
+  /**
+   * Spin the roulette and walk in. Every client runs this, not just a host.
+   *
+   * ── Why a fork, and not `this.rng` ─────────────────────────────────────
+   *
+   * THIS is what keeps a solo run byte-identical, and it is worth being
+   * precise because the first version of this comment credited the wrong
+   * thing. The master stream is the run's spine — every reward, shelf and
+   * encounter draws downstream of it — so taking a number from it here would
+   * shift every later roll by however much the party happened to disagree,
+   * and a party of one would shift by simply existing. `fork(tag)` builds a
+   * whole separate RNG from the seed and the tag, so a draw here moves
+   * nothing at all, however many times it is taken.
+   *
+   * The tag carries the fork we are standing on AND the ballot, so the same
+   * three Kids at the same door always get the same answer — which is what a
+   * replay needs — while a different split is a different draw, rather than
+   * one fixed answer per node that could be read off a recording.
+   *
+   * ── Why it skips the draw for one candidate ────────────────────────────
+   *
+   * Not for determinism: `weighted()` on a single item returns that item, so
+   * drawing would give the same room. It is so `rolled` MEANS something. The
+   * screen has to tell the player when a number overrode them (CONTRACTS 45)
+   * and "the roulette chose" is a lie when nobody disagreed.
+   */
+  resolveVote() {
+    const book = this._voteBook();
+    const seats = Object.keys(book.votes).map(Number).sort((a, b) => a - b);
+    if (!seats.length) return null;
+    const tally = new Map();
+    for (const seat of seats) {
+      const id = book.votes[seat];
+      tally.set(id, (tally.get(id) || 0) + 1);
+    }
+    const items = [...tally].map(([id, w]) => ({ id, w }));
+    let winner = items[0].id;
+    if (items.length > 1) {
+      const ballot = seats.map(s => `${s}:${book.votes[s]}`).join(',');
+      winner = this.fork(`vote|${book.nodeId || 'door'}|${ballot}`).weighted(items).id;
+    }
+    const result = { winner, votes: { ...book.votes },
+                     tally: Object.fromEntries(tally), rolled: items.length > 1 };
+    this.pendingVote = null;
+    this.lastVote = result;   // the sheet they come back to repeats it
+    bus.emit('map:voted', { ...result, run: this });
+    return this._walkAfterVote(result);
+  }
+
+  /**
+   * The beat between the draw and the door.
+   *
+   * A number just overrode what somebody voted for, and the party has to be
+   * told (CONTRACTS 45). `map:voted` above is emitted while the blueprint is
+   * still the screen on the glass — but `enterNode` asks for the next scene
+   * immediately, and MEASURED, the announcement it produced was gone inside
+   * 1.4 s without ever being sampled: `scenes.go` covers the screen BEFORE it
+   * calls `exit()`, so the sheet is already veiled.
+   *
+   * So the resolution waits. This is a game beat, not decoration — the
+   * roulette is a moment in StS2 too — and it is deterministic: every client
+   * waits the same amount and no state moves while it does.
+   *
+   * ── and only when there is somebody to tell ────────────────────────────
+   *
+   * No `ctx.scenes` means no screen: a headless harness, a rejoining client
+   * replaying a log, `tests/vote` spinning 150 ballots. Waiting there would
+   * add three and a half minutes to one suite to animate nothing. `_goto`
+   * already no-ops on the same test, for the same reason.
+   */
+  async _walkAfterVote(result) {
+    if (result.rolled && this.ctx?.scenes) {
+      try { await clock.wait(1.5); } catch { /* a clock that is gone is not fatal */ }
+    }
+    try { await this.enterNode(result.winner); } catch { /* the walk reports itself */ }
+    return result;
+  }
+
+  /** The direct walk. `resolveVote` is the only caller in a played game. */
   chooseNode(node) {
     const id = typeof node === 'string' ? node : node?.id;
     if (!id || id === this.currentNodeId) return;    // already handled by the bus
@@ -2428,7 +2580,7 @@ export function installRunLayer() {
    * that call's own guard true, so it moved nothing on any click ever measured.
    * The whole party's route therefore reached the run layer down a BUS NAME,
    * never as an input, and so could not cross a wire. It goes through
-   * `ACT.MAP_CHOOSE` now, like every other room action; `map:choose` is still
+   * `ACT.MAP_VOTE` now, like every other room action; `map:choose` is still
    * emitted and is audio's alone.
    */
 }

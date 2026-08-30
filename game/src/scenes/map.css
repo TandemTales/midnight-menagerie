@@ -591,6 +591,67 @@
   display: block; margin-top: 5px; font-size: 10.5px; opacity: .6; letter-spacing: .05em;
 }
 
+/* ── the ballot ──────────────────────────────────────────────────────────
+   One shared path, voted (STS2-REFERENCE 8.5). The strip says who the sheet
+   is waiting on; the pin on a room says who wanted it. The pin matters more
+   than the strip: a Kid about to vote is looking at the ROOMS, and seeing two
+   initials sitting on one of them is the whole reason to vote rather than
+   pass the pencil round. */
+.map-ballot {
+  flex: none; font-size: 11.5px; white-space: nowrap;
+  padding: 4px 10px 5px; border-radius: 2px;
+  color: var(--spectre-100);
+  background: color-mix(in srgb, var(--spectre-500) 30%, transparent);
+  border: 1px solid color-mix(in srgb, var(--spectre-400) 62%, transparent);
+  border-left-width: 3px;
+}
+.map-ballot[hidden] { display: none; }
+
+/* The verdict. Only ever shown when a NUMBER decided the room — a party that
+   agreed is told nothing, because there is nothing to tell them. It rides the
+   scene transition out, which is why the same sentence is repeated in the
+   ballot strip on the sheet they come back to. */
+.map-verdict {
+  position: absolute; left: 50%; top: 34%; z-index: 9;
+  transform: translate(-50%, -50%);
+  display: grid; gap: 4px; justify-items: center; text-align: center;
+  padding: 14px 26px 16px;
+  background: linear-gradient(168deg,
+    color-mix(in srgb, var(--parchment) 97%, #fff), var(--parchment) 70%, var(--parchment-shade));
+  color: var(--text-ink);
+  box-shadow: 0 22px 48px rgba(0,0,0,.66);
+  animation: mapVerdictIn var(--t-base) var(--ease-out) both;
+}
+.map-verdict b {
+  font-family: var(--font-display); font-size: 20px; font-weight: 600;
+  letter-spacing: .02em;
+}
+.map-verdict i {
+  font-style: normal; font-size: 12px; letter-spacing: .06em; opacity: .72;
+}
+@keyframes mapVerdictIn {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 8px)) scale(.97); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+.map-node.is-chosen .mn-ring, .map-node.is-chosen .mn-ring2 { opacity: 1; }
+
+.mn-votes {
+  position: absolute; left: 50%; top: -2px;
+  transform: translate(-50%, -100%);
+  display: inline-flex; gap: 3px;
+  padding: 2px 6px 3px; border-radius: 2px;
+  font-family: var(--font-display); font-size: 11px; letter-spacing: .12em;
+  color: var(--text-ink);
+  background: linear-gradient(168deg,
+    color-mix(in srgb, var(--parchment) 97%, #fff), var(--parchment) 70%);
+  box-shadow: 0 4px 12px rgba(0,0,0,.5);
+  pointer-events: none;
+}
+/* A voted-for room is lit like a legal one even while the sheet is dimmed
+   around it, because the party is being asked to compare exactly these. */
+.map-node.is-voted { z-index: 4; }
+.map-node.is-voted .mn-ring { opacity: .95; }
+
 .map-hint {
   flex: none; font-size: 11px; letter-spacing: .05em; color: var(--text-lo);
   padding-left: var(--s-3);

@@ -212,7 +212,7 @@ async def main(a):
         # that is most of what this screen is. It is also why nothing here saw
         # the map quietly become the one screen not on the wire: the route was
         # written straight onto the Run and reached the run layer down a bus
-        # name. It goes through `ACT.MAP_CHOOSE` now, and the seam it crosses is
+        # name. It goes through `ACT.MAP_VOTE` now, and the seam it crosses is
         # only exercised when a Run is actually there.
         #
         # `__in` is the drawing's doorway sentinel — no such node exists. It
