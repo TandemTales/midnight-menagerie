@@ -135,6 +135,8 @@ async function greedyTurn(e) {
 }
 
 const ROWS = [];
+/** Damage from visible countdowns, which no intent promises and none should. */
+let SCHEDULED = 0;
 // How much of what the enemies threw actually reached the player's Courage. Against an AI
 // that blocks exactly the telegraphed number, a single-attack encounter is absorbed almost
 // entirely — which is why raising one enemy's damage barely moves "HP cost per fight".
@@ -146,10 +148,20 @@ async function auditFight(encId, seed, maxTurns = 60) {
   // Damage the enemies actually delivered, straight from the engine's event stream,
   // attributed to the enemy that dealt it so a mismatch names its own culprit.
   let delivered = 0;
+  let scheduled = 0;
   const bySource = new Map();
   e.on('damage', (ev) => {
     if (ev.targetId !== 'player') return;
     const amt = (ev.blocked || 0) + (ev.hpLoss || 0);
+    /* A COUNTDOWN IS ITS OWN PROMISE, and it is not an intent.
+       `endTurn()` runs the enemy phase AND opens the next player turn, so a
+       `playerTurnStart` timer — the Greenhouse's Spore Clouds — fires inside
+       this window with no enemy behind it. Scoring it against the sum of the
+       intents produced 29 "lies" that named no culprit, because there was
+       none. It is excluded from the intent comparison and COUNTED SEPARATELY,
+       so it stays visible rather than quietly forgiven: what promises it is
+       the labelled timer the player has been watching tick for two turns. */
+    if (ev.cause === 'timer') { scheduled += amt; return; }
     delivered += amt;
     ABSORB.blocked += (ev.blocked || 0);
     ABSORB.hpLoss += (ev.hpLoss || 0);
@@ -171,8 +183,10 @@ async function auditFight(encId, seed, maxTurns = 60) {
                    st: Object.keys(x.statuses || {}).join('/') }));
     const atCommit = promised.reduce((s, p) => s + p.t, 0);
     delivered = 0;
+    scheduled = 0;
     bySource.clear();
     await e.endTurn();
+    SCHEDULED += scheduled;
     const per = promised.map(p => ({ ...p, got: bySource.get(p.id) || 0,
                                      alive: !!e.enemies.find(x => x.id === p.id && x.alive),
                                      gone: !e.enemies.find(x => x.id === p.id) }));
@@ -207,6 +221,9 @@ const BATCHES = [
   ['Kitchens 14', 'kc-14'], ['Oven Maw', 'kc-scare-oven'],
   ['Sugar Golem', 'kc-scare-golem'], ['Pantry Poltergeist', 'kc-scare-poltergeist'],
   ['The Confectioner', 'kc-boss'],
+  ['Greenhouse 14', 'gh-14'], ['Compost Colossus', 'gh-scare-compost'],
+  ['Carnivorous Conservatory', 'gh-scare-conservatory'],
+  ['Ancient Topiary', 'gh-scare-topiary'], ['The Head Gardener', 'gh-boss'],
   ['Heart 16', 'ht-16'], ['Hall of Names', 'ht-scare-names'],
   ['House Remembers', 'ht-scare-remembers'], ['Perfect Sanctuary', 'ht-scare-sanctuary'],
   ['Door That Says Stay', 'ht-scare-door'], ['The Keeper', 'ht-boss'],
@@ -241,6 +258,10 @@ head('Result');
   const scored = ROWS.filter(r => !r.truncated && !r.per.some(p => p.gone));
   const bad = scored.filter(r => r.delivered !== r.atCommit);
   const moved = ROWS.filter(r => r.atStart !== r.atCommit);
+  if (SCHEDULED) {
+    log(`  ${SCHEDULED} damage came from scheduled countdowns and is scored against no `
+      + 'intent: a labelled timer the player has watched tick is its own promise.', 'dim');
+  }
   if (bad.length) {
     fail(`${bad.length} of ${scored.length} scored enemy turns delivered damage != the intent shown at commit`);
     // Attribute the discrepancy to the individual enemy that under/over-delivered.

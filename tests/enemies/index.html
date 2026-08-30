@@ -248,6 +248,33 @@ class MockCombat {
         return got;
       },
       /**
+       * Countdowns, REAL rather than recorded.
+       *
+       * The Greenhouse's Spore Clouds are 7 damage two turns from now and they
+       * outlive the enemy that made them, so a shim that only logged the call
+       * would let Spore Puff pass this suite while scheduling nothing. They
+       * tick in `playerTurn()` below, which is where the engine ticks
+       * `playerTurnStart` timers.
+       */
+      schedule: (o) => {
+        const t = { id: o.id || `t${++self._uid}`, label: o.label || 'countdown',
+                    turnsLeft: Math.max(0, o.turns ?? 1), when: o.when || 'playerTurnStart',
+                    ownerId: actor.id, run: o.run, data: o.data || {} };
+        (self.timers ||= []).push(t);
+        return t;
+      },
+      adjustTimer: (id, delta) => {
+        const t = (self.timers || []).find(x => x.id === id);
+        if (t) t.turnsLeft = Math.max(0, t.turnsLeft + delta);
+        return t || null;
+      },
+      cancelTimer: (id) => {
+        const i = (self.timers || []).findIndex(t => t.id === id);
+        if (i >= 0) self.timers.splice(i, 1);
+      },
+      timers: () => (self.timers || []).filter(t => t.ownerId === actor.id)
+        .map(t => ({ id: t.id, label: t.label, turnsLeft: t.turnsLeft, data: t.data })),
+      /**
        * Powers and ad-hoc hooks are RECORDED, not simulated.
        *
        * The Governess hangs Stitched Together on a Power with an
@@ -390,6 +417,17 @@ class MockCombat {
     if (target.hp === 0 && target !== this.player) target.alive = false;
   }
 
+  /**
+   * The engine's own damage entry point, which a TIMER's `run` reaches for.
+   * A Spore Cloud fires with an engine handle and no enemy ctx — the Puff may
+   * be dead — so `{ attacker, defender, amount }` has to work here too.
+   */
+  dealDamage(o) {
+    if (!o || !o.defender || !(o.amount > 0)) return null;
+    this.damage(o.attacker || null, o.defender, o.amount, o);
+    return { hpLoss: o.amount };
+  }
+
   summon(source, enemyId, o) {
     if (!ENEMIES[enemyId]) { (this.missingSummons ||= new Set()).add(enemyId); return null; }
     if (this.living().length >= 4) return null;                    // board cap safety
@@ -416,7 +454,23 @@ class MockCombat {
     for (const a of this.actors) a.damageTakenThisTurn = 0;
 
     for (const a of this.actors) { a._coverUsedThisTurn = 0; a._coverUsedBySeat = {}; }
+
+    /* `playerTurnStart` countdowns, ticked where the engine ticks them: after
+       the turn number moves and before anything is played. A Spore Cloud fires
+       here, from a Spore Puff that may already be dead — which is the whole
+       point of the mechanic and cannot be proved by a shim that records. */
+    for (const t of (this.timers || []).slice()) {
+      if (t.when !== 'playerTurnStart') continue;
+      t.turnsLeft = Math.max(0, t.turnsLeft - 1);
+      if (t.turnsLeft > 0) continue;
+      const i = this.timers.indexOf(t);
+      if (i >= 0) this.timers.splice(i, 1);
+      try { t.run?.({ e: this, engine: this, timer: t, data: t.data, reason: 'tick' }); }
+      catch (err) { this.events.push(`timer ${t.id} threw: ${err && err.message}`); }
+    }
+
     for (const a of this.living()) this.hook(a, 'onPlayerTurnStart');
+    for (const a of this.living()) this.hook(a, 'onPlayerReady');
 
     const nCards = profile.cards ?? this.rng.range(0, 6);
     const types = ['attack', 'skill', 'power'];

@@ -540,6 +540,79 @@ const KC = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// The Impossible Greenhouse — docs/design/regions/05-greenhouse.md §9-§15
+// ─────────────────────────────────────────────────────────────────────────────
+const GH = [
+  // ── Early (§9): one lesson each, in the order the chapter introduces them ──
+  { id: 'gh-1', region: 'greenhouse', tier: 'early', name: 'Potling',
+    members: [m('potling')],
+    teaches: 'Seedlings. The thing on the floor is harmless now and will not stay harmless.' },
+  { id: 'gh-2', region: 'greenhouse', tier: 'early', name: 'Snapping Blossom',
+    members: [m('snapping-blossom')],
+    teaches: 'Bloom. The big number is three turns away and you can see all three.' },
+  { id: 'gh-3', region: 'greenhouse', tier: 'early', name: 'Spore Puff',
+    members: [m('spore-puff')],
+    teaches: 'Delayed damage that outlives the thing that scheduled it.' },
+  { id: 'gh-4', region: 'greenhouse', tier: 'early', name: 'Topiary Beast',
+    members: [m('topiary-beast')],
+    teaches: 'An enemy that reshapes itself around how you played last turn.' },
+
+  // ── Standard (§10) ────────────────────────────────────────────────────────
+  { id: 'gh-5', region: 'greenhouse', tier: 'standard', name: 'Potling + Creeping Ivy',
+    members: [m('potling'), m('creeping-ivy')],
+    teaches: 'The Ivy protects the Potling while its Seedlings come up.' },
+  { id: 'gh-6', region: 'greenhouse', tier: 'standard', name: 'Snapping Blossom + Spore Puff',
+    members: [m('snapping-blossom'), m('spore-puff')],
+    teaches: 'Immediate Bloom pressure against damage already scheduled.' },
+  { id: 'gh-7', region: 'greenhouse', tier: 'standard', name: 'Glassvine + Potling',
+    members: [m('glassvine'), m('potling')],
+    teaches: 'Repeated attacks into the Glassvine compete with pruning Seedlings.' },
+  { id: 'gh-8', region: 'greenhouse', tier: 'standard', name: 'Topiary Beast + Creeping Ivy',
+    members: [m('topiary-beast'), m('creeping-ivy')],
+    teaches: 'Ivy changes what each Topiary form is worth.' },
+
+  // ── Advanced (§11) ────────────────────────────────────────────────────────
+  { id: 'gh-9', region: 'greenhouse', tier: 'advanced', name: 'Spore Puff + Potling',
+    members: [m('spore-puff'), m('potling')],
+    teaches: 'The floor fills up with future problems.' },
+  { id: 'gh-10', region: 'greenhouse', tier: 'advanced', name: 'Snapping Blossom + Glassvine',
+    members: [m('snapping-blossom'), m('glassvine')],
+    teaches: 'The Blossom wants burst; the Glassvine punishes it.' },
+  { id: 'gh-11', region: 'greenhouse', tier: 'advanced', name: 'Topiary Beast + Spore Puff',
+    members: [m('topiary-beast'), m('spore-puff')],
+    teaches: 'React to a changing form while planning around a landing Cloud.' },
+  { id: 'gh-12', region: 'greenhouse', tier: 'advanced',
+    name: 'Creeping Ivy + Glassvine + Potling',
+    members: [m('creeping-ivy'), m('glassvine'), m('potling')],
+    teaches: 'A target puzzle: Entwine, retaliation and Seeds all want different answers.' },
+  { id: 'gh-13', region: 'greenhouse', tier: 'advanced', name: 'Topiary Beast + Snapping Blossom',
+    members: [m('topiary-beast'), m('snapping-blossom')],
+    teaches: 'Two enemies changing state on two different schedules.' },
+  { id: 'gh-14', region: 'greenhouse', tier: 'advanced',
+    name: 'Potling + Spore Puff + Snapping Blossom',
+    members: [m('potling'), m('spore-puff'), m('snapping-blossom')],
+    teaches: 'Seedlings threaten future enemies, Spores threaten future damage, Bloom threatens a major attack. You cannot solve all three.',
+    advancedOnly: true, minScuffle: 1 },
+
+  // ── Big Scares (§13-§15) ──────────────────────────────────────────────────
+  { id: 'gh-scare-compost', region: 'greenhouse', tier: 'elite', name: 'The Compost Colossus',
+    members: [m('compost-colossus')],
+    teaches: 'Take the Nodes, race the body, or push it under half and then take the Nodes.' },
+  { id: 'gh-scare-conservatory', region: 'greenhouse', tier: 'elite',
+    name: 'The Carnivorous Conservatory',
+    members: [m('carnivorous-conservatory')],
+    teaches: 'A pressure gauge. Ignore the room and the room becomes the fight.' },
+  { id: 'gh-scare-topiary', region: 'greenhouse', tier: 'elite', name: 'The Ancient Topiary',
+    members: [m('ancient-topiary')],
+    teaches: 'Four forms, and your first Trick each turn picks which one arrives.' },
+
+  // ── Boss ──────────────────────────────────────────────────────────────────
+  { id: 'gh-boss', region: 'greenhouse', tier: 'boss', name: 'The Head Gardener',
+    members: [m('head-gardener')],
+    teaches: 'Which plant hurts YOUR deck? And it will eat its own garden for damage if you leave one too long.' },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
 // The Heart of the House — docs/design/regions/17-heart.md §12-§15
 //
 // "There are no truly introductory Heart encounters. The player has reached the
@@ -674,6 +747,16 @@ const HEART = [
 // Per-region generation rules (design doc §10 "Encounter selection rules")
 // ─────────────────────────────────────────────────────────────────────────────
 export const REGION_RULES = {
+  /* docs/design/regions/05-greenhouse.md §12. */
+  greenhouse: {
+    bannedFirstScuffle: ['glassvine'],
+    minScuffle: { glassvine: 1 },
+    /** "Creeping Ivy cannot appear alone." It has no fight without a host. */
+    neverAlone: ['creeping-ivy'],
+    /** Two Ivies compound; two Potlings are a Haunt-level thing (§12). */
+    noDuplicates: ['creeping-ivy', 'potling'],
+    maxConsecutiveLead: 2,
+  },
   /* docs/design/regions/17-heart.md §15. The Heart's list is longer than any
      other region's because it is the only one that fields four-body
      formations, and because three separate enemies here modify what a Trick
@@ -728,7 +811,7 @@ export const REGION_RULES = {
   },
 };
 
-const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...HEART];
+const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...HEART];
 
 /** id → EncounterDef */
 export const ENCOUNTERS = Object.freeze(

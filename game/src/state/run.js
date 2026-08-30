@@ -100,7 +100,8 @@ import { rollEvent, eventById, rollOutcome } from '../data/events.js';
  * rather than after it.
  */
 export const RUN_REGIONS = Object.freeze([
-  'foyer', 'nursery', 'sleeping-quarters', 'kitchens-cellars', 'heart',
+  'foyer', 'nursery', 'sleeping-quarters', 'kitchens-cellars', 'greenhouse',
+  'heart',
 ]);
 
 /**

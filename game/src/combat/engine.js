@@ -2135,6 +2135,27 @@ export class CombatEngine {
         return true;
       },
 
+      /* ── a countdown the player can SEE ───────────────────────────────────
+       * The engine's timer system, which Wisp's Linger and Wink's Set Tricks
+       * already use, reached from an enemy for the first time in the
+       * Greenhouse: a Spore Cloud is 7 damage two turns from now, and "Killing
+       * Spore Puff does not erase consequences it already created" means it
+       * cannot live on the enemy that made it.
+       *
+       * `when: 'playerTurnStart'` by default, and that is deliberate rather
+       * than convenient. A scheduled hit that lands during the ENEMY phase is
+       * damage no intent promised, which is the one thing this game's intents
+       * may never do — `tests/enemies/engine-audit.html` scores exactly that.
+       * A labelled countdown ticking down in front of the player is its own
+       * promise, made two turns early.
+       */
+      schedule: (o) => e.schedule({ when: 'playerTurnStart', ownerId: enemy.id, ...o }),
+      adjustTimer: (id, delta, reason) => e.adjustTimer(id, delta, reason || 'enemy'),
+      cancelTimer: (id) => e.cancelTimer(id),
+      timers: () => e.timers.filter(t => t.ownerId === enemy.id).map(t => ({
+        id: t.id, label: t.label, turnsLeft: t.turnsLeft, data: t.data,
+      })),
+
       // House Rules
       announceRule: (rule) => e.announceRule(rule, enemy.id),
       clearRules: (sourceId) => e.clearRules(sourceId ?? enemy.id),
