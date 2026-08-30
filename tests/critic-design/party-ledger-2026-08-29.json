@@ -1,0 +1,1947 @@
+{
+ "config": {
+  "TIER": "elite",
+  "ENC": null,
+  "REGION": "foyer",
+  "LREGION": "foyer",
+  "N": 12,
+  "GEN": 8,
+  "SIZES": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "SLUGS": [
+   "marmalade",
+   "bones"
+  ],
+  "SEED0": 90000
+ },
+ "rows": [
+  {
+   "nodeId": "bench-90000",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-bell",
+   "name": "The House Bell",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90000,
+   "win": true,
+   "turns": 12,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.3888888888888889,
+   "courageCost": 44,
+   "takenBySeat": [
+    50
+   ],
+   "hitsBySeat": [
+    10
+   ],
+   "blockedBySeat": [
+    48
+   ],
+   "aimed": 98,
+   "blocked": 48,
+   "partyGuard": 63,
+   "spread": 1,
+   "enemyHp": 86,
+   "enemyGuard": 55,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-coatcheck",
+   "name": "The Grand Coatcheck",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90013,
+   "win": true,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.5588235294117647,
+   "courageCost": 23,
+   "takenBySeat": [
+    29
+   ],
+   "hitsBySeat": [
+    9
+   ],
+   "blockedBySeat": [
+    42
+   ],
+   "aimed": 71,
+   "blocked": 42,
+   "partyGuard": 45,
+   "spread": 1,
+   "enemyHp": 94,
+   "enemyGuard": 36,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90026,
+   "win": true,
+   "turns": 10,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.4411764705882353,
+   "courageCost": 27,
+   "takenBySeat": [
+    33
+   ],
+   "hitsBySeat": [
+    9
+   ],
+   "blockedBySeat": [
+    69
+   ],
+   "aimed": 102,
+   "blocked": 69,
+   "partyGuard": 94,
+   "spread": 1,
+   "enemyHp": 115,
+   "enemyGuard": 40,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90039,
+   "win": false,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 50,
+   "takenBySeat": [
+    50
+   ],
+   "hitsBySeat": [
+    7
+   ],
+   "blockedBySeat": [
+    25
+   ],
+   "aimed": 75,
+   "blocked": 25,
+   "partyGuard": 37,
+   "spread": 1,
+   "enemyHp": 115,
+   "enemyGuard": 40,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-bell",
+   "name": "The House Bell",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90052,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 1,
+   "courageCost": 0,
+   "takenBySeat": [
+    2
+   ],
+   "hitsBySeat": [
+    1
+   ],
+   "blockedBySeat": [
+    5
+   ],
+   "aimed": 7,
+   "blocked": 5,
+   "partyGuard": 18,
+   "spread": 1,
+   "enemyHp": 86,
+   "enemyGuard": 0,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-coatcheck",
+   "name": "The Grand Coatcheck",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90065,
+   "win": true,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8235294117647058,
+   "courageCost": 10,
+   "takenBySeat": [
+    22
+   ],
+   "hitsBySeat": [
+    9
+   ],
+   "blockedBySeat": [
+    65
+   ],
+   "aimed": 87,
+   "blocked": 65,
+   "partyGuard": 76,
+   "spread": 1,
+   "enemyHp": 94,
+   "enemyGuard": 36,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90078,
+   "win": true,
+   "turns": 13,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8378378378378378,
+   "courageCost": 12,
+   "takenBySeat": [
+    18
+   ],
+   "hitsBySeat": [
+    12
+   ],
+   "blockedBySeat": [
+    118
+   ],
+   "aimed": 136,
+   "blocked": 118,
+   "partyGuard": 151,
+   "spread": 1,
+   "enemyHp": 115,
+   "enemyGuard": 64,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90091,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.5070422535211268,
+   "courageCost": 35,
+   "takenBySeat": [
+    44
+   ],
+   "hitsBySeat": [
+    6
+   ],
+   "blockedBySeat": [
+    21
+   ],
+   "aimed": 65,
+   "blocked": 21,
+   "partyGuard": 34,
+   "spread": 1,
+   "enemyHp": 115,
+   "enemyGuard": 26,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90104",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-bell",
+   "name": "The House Bell",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90104,
+   "win": true,
+   "turns": 12,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.1527777777777778,
+   "courageCost": 61,
+   "takenBySeat": [
+    67
+   ],
+   "hitsBySeat": [
+    11
+   ],
+   "blockedBySeat": [
+    38
+   ],
+   "aimed": 105,
+   "blocked": 38,
+   "partyGuard": 58,
+   "spread": 1,
+   "enemyHp": 86,
+   "enemyGuard": 55,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90117",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90117,
+   "win": true,
+   "turns": 9,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.36764705882352944,
+   "courageCost": 36,
+   "takenBySeat": [
+    42
+   ],
+   "hitsBySeat": [
+    7
+   ],
+   "blockedBySeat": [
+    33
+   ],
+   "aimed": 75,
+   "blocked": 33,
+   "partyGuard": 43,
+   "spread": 1,
+   "enemyHp": 115,
+   "enemyGuard": 34,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90130",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-bell",
+   "name": "The House Bell",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90130,
+   "win": true,
+   "turns": 10,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8676470588235294,
+   "courageCost": -2,
+   "takenBySeat": [
+    4
+   ],
+   "hitsBySeat": [
+    6
+   ],
+   "blockedBySeat": [
+    54
+   ],
+   "aimed": 58,
+   "blocked": 54,
+   "partyGuard": 84,
+   "spread": 1,
+   "enemyHp": 86,
+   "enemyGuard": 35,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90143",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90143,
+   "win": false,
+   "turns": 11,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 50,
+   "takenBySeat": [
+    56
+   ],
+   "hitsBySeat": [
+    10
+   ],
+   "blockedBySeat": [
+    50
+   ],
+   "aimed": 106,
+   "blocked": 50,
+   "partyGuard": 62,
+   "spread": 1,
+   "enemyHp": 115,
+   "enemyGuard": 58,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90000",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-bell",
+   "name": "The House Bell",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90000,
+   "win": true,
+   "turns": 9,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.7602739726027398,
+   "courageCost": 24,
+   "takenBySeat": [
+    30,
+    0
+   ],
+   "hitsBySeat": [
+    7,
+    0
+   ],
+   "blockedBySeat": [
+    31,
+    0
+   ],
+   "aimed": 61,
+   "blocked": 31,
+   "partyGuard": 129,
+   "spread": 0,
+   "enemyHp": 189,
+   "enemyGuard": 30,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-coatcheck",
+   "name": "The Grand Coatcheck",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90013,
+   "win": true,
+   "turns": 11,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.5579710144927537,
+   "courageCost": 54,
+   "takenBySeat": [
+    74,
+    0
+   ],
+   "hitsBySeat": [
+    10,
+    3
+   ],
+   "blockedBySeat": [
+    30,
+    40
+   ],
+   "aimed": 144,
+   "blocked": 70,
+   "partyGuard": 231,
+   "spread": 0,
+   "enemyHp": 207,
+   "enemyGuard": 54,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90026,
+   "win": true,
+   "turns": 15,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.7647058823529411,
+   "courageCost": 24,
+   "takenBySeat": [
+    31,
+    0
+   ],
+   "hitsBySeat": [
+    11,
+    2
+   ],
+   "blockedBySeat": [
+    106,
+    18
+   ],
+   "aimed": 155,
+   "blocked": 124,
+   "partyGuard": 325,
+   "spread": 0,
+   "enemyHp": 253,
+   "enemyGuard": 126,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90039,
+   "win": true,
+   "turns": 20,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.4105960264900662,
+   "courageCost": 56,
+   "takenBySeat": [
+    56,
+    16
+   ],
+   "hitsBySeat": [
+    11,
+    6
+   ],
+   "blockedBySeat": [
+    65,
+    52
+   ],
+   "aimed": 189,
+   "blocked": 117,
+   "partyGuard": 235,
+   "spread": 0.4444444444444444,
+   "enemyHp": 253,
+   "enemyGuard": 164,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-bell",
+   "name": "The House Bell",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90052,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9527027027027027,
+   "courageCost": -5,
+   "takenBySeat": [
+    0,
+    4
+   ],
+   "hitsBySeat": [
+    1,
+    2
+   ],
+   "blockedBySeat": [
+    7,
+    10
+   ],
+   "aimed": 21,
+   "blocked": 17,
+   "partyGuard": 70,
+   "spread": 0,
+   "enemyHp": 189,
+   "enemyGuard": 10,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-coatcheck",
+   "name": "The Grand Coatcheck",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90065,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.6832298136645962,
+   "courageCost": 41,
+   "takenBySeat": [
+    52,
+    0
+   ],
+   "hitsBySeat": [
+    5,
+    1
+   ],
+   "blockedBySeat": [
+    10,
+    17
+   ],
+   "aimed": 79,
+   "blocked": 27,
+   "partyGuard": 124,
+   "spread": 0,
+   "enemyHp": 207,
+   "enemyGuard": 8,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90078,
+   "win": true,
+   "turns": 12,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.847682119205298,
+   "courageCost": 23,
+   "takenBySeat": [
+    29,
+    0
+   ],
+   "hitsBySeat": [
+    10,
+    0
+   ],
+   "blockedBySeat": [
+    89,
+    0
+   ],
+   "aimed": 118,
+   "blocked": 89,
+   "partyGuard": 214,
+   "spread": 0,
+   "enemyHp": 253,
+   "enemyGuard": 70,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90091,
+   "win": true,
+   "turns": 9,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.738255033557047,
+   "courageCost": 39,
+   "takenBySeat": [
+    48,
+    0
+   ],
+   "hitsBySeat": [
+    9,
+    0
+   ],
+   "blockedBySeat": [
+    51,
+    0
+   ],
+   "aimed": 99,
+   "blocked": 51,
+   "partyGuard": 134,
+   "spread": 0,
+   "enemyHp": 253,
+   "enemyGuard": 64,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90104",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-bell",
+   "name": "The House Bell",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90104,
+   "win": true,
+   "turns": 10,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.5684931506849316,
+   "courageCost": 52,
+   "takenBySeat": [
+    58,
+    0
+   ],
+   "hitsBySeat": [
+    10,
+    0
+   ],
+   "blockedBySeat": [
+    49,
+    0
+   ],
+   "aimed": 107,
+   "blocked": 49,
+   "partyGuard": 200,
+   "spread": 0,
+   "enemyHp": 189,
+   "enemyGuard": 45,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90117",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90117,
+   "win": true,
+   "turns": 13,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.6666666666666666,
+   "courageCost": 39,
+   "takenBySeat": [
+    45,
+    0
+   ],
+   "hitsBySeat": [
+    6,
+    6
+   ],
+   "blockedBySeat": [
+    20,
+    68
+   ],
+   "aimed": 133,
+   "blocked": 88,
+   "partyGuard": 296,
+   "spread": 0,
+   "enemyHp": 253,
+   "enemyGuard": 94,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90130",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-bell",
+   "name": "The House Bell",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90130,
+   "win": true,
+   "turns": 10,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8758169934640523,
+   "courageCost": 7,
+   "takenBySeat": [
+    10,
+    12
+   ],
+   "hitsBySeat": [
+    5,
+    5
+   ],
+   "blockedBySeat": [
+    43,
+    48
+   ],
+   "aimed": 113,
+   "blocked": 91,
+   "partyGuard": 266,
+   "spread": 0.9090909090909091,
+   "enemyHp": 189,
+   "enemyGuard": 66,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90143",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90143,
+   "win": true,
+   "turns": 19,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.41721854304635764,
+   "courageCost": 55,
+   "takenBySeat": [
+    41,
+    26
+   ],
+   "hitsBySeat": [
+    9,
+    9
+   ],
+   "blockedBySeat": [
+    55,
+    76
+   ],
+   "aimed": 198,
+   "blocked": 131,
+   "partyGuard": 288,
+   "spread": 0.7761194029850746,
+   "enemyHp": 253,
+   "enemyGuard": 174,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90000",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-bell",
+   "name": "The House Bell",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90000,
+   "win": true,
+   "turns": 11,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.719626168224299,
+   "courageCost": 38,
+   "takenBySeat": [
+    47,
+    3,
+    0
+   ],
+   "hitsBySeat": [
+    8,
+    4,
+    0
+   ],
+   "blockedBySeat": [
+    49,
+    34,
+    0
+   ],
+   "aimed": 133,
+   "blocked": 83,
+   "partyGuard": 371,
+   "spread": 0.08999999999999997,
+   "enemyHp": 344,
+   "enemyGuard": 76,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-coatcheck",
+   "name": "The Grand Coatcheck",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90013,
+   "win": true,
+   "turns": 12,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.5302325581395348,
+   "courageCost": 67,
+   "takenBySeat": [
+    30,
+    0,
+    53
+   ],
+   "hitsBySeat": [
+    7,
+    3,
+    9
+   ],
+   "blockedBySeat": [
+    42,
+    40,
+    30
+   ],
+   "aimed": 195,
+   "blocked": 112,
+   "partyGuard": 347,
+   "spread": 0.5,
+   "enemyHp": 376,
+   "enemyGuard": 54,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90026,
+   "win": true,
+   "turns": 16,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.7828054298642534,
+   "courageCost": 36,
+   "takenBySeat": [
+    43,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    15,
+    0,
+    0
+   ],
+   "blockedBySeat": [
+    130,
+    0,
+    0
+   ],
+   "aimed": 173,
+   "blocked": 130,
+   "partyGuard": 419,
+   "spread": 0,
+   "enemyHp": 460,
+   "enemyGuard": 192,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90039,
+   "win": true,
+   "turns": 22,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.5799086757990868,
+   "courageCost": 57,
+   "takenBySeat": [
+    55,
+    19,
+    0
+   ],
+   "hitsBySeat": [
+    8,
+    12,
+    0
+   ],
+   "blockedBySeat": [
+    29,
+    114,
+    0
+   ],
+   "aimed": 217,
+   "blocked": 143,
+   "partyGuard": 332,
+   "spread": 0.3851351351351351,
+   "enemyHp": 460,
+   "enemyGuard": 158,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-bell",
+   "name": "The House Bell",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90052,
+   "win": true,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9819819819819819,
+   "courageCost": -8,
+   "takenBySeat": [
+    16,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    2,
+    0,
+    5
+   ],
+   "blockedBySeat": [
+    10,
+    0,
+    43
+   ],
+   "aimed": 69,
+   "blocked": 53,
+   "partyGuard": 209,
+   "spread": 0,
+   "enemyHp": 344,
+   "enemyGuard": 40,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-coatcheck",
+   "name": "The Grand Coatcheck",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90065,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8189655172413793,
+   "courageCost": 32,
+   "takenBySeat": [
+    43,
+    0,
+    7
+   ],
+   "hitsBySeat": [
+    5,
+    1,
+    1
+   ],
+   "blockedBySeat": [
+    15,
+    17,
+    10
+   ],
+   "aimed": 92,
+   "blocked": 42,
+   "partyGuard": 214,
+   "spread": 0.20999999999999996,
+   "enemyHp": 376,
+   "enemyGuard": 16,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90078,
+   "win": true,
+   "turns": 14,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8026905829596412,
+   "courageCost": 44,
+   "takenBySeat": [
+    36,
+    0,
+    20
+   ],
+   "hitsBySeat": [
+    10,
+    0,
+    3
+   ],
+   "blockedBySeat": [
+    88,
+    0,
+    5
+   ],
+   "aimed": 149,
+   "blocked": 93,
+   "partyGuard": 312,
+   "spread": 0.5000000000000001,
+   "enemyHp": 460,
+   "enemyGuard": 162,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90091,
+   "win": true,
+   "turns": 12,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8294930875576036,
+   "courageCost": 30,
+   "takenBySeat": [
+    45,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    8,
+    2,
+    0
+   ],
+   "blockedBySeat": [
+    43,
+    9,
+    0
+   ],
+   "aimed": 97,
+   "blocked": 52,
+   "partyGuard": 257,
+   "spread": 0,
+   "enemyHp": 460,
+   "enemyGuard": 100,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90104",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-bell",
+   "name": "The House Bell",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90104,
+   "win": true,
+   "turns": 10,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8037383177570093,
+   "courageCost": 20,
+   "takenBySeat": [
+    32,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    3,
+    4,
+    3
+   ],
+   "blockedBySeat": [
+    15,
+    42,
+    21
+   ],
+   "aimed": 110,
+   "blocked": 78,
+   "partyGuard": 283,
+   "spread": 0,
+   "enemyHp": 344,
+   "enemyGuard": 61,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90117",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90117,
+   "win": true,
+   "turns": 15,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.6744186046511628,
+   "courageCost": 36,
+   "takenBySeat": [
+    51,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    7,
+    7,
+    0
+   ],
+   "blockedBySeat": [
+    10,
+    107,
+    0
+   ],
+   "aimed": 168,
+   "blocked": 117,
+   "partyGuard": 460,
+   "spread": 0,
+   "enemyHp": 460,
+   "enemyGuard": 156,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90130",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-bell",
+   "name": "The House Bell",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90130,
+   "win": true,
+   "turns": 10,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9321266968325792,
+   "courageCost": 3,
+   "takenBySeat": [
+    0,
+    5,
+    25
+   ],
+   "hitsBySeat": [
+    0,
+    5,
+    5
+   ],
+   "blockedBySeat": [
+    0,
+    50,
+    24
+   ],
+   "aimed": 104,
+   "blocked": 74,
+   "partyGuard": 344,
+   "spread": 0.25,
+   "enemyHp": 344,
+   "enemyGuard": 45,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90143",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90143,
+   "win": true,
+   "turns": 18,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.5616438356164384,
+   "courageCost": 61,
+   "takenBySeat": [
+    44,
+    0,
+    40
+   ],
+   "hitsBySeat": [
+    9,
+    0,
+    7
+   ],
+   "blockedBySeat": [
+    52,
+    0,
+    47
+   ],
+   "aimed": 183,
+   "blocked": 99,
+   "partyGuard": 313,
+   "spread": 0.5,
+   "enemyHp": 460,
+   "enemyGuard": 168,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90000",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-bell",
+   "name": "The House Bell",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90000,
+   "win": true,
+   "turns": 13,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.7558528428093646,
+   "courageCost": 50,
+   "takenBySeat": [
+    47,
+    0,
+    16,
+    0
+   ],
+   "hitsBySeat": [
+    5,
+    4,
+    7,
+    1
+   ],
+   "blockedBySeat": [
+    30,
+    41,
+    61,
+    20
+   ],
+   "aimed": 215,
+   "blocked": 152,
+   "partyGuard": 893,
+   "spread": 0.33333333333333337,
+   "enemyHp": 490,
+   "enemyGuard": 86,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-coatcheck",
+   "name": "The Grand Coatcheck",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90013,
+   "win": true,
+   "turns": 13,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.5743944636678201,
+   "courageCost": 83,
+   "takenBySeat": [
+    51,
+    0,
+    52,
+    2
+   ],
+   "hitsBySeat": [
+    8,
+    3,
+    9,
+    3
+   ],
+   "blockedBySeat": [
+    38,
+    40,
+    35,
+    41
+   ],
+   "aimed": 259,
+   "blocked": 154,
+   "partyGuard": 717,
+   "spread": 0.3587301587301587,
+   "enemyHp": 536,
+   "enemyGuard": 54,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90026,
+   "win": true,
+   "turns": 16,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9036544850498339,
+   "courageCost": 5,
+   "takenBySeat": [
+    19,
+    0,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    12,
+    3,
+    0,
+    0
+   ],
+   "blockedBySeat": [
+    106,
+    54,
+    0,
+    0
+   ],
+   "aimed": 179,
+   "blocked": 160,
+   "partyGuard": 949,
+   "spread": 0,
+   "enemyHp": 656,
+   "enemyGuard": 270,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90039,
+   "win": true,
+   "turns": 15,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.7147435897435898,
+   "courageCost": 46,
+   "takenBySeat": [
+    60,
+    12,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    8,
+    3,
+    0,
+    2
+   ],
+   "blockedBySeat": [
+    20,
+    22,
+    0,
+    35
+   ],
+   "aimed": 149,
+   "blocked": 77,
+   "partyGuard": 736,
+   "spread": 0.2222222222222222,
+   "enemyHp": 656,
+   "enemyGuard": 168,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-bell",
+   "name": "The House Bell",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90052,
+   "win": true,
+   "turns": 9,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9464882943143813,
+   "courageCost": 4,
+   "takenBySeat": [
+    8,
+    3,
+    13,
+    3
+   ],
+   "hitsBySeat": [
+    1,
+    3,
+    1,
+    2
+   ],
+   "blockedBySeat": [
+    5,
+    26,
+    0,
+    11
+   ],
+   "aimed": 69,
+   "blocked": 42,
+   "partyGuard": 371,
+   "spread": 0.6296296296296297,
+   "enemyHp": 490,
+   "enemyGuard": 40,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-coatcheck",
+   "name": "The Grand Coatcheck",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90065,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8903225806451613,
+   "courageCost": 24,
+   "takenBySeat": [
+    32,
+    0,
+    10,
+    2
+   ],
+   "hitsBySeat": [
+    6,
+    2,
+    2,
+    2
+   ],
+   "blockedBySeat": [
+    33,
+    30,
+    20,
+    25
+   ],
+   "aimed": 152,
+   "blocked": 108,
+   "partyGuard": 534,
+   "spread": 0.36363636363636365,
+   "enemyHp": 536,
+   "enemyGuard": 26,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90078,
+   "win": true,
+   "turns": 15,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9292929292929293,
+   "courageCost": 10,
+   "takenBySeat": [
+    16,
+    0,
+    0,
+    4
+   ],
+   "hitsBySeat": [
+    12,
+    1,
+    0,
+    1
+   ],
+   "blockedBySeat": [
+    123,
+    19,
+    0,
+    6
+   ],
+   "aimed": 168,
+   "blocked": 148,
+   "partyGuard": 826,
+   "spread": 0.2666666666666667,
+   "enemyHp": 656,
+   "enemyGuard": 198,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90091,
+   "win": true,
+   "turns": 13,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.7735191637630662,
+   "courageCost": 58,
+   "takenBySeat": [
+    78,
+    0,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    8,
+    3,
+    0,
+    0
+   ],
+   "blockedBySeat": [
+    13,
+    28,
+    0,
+    0
+   ],
+   "aimed": 119,
+   "blocked": 41,
+   "partyGuard": 753,
+   "spread": 0,
+   "enemyHp": 656,
+   "enemyGuard": 232,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90104",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-bell",
+   "name": "The House Bell",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90104,
+   "win": true,
+   "turns": 15,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.6655518394648829,
+   "courageCost": 77,
+   "takenBySeat": [
+    83,
+    11,
+    8,
+    4
+   ],
+   "hitsBySeat": [
+    10,
+    3,
+    1,
+    5
+   ],
+   "blockedBySeat": [
+    36,
+    32,
+    12,
+    51
+   ],
+   "aimed": 237,
+   "blocked": 131,
+   "partyGuard": 897,
+   "spread": 0.289308176100629,
+   "enemyHp": 490,
+   "enemyGuard": 96,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90117",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90117,
+   "win": true,
+   "turns": 22,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.7370242214532872,
+   "courageCost": 36,
+   "takenBySeat": [
+    57,
+    0,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    7,
+    12,
+    0,
+    2
+   ],
+   "blockedBySeat": [
+    10,
+    162,
+    0,
+    18
+   ],
+   "aimed": 247,
+   "blocked": 190,
+   "partyGuard": 1104,
+   "spread": 0,
+   "enemyHp": 656,
+   "enemyGuard": 314,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90130",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-bell",
+   "name": "The House Bell",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90130,
+   "win": true,
+   "turns": 9,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9833887043189369,
+   "courageCost": -19,
+   "takenBySeat": [
+    0,
+    0,
+    9,
+    0
+   ],
+   "hitsBySeat": [
+    0,
+    3,
+    5,
+    0
+   ],
+   "blockedBySeat": [
+    0,
+    29,
+    32,
+    0
+   ],
+   "aimed": 70,
+   "blocked": 61,
+   "partyGuard": 544,
+   "spread": 0,
+   "enemyHp": 490,
+   "enemyGuard": 40,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90143",
+   "type": "bigScare",
+   "tier": "elite",
+   "encounter": "foyer-scare-guest",
+   "name": "The Unwelcome Guest",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90143,
+   "win": true,
+   "turns": 12,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8205128205128205,
+   "courageCost": 13,
+   "takenBySeat": [
+    30,
+    1,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    6,
+    3,
+    0,
+    1
+   ],
+   "blockedBySeat": [
+    24,
+    53,
+    0,
+    19
+   ],
+   "aimed": 127,
+   "blocked": 96,
+   "partyGuard": 771,
+   "spread": 0.043010752688172005,
+   "enemyHp": 656,
+   "enemyGuard": 190,
+   "botErrors": 0,
+   "errors": []
+  }
+ ],
+ "table": [
+  {
+   "size": 1,
+   "n": 12,
+   "aimed": 82.1,
+   "landed": 34.8,
+   "blocked": 47.3,
+   "pctBlocked": 57.6,
+   "partyGuard": 63.8,
+   "turns": 9.4,
+   "aimedPerTurn": 8.7,
+   "winPct": 83.3,
+   "leftAll": 49.5,
+   "pool": 101.8,
+   "left": 59.5,
+   "errs": 0
+  },
+  {
+   "size": 2,
+   "n": 12,
+   "aimed": 118.1,
+   "landed": 44.3,
+   "blocked": 73.8,
+   "pctBlocked": 62.5,
+   "partyGuard": 209.3,
+   "turns": 11.6,
+   "aimedPerTurn": 10.2,
+   "winPct": 100,
+   "leftAll": 68.7,
+   "pool": 224,
+   "left": 68.7,
+   "errs": 0,
+   "poolScale": 2.2,
+   "predictedLeft": 72.2,
+   "buys": 3.5
+  },
+  {
+   "size": 3,
+   "n": 12,
+   "aimed": 140.8,
+   "landed": 51.2,
+   "blocked": 89.7,
+   "pctBlocked": 63.7,
+   "partyGuard": 321.8,
+   "turns": 12.8,
+   "aimedPerTurn": 11,
+   "winPct": 100,
+   "leftAll": 75.1,
+   "pool": 407.3,
+   "left": 75.1,
+   "errs": 0,
+   "poolScale": 4,
+   "predictedLeft": 77.6,
+   "buys": 2.5
+  },
+  {
+   "size": 4,
+   "n": 12,
+   "aimed": 165.9,
+   "landed": 52.6,
+   "blocked": 113.3,
+   "pctBlocked": 68.3,
+   "partyGuard": 757.9,
+   "turns": 13.3,
+   "aimedPerTurn": 12.5,
+   "winPct": 100,
+   "leftAll": 80.8,
+   "pool": 580.7,
+   "left": 80.8,
+   "errs": 0,
+   "poolScale": 5.7,
+   "predictedLeft": 82,
+   "buys": 1.2
+  }
+ ],
+ "errors": []
+}

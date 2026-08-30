@@ -840,7 +840,23 @@ export class Run {
     book.votes[n] = id;
     bus.emit('map:vote', { seat: n, nodeId: id, run: this,
                            pending: this.votesPending().slice() });
-    if (this.votesPending().length) return null;   // still someone to hear from
+    /* A DOOR IS NOT A FORK. Where only one exit is legal, every vote still
+       owed is forced to that same node, so the outcome is already settled and
+       the remaining seats are being asked to ratify a choice they do not have
+       — four clicks, and in hotseat three `.hoff__go` passes between them, to
+       walk through the only door there is.
+
+       Resolving early is the SAME result, sooner: `resolveVote` tallies the
+       votes actually cast, a single candidate makes `items.length === 1`, so
+       the winner is that node and `rolled` stays false — no roulette claim and
+       no beat, which is already what a unanimous ballot produces.
+
+       It stays deterministic. `legalNextIds()` reads committed map state that
+       every client shares, and the resolve is triggered by the first
+       `map.vote` in LOG order, which `session._pump` makes the same everywhere
+       — not by whichever client's player happened to click first. */
+    const forced = this.legalNextIds().length <= 1;
+    if (this.votesPending().length && !forced) return null;  // someone to hear from
     return this.resolveVote();
   }
 

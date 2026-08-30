@@ -109,6 +109,42 @@ async function main() {
       `${before.calls} -> ${run.rng.snapshot().calls}`);
   }
 
+  // ── 2b. a door is not a fork ───────────────────────────────────────────
+  head('One legal exit does not open a ballot');
+  {
+    /* A position with exactly one legal exit is a real thing in a generated
+       Foyer — a lane that converges before it branches again — but WHICH node
+       it is depends on the seed, so this searches for one instead of naming
+       it. Hardcoding a node id here would rot the first time mapgen changed
+       and would fail as "the vote is broken" rather than "the fixture moved". */
+    let run = null, only = null;
+    for (let s = 0; s < 40 && !only; s++) {
+      const r = atTheDoor(7000 + s * 101);
+      for (const n of r.map.nodes) {
+        r.currentNodeId = n.id;
+        const next = r.legalNextIds();
+        if (next.length === 1) { run = r; only = next[0]; break; }
+      }
+    }
+    check(!!only, 'a single-exit position exists in a generated Foyer',
+      only ? `${run.currentNodeId} -> ${only}` : 'none found in 40 seeds');
+
+    if (only) {
+      run.pendingVote = null;
+      check(run.votesPending().length === 3,
+        'all three Kids are owed a vote there', String(run.votesPending().length));
+
+      const res = await run.voteNode(only, 0);
+      check(!!res && res.winner === only,
+        'ONE Kid resolves it — the other two are not asked to ratify the only '
+        + 'door there is', String(res && res.winner));
+      check(!!res && res.rolled === false,
+        'and nothing claims a number chose it');
+      check(run.currentNodeId === only,
+        'the party walks in', String(run.currentNodeId));
+    }
+  }
+
   // ── 3. the ballot belongs to the fork it was cast at ───────────────────
   head('A ballot does not travel');
   {
