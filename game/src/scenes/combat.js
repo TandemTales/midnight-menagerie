@@ -33,6 +33,7 @@ import { EnemyView, PlayerView, statusGlyph } from '../ui/enemy.js';
 import { CombatFX } from '../fx/combatfx.js';
 import { HUD } from '../ui/hud.js';
 import { openPile } from '../ui/deckview.js';
+import { confirmModal } from '../ui/modal.js';
 
 const CSS = new URL('./combat.css', import.meta.url).href;
 const CARD_CSS = new URL('../ui/card.css', import.meta.url).href;
@@ -372,6 +373,8 @@ export class CombatScene extends Scene {
     this.flashes = s.flashes ?? 1;
     this.largeText = !!s.largeText;
     this.speed = s.fastMode ? 1.7 : (s.speed || 1);
+    this.autoEndTurn = !!s.autoEndTurn;
+    this.confirmSingleTarget = !!s.confirmSingleTarget;
   }
   /** Every animation duration passes through here. One switch for reduceMotion. */
   _d(sec) { return this.reduceMotion ? 0.001 : sec / this.speed; }
@@ -1049,26 +1052,55 @@ export class CombatScene extends Scene {
       for (const v of this.views.values()) { v.reduceMotion = this.reduceMotion; v.flashes = bloom; }
       if (this.hero) { this.hero.reduceMotion = this.reduceMotion; this.hero.flashes = bloom; }
       if (this.fx) this.fx.setFlashes(bloom, this.reduceMotion);
+      // Auto end turn may have just been switched on with a dead hand already
+      // sitting on the table. `_syncEndTurn` is what arms it.
+      this._syncEndTurn();
     }));
   }
 
   /** Resolve a tap on a card in hand into a play, or into a usable hint. */
-  _tapPlay(uid) {
+  async _tapPlay(uid) {
     const card = this.engine.card(uid);
     if (!card) return;
     const aimed = card.target === 'enemy' || card.target === 'ally';
-    let tid = null;
+    let tid = null, foe = null;
     if (aimed) {
       const living = card.target === 'enemy' ? this.engine.livingEnemies() : [];
       if (living.length !== 1) {
         this._deny('Drag it onto the one you mean, or select it and press Tab.');
         return;
       }
-      tid = living[0].id;
+      foe = living[0];
+      tid = foe.id;
     }
-    const chk = this.engine.canPlay(uid, tid);
+    let chk = this.engine.canPlay(uid, tid);
     if (!chk.ok) { this._deny(chk.reason); return; }
+    /* -- "Confirm single target" (Settings > Play) --------------------------
+     * This branch is the ONLY place in the game that picks a target for you:
+     * with one enemy left a tap aims itself, which is exactly what turns a
+     * misplaced thumb into a spent card. Dragging is deliberately not covered
+     * - a drag onto a creature already said which one you meant.
+     *
+     * The dialog is a real await and the board is allowed to move under it: a
+     * mate's play lands, a burn finishes the last enemy off, the fight ends. So
+     * the engine is asked again afterwards rather than trusting the answer it
+     * gave before the question was put. */
+    if (foe && this.confirmSingleTarget) {
+      if (!(await this._confirmAutoAim(card, foe))) return;
+      if (!this.engine || this.engine.over || !this.hand) return;
+      chk = this.engine.canPlay(uid, tid);
+      if (!chk.ok) { this._deny(chk.reason); return; }
+    }
     this.hand.playCard(uid, tid || undefined);
+  }
+
+  /** The yes/no that toggle buys. Resolves true when the play may proceed. */
+  _confirmAutoAim(card, foe) {
+    return confirmModal({
+      title: `Play ${card.name}?`,
+      body: `${foe.name} is the only one left, so this goes straight at it.`,
+      confirm: 'Play it', cancel: 'Put it back', host: this.ctx?.dom,
+    });
   }
 
   _updatePilePositions() {
@@ -2954,6 +2986,55 @@ export class CombatScene extends Scene {
     // `disabled` — which stops it dispatching the `pointerout` that would
     // otherwise dismiss its own tooltip. Tell the tooltip to re-read itself.
     this.ctx.tooltip?.refresh?.(this.$endTurn);
+    this._scheduleAutoEnd(any);
+  }
+
+  /**
+   * "Auto end turn" (Settings > Play) - the toggle that until now was a live
+   * control read by nobody.
+   *
+   * It fires on exactly the condition the End Turn button already computes for
+   * its own `is-ready` class, and it is handed that same `any` rather than
+   * recomputing one, so the button and the automation can never disagree about
+   * what "nothing left" means.
+   *
+   * THE DELAY IS NOT COSMETIC. `_syncEndTurn` runs on every Nerve change, which
+   * includes the frame a card is spent on; ending the turn out from under the
+   * play animation would read as the game swallowing the card. So the predicate
+   * is tested again when the timer fires, and anything that makes a card
+   * playable in between - a Snack, a Keepsake refund, a companion handing over
+   * Nerve - cancels the end by simply failing that second test.
+   *
+   * MY SEAT, NOT THE TABLE. `canPlay` refuses every card once `me.ended` is
+   * true ("You have already ended your turn"), so a party seat waiting on the
+   * other three reads as "nothing playable" for the whole wait. Without the
+   * `ended` guard in `_autoEndReady` this would call `_endTurn` on a loop until
+   * the enemy phase arrived.
+   */
+  _scheduleAutoEnd(anyPlayable) {
+    clearTimeout(this._autoEndT); this._autoEndT = 0;
+    if (anyPlayable || !this._autoEndReady()) return;
+    // Reduced motion wants instant, but not so instant that the turn ends
+    // before the eye has registered the hand it ended on.
+    const ms = Math.max(180, this._d(0.55) * 1000);
+    this._autoEndT = setTimeout(() => {
+      this._autoEndT = 0;
+      if (!this._autoEndReady()) return;
+      const any = (this.mePiles?.hand || []).some(c =>
+        this.engine.canPlay(c.uid, this._defaultTargetFor(c.uid)).ok);
+      if (!any) this._endTurn();
+    }, ms);
+  }
+
+  /** Everything that must hold before the game may end a turn FOR you. */
+  _autoEndReady() {
+    if (!this.autoEndTurn || !this.engine || this.engine.over) return false;
+    if (this.engine.phase !== 'player') return false;
+    if (this._resolving || this._snacking) return false;      // a play is still landing
+    if (this.me?.ended) return false;                         // waiting on the party
+    if (this._choice && !this._choice.done) return false;     // a Trick is asking a question
+    if (document.querySelector('.mm-modal')) return false;    // Settings, a pile, a confirm
+    return true;
   }
 
   /** Place a CardView statically inside `wrap` at `scale`. */
@@ -3371,6 +3452,7 @@ export class CombatScene extends Scene {
     this._tipOffs.length = 0;
     this._offs.length = 0; this._engineOffs.length = 0;
     clearTimeout(this._bannerT); clearTimeout(this._denyT); clearTimeout(this._windT);
+    clearTimeout(this._autoEndT); this._autoEndT = 0;
     // never leave the engine awaiting a resolution that can no longer arrive
     if (this._choice && !this._choice.done) { this._choice.done = true; this._choice.resolve([]); this._choice = null; }
     this.engine?.setChoiceResolver?.(null);
