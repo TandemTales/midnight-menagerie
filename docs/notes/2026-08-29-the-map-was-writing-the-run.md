@@ -62,7 +62,8 @@ perfect, semantically shared-state mutation, and invisible to all five shapes.
 
 ## 2. The fix
 
-`ACT.MAP_CHOOSE { id }`, named by the node's **authored** id — `foyer-0-1` means
+`ACT.MAP_CHOOSE { id }` — renamed `ACT.MAP_VOTE` the same day, when the
+route became a ballot — named by the node's **authored** id — `foyer-0-1` means
 the same room on all four clients because they all generate the blueprint from
 the same region and seed. (The header of `net/actions.js` already argues this
 for cards; a map node is the easy case, since it never had a uid.)
@@ -132,7 +133,25 @@ seat 1 chooses a sagging wing, courage before 64/43
   without                43 -> 40   the clicker pays     (both clients)
 ```
 
-`tests/net/index.html` asserts the Kid, not the seat.
+> **Corrected the same day, by an adversarial review of this note's own commit.**
+> This control has been retired and the paragraph above is the reasoning it was
+> retired for. Two things moved underneath it:
+>
+> 1. At ONE KEYBOARD the claim was simply false. The vote handoff walks
+>    `localSeat` onto each successive voter, and `enterNode` charged the wing
+>    *before* `resetSeat()` — so the floor sagged under the Kid who voted LAST,
+>    not the first Kid. Measured in the real game: `[68, 74] -> [68, 71]`. The
+>    suite could not see it because on a wire nothing moves the seat, which is
+>    the only configuration it exercised.
+> 2. Charging ONE Kid was itself the bug. With `resetSeat` correctly leaving a
+>    networked client on its own seat, `this.hurt(3)` charges a different Kid on
+>    each machine — `61/43` on one, `64/40` on the other. A real desync.
+>
+> `enterNode` calls `resetSeat()` first now, and the wing charges every Kid who
+> walks in, which is what mapgen's rule says. The control that replaced this one
+> is the ENGINE's seat: `_buildCombat` passes `localSeat` to the engine as
+> "which Kid is at THIS screen", so a borrow makes seat 1's client build its
+> fight as seat 0. See CONTRACTS 52.
 
 ## 5. The gate
 
@@ -143,9 +162,12 @@ array — so it cannot drift from the class it describes, which is the rule the
 other five surfaces in that file already follow.
 
 The receiver is `run`, anything ending `.run` (`this.run`, `ctx.run`, `m.run`),
-or a local alias assigned from one (`const r = this.run`, which `rest.js` and
-`reward.js` both use). Missing the alias would have meant checking the two most
-interesting files against nothing.
+or a local alias assigned from one (`const r = this.run`, which `rest.js:139`
+and `event.js:72` both use — `reward.js` uses `const run = this.run`, which the
+bare name already covers). Missing the alias would have meant checking two of
+the room screens against nothing. The first version of that regex also matched
+a PREFIX of the right-hand side, so `const c = this.run.combat` registered `c`
+as a run alias too; it requires the expression to END at `run` now.
 
 Two self-inflicted lessons went into it:
 
@@ -165,7 +187,7 @@ Every one verified to fail:
 
 | broken | what failed |
 |---|---|
-| `PARTY_ACTS` line removed | the floor sags under the clicker, 43 → 40 |
+| `PARTY_ACTS` line removed | the floor sags under the clicker, 43 → 40 *(retired — see the correction in §4)* |
 | `ACT.MAP_CHOOSE` case removed | route does not cross; 4 `unknown room act` errors |
 | the old direct run-writes restored | SHARED-WRITE ×2 in `scenes/map.js` |
 | `run_fields()`'s brace index broken | "returned only 14 names" |

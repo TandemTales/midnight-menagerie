@@ -7,9 +7,12 @@ morning; this is the mechanic that needed it.
 
 ## 1. Why this and not the balance item
 
-The handoff I was given ranked "party cost is still 15–30 points from solo" as
-the largest open item. `docs/STS2-REFERENCE.md` §8.5 disagrees, in writing, and
-has since the day it was researched:
+The handoff I was given ranked the MAP first — correctly — and I had just
+closed it; the balance item was what my own edit had promoted to the top of the
+list. (An earlier draft of this note said the handoff ranked balance first. It
+did not. Getting that backwards in a note ABOUT stale documents is the joke
+writing itself.) So the real question was what should be first now, and
+`docs/STS2-REFERENCE.md` §8.5 had an answer nobody had put on the list:
 
 > `scenes/map.js` has no seat concept whatsoever … and `run.chooseNode(node)`
 > asks nobody, so seat 0 picks the entire route for the whole expedition. This
@@ -65,6 +68,26 @@ seat 1 chooses a sagging wing, courage before 64/43
   with PARTY_ACTS      64 -> 61    seat 0 pays        (both clients)
   without              43 -> 40    the clicker pays   (both clients)
 ```
+
+> **Corrected the same day, by an adversarial review of this note's own commit.**
+> This control has been retired and the paragraph above is the reasoning it was
+> retired for. Two things moved underneath it:
+>
+> 1. At ONE KEYBOARD the claim was simply false. The vote handoff walks
+>    `localSeat` onto each successive voter, and `enterNode` charged the wing
+>    *before* `resetSeat()` — so the floor sagged under the Kid who voted LAST,
+>    not the first Kid. Measured in the real game: `[68, 74] -> [68, 71]`. The
+>    suite could not see it because on a wire nothing moves the seat, which is
+>    the only configuration it exercised.
+> 2. Charging ONE Kid was itself the bug. With `resetSeat` correctly leaving a
+>    networked client on its own seat, `this.hurt(3)` charges a different Kid on
+>    each machine — `61/43` on one, `64/40` on the other. A real desync.
+>
+> `enterNode` calls `resetSeat()` first now, and the wing charges every Kid who
+> walks in, which is what mapgen's rule says. The control that replaced this one
+> is the ENGINE's seat: `_buildCombat` passes `localSeat` to the engine as
+> "which Kid is at THIS screen", so a borrow makes seat 1's client build its
+> fight as seat 0. See CONTRACTS 52.
 
 **Two.** `resolveVote` skips the draw when the ballot has one candidate, and
 the comment said that was what kept a solo run byte-identical. The test asserted
@@ -134,7 +157,7 @@ Control, majority rule instead of the roulette: `0/150`, `0.0%`.
 | the draw off `this.rng` | master stream: calls 0 → 1, state MOVED |
 | no `votesPending` guard | one Kid's click moves the whole party |
 | no `drawn: true` on the handoff | the survey redraws to change seats |
-| `PARTY_ACTS` removed | the floor sags under the clicker, 43 → 40 |
+| `PARTY_ACTS` removed | seat 1's engine builds itself as seat 0 *(the sagging-floor control it replaced is retired — §3)* |
 
 ## 7. Left open
 

@@ -302,13 +302,26 @@ export class Session {
     return 0;
   }
 
-  /** Take a log from a peer after a rejoin and play the parts we are missing. */
+  /**
+   * Take a log from a peer after a rejoin and play the parts we are missing.
+   *
+   * `absorbing` is true for the duration, and it is not bookkeeping: the game
+   * layer has beats that exist to be WATCHED — `run._walkAfterVote` holds for
+   * a second and a half so the party can read which room the roulette chose —
+   * and a client catching up on twenty rooms must not sit through them. There
+   * is nobody watching a replay; that is what makes it a replay.
+   */
   absorb(log) {
     let taken = 0;
-    for (const msg of log) {
-      if (this.log.some(x => x.seat === msg.seat && x.seq === msg.seq)) continue;
-      this._accept(msg);
-      taken++;
+    this.absorbing = true;
+    try {
+      for (const msg of log) {
+        if (this.log.some(x => x.seat === msg.seat && x.seq === msg.seq)) continue;
+        this._accept(msg);
+        taken++;
+      }
+    } finally {
+      this.absorbing = false;
     }
     return taken;
   }

@@ -324,7 +324,7 @@ above back up:**
 - **NETCODE ITEMS 2, 3 AND 4 ARE DONE. Only the transport is left.** Every
   screen routes through `net/actions.js`; `net/lobby.js` decides seats, host and
   seed with no election; a choice reaches the player whose choice it is.
-  `tests/net/run.py` is **128 checks**. What remains is Steam P2P — one file
+  `tests/net/run.py` is **149 checks**. What remains is Steam P2P — one file
   implementing the five methods in `net/transport.js` — and it needs a wrapper
   shell, so it ends the no-build rule and is the designer's call.
 - **`tools/shot.py` was screenshotting a BLACK VOID.** `--wait` was a fixed
@@ -347,7 +347,7 @@ above back up:**
   screen reached the run layer by ASSIGNING to it — `run.currentNodeId = id`,
   `run.pathIds = …` — and by emitting a bus name a listener in `state/run.js`
   turned into `enterNode`. An assignment has no verb to be missing, so the
-  seam checker had nothing to see. `ACT.MAP_CHOOSE` now, and SHARED-WRITE in
+  seam checker had nothing to see. `ACT.MAP_VOTE` now, and SHARED-WRITE in
   `tests/seams/check.py` keeps it that way. CONTRACTS 52,
   `docs/notes/2026-08-29-the-map-was-writing-the-run.md`.
 - **Ending a turn over a wire used to close the TABLE**, which would have shut
@@ -588,7 +588,7 @@ learn. See §6.
 
 | | |
 |---|---|
-| `tests/seams/check.py` · `proof.py` | 6165 call sites · 52 passed — silent no-ops at module joins, and a screen writing shared Run state |
+| `tests/seams/check.py` · `proof.py` | 6189 call sites · 52 passed — silent no-ops at module joins, and a screen writing shared Run state |
 | `tests/scene-css/check.py` | 0 conflicts — a class meaning two things in two scenes |
 | `tests/css-tokens/check.py` | 0 undefined tokens — `var(--text-low)` when it is `--text-lo` |
 | `tests/dup-keys/check.py` | 0 duplicate keys — the second one silently wins |

@@ -52,6 +52,10 @@ export function shouldHandOff(run) {
   if (run.session && run.session.remote) return false;   // a wire owns the seats
   return true;
 }
+/* `Run.resetSeat()` asks the same question for the same reason — a wire means
+   `localSeat` is "which Kid I am" rather than "who has the controller" — and
+   repeats the condition rather than importing it, because state/ must not
+   depend on ui/. If you change one, change the other. */
 
 /**
  * Cover the screen and wait for the next player.

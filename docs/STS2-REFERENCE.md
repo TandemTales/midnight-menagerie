@@ -418,7 +418,7 @@ Their loudest technical complaint, by a wide margin, is **disconnects**:
 | Per-player decks / currency / rewards / shops | **Level** |
 | Fallen and revival | **Level** — same rule, same 30% Mend |
 | Co-op-only card architecture | **Level** — 5 per character, held out of the solo pool |
-| Route voting | **Behind, buildable now** — seat 0 picks our entire route |
+| Route voting | **Built 2026-08-29** — every Kid votes, weighted roulette settles a split (§8.5) |
 | Inspecting a teammate's deck and Keepsakes | **Behind, buildable now** |
 | Simultaneous turn window | **Behind, transport-blocked** — our window is sequential |
 | Resolution order as a coordination mechanic | **Behind, transport-blocked** |

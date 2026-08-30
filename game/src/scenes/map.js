@@ -280,6 +280,13 @@ export class MapScene extends Scene {
      * CONTRACTS 45: a mechanic the player is not told about is a mechanic
      * they will read as a bug.
      */
+    /* A vote cast on ANOTHER machine has to land on this sheet too, and
+       nothing was listening: `_paintBallot()` ran only from this client's own
+       `_vote()` and from `enter()`. At one keyboard that is invisible, because
+       the handoff rebuilds the scene between voters and `enter()` repaints —
+       which is exactly why it survived: the only configuration that shows it
+       is the one with no transport yet. */
+    this._off.push(bus.on('map:vote', () => this._paintBallot()));
     this._off.push(bus.on('map:voted', (v) => this._announceVote(v)));
     this._bindEvents();
 

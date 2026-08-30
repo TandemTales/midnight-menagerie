@@ -486,6 +486,25 @@ export class Run {
    * "whose numbers are these". The map always shows the first Kid.
    */
   resetSeat() {
+    /**
+     * NOT over a wire. `localSeat` means two different things depending on how
+     * the game is being played, and this is the line where that bites.
+     *
+     * At one keyboard it is "whose turn it is with the controller", and moving
+     * it to the first living Kid at every door is the whole point — the screen
+     * genuinely changes hands. With a session, each client OWNS one seat for
+     * the whole expedition and `localSeat` is "which Kid I am". Moving it then
+     * hands every client seat 0's screen: their HUD becomes somebody else's
+     * Courage, `run.local` answers as the wrong Kid, and — since `_buildCombat`
+     * passes `localSeat` to the engine as "which Kid is at THIS screen" — the
+     * choice broker starts opening other people's pickers in front of them.
+     *
+     * `shouldHandOff()` in ui/handoff.js asks the same question for the same
+     * reason and is the reference for it; this cannot import that module
+     * (ui/ depends on state/, not the other way round), so the condition is
+     * repeated rather than shared, and both name each other.
+     */
+    if (this.session && this.session.remote) return this.local;
     const first = this.kids.findIndex(k => k.courage > 0);
     if (first >= 0) this.setLocalSeat(first);
     return this.local;
@@ -803,7 +822,11 @@ export class Run {
   voteNode(nodeId, seat = this.localSeat) {
     const id = typeof nodeId === 'string' ? nodeId : nodeId?.id;
     if (!id || !this.nodeById(id)) return null;
-    if (this.currentNodeId && !this.isLegal(id)) return null;
+    // NOT `if (this.currentNodeId && ...)`. `legalNextIds` already answers
+    // correctly for a null current node — it returns the doorway row — so
+    // guarding the guard only meant that at every region doorway a vote
+    // could name ANY node on the sheet, the boss included.
+    if (!this.isLegal(id)) return null;
     const n = seat | 0;
     if (!this.voters().includes(n)) return null;   // a fallen seat has no say
     const book = this._voteBook();
@@ -874,8 +897,11 @@ export class Run {
    * calls `exit()`, so the sheet is already veiled.
    *
    * So the resolution waits. This is a game beat, not decoration — the
-   * roulette is a moment in StS2 too — and it is deterministic: every client
-   * waits the same amount and no state moves while it does.
+   * roulette is a moment in StS2 too — and no state moves while it does.
+   * It is NOT wall time: `clock.wait` counts scaled game time, so a client
+   * with the game paused or slowed waits longer. That is right for a beat
+   * whose whole job is to be looked at, and wrong to describe as "every
+   * client waits the same amount", which is what this comment used to say.
    *
    * ── and only when there is somebody to tell ────────────────────────────
    *
@@ -885,14 +911,22 @@ export class Run {
    * already no-ops on the same test, for the same reason.
    */
   async _walkAfterVote(result) {
-    if (result.rolled && this.ctx?.scenes) {
+    // `session.absorbing` is a client catching up on a log after a rejoin.
+    // It has scenes, so the `ctx.scenes` test alone let it sit through the
+    // beat once per split vote — twenty rooms of catching up is twenty
+    // seconds of watching a verdict for a fork that was settled while it was
+    // away. There is nobody to tell.
+    const watched = this.ctx?.scenes && !this.session?.absorbing;
+    if (result.rolled && watched) {
       try { await clock.wait(1.5); } catch { /* a clock that is gone is not fatal */ }
     }
     try { await this.enterNode(result.winner); } catch { /* the walk reports itself */ }
     return result;
   }
 
-  /** The direct walk. `resolveVote` is the only caller in a played game. */
+  /** The direct walk. Nothing in a played game calls it: a vote resolves
+   *  through `resolveVote` -> `_walkAfterVote` -> `enterNode`. Kept as the
+   *  by-name entry point for harnesses and for a future scripted move. */
   chooseNode(node) {
     const id = typeof node === 'string' ? node : node?.id;
     if (!id || id === this.currentNodeId) return;    // already handled by the bus
@@ -906,7 +940,8 @@ export class Run {
   async enterNode(nodeId) {
     const node = this.nodeById(nodeId);
     if (!node) return null;
-    if (this.currentNodeId && !this.isLegal(nodeId)) return null;
+    // See `voteNode`: a null `currentNodeId` is a DOORWAY, not a wildcard.
+    if (!this.isLegal(nodeId)) return null;
 
     this._roomDone = false;
     this._markEntered(nodeId);
@@ -916,16 +951,6 @@ export class Run {
     const rows = this.map?.rows ?? 6;
     this.stats.depth = Math.max(this.stats.depth, this.regionIndex * rows + node.row + 1);
 
-    // Hazard wings bite on entry (mapgen HAZARDS: "The Floor Sags").
-    if (node.payload?.hazard === 'sagging') this.hurt(3);
-    if (node.payload?.hazard === 'paw-prints') this.addClues(1);
-
-    for (const k of this.keepsakes) {
-      try { k.hooks?.onEnterRoom?.({ run: this, node, owner: k, e: null }); } catch { /* cosmetic */ }
-    }
-
-    const type = this.effectiveType(node);
-    const scene = this.sceneFor(node);
     /**
      * A room starts with the lowest living seat, every time.
      *
@@ -935,8 +960,34 @@ export class Run {
      * shelves and the offers are separate — but "who goes first" should not be
      * a thing the players have to work out fresh at every door. It is the same
      * rule combat uses for the top of a round.
+     *
+     * FIRST, not last. Everything below this line that touches a Kid used to
+     * run against whoever `local` happened to be on the way in — and once the
+     * route was voted, that was the Kid who cast the LAST vote. The floor
+     * sagged under whoever clicked last.
      */
     this.resetSeat();
+
+    // Hazard wings bite on entry (mapgen HAZARDS).
+    //
+    // "The Floor Sags: entering any room inside the marked area costs 3
+    // Courage. The boards remember your weight" — with the surveyor's note
+    // "joists unsound, do not crowd". EVERY Kid who walks in pays it, which
+    // is both what the rule says and the only reading that does not depend on
+    // which seat the screen happens to be on. A party of one is unchanged.
+    if (node.payload?.hazard === 'sagging') {
+      for (const k of this.kids) if (k.courage > 0) this.asSeat(this.kids.indexOf(k), () => this.hurt(3));
+    }
+    // Clues are SHARED (`cluesFound` is not a PER_KID field), so this one is
+    // a single grant however many Kids walked in.
+    if (node.payload?.hazard === 'paw-prints') this.addClues(1);
+
+    for (const k of this.keepsakes) {
+      try { k.hooks?.onEnterRoom?.({ run: this, node, owner: k, e: null }); } catch { /* cosmetic */ }
+    }
+
+    const type = this.effectiveType(node);
+    const scene = this.sceneFor(node);
     this.save();
     bus.emit('run:enterNode', { node, type, scene, run: this });
 

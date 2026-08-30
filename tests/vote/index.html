@@ -149,7 +149,17 @@ async function main() {
     run.kids[1].courage = 0;
     check(run.voters().join(',') === '0,2',
       'a Kid at zero Courage is off the ballot', run.voters().join(','));
-    check(run.voteNode(doors[0], 1) === null, 'and their vote is refused');
+    /* NOT `voteNode(...) === null`. That is what the first version asserted and
+       it cannot fail: `voteNode` returns null for a REFUSAL and equally for a
+       vote it recorded but which was not the last one owed. The ballot is the
+       only place the difference shows. */
+    run.voteNode(doors[0], 1);
+    check(run.pendingVote === null || run.pendingVote.votes[1] === undefined,
+      'and a fallen Kid\'s vote is not on the ballot',
+      JSON.stringify(run.pendingVote && run.pendingVote.votes));
+    check(run.votesPending().join(',') === '0,2',
+      'so the fork is still waiting on exactly the two who can walk',
+      run.votesPending().join(','));
     await run.voteNode(doors[0], 0);
     const res = await run.voteNode(doors[0], 2);
     check(!!res && run.currentNodeId === doors[0],
@@ -249,12 +259,52 @@ async function main() {
       'the same ballot in a different order is the same room',
       `${r1 && r1.winner} / ${r2 && r2.winner}`);
 
-    const three = atTheDoor(31337);
-    await three.voteNode(doors[0], 0); await three.voteNode(doors[0], 1);
-    const r3 = await three.voteNode(doors[1], 2);
-    check(!!r3 && JSON.stringify(r3.tally) !== JSON.stringify(r1.tally),
-      'a DIFFERENT ballot at the same door is a different tally',
-      `${JSON.stringify(r1.tally)} / ${JSON.stringify(r3 && r3.tally)}`);
+    /* And the part that actually needs proving: the fork tag carries the
+       BALLOT, not just the tally. Two ballots with the IDENTICAL tally — 2:1
+       the same way round — but different seats holding the minority vote must
+       be able to resolve differently. If the tag were built from the tally
+       alone they would be locked together forever, which is the "one fixed
+       answer per node" that `resolveVote`'s comment and CONTRACTS 53 both say
+       this avoids.
+
+       Measured across seeds, because at any ONE door the two may agree by
+       chance; what must not happen is that they agree everywhere. */
+    /* SEAT 0 VOTES THE SAME WAY IN BOTH, and only the minority MOVES between
+       seat 1 and seat 2. That detail is the whole check.
+
+       `resolveVote` builds its weighted list by walking the seats in ascending
+       order, so the list's ORDER is decided by what the lowest seat voted for —
+       and `RNG.weighted` walks that list subtracting weights, so a different
+       order can pick a different room from the same random number all by
+       itself. A first version of this check moved the minority onto seat 0 and
+       passed with the ballot removed from the fork tag entirely, because it was
+       measuring list order rather than the tag.
+
+       Holding seat 0 fixed holds the list order fixed. The tally is identical
+       and the list is identical; the ONLY thing left that differs is the
+       ballot string inside the fork tag. Build the tag from the tally instead
+       and this check goes to zero. */
+    let sameTallyDiffered = 0, sameTallyTried = 0;
+    for (let i = 0; i < 60; i++) {
+      const x = atTheDoor(500000 + i * 13), y = atTheDoor(500000 + i * 13);
+      const d = x.legalNextIds();
+      if (d.length < 2) continue;
+      sameTallyTried++;
+      await x.voteNode(d[0], 0); await x.voteNode(d[0], 1);
+      const rx = await x.voteNode(d[1], 2);          // seat 2 is the minority
+      await y.voteNode(d[0], 0); await y.voteNode(d[1], 1);
+      const ry = await y.voteNode(d[0], 2);          // seat 1 is the minority
+      if (!rx || !ry) continue;
+      const sameShape = rx.tally[d[0]] === ry.tally[d[0]]
+                     && rx.tally[d[1]] === ry.tally[d[1]];
+      if (sameShape && rx.winner !== ry.winner) sameTallyDiffered++;
+    }
+    check(sameTallyTried > 40, 'enough doors to compare two ballots at',
+      `${sameTallyTried} of 60`);
+    check(sameTallyDiffered > 0,
+      'the same tally in the same order can still resolve differently — the '
+      + 'fork tag carries WHO voted for what, not just how many',
+      `${sameTallyDiffered} of ${sameTallyTried} doors`);
   }
 
   window.__RESULT = { passes, fails, passed: passes.length, failed: fails.length };

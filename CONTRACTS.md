@@ -670,8 +670,15 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    to a `Run` field from `game/src/scenes/` or `game/src/ui/`. The field list is
    read out of `state/run.js`'s constructor plus `PER_KID` rather than
    hardcoded — and the FIRST version of that extractor indexed to the `{}` in
-   `constructor(cfg = {})` and returned an empty set, passing the whole check
-   against nothing (rule 5c again). It now reports its own surface collapsing.
+   `constructor(cfg = {})`, cutting the surface down to the 14 PER_KID names and
+   dropping every field the constructor declares. It reports its own surface
+   collapsing now (rule 5c again).
+
+   It also read ONLY the constructor, so four fields the class assigns elsewhere
+   — `lastVote`, `pendingShop`, `endedAt`, `combatMeta` — were never on the
+   surface at all, while this trap claimed the list "cannot drift from the class
+   it describes". It reads every `this.x =` in the file now. **A surface derived
+   from source is only as honest as the slice of the source it reads.**
 
    **And the guard for it needed two tries.** Applying a whole-party act through
    `asSeat` looked obviously wrong, so `PARTY_ACTS` was added with a test that
@@ -680,8 +687,29 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    `enterNode`'s `resetSeat()` had just chosen anyway. The observable difference
    is who PAYS — `enterNode` calls `this.hurt(3)` on a sagging wing and
    `courage` is a PER_KID accessor, so borrowing the sender's seat moves the
-   damage onto whoever clicked, identically on all four clients, where no digest
-   will ever report it. `tests/net/index.html` asserts the Kid, not the seat.
+   damage onto whoever clicked.
+
+   **That control has been RETIRED, and why is worth more than it was.** Two
+   things moved underneath it. `enterNode` calls `resetSeat()` BEFORE the
+   room-entry effects now, and the sagging wing charges EVERY Kid who walks in —
+   which is what mapgen's own rule says ("entering any room inside the marked
+   area costs 3 Courage", note: "joists unsound, do not crowd") — so the borrow
+   no longer decides who pays. Charging ONE Kid turned out to be worse than
+   mis-targeting: with `resetSeat` correctly leaving a networked client on its
+   own seat, `this.hurt(3)` charged a DIFFERENT Kid on each machine, 61/43
+   against 64/40. A real desync, hiding inside the check written to catch a
+   mis-target. And at one keyboard the original claim was simply false: the
+   handoff walks the seat onto each voter, so the floor sagged under whoever
+   voted LAST.
+
+   The control that replaced it is the ENGINE's seat. `_buildCombat` passes
+   `localSeat` to the engine as "which Kid is at THIS screen" — it is what stops
+   the choice broker opening somebody else's picker in front of you — so a
+   borrow makes seat 1's client build its fight as seat 0. Remove
+   `ACT.MAP_VOTE` from `PARTY_ACTS` and that is what fails.
+
+   **A control has to be re-checked whenever the thing under it moves.** Nothing
+   warned that this one had gone quiet. It kept passing.
 
 53. **A READOUT THAT RIDES A SCENE TRANSITION IS NOT A READOUT, and the check
    that a guarantee holds must name the mechanism that actually provides it.**

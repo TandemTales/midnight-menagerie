@@ -239,6 +239,12 @@ async def main(a):
           el.click();
           return el.dataset.id;
         }""")
+        # A fixture that can come back EMPTY has to say so. Without this, a
+        # selector that matched nothing left `picked` as None, no click was
+        # made, and all three assertions below compared None against None and
+        # passed — the same shape that already bit tests/net once this session.
+        S.check("a legal room was there to click", isinstance(picked, str) and picked,
+                repr(picked))
         await page.wait_for_timeout(2200)
         after = await page.evaluate("""() => {
           const r = window.MM.ctx.run;

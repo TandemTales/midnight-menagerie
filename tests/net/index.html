@@ -564,7 +564,10 @@ try {
     check(A.run.pendingVote.votes[1] === room && B.run.pendingVote.votes[1] === room,
       "seat 1's vote is on the ballot on the machine that never saw the click");
 
-    // Seat 0 agrees, and now the party walks.
+    // Seat 0 agrees, and now the party walks. Both machines are told the room
+    // is already CLEARED first, so `_markEntered`'s splice has something to do
+    // and the check below can fail.
+    for (const c of [A, B]) if (!c.run.visitedIds.includes(room)) c.run.visitedIds.push(room);
     await act(A.run, { t: INPUT.ROOM, act: ACT.MAP_VOTE, id: room });
     await both();
     check(B.run.currentNodeId === room && A.run.currentNodeId === room,
@@ -574,6 +577,11 @@ try {
        && A.run.pathIds.includes(room),
       'and both walked the same route to it',
       `${A.run.pathIds.join('>')} / ${B.run.pathIds.join('>')}`);
+    /* This used to assert `!visitedIds.includes(room)` on a path where nothing
+       had ever PUT it there, so it passed with `_markEntered` deleted. The room
+       is seeded as cleared on both machines first, which is the state an older
+       save and `Run.demo` both produce, so the check now measures the splice
+       `_markEntered` exists to do. */
     check(!A.run.visitedIds.includes(room) && !B.run.visitedIds.includes(room),
       'entered, not cleared — the room is still owed on both');
     check(A.run.pendingVote === null && B.run.pendingVote === null,
@@ -583,20 +591,16 @@ try {
       + 'of one byte-identical to every seeded run ever recorded');
 
     // ── who the sagging floor sags under ─────────────────────────────────
-    /* The only OBSERVABLE consequence of applying a whole-party act as a
-       seat, and it took a control to find: `localSeat` proves nothing,
-       because `asSeat` restores the applying client's OWN seat, which
-       `resetSeat()` had just chosen anyway — so every client agrees either
-       way and the first version of this check passed with the guard deleted.
+    /* THE WHOLE PARTY, and this took three tries to get right.
 
-       What does move is who pays. `enterNode` calls `this.hurt(3)` on a
-       sagging wing and `courage` is a PER_KID accessor, so the damage lands
-       on whoever the seat is. On a blueprint that is the first living Kid,
-       on every machine — never whoever reached for the mouse. Borrow the
-       sender's seat and it lands on the CLICKER instead: consistently on
-       all four clients, so no digest ever reports it, and the wrong Kid
-       quietly pays for the rest of the run. That is what `PARTY_ACTS` in
-       net/actions.js is for; delete that line and this pair is what fails.
+       mapgen's rule for the wing is "entering any room inside the marked area
+       costs 3 Courage. The boards remember your weight", under a surveyor's
+       note reading "joists unsound — do not crowd". `enterNode` charged it
+       once, to `this.local` — so it landed on whichever Kid the screen
+       happened to be showing, which after the route became a VOTE was the Kid
+       who voted LAST. Every Kid who walks in pays it now, and `resetSeat()`
+       moved above the entry effects so nothing else down there depends on who
+       clicked either.
 
        The hazard is stamped rather than hunted for: mapgen rolls wings off
        the seed and the legal set two rows in may hold none, and a check
@@ -617,13 +621,55 @@ try {
     await act(A.run, { t: INPUT.ROOM, act: ACT.MAP_VOTE, id: sag });
     await both();
     check(A.run.kids[0].courage === courageBefore[0] - 3
-       && A.run.kids[1].courage === courageBefore[1],
-      'the floor sags under the FIRST Kid, not the one who clicked',
+       && A.run.kids[1].courage === courageBefore[1] - 3,
+      'EVERY Kid who walks into the sagging wing pays for it',
       `${courageBefore.join('/')} -> ${A.run.kids.map(k => k.courage).join('/')}`);
     check(B.run.kids.map(k => k.courage).join('/')
        === A.run.kids.map(k => k.courage).join('/'),
-      'and the same Kid pays on the machine that sent it',
+      'and both machines charge the same Kids the same amount',
       `${A.run.kids.map(k => k.courage).join('/')} / ${B.run.kids.map(k => k.courage).join('/')}`);
+
+    // ── the seat each client is PLAYING ──────────────────────────────────
+    /* This is what `PARTY_ACTS` in net/actions.js actually protects, and the
+       first two versions of this check were both looking somewhere else.
+
+       `localSeat` means "which Kid I am" once a session owns the seats, and
+       `_buildCombat` hands it to the engine as "which Kid is at THIS screen" —
+       it is what stops the choice broker opening somebody else's picker in
+       front of you. Apply a whole-party act through `asSeat` and, for the
+       duration of the call, the applying client believes it is the SENDER:
+       seat 0's machine builds its engine as seat 1. Remove `ACT.MAP_VOTE` from
+       `PARTY_ACTS` and the pair below is what fails.
+
+       (The old control — who the sagging floor hurt — cannot serve any more:
+       the wing charges every Kid now, so the borrow makes no difference to it.
+       A control has to be re-checked when the thing under it moves.) */
+    check(A.run.localSeat === 0 && B.run.localSeat === 1,
+      'each client still owns its own seat after a remote vote',
+      `${A.run.localSeat} / ${B.run.localSeat}`);
+
+    for (const c of [A, B]) { c.run.currentNodeId = null; c.run.pathIds = []; }
+    const fightId = A.run.legalNextIds()
+      .find(id => A.run.sceneFor(A.run.nodeById(id)) === 'combat');
+    if (fightId) {
+      await act(B.run, { t: INPUT.ROOM, act: ACT.MAP_VOTE, id: fightId });
+      await both();
+      await act(A.run, { t: INPUT.ROOM, act: ACT.MAP_VOTE, id: fightId });
+      await both();
+      await new Promise(r => setTimeout(r, 60));
+      check(!!A.run.combat && !!B.run.combat, 'the voted-for fight is built on both',
+        `${!!A.run.combat} / ${!!B.run.combat}`);
+      check(A.run.combat && A.run.combat.localSeat === 0,
+        "and seat 0's engine is playing SEAT 0",
+        String(A.run.combat && A.run.combat.localSeat));
+      check(B.run.combat && B.run.combat.localSeat === 1,
+        "while seat 1's engine is playing seat 1",
+        String(B.run.combat && B.run.combat.localSeat));
+      for (const c of [A, B]) { c.run.combat = null; c.run.pendingCombat = null; }
+    } else {
+      check(false, 'the engine-seat check needs a combat room at the doorway',
+        'none here — this check did NOT run');
+    }
 
     // ── a SPLIT ballot ──────────────────────────────────────────────────
     /* The roulette is the one place this game resolves a shared decision with

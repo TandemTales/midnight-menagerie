@@ -609,6 +609,13 @@ def run_fields():
     body = code.index("{", match_brace(code, code.index("(", i), "(", ")") - 1)
     ctor = code[body:match_brace(code, body)]
     fields = set(re.findall(r"this\.(" + IDENT + r")\s*=", ctor))
+    # And EVERYWHERE ELSE in the class, not just the constructor. `lastVote` was
+    # added by the vote work and assigned only in `resolveVote`; `pendingShop`,
+    # `endedAt` and `combatMeta` are the same shape. A surface that only knows
+    # the constructor is a surface with holes in it, and "the field list cannot
+    # drift from the class it describes" was written about a list that already
+    # had four fields missing.
+    fields |= set(re.findall(r"^\s{4}this\.(" + IDENT + r")\s*=[^=]", code, re.M))
     per = re.search(r"const PER_KID\s*=\s*\[(.*?)\]", lit, re.S)
     if per:
         fields |= set(re.findall(r"'([A-Za-z_$][\w$]*)'", per.group(1)))
@@ -862,8 +869,12 @@ class Checker:
                      "an empty surface" % len(self.s.run_fields))
             self._surface_reported = True        # report it once, not per file
             return
+        # The RHS must END at `run`. Without the boundary this matched a
+        # PREFIX, so `const c = this.run.combat` registered `c` as a run alias
+        # and every `c.deck = …` in a scene became a false positive waiting to
+        # happen.
         aliases = {"run"} | set(re.findall(
-            r"(?:const|let|var)\s+(" + IDENT + r")\s*=\s*(?:[\w$.]+\.)?run\b", src))
+            r"(?:const|let|var)\s+(" + IDENT + r")\s*=\s*(?:[\w$.]+\.)?run\s*[;\n]", src))
         pat = re.compile(r"((?:" + IDENT + r"\.)*" + IDENT + r")\.(" + IDENT
                          + r")\s*(?:=[^=>]|\+=|-=)")
         for m in pat.finditer(src):
