@@ -129,10 +129,36 @@ function applyRecipe(c, dish, recipe) {
     dish.maxHp += 8 * dough;
     dish.hp = Math.min(dish.maxHp, dish.hp + 8 * dough);
   }
-  dm.jam = count('jam');
-  dm.sugar = count('sugar');
-  dm.spice = count('spice');
-  dm.cream = count('cream');
+  /**
+   * A REPLATE IS STAGED, NOT APPLIED, and the Ingredients are visible.
+   *
+   * `plate()` runs inside the Confectioner's move, during the enemy phase —
+   * after the Dish's intent for that same phase was committed. So adding a
+   * Sugar to a Dish that was already on the board made its Nibble promise 7
+   * and deal 10, and sometimes promise 10 and deal 7. Found on 2026-08-30 when
+   * `tests/enemies/engine-audit.html` was extended past region 3 for the first
+   * time: its batch list is hardcoded and had stopped at the Sleeping Quarters,
+   * so nothing in this whole file had ever had an intent checked against what
+   * it delivered.
+   *
+   * The numbers that appear in an INTENT are therefore promoted at
+   * `onEnemyPhaseEnd` — the engine's documented moment for exactly this, and
+   * the same fix the Rising Batter needed. A brand-new Dish takes them at once,
+   * because it has no published intent to contradict.
+   *
+   * Courage is not an intent number, so extra Dough lands immediately.
+   */
+  const next = { jam: count('jam'), sugar: count('sugar'), spice: count('spice'), cream: count('cream') };
+  if (dm.sugar == null) { Object.assign(dm, next); dm.pending = null; }
+  else dm.pending = next;
+  showIngredients(c, dish, dm.pending ? dm : next);
+}
+
+/** The Ingredients, under the Dish's Courage bar where they can be read. */
+function showIngredients(c, dish, vals) {
+  if (!c || !c.e || typeof c.e.enemyCtx !== 'function') return;
+  const dc = c.e.enemyCtx(dish, null);
+  for (const id of ['jam', 'sugar', 'spice', 'cream']) dc.setCounter(id, vals[id] || 0);
 }
 
 /** A personal Ingredient. Consumed when it triggers. */
@@ -176,6 +202,15 @@ export const dish = {
   onTurnStart(c) {
     const cream = (c.self.mem && c.self.mem.cream) || 0;
     if (cream) c.block(c.self, 4 * cream);
+  },
+
+  /** Promote a staged Recipe before the next intent is drawn — see applyRecipe. */
+  onEnemyPhaseEnd(c) {
+    const dm = c.self.mem || {};
+    if (!dm.pending) return;
+    Object.assign(dm, dm.pending);
+    dm.pending = null;
+    for (const id of ['jam', 'sugar', 'spice', 'cream']) c.setCounter(id, dm[id] || 0);
   },
 
   moves: {

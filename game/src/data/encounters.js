@@ -540,9 +540,153 @@ const KC = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// The Heart of the House — docs/design/regions/17-heart.md §12-§15
+//
+// "There are no truly introductory Heart encounters. The player has reached the
+// final region. The first encounters should still avoid overwhelming
+// combinations." (§12.) So the early tier is not a tutorial: it is four
+// formations that each ask ONE of the region's questions before they start
+// asking two at once.
+// ─────────────────────────────────────────────────────────────────────────────
+const HEART = [
+  // ── Early (§12) ───────────────────────────────────────────────────────────
+  {
+    id: 'ht-1', region: 'heart', tier: 'early', name: 'House Pulse + Memory Animal',
+    members: [m('house-pulse'), m('memory-animal')],
+    teaches: 'The house itself is in the fight, and it is watching what you open with.',
+  },
+  {
+    id: 'ht-2', region: 'heart', tier: 'early', name: 'Sanctuary Warden + Namekeeper',
+    members: [m('sanctuary-warden'), m('namekeeper')],
+    teaches: 'Protection that helps its target, and a Trick of yours held hostage behind it.',
+  },
+  {
+    id: 'ht-3', region: 'heart', tier: 'early', name: 'Quiet Room',
+    members: [m('quiet-room')],
+    teaches: 'You may play as many Tricks as you like. The room responds.',
+  },
+  {
+    id: 'ht-4', region: 'heart', tier: 'early', name: 'Old Welcome + Housekeeper',
+    members: [m('old-welcome'), m('housekeeper')],
+    teaches: 'Two enemies being genuinely helpful, and what that costs.',
+  },
+
+  // ── Standard (§13) ────────────────────────────────────────────────────────
+  {
+    id: 'ht-5', region: 'heart', tier: 'standard', name: 'Perfect Keeper',
+    members: [m('perfect-keeper')],
+    teaches: 'Assessment, alone, so you can watch the intent change under your hands.',
+  },
+  {
+    id: 'ht-6', region: 'heart', tier: 'standard', name: 'House Pulse + Sanctuary Warden',
+    members: [m('house-pulse'), m('sanctuary-warden')],
+    teaches: 'The Pulse amplifies whoever the Warden is keeping alive.',
+  },
+  {
+    id: 'ht-7', region: 'heart', tier: 'standard', name: 'Namekeeper + Quiet Room',
+    members: [m('namekeeper'), m('quiet-room')],
+    teaches: 'Is playing the Named Trick worth another potentially noisy action?',
+  },
+  {
+    id: 'ht-8', region: 'heart', tier: 'standard', name: 'Old Welcome + Memory Animal',
+    members: [m('old-welcome'), m('memory-animal')],
+    teaches: 'Extra draw and Nerve change what the Memory Animal sees you do first.',
+  },
+  {
+    id: 'ht-9', region: 'heart', tier: 'standard', name: 'Housekeeper + Perfect Keeper',
+    members: [m('housekeeper'), m('perfect-keeper')],
+    teaches: 'One rearranges your deck while the other judges the turn that comes out of it.',
+  },
+  {
+    id: 'ht-10', region: 'heart', tier: 'standard', name: 'Sanctuary Warden + Old Welcome',
+    members: [m('sanctuary-warden'), m('old-welcome')],
+    teaches: 'Tempting tempo in front of layered defence.',
+  },
+
+  // ── Advanced (§14) ────────────────────────────────────────────────────────
+  {
+    id: 'ht-11', region: 'heart', tier: 'advanced', name: 'Quiet Room + House Pulse',
+    members: [m('quiet-room'), m('house-pulse')],
+    teaches: 'You want a long turn to kill the Pulse. The long turn is what feeds the Room.',
+  },
+  {
+    id: 'ht-12', region: 'heart', tier: 'advanced', name: 'Perfect Keeper + Memory Animal',
+    members: [m('perfect-keeper'), m('memory-animal')],
+    teaches: 'Two enemies interpreting the same turn in two different ways.',
+  },
+  {
+    id: 'ht-13', region: 'heart', tier: 'advanced',
+    name: 'Housekeeper + Namekeeper + Sanctuary Warden',
+    members: [m('housekeeper'), m('namekeeper'), m('sanctuary-warden')],
+    teaches: 'A highly controlled formation. Everything you hold is being managed.',
+  },
+  {
+    id: 'ht-14', region: 'heart', tier: 'advanced',
+    name: 'Old Welcome + Quiet Room + House Pulse',
+    members: [m('old-welcome'), m('quiet-room'), m('house-pulse')],
+    teaches: 'The Welcome hands you exactly the resources that make the Room angry.',
+  },
+  {
+    id: 'ht-15', region: 'heart', tier: 'advanced',
+    name: 'Perfect Keeper + House Pulse + Sanctuary Warden',
+    members: [m('perfect-keeper'), m('house-pulse'), m('sanctuary-warden')],
+    teaches: 'A final region pressure formation.',
+  },
+  {
+    id: 'ht-16', region: 'heart', tier: 'advanced',
+    name: 'Housekeeper + Memory Animal + Namekeeper + Perfect Keeper',
+    members: [m('housekeeper'), m('memory-animal'), m('namekeeper'), m('perfect-keeper')],
+    teaches: 'It remembers what you did, names what you might do, moves your Tricks between zones, and interprets all of it. One of the hardest ordinary Scuffles in the game.',
+    advancedOnly: true, minScuffle: 1,
+  },
+
+  // ── Big Scares (§16-§29) ──────────────────────────────────────────────────
+  {
+    id: 'ht-scare-names', region: 'heart', tier: 'elite', name: 'The Hall of Names',
+    members: [m('kid-stone'), m('companion-stone'), m('missing-pet-stone'), m('unknown-stone')],
+    teaches: 'Four schedules on four clocks. Erasing one simplifies the timeline and strengthens what is left.',
+  },
+  {
+    id: 'ht-scare-remembers', region: 'heart', tier: 'elite', name: 'House Remembers',
+    members: [m('house-remembers')],
+    teaches: 'One familiar mechanic at a time, in a visible order you are allowed to edit.',
+  },
+  {
+    id: 'ht-scare-sanctuary', region: 'heart', tier: 'elite', name: 'Perfect Sanctuary',
+    members: [m('perfect-sanctuary')],
+    teaches: 'Two of its three Systems are helping you. Which ones are hurting THIS deck?',
+  },
+  {
+    id: 'ht-scare-door', region: 'heart', tier: 'elite', name: 'The Door That Says Stay',
+    members: [m('door-that-says-stay')],
+    teaches: 'Accept and get stronger. Refuse and it gets easier to open. Both paths work.',
+  },
+
+  // ── Boss ──────────────────────────────────────────────────────────────────
+  {
+    id: 'ht-boss', region: 'heart', tier: 'boss', name: 'The Keeper',
+    members: [m('keeper')],
+    teaches: 'Break the Locks when you want the aggression. Reject the Arguments with whatever your deck is actually good at.',
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Per-region generation rules (design doc §10 "Encounter selection rules")
 // ─────────────────────────────────────────────────────────────────────────────
 export const REGION_RULES = {
+  /* docs/design/regions/17-heart.md §15. The Heart's list is longer than any
+     other region's because it is the only one that fields four-body
+     formations, and because three separate enemies here modify what a Trick
+     costs — §15's last clause is a cap on how many of those may meet. */
+  heart: {
+    bannedFirstScuffle: ['perfect-keeper'],
+    minScuffle: { 'perfect-keeper': 1 },
+    /** Two Perfect Keepers compound; two Quiet Rooms double every Noise. */
+    noDuplicates: ['perfect-keeper', 'quiet-room'],
+    /** "House Pulse cannot appear alone" — it amplifies a formation it has not got. */
+    neverAlone: ['house-pulse'],
+    maxConsecutiveLead: 2,
+  },
   /* docs/design/regions/04-kitchens-cellars.md §11. Every clause below is one
      sentence from that section, and `noDuplicates` carries two of them because
      the design bans a second Clump and a second Batter for different reasons —
@@ -584,7 +728,7 @@ export const REGION_RULES = {
   },
 };
 
-const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC];
+const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...HEART];
 
 /** id → EncounterDef */
 export const ENCOUNTERS = Object.freeze(

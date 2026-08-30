@@ -709,7 +709,11 @@ export const nightTerror = {
  * half, after which dead Heads stay dead. Four legitimate plans, no correct one.
  */
 function hydraBody(c) {
-  return allies(c).find(a => a.id === 'blanket-hydra') || null;
+  /* By DEF id. An actor's `id` is its board slot — `e0`, `e1` — and this
+     matched it against a def id, so a Head could never find its own body.
+     Third instance of the trap the Governess's Doll and the Porcelain Twins
+     both carry a note about; `tests/part-lookups/check.py` gates the class now. */
+  return allies(c).find(a => a.defId === 'blanket-hydra') || null;
 }
 
 function hydraHead(id, name, palette, lore, behaviour) {
@@ -838,7 +842,7 @@ export const blanketHydra = {
       else still.push(r);
     }
     mem(c).regrow = still;
-    setCnt(c, 'heads', allies(c).filter(a => blanketHydra.heads.includes(a.id)).length);
+    setCnt(c, 'heads', allies(c).filter(a => blanketHydra.heads.includes(a.defId)).length);
   },
 
   moves: {
@@ -882,7 +886,21 @@ const WARDROBE_SUMMONS = [
   { enemyId: 'wardrobe-guest', hpMul: 0.4 },
 ];
 
-function wardrobeBody(c) { return allies(c).find(a => a.id === 'the-wardrobe') || null; }
+/**
+ * The Wardrobe's body, by DEF id.
+ *
+ * This matched `a.id`, the board slot, so it returned null in every fight ever
+ * played — and it is the only thing that increments `doorsBroken`. Both of the
+ * Wardrobe's signature rules read that counter: the body is "untargetable until
+ * at least one Door is broken" and takes "20% more damage" with both broken.
+ * Neither could ever fire, and both were invisible for a second reason —
+ * `isTargetable` and `damageTakenMul` were themselves read by nothing until
+ * 2026-08-30. Wiring those seams is what surfaced this one, as a Wardrobe
+ * sitting at 140/140 with both Doors dead and a fight that could not end.
+ */
+function wardrobeBody(c) {
+  return allies(c).find(a => a.defId === 'the-wardrobe') || null;
+}
 
 function wardrobeDoor(id, name, lore) {
   return {
@@ -971,7 +989,9 @@ export const theWardrobe = {
   maxSummons: 2,
   maxSummonsFor(c) { return Math.max(2, Math.min(4, c.partySize())); },
 
-  doorActors(c) { return allies(c).filter(a => theWardrobe.doors.includes(a.id)); },
+  doorActors(c) {
+    return allies(c).filter(a => theWardrobe.doors.includes(a.defId));
+  },
   brokenDoors(c) { return (mem(c).doorsBroken || 0); },
 
   /** The body is untargetable until at least one Door is broken. */

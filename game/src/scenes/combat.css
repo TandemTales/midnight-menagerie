@@ -55,6 +55,22 @@
 }
 .cb-enemies[data-n="1"] { gap: 0; }
 .cb-enemies[data-n="4"] { gap: clamp(10px, 1.8vw, 30px); }
+/* FIVE BODIES — the Keeper plus its four Sanctuary Locks, the widest board in
+   the game. The row is centred and carries up to 132px of left padding to stay
+   clear of the Kid, so a fifth body pushed the FIRST one off the left edge: a
+   screenshot of the final boss fight had every Lock on screen and no boss.
+   Nothing modelled this; nothing could have, because the widths come from
+   `--e-scale`, the tier and the arena. The gap tightens, the padding goes, and
+   `--e-scale` is multiplied down — the view writes that as an inline custom
+   property, so the shrink rides on a second variable rather than fighting it. */
+.cb-enemies[data-n="5"] {
+  gap: clamp(4px, 0.9vw, 16px);
+  /* Some of the left pad has to stay. Dropping it entirely fitted all five
+     bodies and put the Keeper behind the Kid's own portrait — the second
+     screenshot of the same fight. Reduced, not removed. */
+  padding-left: clamp(0px, 4vw, 72px);
+}
+.cb-enemies[data-n="5"] .cb-enemy { --e-crowd: 0.74; }
 
 /* ── one enemy ──────────────────────────────────────────────────────────── */
 .cb-enemy {
@@ -62,6 +78,11 @@
   --e2: var(--ink-300);
   --e3: var(--ink-900);
   --e-scale: 1;
+  /* Crowding. `--e-scale` is written inline per creature by `EnemyView`, so a
+     five-body board cannot shrink them by overriding it; `--e-sz` is the
+     product and every size below is written in terms of that instead. */
+  --e-crowd: 1;
+  --e-sz: calc(var(--e-scale) * var(--e-crowd));
   /* ── THE ATTACK POSE ─────────────────────────────────────────────────────
      Written per frame by `EnemyView#update` in SCREEN pixels. Round 3 kept the
      whole pose inside the SVG viewBox, where a full-commitment lunge came to
@@ -233,11 +254,11 @@
   position: relative;
   --e-aspect: .92;
   --e-wide: 1.25;                 /* never wider than this many of its own heights */
-  --e-h: min(calc(226px * var(--e-scale) * var(--e-tier)), calc(100vh - 460px));
+  --e-h: min(calc(226px * var(--e-sz) * var(--e-tier)), calc(100vh - 460px));
   height: var(--e-h);
   /* a sprawling rig can fit a 2.6:1 bbox — cap the footprint and let the SVG's
      `meet` fit inside it, or one rug eats the whole room */
-  width: clamp(calc(88px * var(--e-scale)),
+  width: clamp(calc(88px * var(--e-sz)),
                calc(var(--e-h) * var(--e-aspect)),
                min(320px, 24vw, calc(var(--e-h) * var(--e-wide))));
   display: flex; align-items: flex-end; justify-content: center;
@@ -1734,13 +1755,13 @@
    Coatcheck push its own name and Courage bar underneath the cards. */
 /* Only the creature the arena is FOR. Its escorts stay trash-mob sized. */
 .cb-root[data-arena="elite"] .cb-enemy[data-tier="elite"] .cb-enemy__stage {
-  --e-h: min(calc(320px * var(--e-scale)), calc(100vh - 500px));
+  --e-h: min(calc(320px * var(--e-sz)), calc(100vh - 500px));
   --e-wide: 1.2;
 }
 .cb-root[data-arena="elite"] .cb-enemy:not([data-tier="elite"]) .cb-enemy__stage {
-  --e-h: min(calc(200px * var(--e-scale)), calc(100vh - 540px));
+  --e-h: min(calc(200px * var(--e-sz)), calc(100vh - 540px));
   --e-wide: 1.2;
-  width: clamp(calc(80px * var(--e-scale)),
+  width: clamp(calc(80px * var(--e-sz)),
                calc(var(--e-h) * var(--e-aspect)),
                min(250px, 17vw, calc(var(--e-h) * var(--e-wide))));
 }
@@ -1763,25 +1784,25 @@
 /* Sized so the stage AND the name plate fit inside the field: the field is
    (100vh - 48 - 33%) tall, less the intent stack's 96px and the plate's ~44. */
 .cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__stage {
-  --e-h: min(calc(430px * var(--e-scale)), calc(100vh - 480px));
+  --e-h: min(calc(430px * var(--e-sz)), calc(100vh - 480px));
   --e-wide: 1.15;
-  width: clamp(calc(150px * var(--e-scale)),
+  width: clamp(calc(150px * var(--e-sz)),
                calc(var(--e-h) * var(--e-aspect)),
                min(560px, 40vw, calc(var(--e-h) * var(--e-wide))));
 }
 /* A limb of the boss (the Favorite Doll) and anything the boss summons are
    both explicitly SMALLER than the boss, on both axes. */
 .cb-root[data-arena="boss"] .cb-enemy[data-role="bossPart"] .cb-enemy__stage {
-  --e-h: min(calc(270px * var(--e-scale)), calc(100vh - 540px));
+  --e-h: min(calc(270px * var(--e-sz)), calc(100vh - 540px));
   --e-wide: .95;
-  width: clamp(calc(96px * var(--e-scale)),
+  width: clamp(calc(96px * var(--e-sz)),
                calc(var(--e-h) * var(--e-aspect)),
                min(300px, 20vw, calc(var(--e-h) * var(--e-wide))));
 }
 .cb-root[data-arena="boss"] .cb-enemy:not([data-tier="boss"]) .cb-enemy__stage {
-  --e-h: min(calc(210px * var(--e-scale)), calc(100vh - 560px));
+  --e-h: min(calc(210px * var(--e-sz)), calc(100vh - 560px));
   --e-wide: 1.2;
-  width: clamp(calc(80px * var(--e-scale)),
+  width: clamp(calc(80px * var(--e-sz)),
                calc(var(--e-h) * var(--e-aspect)),
                min(250px, 17vw, calc(var(--e-h) * var(--e-wide))));
 }

@@ -158,6 +158,16 @@ const MOTIF = {
   'toy-soldier': 'stoop', 'porcelain-doll': 'stoop', 'porcelain-twin': 'stoop',
   'favorite-doll': 'stoop', 'button-doll': 'stoop',
   'patchwork-giant': 'slam', bedframe: 'slam', snuffer: 'slam',
+  /* The Heart. Unlisted silhouettes fall back to their body archetype, which is
+     never wrong and is never specific either — a filing cabinet that drifts
+     reads as a ghost rather than as furniture. These are the motifs the
+     chapter's own descriptions ask for: the house's things move like things. */
+  housekeeper: 'stoop', warden: 'stoop', 'keeper-small': 'stoop', keeper: 'stoop',
+  'memory-animal': 'pounce', system: 'pounce',
+  cabinet: 'lunge',
+  'quiet-room': 'slam', 'name-stone': 'slam', 'sanctuary-room': 'slam', lock: 'slam',
+  'house-remembers': 'ripple', sprout: 'ripple',
+  pulse: 'drift', welcome: 'drift',
 };
 const BODY_MOTIF = { squat: 'pounce', 'tall-thin': 'stoop', sprawling: 'ripple', floating: 'drift' };
 

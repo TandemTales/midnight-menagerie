@@ -808,9 +808,23 @@ export class CombatEngine {
     return this.current.piles[map[pile] || pile] || [];
   }
 
-  /** StatusDef.untargetableBy: ['attack'] — Hidden blocks Attack Tricks only. */
+  /**
+   * StatusDef.untargetableBy: ['attack'] — Hidden blocks Attack Tricks only.
+   *
+   * `EnemyDef.isTargetable(c)` is the other half, and it was DEAD alongside
+   * `damageTakenMul`: the Wardrobe declares "the body is untargetable until at
+   * least one Door is broken" and nothing consulted it, so its Doors were
+   * decoration and the body could be hit from turn one. It is checked BEFORE
+   * the `!card` shortcut because it is a property of the enemy, not of what is
+   * being aimed at it.
+   */
   isTargetable(actor, card) {
     if (!actor || !actor.alive) return false;
+    if (actor.def && typeof actor.def.isTargetable === 'function') {
+      let ok = true;
+      try { ok = actor.def.isTargetable(this.enemyCtx(actor, null)); } catch { ok = true; }
+      if (ok === false) return false;
+    }
     if (!card) return true;
     for (const [id] of actor.statuses) {
       const list = getStatus(id).untargetableBy;
@@ -1052,9 +1066,14 @@ export class CombatEngine {
 
   /**
    * Fire one EnemyDef lifecycle hook across the board, in slot order.
-   * The ten documented hooks are: onCombatStart, onSpawn, onPlayerTurnStart,
-   * onTurnStart, onTurnEnd, onPlayerTurnEnd, onDamaged, onDealtDamage,
-   * onAllyDeath, onDeath — plus onPlayerCard / onBoardEvent / onRuleBroken.
+   * The documented hooks are: onCombatStart, onSpawn, onPlayerTurnStart,
+   * onPlayerReady, onTurnStart, onTurnEnd, onPlayerTurnEnd, onDamaged,
+   * onDealtDamage, onAllyDeath, onDeath — plus onPlayerCard / onCardPlayed /
+   * onBoardEvent / onEnemyPhaseEnd / onRuleBroken.
+   *
+   * onPlayerTurnStart fires BEFORE the hand is dealt; onPlayerReady fires
+   * AFTER it and before intents are drawn. An enemy that reads the player's
+   * hand wants the second one — see the Namekeeper.
    */
   _enemyLifecycle(name, extra = {}, list = null) {
     for (const en of (list || [...this.enemies, ...this.allies])) {
@@ -1742,6 +1761,9 @@ export class CombatEngine {
     const i = list.indexOf(actor);
     if (i < 0) return false;
     list.splice(i, 1);
+    // Same reason as `_checkDeath`: a despawn is the other way an enemy leaves,
+    // and a rule it installed must leave with it.
+    this.hooks.removeByOwner(actor);
     this._emit(EV.ENTITY_REMOVE, { id: actor.id, side: actor.side, slot: actor.slot, reason });
     return true;
   }
@@ -1758,6 +1780,21 @@ export class CombatEngine {
     this.hooks.dispatch('onDeath', { actor, killerId });
     if (actor.def?.onDeath) { try { actor.def.onDeath(this.enemyCtx(actor, null)); } catch (e) { console.error(e); } }
     this.clearRules(actor.id);
+    /**
+     * An ad-hoc hook dies with the thing that installed it.
+     *
+     * `enemyCtx.addHook` has documented itself as "removed with the enemy"
+     * since it was written and `Hooks.removeByOwner` had NO CALLERS, so a rule
+     * an enemy installed kept firing after the enemy was gone. No shipped enemy
+     * used `addHook`, which is the only reason nobody had met it — the Heart's
+     * Sanctuary Locks and Routine rules are the first content that does, and
+     * every one of them is a cost or Guard rule that must stop when the Lock
+     * breaks. CONTRACTS 54: the comment was the whole implementation.
+     *
+     * Only for enemies and allies. A PLAYER seat that falls comes back at 1
+     * Courage if the team wins, so its relics and Powers must survive.
+     */
+    if (actor.side !== 'player') this.hooks.removeByOwner(actor);
     this._enemyLifecycle('onAllyDeath', { dead: actor, deadId: actor.id },
       [...this.enemies, ...this.allies].filter(x => x !== actor));
     if (actor.side === 'player') this._fall(actor, killerId);
@@ -2046,6 +2083,48 @@ export class CombatEngine {
         seat.piles.move(card, Pile.LIMBO, { reason: enemy.id });
         return { uid: card.uid, id: card.id, name: card.name };
       },
+      /* ── the aimed seat's piles, in general ──────────────────────────────
+       * `takeFromDraw` above was added for one enemy and answers exactly one
+       * question. The Heart asks a general one in five places — the Namekeeper
+       * Names a Trick in HAND, the Housekeeper puts the most recent DISCARD
+       * back, the Door sends the top of the DRAW pile to the bottom, the Keeper
+       * pulls a discard to the top — so these are the general form rather than
+       * five more one-offs, each with its own mock shim to drift from.
+       *
+       * `cardsIn` returns PLAIN SNAPSHOTS and never runtime cards. An enemy def
+       * holding a runtime card would be CONTRACTS 19 wearing a different hat,
+       * and the mock ctx in tests/enemies has no runtime cards to hand it.
+       * `moveCardTo` takes the uid back, which is the same round trip
+       * `takeFromDraw`/`returnToHand` already use.
+       */
+      cardsIn: (pile = Pile.HAND, who = null) => {
+        const seat = (who && e._resolveSeat(who)) || aim || e.current;
+        const list = (seat && seat.piles && seat.piles[pile]) || [];
+        return list.map(c => ({
+          uid: c.uid, id: c.id, name: c.name, type: c.type, cost: e.costOf(c),
+        }));
+      },
+      /**
+       * Move one of the seat's Tricks by uid. `opts` is Piles.move's:
+       * `{ top: true }` / `{ bottom: true }` / `{ position }`.
+       */
+      moveCardTo: (ref, pile, opts = {}) => {
+        const uid = (ref && ref.uid) || ref;
+        const card = e.card(uid);
+        if (!card) return false;
+        const seat = e.seatOfCard(card) || aim || e.current;
+        return seat.piles.move(card, pile, { reason: enemy.id, ...opts });
+      },
+      /**
+       * The seat this move is aimed at draws.
+       *
+       * Through `_asSeat`, because `drawCards` resolves against `e.current` and
+       * nothing is acting during the enemy phase — the same reason `addCard`
+       * above has to name `to: aim`.
+       */
+      playerDraw: (n = 1) => e._asSeat(aim || e.current,
+        () => e.drawCards(Math.max(0, n | 0), enemy.id)),
+
       /** Put a taken Trick back. Accepts the object `takeFromDraw` returned, or a uid. */
       returnToHand: (ref) => {
         const uid = (ref && ref.uid) || ref;
@@ -2659,6 +2738,24 @@ export class CombatEngine {
        Emitted as a PHASE value rather than a new event so existing listeners,
        which all test for 'player' or 'enemy' specifically, fall through it. */
     this._emit(EV.PHASE, { phase: 'playerReady', turn: this.turn });
+
+    /**
+     * 6c — the enemy-side twin of 6b, and it exists for the same reason.
+     *
+     * `onPlayerTurnStart` fires at step 4, BEFORE the hand is dealt, so an
+     * enemy that has to look at the opening hand sees an empty one. The
+     * Namekeeper is exactly that enemy: §7 of the Heart chapter says it
+     * "chooses one Trick in the player's hand", and driven against the real
+     * engine from `onPlayerTurnStart` it named nothing, ever, because there was
+     * nothing there yet. From the enemy phase it is worse — the hand has been
+     * discarded by then.
+     *
+     * So this is the one moment an enemy can read the hand the player is about
+     * to play with. It fires after the deal and before intents are drawn, which
+     * also means anything armed here is already in the number the player reads.
+     */
+    this._enemyLifecycle('onPlayerReady');
+    if (this.over) return;
 
     // 7 — intents
     this.refreshIntents('turnStart');

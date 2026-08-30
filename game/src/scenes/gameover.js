@@ -284,7 +284,26 @@ export class GameOverScene extends Scene {
 
     /* --- headline --------------------------------------------------------- */
     const head = el('div', 'go-head');
-    head.innerHTML = this.won
+    /**
+     * THE HEART IS THE ENDING, and this screen used to print the same headline
+     * for it as for any other cleared wing.
+     *
+     * "You got one out" is the right thing to say about a Companion freed from
+     * the Foyer. It is the wrong thing to say about the Keeper, because §57 of
+     * the Heart chapter is explicit that the important event is not that a
+     * monster died: "The house has been forced to allow a choice it was
+     * designed to prevent." The Keeper does not die. It comes apart into doors,
+     * blankets, keys and soft blue light, and the last exit unlocks.
+     */
+    const endedTheHouse = this.won && s.regionId === 'heart';
+    head.innerHTML = endedTheHouse
+      ? `<p class="go-kicker">The Heart of the House</p>
+         <h1 class="go-title">The door opens outward.</h1>
+         <p class="go-lede">The Keeper does not fall over. It comes apart &mdash; doors, blankets,
+            brass keys, picture frames, and a lot of soft blue light going out slowly.
+            ${esc(first)} and ${esc(c.name)} walk through a door the house spent a very long time
+            making sure nobody could open, and the house lets them.</p>`
+      : this.won
       ? `<p class="go-kicker">Wing ${s.wing} &middot; ${esc(region)}</p>
          <h1 class="go-title">You got one out.</h1>
          <p class="go-lede">${esc(c.name)} walked through the front door on ${esc(first)}&rsquo;s shoulder

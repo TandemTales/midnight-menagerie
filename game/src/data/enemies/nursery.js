@@ -994,7 +994,7 @@ export const patchworkGiant = {
  */
 function twinOf(c, myId) {
   const otherId = myId === 'porcelain-twin-prim' ? 'porcelain-twin-proper' : 'porcelain-twin-prim';
-  return allies(c).find(a => a.defId === otherId || a.id === otherId) || null;
+  return allies(c).find(a => a.defId === otherId) || null;
 }
 
 /** Shared behaviour for both Twins. */

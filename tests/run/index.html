@@ -36,7 +36,7 @@
 <script type="module">
 import { RNG, hashSeed } from '../../game/src/core/rng.js';
 import { Save } from '../../game/src/core/save.js';
-import { Run, STARTER_SLUGS } from '../../game/src/state/run.js';
+import { Run, STARTER_SLUGS, RUN_LENGTH_REGIONS, RUN_REGIONS } from '../../game/src/state/run.js';
 import { NodeType, REGION_ORDER } from '../../game/src/data/schema.js';
 import { cardById } from '../../game/src/data/cards.js';
 import * as P from '../critic-design/lib/policy.js';
@@ -147,10 +147,20 @@ function leastValuable(run, cards) {
    that follows it, so it is far slower per turn than what it replaces. That is
    paid once, here, and it buys every region past the first.
 
-   `budgetTurns` stays at 80 rather than the balance harness's 60: this one has
-   to resolve every fight the run layer can produce, and an unresolved fight is
-   reported as a failure rather than hidden as a timeout.                      */
-async function playCombat(engine, budgetTurns = 80, run = null) {
+   `budgetTurns` is 120, not the balance harness's 60. This one has to resolve
+   EVERY fight the run layer can produce and an unresolved fight is reported as
+   a failure rather than hidden as a timeout — so the budget has to clear the
+   longest legitimate fight in the game, which is now the Keeper.
+
+   It was 80, and the Keeper did not fit: measured against a competent bot with
+   a drafted deck, the Butler runs 11 turns, the Confectioner 26 and the Keeper
+   36. That length is not a bug in the harness and it has NOT been tuned away —
+   540 Courage is the design's number for a boss at the end of a SEVENTEEN-wing
+   expedition, and this ladder is five wings long. Fitting the boss to a ladder
+   that is about to grow by twelve regions is the curve-to-a-broken-instrument
+   mistake CONTRACTS 47 is about, so the number stays and the measurement is
+   written down instead.                                                       */
+async function playCombat(engine, budgetTurns = 120, run = null) {
   await engine.startCombat();
   // Per-fight running estimates the bot projects the rest of the fight from.
   // One object per fight, never shared between fights.
@@ -168,8 +178,16 @@ async function playCombat(engine, budgetTurns = 80, run = null) {
     await engine.endTurn();
   }
   if (!engine.over) {
-    // A fight that will not resolve is a real failure, not a timeout to hide.
-    fail(`combat did not resolve in ${budgetTurns} turns`);
+    /* A fight that will not resolve is a real failure, not a timeout to hide —
+       and it has to say WHICH fight. "combat did not resolve in 80 turns" sent
+       one session hunting through five regions; a stalemate is always a
+       specific formation whose Guard the player cannot out-damage, and naming
+       it with what is still standing turns a hunt into a fix. */
+    const left = engine.enemies.filter(x => x.alive)
+      .map(x => `${x.defId} ${x.hp}/${x.maxHp}`).join(', ');
+    fail(`combat did not resolve in ${budgetTurns} turns`
+      + ` — ${run?.combatMeta?.name || engine.encounterId || 'unknown encounter'}`
+      + ` — still standing: ${left || 'nobody'}`);
     return false;
   }
   return true;
@@ -248,7 +266,7 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
 
     if (run.combat) {
       const engine = run.combat;
-      const ok = await playCombat(engine, 80, run);
+      const ok = await playCombat(engine, 120, run);
       if (!ok) break;
       log(`  fight ${engine.victory ? 'won' : 'lost'} hp=${run.courage}`);
     }
@@ -295,7 +313,7 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
           }
           if (p?.combat) {
             await run.eventCombat(p.combat);
-            if (run.combat) { await playCombat(run.combat, 80, run); }
+            if (run.combat) { await playCombat(run.combat, 120, run); }
             if (run.result) break;
             if (run.pendingReward) { run.claimReward(); continue; }
           }
@@ -470,7 +488,14 @@ async function main() {
     const pick = run.fork('sim:boss');
     let sawBoss = false, bossReward = null, steps = 0;
     const bossTrace = [];
-    while (!run.result && steps++ < 60) {
+    /* THE STEP BUDGET IS PER WING, not a constant. It was 60, which covered the
+       four-wing ladder with room to spare and then silently failed the moment
+       the Heart was added: a wing is 13-15 rows, so five of them is ~70 rooms
+       and this block ran out of steps rather than out of Courage. It reported
+       "expected victory, got null", which reads like a boss that cannot be
+       beaten and was a loop that stopped early. */
+    const stepBudget = RUN_LENGTH_REGIONS * 20;
+    while (!run.result && steps++ < stepBudget) {
       run.courage = run.maxCourage;                 // straight to the point
       // Route around Big Scares — that is a legitimate thing a player does, and
       // it keeps this structural test from turning into a balance test.
@@ -485,7 +510,7 @@ async function main() {
       await run.enterNode(id);
       if (run.combat) {
         const eng = run.combat;
-        await playCombat(eng, 80, run);
+        await playCombat(eng, 120, run);
         bossTrace.push(`${node.row}:${bt} ${eng.victory ? 'won' : 'LOST'} hp=${eng.player.hp}/${eng.player.maxHp}`);
       } else bossTrace.push(`${node.row}:${bt} hp=${run.courage}`);
       if (run.result) break;
@@ -493,7 +518,22 @@ async function main() {
         sawBoss = true;
         bossReward = run.pendingReward ? { ...run.pendingReward } : null;
       }
-      if (run.pendingReward) { run.claimReward(); continue; }
+      if (run.pendingReward) {
+        /* IT HAS TO DRAFT. This block claimed every reward and took nothing,
+           so it walked the whole ladder on the ten-card starter deck. That was
+           survivable while the run ended at the Confectioner — 2000 Courage
+           grinds 305 down eventually — and stopped being survivable the moment
+           the Heart was added: 120 turns against the Keeper left it at 281 of
+           621 and the fight simply could not end. A structural test of
+           boss -> reward -> completeRegion -> victory cannot reach the last
+           boss on a tutorial deck. */
+        if (run.pendingReward.cards?.length) {
+          const take = P.draft(run.pendingReward.cards, POLICY, draftCtx(run));
+          if (take) run.takeRewardCard(take); else run.skipRewardCards();
+        }
+        run.claimReward();
+        continue;
+      }
       if (run.pendingEvent) {
         const def = run.currentEvent();
         const open = (def?.options || []).filter(o => run.optionOpen(o) && !(o.cost?.lostThings > run.lostThings));
@@ -543,7 +583,7 @@ async function main() {
       if (!legal.length) break;
       const id = legal[pick.int(legal.length)];
       await run.enterNode(id);
-      if (run.combat) { await playCombat(run.combat, 80, run); if (run.pendingReward) run.claimReward(); }
+      if (run.combat) { await playCombat(run.combat, 120, run); if (run.pendingReward) run.claimReward(); }
       else if (run.pendingEvent || run.pendingShop) run.leaveNode();
       else run.leaveNode();
       if (run.result) break;
@@ -735,7 +775,7 @@ async function main() {
       const run = new Run({ companion: 'bones', kid: 'mateo', seed });
       const legal = run.legalNextIds();
       await run.enterNode(legal[0]);
-      if (run.combat) { await playCombat(run.combat, 80, run); if (run.pendingReward) run.claimReward(); }
+      if (run.combat) { await playCombat(run.combat, 120, run); if (run.pendingReward) run.claimReward(); }
       else run.leaveNode();
       const raw = Save.loadRun();
       if (raw && raw.seed === run.seed && Array.isArray(raw.deck)) storeOk++;
@@ -773,8 +813,8 @@ async function main() {
     for (let k = 1; k <= Math.max(...results.map(deepest), 1); k++) {
       const un = results.filter(r => !r.shepherd && deepest(r) >= k).length;
       const sh = results.filter(r => r.shepherd && deepest(r) >= k).length;
-      rrows += `<tr><td>${k} ${REGION_ORDER[k - 1] || ''}</td><td>${un}</td><td>${sh}</td></tr>`;
-      REACH.push({ region: k, id: REGION_ORDER[k - 1] || '', unaided: un, shepherded: sh });
+      rrows += `<tr><td>${k} ${RUN_REGIONS[k - 1] || ''}</td><td>${un}</td><td>${sh}</td></tr>`;
+      REACH.push({ region: k, id: RUN_REGIONS[k - 1] || '', unaided: un, shepherded: sh });
     }
     const vU = results.filter(r => !r.shepherd && r.run.result === 'victory').length;
     const vS = results.filter(r => r.shepherd && r.run.result === 'victory').length;

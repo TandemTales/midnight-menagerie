@@ -99,7 +99,29 @@ import { rollEvent, eventById, rollOutcome } from '../data/events.js';
  * a day on, one constant wide, and it is why this number moves with the content
  * rather than after it.
  */
-export const RUN_LENGTH_REGIONS = 4;
+export const RUN_REGIONS = Object.freeze([
+  'foyer', 'nursery', 'sleeping-quarters', 'kitchens-cellars', 'heart',
+]);
+
+/**
+ * THE LADDER IS A LIST NOW, NOT A LENGTH, and that is the whole change.
+ *
+ * `RUN_LENGTH_REGIONS` was a COUNT taken off the front of `REGION_ORDER`, which
+ * works only while the built regions are a prefix of the design's seventeen.
+ * The Heart is region SEVENTEEN and it is the ending — the only thing that
+ * turns a run into a game with a finish — so a count could reach it only by
+ * pretending the twelve unbuilt wings in between were finished.
+ *
+ * `RUN_REGIONS` is therefore the ladder the run actually walks: every region
+ * with a roster, in `REGION_ORDER` order, with the Heart last. Building the
+ * Greenhouse means adding one string in the right place; nothing else moves,
+ * and the Heart stays where it belongs.
+ *
+ * The constant remains, because it is what everything else asks for and it
+ * still means "how many wings is an expedition". It is derived now, so the two
+ * cannot disagree.
+ */
+export const RUN_LENGTH_REGIONS = RUN_REGIONS.length;
 
 /**
  * The four Companions who start at the clubhouse and were never in the house.
@@ -219,7 +241,7 @@ export class Run {
 
     // ── progression ─────────────────────────────────────────────────────────
     this.regionIndex = 0;
-    this.region = REGION_ORDER[0];
+    this.region = RUN_REGIONS[0];
     this.rescued = (Save.data?.companionsRescued || []).slice();
     /** Freed on THIS expedition only — see rescueCompanion(). */
     this.companionsFreed = [];
@@ -314,7 +336,7 @@ export class Run {
   companionNameOf(k) { return COMPANIONS.find(c => c.slug === k.companion)?.name || k.companion; }
   get petName() { return KIDS.find(k => k.slug === this.kid)?.pet || 'your pet'; }
   get currentNode() { return this.nodeById(this.currentNodeId); }
-  get isLastRegion() { return this.regionIndex >= Math.min(RUN_LENGTH_REGIONS, REGION_ORDER.length) - 1; }
+  get isLastRegion() { return this.regionIndex >= RUN_REGIONS.length - 1; }
 
   /** Aggregated Keepsake + Gear flags. Scenes read this, never a relic by name. */
   get flags() { return this.flagsOf(this.local); }
@@ -2290,7 +2312,7 @@ export class Run {
     // four starters, who were never in the house. See rescueTargetFor().
     const freed = this.rescueTargetFor(`boss:${this.region}`, meta.companion);
     if (freed && !this.rescued.includes(freed)) this.rescueCompanion(freed);
-    if (this.isLastRegion || this.regionIndex + 1 >= REGION_ORDER.length) return this.end(true, null);
+    if (this.isLastRegion || this.regionIndex + 1 >= RUN_REGIONS.length) return this.end(true, null);
     return this.advanceRegion();
   }
 
@@ -2327,7 +2349,7 @@ export class Run {
     }
     if (healed > 0) bus.emit('run:heal', { amount: healed, reason: 'wing' });
     this.regionIndex++;
-    this.region = REGION_ORDER[this.regionIndex];
+    this.region = RUN_REGIONS[this.regionIndex];
     this.encounterHistory = [];
     this._curiosityHealUsed = false;
     this._buildMap();
@@ -2590,7 +2612,7 @@ export class Run {
     }).filter(Boolean);
 
     run.regionIndex = saved.regionIndex || 0;
-    run.region = saved.region || saved.regionId || REGION_ORDER[run.regionIndex] || REGION_ORDER[0];
+    run.region = saved.region || saved.regionId || RUN_REGIONS[run.regionIndex] || RUN_REGIONS[0];
     run.map = saved.map || run.map;
     if (run.map && run.map.regionId !== run.region) run._buildMap();
     run.currentNodeId = saved.currentNodeId || null;

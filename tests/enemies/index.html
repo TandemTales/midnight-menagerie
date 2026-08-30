@@ -41,11 +41,28 @@ const INTENT_VALUES  = new Set(Object.values(Intent));
 // ═════════════════════════════════════════════════════════════════════════════
 const STATUS_BY_ID = ENEMY_STATUSES.reduce((m, s) => (m[s.id] = s, m), {});
 
-function makeActor(def, hp) {
+/**
+ * An actor, named the way the ENGINE names one.
+ *
+ * `id` used to be `def.id`, and that single line is why four multi-body enemies
+ * shipped unable to find their own parts. `_makeEnemy` names enemies `e0`,
+ * `e1`, `e2` by slot and puts the definition's id on `defId` — so
+ * `allies(c).find(a => a.id === 'the-wardrobe')` resolves here and returns null
+ * in every real fight. The Governess's Doll, both Porcelain Twins, the Blanket
+ * Hydra's head count and the Wardrobe's Doors were all written against this
+ * shim, and all four were broken in the shipped game.
+ *
+ * CONTRACTS trap 5, and the most expensive instance of it in the project: a
+ * mock that drifts from the thing it stands in for does not merely test
+ * nothing, it certifies the wrong code. `tests/part-lookups/check.py` gates the
+ * source side; this is the harness side.
+ */
+function makeActor(def, hp, slot = 0) {
   return {
-    id: def.id, uid: def.id + '#' + (makeActor.n = (makeActor.n || 0) + 1), name: def.name,
+    id: 'e' + slot, defId: def.id,
+    uid: def.id + '#' + (makeActor.n = (makeActor.n || 0) + 1), name: def.name,
     hp, maxHp: hp, block: 0, alive: true, mem: {}, counters: {}, flags: {},
-    statuses: {}, damageTakenThisTurn: 0, def,
+    statuses: {}, damageTakenThisTurn: 0, side: 'enemy', slot, def,
   };
 }
 
@@ -62,15 +79,29 @@ class MockCombat {
     this.damageLog = [];
     this.statusLog = [];
     this.player = { id: 'player', name: 'Kid', hp: 80, maxHp: 80, block: 0, statuses: {}, damageTakenThisTurn: 0 };
-    this.discard = [];
-    // Enough of a deck for the Kitchens' Pantry Mimic to steal from.
-    this.draw = [{ uid: 'd1', id: 'test/one', name: 'One' },
-                 { uid: 'd2', id: 'test/two', name: 'Two' },
-                 { uid: 'd3', id: 'test/three', name: 'Three' }];
-    this.hand = [];
+    /**
+     * Piles, only as real as they need to be — but real in all four now.
+     *
+     * They were one three-card draw pile for the Kitchens' Pantry Mimic, which
+     * takes the top Trick and gives it back. The Heart reads three more of
+     * them: the Namekeeper Names a Trick in HAND, the Housekeeper puts the most
+     * recent DISCARD on the bottom of the draw pile, and several enemies make
+     * the player draw. An empty hand would let all of them pass this suite
+     * while running nothing, so each pile is seeded with card-shaped objects
+     * carrying the fields `cardsIn` promises.
+     */
+    const card = (uid, id, name, type, cost) => ({ uid, id, name, type, cost });
+    this.draw = [card('d1', 'test/one', 'One', 'attack', 1),
+                 card('d2', 'test/two', 'Two', 'skill', 1),
+                 card('d3', 'test/three', 'Three', 'power', 2)];
+    this.hand = [card('h1', 'test/four', 'Four', 'attack', 1),
+                 card('h2', 'test/five', 'Five', 'skill', 0),
+                 card('h3', 'test/six', 'Six', 'attack', 2)];
+    this.discard = [card('x1', 'test/seven', 'Seven', 'skill', 1)];
+    this._uid = 0;
     this.limbo = [];
     this.said = [];
-    this.actors = defs.map(d => makeActor(d, opts.hp?.[d.id] ?? d.hp[0]));
+    this.actors = defs.map((d, i) => makeActor(d, opts.hp?.[d.id] ?? d.hp[0], i));
     if (opts.haunt) {
       for (const a of this.actors) {
         const h = a.def.hauntScaling ? a.def.hauntScaling(opts.haunt) : null;
@@ -149,7 +180,12 @@ class MockCombat {
       has: (id, a) => !!((a || actor).statuses[id]),
       addCard: (cardId, pile) => {
         if (!KNOWN_CARDS.has(cardId)) self.unknownCard(cardId);
-        self.discard.push({ id: cardId, pile: pile || 'discard' });
+        // Card-SHAPED, so a Trick an enemy adds is a Trick the pile seams can
+        // then find and move. It used to be `{id, pile}`, which nothing read.
+        const dest = pile || 'discard';
+        (self[dest] || (self[dest] = [])).push({
+          uid: `a${++self._uid}`, id: cardId, name: cardId, type: 'status', cost: 0, addedTo: dest,
+        });
       },
       summon: (enemyId, o = {}) => self.summon(actor, enemyId, o),
       despawn: (a) => { a.alive = false; a.despawned = true; },
@@ -179,6 +215,37 @@ class MockCombat {
         if (i < 0) return false;
         self.hand.push(self.limbo.splice(i, 1)[0]);
         return true;
+      },
+      /**
+       * The general form of the pile seam, mirrored from engine.js.
+       *
+       * The Heart's Namekeeper reads HAND, its Housekeeper reads DISCARD, and
+       * the Door moves the top of DRAW to the bottom. A shim that answered
+       * `[]` to all three would let every one of those enemies pass this suite
+       * while never running its mechanic — CONTRACTS trap 5, and exactly what
+       * `loseBlock` and `targets` were added here for. So the piles are real
+       * arrays and the moves really move between them.
+       */
+      cardsIn: (pile = 'hand') => (self[pile] || []).map(c => ({
+        uid: c.uid, id: c.id, name: c.name, type: c.type || 'skill', cost: c.cost ?? 1,
+      })),
+      moveCardTo: (ref, pile, o = {}) => {
+        const uid = (ref && ref.uid) || ref;
+        for (const from of ['hand', 'draw', 'discard', 'limbo']) {
+          const i = (self[from] || []).findIndex(x => x.uid === uid);
+          if (i < 0) continue;
+          const [card] = self[from].splice(i, 1);
+          const dest = self[pile] || (self[pile] = []);
+          const top = o.position === 'top' || o.top || (pile === 'draw' && !o.bottom && o.position !== 'bottom');
+          if (top) dest.unshift(card); else dest.push(card);
+          return true;
+        }
+        return false;
+      },
+      playerDraw: (n = 1) => {
+        const got = [];
+        for (let i = 0; i < n && self.draw.length; i++) { const c = self.draw.shift(); self.hand.push(c); got.push(c); }
+        return got;
       },
       /**
        * Powers and ad-hoc hooks are RECORDED, not simulated.
@@ -328,7 +395,7 @@ class MockCombat {
     if (this.living().length >= 4) return null;                    // board cap safety
     const def = getEnemy(enemyId);
     const hp = o.hp != null ? o.hp : Math.round(def.hp[0] * (o.hpMul || 1));
-    const a = makeActor(def, Math.max(1, hp));
+    const a = makeActor(def, Math.max(1, hp), this.actors.length);
     a.summoned = true; a.summonedBy = source.uid;
     this.actors.push(a);
     this.hook(a, 'onSpawn');
@@ -725,7 +792,9 @@ for (const enc of ENCOUNTER_LIST.filter(e => e.members.length > 1)) {
       sim.playerTurn({ cards: 3, dmg: 6 });
       for (const a of sim.actors) { if (!a.despawned) { a.hp = a.maxHp; a.alive = true; } }
       const acted = sim.enemyTurn({ fail });
-      for (const x of acted) (per[x.actor.id] ||= []).push(x.moveId);
+      // Keyed by DEF id — FORM_CHECKS below names enemies, not board slots,
+      // and an actor's id is `e0`/`e1` the way the engine names one.
+      for (const x of acted) (per[x.actor.defId] ||= []).push(x.moveId);
       sim.player.hp = sim.player.maxHp;
     }
   } catch (e) { crashed = e; }
@@ -819,7 +888,7 @@ for (const b of BOSSES) {
   const enc = ENCOUNTER_LIST.find(e => e.id === b.enc);
   const defs = enc.members.map(mm => getEnemy(mm.enemyId));
   const sim = new MockCombat(defs, `phases:${b.id}`);
-  const boss = sim.actors.find(a => a.id === b.id);
+  const boss = sim.actors.find(a => a.defId === b.id);
   const seq = [];
   for (let t = 0; t < 200 && boss.hp > 0; t++) {
     sim.playerTurn({ cards: 4, dmg: 8 });

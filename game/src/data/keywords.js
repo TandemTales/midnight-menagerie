@@ -155,7 +155,19 @@ export async function loadContentRegistries(engine = null) {
     console.warn('[keywords] tracker preload failed', e && e.message);
   }
   try {
-    const m = await import('./enemies/_lib.js');
+    /* THE REGISTRY, not the library. This imported `enemies/_lib.js`, which
+       holds only the CORE enemy statuses — so every status a region adds after
+       the Foyer was missing from this loader: the Kitchens' five (Rise,
+       Sweetness, Disguised, Baking, Brittle) and the Heart's fifteen. The game
+       itself was fine, because `state/run.js` and `scenes/combat.js` both
+       register off `enemies/index.js`; what was missing was every KEYWORD
+       tooltip for those statuses, and `tests/status-names/check.py`, which
+       reads this loader and had been reporting the same 268 statuses through
+       two whole regions of new ones.
+       `enemies/index.js`'s own header already names `data/keywords.js` as one
+       of the three consumers that read the merged list. It was the one that
+       did not. */
+    const m = await import('./enemies/index.js');
     const { registerStatuses } = await import('../combat/statuses.js');
     if (m.ENEMY_STATUSES) {
       registerStatuses(m.ENEMY_STATUSES);

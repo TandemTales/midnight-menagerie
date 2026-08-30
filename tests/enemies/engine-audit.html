@@ -195,6 +195,21 @@ const BATCHES = [
   ['The Governess', 'nursery-boss'],
   ['SQ 14', 'sq-14'], ['Blanket Hydra', 'sq-scare-hydra'],
   ['The Wardrobe', 'sq-scare-wardrobe'], ['Bedframe Beast', 'sq-boss'],
+  /* THIS LIST STOPPED AT REGION 3 UNTIL 2026-08-30, and it is hardcoded, so it
+     went on printing a healthy "2085 enemy turns audited" while the Kitchens
+     and Cellars — six ordinary enemies, five baked forms, three Big Scares and
+     the Confectioner — had never had a single intent checked against what it
+     delivered. The number looked like coverage and was a constant.
+
+     A batch is one encounter id, so a region needs its heaviest ordinary
+     formation and every Big Scare and boss: those are where the dynamic
+     intents live, and a dynamic intent is the only kind that can lie. */
+  ['Kitchens 14', 'kc-14'], ['Oven Maw', 'kc-scare-oven'],
+  ['Sugar Golem', 'kc-scare-golem'], ['Pantry Poltergeist', 'kc-scare-poltergeist'],
+  ['The Confectioner', 'kc-boss'],
+  ['Heart 16', 'ht-16'], ['Hall of Names', 'ht-scare-names'],
+  ['House Remembers', 'ht-scare-remembers'], ['Perfect Sanctuary', 'ht-scare-sanctuary'],
+  ['Door That Says Stay', 'ht-scare-door'], ['The Keeper', 'ht-boss'],
 ];
 const N = Number(new URLSearchParams(location.search).get('n') || 12);
 

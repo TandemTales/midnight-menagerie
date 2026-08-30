@@ -80,6 +80,15 @@ const LAYERS = {
   'companion (companions/keywords.js)': 'unseen',
   'enemy (enemies/_lib.js)':            'darkness',
   'wing (data/wings.js)':               'lurking',
+  /* The REGION layer, added 2026-08-30 because its absence is what this whole
+     block exists to catch and it caught nothing. `loadContentRegistries` was
+     importing `enemies/_lib.js` — the shared library — rather than
+     `enemies/index.js`, the merged registry, so every status the Kitchens and
+     the Heart add was missing from this gate. It reported the same 268
+     statuses across two entire regions of new ones and passed every time.
+     One id from each of the two regions that add their own. */
+  'region: kitchens (enemies/index.js)': 'sweetness',
+  'region: heart (enemies/index.js)':    'sanctuary',
 };
 
 async function main() {

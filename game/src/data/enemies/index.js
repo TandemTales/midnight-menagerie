@@ -9,10 +9,13 @@ import { FOYER_ENEMIES } from './foyer.js';
 import { NURSERY_ENEMIES } from './nursery.js';
 import { SLEEPING_QUARTERS_ENEMIES } from './sleeping-quarters.js';
 import { KITCHENS_CELLARS_ENEMIES, KITCHENS_STATUSES } from './kitchens-cellars.js';
+import { HEART_ENEMIES, HEART_STATUSES } from './heart.js';
+import { HEART_SCARES } from './heart-scares.js';
 import { FOYER_BOSSES } from '../bosses/butler.js';
 import { NURSERY_BOSSES } from '../bosses/governess.js';
 import { SLEEPING_QUARTERS_BOSSES } from '../bosses/bedframe-beast.js';
 import { KITCHENS_CELLARS_BOSSES } from '../bosses/confectioner.js';
+import { HEART_BOSSES, KEEPER_STATUSES } from '../bosses/keeper.js';
 import { ENEMY_STATUSES as CORE_STATUSES, STATUS_TRICK_DEFS as CORE_TRICKS } from './_lib.js';
 
 /**
@@ -24,7 +27,14 @@ import { ENEMY_STATUSES as CORE_STATUSES, STATUS_TRICK_DEFS as CORE_TRICKS } fro
  * nothing else in the codebase has to learn that a fourth region exists.
  * `_lib.js` stays the shared library; it is not a registry.
  */
-export const ENEMY_STATUSES = Object.freeze([...CORE_STATUSES, ...KITCHENS_STATUSES]);
+/* KEEPER_STATUSES lives in bosses/keeper.js rather than with the rest of the
+   Heart's, because it is the four things the Sanctuary Locks GIVE the player
+   and they belong beside the Locks that hand them over. It is merged here for
+   the same reason everything else is: this module is the one registry, and
+   `heart.js` importing the boss file to collect them would make a cycle. */
+export const ENEMY_STATUSES = Object.freeze(
+  [...CORE_STATUSES, ...KITCHENS_STATUSES, ...HEART_STATUSES, ...KEEPER_STATUSES],
+);
 export const STATUS_TRICK_DEFS = Object.freeze([...CORE_TRICKS]);
 
 const ALL = [
@@ -36,6 +46,9 @@ const ALL = [
   ...SLEEPING_QUARTERS_BOSSES,
   ...KITCHENS_CELLARS_ENEMIES,
   ...KITCHENS_CELLARS_BOSSES,
+  ...HEART_ENEMIES,
+  ...HEART_SCARES,
+  ...HEART_BOSSES,
 ];
 
 /** id → EnemyDef */
@@ -69,7 +82,7 @@ export function rollHp(def, rng) {
 
 /** Regions this agent has shipped rosters for. */
 export const IMPLEMENTED_REGIONS = Object.freeze([
-  'foyer', 'nursery', 'sleeping-quarters', 'kitchens-cellars',
+  'foyer', 'nursery', 'sleeping-quarters', 'kitchens-cellars', 'heart',
 ]);
 
 /**

@@ -81,6 +81,32 @@ export function computeDamage(engine, o) {
       v = engine.hooks.reduce('modifyDamageTaken', v,
         { ...hCtx, self: defender }, engine.hooks.actorHooks(defender, 'modifyDamageTaken'));
     }
+
+    /**
+     * 5c. `EnemyDef.damageTakenMul(c)` — a whole-body vulnerability that is not
+     * a status anybody applied.
+     *
+     * DEAD UNTIL 2026-08-30, and loudly: the Sugar Golem's exposed crystal
+     * layer declared `damageTakenMul` with a comment stating "the engine reads
+     * a MULTIPLIER here, which is the seam sleeping-quarters.js's Wardrobe
+     * already uses", the Wardrobe declared one for both its Doors being broken
+     * — and a search for the name across `game/` and `tests/` returned those
+     * two definitions and no reader at all. The Golem's third layer was not a
+     * third layer and the Wardrobe was never exposed. CONTRACTS 54: a comment
+     * asserting a seam exists is not a seam.
+     *
+     * It goes AFTER the hooks and BEFORE the clamp so it composes with
+     * Vulnerable and with `modifyDamageTaken` the way a multiplier should, and
+     * it runs in `computeDamage` so the INTENT shows it — `previewDamageValue`
+     * comes through the same path, which is what stops the number on screen
+     * disagreeing with the hit.
+     */
+    if (defender && defender.def && typeof defender.def.damageTakenMul === 'function') {
+      let mul = 1;
+      try { mul = defender.def.damageTakenMul(engine.enemyCtx(defender, null)); } catch { mul = 1; }
+      if (Number.isFinite(mul) && mul > 0 && mul !== 1) v = v * mul;
+      trace.damageTakenMul = mul;
+    }
   } else {
     trace.afterStrength = v; trace.afterWeak = v; trace.afterVulnerable = v;
   }
