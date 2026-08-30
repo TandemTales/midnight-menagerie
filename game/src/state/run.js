@@ -107,6 +107,11 @@ export const STARTER_SLUGS = new Set(['marmalade', 'bones', 'pipkin', 'taffy']);
 /** Courage is topped up to this fraction of max when a new wing opens. See advanceRegion(). */
 const REGION_ENTRY_FLOOR = 0.85;
 
+/** Seconds the blueprint holds on a vote the roulette settled, in SCALED
+ *  game time. Sized against the announcement's own word count — see the
+ *  note on `_walkAfterVote`, which is where the arithmetic lives. */
+const VOTE_BEAT = 3.0;
+
 /** Base Lost Things per room type, before Keepsake multipliers. */
 const PURSE = {
   [NodeType.SCUFFLE]:   [11, 19],
@@ -926,6 +931,35 @@ export class Run {
    * whose whole job is to be looked at, and wrong to describe as "every
    * client waits the same amount", which is what this comment used to say.
    *
+   * ── 1.5 s → 3.0 s, 2026-08-30, and this is arithmetic not taste ────────
+   *
+   * The handoff carried "the beat is unplaytested" as a question for the
+   * designer for three sessions. It did not need a playtest; it needed
+   * somebody to count the words. `scenes/map.js _announceVote` renders
+   * "The house chose <room>" plus "<n> of <m> wanted it · the rest were
+   * outvoted by the draw" — about eighteen words. On-screen reading for
+   * comprehension runs 200–250 wpm, so that text takes 4.3–5.4 s to read,
+   * 3.6 s at a fast skim, plus roughly 0.3 s to notice a thing appearing.
+   *
+   * **1.5 s was about a third of what its own message needs.** It cleared the
+   * MEASURED 1.4 s the announcement used to survive for, which is why it was
+   * chosen — but that floor was about the card still EXISTING, not about
+   * anybody being able to read it. A floor and a duration are different
+   * questions and only the first had been asked.
+   *
+   * 3.0 s rather than the full 5.4 because this message REPEATS. The first
+   * time you must read all of it; after that you are checking two things,
+   * which room and the tally, and that is about six words — 1.8 s plus
+   * noticing. 3.0 is comfortable for the familiar case and tolerable for the
+   * first, and it only ever fires when the roulette actually overrode
+   * somebody, which `tests/vote` measures at 48 of 150 forks.
+   *
+   * The genuinely correct fix is for the verdict to SURVIVE the transition
+   * instead of being covered by it — `scenes.go` veils the screen before
+   * `exit()`, which is what destroys the card — and then the beat could go
+   * back to being short. That is a scene-layer change and it is not this
+   * one.
+   *
    * ── and only when there is somebody to tell ────────────────────────────
    *
    * No `ctx.scenes` means no screen: a headless harness, a rejoining client
@@ -941,7 +975,7 @@ export class Run {
     // away. There is nobody to tell.
     const watched = this.ctx?.scenes && !this.session?.absorbing;
     if (result.rolled && watched) {
-      try { await clock.wait(1.5); } catch { /* a clock that is gone is not fatal */ }
+      try { await clock.wait(VOTE_BEAT); } catch { /* a clock that is gone is not fatal */ }
     }
     try { await this.enterNode(result.winner); } catch { /* the walk reports itself */ }
     return result;
