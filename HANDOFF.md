@@ -43,6 +43,7 @@ control that was verified to FAIL without it.
 | The Twins' Joined and the Horse's Excitement were dead FOUR ways at once | `combat/engine.js`, CONTRACTS 50 |
 | After every resume, no card in hand had a replay key | `state/run.js` |
 | The map moved the whole party by ASSIGNING to the Run, down a bus name | `scenes/map.js`, CONTRACTS 52 |
+| One seat chose the whole expedition's route; nobody else got a say | `state/run.js`, `tests/vote/` |
 
 Instruments repaired: the bot's `turnsLeft` (47), `balance.html`'s missing
 `fc` (49), the ledger's `left%` — quantised to tens AND wins-only (51) — and
@@ -63,11 +64,21 @@ SHARED-WRITE. New suite: `tests/taffy/`.
 4. Steam P2P (designer, ends the no-build rule) and Crinkle's chapter
    (designer review). Both unchanged.
 
-**Closed 2026-08-29 (third session):** the map is on the wire. It was the
-largest open item and it was worse than this list said — the `chooseNode`
-call that made the screen LOOK like it used the run layer's API had been a
-no-op on every click ever made, because the screen wrote `currentNodeId`
-first and that call's own guard reads it. CONTRACTS 52.
+**Closed 2026-08-29 (third session), and read this before picking the list
+above back up:**
+
+- **The map is on the wire.** It was the largest item on this list and it was
+  worse than the list said — the `chooseNode` call that made the screen LOOK
+  like it used the run layer's API had been a no-op on every click ever made,
+  because the screen wrote `currentNodeId` first and that call's own guard
+  reads it. CONTRACTS 52.
+- **The route is VOTED**, which is the gap `docs/STS2-REFERENCE.md` §8.5 has
+  called "the largest co-op gap we have" for two sessions while this list did
+  not mention it at all. Every Kid votes at every fork; a weighted roulette
+  settles a split, so a minority vote can win. `tests/vote` is new.
+  `docs/notes/2026-08-29-the-route-is-voted.md`.
+  **This list is not the only list.** The reference carries its own "For us"
+  verdicts and they are not synced here; read §8 before deciding what is next.
 
 
 - **THE 44-TURN ELITE GRIND WAS THE BOT.** So was "party damage output does not
@@ -817,6 +828,36 @@ further fixes the number and makes fights long rather than dangerous. The real
 lever is **AoE coverage** — the compensation for "damage never scales" is
 supposed to be targeting, and the Foyer's standard tier is thin on moves that
 hit everybody. That is enemy content, not a constant.
+
+### The route is voted, 2026-08-29
+
+StS2's mechanic, taken whole from `docs/STS2-REFERENCE.md` §8.5: one shared
+path, every player votes at every fork, a weighted roulette picks the winner,
+ties break randomly, **the host has no special authority**, and a minority vote
+can win in proportion to how many wanted it.
+
+- `ACT.MAP_VOTE` is one seat's vote, decisive only when it is the LAST one
+  owed — the same shape as `ROOM_DONE`. A party of one resolves on its own
+  first vote and walks in exactly as before, so every solo suite is untouched
+  and every map-clicking driver in `tests/playthrough*` still works.
+- The draw is `fork('vote|<node>|<ballot>')`, **never `run.rng`**. That is what
+  keeps a run byte-identical; the skipped draw for a unanimous ballot does NOT,
+  and a control proved it. CONTRACTS 53.
+- At one keyboard the sheet passes between Kids on the per-Kid-room veil, and
+  each Kid's pin stays on the room they picked. Handing over does not replay
+  the survey sweep — that left the blueprint blank for 3.5s per vote.
+- When a number overrides the vote the party is told before they walk, which
+  needed a beat in `resolveVote`: the first version of that announcement was
+  measured at 200ms intervals and never caught on screen once.
+
+**Measured, not asserted:** at three seats over 150 seeds the lone Kid gets
+their way **32.0%** of the time against 33.3% expected (`tests/vote/run.py`).
+Two seats cannot show this — a 1-vs-1 split is a coin flip whichever way the
+weights work — which is why that suite exists next to `tests/net`'s wire half.
+
+**Still open, and a designer's call:** whether a fork with only one legal exit
+should open a ballot at all (it currently does, and resolves instantly), and
+whether the beat before the walk is the right length at 1.5s.
 
 **Two people can play the whole game on one machine.** "Go in together" on the
 Companion/Kid select, pick your Kid, "Lock in & pass it over", your friend picks

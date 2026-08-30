@@ -683,6 +683,42 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    damage onto whoever clicked, identically on all four clients, where no digest
    will ever report it. `tests/net/index.html` asserts the Kid, not the seat.
 
+53. **A READOUT THAT RIDES A SCENE TRANSITION IS NOT A READOUT, and the check
+   that a guarantee holds must name the mechanism that actually provides it.**
+   Two mistakes from one feature, both found by measuring rather than reading.
+
+   The route is voted now (STS2-REFERENCE 8.5) and a weighted roulette settles
+   a split, so sometimes a number sends the party somewhere only one Kid wanted.
+   Rule 45 says they have to be told. The announcement was painted onto the
+   blueprint from `map:voted`, which `resolveVote` emits BEFORE it walks — which
+   looked right, and sampled at 200 ms intervals **was never once caught on
+   screen**. `scenes.go` covers the screen *before* it calls `exit()`, so by the
+   time anything is painted the sheet is already under the veil. The resolution
+   waits a beat now, in the run layer, because the roulette is a moment in the
+   game and not decoration — and it skips the wait when there is no
+   `ctx.scenes`, or `tests/vote`'s 150 ballots would spend three minutes
+   animating nothing for nobody.
+
+   **If you cannot say how long a thing was on screen, you have not checked
+   that it was.** The same screenshot that found this also found the blueprint
+   coming back BLANK after every vote, because handing the sheet to the next
+   Kid replayed the 820 ms survey sweep — 3.5 s of empty paper per vote, three
+   of them per fork at four Kids.
+
+   The second mistake is subtler and is the one to watch for. `resolveVote`
+   skips the draw when the ballot has one candidate, and the comment on it said
+   that was what kept a solo run byte-identical. The test asserted the master
+   RNG had not moved. **Both were wrong and the test could not have failed:**
+   the draw is a `fork(tag)`, which builds a whole separate RNG, so it never
+   moves the master stream however many times it is taken — and `weighted()` on
+   a single item returns that item, so skipping changes nothing at all. The
+   guarantee comes from the FORK. The skip exists so `rolled` means something
+   to the screen. Rewritten to assert that a **split** ballot leaves the spine
+   alone, which fails the moment `this.fork(...)` becomes `this.rng`.
+
+   Ask of any "X is what protects Y": break X and watch Y break. If Y survives,
+   the credit belongs somewhere else and the check is decorative (rule 5c).
+
 15. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
    now reported their in-flight work being swallowed by an unrelated commit — one had a whole
    `music.js` rewrite land inside a commit titled "Pronouns per the designer", which then made a
@@ -906,5 +942,12 @@ it, so the screen can never offer a party the engine refuses or refuse one it ac
   rewards, and Mr. Moth's shelf (`shopStock(node, kid)`, forked per seat; seat 0's fork
   key is unchanged so no existing seed moved). Shared: the route, the rooms, the enemies,
   the Haunt level, the seed.
+- **The route is shared and therefore VOTED** (StS2-REFERENCE 8.5). `ACT.MAP_VOTE` is
+  one seat's vote and is decisive only when it is the last one owed, the same shape as
+  `ROOM_DONE`; `run.resolveVote()` then runs a weighted roulette on EVERY client, so
+  there is no host authority and a minority vote can win in proportion. The draw is a
+  `fork('vote|<node>|<ballot>')` and must never be `run.rng` — see trap 53. A fallen
+  Kid is off the ballot, or the fork would stall with nobody able to break it. A party
+  of one resolves on its own first vote and walks in exactly as it always did.
 
 See `docs/notes/2026-08-26-multiplayer-engine.md`.

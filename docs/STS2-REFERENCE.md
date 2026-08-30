@@ -270,17 +270,32 @@ This is the part of StS2 co-op that reviewers single out, and the part we have l
 - *(unconfirmed)* the vote happens after each cleared room, i.e. at every step, not only at
   visually branching forks.
 
-> **For us:** `scenes/map.js` has no seat concept whatsoever — a grep for
-> `seat|party|kids|handOff|local` returns one prose comment — and `run.chooseNode(node)`
-> asks nobody, so seat 0 picks the entire route for the whole expedition. This is the
-> largest co-op gap we have and the only one on this list that is both buildable today and
-> unaffected by the transport decision.
+> **For us — BUILT, 2026-08-29.** This paragraph used to read "`scenes/map.js` has no
+> seat concept whatsoever — a grep for `seat|party|kids|handOff|local` returns one prose
+> comment — and `run.chooseNode(node)` asks nobody, so seat 0 picks the entire route for
+> the whole expedition", and called it the largest co-op gap we have. Taken whole:
 >
-> The weighted roulette is **reproducible for us where it is not for them**: routed through
-> `ctx.run.rng` it satisfies determinism, so we can take the mechanic whole without
-> breaking replay. CONTRACTS' "seat choice ALWAYS ties on seat index, never the RNG" is a
-> rule about enemy *targeting*, which is shown before the players act and must survive a
-> replay unchanged; a vote resolved after everyone has committed is a different case.
+> - `ACT.MAP_VOTE` is one seat's vote, decisive only when it is the last one owed — the
+>   same shape as `ROOM_DONE`. A party of one resolves on its own first vote.
+> - `run.resolveVote()` runs the weighted roulette on every client, so **there is no host
+>   authority**, and a minority vote wins in proportion to how many wanted it. Measured at
+>   three seats over 150 seeds: the lone Kid gets their way 32.0% against 33.3% expected
+>   (`tests/vote`).
+> - At one keyboard the sheet passes between Kids on the same veil the per-Kid rooms use,
+>   and each Kid's pin stays on the room they picked so the next one can see it.
+> - When a number overrides the vote the party is told, on the sheet, before they walk.
+>
+> The weighted roulette is **reproducible for us where it is not for them**, which is what
+> made it takeable whole. It is a `fork('vote|<node>|<ballot>')` and NOT `ctx.run.rng` as
+> this paragraph originally proposed: the master stream is the run's spine, and drawing
+> from it would shift every later roll by however much the party happened to disagree.
+> Keyed by the ballot as well as the fork, so a replay reaches the same room while the
+> answer is not one fixed value per node. CONTRACTS' "seat choice ALWAYS ties on seat
+> index, never the RNG" is a rule about enemy *targeting*, which is shown before the
+> players act and must survive a replay unchanged; a vote resolved after everyone has
+> committed is a different case.
+>
+> **Not built:** the map drawing tool above, which is presence rather than routing.
 
 ### 8.6 What is shared and what is each player's own
 
