@@ -15,24 +15,35 @@
  *   import { applyWing, WING_STATUSES } from '../data/wings.js';
  *   applyWing(engine, node.payload?.hazard);      // before startCombat()
  *
- * ── Two rules did not survive contact with the engine ───────────────────────
+ * ── Two rules the engine could not carry as written ─────────────────────────
  *
- * Both are flagged rather than silently reinterpreted, and both are the
- * designer's to overrule:
+ * Both were flagged for the designer, and both were RULED ON, 2026-08-29:
+ * "fix as you deem fit, overrule anything previously written." The engine's
+ * reading stands for each. The second one then moved further than it had.
  *
- * - **Long Shadows** reads "Guard is halved at the start of each of your
+ * - **Long Shadows** read "Guard is halved at the start of each of your
  *   turns". Guard is already WIPED at the start of every player turn
  *   (`_beginPlayerTurn` step 2), so halving it there is a no-op — and this is
- *   a hazard, so a no-op is the one thing it cannot be. Implemented as **Guard
- *   GAINED is halved** while you are in the wing, which is the same threat
- *   ("your defence is worth less in the dark") expressed in a way the engine
- *   can carry.
- * - **The Lights Are Out** reads "start every Scuffle with 2 Unseen". `unseen`
- *   is Hush's status: it does not stack, and every rule for breaking it lives
- *   in his card code, so an enemy handed it would stay hidden forever. This
- *   uses its own status — displayed as "Unseen", because that is what the wing
- *   promises the player — which stacks, starts at 2, and loses one each time
- *   the creature is hurt or attacks. Two events to bring it into the light.
+ *   a hazard, so a no-op is the one thing it cannot be. It is **Guard GAINED
+ *   is halved** while you are in the wing: the same threat ("your defence is
+ *   worth less in the dark") in a shape the engine can carry. Worth naming why
+ *   the literal reading is not merely inert but BACKWARDS — for Guard to be
+ *   halved at turn start it would have to survive the wipe, and a wing that
+ *   let you carry half your Guard forward would be a boon, not a hazard.
+ * - **The Lights Are Out** read "start every Scuffle with 2 Unseen". `unseen`
+ *   is Hush's: it does not stack, and every rule for breaking it lives in his
+ *   card code, so an enemy handed it would stay hidden forever. This wing gets
+ *   its own status, which stacks, starts at 2, and loses one each time the
+ *   creature is hurt or attacks — two events to bring it into the light.
+ *
+ *   It was also DISPLAYED as "Unseen", and that was the half worth changing.
+ *   Hush's own power reads "Starting a turn Unseen gains Nerve", so with Hush
+ *   in a lights-out wing the screen carried "Unseen" on him and "Unseen ×2" on
+ *   every enemy: one glyph, two rules, one of them stacking and one not. It is
+ *   **Lurking** now, on the `lurk` glyph. The id was already `lurking`; only
+ *   the player-facing half was ever ambiguous. `tests/status-names/check.py`
+ *   holds the line — no two statuses may share a display name, because the id
+ *   namespace is not what the player reads.
  */
 
 import { registerStatuses } from '../combat/statuses.js';
@@ -58,7 +69,7 @@ export const WING_STATUSES = [
     },
   },
   {
-    id: 'lurking', name: 'Unseen', kind: 'buff', icon: 'hidden',
+    id: 'lurking', name: 'Lurking', kind: 'buff', icon: 'lurk',
     desc: 'Nothing can be read of what it means to do. Loses 1 when hurt, and 1 when it attacks.',
     decay: 'never', stacks: true,
     hooks: {

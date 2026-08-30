@@ -354,7 +354,7 @@ export function sceneForNode(node) {
 // roundel, exactly the way a real survey flags a condition.
 export const HAZARDS = [
   { id: 'lights-out',   kind: 'hazard', name: 'The Lights Are Out',
-    rule: 'Enemies inside the marked area start every Scuffle with 2 Unseen. You cannot read an intent until Unseen breaks.',
+    rule: 'Enemies inside the marked area start every Scuffle with 2 Lurking. You cannot read an intent until Lurking breaks.',
     note: 'sconces dry · no gas to these rooms', glyph: 'lamp' },
   { id: 'sagging',      kind: 'hazard', name: 'The Floor Sags',
     rule: 'Entering any room inside the marked area costs 3 Courage. The boards remember your weight.',
@@ -373,6 +373,7 @@ export const HAZARDS = [
   // (`_beginPlayerTurn` step 2), so halving it there is a no-op — and a
   // hazard that does nothing is the one thing it cannot be. Reworded to the
   // threat it was plainly reaching for, and implemented in `data/wings.js`.
+  // Confirmed by the designer 2026-08-29, along with the Lurking rename above.
   { id: 'long-shadows', kind: 'hazard', name: 'Long Shadows',
     rule: 'Guard you gain is halved while you are inside the marked area. Your defence is worth less in the dark.',
     note: 'no daylight reaches these rooms', glyph: 'shadow' },

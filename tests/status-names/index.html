@@ -1,0 +1,142 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Status display names — two things may not be called the same thing</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+  .gap { color: #f8c96b; }
+</style>
+<h1>Status display names</h1>
+<div id="out"></div>
+<script type="module">
+/**
+ * A gate against one bug class: **two different statuses rendering the same
+ * word at the player.**
+ *
+ * WHY THIS EXISTS
+ * ---------------
+ * The Lights Are Out gives every enemy a hiding status. It was authored as
+ * "2 Unseen", and `unseen` is already Hush's — it does not stack, and every
+ * rule for breaking it lives in his card code, so an enemy handed the real one
+ * stays hidden forever. `data/wings.js` therefore declared its OWN status,
+ * correctly, under the id `lurking` — and then set `name: 'Unseen'` on it,
+ * because "Unseen" is what the wing's rule text promises.
+ *
+ * The id namespace was clean the whole time. The screen was not. Hush's own
+ * Power reads "Starting a turn Unseen gains Nerve"; a party with Hush in a
+ * lights-out wing showed "Unseen" on Hush and "Unseen x2" on every enemy, the
+ * same `hidden` glyph on both, one stacking and one not, one broken by taking
+ * Courage damage or playing an Attack and one by being hurt or attacking.
+ * Nothing was wrong in any single file. The collision only exists on screen,
+ * which is the one place no unit test was looking.
+ *
+ * This is the sibling of `tests/dup-keys/check.py`: a whole class, gated once,
+ * rather than the instance. **The id namespace is not what the player reads.**
+ *
+ * PROVING THE GATE CAN SEE
+ * ------------------------
+ * CONTRACTS 54 — `tests/bus-names/check.py` printed "0 dead subscriptions"
+ * while blind to the file holding thirty of them. A gate that loads nothing
+ * reports zero collisions and passes. So before the collision check runs, this
+ * asserts the registry is populated AND that one known status from each of the
+ * four layers is present. If a loader breaks, this fails loudly instead of
+ * going quietly green.
+ */
+import { allStatuses } from '../../game/src/combat/statuses.js';
+import { loadContentRegistries } from '../../game/src/data/keywords.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => {
+  (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+  const d = document.createElement('div');
+  d.className = ok ? 'pass' : 'fail';
+  d.textContent = (ok ? 'PASS  ' : 'FAIL  ') + what + (detail ? ` — ${detail}` : '');
+  out.appendChild(d);
+};
+const head = (t) => { const h = document.createElement('h2'); h.textContent = t; out.appendChild(h); };
+const note = (t) => { const d = document.createElement('div'); d.className = 'gap'; d.textContent = t; out.appendChild(d); };
+
+/**
+ * Deliberate shared names, with the reason. A waiver is a claim about the
+ * game, so it is checked in both directions: an entry whose ids no longer
+ * collide FAILS as stale. A control that cannot fail is not a control
+ * (CONTRACTS 52).
+ */
+const WAIVED = {
+  /* Two graveyard Companions, one pun. Pudding's is a fourth cemetery Plot;
+     Mossbit's Guards every friend when an Epitaph matures. They are POWERS,
+     which display on their own Kid's portrait and are read on the card that
+     grants them, so the two never share a status row the way two statuses on
+     one actor would. Renaming either would cost a joke that both chapters are
+     built around and buy nothing a player would notice. */
+  'Family Plot': ['mossbit/family-plot', 'pudding/family-plot'],
+};
+
+/* One id from each registry layer. If any is missing, the loader that feeds
+   this gate is broken and its zero means nothing. */
+const LAYERS = {
+  'core (combat/statuses.js)':          'strength',
+  'companion (companions/keywords.js)': 'unseen',
+  'enemy (enemies/_lib.js)':            'darkness',
+  'wing (data/wings.js)':               'lurking',
+};
+
+async function main() {
+  await loadContentRegistries();
+  const all = allStatuses();
+
+  head('The gate can see');
+  check(all.length >= 200,
+    'the registry is populated', `${all.length} statuses`);
+  for (const [layer, id] of Object.entries(LAYERS)) {
+    check(all.some(s => s.id === id),
+      `${layer} is loaded`, `looked for '${id}'`);
+  }
+
+  head('No two statuses share a display name');
+  const byName = new Map();
+  for (const s of all) {
+    const nm = String(s.name ?? '').trim();
+    if (!byName.has(nm)) byName.set(nm, []);
+    byName.get(nm).push(s.id);
+  }
+
+  check(!byName.has(''), 'every status has a display name',
+    byName.has('') ? `unnamed: ${byName.get('').join(', ')}` : `${byName.size} distinct names`);
+
+  const collisions = [];
+  for (const [nm, ids] of byName) {
+    const uniq = [...new Set(ids)].sort();
+    if (uniq.length < 2) continue;
+    const waived = WAIVED[nm];
+    if (waived && [...waived].sort().join(',') === uniq.join(',')) continue;
+    collisions.push([nm, uniq, waived ? 'waiver does not cover these ids' : '']);
+  }
+
+  check(collisions.length === 0,
+    'no unwaived display-name collisions',
+    collisions.length ? `${collisions.length} found` : `${all.length} statuses checked`);
+  for (const [nm, ids, why] of collisions) {
+    note(`   "${nm}" is used by ${ids.length}: ${ids.join(', ')}${why ? ` (${why})` : ''}`);
+  }
+
+  head('Waivers are still live');
+  for (const [nm, ids] of Object.entries(WAIVED)) {
+    const actual = [...new Set((byName.get(nm) || []))].sort();
+    check(actual.length > 1 && actual.join(',') === [...ids].sort().join(','),
+      `waiver "${nm}" still describes a real collision`,
+      actual.length ? actual.join(', ') : 'no status uses this name any more — delete the waiver');
+  }
+
+  head(`${passes.length} passed, ${fails.length} failed`);
+  window.__RESULT = { passes, fails, passed: passes.length, failed: fails.length, total: all.length };
+  window.__DONE = true;
+}
+
+main().catch((e) => {
+  check(false, 'suite threw', String(e && e.stack || e));
+  window.__RESULT = { passes, fails, passed: passes.length, failed: fails.length, total: 0 };
+  window.__DONE = true;
+});
+</script>
