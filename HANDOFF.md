@@ -61,33 +61,83 @@ SHARED-WRITE. New suite: `tests/taffy/`.
 
 **WHAT IS OPEN, in the order I would take it:**
 
-1. **Party cost is still 15–30 points from solo.** Every encounter beats the
-   arithmetic baseline, but that baseline is "a contentless enemy", not parity.
-   Read §8.3 of the reference before treating this as a defect: StS2 scales
-   enemy HP linearly and does not scale damage either, and its verdict on our
-   matching design is "Keep it; it needs no defending". Nobody has a figure for
-   how much Courage an StS2 party finishes with, so the 15–30 has no source.
-   **The wing conditions have moved party economy and no measured table shows
-   it yet** — the sagging floor charges every Kid now, and five wings that did
-   nothing at all now do something. Re-measure before tuning anything.
+1. **ELITES ARE NOT A FIGHT IN A PARTY, and the lever this list used to name is
+   the wrong one.** Re-measured 2026-08-29 now that five inert wings do
+   something — `party-ledger.py --tier elite --region foyer`, committed as
+   `tests/critic-design/party-ledger-2026-08-29.json`:
+
+   | party | win% | left% | %blocked | aimed | landed | content buys |
+   |---|---|---|---|---|---|---|
+   | 1p | 83.3 | 59.5 | 57.6 | 82.1 | 34.8 | — |
+   | 2p | 100 | 68.7 | 62.5 | 118.1 | 44.3 | +3.5 |
+   | 3p | 100 | 75.1 | 63.7 | 140.8 | 51.2 | +2.5 |
+   | 4p | 100 | 80.8 | 68.3 | 165.9 | 52.6 | +1.2 |
+
+   Read it in this order. **`win%` is 100 at every party size** and 83.3 solo:
+   a Foyer elite is a real fight for one Kid and not a fight at all for two.
+   **`%blocked` CLIMBS with party size**, and the ledger's own rule for that is
+   "the table's Guard budget is the lever and a bigger printed number will be
+   eaten too". **`landed` goes 51.2 → 52.6 from 3p to 4p** while `aimed` goes
+   140.8 → 165.9 — the fourth Kid's share of the threat arrives as 1.4 extra
+   damage. And **what the party content buys COLLAPSES**, +3.5 → +2.5 → +1.2,
+   so the elite is converging on a contentless enemy exactly where it is most
+   outnumbered.
+
+   **This list used to say the lever was AoE coverage. The instrument says it
+   is not.** `party-ledger.html` carries a measured note of its own: "only
+   pierce reliably gets there — a pick SPREADS damage, AoE ADDS damage a party
+   then blocks, and only pierce is KEPT." AoE raises `aimed`, and `%blocked`
+   says a party eats the increase. Pierce is what survives four Kids' Guard.
+   **Do not build AoE for this before reading §8.3 and that note.**
+
+   One number in the table is NOT evidence and is left out above on purpose:
+   `partyGuard` reads 63.8 / 209.3 / 321.8 / 757.9, an 11.9x jump at 4p that no
+   count of seats and turns explains. It is Guard GAINED, not Guard that
+   stopped anything, so a party-wide Guard card scores once per seat and the
+   ratio is not comparable across party sizes. Read `%blocked` instead.
 
 2. **fps and the entry stall need a quiet machine.** Three claims in this
-   document do not reproduce here today.
+   document do not reproduce here today. Unchanged.
 
-3. Steam P2P (designer, ends the no-build rule) and Crinkle's chapter
-   (designer review). Both unchanged.
+3. **Steam P2P is approved and is blocked on something only the designer has.**
+   "Yes build is fine", 2026-08-29. It still needs a wrapper shell, which ends
+   the no-build rule, and it needs a **Steam App ID from a Steamworks partner
+   account** — an account, a fee and a registered app. Nothing in this repo can
+   produce one. `net/transport.js` is ready for it: five members, two working
+   implementations, "a third file rather than a rewrite".
+   **What is NOT blocked, and is the thing to build next:** the turn barrier and
+   idle heartbeats. They close the last netcode case below, they are protocol
+   rather than transport, and `LoopbackHub({ async: true })` already exists to
+   test them against without a wire, a shell or an App ID.
 
-**Design calls waiting on the designer.** None of these is a defect; each is a
-place the code made a choice a person should confirm:
+**Design calls — ALL RESOLVED 2026-08-29.** The designer took every one of these
+back with "fix as you deem fit, overrule anything previously written":
 
-- **Two authored rules did not survive contact with the engine.** Long Shadows
-  read "Guard is halved at the start of each of your turns" and Guard is already
-  WIPED there, so it is now "Guard you GAIN is halved" and mapgen's text was
-  reworded to match. The Lights Are Out read "2 Unseen"; `unseen` is Hush's, it
-  does not stack, and its break rules live in his card code, so the wing uses
-  its own status displayed as "Unseen" which stacks and starts at 2.
-- **A fork with one legal exit still opens a ballot** and resolves instantly.
-- **The vote beat is 1.5 s** and has never been playtested.
+- **Both authored wing rules stand as the engine reads them.** Long Shadows is
+  "Guard you GAIN is halved" — and the literal reading is not merely inert but
+  BACKWARDS, since Guard surviving the turn-start wipe would make the hazard a
+  boon. The Lights Are Out keeps its own stacking status. What DID change is
+  that it no longer displays as "Unseen": Hush's status is called that, his own
+  Power says "Starting a turn Unseen gains Nerve", and a party with Hush in a
+  lights-out wing showed one word, one glyph and two unrelated rules. It is
+  **Lurking** now, and `tests/status-names/` gates the class — no two statuses
+  may share a display name, because the id namespace is not what the player
+  reads.
+- **A single-exit fork no longer opens a ballot.** A door is not a fork: every
+  vote still owed there is forced to the same node, so `voteNode` resolves as
+  soon as the outcome is settled rather than when the last seat has spoken.
+  Same result, sooner. `tests/vote` 30 → 35.
+- **The vote beat stays at 1.5 s**, and the item slightly misread it. It is
+  already conditional — `_walkAfterVote` waits only when `result.rolled`, so
+  solo and unanimous parties never pay it. The 1.5 clears a MEASURED 1.4 s for
+  the announcement to vanish, so it is a floor with something behind it. Whether
+  a beat that clears its floor is the right LENGTH still needs a person
+  watching; it cannot be settled by argument.
+- **Crinkle's chapter is ACCEPTED.** Checked against the build, not just read:
+  90 Tricks named against 90 built, zero drift both ways, and §2's numbers are
+  the code's. Two absences are now recorded in the chapter itself — no
+  per-mechanic "what stops this being universally optimal?" audit, and one-line
+  pool summaries instead of full card text.
 
 **Known-silent, each needing something built first.** `tests/audio/cues.py`
 carries the list and fails if one starts working and stays on it:
