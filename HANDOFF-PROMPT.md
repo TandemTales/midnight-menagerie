@@ -189,6 +189,18 @@ on a person or a machine, or is a decision with the reason already written down.
    again at t+3.3 s. Combat keeps hitching for seconds. **That triplet shape is
    the lead to follow.**
 
+   **The cause is found.** Six `toDataURL` calls, 274 ms, worst 122 ms, zero at
+   the title, all from `cardart.js render()` line 352 — a synchronous PNG
+   encode. Not JS (1289 of 1398 ms sampled is native), not shader linking (that
+   is a boot cost), not texture upload (0.1 ms). "THE CARD-ART HITCH DOES NOT
+   REPRODUCE" has been in HANDOFF since 2026-08-26 and is wrong: the earlier
+   probe instrumented `render` and the cost is the `toDataURL` inside it.
+
+   Pre-warming the encoder was tried and REJECTED — it works in isolation and
+   does nothing in the real transition. The fix is `toBlob` plus object URLs,
+   scoped in `docs/notes/2026-08-30-the-card-art-hitch-is-real.md`, and the
+   note carries the probe that will tell you whether it worked.
+
    Do not subtract a `--scene` run from a `--goto` run: `--goto` already filters
    out page boot and `--scene` does not. The tool's docstring says so because
    that error was made and briefly believed.

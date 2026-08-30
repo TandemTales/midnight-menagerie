@@ -183,6 +183,33 @@ SHARED-WRITE. New suite: `tests/taffy/`.
    mistake was made on 2026-08-30 and briefly "proved" 700 ms of the stall was
    page boot. It was not.
 
+   **AND THE CARD-ART HITCH REPRODUCES TOO, WITH A LINE NUMBER.** This document
+   has said "THE CARD-ART HITCH DOES NOT REPRODUCE" since 2026-08-26. It does.
+   Hooking `HTMLCanvasElement.prototype.toDataURL` across the transition finds
+   **six calls, 274 ms, worst 122 ms, zero of them at the title** — and all six
+   are `cardart.js render()` line 352, a synchronous PNG encode.
+
+   The earlier investigation instrumented `cardart.js render` and reported "6
+   renders, 27.7 ms total, ZERO of them synchronous". Six is the right count; it
+   found the right function and bracketed the wrong side of the call inside it.
+
+   Ruled out first, each by measurement: NOT JavaScript (1289 of 1398 ms sampled
+   is native `(program)`; all game files together are ~48 ms), NOT shader
+   linking (289 ms of blocking `getProgramInfoLog` is a BOOT cost — only 2
+   programs and 12 ms entering combat), NOT texture upload (`texImage2D` is
+   0.1 ms over 61 calls).
+
+   `warmArt`'s incremental budget cannot help: `step` checks its 11 ms budget
+   AFTER each job, so a 122 ms job overruns by 111 ms and the budget only ever
+   stops the NEXT one. A frame budget that cannot protect a frame.
+
+   A fix was tried and REJECTED by measurement — pre-warming the encoder, which
+   works in isolation (25.5 ms then 1–5 ms) and does nothing in the real
+   transition (still 113 ms). Reverted rather than shipped. The real fix is
+   `toBlob` plus object URLs, which is scoped in the note.
+
+   Full detail, including every probe: `docs/notes/2026-08-30-the-card-art-hitch-is-real.md`.
+
 3. **Steam P2P is approved and is blocked on something only the designer has.**
    "Yes build is fine", 2026-08-29. It still needs a wrapper shell, which ends
    the no-build rule, and it needs a **Steam App ID from a Steamworks partner
