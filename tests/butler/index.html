@@ -29,12 +29,32 @@ const say = (html, cls) => { const d = document.createElement('div'); d.classNam
 async function fight(n = 1, o = {}) {
   const e = makeDummyParty(new RNG(o.seed ?? 5), n, {
     maxHp: o.maxHp ?? 80,
-    enemies: [{ def: getEnemy('butler'), hp: o.bossHp ?? 165, id: 'butler' }],
+    /* The DEF's pool, not a number retyped here. A fixture that supplies its
+       own 165 makes "a Kid alone faces the authored 165" a check on the test
+       rather than on the game — see the note in the phase block below. */
+    enemies: [{ def: getEnemy('butler'), hp: o.bossHp ?? getEnemy('butler').hp[0], id: 'butler' }],
   });
   await e.startCombat();
   return e;
 }
 const boss = (e) => e.enemies[0];
+
+/**
+ * The number a House Rule PRINTS for its Reprimand, phase one or phase two.
+ *
+ * The Reprimand assertions below used to hardcode 5, 7, 10 and 12. That made
+ * them checks on the test rather than on the fight — and worse, it let the two
+ * halves of a rule drift apart silently, since a rule states its consequence in
+ * `text` and delivers it in `onBreak` and nothing tied the two together. Read
+ * the printed number and assert the EFFECT matches it, and the check becomes
+ * "this rule does what it says", which is the property that actually matters
+ * at a table where the player is invited to break rules on purpose.
+ */
+const saysReprimand = (id, p2 = false) => {
+  const m = /Reprimand:[^0-9]*(\d+)/.exec(HOUSE_RULES[id](p2).text);
+  if (!m) throw new Error(`no Reprimand number printed by ${id} (p2=${p2})`);
+  return Number(m[1]);
+};
 
 /** Force one specific move and let the enemy phase resolve it. */
 async function useMove(e, id) {
@@ -179,7 +199,8 @@ function standRule(e, id, p2 = false) {
       const c = e.piles.hand[e.piles.hand.length - 1];
       await e.playCard(c.uid, boss(e).id);
     }
-    check(hp0 - e.players[0].hp === 5, 'breaking it costs 5 Courage',
+    check(hp0 - e.players[0].hp === saysReprimand('one-at-a-time'),
+      `breaking it costs the ${saysReprimand('one-at-a-time')} Courage it prints`,
           `lost ${hp0 - e.players[0].hp}`);
     check(e.players[0].block === guard0, 'and it goes THROUGH Guard, which is untouched',
           `Guard ${guard0} -> ${e.players[0].block}`);
@@ -201,7 +222,9 @@ function standRule(e, id, p2 = false) {
       const c = e.piles.hand[e.piles.hand.length - 1];
       await e.playCard(c.uid, boss(e).id);
     }
-    check(hp0 - e.players[0].hp === 7, 'phase two costs 7', `lost ${hp0 - e.players[0].hp}`);
+    check(hp0 - e.players[0].hp === saysReprimand('one-at-a-time', true),
+      `phase two costs the ${saysReprimand('one-at-a-time', true)} it prints`,
+      `lost ${hp0 - e.players[0].hp}`);
   }
 
   say('<h2>GUESTS DO NOT CLUTTER THE HALL — he tidies your Guard away</h2>');
@@ -218,7 +241,9 @@ function standRule(e, id, p2 = false) {
     e.on('block:lose', (ev) => { if (ev.reason === 'reprimand') tidied += (ev.before - ev.after); });
     e.overrideIntent(boss(e), butler.moves['restore-order']);
     await e.endTurn();
-    check(tidied === 10, 'he tidies 10 of YOUR Guard away', `tidied ${tidied}`);
+    check(tidied === saysReprimand('keep-the-hall-clear'),
+      `he tidies the ${saysReprimand('keep-the-hall-clear')} of YOUR Guard it prints`,
+      `tidied ${tidied}`);
     check(boss(e).block - bg0 === 14, 'and gains only what Restore Order itself grants (14)',
           `his Guard +${boss(e).block - bg0}`);
   }
@@ -230,7 +255,9 @@ function standRule(e, id, p2 = false) {
     e.on('block:lose', (ev) => { if (ev.reason === 'reprimand') tidied += (ev.before - ev.after); });
     e.overrideIntent(boss(e), butler.moves['restore-order']);
     await e.endTurn();
-    check(tidied === 12, 'phase two tidies 12', `tidied ${tidied}`);
+    check(tidied === saysReprimand('keep-the-hall-clear', true),
+      `phase two tidies the ${saysReprimand('keep-the-hall-clear', true)} it prints`,
+      `tidied ${tidied}`);
   }
 
   say('<h2>One player\'s actions do not punish another (foyer §26)</h2>');
@@ -271,16 +298,29 @@ function standRule(e, id, p2 = false) {
     };
     const maxOf = async (n) => boss(await fight(n)).maxHp;
 
-    check((await maxOf(1)) === 165, 'a Kid alone faces the authored 165');
-    check(await turnsAt(1, 92), 'and turns him at exactly 92, as authored');
-    check(!(await turnsAt(1, 93)), 'and not a point above it');
+    /* EVERY number here is read from the def. It used to hardcode 165 in four
+       places, its own fixture included, which made "a Kid alone faces the
+       authored 165" a check on a number the test had just supplied — it could
+       not fail when the def moved. When the pool went 165 -> 149 on 2026-08-29
+       that check went on passing while the threshold assertion beside it
+       broke, which is the shape CONTRACTS 52 is about: a control has to be
+       re-checked whenever the thing under it moves. */
+    const POOL = butler.hp[0];
+    const AUTHORED_AT = 92;
+    const soloShare = (100 * AUTHORED_AT / POOL).toFixed(1);
+
+    check((await maxOf(1)) === POOL,
+      'a Kid alone faces the pool the DEF declares', String(POOL));
+    check(await turnsAt(1, AUTHORED_AT),
+      'and turns him at exactly 92, as authored');
+    check(!(await turnsAt(1, AUTHORED_AT + 1)), 'and not a point above it');
 
     for (const n of [2, 3, 4]) {
       const max = await maxOf(n);
-      const want = Math.round(92 * (max / 165));
-      check(max > 165, `${n} Kids face a bigger pool`, String(max));
+      const want = Math.round(AUTHORED_AT * (max / POOL));
+      check(max > POOL, `${n} Kids face a bigger pool`, String(max));
       check(await turnsAt(n, want), `and he turns at the same SHARE of it`,
-        `${want} of ${max} = ${(100 * want / max).toFixed(1)}% vs solo 55.8%`);
+        `${want} of ${max} = ${(100 * want / max).toFixed(1)}% vs solo ${soloShare}%`);
       check(await turnsAt(n, 140),
         'and is ALREADY in phase two at 140, where the absolute 92 left him in phase one',
         `threshold ${want} of ${max}`);

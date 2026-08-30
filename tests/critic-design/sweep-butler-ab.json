@@ -3,14 +3,15 @@
   "TIER": "boss",
   "ENC": null,
   "REGION": "foyer",
-  "N": 24,
+  "N": 48,
   "GEN": 8,
   "BOTS": [
    "competent"
   ],
   "POL": "balanced",
   "SCALES": [
-   1
+   1,
+   1.108
   ],
   "HAUNT": 0,
   "HEAL": 0
@@ -20,14 +21,26 @@
   {
    "bot": "competent",
    "hpScale": 1,
-   "win": 75,
-   "turnsMean": 10.96,
+   "win": 72.9,
+   "turnsMean": 11.46,
    "turnsMed": 11,
-   "costMean": 48.92,
-   "hpAfterWinMean": 31.61,
+   "costMean": 49.5,
+   "hpAfterWinMean": 32.09,
    "courageAtDoor": 64.25,
    "timeouts": 0,
-   "n": 24
+   "n": 48
+  },
+  {
+   "bot": "competent",
+   "hpScale": 1.108,
+   "win": 58.3,
+   "turnsMean": 12.81,
+   "turnsMed": 13,
+   "costMean": 56,
+   "hpAfterWinMean": 28.89,
+   "courageAtDoor": 64.25,
+   "timeouts": 0,
+   "n": 48
   }
  ],
  "errors": []

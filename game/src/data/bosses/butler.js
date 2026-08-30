@@ -37,10 +37,56 @@ import {
  * per step, tests/critic-design/sweep.py) put the fight in the target band at
  * 0.65x — 10.3 turns mean, 9 median, and 42% overall which is ~65% among the
  * runs that arrive in reasonable shape. See docs/NOTES.md for the table.
+ *
+ * BALANCE 2026-08-29: 165 -> 149, and the 16 comes out of PHASE ONE ONLY.
+ *
+ * He had drifted long again once the Governess's Stitched Together was wired.
+ * Re-swept at n=24 against the same captured loadouts, and the useful result
+ * was that NO pool value satisfies both halves of the brief at once:
+ *
+ *     xHP    win%   turns  med        brief: 8-12 turns, 45-65% win
+ *     1.00   62.5   13.08   13        win in band, one turn too long
+ *     0.90   70.8   11.71   12        turns in band, win 6 points over
+ *     0.85   70.8   11.13   11        turns in band, win 6 points over
+ *     0.80   87.5   10.33   11        not close
+ *
+ * Which is the whole diagnosis restated: cutting the pool shortens him by
+ * making him SAFER, and "not dangerous, he is long" is a complaint about both
+ * halves. A flat multiplier cannot fix it because `phaseAt` scales the
+ * threshold WITH the pool, so 0.9x shrinks the dangerous half by 0.9 too.
+ *
+ * So the threshold does not move. `BASE_HP` is pinned to the new pool, which
+ * keeps PHASE2_AT at an absolute 92 and takes the entire cut out of phase one:
+ * 73 Courage of preamble becomes 57, while the 92 that is actually the fight
+ * is untouched. Phase two goes from 56% of him to 62%. Shorter, and NOT
+ * proportionally safer — the only cut that answers the sentence.
+ *
+ * THE POOL ALONE STILL WAS NOT ENOUGH, and this is the measurement that says
+ * so — a true A/B in one run at n=48, the old pool reproduced as x1.108:
+ *
+ *     149   72.9% win   11.46 turns   med 11   cost 49.5
+ *     165   58.3% win   12.81 turns   med 13   cost 56.0
+ *
+ * Length went into the band and the win rate walked straight out of the other
+ * side of it, because a shorter fight is a fight he has fewer turns to hurt
+ * you in. Two criteria, one lever, and the lever moves them in opposite
+ * directions — which is what "he is not dangerous, he is LONG" was always
+ * saying: both halves are wrong and the pool only addresses one.
+ *
+ * So phase two stops being polite. Every p2 Reprimand is up — 8->10, 7->9,
+ * 12->16 Guard tidied, 7->10 retaliation — and every phase-ONE number is
+ * untouched, so the fight he opens with is the fight he always opened with.
+ * The House Rules are where his pressure is supposed to live and `p2` already
+ * exists to make them harsher; this is that flag doing more of its job, not a
+ * new mechanic. Reprimand TEXT moves with every value, because a rule that
+ * misquotes its own consequence is the one thing this fight cannot afford.
  */
 const PHASE2_AT = 92;
-/** The pool the threshold above was authored against. See `phaseAt`. */
-const BASE_HP = 165;
+/** The pool the threshold above was authored against. See `phaseAt`.
+ *  Pinned to the LIVE pool on purpose: `phaseAt` scales the threshold by
+ *  `max / soloMax`, so leaving this at the old 165 would have quietly pulled
+ *  phase two down to 83 and undone the point of the change. */
+const BASE_HP = 149;
 
 // ── The four House Rules ─────────────────────────────────────────────────────
 /**
@@ -51,10 +97,10 @@ export const HOUSE_RULES = {
   'no-running': (p2) => ({
     id: 'no-running',
     name: 'GUESTS DO NOT RUSH',
-    text: `Playing a fourth Trick this turn breaks the rule. Reprimand: ${p2 ? 8 : 6} damage.`,
+    text: `Playing a fourth Trick this turn breaks the rule. Reprimand: ${p2 ? 12 : 6} damage.`,
     when: 'cardPlayed', once: true,
     broken: (rc) => (rc.cardsPlayedThisTurn || []).length >= 4,
-    onBreak: (c) => hitPlayer(c, p2 ? 8 : 6),
+    onBreak: (c) => hitPlayer(c, p2 ? 12 : 6),
   }),
   /**
    * BALANCE 2026-08-28: the Reprimand was +8/10 GUARD. It is now damage that
@@ -84,7 +130,7 @@ export const HOUSE_RULES = {
   'one-at-a-time': (p2) => ({
     id: 'one-at-a-time',
     name: 'GUESTS WAIT THEIR TURN',
-    text: `Playing two Tricks of the same type in a row breaks the rule. Reprimand: ${p2 ? 7 : 5} damage, ignoring Guard.`,
+    text: `Playing two Tricks of the same type in a row breaks the rule. Reprimand: ${p2 ? 11 : 5} damage, ignoring Guard.`,
     when: 'cardPlayed', once: true,
     broken: (rc) => {
       const h = rc.cardsPlayedThisTurn || [];
@@ -92,7 +138,7 @@ export const HOUSE_RULES = {
     },
     // No explicit target: the engine pins a Reprimand's ctx to the Kid who
     // broke it, so this reaches them and nobody else (foyer §26).
-    onBreak: (c) => c.damage(p2 ? 7 : 5, { pierce: true }),
+    onBreak: (c) => c.damage(p2 ? 11 : 5, { pierce: true }),
   }),
   /**
    * BALANCE 2026-08-20 — thresholds lowered from 18 Guard and 20 damage.
@@ -130,12 +176,12 @@ export const HOUSE_RULES = {
      *
      * DEVIATION from foyer §18 (10 Guard to him), same reasoning as §17 above.
      */
-    text: `Ending your turn with 12 or more Guard breaks the rule. Reprimand: he tidies ${p2 ? 12 : 10} of your Guard away.`,
+    text: `Ending your turn with 12 or more Guard breaks the rule. Reprimand: he tidies ${p2 ? 16 : 10} of your Guard away.`,
     when: 'turnEnd', once: true,
     broken: (rc) => (rc.playerBlock || 0) >= 12,
     // `c.player` is the Kid who broke it — the engine pins a Reprimand's ctx
     // to the breaker, so this reaches them and nobody else (foyer §26).
-    onBreak: (c) => c.loseBlock(c.player, p2 ? 12 : 10, 'reprimand'),
+    onBreak: (c) => c.loseBlock(c.player, p2 ? 16 : 10, 'reprimand'),
   }),
   /**
    * BALANCE 2026-08-20 (round 2): back to the plain `rc.damageDealtThisTurn`.
@@ -152,7 +198,7 @@ export const HOUSE_RULES = {
   'no-roughhousing': (p2) => ({
     id: 'no-roughhousing',
     name: 'GUESTS DO NOT ROUGHHOUSE',
-    text: `Dealing 15 or more damage this turn breaks the rule. Reprimand: his next damaging attack deals ${p2 ? 7 : 5} more.`,
+    text: `Dealing 15 or more damage this turn breaks the rule. Reprimand: his next damaging attack deals ${p2 ? 10 : 5} more.`,
     when: 'turnEnd', once: true,
     broken: (rc) => (rc.damageDealtThisTurn || 0) >= 15,
     /**
@@ -165,7 +211,7 @@ export const HOUSE_RULES = {
      * promotes at his own turn end, so the boost is visible on the intent that carries it.
      * (Only reachable at all since the engine started maintaining damageDealtThisTurn.)
      */
-    onBreak: (c) => { mem(c).retaliationPending = (mem(c).retaliationPending || 0) + (p2 ? 7 : 5); },
+    onBreak: (c) => { mem(c).retaliationPending = (mem(c).retaliationPending || 0) + (p2 ? 10 : 5); },
   }),
 
   /**
@@ -202,7 +248,7 @@ export const butler = {
   region: 'foyer',
   tier: 'boss',
   role: 'boss',
-  hp: [165, 165],
+  hp: [149, 149],
   silhouette: 'butler',
   palette: ['#14161d', '#2c3140', '#e9e4d4'],
   shape: { body: 'tall-thin', limbs: 2, eyes: 2 },

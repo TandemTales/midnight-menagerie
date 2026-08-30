@@ -3,7 +3,7 @@
   "TIER": "boss",
   "ENC": null,
   "REGION": "foyer",
-  "N": 24,
+  "N": 48,
   "GEN": 8,
   "BOTS": [
    "competent"
@@ -20,14 +20,14 @@
   {
    "bot": "competent",
    "hpScale": 1,
-   "win": 75,
-   "turnsMean": 10.96,
+   "win": 64.6,
+   "turnsMean": 11.52,
    "turnsMed": 11,
-   "costMean": 48.92,
-   "hpAfterWinMean": 31.61,
+   "costMean": 52.46,
+   "hpAfterWinMean": 32.13,
    "courageAtDoor": 64.25,
    "timeouts": 0,
-   "n": 24
+   "n": 48
   }
  ],
  "errors": []
