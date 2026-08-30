@@ -1857,10 +1857,18 @@
 /* ONE COLUMN, one panel per teammate. The panel used to be positioned
    absolutely on its own because there was only ever one of them; a party of
    four needs three, so the COLUMN holds the position and the panels stack. */
+/* ABOVE `.cb-field` (z-index 20), which is a full-width invisible box from
+   62px down to 40% and therefore sits right over this column. That never
+   mattered while the rail was pure display; the moment a teammate panel
+   became clickable, every click landed on the field instead and Playwright
+   reported `.cb-field intercepts pointer events`. The rail is a narrow
+   left column and the enemies are centred, so raising it costs nothing
+   visually and is cheaper than making the field transparent to hits, which
+   is what enemy targeting reads. */
 .cb-mates {
   position: absolute;
   left: var(--s-4); top: calc(var(--hud-h, 44px) + var(--s-3));
-  z-index: 6;
+  z-index: 21;
   display: flex; flex-direction: column; gap: var(--s-2);
   pointer-events: none;
 }
@@ -1963,3 +1971,12 @@
 @media (prefers-reduced-motion: reduce) {
   .cb-mate__fill { transition: none; }
 }
+
+/* A teammate's panel opens their deck (STS2-REFERENCE 8.4: a deck list is
+   open information; only a HAND is private). Say so with the pointer and a
+   lit edge on hover, and give it a real focus ring — it is reachable by
+   keyboard because it carries role=button and a tabindex. */
+.cb-mate.is-openable { cursor: pointer; }
+.cb-mate.is-openable:hover,
+.cb-mate.is-openable:focus-visible { border-color: var(--flame-400); }
+.cb-mate.is-openable:focus-visible { outline: var(--focus-ring); }

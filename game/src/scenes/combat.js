@@ -2521,6 +2521,31 @@ export class CombatScene extends Scene {
         const panel = i === 0 ? this.$mate : this.$mate.cloneNode(true);
         panel.hidden = false;
         this.$mates.appendChild(panel);
+        /**
+          * A TEAMMATE'S DECK IS OPEN INFORMATION, so their panel opens it.
+          *
+          * `docs/STS2-REFERENCE.md` §8.4: "You can inspect any teammate's full
+          * deck and relics at any time, for the whole run." The scorecard has
+          * carried this as "Behind, buildable now" since it was researched —
+          * buildable because it never needed the wire. Our veil exists because
+          * a HAND is private; a deck LIST is not, and `run.deckViewsOf` has
+          * been able to answer for any Kid the whole time.
+          *
+          * It is the panel itself rather than a new button: the thing you want
+          * to look into is the person, and there is already a picture of them
+          * on screen. `role="button"` and a tabindex rather than a real
+          * <button> so the vitals inside keep their own layout — the panel is
+          * a section full of bars, and a <button> wrapping them changes how
+          * every one of them is sized.
+          */
+        panel.setAttribute('role', 'button');
+        panel.tabIndex = 0;
+        panel.classList.add('is-openable');
+        const open = () => this._openMateDeck(i);
+        panel.addEventListener('click', open);
+        panel.addEventListener('keydown', (ev) => {
+          if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); open(); }
+        });
         this._matePanels.push({
           root: panel,
           art: panel.querySelector('.cb-mate__art'),
@@ -2541,6 +2566,29 @@ export class CombatScene extends Scene {
     for (let i = 0; i < list.length; i++) this._paintMate(this._matePanels[i], list[i]);
   }
 
+  /**
+   * Look into a teammate's deck.
+   *
+   * Indexed by POSITION IN `this.mates`, not by seat, because that is what the
+   * panels were built from — and `mates` is `players` with the local seat
+   * filtered out, so the two only agree below your own seat. Resolving it back
+   * through `m.seat` is what keeps seat 3 from opening seat 2's deck at a table
+   * of four.
+   */
+  async _openMateDeck(index) {
+    const m = this.mates[index];
+    const run = this.ctx?.run;
+    if (!m || !run) return;
+    const kid = run.kidAt(m.seat);
+    if (!kid) return;
+    const cards = run.deckViewsOf(kid) || [];
+    try { this.ctx.audio?.play?.('ui:confirm'); } catch { /* audio is best-effort */ }
+    await openPile({
+      mode: 'deck', cards, ctx: this.ctx, host: this.ctx?.dom,
+      title: `${run.kidNameOf?.(kid) || 'Your friend'}'s Tricks`,
+    });
+  }
+
   /** One teammate's panel. */
   _paintMate(el, m) {
     if (!el || !m) return;
@@ -2556,6 +2604,13 @@ export class CombatScene extends Scene {
         el.art.addEventListener('error', () => { el.art.style.display = 'none'; }, { once: true });
       } else el.art.style.display = 'none';
     }
+
+    /* Named on the panel itself, so the affordance says whose deck it opens
+       rather than "your friend". Re-set on every paint because a fallen Kid's
+       name can change how the row reads. */
+    const who = this.ctx?.run?.kidNameOf?.(this.ctx?.run?.kidAt?.(m.seat));
+    el.root.setAttribute('aria-label', who ? `See ${who}'s Tricks` : "See your friend's Tricks");
+    el.root.title = el.root.getAttribute('aria-label');
 
     const maxHp = m.maxHp || 1;
     const pct = Math.max(0, Math.min(1, m.hp / maxHp));
