@@ -275,10 +275,16 @@ This is the part of StS2 co-op that reviewers single out, and the part we have l
 > offline, while you are aiming, the other Kid is behind an opaque veil and has not chosen
 > anything, so there is no state to draw. Building it now would ship a mechanic no code
 > path can call, which is the failure class that has already cost this project two rounds.
-> **Inspecting a teammate's deck and Keepsakes does not need the wire.** A deck list is not
-> a hand — our veil exists because a hand of Tricks is private, while StS2 treats the deck
-> as open information for the whole run. That is a real, buildable gap that was on none of
-> our lists.
+> **Inspecting a teammate's DECK — BUILT 2026-08-30.** It never needed the wire: a deck
+> list is not a hand, our veil exists because a hand of Tricks is private, and
+> `run.deckViewsOf(kid)` could always answer for any Kid. Nothing had ever called it for
+> anyone but the local seat. Their panel in the combat rail opens it, under their name,
+> through the same `ui/deckview.js` everything else uses — so it arrives with search,
+> filters and sort for free. `tests/coop/matedeck.py`, 8 checks, and they compare the two
+> decks rather than counting cards: your deck is ten cards too.
+>
+> **KEEPSAKES are still not viewable**, which is the other half of this line and is
+> deliberately not claimed. StS2 shows relics as well.
 
 ### 8.5 The map — one route, voted
 
@@ -456,7 +462,9 @@ Their loudest technical complaint, by a wide margin, is **disconnects**:
 | Fallen and revival | **Level** — same rule, same 30% Mend |
 | Co-op-only card architecture | **Level** — 5 per character, held out of the solo pool |
 | Route voting | **Built 2026-08-29** — every Kid votes, weighted roulette settles a split (§8.5) |
-| Inspecting a teammate's deck and Keepsakes | **Behind, buildable now** |
+| Inspecting a teammate's DECK | **Built 2026-08-30** — their panel in the combat rail opens it (§8.4) |
+| Inspecting a teammate's KEEPSAKES | **Behind, buildable now** — the other half of §8.4, still unbuilt |
+| Hosting and joining a game at all | **Built 2026-08-30** — the Treehouse, `scenes/lobby.js`. `net/lobby.js` had been tested and unreachable since 2026-08-28: no host UI, no join UI, no code field. Works today over `ChannelTransport` (two tabs); Steam swaps one constructor |
 | Simultaneous turn window | **Behind, transport-blocked** — our window is sequential |
 | Resolution order as a coordination mechanic | **Behind, transport-blocked** |
 | Teammate cursor / hovering hand | **Behind, transport-blocked** |

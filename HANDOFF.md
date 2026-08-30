@@ -216,6 +216,20 @@ SHARED-WRITE. New suite: `tests/taffy/`.
    account** — an account, a fee and a registered app. Nothing in this repo can
    produce one. `net/transport.js` is ready for it: five members, two working
    implementations, "a third file rather than a rewrite".
+   **THE LOBBY IS BUILT, 2026-08-30, and Steam was never the last piece.**
+   `net/lobby.js` had been tested since 2026-08-28 and nothing in `game/src/`
+   imported it: no host UI, no join UI, no room-code field anywhere in the game.
+   `SteamTransport` would have landed and there would still have been no way for
+   a player to start a networked game. The Treehouse (`scenes/lobby.js`) works
+   today over `ChannelTransport` — two tabs, two Sessions, two Runs, one seed —
+   and `tests/coop/lobby.py` drives both at once for 15 checks. **Tested is not
+   the same as reachable**, and a suite that only builds a `Lobby` in a harness
+   cannot tell the difference.
+
+   Also built the same day: **inspecting a teammate's DECK** (§8.4, carried as
+   "buildable now" since it was researched; `tests/coop/matedeck.py`). Their
+   KEEPSAKES are the half still unbuilt, and are still unblocked.
+
    **The turn barrier and idle heartbeats are BUILT, 2026-08-29** — they were
    the part that never needed the transport. A turn T-1 input sorts before
    every turn T input whatever the seats are, so a client that reached turn T

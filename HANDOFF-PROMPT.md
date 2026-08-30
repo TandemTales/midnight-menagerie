@@ -110,8 +110,10 @@ RUN on 2026-08-30, not copied forward; if one differs, that is the finding.
     truffle 27 · drizzle 70 · pudding 46 · mossbit 55 · brambleboo 52
     crinkle 44 · pipkin 18 · taffy 8      plus butler 38 · governess 56
 
-  four co-op screens, all "0 failures, 0 console errors":
+  SIX co-op screens, all "0 failures, 0 console errors":
     tests/coop/selectscreen.py · hotseat.py · rooms.py · playthrough.py
+    tests/coop/lobby.py     15 checks ← two tabs, one seed, two seats
+    tests/coop/matedeck.py   8 checks ← a friend's deck, and it is THEIRS
 
 ━━ WHAT IS OPEN ━━
 
@@ -127,6 +129,20 @@ on a person or a machine, or is a decision with the reason already written down.
    members, two working implementations, "a third file rather than a rewrite".
    It also ends the no-build rule, which is a real change to how the project is
    developed and not a side effect to absorb quietly.
+
+   **It is no longer the last piece, and calling it that was the mistake.**
+   `net/lobby.js` had been written, documented and TESTED since 2026-08-28 with
+   nothing in `game/src/` importing it — no host UI, no join UI, no code field
+   anywhere, every `join` in the scenes an `Array.join()`. Steam would have
+   landed and there would STILL have been no way to start a networked game.
+   **The Treehouse (`scenes/lobby.js`) is built as of 2026-08-30** and works
+   today over `ChannelTransport`: two tabs are two Sessions, two Runs and two
+   boards from one seed. `tests/coop/lobby.py` drives both at once, 15 checks.
+   Steam now genuinely is one constructor.
+
+   Tested code is not reachable code. A suite that only ever builds a `Lobby`
+   in a harness cannot tell the difference — CONTRACTS 54 with the serial
+   numbers filed off.
 
 2. **The same-turn netcode race.** The cross-turn half is CLOSED — the turn
    barrier and idle heartbeats were built 2026-08-29 and never needed the
