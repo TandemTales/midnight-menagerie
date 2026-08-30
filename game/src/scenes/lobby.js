@@ -52,6 +52,7 @@ import { KIDS, COMPANIONS } from '../data/schema.js';
 import { MAX_PARTY } from '../combat/engine.js';
 import { Lobby, seedFromRoom } from '../net/lobby.js';
 import { Session } from '../net/session.js';
+import { attachSession } from '../net/actions.js';
 import { ChannelTransport, canChannel } from '../net/transport.js';
 import {
   ensureCss, el, rovingFocus, reduceMotion,
@@ -363,7 +364,12 @@ export class LobbyScene extends Scene {
         transport: this._transport, seat: roster.seat,
         seats: roster.seats, seed: roster.seed, host: roster.host,
       });
-      session.attach(run);
+      /* `attachSession`, NOT `session.attach(run)`. The latter only sets a
+         back-pointer; it registers no `on('input')` handler, so the first
+         version of this screen launched a networked run in which nothing
+         either player did was ever applied. Both tabs reached the map and the
+         suite went green. See the note on `attachSession`. */
+      attachSession(session, run);
       /* The transport now belongs to the Session. `exit()` must not close it,
          which is what `_launching` is for. */
       this._transport = null;

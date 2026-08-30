@@ -22,6 +22,15 @@ different seats mean the sorted-peer-id rule assigned them without an election;
 `remote` means `shouldHandOff()` will not veil a screen that belongs to a person
 in another window.
 
+AND THEN IT SENDS AN ACTUAL INPUT, which is the check this suite shipped
+without and needed most. The first version of the lobby called
+`session.attach(run)` — which only sets a back-pointer — instead of
+`attachSession(session, run)`, so no `on('input')` handler was ever registered
+and `attachActions` had NO CALLER anywhere in `game/src/`. A networked run
+started, both tabs reached the map, all fifteen checks passed, and nothing
+either player did would ever have been applied. Reaching the map is not
+playing; only an input crossing proves the wire.
+
 Exit code 0 only when every assertion passes and neither page logs an error.
 """
 import asyncio
@@ -127,6 +136,44 @@ async def main():
             check({snaps["host"]["seat"], snaps["guest"]["seat"]} == {0, 1},
                   "and hold DIFFERENT seats, assigned with no election",
                   f'{snaps["host"]["seat"]} / {snaps["guest"]["seat"]}')
+
+        # ── and now an input has to actually CROSS ────────────────────────
+        wired = await host.evaluate(
+            "() => (window.MM.ctx.run?.session?._listeners?.input?.size | 0)")
+        check(wired > 0,
+              "the session has an input applier registered at all \u2014 "
+              "`attachSession`, not `session.attach`", str(wired))
+
+        # One vote from ONE tab. It must appear in BOTH logs: the sender applies
+        # its own, and the wire carries it to the other.
+        before = [await pg.evaluate("() => window.MM.ctx.run.session.log.length")
+                  for pg in (host, other)]
+        sent = await host.evaluate("""async () => {
+          const { act, ACT } = await import('/game/src/net/actions.js');
+          const { INPUT } = await import('/game/src/net/session.js');
+          const r = window.MM.ctx.run;
+          const id = r.legalNextIds()[0];
+          if (!id) return null;
+          await act(r, { t: INPUT.ROOM, act: ACT.MAP_VOTE, id });
+          return id;
+        }""")
+        check(bool(sent), "the host can vote for a room", str(sent))
+        await host.wait_for_timeout(1200)
+        await other.wait_for_timeout(1200)
+        after = [await pg.evaluate("() => window.MM.ctx.run.session.log.length")
+                 for pg in (host, other)]
+        check(after[0] > before[0],
+              "the sender logged its own input", f"{before[0]} -> {after[0]}")
+        check(after[1] > before[1],
+              "AND IT CROSSED \u2014 the other tab logged it too, which is the whole "
+              "wire in one assertion", f"{before[1]} -> {after[1]}")
+
+        voted = [await pg.evaluate(
+            "() => Object.keys(window.MM.ctx.run.pendingVote?.votes || {}).length")
+            for pg in (host, other)]
+        check(voted[0] == voted[1] and voted[0] >= 1,
+              "and both tabs agree the ballot has that vote on it",
+              f"{voted[0]} / {voted[1]}")
 
         await browser.close()
 

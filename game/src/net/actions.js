@@ -50,6 +50,7 @@
 
 import { INPUT } from './session.js';
 import { SNACKS } from '../state/run.js';
+import { bus } from '../core/bus.js';
 
 /**
  * What a Kid can do in a room. One verb per thing the run layer can be asked
@@ -379,4 +380,49 @@ export function attachChoices(session, engine) {
   return () => { off(); broker.setRemote(null); answers.clear(); waiting.clear(); };
 }
 
-export default { ACT, act, applyInput, attachActions, attachChoices, cardAt, deckIndex };
+/**
+ * Wire a session to a run COMPLETELY. The one call a screen should make.
+ *
+ * `attachActions` and `attachChoices` are two halves of the same job and were
+ * separately forgettable — which is not hypothetical. On 2026-08-30 the new
+ * lobby screen built a Session, called `session.attach(run)` (which only sets a
+ * back-pointer) and shipped: the run started, both tabs reached the map, the
+ * suite went green on fifteen checks, and NOTHING EITHER PLAYER DID WOULD EVER
+ * HAVE BEEN APPLIED, because nothing had registered `session.on('input')`.
+ * `attachActions` had no caller anywhere in `game/src/` at all.
+ *
+ * So there is one function now, and it is the one a screen calls.
+ *
+ * CHOICES ARE PER-FIGHT, which is the part that made this easy to half-do.
+ * `attachChoices` takes an ENGINE, not a run, because `engine.choices` is the
+ * broker it installs a remote resolver on — and a run builds a new engine for
+ * every Scuffle. So this subscribes to `run:combatStart` and re-attaches each
+ * time, and drops the previous fight's resolver first: leaving the old one
+ * installed would answer the new fight's questions with the dead fight's
+ * `seq` map.
+ *
+ * @returns {() => void} detach everything, in the right order.
+ */
+export function attachSession(session, run) {
+  if (!session || !run) return () => {};
+  const offActions = attachActions(session, run);
+
+  let offChoices = null;
+  const wire = (engine) => {
+    try { offChoices?.(); } catch { /* a resolver already gone is fine */ }
+    offChoices = engine ? attachChoices(session, engine) : null;
+  };
+  // A fight may already be up if this is a rejoin rather than a fresh start.
+  if (run.combat) wire(run.combat);
+  const offStart = bus.on('run:combatStart', (ev) => wire(ev?.engine || run.combat));
+  const offEnd = bus.on('run:combatEnd', () => wire(null));
+
+  return () => {
+    try { offEnd(); } catch { /* already gone */ }
+    try { offStart(); } catch { /* already gone */ }
+    try { offChoices?.(); } catch { /* already gone */ }
+    try { offActions(); } catch { /* already gone */ }
+  };
+}
+
+export default { ACT, act, applyInput, attachActions, attachChoices, attachSession, cardAt, deckIndex };
