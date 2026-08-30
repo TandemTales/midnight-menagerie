@@ -327,32 +327,81 @@ FIXED:
    call now, and `tests/coop/lobby.py` sends a real vote and asserts it lands on
    both tabs. See the commit; this is the single best argument for the sweep.
 
-2. **`autoEndTurn` is a live settings control that does nothing.** No code reads
-   it — four hits repo-wide, all of them the declaration, the default and the
-   header. `ui/settings.js`'s own header claims every control "actually takes
-   effect" and names `autoEndTurn` among the flags "read from `Save.settings` at
-   the point of use". Either wire it or take the toggle off the panel; a switch
-   that does nothing is worse than an absent feature.
+2. **FIXED — `autoEndTurn` AND `confirmSingleTarget` were live settings
+   controls that did nothing.** Four hits repo-wide each, every one of them a
+   declaration, a default, or the header sentence claiming they are read. Both
+   are implemented in `scenes/combat.js` now. Auto end fires on the exact
+   condition `_syncEndTurn` was already computing for the End Turn button's
+   `is-ready` class, and is handed that same value so the two cannot disagree;
+   it guards on `me.ended`, without which a party seat waiting on the other
+   three reads as "nothing playable" and ends its turn on a loop. The confirm
+   goes on the TAP path, which is the only place in the game that picks a
+   target for you. `tests/settings-play/run.py` (19) runs the CONTROL first for
+   both halves — same board, same gesture, setting off — because "the turn
+   ended" and "a dialog appeared" are both things that happen for other reasons.
 
-3. **Eight unplayable Status/Curse cards in `data/neutral.js` carry `effect`
-   blocks that can never run.** A card's `effect` is invoked in exactly one
+3. **FIXED — nine unplayable Status/Curse cards in `data/neutral.js` printed
+   rules that had never once run.** A card's `effect` is invoked at exactly one
    place and that place is behind `canPlay`, which refuses every `unplayable`
-   card. Their printed rules text has never done anything — the wing conditions
-   again, in the card pool.
+   card. `handHooks` on a CardDef is the seam now: hooks that fire while the
+   card sits in a HAND, dispatched through the existing machinery in
+   `combat/hooks.js`, so a held card gets the same payload, determinism and dev
+   guard as a status. Four things it had to get right are written up in the
+   commit; the one with reach beyond these cards is `applyStatus(…, {fresh:
+   true})`, which spares a status applied during its owner's own end-of-turn
+   step from the decay that runs moments later. Without it Bad Luck's Weak
+   expired in the same breath it arrived. Slay the Spire calls this
+   `justApplied` and needs it for the identical reason. `tests/hand-cards/`
+   (40) carries a control per card and the GATE for the class: an `unplayable`
+   card may not have a working `effect`.
 
-4. **`gameover.js` fabricates 3–6 Keepsakes for a REAL run that ended carrying
-   none**, contradicting its own header ("Nothing here is a placeholder"), and
-   five of the seven fabricated ids do not exist in `data/relics.js`.
+4. **FIXED — `gameover.js` fabricated 3–6 Keepsakes for a REAL run that ended
+   carrying none**, contradicting its own header ("Nothing here is a
+   placeholder"). `_summarise` collapsed an EMPTY list to the same `null` it
+   used for "there is no run", so the fallback fired for both. Reading the
+   fallback table made it worse than the sweep reported: five of its seven ids
+   do not exist, and BOTH that do were printed with invented rules — the shelf
+   said Chewed Tennis Ball gives you a Nerve and Spare Batteries recharge Gear.
+   Seven entries, seven wrong. The table is gone; the deep link's shelf comes
+   off the real `RELICS` now, and a run that kept nothing says so.
+   `tests/gameover-keeps/run.py` (16) compares every printed rule
+   character-for-character against `data/relics.js`.
 
-5. **`ANIMATED_EVENTS` is exported, documented, and read by nothing.** Five of
-   the 23 events it names have no animator case either.
+5. **FIXED — DeckView's Vanished pile could not be opened.** The component's
+   header lists "the Vanished pile" among the moments it serves and carries the
+   MODES entry for it; nothing in the game ever passed `mode:'exhaust'`. Cards
+   left the Scuffle and the only place that could account for them was
+   unreachable. There is a pile button now, hidden while the pile is empty as
+   Torn is, with T as its hotkey. `tests/piles-reachable/run.py` (24) gates the
+   class rather than the instance: it asks the ENGINE which piles it keeps and
+   requires each to be openable or exempt with a written reason.
+
+6. **`ANIMATED_EVENTS` is exported, documented, and read by nothing.** Five of
+   the 23 events it names have no animator case either. STILL OPEN.
+
+**FIVE OF THE SIX ABOVE ARE NOW FIXED, 2026-08-30**, and they are exactly the
+four the previous handoff named as the best-evidenced work available.
+
+**That handoff called all four "the 24 verified sweep findings" and it was
+wrong about three of them.** Only the Vanished pile (and the deckview.js sort
+claim beside it) came from the verified 24. `autoEndTurn`,
+`confirmSingleTarget`, `gameover.js` and the neutral.js cards were LEADS
+carrying nothing but their finder's own searches. Every one turned out to be
+real when checked, and one — `gameover.js` — was materially WORSE than its
+finder said: the two fallback ids that DO exist in `data/relics.js` were also
+printed with invented rules text, so the table was seven entries and seven
+wrong rather than five missing out of seven.
+
+Which is the argument for reading the 87, and not an argument for trusting
+them. Each of the four took a fresh look at the code before a line was written;
+the leads were right about where to look and imprecise about what was there.
 
 **READ THE NUMBERS HONESTLY.** The sweep returned 111 findings and its own log
 says all 111 survived the skeptics. That line is WRONG and the bug is mine: the
 script joined each skeptic's verdict to its finding by exact `where` string, the
 skeptics phrased theirs differently, and every unjoined finding fell through as
 kept. **24 carry a real adversarial verdict. 87 carry only their finder's own
-evidence.** Numbers 2–5 above are from the verified 24. The rest are leads with
+evidence.** Number 5 above is from the verified 24; 2, 3, 4 and 6 are leads. The rest are leads with
 homework attached, and the whole list — with every `rg` invocation each finder
 actually ran — is in `docs/notes/2026-08-30-the-unreachable-sweep.md`. Re-run the
 skeptic pass with a stable join before believing the total.

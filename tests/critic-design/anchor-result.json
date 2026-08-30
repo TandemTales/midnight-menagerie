@@ -82,13 +82,13 @@
    "same": true,
    "bench": {
     "win": true,
-    "turns": 11,
-    "dmg": 37
+    "turns": 12,
+    "dmg": 60
    },
    "party": {
     "win": true,
-    "turns": 11,
-    "dmg": 37,
+    "turns": 12,
+    "dmg": 60,
     "errs": 0
    }
   }

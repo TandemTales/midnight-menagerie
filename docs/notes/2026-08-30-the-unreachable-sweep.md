@@ -33,6 +33,40 @@ pair, or an index) before believing the total.**
 
 Composition: 61 unreachable, 48 false-claim, 2 cannot-fail. By area: claims 23, combat 16, data 21, plumbing 17, scenes 11, ui 23.
 
+---
+
+## Closed later the same day
+
+Six findings are FIXED and marked as such below. In the order they were taken:
+
+| finding | where it sat | what it turned out to be |
+|---|---|---|
+| Leads 1 + 2 + 57 — `autoEndTurn`, `confirmSingleTarget` | lead | both implemented in `scenes/combat.js`; `tests/settings-play/run.py` (19) |
+| Leads 7 — `gameover.js` fabricates Keepsakes | lead | **worse than reported**; `tests/gameover-keeps/run.py` (16) |
+| Leads 28 — nine unplayable cards' rules never ran | lead | a new `handHooks` seam on CardDef; `tests/hand-cards/run.py` (40) |
+| Verified 1 — DeckView's Vanished pile | verified | a pile button and the `T` hotkey; `tests/piles-reachable/run.py` (24) |
+| Verified 2 — deckview.js's sort claim | verified | a two-line doc fix; combat.js really does no sorting |
+
+**What that says about the 24/87 split.** Two of the six came from the verified
+24 and four were unverified leads — and every one of the four was real when
+checked. One was materially worse than its finder said: the `gameover.js`
+fallback table was reported as "5 of 7 ids do not exist", and reading the two
+that DO exist showed both were printed with invented rules text. Seven entries,
+seven wrong.
+
+So the 87 are worth reading. They are still not worth trusting unread, which is
+the same sentence with the verb changed. Each one took a fresh look at the code
+before a line was written, and the leads' own searches were right about where to
+look and imprecise about what was there.
+
+**And one thing no finding contained,** which is the other half of what a sweep
+is for. Lead 28 read the engine correctly and said the nine cards' rules could
+never run. It could not tell you that `onCardDrawn` and `onCardPlayed` are
+GLOBAL dispatches, so in a party a Curse in YOUR hand hears about a teammate's
+draw and would have charged you for their turn; or that Weak and Frail expire in
+the same `turnEnd` bucket the fix fires in, so Bad Luck and Clingy Shadow would
+have handed you a stack that died in the same breath it arrived. Both came out
+of building it. A finding is a place to start reading, not a spec.
 
 ---
 
@@ -40,7 +74,7 @@ Composition: 61 unreachable, 48 false-claim, 2 cannot-fail. By area: claims 23, 
 
 Each of these was handed to an agent instructed to refute it, which could not.
 
-### 1. DeckView's `exhaust` mode (title "Vanished", note "Out of this Scuffle…") is never requested by anything, so the Vanished pile viewer the header advertises cannot be opened in the game.
+### 1. FIXED 2026-08-30. DeckView's `exhaust` mode (title "Vanished", note "Out of this Scuffle…") is never requested by anything, so the Vanished pile viewer the header advertises cannot be opened in the game.
 
 **Where:** `game/src/ui/deckview.js:37 (MODES.exhaust; claim at deckview.js:4-5)`  
 **Kind:** unreachable · **finder confidence:** high · **area:** ui
@@ -49,7 +83,7 @@ Each of these was handed to an agent instructed to refute it, which could not.
 
 **Skeptic, told to refute it:** Same three openPile call sites; none passes 'exhaust'. I read combat.js:3275-3302 `_pileCards`, which handles only 'draw', 'torn' (mine.stash) and discard — there is no Vanished pile button or hotkey on the combat screen. The header's "the Vanished pile" in the list of moments this component serves is therefore unbacked.
 
-### 2. deckview.js's header says "combat.js already sorts by name before handing the list over; this view sorts again anyway so the guarantee does not depend on the caller" — combat.js does no sorting at all, so the draw-pile-is-not-an-oracle guarantee rests entirely on DeckView's own default.
+### 2. FIXED 2026-08-30. deckview.js's header says "combat.js already sorts by name before handing the list over; this view sorts again anyway so the guarantee does not depend on the caller" — combat.js does no sorting at all, so the draw-pile-is-not-an-oracle guarantee rests entirely on DeckView's own default.
 
 **Where:** `game/src/ui/deckview.js:18-20`  
 **Kind:** false-claim · **finder confidence:** high · **area:** ui
@@ -264,14 +298,14 @@ Each of these was handed to an agent instructed to refute it, which could not.
 Each carries the searches its finder ran. None has been independently checked —
 see the caveat above. Verify before acting.
 
-### 1. The `autoEndTurn` settings toggle is a live control in the panel that does nothing — no code anywhere reads it — while settings.js's own header claims every control "actually takes effect" and names autoEndTurn among the flags "read from `Save.settings` at the point of use".
+### 1. FIXED 2026-08-30. The `autoEndTurn` settings toggle is a live control in the panel that does nothing — no code anywhere reads it — while settings.js's own header claims every control "actually takes effect" and names autoEndTurn among the flags "read from `Save.settings` at the point of use".
 
 **Where:** `game/src/ui/settings.js:65 (claim at game/src/ui/settings.js:19)`  
 **Kind:** false-claim · **finder confidence:** high · **area:** ui
 
 > `rg -n -w "autoEndTurn" . --glob '!node_modules'` (untruncated) returns exactly 4 lines: settings.js:19 (the claim), settings.js:65 (SETTINGS_SPEC entry), settings.js:82 (DEFAULTS), core/save.js:31 (persisted default). No reader in combat/, scenes/, state/, or tests/. combat.js never auto-ends a turn.
 
-### 2. The `confirmSingleTarget` settings toggle likewise has zero consumers — nothing ever asks before playing a targeted Trick at one enemy — yet the same header sentence claims it is read at the point of use.
+### 2. FIXED 2026-08-30. The `confirmSingleTarget` settings toggle likewise has zero consumers — nothing ever asks before playing a targeted Trick at one enemy — yet the same header sentence claims it is read at the point of use.
 
 **Where:** `game/src/ui/settings.js:67 (claim at game/src/ui/settings.js:19)`  
 **Kind:** false-claim · **finder confidence:** high · **area:** ui
@@ -306,7 +340,7 @@ see the caveat above. Verify before acting.
 
 > `rg -n "new HUD\(" -A6 game/src/` gives all three construction sites: combat.js:832 (mount/variant/useSnacks/escape), map.js:470 (mount/escape/useSnacks), reward.js:163-165 (mount/run/fixed/escape/useSnacks). None passes `compact`, so hud.js:239 (`if (this.o.compact) root.dataset.compact = '1'`) never runs and hud.css:190-192 never match.
 
-### 7. gameover.js fabricates 3–6 Keepsakes for a REAL run that ended carrying none, contradicting its own header ("Reads ctx.run when meta-run has built one; otherwise fabricates…", "Nothing here is a placeholder") — and 5 of the 7 fabricated ids do not exist in data/relics.js.
+### 7. FIXED 2026-08-30, and it was worse than this says. gameover.js fabricates 3–6 Keepsakes for a REAL run that ended carrying none, contradicting its own header ("Reads ctx.run when meta-run has built one; otherwise fabricates…", "Nothing here is a placeholder") — and 5 of the 7 fabricated ids do not exist in data/relics.js.
 
 **Where:** `game/src/scenes/gameover.js:219 (summary), :631-637 (_buildKeeps), constant at :41-50, header claim at :15-18`  
 **Kind:** false-claim · **finder confidence:** high · **area:** scenes
@@ -453,7 +487,7 @@ see the caveat above. Verify before acting.
 
 > `rg -n "playerOf" --glob '!node_modules' .` → engine.js:491 (a doc comment), engine.js:497 (the throw text "Say which one: engine.playerOf(actor), ctx.self, or pass a seat."), and engine.js:603 (the definition). No call site in game/src, tests/, or tools/. Medium rather than high because it is a plausible deliberate escape hatch for content authors, but nothing in the file says so.
 
-### 28. Eight unplayable Status/Curse cards in data/neutral.js each carry an `effect` describing end-of-turn, on-draw or on-play behaviour, but a card's `effect` is invoked at exactly one place in the engine and that place is gated behind `canPlay`, which refuses every `unplayable` card — so none of the printed rules text has ever done anything.
+### 28. FIXED 2026-08-30 — nine, not eight. Eight unplayable Status/Curse cards in data/neutral.js each carry an `effect` describing end-of-turn, on-draw or on-play behaviour, but a card's `effect` is invoked at exactly one place in the engine and that place is gated behind `canPlay`, which refuses every `unplayable` card — so none of the printed rules text has ever done anything.
 
 **Where:** `game/src/data/neutral.js:29 (status/candle-burn), :42 (status/gloom), :49 (status/wrong-side), :60 (curse/regret), :67 (curse/bad-luck), :74 (curse/clingy-shadow), :87 (curse/heavy-heart), :94 (curse/night-terror), :101 (curse/lost-mitten)`  
 **Kind:** cannot-fail · **finder confidence:** high · **area:** data
@@ -656,7 +690,7 @@ see the caveat above. Verify before acting.
 
 > `rg -nE "atmosphere\s*\??\.\s*(dread|pulse|light|setIntensity|setActors|keyLight|screenToFloor)\s*\??\.?\(" game/src/ tests/ tools/` → hits only for `dread` (scenes/combat.js ×6) and `pulse` (scenes/combat.js ×2, atmosphere.js:900 internal); zero for the other five. Definitions are at atmosphere.js:994 (`light`), :997 (`setIntensity`), :1004 (`setActors`), :1010 (`keyLight`), :1020 (`screenToFloor`). `setActors` is the ground-shadow entry point, which is the same feature the dead `--atmo-ground` property serves.
 
-### 57. Two player-facing settings toggles, `autoEndTurn` and `confirmSingleTarget`, are read by nothing — yet `ui/settings.js`'s header claims every control "actually takes effect" and names both as "read from `Save.settings` at the point of use".
+### 57. FIXED 2026-08-30 (a duplicate of leads 1 and 2). Two player-facing settings toggles, `autoEndTurn` and `confirmSingleTarget`, are read by nothing — yet `ui/settings.js`'s header claims every control "actually takes effect" and names both as "read from `Save.settings` at the point of use".
 
 **Where:** `game/src/core/save.js:31`  
 **Kind:** false-claim · **finder confidence:** high · **area:** plumbing

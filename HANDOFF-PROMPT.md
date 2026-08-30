@@ -88,18 +88,29 @@ RUN on 2026-08-30, not copied forward; if one differs, that is the finding.
   python tests/wings/run.py               44      ← the eight wing conditions
   python tests/haunt/run.py               21      ← the two Haunt ladders
   python tests/combat-scene/seam.py       22
+  python tests/hand-cards/run.py          40      ← the nine cards that did nothing
+  python tests/piles-reachable/run.py     24      ← every pile openable, or exempt
+  python tests/settings-play/run.py       19      ← the two Play toggles
+  python tests/gameover-keeps/run.py      16      ← the invented Keepsakes
   python tests/audio/run.py               46 cues, 0 errors
   python tests/chrome/run.py              27 checks, 0 errors
   python tests/cards-feel/run.py          exit 0
   python tests/critic-design/anchor.py    6/6 agree
 
   ELEVEN gates, each must stay at zero:
-    tests/seams/check.py          6191 call sites, 0 problems
+    tests/seams/check.py          6267 call sites, 0 problems
     tests/bus-names/check.py      0 dead subscriptions, 0 advisory
     tests/audio/cues.py           46 cues, 45 reachable, 1 known-silent
     tests/status-names/check.py   268 statuses, 0 unwaived name collisions
     tests/party-tells/check.py    13 party moves, 0 tells that address one Kid
     scene-css · css-tokens · dup-keys · hook-names · turn-events · stdlib-shadow
+
+  `tests/hook-names/check.py` reads "76 declared" as of 2026-08-30 and did not
+  before. It had always checked `hooks.add(name)` call sites and `U.onHook`, and
+  had never looked at the `hooks: { … }` object literals on statuses, relics and
+  enemy defs — the biggest surface in the game. The two regexes for it sat
+  UNUSED at the top of that file and the gate reported green over them. They are
+  wired up now, with a brace scan rather than a line regex, and proved seeing.
 
   `tests/enemies/audit.py` reads 2085 and not the 2093 an older note quotes.
   That is the Butler's pool going 165 → 149: a shorter boss is fewer audited
@@ -229,19 +240,36 @@ on a person or a machine, or is a decision with the reason already written down.
    `card:retain` came off this list on 2026-08-30: it was never a missing
    feature, only a missing event.
 
-   **AND A SWEEP LEFT A PILE OF WORK, 24 of it adversarially verified.** `HANDOFF.md` carries the detail. In short: `autoEndTurn` is
-   a settings toggle that nothing reads while settings.js claims it takes
-   effect; eight unplayable Status/Curse cards in `data/neutral.js` have
-   `effect` blocks that can never run because `canPlay` refuses unplayable
-   cards; `gameover.js` fabricates Keepsakes for a REAL run and five of seven
-   ids do not exist; `ANIMATED_EVENTS` is exported and read by nothing.
+   **A SWEEP LEFT A PILE OF WORK AND SIX OF IT ARE NOW DONE, 2026-08-30** —
+   every item the previous handoff named as the best-evidenced work available.
+   `HANDOFF.md` carries the detail. Closed since: the two Play toggles
+   (`autoEndTurn`, `confirmSingleTarget`) are implemented rather than removed;
+   the nine unplayable Status/Curse cards in `data/neutral.js` do what they
+   print, through a new `handHooks` seam on CardDef; `gameover.js` stopped
+   inventing Keepsakes for real runs, and its fallback table — seven entries,
+   all seven wrong — is gone; DeckView's Vanished pile has a button, and its
+   header's claim that combat.js sorts the draw pile is corrected (it does not;
+   the no-oracle guarantee rests on DeckView's own default alone). Four new
+   suites, each with the control that runs the same board WITHOUT the change,
+   and each proved red against the old code before being believed.
+
+   **STILL OPEN AND UNBLOCKED:** `ANIMATED_EVENTS` exported and read by nothing
+   (5 of its 23 events have no animator case), and the other 100-odd findings.
 
    The sweep returned 111 findings and its own log claims all 111 survived
    the skeptics. **That is my orchestration bug, not a result** — the verdict
    join was on an unstable string, so 87 were kept unchecked. 24 are really
    verified; the rest are leads carrying their finder's own searches. The
-   full list is `docs/notes/2026-08-30-the-unreachable-sweep.md`. **None of
-   it is blocked, and it is the best-evidenced work available.**
+   full list is `docs/notes/2026-08-30-the-unreachable-sweep.md`.
+
+   **What the six taught about that split:** two came from the verified 24 and
+   FOUR were unverified leads, and every one was real when checked. One was
+   WORSE than reported — the gameover fallback table's two surviving ids turned
+   out to carry invented rules text as well, so it was seven entries and seven
+   wrong rather than five missing out of seven. The previous handoff called all
+   of them "the 24 verified sweep findings" and was wrong about four. So the 87
+   are worth reading. They are still not worth trusting unread, which is the
+   same sentence with the verb changed, and it is the whole point.
 
 7. **The vote beat is 3.0 s and that was arithmetic, not a playtest.** It sat
    open for three sessions as "unplaytested" and never needed a playtest — it
