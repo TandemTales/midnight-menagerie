@@ -747,6 +747,44 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    Ask of any "X is what protects Y": break X and watch Y break. If Y survives,
    the credit belongs somewhere else and the check is decorative (rule 5c).
 
+54. **CONTENT THAT DESCRIBES ITSELF WILL BE BELIEVED — by the screen that
+   draws it, by the next person reading the table, and by the player.** Two
+   instances found on one day, both years-old, both invisible to every gate.
+
+   **`state/mapgen.js` HAZARDS declares eight wing conditions**, each with a
+   `name`, a `rule` sentence and a `glyph`. Every blueprint places two to four.
+   `scenes/map.js` shades the marked area, prints the wing's name along the
+   footer, adds it to the legend and renders its `rule` in the hover card. A
+   search for each id returned **mapgen and nothing else, for six of the
+   eight.** The player is told "Guard is halved at the start of each of your
+   turns while you are inside the marked area", and nothing halves anything.
+
+   The table looks like an implementation because it reads like one. It has
+   ids, it has rules, it is imported, it is rendered. Nothing in it is a call.
+
+   **`docs/notes/2026-08-19-audio.md` published a contract** — "audio.js
+   listens on the bus and needs no calls from anyone" — and listed 38 event
+   names. No producer ever emitted 33 of them: `combat/engine.js` forwards
+   engine events to the bus as `combat:<type>` while `audio.js` waited on the
+   bare names, and two `EV` entries are themselves `combat:start`/`combat:end`,
+   so the bus literally carried `combat:combat:start`. The payloads never
+   matched either. **A published contract with no producer reads exactly like a
+   working one**, and this one was quoted in a handoff as a feature other
+   agents got for free.
+
+   Why nothing caught either: `tests/bus-names/check.py` printed "0 dead
+   subscriptions" because its fatal regex needs a literal `bus.on('x')`, and
+   `audio.js` subscribes through a local alias. **The gate could not see the
+   file with the most dead subscriptions in the repo, and said zero** — rule 5c
+   again, in the gate written for trap 10. It resolves aliases and `for..of`
+   lists now, by structure rather than by guess.
+
+   **How to apply.** When a table declares content with a rule attached, grep
+   the id — not the export. When a document says a module "listens" or "needs
+   no calls", find the emitter. And when you build the gate, prove it can SEE
+   the file you care about before you trust the number it prints: add a
+   deliberate `bus.on('nonsense:name')` and check the gate goes red.
+
 15. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
    now reported their in-flight work being swallowed by an unrelated commit — one had a whole
    `music.js` rewrite land inside a commit titled "Pronouns per the designer", which then made a

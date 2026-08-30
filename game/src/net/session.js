@@ -266,6 +266,26 @@ export class Session {
    * The order is `(turn, seat, seq)`. Seat index is the tiebreaker and arrival
    * time is never consulted — arrival time is the one thing guaranteed to
    * differ between two machines, so ordering by it is ordering by nothing.
+   *
+   * ── THAT IS TRUE OF THE LOG AND NOT YET OF APPLICATION ──────────────────
+   *
+   * `this.log` is sorted. `_run(msg)` below is handed the message that just
+   * arrived, and chains it onto `this._chain` in the order it arrived. So two
+   * clients that receive the same two inputs in opposite orders hold IDENTICAL
+   * logs and have applied them to their boards in different orders.
+   *
+   * It cannot bite today: the only transports are the loopback and a
+   * BroadcastChannel between two contexts in one page, and `tests/net` §4
+   * hand-delivers out of order but then only compares `session.log`. It bites
+   * the day a real wire ships, which is the one netcode item still open.
+   *
+   * Fixing it properly is a PROTOCOL decision, not a patch: applying in log
+   * order means either waiting for every seat's input for a turn before
+   * applying any of it (a barrier, which changes what a disconnect feels like),
+   * or accepting that a late input can arrive behind one already applied and
+   * reporting that as the divergence it is. Both belong with the transport
+   * decision. `tests/net` §4b pins the current behaviour so this comment cannot
+   * quietly stop being true.
    */
   _accept(msg, from) {
     if (!msg) return;

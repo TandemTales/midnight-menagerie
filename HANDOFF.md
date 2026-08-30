@@ -44,6 +44,10 @@ control that was verified to FAIL without it.
 | After every resume, no card in hand had a replay key | `state/run.js` |
 | The map moved the whole party by ASSIGNING to the Run, down a bus name | `scenes/map.js`, CONTRACTS 52 |
 | One seat chose the whole expedition's route; nobody else got a say | `state/run.js`, `tests/vote/` |
+| 39 bus subscriptions that could never fire, and the gate that could not see them | `audio/audio.js`, `ui/hud.js`, `tests/bus-names/` |
+| Six of the eight wing conditions did nothing at all | `state/mapgen.js`, `tests/wings/` |
+| `resetSeat()` handed every networked client seat 0's screen | `state/run.js` |
+| The sagging wing charged a DIFFERENT Kid on each machine | `state/run.js`, `tests/wings/` |
 
 Instruments repaired: the bot's `turnsLeft` (47), `balance.html`'s missing
 `fc` (49), the ledger's `left%` — quantised to tens AND wins-only (51) — and
@@ -54,15 +58,65 @@ SHARED-WRITE. New suite: `tests/taffy/`.
 
 **WHAT IS OPEN, in the order I would take it:**
 
-1. **Party cost is still 15–30 points from solo.** Every encounter now beats
-   the arithmetic baseline, but that baseline is "a contentless enemy", not
-   parity. Closing it needs MOST of a fight's damage to pierce.
-2. **fps and the entry stall need a quiet machine.** Three claims in this
+1. **FIVE OF THE EIGHT WING CONDITIONS STILL DO NOTHING.** The map draws the
+   marked area, names the wing along the footer, lists it in the legend and
+   shows its rule in the hover card. `tests/wings/` carries the manifest and
+   fails if it goes stale. Each needs engine support that does not exist:
+
+       The Lights Are Out   enemies start with 2 Unseen; intents unreadable
+       Under Dust Sheets    intents hidden on turn 1
+       A Cold Draught       start with 2 Chill — `chill` is not a status at all
+       The Pipes Rattle     one extra small enemy per Scuffle
+       Long Shadows         Guard halved at the start of each of your turns
+
+   `sagging`, `paw-prints` and `moonlit` are wired and asserted. This is the
+   most player-facing dead mechanic in the game: it is the second thing on the
+   blueprint after the rooms.
+
+2. **SEVEN CUES IN THE BANK STILL CANNOT BE REACHED, and the whole mix layer
+   is inert.** Twelve were unreachable; five were given call sites this
+   session (`world:coin`, `world:treasure`, `sting:rescue`, `card:upgrade`,
+   `world:blueprint-unfold`). What is left:
+
+       sting:reward   combat:crit   card:discard   card:exhaust
+       card:retain    ui:tooltip    world:heartbeat
+
+   plus the music cue `rescue`, which `SCENE_MUSIC` never selects. All of
+   them belong in `scenes/combat.js`, where the FX already time the hit
+   sounds — do NOT wire them onto the bus, see the note in `_wireBus`.
+
+   **Separately, and worth more than the cues:** `telegraph()` and
+   `_hpTension()` have NO live caller, so `_effTension()` is permanently 0.
+   The music bed never darkens as Courage falls and there is no audio
+   warning before a big intent. Two designed features, both inert, both
+   needing one call each from the scene that already has the numbers.
+
+3. **`session._accept` applies inputs in ARRIVAL order.** It computes the
+   `(turn, seat, seq)` position for the LOG and then hands the message straight
+   to `_run`. Two clients with byte-identical logs apply them in different
+   orders — measured, `tests/net` §4b, which pins it as a known gap and FAILS
+   the day somebody fixes it. Cannot bite until a real transport ships, and the
+   fix is a protocol decision (a turn barrier, or reporting a late input as the
+   divergence it is) that belongs with the Steam P2P work.
+
+4. **Party cost is still 15–30 points from solo.** Every encounter beats the
+   arithmetic baseline, but that baseline is "a contentless enemy", not parity.
+   Read §8.3 of the reference before treating this as a defect: StS2 scales
+   enemy HP linearly and does not scale damage either, and its verdict on our
+   matching design is "Keep it; it needs no defending". Nobody has a figure for
+   how much Courage an StS2 party finishes with, so the 15–30 has no source.
+   NOTE: the sagging wing now charges the party rather than one Kid, so party
+   economy has moved and no measured table reflects it yet.
+
+5. **fps and the entry stall need a quiet machine.** Three claims in this
    document do not reproduce here today.
-3. **Six advisory dead bus names in the HUD's EVENTS list** —
-   `tests/bus-names/check.py` reports them and does not gate them.
-4. Steam P2P (designer, ends the no-build rule) and Crinkle's chapter
+
+6. Steam P2P (designer, ends the no-build rule) and Crinkle's chapter
    (designer review). Both unchanged.
+
+**Two design calls left open by the vote work:** a fork with only one legal
+exit still opens a ballot and resolves instantly, and the 1.5 s beat before the
+party walks in has never been playtested.
 
 **Closed 2026-08-29 (third session), and read this before picking the list
 above back up:**

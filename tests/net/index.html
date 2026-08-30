@@ -195,6 +195,42 @@ try {
       seq(a.session));
   }
   {
+    /* ── 4b. …AND THAT IS THE LOG, NOT THE BOARD ────────────────────────────
+       The two checks above compare `session.log`. Nothing above compares the
+       order the inputs were APPLIED in, and `_accept` hands each message
+       straight to `_run` as it arrives — so two clients holding identical logs
+       can have applied them in opposite orders.
+
+       This check pins that, deliberately, as a KNOWN GAP. It is not a defect
+       this suite is content with; it is a defect the suite refused to name for
+       as long as it only looked at the log. It cannot bite until a real
+       transport ships, and fixing it is a protocol decision that belongs with
+       that work — see `_accept`'s comment in net/session.js.
+
+       THE DAY SOMEBODY APPLIES IN LOG ORDER, THIS CHECK FAILS. That is the
+       point: change the expectation here, and delete the comment above. */
+    const hub = new LoopbackHub();
+    const a = await makeClient(hub, 0, 2, 'A');
+    const b = await makeClient(hub, 1, 2, 'B');
+    const seenA = [], seenB = [];
+    a.session.on('input', (m) => { seenA.push(`${m.turn}.${m.seat}.${m.seq}`); });
+    b.session.on('input', (m) => { seenB.push(`${m.turn}.${m.seat}.${m.seq}`); });
+
+    const i0 = { t: INPUT.READY, seat: 0, turn: 3, seq: 1 };
+    const i1 = { t: INPUT.READY, seat: 1, turn: 3, seq: 1 };
+    a.session._accept(i1, 'B'); a.session._accept(i0);
+    b.session._accept(i0, 'A'); b.session._accept(i1);
+    await a.session.settled(); await b.session.settled();
+
+    const logsMatch = a.session.log.map(m => `${m.turn}.${m.seat}.${m.seq}`).join(' ')
+                   === b.session.log.map(m => `${m.turn}.${m.seat}.${m.seq}`).join(' ');
+    check(logsMatch, 'the two logs still agree', 'as §4 says');
+    check(seenA.join(' ') !== seenB.join(' '),
+      'KNOWN GAP: the two clients APPLIED them in different orders, from '
+      + 'identical logs — `_accept` runs each input as it arrives',
+      `A applied ${seenA.join(' ')} · B applied ${seenB.join(' ')}`);
+  }
+  {
     // A later turn always sorts after an earlier one, whenever it arrives.
     const hub = new LoopbackHub();
     const a = await makeClient(hub, 0, 2, 'A');
