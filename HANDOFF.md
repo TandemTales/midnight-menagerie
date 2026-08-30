@@ -158,10 +158,30 @@ SHARED-WRITE. New suite: `tests/taffy/`.
    unless it repeats — and take more than one before writing it into a list,
    which is the whole reason this sat open for three sessions.
 
-   The ENTRY STALL is a separate claim and is untested here: it is about the
-   first frames after a scene change, which a steady-state fps sample does not
-   look at. `tools/shot.py --wait` exists precisely because the 3D stage
-   renders nothing while it links shaders, about ten seconds cold on this GPU.
+   **THE ENTRY STALL IS THE OPPOSITE CASE — it REPRODUCES.** Sampled the same
+   day: `tools/entryprof.py --goto combat`, thirteen runs, reads 1150 / 1200 /
+   1233 / 1250 / 1283 / 1350 / 1917 / 1933 / 1933 / 2033 / 2050 / 2166 / 2217
+   ms against a 1200 ms budget. **Eleven of thirteen are over it.** This
+   document has carried "entry-stall timings swing 2x run to run, do not chase
+   them on this machine" for three sessions on the strength of THREE samples,
+   one of which happened to pass. The variance is real; the conclusion drawn
+   from it was not — and it is the exact inverse of the fps item above, where
+   more samples showed there was nothing there. Take more samples either way.
+
+   **Where the time goes matters more than the total, and it is not all at
+   entry.** A typical run: ~250 ms just before the scene enters, ~550 ms
+   immediately after, then evenly spaced TRIPLETS of ~100–130 ms at about
+   t+1.5 s and again at t+3.3 s, and sometimes one large gap near t+6 s. Combat
+   keeps hitching for seconds after it is nominally in. The triplet shape —
+   three gaps ~117 ms apart, twice, ~1.8 s between clusters — is the strongest
+   lead anyone has had on this and nobody has followed it.
+
+   One trap, recorded in the tool because the tool invites it: `--goto` already
+   filters frames to after the goto, so page boot is NOT in a `--goto` number,
+   while `--scene` samples from page load and includes a very stable ~620 ms
+   boot gap. The two modes must never be subtracted from each other. That
+   mistake was made on 2026-08-30 and briefly "proved" 700 ms of the stall was
+   page boot. It was not.
 
 3. **Steam P2P is approved and is blocked on something only the designer has.**
    "Yes build is fine", 2026-08-29. It still needs a wrapper shell, which ends

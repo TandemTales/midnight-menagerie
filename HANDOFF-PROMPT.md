@@ -176,12 +176,22 @@ on a person or a machine, or is a decision with the reason already written down.
    problems. `spread` is in every ledger row and was never printed, which is
    why nobody had looked at it.
 
-5. **fps is CLOSED, sampled 2026-08-30.** The item was `tests/chrome` reading
-   52 on one battery and 61 on another. Eight consecutive `tools/shot.py`
-   samples across map and combat read **61 every time**, plus three verify
-   shots the same day: eleven of eleven. The 52 was a busy machine. The ENTRY
-   STALL is a different claim and is still untested — it is about the first
-   frames after a scene change, which a steady-state sample never sees.
+5. **fps is CLOSED and the ENTRY STALL is REAL** — both sampled 2026-08-30,
+   and they went opposite ways, which is the point.
+
+   fps: eleven of eleven readings at 61. The 52 was a busy machine.
+
+   The stall: `tools/entryprof.py --goto combat`, thirteen runs, 1150–2217 ms
+   against a 1200 ms budget, **eleven of thirteen over**. "Timings swing 2x, do
+   not chase them" had been carried for three sessions on three samples, one of
+   which passed. And it is not all at entry — ~250 ms before the scene enters,
+   ~550 ms after, then evenly spaced triplets of ~100–130 ms at t+1.5 s and
+   again at t+3.3 s. Combat keeps hitching for seconds. **That triplet shape is
+   the lead to follow.**
+
+   Do not subtract a `--scene` run from a `--goto` run: `--goto` already filters
+   out page boot and `--scene` does not. The tool's docstring says so because
+   that error was made and briefly believed.
 
 6. **Two cues are known-silent and need something built first**, with their
    reasons in `tests/audio/cues.py`: `combat:crit` (there is no crit in this

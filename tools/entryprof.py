@@ -10,9 +10,41 @@ gaps, which is the only shape of measurement that can see a stall.
 
 Reports, per run: every frame gap over --gap ms, total blocked time (the sum of
 the excess over one 16.7 ms frame for each such gap), and the worst gap.
-Exit code 1 if the median run's blocked total exceeds --budget ms, so this can
-be a gate.  Also prints the GL renderer: a software rasteriser invalidates the
-numbers and has fooled a measurement here before.
+Exit code 1 if the median run's blocked AFTER ENTRY exceeds --budget ms, so this
+can be a gate.  Also prints the GL renderer: a software rasteriser invalidates
+the numbers and has fooled a measurement here before.
+
+MEASURED 2026-08-30, over 13 runs, and the headline is that THE STALL
+REPRODUCES.  `--goto combat` reads 1150 / 1200 / 1233 / 1250 / 1283 / 1350 /
+1917 / 1933 / 1933 / 2033 / 2050 / 2166 / 2217 ms against a 1200 ms budget --
+median about 1350, and eleven of thirteen over.  HANDOFF carried "entry-stall
+timings swing 2x run to run, do not chase them on this machine" for three
+sessions on the strength of THREE samples, one of which happened to pass.  The
+variance is real; the conclusion drawn from it was not.  Take more samples
+before writing a number off as noise -- the same lesson the fps item taught the
+same day, where 11 of 11 read 61.
+
+WHERE the time goes is the more useful half, and it is not all "entry".  A
+typical run: ~250 ms just before the scene enters, ~550 ms immediately after,
+then evenly spaced TRIPLETS of ~100-130 ms at about t+1.5 s and again at
+t+3.3 s, and sometimes a single large gap near t+6 s.  So combat keeps hitching
+for seconds after it is nominally in, which "entry stall" undersells.  The
+triplet shape -- three gaps roughly 117 ms apart, twice, about 1.8 s between
+clusters -- is the strongest lead anyone has had on this and nobody has chased
+it.
+
+`--goto` already excludes page boot: `one()` filters frames to `>= __gotoAt`.
+The ~620 ms boot gap you see under `--scene` (t+330 ms, and 619 / 623 / 629 ms
+across scenes, the most repeatable number this tool produces) is therefore NOT
+in a `--goto` number, and the two modes must never be compared with each other.
+That mistake was made on 2026-08-30 -- a `--scene title` baseline subtracted
+from a `--goto combat` run, "proving" ~700 ms of the stall was page boot.  It
+was not.  It is written here because the instrument invites it.
+
+The after-entry split below is a real distinction and a small one: only about
+66 ms of a `--goto` run precedes the `scene:entered` mark, because the goto
+filter has already done most of that work.  Gate on it anyway -- it is the
+honest quantity -- but do not expect it to differ much from the gross.
 """
 import asyncio, sys, os, json, argparse, statistics
 
@@ -139,14 +171,27 @@ async def one(p, url, hold, quiet, goto=None, boot="title", watch=None):
     return frames, renderer, errors, marks, t0
 
 
-def analyse(frames, gap_ms):
+def analyse(frames, gap_ms, entered_at=None):
     gaps = []
     for i in range(1, len(frames)):
         d = frames[i] - frames[i - 1]
         if d >= gap_ms:
             gaps.append((frames[i - 1], d))
     blocked = sum(d - FRAME for _, d in gaps)
-    return gaps, blocked
+    # Everything from the moment the scene said it was in. A gap that STRADDLES
+    # entry counts: it is the transition itself and it is exactly what this
+    # tool exists to see.
+    after = (sum(d - FRAME for at, d in gaps if at + d >= entered_at)
+             if entered_at is not None else blocked)
+    return gaps, blocked, after
+
+
+def entry_mark(marks, scene):
+    """When the scene actually came in, or None if it never did."""
+    for kind, at, who in marks or []:
+        if kind == "entered" and (scene is None or who == scene):
+            return at
+    return None
 
 
 async def main(a):
@@ -166,13 +211,15 @@ async def main(a):
         url = a.base + ("#" + "&".join(frag) if frag else "")
         print(f"url: {url}")
 
-    totals, worsts = [], []
+    totals, worsts, grosses = [], [], []
     async with async_playwright() as p:
         for r in range(a.runs):
             frames, renderer, errors, marks, t0 = await one(
                 p, url, a.hold, a.quiet, goto, a.boot, a.watch)
-            gaps, blocked = analyse(frames, a.gap)
-            totals.append(blocked)
+            entered = entry_mark(marks, goto[0] if goto else None)
+            gaps, blocked, after = analyse(frames, a.gap, entered)
+            totals.append(after)
+            grosses.append(blocked)
             worsts.append(max((d for _, d in gaps), default=0.0))
             if r == 0:
                 print(f"renderer: {renderer}")
@@ -180,9 +227,11 @@ async def main(a):
                     print("  !! SOFTWARE RASTERISER — these numbers mean nothing")
                 if errors:
                     print(f"  !! {len(errors)} console error(s): {errors[0][:100]}")
+            since = ("" if entered is None
+                     else f", {after:.0f}ms of it AFTER entry")
             print(f"run {r + 1}: {len(frames)} frames over {a.hold:.1f}s, "
-                  f"{len(gaps)} gaps >= {a.gap:.0f}ms, blocked {blocked:.0f}ms, "
-                  f"worst {worsts[-1]:.0f}ms")
+                  f"{len(gaps)} gaps >= {a.gap:.0f}ms, blocked {blocked:.0f}ms"
+                  f"{since}, worst {worsts[-1]:.0f}ms")
             if not a.quiet:
                 rows = [(at, f"{d:6.0f}ms blocked") for at, d in gaps]
                 for kind, at, who in marks:
@@ -193,8 +242,13 @@ async def main(a):
                     print(f"    t+{at - t0:7.0f}ms   {txt}")
 
     med = statistics.median(totals)
-    print(f"\nRESULT: median blocked {med:.0f}ms over {a.runs} run(s) "
+    gross = statistics.median(grosses)
+    scope = "after entry" if goto else "total (no --goto, so nothing to enter)"
+    print(f"\nRESULT: median blocked {med:.0f}ms {scope} over {a.runs} run(s) "
           f"(budget {a.budget:.0f}ms), worst single gap {max(worsts):.0f}ms")
+    if goto:
+        print(f"        median {gross:.0f}ms gross (all of it after --goto; "
+              f"page boot is already excluded by the frame filter)")
     if med > a.budget:
         print("FAIL: entry stall over budget")
         return 1
