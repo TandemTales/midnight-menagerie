@@ -1,0 +1,1951 @@
+{
+ "config": {
+  "TIER": "normal",
+  "ENC": null,
+  "REGION": "foyer",
+  "LREGION": "foyer",
+  "N": 12,
+  "GEN": 8,
+  "SIZES": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "SLUGS": [
+   "marmalade",
+   "bones"
+  ],
+  "SEED0": 90000
+ },
+ "rows": [
+  {
+   "nodeId": "bench-90000",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90000,
+   "win": true,
+   "turns": 4,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.7222222222222222,
+   "courageCost": 20,
+   "takenBySeat": [
+    26
+   ],
+   "hitsBySeat": [
+    3
+   ],
+   "blockedBySeat": [
+    0
+   ],
+   "aimed": 26,
+   "blocked": 0,
+   "partyGuard": 3,
+   "spread": 1,
+   "enemyHp": 63,
+   "enemyGuard": 20,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90013,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8970588235294118,
+   "courageCost": 0,
+   "takenBySeat": [
+    6
+   ],
+   "hitsBySeat": [
+    3
+   ],
+   "blockedBySeat": [
+    27
+   ],
+   "aimed": 33,
+   "blocked": 27,
+   "partyGuard": 35,
+   "spread": 1,
+   "enemyHp": 63,
+   "enemyGuard": 32,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90026,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8235294117647058,
+   "courageCost": 1,
+   "takenBySeat": [
+    7
+   ],
+   "hitsBySeat": [
+    3
+   ],
+   "blockedBySeat": [
+    26
+   ],
+   "aimed": 33,
+   "blocked": 26,
+   "partyGuard": 39,
+   "spread": 1,
+   "enemyHp": 63,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90039,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.44155844155844154,
+   "courageCost": 16,
+   "takenBySeat": [
+    28
+   ],
+   "hitsBySeat": [
+    3
+   ],
+   "blockedBySeat": [
+    0
+   ],
+   "aimed": 28,
+   "blocked": 0,
+   "partyGuard": 24,
+   "spread": 1,
+   "enemyHp": 63,
+   "enemyGuard": 32,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90052,
+   "win": true,
+   "turns": 1,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 1,
+   "courageCost": 0,
+   "takenBySeat": [
+    0
+   ],
+   "hitsBySeat": [
+    0
+   ],
+   "blockedBySeat": [
+    0
+   ],
+   "aimed": 0,
+   "blocked": 0,
+   "partyGuard": 3,
+   "spread": 1,
+   "enemyHp": 63,
+   "enemyGuard": 0,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90065,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 1,
+   "courageCost": -2,
+   "takenBySeat": [
+    0
+   ],
+   "hitsBySeat": [
+    2
+   ],
+   "blockedBySeat": [
+    21
+   ],
+   "aimed": 21,
+   "blocked": 21,
+   "partyGuard": 39,
+   "spread": 1,
+   "enemyHp": 63,
+   "enemyGuard": 17,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90078,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9594594594594594,
+   "courageCost": 3,
+   "takenBySeat": [
+    9
+   ],
+   "hitsBySeat": [
+    3
+   ],
+   "blockedBySeat": [
+    24
+   ],
+   "aimed": 33,
+   "blocked": 24,
+   "partyGuard": 27,
+   "spread": 1,
+   "enemyHp": 63,
+   "enemyGuard": 32,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90091,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9859154929577465,
+   "courageCost": 1,
+   "takenBySeat": [
+    13
+   ],
+   "hitsBySeat": [
+    4
+   ],
+   "blockedBySeat": [
+    23
+   ],
+   "aimed": 36,
+   "blocked": 23,
+   "partyGuard": 44,
+   "spread": 1,
+   "enemyHp": 63,
+   "enemyGuard": 32,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90104",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90104,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9444444444444444,
+   "courageCost": 4,
+   "takenBySeat": [
+    10
+   ],
+   "hitsBySeat": [
+    3
+   ],
+   "blockedBySeat": [
+    20
+   ],
+   "aimed": 30,
+   "blocked": 20,
+   "partyGuard": 28,
+   "spread": 1,
+   "enemyHp": 63,
+   "enemyGuard": 32,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90117",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90117,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.6323529411764706,
+   "courageCost": 18,
+   "takenBySeat": [
+    24
+   ],
+   "hitsBySeat": [
+    4
+   ],
+   "blockedBySeat": [
+    17
+   ],
+   "aimed": 41,
+   "blocked": 17,
+   "partyGuard": 25,
+   "spread": 1,
+   "enemyHp": 63,
+   "enemyGuard": 32,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90130",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90130,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8235294117647058,
+   "courageCost": 1,
+   "takenBySeat": [
+    7
+   ],
+   "hitsBySeat": [
+    3
+   ],
+   "blockedBySeat": [
+    21
+   ],
+   "aimed": 28,
+   "blocked": 21,
+   "partyGuard": 43,
+   "spread": 1,
+   "enemyHp": 63,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90143",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90143,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.5194805194805194,
+   "courageCost": 10,
+   "takenBySeat": [
+    22
+   ],
+   "hitsBySeat": [
+    5
+   ],
+   "blockedBySeat": [
+    23
+   ],
+   "aimed": 45,
+   "blocked": 23,
+   "partyGuard": 34,
+   "spread": 1,
+   "enemyHp": 63,
+   "enemyGuard": 37,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90000",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90000,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.910958904109589,
+   "courageCost": 2,
+   "takenBySeat": [
+    8,
+    0
+   ],
+   "hitsBySeat": [
+    3,
+    0
+   ],
+   "blockedBySeat": [
+    17,
+    0
+   ],
+   "aimed": 25,
+   "blocked": 17,
+   "partyGuard": 74,
+   "spread": 0,
+   "enemyHp": 139,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90013,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9084507042253521,
+   "courageCost": 6,
+   "takenBySeat": [
+    12,
+    0
+   ],
+   "hitsBySeat": [
+    1,
+    2
+   ],
+   "blockedBySeat": [
+    0,
+    21
+   ],
+   "aimed": 33,
+   "blocked": 21,
+   "partyGuard": 123,
+   "spread": 0,
+   "enemyHp": 139,
+   "enemyGuard": 32,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90026,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9215686274509803,
+   "courageCost": 0,
+   "takenBySeat": [
+    7,
+    0
+   ],
+   "hitsBySeat": [
+    3,
+    0
+   ],
+   "blockedBySeat": [
+    21,
+    0
+   ],
+   "aimed": 28,
+   "blocked": 21,
+   "partyGuard": 93,
+   "spread": 0,
+   "enemyHp": 139,
+   "enemyGuard": 32,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90039,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.7615894039735099,
+   "courageCost": 3,
+   "takenBySeat": [
+    9,
+    12
+   ],
+   "hitsBySeat": [
+    3,
+    2
+   ],
+   "blockedBySeat": [
+    20,
+    8
+   ],
+   "aimed": 49,
+   "blocked": 28,
+   "partyGuard": 100,
+   "spread": 0.8571428571428572,
+   "enemyHp": 139,
+   "enemyGuard": 47,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90052,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9121621621621622,
+   "courageCost": 1,
+   "takenBySeat": [
+    9,
+    7
+   ],
+   "hitsBySeat": [
+    1,
+    1
+   ],
+   "blockedBySeat": [
+    0,
+    0
+   ],
+   "aimed": 16,
+   "blocked": 0,
+   "partyGuard": 43,
+   "spread": 0.875,
+   "enemyHp": 139,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90065,
+   "win": true,
+   "turns": 3,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.906832298136646,
+   "courageCost": 5,
+   "takenBySeat": [
+    0,
+    7
+   ],
+   "hitsBySeat": [
+    1,
+    1
+   ],
+   "blockedBySeat": [
+    9,
+    0
+   ],
+   "aimed": 16,
+   "blocked": 9,
+   "partyGuard": 78,
+   "spread": 0,
+   "enemyHp": 139,
+   "enemyGuard": 15,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90078,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8807947019867549,
+   "courageCost": 18,
+   "takenBySeat": [
+    0,
+    18
+   ],
+   "hitsBySeat": [
+    1,
+    4
+   ],
+   "blockedBySeat": [
+    8,
+    23
+   ],
+   "aimed": 49,
+   "blocked": 31,
+   "partyGuard": 125,
+   "spread": 0,
+   "enemyHp": 139,
+   "enemyGuard": 37,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90091,
+   "win": true,
+   "turns": 4,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9395973154362416,
+   "courageCost": 9,
+   "takenBySeat": [
+    8,
+    9
+   ],
+   "hitsBySeat": [
+    1,
+    3
+   ],
+   "blockedBySeat": [
+    0,
+    17
+   ],
+   "aimed": 34,
+   "blocked": 17,
+   "partyGuard": 70,
+   "spread": 0.9411764705882353,
+   "enemyHp": 139,
+   "enemyGuard": 20,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90104",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90104,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9041095890410958,
+   "courageCost": 3,
+   "takenBySeat": [
+    9,
+    0
+   ],
+   "hitsBySeat": [
+    1,
+    2
+   ],
+   "blockedBySeat": [
+    0,
+    21
+   ],
+   "aimed": 30,
+   "blocked": 21,
+   "partyGuard": 100,
+   "spread": 0,
+   "enemyHp": 139,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90117",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90117,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8873239436619719,
+   "courageCost": 9,
+   "takenBySeat": [
+    3,
+    12
+   ],
+   "hitsBySeat": [
+    1,
+    4
+   ],
+   "blockedBySeat": [
+    5,
+    29
+   ],
+   "aimed": 49,
+   "blocked": 34,
+   "partyGuard": 130,
+   "spread": 0.4,
+   "enemyHp": 139,
+   "enemyGuard": 37,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90130",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90130,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9215686274509803,
+   "courageCost": 0,
+   "takenBySeat": [
+    7,
+    0
+   ],
+   "hitsBySeat": [
+    1,
+    2
+   ],
+   "blockedBySeat": [
+    0,
+    21
+   ],
+   "aimed": 28,
+   "blocked": 21,
+   "partyGuard": 104,
+   "spread": 0,
+   "enemyHp": 139,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90143",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 2,
+   "seed": 90143,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8013245033112583,
+   "courageCost": -3,
+   "takenBySeat": [
+    0,
+    15
+   ],
+   "hitsBySeat": [
+    1,
+    4
+   ],
+   "blockedBySeat": [
+    8,
+    26
+   ],
+   "aimed": 49,
+   "blocked": 34,
+   "partyGuard": 89,
+   "spread": 0,
+   "enemyHp": 139,
+   "enemyGuard": 37,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90000",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90000,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8878504672897196,
+   "courageCost": 2,
+   "takenBySeat": [
+    0,
+    7,
+    1
+   ],
+   "hitsBySeat": [
+    1,
+    2,
+    4
+   ],
+   "blockedBySeat": [
+    5,
+    8,
+    37
+   ],
+   "aimed": 58,
+   "blocked": 50,
+   "partyGuard": 204,
+   "spread": 0.1875,
+   "enemyHp": 252,
+   "enemyGuard": 37,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90013,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8949771689497716,
+   "courageCost": -11,
+   "takenBySeat": [
+    0,
+    7,
+    0
+   ],
+   "hitsBySeat": [
+    0,
+    3,
+    0
+   ],
+   "blockedBySeat": [
+    0,
+    21,
+    0
+   ],
+   "aimed": 28,
+   "blocked": 21,
+   "partyGuard": 195,
+   "spread": 0,
+   "enemyHp": 252,
+   "enemyGuard": 32,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90026,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9773755656108597,
+   "courageCost": -7,
+   "takenBySeat": [
+    0,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    2,
+    0,
+    0
+   ],
+   "blockedBySeat": [
+    21,
+    0,
+    0
+   ],
+   "aimed": 21,
+   "blocked": 21,
+   "partyGuard": 132,
+   "spread": 1,
+   "enemyHp": 252,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90039,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8584474885844748,
+   "courageCost": -4,
+   "takenBySeat": [
+    9,
+    7,
+    0
+   ],
+   "hitsBySeat": [
+    3,
+    1,
+    0
+   ],
+   "blockedBySeat": [
+    21,
+    0,
+    0
+   ],
+   "aimed": 37,
+   "blocked": 21,
+   "partyGuard": 150,
+   "spread": 0.4999999999999999,
+   "enemyHp": 252,
+   "enemyGuard": 32,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90052,
+   "win": true,
+   "turns": 4,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9684684684684685,
+   "courageCost": -5,
+   "takenBySeat": [
+    0,
+    0,
+    7
+   ],
+   "hitsBySeat": [
+    0,
+    1,
+    1
+   ],
+   "blockedBySeat": [
+    0,
+    9,
+    0
+   ],
+   "aimed": 16,
+   "blocked": 9,
+   "partyGuard": 107,
+   "spread": 2.220446049250313e-16,
+   "enemyHp": 252,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90065,
+   "win": true,
+   "turns": 4,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9655172413793104,
+   "courageCost": -2,
+   "takenBySeat": [
+    0,
+    0,
+    7
+   ],
+   "hitsBySeat": [
+    0,
+    1,
+    1
+   ],
+   "blockedBySeat": [
+    0,
+    9,
+    0
+   ],
+   "aimed": 16,
+   "blocked": 9,
+   "partyGuard": 128,
+   "spread": 2.220446049250313e-16,
+   "enemyHp": 252,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90078,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9461883408071748,
+   "courageCost": 12,
+   "takenBySeat": [
+    0,
+    12,
+    5
+   ],
+   "hitsBySeat": [
+    1,
+    4,
+    1
+   ],
+   "blockedBySeat": [
+    8,
+    24,
+    0
+   ],
+   "aimed": 49,
+   "blocked": 32,
+   "partyGuard": 109,
+   "spread": 0.4411764705882353,
+   "enemyHp": 252,
+   "enemyGuard": 37,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90091,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9216589861751152,
+   "courageCost": 10,
+   "takenBySeat": [
+    0,
+    4,
+    12
+   ],
+   "hitsBySeat": [
+    1,
+    2,
+    3
+   ],
+   "blockedBySeat": [
+    8,
+    8,
+    17
+   ],
+   "aimed": 49,
+   "blocked": 33,
+   "partyGuard": 122,
+   "spread": 0.375,
+   "enemyHp": 252,
+   "enemyGuard": 47,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90104",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90104,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8644859813084113,
+   "courageCost": 7,
+   "takenBySeat": [
+    12,
+    0,
+    7
+   ],
+   "hitsBySeat": [
+    4,
+    1,
+    2
+   ],
+   "blockedBySeat": [
+    23,
+    8,
+    8
+   ],
+   "aimed": 58,
+   "blocked": 39,
+   "partyGuard": 194,
+   "spread": 0.4999999999999999,
+   "enemyHp": 252,
+   "enemyGuard": 37,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90117",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90117,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.7808219178082192,
+   "courageCost": 14,
+   "takenBySeat": [
+    32,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    5,
+    1,
+    1
+   ],
+   "blockedBySeat": [
+    13,
+    8,
+    8
+   ],
+   "aimed": 61,
+   "blocked": 29,
+   "partyGuard": 239,
+   "spread": 0,
+   "enemyHp": 252,
+   "enemyGuard": 37,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90130",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90130,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9773755656108597,
+   "courageCost": -7,
+   "takenBySeat": [
+    0,
+    0,
+    7
+   ],
+   "hitsBySeat": [
+    0,
+    2,
+    1
+   ],
+   "blockedBySeat": [
+    0,
+    21,
+    0
+   ],
+   "aimed": 28,
+   "blocked": 21,
+   "partyGuard": 155,
+   "spread": 2.220446049250313e-16,
+   "enemyHp": 252,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90143",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 3,
+   "seed": 90143,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8995433789954338,
+   "courageCost": -13,
+   "takenBySeat": [
+    0,
+    7,
+    3
+   ],
+   "hitsBySeat": [
+    1,
+    5,
+    1
+   ],
+   "blockedBySeat": [
+    8,
+    38,
+    5
+   ],
+   "aimed": 61,
+   "blocked": 51,
+   "partyGuard": 165,
+   "spread": 0.44999999999999996,
+   "enemyHp": 252,
+   "enemyGuard": 37,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90000",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90000,
+   "win": true,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9230769230769231,
+   "courageCost": 0,
+   "takenBySeat": [
+    0,
+    7,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    1,
+    2,
+    1,
+    4
+   ],
+   "blockedBySeat": [
+    5,
+    8,
+    8,
+    38
+   ],
+   "aimed": 66,
+   "blocked": 59,
+   "partyGuard": 478,
+   "spread": 0,
+   "enemyHp": 359,
+   "enemyGuard": 49,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90013,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9010238907849829,
+   "courageCost": -11,
+   "takenBySeat": [
+    3,
+    0,
+    0,
+    14
+   ],
+   "hitsBySeat": [
+    1,
+    1,
+    1,
+    5
+   ],
+   "blockedBySeat": [
+    5,
+    8,
+    8,
+    36
+   ],
+   "aimed": 74,
+   "blocked": 57,
+   "partyGuard": 465,
+   "spread": 0.23529411764705888,
+   "enemyHp": 359,
+   "enemyGuard": 47,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90026,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9767441860465116,
+   "courageCost": -17,
+   "takenBySeat": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    0,
+    2,
+    0,
+    0
+   ],
+   "blockedBySeat": [
+    0,
+    21,
+    0,
+    0
+   ],
+   "aimed": 21,
+   "blocked": 21,
+   "partyGuard": 289,
+   "spread": 1,
+   "enemyHp": 359,
+   "enemyGuard": 32,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90039,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8717948717948718,
+   "courageCost": -3,
+   "takenBySeat": [
+    14,
+    7,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    2,
+    1,
+    0,
+    0
+   ],
+   "blockedBySeat": [
+    7,
+    0,
+    0,
+    0
+   ],
+   "aimed": 28,
+   "blocked": 7,
+   "partyGuard": 310,
+   "spread": 0.33333333333333337,
+   "enemyHp": 359,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90052,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9565217391304348,
+   "courageCost": 1,
+   "takenBySeat": [
+    0,
+    0,
+    0,
+    7
+   ],
+   "hitsBySeat": [
+    0,
+    2,
+    0,
+    1
+   ],
+   "blockedBySeat": [
+    0,
+    21,
+    0,
+    0
+   ],
+   "aimed": 28,
+   "blocked": 21,
+   "partyGuard": 223,
+   "spread": 0,
+   "enemyHp": 359,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90065,
+   "win": true,
+   "turns": 4,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9741935483870968,
+   "courageCost": -2,
+   "takenBySeat": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    0,
+    2,
+    0,
+    0
+   ],
+   "blockedBySeat": [
+    0,
+    21,
+    0,
+    0
+   ],
+   "aimed": 21,
+   "blocked": 21,
+   "partyGuard": 264,
+   "spread": 1,
+   "enemyHp": 359,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90078,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9562289562289562,
+   "courageCost": 2,
+   "takenBySeat": [
+    12,
+    0,
+    5,
+    0
+   ],
+   "hitsBySeat": [
+    4,
+    1,
+    1,
+    1
+   ],
+   "blockedBySeat": [
+    24,
+    8,
+    0,
+    8
+   ],
+   "aimed": 57,
+   "blocked": 40,
+   "partyGuard": 298,
+   "spread": 0.33333333333333337,
+   "enemyHp": 359,
+   "enemyGuard": 37,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90091,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9759450171821306,
+   "courageCost": 0,
+   "takenBySeat": [
+    7,
+    0,
+    6,
+    0
+   ],
+   "hitsBySeat": [
+    1,
+    0,
+    2,
+    0
+   ],
+   "blockedBySeat": [
+    0,
+    0,
+    15,
+    0
+   ],
+   "aimed": 28,
+   "blocked": 15,
+   "partyGuard": 363,
+   "spread": 0.33333333333333337,
+   "enemyHp": 359,
+   "enemyGuard": 32,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90104",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90104,
+   "win": true,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9464882943143813,
+   "courageCost": -7,
+   "takenBySeat": [
+    4,
+    0,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    1,
+    0,
+    3,
+    0
+   ],
+   "blockedBySeat": [
+    0,
+    0,
+    30,
+    0
+   ],
+   "aimed": 34,
+   "blocked": 30,
+   "partyGuard": 421,
+   "spread": 0,
+   "enemyHp": 359,
+   "enemyGuard": 32,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90117",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90117,
+   "win": true,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8327645051194539,
+   "courageCost": 9,
+   "takenBySeat": [
+    33,
+    0,
+    0,
+    0
+   ],
+   "hitsBySeat": [
+    5,
+    1,
+    1,
+    1
+   ],
+   "blockedBySeat": [
+    12,
+    8,
+    8,
+    8
+   ],
+   "aimed": 69,
+   "blocked": 36,
+   "partyGuard": 460,
+   "spread": 0,
+   "enemyHp": 359,
+   "enemyGuard": 49,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90130",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90130,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9767441860465116,
+   "courageCost": -17,
+   "takenBySeat": [
+    0,
+    0,
+    7,
+    0
+   ],
+   "hitsBySeat": [
+    0,
+    2,
+    1,
+    0
+   ],
+   "blockedBySeat": [
+    0,
+    21,
+    0,
+    0
+   ],
+   "aimed": 28,
+   "blocked": 21,
+   "partyGuard": 281,
+   "spread": 0,
+   "enemyHp": 359,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90143",
+   "type": "scuffle",
+   "tier": "advanced",
+   "encounter": "foyer-13",
+   "name": "Coatrack Crawler + Lost Luggage",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90143,
+   "win": true,
+   "turns": 5,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.9166666666666666,
+   "courageCost": -17,
+   "takenBySeat": [
+    0,
+    7,
+    7,
+    0
+   ],
+   "hitsBySeat": [
+    0,
+    1,
+    2,
+    0
+   ],
+   "blockedBySeat": [
+    0,
+    0,
+    14,
+    0
+   ],
+   "aimed": 28,
+   "blocked": 14,
+   "partyGuard": 331,
+   "spread": 0.33333333333333337,
+   "enemyHp": 359,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  }
+ ],
+ "table": [
+  {
+   "size": 1,
+   "n": 12,
+   "aimed": 29.5,
+   "landed": 12.7,
+   "blocked": 16.8,
+   "pctBlocked": 56.9,
+   "partyGuard": 28.7,
+   "spread": 1,
+   "turns": 5.2,
+   "aimedPerTurn": 5.7,
+   "winPct": 100,
+   "leftAll": 81.2,
+   "pool": 63,
+   "left": 81.2,
+   "errs": 0
+  },
+  {
+   "size": 2,
+   "n": 12,
+   "aimed": 33.8,
+   "landed": 12.7,
+   "blocked": 21.2,
+   "pctBlocked": 62.7,
+   "partyGuard": 94.1,
+   "spread": 0.256,
+   "turns": 5.3,
+   "aimedPerTurn": 6.4,
+   "winPct": 100,
+   "leftAll": 88.8,
+   "pool": 139,
+   "left": 88.8,
+   "errs": 0,
+   "poolScale": 2.21,
+   "predictedLeft": 89.6,
+   "buys": 0.8
+  },
+  {
+   "size": 3,
+   "n": 12,
+   "aimed": 40.2,
+   "landed": 12.2,
+   "blocked": 28,
+   "pctBlocked": 69.7,
+   "partyGuard": 158.3,
+   "spread": 0.288,
+   "turns": 5.9,
+   "aimedPerTurn": 6.8,
+   "winPct": 100,
+   "leftAll": 91.2,
+   "pool": 252,
+   "left": 91.2,
+   "errs": 0,
+   "poolScale": 4,
+   "predictedLeft": 91.6,
+   "buys": 0.4
+  },
+  {
+   "size": 4,
+   "n": 12,
+   "aimed": 40.2,
+   "landed": 11.7,
+   "blocked": 28.5,
+   "pctBlocked": 70.9,
+   "partyGuard": 348.6,
+   "spread": 0.297,
+   "turns": 6,
+   "aimedPerTurn": 6.7,
+   "winPct": 100,
+   "leftAll": 93.4,
+   "pool": 359,
+   "left": 93.4,
+   "errs": 0,
+   "poolScale": 5.7,
+   "predictedLeft": 93.3,
+   "buys": -0.1
+  }
+ ],
+ "errors": []
+}

@@ -182,7 +182,37 @@ export const coatrackCrawler = {
       // BALANCE DEVIATION from the design doc (6 damage / 5 Guard). Scuffle 2 cost the
       // player 2.15 Courage of 68 across 60 seeded runs. Raised to 8; Guard unchanged, and
       // Brace / Umbrella Jab — the enemy's actual lesson — are untouched.
+      /**
+       * PARTY: the tell has always said this one sweeps. "It swings the whole
+       * rack around" is an area attack described in words and implemented as a
+       * poke at one Kid — the same shape as CONTRACTS 54, where a rule that
+       * reads like an implementation is believed to be one.
+       *
+       * The standard tier needs it for the reason the elite tier did: `spread`
+       * reads 0.144 / 0.198 / 0.278 at two, three and four Kids, so an ordinary
+       * Foyer scuffle happens to one Kid while the others watch. Five of the
+       * six Foyer normals were single-target; only the Red Carpet Runner ever
+       * reached the table.
+       *
+       * `'all'`, and that was MEASURED rather than assumed. 'two' was tried
+       * first as the smaller change and it reaches half of four: spread went
+       * 0.144 -> 0.256 at two Kids and 0.278 -> 0.270 at four, which is
+       * nothing. 'all' reads 0.256 / 0.288 / 0.297 — identical at 2p, where
+       * the two modes ARE the same thing, and better wherever they differ.
+       * The number does not move — 8 to each, per the Snip Snip precedent —
+       * and the Guard it gains is untouched.
+       *
+       * **It is not enough on its own, and the reason is structural.** Five of
+       * the six Foyer normals are single-target, so one sweeping enemy among
+       * several cannot shift an encounter's aggregate far; the elite tier
+       * reached 0.40 because its fights are one enemy. Fixing this tier
+       * properly is a coverage pass across it. These are 5-turn fights at 100%
+       * win and 93% Courage left, so it is low stakes and low priority — but
+       * it is a to-do, not a solved thing, and the number above is where it
+       * stands.
+       */
       id: 'hat-swipe', name: 'Hat Swipe', intent: Intent.ATTACK_DEFEND, damage: 8, hits: 1, block: 5,
+      partyTarget: 'all',
       tell: 'It shrugs a bowler hat off a hook and swings the whole rack around.',
       effect(c) { hitPlayer(c, 8); c.block(c.self, 5); },
     },
