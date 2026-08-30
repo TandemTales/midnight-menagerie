@@ -809,7 +809,30 @@ export const unwelcomeGuest = {
       // the only Kid there is, so the number is the one it always was.
       damageFn: (c) => Math.min(20, 13 + 3 * unwelcomeGuest.familiarPlayedThisTurn(c, unwelcomeGuest.mostFamiliar(c))),
       intentFn: (c) => (unwelcomeGuest.familiarPlayedThisTurn(c, unwelcomeGuest.mostFamiliar(c)) >= 2 ? Intent.ATTACK_BIG : Intent.ATTACK),
-      effect(c) { hitPlayer(c, Math.min(20, 13 + 3 * (mem(c).familiarPlayed || 0))); },
+      /**
+       * PARTY: the escalated version cuts through Guard. MEASURED 2026-08-29 —
+       * `party-ledger.py --tier elite` read win% 100 at two, three and four
+       * Kids against 83.3 solo, with %blocked CLIMBING 57.6 -> 68.3. A party
+       * does not need more damage aimed at it; it blocks what is already
+       * aimed. Only what is KEPT changes the fight, which is why this is
+       * pierce and not another point of damage or another AoE.
+       *
+       * The threshold is exactly `intentFn`'s, so the turn the icon says BIG
+       * is the turn Guard stops working — one tell, one rule, no move that
+       * pierces while looking ordinary. Solo is untouched: `partySize() > 1`.
+       *
+       * Live count here, latched count in `effect`, for the same reason the
+       * damage does it: `onPlayerTurnEnd` rotates `familiar` between the two,
+       * and reading it live at resolve time once made this deal 15 while its
+       * intent promised 12.
+       */
+      pierceFn: (c) => c.partySize() > 1
+        && unwelcomeGuest.familiarPlayedThisTurn(c, unwelcomeGuest.mostFamiliar(c)) >= 2,
+      effect(c) {
+        const n = mem(c).familiarPlayed || 0;
+        hitPlayer(c, Math.min(20, 13 + 3 * n), 1,
+          { pierce: c.partySize() > 1 && n >= 2 });
+      },
     },
     'wrong-face': {
       id: 'wrong-face', name: 'Wrong Face', intent: Intent.ATTACK, damage: 9, hits: 2,
@@ -948,9 +971,30 @@ export const houseBell = {
       id: 'midnight-toll', name: 'MIDNIGHT TOLL', intent: Intent.ATTACK_BIG, damage: 20, hits: 1,
       // MULTIPLAYER: hits all players (foyer §27).
       partyTarget: 'all',
+      /**
+       * PARTY: and it goes THROUGH Guard, which is the half that was missing.
+       *
+       * This move was already the AoE, and the ledger is precisely about why
+       * that was not enough: "a pick SPREADS damage, AoE ADDS damage a party
+       * then blocks, and only pierce is KEPT". Measured 2026-08-29 at
+       * foyer/elite, `landed` moved 51.2 -> 52.6 from three Kids to four while
+       * `aimed` moved 140.8 -> 165.9 — the fourth Kid's entire share of the
+       * threat arrived as 1.4 damage, because four Kids generate Guard faster
+       * than one elite can spend it. Adding to the 20 would have been eaten
+       * the same way.
+       *
+       * It is the right move to carry it and the only one here that should:
+       * it is named in capitals, it is ATTACK_BIG, it is telegraphed a turn
+       * early at full Resonance, and its tell already promises the whole house
+       * leaning in. Solo never sees it — `partySize() > 1`.
+       */
+      pierceFn: (c) => c.partySize() > 1,
       tell: 'The whole house leans toward the sound. This is going to be very loud.',
       damageFn: (c) => flag(c, 'tollDamage', 20),
-      effect(c) { hitPlayer(c, flag(c, 'tollDamage', 20)); setCnt(c, 'resonance', 0); },
+      effect(c) {
+        hitPlayer(c, flag(c, 'tollDamage', 20), 1, { pierce: c.partySize() > 1 });
+        setCnt(c, 'resonance', 0);
+      },
     },
   },
 
