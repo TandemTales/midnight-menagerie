@@ -393,17 +393,31 @@ export class TitleScene extends Scene {
     panel.innerHTML = '<h2 class="ti-ov__title">Credits</h2>';
 
     {
+      /* ── what this list is FOR ──────────────────────────────────────────────
+       * It used to name no person, no tool and no licence, and printed "Lost
+       * Things" twice. Two of those are taste; one is not. This game
+       * redistributes three OFL fonts and an MIT library, and both licences
+       * require their notices to travel with the work — `game/vendor/LICENSE`
+       * and `game/assets/fonts/OFL.txt` are what satisfies that, and this is
+       * where a player is told the notices exist and where to find them.
+       *
+       * The AI lines are here because Steam requires the disclosure and because
+       * a player who reads credits is exactly the player who wants to know.
+       * `docs/COMMERCIAL-USE.md` carries the evidence and the timestamps. */
       panel.appendChild(el('div', 'ti-ov__body ti-credits', `
         <p class="ti-credits__lead">A cute-spooky deckbuilding roguelike about eight kids,
         sixteen transformed pets, and a house that confused protecting someone with keeping them.</p>
         <dl>
-          <dt>Design</dt><dd>Midnight Menagerie design document</dd>
-          <dt>Menu art</dt><dd>The mansion at midnight, and the wordmark</dd>
-          <dt>Companion art</dt><dd>The Menagerie plates &mdash; sixteen portraits</dd>
-          <dt>Blueprint</dt><dd>The mansion floor plan, seventeen wings</dd>
-          <dt>Soundtrack</dt><dd>Ten tracks for the house and the clubhouse</dd>
-          <dt>Fiction</dt><dd>Courage, Guard, Nerve, Tricks, Keepsakes, Lost Things, Lost Things</dd>
+          <dt>Design, code &amp; writing</dt><dd>The Midnight Menagerie authors</dd>
+          <dt>Fiction</dt><dd>Courage, Guard, Nerve, Tricks, Keepsakes, Lost Things</dd>
+          <dt>Art</dt><dd>Generated with OpenAI's image model, then hand-edited</dd>
+          <dt>Soundtrack</dt><dd>Ten tracks generated with Suno</dd>
+          <dt>Sound effects</dt><dd>Synthesised in the browser &mdash; no recordings</dd>
+          <dt>Engine</dt><dd>three.js r169 &mdash; MIT licence</dd>
+          <dt>Type</dt><dd>Cinzel, Grenze and Rye &mdash; SIL Open Font License 1.1</dd>
         </dl>
+        <p class="ti-credits__note">Full licence texts ship with the game, in
+        <code>vendor/LICENSE</code> and <code>assets/fonts/OFL.txt</code>.</p>
         <p class="ti-credits__foot">Protection without freedom is still imprisonment.</p>`));
     }
 

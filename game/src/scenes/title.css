@@ -479,6 +479,11 @@
 .ti-credits dl { display: grid; grid-template-columns: 10em 1fr; gap: var(--s-2) var(--s-4); margin: 0; }
 .ti-credits dt { font-family: var(--font-display); font-size: var(--fs-sm); letter-spacing: .12em; text-transform: uppercase; color: var(--brass-200); }
 .ti-credits dd { margin: 0; }
+/* Where the licence notices live, so the credits point at them rather than
+   claiming them. Quieter than the list above it: this is a pointer, not a
+   thank-you. */
+.ti-credits__note { margin: var(--s-4) 0 0; font-size: var(--fs-sm); color: var(--text-lo); }
+.ti-credits__note code { font-family: var(--font-num); font-size: var(--fs-xs); color: var(--text-mid); }
 .ti-credits__foot { margin: var(--s-5) 0 0; text-align: center; font-style: italic; color: var(--arcane-200); }
 
 .ti-ov__close {
