@@ -2582,10 +2582,33 @@ export class CombatScene extends Scene {
     const kid = run.kidAt(m.seat);
     if (!kid) return;
     const cards = run.deckViewsOf(kid) || [];
+    /**
+     * "DECK AND RELICS", not just the deck — §8.4 says both and half of it
+     * would be a green scorecard row for a feature nobody finished.
+     *
+     * Keepsakes ride the SUBTITLE rather than getting sigils of their own,
+     * which is a deliberately small choice: `ui/hud.js` draws them as warm
+     * square sigils and `sigil()` there is a local function, so drawing them
+     * here means either exporting it or growing a second copy — and a second
+     * copy of a Keepsake drawing is exactly the drift that comment says the
+     * component exists to end. Names are what you actually need off a
+     * teammate anyway: you are deciding whether they can answer something,
+     * not admiring the icon.
+     *
+     * Their BACKPACK Gear is deliberately not here. The HUD keeps Keepsakes
+     * and Gear visibly apart — warm squares against cool rounds — because
+     * they are not the same thing, and flattening them into one list on this
+     * screen would undo that distinction for the one Kid you cannot see.
+     */
+    const keeps = (kid.keepsakes || []).map(r => r?.name).filter(Boolean);
+    const who = run.kidNameOf(kid) || 'Your friend';
     try { this.ctx.audio?.play?.('ui:confirm'); } catch { /* audio is best-effort */ }
     await openPile({
       mode: 'deck', cards, ctx: this.ctx, host: this.ctx?.dom,
-      title: `${run.kidNameOf?.(kid) || 'Your friend'}'s Tricks`,
+      title: `${who}'s Tricks`,
+      subtitle: keeps.length
+        ? `Keepsakes: ${keeps.join(' · ')}`
+        : 'No Keepsakes yet.',
     });
   }
 
@@ -2607,8 +2630,14 @@ export class CombatScene extends Scene {
 
     /* Named on the panel itself, so the affordance says whose deck it opens
        rather than "your friend". Re-set on every paint because a fallen Kid's
-       name can change how the row reads. */
-    const who = this.ctx?.run?.kidNameOf?.(this.ctx?.run?.kidAt?.(m.seat));
+       name can change how the row reads.
+
+       The RUN is optional here (this scene stands up standalone in harnesses
+       with no run at all) and `kidAt`/`kidNameOf` are NOT — they are contract
+       API, and `?.` on those would turn a renamed method into a silently
+       nameless panel instead of an error. seams rule 8. */
+    const run = this.ctx?.run;
+    const who = run ? run.kidNameOf(run.kidAt(m.seat)) : '';
     el.root.setAttribute('aria-label', who ? `See ${who}'s Tricks` : "See your friend's Tricks");
     el.root.title = el.root.getAttribute('aria-label');
 

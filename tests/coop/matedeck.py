@@ -38,8 +38,10 @@ URL = ("http://localhost:8777/game/index.html"
 TRUTH = """() => {
   const r = window.MM.ctx.run;
   const nm = (l) => (l || []).map(c => c.def?.name || c.name).sort();
+  const keeps = (k) => (k?.keepsakes || []).map(x => x?.name).filter(Boolean);
   return { mate: nm(r.deckViewsOf(r.kidAt(1))), mine: nm(r.deckViews()),
-           who: r.kidNameOf?.(r.kidAt(1)) || '' };
+           who: r.kidNameOf?.(r.kidAt(1)) || '',
+           mateKeeps: keeps(r.kidAt(1)), myKeeps: keeps(r.kidAt(0)) };
 }"""
 
 fails = []
@@ -106,6 +108,33 @@ async def main():
         check(not any(c in grid for c in set(mine_only)),
               "and not one Trick that only YOU own",
               ", ".join(sorted(set(mine_only))[:4]))
+
+        # §8.4 is "deck and relics", and half of it would be a green scorecard
+        # row for a feature nobody finished. Keepsakes ride the subtitle.
+        sub = await page.evaluate(
+            "() => document.querySelector('.mm-modal__subtitle, .mm-modal__sub')"
+            "?.textContent?.trim() || ''")
+        want = truth["mateKeeps"]
+        check(bool(sub), "the panel says something about their Keepsakes too", sub)
+        if want:
+            check(all(k in sub for k in want),
+                  "and it names every Keepsake they are carrying",
+                  f'{want} -> {sub!r}')
+        else:
+            check("No Keepsakes" in sub,
+                  "and says so plainly when they are carrying none", sub)
+
+        # How strong the check above is depends on the two Kids differing. Say
+        # which it was rather than letting a weak pass look like a strong one.
+        mine_only_k = [k for k in truth["myKeeps"] if k not in truth["mateKeeps"]]
+        if mine_only_k:
+            check(not any(k in sub for k in mine_only_k),
+                  "and not one Keepsake that is only YOURS",
+                  f'{mine_only_k} -> {sub!r}')
+        else:
+            print(f"  note  both Kids carry the same Keepsakes ({truth['myKeeps']}), "
+                  f"so this run cannot distinguish theirs from yours — the deck "
+                  f"checks above are what carry the identity here", flush=True)
 
         await browser.close()
 
