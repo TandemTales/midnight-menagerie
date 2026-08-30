@@ -183,10 +183,53 @@ export class Session {
    * queue is the reason `input()` does not apply anything itself: there is one
    * path into the game and it is ordered.
    */
-  _run(msg) {
+  /**
+   * Apply everything in the log that has not been applied yet, IN LOG ORDER.
+   *
+   * This used to be `_run(msg)`, which applied the message that had just
+   * arrived. The log was sorted and the board was not: two clients receiving
+   * the same two inputs in opposite orders held identical logs and had applied
+   * them differently — measured, `tests/net` §4b.
+   *
+   * ── Why a microtask fixes it ────────────────────────────────────────────
+   *
+   * The link below runs as a microtask, so every `_accept` that happens in the
+   * SAME task has already inserted its message by the time the first link
+   * drains. A transport read that delivers two frames in one turn of the event
+   * loop — which is what a socket read, a BroadcastChannel batch and the
+   * loopback all do — therefore gets sorted before anything is applied. Each
+   * later `_accept` still appends its own link; it just finds the cursor has
+   * already passed its message, and does nothing.
+   *
+   * ── What it does NOT fix ────────────────────────────────────────────────
+   *
+   * An input that arrives in a LATER task, sorting before one already applied,
+   * cannot be put back in its place — the board has moved. That is a genuine
+   * divergence and `_accept` reports it as one rather than applying it out of
+   * order and leaving the digest to notice a turn later, a long way from the
+   * cause. Closing that needs a turn barrier and idle heartbeats, which is a
+   * protocol decision belonging with the transport work.
+   */
+  /** One message, out of band, because the cursor has already passed it. */
+  _runOne(msg) {
     this._chain = (this._chain || Promise.resolve()).then(async () => {
       for (const fn of this._listeners.input) {
         try { await fn(msg); } catch (err) { console.error('[net] applying input', msg, err); }
+      }
+    });
+    return this._chain;
+  }
+
+  _pump() {
+    this._chain = (this._chain || Promise.resolve()).then(async () => {
+      while (this._applied < this.log.length) {
+        const msg = this.log[this._applied++];
+        // A CHOICE is delivered out of band by `_accept`; it is in the log so a
+        // rejoin replays it, and it must not be applied as an input here.
+        if (msg.t === INPUT.CHOICE) continue;
+        for (const fn of this._listeners.input) {
+          try { await fn(msg); } catch (err) { console.error('[net] applying input', msg, err); }
+        }
       }
     });
     return this._chain;
@@ -267,25 +310,24 @@ export class Session {
    * time is never consulted — arrival time is the one thing guaranteed to
    * differ between two machines, so ordering by it is ordering by nothing.
    *
-   * ── THAT IS TRUE OF THE LOG AND NOT YET OF APPLICATION ──────────────────
+   * ── AND THAT IS TRUE OF THE BOARD, NOT ONLY THE LOG ─────────────────────
    *
-   * `this.log` is sorted. `_run(msg)` below is handed the message that just
-   * arrived, and chains it onto `this._chain` in the order it arrived. So two
-   * clients that receive the same two inputs in opposite orders hold IDENTICAL
-   * logs and have applied them to their boards in different orders.
+   * It was not, until 2026-08-29. `this.log` was sorted and `_run(msg)` applied
+   * the message that had just ARRIVED, so two clients receiving the same two
+   * inputs in opposite orders held identical logs and different boards. `_pump`
+   * drains the log in order instead, one microtask later, so everything that
+   * arrives in the same turn of the event loop is sorted before any of it is
+   * applied. `tests/net` §4b measures both halves.
    *
-   * It cannot bite today: the only transports are the loopback and a
-   * BroadcastChannel between two contexts in one page, and `tests/net` §4
-   * hand-delivers out of order but then only compares `session.log`. It bites
-   * the day a real wire ships, which is the one netcode item still open.
+   * An input arriving in a LATER task, sorting before one already applied, is
+   * the case a microtask cannot reach — and it is ROUTINE, because both clients
+   * apply their own input as they issue it. It is applied anyway and reported
+   * only when it is a COMBAT input, because room inputs commute and combat
+   * inputs do not. See `_accept`.
    *
-   * Fixing it properly is a PROTOCOL decision, not a patch: applying in log
-   * order means either waiting for every seat's input for a turn before
-   * applying any of it (a barrier, which changes what a disconnect feels like),
-   * or accepting that a late input can arrive behind one already applied and
-   * reporting that as the divergence it is. Both belong with the transport
-   * decision. `tests/net` §4b pins the current behaviour so this comment cannot
-   * quietly stop being true.
+   * Closing even that needs a turn barrier and idle heartbeats so a client
+   * knows when it is safe to advance — a protocol decision that belongs with
+   * the transport work, and there is no transport yet.
    */
   _accept(msg, from) {
     if (!msg) return;
@@ -307,8 +349,57 @@ export class Session {
      * still goes in the log, in its place, because a rejoin replays the log.
      */
     if (msg.t === INPUT.CHOICE) { this._emit('answer', msg); return; }
-    this._run(msg);
+    /**
+     * An input that sorts BEFORE one already applied, arriving in a later task
+     * than the one it should have been sorted with.
+     *
+     * ── This is NORMAL, and for most inputs it is harmless ──────────────────
+     *
+     * Both clients apply their OWN input the moment they issue it, so whichever
+     * seat acts second always sees the other's arrive "late" — seat index is
+     * the tiebreaker and `turn` is 0 for every input outside combat. The first
+     * version of this guard treated that as a desync and shouted six times
+     * during an ordinary two-Kid reward screen.
+     *
+     * It is harmless because ROOM inputs COMMUTE. Every one of them acts on the
+     * sender's own Kid — their deck, their purse, their Keepsakes — or adds to
+     * a shared counter, and addition commutes. `map.vote` writes one seat's
+     * slot in a ballot whose resolution sorts the seats itself. Apply them in
+     * either order and both boards land in the same state, which is why this
+     * has been silently fine for the whole life of the wire.
+     *
+     * COMBAT inputs do not commute. Playing a Trick changes the board every
+     * other seat is about to read, so applying two of them in different orders
+     * on two machines is a real divergence — and THAT is worth reporting at the
+     * moment it happens, rather than leaving the digest to notice a turn later,
+     * "a long way from the cause".
+     *
+     * Either way the input is APPLIED: the cursor has already passed its slot,
+     * so the pump will not, and dropping it would turn a possible divergence
+     * into a certain one.
+     */
+    if (at < this._applied) {
+      this._applied++;
+      /* PLAY and SNACK only. An END commutes as well: `endTurn(seat)` closes
+         one seat and the enemy phase falls out of the LAST one to close,
+         whichever that is, so two ENDs in either order leave the same board
+         — and two Kids ending their turns at once is the most ordinary
+         thing that happens in a co-op fight, which is what a first version
+         of this shouted about twice per round. */
+      if (msg.t === INPUT.PLAY || msg.t === INPUT.SNACK) {
+        console.error('[net] DESYNC {reason: late-input} a COMBAT input arrived '
+          + 'after one that sorts after it; the board has already moved',
+          { turn: msg.turn, seat: msg.seat, seq: msg.seq, t: msg.t });
+        this._emit('desync', { reason: 'late-input', msg });
+      }
+      this._runOne(msg);
+      return;
+    }
+    this._pump();
   }
+
+  /** How far through `this.log` the board has been advanced. */
+  _applied = 0;
 
   _insertAt(msg) {
     const key = (m) => [m.turn | 0, m.seat | 0, m.seq | 0];
