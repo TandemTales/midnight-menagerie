@@ -93,11 +93,12 @@ RUN on 2026-08-30, not copied forward; if one differs, that is the finding.
   python tests/cards-feel/run.py          exit 0
   python tests/critic-design/anchor.py    6/6 agree
 
-  TEN gates, each must stay at zero:
+  ELEVEN gates, each must stay at zero:
     tests/seams/check.py          6191 call sites, 0 problems
     tests/bus-names/check.py      0 dead subscriptions, 0 advisory
     tests/audio/cues.py           46 cues, 45 reachable, 1 known-silent
     tests/status-names/check.py   268 statuses, 0 unwaived name collisions
+    tests/party-tells/check.py    13 party moves, 0 tells that address one Kid
     scene-css · css-tokens · dup-keys · hook-names · turn-events · stdlib-shadow
 
   `tests/enemies/audit.py` reads 2085 and not the 2093 an older note quotes.
@@ -112,8 +113,8 @@ RUN on 2026-08-30, not copied forward; if one differs, that is the finding.
 
   SIX co-op screens, all "0 failures, 0 console errors":
     tests/coop/selectscreen.py · hotseat.py · rooms.py · playthrough.py
-    tests/coop/lobby.py     15 checks ← two tabs, one seed, two seats
-    tests/coop/matedeck.py   8 checks ← a friend's deck, and it is THEIRS
+    tests/coop/lobby.py     20 checks ← two tabs, one seed, and a vote that CROSSES
+    tests/coop/matedeck.py  11 checks ← a friend's deck and Keepsakes, and they are THEIRS
 
 ━━ WHAT IS OPEN ━━
 
@@ -222,9 +223,25 @@ on a person or a machine, or is a decision with the reason already written down.
    that error was made and briefly believed.
 
 6. **Two cues are known-silent and need something built first**, with their
-   reasons in `tests/audio/cues.py`: `combat:crit` (there is no crit in this
-   game — the only crit flag in the repo is the soundboard's own test payload)
-   and `card:retain` (no retain event is emitted).
+   reason in `tests/audio/cues.py`: `combat:crit`. There is no crit in this
+   game — the only crit flag in the repo is the soundboard's own test payload —
+   so wiring it means designing critical hits, which nobody has asked for.
+   `card:retain` came off this list on 2026-08-30: it was never a missing
+   feature, only a missing event.
+
+   **AND A SWEEP LEFT A PILE OF WORK, 24 of it adversarially verified.** `HANDOFF.md` carries the detail. In short: `autoEndTurn` is
+   a settings toggle that nothing reads while settings.js claims it takes
+   effect; eight unplayable Status/Curse cards in `data/neutral.js` have
+   `effect` blocks that can never run because `canPlay` refuses unplayable
+   cards; `gameover.js` fabricates Keepsakes for a REAL run and five of seven
+   ids do not exist; `ANIMATED_EVENTS` is exported and read by nothing.
+
+   The sweep returned 111 findings and its own log claims all 111 survived
+   the skeptics. **That is my orchestration bug, not a result** — the verdict
+   join was on an unstable string, so 87 were kept unchecked. 24 are really
+   verified; the rest are leads carrying their finder's own searches. The
+   full list is `docs/notes/2026-08-30-the-unreachable-sweep.md`. **None of
+   it is blocked, and it is the best-evidenced work available.**
 
 7. **The vote beat is 3.0 s and that was arithmetic, not a playtest.** It sat
    open for three sessions as "unplaytested" and never needed a playtest — it

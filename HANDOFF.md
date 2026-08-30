@@ -310,9 +310,53 @@ back with "fix as you deem fit, overrule anything previously written":
 **Known-silent, each needing something built first.** `tests/audio/cues.py`
 carries the list and fails if one starts working and stays on it:
 `combat:crit` (there is no crit in this game — the only crit flag in the repo
-is the soundboard's own test payload) and `card:retain` (no retain event is
-emitted; retained cards are resolved inside the engine's turn-end pass with
-nothing published).
+is the soundboard's own test payload). **`card:retain` came off this list on
+2026-08-30**: it was never a missing feature, only a missing event, and
+`EV.CARD_RETAIN` now fires where the card is actually kept. One known-silent
+cue, not two.
+
+**A MULTI-AGENT SWEEP FOR THE CONTRACTS 54 CLASS, 2026-08-30.** Six agents swept
+`ui/`, `scenes/`, `combat/`, `data/`, the plumbing and the documents for things
+that are built, documented or tested and that nothing can reach; a skeptic per
+area then tried to refute each one. What survived, with the critical one already
+FIXED:
+
+1. **FIXED — `attachActions` had no caller anywhere in `game/src/`.** The new
+   lobby called `session.attach(run)` and shipped a networked game in which no
+   input either player made would ever be applied. `attachSession()` is the one
+   call now, and `tests/coop/lobby.py` sends a real vote and asserts it lands on
+   both tabs. See the commit; this is the single best argument for the sweep.
+
+2. **`autoEndTurn` is a live settings control that does nothing.** No code reads
+   it — four hits repo-wide, all of them the declaration, the default and the
+   header. `ui/settings.js`'s own header claims every control "actually takes
+   effect" and names `autoEndTurn` among the flags "read from `Save.settings` at
+   the point of use". Either wire it or take the toggle off the panel; a switch
+   that does nothing is worse than an absent feature.
+
+3. **Eight unplayable Status/Curse cards in `data/neutral.js` carry `effect`
+   blocks that can never run.** A card's `effect` is invoked in exactly one
+   place and that place is behind `canPlay`, which refuses every `unplayable`
+   card. Their printed rules text has never done anything — the wing conditions
+   again, in the card pool.
+
+4. **`gameover.js` fabricates 3–6 Keepsakes for a REAL run that ended carrying
+   none**, contradicting its own header ("Nothing here is a placeholder"), and
+   five of the seven fabricated ids do not exist in `data/relics.js`.
+
+5. **`ANIMATED_EVENTS` is exported, documented, and read by nothing.** Five of
+   the 23 events it names have no animator case either.
+
+**READ THE NUMBERS HONESTLY.** The sweep returned 111 findings and its own log
+says all 111 survived the skeptics. That line is WRONG and the bug is mine: the
+script joined each skeptic's verdict to its finding by exact `where` string, the
+skeptics phrased theirs differently, and every unjoined finding fell through as
+kept. **24 carry a real adversarial verdict. 87 carry only their finder's own
+evidence.** Numbers 2–5 above are from the verified 24. The rest are leads with
+homework attached, and the whole list — with every `rg` invocation each finder
+actually ran — is in `docs/notes/2026-08-30-the-unreachable-sweep.md`. Re-run the
+skeptic pass with a stable join before believing the total.
+
 
 **The netcode case is HALF closed, 2026-08-29, and the half that is left is
 named.** `_pump` applies the log in order, so anything arriving in the same turn

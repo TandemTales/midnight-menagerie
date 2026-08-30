@@ -64,3 +64,4 @@ to concurrent whole-file writes, so this is now structural rather than a convent
 | [2026-08-28-butler-aoe-and-a-broken-instrument](notes/2026-08-28-butler-aoe-and-a-broken-instrument.md) | 13 KB |
 | [2026-08-29-the-wire-reaches-the-screens](notes/2026-08-29-the-wire-reaches-the-screens.md) | 14 KB |
 | [2026-08-30-the-card-art-hitch-is-real](notes/2026-08-30-the-card-art-hitch-is-real.md) | 6 KB |
+| [2026-08-30-the-unreachable-sweep](notes/2026-08-30-the-unreachable-sweep.md) | 112 KB |
