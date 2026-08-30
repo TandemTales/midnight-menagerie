@@ -132,6 +132,30 @@ export class Audio {
     return this._unlocking;
   }
 
+  /**
+   * Go quiet while the Steam overlay is up or the window is unfocused.
+   *
+   * Suspending the AudioContext rather than turning the master gain down,
+   * because the point is to stop being audible at all — a player who alt-tabbed
+   * to a video call does not want the Governess's theme underneath it.
+   *
+   * `_pausedByHost` exists because `unlock()` also resumes this context, from a
+   * capture-phase pointerdown listener on window. Without the flag, ANY stray
+   * input during a pause would un-suspend us and the music would come back while
+   * the overlay was still up. Only a resume that matches our own suspend counts.
+   */
+  async setPaused(on) {
+    if (!this.available || !this.ac) return;
+    try {
+      if (on) {
+        if (this.ac.state === 'running') { this._pausedByHost = true; await this.ac.suspend(); }
+      } else if (this._pausedByHost) {
+        this._pausedByHost = false;
+        if (this.ac.state === 'suspended') await this.ac.resume();
+      }
+    } catch (e) { console.warn('[audio] setPaused', e); }
+  }
+
   dispose() {
     for (const off of this._offs) { try { off(); } catch {} }
     this._offs.length = 0;

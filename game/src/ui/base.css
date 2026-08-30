@@ -35,6 +35,30 @@ body {
 #tooltip-layer { z-index: var(--z-tooltip); pointer-events:none; }
 #dom-layer > * { pointer-events: auto; }
 
+/* ── short viewports: the Steam Deck's 1280x800 panel ──────────────────────
+ * Several scenes are `position:absolute; inset:0; overflow:hidden`, which is
+ * correct at 1080p and wrong at 800. Content below the fold is then not merely
+ * unscrolled — it is UNREACHABLE. Measured by `tests/steam-deck/run.py` on the
+ * Deck panel: Game Over lost its Final Tricks list, its Keepsake shelf, the seed
+ * and BOTH of its buttons, so a player who died could not get back to the
+ * Clubhouse without alt-F4. The Shop lost Mr. Moth's whole services counter.
+ *
+ * Only the scenes that STACK are opened up. Combat and the map are fixed boards
+ * whose layout is computed against the viewport, and a scrollbar on either would
+ * be a bug rather than a fix.
+ *
+ * 860 rather than 800: the Deck is 800, and a windowed build a hair under 900
+ * has the same problem for the same reason. */
+@media (max-height: 860px) {
+  .scene[data-scene="gameover"],
+  .scene[data-scene="shop"],
+  .scene[data-scene="clubhouse"],
+  .scene[data-scene="select"] {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 :focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .sr-only {

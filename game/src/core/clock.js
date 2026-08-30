@@ -2,6 +2,7 @@
 export class Clock {
   constructor() {
     this.t = 0; this.dt = 0; this.raf = 0; this.running = false;
+    this.paused = false;         // the Steam overlay, or the window losing focus
     this.scale = 1;              // global time scale (slow-mo on big hits)
     this._subs = new Set();
     this._tweens = [];
@@ -9,7 +10,7 @@ export class Clock {
     this._last = 0;
   }
   start() {
-    if (this.running) return;
+    if (this.running || this.paused) return;
     this.running = true; this._last = performance.now();
     const step = (now) => {
       if (!this.running) return;
@@ -26,6 +27,35 @@ export class Clock {
   }
   stop() { this.running = false; cancelAnimationFrame(this.raf); }
   onFrame(fn) { this._subs.add(fn); return () => this._subs.delete(fn); }
+
+  /* ── pause ────────────────────────────────────────────────────────────────
+   * Freezing, as distinct from stopping: `resume()` puts it back exactly where
+   * it was, and `start()` refuses while paused so nothing else can restart the
+   * loop behind the pause's back.
+   *
+   * WHY THIS IS NOT ALREADY FREE. A hidden tab stops getting rAF callbacks, so
+   * a backgrounded browser game freezes itself. The Steam overlay does NOT hide
+   * the window — it composites on top of a game that is still running, still
+   * getting frames, and still resolving an enemy turn the player cannot see.
+   * A player who pressed Shift+Tab to read a guide and came back to a dead run
+   * writes a review about it.
+   *
+   * `_last` is re-stamped by `start()`, so the frame after a resume has a normal
+   * `dt` instead of the entire pause duration. Without that, unpausing after two
+   * minutes in the overlay would advance every tween two minutes in one frame —
+   * which the `Math.min(..., 0.1)` clamp would blunt but not prevent, because a
+   * hundred-millisecond frame is still four times the usual step.
+   */
+  pause() {
+    if (this.paused) return;
+    this.paused = true;
+    this.stop();
+  }
+  resume() {
+    if (!this.paused) return;
+    this.paused = false;
+    this.start();
+  }
 
   /** Promise-returning tween. obj[key] animated to `to` over `dur` seconds. */
   tween(obj, props, dur, ease = Clock.easeOutCubic, onUpdate) {
