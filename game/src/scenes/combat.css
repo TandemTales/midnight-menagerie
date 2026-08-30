@@ -1318,6 +1318,9 @@
 .cb-pile svg { width: 30px; height: 38px; }
 .cb-pile svg rect { fill: var(--ink-600); stroke: var(--ink-400); stroke-width: 1.4; }
 .cb-pile svg rect.top { fill: var(--ink-500); stroke: currentColor; }
+/* Vanished: the top card is an outline, because it is the one not coming back.
+   Must follow `.top` above - it overrides that rule's fill. */
+.cb-pile--vanished svg rect.gone { fill: none; stroke-dasharray: 3 2.5; }
 .cb-pile b {
   position: absolute; right: 2px; top: 2px;
   min-width: 22px; height: 22px; padding: 0 4px;

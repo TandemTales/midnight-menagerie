@@ -14,9 +14,14 @@
  *   });
  *
  * THE DRAW PILE IS SORTED, NOT ORDERED. Looking at it must be information, not
- * an oracle — you learn *what is left*, never *what is next*. combat.js already
- * sorts by name before handing the list over; this view sorts again anyway so
- * the guarantee does not depend on the caller.
+ * an oracle — you learn *what is left*, never *what is next*. This view is the
+ * ONLY thing enforcing that: the line here used to say "combat.js already sorts
+ * by name before handing the list over; this view sorts again anyway so the
+ * guarantee does not depend on the caller", and combat.js does no sorting at
+ * all — `_pileCards` maps `mine.draw` straight through in real draw order. The
+ * guarantee holds, on the `sort = 'name'` default at the top of the
+ * constructor, and it holds on nothing else. Change that default and the draw
+ * pile becomes an oracle.
  *
  * Keyboard: arrows walk the grid (real column count, not a guess), Home/End
  * jump, Enter picks in reward mode, Escape closes (Modal owns that), and the

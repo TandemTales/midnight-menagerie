@@ -725,6 +725,17 @@ export class CombatScene extends Scene {
             <svg viewBox="0 0 34 44" aria-hidden="true"><rect x="1" y="1" width="24" height="34" rx="3"/><rect x="9" y="9" width="24" height="34" rx="3" class="top"/></svg>
             <b>0</b><span class="cb-pile__lbl">Torn</span>
           </button>
+          <!-- The Vanished pile. ui/deckview.js has had a mode for it since it
+               was written - title "Vanished", note "Out of this Scuffle. A few
+               Tricks can reach in and pull one back" - and nothing in the game
+               ever asked for that mode, so the panel its own header advertises
+               could not be opened. Hidden while empty, like Torn: a Scuffle in
+               which nothing has Vanished should not grow a control for it. -->
+          <button class="cb-pile cb-pile--vanished" id="vanished-pile" type="button" hidden
+                  data-tip="Vanished|Tricks that have left this Scuffle for good.|A few Tricks can reach in and pull one back. Shortcut: T">
+            <svg viewBox="0 0 34 44" aria-hidden="true"><rect x="1" y="1" width="24" height="34" rx="3"/><rect x="9" y="9" width="24" height="34" rx="3" class="top gone"/></svg>
+            <b>0</b><span class="cb-pile__lbl">Vanished</span>
+          </button>
         </div>
 
         <div class="cb-banner" aria-live="polite"></div>
@@ -777,6 +788,7 @@ export class CombatScene extends Scene {
     this.$drawPile = $('#draw-pile');
     this.$discardPile = $('#discard-pile');
     this.$tornPile = $('#torn-pile');
+    this.$vanishedPile = $('#vanished-pile');
     this.$endTurn = $('#end-turn');
     this.$banner = $('.cb-banner');
     this.$deny = $('.cb-deny');
@@ -2916,6 +2928,11 @@ export class CombatScene extends Scene {
     const stash = STASH_PILE[this.me?.companion] || STASH_PILE.default;
     this.$tornPile.querySelector('.cb-pile__lbl').textContent = stash.label;
     this.$tornPile.dataset.tip = stash.tip;
+    /* Vanished, same rule as Torn: no pile, no button. A Scuffle where nothing
+       has left the deck should not advertise a place to look at nothing. */
+    const gone = pl?.exhaust?.length ?? 0;
+    this.$vanishedPile.hidden = gone === 0;
+    this.$vanishedPile.querySelector('b').textContent = String(gone);
   }
 
   _syncNerve(cur, max) {
@@ -3072,6 +3089,7 @@ export class CombatScene extends Scene {
     on(this.$drawPile, 'click', () => this._openPile('draw'));
     on(this.$discardPile, 'click', () => this._openPile('discard'));
     on(this.$tornPile, 'click', () => this._openPile('torn'));
+    on(this.$vanishedPile, 'click', () => this._openPile('exhaust'));
     on(this.$chOk, 'click', () => this._commitChoice());
     on(this.$chSkip, 'click', () => this._commitChoice(true));
 
@@ -3135,6 +3153,7 @@ export class CombatScene extends Scene {
       else if (k === 'q') { e.preventDefault(); this._openPile('draw'); }
       else if (k === 'w') { e.preventDefault(); this._openPile('discard'); }
       else if (k === 'r' && !this.$tornPile.hidden) { e.preventDefault(); this._openPile('torn'); }
+      else if (k === 't' && !this.$vanishedPile.hidden) { e.preventDefault(); this._openPile('exhaust'); }
       else if (k === 'd') { e.preventDefault(); this.hud?.openDeck(); }
       // Escape reaches Settings from inside a Scuffle, the same as everywhere
       // else in a run. The Modal owns Escape whenever one is already open.
@@ -3374,9 +3393,12 @@ export class CombatScene extends Scene {
      * the reader still reaching for the flat one.
      */
     const mine = st.players?.[this.seatIndex]?.piles || st.piles;
+    /* Vanished reads newest-first for the same reason the discard pile does:
+       the card you just lost is the one you are looking for. */
     const raw = which === 'draw' ? mine.draw
       : which === 'torn' ? (mine.stash || []).slice()
-        : mine.discard.slice().reverse();
+        : which === 'exhaust' ? (mine.exhaust || []).slice().reverse()
+          : mine.discard.slice().reverse();
     return raw.map(c => ({
       uid: c.uid, def: this.engine.card(c.uid)?.def || c, upgraded: c.upgraded, cost: c.cost,
     }));
