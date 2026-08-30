@@ -285,13 +285,38 @@ export class Audio {
       try { fn(p || {}); } catch (e) { console.error('[audio:' + ev + ']', e); }
     }));
 
-    const isPlayer = (p) => !!(p.isPlayer || p.player
-      || p.target === 'player' || p.targetId === 'player'
-      || p.target?.isPlayer || p.target?.id === 'player' || p.side === 'player');
-
-    // ── cards
+    /**
+     * ── What this bus block is, and what it is NOT ──────────────────────────
+     *
+     * Only the five below are here. There used to be thirty-three more, and
+     * every one of them was DEAD:
+     *
+     * `combat/engine.js` forwards each engine event to the bus as
+     * `combat:${type}`, and this file listened for the bare names — 'damage',
+     * 'block', 'heal', 'status', 'death', 'turn:start', 'draw', 'discard',
+     * 'exhaust', 'shuffle', 'intent'. The bus carries 'combat:damage'. Two
+     * entries in `EV` are themselves named 'combat:start' and 'combat:end', so
+     * what actually goes past is 'combat:combat:start' — logged during a real
+     * fight, not deduced.
+     *
+     * The game was never silent, which is why this survived: `scenes/combat.js`
+     * plays thirteen of those cues DIRECTLY, at the moment its FX play them,
+     * which is the right place for a hit sound. Renaming these handlers to the
+     * prefixed names would have stacked a second voice on all thirteen.
+     *
+     * `docs/notes/2026-08-19-audio.md` published the opposite contract —
+     * "audio.js listens on the bus and needs no calls from anyone" — and no
+     * producer ever honoured it. The payloads never matched either: `_hpTension`
+     * reads `p.hp`/`p.maxHp`, and no engine event carries those fields.
+     *
+     * `tests/bus-names/check.py` resolves the `on(...)` alias below now and
+     * FAILS on any name here that nothing emits, so this cannot silt up again.
+     *
+     * Twelve cues in the bank are still unreachable and the mix layer
+     * (`tension`, `telegraph`, `duck` on a hit) still has no live caller — both
+     * are open items in HANDOFF, with the evidence.
+     */
     on('card:hover', () => this.play('card:hover'));
-    on('card:pick', () => this.play('card:pickUp'));
     on('card:pickup', () => this.play('card:pickUp'));
     on('card:drop', () => this.play('card:drop'));
     on('card:play', (p) => {
@@ -301,76 +326,7 @@ export class Audio {
       this.play(id);
       if (t === 'power') this.duck(0.5, 320);
     });
-    on('card:upgrade', () => this.play('card:upgrade'));
-    on('card:retain', () => this.play('card:retain'));
-    on('draw', (p) => { if ((p.n ?? p.count ?? 1) > 0) this.play('card:draw'); });
-    on('discard', () => this.play('card:discard'));
-    on('exhaust', () => this.play('card:exhaust'));
-    on('shuffle', () => this.play('card:shuffle'));
-
-    // ── combat
-    on('damage', (p) => {
-      const amt = p.amount ?? p.damage ?? p.value ?? 0;
-      if (isPlayer(p)) {
-        this.play('combat:player-hurt', { vol: clamp(0.7 + amt / 30, 0.7, 1.25) });
-        this.duck(0.8, 240);
-        this._tensionPulse = Math.max(this._tensionPulse, clamp(amt / 25, 0.1, 0.55));
-        this._hpTension(p);
-        this._pushTension(true);
-      } else if (p.crit || p.critical) {
-        this.play('combat:crit');
-        this.duck(1.1, 340);
-      } else if (amt >= 12) {
-        this.play('combat:hit-heavy', { vol: clamp(0.85 + amt / 60, 0.85, 1.25) });
-        this.duck(0.6, 200);
-      } else if (amt > 0) {
-        this.play('combat:hit-light', { vol: clamp(0.75 + amt / 24, 0.75, 1.1) });
-      }
-    });
-    on('block', (p) => {
-      if (p.broken || p.shattered) this.play('combat:block-break');
-      else if ((p.amount ?? p.value ?? 1) > 0) this.play('combat:block-gain');
-    });
-    on('heal', (p) => { this.play('combat:heal'); this._hpTension(p); });
-    on('status', (p) => {
-      const kind = p.kind || p.type || (p.buff ? 'buff' : p.debuff ? 'debuff' : null);
-      this.play(kind === 'debuff' ? 'combat:status-apply-debuff' : 'combat:status-apply-buff');
-    });
-    on('death', (p) => {
-      if (isPlayer(p)) { this.stinger('sting:defeat'); this.tension(0); }
-      else { this.play('combat:enemy-death'); }
-    });
-    on('turn:start', (p) => { this.play('combat:turn-start'); this._hpTension(p); });
-    on('turn:end', () => this.play('combat:turn-end'));
-    on('intent', (p) => {
-      const d = (p.damage ?? p.value ?? 0) * (p.hits ?? 1);
-      if (d >= 15) this.telegraph(clamp(d / 40, 0.4, 1));
-    });
-    on('combat:start', (p) => { this.tension(0); this._hpTension(p); });
-    on('combat:win', () => { this.tension(0); this.stinger('sting:reward'); });
-
-    // ── ui / world
-    on('ui:click', () => this.play('ui:click'));
-    on('ui:hover', () => this.play('ui:hover'));
-    on('ui:back', () => this.play('ui:back'));
-    on('ui:confirm', () => this.play('ui:confirm'));
-    on('ui:deny', () => this.play('ui:deny'));
-    on('ui:open', () => this.play('ui:open-panel'));
-    on('ui:close', () => this.play('ui:close-panel'));
-    on('tooltip:show', () => this.play('ui:tooltip'));
     on('map:choose', () => { this.play('ui:confirm'); this.play('world:door-open', { delay: 0.1, vol: 0.7 }); });
-    on('map:hover', () => this.play('ui:hover'));
-    on('gold', () => this.play('world:coin'));
-    on('treasure', () => this.play('world:treasure'));
-    on('relic', () => this.play('world:treasure', { vol: 0.8 }));
-    on('rescue', () => { this.stinger('sting:rescue'); this.play('world:rescue-chime'); });
-    on('candle', () => this.play('world:candle-light'));
-    on('blueprint', () => this.play('world:blueprint-unfold'));
-    on('boss:intro', () => {
-      this.play('world:boss-roar');
-      this.duck(1.6, 900);
-      this.stinger('sting:boss');
-    });
 
     // ── scenes drive the bed
     this._offs.push(bus.on('scene:entered', (p) => {

@@ -131,10 +131,24 @@ function ensureGearCss() {
   document.head.appendChild(st);
 }
 
+/**
+ * What makes the HUD redraw itself.
+ *
+ * Six of these were names NOTHING EMITS — `run:update`, `run:damage`,
+ * `run:gold`, `run:relic`, `run:potion` and `hud:refresh`. They cost the
+ * player nothing, because every room scene calls `_syncHud()` -> `refresh()`
+ * by hand after a purchase or a heal and `scenes/combat.js` pokes it
+ * directly; the HUD was never stale. But a list of subscriptions where
+ * half the entries cannot fire is a list nobody can read, and the next
+ * person to wonder "why doesn't the purse update" would have added a
+ * seventh dead name to it.
+ *
+ * `tests/bus-names/check.py` resolves this array now and fails on a name
+ * with no emitter, so it cannot silt up again.
+ */
 const EVENTS = [
-  'run:start', 'run:enterNode', 'run:combatEnd', 'run:reward', 'run:update',
-  'run:heal', 'run:damage', 'run:gold', 'run:relic', 'run:potion', 'run:deck',
-  'hud:refresh', 'settings:changed', 'scene:entered',
+  'run:start', 'run:enterNode', 'run:combatEnd', 'run:reward',
+  'run:heal', 'run:deck', 'settings:changed', 'scene:entered',
 ];
 
 /** What the HUD shows when `ctx.run` does not exist yet. */

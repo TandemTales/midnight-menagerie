@@ -17,6 +17,26 @@ The failure is invisible in the ordinary way: the subscription registers, the
 callback is simply never called, and nothing throws.
 
 Exit code 1 if any subscribed name has no emitter.
+
+── Two INDIRECT shapes, resolved exactly ────────────────────────────────────
+
+A regex for `bus.on('x')` misses a file that subscribes through a local alias
+or a list, and both exist here:
+
+    audio.js   const on = (ev, fn) => this._offs.push(bus.on(ev, ...));
+               on('damage', ...)
+    hud.js     const EVENTS = ['run:start', ...];
+               for (const ev of EVENTS) bus.on(ev, () => this.refresh())
+
+Those used to fall to the ADVISORY half, which only matched names carrying a
+`run:` / `combat:` / `map:`-style prefix — so bare engine names like 'damage'
+and 'block' were invisible to this gate entirely. audio.js had **33 dead
+subscriptions** and this file reported nine of them, as advice.
+
+Both shapes are matched by structure, not by guessing: an arrow function whose
+FIRST PARAMETER is handed straight to `bus.on`, and a `for (const x of LIST)`
+whose loop variable is handed straight to `bus.on`. Anything else is still
+advisory.
 """
 import os
 import re
@@ -36,6 +56,35 @@ EMIT = re.compile(r"\b(?:bus|b)\s*\??\.\s*(?:emit|fire)\s*\??\.?\s*\(\s*'([^']+)
 # scene id or a CSS class never lands here.
 INDIRECT = re.compile(r"\b(?:bus|b)\s*\??\.\s*on\s*\??\.?\s*\(\s*[A-Za-z_$]")
 LISTY = re.compile(r"'((?:run|scene|hud|combat|settings|map|save|audio|net):[A-Za-z0-9_:-]+)'")
+
+# `const on = (ev, fn) => ... bus.on(ev, ...)` — an alias whose FIRST PARAMETER
+# is handed straight through. Matched by structure: the parameter name must be
+# the same identifier that reaches `bus.on`, so a helper that transforms the
+# name (a prefixer, say) does not match and stays advisory.
+ALIAS = re.compile(
+    r"\b(?:const|let|var)\s+(\w+)\s*=\s*\(\s*(\w+)\s*(?:,[^)]*)?\)\s*=>"
+    r"[^;\n]*?\bbus\s*\??\.\s*on\s*\(\s*\2\b")
+# `for (const ev of EVENTS) bus.on(ev, ...)`, with EVENTS a literal array.
+LOOP = re.compile(r"for\s*\(\s*(?:const|let)\s+(\w+)\s+of\s+(\w+)\s*\)"
+                  r"[^{]*\{?[^}]*?\bbus\s*\??\.\s*on\s*\(\s*\1\b", re.S)
+ARRAY = r"\b(?:const|let|var)\s+%s\s*=\s*\[(.*?)\]"
+
+
+def resolved_subscriptions(code):
+    """(name, char offset, how) for every subscription reached indirectly."""
+    out = []
+    for m in ALIAS.finditer(code):
+        fn = m.group(1)
+        call = re.compile(r"(?<![\w.])" + re.escape(fn) + r"\(\s*'([^']+)'")
+        for c in call.finditer(code):
+            out.append((c.group(1), c.start(), "%s()" % fn))
+    for m in LOOP.finditer(code):
+        a = re.search(ARRAY % re.escape(m.group(2)), code, re.S)
+        if not a:
+            continue
+        for name in re.findall(r"'([^']+)'", a.group(1)):
+            out.append((name, a.start(), "%s[]" % m.group(2)))
+    return out
 
 
 def js_files():
@@ -79,6 +128,12 @@ def main():
         for m in ON.finditer(src):
             listened.setdefault(m.group(1), []).append(
                 (rel, src[:m.start()].count("\n") + 1))
+        # The two INDIRECT shapes, resolved exactly — an alias whose first
+        # parameter reaches bus.on, and a `for..of` over a literal array. These
+        # are subscriptions, so they go in `listened` and they are FATAL.
+        for name, pos, how in resolved_subscriptions(src):
+            listened.setdefault(name, []).append(
+                (rel + "  (via " + how + ")", src[:pos].count("\n") + 1))
         # Namespaced bare strings, but ONLY in a file that subscribes with a
         # variable — otherwise this is a guess rather than a check.
         if not INDIRECT.search(src):
@@ -90,11 +145,13 @@ def main():
     # THE GATE: a literal `bus.on('x')` whose name nothing emits. Precise.
     bad = [(n, s) for n, s in sorted(listened.items()) if n not in emitted]
 
-    # ADVISORY: event-shaped strings in a file that subscribes with a VARIABLE.
-    # The HUD keeps its subscriptions in a const array, so these are probably
-    # dead subscriptions too — but "probably" is not a gate. A checker that
-    # fails on a guess trains people to ignore it, which is worse than not
-    # checking at all. Reported, never fatal.
+    # ADVISORY: event-shaped strings in a file that subscribes with a VARIABLE,
+    # and which `resolved_subscriptions` could NOT account for. That set used to
+    # carry the HUD's array and audio.js's alias; both are resolved and gated
+    # now, so what is left here is genuinely a guess — a name that looks like an
+    # event in a file that happens to subscribe indirectly. "Probably" is not a
+    # gate: a checker that fails on a guess trains people to ignore it, which is
+    # worse than not checking at all. Reported, never fatal.
     soft = [(n, s) for n, s in sorted(listy.items())
             if n not in emitted and n not in listened]
 
