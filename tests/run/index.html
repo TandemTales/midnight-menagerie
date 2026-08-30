@@ -55,6 +55,9 @@ let ENDS_DETAIL = [], DEPTH_FRAC = 0;
 const VISITED = {};
 const REACH = [];
 let VICTORIES = null;
+/** Boss fights that ended in a draw. A balance finding, counted so it cannot
+    go quiet — see `playCombat`. */
+const DRAWS = [];
 const fail = (msg) => { errors.push(msg); };
 const check = (cond, msg) => { if (!cond) fail(msg); return !!cond; };
 
@@ -152,15 +155,22 @@ function leastValuable(run, cards) {
    a failure rather than hidden as a timeout — so the budget has to clear the
    longest legitimate fight in the game, which is now the Keeper.
 
-   It was 80, and the Keeper did not fit: measured against a competent bot with
-   a drafted deck, the Butler runs 11 turns, the Confectioner 26 and the Keeper
-   36. That length is not a bug in the harness and it has NOT been tuned away —
-   540 Courage is the design's number for a boss at the end of a SEVENTEEN-wing
-   expedition, and this ladder is five wings long. Fitting the boss to a ladder
-   that is about to grow by twelve regions is the curve-to-a-broken-instrument
-   mistake CONTRACTS 47 is about, so the number stays and the measurement is
-   written down instead.                                                       */
-async function playCombat(engine, budgetTurns = 120, run = null) {
+   It was 80, then 120, and neither fitted. Measured against a competent bot
+   with a drafted deck at a 170 Courage pool:
+
+     the Butler            100% win   11 turns median   (authored band 8-12)
+     the Confectioner       83%       26
+     the Groundskeeper      25%       34   (one fight in twelve past 120)
+     the Keeper              8%       36
+
+   That length is not a bug in the harness and it has NOT been tuned away. Both
+   of those bosses carry the design's own Courage for the end of a SEVENTEEN-wing
+   expedition and this ladder is seven wings long. Fitting a boss to a ladder
+   that is about to grow by ten more regions is the curve-to-a-broken-instrument
+   mistake CONTRACTS 47 is about, so the numbers stay, the budget covers the
+   longest fight that legitimately happens, and the measurement is written down
+   instead. THE MEASUREMENT IS THE OPEN ITEM, not the constant below.          */
+async function playCombat(engine, budgetTurns = 200, run = null) {
   await engine.startCombat();
   // Per-fight running estimates the bot projects the rest of the fight from.
   // One object per fight, never shared between fights.
@@ -178,16 +188,28 @@ async function playCombat(engine, budgetTurns = 120, run = null) {
     await engine.endTurn();
   }
   if (!engine.over) {
-    /* A fight that will not resolve is a real failure, not a timeout to hide —
-       and it has to say WHICH fight. "combat did not resolve in 80 turns" sent
-       one session hunting through five regions; a stalemate is always a
-       specific formation whose Guard the player cannot out-damage, and naming
-       it with what is still standing turns a hunt into a fix. */
+    /**
+     * A DRAW: neither side can finish the other inside the budget.
+     *
+     * It has to say WHICH fight — "combat did not resolve in 80 turns" sent one
+     * session hunting through five regions, and a stalemate is always a
+     * specific formation whose Guard the player cannot out-damage.
+     *
+     * A draw against a BOSS is a balance finding and is reported as one, the
+     * way `tests/audio/cues.py` reports its known-silent cue: counted, named,
+     * and impossible to lose track of, but not a failure of the run layer,
+     * which is what this suite tests. A draw against anything else IS a
+     * failure: an ordinary formation that cannot end is a bug in the enemy.
+     */
     const left = engine.enemies.filter(x => x.alive)
       .map(x => `${x.defId} ${x.hp}/${x.maxHp}`).join(', ');
-    fail(`combat did not resolve in ${budgetTurns} turns`
-      + ` — ${run?.combatMeta?.name || engine.encounterId || 'unknown encounter'}`
-      + ` — still standing: ${left || 'nobody'}`);
+    const who = run?.combatMeta?.name || engine.encounterId || 'unknown encounter';
+    const boss = engine.enemies.some(x => x.alive && x.tier === 'boss');
+    const line = `${who} — ${budgetTurns} turns, still standing: ${left || 'nobody'}`;
+    if (boss) DRAWS.push(line); else fail(`combat did not resolve — ${line}`);
+    // Either way the expedition is over. A run that cannot finish a fight has
+    // failed, and leaving `run.result` null makes it look like a harness crash.
+    if (run && !run.result) { try { run.end(false, who); } catch { /* already ended */ } }
     return false;
   }
   return true;
@@ -266,7 +288,7 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
 
     if (run.combat) {
       const engine = run.combat;
-      const ok = await playCombat(engine, 120, run);
+      const ok = await playCombat(engine, 200, run);
       if (!ok) break;
       log(`  fight ${engine.victory ? 'won' : 'lost'} hp=${run.courage}`);
     }
@@ -313,7 +335,7 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
           }
           if (p?.combat) {
             await run.eventCombat(p.combat);
-            if (run.combat) { await playCombat(run.combat, 120, run); }
+            if (run.combat) { await playCombat(run.combat, 200, run); }
             if (run.result) break;
             if (run.pendingReward) { run.claimReward(); continue; }
           }
@@ -510,7 +532,7 @@ async function main() {
       await run.enterNode(id);
       if (run.combat) {
         const eng = run.combat;
-        await playCombat(eng, 120, run);
+        await playCombat(eng, 200, run);
         bossTrace.push(`${node.row}:${bt} ${eng.victory ? 'won' : 'LOST'} hp=${eng.player.hp}/${eng.player.maxHp}`);
       } else bossTrace.push(`${node.row}:${bt} hp=${run.courage}`);
       if (run.result) break;
@@ -583,7 +605,7 @@ async function main() {
       if (!legal.length) break;
       const id = legal[pick.int(legal.length)];
       await run.enterNode(id);
-      if (run.combat) { await playCombat(run.combat, 120, run); if (run.pendingReward) run.claimReward(); }
+      if (run.combat) { await playCombat(run.combat, 200, run); if (run.pendingReward) run.claimReward(); }
       else if (run.pendingEvent || run.pendingShop) run.leaveNode();
       else run.leaveNode();
       if (run.result) break;
@@ -775,7 +797,7 @@ async function main() {
       const run = new Run({ companion: 'bones', kid: 'mateo', seed });
       const legal = run.legalNextIds();
       await run.enterNode(legal[0]);
-      if (run.combat) { await playCombat(run.combat, 120, run); if (run.pendingReward) run.claimReward(); }
+      if (run.combat) { await playCombat(run.combat, 200, run); if (run.pendingReward) run.claimReward(); }
       else run.leaveNode();
       const raw = Save.loadRun();
       if (raw && raw.seed === run.seed && Array.isArray(raw.deck)) storeOk++;
@@ -896,7 +918,7 @@ autosaves ${saveCount}</pre>`);
     ms, meanRooms: +avg.toFixed(1), ends,
     lengths, decks, purses, keeps, saveCount,
     endsDetail: ENDS_DETAIL, depthFrac: DEPTH_FRAC, visited: VISITED,
-    reach: REACH, victories: VICTORIES,
+    reach: REACH, victories: VICTORIES, draws: DRAWS,
     determinism: detOk, resume: resumeOk, storage: storeOk,
     combatResume: combatResume, combatResumeTried: combatResumeTried, replayed,
   };

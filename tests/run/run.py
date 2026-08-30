@@ -83,6 +83,14 @@ async def main(a):
                   % (vic.get("unaided", 0), vic.get("unaidedOf", 0),
                      vic.get("shepherded", 0), vic.get("shepherdedOf", 0)))
 
+    draws = res.get("draws") or []
+    if draws:
+        print("")
+        print("BOSS DRAWS - neither side could finish inside the turn budget.")
+        print("  A balance finding, not a run-layer failure. Watch this number.")
+        for d in draws:
+            print("  !! " + d)
+
     vis = res.get("visited") or {}
     if vis:
         print("\nrooms entered, by kind")

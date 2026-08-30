@@ -317,6 +317,23 @@ export const STATUS_TRICK_DEFS = [
     effect() { /* deliberately nothing — it costs a draw, not a Nerve */ },
   },
   {
+    /**
+     * The Graveyard's Stone of Silence (regions/06 §14).
+     *
+     * The chapter calls this card "Hush", and Hush is a Companion — CONTRACTS
+     * 55, the id namespace is not what the player reads. It is the same card
+     * with a surname, which costs nothing and stops a Shadow Ferret player
+     * finding their own name on a Status Trick a gravestone handed them.
+     */
+    id: 'status/graveside-hush', name: 'Graveside Hush', companion: 'status',
+    type: 'status', rarity: 'special',
+    cost: 1, target: 'self', exhaust: true, nums: { b: 3 },
+    text: 'Gain {b} Guard. [Vanish].',
+    flavor: 'Nobody has spoken here in a very long time, and the habit is catching.',
+    keywords: ['exhaust'],
+    effect(ctx) { ctx.block(ctx.self, ctx.card?.nums?.b ?? 3); },
+  },
+  {
     id: 'drowsy', name: 'Drowsy', companion: 'status', type: 'status', rarity: 'special',
     cost: 1, target: 'self', exhaust: true, nums: { b: 4 },
     text: 'Gain {b} Guard. [Vanish].',

@@ -2156,6 +2156,16 @@ export class CombatEngine {
         id: t.id, label: t.label, turnsLeft: t.turnsLeft, data: t.data,
       })),
 
+      /**
+       * SHOW MORE OF THE PLAN. `previewDepth` is how many FUTURE positions of
+       * an enemy's queue are revealed, and `consumePlan` walks it back down to
+       * zero every turn — so an enemy whose whole design is "you can always see
+       * my next two actions" has to say so again each turn rather than once.
+       * The Graveyard's Epitaph Spirit is the first, and its region's identity
+       * is that it almost never surprises you.
+       */
+      reveal: (n = 1) => { enemy.previewDepth = Math.max(enemy.previewDepth || 0, n | 0); },
+
       // House Rules
       announceRule: (rule) => e.announceRule(rule, enemy.id),
       clearRules: (sourceId) => e.clearRules(sourceId ?? enemy.id),

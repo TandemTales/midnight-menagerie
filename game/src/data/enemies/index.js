@@ -10,6 +10,8 @@ import { NURSERY_ENEMIES } from './nursery.js';
 import { SLEEPING_QUARTERS_ENEMIES } from './sleeping-quarters.js';
 import { KITCHENS_CELLARS_ENEMIES, KITCHENS_STATUSES } from './kitchens-cellars.js';
 import { GREENHOUSE_ENEMIES, GREENHOUSE_STATUSES } from './greenhouse.js';
+import { GRAVEYARD_ENEMIES, GRAVEYARD_STATUSES } from './graveyard.js';
+import { GRAVEYARD_SCARES } from './graveyard-scares.js';
 import { GREENHOUSE_SCARES } from './greenhouse-scares.js';
 import { HEART_ENEMIES, HEART_STATUSES } from './heart.js';
 import { HEART_SCARES } from './heart-scares.js';
@@ -18,6 +20,7 @@ import { NURSERY_BOSSES } from '../bosses/governess.js';
 import { SLEEPING_QUARTERS_BOSSES } from '../bosses/bedframe-beast.js';
 import { KITCHENS_CELLARS_BOSSES } from '../bosses/confectioner.js';
 import { GREENHOUSE_BOSSES } from '../bosses/head-gardener.js';
+import { GRAVEYARD_BOSSES } from '../bosses/groundskeeper.js';
 import { HEART_BOSSES, KEEPER_STATUSES } from '../bosses/keeper.js';
 import { ENEMY_STATUSES as CORE_STATUSES, STATUS_TRICK_DEFS as CORE_TRICKS } from './_lib.js';
 
@@ -37,7 +40,7 @@ import { ENEMY_STATUSES as CORE_STATUSES, STATUS_TRICK_DEFS as CORE_TRICKS } fro
    `heart.js` importing the boss file to collect them would make a cycle. */
 export const ENEMY_STATUSES = Object.freeze(
   [...CORE_STATUSES, ...KITCHENS_STATUSES, ...GREENHOUSE_STATUSES,
-   ...HEART_STATUSES, ...KEEPER_STATUSES],
+   ...GRAVEYARD_STATUSES, ...HEART_STATUSES, ...KEEPER_STATUSES],
 );
 export const STATUS_TRICK_DEFS = Object.freeze([...CORE_TRICKS]);
 
@@ -53,6 +56,9 @@ const ALL = [
   ...GREENHOUSE_ENEMIES,
   ...GREENHOUSE_SCARES,
   ...GREENHOUSE_BOSSES,
+  ...GRAVEYARD_ENEMIES,
+  ...GRAVEYARD_SCARES,
+  ...GRAVEYARD_BOSSES,
   ...HEART_ENEMIES,
   ...HEART_SCARES,
   ...HEART_BOSSES,
@@ -90,7 +96,7 @@ export function rollHp(def, rng) {
 /** Regions this agent has shipped rosters for. */
 export const IMPLEMENTED_REGIONS = Object.freeze([
   'foyer', 'nursery', 'sleeping-quarters', 'kitchens-cellars', 'greenhouse',
-  'heart',
+  'graveyard', 'heart',
 ]);
 
 /**

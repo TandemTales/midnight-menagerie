@@ -272,6 +272,9 @@ class MockCombat {
         const i = (self.timers || []).findIndex(t => t.id === id);
         if (i >= 0) self.timers.splice(i, 1);
       },
+      // Recorded, not simulated: this harness has no intent queue. What it
+      // must prove is that the call exists and does not throw.
+      reveal: (n = 1) => { actor.previewDepth = Math.max(actor.previewDepth || 0, n | 0); },
       timers: () => (self.timers || []).filter(t => t.ownerId === actor.id)
         .map(t => ({ id: t.id, label: t.label, turnsLeft: t.turnsLeft, data: t.data })),
       /**

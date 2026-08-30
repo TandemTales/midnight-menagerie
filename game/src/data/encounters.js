@@ -613,6 +613,78 @@ const GH = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// The Mansion Graveyard — docs/design/regions/06-graveyard.md §9-§15
+// ─────────────────────────────────────────────────────────────────────────────
+const GY = [
+  // ── Early (§9) ────────────────────────────────────────────────────────────
+  { id: 'gy-1', region: 'graveyard', tier: 'early', name: 'Grave Moth',
+    members: [m('grave-moth')],
+    teaches: 'Countdown. What is coming, and in how many turns.' },
+  { id: 'gy-2', region: 'graveyard', tier: 'early', name: 'Headstone Hopper',
+    members: [m('headstone-hopper')],
+    teaches: 'Delayed retaliation. Attack freely now; the bill arrives on a schedule.' },
+  { id: 'gy-3', region: 'graveyard', tier: 'early', name: 'Epitaph Spirit',
+    members: [m('epitaph-spirit')],
+    teaches: 'An enemy that shows you its next two actions.' },
+  { id: 'gy-4', region: 'graveyard', tier: 'early', name: 'Forget Me Not',
+    members: [m('forget-me-not')],
+    teaches: 'Killing something is not always the end of it.' },
+
+  // ── Standard (§10) ────────────────────────────────────────────────────────
+  { id: 'gy-5', region: 'graveyard', tier: 'standard', name: 'Grave Moth + Headstone Hopper',
+    members: [m('grave-moth'), m('headstone-hopper')],
+    teaches: 'A Mark and a Retaliation that can come due on the same turn.' },
+  { id: 'gy-6', region: 'graveyard', tier: 'standard', name: 'Mourning Candle + Forget Me Not',
+    members: [m('mourning-candle'), m('forget-me-not')],
+    teaches: 'Killing the flower feeds the Candle, and the flower comes back anyway.' },
+  { id: 'gy-7', region: 'graveyard', tier: 'standard', name: 'Name Gnawer + Epitaph Spirit',
+    members: [m('name-gnawer'), m('epitaph-spirit')],
+    teaches: 'You know every future attack. You also know which of your Tricks got more expensive.' },
+  { id: 'gy-8', region: 'graveyard', tier: 'standard', name: 'Headstone Hopper + Mourning Candle',
+    members: [m('headstone-hopper'), m('mourning-candle')],
+    teaches: 'Killing the Hopper charges the Candle on the spot.' },
+
+  // ── Advanced (§11) ────────────────────────────────────────────────────────
+  { id: 'gy-9', region: 'graveyard', tier: 'advanced', name: 'Grave Moth + Name Gnawer',
+    members: [m('grave-moth'), m('name-gnawer')],
+    teaches: 'Future damage and future Nerve pressure, overlapping.' },
+  { id: 'gy-10', region: 'graveyard', tier: 'advanced', name: 'Forget Me Not + Headstone Hopper',
+    members: [m('forget-me-not'), m('headstone-hopper')],
+    teaches: 'You can time the flower\'s disappearance around Epitaph Comes Due.' },
+  { id: 'gy-11', region: 'graveyard', tier: 'advanced', name: 'Epitaph Spirit + Mourning Candle',
+    members: [m('epitaph-spirit'), m('mourning-candle')],
+    teaches: 'Perfect information about one enemy, and kill order deciding the other.' },
+  { id: 'gy-12', region: 'graveyard', tier: 'advanced',
+    name: 'Grave Moth + Forget Me Not + Mourning Candle',
+    members: [m('grave-moth'), m('forget-me-not'), m('mourning-candle')],
+    teaches: 'Defeating either of them rewrites the timeline.' },
+  { id: 'gy-13', region: 'graveyard', tier: 'advanced', name: 'Headstone Hopper + Epitaph Spirit',
+    members: [m('headstone-hopper'), m('epitaph-spirit')],
+    teaches: 'Two entirely predictable threats, and a deceptively hard defence puzzle.' },
+  { id: 'gy-14', region: 'graveyard', tier: 'advanced',
+    name: 'Grave Moth + Headstone Hopper + Name Gnawer',
+    members: [m('grave-moth'), m('headstone-hopper'), m('name-gnawer')],
+    teaches: 'A Mark, stored Retaliation, Forgotten Tricks and two live intents at once. Mental scheduling, not aggression.',
+    advancedOnly: true, minScuffle: 1 },
+
+  // ── Big Scares (§13-§15) ──────────────────────────────────────────────────
+  { id: 'gy-scare-angel', region: 'graveyard', tier: 'elite', name: 'The Mourning Angel',
+    members: [m('mourning-angel')],
+    teaches: 'Prepare, endure, punish. Every point you take off it while Still is in the swing that follows.' },
+  { id: 'gy-scare-choir', region: 'graveyard', tier: 'elite', name: 'The Epitaph Choir',
+    members: [m('stone-of-rain'), m('stone-of-silence'), m('stone-of-weight'), m('stone-of-sorrow')],
+    teaches: 'Four timelines, all visible. Which one do you erase first?' },
+  { id: 'gy-scare-mouth', region: 'graveyard', tier: 'elite', name: 'The Mausoleum Mouth',
+    members: [m('mausoleum-mouth')],
+    teaches: 'One long clock, and offence is what pushes it backwards.' },
+
+  // ── Boss ──────────────────────────────────────────────────────────────────
+  { id: 'gy-boss', region: 'graveyard', tier: 'boss', name: 'The Groundskeeper of Names',
+    members: [m('groundskeeper')],
+    teaches: 'Read the Ledger. Smudging everything is not the answer, because a full Ledger accelerates itself.' },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
 // The Heart of the House — docs/design/regions/17-heart.md §12-§15
 //
 // "There are no truly introductory Heart encounters. The player has reached the
@@ -747,6 +819,16 @@ const HEART = [
 // Per-region generation rules (design doc §10 "Encounter selection rules")
 // ─────────────────────────────────────────────────────────────────────────────
 export const REGION_RULES = {
+  /* docs/design/regions/06-graveyard.md §12. */
+  graveyard: {
+    minScuffle: { 'name-gnawer': 1 },
+    /** "Mourning Candle should never appear alone in a normal Scuffle." */
+    neverAlone: ['mourning-candle'],
+    /** Two Hoppers at Haunt 0 is two overlapping bills; two Gnawers is §12's
+        "cannot mark more than two Tricks simultaneously" by another route. */
+    noDuplicates: ['headstone-hopper', 'name-gnawer', 'forget-me-not'],
+    maxConsecutiveLead: 2,
+  },
   /* docs/design/regions/05-greenhouse.md §12. */
   greenhouse: {
     bannedFirstScuffle: ['glassvine'],
@@ -811,7 +893,7 @@ export const REGION_RULES = {
   },
 };
 
-const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...HEART];
+const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...GY, ...HEART];
 
 /** id → EncounterDef */
 export const ENCOUNTERS = Object.freeze(
