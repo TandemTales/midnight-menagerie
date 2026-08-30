@@ -138,12 +138,22 @@ on a person or a machine, or is a decision with the reason already written down.
    The transport decides the latency budget that picks between them, so this
    genuinely waits on item 1.
 
-3. **Foyer elites still win 0% of the time — that is, the PARTY wins 100%.** At
-   every party size, against 83.3% solo. Pierce fixed what it was aimed at
-   (`landed` 52.6 → 65.7 at four Kids, `%blocked` stopped climbing) and did not
-   move that. Deciding it is a question about how deadly a Big Scare should be,
-   and it must NOT be answered by piling on until a bot starts losing —
-   CONTRACTS 47 is this project having already done exactly that once.
+3. **A party wins Foyer elites 100% of the time, against 83.3% solo — and this
+   is NOT a question for the designer.** It was written up as one and that was
+   wrong: `foyer.js` already records the authored target in its own balance
+   note. Elites run **8–12 turns** and land near **88.9% for a competent
+   player**, tuned so region survival sits in a **65–78% band** — the arithmetic
+   is that ~0.83 Big Scares per path means a 73%-win elite removes 18% of runs
+   before the boss is seen. So the target exists, our solo bot reads 83.3%
+   against it, and a party at 100% is above the band.
+
+   Two changes this session moved the party economy hard toward it — pierce,
+   then Wrong Face reaching two Kids — and "Courage left over solo" went
+   +9.2 / +15.6 / +21.3 → +0.4 / +6.5 / +13.0, with two Kids now finishing
+   level with a soloist. `win%` did not follow. The remaining gap is most
+   likely a bot that plays elites very well, and CONTRACTS 47 is this project
+   having already fitted a curve to a broken bot once. **Measure the bot before
+   adding content.**
 
 4. **ONE KID TAKES THE FIGHT AND THE REST WATCH — measured, both tiers, every
    party size.** `spreadOf` is 0 when one seat takes all the damage and 1 when
@@ -166,19 +176,31 @@ on a person or a machine, or is a decision with the reason already written down.
    problems. `spread` is in every ledger row and was never printed, which is
    why nobody had looked at it.
 
-5. **fps and the entry stall need a quiet machine.** `tests/chrome` read 52 on
-   one battery and 61 on another with no perf work in between. Unchanged.
+5. **fps is CLOSED, sampled 2026-08-30.** The item was `tests/chrome` reading
+   52 on one battery and 61 on another. Eight consecutive `tools/shot.py`
+   samples across map and combat read **61 every time**, plus three verify
+   shots the same day: eleven of eleven. The 52 was a busy machine. The ENTRY
+   STALL is a different claim and is still untested — it is about the first
+   frames after a scene change, which a steady-state sample never sees.
 
 6. **Two cues are known-silent and need something built first**, with their
    reasons in `tests/audio/cues.py`: `combat:crit` (there is no crit in this
    game — the only crit flag in the repo is the soundboard's own test payload)
    and `card:retain` (no retain event is emitted).
 
-7. **The 1.5 s vote beat needs a person watching.** It is already conditional
-   — `_walkAfterVote` waits only when the roulette actually settled a split, so
-   solo and unanimous parties never pay it — and 1.5 clears a MEASURED 1.4 s for
-   the announcement to vanish. Whether a beat that clears its floor is the right
-   LENGTH cannot be settled by argument.
+7. **The vote beat is 3.0 s and that was arithmetic, not a playtest.** It sat
+   open for three sessions as "unplaytested" and never needed a playtest — it
+   needed the words counted. The announcement is ~18 words; on-screen reading
+   runs 200–250 wpm, so it takes 4.3–5.4 s to read and 3.6 at a skim. **1.5 s
+   was a third of what its own message needs.** The old 1.5 cleared a measured
+   1.4 s floor, but that floor was about the card still EXISTING, not about
+   anyone reading it. 3.0 rather than 5.4 because the message repeats and a
+   familiar reader checks two things, ~6 words.
+
+   What a person could still confirm, having seen it: whether 3.0 feels long on
+   a third of forks. And the better fix is a scene-layer one — let the verdict
+   survive the transition instead of being covered by it (`scenes.go` veils
+   before `exit()`), and the beat could go back to being short.
 
 **Resolved on 2026-08-29/30, so you do not re-open them:** both authored wing
 rules (Long Shadows is "Guard you GAIN is halved" — the literal reading is

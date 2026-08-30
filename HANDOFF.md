@@ -147,8 +147,21 @@ SHARED-WRITE. New suite: `tests/taffy/`.
    stopped anything, so a party-wide Guard card scores once per seat and the
    ratio is not comparable across party sizes. Read `%blocked` instead.
 
-2. **fps and the entry stall need a quiet machine.** Three claims in this
-   document do not reproduce here today. Unchanged.
+2. **fps DOES NOT REPRODUCE — sampled 2026-08-30 and closed.** The standing
+   item was that `tests/chrome` read 52 on one battery and 61 on another with
+   no perf work in between, which was recorded as needing a quiet machine.
+   Eight consecutive samples, `tools/shot.py` on the map and on combat, four
+   runs each: **61 every single time**, no variance at all. The three verify
+   shots taken the same day read 61 as well, so eleven of eleven.
+
+   The 52 was a busy machine, not the game. Treat a lone fps reading as noise
+   unless it repeats — and take more than one before writing it into a list,
+   which is the whole reason this sat open for three sessions.
+
+   The ENTRY STALL is a separate claim and is untested here: it is about the
+   first frames after a scene change, which a steady-state fps sample does not
+   look at. `tools/shot.py --wait` exists precisely because the 3D stage
+   renders nothing while it links shaders, about ten seconds cold on this GPU.
 
 3. **Steam P2P is approved and is blocked on something only the designer has.**
    "Yes build is fine", 2026-08-29. It still needs a wrapper shell, which ends
