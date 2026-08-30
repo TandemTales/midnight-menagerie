@@ -785,6 +785,46 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    the file you care about before you trust the number it prints: add a
    deliberate `bus.on('nonsense:name')` and check the gate goes red.
 
+55. **THE ID NAMESPACE IS NOT WHAT THE PLAYER READS.** Two different statuses
+   may not render the same word, and nothing about either one has to be wrong
+   for that to happen.
+
+   The Lights Are Out hands every enemy a hiding status. It was authored as
+   "2 Unseen", and `unseen` is already Hush's — it does not stack, and every
+   rule for breaking it lives inside his card code, so an enemy handed the real
+   one stays hidden for the rest of the fight. `data/wings.js` therefore did the
+   correct thing and declared its OWN status under the id `lurking`. Then it did
+   the other correct thing and set `name: 'Unseen'` on it, because "Unseen" is
+   what the wing's rule text promises the player.
+
+   **Both halves were right on their own.** Together they put two statuses
+   behind one word: with Hush in a lights-out wing the screen carried "Unseen"
+   on Hush and "Unseen x2" on every enemy, the same `hidden` glyph on both, one
+   stacking and one not, one broken by taking Courage damage or playing an
+   Attack and one by being hurt or attacking — while Hush's own Power reads
+   "Starting a turn Unseen gains Nerve". No single file was wrong. The collision
+   existed only where the two met, on screen, which is the one place no unit
+   test was pointed.
+
+   This is the sibling of trap 10's dup-keys gate: a whole class, gated once,
+   rather than the instance. `tests/status-names/check.py`.
+
+   **The gate reads the REGISTRY, not the source.** Statuses are declared in at
+   least three shapes — object literals, `powerStatus(...)`, `counterStatus(...)`
+   — and the last defaults to a `kind` that an early source-scanning version of
+   this check filtered out. The browser found 268 statuses where the regex found
+   256. Whatever the game actually registered is what the player can actually
+   see, and no helper added later can hide from it.
+
+   **How to apply.** A new status needs a name nothing else uses, not just an id
+   nothing else uses — and check the one the player reads, not the one the code
+   reads. Deliberate collisions go in `WAIVED` with the reason (Mossbit's and
+   Pudding's "Family Plot" is a pun both graveyard chapters are built on), and
+   a waiver is checked in BOTH directions: one whose ids no longer collide fails
+   as stale, because a control that cannot fail is not a control — trap 52. And
+   per trap 54, this gate asserts it can SEE before it asserts a zero: registry
+   population plus one known id from each of the four layers.
+
 15. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
    now reported their in-flight work being swallowed by an unrelated commit — one had a whole
    `music.js` rewrite land inside a commit titled "Pronouns per the designer", which then made a

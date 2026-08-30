@@ -150,9 +150,30 @@ export const coatrackCrawler = {
       id: 'umbrella-jab', name: 'Umbrella Jab', intent: Intent.ATTACK, damage: 12, hits: 1,
       tell: 'The umbrella tip trembles, waiting for an opening.',
       damageFn: (c) => (coatrackCrawler.braceBroken(c) ? 7 : flag(c, 'jabBig', 12)),
+      /**
+       * PARTY: a tip finds the gap. MEASURED 2026-08-29 — an audit of this file
+       * found the Crawler and the Door Greeter with NO party-aware content of
+       * any kind, not a pick, not a splash, not a pierce, while
+       * `tests/coop/balance.py` had the standard tier ending fights at 62% / 77%
+       * / 83% / 86% Courage left. A rising line there is the tool's own
+       * definition of co-op being too easy.
+       *
+       * Pierce rather than more damage or an AoE, for the reason the elite
+       * ledger records: "a pick SPREADS damage, AoE ADDS damage a party then
+       * blocks, and only pierce is KEPT". Four Kids out-Guard a Foyer normal
+       * comfortably, so anything blockable is blocked and a bigger printed
+       * number is eaten.
+       *
+       * The number does NOT move — 12 stays 12, and 7 stays 7 when the Brace is
+       * broken. Only what a party can do about it changes, which is this game's
+       * stated party design (enemy damage never scales; the threat is what gets
+       * through). Solo is untouched.
+       */
+      pierceFn: (c) => c.partySize() > 1,
       effect(c) {
         const weakened = mem(c).wasBroken;
-        hitPlayer(c, weakened ? 7 : flag(c, 'jabBig', 12));
+        hitPlayer(c, weakened ? 7 : flag(c, 'jabBig', 12), 1,
+          { pierce: c.partySize() > 1 });
         mem(c).braced = false;
         mem(c).wasBroken = false;
       },
@@ -504,7 +525,11 @@ export const doorGreeter = {
     'threshold-slam': {
       id: 'threshold-slam', name: 'Threshold Slam', intent: Intent.ATTACK, damage: 10, hits: 1,
       tell: 'It rears back on its hinges.',
-      effect(c) { hitPlayer(c, 10); },
+      /* PARTY: the door does not care how many of you are leaning on it. Same
+         reasoning as the Crawler's Umbrella Jab above — this was the other
+         Foyer normal with no party content at all, and 10 stays 10. */
+      pierceFn: (c) => c.partySize() > 1,
+      effect(c) { hitPlayer(c, 10, 1, { pierce: c.partySize() > 1 }); },
     },
     'hold-the-door': {
       id: 'hold-the-door', name: 'Hold the Door', intent: Intent.DEFEND, block: 6,
