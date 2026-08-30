@@ -76,7 +76,7 @@ ONE Playwright run at a time, always (CONTRACTS trap 7). Every number below was
 RUN on 2026-08-30, not copied forward; if one differs, that is the finding.
 
   python tests/cards/run.py               1468 cards, 0 errors, 0 warnings
-  python tests/combat/run.py              689
+  python tests/combat/run.py              694     ← +5, the card:retain event
   python tests/coop/run.py                645
   python tests/net/run.py                 158     ← +6, the turn barrier
   python tests/enemies/run.py             37 enemies, 0 errors
@@ -94,9 +94,9 @@ RUN on 2026-08-30, not copied forward; if one differs, that is the finding.
   python tests/critic-design/anchor.py    6/6 agree
 
   TEN gates, each must stay at zero:
-    tests/seams/check.py          6189 call sites, 0 problems
+    tests/seams/check.py          6191 call sites, 0 problems
     tests/bus-names/check.py      0 dead subscriptions, 0 advisory
-    tests/audio/cues.py           46 cues, 44 reachable, 2 known-silent
+    tests/audio/cues.py           46 cues, 45 reachable, 1 known-silent
     tests/status-names/check.py   268 statuses, 0 unwaived name collisions
     scene-css · css-tokens · dup-keys · hook-names · turn-events · stdlib-shadow
 
