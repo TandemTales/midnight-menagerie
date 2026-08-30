@@ -7,13 +7,13 @@
    "same": true,
    "bench": {
     "win": false,
-    "turns": 13,
-    "dmg": 77
+    "turns": 12,
+    "dmg": 93
    },
    "party": {
     "win": false,
-    "turns": 13,
-    "dmg": 77,
+    "turns": 12,
+    "dmg": 93,
     "errs": 0
    }
   },
@@ -22,13 +22,13 @@
    "same": true,
    "bench": {
     "win": false,
-    "turns": 13,
-    "dmg": 48
+    "turns": 11,
+    "dmg": 51
    },
    "party": {
     "win": false,
-    "turns": 13,
-    "dmg": 48,
+    "turns": 11,
+    "dmg": 51,
     "errs": 0
    }
   },
@@ -38,12 +38,12 @@
    "bench": {
     "win": true,
     "turns": 15,
-    "dmg": 44
+    "dmg": 51
    },
    "party": {
     "win": true,
     "turns": 15,
-    "dmg": 44,
+    "dmg": 51,
     "errs": 0
    }
   },
@@ -52,13 +52,13 @@
    "same": true,
    "bench": {
     "win": false,
-    "turns": 14,
-    "dmg": 61
+    "turns": 12,
+    "dmg": 56
    },
    "party": {
     "win": false,
-    "turns": 14,
-    "dmg": 61,
+    "turns": 12,
+    "dmg": 56,
     "errs": 0
    }
   },
@@ -67,13 +67,13 @@
    "same": true,
    "bench": {
     "win": true,
-    "turns": 11,
-    "dmg": 79
+    "turns": 10,
+    "dmg": 58
    },
    "party": {
     "win": true,
-    "turns": 11,
-    "dmg": 79,
+    "turns": 10,
+    "dmg": 58,
     "errs": 0
    }
   },
@@ -83,12 +83,12 @@
    "bench": {
     "win": true,
     "turns": 11,
-    "dmg": 32
+    "dmg": 37
    },
    "party": {
     "win": true,
     "turns": 11,
-    "dmg": 32,
+    "dmg": 37,
     "errs": 0
    }
   }
