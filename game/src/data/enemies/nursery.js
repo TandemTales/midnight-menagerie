@@ -744,7 +744,16 @@ export const toyChest = {
       // does not move: "individual enemy attack damage generally remains close
       // to solo values" (§27).
       partyTarget: 'all',
+      /* SOLO keeps the intimate wording; a PARTY is told the truth. This move
+         is `partyTarget: 'all'`, so before 2026-08-30 four Kids each read a
+         tell addressed personally to them and then all four were hit — the
+         intent is the promise this game makes about what is coming, and it was
+         quietly making it to the wrong number of people. `tellFn` has existed
+         in `combat/intents.js` the whole time. */
       tell: 'It throws its own contents at you, one handful at a time.',
+      tellFn: (c) => (c.partySize() > 1
+        ? 'It throws its own contents at all of you, one handful at a time.'
+        : 'It throws its own contents at you, one handful at a time.'),
       effect(c) { hitPlayer(c, 6, 3); },
     },
     'tidy-up': {

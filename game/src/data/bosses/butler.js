@@ -527,7 +527,16 @@ export const butler = {
        */
       id: 'dust-them-off', name: 'Dust Them Off', intent: Intent.ATTACK, damage: 5, hits: 2,
       partyTarget: 'all',
+      /* SOLO keeps the intimate wording; a PARTY is told the truth. This move
+         is `partyTarget: 'all'`, so before 2026-08-30 four Kids each read a
+         tell addressed personally to them and then all four were hit — the
+         intent is the promise this game makes about what is coming, and it
+         was quietly making it to the wrong number of people. `tellFn` has
+         existed in `combat/intents.js` the whole time. */
       tell: 'He produces a cloth and begins, briskly, to tidy you.',
+      tellFn: (c) => (c.partySize() > 1
+        ? 'He produces a cloth and begins, briskly, to tidy all of you.'
+        : 'He produces a cloth and begins, briskly, to tidy you.'),
       /**
        * 5x2 alone, 3x2 EACH in a party — coverage bought with per-head damage,
        * which is the doc's own shape for an AoE move: Run the Hall is 8 + 7 per

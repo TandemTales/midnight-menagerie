@@ -503,7 +503,16 @@ export const governess = {
        */
       id: 'mind-your-seams', name: 'Mind Your Seams', intent: Intent.ATTACK_DEBUFF, damage: 12, hits: 2,
       partyTarget: 'all',
+      /* SOLO keeps the intimate wording; a PARTY is told the truth. This move
+         is `partyTarget: 'all'`, so before 2026-08-30 four Kids each read a
+         tell addressed personally to them and then all four were hit — the
+         intent is the promise this game makes about what is coming, and it was
+         quietly making it to the wrong number of people. `tellFn` has existed
+         in `combat/intents.js` the whole time. */
       tell: 'She takes in a seam somewhere on you that you did not know you had.',
+      tellFn: (c) => (c.partySize() > 1
+        ? 'She takes in a seam on each of you that none of you knew you had.'
+        : 'She takes in a seam somewhere on you that you did not know you had.'),
       applies: [{ id: 'seam-pinch', stacks: 1, to: 'player' }],
       damageFn: (c) => 12 + bossDmg(c),
       hitsFn: () => 2,

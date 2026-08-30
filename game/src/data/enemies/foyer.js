@@ -437,7 +437,16 @@ export const redCarpetRunner = {
       // MULTIPLAYER: hits EVERY Kid — "This makes disrupting Momentum a
       // genuinely cooperative responsibility." (foyer §26)
       partyTarget: 'all',
+      /* SOLO keeps the intimate wording; a PARTY is told the truth. This move
+         is `partyTarget: 'all'`, so before 2026-08-30 four Kids each read a
+         tell addressed personally to them and then all four were hit — the
+         intent is the promise this game makes about what is coming, and it was
+         quietly making it to the wrong number of people. `tellFn` has existed
+         in `combat/intents.js` the whole time. */
       tell: 'Every inch of carpet snaps taut, pointed directly at you.',
+      tellFn: (c) => (c.partySize() > 1
+        ? 'Every inch of carpet snaps taut, from one end of the hall to the other.'
+        : 'Every inch of carpet snaps taut, pointed directly at you.'),
       /**
        * "Multiplayer damage becomes: 6 plus 5 per Momentum to each player."
        * (§26.) This shipped dealing the full solo number — 8 + 7 per Momentum —
@@ -917,7 +926,14 @@ export const unwelcomeGuest = {
        */
       id: 'wrong-face', name: 'Wrong Face', intent: Intent.ATTACK, damage: 9, hits: 2,
       partyTarget: 'two',
+      /* And the TELL has to say so. I gave this move `partyTarget: 'two'`
+         earlier today and quoted its own tell as the justification, then left
+         the tell addressing one person — `tests/party-tells/check.py`, written
+         an hour later for exactly this class, caught me. */
       tell: 'It turns toward you, and keeps turning.',
+      tellFn: (c) => (c.partySize() > 1
+        ? 'It turns toward you, and keeps turning until it is facing somebody else too.'
+        : 'It turns toward you, and keeps turning.'),
       effect(c) { hitPlayer(c, 9, 2); },
     },
     'come-in-then': {
