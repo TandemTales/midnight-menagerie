@@ -48,7 +48,7 @@
 
 import { Intent } from '../schema.js';
 import {
-  mem, allies, board, cyc, hitPlayer, hauntBase, flag,
+  mem, allies, board, cyc, hitPlayer, hauntBase, bossDmg, flag,
   isAlive, played, field, lastMove,
 } from '../enemies/_lib.js';
 
@@ -243,7 +243,10 @@ export const whisperWarden = {
     'quiet-knife': {
       id: 'quiet-knife', name: 'Quiet Knife', intent: Intent.ATTACK, damage: 12, hits: 1,
       tell: 'One of the hands comes out of the coat.',
-      effect(c) { hitPlayer(c, 12); },
+      // A static `damage` cannot carry the Haunt rider, so both halves are
+      // written out. See `ambush` for why every Warden attack needs it.
+      damageFn: (c) => 12 + bossDmg(c),
+      effect(c) { hitPlayer(c, 12 + bossDmg(c)); },
     },
     'listen-at-the-wall': {
       id: 'listen-at-the-wall', name: 'Listen at the Wall', intent: Intent.DEFEND, block: 11,
@@ -270,7 +273,8 @@ export const whisperWarden = {
     'whisper-blade': {
       id: 'whisper-blade', name: 'Whisper Blade', intent: Intent.ATTACK, damage: 15, hits: 1,
       tell: 'Its shadow arrives before it does.',
-      effect(c) { hitPlayer(c, 15); },
+      damageFn: (c) => 15 + bossDmg(c),
+      effect(c) { hitPlayer(c, 15 + bossDmg(c)); },
     },
     'stolen-moment': {
       id: 'stolen-moment', name: 'Stolen Moment', intent: Intent.DEFEND_DEBUFF, block: 8,
@@ -481,11 +485,27 @@ function allSealed(c) {
  * folded in. Everything that changes an Ambush number lives here so the intent
  * and the swing cannot disagree.
  */
+/**
+ * Every rider on a Warden attack, including the Haunt one.
+ *
+ * `bossDmg` is the whole of boss Haunt scaling above the flat +6% Courage:
+ * +1 damage a hit every third level, deliberately per-hit so a multi-hit
+ * finisher scales with its own shape. `_lib.js` states the contract — "Bosses
+ * must apply this in BOTH their `damageFn` and their `effect`, or the intent
+ * stops telling the truth" — and this boss applied it in NEITHER, so its own
+ * Haunt notes promised a number it never delivered. Added here, in the one
+ * helper both halves already share, because two expressions that must agree
+ * will eventually not. `tests/boss-haunt/check.py` is the gate.
+ *
+ * Added AFTER the floor: Mapped can take an Ambush down to 1, and the Haunt
+ * bonus is meant to be a rise at every level rather than something a debuff
+ * can swallow.
+ */
 function ambush(c, base) {
   let d = base;
   if (c.has('mapped', c.self)) d -= 3;
   if (mem(c).houseMark && routeNow(c) === mem(c).houseMark) d += 4;
-  return Math.max(1, d);
+  return Math.max(1, d) + bossDmg(c);
 }
 
 /**

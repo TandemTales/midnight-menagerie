@@ -355,15 +355,37 @@ export function hauntBase(level, tierClass = 'normal') {
     hpMul: l >= 1 ? Math.min(2, base + step * (l - 1)) : 1,
     counters: {},                       // starting counters, always applied
     flags: dmgBonus ? { dmgBonus } : {}, // behavioural switches, read via flag(c,'key')
-    moves: {},                          // per-move stat overrides merged into the MoveDef
     advanced: { counters: {}, flags: {} }, // applied ONLY in advanced-pool encounters
     notes: dmgBonus ? [`Haunt ${l}: every boss attack hits for ${dmgBonus} more per hit.`] : [],
   };
 }
 
 /**
+ * THE ENVELOPE HAD A FOURTH FIELD AND NOTHING EVER READ IT.
+ *
+ * `moves: {}` was returned here and copied into `buildEncounter`'s output as
+ * `moveOverrides`, documented in both places as "per-move stat overrides merged
+ * into the MoveDef" — and grepping the whole repo on 2026-08-31 found exactly
+ * two references, the two that WRITE it. No consumer, ever.
+ *
+ * It was removed rather than wired, for two reasons. Three defs used it — the
+ * Crawler's Umbrella Jab, the House Bell's MIDNIGHT TOLL and the Wardrobe
+ * Guest's Rustle — and all three ALSO set a flag their own `damageFn`/`blockFn`
+ * already reads, so every one of them worked and none of them needed it.
+ *
+ * And wiring it would have been a trap. A merged override reaches `buildIntent`
+ * (which reads `pendingMove`) but NOT a hand-written `effect`, so a def that set
+ * only the override would show one number and deal another — the single most
+ * expensive bug class in this codebase, newly available from a field that looks
+ * like a convenience. Scale with `flags` and a `damageFn` that reads them: one
+ * expression, both halves.
+ */
+
+/**
  * Per-hit damage a boss adds at this Haunt level. Bosses must apply this in BOTH their
  * `damageFn` and their `effect`, or the intent stops telling the truth.
+ * `tests/boss-haunt/check.py` drives every boss at two Haunt levels and proves
+ * both halves moved — five of the seventeen were applying it in neither.
  */
 export function bossDmg(c) { return flag(c, 'dmgBonus', 0) || 0; }
 

@@ -225,7 +225,6 @@ export const coatrackCrawler = {
     if (level >= 1) h.notes.push('Courage +8%.');
     if (level >= 5) {
       h.flags.jabBig = 14;
-      h.moves['umbrella-jab'] = { damage: 14 };
       h.notes.push('Haunt 5: undisturbed Umbrella Jab 12 → 14. The disrupted version stays 7, so disruption is worth more.');
     }
     return h;
@@ -1114,7 +1113,6 @@ export const houseBell = {
     if (level >= 1) h.notes.push('Courage +6%.');
     if (level >= 9) {
       h.flags.tollDamage = 23;
-      h.moves['midnight-toll'] = { damage: 23 };
       h.notes.push('Haunt 9: MIDNIGHT TOLL deals 23 instead of 20.');
     }
     return h;

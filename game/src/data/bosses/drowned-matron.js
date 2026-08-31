@@ -40,7 +40,7 @@
 
 import { Intent } from '../schema.js';
 import {
-  mem, cnt, setCnt, addCnt, allies, board, cyc, hitPlayer, hauntBase, flag,
+  mem, cnt, setCnt, addCnt, allies, board, cyc, hitPlayer, hauntBase, bossDmg, flag,
   isAlive, field, lastMove,
 } from '../enemies/_lib.js';
 import {
@@ -206,9 +206,9 @@ export const drownedMatron = {
          The Kitchens made this call first for Cutlery Devil: a printed number
          that is true beats a design nicety that is not, so the +4 is spread
          across both hits rather than hidden in one of them. */
-      damageFn: (c) => wx(c, 5 + (c.has('wet', c.player) ? 2 : 0)),
+      damageFn: (c) => mx(c, 5 + (c.has('wet', c.player) ? 2 : 0)),
       tell: 'Twice, and harder if you are dripping on her floor.',
-      effect(c) { hitPlayer(c, wx(c, 5 + (c.has('wet', c.player) ? 2 : 0)), 2); },
+      effect(c) { hitPlayer(c, mx(c, 5 + (c.has('wet', c.player) ? 2 : 0)), 2); },
     },
     'fill-it-higher': {
       id: 'fill-it-higher', name: 'Fill It Higher', intent: Intent.DEFEND_BUFF, block: 9,
@@ -252,15 +252,15 @@ export const drownedMatron = {
     /* ── phase two (§30) ─────────────────────────────────────────────────── */
     'bath-key': {
       id: 'bath-key', name: 'Bath Key', intent: Intent.ATTACK_BIG, damage: 15, hits: 1,
-      damageFn: (c) => wx(c, cnt(c, 'water') === 0 ? 18 : 15),
+      damageFn: (c) => mx(c, cnt(c, 'water') === 0 ? 18 : 15),
       tell: 'The brass key, swung on its chain, from the shoulder.',
-      effect(c) { hitPlayer(c, wx(c, cnt(c, 'water') === 0 ? 18 : 15)); },
+      effect(c) { hitPlayer(c, mx(c, cnt(c, 'water') === 0 ? 18 : 15)); },
     },
     undertow: {
       id: 'undertow', name: 'Undertow', intent: Intent.ATTACK, damage: 6, hits: 2,
-      damageFn: (c) => wx(c, cnt(c, 'water') >= 3 ? 5 : 6),
+      damageFn: (c) => mx(c, cnt(c, 'water') >= 3 ? 5 : 6),
       tell: 'Something takes your feet out from under you twice.',
-      effect(c) { hitPlayer(c, wx(c, cnt(c, 'water') >= 3 ? 5 : 6), 2); },
+      effect(c) { hitPlayer(c, mx(c, cnt(c, 'water') >= 3 ? 5 : 6), 2); },
     },
     'fill-the-room': {
       id: 'fill-the-room', name: 'Fill the Room', intent: Intent.DEFEND_BUFF, block: 7,
@@ -278,10 +278,10 @@ export const drownedMatron = {
     },
     'tidal-sweep': {
       id: 'tidal-sweep', name: 'Tidal Sweep', intent: Intent.ATTACK, damage: 10, hits: 1,
-      damageFn: (c) => wx(c, tidal(c)),
+      damageFn: (c) => mx(c, tidal(c)),
       tell: 'The whole room leans.',
       effect(c) {
-        hitPlayer(c, wx(c, tidal(c)));
+        hitPlayer(c, mx(c, tidal(c)));
         if (cnt(c, 'water') >= 3) c.block(c.self, 8);
       },
     },
@@ -334,9 +334,27 @@ export const drownedMatron = {
 /* ══ the machinery ══════════════════════════════════════════════════════════ */
 
 /** §19: "The Matron's SINGLE HIT attacks deal 2 less" while it is raining. */
+/**
+ * `wx` plus the Matron's own Haunt rider.
+ *
+ * `bossDmg` is the whole of boss Haunt scaling above the flat +6% Courage:
+ * +1 damage a hit every third level, deliberately per-hit so a multi-hit
+ * finisher scales with its own shape. `_lib.js` states the contract — "Bosses
+ * must apply this in BOTH their `damageFn` and their `effect`, or the intent
+ * stops telling the truth" — and this boss applied it in NEITHER, so its own
+ * Haunt notes promised a number it never delivered. Added here, in the one
+ * helper both halves already share, because two expressions that must agree
+ * will eventually not. `tests/boss-haunt/check.py` is the gate.
+ *
+ * It cannot go into `wx` itself: that is the Bathhouse's shared Weather
+ * multiplier and every ordinary enemy in the wing reads it, none of which is
+ * a boss.
+ */
+function mx(c, base) { return wx(c, base) + bossDmg(c); }
+
 function single(c, base) {
   const w = weather(c);
-  return wx(c, Math.max(1, base - (w === 'rain' ? 2 : 0)));
+  return mx(c, Math.max(1, base - (w === 'rain' ? 2 : 0)));
 }
 
 /** §30's Tidal Sweep, whose whole point is that it is worst in the middle. */

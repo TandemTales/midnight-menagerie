@@ -1958,7 +1958,7 @@ function defaultWeight(enc) {
  * @param {import('../core/rng.js').RNG} rng
  * @param {number} hauntLevel
  * @returns {{enemyId:string, hp:number, maxHp:number, slot:number, counters:Object,
- *            flags:Object, moveOverrides:Object, tier:string}[]}
+ *            flags:Object, tier:string}[]}
  */
 export function buildEncounter(id, rng, hauntLevel = 0) {
   const enc = encounterById(id);
@@ -1991,7 +1991,6 @@ export function buildEncounter(id, rng, hauntLevel = 0) {
       slot,
       counters,
       flags,
-      moveOverrides: Object.assign({}, haunt?.moves),
     });
   });
 

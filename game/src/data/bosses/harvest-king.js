@@ -36,7 +36,7 @@
 
 import { Intent } from '../schema.js';
 import {
-  mem, cnt, setCnt, addCnt, allies, board, cyc, hitPlayer, hauntBase, flag,
+  mem, cnt, setCnt, addCnt, allies, board, cyc, hitPlayer, hauntBase, bossDmg, flag,
   isAlive, played, field, lastMove, hpFrac,
 } from '../enemies/_lib.js';
 import {
@@ -360,8 +360,21 @@ const cropsOf = (c) => allies(c).filter(a => isAlive(a)
 const ripeOf = (c) => cropsOf(c).filter(isRipe);
 
 /** §27's Bounty, and §19's Overripe leftovers, both in the damage number. */
+/**
+ * Every rider on a Harvest King attack, including the Haunt one.
+ *
+ * `bossDmg` is the whole of boss Haunt scaling above the flat +6% Courage:
+ * +1 damage a hit every third level, deliberately per-hit so a multi-hit
+ * finisher scales with its own shape. `_lib.js` states the contract — "Bosses
+ * must apply this in BOTH their `damageFn` and their `effect`, or the intent
+ * stops telling the truth" — and this boss applied it in NEITHER, so its own
+ * Haunt notes promised a number it never delivered. Added here, in the one
+ * helper both halves already share, because two expressions that must agree
+ * will eventually not. `tests/boss-haunt/check.py` is the gate.
+ */
 function kingDmg(c, base) {
-  return base + cnt(c, 'bounty') + (mem(c).spark ? (mem(c).sparkBig ? 7 : 4) : 0);
+  return base + cnt(c, 'bounty') + (mem(c).spark ? (mem(c).sparkBig ? 7 : 4) : 0)
+    + bossDmg(c);
 }
 
 function plant(c, howMany) {

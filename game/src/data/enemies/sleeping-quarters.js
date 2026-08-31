@@ -212,7 +212,6 @@ export const wardrobeGuest = {
     if (level >= 5) {
       h.flags.rustleBlock = 8;
       h.flags.hideAlly = true;
-      h.moves.rustle = { block: 8 };
       h.notes.push('Haunt 5: Rustle grants 8 Guard instead of 5 while Hidden, and Back Inside now '
         + 'takes an ally into the wardrobe with it (design doc §48) — your targeting window closes '
         + 'on the enemy you actually wanted.');

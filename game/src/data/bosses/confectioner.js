@@ -21,7 +21,7 @@
 
 import { Intent } from '../schema.js';
 import {
-  mem, cnt, setCnt, addCnt, allies, cyc, hitPlayer, hauntBase, flag, isAlive,
+  mem, cnt, setCnt, addCnt, allies, cyc, hitPlayer, hauntBase, bossDmg, flag, isAlive,
 } from '../enemies/_lib.js';
 
 const REGION = 'kitchens-cellars';
@@ -181,6 +181,17 @@ function spendPersonal(c) {
 }
 function personalBonus(c) { return mem(c).personal === 'sugar' ? 5 : 0; }
 function offendedBonus(c) { return cnt(c, 'offended') > 0 ? 3 : 0; }
+/**
+ * Every rider on a Confectioner attack, including the Haunt one.
+ *
+ * `hauntBase(level, 'boss')` hands every boss +1 damage a hit every third
+ * Haunt level and `_lib.js` states the contract in as many words: "Bosses must
+ * apply this in BOTH their `damageFn` and their `effect`, or the intent stops
+ * telling the truth." This boss applied it in neither, so its own Haunt notes
+ * promised a number it never delivered. Folded into one helper that both halves
+ * call, because two expressions that must agree will eventually not.
+ */
+function rider(c) { return personalBonus(c) + offendedBonus(c) + bossDmg(c); }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // The Dish
@@ -313,15 +324,15 @@ export const confectioner = {
     'sugar-hook': {
       id: 'sugar-hook', name: 'Sugar Hook', intent: Intent.ATTACK, damage: 11, hits: 1,
       tell: 'One long arm comes around with a hook on the end of it.',
-      damageFn: (c) => 11 + personalBonus(c) + offendedBonus(c),
-      effect(c) { hitPlayer(c, 11 + personalBonus(c) + offendedBonus(c)); spendPersonal(c); },
+      damageFn: (c) => 11 + rider(c),
+      effect(c) { hitPlayer(c, 11 + rider(c)); spendPersonal(c); },
     },
     'taste-test': {
       id: 'taste-test', name: 'Taste Test', intent: Intent.ATTACK, damage: 5, hits: 2,
       tell: 'It tries a little of everything, including you.',
-      damageFn: (c) => 5 + personalBonus(c) + offendedBonus(c),
+      damageFn: (c) => 5 + rider(c),
       effect(c) {
-        hitPlayer(c, 5 + personalBonus(c) + offendedBonus(c), 2);
+        hitPlayer(c, 5 + rider(c), 2);
         spendPersonal(c);
         const d = allies(c).find(a => isAlive(a) && a.defId === 'dish');
         if (d) c.heal(d, 5);
@@ -358,14 +369,14 @@ export const confectioner = {
     'candy-cleaver': {
       id: 'candy-cleaver', name: 'Candy Cleaver', intent: Intent.ATTACK, damage: 15, hits: 1,
       tell: 'It brings something down that was never meant for this.',
-      damageFn: (c) => 15 + personalBonus(c) + offendedBonus(c),
-      effect(c) { hitPlayer(c, 15 + personalBonus(c) + offendedBonus(c)); spendPersonal(c); },
+      damageFn: (c) => 15 + rider(c),
+      effect(c) { hitPlayer(c, 15 + rider(c)); spendPersonal(c); },
     },
     'whisking-frenzy': {
       id: 'whisking-frenzy', name: 'Whisking Frenzy', intent: Intent.ATTACK, damage: 4, hits: 4,
       tell: 'Every arm at once, far too fast to follow.',
-      damageFn: (c) => 4 + personalBonus(c) + offendedBonus(c),
-      effect(c) { hitPlayer(c, 4 + personalBonus(c) + offendedBonus(c), 4); spendPersonal(c); },
+      damageFn: (c) => 4 + rider(c),
+      effect(c) { hitPlayer(c, 4 + rider(c), 4); spendPersonal(c); },
     },
     'toss-it-in': {
       id: 'toss-it-in', name: 'Toss It In', intent: Intent.BUFF, block: 5,

@@ -47,7 +47,7 @@
 
 import { Intent } from '../schema.js';
 import {
-  mem, cnt, setCnt, addCnt, allies, board, cyc, hitPlayer, hauntBase, flag,
+  mem, cnt, setCnt, addCnt, allies, board, cyc, hitPlayer, hauntBase, bossDmg, flag,
   isAlive, played, field, lastMove,
 } from '../enemies/_lib.js';
 import { frighten } from '../enemies/kennels.js';
@@ -377,7 +377,21 @@ const systemsOf = (c) => allies(c).filter(a => isAlive(a)
 const systemAlive = (c, id) => allies(c).some(a => isAlive(a) && a.defId === id);
 
 /** §20: the Collar Dock's damage bonus, in one place. */
-function masterDmg(c, base) { return base + (systemAlive(c, 'collar-dock') ? 3 : 0); }
+/**
+ * Every rider on a Kennelmaster attack, including the Haunt one.
+ *
+ * `bossDmg` is the whole of boss Haunt scaling above the flat +6% Courage:
+ * +1 damage a hit every third level, deliberately per-hit so a multi-hit
+ * finisher scales with its own shape. `_lib.js` states the contract — "Bosses
+ * must apply this in BOTH their `damageFn` and their `effect`, or the intent
+ * stops telling the truth" — and this boss applied it in NEITHER, so its own
+ * Haunt notes promised a number it never delivered. Added here, in the one
+ * helper both halves already share, because two expressions that must agree
+ * will eventually not. `tests/boss-haunt/check.py` is the gate.
+ */
+function masterDmg(c, base) {
+  return base + (systemAlive(c, 'collar-dock') ? 3 : 0) + bossDmg(c);
+}
 
 /** §23's third Kennel Sweep hit. */
 function sweepHits(c) { return c.count('leashed', c.player) >= 2 ? 3 : 2; }
