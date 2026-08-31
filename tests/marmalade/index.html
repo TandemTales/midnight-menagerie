@@ -1,0 +1,212 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Marmalade — Lives, Ghoststep, Zoomies and the Untouched streak</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+</style>
+<h1>Marmalade</h1>
+<div id="out"></div>
+<script type="module">
+/**
+ * MARMALADE IS ONE OF THE FOUR STARTERS AND HAD NO SUITE OF HER OWN.
+ *
+ * Fifteen Companions have one. She and Bones were covered only by
+ * `tests/cards/run.py`, which proves a card resolves without throwing
+ * (CONTRACTS trap 12), and `tests/combat/run.py`, which knows nothing about
+ * her archetypes. So every one of her five systems — Ghoststep, Haunt, Nine
+ * Lives, Zoomies, Untouched — was asserted by nothing.
+ *
+ * That is not a hypothetical gap for this Companion in particular. CONTRACTS
+ * trap 9 is HER bug:
+ *
+ *     `turn:start` and `turn:end` fire for EVERY ENEMY too, not just the
+ *     player. Marmalade's Untouched was decided by whichever enemy swung LAST
+ *     — take 9 from the first and have the second merely block, and you were
+ *     still "Untouched"; the archetype did nothing in any fight with more than
+ *     one enemy.
+ *
+ * `tests/turn-events/check.py` gates the SOURCE of that — no companion may
+ * subscribe to the raw event — and cannot see the BEHAVIOUR. Everything below
+ * runs on the two-enemy board the trap needs, because a one-enemy board is
+ * exactly where the bug hides.
+ */
+import { RNG } from '../../game/src/core/rng.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import { makeDummySetup, startDummyParty } from '../../game/src/combat/dummy.js';
+import { installTrackers, mm as MM } from '../../game/src/data/companions/_util.js';
+import * as CARDS from '../../game/src/data/cards.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+const say = (html, cls) => { const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; out.appendChild(d); };
+
+async function cat(o = {}) {
+  const e = new CombatEngine(makeDummySetup(new RNG(o.seed || 17), {
+    companion: 'marmalade', deck: CARDS.startingDeckFor('marmalade'), maxHp: 200, ...o,
+  }));
+  await e.startCombat();
+  installTrackers(e, 'marmalade');
+  return e;
+}
+async function play(e, id, seat = null, target) {
+  const who = seat || e.players[0];
+  e.addCard(CARDS.cardById(id), 'hand', { to: who });
+  const hand = e.pilesOf(who).hand;
+  const card = hand[hand.length - 1];
+  who.energy = 9;
+  await e.playCard(card.uid, target === undefined ? (e.firstLivingEnemy() || {}).id : target);
+  return card;
+}
+/* Counters live on the ENGINE, keyed per seat by `_ckey`. Reading
+   `player.counters` finds the ENEMY-style bag and always answers null. */
+const lives = (e, seat = null) => e.counter('lives', (seat || e.players[0]).id);
+/* Ghoststep is NOT a counter — only Lives is declared through `defineCounters`.
+   `U.res` falls through to the status track for everything else. */
+const ghost = (e, seat = null) => (seat || e.players[0]).status('ghoststep');
+const state = (e, seat = null) => MM({ e, self: seat || e.players[0] });
+/**
+ * Courage the first living enemy lost to one card.
+ *
+ * The player's statuses are cleared first, and that is not tidying: the dummy
+ * board's enemies apply Weak, which is a 25% cut on the ATTACKER, so a 10 reads
+ * 7 and a 6 reads 4 and every absolute number below would be measuring the
+ * debuff instead of the mechanic. Untouched is the thing under test; Weak is
+ * `tests/combat/run.py`'s business.
+ */
+async function swing(e, id, seat = null) {
+  const who = seat || e.players[0];
+  who.statuses.clear();
+  const t = e.livingEnemies()[0];
+  const before = t.hp + t.block;
+  await play(e, id, seat, t.id);
+  return before - (t.hp + t.block);
+}
+
+(async () => {
+  say('<h2>Nine Lives, which do not come back</h2>');
+  {
+    const e = await cat();
+    check(lives(e) === 9, 'she begins every combat with 9 Lives', String(lives(e)));
+    check(e.livingEnemies().length === 2,
+          'and this board has TWO enemies, which is where trap 9 lives',
+          e.livingEnemies().map(x => x.defId).join(' + '));
+    await play(e, 'marmalade/nine-lived-nerve', null, null);
+    const spent = lives(e);
+    check(spent < 9, 'a Trick that spends Lives really spends them', `9 -> ${spent}`);
+    e.players[0].block = 0;
+    await e.endTurn();
+    check(lives(e) === spent,
+          'and a new turn does NOT hand them back — they last the whole fight',
+          `${spent} -> ${lives(e)}`);
+  }
+
+  say('<h2>Ghoststep and Haunt reach the board</h2>');
+  {
+    const e = await cat();
+    check(ghost(e) === 0, 'no Ghoststep to begin with');
+    await play(e, 'marmalade/ghoststep');
+    check(ghost(e) === 1, 'Ghoststep grants one', String(ghost(e)));
+    for (let i = 0; i < 12; i++) await play(e, 'marmalade/ghoststep');
+    check(ghost(e) === 9, 'and it stops at 9, the declared cap', String(ghost(e)));
+
+    const t = e.livingEnemies()[0];
+    await play(e, 'marmalade/boo', null, t.id);
+    check(t.status('haunt') === 2, 'Boo! puts 2 Haunt on the enemy it named',
+          `${t.defId} has ${t.status('haunt')}`);
+    const other = e.livingEnemies()[1];
+    check(other.status('haunt') === 0,
+          'CONTROL: and none at all on the one it did not', String(other.status('haunt')));
+  }
+
+  say('<h2>Untouched, on the board where it used to lie</h2>');
+  {
+    // Turn one: nothing has swung yet, so she is Untouched by definition.
+    const e = await cat();
+    const opener = await swing(e, 'marmalade/spectral-scratch');
+    check(opener === 10, 'Spectral Scratch opens at 6 + 4 while Untouched', String(opener));
+
+    // Take a real enemy phase with no Guard: at least one of the two connects.
+    e.players[0].block = 0;
+    const hpBefore = e.players[0].hp;
+    await e.endTurn();
+    const took = hpBefore - e.players[0].hp;
+    check(took > 0, 'the enemy phase actually landed something', `${took} Courage`);
+    const after = await swing(e, 'marmalade/spectral-scratch');
+    check(after === 6,
+          'and the very next Spectral Scratch reads 6 — being hit ONCE ends the streak, '
+          + 'whichever of the two did it and whichever swung last',
+          String(after));
+  }
+  {
+    // The control: the same board, the same two enemies, and a Kid who blocks.
+    const e = await cat();
+    await e.endTurn();                                  // enemy phase 1, unblocked
+    e.players[0].block = 999;                           // and now nothing gets through
+    const hpBefore = e.players[0].hp;
+    await e.endTurn();
+    check(e.players[0].hp === hpBefore, 'CONTROL: a fully blocked phase costs no Courage');
+    const guarded = await swing(e, 'marmalade/spectral-scratch');
+    check(guarded === 10,
+          'and Spectral Scratch is back to 10 — Untouched is about COURAGE, not about '
+          + 'whether anything swung',
+          String(guarded));
+  }
+
+  say('<h2>Zoomies counts a PLAYER turn, not an actor turn</h2>');
+  {
+    const e = await cat();
+    // Two cards is not Zoomies; the third is. Quick Pounce is 5, or 11 with it.
+    await play(e, 'marmalade/curl-up');
+    await play(e, 'marmalade/curl-up');
+    const third = await swing(e, 'marmalade/quick-pounce');
+    check(third === 11, 'the third Trick of a turn is Zoomies', String(third));
+
+    e.players[0].block = 0;
+    await e.endTurn();                                  // both enemies act
+    const firstNextTurn = await swing(e, 'marmalade/quick-pounce');
+    check(firstNextTurn === 5,
+          'and the count resets ONCE at the new player turn, not once per enemy that '
+          + 'took one — two enemies acted and the first Trick is still the first',
+          String(firstNextTurn));
+  }
+
+  say('<h2>Two Kids, two streaks</h2>');
+  {
+    const e = await startDummyParty(new RNG(23), 2, {
+      companion: 'marmalade', maxHp: 200,
+      decks: [CARDS.startingDeckFor('marmalade'), CARDS.startingDeckFor('marmalade')],
+    });
+    installTrackers(e, 'marmalade');
+    const [a, b] = e.players;
+    // Keep going until the board has actually hit seat 0 and never seat 1 —
+    // which seat an enemy picks is its own business, so this waits for the
+    // condition rather than assuming one phase produces it.
+    let phases = 0;
+    while (a.hp === a.maxHp && phases++ < 6) {
+      a.block = 0; b.block = 999;
+      await e.endTurn();
+    }
+    check(a.hp < a.maxHp, 'seat 0 took the phase on the chin',
+          `${a.hp}/${a.maxHp} after ${phases} phase(s)`);
+    check(b.hp === b.maxHp, 'seat 1 blocked all of it', `${b.hp}/${b.maxHp}`);
+    const hitSeat = await swing(e, 'marmalade/spectral-scratch', a);
+    const safeSeat = await swing(e, 'marmalade/spectral-scratch', b);
+    check(hitSeat === 6 && safeSeat === 10,
+          'and each Kid reads their OWN Courage — a teammate being hit does not end '
+          + 'your streak',
+          `hit seat ${hitSeat}, safe seat ${safeSeat}`);
+  }
+
+  for (const line of passes) say('PASS ' + line, 'pass');
+  for (const line of fails) say('FAIL ' + line, 'fail');
+  say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`);
+  window.__RESULT = { passes, fails, passed: passes.length, failed: fails.length };
+  window.__DONE = true;
+})().catch(err => {
+  say('CRASHED: ' + (err && err.stack || err), 'fail');
+  window.__RESULT = { passes, fails: fails.concat(['CRASHED ' + err]), passed: passes.length, failed: fails.length + 1 };
+  window.__DONE = true;
+});
+</script>

@@ -126,7 +126,23 @@ const tailAMile = (c) => {
   U.empower(c, 7 + (U.stacks(c, c.self, 'bones/tail-a-mile-a-minute') - 1) * 3);
 };
 U.onHook('fetch', 'bones/tail-a-mile-a-minute', tailAMile);
-U.onHook('dugUp', 'bones/tail-a-mile-a-minute', tailAMile);
+/**
+ * `digUp`, not `dugUp`. TRAP 10 AGAIN, ON THE SAME CARD.
+ *
+ * This Power shipped with an empty handler on `retrieved`, a hook nothing
+ * fires, and was repaired by listening on `dugUp` — which IS fired, but only by
+ * the two multiplayer Pack Stash cards at the bottom of this file. `digUp()`,
+ * the ordinary Dig Up every solo player uses, has always fired `digUp`, and so
+ * does Pudding. So half of a card that says "after Fetching or Digging Up" was
+ * still dead, in solo, where nearly every game of this is played.
+ *
+ * `hook-names` could not see it: both spellings were declared somewhere and
+ * fired somewhere, so the registry balanced. Only playing a Dig Up and looking
+ * at the Attack afterwards finds it — `tests/bones/run.py` now does.
+ *
+ * One name now. The two co-op cards fire `digUp` like everything else.
+ */
+U.onHook('digUp', 'bones/tail-a-mile-a-minute', tailAMile);
 U.onHook('fetch', 'bones/scent-memory', (c) => { if (U.once(c, 'scentMemory')) U.draw(c, U.stacks(c, c.self, 'bones/scent-memory')); });
 U.onHook('becameScattered', 'bones/spare-parts-everywhere', (c) => { if (U.once(c, 'sparePartsEverywhere')) spawnSpare(c, U.stacks(c, c.self, 'bones/spare-parts-everywhere')); });
 U.onHook('becameWhole', 'bones/tighten-the-collar', (c) => {
@@ -715,7 +731,7 @@ const uncommons = [
     // This Power did NOTHING. It registered an EMPTY handler on 'retrieved', a
     // hook name nothing in the game fires — so the card was a Rare that cost 1
     // Nerve and had no effect whatsoever. Found by tests/hook-names/check.py.
-    // The hooks Bones actually fires are 'fetch' and 'dugUp'; the wiring is
+    // The hooks Bones actually fires are 'fetch' and 'digUp'; the wiring is
     // module-scope below, next to the other Bones Powers.
     effect: eff(c => power(c, 'bones/tail-a-mile-a-minute', 1)),
     upgrade: { nums: { n: 10 } },
@@ -1098,7 +1114,7 @@ const coopCards = [
       };
       stash(c.self, mine);
       stash(ally, theirs);
-      if (mine) { U.fire(c, 'buried', { card: mine }); U.fire(c, 'dugUp', { card: mine }); }
+      if (mine) { U.fire(c, 'buried', { card: mine }); U.fire(c, 'digUp', { card: mine }); }
     }),
     upgrade: { nums: { n: 2 } },
   },
@@ -1180,7 +1196,7 @@ const coopCards = [
             card.costOverrideTurn = 0;
           }),
         });
-        if (pl === c.self) { U.fire(c, 'buried', { card }); U.fire(c, 'dugUp', { card }); }
+        if (pl === c.self) { U.fire(c, 'buried', { card }); U.fire(c, 'digUp', { card }); }
       }
     }),
     upgrade: { cost: 1 },

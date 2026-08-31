@@ -1,0 +1,214 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Bones — Loose Bones, Rattle, Bury and the Dig Up nobody heard</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } h2 { color: #c9a9ff; margin: 18px 0 6px; }
+</style>
+<h1>Bones</h1>
+<div id="out"></div>
+<script type="module">
+/**
+ * BONES IS ONE OF THE FOUR STARTERS AND HAD NO SUITE OF HIS OWN.
+ *
+ * Fifteen Companions have one. He and Marmalade were covered only by
+ * `tests/cards/run.py`, which proves a card resolves without throwing, and
+ * `tests/combat/run.py`, which knows nothing about his archetypes.
+ *
+ * He is also named twice in the two traps that most often hide here:
+ *
+ *   CONTRACTS 9 — "Bones' Buried countdown ticked at ~3x", because
+ *   `turn:start` fires for every enemy as well as the player. Everything below
+ *   runs on the two-enemy dummy board for that reason; a one-enemy board is
+ *   where the bug hides.
+ *
+ *   CONTRACTS 10 — `bones/tail-a-mile-a-minute` shipped as a Rare Power whose
+ *   whole implementation was an EMPTY handler on `retrieved`, a hook nothing
+ *   fires. It was repaired onto `dugUp` — and `dugUp` is fired ONLY by the two
+ *   multiplayer Pack Stash cards, while `digUp()`, the Dig Up every solo player
+ *   uses, has always fired `digUp`. So half of it was still dead, in solo,
+ *   until 2026-08-31. `hook-names` could not see it: both spellings were
+ *   declared somewhere and fired somewhere, so the registry balanced.
+ */
+import { RNG } from '../../game/src/core/rng.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import { makeDummySetup } from '../../game/src/combat/dummy.js';
+import { installTrackers, mm as MM } from '../../game/src/data/companions/_util.js';
+import * as CARDS from '../../game/src/data/cards.js';
+
+const passes = [], fails = [];
+const out = document.getElementById('out');
+const check = (ok, what, detail = '') => (ok ? passes : fails).push(what + (detail ? ` — ${detail}` : ''));
+const say = (html, cls) => { const d = document.createElement('div'); d.className = cls || ''; d.innerHTML = html; out.appendChild(d); };
+
+async function dog(o = {}) {
+  const e = new CombatEngine(makeDummySetup(new RNG(o.seed || 19), {
+    companion: 'bones', deck: CARDS.startingDeckFor('bones'), maxHp: 400, ...o,
+  }));
+  await e.startCombat();
+  installTrackers(e, 'bones');
+  /* The dummy bodies are Foyer-sized and several scenarios below play the same
+     Attack ten times to walk a track to its cap. Killing them ends the combat
+     and every card after that silently does nothing — which reads as a broken
+     mechanic. Courage they cannot run out of keeps the fight open. */
+  for (const x of e.enemies) { x.maxHp = 5000; x.hp = 5000; }
+  return e;
+}
+/** `null` here means "no target at all", which is what a SELF or NONE Trick
+ *  wants; passing an enemy id to one of those makes `canPlay` refuse and the
+ *  card silently does nothing. */
+async function play(e, id, target) {
+  const who = e.players[0];
+  e.addCard(CARDS.cardById(id), 'hand', { to: who });
+  const hand = e.pilesOf(who).hand;
+  const card = hand[hand.length - 1];
+  who.energy = 9;
+  const aim = target === undefined ? (e.firstLivingEnemy() || {}).id
+            : (target === null ? undefined : target);
+  await e.playCard(card.uid, aim);
+  return card;
+}
+const loose = (e) => e.counter('loose-bones', e.players[0].id);
+const stash = (e) => e.pilesOf(e.players[0]).stash || [];
+/* A card's counters are NOT `card.counters` — `_util.setCounter` writes
+   `card.meta['#buried']` when the card has a meta bag and `card.mmCounters`
+   otherwise. Reading the wrong one finds 0 whether the mechanic works or not. */
+const cardCounter = (k, key) => (k?.meta && ('#' + key) in k.meta)
+  ? (k.meta['#' + key] | 0) : ((k?.mmCounters && k.mmCounters[key]) | 0);
+const buriedIn = (e) => stash(e).filter(k => cardCounter(k, 'buried') > 0);
+const empowered = (e) => e.players[0].status('empowered');
+/** Courage the first living enemy lost to one card, with the player's own
+ *  debuffs cleared — the dummy board applies Weak and every absolute number
+ *  below would otherwise be measuring that instead of the mechanic. */
+async function swing(e, id) {
+  e.players[0].statuses.delete('weak');
+  const t = e.livingEnemies()[0];
+  const before = t.hp + t.block;
+  await play(e, id, t.id);
+  return before - (t.hp + t.block);
+}
+
+(async () => {
+  say('<h2>Loose Bones is a track with two ends</h2>');
+  {
+    const e = await dog();
+    check(loose(e) === 0, 'he starts Whole', String(loose(e)));
+    check(e.livingEnemies().length === 2,
+          'and this board has TWO enemies, which is where trap 9 lives',
+          e.livingEnemies().map(x => x.defId).join(' + '));
+    await play(e, 'bones/rib-rattle');
+    check(loose(e) === 1, 'Rib Rattle sheds one', String(loose(e)));
+    for (let i = 0; i < 9; i++) await play(e, 'bones/rib-rattle');
+    check(loose(e) === 6, 'and the track stops at 6, the declared cap', String(loose(e)));
+    await play(e, 'bones/put-yourself-back-together', null);
+    check(loose(e) === 4, 'Put Yourself Back Together reattaches two', String(loose(e)));
+  }
+
+  say('<h2>Scattered is a band on that track, not a flag</h2>');
+  {
+    const e = await dog();
+    // Digging Claws is 4 x2, or x3 with something Buried — used below. Here the
+    // question is only whether the band is read from the number.
+    const bands = e.counters?.get?.(e._ckey ? e._ckey('loose-bones', e.players[0].id) : 'loose-bones');
+    check(!!bands, 'Loose Bones is a real declared counter, not a status', bands ? bands.id : 'missing');
+    check(bands.min === 0 && bands.max === 6,
+          'declared 0 to 6, which is what the two ends above measured',
+          `${bands.min}..${bands.max}`);
+  }
+
+  say('<h2>The Buried countdown ticks once a PLAYER turn</h2>');
+  {
+    const e = await dog();
+    const doomed = await play(e, 'bones/bury-it', null);
+    const buried = buriedIn(e);
+    check(buried.length === 1, 'Bury It really put a Trick in the stash',
+          `${buried.length} buried, stash ${stash(e).length}`);
+    check(cardCounter(buried[0], 'buried') === 2, 'with a countdown of 2',
+          String(cardCounter(buried[0], 'buried')));
+
+    const k = buried[0];
+    e.players[0].block = 0;
+    await e.endTurn();                              // BOTH enemies act, one player turn
+    check(cardCounter(k, 'buried') === 1,
+          'one whole round later it is on 1 — not 0, and not below it. Two enemies '
+          + 'acted and the countdown moved ONCE',
+          String(cardCounter(k, 'buried')));
+    e.players[0].block = 0;
+    await e.endTurn();
+    check(cardCounter(k, 'buried') === 0, 'the second round finishes it',
+          String(cardCounter(k, 'buried')));
+    check(e.pilesOf(e.players[0]).hand.some(x => x.uid === k.uid),
+          'and it comes back to the hand by itself',
+          e.pilesOf(e.players[0]).hand.length + ' cards in hand');
+  }
+
+  say('<h2>Fetch marks what it fetched</h2>');
+  {
+    const e = await dog();
+    // Something cheap in the discard for him to go and get.
+    await play(e, 'bones/bite');
+    const disc = e.pilesOf(e.players[0]).discard;
+    check(disc.length > 0, 'there is something in the discard pile', String(disc.length));
+    await play(e, 'bones/go-get-it', null);
+    const cardFlag = (k, key) => (k?.meta && key in k.meta) ? k.meta[key]
+  : (k?.mmFlags ? k.mmFlags[key] : undefined);
+    const back = e.pilesOf(e.players[0]).hand.filter(x => cardFlag(x, 'slobbered'));
+    check(back.length === 1, 'Go Get It! brought exactly one Trick back',
+          `${back.length} Slobbered in hand`);
+    check(cardFlag(back[0], 'slobbered') === true,
+          'and marked it Slobbered, which is what stops it being fetched twice');
+  }
+
+  say('<h2>Tail Going A Mile A Minute, on the Dig Up the solo game uses</h2>');
+  {
+    const e = await dog();
+    await play(e, 'bones/tail-a-mile-a-minute', null);
+    check(e.players[0].status('bones/tail-a-mile-a-minute') === 1,
+          'the Power is installed');
+    await play(e, 'bones/bury-it', null);
+    check(buriedIn(e).length === 1, 'and something is Buried to dig up');
+    check(empowered(e) === 0, 'nothing is Empowered yet', String(empowered(e)));
+
+    await play(e, 'bones/dig-here', null);
+    check(buriedIn(e).length === 0, 'Dig Here really dug it up', String(buriedIn(e).length));
+    check(empowered(e) >= 7,
+          'and the Power fired — this is the half that listened for `dugUp` while the '
+          + 'ordinary Dig Up fired `digUp`, and was dead in solo for two commits',
+          `${empowered(e)} Empowered`);
+  }
+  {
+    const e = await dog();
+    // CONTROL: the same Dig Up with no Power installed.
+    await play(e, 'bones/bury-it', null);
+    await play(e, 'bones/dig-here', null);
+    check(empowered(e) === 0,
+          'CONTROL: without the Power, digging one up Empowers nothing',
+          String(empowered(e)));
+  }
+
+  say('<h2>Something Buried is worth an extra hit</h2>');
+  {
+    const bare = await dog();
+    const plain = await swing(bare, 'bones/digging-claws');
+    const armed = await dog();
+    await play(armed, 'bones/bury-it', null);
+    const withBuried = await swing(armed, 'bones/digging-claws');
+    check(withBuried > plain,
+          'Digging Claws lands a third hit while a Trick is Buried',
+          `${plain} bare, ${withBuried} with something in the ground`);
+    check(withBuried - plain === 4,
+          'and the extra hit is exactly one more of the same 4',
+          `+${withBuried - plain}`);
+  }
+
+  for (const line of passes) say('PASS ' + line, 'pass');
+  for (const line of fails) say('FAIL ' + line, 'fail');
+  say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`);
+  window.__RESULT = { passes, fails, passed: passes.length, failed: fails.length };
+  window.__DONE = true;
+})().catch(err => {
+  say('CRASHED: ' + (err && err.stack || err), 'fail');
+  window.__RESULT = { passes, fails: fails.concat(['CRASHED ' + err]), passed: passes.length, failed: fails.length + 1 };
+  window.__DONE = true;
+});
+</script>
