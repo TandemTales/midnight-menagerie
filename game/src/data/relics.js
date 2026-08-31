@@ -725,7 +725,56 @@ export const RELICS = [
       },
     },
   },
+  {
+    /**
+     * 16-pumpkin-grounds.md §55, Frog Charm: "The first time each combat you
+     * play four Tricks in one turn, draw 1 Trick."
+     *
+     * The Pumpkin Grounds hand out three separate offers on the fourth or fifth
+     * Trick of a turn, so a Keepsake that pays for reaching four is a Keepsake
+     * that pays for playing the region the way it asks to be played.
+     */
+    id: 'frog-charm', name: 'Frog Charm', rarity: 'rare', icon: 'frog',
+    desc: `The first time each ${TERMS.combat} you play four Tricks in one turn, draw 1 Trick.`,
+    flavor: 'Carved out of something pale, and warm in the hand for no reason anyone has explained.',
+    hooks: {
+      onCardPlayed(h) {
+        const n = (h.e && h.e.playedThisTurn && h.e.playedThisTurn.length) || 0;
+        if (n < 4 || !once(h, 'frog')) return;
+        h.e._asSeat(player(h), () => h.e.drawCards(1, 'relic'));
+        pop(h, 'frog');
+      },
+    },
+  },
   // ── boss ──────────────────────────────────────────────────────────────────
+  {
+    /**
+     * §55, Bent Sickle: "Whenever you defeat an enemy with at least 10 excess
+     * damage, gain 4 Guard. Once per turn."
+     *
+     * The Gourd Knight's Clean Cut is the same arithmetic — §14 rewards timing a
+     * big swing so it carries PAST a threshold rather than stopping on it — and
+     * this is that idea as a Keepsake you take with you. `hpBefore` is the
+     * overkill: what the blow had left to give after the last Courage was gone.
+     */
+    id: 'bent-sickle', name: 'Bent Sickle', rarity: 'boss', icon: 'sickle',
+    desc: `Once each turn, when you defeat something with 10 or more damage to spare, gain 4 ${TERMS.block} and draw 1.`,
+    flavor: 'The curve is wrong and it cuts better for it. Somebody bent it back on purpose.',
+    hooks: {
+      onAttacked(h) {
+        if (!h.defender || h.defender.side === 'player' || h.defender.hp > 0) return;
+        if (h.attacker !== player(h)) return;
+        const spare = (h.hpLoss || 0) - (h.hpBefore ?? 0);
+        if (spare < 10) return;
+        const m = mem(h);
+        if (m.sickleTurn === h.e.turn) return;
+        m.sickleTurn = h.e.turn;
+        h.e.gainBlock(player(h), 4, { reason: 'relic', source: null });
+        h.e._asSeat(player(h), () => h.e.drawCards(1, 'relic'));
+        pop(h, 'sickle');
+      },
+    },
+  },
   {
     /**
      * §55, Soft Leash: "The first time each combat an enemy applies a temporary

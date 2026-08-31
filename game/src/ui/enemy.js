@@ -249,6 +249,16 @@ const MOTIF = {
   'walking-cage': 'slam', 'rolling-ward': 'slam', cart: 'slam',
   orderly: 'stoop', 'collar-rack': 'stoop', 'perfect-pen': 'stoop',
   kennelmaster: 'stoop',
+  /* The Moon Courtyard and Pumpkin Grounds. Frogs and gourds hop, the things
+     that grew out of the soil stand up slowly, and the crops just sit there. */
+  'pumpkin-pip': 'pounce', 'harvest-hopper': 'pounce', 'gourd-guard': 'pounce',
+  moonseed: 'drift', 'vine-lantern': 'drift',
+  'shield-gourd': 'drift', 'spark-pumpkin': 'drift', 'moon-melon': 'drift',
+  'guard-gourd': 'drift', 'king-spark': 'drift', 'moon-squash': 'drift',
+  'jumping-gourd': 'drift',
+  'scarecrow-sprout': 'stoop', 'moon-scarecrow': 'stoop', 'gourd-knight': 'stoop',
+  'harvest-king': 'stoop',
+  'great-root': 'ripple',
   'straw-pile': 'drift', 'rot-pile': 'drift', 'briar-ring': 'drift',
 };
 const BODY_MOTIF = { squat: 'pounce', 'tall-thin': 'stoop', sprawling: 'ripple', floating: 'drift' };

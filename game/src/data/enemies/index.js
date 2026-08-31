@@ -30,6 +30,8 @@ import { BATH_ENEMIES, BATH_STATUSES } from './bathhouse.js';
 import { BATH_SCARES } from './bathhouse-scares.js';
 import { KENNEL_ENEMIES, KENNEL_STATUSES } from './kennels.js';
 import { KENNEL_SCARES, SCARE_STATUSES as KENNEL_SCARE_STATUSES } from './kennels-scares.js';
+import { PUMPKIN_ENEMIES, PUMPKIN_STATUSES } from './pumpkin-grounds.js';
+import { PUMPKIN_SCARES } from './pumpkin-grounds-scares.js';
 import { GREENHOUSE_SCARES } from './greenhouse-scares.js';
 import { HEART_ENEMIES, HEART_STATUSES } from './heart.js';
 import { HEART_SCARES } from './heart-scares.js';
@@ -48,9 +50,11 @@ import { MAZE_BOSSES } from '../bosses/gardener-of-rot.js';
 import { WARDEN_BOSSES, WARDEN_STATUSES } from '../bosses/whisper-warden.js';
 import { MATRON_BOSSES } from '../bosses/drowned-matron.js';
 import { MASTER_BOSSES, MASTER_STATUSES } from '../bosses/kennelmaster.js';
+import { KING_BOSSES } from '../bosses/harvest-king.js';
 import { HEART_BOSSES, KEEPER_STATUSES } from '../bosses/keeper.js';
 import { ENEMY_STATUSES as CORE_STATUSES, STATUS_TRICK_DEFS as CORE_TRICKS } from './_lib.js';
-import { INVITATION_TRICKS, PASSAGE_OFFER_TRICKS, ECHO_TRICKS, STORM_OFFER_TRICKS } from '../invitations.js';
+import { INVITATION_TRICKS, PASSAGE_OFFER_TRICKS, ECHO_TRICKS, STORM_OFFER_TRICKS,
+  PUMPKIN_OFFER_TRICKS } from '../invitations.js';
 
 /**
  * Statuses and status Tricks, merged here rather than in `_lib.js`.
@@ -74,6 +78,7 @@ export const ENEMY_STATUSES = Object.freeze(
    ...PASSAGE_STATUSES, ...PASSAGE_SCARE_STATUSES, ...WARDEN_STATUSES,
    ...BATH_STATUSES,
    ...KENNEL_STATUSES, ...KENNEL_SCARE_STATUSES, ...MASTER_STATUSES,
+   ...PUMPKIN_STATUSES,
    ...HEART_STATUSES,
    ...KEEPER_STATUSES],
 );
@@ -82,7 +87,7 @@ export const ENEMY_STATUSES = Object.freeze(
    card registry — `scenes/combat.js` and the enemy ctx's `addCard` both
    resolve ids through this list. */
 export const STATUS_TRICK_DEFS = Object.freeze([...CORE_TRICKS, ...INVITATION_TRICKS, ...PASSAGE_OFFER_TRICKS, ...ECHO_TRICKS,
-   ...STORM_OFFER_TRICKS]);
+   ...STORM_OFFER_TRICKS, ...PUMPKIN_OFFER_TRICKS]);
 
 const ALL = [
   ...FOYER_ENEMIES,
@@ -126,6 +131,9 @@ const ALL = [
   ...KENNEL_ENEMIES,
   ...KENNEL_SCARES,
   ...MASTER_BOSSES,
+  ...PUMPKIN_ENEMIES,
+  ...PUMPKIN_SCARES,
+  ...KING_BOSSES,
   ...HEART_ENEMIES,
   ...HEART_SCARES,
   ...HEART_BOSSES,
@@ -164,7 +172,8 @@ export function rollHp(def, rng) {
 export const IMPLEMENTED_REGIONS = Object.freeze([
   'foyer', 'nursery', 'sleeping-quarters', 'kitchens-cellars', 'greenhouse',
   'graveyard', 'study-library', 'attic-observatory', 'lampworks', 'ballroom',
-  'crypt', 'hedge-maze', 'secret-passages', 'bathhouse', 'kennels', 'heart',
+  'crypt', 'hedge-maze', 'secret-passages', 'bathhouse', 'kennels',
+  'pumpkin-grounds', 'heart',
 ]);
 
 /**

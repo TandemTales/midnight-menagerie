@@ -225,3 +225,31 @@ export const STORM_OFFER_TRICKS = [
     'You put your foot over the drain. It is colder than the water.',
     () => {}),
 ].map(t => ({ ...t, id: t.id.replace('invite/', 'storm/') }));
+
+/* ══ The Moon Courtyard and Pumpkin Grounds ═════════════════════════════════ */
+
+/**
+ * §13's Turn the Moon, §21's Encourage Growth and §31's Moon Ripening.
+ *
+ * All three are the same shape and the chapter says so about each of them in
+ * turn: the player MAY do this, once, and it is optional. §21 is the clearest —
+ * "This is optional. Why would the player do this?" — and a question with a
+ * printed answer is a card. The enemy that made the offer does the bookkeeping
+ * in its own `onCardPlayed`, because the enemy is what knows its own patch.
+ */
+export const PUMPKIN_OFFER_TRICKS = [
+  invite('turn-the-moon', 'Turn the Moon',
+    'The Moon Scarecrow’s cycle advances one stage. [Vanish]',
+    'You have played enough of them that the sky has started paying attention.',
+    () => {}),
+
+  invite('encourage-growth', 'Encourage Growth',
+    'The least ripe Crop in the Royal Patch comes on one stage. [Vanish]',
+    'You put a hand flat on the soil and something under it decides to hurry.',
+    () => {}),
+
+  invite('moon-ripening', 'Moon Ripening',
+    'The moon brings the least ripe Crop on one stage. [Vanish]',
+    'It is very high now, and everything in the field is leaning toward it.',
+    () => {}),
+].map(t => ({ ...t, id: t.id.replace('invite/', 'moon/') }));

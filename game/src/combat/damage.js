@@ -308,6 +308,12 @@ export function applyDamage(engine, o) {
   const hookPayload = {
     attacker, defender, target: defender, kind,
     amount: t.final, hpLoss: t.hpLoss, blocked: t.blocked,
+    /* `hpBefore` went into the EVENT and not into the hook payload, so a hook
+       could see how much damage landed and never how much Courage there was to
+       land it on. OVERKILL is `hpLoss - hpBefore`, and it is the whole
+       mechanic behind the Pumpkin Grounds' Bent Sickle and behind the Gourd
+       Knight's Clean Cut. */
+    hpBefore, hpAfter: defender.hp,
     card: o.card || null, cause: o.cause || null,
   };
   engine.hooks.dispatch('onDamaged', hookPayload, engine.hooks.actorHooks(defender, 'onDamaged'));

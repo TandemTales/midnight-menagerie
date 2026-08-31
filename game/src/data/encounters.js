@@ -996,6 +996,82 @@ const KN = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// The Moon Courtyard and Pumpkin Grounds - docs/design/regions/16-pumpkin-grounds.md §9-§12
+//
+// §9-§11's fourteen Scuffles. The four EARLY ones are solo because each one
+// introduces a different answer to the same question - when is the right moment
+// to destroy this - and two of them at once teaches neither.
+// ─────────────────────────────────────────────────────────────────────────────
+const PK = [
+  // ── Early (§9) ----------------------------------------------------------
+  { id: 'pk-1', region: 'pumpkin-grounds', tier: 'early', name: 'Pumpkin Pip',
+    members: [m('pumpkin-pip')],
+    teaches: 'It ripens after every action. Ripe hits harder AND takes 20% more.' },
+  { id: 'pk-2', region: 'pumpkin-grounds', tier: 'early', name: 'Moonseed',
+    members: [m('moonseed')],
+    teaches: 'A free kill now, or a stronger enemy and a Trick later.' },
+  { id: 'pk-3', region: 'pumpkin-grounds', tier: 'early', name: 'Gourd Guard',
+    members: [m('gourd-guard')],
+    teaches: 'Let it harden, then crack the shell with one big turn.' },
+  { id: 'pk-4', region: 'pumpkin-grounds', tier: 'early', name: 'Scarecrow Sprout',
+    members: [m('scarecrow-sprout')],
+    teaches: 'It builds itself, and its best swing knocks an arm back off.' },
+
+  // ── Standard (§10) ------------------------------------------------------
+  { id: 'pk-5', region: 'pumpkin-grounds', tier: 'standard', name: 'Pumpkin Pip + Harvest Hopper',
+    members: [m('pumpkin-pip'), m('harvest-hopper')],
+    teaches: 'The Hopper wants your first Harvest as much as you do.' },
+  { id: 'pk-6', region: 'pumpkin-grounds', tier: 'standard', name: 'Moonseed + Gourd Guard',
+    members: [m('moonseed'), m('gourd-guard')],
+    teaches: 'One matures into damage, the other into armour.' },
+  { id: 'pk-7', region: 'pumpkin-grounds', tier: 'standard', name: 'Vine Lantern + Pumpkin Pip',
+    members: [m('vine-lantern'), m('pumpkin-pip')],
+    teaches: 'Two timing windows opening at different speeds.' },
+  { id: 'pk-8', region: 'pumpkin-grounds', tier: 'standard', name: 'Scarecrow Sprout + Harvest Hopper',
+    members: [m('scarecrow-sprout'), m('harvest-hopper')],
+    teaches: 'You want the Scarecrow finished for the Nerve. So does the frog.' },
+
+  // ── Advanced (§11) ------------------------------------------------------
+  { id: 'pk-9', region: 'pumpkin-grounds', tier: 'advanced', name: 'Gourd Guard + Harvest Hopper',
+    members: [m('gourd-guard'), m('harvest-hopper')],
+    teaches: 'The Hopper eats the maturity you were saving up to crack.' },
+  { id: 'pk-10', region: 'pumpkin-grounds', tier: 'advanced', name: 'Moonseed + Vine Lantern',
+    members: [m('moonseed'), m('vine-lantern')],
+    teaches: 'A card later, or a cheaper Attack now. You cannot have both.' },
+  { id: 'pk-11', region: 'pumpkin-grounds', tier: 'advanced', name: 'Pumpkin Pip + Scarecrow Sprout',
+    members: [m('pumpkin-pip'), m('scarecrow-sprout')],
+    teaches: 'They peak several turns apart and you only get one big turn.' },
+  { id: 'pk-12', region: 'pumpkin-grounds', tier: 'advanced',
+    name: 'Harvest Hopper + Moonseed + Pumpkin Pip',
+    members: [m('harvest-hopper'), m('moonseed'), m('pumpkin-pip')],
+    teaches: 'Two Harvests coming ripe and one very hungry frog.' },
+  { id: 'pk-13', region: 'pumpkin-grounds', tier: 'advanced', name: 'Gourd Guard + Vine Lantern',
+    members: [m('gourd-guard'), m('vine-lantern')],
+    teaches: 'Both of them pay you for waiting for a specific window.' },
+  { id: 'pk-14', region: 'pumpkin-grounds', tier: 'advanced',
+    name: 'Scarecrow Sprout + Vine Lantern + Harvest Hopper',
+    members: [m('scarecrow-sprout'), m('vine-lantern'), m('harvest-hopper')],
+    teaches: 'Maturation, Glow, Harvest timing, and whether delaying a kill is still worth it.',
+    advancedOnly: true, minScuffle: 2 },
+
+  // ── Big Scares (§13-§15) ----------------------------------------------
+  { id: 'pk-scare-moon', region: 'pumpkin-grounds', tier: 'elite', name: 'The Moon Scarecrow',
+    members: [m('moon-scarecrow')],
+    teaches: 'You can push the moon. Pushing it brings the window AND the swing.' },
+  { id: 'pk-scare-knight', region: 'pumpkin-grounds', tier: 'elite', name: 'The Gourd Knight',
+    members: [m('gourd-knight')],
+    teaches: 'Its layers are lines on one bar. Cross one with damage to spare.' },
+  { id: 'pk-scare-root', region: 'pumpkin-grounds', tier: 'elite', name: 'The Great Root',
+    members: [m('great-root')],
+    teaches: 'Three crops, both of you farming them, and rotting helps neither much.' },
+
+  // ── Boss -----------------------------------------------------------------
+  { id: 'pk-boss', region: 'pumpkin-grounds', tier: 'boss', name: 'The Harvest King',
+    members: [m('harvest-king')],
+    teaches: 'It tells you which crop it wants. Take that one first.' },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
 // The Crypt and Ossuary - docs/design/regions/11-crypt.md §9-§12
 //
 // The ladder is what gets left behind. The Tibia leaves one Remains and has no
@@ -1518,6 +1594,20 @@ const HEART = [
 // Per-region generation rules (design doc §10 "Encounter selection rules")
 // ─────────────────────────────────────────────────────────────────────────────
 export const REGION_RULES = {
+  /* docs/design/regions/16-pumpkin-grounds.md §12. "Pumpkin Pip should
+     appear before Harvest Hopper" and "Moonseed should first appear without
+     Harvest Hopper" are the tier ladder: both are EARLY solo and every
+     Hopper pairing is STANDARD or later. "Harvest rewards trigger only once
+     per enemy", "an enemy cannot become Ripe and Overripe during the same
+     resolution" and "Harvest Hopper cannot reduce a Tasty enemy below 1
+     Courage" are all enforced in the defs, where the thing happens. */
+  'pumpkin-grounds': {
+    /** §12 outright: two Hoppers or two Gourd Guards at Haunt 0. */
+    noDuplicates: ['harvest-hopper', 'gourd-guard', 'vine-lantern', 'scarecrow-sprout'],
+    /** The Hopper needs somebody ripening to steal from. */
+    neverAlone: ['harvest-hopper'],
+    maxConsecutiveLead: 2,
+  },
   /* docs/design/regions/15-kennels.md §13. "Ward Animals cannot be directly
      damaged" and "Fright 3 never kills or permanently harms an animal" are
      enforced in the defs, where the damage actually arrives — see the header
@@ -1720,7 +1810,7 @@ export const REGION_RULES = {
   },
 };
 
-const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...GY, ...SL, ...AO, ...LW, ...BR, ...CR, ...HM, ...SP, ...BH, ...KN, ...HEART];
+const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...GY, ...SL, ...AO, ...LW, ...BR, ...CR, ...HM, ...SP, ...BH, ...KN, ...PK, ...HEART];
 
 /** id → EncounterDef */
 export const ENCOUNTERS = Object.freeze(
