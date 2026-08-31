@@ -36,7 +36,7 @@
 <script type="module">
 import { RNG, hashSeed } from '../../game/src/core/rng.js';
 import { Save } from '../../game/src/core/save.js';
-import { Run, STARTER_SLUGS, RUN_LENGTH_REGIONS, RUN_REGIONS } from '../../game/src/state/run.js';
+import { Run, STARTER_SLUGS, RUN_LENGTH_REGIONS, RUN_REGIONS, EXPEDITION_WINGS } from '../../game/src/state/run.js';
 import { NodeType, REGION_ORDER } from '../../game/src/data/schema.js';
 import { cardById } from '../../game/src/data/cards.js';
 import * as R from '../../game/src/data/relics.js';
@@ -55,6 +55,8 @@ let ENDS_DETAIL = [], DEPTH_FRAC = 0;
    printing green while covering less than the random one it replaced. */
 const VISITED = {};
 const REACH = [];
+/** How many of the fifty expeditions routed through each wing. */
+const ROUTED = [];
 /** Cost-per-fight by region — the ladder priced rather than guessed at. */
 const LEDGER_TABLE = [];
 /** Keepsakes and cards handed over, by room kind. */
@@ -513,6 +515,26 @@ async function main() {
     // ── sanity ──────────────────────────────────────────────────────────────
     check(run.result === 'victory' || run.result === 'defeat',
       `seed ${seed}: ended with result=${run.result}`);
+
+    /* THE ROUTE. An expedition walks a selection of wings, not the ladder, so
+       the four things that keep it a game rather than a shuffle are asserted on
+       every one of the fifty:
+         - it starts at the front door and ends at the Heart, because the Heart
+           is the ENDING and a route that could omit it is a run with no finish;
+         - the middle keeps REGION_ORDER, so difficulty still climbs and the
+           Bathhouse can never be wing two;
+         - it is the declared length;
+         - and it holds no wing twice. */
+    const rt = run.route || [];
+    check(rt.length === EXPEDITION_WINGS,
+      `seed ${seed}: route is ${rt.length} wings, expected ${EXPEDITION_WINGS}`);
+    check(rt[0] === RUN_REGIONS[0] && rt[rt.length - 1] === RUN_REGIONS[RUN_REGIONS.length - 1],
+      `seed ${seed}: route runs ${rt[0]} -> ${rt[rt.length - 1]}, not foyer -> heart`);
+    const idx = rt.map(id => RUN_REGIONS.indexOf(id));
+    check(idx.every((n, i) => n >= 0 && (i === 0 || n > idx[i - 1])),
+      `seed ${seed}: route is out of ladder order — ${rt.join(' > ')}`);
+    check(new Set(rt).size === rt.length,
+      `seed ${seed}: route repeats a wing — ${rt.join(' > ')}`);
     check(run.deck.length >= 5 && run.deck.length <= 60,
       `seed ${seed}: deck size out of range (${run.deck.length})`);
     check(run.deck.every(c => !!cardById(c.id)),
@@ -706,6 +728,14 @@ async function main() {
     // and it must still be playable from there
     const legal = back.legalNextIds();
     check(legal.length > 0 || back.result, `seed ${seed}: resumed run has nowhere to go`);
+    /* THE ROUTE HAS TO SURVIVE THE SAVE. It is not derivable from the seed at
+       resume time — a save from before routes existed walked all seventeen, so
+       rebuilding one would drop that run into a wing it had never been in. The
+       digest above compares `region`, which is only the CURRENT wing; this is
+       the rest of the itinerary. */
+    check((back.route || []).join('>') === (run.route || []).join('>'),
+      `seed ${seed}: resume lost the route — ${(run.route || []).join('>')} became `
+      + `${(back.route || []).join('>')}`);
     resumeOk++;
   }
   say(`<pre class="ok">${resumeOk}/${resumeTried} resumed identically and were still playable</pre>`);
@@ -988,15 +1018,24 @@ async function main() {
     say(prows + `<pre>${runs} unaided runs.</pre>`);
   }
 
-  say('<h2>regions reached</h2>');
+  /* WINGS DEEP, not "which region is number 3".
+     An expedition is a ROUTE now — the Foyer, the Heart, and a seeded selection
+     between — so wing 3 is a different wing in different runs and naming it off
+     `RUN_REGIONS[k-1]` would print a region most of those runs never entered.
+     Depth is the thing this table was always measuring; the census below says
+     which wings the fifty expeditions actually opened. */
+  say('<h2>wings reached</h2>');
   {
     const deepest = (r) => (r.run.regionIndex ?? 0) + 1;
-    let rrows = '<table><tr><th>region</th><th>unaided</th><th>shepherded</th></tr>';
+    let rrows = '<table><tr><th>wing</th><th>unaided</th><th>shepherded</th></tr>';
     for (let k = 1; k <= Math.max(...results.map(deepest), 1); k++) {
       const un = results.filter(r => !r.shepherd && deepest(r) >= k).length;
       const sh = results.filter(r => r.shepherd && deepest(r) >= k).length;
-      rrows += `<tr><td>${k} ${RUN_REGIONS[k - 1] || ''}</td><td>${un}</td><td>${sh}</td></tr>`;
-      REACH.push({ region: k, id: RUN_REGIONS[k - 1] || '', unaided: un, shepherded: sh });
+      // The wings that WERE wing k, across the fifty routes.
+      const names = [...new Set(results.map(r => (r.run.route || RUN_REGIONS)[k - 1])
+                                       .filter(Boolean))].sort();
+      rrows += `<tr><td>${k} ${names.join(' / ')}</td><td>${un}</td><td>${sh}</td></tr>`;
+      REACH.push({ region: k, id: names.join(' / '), unaided: un, shepherded: sh });
     }
     const vU = results.filter(r => !r.shepherd && r.run.result === 'victory').length;
     const vS = results.filter(r => r.shepherd && r.run.result === 'victory').length;
@@ -1005,6 +1044,24 @@ async function main() {
                   shepherdedOf: results.filter(r => r.shepherd).length };
     say(rrows + '</table>'
       + `<pre>victories: ${vU}/${VICTORIES.unaidedOf} unaided, ${vS}/${VICTORIES.shepherdedOf} shepherded</pre>`);
+  }
+
+  /* WHICH WINGS THE HOUSE OPENED. With a routed expedition every wing must
+     still be reachable — a region nothing ever routes through is unreachable
+     content, which is the class this project has spent whole sessions on. */
+  say('<h2>which wings the routes opened</h2>');
+  {
+    const seen = {};
+    for (const r of results) for (const id of (r.run.route || [])) seen[id] = (seen[id] || 0) + 1;
+    let wrows = '<table><tr><th>wing</th><th>expeditions</th></tr>';
+    for (const id of RUN_REGIONS) {
+      wrows += `<tr><td>${id}</td><td class="${seen[id] ? '' : 'err'}">${seen[id] || 0}</td></tr>`;
+      ROUTED.push({ id, runs: seen[id] || 0 });
+    }
+    const never = RUN_REGIONS.filter(id => !seen[id]);
+    say(wrows + '</table>'
+      + `<pre>${never.length ? 'UNREACHABLE: ' + never.join(', ') : 'every wing was routed through at least once'}</pre>`);
+    check(!never.length, `wings no expedition ever opened: ${never.join(', ')}`);
   }
 
   say('<h2>rooms entered, by kind</h2>');
@@ -1078,7 +1135,7 @@ autosaves ${saveCount}</pre>`);
     ms, meanRooms: +avg.toFixed(1), ends,
     lengths, decks, purses, keeps, saveCount,
     endsDetail: ENDS_DETAIL, depthFrac: DEPTH_FRAC, visited: VISITED,
-    reach: REACH, victories: VICTORIES, draws: DRAWS, ledger: LEDGER_TABLE, purse: PURSE_TABLE,
+    reach: REACH, routed: ROUTED, victories: VICTORIES, draws: DRAWS, ledger: LEDGER_TABLE, purse: PURSE_TABLE,
     determinism: detOk, resume: resumeOk, storage: storeOk,
     combatResume: combatResume, combatResumeTried: combatResumeTried, replayed,
   };

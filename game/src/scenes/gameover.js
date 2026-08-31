@@ -180,8 +180,9 @@ export class GameOverScene extends Scene {
     const mocked = !run;
     /* Two numbers, not one. The run layer split the old ambiguous "floor":
        `depth` is how many rooms deep the expedition got (the number the
-       Clubhouse records as its best), and `wing` is the ladder position the map
-       prints as "Wing N of 17". The `floor` param carries `depth` now, so this
+       Clubhouse records as its best), and `wing` is the position on tonight's
+       ROUTE that the map prints as "Wing N of M". The `floor` param carries
+       `depth` now, so this
        screen prints it as ROOMS DEEP and prints `wing` as the wing — labelling
        either with the other's word is how the Clubhouse ended up boasting
        "Deepest floor 5" about a run Game Over called "Floor 1". */

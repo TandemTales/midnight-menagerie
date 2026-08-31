@@ -318,7 +318,8 @@ export class HUD {
     this.el.classList.toggle('is-mock', !!r._mock);
 
     /* where — WING, not "floor".
-       The map header says "Wing 1 of 17" and this strip is mounted directly
+       The map header says "Wing 1 of 6" — of tonight's ROUTE, not of the
+       mansion's seventeen — and this strip is mounted directly
        above it; saying "Floor 1" in the same breath invented a third word for
        one number. "Floor" is also wrong on its own terms — several wings sit on
        the same storey. `run.wing` is the ladder position; `run.floor` is its

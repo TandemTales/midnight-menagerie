@@ -73,15 +73,25 @@ async def main(a):
     vic = res.get("victories") or {}
     if reach:
         print("")
-        print("regions reached (of 50; every 5th run is shepherded)")
-        print("  %-22s %-9s %s" % ("region", "unaided", "shepherded"))
+        print("wings reached (of 50; every 5th run is shepherded)")
+        print("  %-34s %-9s %s" % ("wing", "unaided", "shepherded"))
         for r in reach:
-            print("  %-22s %-9d %d"
+            print("  %-34s %-9d %d"
                   % ("%d %s" % (r["region"], r["id"]), r["unaided"], r["shepherded"]))
         if vic:
             print("  victories: %d/%d unaided, %d/%d shepherded"
                   % (vic.get("unaided", 0), vic.get("unaidedOf", 0),
                      vic.get("shepherded", 0), vic.get("shepherdedOf", 0)))
+
+    routed = res.get("routed") or []
+    if routed:
+        never = [r["id"] for r in routed if not r["runs"]]
+        print("")
+        print("which wings the routes opened  (of 50 expeditions)")
+        for r in routed:
+            print("  %-22s %3d %s" % (r["id"], r["runs"], bar(r["runs"], 2)))
+        print("  " + ("UNREACHABLE: " + ", ".join(never) if never
+                      else "every wing was routed through at least once"))
 
     led = res.get("ledger") or []
     if led:

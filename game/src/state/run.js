@@ -127,6 +127,86 @@ export const RUN_REGIONS = Object.freeze([
 export const RUN_LENGTH_REGIONS = RUN_REGIONS.length;
 
 /**
+ * HOW MANY WINGS ONE EXPEDITION CROSSES — and why it is not seventeen.
+ *
+ * `RUN_REGIONS` above is the MANSION: every wing that exists, in the order the
+ * design lays them out, with the Heart last because the Heart is the ending. It
+ * grew 2 -> 4 -> 17 as regions shipped, and each of those moves was about
+ * making finished content REACHABLE rather than about how long a run should be.
+ * Nobody ever decided seventeen. It is what "all of them" happens to equal.
+ *
+ * Measured on 2026-08-31 with `tests/run/run.py`'s new cost-per-fight ledger,
+ * seventeen is far past the point where the game has anything left to say:
+ *
+ *     region              cost per fight   turns   deck   keepsakes
+ *     foyer                  24.6% of pool   6.7     12       2.2
+ *     nursery                 8.4%           6.1     18       6.8
+ *     sleeping-quarters       1.7%           4.6     23      11.8
+ *     ...
+ *     crypt                   0.6%           2.6     33      50.6
+ *     heart                   1.7%           2.4     33      55.0
+ *
+ * Fights past the second wing cost one to four per cent of the Courage pool and
+ * end in two turns; four of the bosses cost literally nothing. The run ends
+ * holding FIFTY-FIVE Keepsakes, which is every one in the game — the pool is
+ * not merely generous, it is exhausted. No drop rate fixes that. A run long
+ * enough to collect everything will collect everything.
+ *
+ * THE DESIGN ALREADY SAYS AN EXPEDITION IS A ROUTE, NOT THE LADDER.
+ * `docs/design/01-mansion-structure.md`: "Every time they enter: Hallways
+ * change. Rooms move. ENTIRE WINGS DISAPPEAR." And: "Many exits lead into other
+ * mansion regions, though NOT ALL ARE USABLE EVERY EXPEDITION… A different
+ * selection of exits should be active each expedition." And the chapter's own
+ * closing line: "What changes is not the identity of the mansion. What changes
+ * is what the mansion is WILLING TO LET THEM REACH."
+ *
+ * §22 of the core overview is the same premise from the fiction's side — it is
+ * the answer to "why do the kids go back in", and a run that walks every wing
+ * every time answers it with "they do not need to".
+ *
+ * So an expedition is `expeditionRoute()` below: the Foyer, the Heart, and a
+ * seeded selection in between, kept in `REGION_ORDER` order so difficulty still
+ * climbs. Every wing remains in the game and every wing is reachable; which
+ * ones the house opens tonight is what changes.
+ *
+ * The NUMBER is a measurement, not a taste. See the sweep in
+ * `docs/notes/2026-08-31-how-long-is-an-expedition.md`.
+ */
+export const EXPEDITION_WINGS = 6;
+
+/**
+ * The wings tonight: the Foyer first, the Heart last, and the rest drawn from
+ * the middle fifteen in ladder order.
+ *
+ * ORDER IS PRESERVED, deliberately. A route that shuffled the middle would make
+ * the Bathhouse a possible second wing, and every region's numbers were priced
+ * against roughly where it sits on the ladder. Drawing a SUBSET in order keeps
+ * the climb monotone: the second wing is always an early one, the wing before
+ * the Heart is always a late one.
+ *
+ * Seeded off the run seed, so the same seed is the same expedition — which the
+ * determinism and resume checks in `tests/run/` both depend on.
+ *
+ * @param {string|number} seed
+ * @param {number} wings   how many, including the Foyer and the Heart
+ * @returns {string[]}
+ */
+export function expeditionRoute(seed, wings = EXPEDITION_WINGS) {
+  const all = RUN_REGIONS.slice();
+  const first = all[0];
+  const last = all[all.length - 1];
+  const middle = all.slice(1, -1);
+  const want = Math.max(2, Math.min(wings | 0, all.length)) - 2;
+  if (want >= middle.length) return [first, ...middle, last];
+  const rng = new RNG(hashSeed(`mm-route-v1|${seed}`));
+  const picked = new Set();
+  // Draw without replacement, then sort back into ladder order.
+  while (picked.size < want) picked.add(rng.int(middle.length));
+  const mid = [...picked].sort((a, b) => a - b).map(i => middle[i]);
+  return [first, ...mid, last];
+}
+
+/**
  * The four Companions who start at the clubhouse and were never in the house.
  * They are therefore never a meaningful Rescue — see `missingCompanions()`.
  *
@@ -246,7 +326,14 @@ export class Run {
 
     // ── progression ─────────────────────────────────────────────────────────
     this.regionIndex = 0;
-    this.region = RUN_REGIONS[0];
+    /**
+     * The wings this expedition crosses. `RUN_REGIONS` is the mansion; this is
+     * tonight's route through it, and everything that used to index the ladder
+     * indexes this instead. Saved and restored, so a resumed run does not walk
+     * a different house.
+     */
+    this.route = expeditionRoute(this.seed, cfg.wings ?? EXPEDITION_WINGS);
+    this.region = this.route[0];
     this.rescued = (Save.data?.companionsRescued || []).slice();
     /** Freed on THIS expedition only — see rescueCompanion(). */
     this.companionsFreed = [];
@@ -341,7 +428,7 @@ export class Run {
   companionNameOf(k) { return COMPANIONS.find(c => c.slug === k.companion)?.name || k.companion; }
   get petName() { return KIDS.find(k => k.slug === this.kid)?.pet || 'your pet'; }
   get currentNode() { return this.nodeById(this.currentNodeId); }
-  get isLastRegion() { return this.regionIndex >= RUN_REGIONS.length - 1; }
+  get isLastRegion() { return this.regionIndex >= this.route.length - 1; }
 
   /** Aggregated Keepsake + Gear flags. Scenes read this, never a relic by name. */
   get flags() { return this.flagsOf(this.local); }
@@ -2325,7 +2412,7 @@ export class Run {
     // four starters, who were never in the house. See rescueTargetFor().
     const freed = this.rescueTargetFor(`boss:${this.region}`, meta.companion);
     if (freed && !this.rescued.includes(freed)) this.rescueCompanion(freed);
-    if (this.isLastRegion || this.regionIndex + 1 >= RUN_REGIONS.length) return this.end(true, null);
+    if (this.isLastRegion || this.regionIndex + 1 >= this.route.length) return this.end(true, null);
     return this.advanceRegion();
   }
 
@@ -2362,7 +2449,7 @@ export class Run {
     }
     if (healed > 0) bus.emit('run:heal', { amount: healed, reason: 'wing' });
     this.regionIndex++;
-    this.region = RUN_REGIONS[this.regionIndex];
+    this.region = this.route[this.regionIndex];
     this.encounterHistory = [];
     this._curiosityHealUsed = false;
     this._buildMap();
@@ -2443,7 +2530,7 @@ export class Run {
         counter: k.counter ?? null, forged: !!k.forged, icon: k.icon,
       })),
 
-      region: this.region, regionIndex: this.regionIndex,
+      region: this.region, regionIndex: this.regionIndex, route: this.route.slice(),
       wing: this.wing, depth: this.depth,
       map: this.map,
       currentNodeId: this.currentNodeId,
@@ -2625,7 +2712,13 @@ export class Run {
     }).filter(Boolean);
 
     run.regionIndex = saved.regionIndex || 0;
-    run.region = saved.region || saved.regionId || RUN_REGIONS[run.regionIndex] || RUN_REGIONS[0];
+    /* A save from before routes existed has no `route`; it walked the whole
+       ladder, so that is what it is given back. Rebuilding from the seed would
+       hand it a five-wing route and drop it somewhere it had never been. */
+    run.route = (Array.isArray(saved.route) && saved.route.length)
+      ? saved.route.slice()
+      : RUN_REGIONS.slice();
+    run.region = saved.region || saved.regionId || run.route[run.regionIndex] || run.route[0];
     run.map = saved.map || run.map;
     if (run.map && run.map.regionId !== run.region) run._buildMap();
     run.currentNodeId = saved.currentNodeId || null;

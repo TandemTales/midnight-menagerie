@@ -22,6 +22,10 @@ import { mapNodeMarkup, nodeSymbol, hazardSymbol, hazardGlyphMarkup, pencilStrok
 import { HUD } from '../ui/hud.js';
 import { pauseStageFor } from './_stage.js';
 import { act, ACT } from '../net/actions.js';
+/* How many wings an expedition is, for the run-less preview only. `reward.js`
+   already imports from `state/run.js` and run.js imports no scene, so this
+   closes no cycle. */
+import { EXPEDITION_WINGS } from '../state/run.js';
 import { INPUT } from '../net/session.js';
 import { passTo, shouldHandOff } from '../ui/handoff.js';
 
@@ -382,6 +386,17 @@ export class MapScene extends Scene {
       path: _route(run),
       // Courage / Lost Things / Keepsakes are the shared HUD's business now.
       floor: run?.floor ?? (regionMeta(regionId).index),
+      /* How many wings tonight's route has. Not `RUN_REGIONS.length` — the
+         house does not open all of them every expedition — and not a constant,
+         because a resumed save from before routes existed legitimately carries
+         the full seventeen and must keep saying so.
+
+         The run-less MOCK falls back to `EXPEDITION_WINGS` rather than to the
+         mansion's seventeen: a preview with no expedition behind it should
+         still describe the expedition a player would get, and "Wing 1 of 17" on
+         a screen nobody is playing is the same false promise as on one they
+         are. */
+      wings: run?.route?.length ?? EXPEDITION_WINGS,
       mock: !run,
     };
   }
@@ -397,6 +412,7 @@ export class MapScene extends Scene {
   // ──────────────────────────────────────────────────────────────── layout ──
   _buildDom() {
     const m = this.model, meta = m.map.meta;
+    const wings = m.wings || EXPEDITION_WINGS;
     this.root.innerHTML = `
       <div class="map-screen${this.still ? ' is-still' : ''}">
         <div class="map-desk"></div>
@@ -433,11 +449,21 @@ export class MapScene extends Scene {
                  have walked.  A playtester read "Wing 1 of 17" and "row 2 of
                  13" as two unrelated facts, so they now share capitalisation,
                  weight and the "N of M" shape, and the hover on either one
-                 explains the pair. -->
+                 explains the pair.
+
+                 THE SECOND NUMBER IS THE ROUTE'S, NOT THE MANSION'S. It read a
+                 hardcoded 17 until 2026-08-31, which was true only while an
+                 expedition walked every wing there is. It walks a ROUTE now —
+                 the Foyer, the Heart, and a seeded selection between — so
+                 "of 17" would promise eleven wings the house is not opening
+                 tonight, on the one screen whose whole job is to say where you
+                 are and how much is left. The Roman numeral and the SHEET line
+                 below are the MANSION's, and stay: the Foyer really is sheet I
+                 of seventeen, whether or not you reach the other sixteen. -->
             <p class="bn-meta">
-              <span title="The house has seventeen wings. This is the ${ordinal(m.floor)}. The second number is how far into this wing you have walked.">Wing <b>${m.floor}</b> of 17</span>
+              <span title="Tonight the house has opened ${wings} wings. This is the ${ordinal(m.floor)}. The second number is how far into this wing you have walked.">Wing <b>${m.floor}</b> of ${wings}</span>
               <span class="dot">·</span>
-              <span class="bn-row" title="This wing is ${m.map.rows} rows deep, door to boss. The first number is which of the seventeen wings you are in."></span>
+              <span class="bn-row" title="This wing is ${m.map.rows} rows deep, door to boss. The first number is which of tonight's ${wings} wings you are in."></span>
               <span class="dot">·</span>
               <span>Boss: <b>${escapeHtml(meta.boss)}</b></span>
             </p>

@@ -529,11 +529,18 @@ try {
     // ── a Curiosity ──────────────────────────────────────────────────────
     for (const c of [A, B]) {
       c.run.currentNodeId = 'x-curio';
-      c.run.pendingEvent = { id: 'the-portrait-that-follows', nodeId: 'x-curio',
+      /* THE COLLAR, not the Portrait. The claim here is that an event's payout
+         replicates across machines, and a Keepsake is the observable it uses —
+         so the option has to be one that certainly pays one. The Portrait's
+         "Call it." stopped doing that on 2026-08-31, when every option that
+         risked Nothing and handed over a guaranteed Keepsake was rewritten
+         (`tests/events/check.py`). Taking the collar costs Courage and always
+         pays the named Keepsake, which is the shape this check needs. */
+      c.run.pendingEvent = { id: 'the-collar', nodeId: 'x-curio',
                              resolved: null, resolvedBy: {}, pendingBy: {} };
     }
     const keepsBefore = A.run.kids[0].keepsakes.length;
-    await act(A.run, { t: INPUT.ROOM, act: ACT.EVENT_OPTION, id: 'call' });
+    await act(A.run, { t: INPUT.ROOM, act: ACT.EVENT_OPTION, id: 'take' });
     await both();
     check(!!A.run.pendingEvent.resolvedBy[0] && !!B.run.pendingEvent.resolvedBy[0],
       'seat 0’s answer to a Curiosity is recorded on both machines');
@@ -544,10 +551,10 @@ try {
     check(!A.run.pendingEvent.resolvedBy[1] && !B.run.pendingEvent.resolvedBy[1],
       'while seat 1 has still not answered it — the choice is theirs');
 
-    await act(B.run, { t: INPUT.ROOM, act: ACT.EVENT_OPTION, id: 'straighten' });
+    await act(B.run, { t: INPUT.ROOM, act: ACT.EVENT_OPTION, id: 'leave' });
     await both();
-    check(A.run.pendingEvent.resolvedBy[1]?.option === 'straighten'
-       && B.run.pendingEvent.resolvedBy[1]?.option === 'straighten',
+    check(A.run.pendingEvent.resolvedBy[1]?.option === 'leave'
+       && B.run.pendingEvent.resolvedBy[1]?.option === 'leave',
       'and their own, different answer reaches both too');
 
     // ── who is still owed a turn in here ─────────────────────────────────
