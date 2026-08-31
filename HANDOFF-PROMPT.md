@@ -8,8 +8,9 @@ C:\Users\Josh\OneDrive\Desktop\Tandem Tales\Midnight Menagerie
 
 The owner asked for every remaining area. There are none left. `RUN_REGIONS` in
 `state/run.js` walks all seventeen, each with six ordinary enemies, three Big
-Scares, a two-phase boss, fourteen Scuffles, its own statuses, its own
-real-engine gate and two Keepsakes from its chapter's own list.
+Scares, a two-phase boss, fourteen Scuffles, its own statuses and two Keepsakes
+from its chapter's own list. FOURTEEN of the seventeen also have a real-engine
+gate of their own; foyer, nursery and sleeping-quarters predate that pattern.
 
     foyer · nursery · sleeping-quarters · kitchens-cellars · greenhouse ·
     graveyard · study-library · attic-observatory · lampworks · ballroom ·
@@ -53,7 +54,7 @@ prints the table and it says this:
 **TEN OF THE SEVENTEEN WINGS KILL NOBODY.** Everything that survives the Study
 and Library wins the game. The Foyer alone ends 25 of 40 unaided runs; four more
 die by the Graveyard; three at the Library; and then regions 8 through 17 —
-ten wings, thirty Big Scares, ten bosses, a hundred and eighty enemies — take
+ten wings, 31 Big Scare formations, ten bosses, 176 enemy defs, counted — take
 nobody at all.
 
 That is the same finding the previous handoff carried, and building nine more
@@ -153,9 +154,18 @@ watches the meter move at the top of their own turn, which is when they are
 reading the board anyway. `enemies/bathhouse.js`'s `settleLedger` is the shared
 form and its comment is the long version.
 
-The ONE exception in the whole codebase is the Scarecrow Sprout's delay in
+The one DELIBERATE exception is the Scarecrow Sprout's delay in
 `enemies/pumpkin-grounds.js`, and its comment says exactly why it is allowed:
 it moves no number that has already been shown.
+
+**THE OTHER FIFTY-SEVEN HAVE NOT BEEN RE-AUDITED.** `grep -rn "onPlayerTurnEnd"
+game/src/data/` finds 59 handlers across every region, including the eight built
+before this class was identified. The audit is green over all of them — 20530
+turns, zero — which is real evidence and is not proof: it plays cards, but it
+does not deliberately construct the "I dealt exactly N to that meter this turn"
+board each one is waiting for. They were written as recorders and double buffers
+and are probably fine. Reading all 59 with this rule in hand is a cheap pass,
+and it is item 4 of the open list.
 
 Three more, all violated at least once:
 
@@ -239,7 +249,8 @@ twenty-five enemies arrived is the finding.
 ━━ THE BATTERY ━━
 
 ONE Playwright run at a time, always (CONTRACTS trap 7). Every number was RUN on
-2026-08-31 against commit `5cfadb5`. If one differs, that is the finding.
+2026-08-31 against commit `5cfadb5`, which is the last commit that touched
+`game/`. If one differs, that is the finding.
 
   python tests/cards/run.py               1470 cards, 0 errors, 0 warnings
   python tests/combat/run.py              694
@@ -267,7 +278,7 @@ ONE Playwright run at a time, always (CONTRACTS trap 7). Every number was RUN on
   python tests/cards-feel/run.py          exit 0
   python tests/critic-design/anchor.py    6/6 agree
 
-  SEVENTEEN REAL-ENGINE REGION GATES — one per region:
+  FOURTEEN REAL-ENGINE REGION GATES — one per region that has one:
     kitchens 16 · greenhouse 33 · graveyard 35 · study-library 50 ·
     attic-observatory 48 · lampworks 45 · ballroom 46 · crypt 41 ·
     hedge-maze 42 · secret-passages 74 · bathhouse 81 · kennels 69 ·
@@ -288,10 +299,12 @@ ONE Playwright run at a time, always (CONTRACTS trap 7). Every number was RUN on
     tests/audio/cues.py           46 cues, 1 known-silent
     dup-keys · scene-css · css-tokens · turn-events · stdlib-shadow
 
-  sixteen effect-asserting Companion suites:
+  fourteen effect-asserting Companion suites, plus two boss suites:
     boggle 31 · mopsy 28 · wisp 25 · crumbula 25 · hush 17 · wink 16
     truffle 27 · drizzle 70 · pudding 46 · mossbit 55 · brambleboo 52
     crinkle 44 · pipkin 18 · taffy 8      plus butler 38 · governess 56
+  (Marmalade and Bones have no suite of their own and are covered by
+   `tests/cards/run.py` and `tests/combat/run.py`. That is the gap.)
 
   SIX co-op screens (they live in `tests/coop/`, NOT `tests/playthrough*/`,
   which are interactive drivers and not pass/fail suites):
@@ -322,50 +335,58 @@ for you, run it twice before believing it.
    rather than playing a fight at Haunt 6. It is the most likely place the
    answer to item 1 already lives.
 
-4. **`bosses/keeper.js`'s Belonging can never fire.** "End the turn holding 2 or
+4. **FIFTY-NINE `onPlayerTurnEnd` HANDLERS, AND ONLY THE FIVE NEWEST REGIONS
+   HAVE BEEN READ WITH THE SETTLE RULE IN HAND.** See the timing section. The
+   audit is green over all of them, which is evidence and not proof — it does
+   not construct the specific "I dealt exactly N to that meter this turn" board
+   each one waits for. A read-through is a couple of hours and would either
+   close the class or find the next forty-six.
+
+5. **`bosses/keeper.js`'s Belonging can never fire.** "End the turn holding 2 or
    more and the Keeper gains 8 Guard", evaluated from `onPlayerTurnEnd`, where
    the hand has already been closed. Same class as the two Graveyard enemies
    fixed earlier; left alone because it makes a boss stronger and item 1 says
-   not to tune anything by feel yet. Fix it as part of the measurement pass.
+   not to tune anything by feel yet. Fix it as part of the measurement pass, or
+   as part of item 4 — it is the same class.
 
-5. **Steam P2P is APPROVED and BLOCKED, and only Josh can unblock it.** It needs
+6. **Steam P2P is APPROVED and BLOCKED, and only Josh can unblock it.** It needs
    a Steam App ID, which needs a Steamworks partner account, a fee and a
    registered app. `net/transport.js` is ready — five members, two working
    implementations. It also ends the no-build rule. The Treehouse
    (`scenes/lobby.js`) works today over `ChannelTransport`.
 
-6. **The same-turn netcode race.** The cross-turn half is CLOSED. What remains
+7. **The same-turn netcode race.** The cross-turn half is CLOSED. What remains
    is two seats acting at once with their inputs crossing; closing it needs
-   ROLLBACK or a SEQUENCER, and the transport decides which. Waits on item 5.
+   ROLLBACK or a SEQUENCER, and the transport decides which. Waits on item 6.
 
-7. **ONE KID TAKES THE FIGHT AND THE REST WATCH.** `spreadOf` is 0 when one seat
+8. **ONE KID TAKES THE FIGHT AND THE REST WATCH.** `spreadOf` is 0 when one seat
    takes all the damage and 1 when it is shared: elite 2p 0.181 / 3p 0.163 /
    4p 0.259, standard 2p 0.144 / 3p 0.198 / 4p 0.278. It reframes AoE: its value
    here is PARTICIPATION, not difficulty. Nine new regions have not been
    measured this way.
 
-8. **The entry stall is REAL and the cause is found.** Six `toDataURL` calls,
+9. **The entry stall is REAL and the cause is found.** Six `toDataURL` calls,
    274 ms, from `cardart.js render()` line 352 — a synchronous PNG encode. The
    fix is `toBlob` plus object URLs, scoped in
    `docs/notes/2026-08-30-the-card-art-hitch-is-real.md`. Pre-warming was tried
    and REJECTED. fps is CLOSED: eleven of eleven readings at 61.
 
-9. **`combat:crit` is known-silent** and wiring it means designing critical hits,
+10. **`combat:crit` is known-silent** and wiring it means designing critical hits,
    which nobody has asked for.
 
-10. **ENEMY SILHOUETTES FOR THIRTEEN REGIONS ARE GENERIC.** Roughly 190 defs use
+11. **ENEMY SILHOUETTES FOR THIRTEEN REGIONS ARE GENERIC.** Roughly 190 defs use
     silhouette keys `ui/enemy.js` has no prop layer for, so they render as
     coloured blobs with the right palette and the right MOTIF. That is the
     documented fallback and nothing is broken; it is the largest single art pass
     left in the project. Every new region got its MOTIF entries, so at least
     everything moves like what it is.
 
-11. **`ANIMATED_EVENTS` is exported and read by nothing** (5 of its 23 events
+12. **`ANIMATED_EVENTS` is exported and read by nothing** (5 of its 23 events
     have no animator case), plus the other ~100 sweep findings in
     `docs/notes/2026-08-30-the-unreachable-sweep.md`. 24 are verified; the other
     87 are leads worth reading and not worth trusting unread.
 
-12. **`tests/audio/run.py`'s intermittent failure.** See the note under THE
+13. **`tests/audio/run.py`'s intermittent failure.** See the note under THE
     BATTERY. Not caused by anything in this session and not chased to ground.
 
 ━━ THINGS THAT WILL SAVE YOU A ROUND ━━
@@ -427,9 +448,11 @@ context:
   docs/STS2-REFERENCE.md §8 — it carries its OWN "For us:" verdicts and nothing
   syncs them to HANDOFF's list.
 
-STATE: branch `dev`, tree clean, committed and pushed at `5cfadb5`. Do not trust
-a hash written here; run `git rev-list --count origin/dev..dev`. Pushing to
-origin/dev is authorised and was exercised nine times across 2026-08-30 and 31.
+STATE: branch `dev`, tree clean, committed and pushed at `08f293f` (`5cfadb5`
+is the last commit that touched `game/`; everything after it is documentation).
+Do not trust a hash written here; run `git rev-list --count origin/dev..dev`.
+Pushing to origin/dev is authorised and was exercised ten times across
+2026-08-30 and 31.
 
 **LINE ENDINGS ARE MIXED PER FILE AND BOTH KINDS ARE LOAD-BEARING.**
 `combat/engine.js`, `combat/damage.js`, `_lib.js`, `encounters.js`,
