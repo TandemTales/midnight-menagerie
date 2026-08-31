@@ -1,6 +1,6 @@
 # Midnight Menagerie — handoff
 
-Written 2026-08-26, last updated 2026-08-29. Everything a fresh conversation needs to pick
+Written 2026-08-26, last updated 2026-08-30 (evening). Everything a fresh conversation needs to pick
 this up. Read this, then `CONTRACTS.md`, then `docs/STS2-REFERENCE.md`. Nothing else is
 required reading.
 
@@ -24,6 +24,63 @@ change him.
 
 **~65,500 lines** across `game/src/`. Currently on branch **`dev`**, pushed to
 `github.com/TandemTales/midnight-menagerie`. `main` is untouched and stale.
+
+### Where it stands, 2026-08-30 (evening)
+
+**SEVEN of the seventeen regions ship rosters.** The Heart of the House — region
+17, the ending — was built this session, then the Greenhouse and the Mansion
+Graveyard. Ten remain, and `HANDOFF-PROMPT.md` opens with the template all three
+were built against.
+
+    BUILT   foyer · nursery · sleeping-quarters · kitchens-cellars ·
+            greenhouse · graveyard · heart
+    LEFT    study-library · attic-observatory · lampworks · ballroom · crypt ·
+            hedge-maze · secret-passages · bathhouse · kennels · pumpkin-grounds
+
+`RUN_REGIONS` in `state/run.js` is the ladder the run walks — an explicit list
+of BUILT regions ending at the Heart, not a count off `REGION_ORDER`. Adding a
+region is one string in the right place.
+
+**The run harness's bot could not reach any of it.** It scored every PLAY with
+`preview()` and built its DECK with a die, so 46 of 50 expeditions died inside
+the Foyer and nothing past region 1 was exercised by anything. It drafts with
+`tests/critic-design/lib/policy.js` now, routes with `pickNode`, and fights with
+the same `competentTurn` the balance numbers were measured against — one bot,
+not two disagreeing ones. Eleven of forty unaided runs now clear the game.
+
+| what was wrong | where |
+|---|---|
+| The bot rolled dice for its deck while playing a considered game | `tests/run/index.html` |
+| Two bots disagreed about what a player is; this one's picture was believed | `tests/run/index.html` |
+| `bones/never-really-lost` CRASHED any fight where a Slobbered Trick was played | `companions/bones.js`, CONTRACTS 19 |
+| Boggle's Attack ban had never reached a card drawn after it went up | `companions/boggle.js`, CONTRACTS 19 |
+| `EnemyDef.damageTakenMul` was declared by two enemies and read by nothing | `combat/damage.js` |
+| `EnemyDef.isTargetable` — same two files, same story | `combat/engine.js` |
+| `Hooks.removeByOwner` said "removed with the enemy" and had no callers | `combat/engine.js` |
+| The mock named actors `id: def.id`; the engine names them `e0` | `tests/enemies/index.html` |
+| …so FOUR multi-body enemies could not find their own parts | `enemies/sleeping-quarters.js`, `nursery.js` |
+| The intent audit's batch list stopped at region 3 and printed a healthy number | `tests/enemies/engine-audit.html` |
+| Three enemies armed a buff AFTER publishing the intent that carried it | Namekeeper, House Remembers, the Dish |
+| `loadContentRegistries` read the library, not the registry — two regions of statuses had no tooltips | `data/keywords.js` |
+| The Groundskeeper's Ledger was an unbounded Guard engine; the fight could not END | `bosses/groundskeeper.js` |
+| Five full-size bodies pushed the final boss off the left edge of its own fight | `scenes/combat.css` |
+
+New gates: `tests/part-lookups/check.py` (an actor id is never kebab-case),
+`tests/snapshot-cards/check.py` (CONTRACTS 19, gated at last). New real-engine
+region suites: `tests/heart/` 41, `tests/greenhouse/` 33, `tests/graveyard/` 35.
+New enemy-ctx seams, all mirrored in the mock: `cardsIn`, `moveCardTo`,
+`playerDraw`, `schedule`/`adjustTimer`/`cancelTimer`/`timers`, `reveal`, and the
+`onPlayerReady` def hook.
+
+The intent audit went 2085 → 7530 turns and found 40 lies on the way. All fixed.
+
+**Two open findings live in `HANDOFF-PROMPT.md`'s numbered list and are the best
+evidence available**: the difficulty curve flattens after the Nursery (sixteen
+runs become eleven and then almost nothing dies for four wings), and two bosses
+authored for a seventeen-wing expedition are being measured against a
+seven-wing one. Neither has been tuned, deliberately.
+
+---
 
 ### Where it stands, 2026-08-29 (second session)
 

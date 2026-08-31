@@ -3,536 +3,315 @@ modules, no build step) at
 C:\Users\Josh\OneDrive\Desktop\Tandem Tales\Midnight Menagerie
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-━━ START HERE, 2026-08-30 ━━ TWO JOBS, IN THIS ORDER ━━
+━━ START HERE, 2026-08-30 (evening) ━━ TEN REGIONS LEFT, AND A TEMPLATE ━━
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-The owner asked for the fourteen empty regions. One shipped — the Kitchens and
-Cellars, region 4 — and the next thing is NOT region 5. It is these two, in
-this order, and the order is the whole point.
+The owner asked for every remaining area. SEVEN of the seventeen regions now
+ship rosters. Ten are left, and they are ordinary engineering: the design
+chapters are written, the art, room names, blueprints and music already exist,
+and this session established a template that three regions have now been built
+against without a surprise in the last two.
 
-── JOB 1 · THE SIMULATION BOT CANNOT REACH THE CONTENT ──────────────────────
+    BUILT      foyer · nursery · sleeping-quarters · kitchens-cellars ·
+               greenhouse · graveyard · heart
+    LEFT       study-library · attic-observatory · lampworks · ballroom ·
+               crypt · hedge-maze · secret-passages · bathhouse · kennels ·
+               pumpkin-grounds
 
-`tests/run/run.py` walks 50 seeded expeditions. Measured 2026-08-30, after
-`RUN_LENGTH_REGIONS` went 2 → 4:
+Build them IN THAT ORDER — it is `REGION_ORDER`'s order, and `RUN_REGIONS` in
+`state/run.js` is the ladder the run actually walks. Adding a region is one
+string in that array, in the right place, with `'heart'` staying last. The
+Heart is the ENDING and must remain the final wing.
 
-    defeat/foyer   46      mean 9.2 rooms, min 2, max 14
-    defeat/nursery  3      deck   min 10 / mean 14.7 / max 30
-    victory         1      purse  min  8 / mean 176.9 / max 951
+Budget one region per session. The Greenhouse and the Graveyard each took about
+a third of this one, and the Graveyard's boss alone took four separate
+measurements before it stopped being able to draw.
 
-**Forty-six of fifty runs die in the FIRST region.** Nothing past the Foyer is
-exercised by anything — not the Nursery, not the Sleeping Quarters, not the
-Kitchens. Four regions of content and a harness that only ever sees one.
+── THE TEMPLATE, IN ORDER ───────────────────────────────────────────────────
 
-THERE ARE TWO BOTS AND THEY ARE NOT THE SAME BOT. Establish which one you are
-touching before you touch it:
+1. Read the whole design chapter first. `docs/design/regions/NN-name.md`.
+   They run 900-1200 lines. Outline it with a heading grep, then read it whole.
 
-    tests/run/index.html          `playCombat()`, inline, ~line 95. Drives the
-                                  50-run simulation above. THIS is the one that
-                                  dies in the Foyer.
-    tests/critic-design/lib/bot.js
-                                  the BALANCE bot. Drives anchor.py,
-                                  party-turns.py and tests/coop/balance.html.
-                                  It is the subject of CONTRACTS 47 — read that
-                                  trap before editing it.
+2. Three files, copying the freshest worked examples:
+     `data/enemies/<region>.js`        statuses + the ordinary roster
+     `data/enemies/<region>-scares.js` the Big Scares
+     `data/bosses/<boss>.js`           the boss and its parts
+   The Graveyard is the newest and cleanest of the three built this session.
 
-THE LEAD, and it is a strong one. The run bot scores every PLAY with the
-engine's own `preview()` — damage, lethality, Guard valued only up to the damage
-actually incoming. Then it builds its DECK with a die:
+3. Wire FIVE places, and all five matter:
+     `data/enemies/index.js`     imports, ALL, ENEMY_STATUSES, IMPLEMENTED_REGIONS
+     `data/encounters.js`        the formation block, REGION_RULES, ALL_ENCOUNTERS
+     `state/run.js`              RUN_REGIONS
+     `tests/enemies/engine-audit.html`  a BATCH per Big Scare and boss — see below
+     `tests/status-names/index.html`    a layer probe naming one of its statuses
 
-    tests/run/index.html:190-200
-      if (r.cards.length && dice.chance(0.7)) {
-        const c = r.cards[dice.int(r.cards.length)];   // a RANDOM card, 70% of the time
-        run.takeRewardCard(c.id);
+4. `tests/<region>/check.py`, driving the REAL `CombatEngine`. Copy
+   `tests/graveyard/check.py`. Every claim about a board two turns from now gets
+   a CONTROL that runs the same board without the thing.
 
-    tests/run/index.html:240-243
-      for (const c of stock.cards)     if (… && dice.chance(0.35)) run.buyCard(…)
-      for (const k of stock.keepsakes) if (… && dice.chance(0.50)) run.buyKeepsake(…)
+5. `python tools/shot.py <name> --scene combat --encounter <boss-id> --wait 5`
+   and LOOK at it.
 
-So it plays a considered game with a random pile, and reaches the Butler on ~14
-cards holding an average of 177 unspent Lost Things — 951 in the worst case. A
-deck that grew by four cards across nine rooms is not a player, and a win rate
-measured against it is not a fact about the game.
+6. Run the battery. Commit with explicit paths and `git commit -F`.
 
-**Do not tune any content against these numbers until this is fixed.** That is
-CONTRACTS 47 almost word for word: this project has already fitted a curve to a
-broken bot once, and the tell was exactly this shape — a number that reads as a
-fact about the game and is a fact about the harness.
+── THE FOUR INSTRUMENTS, AND WHY EACH ONE EXISTS ────────────────────────────
 
-What "fixed" means, and what it does not. It does not mean a good player. It
-means a bot whose deck-building is as considered as its combat, so that reaching
-the Nursery is ordinary and reaching the Kitchens happens at all. Score reward
-and shop offers with something real — `engine.preview()` against a scratch
-engine, or a defensible heuristic over cost, damage and keywords — and SPEND the
-purse. Then re-run and report the new distribution honestly, including if it
-barely moves.
+`tests/enemies/run.py` is a STRUCTURAL checker with a mocked context. It stayed
+green through every one of the bugs below. It cannot see them and it never will.
 
-Two traps waiting there:
+  * `tests/<region>/check.py` — the real engine. The Kitchens' Divide, Bake and
+    Recipe summoned NOTHING on their first real run with the structural suite
+    green throughout.
+  * `tests/enemies/engine-audit.html` — ITS BATCH LIST IS HARDCODED. It stopped
+    at region 3 and printed a healthy "2085 enemy turns audited" while the whole
+    Kitchens had never had one intent checked. Extended, it immediately found 40
+    lies. It is at 7530 turns and zero now. ADD YOUR REGION'S BATCHES.
+  * A SCREENSHOT. It found the final boss pushed off the left edge of its own
+    fight by a five-body row, and five House Rule cards burying the portrait.
+    No suite measures how much of the screen a thing eats.
+  * `tests/status-names/check.py` — add a layer probe naming one status id from
+    the new region, or it goes quietly blind to it. It reported the same 268
+    statuses across two entire regions of new ones.
 
-  * The bot is deterministic off `run.fork('sim:…')`. Keep it deterministic —
-    the suite asserts a seed reproduces a run byte-identically, and that check
-    is worth more than the bot.
-  * `tests/run/index.html` sets `run.maxCourage = 2000` in the BOSS-PATH block
-    only. It moved from 400 on 2026-08-30 because the Curses in data/neutral.js
-    started working and Night Terror alone cost 121 Courage across a run. That
-    block is a structural test of boss → reward → victory → meta-write, not a
-    balance test. Leave the number alone.
+**Check that each gate's NUMBER MOVED.** A count that did not change when
+twenty-five enemies arrived is the finding.
 
-── JOB 2 · THE HEART OF THE HOUSE ───────────────────────────────────────────
+── WHAT THE ENEMY CTX CAN DO, INCLUDING FIVE THINGS THAT ARE NEW ────────────
 
-Region 17, `docs/design/regions/17-heart.md`, 1343 lines and the longest design
-in the project. It is THE ENDING. Every other region is a wing; this is the only
-thing that turns a run into a game with a finish, and `scenes/gameover.js`
-currently prints "You got one out." as a victory.
+`data/enemies/_lib.js`'s header documents the surface. Added this session, all
+mirrored in the mock and all gated:
 
-Scope, larger than any region so far:
+    c.cardsIn(pile)        snapshots of a seat's hand/draw/discard
+    c.moveCardTo(uid, pile, {top|bottom})
+    c.playerDraw(n)
+    c.schedule({turns, label, run, when})   a countdown the player can SEE
+    c.adjustTimer / c.cancelTimer / c.timers()
+    c.reveal(n)            show n more future intents (Epitaph Spirit)
+    onPlayerReady(c)       a NEW def hook, the only moment an enemy can read
+                           the hand the player is about to play with
 
-    8 ordinary enemies   Housekeeper · Memory Animal · Sanctuary Warden ·
-                         Namekeeper · Quiet Room · House Pulse · Old Welcome ·
-                         Perfect Keeper
-    4 Big Scares         Hall of Names · House Remembers · Perfect Sanctuary ·
-                         The Door That Says Stay
-    1 final boss         The Keeper
+FOUR SEAMS WERE DEAD WHEN THE HEART NEEDED THEM. All four had been declared for
+months, two with comments asserting the engine read them:
 
-The Kitchens was 6 + 3 + 1 and took a full session, so budget accordingly.
+    EnemyDef.damageTakenMul    the Sugar Golem's third layer was not a layer
+    EnemyDef.isTargetable      the Wardrobe was never shut behind its Doors
+    Hooks.removeByOwner        `addHook` said "removed with the enemy" and had
+                               no callers at all
+    data/keywords.js loader    imported `enemies/_lib.js` rather than the
+                               registry, so two regions of statuses had no
+                               keyword tooltips
 
-Its thesis is "a system can protect you and control you at the same time", and
-§1 is explicit that Heart enemies SYNTHESISE ideas the player has already learned
-rather than introducing another standalone subsystem. Read §1 before §4.
+── AND THE ONE THAT COST THE MOST ───────────────────────────────────────────
 
-BUILD IT THE WAY THE KITCHENS WAS BUILT.
-`game/src/data/enemies/kitchens-cellars.js` and
-`game/src/data/bosses/confectioner.js` are the freshest worked examples, and
-`tests/kitchens/check.py` is the gate shape to copy. Wiring is four places:
-`enemies/index.js` (import, ALL, IMPLEMENTED_REGIONS), `encounters.js`
-(formations + REGION_RULES + ALL_ENCOUNTERS), the boss file, and
-`RUN_LENGTH_REGIONS` in `state/run.js`.
+`tests/enemies/index.html` named its actors `id: def.id`. The ENGINE names them
+`e0`, `e1`, `e2` and puts the definition's id on `defId`. So
+`allies(c).find(a => a.id === 'the-wardrobe')` resolved in the harness and
+returned null in every real fight — and FOUR multi-body enemies were written
+against it. The Governess could never see her Doll, each Porcelain Twin believed
+it was alone, a Hydra Head could not find its body, and the Wardrobe's
+`doorsBroken` never left zero.
 
-FIVE THINGS THE KITCHENS GOT WRONG THAT YOU CAN GET RIGHT FIRST TIME. All five
-were caught by gates rather than by thinking, and each cost a cycle:
-
-  1. `damageTakenFn` DOES NOT EXIST. The seam is `damageTakenMul(c) → number`.
-     An invented hook name is silent, and the Sugar Golem's entire third layer
-     would not have been a layer.
-  2. `announceRule` takes `{ id, name, text }`, not a string. It throws on a
-     string, which is the good outcome.
-  3. `Intent` has no HEAL. Check `data/schema.js:16` before naming one.
-  4. `shape.body` must be one of `tall-thin | squat | sprawling | floating`.
-     Four other words were invented and all fourteen defs failed the gate.
-  5. AN INTENT THAT LIES IS THE WORST OF THEM. Rising Batter promised 7 and
-     dealt 9, because it gained its stack at `onPlayerTurnEnd` — after the
-     intent for that very attack had already been published. If a buff must land
-     before the number is read, use `onEnemyPhaseEnd`; `combat/hooks.js`
-     documents it as exactly that moment. And if a mechanic cannot be expressed
-     as `damage × hits`, CHANGE THE MECHANIC: the Whisk's half-damage extra hit
-     became a full-damage one, because the promise beats the nicety.
-
-AND THE ONE THAT MATTERED MOST. Every roster-mutating mechanic in the Kitchens —
-Divide, Bake, the Recipe Board — summoned NOTHING the first time it ran against
-the real engine, while `tests/enemies/run.py` stayed green throughout.
-`resolveEnemyDef` reads a registry the engine must be GIVEN; a missing
-`registerEnemies()` warns to the console and returns null. Six formations ran,
-WON, and never produced a single Doughling.
-
-  * `tests/enemies/run.py` is a STRUCTURAL checker with a mocked context. It
-    cannot see this class of failure and will stay green through it.
-  * `tests/kitchens/check.py` drives the real `CombatEngine` and asserts on the
-    board. Any Heart mechanic that changes the roster needs the same treatment.
-  * Console WARNINGS are not console errors. Capture them.
-
-── AND THEN ──
-
-Eleven regions after that: Greenhouse, Graveyard, Study & Library, Attic &
-Observatory, Lampworks, Ballroom, Crypt, Hedge Maze, Secret Passages, Bathhouse,
-Kennels, Pumpkin Grounds. Art, room names, blueprints and music already exist for
-all seventeen, so this is engineering time and not asset time.
+The first two were found and fixed one at a time, each with a comment naming the
+trap, and the other two sat broken underneath them for months.
+`tests/part-lookups/check.py` gates the class now, and the mock names actors the
+way the engine does. **A mock that drifts does not merely test nothing — it
+certifies the wrong code.**
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Read HANDOFF.md first — it opens with a "Where it stands" block and a numbered
-list of what is open. Then CONTRACTS.md, which is at 54 traps. Then, for the
-last two sessions:
+Read `HANDOFF.md` next — it opens with "Where it stands" and a numbered open
+list. Then `CONTRACTS.md`, at 55 traps. Then, for context:
 
-  docs/notes/2026-08-30-the-unreachable-sweep.md   (the 111 findings, and an
-                                                    honest count of which were
-                                                    verified and which were not)
-  docs/STEAM-DECK.md                (achievements, Cloud saves, the overlay,
-                                     controller and the Deck audit — all five
-                                     built to the seam the App ID sits behind)
-  docs/COMMERCIAL-USE.md            (who owns what. The Suno question is SETTLED
-                                     — the owner confirmed paid tier on
-                                     2026-08-30, so the soundtrack ships)
+  docs/notes/2026-08-30-the-unreachable-sweep.md   111 findings, 24 verified
+  docs/STEAM-DECK.md · docs/COMMERCIAL-USE.md
+  docs/STS2-REFERENCE.md §8 — it carries its OWN "For us:" verdicts and nothing
+  syncs them to HANDOFF's list.
 
-Don't read the design doc whole; it is carved into docs/design/. And read §8 of
-docs/STS2-REFERENCE.md before deciding what to work on — see below.
+STATE: branch `dev`, tree clean, **everything pushed** — `origin/dev` is at
+`1c5a4c7`. Do not trust a hash written here; run
+`git rev-list --count origin/dev..dev`. Pushing to origin/dev is authorised and
+was exercised four times today.
 
-STATE: branch dev, tree clean, and **NOT pushed — 8 commits ahead of
-origin/dev as of 2026-08-30.** Do not trust a HEAD hash written here; naming one
-dates this file the moment it is committed, which is how two handoffs in a row
-went stale. Run `git log --oneline -12` and `git rev-list --count origin/dev..dev`.
-Pushing to origin/dev was authorised on 2026-08-29 and has not been exercised
-since; confirm before you use it.
-Dev server does not survive a restart:
+Dev server, and it does not survive a restart:
 
   python tools/devserver.py 8777
-
-EVERYTHING IS GREEN, and the battery below was RUN on 2026-08-30 rather than
-copied forward. Not "green except one".
-
-━━ THE ONE THING TO UNDERSTAND BEFORE YOU CHANGE ANYTHING ━━
-
-**Three separate systems were fully wired, fully documented, and doing nothing.**
-Not subtly wrong — inert, for months, while every suite stayed green:
-
-- **Six of the eight WING CONDITIONS.** `state/mapgen.js` HAZARDS declares
-  eight, every blueprint places two to four, and the map shades the area, prints
-  the name along the footer, lists it in the legend and renders its rule in the
-  hover card. A search for each id returned mapgen and nothing else, for six.
-  The player was told "Guard is halved" and nothing halved anything.
-- **33 of audio.js's 38 BUS SUBSCRIPTIONS.** `combat/engine.js` forwards engine
-  events to the bus as `combat:<type>`; audio listened for the bare names. Two
-  `EV` entries are themselves `combat:start`/`combat:end`, so the bus literally
-  carried `combat:combat:start`. Twelve authored cues could be played by nothing.
-- **The whole audio MIX LAYER.** `tension()` and `telegraph()` are public, were
-  written in the sound pass, and had no caller anywhere, so `_effTension()` was
-  permanently 0. The bed never darkened as Courage fell and there was no warning
-  before a big hit.
-
-All three are fixed and gated. The lesson, now CONTRACTS 54: **content that
-describes itself will be believed.** A table with ids and rule sentences reads
-like an implementation. A note saying "audio.js listens on the bus and needs no
-calls from anyone" reads like a contract. Neither is a call.
-
-**When you build a gate, prove it can SEE the file you care about before you
-trust the number it prints.** `tests/bus-names/check.py` printed "0 dead
-subscriptions" while blind to the file holding thirty of them, because its regex
-needed a literal `bus.on('x')` and audio.js subscribes through a local alias.
-
-**Its sibling, CONTRACTS 55: the id namespace is not what the player reads.**
-The Lights Are Out correctly gave itself its own status id, because Hush owns
-`unseen` and it does not stack — then correctly named it "Unseen", because that
-is what the wing's rule promises. Two locally right decisions put two statuses
-behind one word, on one glyph, with two unrelated break rules. **No single file
-was wrong.** The collision existed only where they met, on screen, which is the
-one place no unit test was pointed. `tests/status-names/` gates the class, and
-reads the REGISTRY rather than the source because statuses are declared in three
-shapes and the browser finds 268 where a regex finds 256.
-
-**And a screenshot is not optional.** On 2026-08-30 `tests/chrome` (27 checks),
-scene-css, css-tokens, seams and stdlib-shadow ALL passed while `select.js` was
-a syntax error and the screen rendered nothing at all. One suite caught it, as a
-30-second Playwright timeout that reads like a flake. A browser probe for
-pageerrors named it in one line:
-
-  python tools/shot.py <name> --scene select --wait 4
 
 ━━ THE BATTERY ━━
 
 ONE Playwright run at a time, always (CONTRACTS trap 7). Every number below was
-RUN on 2026-08-30, not copied forward; if one differs, that is the finding.
+RUN on 2026-08-30 after the Graveyard landed, not copied forward. If one
+differs, that is the finding.
 
   python tests/cards/run.py               1470 cards, 0 errors, 0 warnings
-  python tests/combat/run.py              694     ← +5, the card:retain event
-  python tests/enemies/run.py             54 enemies, 0 errors  ← +17, the Kitchens
-  python tests/kitchens/check.py          16      ← Divide / Bake / the Recipe,
-                                                    driven on a REAL engine
+  python tests/combat/run.py              694
+  python tests/enemies/run.py             114 enemies, 0 errors
+                                          (130 encounters, 39 statuses, 3 Tricks)
+  python tests/enemies/audit.py           7530 turns, 0 errors  ← 2085 before
+  python tests/run/run.py                 50 runs, 0 errors, 2 boss DRAWS
   python tests/coop/run.py                645
-  python tests/net/run.py                 158     ← +6, the turn barrier
-  python tests/enemies/audit.py           2085 turns, 0 errors
-  python tests/run/run.py                 50 runs, 0 errors
-  python tests/backpack/run.py            80 checks, 0 failures
+  python tests/net/run.py                 158
+  python tests/backpack/run.py            80
   python tests/map/run.py                 30
-  python tests/vote/run.py                35      ← the route ballot
-  python tests/wings/run.py               44      ← the eight wing conditions
-  python tests/haunt/run.py               21      ← the two Haunt ladders
+  python tests/vote/run.py                35
+  python tests/wings/run.py               44
+  python tests/haunt/run.py               21
   python tests/combat-scene/seam.py       22
-  python tests/hand-cards/run.py          40      ← the nine cards that did nothing
-  python tests/piles-reachable/run.py     24      ← every pile openable, or exempt
-  python tests/settings-play/run.py       19      ← the two Play toggles
-  python tests/gameover-keeps/run.py      16      ← the invented Keepsakes
-  python tests/platform/run.py            52      ← Steam, via a fake host bridge
-  python tests/gamepad/run.py             23      ← a synthetic pad, real polling
-  python tests/steam-deck/run.py           6      ← every screen at 1280x800
-  python tests/licences/check.py          21 ok, 0 problems
+  python tests/hand-cards/run.py          40
+  python tests/piles-reachable/run.py     24
+  python tests/settings-play/run.py       19
+  python tests/gameover-keeps/run.py      16
+  python tests/platform/run.py            52
+  python tests/gamepad/run.py             23
+  python tests/steam-deck/run.py           6
   python tests/audio/run.py               46 cues, 0 errors
-  python tests/chrome/run.py              27 checks, 0 errors
+  python tests/chrome/run.py              27
   python tests/cards-feel/run.py          exit 0
   python tests/critic-design/anchor.py    6/6 agree
 
-  TWELVE gates, each must stay at zero:
-    tests/seams/check.py          6404 call sites, 0 problems
-    tests/licences/check.py       21 ok, 0 problems  ← NEW 2026-08-30. Before it
-                                  there was no LICENSE, NOTICE or OFL file
-                                  anywhere, while the build redistributed three
-                                  OFL fonts and three.js. Both breaches, both
-                                  invisible: a missing file looks exactly like a
-                                  file nobody needed.
-    tests/bus-names/check.py      0 dead subscriptions, 0 advisory
-    tests/audio/cues.py           46 cues, 45 reachable, 1 known-silent
-    tests/status-names/check.py   268 statuses, 0 unwaived name collisions
-    tests/party-tells/check.py    13 party moves, 0 tells that address one Kid
-    scene-css · css-tokens · dup-keys · hook-names · turn-events · stdlib-shadow
+  REAL-ENGINE REGION GATES — one per region, and each region needs its own:
+    tests/kitchens/check.py     16
+    tests/greenhouse/check.py   33
+    tests/graveyard/check.py    35
+    tests/heart/check.py        41
 
-  `tests/hook-names/check.py` reads "79 declared" as of 2026-08-30 and did not
-  before. It had always checked `hooks.add(name)` call sites and `U.onHook`, and
-  had never looked at the `hooks: { … }` object literals on statuses, relics and
-  enemy defs — the biggest surface in the game. The two regexes for it sat
-  UNUSED at the top of that file and the gate reported green over them. They are
-  wired up now, with a brace scan rather than a line regex, and proved seeing.
-
-  `tests/enemies/run.py` reads 54 enemies and not 37: the Kitchens and Cellars
-  shipped on 2026-08-30 (6 ordinary, 5 baked forms, 3 Big Scares, the
-  Confectioner and her Dish). `RUN_LENGTH_REGIONS` went 2 -> 4 in the same
-  commit, which also made the SLEEPING QUARTERS reachable for the first time —
-  it had been finished and unplayable behind that constant.
-
-  `tests/enemies/audit.py` reads 2085 and not the 2093 an older note quotes.
-  That is the Butler's pool going 165 → 149: a shorter boss is fewer audited
-  turns. It is the expected consequence of a committed change, not drift —
-  which is exactly the kind of thing this list exists to let you tell apart.
+  FOURTEEN GATES, each must stay at zero:
+    tests/seams/check.py          6793 call sites, 0 problems
+    tests/hook-names/check.py     110 declared, 0 unknown
+    tests/bus-names/check.py      0 dead subscriptions
+    tests/status-names/check.py   295 statuses, 0 unwaived collisions
+    tests/part-lookups/check.py   0 actor lookups by def id      ← NEW
+    tests/snapshot-cards/check.py 0 snapshot-as-runtime-card     ← NEW
+    tests/party-tells/check.py    0 tells that address one Kid
+    tests/licences/check.py       21 ok, 0 problems
+    tests/audio/cues.py           46 cues, 1 known-silent
+    dup-keys · scene-css · css-tokens · turn-events · stdlib-shadow
 
   fourteen effect-asserting Companion suites:
-    boggle 30 · mopsy 28 · wisp 25 · crumbula 25 · hush 17 · wink 16
+    boggle 31 · mopsy 28 · wisp 25 · crumbula 25 · hush 17 · wink 16
     truffle 27 · drizzle 70 · pudding 46 · mossbit 55 · brambleboo 52
     crinkle 44 · pipkin 18 · taffy 8      plus butler 38 · governess 56
 
   SIX co-op screens, all "0 failures, 0 console errors":
-    tests/coop/selectscreen.py · hotseat.py · rooms.py · playthrough.py
-    tests/coop/lobby.py     20 checks ← two tabs, one seed, and a vote that CROSSES
-    tests/coop/matedeck.py  11 checks ← a friend's deck and Keepsakes, and they are THEIRS
+    selectscreen · hotseat · rooms · playthrough · lobby 20 · matedeck 11
 
 ━━ WHAT IS OPEN ━━
 
-HANDOFF.md carries this in full. **Every design call the designer was holding
-was delegated back on 2026-08-29 — "fix as you deem fit, overrule anything
-previously written" — and all of them are resolved.** What is left is blocked
-on a person or a machine, or is a decision with the reason already written down.
+1. **THE DIFFICULTY CURVE FLATTENS AFTER THE NURSERY, and this is the best-
+   evidenced balance finding available.** Measured over 50 seeded expeditions
+   with a competent bot and real drafting:
 
-1. **Steam P2P is APPROVED and BLOCKED, and only Josh can unblock it.** It needs
-   a **Steam App ID**, which needs a Steamworks partner account, a fee and a
-   registered app. Nothing in this repo can produce one, so do not start
-   `SteamTransport` expecting to finish it. `net/transport.js` is ready — five
-   members, two working implementations, "a third file rather than a rewrite".
-   It also ends the no-build rule, which is a real change to how the project is
-   developed and not a side effect to absorb quietly.
+       reach the Foyer          40 / 40 unaided
+       reach the Nursery        16
+       reach the Sleeping Q.    11
+       reach the Kitchens       11
+       reach the Greenhouse     11
+       reach the Graveyard      11
+       reach the Heart           9
 
-   **It is no longer the last piece, and calling it that was the mistake.**
-   `net/lobby.js` had been written, documented and TESTED since 2026-08-28 with
-   nothing in `game/src/` importing it — no host UI, no join UI, no code field
-   anywhere, every `join` in the scenes an `Array.join()`. Steam would have
-   landed and there would STILL have been no way to start a networked game.
-   **The Treehouse (`scenes/lobby.js`) is built as of 2026-08-30** and works
-   today over `ChannelTransport`: two tabs are two Sessions, two Runs and two
-   boards from one seed. `tests/coop/lobby.py` drives both at once, 15 checks.
-   Steam now genuinely is one constructor.
+   Sixteen runs become eleven at the Nursery boss, and then almost nothing dies
+   for four whole wings. A deck that survives region two snowballs past
+   everything until the Keeper. The later regions are not pricing the deck the
+   player actually brings, and no win rate on any single fight shows it —
+   `tests/run/run.py`'s "regions reached" table is the instrument.
 
-   Tested code is not reachable code. A suite that only ever builds a `Lobby`
-   in a harness cannot tell the difference — CONTRACTS 54 with the serial
-   numbers filed off.
+2. **TWO BOSSES DRAW OR NEARLY DRAW, and both are authored for a longer run.**
+   Same competent bot, same drafted deck, 170 Courage pool:
 
-2. **The same-turn netcode race.** The cross-turn half is CLOSED — the turn
-   barrier and idle heartbeats were built 2026-08-29 and never needed the
-   transport. What remains is two seats acting at once with their inputs
-   crossing, and closing it needs ROLLBACK (rewind to the top of the turn and
-   replay; `_resumeCombat` and the digests are most of that machinery) or a
-   SEQUENCER stamping a global order, which reintroduces the host-dependency
-   §8.11 calls StS2's loudest weakness. Both are named in `_heldByBarrier`.
-   The transport decides the latency budget that picks between them, so this
-   genuinely waits on item 1.
+       the Butler            100% win   11 turns median   (authored band 8-12)
+       the Confectioner       83%       26
+       the Head Gardener      —         not yet measured this way
+       the Groundskeeper      25%       29
+       the Keeper              8%       36
 
-3. **A party wins Foyer elites 100% of the time, against 83.3% solo — and this
-   is NOT a question for the designer.** It was written up as one and that was
-   wrong: `foyer.js` already records the authored target in its own balance
-   note. Elites run **8–12 turns** and land near **88.9% for a competent
-   player**, tuned so region survival sits in a **65–78% band** — the arithmetic
-   is that ~0.83 Big Scares per path means a 73%-win elite removes 18% of runs
-   before the boss is seen. So the target exists, our solo bot reads 83.3%
-   against it, and a party at 100% is above the band.
+   540 and 330 Courage are the design's numbers for the end of a SEVENTEEN-wing
+   expedition. This ladder is seven wings long. **Do not fit these to a ladder
+   that is about to grow by ten regions** — that is the curve-to-a-broken-
+   instrument mistake CONTRACTS 47 is about. Measure again when the ladder is
+   whole.
 
-   Two changes this session moved the party economy hard toward it — pierce,
-   then Wrong Face reaching two Kids — and "Courage left over solo" went
-   +9.2 / +15.6 / +21.3 → +0.4 / +6.5 / +13.0, with two Kids now finishing
-   level with a soloist. `win%` did not follow. The remaining gap is most
-   likely a bot that plays elites very well, and CONTRACTS 47 is this project
-   having already fitted a curve to a broken bot once. **Measure the bot before
-   adding content.**
+   Two expeditions in fifty still DRAW against the Groundskeeper.
+   `tests/run/run.py` reports those under "BOSS DRAWS", named, with what was
+   still standing. A draw against anything that is NOT a boss is a hard failure
+   — an ordinary formation that cannot end is a bug in the enemy.
 
-4. **ONE KID TAKES THE FIGHT AND THE REST WATCH — measured, both tiers, every
-   party size.** `spreadOf` is 0 when one seat takes all the damage and 1 when
-   it is shared evenly. Three ledger runs, 12 fights per cell:
+3. **Steam P2P is APPROVED and BLOCKED, and only Josh can unblock it.** It needs
+   a Steam App ID, which needs a Steamworks partner account, a fee and a
+   registered app. `net/transport.js` is ready — five members, two working
+   implementations. It also ends the no-build rule. The Treehouse
+   (`scenes/lobby.js`) works today over `ChannelTransport`: two tabs are two
+   Sessions, two Runs and two boards from one seed. Steam is one constructor.
 
-       elite, before pierce   2p 0.177   3p 0.203   4p 0.209
-       elite, after pierce    2p 0.181   3p 0.163   4p 0.259
-       standard tier          2p 0.144   3p 0.198   4p 0.278
+4. **The same-turn netcode race.** The cross-turn half is CLOSED. What remains
+   is two seats acting at once with their inputs crossing; closing it needs
+   ROLLBACK or a SEQUENCER, and the transport decides the latency budget that
+   picks between them. Genuinely waits on item 3.
 
-   Three Kids in four are spectators as far as incoming threat goes. It is one
-   cause for BOTH tiers' rising "Courage left" lines (+16 / +20 / +23 over solo
-   at the standard tier), and it makes those lines substantially an averaging
-   artefact — averaged over Kids who were never in danger. More importantly it
-   is a co-op FEEL problem no win rate would ever surface.
+5. **ONE KID TAKES THE FIGHT AND THE REST WATCH.** `spreadOf` is 0 when one seat
+   takes all the damage and 1 when it is shared: elite 2p 0.181 / 3p 0.163 /
+   4p 0.259, standard 2p 0.144 / 3p 0.198 / 4p 0.278. Three Kids in four are
+   spectators as far as incoming threat goes. It reframes AoE: its value here is
+   PARTICIPATION, not difficulty. `spread` is in every ledger row and was never
+   printed.
 
-   **It also reframes AoE.** "AoE is added damage a party then blocks" is true
-   and is why pierce was right for DIFFICULTY. But AoE's value here is
-   PARTICIPATION — it is what puts the other three Kids in the fight. Measure
-   `spread` for that and `%blocked`/`landed` for difficulty; they are different
-   problems. `spread` is in every ledger row and was never printed, which is
-   why nobody had looked at it.
+6. **The entry stall is REAL and the cause is found.** Six `toDataURL` calls,
+   274 ms, from `cardart.js render()` line 352 — a synchronous PNG encode. Not
+   JS, not shader linking, not texture upload. Pre-warming was tried and
+   REJECTED. The fix is `toBlob` plus object URLs, scoped in
+   `docs/notes/2026-08-30-the-card-art-hitch-is-real.md`. fps is CLOSED: eleven
+   of eleven readings at 61.
 
-5. **fps is CLOSED and the ENTRY STALL is REAL** — both sampled 2026-08-30,
-   and they went opposite ways, which is the point.
+7. **`combat:crit` is known-silent** and wiring it means designing critical hits,
+   which nobody has asked for.
 
-   fps: eleven of eleven readings at 61. The 52 was a busy machine.
+8. **`ANIMATED_EVENTS` is exported and read by nothing** (5 of its 23 events have
+   no animator case), plus the other ~100 sweep findings. The sweep returned 111
+   and its log claims all 111 survived the skeptics — that was an orchestration
+   bug, not a result. 24 are verified; the other 87 are leads worth reading and
+   not worth trusting unread.
 
-   The stall: `tools/entryprof.py --goto combat`, thirteen runs, 1150–2217 ms
-   against a 1200 ms budget, **eleven of thirteen over**. "Timings swing 2x, do
-   not chase them" had been carried for three sessions on three samples, one of
-   which passed. And it is not all at entry — ~250 ms before the scene enters,
-   ~550 ms after, then evenly spaced triplets of ~100–130 ms at t+1.5 s and
-   again at t+3.3 s. Combat keeps hitching for seconds. **That triplet shape is
-   the lead to follow.**
-
-   **The cause is found.** Six `toDataURL` calls, 274 ms, worst 122 ms, zero at
-   the title, all from `cardart.js render()` line 352 — a synchronous PNG
-   encode. Not JS (1289 of 1398 ms sampled is native), not shader linking (that
-   is a boot cost), not texture upload (0.1 ms). "THE CARD-ART HITCH DOES NOT
-   REPRODUCE" has been in HANDOFF since 2026-08-26 and is wrong: the earlier
-   probe instrumented `render` and the cost is the `toDataURL` inside it.
-
-   Pre-warming the encoder was tried and REJECTED — it works in isolation and
-   does nothing in the real transition. The fix is `toBlob` plus object URLs,
-   scoped in `docs/notes/2026-08-30-the-card-art-hitch-is-real.md`, and the
-   note carries the probe that will tell you whether it worked.
-
-   Do not subtract a `--scene` run from a `--goto` run: `--goto` already filters
-   out page boot and `--scene` does not. The tool's docstring says so because
-   that error was made and briefly believed.
-
-6. **Two cues are known-silent and need something built first**, with their
-   reason in `tests/audio/cues.py`: `combat:crit`. There is no crit in this
-   game — the only crit flag in the repo is the soundboard's own test payload —
-   so wiring it means designing critical hits, which nobody has asked for.
-   `card:retain` came off this list on 2026-08-30: it was never a missing
-   feature, only a missing event.
-
-   **A SWEEP LEFT A PILE OF WORK AND SIX OF IT ARE NOW DONE, 2026-08-30** —
-   every item the previous handoff named as the best-evidenced work available.
-   `HANDOFF.md` carries the detail. Closed since: the two Play toggles
-   (`autoEndTurn`, `confirmSingleTarget`) are implemented rather than removed;
-   the nine unplayable Status/Curse cards in `data/neutral.js` do what they
-   print, through a new `handHooks` seam on CardDef; `gameover.js` stopped
-   inventing Keepsakes for real runs, and its fallback table — seven entries,
-   all seven wrong — is gone; DeckView's Vanished pile has a button, and its
-   header's claim that combat.js sorts the draw pile is corrected (it does not;
-   the no-oracle guarantee rests on DeckView's own default alone). Four new
-   suites, each with the control that runs the same board WITHOUT the change,
-   and each proved red against the old code before being believed.
-
-   **STILL OPEN AND UNBLOCKED:** `ANIMATED_EVENTS` exported and read by nothing
-   (5 of its 23 events have no animator case), and the other 100-odd findings.
-
-   The sweep returned 111 findings and its own log claims all 111 survived
-   the skeptics. **That is my orchestration bug, not a result** — the verdict
-   join was on an unstable string, so 87 were kept unchecked. 24 are really
-   verified; the rest are leads carrying their finder's own searches. The
-   full list is `docs/notes/2026-08-30-the-unreachable-sweep.md`.
-
-   **What the six taught about that split:** two came from the verified 24 and
-   FOUR were unverified leads, and every one was real when checked. One was
-   WORSE than reported — the gameover fallback table's two surviving ids turned
-   out to carry invented rules text as well, so it was seven entries and seven
-   wrong rather than five missing out of seven. The previous handoff called all
-   of them "the 24 verified sweep findings" and was wrong about four. So the 87
-   are worth reading. They are still not worth trusting unread, which is the
-   same sentence with the verb changed, and it is the whole point.
-
-7. **The vote beat is 3.0 s and that was arithmetic, not a playtest.** It sat
-   open for three sessions as "unplaytested" and never needed a playtest — it
-   needed the words counted. The announcement is ~18 words; on-screen reading
-   runs 200–250 wpm, so it takes 4.3–5.4 s to read and 3.6 at a skim. **1.5 s
-   was a third of what its own message needs.** The old 1.5 cleared a measured
-   1.4 s floor, but that floor was about the card still EXISTING, not about
-   anyone reading it. 3.0 rather than 5.4 because the message repeats and a
-   familiar reader checks two things, ~6 words.
-
-   What a person could still confirm, having seen it: whether 3.0 feels long on
-   a third of forks. And the better fix is a scene-layer one — let the verdict
-   survive the transition instead of being covered by it (`scenes.go` veils
-   before `exit()`), and the beat could go back to being short.
-
-**Resolved on 2026-08-29/30, so you do not re-open them:** both authored wing
-rules (Long Shadows is "Guard you GAIN is halved" — the literal reading is
-backwards, not merely inert; The Lights Are Out's status is **Lurking** now, not
-"Unseen", which was Hush's word); the single-exit ballot (a door is not a fork);
-Crinkle's chapter (ACCEPTED — 90 Tricks named against 90 built, zero drift);
-the Butler (in both halves of his brief for the first time, 64.6% at 11.5
-turns); the Haunt ladder (two ladders, and it advances at all now — it never
-did); and the two remaining §8 levers, DECLINED with reasons in the reference
-rather than left reading as oversights.
+9. **Enemy silhouettes for the three new regions are generic.** 39 new defs use
+   silhouette keys `ui/enemy.js` does not know, so they render as coloured blobs
+   with the right palette and the right motif. That is the documented fallback
+   and nothing is broken; it is an art pass, not a bug.
 
 ━━ THINGS THAT WILL SAVE YOU A ROUND ━━
 
-- **HANDOFF's open list is not the only open list.** `docs/STS2-REFERENCE.md` §8
-  carries its own "For us:" verdicts and nothing syncs them. On 2026-08-29 the
-  handoff's number-one item was a balance question while §8.5 had been calling
-  the map route "the largest co-op gap we have" since it was researched. When
-  you close one, update the reference's verdict too — it is a claim about the
-  code, and a stale one reads as a gap that is still open.
-- **ROOM inputs COMMUTE; COMBAT inputs do not.** Every room act works on the
-  sender's own Kid or adds to a shared counter; `map.vote` writes one seat's
-  slot in a ballot whose resolution sorts the seats itself; `end` commutes
-  because the enemy phase falls out of the LAST seat to close. Only `play` and
-  `snack` reorder the board. This is why a late-input warning must be narrow —
-  both clients apply their own input as they issue it, so whichever seat acts
-  second always sees the other's arrive late, and a guard that shouts about it
-  shouts six times during an ordinary reward screen.
-- **The route is VOTED.** A single click no longer moves the party: every living
-  Kid votes, and a weighted roulette settles a split so a minority vote can win.
-  Any harness that clicks a map node with a PARTY needs one vote per Kid with
-  `.hoff__go` between them — `tests/coop/hotseat.py` timed out at `#end-turn`
-  until it was taught to. Solo still resolves on its first vote, which is why
-  every solo driver was unaffected.
-
-━━ THE WORKING METHOD ━━
-
-- Read the whole design chapter before writing anything.
-- **Every fix gets a test that asserts the EFFECT, and you verify it FAILS
-  without the fix.** This is not ceremony. In the last two sessions it caught
-  four checks that could not fail — including one whose own comment named it as
-  the control for the line it could not test.
-- **A control has to be re-checked whenever the thing under it moves.** A
-  `PARTY_ACTS` control stopped failing when the route became a ballot, and
-  nothing said so; it kept passing. CONTRACTS 52 and two notes cited it.
-- For any "X is what protects Y": break X and watch Y break. If Y survives, the
-  credit belongs somewhere else and the check is decorative.
-- A measuring instrument is CODE and can be wrong. Suspect it first when a
-  measurement surprises you — and suspect your own analysis script: three
-  separate greps in one session produced three different wrong answers about the
-  audio wiring before a browser probe settled it.
-- **TAKE A SCREENSHOT.** It found a blank blueprint after every vote and an
-  announcement that was never once on screen, both with every suite green.
-      python tools/shot.py <name> --scene map --wait 2
-- ONE Playwright run at a time.
-- Commit with explicit paths, message via `git commit -F` — backticks in a `-m`
-  string get eaten.
-- Scripted edits: this repo is MIXED per file (CONTRACTS + HANDOFF are both
-  CRLF with bare-LF runs). Read with `newline=''`, convert to LF, patch, convert
-  back, and check `git diff --stat` — a 370-line diff for a two-paragraph edit
-  means the endings flipped. Heredocs in the Bash tool eat backslash escapes:
-  one of them wrote a literal 0x08 into a checked-in file that parsed clean.
-  Write patch scripts with the Write tool and run them with `python <path>`.
+- **An intent may never lie.** `damage x hits` is the whole vocabulary, so a
+  move that adds damage on one hit adds it to BOTH — the Whisk, Stay Where I
+  Can See You and Rake the Floor all made that call. If a buff must be inside a
+  number the player reads, it has to land BEFORE the intent is drawn:
+  `onEnemyPhaseEnd` or `onPlayerReady`, never `onPlayerTurnEnd`. Three separate
+  enemies got that wrong this session and the audit caught all three.
+- **A COUNTDOWN IS NOT AN INTENT.** Scheduled damage (`c.schedule`, tagged
+  `cause: 'timer'`) is excluded from the intent comparison and COUNTED
+  SEPARATELY in the audit's report, because a labelled timer the player has
+  watched tick for two turns is its own promise. Do not widen that exemption.
+- **A fight that cannot END is a defect, and it is not the same as a hard
+  fight.** It comes from an enemy whose Guard generation is unbounded and whose
+  damage is fully blockable. Every boss in this game escalates for that reason.
+- **ROOM inputs COMMUTE; COMBAT inputs do not.** Only `play` and `snack`
+  reorder the board.
+- **The route is VOTED.** Any harness that clicks a map node with a PARTY needs
+  one vote per Kid with `.hoff__go` between them.
+- Scripted edits: this repo is MIXED per file. Read with `newline=''`, convert
+  to LF, patch, convert back, and check `git diff --stat`. **Heredocs in the
+  Bash tool eat backslash escapes and backticks** — that cost four broken
+  patches today. Write patch scripts with the Write tool and run them with
+  `python <path>`, or use the Edit tool for anything with a template literal.
 
 ━━ NOT THE JOB ━━
 
+- Do not tune the Keeper or the Groundskeeper to this ladder. See item 2.
 - Do not change `PARTY_HP_SCALE`; it was re-measured on a repaired harness.
 - Do not chase fps on this machine as it currently is.
-- Do not re-open the card-art encoder question — it does not reproduce.
+- Do not re-open the card-art encoder question — pre-warming does not work.
 - Do not re-wire audio's dead bus names. `scenes/combat.js` plays thirteen of
-  those cues directly, timed to its FX, and reviving the handlers would stack a
-  second voice on every one. The note in `_wireBus` says so.
+  those cues directly, timed to its FX.
 - Do not redesign Crinkle — his chapter is accepted, checked against the build.
-- Do not start Steam P2P until Josh has a Steam App ID; see item 1.
-- Do not tune the Butler or the Foyer elites by feel. Both were measured this
-  session and both have a committed before/after in `tests/critic-design/`.
-- Do not build AoE for the ELITE tier. The ledger's own note is that AoE is
-  added damage a party then blocks, and only pierce is kept — measured.
+- Do not start Steam P2P until Josh has a Steam App ID.
+- Do not tune the Butler or the Foyer elites by feel. Both have a committed
+  before/after in `tests/critic-design/`.
+- Do not build AoE for the ELITE tier. Measured: AoE is added damage a party
+  then blocks, and only pierce is kept.
 
 Start by telling me what you'd do first and why.
