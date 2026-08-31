@@ -410,7 +410,13 @@ class MockCombat {
     }
     n = Math.max(0, Math.round(n));
     if (!target) return;
-    this.damageLog.push({ source: source === this.player ? 'player' : source.id, target: target === this.player ? 'player' : target.id, amount: n });
+    /* `source` may legitimately be NULL. The engine's `dealDamage` takes
+       `attacker: null` for hazard damage that belongs to no actor — every
+       Graveyard Countdown and the Chandelier's exploding Lights are that —
+       and reading `source.id` here threw before the harness could finish.
+       The mock has to accept what the engine accepts. */
+    const srcId = source === this.player ? 'player' : (source ? source.id : null);
+    this.damageLog.push({ source: srcId, target: target === this.player ? 'player' : target.id, amount: n });
     // Defender-side status hooks, mirroring combat/damage.js. Cover, Scurry and
     // Discomposed all live here — the harness must NOT reimplement them, or it would
     // pass with the real mechanic completely inert (which is how Cover shipped broken).
@@ -453,8 +459,10 @@ class MockCombat {
       n = Math.max(0, Math.round(box.amount));
     }
     if (n <= 0) return;
-    // statuses that modify damage dealt (roused, darkness, buttons)
-    for (const [sid, stacks] of Object.entries(source.statuses || {})) {
+    // statuses that modify damage dealt (roused, darkness, buttons).
+    // `source` is null for hazard damage that belongs to no actor, and a
+    // hazard carries nobody's buffs — see the note in the damage log above.
+    for (const [sid, stacks] of Object.entries((source && source.statuses) || {})) {
       const def = STATUS_BY_ID[sid];
       if (def?.hooks?.modifyDamageDealt) n = def.hooks.modifyDamageDealt(n, { stacks, actor: source });
     }

@@ -187,6 +187,14 @@ const MOTIF = {
   telescope: 'stoop', seer: 'stoop', watcher: 'stoop',
   cobweb: 'ripple',
   orrery: 'slam',
+  /* The Lampworks. Flame reads as drift, wax and candles as a slow slam,
+     and the two dark things pounce because that is what they do. */
+  sprite: 'drift', lampmoth: 'drift', gaslight: 'drift', lantern: 'drift',
+  'hanging-lamp': 'drift',
+  waxling: 'stoop', lamplighter: 'stoop',
+  candles: 'slam', chandelier: 'slam',
+  blackout: 'ripple',
+  'beast-dark': 'pounce',
 };
 const BODY_MOTIF = { squat: 'pounce', 'tall-thin': 'stoop', sprawling: 'ripple', floating: 'drift' };
 

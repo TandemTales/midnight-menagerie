@@ -72,6 +72,24 @@
 }
 .cb-enemies[data-n="5"] .cb-enemy { --e-crowd: 0.74; }
 
+/* SIX BODIES — The Lamplighter plus its five-Lamp row, and the widest board in
+   the game again. `data-n` is written straight from `enemies.length`, so a
+   sixth body fell past the rule above into the DEFAULT: full padding, no crowd
+   shrink. The screenshot is the same one as before with one more lamp in it —
+   the boss shoved behind the Kid's portrait with its name plate cut off, and
+   the last Lamp clipped off the right edge.
+   The row is five 0.45-scale Lamps and one 1.9-scale boss, so this leans harder
+   on the gap than on the shrink: the Lamps are already small and taking another
+   quarter off them would make a 10-Courage target hard to click. */
+.cb-enemies[data-n="6"] {
+  gap: clamp(2px, 0.5vw, 10px);
+  /* Reduced, NOT removed — the five-body note two rules up says exactly why,
+     and dropping it to zero here reproduced its second screenshot: all six
+     bodies on screen and the boss's name plate behind the Kid's portrait. */
+  padding-left: clamp(0px, 3vw, 56px);
+}
+.cb-enemies[data-n="6"] .cb-enemy { --e-crowd: 0.62; }
+
 /* ── one enemy ──────────────────────────────────────────────────────────── */
 .cb-enemy {
   --e1: var(--ink-500);

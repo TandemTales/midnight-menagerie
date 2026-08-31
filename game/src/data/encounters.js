@@ -685,6 +685,83 @@ const GY = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// The Lampworks - docs/design/regions/09-lampworks.md §9-§12
+//
+// The ladder is Charge first, then the things that protect or steal it. The
+// Blackout Blob arrives after the Spark Sprite on purpose: Blackout's whole
+// meaning is "you cannot knock the Charge loose any more", which is nothing
+// until the player has learned that they could.
+// ─────────────────────────────────────────────────────────────────────────────
+const LW = [
+  // ── Early (§9) ----------------------------------------------------------
+  { id: 'lw-1', region: 'lampworks', tier: 'early', name: 'Spark Sprite',
+    members: [m('spark-sprite')],
+    teaches: 'Charge. Build, build, release — and 12 damage in a turn knocks one loose.' },
+  { id: 'lw-2', region: 'lampworks', tier: 'early', name: 'Waxling',
+    members: [m('waxling')],
+    teaches: 'An enemy that gets more dangerous AND more fragile as it burns down.' },
+  { id: 'lw-3', region: 'lampworks', tier: 'early', name: 'Gaslight Ghost',
+    members: [m('gaslight-ghost')],
+    teaches: 'Lit and Dim. You can swing whenever you like; one window is simply better.' },
+  { id: 'lw-4', region: 'lampworks', tier: 'early', name: 'Candle Cluster',
+    members: [m('candle-cluster')],
+    teaches: 'Keep it small, or let it grow into a five-hit turn.' },
+
+  // ── Standard (§10) ------------------------------------------------------
+  { id: 'lw-5', region: 'lampworks', tier: 'standard', name: 'Spark Sprite + Lamp Moth',
+    members: [m('spark-sprite'), m('lamp-moth')],
+    teaches: 'The Moth drinks the Sprite Charge and turns a future threat into a present one.' },
+  { id: 'lw-6', region: 'lampworks', tier: 'standard', name: 'Waxling + Gaslight Ghost',
+    members: [m('waxling'), m('gaslight-ghost')],
+    teaches: 'Two enemies whose good windows are at opposite ends of the fight.' },
+  { id: 'lw-7', region: 'lampworks', tier: 'standard', name: 'Candle Cluster + Lamp Moth',
+    members: [m('candle-cluster'), m('lamp-moth')],
+    teaches: 'Flames are not Charge, so the Moth cannot help itself and just presses.' },
+  { id: 'lw-8', region: 'lampworks', tier: 'standard', name: 'Spark Sprite + Blackout Blob',
+    members: [m('spark-sprite'), m('blackout-blob')],
+    teaches: 'While the lights are out, damage will not shake the Charge loose at all.' },
+
+  // ── Advanced (§11) ------------------------------------------------------
+  { id: 'lw-9', region: 'lampworks', tier: 'advanced', name: 'Gaslight Ghost + Blackout Blob',
+    members: [m('gaslight-ghost'), m('blackout-blob')],
+    teaches: 'Blackout forces the Ghost Dim again and again.' },
+  { id: 'lw-10', region: 'lampworks', tier: 'advanced', name: 'Spark Sprite + Candle Cluster',
+    members: [m('spark-sprite'), m('candle-cluster')],
+    teaches: 'Two stored threats on different clocks. You cannot suppress both.' },
+  { id: 'lw-11', region: 'lampworks', tier: 'advanced', name: 'Waxling + Lamp Moth',
+    members: [m('waxling'), m('lamp-moth')],
+    teaches: 'Immediate pressure against a Waxling you would rather let get to 1 Wax.' },
+  { id: 'lw-12', region: 'lampworks', tier: 'advanced',
+    name: 'Spark Sprite + Lamp Moth + Blackout Blob',
+    members: [m('spark-sprite'), m('lamp-moth'), m('blackout-blob')],
+    teaches: 'The Sprite builds, the Blob protects the build, and the Moth may take it for itself.' },
+  { id: 'lw-13', region: 'lampworks', tier: 'advanced', name: 'Gaslight Ghost + Candle Cluster',
+    members: [m('gaslight-ghost'), m('candle-cluster')],
+    teaches: 'Two very different timing windows in one fight.' },
+  { id: 'lw-14', region: 'lampworks', tier: 'advanced',
+    name: 'Spark Sprite + Candle Cluster + Blackout Blob',
+    members: [m('spark-sprite'), m('candle-cluster'), m('blackout-blob')],
+    teaches: 'Charge, Flames and Blackout at once. The hardest baseline formation.',
+    advancedOnly: true, minScuffle: 2 },
+
+  // ── Big Scares (§13-§15) ----------------------------------------------
+  { id: 'lw-scare-chandelier', region: 'lampworks', tier: 'elite', name: 'The Chandelier',
+    members: [m('chandelier')],
+    teaches: 'Six lights, three states each, and an Overcharged one explodes if you leave it.' },
+  { id: 'lw-scare-beast', region: 'lampworks', tier: 'elite', name: 'The Blackout Beast',
+    members: [m('blackout-beast')],
+    teaches: 'You want the room bright. You do not want it AS bright as it goes.' },
+  { id: 'lw-scare-lantern', region: 'lampworks', tier: 'elite', name: 'The Great Lantern',
+    members: [m('great-lantern')],
+    teaches: 'Forty-eight damage, four turns away, and three different ways to answer it.' },
+
+  // ── Boss -----------------------------------------------------------------
+  { id: 'lw-boss', region: 'lampworks', tier: 'boss', name: 'The Lamplighter',
+    members: [m('the-lamplighter'), m('lamp'), m('lamp'), m('lamp'), m('lamp'), m('lamp')],
+    teaches: 'Five Lamps you can break, and every Charge left hanging becomes its phase-two fuel.' },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
 // The Moonlit Attic and Observatory - docs/design/regions/08-attic-observatory.md
 // §9-§12
 //
@@ -975,6 +1052,21 @@ const HEART = [
 // Per-region generation rules (design doc §10 "Encounter selection rules")
 // ─────────────────────────────────────────────────────────────────────────────
 export const REGION_RULES = {
+  /* docs/design/regions/09-lampworks.md §12. "Spark Sprite should appear
+     before Blackout Blob" and "Gaslight Ghost should appear alone before
+     appearing with Blackout Blob" are both handled by the tier ladder: the
+     Sprite and the Ghost are EARLY, every Blob pairing is STANDARD or
+     ADVANCED. */
+  lampworks: {
+    /** "Lamp Moth should not appear alone in ordinary Scuffles." It has
+        nothing to drink from and no fight of its own. */
+    neverAlone: ['lamp-moth'],
+    /** The Blob wants a build to protect, so it waits for one. */
+    minScuffle: { 'blackout-blob': 2 },
+    /** Two Blobs, and two Clusters at baseline, are §12 outright. */
+    noDuplicates: ['blackout-blob', 'candle-cluster'],
+    maxConsecutiveLead: 2,
+  },
   /* docs/design/regions/08-attic-observatory.md SS12. Every clause below is
      one line of that section. "Moon Moth should be encountered alone before
      appearing with Orrery Imp" has no field to hold it and needs none: the
@@ -1082,7 +1174,7 @@ export const REGION_RULES = {
   },
 };
 
-const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...GY, ...SL, ...AO, ...HEART];
+const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...GY, ...SL, ...AO, ...LW, ...HEART];
 
 /** id → EncounterDef */
 export const ENCOUNTERS = Object.freeze(

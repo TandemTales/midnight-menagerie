@@ -16,6 +16,8 @@ import { STUDY_LIBRARY_ENEMIES, STUDY_LIBRARY_STATUSES } from './study-library.j
 import { STUDY_LIBRARY_SCARES } from './study-library-scares.js';
 import { ATTIC_ENEMIES, ATTIC_STATUSES } from './attic-observatory.js';
 import { ATTIC_SCARES } from './attic-observatory-scares.js';
+import { LAMPWORKS_ENEMIES, LAMPWORKS_STATUSES } from './lampworks.js';
+import { LAMPWORKS_SCARES } from './lampworks-scares.js';
 import { GREENHOUSE_SCARES } from './greenhouse-scares.js';
 import { HEART_ENEMIES, HEART_STATUSES } from './heart.js';
 import { HEART_SCARES } from './heart-scares.js';
@@ -27,6 +29,7 @@ import { GREENHOUSE_BOSSES } from '../bosses/head-gardener.js';
 import { GRAVEYARD_BOSSES } from '../bosses/groundskeeper.js';
 import { STUDY_LIBRARY_BOSSES } from '../bosses/archivist.js';
 import { ATTIC_BOSSES } from '../bosses/watcher.js';
+import { LAMPWORKS_BOSSES } from '../bosses/lamplighter.js';
 import { HEART_BOSSES, KEEPER_STATUSES } from '../bosses/keeper.js';
 import { ENEMY_STATUSES as CORE_STATUSES, STATUS_TRICK_DEFS as CORE_TRICKS } from './_lib.js';
 
@@ -47,6 +50,7 @@ import { ENEMY_STATUSES as CORE_STATUSES, STATUS_TRICK_DEFS as CORE_TRICKS } fro
 export const ENEMY_STATUSES = Object.freeze(
   [...CORE_STATUSES, ...KITCHENS_STATUSES, ...GREENHOUSE_STATUSES,
    ...GRAVEYARD_STATUSES, ...STUDY_LIBRARY_STATUSES, ...ATTIC_STATUSES,
+   ...LAMPWORKS_STATUSES,
    ...HEART_STATUSES,
    ...KEEPER_STATUSES],
 );
@@ -73,6 +77,9 @@ const ALL = [
   ...ATTIC_ENEMIES,
   ...ATTIC_SCARES,
   ...ATTIC_BOSSES,
+  ...LAMPWORKS_ENEMIES,
+  ...LAMPWORKS_SCARES,
+  ...LAMPWORKS_BOSSES,
   ...HEART_ENEMIES,
   ...HEART_SCARES,
   ...HEART_BOSSES,
@@ -110,7 +117,7 @@ export function rollHp(def, rng) {
 /** Regions this agent has shipped rosters for. */
 export const IMPLEMENTED_REGIONS = Object.freeze([
   'foyer', 'nursery', 'sleeping-quarters', 'kitchens-cellars', 'greenhouse',
-  'graveyard', 'study-library', 'attic-observatory', 'heart',
+  'graveyard', 'study-library', 'attic-observatory', 'lampworks', 'heart',
 ]);
 
 /**
