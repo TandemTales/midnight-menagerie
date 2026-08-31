@@ -219,6 +219,16 @@ const MOTIF = {
   rotcap: 'stoop', scarecrow: 'stoop', 'gardener-rot': 'stoop', idol: 'stoop',
   'the-fungus': 'stoop', 'the-husk': 'stoop',
   compost: 'pounce', minotaur: 'pounce',
+  /* The Secret Passages. Things in the walls drift; the two that come out
+     of them pounce; the architecture itself just stoops. */
+  peephole: 'drift', whisper: 'drift', draft: 'drift', grate: 'drift',
+  'threatening-whisper': 'drift', 'nervous-whisper': 'drift',
+  'hungry-whisper': 'drift', 'lost-whisper': 'drift',
+  'latch-wall': 'drift', 'latch-floor': 'drift', 'latch-ceiling': 'drift',
+  'latch-mirror': 'drift', 'latch-dumbwaiter': 'drift',
+  crawlspace: 'pounce', snatcher: 'pounce',
+  'false-door': 'stoop', 'the-door': 'stoop', doorframe: 'stoop',
+  'moving-wall': 'stoop', 'whisper-warden': 'stoop',
   'straw-pile': 'drift', 'rot-pile': 'drift', 'briar-ring': 'drift',
 };
 const BODY_MOTIF = { squat: 'pounce', 'tall-thin': 'stoop', sprawling: 'ripple', floating: 'drift' };

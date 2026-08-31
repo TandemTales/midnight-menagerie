@@ -1059,6 +1059,21 @@ export class CombatEngine {
         try { en.def.onBoardEvent(this.enemyCtx(en, null, { boardEvent: ev }), ev); }
         catch (err) { console.error(err); }
       }
+      /**
+       * Relics, Powers and statuses get the same stream.
+       *
+       * `boardEvent` was written for two nursery enemies and only ever asked
+       * ENEMY defs, so a Keepsake with an `onBoardEvent` hook was a Keepsake
+       * that did nothing — the Bent Garden Fork's "the first time an enemy
+       * recovers Courage" had no way to hear it. The event is a fact about the
+       * board and not about the enemies, so everything that hooks gets it.
+       *
+       * `boardEvent` and `ev` both, because the enemy side reads `c.boardEvent`
+       * and a hook payload is flat: giving it two names costs nothing and
+       * spreading `ev` itself would shadow `actor` and `amount` in the shared
+       * payload.
+       */
+      this.hooks.dispatch('onBoardEvent', { boardEvent: ev, ev });
     } finally {
       this._boardDepth -= 1;
     }
@@ -1799,6 +1814,21 @@ export class CombatEngine {
       [...this.enemies, ...this.allies].filter(x => x !== actor));
     if (actor.side === 'player') this._fall(actor, killerId);
     else if (actor.side === 'enemy' && this.livingEnemies().length === 0) this._endCombat(true);
+    /**
+     * A body leaving the board changes what the survivors are about to do,
+     * and until now nothing said so until the next card was played.
+     *
+     * Half the multi-part content in the game reads its parts for its own
+     * numbers — the Briar Idol retaliates once per surviving Ring, the
+     * Carrion Hedge's attacks carry its Crown, the Whisper Warden reroutes
+     * to a different Ambush entirely when the Latch on its route breaks and
+     * SS19 says that update is supposed to be immediate. In ordinary play the
+     * `cardPlayed` refresh a few lines later covered it, which is exactly why
+     * it went unnoticed: the stale intent only survived until the end of the
+     * card that caused it. Anything that kills outside a card — a hazard, a
+     * retaliation, an ally's Guard running out — left the promise wrong.
+     */
+    if (!this.over) this.refreshIntents('death');
     return true;
   }
 
@@ -2239,9 +2269,33 @@ export class CombatEngine {
 
   moveCard(card, pile, opts = {}) { return this.current.piles.move(card, pile, opts); }
 
+  /**
+   * `onCardsDrawn` was the missing half of the draw pipeline.
+   *
+   * `modifyDraw` lets a status change HOW MANY cards arrive and nothing could
+   * react to WHICH ones did. The Secret Passages' Distracted is "the first
+   * Trick you draw through an effect goes to the discard instead, then draw
+   * another" (13-secret-passages.md SS5) — a rule about identity, not count,
+   * and the chapter is explicit that "the player does not lose total draw
+   * count". There was no seam for that at all.
+   *
+   * The payload carries `reason` because the distinction the content needs is
+   * between the turn-start deal and a mid-turn draw off a Trick, and `reason`
+   * is the only thing that separates them ('turnStart' vs the card's id).
+   *
+   * Dispatched AFTER the cards are in hand, so a listener that discards one and
+   * draws a replacement is moving a card that exists. A listener that draws
+   * re-enters here; that is intended and is why anything reacting must clear
+   * its own trigger BEFORE it draws.
+   */
   drawCards(n, reason = 'draw') {
     const want = this.hooks.reduce('modifyDraw', n, { reason }, this.hooks.actorHooks(this.current, 'modifyDraw'));
-    return this.current.piles.drawN(Math.max(0, want), reason);
+    const drawn = this.current.piles.drawN(Math.max(0, want), reason);
+    if (drawn.length) {
+      this.hooks.dispatch('onCardsDrawn', { cards: drawn, reason },
+        this.hooks.actorHooks(this.current, 'onCardsDrawn'));
+    }
+    return drawn;
   }
 
   discardCard(card, reason = 'effect') {

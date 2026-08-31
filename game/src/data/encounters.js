@@ -762,6 +762,83 @@ const HM = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// The Secret Passages - docs/design/regions/13-secret-passages.md §10-§13
+//
+// §10-§12's fourteen Scuffles verbatim, and the shape of the ladder is the
+// region's lesson: every EARLY Scuffle is one enemy alone, because Hidden,
+// Passage, stolen Nerve and moved Tricks are four different kinds of "it is
+// still there" and meeting two at once teaches neither.
+// ─────────────────────────────────────────────────────────────────────────────
+const SP = [
+  // ── Early (§10) ---------------------------------------------------------
+  { id: 'sp-1', region: 'secret-passages', tier: 'early', name: 'False Door',
+    members: [m('false-door')],
+    teaches: 'Play three Tricks in a turn and it opens. Until then your first Attack is halved.' },
+  { id: 'sp-2', region: 'secret-passages', tier: 'early', name: 'Wall Whisper',
+    members: [m('wall-whisper')],
+    teaches: 'Hidden: Attack Tricks cannot reach it. Everything else still can.' },
+  { id: 'sp-3', region: 'secret-passages', tier: 'early', name: 'Shadow Draft',
+    members: [m('shadow-draft')],
+    teaches: 'It moves your Tricks between piles and destroys nothing.' },
+  { id: 'sp-4', region: 'secret-passages', tier: 'early', name: 'Key Snatcher',
+    members: [m('key-snatcher')],
+    teaches: 'It takes Nerve and carries it where you can see it. Hit it hard enough and it drops one.' },
+
+  // ── Standard (§11) ------------------------------------------------------
+  { id: 'sp-5', region: 'secret-passages', tier: 'standard', name: 'Peephole + False Door',
+    members: [m('peephole'), m('false-door')],
+    teaches: 'Three Tricks opens the Door. Three of the SAME Trick gets you Seen.' },
+  { id: 'sp-6', region: 'secret-passages', tier: 'standard', name: 'Wall Whisper + Shadow Draft',
+    members: [m('wall-whisper'), m('shadow-draft')],
+    teaches: 'One disappears while the other rearranges your deck.' },
+  { id: 'sp-7', region: 'secret-passages', tier: 'standard', name: 'Key Snatcher + Peephole',
+    members: [m('key-snatcher'), m('peephole')],
+    teaches: 'Less Nerve makes varying your turn harder, and varying it is how you stay unseen.' },
+  { id: 'sp-8', region: 'secret-passages', tier: 'standard', name: 'Crawlspace Thing',
+    members: [m('crawlspace-thing')],
+    teaches: 'It leaves the board entirely. The grate it went through does not.' },
+
+  // ── Advanced (§12) ------------------------------------------------------
+  { id: 'sp-9', region: 'secret-passages', tier: 'advanced', name: 'Crawlspace Thing + Peephole',
+    members: [m('crawlspace-thing'), m('peephole')],
+    teaches: 'Four Tricks weakens the ambush. Four of a kind gets you Seen.' },
+  { id: 'sp-10', region: 'secret-passages', tier: 'advanced', name: 'False Door + Key Snatcher',
+    members: [m('false-door'), m('key-snatcher')],
+    teaches: 'The Door rewards reaching your third Trick. The Snatcher makes that harder.' },
+  { id: 'sp-11', region: 'secret-passages', tier: 'advanced', name: 'Wall Whisper + Peephole',
+    members: [m('wall-whisper'), m('peephole')],
+    teaches: 'Being Seen makes the thing you cannot reach hit harder.' },
+  { id: 'sp-12', region: 'secret-passages', tier: 'advanced',
+    name: 'Shadow Draft + Key Snatcher + False Door',
+    members: [m('shadow-draft'), m('key-snatcher'), m('false-door')],
+    teaches: 'Deck order, less Nerve, and a window that only opens on your third Trick.' },
+  { id: 'sp-13', region: 'secret-passages', tier: 'advanced', name: 'Crawlspace Thing + Shadow Draft',
+    members: [m('crawlspace-thing'), m('shadow-draft')],
+    teaches: 'The Draft can wreck the four-Trick turn you needed before the ambush lands.' },
+  { id: 'sp-14', region: 'secret-passages', tier: 'advanced',
+    name: 'Peephole + Key Snatcher + Crawlspace Thing',
+    members: [m('peephole'), m('key-snatcher'), m('crawlspace-thing')],
+    teaches: 'Stay unseen, get your Nerve back, blunt the ambush, and still kill three things.',
+    advancedOnly: true, minScuffle: 2 },
+
+  // ── Big Scares (§14-§16) ----------------------------------------------
+  { id: 'sp-scare-wall', region: 'secret-passages', tier: 'elite', name: 'The Moving Wall',
+    members: [m('moving-wall')],
+    teaches: 'You steer where it is vulnerable with your own Attack-to-Skill mix.' },
+  { id: 'sp-scare-choir', region: 'secret-passages', tier: 'elite', name: 'The Whisper Choir',
+    members: [m('threatening-whisper'), m('nervous-whisper'), m('hungry-whisper'), m('lost-whisper')],
+    teaches: 'Four voices, four ways to be exposed. Pick the one your deck already does.' },
+  { id: 'sp-scare-door', region: 'secret-passages', tier: 'elite', name: "The Door That Wasn't There",
+    members: [m('the-door')],
+    teaches: 'It offers you a way out, and the offer is neither a trap nor a gift.' },
+
+  // ── Boss -----------------------------------------------------------------
+  { id: 'sp-boss', region: 'secret-passages', tier: 'boss', name: 'The Whisper Warden',
+    members: [m('whisper-warden')],
+    teaches: 'You cannot stop the Ambush. You choose which one it is.' },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
 // The Crypt and Ossuary - docs/design/regions/11-crypt.md §9-§12
 //
 // The ladder is what gets left behind. The Tibia leaves one Remains and has no
@@ -1284,6 +1361,19 @@ const HEART = [
 // Per-region generation rules (design doc §10 "Encounter selection rules")
 // ─────────────────────────────────────────────────────────────────────────────
 export const REGION_RULES = {
+  /* docs/design/regions/13-secret-passages.md §13. "Wall Whisper should
+     appear alone before appearing with Peephole" and "Peephole cannot appear
+     alone after the introductory pool" are both the tier ladder: the Whisper
+     is EARLY solo and the pair is ADVANCED, and Peephole is never alone in
+     any formation in this region. "Key Snatcher cannot reduce a player's
+     starting Nerve below 1" is enforced in the def, where the Key is taken. */
+  'secret-passages': {
+    /** §13: the Crawlspace Thing cannot be the first thing you meet here. */
+    minScuffle: { 'crawlspace-thing': 2 },
+    /** §13 outright: two Snatchers or two Crawlspace Things at Haunt 0. */
+    noDuplicates: ['key-snatcher', 'crawlspace-thing', 'false-door', 'peephole'],
+    maxConsecutiveLead: 2,
+  },
   /* docs/design/regions/12-hedge-maze.md §12. The Topiary gets a solo
      STANDARD Scuffle of its own (§10, Scuffle 8) before it appears with
      anything, because it is the one enemy that punishes the answer the
@@ -1444,7 +1534,7 @@ export const REGION_RULES = {
   },
 };
 
-const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...GY, ...SL, ...AO, ...LW, ...BR, ...CR, ...HM, ...HEART];
+const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...GY, ...SL, ...AO, ...LW, ...BR, ...CR, ...HM, ...SP, ...HEART];
 
 /** id → EncounterDef */
 export const ENCOUNTERS = Object.freeze(

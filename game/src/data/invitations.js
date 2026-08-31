@@ -1,6 +1,14 @@
 /**
- * Invitations — the Ballroom's offers, as real Tricks. OWNER: cards.
- * Source of truth: docs/design/regions/10-ballroom.md §2, §6, §7, §13, §15, §17.
+ * Offers — enemy-made Tricks the player may take or leave. OWNER: cards.
+ * Source of truth: docs/design/regions/10-ballroom.md §2, §6, §7, §13, §15, §17
+ * and docs/design/regions/13-secret-passages.md §16, §29.
+ *
+ * The Ballroom's Invitations came first and named the file; the Secret Passages
+ * asks the identical question ("Go Through? Accept or Decline") and gets the
+ * identical answer, so its offer lives here beside them rather than inventing a
+ * second mechanism. The Mirror Passage's Echoes are here for the neighbouring
+ * reason: they are cards an enemy puts in your deck, and a card def inside
+ * `data/enemies/` is a file whose ownership cannot be read off its path.
  *
  * THESE ARE CARDS, and they live here rather than in `enemies/ballroom.js`
  * because of what that costs: `tests/seams/check.py` maps every `ctx` inside
@@ -131,4 +139,62 @@ export const INVITATION_TRICKS = [
     'Draw {d} Tricks. The Master gains Revelry. [Vanish]',
     'Your name is already on it, in a hand you do not recognise.',
     (ctx) => ctx.draw(ctx.card?.nums?.d ?? 2), { d: 2 }),
+];
+
+/* ══ The Secret Passages ════════════════════════════════════════════════════ */
+
+export const PASSAGE_OFFER_TRICKS = [
+  /**
+   * §16's Go Through offer. "The player may choose Accept or Decline. If
+   * accepted: the player temporarily disappears into Elsewhere, the Door's next
+   * attack misses, at the beginning of the next player turn draw 2 additional
+   * Tricks, then lose 1 Nerve that turn. If declined: no effect."
+   *
+   * Playing it is Accept. Letting it expire is Decline. The half that belongs
+   * to the Door — its next attack missing — is taken by the Door in its own
+   * `onPlayerCard`, because the enemy is what knows its own bookkeeping.
+   *
+   * `modifyCost` is not involved and `ctx.modifyDraw(2)` is: the engine's
+   * positive next-turn draw lives on `drawDeltaNextTurn`, and that is the seam
+   * `modifyDraw` writes to.
+   */
+  invite('go-through', 'Go Through?',
+    'Step into Elsewhere. The Door’s next attack misses. Draw {d} extra Tricks next turn, and start that turn with 1 less Nerve. [Vanish]',
+    'There is no room on the other side. There is a corridor, and it is going the wrong way.',
+    (ctx) => {
+      ctx.modifyDraw(ctx.card?.nums?.d ?? 2);
+      ctx.applyStatus(ctx.self, 'nerve-taken', 1);
+    }, { d: 2 }),
+];
+
+/**
+ * §29's Echo. "The Echo has the same TYPE as the original Trick but simplified
+ * text: cost 1 Nerve; gain 4 Guard if copied from a Skill or Power; deal 5
+ * damage if copied from an Attack; remove from combat after playing. THIS
+ * AVOIDS ARBITRARY FULL CARD COPYING."
+ *
+ * Two fixed cards rather than a copy machine, which is what §29 is asking for
+ * in the last line: the Warden should not be able to hand you back your own
+ * best Trick pointed the wrong way, and the player should be able to read what
+ * arrived without opening it.
+ */
+function echo(id, name, type, target, text, flavor, effect, nums) {
+  return {
+    id: `echo/${id}`, name, companion: 'status', type, rarity: 'special',
+    cost: 1, target, exhaust: true, nums: nums || {},
+    text, flavor, keywords: ['exhaust'],
+    effect,
+  };
+}
+
+export const ECHO_TRICKS = [
+  echo('attack', 'Echo of a Swing', 'attack', 'enemy',
+    'Deal {d} damage. [Vanish]',
+    'It is your own movement, done slightly wrong, from the other side of the glass.',
+    (ctx) => ctx.damage(ctx.target, ctx.card?.nums?.d ?? 5), { d: 5 }),
+
+  echo('guard', 'Echo of a Guard', 'skill', 'self',
+    'Gain {b} Guard. [Vanish]',
+    'You watch yourself brace against nothing at all.',
+    (ctx) => ctx.block(ctx.self, ctx.card?.nums?.b ?? 4), { b: 4 }),
 ];

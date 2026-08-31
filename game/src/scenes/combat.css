@@ -54,7 +54,25 @@
   height: 100%;
 }
 .cb-enemies[data-n="1"] { gap: 0; }
-.cb-enemies[data-n="4"] { gap: clamp(10px, 1.8vw, 30px); }
+/* FOUR BODIES. This used to tighten the gap and nothing else, which held for
+   every four-body board that was four SIMILAR bodies — the Wardrobe and its
+   Doors, the Carrion Hedge and its sections. The Whisper Warden's Ambush is not
+   that: a 1.65-scale boss beside three 0.42-scale Latches, and the screenshot
+   was the five-body note's second failure a body early — the Warden shoved left
+   under the Kid's portrait with its name plate behind her.
+   And it goes the OPPOSITE WAY to the five- and six-body rules above, which is
+   worth saying out loud because the first attempt copied them and made it
+   worse. Those two overflow: the row is wider than the arena, so taking the
+   left padding off is what stops a body falling off the left edge. Four bodies
+   FIT — a 1.65 boss and three small Latches is about 1170px of a 1600px arena —
+   and the trouble is only that a centred row of that width starts at x=261 and
+   the Kid's portrait ends at x=300. So this one pushes the row RIGHT, and the
+   small shrink is what buys the room to do it. */
+.cb-enemies[data-n="4"] {
+  gap: clamp(10px, 1.8vw, 30px);
+  padding-left: clamp(0px, 11vw, 200px);
+}
+.cb-enemies[data-n="4"] .cb-enemy { --e-crowd: 0.88; }
 /* FIVE BODIES — the Keeper plus its four Sanctuary Locks, the widest board in
    the game. The row is centred and carries up to 132px of left padding to stay
    clear of the Kid, so a fifth body pushed the FIRST one off the left edge: a

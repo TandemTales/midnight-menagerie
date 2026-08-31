@@ -660,7 +660,49 @@ export const RELICS = [
       },
     },
   },
+  {
+    /* 13-secret-passages.md §54, Stolen Key. Written for the wing where two
+       different enemies and the boss all take Nerve off your next turn. */
+    id: 'stolen-key', name: 'Stolen Key', rarity: 'rare', icon: 'key',
+    desc: `The first time each ${TERMS.combat} an enemy takes ${TERMS.energy} from you, get 1 back at the start of your next turn.`,
+    flavor: 'It does not open anything you have found yet. Somebody wanted it badly enough to hide it.',
+    hooks: {
+      onBoardEvent(h) {
+        const ev = h.boardEvent || h.ev;
+        if (!ev || ev.type !== 'status') return;
+        if (ev.id !== 'stolen-key' && ev.id !== 'nerve-taken') return;
+        if (!ev.actor || ev.actor !== player(h)) return;
+        if (!once(h, 'key')) return;
+        player(h).flags.energyNextTurn = (player(h).flags.energyNextTurn || 0) + 1;
+        pop(h, 'key');
+      },
+    },
+  },
   // ── boss ──────────────────────────────────────────────────────────────────
+  {
+    /* §54, Black Ribbon, sized for a boss slot. The Passages are a wing where
+       things leave — Hidden, Passage, Elsewhere — and §60's lesson is that
+       something out of sight is not gone. This is the player's half of that:
+       the first thing to hide teaches you where everything else is. */
+    id: 'black-ribbon', name: 'Black Ribbon', rarity: 'boss', icon: 'ribbon',
+    desc: `Once each ${TERMS.combat}, when an enemy hides or leaves the battlefield, your Attack Tricks deal 3 more damage for the rest of the fight.`,
+    flavor: 'Tied around a door handle at ankle height, by somebody small who meant to come back.',
+    hooks: {
+      onBoardEvent(h) {
+        const ev = h.boardEvent || h.ev;
+        if (!ev || ev.type !== 'status' || ev.amount <= 0) return;
+        if (ev.id !== 'hidden' && ev.id !== 'passage') return;
+        if (!ev.actor || ev.actor.side !== 'enemy') return;
+        if (!once(h, 'ribbon')) return;
+        mem(h).ribbon = 3;
+        pop(h, 'ribbon');
+      },
+      modifyDamageDealt(amount, h) {
+        if (h.attacker !== player(h) || h.card?.type !== 'attack') return amount;
+        return amount + (mem(h).ribbon || 0);
+      },
+    },
+  },
   {
     id: 'butlers-white-glove', name: "The Butler's White Glove", rarity: 'boss', icon: 'glove',
     desc: `Gain 1 extra ${TERMS.energy} every turn. You can no longer rest in a Safe Room.`,
