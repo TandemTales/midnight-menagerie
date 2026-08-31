@@ -685,6 +685,83 @@ const GY = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// The Withered Hedge Maze - docs/design/regions/12-hedge-maze.md §9-§12
+//
+// The ladder is two opposite retaliators. The Mildew Puff banks what you do to
+// it and the Briar Lump runs out of thorns; the Thorn Topiary gets its own solo
+// Scuffle before anything else meets it, because it is the one that punishes
+// exactly the answer the first two taught.
+// ─────────────────────────────────────────────────────────────────────────────
+const HM = [
+  // ── Early (§9) ----------------------------------------------------------
+  { id: 'hm-1', region: 'hedge-maze', tier: 'early', name: 'Mildew Puff',
+    members: [m('mildew-puff')],
+    teaches: 'It banks every Attack you land and spends the lot at once.' },
+  { id: 'hm-2', region: 'hedge-maze', tier: 'early', name: 'Rotcap',
+    members: [m('rotcap')],
+    teaches: 'Under 8 damage in a turn and it takes it all back.' },
+  { id: 'hm-3', region: 'hedge-maze', tier: 'early', name: 'Briar Lump',
+    members: [m('briar-lump')],
+    teaches: 'Finite retaliation. Strip the thorns and there is a window behind them.' },
+  { id: 'hm-4', region: 'hedge-maze', tier: 'early', name: 'Wilted Scarecrow',
+    members: [m('wilted-scarecrow')],
+    teaches: 'It gets more dangerous the closer it is to falling over.' },
+
+  // ── Standard (§10) ------------------------------------------------------
+  { id: 'hm-5', region: 'hedge-maze', tier: 'standard', name: 'Rotcap + Mildew Puff',
+    members: [m('rotcap'), m('mildew-puff')],
+    teaches: 'One wants steady pressure and the other punishes exactly that.' },
+  { id: 'hm-6', region: 'hedge-maze', tier: 'standard', name: 'Briar Lump + Compost Crawler',
+    members: [m('briar-lump'), m('compost-crawler')],
+    teaches: 'Wounding the Lump gives the Crawler something to eat.' },
+  { id: 'hm-7', region: 'hedge-maze', tier: 'standard', name: 'Wilted Scarecrow + Rotcap',
+    members: [m('wilted-scarecrow'), m('rotcap')],
+    teaches: 'Both of them behave differently depending on how hard you swing.' },
+  { id: 'hm-8', region: 'hedge-maze', tier: 'standard', name: 'Thorn Topiary',
+    members: [m('thorn-topiary')],
+    teaches: 'Retaliation that GROWS BACK. Small attacks get worse; big ones prune it.' },
+
+  // ── Advanced (§11) ------------------------------------------------------
+  { id: 'hm-9', region: 'hedge-maze', tier: 'advanced', name: 'Thorn Topiary + Rotcap',
+    members: [m('thorn-topiary'), m('rotcap')],
+    teaches: 'One wants one big swing. The other wants a big swing every single turn.' },
+  { id: 'hm-10', region: 'hedge-maze', tier: 'advanced', name: 'Compost Crawler + Wilted Scarecrow',
+    members: [m('compost-crawler'), m('wilted-scarecrow')],
+    teaches: 'The Scarecrow hurts itself, and the Crawler is waiting for exactly that.' },
+  { id: 'hm-11', region: 'hedge-maze', tier: 'advanced', name: 'Briar Lump + Mildew Puff',
+    members: [m('briar-lump'), m('mildew-puff')],
+    teaches: 'Two different bills for the same swing.' },
+  { id: 'hm-12', region: 'hedge-maze', tier: 'advanced',
+    name: 'Thorn Topiary + Compost Crawler + Mildew Puff',
+    members: [m('thorn-topiary'), m('compost-crawler'), m('mildew-puff')],
+    teaches: 'Everything on this board charges you for attacking it, in three different currencies.' },
+  { id: 'hm-13', region: 'hedge-maze', tier: 'advanced', name: 'Rotcap + Briar Lump',
+    members: [m('rotcap'), m('briar-lump')],
+    teaches: 'Commit to one and the other takes everything back.' },
+  { id: 'hm-14', region: 'hedge-maze', tier: 'advanced',
+    name: 'Thorn Topiary + Wilted Scarecrow + Rotcap',
+    members: [m('thorn-topiary'), m('wilted-scarecrow'), m('rotcap')],
+    teaches: 'Prune, suppress, and finish — and you cannot do all three in one turn.',
+    advancedOnly: true, minScuffle: 2 },
+
+  // ── Big Scares (§13-§15) ----------------------------------------------
+  { id: 'hm-scare-minotaur', region: 'hedge-maze', tier: 'elite', name: 'The Mold Minotaur',
+    members: [m('mold-minotaur')],
+    teaches: 'Interrupt the Charge or suppress the regrowth. Probably not both.' },
+  { id: 'hm-scare-idol', region: 'hedge-maze', tier: 'elite', name: 'The Briar Idol',
+    members: [m('briar-idol'), m('briar-ring-1'), m('briar-ring-2'), m('briar-ring-3')],
+    teaches: 'Three rings of retaliation, and breaking one makes it angrier for good.' },
+  { id: 'hm-scare-carrion', region: 'hedge-maze', tier: 'elite', name: 'The Carrion Hedge',
+    members: [m('carrion-hedge'), m('hedge-crown'), m('hedge-middle'), m('hedge-roots')],
+    teaches: 'Three sections that grow back — until the body is under half.' },
+
+  // ── Boss -----------------------------------------------------------------
+  { id: 'hm-boss', region: 'hedge-maze', tier: 'boss', name: 'The Gardener of Rot',
+    members: [m('gardener-of-rot')],
+    teaches: 'You drive its Decay Cycle as well as its Courage, and they pull against each other.' },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
 // The Crypt and Ossuary - docs/design/regions/11-crypt.md §9-§12
 //
 // The ladder is what gets left behind. The Tibia leaves one Remains and has no
@@ -1207,6 +1284,17 @@ const HEART = [
 // Per-region generation rules (design doc §10 "Encounter selection rules")
 // ─────────────────────────────────────────────────────────────────────────────
 export const REGION_RULES = {
+  /* docs/design/regions/12-hedge-maze.md §12. The Topiary gets a solo
+     STANDARD Scuffle of its own (§10, Scuffle 8) before it appears with
+     anything, because it is the one enemy that punishes the answer the
+     first four teach, and it should get to make that point alone. */
+  'hedge-maze': {
+    /** Two of anything that retaliates is two bills for one swing. */
+    noDuplicates: ['thorn-topiary', 'briar-lump', 'compost-crawler'],
+    /** The Crawler needs somebody to eat. */
+    neverAlone: ['compost-crawler'],
+    maxConsecutiveLead: 2,
+  },
   /* docs/design/regions/11-crypt.md §12. "Loose Tibia should appear before
      Crypt Fetcher" and "Bone Heap should appear alone before appearing with
      Crypt Fetcher" are the tier ladder: both are EARLY solo, both Fetcher
@@ -1356,7 +1444,7 @@ export const REGION_RULES = {
   },
 };
 
-const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...GY, ...SL, ...AO, ...LW, ...BR, ...CR, ...HEART];
+const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...GY, ...SL, ...AO, ...LW, ...BR, ...CR, ...HM, ...HEART];
 
 /** id → EncounterDef */
 export const ENCOUNTERS = Object.freeze(

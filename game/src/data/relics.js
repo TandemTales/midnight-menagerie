@@ -626,6 +626,40 @@ export const RELICS = [
       },
     },
   },
+  {
+    id: 'truffle-brush', name: "Truffle's Brush", rarity: 'rare', icon: 'brush',
+    desc: `The first three times each ${TERMS.combat} you take retaliation damage, reduce it by 1.`,
+    flavor: 'Stiff, and full of things that used to be quills.',
+    hooks: {
+      modifyDamageTaken(amount, h) {
+        if (h.defender !== player(h) || amount <= 0) return amount;
+        // Retaliation is damage from an enemy that arrives on YOUR turn, in
+        // answer to a card — the Hedge Maze's whole vocabulary.
+        if (h.e.phase !== 'player' || !h.attacker || h.attacker.side !== 'enemy') return amount;
+        if (h.e.isPreview) return Math.max(0, amount - 1);
+        const m = mem(h);
+        if ((m.brushed || 0) >= 3) return amount;
+        m.brushed = (m.brushed || 0) + 1;
+        pop(h, 'brush');
+        return Math.max(0, amount - 1);
+      },
+    },
+  },
+  {
+    id: 'bent-garden-fork', name: 'Bent Garden Fork', rarity: 'boss', icon: 'fork',
+    desc: `The first time each ${TERMS.combat} an enemy recovers ${TERMS.hp}, deal 3 damage to it.`,
+    flavor: 'Somebody put it through something it was not for and never straightened it.',
+    hooks: {
+      onBoardEvent(h) {
+        const ev = h.boardEvent || h.ev;
+        if (!ev || ev.type !== 'heal' || !ev.actor || ev.actor.side !== 'enemy') return;
+        if (!once(h, 'fork')) return;
+        h.e.dealDamage({ attacker: null, defender: ev.actor, amount: 3,
+                         kind: 'hazard', cause: 'relic' });
+        pop(h, 'prune');
+      },
+    },
+  },
   // ── boss ──────────────────────────────────────────────────────────────────
   {
     id: 'butlers-white-glove', name: "The Butler's White Glove", rarity: 'boss', icon: 'glove',

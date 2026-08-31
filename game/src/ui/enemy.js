@@ -211,6 +211,15 @@ const MOTIF = {
   'skull-helm': 'lunge',
   ossuary: 'slam', coffins: 'slam',
   curator: 'stoop',
+  /* The Withered Hedge Maze. Hedges ripple, mushrooms stoop, and the two
+     things that charge you pounce. */
+  puff: 'ripple', briar: 'ripple', 'topiary-thorn': 'ripple',
+  carrion: 'ripple', 'hedge-crown': 'ripple', 'hedge-middle': 'ripple',
+  'hedge-roots': 'ripple', 'the-bramble': 'ripple',
+  rotcap: 'stoop', scarecrow: 'stoop', 'gardener-rot': 'stoop', idol: 'stoop',
+  'the-fungus': 'stoop', 'the-husk': 'stoop',
+  compost: 'pounce', minotaur: 'pounce',
+  'straw-pile': 'drift', 'rot-pile': 'drift', 'briar-ring': 'drift',
 };
 const BODY_MOTIF = { squat: 'pounce', 'tall-thin': 'stoop', sprawling: 'ripple', floating: 'drift' };
 
