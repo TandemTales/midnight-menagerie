@@ -236,6 +236,19 @@ const MOTIF = {
   'bath-drain': 'drift', 'drain-valve': 'drift', 'intake-valve': 'drift',
   pipes: 'slam', boiler: 'slam',
   matron: 'stoop',
+  /* The Kennels and Animal Ward. The animals themselves drift, because they
+     are not fighting anybody; the containment walks and slams. */
+  'ward-pup': 'drift', 'ward-cat': 'drift', 'ward-bird': 'drift',
+  'cage-latch': 'drift', 'ward-collar': 'drift', 'ward-leash': 'drift',
+  collars: 'drift', blanket: 'drift', 'leash-hand': 'drift',
+  'short-collar': 'drift', 'heavy-collar': 'drift', 'bell-collar': 'drift',
+  'spare-collar': 'drift', 'pen-heater': 'drift', 'pen-feeder': 'drift',
+  'pen-lock': 'drift', 'kennel-gate': 'drift', 'collar-dock': 'drift',
+  'lead-post': 'drift', 'ward-pen-1': 'drift', 'ward-pen-2': 'drift',
+  'ward-pen-3': 'drift',
+  'walking-cage': 'slam', 'rolling-ward': 'slam', cart: 'slam',
+  orderly: 'stoop', 'collar-rack': 'stoop', 'perfect-pen': 'stoop',
+  kennelmaster: 'stoop',
   'straw-pile': 'drift', 'rot-pile': 'drift', 'briar-ring': 'drift',
 };
 const BODY_MOTIF = { squat: 'pounce', 'tall-thin': 'stoop', sprawling: 'ripple', floating: 'drift' };

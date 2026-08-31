@@ -917,6 +917,85 @@ const BH = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// The Kennels and Animal Ward - docs/design/regions/15-kennels.md §10-§13
+//
+// §10-§12's fourteen Scuffles, and §13's "a Ward Animal appears in
+// approximately one third of normal Kennels Scuffles" is the ladder itself:
+// five of the fourteen carry one, and the FIRST Walking Cage encounter always
+// does, because §10 says the first thing this region teaches is that the cage
+// is the target and the animal is not.
+// ─────────────────────────────────────────────────────────────────────────────
+const KN = [
+  // ── Early (§10) ---------------------------------------------------------
+  { id: 'kn-1', region: 'kennels', tier: 'early', name: 'Walking Cage',
+    members: [m('walking-cage'), m('ward-pup')],
+    teaches: 'The cage is the enemy. The animal inside it is not, and cannot be hurt.' },
+  { id: 'kn-2', region: 'kennels', tier: 'early', name: 'Collar Keeper',
+    members: [m('collar-keeper')],
+    teaches: 'A restraint on YOU: a price for your fourth Trick, not a ban on it.' },
+  { id: 'kn-3', region: 'kennels', tier: 'early', name: 'Feeding Cart + Walking Cage',
+    members: [m('feeding-cart'), m('walking-cage')],
+    teaches: 'The Cart helps whoever needs it — sometimes the cage, sometimes the animal.' },
+  { id: 'kn-4', region: 'kennels', tier: 'early', name: 'Leash Hand',
+    members: [m('leash-hand')],
+    teaches: 'Tether is a threshold. Cross it in one swing and the lead never gets used.' },
+
+  // ── Standard (§11) ------------------------------------------------------
+  { id: 'kn-5', region: 'kennels', tier: 'standard', name: 'Walking Cage + Comfort Blanket',
+    members: [m('walking-cage'), m('comfort-blanket'), m('ward-cat')],
+    teaches: 'The Blanket protects the cage and calms the animal at the same time.' },
+  { id: 'kn-6', region: 'kennels', tier: 'standard', name: 'Collar Keeper + Feeding Cart',
+    members: [m('collar-keeper'), m('feeding-cart')],
+    teaches: 'Your tempo is taxed while theirs is topped up.' },
+  { id: 'kn-7', region: 'kennels', tier: 'standard', name: 'Leash Hand + Ward Orderly',
+    members: [m('leash-hand'), m('ward-orderly')],
+    teaches: 'One stops it dying and the other pulls it out of reach first.' },
+  { id: 'kn-8', region: 'kennels', tier: 'standard', name: 'Walking Cage + Ward Orderly',
+    members: [m('walking-cage'), m('ward-orderly'), m('ward-bird')],
+    teaches: 'The Orderly calms the animal AND makes the containment harder to dismantle.' },
+
+  // ── Advanced (§12) ------------------------------------------------------
+  { id: 'kn-9', region: 'kennels', tier: 'advanced', name: 'Comfort Blanket + Feeding Cart',
+    members: [m('comfort-blanket'), m('feeding-cart')],
+    teaches: 'The two gentlest things in the house are a surprisingly hard wall.' },
+  { id: 'kn-10', region: 'kennels', tier: 'advanced', name: 'Collar Keeper + Leash Hand',
+    members: [m('collar-keeper'), m('leash-hand'), m('ward-pup')],
+    teaches: 'Two restraints on one animal, and you can free it without killing either.' },
+  { id: 'kn-11', region: 'kennels', tier: 'advanced', name: 'Ward Orderly + Comfort Blanket',
+    members: [m('ward-orderly'), m('comfort-blanket')],
+    teaches: 'One redirects the damage and the other refuses to let anything fall.' },
+  { id: 'kn-12', region: 'kennels', tier: 'advanced',
+    name: 'Walking Cage + Collar Keeper + Feeding Cart',
+    members: [m('walking-cage'), m('collar-keeper'), m('feeding-cart'), m('ward-cat')],
+    teaches: 'The Cart keeps calming the animal while everything else keeps it locked in.' },
+  { id: 'kn-13', region: 'kennels', tier: 'advanced',
+    name: 'Leash Hand + Ward Orderly + Comfort Blanket',
+    members: [m('leash-hand'), m('ward-orderly'), m('comfort-blanket')],
+    teaches: 'Three layers of protection and not one of them is aimed at you.' },
+  { id: 'kn-14', region: 'kennels', tier: 'advanced',
+    name: 'Walking Cage + Collar Keeper + Ward Orderly',
+    members: [m('walking-cage'), m('collar-keeper'), m('ward-orderly'), m('ward-bird')],
+    teaches: 'Nothing here is trying to hurt the animal. The system just keeps repairing itself.',
+    advancedOnly: true, minScuffle: 2 },
+
+  // ── Big Scares (§14-§16) ----------------------------------------------
+  { id: 'kn-scare-collector', region: 'kennels', tier: 'elite', name: 'The Collar Collector',
+    members: [m('collar-collector')],
+    teaches: 'Every rule you take off it makes it hit harder. Some rules are worth keeping.' },
+  { id: 'kn-scare-rolling', region: 'kennels', tier: 'elite', name: 'The Rolling Ward',
+    members: [m('rolling-ward')],
+    teaches: 'Freeing them and beating it are the same three latches.' },
+  { id: 'kn-scare-perfect', region: 'kennels', tier: 'elite', name: 'The Perfect Pen',
+    members: [m('perfect-pen'), m('ward-pup')],
+    teaches: 'Its defence is a score for how safe it is, and it goes up when you leave it alone.' },
+
+  // ── Boss -----------------------------------------------------------------
+  { id: 'kn-boss', region: 'kennels', tier: 'boss', name: 'The Kennelmaster',
+    members: [m('kennelmaster')],
+    teaches: 'Nothing here will hurt them. It simply will not let them go.' },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
 // The Crypt and Ossuary - docs/design/regions/11-crypt.md §9-§12
 //
 // The ladder is what gets left behind. The Tibia leaves one Remains and has no
@@ -1439,6 +1518,21 @@ const HEART = [
 // Per-region generation rules (design doc §10 "Encounter selection rules")
 // ─────────────────────────────────────────────────────────────────────────────
 export const REGION_RULES = {
+  /* docs/design/regions/15-kennels.md §13. "Ward Animals cannot be directly
+     damaged" and "Fright 3 never kills or permanently harms an animal" are
+     enforced in the defs, where the damage actually arrives — see the header
+     of `enemies/kennels.js` for why one flag was not enough. "No ordinary
+     Scuffle can contain more than one Ward Animal" is the formation list
+     above, which never places two. */
+  kennels: {
+    /** §13 outright: two Ward Orderlies at Haunt 0. The rest is the same
+        argument — a second copy of any of these support enemies makes a
+        board that defends itself faster than it can be taken apart. */
+    noDuplicates: ['ward-orderly', 'comfort-blanket', 'walking-cage', 'feeding-cart'],
+    /** The Leash Hand and the Blanket both need somebody to hold onto. */
+    neverAlone: ['comfort-blanket'],
+    maxConsecutiveLead: 2,
+  },
   /* docs/design/regions/14-bathhouse.md §13. "Soap Sprite should appear
      before Overflow" and "Steam Ghost should appear alone before it appears
      beside Pipe Knocker" are the tier ladder: both are EARLY solo and both
@@ -1626,7 +1720,7 @@ export const REGION_RULES = {
   },
 };
 
-const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...GY, ...SL, ...AO, ...LW, ...BR, ...CR, ...HM, ...SP, ...BH, ...HEART];
+const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...GY, ...SL, ...AO, ...LW, ...BR, ...CR, ...HM, ...SP, ...BH, ...KN, ...HEART];
 
 /** id → EncounterDef */
 export const ENCOUNTERS = Object.freeze(

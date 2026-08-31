@@ -29,6 +29,9 @@
  *   RELIC_SIGILS[id]                    -> an SVG path for the chip glyph
  */
 import { TERMS } from './schema.js';
+/* Soft Leash asks a StatusDef whether it is the kind of rule that makes a
+   Trick cost more, rather than carrying a list of the ones that currently do. */
+import { getStatus } from '../combat/statuses.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // hook helpers — every one of these is preview-safe
@@ -697,7 +700,63 @@ export const RELICS = [
       },
     },
   },
+  {
+    /**
+     * 15-kennels.md §55, Spare Dog Tag: "The first time each combat you gain
+     * Guard from another character or allied effect, gain 3 additional Guard."
+     *
+     * `ev.source` is what makes that readable — it is the ACTOR the Guard came
+     * from, and Guard the Kid gave itself carries itself as the source. Freeing
+     * a Ward Animal is the shape it was written for, and Pudding's whole card
+     * pool is the other one.
+     */
+    id: 'spare-dog-tag', name: 'Spare Dog Tag', rarity: 'rare', icon: 'tag',
+    desc: `The first time each ${TERMS.combat} you gain ${TERMS.block} from someone other than yourself, gain 3 more.`,
+    flavor: 'A blank one, on a split ring, waiting for a name that nobody ever wrote on it.',
+    hooks: {
+      onBoardEvent(h) {
+        const ev = h.boardEvent || h.ev;
+        if (!ev || ev.type !== 'block' || !ev.amount) return;
+        if (!ev.actor || ev.actor !== player(h)) return;
+        if (ev.source === player(h)) return;
+        if (!once(h, 'tag')) return;
+        h.e.gainBlock(player(h), 3, { reason: 'relic', source: null });
+        pop(h, 'tag');
+      },
+    },
+  },
   // ── boss ──────────────────────────────────────────────────────────────────
+  {
+    /**
+     * §55, Soft Leash: "The first time each combat an enemy applies a temporary
+     * Nerve increase to one of your Tricks, gain 4 Guard." Sized for a boss slot
+     * by paying every turn rather than once a fight.
+     *
+     * It asks a question no board event answers directly — "is this status one
+     * that makes a Trick cost more?" — so it reads the STATUS DEF and asks
+     * whether it hooks `modifyCardCost`. That is a fact about the rule rather
+     * than a hard-coded list of the seven statuses that currently do it, which
+     * means the eighth is covered on the day it is written.
+     */
+    id: 'soft-leash', name: 'Soft Leash', rarity: 'boss', icon: 'leash',
+    desc: `Once each turn, when something makes one of your Tricks cost more ${TERMS.energy}, gain 4 ${TERMS.block} and draw 1.`,
+    flavor: 'Braided cotton, gone soft with use. Whoever wore it was walked every day.',
+    hooks: {
+      onBoardEvent(h) {
+        const ev = h.boardEvent || h.ev;
+        if (!ev || ev.type !== 'status' || ev.amount <= 0) return;
+        if (!ev.actor || ev.actor !== player(h)) return;
+        const def = getStatus(ev.id);
+        if (!def || !def.hooks || !def.hooks.modifyCardCost) return;
+        const m = mem(h);
+        if (m.leashTurn === h.e.turn) return;
+        m.leashTurn = h.e.turn;
+        h.e.gainBlock(player(h), 4, { reason: 'relic', source: null });
+        h.e._asSeat(player(h), () => h.e.drawCards(1, 'relic'));
+        pop(h, 'leash');
+      },
+    },
+  },
   {
     /**
      * §53, Bathhouse Slippers: "The first temporary increase to a Trick's Nerve

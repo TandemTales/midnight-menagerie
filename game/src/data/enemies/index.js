@@ -28,6 +28,8 @@ import { PASSAGE_ENEMIES, PASSAGE_STATUSES } from './secret-passages.js';
 import { PASSAGE_SCARES, SCARE_STATUSES as PASSAGE_SCARE_STATUSES } from './secret-passages-scares.js';
 import { BATH_ENEMIES, BATH_STATUSES } from './bathhouse.js';
 import { BATH_SCARES } from './bathhouse-scares.js';
+import { KENNEL_ENEMIES, KENNEL_STATUSES } from './kennels.js';
+import { KENNEL_SCARES, SCARE_STATUSES as KENNEL_SCARE_STATUSES } from './kennels-scares.js';
 import { GREENHOUSE_SCARES } from './greenhouse-scares.js';
 import { HEART_ENEMIES, HEART_STATUSES } from './heart.js';
 import { HEART_SCARES } from './heart-scares.js';
@@ -45,6 +47,7 @@ import { CRYPT_BOSSES } from '../bosses/bone-curator.js';
 import { MAZE_BOSSES } from '../bosses/gardener-of-rot.js';
 import { WARDEN_BOSSES, WARDEN_STATUSES } from '../bosses/whisper-warden.js';
 import { MATRON_BOSSES } from '../bosses/drowned-matron.js';
+import { MASTER_BOSSES, MASTER_STATUSES } from '../bosses/kennelmaster.js';
 import { HEART_BOSSES, KEEPER_STATUSES } from '../bosses/keeper.js';
 import { ENEMY_STATUSES as CORE_STATUSES, STATUS_TRICK_DEFS as CORE_TRICKS } from './_lib.js';
 import { INVITATION_TRICKS, PASSAGE_OFFER_TRICKS, ECHO_TRICKS, STORM_OFFER_TRICKS } from '../invitations.js';
@@ -70,6 +73,7 @@ export const ENEMY_STATUSES = Object.freeze(
    ...MAZE_STATUSES,
    ...PASSAGE_STATUSES, ...PASSAGE_SCARE_STATUSES, ...WARDEN_STATUSES,
    ...BATH_STATUSES,
+   ...KENNEL_STATUSES, ...KENNEL_SCARE_STATUSES, ...MASTER_STATUSES,
    ...HEART_STATUSES,
    ...KEEPER_STATUSES],
 );
@@ -119,6 +123,9 @@ const ALL = [
   ...BATH_ENEMIES,
   ...BATH_SCARES,
   ...MATRON_BOSSES,
+  ...KENNEL_ENEMIES,
+  ...KENNEL_SCARES,
+  ...MASTER_BOSSES,
   ...HEART_ENEMIES,
   ...HEART_SCARES,
   ...HEART_BOSSES,
@@ -157,7 +164,7 @@ export function rollHp(def, rng) {
 export const IMPLEMENTED_REGIONS = Object.freeze([
   'foyer', 'nursery', 'sleeping-quarters', 'kitchens-cellars', 'greenhouse',
   'graveyard', 'study-library', 'attic-observatory', 'lampworks', 'ballroom',
-  'crypt', 'hedge-maze', 'secret-passages', 'bathhouse', 'heart',
+  'crypt', 'hedge-maze', 'secret-passages', 'bathhouse', 'kennels', 'heart',
 ]);
 
 /**
