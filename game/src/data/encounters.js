@@ -685,6 +685,83 @@ const GY = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// The Crypt and Ossuary - docs/design/regions/11-crypt.md §9-§12
+//
+// The ladder is what gets left behind. The Tibia leaves one Remains and has no
+// use for it; the Fetcher arrives later and turns the whole floor into a
+// resource. §12 keeps them in that order because the second enemy is only
+// frightening once the first has taught you what it is eating.
+// ─────────────────────────────────────────────────────────────────────────────
+const CR = [
+  // ── Early (§9) ----------------------------------------------------------
+  { id: 'cr-1', region: 'crypt', tier: 'early', name: 'Loose Tibia',
+    members: [m('loose-tibia')],
+    teaches: 'Remains. Killing it leaves something on the floor, and nothing wants it yet.' },
+  { id: 'cr-2', region: 'crypt', tier: 'early', name: 'Skull Roller',
+    members: [m('skull-roller')],
+    teaches: 'It does not resurrect. It leaves, and comes back, and you cannot hit it in between.' },
+  { id: 'cr-3', region: 'crypt', tier: 'early', name: 'Bone Heap',
+    members: [m('bone-heap')],
+    teaches: 'Kill it and it collapses into a Pile. Break the Pile and it stays dead.' },
+  { id: 'cr-4', region: 'crypt', tier: 'early', name: 'Ribcage Guard',
+    members: [m('ribcage-guard')],
+    teaches: 'It takes the first 10 damage aimed at somebody else, and it leaves two Remains.' },
+
+  // ── Standard (§10) ------------------------------------------------------
+  { id: 'cr-5', region: 'crypt', tier: 'standard', name: 'Loose Tibia + Crypt Fetcher',
+    members: [m('loose-tibia'), m('crypt-fetcher')],
+    teaches: 'Now you see what the bones on the floor were for.' },
+  { id: 'cr-6', region: 'crypt', tier: 'standard', name: 'Ribcage Guard + Loose Tibia',
+    members: [m('ribcage-guard'), m('loose-tibia')],
+    teaches: 'The Guard protects the small one and pays for it in Remains when it dies.' },
+  { id: 'cr-7', region: 'crypt', tier: 'standard', name: 'Urn Spirit + Skull Roller',
+    members: [m('urn-spirit'), m('skull-roller')],
+    teaches: 'Whatever dies first is what the Urn gets to keep.' },
+  { id: 'cr-8', region: 'crypt', tier: 'standard', name: 'Bone Heap + Loose Tibia',
+    members: [m('bone-heap'), m('loose-tibia')],
+    teaches: 'A Bone Pile and ordinary Remains at once, and only one of them matters.' },
+
+  // ── Advanced (§11) ------------------------------------------------------
+  { id: 'cr-9', region: 'crypt', tier: 'advanced', name: 'Ribcage Guard + Crypt Fetcher',
+    members: [m('ribcage-guard'), m('crypt-fetcher')],
+    teaches: 'The Guard makes exactly the thing the Fetcher wants, and makes two of them.' },
+  { id: 'cr-10', region: 'crypt', tier: 'advanced', name: 'Bone Heap + Crypt Fetcher',
+    members: [m('bone-heap'), m('crypt-fetcher')],
+    teaches: 'Ignore the Pile or the Remains and something you already killed comes back.' },
+  { id: 'cr-11', region: 'crypt', tier: 'advanced', name: 'Urn Spirit + Ribcage Guard',
+    members: [m('urn-spirit'), m('ribcage-guard')],
+    teaches: 'Kill the Guard and the Urn gets the best defensive memory in the region.' },
+  { id: 'cr-12', region: 'crypt', tier: 'advanced',
+    name: 'Loose Tibia + Ribcage Guard + Crypt Fetcher',
+    members: [m('loose-tibia'), m('ribcage-guard'), m('crypt-fetcher')],
+    teaches: 'Killing the first two feeds the third almost everything it needs.' },
+  { id: 'cr-13', region: 'crypt', tier: 'advanced', name: 'Bone Heap + Urn Spirit',
+    members: [m('bone-heap'), m('urn-spirit')],
+    teaches: 'Manage the reassembly while deciding whether to hand the Urn a heal.' },
+  { id: 'cr-14', region: 'crypt', tier: 'advanced',
+    name: 'Bone Heap + Ribcage Guard + Crypt Fetcher',
+    members: [m('bone-heap'), m('ribcage-guard'), m('crypt-fetcher')],
+    teaches: 'One redirects, one rebuilds, one turns everything you killed into more of it.',
+    advancedOnly: true, minScuffle: 2 },
+
+  // ── Big Scares (§13-§15) ----------------------------------------------
+  { id: 'cr-scare-knight', region: 'crypt', tier: 'elite', name: 'The Ribcage Knight',
+    members: [m('ribcage-knight'), m('rib-shield'), m('femur-blade'), m('skull-helm')],
+    teaches: 'Three pieces of equipment you can take off it — and twice, it can put one back.' },
+  { id: 'cr-scare-ossuary', region: 'crypt', tier: 'elite', name: 'The Walking Ossuary',
+    members: [m('walking-ossuary')],
+    teaches: 'Every Remains anybody makes feeds it, including the ones it makes itself.' },
+  { id: 'cr-scare-coffins', region: 'crypt', tier: 'elite', name: 'The Coffin Collector',
+    members: [m('coffin-collector')],
+    teaches: 'It buries your best Trick and gives it back if you hit hard enough.' },
+
+  // ── Boss -----------------------------------------------------------------
+  { id: 'cr-boss', region: 'crypt', tier: 'boss', name: 'The Bone Curator',
+    members: [m('bone-curator')],
+    teaches: 'Breaking its Exhibit does not destroy the pieces. It leaves them where it can reach them.' },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
 // The Ballroom and Velvet Suites - docs/design/regions/10-ballroom.md §9-§12
 //
 // The ladder is one temptation at a time. The Party Phantom opens alone because
@@ -1130,6 +1207,19 @@ const HEART = [
 // Per-region generation rules (design doc §10 "Encounter selection rules")
 // ─────────────────────────────────────────────────────────────────────────────
 export const REGION_RULES = {
+  /* docs/design/regions/11-crypt.md §12. "Loose Tibia should appear before
+     Crypt Fetcher" and "Bone Heap should appear alone before appearing with
+     Crypt Fetcher" are the tier ladder: both are EARLY solo, both Fetcher
+     pairings are STANDARD or ADVANCED. "Ribcage Guard cannot Cage another
+     Ribcage Guard" and "Crypt Fetcher cannot restore the same enemy twice"
+     are enforced in the defs, where the target is actually chosen. */
+  crypt: {
+    /** The Fetcher wants a floor with something on it. */
+    minScuffle: { 'crypt-fetcher': 2 },
+    /** Two Fetchers or two Heaps at Haunt 0 are §12 outright. */
+    noDuplicates: ['crypt-fetcher', 'bone-heap', 'ribcage-guard'],
+    maxConsecutiveLead: 2,
+  },
   /* docs/design/regions/10-ballroom.md §12. "Party Phantom should appear
      alone before being paired with Waltzing Armor" is the tier ladder: the
      Phantom alone is Scuffle 2 in EARLY, the pair is Scuffle 8 in STANDARD.
@@ -1266,7 +1356,7 @@ export const REGION_RULES = {
   },
 };
 
-const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...GY, ...SL, ...AO, ...LW, ...BR, ...HEART];
+const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...GY, ...SL, ...AO, ...LW, ...BR, ...CR, ...HEART];
 
 /** id → EncounterDef */
 export const ENCOUNTERS = Object.freeze(

@@ -592,6 +592,40 @@ export const RELICS = [
     },
   },
 
+  {
+    id: 'spare-rib', name: 'Spare Rib', rarity: 'rare', icon: 'rib',
+    desc: `The first time each ${TERMS.combat} you fall below half ${TERMS.hp}, gain 7 ${TERMS.block}.`,
+    flavor: 'Everyone has a couple they are not really using.',
+    hooks: {
+      onDamaged(h) {
+        if (h.defender !== player(h)) return;
+        const p = player(h);
+        if (p.hp > p.maxHp / 2) return;
+        if (!once(h, 'rib')) return;
+        h.e.gainBlock(p, 7, { fromCard: false, reason: 'relic' });
+        pop(h, 'brace');
+      },
+    },
+  },
+  {
+    id: 'crooked-bone', name: 'Crooked Bone', rarity: 'boss', icon: 'crooked',
+    desc: `Whenever an enemy comes back after being defeated or removed, it returns with 4 less `
+        + `${TERMS.hp}. Minimum 1.`,
+    flavor: 'It was put back the wrong way round and nothing has been quite right since.',
+    hooks: {
+      /* The Crypt is the region this is for — a Bone Heap reassembling, a Crypt
+         Fetcher bringing something back, a Skull Roller returning — but it is
+         written against the engine's own spawn event rather than against those
+         enemies, so it reads the whole class. */
+      onSpawn(h) {
+        const en = h.actor || h.enemy;
+        if (!en || en.side !== 'enemy') return;
+        if (!(en.summoned || (en.mem && en.mem.returned))) return;
+        en.hp = Math.max(1, en.hp - 4);
+        pop(h, 'crooked');
+      },
+    },
+  },
   // ── boss ──────────────────────────────────────────────────────────────────
   {
     id: 'butlers-white-glove', name: "The Butler's White Glove", rarity: 'boss', icon: 'glove',

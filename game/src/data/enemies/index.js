@@ -20,6 +20,8 @@ import { LAMPWORKS_ENEMIES, LAMPWORKS_STATUSES } from './lampworks.js';
 import { LAMPWORKS_SCARES } from './lampworks-scares.js';
 import { BALLROOM_ENEMIES, BALLROOM_STATUSES } from './ballroom.js';
 import { BALLROOM_SCARES } from './ballroom-scares.js';
+import { CRYPT_ENEMIES, CRYPT_STATUSES } from './crypt.js';
+import { CRYPT_SCARES } from './crypt-scares.js';
 import { GREENHOUSE_SCARES } from './greenhouse-scares.js';
 import { HEART_ENEMIES, HEART_STATUSES } from './heart.js';
 import { HEART_SCARES } from './heart-scares.js';
@@ -33,6 +35,7 @@ import { STUDY_LIBRARY_BOSSES } from '../bosses/archivist.js';
 import { ATTIC_BOSSES } from '../bosses/watcher.js';
 import { LAMPWORKS_BOSSES } from '../bosses/lamplighter.js';
 import { BALLROOM_BOSSES } from '../bosses/master-of-revels.js';
+import { CRYPT_BOSSES } from '../bosses/bone-curator.js';
 import { HEART_BOSSES, KEEPER_STATUSES } from '../bosses/keeper.js';
 import { ENEMY_STATUSES as CORE_STATUSES, STATUS_TRICK_DEFS as CORE_TRICKS } from './_lib.js';
 import { INVITATION_TRICKS } from '../invitations.js';
@@ -54,7 +57,7 @@ import { INVITATION_TRICKS } from '../invitations.js';
 export const ENEMY_STATUSES = Object.freeze(
   [...CORE_STATUSES, ...KITCHENS_STATUSES, ...GREENHOUSE_STATUSES,
    ...GRAVEYARD_STATUSES, ...STUDY_LIBRARY_STATUSES, ...ATTIC_STATUSES,
-   ...LAMPWORKS_STATUSES, ...BALLROOM_STATUSES,
+   ...LAMPWORKS_STATUSES, ...BALLROOM_STATUSES, ...CRYPT_STATUSES,
    ...HEART_STATUSES,
    ...KEEPER_STATUSES],
 );
@@ -91,6 +94,9 @@ const ALL = [
   ...BALLROOM_ENEMIES,
   ...BALLROOM_SCARES,
   ...BALLROOM_BOSSES,
+  ...CRYPT_ENEMIES,
+  ...CRYPT_SCARES,
+  ...CRYPT_BOSSES,
   ...HEART_ENEMIES,
   ...HEART_SCARES,
   ...HEART_BOSSES,
@@ -129,7 +135,7 @@ export function rollHp(def, rng) {
 export const IMPLEMENTED_REGIONS = Object.freeze([
   'foyer', 'nursery', 'sleeping-quarters', 'kitchens-cellars', 'greenhouse',
   'graveyard', 'study-library', 'attic-observatory', 'lampworks', 'ballroom',
-  'heart',
+  'crypt', 'heart',
 ]);
 
 /**

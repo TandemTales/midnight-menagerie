@@ -202,6 +202,15 @@ const MOTIF = {
   admirer: 'drift',
   curtain: 'ripple',
   armor: 'stoop', host: 'stoop', revels: 'stoop', chaperone: 'stoop',
+  /* The Crypt. Bones move like bones: nothing here drifts except the urn
+     and the little labelled pieces on their stands. */
+  tibia: 'pounce', skull: 'pounce', fetcher: 'pounce',
+  urn: 'drift', 'bone-piece': 'drift',
+  ribcage: 'ripple', boneheap: 'ripple', remains: 'ripple', bonepile: 'ripple',
+  'knight-bone': 'lunge', 'rib-shield': 'lunge', 'femur-blade': 'lunge',
+  'skull-helm': 'lunge',
+  ossuary: 'slam', coffins: 'slam',
+  curator: 'stoop',
 };
 const BODY_MOTIF = { squat: 'pounce', 'tall-thin': 'stoop', sprawling: 'ripple', floating: 'drift' };
 

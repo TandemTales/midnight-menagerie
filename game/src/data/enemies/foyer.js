@@ -1006,7 +1006,13 @@ export const houseBell = {
   },
 
   /** Any summon of the Bell's dying drops Resonance — the player's lever on the Toll. */
-  onAllyDeath(c, dead) {
+  onAllyDeath(c) {
+    // `c.dead`, NOT a second parameter: `_enemyLifecycle` merges its `extra`
+    // INTO the ctx and calls the hook with ONE argument, so this read
+    // `undefined` and returned on its first line every time — the player’s only
+    // lever on the House Bell’s Toll had never once worked. Found 2026-08-30
+    // while writing the Crypt, which needed the same hook.
+    const dead = c.dead;
     if (dead && dead.summonedBy === (c.self.uid ?? c.self.id)) {
       addCnt(c, 'resonance', -1, 4, 0);
     }
