@@ -44,11 +44,36 @@ import { REGION_ORDER, COMPANIONS, NodeType } from '../data/schema.js';
  * Kept as data rather than probed, because probing `data/enemies/index.js` at
  * module load would make the catalogue depend on the content registry being
  * booted, and this file is imported by the settings panel. When a region ships,
- * this list is where it gets added — and `tests/achievements/run.py` asserts the
- * list matches the enemy pools that really exist, so it cannot rot silently.
+ * this list is where it gets added.
+ *
+ * IT ROTTED, AND THE SUITE THAT WAS SUPPOSED TO STOP IT DID NOT EXIST.
+ *
+ * The comment here used to end "`tests/achievements/run.py` asserts the list
+ * matches the enemy pools that really exist, so it cannot rot silently". There
+ * was no `tests/achievements/`. Meanwhile the ladder went from three regions to
+ * seventeen across two sessions and this list stayed at three, so `shippable()`
+ * kept withholding every achievement gated on `all-regions` or `heart` — which
+ * is `rescue-all`, the game's own TITLE achievement, and `reach-heart`, the one
+ * for finishing it. Both were fully written, tested, and invisible.
+ *
+ * That is CONTRACTS 54 in its purest form: a comment describing a gate is not a
+ * gate, and this one described a gate that had never been written. The suite
+ * exists now and it reads the real registries — `IMPLEMENTED_REGIONS` from
+ * `data/enemies/index.js` and the boss formations from `data/encounters.js` —
+ * so the next region to ship fails it until it is added here.
  */
-export const BUILT_REGIONS = ['foyer', 'nursery', 'sleeping-quarters'];
-export const BUILT_BOSSES = ['butler', 'governess', 'bedframe-beast'];
+export const BUILT_REGIONS = [
+  'foyer', 'nursery', 'sleeping-quarters', 'kitchens-cellars', 'greenhouse',
+  'graveyard', 'study-library', 'attic-observatory', 'lampworks', 'ballroom',
+  'crypt', 'hedge-maze', 'secret-passages', 'bathhouse', 'kennels',
+  'pumpkin-grounds', 'heart',
+];
+export const BUILT_BOSSES = [
+  'butler', 'governess', 'bedframe-beast', 'confectioner', 'head-gardener',
+  'groundskeeper', 'the-archivist', 'the-watcher', 'the-lamplighter',
+  'master-of-revels', 'bone-curator', 'gardener-of-rot', 'whisper-warden',
+  'drowned-matron', 'kennelmaster', 'harvest-king', 'keeper',
+];
 
 const TIER = { bronze: 'bronze', silver: 'silver', gold: 'gold' };
 

@@ -825,6 +825,130 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    per trap 54, this gate asserts it can SEE before it asserts a zero: registry
    population plus one known id from each of the four layers.
 
+56. **A FIELD THAT LOOKS WRITTEN BECAUSE ITS SIBLING IS.** `engine.summon()` set
+   `e.summoned = true` and threaded a `sourceId` into the emitted event, and
+   never wrote `summonedBy` onto the actor at all. FIVE content sites in three
+   regions read it, every one comparing it against their own id, so every one
+   matched nothing:
+
+   * the House Bell's Resonance falls by 1 when one of ITS OWN summons dies —
+     the player's only lever on MIDNIGHT TOLL, and it had never once fallen;
+   * the Toy Chest caps how many of its own Toys may stand at once and counted
+     zero of them, so the cap could not bind and Rattle Angrily was unreachable;
+   * Tidy Up reclaims its most damaged own summon and found none to reclaim;
+   * The Wardrobe despawns its summons when it dies, and despawned nothing.
+
+   The Butler is the only site that worked, and only because it asks
+   `a.summoned || a.summonedBy` — the half that is not the one it means, which
+   is also why nobody noticed.
+
+   This is trap 10's shape moved from a hook name to a DATA field, and it is
+   worse in one way: a hook registered under an unknown name can be found by
+   comparing two registries, which is what `tests/hook-names/check.py` does.
+   A read of `actor.x` where nothing writes `actor.x` looks exactly like a read
+   of a field that is sometimes empty. **The only thing that finds it is playing
+   the mechanic and looking at the number.** The House Bell's Resonance was
+   repaired ONCE already, in the `onAllyDeath` signature, and the field it then
+   read was still never written — a mechanic can be dead in more than one way at
+   once (trap 50), including twice on the same line.
+
+57. **THE BUILDER RETURNS THE MODIFIERS. SOMETHING ELSE APPLIES THEM.**
+   `buildEncounter(id, rng, hauntLevel)` returns `{enemyId, hp, counters, flags}`
+   and applies none of it; `state/run.js` copies `counters` and `flags` onto the
+   built actors after construction. A harness that does the natural thing —
+
+       enemies: members.map(m => en.getEnemy(m.enemyId))
+
+   — throws every one of them away and measures HAUNT 0 whatever level it asked
+   for, silently, with a green result.
+
+   `tests/boss-haunt/check.py`'s first run reported ALL SEVENTEEN bosses failing
+   to apply their Haunt damage bonus. Five of them really were; the other twelve
+   were the gate being wrong. **A gate whose first run indicts everything is
+   more likely to be broken than to be right** — the base rate for "every single
+   piece of content is wrong in the same way" is very low, and a checker that
+   says so has usually failed to set up the thing it is checking.
+
+   Two rules. A probe that builds a fight must apply the envelope the way the
+   run layer does, or say in its own comment that it is deliberately at Haunt 0.
+   And a returned bag of modifiers wants exactly one applier: `moveOverrides`
+   came out of the same call, was documented in two places, and was consumed by
+   NOTHING for as long as it existed — see `_lib.js`'s note on why it was
+   removed rather than wired.
+
+58. **TWO SPELLINGS OF ONE HOOK BALANCE THE REGISTRY AND STILL SPLIT THE
+   MECHANIC.** `bones/tail-a-mile-a-minute` is trap 10's own example: it shipped
+   as a Rare Power whose whole implementation was an empty handler on
+   `retrieved`, a hook nothing fires. It was repaired by registering it on
+   `dugUp` — and `dugUp` is fired by exactly two things, both multiplayer Pack
+   Stash cards, while `digUp()`, the ordinary Dig Up every solo player uses and
+   the one Pudding also fires, has always fired `digUp`.
+
+   So the card says "the first Attack after Fetching or Digging Up", the Fetch
+   half worked, and the Dig Up half was dead in solo for two commits.
+   `tests/hook-names/check.py` cannot see it and is not wrong to: both spellings
+   were declared somewhere and fired somewhere, so the registry balanced
+   perfectly. A name that exists is not a name that reaches you.
+
+   **One canonical name per event.** When repairing a dead hook, do not pick the
+   spelling that makes the gate go green — grep for who FIRES it and count the
+   paths. `tests/bones/run.py` plays a Dig Up and looks at the next Attack,
+   which is the only thing that could have caught this.
+
+59. **A LABEL WRITTEN BESIDE A THING IS NOT DERIVED FROM IT.** Every Curiosity
+   option carries `risk` and `reward` lines, and `data/events.js`'s own header
+   sets the bar and names its source: "the risk is NAMED in the option's `risk`
+   line… Slay the Spire's `?` rooms always tell you the shape of the bet". They
+   are prose typed next to the outcomes rather than computed from them, so they
+   can say anything, and they did:
+
+   * THE COLLAR's "Leave it exactly where it is" advertised `RISK You walk away
+     empty-handed` and had exactly ONE outcome, which handed over a Keepsake and
+     6 Courage. The advertised risk could not happen.
+   * EIGHT options read `RISK Nothing` and handed over a GUARANTEED Keepsake.
+
+   Measured consequence, not a tidiness complaint: `tests/run/run.py` found the
+   Curiosity room paying **0.97 Keepsakes per visit** across 273 of them, more
+   than every boss in the run put together, and all seventeen Curiosities could
+   pay one. The `?` room was a treasure chest with reading attached, and it is
+   the second most common room in the game.
+
+   `tests/events/check.py` derives the line from the outcomes: every noun a
+   button names must be DELIVERABLE (reward side) or REACHABLE (risk side) by
+   some outcome of that option, the vocabulary is closed, and an option that
+   risks nothing may not hand over the run's best resource. This is trap 54 in
+   the one place trap 54 did not think to look — not content describing its own
+   MECHANICS, but content describing its own PRICE.
+
+60. **A COMMENT THAT NAMES A SUITE IS NOT A SUITE, AND THE LIST IT GUARDS WILL
+   ROT.** `core/achievements.js` keeps two hand-written lists of what content is
+   in the build, `BUILT_REGIONS` and `BUILT_BOSSES`, and `shippable()` uses them
+   to withhold achievements whose content does not exist yet — so a Steam page
+   never lists one nobody can earn. The comment beside them read:
+
+       When a region ships, this list is where it gets added — and
+       `tests/achievements/run.py` asserts the list matches the enemy pools that
+       really exist, so it cannot rot silently.
+
+   There was no `tests/achievements/`. The ladder went from three regions to
+   seventeen across two sessions and the list stayed at three, so `shippable()`
+   kept withholding **`rescue-all`, the game's own title achievement, and
+   `reach-heart`, the one for finishing it** — both fully written, both tested,
+   both invisible, for a reason that had stopped being true.
+
+   The duplicate itself is CORRECT and deliberate: `achievements.js` must not
+   import the content registry, because probing it at module load would make the
+   catalogue depend on the registry being booted and the settings panel imports
+   this file. A duplicate of a growing list is a fine design **with** a gate and
+   an inevitable defect without one.
+
+   Two rules from it. **When a comment names a suite, open the directory** —
+   that is a five-second check and it is the only thing between "gated on
+   purpose" and "broken since March". And **anything derived by hand from a list
+   that grows needs a checker in the same commit**, not in the comment.
+
+
+
 15. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
    now reported their in-flight work being swallowed by an unrelated commit — one had a whole
    `music.js` rewrite land inside a commit titled "Pronouns per the designer", which then made a

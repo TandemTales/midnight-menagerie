@@ -25,86 +25,175 @@ change him.
 **~65,500 lines** across `game/src/`. Currently on branch **`dev`**, pushed to
 `github.com/TandemTales/midnight-menagerie`. `main` is untouched and stale.
 
-### Where it stands, 2026-08-31
+### Where it stands, 2026-08-31 (second session)
 
-**ALL SEVENTEEN REGIONS SHIP ROSTERS.** `RUN_REGIONS` in `state/run.js` walks
-the whole ladder. Five regions were built this session — the Withered Hedge Maze
-was finished and committed, then the Secret Passages, the Bathhouse and Rain
-Wing, the Kennels and Animal Ward, and the Moon Courtyard and Pumpkin Grounds.
+**ALL SEVENTEEN REGIONS SHIP ROSTERS, AND ALL SEVENTEEN NOW HAVE A REAL-ENGINE
+GATE.** The first three — foyer, nursery, sleeping-quarters, the ones a new
+player actually meets — predated the pattern and had none. `tests/foyer/` 66,
+`tests/nursery/` 64, `tests/sleeping-quarters/` 62.
 
-    foyer · nursery · sleeping-quarters · kitchens-cellars · greenhouse ·
-    graveyard · study-library · attic-observatory · lampworks · ballroom ·
-    crypt · hedge-maze · secret-passages · bathhouse · kennels ·
-    pumpkin-grounds · heart
+**AND THE LADDER HAS A SHAPE.** The previous handoff's headline finding was that
+**ten of the seventeen wings killed nobody** — everything that survived the
+Study and Library won the game. That is closed, against the same content,
+unchanged:
 
-Every gate's number moved and every one of them is at zero: 196 → 275 enemies,
-238 → 310 encounters, 57 → 106 statuses, 16 → 24 status Tricks, and the intent
-audit 14382 → 20530 turns. Battery 64/64.
+    where fifty seeded expeditions END
+    before                          after
+    defeat/foyer            28      defeat/foyer            28
+    defeat/nursery          10      victory                  7
+    victory                  8      defeat/greenhouse        4
+    defeat/graveyard         3      defeat/study-library     2
+    defeat/greenhouse        1      defeat/hedge-maze        2
+                                    defeat/nursery           2
+                                    defeat/graveyard         2
+                                    defeat/lampworks         1
+                                    defeat/sleeping-quarters 1
+                                    defeat/kitchens-cellars  1
 
-**THE CONTENT JOB IS DONE AND THE BALANCE JOB HAS NOT STARTED**, and finishing
-the ladder turned the previous handoff's softest finding into its hardest:
+Ten of the seventeen kill somebody now. Back-half fights run 4 to 7 turns
+instead of 1.8 to 2.5. Boss draws: 4 to 0.
 
-    regions reached (of 50; every 5th run is shepherded)
-      1 foyer 40/10 · 2 nursery 15/7 · 3 sleeping-quarters 10/2 ·
-      4 kitchens-cellars 10/2 · 5 greenhouse 10/2 · 6 graveyard 9/2 ·
-      7 study-library 6/2 · 8 attic-observatory 6/2 · … · 17 heart 6/2
-      victories: 6/40 unaided, 2/10 shepherded
+#### What it actually was
 
-**Ten of the seventeen wings kill nobody.** Everything that survives the Study
-and Library wins the game — thirty Big Scares, ten bosses and a hundred and
-eighty enemies take not one run between them. The regions are not mispriced
-against each other; they are mispriced against the deck that ARRIVES, which by
-region 8 is thirty-odd cards, fifteen Keepsakes and a mean purse of 500. Boss
-draws went from two to four (the Groundskeeper of Names three times, the Head
-Gardener once). This is item 1 of the open list and the natural next work.
+"Regions reached" says where runs STOP and cannot say why. `tests/run/run.py`
+prints two new tables that can. The first is **what a fight costs, region by
+region, as a share of the pool it comes out of** — the only cross-region
+comparison that survives the pool growing:
 
-**Five new engine seams, and all five were DEAD before they were used.**
+| region | cost per fight | turns | deck | keepsakes |
+|---|---|---|---|---|
+| foyer | 24.6% of pool | 6.7 | 12 | 2.2 |
+| nursery | 8.4% | 6.1 | 18 | 6.8 |
+| sleeping-quarters | 1.7% | 4.6 | 23 | 11.8 |
+| … | | | | |
+| crypt | 0.6% | 2.6 | 33 | 50.6 |
+| heart | 1.7% | 2.4 | 33 | 55.0 |
 
-| what was wrong | where |
-|---|---|
-| `drawCards` had `modifyDraw` and no way to react to WHICH cards arrived | `combat/engine.js` |
-| `boardEvent` only ever asked ENEMY defs, so an `onBoardEvent` Keepsake did nothing — the Bent Garden Fork had never fired | `combat/engine.js` |
-| enemy death did not refresh intents; anything that killed outside a card left the promise wrong | `combat/engine.js` |
-| `hpBefore` went into the damage EVENT and not the hook payload, so overkill was unmeasurable | `combat/damage.js` |
-| the enemy mock had no `engine.stats`, so `c.e.stats.*` threw in the harness and resolved against the real engine | `tests/enemies/index.html` |
+Fights past the second wing cost one to four per cent and ended in two turns;
+four bosses cost 0.0. And the last column is the cause: a run ended holding
+**fifty-five Keepsakes**, which is every Keepsake in the game. The pool was not
+generous, it was EXHAUSTED, and nothing can be priced against a player holding
+every relic that exists.
 
-**AND ONE WHOLE CLASS OF INTENT LIE, FOUND FORTY-SIX TIMES.** A meter the
-player's damage moves, settled in `onPlayerTurnEnd`, drops underneath a number
-the player has already committed against — that hook fires after the intent was
-drawn and before the enemy acts. `tests/enemies/audit.py` caught it across three
-Bathhouse moves including a Calm meter that rerouted a promised 12-damage Towel
-Snap into a heal thirty-three times; it was then found by inspection in the
-Kennels and the Pumpkin Grounds before it could ship. Everything settles at
-`onPlayerTurnStart` now, with one documented exception whose comment says why.
+The second table is **what each kind of room hands over**, and it named a defect
+rather than a balance opinion: a Curiosity paid **0.97 Keepsakes per visit**
+across 273 of them — more than every boss in the run put together, on the second
+most common room in the game.
 
-The same trap lives in status decay buckets: a player's `turnEnd` decay runs
-BEFORE the enemy phase, so Wet promised 14 and delivered 10 until it moved to
-`enemyTurnEnd`, and the Secret Passages' Seen could never be read by any
-committed intent at all.
+#### The three things that fixed it
 
-| what else was wrong | where |
-|---|---|
-| a Ward Animal with only `isTargetable` would have been safe from every Attack and killable by a sweep | `enemies/kennels.js` |
-| the Harvest King's phase transition ripened every Crop and rotted every one in the same turn | `bosses/harvest-king.js` |
-| a Crop that reached Overripe by any route but one sat in its plot forever paying nobody | `enemies/pumpkin-grounds.js` |
-| §26's Disappointed read "is anything ripe" instead of "is the marked Crop gone" | `bosses/harvest-king.js` |
-| Stable was a status with no hook — a chip that meant nothing until it got `onLethal` | `enemies/kennels.js` |
-| Told On was a number in one enemy's own `damageFn`, so it did nothing in the case its chapter describes | `enemies/secret-passages.js` |
-| four display-name collisions — two chips reading the same word on one portrait | `status-names/check.py` |
-| the four-body layout put a boss under the Kid's portrait, and it needed the OPPOSITE fix to five and six | `scenes/combat.css` |
-| four House Rule cards buried that portrait again; three fit and the fourth does not | `kennels.js`, `pumpkin-grounds.js` |
+1. **A Curiosity is a bet again.** `data/events.js`'s own header cites Slay the
+   Spire's `?` rooms — "always tell you the shape of the bet" — and the `risk`
+   and `reward` lines were prose typed beside the outcomes rather than derived
+   from them, so they said untrue things. THE COLLAR advertised `RISK You walk
+   away empty-handed` on an option whose only outcome handed over a Keepsake,
+   and EIGHT options read `RISK Nothing` and paid a guaranteed one.
+   `tests/events/check.py` derives the line from the outcomes now: every noun a
+   button names must be deliverable (reward) or reachable (risk) by some outcome
+   of that option, and an option that risks nothing may not pay the run's best
+   resource. 17 of 17 events could pay one → 11; 24 of 54 options → 16.
 
-New real-engine region gates: `tests/secret-passages/` 74, `tests/bathhouse/` 81,
-`tests/kennels/` 69, `tests/pumpkin-grounds/` 70. Fourteen of the seventeen
-regions now have one; foyer, nursery and sleeping-quarters predate the pattern
-and writing theirs is a real and small piece of work.
+2. **An expedition is a ROUTE, not the ladder.** The Foyer, the Heart, and four
+   wings drawn from the middle fifteen in ladder order, seeded off the run seed.
+   `EXPEDITION_WINGS = 6`, and the number is a measurement — the sweep is in
+   `docs/notes/2026-08-31-how-long-is-an-expedition.md`. This is what the design
+   has always said: "entire wings disappear", "not all are usable every
+   expedition", "what changes is what the mansion is willing to let them reach".
+   `RUN_REGIONS` grew 2 → 4 → 17 as regions shipped and its own comment says
+   every move was about making finished content REACHABLE; nobody decided
+   seventeen. `RUN_REGIONS` is still the mansion, `run.route` is tonight's way
+   through it, and the harness FAILS if any wing is never routed through.
 
-Two new engine concepts the chapters demanded and the engine had never had:
-**WEATHER**, a global battlefield state that affects both sides with visible
-rules and always changes one turn ahead (`enemies/bathhouse.js`), and a
-**NEUTRAL NON-COMBATANT** that cannot be targeted, cannot be damaged by anything
-including a sweep, cannot die, and leaves when the fight does
-(`enemies/kennels.js`). Both headers carry the long version.
+3. **A fight that cannot end is now impossible.** `CombatEngine._losePatience`:
+   past turn 30 every living enemy gains a stack of Strength at each player turn
+   start, announced as THE HOUSE LOSES PATIENCE. Strength is a pipeline status
+   that `previewDamageValue` also applies, so the number rises on the INTENT
+   before it rises on the hit. Unbounded, so termination is guaranteed rather
+   than likely, and far outside reachable play — the longest fight any region
+   gate produces is 24 turns. The boss-draw exemption in the run harness is
+   closed: a draw is a failure now.
+
+#### Five more dead seams. That makes fifteen.
+
+| what was dead | for how long | found by |
+|---|---|---|
+| `actor.summonedBy` — read by five content sites in three regions, written by nothing | always | `tests/foyer/check.py` |
+| boss Haunt `dmgBonus` — five of seventeen bosses applied it in neither `damageFn` nor `effect` | always | `tests/boss-haunt/check.py` |
+| the Haunt envelope's `moves` / `moveOverrides` — produced, documented in two places, consumed by nothing | always | a grep for its consumers |
+| `ANIMATED_EVENTS` — exported and imported by nothing | always | `tests/animated-events/check.py` |
+| `BUILT_REGIONS` said THREE regions while seventeen shipped, so two gold achievements were withheld | two sessions | reading a comment that named a suite which did not exist |
+
+`summonedBy` cost the House Bell's Resonance lever (the player's only way to
+delay MIDNIGHT TOLL — and it had been repaired ONCE already, in the
+`onAllyDeath` signature, while the field it then read was still never written),
+the Toy Chest's summon cap, its Tidy Up, and The Wardrobe's despawn-on-death.
+The Butler is the only site that worked, because it asks
+`a.summoned || a.summonedBy` — the half that is not the one it means.
+
+`moveOverrides` was REMOVED rather than wired: its three users all set a flag
+their own `damageFn` already reads, and a merged override would reach
+`buildIntent` but not a hand-written `effect` — the most expensive bug class in
+this codebase, newly available from a field that looks like a convenience.
+
+`ANIMATED_EVENTS` had five entries with no animator case. Three were real holes
+and now have one — a Kid falling, a Kid getting back up, and a countdown
+reaching zero — and two are met elsewhere on purpose (the hand owns the card-play
+animation, and a status firing is reported by the `damage` or `heal` it causes).
+
+#### The title achievement was withheld for a reason that had stopped being true
+
+`core/achievements.js` gates achievements on `BUILT_REGIONS` and `BUILT_BOSSES`,
+so a Steam page never lists one nobody can earn. The list said three regions.
+Its own comment said "`tests/achievements/run.py` asserts the list matches the
+enemy pools that really exist, so it cannot rot silently" — **and there was no
+`tests/achievements/`.** So `rescue-all`, the game's own title achievement, and
+`reach-heart`, the one for finishing it, were fully written, tested and
+invisible.
+
+The duplicate itself is correct and deliberate: `achievements.js` must not
+import the content registry, because probing it at module load would make the
+catalogue depend on the registry being booted and the settings panel imports
+this file. A duplicate of a growing list is a fine design WITH a gate and an
+inevitable defect without one. `tests/achievements/run.py` exists now — 10
+checks, reading `IMPLEMENTED_REGIONS` and the boss formations, in both
+directions. CONTRACTS 60.
+
+#### The final boss had a rule it could not enforce, twice over
+
+The Keeper's Belonging is printed on screen: "End the turn holding 2 or more and
+the Keeper gains 8 Guard." It read `cardsIn('hand')` from `onPlayerTurnEnd`,
+which is step 3 of `_endTurn`, while `_closeSeatHand` empties the hand at step 1
+— so the count was 0 for every seat on every turn. And fixing only that would
+not have been enough: Guard granted from `onPlayerTurnEnd` is wiped by the
+enemy's own start-of-turn Guard wipe. It is armed at the player's turn end and
+PAID at the Keeper's turn start now. `_closeSeatHand` latches `handAtTurnEnd`
+and `energyAtTurnEnd` per seat, because there is no hook between the player
+pressing the button and the hand being emptied.
+
+#### The two starters that had no suite
+
+Fifteen Companions had an effect-asserting suite; Marmalade and Bones — two of
+the four STARTERS — did not. `tests/marmalade/` 19, `tests/bones/` 23. Both are
+named in CONTRACTS 9 and 10, so both run every scenario on the TWO-ENEMY board,
+which is where a per-actor tick looks correct.
+
+The Bones suite found `bones/tail-a-mile-a-minute` still half-dead. It is trap
+10's own example — it shipped registered on `retrieved`, a hook nothing fires —
+and was repaired onto `dugUp`, which only two multiplayer cards fire, while
+`digUp()`, the ordinary Dig Up every solo player uses, has always fired `digUp`.
+`tests/hook-names/check.py` balanced because both spellings existed somewhere.
+
+#### What is open
+
+The FRONT of the ladder. The Foyer is 28 of 43 defeats — sixteen to the Butler
+on row 12, twelve before him at row 3.9 on average. **Do not tune it by feel:**
+the Butler and the Foyer elites have a committed before/after in
+`tests/critic-design/`, and CONTRACTS 47 exists for exactly this temptation.
+
+And Haunt is exercised at one tier: `tests/boss-haunt/` covers every boss, on
+the intent and on the hit, and nothing does the same for ordinary enemies or Big
+Scares. `tests/enemies/audit.py` runs at Haunt 0 and cannot see a Haunt bug of
+any kind.
 
 ---
 

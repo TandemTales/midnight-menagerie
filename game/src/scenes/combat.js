@@ -1957,6 +1957,72 @@ export class CombatScene extends Scene {
         await this._animDeath(ev);
         return;
 
+      /**
+       * A KID GOING DOWN IS A MOMENT, AND IT HAD ONLY EVER BEEN A STATE.
+       *
+       * `_syncMate` already paints a fallen seat — greyed, "down", a tooltip
+       * that explains they come back at 1 Courage if the team wins. So the
+       * board was correct and nothing ever SAID it: no banner, no sound, no
+       * beat, in the one event of a co-op fight that changes what everybody
+       * still standing has to do. `ANIMATED_EVENTS` has listed `player:fall`
+       * since it was written and nothing read that list (trap 59's shape on a
+       * data export) — `tests/animated-events/check.py` is the gate now.
+       *
+       * Solo falls straight through to `combat:end`, which has its own
+       * treatment, so this is worth a beat only while somebody is left to see
+       * it.
+       */
+      case 'player:fall': {
+        const solo = E.players.length <= 1;
+        this._syncMate();
+        if (!solo) {
+          this._banner(`${ev.name} is down`, 'enemy', 1.2);
+          const c = this._pointOf(ev.actorId);
+          this.fx.ring(c.x, c.y, this.fx.col.threat, 70);
+          this.ctx.audio?.play?.('combat:status-apply-debuff');
+          await this._wait(this._d(0.26));
+        }
+        return;
+      }
+
+      case 'player:revive': {
+        this._syncMate();
+        this._banner(`${ev.name} gets back up`, 'good', 1.2);
+        const c = this._pointOf(ev.actorId);
+        this.fx.shimmer(c.x, c.y, this.fx.col.flame);
+        this.ctx.audio?.play?.('world:rescue-chime');
+        await this._wait(this._d(0.24));
+        return;
+      }
+
+      /**
+       * A countdown reaching zero, announced BEFORE its effect lands — the same
+       * shape as `snack:used` above, and for the same reason: the label is the
+       * promise the player has been watching tick, so it reads first and the
+       * damage or the heal arrives after as its own event.
+       *
+       * A COUNTDOWN IS NOT AN INTENT (see the audit's own exemption), which is
+       * exactly why it needs its own beat: it is the one kind of incoming the
+       * intent rail never showed.
+       */
+      case 'timer:fire': {
+        /* ONE banner per BATCH, not one per timer. `_fireTimers` emits an event
+           for every countdown that came due together and the Groundskeeper's
+           Ledger routinely resolves two or three Epitaph Entries in one go —
+           three banners at 0.14s each is a flicker, not a beat. `batchSize` is
+           on every event of the batch, so the first one says how many are
+           coming and the rest are sound only. */
+        const n = Math.max(1, ev.batchSize | 0);
+        const first = this._timerBatch !== this.engine.turn || n === 1;
+        if (n > 1) this._timerBatch = this.engine.turn;
+        if (first && ev.label) {
+          this._banner(n > 1 ? `${ev.label}  +${n - 1} more` : ev.label, 'enemy', 0.95);
+        }
+        this.ctx.audio?.play?.('combat:status-apply-debuff');
+        if (first) await this._wait(this._o(0.14));
+        return;
+      }
+
       case 'counter': {
         // The PLAYER owns counters too (Loose Bones, Nine Lives, Glow, Web…) and
         // round 3 only floated a word for enemies, so every change to your own

@@ -134,6 +134,12 @@ async () => {
     planned: A.plannedFor().map(a => a.id),
     steamName: A.steamName('first-win'),
   };
+  /* THE FILTER, not its current answer. Every achievement that carries a
+     `requires` is checked against the gate it names, both ways round, so this
+     proves `shippable()` is really filtering however much content exists. */
+  out.gated = A.ACHIEVEMENTS.filter(a => a.requires).map(a => a.id);
+  out.shipWithGate = A.shippable().filter(a => a.requires).map(a => a.requires);
+  out.plannedGates = A.plannedFor().map(a => a.requires);
   // Ids must be unique and stable-looking; a duplicate would silently shadow.
   const ids = A.ACHIEVEMENTS.map(a => a.id);
   out.dupIds = ids.filter((x, i) => ids.indexOf(x) !== i);
@@ -424,8 +430,24 @@ async def main(a):
         ac = await page.evaluate(ACH)
         check(ac["catalogue"]["total"] >= 30,
               "the catalogue is a real size", f"{ac['catalogue']['total']} achievements")
-        check(ac["catalogue"]["shippable"] < ac["catalogue"]["total"],
-              "content-gated achievements are held back from Steam",
+        # This used to assert `shippable < total` — that SOMETHING is still
+        # withheld — and it passed only because content was missing. All
+        # seventeen regions ship now and co-op is built, so every gate is open
+        # and `plannedFor()` is correctly empty; the old check would have failed
+        # for the best possible reason. What is worth asserting is that the
+        # FILTER still filters: an achievement reaches Steam only if the gate it
+        # names is open, and is withheld only if the gate it names is shut.
+        check(ac["catalogue"]["shippable"] <= ac["catalogue"]["total"],
+              "the shippable set is a subset of the catalogue",
+              f"{ac['catalogue']['shippable']} of {ac['catalogue']['total']}")
+        check(len(ac["gated"]) >= 3,
+              "achievements really are content-gated — the mechanism has users",
+              f"{len(ac['gated'])} carry a `requires`: {ac['gated']}")
+        check(all(g in ("all-regions", "heart", "coop") for g in ac["shipWithGate"]),
+              "every gated achievement that ships names a gate that is OPEN",
+              f"{sorted(set(ac['shipWithGate']))}")
+        check(not ac["catalogue"]["planned"] or all(ac["plannedGates"]),
+              "and every withheld one names a gate that is SHUT",
               f"planned: {ac['catalogue']['planned']}")
         check(ac["catalogue"]["steamName"] == "ACH_FIRST_WIN",
               "the Steam API name is derived, not hand-listed", ac["catalogue"]["steamName"])

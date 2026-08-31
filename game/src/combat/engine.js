@@ -2944,8 +2944,13 @@ export class CombatEngine {
    * at the start of each player turn. Strength is a pipeline status
    * (`damage.step2`) which `previewDamageValue` also applies, so the number
    * rises ON THE INTENT the player is reading before it rises on the hit — the
-   * escalation is never a surprise and never a lie. Unbounded, so termination
-   * is guaranteed rather than merely likely.
+   * escalation is never a surprise and never a lie.
+   *
+   * It is unbounded, so a board that ATTACKS AT ALL must eventually finish the
+   * player. Strength is an attacker-side term, so a formation that only ever
+   * DEFENDED would not escalate — and it also could not be the half that fails
+   * to end, because a board dealing nothing is not what makes a fight
+   * unfinishable. Every boss cycle in this game contains an attack.
    *
    * `PATIENCE` is deliberately far outside reachable play. Measured 2026-08-31:
    * the Butler runs 8-12 turns, the longest ordinary boss 15, and the longest

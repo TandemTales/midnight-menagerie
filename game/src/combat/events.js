@@ -185,10 +185,35 @@ export const EV = /** @type {const} */ ({
 /** Every event type, in a stable order. Handy for test harnesses and debug UI. */
 export const EVENT_TYPES = Object.freeze(Object.values(EV));
 
-/** Events the renderer must animate rather than just re-render state for. */
+/**
+ * Events the renderer must animate rather than just re-render state for.
+ *
+ * THIS LIST WAS EXPORTED AND IMPORTED BY NOTHING until 2026-08-31 — a promise
+ * about the renderer, written beside the renderer, read by nobody. Gated now by
+ * `tests/animated-events/check.py`, which requires every entry to be a real `EV`
+ * member AND to have a case in `scenes/combat.js`'s event switch. Wiring the
+ * switch to derive itself from this list was considered and rejected: it would
+ * replace a working dispatch with a table lookup on the one surface a player
+ * looks at for a whole fight, and buy nothing the gate does not.
+ *
+ * Running it the first time found five entries with no case. Three of them were
+ * real holes and now have animators — a Kid falling, a Kid getting back up, and
+ * a countdown reaching zero. The other two are met elsewhere ON PURPOSE and are
+ * therefore not claims this list should be making:
+ *
+ *   CARD_PLAY   `ui/hand.js` owns the whole play animation — lift, arc, impact,
+ *               settle — and starts it from the pointer, not from the engine
+ *               event, because the card has to move the instant it is released
+ *               rather than when resolution comes back. A second animator on
+ *               the event would double the motion.
+ *   STATUS_TRIGGER  a status FIRING is reported by what it does: Regen emits
+ *               `heal`, a Poison emits `damage`, and both of those are on this
+ *               list and animated. Announcing the trigger as well would print
+ *               the same event twice, once as a name and once as a number.
+ */
 export const ANIMATED_EVENTS = Object.freeze([
-  EV.DAMAGE, EV.BLOCK, EV.BLOCK_BREAK, EV.HEAL, EV.STATUS, EV.STATUS_TRIGGER,
-  EV.DRAW, EV.DISCARD, EV.EXHAUST, EV.SHUFFLE, EV.CARD_PLAY, EV.CARD_MOVE,
+  EV.DAMAGE, EV.BLOCK, EV.BLOCK_BREAK, EV.HEAL, EV.STATUS,
+  EV.DRAW, EV.DISCARD, EV.EXHAUST, EV.SHUFFLE, EV.CARD_MOVE,
   EV.DEATH, EV.PLAYER_FALL, EV.PLAYER_REVIVE, EV.SUMMON, EV.COUNTER, EV.TIMER_FIRE, EV.ENERGY,
   EV.INTENT_QUEUE, EV.CHOICE, EV.RULE_BROKEN, EV.SNACK,
 ]);
