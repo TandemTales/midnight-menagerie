@@ -168,6 +168,17 @@ const MOTIF = {
   'quiet-room': 'slam', 'name-stone': 'slam', 'sanctuary-room': 'slam', lock: 'slam',
   'house-remembers': 'ripple', sprout: 'ripple',
   pulse: 'drift', welcome: 'drift',
+  /* The Grand Study and Library, for the same reason the Heart's are here: the
+     body archetype is never wrong and never specific, and half this region's
+     bodies are `sprawling`, which defaults every one of them to `ripple`. A
+     paper knight that ripples reads as a rug. These are what the chapter's own
+     descriptions ask for — the library's things move like what they are. */
+  bat: 'drift', quill: 'drift', oracle: 'drift',
+  blob: 'ripple', wyrm: 'ripple',
+  knight: 'lunge', catalogue: 'lunge',
+  beast: 'slam',
+  imp: 'pounce',
+  archivist: 'stoop',
 };
 const BODY_MOTIF = { squat: 'pounce', 'tall-thin': 'stoop', sprawling: 'ripple', floating: 'drift' };
 

@@ -685,6 +685,85 @@ const GY = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// The Grand Study and Library — docs/design/regions/07-study-library.md §10-§16
+//
+// The through-line of the region's own progression: each Scuffle pairs enemies
+// that read DIFFERENT slices of the same deck, so the player ends up managing
+// several simultaneous interpretations of one turn. §12's Scuffle 14 is named
+// in the chapter as "the hardest baseline Library formation" for exactly that
+// reason — the next draw, the last Trick and the whole turn's composition, all
+// being read at once.
+// ─────────────────────────────────────────────────────────────────────────────
+const SL = [
+  // ── Early (§10) ───────────────────────────────────────────────────────────
+  { id: 'sl-1', region: 'study-library', tier: 'early', name: 'Book Bat',
+    members: [m('book-bat')],
+    teaches: 'Enemies can inspect your deck. It reads your next draw and answers it.' },
+  { id: 'sl-2', region: 'study-library', tier: 'early', name: 'Inkblot',
+    members: [m('inkblot')],
+    teaches: 'It copies the LAST Trick you played. End your turn on purpose.' },
+  { id: 'sl-3', region: 'study-library', tier: 'early', name: 'Paper Knight',
+    members: [m('paper-knight')],
+    teaches: 'Alternate forms. Wait it out, or force it open with one big turn.' },
+  { id: 'sl-4', region: 'study-library', tier: 'early', name: 'Bookmark Imp',
+    members: [m('bookmark-imp')],
+    teaches: 'Markup. One Trick, and a real choice about whether to spend it.' },
+
+  // ── Standard (§11) ────────────────────────────────────────────────────────
+  { id: 'sl-5', region: 'study-library', tier: 'standard', name: 'Book Bat + Bookmark Imp',
+    members: [m('book-bat'), m('bookmark-imp')],
+    teaches: 'You know your next draw while deciding whether to spend the Trick in your hand.' },
+  { id: 'sl-6', region: 'study-library', tier: 'standard', name: 'Paper Knight + Quill Clerk',
+    members: [m('paper-knight'), m('quill-clerk')],
+    teaches: 'Sequencing around Corrected Tricks while trying to hit an Unfold threshold.' },
+  { id: 'sl-7', region: 'study-library', tier: 'standard', name: 'Inkblot + Book Bat',
+    members: [m('inkblot'), m('book-bat')],
+    teaches: 'One reads the Trick you just played. The other reads the one you have not drawn.' },
+  { id: 'sl-8', region: 'study-library', tier: 'standard', name: 'Quill Clerk + Bookmark Imp',
+    members: [m('quill-clerk'), m('bookmark-imp')],
+    teaches: 'One taxes a future Trick. The other pressures the one in your hand right now.' },
+
+  // ── Advanced (§12) ────────────────────────────────────────────────────────
+  { id: 'sl-9', region: 'study-library', tier: 'advanced', name: 'Index Beast',
+    members: [m('index-beast')],
+    teaches: 'Classification, alone, so you can learn it. It answers the shape of your whole turn.' },
+  { id: 'sl-10', region: 'study-library', tier: 'advanced', name: 'Index Beast + Book Bat',
+    members: [m('index-beast'), m('book-bat')],
+    teaches: 'One reads the composition of the turn, the other reads the next card of it.' },
+  { id: 'sl-11', region: 'study-library', tier: 'advanced', name: 'Paper Knight + Inkblot',
+    members: [m('paper-knight'), m('inkblot')],
+    teaches: 'You want to end on a Skill for the Inkblot and swing Attacks to open the Knight.' },
+  { id: 'sl-12', region: 'study-library', tier: 'advanced',
+    name: 'Bookmark Imp + Quill Clerk + Paper Knight',
+    members: [m('bookmark-imp'), m('quill-clerk'), m('paper-knight')],
+    teaches: 'Your hand is being edited while a burst threshold sits in front of you.' },
+  { id: 'sl-13', region: 'study-library', tier: 'advanced', name: 'Index Beast + Quill Clerk',
+    members: [m('index-beast'), m('quill-clerk')],
+    teaches: 'Correction interferes with the classification you were trying to produce.' },
+  { id: 'sl-14', region: 'study-library', tier: 'advanced',
+    name: 'Index Beast + Inkblot + Book Bat',
+    members: [m('index-beast'), m('inkblot'), m('book-bat')],
+    teaches: 'Three readings of one deck at once: the whole turn, the last Trick, the next draw.',
+    advancedOnly: true, minScuffle: 2 },
+
+  // ── Big Scares (§14-§16) ──────────────────────────────────────────────────
+  { id: 'sl-scare-wyrm', region: 'study-library', tier: 'elite', name: 'The Bookwyrm',
+    members: [m('bookwyrm')],
+    teaches: 'It eats your best Trick and gets better at whatever that Trick was. Burst damage buys it back.' },
+  { id: 'sl-scare-index', region: 'study-library', tier: 'elite', name: 'The Living Index',
+    members: [m('living-index')],
+    teaches: 'Three counters you can see. You decide which one trips, and a long turn trips all three.' },
+  { id: 'sl-scare-oracle', region: 'study-library', tier: 'elite', name: 'The Inkblot Oracle',
+    members: [m('inkblot-oracle')],
+    teaches: 'It echoes your most EXPENSIVE Trick. The cost of your finisher is now part of its cost.' },
+
+  // ── Boss ──────────────────────────────────────────────────────────────────
+  { id: 'sl-boss', region: 'study-library', tier: 'boss', name: 'The Archivist',
+    members: [m('the-archivist')],
+    teaches: 'The Catalogue is a resource. A Filed tab takes no more Entries — so overloading it on purpose is the point.' },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
 // The Heart of the House — docs/design/regions/17-heart.md §12-§15
 //
 // "There are no truly introductory Heart encounters. The player has reached the
@@ -819,6 +898,24 @@ const HEART = [
 // Per-region generation rules (design doc §10 "Encounter selection rules")
 // ─────────────────────────────────────────────────────────────────────────────
 export const REGION_RULES = {
+  /* docs/design/regions/07-study-library.md §13. Every clause below is one line
+     of that section.
+
+     "Paper Knight should appear alone before appearing with Quill Clerk" is the
+     one rule with no field to hold it: the generator has no notion of "this
+     formation must have been seen first". It is satisfied by the POOLS instead
+     — the Knight alone is Scuffle 3 in the early tier and the Knight with the
+     Clerk is Scuffle 6 in standard, so the tier ladder already orders them. */
+  'study-library': {
+    /** "Quill Clerk cannot appear in the first Scuffle." */
+    bannedFirstScuffle: ['quill-clerk'],
+    /** "Index Beast cannot appear before the player has completed at least two
+        Library Scuffles." */
+    minScuffle: { 'index-beast': 2 },
+    /** Two Clerks at Haunt 0 is four Corrections; two Beasts is §13 outright. */
+    noDuplicates: ['quill-clerk', 'index-beast'],
+    maxConsecutiveLead: 2,
+  },
   /* docs/design/regions/06-graveyard.md §12. */
   graveyard: {
     minScuffle: { 'name-gnawer': 1 },
@@ -893,7 +990,7 @@ export const REGION_RULES = {
   },
 };
 
-const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...GY, ...HEART];
+const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...GY, ...SL, ...HEART];
 
 /** id → EncounterDef */
 export const ENCOUNTERS = Object.freeze(

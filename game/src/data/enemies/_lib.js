@@ -217,6 +217,57 @@ export function phaseAt(c, soloAt, soloMax) {
 /** Shared per-combat scratch (Darkness, Bed Positions, House Rules…). */
 export function field(c) { return (c.field ||= {}); }
 
+/* ── THERE IS NO HAND DURING THE ENEMY PHASE ─────────────────────────────────
+ *
+ * The engine closes every seat's hand at step 2 of `endTurn`, three steps
+ * before any enemy acts. MEASURED: at the `enemy` phase the hand holds 0 cards
+ * and the discard holds all five. So a MOVE EFFECT that reads
+ * `c.cardsIn('hand')` gets an empty array, every time, and falls through to
+ * whatever its guard clause does — silently, with no warning, and with
+ * `tests/enemies/run.py` green, because the mock hands out a hand at every
+ * moment of its fake turn.
+ *
+ * This is not hypothetical and it is not new. Found 2026-08-30 by probing the
+ * real engine while building the Library:
+ *
+ *   graveyard.js       Name Gnawer's Nibble the Name marked NOTHING, ever
+ *   graveyard-scares.js Mausoleum Mouth's Crypt Breath, the same
+ *
+ * Both shipped. Both took their "no hand" fallback on every single use, so a
+ * whole authored mechanic in region 6 was decoration. `bosses/keeper.js`'s
+ * Belonging argument has the same shape from `onPlayerTurnEnd` and is reported
+ * rather than changed, because it makes a measured boss stronger.
+ *
+ * The engine names the fix in its own comment: `onPlayerReady` is "the one
+ * moment an enemy can read the hand the player is about to play with". It
+ * fires at step 6c — AFTER the deal and BEFORE intents are drawn — which is
+ * also why anything armed there is already inside the number the player reads.
+ * `bosses/head-gardener.js` and `enemies/heart.js` both mark from it correctly.
+ *
+ * So a move that wants to touch the hand does not touch it. It QUEUES the work
+ * with `whenHandArrives`, and the def's `onPlayerReady` calls `runHandOps`.
+ * That also reads better than the alternative: the enemy announces that it is
+ * going to edit your deck, and the edit is there when you pick your Tricks up.
+ */
+export function whenHandArrives(c, fn) {
+  (mem(c).handOps ||= []).push(fn);
+}
+
+/**
+ * Run the queued hand operations. Any def that calls `whenHandArrives` MUST
+ * declare `onPlayerReady(c) { runHandOps(c); }` or the work never happens —
+ * which is the same silence this helper exists to end, so
+ * `tests/study-library/check.py` asserts the pairing across the whole roster.
+ */
+export function runHandOps(c) {
+  const q = mem(c).handOps;
+  if (!q || !q.length) return;
+  mem(c).handOps = [];
+  for (const fn of q) {
+    try { fn(c); } catch (err) { console.error('[enemies] queued hand op threw', err); }
+  }
+}
+
 /** The intent silhouettes that mean "this is going to hurt". */
 export const ATTACK_INTENTS = new Set([
   Intent.ATTACK, Intent.ATTACK_BIG, Intent.ATTACK_DEFEND, Intent.ATTACK_BUFF, Intent.ATTACK_DEBUFF,

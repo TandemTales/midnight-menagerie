@@ -479,7 +479,16 @@ class MockCombat {
     const types = ['attack', 'skill', 'power'];
     for (let i = 0; i < nCards; i++) {
       const type = profile.type || types[this.rng.int(types.length)];
-      this.cardsPlayedThisTurn.push({ id: `test-${type}-${i}`, type });
+      /* The SAME SHAPE the engine pushes in `playCard` — id, type, uid, name,
+         seat and the PRINTED cost. It used to be `{id, type}`, which is the
+         mock-drift class: an enemy reading `p.cost` (the Inkblot Oracle reads
+         exactly that) would have seen `undefined` here and NaN'd in silence
+         while this suite stayed green. `cost` cycles 0..2 so a suite that keys
+         off "the most expensive Trick played" has something to find. */
+      this.cardsPlayedThisTurn.push({
+        id: `test-${type}-${i}`, type, uid: `p${this.turn}-${i}`,
+        name: `Test ${type} ${i}`, seat: 0, cost: i % 3,
+      });
       if (type === 'attack') {
         const targets = this.living();
         if (targets.length) {

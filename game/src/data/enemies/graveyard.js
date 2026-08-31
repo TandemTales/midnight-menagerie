@@ -26,7 +26,7 @@
 import { Intent } from '../schema.js';
 import {
   mem, cnt, setCnt, addCnt, allies, cyc, countMoves, hitPlayer, hauntBase,
-  flag, isAlive, dmgTaken,
+  flag, isAlive, dmgTaken, whenHandArrives, runHandOps,
 } from './_lib.js';
 
 const REGION = 'graveyard';
@@ -343,22 +343,39 @@ export const nameGnawer = {
   scale: 0.55,
   lore: 'A small grey thing with far too many teeth, which eats letters out of gravestones and is not sorry.',
 
+  /** Nibble the Name gnaws the hand the player has actually picked up. */
+  onPlayerReady(c) { runHandOps(c); },
+
   moves: {
     'nibble-the-name': {
       id: 'nibble-the-name', name: 'Nibble the Name', intent: Intent.DEBUFF,
       applies: [{ id: 'forgotten', stacks: 1, to: 'player' }],
       tell: 'It picks a name out of your hand and starts on it.',
+      /**
+       * QUEUED, and it was BROKEN before it was.
+       *
+       * This read `cardsIn('hand')` straight from the move effect, which runs
+       * in the enemy phase — three steps after the engine closes the hand. So
+       * the array was empty on every single use and the Gnawer took the
+       * `block(5)` fallback forever: an enemy whose whole authored mechanic is
+       * "it eats the name off one of your Tricks" never once marked a Trick.
+       * Proved against the real engine 2026-08-30; `tests/enemies/run.py` was
+       * green throughout, because its mock has a hand at every moment.
+       * See `_lib.js`'s `whenHandArrives` for the shape and the full list.
+       */
       effect(c) {
-        const hand = (c.cardsIn ? c.cardsIn('hand') : []);
-        if (!hand.length) { c.block(c.self, 5); return; }
-        // "Prefer a Trick costing at least 1 Nerve." A free Trick costs nothing
-        // to make expensive, so marking one is a wasted turn.
-        const pool = hand.filter(x => (x.cost || 0) >= 1);
-        const pick = (pool.length ? pool : hand)[c.rng.int((pool.length ? pool : hand).length)];
-        forget(c, c.player, [pick.uid]);
-        c.announceRule({
-          id: `gnaw:${c.self.id}`, name: `Forgotten: ${pick.name}`,
-          text: 'It costs 1 additional Nerve the first time you play it.',
+        whenHandArrives(c, (k) => {
+          const hand = (k.cardsIn ? k.cardsIn('hand') : []);
+          if (!hand.length) { k.block(k.self, 5); return; }
+          // "Prefer a Trick costing at least 1 Nerve." A free Trick costs nothing
+          // to make expensive, so marking one is a wasted turn.
+          const pool = hand.filter(x => (x.cost || 0) >= 1);
+          const pick = (pool.length ? pool : hand)[k.rng.int((pool.length ? pool : hand).length)];
+          forget(k, k.player, [pick.uid]);
+          k.announceRule({
+            id: `gnaw:${k.self.id}`, name: `Forgotten: ${pick.name}`,
+            text: 'It costs 1 additional Nerve the first time you play it.',
+          });
         });
       },
     },

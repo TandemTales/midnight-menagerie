@@ -15,6 +15,7 @@
 import { Intent } from '../schema.js';
 import {
   mem, cnt, setCnt, addCnt, allies, cyc, hitPlayer, hauntBase, isAlive, dmgTaken,
+  whenHandArrives, runHandOps,
 } from './_lib.js';
 import { countdown, countdownHit, forget } from './graveyard.js';
 
@@ -268,6 +269,9 @@ export const mausoleumMouth = {
 
   onSpawn(c) { setCnt(c, 'opening', 0); announceMouth(c); },
 
+  /** Crypt Breath marks a Trick from the hand the player has picked up. */
+  onPlayerReady(c) { runHandOps(c); },
+
   onTurnStart(c) { if (cnt(c, 'opening') >= 2) c.block(c.self, 5); },
 
   onPlayerTurnEnd(c) {
@@ -300,15 +304,19 @@ export const mausoleumMouth = {
       applies: [{ id: 'forgotten', stacks: 1, to: 'player' }],
       damageFn: (c) => 6 + (cnt(c, 'opening') >= 1 ? 2 : 0),
       tell: 'Something very old comes out of it, at room temperature.',
+      /* Queued for the same reason the Name Gnawer's is: read from a move
+         effect this found an empty hand every time and marked nothing. */
       effect(c) {
         hitPlayer(c, 6 + (cnt(c, 'opening') >= 1 ? 2 : 0));
-        const hand = c.cardsIn ? c.cardsIn('hand') : [];
-        if (!hand.length) return;
-        const pick = hand[c.rng.int(hand.length)];
-        forget(c, c.player, [pick.uid]);
-        c.announceRule({
-          id: `crypt:${c.self.id}`, name: `Forgotten: ${pick.name}`,
-          text: 'It costs 1 additional Nerve the first time you play it.',
+        whenHandArrives(c, (k) => {
+          const hand = k.cardsIn ? k.cardsIn('hand') : [];
+          if (!hand.length) return;
+          const pick = hand[k.rng.int(hand.length)];
+          forget(k, k.player, [pick.uid]);
+          k.announceRule({
+            id: `crypt:${k.self.id}`, name: `Forgotten: ${pick.name}`,
+            text: 'It costs 1 additional Nerve the first time you play it.',
+          });
         });
       },
     },

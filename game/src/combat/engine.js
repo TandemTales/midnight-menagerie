@@ -2983,7 +2983,18 @@ export class CombatEngine {
       if (spend > 0) this.gainEnergy(-spend, 'play');
 
       // 3. announce
-      const rec = { id: card.id, type: card.type, uid: card.uid, name: card.name, seat: owner.seat };
+      /* `cost` is the PRINTED cost (`baseCost`), not `costOf(card)`, and the
+       * difference is the whole reason it is recorded here rather than read
+       * back off the discard pile afterwards. The Inkblot Oracle reflects "the
+       * highest printed Nerve cost Trick played that turn" (study-library §16),
+       * and the Library is also the region that makes Tricks cost MORE —
+       * a Corrected 1-Nerve Trick would otherwise echo as a 2-Nerve one and the
+       * Oracle's intent would be a number the player cannot derive. -1 (X) and
+       * -2 (unplayable) reach content as-is; clamping is the reader's call. */
+      const rec = {
+        id: card.id, type: card.type, uid: card.uid, name: card.name,
+        seat: owner.seat, cost: card.baseCost,
+      };
       this.stats.cardsPlayedThisTurn++;
       this.stats.cardsPlayedThisCombat++;
       this.playedThisTurn.push(rec);
