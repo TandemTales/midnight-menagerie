@@ -229,6 +229,13 @@ const MOTIF = {
   crawlspace: 'pounce', snatcher: 'pounce',
   'false-door': 'stoop', 'the-door': 'stoop', doorframe: 'stoop',
   'moving-wall': 'stoop', 'whisper-warden': 'stoop',
+  /* The Bathhouse and Rain Wing. Water ripples, steam drifts, and the two
+     iron things in here move like iron things. */
+  puddle: 'ripple', tub: 'ripple', 'storm-bath': 'ripple', mirror: 'ripple',
+  'soap-sprite': 'drift', 'steam-ghost': 'drift', umbrella: 'drift',
+  'bath-drain': 'drift', 'drain-valve': 'drift', 'intake-valve': 'drift',
+  pipes: 'slam', boiler: 'slam',
+  matron: 'stoop',
   'straw-pile': 'drift', 'rot-pile': 'drift', 'briar-ring': 'drift',
 };
 const BODY_MOTIF = { squat: 'pounce', 'tall-thin': 'stoop', sprawling: 'ripple', floating: 'drift' };

@@ -678,7 +678,57 @@ export const RELICS = [
       },
     },
   },
+  {
+    /* 14-bathhouse.md §53, Rubber Duck. The Bathhouse is a wing where the room
+       itself changes four or five times a fight, and this makes the first of
+       those changes something you were waiting for. */
+    id: 'rubber-duck', name: 'Rubber Duck', rarity: 'rare', icon: 'duck',
+    desc: `The first time each ${TERMS.combat} the Weather changes, gain 4 ${TERMS.block}.`,
+    flavor: 'Faded almost white. It has been in this bath a very long time and it is still cheerful about it.',
+    hooks: {
+      onBoardEvent(h) {
+        const ev = h.boardEvent || h.ev;
+        if (!ev || ev.type !== 'status' || ev.amount <= 0) return;
+        if (!String(ev.id || '').startsWith('weather-')) return;
+        if (!ev.actor || ev.actor !== player(h)) return;
+        if (!once(h, 'duck')) return;
+        h.e.gainBlock(player(h), 4, { reason: 'relic' });
+        pop(h, 'duck');
+      },
+    },
+  },
   // ── boss ──────────────────────────────────────────────────────────────────
+  {
+    /**
+     * §53, Bathhouse Slippers: "The first temporary increase to a Trick's Nerve
+     * cost each combat is ignored."
+     *
+     * PER TURN, not per combat, and that is a deliberate change of shape. Cost
+     * hooks are pure reducers — they run during preview as well as during play
+     * — so a once-per-COMBAT version has nowhere to record that it has been
+     * spent: written in the reducer it spends itself on a hover, and written in
+     * `onCardPlayed` it cannot tell a raised cost from a printed one, because by
+     * then the reducer has already hidden the raise. The Observatory's Webbed
+     * gets away with the two-hook split only because it RAISES, and a raise is
+     * still visible to the hook that consumes it.
+     *
+     * "Your FIRST Trick each turn ignores a raise" needs no memory at all, and
+     * it lands on exactly the rules §53 wrote it for: the Bathhouse's Flood and
+     * the Matron's Submerged both tax the first Trick of the turn specifically.
+     * It answers the Ballroom's Well Hosted the same way.
+     */
+    id: 'bathhouse-slippers', name: 'Bathhouse Slippers', rarity: 'boss', icon: 'slippers',
+    desc: `Your first Trick each turn ignores any increase to its ${TERMS.energy} cost.`,
+    flavor: 'Enormous, towelling, and warm. Nobody has ever explained whose they are.',
+    hooks: {
+      modifyCardCost(cost, h) {
+        const base = h.card && h.card.baseCost;
+        if (base == null || cost <= base) return cost;
+        const played = (h.e && h.e.playedThisTurn && h.e.playedThisTurn.length) || 0;
+        return played === 0 ? base : cost;
+      },
+    },
+  },
   {
     /* §54, Black Ribbon, sized for a boss slot. The Passages are a wing where
        things leave — Hidden, Passage, Elsewhere — and §60's lesson is that

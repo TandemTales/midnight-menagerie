@@ -82,6 +82,27 @@ class MockCombat {
     this.events = [];
     this.cardsPlayedThisTurn = [];
     this.damageDealtThisTurn = 0;
+    /**
+     * `engine.stats`, because content reads it directly.
+     *
+     * The mock carried a loose `damageDealtThisTurn` and `seatStats` answered
+     * `self.stats`, which never existed — so `c.e.stats.damageDealtThisCombat`
+     * threw here and resolved perfectly against the real engine. The Bathhouse's
+     * Boiler and Flooded Reflection are the first defs to read the object, and
+     * both do it the way every companion Power already does.
+     *
+     * The keys are the engine's exact set. Player-side totals stay at 0 in a
+     * harness where the player never plays a card, which is the honest answer:
+     * a def that reads them here sees "the Kid has done nothing", not garbage.
+     */
+    this.stats = {
+      cardsPlayedThisTurn: 0, cardsPlayedThisCombat: 0,
+      attacksPlayedThisTurn: 0, skillsPlayedThisTurn: 0,
+      cardsDiscardedThisTurn: 0, cardsExhaustedThisTurn: 0, cardsExhaustedThisCombat: 0,
+      damageDealtThisTurn: 0, damageDealtThisCombat: 0,
+      damageTakenThisTurn: 0, damageTakenThisCombat: 0,
+      damageTakenLastEnemyTurn: 0, turnsTaken: 0,
+    };
     this.damageLog = [];
     this.statusLog = [];
     this.player = { id: 'player', name: 'Kid', hp: 80, maxHp: 80, block: 0, statuses: {}, damageTakenThisTurn: 0 };
@@ -471,6 +492,14 @@ class MockCombat {
     const through = n - absorbed;
     target.hp = Math.max(0, target.hp - through);
     target.damageTakenThisTurn = (target.damageTakenThisTurn || 0) + through;
+    if (target === this.player) {
+      this.stats.damageTakenThisTurn += through;
+      this.stats.damageTakenThisCombat += through;
+    }
+    if (source === this.player) {
+      this.stats.damageDealtThisTurn += n;
+      this.stats.damageDealtThisCombat += n;
+    }
     if (target.hp === 0 && target !== this.player) target.alive = false;
   }
 

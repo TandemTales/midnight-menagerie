@@ -839,6 +839,84 @@ const SP = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// The Bathhouse and Rain Wing - docs/design/regions/14-bathhouse.md §10-§13
+//
+// §10-§12's fourteen Scuffles. The four EARLY ones are solo on purpose: Wet,
+// Weather-dependent states, Pressure and Weather-based vulnerability are four
+// different answers to the same question, and meeting two at once teaches
+// neither.
+// ─────────────────────────────────────────────────────────────────────────────
+const BH = [
+  // ── Early (§10) ---------------------------------------------------------
+  { id: 'bh-1', region: 'bathhouse', tier: 'early', name: 'Soap Sprite',
+    members: [m('soap-sprite')],
+    teaches: 'Wet is 2 more Guard for you and a defence for it. It is not a debuff.' },
+  { id: 'bh-2', region: 'bathhouse', tier: 'early', name: 'Puddle Spirit',
+    members: [m('puddle-spirit')],
+    teaches: 'The Weather changes what it physically is. Rain grows it; Clear shrinks it.' },
+  { id: 'bh-3', region: 'bathhouse', tier: 'early', name: 'Pipe Knocker',
+    members: [m('pipe-knocker')],
+    teaches: 'Stored Pressure, and venting it changes the whole room to Steam.' },
+  { id: 'bh-4', region: 'bathhouse', tier: 'early', name: 'Steam Ghost',
+    members: [m('steam-ghost')],
+    teaches: 'Steam hides it and Rain solidifies it. Changing the Weather is the attack.' },
+
+  // ── Standard (§11) ------------------------------------------------------
+  { id: 'bh-5', region: 'bathhouse', tier: 'standard', name: 'Soap Sprite + Puddle Spirit',
+    members: [m('soap-sprite'), m('puddle-spirit')],
+    teaches: 'Wet and Rain help both of them, differently.' },
+  { id: 'bh-6', region: 'bathhouse', tier: 'standard', name: 'Pipe Knocker + Steam Ghost',
+    members: [m('pipe-knocker'), m('steam-ghost')],
+    teaches: 'Release Valve makes exactly the Weather the Ghost wants.' },
+  { id: 'bh-7', region: 'bathhouse', tier: 'standard', name: 'Umbrella Imp + Puddle Spirit',
+    members: [m('umbrella-imp'), m('puddle-spirit')],
+    teaches: 'The Imp keeps the Spirit dry while the rain grows it anyway.' },
+  { id: 'bh-8', region: 'bathhouse', tier: 'standard', name: 'Overflow + Soap Sprite',
+    members: [m('overflow'), m('soap-sprite')],
+    teaches: 'The flood keeps everyone Wet, and one of them is built for that.' },
+
+  // ── Advanced (§12) ------------------------------------------------------
+  { id: 'bh-9', region: 'bathhouse', tier: 'advanced', name: 'Steam Ghost + Umbrella Imp',
+    members: [m('steam-ghost'), m('umbrella-imp')],
+    teaches: 'You want Rain to expose the Ghost. The Imp wants Rain too.' },
+  { id: 'bh-10', region: 'bathhouse', tier: 'advanced', name: 'Pipe Knocker + Overflow',
+    members: [m('pipe-knocker'), m('overflow')],
+    teaches: 'Pressure pulls toward Steam while the Flood pushes toward Downpour.' },
+  { id: 'bh-11', region: 'bathhouse', tier: 'advanced', name: 'Puddle Spirit + Steam Ghost',
+    members: [m('puddle-spirit'), m('steam-ghost')],
+    teaches: 'They want opposite Weather. Helping one is hurting the other.' },
+  { id: 'bh-12', region: 'bathhouse', tier: 'advanced',
+    name: 'Umbrella Imp + Overflow + Soap Sprite',
+    members: [m('umbrella-imp'), m('overflow'), m('soap-sprite')],
+    teaches: 'Rain builds them a defensive network. Fold the umbrella first.' },
+  { id: 'bh-13', region: 'bathhouse', tier: 'advanced',
+    name: 'Pipe Knocker + Steam Ghost + Umbrella Imp',
+    members: [m('pipe-knocker'), m('steam-ghost'), m('umbrella-imp')],
+    teaches: 'Steam protects the Ghost while the Imp waits for the next Rain.' },
+  { id: 'bh-14', region: 'bathhouse', tier: 'advanced',
+    name: 'Overflow + Puddle Spirit + Pipe Knocker',
+    members: [m('overflow'), m('puddle-spirit'), m('pipe-knocker')],
+    teaches: 'Flood, Pressure, Size, Wet and two Weather transitions, all at once.',
+    advancedOnly: true, minScuffle: 2 },
+
+  // ── Big Scares (§14-§16) ----------------------------------------------
+  { id: 'bh-scare-boiler', region: 'bathhouse', tier: 'elite', name: 'The Boiler Bellower',
+    members: [m('boiler-bellower')],
+    teaches: 'A gauge where the middle is safe and both ends are dangerous, oppositely.' },
+  { id: 'bh-scare-mirror', region: 'bathhouse', tier: 'elite', name: 'The Flooded Reflection',
+    members: [m('flooded-reflection')],
+    teaches: 'It copies whatever you did most. Steam decides whether you get to know.' },
+  { id: 'bh-scare-storm', region: 'bathhouse', tier: 'elite', name: 'The Storm Bath',
+    members: [m('storm-bath')],
+    teaches: 'The whole Weather cycle on a clock, and your fourth Trick can push or hold it.' },
+
+  // ── Boss -----------------------------------------------------------------
+  { id: 'bh-boss', region: 'bathhouse', tier: 'boss', name: 'The Drowned Matron',
+    members: [m('drowned-matron')],
+    teaches: 'There is no correct Water Level, and a quiet turn is one she counts.' },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
 // The Crypt and Ossuary - docs/design/regions/11-crypt.md §9-§12
 //
 // The ladder is what gets left behind. The Tibia leaves one Remains and has no
@@ -1361,6 +1439,20 @@ const HEART = [
 // Per-region generation rules (design doc §10 "Encounter selection rules")
 // ─────────────────────────────────────────────────────────────────────────────
 export const REGION_RULES = {
+  /* docs/design/regions/14-bathhouse.md §13. "Soap Sprite should appear
+     before Overflow" and "Steam Ghost should appear alone before it appears
+     beside Pipe Knocker" are the tier ladder: both are EARLY solo and both
+     pairings are STANDARD. §13's last clause — "if several effects change
+     Weather during one enemy turn, the LATEST resolved effect becomes
+     active" — is free here, because every change in this region is written
+     to `field.pendingWeather` and the last writer wins by construction. */
+  bathhouse: {
+    /** §13 outright: two Overflows or two Pipe Knockers at Haunt 0. */
+    noDuplicates: ['overflow', 'pipe-knocker', 'umbrella-imp', 'steam-ghost'],
+    /** §13: the Imp is support and has nobody to shelter on its own. */
+    neverAlone: ['umbrella-imp'],
+    maxConsecutiveLead: 2,
+  },
   /* docs/design/regions/13-secret-passages.md §13. "Wall Whisper should
      appear alone before appearing with Peephole" and "Peephole cannot appear
      alone after the introductory pool" are both the tier ladder: the Whisper
@@ -1534,7 +1626,7 @@ export const REGION_RULES = {
   },
 };
 
-const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...GY, ...SL, ...AO, ...LW, ...BR, ...CR, ...HM, ...SP, ...HEART];
+const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...GY, ...SL, ...AO, ...LW, ...BR, ...CR, ...HM, ...SP, ...BH, ...HEART];
 
 /** id → EncounterDef */
 export const ENCOUNTERS = Object.freeze(

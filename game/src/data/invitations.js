@@ -198,3 +198,30 @@ export const ECHO_TRICKS = [
     'You watch yourself brace against nothing at all.',
     (ctx) => ctx.block(ctx.self, ctx.card?.nums?.b ?? 4), { b: 4 }),
 ];
+
+/* ══ The Bathhouse and Rain Wing ════════════════════════════════════════════ */
+
+/**
+ * §16's Redirect the Water, as two offers.
+ *
+ * "Whenever the player plays exactly their fourth Trick during one turn, they
+ * may choose: advance Weather one stage, or delay the next Weather transition
+ * by one enemy turn. Once per turn."
+ *
+ * Two cards rather than one card with a choice, because the whole point of the
+ * Ballroom's precedent is that the terms are PRINTED: a card that asks a
+ * question at play time is a card whose text cannot say what it does. The Storm
+ * Bath takes both halves of the bookkeeping in its own `onCardPlayed`, and
+ * playing either spends the turn's offer.
+ */
+export const STORM_OFFER_TRICKS = [
+  invite('push-the-water', 'Push the Water',
+    'The Storm Cycle advances one stage at the start of your next turn. [Vanish]',
+    'The grates are wide open and something down there is listening.',
+    () => {}),
+
+  invite('hold-the-water', 'Hold the Water',
+    'The Storm Cycle does not advance on the Storm Bath’s next Turn the Taps. [Vanish]',
+    'You put your foot over the drain. It is colder than the water.',
+    () => {}),
+].map(t => ({ ...t, id: t.id.replace('invite/', 'storm/') }));
