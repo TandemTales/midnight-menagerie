@@ -44,6 +44,8 @@ export class Actor {
     this.powers = new Map();
     this.alive = this.hp > 0;
     this.summoned = !!o.summoned;
+    /** Actor id of whatever called this one up, or null. Set by `engine.summon`. */
+    this.summonedBy = o.summonedBy || null;
     this.tier = o.tier || 'normal';
     /** Free-form per-combat scratch space for companion mechanics. Plain data only. */
     this.flags = {};
@@ -76,6 +78,7 @@ export class Actor {
     const a = new Actor({
       id: this.id, name: this.name, side: this.side, slot: this.slot,
       maxHp: this.maxHp, hp: this.hp, summoned: this.summoned, tier: this.tier,
+      summonedBy: this.summonedBy,
     });
     a.block = this.block;
     a.alive = this.alive;
@@ -98,7 +101,7 @@ export class Actor {
     return {
       id: this.id, name: this.name, side: this.side, slot: this.slot,
       hp: this.hp, maxHp: this.maxHp, block: this.block, alive: this.alive,
-      tier: this.tier, summoned: this.summoned,
+      tier: this.tier, summoned: this.summoned, summonedBy: this.summonedBy,
       damageTakenThisTurn: this.damageTakenThisTurn,
       damageTakenLastTurn: this.damageTakenLastTurn,
       flags: JSON.parse(JSON.stringify(this.flags)),
@@ -275,7 +278,7 @@ export class Enemy extends Actor {
     const e = new Enemy({
       id: this.id, name: this.name, side: this.side, slot: this.slot,
       maxHp: this.maxHp, hp: this.hp, def: this.def, tier: this.tier,
-      summoned: this.summoned,
+      summoned: this.summoned, summonedBy: this.summonedBy,
     });
     e.block = this.block;
     e.alive = this.alive;

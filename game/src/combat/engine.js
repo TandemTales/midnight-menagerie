@@ -1760,6 +1760,29 @@ export class CombatEngine {
     const e = this._makeEnemy({ def, hp: o.hp, id }, slot);
     e.side = side;
     e.summoned = true;
+    /**
+     * WHO called it up, not merely THAT it was called up.
+     *
+     * `summoned` has always been set and `summonedBy` never was — while FIVE
+     * content sites in three regions read it, every one of them comparing it
+     * against their own id. Each therefore matched nothing:
+     *
+     *   * the House Bell's Resonance falls by 1 when one of ITS OWN summons
+     *     dies, which is the player's only lever on MIDNIGHT TOLL. It has
+     *     never once fallen. (This is the SECOND dead thing on that line —
+     *     `onAllyDeath`'s argument was fixed on 2026-08-30 and the field it
+     *     then read was still never written.)
+     *   * the Toy Chest caps how many of its own Toys may stand at once, and
+     *     counted 0 of them, so the cap could not bind;
+     *   * The Wardrobe despawns its own summons when it closes, and despawned
+     *     nothing.
+     *
+     * The Butler is the only one that worked, and only because it asks
+     * `a.summoned || a.summonedBy` — the half that is not the one it means.
+     * `sourceId` was already being threaded here for the event; it just never
+     * reached the actor.
+     */
+    e.summonedBy = o.sourceId || null;
     if (o.maxSlots && list.length >= o.maxSlots) return null;
     list.push(e);
     this._emit(EV.SUMMON, {
