@@ -1,6 +1,6 @@
 # Midnight Menagerie — handoff
 
-Written 2026-08-26, last updated 2026-08-30 (late). Everything a fresh conversation needs to pick
+Written 2026-08-26, last updated 2026-08-31. Everything a fresh conversation needs to pick
 this up. Read this, then `CONTRACTS.md`, then `docs/STS2-REFERENCE.md`. Nothing else is
 required reading.
 
@@ -24,6 +24,89 @@ change him.
 
 **~65,500 lines** across `game/src/`. Currently on branch **`dev`**, pushed to
 `github.com/TandemTales/midnight-menagerie`. `main` is untouched and stale.
+
+### Where it stands, 2026-08-31
+
+**ALL SEVENTEEN REGIONS SHIP ROSTERS.** `RUN_REGIONS` in `state/run.js` walks
+the whole ladder. Five regions were built this session — the Withered Hedge Maze
+was finished and committed, then the Secret Passages, the Bathhouse and Rain
+Wing, the Kennels and Animal Ward, and the Moon Courtyard and Pumpkin Grounds.
+
+    foyer · nursery · sleeping-quarters · kitchens-cellars · greenhouse ·
+    graveyard · study-library · attic-observatory · lampworks · ballroom ·
+    crypt · hedge-maze · secret-passages · bathhouse · kennels ·
+    pumpkin-grounds · heart
+
+Every gate's number moved and every one of them is at zero: 196 → 275 enemies,
+238 → 310 encounters, 57 → 106 statuses, 16 → 24 status Tricks, and the intent
+audit 14382 → 20530 turns. Battery 64/64.
+
+**THE CONTENT JOB IS DONE AND THE BALANCE JOB HAS NOT STARTED**, and finishing
+the ladder turned the previous handoff's softest finding into its hardest:
+
+    regions reached (of 50; every 5th run is shepherded)
+      1 foyer 40/10 · 2 nursery 15/7 · 3 sleeping-quarters 10/2 ·
+      4 kitchens-cellars 10/2 · 5 greenhouse 10/2 · 6 graveyard 9/2 ·
+      7 study-library 6/2 · 8 attic-observatory 6/2 · … · 17 heart 6/2
+      victories: 6/40 unaided, 2/10 shepherded
+
+**Ten of the seventeen wings kill nobody.** Everything that survives the Study
+and Library wins the game — thirty Big Scares, ten bosses and a hundred and
+eighty enemies take not one run between them. The regions are not mispriced
+against each other; they are mispriced against the deck that ARRIVES, which by
+region 8 is thirty-odd cards, fifteen Keepsakes and a mean purse of 500. Boss
+draws went from two to four (the Groundskeeper of Names three times, the Head
+Gardener once). This is item 1 of the open list and the natural next work.
+
+**Five new engine seams, and all five were DEAD before they were used.**
+
+| what was wrong | where |
+|---|---|
+| `drawCards` had `modifyDraw` and no way to react to WHICH cards arrived | `combat/engine.js` |
+| `boardEvent` only ever asked ENEMY defs, so an `onBoardEvent` Keepsake did nothing — the Bent Garden Fork had never fired | `combat/engine.js` |
+| enemy death did not refresh intents; anything that killed outside a card left the promise wrong | `combat/engine.js` |
+| `hpBefore` went into the damage EVENT and not the hook payload, so overkill was unmeasurable | `combat/damage.js` |
+| the enemy mock had no `engine.stats`, so `c.e.stats.*` threw in the harness and resolved against the real engine | `tests/enemies/index.html` |
+
+**AND ONE WHOLE CLASS OF INTENT LIE, FOUND FORTY-SIX TIMES.** A meter the
+player's damage moves, settled in `onPlayerTurnEnd`, drops underneath a number
+the player has already committed against — that hook fires after the intent was
+drawn and before the enemy acts. `tests/enemies/audit.py` caught it across three
+Bathhouse moves including a Calm meter that rerouted a promised 12-damage Towel
+Snap into a heal thirty-three times; it was then found by inspection in the
+Kennels and the Pumpkin Grounds before it could ship. Everything settles at
+`onPlayerTurnStart` now, with one documented exception whose comment says why.
+
+The same trap lives in status decay buckets: a player's `turnEnd` decay runs
+BEFORE the enemy phase, so Wet promised 14 and delivered 10 until it moved to
+`enemyTurnEnd`, and the Secret Passages' Seen could never be read by any
+committed intent at all.
+
+| what else was wrong | where |
+|---|---|
+| a Ward Animal with only `isTargetable` would have been safe from every Attack and killable by a sweep | `enemies/kennels.js` |
+| the Harvest King's phase transition ripened every Crop and rotted every one in the same turn | `bosses/harvest-king.js` |
+| a Crop that reached Overripe by any route but one sat in its plot forever paying nobody | `enemies/pumpkin-grounds.js` |
+| §26's Disappointed read "is anything ripe" instead of "is the marked Crop gone" | `bosses/harvest-king.js` |
+| Stable was a status with no hook — a chip that meant nothing until it got `onLethal` | `enemies/kennels.js` |
+| Told On was a number in one enemy's own `damageFn`, so it did nothing in the case its chapter describes | `enemies/secret-passages.js` |
+| four display-name collisions — two chips reading the same word on one portrait | `status-names/check.py` |
+| the four-body layout put a boss under the Kid's portrait, and it needed the OPPOSITE fix to five and six | `scenes/combat.css` |
+| four House Rule cards buried that portrait again; three fit and the fourth does not | `kennels.js`, `pumpkin-grounds.js` |
+
+New real-engine region gates: `tests/secret-passages/` 74, `tests/bathhouse/` 81,
+`tests/kennels/` 69, `tests/pumpkin-grounds/` 70. Fourteen of the seventeen
+regions now have one; foyer, nursery and sleeping-quarters predate the pattern
+and writing theirs is a real and small piece of work.
+
+Two new engine concepts the chapters demanded and the engine had never had:
+**WEATHER**, a global battlefield state that affects both sides with visible
+rules and always changes one turn ahead (`enemies/bathhouse.js`), and a
+**NEUTRAL NON-COMBATANT** that cannot be targeted, cannot be damaged by anything
+including a sweep, cannot die, and leaves when the fight does
+(`enemies/kennels.js`). Both headers carry the long version.
+
+---
 
 ### Where it stands, 2026-08-30 (late)
 
@@ -1113,19 +1196,22 @@ autosave and mid-combat resume.
 - **Combat engine** (`src/combat/`) — headless, deterministic, 649 assertions. Player choice with
   a replay log, first-class intent queue, House Rules, `onEnemyPhaseEnd`, preview by cloning the
   engine so it cannot drift from resolution.
-- **Content** — **1468 cards across all 16 Companions.** The roster is COMPLETE as of
+- **Content** — **1470 cards across all 16 Companions.** The roster is COMPLETE as of
   2026-08-28 (Marmalade, Bones, Pipkin, Taffy, Wink · Boggle, Mopsy, Wisp, Crumbula, Hush,
   Truffle · Drizzle, Pudding, Mossbit, Brambleboo, Crinkle), each with its own
-  effect-asserting suite; 37 enemies
-  across Foyer / Nursery / Sleeping Quarters with 3 multi-phase bosses; 38 Keepsakes; 16
-  Curiosities; 18 Backpack items; a 10-level Haunt ladder with real behavioural upgrades.
+  effect-asserting suite. **275 enemies across ALL SEVENTEEN REGIONS** as of 2026-08-31,
+  310 encounters, 106 statuses, 24 status Tricks, seventeen two-phase bosses; 60 Keepsakes;
+  16 Curiosities; 18 Backpack items; a 10-level Haunt ladder with real behavioural upgrades
+  written for every region and exercised by nothing above Haunt 0 in the run harness.
 - **Art** — all authored art is wired: the main menu (`UI/mainMenu.png` + keyed `UI/title.png`),
   Companion select (`UI/selectCompanion.png` itself, unrescued frames hidden, candle hover), all
   17 map wings traced from their own `art/sectionNN.png`, 8 painted Kid portraits + thumbnails,
   13 upgraded Companion portraits. Pet photographs are *generated* (`ui/petart.js`) — there is no
   authored pet art, and that code is deliberate, not a placeholder.
-- **Balance** (measured, not guessed): whole-run survival 50–58%, Foyer boss ~82%, Governess ~74%
-  when reached, naive-vs-competent gap ~33 points.
+- **Balance** (measured, not guessed, and RE-MEASURED against the full ladder on 2026-08-31):
+  6 of 40 unaided expeditions clear all seventeen wings, 25 of them end in the Foyer, and
+  **ten of the seventeen wings kill nobody**. Four boss DRAWS in fifty runs. See the top of
+  this file — this is the largest open finding in the project.
 
 `UI/selectKid.png` is prepped to `game/assets/ui/select-kid.jpg` and **wired to nothing** — the
 designer has not asked for it yet.
