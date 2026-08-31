@@ -83,11 +83,38 @@ async def main(a):
                   % (vic.get("unaided", 0), vic.get("unaidedOf", 0),
                      vic.get("shepherded", 0), vic.get("shepherdedOf", 0)))
 
+    led = res.get("ledger") or []
+    if led:
+        print("")
+        print("what a fight costs, by region  (unaided runs only)")
+        print("  %-22s %-7s %-10s %-9s %-7s %-6s %-6s %-9s %-7s %s"
+              % ("region", "fights", "mean cost", "% of pool", "turns",
+                 "deck", "keeps", "scuffle", "scare", "boss"))
+        for r in led:
+            print("  %-22s %-7d %-10.1f %-9s %-7.1f %-6.1f %-6.1f %-9.1f %-7.1f %.1f"
+                  % (r["region"], r["fights"], r["cost"], "%.1f%%" % r["pct"],
+                     r["turns"], r["deck"], r["keeps"],
+                     r["scuffle"], r["scare"], r["boss"]))
+        print("  '%% of pool' is one fight's Courage cost as a share of MAX Courage -")
+        print("  the only cross-region comparison that survives the pool growing.")
+
+    pw = res.get("purse") or []
+    if pw:
+        print("")
+        print("what each kind of room hands over  (unaided runs only)")
+        print("  %-12s %-8s %-11s %-11s %-11s %s"
+              % ("room", "visits", "keepsakes", "per visit", "per run", "cards/run"))
+        for r in pw:
+            print("  %-12s %-8d %-11d %-11.2f %-11.2f %.2f"
+                  % (r["type"], r["visits"], r["keeps"], r["per"],
+                     r["perRun"], r["cardsPerRun"]))
+
     draws = res.get("draws") or []
     if draws:
         print("")
         print("BOSS DRAWS - neither side could finish inside the turn budget.")
-        print("  A balance finding, not a run-layer failure. Watch this number.")
+        print("  These are FAILURES now: `_losePatience` makes an unbounded stall")
+        print("  impossible, so a draw means that mechanism did not run.")
         for d in draws:
             print("  !! " + d)
 

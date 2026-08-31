@@ -2150,6 +2150,20 @@ export class CombatEngine {
        * `moveCardTo` takes the uid back, which is the same round trip
        * `takeFromDraw`/`returnToHand` already use.
        */
+      /**
+       * What a seat was still HOLDING when they ended their turn, and how much
+       * Nerve they left unspent. Latched in `_closeSeatHand`, because by the
+       * time `onPlayerTurnEnd` runs the hand has already been emptied and
+       * `cardsIn('hand')` reads 0 for everybody. See the note there.
+       */
+      handAtTurnEnd: (who = null) => {
+        const seat = (who && e._resolveSeat(who)) || aim || e.current;
+        return seat ? (seat.handAtTurnEnd || 0) : 0;
+      },
+      energyAtTurnEnd: (who = null) => {
+        const seat = (who && e._resolveSeat(who)) || aim || e.current;
+        return seat ? (seat.energyAtTurnEnd || 0) : 0;
+      },
       cardsIn: (pile = Pile.HAND, who = null) => {
         const seat = (who && e._resolveSeat(who)) || aim || e.current;
         const list = (seat && seat.piles && seat.piles[pile]) || [];
@@ -2892,8 +2906,67 @@ export class CombatEngine {
     this._enemyLifecycle('onPlayerReady');
     if (this.over) return;
 
+    // 6d — the house loses patience
+    this._losePatience();
+    if (this.over) return;
+
     // 7 — intents
     this.refreshIntents('turnStart');
+  }
+
+  /**
+   * A FIGHT THAT CANNOT END IS A DEFECT, AND IT IS NOT THE SAME AS A HARD FIGHT.
+   *
+   * `tests/run/run.py` has reported boss DRAWS since the ladder reached
+   * seventeen regions — the Groundskeeper of Names three times in fifty
+   * expeditions, the Head Gardener, the Confectioner — all at the harness's
+   * 200-turn ceiling with both sides comfortable. Measured, the Groundskeeper
+   * sat at 203 of 350 Courage for the last hundred and forty of them.
+   *
+   * The cause is arithmetic rather than design. An enemy's Guard is wiped at
+   * the start of its own turn and re-granted every turn, so what the player
+   * must beat is its Guard PER TURN, not its Courage. The Groundskeeper can
+   * raise 46 in a turn between Here Lies Shelter, the memorial stones, Record
+   * the Name and Review the Records; a deck that deals less than that can never
+   * move its Courage bar at all, however long the fight runs — and its own
+   * damage is fully blockable, so neither can it finish the player. Both sides
+   * are then stable and the fight is decided by the turn cap.
+   *
+   * Per-boss escalation is the shipped answer to this and it does not hold:
+   * the Groundskeeper GAINED one (`names`, up to +3 a hit) in an earlier round
+   * specifically to break a draw, and still draws three times in fifty. Nor can
+   * it hold in general — a boss written next year will have the same hole and
+   * nothing would catch it, because `tests/enemies/run.py` cannot see a draw and
+   * the region gates all fight to a conclusion in under sixty turns.
+   *
+   * So it is settled HERE, once, for every enemy in the game including ones not
+   * written yet. Past `PATIENCE`, every living enemy gains a stack of Strength
+   * at the start of each player turn. Strength is a pipeline status
+   * (`damage.step2`) which `previewDamageValue` also applies, so the number
+   * rises ON THE INTENT the player is reading before it rises on the hit — the
+   * escalation is never a surprise and never a lie. Unbounded, so termination
+   * is guaranteed rather than merely likely.
+   *
+   * `PATIENCE` is deliberately far outside reachable play. Measured 2026-08-31:
+   * the Butler runs 8-12 turns, the longest ordinary boss 15, and the longest
+   * fight any region gate produces is 24. Nothing a player will ever see is
+   * touched by this; it exists to make the tail finite.
+   */
+  _losePatience() {
+    const PATIENCE = 30;
+    if (this.turn <= PATIENCE) return;
+    const living = this.livingEnemies();
+    if (!living.length) return;
+    if (!this._impatient) {
+      this._impatient = true;
+      this.announceRule({
+        id: 'the-house-loses-patience',
+        name: 'THE HOUSE LOSES PATIENCE',
+        text: 'This has gone on long enough. Every enemy gains 1 Strength at the '
+            + 'start of each of your turns, and keeps it.',
+      });
+    }
+    for (const a of living) this.applyStatus(a, 'strength', 1);
   }
 
   /** One seat's turn opening: draw penalty, Guard wipe, start-of-turn statuses. */
@@ -3357,6 +3430,28 @@ export class CombatEngine {
    */
   _closeSeatHand(pl) {
     pl.ended = true;
+    /**
+     * WHAT THIS SEAT WAS STILL HOLDING WHEN THEY ENDED THE TURN.
+     *
+     * `onPlayerTurnEnd` is step 3 of `_endTurn` and this method is step 1, so
+     * by the time any enemy hook looks, the hand is empty and `cardsIn('hand')`
+     * is `[]` for every seat — the same ordering trap the `onHeldTurnEnd`
+     * comment below documents for cards.
+     *
+     * The Keeper's Belonging is printed "End the turn holding 2 or more and the
+     * Keeper gains 8 Guard", it reads `c.cardsIn('hand')` from
+     * `onPlayerTurnEnd`, and it has therefore never once fired — a rule the
+     * FINAL BOSS states on screen and cannot enforce. It is not alone in kind:
+     * anything that wants to price what the player did NOT spend has to be
+     * given the number here, because there is no hook between the player
+     * pressing the button and the hand being emptied.
+     *
+     * Latched rather than hooked, because that is the smaller seam and because
+     * "how many Tricks did this seat finish holding" is a fact worth having
+     * rather than a moment worth interrupting.
+     */
+    pl.handAtTurnEnd = pl.piles.hand.length;
+    pl.energyAtTurnEnd = pl.energy || 0;
     this._emit(EV.TURN_END, {
       actor: 'player', actorId: pl.id, seat: pl.seat, turn: this.turn, side: 'player',
       seats: this.livingPlayers().map(x => ({ id: x.id, seat: x.seat, ended: !!x.ended })),

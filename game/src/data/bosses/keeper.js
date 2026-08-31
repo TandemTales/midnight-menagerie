@@ -246,9 +246,24 @@ const ARGUMENTS = [
     text: 'Draw {g} additional Trick at the start of your turn. End the turn holding 2 or more and the Keeper gains 8 Guard.',
     gift(c, boosted) { c.playerDraw(boosted ? 2 : 1); },
     guard: [1, 2],
+    /**
+     * `handAtTurnEnd`, not `cardsIn('hand')`.
+     *
+     * `_closeSeatHand` is step 1 of `_endTurn` and `onPlayerTurnEnd` is step 3,
+     * so by the time this runs the hand has already been emptied and
+     * `cardsIn('hand')` is `[]` for every seat — always. Belonging is printed on
+     * screen as a rule of the FINAL BOSS and had never once fired. The engine
+     * latches the count at the moment the player pressed the button.
+     */
     endTurn(c) {
-      const hand = c.cardsIn ? c.cardsIn('hand') : [];
-      if (hand.length >= 2) { c.block(c.self, 8); c.say('Everything you need is already here.', 'warn'); }
+      const held = c.handAtTurnEnd ? c.handAtTurnEnd() : 0;
+      // ARMED here, PAID at the Keeper's own turn start. Guard granted from
+      // `onPlayerTurnEnd` is wiped a moment later by the enemy's own Guard wipe
+      // (engine step 2 of the enemy turn), so this rule was dead a SECOND time
+      // over: it read an emptied hand, and the 8 it would have granted could
+      // not have survived to stop anything. Paying it after the wipe puts it on
+      // the bar for the player turn it is meant to make harder.
+      if (held >= 2) mem(c).belongingOwed = 8;
     },
   },
 ];
@@ -333,6 +348,14 @@ export const keeper = {
 
   onTurnStart(c) {
     if (mem(c).phase === 1 && locks(c).some(l => l.defId === 'shelter-lock')) c.block(c.self, 7);
+    // Belonging's 8, armed at the player's turn end and paid AFTER the Guard
+    // wipe so it is standing when the player next swings. See the note there.
+    const owed = mem(c).belongingOwed || 0;
+    if (owed) {
+      mem(c).belongingOwed = 0;
+      c.block(c.self, owed);
+      c.say('Everything you need is already here.', 'warn');
+    }
   },
 
   onPlayerTurnStart(c) {

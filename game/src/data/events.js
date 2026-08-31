@@ -121,17 +121,17 @@ export const CURIOSITIES = [
         id: 'feed', label: 'Post food under the panel.',
         requires: ['pet-treats', 'feed'],
         gateText: 'You have nothing to give it.',
-        risk: 'Nothing you can see',
+        risk: 'Lost Things, and nothing you can see',
         reward: 'A Keepsake, and a Clue',
         outcomes: [
           { w: 1, title: 'Taken',
             text: 'You slide two treats under the gap. There is a pause exactly long enough to be polite, and then they are gone. Something pushes a button back out to you — brass, four holes, warm. It seems important that this was a trade and not a gift.',
-            effects: { relic: 'lucky-button', clues: 1 } },
+            effects: { relic: 'lucky-button', clues: 1, lostThings: -25 } },
         ],
       },
       {
         id: 'leave', label: 'Walk away.',
-        risk: 'You never find out',
+        risk: 'Nothing',
         reward: 'A little Courage back',
         effects: { heal: 4 },
         outcomes: [
@@ -182,12 +182,12 @@ export const CURIOSITIES = [
       },
       {
         id: 'leave', label: 'Leave it exactly where it is.',
-        risk: 'You walk away empty-handed',
-        reward: 'A Keepsake, and a little Courage',
+        risk: 'Nothing',
+        reward: 'Courage, and a Clue',
         outcomes: [
           { w: 1, title: 'Squared up again',
             text: 'You square it up again, the way you found it, and back out. When you look through the doorway from the corridor, the collar is gone and the boards are dusty and undisturbed, as if it was never put down at all. Something decides you are all right.',
-            effects: { relic: 'common', heal: 6 } },
+            effects: { heal: 10, clues: 1 } },
         ],
       },
     ],
@@ -210,12 +210,12 @@ export const CURIOSITIES = [
         id: 'fill', label: 'Fill the empty ones.',
         requires: ['pet-treats', 'feed'],
         gateText: 'You have nothing to put in them.',
-        risk: 'Nothing you can see',
+        risk: 'Lost Things, and nothing you can see',
         reward: 'A Keepsake, and a Clue',
         outcomes: [
           { w: 1, title: 'It notices',
             text: 'You go down the rows and share out what you brought. It takes a while. When you stand up, every bowl you filled has been licked clean and there is nothing else in the room, and hanging on the door handle is a bowl with your own name on it in your own handwriting.',
-            effects: { relic: 'bowl-with-your-name', clues: 1 } },
+            effects: { relic: 'bowl-with-your-name', clues: 1, lostThings: -30 } },
         ],
       },
       {
@@ -274,12 +274,12 @@ export const CURIOSITIES = [
         id: 'photograph', label: 'Photograph the photograph.',
         requires: ['camera', 'photo'],
         gateText: 'You would need a camera.',
-        risk: 'Nothing',
+        risk: 'Courage',
         reward: 'Clues, and a Keepsake',
         outcomes: [
           { w: 1, title: 'The flash shows more',
             text: 'In the flash, for a fraction of a second, the photograph is different: there are nine animals on the steps instead of one, and the family are not looking at the camera, they are looking at the door. When you lower the camera the picture is just a picture again. But you have it now.',
-            effects: { clues: 3, relic: 'photograph-of-a-cat' } },
+            effects: { clues: 3, relic: 'photograph-of-a-cat', hp: -7 } },
         ],
       },
       {
@@ -392,11 +392,11 @@ export const CURIOSITIES = [
         requires: ['multitool', 'open'],
         gateText: 'You would need something with a blade.',
         risk: 'Nothing',
-        reward: 'A Keepsake, and Clues',
+        reward: 'Clues, and Lost Things',
         outcomes: [
           { w: 1, title: 'Quiet',
             text: 'You saw through it and the whole board goes still for the first time in a century. In the silence you can hear, very faintly, animals moving about upstairs — a lot of animals, in a lot of rooms. You write down the floor and the direction.',
-            effects: { clues: 2, relic: 'common' } },
+            effects: { clues: 3, lostThings: 60 } },
         ],
       },
       {
@@ -449,11 +449,11 @@ export const CURIOSITIES = [
       {
         id: 'take-umbrella', label: 'Take an umbrella for later.',
         risk: 'Nothing',
-        reward: 'A Keepsake',
+        reward: 'Lost Things, and a Snack',
         outcomes: [
           { w: 1, title: 'Black, enormous, unkillable',
-            text: 'You pick the biggest, blackest, most funeral-looking one on the rack, and it settles into your hand like it has been waiting for someone with the sense to choose properly.',
-            effects: { relic: 'uncommon' } },
+            text: 'You pick the biggest, blackest, most funeral-looking one on the rack, and it settles into your hand like it has been waiting for someone with the sense to choose properly. Somebody has been keeping things in it: coins, a boiled sweet, and one brass button that is not from any coat here.',
+            effects: { lostThings: 70, snacks: 1 } },
         ],
       },
     ],
@@ -487,12 +487,12 @@ export const CURIOSITIES = [
         id: 'whistle', label: 'Whistle through it.',
         requires: ['dog-whistle', 'call'],
         gateText: 'You have nothing that would carry.',
-        risk: 'Nothing',
+        risk: 'Lost Things',
         reward: 'A Keepsake, Clues and Courage',
         outcomes: [
           { w: 1, title: 'Something comes',
             text: 'You do not hear it. The field does. Something bounds up out of the grass and pushes its whole head through the flap — a scruffy, delighted, utterly ordinary terrier — licks your face once, and is pulled back by the scruff by a hand you do not see. In your palm, left behind: a tag.',
-            effects: { relic: 'collar-tag', clues: 2, heal: 6 } },
+            effects: { relic: 'collar-tag', clues: 2, heal: 6, lostThings: -35 } },
         ],
       },
       {
@@ -629,11 +629,11 @@ export const CURIOSITIES = [
       {
         id: 'call', label: 'Call it.',
         risk: 'Nothing',
-        reward: 'A Keepsake, and Courage',
+        reward: 'Courage, and a Clue',
         outcomes: [
           { w: 1, title: 'It comes out',
             text: 'You whistle the way you whistle for a dog and eleven painted spaniels lift their heads at once. Then something steps out of the empty frame, brown and white and not quite solid, and puts its chin on your knee, and stays for exactly as long as it takes you to say good boy.',
-            effects: { relic: 'uncommon', heal: 14, clues: 1 } },
+            effects: { heal: 20, clues: 1 } },
         ],
       },
       {
@@ -753,11 +753,11 @@ export const CURIOSITIES = [
       {
         id: 'shut', label: 'Shut it.',
         risk: 'Nothing',
-        reward: 'A Keepsake, and maximum Courage',
+        reward: 'Maximum Courage',
         outcomes: [
           { w: 1, title: 'Latched',
             text: 'You slide it down and latch it, and the street noise stops mid-car. The house settles around you like a held breath let go. Something has been trying to close this window for a long time and could not reach.',
-            effects: { relic: 'uncommon', maxHp: 4, clues: -0 } },
+            effects: { maxHp: 8 } },
         ],
       },
     ],
@@ -805,11 +805,11 @@ export const CURIOSITIES = [
         requires: ['pet-treats', 'feed'],
         gateText: 'You have nothing to leave.',
         risk: 'Nothing',
-        reward: 'A Keepsake, and Courage',
+        reward: 'Courage, and Clues',
         outcomes: [
           { w: 1, title: 'A friend on this floor',
             text: 'You drop two treats in the pocket, do the button back up, and leave. For the rest of the region you keep finding doors already open, and once, at a corner, a coat sleeve pointing.',
-            effects: { relic: 'common', heal: 10, clues: 1 } },
+            effects: { heal: 14, clues: 2 } },
         ],
       },
     ],
@@ -839,11 +839,11 @@ export const CURIOSITIES = [
       {
         id: 'sit', label: 'Sit down on the step and wait.',
         risk: 'Nothing',
-        reward: 'A Keepsake, Clues and Courage',
+        reward: 'Clues, and Courage',
         outcomes: [
           { w: 1, title: 'Eleven minutes',
             text: 'You sit two steps down and wait. It takes eleven minutes. Then it gets up, stretches enormously, walks up two steps, and looks back at you, which in cat means come on then. It shows you a door. The door is not on the blueprint.',
-            effects: { relic: 'uncommon', clues: 2, heal: 6 } },
+            effects: { clues: 3, heal: 12 } },
         ],
       },
       {
@@ -877,11 +877,11 @@ export const CURIOSITIES = [
       {
         id: 'yes', label: 'Write YES.',
         risk: 'Nothing',
-        reward: 'A Keepsake, and maximum Courage',
+        reward: 'Maximum Courage, and a Snack',
         outcomes: [
           { w: 1, title: 'The house agrees',
             text: 'You write YES and the lamp warms up a shade and the whole closet feels, briefly, like somebody being thanked. Something is put into your bag while you are not looking, and you decide not to think too hard about what the question was really about.',
-            effects: { relic: 'uncommon', maxHp: 5 } },
+            effects: { maxHp: 9, snacks: 1 } },
         ],
       },
       {

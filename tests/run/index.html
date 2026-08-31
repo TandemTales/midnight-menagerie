@@ -55,6 +55,10 @@ let ENDS_DETAIL = [], DEPTH_FRAC = 0;
    printing green while covering less than the random one it replaced. */
 const VISITED = {};
 const REACH = [];
+/** Cost-per-fight by region — the ladder priced rather than guessed at. */
+const LEDGER_TABLE = [];
+/** Keepsakes and cards handed over, by room kind. */
+const PURSE_TABLE = [];
 let VICTORIES = null;
 /** Boss fights that ended in a draw. A balance finding, counted so it cannot
     go quiet — see `playCombat`. */
@@ -196,18 +200,32 @@ async function playCombat(engine, budgetTurns = 200, run = null) {
      * session hunting through five regions, and a stalemate is always a
      * specific formation whose Guard the player cannot out-damage.
      *
-     * A draw against a BOSS is a balance finding and is reported as one, the
-     * way `tests/audio/cues.py` reports its known-silent cue: counted, named,
-     * and impossible to lose track of, but not a failure of the run layer,
-     * which is what this suite tests. A draw against anything else IS a
-     * failure: an ordinary formation that cannot end is a bug in the enemy.
+     * A boss draw USED TO BE reported as a balance finding rather than a
+     * failure, the way `tests/audio/cues.py` reports its known-silent cue —
+     * counted, named, and impossible to lose track of, but not a defect of the
+     * run layer, which is what this suite tests. It stood at four in fifty on
+     * 2026-08-31: the Groundskeeper of Names three times, the Head Gardener
+     * once, all at the 200-turn ceiling with both sides comfortable.
+     *
+     * That exemption is CLOSED. `CombatEngine._losePatience` now makes an
+     * unbounded stall impossible for every enemy in the game: past turn 30
+     * every living enemy gains a stack of Strength each player turn, on the
+     * intent before it is on the hit, so damage grows without limit and the
+     * fight must resolve one way or the other. A draw is therefore no longer a
+     * statement about how a boss is priced — it is evidence that the mechanism
+     * meant to guarantee termination did not run.
+     *
+     * Both kinds fail now, and the line still names the formation, because
+     * "combat did not resolve in 200 turns" once sent a session hunting
+     * through five regions.
      */
     const left = engine.enemies.filter(x => x.alive)
       .map(x => `${x.defId} ${x.hp}/${x.maxHp}`).join(', ');
     const who = run?.combatMeta?.name || engine.encounterId || 'unknown encounter';
     const boss = engine.enemies.some(x => x.alive && x.tier === 'boss');
     const line = `${who} — ${budgetTurns} turns, still standing: ${left || 'nobody'}`;
-    if (boss) DRAWS.push(line); else fail(`combat did not resolve — ${line}`);
+    if (boss) DRAWS.push(line);
+    fail(`combat did not resolve — ${line}`);
     // Either way the expedition is over. A run that cannot finish a fight has
     // failed, and leaving `run.result` null makes it look like a harness crash.
     if (run && !run.result) { try { run.end(false, who); } catch { /* already ended */ } }
@@ -254,6 +272,22 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
      13 rows deep, so it mattered enormously whether those were row 3 or the
      Butler on row 12, and nothing here could tell them apart. */
   let lastRoom = null;
+  /* THE LEDGER. One row per fight, so the ladder can be priced rather than
+     guessed at.
+
+     "Regions reached" says where runs STOP, and by 2026-08-31 that table had
+     gone flat from region 8 onward — six runs reach the Attic and six reach the
+     Heart, so ten wings kill nobody. That is a symptom with at least three
+     different causes and the reach table cannot tell them apart: the back half
+     could be underpriced, or the player could be arriving with a deck nothing
+     in the game is priced against, or the bot could simply be good enough that
+     everything after the Library is a formality.
+
+     What separates them is the COST of a fight relative to the pool it is spent
+     from, region by region — and nothing recorded it. */
+  const ledger = [];
+  /** One row per ROOM: what it added to the deck and the Keepsake shelf. */
+  const purse = [];
 
   const log = (s) => t.push(s);
   log(`seed ${run.seed} ${companion}/${kid} h${haunt}`);
@@ -285,6 +319,10 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
                  rows: run.map?.rows ?? 0, deck: run.deck.length };
     log(`> ${id} ${type}`);
 
+    const hpBefore = run.courage;
+    const regionBefore = run.region;
+    const keepsBefore = run.keepsakes.length;
+    const deckBefore = run.deck.length;
     await run.enterNode(id);
 
     if (run.combat) {
@@ -292,9 +330,29 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
       const ok = await playCombat(engine, 200, run);
       if (!ok) break;
       log(`  fight ${engine.victory ? 'won' : 'lost'} hp=${run.courage}`);
+      ledger.push({
+        region: regionBefore, type, seed, shepherd,
+        hpBefore, hpAfter: run.courage, max: run.maxCourage,
+        cost: Math.max(0, hpBefore - run.courage),
+        turns: engine.turn, won: !!engine.victory,
+        deck: run.deck.length, keeps: run.keepsakes.length,
+        purse: run.lostThings,
+      });
     }
 
-    if (run.result) break;
+    /* WHAT EACH ROOM HANDS OVER. `keepsakes` reaches 11.8 by the third wing and
+       55 by the Heart, and the ladder's flat back half is downstream of that —
+       but "where do 55 Keepsakes come from" cannot be answered from the reach
+       table or from the room census, because a shop that SELLS three and a
+       Treasure that GIVES one look identical in both. This is recorded per
+       room so the economy can be priced at its source. */
+    const bank = () => {
+      const dk = run.keepsakes.length - keepsBefore;
+      const dc = run.deck.length - deckBefore;
+      if (dk || dc) purse.push({ type, region: regionBefore, keeps: dk, cards: dc, shepherd });
+    };
+
+    if (run.result) { bank(); break; }
 
     if (run.pendingReward) {
       const r = run.pendingReward;
@@ -306,6 +364,7 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
         else { run.skipRewardCards(); log('  skipped'); }
       }
       run.claimReward();
+      bank();
       continue;
     }
 
@@ -338,12 +397,13 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
             await run.eventCombat(p.combat);
             if (run.combat) { await playCombat(run.combat, 200, run); }
             if (run.result) break;
-            if (run.pendingReward) { run.claimReward(); continue; }
+            if (run.pendingReward) { run.claimReward(); bank(); continue; }
           }
         }
       }
-      if (run.result) break;
+      if (run.result) { bank(); break; }
       run.leaveNode();
+      bank();
       continue;
     }
 
@@ -364,6 +424,7 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
       }
       log(`  shop, purse ${run.lostThings}`);
       run.leaveNode();
+      bank();
       continue;
     }
 
@@ -389,15 +450,17 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
       }
       log(`  safe room, hp ${run.courage}/${run.maxCourage}`);
       run.leaveNode();
+      bank();
       continue;
     }
 
     // treasure and anything else already left a pendingReward or is a no-op
     run.leaveNode();
+    bank();
   }
 
   if (!run.result && steps >= 400) fail(`seed ${seed}: run never terminated (400 steps)`);
-  return { run, trace: t, steps, lastRoom };
+  return { run, trace: t, steps, lastRoom, ledger, purse };
 }
 
 /* ── a stable digest of everything a run ended up being ─────────────────── */
@@ -444,7 +507,8 @@ async function main() {
     }
     const run = r.run;
     results.push({ seed, companion, kid, haunt, shepherd, elitist, run, steps: r.steps,
-                   trace: r.trace, lastRoom: r.lastRoom });
+                   trace: r.trace, lastRoom: r.lastRoom, ledger: r.ledger,
+                   purse: r.purse });
 
     // ── sanity ──────────────────────────────────────────────────────────────
     check(run.result === 'victory' || run.result === 'defeat',
@@ -847,6 +911,83 @@ async function main() {
      expedition is shepherded to full Courage each room so the back half of the
      ladder is structurally exercised; those runs say nothing about whether the
      game is reachable. Reporting one victory count over both kinds hid that. */
+  /* WHAT A FIGHT COSTS, region by region.
+     "Regions reached" says where runs stop. It cannot say WHY, and from
+     region 8 onward it is a flat line that could equally mean "the back half is
+     underpriced" or "the bot is simply good by then". This is the number that
+     separates them: Courage spent per fight as a share of the pool it comes
+     out of, beside the deck and Keepsakes the player is holding at the time.
+
+     Shepherded runs are EXCLUDED. They are refilled to full Courage in every
+     room specifically so the back half gets walked, so their cost-per-fight is
+     an artefact of the harness and would flatten this table by construction.  */
+  say('<h2>what a fight costs, by region</h2>');
+  {
+    const LED = results.filter(r => !r.shepherd).flatMap(r => r.ledger || []);
+    const mean = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
+    let lrows = '<table><tr><th>region</th><th>fights</th><th>mean cost</th>'
+      + '<th>% of pool</th><th>turns</th><th>deck</th><th>keeps</th>'
+      + '<th>scuffle</th><th>scare</th><th>boss</th></tr>';
+    const seenRegions = RUN_REGIONS.filter(id => LED.some(x => x.region === id));
+    for (const id of seenRegions) {
+      const rows = LED.filter(x => x.region === id);
+      const of = (t) => rows.filter(x => x.type === t);
+      const pct = mean(rows.map(x => (x.max ? x.cost / x.max : 0))) * 100;
+      lrows += `<tr><td>${id}</td><td>${rows.length}</td>`
+        + `<td>${mean(rows.map(x => x.cost)).toFixed(1)}</td>`
+        + `<td class="bar">${pct.toFixed(1)}%</td>`
+        + `<td>${mean(rows.map(x => x.turns)).toFixed(1)}</td>`
+        + `<td>${mean(rows.map(x => x.deck)).toFixed(1)}</td>`
+        + `<td>${mean(rows.map(x => x.keeps)).toFixed(1)}</td>`
+        + `<td>${mean(of('scuffle').map(x => x.cost)).toFixed(1)}</td>`
+        + `<td>${mean(of('bigScare').map(x => x.cost)).toFixed(1)}</td>`
+        + `<td>${mean(of('boss').map(x => x.cost)).toFixed(1)}</td></tr>`;
+      LEDGER_TABLE.push({
+        region: id, fights: rows.length,
+        cost: +mean(rows.map(x => x.cost)).toFixed(1),
+        pct: +pct.toFixed(1),
+        turns: +mean(rows.map(x => x.turns)).toFixed(1),
+        deck: +mean(rows.map(x => x.deck)).toFixed(1),
+        keeps: +mean(rows.map(x => x.keeps)).toFixed(1),
+        scuffle: +mean(of('scuffle').map(x => x.cost)).toFixed(1),
+        scare: +mean(of('bigScare').map(x => x.cost)).toFixed(1),
+        boss: +mean(of('boss').map(x => x.cost)).toFixed(1),
+      });
+    }
+    lrows += '</table>';
+    say(lrows + '<pre>unaided runs only. "% of pool" is the share of MAX Courage '
+      + 'one fight takes off, which is the only cross-region comparison that '
+      + 'survives the pool growing.</pre>');
+  }
+
+  /* WHERE THE FIFTY-FIVE KEEPSAKES COME FROM. Priced at the source rather than
+     inferred from the room census: a Shop that SELLS three and a Treasure that
+     GIVES one are the same row in that census and completely different
+     economies. */
+  say('<h2>what each kind of room hands over</h2>');
+  {
+    const P2 = results.filter(r => !r.shepherd).flatMap(r => r.purse || []);
+    const runs = results.filter(r => !r.shepherd).length || 1;
+    const kinds = [...new Set(P2.map(x => x.type))];
+    let prows = '<table><tr><th>room</th><th>visits</th><th>keepsakes</th>'
+      + '<th>per visit</th><th>per run</th><th>cards</th></tr>';
+    for (const k of kinds.sort()) {
+      const rows = P2.filter(x => x.type === k);
+      const keeps = rows.reduce((a, b) => a + b.keeps, 0);
+      const cards = rows.reduce((a, b) => a + b.cards, 0);
+      prows += `<tr><td>${k}</td><td>${rows.length}</td><td>${keeps}</td>`
+        + `<td>${(keeps / (rows.length || 1)).toFixed(2)}</td>`
+        + `<td class="bar">${(keeps / runs).toFixed(2)}</td>`
+        + `<td>${(cards / runs).toFixed(2)}</td></tr>`;
+      PURSE_TABLE.push({ type: k, visits: rows.length, keeps,
+                         per: +(keeps / (rows.length || 1)).toFixed(2),
+                         perRun: +(keeps / runs).toFixed(2),
+                         cardsPerRun: +(cards / runs).toFixed(2) });
+    }
+    prows += '</table>';
+    say(prows + `<pre>${runs} unaided runs.</pre>`);
+  }
+
   say('<h2>regions reached</h2>');
   {
     const deepest = (r) => (r.run.regionIndex ?? 0) + 1;
@@ -937,7 +1078,7 @@ autosaves ${saveCount}</pre>`);
     ms, meanRooms: +avg.toFixed(1), ends,
     lengths, decks, purses, keeps, saveCount,
     endsDetail: ENDS_DETAIL, depthFrac: DEPTH_FRAC, visited: VISITED,
-    reach: REACH, victories: VICTORIES, draws: DRAWS,
+    reach: REACH, victories: VICTORIES, draws: DRAWS, ledger: LEDGER_TABLE, purse: PURSE_TABLE,
     determinism: detOk, resume: resumeOk, storage: storeOk,
     combatResume: combatResume, combatResumeTried: combatResumeTried, replayed,
   };

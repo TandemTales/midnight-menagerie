@@ -293,6 +293,48 @@ async ([playIt]) => {
 }
 """
 
+# ── Belonging: a rule the final boss prints and could not enforce ────────────
+#
+# "End the turn holding 2 or more and the Keeper gains 8 Guard."  It read
+# `c.cardsIn('hand')` from `onPlayerTurnEnd`, which is step 3 of `_endTurn`,
+# and `_closeSeatHand` empties the hand at step 1 — so the count was 0 for
+# every seat on every turn and the rule had never fired once. The engine now
+# latches what the seat was holding when the button was pressed.
+BELONGING = r"""
+async ([spendHand]) => {
+  const e = make(['keeper'], { seed: 31, hp: 5000, energy: 99 });
+  await e.startCombat();
+  const k = e.enemies.find(x => x.defId === 'keeper');
+  // Into phase two, where the Arguments live, and onto Belonging.
+  k.hp = Math.round(350 * (k.maxHp / 540)); k.block = 0;
+  e.refreshIntents('test');
+  await e.endTurn();
+  if (k.mem.phase !== 2) await e.endTurn();
+  const args = (k.mem.rejected || []);
+  const before = k.block;
+  if (spendHand) {
+    // Empty the hand deliberately: the CONTROL for "holding 2 or more".
+    for (const c of [...e.piles.hand]) {
+      const t = (e.firstLivingEnemy() || {}).id ?? null;
+      if (e.canPlay(c.uid, t).ok) await e.playCard(c.uid, t);
+      else e.moveCard(c, 'discard');
+    }
+  }
+  const held = e.piles.hand.length;
+  k.block = 0;
+  // Point the rotation at Belonging LAST, after the hand is settled: emptying
+  // it by playing four Tricks meets two Independence conditions at once and
+  // the Argument is rejected before it can be tested.
+  k.mem.argAt = 3;
+  const which = k.mem.argAt;
+  await e.endTurn();
+  return { phase: k.mem.phase, held, guardAfter: k.block, which,
+           owed: k.mem.belongingOwed || 0,
+           rejected: (k.mem.rejected || []).slice(),
+           rules: e.rules.map(r => r.name) };
+}
+"""
+
 # ── the Keeper's three phases, walked ────────────────────────────────────────
 KEEPER = r"""
 async () => {
@@ -510,6 +552,22 @@ async def main(a):
         check(r["beating"] is True,
               "the House Pulse's Heartbeat reaches the rest of the formation",
               json.dumps(r))
+
+        # ══ Belonging, the rule that could not fire ════════════════════════
+        holding = await page.evaluate(BELONGING, [False])
+        empty = await page.evaluate(BELONGING, [True])
+        check(holding["phase"] == 2 and empty["phase"] == 2,
+              "both probes reach phase two, where the Arguments live",
+              f"{holding['phase']} / {empty['phase']}")
+        # Its own move grants Guard either way, so the claim is the DIFFERENCE
+        # the two boards make, not the total on the bar.
+        check(holding["held"] >= 2 and empty["held"] < 2,
+              "the two boards really do differ in what the seat was holding",
+              f"holding {holding['held']}, empty {empty['held']}")
+        check(holding["guardAfter"] - empty["guardAfter"] == 8,
+              "ending the turn holding 2 or more really does hand the Keeper "
+              "exactly 8 more Guard than ending it empty-handed",
+              f"{holding['guardAfter']} vs {empty['guardAfter']}")
 
         check(not errors, "zero console errors", "; ".join(errors[:3]))
         await browser.close()
