@@ -685,6 +685,83 @@ const GY = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// The Moonlit Attic and Observatory - docs/design/regions/08-attic-observatory.md
+// §9-§12
+//
+// The region ladder is "one forecast, then two that overlap". The Orrery Imp
+// arrives last on purpose: it can only reschedule a forecast that already
+// exists, so §12 keeps it out of the pools until the player has met one.
+// ─────────────────────────────────────────────────────────────────────────────
+const AO = [
+  // ── Early (§9) ----------------------------------------------------------
+  { id: 'ao-1', region: 'attic-observatory', tier: 'early', name: 'Rafter Peeker',
+    members: [m('rafter-peeker')],
+    teaches: 'An intent you change by swinging at it. Both futures stay on screen until you pick.' },
+  { id: 'ao-2', region: 'attic-observatory', tier: 'early', name: 'Moon Moth',
+    members: [m('moon-moth')],
+    teaches: 'A visible cycle. The dangerous, fragile Full Moon is three turns out and you can count.' },
+  { id: 'ao-3', region: 'attic-observatory', tier: 'early', name: 'Cobweb Bundle',
+    members: [m('cobweb-bundle')],
+    teaches: 'It names the Trick you have not drawn yet and makes it awkward.' },
+  { id: 'ao-4', region: 'attic-observatory', tier: 'early', name: 'Telescope Eye',
+    members: [m('telescope-eye')],
+    teaches: 'It watches one thing about your turn and tells you which. Change, or pay for it.' },
+
+  // ── Standard (§10) ------------------------------------------------------
+  { id: 'ao-5', region: 'attic-observatory', tier: 'standard', name: 'Rafter Peeker + Star Chart',
+    members: [m('rafter-peeker'), m('star-chart')],
+    teaches: 'The Chart can bless Drop Down, which is a reason to force Scramble Away.' },
+  { id: 'ao-6', region: 'attic-observatory', tier: 'standard', name: 'Moon Moth + Cobweb Bundle',
+    members: [m('moon-moth'), m('cobweb-bundle')],
+    teaches: 'Plan around the Full Moon while the Tricks you were counting on get silk on them.' },
+  { id: 'ao-7', region: 'attic-observatory', tier: 'standard', name: 'Telescope Eye + Rafter Peeker',
+    members: [m('telescope-eye'), m('rafter-peeker')],
+    teaches: 'One reads the whole turn. The other reacts to a single hit.' },
+  { id: 'ao-8', region: 'attic-observatory', tier: 'standard', name: 'Moon Moth + Star Chart',
+    members: [m('moon-moth'), m('star-chart')],
+    teaches: 'A blessed Full Moon attack, visible for three turns before it lands.' },
+
+  // ── Advanced (§11) ------------------------------------------------------
+  { id: 'ao-9', region: 'attic-observatory', tier: 'advanced', name: 'Orrery Imp + Moon Moth',
+    members: [m('orrery-imp'), m('moon-moth')],
+    teaches: 'The Imp can bring the Full Moon forward.' },
+  { id: 'ao-10', region: 'attic-observatory', tier: 'advanced', name: 'Telescope Eye + Star Chart',
+    members: [m('telescope-eye'), m('star-chart')],
+    teaches: 'One predicts you. The other makes the prediction hurt more.' },
+  { id: 'ao-11', region: 'attic-observatory', tier: 'advanced', name: 'Cobweb Bundle + Orrery Imp',
+    members: [m('cobweb-bundle'), m('orrery-imp')],
+    teaches: 'Future card friction and future enemy timing, overlapping.' },
+  { id: 'ao-12', region: 'attic-observatory', tier: 'advanced',
+    name: 'Rafter Peeker + Orrery Imp + Star Chart',
+    members: [m('rafter-peeker'), m('orrery-imp'), m('star-chart')],
+    teaches: 'Manipulate the Peeker while the Imp moves the Chart blessing somewhere worse.' },
+  { id: 'ao-13', region: 'attic-observatory', tier: 'advanced', name: 'Moon Moth + Telescope Eye',
+    members: [m('moon-moth'), m('telescope-eye')],
+    teaches: 'Two predictable systems at once, and they want opposite turns from you.' },
+  { id: 'ao-14', region: 'attic-observatory', tier: 'advanced',
+    name: 'Telescope Eye + Orrery Imp + Moon Moth',
+    members: [m('telescope-eye'), m('orrery-imp'), m('moon-moth')],
+    teaches: 'Your own behaviour, the lunar cycle, and the timing of both. The hardest baseline formation.',
+    advancedOnly: true, minScuffle: 2 },
+
+  // ── Big Scares (§13-§15) ----------------------------------------------
+  { id: 'ao-scare-orrery', region: 'attic-observatory', tier: 'elite', name: 'The Great Orrery',
+    members: [m('great-orrery')],
+    teaches: 'Four positions, all visible. Twenty damage in one turn moves the heavens.' },
+  { id: 'ao-scare-seer', region: 'attic-observatory', tier: 'elite', name: 'The Rafter Seer',
+    members: [m('rafter-seer')],
+    teaches: 'Three futures at once. Your first Attack, Skill or Power decides which comes true.' },
+  { id: 'ao-scare-lens', region: 'attic-observatory', tier: 'elite', name: 'The Moon Lens',
+    members: [m('moon-lens')],
+    teaches: 'It magnifies whatever it points at, including itself. Your third Trick decides which.' },
+
+  // ── Boss -----------------------------------------------------------------
+  { id: 'ao-boss', region: 'attic-observatory', tier: 'boss', name: 'The Watcher in the Rafters',
+    members: [m('the-watcher')],
+    teaches: 'Its next three actions are on screen. Your 3rd and 5th Trick each let you reorder them.' },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
 // The Grand Study and Library — docs/design/regions/07-study-library.md §10-§16
 //
 // The through-line of the region's own progression: each Scuffle pairs enemies
@@ -898,6 +975,21 @@ const HEART = [
 // Per-region generation rules (design doc §10 "Encounter selection rules")
 // ─────────────────────────────────────────────────────────────────────────────
 export const REGION_RULES = {
+  /* docs/design/regions/08-attic-observatory.md SS12. Every clause below is
+     one line of that section. "Moon Moth should be encountered alone before
+     appearing with Orrery Imp" has no field to hold it and needs none: the
+     Moth alone is Scuffle 2 in the EARLY tier and the pair is Scuffle 9 in
+     ADVANCED, so the tier ladder already orders them. */
+  'attic-observatory': {
+    /** "Orrery Imp cannot appear before the player has encountered at least
+        one enemy with a forecast system." It has nothing to reschedule. */
+    minScuffle: { 'orrery-imp': 2 },
+    /** "Star Chart cannot appear alone in ordinary Scuffles." It marks an ALLY. */
+    neverAlone: ['star-chart'],
+    /** Two Imps at Haunt 0, and two Eyes ever, are SS12 outright. */
+    noDuplicates: ['orrery-imp', 'telescope-eye'],
+    maxConsecutiveLead: 2,
+  },
   /* docs/design/regions/07-study-library.md §13. Every clause below is one line
      of that section.
 
@@ -990,7 +1082,7 @@ export const REGION_RULES = {
   },
 };
 
-const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...GY, ...SL, ...HEART];
+const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...GY, ...SL, ...AO, ...HEART];
 
 /** id → EncounterDef */
 export const ENCOUNTERS = Object.freeze(

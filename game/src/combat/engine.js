@@ -2166,6 +2166,24 @@ export class CombatEngine {
        */
       reveal: (n = 1) => { enemy.previewDepth = Math.max(enemy.previewDepth || 0, n | 0); },
 
+      /* ── the plan, from the enemy side ────────────────────────────────────
+       * `swapIntents`/`postponeIntent` have existed since Wink and were reachable
+       * only from the CARD ctx, because until now the only thing that rearranged
+       * a plan was a player. The Attic and Observatory is the region whose whole
+       * identity is the forecast — its Orrery Imp "does not increase damage
+       * directly, it attacks the player's timeline" (§8), its Star Chart marks an
+       * ALLY's future attack, and the Watcher's Future Line is the boss — so the
+       * same three calls are wanted here, aimed at another enemy.
+       *
+       * `planOf` is the read half and returns move IDS, never move objects: a def
+       * holding another enemy's live move would be the same class of bug as
+       * holding a runtime card. Positions are 0 = resolving next, 1..3 = after.
+       */
+      planOf: (en) => ((en && en.plan) || []).slice(0, MAX_PLAN),
+      swapIntents: (en, a, b) => e.swapIntents(en || enemy, a, b),
+      postponeIntent: (en) => e.postponeIntent(en || enemy),
+      isAnchored: (en, pos) => isAnchored(en || enemy, pos ?? 0),
+
       // House Rules
       announceRule: (rule) => e.announceRule(rule, enemy.id),
       clearRules: (sourceId) => e.clearRules(sourceId ?? enemy.id),

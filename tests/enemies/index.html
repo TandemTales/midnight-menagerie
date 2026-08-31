@@ -63,6 +63,12 @@ function makeActor(def, hp, slot = 0) {
     uid: def.id + '#' + (makeActor.n = (makeActor.n || 0) + 1), name: def.name,
     hp, maxHp: hp, block: 0, alive: true, mem: {}, counters: {}, flags: {},
     statuses: {}, damageTakenThisTurn: 0, side: 'enemy', slot, def,
+    /* A real four-slot plan, because `planOf`/`swapIntents` promise one. The
+       mock fills it from `nextMove` each turn (see `planFor` below), so an
+       enemy that rearranges a NEIGHBOUR's forecast — the Orrery Imp, the Star
+       Chart, the Watcher — has something to rearrange here instead of a
+       silently empty array. */
+    plan: [], planLocked: 0, previewDepth: 0,
   };
 }
 
@@ -275,6 +281,35 @@ class MockCombat {
       // Recorded, not simulated: this harness has no intent queue. What it
       // must prove is that the call exists and does not throw.
       reveal: (n = 1) => { actor.previewDepth = Math.max(actor.previewDepth || 0, n | 0); },
+      /* The plan, mirrored from engine.js. Every actor here carries a real four
+         slot `plan` array of move ids, and the swap really swaps — a shim that
+         answered `[]` would let the Orrery Imp, the Star Chart and the whole
+         Watcher fight pass this suite while rearranging nothing, which is
+         CONTRACTS trap 5 and exactly what the pile seams were added for. */
+      planOf: (en) => (((en || actor).plan) || []).slice(0, 4),
+      swapIntents: (en, a, b) => {
+        const t = (en || actor);
+        const p = t.plan || (t.plan = []);
+        if (a === b || a < 0 || b < 0 || a > 3 || b > 3 || !p[a] || !p[b]) return false;
+        const tmp = p[a]; p[a] = p[b]; p[b] = tmp;
+        t.planLocked = Math.max(t.planLocked || 0, Math.max(a, b) + 1);
+        return true;
+      },
+      postponeIntent: (en) => {
+        const t = (en || actor);
+        const p = t.plan || (t.plan = []);
+        if (!p[0]) return false;
+        const cur = p.shift();
+        p.splice(Math.min(p.filter(Boolean).length, 3), 0, cur);
+        p.length = 4;
+        return true;
+      },
+      isAnchored: (en, pos) => {
+        const t = (en || actor);
+        const id = (t.plan || [])[pos ?? 0];
+        const mv = id && t.def && t.def.moves ? t.def.moves[id] : null;
+        return !!(mv && mv.anchored);
+      },
       timers: () => (self.timers || []).filter(t => t.ownerId === actor.id)
         .map(t => ({ id: t.id, label: t.label, turnsLeft: t.turnsLeft, data: t.data })),
       /**
@@ -332,10 +367,21 @@ class MockCombat {
   }
 
   // ctx.self must BE the actor — rebuild the object with the right binding.
-  ctx(actor) {
+  ctx(actor, extra) {
     const c = this.ctxFor(actor);
     c.self = actor;
     // Haunt flags live on the actor; _lib.flag() reads actor.flags.
+    // `extra.history` is how `planFor` asks "what would you do at position k",
+    // mirroring the engine's `deriveMoveId`.
+    if (extra && extra.history) c.history = extra.history;
+    /* NOTE, because it looks like a gap and is not: the engine derives plan
+       positions with `rng.fork('intent:<id>:<k>')`, never the main stream, so a
+       def MAY legally roll in `nextMove` there. This mock hands over the shared
+       RNG, so it would call such a def non-deterministic. Rather than fork here
+       — which would have to be done at all THREE nextMove call sites or be
+       worse drift than none — the rule for content is the stricter one this
+       suite already enforces: derive the move from `history`, never from a die.
+       Every def in the game does, including the Watcher's Future Line. */
     return c;
   }
 
@@ -530,9 +576,34 @@ class MockCombat {
     for (const a of this.living()) this.hook(a, 'onPlayerTurnEnd');
   }
 
+  /**
+   * Fill an actor's four-slot plan the way `rebuildPlan` does: position k is
+   * `nextMove` asked as if the k moves before it had already resolved.
+   *
+   * Locked positions are left alone, which is what makes a swap by the Orrery
+   * Imp or the Watcher survive to the next rebuild instead of being derived
+   * straight back. Without this the plan is an empty array and every enemy in
+   * the Attic that rearranges a forecast passes while doing nothing.
+   */
+  planFor(actor) {
+    const p = actor.plan || (actor.plan = []);
+    const base = (actor.history || []).slice();
+    for (let k = 0; k < 4; k++) {
+      if (k < (actor.planLocked || 0) && p[k]) continue;
+      let id = null;
+      try {
+        id = actor.def.nextMove(this.ctx(actor, { history: base.concat(p.slice(0, k).filter(Boolean)) }));
+      } catch { id = null; }
+      p[k] = (id && actor.def.moves[id]) ? id : null;
+    }
+    p.length = 4;
+    return p;
+  }
+
   /** One enemy action for a specific actor. Returns {moveId, move}. */
   enemyAction(actor, report) {
     const c0 = this.ctx(actor);
+    this.planFor(actor);
 
     // ── nextMove must be pure and deterministic ────────────────────────────
     const before = snapshot(actor);
@@ -558,6 +629,11 @@ class MockCombat {
     }
     move.effect(this.ctx(actor));
     (actor.history ||= []).push(id1);
+    // `consumePlan`: the resolved action leaves, everything shuffles up, and one
+    // lock is released. Without this a swapped plan would stay swapped forever.
+    const p = actor.plan || (actor.plan = []);
+    p.shift(); p.push(null); p.length = 4;
+    actor.planLocked = Math.max(0, (actor.planLocked || 0) - 1);
     return { moveId: id1, move, shown };
   }
 

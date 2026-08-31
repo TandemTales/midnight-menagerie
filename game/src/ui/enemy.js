@@ -179,6 +179,14 @@ const MOTIF = {
   beast: 'slam',
   imp: 'pounce',
   archivist: 'stoop',
+  /* The Moonlit Attic and Observatory. Four of its bodies are `floating`,
+     which defaults them all to `drift` — right for a moth and a lens and
+     wrong for a walking telescope. */
+  peeker: 'pounce', 'orrery-imp': 'pounce', echo: 'drift',
+  chart: 'drift', moonmoth: 'drift', lens: 'drift',
+  telescope: 'stoop', seer: 'stoop', watcher: 'stoop',
+  cobweb: 'ripple',
+  orrery: 'slam',
 };
 const BODY_MOTIF = { squat: 'pounce', 'tall-thin': 'stoop', sprawling: 'ripple', floating: 'drift' };
 
