@@ -455,6 +455,143 @@ export const RELICS = [
     run: { clueOnClear: true, lostThingsMul: 1.1 },
   },
 
+
+  /* ── the four regions built on 2026-08-30, each with the reward its own
+        chapter asks for ────────────────────────────────────────────────────
+     THE POOL RAN DRY, which is why these exist now rather than later.
+     `tests/run/run.py` walks a scripted expedition to the end and asserts the
+     boss drops a Keepsake; with the ladder at eleven regions there were 4 boss
+     and 25 findable Keepsakes against eleven bosses plus every treasure node,
+     and the last boss handed over nothing. That is a content shortfall the
+     ladder creates and it gets worse with every wing — so from here a region
+     ships its rewards with its roster, one boss-rarity trophy and one rare,
+     both quoted from the chapter's own "themed run reward concepts". */
+  {
+    id: 'brass-bookmark', name: 'Brass Bookmark', rarity: 'rare', icon: 'bookmark',
+    desc: `The first time each ${TERMS.combat} one of your ${TERMS.card}s is marked or made `
+        + `to cost more, draw 1 ${TERMS.card}.`,
+    flavor: 'Somebody kept their place in a book they never came back to.',
+    hooks: {
+      modifyCardCost(cost, h) {
+        // A read-only reducer: it may not draw here. It records that a Trick was
+        // taxed, and `onTurnEnd` pays out — `peek` is the display-safe view.
+        if (cost > 0 && h.card && h.card.baseCost >= 0 && cost > h.card.baseCost) {
+          const m = h.e.isPreview ? null : mem(h);
+          if (m && !m.marked) m.marked = true;
+        }
+        return cost;
+      },
+      onTurnEnd(h) {
+        if (h.side !== 'player') return;
+        if (!peek(h).marked || !once(h, 'bookmark')) return;
+        h.e.drawCards(1, 'relic'); pop(h, 'marked');
+      },
+    },
+  },
+  {
+    id: 'librarians-stamp', name: "The Librarian's Stamp", rarity: 'boss', icon: 'stamp',
+    desc: `Whenever you play an Attack, a Skill and a Power in the same turn, gain 5 ${TERMS.block}. `
+        + `Once per turn.`,
+    flavor: 'APPROVED. It is not clear who approved you, or of what.',
+    hooks: {
+      onCardPlayed(h) {
+        const played = h.e.playedThisTurn || [];
+        const kinds = new Set(played.map(p => p && p.type));
+        if (!(kinds.has('attack') && kinds.has('skill') && kinds.has('power'))) return;
+        const m = mem(h);
+        if (m.stampedTurn === h.e.turn) return;
+        m.stampedTurn = h.e.turn;
+        h.e.gainBlock(player(h), 5, { fromCard: false, reason: 'relic' });
+        pop(h, 'stamped');
+      },
+    },
+  },
+  {
+    id: 'cracked-telescope-lens', name: 'Cracked Telescope Lens', rarity: 'rare', icon: 'lens',
+    desc: 'At the start of combat, see one action further into every enemy\'s plan.',
+    flavor: 'The crack runs right across the middle and somehow that is what makes it work.',
+    hooks: {
+      onCombatStart(h) {
+        for (const en of h.e.enemies) {
+          if (en.alive) en.previewDepth = Math.max(en.previewDepth || 0, 1);
+        }
+        pop(h, 'look');
+      },
+    },
+  },
+  {
+    id: 'pocket-orrery', name: 'Pocket Orrery', rarity: 'boss', icon: 'orrery',
+    desc: `Every fourth turn, draw 1 additional ${TERMS.card} and gain 1 ${TERMS.energy}.`,
+    flavor: 'Brass, and warm, and turning very slightly faster than it should.',
+    hooks: {
+      onTurnStart(h) {
+        if (h.side !== 'player' || h.turn % 4 !== 0) return;
+        h.e.drawCards(1, 'relic');
+        lendNerve(h, 1);
+        pop(h, 'align');
+      },
+      onTurnEnd(h) { if (h.side === 'player') returnNerve(h); },
+      onCombatEnd(h) { returnNerve(h); },
+    },
+  },
+  {
+    id: 'smoked-glass', name: 'Smoked Glass', rarity: 'rare', icon: 'smokedglass',
+    desc: `The first time each ${TERMS.combat} you would take 15 or more damage from one hit, `
+        + `reduce it by 4.`,
+    flavor: 'Hold it up and the worst of anything is easier to look at.',
+    hooks: {
+      modifyDamageTaken(amount, h) {
+        if (h.defender !== player(h) || amount < 15) return amount;
+        if (h.e.isPreview) return amount - 4;
+        if (!once(h, 'smoke')) return amount;
+        pop(h, 'dimmed');
+        return amount - 4;
+      },
+    },
+  },
+  {
+    id: 'brass-wick-trimmer', name: 'Brass Wick Trimmer', rarity: 'boss', icon: 'trimmer',
+    desc: `At the start of each of your turns, gain 3 ${TERMS.block}. It is never much, and it `
+        + `never stops.`,
+    flavor: 'Somebody went round this house every night for a very long time.',
+    hooks: {
+      onTurnStart(h) {
+        if (h.side !== 'player') return;
+        h.e.gainBlock(player(h), 3, { fromCard: false, reason: 'relic' });
+        pop(h, 'trim');
+      },
+    },
+  },
+  {
+    id: 'silver-dance-card', name: 'Silver Dance Card', rarity: 'rare', icon: 'dancecard',
+    desc: `The first time each ${TERMS.combat} you play exactly 3 ${TERMS.card}s in one turn, `
+        + `draw 1 ${TERMS.card}.`,
+    flavor: 'Every line is filled in. None of the names are yours.',
+    hooks: {
+      onCardPlayed(h) {
+        if ((h.e.playedThisTurn || []).length !== 3) return;
+        if (!once(h, 'dance')) return;
+        h.e.drawCards(1, 'relic'); pop(h, 'three');
+      },
+    },
+  },
+  {
+    id: 'empty-goblet', name: 'The Empty Goblet', rarity: 'boss', icon: 'goblet',
+    desc: `The first time each ${TERMS.combat} you lose ${TERMS.hp} to one of your own effects, `
+        + `gain 8 ${TERMS.block}.`,
+    flavor: 'Whatever was in it, you did not drink it. Something did.',
+    hooks: {
+      onDamaged(h) {
+        if (h.defender !== player(h)) return;
+        // A cost you paid yourself, not something that hit you.
+        if (h.attacker && h.attacker.side === 'enemy') return;
+        if (!once(h, 'goblet')) return;
+        h.e.gainBlock(player(h), 8, { fromCard: false, reason: 'relic' });
+        pop(h, 'toast');
+      },
+    },
+  },
+
   // ── boss ──────────────────────────────────────────────────────────────────
   {
     id: 'butlers-white-glove', name: "The Butler's White Glove", rarity: 'boss', icon: 'glove',

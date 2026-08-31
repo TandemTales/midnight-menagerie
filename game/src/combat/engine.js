@@ -2212,6 +2212,15 @@ export class CombatEngine {
     for (let i = 0; i < n; i++) {
       const card = new Card(def, { upgraded: !!opts.upgraded, meta: opts.meta });
       if (opts.cost !== undefined) card.costOverrideCombat = opts.cost;
+      /* `nums` OVERRIDES, and it was silently dropped until 2026-08-30.
+         `tests/seams/check.py` caught it by name — "addCard({ nums: … }) —
+         the implementation never reads `nums`" — which is the whole reason
+         that check exists. The Ballroom hands the same Invitation card
+         different terms depending on who is offering it (the Admirer makes
+         every Banquet offer better; the Goblet Geist's Haunt 7 Sip costs 5
+         rather than 4), and without this every one of them quietly used the
+         printed number instead. */
+      if (opts.nums) card.nums = { ...card.nums, ...opts.nums };
       if (opts.exhaust) card.exhaust = true;
       if (opts.ethereal) card.ethereal = true;
       if (opts.retain) card.retain = true;

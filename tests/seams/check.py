@@ -562,7 +562,11 @@ def strip_comments_keep_strings(s):
 
 ENEMY_DIRS = ("game/src/data/enemies/", "game/src/data/bosses/")
 CARD_DIRS = ("game/src/data/companions/", "game/src/data/cards.js",
-             "game/src/data/neutral.js")
+             "game/src/data/neutral.js",
+             # The Ballroom's Invitations. Card defs, so a CARD ctx — they were
+             # briefly inside `data/enemies/` and this checker correctly refused
+             # to believe `ctx.draw()` belonged to an enemy.
+             "game/src/data/invitations.js")
 
 # `?.` is fine on these: their absence is harmless (CONTRACTS rule 8).
 PRESENTATION = {

@@ -154,7 +154,7 @@ export const watcher = {
     setCnt(c, 'skitter', 0);
     // §17: the whole point is that the player can inspect the line.
     c.reveal(3);
-    if (flag(c, 'openPrediction', false)) m.predict = PREDICTIONS[0];
+    if (flag(c, 'openPrediction', false)) m.predictId = PREDICTIONS[0].id;
     announceLine(c);
   },
 
@@ -193,9 +193,10 @@ export const watcher = {
   onPlayerTurnEnd(c) {
     const m = mem(c);
     m.severed = false;
-    if (!m.predict) return;
-    const right = !!m.predict.test(c);
-    m.predict = null;
+    const pred = m.predictId && PREDICTIONS.find(p => p.id === m.predictId);
+    if (!pred) { m.predictId = null; return; }
+    const right = !!pred.test(c);
+    m.predictId = null;
     if (right) {
       m.pendingCertain = true;              // cashed at onPlayerTurnStart
       c.say('I saw that coming.', 'warn');
@@ -224,8 +225,14 @@ export const watcher = {
        the end of its turn, so the prediction is on screen before the player
        takes the turn it is about, which §22 requires in the same sentence. The
        pick is per-turn deterministic through the enemy's own RNG. */
-    if (!m.predict && (c.history || []).length % 3 === 0) {
-      m.predict = PREDICTIONS[c.rng.int(PREDICTIONS.length)];
+    if (!m.predictId && (c.history || []).length % 3 === 0) {
+      /* The ID, never the object. `mem` is JSON round-tripped by
+         `combat/actor.js` for autosave and resume, so a stored PREDICTIONS
+         entry comes back without its `test` function — and the next scoring
+         turn threw `m.predict.test is not a function`. Found by
+         `tests/run/run.py`, which is the only suite that saves mid-fight.
+         Enemy `mem` is PLAIN DATA ONLY. */
+      m.predictId = PREDICTIONS[c.rng.int(PREDICTIONS.length)].id;
       c.say('I know what you are going to do.', 'warn');
     }
     if (m.phase === 1 || m.everyThread) { announceLine(c); return; }
@@ -455,6 +462,13 @@ function tug(c, free = false) {
  * `onSpawn` the plan has not been derived yet, so a screenshot caught the card
  * reading "FUTURE LINE —" with nothing after the dash.
  */
+/** The standing prediction, looked up by id. */
+function predictionText(c) {
+  const id = mem(c).predictId;
+  const p = id && PREDICTIONS.find(x => x.id === id);
+  return p ? `It predicts: ${p.text}` : '';
+}
+
 function announceLine(c) {
   const m = mem(c);
   const gates = m.phase === 2 ? '3rd, 5th and 7th' : '3rd and 5th';
@@ -464,7 +478,7 @@ function announceLine(c) {
     text: `Your ${gates} Trick each earn a Tug, and a Tug swaps two FUTURE actions — never the one it is about to do. `
       + (m.phase === 2 ? 'A Tug pushes its heaviest scheduled attack one slot later. ' : '')
       + (cnt(c, 'certainty') ? `Certainty ${cnt(c, 'certainty')}/3: every attack deals ${2 * cnt(c, 'certainty')} more. ` : '')
-      + (m.predict ? `It predicts: ${m.predict.text}` : ''),
+      + (predictionText(c) || ''),
   });
 }
 

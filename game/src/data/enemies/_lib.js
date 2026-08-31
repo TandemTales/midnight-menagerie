@@ -249,8 +249,27 @@ export function field(c) { return (c.field ||= {}); }
  * That also reads better than the alternative: the enemy announces that it is
  * going to edit your deck, and the edit is there when you pick your Tricks up.
  */
+/**
+ * NOT IN `mem`, and that is load-bearing.
+ *
+ * `combat/actor.js` clones every actor with
+ * `mem = JSON.parse(JSON.stringify(this.mem))` — for autosave, for the resume
+ * round-trip and for the co-op mirror. JSON DESTROYS FUNCTIONS: an array of
+ * closures comes back as an array of `null`, and the next `runHandOps` calls
+ * one of them. **Enemy `mem` is plain data only**, exactly like `card.meta`.
+ *
+ * A WeakMap keyed by the actor keeps the queue out of the snapshot entirely, so
+ * a mid-fight save loses a pending mark rather than corrupting one — and the
+ * actor is collected with its queue when the fight ends.
+ */
+const HAND_OPS = new WeakMap();
+
 export function whenHandArrives(c, fn) {
-  (mem(c).handOps ||= []).push(fn);
+  const who = c.self;
+  if (!who || typeof fn !== 'function') return;
+  const q = HAND_OPS.get(who) || [];
+  q.push(fn);
+  HAND_OPS.set(who, q);
 }
 
 /**
@@ -260,10 +279,12 @@ export function whenHandArrives(c, fn) {
  * `tests/study-library/check.py` asserts the pairing across the whole roster.
  */
 export function runHandOps(c) {
-  const q = mem(c).handOps;
+  const who = c.self;
+  const q = who && HAND_OPS.get(who);
   if (!q || !q.length) return;
-  mem(c).handOps = [];
+  HAND_OPS.set(who, []);
   for (const fn of q) {
+    if (typeof fn !== 'function') continue;
     try { fn(c); } catch (err) { console.error('[enemies] queued hand op threw', err); }
   }
 }

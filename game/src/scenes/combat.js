@@ -562,13 +562,28 @@ export class CombatScene extends Scene {
           if (mm.flags) en.flags = { ...(en.flags || {}), ...mm.flags };
         });
       }
-      // Teach the engine the content vocabulary its EnemyCtx resolves ids against.
+      /* Teach the engine the content vocabulary its EnemyCtx resolves ids
+         against.
+
+         FROM `enemies/index.js`, THE REGISTRY — never `enemies/_lib.js`, THE
+         LIBRARY. `_lib` exports the three CORE status Tricks; the registry
+         exports those plus every one a region adds, which as of the Ballroom is
+         thirteen Invitations. Registering the library instead left every
+         Invitation unresolvable, so `ctx.addCard('invite/plate')` warned
+         "unknown card", returned null, and the entire region's mechanic was
+         dead ON SCREEN while the region's own suite — which registers the
+         merged list explicitly — stayed green.
+
+         This is `data/keywords.js`'s bug in a second file: it imported `_lib`
+         rather than the registry and two regions of statuses had no tooltips.
+         Same mistake, same shape, found by a screenshot with no card in the
+         hand. `tests/ballroom/check.py` gates the class now. */
       try {
-        const [cards, lib] = await Promise.all([
-          import('../data/cards.js'), import('../data/enemies/_lib.js'),
+        const [cards, reg] = await Promise.all([
+          import('../data/cards.js'), import('../data/enemies/index.js'),
         ]);
         engine.registerCards(cards.allCards());
-        engine.registerCards(lib.STATUS_TRICK_DEFS || []);
+        engine.registerCards(reg.STATUS_TRICK_DEFS || []);
       } catch { /* nothing to register */ }
       try { engine.registerEnemies(this._enemyDefs || []); } catch { /* none */ }
       try { engine.registerRules(houseRuleCatalogue(engine)); } catch { /* none */ }

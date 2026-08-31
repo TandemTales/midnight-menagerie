@@ -195,6 +195,13 @@ const MOTIF = {
   candles: 'slam', chandelier: 'slam',
   blackout: 'ripple',
   'beast-dark': 'pounce',
+  /* The Ballroom. Everything here is either dancing or hanging in the air,
+     and a curtain on a rail is the one thing that ripples. */
+  shoe: 'pounce', 'dancer-lead': 'pounce', 'dancer-follow': 'pounce',
+  mask: 'drift', phantom: 'drift', goblet: 'drift', 'grand-mask': 'drift',
+  admirer: 'drift',
+  curtain: 'ripple',
+  armor: 'stoop', host: 'stoop', revels: 'stoop', chaperone: 'stoop',
 };
 const BODY_MOTIF = { squat: 'pounce', 'tall-thin': 'stoop', sprawling: 'ripple', floating: 'drift' };
 

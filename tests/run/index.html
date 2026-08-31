@@ -39,6 +39,7 @@ import { Save } from '../../game/src/core/save.js';
 import { Run, STARTER_SLUGS, RUN_LENGTH_REGIONS, RUN_REGIONS } from '../../game/src/state/run.js';
 import { NodeType, REGION_ORDER } from '../../game/src/data/schema.js';
 import { cardById } from '../../game/src/data/cards.js';
+import * as R from '../../game/src/data/relics.js';
 import * as P from '../critic-design/lib/policy.js';
 import { competentTurn } from '../critic-design/lib/bot.js';
 
@@ -568,7 +569,25 @@ async function main() {
     }
     check(sawBoss, 'boss path: never reached the boss node');
     check(!!bossReward && bossReward.kind === 'boss', 'boss path: boss reward was not kind="boss"');
-    check(!!bossReward?.keepsake, 'boss path: boss dropped no Keepsake');
+    /* A boss must drop a Keepsake UNLESS the player already owns every findable
+       one in the game — which an eleven-wing expedition genuinely can, and which
+       is a content shortfall rather than a run-layer defect.
+
+       The bare `!!bossReward.keepsake` was true while the ladder was short
+       enough that the pool outlasted it. It stopped being true when the ladder
+       reached eleven wings: a full run takes a Keepsake from every boss, every
+       treasure and every shop, and `rollKeepsake` correctly returns null rather
+       than handing out a duplicate. Asserting the reason keeps the check
+       meaningful instead of turning it into a countdown to the next region. */
+    const findableLeft = R.allRelics().filter(
+      r => ['common', 'uncommon', 'rare', 'boss'].includes(r.rarity) && !run.hasKeepsake(r.id),
+    ).length;
+    check(!!bossReward?.keepsake || findableLeft === 0,
+      `boss path: boss dropped no Keepsake and ${findableLeft} were still available`);
+    if (!bossReward?.keepsake) {
+      say(`  note: the expedition owned every findable Keepsake by the last boss `
+        + `(${run.keepsakes.length} held). The pool is shorter than the ladder.`, 'dim');
+    }
     check(run.result === 'victory', `boss path: expected victory, got ${run.result}`);
     /* This used to assert `rescued.includes('marmalade')` — the Foyer's authored
        Companion. Marmalade is one of the four starters: she is at the clubhouse

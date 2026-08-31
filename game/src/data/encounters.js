@@ -685,6 +685,84 @@ const GY = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// The Ballroom and Velvet Suites - docs/design/regions/10-ballroom.md §9-§12
+//
+// The ladder is one temptation at a time. The Party Phantom opens alone because
+// an Invitation has to be understood before it can be weighed against anything
+// else, and the Masquerade Mask never appears alone because it has nothing of
+// its own to do.
+// ─────────────────────────────────────────────────────────────────────────────
+const BR = [
+  // ── Early (§9) ----------------------------------------------------------
+  { id: 'br-1', region: 'ballroom', tier: 'early', name: 'Dancing Shoe',
+    members: [m('dancing-shoe')],
+    teaches: 'Tempo. A little pressure every turn stops it snowballing.' },
+  { id: 'br-2', region: 'ballroom', tier: 'early', name: 'Party Phantom',
+    members: [m('party-phantom')],
+    teaches: 'Invitations. The offer is a card in your hand and the whole cost is printed on it.' },
+  { id: 'br-3', region: 'ballroom', tier: 'early', name: 'Goblet Geist',
+    members: [m('goblet-geist')],
+    teaches: 'Courage straight into damage — and refusing is not free here.' },
+  { id: 'br-4', region: 'ballroom', tier: 'early', name: 'Velvet Curtain',
+    members: [m('velvet-curtain')],
+    teaches: 'You are not forbidden from hitting the protected one. You are choosing where it lands.' },
+
+  // ── Standard (§10) ------------------------------------------------------
+  { id: 'br-5', region: 'ballroom', tier: 'standard', name: 'Party Phantom + Dancing Shoe',
+    members: [m('party-phantom'), m('dancing-shoe')],
+    teaches: 'Taking the offer may cost you the attack that was keeping Tempo down.' },
+  { id: 'br-6', region: 'ballroom', tier: 'standard', name: 'Masquerade Mask + Velvet Curtain',
+    members: [m('masquerade-mask'), m('velvet-curtain')],
+    teaches: 'The Curtain gains Guard constantly, and the Mask copies half of all of it.' },
+  { id: 'br-7', region: 'ballroom', tier: 'standard', name: 'Goblet Geist + Dancing Shoe',
+    members: [m('goblet-geist'), m('dancing-shoe')],
+    teaches: 'Spend Courage for the burst that keeps the Shoe from running away.' },
+  { id: 'br-8', region: 'ballroom', tier: 'standard', name: 'Waltzing Armor + Party Phantom',
+    members: [m('waltzing-armor'), m('party-phantom')],
+    teaches: 'One tempts you while the other quietly makes somebody else dangerous.' },
+
+  // ── Advanced (§11) ------------------------------------------------------
+  { id: 'br-9', region: 'ballroom', tier: 'advanced', name: 'Masquerade Mask + Party Phantom',
+    members: [m('masquerade-mask'), m('party-phantom')],
+    teaches: 'Every bargain you take feeds one of them and gives the other something to copy.' },
+  { id: 'br-10', region: 'ballroom', tier: 'advanced', name: 'Velvet Curtain + Goblet Geist',
+    members: [m('velvet-curtain'), m('goblet-geist')],
+    teaches: 'You buy burst with Courage and the Curtain decides where half of it goes.' },
+  { id: 'br-11', region: 'ballroom', tier: 'advanced', name: 'Waltzing Armor + Dancing Shoe',
+    members: [m('waltzing-armor'), m('dancing-shoe')],
+    teaches: 'The Armor can Encore a Shoe that is already at full Tempo.' },
+  { id: 'br-12', region: 'ballroom', tier: 'advanced',
+    name: 'Party Phantom + Masquerade Mask + Velvet Curtain',
+    members: [m('party-phantom'), m('masquerade-mask'), m('velvet-curtain')],
+    teaches: 'A layered support formation: one grows on your bargains, one copies, one protects.' },
+  { id: 'br-13', region: 'ballroom', tier: 'advanced', name: 'Goblet Geist + Waltzing Armor',
+    members: [m('goblet-geist'), m('waltzing-armor')],
+    teaches: 'Trade Courage for burst while the Armor keeps changing which enemy matters.' },
+  { id: 'br-14', region: 'ballroom', tier: 'advanced',
+    name: 'Dancing Shoe + Party Phantom + Waltzing Armor',
+    members: [m('dancing-shoe'), m('party-phantom'), m('waltzing-armor')],
+    teaches: 'One escalates when ignored, one makes attractive offers, one amplifies the future. '
+      + 'How much danger will you take for value now?',
+    advancedOnly: true, minScuffle: 2 },
+
+  // ── Big Scares (§13-§15) ----------------------------------------------
+  { id: 'br-scare-masque', region: 'ballroom', tier: 'elite', name: 'The Grand Masque',
+    members: [m('grand-masque')],
+    teaches: 'Four faces, four different dangers, and Favor survives all of them.' },
+  { id: 'br-scare-dance', region: 'ballroom', tier: 'elite', name: 'The Eternal Dance',
+    members: [m('the-lead'), m('the-follow')],
+    teaches: 'Two dancers on one three-beat clock. Break the rhythm, or break a dancer.' },
+  { id: 'br-scare-host', region: 'ballroom', tier: 'elite', name: 'The Velvet Host',
+    members: [m('velvet-host')],
+    teaches: 'Five offers, each better and each costing more. Taking two and stopping is a plan.' },
+
+  // ── Boss -----------------------------------------------------------------
+  { id: 'br-boss', region: 'ballroom', tier: 'boss', name: 'The Master of Revels',
+    members: [m('master-of-revels')],
+    teaches: 'You set your own Revelry curve — and 25 damage in a turn takes one back off it.' },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
 // The Lampworks - docs/design/regions/09-lampworks.md §9-§12
 //
 // The ladder is Charge first, then the things that protect or steal it. The
@@ -1052,6 +1130,20 @@ const HEART = [
 // Per-region generation rules (design doc §10 "Encounter selection rules")
 // ─────────────────────────────────────────────────────────────────────────────
 export const REGION_RULES = {
+  /* docs/design/regions/10-ballroom.md §12. "Party Phantom should appear
+     alone before being paired with Waltzing Armor" is the tier ladder: the
+     Phantom alone is Scuffle 2 in EARLY, the pair is Scuffle 8 in STANDARD.
+     "Two Velvet Curtains cannot protect each other" and "Waltzing Armor
+     cannot Encore another Waltzing Armor" are enforced in the defs, where
+     the target is actually chosen. */
+  ballroom: {
+    /** "Masquerade Mask cannot appear alone in normal Scuffles." It has no
+        fight of its own — everything it does is copied from somebody. */
+    neverAlone: ['masquerade-mask'],
+    /** Two Phantoms at Haunt 0 is two Invitations a turn, which is §12. */
+    noDuplicates: ['party-phantom', 'velvet-curtain', 'waltzing-armor'],
+    maxConsecutiveLead: 2,
+  },
   /* docs/design/regions/09-lampworks.md §12. "Spark Sprite should appear
      before Blackout Blob" and "Gaslight Ghost should appear alone before
      appearing with Blackout Blob" are both handled by the tier ladder: the
@@ -1174,7 +1266,7 @@ export const REGION_RULES = {
   },
 };
 
-const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...GY, ...SL, ...AO, ...LW, ...HEART];
+const ALL_ENCOUNTERS = [...FOYER, ...NURSERY, ...SQ, ...KC, ...GH, ...GY, ...SL, ...AO, ...LW, ...BR, ...HEART];
 
 /** id → EncounterDef */
 export const ENCOUNTERS = Object.freeze(

@@ -101,7 +101,8 @@ import { rollEvent, eventById, rollOutcome } from '../data/events.js';
  */
 export const RUN_REGIONS = Object.freeze([
   'foyer', 'nursery', 'sleeping-quarters', 'kitchens-cellars', 'greenhouse',
-  'graveyard', 'study-library', 'attic-observatory', 'lampworks', 'heart',
+  'graveyard', 'study-library', 'attic-observatory', 'lampworks', 'ballroom',
+  'heart',
 ]);
 
 /**
@@ -166,7 +167,7 @@ const nextUid = () => `c${(++UID).toString(36)}`;
 // Warming them up front turns the rebuild into a pure microtask chain, which
 // always completes before the scene manager's cover transition does.
 // ─────────────────────────────────────────────────────────────────────────────
-/** @type {{CombatEngine:Function, enemies:Object, statuses:Object, keywords:Object, lib:Object|null}|null} */
+/** @type {{CombatEngine:Function, enemies:Object, statuses:Object, keywords:Object}|null} */
 let CONTENT = null;
 let CONTENT_P = null;
 
@@ -174,12 +175,15 @@ let CONTENT_P = null;
 export function warmCombatContent() {
   if (CONTENT_P) return CONTENT_P;
   CONTENT_P = (async () => {
-    const [engineMod, enemiesMod, statusesMod, keywordsMod, libMod] = await Promise.all([
+    /* `enemies/_lib.js` is deliberately NOT loaded here. It is the shared
+       library and it exports only the three CORE status Tricks; the REGISTRY
+       (`enemies/index.js`, already in this list) exports those plus every one a
+       region adds. Holding both invites the mistake this file used to make. */
+    const [engineMod, enemiesMod, statusesMod, keywordsMod] = await Promise.all([
       import('../combat/engine.js'),
       import('../data/enemies/index.js'),
       import('../combat/statuses.js'),
       import('../data/keywords.js'),
-      import('../data/enemies/_lib.js').catch(() => null),
     ]);
     if (enemiesMod.ENEMY_STATUSES) statusesMod.registerStatuses(enemiesMod.ENEMY_STATUSES);
     // Global keyword/status registries. Per-engine registration happens in
@@ -190,7 +194,6 @@ export function warmCombatContent() {
       enemies: enemiesMod,
       statuses: statusesMod,
       keywords: keywordsMod,
-      lib: libMod,
     };
     return CONTENT;
   })();
@@ -1255,10 +1258,18 @@ export class Run {
     try {
       engine.registerCards(allCards());
       engine.registerEnemies(ENEMY_LIST || []);
-      // Enemy-generated status Tricks (`ctx.addCard('clutter')`). The global
-      // keyword/status registries were already loaded by warmCombatContent();
-      // this is the only per-engine part of loadContentRegistries().
-      if (C.lib && C.lib.STATUS_TRICK_DEFS) engine.registerCards(C.lib.STATUS_TRICK_DEFS);
+      /* Enemy-generated status Tricks (`ctx.addCard('clutter')`, and every
+         Ballroom Invitation). The global keyword/status registries were already
+         loaded by warmCombatContent(); this is the only per-engine part of
+         loadContentRegistries().
+
+         `C.enemies` is `enemies/index.js`, THE REGISTRY. This used to read
+         `enemies/_lib.js`, the shared library, which carries only the three
+         CORE Tricks — so every region-supplied Trick was unresolvable at
+         runtime. See the long note at the same call in `scenes/combat.js`. */
+      if (C.enemies && C.enemies.STATUS_TRICK_DEFS) {
+        engine.registerCards(C.enemies.STATUS_TRICK_DEFS);
+      }
       /* The marked area this room sits in. BEFORE `startCombat()`, which rolls
          the opening intents — two of the wings are about what can be read of
          one. `applyWing` is a no-op for the three room-effect wings and for a
