@@ -1,6 +1,6 @@
 # Midnight Menagerie — handoff
 
-Written 2026-08-26, last updated 2026-08-30 (evening). Everything a fresh conversation needs to pick
+Written 2026-08-26, last updated 2026-08-30 (late). Everything a fresh conversation needs to pick
 this up. Read this, then `CONTRACTS.md`, then `docs/STS2-REFERENCE.md`. Nothing else is
 required reading.
 
@@ -24,6 +24,69 @@ change him.
 
 **~65,500 lines** across `game/src/`. Currently on branch **`dev`**, pushed to
 `github.com/TandemTales/midnight-menagerie`. `main` is untouched and stale.
+
+### Where it stands, 2026-08-30 (late)
+
+**EIGHT of the seventeen regions ship rosters.** The Grand Study and Library —
+region 7, Crinkle's home — was built this session against the template
+`HANDOFF-PROMPT.md` opens with. Nine remain.
+
+    BUILT   foyer · nursery · sleeping-quarters · kitchens-cellars ·
+            greenhouse · graveyard · study-library · heart
+    LEFT    attic-observatory · lampworks · ballroom · crypt · hedge-maze ·
+            secret-passages · bathhouse · kennels · pumpkin-grounds
+
+Six ordinary enemies, three Big Scares, The Archivist, fourteen Scuffles and
+four Markup statuses. Every gate's number moved: 114 → 124 enemies, 130 → 148
+encounters, 39 → 43 statuses, and the intent audit 7530 → 8783 turns, all zero.
+
+**The region needed exactly ONE new engine seam.** `playCard` now records each
+Trick's PRINTED cost on `cardsPlayedThisTurn`, because the Inkblot Oracle echoes
+"the highest printed Nerve cost Trick played that turn" and the Library is also
+the region that makes Tricks cost MORE — reading the effective cost would let a
+Quill Clerk's Correction inflate the echo into a number the player cannot derive
+from the card in their hand. Markup itself needed nothing: `Corrected` is the
+Graveyard's `forgotten` with a cap.
+
+**THERE IS NO HAND DURING THE ENEMY PHASE.** The engine closes every seat's hand
+at step 2 of `endTurn`, three steps before any enemy acts — measured, 0 cards in
+hand and all five in discard at the `enemy` phase. A move effect that reads
+`cardsIn('hand')` therefore gets an empty array and does nothing, silently, with
+`tests/enemies/run.py` green throughout because its mock has a hand at every
+moment.
+
+Six of this region's moves were written that way. **So were two that had already
+shipped**: the Name Gnawer's Nibble the Name and the Mausoleum Mouth's Crypt
+Breath, both in the Graveyard, both of which had marked NOTHING, ever. An enemy
+whose whole authored mechanic is eating the names off your Tricks had never
+eaten one.
+
+| what was wrong | where |
+|---|---|
+| Six moves — and two shipped ones — read a hand that does not exist in the enemy phase | `_lib.js`, `graveyard.js`, `graveyard-scares.js` |
+| The Inkblot Oracle recorded its echo AFTER the intent that carried it was committed | `study-library-scares.js` |
+| Offensive Works and Violence sharpened an attack from inside the enemy phase — 80 audit lies | `archivist.js`, `study-library-scares.js` |
+| The Bookmark Imp's Guard was wiped by the engine's own turn-start clear before it could matter | `study-library.js` |
+| `reorganize`'s `blockFn` lazily CREATED state, on a path the engine treats as pure | `archivist.js` |
+| A scripted normalise turned two LF files into a 1819-line diff for 43 lines of change | line endings are mixed PER FILE |
+
+`_lib.js` now carries `whenHandArrives`/`runHandOps`: a move QUEUES its hand work
+and `onPlayerReady` runs it against a real hand. `tests/study-library/check.py`
+(50 checks) gates the class both ways — no def may queue without declaring the
+hook, and no move effect may read the hand directly.
+
+**`bosses/keeper.js`'s Belonging has the same bug and was deliberately NOT
+fixed**: "end the turn holding 2 or more and the Keeper gains 8 Guard", from
+`onPlayerTurnEnd`, when the hand is already closed. Fixing it makes a boss that
+already wins 8% stronger, and the open list says not to tune the Keeper. It is
+item 3 of that list now.
+
+**The Library is the first wing since the Nursery to kill anybody** — 11 unaided
+runs reach it and 9 leave. Everyone who reaches the Heart still wins, which
+sharpens the curve finding rather than softening it. Both Groundskeeper draws
+are unchanged and still reported by name.
+
+---
 
 ### Where it stands, 2026-08-30 (evening)
 
@@ -940,17 +1003,22 @@ All prep scripts are **one-off and commit their output** — there is no runtime
 
 ### Test suites — all must stay green
 
+**The canonical battery, every number re-run, lives at the bottom of
+`HANDOFF-PROMPT.md`.** This table is the shape of the tooling; that one is
+the current reading. If they disagree, the prompt is right and this is stale.
+
 | Suite | What it says when it is happy |
 |---|---|
-| `tests/combat/run.py` | 677 assertions |
-| `tests/coop/run.py` | 594 assertions |
+| `tests/combat/run.py` | 694 assertions |
+| `tests/coop/run.py` | 645 assertions |
 | `tests/net/run.py` | 128, and **exit 0 since 2026-08-29** — it had always exited 1 on the console errors its own checks provoke, while printing "128 passed, 0 failed". The page declares those three now; an undeclared error fails, and so does a declaration that never fires. The lockstep session; every room and combat through the REAL applier against two real `Run`s; the lobby's seats/host/seed including two tabs over `BroadcastChannel`; and a choice reaching the seat it belongs to, mid-input, without deadlocking |
-| `tests/cards/run.py` | 1468 cards, 0 errors, 0 warnings |
-| `tests/enemies/run.py` | 37 enemies, 0 errors |
-| `tests/enemies/audit.py` | ~2060 turns, intent === delivered |
-| `tests/run/run.py` | 50 runs, 0 errors |
-| `tests/backpack/run.py` | 77 checks |
-| `tests/map/run.py` · `tests/chrome/run.py` | 23 passed · 27 checks |
+| `tests/cards/run.py` | 1470 cards, 0 errors, 0 warnings |
+| `tests/enemies/run.py` | 124 enemies, 0 errors (148 encounters, 43 statuses) |
+| `tests/enemies/audit.py` | 8783 turns, intent === delivered. ITS BATCH LIST IS HARDCODED — add your region |
+| `tests/run/run.py` | 50 runs, 0 errors, 2 named boss DRAWS, and the regions-reached table |
+| `tests/backpack/run.py` | 80 checks |
+| `tests/map/run.py` · `tests/chrome/run.py` | 30 passed · 27 checks |
+| REAL-ENGINE REGION GATES | `kitchens` 16 · `greenhouse` 33 · `graveyard` 35 · `study-library` 50 · `heart` 41. One per region, and each region needs its own — the mocked suite above cannot see a single one of the bugs these find |
 | `tests/combat-scene/seam.py` · `tests/audio/run.py` | 22 passed · 46 cues |
 | `tests/critic-design/sim.py` · `sweep.py` | the balance simulator |
 | `tests/critic-design/party-boss.py` | a boss at 1..4 Kids against REAL pre-boss decks — the gap `sweep.py` (solo only) and `tests/coop/balance.py` (starting decks) both leave |
