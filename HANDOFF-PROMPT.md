@@ -180,11 +180,30 @@ POP UP TUTORIALS" — so the encounter ladder IS the onboarding, and a lesson on
 lands if the player MEETS the body carrying it. That is checkable, and the answer
 was that **the Red Carpet Runner was never met once in forty expeditions.**
 
-Still open, and NOT taken: a run meets **3.5 of the six** teachers after the fix
-(Runner 15%, Bell 40%). A run fights ~4.7 times in the Foyer against six enemies
-in fourteen formations, so random rolling cannot cover it — meeting the contract
-needs the first wing's roller to COVER rather than sample. That is a design call.
-`tests/run/run.py` prints the teaching table every run, so it is watched.
+**AND THE ROLLER COVERS NOW, 2026-09-01.** I first called this a design call and
+that was a misreading: §10 says outright "the procedural system **should not
+treat all formations equally**", and §33 states the teaching as an OUTCOME — "by
+the time they defeat The Butler, the player HAS BEEN taught" — not an intention.
+Covering implements two things the chapter already says.
+
+One soft rule in `rollEncounter`, after every hard rule and before the weighted
+pick: prefer a formation carrying a body this run has not met IN THIS REGION.
+It is a `soften`, so it vanishes the moment there is nobody left to introduce.
+
+    the enemy            before   after        a run meets   3.5 -> 4.3 of six
+    coatrack-crawler       60%      88%        met ALL six     0 -> 8 runs
+    calling-bell           40%      65%
+    red-carpet-runner      15%      33%
+
+**Eight runs in forty now meet the whole roster, where none ever had** — and it
+is slightly CHEAPER, not dearer: Foyer cost per fight 24.7% → 23.2%, the
+ordinary Scuffle 11.9 → 10.7, arrival 84% → 86%, defeats 31 → 31. Covering means
+fewer repeat fights against the same escalating body, which is why the design
+wanted it.
+
+Still short of the contract at 4.3 of six: a run fights ~4.7 times and two of
+those are the forced opening pair. Closing the rest means more fights in the
+first wing or fewer teachers in it, and both are design calls.
 
 ━━ WHAT I WOULD DO FIRST ━━
 

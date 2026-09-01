@@ -123,9 +123,42 @@ The Foyer still cannot teach its own contract. After the change a run meets
 The arithmetic is against it. A run fights about **4.7 times** in the Foyer and
 there are six enemies across fourteen formations, so random rolling cannot cover
 six teachers in five rooms — no tier band fixes that. Meeting the contract needs
-the first wing's roller to *cover* rather than sample: prefer a formation whose
-lead enemy this run has not met yet. That is a real design decision about how
-directed the tutorial region should be, and it is not taken here.
+the first wing's roller to *cover* rather than sample.
 
-`tests/run/run.py` prints the teaching table every run, so whatever is decided,
-the number is watched.
+## So the roller covers now — 2026-09-01
+
+The design already asks for this and I had misread it as a preference. §10 is
+explicit: "The procedural system **should not treat all formations equally**."
+And §33 states the teaching as an *outcome* — by the time they defeat The
+Butler, the player **has been** taught — not as an intention. Covering is the
+implementation of two things the chapter already says.
+
+One soft rule in `rollEncounter`, after every hard rule and before the weighted
+pick: among everything still legal, prefer a formation carrying a body this run
+has not met **in this region**. It is a `soften`, so the moment there is nobody
+left to introduce it vanishes and normal weighting resumes — which is most of a
+long region, and all of a region already toured. It cannot deadlock and it
+cannot override a hard rule, because every hard rule ran above it.
+
+    the enemy            before   after
+    dust-bunny             98%      98%
+    lost-luggage           85%      93%
+    coatrack-crawler       60%      88%
+    calling-bell           40%      65%
+    door-greeter           50%      58%
+    red-carpet-runner      15%      33%
+
+    a run meets            3.5      4.3   of the six
+    runs meeting ALL six     0        8
+
+**Eight runs in forty now meet the whole roster, where none ever had.** And it
+is not a difficulty cost — it is slightly cheaper: Foyer cost per fight 24.7% →
+23.2% of pool, the ordinary Scuffle 11.9 → 10.7, arrival at the Butler 84% →
+86%, defeats 31 → 31. Covering means fewer repeat fights against the same
+escalating body, which is the same reason the design wanted it.
+
+The contract is still not fully met — 4.3 of six, and the Runner at 33%, because
+a run only fights ~4.7 times and two of those rooms are the forced opening pair.
+Closing the rest means either more fights in the first wing or fewer teachers in
+it, and both are design calls. `tests/run/run.py` prints the teaching table
+every run, so the number is watched either way.

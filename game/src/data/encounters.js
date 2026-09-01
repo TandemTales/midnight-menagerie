@@ -1923,6 +1923,35 @@ export function rollEncounter(region, tier, rng, history = []) {
     cand = soften(cand, (e) => leadOf(e) !== recentLeads[0]);
   }
 
+  /* Soft rule: PREFER A FORMATION THAT INTRODUCES SOMEBODY.
+   *
+   * `docs/design/regions/01-foyer.md` §33 states the region's teaching as an
+   * OUTCOME, not an intention — "by the time they defeat The Butler, the player
+   * has been taught, primarily through combat rather than pop up tutorials" —
+   * and then lists ten lessons, each carried by one of the wing's six ordinary
+   * enemies. §10 says the procedural system "should not treat all formations
+   * equally". Uniform sampling cannot deliver §33 and the gap was measured:
+   * across forty expeditions a run met 3.2 of the six, no run met more than
+   * five, and the Red Carpet Runner was never met ONCE. The arithmetic is why —
+   * a run fights about 4.7 times in that wing, against six enemies spread over
+   * fourteen formations, so covering them by chance is not available.
+   *
+   * So the roller covers rather than samples: among everything still legal,
+   * prefer a formation carrying a body this run has not met IN THIS REGION.
+   * It is a `soften`, so the moment there is nobody left to introduce it
+   * vanishes and normal weighting resumes — which is most of a long region,
+   * and all of a region the player has already toured. It cannot deadlock and
+   * it cannot override a hard rule, because every hard rule ran above it.
+   *
+   * `history` is per-region (`state/run.js` keeps one list per wing), so
+   * "unmet" means unmet HERE, which is what a region teaching its own roster
+   * means. */
+  {
+    const met = new Set();
+    for (const id of hist) for (const mm of (ENCOUNTERS[id]?.members || [])) met.add(mm.enemyId);
+    cand = soften(cand, (e) => e.members.some(mm => !met.has(mm.enemyId)));
+  }
+
   // Weighted, not uniform. A formation's `weight` is how often the region wants
   // to ask that particular question; two-body formations carry 2 because a lone
   // enemy is structurally unable to out-damage one turn of Guard, so a pool of
