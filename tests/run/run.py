@@ -135,14 +135,24 @@ async def main(a):
         print("  a safety net that fires during ordinary content is a difficulty")
         print("  mechanic nobody designed, so over30 is a hard failure.")
         for w in (pat.get("worst") or [])[:10]:
-            print("    %3d turns  wing %-3s %-22s %-9s %-18s %s  cost %-4.0f left %d%%"
+            print("    %3d turns  wing %-3s %-20s %-8s %s  cost %-4.0f left %-5s wall %-6s land %s"
                   % (w["turns"], w.get("wing", "?"), w["region"], w["type"],
-                     w["enc"] or "-", "won " if w["won"] else "LOST",
-                     w["cost"], w.get("leftPct", 0)))
+                     "won " if w["won"] else "LOST", w["cost"],
+                     "%d%%" % w.get("leftPct", 0),
+                     w.get("wall", 0), w.get("land", 0))
+                  + "  summoned %d" % w.get("summoned", 0))
         print("    wing = ROUTE slot 1-6, not ladder index. left%% = share of the")
         print("    board's Courage still standing: near 0 is a GRIND that a pool or")
         print("    route change reaches, high is the Guard STALL engine.js describes,")
         print("    which neither can touch.")
+        print("    wall = Guard the board raised per turn. land = damage that")
+        print("    actually REACHED Courage per turn. wall > land is the stall:")
+        print("    the board re-raises faster than the deck gets through, so the")
+        print("    bar cannot move and only `_losePatience` ends the fight.")
+        print("    summoned = Courage that arrived DURING the fight. High here with a")
+        print("    low wall is a treadmill, not a wall: the deck is getting through")
+        print("    and the board keeps refilling. Three different defects, one column")
+        print("    in `turns`.")
 
     tie = res.get("tiers") or []
     if tie:

@@ -192,6 +192,24 @@ function leastValuable(run, cards) {
    longest fight that legitimately happens, and the measurement is written down
    instead. THE MEASUREMENT IS THE OPEN ITEM, not the constant below.          */
 async function playCombat(engine, budgetTurns = 200, run = null) {
+  /* THE GUARD AXIS, the same two listeners `fight()` in
+     tests/critic-design/lib/expedition.js has always used. An enemy's Guard
+     is wiped and re-granted at the start of its own turn, so what the player
+     must beat is what the board raises PER TURN - engine.js ~2918. Below the
+     wall the Courage bar never moves however long the fight runs, and that is
+     a different defect from a fight that is merely long. `dealt` is damage
+     that LANDED, `blockedByEnemies` is damage Guard ate, `enemyGuard` is Guard
+     granted; the caller turns them into per-turn rates. */
+  const gx = { dealt: 0, blockedByEnemies: 0, enemyGuard: 0 };
+  engine.on('damage', (ev) => {
+    if (ev.targetId === engine.player.id) return;
+    gx.dealt += ev.hpLoss;
+    gx.blockedByEnemies += ev.blocked || 0;
+  });
+  engine.on('block', (ev) => {
+    if (ev.actorId !== engine.player.id) gx.enemyGuard += ev.amount || 0;
+  });
+  engine.__guard = gx;
   await engine.startCombat();
   // Per-fight running estimates the bot projects the rest of the fight from.
   // One object per fight, never shared between fights.
@@ -372,6 +390,9 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
         region: regionBefore, type, seed, shepherd, wing: wingBefore,
         pool: poolBefore,
         left: engine.enemies.reduce((s, x) => s + (x.alive ? x.hp : 0), 0),
+        dealt: (engine.__guard || {}).dealt || 0,
+        blocked: (engine.__guard || {}).blockedByEnemies || 0,
+        guard: (engine.__guard || {}).enemyGuard || 0,
         /* DEPTH. Without it the ledger can price a wing but not its SHAPE, and
            the Foyer's 28 defeats split 16 at the boss on row 12 and 12 before
            it at row 3.9 — two findings with completely different fixes that
@@ -1109,7 +1130,23 @@ async function main() {
                         Near 0 is a GRIND and a pool or route change reaches it;
                         high is the Guard STALL engine.js describes, which
                         neither one can. */
-                     leftPct: f.pool ? Math.round(100 * f.left / f.pool) : 0 })),
+                     leftPct: f.pool ? Math.round(100 * f.left / f.pool) : 0,
+                     /* wall = Guard raised per turn; land = damage that actually
+                        REACHED Courage per turn. wall > land is the stall: the
+                        board re-raises more than the deck can get through, so
+                        the bar cannot move and only `_losePatience` ends it. */
+                     wall: f.turns ? +(f.guard / f.turns).toFixed(1) : 0,
+                     land: f.turns ? +(f.dealt / f.turns).toFixed(1) : 0,
+                     /* SUMMONED. Total Courage the player actually faced is what
+                        they destroyed plus what was still standing; anything
+                        above the board they STARTED against arrived mid-fight.
+                        This is the third mechanism and it looks identical to the
+                        other two in `turns`: the greenhouse boss lands 7.5 a
+                        turn for 56 turns - 420 into a 464 board - and still
+                        faces 68% of it, because the Head Gardener keeps
+                        planting. A Guard wall is beaten by piercing it; a
+                        treadmill is beaten by killing the summoner. */
+                     summoned: Math.max(0, Math.round(f.dealt + f.left - f.pool)) })),
     };
     if (over30.length) {
       /* NOT A BROKEN GATE - a real defect, named here so the next session does

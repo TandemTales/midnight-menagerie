@@ -226,6 +226,54 @@ means the termination guarantee ran for 57 turns, stacking 57 Strength, before
 the fight ended. THE HOUSE LOSES PATIENCE is on screen as though it were
 designed content.
 
+**AND THE AXIS IS MEASURED NOW - IT IS THREE DEFECTS, NOT ONE.** `fight()` has
+summed `dmgDealt`, `dmgBlockedByEnemies` and `enemyGuard` since it was written
+and NOTHING EVER PRINTED THEM, so the mechanism engine.js ~2918 names had never
+been measured. Both harnesses report it now: `ladder.py` adds wall / swing /
+absorbed, `run.py` adds wall / land / summoned. The nine over-30 fights split:
+
+    turns  wing  region             left  wall  land  summoned
+      87     3   graveyard           64%   3.2   2.2      72   GUARD STALL
+      54     3   attic-observatory   66%   3.1   2.5       0   GUARD STALL
+      37     3   study-library       33%   6.0   6.6       0   GUARD STALL
+      56     2   greenhouse          68%   2.1   7.5     314   TREADMILL
+      55     2   greenhouse          69%   2.4   5.5     201   TREADMILL
+      52     3   greenhouse           0%   2.6  13.2     346   TREADMILL (won)
+      44     2   greenhouse          33%   2.7   9.9     210   TREADMILL
+      69     4   graveyard           27%   3.1   5.8     142   GRIND
+      55     2   lampworks           21%   1.4   9.5     122   GRIND
+
+A STALL is wall >= land with nothing summoned - the board re-raises faster than
+the deck gets through. A TREADMILL is the opposite reading and identical in
+`turns`: the greenhouse boss lands 7.5 a turn for 56 turns, 420 into a 464
+board, and still faces 68% of it because the Head Gardener keeps planting -
+which is WORKING AS DESIGNED (three Beds, `sow` becomes `water` when full). A
+GRIND is just long. **A pool cut reaches only the grinds.**
+
+Across all seventeen bosses against a constant deck, three raise a wall at or
+above the deck's whole swing - study-library 0.92x, bathhouse 1.25x, **heart
+1.40x** - where the other fourteen sit at 0.16 to 0.56. The Heart is the ending
+of the game and it is the highest wall in it.
+
+**ONE REPAIR LANDED, AND IT DOES NOT FIX THE STALL.** `bosses/watcher.js` prints
+"It takes 25% more damage and CANNOT GAIN GUARD until it climbs back. This is
+your window." `damageTakenMul` did the first half; nothing did the second, so
+all three `c.block(c.self, ...)` sites were unconditional. Same shape as the
+Keeper's Belonging. Gated in `blockFn` AS WELL AS the effect, because gating
+only the effect leaves Skitter Above promising 13 Guard on the rail and granting
+none. `tests/attic-observatory/` 48 -> 53 with the control pair the suite's own
+header demands; proved it can see - both assertions go red at 13 without the fix.
+
+But the run harness is UNCHANGED (535 / 87 / 13 / 9) and that fight is still 54
+turns at wall 3.1 / land 2.5 / left 66%. Grounded is set by the Watcher's OWN
+Great Descent, so the window opens about one turn in five. And wall > land does
+not mean the bar never moves - it moves at 2.5 a turn, which is 142 turns for a
+356 pool. The Watcher is a Guard TAX on a pool too large for a wing-three deck.
+The repair is worth keeping because an unenforced printed rule is a defect on
+its own terms; calling it the fix would repeat yesterday's mistake.
+
+Full working: `docs/notes/2026-09-01-the-guard-axis.md`.
+
 **THE CAUSE IS THE GUARD WALL, NOT THE ROUTE - AND I GOT THIS WRONG FIRST.**
 This section originally blamed boss pools "authored by LADDER position, met at
 ROUTE position since EXPEDITION_WINGS = 6". That was an attribution written

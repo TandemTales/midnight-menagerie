@@ -212,6 +212,26 @@ export const watcher = {
     announceLine(c);
   },
 
+  /* §26 SAYS TWO THINGS AND ONLY ONE OF THEM WAS ENFORCED. Grounded is
+     announced to the player as "It takes 25% more damage and cannot gain
+     Guard until it climbs back. This is your window." `damageTakenMul`
+     below did the first half. Nothing did the second - all three
+     `c.block(c.self, ...)` sites were unconditional - so the window the
+     rule promises did nothing to the Guard wall, which is the whole of
+     this fight's defence.
+
+     Measured 2026-09-01 in tests/run/run.py: the Watcher stalled at 3.1
+     Guard raised per turn against 2.5 landed, with SUMMONED 0 and 66% of
+     its Courage still standing after 54 turns, and `_losePatience` was
+     what ended it. That is the purest Guard wall in the measured set.
+
+     Gated in `blockFn` AS WELL AS in the effect at every site that
+     declares Guard on its intent. Gating only the effect would leave
+     Skitter Above promising 13 Guard on the rail and granting none, which
+     is an intent that lies - the most expensive mistake in this codebase.
+     `grounded` is set during the Watcher's OWN turn and cleared at its
+     next `onTurnEnd`, so the flag is already true when `refreshIntents`
+     draws the intent at player-turn start. The rail is honest either way. */
   /** §26's Grounded, and §31's lock on Great Descent. */
   damageTakenMul(c) { return mem(c).grounded ? 1.25 : 1; },
 
@@ -294,10 +314,10 @@ export const watcher = {
     },
     'skitter-above': {
       id: 'skitter-above', name: 'Skitter Above', intent: Intent.DEFEND_BUFF, block: 13,
-      blockFn: (c) => base(c, 13, 14),
+      blockFn: (c) => (grounded(c) ? 0 : base(c, 13, 14)),
       tell: 'It moves along the beams to somewhere with a better angle.',
       effect(c) {
-        c.block(c.self, base(c, 13, 14));
+        if (!grounded(c)) c.block(c.self, base(c, 13, 14));
         // "The next damaging action in the Future Line deals 3 more" (4 in
         // phase two). A counter, so the very next intent shows the real number.
         setCnt(c, 'skitter', base(c, 3, 4));
@@ -306,9 +326,10 @@ export const watcher = {
     },
     readjust: {
       id: 'readjust', name: 'Readjust', intent: Intent.DEFEND, block: 6,
+      blockFn: (c) => (grounded(c) ? 0 : 6),
       tell: 'It rearranges what it was going to do.',
       effect(c) {
-        c.block(c.self, 6);
+        if (!grounded(c)) c.block(c.self, 6);
         if (c.swapIntents) c.swapIntents(c.self, 1, 2);
         announceLine(c);
       },
@@ -365,7 +386,7 @@ export const watcher = {
         const plan = (c.planOf && c.planOf(c.self)) || [];
         const slot = plan[3] ? 3 : 2;
         if (c.self.plan) { c.self.plan[slot] = chosen; c.self.planLocked = Math.max(c.self.planLocked || 0, slot + 1); }
-        c.block(c.self, 6);
+        if (!grounded(c)) c.block(c.self, 6);
         c.announceRule({
           id: `false:${c.self.id}`,
           name: `False Future → ${chosen === 'rafter-strike' ? 'Rafter Strike' : 'Web the Hand'}`,
@@ -468,6 +489,9 @@ function predictionText(c) {
   const p = id && PREDICTIONS.find(x => x.id === id);
   return p ? `It predicts: ${p.text}` : '';
 }
+
+/** §26: while it is on the floor it cannot raise Guard. */
+function grounded(c) { return !!mem(c).grounded; }
 
 function announceLine(c) {
   const m = mem(c);

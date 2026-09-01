@@ -288,6 +288,43 @@ async ([tricks]) => {
 }
 """
 
+# ── Grounded really denies Guard, and the intent says so first ─────────────
+GROUNDED = r"""
+async ([pin]) => {
+  const e = make(['the-watcher'], { seed: 67, hp: 2000, energy: 99 });
+  await e.startCombat();
+  const w = e.enemies[0];
+  let maxBlock = 0, sawGuardMove = false, maxIntentBlock = 0;
+  for (let t = 0; t < 10 && !e.over; t++) {
+    /* Pin the state under test on BOTH sides of the enemy phase: Grounded is
+       normally set by the Watcher's own Great Descent and cleared at its next
+       turn end, and this holds it open so the same board can be run with and
+       without it. */
+    (w.mem ||= {}).grounded = pin;
+    /* The RAIL, read from the actor the way the screen reads it. `buildIntent`
+       prefers `blockFn` over the static `block` (combat/intents.js), so a gate
+       that only checked the granted Guard would pass while the intent still
+       promised 13.
+       REFRESH FIRST, and this is the real sequence rather than a convenience:
+       Grounded is set during the Watcher's OWN turn, and the intent the player
+       reads is the one rebuilt at the next player-turn start. Reading without
+       the refresh reads the rail from BEFORE the flag was set - which is what
+       the first draft of this check did, and it reported a stale 6. */
+    e.refreshIntents('turnStart');
+    maxIntentBlock = Math.max(maxIntentBlock, (w.intent && w.intent.block) || 0);
+    await e.endTurn();
+    (w.mem ||= {}).grounded = pin;
+    const did = (w.history || [])[(w.history || []).length - 1];
+    if (did === 'skitter-above' || did === 'readjust') {
+      sawGuardMove = true;
+      maxBlock = Math.max(maxBlock, w.block || 0);
+    }
+  }
+  return { pin, maxBlock, sawGuardMove, maxIntentBlock,
+           history: (w.history || []).slice(0, 10) };
+}
+"""
+
 HAND_PAIRING = r"""
 async () => {
   const { en } = window.__Y;
@@ -494,6 +531,28 @@ async def main(a):
               "and the action it is about to take never moves (§20)", json.dumps(tug3)[:200])
         check(tug1["futureChanged"] is False,
               "CONTROL: one Trick earns nothing", json.dumps(tug1)[:200])
+
+        # ══ Grounded denies Guard, which it printed and did not do ══════════
+        gnd = await page.evaluate(GROUNDED, [True])
+        ung = await page.evaluate(GROUNDED, [False])
+        check(ung["sawGuardMove"] is True and gnd["sawGuardMove"] is True,
+              "both runs reach a Guard move, so the pair compares the same thing",
+              f"grounded {gnd['history']} / control {ung['history']}")
+        check(ung["maxBlock"] > 0,
+              "CONTROL: not Grounded, Skitter Above and Readjust really raise Guard",
+              f"maxBlock {ung['maxBlock']}")
+        check(gnd["maxBlock"] == 0,
+              "Grounded really denies Guard - the rule the fight PRINTS "
+              "(\"cannot gain Guard until it climbs back\") and did not enforce",
+              f"maxBlock {gnd['maxBlock']} (control {ung['maxBlock']})")
+        check(ung["maxIntentBlock"] > 0,
+              "CONTROL: not Grounded, the rail really does promise Guard",
+              f"maxIntentBlock {ung['maxIntentBlock']}")
+        check(gnd["maxIntentBlock"] == 0,
+              "and while Grounded the INTENT promises none either, so the rail "
+              "never advertises Guard the move will not grant",
+              f"maxIntentBlock {gnd['maxIntentBlock']} "
+              f"(control {ung['maxIntentBlock']})")
 
         # ══ the hand gate ═══════════════════════════════════════════════════
         pairing = await page.evaluate(HAND_PAIRING)

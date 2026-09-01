@@ -58,17 +58,27 @@ async def main(a):
     if res["config"].get("BHAUNT", 0) != res["config"].get("HAUNT", 0):
         print("  loadouts generated at Haunt %s, content measured at Haunt %s"
               % (res["config"]["HAUNT"], res["config"]["BHAUNT"]))
-    print("  %-4s %-22s %-8s %-8s %-11s %-10s %-8s %s"
-          % ("#", "region", "fights", "win%", "mean cost", "% of pool", "turns", "enemy Courage"))
+    print("  %-4s %-22s %-7s %-7s %-10s %-9s %-7s %-8s %-9s %-8s %s"
+          % ("#", "region", "fights", "win%", "mean cost", "% of pool", "turns",
+             "pool", "wall/turn", "swing", "absorbed"))
     for r in res.get("table") or []:
-        print("  %-4d %-22s %-8d %-8s %-11.1f %-10s %-8.1f %.0f"
-              % (r["index"], r["region"], r["fights"], "%.1f%%" % r["win"],
-                 r["cost"], "%.1f%%" % r["pct"], r["turns"], r["pool"]))
+        print("  %-4d %-22s %-7d %-7s %-10.1f %-9s %-7.1f %-8.0f %-9.1f %-8.1f %s"
+              % (r["index"], r["region"], r["fights"], "%.0f%%" % r["win"],
+                 r["cost"], "%.0f%%" % r["pct"], r["turns"], r["pool"],
+                 r.get("wall", 0), r.get("swing", 0),
+                 "%.0f%%" % r.get("absorbed", 0)))
     if res.get("slope") is not None:
         t = res["table"]
         print("  wing 1 %.1f%% of pool -> wing %d %.1f%% = x%.2f"
               % (t[0]["pct"], t[-1]["index"], t[-1]["pct"], res["slope"]))
     print("  A RISING '%% of pool' is a ladder. A flat one is not.")
+    print("")
+    print("  wall/turn = Guard the board raises each turn. swing = damage the deck")
+    print("  puts out each turn, landed plus absorbed. absorbed = the share Guard")
+    print("  ate. engine.js ~2918: Guard is wiped and re-granted every turn, so a")
+    print("  deck that cannot out-damage the WALL never moves the Courage bar at")
+    print("  all. A wall near the swing is a stall waiting for a weaker deck, and")
+    print("  no pool cut, route ceiling or re-authoring can reach it.")
 
     out = ROOT / "tests" / "critic-design" / a.out
     out.write_text(json.dumps(res, indent=1), encoding="utf-8")

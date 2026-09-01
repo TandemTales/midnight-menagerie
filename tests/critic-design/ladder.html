@@ -76,7 +76,8 @@ if (!loadouts.length) throw new Error('no wing-one loadouts generated');
 const mean = (a) => (a.length ? +(a.reduce((x, y) => x + y, 0) / a.length).toFixed(2) : 0);
 
 let html = '<table><tr><th>#</th><th>region</th><th>fights</th><th>win%</th>'
-  + '<th>mean cost</th><th>% of pool</th><th>turns</th><th>enemy Courage</th></tr>';
+  + '<th>mean cost</th><th>% of pool</th><th>turns</th><th>enemy Courage</th>'
+  + '<th>wall/turn</th><th>swing</th><th>absorbed</th></tr>';
 
 for (let ri = 0; ri < REGION_ORDER.length; ri++) {
   const region = REGION_ORDER[ri];
@@ -102,11 +103,30 @@ for (let ri = 0; ri < REGION_ORDER.length; ri++) {
     pct: +pct.toFixed(1),
     turns: mean(rows.map(r => r.turns)),
     pool: mean(rows.map(r => (r.enemyHpLeft || 0) + (r.dmgDealt || 0))),
+    /* THE GUARD AXIS. engine.js ~2918 says an unfinishable fight is a GUARD
+       wall and not a Courage pool: Guard is wiped and re-granted at the start
+       of the enemy's own turn, so what the player must beat is what the board
+       raises PER TURN. Beat it and the Courage bar moves; fall short and it
+       never moves at all, however long the fight runs.
+         wall     Guard the board raises per turn
+         swing    damage the deck puts out per turn, landed + absorbed
+         absorbed share of that swing Guard ate
+       A boss whose wall approaches the deck's swing is a stall waiting for a
+       weaker deck, and no pool change can reach it. */
+    wall: mean(rows.map(r => (r.turns ? (r.enemyGuard || 0) / r.turns : 0))),
+    swing: mean(rows.map(r => (r.turns
+      ? ((r.dmgDealt || 0) + (r.dmgBlockedByEnemies || 0)) / r.turns : 0))),
+    absorbed: mean(rows.map(r => {
+      const sw = (r.dmgDealt || 0) + (r.dmgBlockedByEnemies || 0);
+      return sw ? 100 * (r.dmgBlockedByEnemies || 0) / sw : 0;
+    })),
   };
   R.table.push(rec);
   html += `<tr><td>${rec.index}</td><td>${region}</td><td>${rec.fights}</td>`
     + `<td class="bar">${rec.win}%</td><td>${rec.cost}</td>`
-    + `<td class="bar">${rec.pct}%</td><td>${rec.turns}</td><td>${rec.pool}</td></tr>`;
+    + `<td class="bar">${rec.pct}%</td><td>${rec.turns}</td><td>${rec.pool}</td>`
+    + `<td>${rec.wall}</td><td>${rec.swing}</td>`
+    + `<td class="bar">${rec.absorbed}%</td></tr>`;
   sum.textContent = `${region} — ${rec.win}% win, ${rec.pct}% of pool`;
 }
 html += '</table>';
