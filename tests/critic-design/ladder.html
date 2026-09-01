@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Midnight Menagerie — the ladder, priced against a constant player</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; padding: 24px 28px 60px; background: #0d0b16; color: #c3bbcd;
+         font: 13px/1.55 ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  h1 { font-size: 18px; letter-spacing: .14em; text-transform: uppercase; color: #f4efe4; margin: 0 0 4px; }
+  .sub { color: #8b839a; margin-bottom: 18px; font-size: 12px; max-width: 78ch; }
+  #summary { padding: 12px 14px; margin: 0 0 18px; border-radius: 8px;
+             background: #14111f; border: 1px solid #2a2442; font-size: 15px; }
+  table { border-collapse: collapse; margin: 4px 0 0; }
+  td, th { padding: 2px 16px 2px 0; text-align: left; font-weight: 400; }
+  th { color: #8b839a; }
+  .bar { color: #f8c96b; }
+  pre { margin: 8px 0 0; color: #8b839a; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h1>The ladder, priced against a constant player</h1>
+<div class="sub">
+  The cost ledger in <code>tests/run/run.py</code> prices a wing against the player who
+  actually reaches it, which cannot separate "this wing is gentle" from "the player who
+  gets here is strong". This holds the player CONSTANT — one captured wing-one loadout —
+  and walks it through every region's ordinary Scuffle pool. What is left is the
+  authored content's own difficulty curve.
+</div>
+<div id="summary">running…</div>
+<div id="out"></div>
+
+<script type="module">
+import { REGION_ORDER } from '../../game/src/data/schema.js';
+import { expedition, bench } from './lib/expedition.js';
+
+const Q = new URLSearchParams(location.search);
+const GEN = +(Q.get('gen') || 8);          // expeditions generating wing-1 loadouts
+const N   = +(Q.get('n') || 16);           // bench fights per region
+const TIER = Q.get('tier') || 'standard';
+const SEED0 = +(Q.get('seed') || 90000);
+const HAUNT = +(Q.get('haunt') || 0);
+
+const out = document.getElementById('out');
+const sum = document.getElementById('summary');
+const R = { config: { GEN, N, TIER, SEED0, HAUNT }, loadouts: 0, table: [], errors: [] };
+
+/* THE CONSTANT PLAYER. `loadoutAtBoss` for the FOYER is the deck, Keepsakes and
+   pool a real expedition was carrying at the end of wing one — about 14 cards
+   and 4 Keepsakes. Every region below is fought by that same player. */
+const loadouts = [];
+for (let i = 0; i < GEN; i++) {
+  try {
+    const r = await expedition({ seed: SEED0 + i * 7, bot: 'competent', policy: 'balanced', haunt: HAUNT });
+    const g = (r.regions || []).find(x => x.region === 'foyer');
+    if (g?.loadoutAtBoss) loadouts.push(g.loadoutAtBoss);
+  } catch (e) { R.errors.push('gen ' + i + ': ' + (e.message || e)); }
+}
+R.loadouts = loadouts.length;
+sum.textContent = `loadouts ${loadouts.length} — benching…`;
+if (!loadouts.length) throw new Error('no wing-one loadouts generated');
+
+const mean = (a) => (a.length ? +(a.reduce((x, y) => x + y, 0) / a.length).toFixed(2) : 0);
+
+let html = '<table><tr><th>#</th><th>region</th><th>fights</th><th>win%</th>'
+  + '<th>mean cost</th><th>% of pool</th><th>turns</th><th>enemy Courage</th></tr>';
+
+for (let ri = 0; ri < REGION_ORDER.length; ri++) {
+  const region = REGION_ORDER[ri];
+  const rows = [];
+  for (let i = 0; i < N; i++) {
+    const l = loadouts[i % loadouts.length];
+    try {
+      /* fullCourage so every region starts the player from the SAME pool —
+         otherwise a captured mid-wing Courage would leak the old confound
+         straight back in. */
+      rows.push(await bench({ loadout: l, encounterTier: TIER, region,
+                              seed: 800000 + ri * 977 + i * 13, bot: 'competent',
+                              haunt: HAUNT, fullCourage: true, maxTurns: 120 }));
+    } catch (e) { R.errors.push(`${region} ${i}: ` + (e.message || e)); }
+  }
+  if (!rows.length) continue;
+  const pct = mean(rows.map(r => (r.maxCourage ? r.dmgTaken / r.maxCourage : 0))) * 100;
+  const rec = {
+    index: ri + 1, region, fights: rows.length,
+    win: +(rows.filter(r => r.win).length / rows.length * 100).toFixed(1),
+    cost: mean(rows.map(r => r.dmgTaken)),
+    pct: +pct.toFixed(1),
+    turns: mean(rows.map(r => r.turns)),
+    pool: mean(rows.map(r => (r.enemyHpLeft || 0) + (r.dmgDealt || 0))),
+  };
+  R.table.push(rec);
+  html += `<tr><td>${rec.index}</td><td>${region}</td><td>${rec.fights}</td>`
+    + `<td class="bar">${rec.win}%</td><td>${rec.cost}</td>`
+    + `<td class="bar">${rec.pct}%</td><td>${rec.turns}</td><td>${rec.pool}</td></tr>`;
+  sum.textContent = `${region} — ${rec.win}% win, ${rec.pct}% of pool`;
+}
+html += '</table>';
+out.innerHTML = html + '<pre>One wing-one loadout, every region\'s ordinary Scuffle pool, '
+  + 'full Courage each time. A rising "% of pool" is a ladder; a flat one is not.</pre>';
+
+const first = R.table[0], last = R.table[R.table.length - 1];
+if (first && last && first.pct) {
+  R.slope = +(last.pct / first.pct).toFixed(2);
+  out.innerHTML += `<pre>wing 1 ${first.pct}% of pool -> wing ${last.index} ${last.pct}% = x${R.slope}</pre>`;
+}
+
+sum.textContent = `RESULT: ${R.table.length} regions, ${R.errors.length} errors`;
+window.__LADDER__ = R;
+</script>
+</body>
+</html>

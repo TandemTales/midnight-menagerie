@@ -426,6 +426,7 @@ RUN on 2026-08-31 against this tree. If one differs, that is the finding.
   python tests/chrome/run.py              27
   python tests/cards-feel/run.py          exit 0
   python tests/critic-design/anchor.py    5/5 agree
+  python tests/critic-design/ladder.py    17 regions, 0 errors  <- NEW
 
   SEVENTEEN REAL-ENGINE REGION GATES — one per region, at last:
     foyer 66 · nursery 64 · sleeping-quarters 62 · kitchens 16 ·
