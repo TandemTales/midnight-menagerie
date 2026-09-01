@@ -328,6 +328,25 @@ thirty-to-eighty-turn grind the player loses.
 Full working, with the ordinary and elite tiers measured the same way, in
 `docs/notes/2026-09-01-the-mansion-is-not-a-ladder.md`.
 
+━━ AND FIVE MORE DEAD SEAMS, 2026-09-01. THAT MAKES TWENTY. ━━
+
+| what was dead | how long | found by |
+|---|---|---|
+| the `advanced` encounter tier — 102 formations, the largest in the game, drawn from 1.7% of the time | since EXPEDITION_WINGS | the tier census in `tests/run/run.py` |
+| `minScuffle: { 'red-carpet-runner': 2 }` — §10 implemented correctly, unable to bind because the tier gate was stricter everywhere | always | the same census |
+| 129 of 366 Haunt behavioural hooks, gated at levels 6–10 against `MAX_HAUNT = 5` | grew with the roster | counting `level >= N` inside `hauntScaling` |
+| the Watcher's Grounded — "cannot gain Guard until it climbs back" printed to the player, enforced by nothing | always | reading the rule against its own code |
+| the Topiary Beast's Leafy Shell — §7's "its next attack deals 4 additional damage", plus a Haunt-8 `shellBonus` for a consumer that did not exist | always | `tools/deadflags.py` |
+| the Oven Maw's Preheat — §12's "the next baked enemy emerges one turn earlier", discounting a bake that had already finished | always | `tools/deadflags.py` |
+
+**`tools/deadflags.py` is the reusable half.** It sweeps `data/bosses/` and
+`data/enemies/` for `mem` keys written and never read ANYWHERE in `game/src` —
+per-file was wrong and this codebase says so, since `heart.js` documents
+`remnant: true` as a flag one file writes and another reads. It is an AUDIT and
+not a gate: thirteen of the fourteen survivors are harmless bookkeeping, so a
+gate would be permanently red. The question that separates them is HANDOFF's own
+test for an unused export — does the field make a CLAIM? A name that appears in
+a rule text, a design chapter or a Haunt note is promising the player something.
 ━━ WHAT I WOULD DO FIRST ━━
 
 **THE FOYER QUESTION IS ANSWERED, AND THE ANSWER WAS NEITHER OPTION.** The
