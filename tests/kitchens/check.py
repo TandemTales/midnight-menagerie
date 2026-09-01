@@ -108,6 +108,37 @@ async ([mode]) => {
 }
 """
 
+PREHEAT = r"""
+async ([preheat]) => {
+  const { C, en, RNG } = window.__K;
+  const e = new C.CombatEngine({ rng: new RNG(11),
+    player: { name: 'K', maxHp: 400, hp: 400, energyMax: 9, deck: [] },
+    enemies: [en.getEnemy('oven-maw'), en.getEnemy('dough-blob')] });
+  e.registerEnemies(en.ENEMY_LIST);
+  await e.startCombat();
+  const oven = e.enemies[0];
+  const defs = en.getEnemy('oven-maw').moves;
+  const ctx = e.enemyCtx(oven, null);
+  /* Drive the two moves directly, in the order §12's Behavior lists them, so
+     the pair differs by exactly one Preheat and nothing else. */
+  if (preheat) defs.preheat.effect(ctx);
+  const armed = (oven.mem || {}).preheated === true;
+  defs.bake.effect(e.enemyCtx(oven, null));
+  const turns = (oven.mem || {}).bakeTurns;
+  const baking = (oven.mem || {}).baking || null;
+  /* Tick the oven until the door opens, so the count is the player-visible one
+     rather than an internal field. */
+  let ticks = 0;
+  while ((oven.mem || {}).baking && ticks < 8) {
+    await e.endTurn();
+    ticks++;
+  }
+  return { preheat, armed, turns, baking, ticks,
+           spent: (oven.mem || {}).preheated === false,
+           came: e.enemies.some(x => x.defId === 'crust-beast' && x.alive) };
+}
+"""
+
 STATIC = r"""
 async () => {
   const { enc, en, cards } = window.__K;
@@ -179,6 +210,24 @@ async def main(a):
               str([t for t in s["statusTricks"] if "sticky" in t]))
 
         # ══ Divide, and the burst exemption that makes it a decision ════════
+        # ══ §12's Preheat discounts the NEXT bake, which it never used to ═══
+        cold = await page.evaluate(PREHEAT, [False])
+        hot = await page.evaluate(PREHEAT, [True])
+        check(cold["baking"] is not None and hot["baking"] is not None,
+              "CONTROL: the Oven bakes something in both runs, so the pair "
+              "compares the same thing",
+              f"cold {cold['baking']} / hot {hot['baking']}")
+        check(hot["armed"] is True and hot["spent"] is True,
+              "Preheat arms the discount and Bake SPENDS it",
+              f"armed {hot['armed']} spent {hot['spent']}")
+        check(hot["turns"] == cold["turns"] - 1,
+              "and the next baked enemy really emerges one turn earlier "
+              "(\u00a712), which is the sentence the chapter authors",
+              f"bakeTurns {hot['turns']} vs {cold['turns']}")
+        check(hot["turns"] >= 1,
+              "and never instantly - earlier, not free",
+              f"bakeTurns {hot['turns']}")
+
         chip = await page.evaluate(DIVIDE, ["chip"])
         check(chip["doughlings"] == 2 and chip["blobAlive"] is False,
               "chipped below 16, the Dough Blob divides into two",

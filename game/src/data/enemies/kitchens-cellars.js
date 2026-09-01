@@ -815,7 +815,15 @@ export const ovenMaw = {
         if (!eligible.length) { mixIngredients(c); return; }
         const victim = eligible[c.rng.int(eligible.length)];
         m.baking = victim.defId;
-        m.bakeTurns = flag(c, 'bakeFast') ? 1 : 2;
+        /* §12: "Preheat - the NEXT baked enemy emerges one turn earlier."
+           Consumed HERE, at the next Bake, which is what "next" means. It
+           used to be spent inside Preheat as `if (bakeTurns > 1) bakeTurns--`,
+           which discounts a bake ALREADY RUNNING - and in the chapter's own
+           cycle (Bake, Slam, Heat Wave, Preheat, repeat) that bake has been
+           out of the oven for two turns by then, so the rule never fired
+           once. Floored at 1: earlier, never instant. */
+        m.bakeTurns = Math.max(1, (flag(c, 'bakeFast') ? 1 : 2) - (m.preheated ? 1 : 0));
+        m.preheated = false;
         c.say(`${victim.name} goes in.`, 'warn');
         c.despawn(victim);
       },
@@ -841,8 +849,8 @@ export const ovenMaw = {
       tell: 'It glows a shade brighter and settles in.',
       effect(c) {
         c.block(c.self, 14);
+        /* Arms the discount; `bake` above spends it. */
         mem(c).preheated = true;
-        if (mem(c).bakeTurns > 1) mem(c).bakeTurns -= 1;
       },
     },
   },

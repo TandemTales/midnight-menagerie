@@ -467,6 +467,22 @@ const FORMS = {
   bear: { name: 'Bear', move: 'topiary-maul' },
   tortoise: { name: 'Tortoise', move: 'leafy-shell' },
 };
+/**
+ * §7's shell bonus: "Its next attack deals 4 additional damage."
+ *
+ * The bonus is on the ATTACK, so a two-hit attack SPLITS it rather than
+ * doubling it - Hedge Hop goes 4x2 to 6x2, which is the +4 the chapter
+ * authors, not +8. Topiary Maul is one hit and takes the whole of it.
+ * `flag(c, 'shellBonus', 4)` picks up the Haunt >= 8 envelope's 6, whose own
+ * note says "adds 6 to its next attack, not 4" and which had no consumer
+ * either.
+ *
+ * Read by `damageFn` AND by the effect, from the same counter, so the rail
+ * and the hit can never disagree.
+ */
+const shellPerHit = (c, hits) => Math.floor(cnt(c, 'shell') / Math.max(1, hits));
+function spendShell(c) { setCnt(c, 'shell', 0); }
+
 export const topiaryBeast = {
   id: 'topiary-beast',
   name: 'Topiary Beast',
@@ -497,18 +513,26 @@ export const topiaryBeast = {
   moves: {
     'hedge-hop': {
       id: 'hedge-hop', name: 'Hedge Hop', intent: Intent.ATTACK, damage: 4, hits: 2,
+      damageFn: (c) => 4 + shellPerHit(c, 2),
       tell: 'Two quick bounds, and it is somewhere else afterwards.',
-      effect(c) { hitPlayer(c, 4, 2); c.block(c.self, 4); },
+      effect(c) { hitPlayer(c, 4 + shellPerHit(c, 2), 2); spendShell(c); c.block(c.self, 4); },
     },
     'topiary-maul': {
       id: 'topiary-maul', name: 'Topiary Maul', intent: Intent.ATTACK, damage: 12, hits: 1,
+      damageFn: (c) => 12 + shellPerHit(c, 1),
       tell: 'It rears up on branches thick enough to be legs.',
-      effect(c) { hitPlayer(c, 12); },
+      effect(c) { hitPlayer(c, 12 + shellPerHit(c, 1)); spendShell(c); },
     },
     'leafy-shell': {
       id: 'leafy-shell', name: 'Leafy Shell', intent: Intent.DEFEND, block: 14,
       tell: 'It folds every branch inwards and waits.',
-      effect(c) { c.block(c.self, 14); mem(c).shelled = true; },
+      /* §7: "Gain 14 Guard. Its next attack deals 4 additional damage."
+         A COUNTER, not `mem(c).shelled` - which is what this was, written
+         and read by nothing, so the second sentence never happened. Writing
+         a counter calls `refreshIntents`; writing `mem` does not, so the
+         boosted number reaches the intent rail the moment the shell closes
+         rather than surprising the player when the attack lands. */
+      effect(c) { c.block(c.self, 14); setCnt(c, 'shell', flag(c, 'shellBonus', 4)); },
     },
     reshape: {
       id: 'reshape', name: 'Reshape', intent: Intent.BUFF,

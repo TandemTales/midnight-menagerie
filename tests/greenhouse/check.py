@@ -161,6 +161,32 @@ async ([shatter]) => {
 }
 """
 
+# ── Leafy Shell really makes the NEXT attack bigger, on the rail and the hit ─
+SHELL = r"""
+async ([shelled]) => {
+  const e = make(['topiary-beast'], { seed: 31, hp: 400 });
+  await e.startCombat();
+  const t = e.enemies[0];
+  /* Arm the counter the way Leafy Shell does. `setCnt` is what makes the rail
+     move, so this exercises the same path the move takes rather than a
+     back door. */
+  if (shelled) {
+    const m = e.moveDefOf ? e.moveDefOf(t, 'leafy-shell') : null;
+    if (m && m.effect) m.effect(e.ctxFor ? e.ctxFor(t) : null);
+    else t.counters = Object.assign({}, t.counters, { shell: 4 });
+  }
+  e.refreshIntents('turnStart');
+  const railed = (t.intent && t.intent.damage) || 0;
+  const hits = (t.intent && t.intent.hits) || 1;
+  let landed = 0;
+  e.on('damage', (ev) => { if (ev.targetId === e.player.id) landed += (ev.hpLoss || 0); });
+  const before = e.player.hp;
+  await e.endTurn();
+  return { shelled, railed, hits, landed, move: (t.history || []).slice(-1)[0],
+           shellLeft: (t.counters || {}).shell || 0, dropped: before - e.player.hp };
+}
+"""
+
 # ── Bloom escalates, and pruning it defuses the swing ───────────────────────
 BLOOM = r"""
 async ([prune]) => {
@@ -309,6 +335,27 @@ async def main(a):
               f"14 into the host -> {hit['ivyLost']} off the Ivy")
 
         # ══ Glass Thorns ════════════════════════════════════════════════════
+        # ══ Leafy Shell's second sentence, which nothing used to read ═══════
+        plain = await page.evaluate(SHELL, [False])
+        shell = await page.evaluate(SHELL, [True])
+        check(plain["railed"] > 0 and shell["railed"] > 0,
+              "CONTROL: the Beast attacks in both runs, so the pair compares "
+              "the same thing",
+              f"plain {plain['move']} {plain['railed']}x{plain['hits']} / "
+              f"shelled {shell['move']} {shell['railed']}x{shell['hits']}")
+        check(shell["railed"] > plain["railed"],
+              "a shelled Beast's next attack is bigger ON THE RAIL "
+              "(§7: 'its next attack deals 4 additional damage')",
+              f"railed {shell['railed']} vs {plain['railed']}")
+        check(shell["railed"] * shell["hits"] - plain["railed"] * plain["hits"] == 4,
+              "and the bonus is +4 on the ATTACK, split across its hits, "
+              "not +4 per hit",
+              f"total {shell['railed'] * shell['hits']} vs "
+              f"{plain['railed'] * plain['hits']}")
+        check(shell["shellLeft"] == 0,
+              "and it is spent, so the attack after it is ordinary again",
+              f"shell counter {shell['shellLeft']}")
+
         intact = await page.evaluate(THORNS, [False])
         broken = await page.evaluate(THORNS, [True])
         check(intact["retaliation"] >= 4, "Glass Thorns really cost Courage",
