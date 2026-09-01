@@ -117,5 +117,73 @@ they meet there is, on this instrument, the same difficulty as wing one. The
 snowball was only ever half the story; the other half is that **nothing was
 waiting for it.**
 
-`python tests/critic-design/ladder.py [--tier elite]`, results committed as
-`ladder-result.json` and `ladder-elite.json`.
+## The bosses DO scale — and that is the bug
+
+Same instrument, `--tier boss`. This is the one tier with a real ladder in it:
+
+    #   region              pool   turns   win%        #   region            pool   turns   win%
+    1   foyer                137    10.4   75.0%      10   ballroom           419    27.5   33.3%
+    2   nursery              247     9.2    0.0%      11   crypt              548    24.2    0.0%
+    3   sleeping-quarters    297    19.1   75.0%      12   hedge-maze         504    20.4    8.3%
+    4   kitchens-cellars     358    21.2   41.7%      13   secret-passages    464    33.8   16.7%
+    5   greenhouse           464    29.0    8.3%      14   bathhouse          692    43.8    0.0%
+    6   graveyard            378    21.2    8.3%      15   kennels            515    31.4   50.0%
+    7   study-library        345    29.0    8.3%      16   pumpkin-grounds    695    39.9   16.7%
+    8   attic-observatory    356    25.4   25.0%      17   heart              645    20.2    0.0%
+    9   lampworks            474    31.2   75.0%
+
+**137 → 695, a five-fold rise.** The boss tier is the only place the mansion is
+actually a ladder — and the turn count climbs with it, 10.4 → 43.8.
+
+## Which is why the safety net is now firing in real play
+
+`combat/engine.js`'s `_losePatience` escalates every enemy past turn 30, and its
+comment makes a measured claim: *"PATIENCE is deliberately far outside reachable
+play … the longest fight any region gate produces is 24. Nothing a player will
+ever see is touched by this."* **Nothing checked it.** `tests/run/run.py` does
+now, and across 535 real fights in fifty expeditions:
+
+    longest fight        87 turns   graveyard/boss
+    past 24 turns        13
+    past 30 turns         9   <- _losePatience fired
+
+All ten of the longest fights are **bosses**, and **nine of the ten were lost**:
+
+    87  graveyard/boss    LOST      55  lampworks/boss           LOST
+    69  graveyard/boss    LOST      54  attic-observatory/boss   LOST
+    56  greenhouse/boss   LOST      52  greenhouse/boss          won
+    55  greenhouse/boss   LOST      44  greenhouse/boss          LOST
+                                    37  study-library/boss       LOST
+
+An 87-turn fight means `_losePatience` ran for **57 turns**, stacking 57
+Strength on the boss before it ended. THE HOUSE LOSES PATIENCE is being shown to
+players as though it were designed content. It is the termination guarantee, and
+it is deciding real fights.
+
+## The cause, and it is one day old
+
+Boss pools were authored against **ladder position**: the greenhouse boss's 464
+Courage assumes a player who has cleared four wings before arriving.
+`EXPEDITION_WINGS = 6` (2026-08-31) draws four wings from the middle fifteen, so
+**ladder position and route position came apart** — and nothing re-measured the
+bosses afterwards.
+
+The run harness's own `reach` table names the regions that can be **wing two**:
+attic-observatory, graveyard, greenhouse, kitchens-cellars, lampworks, nursery,
+sleeping-quarters, study-library. Every region in the long-fight list above is on
+it. A 345–474 Courage boss authored for wing five, met with a wing-two deck, is
+a thirty-to-eighty-turn grind that the player loses.
+
+That is the whole of it, and it makes the fix a fork rather than a repair:
+
+* **scale the boss pool by ROUTE position** rather than ladder position — the
+  mansion adapts to how deep tonight's expedition is;
+* **or constrain the route** so a wing cannot appear far from its ladder index;
+* **or re-author seventeen pools** against the six-wing route.
+
+The first is small and principled and changes what a wing *is*. None of them is
+taken here. The gate is red on purpose and names its own cause, so nobody spends
+a round deciding whether they broke it.
+
+`python tests/critic-design/ladder.py [--tier elite|boss]`, results committed as
+`ladder-result.json`, `ladder-elite.json` and `ladder-boss.json`.

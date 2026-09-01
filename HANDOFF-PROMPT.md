@@ -205,6 +205,46 @@ Still short of the contract at 4.3 of six: a run fights ~4.7 times and two of
 those are the forced opening pair. Closing the rest means more fights in the
 first wing or fewer teachers in it, and both are design calls.
 
+━━ THE BATTERY IS RED ON PURPOSE, AND HERE IS WHY ━━
+
+**`tests/run/run.py` FAILS with 1 error, and the error is a real defect.** Do not
+spend a round deciding whether you broke it — the failure message names its own
+cause and this section is the long version.
+
+`combat/engine.js`'s `_losePatience` escalates every enemy past turn 30, and its
+comment claims: "PATIENCE is deliberately far outside reachable play ... the
+longest fight any region gate produces is 24. Nothing a player will ever see is
+touched by this." **Nothing checked it.** The run harness does now, and across
+535 real fights in fifty expeditions:
+
+    longest fight        87 turns   graveyard/boss
+    past 24 turns        13
+    past 30 turns         9   <- _losePatience fired, in ordinary play
+
+All ten longest fights are BOSSES and NINE OF TEN WERE LOST. An 87-turn fight
+means the termination guarantee ran for 57 turns, stacking 57 Strength, before
+the fight ended. THE HOUSE LOSES PATIENCE is on screen as though it were
+designed content.
+
+**THE CAUSE IS ONE DAY OLD AND IT IS OURS.** Boss pools scale 137 → 695 across
+the ladder — the boss tier is the only place this mansion IS a ladder — and they
+were authored against LADDER position. `EXPEDITION_WINGS = 6` drew route
+position apart from ladder position on 2026-08-31, and nothing re-measured the
+bosses after it. The harness's own `reach` table lists the wings that can be
+WING TWO: attic-observatory, graveyard, greenhouse, kitchens-cellars, lampworks,
+nursery, sleeping-quarters, study-library. Every long-fight region is on it. A
+345–474 Courage boss authored for wing five, met with a wing-two deck, is a
+thirty-to-eighty-turn grind the player loses.
+
+**The fix is a FORK, which is why it is not taken:**
+  * scale the boss pool by ROUTE position rather than ladder position — small,
+    principled, and it changes what a wing IS;
+  * or constrain the route so a wing cannot appear far from its ladder index;
+  * or re-author seventeen pools against the six-wing route.
+
+Full working, with the ordinary and elite tiers measured the same way, in
+`docs/notes/2026-09-01-the-mansion-is-not-a-ladder.md`.
+
 ━━ WHAT I WOULD DO FIRST ━━
 
 **THE FOYER QUESTION IS ANSWERED, AND THE ANSWER WAS NEITHER OPTION.** The
@@ -406,7 +446,8 @@ RUN on 2026-08-31 against this tree. If one differs, that is the finding.
   python tests/enemies/run.py             275 enemies, 0 errors
                                           (310 encounters, 106 statuses, 24 Tricks)
   python tests/enemies/audit.py           19803 turns, 0 errors
-  python tests/run/run.py                 50 runs, 0 errors, 0 DRAWS  ← was 4
+  python tests/run/run.py                 50 runs, **1 ERROR** — ON PURPOSE,
+                                          see THE BATTERY IS RED section
   python tests/coop/run.py                645
   python tests/net/run.py                 158
   python tests/backpack/run.py            80
@@ -623,7 +664,16 @@ everything under `docs/notes/` is LF.
 **Read with `newline=''`, translate your patterns to the file's own ending, and
 check `git diff --stat` against `git diff --ignore-cr-at-eol --stat`** — they
 must be identical. That check is independent of the shell and stayed right when
-the grep above did not. A patch script that writes `\n` into a CRLF file will either
+the grep above did not.
+
+**BUT THAT CHECK HAS A HOLE, and it was fallen into on 2026-09-01.** It catches
+a script that CONVERTS existing lines. It does NOT catch a script that INSERTS
+new lines with the wrong ending: both stat forms count the same added lines, so
+they agree while the file quietly goes MIXED. `HANDOFF-PROMPT.md` went 640/0 to
+640 CRLF + 41 LF with both stats identical. **Count the bytes on the file itself
+after any scripted insert** — `raw.count(b"\r\n")` against `raw.count(b"\n")` —
+and repair with `re.sub(rb"(?<!\r)\n", b"\r\n", raw)`. The Edit tool does not
+have this problem; it preserves the surrounding endings. A patch script that writes `\n` into a CRLF file will either
 match nothing or quietly convert the lines it touches.
 
 **Heredocs in the Bash tool eat backslash escapes, backticks and the section

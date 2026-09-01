@@ -123,6 +123,22 @@ async def main(a):
         print("  FLAT '%% of pool' down the column means the CONTENT is overpriced;")
         print("  falling means the OPENING DECK is. 'deck' beside it is the control.")
 
+    pat = res.get("patience")
+    if pat:
+        print("")
+        print("the longest fight anyone had  (all 50 expeditions)")
+        print("  %d fights. Longest %d turns (%s)."
+              % (pat["fights"], pat["longest"], pat["where"]))
+        print("  Past 24 turns: %d.  Past 30, where `_losePatience` fires: %d."
+              % (pat["over24"], pat["over30"]))
+        print("  engine.js claims PATIENCE is outside reachable play. This checks it:")
+        print("  a safety net that fires during ordinary content is a difficulty")
+        print("  mechanic nobody designed, so over30 is a hard failure.")
+        for w in (pat.get("worst") or [])[:10]:
+            print("    %3d turns  %-22s %-9s %-22s seed %-6s %s  cost %.0f"
+                  % (w["turns"], w["region"], w["type"], w["enc"] or "-",
+                     w["seed"], "won " if w["won"] else "LOST", w["cost"]))
+
     tie = res.get("tiers") or []
     if tie:
         print("")

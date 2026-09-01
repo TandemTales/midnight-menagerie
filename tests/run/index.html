@@ -62,6 +62,8 @@ const ROUTED = [];
 const LEDGER_TABLE = [];
 /** Keepsakes and cards handed over, by room kind. */
 const PURSE_TABLE = [];
+/** The longest fight, against `_losePatience`'s claim of being unreachable. */
+let PATIENCE_ROW = null;
 /** Which authored formations the fifty expeditions ever actually roll. */
 const REACHABLE_TABLE = [];
 /** Which TIER band the fights that happened were drawn from. */
@@ -1062,6 +1064,50 @@ async function main() {
       + 'the player still had when the fight STARTED.</pre>');
   }
 
+  /* IS THE SAFETY NET INSIDE REACHABLE PLAY?
+     `combat/engine.js`'s `_losePatience` fires past turn 30 and its comment
+     makes a measured CLAIM: "PATIENCE is deliberately far outside reachable
+     play ... the longest fight any region gate produces is 24. Nothing a player
+     will ever see is touched by this." Nothing checked it. The ledger already
+     records `turns` for every fight, so the check is free — and a safety net
+     that starts firing during ordinary content stops being a safety net and
+     becomes a difficulty mechanic nobody designed. */
+  {
+    const ALLT = results.flatMap(r => r.ledger || []);
+    const longest = ALLT.reduce((m, f) => (f.turns > (m?.turns ?? -1) ? f : m), null);
+    const over24 = ALLT.filter(f => f.turns > 24);
+    const over30 = ALLT.filter(f => f.turns > 30);
+    PATIENCE_ROW = {
+      fights: ALLT.length,
+      longest: longest ? longest.turns : 0,
+      where: longest ? `${longest.region}/${longest.type}` : '-',
+      over24: over24.length, over30: over30.length,
+      worst: ALLT.slice().sort((a, b) => b.turns - a.turns).slice(0, 10)
+        .map(f => ({ turns: f.turns, region: f.region, type: f.type,
+                     enc: f.encId, seed: f.seed, won: !!f.won, cost: f.cost })),
+    };
+    if (over30.length) {
+      /* NOT A BROKEN GATE — a real defect, named here so the next session does
+         not spend a round deciding whether it broke something. Every one of
+         these is a BOSS, and every region in the list can be routed as WING TWO
+         (see the `reach` table). Boss pools scale 137 -> 695 across the ladder
+         and were authored against LADDER position; `EXPEDITION_WINGS = 6` drew
+         route position apart from ladder position on 2026-08-31 and nothing
+         re-measured the bosses after it. See
+         docs/notes/2026-09-01-the-mansion-is-not-a-ladder.md. */
+      fail(`_losePatience fired in reachable play: ${over30.length} of ${ALLT.length} `
+         + `fights ran past turn 30 (longest ${PATIENCE_ROW.longest}, ${PATIENCE_ROW.where}). `
+         + `engine.js claims this is unreachable. Cause: boss pools authored by LADDER `
+         + `position, met at ROUTE position since EXPEDITION_WINGS = 6.`);
+    }
+    say('<h2>the longest fight anyone had</h2>');
+    say(`<pre>${ALLT.length} fights. Longest ${PATIENCE_ROW.longest} turns `
+      + `(${PATIENCE_ROW.where}). Past 24 turns: ${over24.length}. `
+      + `Past 30, where <code>_losePatience</code> fires: ${over30.length}.
+`
+      + `engine.js claims PATIENCE is outside reachable play; this is the check.</pre>`);
+  }
+
   /* HOW MUCH OF THE AUTHORED CONTENT A RUN CAN ACTUALLY REACH.
      `tierFor` asks for 'early' on rows 0-1, 'standard' up to rows-2, and
      'advanced' only on the last walkable row — which on a 13-row wing is ONE
@@ -1377,7 +1423,7 @@ autosaves ${saveCount}</pre>`);
     reach: REACH, routed: ROUTED, victories: VICTORIES, draws: DRAWS, ledger: LEDGER_TABLE, purse: PURSE_TABLE,
     depth: DEPTH_TABLE, arrival: ARRIVAL_TABLE,
     teach: TEACH_TABLE, teachCover: TEACH_COVER, reachable: REACHABLE_TABLE,
-    tiers: TIER_TABLE,
+    tiers: TIER_TABLE, patience: PATIENCE_ROW,
     determinism: detOk, resume: resumeOk, storage: storeOk,
     combatResume: combatResume, combatResumeTried: combatResumeTried, replayed,
   };
