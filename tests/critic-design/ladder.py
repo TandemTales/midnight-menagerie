@@ -27,7 +27,7 @@ async def main(a):
     from playwright.async_api import async_playwright
     url = (f"http://localhost:8777/tests/critic-design/ladder.html"
            f"?gen={a.gen}&n={a.n}&tier={a.tier}&seed={a.seed}&haunt={a.haunt}"
-           f"&hpscale={a.hpscale}")
+           f"&hpscale={a.hpscale}&benchhaunt={a.benchhaunt if a.benchhaunt is not None else a.haunt}")
     errs = []
     async with async_playwright() as p:
         b = await p.chromium.launch(args=["--enable-unsafe-swiftshader"])
@@ -55,6 +55,9 @@ async def main(a):
               % res["config"]["HPSCALE"])
     print("  %d loadouts, %s tier, %d fights per region, full Courage each time"
           % (res.get("loadouts", 0), res["config"]["TIER"], res["config"]["N"]))
+    if res["config"].get("BHAUNT", 0) != res["config"].get("HAUNT", 0):
+        print("  loadouts generated at Haunt %s, content measured at Haunt %s"
+              % (res["config"]["HAUNT"], res["config"]["BHAUNT"]))
     print("  %-4s %-22s %-8s %-8s %-11s %-10s %-8s %s"
           % ("#", "region", "fights", "win%", "mean cost", "% of pool", "turns", "enemy Courage"))
     for r in res.get("table") or []:
@@ -88,6 +91,10 @@ if __name__ == "__main__":
     # has to show it responds to content strength before its verdict counts.
     # Shipping numbers are always 1.
     ap.add_argument("--hpscale", type=float, default=1.0)
+    # Haunt of the CONTENT being measured. --haunt alone also raises the
+    # Haunt of the expeditions that generate the constant player, which
+    # un-constants it; pass --benchhaunt to move only the content.
+    ap.add_argument("--benchhaunt", type=int, default=None)
     ap.add_argument("--out", default="ladder-result.json")
     ap.add_argument("--timeout", type=float, default=2400)
     sys.exit(asyncio.run(main(ap.parse_args())))

@@ -519,7 +519,41 @@ declared fixed.
    the defect. What changed the end-state distribution was the ROUTE change
    alone; HANDOFF credits both.
 
-2. **HAUNT SCALING IS EXERCISED AT ONE TIER.** `tests/boss-haunt/check.py`
+2. **HAUNT: HALF CLOSED, AND A THIRD OF THE LADDER IS ABOVE THE CEILING.**
+   Measured 2026-09-01 with `tests/critic-design/ladder.py --benchhaunt`, which
+   is a SEPARATE knob from `--haunt` on purpose: `--haunt` also raises the
+   difficulty of the expeditions generating the constant player, which
+   un-constants it.
+
+   **The good half.** Haunt DOES reach ordinary enemies, which nothing had
+   checked. At Haunt 5 every region's enemy Courage rose about 15% and the
+   cost rose in sixteen of seventeen. The 2026-08-20 Courage ramp works.
+
+   **The bad half.** Counting every `level >= N` inside a `hauntScaling(level)`
+   block across `data/enemies/` and `data/bosses/`:
+
+       >= 1  166 | >= 2   8 | >= 3  19 | >= 4  20 | >= 5  24    reachable
+       >= 6   18 | >= 7  18 | >= 8  17 | >= 9  60 | >= 10 16    UNREACHABLE
+
+   **129 of 366 authored Haunt behaviours - 35% - are gated above
+   `MAX_HAUNT = 5`.** Sixty sit at Haunt 9 alone, across sixteen of seventeen
+   regions, each with its player-facing sentence already written ("Haunt 9:
+   the dance opens on Beat 2."). `advanceHaunt` clamps hard; none can fire.
+
+   `_lib.js` line 318 records the audit that set the shape - "35 hooks at
+   `>= 1`, 13 at `>= 9`, 4 at `>= 10`, three in total between 2 and 8" - dated
+   2026-08-20, when THREE regions shipped. Fourteen more arrived, each author
+   copied the shape, and nobody re-counted against the ceiling.
+
+   NOT established: whether the unreachable hooks would MATTER. Haunt 8 against
+   Haunt 9 isolates the sixty, but at n=6 on the elite tier it showed no
+   systematic movement and that measurement is underpowered - do not quote it.
+   Needs n>=24. The fork is raise `MAX_HAUNT` (and name the new rungs in
+   `data/haunts.js`, which is what the player is shown) or re-tier 6-10 down.
+   See `docs/notes/2026-09-01-a-third-of-the-haunt-ladder-is-above-the-ceiling.md`.
+
+   The ORIGINAL item, still open for Big Scares specifically:
+   **HAUNT SCALING IS EXERCISED AT ONE TIER.** `tests/boss-haunt/check.py`
    proves every BOSS really hits harder at higher Haunt, on the intent and on
    the hit — it found five that applied the bonus in neither half. Nothing does
    the same for ordinary enemies or Big Scares, whose envelopes carry ~35

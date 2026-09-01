@@ -46,10 +46,17 @@ const HAUNT = +(Q.get('haunt') || 0);
    responds to content strength before its verdict is worth anything.
    CONTRACTS 54. Shipping numbers are always hpScale 1. */
 const HPSCALE = +(Q.get('hpscale') || 1);
+/* Haunt has to be TWO knobs here, not one. `haunt` raises the difficulty of
+   the expeditions that GENERATE the constant player; `benchhaunt` raises the
+   difficulty of the content being measured. Tying them together means the
+   player is no longer constant and a Haunt comparison measures nothing.
+   Defaults to `haunt` so the single-knob callers are unchanged. */
+const BHAUNT = Q.has('benchhaunt') ? +Q.get('benchhaunt') : HAUNT;
 
 const out = document.getElementById('out');
 const sum = document.getElementById('summary');
-const R = { config: { GEN, N, TIER, SEED0, HAUNT, HPSCALE }, loadouts: 0, table: [], errors: [] };
+const R = { config: { GEN, N, TIER, SEED0, HAUNT, BHAUNT, HPSCALE },
+            loadouts: 0, table: [], errors: [] };
 
 /* THE CONSTANT PLAYER. `loadoutAtBoss` for the FOYER is the deck, Keepsakes and
    pool a real expedition was carrying at the end of wing one — about 14 cards
@@ -82,7 +89,7 @@ for (let ri = 0; ri < REGION_ORDER.length; ri++) {
          straight back in. */
       rows.push(await bench({ loadout: l, encounterTier: TIER, region,
                               seed: 800000 + ri * 977 + i * 13, bot: 'competent',
-                              haunt: HAUNT, fullCourage: true, maxTurns: 120,
+                              haunt: BHAUNT, fullCourage: true, maxTurns: 120,
                               hpScale: HPSCALE }));
     } catch (e) { R.errors.push(`${region} ${i}: ` + (e.message || e)); }
   }

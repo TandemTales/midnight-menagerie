@@ -1,0 +1,186 @@
+{
+ "config": {
+  "GEN": 5,
+  "N": 6,
+  "TIER": "elite",
+  "SEED0": 90000,
+  "HAUNT": 0,
+  "BHAUNT": 9,
+  "HPSCALE": 1
+ },
+ "loadouts": 4,
+ "table": [
+  {
+   "index": 1,
+   "region": "foyer",
+   "fights": 6,
+   "win": 100,
+   "cost": 40.67,
+   "pct": 53,
+   "turns": 10.67,
+   "pool": 131.5
+  },
+  {
+   "index": 2,
+   "region": "nursery",
+   "fights": 6,
+   "win": 66.7,
+   "cost": 74.33,
+   "pct": 100,
+   "turns": 16.67,
+   "pool": 222.17
+  },
+  {
+   "index": 3,
+   "region": "sleeping-quarters",
+   "fights": 6,
+   "win": 100,
+   "cost": 27,
+   "pct": 35,
+   "turns": 18.83,
+   "pool": 272.67
+  },
+  {
+   "index": 4,
+   "region": "kitchens-cellars",
+   "fights": 6,
+   "win": 33.3,
+   "cost": 70.67,
+   "pct": 95,
+   "turns": 13.67,
+   "pool": 213.83
+  },
+  {
+   "index": 5,
+   "region": "greenhouse",
+   "fights": 6,
+   "win": 100,
+   "cost": 38.17,
+   "pct": 49,
+   "turns": 23,
+   "pool": 340.67
+  },
+  {
+   "index": 6,
+   "region": "graveyard",
+   "fights": 6,
+   "win": 100,
+   "cost": 21,
+   "pct": 28,
+   "turns": 13.67,
+   "pool": 162.67
+  },
+  {
+   "index": 7,
+   "region": "study-library",
+   "fights": 6,
+   "win": 83.3,
+   "cost": 32.17,
+   "pct": 43,
+   "turns": 16.67,
+   "pool": 162.33
+  },
+  {
+   "index": 8,
+   "region": "attic-observatory",
+   "fights": 6,
+   "win": 83.3,
+   "cost": 28.17,
+   "pct": 38,
+   "turns": 14.17,
+   "pool": 182.83
+  },
+  {
+   "index": 9,
+   "region": "lampworks",
+   "fights": 6,
+   "win": 66.7,
+   "cost": 65.83,
+   "pct": 89,
+   "turns": 13.5,
+   "pool": 182.5
+  },
+  {
+   "index": 10,
+   "region": "ballroom",
+   "fights": 6,
+   "win": 83.3,
+   "cost": 48.17,
+   "pct": 63,
+   "turns": 13,
+   "pool": 185
+  },
+  {
+   "index": 11,
+   "region": "crypt",
+   "fights": 6,
+   "win": 66.7,
+   "cost": 59.17,
+   "pct": 78,
+   "turns": 17.33,
+   "pool": 278.17
+  },
+  {
+   "index": 12,
+   "region": "hedge-maze",
+   "fights": 6,
+   "win": 0,
+   "cost": 91.33,
+   "pct": 123,
+   "turns": 18.17,
+   "pool": 411.83
+  },
+  {
+   "index": 13,
+   "region": "secret-passages",
+   "fights": 6,
+   "win": 83.3,
+   "cost": 27,
+   "pct": 35,
+   "turns": 22.17,
+   "pool": 184.5
+  },
+  {
+   "index": 14,
+   "region": "bathhouse",
+   "fights": 6,
+   "win": 100,
+   "cost": 28.83,
+   "pct": 37,
+   "turns": 13.83,
+   "pool": 187.33
+  },
+  {
+   "index": 15,
+   "region": "kennels",
+   "fights": 6,
+   "win": 33.3,
+   "cost": 91,
+   "pct": 124,
+   "turns": 45,
+   "pool": 699.67
+  },
+  {
+   "index": 16,
+   "region": "pumpkin-grounds",
+   "fights": 6,
+   "win": 83.3,
+   "cost": 58.33,
+   "pct": 77,
+   "turns": 18.33,
+   "pool": 213.67
+  },
+  {
+   "index": 17,
+   "region": "heart",
+   "fights": 6,
+   "win": 100,
+   "cost": 30.83,
+   "pct": 40,
+   "turns": 27,
+   "pool": 294
+  }
+ ],
+ "errors": [],
+ "slope": 0.75
+}

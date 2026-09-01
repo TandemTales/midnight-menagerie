@@ -73,3 +73,4 @@ to concurrent whole-file writes, so this is now structural rather than a convent
 | [2026-08-31-the-foyer-is-attrition-not-the-boss](notes/2026-08-31-the-foyer-is-attrition-not-the-boss.md) | 8 KB |
 | [2026-08-31-the-advanced-pool-was-one-row-deep](notes/2026-08-31-the-advanced-pool-was-one-row-deep.md) | 6 KB |
 | [2026-09-01-the-mansion-is-not-a-ladder](notes/2026-09-01-the-mansion-is-not-a-ladder.md) | 7 KB |
+| [2026-09-01-a-third-of-the-haunt-ladder-is-above-the-ceiling](notes/2026-09-01-a-third-of-the-haunt-ladder-is-above-the-ceiling.md) | 5 KB |
