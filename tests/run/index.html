@@ -61,6 +61,10 @@ const ROUTED = [];
 const LEDGER_TABLE = [];
 /** Keepsakes and cards handed over, by room kind. */
 const PURSE_TABLE = [];
+/** The first wing priced by DEPTH rather than as one average. */
+const DEPTH_TABLE = [];
+/** What the player brings to each boss door, against what the boss costs. */
+const ARRIVAL_TABLE = [];
 let VICTORIES = null;
 /** Boss fights that ended in a draw. A balance finding, counted so it cannot
     go quiet — see `playCombat`. */
@@ -334,6 +338,11 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
       log(`  fight ${engine.victory ? 'won' : 'lost'} hp=${run.courage}`);
       ledger.push({
         region: regionBefore, type, seed, shepherd,
+        /* DEPTH. Without it the ledger can price a wing but not its SHAPE, and
+           the Foyer's 28 defeats split 16 at the boss on row 12 and 12 before
+           it at row 3.9 — two findings with completely different fixes that
+           the region row averages together into one number. */
+        row: node?.row ?? -1, rows: run.map?.rows ?? 0,
         hpBefore, hpAfter: run.courage, max: run.maxCourage,
         cost: Math.max(0, hpBefore - run.courage),
         turns: engine.turn, won: !!engine.victory,
@@ -990,6 +999,109 @@ async function main() {
       + 'survives the pool growing.</pre>');
   }
 
+  /* THE FIRST WING, PRICED BY DEPTH.
+     The region row above averages a row-0 Scuffle fought out of the starting
+     twelve cards together with the Butler on row 12, and those are the two
+     halves of the Foyer's 28 defeats: 16 at the boss, 12 before it at row 3.9.
+     One number cannot separate them, and the two have opposite fixes.
+
+     What this table decides: if `% of pool` is FLAT from row 0 to row 11 the
+     content is uniformly overpriced, and if it FALLS the opening deck is the
+     cause and the content is fine. `deck` beside it is the control — a cost
+     that falls while the deck stands still is not the deck.  */
+  say('<h2>the first wing, by depth</h2>');
+  {
+    const LED = results.filter(r => !r.shepherd).flatMap(r => r.ledger || [])
+      .filter(x => x.region === 'foyer' && x.row >= 0);
+    const mean = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
+    let drows = '<table><tr><th>row</th><th>fights</th><th>what</th><th>mean cost</th>'
+      + '<th>% of pool</th><th>turns</th><th>deck</th><th>keeps</th>'
+      + '<th>Courage in</th><th>lost</th></tr>';
+    const maxRow = Math.max(0, ...LED.map(x => x.row));
+    for (let r = 0; r <= maxRow; r++) {
+      const rows = LED.filter(x => x.row === r);
+      if (!rows.length) continue;
+      const pct = mean(rows.map(x => (x.max ? x.cost / x.max : 0))) * 100;
+      const inPct = mean(rows.map(x => (x.max ? x.hpBefore / x.max : 0))) * 100;
+      const kinds = {};
+      for (const x of rows) kinds[x.type] = (kinds[x.type] || 0) + 1;
+      const what = Object.entries(kinds).sort((a, b) => b[1] - a[1])
+        .map(([k, n]) => k + ' ' + n).join(' · ');
+      const lost = rows.filter(x => !x.won).length;
+      drows += `<tr><td>${r}</td><td>${rows.length}</td><td>${what}</td>`
+        + `<td>${mean(rows.map(x => x.cost)).toFixed(1)}</td>`
+        + `<td class="bar">${pct.toFixed(1)}%</td>`
+        + `<td>${mean(rows.map(x => x.turns)).toFixed(1)}</td>`
+        + `<td>${mean(rows.map(x => x.deck)).toFixed(1)}</td>`
+        + `<td>${mean(rows.map(x => x.keeps)).toFixed(1)}</td>`
+        + `<td>${inPct.toFixed(0)}%</td><td>${lost}</td></tr>`;
+      DEPTH_TABLE.push({
+        row: r, fights: rows.length, what,
+        cost: +mean(rows.map(x => x.cost)).toFixed(1), pct: +pct.toFixed(1),
+        turns: +mean(rows.map(x => x.turns)).toFixed(1),
+        deck: +mean(rows.map(x => x.deck)).toFixed(1),
+        keeps: +mean(rows.map(x => x.keeps)).toFixed(1),
+        inPct: +inPct.toFixed(0), lost,
+      });
+    }
+    drows += '</table>';
+    say(drows + '<pre>unaided runs only. "Courage in" is the share of the pool '
+      + 'the player still had when the fight STARTED.</pre>');
+  }
+
+  /* WHAT THE PLAYER BRINGS TO THE DOOR.
+     `hpBefore` has been recorded for every fight since this ledger existed and
+     never printed, and it is the whole difference between "the boss costs too
+     much" and "the player arrives broke" — which are, again, opposite fixes.
+     A boss that costs 65% of a pool is fine if you meet it at 100% and fatal
+     if you meet it at 60%, and only this column can tell you which. */
+  say('<h2>what the player brings to each boss door</h2>');
+  {
+    const LED = results.filter(r => !r.shepherd).flatMap(r => r.ledger || [])
+      .filter(x => x.type === 'boss');
+    const mean = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
+    let arows = '<table><tr><th>region</th><th>bosses</th><th>Courage in</th>'
+      + '<th>arrives at</th><th>boss costs</th><th>of pool</th>'
+      + '<th>margin</th><th>lost</th>'
+      + '<th>won: hp/deck</th><th>lost: hp/deck</th></tr>';
+    for (const id of RUN_REGIONS.filter(id => LED.some(x => x.region === id))) {
+      const rows = LED.filter(x => x.region === id);
+      const inPct = mean(rows.map(x => (x.max ? x.hpBefore / x.max : 0))) * 100;
+      const costPct = mean(rows.map(x => (x.max ? x.cost / x.max : 0))) * 100;
+      const lost = rows.filter(x => !x.won).length;
+      /* THE DISCRIMINATOR. Two runs at the same door, one wins and one does
+         not: if the loser arrived with the same COURAGE and a smaller DECK,
+         the wing starved it of cards, and no amount of boss tuning is the fix.
+         If it arrived with less Courage, the wing bled it and the boss is
+         merely where the bill came due. */
+      const W = rows.filter(x => x.won), L = rows.filter(x => !x.won);
+      const pair = (xs) => xs.length
+        ? mean(xs.map(x => (x.max ? x.hpBefore / x.max : 0)) ).toFixed(2).slice(1)
+          + ' / ' + mean(xs.map(x => x.deck)).toFixed(1)
+        : '-';
+      arows += `<tr><td>${id}</td><td>${rows.length}</td>`
+        + `<td>${mean(rows.map(x => x.hpBefore)).toFixed(1)}</td>`
+        + `<td class="bar">${inPct.toFixed(0)}%</td>`
+        + `<td>${mean(rows.map(x => x.cost)).toFixed(1)}</td>`
+        + `<td>${costPct.toFixed(0)}%</td>`
+        + `<td>${(inPct - costPct).toFixed(0)}pp</td><td>${lost}</td>`
+        + `<td>${pair(W)}</td><td>${pair(L)}</td></tr>`;
+      ARRIVAL_TABLE.push({
+        region: id, bosses: rows.length,
+        hpIn: +mean(rows.map(x => x.hpBefore)).toFixed(1), inPct: +inPct.toFixed(0),
+        cost: +mean(rows.map(x => x.cost)).toFixed(1), costPct: +costPct.toFixed(0),
+        margin: +(inPct - costPct).toFixed(0), lost,
+        wonHp: W.length ? +(mean(W.map(x => (x.max ? x.hpBefore / x.max : 0))) * 100).toFixed(0) : null,
+        wonDeck: W.length ? +mean(W.map(x => x.deck)).toFixed(1) : null,
+        lostHp: L.length ? +(mean(L.map(x => (x.max ? x.hpBefore / x.max : 0))) * 100).toFixed(0) : null,
+        lostDeck: L.length ? +mean(L.map(x => x.deck)).toFixed(1) : null,
+      });
+    }
+    arows += '</table>';
+    say(arows + '<pre>unaided runs only. "margin" is arrival minus price, in '
+      + 'points of the pool: below zero the average run cannot pay.</pre>');
+  }
+
   /* WHERE THE FIFTY-FIVE KEEPSAKES COME FROM. Priced at the source rather than
      inferred from the room census: a Shop that SELLS three and a Treasure that
      GIVES one are the same row in that census and completely different
@@ -1136,6 +1248,7 @@ autosaves ${saveCount}</pre>`);
     lengths, decks, purses, keeps, saveCount,
     endsDetail: ENDS_DETAIL, depthFrac: DEPTH_FRAC, visited: VISITED,
     reach: REACH, routed: ROUTED, victories: VICTORIES, draws: DRAWS, ledger: LEDGER_TABLE, purse: PURSE_TABLE,
+    depth: DEPTH_TABLE, arrival: ARRIVAL_TABLE,
     determinism: detOk, resume: resumeOk, storage: storeOk,
     combatResume: combatResume, combatResumeTried: combatResumeTried, replayed,
   };

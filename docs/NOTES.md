@@ -64,4 +64,10 @@ to concurrent whole-file writes, so this is now structural rather than a convent
 | [2026-08-28-butler-aoe-and-a-broken-instrument](notes/2026-08-28-butler-aoe-and-a-broken-instrument.md) | 13 KB |
 | [2026-08-29-the-wire-reaches-the-screens](notes/2026-08-29-the-wire-reaches-the-screens.md) | 14 KB |
 | [2026-08-30-the-card-art-hitch-is-real](notes/2026-08-30-the-card-art-hitch-is-real.md) | 6 KB |
+| [2026-08-29-the-map-was-writing-the-run](notes/2026-08-29-the-map-was-writing-the-run.md) | 12 KB |
+| [2026-08-29-the-route-is-voted](notes/2026-08-29-the-route-is-voted.md) | 12 KB |
+| [2026-08-29-the-party-cost-gap-is-arithmetic](notes/2026-08-29-the-party-cost-gap-is-arithmetic.md) | 12 KB |
+| [2026-08-29-the-grind-was-the-instrument](notes/2026-08-29-the-grind-was-the-instrument.md) | 12 KB |
 | [2026-08-30-the-unreachable-sweep](notes/2026-08-30-the-unreachable-sweep.md) | 115 KB |
+| [2026-08-31-how-long-is-an-expedition](notes/2026-08-31-how-long-is-an-expedition.md) | 8 KB |
+| [2026-08-31-the-foyer-is-attrition-not-the-boss](notes/2026-08-31-the-foyer-is-attrition-not-the-boss.md) | 8 KB |

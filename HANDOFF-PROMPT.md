@@ -150,17 +150,41 @@ somewhere.
 
 ━━ WHAT I WOULD DO FIRST ━━
 
-**THE FOYER IS 28 OF 43 DEFEATS.** The back half is fixed and the FRONT is now
-the whole finding: a first wing that ends two runs in three is doing more work
-than a first wing should. Sixteen of those 28 are the Butler on row 12; the
-other twelve die before him, at row 3.9 on average, which is a different problem
-from the boss being hard.
+**THE FOYER QUESTION IS ANSWERED, AND THE ANSWER WAS NEITHER OPTION.** The
+previous handoff asked whether the twelve early Foyer deaths were the CONTENT or
+the opening DECK. The ledger could not say, because it priced a fight by REGION —
+averaging a row-0 Scuffle together with the Butler on row 12, which are exactly
+the two halves of the finding. It has `row` now, and it prints two new tables.
+The full working is `docs/notes/2026-08-31-the-foyer-is-attrition-not-the-boss.md`.
 
-**Do not tune it by feel.** The Butler and the Foyer elites both have a
-committed before/after in `tests/critic-design/`, and CONTRACTS 47 exists
-because of exactly this temptation. The instrument is the cost ledger in
-`tests/run/run.py`, and the question it can answer that nothing else can is
-whether the twelve early deaths are the CONTENT or the opening DECK.
+    region   bosses  arrives at  boss costs  margin  lost   won hp/deck   lost hp/deck
+    foyer      29       85%         64%       21pp    15    95% / 14.2    76% / 14.6
+
+**Winners and losers arrive at the Butler's door with the SAME DECK** — 14.2
+cards against 14.6 — and different Courage, 95% against 76%. It is ATTRITION.
+Not the deck, and not the content either: the ordinary rooms cost 7-22% of the
+pool and the bot only meets about four of them.
+
+**AND THE CEILING IS ARITHMETIC.** Margin — arrival minus price, in points of
+the pool — predicts the boss loss rate across every wing monotonically (0pp →
+2/2 lost, 20pp → 4/5, 21pp → 15/29, 35pp → 1/3, 75pp → 1/5). Arrival cannot
+exceed 100%, so while the Butler costs 64% of the pool **the Foyer's margin can
+never exceed +36pp however well the wing is played.**
+
+**THE BUTLER HAS NOT DRIFTED.** Re-measured at 24 generations / 22 loadouts:
+62.5%, which is within noise of the committed 68.8% — and that anchor was taken
+on EIGHT loadouts, which cannot resolve six points. The replacement is
+`sweep-butler-2026-08-31-powered.json`, with the what-if beside it: `x0.9` on the
+Butler's pool buys 62.5% → 77.1%, `x0.8` buys 81.3%.
+
+So the remaining move is a DESIGN call, not a repair: is the first wing meant to
+end half the runs that reach its door? Do not take it by feel — CONTRACTS 47 —
+but it can now be taken against numbers.
+
+**WHAT IS ALREADY RULED OUT, so it is not re-run:** the map is not rest-starved
+(a Safe Room is reachable behind 1.98 fights, measured over 5100 sheets), and
+moving `NodeType.SAFE`'s floor from row 4 to row 3 leaves Foyer defeats at
+exactly 28 — it converts corridor deaths into boss deaths one for one.
 
 ━━ HOW A REGION WAS BUILT, IF ONE IS EVER ADDED ━━
 
@@ -262,8 +286,15 @@ green through every bug above. It cannot see them.
     healthy number while the whole Kitchens had never had one intent checked.
     **It runs at HAUNT 0**, which is why it cannot see a Haunt bug of any kind.
   * `tests/run/run.py` — 50 seeded expeditions with a competent bot and real
-    drafting, 4 minutes. Its two new tables are the only thing in the project
-    that can price the ladder rather than describe it.
+    drafting, 4 minutes. Its four tables are the only thing in the project that
+    can price the ladder rather than describe it: cost per fight BY REGION, what
+    each ROOM KIND hands over, the first wing BY DEPTH, and what the player
+    brings to each BOSS DOOR. The last two are new, and the depth one exists
+    because a region average hides a wing's own shape — the Foyer's 28 defeats
+    are 16 at row 12 and 12 before it, and one number cannot hold both.
+    **`hpBefore` was recorded for every fight from the day the ledger existed
+    and printed by nothing for two sessions**, which is why "the boss costs too
+    much" and "the player arrives broke" could not be told apart.
   * `tests/boss-haunt/check.py` — every boss at two Haunt levels, on the intent
     AND on the hit. The only thing that can see a Haunt bug at all.
   * A SCREENSHOT. It found a final boss pushed off the left edge of its own
@@ -351,8 +382,14 @@ declared fixed.
 
 ━━ WHAT IS OPEN ━━
 
-1. **THE FOYER IS 28 OF 43 DEFEATS.** See WHAT I WOULD DO FIRST. This is the
-   front half of the finding whose back half closed today.
+1. **THE FOYER IS 28 OF 43 DEFEATS, AND IT IS ATTRITION.** See WHAT I WOULD DO
+   FIRST — the question is answered and what remains is a design call on the
+   Butler's price, costed. Two things came off this while it was measured: the
+   Curiosity fix cost ~4.4 Courage of arrival at the Butler's door (measured by
+   A/B against `24cf02c^`), and it did NOT move the number it was named for —
+   a Curiosity still pays **0.92** Keepsakes per visit against the 0.97 that was
+   the defect. What changed the end-state distribution was the ROUTE change
+   alone; HANDOFF credits both.
 
 2. **HAUNT SCALING IS EXERCISED AT ONE TIER.** `tests/boss-haunt/check.py`
    proves every BOSS really hits harder at higher Haunt, on the intent and on
@@ -488,9 +525,18 @@ every boss file, `enemies/index.js`, `ui/enemy.js`, `status-names/index.html`,
 are MIXED. A scripted normalise-and-rewrite once turned two Graveyard files into
 a 1819-line diff for 43 lines of change.
 
+**`grep -c $'\r$'` DOES NOT WORK IN THE BASH TOOL** and it fails in the worst
+possible way: the `\r` is eaten before grep sees it, the pattern collapses to
+`$`, and it matches EVERY line — so every file reads as 100% CRLF and the count
+is just the line count. Checked that way the list above looks wrong on three
+files. It is not; the tool is. Count bytes instead (`raw.count(b"\r\n")` against
+`raw.count(b"\n")`). The census of this tree is **1750 CRLF, 377 LF, 10 mixed**;
+everything under `docs/notes/` is LF.
+
 **Read with `newline=''`, translate your patterns to the file's own ending, and
 check `git diff --stat` against `git diff --ignore-cr-at-eol --stat`** — they
-must be identical. A patch script that writes `\n` into a CRLF file will either
+must be identical. That check is independent of the shell and stayed right when
+the grep above did not. A patch script that writes `\n` into a CRLF file will either
 match nothing or quietly convert the lines it touches.
 
 **Heredocs in the Bash tool eat backslash escapes, backticks and the section

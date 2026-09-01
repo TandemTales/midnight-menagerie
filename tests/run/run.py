@@ -108,6 +108,40 @@ async def main(a):
         print("  '%% of pool' is one fight's Courage cost as a share of MAX Courage -")
         print("  the only cross-region comparison that survives the pool growing.")
 
+    dep = res.get("depth") or []
+    if dep:
+        print("")
+        print("the first wing, by depth  (unaided runs only)")
+        print("  %-5s %-7s %-22s %-10s %-9s %-7s %-6s %-6s %-11s %s"
+              % ("row", "fights", "what", "mean cost", "% of pool", "turns",
+                 "deck", "keeps", "courage in", "lost"))
+        for r in dep:
+            print("  %-5d %-7d %-22s %-10.1f %-9s %-7.1f %-6.1f %-6.1f %-11s %d"
+                  % (r["row"], r["fights"], r["what"][:22], r["cost"],
+                     "%.1f%%" % r["pct"], r["turns"], r["deck"], r["keeps"],
+                     "%d%%" % r["inPct"], r["lost"]))
+        print("  FLAT '%% of pool' down the column means the CONTENT is overpriced;")
+        print("  falling means the OPENING DECK is. 'deck' beside it is the control.")
+
+    arr = res.get("arrival") or []
+    if arr:
+        print("")
+        print("what the player brings to each boss door  (unaided runs only)")
+        print("  %-22s %-8s %-11s %-11s %-11s %-8s %-8s %-6s %-14s %s"
+              % ("region", "bosses", "courage in", "arrives at", "boss costs",
+                 "of pool", "margin", "lost", "won hp/deck", "lost hp/deck"))
+        for r in arr:
+            pair = lambda h, d: "-" if h is None else "%d%% / %.1f" % (h, d)
+            print("  %-22s %-8d %-11.1f %-11s %-11.1f %-8s %-8s %-6d %-14s %s"
+                  % (r["region"], r["bosses"], r["hpIn"], "%d%%" % r["inPct"],
+                     r["cost"], "%d%%" % r["costPct"], "%dpp" % r["margin"],
+                     r["lost"], pair(r["wonHp"], r["wonDeck"]),
+                     pair(r["lostHp"], r["lostDeck"])))
+        print("  'margin' is arrival minus price in points of the pool.")
+        print("  Below zero the average run cannot pay for its own boss.")
+        print("  Same Courage but a smaller DECK on the losing side means the")
+        print("  wing starved the run of cards, and the boss is not the fix.")
+
     pw = res.get("purse") or []
     if pw:
         print("")

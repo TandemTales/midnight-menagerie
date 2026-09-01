@@ -190,6 +190,31 @@ on row 12, twelve before him at row 3.9 on average. **Do not tune it by feel:**
 the Butler and the Foyer elites have a committed before/after in
 `tests/critic-design/`, and CONTRACTS 47 exists for exactly this temptation.
 
+**ANSWERED, 2026-08-31 (third session).** It is neither the content nor the
+opening deck — it is ATTRITION, and the ledger could not say so because it
+priced a fight by region, averaging a row-0 Scuffle together with the Butler.
+It has `row` now. Winners and losers arrive at the Butler's door with the SAME
+deck (14.2 cards against 14.6) and different Courage (95% of the pool against
+76%). Margin — arrival minus price — predicts the boss loss rate across every
+wing monotonically, and since arrival cannot exceed 100% while the Butler costs
+64% of the pool, **the Foyer's margin has a ceiling of +36pp however well the
+wing is played.** The Butler itself has not drifted: 62.5% at 22 loadouts
+against a committed 68.8% taken at EIGHT, which cannot resolve six points.
+What remains is a design call on the Butler's price, costed — `x0.9` buys
+62.5% → 77.1%. Ruled out and not to be re-run: the map is not rest-starved (a
+Safe Room sits behind 1.98 fights, over 5100 sheets), and moving the Safe Room
+floor from row 4 to row 3 leaves Foyer defeats at exactly 28, converting
+corridor deaths into boss deaths one for one. Full working in
+`docs/notes/2026-08-31-the-foyer-is-attrition-not-the-boss.md`.
+
+Two things came off it while it was measured. The Curiosity fix cost about
+**4.4 Courage of arrival** at the Butler's door, measured by A/B against
+`24cf02c^` — and it did NOT move the number it was named for: a Curiosity still
+pays **0.92** Keepsakes per visit against the 0.97 that was the defect. What
+changed the end-state distribution was the ROUTE change alone. The events work
+was a real repair of the TEXT — the risk and reward lines are derived from the
+outcomes now — and not of the economy; this file credits it with both above.
+
 And Haunt is exercised at one tier: `tests/boss-haunt/` covers every boss, on
 the intent and on the hit, and nothing does the same for ordinary enemies or Big
 Scares. `tests/enemies/audit.py` runs at Haunt 0 and cannot see a Haunt bug of

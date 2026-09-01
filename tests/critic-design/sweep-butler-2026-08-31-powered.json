@@ -1,0 +1,60 @@
+{
+ "config": {
+  "TIER": "boss",
+  "ENC": null,
+  "REGION": "foyer",
+  "N": 96,
+  "GEN": 24,
+  "BOTS": [
+   "competent"
+  ],
+  "POL": "balanced",
+  "SCALES": [
+   1,
+   0.9,
+   0.8
+  ],
+  "HAUNT": 0,
+  "HEAL": 0
+ },
+ "loadouts": 22,
+ "table": [
+  {
+   "bot": "competent",
+   "hpScale": 1,
+   "win": 62.5,
+   "turnsMean": 11.57,
+   "turnsMed": 12,
+   "costMean": 51.73,
+   "hpAfterWinMean": 32.9,
+   "courageAtDoor": 63.6,
+   "timeouts": 0,
+   "n": 96
+  },
+  {
+   "bot": "competent",
+   "hpScale": 0.9,
+   "win": 77.1,
+   "turnsMean": 10.47,
+   "turnsMed": 10,
+   "costMean": 46.77,
+   "hpAfterWinMean": 32.54,
+   "courageAtDoor": 63.6,
+   "timeouts": 0,
+   "n": 96
+  },
+  {
+   "bot": "competent",
+   "hpScale": 0.8,
+   "win": 81.3,
+   "turnsMean": 9.47,
+   "turnsMed": 9,
+   "costMean": 40.57,
+   "hpAfterWinMean": 37.77,
+   "courageAtDoor": 63.6,
+   "timeouts": 0,
+   "n": 96
+  }
+ ],
+ "errors": []
+}
