@@ -40,10 +40,16 @@ const N   = +(Q.get('n') || 16);           // bench fights per region
 const TIER = Q.get('tier') || 'standard';
 const SEED0 = +(Q.get('seed') || 90000);
 const HAUNT = +(Q.get('haunt') || 0);
+/* A what-if lever, and the proof this gate can SEE. `bench` already took
+   hpScale and this harness was not passing it. Running at 2 must move every
+   row; a gate that indicts fifteen of seventeen regions has to demonstrate it
+   responds to content strength before its verdict is worth anything.
+   CONTRACTS 54. Shipping numbers are always hpScale 1. */
+const HPSCALE = +(Q.get('hpscale') || 1);
 
 const out = document.getElementById('out');
 const sum = document.getElementById('summary');
-const R = { config: { GEN, N, TIER, SEED0, HAUNT }, loadouts: 0, table: [], errors: [] };
+const R = { config: { GEN, N, TIER, SEED0, HAUNT, HPSCALE }, loadouts: 0, table: [], errors: [] };
 
 /* THE CONSTANT PLAYER. `loadoutAtBoss` for the FOYER is the deck, Keepsakes and
    pool a real expedition was carrying at the end of wing one — about 14 cards
@@ -76,7 +82,8 @@ for (let ri = 0; ri < REGION_ORDER.length; ri++) {
          straight back in. */
       rows.push(await bench({ loadout: l, encounterTier: TIER, region,
                               seed: 800000 + ri * 977 + i * 13, bot: 'competent',
-                              haunt: HAUNT, fullCourage: true, maxTurns: 120 }));
+                              haunt: HAUNT, fullCourage: true, maxTurns: 120,
+                              hpScale: HPSCALE }));
     } catch (e) { R.errors.push(`${region} ${i}: ` + (e.message || e)); }
   }
   if (!rows.length) continue;

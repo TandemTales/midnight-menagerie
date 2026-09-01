@@ -25,6 +25,38 @@ into every region's pool at full Courage. `bench()` already supported it: its
 
 Eleven loadouts, sixteen fights per region, 272 fights per tier.
 
+## First: can this gate see?
+
+A new instrument that indicts fifteen of seventeen regions is more likely to be
+broken than to be right — CONTRACTS 57 was written after `tests/boss-haunt/`
+reported all seventeen bosses failing before it applied the Haunt envelope the
+way the run layer does. So before any of the numbers below are worth reading,
+the gate has to demonstrate it responds to content strength at all.
+
+`bench()` already accepted an `hpScale` lever and this harness was not passing
+it. `--hpscale 2` now does. Every one of the seventeen rows must move:
+
+    region              x1     x2        region              x1     x2
+    foyer                7%    37%       ballroom            12%    49%
+    nursery             38%    86%       crypt               15%    37%
+    sleeping-quarters   17%    51%       hedge-maze          31%    56%
+    kitchens-cellars    27%    73%       secret-passages     33%    77%
+    greenhouse          13%    38%       bathhouse            9%    35%
+    graveyard           12%    45%       kennels              8%    20%
+    study-library       11%    27%       pumpkin-grounds      7%    45%
+    attic-observatory   13%    48%       heart               30%    66%
+    lampworks           12%    28%
+
+**All seventeen moved, all upward**, win rates fell where they should
+(secret-passages 75% → 37.5%, hedge-maze 100% → 62.5%, heart 100% → 62.5%), and
+the measured enemy Courage doubled with the lever. The gate sees.
+
+It also shows the disorder is a property of the CONTENT and not of the
+measurement: at double Courage the ordering barely changes, and kennels is still
+the easiest region in the game.
+
+Shipping numbers are always `hpScale 1`. Everything below is.
+
 ## The ordinary pool: thirteen regions are the first region
 
     #   region              % of pool   win%      enemy Courage

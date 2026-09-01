@@ -26,7 +26,8 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 async def main(a):
     from playwright.async_api import async_playwright
     url = (f"http://localhost:8777/tests/critic-design/ladder.html"
-           f"?gen={a.gen}&n={a.n}&tier={a.tier}&seed={a.seed}&haunt={a.haunt}")
+           f"?gen={a.gen}&n={a.n}&tier={a.tier}&seed={a.seed}&haunt={a.haunt}"
+           f"&hpscale={a.hpscale}")
     errs = []
     async with async_playwright() as p:
         b = await p.chromium.launch(args=["--enable-unsafe-swiftshader"])
@@ -49,6 +50,9 @@ async def main(a):
         return 1
 
     print("\nthe ladder, priced against ONE wing-one player")
+    if res["config"].get("HPSCALE", 1) != 1:
+        print("  !! hpScale %s - a WHAT-IF, not a shipping number"
+              % res["config"]["HPSCALE"])
     print("  %d loadouts, %s tier, %d fights per region, full Courage each time"
           % (res.get("loadouts", 0), res["config"]["TIER"], res["config"]["N"]))
     print("  %-4s %-22s %-8s %-8s %-11s %-10s %-8s %s"
@@ -79,6 +83,11 @@ if __name__ == "__main__":
     ap.add_argument("--tier", default="standard")
     ap.add_argument("--seed", type=int, default=90000)
     ap.add_argument("--haunt", type=int, default=0)
+    # A what-if lever, and the proof this gate can SEE (CONTRACTS 54): at 2
+    # every row must move. A gate that indicts fifteen of seventeen regions
+    # has to show it responds to content strength before its verdict counts.
+    # Shipping numbers are always 1.
+    ap.add_argument("--hpscale", type=float, default=1.0)
     ap.add_argument("--out", default="ladder-result.json")
     ap.add_argument("--timeout", type=float, default=2400)
     sys.exit(asyncio.run(main(ap.parse_args())))
