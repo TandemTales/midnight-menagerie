@@ -7,13 +7,13 @@
    "same": true,
    "bench": {
     "win": false,
-    "turns": 12,
-    "dmg": 98
+    "turns": 11,
+    "dmg": 82
    },
    "party": {
     "win": false,
-    "turns": 12,
-    "dmg": 98,
+    "turns": 11,
+    "dmg": 82,
     "errs": 0
    }
   },
@@ -37,13 +37,13 @@
    "same": true,
    "bench": {
     "win": false,
-    "turns": 13,
-    "dmg": 49
+    "turns": 10,
+    "dmg": 61
    },
    "party": {
     "win": false,
-    "turns": 13,
-    "dmg": 49,
+    "turns": 10,
+    "dmg": 61,
     "errs": 0
    }
   },
@@ -51,14 +51,14 @@
    "seed": 700039,
    "same": true,
    "bench": {
-    "win": true,
-    "turns": 10,
-    "dmg": 70
+    "win": false,
+    "turns": 6,
+    "dmg": 69
    },
    "party": {
-    "win": true,
-    "turns": 10,
-    "dmg": 70,
+    "win": false,
+    "turns": 6,
+    "dmg": 69,
     "errs": 0
    }
   },
@@ -68,12 +68,12 @@
    "bench": {
     "win": false,
     "turns": 12,
-    "dmg": 79
+    "dmg": 71
    },
    "party": {
     "win": false,
     "turns": 12,
-    "dmg": 79,
+    "dmg": 71,
     "errs": 0
    }
   }
