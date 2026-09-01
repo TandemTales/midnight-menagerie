@@ -192,30 +192,65 @@ Strength on the boss before it ended. THE HOUSE LOSES PATIENCE is being shown to
 players as though it were designed content. It is the termination guarantee, and
 it is deciding real fights.
 
-## The cause, and it is one day old
+## The cause I first wrote here was wrong, and measuring it took one field
 
-Boss pools were authored against **ladder position**: the greenhouse boss's 464
-Courage assumes a player who has cleared four wings before arriving.
-`EXPEDITION_WINGS = 6` (2026-08-31) draws four wings from the middle fifteen, so
-**ladder position and route position came apart** — and nothing re-measured the
-bosses afterwards.
+I blamed the route. Boss pools are authored against **ladder position**, and
+`EXPEDITION_WINGS = 6` (2026-08-31) drew route position apart from it, so a
+464-Courage boss authored for wing five could turn up at wing two. It is a tidy
+story, it fits, and **I committed it into a failure message and both handoffs
+without measuring it** — on a ledger that did not record the route slot, so
+nothing in the repo could have joined the claim to the data.
 
-The run harness's own `reach` table names the regions that can be **wing two**:
-attic-observatory, graveyard, greenhouse, kitchens-cellars, lampworks, nursery,
-sleeping-quarters, study-library. Every region in the long-fight list above is on
-it. A 345–474 Courage boss authored for wing five, met with a wing-two deck, is
-a thirty-to-eighty-turn grind that the player loses.
+Two fields settled it. `wing` is the route slot the fight happened at; `left` is
+the board's Courage still standing when it ended, because a forty-turn GRIND
+(boss nearly dead) and a forty-turn STALL (boss near full) are the same number
+in the `turns` column and completely different defects.
 
-That is the whole of it, and it makes the fix a fork rather than a repair:
+    turns  wing  region             left    turns  wing  region             left
+      87     3   graveyard           64%      52     3   greenhouse           0%  won
+      69     4   graveyard           27%      44     2   greenhouse          33%
+      56     2   greenhouse          68%      37     3   study-library       33%
+      55     2   greenhouse          69%      28     4   hedge-maze          22%
+      55     2   lampworks           21%
+      54     3   attic-observatory   66%
 
-* **scale the boss pool by ROUTE position** rather than ladder position — the
-  mansion adapts to how deep tonight's expedition is;
-* **or constrain the route** so a wing cannot appear far from its ladder index;
-* **or re-author seventeen pools** against the six-wing route.
+**The route claim predicted at least seven of the nine over-30 fights at wing
+two. There are four.** The rest are wings three and four, including the 87-turn
+worst case. The route is not what is long about these fights.
 
-The first is small and principled and changes what a wing *is*. None of them is
-taken here. The gate is red on purpose and names its own cause, so nobody spends
-a round deciding whether they broke it.
+**And the four LONGEST ended with the boss 64–69% alive.** That is the other
+prediction, and it is `_losePatience`'s own note (`engine.js` ~2918) which had
+already diagnosed this with numbers before I started:
+
+> An enemy's Guard is wiped at the start of its own turn and re-granted every
+> turn, so what the player must beat is its Guard PER TURN, not its Courage. The
+> Groundskeeper can raise 46 in a turn … a deck that deals less than that can
+> never move its Courage bar at all, however long the fight runs.
+
+It even names the boss: the Groundskeeper "sat at 203 of 350 Courage for the
+last hundred and forty" turns. The graveyard boss **is** the Groundskeeper, and
+it is the 87 and the 69 in that table.
+
+## Which disqualifies all three of the fixes I was choosing between
+
+Scaling the pool by route position, constraining the route, and re-authoring
+seventeen pools all move **Courage**. Not one of them can move a Courage bar the
+deck cannot dent, and the four worst fights in the game are exactly that. A pool
+cut reaches the five grinds in the table and leaves the four stalls untouched —
+and the stalls are the 87, the 56, the 55 and the 54.
+
+So the real finding is smaller than the one I wrote and worse than it:
+
+**`_losePatience` is not a safety net that never fires.** It is the resolution
+mechanism for a Guard-wall stall the game still has, it fires in nine of 535
+ordinary fights, and it resolves them against the player — eight of the nine
+were lost. The termination guarantee is doing the killing.
+
+The axis that can reach it is Guard-per-turn: what a boss can raise in a turn
+against what a deck at that depth can put out. Nothing in the repo measures that
+yet, and it is the next instrument rather than the next fix.
+
+The gate is red on purpose and now names the measured cause.
 
 `python tests/critic-design/ladder.py [--tier elite|boss]`, results committed as
 `ladder-result.json`, `ladder-elite.json` and `ladder-boss.json`.

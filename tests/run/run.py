@@ -135,9 +135,14 @@ async def main(a):
         print("  a safety net that fires during ordinary content is a difficulty")
         print("  mechanic nobody designed, so over30 is a hard failure.")
         for w in (pat.get("worst") or [])[:10]:
-            print("    %3d turns  %-22s %-9s %-22s seed %-6s %s  cost %.0f"
-                  % (w["turns"], w["region"], w["type"], w["enc"] or "-",
-                     w["seed"], "won " if w["won"] else "LOST", w["cost"]))
+            print("    %3d turns  wing %-3s %-22s %-9s %-18s %s  cost %-4.0f left %d%%"
+                  % (w["turns"], w.get("wing", "?"), w["region"], w["type"],
+                     w["enc"] or "-", "won " if w["won"] else "LOST",
+                     w["cost"], w.get("leftPct", 0)))
+        print("    wing = ROUTE slot 1-6, not ladder index. left%% = share of the")
+        print("    board's Courage still standing: near 0 is a GRIND that a pool or")
+        print("    route change reaches, high is the Guard STALL engine.js describes,")
+        print("    which neither can touch.")
 
     tie = res.get("tiers") or []
     if tie:

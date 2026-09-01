@@ -220,6 +220,20 @@ floor from row 4 to row 3 leaves Foyer defeats at exactly 28, converting
 corridor deaths into boss deaths one for one. Full working in
 `docs/notes/2026-08-31-the-foyer-is-attrition-not-the-boss.md`.
 
+**THE OVER-30 CAUSE WAS THE GUARD WALL, NOT THE ROUTE.** I first wrote that boss
+pools "authored by LADDER position, met at ROUTE position since
+EXPEDITION_WINGS = 6" caused the nine fights past turn 30, and committed that
+into a failure message and both handoffs without measuring it. Adding `wing` and
+`left` to the ledger refuted it: only **four** of the nine are at wing two (the
+87-turn worst case is wing three), and the four LONGEST ended with the boss
+**64-69% ALIVE**. That is the Guard-per-turn stall `engine.js` ~2918 had already
+documented with numbers - the Groundskeeper "sat at 203 of 350 Courage for the
+last hundred and forty" turns, and the graveyard boss IS the Groundskeeper. It
+disqualifies all three candidate fixes, which all move Courage and cannot move a
+bar the deck cannot dent. `_losePatience` is the resolution mechanism for a stall
+the game still has, and it resolves it against the player. The next thing is an
+instrument for Guard-per-turn against deck output at depth, not a fix.
+
 **AND THE ADVANCED POOL WAS ONE ROW DEEP.** Found by asking whether the tutorial
 region teaches what §33 of its own chapter says it teaches — ten lessons, six
 enemies, "primarily through combat rather than pop up tutorials", so the ladder

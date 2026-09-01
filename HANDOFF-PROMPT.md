@@ -226,6 +226,41 @@ means the termination guarantee ran for 57 turns, stacking 57 Strength, before
 the fight ended. THE HOUSE LOSES PATIENCE is on screen as though it were
 designed content.
 
+**THE CAUSE IS THE GUARD WALL, NOT THE ROUTE - AND I GOT THIS WRONG FIRST.**
+This section originally blamed boss pools "authored by LADDER position, met at
+ROUTE position since EXPEDITION_WINGS = 6". That was an attribution written
+without measuring, on a ledger that did not record the route slot. Two fields
+settled it - `wing` (route slot) and `left` (board Courage still standing):
+
+    turns  wing  region             left       turns  wing  region          left
+      87     3   graveyard           64%         52     3   greenhouse        0% won
+      69     4   graveyard           27%         44     2   greenhouse       33%
+      56     2   greenhouse          68%         37     3   study-library    33%
+      55     2   greenhouse          69%         28     4   hedge-maze       22%
+      55     2   lampworks           21%
+      54     3   attic-observatory   66%
+
+The route claim predicted at least seven of the nine over-30 fights at wing two.
+**There are four**, and the 87-turn worst case is wing THREE. But the four
+LONGEST ended with the boss **64-69% ALIVE**, which is exactly what
+`_losePatience`'s own note (engine.js ~2918) already described: Guard is wiped
+and re-granted every turn, so what the player must beat is Guard PER TURN, not
+Courage, and the Groundskeeper "sat at 203 of 350 Courage for the last hundred
+and forty" turns. The graveyard boss IS the Groundskeeper.
+
+**That disqualifies all three fixes I was choosing between.** Scaling the pool
+by route position, constraining the route, and re-authoring seventeen pools all
+move COURAGE, and not one can move a bar the deck cannot dent. A pool cut
+reaches the five grinds and leaves the four stalls - which are the 87, 56, 55
+and 54.
+
+So `_losePatience` is not a net that never fires: it is the resolution mechanism
+for a Guard stall the game still has, and it resolves it AGAINST the player -
+eight of the nine were LOST. The axis that reaches it is Guard-per-turn against
+deck output at depth, which nothing measures yet. That is the next INSTRUMENT,
+not the next fix.
+
+(Superseded, kept because the reasoning is the lesson:)
 **THE CAUSE IS ONE DAY OLD AND IT IS OURS.** Boss pools scale 137 → 695 across
 the ladder — the boss tier is the only place this mansion IS a ladder — and they
 were authored against LADDER position. `EXPEDITION_WINGS = 6` drew route

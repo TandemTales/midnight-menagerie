@@ -408,7 +408,8 @@ function worstCard(run, policy, core) {
 export async function bench({ loadout, encounterTier, seed, bot = 'competent',
                               companion = 'marmalade', haunt = 0, clutter = true,
                               fullCourage = false, maxTurns = 120, trace = null,
-                              encounterId = null, hpScale = 1, region = null } = {}) {
+                              encounterId = null, hpScale = 1, region = null,
+                              routeIndex = null } = {}) {
   const run = new Run({ companion, seed, hauntLevel: haunt });
   run.ephemeral = true;
   // Bench a later region's content. `_buildCombat` resolves its formations
@@ -417,7 +418,14 @@ export async function bench({ loadout, encounterTier, seed, bot = 'competent',
   if (region && region !== run.region) {
     const idx = REGION_ORDER.indexOf(region);
     if (idx < 0) throw new Error(`[bench] unknown region ${region}`);
-    run.regionIndex = idx;
+    /* LADDER INDEX, NOT ROUTE POSITION, and the two came apart on 2026-08-31
+       when EXPEDITION_WINGS went to 6. `new Run()` above has already built a
+       SIX-element `route`, so this line leaves `regionIndex` pointing past the
+       end of it for every region above the fifth. Nothing read the two
+       together, so it never bit - but anything that prices content by ROUTE
+       position must pin it here explicitly, or it measures every region at
+       route position == ladder position and reports the artefact as a result. */
+    run.regionIndex = routeIndex == null ? idx : routeIndex;
     run.region = region;
     run.encounterHistory = [];
   }

@@ -337,6 +337,12 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
 
     const hpBefore = run.courage;
     const regionBefore = run.region;
+    /* ROUTE SLOT. The ledger priced a wing but never recorded WHERE IN THE
+       ROUTE the fight happened, so the over-30 failure below asserted a cause
+       - "every region in the list can be routed as WING TWO" - that nothing
+       in this repo could join. I wrote that attribution without measuring it.
+       One field makes it a measurement instead of an inference. */
+    const wingBefore = run.regionIndex + 1;
     const keepsBefore = run.keepsakes.length;
     const deckBefore = run.deck.length;
     await run.enterNode(id);
@@ -347,11 +353,25 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
          summoned body is not counted as something the room presented — and by
          `defId`, never `id`, which is the board slot (CONTRACTS / part-lookups). */
       const met = engine.enemies.map(x => x.defId).filter(Boolean);
+      /* THE STALL DISCRIMINATOR, and it decides which fix is even possible.
+         `_losePatience`'s own note (engine.js ~2918) says an unfinishable
+         fight is a GUARD wall and not a Courage pool: the Groundskeeper of
+         Names "sat at 203 of 350 Courage for the last hundred and forty"
+         turns, because an enemy's Guard is wiped and re-granted every turn,
+         so what the player must beat is Guard PER TURN. A 40-turn GRIND
+         (boss nearly dead) and a 40-turn STALL (boss near full) are the same
+         number in `turns` and completely different defects - a pool cut or a
+         route ceiling reaches the first and cannot touch the second.
+         Captured BEFORE the fight, so a summon is not counted as Courage the
+         room presented. */
+      const poolBefore = engine.enemies.reduce((s, x) => s + (x.maxHp || 0), 0);
       const ok = await playCombat(engine, 200, run);
       if (!ok) break;
       log(`  fight ${engine.victory ? 'won' : 'lost'} hp=${run.courage}`);
       ledger.push({
-        region: regionBefore, type, seed, shepherd,
+        region: regionBefore, type, seed, shepherd, wing: wingBefore,
+        pool: poolBefore,
+        left: engine.enemies.reduce((s, x) => s + (x.alive ? x.hp : 0), 0),
         /* DEPTH. Without it the ledger can price a wing but not its SHAPE, and
            the Foyer's 28 defeats split 16 at the boss on row 12 and 12 before
            it at row 3.9 — two findings with completely different fixes that
@@ -1083,22 +1103,42 @@ async function main() {
       where: longest ? `${longest.region}/${longest.type}` : '-',
       over24: over24.length, over30: over30.length,
       worst: ALLT.slice().sort((a, b) => b.turns - a.turns).slice(0, 10)
-        .map(f => ({ turns: f.turns, region: f.region, type: f.type,
-                     enc: f.encId, seed: f.seed, won: !!f.won, cost: f.cost })),
+        .map(f => ({ turns: f.turns, region: f.region, wing: f.wing, type: f.type,
+                     enc: f.encId, seed: f.seed, won: !!f.won, cost: f.cost,
+                     /* share of the board's Courage still standing at the end.
+                        Near 0 is a GRIND and a pool or route change reaches it;
+                        high is the Guard STALL engine.js describes, which
+                        neither one can. */
+                     leftPct: f.pool ? Math.round(100 * f.left / f.pool) : 0 })),
     };
     if (over30.length) {
-      /* NOT A BROKEN GATE — a real defect, named here so the next session does
-         not spend a round deciding whether it broke something. Every one of
-         these is a BOSS, and every region in the list can be routed as WING TWO
-         (see the `reach` table). Boss pools scale 137 -> 695 across the ladder
-         and were authored against LADDER position; `EXPEDITION_WINGS = 6` drew
-         route position apart from ladder position on 2026-08-31 and nothing
-         re-measured the bosses after it. See
-         docs/notes/2026-09-01-the-mansion-is-not-a-ladder.md. */
+      /* NOT A BROKEN GATE - a real defect, named here so the next session does
+         not spend a round deciding whether it broke something.
+
+         THE CAUSE IS THE GUARD WALL, NOT DEPTH, and this message said otherwise
+         until 2026-09-01. It blamed boss pools "authored by LADDER position, met
+         at ROUTE position since EXPEDITION_WINGS = 6" - an attribution written
+         without measuring, on a ledger that did not even record the route slot.
+         Adding `wing` and `left` refuted it: only FOUR of the nine over-30
+         fights are at wing two, the rest are wings three and four, and the four
+         LONGEST ended with the boss 64-69% ALIVE.
+
+         That is exactly what `_losePatience`'s own note (engine.js ~2918)
+         already described with numbers: an enemy's Guard is wiped and re-granted
+         every turn, so what the player must beat is Guard PER TURN, not Courage.
+         The Groundskeeper "sat at 203 of 350 Courage for the last hundred and
+         forty" turns. A pool cut, a route ceiling and a re-authoring all move
+         Courage, and none of them can move a bar the deck cannot dent.
+
+         So `_losePatience` is not a net that never fires. It is the resolution
+         mechanism for a stall the game still has, and it resolves it AGAINST the
+         player: nine of nine over-30 fights but one were LOST. */
+      const stalls = over30.filter(f => f.pool && f.left / f.pool > 0.4).length;
       fail(`_losePatience fired in reachable play: ${over30.length} of ${ALLT.length} `
          + `fights ran past turn 30 (longest ${PATIENCE_ROW.longest}, ${PATIENCE_ROW.where}). `
-         + `engine.js claims this is unreachable. Cause: boss pools authored by LADDER `
-         + `position, met at ROUTE position since EXPEDITION_WINGS = 6.`);
+         + `engine.js claims this is unreachable. ${stalls} of them ended with the board `
+         + `over 40% ALIVE, which is the Guard-per-turn stall engine.js ~2918 describes - `
+         + `not a Courage pool and not a route-depth problem.`);
     }
     say('<h2>the longest fight anyone had</h2>');
     say(`<pre>${ALLT.length} fights. Longest ${PATIENCE_ROW.longest} turns `
