@@ -71,3 +71,4 @@ to concurrent whole-file writes, so this is now structural rather than a convent
 | [2026-08-30-the-unreachable-sweep](notes/2026-08-30-the-unreachable-sweep.md) | 115 KB |
 | [2026-08-31-how-long-is-an-expedition](notes/2026-08-31-how-long-is-an-expedition.md) | 8 KB |
 | [2026-08-31-the-foyer-is-attrition-not-the-boss](notes/2026-08-31-the-foyer-is-attrition-not-the-boss.md) | 8 KB |
+| [2026-08-31-the-advanced-pool-was-one-row-deep](notes/2026-08-31-the-advanced-pool-was-one-row-deep.md) | 6 KB |

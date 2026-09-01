@@ -38,6 +38,7 @@ import { RNG, hashSeed } from '../../game/src/core/rng.js';
 import { Save } from '../../game/src/core/save.js';
 import { Run, STARTER_SLUGS, RUN_LENGTH_REGIONS, RUN_REGIONS, EXPEDITION_WINGS } from '../../game/src/state/run.js';
 import { NodeType, REGION_ORDER } from '../../game/src/data/schema.js';
+import { ENCOUNTER_LIST } from '../../game/src/data/encounters.js';
 import { cardById } from '../../game/src/data/cards.js';
 import * as R from '../../game/src/data/relics.js';
 import * as P from '../critic-design/lib/policy.js';
@@ -61,6 +62,13 @@ const ROUTED = [];
 const LEDGER_TABLE = [];
 /** Keepsakes and cards handed over, by room kind. */
 const PURSE_TABLE = [];
+/** Which authored formations the fifty expeditions ever actually roll. */
+const REACHABLE_TABLE = [];
+/** Which TIER band the fights that happened were drawn from. */
+const TIER_TABLE = [];
+/** Does the tutorial region teach what its own chapter says it teaches? */
+const TEACH_TABLE = [];
+let TEACH_COVER = null;
 /** The first wing priced by DEPTH rather than as one average. */
 const DEPTH_TABLE = [];
 /** What the player brings to each boss door, against what the boss costs. */
@@ -333,6 +341,10 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
 
     if (run.combat) {
       const engine = run.combat;
+      /* WHICH BODIES THE PLAYER ACTUALLY MET. Captured BEFORE the fight, so a
+         summoned body is not counted as something the room presented — and by
+         `defId`, never `id`, which is the board slot (CONTRACTS / part-lookups). */
+      const met = engine.enemies.map(x => x.defId).filter(Boolean);
       const ok = await playCombat(engine, 200, run);
       if (!ok) break;
       log(`  fight ${engine.victory ? 'won' : 'lost'} hp=${run.courage}`);
@@ -342,7 +354,8 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
            the Foyer's 28 defeats split 16 at the boss on row 12 and 12 before
            it at row 3.9 — two findings with completely different fixes that
            the region row averages together into one number. */
-        row: node?.row ?? -1, rows: run.map?.rows ?? 0,
+        row: node?.row ?? -1, rows: run.map?.rows ?? 0, met,
+        encTier: run.combatMeta?.tier || null, encId: run.combatMeta?.encounter || null,
         hpBefore, hpAfter: run.courage, max: run.maxCourage,
         cost: Math.max(0, hpBefore - run.courage),
         turns: engine.turn, won: !!engine.victory,
@@ -1049,6 +1062,120 @@ async function main() {
       + 'the player still had when the fight STARTED.</pre>');
   }
 
+  /* HOW MUCH OF THE AUTHORED CONTENT A RUN CAN ACTUALLY REACH.
+     `tierFor` asks for 'early' on rows 0-1, 'standard' up to rows-2, and
+     'advanced' only on the last walkable row — which on a 13-row wing is ONE
+     row, and that row is 11% Scuffles because it is the boss's door row, given
+     over to the guaranteed Safe Room, a shop or a treasure. So an enemy that
+     lives only in `advanced` formations is not rare, it is unreachable.
+
+     This is a CONTENT question, not a balance one: a formation nobody rolls is
+     a formation nobody wrote. Counted across all 50 expeditions, shepherded
+     included, because reachability is about the sheet and not about skill. */
+  say('<h2>which authored formations a run ever rolls</h2>');
+  {
+    const ALL = results.flatMap(r => r.ledger || []);
+    const rolled = new Map();
+    for (const f of ALL) if (f.encId) rolled.set(f.encId, (rolled.get(f.encId) || 0) + 1);
+    let rrows = '<table><tr><th>region</th><th>tier</th><th>authored</th>'
+      + '<th>ever rolled</th><th>never rolled</th><th>the unreachable ones</th></tr>';
+    const TIERS = ['early', 'standard', 'advanced', 'elite', 'boss'];
+    for (const id of RUN_REGIONS) {
+      for (const tier of TIERS) {
+        const pool = ENCOUNTER_LIST.filter(e => e.region === id && e.tier === tier);
+        if (!pool.length) continue;
+        const hit = pool.filter(e => rolled.has(e.id));
+        const miss = pool.filter(e => !rolled.has(e.id));
+        if (!miss.length) continue;                       // only report holes
+        rrows += `<tr><td>${id}</td><td>${tier}</td><td>${pool.length}</td>`
+          + `<td>${hit.length}</td><td class="bar">${miss.length}</td>`
+          + `<td>${miss.map(e => e.id).join(' ')}</td></tr>`;
+        REACHABLE_TABLE.push({ region: id, tier, authored: pool.length, rolled: hit.length,
+                               never: miss.length, ids: miss.map(e => e.id) });
+      }
+    }
+    rrows += '</table>';
+    /* THE CONFOUND, AND THE CONTROL FOR IT. A wing late in the route is ENTERED
+       rarely, so its holes could be sampling rather than structure. This table
+       is immune to that: it asks, of the fights that DID happen, which tier
+       band they came from. `tierFor` gives 'advanced' only on row rows-2 — the
+       boss's DOOR row, which is 26% Safe Room and 11% Scuffle — so if the band
+       is structurally starved it shows up here whatever the reach was. */
+    const tierN = {};
+    for (const f of ALL) if (f.encTier) tierN[f.encTier] = (tierN[f.encTier] || 0) + 1;
+    const totF = Object.values(tierN).reduce((a, b) => a + b, 0) || 1;
+    let trs = '<table><tr><th>tier</th><th>fights</th><th>share of all fights</th>'
+      + '<th>formations authored</th></tr>';
+    for (const t of TIERS) {
+      const authored = ENCOUNTER_LIST.filter(e => RUN_REGIONS.includes(e.region) && e.tier === t).length;
+      trs += `<tr><td>${t}</td><td>${tierN[t] || 0}</td>`
+        + `<td class="bar">${(100 * (tierN[t] || 0) / totF).toFixed(1)}%</td>`
+        + `<td>${authored}</td></tr>`;
+      TIER_TABLE.push({ tier: t, fights: tierN[t] || 0,
+                        pct: +(100 * (tierN[t] || 0) / totF).toFixed(1), authored });
+    }
+    trs += '</table>';
+    say(trs + '<pre>Which tier the fights that DID happen were drawn from. Immune to '
+      + 'how often a wing was reached.</pre>');
+    const tot = ENCOUNTER_LIST.filter(e => RUN_REGIONS.includes(e.region)).length;
+    const seen = ENCOUNTER_LIST.filter(e => RUN_REGIONS.includes(e.region) && rolled.has(e.id)).length;
+    say(rrows + `<pre>${seen} of ${tot} authored formations were rolled at least once `
+      + `across all 50 expeditions. Rows with no hole are omitted.</pre>`);
+  }
+
+  /* DOES THE TUTORIAL REGION TEACH WHAT IT SAYS IT TEACHES?
+     `docs/design/regions/01-foyer.md` §33 is a CONTRACT, and an unusually
+     checkable one: "By the time they defeat The Butler, the player has been
+     taught, PRIMARILY THROUGH COMBAT RATHER THAN POP UP TUTORIALS" — ten
+     lessons, each carried by one of the wing's six ordinary enemies. The
+     chapter rejects pop-ups outright, which means the encounter ladder IS the
+     onboarding and the only way it can teach is by the player MEETING the
+     bodies. So: of the six, how many does a run actually see before the door?
+
+     Counted by `defId` on the built board, before the fight. */
+  const FOYER_TEACHERS = [
+    ['dust-bunny',        'some enemies become dangerous when ignored'],
+    ['coatrack-crawler',  'attacks can be weakened before they happen'],
+    ['lost-luggage',      'deck pollution exists'],
+    ['calling-bell',      'small support enemies are priority targets'],
+    ['red-carpet-runner', 'large attacks are telegraphed'],
+    ['door-greeter',      'a rule can alter sequencing, and breaking it can be right'],
+  ];
+  say('<h2>what the first wing actually teaches</h2>');
+  {
+    const byRun = new Map();
+    for (const r of results.filter(x => !x.shepherd)) {
+      for (const f of r.ledger || []) {
+        if (f.region !== 'foyer' || f.type === 'boss') continue;
+        if (!byRun.has(f.seed)) byRun.set(f.seed, new Set());
+        for (const d of f.met || []) byRun.get(f.seed).add(d);
+      }
+    }
+    const runs = [...byRun.values()];
+    const seen = (id) => runs.filter(s => s.has(id)).length;
+    let trows = '<table><tr><th>the enemy</th><th>the lesson it carries</th>'
+      + '<th>runs that met it</th><th>share</th></tr>';
+    for (const [id, lesson] of FOYER_TEACHERS) {
+      const n = seen(id);
+      const pct = runs.length ? (100 * n / runs.length) : 0;
+      trows += `<tr><td>${id}</td><td>${lesson}</td>`
+        + `<td>${n} / ${runs.length}</td>`
+        + `<td class="bar">${pct.toFixed(0)}%</td></tr>`;
+      TEACH_TABLE.push({ id, lesson, met: n, of: runs.length, pct: +pct.toFixed(0) });
+    }
+    trows += '</table>';
+    const cover = runs.map(s => FOYER_TEACHERS.filter(([id]) => s.has(id)).length);
+    const hist = {};
+    for (const c of cover) hist[c] = (hist[c] || 0) + 1;
+    TEACH_COVER = { hist, mean: cover.length ? cover.reduce((a, b) => a + b, 0) / cover.length : 0,
+                    runs: runs.length };
+    let crows = '<table><tr><th>of the six, met</th><th>runs</th></tr>';
+    for (let k = 0; k <= 6; k++) if (hist[k]) crows += `<tr><td>${k}</td><td>${hist[k]}</td></tr>`;
+    crows += '</table>';
+    say(trows + '<pre>a run meets ' + TEACH_COVER.mean.toFixed(1)
+      + ' of the six on average, before the Butler</pre>' + crows);
+  }
+
   /* WHAT THE PLAYER BRINGS TO THE DOOR.
      `hpBefore` has been recorded for every fight since this ledger existed and
      never printed, and it is the whole difference between "the boss costs too
@@ -1249,6 +1376,8 @@ autosaves ${saveCount}</pre>`);
     endsDetail: ENDS_DETAIL, depthFrac: DEPTH_FRAC, visited: VISITED,
     reach: REACH, routed: ROUTED, victories: VICTORIES, draws: DRAWS, ledger: LEDGER_TABLE, purse: PURSE_TABLE,
     depth: DEPTH_TABLE, arrival: ARRIVAL_TABLE,
+    teach: TEACH_TABLE, teachCover: TEACH_COVER, reachable: REACHABLE_TABLE,
+    tiers: TIER_TABLE,
     determinism: detOk, resume: resumeOk, storage: storeOk,
     combatResume: combatResume, combatResumeTried: combatResumeTried, replayed,
   };

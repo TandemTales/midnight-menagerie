@@ -148,6 +148,44 @@ which only two multiplayer cards fire, while the ordinary `digUp()` every solo
 player uses fires `digUp`. `hook-names` balanced because both spellings existed
 somewhere.
 
+━━ AND THE ADVANCED POOL WAS ONE ROW DEEP ━━
+
+**102 AUTHORED FORMATIONS — THE LARGEST TIER IN THE GAME — WERE DRAWN FROM 1.7%
+OF THE TIME.** `tierFor` asked for `advanced` only on row `rows - 2`, which is
+`lastWalk`, the boss's DOOR row — 26% Safe Room, 13% shop, 13% treasure, **11%
+Scuffle**, and `pickNode` scores a deep Safe Room at 400 so the router walks past
+what is left. One row, one room in nine, and the bot takes the rest.
+
+    tier         before          after `rows - 5`
+    early        194  33.9%      189  34.3%     69 authored
+    standard     248  43.4%      150  27.2%     70
+    advanced      10   1.7%       96  17.4%    102   <-- ten fights to ninety-six
+    elite         28   4.9%       28   5.1%     52
+    boss          92  16.1%       88  16.0%     17
+
+It cost NOTHING: Foyer defeats 28 → 28, cost per fight 24.0% → 24.5%, arrival
+85% → 84%, boss losses 15 → 14. The back half prices at 0.0–0.6% of pool per
+fight, so a harder formation there troubles nobody. The deep content was not
+withheld for balance, it was withheld by an off-by-three.
+
+It also had a rule dead underneath it. `REGION_RULES.foyer` carries
+`minScuffle: { 'red-carpet-runner': 2 }` — §10 of the chapter, implemented
+correctly and consulted by `rollEncounter` — which could never bind, because the
+tier gate was strictly more restrictive everywhere. A floor turned into an
+unreachable ceiling.
+
+**HOW IT WAS FOUND, which is the reusable part.** `docs/design/regions/01-foyer.md`
+§33 says the player is taught ten lessons "PRIMARILY THROUGH COMBAT RATHER THAN
+POP UP TUTORIALS" — so the encounter ladder IS the onboarding, and a lesson only
+lands if the player MEETS the body carrying it. That is checkable, and the answer
+was that **the Red Carpet Runner was never met once in forty expeditions.**
+
+Still open, and NOT taken: a run meets **3.5 of the six** teachers after the fix
+(Runner 15%, Bell 40%). A run fights ~4.7 times in the Foyer against six enemies
+in fourteen formations, so random rolling cannot cover it — meeting the contract
+needs the first wing's roller to COVER rather than sample. That is a design call.
+`tests/run/run.py` prints the teaching table every run, so it is watched.
+
 ━━ WHAT I WOULD DO FIRST ━━
 
 **THE FOYER QUESTION IS ANSWERED, AND THE ANSWER WAS NEITHER OPTION.** The
@@ -289,7 +327,9 @@ green through every bug above. It cannot see them.
     drafting, 4 minutes. Its four tables are the only thing in the project that
     can price the ladder rather than describe it: cost per fight BY REGION, what
     each ROOM KIND hands over, the first wing BY DEPTH, and what the player
-    brings to each BOSS DOOR. The last two are new, and the depth one exists
+    brings to each BOSS DOOR, which TIER the fights came from, which authored
+    formations a run NEVER rolls, and what the first wing actually TEACHES.
+    The last five are new, and the depth one exists
     because a region average hides a wing's own shape — the Foyer's 28 defeats
     are 16 at row 12 and 12 before it, and one number cannot hold both.
     **`hpBefore` was recorded for every fight from the day the ledger existed

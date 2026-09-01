@@ -123,6 +123,49 @@ async def main(a):
         print("  FLAT '%% of pool' down the column means the CONTENT is overpriced;")
         print("  falling means the OPENING DECK is. 'deck' beside it is the control.")
 
+    tie = res.get("tiers") or []
+    if tie:
+        print("")
+        print("which TIER the fights that happened were drawn from  (all 50)")
+        print("  immune to how often a wing was reached, so a starved band here is")
+        print("  structural. `tierFor` asks for 'advanced' only on the boss's door")
+        print("  row, which is 26% Safe Room and 11% Scuffle.")
+        print("  %-10s %-9s %-9s %s" % ("tier", "fights", "share", "formations authored"))
+        for r in tie:
+            print("  %-10s %-9d %-9s %d"
+                  % (r["tier"], r["fights"], "%.1f%%" % r["pct"], r["authored"]))
+
+    rch = res.get("reachable") or []
+    if rch:
+        print("")
+        print("authored formations a run NEVER rolls  (all 50 expeditions)")
+        print("  %-22s %-10s %-10s %-8s %s"
+              % ("region", "tier", "authored", "never", "the unreachable ones"))
+        for r in rch:
+            print("  %-22s %-10s %-10d %-8d %s"
+                  % (r["region"], r["tier"], r["authored"], r["never"],
+                     " ".join(r["ids"])[:70]))
+        print("  Rows with no hole are omitted. A formation nobody rolls is")
+        print("  content nobody wrote: check the tier band it sits in.")
+
+    tea = res.get("teach") or []
+    if tea:
+        print("")
+        print("what the first wing actually teaches  (unaided runs only)")
+        print("  docs/design/regions/01-foyer.md 33 rejects pop-up tutorials, so the")
+        print("  encounter ladder IS the onboarding and a lesson only lands if the")
+        print("  player MEETS the body that carries it.")
+        print("  %-20s %-46s %-10s %s"
+              % ("the enemy", "the lesson it carries", "runs met", "share"))
+        for r in tea:
+            print("  %-20s %-46s %-10s %d%%"
+                  % (r["id"], r["lesson"][:46], "%d / %d" % (r["met"], r["of"]), r["pct"]))
+        cov = res.get("teachCover") or {}
+        if cov:
+            print("  a run meets %.1f of the six before the Butler" % cov.get("mean", 0))
+            h = cov.get("hist") or {}
+            print("  " + "  ".join("%s met: %d runs" % (k, h[k]) for k in sorted(h, key=int)))
+
     arr = res.get("arrival") or []
     if arr:
         print("")

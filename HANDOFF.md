@@ -207,6 +207,23 @@ floor from row 4 to row 3 leaves Foyer defeats at exactly 28, converting
 corridor deaths into boss deaths one for one. Full working in
 `docs/notes/2026-08-31-the-foyer-is-attrition-not-the-boss.md`.
 
+**AND THE ADVANCED POOL WAS ONE ROW DEEP.** Found by asking whether the tutorial
+region teaches what §33 of its own chapter says it teaches — ten lessons, six
+enemies, "primarily through combat rather than pop up tutorials", so the ladder
+IS the onboarding and a lesson only lands if the player meets the body. **The Red
+Carpet Runner was never met once in forty expeditions.** The cause: `tierFor`
+asked for `advanced` only on row `rows - 2`, the boss's DOOR row, which is 26%
+Safe Room and 11% Scuffle and which `pickNode` scores at 400 to walk past. So
+**102 authored formations — the largest tier in the game — were drawn from 1.7%
+of the time**, and `minScuffle: { 'red-carpet-runner': 2 }` (§10, implemented
+correctly) could never bind because the tier gate was stricter everywhere.
+`advanced` is now the last four walkable rows, per the chapter's own "these
+appear deeper in the region": 10 fights → 96, every Foyer formation now rolls,
+and it cost nothing — defeats 28 → 28, cost 24.0% → 24.5%, boss losses 15 → 14.
+Still open and not taken: a run meets 3.5 of the six teachers, and covering six
+in ~4.7 fights needs a roller that COVERS rather than samples. See
+`docs/notes/2026-08-31-the-advanced-pool-was-one-row-deep.md`.
+
 Two things came off it while it was measured. The Curiosity fix cost about
 **4.4 Courage of arrival** at the Butler's door, measured by A/B against
 `24cf02c^` — and it did NOT move the number it was named for: a Curiosity still

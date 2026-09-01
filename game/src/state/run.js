@@ -1255,7 +1255,7 @@ export class Run {
     if (type === NodeType.BIG_SCARE) return 'elite';
     const rows = this.map?.rows ?? 6;
     if (node.row < 2) return 'early';
-    if (node.row < rows - 2) return 'standard';
+    if (node.row < rows - 5) return 'standard';
     return 'advanced';
   }
 
