@@ -80,13 +80,53 @@ import {
  * exists to make them harsher; this is that flag doing more of its job, not a
  * new mechanic. Reprimand TEXT moves with every value, because a rule that
  * misquotes its own consequence is the one thing this fight cannot afford.
+ *
+ * ── BALANCE 2026-09-01: Courage 149 -> 134 ─────────────────────────────────
+ *
+ * `BASE_HP` is pinned to the new pool again, for the reason directly above, so
+ * PHASE2_AT stays an absolute 92 and the whole cut comes out of the preamble:
+ * 57 Courage of it becomes 42. Phase two goes from 62% of him to 69%.
+ *
+ * Asked for because the cost ledger priced the Foyer for the first time: it
+ * ends 28 of 50 expeditions, the winners and losers at his door hold the SAME
+ * deck (14.2 cards against 14.6) and different Courage (95% of pool against
+ * 76%), and margin — arrival minus price — predicts the boss loss rate across
+ * every wing. Arrival cannot exceed 100%, so at 65% of the pool his price
+ * capped the Foyer's margin at +36pp however well the wing is played.
+ *
+ * TWO WARNINGS IN THIS FILE PROVED THEMSELVES AGAIN.
+ *
+ * `sweep.py --scales` IS NOT THIS CHANGE. `scaleHp` multiplies the actor's
+ * maxHp at fight time and leaves BASE_HP alone, so `phaseAt` drags the
+ * threshold down with it: a x0.9 row measured a Butler whose DANGEROUS half was
+ * also cut a tenth, and reported 77.1%. The real edit buys a quarter of that.
+ * Never quote a --scales row as a forecast of a pool edit on a phased boss.
+ *
+ * And "the pool alone is not enough" holds at a second pool size. A true A/B,
+ * n=96 over 22 loadouts, both on the current tier bands:
+ *
+ *     149   58.3% win   11.41 turns   cost 50.9   winners keep 33.4
+ *     134   62.5% win   10.09 turns   cost 49.0   winners keep 30.8
+ *
+ * +4.2 points and 1.3 turns — and winners come out 2.6 Courage POORER, because
+ * a cut that can only come from phase one makes him SHORTER WITHOUT MAKING HIM
+ * SOFTER. Across whole expeditions it is a wash: Foyer defeats 28 -> 31,
+ * victories 6 -> 5, at n=50 where the standard deviation is about 3.5.
+ *
+ * THE ROUTER IS NOT THE CAUSE, which was the open question against CONTRACTS
+ * 47. Control run with `pickNode`'s shallow Safe Room raised 40 -> 120 so it
+ * outranks Treasure: arrival at his door moved 84% -> 85%. The wing's attrition
+ * is real and is not a bot artifact.
+ *
+ * So the remaining lever is phase two's DAMAGE, not the pool — the same
+ * sentence the 2026-08-29 pass ended on, now measured true at 134 as well.
  */
 const PHASE2_AT = 92;
 /** The pool the threshold above was authored against. See `phaseAt`.
  *  Pinned to the LIVE pool on purpose: `phaseAt` scales the threshold by
  *  `max / soloMax`, so leaving this at the old 165 would have quietly pulled
  *  phase two down to 83 and undone the point of the change. */
-const BASE_HP = 149;
+const BASE_HP = 134;
 
 // ── The four House Rules ─────────────────────────────────────────────────────
 /**
@@ -248,7 +288,7 @@ export const butler = {
   region: 'foyer',
   tier: 'boss',
   role: 'boss',
-  hp: [149, 149],
+  hp: [134, 134],
   silhouette: 'butler',
   palette: ['#14161d', '#2c3140', '#e9e4d4'],
   shape: { body: 'tall-thin', limbs: 2, eyes: 2 },

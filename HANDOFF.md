@@ -200,8 +200,21 @@ wing monotonically, and since arrival cannot exceed 100% while the Butler costs
 64% of the pool, **the Foyer's margin has a ceiling of +36pp however well the
 wing is played.** The Butler itself has not drifted: 62.5% at 22 loadouts
 against a committed 68.8% taken at EIGHT, which cannot resolve six points.
-What remains is a design call on the Butler's price, costed — `x0.9` buys
-62.5% → 77.1%. Ruled out and not to be re-run: the map is not rest-starved (a
+What remains is a design call on the Butler's price. **Taken 2026-09-01: the
+pool went 149 → 134, and it is a wash.** The `x0.9` sweep row that promised
+62.5% → 77.1% was an artefact — `scaleHp` multiplies maxHp at fight time and
+leaves `BASE_HP` alone, so `phaseAt` cut the DANGEROUS half a tenth as well. The
+real edit pins `BASE_HP`, keeping PHASE2_AT at an absolute 92 so the whole cut
+comes out of the preamble. True A/B at n=96 over 22 loadouts, both on current
+tier bands: **149 → 58.3% win / 11.41 turns / winners keep 33.4; 134 → 62.5% /
+10.09 / 30.8.** +4.2 points, and winners come out 2.6 Courage POORER, because a
+cut that can only come from phase one makes him shorter without making him
+softer. Across whole expeditions, a wash (Foyer defeats 28 → 31 at n=50, sd
+~3.5). **Never quote a `--scales` row as a forecast of a pool edit on a phased
+boss.** And the router question is CLOSED: raising `pickNode`'s shallow Safe
+Room 40 → 120 moved arrival 84% → 85%, so the attrition is real, not a bot
+artefact, and CONTRACTS 47 does not apply. The remaining lever is phase two's
+DAMAGE, not the pool. Ruled out and not to be re-run: the map is not rest-starved (a
 Safe Room sits behind 1.98 fights, over 5100 sheets), and moving the Safe Room
 floor from row 4 to row 3 leaves Foyer defeats at exactly 28, converting
 corridor deaths into boss deaths one for one. Full working in

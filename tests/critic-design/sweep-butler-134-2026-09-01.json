@@ -1,0 +1,34 @@
+{
+ "config": {
+  "TIER": "boss",
+  "ENC": null,
+  "REGION": "foyer",
+  "N": 96,
+  "GEN": 24,
+  "BOTS": [
+   "competent"
+  ],
+  "POL": "balanced",
+  "SCALES": [
+   1
+  ],
+  "HAUNT": 0,
+  "HEAL": 0
+ },
+ "loadouts": 22,
+ "table": [
+  {
+   "bot": "competent",
+   "hpScale": 1,
+   "win": 62.5,
+   "turnsMean": 10.09,
+   "turnsMed": 10,
+   "costMean": 48.99,
+   "hpAfterWinMean": 30.77,
+   "courageAtDoor": 60.25,
+   "timeouts": 0,
+   "n": 96
+  }
+ ],
+ "errors": []
+}

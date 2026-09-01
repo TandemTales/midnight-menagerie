@@ -215,9 +215,36 @@ on EIGHT loadouts, which cannot resolve six points. The replacement is
 `sweep-butler-2026-08-31-powered.json`, with the what-if beside it: `x0.9` on the
 Butler's pool buys 62.5% → 77.1%, `x0.8` buys 81.3%.
 
-So the remaining move is a DESIGN call, not a repair: is the first wing meant to
-end half the runs that reach its door? Do not take it by feel — CONTRACTS 47 —
-but it can now be taken against numbers.
+**AND THE POOL WAS CUT, 2026-09-01: 149 → 134. IT IS A WASH, AND THE WHY IS THE
+REUSABLE PART.**
+
+`sweep.py --scales` IS NOT A POOL EDIT. `scaleHp` multiplies the actor's maxHp
+at fight time and leaves `BASE_HP` alone, so `phaseAt` drags the phase-two
+threshold down with it — the `x0.9` row above measured a Butler whose DANGEROUS
+half was ALSO cut a tenth. The real edit pins `BASE_HP` (the file says why, at
+length) so PHASE2_AT stays an absolute 92 and the whole cut comes out of the
+preamble. **Never quote a `--scales` row as a forecast of a pool edit on a
+phased boss.** A true A/B, n=96 over 22 loadouts, both on current tier bands:
+
+    149   58.3% win   11.41 turns   cost 50.9   winners keep 33.4
+    134   62.5% win   10.09 turns   cost 49.0   winners keep 30.8
+
++4.2 points, not the +14.6 the `--scales` row promised — and winners come out
+**2.6 Courage POORER**, because a cut that can only come from phase one makes
+him shorter without making him softer (phase two goes 62% → 69% of the pool).
+Across whole expeditions: Foyer defeats 28 → 31, victories 6 → 5, at n=50 where
+the sd is ~3.5. The boss instrument and the run instrument disagree and neither
+is decisive; the change is kept because it was asked for and it is not harmful.
+
+**THE ROUTER IS NOT THE CAUSE — that question is CLOSED.** Control run with
+`pickNode`'s shallow Safe Room raised 40 → 120 so it outranks Treasure: arrival
+at the Butler's door moved **84% → 85%**. The wing's attrition is real and is
+not a bot artifact, so CONTRACTS 47 does not apply here.
+
+**So the remaining lever is phase two's DAMAGE, not the pool** — which is the
+sentence the 2026-08-29 pass ended on, now measured true at 134 as well as 149.
+That is a DESIGN call: is the first wing meant to end half the runs that reach
+its door? Do not take it by feel, but it can be taken against numbers.
 
 **WHAT IS ALREADY RULED OUT, so it is not re-run:** the map is not rest-starved
 (a Safe Room is reachable behind 1.98 fights, measured over 5100 sheets), and
