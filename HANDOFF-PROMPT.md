@@ -339,6 +339,29 @@ Full working, with the ordinary and elite tiers measured the same way, in
 | the Topiary Beast's Leafy Shell — §7's "its next attack deals 4 additional damage", plus a Haunt-8 `shellBonus` for a consumer that did not exist | always | `tools/deadflags.py` |
 | the Oven Maw's Preheat — §12's "the next baked enemy emerges one turn earlier", discounting a bake that had already finished | always | `tools/deadflags.py` |
 
+**AND TWO MORE, FOUND AND DELIBERATELY NOT FIXED — the Bedframe Beast.**
+`docs/design/regions/03-sleeping-quarters.md` §21: "While Underneath: **Attack
+Tricks cannot target the Beast.**" The def has no `isTargetable` at all, so
+Underneath hides nothing. §23: 18 indirect damage while Underneath drags it out
+— it reads `c.self.indirectDamageThisTurn`, a field that appears EXACTLY ONCE in
+this repository (that read) and is assigned nowhere, so `|| 0` makes it 0 and
+the trigger can never fire. The consequence is fully coded; only the trigger is
+dead.
+
+They are ONE defect: with the Beast targetable, "indirect damage" is not a
+distinction the engine can make. Fix §21 and §23 is a one-word change, because
+an Attack Trick then cannot be aimed at it and every point reaching it there is
+indirect by construction.
+
+**Measured and reverted.** `isTargetable` is a supported seam with three
+precedents, so both were wired and run. The Beast is SOLO and its cycle is
+covers → retreat → scratching → footsteps → BOO, so §21 makes it untargetable
+THREE TURNS IN FIVE against a 297-Courage pool: **past-24 went 13 → 15 and
+past-30 went 9 → 11.** It moves the open defect the wrong way, exactly as
+HANDOFF's Wardrobe note warns about wiring `isTargetable`. The fight is
+genuinely missing its signature mechanic and it cannot ship without the pool and
+pacing work that comes with it — the same design call the over-30 gate waits on.
+
 **`tools/deadflags.py` is the reusable half.** It sweeps `data/bosses/` and
 `data/enemies/` for `mem` keys written and never read ANYWHERE in `game/src` —
 per-file was wrong and this codebase says so, since `heart.js` documents
