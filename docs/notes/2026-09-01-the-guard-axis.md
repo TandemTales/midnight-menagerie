@@ -405,3 +405,33 @@ The ladder's shape moved in BOTH directions, which is the argument for
 re-measuring the rest rather than assuming the fix only helps: pumpkin-grounds
 17% -> 58% win and secret-passages 17% -> 42%, against sleeping-quarters
 75% -> 58% and study-library 8% -> 0%.
+
+## The blast radius scales with pool size, which is the diagnosis confirming itself
+
+Three tiers re-measured at the same config and seed. The degeneracy needs
+`turnsLeft = (pool.hp + block*0.6) / dps` to SATURATE at its 28 cap, so the
+effect should scale with the Courage pool and vanish on small ones. It does:
+
+    tier        mean pool   win            turns
+    standard    small       99% -> 99%     6.6 -> 6.4    (-0.2)
+    elite       205         79% -> 83%    14.8 -> 14.2   (-0.6)
+    boss        large       26% -> 30%    25.7 -> 23.9   (-1.8)
+
+That gradient was predicted by the mechanism before it was measured, and none
+of the three runs was fitted to it. It is the strongest evidence in this file
+that the cause is the right one — stronger than the fix working, which a wrong
+cause can also produce.
+
+**So the caveat is bounded, not global.** "Every balance number was measured by
+a bot that could not see damage" is true but misleading: the standard ladder is
+untouched, elite moves a few points, and only boss measurements move enough to
+change a verdict. Re-measure boss and elite baselines before tuning against
+them; the ordinary-content tables stand.
+
+### One outlier survives the fix
+
+`hedge-maze` elite: **19% win at 108% of the Courage pool** in cost, up from 12%
+at 110%. It is the only tier row in the game that costs more than the pool it
+is fighting, and the bot fix barely touched it. That is a content finding, not
+a harness one, and it is the first thing in this investigation that has survived
+every re-measurement.
