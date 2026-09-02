@@ -616,7 +616,7 @@ export const grandCoatcheck = {
   // turns, which is a long Scuffle, not a Big Scare; StS elites run 8-12. 122
   // overshot hard (43% for a competent player, and the naive bot within ten
   // points of it, which means the fight had stopped rewarding play at all).
-  hp: [104, 104],
+  hp: [96, 96],
   silhouette: 'coat-rack-mass',
   palette: ['#2f2a3a', '#6a5f7d', '#c4b48c'],
   shape: { body: 'sprawling', limbs: 8, eyes: 3 },

@@ -21,15 +21,22 @@ and 30 Courage, scaled by `maxHp / 126` — its authored Courage, hardcoded in i
 own source. At 150 those tears drifted to 107/71/36 and no test noticed, because
 the test knocked it to a literal 100 and was calibrated against the drift.
 
+A GATE THAT SKIPS IS WORSE THAN NO GATE. The first version of this file keyed on
+the raw `name:` string and silently skipped SIXTEEN authored values — chapters
+write "Big Scare: The Grand Coatcheck", the implementation writes
+`id: 'grand-coatcheck'` / `name: 'The Grand Coatcheck'` — then reported "0
+failures" with the Coatcheck sitting 8 Courage over its chapter. `norm()` exists
+because of that, and the skip count is printed on every run so the same hole
+cannot open quietly a second time.
+
 This gate is text-only and needs no browser, so it is cheap enough to run every
 time. It reads the DESIGN CHAPTER as the authority and the implementation as the
 thing under test — the same direction as tests/teaching, and the opposite of
 fitting the doc to the code afterwards.
 
 DIVERGENCE IS ALLOWED, but it has to be declared here with its reason. Bosses
-are tuned against measurement and their chapters are opening bids, not ship
-values; `butler.js` says so in its own source. An undeclared divergence is the
-defect this gate exists to catch.
+are tuned against measurement and their chapters are opening bids; `butler.js`
+says so in its own source. An undeclared divergence is the defect.
 """
 import io, os, re, sys, glob
 
@@ -41,29 +48,63 @@ except Exception:
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # ── Declared divergences ─────────────────────────────────────────────────────
-# name -> (implemented, reason). Tuned against measurement; the chapter number is
-# the authored opening bid. Keep the reason specific enough to re-litigate.
+# chapter name -> (implemented, reason). Keep the reason specific enough to
+# re-litigate, and prefer a measurement to an adjective.
 ALLOWED = {
-    "House Bell": (95, "Big Scare tuned down in foyer balance passes; chapter 105 is the opening bid."),
-    "Butler":     (134, "butler.js records the chapter baseline as measured-and-rejected: it "
-                        "'does not hold the win rate'. Ships at 134 after the Courage sweeps."),
-    "Governess":  (175, "Chapter 280 covers the pair; she ships at 175 with the Favorite Doll at 50, "
-                        "and measures at 63% of the player's pool - cheaper than the Butler."),
+    "House Bell": (95, "Big Scare tuned down in the foyer balance passes; chapter 105 is the opening bid."),
+    "Butler": (86, "Chapter 250 is the opening bid and butler.js records it as measured-and-rejected. "
+                    "Shipped 134 until 2026-09-02, when the Foyer was losing 22 of 38 boss fights at a "
+                    "15pp margin - the worst in the game. 86 puts the price at 47% of the pool and the "
+                    "margin at 28pp: 15 of 38 lost, Foyer deaths 28 -> 19, run victories 5 -> 10. See "
+                    "docs/notes/2026-08-31-the-foyer-is-attrition-not-the-boss.md for why margin is the "
+                    "number that predicts the loss rate."),
+    "Governess": (175, "Chapter 280 covers the pair; she ships at 175 with the Favorite Doll at 50, and "
+                       "measures at 63% of the player's pool - cheaper than the Butler."),
 }
 
 
+def norm(s):
+    """Match key: case, punctuation and a leading "The"/"Final Boss:" are noise."""
+    s = re.sub(r"^final boss:?\s+", "", s.strip().lower())
+    s = re.sub(r"^the\s+", "", s)
+    return re.sub(r"[^a-z0-9]", "", s)
+
+
 def impl_hp():
-    """name -> set of implemented starting Courage values."""
+    """normalised name AND id -> set of implemented starting Courage values."""
     out = {}
     files = glob.glob(os.path.join(ROOT, "game/src/data/enemies/*.js")) \
         + glob.glob(os.path.join(ROOT, "game/src/data/bosses/*.js"))
     for f in files:
         s = io.open(f, encoding="utf-8").read()
-        # `name: 'X'` followed, within a short window, by `hp: [N, N]`. The window
-        # is bounded so a name never captures the NEXT enemy's Courage — the trap
-        # tests/party-tells hit with a +/-14 line scan.
-        for m in re.finditer(r"name:\s*'([^']+)',(?:[^\n]*\n){0,12}?\s*hp:\s*\[\s*(\d+)\s*,", s):
-            out.setdefault(m.group(1), set()).add(int(m.group(2)))
+        # id + name together, then `hp: [N, N]` within a bounded window. The
+        # window is bounded so one enemy never captures the NEXT one's Courage —
+        # the trap tests/party-tells hit with a +/-14 line scan. Both keys are
+        # registered because chapters use the display name and the code uses ids.
+        # Bosses declare `hp: [SOLO_MAX, SOLO_MAX]`, so a numbers-only regex sees
+        # NO boss Courage at all — which is the content balance depends on most,
+        # and the first version of this gate was blind to every one of them.
+        # Resolve file-local `const NAME = 123` and accept a literal or an id.
+        consts = {m.group(1): int(m.group(2)) for m in
+                  re.finditer(r"const\s+([A-Za-z_$][\w$]*)\s*=\s*(\d+)\s*;", s)}
+
+        def val(tok):
+            return int(tok) if tok.isdigit() else consts.get(tok)
+
+        num = r"(\d+|[A-Za-z_$][\w$]*)"
+        pat = (r"id:\s*'([^']+)',\s*\n\s*name:\s*'([^']+)',"
+               r"(?:[^\n]*\n){0,14}?\s*hp:\s*\[\s*" + num + r"\s*,")
+        for m in re.finditer(pat, s):
+            v = val(m.group(3))
+            if v is None:
+                continue
+            for k in (m.group(1), m.group(2)):
+                out.setdefault(norm(k), set()).add(v)
+        # Fallback for defs that declare `name` without an adjacent `id`.
+        for m in re.finditer(r"name:\s*'([^']+)',(?:[^\n]*\n){0,12}?\s*hp:\s*\[\s*" + num + r"\s*,", s):
+            v = val(m.group(2))
+            if v is not None:
+                out.setdefault(norm(m.group(1)), set()).add(v)
     return out
 
 
@@ -73,7 +114,7 @@ def doc_courage():
     for d in sorted(glob.glob(os.path.join(ROOT, "docs/design/regions/*.md"))):
         cur = None
         for line in io.open(d, encoding="utf-8").read().split("\n"):
-            h = re.match(r"#\s*\d+\.\s*(?:Big Scare:\s*)?(?:The\s+)?(.+?)\s*$", line)
+            h = re.match(r"#\s*\d+\.\s*(?:Big Scare:\s*)?(.+?)\s*$", line)
             if h:
                 cur = h.group(1).strip()
                 continue
@@ -87,32 +128,39 @@ def doc_courage():
 def main():
     impl = impl_hp()
     rows = doc_courage()
-    checked = matched = skipped = 0
-    fails, allowed_hits = [], []
+    checked = matched = 0
+    fails, allowed_hits, skipped = [], [], []
 
     for chapter, name, want in rows:
-        got = impl.get(name) or impl.get("The " + name)
+        got = impl.get(norm(name))
         if not got:
-            skipped += 1                      # not an enemy with its own hp (party, region prose)
+            skipped.append((chapter, name, want))
             continue
         checked += 1
         if want in got:
             matched += 1
             continue
-        if name in ALLOWED and ALLOWED[name][0] in got:
-            allowed_hits.append((chapter, name, want, ALLOWED[name][0]))
+        key = re.sub(r"^(?:The|Final Boss:?)\s+", "", name).strip()
+        if key in ALLOWED and ALLOWED[key][0] in got:
+            allowed_hits.append((chapter, key, want, ALLOWED[key][0]))
             continue
         fails.append((chapter, name, want, sorted(got)))
 
     print("design chapters vs implementation — enemy Courage")
     print("  %d authored values, %d have an implementation, %d matched exactly"
           % (len(rows), checked, matched))
-    print("  %d declared divergences, %d headings with no hp of their own"
-          % (len(allowed_hits), skipped))
+    print("  %d declared divergences, %d unmatched headings"
+          % (len(allowed_hits), len(skipped)))
     if allowed_hits:
         print("\ndeclared divergences (in ALLOWED, with a reason):")
         for chapter, name, want, got in allowed_hits:
-            print("  %-22s chapter %-5d ships %-5d  %s" % (name, want, got, ALLOWED[name][1]))
+            print("  %-20s chapter %-5d ships %-5d  %s" % (name, want, got, ALLOWED[name][1]))
+    if skipped:
+        # Printed, never silent: an unmatched heading is a hole in the gate.
+        print("\nunmatched headings (no enemy of that name carries an hp) —")
+        print("these are NOT checked, so keep the list short and boring:")
+        for chapter, name, want in skipped:
+            print("  %-26s %-28s doc %d" % (chapter, name, want))
     if fails:
         print("\n--- failures ---")
         for chapter, name, want, got in fails:

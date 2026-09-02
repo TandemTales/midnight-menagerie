@@ -288,7 +288,7 @@ export const butler = {
   region: 'foyer',
   tier: 'boss',
   role: 'boss',
-  hp: [134, 134],
+  hp: [86, 86],
   silhouette: 'butler',
   palette: ['#14161d', '#2c3140', '#e9e4d4'],
   shape: { body: 'tall-thin', limbs: 2, eyes: 2 },
