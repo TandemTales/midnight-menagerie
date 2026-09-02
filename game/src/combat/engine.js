@@ -252,6 +252,9 @@ export class CombatEngine {
      * fight; 0 everywhere else, which is the whole answer in solo.
      */
     this.localSeat = cfg.localSeat | 0;
+    /** Depth multiplier on ENEMY attack damage; 1 unless run.js passes one.
+        See computeDamage() step 1b for why damage and not Courage. */
+    this.enemyDamageScale = Number(cfg.enemyDamageScale) > 0 ? Number(cfg.enemyDamageScale) : 1;
     this.choices = new ChoiceBroker(this);
     this._trackerInstaller = cfg.trackerInstaller || null;
 

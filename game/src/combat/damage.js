@@ -59,6 +59,29 @@ export function computeDamage(engine, o) {
   const trace = { base };
 
   if (!o.skipModifiers) {
+    /* 1b. DEPTH. Enemy attack damage is FLAT across the mansion — measured
+       2026-09-02, mean per-move damage 10.9 in the Foyer and 9.0 in the Heart,
+       slope -0.03 per region step, so the finale hits SOFTER than the tutorial —
+       while the player arrives at it with three times the deck and thirty of the
+       game's fifty-eight Keepsakes. The result is a last third of the game that
+       costs 0-3% of the player's Courage pool and a final boss that has never
+       been lost.
+
+       Scaling enemy COURAGE was tried first and failed: it lengthened fights
+       without threatening anybody, because a player who blocks everything is
+       missed regardless of how much health the thing missing them has. Damage is
+       the axis that reaches them. See
+       docs/notes/2026-09-01-the-mansion-is-not-a-ladder.md.
+
+       `defId` is the enemy marker — players do not carry one. Applied before
+       Strength so the curve reads as the enemy being bigger, not buffed, and it
+       flows through `previewDamageValue`, so the INTENT the player reads is the
+       number they will actually take. 1 unless state/run.js passes a depth. */
+    if (isAttack && attacker && attacker.defId && engine.enemyDamageScale > 1) {
+      v = Math.max(1, Math.round(v * engine.enemyDamageScale));
+    }
+    trace.afterDepth = v;
+
     // 2. attacker Strength (additive, attacks only)
     if (isAttack && attacker) v = v + (attacker.status('strength') || 0);
     trace.afterStrength = v;

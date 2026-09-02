@@ -180,6 +180,32 @@ export const REGION_ORDER = [
   'pumpkin-grounds', 'heart',
 ];
 
+/**
+ * THE LADDER, and the mansion did not have one.
+ *
+ * Measured 2026-09-02 across all seventeen chapters: enemy Courage rises 9% end
+ * to end (slope +0.21 a region) and enemy DAMAGE does not rise at all (slope
+ * -0.03 a region; mean per-move damage 10.9 in the Foyer and 9.0 in the Heart,
+ * so the finale hits softer than the tutorial). Against that, the player
+ * arrives at the Heart with three times the deck and thirty of the game's
+ * fifty-eight Keepsakes. The last third of the game cost 0-3% of their Courage
+ * pool and the final boss had never been lost.
+ *
+ * Scaling Courage by depth was built and measured first and FAILED - it made
+ * fights longer without making them dangerous, because a player who blocks
+ * everything is missed no matter how much health the thing missing them has.
+ * Damage is the axis that reaches them.
+ *
+ * One constant, so it can be argued with: region 17 hits `scaleAtHeart` times
+ * as hard as region 1, linearly in ladder position. Returns 1 for anything not
+ * on the ladder, so a test fixture or an unknown region is never scaled.
+ */
+export function depthDamageScale(region, order = REGION_ORDER, scaleAtHeart = 2.0) {
+  const i = Array.isArray(order) ? order.indexOf(region) : -1;
+  if (i <= 0 || order.length < 2) return 1;
+  return 1 + (scaleAtHeart - 1) * (i / (order.length - 1));
+}
+
 export const COMPANIONS = [
   { slug: 'marmalade',  name: 'Marmalade',      title: 'the Ghost Cat',            region: 'foyer' },
   { slug: 'wisp',       name: 'Wisp',           title: "the Baby Will-o'-Wisp",    region: 'lampworks' },
