@@ -208,6 +208,21 @@ function enemyPool(s) {
 function residual(s, before, pool, seat = null) {
   const me = seatOf(s, seat);
   let v = 34 * Math.max(0, before.living - pool.living);
+  /* DAMAGE TO A SURVIVING ENEMY, which this function valued at ZERO.
+     `34 * kills` pays only when a body drops, and the projection's other route
+     for damage - `turnsLeft = (pool.hp + block*0.6) / dps` - is capped at 28,
+     so against any boss whose pool exceeds ~28*dps the cap is SATURATED and
+     chipping it moves no term at all. The bot then correctly computed that
+     attacking a boss was worth nothing, held its hand, and optimised for its
+     own hp: 57 turns against the attic-observatory boss holding `legal 4.3`
+     cards a turn and playing 0.2 of them, with 95% of the board still standing.
+     `_losePatience` then fired and the run gate reported a GAME defect.
+     Coefficient is deliberately small - a kill is 34, so a 350-Courage boss
+     prices at ~0.1 a point - and it is the smallest value measured to clear the
+     degeneracy. 0.5 also clears it and shortens fights further (past-24 8 vs
+     13) at the cost of some survival, so this is a judgement call, not a
+     derived constant. */
+  v += 0.15 * Math.max(0, before.enemyHp - pool.hp);
   v += 0.55 * pool.haunt + 1.2 * pool.weak + 1.5 * pool.vuln;
   v += 1.4 * stacksOf(me, 'ghoststep');
   v += 4.0 * stacksOf(me, 'strength');
