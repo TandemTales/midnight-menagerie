@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Midnight Menagerie — is everything the player meets explained?</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; padding: 24px 28px 60px; background: #0d0b16; color: #c3bbcd;
+         font: 13px/1.55 ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  h1 { font-size: 18px; letter-spacing: .14em; text-transform: uppercase; color: #f4efe4; margin: 0 0 4px; }
+  .sub { color: #8b839a; margin-bottom: 18px; font-size: 12px; max-width: 86ch; }
+  #summary { padding: 12px 14px; margin: 0 0 18px; border-radius: 8px;
+             background: #14111f; border: 1px solid #2a2442; font-size: 15px; }
+  .pass { color: #6fd9ec; } .fail { color: #ff9c8a; }
+  pre { margin: 2px 0; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h1>The teaching surface</h1>
+<div class="sub">
+  This game has no tutorial and does not want one — <code>docs/design/regions/01-foyer.md</code>
+  §33 says the player is taught "primarily through combat rather than pop up tutorials", and
+  <code>docs/design/kids/03-amina-mochi.md</code> asks for the story "without requiring a
+  tutorial lecture". So the teaching happens WHERE THE PLAYER MEETS THE THING: a tooltip under
+  every status chip, every keyword, every bracketed term on a card.
+  That makes the tooltip registry the tutorial, and this is the gate on it.
+</div>
+<div id="summary">running…</div>
+<div id="out"></div>
+
+<script type="module">
+import { loadContentRegistries, allKeywords, getKeyword } from '../../game/src/data/keywords.js';
+import { allStatuses, UNIVERSAL_STATUSES } from '../../game/src/combat/statuses.js';
+import * as en from '../../game/src/data/enemies/index.js';
+import { allCards } from '../../game/src/data/cards.js';
+
+const out = document.getElementById('out');
+const sum = document.getElementById('summary');
+const fails = [];
+let passed = 0, failed = 0;
+
+function check(ok, label, detail = '') {
+  if (ok) { passed++; } else { failed++; fails.push(label + (detail ? ' — ' + detail : '')); }
+  const d = document.createElement('pre');
+  d.className = ok ? 'pass' : 'fail';
+  d.textContent = (ok ? 'PASS  ' : 'FAIL  ') + label + (detail ? '  — ' + detail : '');
+  out.appendChild(d);
+}
+
+await loadContentRegistries();
+
+/* ── 1. A registered keyword that says nothing is worse than none ──────────
+   `loadContentRegistries` registers enemy and wing statuses with
+   `desc: String(s.desc || '')`, so a status authored without a description
+   still lands in the registry — as an EMPTY one. The tooltip then opens on
+   hover and is blank, which reads as a broken game rather than a missing line. */
+const kws = allKeywords();
+const blank = kws.filter(k => !String(k.desc || '').trim());
+check(blank.length === 0,
+  'every registered keyword actually says something',
+  blank.length ? blank.slice(0, 8).map(k => k.id).join(', ') : `${kws.length} keywords`);
+
+const stub = kws.filter(k => {
+  const d = String(k.desc || '').trim();
+  return d && d.length < 12;
+});
+check(stub.length === 0,
+  'and none of them is a stub too short to explain anything',
+  stub.length ? stub.slice(0, 8).map(k => `${k.id} "${k.desc}"`).join('; ')
+              : 'shortest is over 12 characters');
+
+/* ── 1b. The SOURCE description, not just the merged entry ─────────────────
+   `keywords.js` builds a core status's tooltip as
+   `String(s.desc || '') + decayNote(s)`. So a status authored with NO
+   description still produces a non-empty keyword - the decay note alone - and
+   the check above passes while the tooltip says only "Lasts until the end of
+   your turn" and never says what the thing DOES. Caught here instead, at the
+   definition, which is the only place the two paths agree. */
+const srcNoDesc = [];
+for (const s of Object.values(UNIVERSAL_STATUSES || {})) {
+  if (s && s.id && !String(s.desc || '').trim()) srcNoDesc.push('universal/' + s.id);
+}
+for (const s of (en.ENEMY_STATUSES || [])) {
+  if (s && s.id && !String(s.desc || '').trim()) srcNoDesc.push('enemy/' + s.id);
+}
+check(srcNoDesc.length === 0,
+  'and every status DEFINITION carries its own description, so a decay note '
+  + 'cannot stand in for one',
+  srcNoDesc.length ? srcNoDesc.slice(0, 8).join(', ')
+                   : `${Object.keys(UNIVERSAL_STATUSES || {}).length} universal `
+                     + `+ ${(en.ENEMY_STATUSES || []).length} enemy definitions`);
+
+/* ── 2. Every chip on a portrait can be hovered ────────────────────────────
+   A status with no registry entry renders as an unlabelled chip. `keywords.js`
+   records that this rotted silently once already: its loader imported
+   `enemies/_lib.js` (core statuses only) instead of `enemies/index.js`, so
+   every status added after the Foyer had no tooltip and the count sat at 268
+   "through two whole regions of new ones". */
+const statusIds = new Set();
+for (const s of allStatuses()) statusIds.add(s.id);
+for (const s of Object.values(UNIVERSAL_STATUSES || {})) if (s && s.id) statusIds.add(s.id);
+for (const s of (en.ENEMY_STATUSES || [])) statusIds.add(s.id);
+const noKw = [...statusIds].filter(id => !getKeyword(id));
+check(noKw.length === 0,
+  'every status the player can see has a tooltip to hover',
+  noKw.length ? noKw.slice(0, 10).join(', ') : `${statusIds.size} statuses`);
+
+/* ── 3. Every bracketed term on a card resolves ────────────────────────────
+   Card text writes keywords as [Haunt], [Guard], [Ghoststep]. A term with no
+   entry is a word the card invented and cannot explain at the moment it is
+   read, which is the one moment that matters. */
+const cards = allCards();
+const missing = new Map();
+for (const c of cards) {
+  for (const m of String(c.text || '').matchAll(/\[([^\]]+)\]/g)) {
+    const raw = m[1].trim();
+    const id = raw.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    if (!getKeyword(id) && !getKeyword(raw)) {
+      if (!missing.has(raw)) missing.set(raw, []);
+      missing.get(raw).push(c.id);
+    }
+  }
+}
+check(missing.size === 0,
+  'every bracketed term in every card resolves to a tooltip',
+  missing.size ? [...missing].slice(0, 6).map(([t, ids]) => `[${t}] on ${ids[0]}`).join('; ')
+               : `${cards.length} cards scanned`);
+
+/* ── 4. The counts themselves, so a DROP is visible ────────────────────────
+   The rot this file exists to catch did not look like a failure. It looked
+   like a number that stopped moving while two regions shipped. */
+check(kws.length >= 400,
+  'the keyword registry is fully loaded, not a partial import',
+  `${kws.length} keywords (a partial load reads far lower)`);
+check(statusIds.size >= 300,
+  'and the status registry is the merged one, not the core library',
+  `${statusIds.size} statuses`);
+
+sum.className = failed ? 'fail' : 'pass';
+sum.textContent = `RESULT: ${passed} passed, ${failed} failed`;
+window.__TEACH__ = {
+  passed, failed, fails,
+  keywords: kws.length, blank: blank.length, stub: stub.length,
+  statuses: statusIds.size, noKeyword: noKw.length,
+  cards: cards.length, missingTerms: missing.size,
+};
+</script>
+</body>
+</html>
