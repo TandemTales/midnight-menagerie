@@ -64,6 +64,7 @@ const LEDGER_TABLE = [];
 const PURSE_TABLE = [];
 /** The longest fight, against `_losePatience`'s claim of being unreachable. */
 let PATIENCE_ROW = null;
+let PIERCE_ROW = null;
 /** Which authored formations the fifty expeditions ever actually roll. */
 const REACHABLE_TABLE = [];
 /** Which TIER band the fights that happened were drawn from. */
@@ -383,6 +384,17 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
          Captured BEFORE the fight, so a summon is not counted as Courage the
          room presented. */
       const poolBefore = engine.enemies.reduce((s, x) => s + (x.maxHp || 0), 0);
+      /* COULD THIS DECK EVEN ANSWER A WALL? `wall > land` is read as "the board
+         re-raises faster than the deck gets through", but that is only the
+         whole story if the deck HELD an answer and it still was not enough.
+         Four cards in the game ignore Guard and they sit on two of sixteen
+         companions, so "no answer in the deck" and "answer present but too
+         small" are different defects that look identical in `wall`.
+         Detected from card TEXT, not an id list, so a new piercing card
+         registers itself the way the teaching registry's terms do. */
+      const pierceCards = run.deck.map(c => cardById(c.id))
+        .filter(c => c && /ignor(?:e|es|ing)\s+guard/i.test(c.text || ''));
+      const pierceIds = [...new Set(pierceCards.map(c => c.id))];
       const ok = await playCombat(engine, 200, run);
       if (!ok) break;
       log(`  fight ${engine.victory ? 'won' : 'lost'} hp=${run.courage}`);
@@ -403,6 +415,8 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
         cost: Math.max(0, hpBefore - run.courage),
         turns: engine.turn, won: !!engine.victory,
         deck: run.deck.length, keeps: run.keepsakes.length,
+        companion: run.companion,
+        pierce: pierceCards.length, pierceIds,
         purse: run.lostThings,
       });
     }
@@ -1115,6 +1129,25 @@ async function main() {
      becomes a difficulty mechanic nobody designed. */
   {
     const ALLT = results.flatMap(r => r.ledger || []);
+    /* WHO CAN EVEN ANSWER A WALL. `pierce` on the worst rows says whether THAT
+       deck held an answer; this says how often ANY deck does, which is the
+       number the stall rows are actually evidence about. Split by companion,
+       because the answer is not evenly distributed - four cards, on two of the
+       sixteen companions - so one low overall figure could mean "the drafter
+       passes it" or "most companions cannot draft it at all", and those want
+       completely different fixes. Note this sweep runs 5 companions, not 16. */
+    const PC = {};
+    for (const f of ALLT) {
+      const k = f.companion || '?';
+      (PC[k] || (PC[k] = { fights: 0, held: 0 })).fights++;
+      if (f.pierce > 0) PC[k].held++;
+    }
+    PIERCE_ROW = {
+      swept: COMPANIONS.length, fights: ALLT.length,
+      held: ALLT.filter(f => f.pierce > 0).length,
+      byCompanion: Object.entries(PC).sort((a, b) => b[1].fights - a[1].fights)
+        .map(([name, v]) => ({ name, fights: v.fights, held: v.held })),
+    };
     const longest = ALLT.reduce((m, f) => (f.turns > (m?.turns ?? -1) ? f : m), null);
     const over24 = ALLT.filter(f => f.turns > 24);
     const over30 = ALLT.filter(f => f.turns > 30);
@@ -1146,7 +1179,12 @@ async function main() {
                         faces 68% of it, because the Head Gardener keeps
                         planting. A Guard wall is beaten by piercing it; a
                         treadmill is beaten by killing the summoner. */
-                     summoned: Math.max(0, Math.round(f.dealt + f.left - f.pool)) })),
+                     summoned: Math.max(0, Math.round(f.dealt + f.left - f.pool)),
+                     /* THE CONTROL on the wall reading. A stall with pierce 0
+                        is a deck that never had the answer; a stall with pierce
+                        held is an answer too small to matter, and only the
+                        second one argues for changing the boss. */
+                     pierce: f.pierce || 0, pierceIds: f.pierceIds || [] })),
     };
     if (over30.length) {
       /* NOT A BROKEN GATE - a real defect, named here so the next session does
@@ -1500,7 +1538,7 @@ autosaves ${saveCount}</pre>`);
     reach: REACH, routed: ROUTED, victories: VICTORIES, draws: DRAWS, ledger: LEDGER_TABLE, purse: PURSE_TABLE,
     depth: DEPTH_TABLE, arrival: ARRIVAL_TABLE,
     teach: TEACH_TABLE, teachCover: TEACH_COVER, reachable: REACHABLE_TABLE,
-    tiers: TIER_TABLE, patience: PATIENCE_ROW,
+    tiers: TIER_TABLE, patience: PATIENCE_ROW, pierceCover: PIERCE_ROW,
     determinism: detOk, resume: resumeOk, storage: storeOk,
     combatResume: combatResume, combatResumeTried: combatResumeTried, replayed,
   };

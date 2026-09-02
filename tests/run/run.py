@@ -135,13 +135,16 @@ async def main(a):
         print("  a safety net that fires during ordinary content is a difficulty")
         print("  mechanic nobody designed, so over30 is a hard failure.")
         for w in (pat.get("worst") or [])[:10]:
-            print("    %3d turns  wing %-3s %-20s %-8s %s  cost %-4.0f left %-5s wall %-6s land %s"
+            print("    %3d turns  wing %-3s %-20s %-8s %s  cost %-4.0f left %-5s wall %-6s land %-5s"
                   % (w["turns"], w.get("wing", "?"), w["region"], w["type"],
                      "won " if w["won"] else "LOST", w["cost"],
                      "%d%%" % w.get("leftPct", 0),
                      w.get("wall", 0), w.get("land", 0))
-                  + "  summoned %d" % w.get("summoned", 0))
-        print("    wing = ROUTE slot 1-6, not ladder index. left%% = share of the")
+                  + "  summoned %-4d pierce %d %s"
+                  % (w.get("summoned", 0), w.get("pierce", 0),
+                     ",".join(i.split("/")[-1] for i in (w.get("pierceIds") or []))
+                     or "-"))
+        print("    wing = ROUTE slot 1-6, not ladder index. left% = share of the")
         print("    board's Courage still standing: near 0 is a GRIND that a pool or")
         print("    route change reaches, high is the Guard STALL engine.js describes,")
         print("    which neither can touch.")
@@ -153,6 +156,28 @@ async def main(a):
         print("    low wall is a treadmill, not a wall: the deck is getting through")
         print("    and the board keeps refilling. Three different defects, one column")
         print("    in `turns`.")
+        print("    pierce = cards in the deck whose text ignores Guard, and the")
+        print("    game has four of them across two of sixteen companions. pierce 0")
+        print("    beside a high wall is a deck that never held the answer; pierce >0")
+        print("    is an answer that was present and too small. Only the second one")
+        print("    argues for changing the boss rather than the distribution.")
+
+    pc = res.get("pierceCover") or {}
+    if pc and pc.get("fights"):
+        print("")
+        print("could the deck answer a Guard wall at all?")
+        held, tot = pc.get("held", 0), pc["fights"]
+        print("  %d of %d fights held a card that ignores Guard  (%.0f%%)"
+              % (held, tot, 100.0 * held / tot))
+        for r in pc.get("byCompanion") or []:
+            print("    %-12s %4d fights  %4d held  %3.0f%%"
+                  % (r["name"], r["fights"], r["held"],
+                     100.0 * r["held"] / max(1, r["fights"])))
+        print("  Four cards in the game ignore Guard and they sit on two of the")
+        print("  sixteen companions; this sweep runs %d of them. A companion sitting"
+              % pc.get("swept", 0))
+        print("  at 0% cannot draft an answer at any price, so its stalls are not a")
+        print("  drafting mistake and no amount of boss tuning reaches them.")
 
     tie = res.get("tiers") or []
     if tie:
