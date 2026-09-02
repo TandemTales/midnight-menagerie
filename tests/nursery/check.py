@@ -372,7 +372,13 @@ async ([coming]) => {
   const before = intentOf(g);
   const patches0 = (g.mem.patches || []).slice();
   g.block = 0;
-  swing(e, g, g.hp - 100, { ignoreBlock: true });   // under the first threshold
+  /* Under the FIRST threshold, derived rather than guessed. The Giant scales
+     its 90/60/30 tears by `maxHp / 126` (its authored Courage), so a literal
+     "knock it to 100" only crossed a threshold while `hp` was the un-authored
+     150 — at the design's 126 the first tear is at exactly 90 and 100 is above
+     it, so nothing tore and four checks went red. */
+  const t1 = Math.round(90 * (g.maxHp / 126));
+  swing(e, g, g.hp - (t1 - 5), { ignoreBlock: true });
   const patches1 = (g.mem.patches || []).slice();
   const stuffing1 = g.counters['loose-stuffing'];
   const counter1 = g.counters.patches;
@@ -380,7 +386,9 @@ async ([coming]) => {
   const after = intentOf(g);
   // All the way down: every Patch gone, and Stuffed Fist stops being a Spring split.
   g.block = 0;
-  swing(e, g, g.hp - 20, { ignoreBlock: true });
+  // ...and below the LAST one, same derivation.
+  const t3 = Math.round(30 * (g.maxHp / 126));
+  swing(e, g, g.hp - Math.max(1, t3 - 10), { ignoreBlock: true });
   g.history.length = 0;
   e.refreshIntents('probe');
   return { coming, patches0, patches1, stuffing1, torn: g.mem.torn, before, after,
