@@ -299,16 +299,43 @@ RUN on 2026-09-01 against this tree.
   python tests/enemies/audit.py      19819 turns, 0 errors
   python tests/coop/run.py           645
   python tests/combat/run.py         694
-  python tests/teaching/check.py     7            ← NEW
+  python tests/teaching/check.py     7
+  python tests/design-courage/check.py  120 checked, 0 failures   ← NEW
   python tests/critic-design/ladder.py  17 regions, 0 errors   ← NEW
   python tests/critic-design/anchor.py  5/5 agree
   python tools/deadflags.py [--reads]   audit, not a gate      ← NEW
 
   REGION GATES, the ones touched today:
-    foyer 66 · nursery 71 · sleeping-quarters 62 · kitchens 20 ·
+    foyer 66 · nursery 71 (re-run after the Courage fix) · sleeping-quarters 62 · kitchens 20 ·
     greenhouse 37 · attic-observatory 53 · heart 44
     (the other ten were not re-run this session)
 
+━━ THE NURSERY WAS 44% HEAVIER THAN ITS OWN CHAPTER ━━
+
+Chasing "the Governess is a difficulty regression" found she was never the
+problem — she costs 63% of the player's pool, and the Butler costs 61%. The
+player was ARRIVING at her door on 62% Courage, the lowest in the game.
+
+Every one of the nine Nursery enemies shipped above its authored Courage, a
+uniform ~1.44x on normals and ~1.19x on Big Scares. Regions 1 and 3 match their
+chapters byte for byte; the Nursery was the only region in the game that did
+not, and nothing justified it. The Patchwork Giant's own code gives the game
+away — it scales its 90/60/30 Patch tears by `maxHp / 126`, the chapter value,
+so at 150 the tears silently drifted to 107/71/36.
+
+    standard ladder   nursery 39% -> 21% of pool, rank 1 -> 5 of 17
+    elite ladder      82% -> 68%, win 69% -> 75%
+    boss door         arrives at 62% -> 83%, margin 9pp -> 19pp
+    Governess bench   solo 12.5% -> 25.0%, 4p 93.8% -> 100% at fallen 0.00
+
+No other region moved by more than 2pp at either tier. `tests/design-courage/
+check.py` now gates the class: 120 enemies checked against their chapters, 3
+declared divergences (House Bell, Butler, Governess — bosses are tuned against
+measurement and their chapters are opening bids), 0 failures.
+
+**The ladder had been reporting this since August** — nursery 39% against a 15%
+median, rank 1 of 17 — and it was read as a boss problem every time. The number
+was never wrong; nobody asked which room it was pointing at.
   GATES THAT MUST STAY AT ZERO:
     seams 7892 sites / 0 · hook-names 201 declared / 0 unknown ·
     bus-names 0 dead · status-names 22 / 0 · part-lookups 0 ·

@@ -484,3 +484,66 @@ Governess is recorded here as the one place it measured worse.
 **And the Governess at 25% solo on the old bot is a finding in its own right** -
 nobody measured her after whatever content moved between 2026-08-29 and now.
 That is a difficulty regression the co-op question was hiding.
+
+## The Governess was never the problem: the room in front of her was
+
+Chasing the "difficulty regression" ended somewhere else entirely.
+
+She costs **63% of the player's pool**; the Butler costs 61%. She is not
+overpriced. The player was arriving at her door on **62% Courage — the lowest
+arrival in the game**, against 88-100% everywhere else.
+
+### What the discriminator said
+
+Comparing the solo fight internals, old bot on both sides, told me immediately
+it was not her:
+
+    aimed at the player   148.2 -> 98.8     she attacks LESS
+    damage blocked         96.8 -> 29.8
+    Guard raised          152.3 -> 38.5     the player defends far less
+    damage taken           51.4 -> 69.1
+
+Her damage per turn is unchanged (13.3 -> 13.2 aimed/turn). And the Butler bench
+run on the same day shows the player's Guard per turn UNCHANGED (7.1 -> 7.6), so
+Guard generation is healthy globally. The collapse was nursery-only.
+
+### The cause, and it was in the design chapter all along
+
+Every one of the nine Nursery enemies ships above its authored Courage:
+
+    Button Baby 21/30 · Jack in the Box 32/46 · Patchwork Soldier 38/55
+    Rocking Horse 42/60 · Blanket Blob 34/50 · Porcelain Doll 36/52
+    Toy Chest 110/132 · Patchwork Giant 126/150 · Porcelain Twins 68/80
+
+Uniform ~1.44x on normals, ~1.19x on Big Scares. Three checks made it a bug and
+not a divergence, all run before a number was touched: regions 1 and 3 match
+their chapters **byte for byte**; nothing in the source justified it; and the
+Patchwork Giant's own code scales its 90/60/30 Patch tears by `maxHp / 126` —
+the chapter value, hardcoded — so at 150 the authored tears silently became
+107/71/36 and no test noticed, because the only test that could have was
+calibrated against the drift.
+
+### Verified
+
+    standard ladder   nursery 39% -> 21% of pool, rank 1 -> 5 of 17, pool 117 -> 79
+    elite ladder      82% -> 68%, win 69% -> 75%
+    boss door         arrives at 62% -> 83%, margin 9pp -> 19pp (was worst in game)
+    Governess         solo 12.5% -> 25.0%, 4p 93.8% -> 100% at fallen 0.00
+
+**No other region moved by more than 2pp at either tier.** Gates green: nursery
+71/0, enemies 275/0, coop balance DONE, run.py unchanged at 558 fights with
+every determinism and resume check passing.
+
+### The part worth keeping
+
+**The ladder had been reporting this since August.** Nursery 39% of pool against
+a 15% median, rank 1 of 17, in the August artifact as well as today's. It was
+read as a boss problem every time it came up. The instrument was right and the
+question asked of it was wrong — "which boss is overtuned" instead of "which
+room is this number pointing at".
+
+And it was never a regression at all. The August 62.5% bench figure was the
+outlier, not today's number.
+
+`tests/design-courage/check.py` gates the class now: 120 enemies against their
+chapters, 3 declared divergences, 0 failures, red on reintroducing the bug.
