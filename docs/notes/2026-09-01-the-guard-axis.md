@@ -200,3 +200,73 @@ should stay a companion identity (Marmalade and Hush are "the ones who get
 through walls") or become a floor every companion can reach, e.g. by giving
 `dread` a source. That is a real design call, and unlike the last one it is a
 call about the roster rather than a fact about StS2.
+
+## Measured, and it takes back this note's headline
+
+The lookup section above says the stalls' cause was unmeasured and that `deckEnd`
+should be read before building. Reading it was not possible: the ledger kept deck
+LENGTH per fight and never contents. Three instruments later, the answer is in,
+and the first casualty is this note's own central claim.
+
+### The sweep was five companions of sixteen
+
+`tests/run/index.html` held `COMPANIONS = ['marmalade','bones','pipkin','taffy',
+'wink']` — the four `STARTER_SLUGS` plus `wink` — while sixteen are playable. It
+is `companionSlugs()` now, so a companion joins the gate by existing. All sixteen
+run clean: same single failure, determinism/resume/localStorage all still pass.
+
+### Nobody can answer a Guard wall
+
+`pierce` counts cards in the deck whose TEXT ignores Guard — detected by text,
+not an id list, so a new piercing card registers itself.
+
+**11 of 491 fights (2%) held one.** `marmalade` 11/41 (27%) is the only nonzero
+row in the roster. `hush` holds two of the game's four piercing cards and drew
+neither across 17 fights, because both are RARE while Marmalade's
+`through-the-wall` is UNCOMMON. And `rescueCompanion()` adds clues and Courage
+but **no cards**, so a run's answer to Guard is fixed at companion select and
+cannot change afterwards.
+
+### The purest "Guard stall" in the game was not a Guard stall
+
+`swing` (damage put out per turn, landed plus absorbed), `abs` (the share the
+board ate) and `cpt` (Tricks played per turn) separate readings that `wall > land`
+collapses into one:
+
+    57t attic-observatory  bones   wall 4.1  land 0.3  swing 0.3  abs 0%   cpt 0.2
+    38t study-library      taffy   wall 4.1  land 0.4  swing 0.4  abs 0%   cpt 1.0
+    37t study-library      pudding wall 7.0  land 8.8  swing 12.2 abs 28%  cpt 1.5
+
+**Absorbed zero.** The board took nothing from the top two because there was
+nothing to take. The section above called the attic-observatory row "the purest
+in the game" and read `wall 3.1 > land 2.5` as a board out-raising a deck; with
+`abs` printed it is a deck putting out 0.3 a turn into a wall that never touched
+it. No boss change reaches that fight. The genuinely wall-shaped row is the
+third, and that deck got through to 6% left.
+
+Healthy fights run `cpt` 1.5-2.6, which makes the top two **two different bugs**:
+
+- **bones/attic-observatory, cpt 0.2** — a turn loop that almost never plays a
+  card. About 11 Tricks in 57 turns.
+- **taffy/study-library, cpt 1.0** — plays a Trick every turn and deals 0.4.
+  It acts; the acting does nothing.
+
+`bones` lands 15.3 a turn in kitchens-cellars and 0.3 against the Watcher, so
+neither is "the bot cannot play that companion".
+
+**Cause not established, and I am not naming one this time.** The obvious
+suspect was the Watcher's `web-the-hand` inflating card costs, but `web()` takes
+`cap = 4`, so concurrent webs are bounded and it cannot price out a deck on its
+own. That is where the next session should start, with `trace` on the failing
+seed rather than another inference.
+
+### What the three mechanisms actually are
+
+The taxonomy above — GUARD STALL, TREADMILL, GRIND — was built from `turns`,
+`wall`, `land` and `summoned`. With `abs` and `cpt` added it is missing two, and
+they are the two that produced the longest fights in the game:
+
+    stuck loop    cpt near 0                     the deck never acts
+    inert deck    cpt normal, swing near 0       the deck acts and cannot hurt
+
+Neither is reached by a pool cut, a route change, a wall cap, or pierce.
