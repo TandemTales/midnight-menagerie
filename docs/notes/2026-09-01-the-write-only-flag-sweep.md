@@ -137,6 +137,78 @@ total `8 vs 8`, and the counter is left unspent at 4.
 new `damageFn` and the effect agree — an intent that promised 6 and hit for 4
 would be the expensive version of this fix.
 
+## The other shape: read, never written
+
+`--reads` sweeps the opposite direction, which is the more expensive bug. A
+field written and never read means a rule the author never finished. A field
+**read and never written** means a guard clause that is always false, so a
+finished-looking rule silently does nothing — and that is what `summonedBy`
+was, across five content sites in three regions.
+
+Getting the signal down to something readable took four passes, and every
+false-positive class is worth naming because they are all idioms this codebase
+uses constantly:
+
+| pass | candidates | what was wrong |
+|---|---|---|
+| 1 | 76 | module `export const NAME = …` is not a property write |
+| 2 | 76 | object **method shorthand** `springs(c, moveId) {` — how every enemy def declares its helpers |
+| 3 | 9 | **logical assignment** `(mem(c).costRules ||= {})` — used constantly for lazy init |
+| 4 | **2** | named function parameters with defaults |
+
+**Two survive, and only one is a defect.** `butler.js`'s `removeWorstStatus` is
+an optional ctx API called behind `typeof … === 'function'` with a working
+`else` branch — defensive by design, though it does mean the richer behaviour
+its comment describes has never once run.
+
+## The Bedframe Beast: two dead rules that are one defect
+
+`indirectDamageThisTurn` appears **exactly once in the whole repository** — the
+read itself, in `bosses/bedframe-beast.js`:
+
+```js
+if (bedframeBeast.isUnderneath(c) && (c.self.indirectDamageThisTurn || 0) >= 18)
+```
+
+It is assigned nowhere, so `|| 0` makes it 0 and `0 >= 18` is never true. That
+is §23, *"Pulling the Beast out early"* — 18 indirect damage while it is
+Underneath drags it into the open, costs it a Scare and makes its next action
+Disoriented. **The consequence is fully coded. Only the trigger is dead.**
+
+Chasing why nobody wired it found the larger one. §21:
+
+> While Underneath: **Attack Tricks cannot target the Beast.** Area effects and
+> effects that explicitly reach Hidden enemies may still affect it.
+
+The def has **no `isTargetable` at all**, so Underneath hides nothing and you
+simply keep attacking it. And that is exactly why §23 could not be written:
+with the Beast targetable, "indirect damage" is not a distinction the engine can
+make — there is no marker separating a player AoE that splashed onto an actor
+from a card aimed at it.
+
+The two are one defect, and fixing §21 makes §23 a one-word change: once an
+Attack Trick cannot be aimed at the Beast, every point that reaches it there is
+indirect *by construction*, and `damageTakenThisTurn` is the right field.
+
+### Measured, and not shipped
+
+`EnemyDef.isTargetable` is a supported seam with three precedents. So I wired
+both and ran it — and HANDOFF's warning about the Wardrobe (wiring
+`isTargetable` once produced a Big Scare that could not end) turned out to
+apply here too. The Beast is **solo** in its only formation and its cycle is
+covers → retreat → scratching → footsteps → BOO, so §21 makes it untargetable
+**three turns in five**, against a 297-Courage pool:
+
+    past 24 turns    13 -> 15
+    past 30 turns     9 -> 11
+
+**Reverted.** It moves the open defect in the wrong direction. §21 is real and
+authored and the fight is genuinely missing its signature mechanic — but it
+cannot be shipped without the pool and pacing work that has to come with it,
+and that is the same design call the over-30 gate is already waiting on. This
+is recorded rather than fixed so the next person does not wire it naively and
+discover the same thing.
+
 ## What this does not touch
 
 Nothing about the nine over-30 fights. The Topiary Beast is an ordinary
