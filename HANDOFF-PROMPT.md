@@ -12,12 +12,12 @@ found by a gate added yesterday, and it is the one open thing in the game layer.
 `combat/engine.js`'s `_losePatience` escalates every enemy past turn 30 so a
 fight cannot fail to end, and its comment claims it is "far outside reachable
 play … the longest fight any region gate produces is 24. Nothing a player will
-ever see is touched by this." **Nothing checked that.** Across 491 real fights
+ever see is touched by this." **Nothing checked that.** Across 559 real fights
 in fifty seeded expeditions:
 
-    longest fight        59 turns   graveyard/boss
-    past 24 turns        14
-    past 30 turns         8   <- _losePatience fired, in ordinary play
+    longest fight        57 turns   graveyard/boss
+    past 24 turns        13
+    past 30 turns         5   <- _losePatience fired, in ordinary play
 
 All ten of the longest are BOSSES and six of the eight were LOST. The
 termination guarantee is doing the killing.
@@ -37,24 +37,50 @@ board. Seed 379133, bones:
 
 With that boss naive the new longest is hedge-maze at 63 turns — `cpt 0.6`,
 `legal 4.4`, same signature. The pathology follows the bot, not the boss.
-`bot.js` already has a naive floor for it ("the beam occasionally talks itself
-into a long grind") but takes it only when `heur.score > baseline.score`,
-scored by the same function whose bias it exists to correct — and `staticScore`
-pays +0.9 per UNSPENT Nerve and +0.7 per HELD card, for a Nerve pool that does
-not carry across turns. First place to look; still a hypothesis.
+
+**FOUND AND FIXED.** `residual()` paid `34 * kills` and NOTHING for damage that
+does not drop a body, and the projection's only other route for damage —
+`turnsLeft = (pool.hp + block*0.6) / dps` — is capped at 28, so against a boss
+whose pool exceeds ~28*dps that cap is SATURATED and chipping it moves no term
+either. Both channels dead at once, and only for big-pool bosses, which is why
+all ten longest fights are bosses. The bot was not malfunctioning: it correctly
+computed that attacking a boss was worth zero and held its hand.
+
+One term, `+0.15` per point of damage:
+
+    fights reached  491 -> 559      past 30            8 -> 5
+    past 24          14 -> 13       board >40% alive   5 -> 1
+    victories         3 -> 4        foyer defeats     32 -> 28
+
+It plays better AND survives better, which is why this one is not confounded.
+All integrity checks still pass; `anchor.py` still agrees 5/5.
+
+**The gate still exits 1**: five fights past 30, longest 57. Exactly one ends
+with the board over 40% alive — and it is the GREENHOUSE at 50% with
+`summoned 212`, which is the Head Gardener treadmill this repo already
+established as working as designed. **So after the fix there is no
+Guard-stall-shaped fight left in the sample at all.** What remains is one
+grind, two long fights the deck WON, and two treadmills.
+
+**Every balance number predating this was measured by a bot that could not see
+damage** — ladder tables, party sweeps, the Butler curve. The methods stand;
+the absolute numbers want re-measuring before anything is tuned against them.
 
 ━━ AND IT IS FIVE MECHANISMS, NOT ONE ━━
 
 The ledger prints `wing`, `left`, `wall`, `land`, `swing`, `abs`, `cpt`,
 `summoned` and `pierce` now, and they separate things `turns` cannot:
 
-    turns  who      region             left  wall  land  swing  abs   cpt  summoned
-      59   bones    graveyard           63%   3.2   2.2    2.9   24%  0.7       0
-      57   bones    attic-observatory   95%   4.1   0.3    0.3    0%  0.2       0
-      55   bones    greenhouse          69%   2.4   5.5    6.0    8%  1.3     201
-      46   mossbit  hedge-maze          62%   3.5   8.5    9.7   12%  2.1     226
-      38   taffy    study-library       96%   4.1   0.4    0.4    0%  1.0       0
-      37   pudding  study-library        6%   7.0   8.8   12.2   28%  1.5       0
+    turns  who      region        left  wall  land  swing  abs   cpt  summoned
+      57   bones    graveyard      27%   3.2   6.4    7.5   14%  1.3      107   grind
+      45   mossbit  lampworks       0%   3.6  11.6   14.6   21%  1.9       78   won
+      40   bones    greenhouse     50%   2.2   9.5   10.7   11%  1.8      212   treadmill
+      40   mossbit  hedge-maze     30%   4.4  14.3   16.0   10%  2.4      272   treadmill
+      36   pudding  graveyard       0%   3.4  12.3   14.4   15%  1.9      111   won
+
+`cpt` is 1.3-2.4 across all of them now. Before the bot fix the same table's
+top two rows were `cpt 0.2` / `abs 0%` and `cpt 1.0` / `swing 0.4` — the deck
+standing still. Those two fights no longer exist.
 
 **Read `abs` before `wall`.** A high `wall` beside a low `land` looks like a
 board out-raising a deck, and for the two worst fights in the game it is not:

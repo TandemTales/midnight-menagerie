@@ -325,3 +325,61 @@ picks an empty sequence *because* of those two terms.
 Caveat on the controlled test: once the first different card is played the RNG
 diverges, so it is one sample rather than a repeated trial. The effect is large
 enough to act on and small enough to re-check.
+
+## Root cause, and my hypothesis was wrong
+
+I named `staticScore`'s `+0.9 * energy` and `+0.7 * hand.length` as the first
+place to look. **That was wrong.** `staticScore` only shapes the beam; the stop
+decision is `projectedValue`, which contains neither term. Third confident cause
+named in this file, third one that did not survive being checked.
+
+The actual cause is in `residual()`:
+
+    let v = 34 * Math.max(0, before.living - pool.living);
+
+**It pays only for kills.** Damage that does not drop a body is worth nothing.
+And the projection's only other route for damage is
+
+    turnsLeft = Math.min(28, (pool.hp + pool.block * 0.6) / (dps * standing))
+
+which is **capped at 28** — so against any boss whose pool exceeds about
+`28 * dps` the cap is saturated and chipping it moves no term either. Both
+channels are dead at once, and only for big-pool bosses. That is why every one
+of the ten longest fights is a boss.
+
+So the bot was not malfunctioning. It correctly computed that attacking a boss
+was worth zero, held its hand, and maximised its own Courage instead.
+
+### The fix, and what it costs
+
+One term, `+0.15` per point of damage — a kill is 34, so a 350-Courage boss
+prices at roughly 0.1 a point, and 0.15 is the smallest value measured to clear
+the degeneracy:
+
+    fights reached     491 -> 559     runs go deeper
+    past 24             14 -> 13
+    past 30              8 -> 5
+    board >40% alive     5 -> 1       the stall-shaped ones
+    victories            3 -> 4
+    foyer defeats       32 -> 28
+
+It plays better AND survives better, which is the opposite of the naive swap and
+the reason this one is not confounded. Determinism, resume, localStorage and
+mid-fight resume all still pass; `anchor.py` still agrees 5/5.
+
+**The gate still exits 1** — five fights past turn 30, longest 57. Exactly one
+ends with the board over 40% alive, and I checked which: the GREENHOUSE at 50%
+with `summoned 212`. That is the Head Gardener treadmill this note already
+established as working as designed.
+
+**So after the fix there is no Guard-stall-shaped fight left in the sample at
+all.** What remains past turn 30 is one grind, two fights the deck WON, and two
+treadmills. The Guard axis that this entire note is named after turns out not to
+be a live defect in the run gate — which is worth saying plainly, having spent
+three sections and two wrong causes getting here.
+
+**Every balance number in this repo predating this commit was measured by a bot
+that could not see damage.** The ladder tables, the party sweeps, the Butler
+Courage curve — all upstream of it. That does not invalidate the *method* in any
+of them, but the absolute numbers should be re-measured before anything is tuned
+against them.
