@@ -1,0 +1,1295 @@
+{
+ "config": {
+  "TIER": "boss",
+  "ENC": "nursery-boss",
+  "REGION": "nursery",
+  "LREGION": "nursery",
+  "N": 16,
+  "GEN": 8,
+  "SIZES": [
+   1,
+   4
+  ],
+  "SLUGS": [
+   "marmalade",
+   "bones"
+  ],
+  "POL": "balanced",
+  "SEED0": 90000,
+  "HAUNT": 0,
+  "SCALES": [
+   1
+  ]
+ },
+ "loadouts": {
+  "marmalade": 2,
+  "bones": 3
+ },
+ "table": [
+  {
+   "scale": 1,
+   "size": 1,
+   "n": 16,
+   "win": 12.5,
+   "turnsMean": 10.06,
+   "turnsMed": 10,
+   "left": 30,
+   "fallen": 0.88,
+   "spread": 1,
+   "enemyHp": 242,
+   "cost": 67.56,
+   "errs": 0,
+   "timeouts": 0
+  },
+  {
+   "scale": 1,
+   "size": 4,
+   "n": 16,
+   "win": 93.8,
+   "turnsMean": 17,
+   "turnsMed": 18,
+   "left": 52,
+   "fallen": 0.25,
+   "spread": 0.66,
+   "enemyHp": 1209,
+   "cost": 133.5,
+   "errs": 0,
+   "timeouts": 0
+  }
+ ],
+ "rows": [
+  {
+   "nodeId": "bench-90000",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90000,
+   "win": false,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 68,
+   "takenBySeat": [
+    69
+   ],
+   "hitsBySeat": [
+    6
+   ],
+   "blockedBySeat": [
+    20
+   ],
+   "aimed": 89,
+   "blocked": 20,
+   "partyGuard": 34,
+   "spread": 1,
+   "enemyHp": 258,
+   "enemyGuard": 35,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90013,
+   "win": true,
+   "turns": 19,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.23076923076923078,
+   "courageCost": 53,
+   "takenBySeat": [
+    83
+   ],
+   "hitsBySeat": [
+    20
+   ],
+   "blockedBySeat": [
+    212
+   ],
+   "aimed": 295,
+   "blocked": 212,
+   "partyGuard": 301,
+   "spread": 1,
+   "enemyHp": 225,
+   "enemyGuard": 66,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90026,
+   "win": false,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 68,
+   "takenBySeat": [
+    71
+   ],
+   "hitsBySeat": [
+    6
+   ],
+   "blockedBySeat": [
+    5
+   ],
+   "aimed": 76,
+   "blocked": 5,
+   "partyGuard": 14,
+   "spread": 1,
+   "enemyHp": 258,
+   "enemyGuard": 23,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90039,
+   "win": false,
+   "turns": 10,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 74,
+   "takenBySeat": [
+    90
+   ],
+   "hitsBySeat": [
+    9
+   ],
+   "blockedBySeat": [
+    78
+   ],
+   "aimed": 168,
+   "blocked": 78,
+   "partyGuard": 119,
+   "spread": 1,
+   "enemyHp": 225,
+   "enemyGuard": 34,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90052,
+   "win": false,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 68,
+   "takenBySeat": [
+    74
+   ],
+   "hitsBySeat": [
+    6
+   ],
+   "blockedBySeat": [
+    15
+   ],
+   "aimed": 89,
+   "blocked": 15,
+   "partyGuard": 24,
+   "spread": 1,
+   "enemyHp": 258,
+   "enemyGuard": 27,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90065,
+   "win": false,
+   "turns": 11,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 74,
+   "takenBySeat": [
+    108
+   ],
+   "hitsBySeat": [
+    10
+   ],
+   "blockedBySeat": [
+    66
+   ],
+   "aimed": 174,
+   "blocked": 66,
+   "partyGuard": 104,
+   "spread": 1,
+   "enemyHp": 225,
+   "enemyGuard": 45,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90078,
+   "win": false,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 68,
+   "takenBySeat": [
+    77
+   ],
+   "hitsBySeat": [
+    6
+   ],
+   "blockedBySeat": [
+    10
+   ],
+   "aimed": 87,
+   "blocked": 10,
+   "partyGuard": 19,
+   "spread": 1,
+   "enemyHp": 258,
+   "enemyGuard": 31,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90091,
+   "win": false,
+   "turns": 12,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 74,
+   "takenBySeat": [
+    94
+   ],
+   "hitsBySeat": [
+    12
+   ],
+   "blockedBySeat": [
+    102
+   ],
+   "aimed": 196,
+   "blocked": 102,
+   "partyGuard": 132,
+   "spread": 1,
+   "enemyHp": 225,
+   "enemyGuard": 37,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90104",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90104,
+   "win": false,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 68,
+   "takenBySeat": [
+    68
+   ],
+   "hitsBySeat": [
+    6
+   ],
+   "blockedBySeat": [
+    21
+   ],
+   "aimed": 89,
+   "blocked": 21,
+   "partyGuard": 24,
+   "spread": 1,
+   "enemyHp": 258,
+   "enemyGuard": 31,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90117",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90117,
+   "win": true,
+   "turns": 14,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.37362637362637363,
+   "courageCost": 40,
+   "takenBySeat": [
+    58
+   ],
+   "hitsBySeat": [
+    13
+   ],
+   "blockedBySeat": [
+    143
+   ],
+   "aimed": 201,
+   "blocked": 143,
+   "partyGuard": 187,
+   "spread": 1,
+   "enemyHp": 225,
+   "enemyGuard": 49,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90130",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90130,
+   "win": false,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 68,
+   "takenBySeat": [
+    78
+   ],
+   "hitsBySeat": [
+    6
+   ],
+   "blockedBySeat": [
+    11
+   ],
+   "aimed": 89,
+   "blocked": 11,
+   "partyGuard": 14,
+   "spread": 1,
+   "enemyHp": 258,
+   "enemyGuard": 33,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90143",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90143,
+   "win": false,
+   "turns": 11,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 74,
+   "takenBySeat": [
+    105
+   ],
+   "hitsBySeat": [
+    11
+   ],
+   "blockedBySeat": [
+    67
+   ],
+   "aimed": 172,
+   "blocked": 67,
+   "partyGuard": 93,
+   "spread": 1,
+   "enemyHp": 225,
+   "enemyGuard": 41,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90156",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90156,
+   "win": false,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 68,
+   "takenBySeat": [
+    74
+   ],
+   "hitsBySeat": [
+    7
+   ],
+   "blockedBySeat": [
+    26
+   ],
+   "aimed": 100,
+   "blocked": 26,
+   "partyGuard": 29,
+   "spread": 1,
+   "enemyHp": 258,
+   "enemyGuard": 23,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90169",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90169,
+   "win": false,
+   "turns": 16,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 74,
+   "takenBySeat": [
+    110
+   ],
+   "hitsBySeat": [
+    16
+   ],
+   "blockedBySeat": [
+    145
+   ],
+   "aimed": 255,
+   "blocked": 145,
+   "partyGuard": 196,
+   "spread": 1,
+   "enemyHp": 225,
+   "enemyGuard": 66,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90182",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90182,
+   "win": false,
+   "turns": 7,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 68,
+   "takenBySeat": [
+    79
+   ],
+   "hitsBySeat": [
+    7
+   ],
+   "blockedBySeat": [
+    15
+   ],
+   "aimed": 94,
+   "blocked": 15,
+   "partyGuard": 24,
+   "spread": 1,
+   "enemyHp": 258,
+   "enemyGuard": 25,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90195",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90195,
+   "win": false,
+   "turns": 12,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 74,
+   "takenBySeat": [
+    103
+   ],
+   "hitsBySeat": [
+    12
+   ],
+   "blockedBySeat": [
+    93
+   ],
+   "aimed": 196,
+   "blocked": 93,
+   "partyGuard": 121,
+   "spread": 1,
+   "enemyHp": 225,
+   "enemyGuard": 45,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90000",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90000,
+   "win": true,
+   "turns": 13,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.49642857142857144,
+   "courageCost": 131,
+   "takenBySeat": [
+    74,
+    4,
+    34,
+    48
+   ],
+   "hitsBySeat": [
+    8,
+    8,
+    4,
+    6
+   ],
+   "blockedBySeat": [
+    31,
+    90,
+    10,
+    44
+   ],
+   "aimed": 335,
+   "blocked": 175,
+   "partyGuard": 987,
+   "spread": 0.65,
+   "enemyHp": 1292,
+   "enemyGuard": 50,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90013,
+   "win": true,
+   "turns": 18,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.5920679886685553,
+   "courageCost": 102,
+   "takenBySeat": [
+    15,
+    0,
+    85,
+    44
+   ],
+   "hitsBySeat": [
+    12,
+    15,
+    5,
+    7
+   ],
+   "blockedBySeat": [
+    119,
+    192,
+    11,
+    45
+   ],
+   "aimed": 511,
+   "blocked": 367,
+   "partyGuard": 1947,
+   "spread": 0.4722222222222222,
+   "enemyHp": 1126,
+   "enemyGuard": 66,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90026,
+   "win": true,
+   "turns": 14,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.43564356435643564,
+   "courageCost": 153,
+   "takenBySeat": [
+    72,
+    48,
+    57,
+    0
+   ],
+   "hitsBySeat": [
+    7,
+    14,
+    7,
+    4
+   ],
+   "blockedBySeat": [
+    15,
+    148,
+    20,
+    44
+   ],
+   "aimed": 404,
+   "blocked": 227,
+   "partyGuard": 1396,
+   "spread": 0.6666666666666667,
+   "enemyHp": 1292,
+   "enemyGuard": 48,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90039,
+   "win": true,
+   "turns": 22,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.4294478527607362,
+   "courageCost": 142,
+   "takenBySeat": [
+    43,
+    32,
+    80,
+    37
+   ],
+   "hitsBySeat": [
+    16,
+    21,
+    5,
+    8
+   ],
+   "blockedBySeat": [
+    134,
+    238,
+    16,
+    65
+   ],
+   "aimed": 645,
+   "blocked": 453,
+   "partyGuard": 1959,
+   "spread": 0.7777777777777778,
+   "enemyHp": 1126,
+   "enemyGuard": 79,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90052,
+   "win": true,
+   "turns": 12,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.6091205211726385,
+   "courageCost": 112,
+   "takenBySeat": [
+    41,
+    48,
+    19,
+    25
+   ],
+   "hitsBySeat": [
+    6,
+    5,
+    3,
+    9
+   ],
+   "blockedBySeat": [
+    26,
+    34,
+    15,
+    90
+   ],
+   "aimed": 298,
+   "blocked": 165,
+   "partyGuard": 1262,
+   "spread": 0.7744360902255639,
+   "enemyHp": 1292,
+   "enemyGuard": 35,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90065,
+   "win": true,
+   "turns": 20,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.5702005730659025,
+   "courageCost": 98,
+   "takenBySeat": [
+    21,
+    44,
+    78,
+    0
+   ],
+   "hitsBySeat": [
+    12,
+    18,
+    6,
+    6
+   ],
+   "blockedBySeat": [
+    113,
+    203,
+    30,
+    68
+   ],
+   "aimed": 557,
+   "blocked": 414,
+   "partyGuard": 2264,
+   "spread": 0.5291375291375291,
+   "enemyHp": 1126,
+   "enemyGuard": 68,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90078,
+   "win": true,
+   "turns": 13,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.55,
+   "courageCost": 116,
+   "takenBySeat": [
+    46,
+    0,
+    29,
+    70
+   ],
+   "hitsBySeat": [
+    6,
+    5,
+    3,
+    8
+   ],
+   "blockedBySeat": [
+    21,
+    62,
+    5,
+    54
+   ],
+   "aimed": 287,
+   "blocked": 142,
+   "partyGuard": 817,
+   "spread": 0.6,
+   "enemyHp": 1292,
+   "enemyGuard": 45,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90091,
+   "win": true,
+   "turns": 17,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.546742209631728,
+   "courageCost": 118,
+   "takenBySeat": [
+    29,
+    0,
+    85,
+    58
+   ],
+   "hitsBySeat": [
+    12,
+    6,
+    5,
+    15
+   ],
+   "blockedBySeat": [
+    105,
+    68,
+    11,
+    131
+   ],
+   "aimed": 487,
+   "blocked": 315,
+   "partyGuard": 1814,
+   "spread": 0.5581395348837209,
+   "enemyHp": 1126,
+   "enemyGuard": 62,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90104",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90104,
+   "win": true,
+   "turns": 11,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.6204620462046204,
+   "courageCost": 97,
+   "takenBySeat": [
+    47,
+    48,
+    24,
+    0
+   ],
+   "hitsBySeat": [
+    6,
+    5,
+    3,
+    8
+   ],
+   "blockedBySeat": [
+    20,
+    34,
+    10,
+    105
+   ],
+   "aimed": 288,
+   "blocked": 169,
+   "partyGuard": 1238,
+   "spread": 0.6022408963585435,
+   "enemyHp": 1292,
+   "enemyGuard": 35,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90117",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90117,
+   "win": true,
+   "turns": 23,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.34662576687116564,
+   "courageCost": 169,
+   "takenBySeat": [
+    45,
+    19,
+    77,
+    65
+   ],
+   "hitsBySeat": [
+    17,
+    10,
+    5,
+    19
+   ],
+   "blockedBySeat": [
+    150,
+    89,
+    19,
+    199
+   ],
+   "aimed": 663,
+   "blocked": 457,
+   "partyGuard": 1904,
+   "spread": 0.7475728155339806,
+   "enemyHp": 1126,
+   "enemyGuard": 83,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90130",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90130,
+   "win": true,
+   "turns": 13,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.46579804560260585,
+   "courageCost": 156,
+   "takenBySeat": [
+    56,
+    48,
+    85,
+    3
+   ],
+   "hitsBySeat": [
+    7,
+    6,
+    8,
+    5
+   ],
+   "blockedBySeat": [
+    21,
+    44,
+    20,
+    58
+   ],
+   "aimed": 335,
+   "blocked": 143,
+   "partyGuard": 1255,
+   "spread": 0.6875,
+   "enemyHp": 1292,
+   "enemyGuard": 50,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90143",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90143,
+   "win": true,
+   "turns": 19,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.5558739255014327,
+   "courageCost": 103,
+   "takenBySeat": [
+    26,
+    44,
+    78,
+    0
+   ],
+   "hitsBySeat": [
+    12,
+    17,
+    6,
+    6
+   ],
+   "blockedBySeat": [
+    108,
+    190,
+    30,
+    68
+   ],
+   "aimed": 544,
+   "blocked": 396,
+   "partyGuard": 2143,
+   "spread": 0.5675675675675675,
+   "enemyHp": 1126,
+   "enemyGuard": 66,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90156",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90156,
+   "win": false,
+   "turns": 24,
+   "timeout": false,
+   "fallen": 4,
+   "courageLeft": 0,
+   "courageCost": 270,
+   "takenBySeat": [
+    77,
+    79,
+    82,
+    77
+   ],
+   "hitsBySeat": [
+    9,
+    21,
+    8,
+    5
+   ],
+   "blockedBySeat": [
+    41,
+    172,
+    20,
+    19
+   ],
+   "aimed": 567,
+   "blocked": 252,
+   "partyGuard": 869,
+   "spread": 0.9851851851851852,
+   "enemyHp": 1292,
+   "enemyGuard": 98,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90169",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90169,
+   "win": true,
+   "turns": 19,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.5694050991501416,
+   "courageCost": 110,
+   "takenBySeat": [
+    27,
+    0,
+    80,
+    52
+   ],
+   "hitsBySeat": [
+    12,
+    6,
+    5,
+    17
+   ],
+   "blockedBySeat": [
+    107,
+    68,
+    16,
+    168
+   ],
+   "aimed": 518,
+   "blocked": 359,
+   "partyGuard": 2020,
+   "spread": 0.559748427672956,
+   "enemyHp": 1126,
+   "enemyGuard": 72,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90182",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90182,
+   "win": true,
+   "turns": 12,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.636963696369637,
+   "courageCost": 92,
+   "takenBySeat": [
+    36,
+    54,
+    24,
+    0
+   ],
+   "hitsBySeat": [
+    6,
+    11,
+    3,
+    3
+   ],
+   "blockedBySeat": [
+    31,
+    112,
+    10,
+    34
+   ],
+   "aimed": 301,
+   "blocked": 187,
+   "partyGuard": 1299,
+   "spread": 0.6140350877192983,
+   "enemyHp": 1292,
+   "enemyGuard": 43,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90195",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "nursery-boss",
+   "name": "The Governess",
+   "region": "nursery",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90195,
+   "win": true,
+   "turns": 22,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.35276073619631904,
+   "courageCost": 167,
+   "takenBySeat": [
+    29,
+    53,
+    80,
+    61
+   ],
+   "hitsBySeat": [
+    12,
+    17,
+    5,
+    8
+   ],
+   "blockedBySeat": [
+    105,
+    167,
+    16,
+    55
+   ],
+   "aimed": 566,
+   "blocked": 343,
+   "partyGuard": 1936,
+   "spread": 0.8236173393124065,
+   "enemyHp": 1126,
+   "enemyGuard": 80,
+   "botErrors": 0,
+   "errors": []
+  }
+ ],
+ "errors": []
+}

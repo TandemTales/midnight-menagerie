@@ -1,0 +1,1295 @@
+{
+ "config": {
+  "TIER": "boss",
+  "ENC": "foyer-boss",
+  "REGION": "foyer",
+  "LREGION": "foyer",
+  "N": 16,
+  "GEN": 8,
+  "SIZES": [
+   1,
+   4
+  ],
+  "SLUGS": [
+   "marmalade",
+   "bones"
+  ],
+  "POL": "balanced",
+  "SEED0": 90000,
+  "HAUNT": 0,
+  "SCALES": [
+   1
+  ]
+ },
+ "loadouts": {
+  "marmalade": 7,
+  "bones": 8
+ },
+ "table": [
+  {
+   "scale": 1,
+   "size": 1,
+   "n": 16,
+   "win": 68.8,
+   "turnsMean": 10.31,
+   "turnsMed": 10,
+   "left": 34,
+   "fallen": 0.31,
+   "spread": 1,
+   "enemyHp": 134,
+   "cost": 44.25,
+   "errs": 0,
+   "timeouts": 0
+  },
+  {
+   "scale": 1,
+   "size": 4,
+   "n": 16,
+   "win": 100,
+   "turnsMean": 12.13,
+   "turnsMed": 12,
+   "left": 68,
+   "fallen": 0,
+   "spread": 0.6,
+   "enemyHp": 764,
+   "cost": 49.5,
+   "errs": 0,
+   "timeouts": 0
+  }
+ ],
+ "rows": [
+  {
+   "nodeId": "bench-90000",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90000,
+   "win": true,
+   "turns": 10,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.13157894736842105,
+   "courageCost": 66,
+   "takenBySeat": [
+    72
+   ],
+   "hitsBySeat": [
+    12
+   ],
+   "blockedBySeat": [
+    30
+   ],
+   "aimed": 102,
+   "blocked": 30,
+   "partyGuard": 43,
+   "spread": 1,
+   "enemyHp": 134,
+   "enemyGuard": 54,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90013,
+   "win": true,
+   "turns": 18,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.3382352941176471,
+   "courageCost": 30,
+   "takenBySeat": [
+    36
+   ],
+   "hitsBySeat": [
+    25
+   ],
+   "blockedBySeat": [
+    171
+   ],
+   "aimed": 207,
+   "blocked": 171,
+   "partyGuard": 255,
+   "spread": 1,
+   "enemyHp": 134,
+   "enemyGuard": 108,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90026,
+   "win": false,
+   "turns": 10,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 59,
+   "takenBySeat": [
+    60
+   ],
+   "hitsBySeat": [
+    12
+   ],
+   "blockedBySeat": [
+    35
+   ],
+   "aimed": 95,
+   "blocked": 35,
+   "partyGuard": 57,
+   "spread": 1,
+   "enemyHp": 134,
+   "enemyGuard": 53,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90039,
+   "win": false,
+   "turns": 9,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 62,
+   "takenBySeat": [
+    80
+   ],
+   "hitsBySeat": [
+    12
+   ],
+   "blockedBySeat": [
+    25
+   ],
+   "aimed": 105,
+   "blocked": 25,
+   "partyGuard": 43,
+   "spread": 1,
+   "enemyHp": 134,
+   "enemyGuard": 54,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90052,
+   "win": true,
+   "turns": 11,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.35294117647058826,
+   "courageCost": 30,
+   "takenBySeat": [
+    53
+   ],
+   "hitsBySeat": [
+    16
+   ],
+   "blockedBySeat": [
+    72
+   ],
+   "aimed": 125,
+   "blocked": 72,
+   "partyGuard": 86,
+   "spread": 1,
+   "enemyHp": 134,
+   "enemyGuard": 54,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90065,
+   "win": true,
+   "turns": 12,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.44594594594594594,
+   "courageCost": 37,
+   "takenBySeat": [
+    43
+   ],
+   "hitsBySeat": [
+    14
+   ],
+   "blockedBySeat": [
+    70
+   ],
+   "aimed": 113,
+   "blocked": 70,
+   "partyGuard": 119,
+   "spread": 1,
+   "enemyHp": 134,
+   "enemyGuard": 68,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90078,
+   "win": true,
+   "turns": 6,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.38461538461538464,
+   "courageCost": 21,
+   "takenBySeat": [
+    27
+   ],
+   "hitsBySeat": [
+    4
+   ],
+   "blockedBySeat": [
+    10
+   ],
+   "aimed": 37,
+   "blocked": 10,
+   "partyGuard": 19,
+   "spread": 1,
+   "enemyHp": 134,
+   "enemyGuard": 34,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90091,
+   "win": true,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.2894736842105263,
+   "courageCost": 54,
+   "takenBySeat": [
+    60
+   ],
+   "hitsBySeat": [
+    8
+   ],
+   "blockedBySeat": [
+    20
+   ],
+   "aimed": 80,
+   "blocked": 20,
+   "partyGuard": 33,
+   "spread": 1,
+   "enemyHp": 134,
+   "enemyGuard": 54,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90104",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90104,
+   "win": false,
+   "turns": 10,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 53,
+   "takenBySeat": [
+    55
+   ],
+   "hitsBySeat": [
+    13
+   ],
+   "blockedBySeat": [
+    57
+   ],
+   "aimed": 112,
+   "blocked": 57,
+   "partyGuard": 106,
+   "spread": 1,
+   "enemyHp": 134,
+   "enemyGuard": 54,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90117",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90117,
+   "win": false,
+   "turns": 9,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 59,
+   "takenBySeat": [
+    61
+   ],
+   "hitsBySeat": [
+    11
+   ],
+   "blockedBySeat": [
+    25
+   ],
+   "aimed": 86,
+   "blocked": 25,
+   "partyGuard": 42,
+   "spread": 1,
+   "enemyHp": 134,
+   "enemyGuard": 54,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90130",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90130,
+   "win": true,
+   "turns": 9,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.4189189189189189,
+   "courageCost": 31,
+   "takenBySeat": [
+    52
+   ],
+   "hitsBySeat": [
+    8
+   ],
+   "blockedBySeat": [
+    25
+   ],
+   "aimed": 77,
+   "blocked": 25,
+   "partyGuard": 38,
+   "spread": 1,
+   "enemyHp": 134,
+   "enemyGuard": 54,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90143",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90143,
+   "win": true,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.5735294117647058,
+   "courageCost": 15,
+   "takenBySeat": [
+    38
+   ],
+   "hitsBySeat": [
+    9
+   ],
+   "blockedBySeat": [
+    21
+   ],
+   "aimed": 59,
+   "blocked": 21,
+   "partyGuard": 49,
+   "spread": 1,
+   "enemyHp": 134,
+   "enemyGuard": 48,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90156",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90156,
+   "win": false,
+   "turns": 14,
+   "timeout": false,
+   "fallen": 1,
+   "courageLeft": 0,
+   "courageCost": 70,
+   "takenBySeat": [
+    76
+   ],
+   "hitsBySeat": [
+    19
+   ],
+   "blockedBySeat": [
+    76
+   ],
+   "aimed": 152,
+   "blocked": 76,
+   "partyGuard": 140,
+   "spread": 1,
+   "enemyHp": 134,
+   "enemyGuard": 74,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90169",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90169,
+   "win": true,
+   "turns": 8,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.09230769230769231,
+   "courageCost": 40,
+   "takenBySeat": [
+    55
+   ],
+   "hitsBySeat": [
+    10
+   ],
+   "blockedBySeat": [
+    25
+   ],
+   "aimed": 80,
+   "blocked": 25,
+   "partyGuard": 51,
+   "spread": 1,
+   "enemyHp": 134,
+   "enemyGuard": 48,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90182",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90182,
+   "win": true,
+   "turns": 10,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.3026315789473684,
+   "courageCost": 53,
+   "takenBySeat": [
+    59
+   ],
+   "hitsBySeat": [
+    11
+   ],
+   "blockedBySeat": [
+    32
+   ],
+   "aimed": 91,
+   "blocked": 32,
+   "partyGuard": 48,
+   "spread": 1,
+   "enemyHp": 134,
+   "enemyGuard": 54,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90195",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 1,
+   "seed": 90195,
+   "win": true,
+   "turns": 13,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.36764705882352944,
+   "courageCost": 28,
+   "takenBySeat": [
+    34
+   ],
+   "hitsBySeat": [
+    14
+   ],
+   "blockedBySeat": [
+    88
+   ],
+   "aimed": 122,
+   "blocked": 88,
+   "partyGuard": 132,
+   "spread": 1,
+   "enemyHp": 134,
+   "enemyGuard": 74,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90000",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90000,
+   "win": true,
+   "turns": 12,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.703125,
+   "courageCost": 50,
+   "takenBySeat": [
+    26,
+    0,
+    10,
+    30
+   ],
+   "hitsBySeat": [
+    7,
+    3,
+    3,
+    6
+   ],
+   "blockedBySeat": [
+    26,
+    12,
+    11,
+    24
+   ],
+   "aimed": 139,
+   "blocked": 73,
+   "partyGuard": 583,
+   "spread": 0.5353535353535354,
+   "enemyHp": 764,
+   "enemyGuard": 65,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90013",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90013,
+   "win": true,
+   "turns": 13,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.7797202797202797,
+   "courageCost": 17,
+   "takenBySeat": [
+    0,
+    16,
+    6,
+    17
+   ],
+   "hitsBySeat": [
+    8,
+    5,
+    3,
+    5
+   ],
+   "blockedBySeat": [
+    54,
+    42,
+    16,
+    16
+   ],
+   "aimed": 167,
+   "blocked": 128,
+   "partyGuard": 977,
+   "spread": 0.5384615384615384,
+   "enemyHp": 764,
+   "enemyGuard": 74,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90026",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90026,
+   "win": true,
+   "turns": 14,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.593167701863354,
+   "courageCost": 66,
+   "takenBySeat": [
+    37,
+    29,
+    20,
+    16
+   ],
+   "hitsBySeat": [
+    4,
+    11,
+    9,
+    7
+   ],
+   "blockedBySeat": [
+    19,
+    41,
+    31,
+    23
+   ],
+   "aimed": 216,
+   "blocked": 114,
+   "partyGuard": 655,
+   "spread": 0.803921568627451,
+   "enemyHp": 764,
+   "enemyGuard": 73,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90039",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90039,
+   "win": true,
+   "turns": 11,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.7877813504823151,
+   "courageCost": 34,
+   "takenBySeat": [
+    16,
+    2,
+    27,
+    11
+   ],
+   "hitsBySeat": [
+    4,
+    6,
+    6,
+    6
+   ],
+   "blockedBySeat": [
+    6,
+    40,
+    21,
+    34
+   ],
+   "aimed": 157,
+   "blocked": 101,
+   "partyGuard": 566,
+   "spread": 0.6428571428571428,
+   "enemyHp": 764,
+   "enemyGuard": 54,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90052",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90052,
+   "win": true,
+   "turns": 9,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.6971830985915493,
+   "courageCost": 16,
+   "takenBySeat": [
+    34,
+    1,
+    14,
+    3
+   ],
+   "hitsBySeat": [
+    6,
+    4,
+    3,
+    1
+   ],
+   "blockedBySeat": [
+    11,
+    20,
+    7,
+    12
+   ],
+   "aimed": 102,
+   "blocked": 50,
+   "partyGuard": 509,
+   "spread": 0.4358974358974359,
+   "enemyHp": 764,
+   "enemyGuard": 54,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90065",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90065,
+   "win": true,
+   "turns": 12,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8134556574923547,
+   "courageCost": 48,
+   "takenBySeat": [
+    21,
+    0,
+    25,
+    14
+   ],
+   "hitsBySeat": [
+    4,
+    6,
+    7,
+    7
+   ],
+   "blockedBySeat": [
+    20,
+    33,
+    10,
+    24
+   ],
+   "aimed": 147,
+   "blocked": 87,
+   "partyGuard": 677,
+   "spread": 0.6444444444444444,
+   "enemyHp": 764,
+   "enemyGuard": 68,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90078",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90078,
+   "win": true,
+   "turns": 12,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.7116788321167883,
+   "courageCost": 14,
+   "takenBySeat": [
+    11,
+    0,
+    15,
+    16
+   ],
+   "hitsBySeat": [
+    3,
+    2,
+    5,
+    8
+   ],
+   "blockedBySeat": [
+    11,
+    12,
+    18,
+    56
+   ],
+   "aimed": 139,
+   "blocked": 97,
+   "partyGuard": 826,
+   "spread": 0.6666666666666667,
+   "enemyHp": 764,
+   "enemyGuard": 74,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90091",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90091,
+   "win": true,
+   "turns": 16,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.6018808777429467,
+   "courageCost": 89,
+   "takenBySeat": [
+    34,
+    36,
+    8,
+    27
+   ],
+   "hitsBySeat": [
+    7,
+    14,
+    5,
+    12
+   ],
+   "blockedBySeat": [
+    35,
+    57,
+    16,
+    50
+   ],
+   "aimed": 263,
+   "blocked": 158,
+   "partyGuard": 997,
+   "spread": 0.7682539682539682,
+   "enemyHp": 764,
+   "enemyGuard": 88,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90104",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90104,
+   "win": true,
+   "turns": 12,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.6611295681063123,
+   "courageCost": 56,
+   "takenBySeat": [
+    14,
+    12,
+    16,
+    33
+   ],
+   "hitsBySeat": [
+    2,
+    4,
+    4,
+    5
+   ],
+   "blockedBySeat": [
+    2,
+    27,
+    11,
+    14
+   ],
+   "aimed": 129,
+   "blocked": 54,
+   "partyGuard": 841,
+   "spread": 0.7466666666666666,
+   "enemyHp": 764,
+   "enemyGuard": 66,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90117",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90117,
+   "win": true,
+   "turns": 14,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.6868686868686869,
+   "courageCost": 34,
+   "takenBySeat": [
+    8,
+    2,
+    26,
+    34
+   ],
+   "hitsBySeat": [
+    5,
+    13,
+    7,
+    7
+   ],
+   "blockedBySeat": [
+    20,
+    84,
+    10,
+    53
+   ],
+   "aimed": 237,
+   "blocked": 167,
+   "partyGuard": 841,
+   "spread": 0.5238095238095238,
+   "enemyHp": 764,
+   "enemyGuard": 79,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90130",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90130,
+   "win": true,
+   "turns": 11,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.637223974763407,
+   "courageCost": 74,
+   "takenBySeat": [
+    11,
+    37,
+    31,
+    17
+   ],
+   "hitsBySeat": [
+    2,
+    5,
+    4,
+    4
+   ],
+   "blockedBySeat": [
+    5,
+    32,
+    20,
+    10
+   ],
+   "aimed": 163,
+   "blocked": 67,
+   "partyGuard": 610,
+   "spread": 0.7222222222222222,
+   "enemyHp": 764,
+   "enemyGuard": 68,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90143",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90143,
+   "win": true,
+   "turns": 12,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.8040540540540541,
+   "courageCost": 9,
+   "takenBySeat": [
+    17,
+    12,
+    6,
+    10
+   ],
+   "hitsBySeat": [
+    5,
+    11,
+    2,
+    5
+   ],
+   "blockedBySeat": [
+    11,
+    75,
+    6,
+    35
+   ],
+   "aimed": 172,
+   "blocked": 127,
+   "partyGuard": 742,
+   "spread": 0.8074074074074074,
+   "enemyHp": 764,
+   "enemyGuard": 68,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90156",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90156,
+   "win": true,
+   "turns": 13,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.46179401993355484,
+   "courageCost": 121,
+   "takenBySeat": [
+    62,
+    24,
+    43,
+    11
+   ],
+   "hitsBySeat": [
+    9,
+    3,
+    6,
+    6
+   ],
+   "blockedBySeat": [
+    34,
+    23,
+    15,
+    38
+   ],
+   "aimed": 250,
+   "blocked": 110,
+   "partyGuard": 802,
+   "spread": 0.6666666666666667,
+   "enemyHp": 764,
+   "enemyGuard": 73,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90169",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90169,
+   "win": true,
+   "turns": 10,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.7322580645161291,
+   "courageCost": 40,
+   "takenBySeat": [
+    5,
+    4,
+    0,
+    43
+   ],
+   "hitsBySeat": [
+    2,
+    7,
+    1,
+    4
+   ],
+   "blockedBySeat": [
+    9,
+    36,
+    4,
+    23
+   ],
+   "aimed": 124,
+   "blocked": 72,
+   "partyGuard": 590,
+   "spread": 0.23076923076923073,
+   "enemyHp": 764,
+   "enemyGuard": 54,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90182",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90182,
+   "win": true,
+   "turns": 13,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.6158940397350994,
+   "courageCost": 59,
+   "takenBySeat": [
+    67,
+    0,
+    6,
+    14
+   ],
+   "hitsBySeat": [
+    11,
+    3,
+    4,
+    6
+   ],
+   "blockedBySeat": [
+    20,
+    21,
+    11,
+    19
+   ],
+   "aimed": 158,
+   "blocked": 71,
+   "partyGuard": 820,
+   "spread": 0.30651340996168586,
+   "enemyHp": 764,
+   "enemyGuard": 65,
+   "botErrors": 0,
+   "errors": []
+  },
+  {
+   "nodeId": "bench-90195",
+   "type": "boss",
+   "tier": "boss",
+   "encounter": "foyer-boss",
+   "name": "The Butler",
+   "region": "foyer",
+   "histLen": 0,
+   "size": 4,
+   "seed": 90195,
+   "win": true,
+   "turns": 10,
+   "timeout": false,
+   "fallen": 0,
+   "courageLeft": 0.6533333333333333,
+   "courageCost": 65,
+   "takenBySeat": [
+    26,
+    58,
+    0,
+    12
+   ],
+   "hitsBySeat": [
+    4,
+    5,
+    1,
+    4
+   ],
+   "blockedBySeat": [
+    22,
+    18,
+    6,
+    12
+   ],
+   "aimed": 154,
+   "blocked": 58,
+   "partyGuard": 719,
+   "spread": 0.5,
+   "enemyHp": 764,
+   "enemyGuard": 54,
+   "botErrors": 0,
+   "errors": []
+  }
+ ],
+ "errors": []
+}

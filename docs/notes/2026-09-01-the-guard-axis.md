@@ -435,3 +435,52 @@ at 110%. It is the only tier row in the game that costs more than the pool it
 is fighting, and the bot fix barely touched it. That is a content finding, not
 a harness one, and it is the first thing in this investigation that has survived
 every re-measurement.
+
+## Co-op re-measured, and the raw comparison lies twice
+
+Both party bosses re-run at the recorded config (n=16, sizes 1 and 4,
+marmalade+bones, seed 90000). Neither headline number means what it looks like.
+
+### The Butler: the mover is a deleted curve, not the bot
+
+    size   win%            cost            effective 4p pool multiple
+    1      62.5 -> 68.8    47.4 -> 44.2
+    4     100.0 -> 100.0   16.2 -> 49.5    3.20 -> 5.70
+
+`528/165 = 3.20` is exactly the last value of `partyHp: [1, 2.2, 2.8, 3.2]`,
+the curve `butler.js` records as **cut** because it had been "fitted to a broken
+instrument" — `lib/bot.js` turtling, the same defect class fixed today, found on
+2026-08-28. The baseline artifact predates the removal. So the 3.20 -> 5.70 jump
+and most of the cost change are that deletion, not the damage term.
+
+What survives: **`fallen 0.00` at four Kids across 16 fights.** Nobody has ever
+gone down. Solo drops someone in 31%. Four Kids now pay a real cost (49.5 vs
+solo's 44.2) and still win every time, at `spread 0.60` — the damage is being
+distributed, never concentrated into a kill.
+
+### The Governess: content drift, then a small real regression of mine
+
+Solo win 62.5% (August) -> 12.5% (now). Isolated on CURRENT content, same seeds,
+only the damage term moving:
+
+    coefficient      0.0     0.15
+    solo win        25.0%   12.5%
+    solo fallen      0.75    0.88
+    solo cost        63.2    67.6
+    solo turns        7.5    10.1
+    4p win          93.8%   93.8%
+
+So the collapse is **two causes**: 62.5 -> 25.0 is content drift since August and
+nothing to do with the bot; 25.0 -> 12.5 is mine. At n=16 that is 4 wins against
+2 — well inside noise on the win rate alone — but all four metrics move the same
+way, which is more than the win rate is saying by itself. Four Kids are
+untouched either way.
+
+**Keeping 0.15.** Against one boss losing perhaps two solo fights of sixteen:
+run.py past-30 8->5 and board-over-40% 5->1, boss ladder swing +32% and win
+26->30%, elite win 79->83%, standard unchanged, Butler solo 62.5->68.8. The
+Governess is recorded here as the one place it measured worse.
+
+**And the Governess at 25% solo on the old bot is a finding in its own right** -
+nobody measured her after whatever content moved between 2026-08-29 and now.
+That is a difficulty regression the co-op question was hiding.
