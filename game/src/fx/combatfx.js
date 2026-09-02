@@ -60,7 +60,14 @@ export class CombatFX {
     this.el = layer;
     this.canvas = layer.querySelector('canvas');
     this.$nums = layer.querySelector('.cb-fx__nums');
-    this.g = this.canvas.getContext('2d', { alpha: true, desynchronized: true });
+    /* NO `desynchronized: true` HERE. It is the low-latency hint, and it lets
+       this canvas present OUTSIDE the page's compositing sync — which on
+       Windows/Chromium tears and flickers when the layer sits on top of the
+       WebGL canvas, as this one does. Observed 2026-09-01 as a constant
+       full-screen flicker in combat that briefly stopped on every `impact()`
+       (the hit flash forces a full composite) and resumed immediately after.
+       The latency this buys is worth nothing to particles and damage numbers. */
+    this.g = this.canvas.getContext('2d', { alpha: true });
 
     // ── pools ────────────────────────────────────────────────────────────
     this.n = 0;
