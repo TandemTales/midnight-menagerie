@@ -39,6 +39,57 @@ None of those cost the player anything. **There was no second Watcher among
 them**, and that is worth recording so nobody runs this sweep again expecting
 one.
 
+### The full verdict list, so the pass is not repeated
+
+A tool that prints candidates is worth nothing until somebody confirms them. All
+twelve survivors, checked against their region's design chapter:
+
+| flag | verdict |
+|---|---|
+| `ballroom.guarding`, `crypt.caging` | the protection really runs on `_curtain` and a status |
+| `kennels.tuckedId` | mirrors a `tucked` status the untuck loop scans directly |
+| `greenhouse.attackDamage` | zeroed each turn, never incremented |
+| `foyer.calledService` | looks like a summon cap that is already `board(c).length < 3` |
+| `heart.damageDone` | superseded by the engine's `damageTakenThisTurn`, which `nextMove` reads |
+| `heart.restUntil` | the effect is a `costRule`, which carries its own duration |
+| `ballroom.drank`, `ballroom.offerId` | the invitation card does the work |
+| `harvest-king.markWas`, `governess.lastEmergencyCycle`, `kennelmaster.thought` | records of something already handled |
+
+**All dead weight.** Checking the last one is what turned up something else.
+
+## The Patchwork Giant models its design perfectly and never said any of it
+
+`nursery.lastTorn` records the Patch that just tore off the Patchwork Giant.
+Chasing why nothing read it: `docs/design/regions/02-nursery.md` §13 gives the
+Giant three **named** Patches, each with its own ability — Bear (+3 damage),
+Pillow (6 Guard at the start of its turn), Spring (its first attack each cycle
+splits into two at 60%) — and states the identity outright:
+
+> The player feels like they are literally dismantling it.
+
+The code is faithful to all of it: `damageFn` and `hitsFn` on both attacks,
+`atkBonus` folding Bear and Loose Stuffing and Coming Apart together, `springs()`
+splitting the cycle's first attack, thresholds at 90 / 60 / 30 scaled to `maxHp`.
+Every number is right.
+
+**What it never did was say any of it.** `nursery.js` contained no
+`announceRule` and no `c.say` at all, so three distinct named abilities reached
+the player as a counter reading `patches 2`. Which two, and what the Giant had
+just lost, were not readable anywhere. You cannot feel like you are dismantling
+something if you cannot see which pieces have come off.
+
+So `lastTorn` finally has the job it was written for: it names the loss. One
+card, keyed `patch:<self.id>` so the Giant replaces its own announcement rather
+than adding one per tear — three House Rule cards fit and the fourth lands on
+the Kid's portrait. The Giant is solo in its only formation, so this is the only
+card on the board.
+
+`tests/nursery/check.py` 64 → 71, proved to see: with the announcement removed
+all seven go red. The control line is the useful part — it reports
+`left ['spring']`, so two Patches genuinely tore and only the **display** was
+missing. This mechanic was never broken. It was invisible, which on the quality
+bar this project holds is the same thing.
+
 ## The fourteenth was real: the Topiary Beast never got its shell bonus
 
 `docs/design/regions/05-greenhouse.md` §7 authors the Tortoise form in two
