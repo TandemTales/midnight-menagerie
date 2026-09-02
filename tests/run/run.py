@@ -141,8 +141,9 @@ async def main(a):
                      "won " if w["won"] else "LOST", w["cost"],
                      "%d%%" % w.get("leftPct", 0),
                      w.get("wall", 0), w.get("land", 0))
-                  + "  swing %-5s abs %-4s" % (w.get("swing", 0),
-                                               "%d%%" % w.get("absorbed", 0))
+                  + "  swing %-5s abs %-4s cpt %-4s" % (w.get("swing", 0),
+                                                          "%d%%" % w.get("absorbed", 0),
+                                                          w.get("cpt", 0))
                   + "  summoned %-4d pierce %d %s"
                   % (w.get("summoned", 0), w.get("pierce", 0),
                      ",".join(i.split("/")[-1] for i in (w.get("pierceIds") or []))
@@ -162,6 +163,9 @@ async def main(a):
         print("    abs = the share the board ate. land 0.3 with swing 4.4 and abs 93%")
         print("    is a wall. land 0.3 with swing 0.3 and abs 0% is a deck doing")
         print("    nothing, which no boss change fixes.")
+        print("    cpt = Tricks played per turn. Near 0 is a turn loop that never")
+        print("    acted; normal cpt with ~0 swing is a deck that acted and could")
+        print("    not hurt anything. Different bugs.")
         print("    in `turns`.")
         print("    pierce = cards in the deck whose text ignores Guard, and the")
         print("    game has four of them across two of sixteen companions. pierce 0")

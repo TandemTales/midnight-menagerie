@@ -12,53 +12,67 @@ found by a gate added yesterday, and it is the one open thing in the game layer.
 `combat/engine.js`'s `_losePatience` escalates every enemy past turn 30 so a
 fight cannot fail to end, and its comment claims it is "far outside reachable
 play … the longest fight any region gate produces is 24. Nothing a player will
-ever see is touched by this." **Nothing checked that.** Across 535 real fights
+ever see is touched by this." **Nothing checked that.** Across 491 real fights
 in fifty seeded expeditions:
 
-    longest fight        87 turns   graveyard/boss
-    past 24 turns        13
-    past 30 turns         9   <- _losePatience fired, in ordinary play
+    longest fight        59 turns   graveyard/boss
+    past 24 turns        14
+    past 30 turns         8   <- _losePatience fired, in ordinary play
 
-All ten of the longest are BOSSES and eight of the nine were LOST. The
+All ten of the longest are BOSSES and six of the eight were LOST. The
 termination guarantee is doing the killing.
 
-━━ AND IT IS THREE DEFECTS, NOT ONE ━━
+━━ AND IT IS FIVE MECHANISMS, NOT ONE ━━
 
-The run ledger prints `wing`, `left`, `wall`, `land` and `summoned` now, and
-they separate three things the `turns` column cannot:
+The ledger prints `wing`, `left`, `wall`, `land`, `swing`, `abs`, `cpt`,
+`summoned` and `pierce` now, and they separate things `turns` cannot:
 
-    turns  wing  region             left  wall  land  summoned
-      87     3   graveyard           64%   3.2   2.2      72   GUARD STALL
-      54     3   attic-observatory   66%   3.1   2.5       0   GUARD STALL
-      37     3   study-library       33%   6.0   6.6       0   GUARD STALL
-      56     2   greenhouse          68%   2.1   7.5     314   TREADMILL
-      55     2   greenhouse          69%   2.4   5.5     201   TREADMILL
-      52     3   greenhouse           0%   2.6  13.2     346   TREADMILL (won)
-      44     2   greenhouse          33%   2.7   9.9     210   TREADMILL
-      69     4   graveyard           27%   3.1   5.8     142   GRIND
-      55     2   lampworks           21%   1.4   9.5     122   GRIND
+    turns  who      region             left  wall  land  swing  abs   cpt  summoned
+      59   bones    graveyard           63%   3.2   2.2    2.9   24%  0.7       0
+      57   bones    attic-observatory   95%   4.1   0.3    0.3    0%  0.2       0
+      55   bones    greenhouse          69%   2.4   5.5    6.0    8%  1.3     201
+      46   mossbit  hedge-maze          62%   3.5   8.5    9.7   12%  2.1     226
+      38   taffy    study-library       96%   4.1   0.4    0.4    0%  1.0       0
+      37   pudding  study-library        6%   7.0   8.8   12.2   28%  1.5       0
 
-A **STALL** is `wall` at or above `land` with nothing summoned — the board
-re-raises Guard faster than the deck gets through, so the Courage bar cannot
-move. `engine.js` ~2918 already diagnosed this with numbers before anyone
-measured it: Guard is wiped and re-granted every turn, so what the player must
-beat is Guard PER TURN, and the Groundskeeper "sat at 203 of 350 Courage for the
-last hundred and forty" turns. The graveyard boss IS the Groundskeeper.
+**Read `abs` before `wall`.** A high `wall` beside a low `land` looks like a
+board out-raising a deck, and for the two worst fights in the game it is not:
+`abs 0%` means the board absorbed NOTHING, because the deck put out 0.3 a turn.
+An earlier version of this document called the attic-observatory row "the purest
+GUARD STALL in the game" on `wall > land` alone. It was never a Guard stall.
 
-A **TREADMILL** is the opposite reading and identical in `turns`: the greenhouse
-boss lands 7.5 a turn for 56 turns — 420 damage into a 464 board — and still
-faces 68% of it, because the Head Gardener keeps planting. That one is WORKING
-AS DESIGNED (three Beds, `sow` becomes `water` when they are full).
+    stuck loop    cpt near 0                  the deck never acts
+    inert deck    cpt normal, swing near 0    it acts and cannot hurt anything
+    guard stall   abs high, swing > 0         the board really is eating it
+    treadmill     summoned high               it gets through; more keeps arriving
+    grind         left near 0                 a long fight the deck is winning
 
-A **GRIND** is just a long fight the deck is winning slowly.
+Healthy fights run `cpt` 1.5-2.6. `bones` lands 15.3 a turn in kitchens-cellars
+and 0.3 against the Watcher, so neither top row is "the bot cannot play bones".
+**The two longest fights in the game are the first two kinds, and no Courage
+pool cut, route change, wall cap or piercing card reaches either.** Cause is
+NOT established - `web()` takes `cap = 4`, so the Watcher inflating card costs
+cannot price out a deck on its own. Start with `trace` on the seed.
 
-**A Courage pool cut reaches only the grinds.** Anything that moves Courage —
-scaling pools by route position, constraining the route, re-authoring seventeen
-pools — cannot move a bar the deck cannot dent, and the four worst fights are
-exactly that.
+The genuinely wall-shaped row is pudding/study-library - `wall 7.0`, `abs 28%` -
+and that deck got through to 6% left.
 
-**The remaining lever is Guard-per-turn against deck output at depth. That is a
-DESIGN call and it is the one thing this session deliberately did not take.**
+━━ CAN ANYONE ANSWER A GUARD WALL? 2% OF FIGHTS ━━
+
+`pierce` counts cards in the deck whose TEXT ignores Guard. **11 of 491 fights
+(2%) held one.** `marmalade` 11/41 (27%) is the only nonzero row in the whole
+roster; `hush` holds two of the game's four piercing cards and drew neither in
+17 fights, because both are RARE. `rescueCompanion()` adds clues and Courage but
+NO CARDS, so a run's answer to Guard is fixed at companion select and cannot
+change afterwards.
+
+StS2's answer to enemy Block is not a cap. It flattens Block's GROWTH - co-op
+Block was deliberately decoupled from the HP curve to a flat x2 while every
+other defensive buff kept a rising curve - and answers it with channels that
+never touch Block at all: Poison and Doom. We have `dread` in
+`combat/statuses.js` at exact StS-poison parity (`ignoreBlock`, stacks, ticks
+at turn start) with an icon drawn for it, no tooltip, no `docs/design/` entry,
+and NOTHING anywhere that applies it.
 
 ━━ HOW THAT WAS FOUND, WHICH MATTERS MORE THAN THE FINDING ━━
 
@@ -78,7 +92,15 @@ is wing THREE. Meanwhile the four longest ended with the boss 64–69% ALIVE,
 which is the Guard reading, and the diagnosis was already sitting three lines
 above the mechanism I was instrumenting.
 
-**Measure the cause before you name it, even when the story is good.**
+**And then I did it again, one layer down.** "The four longest ended with the
+boss 64-69% ALIVE, which is the Guard reading" is the same move: a number that
+FITS the Guard story, named as the Guard story, without the one field that
+could refute it. `abs` refuted it - the board absorbed 0% of those fights,
+because the deck put out 0.3 a turn. Two sessions, two confident causes, both
+wrong, both from a metric that could not tell the difference.
+
+**Measure the cause before you name it, even when the story is good — and
+especially when you have just been burned for naming one.**
 
 ━━ THE INSTRUMENTS, AND WHAT EACH ONE CAN SEE ━━
 
@@ -235,7 +257,9 @@ RUN on 2026-09-01 against this tree.
 ━━ WHAT IS OPEN ━━
 
 1. **THE OVER-30 GATE.** Top of this document. The only open defect in the game
-   layer, and its fix is a design call on the Guard axis.
+   layer - but NOT one defect and NOT primarily a Guard problem. The two longest
+   fights are a stuck turn loop (`cpt 0.2`) and an inert deck (`swing 0.4`), and
+   the cause of neither is proven. Measure before naming one.
 2. **NO APPLICATION EXISTS.** No `package.json`, no Electron, no Tauri. The game
    is a folder of ES modules served by `tools/devserver.py`. `platform/index.js`
    specifies the host bridge carefully and `tests/platform/run.py` exercises all
