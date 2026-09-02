@@ -807,6 +807,38 @@ export const toyChest = {
  */
 const GIANT_CYCLE = ['stuffed-fist', 'sit-down', 'wild-flail', 'coming-apart'];
 
+/**
+ * §13's three Patches, on screen. Each is a different ability and the design
+ * identity is "the player feels like they are literally dismantling it", which
+ * needs the player to know WHICH pieces are left rather than how many. Before
+ * this the whole mechanic reached them as a counter reading `patches 2`, and
+ * this file contained no `announceRule` and no `c.say` at all.
+ *
+ * Keyed `patch:<self.id>` so the Giant REPLACES its own card instead of adding
+ * one per tear: three House Rule cards fit and the fourth lands on the Kid's
+ * portrait.
+ */
+const PATCH_TEXT = {
+  bear: 'Bear — its attacks deal 3 more',
+  pillow: 'Pillow — 6 Guard at the start of its turn',
+  spring: 'Spring — its first attack each cycle splits into two',
+};
+
+function announcePatches(c) {
+  const left = mem(c).patches || [];
+  const lost = mem(c).lastTorn;
+  const stuffing = patchworkGiant.stuffing(c);
+  c.announceRule({
+    id: `patch:${c.self.id}`,
+    name: left.length ? `Patches ${left.length} / 3` : 'Coming Apart',
+    text: (lost ? `The ${lost} Patch tears away. ` : '')
+      + (left.length
+        ? `${left.map(p => PATCH_TEXT[p]).join('. ')}.`
+        : 'Every Patch is gone.')
+      + (stuffing ? ` Loose Stuffing ${stuffing}: every hit deals ${stuffing} more.` : ''),
+  });
+}
+
 export const patchworkGiant = {
   id: 'patchwork-giant',
   name: 'The Patchwork Giant',
@@ -827,6 +859,8 @@ export const patchworkGiant = {
     mem(c).patches = ['bear', 'pillow', 'spring'];
     mem(c).torn = 0;
     setCnt(c, 'patches', 3);
+    mem(c).lastTorn = null;
+    announcePatches(c);
     setCnt(c, 'loose-stuffing', 0);
   },
 
@@ -885,6 +919,7 @@ export const patchworkGiant = {
       setCnt(c, 'patches', (mem(c).patches || []).length);
       addCnt(c, 'loose-stuffing', flag(c, 'stuffingPerTear', 2), 99);
       mem(c).lastTorn = p;
+      announcePatches(c);
     }
   },
 

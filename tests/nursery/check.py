@@ -224,6 +224,35 @@ async ([hurtAlly]) => {
 }
 """
 
+# -- 5. The Giant's Patches are READABLE, not just counted --------------------
+PATCHES = r"""
+async ([tear]) => {
+  const e = make(['patchwork-giant']);
+  await e.startCombat();
+  const g = body(e, 'patchwork-giant');
+  const card = () => (e.rules || []).find(r => String(r.id).startsWith('patch:')) || null;
+  const opening = card();
+  /* Drop it past the 90 / 60 / 30 thresholds so Patches really tear. They
+     scale with maxHp, so drive it by fraction rather than a literal, then land
+     one real hit so `onDamaged` runs. */
+  if (tear) {
+    setHp(g, Math.round(g.maxHp * 0.45));
+    e.dealDamage({ attacker: e.player, defender: g, amount: 1, kind: 'attack',
+                   card: { type: 'attack' } });
+  }
+  const after = card();
+  return {
+    tear,
+    openingName: opening && opening.name,
+    openingText: opening && opening.text,
+    afterName: after && after.name,
+    afterText: after && after.text,
+    cards: (e.rules || []).filter(r => String(r.id).startsWith('patch:')).length,
+    left: (g.mem || {}).patches || [],
+  };
+}
+"""
+
 # ── 4. Rocking Horse: Excitement comes off the BOARD, not off itself ──────────
 HORSE = r"""
 async ([mode]) => {
@@ -629,6 +658,31 @@ async def main(a):
         check(total_lies == 0,
               "no enemy phase in the whole region took more than its intents promised",
               "; ".join(worst[:3]) or f"{len(ids)} formations audited")
+
+        # == the Giant's Patches reach the screen, not just a counter =======
+        whole = await page.evaluate(PATCHES, [False])
+        torn = await page.evaluate(PATCHES, [True])
+        check(whole["openingName"] == "Patches 3 / 3",
+              "the Giant opens by naming how many Patches it has",
+              str(whole["openingName"]))
+        for patch in ("Bear", "Pillow", "Spring"):
+            check(patch in (whole["openingText"] or ""),
+                  "and the card names the " + patch + " Patch and what it does "
+                  "(13 gives each one its own ability)",
+                  (whole["openingText"] or "")[:120])
+        check(len(torn["left"]) < 3 and torn["afterName"] != whole["openingName"],
+              "CONTROL: driven past a threshold a Patch really tears and the "
+              "card really changes",
+              str(whole["openingName"]) + " -> " + str(torn["afterName"])
+              + ", left " + str(torn["left"]))
+        check("tears away" in (torn["afterText"] or ""),
+              "and it NAMES the Patch that just came off - which is what "
+              "'the player feels like they are literally dismantling it' needs",
+              (torn["afterText"] or "")[:120])
+        check(torn["cards"] == 1,
+              "and it REPLACES its own card rather than adding one per tear "
+              "(three House Rule cards fit; the fourth buries the portrait)",
+              str(torn["cards"]) + " patch cards")
 
         check(not errors, "zero console errors", "; ".join(errors[:3]))
         await browser.close()
