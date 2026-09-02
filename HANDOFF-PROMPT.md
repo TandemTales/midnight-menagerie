@@ -355,8 +355,16 @@ was never wrong; nobody asked which room it was pointing at.
    is a folder of ES modules served by `tools/devserver.py`. `platform/index.js`
    specifies the host bridge carefully and `tests/platform/run.py` exercises all
    of it — against `installFakeHost()`. **There is nothing to put in a depot.**
-   Blocked on a toolchain: this machine has no node, npm, cargo or rustc.
-   `winget install OpenJS.NodeJS.LTS` unblocks it and is Josh's to run.
+   **NO LONGER BLOCKED ON THE TOOLCHAIN (2026-09-02).** `winget install
+   OpenJS.NodeJS.LTS` has been run: **node v24.19.0, npm 11.17.0**, at
+   `C:\Program Files
+odejs\`. A shell started before the install will not
+   have it on PATH — call it by full path or restart the host.
+   Still no cargo/rustc, so ELECTRON is available today and TAURI would need
+   `winget install Rustlang.Rustup` first. That choice is unmade and it is the
+   next real decision: it sets bundle size, the Steam overlay path, and how
+   `platform/index.js`'s host bridge gets implemented for real instead of
+   against `installFakeHost()`.
 3. **STEAM APP ID.** Josh only. Gates achievements, Cloud, the controller
    layout, P2P and Deck Verified.
 4. **ART.** 1470 cards with zero illustrations (`ui/cardart.js` generates them
