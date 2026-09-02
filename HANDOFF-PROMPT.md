@@ -22,6 +22,27 @@ in fifty seeded expeditions:
 All ten of the longest are BOSSES and six of the eight were LOST. The
 termination guarantee is doing the killing.
 
+**AND MOST OF IT IS THE BOT, NOT THE GAME. Read this before you retune
+anything.** In the 57-turn attic-observatory fight the bot held `nerve 3`,
+`hand 5` and `legal 4.3` — four playable cards every turn — and played 0.2 a
+turn. The same companion in the fight it WON: identical Nerve, hand and legal
+count, `cpt 2.4`. Nothing was denied; it passed.
+
+Controlled A/B, one variable: play only that boss with `naiveTurn` and leave
+everything upstream to the competent bot, so the same deck meets the same
+board. Seed 379133, bones:
+
+    competent   57 turns, 95% of the board alive, LOST, run ends there
+    naive       under 30 turns, and the run continues to hedge-maze wing 4
+
+With that boss naive the new longest is hedge-maze at 63 turns — `cpt 0.6`,
+`legal 4.4`, same signature. The pathology follows the bot, not the boss.
+`bot.js` already has a naive floor for it ("the beam occasionally talks itself
+into a long grind") but takes it only when `heur.score > baseline.score`,
+scored by the same function whose bias it exists to correct — and `staticScore`
+pays +0.9 per UNSPENT Nerve and +0.7 per HELD card, for a Nerve pool that does
+not carry across turns. First place to look; still a hypothesis.
+
 ━━ AND IT IS FIVE MECHANISMS, NOT ONE ━━
 
 The ledger prints `wing`, `left`, `wall`, `land`, `swing`, `abs`, `cpt`,
@@ -256,10 +277,11 @@ RUN on 2026-09-01 against this tree.
 
 ━━ WHAT IS OPEN ━━
 
-1. **THE OVER-30 GATE.** Top of this document. The only open defect in the game
-   layer - but NOT one defect and NOT primarily a Guard problem. The two longest
-   fights are a stuck turn loop (`cpt 0.2`) and an inert deck (`swing 0.4`), and
-   the cause of neither is proven. Measure before naming one.
+1. **THE OVER-30 GATE.** Top of this document. NOT one defect, NOT a Guard
+   problem, and mostly NOT a game defect: a controlled A/B shows the longest
+   fight in the game is `competentTurn` passing with four legal cards in hand.
+   Fix the bot's stop decision, or stop reading over-30 as a statement about
+   bosses. `bench()` in critic-design/lib/expedition.js runs the repeat trial.
 2. **NO APPLICATION EXISTS.** No `package.json`, no Electron, no Tauri. The game
    is a folder of ES modules served by `tools/devserver.py`. `platform/index.js`
    specifies the host bridge carefully and `tests/platform/run.py` exercises all

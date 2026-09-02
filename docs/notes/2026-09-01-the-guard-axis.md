@@ -270,3 +270,58 @@ they are the two that produced the longest fights in the game:
     inert deck    cpt normal, swing near 0       the deck acts and cannot hurt
 
 Neither is reached by a pool cut, a route change, a wall cap, or pierce.
+
+## The longest fight in the game is the bot, not the board
+
+`nerve`, `hand` and `legal` sample what the bot was handed before it acts.
+Nothing was denied:
+
+    57t attic-observatory bones  nerve 3  hand 5  legal 4.3  cpt 0.2  LOST
+    38t study-library     taffy  nerve 3  hand 5  legal 5.0  cpt 1.0  LOST
+    30t kitchens-cellars  bones  nerve 3  hand 5  legal 4.2  cpt 2.4  won
+
+Same companion, same Nerve, same hand, same count of legal cards — and twelve
+times the play rate in the fight it won. The bot held four playable cards and
+passed, for fifty-seven turns.
+
+### The confounded test, kept because the confound is the lesson
+
+Swapping `naiveTurn` in everywhere dropped past-30 from 8 to 1 and raised `cpt`
+to 3.1-4.1. **That proves nothing.** Naive dies in the FOYER in 43 of 50 runs
+and never reaches attic-observatory or study-library at all, so those fights
+disappeared because it never got there. End-state distribution is the tell, and
+I nearly published the first number without looking at it.
+
+### The controlled test
+
+Play *only* the attic-observatory boss naively and leave everything upstream to
+the competent bot, so the same deck arrives at the same board and exactly one
+variable moves. Seed 379133, bones:
+
+    competent   57 turns   95% of the board alive   cpt 0.2   LOST, run ends
+    naive       under 30 turns (off the top-10)               run continues to
+                                                              hedge-maze, wing 4
+
+The naive bot resolves in half the turns what the beam spent 57 failing at, and
+the run survives two more wings. **The longest fight in the game is a property
+of `competentTurn`, not of the Watcher.**
+
+It is not one boss, either: with attic-observatory naive, the new longest is
+hedge-maze at 63 turns — `bones`, `cpt 0.6`, `legal 4.4`. Same signature. The
+bot does this wherever it reads a board as unwinnable.
+
+### What that means for the gate
+
+`tests/run/run.py` exits 1 on "over30 is a hard failure", and over-30 is
+substantially measuring the harness. `bot.js` already carries a naive floor for
+exactly this — *"the beam occasionally talks itself into a long grind"* — but
+takes it only when `heur.score > baseline.score`, scored by the same function
+whose bias it exists to correct, and `staticScore` pays **+0.9 per unspent
+Nerve and +0.7 per held card**. Nerve does not carry across turns, so at the
+stop decision that credit is for a resource about to evaporate. That is the
+first place to look, and it is still a hypothesis: I have not shown the beam
+picks an empty sequence *because* of those two terms.
+
+Caveat on the controlled test: once the first different card is played the RNG
+diverges, so it is one sample rather than a repeated trial. The effect is large
+enough to act on and small enough to re-check.
