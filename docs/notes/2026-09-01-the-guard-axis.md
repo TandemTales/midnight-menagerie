@@ -383,3 +383,25 @@ that could not see damage.** The ladder tables, the party sweeps, the Butler
 Courage curve — all upstream of it. That does not invalidate the *method* in any
 of them, but the absolute numbers should be re-measured before anything is tuned
 against them.
+
+## The boss wall table, re-measured
+
+"Every boss, against a constant wing-one deck" above concluded that three bosses
+raise a wall at or above the deck's entire output — study-library 0.92x,
+bathhouse 1.25x, heart 1.40x. **That table was measured with the bot that valued
+damage at zero.** Same config, same seed, fixed bot:
+
+                        wall/swing         swing
+      heart             1.40 -> 0.78     11.2 -> 16.5
+      bathhouse         1.26 -> 0.68      7.7 -> 12.7
+      study-library     0.91 -> 0.72      7.1 -> 11.1
+      mean                                12.0 -> 15.8
+
+**Nothing in the game is above 1.0 now**; the highest is the Heart at 0.78. The
+wall did not move — the deck started swinging. `wall` is a property of the boss
+and was measured correctly all along; `swing` was measuring the bot.
+
+The ladder's shape moved in BOTH directions, which is the argument for
+re-measuring the rest rather than assuming the fix only helps: pumpkin-grounds
+17% -> 58% win and secret-passages 17% -> 42%, against sleeping-quarters
+75% -> 58% and study-library 8% -> 0%.
