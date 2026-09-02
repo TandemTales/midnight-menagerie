@@ -357,8 +357,7 @@ was never wrong; nobody asked which room it was pointing at.
    of it — against `installFakeHost()`. **There is nothing to put in a depot.**
    **NO LONGER BLOCKED ON THE TOOLCHAIN (2026-09-02).** `winget install
    OpenJS.NodeJS.LTS` has been run: **node v24.19.0, npm 11.17.0**, at
-   `C:\Program Files
-odejs\`. A shell started before the install will not
+   `C:/Program Files/nodejs/`. A shell started before the install will not
    have it on PATH — call it by full path or restart the host.
    Still no cargo/rustc, so ELECTRON is available today and TAURI would need
    `winget install Rustlang.Rustup` first. That choice is unmade and it is the
