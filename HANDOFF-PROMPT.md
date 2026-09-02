@@ -62,9 +62,25 @@ established as working as designed. **So after the fix there is no
 Guard-stall-shaped fight left in the sample at all.** What remains is one
 grind, two long fights the deck WON, and two treadmills.
 
-**Every balance number predating this was measured by a bot that could not see
-damage** — ladder tables, party sweeps, the Butler curve. The methods stand;
-the absolute numbers want re-measuring before anything is tuned against them.
+**What that invalidates, measured rather than assumed.** Three tiers re-run at
+the same config and seed. The degeneracy needs `turnsLeft` to SATURATE at its
+28 cap, so it must scale with the Courage pool and vanish on small ones:
+
+    standard   small pool   win 99% -> 99%    turns  6.6 -> 6.4   (-0.2)
+    elite      pool 205     win 79% -> 83%    turns 14.8 -> 14.2  (-0.6)
+    boss       large pool   win 26% -> 30%    turns 25.7 -> 23.9  (-1.8)
+
+That gradient was predicted by the mechanism and not fitted to it, which is
+better evidence than the fix working — a wrong cause produces that too.
+
+So: **re-measure BOSS and ELITE baselines before tuning against them; the
+ordinary-content tables stand.** `ladder-*-dmgterm.json` are the new ones, kept
+beside the originals. Party sweeps and the Butler curve are boss-tier and have
+NOT been re-run.
+
+**One content finding survived every re-measurement:** `hedge-maze` ELITE wins
+19% at 108% of the Courage pool — the only tier row in the game that costs more
+than the pool it fights, and the bot fix barely moved it.
 
 ━━ AND IT IS FIVE MECHANISMS, NOT ONE ━━
 
