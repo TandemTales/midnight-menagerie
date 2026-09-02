@@ -254,3 +254,63 @@ The gate is red on purpose and now names the measured cause.
 
 `python tests/critic-design/ladder.py [--tier elite|boss]`, results committed as
 `ladder-result.json`, `ladder-elite.json` and `ladder-boss.json`.
+
+## 2026-09-02 — the flatness is AUTHORED, and depth-scaling Courage does not fix it
+
+### Where the flatness comes from
+
+Mean normal-tier enemy Courage, per region, straight out of the implementation
+(and therefore out of the chapters, since `tests/design-courage` is green):
+
+    foyer 28.8 · nursery 33.8 · sleeping-quarters 32.2 · kitchens 34.2
+    greenhouse 28.4 · graveyard 30.3 · study-library 32.7 · attic 30.6
+    lampworks 32.2 · ballroom 33.0 · crypt 27.0 · hedge-maze 37.3
+    secret-passages 30.7 · bathhouse 32.5 · kennels 30.4 · pumpkin 35.3
+    heart 38.1
+
+**Slope +0.21 Courage per region step. First six mean 31.3, last six 34.1 — a 9%
+rise across the whole game.** Meanwhile the player goes from a ten-card deck
+holding one Keepsake to thirty cards holding twenty-nine, and finishes holding
+**29 of the game's 58 Keepsakes**.
+
+So the mansion is not a ladder because the seventeen chapters authored it at
+PARITY. No amount of moving numbers inside the 25-45 band makes a curve out of
+it, and that is why this note's per-region list never resolved into one.
+
+### The obvious fix, built and measured and REVERTED
+
+A single depth multiplier on enemy Courage — 1.00 at the Foyer rising linearly
+to 2.20 at the Heart, applied in `_makeEnemy` beside `partyHpScale` so summons
+scale with their parent, passed in by `state/run.js` so unit-test engines stay
+at 1.00 and every region gate keeps asserting authored numbers. Clean to build.
+It does not work:
+
+    fights reached   570 -> 488      runs die EARLIER
+    past 24 turns     14 -> 23
+    past 30 turns      6 -> 13       twice as many _losePatience failures
+    attic / bathhouse / heart cost   0.0% / 0.0% / 1.4%  ->  0.0% / 0.0% / 1.1%
+
+**The late game did not move at all.** More Courage on an enemy that cannot get
+through the player's Guard does not create threat; it creates a longer fight.
+The cost column at depth stayed at zero and the only thing that grew was turns.
+
+Reverted in full. Recorded because the next person to look at this note will
+have the same idea, and it costs an afternoon.
+
+### What the measurement actually points at
+
+Cost at depth is **zero**, not small. A wing-five player is not being *lightly*
+threatened, they are being missed entirely, so no multiplier on enemy Courage
+can reach them. The lever has to be one of:
+
+- **enemy DAMAGE by depth** — the engine has no damage scaling at all today
+  (there is no `partyDmg`/`damageScale`; StS2 deliberately does not scale attack
+  damage either, and gets its co-op threat from AoE breadth instead), or
+- **the Keepsake economy** — 29 of 58 in a finishing run, with treasure, boss,
+  Big Scare and Curiosity rooms each handing over ~1.0 per visit, or
+- **the player's Guard generation at depth**, which is what is actually
+  absorbing everything.
+
+All three are design calls with no authored target in `docs/design/`, which is
+the same wall this note hit the first time. The difference now is that the
+FLATNESS has a number (+0.21/region) and the obvious fix has been eliminated.
