@@ -34,7 +34,8 @@ async def main(a):
                                       errors.append(m.text) if m.type == "error" else None))
         page.on("pageerror", lambda e: errors.append("PAGEERROR " + str(e)))
 
-        await page.goto(URL, wait_until="load", timeout=60000)
+        url = URL + (("?runs=%d" % a.runs) if a.runs else "")
+        await page.goto(url, wait_until="load", timeout=60000)
         try:
             await page.wait_for_function("window.__RUN_RESULT__ !== undefined",
                                          timeout=int(a.wait * 1000))
@@ -337,5 +338,8 @@ async def main(a):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--wait", type=float, default=240.0)
+    # More expeditions for a MEASUREMENT pass. Deep regions get 1-5 boss
+    # fights at the default 50, which is too few to tune against.
+    ap.add_argument("--runs", type=int, default=0)
     ap.add_argument("--verbose", action="store_true")
     sys.exit(asyncio.run(main(ap.parse_args())))

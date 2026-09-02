@@ -58,9 +58,25 @@ ALLOWED = {
                     "margin at 28pp: 15 of 38 lost, Foyer deaths 28 -> 19, run victories 5 -> 10. See "
                     "docs/notes/2026-08-31-the-foyer-is-attrition-not-the-boss.md for why margin is the "
                     "number that predicts the loss rate."),
-    "Governess": (175, "Chapter 280 covers the pair; she ships at 175 with the Favorite Doll at 50, and "
-                       "measures at 63% of the player's pool - cheaper than the Butler."),
+    "Governess": (175, "Chapter 280 covers the pair; she ships at 175 with the Favorite Doll at 50. Cutting her to "
+                       "130 was TRIED on 2026-09-02 and reverted: it moved the price only 62% -> 60% of "
+                       "the pool and broke her phase-two test, because `phaseAt` scales the threshold "
+                       "with the pool. Her Courage is a weak lever; the Doll and her mechanics dominate "
+                       "the cost. The Nursery losing 16 of 24 boss fights is still open."),
+    "Groundskeeper": (165, "Chapter 330. Cut on 2026-09-02: the Graveyard was the most expensive boss in "
+                           "the game at 77% of the pool, 14pp margin, 9 of 12 lost. Unlike the Governess "
+                           "it responds strongly to Courage - 330 -> 165 took it to 37% and 3 of 12."),
+    "Archivist": (200, "Chapter 345. Cut on 2026-09-02 with the Study losing 10 of 13 at a 20pp margin. "
+                       "Also a weak lever: 345 -> 200 moved the price 71% -> 70%, so the Study is still "
+                       "an outlier and the cause is not its boss's Courage."),
 }
+
+# NOT TUNED, and deliberately so: the Head Gardener stays at his chapter's 320.
+# Lowering him was tried twice on 2026-09-02 (to 225 and to 230) and the
+# Greenhouse got HARDER both times - 68% of pool -> 81% and -> 79%. His fight is
+# a treadmill whose length is set by the three Beds, not by him, so cutting his
+# Courage shortens nothing and only moves his phase thresholds. Whatever fixes
+# the Greenhouse, it is not this number.
 
 
 def norm(s):

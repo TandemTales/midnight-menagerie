@@ -45,7 +45,7 @@ import {
 import { correct, TYPES, catalogueType, misfile, unfile } from '../enemies/study-library.js';
 
 const REGION = 'study-library';
-const SOLO_MAX = 345;
+const SOLO_MAX = 200;
 const PHASE_TWO_AT = 195;
 const FINAL_EDITION_AT = 75;
 

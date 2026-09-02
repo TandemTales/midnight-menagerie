@@ -32,7 +32,7 @@ import {
 import { countdown, countdownHit } from '../enemies/graveyard.js';
 
 const REGION = 'graveyard';
-const SOLO_MAX = 330;
+const SOLO_MAX = 165;
 const PHASE_TWO_AT = 190;
 
 /**

@@ -594,7 +594,13 @@ async function main() {
   const t0 = performance.now();
   useMemorySave();
 
-  const N = 50;
+  /* HOW MANY EXPEDITIONS. Fifty is the shipping number and the default, but
+     fifty runs give the DEEP regions one to five boss fights each, which is
+     too few to tune on - two sessions were spent chasing swings that were
+     sample noise. `?runs=` raises it for a measurement pass without changing
+     what the gate asserts. Seeds are unchanged, so the first fifty runs of a
+     larger pass are exactly the shipping fifty. */
+  const N = Math.max(1, Number(new URLSearchParams(location.search).get('runs')) || 50);
   const results = [];
   const lengths = [];
   const ends = {};
