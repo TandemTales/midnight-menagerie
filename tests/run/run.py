@@ -135,12 +135,15 @@ async def main(a):
         print("  a safety net that fires during ordinary content is a difficulty")
         print("  mechanic nobody designed, so over30 is a hard failure.")
         for w in (pat.get("worst") or [])[:10]:
-            print("    %3d turns  %-11s wing %-3s %-20s %-8s %s  cost %-4.0f left %-5s wall %-6s land %-5s"
-                  % (w["turns"], w.get("companion", "?"),
+            print("    %3d turns  %-11s seed %-11s wing %-3s %-20s %-8s %s  cost %-4.0f left %-5s wall %-6s land %-5s"
+                  % (w["turns"], w.get("companion", "?"), w.get("seed", "?"),
                      w.get("wing", "?"), w["region"], w["type"],
                      "won " if w["won"] else "LOST", w["cost"],
                      "%d%%" % w.get("leftPct", 0),
                      w.get("wall", 0), w.get("land", 0))
+                  + "  nerve %-4s hand %-5s legal %-4s" % (w.get("nerve", 0),
+                                                             w.get("hand", 0),
+                                                             w.get("legal", 0))
                   + "  swing %-5s abs %-4s cpt %-4s" % (w.get("swing", 0),
                                                           "%d%%" % w.get("absorbed", 0),
                                                           w.get("cpt", 0))
@@ -166,6 +169,10 @@ async def main(a):
         print("    cpt = Tricks played per turn. Near 0 is a turn loop that never")
         print("    acted; normal cpt with ~0 swing is a deck that acted and could")
         print("    not hurt anything. Different bugs.")
+        print("    nerve/hand/legal = Nerve, cards in hand, and cards actually")
+        print("    LEGAL to play, averaged over the turns the bot was handed.")
+        print("    legal near 0 says why a turn played nothing; nerve and hand say")
+        print("    which denial did it.")
         print("    in `turns`.")
         print("    pierce = cards in the deck whose text ignores Guard, and the")
         print("    game has four of them across two of sixteen companions. pierce 0")
