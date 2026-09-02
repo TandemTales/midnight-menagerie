@@ -135,11 +135,14 @@ async def main(a):
         print("  a safety net that fires during ordinary content is a difficulty")
         print("  mechanic nobody designed, so over30 is a hard failure.")
         for w in (pat.get("worst") or [])[:10]:
-            print("    %3d turns  wing %-3s %-20s %-8s %s  cost %-4.0f left %-5s wall %-6s land %-5s"
-                  % (w["turns"], w.get("wing", "?"), w["region"], w["type"],
+            print("    %3d turns  %-11s wing %-3s %-20s %-8s %s  cost %-4.0f left %-5s wall %-6s land %-5s"
+                  % (w["turns"], w.get("companion", "?"),
+                     w.get("wing", "?"), w["region"], w["type"],
                      "won " if w["won"] else "LOST", w["cost"],
                      "%d%%" % w.get("leftPct", 0),
                      w.get("wall", 0), w.get("land", 0))
+                  + "  swing %-5s abs %-4s" % (w.get("swing", 0),
+                                               "%d%%" % w.get("absorbed", 0))
                   + "  summoned %-4d pierce %d %s"
                   % (w.get("summoned", 0), w.get("pierce", 0),
                      ",".join(i.split("/")[-1] for i in (w.get("pierceIds") or []))
@@ -155,6 +158,10 @@ async def main(a):
         print("    summoned = Courage that arrived DURING the fight. High here with a")
         print("    low wall is a treadmill, not a wall: the deck is getting through")
         print("    and the board keeps refilling. Three different defects, one column")
+        print("    swing = damage the deck PUT OUT per turn, landed plus absorbed;")
+        print("    abs = the share the board ate. land 0.3 with swing 4.4 and abs 93%")
+        print("    is a wall. land 0.3 with swing 0.3 and abs 0% is a deck doing")
+        print("    nothing, which no boss change fixes.")
         print("    in `turns`.")
         print("    pierce = cards in the deck whose text ignores Guard, and the")
         print("    game has four of them across two of sixteen companions. pierce 0")

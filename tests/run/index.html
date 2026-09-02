@@ -39,7 +39,7 @@ import { Save } from '../../game/src/core/save.js';
 import { Run, STARTER_SLUGS, RUN_LENGTH_REGIONS, RUN_REGIONS, EXPEDITION_WINGS } from '../../game/src/state/run.js';
 import { NodeType, REGION_ORDER } from '../../game/src/data/schema.js';
 import { ENCOUNTER_LIST } from '../../game/src/data/encounters.js';
-import { cardById } from '../../game/src/data/cards.js';
+import { cardById, companionSlugs } from '../../game/src/data/cards.js';
 import * as R from '../../game/src/data/relics.js';
 import * as P from '../critic-design/lib/policy.js';
 import { competentTurn } from '../critic-design/lib/bot.js';
@@ -558,7 +558,14 @@ function digest(run) {
 }
 
 /* ── the suite ──────────────────────────────────────────────────────────── */
-const COMPANIONS = ['marmalade', 'bones', 'pipkin', 'taffy', 'wink'];
+/* THE WHOLE ROSTER, from the registry rather than a hand-written list. The
+   list this replaces held five names - the four STARTER_SLUGS plus `wink` -
+   while sixteen companions are playable, and the gap was invisible until the
+   pierce column asked a question the sample could not answer: four of those
+   five cannot draft a card that ignores Guard at any price, so 400 of 535
+   fights were structurally unable to answer a Guard wall and nothing said so.
+   Derived, so a new companion joins this gate by existing. */
+const COMPANIONS = companionSlugs();
 const KIDS = ['maya', 'mateo', 'amina', 'eli', 'priya', 'jordan', 'lena', 'samir'];
 
 async function main() {
@@ -1158,6 +1165,11 @@ async function main() {
       over24: over24.length, over30: over30.length,
       worst: ALLT.slice().sort((a, b) => b.turns - a.turns).slice(0, 10)
         .map(f => ({ turns: f.turns, region: f.region, wing: f.wing, type: f.type,
+                     /* WHO WAS HOLDING THE CONTROLLER. A row landing 0.3 a turn
+                        is a wall only if the deck was trying; without this the
+                        same row also reads as a bot that cannot play that
+                        companion, and those are not the same defect. */
+                     companion: f.companion,
                      enc: f.encId, seed: f.seed, won: !!f.won, cost: f.cost,
                      /* share of the board's Courage still standing at the end.
                         Near 0 is a GRIND and a pool or route change reaches it;
@@ -1179,6 +1191,16 @@ async function main() {
                         faces 68% of it, because the Head Gardener keeps
                         planting. A Guard wall is beaten by piercing it; a
                         treadmill is beaten by killing the summoner. */
+                     /* SWING and ABSORBED separate the two readings `land` alone
+                        collapses. A row at land 0.3 is a WALL if the deck swung
+                        4.4 and the board ate 4.1 of it, and a DUD DECK if it
+                        swung 0.3 and nothing was absorbed at all - identical in
+                        `land`, opposite in what they ask for. `bones` lands 15.3
+                        in one fight and 0.3 in another, so neither reading can
+                        be assumed from the companion either. */
+                     swing: f.turns ? +((f.dealt + f.blocked) / f.turns).toFixed(1) : 0,
+                     absorbed: (f.dealt + f.blocked)
+                       ? Math.round(100 * f.blocked / (f.dealt + f.blocked)) : 0,
                      summoned: Math.max(0, Math.round(f.dealt + f.left - f.pool)),
                      /* THE CONTROL on the wall reading. A stall with pierce 0
                         is a deck that never had the answer; a stall with pierce
