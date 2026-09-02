@@ -180,9 +180,27 @@ export const EXPEDITION_WINGS = 6;
  *
  * ORDER IS PRESERVED, deliberately. A route that shuffled the middle would make
  * the Bathhouse a possible second wing, and every region's numbers were priced
- * against roughly where it sits on the ladder. Drawing a SUBSET in order keeps
- * the climb monotone: the second wing is always an early one, the wing before
- * the Heart is always a late one.
+ * against roughly where it sits on the ladder.
+ *
+ * BANDED, and it did not used to be. Drawing a subset in order and sorting it
+ * keeps the route ASCENDING, but it does NOT keep the climb monotone, and this
+ * comment claimed it did for as long as the draw was uniform. Measured over
+ * 4000 seeds, every middle wing spanned ELEVEN region-steps:
+ *
+ *     wing 2   region 2..13   (median 4)
+ *     wing 3   region 3..14   (median 7)
+ *     wing 4   region 4..15   (median 11)
+ *     wing 5   region 5..16   (median 14)
+ *
+ * So the Secret Passages could be somebody's SECOND wing and the Greenhouse
+ * their FIFTH, and every region's numbers are priced against its ladder slot.
+ * That is the single largest source of difficulty variance in the game: not
+ * regions mistuned against each other, but content authored for depth twelve
+ * meeting a depth-two deck.
+ *
+ * One region is drawn from each contiguous BAND of the middle instead, which
+ * is what the paragraph above always promised. The bands are as even as the
+ * count allows, so this generalises if `wings` changes.
  *
  * Seeded off the run seed, so the same seed is the same expedition — which the
  * determinism and resume checks in `tests/run/` both depend on.
@@ -199,10 +217,15 @@ export function expeditionRoute(seed, wings = EXPEDITION_WINGS) {
   const want = Math.max(2, Math.min(wings | 0, all.length)) - 2;
   if (want >= middle.length) return [first, ...middle, last];
   const rng = new RNG(hashSeed(`mm-route-v1|${seed}`));
-  const picked = new Set();
-  // Draw without replacement, then sort back into ladder order.
-  while (picked.size < want) picked.add(rng.int(middle.length));
-  const mid = [...picked].sort((a, b) => a - b).map(i => middle[i]);
+  /* One from each band, in order. `lo`/`hi` walk the middle in `want` slices
+     that differ by at most one region, so no band is empty and every region
+     stays reachable. Ascending by construction — no sort needed. */
+  const mid = [];
+  for (let b = 0; b < want; b++) {
+    const lo = Math.floor((b * middle.length) / want);
+    const hi = Math.floor(((b + 1) * middle.length) / want);   // exclusive
+    mid.push(middle[lo + rng.int(Math.max(1, hi - lo))]);
+  }
   return [first, ...mid, last];
 }
 
