@@ -120,3 +120,83 @@ a boss whose wall approaches a plausible deck's swing needs either a cap on what
 it can raise per turn, or a reliable answer in the player's deck (pierce, Guard
 removal), or a smaller pool so the tax is survivable. Which one is a design
 call, and it should be taken against this table rather than against a feeling.
+
+## The StS2 lookup, run 2026-09-01
+
+The section above ends by calling the fix "a design call". That was wrong in the
+same way yesterday's route-depth claim was wrong: it was a lookup I had not run,
+wearing a design question's clothes. `docs/STS2-REFERENCE.md` has no entry for
+"guard" — but it does have four for **Block**, which is what StS2 calls it, and
+grepping our own word instead of theirs is why this sat unanswered for sessions.
+
+### What StS2 actually does about enemy Block
+
+**It does not cap it.** No source I could find — the wiki, Spire Codex, sts2wiki
+— documents a per-turn ceiling on enemy Block. Candidate fix 1 has no precedent.
+
+**It does flatten its growth.** `STS2-REFERENCE.md:232` already recorded this and
+nobody connected it: co-op enemy Block was *changed from* x2.2/x2.4/x2.6 to a
+**flat x2**, "deliberately decoupled from the HP curve", while Plating, Artifact,
+Slippery and Skittish all kept rising curves. Block is the one defensive buff
+they refused to let scale with difficulty.
+
+**The real answer is damage that never touches Block at all.** Two channels,
+confirmed independently by two sources: **Poison** (HP loss at the start of the
+creature's turn, ignores Block) and **Doom** (Necrobinder; at the end of enemy
+turns, Doom >= HP kills outright, bypasses all defence). There is no general
+"remove enemy Block" card — so the "Guard removal" half of my guess is not the
+StS2 shape either. The shape is *a channel that does not route through the wall*.
+
+**Unresolved, and it matters.** One search summary claimed enemy Block is
+subtracted from the *combined total* of a multi-hit attack rather than per hit;
+Spire Codex says "multi-hit attacks apply the full pipeline per hit", and StS1 is
+per-hit. Two against one, but I did not confirm on a primary source. If StS2 did
+pool it, that alone would be a large part of their answer, because it makes many
+small hits beat a wall. **Our engine's behaviour here is measurable in our own
+harness and was not measured.** Do that before copying anything.
+
+### What we have
+
+Our Guard-ignoring mechanism is `pierce`, an option to `U.hit` — not `ignoreBlock`,
+which is why it does not grep like the engine's own term.
+
+**Four piercing cards, on two of sixteen companions:**
+
+    marmalade/through-the-wall        UNCOMMON  1 Nerve,  9 dmg, unconditional
+    marmalade/<ghost multi-hit>       consumes Ghost
+    hush/whole-ferret-no-warning      RARE      3 Nerve, 33 dmg, Shadow Pocket + Ambush
+    hush/<pilfer/defend-read>         only if the target intends to Defend
+
+Both design-specified ones are implemented and match spec, so this is **not** a
+Watcher-style unenforced rule. `through-the-wall` is in no core set, so it must be
+drafted. Against that, Guard-granting is everywhere in the region data — nursery
+4/turn, graveyard 7, ballroom 5, and lampworks carries a "+2 additional Guard"
+amplifier on every gain.
+
+**And there is an orphaned poison.** `combat/statuses.js:157` defines `dread` with
+exact StS-poison parity — `loseHp(..., ignoreBlock: true)`, stacks, ticks at the
+owner's turn start, decrements 1. **Nothing applies it**: no card, companion,
+relic, enemy, boss or event. It is not in `keywords.js`, so it has no tooltip and
+is not among the 362 the teaching gate counts, and it appears nowhere in
+`docs/design/`. An icon was drawn for it (`ui/icons.js:96`). The other seven
+`dread` hits in the codebase are an unrelated atmosphere shader.
+
+### What this does NOT establish
+
+The bench defaults to `companion = 'marmalade'` (`expedition.js:159`, `:409`) —
+**one of the only two companions that has pierce.** So the stalling runs had a
+piercing card in their pool and stalled anyway, and I cannot claim from this that
+the stalls are caused by pierce being unavailable. Either the drafter passed it,
+or one uncommon at 9 damage does not move a 6.0 wall. Both are checkable and
+neither is checked. `deckEnd` is already captured per run; read it for the three
+GUARD STALL rows before building anything.
+
+### The narrowed question
+
+Not "cap, answer, or pool" any more. StS2's answer is the middle one, we have a
+thin version of it on 12.5% of the roster, and a correct unreachable poison in
+the engine. What is genuinely open is *distribution*: whether the answer to Guard
+should stay a companion identity (Marmalade and Hush are "the ones who get
+through walls") or become a floor every companion can reach, e.g. by giving
+`dread` a source. That is a real design call, and unlike the last one it is a
+call about the roster rather than a fact about StS2.
