@@ -39,9 +39,11 @@
  */
 
 import { Intent } from '../schema.js';
+/** The pool 240 and 90 were authored against. See checkPhase(). */
+const BASE_HP = 425;
 import {
   mem, cnt, setCnt, addCnt, allies, board, cyc, hitPlayer, hauntBase, bossDmg, flag,
-  isAlive, field, lastMove,
+  isAlive, field, lastMove, phaseAt,
 } from '../enemies/_lib.js';
 import {
   weather, prepareWeather, openWeather, soak, wx, announceWeather,
@@ -474,16 +476,34 @@ function repairValves(c) {
 function damageTakenMulFor(c) { return cnt(c, 'water') === 0 && mem(c).phase >= 2 ? 1.15 : 1; }
 drownedMatron.damageTakenMul = damageTakenMulFor;
 
-/** §27 and §34. */
+/**
+ * §27 and §34.
+ *
+ * THRESHOLDS SCALE WITH THE POOL, and they did not until 2026-09-02.
+ * 240 and 90 are authored against her chapter's 425 Courage and were compared
+ * against `hp` raw, so any multiplier on her pool moved the SHARE of the fight
+ * each phase covers. Two consequences, one measured and one latent:
+ *
+ *   - Measured: a per-region Courage correction took her to 595 and the fight
+ *     became UNWINNABLE - `tests/run/run.py` reported her twice at 595/595,
+ *     full health after 200 turns, because phase one now needed 355 damage
+ *     instead of 185 and her Pull the Plug healing covers the difference.
+ *     Phase three is where 'nothing heals her', so she never got there.
+ *   - Latent, and worse: `partyHpScale` is x5.7 at four Kids. Her phase two
+ *     would have needed 2400 damage. The same fight, in co-op, all along.
+ *
+ * `phaseAt` is the shared helper for exactly this and the Governess and the
+ * Patchwork Giant both use it. See enemies/_lib.js.
+ */
 function checkPhase(c) {
   const m = mem(c);
-  if (m.phase === 1 && c.self.hp <= 240) {
+  if (m.phase === 1 && c.self.hp <= phaseAt(c, 240, BASE_HP)) {
     m.phase = 2;
     m.phaseStart = (c.history || []).length + 1;
     m.pendingTransition = 'this-bath-is-not-finished';
     return;
   }
-  if (m.phase === 2 && c.self.hp <= 90) {
+  if (m.phase === 2 && c.self.hp <= phaseAt(c, 90, BASE_HP)) {
     m.phase = 3;
     m.phaseStart = (c.history || []).length + 1;
     m.pendingTransition = 'enough-bathing';

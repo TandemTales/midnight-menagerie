@@ -35,10 +35,16 @@
  */
 
 import { Intent } from '../schema.js';
+/** The pool the phase thresholds below were authored against. They were
+    compared against raw `hp`, so ANY multiplier on the pool moved the share
+    of the fight each phase covers — and `partyHpScale` is x5.7 at four Kids,
+    which would have put phase two out of reach entirely. The Drowned Matron
+    proved it in solo on 2026-09-02: a x1.4 correction left her at 595/595,
+    full health after 200 turns, twice. `phaseAt` is the shared helper. */
+const BASE_HP = 445;
 import {
   mem, cnt, setCnt, addCnt, allies, board, cyc, hitPlayer, hauntBase, bossDmg, flag,
-  isAlive, played, field, lastMove, hpFrac,
-} from '../enemies/_lib.js';
+  isAlive, played, field, lastMove, hpFrac, phaseAt,} from '../enemies/_lib.js';
 import {
   STAGES, SEED, GROWING, RIPE, OVERRIPE, stageOf, isRipe, harvest, REWARD,
   crop, growCrop,
@@ -474,13 +480,13 @@ function resolveGrowth(c, plant0) {
 
 function checkPhase(c) {
   const m = mem(c);
-  if (m.phase === 1 && c.self.hp <= 255) {
+  if (m.phase === 1 && c.self.hp <= phaseAt(c, 255, BASE_HP)) {
     m.phase = 2;
     m.phaseStart = (c.history || []).length + 1;
     m.pendingTransition = 'the-moon-is-high';
     return;
   }
-  if (m.phase === 2 && c.self.hp <= 95) {
+  if (m.phase === 2 && c.self.hp <= phaseAt(c, 95, BASE_HP)) {
     m.phase = 3;
     m.phaseStart = (c.history || []).length + 1;
     m.pendingTransition = 'last-harvest';

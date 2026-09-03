@@ -46,10 +46,16 @@
  */
 
 import { Intent } from '../schema.js';
+/** The pool the phase thresholds below were authored against. They were
+    compared against raw `hp`, so ANY multiplier on the pool moved the share
+    of the fight each phase covers — and `partyHpScale` is x5.7 at four Kids,
+    which would have put phase two out of reach entirely. The Drowned Matron
+    proved it in solo on 2026-09-02: a x1.4 correction left her at 595/595,
+    full health after 200 turns, twice. `phaseAt` is the shared helper. */
+const BASE_HP = 440;
 import {
   mem, cnt, setCnt, addCnt, allies, board, cyc, hitPlayer, hauntBase, bossDmg, flag,
-  isAlive, played, field, lastMove,
-} from '../enemies/_lib.js';
+  isAlive, played, field, lastMove, phaseAt,} from '../enemies/_lib.js';
 import { frighten } from '../enemies/kennels.js';
 
 const REGION = 'kennels';
@@ -458,13 +464,13 @@ function applyRestraint(c) {
 
 function checkPhase(c) {
   const m = mem(c);
-  if (m.phase === 1 && c.self.hp <= 250) {
+  if (m.phase === 1 && c.self.hp <= phaseAt(c, 250, BASE_HP)) {
     m.phase = 2;
     m.phaseStart = (c.history || []).length + 1;
     m.pendingTransition = 'everyone-back-to-their-rooms';
     return;
   }
-  if (m.phase === 2 && c.self.hp <= 90) {
+  if (m.phase === 2 && c.self.hp <= phaseAt(c, 90, BASE_HP)) {
     m.phase = 3;
     m.phaseStart = (c.history || []).length + 1;
     m.pendingTransition = 'please-stay';

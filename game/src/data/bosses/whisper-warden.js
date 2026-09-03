@@ -47,10 +47,16 @@
  */
 
 import { Intent } from '../schema.js';
+/** The pool the phase thresholds below were authored against. They were
+    compared against raw `hp`, so ANY multiplier on the pool moved the share
+    of the fight each phase covers — and `partyHpScale` is x5.7 at four Kids,
+    which would have put phase two out of reach entirely. The Drowned Matron
+    proved it in solo on 2026-09-02: a x1.4 correction left her at 595/595,
+    full health after 200 turns, twice. `phaseAt` is the shared helper. */
+const BASE_HP = 415;
 import {
   mem, allies, board, cyc, hitPlayer, hauntBase, bossDmg, flag,
-  isAlive, played, field, lastMove,
-} from '../enemies/_lib.js';
+  isAlive, played, field, lastMove, phaseAt,} from '../enemies/_lib.js';
 
 const REGION = 'secret-passages';
 
@@ -642,7 +648,7 @@ function returnStash(c) {
 function checkPhase(c) {
   const m = mem(c);
   const hp = c.self.hp;
-  if (m.phase === 1 && hp <= 235) {
+  if (m.phase === 1 && hp <= phaseAt(c, 235, BASE_HP)) {
     m.phase = 2;
     /* +1 because the transition move itself lands on the history before the
        new phase's first ordinary move is asked for. */
@@ -650,7 +656,7 @@ function checkPhase(c) {
     m.pendingTransition = 'there-are-more-ways';
     return;
   }
-  if (m.phase === 2 && hp <= 90) {
+  if (m.phase === 2 && hp <= phaseAt(c, 90, BASE_HP)) {
     m.phase = 3;
     m.phaseStart = (c.history || []).length + 1;
     m.pendingTransition = 'nowhere-left-to-hide';

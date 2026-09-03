@@ -1383,10 +1383,14 @@ const SPOT = [
     const s = show('stuffed-fist');
     return s.damage === 7 && s.hits === 2;               // round(11 × 0.6) = 7
   })],
-  ['Governess: Tighten the Stitch primes Needle Point 13 → 18', () => intentAfter('governess', (sim, a, d, show) => {
+  /* The MECHANIC is the +5, not the absolute pair. Asserting 13 -> 18 made
+     this go red the moment her damage was tuned (2026-09-02, 13 -> 9), which
+     is a test rotting on a number it was never about. Same shape as the
+     Patchwork Giant probe that hardcoded a knock-to-100. */
+  ['Governess: Tighten the Stitch primes Needle Point by +5', () => intentAfter('governess', (sim, a, d, show) => {
     const before = show('needle-point').damage;
     a.mem.tightened = true;
-    return before === 13 && show('needle-point').damage === 18;
+    return before > 0 && show('needle-point').damage === before + 5;
   })],
 
   // ── Sleeping Quarters ──

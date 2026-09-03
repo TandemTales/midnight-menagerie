@@ -20,9 +20,15 @@
  */
 
 import { Intent } from '../schema.js';
+/** The pool the phase thresholds below were authored against. They were
+    compared against raw `hp`, so ANY multiplier on the pool moved the share
+    of the fight each phase covers — and `partyHpScale` is x5.7 at four Kids,
+    which would have put phase two out of reach entirely. The Drowned Matron
+    proved it in solo on 2026-09-02: a x1.4 correction left her at 595/595,
+    full health after 200 turns, twice. `phaseAt` is the shared helper. */
+const BASE_HP = 305;
 import {
-  mem, cnt, setCnt, addCnt, allies, cyc, hitPlayer, hauntBase, bossDmg, flag, isAlive,
-} from '../enemies/_lib.js';
+  mem, cnt, setCnt, addCnt, allies, cyc, hitPlayer, hauntBase, bossDmg, flag, isAlive, phaseAt,} from '../enemies/_lib.js';
 
 const REGION = 'kitchens-cellars';
 
@@ -406,7 +412,7 @@ export const confectioner = {
 
   nextMove: (c) => {
     const m = mem(c);
-    if (m.phase !== 2 && c.self.hp <= 170) return 'enough-measuring';
+    if (m.phase !== 2 && c.self.hp <= phaseAt(c, 170, BASE_HP)) return 'enough-measuring';
     if (m.phase === 2) {
       return cyc(['candy-cleaver', 'toss-it-in', 'whisking-frenzy', 'no-recipe-needed', 'lick-the-spoon'],
         (c.history || []).length);
