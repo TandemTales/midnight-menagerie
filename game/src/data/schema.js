@@ -216,15 +216,24 @@ export const REGION_ORDER = [
  * that put it there. The Heart is deliberately absent - it measures 48% and is
  * the one late fight that already works.
  */
-export const REGION_COURAGE_FIX = Object.freeze({
-  'secret-passages': 1.6,   // 4% of the player's pool -> 42% at 2.0, but 2.0 also
-  'bathhouse':       1.4,   // took past-30 from 16 to 27 across the run: outlasting
-  'kennels':         1.6,   // a 90-damage-a-turn player costs fight LENGTH, and
-  'pumpkin-grounds': 1.8,   // _losePatience is what catches length. Backed off.
+export const REGION_CONTENT_FIX = Object.freeze({
+  // wing: [Courage multiplier, damage multiplier]
+  // Courage buys a turn of life; damage makes that turn cost something. Courage
+  // ALONE was measured and it only bought fight length - at 2.0 these four hit
+  // 42% of pool and past-30 went 16 -> 27 - because a body that survives longer
+  // without hitting harder is just a longer fight.
+  'secret-passages': [1.6, 1.5],   // measured 24% of the player's pool
+  'bathhouse':       [1.4, 1.4],   // measured 27%
+  'kennels':         [1.6, 1.8],   // measured 21%
+  'pumpkin-grounds': [1.8, 2.2],   // measured 13%
 });
 
 export function regionCourageFix(region) {
-  return REGION_COURAGE_FIX[region] || 1;
+  return (REGION_CONTENT_FIX[region] || [1, 1])[0];
+}
+
+export function regionDamageFix(region) {
+  return (REGION_CONTENT_FIX[region] || [1, 1])[1];
 }
 
 export function depthDamageScale(region, order = REGION_ORDER, scaleAtHeart = 2.0) {

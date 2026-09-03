@@ -67,7 +67,7 @@ import { RNG, hashSeed } from '../core/rng.js';
 import { Save } from '../core/save.js';
 import { bus } from '../core/bus.js';
 import { clock } from '../core/clock.js';
-import { NodeType, REGION_ORDER, TERMS, COMPANIONS, KIDS, depthDamageScale, regionCourageFix } from '../data/schema.js';
+import { NodeType, REGION_ORDER, TERMS, COMPANIONS, KIDS, depthDamageScale, regionCourageFix, regionDamageFix } from '../data/schema.js';
 import { generateRegionMap, legalNextIds, regionMeta, sceneForNode } from './mapgen.js';
 import {
   cardById, startingDeckFor, poolFor, poolWithCoop, companion as companionDef, allCards,
@@ -1358,7 +1358,7 @@ export class Run {
       localSeat: this.localSeat | 0,
       /* THE LADDER. `region` is the CONTENT's region, so a formation
          borrowed from elsewhere is priced where it was authored. */
-      enemyDamageScale: depthDamageScale(region, REGION_ORDER),
+      enemyDamageScale: depthDamageScale(region, REGION_ORDER) * regionDamageFix(region),
       courageFix: regionCourageFix(region),
     });
 
