@@ -12,15 +12,19 @@ found by a gate added yesterday, and it is the one open thing in the game layer.
 `combat/engine.js`'s `_losePatience` escalates every enemy past turn 30 so a
 fight cannot fail to end, and its comment claims it is "far outside reachable
 play … the longest fight any region gate produces is 24. Nothing a player will
-ever see is touched by this." **Nothing checked that.** Across 559 real fights
-in fifty seeded expeditions:
+ever see is touched by this." **Nothing checked that.**
 
-    longest fight        57 turns   graveyard/boss
-    past 24 turns        13
-    past 30 turns         5   <- _losePatience fired, in ordinary play
+    2026-09-02, 200 expeditions, 2782 fights
+      longest fight      60 turns   ballroom/boss
+      past 24 turns      38         1.37%
+      past 30 turns      19         0.68%   <- _losePatience fired in ordinary play
 
-All ten of the longest are BOSSES and six of the eight were LOST. The
-termination guarantee is doing the killing.
+**COMPARE RATES, NOT COUNTS.** `--runs` exists now (below) and a measurement
+pass is 2800 fights where the shipping default is 559, so "past-30 went from 5
+to 19" is four times the sample, not four times the defect. The rate moved
+0.48% -> 0.68% across the balance pass, and that rise is PAID FOR: making the
+last four wings survive a 90-damage-a-turn player is bought with fight length,
+which is the thing this gate measures. See the balance section below.
 
 **AND MOST OF IT IS THE BOT, NOT THE GAME. Read this before you retune
 anything.** In the 57-turn attic-observatory fight the bot held `nerve 3`,
@@ -344,14 +348,82 @@ was never wrong; nobody asked which room it was pointing at.
   map 30 · wings 44 · backpack 80 · haunt 21 · gameover-keeps 16 ·
   governess 56 · butler 38
 
+━━ THE BALANCE PASS, 2026-09-02 ━━
+
+`python tests/run/run.py --runs 200` is the measurement pass. Fifty runs give
+the DEEP regions one to five boss fights each, which is too few to tune on, and
+two rounds were lost to swings that were sample noise. Seeds are unchanged, so
+the first fifty runs of a larger pass are exactly the shipping fifty.
+
+**The number that matters is MARGIN** — arrival minus price, in points of the
+Courage pool — because it predicts boss loss rate monotonically. See
+docs/notes/2026-08-31-the-foyer-is-attrition-not-the-boss.md.
+
+    region              cost of pool   margin   was
+    foyer                    43%        35pp    61% / 15pp, ending 44% of all runs
+    nursery                  42%        41pp    64% / 25pp
+    sleeping-quarters        48%        41pp
+    kitchens-cellars         51%        34pp
+    graveyard                37%        55pp    77% / 14pp
+    attic-observatory        38%        56pp     3% (free)
+    lampworks                34%        66pp     1% (free)
+    ballroom                 39%        52pp
+    crypt                    43%        45pp
+    hedge-maze               44%        50pp
+    secret-passages          39%        58pp     2% (free)
+    bathhouse                49%        40pp     4% (free)
+    heart                    43%        52pp     3%, NEVER LOST (0 of 8)
+
+WHAT MOVED, and every one of these is measured, not felt:
+
+  * **The route was not a ladder.** `expeditionRoute` drew 4 of the middle 15
+    uniformly and sorted them, so wing 2 spanned regions 2..13 and wing 5
+    spanned 5..16 — content priced for depth 12 meeting a depth-2 deck. It
+    draws one region per BAND now; spread 11 -> 2-3.
+  * **Enemy damage never rose.** Mean per-move damage 10.9 in the Foyer and 9.0
+    in the Heart, slope -0.03 a region: the finale hit SOFTER than the tutorial.
+    `depthDamageScale` is the ladder; it took the Heart from 3% to 43%.
+  * **The Butler** ships at 86 (was 134). **The Governess** 22.2 -> 14.6 damage
+    a move. **The Groundskeeper** 330 -> 165. All declared in
+    tests/design-courage with their measurements.
+  * **The last four wings** get a per-region Courage AND damage correction
+    (`REGION_CONTENT_FIX`). It is a TABLE and not a curve so it deletes in one
+    line when the content is re-authored.
+
+NEGATIVE RESULTS — do not repeat these, they are all measured:
+
+    scaling enemy COURAGE by depth        longer fights, no threat
+    squaring the damage curve (3 ceilings) buys the tail, breaks the Heart
+    partial PIERCE by depth               no measurable effect whatsoever
+    lowering the Head Gardener (x2)       the Greenhouse got HARDER
+    cutting event relic supply            29.0 -> 28.7 Keepsakes, no cost change
+
+**Pierce failing is the one to understand.** It exists for a player who blocks
+everything, and it changed nothing — because they are not blocking. The Secret
+Passages took ~1.6 Courage of ENEMY damage per fight across 64 fights, and 48%
+of the region's total was the player's OWN RELICS. The bodies never lived to
+act. That is why survivability was the only lever left, and why it costs length.
+
+STILL OUT OF BAND: **study-library 65%/24pp** and **greenhouse 62%/26pp**. Six
+levers between them bought 11pp. The boss ladder says why — the Archivist runs
+24.3 turns and the Head Gardener 19.7, against the Butler's 9.8. They are not
+overpriced, they are LONG, and the fix is fewer Catalogue consequences and fewer
+Beds, which are content edits and not constants.
 ━━ WHAT IS OPEN ━━
 
-1. **THE OVER-30 GATE.** Top of this document. NOT one defect, NOT a Guard
-   problem, and mostly NOT a game defect: a controlled A/B shows the longest
-   fight in the game is `competentTurn` passing with four legal cards in hand.
-   Fix the bot's stop decision, or stop reading over-30 as a statement about
-   bosses. `bench()` in critic-design/lib/expedition.js runs the repeat trial.
-2. **NO APPLICATION EXISTS.** No `package.json`, no Electron, no Tauri. The game
+1. **THE OVER-30 GATE.** Top of this document, and read it as a RATE: 0.68% of
+   fights at 200 expeditions, up from 0.48% before the balance pass. Part of it
+   was the bot passing with legal cards in hand (fixed 2026-09-01: `residual()`
+   valued damage to a surviving enemy at zero). The rest is the price of making
+   the last four wings survive a 90-damage-a-turn player. Decide whether 0.68%
+   is a defect before tuning it — the alternative is a free last third.
+2. **THE ECONOMY IS THE OTHER HALF, and it is a design call.** Capping Keepsakes
+   at 12 (a finishing run holds ~29 of 58) leaves the first four wings BYTE
+   IDENTICAL and moves the late game 10-23pp — the most surgical result in the
+   whole investigation. But treasure, boss and Big Scare drops are all sourced
+   to STS2-REFERENCE, and ~29 sits beside Slay the Spire's own ~25, so a cap is
+   a deliberate divergence from our own yardstick. Nobody has taken it.
+3. **NO APPLICATION EXISTS.** No `package.json`, no Electron, no Tauri. The game
    is a folder of ES modules served by `tools/devserver.py`. `platform/index.js`
    specifies the host bridge carefully and `tests/platform/run.py` exercises all
    of it — against `installFakeHost()`. **There is nothing to put in a depot.**
@@ -364,22 +436,26 @@ was never wrong; nobody asked which room it was pointing at.
    next real decision: it sets bundle size, the Steam overlay path, and how
    `platform/index.js`'s host bridge gets implemented for real instead of
    against `installFakeHost()`.
-3. **STEAM APP ID.** Josh only. Gates achievements, Cloud, the controller
+4. **STEAM APP ID.** Josh only. Gates achievements, Cloud, the controller
    layout, P2P and Deck Verified.
-4. **ART.** 1470 cards with zero illustrations (`ui/cardart.js` generates them
+5. **ART.** 1470 cards with zero illustrations (`ui/cardart.js` generates them
    from the card id); 189 silhouette keys, 12 with a prop layer, 177 unlayered.
    This is the schedule, and it needs a person.
-5. **THE MANSION IS NOT A LADDER.** Per-region list in
-   `docs/notes/2026-09-01-the-mansion-is-not-a-ladder.md`: hedge-maze elite at
-   110% of pool and 12.5% win, kennels elite at 489 Courage over 32 turns,
-   secret-passages and heart elites at 19% and 24%.
-6. **THE HAUNT CEILING.** Raise `MAX_HAUNT` (129 behaviours become reachable and
+6. **THE MANSION IS NOT A LADDER — LARGELY ADDRESSED, see the balance section.**
+   The cause was found and it was authored: enemy Courage rises 9% across
+   seventeen regions and enemy DAMAGE falls 3%, so the chapters built the
+   mansion at PARITY. Twelve of seventeen wings are now in band. What is left
+   in that note is the ELITE tier, which this pass did not touch: hedge-maze
+   elite at 108% of pool, kennels elite at 489 Courage over 32 turns.
+7. **THE HAUNT CEILING.** Raise `MAX_HAUNT` (129 behaviours become reachable and
    `data/haunts.js` must name the new rungs) or re-tier 6–10 down.
-7. **THE RELIC ECONOMY.** A run holds 23–32 of the game's 58 Keepsakes by the
+8. **THE RELIC ECONOMY — now MEASURED, and it is item 2's design call.** A cap
+   at 12 leaves the first four wings byte-identical and moves the late game
+   10-23pp; the supply itself is StS2-shaped. A run holds 23–32 of the 58 by the
    fifth wing.
-8. **THE TEACHING CONTRACT.** 4.3 of six after the roller fix; a run fights ~4.7
+9. **THE TEACHING CONTRACT.** 4.3 of six after the roller fix; a run fights ~4.7
    times in the Foyer against six teachers.
-9. **`spreadOf` unmeasured for nine regions · the entry stall (274 ms of
+10. **`spreadOf` unmeasured for nine regions · the entry stall (274 ms of
    `toDataURL`, fix scoped) · `combat:crit` known-silent · the ~100 remaining
    sweep findings.**
 
