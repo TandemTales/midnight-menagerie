@@ -306,6 +306,7 @@ RUN on 2026-09-01 against this tree.
   python tests/teaching/check.py     7
   python tests/design-courage/check.py  120 checked, 0 failures   ← NEW
   python tests/phase-thresholds/check.py  17 boss files, 0 failures   ← NEW
+  python tests/design-damage/check.py    118 compared, 0 failures     ← NEW
   python tests/critic-design/ladder.py  17 regions, 0 errors   ← NEW
   python tests/critic-design/anchor.py  5/5 agree
   python tools/deadflags.py [--reads]   audit, not a gate      ← NEW

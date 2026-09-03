@@ -211,10 +211,10 @@ export const coatrackCrawler = {
        * it is a to-do, not a solved thing, and the number above is where it
        * stands.
        */
-      id: 'hat-swipe', name: 'Hat Swipe', intent: Intent.ATTACK_DEFEND, damage: 8, hits: 1, block: 5,
+      id: 'hat-swipe', name: 'Hat Swipe', intent: Intent.ATTACK_DEFEND, damage: 6, hits: 1, block: 5,
       partyTarget: 'all',
       tell: 'It shrugs a bowler hat off a hook and swings the whole rack around.',
-      effect(c) { hitPlayer(c, 8); c.block(c.self, 5); },
+      effect(c) { hitPlayer(c, 6); c.block(c.self, 5); },
     },
   },
 

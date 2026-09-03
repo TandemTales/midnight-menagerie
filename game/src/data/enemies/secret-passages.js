@@ -517,9 +517,9 @@ export const falseDoor = {
 
   moves: {
     'door-slam': {
-      id: 'door-slam', name: 'Door Slam', intent: Intent.ATTACK, damage: 9, hits: 1,
+      id: 'door-slam', name: 'Door Slam', intent: Intent.ATTACK, damage: 11, hits: 1,
       tell: 'It swings all the way open and all the way shut.',
-      effect(c) { hitPlayer(c, 9); },
+      effect(c) { hitPlayer(c, 11); },
     },
     'wrong-room': {
       id: 'wrong-room', name: 'Wrong Room', intent: Intent.DEFEND, block: 10,

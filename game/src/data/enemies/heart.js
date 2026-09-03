@@ -686,10 +686,10 @@ export const namekeeper = {
       effect(c) { hitPlayer(c, 8 + recognizedBonus(c)); spendRecognized(c); },
     },
     'i-know-you': {
-      id: 'i-know-you', name: 'I Know You', intent: Intent.ATTACK, damage: 8, hits: 1,
-      damageFn: (c) => 8 + recognizedBonus(c),
+      id: 'i-know-you', name: 'I Know You', intent: Intent.ATTACK, damage: 12, hits: 1,
+      damageFn: (c) => 12 + recognizedBonus(c),
       tell: 'It says the name again, and this time it is sure.',
-      effect(c) { hitPlayer(c, 8 + recognizedBonus(c)); spendRecognized(c); },
+      effect(c) { hitPlayer(c, 12 + recognizedBonus(c)); spendRecognized(c); },
     },
     'file-away': {
       id: 'file-away', name: 'File Away', intent: Intent.DEFEND, block: 10,
