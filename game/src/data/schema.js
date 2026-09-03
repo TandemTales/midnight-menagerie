@@ -200,6 +200,33 @@ export const REGION_ORDER = [
  * as hard as region 1, linearly in ladder position. Returns 1 for anything not
  * on the ladder, so a test fixture or an unknown region is never scaled.
  */
+/**
+ * Courage correction for the four wings that measure under-priced.
+ *
+ * A CURVE WAS THE WRONG SHAPE and three were tried: Courage by depth (longer
+ * fights, no threat), damage by depth (fixed the Heart, missed these four),
+ * and partial Pierce by depth (no measurable effect at all). The attribution
+ * ledger says why none of them reached here - the Secret Passages take about
+ * 1.6 Courage of ENEMY damage per fight across 64 fights, because at wing five
+ * the player deals ~90 a turn and the bodies never live to act. They do not
+ * need to hit harder or get past Guard; they need to SURVIVE A TURN.
+ *
+ * So this is a table and not a function: only the wings whose measured cost is
+ * far below the 37-51% band the rest of the game sits in, each with the number
+ * that put it there. The Heart is deliberately absent - it measures 48% and is
+ * the one late fight that already works.
+ */
+export const REGION_COURAGE_FIX = Object.freeze({
+  'secret-passages': 1.6,   // 4% of the player's pool -> 42% at 2.0, but 2.0 also
+  'bathhouse':       1.4,   // took past-30 from 16 to 27 across the run: outlasting
+  'kennels':         1.6,   // a 90-damage-a-turn player costs fight LENGTH, and
+  'pumpkin-grounds': 1.8,   // _losePatience is what catches length. Backed off.
+});
+
+export function regionCourageFix(region) {
+  return REGION_COURAGE_FIX[region] || 1;
+}
+
 export function depthDamageScale(region, order = REGION_ORDER, scaleAtHeart = 2.0) {
   const i = Array.isArray(order) ? order.indexOf(region) : -1;
   if (i <= 0 || order.length < 2) return 1;

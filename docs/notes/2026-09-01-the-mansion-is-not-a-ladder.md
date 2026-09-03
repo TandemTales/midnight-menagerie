@@ -397,3 +397,39 @@ they are correctly priced and the band should have a second tier in it. If no,
 the fix is fewer Catalogue consequences and fewer Beds - content edits, not
 constants. Nothing here should be tuned further until that is decided, because
 six measured attempts have bought 11pp between them.
+
+## 2026-09-02 — four levers at the free tail, and what they proved
+
+The last four wings measured 2-21% of the player's Courage pool against a
+37-51% band everywhere else. Four different mechanisms were built and measured
+at n=200:
+
+    1. Courage by depth (1.0 -> 2.2 linear)   longer fights, no threat. REVERTED.
+    2. Damage by depth (1.0 -> 2.0 linear)    fixed the HEART (3% -> 43%),
+                                              never reached the tail. KEPT.
+    3. Partial Pierce by depth (0 -> 0.5)     NO MEASURABLE EFFECT AT ALL.
+    4. Targeted Courage table on four wings   4% -> 24%, and past-30 16 -> 24.
+
+**Lever 3 is the one that explains the others.** Pierce exists because a player
+who blocks everything cannot be reached by bigger numbers — and it did nothing,
+because they are not blocking. The attribution ledger: the Secret Passages take
+about **1.6 Courage of enemy damage per fight across 64 fights**, and 48% of the
+region's total is the player's OWN RELICS. The bodies are not being blocked.
+**They never live long enough to act.** At wing five the player deals ~90 a turn
+into enemies that hold 415-445.
+
+So the only enemy-side lever that works at depth is survivability, and it is
+bought with fight LENGTH — which is exactly what `_losePatience` catches. At a
+2.0 multiplier the four wings hit 42% of pool and past-30 went 16 -> 27; backed
+off to 1.4-1.8 they sit at 13-27% and past-30 is 24. There is no setting that
+gets the tail into band without paying in long fights.
+
+**That is the case for the economy being the real lever, and it is now four
+experiments deep.** The player's output is the free variable: deck 12 -> 29
+cards and Keepsakes 1.9 -> 29 of the game's 58, while every enemy-side curve
+runs into the same wall. Fixing the tail by making enemies survive a 90-a-turn
+player is treating the symptom.
+
+Kept for now at 1.4-1.8, because 2-21% -> 13-27% is a real improvement and the
+long-fight cost is 8 fights in 2844. It is a TABLE and not a curve precisely so
+it can be deleted in one line when the economy is addressed.

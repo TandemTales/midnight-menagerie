@@ -255,6 +255,8 @@ export class CombatEngine {
     /** Depth multiplier on ENEMY attack damage; 1 unless run.js passes one.
         See computeDamage() step 1b for why damage and not Courage. */
     this.enemyDamageScale = Number(cfg.enemyDamageScale) > 0 ? Number(cfg.enemyDamageScale) : 1;
+    /** Courage multiplier for wings that measure under-priced; 1 elsewhere. */
+    this.courageFix = Number(cfg.courageFix) > 0 ? Number(cfg.courageFix) : 1;
     this.choices = new ChoiceBroker(this);
     this._trackerInstaller = cfg.trackerInstaller || null;
 
@@ -396,9 +398,10 @@ export class CombatEngine {
     // A per-enemy override from its region chapter wins over the party curve;
     // otherwise the curve applies. Rolled Courage is scaled AFTER the roll so a
     // seeded fight keeps the same roll at every party size.
-    const f = (typeof def.partyHp === 'function')
+    const party = (typeof def.partyHp === 'function')
       ? (def.partyHp(this.players.length) ?? this.partyHpScale)
       : this.partyHpScale;
+    const f = party * (this.courageFix || 1);
     const scaled = f === 1 ? hp : Math.max(1, Math.round(hp * f));
     return new Enemy({
       id: (wrapped && raw.id) || `e${slot}`,
