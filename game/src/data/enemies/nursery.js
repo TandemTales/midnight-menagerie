@@ -94,9 +94,9 @@ export const buttonBaby = {
       },
     },
     'button-toss': {
-      id: 'button-toss', name: 'Button Toss', intent: Intent.ATTACK, damage: 8, hits: 1,
+      id: 'button-toss', name: 'Button Toss', intent: Intent.ATTACK, damage: 5, hits: 1,
       tell: 'It flicks a brass button at you, hard.',
-      effect(c) { hitPlayer(c, 8); },
+      effect(c) { hitPlayer(c, 5); },
     },
     'gather-thread': {
       id: 'gather-thread', name: 'Gather Thread', intent: Intent.DEFEND, block: 7,
@@ -260,9 +260,9 @@ export const patchworkSoldier = {
       },
     },
     'wooden-saber': {
-      id: 'wooden-saber', name: 'Wooden Saber', intent: Intent.ATTACK, damage: 13, hits: 1,
+      id: 'wooden-saber', name: 'Wooden Saber', intent: Intent.ATTACK, damage: 9, hits: 1,
       tell: 'It presents the wooden sword with complete seriousness.',
-      effect(c) { hitPlayer(c, 13); },
+      effect(c) { hitPlayer(c, 9); },
     },
     'dismantle': {
       id: 'dismantle', name: 'Dismantle', intent: Intent.BUFF,
@@ -367,9 +367,9 @@ export const rockingHorse = {
 
   moves: {
     rock: {
-      id: 'rock', name: 'Rock', intent: Intent.ATTACK_DEFEND, damage: 9, hits: 1, block: 5,
+      id: 'rock', name: 'Rock', intent: Intent.ATTACK_DEFEND, damage: 6, hits: 1, block: 5,
       tell: 'It tips forward on its rockers and comes down hard.',
-      effect(c) { hitPlayer(c, 9); c.block(c.self, 5); },
+      effect(c) { hitPlayer(c, 6); c.block(c.self, 5); },
     },
     gallop: {
       id: 'gallop', name: 'Gallop', intent: Intent.ATTACK_BIG, damage: 7, hits: 1,
@@ -523,9 +523,9 @@ export const blanketBlob = {
       },
     },
     'blanket-snap': {
-      id: 'blanket-snap', name: 'Blanket Snap', intent: Intent.ATTACK, damage: 11, hits: 1,
+      id: 'blanket-snap', name: 'Blanket Snap', intent: Intent.ATTACK, damage: 8, hits: 1,
       tell: 'A corner of it cracks out like a wet towel.',
-      effect(c) { hitPlayer(c, 11); },
+      effect(c) { hitPlayer(c, 8); },
     },
     smother: {
       id: 'smother', name: 'Smother', intent: Intent.ATTACK_DEBUFF, damage: 7, hits: 1,
