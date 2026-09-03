@@ -433,3 +433,56 @@ player is treating the symptom.
 Kept for now at 1.4-1.8, because 2-21% -> 13-27% is a real improvement and the
 long-fight cost is 8 fights in 2844. It is a TABLE and not a curve precisely so
 it can be deleted in one line when the economy is addressed.
+
+## 2026-09-02 — the economy IS the late-game lever, and it is already StS2-shaped
+
+A hard cap on Keepsakes settles the question that four enemy-side experiments
+could not. Capping a run at 12 (a finishing run normally holds ~29 of the game's
+58) and re-running at n=200:
+
+    region              29 keepsakes   capped at 12
+    foyer                    43%            43%      <- IDENTICAL
+    nursery                  42%            42%      <- IDENTICAL
+    sleeping-quarters        48%            48%      <- IDENTICAL
+    kitchens-cellars         51%            51%      <- IDENTICAL
+    attic-observatory        38%            50%
+    lampworks                34%            48%
+    ballroom                 39%            55%
+    bathhouse                27%            50%
+    secret-passages          24%            38%
+    pumpkin-grounds          13%            25%
+
+**The early game does not move at all** — the player does not hold twelve
+Keepsakes yet — and the late game moves 10-23pp. That is the cleanest result in
+this whole investigation: the player's Keepsake count is what makes the last
+third of the game free, and it is surgical in a way no enemy curve was.
+
+### But the supply is not the deviation
+
+Where they come from, per run: treasure 2.93, curiosity 2.50, boss 1.44, shop
+1.09, Big Scare 0.68. Three of those five are sourced directly to
+`docs/STS2-REFERENCE.md` — "Treasure chests offer one relic per player" is
+quoted in `run.js` at the treasure site — and a finishing run's ~29 is close to
+Slay the Spire's own ~25 per run. **We are not handing out more relics than the
+game we are measuring ourselves against.**
+
+Converting six of the eleven GENERIC event relic grants to Lost Things was tried
+and reverted: it moved Keepsakes at the Heart from 29.0 to 28.7 and no region's
+cost at all, because fourteen of seventeen events still carry a relic option and
+the bot takes whichever one does.
+
+### So the actual finding
+
+The economy is roughly the right size *for a game whose content scales*. Ours
+does not: +9% enemy Courage and -3% enemy damage across seventeen regions. Two
+things can close that, and they are both design calls:
+
+  1. **Hold the economy and finish scaling the content** — the damage ladder
+     already took the Heart from 3% to 43%; the same work is unfinished for the
+     four wings before it, and it costs fight length.
+  2. **Diverge from StS2 deliberately and give fewer Keepsakes** — measured to
+     work, surgical, early game untouched. It makes the game less generous than
+     its own reference, which is a decision nobody has taken.
+
+A cap is not shipped here because picking between those two is not a tuning
+call. The measurement that makes it decidable is above.
