@@ -357,3 +357,43 @@ the cost lives in her mechanics: the Favorite Doll's redirect, Button Patch
 feeding her Guard off it, or the phase-two Repair cycle. That is where the next
 attempt has to go, and it should start by instrumenting WHICH of the three the
 Courage actually goes to.
+
+## 2026-09-02 — two bosses that no number reaches
+
+The Archivist and the Head Gardener are the last two regions out of band
+(study-library 65% of the pool at a 26pp margin, greenhouse 61% at 27pp, against
+a band of 37-51%). Every lever was tried on them and measured at n=200:
+
+    THE ARCHIVIST                          cost of pool
+      Courage    345 -> 200                72% -> 71%
+      damage     12.0 -> 10.0 per move     71% -> 67%
+      Catalogue Guard  16/18 -> 10/12      67% -> 65%
+      cumulative                           72% -> 65%, 11 of 16 lost -> 8 of 14
+
+    THE HEAD GARDENER                      cost of pool
+      Courage    320 -> 225                68% -> 81%   WORSE
+      Courage    320 -> 230                68% -> 79%   WORSE
+      mature plant Courage 16 -> 10        62% -> 61%
+      (all reverted except nothing; he sits at his chapter's 320)
+
+Three levers on one, three on the other, and the best single move was worth
+4pp. **Their cost is not in any number; it is in how long they keep the player
+there.** The boss ladder says it plainly: the Archivist runs **24.3 turns** and
+the Head Gardener **19.7**, against the Butler's 9.8 and the Groundskeeper's
+19.6-at-37%-cost.
+
+  * The Archivist Files a tab every four Tricks and hands himself 16 Guard for
+    it, so the player's own attacks build his wall, and `Misfiled` interferes
+    with their deck every single player turn. Cutting the Guard helped least of
+    the three, which says the Corrections and the deck interference are doing
+    more than the wall.
+  * The Head Gardener's length is the three Beds, and he gets HARDER when he is
+    weakened, twice measured - a lower pool does not shorten a fight whose clock
+    is the garden, it only moves his phase thresholds.
+
+**So this is a design question, not a tuning one**, and it is the same question
+in both cases: is a boss allowed to be twice as long as its neighbours? If yes,
+they are correctly priced and the band should have a second tier in it. If no,
+the fix is fewer Catalogue consequences and fewer Beds - content edits, not
+constants. Nothing here should be tuned further until that is decided, because
+six measured attempts have bought 11pp between them.

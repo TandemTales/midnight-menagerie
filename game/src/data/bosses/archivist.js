@@ -496,7 +496,7 @@ function process(c, entry) {
 
   if (entry.type === 'attack') {
     // Offensive Works — §20, §30.
-    c.block(c.self, two ? 18 : 16);
+    c.block(c.self, two ? 12 : 10);
     setCnt(c, 'offensive', 1);
   } else if (entry.type === 'skill') {
     // Practical Works — two Corrections, three in phase two.
