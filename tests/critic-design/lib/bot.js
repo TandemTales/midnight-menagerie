@@ -190,24 +190,63 @@ async function step(e, uid, targetId) {
 // player is actually making, and the reason it can be beaten by a boss that is
 // genuinely too big rather than merely arithmetically unfavourable.
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ * Can this body actually hurt anybody?
+ *
+ * `residual` pays a flat 34 for every body that stops being alive, and it paid
+ * it for the Drowned Matron's Drain: one move, `Intent.SLEEP`, `effect() {}`,
+ * re-summoned by her whenever it is repaired. Killing a 25-Courage Drain scored
+ * 34 + 0.15x25 = 37.75 against 3.75 for hitting HER for the same 25, so the bot
+ * farmed a sleeping fixture ten to one and never touched the boss - twice
+ * reported at 595/595 after 200 turns.
+ *
+ * It is not one fixture. Thirteen summon-only bodies in the game carry no
+ * damaging move and NINE of them respawn: the Greenhouse's seedlings and growth
+ * patches, the Crypt's bone piles, the Kennels' spare collars, the Secret
+ * Passages' doorframes. The Greenhouse reading as a long expensive fight, and
+ * getting HARDER when the Head Gardener was weakened, is the same farm.
+ *
+ * Unknown shapes count as threats: this may only ever REMOVE credit, never
+ * invent it.
+ */
+function canHurt(en) {
+  const def = en && en.def;
+  if (!def) return true;
+  /* A SEED IS A THREAT, even though it cannot swing today. `becomes` is the
+     Greenhouse's whole fight: Vine Seed -> Binding Vine, Bloom Seed -> Moon
+     Bloom, and killing one before it opens is the point. The first version of
+     this function read only the CURRENT move set, so the bot stopped clearing
+     the Garden and let it mature - measured at n=400, the Greenhouse went from
+     63% of the player's pool to 79% and its margin from 25pp to 11pp. Exactly
+     the farm this function exists to stop, run in reverse. */
+  if (def.becomes) return true;
+  const mv = def.moves;
+  if (!mv) return true;
+  return Object.values(mv).some(m => (m && ((m.damage || 0) > 0 || typeof m.damageFn === 'function')));
+}
+
 function enemyPool(s) {
-  let hp = 0, block = 0, living = 0, haunt = 0, weak = 0, vuln = 0;
+  let hp = 0, block = 0, living = 0, haunt = 0, weak = 0, vuln = 0, threats = 0;
   for (const en of s.enemies) {
     if (!en.alive) continue;
     living++;
+    if (canHurt(en)) threats++;
     hp += Math.max(0, en.hp);
     block += en.block;
     haunt += stacksOf(en, 'haunt');
     weak += stacksOf(en, 'weak');
     vuln += stacksOf(en, 'vulnerable');
   }
-  return { hp, block, living, haunt, weak, vuln };
+  return { hp, block, living, threats, haunt, weak, vuln };
 }
 
 /** Board value that does not depend on the projection. */
 function residual(s, before, pool, seat = null) {
   const me = seatOf(s, seat);
-  let v = 34 * Math.max(0, before.living - pool.living);
+  /* THREATS, not bodies. `pool.living` stays the win check and must not change
+     meaning; this is only what the kill bonus is paid on. See canHurt(). */
+  const wasThreats = (before.threats == null) ? before.living : before.threats;
+  let v = 34 * Math.max(0, wasThreats - pool.threats);
   /* DAMAGE TO A SURVIVING ENEMY, which this function valued at ZERO.
      `34 * kills` pays only when a body drops, and the projection's other route
      for damage - `turnsLeft = (pool.hp + block*0.6) / dps` - is capped at 28,
@@ -357,7 +396,7 @@ export async function naiveTurn(e, opts = {}) {
 export async function competentTurn(e, opts = {}) {
   const { snacks = null, onSnack = null, beam = 3, depth = 6, cap = 12, fc = null, debug = null, seat = null } = opts;
   const pool0 = enemyPool(e);
-  const before = { living: pool0.living, enemyHp: pool0.hp };
+  const before = { living: pool0.living, enemyHp: pool0.hp, threats: pool0.threats };
   const F = fc || { dps: 10, threat: 8, guard: 4, peak: 0, turns: 0 };
   const shown = shownIncoming(e, seat);
   F.peak = Math.max(F.peak || 0, shown);
