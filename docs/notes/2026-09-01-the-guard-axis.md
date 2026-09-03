@@ -547,3 +547,50 @@ outlier, not today's number.
 
 `tests/design-courage/check.py` gates the class now: 120 enemies against their
 chapters, 3 declared divergences, 0 failures, red on reintroducing the bug.
+
+## 2026-09-02 — the Drowned Matron draw, and a kill bonus paid on a harmless fixture
+
+`tests/run/run.py --runs 400` reports the Drowned Matron TWICE as an unresolved
+combat: **595/595, bath-drain 20/25, after 200 turns.** She is at FULL health.
+
+I first blamed her unscaled phase thresholds and was wrong, and the number said
+so before I checked: a phase gate that will not open explains a boss you cannot
+FINISH, never one you never DAMAGED. (The thresholds were genuinely unscaled and
+are fixed regardless — at `PARTY_HP_SCALE` x5.7 the Kennelmaster needed 1425
+damage to leave phase one. Real bug, different bug.)
+
+She has no `isTargetable`, no damage prevention, and a `damageTakenMul` of 1.0
+or 1.15. She is damageable for all 200 turns. So the bot never attacked her.
+
+### The arithmetic, read out of the source rather than guessed
+
+    bath-drain:  moves: { hold: { intent: Intent.SLEEP, effect() {} } }
+
+**The Drain does nothing.** It has one move, it sleeps, it never attacks. The
+Matron re-summons it whenever it is repaired (`c.summon('bath-drain')`). And
+`enemyPool()` in lib/bot.js counts every living body, summon-only boss parts
+included, so `residual()` pays its flat kill bonus for one:
+
+    kill the 25-Courage Drain     34 + 0.15 x 25  =  37.75
+    hit the Matron for 25          0.15 x 25      =   3.75
+
+**Ten to one in favour of farming a harmless fixture that grows back.** The bot
+kills the Drain, she repairs it, and the loop runs until the 200-turn ceiling.
+`bath-drain 20/25` in the report is a freshly respawned one, caught mid-cycle.
+
+### What this is and is not
+
+It is a HARNESS defect, the same family as `residual()` valuing damage to a
+surviving enemy at zero (fixed earlier today). A human sees a sleeping drain
+regrow twice and hits the boss. It is not a defect in the Bathhouse.
+
+The fix is not the 0.15 damage term — that was measured across the whole game.
+It is that the kill bonus is flat and unconditional, so a body worth no threat
+and 25 Courage scores nearly ten times what real progress on the boss does. The
+bounded shape: count THREATS separately from living bodies (`pool.living` is
+also the win check and must not change meaning) and pay the kill bonus on
+threats only.
+
+Not yet done, and deliberately: the specific two fights are not reproducible
+until the seed lands in the draw message, which is now instrumented. Mechanism
+confirmed in source; those two fights confirmed by replay, next.
