@@ -314,3 +314,46 @@ can reach them. The lever has to be one of:
 All three are design calls with no authored target in `docs/design/`, which is
 the same wall this note hit the first time. The difference now is that the
 FLATNESS has a number (+0.21/region) and the obvious fix has been eliminated.
+
+## 2026-09-02, later — the convex curve, tried and reverted
+
+The linear depth-damage curve (1.0 at the Foyer to 2.0 at the Heart) fixed the
+finale but left four regions free: at n=200 the Secret Passages cost **0.9% of
+the player's pool across the whole wing**, and the Bathhouse 0.7%. Meanwhile the
+middle was over-taxed. Squaring the position looked obviously right — take the
+tax off the middle, put it on the end — so it was built and measured at three
+ceilings:
+
+    curve            heart cost / lost      past-24   past-30   bathhouse   kennels
+    linear 2.0       43% /  7 of 20 (35%)     27        13         4%        16%
+    convex 3.0       52% / 11 of 19 (58%)     29        12        34%        50%
+    convex 2.5       60% / 15 of 24 (62%)     38        17        46%        43%
+    convex 2.2       55% / 15 of 28 (54%)     39        18        42%        19%
+
+**It buys the dead tail and pays for it with the finale and with stalled
+fights.** Every convex setting more than doubled the Heart's loss rate and the
+two gentler ones drove past-30 from 13 to 18 — because more enemy damage makes
+the bot block instead of attack, which makes fights LONGER, which is the defect
+the whole `_losePatience` gate exists to catch.
+
+Reverted to linear 2.0. The four free regions — secret-passages 2%, bathhouse
+4%, pumpkin-grounds 4%, kennels 16% — are still open, and the lesson is that a
+single depth curve cannot serve both them and the Heart, because the Heart is
+already the one late fight that works.
+
+## The Nursery resists every lever
+
+Its boss is the most stubborn number in the game. At n=200 it sits at 64-65% of
+the pool, 23-25pp margin, losing 15 of 23 — and:
+
+  * Courage 175 -> 130 moved the price **62% -> 60%**, and broke her phase-two
+    test (`phaseAt` scales the threshold with the pool). Reverted.
+  * Damage 22.2 -> 14.6 mean per move moved it **65% -> 64%**.
+
+Her damage WAS a genuine outlier and the cut is kept — 22.2 mean with a 33 max
+in region TWO, against the Butler's 14.0 and the Groundskeeper's 11.2 — but it
+is not what makes the fight expensive. Neither pool nor damage is the lever, so
+the cost lives in her mechanics: the Favorite Doll's redirect, Button Patch
+feeding her Guard off it, or the phase-two Repair cycle. That is where the next
+attempt has to go, and it should start by instrumenting WHICH of the three the
+Courage actually goes to.

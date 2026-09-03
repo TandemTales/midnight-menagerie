@@ -457,11 +457,11 @@ export const governess = {
        * took solo leftover Courage 60% -> 40%, which is a fight that does not
        * need fixing.
        */
-      id: 'sharp-correction', name: 'Sharp Correction', intent: Intent.ATTACK, damage: 24, hits: 1,
+      id: 'sharp-correction', name: 'Sharp Correction', intent: Intent.ATTACK, damage: 16, hits: 1,
       partyPick: 'lowestCourage',
       pierceFn: (c) => c.partySize() > 1,
       tell: 'Her needles come together with a small, tidy click.',
-      damageFn: (c) => 24 + bossDmg(c),
+      damageFn: (c) => 16 + bossDmg(c),
       effect(c) {
         c.damage(24 + bossDmg(c), { pierce: c.partySize() > 1 });
       },
@@ -501,7 +501,7 @@ export const governess = {
        * generally remains close to solo values. Mechanics change to account for
        * multiple players." The mechanic that changed is who it lands on.
        */
-      id: 'mind-your-seams', name: 'Mind Your Seams', intent: Intent.ATTACK_DEBUFF, damage: 12, hits: 2,
+      id: 'mind-your-seams', name: 'Mind Your Seams', intent: Intent.ATTACK_DEBUFF, damage: 8, hits: 2,
       partyTarget: 'all',
       /* SOLO keeps the intimate wording; a PARTY is told the truth. This move
          is `partyTarget: 'all'`, so before 2026-08-30 four Kids each read a
@@ -514,7 +514,7 @@ export const governess = {
         ? 'She takes in a seam on each of you that none of you knew you had.'
         : 'She takes in a seam somewhere on you that you did not know you had.'),
       applies: [{ id: 'seam-pinch', stacks: 1, to: 'player' }],
-      damageFn: (c) => 12 + bossDmg(c),
+      damageFn: (c) => 8 + bossDmg(c),
       hitsFn: () => 2,
       effect(c) {
         hitPlayer(c, 12 + bossDmg(c), 2);
@@ -595,9 +595,9 @@ export const governess = {
 
     // ── phase two ────────────────────────────────────────────────────────────
     'needle-point': {
-      id: 'needle-point', name: 'Needle Point', intent: Intent.ATTACK, damage: 13, hits: 1,
+      id: 'needle-point', name: 'Needle Point', intent: Intent.ATTACK, damage: 9, hits: 1,
       tell: 'One long silver finger, held perfectly level.',
-      damageFn: (c) => 13 + (mem(c).tightened ? 5 : 0) + bossDmg(c),
+      damageFn: (c) => 9 + (mem(c).tightened ? 5 : 0) + bossDmg(c),
       effect(c) {
         hitPlayer(c, 13 + (mem(c).tightened ? 5 : 0) + bossDmg(c));
         mem(c).tightened = false;
@@ -628,9 +628,9 @@ export const governess = {
        * that already hits everybody, and hers does not.
        */
       id: 'tighten-the-stitch', name: 'Tighten the Stitch', intent: Intent.ATTACK_DEFEND,
-      damage: 17, hits: 1, block: 13,
+      damage: 11, hits: 1, block: 13,
       tell: 'She pulls a thread through herself, and through you, and draws it tight.',
-      damageFn: (c) => 17 + bossDmg(c),
+      damageFn: (c) => 11 + bossDmg(c),
       splashFn: (c) => (c.partySize() > 1 ? 10 : 0),
       blockFn: (c) => 13 + (governess.activePatch(c) === 'buttoned' ? 4 : 0),
       effect(c) {
@@ -653,10 +653,10 @@ export const governess = {
        * change is who it reaches. Two seats is the coverage; cutting the number
        * as well was tried and measured nothing (see Mind Your Seams).
        */
-      id: 'snip-snip', name: 'Snip Snip', intent: Intent.ATTACK, damage: 11, hits: 3,
+      id: 'snip-snip', name: 'Snip Snip', intent: Intent.ATTACK, damage: 7, hits: 3,
       partyTarget: 'two',
       tell: 'Three quick cuts, the way one trims a loose thread.',
-      damageFn: (c) => 11 + bossDmg(c),
+      damageFn: (c) => 7 + bossDmg(c),
       hitsFn: () => 3,
       effect(c) { hitPlayer(c, 11 + bossDmg(c), 3); },
     },
