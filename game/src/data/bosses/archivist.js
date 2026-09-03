@@ -249,10 +249,10 @@ export const archivist = {
   moves: {
     /* ── phase one (§24) ──────────────────────────────────────────────────── */
     'paper-cutter': {
-      id: 'paper-cutter', name: 'Paper Cutter', intent: Intent.ATTACK, damage: 12, hits: 1,
-      damageFn: (c) => 12 + punch(c),
+      id: 'paper-cutter', name: 'Paper Cutter', intent: Intent.ATTACK, damage: 8, hits: 1,
+      damageFn: (c) => 8 + punch(c),
       tell: 'A guillotine arm comes down out of the robes.',
-      effect(c) { const d = 12 + punch(c); spendOffensive(c); hitPlayer(c, d); },
+      effect(c) { const d = 8 + punch(c); spendOffensive(c); hitPlayer(c, d); },
     },
     'stamp-of-approval': {
       id: 'stamp-of-approval', name: 'Stamp of Approval', intent: Intent.DEFEND_BUFF, block: 12,
@@ -321,10 +321,10 @@ export const archivist = {
 
     /* ── phase two (§29) ──────────────────────────────────────────────────── */
     'red-pen': {
-      id: 'red-pen', name: 'Red Pen', intent: Intent.ATTACK_BIG, damage: 14, hits: 1,
-      damageFn: (c) => 14 + punch(c),
+      id: 'red-pen', name: 'Red Pen', intent: Intent.ATTACK_BIG, damage: 10, hits: 1,
+      damageFn: (c) => 10 + punch(c),
       tell: 'It uncaps the big one.',
-      effect(c) { const d = 14 + punch(c); spendOffensive(c); hitPlayer(c, d); },
+      effect(c) { const d = 10 + punch(c); spendOffensive(c); hitPlayer(c, d); },
     },
     'binding-thread': {
       id: 'binding-thread', name: 'Binding Thread', intent: Intent.ATTACK, damage: 5, hits: 3,
