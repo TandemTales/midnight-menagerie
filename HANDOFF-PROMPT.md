@@ -14,10 +14,14 @@ fight cannot fail to end, and its comment claims it is "far outside reachable
 play … the longest fight any region gate produces is 24. Nothing a player will
 ever see is touched by this." **Nothing checked that.**
 
-    2026-09-02, 200 expeditions, 2782 fights
-      longest fight      60 turns   ballroom/boss
-      past 24 turns      38         1.37%
-      past 30 turns      19         0.68%   <- _losePatience fired in ordinary play
+    2026-09-03, 400 expeditions, 5672 fights
+      longest fight      65 turns   bathhouse/boss
+      past 24 turns      69         1.22%
+      past 30 turns      32         0.56%   <- _losePatience fired in ordinary play
+
+    It is the run gate's ONLY error again. A second failure - the Drowned
+    Matron drawing at 595/595 after 200 turns - was a bot defect, fixed:
+    see THE BOT FARMS SLEEPING FIXTURES below.
 
 **COMPARE RATES, NOT COUNTS.** `--runs` exists now (below) and a measurement
 pass is 2800 fights where the shipping default is 559, so "past-30 went from 5
@@ -411,6 +415,44 @@ levers between them bought 11pp. The boss ladder says why — the Archivist runs
 24.3 turns and the Head Gardener 19.7, against the Butler's 9.8. They are not
 overpriced, they are LONG, and the fix is fewer Catalogue consequences and fewer
 Beds, which are content edits and not constants.
+━━ THE BOT FARMS SLEEPING FIXTURES (2026-09-03) ━━
+
+`residual()` in lib/bot.js pays a flat **34 for any body that stops being
+alive**, and `enemyPool()` counts every living body - summon-only boss parts
+included. The Drowned Matron's Drain has ONE move, `Intent.SLEEP`,
+`effect() {}`, and she re-summons it whenever it is repaired:
+
+    kill the 25-Courage Drain   34 + 0.15 x 25 = 37.75
+    hit the Matron for 25             0.15 x 25 =  3.75
+
+Ten to one in favour of farming a sleeping fixture that grows back. She was
+reported twice at **595/595 - full health after 200 turns**.
+
+IT IS A CLASS: thirteen summon-only bodies carry no damaging move and NINE
+respawn - the Greenhouse's seedlings, the Crypt's bone piles, the Kennels'
+spare collars, the Secret Passages' doorframes.
+
+The bonus is paid on THREATS now, not bodies. `pool.living` is untouched
+because it is also the win check. Unknown shapes count as threats, so the
+change can only remove credit, never invent it.
+
+**AND A SEED IS A THREAT.** The first version read only the current move set,
+so the bot stopped clearing the Greenhouse and let it mature: 63% of the
+player's pool -> 79%, margin 25pp -> 11pp. `Vine Seed -> Binding Vine` is that
+fight's whole point. `def.becomes` counts. Two bodies look identical at rest -
+a Drain that sleeps forever and a seed three turns from blooming - and only
+that field tells them apart.
+
+    region        baseline   threats v1   threats v2 (shipped)
+    bathhouse     60% 25pp   37% 49pp     37% 49pp
+    hedge-maze    64% 25pp   51% 36pp     51% 36pp
+    greenhouse    63% 25pp   79% 11pp     69% 22pp
+    errors             3          1            1
+
+This is the THIRD bot defect this week that read as a content problem - after
+`residual()` valuing damage to a surviving enemy at zero, and the beam passing
+with four legal cards in hand. When a region's numbers will not move for any
+content lever, price the BOT before re-authoring the wing.
 ━━ WHAT IS OPEN ━━
 
 1. **THE OVER-30 GATE.** Top of this document, and read it as a RATE: 0.68% of
