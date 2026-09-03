@@ -287,7 +287,12 @@ async function playCombat(engine, budgetTurns = 200, run = null) {
       .map(x => `${x.defId} ${x.hp}/${x.maxHp}`).join(', ');
     const who = run?.combatMeta?.name || engine.encounterId || 'unknown encounter';
     const boss = engine.enemies.some(x => x.alive && x.tier === 'boss');
-    const line = `${who} — ${budgetTurns} turns, still standing: ${left || 'nobody'}`;
+    /* THE SEED, because without it this is not reproducible. The Drowned Matron
+       drew twice at 595/595 in a 400-run pass — full health after 200 turns —
+       and the message named the formation but not which expedition, so there
+       was no way to replay the one fight that mattered. */
+    const line = `${who} [seed ${run ? run.seed : '?'} ${run ? run.region : '?'}] `
+      + `— ${budgetTurns} turns, still standing: ${left || 'nobody'}`;
     if (boss) DRAWS.push(line);
     fail(`combat did not resolve — ${line}`);
     // Either way the expedition is over. A run that cannot finish a fight has
