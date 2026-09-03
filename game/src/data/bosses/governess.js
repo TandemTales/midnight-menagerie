@@ -463,7 +463,7 @@ export const governess = {
       tell: 'Her needles come together with a small, tidy click.',
       damageFn: (c) => 16 + bossDmg(c),
       effect(c) {
-        c.damage(24 + bossDmg(c), { pierce: c.partySize() > 1 });
+        c.damage(16 + bossDmg(c), { pierce: c.partySize() > 1 });
       },
     },
     'mind-your-seams': {
@@ -517,7 +517,7 @@ export const governess = {
       damageFn: (c) => 8 + bossDmg(c),
       hitsFn: () => 2,
       effect(c) {
-        hitPlayer(c, 12 + bossDmg(c), 2);
+        hitPlayer(c, 8 + bossDmg(c), 2);
         /**
          * Every seat the damage reached, not `c.player`.
          *
@@ -599,7 +599,7 @@ export const governess = {
       tell: 'One long silver finger, held perfectly level.',
       damageFn: (c) => 9 + (mem(c).tightened ? 5 : 0) + bossDmg(c),
       effect(c) {
-        hitPlayer(c, 13 + (mem(c).tightened ? 5 : 0) + bossDmg(c));
+        hitPlayer(c, 9 + (mem(c).tightened ? 5 : 0) + bossDmg(c));
         mem(c).tightened = false;
       },
     },
@@ -634,7 +634,7 @@ export const governess = {
       splashFn: (c) => (c.partySize() > 1 ? 10 : 0),
       blockFn: (c) => 13 + (governess.activePatch(c) === 'buttoned' ? 4 : 0),
       effect(c) {
-        hitPlayer(c, 17 + bossDmg(c));
+        hitPlayer(c, 11 + bossDmg(c));
         for (const pl of governess.bystanders(c)) c.damage(pl, 10);
         governess.gainGuard(c, 13);
         mem(c).tightened = true;
@@ -658,7 +658,7 @@ export const governess = {
       tell: 'Three quick cuts, the way one trims a loose thread.',
       damageFn: (c) => 7 + bossDmg(c),
       hitsFn: () => 3,
-      effect(c) { hitPlayer(c, 11 + bossDmg(c), 3); },
+      effect(c) { hitPlayer(c, 7 + bossDmg(c), 3); },
     },
     'emergency-repair': {
       id: 'emergency-repair', name: 'Emergency Repair', intent: Intent.DEFEND_BUFF, block: 8,

@@ -65,6 +65,7 @@ const PURSE_TABLE = [];
 /** The longest fight, against `_losePatience`'s claim of being unreachable. */
 let PATIENCE_ROW = null;
 let PIERCE_ROW = null;
+let SOURCE_ROWS = null;
 /** Which authored formations the fifty expeditions ever actually roll. */
 const REACHABLE_TABLE = [];
 /** Which TIER band the fights that happened were drawn from. */
@@ -202,9 +203,22 @@ async function playCombat(engine, budgetTurns = 200, run = null) {
      that LANDED, `blockedByEnemies` is damage Guard ate, `enemyGuard` is Guard
      granted; the caller turns them into per-turn rates. */
   const gx = { dealt: 0, blockedByEnemies: 0, enemyGuard: 0,
-               samples: 0, nerveSum: 0, handSum: 0, playSum: 0 };
+               samples: 0, nerveSum: 0, handSum: 0, playSum: 0, bySource: {} };
   engine.on('damage', (ev) => {
-    if (ev.targetId === engine.player.id) return;
+    if (ev.targetId === engine.player.id) {
+      /* WHO IS ACTUALLY HURTING YOU. Two bosses resisted every number we moved
+         - the Governess shrugged off a 26% Courage cut (62% -> 60% of the pool)
+         AND a 34% damage cut (65% -> 64%), and the Archivist did the same - so
+         the cost is not in the body's pool or its printed attacks. It is in
+         something else on the board: a summon, a redirect, a status tick. A
+         total cannot say which, and `sourceName` has been on every damage event
+         all along. */
+      if (ev.hpLoss > 0) {
+        const k = ev.sourceName || ev.cause || 'the house';
+        gx.bySource[k] = (gx.bySource[k] || 0) + ev.hpLoss;
+      }
+      return;
+    }
     gx.dealt += ev.hpLoss;
     gx.blockedByEnemies += ev.blocked || 0;
   });
@@ -439,6 +453,7 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
         deck: run.deck.length, keeps: run.keepsakes.length,
         companion: run.companion,
         pierce: pierceCards.length, pierceIds,
+        bySource: (engine.__guard || {}).bySource || {},
         purse: run.lostThings,
       });
     }
@@ -1242,6 +1257,24 @@ async function main() {
                         second one argues for changing the boss. */
                      pierce: f.pierce || 0, pierceIds: f.pierceIds || [] })),
     };
+    /* WHERE THE COURAGE WENT, by region. Ranked by share, because the question
+       is never "how much" - the cost table already says that - but WHICH BODY,
+       and a boss that is expensive because of the thing standing next to it
+       needs a completely different fix from one that is expensive itself. */
+    SOURCE_ROWS = (() => {
+      const byRegion = {};
+      for (const f of ALLT) {
+        const m = (byRegion[f.region] ||= {});
+        for (const [k, v] of Object.entries(f.bySource || {})) m[k] = (m[k] || 0) + v;
+      }
+      return Object.entries(byRegion).map(([region, m]) => {
+        const tot = Object.values(m).reduce((a, b) => a + b, 0) || 1;
+        const top = Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, 4)
+          .map(([name, v]) => ({ name, hp: Math.round(v), pct: Math.round(100 * v / tot) }));
+        return { region, total: Math.round(tot), top };
+      });
+    })();
+
     if (over30.length) {
       /* NOT A BROKEN GATE - a real defect, named here so the next session does
          not spend a round deciding whether it broke something.
@@ -1595,6 +1628,7 @@ autosaves ${saveCount}</pre>`);
     depth: DEPTH_TABLE, arrival: ARRIVAL_TABLE,
     teach: TEACH_TABLE, teachCover: TEACH_COVER, reachable: REACHABLE_TABLE,
     tiers: TIER_TABLE, patience: PATIENCE_ROW, pierceCover: PIERCE_ROW,
+    sources: SOURCE_ROWS,
     determinism: detOk, resume: resumeOk, storage: storeOk,
     combatResume: combatResume, combatResumeTried: combatResumeTried, replayed,
   };

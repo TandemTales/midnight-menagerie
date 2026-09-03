@@ -198,6 +198,21 @@ async def main(a):
         print("  at 0% cannot draft an answer at any price, so its stalls are not a")
         print("  drafting mistake and no amount of boss tuning reaches them.")
 
+    src = res.get("sources") or []
+    if src:
+        order = {r: i for i, r in enumerate([
+            "foyer", "nursery", "sleeping-quarters", "kitchens-cellars", "greenhouse",
+            "graveyard", "study-library", "attic-observatory", "lampworks", "ballroom",
+            "crypt", "hedge-maze", "secret-passages", "bathhouse", "kennels",
+            "pumpkin-grounds", "heart"])}
+        print("")
+        print("where the Courage actually went  (top sources per region)")
+        print("  a boss that is expensive because of the thing STANDING NEXT TO IT")
+        print("  needs a different fix from one that is expensive itself.")
+        for r in sorted(src, key=lambda x: order.get(x["region"], 99)):
+            top = "  ".join("%s %d%%" % (t["name"], t["pct"]) for t in r["top"])
+            print("  %-20s %5d taken   %s" % (r["region"], r["total"], top))
+
     tie = res.get("tiers") or []
     if tie:
         print("")
