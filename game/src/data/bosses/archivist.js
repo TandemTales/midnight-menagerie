@@ -551,7 +551,27 @@ function correctFrom(c, pile, want) {
   const list = c.cardsIn ? c.cardsIn(pile) : [];
   if (!list.length) return 0;
   const pool = list.slice(0, pile === 'draw' ? want : list.length);
-  const took = correct(c, c.player, pool.map(x => x.uid).slice(0, want));
+  /* CAPPED, and it was not. `correct()` takes a cap and defaults it to
+     Infinity, and the Quill Clerk - the enemy that INTRODUCES Correction -
+     passes `flag(c, 'maxCorrections', 2)` because its chapter says "Maximum two
+     Corrected Tricks can exist from one Quill Clerk" (§, line 206). The
+     Archivist passed nothing, so the boss that processes the mechanic hardest
+     was the only source that never bounded it.
+
+     That is why his fight is LONG rather than expensive. Corrected costs 1
+     extra Nerve, his Skill tab applies two (three in phase two) every time it
+     processes, and three other sites add more - so over 24 turns the player's
+     deck quietly became unplayable and their output fell with it. Measured on
+     the constant-player ladder: his swing is 8.96 against a ~15 median, at a
+     wall of only 6.45. The player was not being out-walled, they were being
+     priced out of their own hand, and each Correction bought him the turns to
+     apply the next one.
+
+     4 rather than the Clerk's 2: he is a boss with three tabs and a phase-two
+     application of three at once, so 2 would erase the mechanic. Same number
+     the Watcher's `web()` uses for the same reason. */
+  const took = correct(c, c.player, pool.map(x => x.uid).slice(0, want),
+    flag(c, 'maxCorrections', 4));
   if (!took.length) return 0;
   const names = pool.filter(x => took.includes(x.uid)).map(x => x.name).join(', ');
   c.announceRule({
