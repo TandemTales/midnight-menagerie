@@ -3,568 +3,247 @@ modules, no build step) at
 C:\Users\Josh\OneDrive\Desktop\Tandem Tales\Midnight Menagerie
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-━━ START HERE, 2026-09-01 ━━ THE BATTERY IS RED ON PURPOSE ━━
+━━ START HERE, 2026-09-04 ━━ ONE GATE IS RED AND IT IS SUPPOSED TO BE ━━
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-`python tests/run/run.py` EXITS 1. You did not break it. It is a real defect,
-found by a gate added yesterday, and it is the one open thing in the game layer.
+`python tests/run/run.py` EXITS 1. You did not break it. Every other gate in
+the battery is green.
 
 `combat/engine.js`'s `_losePatience` escalates every enemy past turn 30 so a
-fight cannot fail to end, and its comment claims it is "far outside reachable
-play … the longest fight any region gate produces is 24. Nothing a player will
-ever see is touched by this." **Nothing checked that.**
+fight cannot fail to end, and its comment claims that is "far outside reachable
+play". It is not:
 
-    2026-09-03, 400 expeditions, 5672 fights
+    2026-09-04, 400 expeditions, 5687 fights
       longest fight      65 turns   bathhouse/boss
-      past 24 turns      69         1.22%
-      past 30 turns      32         0.56%   <- _losePatience fired in ordinary play
+      past 24 turns      69         1.21%
+      past 30 turns      32         0.56%
 
-    It is the run gate's ONLY error again. A second failure - the Drowned
-    Matron drawing at 595/595 after 200 turns - was a bot defect, fixed:
-    see THE BOT FARMS SLEEPING FIXTURES below.
-
-**COMPARE RATES, NOT COUNTS.** `--runs` exists now (below) and a measurement
-pass is 2800 fights where the shipping default is 559, so "past-30 went from 5
-to 19" is four times the sample, not four times the defect. The rate moved
-0.48% -> 0.68% across the balance pass, and that rise is PAID FOR: making the
-last four wings survive a 90-damage-a-turn player is bought with fight length,
-which is the thing this gate measures. See the balance section below.
-
-**AND MOST OF IT IS THE BOT, NOT THE GAME. Read this before you retune
-anything.** In the 57-turn attic-observatory fight the bot held `nerve 3`,
-`hand 5` and `legal 4.3` — four playable cards every turn — and played 0.2 a
-turn. The same companion in the fight it WON: identical Nerve, hand and legal
-count, `cpt 2.4`. Nothing was denied; it passed.
-
-Controlled A/B, one variable: play only that boss with `naiveTurn` and leave
-everything upstream to the competent bot, so the same deck meets the same
-board. Seed 379133, bones:
-
-    competent   57 turns, 95% of the board alive, LOST, run ends there
-    naive       under 30 turns, and the run continues to hedge-maze wing 4
-
-With that boss naive the new longest is hedge-maze at 63 turns — `cpt 0.6`,
-`legal 4.4`, same signature. The pathology follows the bot, not the boss.
-
-**FOUND AND FIXED.** `residual()` paid `34 * kills` and NOTHING for damage that
-does not drop a body, and the projection's only other route for damage —
-`turnsLeft = (pool.hp + block*0.6) / dps` — is capped at 28, so against a boss
-whose pool exceeds ~28*dps that cap is SATURATED and chipping it moves no term
-either. Both channels dead at once, and only for big-pool bosses, which is why
-all ten longest fights are bosses. The bot was not malfunctioning: it correctly
-computed that attacking a boss was worth zero and held its hand.
-
-One term, `+0.15` per point of damage:
-
-    fights reached  491 -> 559      past 30            8 -> 5
-    past 24          14 -> 13       board >40% alive   5 -> 1
-    victories         3 -> 4        foyer defeats     32 -> 28
-
-It plays better AND survives better, which is why this one is not confounded.
-All integrity checks still pass; `anchor.py` still agrees 5/5.
-
-**The gate still exits 1**: five fights past 30, longest 57. Exactly one ends
-with the board over 40% alive — and it is the GREENHOUSE at 50% with
-`summoned 212`, which is the Head Gardener treadmill this repo already
-established as working as designed. **So after the fix there is no
-Guard-stall-shaped fight left in the sample at all.** What remains is one
-grind, two long fights the deck WON, and two treadmills.
-
-**What that invalidates, measured rather than assumed.** Three tiers re-run at
-the same config and seed. The degeneracy needs `turnsLeft` to SATURATE at its
-28 cap, so it must scale with the Courage pool and vanish on small ones:
-
-    standard   small pool   win 99% -> 99%    turns  6.6 -> 6.4   (-0.2)
-    elite      pool 205     win 79% -> 83%    turns 14.8 -> 14.2  (-0.6)
-    boss       large pool   win 26% -> 30%    turns 25.7 -> 23.9  (-1.8)
-
-That gradient was predicted by the mechanism and not fitted to it, which is
-better evidence than the fix working — a wrong cause produces that too.
-
-So: **re-measure BOSS and ELITE baselines before tuning against them; the
-ordinary-content tables stand.** `ladder-*-dmgterm.json` are the new ones, kept
-beside the originals. Party sweeps and the Butler curve are boss-tier and have
-NOT been re-run.
-
-**One content finding survived every re-measurement:** `hedge-maze` ELITE wins
-19% at 108% of the Courage pool — the only tier row in the game that costs more
-than the pool it fights, and the bot fix barely moved it.
-
-━━ AND IT IS FIVE MECHANISMS, NOT ONE ━━
-
-The ledger prints `wing`, `left`, `wall`, `land`, `swing`, `abs`, `cpt`,
-`summoned` and `pierce` now, and they separate things `turns` cannot:
-
-    turns  who      region        left  wall  land  swing  abs   cpt  summoned
-      57   bones    graveyard      27%   3.2   6.4    7.5   14%  1.3      107   grind
-      45   mossbit  lampworks       0%   3.6  11.6   14.6   21%  1.9       78   won
-      40   bones    greenhouse     50%   2.2   9.5   10.7   11%  1.8      212   treadmill
-      40   mossbit  hedge-maze     30%   4.4  14.3   16.0   10%  2.4      272   treadmill
-      36   pudding  graveyard       0%   3.4  12.3   14.4   15%  1.9      111   won
-
-`cpt` is 1.3-2.4 across all of them now. Before the bot fix the same table's
-top two rows were `cpt 0.2` / `abs 0%` and `cpt 1.0` / `swing 0.4` — the deck
-standing still. Those two fights no longer exist.
-
-**Read `abs` before `wall`.** A high `wall` beside a low `land` looks like a
-board out-raising a deck, and for the two worst fights in the game it is not:
-`abs 0%` means the board absorbed NOTHING, because the deck put out 0.3 a turn.
-An earlier version of this document called the attic-observatory row "the purest
-GUARD STALL in the game" on `wall > land` alone. It was never a Guard stall.
-
-    stuck loop    cpt near 0                  the deck never acts
-    inert deck    cpt normal, swing near 0    it acts and cannot hurt anything
-    guard stall   abs high, swing > 0         the board really is eating it
-    treadmill     summoned high               it gets through; more keeps arriving
-    grind         left near 0                 a long fight the deck is winning
-
-Healthy fights run `cpt` 1.5-2.6. `bones` lands 15.3 a turn in kitchens-cellars
-and 0.3 against the Watcher, so neither top row is "the bot cannot play bones".
-**The two longest fights in the game are the first two kinds, and no Courage
-pool cut, route change, wall cap or piercing card reaches either.** Cause is
-NOT established - `web()` takes `cap = 4`, so the Watcher inflating card costs
-cannot price out a deck on its own. Start with `trace` on the seed.
-
-The genuinely wall-shaped row is pudding/study-library - `wall 7.0`, `abs 28%` -
-and that deck got through to 6% left.
-
-━━ CAN ANYONE ANSWER A GUARD WALL? 2% OF FIGHTS ━━
-
-`pierce` counts cards in the deck whose TEXT ignores Guard. **11 of 491 fights
-(2%) held one.** `marmalade` 11/41 (27%) is the only nonzero row in the whole
-roster; `hush` holds two of the game's four piercing cards and drew neither in
-17 fights, because both are RARE. `rescueCompanion()` adds clues and Courage but
-NO CARDS, so a run's answer to Guard is fixed at companion select and cannot
-change afterwards.
-
-StS2's answer to enemy Block is not a cap. It flattens Block's GROWTH - co-op
-Block was deliberately decoupled from the HP curve to a flat x2 while every
-other defensive buff kept a rising curve - and answers it with channels that
-never touch Block at all: Poison and Doom. We have `dread` in
-`combat/statuses.js` at exact StS-poison parity (`ignoreBlock`, stacks, ticks
-at turn start) with an icon drawn for it, no tooltip, no `docs/design/` entry,
-and NOTHING anywhere that applies it.
-
-━━ HOW THAT WAS FOUND, WHICH MATTERS MORE THAN THE FINDING ━━
-
-I got it wrong first, and expensively, so do not repeat it.
-
-I blamed the ROUTE: boss pools scale 137 → 695 and are authored against LADDER
-position, and `EXPEDITION_WINGS = 6` (2026-08-31) draws route position apart
-from it, so a 464-Courage wing-five boss can appear at wing two. It is a tidy
-story, it fits, and **I committed it into a failure message and both handoffs
-without measuring it** — onto a ledger that did not even record the route slot,
-so nothing in the repo could have joined the claim to the data. That is the
-CONTRACTS 47 shape, written by someone who had spent the day citing CONTRACTS 47.
-
-Two ledger fields refuted it. The route claim predicted at least seven of the
-nine over-30 fights at wing two; **there are four**, and the 87-turn worst case
-is wing THREE. Meanwhile the four longest ended with the boss 64–69% ALIVE,
-which is the Guard reading, and the diagnosis was already sitting three lines
-above the mechanism I was instrumenting.
-
-**And then I did it again, one layer down.** "The four longest ended with the
-boss 64-69% ALIVE, which is the Guard reading" is the same move: a number that
-FITS the Guard story, named as the Guard story, without the one field that
-could refute it. `abs` refuted it - the board absorbed 0% of those fights,
-because the deck put out 0.3 a turn. Two sessions, two confident causes, both
-wrong, both from a metric that could not tell the difference.
-
-**Measure the cause before you name it, even when the story is good — and
-especially when you have just been burned for naming one.**
-
-━━ THE INSTRUMENTS, AND WHAT EACH ONE CAN SEE ━━
-
-`tests/run/run.py` — 50 seeded expeditions, competent bot, real drafting, ~75s.
-Seven tables now. Cost per fight BY REGION; what each ROOM KIND hands over; the
-first wing BY DEPTH; what the player brings to each BOSS DOOR; which TIER the
-fights came from; which authored formations a run NEVER rolls; and what the
-first wing actually TEACHES. **`hpBefore` sat on that ledger unprinted for two
-sessions** — it is the whole difference between "the boss costs too much" and
-"the player arrives broke".
-
-`tests/critic-design/ladder.py` — NEW. Prices content against a player held
-CONSTANT: one wing-one loadout through every region at full Courage. This is the
-control the cost ledger never had, because that one prices a wing against the
-player who actually reaches it and cannot separate "this wing is gentle" from
-"the player who gets here is strong". Flags: `--tier standard|elite|boss`,
-`--benchhaunt N` (separate from `--haunt`, which also hardens the expeditions
-that GENERATE the constant player and so un-constants it), `--hpscale N`.
-
-  Its headline: **a wing-one deck wins every ordinary fight in fifteen of the
-  seventeen regions.** Region 15 is the easiest content in the game, region 16
-  is exactly region 1, and the FINAL region's Big Scares are easier than the
-  Foyer's. The mansion is not a ladder. Only the boss tier climbs, 137 → 695.
-
-`tools/deadflags.py` — NEW. Sweeps content for state that is written and never
-read (`--reads` for the opposite, more expensive shape). An AUDIT, not a gate.
-
-`tests/teaching/check.py` — NEW, 7 checks. The tooltip registry IS the tutorial
-(see below) and nothing protected it.
-
-`tests/enemies/audit.py` — the only thing that finds a lying intent. Runs at
-HAUNT 0, which is why it cannot see a Haunt bug of any kind.
-
-━━ WHAT MOVED THIS SESSION ━━
-
-**THE FOYER QUESTION IS ANSWERED AND IT WAS NEITHER OPTION.** The previous
-handoff asked whether the twelve early Foyer deaths were the CONTENT or the
-opening DECK. Winners and losers arrive at the Butler's door with the SAME DECK
-— 14.2 cards against 14.6 — and different Courage, 95% of pool against 76%. It
-is ATTRITION. And the ceiling is arithmetic: margin (arrival minus price)
-predicts the boss loss rate across every wing, and arrival cannot exceed 100%,
-so while the Butler costs 64% of the pool the Foyer's margin can never exceed
-+36pp however well it is played.
-
-**THE ADVANCED POOL WAS ONE ROW DEEP.** `tierFor` asked for `advanced` only on
-row `rows - 2`, which is the boss's DOOR row — 26% Safe Room, 11% Scuffle — so
-**102 authored formations, the largest tier in the game, were drawn from 1.7% of
-the time.** Now the last four walkable rows: 10 fights → 96, every Foyer
-formation rolls, and it cost nothing (defeats 28 → 28). It had a rule dead
-underneath it: `minScuffle: { 'red-carpet-runner': 2 }` implemented §10
-correctly and could never bind because the tier gate was stricter everywhere.
-
-**THE ROLLER COVERS ITS ROSTER.** §10 says outright "the procedural system
-should not treat all formations equally" and §33 states the teaching as an
-OUTCOME. One soft rule: prefer a formation carrying a body this run has not met.
-Coverage 3.2 → 4.3 of six teachers, **eight runs in forty now meet the whole
-roster where none ever had**, and it is CHEAPER (24.7% → 23.2% of pool).
-
-**THE BUTLER'S POOL WENT 149 → 134, AND IT IS A WASH.** Asked for; measured;
-recorded honestly as +4.2 points at the boss and no difference across whole
-runs. The lesson is the `--scales` trap: `scaleHp` multiplies maxHp at fight
-time and leaves `BASE_HP` alone, so `phaseAt` drags the phase-two threshold down
-with it and a `x0.9` row measures a Butler whose DANGEROUS half was also cut.
-**Never quote a `--scales` row as a forecast of a pool edit on a phased boss.**
-
-**A THIRD OF THE HAUNT LADDER IS ABOVE THE CEILING.** 129 of 366 authored Haunt
-behaviours are gated at levels 6–10; `MAX_HAUNT` is 5. Sixty sit at Haunt 9
-alone, across sixteen regions, each with its player-facing sentence already
-written. `_lib.js` line 318 records the audit that set the shape — dated
-2026-08-20, when THREE regions shipped. Fourteen more arrived and nobody
-re-counted. The good half: Haunt DOES reach ordinary enemies, measured for the
-first time (+15% enemy Courage at Haunt 5, cost up in 16 of 17 regions).
-
-**FIVE MORE DEAD SEAMS, PLUS TWO FOUND AND DELIBERATELY NOT FIXED.** See below.
-
-━━ THE TUTORIAL, BECAUSE IT WILL BE ASKED AGAIN ━━
-
-**There is no tutorial and the design does not want one.** Three files say so
-consistently: `01-foyer.md` §33 ("primarily through combat rather than pop up
-tutorials"), `kids/03-amina-mochi.md` ("without requiring a tutorial lecture"),
-`01-mansion-structure.md` (the Foyer IS the tutorial region). There is no
-tutorial spec anywhere in `docs/design/`. That is a position, not an omission.
-
-So all the teaching happens where the player meets the thing, and the tooltip
-registry is the tutorial. Measured: **498 keywords with 0 blank and 0 stubs, 362
-statuses with 0 missing an entry, 1470 cards with 0 unresolved bracketed
-terms.** The vocabulary teaching is COMPLETE.
-
-`tests/teaching/check.py` gates it, because it has already rotted once —
-`keywords.js` records that its loader imported `enemies/_lib.js` (core statuses
-only) instead of `enemies/index.js`, so every status added after the Foyer had
-no tooltip and the count sat at 268 "through two whole regions of new ones".
-Nothing failed; a number stopped moving. The gate asserts the COUNTS as well as
-the gaps for that reason.
-
-**Still open:** first-run ORIENTATION — what Nerve is, how a turn ends, what a
-Curiosity or Safe Room does. `seenTutorials` sits in the save schema written and
-read by nothing. Choosing between "leave it, the Foyer teaches it" and "build
-something that is not a lecture" is a design call.
-
-━━ TWENTY-TWO DEAD SEAMS. THE LAST FIVE WERE FIXED, TWO WERE NOT ━━
-
-A seam is dead when it is written, documented, and read by nothing.
-
-| what was dead | found by |
-|---|---|
-| the `advanced` tier — 102 formations at 1.7% of fights | the tier census |
-| `minScuffle: { 'red-carpet-runner': 2 }` — §10, unable to bind | the same census |
-| 129 of 366 Haunt hooks, gated above `MAX_HAUNT = 5` | counting `level >= N` |
-| the Watcher's Grounded — "cannot gain Guard until it climbs back", printed and unenforced | reading the rule against its code |
-| the Topiary Beast's Leafy Shell — §7's "+4 to its next attack", plus a Haunt-8 `shellBonus` with no consumer | `tools/deadflags.py` |
-| the Oven Maw's Preheat — §12's "the next baked enemy emerges one turn earlier", discounting a bake that had already finished | `tools/deadflags.py` |
-| the Patchwork Giant's three NAMED Patches, reaching the player as a bare counter | `tools/deadflags.py` |
-
-**FOUND AND DELIBERATELY NOT FIXED — the Bedframe Beast.** §21: "While
-Underneath: **Attack Tricks cannot target the Beast.**" The def has no
-`isTargetable` at all. §23's trigger reads `c.self.indirectDamageThisTurn`, a
-field that appears EXACTLY ONCE in this repository — that read — and is assigned
-nowhere. They are ONE defect: with the Beast targetable, "indirect damage" is
-not a distinction the engine can make. Wired and measured: **past-24 13 → 15,
-past-30 9 → 11**, because the Beast is solo and §21 makes it untargetable three
-turns in five against a 297-Courage pool. Reverted. It moves the open defect the
-wrong way, exactly as the Wardrobe note warns about wiring `isTargetable`.
+**READ IT AS A RATE.** `--runs` exists now; a measurement pass is ~5700 fights
+where the shipping default is ~560. "Past-30 went from 5 to 32" is ten times the
+sample, not ten times the defect. Before deciding it is a defect at all, know
+that some of it is bought deliberately: making the last four wings survive a
+player who deals ~90 a turn costs fight LENGTH, and length is what this gate
+measures.
 
 ━━ THE BATTERY ━━
 
 ONE Playwright run at a time, always (CONTRACTS trap 7). Everything below was
-RUN on 2026-09-01 against this tree.
+run on 2026-09-04 against this tree.
 
-  python tests/run/run.py            50 runs, **1 ERROR — ON PURPOSE**, see top
-  python tests/cards/run.py          1470 cards, 0 errors, 0 warnings
-  python tests/enemies/run.py        275 enemies, 0 errors
-  python tests/enemies/audit.py      19819 turns, 0 errors
-  python tests/coop/run.py           645
-  python tests/combat/run.py         694
-  python tests/teaching/check.py     7
-  python tests/design-courage/check.py  120 checked, 0 failures   ← NEW
-  python tests/phase-thresholds/check.py  17 boss files, 0 failures   ← NEW
-  python tests/design-damage/check.py    118 compared, 0 failures     ← NEW
-  python tests/critic-design/ladder.py  17 regions, 0 errors   ← NEW
-  python tests/critic-design/anchor.py  5/5 agree
-  python tools/deadflags.py [--reads]   audit, not a gate      ← NEW
+  python tests/run/run.py                   50 runs, **1 ERROR — ON PURPOSE**
+  python tests/run/run.py --runs 400        the measurement pass, ~13 min
+  python tests/cards/run.py                 1470 cards, 0 errors, 0 warnings
+  python tests/enemies/run.py               275 enemies, 0 errors
+  python tests/enemies/audit.py             19574 turns, 0 errors
+  python tests/combat/run.py                694 passed, 0 failed
+  python tests/coop/run.py                  645
+  python tests/teaching/check.py            7
+  python tests/design-courage/check.py      129 checked, 0 failures      ← NEW
+  python tests/design-damage/check.py       118 compared, 0 failures     ← NEW
+  python tests/phase-thresholds/check.py    17 boss files, 0 failures    ← NEW
+  python tests/critic-design/ladder.py      17 regions, 0 errors
+  python tests/critic-design/anchor.py      5/5 agree
 
-  REGION GATES, the ones touched today:
-    foyer 66 · nursery 71 (re-run after the Courage fix) · sleeping-quarters 62 · kitchens 20 ·
-    greenhouse 37 · attic-observatory 53 · heart 44
-    (the other ten were not re-run this session)
+  REGION GATES touched recently: foyer 66 · nursery 71 · sleeping-quarters 62
+  (the other fourteen were not re-run)
 
-━━ THE NURSERY WAS 44% HEAVIER THAN ITS OWN CHAPTER ━━
+━━ THE THREE NEW GATES, AND WHY THEY EXIST ━━
 
-Chasing "the Governess is a difficulty regression" found she was never the
-problem — she costs 63% of the player's pool, and the Butler costs 61%. The
-player was ARRIVING at her door on 62% Courage, the lowest in the game.
+All three read the DESIGN CHAPTER as the authority and the implementation as the
+thing under test. That direction matters: the opposite is fitting the doc to the
+code afterwards, which proves nothing.
 
-Every one of the nine Nursery enemies shipped above its authored Courage, a
-uniform ~1.44x on normals and ~1.19x on Big Scares. Regions 1 and 3 match their
-chapters byte for byte; the Nursery was the only region in the game that did
-not, and nothing justified it. The Patchwork Giant's own code gives the game
-away — it scales its 90/60/30 Patch tears by `maxHp / 126`, the chapter value,
-so at 150 the tears silently drifted to 107/71/36.
+**`design-courage`** — every enemy's Courage against its chapter. Exists because
+the Nursery shipped all nine of its enemies ~1.44x over their authored pools and
+nothing said so; the region read as the most expensive content in the game and
+it was blamed on its BOSS for two sessions. Divergence is allowed and must be
+DECLARED in `ALLOWED` with its measurement (currently: House Bell, Butler,
+Governess, Groundskeeper, Archivist).
 
-    standard ladder   nursery 39% -> 21% of pool, rank 1 -> 5 of 17
-    elite ladder      82% -> 68%, win 69% -> 75%
-    boss door         arrives at 62% -> 83%, margin 9pp -> 19pp
-    Governess bench   solo 12.5% -> 25.0%, 4p 93.8% -> 100% at fallen 0.00
+**`design-damage`** — the same for move damage. The Nursery's damage was
+inflated by the same hand and the same factor. Matching is on **(region, name)**,
+never name alone: two moves are called "Lid Slam". Per-stack moves are skipped
+and COUNTED OUT LOUD — "Open the Lantern" reads chapter 8 against impl 40 and
+both are right, because the chapter says "8 damage PER CHARGE".
 
-No other region moved by more than 2pp at either tier. `tests/design-courage/
-check.py` now gates the class: 120 enemies checked against their chapters, 3
-declared divergences (House Bell, Butler, Governess — bosses are tuned against
-measurement and their chapters are opening bids), 0 failures.
+**`phase-thresholds`** — no boss may compare `hp` to a raw number. Five did.
+They are shares of an authored pool written as absolutes, so any multiplier
+moves how much of the fight each phase covers — and `PARTY_HP_SCALE` is **x5.7
+at four Kids**, which put the Kennelmaster's phase two at 1425 damage and the
+Harvest King's phase three at 542. Those fights were broken in co-op since they
+were built. Use `phaseAt(c, N, BASE_HP)`.
 
-**The ladder had been reporting this since August** — nursery 39% against a 15%
-median, rank 1 of 17 — and it was read as a boss problem every time. The number
-was never wrong; nobody asked which room it was pointing at.
-  GATES THAT MUST STAY AT ZERO:
-    seams 7892 sites / 0 · hook-names 201 declared / 0 unknown ·
-    bus-names 0 dead · status-names 22 / 0 · part-lookups 0 ·
-    party-tells 0 · events 8 · achievements 10 · boss-haunt 6
+━━ WHERE THE BALANCE IS ━━
 
-  map 30 · wings 44 · backpack 80 · haunt 21 · gameover-keeps 16 ·
-  governess 56 · butler 38
+The number that predicts a boss loss rate is **MARGIN** — arrival minus price,
+in points of the Courage pool. See
+`docs/notes/2026-08-31-the-foyer-is-attrition-not-the-boss.md`. n=400:
 
-━━ THE BALANCE PASS, 2026-09-02 ━━
+    region              cost   margin   lost      was
+    foyer                45%    36pp    82/279    61% / 15pp, ending 44% of runs
+    nursery              47%    39pp    22/55     64% / 25pp
+    sleeping-quarters    50%    39pp    12/58
+    kitchens-cellars     51%    35pp    26/61
+    greenhouse           69%    22pp    15/27     <- OPEN
+    graveyard            34%    61pp     7/31     77% / 14pp
+    study-library        65%    27pp    18/31     <- OPEN
+    attic-observatory    49%    46pp     7/25      3% (free)
+    lampworks            27%    71pp     2/16      1% (free)
+    ballroom             43%    52pp     3/19
+    crypt                53%    38pp    10/19
+    hedge-maze           51%    36pp     5/11
+    secret-passages      42%    55pp     4/17      2% (free)
+    bathhouse            37%    49pp     4/12      4% (free), and UNWINNABLE
+    kennels              23%    62pp     2/6
+    pumpkin-grounds      18%    53pp     0/4
+    heart                28%    67pp     5/29      3%, NEVER LOST (0 of 8)
 
-`python tests/run/run.py --runs 200` is the measurement pass. Fifty runs give
-the DEEP regions one to five boss fights each, which is too few to tune on, and
-two rounds were lost to swings that were sample noise. Seeds are unchanged, so
-the first fifty runs of a larger pass are exactly the shipping fifty.
-
-**The number that matters is MARGIN** — arrival minus price, in points of the
-Courage pool — because it predicts boss loss rate monotonically. See
-docs/notes/2026-08-31-the-foyer-is-attrition-not-the-boss.md.
-
-    region              cost of pool   margin   was
-    foyer                    43%        35pp    61% / 15pp, ending 44% of all runs
-    nursery                  42%        41pp    64% / 25pp
-    sleeping-quarters        48%        41pp
-    kitchens-cellars         51%        34pp
-    graveyard                37%        55pp    77% / 14pp
-    attic-observatory        38%        56pp     3% (free)
-    lampworks                34%        66pp     1% (free)
-    ballroom                 39%        52pp
-    crypt                    43%        45pp
-    hedge-maze               44%        50pp
-    secret-passages          39%        58pp     2% (free)
-    bathhouse                49%        40pp     4% (free)
-    heart                    43%        52pp     3%, NEVER LOST (0 of 8)
-
-WHAT MOVED, and every one of these is measured, not felt:
+WHAT MOVED, all measured:
 
   * **The route was not a ladder.** `expeditionRoute` drew 4 of the middle 15
-    uniformly and sorted them, so wing 2 spanned regions 2..13 and wing 5
-    spanned 5..16 — content priced for depth 12 meeting a depth-2 deck. It
-    draws one region per BAND now; spread 11 -> 2-3.
-  * **Enemy damage never rose.** Mean per-move damage 10.9 in the Foyer and 9.0
-    in the Heart, slope -0.03 a region: the finale hit SOFTER than the tutorial.
-    `depthDamageScale` is the ladder; it took the Heart from 3% to 43%.
-  * **The Butler** ships at 86 (was 134). **The Governess** 22.2 -> 14.6 damage
-    a move. **The Groundskeeper** 330 -> 165. All declared in
-    tests/design-courage with their measurements.
-  * **The last four wings** get a per-region Courage AND damage correction
-    (`REGION_CONTENT_FIX`). It is a TABLE and not a curve so it deletes in one
-    line when the content is re-authored.
+    uniformly and sorted them, so wing 2 spanned regions 2..13 — content priced
+    for depth 12 meeting a depth-2 deck. It draws one per BAND now; spread
+    11 -> 2-3.
+  * **Enemy damage never rose.** 10.9 a move in the Foyer, 9.0 in the Heart,
+    slope -0.03 a region: the finale hit SOFTER than the tutorial.
+    `depthDamageScale` is the ladder and it took the Heart 3% -> 43%.
+  * **The last four wings** carry a per-region Courage AND damage correction
+    (`REGION_CONTENT_FIX` in data/schema.js). Courage alone only bought length.
+    It is a TABLE not a curve so it deletes in one line.
+  * Butler 134 -> 86. Governess damage 22.2 -> 14.6 a move. Groundskeeper
+    330 -> 165. Archivist 345 -> 200 and his Corrections capped at 4.
 
-NEGATIVE RESULTS — do not repeat these, they are all measured:
+━━ THE PATTERN THAT COST THE MOST TIME ━━
 
-    scaling enemy COURAGE by depth        longer fights, no threat
-    squaring the damage curve (3 ceilings) buys the tail, breaks the Heart
-    partial PIERCE by depth               no measurable effect whatsoever
-    lowering the Head Gardener (x2)       the Greenhouse got HARDER
-    cutting event relic supply            29.0 -> 28.7 Keepsakes, no cost change
+**Three separate bot defects this week each read as a content problem.** Price
+the bot before re-authoring a wing.
 
-**Pierce failing is the one to understand.** It exists for a player who blocks
-everything, and it changed nothing — because they are not blocking. The Secret
-Passages took ~1.6 Courage of ENEMY damage per fight across 64 fights, and 48%
-of the region's total was the player's OWN RELICS. The bodies never lived to
-act. That is why survivability was the only lever left, and why it costs length.
+  1. `residual()` valued damage to a surviving enemy at **zero**, so the beam
+     held a full hand against a boss it could not one-shot. Read as "the Guard
+     axis is a design call" for two sessions.
+  2. The beam passed with **four legal cards in hand** (`nerve 3, hand 5, legal
+     4.3, cpt 0.2`). Read as "bosses are overtuned".
+  3. `residual()` paid a flat **34 per body killed**, and `enemyPool()` counts
+     summon-only parts. The Drowned Matron's Drain has one move — `Intent.SLEEP`,
+     `effect() {}` — and she re-summons it: killing it scored 37.75 against 3.75
+     for hitting HER for the same damage. She was reported twice at **595/595,
+     full health after 200 turns**. Read as "the Bathhouse is broken" AND as
+     "the Greenhouse is long by design" — both wrong.
 
-STILL OUT OF BAND: **study-library 65%/24pp** and **greenhouse 62%/26pp**. Six
-levers between them bought 11pp. The boss ladder says why — the Archivist runs
-24.3 turns and the Head Gardener 19.7, against the Butler's 9.8. They are not
-overpriced, they are LONG, and the fix is fewer Catalogue consequences and fewer
-Beds, which are content edits and not constants.
-━━ THE BOT FARMS SLEEPING FIXTURES (2026-09-03) ━━
+Thirteen summon-only bodies carry no damaging move and nine respawn. The bonus
+is paid on THREATS now (`pool.living` is untouched; it is also the win check),
+and **a seed counts as a threat** — the first version read only current moves,
+so the bot stopped clearing the Greenhouse and it went 63% -> 79%. `def.becomes`
+is the field that separates a Drain that sleeps forever from a seed three turns
+from blooming.
 
-`residual()` in lib/bot.js pays a flat **34 for any body that stops being
-alive**, and `enemyPool()` counts every living body - summon-only boss parts
-included. The Drowned Matron's Drain has ONE move, `Intent.SLEEP`,
-`effect() {}`, and she re-summons it whenever it is repaired:
-
-    kill the 25-Courage Drain   34 + 0.15 x 25 = 37.75
-    hit the Matron for 25             0.15 x 25 =  3.75
-
-Ten to one in favour of farming a sleeping fixture that grows back. She was
-reported twice at **595/595 - full health after 200 turns**.
-
-IT IS A CLASS: thirteen summon-only bodies carry no damaging move and NINE
-respawn - the Greenhouse's seedlings, the Crypt's bone piles, the Kennels'
-spare collars, the Secret Passages' doorframes.
-
-The bonus is paid on THREATS now, not bodies. `pool.living` is untouched
-because it is also the win check. Unknown shapes count as threats, so the
-change can only remove credit, never invent it.
-
-**AND A SEED IS A THREAT.** The first version read only the current move set,
-so the bot stopped clearing the Greenhouse and let it mature: 63% of the
-player's pool -> 79%, margin 25pp -> 11pp. `Vine Seed -> Binding Vine` is that
-fight's whole point. `def.becomes` counts. Two bodies look identical at rest -
-a Drain that sleeps forever and a seed three turns from blooming - and only
-that field tells them apart.
-
-    region        baseline   threats v1   threats v2 (shipped)
-    bathhouse     60% 25pp   37% 49pp     37% 49pp
-    hedge-maze    64% 25pp   51% 36pp     51% 36pp
-    greenhouse    63% 25pp   79% 11pp     69% 22pp
-    errors             3          1            1
-
-This is the THIRD bot defect this week that read as a content problem - after
-`residual()` valuing damage to a surviving enemy at zero, and the beam passing
-with four legal cards in hand. When a region's numbers will not move for any
-content lever, price the BOT before re-authoring the wing.
 ━━ WHAT IS OPEN ━━
 
-1. **THE OVER-30 GATE.** Top of this document, and read it as a RATE: 0.68% of
-   fights at 200 expeditions, up from 0.48% before the balance pass. Part of it
-   was the bot passing with legal cards in hand (fixed 2026-09-01: `residual()`
-   valued damage to a surviving enemy at zero). The rest is the price of making
-   the last four wings survive a 90-damage-a-turn player. Decide whether 0.68%
-   is a defect before tuning it — the alternative is a free last third.
-2. **THE ECONOMY IS THE OTHER HALF, and it is a design call.** Capping Keepsakes
+1. **THE TWO LONG BOSSES.** study-library 65%/27pp and greenhouse 69%/22pp.
+   The Archivist runs 24.3 turns against the Butler's 9.8. FOUR levers on him
+   (Courage, damage, Catalogue Guard, the Corrections cap) bought 7pp between
+   them. His `swing` is 8.96 against a ~15 median, so the player's OUTPUT is
+   suppressed and I eliminated the two mechanics I assumed were doing it —
+   Corrections are capped now, and `Misfiled` is explicitly "still performs its
+   normal effect". Unchased hypothesis: whether `sl-boss` includes the Paper
+   Knight, whose "first Attack Trick that damages it each turn deals 5 less"
+   would suppress exactly that. MEASURE IT BEFORE STATING IT.
+2. **THE ECONOMY, and it is a design call nobody has taken.** Capping Keepsakes
    at 12 (a finishing run holds ~29 of 58) leaves the first four wings BYTE
    IDENTICAL and moves the late game 10-23pp — the most surgical result in the
    whole investigation. But treasure, boss and Big Scare drops are all sourced
-   to STS2-REFERENCE, and ~29 sits beside Slay the Spire's own ~25, so a cap is
-   a deliberate divergence from our own yardstick. Nobody has taken it.
+   to STS2-REFERENCE and ~29 sits beside Slay the Spire's own ~25, so a cap is a
+   deliberate divergence from our own yardstick.
 3. **NO APPLICATION EXISTS.** No `package.json`, no Electron, no Tauri. The game
-   is a folder of ES modules served by `tools/devserver.py`. `platform/index.js`
-   specifies the host bridge carefully and `tests/platform/run.py` exercises all
-   of it — against `installFakeHost()`. **There is nothing to put in a depot.**
-   **NO LONGER BLOCKED ON THE TOOLCHAIN (2026-09-02).** `winget install
-   OpenJS.NodeJS.LTS` has been run: **node v24.19.0, npm 11.17.0**, at
-   `C:/Program Files/nodejs/`. A shell started before the install will not
-   have it on PATH — call it by full path or restart the host.
-   Still no cargo/rustc, so ELECTRON is available today and TAURI would need
+   is ES modules served by `tools/devserver.py`. `platform/index.js` specifies
+   the host bridge and `tests/platform/run.py` exercises all of it — against
+   `installFakeHost()`. **NO LONGER BLOCKED ON THE TOOLCHAIN:** node v24.19.0
+   and npm 11.17.0 are installed at `C:/Program Files/nodejs/`. Still no
+   cargo/rustc, so ELECTRON is available today and TAURI needs
    `winget install Rustlang.Rustup` first. That choice is unmade and it is the
-   next real decision: it sets bundle size, the Steam overlay path, and how
-   `platform/index.js`'s host bridge gets implemented for real instead of
-   against `installFakeHost()`.
-4. **STEAM APP ID.** Josh only. Gates achievements, Cloud, the controller
-   layout, P2P and Deck Verified.
-5. **ART.** 1470 cards with zero illustrations (`ui/cardart.js` generates them
-   from the card id); 189 silhouette keys, 12 with a prop layer, 177 unlayered.
-   This is the schedule, and it needs a person.
-6. **THE MANSION IS NOT A LADDER — LARGELY ADDRESSED, see the balance section.**
-   The cause was found and it was authored: enemy Courage rises 9% across
-   seventeen regions and enemy DAMAGE falls 3%, so the chapters built the
-   mansion at PARITY. Twelve of seventeen wings are now in band. What is left
-   in that note is the ELITE tier, which this pass did not touch: hedge-maze
-   elite at 108% of pool, kennels elite at 489 Courage over 32 turns.
+   next real decision.
+4. **STEAM APP ID.** Josh only. Gates achievements, Cloud, controller layout,
+   P2P, Deck Verified.
+5. **ART.** 1470 cards with zero illustrations; 189 silhouette keys, 177
+   unlayered. Needs a person.
+6. **THE ELITE TIER**, which the balance pass never touched: hedge-maze elite at
+   108% of pool, kennels elite at 489 Courage over 32 turns.
 7. **THE HAUNT CEILING.** Raise `MAX_HAUNT` (129 behaviours become reachable and
-   `data/haunts.js` must name the new rungs) or re-tier 6–10 down.
-8. **THE RELIC ECONOMY — now MEASURED, and it is item 2's design call.** A cap
-   at 12 leaves the first four wings byte-identical and moves the late game
-   10-23pp; the supply itself is StS2-shaped. A run holds 23–32 of the 58 by the
-   fifth wing.
-9. **THE TEACHING CONTRACT.** 4.3 of six after the roller fix; a run fights ~4.7
-   times in the Foyer against six teachers.
-10. **`spreadOf` unmeasured for nine regions · the entry stall (274 ms of
-   `toDataURL`, fix scoped) · `combat:crit` known-silent · the ~100 remaining
-   sweep findings.**
+   `data/haunts.js` must name the new rungs) or re-tier 6-10 down.
+8. **FIRST-RUN ORIENTATION.** The vocabulary teaching is COMPLETE and gated —
+   498 keywords, 362 statuses, 0 gaps — but nothing explains what Nerve is or
+   how a turn ends. `seenTutorials` is dead in the save schema. **Do not build a
+   pop-up tutorial**; the design rejects it in three places (§33, Amina's
+   chapter, the Foyer as tutorial region).
+9. **`spreadOf` unmeasured for nine regions · the entry stall (274 ms of
+   `toDataURL`) · `combat:crit` known-silent · 11 write-only mem flags from
+   tools/deadflags.py, unconfirmed.**
 
 ━━ THINGS THAT WILL COST YOU A ROUND ━━
 
-**AN INTENT MAY NEVER LIE.** Moves and intents are chosen at PLAYER-TURN START
-and held. A meter the player's damage moves, settled in `onPlayerTurnEnd`, is
-the single most expensive mistake in this codebase — that hook fires after the
-intent was drawn. Settle at `onPlayerTurnStart`. And use
-`damageFn`/`blockFn`/`hitsFn` reading a COUNTER for anything that scales:
-**writing a counter calls `refreshIntents`, writing `mem` does not**, which is
-half of why the Topiary Beast's shell bonus could hide.
+**AN INTENT MAY NEVER LIE.** `damageFn` is what the intent PRINTS and the
+`effect` body is what actually lands — they are separate numbers. Changing one
+is a boss that advertises 16 and hits for 24. I did exactly that this week and
+it took a refusing measurement to notice. `tests/enemies/audit.py` is the gate
+that catches it; run THAT after touching enemy damage, not `enemies/run.py`.
 
-**LINE ENDINGS ARE MIXED PER FILE, AND THEY VARY INSIDE ONE DIRECTORY.**
-`enemies/greenhouse.js` and `enemies/kitchens-cellars.js` are LF;
-`enemies/nursery.js` is CRLF. A patch script authored with `\n` matched ZERO
-anchors there. Make every patch script ENDING-AWARE: read the bytes, set
-`EOL = "\r\n" if raw.count(b"\r\n") else "\n"`, translate each pattern, and
-assert every anchor matches exactly once BEFORE writing anything.
+Moves and intents are chosen at PLAYER-TURN START and held. A meter settled in
+`onPlayerTurnEnd` moves a number the player already committed against. Use
+`damageFn`/`blockFn`/`hitsFn` reading a COUNTER: **writing a counter calls
+`refreshIntents`, writing `mem` does not**.
 
-**`grep -c $'\r$'` DOES NOT WORK IN THE BASH TOOL.** The escape is eaten, the
-pattern collapses to `$`, and it matches EVERY line — so every file reads as
-100% CRLF. Count bytes instead. The tell: every file reporting crlf == total.
+**SCOPE EVERY REPLACEMENT TO ITS BLOCK.** `registry-slam` shares
+`8 + recognizedBonus(c)` with `i-know-you` verbatim; two secret-passages moves
+deal 9; two moves are called "Lid Slam". A global string replace silently hits
+the wrong one. Find the `id:` line, then edit the following lines.
 
-**`pathlib.write_text()` WITHOUT `newline=""` CONVERTS LF TO CRLF ON WINDOWS.**
-That flipped `tools/deadflags.py` whole-file this session.
+**LINE ENDINGS ARE MIXED PER FILE AND VARY INSIDE ONE DIRECTORY.**
+`enemies/nursery.js` is CRLF; `enemies/heart.js` and `enemies/greenhouse.js` are
+LF; `tests/enemies/index.html` is MIXED (1801 lines, 1798 CR) — do not normalise
+that one, edit it line-wise. After ANY scripted write, check
+`tr -dc '\r' < f | wc -c` against `wc -l`. `git diff --stat` will NOT catch a
+script that inserts lines with the wrong ending.
 
-**`git diff --stat` vs `git diff --ignore-cr-at-eol --stat` HAS A HOLE.** It
-catches a script that CONVERTS lines. It does NOT catch one that INSERTS lines
-with the wrong ending — both forms count the same added lines and agree while
-the file quietly goes MIXED. Count bytes after any scripted insert.
+**HEREDOCS IN THE BASH TOOL EAT BACKSLASHES.** `C:\Program Files\nodejs\` went
+through a non-raw Python string and `\n` became a real newline, splitting a path
+across two lines mid-word. Write paths with forward slashes, or use the Write
+tool for patch scripts.
 
-**HEREDOCS IN THE BASH TOOL EAT BACKSLASHES.** Use the Write tool for patch
-scripts and run them with `python <path>`. I violated this three times today and
-paid for it three times.
+**`tools/devserver.py` DIES UNDER A LONG PASS** and every gate then hangs on
+"navigating to… waiting until load". Restart it before diagnosing a broken
+suite. It is single-threaded: a game open in the browser pane can also block it.
 
-**A GATE THAT CANNOT FAIL IS A STORY.** Every fix this session ships with its
-gate and a demonstration that removing the fix turns it red (CONTRACTS 54). Two
-of those gates were worthless on their first draft — one read `w.intent` without
-refreshing and reported a stale number; one called `e.ctxFor`, which does not
-exist, so it compared two empty runs. `e.enemyCtx(actor, null)` is the real one.
+**A GATE THAT CANNOT FAIL IS A STORY.** Every gate here ships with a
+demonstration that removing the fix turns it red (CONTRACTS 54). And a gate that
+SKIPS is worse than no gate: `design-courage` reported "0 failures" while
+silently skipping 16 of 136 authored values, because it keyed on a display name
+and every boss declares `hp: [SOLO_MAX, SOLO_MAX]`. It prints its skip count now.
 
 ━━ NOT THE JOB ━━
 
-- Do not tune the Foyer, the Butler or the Foyer elites by feel — all three have
-  committed before/afters in `tests/critic-design/`.
-- Do not quote `sweep.py --scales` as a forecast for a pool edit on a phased boss.
+- Do not repeat these; they are all measured and recorded in
+  `docs/notes/2026-09-01-the-mansion-is-not-a-ladder.md`: scaling enemy COURAGE
+  by depth (longer fights, no threat), squaring the damage curve (buys the tail,
+  breaks the Heart, at three ceilings), partial PIERCE by depth (no measurable
+  effect — they are not blocking, the bodies never live to act), lowering the
+  Head Gardener (the Greenhouse got HARDER, twice), cutting event relic supply
+  (29.0 -> 28.7 Keepsakes, no cost change).
 - Do not change `PARTY_HP_SCALE`.
-- Do not wire the Bedframe Beast's `isTargetable` without the pacing work — it
-  is measured and it makes the open defect worse.
-- Do not build a pop-up tutorial. The design rejects it in three places.
+- Do not tune the Foyer or the Butler by feel — both have committed
+  before/afters in `tests/critic-design/`.
+- Do not build a pop-up tutorial.
 - Do not start Steam P2P until Josh has an App ID.
 - Do not chase fps on this machine; do not re-open the card-art encoder question.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Read `HANDOFF.md` next ("Where it stands"), then `CONTRACTS.md` at 60 traps.
-Then, for this session's working:
+Then, for the recent working:
 
   docs/notes/2026-08-31-the-foyer-is-attrition-not-the-boss.md
-  docs/notes/2026-08-31-the-advanced-pool-was-one-row-deep.md
   docs/notes/2026-09-01-the-mansion-is-not-a-ladder.md
   docs/notes/2026-09-01-the-guard-axis.md
   docs/notes/2026-09-01-a-third-of-the-haunt-ladder-is-above-the-ceiling.md
-  docs/notes/2026-09-01-the-write-only-flag-sweep.md
 
 STATE: branch `dev`, committed and pushed. Do not trust a hash written here; run
 `git rev-list --count origin/dev..dev`. Pushing to origin/dev is authorised.
