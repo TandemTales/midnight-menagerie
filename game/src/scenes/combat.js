@@ -821,6 +821,7 @@ export class CombatScene extends Scene {
       flashes: this._bloomGain(), companion: slug,
     });
     $('.cb-herohost').appendChild(this.hero.el);
+    this._installClipHarness();
     this.$plArt.src = `${PORTRAITS}${slug}.png`;
     this.$plArt.addEventListener('error', () => { this.$plArt.style.display = 'none'; }, { once: true });
 
@@ -1155,6 +1156,22 @@ export class CombatScene extends Scene {
     // The wind-up runs during the Hand's 0.20s hold, so contact lands on the
     // frame the effect resolves rather than after it.
     if (card && card.type === 'attack') this._playerWindup();
+    /* Everything that is not an Attack is a Trick activation as far as the
+       Companion is concerned. The brief builds exactly one clip for the whole
+       category -- "Skills, Powers, buff application, healing... Many Companion
+       mechanics can reuse this animation while changing only the VFX" -- so
+       Skills and Powers share it and the card's own effects tell them apart. */
+    /* THE THIRD TRICK IS THE ZOOMIES. `data/companions/keywords.js` defines
+       Marmalade's Zoomies as "the third or later Trick you have played this
+       turn" and gates it on `cardsPlayedThisTurn >= 2` -- the count BEFORE this
+       card is added. Reading that same predicate here means the clip fires on
+       exactly the plays the keyword lights up, rather than on a second and
+       parallel idea of what "fast" means. `playClip` returns false for a
+       Companion with no `zoomies` built, so the other fifteen fall to `trick`. */
+    else if (card) {
+      const fast = (this.engine.seatStats?.(this.me)?.cardsPlayedThisTurn ?? 0) >= 2;
+      if (!fast || !this.hero?.playClip('zoomies')) this.hero?.playClip('trick');
+    }
     /* No `card:play` re-emit here: `ui/hand.js` already emits it (now carrying `type`),
        and this method is the handler for that very event. Emitting again made every
        play appear twice on the bus. */
@@ -1620,6 +1637,17 @@ export class CombatScene extends Scene {
     }
     const hp = this.me.hp;
     const lethal = through >= hp;
+    /* THE ONE-PER-TURN BRACE. `caution` is a wary crouch into an alert rear-up,
+       and it belongs to the moment the board FIRST says this turn can kill you.
+       It cannot hang off this method alone: `_renderIncoming` re-runs on card
+       hover, on every Guard change and on every preview clear, so an unlatched
+       call played the clip on mouse movement. The latch drops at the top of each
+       player turn, which is also when intents settle, so a fight that stays
+       lethal shows the brace once a turn rather than once a frame. */
+    if (lethal && !this._cautioned) {
+      this._cautioned = true;
+      this.hero?.playClip('caution');
+    }
     // More Guard only ever helps against the blockable share.
     const need = Math.max(0, blockable - (inc.block || 0));
     this.$inc.hidden = false;
@@ -1743,6 +1771,7 @@ export class CombatScene extends Scene {
 
       case 'turn:start':
         if (ev.side === 'player') {
+          this._cautioned = false;   // see `caution` in _renderIncoming
           this.$turnN.textContent = `Turn ${ev.turn}`;
           this._banner(`Your Turn ${ev.turn}`, 'player');
           this.ctx.audio?.play?.('combat:turn-start');
@@ -2039,6 +2068,14 @@ export class CombatScene extends Scene {
           this.fx.word(c.x + (ev.ownerId === this.me.id ? 64 : 0), c.y - 56,
             `${ev.delta > 0 ? '+' : ''}${ev.delta} ${label}`, 'counter');
         }
+        /* NINE LIVES IS A BODY BEAT, not only a number moving. The brief builds
+           one Life Spark clip for both directions -- "the same clip can represent
+           either spending or recovering a Life by changing the direction and
+           colour behaviour of the separate VFX" -- so it fires on any change to
+           the track and the floating counter word says which way it went. */
+        if (ev.ownerId === this.me.id && ev.id === 'lives' && ev.delta) {
+          this.hero?.playClip('spark');
+        }
         if (ev.ownerId === this.me.id) this._syncPlayer();
         return;
       }
@@ -2266,6 +2303,23 @@ export class CombatScene extends Scene {
     const hpLoss = ev.hpLoss || 0;
     const blockedAll = hpLoss <= 0 && ev.blocked > 0;
 
+    /* A PREVENTED HIT IS A DODGE, NOT A ZERO. Ghoststep's `onIncomingHit`
+       calls `ctx.prevent()` -- combat/damage.js step 6b, "the hit does not
+       happen" rather than "the hit does 0" -- and the engine still reports it
+       as a DAMAGE event, carrying `prevented: true` with every number at 0.
+       Nothing branched on that flag, so a dodge arrived as the full contact
+       presentation: a red threat slash, a burst, and `fx.number` printing a
+       literal floating "0" on the Kid who had just been missed. The attacker
+       has already swung above, so the miss reads as a miss; this replaces only
+       the contact beat. A Companion with no `spectral` built clanks instead. */
+    if (ev.prevented) {
+      this.fx.word(c.x, c.y - 46, 'MISSED', 'counter');
+      if (isPlayer && !this.hero?.playClip('spectral')) this._playerHit(0, 1);
+      this.ctx.audio?.play?.('combat:block-gain');
+      await this._wait(this._d(0.16));
+      return;
+    }
+
     // impact
     const dir = isPlayer ? Math.PI * 0.85 : -0.5;
     this.fx.slash(c.x, c.y, dir, blockedAll ? this.fx.col.guard : this.fx.col.threat);
@@ -2455,6 +2509,10 @@ export class CombatScene extends Scene {
     this.hand.lock();
     this._focusEnemy(null);
     this.$cb.classList.add(ev.victory ? 'is-won' : 'is-lost');
+    /* The Companion's last beat of the fight. `defeat` is the one clip that
+       does not hand back to idle -- it holds its final pose (ui/sprite.js), so
+       the body on the board stays down while the banner runs. */
+    this.hero?.playClip(ev.victory ? 'celebrate' : 'defeat');
     this._banner(ev.victory ? 'Room Cleared' : 'Out of Courage', ev.victory ? 'win' : 'lose', 2.2);
     this.ctx.atmosphere?.dread?.(ev.victory ? 0 : 0.9, 0.8);
     this.ctx.audio?.stinger?.(ev.victory ? 'sting:victory' : 'sting:defeat');
@@ -3437,6 +3495,46 @@ export class CombatScene extends Scene {
     return this.fx.toLocal(c.x, c.y);
   }
 
+  /* ── THE CLIP HARNESS (dev) ─────────────────────────────────────────────
+   * Twelve clips are built, and four of them answer to beats that are rare on
+   * purpose -- a lethal telegraph, an avoided hit, the third Trick of a turn, a
+   * Life spent. `affection` has no combat beat at all: the brief puts it in bond
+   * and camp scenes and says outright it is "not required during combat".
+   * Waiting for all twelve to occur on their own is not a test plan, so the
+   * scene publishes a driver for them:
+   *
+   *   __MM_CLIPS.list()             names actually built for this Companion
+   *   __MM_CLIPS.play('spectral')   one clip, now
+   *   __MM_CLIPS.all()              every clip in order, each held for its own
+   *                                 frames/fps, ending back on idle
+   *
+   * Waits are raw seconds rather than `_d`, so a clip runs at its true length
+   * whatever the game speed is set to. Nothing in the game reads any of this.
+   * Reduced motion freezes every clip on frame 0 by design (ui/sprite.js), so
+   * an animation pass has to be run with it off. */
+  _installClipHarness() {
+    const clips = () => this.hero?.sprite?.clips || {};
+    const api = {
+      _scene: this,
+      list: () => Object.keys(clips()),
+      seconds: (n) => { const c = clips()[n]; return c ? (c.frames || 1) / (c.fps || 24) : 0; },
+      play: (n) => !!this.hero?.playClip(n),
+      all: async (gap = 0.35) => {
+        const names = Object.keys(clips());
+        for (const n of names) {
+          if (!this.hero) return 'scene gone';
+          this.hero.playClip(n);
+          await this._wait(api.seconds(n) + gap);
+        }
+        /* `defeat` holds its last frame on purpose, so a walk that ends on it
+           leaves the Companion face down on the board. Put her back up. */
+        this.hero?.playClip('idle');
+        return names;
+      },
+    };
+    window.__MM_CLIPS = api;
+  }
+
   _wait(s) { return this.ctx.clock.wait(Math.max(0.001, s)); }
 
   /* ── pile viewer ─────────────────────────────────────────────────────────
@@ -3548,6 +3646,7 @@ export class CombatScene extends Scene {
     this._offFrame?.();
     this.hero?.destroy();
     this.hero = null;
+    if (window.__MM_CLIPS?._scene === this) delete window.__MM_CLIPS;
     this._ro?.disconnect();
     for (const off of this._offs) { try { off(); } catch {} }
     for (const off of this._engineOffs) { try { off(); } catch {} }

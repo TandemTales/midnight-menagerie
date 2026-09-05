@@ -1,0 +1,253 @@
+{
+ "animated": {
+  "marmalade": [
+   "affection",
+   "attack",
+   "caution",
+   "celebrate",
+   "defeat",
+   "hurt",
+   "idle",
+   "ready",
+   "spark",
+   "spectral",
+   "trick",
+   "zoomies"
+  ]
+ },
+ "stills": {
+  "aminaOkafor": {
+   "file": "aminaOkafor.webp",
+   "w": 146,
+   "h": 256,
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "boggle": {
+   "file": "boggle.webp",
+   "w": 219,
+   "h": 111,
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "bones": {
+   "file": "bones.webp",
+   "w": 199,
+   "h": 140,
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "brambleboo": {
+   "file": "brambleboo.webp",
+   "w": 234,
+   "h": 204,
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "countCrumbula": {
+   "file": "countCrumbula.webp",
+   "w": 222,
+   "h": 185,
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "crinkle": {
+   "file": "crinkle.webp",
+   "w": 204,
+   "h": 157,
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "drizzle": {
+   "file": "drizzle.webp",
+   "w": 224,
+   "h": 210,
+   "matte": "CLEAN",
+   "bg": null
+  },
+  "eliRosen": {
+   "file": "eliRosen.webp",
+   "w": 185,
+   "h": 256,
+   "matte": "CLEAN",
+   "bg": null
+  },
+  "hush": {
+   "file": "hush.webp",
+   "w": 218,
+   "h": 144,
+   "matte": "CLEAN",
+   "bg": null
+  },
+  "jordanBrooks": {
+   "file": "jordanBrooks.webp",
+   "w": 194,
+   "h": 256,
+   "matte": "CLEAN",
+   "bg": null
+  },
+  "lenaYazzie": {
+   "file": "lenaYazzie.webp",
+   "w": 164,
+   "h": 256,
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "marmalade": {
+   "file": "marmalade.webp",
+   "w": 253,
+   "h": 230,
+   "matte": "CLEAN",
+   "bg": null
+  },
+  "mateoAlvarez": {
+   "file": "mateoAlvarez.webp",
+   "w": 164,
+   "h": 256,
+   "matte": "CLEAN",
+   "bg": null
+  },
+  "mayaChen": {
+   "file": "mayaChen.webp",
+   "w": 141,
+   "h": 256,
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "mopsy": {
+   "file": "mopsy.webp",
+   "w": 222,
+   "h": 221,
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "mossbit": {
+   "file": "mossbit.webp",
+   "w": 236,
+   "h": 174,
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "pipkin": {
+   "file": "pipkin.webp",
+   "w": 229,
+   "h": 211,
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "pryaSHah": {
+   "file": "pryaSHah.webp",
+   "w": 120,
+   "h": 256,
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "pudding": {
+   "file": "pudding.webp",
+   "w": 228,
+   "h": 194,
+   "matte": "CLEAN",
+   "bg": null
+  },
+  "samirHaddad": {
+   "file": "samirHaddad.webp",
+   "w": 203,
+   "h": 256,
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "taffy": {
+   "file": "taffy.webp",
+   "w": 208,
+   "h": 137,
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "truffle": {
+   "file": "truffle.webp",
+   "w": 194,
+   "h": 188,
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "wink": {
+   "file": "wink.webp",
+   "w": 224,
+   "h": 164,
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "wisp": {
+   "file": "wisp.webp",
+   "w": 127,
+   "h": 178,
+   "matte": "CLEAN",
+   "bg": null
+  }
+ },
+ "targetContentH": 128
+}

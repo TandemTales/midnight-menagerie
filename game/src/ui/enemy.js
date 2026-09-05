@@ -40,6 +40,32 @@
 import { Clock } from '../core/clock.js';
 import { IntentView, statusIconId } from './intent.js';
 import { iconSvg } from './icons.js';
+import { ClipPlayer } from './sprite.js';
+
+/* ── THE ANIMATED COMPANION ────────────────────────────────────────────────
+   Where a Companion has real animation built (`tools/prep_sprites.py`), it
+   replaces the `PAL_ART` silhouette at the Kid's shoulder. Fifteen of sixteen
+   still have only the silhouette, so this is a swap and not a removal: the
+   sprite reveals itself once its atlas has decoded and the glyph hides at the
+   same moment, which means a missing, slow or broken atlas is invisible rather
+   than a hole in the scene.
+
+   SPRITE_RIG_H is how tall the Companion stands in rig units, and the scale is
+   derived from it per clip rather than fixed. It has to be: an animated frame
+   is built to a 128px figure and a still is trimmed to its own content at up to
+   256px, so one constant factor would draw the fifteen still Companions at
+   twice the size of the animated one. `unit` (ui/sprite.js) is the frame's own
+   figure height, so dividing by it makes every Companion the same size on
+   screen whichever pipeline produced it. 70 matches the ~65-unit silhouette
+   each one stands in for.
+
+   SPRITE_RIG_DY exists because the two are anchored differently: the
+   silhouette is drawn AROUND the palset origin, and a sprite is anchored at
+   its FEET (see `anchor` in ui/sprite.js). Dropping it by the silhouette's own
+   half-height puts the creature where the glyph was instead of floating it a
+   body-length higher. */
+const SPRITE_RIG_H = 70;
+const SPRITE_RIG_DY = 30;
 
 const NS = 'http://www.w3.org/2000/svg';
 const TAU = Math.PI * 2;
@@ -1963,6 +1989,7 @@ export class PlayerView {
     if (next === this.slug) return this;
     const host = this.el && this.el.parentNode;
     const before = this.el;
+    this.sprite?.destroy();          // _build() constructs the next one
     this.slug = next;
     this.rnd = mulberry(hash32(this.slug));
     this._poseToken = 0;
@@ -2013,6 +2040,9 @@ export class PlayerView {
           <radialGradient id="${gid}p" cx="0.5" cy="0.5" r="0.5">
             <stop offset="0" class="pr-p1"/><stop offset="1" class="pr-p2"/>
           </radialGradient>
+          <!-- The window onto one atlas cell. Sized per clip in _tickSprite,
+               because attack is a lunge and needs a bigger frame than idle. -->
+          <clipPath id="${gid}sp"><rect class="pr-spriterect" x="0" y="0" width="1" height="1"/></clipPath>
         </defs>
         <!-- THE CONTACT SHADOW, in rig units so it is always exactly under the
              boots. It sits OUTSIDE pr-root on purpose: the rig's internal lean
@@ -2093,8 +2123,19 @@ export class PlayerView {
             <path class="pr-mouth" d="M4,-166 q7,7 14,0"/>
           </g>
           <!-- The Companion, at her shoulder. One silhouette per Companion:
-               PAL_ART above, keyed the way MOTIF keys the creatures. -->
-          <g class="pr-pal"><g class="pr-palset" transform="translate(-72 -204)">${art}</g></g>
+               PAL_ART above, keyed the way MOTIF keys the creatures — and, for
+               the ones that have animation built, a sprite that takes its place
+               once the atlas has decoded. -->
+          <g class="pr-pal"><g class="pr-palset" transform="translate(-72 -204)">
+            <g class="pr-palart">${art}</g>
+            <g class="pr-sprite" style="display:none">
+              <g class="pr-spritefit">
+                <g clip-path="url(#${gid}sp)">
+                  <image class="pr-spriteimg" preserveAspectRatio="none"/>
+                </g>
+              </g>
+            </g>
+          </g></g>
         </g>
       </svg>
       <div class="cb-hero__flash"></div>`;
@@ -2112,6 +2153,18 @@ export class PlayerView {
     this.$cast = el.querySelector('.pr-cast');
     this.$flash = el.querySelector('.cb-hero__flash');
     this.$lids = Array.from(el.querySelectorAll('.pr-lid'));
+
+    this.$palArt = el.querySelector('.pr-palart');
+    this.$sprite = el.querySelector('.pr-sprite');
+    this.$spriteFit = el.querySelector('.pr-spritefit');
+    this.$spriteImg = el.querySelector('.pr-spriteimg');
+    this.$spriteRect = el.querySelector('.pr-spriterect');
+    this._spriteSrc = null;
+    this._spriteClip = null;
+    /* Always constructed, never gated on a lookup: a Companion with no atlas
+       resolves to an empty index and `frame()` returns null forever, which is
+       the same code path as "still downloading" and leaves the silhouette up. */
+    this.sprite = new ClipPlayer(this.slug);
   }
 
   _d(s) { return this.reduceMotion ? 0.001 : s; }
@@ -2134,6 +2187,11 @@ export class PlayerView {
   async windup() {
     if (this._dead) return;
     this.el.classList.add('is-acting');
+    /* The Companion's attack clip carries its own anticipation ("a brief
+       anticipation movement followed by one decisive forward attack motion"),
+       so it starts HERE rather than on contact — starting it in `strike` would
+       play the wind-up after the hit had already landed. */
+    this.playClip('attack');
     this.a.leanT = -0.8; this.a.squashT = 0.2; this.a.swingT = -1;
     await this._pose(-16, -5, -5, this._d(0.12), Clock.easeOutCubic);
   }
@@ -2160,6 +2218,9 @@ export class PlayerView {
 
   /** Took a hit. `mag` is Courage actually lost. */
   flinch(mag = 4, blocked = false) {
+    // A blocked hit is a clank, not a recoil, and the brief's hit reaction is a
+    // recoil — so only real Courage loss moves the Companion.
+    if (!blocked) this.playClip('hurt');
     const k = Math.min(1.3, 0.35 + mag / 22);
     this.a.shove = Math.max(this.a.shove, (blocked ? 7 : 20) * k);
     this.a.squashT = blocked ? 0.12 : 0.3;
@@ -2179,6 +2240,54 @@ export class PlayerView {
     this.el.classList.remove('is-guarding');
     void this.el.offsetWidth;
     this.el.classList.add('is-guarding');
+  }
+
+  /**
+   * Play one named clip on the Companion. Returns false when this Companion has
+   * no such clip, so a caller can ask for `spectral` on all sixteen and get the
+   * dodge only from the one that owns it.
+   */
+  playClip(name, opts) { return !!this.sprite && this.sprite.play(name, opts); }
+
+  /**
+   * Advance the Companion sprite and blit the current atlas cell.
+   *
+   * Reduced motion freezes on frame 0 rather than unmounting: the Companion is
+   * still THERE, it just stops moving, which is the setting's promise and not
+   * "the art disappears".
+   */
+  _tickSprite(dt) {
+    const p = this.sprite;
+    if (!p) return;
+    if (!this.reduceMotion) p.advance(dt);
+    const fr = p.frame({ still: this.reduceMotion });
+    if (!fr || !fr.loaded) return;
+
+    if (fr.src !== this._spriteSrc) {
+      this.$spriteImg.setAttribute('href', fr.src);
+      this.$spriteImg.setAttribute('width', fr.atlasW);
+      this.$spriteImg.setAttribute('height', fr.atlasH);
+      this._spriteSrc = fr.src;
+    }
+    if (fr.clip !== this._spriteClip) {
+      // Frame size and anchor are per clip, so both the window and the fit move
+      // when the clip does — see `anchor` in ui/sprite.js for why.
+      this.$spriteRect.setAttribute('width', fr.fw);
+      this.$spriteRect.setAttribute('height', fr.fh);
+      const s = SPRITE_RIG_H / Math.max(1, fr.unit);
+      this.$spriteFit.setAttribute('transform',
+        `translate(0 ${SPRITE_RIG_DY}) scale(${f2(s)})`
+        + ` translate(${f2(-fr.anchor[0])} ${f2(-fr.anchor[1])})`);
+      this._spriteClip = fr.clip;
+    }
+    this.$spriteImg.setAttribute('transform',
+      `translate(${f2(-fr.col * fr.fw)} ${f2(-fr.row * fr.fh)})`);
+    this.$sprite.setAttribute('opacity', fr.opacity.toFixed(3));
+
+    if (this.$palArt.style.display !== 'none') {
+      this.$palArt.style.display = 'none';
+      this.$sprite.style.display = '';
+    }
   }
 
   /** Where FX should land on her. */
@@ -2238,6 +2347,9 @@ export class PlayerView {
     this.$tail.setAttribute('transform', `rotate(${f(trail)} -38 -96)`);
     this.$scarf.setAttribute('transform', `rotate(${f(trail * 1.25 + bob * 3)} -24 -152)`);
     this.$pal.setAttribute('transform', `translate(${f(bob * 3 - a.lean * 4)} ${f(bob * 5)})`);
+    /* Inside that bob, so the Companion rides the Kid's movement exactly as the
+       silhouette it replaces did. */
+    this._tickSprite(dt);
     /* The contact shadow is ON THE FLOOR, so it does not travel with her: it
        slides a fraction of the lean, stretches as she commits and tightens
        when she plants. Round 4 had a 1px light-blue ellipse around the whole
@@ -2266,7 +2378,7 @@ export class PlayerView {
     }
   }
 
-  destroy() { this._dead = true; this.el.remove(); }
+  destroy() { this._dead = true; this.sprite?.destroy(); this.el.remove(); }
 }
 
 function statusTip(s) {

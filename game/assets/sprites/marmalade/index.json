@@ -1,0 +1,475 @@
+{
+ "clips": {
+  "affection": {
+   "file": "affection.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 169,
+   "fh": 132,
+   "anchor": [
+    88.04,
+    130.13
+   ],
+   "source": "SS_marmalade_affection.png",
+   "matte": "CLEAN",
+   "bg": null,
+   "grid": [
+    9,
+    9
+   ],
+   "dip": 0.735,
+   "loop": false,
+   "fps": 30,
+   "hold": false
+  },
+  "attack": {
+   "file": "attack.webp",
+   "frames": 65,
+   "cols": 9,
+   "rows": 8,
+   "fw": 188,
+   "fh": 169,
+   "anchor": [
+    92.1,
+    161.76
+   ],
+   "source": "SS_marmalade_attack.png",
+   "matte": "CONTAM",
+   "bg": [
+    227.8,
+    255.0,
+    255.0
+   ],
+   "grid": [
+    9,
+    8
+   ],
+   "dip": 0.763,
+   "loop": false,
+   "fps": 60,
+   "hold": false
+  },
+  "caution": {
+   "file": "caution.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 169,
+   "fh": 142,
+   "anchor": [
+    93.87,
+    139.48
+   ],
+   "source": "SS_marmalade_caution.png",
+   "matte": "CONTAM",
+   "bg": [
+    100.0,
+    118.0,
+    136.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "dip": 0.637,
+   "loop": true,
+   "fps": 20,
+   "hold": false
+  },
+  "celebrate": {
+   "file": "celebrate.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 196,
+   "fh": 149,
+   "anchor": [
+    95.63,
+    143.74
+   ],
+   "source": "SS_marmalade_celebrate.png",
+   "matte": "CONTAM",
+   "bg": [
+    108.9,
+    135.3,
+    144.5
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "dip": 0.65,
+   "loop": false,
+   "fps": 30,
+   "hold": false
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 175,
+   "fh": 132,
+   "anchor": [
+    90.13,
+    130.6
+   ],
+   "source": "SS_marmalade_defeat.png",
+   "matte": "CLEAN",
+   "bg": null,
+   "grid": [
+    9,
+    9
+   ],
+   "dip": 0.643,
+   "loop": false,
+   "fps": 24,
+   "hold": true
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 183,
+   "fh": 144,
+   "anchor": [
+    96.71,
+    137.56
+   ],
+   "source": "SS_marmalade_hurt.png",
+   "matte": "CLEAN",
+   "bg": null,
+   "grid": [
+    9,
+    9
+   ],
+   "dip": 0.605,
+   "loop": false,
+   "fps": 60,
+   "hold": false
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 173,
+   "fh": 138,
+   "anchor": [
+    87.45,
+    134.84
+   ],
+   "source": "SS_marmalade_idle.png",
+   "matte": "CONTAM",
+   "bg": [
+    79.1,
+    79.7,
+    94.9
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "dip": 0.705,
+   "loop": true,
+   "fps": 20,
+   "hold": false
+  },
+  "ready": {
+   "file": "ready.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 177,
+   "fh": 137,
+   "anchor": [
+    91.76,
+    134.3
+   ],
+   "source": "SS_marmalade_ready.png",
+   "matte": "CONTAM",
+   "bg": [
+    101.7,
+    124.2,
+    140.8
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "dip": 0.724,
+   "loop": false,
+   "fps": 40,
+   "hold": false
+  },
+  "spark": {
+   "file": "spark.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 177,
+   "fh": 161,
+   "anchor": [
+    86.88,
+    140.65
+   ],
+   "source": "SS_marmalade_spark.png",
+   "matte": "CONTAM",
+   "bg": [
+    199.8,
+    209.1,
+    219.8
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "dip": 0.512,
+   "loop": false,
+   "fps": 36,
+   "hold": false
+  },
+  "spectral": {
+   "file": "spectral.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 160,
+   "fh": 135,
+   "anchor": [
+    81.25,
+    131.65
+   ],
+   "source": "SS_marmalade_spectral.png",
+   "matte": "CLEAN",
+   "bg": null,
+   "grid": [
+    9,
+    9
+   ],
+   "dip": 0.266,
+   "fade": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.997,
+    0.85,
+    0.621,
+    0.63,
+    0.379,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.103,
+    0.107,
+    0.157,
+    0.241,
+    0.309,
+    0.322,
+    0.498,
+    0.584,
+    0.634,
+    0.676,
+    0.797,
+    0.95,
+    0.978,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   "loop": false,
+   "fps": 60,
+   "hold": false
+  },
+  "trick": {
+   "file": "trick.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 188,
+   "fh": 142,
+   "anchor": [
+    91.9,
+    132.62
+   ],
+   "source": "SS_marmalade_trick.png",
+   "matte": "CLEAN",
+   "bg": null,
+   "grid": [
+    9,
+    9
+   ],
+   "dip": 0.661,
+   "loop": false,
+   "fps": 48,
+   "hold": false
+  },
+  "zoomies": {
+   "file": "zoomies.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 247,
+   "fh": 158,
+   "anchor": [
+    123.32,
+    150.24
+   ],
+   "source": "SS_marmalade_zoomies.png",
+   "matte": "CONTAM",
+   "bg": [
+    90.5,
+    96.0,
+    120.6
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "dip": 0.39,
+   "fade": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.979,
+    1.0,
+    1.0,
+    1.0,
+    0.903,
+    0.763,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.769,
+    1.0,
+    1.0,
+    1.0,
+    0.991,
+    0.979,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.992,
+    0.91,
+    1.0,
+    1.0,
+    0.996,
+    0.86,
+    0.42,
+    0.42,
+    0.42,
+    0.491,
+    0.549,
+    0.42,
+    0.42,
+    0.42,
+    0.735,
+    0.97,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.991,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.979,
+    0.919,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   "loop": false,
+   "fps": 60,
+   "hold": false
+  }
+ },
+ "scale": 0.3873
+}
