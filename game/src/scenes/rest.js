@@ -30,13 +30,24 @@ import { INPUT } from '../net/session.js';
 import { el, ensureCss, rovingFocus } from '../ui/portrait.js';
 import { ClipPlayer } from '../ui/sprite.js';
 
-/* Where the Companion stands in the fort, in FORT_SVG viewBox units: on the
-   floor line, in the spot the drawing already leaves for her. REST_PET_H is her
-   height there -- the Kid beside her is 34 units and the blob she replaces is
-   22, so 26 puts a cat between the two, which is what the picture was drawn
-   for. `unit` (ui/sprite.js) divides out whether the frame came from an atlas
-   or a still, so both arrive the same size. */
-const REST_PET_X = 246, REST_PET_Y = 248, REST_PET_H = 26;
+/* WHO STANDS WHERE IN THE FORT, in FORT_SVG viewBox units. Both figures are
+   anchored at their feet on the floor line the drawing already has, in the spots
+   it already leaves for them, and `h` is how tall each one stands there.
+
+   THE HEIGHTS COME FROM THE DRAWING, NOT FROM COMBAT. The flat kid is 56 units
+   to the top of her head and the flat pet 29 including ears -- a ratio near 1.9,
+   where the Scuffle screen uses 3.3. That is not an inconsistency to correct:
+   this is a small warm scene with the two of them nestled together, drawn that
+   way on purpose, and matching the glyphs keeps the composition the art was made
+   for. She also ends up facing the Companion, because the Kid stills face right
+   and the pet sits to her right.
+
+   `unit` (ui/sprite.js) divides out whether a frame came from an atlas or a
+   still, so both arrive at the height asked for either way. */
+const FORT_CAST = [
+  { who: 'kid', x: 180, y: 248, h: 56, warm: ['idle'] },
+  { who: 'pet', x: 246, y: 248, h: 26, warm: ['idle', 'affection'] },
+];
 
 const CSS_REST = new URL('./rest.css', import.meta.url).href;
 
@@ -85,8 +96,9 @@ const FORT_SVG = `
     <radialGradient id="rsInside" cx="50%" cy="86%">
       <stop offset="0%" class="rs-in-a"/><stop offset="100%" class="rs-in-b"/>
     </radialGradient>
-    <!-- The window onto one atlas cell, sized per clip in _tickCompanion. -->
-    <clipPath id="rsPetClip"><rect class="rs-petrect" x="0" y="0" width="1" height="1"/></clipPath>
+    <!-- One window per figure onto its atlas cell, sized per clip in _tickFigure. -->
+    <clipPath id="rsClipKid"><rect x="0" y="0" width="1" height="1"/></clipPath>
+    <clipPath id="rsClipPet"><rect x="0" y="0" width="1" height="1"/></clipPath>
   </defs>
 
   <ellipse class="rs-pool" cx="210" cy="240" rx="192" ry="42" fill="url(#rsGlow)"/>
@@ -117,16 +129,20 @@ const FORT_SVG = `
   <path class="rs-kid" d="M180 212a10 10 0 1 1 0-.02"/>
   <path class="rs-pet" d="M228 248c0-13 8-22 18-22s18 9 18 22Z"/>
   <path class="rs-petear" d="M234 230l-4-11m20 10 5-11"/>
-  <!-- ...and the real one, for a Companion that has art built. Same swap as
-       ui/enemy.js makes over PAL_ART: the two paths above stay until a frame is
-       actually on screen, so a missing or slow atlas leaves the drawing whole
-       rather than cutting a hole in it. -->
-  <g class="rs-petsprite" style="display:none">
-    <g class="rs-petfit">
-      <g clip-path="url(#rsPetClip)">
-        <image class="rs-petimg" preserveAspectRatio="none"/>
-      </g>
-    </g>
+  <!-- ...and the real pair, for a Kid and a Companion whose art is built. Same
+       swap as ui/enemy.js makes over PAL_ART: each flat path above stays until a
+       frame is genuinely on screen, so a missing or slow atlas leaves the drawing
+       whole rather than cutting a hole in it. Kid first, so the Companion draws
+       in front of her the way she does on the Scuffle screen. -->
+  <g class="rs-fig" data-who="kid" style="display:none">
+    <g class="rs-fig__fit"><g clip-path="url(#rsClipKid)">
+      <image class="rs-fig__img" preserveAspectRatio="none"/>
+    </g></g>
+  </g>
+  <g class="rs-fig" data-who="pet" style="display:none">
+    <g class="rs-fig__fit"><g clip-path="url(#rsClipPet)">
+      <image class="rs-fig__img" preserveAspectRatio="none"/>
+    </g></g>
   </g>
 
   <!-- cushions and floorboards -->
@@ -177,7 +193,7 @@ export class RestScene extends RoomScene {
       <div class="rs-art">${FORT_SVG}</div>
       <div class="rs-choices" role="group" aria-label="Choose one thing to do here"></div>`;
     this.$body.appendChild(wrap);
-    this._mountCompanion(wrap);
+    this._mountFort(wrap);
     const list = wrap.querySelector('.rs-choices');
 
     this._options = [
@@ -372,64 +388,86 @@ export class RestScene extends RoomScene {
     return `${k.name} is forged. It costs you ${this.run.forgeCost()} maximum ${TERMS.hp} and it was worth it.`;
   }
 
-  /* ── THE COMPANION IN THE FORT ─────────────────────────────────────────
-   * The art draws a generic small animal beside the Kid, and it is the same
-   * stand-in `PAL_ART` is on the Scuffle screen, so it gets the same treatment.
+  /* ── THE TWO OF THEM IN THE FORT ─────────────────────────────────
+   * The art draws a generic kid and a generic small animal in the warm, and both
+   * are the same kind of stand-in `PAL_ART` is on the Scuffle screen, so both get
+   * the same treatment: the real art replaces them once it has actually decoded.
+   *
+   * Table-driven because the two figures differ only in where they stand, how
+   * tall they are and which clips are worth warming -- everything else, down to
+   * the swap, is one routine.
    *
    * This is also the only screen that can honestly play `affection`. The brief
-   * builds that clip for "Kid petting Companion, bond scenes, camp
-   * interactions" and says outright it is "not required during combat", so it
-   * has no beat in a fight -- and sitting down with them IS the interaction the
-   * clip depicts. Every other Companion falls back to its still, because
-   * `playClip` returns false rather than throwing when the clip is not built.
+   * builds that clip for "Kid petting Companion, bond scenes, camp interactions"
+   * and says outright it is "not required during combat", so it has no beat in a
+   * fight -- and sitting down with them IS the interaction the clip depicts.
    */
-  _mountCompanion(wrap) {
+  _mountFort(wrap) {
     const svg = wrap.querySelector('.rs-fort');
-    this.$petSprite = svg && svg.querySelector('.rs-petsprite');
-    if (!this.$petSprite) return;
-    this.$petGlyph = Array.from(svg.querySelectorAll('.rs-pet, .rs-petear'));
-    this.$petFit = svg.querySelector('.rs-petfit');
-    this.$petImg = svg.querySelector('.rs-petimg');
-    this.$petRect = svg.querySelector('.rs-petrect');
-    this._petSrc = this._petClip = null;
-    /* Opens on `idle`, not `ready`: nothing here is entering combat. Warming
-       only idle and affection keeps the fort off the two atlases -- attack and
-       hurt, ~2 MB -- that this screen has no way to play. */
-    this.pet = new ClipPlayer(String(this.run?.companion || 'marmalade'),
-      { opening: 'idle', warm: ['idle', 'affection'] });
-    this._off.push(this.ctx.clock.onFrame((dt) => this._tickCompanion(dt)));
+    if (!svg) return;
+    const SLUG = { kid: this.run?.kid, pet: this.run?.companion };
+    const GLYPH = { kid: '.rs-kid', pet: '.rs-pet, .rs-petear' };
+    const CLIP = { kid: '#rsClipKid rect', pet: '#rsClipPet rect' };
+    this._fort = [];
+    for (const c of FORT_CAST) {
+      const slug = SLUG[c.who];
+      const root = svg.querySelector(`.rs-fig[data-who="${c.who}"]`);
+      // No Kid chosen yet (a deep link, a standalone review) keeps her drawn.
+      if (!slug || !root) continue;
+      this._fort.push({
+        ...c,
+        root,
+        fit: root.querySelector('.rs-fig__fit'),
+        img: root.querySelector('.rs-fig__img'),
+        rect: svg.querySelector(CLIP[c.who]),
+        glyphs: Array.from(svg.querySelectorAll(GLYPH[c.who])),
+        /* Opens on `idle`, never `ready`: nothing in a blanket fort is entering
+           combat. Warming only what this screen can actually play keeps it off
+           the combat atlases -- attack and hurt, ~2 MB -- it has no way to show. */
+        player: new ClipPlayer(String(slug), { opening: 'idle', warm: c.warm }),
+        src: null,
+        clip: null,
+      });
+    }
+    if (!this._fort.length) return;
+    /** The Companion's own player: `_doSit` plays a clip on her by name. */
+    this.pet = (this._fort.find(r => r.who === 'pet') || {}).player || null;
+    this._off.push(this.ctx.clock.onFrame((dt) => this._tickFort(dt)));
   }
 
-  /** Advance her and blit the current cell. Mirrors PlayerView#_tickSprite. */
-  _tickCompanion(dt) {
-    const p = this.pet;
-    if (!p || this._dead || !this.$petSprite) return;
-    if (!this.reduceMotion) p.advance(dt);
-    const fr = p.frame({ still: this.reduceMotion });
+  _tickFort(dt) {
+    if (this._dead || !this._fort) return;
+    for (const r of this._fort) this._tickFigure(r, dt);
+  }
+
+  /** Advance one figure and blit its current cell. Mirrors PlayerView#_tickSprite. */
+  _tickFigure(r, dt) {
+    if (!this.reduceMotion) r.player.advance(dt);
+    const fr = r.player.frame({ still: this.reduceMotion });
     if (!fr || !fr.loaded) return;
 
-    if (fr.src !== this._petSrc) {
-      this.$petImg.setAttribute('href', fr.src);
-      this.$petImg.setAttribute('width', fr.atlasW);
-      this.$petImg.setAttribute('height', fr.atlasH);
-      this._petSrc = fr.src;
+    if (fr.src !== r.src) {
+      r.img.setAttribute('href', fr.src);
+      r.img.setAttribute('width', fr.atlasW);
+      r.img.setAttribute('height', fr.atlasH);
+      r.src = fr.src;
     }
-    if (fr.clip !== this._petClip) {
-      const s = REST_PET_H / Math.max(1, fr.unit);
-      this.$petRect.setAttribute('width', fr.fw);
-      this.$petRect.setAttribute('height', fr.fh);
-      this.$petFit.setAttribute('transform',
-        `translate(${REST_PET_X} ${REST_PET_Y}) scale(${s.toFixed(4)})`
+    if (fr.clip !== r.clip) {
+      const s = r.h / Math.max(1, fr.unit);
+      r.rect.setAttribute('width', fr.fw);
+      r.rect.setAttribute('height', fr.fh);
+      r.fit.setAttribute('transform',
+        `translate(${r.x} ${r.y}) scale(${s.toFixed(4)})`
         + ` translate(${(-fr.anchor[0]).toFixed(2)} ${(-fr.anchor[1]).toFixed(2)})`);
-      this._petClip = fr.clip;
+      r.clip = fr.clip;
     }
-    this.$petImg.setAttribute('transform',
+    r.img.setAttribute('transform',
       `translate(${(-fr.col * fr.fw).toFixed(2)} ${(-fr.row * fr.fh).toFixed(2)})`);
-    this.$petSprite.setAttribute('opacity', fr.opacity.toFixed(3));
+    r.root.setAttribute('opacity', fr.opacity.toFixed(3));
 
-    if (this.$petSprite.style.display !== '') {
-      this.$petSprite.style.display = '';
-      for (const g of this.$petGlyph) g.style.display = 'none';
+    if (r.root.style.display !== '') {
+      r.root.style.display = '';
+      for (const g of r.glyphs) g.style.display = 'none';
     }
   }
 

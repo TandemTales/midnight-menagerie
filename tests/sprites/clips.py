@@ -32,8 +32,9 @@ an edit to `game/src/scenes/combat.js` that turns it red:
              third Trick then plays `trick` like the first two.
   harness    delete `_installClipHarness()`; `__MM_CLIPS` goes undefined and
              `affection` can only be reached by sitting down in the Safe Room.
-  fort       delete `_mountCompanion(wrap)` from `scenes/rest.js`; the fort goes
-             back to the generic two-ear blob and `affection` has no home again.
+  fort       delete `_mountFort(wrap)` from `scenes/rest.js`; the fort goes back
+             to a stick kid and a two-ear blob, and `affection` has no home again.
+             Dropping one row from `FORT_CAST` reds only that figure's check.
   opening    drop `{ opening: 'idle' }` from the Safe Room's ClipPlayer.  Red,
              and the Kid walks into a blanket fort to find their Companion
              playing the ENTER COMBAT clip.
@@ -210,12 +211,17 @@ ZOOMIES = """async () => {
 # PAL_ART is in combat, and it gets the same swap.
 FORT = """() => {
   const s = window.MM.ctx.scenes.current;
-  const sp = document.querySelector('.rs-petsprite');
+  const fig = (who) => document.querySelector('.rs-fig[data-who="' + who + '"]');
+  const up = (who) => { const f = fig(who); return !!f && f.style.display === ''; };
+  const gone = (sel) => [...document.querySelectorAll(sel)]
+                          .every(g => g.style.display === 'none');
   return {
-    shown: !!sp && sp.style.display === '',
-    glyphHidden: [...document.querySelectorAll('.rs-pet, .rs-petear')]
-                   .every(g => g.style.display === 'none'),
+    petShown: up('pet'),
+    kidShown: up('kid'),
+    petGlyphHidden: gone('.rs-pet, .rs-petear'),
+    kidGlyphHidden: gone('.rs-kid'),
     clip: s && s.pet ? s.pet.name : null,
+    cast: (s._fort || []).map(r => r.who + ':' + r.player.slug).join(' '),
   };
 }"""
 
@@ -298,19 +304,24 @@ async def main(a):
         # `page.goto` to a URL that differs only in its hash is a same-document
         # navigation: main.js never re-runs and the scene never changes, so this
         # sat waiting 20s for a fort that was still a Scuffle screen.
-        await page.goto(BASE + "#scene=rest&seed=7&companion=marmalade",
+        await page.goto(BASE + "#scene=rest&seed=7&companion=marmalade&kid=maya",
                         wait_until="load", timeout=60000)
         await page.reload(wait_until="load", timeout=60000)
         await page.wait_for_function(
             f"!!({SCENE}) && window.MM.ctx.scenes.currentName === 'rest'",
             timeout=int(a.wait * 1000))
-        await page.wait_for_function("!!document.querySelector('.rs-petsprite')", timeout=20000)
+        # Both figures up. Attribute selectors need quotes this string cannot
+        # carry cleanly, so count the ones that have swapped instead.
         await page.wait_for_function(
-            "document.querySelector('.rs-petsprite').style.display === ''", timeout=20000)
+            "[...document.querySelectorAll('.rs-fig')]"
+            ".filter(f => f.style.display === '').length === 2", timeout=20000)
         fort = await page.evaluate(FORT)
-        check(fort["shown"] and fort["glyphHidden"],
+        check(fort["petShown"] and fort["petGlyphHidden"],
               "the fort swaps its blob for the Companion",
-              f"shown={fort['shown']} glyphHidden={fort['glyphHidden']}")
+              f"shown={fort['petShown']} glyphHidden={fort['petGlyphHidden']}")
+        check(fort["kidShown"] and fort["kidGlyphHidden"],
+              "the fort swaps its stick kid for the Kid",
+              f"shown={fort['kidShown']} glyphHidden={fort['kidGlyphHidden']} cast={fort['cast']}")
         check(fort["clip"] == "idle", "the Safe Room opens on `idle`, not `ready`",
               f"opened on '{fort['clip']}'")
 
