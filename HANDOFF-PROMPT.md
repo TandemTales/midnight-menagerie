@@ -162,6 +162,35 @@ from blooming.
 
 ━━ WHAT IS OPEN ━━
 
+0. **IN FLIGHT, HANDED OVER MID-INVESTIGATION: MARMALADE'S SPRITE SCALE.**
+   Josh: "just changed marmalade's original sprite size, resize/reorganize
+   animations to match new sprite size." I had gathered facts and written NO
+   code. What is established:
+
+     - `animations/sprites/sprite_marmalade.png` is now **256x256**, matching
+       every other Companion still (the Kids' are 512x512 - a different class).
+       It is UNTRACKED, so git has no before-size to diff against.
+     - The twelve `animations/SS_marmalade_*.png` sheets are UNCHANGED
+       (3924-5616px, 13-19MB each). The still moved; the sheets did not.
+     - `tools/prep_sprites.py` is the whole pipeline and it is careful - read
+       its header before touching it. It fits the matte per file, recovers the
+       row count by autocorrelation because the grids are 9-wide but ragged
+       (attack is 9x8 with 65 frames, not 81), and de-jitters the centre track.
+     - **THERE ARE TWO DIFFERENT SCALE TARGETS, and this is the likely crux.**
+       Animations use `TARGET_CONTENT_H = 128` with ONE scale per Companion
+       (`scale = TARGET_CONTENT_H / median content height across all clips`).
+       Stills use `build_still(..., target_h=256)`. So a still renders at
+       roughly twice the content height of the animation frames, by design or
+       by drift - I did not establish which.
+     - Current outputs: `stills/marmalade.webp` is 253x230; the clip frames are
+       `fw/fh` 169x132 (affection), 188x169 (attack), 169x142 (caution).
+
+   THE QUESTION I HAD NOT ANSWERED: what "match" means here. Either the
+   animations should be re-scaled so the creature matches the new still, or the
+   still's `target_h` is what should move. Both are one number in
+   prep_sprites.py, and the two targets differing 2:1 is suspicious enough that
+   it should be ASKED rather than guessed. `python tools/prep_sprites.py
+   --report` measures without writing anything - start there.
 1. **THE TWO LONG BOSSES.** study-library 65%/27pp and greenhouse 69%/22pp.
    The Archivist runs 24.3 turns against the Butler's 9.8. FOUR levers on him
    (Courage, damage, Catalogue Guard, the Corrections cap) bought 7pp between
