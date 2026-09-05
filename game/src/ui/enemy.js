@@ -44,7 +44,7 @@ import { ClipPlayer } from './sprite.js';
 
 /* ── THE ANIMATED COMPANION ────────────────────────────────────────────────
    Where a Companion has real animation built (`tools/prep_sprites.py`), it
-   replaces the `PAL_ART` silhouette at the Kid's shoulder. Fifteen of sixteen
+   replaces the `PAL_ART` silhouette standing at the Kid's feet. Fifteen of sixteen
    still have only the silhouette, so this is a swap and not a removal: the
    sprite reveals itself once its atlas has decoded and the glyph hides at the
    same moment, which means a missing, slow or broken atlas is invisible rather
@@ -63,9 +63,26 @@ import { ClipPlayer } from './sprite.js';
    silhouette is drawn AROUND the palset origin, and a sprite is anchored at
    its FEET (see `anchor` in ui/sprite.js). Dropping it by the silhouette's own
    half-height puts the creature where the glyph was instead of floating it a
-   body-length higher. */
+   body-length higher.
+
+   THE COMPANION STANDS ON THE FLOOR, beside the Kid's boots -- not up at her
+   shoulder. Both bodies are anchored at their feet on y=0, so a palset at
+   -SPRITE_RIG_DY lands the creature on the same floor line the contact shadow
+   is drawn for, and the two of them read as standing in one room together
+   rather than one of them being carried. */
 const SPRITE_RIG_H = 70;
 const SPRITE_RIG_DY = 30;
+
+/* THE KID HERSELF, when her still is built. The drawn rig below stands ~230
+   units tall with her boots on y=0, so a still fitted to the same 230 lands her
+   feet on the same floor line the contact shadow is drawn for, and every pose
+   the scene drives -- lean, wind-up, strike, flinch -- keeps working, because
+   those act on `pr-root` and not on the body parts.
+
+   The rig does NOT go away when she does: it is hidden, the same swap the
+   Companion silhouette gets, so a missing or slow still leaves a drawn Kid on
+   the board rather than a hole where one should be. */
+const KID_RIG_H = 230;
 
 const NS = 'http://www.w3.org/2000/svg';
 const TAU = Math.PI * 2;
@@ -1963,6 +1980,8 @@ export class PlayerView {
     /** Flashes slider, 0..1. Zero means "no bloom", never "no feedback". */
     this.flashes = clamp01(o.flashes);
     this.slug = String(o.companion || 'marmalade');
+    /** Which Kid is in the boots. Blank keeps the drawn rig. */
+    this.kid = String(o.kid || '');
     this.rnd = mulberry(hash32(this.slug));
     this.a = {
       breathPh: 0, bobPh: 0, lean: 0, leanT: 0, squash: 0, squashT: 0,
@@ -1984,13 +2003,16 @@ export class PlayerView {
    * everybody notices. Rebuilds rather than re-tints: the palette AND the art
    * are per Companion.
    */
-  setCompanion(slug) {
+  setCompanion(slug, kid) {
     const next = String(slug || 'marmalade');
-    if (next === this.slug) return this;
+    const nextKid = kid === undefined ? this.kid : String(kid || '');
+    if (next === this.slug && nextKid === this.kid) return this;
     const host = this.el && this.el.parentNode;
     const before = this.el;
     this.sprite?.destroy();          // _build() constructs the next one
+    this.kidSprite?.destroy();
     this.slug = next;
+    this.kid = nextKid;
     this.rnd = mulberry(hash32(this.slug));
     this._poseToken = 0;
     this._poseWrote = false;
@@ -2043,6 +2065,7 @@ export class PlayerView {
           <!-- The window onto one atlas cell. Sized per clip in _tickSprite,
                because attack is a lunge and needs a bigger frame than idle. -->
           <clipPath id="${gid}sp"><rect class="pr-spriterect" x="0" y="0" width="1" height="1"/></clipPath>
+          <clipPath id="${gid}kd"><rect class="pr-kidrect" x="0" y="0" width="1" height="1"/></clipPath>
         </defs>
         <!-- THE CONTACT SHADOW, in rig units so it is always exactly under the
              boots. It sits OUTSIDE pr-root on purpose: the rig's internal lean
@@ -2053,6 +2076,15 @@ export class PlayerView {
           <ellipse class="pr-shadow" cx="4" cy="6" rx="62" ry="16" fill="url(#${gid}s)"/>
         </g>
         <g class="pr-root">
+          <!-- The Kid's own art, behind the Companion so she is never drawn over
+               her own shoulder. Hidden until a frame is genuinely on screen. -->
+          <g class="pr-kid" style="display:none">
+            <g class="pr-kidfit">
+              <g clip-path="url(#${gid}kd)">
+                <image class="pr-kidimg" preserveAspectRatio="none"/>
+              </g>
+            </g>
+          </g>
           <g class="pr-legb">
             <path class="pr-leg pr-leg--back" d="M-5,-70 q-13,30 -11,58"/>
             <path class="pr-boot pr-boot--back" d="M-32,-13 h23 q5,0 5,6 v8 h-34 q-7,-6 6,-14 Z"/>
@@ -2122,11 +2154,11 @@ export class PlayerView {
             <ellipse class="pr-blush" cx="28" cy="-168" rx="7" ry="4"/>
             <path class="pr-mouth" d="M4,-166 q7,7 14,0"/>
           </g>
-          <!-- The Companion, at her shoulder. One silhouette per Companion:
+          <!-- The Companion, on the floor at her feet. One silhouette per Companion:
                PAL_ART above, keyed the way MOTIF keys the creatures — and, for
                the ones that have animation built, a sprite that takes its place
                once the atlas has decoded. -->
-          <g class="pr-pal"><g class="pr-palset" transform="translate(-72 -204)">
+          <g class="pr-pal"><g class="pr-palset" transform="translate(-72 -30)">
             <g class="pr-palart">${art}</g>
             <g class="pr-sprite" style="display:none">
               <g class="pr-spritefit">
@@ -2165,6 +2197,25 @@ export class PlayerView {
        resolves to an empty index and `frame()` returns null forever, which is
        the same code path as "still downloading" and leaves the silhouette up. */
     this.sprite = new ClipPlayer(this.slug);
+
+    this.$kid = el.querySelector('.pr-kid');
+    this.$kidFit = el.querySelector('.pr-kidfit');
+    this.$kidImg = el.querySelector('.pr-kidimg');
+    this.$kidRect = el.querySelector('.pr-kidrect');
+    this.$palSet = el.querySelector('.pr-palset');
+    /* Everything the drawn Kid is made of. Held as a list because the swap hides
+       all of it at once and `update()` goes on writing transforms into it -- the
+       writes are harmless on a hidden node, and keeping them means the rig is
+       still correct if a still never arrives. */
+    this.$rigArt = Array.from(el.querySelectorAll(
+      '.pr-legb, .pr-armb, .pr-pack, .pr-legf, .pr-body, .pr-swing, .pr-head'));
+    this._kidSrc = null;
+    this._kidClip = null;
+    /* Only when we know who she is. `ClipPlayer` resolves a Kid slug through
+       STILL_ALIAS to her still today, and to her clips the day they are built. */
+    this.kidSprite = this.kid
+      ? new ClipPlayer(this.kid, { opening: 'idle', warm: ['idle'] })
+      : null;
   }
 
   _d(s) { return this.reduceMotion ? 0.001 : s; }
@@ -2290,6 +2341,56 @@ export class PlayerView {
     }
   }
 
+  /**
+   * Advance the Kid and blit her current cell. Same shape as `_tickSprite`.
+   *
+   * The scale is `KID_RIG_H / unit`, so a still trimmed to its own content and
+   * an animated frame built to a fixed figure both arrive the same height --
+   * the same normalisation the Companion gets, for the same reason.
+   */
+  _tickKid(dt) {
+    const p = this.kidSprite;
+    if (!p || !this.$kid) return;
+    if (!this.reduceMotion) p.advance(dt);
+    const fr = p.frame({ still: this.reduceMotion });
+    if (!fr || !fr.loaded) return;
+
+    if (fr.src !== this._kidSrc) {
+      this.$kidImg.setAttribute('href', fr.src);
+      this.$kidImg.setAttribute('width', fr.atlasW);
+      this.$kidImg.setAttribute('height', fr.atlasH);
+      this._kidSrc = fr.src;
+    }
+    if (fr.clip !== this._kidClip) {
+      const s = KID_RIG_H / Math.max(1, fr.unit);
+      this.$kidRect.setAttribute('width', fr.fw);
+      this.$kidRect.setAttribute('height', fr.fh);
+      this.$kidFit.setAttribute('transform',
+        `scale(${f2(s)}) translate(${f2(-fr.anchor[0])} ${f2(-fr.anchor[1])})`);
+      /* AND STAND THE COMPANION BESIDE HER BOOTS. `pr-palset`'s authored -72 was
+         measured against the drawn rig, which is one width; the Kids are not.
+         Their stills run 120 to 203 px of content, so a fixed offset that clears
+         Maya puts the Companion inside Samir. Half the Kid's own width plus a
+         hand's breadth keeps the creature just off whoever is actually standing
+         there, on the enemy's far side so it never covers her, and -y is
+         SPRITE_RIG_DY exactly -- which is what puts its feet on the floor line
+         instead of somewhere up her back. Only set when her art is up; the drawn
+         rig keeps the authored offset. */
+      if (this.$palSet) {
+        this.$palSet.setAttribute('transform',
+          `translate(${f(-(fr.fw * s / 2 + 10))} ${f(-SPRITE_RIG_DY)})`);
+      }
+      this._kidClip = fr.clip;
+    }
+    this.$kidImg.setAttribute('transform',
+      `translate(${f2(-fr.col * fr.fw)} ${f2(-fr.row * fr.fh)})`);
+
+    if (this.$kid.style.display !== '') {
+      this.$kid.style.display = '';
+      for (const g of this.$rigArt) g.style.display = 'none';
+    }
+  }
+
   /** Where FX should land on her. */
   centre() {
     const r = this.el.getBoundingClientRect();
@@ -2330,8 +2431,13 @@ export class PlayerView {
     const dx = a.lean * 9 - a.shove;
     const dy = Math.abs(a.lean) * -3;
     this.$root.setAttribute('transform', `translate(${f(dx)} ${f(dy)}) rotate(${f(a.lean * 3)} 0 0)`);
-    this.$body.setAttribute('transform',
-      `scale(${f2(1 - breath * 0.012 + a.squash * 0.14)} ${f2(1 + breath * 0.018 - a.squash * 0.16)})`);
+    const bodyT =
+      `scale(${f2(1 - breath * 0.012 + a.squash * 0.14)} ${f2(1 + breath * 0.018 - a.squash * 0.16)})`;
+    this.$body.setAttribute('transform', bodyT);
+    // She breathes and compresses on the same curve the drawn body did: once
+    // the still is up it IS the body, and a figure that only slid would read as
+    // a sticker rather than someone standing there.
+    if (this.$kid) this.$kid.setAttribute('transform', bodyT);
     this.$head.setAttribute('transform', `translate(${f(a.lean * 6)} ${f(breath * 1.6)})`);
     // the torch arm: −24° drawn back, +64° at the bottom of the swing
     this.$swing.setAttribute('transform', `rotate(${f(a.swing * (a.swing < 0 ? 24 : 64))} 20 -150)`);
@@ -2349,6 +2455,7 @@ export class PlayerView {
     this.$pal.setAttribute('transform', `translate(${f(bob * 3 - a.lean * 4)} ${f(bob * 5)})`);
     /* Inside that bob, so the Companion rides the Kid's movement exactly as the
        silhouette it replaces did. */
+    this._tickKid(dt);
     this._tickSprite(dt);
     /* The contact shadow is ON THE FLOOR, so it does not travel with her: it
        slides a fraction of the lean, stretches as she commits and tightens
@@ -2378,7 +2485,12 @@ export class PlayerView {
     }
   }
 
-  destroy() { this._dead = true; this.sprite?.destroy(); this.el.remove(); }
+  destroy() {
+    this._dead = true;
+    this.sprite?.destroy();
+    this.kidSprite?.destroy();
+    this.el.remove();
+  }
 }
 
 function statusTip(s) {

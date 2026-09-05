@@ -37,6 +37,16 @@ an edit to `game/src/scenes/combat.js` that turns it red:
   opening    drop `{ opening: 'idle' }` from the Safe Room's ClipPlayer.  Red,
              and the Kid walks into a blanket fort to find their Companion
              playing the ENTER COMBAT clip.
+  kid        delete `_tickKid`'s swap, or blank the `kid:` passed to PlayerView
+             in scenes/combat.js; the board goes back to one drawn rig for all
+             eight Kids.
+  alias      remove any Kid from `STILL_ALIAS` in ui/sprite.js.  Their slugs are
+             first names (`priya`) and the art arrived under full ones (and one
+             typo, `pryaSHah`), so without the table a Kid silently keeps the
+             drawn rig -- exactly the failure this file exists to catch.
+  palset     hard-code `pr-palset` back to a constant x.  Red on the widest
+             Kid: a fixed offset tuned for one width puts the Companion inside
+             Samir, who is 203 px of content against Priya's 120.
 
 WARM THE ATLASES BEFORE ASSERTING.  `ClipPlayer.play()` on a clip whose webp has
 not landed sets `_pending` and starts it later ("late rather than blank",
@@ -133,6 +143,37 @@ CAUTION = """async () => {
 
 # Real plays through `hand.playCard`, the same entry a click and the keyboard
 # use, so this exercises _onPlay -> engine.playCard -> _animate.
+# Every Kid slug has to resolve to something drawable.  Imported into the page
+# rather than driven through eight navigations: the alias table is the thing
+# under test, and it is one module away.
+KIDS = """async () => {
+  const m = await import('/game/src/ui/sprite.js');
+  const out = [];
+  for (const k of ['maya','mateo','amina','eli','priya','jordan','lena','samir']) {
+    const p = new m.ClipPlayer(k, { opening: 'idle', warm: ['idle'] });
+    await p.ready;
+    out.push(k + ':' + (p.clips && p.clips.idle ? 'ok' : 'MISSING'));
+  }
+  return out;
+}"""
+
+# Samir is the widest Kid built (203 px of content against Priya's 120), so he
+# is the one a fixed Companion offset fails on.
+KIDRIG = """() => {
+  const S = window.MM.ctx.scenes.current;
+  const t = document.querySelector('.pr-palset').getAttribute('transform');
+  const n = t.match(/-?[\d.]+/g).map(Number);
+  const kb = document.querySelector('.pr-kid').getBBox();
+  return {
+    shown: (document.querySelector('.pr-kid') || {}).style.display === '',
+    rigHidden: [...document.querySelectorAll('.pr-body, .pr-head, .pr-legf')]
+                 .every(g => g.style.display === 'none'),
+    palX: n[0], palY: n[1],
+    kidHalf: Math.round(kb.width / 2),
+    kid: S.hero.kid,
+  };
+}"""
+
 ZOOMIES = """async () => {
   const s = window.MM.ctx.scenes.current, E = s.engine, p = s.hero.sprite;
   const settle = async () => {
@@ -283,6 +324,33 @@ async def main(a):
                   f"played '{clip}'")
 
         check(not errors, "no JS errors in the Safe Room",
+              "; ".join(errors[:3]) or "clean")
+
+        # ── the Kids' own art on the board ─────────────────────────────────
+        kids = await page.evaluate(KIDS)
+        missing = [k for k in kids if k.endswith("MISSING")]
+        check(not missing, "every Kid slug resolves to a still",
+              ", ".join(missing) or f"{len(kids)}/8")
+
+        await page.goto(BASE + "#scene=combat&seed=7&companion=marmalade&kid=samir",
+                        wait_until="load", timeout=60000)
+        await page.reload(wait_until="load", timeout=60000)
+        await page.wait_for_function(f"!!({SCENE}) && {SCENE}.engine", timeout=int(a.wait * 1000))
+        await page.wait_for_function(f"{SCENE} && {SCENE}._opening === false", timeout=30000)
+        await page.wait_for_function(
+            "document.querySelector('.pr-kid') && "
+            "document.querySelector('.pr-kid').style.display === ''", timeout=20000)
+        rig = await page.evaluate(KIDRIG)
+        check(rig["shown"] and rig["rigHidden"],
+              "the Kid's own art replaces the drawn rig",
+              f"kid={rig['kid']} shown={rig['shown']} rigHidden={rig['rigHidden']}")
+        check(rig["palX"] < -rig["kidHalf"],
+              "the Companion stands clear of the widest Kid",
+              f"palset x={rig['palX']} vs half-width {rig['kidHalf']}")
+        check(rig["palY"] == -30, "the Companion stands on the floor line",
+              f"palset y={rig['palY']} (want -SPRITE_RIG_DY = -30)")
+
+        check(not errors, "no JS errors with a Kid on the board",
               "; ".join(errors[:3]) or "clean")
         await browser.close()
 

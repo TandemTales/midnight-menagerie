@@ -49,7 +49,18 @@ const WARM = ['idle', 'attack', 'hurt'];
  * is a naming difference in the source art rather than anything meaningful:
  * the game calls him `crumbula` and the sprite arrived as `countCrumbula`.
  */
-const STILL_ALIAS = { crumbula: 'countCrumbula' };
+const STILL_ALIAS = {
+  crumbula: 'countCrumbula',
+  /* The eight Kids, same shape. Their stills came back from the art pass under
+     full names -- and one typo, `pryaSHah` for Priya -- while the game has keyed
+     them by first name since data/schema.js was written. Aliasing here rather
+     than renaming eight files keeps the art as it was delivered, and means a Kid
+     resolves through exactly the path a Companion does: no animation index, so
+     `_loadStill` picks up the still. When Kid clips ARE built, `clipIndex(slug)`
+     finds them first and they animate with nothing else to change. */
+  maya: 'mayaChen', mateo: 'mateoAlvarez', amina: 'aminaOkafor', eli: 'eliRosen',
+  priya: 'pryaSHah', jordan: 'jordanBrooks', lena: 'lenaYazzie', samir: 'samirHaddad',
+};
 
 let _manifest = null;
 

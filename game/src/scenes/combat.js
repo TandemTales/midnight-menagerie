@@ -816,9 +816,14 @@ export class CombatScene extends Scene {
 
     this.root.classList.toggle('is-large', this.largeText);
     const slug = String(params.companion || this.ctx.run?.companion || 'marmalade');
+    /* WHICH KID IS IN THE BOOTS. `run.kid` is the local seat's, the same way
+       `run.companion` is, and the deep link can name one for review. Blank is
+       allowed and means the drawn rig stays -- PlayerView treats her art as an
+       upgrade over the silhouette, never as a requirement. */
+    const kidSlug = String(params.kid || this.ctx.run?.kid || '');
     this.hero = new PlayerView({
       clock: this.ctx.clock, reduceMotion: this.reduceMotion,
-      flashes: this._bloomGain(), companion: slug,
+      flashes: this._bloomGain(), companion: slug, kid: kidSlug,
     });
     $('.cb-herohost').appendChild(this.hero.el);
     this._installClipHarness();
@@ -3415,7 +3420,9 @@ export class CombatScene extends Scene {
      */
     this.engine.localSeat = this.seatIndex | 0;
     const slug = String(me.companion || 'marmalade');
-    if (this.hero && this.hero.setCompanion) this.hero.setCompanion(slug);
+    // Pass-and-play changes the Kid as well as the Companion: the body on the
+    // board belongs to whoever is taking this turn.
+    if (this.hero && this.hero.setCompanion) this.hero.setCompanion(slug, me.kid);
     if (this.$plArt) this.$plArt.src = `${PORTRAITS}${slug}.png`;
     const meta = COMPANIONS.find(c => c.slug === slug);
     if (this.$plName) this.$plName.textContent = (meta && meta.name) || slug;
