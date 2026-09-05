@@ -64,13 +64,6 @@ export function spriteManifest() {
   return _manifest;
 }
 
-/** URL of a repaired still, or null if that name has none. */
-export async function stillSrc(name) {
-  const m = await spriteManifest();
-  const e = m.stills?.[name];
-  return e ? `${SPRITES}stills/${e.file}` : null;
-}
-
 /** Does this Companion have animation built for it? */
 export async function hasAnimation(slug) {
   const m = await spriteManifest();
@@ -110,8 +103,18 @@ function clipIndex(slug) {
  * does and a slow frame drops a frame instead of stretching the beat.
  */
 export class ClipPlayer {
-  constructor(slug) {
+  /**
+   * `opening` is the clip to play on mount and `warm` the clips to fetch up
+   * front. Both default to the fight, because that is where a Companion mostly
+   * stands -- but the Safe Room mounts one too, and there `ready` ("notices the
+   * threat, becomes alert, prepares for action") is the wrong first thing a Kid
+   * sees inside a blanket fort, and `attack`/`hurt` are two atlases downloaded
+   * for a screen that cannot play either.
+   */
+  constructor(slug, { opening = 'ready', warm = WARM } = {}) {
     this.slug = String(slug);
+    this._opening = opening;
+    this._warm = warm;
     this.clips = null;
     this.scale = 1;
     this.name = null;
@@ -140,14 +143,15 @@ export class ClipPlayer {
        manifest so it is never duplicated as a constant over here); a still is
        trimmed to its content, so its own height IS the figure. */
     this.unit = (await spriteManifest()).targetContentH || 128;
-    await Promise.all(WARM.filter(n => this.clips[n]).map(n => this._atlas(n)));
-    /* MOUNTING IS ENTERING COMBAT. The brief's `ready` clip begins "in a
-       relaxed neutral pose and ending in the Companion's standard combat idle
-       pose", which is exactly this moment, and it needs no trigger of its own
-       because a one-shot hands back to idle when it runs out. Falls straight to
-       idle for a Companion that has no `ready` built. */
+    await Promise.all(this._warm.filter(n => this.clips[n]).map(n => this._atlas(n)));
+    /* MOUNTING INTO A FIGHT IS ENTERING COMBAT. The brief's `ready` clip begins
+       "in a relaxed neutral pose and ending in the Companion's standard combat
+       idle pose", which is exactly that moment, and it needs no trigger of its
+       own because a one-shot hands back to idle when it runs out. Falls to idle
+       for a Companion with no `ready` built, and for any mount that asked for a
+       different opening. */
     if (!this.name) {
-      const opening = this.clips.ready ? 'ready' : REST_CLIP;
+      const opening = this.clips[this._opening] ? this._opening : REST_CLIP;
       if (this.clips[opening]) { await this._atlas(opening); this.play(opening); }
     }
     return true;

@@ -28,6 +28,15 @@ import { RoomScene, esc } from './reward.js';
 import { act, ACT, deckIndex } from '../net/actions.js';
 import { INPUT } from '../net/session.js';
 import { el, ensureCss, rovingFocus } from '../ui/portrait.js';
+import { ClipPlayer } from '../ui/sprite.js';
+
+/* Where the Companion stands in the fort, in FORT_SVG viewBox units: on the
+   floor line, in the spot the drawing already leaves for her. REST_PET_H is her
+   height there -- the Kid beside her is 34 units and the blob she replaces is
+   22, so 26 puts a cat between the two, which is what the picture was drawn
+   for. `unit` (ui/sprite.js) divides out whether the frame came from an atlas
+   or a still, so both arrive the same size. */
+const REST_PET_X = 246, REST_PET_Y = 248, REST_PET_H = 26;
 
 const CSS_REST = new URL('./rest.css', import.meta.url).href;
 
@@ -76,6 +85,8 @@ const FORT_SVG = `
     <radialGradient id="rsInside" cx="50%" cy="86%">
       <stop offset="0%" class="rs-in-a"/><stop offset="100%" class="rs-in-b"/>
     </radialGradient>
+    <!-- The window onto one atlas cell, sized per clip in _tickCompanion. -->
+    <clipPath id="rsPetClip"><rect class="rs-petrect" x="0" y="0" width="1" height="1"/></clipPath>
   </defs>
 
   <ellipse class="rs-pool" cx="210" cy="240" rx="192" ry="42" fill="url(#rsGlow)"/>
@@ -106,6 +117,17 @@ const FORT_SVG = `
   <path class="rs-kid" d="M180 212a10 10 0 1 1 0-.02"/>
   <path class="rs-pet" d="M228 248c0-13 8-22 18-22s18 9 18 22Z"/>
   <path class="rs-petear" d="M234 230l-4-11m20 10 5-11"/>
+  <!-- ...and the real one, for a Companion that has art built. Same swap as
+       ui/enemy.js makes over PAL_ART: the two paths above stay until a frame is
+       actually on screen, so a missing or slow atlas leaves the drawing whole
+       rather than cutting a hole in it. -->
+  <g class="rs-petsprite" style="display:none">
+    <g class="rs-petfit">
+      <g clip-path="url(#rsPetClip)">
+        <image class="rs-petimg" preserveAspectRatio="none"/>
+      </g>
+    </g>
+  </g>
 
   <!-- cushions and floorboards -->
   <path class="rs-cushion" d="M300 248c0-9 9-15 20-15s20 6 20 15ZM72 248c0-8 8-13 18-13s18 5 18 13Z"/>
@@ -155,6 +177,7 @@ export class RestScene extends RoomScene {
       <div class="rs-art">${FORT_SVG}</div>
       <div class="rs-choices" role="group" aria-label="Choose one thing to do here"></div>`;
     this.$body.appendChild(wrap);
+    this._mountCompanion(wrap);
     const list = wrap.querySelector('.rs-choices');
 
     this._options = [
@@ -349,7 +372,70 @@ export class RestScene extends RoomScene {
     return `${k.name} is forged. It costs you ${this.run.forgeCost()} maximum ${TERMS.hp} and it was worth it.`;
   }
 
+  /* ── THE COMPANION IN THE FORT ─────────────────────────────────────────
+   * The art draws a generic small animal beside the Kid, and it is the same
+   * stand-in `PAL_ART` is on the Scuffle screen, so it gets the same treatment.
+   *
+   * This is also the only screen that can honestly play `affection`. The brief
+   * builds that clip for "Kid petting Companion, bond scenes, camp
+   * interactions" and says outright it is "not required during combat", so it
+   * has no beat in a fight -- and sitting down with them IS the interaction the
+   * clip depicts. Every other Companion falls back to its still, because
+   * `playClip` returns false rather than throwing when the clip is not built.
+   */
+  _mountCompanion(wrap) {
+    const svg = wrap.querySelector('.rs-fort');
+    this.$petSprite = svg && svg.querySelector('.rs-petsprite');
+    if (!this.$petSprite) return;
+    this.$petGlyph = Array.from(svg.querySelectorAll('.rs-pet, .rs-petear'));
+    this.$petFit = svg.querySelector('.rs-petfit');
+    this.$petImg = svg.querySelector('.rs-petimg');
+    this.$petRect = svg.querySelector('.rs-petrect');
+    this._petSrc = this._petClip = null;
+    /* Opens on `idle`, not `ready`: nothing here is entering combat. Warming
+       only idle and affection keeps the fort off the two atlases -- attack and
+       hurt, ~2 MB -- that this screen has no way to play. */
+    this.pet = new ClipPlayer(String(this.run?.companion || 'marmalade'),
+      { opening: 'idle', warm: ['idle', 'affection'] });
+    this._off.push(this.ctx.clock.onFrame((dt) => this._tickCompanion(dt)));
+  }
+
+  /** Advance her and blit the current cell. Mirrors PlayerView#_tickSprite. */
+  _tickCompanion(dt) {
+    const p = this.pet;
+    if (!p || this._dead || !this.$petSprite) return;
+    if (!this.reduceMotion) p.advance(dt);
+    const fr = p.frame({ still: this.reduceMotion });
+    if (!fr || !fr.loaded) return;
+
+    if (fr.src !== this._petSrc) {
+      this.$petImg.setAttribute('href', fr.src);
+      this.$petImg.setAttribute('width', fr.atlasW);
+      this.$petImg.setAttribute('height', fr.atlasH);
+      this._petSrc = fr.src;
+    }
+    if (fr.clip !== this._petClip) {
+      const s = REST_PET_H / Math.max(1, fr.unit);
+      this.$petRect.setAttribute('width', fr.fw);
+      this.$petRect.setAttribute('height', fr.fh);
+      this.$petFit.setAttribute('transform',
+        `translate(${REST_PET_X} ${REST_PET_Y}) scale(${s.toFixed(4)})`
+        + ` translate(${(-fr.anchor[0]).toFixed(2)} ${(-fr.anchor[1]).toFixed(2)})`);
+      this._petClip = fr.clip;
+    }
+    this.$petImg.setAttribute('transform',
+      `translate(${(-fr.col * fr.fw).toFixed(2)} ${(-fr.row * fr.fh).toFixed(2)})`);
+    this.$petSprite.setAttribute('opacity', fr.opacity.toFixed(3));
+
+    if (this.$petSprite.style.display !== '') {
+      this.$petSprite.style.display = '';
+      for (const g of this.$petGlyph) g.style.display = 'none';
+    }
+  }
+
   async _doSit() {
+    // The clip this screen exists to give a home to. See _mountCompanion.
+    this.pet?.play('affection');
     const lines = COMPANION_TALK[this.run.companion] || GENERIC_TALK;
     const g = this.run.fork(`sit:${this.run.currentNodeId}`);
     const line = lines[g.int(lines.length)];

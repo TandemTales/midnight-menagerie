@@ -31,8 +31,12 @@ an edit to `game/src/scenes/combat.js` that turns it red:
   zoomies    change `>= 2` to `>= 99` at the `else if (card)` play site.  The
              third Trick then plays `trick` like the first two.
   harness    delete `_installClipHarness()`; `__MM_CLIPS` goes undefined and
-             `affection` -- which the brief puts in bond and camp scenes, not in
-             combat -- has no way to be seen at all.
+             `affection` can only be reached by sitting down in the Safe Room.
+  fort       delete `_mountCompanion(wrap)` from `scenes/rest.js`; the fort goes
+             back to the generic two-ear blob and `affection` has no home again.
+  opening    drop `{ opening: 'idle' }` from the Safe Room's ClipPlayer.  Red,
+             and the Kid walks into a blanket fort to find their Companion
+             playing the ENTER COMBAT clip.
 
 WARM THE ATLASES BEFORE ASSERTING.  `ClipPlayer.play()` on a clip whose webp has
 not landed sets `_pending` and starts it later ("late rather than blank",
@@ -161,6 +165,19 @@ ZOOMIES = """async () => {
   return log;
 }"""
 
+# The Safe Room mounts a Companion too.  `.rs-pet` is the same flat stand-in
+# PAL_ART is in combat, and it gets the same swap.
+FORT = """() => {
+  const s = window.MM.ctx.scenes.current;
+  const sp = document.querySelector('.rs-petsprite');
+  return {
+    shown: !!sp && sp.style.display === '',
+    glyphHidden: [...document.querySelectorAll('.rs-pet, .rs-petear')]
+                   .every(g => g.style.display === 'none'),
+    clip: s && s.pet ? s.pet.name : null,
+  };
+}"""
+
 
 async def main(a):
     from playwright.async_api import async_playwright
@@ -234,6 +251,38 @@ async def main(a):
               + "  " + json.dumps(log))
 
         check(not errors, "no JS errors after driving every trigger",
+              "; ".join(errors[:3]) or "clean")
+
+        # ── the Safe Room, where `affection` lives ──────────────────────────
+        # `page.goto` to a URL that differs only in its hash is a same-document
+        # navigation: main.js never re-runs and the scene never changes, so this
+        # sat waiting 20s for a fort that was still a Scuffle screen.
+        await page.goto(BASE + "#scene=rest&seed=7&companion=marmalade",
+                        wait_until="load", timeout=60000)
+        await page.reload(wait_until="load", timeout=60000)
+        await page.wait_for_function(
+            f"!!({SCENE}) && window.MM.ctx.scenes.currentName === 'rest'",
+            timeout=int(a.wait * 1000))
+        await page.wait_for_function("!!document.querySelector('.rs-petsprite')", timeout=20000)
+        await page.wait_for_function(
+            "document.querySelector('.rs-petsprite').style.display === ''", timeout=20000)
+        fort = await page.evaluate(FORT)
+        check(fort["shown"] and fort["glyphHidden"],
+              "the fort swaps its blob for the Companion",
+              f"shown={fort['shown']} glyphHidden={fort['glyphHidden']}")
+        check(fort["clip"] == "idle", "the Safe Room opens on `idle`, not `ready`",
+              f"opened on '{fort['clip']}'")
+
+        sit = await page.query_selector('[data-opt="sit"]')
+        check(sit is not None, "the Safe Room offers Sit", "" if sit else "no [data-opt=sit]")
+        if sit:
+            await sit.click()
+            await page.wait_for_timeout(500)
+            clip = await page.evaluate(f"() => {SCENE} && {SCENE}.pet && {SCENE}.pet.name")
+            check(clip == "affection", "sitting with them plays `affection`",
+                  f"played '{clip}'")
+
+        check(not errors, "no JS errors in the Safe Room",
               "; ".join(errors[:3]) or "clean")
         await browser.close()
 
