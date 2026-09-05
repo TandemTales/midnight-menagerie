@@ -47,6 +47,29 @@ run on 2026-09-04 against this tree.
   REGION GATES touched recently: foyer 66 · nursery 71 · sleeping-quarters 62
   (the other fourteen were not re-run)
 
+━━ NODE IS INSTALLED, AND THE DATA LAYER LOADS HEADLESSLY ━━
+
+node v24.19.0 at `C:/Program Files/nodejs/`. A shell started before the install
+does not have it on PATH - call it by full path or restart the host.
+
+**`data/schema.js` and `data/cards.js` import cleanly under node**, which means
+any question about content is a one-liner instead of a Playwright page:
+
+    node -e "import('./game/src/data/cards.js').then(m=>console.log(m.allCards().length))"
+
+`allCards()` returns every Trick with `id, name, companion, type, rarity, cost,
+text, nums, upgrade`; resolve the `{d}` placeholders from `nums` yourself.
+`companions()`, `companionSlugs()`, `KIDS`, `TERMS`, `REGION_ORDER` are all
+there too. `state/run.js` is headless by design and loads as well - that is how
+`expeditionRoute` was measured over 4000 seeds in seconds.
+
+**What does NOT load**: anything reaching `combat/` through an absolute
+`/game/src/...` path, `lib/bot.js` among them. Those need the dev server.
+
+A full card reference built this way is published at
+claude.ai/code/artifact/fa284580-04fb-4b56-81ff-8ab221020455 - all 1470 Tricks
+with numbers resolved, searchable, grouped by Companion. Regenerate rather than
+hand-edit it.
 ━━ THE THREE NEW GATES, AND WHY THEY EXIST ━━
 
 All three read the DESIGN CHAPTER as the authority and the implementation as the
