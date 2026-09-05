@@ -18,6 +18,8 @@
     9,
     9
    ],
+   "lift": -31.0,
+   "dehalo": false,
    "dip": 0.735,
    "loop": false,
    "fps": 30,
@@ -45,6 +47,8 @@
     9,
     8
    ],
+   "lift": -19.3,
+   "dehalo": false,
    "dip": 0.763,
    "loop": false,
    "fps": 60,
@@ -72,6 +76,8 @@
     9,
     9
    ],
+   "lift": -28.8,
+   "dehalo": false,
    "dip": 0.637,
    "loop": true,
    "fps": 20,
@@ -99,6 +105,8 @@
     9,
     9
    ],
+   "lift": -25.1,
+   "dehalo": false,
    "dip": 0.65,
    "loop": false,
    "fps": 30,
@@ -122,6 +130,8 @@
     9,
     9
    ],
+   "lift": -28.1,
+   "dehalo": false,
    "dip": 0.643,
    "loop": false,
    "fps": 24,
@@ -145,6 +155,8 @@
     9,
     9
    ],
+   "lift": -32.7,
+   "dehalo": false,
    "dip": 0.605,
    "loop": false,
    "fps": 60,
@@ -172,6 +184,8 @@
     9,
     9
    ],
+   "lift": -26.7,
+   "dehalo": false,
    "dip": 0.705,
    "loop": true,
    "fps": 20,
@@ -199,6 +213,8 @@
     9,
     9
    ],
+   "lift": -31.1,
+   "dehalo": false,
    "dip": 0.724,
    "loop": false,
    "fps": 40,
@@ -226,6 +242,8 @@
     9,
     9
    ],
+   "lift": -41.5,
+   "dehalo": false,
    "dip": 0.512,
    "loop": false,
    "fps": 36,
@@ -249,6 +267,8 @@
     9,
     9
    ],
+   "lift": -39.9,
+   "dehalo": false,
    "dip": 0.266,
    "fade": [
     1.0,
@@ -355,6 +375,8 @@
     9,
     9
    ],
+   "lift": -26.9,
+   "dehalo": false,
    "dip": 0.661,
    "loop": false,
    "fps": 48,
@@ -382,6 +404,8 @@
     9,
     9
    ],
+   "lift": -21.8,
+   "dehalo": false,
    "dip": 0.39,
    "fade": [
     1.0,

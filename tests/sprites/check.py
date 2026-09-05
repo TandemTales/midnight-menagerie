@@ -10,6 +10,10 @@ none of them log, and all of them just look slightly wrong at 60fps.
 HOW TO PROVE EACH ONE CAN FAIL (CONTRACTS 54). Every check below is paired with
 an edit to prep_sprites.py that turns it red, so none of them is decorative:
 
+  lift        flip `dehalo(a) if haloed else a` to always-`a` in `build_clip`
+              and rebuild: bones/idle records lift +62.1 with dehalo False and
+              the pairing goes red. Raising prep_sprites.HALO_LIFT above 62
+              without raising it here does the same from the other side.
   halo        set `B = None` in `classify` (never decontaminate) and rebuild.
               Measured on idle frames 10 and 40: the edge lands 3 and 2 units
               from the background colour against a bar of 80 -- which is the
@@ -78,6 +82,19 @@ MAX_ANCHOR_ERR = 6.0          # px
 MIN_BG_DISTANCE = 80.0        # euclidean, 0-255 RGB
 BG_TOO_PALE = 180.0           # mean channel above which the test is undecidable
 
+# Must match tools/prep_sprites.HALO_LIFT. The rim-minus-core luma of the SOURCE
+# sheet: bones/idle came in at +62 and every marmalade sheet at -19 to -42,
+# because a normally shaded edge is darker than the body it belongs to.
+#
+# This is checked against the recorded number, not re-measured, and that is not
+# laziness: the built atlas genuinely cannot answer the question. Rebuilt with
+# the repair disabled, bones' atlas measures +20.7 against +20.8 with it -- the
+# LANCZOS downscale and the premultiply round trip erase the difference. The
+# source sheets are 187 MB and not in the repo, so the index is the only place
+# the fact survives, and what this gate can still prove is that the pipeline
+# acted on what it measured.
+HALO_LIFT = 25.0
+
 
 def sat(c):
     return (c.max() - c.min()) / max(1.0, c.max())
@@ -109,6 +126,17 @@ def check_clip(slug, name, meta, fails, counts):
                       % (meta["frames"], meta["cols"], meta["rows"])))
         return
     counts["clips"] += 1
+
+    # ── THE HALO PAIRING: measured and repaired must agree ──────────────────
+    lift = meta.get("lift")
+    if lift is None:
+        fails.append(("STALE", "%s/%s" % (slug, name),
+                      "no `lift` recorded -- built by a prep_sprites older than the halo pass"))
+    elif bool(meta.get("dehalo")) != (lift > HALO_LIFT):
+        fails.append(("HALO", "%s/%s" % (slug, name),
+                      "source lift %+.1f but dehalo=%s" % (lift, bool(meta.get("dehalo")))))
+    else:
+        counts["lift"]["%s/%s" % (slug, name)] = lift
 
     bg = meta.get("bg")
     pale = bg is not None and (sum(bg) / 3.0) > BG_TOO_PALE
@@ -193,7 +221,7 @@ def main():
     manifest = json.load(open(os.path.join(SPRITES, "index.json")))
     fails = []
     counts = {"clips": 0, "sampled": 0, "dissolves": 0, "nosample": 0, "stills": 0,
-              "wash": {}, "anchor": {}, "halo": {}, "undecidable": []}
+              "wash": {}, "anchor": {}, "halo": {}, "lift": {}, "undecidable": []}
 
     print("built Companion sprites, re-measured")
     for slug, names in sorted(manifest.get("animated", {}).items()):
@@ -233,6 +261,11 @@ def main():
     if counts["halo"]:
         h = min(counts["halo"].items(), key=lambda kv: kv[1])
         print("  halo margin:  worst %-22s %.0f (bar %.0f)" % (h[0], h[1], MIN_BG_DISTANCE))
+    if counts["lift"]:
+        w = max(counts["lift"].items(), key=lambda kv: kv[1])
+        deh = [k for k, v in counts["lift"].items() if v > HALO_LIFT]
+        print("  source lift:  worst %-22s %+.1f (bar %+.1f) -- %d dehaloed"
+              % (w[0], w[1], HALO_LIFT, len(deh)))
     if counts["undecidable"]:
         print("  %d clips NOT halo-checked -- the background they were cut from is itself"
               % len(counts["undecidable"]))

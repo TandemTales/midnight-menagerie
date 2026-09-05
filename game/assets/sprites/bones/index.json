@@ -1,0 +1,30 @@
+{
+ "clips": {
+  "idle": {
+   "file": "idle.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 211,
+   "fh": 135,
+   "anchor": [
+    108.37,
+    132.46
+   ],
+   "source": "SS_bones_idle.png",
+   "matte": "CLEAN",
+   "bg": null,
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 62.1,
+   "dehalo": true,
+   "dip": 0.556,
+   "loop": true,
+   "fps": 20,
+   "hold": false
+  }
+ },
+ "scale": 0.6368
+}

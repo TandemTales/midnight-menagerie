@@ -106,6 +106,28 @@ SOLID_ALPHA = 96          # "definitely the creature", the seed for the filter
 # keeps every atlas well inside a 2048px texture limit.
 ATLAS_COLS = 9
 
+# THE OTHER WAY A GENERATOR HANDS BACK A BAD EDGE. `classify` below catches art
+# FLATTENED against a background: the edge colour is dragged toward that
+# background as alpha falls, and the model S = a*F + (1-a)*B inverts it.
+#
+# `SS_bones_idle` is the other shape. Its alpha was cut by LUMINANCE, not
+# composited, so there is no B to solve for and the sheet reads CLEAN -- while
+# carrying a bright ring around every silhouette that is near-constant
+# [248,228,200] from alpha 0.2 all the way to 0.995, plus one more pixel of it
+# at FULL alpha. Measured on the rim (opaque, within 1px of the boundary)
+# against the core (opaque, deeper than 3px): bones lifts +65 luma, and all
+# twelve marmalade sheets sit at -12 to -18, because a normally shaded edge is
+# DARKER than the body it belongs to. 25 sits in the middle of that gap.
+#
+# The repair is subtractive on purpose. Recolouring the ring from the nearest
+# opaque pixel fails twice over: that pixel is itself the bright rim, and where
+# it is not, it is linework, so the halo comes back dark and thin detail bleeds
+# outward. The ring is EXTRA PIXELS -- taking them off and rebuilding the soft
+# edge behind them leaves every interior pixel untouched.
+HALO_LIFT = 25.0          # rim-minus-core luma that means "there is a ring"
+HALO_BITE = 1.6           # px of silhouette the ring occupies
+HALO_SOFT = 1.3           # px of new soft edge rebuilt behind it
+
 # WebP at q92 is 2.6x smaller than optimised PNG here (3.06MB -> 1.16MB for one
 # atlas) and `tools/devserver.py` already serves the type. `alpha_quality=100`
 # is not optional: libwebp will happily lossy-compress the alpha channel, and
@@ -234,6 +256,50 @@ def _nearest_opaque(rgb, a):
         return None, None
     dist, idx = ndi.distance_transform_edt(~op, return_distances=True, return_indices=True)
     return rgb[idx[0], idx[1]], dist
+
+
+def halo_lift(rgb, a):
+    """How much brighter the opaque RIM is than the opaque CORE, in luma.
+
+    Positive and large means a bright ring was painted around the silhouette.
+    Negative is the normal case: an edge in shadow. Returns 0.0 when there is
+    not enough of either band to ask the question.
+    """
+    op = a >= 0.995
+    if op.sum() < 500:
+        return 0.0
+    d = ndi.distance_transform_edt(op)
+    rim = op & (d > 0) & (d <= 1.01)
+    core = op & (d > 3.0)
+    if rim.sum() < 200 or core.sum() < 200:
+        return 0.0
+    lum = rgb.mean(axis=2)
+    return float(lum[rim].mean() - lum[core].mean())
+
+
+def dehalo(a):
+    """Take the painted ring off one cell's alpha and rebuild the soft edge.
+
+    Two defects, one cause -- a luminance key run over art drawn on white:
+
+      pinholes  the key also punched through the art's own bright highlights,
+                leaving speckle enclosed by the body. 80 of bones' 81 frames
+                carry some; they are tiny (largest blob 7px) and sit at alpha
+                0.2-0.5, which is exactly what a partially-keyed highlight
+                looks like and nothing like a real gap. Anything the body
+                completely encloses is body.
+
+      the ring  everything within HALO_BITE of the old boundary goes, and a
+                new HALO_SOFT edge is ramped in behind it. Note the distance is
+                measured from EVERY non-solid pixel, interior gaps included, so
+                a skeleton's see-through spaces keep their own clean edges.
+    """
+    solid = a > 0.5
+    if not solid.any():
+        return a
+    a = np.where(ndi.binary_fill_holes(solid) & ~solid, 1.0, a)
+    d = ndi.distance_transform_edt(a > 0.5)
+    return np.clip((d - HALO_BITE) / HALO_SOFT, 0.0, 1.0)
 
 
 def classify(rgb, a):
@@ -400,8 +466,11 @@ def build_clip(path, cols=ATLAS_COLS):
 
     rows = detect_rows(a_full)
     kind, B = classify(rgb_full, a_full)
+    lift = halo_lift(rgb_full, a_full)
+    haloed = lift > HALO_LIFT
 
-    frames = [(repair(r, a, B), a) for r, a in cells(rgb_full, raw_a, cols, rows)]
+    frames = [(repair(r, a, B), dehalo(a) if haloed else a)
+              for r, a in cells(rgb_full, raw_a, cols, rows)]
 
     boxes = [bbox(a) for _, a in frames]
     keep = [(f, b) for f, b in zip(frames, boxes) if b is not None]
@@ -412,6 +481,7 @@ def build_clip(path, cols=ATLAS_COLS):
     heights = np.array([b[3] - b[1] for b in boxes])
     return {
         "path": path, "rows": rows, "kind": kind,
+        "lift": lift, "haloed": haloed,
         "B": None if B is None else [round(float(x), 1) for x in B],
         "frames": frames, "boxes": boxes, "centres": centres,
         "median_h": float(np.median(heights)),
@@ -561,6 +631,12 @@ def render_clip(clip, scale, out_noext, name=""):
         "anchor": [round((med_cx - ux0) * scale, 2), round((med_by - uy0) * scale, 2)],
         "source": os.path.basename(clip["path"]),
         "matte": clip["kind"], "bg": clip["B"], "grid": [ATLAS_COLS, clip["rows"]],
+        # THE SOURCE MEASUREMENT, CARRIED FORWARD. The built atlas cannot answer
+        # whether the ring was there: LANCZOS at 0.63 plus the premultiply round
+        # trip leaves a dehaloed and a haloed bones within 0.1 luma of each other
+        # (+20.8 vs +20.7, measured). The sheets are far too large to commit, so
+        # the only place this fact can live is here, next to the atlas it made.
+        "lift": round(clip["lift"], 1), "dehalo": bool(clip["haloed"]),
         "dip": round(float(focus.min() / max(1e-6, focus.max())), 3),
     }
     if fade:
@@ -577,6 +653,8 @@ def build_still(path, out_noext, target_h=256):
     a = clean_alpha(arr[:, :, 3].astype(np.float64) / 255.0)
     kind, B = classify(rgb0, a)
     rgb = repair(rgb0, a, B)
+    if halo_lift(rgb0, a) > HALO_LIFT:
+        a = dehalo(a)
     box = bbox(a)
     if box is None:
         return None
@@ -636,9 +714,10 @@ def main():
         entry = {"clips": {}, "scale": round(scale, 4)}
         for name, clip in built.items():
             cfg = CLIPS.get(name, {"loop": False, "fps": 24})
-            print("   %-10s %dx%-2d cell %-9s %-7s wash %5.1f%%  bg=%-20s frames %d" % (
+            print("   %-10s %dx%-2d cell %-9s %-7s wash %5.1f%%  bg=%-20s lift %+5.1f%s frames %d" % (
                 name, ATLAS_COLS, clip["rows"], "%dx%d" % clip["cell"], clip["kind"],
-                100 * clip["washed"], str(clip["B"]), len(clip["frames"])))
+                100 * clip["washed"], str(clip["B"]), clip["lift"],
+                " DEHALO" if clip["haloed"] else "       ", len(clip["frames"])))
             if args.report:
                 continue
             meta = render_clip(clip, scale, os.path.join(outdir, name), name)

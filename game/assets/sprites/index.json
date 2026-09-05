@@ -1,5 +1,8 @@
 {
  "animated": {
+  "bones": [
+   "idle"
+  ],
   "marmalade": [
    "affection",
    "attack",
@@ -123,8 +126,8 @@
   },
   "marmalade": {
    "file": "marmalade.webp",
-   "w": 253,
-   "h": 230,
+   "w": 219,
+   "h": 198,
    "matte": "CLEAN",
    "bg": null
   },

@@ -38,6 +38,9 @@ an edit to `game/src/scenes/combat.js` that turns it red:
   opening    drop `{ opening: 'idle' }` from the Safe Room's ClipPlayer.  Red,
              and the Kid walks into a blanket fort to find their Companion
              playing the ENTER COMBAT clip.
+  bones      rename `game/assets/sprites/bones/` aside and rebuild without the
+             sheet; he falls back to his still, `unit` becomes 140 instead of
+             128, and the animation check goes red.
   kid        delete `_tickKid`'s swap, or blank the `kid:` passed to PlayerView
              in scenes/combat.js; the board goes back to one drawn rig for all
              eight Kids.
@@ -173,6 +176,19 @@ KIDRIG = """() => {
     kidHalf: Math.round(kb.width / 2),
     kid: S.hero.kid,
   };
+}"""
+
+# Bones has exactly one clip built. He must resolve through the ANIMATED path --
+# `clipIndex` finds his index first -- and not fall back to the still every other
+# Companion still gets. `unit` is the tell: 128 (targetContentH) for an atlas,
+# the still's own pixel height for a still.
+BONES = """async () => {
+  const m = await import('/game/src/ui/sprite.js');
+  const p = new m.ClipPlayer('bones', { opening: 'idle', warm: ['idle'] });
+  await p.ready;
+  const c = (p.clips || {}).idle || {};
+  return { clips: Object.keys(p.clips || {}), frames: c.frames || 0,
+           unit: p.unit, playing: p.name };
 }"""
 
 ZOOMIES = """async () => {
@@ -362,6 +378,17 @@ async def main(a):
               f"palset y={rig['palY']} (want -SPRITE_RIG_DY = -30)")
 
         check(not errors, "no JS errors with a Kid on the board",
+              "; ".join(errors[:3]) or "clean")
+
+        # ── a second Companion with animation built ─────────────────────────
+        bones = await page.evaluate(BONES)
+        check(bones["frames"] > 1 and bones["unit"] == 128,
+              "bones resolves as animation, not his still",
+              f"clips={bones['clips']} frames={bones['frames']} unit={bones['unit']}")
+        check(bones["playing"] == "idle", "bones opens on `idle`",
+              f"playing '{bones['playing']}'")
+
+        check(not errors, "no JS errors loading a second Companion",
               "; ".join(errors[:3]) or "clean")
         await browser.close()
 
