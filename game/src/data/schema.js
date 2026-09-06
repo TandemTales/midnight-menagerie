@@ -242,6 +242,34 @@ export function depthDamageScale(region, order = REGION_ORDER, scaleAtHeart = 2.
   return 1 + (scaleAtHeart - 1) * (i / (order.length - 1));
 }
 
+/**
+ * The same curve, driven by HOW FAR INTO THE RUN the player is rather than by
+ * which wing they are standing in.
+ *
+ * `depthDamageScale` above reads a region's fixed slot in REGION_ORDER, which
+ * is right only while the route is fixed. An expedition visits six of the
+ * seventeen, and once the player CHOOSES those six that reading falls apart in
+ * both directions: pick the Heart first and wing one hits at 2.0, pick six
+ * early wings and the whole run sits near 1.0 and never ramps.
+ *
+ * Neither is what the ladder is for. `docs/notes/2026-09-01-the-mansion-is-not-
+ * a-ladder.md` measured the problem it exists to fix -- the player arrives at
+ * the end with three times the deck and thirty of fifty-eight Keepsakes, and
+ * the content does not answer that -- and the thing that grows is the PLAYER,
+ * over the run, whichever doors they went through. So the curve belongs to
+ * their progress.
+ *
+ * Same shape and same endpoint as the region version, so the numbers the
+ * balance work was done against still mean what they meant: 1.0 on the first
+ * wing, `scaleAtEnd` on the last, linear between.
+ */
+export function runDepthDamageScale(step, steps, scaleAtEnd = 2.0) {
+  const n = Math.floor(Number(steps) || 0);
+  const i = Math.floor(Number(step) || 0);
+  if (n < 2 || i <= 0) return 1;
+  return 1 + (scaleAtEnd - 1) * (Math.min(i, n - 1) / (n - 1));
+}
+
 export const COMPANIONS = [
   { slug: 'marmalade',  name: 'Marmalade',      title: 'the Ghost Cat',            region: 'foyer' },
   { slug: 'wisp',       name: 'Wisp',           title: "the Baby Will-o'-Wisp",    region: 'lampworks' },

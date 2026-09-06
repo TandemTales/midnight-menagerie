@@ -67,7 +67,7 @@ import { RNG, hashSeed } from '../core/rng.js';
 import { Save } from '../core/save.js';
 import { bus } from '../core/bus.js';
 import { clock } from '../core/clock.js';
-import { NodeType, REGION_ORDER, TERMS, COMPANIONS, KIDS, depthDamageScale, regionCourageFix, regionDamageFix } from '../data/schema.js';
+import { NodeType, REGION_ORDER, TERMS, COMPANIONS, KIDS, depthDamageScale, runDepthDamageScale, regionCourageFix, regionDamageFix } from '../data/schema.js';
 import { generateRegionMap, legalNextIds, regionMeta, sceneForNode } from './mapgen.js';
 import {
   cardById, startingDeckFor, poolFor, poolWithCoop, companion as companionDef, allCards,
@@ -1363,9 +1363,21 @@ export class Run {
       // Which Kid is at THIS screen. The choice broker will not ask the person
       // sitting here to make the other Kid's decisions.
       localSeat: this.localSeat | 0,
-      /* THE LADDER. `region` is the CONTENT's region, so a formation
-         borrowed from elsewhere is priced where it was authored. */
-      enemyDamageScale: depthDamageScale(region, REGION_ORDER) * regionDamageFix(region),
+      /* THE LADDER, and it belongs to the RUN, not to the room. An
+         expedition visits six of the seventeen wings, so pricing a fight by
+         its region's slot in REGION_ORDER means a route made of early wings
+         never ramps and one that opens on a late wing spikes on turn one --
+         and it gets worse the moment the player picks the route themselves.
+         What actually grows across a run is the player, whichever doors they
+         went through, so the depth term reads THEIR progress.
+
+         `regionDamageFix` stays keyed to the region, because that one is not
+         a ladder: it is the measured content correction for four wings whose
+         bodies do not survive a turn (see REGION_CONTENT_FIX). Where the
+         fight is authored still prices the fight; how deep the player is
+         prices the run. */
+      enemyDamageScale: runDepthDamageScale(this.regionIndex, this.route.length)
+        * regionDamageFix(region),
       courageFix: regionCourageFix(region),
     });
 
