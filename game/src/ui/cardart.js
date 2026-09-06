@@ -1,9 +1,14 @@
 /**
- * Procedural card art. OWNER: card-feel agent.
+ * Card art. OWNER: card-feel agent.
  *
- * There is no per-card illustration in this game, so we generate one.
- * `cardArt(def, w, h)` returns a data URL for a deterministic illustration
- * derived from the card id: same id -> byte-identical picture, forever.
+ * `cardArt(def, w, h)` returns something to put behind a card, and it prefers a
+ * PAINTED illustration when one has been made for that card -- see
+ * `game/assets/cards/`, cut from the composite sheets by tools/cut_card_art.py.
+ * Most cards do not have one yet (180 of 1470 at time of writing), so the rest
+ * of this file is the fallback, and it is not going anywhere.
+ *
+ * THE FALLBACK: a deterministic illustration derived from the card id, same id
+ * -> byte-identical picture, forever.
  *
  * The picture is built in named layers so it reads as a designed icon-
  * illustration rather than noise:
@@ -306,6 +311,53 @@ function fireReady() { for (const fn of [...readyFns]) { try { fn(); } catch (e)
  */
 export function preloadArt() { return Promise.resolve([]); }
 
+/* ── PAINTED ART, WHERE THERE IS ANY ────────────────────────────────────────
+ * `cardArt` is synchronous and a painted file is not, so this never blocks it:
+ * the manifest and each image load in the background, the card gets procedural
+ * art in the meantime, and `fireReady()` -- the repaint hook `ui/card.js` has
+ * always subscribed to -- swaps it the moment the real one has decoded. A card
+ * therefore never renders empty and never flashes a half-loaded image.
+ *
+ * `.mm-card__art` is `background-size: cover`, so the plain asset URL is handed
+ * back as-is. No canvas, no data URL, no re-encode: the browser crops the
+ * square source into the 224x126 slot and caches one copy for every card that
+ * shows it.
+ */
+const CARDS_URL = new URL('../../assets/cards/', import.meta.url).href;
+/** card id -> url, for art that exists on disk. */
+const PAINTED = new Map();
+/** card id -> url, for art that has finished decoding and is safe to show. */
+const PAINTED_READY = new Map();
+const _loading = new Set();
+
+fetch(`${CARDS_URL}index.json`)
+  .then(r => (r.ok ? r.json() : null))
+  .catch(() => null)
+  .then((m) => {
+    for (const [id, e] of Object.entries((m && m.cards) || {})) {
+      if (e && e.file) PAINTED.set(id, `${CARDS_URL}${e.file}`);
+    }
+    if (PAINTED.size) fireReady();
+  });
+
+function painted(def) {
+  const id = def && def.id;
+  if (!id) return null;
+  const ready = PAINTED_READY.get(id);
+  if (ready) return ready;
+  const url = PAINTED.get(id);
+  if (!url || _loading.has(id)) return null;
+  _loading.add(id);
+  const img = new Image();
+  img.onload = () => { PAINTED_READY.set(id, url); _loading.delete(id); fireReady(); };
+  img.onerror = () => { _loading.delete(id); PAINTED.delete(id); };
+  img.src = url;
+  return null;
+}
+
+/** Does this card have a painted illustration on disk? */
+export function hasPaintedArt(def) { return !!(def && PAINTED.has(def.id)); }
+
 // ── canvas plumbing ─────────────────────────────────────────────────────────
 const CACHE = new Map();
 const SCRATCH = new Map();
@@ -329,6 +381,13 @@ function scratch(w, h) {
  * @returns {string} data URL
  */
 export function cardArt(def, w, h, o = {}) {
+  /* Painted first, and NOT via CACHE: that map is keyed by size and upgrade
+     state because a generated picture is drawn per size, while a painted one is
+     one file the browser scales itself. Putting it in there would store the
+     same URL under a dozen keys and push real generated art out of a 320-entry
+     cache for nothing. */
+  const real = painted(def);
+  if (real) return real;
   const key = artKey(def, w, h, o);
   const hit = CACHE.get(key);
   if (hit) return hit;
@@ -1655,4 +1714,4 @@ function tri(g, x, y, s) {
   g.lineTo(x, y - s * 0.6); g.closePath(); g.fill();
 }
 
-export default { cardArt, warmArt, warmArtSync, preloadArt, onArtReady, subjectFor, artCacheSize, clearArtCache };
+export default { cardArt, warmArt, warmArtSync, preloadArt, onArtReady, subjectFor, artCacheSize, clearArtCache, hasPaintedArt };
