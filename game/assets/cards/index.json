@@ -2850,11 +2850,19 @@
   },
   "taffy/three-course-chomp": {
    "file": "taffy/three-course-chomp.webp",
+   "w": 373,
+   "h": 537,
+   "source": "taffy_cards81onB.png",
+   "tile": 8,
+   "n": 88
+  },
+  "taffy/whole-body-slam": {
+   "file": "taffy/whole-body-slam.webp",
    "w": 371,
    "h": 547,
    "source": "taffy_cards81onA.png",
    "tile": 8,
-   "n": 88
+   "n": 89
   }
  }
 }

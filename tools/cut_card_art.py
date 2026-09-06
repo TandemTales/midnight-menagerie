@@ -94,6 +94,15 @@ OVERRIDE = {
     "mopsy/button-box":       ("mopsy_cards1-20a.png", 20),   # a box of buttons
     "mopsy/cross-stitch":     ("mopsy_cards1-20a.png", 21),   # a needle making an X
     "mopsy/cushion-check":    ("mopsy_cards1-20a.png", 22),   # a quilted shield of stuffing
+
+    # taffy 81-89: both versions hold 8 tiles for 9 cards, so neither finishes
+    # the range alone -- but they do not hold the SAME eight. Version A's last
+    # tile is the blob slamming down and scattering what is under it; version
+    # B's is a three-tier dessert captioned "ATTACK + MORE / SKILL + GUARD /
+    # POWER - COST", which is three courses in as many words. Taking one from
+    # each covers 88 and 89 and reuses nothing.
+    "taffy/three-course-chomp": ("taffy_cards81onB.png", 8),
+    "taffy/whole-body-slam":    ("taffy_cards81onA.png", 8),
 }
 
 
@@ -194,7 +203,11 @@ def main(report=False):
                     elif i < count:
                         chosen = (nm, i + 1); break
                 plan.append(chosen)
-            bare = [lo + i for i, c in enumerate(plan) if c is None]
+            # An OVERRIDE fills a card the pool could not reach, so it has to be
+            # counted before anything is called bare -- otherwise the report
+            # cries about a gap the very next loop closes.
+            bare = [lo + i for i, c in enumerate(plan)
+                    if c is None and ids[lo - 1 + i] not in OVERRIDE]
             if bare:
                 notes.append(
                     f"UNCOVERED  {comp} {lo}-{hi}: no version has a tile for card"
