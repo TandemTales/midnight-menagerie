@@ -320,6 +320,326 @@
    "tile": 20,
    "n": 40
   },
+  "boggle/nervous-giggle": {
+   "file": "boggle/nervous-giggle.webp",
+   "w": 213,
+   "h": 233,
+   "source": "boggle_cards41-60a.png",
+   "tile": 1,
+   "n": 41
+  },
+  "boggle/one-eye-open": {
+   "file": "boggle/one-eye-open.webp",
+   "w": 207,
+   "h": 233,
+   "source": "boggle_cards41-60a.png",
+   "tile": 2,
+   "n": 42
+  },
+  "boggle/perfect-distraction": {
+   "file": "boggle/perfect-distraction.webp",
+   "w": 210,
+   "h": 233,
+   "source": "boggle_cards41-60a.png",
+   "tile": 3,
+   "n": 43
+  },
+  "boggle/pillow-shield": {
+   "file": "boggle/pillow-shield.webp",
+   "w": 207,
+   "h": 233,
+   "source": "boggle_cards41-60a.png",
+   "tile": 4,
+   "n": 44
+  },
+  "boggle/practice-your-scream": {
+   "file": "boggle/practice-your-scream.webp",
+   "w": 212,
+   "h": 233,
+   "source": "boggle_cards41-60a.png",
+   "tile": 5,
+   "n": 45
+  },
+  "boggle/quiet-as-dust": {
+   "file": "boggle/quiet-as-dust.webp",
+   "w": 207,
+   "h": 233,
+   "source": "boggle_cards41-60a.png",
+   "tile": 6,
+   "n": 46
+  },
+  "boggle/scritch-scratch-scritch": {
+   "file": "boggle/scritch-scratch-scritch.webp",
+   "w": 212,
+   "h": 233,
+   "source": "boggle_cards41-60a.png",
+   "tile": 7,
+   "n": 47
+  },
+  "boggle/scuttle-away": {
+   "file": "boggle/scuttle-away.webp",
+   "w": 213,
+   "h": 228,
+   "source": "boggle_cards41-60a.png",
+   "tile": 8,
+   "n": 48
+  },
+  "boggle/shadow-puppet": {
+   "file": "boggle/shadow-puppet.webp",
+   "w": 207,
+   "h": 228,
+   "source": "boggle_cards41-60a.png",
+   "tile": 9,
+   "n": 49
+  },
+  "boggle/shiver-in-the-walls": {
+   "file": "boggle/shiver-in-the-walls.webp",
+   "w": 210,
+   "h": 228,
+   "source": "boggle_cards41-60a.png",
+   "tile": 10,
+   "n": 50
+  },
+  "boggle/sock-drawer-lunge": {
+   "file": "boggle/sock-drawer-lunge.webp",
+   "w": 207,
+   "h": 228,
+   "source": "boggle_cards41-60a.png",
+   "tile": 11,
+   "n": 51
+  },
+  "boggle/stage-fright": {
+   "file": "boggle/stage-fright.webp",
+   "w": 212,
+   "h": 228,
+   "source": "boggle_cards41-60a.png",
+   "tile": 12,
+   "n": 52
+  },
+  "boggle/surprise-from-behind": {
+   "file": "boggle/surprise-from-behind.webp",
+   "w": 207,
+   "h": 228,
+   "source": "boggle_cards41-60a.png",
+   "tile": 13,
+   "n": 53
+  },
+  "boggle/the-house-settles": {
+   "file": "boggle/the-house-settles.webp",
+   "w": 212,
+   "h": 228,
+   "source": "boggle_cards41-60a.png",
+   "tile": 14,
+   "n": 54
+  },
+  "boggle/the-shadow-is-bigger": {
+   "file": "boggle/the-shadow-is-bigger.webp",
+   "w": 213,
+   "h": 232,
+   "source": "boggle_cards41-60a.png",
+   "tile": 15,
+   "n": 55
+  },
+  "boggle/under-the-bed": {
+   "file": "boggle/under-the-bed.webp",
+   "w": 207,
+   "h": 232,
+   "source": "boggle_cards41-60a.png",
+   "tile": 16,
+   "n": 56
+  },
+  "boggle/under-the-rug": {
+   "file": "boggle/under-the-rug.webp",
+   "w": 210,
+   "h": 232,
+   "source": "boggle_cards41-60a.png",
+   "tile": 17,
+   "n": 57
+  },
+  "boggle/wait-for-it": {
+   "file": "boggle/wait-for-it.webp",
+   "w": 207,
+   "h": 232,
+   "source": "boggle_cards41-60a.png",
+   "tile": 18,
+   "n": 58
+  },
+  "boggle/wrong-room": {
+   "file": "boggle/wrong-room.webp",
+   "w": 213,
+   "h": 232,
+   "source": "boggle_cards41-60a.png",
+   "tile": 19,
+   "n": 59
+  },
+  "boggle/bedframe-geography": {
+   "file": "boggle/bedframe-geography.webp",
+   "w": 207,
+   "h": 232,
+   "source": "boggle_cards41-60a.png",
+   "tile": 20,
+   "n": 60
+  },
+  "boggle/beneath-every-bed": {
+   "file": "boggle/beneath-every-bed.webp",
+   "w": 244,
+   "h": 241,
+   "source": "boggle_cards61-80a.png",
+   "tile": 1,
+   "n": 61
+  },
+  "boggle/bigger-in-your-head": {
+   "file": "boggle/bigger-in-your-head.webp",
+   "w": 245,
+   "h": 241,
+   "source": "boggle_cards61-80a.png",
+   "tile": 2,
+   "n": 62
+  },
+  "boggle/ceiling-creep": {
+   "file": "boggle/ceiling-creep.webp",
+   "w": 246,
+   "h": 241,
+   "source": "boggle_cards61-80a.png",
+   "tile": 3,
+   "n": 63
+  },
+  "boggle/check-under-the-bed": {
+   "file": "boggle/check-under-the-bed.webp",
+   "w": 248,
+   "h": 241,
+   "source": "boggle_cards61-80a.png",
+   "tile": 4,
+   "n": 64
+  },
+  "boggle/creaks-have-teeth": {
+   "file": "boggle/creaks-have-teeth.webp",
+   "w": 247,
+   "h": 241,
+   "source": "boggle_cards61-80a.png",
+   "tile": 5,
+   "n": 65
+  },
+  "boggle/dont-check-again": {
+   "file": "boggle/dont-check-again.webp",
+   "w": 247,
+   "h": 241,
+   "source": "boggle_cards61-80a.png",
+   "tile": 6,
+   "n": 66
+  },
+  "boggle/every-creak-means-me": {
+   "file": "boggle/every-creak-means-me.webp",
+   "w": 244,
+   "h": 243,
+   "source": "boggle_cards61-80a.png",
+   "tile": 7,
+   "n": 67
+  },
+  "boggle/everywhere-at-once": {
+   "file": "boggle/everywhere-at-once.webp",
+   "w": 246,
+   "h": 243,
+   "source": "boggle_cards61-80a.png",
+   "tile": 8,
+   "n": 68
+  },
+  "boggle/feed-the-imagination": {
+   "file": "boggle/feed-the-imagination.webp",
+   "w": 246,
+   "h": 243,
+   "source": "boggle_cards61-80a.png",
+   "tile": 9,
+   "n": 69
+  },
+  "boggle/hide-in-plain-sight": {
+   "file": "boggle/hide-in-plain-sight.webp",
+   "w": 247,
+   "h": 243,
+   "source": "boggle_cards61-80a.png",
+   "tile": 10,
+   "n": 70
+  },
+  "boggle/i-was-behind-you": {
+   "file": "boggle/i-was-behind-you.webp",
+   "w": 247,
+   "h": 243,
+   "source": "boggle_cards61-80a.png",
+   "tile": 11,
+   "n": 71
+  },
+  "boggle/keep-the-lights-off": {
+   "file": "boggle/keep-the-lights-off.webp",
+   "w": 245,
+   "h": 243,
+   "source": "boggle_cards61-80a.png",
+   "tile": 12,
+   "n": 72
+  },
+  "boggle/monster-squad": {
+   "file": "boggle/monster-squad.webp",
+   "w": 244,
+   "h": 215,
+   "source": "boggle_cards61-80a.png",
+   "tile": 13,
+   "n": 73
+  },
+  "boggle/no-one-here-but-dust": {
+   "file": "boggle/no-one-here-but-dust.webp",
+   "w": 245,
+   "h": 215,
+   "source": "boggle_cards61-80a.png",
+   "tile": 14,
+   "n": 74
+  },
+  "boggle/nobodys-here": {
+   "file": "boggle/nobodys-here.webp",
+   "w": 246,
+   "h": 215,
+   "source": "boggle_cards61-80a.png",
+   "tile": 15,
+   "n": 75
+  },
+  "boggle/nothing-but-teeth": {
+   "file": "boggle/nothing-but-teeth.webp",
+   "w": 249,
+   "h": 215,
+   "source": "boggle_cards61-80a.png",
+   "tile": 16,
+   "n": 76
+  },
+  "boggle/the-long-wait": {
+   "file": "boggle/the-long-wait.webp",
+   "w": 249,
+   "h": 215,
+   "source": "boggle_cards61-80a.png",
+   "tile": 17,
+   "n": 77
+  },
+  "boggle/the-room-is-looking-back": {
+   "file": "boggle/the-room-is-looking-back.webp",
+   "w": 246,
+   "h": 215,
+   "source": "boggle_cards61-80a.png",
+   "tile": 18,
+   "n": 78
+  },
+  "boggle/too-late-to-run": {
+   "file": "boggle/too-late-to-run.webp",
+   "w": 243,
+   "h": 268,
+   "source": "boggle_cards61-80a.png",
+   "tile": 19,
+   "n": 79
+  },
+  "boggle/underbed-kingdom": {
+   "file": "boggle/underbed-kingdom.webp",
+   "w": 247,
+   "h": 268,
+   "source": "boggle_cards61-80a.png",
+   "tile": 20,
+   "n": 80
+  },
   "boggle/underbed-uppercut": {
    "file": "boggle/underbed-uppercut.webp",
    "w": 294,
@@ -2471,6 +2791,70 @@
    "source": "taffy_cards61-80a.png",
    "tile": 20,
    "n": 80
+  },
+  "taffy/jawbreaker-drop": {
+   "file": "taffy/jawbreaker-drop.webp",
+   "w": 368,
+   "h": 463,
+   "source": "taffy_cards81onA.png",
+   "tile": 1,
+   "n": 81
+  },
+  "taffy/one-big-piece": {
+   "file": "taffy/one-big-piece.webp",
+   "w": 387,
+   "h": 463,
+   "source": "taffy_cards81onA.png",
+   "tile": 2,
+   "n": 82
+  },
+  "taffy/perfect-replica": {
+   "file": "taffy/perfect-replica.webp",
+   "w": 375,
+   "h": 463,
+   "source": "taffy_cards81onA.png",
+   "tile": 3,
+   "n": 83
+  },
+  "taffy/runaway-puddle": {
+   "file": "taffy/runaway-puddle.webp",
+   "w": 371,
+   "h": 463,
+   "source": "taffy_cards81onA.png",
+   "tile": 4,
+   "n": 84
+  },
+  "taffy/slow-pull": {
+   "file": "taffy/slow-pull.webp",
+   "w": 367,
+   "h": 547,
+   "source": "taffy_cards81onA.png",
+   "tile": 5,
+   "n": 85
+  },
+  "taffy/splattershot": {
+   "file": "taffy/splattershot.webp",
+   "w": 387,
+   "h": 547,
+   "source": "taffy_cards81onA.png",
+   "tile": 6,
+   "n": 86
+  },
+  "taffy/sugar-comet": {
+   "file": "taffy/sugar-comet.webp",
+   "w": 376,
+   "h": 547,
+   "source": "taffy_cards81onA.png",
+   "tile": 7,
+   "n": 87
+  },
+  "taffy/three-course-chomp": {
+   "file": "taffy/three-course-chomp.webp",
+   "w": 371,
+   "h": 547,
+   "source": "taffy_cards81onA.png",
+   "tile": 8,
+   "n": 88
   }
  }
 }

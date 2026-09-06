@@ -72,6 +72,14 @@ QUALITY = 92       # webp; visually lossless on this material, ~24 KB a card
 #                9 "THE BIG ONE", 10 "You Didn't See Anything." Tile 7, a
 #                shadow in a doorway, is named by nothing and sits between 6 and
 #                8, both of which are pinned by their own text.
+# Which VERSION to read a range from, where the default (first that is long
+# enough, alphabetical) is not the one that matches. Only mopsy 1-20 so far, and
+# it was checked by eye: version b's tiles line up with cards 1-15 and version
+# a's do not, while a's last row is unmistakable for 16-20 -- which is what the
+# five OVERRIDE entries below pin. `a` has 22 tiles so the default rule would
+# reach for it first and take the front half from the wrong sheet.
+PREFER = {("mopsy", 1): "mopsy_cards1-20b.png"}
+
 TILES = {
     "mopsy_cards81onA.png":  list(range(3, 15)),
     "boggle_cards81onA.png": [1, 2, 3, 4, 5, 6, 8, 9, 10],
@@ -156,45 +164,61 @@ def main(report=False):
             if not opts:
                 notes.append(f"{comp} {lo}-{hi}: no sheet")
                 continue
-            exact = [o for o in opts if o[1] == want]
-            if exact:
-                name, pick = exact[0][0], list(range(1, want + 1))
-            else:
-                named = [o[0] for o in opts if o[0] in TILES]
-                if not named:
-                    # Loud, and skipped rather than fatal: one unreadable range
-                    # should not hold back the nineteen that are fine. These
-                    # cards keep the procedural art, which is the same thing
-                    # that happens for a Companion with no sheets at all.
-                    notes.append(
-                        f"UNRESOLVED  {comp} {lo}-{hi}: no sheet has {want} tiles "
-                        f"({', '.join('%s=%d' % o for o in opts)}). Needs an entry in TILES, "
-                        f"read off the art. These {want} cards stay procedural.")
-                    print("   cards %-7s want %2d  %-40s -> SKIPPED, unresolved"
-                          % (f"{lo}-{hi}", want, str(opts)))
-                    continue
-                name = named[0]
-                pick = TILES[name]
-                if len(pick) != want:
-                    raise SystemExit(
-                        f"{comp} {lo}-{hi}: TILES[{name}] names {len(pick)} tiles for {want} cards.")
-                notes.append(f"{comp} {lo}-{hi}: {name} has {dict(opts)[name]} tiles for {want} "
-                             f"cards; used {pick[0]}..{pick[-1]} (alignment read off the art)")
-            print("   cards %-6s want %2d  %-40s -> %s" % (f"{lo}-{hi}", want, str(opts), name))
+            # WHICH TILE IS WHICH CARD. Tile N of a sheet is card N, and a sheet
+            # with more tiles than the range has cards is carrying its spares at
+            # the end -- that is the rule, and it settles almost everything the
+            # generator's arbitrary grids throw at this (7x4 for a 20-card
+            # range, 5x4 for a 9-card one).
+            #
+            # Where a version is SHORT, the others are a pool: `a` covers what it
+            # covers and `b`, `c` fill in behind it. Versions are alternate
+            # renderings of the same cards, so a card takes one of them and never
+            # two, and a card is only left bare when NO version has a tile at
+            # that index.
+            #
+            # A verified TILES entry still wins, because it encodes the one thing
+            # the rule cannot know: boggle's 81on sheet carries its spare in the
+            # MIDDLE, at tile 7, so "first nine" would quietly slide its last
+            # three cards onto the wrong art.
+            first = PREFER.get((comp, lo))
+            order_opts = ([o for o in opts if o[0] == first]
+                          + [o for o in opts if o[0] != first]) if first else opts
+            plan = []
+            for i in range(want):
+                chosen = None
+                for nm, count in order_opts:
+                    if nm in TILES:
+                        pk = TILES[nm]
+                        if i < len(pk):
+                            chosen = (nm, pk[i]); break
+                    elif i < count:
+                        chosen = (nm, i + 1); break
+                plan.append(chosen)
+            bare = [lo + i for i, c in enumerate(plan) if c is None]
+            if bare:
+                notes.append(
+                    f"UNCOVERED  {comp} {lo}-{hi}: no version has a tile for card"
+                    f"{'s' if len(bare) > 1 else ''} {', '.join(map(str, bare))} "
+                    f"({', '.join('%s=%d' % o for o in opts)}). Those keep procedural art.")
+            used = sorted({c[0] for c in plan if c})
+            print("   cards %-7s want %2d  %-46s -> %s%s"
+                  % (f"{lo}-{hi}", want,
+                     ', '.join('%s=%d' % (a.split('_cards')[1][:-4], b) for a, b in opts),
+                     ', '.join(u.split('_cards')[1][:-4] for u in used) or '-',
+                     '   %d BARE' % len(bare) if bare else ''))
             if report:
                 continue
-            im = Image.open(os.path.join(ART, name)).convert("RGB")
-            t = sheet_tiles(name)
             for i in range(want):
                 cid = ids[lo - 1 + i]
                 slug = cid.split("/", 1)[1]
                 if cid in OVERRIDE:
                     src_name, tno = OVERRIDE[cid]
-                    src = Image.open(os.path.join(ART, src_name)).convert("RGB")
-                    box = sheet_tiles(src_name)[tno - 1]
+                elif plan[i]:
+                    src_name, tno = plan[i]
                 else:
-                    src_name, tno, src = name, pick[i], im
-                    box = t[pick[i] - 1]
+                    continue
+                src = Image.open(os.path.join(ART, src_name)).convert("RGB")
+                box = sheet_tiles(src_name)[tno - 1]
                 x0, y0, x1, y1 = box
                 crop = src.crop((x0 + INSET, y0 + INSET, x1 - INSET, y1 - INSET))
                 rel = f"{comp}/{slug}.webp"
