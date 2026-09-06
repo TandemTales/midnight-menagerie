@@ -83,6 +83,7 @@ export const ACT = Object.freeze({
 
   /* the blueprint */
   MAP_VOTE: 'map.vote',             // { id }      this seat's vote for the next room
+  WING_CHOOSE: 'wing.choose',       // { region }  this seat's vote for the next WING
 
   /* every per-Kid room */
   ROOM_DONE: 'room.done',           // {}          this Kid's turn in here is over
@@ -265,6 +266,22 @@ function _room(run, msg, seat) {
          vote and takes no number at all, which is what keeps a solo run
          byte-identical. */
       return run.voteNode(msg.id, seat);
+
+    case ACT.WING_CHOOSE:
+      /* THE WING, not the room — the fork at the end of a cleared wing, where
+         the house has opened two or three ways on and the party picks one.
+         By slug, because every client computes the same offer from the seed,
+         the wing being left and how many wings have been walked (see
+         `wingOffer` in state/run.js), so `hedge-maze` names the same door on
+         all four.
+
+         Same shape as MAP_VOTE: one seat's vote, decisive only when it is the
+         last one owed, resolved by a weighted roulette drawn from a keyed fork
+         so nobody publishes an answer and a party of one takes no number at
+         all. This is the only irreversible decision in an expedition — you
+         cannot go back through a wing — so it is worth being exactly as
+         careful with it as with a room. */
+      return run.voteWing(msg.region, seat);
 
     case ACT.ROOM_DONE:
       return run.markRoomDone();

@@ -162,7 +162,10 @@
    enlarged detail is called out on a real drawing. */
 .at-hot__box {
   position: absolute; inset: 0;
-  border: 1.5px solid transparent;
+  /* Divided by the zoom, so the ruled box is a drawn line at every scale
+     rather than a 7px pipe at 4.6x. `--k` is published by `_layout()`. */
+  border: calc(1.5px / var(--k, 1)) solid transparent;
+  border-radius: calc(var(--radius-md) / var(--k, 1));
   background: transparent;
   transition:
     background-color var(--t-quick) var(--ease-out),
@@ -176,7 +179,7 @@
 }
 .at-hot.is-sel .at-hot__box {
   border-color: var(--mark);
-  border-width: 2px;
+  border-width: calc(2px / var(--k, 1));
   background: transparent;
 }
 .at-hot:focus-visible .at-hot__box {
@@ -188,8 +191,13 @@
    seventeen labels at once is not a drawing, it is a list. */
 .at-hot__tag {
   position: absolute;
-  left: 50%; top: 50%;
-  transform: translate(-50%, -50%);
+  /* Just above centre, so the trail's mark at the wing's centre is not covered
+     by its own name — the label-over-marks failure `scenes/map.js` hit twice. */
+  left: 50%; top: 42%;
+  /* The label undoes the plate's zoom: it is an annotation ON the drawing, not
+     part of it, so it stays the size it was written at however far the sheet is
+     pushed in. */
+  transform: translate(-50%, -50%) scale(calc(1 / var(--k, 1)));
   white-space: nowrap;
   font-family: var(--font-display);
   font-size: clamp(9px, 0.85vw, 13px);
@@ -205,8 +213,10 @@
 .at-hot:hover .at-hot__tag,
 .at-hot.is-hover .at-hot__tag,
 .at-hot:focus-visible .at-hot__tag { opacity: 1; }
-/* Under the magnifier the wing speaks for itself and the label is in the way. */
-.at-root[data-zoom="1"] .at-hot.is-sel .at-hot__tag { opacity: 0; }
+/* Under the magnifier the wing speaks for itself and the label is in the way.
+   `!important` because the fork's own rule below lights every open wing's label
+   and would otherwise win on order. */
+.at-root[data-zoom="1"] .at-hot.is-sel .at-hot__tag { opacity: 0 !important; }
 .at-root[data-zoom="1"] .at-hot:not(.is-sel) { pointer-events: none; }
 
 /* ── sheet furniture ──────────────────────────────────────────────────────── */
@@ -355,3 +365,173 @@
   .at-dossier { align-self: end; }
   .at-dos__held { grid-template-columns: 5.5rem 1fr; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE FORK — the end of a cleared wing, and the ways on.
+   `Run#openWingFork` sends the party here; `docs/design/01-mansion-structure.md`
+   decides which doors are marked. Graphite over the printed ink, the same
+   ground/figure split scenes/map.js uses for its route.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.at-trail {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+.at-trail path { fill: none; vector-effect: non-scaling-stroke; }
+
+/* where they have been */
+.at-trail__walked {
+  stroke: var(--graphite);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: .85;
+}
+/* the doors the house is holding open */
+.at-trail__open {
+  stroke: var(--mark);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-dasharray: 7 6;
+  opacity: .9;
+}
+.mm-reduce-motion .at-trail__open { animation: none; }
+.at-root[data-choose="1"] .at-trail__open { animation: at-crawl 1.4s linear infinite; }
+@keyframes at-crawl { to { stroke-dashoffset: -13; } }
+
+.at-mark {
+  fill: var(--parchment);
+  stroke: var(--graphite);
+  stroke-width: 2.2;
+  vector-effect: non-scaling-stroke;
+}
+.at-mark--here { fill: var(--mark); stroke: var(--mark); }
+
+/* Under the magnifier the trail is context, not the subject. */
+.at-root[data-zoom="1"] .at-trail { opacity: .35; }
+.at-trail { transition: opacity var(--t-base) var(--ease-out); }
+.mm-reduce-motion .at-trail { transition: none; }
+
+/* ── the wings, at a fork ─────────────────────────────────────────────────── */
+/* A way on is marked whether or not the cursor is anywhere near it: at a fork
+   the player is looking for the doors, and making them hover-only would hide
+   the only thing the screen is for. */
+.at-root[data-choose="1"] .at-hot.is-open .at-hot__box {
+  border-color: var(--mark);
+  border-width: calc(2.5px / var(--k, 1));
+  background: color-mix(in srgb, var(--mark) 10%, transparent);
+  animation: at-door 2.2s var(--ease-soft) infinite;
+}
+@keyframes at-door {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--mark) 34%, transparent); }
+  50%      { box-shadow: 0 0 16px 3px color-mix(in srgb, var(--mark) 26%, transparent); }
+}
+.mm-reduce-motion .at-hot.is-open .at-hot__box { animation: none; }
+.at-root[data-choose="1"] .at-hot.is-open .at-hot__tag { opacity: 1; }
+
+.at-root[data-choose="1"] .at-hot.is-shut { cursor: default; }
+.at-root[data-choose="1"] .at-hot.is-shut .at-hot__box { border-color: transparent; }
+.at-root[data-choose="1"] .at-hot.is-shut .at-hot__tag {
+  color: color-mix(in srgb, var(--graphite) 52%, transparent);
+}
+
+/* where they have already been — a wing cannot be walked twice */
+.at-hot.is-walked .at-hot__tag { color: var(--pencil); }
+.at-hot.is-here .at-hot__box {
+  border-color: color-mix(in srgb, var(--graphite) 70%, transparent);
+  border-style: dashed;
+}
+/* The wing they are standing in labels itself BELOW its centre, so its name
+   and a neighbouring way-on's name cannot land on the same line — measured on
+   the Heart fork, where the Kitchens and the Heart collided. */
+.at-hot.is-here .at-hot__tag { opacity: 1; font-weight: 700; top: 60%; }
+
+/* who voted for this one, in co-op */
+.at-hot.is-voted::after {
+  transform: translateX(-50%) scale(calc(1 / var(--k, 1)));
+  content: attr(data-votes);
+  position: absolute;
+  left: 50%; bottom: -0.2em;
+  font-family: var(--font-display);
+  font-size: clamp(9px, .8vw, 12px);
+  letter-spacing: .16em;
+  color: var(--mark);
+  background: color-mix(in srgb, var(--parchment) 88%, transparent);
+  padding: 0 .35em;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* ── the dossier's way-on block ───────────────────────────────────────────── */
+.at-dos__why {
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  color: var(--text-mid);
+  padding-left: var(--s-3);
+  border-left: 2px solid color-mix(in srgb, var(--flame-500) 60%, transparent);
+}
+.at-dos__why[hidden] { display: none; }
+.at-dos__why em { color: var(--text-lo); font-style: normal; letter-spacing: .1em; text-transform: uppercase; font-size: .84em; }
+.at-dos__why.is-manifested { border-left-color: var(--spectre-400); }
+.at-dos__why.is-manifested em { color: var(--spectre-300); }
+
+.at-dos__act { display: flex; flex-direction: column; gap: var(--s-2); }
+.at-dos__act[hidden] { display: none; }
+
+.at-go {
+  appearance: none;
+  width: 100%;
+  border: 1px solid color-mix(in srgb, var(--flame-500) 70%, var(--surface-line));
+  border-radius: var(--radius-sm);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--flame-400) 30%, transparent),
+    color-mix(in srgb, var(--flame-500) 18%, transparent));
+  color: var(--flame-100);
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  letter-spacing: .06em;
+  padding: var(--s-3) var(--s-4);
+  cursor: pointer;
+  transition: background-color var(--t-quick) var(--ease-out), color var(--t-quick) var(--ease-out);
+}
+.at-go:hover:not(:disabled), .at-go:focus-visible:not(:disabled) {
+  background: color-mix(in srgb, var(--flame-400) 42%, transparent);
+  color: #fff;
+}
+.at-go:disabled { opacity: .5; cursor: default; }
+
+.at-ballot {
+  margin: 0;
+  font-size: var(--fs-xs);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-lo);
+  text-align: center;
+}
+.at-ballot[hidden] { display: none; }
+
+/* ── the draw overrode somebody ───────────────────────────────────────────── */
+.at-verdict {
+  position: absolute;
+  left: 50%; top: 22%;
+  transform: translateX(-50%);
+  z-index: 8;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: var(--s-4) var(--s-6);
+  background: color-mix(in srgb, var(--ink-900) 88%, transparent);
+  border: 1px solid var(--surface-line-hi);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(8px);
+  animation: at-verdict-in var(--t-slow) var(--ease-out) both;
+  pointer-events: none;
+}
+.at-verdict b { font-family: var(--font-display); font-size: var(--fs-lg); color: var(--flame-200); }
+.at-verdict i { font-style: normal; font-size: var(--fs-sm); color: var(--text-mid); }
+@keyframes at-verdict-in {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+.mm-reduce-motion .at-verdict { animation: none; }

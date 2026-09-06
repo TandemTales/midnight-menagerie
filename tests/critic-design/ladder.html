@@ -52,10 +52,26 @@ const HPSCALE = +(Q.get('hpscale') || 1);
    player is no longer constant and a Haunt comparison measures nothing.
    Defaults to `haunt` so the single-knob callers are unchanged. */
 const BHAUNT = Q.has('benchhaunt') ? +Q.get('benchhaunt') : HAUNT;
+/**
+ * WHICH WING OF THE EXPEDITION to price every region as, 1-based.
+ *
+ * Unset, `bench()` pins `regionIndex` to the region's LADDER index, so a region
+ * at slot six or later carries `runDepthDamageScale`'s endpoint of x2.0 — the
+ * ladder table has always been "authored content AND the depth term", and
+ * `lib/expedition.js` says in as many words that anything pricing content by
+ * route position has to pin it or it "measures every region at route position
+ * == ladder position and reports the artefact as a result".
+ *
+ * It matters now because the route is CHOSEN. Since 2026-09-06 the house can
+ * open a door from the Foyer's neighbourhood straight into the Moon Courtyard,
+ * so "what does the worst wing cost somebody who arrives at it second" is a
+ * question a player can actually ask, and `--wing 2` is how it gets answered.
+ */
+const WING = Q.has('wing') ? Math.max(1, +Q.get('wing')) : null;
 
 const out = document.getElementById('out');
 const sum = document.getElementById('summary');
-const R = { config: { GEN, N, TIER, SEED0, HAUNT, BHAUNT, HPSCALE },
+const R = { config: { GEN, N, TIER, SEED0, HAUNT, BHAUNT, HPSCALE, WING },
             loadouts: 0, table: [], errors: [] };
 
 /* THE CONSTANT PLAYER. `loadoutAtBoss` for the FOYER is the deck, Keepsakes and
@@ -91,7 +107,8 @@ for (let ri = 0; ri < REGION_ORDER.length; ri++) {
       rows.push(await bench({ loadout: l, encounterTier: TIER, region,
                               seed: 800000 + ri * 977 + i * 13, bot: 'competent',
                               haunt: BHAUNT, fullCourage: true, maxTurns: 120,
-                              hpScale: HPSCALE }));
+                              hpScale: HPSCALE,
+                              routeIndex: WING == null ? null : WING - 1 }));
     } catch (e) { R.errors.push(`${region} ${i}: ` + (e.message || e)); }
   }
   if (!rows.length) continue;

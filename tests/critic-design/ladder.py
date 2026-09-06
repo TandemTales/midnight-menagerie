@@ -27,7 +27,8 @@ async def main(a):
     from playwright.async_api import async_playwright
     url = (f"http://localhost:8777/tests/critic-design/ladder.html"
            f"?gen={a.gen}&n={a.n}&tier={a.tier}&seed={a.seed}&haunt={a.haunt}"
-           f"&hpscale={a.hpscale}&benchhaunt={a.benchhaunt if a.benchhaunt is not None else a.haunt}")
+           f"&hpscale={a.hpscale}&benchhaunt={a.benchhaunt if a.benchhaunt is not None else a.haunt}"
+           + (f"&wing={a.wing}" if a.wing else ""))
     errs = []
     async with async_playwright() as p:
         b = await p.chromium.launch(args=["--enable-unsafe-swiftshader"])
@@ -105,6 +106,10 @@ if __name__ == "__main__":
     # Haunt of the expeditions that generate the constant player, which
     # un-constants it; pass --benchhaunt to move only the content.
     ap.add_argument("--benchhaunt", type=int, default=None)
+    # Price every region as the Nth wing of an expedition rather than at its own
+    # ladder slot. The route is chosen now, so "the Moon Courtyard as somebody's
+    # SECOND wing" is a real thing a player can do. See ladder.html.
+    ap.add_argument("--wing", type=int, default=None)
     ap.add_argument("--out", default="ladder-result.json")
     ap.add_argument("--timeout", type=float, default=2400)
     sys.exit(asyncio.run(main(ap.parse_args())))

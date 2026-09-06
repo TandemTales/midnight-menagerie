@@ -1,0 +1,567 @@
+{
+ "what": "Every region priced at four different ROUTE SLOTS, not at its ladder slot. One wing-one loadout, 16 fights per region per slot, full Courage, competent bot. Made for the 2026-09-06 routing change: since the party chooses each crossing, 'the Moon Courtyard as somebody's second wing' is a thing that can happen. Reproduce with: python tests/critic-design/ladder.py --wing N",
+ "finding": "Every region is GENTLER early, not harder \u2014 runDepthDamageScale climbs 1.2 -> 1.8 across wings 2..5 and swamps the authored difference. A depth floor on the route would have pushed the hardest wings to the slots where they cost the most.",
+ "byWing": {
+  "2": [
+   {
+    "region": "foyer",
+    "win": 100,
+    "pct": 8,
+    "turns": 4.88,
+    "wall": 4.82,
+    "swing": 18.69
+   },
+   {
+    "region": "nursery",
+    "win": 100,
+    "pct": 18,
+    "turns": 4.69,
+    "wall": 3.55,
+    "swing": 18.67
+   },
+   {
+    "region": "sleeping-quarters",
+    "win": 100,
+    "pct": 16,
+    "turns": 8.5,
+    "wall": 9.16,
+    "swing": 14.99
+   },
+   {
+    "region": "kitchens-cellars",
+    "win": 100,
+    "pct": 28,
+    "turns": 6.5,
+    "wall": 2.59,
+    "swing": 17.08
+   },
+   {
+    "region": "greenhouse",
+    "win": 100,
+    "pct": 16,
+    "turns": 4.38,
+    "wall": 2.84,
+    "swing": 18.13
+   },
+   {
+    "region": "graveyard",
+    "win": 100,
+    "pct": 16,
+    "turns": 5.38,
+    "wall": 2.91,
+    "swing": 17.51
+   },
+   {
+    "region": "study-library",
+    "win": 100,
+    "pct": 17,
+    "turns": 6.63,
+    "wall": 4.68,
+    "swing": 13.77
+   },
+   {
+    "region": "attic-observatory",
+    "win": 100,
+    "pct": 19,
+    "turns": 4.5,
+    "wall": 3.31,
+    "swing": 19.87
+   },
+   {
+    "region": "lampworks",
+    "win": 100,
+    "pct": 9,
+    "turns": 4.38,
+    "wall": 2.36,
+    "swing": 20.62
+   },
+   {
+    "region": "ballroom",
+    "win": 100,
+    "pct": 21,
+    "turns": 5.5,
+    "wall": 6.36,
+    "swing": 18.87
+   },
+   {
+    "region": "crypt",
+    "win": 100,
+    "pct": 20,
+    "turns": 7.38,
+    "wall": 4.26,
+    "swing": 16.83
+   },
+   {
+    "region": "hedge-maze",
+    "win": 100,
+    "pct": 45,
+    "turns": 6.06,
+    "wall": 2.76,
+    "swing": 17.92
+   },
+   {
+    "region": "secret-passages",
+    "win": 43.8,
+    "pct": 84,
+    "turns": 6.5,
+    "wall": 4.7,
+    "swing": 14.08
+   },
+   {
+    "region": "bathhouse",
+    "win": 87.5,
+    "pct": 56,
+    "turns": 8.75,
+    "wall": 3.63,
+    "swing": 14.9
+   },
+   {
+    "region": "kennels",
+    "win": 100,
+    "pct": 55,
+    "turns": 9.19,
+    "wall": 6.33,
+    "swing": 19.35
+   },
+   {
+    "region": "pumpkin-grounds",
+    "win": 25,
+    "pct": 109,
+    "turns": 4.94,
+    "wall": 6.34,
+    "swing": 18.29
+   },
+   {
+    "region": "heart",
+    "win": 93.8,
+    "pct": 50,
+    "turns": 10,
+    "wall": 8.93,
+    "swing": 15.38
+   }
+  ],
+  "3": [
+   {
+    "region": "foyer",
+    "win": 100,
+    "pct": 8,
+    "turns": 4.88,
+    "wall": 4.82,
+    "swing": 18.69
+   },
+   {
+    "region": "nursery",
+    "win": 100,
+    "pct": 24,
+    "turns": 4.69,
+    "wall": 3.55,
+    "swing": 18.72
+   },
+   {
+    "region": "sleeping-quarters",
+    "win": 100,
+    "pct": 22,
+    "turns": 7.69,
+    "wall": 8.79,
+    "swing": 15.92
+   },
+   {
+    "region": "kitchens-cellars",
+    "win": 100,
+    "pct": 37,
+    "turns": 6.31,
+    "wall": 2.32,
+    "swing": 17.07
+   },
+   {
+    "region": "greenhouse",
+    "win": 100,
+    "pct": 15,
+    "turns": 4.44,
+    "wall": 2.95,
+    "swing": 18.17
+   },
+   {
+    "region": "graveyard",
+    "win": 100,
+    "pct": 22,
+    "turns": 5.25,
+    "wall": 3.12,
+    "swing": 17.91
+   },
+   {
+    "region": "study-library",
+    "win": 100,
+    "pct": 23,
+    "turns": 6.88,
+    "wall": 4.67,
+    "swing": 13.61
+   },
+   {
+    "region": "attic-observatory",
+    "win": 100,
+    "pct": 25,
+    "turns": 4.56,
+    "wall": 3.35,
+    "swing": 19.63
+   },
+   {
+    "region": "lampworks",
+    "win": 100,
+    "pct": 11,
+    "turns": 4.38,
+    "wall": 2.36,
+    "swing": 20.52
+   },
+   {
+    "region": "ballroom",
+    "win": 100,
+    "pct": 25,
+    "turns": 5.56,
+    "wall": 6.38,
+    "swing": 18.56
+   },
+   {
+    "region": "crypt",
+    "win": 100,
+    "pct": 22,
+    "turns": 6.69,
+    "wall": 3.66,
+    "swing": 18.01
+   },
+   {
+    "region": "hedge-maze",
+    "win": 81.3,
+    "pct": 58,
+    "turns": 5.81,
+    "wall": 2.76,
+    "swing": 17.14
+   },
+   {
+    "region": "secret-passages",
+    "win": 43.8,
+    "pct": 90,
+    "turns": 5.38,
+    "wall": 4.55,
+    "swing": 14.45
+   },
+   {
+    "region": "bathhouse",
+    "win": 62.5,
+    "pct": 74,
+    "turns": 7.94,
+    "wall": 3.86,
+    "swing": 14.3
+   },
+   {
+    "region": "kennels",
+    "win": 93.8,
+    "pct": 74,
+    "turns": 8.69,
+    "wall": 6.49,
+    "swing": 19.7
+   },
+   {
+    "region": "pumpkin-grounds",
+    "win": 25,
+    "pct": 116,
+    "turns": 4.31,
+    "wall": 6.44,
+    "swing": 18.77
+   },
+   {
+    "region": "heart",
+    "win": 75,
+    "pct": 66,
+    "turns": 9.19,
+    "wall": 9.41,
+    "swing": 15.63
+   }
+  ],
+  "4": [
+   {
+    "region": "foyer",
+    "win": 100,
+    "pct": 8,
+    "turns": 4.88,
+    "wall": 4.82,
+    "swing": 18.69
+   },
+   {
+    "region": "nursery",
+    "win": 100,
+    "pct": 29,
+    "turns": 4.63,
+    "wall": 3.65,
+    "swing": 19.04
+   },
+   {
+    "region": "sleeping-quarters",
+    "win": 100,
+    "pct": 28,
+    "turns": 7.5,
+    "wall": 8.53,
+    "swing": 16.14
+   },
+   {
+    "region": "kitchens-cellars",
+    "win": 100,
+    "pct": 45,
+    "turns": 6.19,
+    "wall": 2.36,
+    "swing": 17.48
+   },
+   {
+    "region": "greenhouse",
+    "win": 100,
+    "pct": 18,
+    "turns": 4.44,
+    "wall": 2.95,
+    "swing": 18.07
+   },
+   {
+    "region": "graveyard",
+    "win": 100,
+    "pct": 32,
+    "turns": 5,
+    "wall": 3.3,
+    "swing": 18.76
+   },
+   {
+    "region": "study-library",
+    "win": 100,
+    "pct": 26,
+    "turns": 7.13,
+    "wall": 4.77,
+    "swing": 13.51
+   },
+   {
+    "region": "attic-observatory",
+    "win": 100,
+    "pct": 30,
+    "turns": 4.56,
+    "wall": 3.35,
+    "swing": 19.63
+   },
+   {
+    "region": "lampworks",
+    "win": 100,
+    "pct": 14,
+    "turns": 4.44,
+    "wall": 2.39,
+    "swing": 20.37
+   },
+   {
+    "region": "ballroom",
+    "win": 100,
+    "pct": 32,
+    "turns": 5.56,
+    "wall": 6.12,
+    "swing": 18.83
+   },
+   {
+    "region": "crypt",
+    "win": 100,
+    "pct": 29,
+    "turns": 6.75,
+    "wall": 3.66,
+    "swing": 17.76
+   },
+   {
+    "region": "hedge-maze",
+    "win": 81.3,
+    "pct": 65,
+    "turns": 5.81,
+    "wall": 2.73,
+    "swing": 16.79
+   },
+   {
+    "region": "secret-passages",
+    "win": 31.3,
+    "pct": 97,
+    "turns": 4.75,
+    "wall": 5.2,
+    "swing": 14.51
+   },
+   {
+    "region": "bathhouse",
+    "win": 62.5,
+    "pct": 79,
+    "turns": 7.13,
+    "wall": 3.78,
+    "swing": 14.88
+   },
+   {
+    "region": "kennels",
+    "win": 81.3,
+    "pct": 89,
+    "turns": 8.13,
+    "wall": 6.46,
+    "swing": 20.17
+   },
+   {
+    "region": "pumpkin-grounds",
+    "win": 12.5,
+    "pct": 122,
+    "turns": 4.06,
+    "wall": 6.8,
+    "swing": 18.92
+   },
+   {
+    "region": "heart",
+    "win": 62.5,
+    "pct": 75,
+    "turns": 8.25,
+    "wall": 9.34,
+    "swing": 16.28
+   }
+  ],
+  "5": [
+   {
+    "region": "foyer",
+    "win": 100,
+    "pct": 8,
+    "turns": 4.88,
+    "wall": 4.82,
+    "swing": 18.69
+   },
+   {
+    "region": "nursery",
+    "win": 100,
+    "pct": 36,
+    "turns": 4.69,
+    "wall": 3.69,
+    "swing": 18.91
+   },
+   {
+    "region": "sleeping-quarters",
+    "win": 100,
+    "pct": 35,
+    "turns": 7.38,
+    "wall": 8.28,
+    "swing": 16.21
+   },
+   {
+    "region": "kitchens-cellars",
+    "win": 100,
+    "pct": 56,
+    "turns": 6.25,
+    "wall": 2.4,
+    "swing": 17.28
+   },
+   {
+    "region": "greenhouse",
+    "win": 100,
+    "pct": 21,
+    "turns": 4.5,
+    "wall": 3.07,
+    "swing": 18.35
+   },
+   {
+    "region": "graveyard",
+    "win": 100,
+    "pct": 37,
+    "turns": 5,
+    "wall": 3.17,
+    "swing": 18.72
+   },
+   {
+    "region": "study-library",
+    "win": 100,
+    "pct": 33,
+    "turns": 6.94,
+    "wall": 4.7,
+    "swing": 13.51
+   },
+   {
+    "region": "attic-observatory",
+    "win": 100,
+    "pct": 37,
+    "turns": 4.5,
+    "wall": 3.31,
+    "swing": 19.64
+   },
+   {
+    "region": "lampworks",
+    "win": 100,
+    "pct": 19,
+    "turns": 4.44,
+    "wall": 2.39,
+    "swing": 20.44
+   },
+   {
+    "region": "ballroom",
+    "win": 100,
+    "pct": 40,
+    "turns": 5.63,
+    "wall": 6.32,
+    "swing": 18.62
+   },
+   {
+    "region": "crypt",
+    "win": 100,
+    "pct": 35,
+    "turns": 6.69,
+    "wall": 3.65,
+    "swing": 17.87
+   },
+   {
+    "region": "hedge-maze",
+    "win": 75,
+    "pct": 75,
+    "turns": 5.75,
+    "wall": 2.74,
+    "swing": 16.02
+   },
+   {
+    "region": "secret-passages",
+    "win": 25,
+    "pct": 103,
+    "turns": 4.5,
+    "wall": 4.89,
+    "swing": 13.68
+   },
+   {
+    "region": "bathhouse",
+    "win": 56.3,
+    "pct": 88,
+    "turns": 6.69,
+    "wall": 4.11,
+    "swing": 14.74
+   },
+   {
+    "region": "kennels",
+    "win": 62.5,
+    "pct": 98,
+    "turns": 6.69,
+    "wall": 6.61,
+    "swing": 19.98
+   },
+   {
+    "region": "pumpkin-grounds",
+    "win": 12.5,
+    "pct": 127,
+    "turns": 3.75,
+    "wall": 6.88,
+    "swing": 18.16
+   },
+   {
+    "region": "heart",
+    "win": 56.3,
+    "pct": 83,
+    "turns": 7.44,
+    "wall": 9.65,
+    "swing": 16.33
+   }
+  ]
+ },
+ "config": {
+  "GEN": 8,
+  "N": 16,
+  "TIER": "standard",
+  "SEED0": 90000,
+  "HAUNT": 0,
+  "BHAUNT": 0,
+  "HPSCALE": 1
+ }
+}

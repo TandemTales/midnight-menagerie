@@ -37,14 +37,29 @@
  * atlas that printed "Hush — the Secret Passages" on night one would hand back
  * everything that screen refuses to say.
  *
+ * ── AND IT IS WHERE THE EXPEDITION TURNS ───────────────────────────────────
+ *
+ * A cleared wing does not hand the party the next one. `Run#openWingFork` sends
+ * them here with two or three ways on marked, and `docs/design/01-mansion-structure.md`
+ * is what decides which: the wing's own architectural neighbours, minus the
+ * doors the house has shut tonight, minus everywhere they have already been —
+ * and, when that leaves nothing, a door that was never on the plan. The reason
+ * for each one is printed beside it in the house's own words, because the doc
+ * insists the regions "should not merely touch because the map needs them to".
+ *
+ * This is the right screen for it and the map is not: the choice is about the
+ * HOUSE, and this is the only place that shows which wings exist, which you
+ * have surveyed, and what is held in them.
+ *
  * Deep link: `#scene=atlas`, `&wing=<slug>` to open zoomed on one,
- * `&all=1` to survey everything (a review door, never progress).
+ * `&all=1` to survey everything (a review door, never progress),
+ * `&choose=1` for the fork (needs a run standing on one).
  */
 import { Scene } from '../core/scenes.js';
 import { bus } from '../core/bus.js';
 import { Save } from '../core/save.js';
 import { COMPANIONS, REGION_ORDER } from '../data/schema.js';
-import { regionMeta, blueprintTraceUrl, MASTER } from '../state/mapgen.js';
+import { regionMeta, blueprintTraceUrl, MASTER, exitReason } from '../state/mapgen.js';
 import { loadPlanTrace, solvePen, inkTrace } from '../ui/plan.js';
 import {
   ensureCss, fontsReady, el, svg, rovingFocus, logoLockup, filigree,
@@ -52,6 +67,9 @@ import {
   freedCompanions, warmFaces,
 } from '../ui/portrait.js';
 import { pauseStageFor } from './_stage.js';
+import { act, ACT } from '../net/actions.js';
+import { INPUT } from '../net/session.js';
+import { passTo, shouldHandOff } from '../ui/handoff.js';
 
 const CSS_KIT = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_ATL = new URL('./atlas.css', import.meta.url).href;
@@ -102,6 +120,9 @@ export class AtlasScene extends Scene {
     this.wings = [];
     this.sel = null;          // slug of the wing the sheet is zoomed on
     this.hover = null;        // slug under the cursor / keyboard focus
+    this.choosing = false;    // standing at a fork between wings
+    this.offer = [];          // [{to, why, manifested}] while choosing
+    this._voting = false;
   }
 
   async enter(params = {}) {
@@ -121,6 +142,17 @@ export class AtlasScene extends Scene {
     this.wings = await loadSections();
     this.surveyed = this._surveyed(params.all === '1' || params.all === true);
 
+    /* THE FORK. `run.pendingWing` is the truth, never the deep-link parameter:
+       `&choose=1` on a run that is not standing at a fork would offer wings the
+       house has not opened, and a resumed save that IS at one must show it
+       whether or not the parameter survived. */
+    const run = this.ctx.run;
+    this.choosing = !!(run && run.pendingWing);
+    this.offer = this.choosing ? run.pendingWing.options.slice() : [];
+    this.offered = new Set(this.offer.map((o) => o.to));
+    this.trail = (run && Array.isArray(run.route)) ? run.route.slice(0, (run.regionIndex | 0) + 1) : [];
+    this.root.dataset.choose = this.choosing ? '1' : '0';
+
     this.root.classList.add('at-root');
     this.root.innerHTML = '';
     this.root.appendChild(el('div', 'at-bg'));
@@ -135,11 +167,23 @@ export class AtlasScene extends Scene {
     await fontsReady();
     this._layout();
 
-    const want = params.wing && this.wings.some((w) => w.slug === params.wing) ? params.wing : null;
-    this._show(want || this.wings[0].slug);
-    if (want) this._select(want, true);
+    this._paintTrail();
+    this._paintBallot();
 
-    bus.emit('atlas:ready', { wings: this.wings.length, surveyed: this.surveyed.size });
+    /* AT A FORK THE SCREEN OPENS ON THE WHOLE HOUSE, and the first version of
+       this opened zoomed on the first way on — which showed the player one wing
+       at the exact moment the question is "which of these three". The dossier
+       previews the first option so the panel is not blank; the drawing shows
+       all of them. */
+    const want = params.wing && this.wings.some((w) => w.slug === params.wing) ? params.wing : null;
+    this._show(this.choosing ? this.offer[0].to
+      : (want || this.trail[this.trail.length - 1] || this.wings[0].slug));
+    if (want && !this.choosing) this._select(want, true);
+
+    bus.emit('atlas:ready', {
+      wings: this.wings.length, surveyed: this.surveyed.size,
+      choosing: this.choosing, offer: this.offer.map((o) => o.to),
+    });
   }
 
   /**
@@ -176,14 +220,25 @@ export class AtlasScene extends Scene {
     back.type = 'button';
     back.innerHTML = '<span aria-hidden="true">&#8592;</span> Back';
     back.addEventListener('click', () => this._leave());
+    /* No way out of a fork except through it. The party has cleared a wing and
+       the house is holding a door open; leaving would mean a run with nowhere
+       to be. `_leave` refuses too — this only stops it being offered. */
+    back.hidden = this.choosing;
     h.appendChild(back);
 
-    const logo = logoLockup({ size: 'sm', plaque: 'The Mansion', id: 'mm-logo-atlas' });
+    const logo = logoLockup({
+      size: 'sm', plaque: this.choosing ? 'The Way On' : 'The Mansion', id: 'mm-logo-atlas',
+    });
     logo.classList.add('at-logo');
     h.appendChild(logo);
 
-    const tally = el('p', 'at-tally');
-    tally.innerHTML = `<b>${this.surveyed.size}</b> <span>of ${this.wings.length} wings surveyed</span>`;
+    const tally = this._tally = el('p', 'at-tally');
+    if (this.choosing) {
+      const run = this.ctx.run;
+      tally.innerHTML = `<b>${run.regionIndex + 1}</b> <span>of ${run.wings} wings crossed</span>`;
+    } else {
+      tally.innerHTML = `<b>${this.surveyed.size}</b> <span>of ${this.wings.length} wings surveyed</span>`;
+    }
     h.appendChild(tally);
     return h;
   }
@@ -213,6 +268,20 @@ export class AtlasScene extends Scene {
     ink.hidden = true;
     plate.appendChild(ink);
 
+    /* THE TRAIL. Pencil over the printed drawing — the same ground/figure
+       split `scenes/map.js` uses for its route, and the reason this is graphite
+       and the house is ink. Solid where the party has walked, dashed to each
+       door the house is holding open. viewBox is the master's own pixel size
+       so a wing's centre is just its rect's centre, and the plate is fitted to
+       exactly that aspect (`_fitSheet`), so nothing is distorted. */
+    const trail = this._trail = svg(`<svg class="at-trail" viewBox="0 0 ${MASTER.w} ${MASTER.h}"
+         preserveAspectRatio="none" aria-hidden="true">
+      <path class="at-trail__walked" d=""></path>
+      <path class="at-trail__open" d=""></path>
+      <g class="at-trail__marks"></g>
+    </svg>`);
+    plate.appendChild(trail);
+
     const hots = this._hots = el('div', 'at-hots');
     hots.setAttribute('role', 'listbox');
     hots.setAttribute('aria-label',
@@ -227,6 +296,10 @@ export class AtlasScene extends Scene {
       b.style.top = `${w.ny * 100}%`;
       b.style.width = `${w.nw * 100}%`;
       b.style.height = `${w.nh * 100}%`;
+      if (this.offered.has(w.slug)) b.classList.add('is-open');
+      else if (this.choosing) b.classList.add('is-shut');
+      if (this.trail.includes(w.slug)) b.classList.add('is-walked');
+      if (this.trail[this.trail.length - 1] === w.slug) b.classList.add('is-here');
       b.setAttribute('aria-label', this._hotLabel(w));
       b.innerHTML = `<span class="at-hot__box" aria-hidden="true"></span>`
         + `<span class="at-hot__tag">${esc(w.meta.name)}</span>`;
@@ -258,9 +331,80 @@ export class AtlasScene extends Scene {
 
   _hotLabel(w) {
     const seen = this.surveyed.has(w.slug);
-    if (!seen) return `${w.meta.name}. Unsurveyed.`;
+    const o = this.offer.find((x) => x.to === w.slug);
+    const way = o ? ` A way on from here: ${o.why}.` : this.choosing ? ' No way through tonight.' : '';
+    if (!seen) return `${w.meta.name}. Unsurveyed.${way}`;
     const held = w.companion ? ` ${w.companion.name}, ${w.companion.title}, is held here.` : '';
-    return `${w.meta.name}. Surveyed.${held} Guarded by ${w.meta.boss}.`;
+    return `${w.meta.name}. Surveyed.${held} Guarded by ${w.meta.boss}.${way}`;
+  }
+
+  /* ── the pencil trail ───────────────────────────────────────────────────── */
+
+  /** A wing's centre on the master drawing, in its own pixels. */
+  _centre(slug) {
+    const w = this.wings.find((x) => x.slug === slug);
+    if (!w) return null;
+    return [(w.nx + w.nw / 2) * MASTER.w, (w.ny + w.nh / 2) * MASTER.h];
+  }
+
+  /**
+   * Where they have been, and where the house says they can go.
+   *
+   * Drawn as a pencil line, not a straight rule: each leg bows by a seeded
+   * fraction of its own length, perpendicular to itself, so the trail reads as
+   * something somebody drew on a printed plan rather than as a graph edge. The
+   * seed is the pair of wings, so the same leg always bows the same way and the
+   * drawing does not twitch when the sheet is re-laid.
+   */
+  _paintTrail() {
+    if (!this._trail) return;
+    const bow = (a, b, k) => {
+      const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
+      const dx = b[0] - a[0], dy = b[1] - a[1];
+      return `Q ${(mx - dy * k).toFixed(1)} ${(my + dx * k).toFixed(1)} ${b[0].toFixed(1)} ${b[1].toFixed(1)}`;
+    };
+    // A stable little hash, so a leg's bow belongs to the leg.
+    const lean = (a, b) => {
+      let h = 0;
+      for (const ch of `${a}>${b}`) h = (h * 31 + ch.charCodeAt(0)) | 0;
+      return ((h % 9) - 4) / 90;                       // about ±4.5% of the run
+    };
+
+    let walked = '';
+    for (let i = 0; i < this.trail.length; i++) {
+      const c = this._centre(this.trail[i]);
+      if (!c) continue;
+      if (!walked) { walked = `M ${c[0].toFixed(1)} ${c[1].toFixed(1)}`; continue; }
+      const prev = this._centre(this.trail[i - 1]);
+      walked += ' ' + bow(prev, c, lean(this.trail[i - 1], this.trail[i]));
+    }
+    this._trail.querySelector('.at-trail__walked').setAttribute('d', walked);
+
+    let open = '';
+    const from = this.trail[this.trail.length - 1];
+    const a = from && this._centre(from);
+    if (a) {
+      for (const o of this.offer) {
+        const b = this._centre(o.to);
+        if (!b) continue;
+        open += `M ${a[0].toFixed(1)} ${a[1].toFixed(1)} ` + bow(a, b, lean(from, o.to)) + ' ';
+      }
+    }
+    this._trail.querySelector('.at-trail__open').setAttribute('d', open.trim());
+
+    const marks = this._trail.querySelector('.at-trail__marks');
+    marks.innerHTML = '';
+    const ns = 'http://www.w3.org/2000/svg';
+    for (const slug of this.trail) {
+      const c = this._centre(slug);
+      if (!c) continue;
+      const dot = document.createElementNS(ns, 'circle');
+      dot.setAttribute('cx', c[0].toFixed(1));
+      dot.setAttribute('cy', c[1].toFixed(1));
+      dot.setAttribute('r', slug === from ? '11' : '7');
+      dot.setAttribute('class', slug === from ? 'at-mark at-mark--here' : 'at-mark');
+      marks.appendChild(dot);
+    }
   }
 
   /* ── the dossier ────────────────────────────────────────────────────────── */
@@ -285,7 +429,12 @@ export class AtlasScene extends Scene {
         <div><dt>Rooms</dt><dd class="at-dos__rooms">20</dd></div>
         <div><dt>Survey</dt><dd class="at-dos__state">&mdash;</dd></div>
       </dl>
-      <p class="at-dos__hint"></p>`;
+      <p class="at-dos__why" hidden></p>
+      <p class="at-dos__hint"></p>
+      <div class="at-dos__act" hidden>
+        <button class="at-go" type="button">Go this way</button>
+        <p class="at-ballot" aria-live="polite" hidden></p>
+      </div>`;
     d.appendChild(svg(`<div class="at-dos__fil" aria-hidden="true">
       <svg viewBox="0 0 320 80">${filigree()}</svg></div>`));
     return d;
@@ -310,19 +459,41 @@ export class AtlasScene extends Scene {
     on(this._hots, 'click', (e) => {
       const b = e.target.closest('.at-hot');
       if (!b) return;
-      this._select(b.dataset.wing === this.sel ? null : b.dataset.wing);
+      const slug = b.dataset.wing;
+      /* At a fork, clicking a way on the SECOND time takes it. The first click
+         zooms — a wing is a whole act and nobody should commit to one they have
+         not looked at — and the dossier's own button is the other way to do it. */
+      if (this.choosing && this.offered.has(slug) && this.sel === slug) return this._choose(slug);
+      if (this.choosing && !this.offered.has(slug)) { this._select(slug); return; }
+      this._select(slug === this.sel ? null : slug);
     });
 
     this._offs.push(rovingFocus(this._hots, '.at-hot', {
       cols: 0, wrap: true,
-      onActivate: (b) => this._select(b.dataset.wing === this.sel ? null : b.dataset.wing),
+      onActivate: (b) => {
+        const slug = b.dataset.wing;
+        if (this.choosing && this.offered.has(slug) && this.sel === slug) return this._choose(slug);
+        this._select(slug === this.sel ? null : slug);
+      },
     }));
+
+    on(this._dossier.querySelector('.at-go'), 'click', () => {
+      if (this.hover) this._choose(this.hover);
+    });
 
     on(window, 'keydown', (e) => {
       if (e.key !== 'Escape') return;
       e.preventDefault();
-      if (this.sel) this._select(null); else this._leave();
+      /* At a fork Escape pulls back out of a wing and stops there. There is no
+         "leave" while the house is holding a door open — see `_leave`. */
+      if (this.sel) this._select(null);
+      else if (!this.choosing) this._leave();
     });
+
+    // The ballot belongs to the run, so it is repainted from the run's events —
+    // including the ones another client raised.
+    this._offs.push(bus.on('wing:vote', () => this._paintBallot()));
+    this._offs.push(bus.on('wing:chosen', (v) => this._announce(v)));
 
     /* The SHEET, never the viewport: `_fitSheet()` resizes the viewport, so
        watching it would feed its own output back in as a resize. */
@@ -386,6 +557,7 @@ export class AtlasScene extends Scene {
     const w = this.sel && this.wings.find((x) => x.slug === this.sel);
     if (!w) {
       this._plate.style.transform = 'translate(0px, 0px) scale(1)';
+      this._plate.style.setProperty('--k', '1');
       this._k = 1;
       return;
     }
@@ -396,6 +568,11 @@ export class AtlasScene extends Scene {
     const tx = clamp(r.vw / 2 - k * cx, r.vw - k * r.vw, 0);
     const ty = clamp(r.vh / 2 - k * cy, r.vh - k * r.vh, 0);
     this._k = k;
+    /* Everything pinned to the plate is magnified with it — a 13px label at 4.6x
+       is a 60px banner across the plan, which is the exact failure `scenes/map.js`
+       hit twice with its own title card. `--k` lets a mark undo the zoom and stay
+       the size it was drawn. */
+    this._plate.style.setProperty('--k', k.toFixed(4));
     this._plate.style.transform = `translate(${tx.toFixed(2)}px, ${ty.toFixed(2)}px) scale(${k.toFixed(4)})`;
     this._paintInk(w, r, k);
   }
@@ -497,10 +674,146 @@ export class AtlasScene extends Scene {
     /* The Heart holds no Companion — it is what holds the house — so the
        "Held here" block is simply absent there rather than reading empty. */
 
-    d.querySelector('.at-dos__hint').textContent = !seen
-      ? 'The house drew this wing. Nobody has been in it yet.'
+    /* WHY these two wings join, in the house's own words. Printed whenever the
+       drawing knows — not only at a fork — because it is the one thing a floor
+       plan of seventeen wings cannot show you and the design doc bothered to
+       write down for every edge. */
+    const from = this.trail[this.trail.length - 1] || null;
+    const o = this.offer.find((x) => x.to === slug);
+    const why = o ? o.why : (from && from !== slug ? exitReason(from, slug) : null);
+    const $why = d.querySelector('.at-dos__why');
+    $why.hidden = !why;
+    if (why) {
+      $why.innerHTML = o && o.manifested
+        ? `<em>The house opens</em> ${esc(why)}`
+        : `<em>From ${esc(regionMeta(from).name)}</em> &mdash; ${esc(why)}`;
+      $why.classList.toggle('is-manifested', !!(o && o.manifested));
+    }
+
+    const act$ = d.querySelector('.at-dos__act');
+    act$.hidden = !o;
+    if (o) {
+      const go = act$.querySelector('.at-go');
+      go.textContent = `Go to ${w.meta.name}`;
+      go.disabled = this._voting;
+    }
+
+    d.querySelector('.at-dos__hint').textContent = o
+      ? 'One way on. There is no way back through a wing.'
+      : this.choosing ? 'The house is not opening this one tonight.'
+      : !seen ? 'The house drew this wing. Nobody has been in it yet.'
       : this.sel === slug ? 'Escape, or “The whole house”, to pull back out.'
       : 'Select to look closer.';
+  }
+
+  /* ── choosing the way on ────────────────────────────────────────────────── */
+
+  /**
+   * One Kid commits to a wing, and the drawing waits for the rest.
+   *
+   * The same ballot as `scenes/map.js#_vote` and for the same reason
+   * (STS2-REFERENCE §8.5): everybody votes, a weighted roulette settles a
+   * split, and the host has no special authority. `act()` is awaited because
+   * over a wire it is a promise for the answer that lands once the input has
+   * taken its place in the total order; solo it resolves synchronously and
+   * crosses immediately.
+   *
+   * This is the ONE irreversible decision in an expedition — you cannot walk
+   * back through a wing — so it is worth being exactly as careful with it as
+   * with a room.
+   */
+  async _choose(slug) {
+    const run = this.ctx.run;
+    if (!run || !run.pendingWing || this._voting) return;
+    if (!this.offered.has(slug)) return;
+    // A fallen Kid has no say in the route (`run.voters()`), so their click has
+    // to be refused HERE too or the screen accepts it and silently does nothing.
+    if (!run.voters().includes(run.localSeat)) return;
+    this._voting = true;
+    try {
+      await act(run, { t: INPUT.ROOM, act: ACT.WING_CHOOSE, region: slug });
+      // The last vote owed crosses the party, and by then `advanceRegion` has
+      // asked for the map and `exit()` has nulled this screen's elements.
+      if (!this._dossier || !this.ctx.run?.pendingWing) return;
+      const owed = run.wingVotesPending();
+      this._paintBallot();
+      try { this.ctx.audio?.play?.('ui:click'); } catch {}
+      if (!owed.length) return;
+      // On a wire each Kid votes from their own machine; at one keyboard the
+      // sheet has to be handed over, the same veil every per-Kid room uses.
+      if (shouldHandOff(run)) await this._passVoteTo(owed[0]);
+    } finally {
+      this._voting = false;
+    }
+  }
+
+  /** Cover the drawing, put the next voter in the seat, redraw as theirs. */
+  async _passVoteTo(seat) {
+    const run = this.ctx.run;
+    const kid = run.kids[seat];
+    if (!kid) return;
+    await passTo({
+      name: run.kidNameOf(kid), companion: kid.companion,
+      line: 'Which way now?',
+      sub: 'Everyone gets a say in where the house takes you.',
+      onReady: async () => {
+        run.setLocalSeat(seat);
+        await this.ctx.scenes.go('atlas', { choose: '1' }, { instant: true });
+      },
+    });
+  }
+
+  /**
+   * Who has chosen what. Hidden in solo, where there is nobody to wait for.
+   *
+   * Painted from `run.pendingWing.votes` rather than from anything this screen
+   * remembers, so it survives the hand-off rebuild — the ballot belongs to the
+   * run, not to the sheet.
+   */
+  _paintBallot() {
+    const run = this.ctx.run;
+    const bar = this._dossier && this._dossier.querySelector('.at-ballot');
+    if (!bar) return;
+    const votes = (run && run.pendingWing) ? run.pendingWing.votes : {};
+    const cast = Object.keys(votes).map(Number).sort((a, b) => a - b);
+
+    for (const b of this._hots.querySelectorAll('.at-hot')) {
+      const who = cast.filter((s) => votes[s] === b.dataset.wing);
+      b.classList.toggle('is-voted', who.length > 0);
+      b.dataset.votes = who.length ? who.map((s) => this._kidTag(run, s)).join(' ') : '';
+    }
+    if (!run || !this.choosing || run.partySize < 2) { bar.hidden = true; return; }
+    bar.hidden = false;
+    const total = run.voters().length;
+    const owed = run.wingVotesPending();
+    bar.textContent = owed.length
+      ? `${cast.length} of ${total} have chosen · ${run.kidNameOf(run.kids[owed[0]])} is deciding`
+      : `${total} of ${total} have chosen`;
+  }
+
+  /** A Kid's initial, for a vote pin. */
+  _kidTag(run, seat) {
+    const k = run && run.kids[seat];
+    return (run.kidNameOf(k) || '?').trim().charAt(0).toUpperCase();
+  }
+
+  /**
+   * "The house chose the Hedge Maze." Only when a number decided it.
+   *
+   * Silent on a unanimous ballot — CONTRACTS 45 wants the player told when a
+   * roll overrode them, and "the roulette chose" is a lie when nobody
+   * disagreed, which is what `rolled` is on the result for.
+   */
+  _announce(v) {
+    if (!v || !v.rolled || !this.root) return;
+    const want = v.tally?.[v.winner] || 0;
+    const of = Object.values(v.tally || {}).reduce((a, b) => a + b, 0);
+    const card = el('div', 'at-verdict');
+    card.setAttribute('role', 'status');
+    card.innerHTML = `<b>The house chose ${esc(regionMeta(v.winner).name)}</b>`
+      + `<i>${want} of ${of} wanted it &middot; the rest were outvoted by the draw</i>`;
+    this.root.appendChild(card);
+    try { this.ctx.audio?.play?.('ui:confirm'); } catch {}
   }
 
   /** Commit: zoom the sheet onto a wing, or pull back out. */
@@ -531,6 +844,10 @@ export class AtlasScene extends Scene {
    * otherwise the clubhouse board, where the pinned blueprint fragment is.
    */
   _leave() {
+    /* A run standing at a fork has nowhere else to be: the wing behind it is
+       cleared, the map would rebuild the sheet they have finished, and the
+       Clubhouse is between expeditions. The choice is the screen. */
+    if (this.choosing) return;
     const run = this.ctx.run;
     const opts = { transition: reduceMotion() ? 'veil' : 'blueprint' };
     if (run) this.ctx.scenes.go('map', { region: run.region, seed: run.seed }, opts);
@@ -549,7 +866,10 @@ export class AtlasScene extends Scene {
     try { this._pf?.destroy?.(); } catch {}
     this._pf = null;
     this._inkToken = (this._inkToken || 0) + 1;
-    this._vp = this._plate = this._estate = this._ink = this._hots = this._dossier = this._wide = null;
+    this._vp = this._plate = this._estate = this._ink = this._hots = null;
+    this._dossier = this._wide = this._trail = this._tally = null;
+    this.offer = [];
+    this.offered = new Set();
     this.root.innerHTML = '';
   }
 }

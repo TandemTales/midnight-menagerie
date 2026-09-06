@@ -68,7 +68,10 @@ import { Save } from '../core/save.js';
 import { bus } from '../core/bus.js';
 import { clock } from '../core/clock.js';
 import { NodeType, REGION_ORDER, TERMS, COMPANIONS, KIDS, depthDamageScale, runDepthDamageScale, regionCourageFix, regionDamageFix } from '../data/schema.js';
-import { generateRegionMap, legalNextIds, regionMeta, sceneForNode } from './mapgen.js';
+import {
+  generateRegionMap, legalNextIds, regionMeta, sceneForNode,
+  exitsFrom, exitReason, wingDistance,
+} from './mapgen.js';
 import {
   cardById, startingDeckFor, poolFor, poolWithCoop, companion as companionDef, allCards,
 } from '../data/cards.js';
@@ -164,10 +167,11 @@ export const RUN_LENGTH_REGIONS = RUN_REGIONS.length;
  * the answer to "why do the kids go back in", and a run that walks every wing
  * every time answers it with "they do not need to".
  *
- * So an expedition is `expeditionRoute()` below: the Foyer, the Heart, and a
- * seeded selection in between, kept in `REGION_ORDER` order so difficulty still
- * climbs. Every wing remains in the game and every wing is reachable; which
- * ones the house opens tonight is what changes.
+ * So an expedition is SIX WINGS, and the quoted lines above say what decides
+ * which six: the Foyer, the Heart, and four the house opens on the way through
+ * — see the three-layer note over `openExitsFor` below. Every wing remains in
+ * the game and every wing is reachable; which ones the house is willing to let
+ * them reach is what changes.
  *
  * The NUMBER is a measurement, not a taste. See the sweep in
  * `docs/notes/2026-08-31-how-long-is-an-expedition.md`.
@@ -175,59 +179,228 @@ export const RUN_LENGTH_REGIONS = RUN_REGIONS.length;
 export const EXPEDITION_WINGS = 6;
 
 /**
- * The wings tonight: the Foyer first, the Heart last, and the rest drawn from
- * the middle fifteen in ladder order.
+ * THE ROUTE IS WALKED, NOT DEALT. This used to be `expeditionRoute(seed)`:
+ * six wings picked up front, in ladder order, and `advanceRegion()` read the
+ * next one off the list. The player never chose anything.
  *
- * ORDER IS PRESERVED, deliberately. A route that shuffled the middle would make
- * the Bathhouse a possible second wing, and every region's numbers were priced
- * against roughly where it sits on the ladder.
+ * `docs/design/01-mansion-structure.md` describes something else entirely, and
+ * describes it in three layers:
  *
- * BANDED, and it did not used to be. Drawing a subset in order and sorting it
- * keeps the route ASCENDING, but it does NOT keep the climb monotone, and this
- * comment claimed it did for as long as the draw was uniform. Measured over
- * 4000 seeds, every middle wing spanned ELEVEN region-steps:
+ *   1. PERMANENT ARCHITECTURAL CIRCULATION — "the ordinary connections printed
+ *      on the clean blueprint … the believable underlying mansion". That is
+ *      `REGION_EDGES` in `state/mapgen.js`, transcribed edge for edge with the
+ *      doc's own reason for each one, because the doc opens the section by
+ *      insisting the regions "should not merely touch because the map needs
+ *      them to".
+ *   2. CURRENT HOUSE STATE — "the mansion can alter whether a permanent route
+ *      is presently usable … the architectural connection still exists on the
+ *      blueprint, but the investigation layer shows that it cannot currently be
+ *      used", and "at the start of an expedition, the game selects a current
+ *      circulation state for each region". That is `openExitsFor` below: a
+ *      seeded subset of each wing's doors, fixed for the whole night, so
+ *      tonight's house is a THING and not a series of dice rolls.
+ *   3. MANIFESTED CONNECTIONS — "supernatural links that are not part of the
+ *      dependable architectural blueprint … doors that simply appear where no
+ *      door should exist". That is the top-up in `wingOffer`, and it is the
+ *      reason a fork can never be empty: when the house has shut everything, it
+ *      opens something that was never there.
  *
- *     wing 2   region 2..13   (median 4)
- *     wing 3   region 3..14   (median 7)
- *     wing 4   region 4..15   (median 11)
- *     wing 5   region 5..16   (median 14)
+ * And the closing line of the chapter, which is the whole design: "What changes
+ * is not the identity of the mansion. What changes is what the mansion is
+ * WILLING TO LET THEM REACH."
+ */
+
+/** The last wing of every expedition, and the only way the run ends well. */
+const HEART = RUN_REGIONS[RUN_REGIONS.length - 1];
+
+/** Of a wing's architectural doors, how many the house opens tonight. */
+const OPEN_FRACTION = 0.7;
+/** …but never fewer than this, so a wing is never a dead end by itself. */
+const OPEN_MIN = 2;
+/** How many ways on the player is shown at a fork. */
+const OFFER_MIN = 2, OFFER_MAX = 3;
+
+/* ── THERE IS NO DEPTH FLOOR, AND THE MEASUREMENT IS WHY ────────────────────
  *
- * So the Secret Passages could be somebody's SECOND wing and the Greenhouse
- * their FIFTH, and every region's numbers are priced against its ladder slot.
- * That is the single largest source of difficulty variance in the game: not
- * regions mistuned against each other, but content authored for depth twelve
- * meeting a depth-two deck.
+ * The obvious worry about a chosen route is that a player walks into content
+ * authored for the far end of the ladder with a wing-one deck. The old dealt
+ * route drew one wing from each contiguous BAND of the middle fifteen, so the
+ * Bathhouse could never be wing two, and restoring that band as a FLOOR was the
+ * first thing tried here.
  *
- * One region is drawn from each contiguous BAND of the middle instead, which
- * is what the paragraph above always promised. The bands are as even as the
- * count allows, so this generalises if `wings` changes.
+ * `tests/critic-design/ladder.py --wing N` was added to price it — it pins the
+ * bench's route position instead of letting it default to the region's ladder
+ * slot — and it says the worry is backwards. Sixteen fights per region, ONE
+ * wing-one deck held at full Courage, competent bot, win% by route slot:
  *
- * Seeded off the run seed, so the same seed is the same expedition — which the
- * determinism and resume checks in `tests/run/` both depend on.
+ *                        wing 2   wing 3   wing 4   wing 5
+ *     hedge-maze           100%      81%      81%      75%
+ *     secret-passages       44%      44%      31%      25%
+ *     bathhouse             88%      63%      63%      56%
+ *     kennels              100%      94%      81%      63%
+ *     pumpkin-grounds       25%      25%      13%      13%
+ *     heart                 94%      75%      63%      56%
+ *
+ * EVERY region is gentler early, not harder, because `runDepthDamageScale`
+ * climbs 1.2 -> 1.8 across those slots and swamps the authored difference. A
+ * floor would have pushed the five hardest wings to precisely the slots where
+ * they cost the most — it would have made the game harder while claiming to
+ * protect the player.
+ *
+ * The hard wings are hard at EVERY slot; that is the shipped game and it
+ * predates this change. And the run-level A/B agrees that nothing moved: fifty
+ * seeded expeditions, dealt route against chosen route, 4 victories each, 19
+ * Foyer defeats each, deck / purse / Keepsakes inside noise.
+ *
+ * So: no floor. The house opens what the architecture and tonight's circulation
+ * state say it opens, and the player takes whichever they like.
+ */
+/** How often a fork also opens a door that was never on the plan. Measured. */
+const SHIFT_CHANCE = 0.55;
+
+/**
+ * Tonight's usable exits from one wing — layer two, above.
+ *
+ * Seeded on the run seed AND the wing, never on the step, so the state of a
+ * door does not change depending on when you arrive at it. That is what makes
+ * it a house rather than a slot machine: the Ballroom's terrace either is or is
+ * not open tonight, and if you reach the Ballroom twice you find the same
+ * doors. (A run visits at most six wings, so "twice" is hypothetical — but the
+ * property is what stops the atlas lying when it shows a wing's exits.)
+ *
+ * The Heart is never an ordinary exit. The doc is explicit: it "should have
+ * very few ordinary architectural entrances", and is instead reached because
+ * "many strange dead ends, sealed stairs, impossible doors, and unexplained
+ * shafts throughout the mansion are fragments of routes toward the Heart" —
+ * which is `wingOffer`'s last step, from wherever the party happens to be.
+ *
+ * @returns {string[]} wing slugs, in REGION_ORDER order
+ */
+export function openExitsFor(seed, region) {
+  const all = exitsFrom(region).map(e => e.to).filter(t => t !== HEART);
+  if (all.length <= OPEN_MIN) return all.slice();
+  const keep = Math.max(OPEN_MIN, Math.min(all.length, Math.round(all.length * OPEN_FRACTION)));
+  const rng = new RNG(hashSeed(`mm-exits-v1|${seed}|${region}`));
+  const pool = all.slice();
+  const out = [];
+  for (let i = 0; i < keep; i++) out.push(pool.splice(rng.int(pool.length), 1)[0]);
+  // back into ladder order, so the offer reads the same way the house is drawn
+  return out.sort((a, b) => REGION_ORDER.indexOf(a) - REGION_ORDER.indexOf(b));
+}
+
+/**
+ * The ways on, at the end of one wing.
  *
  * @param {string|number} seed
- * @param {number} wings   how many, including the Foyer and the Heart
- * @returns {string[]}
+ * @param {string} from      the wing being left
+ * @param {string[]} visited every wing walked this expedition, `from` included
+ * @param {number} step      `regionIndex` of `from`
+ * @param {number} wings     how long tonight's expedition is
+ * @returns {{to:string, why:string, manifested:boolean}[]}
  */
-export function expeditionRoute(seed, wings = EXPEDITION_WINGS) {
-  const all = RUN_REGIONS.slice();
-  const first = all[0];
-  const last = all[all.length - 1];
-  const middle = all.slice(1, -1);
-  const want = Math.max(2, Math.min(wings | 0, all.length)) - 2;
-  if (want >= middle.length) return [first, ...middle, last];
-  const rng = new RNG(hashSeed(`mm-route-v1|${seed}`));
-  /* One from each band, in order. `lo`/`hi` walk the middle in `want` slices
-     that differ by at most one region, so no band is empty and every region
-     stays reachable. Ascending by construction — no sort needed. */
-  const mid = [];
-  for (let b = 0; b < want; b++) {
-    const lo = Math.floor((b * middle.length) / want);
-    const hi = Math.floor(((b + 1) * middle.length) / want);   // exclusive
-    mid.push(middle[lo + rng.int(Math.max(1, hi - lo))]);
+export function wingOffer(seed, from, visited, step, wings = EXPEDITION_WINGS) {
+  const seen = new Set(visited);
+  /* THE HEART IS THE ENDING, so the last crossing is not a choice. Offering it
+     alongside two ordinary wings would let a player skip half the expedition;
+     offering ordinary wings alongside it would let them refuse to finish. */
+  if (step + 1 >= wings - 1) {
+    return [{ to: HEART, why: exitReason(from, HEART)
+      || 'a stair that was not there on the way in', manifested: !exitReason(from, HEART) }];
   }
-  return [first, ...mid, last];
+
+  const rng = new RNG(hashSeed(`mm-offer-v1|${seed}|${step}|${from}`));
+
+  /**
+   * DOES THE HOUSE SHIFT AT THIS FORK?
+   *
+   * Layer three is not only a fallback. The doc calls manifested connections
+   * "excellent procedural route modifiers because they let a familiar region
+   * play differently without turning the underlying architecture into
+   * meaningless randomization" — so some forks offer a door that should not be
+   * there at all, beside the two that should.
+   *
+   * THE NUMBER IS A MEASUREMENT. Architecture alone puts the exterior estate
+   * out of reach: the Foyer's own neighbourhood is dense and the Moon Courtyard
+   * is three doors out through a single bottleneck, so over 4000 expeditions it
+   * appeared in 1.3% of them and the Kennels in 6.8% — content nobody would
+   * ever see, which is the class CONTRACTS trap 42 and the 2026-08-30 sweep are
+   * both about. See the note for the sweep this was tuned against; the goal was
+   * a floor under every wing, not an even distribution, because the Foyer's
+   * neighbours SHOULD be walked more often than the far end of the grounds.
+   */
+  const shifts = rng.chance(SHIFT_CHANCE);
+  const room = OFFER_MAX - (shifts ? 1 : 0);
+
+  /** Draw one, weighted, and take it out of the pool. */
+  const draw = (arr, weight) => {
+    if (!arr.length) return null;
+    const to = rng.weighted(arr.map(t => ({ id: t, w: weight ? weight(t) : 1 }))).id;
+    arr.splice(arr.indexOf(to), 1);
+    return to;
+  };
+
+  const open = openExitsFor(seed, from).filter(t => !seen.has(t));
+  const out = [];
+  const pool = open.slice();
+  while (out.length < room && pool.length) {
+    const to = draw(pool);
+    out.push({ to, why: exitReason(from, to) || 'a way through', manifested: false });
+  }
+
+  if (shifts) {
+    /* Weighted by how far the door reaches, because a door that should not
+       exist is only interesting when it goes somewhere the architecture will
+       not take you. Squared, so three doors out is nine times a neighbour. */
+    const taken = new Set(out.map(o => o.to));
+    const far = RUN_REGIONS
+      .filter(t => t !== HEART && !seen.has(t) && !taken.has(t));
+    const to = draw(far, t => Math.pow(Math.min(6, wingDistance(from, t) || 1), 2));
+    if (to) out.push({ to, why: MANIFESTED[rng.int(MANIFESTED.length)], manifested: true });
+  }
+
+  /* Layer three. The house has shut, or you have already been through,
+     everything this wing ordinarily reaches — so it opens something that was
+     never on the plan. A door the house merely CLOSED tonight is preferred
+     over one that never existed: the first is a bolt drawn back, the second is
+     a hole in the architecture, and the fiction is better served by trying the
+     believable one first. */
+  if (out.length < OFFER_MIN) {
+    const taken = new Set(out.map(o => o.to));
+    const shut = exitsFrom(from).map(e => e.to)
+      .filter(t => t !== HEART && !seen.has(t) && !taken.has(t));
+    const elsewhere = RUN_REGIONS
+      .filter(t => t !== HEART && !seen.has(t) && !taken.has(t) && !shut.includes(t));
+    for (const tier of [shut, elsewhere]) {
+      const p = tier.slice();
+      while (out.length < OFFER_MIN && p.length) {
+        const to = draw(p);
+        out.push({ to, why: exitReason(from, to) || MANIFESTED[rng.int(MANIFESTED.length)],
+                   manifested: true });
+      }
+    }
+  }
+  return out.sort((a, b) => REGION_ORDER.indexOf(a.to) - REGION_ORDER.indexOf(b.to));
 }
+
+/**
+ * What a door that should not exist looks like when it does.
+ * The doc's own list: "secret doors, fireplace passages, mirrors, wardrobes,
+ * dumbwaiters, crawlspaces, holes beneath beds, trapdoors, moving bookshelves,
+ * root tunnels, drains, chimneys, animal burrows, paintings, and doors that
+ * simply appear where no door should exist."
+ */
+const MANIFESTED = Object.freeze([
+  'a door that was not there a moment ago',
+  'a fireplace with a corridor in it',
+  'a wardrobe that does not end',
+  'a bookcase standing open',
+  'a hole under a bed, going down',
+  'a trapdoor nobody remembers',
+  'a drain wide enough to walk',
+  'a painting hung over an archway',
+  'a burrow somebody animal-sized dug',
+  'a chimney with steps cut into it',
+]);
 
 /**
  * MARMALADE, AND NOBODY ELSE. She is the one Companion who starts at the
@@ -357,13 +530,31 @@ export class Run {
     // ── progression ─────────────────────────────────────────────────────────
     this.regionIndex = 0;
     /**
-     * The wings this expedition crosses. `RUN_REGIONS` is the mansion; this is
-     * tonight's route through it, and everything that used to index the ladder
-     * indexes this instead. Saved and restored, so a resumed run does not walk
-     * a different house.
+     * HOW LONG TONIGHT IS, and it is a length now rather than a list.
+     *
+     * `route` used to be six wings dealt up front and `regionIndex` indexed it,
+     * so "how many wings tonight" and "which wings tonight" were one fact.
+     * They are two: the length is decided when the expedition starts, the wings
+     * are decided one door at a time. Anything that used to ask
+     * `route.length` for the FIRST question asks this.
      */
-    this.route = expeditionRoute(this.seed, cfg.wings ?? EXPEDITION_WINGS);
+    this.wings = Math.max(2, Math.min((cfg.wings ?? EXPEDITION_WINGS) | 0, RUN_REGIONS.length));
+    /**
+     * The wings this expedition has actually crossed, in order, starting at the
+     * front door. It GROWS — `advanceRegion` pushes whichever way on the party
+     * chose. Saved and restored, so a resumed run remembers where it has been
+     * (and so the atlas can draw the trail).
+     */
+    this.route = [RUN_REGIONS[0]];
     this.region = this.route[0];
+    /**
+     * The fork between two wings, while it is open.
+     * `{ from, step, options:[{to,why,manifested}], votes:{seat:slug} }`
+     * Null everywhere except standing on a cleared boss room.
+     */
+    this.pendingWing = null;
+    /** The last resolved wing ballot, so the atlas can repeat what happened. */
+    this.lastWingVote = null;
     this.rescued = (Save.data?.companionsRescued || []).slice();
     /** Freed on THIS expedition only — see rescueCompanion(). */
     this.companionsFreed = [];
@@ -492,7 +683,13 @@ export class Run {
   companionNameOf(k) { return COMPANIONS.find(c => c.slug === k.companion)?.name || k.companion; }
   get petName() { return KIDS.find(k => k.slug === this.kid)?.pet || 'your pet'; }
   get currentNode() { return this.nodeById(this.currentNodeId); }
-  get isLastRegion() { return this.regionIndex >= this.route.length - 1; }
+  /* AGAINST THE LENGTH, not the walked list. `route` grows as the party walks,
+     so `regionIndex >= route.length - 1` was true at the end of EVERY wing once
+     the route stopped being dealt up front — the run would have ended in
+     victory on the Foyer's boss. */
+  get isLastRegion() { return this.regionIndex >= this.wings - 1; }
+  /** True while the party is standing at a fork between wings. */
+  get atWingFork() { return !!this.pendingWing; }
 
   /** Aggregated Keepsake + Gear flags. Scenes read this, never a relic by name. */
   get flags() { return this.flagsOf(this.local); }
@@ -1410,7 +1607,7 @@ export class Run {
          bodies do not survive a turn (see REGION_CONTENT_FIX). Where the
          fight is authored still prices the fight; how deep the player is
          prices the run. */
-      enemyDamageScale: runDepthDamageScale(this.regionIndex, this.route.length)
+      enemyDamageScale: runDepthDamageScale(this.regionIndex, this.wings)
         * regionDamageFix(region),
       courageFix: regionCourageFix(region),
     });
@@ -2492,8 +2689,105 @@ export class Run {
     // four starters, who were never in the house. See rescueTargetFor().
     const freed = this.rescueTargetFor(`boss:${this.region}`, meta.companion);
     if (freed && !this.rescued.includes(freed)) this.rescueCompanion(freed);
-    if (this.isLastRegion || this.regionIndex + 1 >= this.route.length) return this.end(true, null);
-    return this.advanceRegion();
+    if (this.isLastRegion) return this.end(true, null);
+    return this.openWingFork();
+  }
+
+  /* ══ the way on ═════════════════════════════════════════════════════════
+   *
+   * A cleared wing does not hand you the next one any more. The house opens
+   * two or three ways out and the party picks — see the three-layer note over
+   * `openExitsFor`.
+   * ═══════════════════════════════════════════════════════════════════════ */
+
+  /**
+   * The ways out of the wing the party is standing in.
+   *
+   * Recomputed rather than read off `pendingWing` when there is no open fork,
+   * so a screen can ask "where could we go from here" at any time (the atlas
+   * draws them) without a fork existing.
+   */
+  wingOptions() {
+    if (this.pendingWing) return this.pendingWing.options;
+    return wingOffer(this.seed, this.region, this.route, this.regionIndex, this.wings);
+  }
+
+  /** Open the fork and put the estate drawing on the screen. */
+  openWingFork() {
+    const options = wingOffer(this.seed, this.region, this.route, this.regionIndex, this.wings);
+    this.pendingWing = { from: this.region, step: this.regionIndex, options, votes: {} };
+    this.save();
+    bus.emit('run:wings', { from: this.region, options, run: this });
+    /* The ATLAS, not the map. The map is the plan of one wing; this decision is
+       about the house, and the estate drawing is the only screen that shows
+       which wings exist, which you have surveyed, and what is held in them —
+       which is precisely the information the choice is made on. */
+    return this._goto('atlas', { choose: '1' });
+  }
+
+  /** Seats that still owe a vote at the wing fork. */
+  wingVotesPending() {
+    if (!this.pendingWing) return [];
+    return this.voters().filter(seat => this.pendingWing.votes[seat] === undefined);
+  }
+
+  /**
+   * One seat's vote for the next wing. Where `ACT.WING_CHOOSE` lands.
+   *
+   * The same shape as `voteNode` and for the same reason — STS2-REFERENCE §8.5:
+   * one shared route, everybody votes, a weighted roulette settles a split, and
+   * the host has no special authority. A party of one resolves on its own first
+   * vote and takes no number at all, which is what keeps a solo run
+   * byte-identical to the seed.
+   *
+   * A fork with ONE option is not a fork: the last crossing is always the Heart
+   * and there is nothing to ask. It resolves on the first vote without a roll,
+   * exactly as `voteNode` short-circuits a single legal door.
+   */
+  voteWing(slug, seat = this.localSeat) {
+    const fork = this.pendingWing;
+    if (!fork) return null;
+    if (!fork.options.some(o => o.to === slug)) return null;
+    const n = seat | 0;
+    if (!this.voters().includes(n)) return null;      // a fallen seat has no say
+    fork.votes[n] = slug;
+    this.save();
+    bus.emit('wing:vote', { seat: n, region: slug, run: this,
+                            pending: this.wingVotesPending().slice() });
+    const forced = fork.options.length <= 1;
+    if (this.wingVotesPending().length && !forced) return null;
+    return this.resolveWingVote();
+  }
+
+  /**
+   * Spin the roulette and cross. Every client runs this; nobody publishes an
+   * answer. `fork(tag)` is a stream built from the seed and the tag, so the
+   * draw moves the run's master stream by nothing at all — the same argument
+   * as `resolveVote`, and the reason a party's disagreement cannot shift a
+   * later encounter roll.
+   */
+  resolveWingVote() {
+    const fork = this.pendingWing;
+    if (!fork) return null;
+    const seats = Object.keys(fork.votes).map(Number).sort((a, b) => a - b);
+    if (!seats.length) return null;
+    const tally = new Map();
+    for (const seat of seats) {
+      const to = fork.votes[seat];
+      tally.set(to, (tally.get(to) || 0) + 1);
+    }
+    const items = [...tally].map(([id, w]) => ({ id, w }));
+    let winner = items[0].id;
+    if (items.length > 1) {
+      const ballot = seats.map(s => `${s}:${fork.votes[s]}`).join(',');
+      winner = this.fork(`wing|${fork.from}|${fork.step}|${ballot}`).weighted(items).id;
+    }
+    const result = { winner, from: fork.from, votes: { ...fork.votes },
+                     tally: Object.fromEntries(tally), rolled: items.length > 1 };
+    this.pendingWing = null;
+    this.lastWingVote = result;
+    bus.emit('wing:chosen', { ...result, run: this });
+    return this.advanceRegion(winner);
   }
 
   /**
@@ -2507,7 +2801,16 @@ export class Run {
    * Measured with this in: wing-2 Scuffle deaths 5 -> 0, reached the boss 86.4% -> 95.5%,
    * whole-run survival 46.7% -> 50.0%.
    */
-  advanceRegion() {
+  /**
+   * @param {string|null} next  the wing chosen at the fork. Omitted (the co-op
+   *   suite and any headless driver that just wants to cross) takes the first
+   *   way on the house is offering, which is a real option and not a fallback
+   *   to the old dealt route.
+   */
+  advanceRegion(next = null) {
+    const options = this.wingOptions();
+    const to = (next && options.some(o => o.to === next)) ? next
+      : (options[0] ? options[0].to : HEART);
     /**
      * THE BREATHER IS FOR THE WHOLE PARTY.
      *
@@ -2529,7 +2832,13 @@ export class Run {
     }
     if (healed > 0) bus.emit('run:heal', { amount: healed, reason: 'wing' });
     this.regionIndex++;
-    this.region = this.route[this.regionIndex];
+    /* The route GROWS. `route[regionIndex] = to` rather than a push, so a
+       crossing is idempotent against a replayed input — the net layer applies
+       every client's log and a doubled `wing.choose` must not walk two wings. */
+    this.route[this.regionIndex] = to;
+    this.route.length = this.regionIndex + 1;
+    this.region = to;
+    this.pendingWing = null;
     this.markWingMapped(this.region);
     this.encounterHistory = [];
     this._curiosityHealUsed = false;
@@ -2612,6 +2921,21 @@ export class Run {
       })),
 
       region: this.region, regionIndex: this.regionIndex, route: this.route.slice(),
+      wings: this.wings,
+      /* The open fork, if the party quit standing on one. Options are
+         recomputable from the seed, but the VOTES are not — a half-cast ballot
+         is real state, and `_voteBook`'s own note explains why the room-level
+         one is deliberately dropped instead: quitting on the blueprint and
+         coming back re-opens that fork with nobody committed. A wing fork is
+         the opposite case. It is the end of a whole act; the party has walked
+         away from the game with a decision half made, and throwing it away
+         costs them the only irreversible choice in the run. */
+      pendingWing: this.pendingWing
+        ? { from: this.pendingWing.from, step: this.pendingWing.step,
+            options: this.pendingWing.options.map(o => ({ ...o })),
+            votes: { ...this.pendingWing.votes } }
+        : null,
+      lastWingVote: this.lastWingVote,
       wing: this.wing, depth: this.depth,
       map: this.map,
       currentNodeId: this.currentNodeId,
@@ -2792,14 +3116,35 @@ export class Run {
       return inst;
     }).filter(Boolean);
 
-    run.regionIndex = saved.regionIndex || 0;
+    run.regionIndex = Math.max(0, saved.regionIndex || 0);
     /* A save from before routes existed has no `route`; it walked the whole
        ladder, so that is what it is given back. Rebuilding from the seed would
        hand it a five-wing route and drop it somewhere it had never been. */
     run.route = (Array.isArray(saved.route) && saved.route.length)
       ? saved.route.slice()
       : RUN_REGIONS.slice();
+    /* HOW LONG, before the route is trimmed to the walked part below — a save
+       written while the route was DEALT carries its length there and nowhere
+       else, so this is the only moment the old shape can still answer it. */
+    run.wings = Math.max(2, Math.min(
+      (Number(saved.wings) || run.route.length || EXPEDITION_WINGS) | 0, RUN_REGIONS.length));
+    /* MIGRATION, dealt route -> walked route. A save from before the party
+       chose anything holds all six wings up front; only the first
+       `regionIndex + 1` of them were ever entered, and the rest are wings the
+       house has not been asked about yet. Keeping them would put four unvisited
+       wings on the atlas's trail and make `wingOffer` treat them as visited,
+       which would quietly shrink every remaining fork. */
+    if (run.route.length > run.regionIndex + 1) run.route = run.route.slice(0, run.regionIndex + 1);
+    if (run.regionIndex > run.route.length - 1) run.regionIndex = run.route.length - 1;
     run.region = saved.region || saved.regionId || run.route[run.regionIndex] || run.route[0];
+    if (run.route[run.regionIndex] !== run.region) run.route[run.regionIndex] = run.region;
+    run.pendingWing = saved.pendingWing && Array.isArray(saved.pendingWing.options)
+      ? { from: saved.pendingWing.from || run.region,
+          step: saved.pendingWing.step ?? run.regionIndex,
+          options: saved.pendingWing.options.map(o => ({ ...o })),
+          votes: { ...(saved.pendingWing.votes || {}) } }
+      : null;
+    run.lastWingVote = saved.lastWingVote || null;
     /* A resumed run has already been through everything up to where it stands,
        and a save written before `markWingMapped` existed carries none of it —
        so the whole walked prefix is caught up here rather than only the wing
@@ -2854,6 +3199,10 @@ export class Run {
     if (this.result) return 'gameover';
     if (this.pendingCombat) return 'combat';
     if (this.pendingReward) return 'reward';
+    /* Standing at a fork between wings. Below the reward on purpose: the boss's
+       purse is claimed BEFORE the house opens anything, so a save holding both
+       is a save that quit mid-reward, and the fork is still waiting behind it. */
+    if (this.pendingWing) return 'atlas';
     if (this.pendingEvent && !this.pendingEvent.resolved) return 'event';
     const node = this.currentNode;
     if (node && !this._roomDone) {

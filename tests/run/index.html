@@ -36,8 +36,9 @@
 <script type="module">
 import { RNG, hashSeed } from '../../game/src/core/rng.js';
 import { Save } from '../../game/src/core/save.js';
-import { Run, STARTER_SLUGS, RUN_LENGTH_REGIONS, RUN_REGIONS, EXPEDITION_WINGS } from '../../game/src/state/run.js';
+import { Run, STARTER_SLUGS, RUN_LENGTH_REGIONS, RUN_REGIONS, EXPEDITION_WINGS, wingOffer, openExitsFor } from '../../game/src/state/run.js';
 import { NodeType, REGION_ORDER } from '../../game/src/data/schema.js';
+import { REGION_EXITS } from '../../game/src/state/mapgen.js';
 import { ENCOUNTER_LIST } from '../../game/src/data/encounters.js';
 import { cardById, companionSlugs } from '../../game/src/data/cards.js';
 import * as R from '../../game/src/data/relics.js';
@@ -49,6 +50,27 @@ const sum = document.getElementById('summary');
 const say = (html, cls = '') => { const d = document.createElement('div'); if (cls) d.className = cls; d.innerHTML = html; out.appendChild(d); };
 
 const errors = [];
+
+/**
+ * Claim the purse, and if that cleared a wing, choose the way on.
+ *
+ * Since 2026-09-06 a cleared boss does not hand the party the next wing: it
+ * opens two or three ways on and waits (`Run#openWingFork`). Every driver in
+ * this file used to be able to call `claimReward()` and carry on; now they have
+ * to choose, exactly as a player does. Uniform among what the house offers,
+ * from a keyed fork so the pick takes nothing from the run's master stream and
+ * a seed still reproduces the whole expedition. `voteWing` resolves on the
+ * first vote for a party of one and crosses.
+ */
+function claimAndCross(run) {
+  const r = run.claimReward();
+  if (run.pendingWing) {
+    const opts = run.pendingWing.options;
+    run.voteWing(opts[run.fork(`gate:wing:${run.regionIndex}`).int(opts.length)].to);
+  }
+  return r;
+}
+
 let ENDS_DETAIL = [], DEPTH_FRAC = 0;
 /* Which kinds of room the 50 expeditions actually enter. A deliberate router
    is a better player and a WORSE sampler, and the trade is only acceptable if
@@ -58,6 +80,8 @@ const VISITED = {};
 const REACH = [];
 /** How many of the fifty expeditions routed through each wing. */
 const ROUTED = [];
+/** Where four thousand routes go — the reachability gate. */
+const ROUTE_SWEEP = [];
 /** Cost-per-fight by region — the ladder priced rather than guessed at. */
 const LEDGER_TABLE = [];
 /** Keepsakes and cards handed over, by room kind. */
@@ -486,7 +510,7 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
         if (take) { run.takeRewardCard(take); log(`  took ${take}`); }
         else { run.skipRewardCards(); log('  skipped'); }
       }
-      run.claimReward();
+      claimAndCross(run);
       bank();
       continue;
     }
@@ -520,7 +544,7 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
             await run.eventCombat(p.combat);
             if (run.combat) { await playCombat(run.combat, 200, run); }
             if (run.result) break;
-            if (run.pendingReward) { run.claimReward(); bank(); continue; }
+            if (run.pendingReward) { claimAndCross(run); bank(); continue; }
           }
         }
       }
@@ -650,25 +674,47 @@ async function main() {
     check(run.result === 'victory' || run.result === 'defeat',
       `seed ${seed}: ended with result=${run.result}`);
 
-    /* THE ROUTE. An expedition walks a selection of wings, not the ladder, so
-       the four things that keep it a game rather than a shuffle are asserted on
-       every one of the fifty:
-         - it starts at the front door and ends at the Heart, because the Heart
-           is the ENDING and a route that could omit it is a run with no finish;
-         - the middle keeps REGION_ORDER, so difficulty still climbs and the
-           Bathhouse can never be wing two;
-         - it is the declared length;
-         - and it holds no wing twice. */
+    /* THE ROUTE, and what it now means. Until 2026-09-06 six wings were dealt
+       up front in REGION_ORDER order and `route` was that list; the assertions
+       here checked the DEAL. The party chooses each crossing now, so `route` is
+       the wings actually WALKED, it grows one at a time, and "in ladder order"
+       is not merely untrue — it is the thing that was removed.
+
+       What still has to hold on every one of the fifty:
+         - it starts at the front door;
+         - it never holds a wing twice, because there is no way back through one;
+         - it is never longer than the expedition is;
+         - it reaches the Heart exactly when the run was WON, because the Heart
+           is the ending — a victory that skipped it would be a run with no
+           finish, and a defeat that contains it is a run that ended after it;
+         - and every single crossing was one of the ways the house actually
+           opened. That last one is the real gate: it re-derives the offer from
+           the seed with `wingOffer` and checks the step against it, so a route
+           that walked through a wall fails here rather than looking plausible. */
     const rt = run.route || [];
-    check(rt.length === EXPEDITION_WINGS,
-      `seed ${seed}: route is ${rt.length} wings, expected ${EXPEDITION_WINGS}`);
-    check(rt[0] === RUN_REGIONS[0] && rt[rt.length - 1] === RUN_REGIONS[RUN_REGIONS.length - 1],
-      `seed ${seed}: route runs ${rt[0]} -> ${rt[rt.length - 1]}, not foyer -> heart`);
-    const idx = rt.map(id => RUN_REGIONS.indexOf(id));
-    check(idx.every((n, i) => n >= 0 && (i === 0 || n > idx[i - 1])),
-      `seed ${seed}: route is out of ladder order — ${rt.join(' > ')}`);
+    check(rt[0] === RUN_REGIONS[0], `seed ${seed}: route starts at ${rt[0]}, not the Foyer`);
     check(new Set(rt).size === rt.length,
       `seed ${seed}: route repeats a wing — ${rt.join(' > ')}`);
+    check(rt.length <= run.wings,
+      `seed ${seed}: route is ${rt.length} wings, longer than the ${run.wings} tonight`);
+    const HEART_ID = RUN_REGIONS[RUN_REGIONS.length - 1];
+    const wonIt = run.result === 'victory';
+    /* A victory MUST end at the Heart; a defeat may — dying in the Heart is a
+       run that got all the way and lost there, and the first version of this
+       check called that a failure. What must never happen is the Heart turning
+       up anywhere but last, which is what makes it the ending. */
+    if (wonIt) {
+      check(rt[rt.length - 1] === HEART_ID && rt.length === run.wings,
+        `seed ${seed}: won on ${rt.length} wings ending at ${rt[rt.length - 1]} — ${rt.join(' > ')}`);
+    }
+    check(rt.indexOf(HEART_ID) < 0 || rt.indexOf(HEART_ID) === rt.length - 1,
+      `seed ${seed}: the Heart is not the last wing — ${rt.join(' > ')}`);
+    for (let i = 1; i < rt.length; i++) {
+      const offer = wingOffer(seed, rt[i - 1], rt.slice(0, i), i - 1, run.wings);
+      check(offer.some(o => o.to === rt[i]),
+        `seed ${seed}: crossed ${rt[i - 1]} -> ${rt[i]}, which the house never opened `
+        + `(it offered ${offer.map(o => o.to).join(', ') || 'nothing'})`);
+    }
     check(run.deck.length >= 5 && run.deck.length <= 60,
       `seed ${seed}: deck size out of range (${run.deck.length})`);
     check(run.deck.every(c => !!cardById(c.id)),
@@ -774,7 +820,7 @@ async function main() {
           const take = P.draft(run.pendingReward.cards, POLICY, draftCtx(run));
           if (take) run.takeRewardCard(take); else run.skipRewardCards();
         }
-        run.claimReward();
+        claimAndCross(run);
         continue;
       }
       if (run.pendingEvent) {
@@ -844,7 +890,7 @@ async function main() {
       if (!legal.length) break;
       const id = legal[pick.int(legal.length)];
       await run.enterNode(id);
-      if (run.combat) { await playCombat(run.combat, 200, run); if (run.pendingReward) run.claimReward(); }
+      if (run.combat) { await playCombat(run.combat, 200, run); if (run.pendingReward) claimAndCross(run); }
       else if (run.pendingEvent || run.pendingShop) run.leaveNode();
       else run.leaveNode();
       if (run.result) break;
@@ -930,7 +976,7 @@ async function main() {
       const ids = legal.filter(id => run.sceneFor(run.nodeById(id)) === 'combat');
       await run.enterNode((ids.length ? ids : legal)[pick.int((ids.length ? ids : legal).length)]);
       if (run.combat) break;
-      if (run.pendingReward) run.claimReward();
+      if (run.pendingReward) claimAndCross(run);
       else run.leaveNode();
       if (run.result) break;
     }
@@ -1044,7 +1090,7 @@ async function main() {
       const run = new Run({ companion: 'bones', kid: 'mateo', seed });
       const legal = run.legalNextIds();
       await run.enterNode(legal[0]);
-      if (run.combat) { await playCombat(run.combat, 200, run); if (run.pendingReward) run.claimReward(); }
+      if (run.combat) { await playCombat(run.combat, 200, run); if (run.pendingReward) claimAndCross(run); }
       else run.leaveNode();
       const raw = Save.loadRun();
       if (raw && raw.seed === run.seed && Array.isArray(raw.deck)) storeOk++;
@@ -1540,22 +1586,118 @@ async function main() {
       + `<pre>victories: ${vU}/${VICTORIES.unaidedOf} unaided, ${vS}/${VICTORIES.shepherdedOf} shepherded</pre>`);
   }
 
-  /* WHICH WINGS THE HOUSE OPENED. With a routed expedition every wing must
-     still be reachable — a region nothing ever routes through is unreachable
-     content, which is the class this project has spent whole sessions on. */
+  /* WHICH WINGS THE HOUSE OPENED.
+     A region nothing ever routes through is unreachable content, which is the
+     class this project has spent whole sessions on — so this is gated. But it
+     is NOT gated on these fifty any more, and that change is the point:
+
+     fifty expeditions is a tiny sample of a graph, and half of them die before
+     the third wing, so the wings that sit three doors from the front hall were
+     failing this check for the arithmetic of the sample rather than for
+     anything about the router. The fifty are still PRINTED, because how deep a
+     real run gets is worth seeing beside where it went.
+
+     The gate is the sweep below: four thousand routes off the real
+     `wingOffer`, with a player who picks uniformly among what the house opens.
+     That is strictly stronger than "at least one of fifty" — it asserts a
+     FLOOR under every wing, so a wing quietly falling to 2% would fail here
+     while still passing the old check. */
   say('<h2>which wings the routes opened</h2>');
   {
     const seen = {};
     for (const r of results) for (const id of (r.run.route || [])) seen[id] = (seen[id] || 0) + 1;
-    let wrows = '<table><tr><th>wing</th><th>expeditions</th></tr>';
+    let wrows = '<table><tr><th>wing</th><th>of the 50</th></tr>';
     for (const id of RUN_REGIONS) {
-      wrows += `<tr><td>${id}</td><td class="${seen[id] ? '' : 'err'}">${seen[id] || 0}</td></tr>`;
+      wrows += `<tr><td>${id}</td><td>${seen[id] || 0}</td></tr>`;
       ROUTED.push({ id, runs: seen[id] || 0 });
     }
-    const never = RUN_REGIONS.filter(id => !seen[id]);
-    say(wrows + '</table>'
-      + `<pre>${never.length ? 'UNREACHABLE: ' + never.join(', ') : 'every wing was routed through at least once'}</pre>`);
-    check(!never.length, `wings no expedition ever opened: ${never.join(', ')}`);
+    say(wrows + '</table>');
+  }
+
+  say('<h2>where four thousand routes go</h2>');
+  {
+    const N = 4000, W = EXPEDITION_WINGS;
+    /** The floor every wing has to clear. Measured; see the note. */
+    const FLOOR = 0.07;
+    const runs = {}, slots = {};
+    for (const id of RUN_REGIONS) { runs[id] = 0; slots[id] = new Array(W).fill(0); }
+    let bad = 0, empty = 0, s = 987654321;
+    const rnd = (n) => { s = (s * 1103515245 + 12345) & 0x7fffffff; return s % n; };
+    for (let i = 0; i < N; i++) {
+      const seed = 5000 + i;
+      const route = [RUN_REGIONS[0]];
+      for (let step = 0; step < W - 1; step++) {
+        const off = wingOffer(seed, route[route.length - 1], route, step, W);
+        if (!off.length) { empty++; break; }
+        const to = off[rnd(off.length)].to;
+        if (route.includes(to)) bad++;
+        route.push(to);
+      }
+      route.forEach((id, k) => { runs[id]++; slots[id][k]++; });
+    }
+    let rows = '<table><tr><th>wing</th><th>% of routes</th><th>wing 1..6</th></tr>';
+    const starved = [];
+    for (const id of RUN_REGIONS) {
+      const pct = runs[id] / N;
+      const mid = id !== RUN_REGIONS[0] && id !== RUN_REGIONS[RUN_REGIONS.length - 1];
+      if (mid && pct < FLOOR) starved.push(`${id} ${(pct * 100).toFixed(1)}%`);
+      rows += `<tr><td>${id}</td><td class="${mid && pct < FLOOR ? 'err' : ''}">`
+        + `${(pct * 100).toFixed(1)}%</td><td>${slots[id].join(' · ')}</td></tr>`;
+      ROUTE_SWEEP.push({ id, pct: +(pct * 100).toFixed(1), slots: slots[id].slice(), mid });
+    }
+    say(rows + '</table>');
+    check(!empty, `${empty} forks offered the party nowhere to go`);
+    check(!bad, `${bad} crossings walked into a wing the party had already cleared`);
+    check(!starved.length, `wings under the ${(FLOOR * 100).toFixed(0)}% floor: ${starved.join(', ')}`);
+
+    /* And the doors themselves: tonight's open set must be a real subset of the
+       architecture, never empty, and never the Heart — which is reached from
+       wherever the party happens to be standing on the last crossing, not
+       through a door. */
+    let doorErr = 0;
+    for (const id of RUN_REGIONS) {
+      const open = openExitsFor(11, id);
+      const arch = new Set((REGION_EXITS[id] || []).map(e => e.to));
+      if (id !== RUN_REGIONS[RUN_REGIONS.length - 1] && !open.length) doorErr++;
+      if (open.some(x => !arch.has(x) || x === RUN_REGIONS[RUN_REGIONS.length - 1])) doorErr++;
+    }
+    check(!doorErr, `${doorErr} wings opened a door the blueprint does not have`);
+
+    /* THE BLUEPRINT ITSELF. `REGION_EDGES` is a transcription of
+       `docs/design/01-mansion-structure.md`, and a transcription is exactly the
+       kind of thing that rots by one line without anything failing — so the
+       shape it has to have is asserted rather than assumed:
+         every edge reads both ways (a staircase is a staircase from both ends);
+         every edge carries the doc's reason, because the atlas prints it;
+         no wing is a dead end;
+         and the whole house is one connected building. */
+    {
+      const bad = [];
+      for (const [id, exits] of Object.entries(REGION_EXITS)) {
+        if (!RUN_REGIONS.includes(id)) bad.push(`${id} is not a wing`);
+        for (const e of exits) {
+          if (!e.why || !e.why.trim()) bad.push(`${id} -> ${e.to} has no reason`);
+          if (!(REGION_EXITS[e.to] || []).some(x => x.to === id)) {
+            bad.push(`${id} -> ${e.to} is one-way`);
+          }
+        }
+        // The Heart is allowed its single deep route; everything else joins twice.
+        if (id !== RUN_REGIONS[RUN_REGIONS.length - 1] && exits.length < 2) {
+          bad.push(`${id} has ${exits.length} exit(s)`);
+        }
+      }
+      const seen2 = new Set([RUN_REGIONS[0]]), q = [RUN_REGIONS[0]];
+      for (let i = 0; i < q.length; i++) {
+        for (const e of (REGION_EXITS[q[i]] || [])) {
+          if (!seen2.has(e.to)) { seen2.add(e.to); q.push(e.to); }
+        }
+      }
+      const cut = RUN_REGIONS.filter(id => !seen2.has(id));
+      if (cut.length) bad.push(`unreachable from the Foyer on the blueprint: ${cut.join(', ')}`);
+      say(`<pre>blueprint: ${Object.values(REGION_EXITS).reduce((n, v) => n + v.length, 0) / 2} `
+        + `edges across ${RUN_REGIONS.length} wings, all two-way, all reasoned</pre>`);
+      check(!bad.length, `blueprint graph: ${bad.slice(0, 6).join('; ')}`);
+    }
   }
 
   say('<h2>rooms entered, by kind</h2>');
@@ -1629,7 +1771,7 @@ autosaves ${saveCount}</pre>`);
     ms, meanRooms: +avg.toFixed(1), ends,
     lengths, decks, purses, keeps, saveCount,
     endsDetail: ENDS_DETAIL, depthFrac: DEPTH_FRAC, visited: VISITED,
-    reach: REACH, routed: ROUTED, victories: VICTORIES, draws: DRAWS, ledger: LEDGER_TABLE, purse: PURSE_TABLE,
+    reach: REACH, routed: ROUTED, routeSweep: ROUTE_SWEEP, routeFloor: 7, victories: VICTORIES, draws: DRAWS, ledger: LEDGER_TABLE, purse: PURSE_TABLE,
     depth: DEPTH_TABLE, arrival: ARRIVAL_TABLE,
     teach: TEACH_TABLE, teachCover: TEACH_COVER, reachable: REACHABLE_TABLE,
     tiers: TIER_TABLE, patience: PATIENCE_ROW, pierceCover: PIERCE_ROW,

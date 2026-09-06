@@ -203,6 +203,140 @@ export const REGIONS = Object.fromEntries([
 export function regionMeta(regionId) {
   return REGIONS[regionId] || REGIONS['foyer'];
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HOW THE WINGS JOIN UP.
+//
+// Transcribed from `docs/design/01-mansion-structure.md` § "Region adjacency
+// across the complete mansion", which opens by saying exactly why this is a
+// table and not a random graph: "The regions should not merely touch because
+// the map needs them to. Their major permanent relationships should have
+// architectural reasons."  Every edge below is one the doc names, and the third
+// element is the reason the doc gives for it — printed on the estate drawing
+// when the player is choosing where to go, so the house explains itself.
+//
+// SYMMETRIC, and the doc is not. It lists the Foyer's connections without the
+// Nursery and the Nursery's connections with the Foyer; the Study reaches the
+// Sleeping Quarters and the Sleeping Quarters' own list does not reach back.
+// Those are omissions in a prose list, not one-way doors — a staircase is a
+// staircase from both ends — so the edges are declared once here and read in
+// both directions.
+//
+// This is LAYER ONE of the doc's three circulation layers: "the ordinary
+// connections printed on the clean blueprint … the believable underlying
+// mansion." Layer two (which of them are usable tonight) is
+// `Run#openExitsFor`; layer three (a door where no door should exist) is
+// `Run#wingOptions`'s manifested fallback.
+// ─────────────────────────────────────────────────────────────────────────────
+/** @type {[string, string, string][]}  a, b, why */
+export const REGION_EDGES = Object.freeze([
+  // central entrance block
+  ['foyer', 'ballroom',            'the formal enfilade off the entrance hall'],
+  ['foyer', 'study-library',       'the library doors off the entrance hall'],
+  ['foyer', 'sleeping-quarters',   'the Grand Staircase'],
+  ['foyer', 'kitchens-cellars',    'dining and service circulation'],
+  ['foyer', 'secret-passages',     'several concealed service routes'],
+  ['foyer', 'nursery',             'the family stair to the upper floor'],
+  // residential block
+  ['nursery', 'sleeping-quarters', 'the night corridor between the two'],
+  ['nursery', 'secret-passages',   'a panel behind the toy cupboard'],
+  ['sleeping-quarters', 'bathhouse',         'the bathing corridor'],
+  ['sleeping-quarters', 'attic-observatory', 'the attic stairs'],
+  ['sleeping-quarters', 'secret-passages',   'servants’ doors on every landing'],
+  ['sleeping-quarters', 'study-library',     'the upper stairs'],
+  ['sleeping-quarters', 'lampworks',         'the maintenance shaft behind the linen room'],
+  // formal block
+  ['ballroom', 'kitchens-cellars', 'the service passage behind the supper room'],
+  ['ballroom', 'pumpkin-grounds',  'the terrace'],
+  ['ballroom', 'secret-passages',  'a mirrored door in the velvet suites'],
+  ['study-library', 'attic-observatory', 'the upper stairs to the tower'],
+  ['study-library', 'secret-passages',   'a bookcase that opens'],
+  // service block
+  ['kitchens-cellars', 'greenhouse',      'the kitchen garden door'],
+  ['kitchens-cellars', 'kennels',         'the feed store'],
+  ['kitchens-cellars', 'lampworks',       'the service shaft down from the sculleries'],
+  ['kitchens-cellars', 'secret-passages', 'the dumbwaiter runs'],
+  ['kitchens-cellars', 'crypt',           'old foundation passages beneath the cellars'],
+  ['lampworks', 'attic-observatory', 'the vertical shaft up to the roof floors'],
+  ['lampworks', 'bathhouse',         'the bathhouse infrastructure'],
+  ['lampworks', 'secret-passages',   'maintenance floors open into the walls'],
+  // the exterior estate
+  ['greenhouse', 'pumpkin-grounds', 'the glass walk out to the courtyard'],
+  ['greenhouse', 'hedge-maze',      'the far end of the glass complex'],
+  ['pumpkin-grounds', 'hedge-maze', 'the moon gate'],
+  ['pumpkin-grounds', 'kennels',    'the exercise yard gate'],
+  ['kennels', 'graveyard',          'the path behind the animal ward'],
+  ['graveyard', 'hedge-maze',       'the burial paths run into the maze'],
+  ['graveyard', 'crypt',            'the steps down from the burial ring'],
+  // the interior hidden structure — "can potentially connect to almost every region"
+  ['attic-observatory', 'secret-passages', 'the rafters run the length of the house'],
+  ['crypt', 'secret-passages',             'a sealed stair nobody sealed'],
+  ['bathhouse', 'secret-passages',         'the drain gallery'],
+  // and the one ordinary way in to the middle of it all
+  ['crypt', 'heart', 'deep routes that were never on the plan'],
+]);
+
+/** slug -> [{ to, why }], both directions. Built once. */
+export const REGION_EXITS = (() => {
+  const out = Object.fromEntries(REGION_ORDER.map(s => [s, []]));
+  for (const [a, b, why] of REGION_EDGES) {
+    if (!out[a] || !out[b]) throw new Error(`[mapgen] REGION_EDGES names an unknown wing: ${a} / ${b}`);
+    out[a].push({ to: b, why });
+    out[b].push({ to: a, why });
+  }
+  return Object.freeze(Object.fromEntries(
+    Object.entries(out).map(([k, v]) => [k, Object.freeze(v)])));
+})();
+
+/** Every wing this one has an architectural connection to. */
+export function exitsFrom(regionId) {
+  return REGION_EXITS[regionId] || [];
+}
+
+/**
+ * Why these two join, in the house's own words. `null` when they do not — which
+ * is what the atlas prints as a manifested connection rather than a door.
+ */
+export function exitReason(from, to) {
+  const e = (REGION_EXITS[from] || []).find(x => x.to === to);
+  return e ? e.why : null;
+}
+
+/**
+ * How many doors apart two wings are on the clean blueprint.
+ *
+ * Breadth-first over `REGION_EXITS`, memoised from each source — seventeen
+ * nodes and thirty-seven edges, so the whole table is a few microseconds and is
+ * built at most seventeen times in a session.
+ *
+ * `Run#wingOffer` uses it to decide where a MANIFESTED connection goes: a door
+ * that should not exist is more interesting the further it reaches, and the
+ * exterior estate is three and four doors from the front hall. Without the
+ * weighting, a route that only ever walks outward from the Foyer reaches the
+ * Moon Courtyard in 1.3% of expeditions — measured, and the same
+ * unreachable-content class the 2026-08-30 sweep spent a day on.
+ *
+ * @returns {number} 0 for the same wing, Infinity when there is no path
+ */
+const DIST = new Map();
+export function wingDistance(from, to) {
+  if (from === to) return 0;
+  let d = DIST.get(from);
+  if (!d) {
+    d = new Map([[from, 0]]);
+    const q = [from];
+    for (let i = 0; i < q.length; i++) {
+      const at = q[i], n = d.get(at) + 1;
+      for (const e of (REGION_EXITS[at] || [])) {
+        if (d.has(e.to)) continue;
+        d.set(e.to, n);
+        q.push(e.to);
+      }
+    }
+    DIST.set(from, d);
+  }
+  return d.has(to) ? d.get(to) : Infinity;
+}
 export function blueprintSectionUrl(regionId) {
   return `assets/blueprint/section${String(sectionNo(regionId)).padStart(2, '0')}.png`;
 }

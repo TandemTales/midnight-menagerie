@@ -86,13 +86,26 @@ async def main(a):
 
     routed = res.get("routed") or []
     if routed:
-        never = [r["id"] for r in routed if not r["runs"]]
         print("")
-        print("which wings the routes opened  (of 50 expeditions)")
+        print("which wings these 50 expeditions walked")
         for r in routed:
             print("  %-22s %3d %s" % (r["id"], r["runs"], bar(r["runs"], 2)))
-        print("  " + ("UNREACHABLE: " + ", ".join(never) if never
-                      else "every wing was routed through at least once"))
+        print("  (informational — half these runs die before the third wing.")
+        print("   The reachability GATE is the sweep below.)")
+
+    sweep = res.get("routeSweep") or []
+    if sweep:
+        floor = res.get("routeFloor", 7)
+        mids = [r["pct"] for r in sweep if r.get("mid")]
+        print("")
+        print("where 4000 routes go  (uniform pick among what the house opens)")
+        for r in sweep:
+            flag = "  UNDER FLOOR" if r.get("mid") and r["pct"] < floor else ""
+            print("  %-22s %5.1f%% %s%s" % (r["id"], r["pct"], bar(int(r["pct"]), 1), flag))
+        if mids:
+            mids_sorted = sorted(mids)
+            print("  floor %d%% · min %.1f%% · median %.1f%% · max %.1f%%"
+                  % (floor, min(mids), mids_sorted[len(mids_sorted) // 2], max(mids)))
 
     led = res.get("ledger") or []
     if led:

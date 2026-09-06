@@ -237,8 +237,17 @@ export async function expedition({
       const regionBefore = run.regionIndex;
       run.claimReward();
       if (wasBoss) {
-        // `claimReward` → `completeRegion()` → `end(true)` on the last region,
-        // or `advanceRegion()` which rebuilds the map and keeps everything else.
+        /* `claimReward` → `completeRegion()` → `end(true)` on the last wing, or
+           a FORK: since 2026-09-06 a cleared wing does not hand the party the
+           next one, it opens two or three ways on and waits (`openWingFork`).
+           The sim has to choose like a player would. Uniform among what the
+           house offers, off a keyed fork so the pick moves the run's master
+           stream by nothing and a seed still reproduces the expedition exactly.
+           `voteWing` resolves on the first vote for a party of one and crosses. */
+        if (run.pendingWing) {
+          const opts = run.pendingWing.options;
+          run.voteWing(opts[run.fork(`sim:wing:${run.regionIndex}`).int(opts.length)].to);
+        }
         R.cleared = true;
         R.exit = snapshotExit(run);
         out.regionsCleared++;
@@ -427,6 +436,13 @@ export async function bench({ loadout, encounterTier, seed, bot = 'competent',
        route position == ladder position and reports the artefact as a result. */
     run.regionIndex = routeIndex == null ? idx : routeIndex;
     run.region = region;
+    /* `route` is the wings WALKED now and grows one at a time, so pinning the
+       index without pinning the list leaves `route[regionIndex]` undefined and
+       the two disagreeing. Nothing in a bench reads the earlier entries — no
+       bench ever crosses a wing — but a Run whose own route does not contain
+       the region it is standing in is a lie waiting to be believed. */
+    run.route = Array.from({ length: run.regionIndex + 1 },
+      (_, i) => (i === run.regionIndex ? region : (run.route[i] || REGION_ORDER[i])));
     run.encounterHistory = [];
   }
   run.deck = loadout.deck.map((c, i) => ({ uid: `b${i}`, id: c.id, upgraded: !!c.upgraded }));

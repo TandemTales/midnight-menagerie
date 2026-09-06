@@ -77,3 +77,4 @@ to concurrent whole-file writes, so this is now structural rather than a convent
 | [2026-09-01-the-guard-axis](notes/2026-09-01-the-guard-axis.md) | 6 KB |
 | [2026-09-01-the-write-only-flag-sweep](notes/2026-09-01-the-write-only-flag-sweep.md) | 4 KB |
 | [2026-09-06-the-house-the-opening-and-the-atlas](notes/2026-09-06-the-house-the-opening-and-the-atlas.md) | 9 KB |
+| [2026-09-06-the-route-is-walked-not-dealt](notes/2026-09-06-the-route-is-walked-not-dealt.md) | 8 KB |

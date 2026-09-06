@@ -350,17 +350,19 @@ export class MapScene extends Scene {
       path: _route(run),
       // Courage / Lost Things / Keepsakes are the shared HUD's business now.
       floor: run?.floor ?? (regionMeta(regionId).index),
-      /* How many wings tonight's route has. Not `RUN_REGIONS.length` — the
-         house does not open all of them every expedition — and not a constant,
-         because a resumed save from before routes existed legitimately carries
-         the full seventeen and must keep saying so.
+      /* How many wings tonight is. Not `RUN_REGIONS.length` — the house does
+         not open all of them every expedition — and NOT `route.length` any
+         more: since the party chooses each crossing, `route` is the wings they
+         have WALKED and grows by one per wing, so reading it here printed
+         "Wing 1 of 1", then "Wing 2 of 2", all the way to the Heart.
+         `run.wings` is the length, decided when the expedition starts.
 
          The run-less MOCK falls back to `EXPEDITION_WINGS` rather than to the
          mansion's seventeen: a preview with no expedition behind it should
          still describe the expedition a player would get, and "Wing 1 of 17" on
          a screen nobody is playing is the same false promise as on one they
          are. */
-      wings: run?.route?.length ?? EXPEDITION_WINGS,
+      wings: run?.wings ?? EXPEDITION_WINGS,
       mock: !run,
     };
   }
