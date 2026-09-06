@@ -222,11 +222,10 @@ export class TitleScene extends Scene {
 
     // ── the menu ───────────────────────────────────────────────────────────
     /* FREED means freed. On a completely empty localStorage this line said
-       "4 / 16 MENAGERIE COMPANIONS FREED" — the four starters were being
-       counted as rescues — which is a lie on a fresh save and it flattens the
-       counter you spend the entire game raising: your first real rescue moved
-       it from four to five. The starters are named separately, because they are
-       real and pickable, but they are not rescues.
+       "4 / 16 MENAGERIE COMPANIONS FREED" — the starters were being counted as
+       rescues — which is a lie on a fresh save and it flattens the counter you
+       spend the entire game raising. Marmalade is named separately, because she
+       is real and pickable, but she is not a rescue.
        `freedCompanions()` / `starterCount()` — see ui/portrait.js. */
     const rescued = freedCompanions();
     const starters = starterCount();

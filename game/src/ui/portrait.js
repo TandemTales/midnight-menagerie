@@ -166,8 +166,10 @@ export const COMPANION_BY_SLUG = Object.fromEntries(COMPANIONS.map((c) => [c.slu
 export const KID_BY_SLUG = Object.fromEntries(KIDS.map((k) => [k.slug, k]));
 
 // ── who is out of the house ─────────────────────────────────────────────────
-/** The four that already live at the clubhouse on a fresh save. */
-export const STARTER_COMPANIONS = ['marmalade', 'bones', 'pipkin', 'taffy'];
+/** The one who already lives at the clubhouse on a fresh save; everyone else is
+    in the house until you get them out. Kept identical to `STARTER_SLUGS` in
+    state/run.js, which tests/backpack asserts. */
+export const STARTER_COMPANIONS = ['marmalade'];
 
 /**
  * AVAILABLE is not FREED, and treating them as one number put a lie on the
@@ -182,11 +184,10 @@ export const STARTER_COMPANIONS = ['marmalade', 'bones', 'pipkin', 'taffy'];
  * An earlier round unified them because the Title said "0 / 16 freed" while
  * Select and the Clubhouse said "4 / 16" on the same save. That was a real bug,
  * but it got unified in the wrong direction: a brand-new save then opened on
- * "4 / 16 MENAGERIE COMPANIONS FREED" with an empty localStorage, claiming four
- * rescues that never happened — and it flattens every real one, because the
- * first Companion you actually free moves the number to five. The four starters
- * were never in the house. They live at the clubhouse; that is why you have
- * them.
+ * "1 / 16 MENAGERIE COMPANIONS FREED" with an empty localStorage, claiming a
+ * rescue that never happened — and it flattens every real one, because the
+ * first Companion you actually free would move the number to two. Marmalade was
+ * never in the house. She lives at the clubhouse; that is why you have her.
  *
  * So `availableCompanions()` decides what is pickable and whose portrait is
  * unlocked, `freedCompanions()` is the score, and a fresh save reads 0 / 16.

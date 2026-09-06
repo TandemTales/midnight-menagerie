@@ -230,8 +230,15 @@ export function expeditionRoute(seed, wings = EXPEDITION_WINGS) {
 }
 
 /**
- * The four Companions who start at the clubhouse and were never in the house.
- * They are therefore never a meaningful Rescue — see `missingCompanions()`.
+ * MARMALADE, AND NOBODY ELSE. She is the one Companion who starts at the
+ * clubhouse and was never in the house, so she is never a meaningful Rescue —
+ * see `missingCompanions()`. Every other Companion has to be got out of it.
+ *
+ * This was four, which let a fresh save pick Bones, Pipkin or Taffy on day one
+ * and opened the rescue arc three animals short. The set is the only thing that
+ * decides it: `availableCompanions()` is starters plus lifetime rescues, so
+ * narrowing it here closes the other three behind the house without a screen
+ * having to know anything changed.
  *
  * `ui/portrait.js` exports the same list as `STARTER_COMPANIONS` for the
  * Title, Select and Clubhouse screens. It is duplicated rather than imported
@@ -239,7 +246,7 @@ export function expeditionRoute(seed, wings = EXPEDITION_WINGS) {
  * with no DOM at all) and portrait.js is a UI kit. `tests/backpack/index.html`
  * asserts the two lists are identical, so they cannot drift in silence.
  */
-export const STARTER_SLUGS = new Set(['marmalade', 'bones', 'pipkin', 'taffy']);
+export const STARTER_SLUGS = new Set(['marmalade']);
 
 /** Courage is topped up to this fraction of max when a new wing opens. See advanceRegion(). */
 const REGION_ENTRY_FLOOR = 0.85;

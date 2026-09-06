@@ -590,9 +590,9 @@ export class SelectScene extends Scene {
     const revealAll = params.all === '1' || params.all === true;
     this.unlocked = revealAll ? new Set(COMPANIONS.map((c) => c.slug)) : availableCompanions();
     /* The grid tally must never move with `?all=1`: that flag is a review door,
-       not progress. It counts what you actually freed either way — and the four
-       starters are pickable without being freed, so this is a different set
-       from `unlocked` and not just a copy of it. See ui/portrait.js. */
+       not progress. It counts what you actually freed either way — and Marmalade
+       is pickable without being freed, so this is a different set from
+       `unlocked` and not just a copy of it. See ui/portrait.js. */
     this.freed = freedCompanions();
 
     this.state.seed = Number(params.seed) || (Date.now() % 0x7fffffff);
@@ -1036,10 +1036,11 @@ export class SelectScene extends Scene {
       board.removeEventListener('focusout', onBlur);
     });
     /* Linear, not `cols: 4`. Only the Companions you can actually take are on
-       the wall, so on a fresh save the four sit at (0,0), (1,0), (1,1) and
-       (1,2) — arrow keys that step by four rows would land on empty frames that
-       have no element. Left/Right and Up/Down both walk the roster in reading
-       order instead. */
+       the wall — on a fresh save that is Marmalade alone at (0,0) — so arrow
+       keys that step by four would land on empty frames with no element behind
+       them. Left/Right and Up/Down both walk the roster in reading order
+       instead, which is also what makes the wall correct at every size the
+       rescue count can take it through. */
     this._offs.push(rovingFocus(board, '.companion-tile', {
       cols: 0,
       onActivate: (t) => this._pickCompanion(t.dataset.slug),
