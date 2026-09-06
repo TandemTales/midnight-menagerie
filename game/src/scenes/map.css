@@ -572,6 +572,28 @@
 .lg-ico .f { fill: currentColor; }
 .lg-ico .pl, .lg-ico .pw { fill: var(--ink-800); }
 
+/* Out to the estate drawing — `scenes/atlas.js`. Sits between the wing
+   conditions and the control hint, in the bar rather than the banner because
+   the banner tucks itself away and takes no pointer events. */
+.map-atlas {
+  appearance: none; flex: none;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 11px;
+  border: 1px solid color-mix(in srgb, var(--ink-400) 78%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--ink-700) 74%, transparent);
+  color: var(--text-mid);
+  font-family: var(--font-display);
+  font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+  cursor: pointer;
+  transition: color var(--t-quick) var(--ease-out), border-color var(--t-quick) var(--ease-out);
+}
+.map-atlas span { color: var(--spectre-200); font-size: 13px; }
+.map-atlas:hover, .map-atlas:focus-visible {
+  color: var(--text-hi);
+  border-color: color-mix(in srgb, var(--spectre-400) 60%, var(--ink-400));
+}
+
 .map-notes { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 .note {
   position: relative;

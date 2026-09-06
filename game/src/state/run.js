@@ -410,6 +410,40 @@ export class Run {
     this._saveTimer = null;
 
     this._buildMap();
+    this.markWingMapped(this.region);
+  }
+
+  /**
+   * THE BLUEPRINT REMEMBERS THE WINGS YOU HAVE WALKED, and until now nothing
+   * ever wrote to it.
+   *
+   * `Save.data.blueprint.revealed` has existed since the save schema was first
+   * authored, initialised to `['foyer']`, and no code path in the build ever
+   * added a second entry. Two screens read it: the Clubhouse prints
+   * "N / 17 wings" on its recovered-blueprint fragment, and `scenes/gameover.js`
+   * prints "N / 17 wings drawn" on the run-end sheet. Both said ONE, forever, on
+   * every save in existence — a number that cannot move is not a readout, and
+   * nothing failed to make that visible. (CONTRACTS trap 54's shape: the field
+   * described itself as progress and was believed.)
+   *
+   * `scenes/atlas.js` is what made it load-bearing. The atlas gates a wing's
+   * ANNOTATIONS — who is held there, what keeps it — on having surveyed the
+   * wing, which is the same rule `scenes/select.js` enforces by drawing no tile
+   * for a Companion you have not freed. With nothing writing here, the whole
+   * house would have stayed blank however far a player got.
+   *
+   * ON ENTRY, not on clearing: you draw a wing as you survey it, and a wing you
+   * walked into and died in is still a wing you have seen. Lifetime, never
+   * cleared — this is the map the kids keep at the clubhouse, not run state.
+   */
+  markWingMapped(regionId) {
+    if (!regionId) return false;
+    const bp = Save.data.blueprint || (Save.data.blueprint = { revealed: [] });
+    if (!Array.isArray(bp.revealed)) bp.revealed = [];
+    if (bp.revealed.includes(regionId)) return false;
+    bp.revealed.push(regionId);
+    Save.save();
+    return true;
   }
 
   // ══ identity / derived ═══════════════════════════════════════════════════
@@ -2496,6 +2530,7 @@ export class Run {
     if (healed > 0) bus.emit('run:heal', { amount: healed, reason: 'wing' });
     this.regionIndex++;
     this.region = this.route[this.regionIndex];
+    this.markWingMapped(this.region);
     this.encounterHistory = [];
     this._curiosityHealUsed = false;
     this._buildMap();
@@ -2765,6 +2800,11 @@ export class Run {
       ? saved.route.slice()
       : RUN_REGIONS.slice();
     run.region = saved.region || saved.regionId || run.route[run.regionIndex] || run.route[0];
+    /* A resumed run has already been through everything up to where it stands,
+       and a save written before `markWingMapped` existed carries none of it —
+       so the whole walked prefix is caught up here rather than only the wing
+       being resumed into. */
+    for (let i = 0; i <= run.regionIndex && i < run.route.length; i++) run.markWingMapped(run.route[i]);
     run.map = saved.map || run.map;
     if (run.map && run.map.regionId !== run.region) run._buildMap();
     run.currentNodeId = saved.currentNodeId || null;

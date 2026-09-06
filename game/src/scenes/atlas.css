@@ -1,0 +1,357 @@
+/* ===========================================================================
+   The Atlas — the whole estate on one sheet.  OWNER: map.
+   Every colour resolves through ui/tokens.css. See CONTRACTS non-negotiable 2.
+   =========================================================================== */
+
+.at-root {
+  position: absolute; inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  color: var(--parchment);
+  font-family: var(--font-body);
+  overflow: hidden;
+
+  --ink: var(--blueprint-ink);
+  --ink-soft: color-mix(in srgb, var(--blueprint-ink) 55%, transparent);
+  --pencil: color-mix(in srgb, var(--ink-900) 84%, var(--parchment-shade));
+  --graphite: color-mix(in srgb, var(--ink-900) 66%, var(--parchment-shade));
+  --mark: color-mix(in srgb, var(--flame-500) 88%, var(--ink-900));
+}
+
+.at-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(120% 90% at 50% 12%,
+      color-mix(in srgb, var(--ink-700) 88%, var(--flame-500)) 0%,
+      var(--ink-900) 76%),
+    var(--ink-900);
+  pointer-events: none;
+}
+
+/* ── header ───────────────────────────────────────────────────────────────── */
+.at-head {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--s-4);
+  padding: var(--s-4) var(--s-6) var(--s-2);
+}
+.at-logo { justify-self: center; }
+
+.at-back {
+  justify-self: start;
+  appearance: none;
+  border: 1px solid var(--surface-line);
+  background: var(--surface-1);
+  color: var(--text-mid);
+  font: inherit;
+  font-size: var(--fs-sm);
+  letter-spacing: .04em;
+  padding: var(--s-2) var(--s-4);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color var(--t-quick) var(--ease-out), border-color var(--t-quick) var(--ease-out);
+}
+.at-back:hover, .at-back:focus-visible { color: var(--text-hi); border-color: var(--surface-line-hi); }
+
+.at-tally {
+  justify-self: end;
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-lo);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.at-tally b { color: var(--flame-300); font-size: var(--fs-lg); margin-right: .3em; }
+
+/* ── body ─────────────────────────────────────────────────────────────────── */
+.at-body {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 25rem);
+  gap: var(--s-6);
+  padding: 0 var(--s-6) var(--s-6);
+  min-height: 0;
+}
+
+/* ── the sheet ────────────────────────────────────────────────────────────── */
+/* The PAPER fills its column; the DRAWING is placed on it by `_fitSheet()`.
+   Sizing the drawing in CSS was tried with `aspect-ratio` and is a trap: once
+   both axes are constrained the ratio is simply dropped, the estate stretches,
+   and every hotspot — which is a percentage of the drawing — points at the
+   wrong wing. One measured box in JS keeps the drawing square and the
+   seventeen rectangles exact, and leaves the paper free to be paper. */
+.at-sheet {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0; min-height: 0;
+  background: var(--parchment);
+  border-radius: var(--radius-sm);
+  box-shadow:
+    0 24px 60px color-mix(in srgb, var(--ink-900) 72%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--parchment-shade) 70%, transparent);
+}
+
+/* The drawn double rule a survey sheet carries, inked not imaged. */
+.at-sheet::before {
+  content: ''; position: absolute; inset: 7px;
+  border: 1px solid var(--ink-soft);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.at-vp {
+  position: absolute;
+  left: 0; top: 0; width: 0; height: 0;      /* placed by _fitSheet() */
+  overflow: hidden;
+  background: var(--parchment);
+}
+
+.at-plate {
+  position: absolute; inset: 0;
+  transform-origin: 0 0;
+  transition: transform var(--t-slow) var(--ease-out);
+  will-change: transform;
+}
+.mm-reduce-motion .at-plate { transition: none; }
+
+.at-estate {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: fill;          /* the plate IS the drawing's aspect — see .at-sheet */
+  user-select: none;
+  /* The master is a scan on its own warm paper; multiplying it onto ours keeps
+     one sheet rather than two stacked ones. */
+  mix-blend-mode: multiply;
+}
+
+.at-ink {
+  position: absolute;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--t-base) var(--ease-out);
+}
+.at-root[data-zoom="1"] .at-ink:not([hidden]) { opacity: .88; }
+.mm-reduce-motion .at-ink { transition: none; }
+
+/* The rest of the house recedes while one wing is being read. */
+.at-root[data-zoom="1"] .at-estate { opacity: .55; }
+.at-estate { transition: opacity var(--t-base) var(--ease-out); }
+.mm-reduce-motion .at-estate { transition: none; }
+
+/* ── the seventeen wings ──────────────────────────────────────────────────── */
+.at-hots { position: absolute; inset: 0; }
+
+.at-hot {
+  position: absolute;
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: var(--ink);
+}
+.at-hot:focus { outline: none; }
+
+/* The highlight, and at zoom the DETAIL BOX: a section is a rectangle of the
+   master, so the redraw has to say where it stops. Ruled corners, the way an
+   enlarged detail is called out on a real drawing. */
+.at-hot__box {
+  position: absolute; inset: 0;
+  border: 1.5px solid transparent;
+  background: transparent;
+  transition:
+    background-color var(--t-quick) var(--ease-out),
+    border-color var(--t-quick) var(--ease-out);
+}
+.at-hot:hover .at-hot__box,
+.at-hot.is-hover .at-hot__box,
+.at-hot:focus-visible .at-hot__box {
+  border-color: color-mix(in srgb, var(--mark) 78%, transparent);
+  background: color-mix(in srgb, var(--mark) 12%, transparent);
+}
+.at-hot.is-sel .at-hot__box {
+  border-color: var(--mark);
+  border-width: 2px;
+  background: transparent;
+}
+.at-hot:focus-visible .at-hot__box {
+  outline: 2px dashed color-mix(in srgb, var(--ink) 70%, transparent);
+  outline-offset: 3px;
+}
+
+/* The pencilled wing name. Hidden until the wing is being looked at, because
+   seventeen labels at once is not a drawing, it is a list. */
+.at-hot__tag {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: clamp(9px, 0.85vw, 13px);
+  letter-spacing: .05em;
+  color: var(--graphite);
+  background: color-mix(in srgb, var(--parchment) 86%, transparent);
+  padding: .15em .5em;
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity var(--t-quick) var(--ease-out);
+  pointer-events: none;
+}
+.at-hot:hover .at-hot__tag,
+.at-hot.is-hover .at-hot__tag,
+.at-hot:focus-visible .at-hot__tag { opacity: 1; }
+/* Under the magnifier the wing speaks for itself and the label is in the way. */
+.at-root[data-zoom="1"] .at-hot.is-sel .at-hot__tag { opacity: 0; }
+.at-root[data-zoom="1"] .at-hot:not(.is-sel) { pointer-events: none; }
+
+/* ── sheet furniture ──────────────────────────────────────────────────────── */
+/* The title block sits BELOW the drawing, in the paper margin `_fitSheet()`
+   leaves for it — never over the plan. `scenes/map.js` learned this twice. */
+.at-foot {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 2.1em;
+  display: flex;
+  justify-content: center;
+  gap: var(--s-4);
+  align-items: center;
+  font-size: var(--fs-xs);
+  color: var(--graphite);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+.at-foot__d { color: color-mix(in srgb, var(--graphite) 70%, transparent); }
+
+.at-wide {
+  position: absolute;
+  right: var(--s-3);
+  top: var(--s-3);
+  z-index: 2;
+  appearance: none;
+  border: 1px solid var(--ink-soft);
+  background: color-mix(in srgb, var(--parchment) 88%, transparent);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--fs-sm);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.at-wide:hover, .at-wide:focus-visible { background: var(--parchment); border-color: var(--ink); }
+
+/* ── the dossier ──────────────────────────────────────────────────────────── */
+.at-dossier {
+  position: relative;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-5);
+  background: var(--surface-1);
+  border: 1px solid var(--surface-line);
+  border-radius: var(--radius-md);
+  min-width: 0;
+}
+.at-dos__rule {
+  height: 1px;
+  background: linear-gradient(90deg,
+    var(--surface-line-hi), color-mix(in srgb, var(--surface-line) 40%, transparent));
+}
+.at-dos__no {
+  margin: 0;
+  font-size: var(--fs-xs);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--text-lo);
+}
+.at-dos__no b { color: var(--flame-300); letter-spacing: .1em; }
+.at-dos__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  line-height: 1.1;
+  color: var(--text-hi);
+}
+.at-dos__form {
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  color: var(--text-mid);
+}
+
+.at-dos__held {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  gap: var(--s-3);
+  align-items: center;
+  padding: var(--s-3);
+  background: var(--surface-2);
+  border: 1px solid var(--surface-line);
+  border-radius: var(--radius-sm);
+}
+.at-dos__held[hidden] { display: none; }
+/* `.pf`'s art is absolutely positioned, so the plate has no intrinsic height —
+   every caller sizes it. Measured 120x0 here before this line existed. */
+.at-dos__pf .pf {
+  width: 100%;
+  aspect-ratio: 828 / 516;         /* PORTRAIT_W / PORTRAIT_H, ui/portrait.js */
+  border-radius: var(--radius-sm);
+}
+.at-dos__who { display: flex; flex-direction: column; gap: .15em; min-width: 0; }
+.at-dos__lbl {
+  font-size: var(--fs-xs);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--text-lo);
+}
+.at-dos__cname { font-family: var(--font-display); font-size: var(--fs-lg); color: var(--flame-200); }
+.at-dos__ctitle { font-size: var(--fs-sm); color: var(--text-mid); }
+
+.at-dos__facts { margin: 0; display: grid; gap: var(--s-2); }
+.at-dos__facts > div {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: var(--s-3);
+  align-items: baseline;
+}
+.at-dos__facts dt {
+  font-size: var(--fs-xs);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--text-lo);
+}
+.at-dos__facts dd { margin: 0; font-size: var(--fs-sm); color: var(--text-hi); }
+
+.at-dossier[data-seen="0"] .at-dos__facts dd { color: var(--text-lo); font-style: italic; }
+.at-dossier[data-seen="0"] .at-dos__state { color: var(--warn-300); font-style: normal; }
+.at-dossier[data-seen="1"] .at-dos__state { color: var(--good-300); }
+
+.at-dos__hint {
+  margin: 0;
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+  color: var(--text-lo);
+  min-height: 2.6em;
+}
+.at-dos__fil {
+  position: absolute;
+  left: 50%; top: calc(var(--s-2) * -1);
+  width: 45%;
+  transform: translateX(-50%);
+  opacity: .28;
+  pointer-events: none;
+}
+.at-dos__fil svg { width: 100%; height: auto; fill: none; stroke: var(--flame-500); stroke-width: 2; }
+
+/* ── narrow ───────────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .at-body { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; }
+  .at-dossier { align-self: end; }
+  .at-dos__held { grid-template-columns: 5.5rem 1fr; }
+}

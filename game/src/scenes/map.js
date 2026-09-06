@@ -19,6 +19,12 @@ import {
   NODE_INFO, sceneForNode, legalNextIds, reachableFrom, hazardById,
 } from '../state/mapgen.js';
 import { mapNodeMarkup, nodeSymbol, hazardSymbol, hazardGlyphMarkup, pencilStroke, seedOf, escapeHtml } from '../ui/mapnode.js';
+/* The traced plans, and the pen that inks them. Lifted out of this file when
+   `scenes/atlas.js` became the SECOND screen that draws them — the format, the
+   cache, the pen solver and the three drawing passes are one thing now, and the
+   two screens can no longer drift apart on line weight. What stays here is how
+   this sheet FRAMES a wing, which is a composition decision, not a drawing one. */
+import { loadPlanTrace, inkTrace, solvePen, traceBox, lru } from '../ui/plan.js';
 import { HUD } from '../ui/hud.js';
 import { pauseStageFor } from './_stage.js';
 import { act, ACT } from '../net/actions.js';
@@ -102,57 +108,15 @@ const MIN_ICON_SCALE = 0.86;
    a survey.  Width still carries the source's own hierarchy (a load-bearing
    wall traced fat stays fatter than a partition), just compressed into a range
    a drafting pen could hold. */
+/* The pen itself lives in `ui/plan.js` (`PEN`) because the atlas inks with the
+   same one.  What is left here is how this SHEET lays the drawing down: the
+   three layers' weight against the paper, which is a property of the sheet — a
+   parchment survey with a wash of the source bitmap under the vectors — and not
+   of the plan. */
 const PLAN = {
-  /* Ink-to-paper ratio the pen is solved for.  The seventeen drawings are not
-     remotely alike: per unit of paper the Impossible Greenhouse carries three
-     times the line length of the Grand Study, and it is shown at half the
-     magnification (3.5x against 6.5x).  One authored stroke weight leaves the Study faint and turns
-     the Greenhouse into a solid blue field — which is how you end up with
-     sixteen wings that look like an afterthought and one that looks right.  So
-     the sheet asks for a COVERAGE and works back to the pen it needs.  Same
-     drawing weight on all seventeen; the pen changes, as it would in a real
-     drawing office. */
-  cover: 0.034,
-  pen:   { min: 1.35, max: 5.20 },     // and the pen box it may solve inside
-  /* How far a single stroke may depart from that pen for its own traced weight.
-     The source does have a hierarchy — envelope walls are drawn heavier than
-     partitions — and flattening it loses the plan's structure. */
-  vary:  0.52,
-  pierR: 0.62,        // pier radius as a fraction of the pen
-  fineR: 0.40,        // and the drawing's small change, smaller and lighter
-  fineA: 0.70,
   ink:   0.74,        // the linework's weight against the paper
-  bleed: 0.19,        // the same drawing again, offset — ink soaking into paper
   wash:  0.09,        // the SOURCE bitmap under it all: grain, ornament, tone
 };
-/**
- * Small LRU, shared by the two per-section caches below.
- *
- * The map is re-entered on every single room, so recomputing either of these
- * each time is wasteful — but holding all seventeen forever is worse: the
- * parsed traces alone would be tens of megabytes of number arrays for wings the
- * run left two hours ago.  A run walks the wings in order and only ever needs
- * the one it is standing in, so three is generous.
- */
-const KEEP = 3;
-function lru(map, key, make) {
-  if (map.has(key)) {
-    const v = map.get(key);
-    map.delete(key); map.set(key, v);            // touch
-    return v;
-  }
-  const v = make();
-  map.set(key, v);
-  while (map.size > KEEP) map.delete(map.keys().next().value);
-  return v;
-}
-
-/** Traced plans — see tools/blueprint_trace.py. */
-const PLAN_CACHE = new Map();
-function loadPlanTrace(url) {
-  return lru(PLAN_CACHE, url,
-    () => fetch(url).then(r => (r.ok ? r.json() : null)).catch(() => null));
-}
 
 /**
  * The wash layer: the section PNG with its paper dissolved away, so what is
@@ -474,6 +438,16 @@ export class MapScene extends Scene {
           <div class="map-legend" aria-label="Blueprint key"></div>
           <div class="map-notes" aria-label="Wing conditions"></div>
           <div class="map-ballot" aria-live="polite" hidden></div>
+          <!-- Out to the estate drawing. In the BAR, not the banner: the banner
+               tucks itself away on the first interaction (see tuck() in _bind),
+               so a control living there is unreachable for most of the screen's
+               life, and it takes no pointer events besides.
+               NO BACKTICKS IN HERE. This is inside a template literal and one
+               backtick ends it -- CONTRACTS trap 1, for the third time. -->
+          <button class="map-atlas" type="button"
+                  title="The recovered plan of the whole estate — every wing, and which of the Menagerie is held where. Press H.">
+            <span aria-hidden="true">&#9974;</span> The whole house
+          </button>
           <div class="map-hint" aria-hidden="true">
             <b>drag</b> pan · <b>scroll</b> zoom · <b>↑↓</b> choose · <b>⏎</b> go
           </div>
@@ -628,12 +602,7 @@ export class MapScene extends Scene {
     // of the wing — most visibly on the secret passages, where it left a band of
     // bare paper along the foot of the sheet.  The tracer records the ink's
     // bounding box for exactly this.
-    let bx = 0, by = 0, bw = s.w, bh = s.h;
-    if (t && t.box) {
-      const q = t.q || 1;
-      bx = t.box[0] / q; by = t.box[1] / q;
-      bw = Math.max(1, t.box[2] / q - bx); bh = Math.max(1, t.box[3] / q - by);
-    }
+    const { bx, by, bw, bh } = traceBox(t, s.w, s.h);
     // in sheet-facing orientation
     const pw = s.rot ? bh : bw, ph = s.rot ? bw : bh;
     const scale = Math.max(WIN.w / pw, WIN.h / ph);
@@ -643,10 +612,7 @@ export class MapScene extends Scene {
     // IS the visible plan, so drawn-line area / window area reduces to
     // len * pen / (area * scale) with everything in the section's own units —
     // no need to know which part of the wing the window happens to be showing.
-    let pen = 3.2;
-    if (t && t.len > 0 && t.area > 0) {
-      pen = clampN(PLAN.cover * t.area * scale / t.len, PLAN.pen.min, PLAN.pen.max);
-    }
+    const pen = solvePen(t, scale);
     return {
       scale, dw, dh, bx, by, bw, bh, pen,
       dx: WIN.x + (WIN.w - dw) / 2,
@@ -704,60 +670,11 @@ export class MapScene extends Scene {
       o.restore();
     }
 
-    if (t) {
-      const inv = 1 / fit.scale;
-      const Qn = (t.q || 1);
-      o.lineCap = 'round'; o.lineJoin = 'round';
-      o.strokeStyle = ink; o.fillStyle = ink;
-
-      // Every mark is the solved pen, times how heavy the tracer found THIS
-      // mark against the drawing's own median — held inside +-52% so the
-      // hierarchy survives without any one line running away with the sheet.
-      const pen = fit.pen;
-      const wm = (t.wm || 2 * Qn) / Qn, pm = (t.pr || Qn) / Qn;
-      const rel = (v, med) => clampN(v / med, 1 - PLAN.vary, 1 + PLAN.vary);
-
-      // Strokes are bucketed by width and each bucket is ONE path with one
-      // stroke() call: six hundred stroke calls each with its own lineWidth is
-      // six hundred state changes, and this runs while the veil is still down.
-      const pens = new Map();
-      for (const s of t.s) {
-        const key = Math.round(pen * rel(s[0] / Qn, wm) * 4);      // quarter-px pens
-        let path = pens.get(key);
-        if (!path) pens.set(key, path = new Path2D());
-        path.moveTo(s[1] / Qn, s[2] / Qn);
-        for (let i = 3; i < s.length; i += 2) path.lineTo(s[i] / Qn, s[i + 1] / Qn);
-      }
-      const piers = new Path2D();
-      const pierBase = pen * PLAN.pierR;
-      for (const p of t.p) {
-        const r = (pierBase * rel(p[2] / Qn, pm)) * inv;
-        piers.moveTo(p[0] / Qn + r, p[1] / Qn);
-        piers.arc(p[0] / Qn, p[1] / Qn, r, 0, 6.2832);
-      }
-      // The drawing's small change — door swings, dashes, hatch ticks — a
-      // couple of hundred marks the walls and piers do not account for.  Drawn
-      // lighter, because on the original they ARE lighter.
-      const fine = new Path2D();
-      const fineBase = pen * PLAN.fineR;
-      for (const p of (t.f || [])) {
-        const r = (fineBase * clampN(p[2] / Qn, 0.5, 1.8)) * inv;
-        fine.moveTo(p[0] / Qn + r, p[1] / Qn);
-        fine.arc(p[0] / Qn, p[1] / Qn, r, 0, 6.2832);
-      }
-
-      // bleed first, under everything, so the drawing sits ON the paper
-      o.save();
-      o.globalAlpha = PLAN.bleed / PLAN.ink;
-      o.translate(-1.6 * inv, 1.6 * inv);
-      for (const [key, path] of pens) { o.lineWidth = (key / 4 + 1.1) * inv; o.stroke(path); }
-      o.fill(piers);
-      o.restore();
-
-      for (const [key, path] of pens) { o.lineWidth = (key / 4) * inv; o.stroke(path); }
-      o.fill(piers);
-      o.save(); o.globalAlpha = PLAN.fineA; o.fill(fine); o.restore();
-    }
+    // The vectors.  Three passes — bleed, line, the drawing's small change —
+    // all in `ui/plan.js`, which is also what the atlas draws with.  `layerAlpha`
+    // is PLAN.ink because the whole offscreen is composited at that weight
+    // below, and the bleed is stated relative to it.
+    if (t) inkTrace(o, t, { pen: fit.pen, scale: fit.scale, ink, layerAlpha: PLAN.ink });
     o.restore();
 
     // One composite, clipped to the drawn window.  GROUND, not figure: the
@@ -1659,6 +1576,10 @@ export class MapScene extends Scene {
       this.el.screen.dataset.hzFocus = n.dataset.hz;
     });
     on(el.notes, 'pointerout', () => { delete this.el.screen.dataset.hzFocus; });
+
+    // out to the estate drawing
+    const atlas = this.root.querySelector('.map-atlas');
+    if (atlas) on(atlas, 'click', () => this._openAtlas());
   }
 
   _key(e) {
@@ -1689,8 +1610,23 @@ export class MapScene extends Scene {
       case '-': case '_': this._zoomCentre(1 / 1.2); break;
       case '0': this._fitView(); break;
       case 'l': case 'L': this.el.screen.classList.toggle('no-bar'); break;
+      case 'h': case 'H': this._openAtlas(); break;
       default: return;
     }
+  }
+
+  /**
+   * Out to the estate drawing and back.
+   *
+   * A read-only look at the house — `scenes/atlas.js` chooses nothing and
+   * changes nothing, so leaving the map for it costs the run no state. It comes
+   * back here with the wing and seed this screen was opened on, which is the
+   * same shape `Run#advanceRegion` hands over.
+   */
+  _openAtlas() {
+    const run = this.ctx.run;
+    this.ctx.scenes.go('atlas', { wing: run ? run.region : this.model.regionId },
+      { transition: this.still ? 'veil' : 'blueprint' });
   }
   _zoomCentre(f) {
     const r = this._vpRect();

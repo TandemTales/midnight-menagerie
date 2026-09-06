@@ -201,7 +201,16 @@ export class GameOverScene extends Scene {
     const hp         = result === 'victory' ? Math.max(1, Number(run?.hp ?? (mocked ? 8 + rng.int(40) : 1))) : 0;
     const turns      = Number(run?.stats?.turns) || (mocked ? 40 + rng.int(90) : 0);
 
-    const wingsMapped = Number(run?.wingsMapped ?? Save?.data?.blueprint?.revealed?.length) || 1;
+    /* TWO NUMBERS, and this used to be one — `run.wingsMapped ?? revealed.length`,
+       reading a field no version of `state/run.js` has ever written, falling
+       through to a lifetime count that nothing ever added to. It printed ONE in
+       both places it appears, on every save, forever.
+         wingsThisRun  how far tonight got. Belongs in "What you found".
+         wingsMapped   the blueprint the kids keep, across every expedition.
+                       Belongs on the band, which counts against all 17.
+       `state/run.js#markWingMapped` is what fills the second one in now. */
+    const wingsThisRun = Number(run?.regionIndex >= 0 ? run.regionIndex + 1 : (mocked ? wing : 1)) || 1;
+    const wingsMapped = Number(Save?.data?.blueprint?.revealed?.length) || 1;
     // `run.companionsFreed` is what you freed on THIS expedition (run.rescued is the
     // lifetime set). The old fallback quietly printed "1 Companion freed" naming the one you
     // brought in, so a two-wing victory that freed two undercounted to one.
@@ -214,7 +223,7 @@ export class GameOverScene extends Scene {
       result, seed: seedRaw, rng, mocked,
       companion, kid, regionId, meta, floor, wing,
       scuffles, bigScares, curiosity, safeRooms, cardsPlay, damage, gold,
-      hp, maxHp, turns, wingsMapped, freedThisRun, cluesFound, petHome,
+      hp, maxHp, turns, wingsMapped, wingsThisRun, freedThisRun, cluesFound, petHome,
       haunt: Number(run?.hauntLevel ?? Save?.data?.hauntLevel ?? 0) || 0,
       killedBy: run?.killedBy || KILLERS[regionId] || 'the house',
       deck: Array.isArray(run?.deck) ? run.deck : null,          // filled by _hydrateCards
@@ -323,7 +332,7 @@ export class GameOverScene extends Scene {
       found.push(`${plural(s.freedThisRun.length, 'Companion')} freed &mdash; ` +
         s.freedThisRun.map((sl) => esc(COMPANION_BY_SLUG[sl]?.name ?? sl)).join(', '));
     }
-    found.push(`${plural(s.wingsMapped, 'wing')} drawn onto the blueprint`);
+    found.push(`${plural(s.wingsThisRun, 'wing')} of the house crossed`);
     if (s.cluesFound) found.push(`${plural(s.cluesFound, 'clue')} for the board`);
     if (s.bigScares) found.push(`${plural(s.bigScares, 'Big Scare')} survived`);
     stanzas.appendChild(this._stanza('found', 'What you found', found));

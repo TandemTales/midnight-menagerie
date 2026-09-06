@@ -27,6 +27,7 @@ import { ClubhouseScene } from './scenes/clubhouse.js';
 import { SelectScene } from './scenes/select.js';
 import { LobbyScene } from './scenes/lobby.js';
 import { MapScene } from './scenes/map.js';
+import { AtlasScene } from './scenes/atlas.js';
 import { CombatScene } from './scenes/combat.js';
 import { RewardScene } from './scenes/reward.js';
 import { EventScene } from './scenes/event.js';
@@ -122,6 +123,7 @@ ctx.scenes
   .register('select',     (c) => new SelectScene(c))
   .register('lobby',      (c) => new LobbyScene(c))
   .register('map',        (c) => new MapScene(c))
+  .register('atlas',      (c) => new AtlasScene(c))
   .register('combat',     (c) => new CombatScene(c))
   .register('reward',     (c) => new RewardScene(c))
   .register('event',      (c) => new EventScene(c))

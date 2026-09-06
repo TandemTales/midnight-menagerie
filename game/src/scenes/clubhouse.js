@@ -18,7 +18,7 @@ import { Save } from '../core/save.js';
 import { COMPANIONS, KIDS, TERMS, REGION_ORDER } from '../data/schema.js';
 import {
   ensureCss, fontsReady, companionPortrait, kidPortrait, petPortrait, blueprintSrc,
-  el, svg, rovingFocus, setReduceMotion, REGION_NAMES,
+  el, svg, rovingFocus, setReduceMotion, reduceMotion, REGION_NAMES,
   freedCompanions, availableCompanions, warmFaces,
 } from '../ui/portrait.js';
 import { KID_CODEX, loadoutFor } from './select.js';
@@ -212,14 +212,26 @@ export class ClubhouseScene extends Scene {
       cork.appendChild(card);
     });
 
-    // recovered blueprint
-    const bp = el('div', 'bpfrag');
+    /* The recovered blueprint, and it OPENS now.
+       It was a picture of the thing `scenes/atlas.js` is: the same drawing, the
+       same count, pinned to the same board. A player who wants a closer look at
+       the house has exactly one instinct about a floor plan on a corkboard, and
+       until the atlas existed there was nothing for that instinct to reach. */
+    const bp = el('button', 'bpfrag');
+    bp.type = 'button';
     bp.style.cssText = 'right:2.5%;top:5%;--rot:1.6deg';
+    bp.setAttribute('aria-label',
+      `Open the atlas — the house, ${this.revealed.size} of ${REGION_ORDER.length} wings mapped`);
     bp.innerHTML = `
       <span class="pin pin--blue" aria-hidden="true"></span>
       <span class="bpfrag__label">The house, as far as we have mapped it</span>
-      <span class="bpfrag__img"><img src="${blueprintSrc('mansion')}" alt="Hand-copied floor plan of the mansion" width="1448" height="1086" decoding="async"></span>
-      <span class="bpfrag__count"><b>${this.revealed.size}</b> / ${REGION_ORDER.length} wings</span>`;
+      <span class="bpfrag__img"><img src="${blueprintSrc('mansion')}" alt="" width="1448" height="1086" decoding="async"></span>
+      <span class="bpfrag__count"><b>${this.revealed.size}</b> / ${REGION_ORDER.length} wings</span>
+      <span class="bpfrag__go">Look closer</span>`;
+    bp.addEventListener('click', () => {
+      try { this.ctx.audio?.play?.('ui:open-panel'); } catch {}
+      this.ctx.scenes.go('atlas', {}, { transition: reduceMotion() ? 'veil' : 'blueprint' });
+    });
     cork.appendChild(bp);
 
     // clue notes

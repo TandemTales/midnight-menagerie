@@ -329,6 +329,9 @@
   box-shadow: 0 1px 3px color-mix(in srgb, var(--ink-900) 34%, transparent);
 }
 
+/* A BUTTON since the atlas exists — it opens the full drawing. The reset is
+   here rather than a shared one because `.bpfrag` is pinned to the corkboard by
+   `.polaroid, .ch-note, .bpfrag, .scrawl` above and must keep that geometry. */
 .bpfrag {
   width: clamp(170px, 17vw, 250px);
   padding: 9px;
@@ -336,7 +339,30 @@
   box-shadow: var(--shadow-3);
   color: var(--text-ink);
   display: grid; gap: 4px;
+  appearance: none;
+  border: 0;
+  font: inherit;
+  text-align: inherit;
+  cursor: pointer;
+  transition: transform var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out);
 }
+.bpfrag:hover, .bpfrag:focus-visible {
+  transform: rotate(var(--rot, 0deg)) scale(1.035);
+  box-shadow: var(--shadow-4, var(--shadow-3));
+}
+.bpfrag__go {
+  text-align: center;
+  font-size: var(--fs-xs);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--blueprint-ink) 76%, var(--text-ink));
+  opacity: 0;
+  transition: opacity var(--t-quick) var(--ease-out);
+}
+.bpfrag:hover .bpfrag__go, .bpfrag:focus-visible .bpfrag__go { opacity: 1; }
+.mm-reduce-motion .bpfrag { transition: none; }
+.mm-reduce-motion .bpfrag:hover, .mm-reduce-motion .bpfrag:focus-visible { transform: rotate(var(--rot, 0deg)); }
+.mm-reduce-motion .bpfrag__go { opacity: 1; }
 .bpfrag__label { font-size: var(--fs-xs); font-style: italic; text-align: center; color: color-mix(in oklab, var(--text-ink) 70%, var(--parchment-shade)); }
 .bpfrag__img { display: block; overflow: hidden; border: 1px solid color-mix(in srgb, var(--text-ink) 22%, transparent); }
 .bpfrag__img img { width: 100%; height: auto; display: block; filter: sepia(.3) contrast(1.05); }
