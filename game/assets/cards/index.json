@@ -1,5 +1,397 @@
 {
  "cards": {
+  "boggle/dont-scream-yet": {
+   "file": "boggle/dont-scream-yet.webp",
+   "w": 232,
+   "h": 297,
+   "source": "boggle_cards1-20a.png",
+   "tile": 1,
+   "n": 1
+  },
+  "boggle/false-alarm": {
+   "file": "boggle/false-alarm.webp",
+   "w": 210,
+   "h": 297,
+   "source": "boggle_cards1-20a.png",
+   "tile": 2,
+   "n": 2
+  },
+  "boggle/scoot-scoot": {
+   "file": "boggle/scoot-scoot.webp",
+   "w": 206,
+   "h": 297,
+   "source": "boggle_cards1-20a.png",
+   "tile": 3,
+   "n": 3
+  },
+  "boggle/that-was-my-foot": {
+   "file": "boggle/that-was-my-foot.webp",
+   "w": 209,
+   "h": 297,
+   "source": "boggle_cards1-20a.png",
+   "tile": 4,
+   "n": 4
+  },
+  "boggle/tiny-teeth": {
+   "file": "boggle/tiny-teeth.webp",
+   "w": 232,
+   "h": 297,
+   "source": "boggle_cards1-20a.png",
+   "tile": 5,
+   "n": 5
+  },
+  "boggle/toe-nibbler": {
+   "file": "boggle/toe-nibbler.webp",
+   "w": 232,
+   "h": 298,
+   "source": "boggle_cards1-20a.png",
+   "tile": 6,
+   "n": 6
+  },
+  "boggle/again-but-over-there": {
+   "file": "boggle/again-but-over-there.webp",
+   "w": 211,
+   "h": 298,
+   "source": "boggle_cards1-20a.png",
+   "tile": 7,
+   "n": 7
+  },
+  "boggle/ankle-grab": {
+   "file": "boggle/ankle-grab.webp",
+   "w": 206,
+   "h": 298,
+   "source": "boggle_cards1-20a.png",
+   "tile": 8,
+   "n": 8
+  },
+  "boggle/boo": {
+   "file": "boggle/boo.webp",
+   "w": 210,
+   "h": 298,
+   "source": "boggle_cards1-20a.png",
+   "tile": 9,
+   "n": 9
+  },
+  "boggle/bedframe-bonk": {
+   "file": "boggle/bedframe-bonk.webp",
+   "w": 232,
+   "h": 298,
+   "source": "boggle_cards1-20a.png",
+   "tile": 10,
+   "n": 10
+  },
+  "boggle/bedtime-jitters": {
+   "file": "boggle/bedtime-jitters.webp",
+   "w": 232,
+   "h": 359,
+   "source": "boggle_cards1-20a.png",
+   "tile": 11,
+   "n": 11
+  },
+  "boggle/big-eyes-in-the-dark": {
+   "file": "boggle/big-eyes-in-the-dark.webp",
+   "w": 210,
+   "h": 359,
+   "source": "boggle_cards1-20a.png",
+   "tile": 12,
+   "n": 12
+  },
+  "boggle/blanket-fort": {
+   "file": "boggle/blanket-fort.webp",
+   "w": 206,
+   "h": 359,
+   "source": "boggle_cards1-20a.png",
+   "tile": 13,
+   "n": 13
+  },
+  "boggle/blanket-snap": {
+   "file": "boggle/blanket-snap.webp",
+   "w": 211,
+   "h": 359,
+   "source": "boggle_cards1-20a.png",
+   "tile": 14,
+   "n": 14
+  },
+  "boggle/closer-closer": {
+   "file": "boggle/closer-closer.webp",
+   "w": 234,
+   "h": 359,
+   "source": "boggle_cards1-20a.png",
+   "tile": 15,
+   "n": 15
+  },
+  "boggle/count-to-three": {
+   "file": "boggle/count-to-three.webp",
+   "w": 231,
+   "h": 425,
+   "source": "boggle_cards1-20a.png",
+   "tile": 16,
+   "n": 16
+  },
+  "boggle/cozy-darkness": {
+   "file": "boggle/cozy-darkness.webp",
+   "w": 210,
+   "h": 425,
+   "source": "boggle_cards1-20a.png",
+   "tile": 17,
+   "n": 17
+  },
+  "boggle/crawlspace-shortcut": {
+   "file": "boggle/crawlspace-shortcut.webp",
+   "w": 206,
+   "h": 425,
+   "source": "boggle_cards1-20a.png",
+   "tile": 18,
+   "n": 18
+  },
+  "boggle/creak": {
+   "file": "boggle/creak.webp",
+   "w": 210,
+   "h": 425,
+   "source": "boggle_cards1-20a.png",
+   "tile": 19,
+   "n": 19
+  },
+  "boggle/creaky-floorboard": {
+   "file": "boggle/creaky-floorboard.webp",
+   "w": 233,
+   "h": 425,
+   "source": "boggle_cards1-20a.png",
+   "tile": 20,
+   "n": 20
+  },
+  "boggle/creepy-little-noise": {
+   "file": "boggle/creepy-little-noise.webp",
+   "w": 209,
+   "h": 298,
+   "source": "boggle_cards21-40a.png",
+   "tile": 1,
+   "n": 21
+  },
+  "boggle/did-you-hear-that": {
+   "file": "boggle/did-you-hear-that.webp",
+   "w": 221,
+   "h": 298,
+   "source": "boggle_cards21-40a.png",
+   "tile": 2,
+   "n": 22
+  },
+  "boggle/dont-look-behind-you": {
+   "file": "boggle/dont-look-behind-you.webp",
+   "w": 205,
+   "h": 298,
+   "source": "boggle_cards21-40a.png",
+   "tile": 3,
+   "n": 23
+  },
+  "boggle/dont-move": {
+   "file": "boggle/dont-move.webp",
+   "w": 213,
+   "h": 298,
+   "source": "boggle_cards21-40a.png",
+   "tile": 4,
+   "n": 24
+  },
+  "boggle/dont-turn-around": {
+   "file": "boggle/dont-turn-around.webp",
+   "w": 239,
+   "h": 298,
+   "source": "boggle_cards21-40a.png",
+   "tile": 5,
+   "n": 25
+  },
+  "boggle/dust-bunny-decoy": {
+   "file": "boggle/dust-bunny-decoy.webp",
+   "w": 209,
+   "h": 295,
+   "source": "boggle_cards21-40a.png",
+   "tile": 6,
+   "n": 26
+  },
+  "boggle/emergency-pillow": {
+   "file": "boggle/emergency-pillow.webp",
+   "w": 219,
+   "h": 295,
+   "source": "boggle_cards21-40a.png",
+   "tile": 7,
+   "n": 27
+  },
+  "boggle/everybody-heard-that": {
+   "file": "boggle/everybody-heard-that.webp",
+   "w": 206,
+   "h": 295,
+   "source": "boggle_cards21-40a.png",
+   "tile": 8,
+   "n": 28
+  },
+  "boggle/from-under-here": {
+   "file": "boggle/from-under-here.webp",
+   "w": 210,
+   "h": 295,
+   "source": "boggle_cards21-40a.png",
+   "tile": 9,
+   "n": 29
+  },
+  "boggle/hallway-skitter": {
+   "file": "boggle/hallway-skitter.webp",
+   "w": 239,
+   "h": 295,
+   "source": "boggle_cards21-40a.png",
+   "tile": 10,
+   "n": 30
+  },
+  "boggle/hide-behind-me": {
+   "file": "boggle/hide-behind-me.webp",
+   "w": 209,
+   "h": 316,
+   "source": "boggle_cards21-40a.png",
+   "tile": 11,
+   "n": 31
+  },
+  "boggle/hide-under-something": {
+   "file": "boggle/hide-under-something.webp",
+   "w": 220,
+   "h": 316,
+   "source": "boggle_cards21-40a.png",
+   "tile": 12,
+   "n": 32
+  },
+  "boggle/hide-and-shriek": {
+   "file": "boggle/hide-and-shriek.webp",
+   "w": 207,
+   "h": 316,
+   "source": "boggle_cards21-40a.png",
+   "tile": 13,
+   "n": 33
+  },
+  "boggle/hiding-place-inside-a-hiding-place": {
+   "file": "boggle/hiding-place-inside-a-hiding-place.webp",
+   "w": 211,
+   "h": 316,
+   "source": "boggle_cards21-40a.png",
+   "tile": 14,
+   "n": 34
+  },
+  "boggle/hold-very-still": {
+   "file": "boggle/hold-very-still.webp",
+   "w": 239,
+   "h": 316,
+   "source": "boggle_cards21-40a.png",
+   "tile": 15,
+   "n": 35
+  },
+  "boggle/imagination-does-the-rest": {
+   "file": "boggle/imagination-does-the-rest.webp",
+   "w": 210,
+   "h": 468,
+   "source": "boggle_cards21-40a.png",
+   "tile": 16,
+   "n": 36
+  },
+  "boggle/little-chomp": {
+   "file": "boggle/little-chomp.webp",
+   "w": 220,
+   "h": 468,
+   "source": "boggle_cards21-40a.png",
+   "tile": 17,
+   "n": 37
+  },
+  "boggle/long-arms": {
+   "file": "boggle/long-arms.webp",
+   "w": 208,
+   "h": 468,
+   "source": "boggle_cards21-40a.png",
+   "tile": 18,
+   "n": 38
+  },
+  "boggle/lump-under-the-blanket": {
+   "file": "boggle/lump-under-the-blanket.webp",
+   "w": 210,
+   "h": 468,
+   "source": "boggle_cards21-40a.png",
+   "tile": 19,
+   "n": 39
+  },
+  "boggle/monster-in-the-mirror": {
+   "file": "boggle/monster-in-the-mirror.webp",
+   "w": 239,
+   "h": 468,
+   "source": "boggle_cards21-40a.png",
+   "tile": 20,
+   "n": 40
+  },
+  "boggle/underbed-uppercut": {
+   "file": "boggle/underbed-uppercut.webp",
+   "w": 294,
+   "h": 253,
+   "source": "boggle_cards81onA.png",
+   "tile": 1,
+   "n": 81
+  },
+  "boggle/wrong-side-of-bed": {
+   "file": "boggle/wrong-side-of-bed.webp",
+   "w": 293,
+   "h": 253,
+   "source": "boggle_cards81onA.png",
+   "tile": 2,
+   "n": 82
+  },
+  "boggle/everybody-under-the-bed": {
+   "file": "boggle/everybody-under-the-bed.webp",
+   "w": 294,
+   "h": 253,
+   "source": "boggle_cards81onA.png",
+   "tile": 3,
+   "n": 83
+  },
+  "boggle/fear-of-the-dark": {
+   "file": "boggle/fear-of-the-dark.webp",
+   "w": 294,
+   "h": 253,
+   "source": "boggle_cards81onA.png",
+   "tile": 4,
+   "n": 84
+  },
+  "boggle/good-night-sleep-tight": {
+   "file": "boggle/good-night-sleep-tight.webp",
+   "w": 292,
+   "h": 253,
+   "source": "boggle_cards81onA.png",
+   "tile": 5,
+   "n": 85
+  },
+  "boggle/lights-out": {
+   "file": "boggle/lights-out.webp",
+   "w": 294,
+   "h": 242,
+   "source": "boggle_cards81onA.png",
+   "tile": 6,
+   "n": 86
+  },
+  "boggle/monster-under-every-bed": {
+   "file": "boggle/monster-under-every-bed.webp",
+   "w": 292,
+   "h": 242,
+   "source": "boggle_cards81onA.png",
+   "tile": 8,
+   "n": 87
+  },
+  "boggle/the-big-one": {
+   "file": "boggle/the-big-one.webp",
+   "w": 295,
+   "h": 242,
+   "source": "boggle_cards81onA.png",
+   "tile": 9,
+   "n": 88
+  },
+  "boggle/you-didnt-see-anything": {
+   "file": "boggle/you-didnt-see-anything.webp",
+   "w": 291,
+   "h": 242,
+   "source": "boggle_cards81onA.png",
+   "tile": 10,
+   "n": 89
+  },
   "marmalade/catastrophe": {
    "file": "marmalade/catastrophe.webp",
    "w": 243,
@@ -1439,6 +1831,646 @@
    "source": "mopsy_cards81onA.png",
    "tile": 14,
    "n": 92
+  },
+  "taffy/keep-the-wrapper": {
+   "file": "taffy/keep-the-wrapper.webp",
+   "w": 272,
+   "h": 274,
+   "source": "taffy_cards1-20a.png",
+   "tile": 1,
+   "n": 1
+  },
+  "taffy/let-it-sag": {
+   "file": "taffy/let-it-sag.webp",
+   "w": 275,
+   "h": 274,
+   "source": "taffy_cards1-20a.png",
+   "tile": 2,
+   "n": 2
+  },
+  "taffy/mix-the-costs": {
+   "file": "taffy/mix-the-costs.webp",
+   "w": 272,
+   "h": 274,
+   "source": "taffy_cards1-20a.png",
+   "tile": 3,
+   "n": 3
+  },
+  "taffy/stretch-transfer": {
+   "file": "taffy/stretch-transfer.webp",
+   "w": 275,
+   "h": 274,
+   "source": "taffy_cards1-20a.png",
+   "tile": 4,
+   "n": 4
+  },
+  "taffy/wobble-room": {
+   "file": "taffy/wobble-room.webp",
+   "w": 271,
+   "h": 274,
+   "source": "taffy_cards1-20a.png",
+   "tile": 5,
+   "n": 5
+  },
+  "taffy/better-save-that": {
+   "file": "taffy/better-save-that.webp",
+   "w": 272,
+   "h": 265,
+   "source": "taffy_cards1-20a.png",
+   "tile": 6,
+   "n": 6
+  },
+  "taffy/big-chew": {
+   "file": "taffy/big-chew.webp",
+   "w": 275,
+   "h": 265,
+   "source": "taffy_cards1-20a.png",
+   "tile": 7,
+   "n": 7
+  },
+  "taffy/bite-sized-brigade": {
+   "file": "taffy/bite-sized-brigade.webp",
+   "w": 272,
+   "h": 265,
+   "source": "taffy_cards1-20a.png",
+   "tile": 8,
+   "n": 8
+  },
+  "taffy/blob-barrage": {
+   "file": "taffy/blob-barrage.webp",
+   "w": 275,
+   "h": 265,
+   "source": "taffy_cards1-20a.png",
+   "tile": 9,
+   "n": 9
+  },
+  "taffy/blob-insurance": {
+   "file": "taffy/blob-insurance.webp",
+   "w": 271,
+   "h": 265,
+   "source": "taffy_cards1-20a.png",
+   "tile": 10,
+   "n": 10
+  },
+  "taffy/borrowed-price": {
+   "file": "taffy/borrowed-price.webp",
+   "w": 272,
+   "h": 246,
+   "source": "taffy_cards1-20a.png",
+   "tile": 11,
+   "n": 11
+  },
+  "taffy/candy-surgery": {
+   "file": "taffy/candy-surgery.webp",
+   "w": 275,
+   "h": 246,
+   "source": "taffy_cards1-20a.png",
+   "tile": 12,
+   "n": 12
+  },
+  "taffy/candy-wrapper": {
+   "file": "taffy/candy-wrapper.webp",
+   "w": 272,
+   "h": 246,
+   "source": "taffy_cards1-20a.png",
+   "tile": 13,
+   "n": 13
+  },
+  "taffy/chew-slowly": {
+   "file": "taffy/chew-slowly.webp",
+   "w": 275,
+   "h": 246,
+   "source": "taffy_cards1-20a.png",
+   "tile": 14,
+   "n": 14
+  },
+  "taffy/conservation-of-taffy": {
+   "file": "taffy/conservation-of-taffy.webp",
+   "w": 271,
+   "h": 246,
+   "source": "taffy_cards1-20a.png",
+   "tile": 15,
+   "n": 15
+  },
+  "taffy/cross-flavor": {
+   "file": "taffy/cross-flavor.webp",
+   "w": 272,
+   "h": 311,
+   "source": "taffy_cards1-20a.png",
+   "tile": 16,
+   "n": 16
+  },
+  "taffy/deep-pocket": {
+   "file": "taffy/deep-pocket.webp",
+   "w": 275,
+   "h": 311,
+   "source": "taffy_cards1-20a.png",
+   "tile": 17,
+   "n": 17
+  },
+  "taffy/elastic-memory": {
+   "file": "taffy/elastic-memory.webp",
+   "w": 271,
+   "h": 311,
+   "source": "taffy_cards1-20a.png",
+   "tile": 18,
+   "n": 18
+  },
+  "taffy/elastic-reversal": {
+   "file": "taffy/elastic-reversal.webp",
+   "w": 276,
+   "h": 311,
+   "source": "taffy_cards1-20a.png",
+   "tile": 19,
+   "n": 19
+  },
+  "taffy/feed-the-blob": {
+   "file": "taffy/feed-the-blob.webp",
+   "w": 271,
+   "h": 311,
+   "source": "taffy_cards1-20a.png",
+   "tile": 20,
+   "n": 20
+  },
+  "taffy/gumball-volley": {
+   "file": "taffy/gumball-volley.webp",
+   "w": 257,
+   "h": 241,
+   "source": "taffy_cards21-40a.png",
+   "tile": 1,
+   "n": 21
+  },
+  "taffy/gummy-jab": {
+   "file": "taffy/gummy-jab.webp",
+   "w": 256,
+   "h": 241,
+   "source": "taffy_cards21-40a.png",
+   "tile": 2,
+   "n": 22
+  },
+  "taffy/half-now-half-later": {
+   "file": "taffy/half-now-half-later.webp",
+   "w": 313,
+   "h": 241,
+   "source": "taffy_cards21-40a.png",
+   "tile": 3,
+   "n": 23
+  },
+  "taffy/hold-this-for-me": {
+   "file": "taffy/hold-this-for-me.webp",
+   "w": 227,
+   "h": 241,
+   "source": "taffy_cards21-40a.png",
+   "tile": 4,
+   "n": 24
+  },
+  "taffy/last-bite-first": {
+   "file": "taffy/last-bite-first.webp",
+   "w": 437,
+   "h": 241,
+   "source": "taffy_cards21-40a.png",
+   "tile": 5,
+   "n": 25
+  },
+  "taffy/licorice-lash": {
+   "file": "taffy/licorice-lash.webp",
+   "w": 296,
+   "h": 228,
+   "source": "taffy_cards21-40a.png",
+   "tile": 6,
+   "n": 26
+  },
+  "taffy/little-recombine": {
+   "file": "taffy/little-recombine.webp",
+   "w": 276,
+   "h": 228,
+   "source": "taffy_cards21-40a.png",
+   "tile": 7,
+   "n": 27
+  },
+  "taffy/long-distance-smack": {
+   "file": "taffy/long-distance-smack.webp",
+   "w": 289,
+   "h": 228,
+   "source": "taffy_cards21-40a.png",
+   "tile": 8,
+   "n": 28
+  },
+  "taffy/long-pull": {
+   "file": "taffy/long-pull.webp",
+   "w": 306,
+   "h": 228,
+   "source": "taffy_cards21-40a.png",
+   "tile": 9,
+   "n": 29
+  },
+  "taffy/make-it-sticky": {
+   "file": "taffy/make-it-sticky.webp",
+   "w": 325,
+   "h": 228,
+   "source": "taffy_cards21-40a.png",
+   "tile": 10,
+   "n": 30
+  },
+  "taffy/melt-and-remake": {
+   "file": "taffy/melt-and-remake.webp",
+   "w": 296,
+   "h": 213,
+   "source": "taffy_cards21-40a.png",
+   "tile": 11,
+   "n": 31
+  },
+  "taffy/mix-everything": {
+   "file": "taffy/mix-everything.webp",
+   "w": 275,
+   "h": 213,
+   "source": "taffy_cards21-40a.png",
+   "tile": 12,
+   "n": 32
+  },
+  "taffy/mouthfeel": {
+   "file": "taffy/mouthfeel.webp",
+   "w": 302,
+   "h": 213,
+   "source": "taffy_cards21-40a.png",
+   "tile": 13,
+   "n": 33
+  },
+  "taffy/multipack": {
+   "file": "taffy/multipack.webp",
+   "w": 291,
+   "h": 213,
+   "source": "taffy_cards21-40a.png",
+   "tile": 14,
+   "n": 34
+  },
+  "taffy/overstretch": {
+   "file": "taffy/overstretch.webp",
+   "w": 326,
+   "h": 213,
+   "source": "taffy_cards21-40a.png",
+   "tile": 15,
+   "n": 35
+  },
+  "taffy/pass-the-piece": {
+   "file": "taffy/pass-the-piece.webp",
+   "w": 292,
+   "h": 311,
+   "source": "taffy_cards21-40a.png",
+   "tile": 16,
+   "n": 36
+  },
+  "taffy/pinch-off": {
+   "file": "taffy/pinch-off.webp",
+   "w": 231,
+   "h": 311,
+   "source": "taffy_cards21-40a.png",
+   "tile": 17,
+   "n": 37
+  },
+  "taffy/pinch-a-piece": {
+   "file": "taffy/pinch-a-piece.webp",
+   "w": 305,
+   "h": 311,
+   "source": "taffy_cards21-40a.png",
+   "tile": 18,
+   "n": 38
+  },
+  "taffy/pocket-taffy": {
+   "file": "taffy/pocket-taffy.webp",
+   "w": 306,
+   "h": 311,
+   "source": "taffy_cards21-40a.png",
+   "tile": 19,
+   "n": 39
+  },
+  "taffy/pull-apart": {
+   "file": "taffy/pull-apart.webp",
+   "w": 359,
+   "h": 311,
+   "source": "taffy_cards21-40a.png",
+   "tile": 20,
+   "n": 40
+  },
+  "taffy/pull-it-long": {
+   "file": "taffy/pull-it-long.webp",
+   "w": 297,
+   "h": 241,
+   "source": "taffy_cards41-60a.png",
+   "tile": 1,
+   "n": 41
+  },
+  "taffy/pull-to-the-moon": {
+   "file": "taffy/pull-to-the-moon.webp",
+   "w": 298,
+   "h": 241,
+   "source": "taffy_cards41-60a.png",
+   "tile": 2,
+   "n": 42
+  },
+  "taffy/rebound-bite": {
+   "file": "taffy/rebound-bite.webp",
+   "w": 290,
+   "h": 241,
+   "source": "taffy_cards41-60a.png",
+   "tile": 3,
+   "n": 43
+  },
+  "taffy/recombination-slam": {
+   "file": "taffy/recombination-slam.webp",
+   "w": 307,
+   "h": 241,
+   "source": "taffy_cards41-60a.png",
+   "tile": 4,
+   "n": 44
+  },
+  "taffy/regurgitate": {
+   "file": "taffy/regurgitate.webp",
+   "w": 302,
+   "h": 241,
+   "source": "taffy_cards41-60a.png",
+   "tile": 5,
+   "n": 45
+  },
+  "taffy/same-again": {
+   "file": "taffy/same-again.webp",
+   "w": 297,
+   "h": 229,
+   "source": "taffy_cards41-60a.png",
+   "tile": 6,
+   "n": 46
+  },
+  "taffy/sample-size": {
+   "file": "taffy/sample-size.webp",
+   "w": 298,
+   "h": 229,
+   "source": "taffy_cards41-60a.png",
+   "tile": 7,
+   "n": 47
+  },
+  "taffy/save-for-later": {
+   "file": "taffy/save-for-later.webp",
+   "w": 290,
+   "h": 229,
+   "source": "taffy_cards41-60a.png",
+   "tile": 8,
+   "n": 48
+  },
+  "taffy/second-helping": {
+   "file": "taffy/second-helping.webp",
+   "w": 307,
+   "h": 229,
+   "source": "taffy_cards41-60a.png",
+   "tile": 9,
+   "n": 49
+  },
+  "taffy/second-serving": {
+   "file": "taffy/second-serving.webp",
+   "w": 302,
+   "h": 229,
+   "source": "taffy_cards41-60a.png",
+   "tile": 10,
+   "n": 50
+  },
+  "taffy/smoosh-together": {
+   "file": "taffy/smoosh-together.webp",
+   "w": 297,
+   "h": 214,
+   "source": "taffy_cards41-60a.png",
+   "tile": 11,
+   "n": 51
+  },
+  "taffy/snack-pocket": {
+   "file": "taffy/snack-pocket.webp",
+   "w": 298,
+   "h": 214,
+   "source": "taffy_cards41-60a.png",
+   "tile": 12,
+   "n": 52
+  },
+  "taffy/snap-back": {
+   "file": "taffy/snap-back.webp",
+   "w": 290,
+   "h": 214,
+   "source": "taffy_cards41-60a.png",
+   "tile": 13,
+   "n": 53
+  },
+  "taffy/snapback-special": {
+   "file": "taffy/snapback-special.webp",
+   "w": 307,
+   "h": 214,
+   "source": "taffy_cards41-60a.png",
+   "tile": 14,
+   "n": 54
+  },
+  "taffy/spit-take": {
+   "file": "taffy/spit-take.webp",
+   "w": 302,
+   "h": 214,
+   "source": "taffy_cards41-60a.png",
+   "tile": 15,
+   "n": 55
+  },
+  "taffy/spit-the-whole-bag": {
+   "file": "taffy/spit-the-whole-bag.webp",
+   "w": 297,
+   "h": 311,
+   "source": "taffy_cards41-60a.png",
+   "tile": 16,
+   "n": 56
+  },
+  "taffy/split-splat": {
+   "file": "taffy/split-splat.webp",
+   "w": 298,
+   "h": 311,
+   "source": "taffy_cards41-60a.png",
+   "tile": 17,
+   "n": 57
+  },
+  "taffy/squish": {
+   "file": "taffy/squish.webp",
+   "w": 290,
+   "h": 311,
+   "source": "taffy_cards41-60a.png",
+   "tile": 18,
+   "n": 58
+  },
+  "taffy/squish-flat": {
+   "file": "taffy/squish-flat.webp",
+   "w": 307,
+   "h": 311,
+   "source": "taffy_cards41-60a.png",
+   "tile": 19,
+   "n": 59
+  },
+  "taffy/sticky-palm": {
+   "file": "taffy/sticky-palm.webp",
+   "w": 302,
+   "h": 311,
+   "source": "taffy_cards41-60a.png",
+   "tile": 20,
+   "n": 60
+  },
+  "taffy/stretch-punch": {
+   "file": "taffy/stretch-punch.webp",
+   "w": 300,
+   "h": 239,
+   "source": "taffy_cards61-80a.png",
+   "tile": 1,
+   "n": 61
+  },
+  "taffy/sugar-bonk": {
+   "file": "taffy/sugar-bonk.webp",
+   "w": 294,
+   "h": 239,
+   "source": "taffy_cards61-80a.png",
+   "tile": 2,
+   "n": 62
+  },
+  "taffy/sugar-coat": {
+   "file": "taffy/sugar-coat.webp",
+   "w": 283,
+   "h": 239,
+   "source": "taffy_cards61-80a.png",
+   "tile": 3,
+   "n": 63
+  },
+  "taffy/sugar-sling": {
+   "file": "taffy/sugar-sling.webp",
+   "w": 319,
+   "h": 239,
+   "source": "taffy_cards61-80a.png",
+   "tile": 4,
+   "n": 64
+  },
+  "taffy/surface-tension": {
+   "file": "taffy/surface-tension.webp",
+   "w": 299,
+   "h": 239,
+   "source": "taffy_cards61-80a.png",
+   "tile": 5,
+   "n": 65
+  },
+  "taffy/sweet-spot": {
+   "file": "taffy/sweet-spot.webp",
+   "w": 297,
+   "h": 228,
+   "source": "taffy_cards61-80a.png",
+   "tile": 6,
+   "n": 66
+  },
+  "taffy/taffy-hook": {
+   "file": "taffy/taffy-hook.webp",
+   "w": 289,
+   "h": 228,
+   "source": "taffy_cards61-80a.png",
+   "tile": 7,
+   "n": 67
+  },
+  "taffy/taste-memory": {
+   "file": "taffy/taste-memory.webp",
+   "w": 296,
+   "h": 228,
+   "source": "taffy_cards61-80a.png",
+   "tile": 8,
+   "n": 68
+  },
+  "taffy/unsplit": {
+   "file": "taffy/unsplit.webp",
+   "w": 317,
+   "h": 228,
+   "source": "taffy_cards61-80a.png",
+   "tile": 9,
+   "n": 69
+  },
+  "taffy/wrapped-up": {
+   "file": "taffy/wrapped-up.webp",
+   "w": 295,
+   "h": 228,
+   "source": "taffy_cards61-80a.png",
+   "tile": 10,
+   "n": 70
+  },
+  "taffy/bellyflop": {
+   "file": "taffy/bellyflop.webp",
+   "w": 293,
+   "h": 225,
+   "source": "taffy_cards61-80a.png",
+   "tile": 11,
+   "n": 71
+  },
+  "taffy/bottomless-belly": {
+   "file": "taffy/bottomless-belly.webp",
+   "w": 285,
+   "h": 225,
+   "source": "taffy_cards61-80a.png",
+   "tile": 12,
+   "n": 72
+  },
+  "taffy/chew-cycle": {
+   "file": "taffy/chew-cycle.webp",
+   "w": 301,
+   "h": 225,
+   "source": "taffy_cards61-80a.png",
+   "tile": 13,
+   "n": 73
+  },
+  "taffy/copycat-cannon": {
+   "file": "taffy/copycat-cannon.webp",
+   "w": 318,
+   "h": 225,
+   "source": "taffy_cards61-80a.png",
+   "tile": 14,
+   "n": 74
+  },
+  "taffy/elastic-orbit": {
+   "file": "taffy/elastic-orbit.webp",
+   "w": 299,
+   "h": 225,
+   "source": "taffy_cards61-80a.png",
+   "tile": 15,
+   "n": 75
+  },
+  "taffy/everybody-squeeze-in": {
+   "file": "taffy/everybody-squeeze-in.webp",
+   "w": 293,
+   "h": 300,
+   "source": "taffy_cards61-80a.png",
+   "tile": 16,
+   "n": 76
+  },
+  "taffy/family-pack": {
+   "file": "taffy/family-pack.webp",
+   "w": 290,
+   "h": 300,
+   "source": "taffy_cards61-80a.png",
+   "tile": 17,
+   "n": 77
+  },
+  "taffy/family-size": {
+   "file": "taffy/family-size.webp",
+   "w": 294,
+   "h": 300,
+   "source": "taffy_cards61-80a.png",
+   "tile": 18,
+   "n": 78
+  },
+  "taffy/hard-candy-haymaker": {
+   "file": "taffy/hard-candy-haymaker.webp",
+   "w": 301,
+   "h": 300,
+   "source": "taffy_cards61-80a.png",
+   "tile": 19,
+   "n": 79
+  },
+  "taffy/house-of-mirrors": {
+   "file": "taffy/house-of-mirrors.webp",
+   "w": 317,
+   "h": 300,
+   "source": "taffy_cards61-80a.png",
+   "tile": 20,
+   "n": 80
   }
  }
 }

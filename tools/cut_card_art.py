@@ -52,13 +52,30 @@ DOCX = os.path.join(ROOT, "Every Trick in the House.docx")
 INSET = 2          # px shaved off each tile so no antialiased gutter survives
 QUALITY = 92       # webp; visually lossless on this material, ~24 KB a card
 
-# Leading tiles on a sheet that are not cards. Only ever added with the art read
-# against the names: on mopsy_cards81onA the spares are at the FRONT, and tiles
-# 3..14 are cards 81..92 -- tile 3 is a reaper with a scythe (seam-reaper), 4 a
-# ship (ship-of-mopsy), 5 a bunny bursting with stuffing (stuffed-to-bursting),
-# 6 scales weighing stuffing against patches (stuffing-economy), 9 a bunny in a
-# "Well Loved" tag (well-loved), 14 a finished quilt (the-whole-pattern).
-SKIP = {"mopsy_cards81onA.png": 2}
+# WHICH TILES ARE THE CARDS, for sheets whose slot count ignores the range. The
+# generator lays out whatever grid it likes -- 7x4 for a 20-card range, 5x4 for a
+# 9-card one -- and the spares are not reliably at either end, so there is no rule
+# to infer. Every entry here was read off the art against the card names, and a
+# sheet that needs one and does not have one makes this tool stop rather than
+# guess: a silently wrong mapping is worse than no mapping, because it looks
+# finished.
+#
+#   mopsy 81on   spares at the FRONT. Tile 3 is a reaper with a scythe
+#                (seam-reaper), 5 a bunny bursting with stuffing
+#                (stuffed-to-bursting), 6 scales weighing stuffing against
+#                patches (stuffing-economy), 9 a bunny in a "Well Loved" tag,
+#                14 a finished quilt (the-whole-pattern).
+#   boggle 81on  one spare in the MIDDLE, at tile 7. Most of this sheet labels
+#                itself: 2 reads "WRONG SIDE OF BED", 3 "EVERYBODY UNDER THE
+#                BED!", 4 "FEAR OF THE DARK", 5 "Good Night, Sleep Tight.",
+#                6 "LIGHTS OUT", 8 books spelling "Monsters Under Every Bed",
+#                9 "THE BIG ONE", 10 "You Didn't See Anything." Tile 7, a
+#                shadow in a doorway, is named by nothing and sits between 6 and
+#                8, both of which are pinned by their own text.
+TILES = {
+    "mopsy_cards81onA.png":  list(range(3, 15)),
+    "boggle_cards81onA.png": [1, 2, 3, 4, 5, 6, 8, 9, 10],
+}
 
 # Per-card overrides, for the one range where no single sheet is right end to
 # end. mopsy 1-20 version b matches through ~15 and version a's last row is
@@ -141,16 +158,28 @@ def main(report=False):
                 continue
             exact = [o for o in opts if o[1] == want]
             if exact:
-                name, k = exact[0][0], 0
+                name, pick = exact[0][0], list(range(1, want + 1))
             else:
-                name = min(opts, key=lambda o: abs(o[1] - want))[0]
-                k = SKIP.get(name)
-                if k is None:
+                named = [o[0] for o in opts if o[0] in TILES]
+                if not named:
+                    # Loud, and skipped rather than fatal: one unreadable range
+                    # should not hold back the nineteen that are fine. These
+                    # cards keep the procedural art, which is the same thing
+                    # that happens for a Companion with no sheets at all.
+                    notes.append(
+                        f"UNRESOLVED  {comp} {lo}-{hi}: no sheet has {want} tiles "
+                        f"({', '.join('%s=%d' % o for o in opts)}). Needs an entry in TILES, "
+                        f"read off the art. These {want} cards stay procedural.")
+                    print("   cards %-7s want %2d  %-40s -> SKIPPED, unresolved"
+                          % (f"{lo}-{hi}", want, str(opts)))
+                    continue
+                name = named[0]
+                pick = TILES[name]
+                if len(pick) != want:
                     raise SystemExit(
-                        f"{comp} {lo}-{hi}: {name} has {dict(opts)[name]} tiles for {want} cards "
-                        f"and no verified alignment. Refusing to guess.")
+                        f"{comp} {lo}-{hi}: TILES[{name}] names {len(pick)} tiles for {want} cards.")
                 notes.append(f"{comp} {lo}-{hi}: {name} has {dict(opts)[name]} tiles for {want} "
-                             f"cards; used tiles {k + 1}-{k + want} (alignment read off the art)")
+                             f"cards; used {pick[0]}..{pick[-1]} (alignment read off the art)")
             print("   cards %-6s want %2d  %-40s -> %s" % (f"{lo}-{hi}", want, str(opts), name))
             if report:
                 continue
@@ -164,8 +193,8 @@ def main(report=False):
                     src = Image.open(os.path.join(ART, src_name)).convert("RGB")
                     box = sheet_tiles(src_name)[tno - 1]
                 else:
-                    src_name, tno, src = name, k + i + 1, im
-                    box = t[k + i]
+                    src_name, tno, src = name, pick[i], im
+                    box = t[pick[i] - 1]
                 x0, y0, x1, y1 = box
                 crop = src.crop((x0 + INSET, y0 + INSET, x1 - INSET, y1 - INSET))
                 rel = f"{comp}/{slug}.webp"

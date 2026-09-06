@@ -1,7 +1,16 @@
 {
  "animated": {
   "bones": [
-   "idle"
+   "affection",
+   "attack",
+   "celebrate",
+   "defeat",
+   "dig",
+   "fetch",
+   "hurt",
+   "idle",
+   "ready",
+   "trick"
   ],
   "marmalade": [
    "affection",

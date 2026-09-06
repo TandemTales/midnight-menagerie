@@ -125,6 +125,35 @@ ATLAS_COLS = 9
 # outward. The ring is EXTRA PIXELS -- taking them off and rebuilding the soft
 # edge behind them leaves every interior pixel untouched.
 HALO_LIFT = 25.0          # rim-minus-core luma that means "there is a ring"
+
+# AND THE PATCHES THE KEY LEFT INSIDE THE ART. Taking the ring off the edge does
+# not touch the flecks of background stranded in the middle of the drawing --
+# between ribs, under a jaw -- which stay fully opaque and read as holes punched
+# in the creature. They cannot be found by brightness: on bones the ones a human
+# erased by hand and the highlights that human deliberately KEPT are both bright
+# and both opaque, and the kept ones are the brighter of the two relative to
+# their surroundings (+62 vs +57 luma). Distance to the nearest transparent
+# pixel does not separate them either (9.6 px vs 7.2).
+#
+# COLOUR DOES, because of where the pixels came from. The art was drawn on
+# NEUTRAL white, so a leftover scrap of that background is neutral, while a
+# highlight on a bone is painted in the bone's own warm cream. Measured on the
+# source sheet: solid art at luma 210-240 runs R-B +51, and at luma 240+ it runs
+# R-B +5. Against 5,086 hand-erased pixels as ground truth, R-B < 26 catches 84%
+# of them and 1% of what was kept.
+#
+# The bar is a FRACTION of the sheet's own warmth rather than an absolute, so a
+# Companion who is genuinely white or grey -- a sheet ghost, a moth -- has a
+# body warmth near zero, no pixel can be much less warm than that, and the whole
+# step switches itself off.
+WHITE_WARM = 20.0         # body R-B below this and the sheet is not warm enough to judge
+WHITE_FRAC = 0.45         # a remnant is under this fraction of the body's warmth
+WHITE_SEED_LUMA = 220.0   # ...and at least this bright, to be a seed
+WHITE_LUMA = 170.0        # a scrap's blended edge is dimmer than its core
+WHITE_GROW = 0.85         # ...and still less warm than the body, which is what bounds the grow
+WHITE_MAX_BLOB = 4000     # source px; above this it is a bone, not a blemish
+WHITE_SEED_SHARE = 0.03   # a real scrap is meaningfully neutral, not one stray pixel
+WHITE_MIN = 0.0005        # under this share of the art, assume there is nothing to remove
 HALO_BITE = 1.6           # px of silhouette the ring occupies
 HALO_SOFT = 1.3           # px of new soft edge rebuilt behind it
 
@@ -275,6 +304,56 @@ def halo_lift(rgb, a):
         return 0.0
     lum = rgb.mean(axis=2)
     return float(lum[rim].mean() - lum[core].mean())
+
+
+def body_warmth(rgb, a):
+    """Median R-B over the sheet's mid-tone solid art: how warm this creature is."""
+    lum = rgb.mean(axis=2)
+    m = (a > 0.5) & (lum > 120) & (lum < 220)
+    if m.sum() < 500:
+        return 0.0
+    return float(np.median(rgb[:, :, 0][m] - rgb[:, :, 2][m]))
+
+
+def white_mask(rgb, a, warm):
+    """The stranded background scraps: a confident neutral core, grown outward.
+
+    A per-pixel colour test alone takes the middle of a scrap and leaves a ring.
+    Measured on the patch at Bones' neck: its core (luma 220+) is neutral at
+    R-B +0..+5 and the test catches it, but the bulk of the same patch sits at
+    luma 170-205 and R-B +34..+62 -- warm, because the scrap blends into the
+    bone it is lying on -- so the test walks straight past it and the patch is
+    still there afterwards, only smaller. Erasing a hole in the middle of a
+    blemish is not removing the blemish.
+
+    So the neutral pixels are SEEDS, not the answer. The answer is the connected
+    bright region each seed sits in, which is the scrap including its blended
+    edge. The bounds are what keeps it off the drawing: grow only through pixels
+    that are already less warm than the body (normal bone runs R-B ~55, the
+    scrap's fringe ~34), require several seeds and a real share of the region,
+    and cap the size so a seed touching a bone can never take the bone.
+    """
+    lum = rgb.mean(axis=2)
+    solid = a > 0.5
+    seed = solid & (lum > WHITE_SEED_LUMA) & ((rgb[:, :, 0] - rgb[:, :, 2]) < warm * WHITE_FRAC)
+    if seed.sum() < 3:
+        return np.zeros_like(solid)
+    grow = solid & (lum > WHITE_LUMA) & ((rgb[:, :, 0] - rgb[:, :, 2]) < warm * WHITE_GROW)
+    lab, n = ndi.label(grow)
+    if n == 0:
+        return np.zeros_like(solid)
+    seeds = np.bincount(lab[seed], minlength=n + 1)
+    sizes = np.bincount(lab.ravel(), minlength=n + 1)
+    keep = (seeds >= 3) & (sizes <= WHITE_MAX_BLOB) & (seeds >= WHITE_SEED_SHARE * sizes)
+    keep[0] = False
+    return keep[lab]
+
+
+def dewhite(rgb, a, warm):
+    """Delete the stranded background scraps. Runs AFTER the hole fill in
+    `dehalo`, never before: that fill treats anything the body encloses as body,
+    so erasing first only invites it to put every scrap straight back."""
+    return np.where(white_mask(rgb, a, warm), 0.0, a)
 
 
 def dehalo(a):
@@ -468,8 +547,18 @@ def build_clip(path, cols=ATLAS_COLS):
     kind, B = classify(rgb_full, a_full)
     lift = halo_lift(rgb_full, a_full)
     haloed = lift > HALO_LIFT
+    warm = body_warmth(rgb_full, a_full)
+    whited = (warm > WHITE_WARM
+              and white_mask(rgb_full, a_full, warm).sum() > WHITE_MIN * (a_full > 0.5).sum())
 
-    frames = [(repair(r, a, B), dehalo(a) if haloed else a)
+    def clean(r, a):
+        if haloed:
+            a = dehalo(a)
+        if whited:
+            a = dewhite(r, a, warm)
+        return a
+
+    frames = [(repair(r, a, B), clean(r, a))
               for r, a in cells(rgb_full, raw_a, cols, rows)]
 
     boxes = [bbox(a) for _, a in frames]
@@ -481,7 +570,7 @@ def build_clip(path, cols=ATLAS_COLS):
     heights = np.array([b[3] - b[1] for b in boxes])
     return {
         "path": path, "rows": rows, "kind": kind,
-        "lift": lift, "haloed": haloed,
+        "lift": lift, "haloed": haloed, "warm": warm, "whited": whited,
         "B": None if B is None else [round(float(x), 1) for x in B],
         "frames": frames, "boxes": boxes, "centres": centres,
         "median_h": float(np.median(heights)),
@@ -637,6 +726,7 @@ def render_clip(clip, scale, out_noext, name=""):
         # (+20.8 vs +20.7, measured). The sheets are far too large to commit, so
         # the only place this fact can live is here, next to the atlas it made.
         "lift": round(clip["lift"], 1), "dehalo": bool(clip["haloed"]),
+        "warm": round(clip["warm"], 1), "dewhite": bool(clip["whited"]),
         "dip": round(float(focus.min() / max(1e-6, focus.max())), 3),
     }
     if fade:
@@ -655,6 +745,9 @@ def build_still(path, out_noext, target_h=256):
     rgb = repair(rgb0, a, B)
     if halo_lift(rgb0, a) > HALO_LIFT:
         a = dehalo(a)
+    _w = body_warmth(rgb0, a)
+    if _w > WHITE_WARM and white_mask(rgb0, a, _w).sum() > WHITE_MIN * (a > 0.5).sum():
+        a = dewhite(rgb0, a, _w)
     box = bbox(a)
     if box is None:
         return None
@@ -717,7 +810,8 @@ def main():
             print("   %-10s %dx%-2d cell %-9s %-7s wash %5.1f%%  bg=%-20s lift %+5.1f%s frames %d" % (
                 name, ATLAS_COLS, clip["rows"], "%dx%d" % clip["cell"], clip["kind"],
                 100 * clip["washed"], str(clip["B"]), clip["lift"],
-                " DEHALO" if clip["haloed"] else "       ", len(clip["frames"])))
+                (" DEHALO" if clip["haloed"] else "       ")
+                + (" DEWHITE" if clip["whited"] else "        "), len(clip["frames"])))
             if args.report:
                 continue
             meta = render_clip(clip, scale, os.path.join(outdir, name), name)
