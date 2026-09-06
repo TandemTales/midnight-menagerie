@@ -498,7 +498,22 @@
   transform: rotate(-.7deg);
   box-shadow: 0 18px 40px rgba(0,0,0,.55), 0 2px 0 rgba(255,255,255,.3) inset;
   border-radius: 2px;
+  /* IT INTRODUCES THE WING, THEN IT GETS OFF THE DRAWING. `pointer-events: none`
+     kept it from eating clicks, but the rooms underneath were still invisible --
+     measured, three marks covered and one of them a legal move. The wing name
+     and its boss are already printed in the sheet's own title block along the
+     bottom edge, so nothing here is lost by tucking it away once it has been
+     read. See `_wire` in map.js for when. */
+  transition: opacity .45s ease, transform .45s ease;
 }
+.map-banner.is-tucked {
+  opacity: 0;
+  transform: rotate(-.7deg) translateY(-16px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .map-banner { transition: none; }
+}
+
 .map-banner .tape {
   position: absolute; top: -11px; width: 66px; height: 22px;
   background: color-mix(in srgb, var(--flame-100) 62%, transparent);

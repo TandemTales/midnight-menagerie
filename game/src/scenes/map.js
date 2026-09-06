@@ -488,7 +488,7 @@ export class MapScene extends Scene {
       lamp: q('.map-lamp'), lampWarm: q('.map-lamp--warm'), grain: q('.map-grain'),
       tip: q('.map-tip'), notes: q('.map-notes'), legend: q('.map-legend'),
       ballot: q('.map-ballot'),
-      hudHost: q('.map-hudhost'), rowNum: q('.bn-row'),
+      hudHost: q('.map-hudhost'), rowNum: q('.bn-row'), banner: q('.map-banner'),
     };
     // One HUD, one position: the shared strip along the top edge. Everything it
     // used to duplicate here — Courage, Lost Things, Keepsakes, Haunt, the cog
@@ -1567,6 +1567,28 @@ export class MapScene extends Scene {
   // ──────────────────────────────────────────────────────────────── events ──
   _bindEvents() {
     const el = this.el, on = (t, ev, fn, o) => { t.addEventListener(ev, fn, o); this._off.push(() => t.removeEventListener(ev, fn, o)); };
+
+    /* THE TITLE CARD GETS OUT OF THE WAY. It is a reveal, not a reference --
+       the wing's name and its boss are printed in the sheet's title block
+       along the bottom edge either way -- and where it sits is the top-left
+       corner of the plan, which is where the rooms you can actually walk into
+       first are. Measured on the Foyer at 1600x900: three marks under it, one
+       of them a legal move.
+
+       This is the same fix the hazard wings got and for the same reason (see
+       the note above the wing roundels): a label that covers marks is wrong on
+       a drawing, whatever its z-index says.
+
+       Either trigger, whichever comes first: the moment you touch the plan --
+       drag, zoom, or arrow-key -- because that IS you looking for a room, or a
+       beat long enough to read four short lines. The timer matters on its own:
+       without it a player who only wants to LOOK at the top-left never clears
+       it, and hovering cannot help because the card takes no pointer events. */
+    const tuck = () => { el.banner?.classList.add('is-tucked'); };
+    const tuckT = setTimeout(tuck, 4000);
+    this._off.push(() => clearTimeout(tuckT));
+    for (const ev of ['pointerdown', 'wheel']) on(el.viewport, ev, tuck, { passive: true });
+    on(window, 'keydown', (e) => { if (!e.metaKey && !e.ctrlKey && !e.altKey) tuck(); });
 
     // hover / click on nodes (delegated — one listener, not fifty)
     on(el.nodes, 'pointerover', (e) => {

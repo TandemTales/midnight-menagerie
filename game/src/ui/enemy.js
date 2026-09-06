@@ -2216,6 +2216,38 @@ export class PlayerView {
     this.kidSprite = this.kid
       ? new ClipPlayer(this.kid, { opening: 'idle', warm: ['idle'] })
       : null;
+
+    /* DON'T SHOW THE DRAWN KID JUST TO TAKE HER AWAY AGAIN. The swap used to run
+       the other way -- rig up, then hidden the first frame the still could be
+       drawn -- and off a warm disk that is a visible flash of a different Kid
+       before the right one arrives, which reads as a bug even though both halves
+       are working.
+
+       So when we know whose art to expect, the rig starts hidden and only comes
+       back if the still does NOT: the grace timer is the fallback, not the happy
+       path. Local art lands in a few ms and nobody ever sees the rig; a missing
+       or slow still still leaves a drawn Kid on the board rather than a hole,
+       which is the property the swap existed for in the first place. */
+    clearTimeout(this._rigT);
+    if (this.kidSprite) {
+      for (const g of this.$rigArt) g.style.display = 'none';
+      const showRig = () => {
+        if (this._dead || (this.$kid && this.$kid.style.display === '')) return;
+        for (const g of this.$rigArt) g.style.display = '';
+      };
+      /* ASK, DO NOT TIME. `ClipPlayer.ready` resolves false only when there is
+         genuinely nothing to draw -- no clip index and no still -- and by the
+         time it resolves true the atlas is already decoded, because both
+         `_load` and `_loadStill` await it before they return. A timer instead
+         of this promise is what put the drawn rig back on screen for a frame:
+         400 ms is longer than a warm local fetch and shorter than a cold one,
+         so it fired exactly in the case it was meant to cover.
+
+         The timeout that remains is a backstop for a promise that never
+         settles at all, and it is long enough that no real load races it. */
+      this.kidSprite.ready.then((ok) => { if (!ok) showRig(); }).catch(showRig);
+      this._rigT = setTimeout(showRig, 4000);
+    }
   }
 
   _d(s) { return this.reduceMotion ? 0.001 : s; }
@@ -2386,6 +2418,7 @@ export class PlayerView {
       `translate(${f2(-fr.col * fr.fw)} ${f2(-fr.row * fr.fh)})`);
 
     if (this.$kid.style.display !== '') {
+      clearTimeout(this._rigT);
       this.$kid.style.display = '';
       for (const g of this.$rigArt) g.style.display = 'none';
     }
@@ -2487,6 +2520,7 @@ export class PlayerView {
 
   destroy() {
     this._dead = true;
+    clearTimeout(this._rigT);
     this.sprite?.destroy();
     this.kidSprite?.destroy();
     this.el.remove();
