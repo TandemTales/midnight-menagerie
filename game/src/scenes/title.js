@@ -28,6 +28,7 @@ import {
   freedCompanions, starterCount, warmFaces,
 } from '../ui/portrait.js';
 import { pauseStageFor } from './_stage.js';
+import { shouldPlayOpening } from './tutorial.js';
 import { openSettings } from '../ui/settings.js';
 
 const CSS_KIT   = new URL('../ui/portrait.css', import.meta.url).href;
@@ -361,7 +362,13 @@ export class TitleScene extends Scene {
         ctx.scenes?.go?.(run?.scene && ctx.scenes.registry?.has?.(run.scene) ? run.scene : 'map', run || {});
         break;
       }
-      case 'new':       ctx.scenes?.go?.('select', {}); break;
+      /* A first game opens with the story, not the planning screen. On a fresh
+         save `STARTER_SLUGS` is Marmalade and nothing else, so the Companion
+         board has one pickable frame — `scenes/tutorial.js` is the fiction for
+         that rule, and it hands her over the way the design's own account of
+         the first night does. `shouldPlayOpening()` is false the moment the
+         player has freed anybody, or has already been through it. */
+      case 'new':       ctx.scenes?.go?.(shouldPlayOpening() ? 'tutorial' : 'select', {}); break;
       case 'together':  ctx.scenes?.go?.('lobby', {}); break;
       case 'menagerie': ctx.scenes?.go?.('clubhouse', { panel: 'menagerie' }); break;
       case 'settings':  this._openSettings(); break;

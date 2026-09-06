@@ -1,0 +1,253 @@
+/* ===========================================================================
+   The opening — prose over a lit room.  OWNER: map.
+   Every colour resolves through ui/tokens.css. See CONTRACTS non-negotiable 2.
+
+   THE CANVAS IS DELIBERATELY VISIBLE HERE. Nine of the ten scenes cover it
+   completely and pause the stage (`scenes/_stage.js`); this one does not, so
+   the atmosphere layer's authored Foyer is the ground the story is told on.
+   Which means: no opaque background anywhere below .tut-veil.
+   =========================================================================== */
+
+.tut-root {
+  position: absolute; inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--text-hi);
+  font-family: var(--font-body);
+  overflow: hidden;
+}
+
+/* Enough to read on, and not one step more — the room has to stay a room. */
+.tut-veil {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(78% 62% at 50% 56%,
+      color-mix(in srgb, var(--ink-900) 62%, transparent) 0%,
+      color-mix(in srgb, var(--ink-900) 88%, transparent) 74%),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--ink-900) 74%, transparent) 0%,
+      transparent 22%, transparent 72%,
+      color-mix(in srgb, var(--ink-900) 82%, transparent) 100%);
+}
+
+.tut-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 22rem) minmax(0, 46rem);
+  align-items: center;
+  gap: var(--s-7);
+  padding: var(--s-6);
+  max-width: 100%;
+}
+.tut-root[data-wide="1"] .tut-stage {
+  grid-template-columns: minmax(0, 54rem);
+  justify-items: center;
+}
+
+/* ── who is on screen ─────────────────────────────────────────────────────── */
+.tut-fig {
+  position: relative;
+  justify-self: end;
+  width: 100%;
+  display: grid; place-items: center;
+  min-height: 1px;
+}
+.tut-fig:empty { display: none; }
+.tut-fig__img {
+  width: 100%; height: auto;
+  max-height: 62vh;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+  box-shadow: 0 26px 70px color-mix(in srgb, var(--ink-900) 78%, transparent);
+  animation: tut-fig-in var(--t-scene) var(--ease-out) both;
+}
+/* She is a ghost. The cold rim is the same spectral key the fx layer uses. */
+.tut-fig__img--ghost {
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 26px 70px color-mix(in srgb, var(--ink-900) 82%, transparent),
+    0 0 46px color-mix(in srgb, var(--spectre-300) 26%, transparent);
+}
+@keyframes tut-fig-in {
+  from { opacity: 0; transform: translateY(14px) scale(.985); }
+  to   { opacity: 1; transform: none; }
+}
+.mm-reduce-motion .tut-fig__img { animation: none; }
+
+/* ── the page ─────────────────────────────────────────────────────────────── */
+.tut-panel {
+  position: relative;
+  display: flex; flex-direction: column;
+  gap: var(--s-4);
+  min-width: 0;
+  padding: var(--s-5) var(--s-6);
+  max-height: calc(100vh - var(--s-7));
+  background: color-mix(in srgb, var(--ink-900) 58%, transparent);
+  border: 1px solid color-mix(in srgb, var(--surface-line) 70%, transparent);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+}
+.tut-panel.is-in { animation: tut-page-in var(--t-slow) var(--ease-out) both; }
+@keyframes tut-page-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+.mm-reduce-motion .tut-panel { opacity: 1; }
+.mm-reduce-motion .tut-panel.is-in { animation: none; opacity: 1; }
+
+.tut-head {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  line-height: 1.1;
+  color: var(--text-hi);
+}
+.tut-head[hidden], .tut-sub[hidden], .tut-lines[hidden] { display: none; }
+.tut-sub {
+  margin: 0;
+  font-size: var(--fs-md);
+  color: var(--text-mid);
+}
+
+.tut-lines { display: flex; flex-direction: column; gap: var(--s-3); }
+.tut-line {
+  margin: 0;
+  font-size: var(--fs-lg);
+  line-height: 1.48;
+  color: var(--text-hi);
+  text-wrap: pretty;
+}
+/* The kid's own words, and the last line of a page, sit differently. */
+.tut-line:last-child { color: var(--text-mid); }
+.tut-panel[data-page="loss"] .tut-line:last-child {
+  font-style: italic;
+  color: var(--flame-200);
+}
+
+/* ── choosing a Kid ───────────────────────────────────────────────────────── */
+.tut-pick {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--s-2);
+}
+.tut-pick[hidden] { display: none; }
+
+.tut-kid {
+  appearance: none;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: var(--s-2) 4px var(--s-2);
+  background: color-mix(in srgb, var(--surface-1) 72%, transparent);
+  border: 1px solid var(--surface-line);
+  border-radius: var(--radius-sm);
+  color: var(--text-mid);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    border-color var(--t-quick) var(--ease-out),
+    transform var(--t-quick) var(--ease-out),
+    color var(--t-quick) var(--ease-out);
+}
+.tut-kid .kidpf {
+  width: 100%; height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+.tut-kid__n { font-family: var(--font-display); font-size: var(--fs-sm); color: var(--text-hi); }
+.tut-kid__p { font-size: var(--fs-xs); color: var(--text-lo); }
+.tut-kid:hover, .tut-kid.is-hover, .tut-kid:focus-visible {
+  border-color: var(--surface-line-hi);
+  color: var(--text-hi);
+  transform: translateY(-2px);
+}
+.tut-kid[aria-selected="true"] { border-color: var(--flame-400); }
+.mm-reduce-motion .tut-kid { transition: none; }
+.mm-reduce-motion .tut-kid:hover, .mm-reduce-motion .tut-kid.is-hover { transform: none; }
+
+.tut-detail {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0 var(--s-3);
+  align-items: baseline;
+  min-height: 4.6em;
+}
+.tut-detail[hidden] { display: none; }
+.tut-detail__n { font-family: var(--font-display); font-size: var(--fs-lg); color: var(--flame-200); }
+.tut-detail__a { font-size: var(--fs-sm); color: var(--text-lo); }
+.tut-detail__t, .tut-detail__l {
+  grid-column: 1 / -1;
+  margin: 2px 0 0;
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  color: var(--text-mid);
+}
+.tut-detail__l em { color: var(--text-lo); font-style: normal; letter-spacing: .1em; text-transform: uppercase; font-size: .86em; }
+
+/* ── foot ─────────────────────────────────────────────────────────────────── */
+.tut-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--s-4);
+  margin-top: var(--s-2);
+}
+.tut-dots { display: flex; gap: 6px; }
+.tut-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: color-mix(in srgb, var(--text-lo) 42%, transparent);
+  transition: background-color var(--t-quick) var(--ease-out);
+}
+.tut-dot.is-past { background: color-mix(in srgb, var(--flame-400) 52%, transparent); }
+.tut-dot.is-on { background: var(--flame-300); }
+
+/* Its own button. `btn btn--go` is authored in select.css and that sheet is not
+   loaded here, so the class pair rendered as bare text. */
+.tut-next {
+  appearance: none;
+  border: 1px solid color-mix(in srgb, var(--flame-500) 60%, var(--surface-line));
+  border-radius: var(--radius-sm);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--flame-400) 24%, transparent),
+    color-mix(in srgb, var(--flame-500) 16%, transparent));
+  color: var(--flame-100);
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  letter-spacing: .08em;
+  padding: var(--s-2) var(--s-5);
+  cursor: pointer;
+  transition: background-color var(--t-quick) var(--ease-out), color var(--t-quick) var(--ease-out);
+}
+.tut-next:hover, .tut-next:focus-visible {
+  background: color-mix(in srgb, var(--flame-400) 34%, transparent);
+  color: #fff;
+}
+.tut-next[hidden] { display: none; }
+
+.tut-skip {
+  position: absolute;
+  right: var(--s-5); top: var(--s-5);
+  appearance: none;
+  border: 1px solid color-mix(in srgb, var(--surface-line) 70%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--ink-800) 60%, transparent);
+  color: var(--text-lo);
+  font: inherit;
+  font-size: var(--fs-xs);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: var(--s-2) var(--s-3);
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: color var(--t-quick) var(--ease-out), border-color var(--t-quick) var(--ease-out);
+}
+.tut-skip:hover, .tut-skip:focus-visible { color: var(--text-hi); border-color: var(--surface-line-hi); }
+
+/* ── narrow ───────────────────────────────────────────────────────────────── */
+@media (max-width: 1180px) {
+  .tut-stage { grid-template-columns: minmax(0, 16rem) minmax(0, 40rem); gap: var(--s-5); }
+  .tut-fig__img { max-height: 44vh; }
+}
+@media (max-width: 900px) {
+  .tut-stage { grid-template-columns: minmax(0, 1fr); }
+  .tut-fig { display: none; }
+}

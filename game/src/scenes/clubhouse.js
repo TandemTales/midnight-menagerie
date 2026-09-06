@@ -22,6 +22,7 @@ import {
   freedCompanions, availableCompanions, warmFaces,
 } from '../ui/portrait.js';
 import { KID_CODEX, loadoutFor } from './select.js';
+import { shouldPlayOpening } from './tutorial.js';
 import { pauseStageFor } from './_stage.js';
 import {
   BACKPACK_ITEMS, itemById, loadoutSize, assertLoadout, SLOTS_BASE,
@@ -572,6 +573,13 @@ export class ClubhouseScene extends Scene {
 
     const onGo = () => {
       this._savePack();
+      /* Same fork as the title's New Game: a player who has freed nobody and
+         never seen the opening gets the story, not the planning screen. The Kid
+         they have been looking at on the board comes with them. */
+      if (shouldPlayOpening()) {
+        this.ctx.scenes?.go?.('tutorial', { kid: this.activeKid });
+        return;
+      }
       this.ctx.scenes?.go?.('select', { haunt: this.haunt, kid: this.activeKid });
     };
     this._goBtn.addEventListener('click', onGo);

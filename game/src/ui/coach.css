@@ -1,0 +1,127 @@
+/* ===========================================================================
+   The coach — the opening walkthrough, laid over a real Scuffle.
+   OWNER: map (ships with scenes/tutorial.js). Colours via ui/tokens.css.
+
+   POINTER EVENTS ARE THE WHOLE POINT: the overlay must never make the fight
+   underneath unplayable, so only its own two buttons take a click. A tutorial
+   the player has to dismiss before they can obey it is not a tutorial.
+   =========================================================================== */
+.coach {
+  position: fixed; inset: 0; z-index: 60;
+  pointer-events: none;
+  font-family: var(--font-body);
+  opacity: 1;
+  transition: opacity var(--t-base) var(--ease-out);
+}
+.coach.is-out { opacity: 0; }
+.mm-reduce-motion .coach { transition: none; }
+
+/* ── the spotlight ────────────────────────────────────────────────────────── */
+/* A ring, not a hole punched in a scrim: dimming the rest of the board hides
+   the very numbers the sentence is asking the player to read. */
+.coach__spot {
+  position: fixed;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--flame-300);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--ink-900) 60%, transparent),
+    0 0 22px 4px color-mix(in srgb, var(--flame-glow) 34%, transparent),
+    inset 0 0 18px color-mix(in srgb, var(--flame-glow) 14%, transparent);
+  opacity: 0;
+  transition: opacity var(--t-quick) var(--ease-out);
+  pointer-events: none;
+}
+.coach:not(.has-spot) .coach__spot { opacity: 0 !important; }
+.coach.has-spot .coach__spot { animation: coach-pulse 2.1s var(--ease-soft) infinite; }
+@keyframes coach-pulse {
+  0%, 100% { border-color: var(--flame-300); }
+  50%      { border-color: var(--flame-200); }
+}
+.mm-reduce-motion .coach__spot { animation: none; transition: none; }
+
+/* ── the card ─────────────────────────────────────────────────────────────── */
+.coach__card {
+  position: fixed;
+  width: min(30rem, calc(100vw - 36px));
+  padding: var(--s-4) var(--s-4) var(--s-3);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--parchment) 97%, #fff), var(--parchment) 64%, var(--parchment-shade));
+  color: var(--ink-900);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-4), 0 2px 0 rgba(255, 255, 255, .34) inset;
+  pointer-events: none;
+}
+/* the torn top edge of a note pushed across a table */
+.coach__card::before {
+  content: ''; position: absolute; left: 10%; right: 10%; top: -7px; height: 8px;
+  background: color-mix(in srgb, var(--parchment) 80%, var(--parchment-shade));
+  clip-path: polygon(0 100%, 4% 30%, 11% 92%, 19% 22%, 27% 88%, 36% 34%, 45% 96%,
+    54% 28%, 63% 90%, 72% 26%, 81% 94%, 90% 36%, 97% 88%, 100% 100%);
+  opacity: .8;
+}
+
+.coach__text {
+  margin: 0 0 var(--s-3);
+  font-size: var(--fs-md);
+  line-height: 1.5;
+}
+
+.coach__row {
+  display: flex; align-items: center; justify-content: flex-end;
+  gap: var(--s-3);
+  min-height: 1.9em;
+}
+
+.coach__hint {
+  flex: 1;
+  font-family: var(--font-display);
+  font-size: var(--fs-xs);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink-900) 62%, var(--parchment-shade));
+}
+.coach__hint::before {
+  content: '\2192';                 /* → */
+  margin-right: .5em;
+  color: var(--flame-500);
+}
+.coach__hint[hidden] { display: none; }
+
+.coach__next {
+  pointer-events: auto;
+  appearance: none;
+  border: 1px solid color-mix(in srgb, var(--ink-900) 34%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--flame-300) 74%, var(--parchment));
+  color: var(--ink-900);
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  letter-spacing: .08em;
+  padding: var(--s-2) var(--s-4);
+  cursor: pointer;
+  transition: background-color var(--t-quick) var(--ease-out);
+}
+.coach__next:hover, .coach__next:focus-visible {
+  background: color-mix(in srgb, var(--flame-200) 86%, var(--parchment));
+}
+
+/* ── always available ─────────────────────────────────────────────────────── */
+/* In the card's own row, never over the board — see the note in coach.js. */
+.coach__skip {
+  pointer-events: auto;
+  appearance: none;
+  border: 0;
+  background: none;
+  color: color-mix(in srgb, var(--ink-900) 54%, var(--parchment-shade));
+  font: inherit;
+  font-size: var(--fs-xs);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: var(--s-2);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+  transition: color var(--t-quick) var(--ease-out);
+}
+.coach__skip:hover, .coach__skip:focus-visible { color: var(--ink-900); }

@@ -218,6 +218,21 @@ export class CombatScene extends Scene {
 
     this._syncAll();
 
+    /* ── THE OPENING WALKTHROUGH ────────────────────────────────────────────
+       `scenes/tutorial.js` deep-links this scene with `tutorial=1` and lets the
+       fight run exactly as it always does. The coach (`ui/coach.js`) is an
+       overlay: it points at things already on the board, reads engine events to
+       know when the player has done a thing, and takes no pointer events except
+       on its own two buttons.
+
+       DELIBERATELY NOT a tutorial mode in the engine. A fixed opening hand and
+       gated legality teach in a tighter order and cost a second set of combat
+       rules beside this one, free to drift without anything failing. Nothing in
+       this file changes behaviour when the flag is absent, and nothing in the
+       engine can tell the coached fight from any other. */
+    this._tutorial = !!params.tutorial;
+    if (this._tutorial) this._mountCoach();
+
     /* ── DO NOT AWAIT THE FIGHT HERE ────────────────────────────────────────
        `core/scenes.js#go` awaits `enter()` and only THEN calls
        `transition.reveal()`. Round 1 awaited `startCombat()` and `_settle()`
@@ -236,6 +251,30 @@ export class CombatScene extends Scene {
     // left BODY. `focusHand` is bound to Tab in `_bindUi`; the scene does NOT
     // grab focus on entry, because auto-lifting a card for a mouse player who
     // never touched the keyboard is worse than the problem it solves.
+  }
+
+  /**
+   * Bring the coach up once the veil has lifted and the hand has been dealt.
+   *
+   * Deferred for the same reason the boss entrance is: `core/scenes.js` reveals
+   * AFTER `enter()` returns, so a card raised here would deliver its first two
+   * beats to a black screen. The wait is capped by `_untilRevealed`, and the
+   * deal is what puts `.cb-handhost` and the enemy plate somewhere worth
+   * pointing at.
+   */
+  async _mountCoach() {
+    try {
+      const [{ Coach, openingSteps }] = await Promise.all([import('../ui/coach.js')]);
+      await this._untilRevealed();
+      await this._boot;                       // the opening, the shuffle, the first hand
+      if (!this.engine || !this._tutorial) return;
+      this.coach = await new Coach(this.ctx, this.root, this.engine,
+        openingSteps(TERMS)).mount();
+    } catch (e) {
+      /* A walkthrough that fails to build must never take the fight with it —
+         the player is left in an ordinary, completely playable Scuffle. */
+      console.error('[combat] coach', e);
+    }
   }
 
   /**
@@ -2539,6 +2578,17 @@ export class CombatScene extends Scene {
     this.ctx.atmosphere?.dread?.(ev.victory ? 0 : 0.9, 0.8);
     this.ctx.audio?.stinger?.(ev.victory ? 'sting:victory' : 'sting:defeat');
     await this._wait(this._d(1.1));
+    if (this._tutorial && !this.ctx.run) {
+      /* The opening's fight has no Run behind it — it is a prologue, and the
+         expedition starts after it. Won: back to `scenes/tutorial.js` for the
+         closing beats. Lost: back to the beat where Marmalade steps in front of
+         you, and it happens again. A first fight that ends the game before the
+         player has a deck is not a lesson, it is a wall, and `foyer-1` is one
+         Dust Bunny precisely so this branch is nearly unreachable. */
+      this.coach?.dismiss();
+      this.ctx.scenes?.go?.('tutorial', ev.victory ? { step: 'after' } : { step: 'fight' });
+      return;
+    }
     if (ev.victory && this.ctx.run) {
       this.ctx.scenes?.go?.('reward', { seed: this.engine.seed });
     } else if (!ev.victory && this.ctx.run) {
@@ -3667,6 +3717,9 @@ export class CombatScene extends Scene {
   async exit() {
     clearTimeout(this._veilT);
     clearTimeout(this._fitT); clearTimeout(this._fitT2);
+    this._tutorial = false;                    // stops a pending _mountCoach
+    this.coach?.destroy();
+    this.coach = null;
     this._offFrame?.();
     this.hero?.destroy();
     this.hero = null;
