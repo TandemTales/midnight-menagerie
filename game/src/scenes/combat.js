@@ -2189,6 +2189,23 @@ export class CombatScene extends Scene {
     this._syncPiles();
     if (!to || to === from) return;
 
+    /* BONES DIGS AND FETCHES, and this event already knows which. The brief
+       gives him two clips and spells out what each one covers -- Dig is
+       "Dig, Bury Trick, Retrieve buried Trick, Recursion, Uncover Bone",
+       Fetch is "Fetch, Retrieve Trick, Recover discarded object" -- and both
+       of those ARE a card changing piles: `bury()` moves one into `stash`,
+       `digUp()` takes it back out, and `fetch()` pulls one out of the discard
+       pile. So the two piles the card crossed name the clip, and the engine
+       does not have to say anything it was not already saying.
+
+       Seat-gated, because in co-op the other Kid's Bones moving a card is
+       not this body's business. `playClip` returns false for every Companion
+       with no such clip, which is the other fifteen. */
+    if (!ev.seatId || ev.seatId === this.me.id) {
+      if (from === 'stash' || to === 'stash') this.hero?.playClip('dig');
+      else if (from === 'discard' && to === 'hand') this.hero?.playClip('fetch');
+    }
+
     if (to === 'hand') {
       // Already in the fan (the Hand put it there itself, or a duplicate
       // event): nothing to build, but the piles and playability still moved.

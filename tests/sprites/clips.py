@@ -41,6 +41,9 @@ an edit to `game/src/scenes/combat.js` that turns it red:
   bones      rename `game/assets/sprites/bones/` aside and rebuild without the
              sheet; he falls back to his still, `unit` becomes 140 instead of
              128, and the animation check goes red.
+  dig/fetch  delete either branch of the `stash` / `discard` test in
+             `_animCardMove`.  Burying a Trick, digging it back up and pulling
+             one out of the discard pile all go back to moving in silence.
   kid        delete `_tickKid`'s swap, or blank the `kid:` passed to PlayerView
              in scenes/combat.js; the board goes back to one drawn rig for all
              eight Kids.
@@ -189,6 +192,21 @@ BONES = """async () => {
   const c = (p.clips || {}).idle || {};
   return { clips: Object.keys(p.clips || {}), frames: c.frames || 0,
            unit: p.unit, playing: p.name };
+}"""
+
+# Bones' own two. The brief pairs each with what it covers -- Dig with "Bury
+# Trick, Retrieve buried Trick, Recursion", Fetch with "Recover discarded
+# object" -- and both are already a card changing piles, so the trigger reads
+# `card:move` rather than asking the engine for a new event.
+DIGFETCH = """async (a) => {
+  const s = window.MM.ctx.scenes.current;
+  s.hero.playClip('idle');
+  const c = s.engine.piles.hand[0];
+  s.engine._emit('card:move', { cardUid: c ? c.uid : 'x',
+    card: c ? s.engine.cardSnap(c) : null, seatId: s.me.id,
+    from: a.from, to: a.to, position: 0, reason: 'effect' });
+  await new Promise(r => setTimeout(r, 450));
+  return s.hero.sprite.name;
 }"""
 
 ZOOMIES = """async () => {
@@ -387,6 +405,27 @@ async def main(a):
               f"clips={bones['clips']} frames={bones['frames']} unit={bones['unit']}")
         check(bones["playing"] == "idle", "bones opens on `idle`",
               f"playing '{bones['playing']}'")
+
+        # His two, driven by the piles a card crosses.
+        await page.goto(BASE + "#scene=combat&seed=7&companion=bones&kid=eli",
+                        wait_until="load", timeout=60000)
+        await page.reload(wait_until="load", timeout=60000)
+        await page.wait_for_function(f"!!({SCENE}) && {SCENE}.engine", timeout=int(a.wait * 1000))
+        await page.wait_for_function(f"{SCENE} && {SCENE}._opening === false", timeout=30000)
+        # `clips` is null until ClipPlayer.ready resolves; warming before that
+        # throws on Object.keys(null) rather than warming anything.
+        await page.wait_for_function(
+            f"{SCENE} && {SCENE}.hero && {SCENE}.hero.sprite && {SCENE}.hero.sprite.clips",
+            timeout=30000)
+        await page.evaluate("""async () => { const p = window.MM.ctx.scenes.current.hero.sprite;
+            await Promise.all(Object.keys(p.clips || {}).map(n => p._atlas(n))); }""")
+        for frm, to, want in (("hand", "stash", "dig"), ("stash", "hand", "dig"),
+                              ("discard", "hand", "fetch")):
+            got = await page.evaluate(DIGFETCH, {"from": frm, "to": to})
+            check(got == want, f"a Trick {frm} -> {to} plays `{want}`", f"played '{got}'")
+
+        check(not errors, "no JS errors driving dig and fetch",
+              "; ".join(errors[:3]) or "clean")
 
         check(not errors, "no JS errors loading a second Companion",
               "; ".join(errors[:3]) or "clean")
