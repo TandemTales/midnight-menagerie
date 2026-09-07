@@ -1865,9 +1865,20 @@ async function main() {
       Save.data.blueprint = { revealed: ['foyer'], cleared: [] };
       check(!canChooseEntry(), 'a fresh save could already choose its way in');
       const shut = new Run({ companion: 'marmalade', kid: 'maya', seed: 5,
-                             startRegion: 'kennels' });
+                             startRegion: 'kennels', entryUnlocked: canChooseEntry() });
       check(shut.region === RUN_REGIONS[0],
         `a locked save started in ${shut.region}, not the Foyer`);
+      /* AND A CALLER THAT SAYS NOTHING GETS THE FRONT DOOR, whatever the save
+         holds. `entryUnlocked` is explicit-only: run construction reads no
+         local save, so a headless driver cannot inherit a fork from whichever
+         expedition happened to clear the Foyer before it. */
+      Save.data.blueprint.cleared = ['foyer'];
+      const mute = new Run({ companion: 'marmalade', kid: 'maya', seed: 5,
+                             startRegion: 'kennels' });
+      check(mute.region === RUN_REGIONS[0] && !mute.pendingWing,
+        `a run that did not ask began in ${mute.region}`
+        + `${mute.pendingWing ? ' at a fork it never requested' : ''}`);
+      Save.data.blueprint.cleared = [];
 
       // surveying the Foyer is not clearing it
       new Run({ companion: 'marmalade', kid: 'maya', seed: 5 }).markWingMapped('foyer');
@@ -1876,12 +1887,13 @@ async function main() {
       Save.data.blueprint.cleared = ['foyer'];
       check(canChooseEntry(), 'clearing the Foyer did not unlock the way in');
       const open = new Run({ companion: 'marmalade', kid: 'maya', seed: 5,
-                             startRegion: 'kennels' });
+                             startRegion: 'kennels', entryUnlocked: true });
       check(open.region === 'kennels' && open.route.length === 1
         && open.route[0] === 'kennels',
         `an unlocked save asked for the Kennels and got ${open.region}`);
       for (const bad of ['not-a-wing', HEART_W, '', null]) {
-        const r = new Run({ companion: 'marmalade', kid: 'maya', seed: 5, startRegion: bad });
+        const r = new Run({ companion: 'marmalade', kid: 'maya', seed: 5,
+                            startRegion: bad, entryUnlocked: true });
         check(r.region === RUN_REGIONS[0],
           `startRegion ${JSON.stringify(bad)} was accepted — run began in ${r.region}`);
       }

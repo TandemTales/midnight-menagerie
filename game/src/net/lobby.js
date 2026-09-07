@@ -116,6 +116,7 @@ export class Lobby {
       /* YOUR OWN Backpack, unlike `haunt` and `freed`: it belongs to the Kid
          you brought, so every seat's travels rather than only seat 0's. */
       pack: Array.isArray(o.pack) ? o.pack.slice() : null,
+      entry: !!o.entry,
     };
     /** id -> { id, companion, kid, name, ready } */
     this._peers = new Map([[this.me.id, this.me]]);
@@ -166,13 +167,14 @@ export class Lobby {
 
   /* ── my own choices ───────────────────────────────────────────────────── */
 
-  setChoice({ companion, kid, name, haunt, freed, pack } = {}) {
+  setChoice({ companion, kid, name, haunt, freed, pack, entry } = {}) {
     if (companion !== undefined) this.me.companion = companion;
     if (kid !== undefined) this.me.kid = kid;
     if (name !== undefined) this.me.name = name;
     if (haunt !== undefined) this.me.haunt = haunt | 0;
     if (freed !== undefined) this.me.freed = Array.isArray(freed) ? freed.slice() : [];
     if (pack !== undefined) this.me.pack = Array.isArray(pack) ? pack.slice() : null;
+    if (entry !== undefined) this.me.entry = !!entry;
     // Changing your Kid un-readies you. Otherwise a player can lock in, swap to
     // somebody else's Kid, and the roster that starts is not the one anybody
     // agreed to.
@@ -220,6 +222,7 @@ export class Lobby {
          and not a derivation. */
       haunt: (players[0] || {}).haunt | 0,
       freed: ((players[0] || {}).freed || []).slice(),
+      entryUnlocked: !!(players[0] || {}).entry,
     };
     this.started = true;
     this._emit('start', this.roster);
@@ -259,7 +262,7 @@ export class Lobby {
       companion: this.me.companion, kid: this.me.kid,
       name: this.me.name, ready: this.me.ready,
       haunt: this.me.haunt | 0, freed: this.me.freed || [],
-      pack: this.me.pack || null,
+      pack: this.me.pack || null, entry: !!this.me.entry,
     });
   }
 
@@ -272,7 +275,7 @@ export class Lobby {
           id, companion: m.companion || null, kid: m.kid || null,
           name: m.name || '', ready: !!m.ready,
           haunt: m.haunt | 0, freed: Array.isArray(m.freed) ? m.freed : [],
-          pack: Array.isArray(m.pack) ? m.pack : null,
+          pack: Array.isArray(m.pack) ? m.pack : null, entry: !!m.entry,
         });
         this._emit('change');
         break;

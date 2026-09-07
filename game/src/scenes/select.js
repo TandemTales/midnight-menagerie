@@ -1549,27 +1549,20 @@ export class SelectScene extends Scene {
       ? { seed, haunt, kids: [...this.state.party, { companion, kid, backpack }] }
       : { companion, kid, seed, haunt, backpack };
 
-    /* WHERE DOES TONIGHT START? Once the Foyer has been cleared the way in is a
-       decision, and the atlas is the screen that makes it — it is the only one
-       that draws all seventeen wings and can say who is held in each. So the
-       payload is handed over rather than fired here, and `scenes/atlas.js` in
-       `enter` mode emits `run:start` with the chosen wing appended.
+    /* WHERE DOES TONIGHT START? Once the Foyer has been cleared, `Run` opens a
+       fork at `ENTRY_STEP` instead of committing to the front door, and asks to
+       be taken to the atlas rather than the map. This screen does not decide
+       any of that — it starts the expedition through the one seam and then goes
+       where the run says. `openingScene()` is the whole branch.
 
-       Before that unlock this is unchanged: the front door, straight to the map,
-       one seam. `new Run` validates the wing either way. */
-    if (canChooseEntry()) {
-      try { this.ctx.audio?.play?.('ui:confirm'); } catch {}
-      this.root.classList.add('is-leaving');
-      const toAtlas = () => this.ctx.scenes?.go?.('atlas', { enter: '1', payload });
-      if (reduceMotion()) toAtlas();
-      else clock.wait(0.32).then(toAtlas);
-      return;
-    }
-
+       It used to hand the payload to the atlas and let that screen fire
+       `run:start` with a wing appended, which meant a second start path and no
+       way for a PARTY to vote on the answer. */
     try { this.ctx.audio?.play?.('ui:begin'); } catch {}
-    bus.emit('run:start', payload);
+    bus.emit('run:start', { ...payload, entryUnlocked: canChooseEntry() });
     this.root.classList.add('is-leaving');
-    const go = () => this.ctx.scenes?.go?.('map', payload);
+    const where = this.ctx.run?.openingScene?.() || 'map';
+    const go = () => this.ctx.scenes?.go?.(where, payload);
     if (reduceMotion()) go();
     else clock.wait(0.32).then(go);
   }

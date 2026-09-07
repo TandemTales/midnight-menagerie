@@ -15,7 +15,7 @@ import { installTrackers } from '../../game/src/data/companions/_util.js';
 import { startingDeckFor } from '../../game/src/data/cards.js';
 import { LoopbackHub, ChannelTransport, canChannel } from '../../game/src/net/transport.js';
 import { Session, INPUT, cardRef, refCard } from '../../game/src/net/session.js';
-import { Run } from '../../game/src/state/run.js';
+import { Run, RUN_REGIONS } from '../../game/src/state/run.js';
 import { act, ACT, attachActions, attachChoices, deckIndex } from '../../game/src/net/actions.js';
 import { Lobby, seedFromRoom } from '../../game/src/net/lobby.js';
 import { MAX_PARTY } from '../../game/src/combat/engine.js';
@@ -924,6 +924,71 @@ try {
       `${A.e.localSeat} / ${B.e.localSeat}`);
 
     A.session.close(); B.session.close();
+  }
+
+  /* == 11b. THE WAY IN IS A VOTE, and four machines must land in one wing ===
+   *
+   * An expedition that may choose where it BEGINS opens a fork at `ENTRY_STEP`
+   * instead of committing to the front door. It is deliberately the same fork
+   * as every other crossing — same `voteWing`, same `ACT.WING_CHOOSE`, same
+   * seeded roulette, same screen — so co-op gets it for nothing and there is no
+   * second mechanism to keep in step.
+   *
+   * The property that matters is not "somebody picked something". It is that a
+   * SPLIT resolves identically on every machine: the run has not started yet,
+   * so a disagreement here does not desync a fight, it puts four players in
+   * four different wings for the whole expedition. Two for the Kennels and two
+   * for the Graveyard is the sharpest case, because it forces the roulette —
+   * `rolled` is asserted, or this would be testing a unanimous vote by accident.
+   */
+  {
+    const PARTY4 = [{ companion: 'marmalade', kid: 'maya' }, { companion: 'bones', kid: 'eli' },
+                    { companion: 'pipkin', kid: 'amina' }, { companion: 'taffy', kid: 'jordan' }];
+    const hub = new LoopbackHub();
+    const seats = [0, 1, 2, 3].map((seat) => {
+      const run = new Run({ seed: SEED, kids: PARTY4, entryUnlocked: true, freedRoster: [] });
+      const session = new Session({ transport: hub.peer('E' + seat), seat, seats: 4,
+                                    seed: SEED, host: seat === 0 });
+      attachActions(session, run);
+      return { seat, run, session };
+    });
+
+    check(seats.every(c => c.run.pendingWing && c.run.pendingWing.step < 0),
+      'every seat opens on the way-in fork, not in the Foyer');
+    check(seats.every(c => c.run.openingScene() === 'atlas'),
+      'and every seat is sent to the atlas rather than the map');
+    check(seats.every(c => c.run.pendingWing.options.length === RUN_REGIONS.length - 1),
+      'every wing but the Heart is on offer',
+      String(seats[0].run.pendingWing.options.length));
+    check(!seats[0].run.pendingWing.options.some(o => o.to === RUN_REGIONS[RUN_REGIONS.length - 1]),
+      'and the Heart is not — it is the ending, not a place to begin');
+    check(seats[0].run.wingVotesPending().length === 4,
+      'all four seats owe a vote', String(seats[0].run.wingVotesPending().length));
+
+    const split = ['kennels', 'graveyard', 'kennels', 'graveyard'];
+    for (let i = 0; i < 4; i++) {
+      seats[i].session.input({ t: INPUT.ROOM, seat: i, act: ACT.WING_CHOOSE, region: split[i] });
+    }
+    /* The roulette overrode somebody, so `_crossAfterVote` holds `VOTE_BEAT`
+       before it moves — the party has to SEE the verdict. Wait past it rather
+       than racing it; reading at 120ms reported "everyone is still in the
+       Foyer" and looked exactly like a broken vote. */
+    await new Promise(r => setTimeout(r, 3400));
+
+    const wings = new Set(seats.map(c => c.run.region));
+    const routes = new Set(seats.map(c => (c.run.route || []).join('>')));
+    check(wings.size === 1, 'all four machines begin in the SAME wing',
+      [...wings].join(' / '));
+    check(routes.size === 1 && !routes.has('foyer'),
+      'and their route is that wing, not the front door', [...routes].join(' / '));
+    check(seats.every(c => c.run.regionIndex === 0),
+      'beginning somewhere is still WING ONE — it does not consume a crossing');
+    check(seats.every(c => !c.run.pendingWing), 'the fork closes on every machine');
+    check(seats.every(c => c.run.lastWingVote && c.run.lastWingVote.rolled),
+      'the 2-2 split actually forced the roulette (or this proves nothing)');
+    check(new Set(seats.map(c => (c.run.map?.nodes || []).length)).size === 1,
+      'and all four generated the same map for it');
+    hub.close();
   }
 
   // ══ 12. The lobby: seats, host and seed, with no election ══════════════

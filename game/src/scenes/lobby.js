@@ -51,6 +51,7 @@ import { Save } from '../core/save.js';
 import { KIDS, COMPANIONS } from '../data/schema.js';
 import { MAX_PARTY } from '../combat/engine.js';
 import { loadoutFor } from './select.js';
+import { canChooseEntry } from '../state/run.js';
 import { Lobby, seedFromRoom } from '../net/lobby.js';
 import { Session } from '../net/session.js';
 import { attachSession } from '../net/actions.js';
@@ -227,6 +228,7 @@ export class LobbyScene extends Scene {
          join and leave the room. */
       haunt: Save.hauntLevelFor(MAX_PARTY),
       freed: (Save?.data?.companionsRescued || []).slice(),
+      entry: canChooseEntry(),
       /* The Clubhouse Backpack editor writes `Save.data.backpacks[kid]`, and a
          co-op run ignored it entirely: the roster carried only a Companion and
          a Kid, so every co-op Kid walked in on the default loadout while the
@@ -299,6 +301,7 @@ export class LobbyScene extends Scene {
       this._lobby.setChoice({ companion: cSel.value, kid: kSel.value, name: l.me.name,
                               haunt: Save.hauntLevelFor(MAX_PARTY),
                               freed: (Save?.data?.companionsRescued || []).slice(),
+                              entry: canChooseEntry(),
                               pack: loadoutFor(kSel.value) });
     };
     cSel.addEventListener('change', onPick);
@@ -376,6 +379,11 @@ export class LobbyScene extends Scene {
       seed: roster.seed,
       haunt: roster.haunt | 0,
       freedRoster: (roster.freed || []).slice(),
+      /* THE PARTY VOTES ON THE WAY IN, and whether it may is seat 0's answer —
+         the same anchor as the ladder and the roster. Read per client it would
+         put one player at a fork while another walked straight into the Foyer,
+         which is two machines in different wings. */
+      entryUnlocked: !!roster.entryUnlocked,
       kids: roster.party.map(p => ({ companion: p.companion, kid: p.kid,
                                      backpack: p.backpack || undefined })),
     };
@@ -400,7 +408,8 @@ export class LobbyScene extends Scene {
 
     bus.emit('run:start', payload);
     this.root.classList.add('is-leaving');
-    const go = () => this.ctx.scenes?.go?.('map', payload);
+    /* The run says where it belongs: the way-in fork, or straight in. */
+    const go = () => this.ctx.scenes?.go?.(this.ctx.run?.openingScene?.() || 'map', payload);
     if (reduceMotion()) go();
     else clock.wait(0.32).then(go);
   }

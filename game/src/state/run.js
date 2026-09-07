@@ -219,6 +219,28 @@ export const EXPEDITION_WINGS = 6;
 const HEART = RUN_REGIONS[RUN_REGIONS.length - 1];
 
 /**
+ * The step a fork carries when it is the way IN rather than a way on.
+ *
+ * Negative on purpose: `regionIndex` is 0 for the first wing, so the choice
+ * that happens BEFORE it has to sort before it. Everything else about the fork
+ * — the ballot, the roulette, the wire action, the screen — is identical, which
+ * is the whole reason it is a fork and not a second mechanism.
+ */
+const ENTRY_STEP = -1;
+
+/**
+ * Every wing the party could begin in.
+ *
+ * Not the Heart: it is the ending, and beginning there is beginning at the end.
+ * No `why`, because there is no wing to come FROM — the atlas prints who is
+ * held in each instead, which is the question this fork is actually asking.
+ */
+export function entryOffer() {
+  return RUN_REGIONS.filter(r => r !== HEART)
+    .map(to => ({ to, why: null, manifested: false }));
+}
+
+/**
  * MAY THE PLAYER CHOOSE WHERE TONIGHT STARTS?
  *
  * Only once they have cleared the Foyer. The first expedition is the front
@@ -553,13 +575,42 @@ export class Run {
        the game. So a caller that already knows the party's answer passes
        `entryUnlocked` and it is used verbatim; solo passes nothing and the
        local unlock decides, exactly as before. Same shape as `freedRoster`. */
+    /* EXPLICIT ONLY. This used to fall back to `canChooseEntry()`, which reads
+       THIS machine's save — the last local-save read left in run construction,
+       and the same class of bug as the Haunt level and the rescue pool. Two
+       ways it bites: two co-op clients disagree about whether there is a fork
+       at all (one votes, the other walks into the Foyer), and any headless
+       driver that clears the Foyer once starts getting a fork it never asked
+       for on every later run.
+
+       The screens pass `entryUnlocked: canChooseEntry()` because the unlock is
+       genuinely theirs to check; the lobby passes seat 0's answer off the
+       roster. A caller that says nothing gets the front door, deterministically,
+       whatever the save happens to hold. */
     const wanted = cfg.startRegion;
-    const unlocked = cfg.entryUnlocked === undefined
-      ? canChooseEntry() : !!cfg.entryUnlocked;
-    const start = (wanted && wanted !== RUN_REGIONS[RUN_REGIONS.length - 1]
-      && RUN_REGIONS.includes(wanted) && unlocked) ? wanted : RUN_REGIONS[0];
+    const unlocked = cfg.entryUnlocked === true;
+    const named = wanted && wanted !== HEART && RUN_REGIONS.includes(wanted) && unlocked;
+    const start = named ? wanted : RUN_REGIONS[0];
     this.route = [start];
     this.region = this.route[0];
+    /**
+     * THE WAY IN IS A VOTE, and it is the SAME vote as every other crossing.
+     *
+     * An expedition that may choose where it begins opens a fork at
+     * `ENTRY_STEP` instead of committing to the front door. It goes through
+     * `voteWing` / `resolveWingVote` / `ACT.WING_CHOOSE` and the atlas's ballot
+     * exactly as a way ON does, which means co-op gets it for nothing:
+     * everybody votes, a weighted roulette settles a split, and the host has no
+     * special authority (STS2-REFERENCE §8.5). A party of one short-circuits on
+     * its own first vote and takes no number at all, so a solo run stays
+     * byte-identical to its seed.
+     *
+     * The run is CONSTRUCTED at the Foyer regardless, so every invariant holds
+     * while the fork is open (`map` is never null, `region` is always a real
+     * wing). `enterRegion` moves it if the party picks somewhere else. A caller
+     * that names `startRegion` outright — a deep link, a test — skips the fork.
+     */
+    this._entryPending = !named && unlocked;
     /**
      * The fork between two wings, while it is open.
      * `{ from, step, options:[{to,why,manifested}], votes:{seat:slug} }`
@@ -632,7 +683,10 @@ export class Run {
     this._saveTimer = null;
 
     this._buildMap();
-    this.markWingMapped(this.region);
+    /* Only once the way in is settled. Marking here would draw the Foyer on the
+       blueprint for a party that is about to walk into the Kennels instead. */
+    if (this._entryPending) this.openEntryFork();
+    else this.markWingMapped(this.region);
   }
 
   /**
@@ -2820,6 +2874,49 @@ export class Run {
   }
 
   /** Open the fork and put the estate drawing on the screen. */
+  /**
+   * Open the way-in fork. State only: the run is not attached to a ctx yet when
+   * the constructor calls this, so it cannot navigate. `openingScene()` is how
+   * the screen that started the run finds out where to go.
+   */
+  openEntryFork() {
+    this.pendingWing = { from: null, step: ENTRY_STEP, options: entryOffer(), votes: {} };
+    return this.pendingWing;
+  }
+
+  /** Where a freshly started run belongs: the way-in fork, or straight in. */
+  openingScene() {
+    return (this.pendingWing && this.pendingWing.step === ENTRY_STEP) ? 'atlas' : 'map';
+  }
+
+  /**
+   * Begin in a wing. The way-in counterpart of `advanceRegion`, and the reason
+   * it is separate: crossing INCREMENTS `regionIndex` and heals the party for
+   * the wing behind them, and neither is true of walking through the front door
+   * for the first time. Wing one is still wing one.
+   */
+  enterRegion(to) {
+    /* Validated against `entryOffer()` and NOT against `pendingWing`, which
+       `resolveWingVote` has already nulled by the time it crosses — reading it
+       here made every vote fall back to the front door. `entryOffer` is a pure
+       function of the roster, so it answers the same on every client. */
+    const ok = entryOffer().some(o => o.to === to);
+    const next = ok ? to : RUN_REGIONS[0];
+    this.pendingWing = null;
+    this._entryPending = false;
+    // Idempotent against a replayed input, the same way `advanceRegion` is.
+    this.regionIndex = 0;
+    this.route = [next];
+    this.region = next;
+    this._previews = null;
+    this.encounterHistory = [];
+    this._buildMap();
+    this.markWingMapped(this.region);
+    this.save();
+    bus.emit('run:region', { region: this.region, index: 0, entry: true });
+    return this._goto('map', { region: this.region, seed: this.seed });
+  }
+
   openWingFork() {
     const options = wingOffer(this.seed, this.region, this.route, this.regionIndex, this.wings);
     this.pendingWing = { from: this.region, step: this.regionIndex, options, votes: {} };
@@ -2890,7 +2987,8 @@ export class Run {
       winner = this.fork(`wing|${fork.from}|${fork.step}|${ballot}`).weighted(items).id;
     }
     const result = { winner, from: fork.from, votes: { ...fork.votes },
-                     tally: Object.fromEntries(tally), rolled: items.length > 1 };
+                     tally: Object.fromEntries(tally), rolled: items.length > 1,
+                     entry: fork.step === ENTRY_STEP };
     this.pendingWing = null;
     this.lastWingVote = result;
     bus.emit('wing:chosen', { ...result, run: this });
@@ -2918,7 +3016,8 @@ export class Run {
     if (result.rolled && watched) {
       try { await clock.wait(VOTE_BEAT); } catch { /* a clock that is gone is not fatal */ }
     }
-    return this.advanceRegion(result.winner);
+    return result.entry ? this.enterRegion(result.winner)
+                        : this.advanceRegion(result.winner);
   }
 
   /**
