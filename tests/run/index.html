@@ -1808,6 +1808,44 @@ async function main() {
     }
     check(!doorErr, `${doorErr} wings opened a door the blueprint does not have`);
 
+    /* EVERY WING IS REACHABLE FROM EVERY FORK, which is the whole point of the
+       2026-09-06 routing change and exactly the kind of thing that rots back to
+       "two or three doors" without anything failing. The offer must be the set
+       of wings the party has NOT walked, minus the Heart — no more, no less.
+
+       The Heart is checked from the other side too: it may only ever be offered
+       on the last crossing, and there it must be the only thing offered. */
+    const HEART_ID = RUN_REGIONS[RUN_REGIONS.length - 1];
+    let offerErr = 0, heartErr = 0, offerSample = '';
+    for (let t = 0; t < 200; t++) {
+      const seed = 90000 + t;
+      const walked = [RUN_REGIONS[0]];
+      for (let step = 0; step < EXPEDITION_WINGS - 1; step++) {
+        const from = walked[walked.length - 1];
+        const off = wingOffer(seed, from, walked, step, EXPEDITION_WINGS);
+        const got = new Set(off.map(o => o.to));
+        const last = step + 1 >= EXPEDITION_WINGS - 1;
+        if (last) {
+          if (off.length !== 1 || off[0].to !== HEART_ID) heartErr++;
+        } else {
+          const want = RUN_REGIONS.filter(r =>
+            r !== HEART_ID && r !== from && !walked.includes(r));
+          if (got.size !== want.length || want.some(r => !got.has(r))) {
+            if (!offerErr) {
+              offerSample = `seed ${seed} step ${step} from ${from}: `
+                + `offered ${want.length ? [...got].length : 0} of ${want.length}`;
+            }
+            offerErr++;
+          }
+          if (got.has(HEART_ID)) heartErr++;
+        }
+        walked.push(off[Math.abs(seed + step) % off.length].to);
+      }
+    }
+    check(!offerErr, `${offerErr} forks did not offer every unwalked wing — ${offerSample}`);
+    check(!heartErr, `${heartErr} forks handled the Heart wrongly `
+      + `(it is the last crossing and nothing else)`);
+
     /* THE BLUEPRINT ITSELF. `REGION_EDGES` is a transcription of
        `docs/design/01-mansion-structure.md`, and a transcription is exactly the
        kind of thing that rots by one line without anything failing — so the

@@ -93,17 +93,36 @@ most common room in the game.
    of that option, and an option that risks nothing may not pay the run's best
    resource. 17 of 17 events could pay one → 11; 24 of 54 options → 16.
 
-2. **An expedition is a ROUTE, and since 2026-09-06 the party WALKS it.** The
-   Foyer, the Heart, and four wings the party chooses one door at a time off the
-   design doc's own adjacency graph — `REGION_EDGES` in `state/mapgen.js`, the
-   fork in `Run#openWingFork`, the screen in `scenes/atlas.js`. (It used to be
-   six wings dealt up front in ladder order; `expeditionRoute()` is gone.
-   `run.route` is the wings WALKED and grows; `run.wings` is how long tonight
-   is — reading `route.length` for the second prints "Wing 1 of 1".)
+2. **An expedition is a ROUTE the party WALKS, and since 2026-09-07 it can go
+   anywhere.** Six wings: the Foyer or a wing the party CHOSE to start in, four
+   they pick one door at a time, and the Heart. (It used to be six wings dealt
+   up front in ladder order; `expeditionRoute()` is gone. `run.route` is the
+   wings WALKED and grows; `run.wings` is how long tonight is — reading
+   `route.length` for the second prints "Wing 1 of 1".)
+
+   **Every unwalked wing is offered at every fork.** It was two or three, drawn
+   from the wing's architectural neighbours; the owner's call on 2026-09-07 was
+   that the party should go where they like. `openExitsFor` still separates an
+   ordinary door (an open neighbour, printed with the design doc's own reason)
+   from a manifested one (everything else, styled differently on the atlas) — so
+   the three layers decide HOW you get in, not WHETHER. Gated: 200 seeded forks
+   must offer exactly the unwalked set minus the Heart, and the Heart only on
+   the last crossing. **This is a decision AGAINST** `01-mansion-structure.md`'s
+   closing line ("what changes is what the mansion is willing to let them
+   reach"), taken deliberately and recorded in `wingOffer`'s own comment.
+
+   **Where tonight STARTS is a choice once the Foyer has been cleared** —
+   `canChooseEntry()` reads `Save.data.blueprint.cleared`, `new Run` takes and
+   validates `startRegion`, and `scenes/atlas.js` in `enter` mode is the screen.
+   That screen names who is held in each wing whether or not you have surveyed
+   it, which is a deliberate exception to the atlas's own rule and is written
+   down as one in its header: the point of the screen is to go and get the
+   Companion you want first. Verified end to end for all 15 non-Foyer wings —
+   choosing a wing starts you there and clearing its boss frees the Companion
+   the atlas said was held there.
+
    `EXPEDITION_WINGS = 6`, and the number is a measurement — the sweep is in
-   `docs/notes/2026-08-31-how-long-is-an-expedition.md`. This is what the design
-   has always said: "entire wings disappear", "not all are usable every
-   expedition", "what changes is what the mansion is willing to let them reach".
+   `docs/notes/2026-08-31-how-long-is-an-expedition.md`.
    `RUN_REGIONS` grew 2 → 4 → 17 as regions shipped and its own comment says
    every move was about making finished content REACHABLE; nobody decided
    seventeen. `RUN_REGIONS` is still the mansion, `run.route` is tonight's way
