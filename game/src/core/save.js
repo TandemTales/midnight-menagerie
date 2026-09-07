@@ -93,7 +93,14 @@ const DEFAULT = {
   kidsUnlocked: ['maya'],
   petsRescued: [],
   clues: {},                   // kid slug -> [clue ids]
-  blueprint: { revealed: ['foyer'] },
+  /**
+   * `revealed` is every wing SURVEYED (walked into, win or lose) and gates the
+   * atlas's annotations. `cleared` is every wing whose boss has gone down, and
+   * it is what unlocks choosing where tonight starts — see `canChooseEntry` in
+   * state/run.js. Two different facts: you can survey a wing by dying in it.
+   * Old saves get both from `deepMerge`, so no migration is needed.
+   */
+  blueprint: { revealed: ['foyer'], cleared: [] },
   hauntLevel: 0,               // ascension analogue — the SOLO ladder
   partyHauntLevel: 0,          // and the party one, climbed separately
   stats: { runs: 0, wins: 0, cardsPlayed: 0, damageDealt: 0, bestFloor: 0 },

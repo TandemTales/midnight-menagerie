@@ -437,6 +437,15 @@
   color: color-mix(in srgb, var(--graphite) 52%, transparent);
 }
 
+/* THE WAY IN. Everything but the Heart is choosable, so nothing is marked as a
+   door — sixteen lit boxes is not a set of choices, it is a texture. Only the
+   Heart is dimmed, and the ordinary hover reveal does the rest. */
+.at-root[data-enter="1"] .at-hot.is-shut { cursor: default; }
+.at-root[data-enter="1"] .at-hot.is-shut .at-hot__box { border-color: transparent; }
+.at-root[data-enter="1"] .at-hot.is-shut .at-hot__tag {
+  color: color-mix(in srgb, var(--graphite) 40%, transparent);
+}
+
 /* where they have already been — a wing cannot be walked twice */
 .at-hot.is-walked .at-hot__tag { color: var(--pencil); }
 .at-hot.is-here .at-hot__box {

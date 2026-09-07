@@ -218,6 +218,24 @@ export const EXPEDITION_WINGS = 6;
 /** The last wing of every expedition, and the only way the run ends well. */
 const HEART = RUN_REGIONS[RUN_REGIONS.length - 1];
 
+/**
+ * MAY THE PLAYER CHOOSE WHERE TONIGHT STARTS?
+ *
+ * Only once they have cleared the Foyer. The first expedition is the front
+ * door and the Butler behind it, because that is the run the opening teaches
+ * and there is nothing yet to choose BETWEEN — the atlas would be seventeen
+ * blank rectangles. After the Foyer has gone down once, the way in is a
+ * decision, and `scenes/atlas.js` in `enter` mode is where it is made.
+ *
+ * Reads the LIFETIME record, never run state: the unlock survives a defeat,
+ * because clearing the Foyer is a thing you did and losing later does not
+ * undo it. `markWingCleared` is the writer.
+ */
+export function canChooseEntry() {
+  const cleared = Save.data.blueprint?.cleared;
+  return Array.isArray(cleared) && cleared.includes(RUN_REGIONS[0]);
+}
+
 /** Of a wing's architectural doors, how many the house opens tonight. */
 const OPEN_FRACTION = 0.7;
 /** …but never fewer than this, so a wing is never a dead end by itself. */
@@ -519,7 +537,18 @@ export class Run {
      * chose. Saved and restored, so a resumed run remembers where it has been
      * (and so the atlas can draw the trail).
      */
-    this.route = [RUN_REGIONS[0]];
+    /**
+     * WHERE TONIGHT STARTS. The front door unless the caller names a wing and
+     * the save has earned the right to name one — see `canChooseEntry`.
+     *
+     * Validated here rather than trusted, because this arrives from a scene and
+     * from the network seam: an unknown slug or the Heart (which is the ending)
+     * falls back to the Foyer rather than producing a run standing nowhere.
+     */
+    const wanted = cfg.startRegion;
+    const start = (wanted && wanted !== RUN_REGIONS[RUN_REGIONS.length - 1]
+      && RUN_REGIONS.includes(wanted) && canChooseEntry()) ? wanted : RUN_REGIONS[0];
+    this.route = [start];
     this.region = this.route[0];
     /**
      * The fork between two wings, while it is open.
@@ -601,6 +630,21 @@ export class Run {
    * walked into and died in is still a wing you have seen. Lifetime, never
    * cleared — this is the map the kids keep at the clubhouse, not run state.
    */
+  /**
+   * A WING WHOSE BOSS HAS GONE DOWN. Lifetime, like `revealed`, and separate
+   * from it: `revealed` records that you walked in, which dying also does.
+   * This is what `canChooseEntry` reads.
+   */
+  markWingCleared(regionId) {
+    if (!regionId) return false;
+    const bp = Save.data.blueprint || (Save.data.blueprint = { revealed: [], cleared: [] });
+    if (!Array.isArray(bp.cleared)) bp.cleared = [];
+    if (bp.cleared.includes(regionId)) return false;
+    bp.cleared.push(regionId);
+    Save.save();
+    return true;
+  }
+
   markWingMapped(regionId) {
     if (!regionId) return false;
     const bp = Save.data.blueprint || (Save.data.blueprint = { revealed: [] });
@@ -2659,6 +2703,9 @@ export class Run {
   /** Boss down. Either the next wing opens, or the expedition is over. */
   completeRegion() {
     const meta = this.meta;
+    // Lifetime record, before anything can end the run: clearing the Foyer is
+    // what unlocks choosing where the next expedition starts.
+    this.markWingCleared(this.region);
     // Same substitution as a Rescue room: a boss kill must not "free" one of the
     // four starters, who were never in the house. See rescueTargetFor().
     const freed = this.rescueTargetFor(`boss:${this.region}`, meta.companion);
@@ -3326,6 +3373,9 @@ export function installRunLayer() {
     const run = new Run({
       companion: p?.companion, kid: p?.kid, seed: p?.seed,
       hauntLevel: p?.haunt ?? p?.hauntLevel, backpack: p?.backpack,
+      // Where tonight starts. `new Run` validates it and falls back to the
+      // front door, so a stale or hostile slug cannot strand a run.
+      startRegion: p?.startRegion,
       // A co-op expedition comes in through the SAME seam as a solo one, so
       // there is no second start path to keep in step. `kids` is an array of
       // { companion, kid, name, backpack }; absent means a party of one.

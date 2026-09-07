@@ -38,6 +38,7 @@ import {
   itemById, defaultLoadout, loadoutSize, migrateLoadout, assertLoadout, SLOTS_BASE,
 } from '../data/backpack.js';
 import { HAUNTS } from '../data/haunts.js';
+import { canChooseEntry } from '../state/run.js';
 
 const CSS_KIT  = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_SEL  = new URL('./select.css', import.meta.url).href;
@@ -1547,6 +1548,24 @@ export class SelectScene extends Scene {
     const payload = want > 1
       ? { seed, haunt, kids: [...this.state.party, { companion, kid, backpack }] }
       : { companion, kid, seed, haunt, backpack };
+
+    /* WHERE DOES TONIGHT START? Once the Foyer has been cleared the way in is a
+       decision, and the atlas is the screen that makes it — it is the only one
+       that draws all seventeen wings and can say who is held in each. So the
+       payload is handed over rather than fired here, and `scenes/atlas.js` in
+       `enter` mode emits `run:start` with the chosen wing appended.
+
+       Before that unlock this is unchanged: the front door, straight to the map,
+       one seam. `new Run` validates the wing either way. */
+    if (canChooseEntry()) {
+      try { this.ctx.audio?.play?.('ui:confirm'); } catch {}
+      this.root.classList.add('is-leaving');
+      const toAtlas = () => this.ctx.scenes?.go?.('atlas', { enter: '1', payload });
+      if (reduceMotion()) toAtlas();
+      else clock.wait(0.32).then(toAtlas);
+      return;
+    }
+
     try { this.ctx.audio?.play?.('ui:begin'); } catch {}
     bus.emit('run:start', payload);
     this.root.classList.add('is-leaving');

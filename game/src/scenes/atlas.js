@@ -37,6 +37,15 @@
  * atlas that printed "Hush — the Secret Passages" on night one would hand back
  * everything that screen refuses to say.
  *
+ * ONE DELIBERATE EXCEPTION, added 2026-09-06 on the design owner's call: in
+ * `enter` mode — choosing which wing tonight starts in — every wing shows who
+ * is held there, surveyed or not.  The whole point of that screen is "go and
+ * get the one you want first", and it cannot be used for that if it will not
+ * say who is where.  It is not night one either: the mode does not exist until
+ * the Foyer has been cleared (`canChooseEntry`).  Everywhere else the survey
+ * gate above still holds, which is why this is a flag on the mode rather than
+ * a change to `_surveyed`.
+ *
  * ── AND IT IS WHERE THE EXPEDITION TURNS ───────────────────────────────────
  *
  * A cleared wing does not hand the party the next one. `Run#openWingFork` sends
@@ -56,13 +65,15 @@
  *
  * Deep link: `#scene=atlas`, `&wing=<slug>` to open zoomed on one,
  * `&all=1` to survey everything (a review door, never progress),
- * `&choose=1` for the fork (needs a run standing on one).
+ * `&choose=1` for the fork (needs a run standing on one),
+ * `&enter=1` to pick tonight's way in (needs `canChooseEntry`).
  */
 import { Scene } from '../core/scenes.js';
 import { bus } from '../core/bus.js';
 import { Save } from '../core/save.js';
 import { COMPANIONS, REGION_ORDER } from '../data/schema.js';
 import { regionMeta, blueprintTraceUrl, MASTER, exitReason } from '../state/mapgen.js';
+import { canChooseEntry } from '../state/run.js';
 import { loadPlanTrace, solvePen, inkTrace } from '../ui/plan.js';
 import {
   ensureCss, fontsReady, el, svg, rovingFocus, logoLockup, filigree,
@@ -124,6 +135,8 @@ export class AtlasScene extends Scene {
     this.sel = null;          // slug of the wing the sheet is zoomed on
     this.hover = null;        // slug under the cursor / keyboard focus
     this.choosing = false;    // standing at a fork between wings
+    this.entering = false;     // choosing which wing the expedition STARTS in
+    this.startPayload = null;  // the run:start payload `enter` mode will fire
     this.offer = [];          // [{to, why, manifested}] while choosing
     this._voting = false;
   }
@@ -151,10 +164,29 @@ export class AtlasScene extends Scene {
        whether or not the parameter survived. */
     const run = this.ctx.run;
     this.choosing = !!(run && run.pendingWing);
-    this.offer = this.choosing ? run.pendingWing.options.slice() : [];
+
+    /* THE WAY IN. `scenes/select.js` sends the whole `run:start` payload here
+       instead of firing it, so this screen owns one decision and then starts
+       the expedition. No run exists yet, which is what separates this from the
+       fork above: `choosing` reads `run.pendingWing` and there isn't one.
+
+       Guarded on `canChooseEntry()` as well as on the parameter, so a deep link
+       cannot buy the unlock. Everything but the Heart is on offer — it is the
+       ending, and starting there would be starting at the end. */
+    this.entering = !this.choosing && (params.enter === '1' || params.enter === true)
+      && canChooseEntry();
+    this.startPayload = this.entering ? (params.payload || {}) : null;
+    if (this.entering) {
+      const last = this.wings[this.wings.length - 1].slug;
+      this.offer = this.wings.filter((w) => w.slug !== last)
+        .map((w) => ({ to: w.slug, why: null, manifested: false }));
+    } else {
+      this.offer = this.choosing ? run.pendingWing.options.slice() : [];
+    }
     this.offered = new Set(this.offer.map((o) => o.to));
     this.trail = (run && Array.isArray(run.route)) ? run.route.slice(0, (run.regionIndex | 0) + 1) : [];
     this.root.dataset.choose = this.choosing ? '1' : '0';
+    this.root.dataset.enter = this.entering ? '1' : '0';
 
     this.root.classList.add('at-root');
     this.root.innerHTML = '';
@@ -179,13 +211,14 @@ export class AtlasScene extends Scene {
        previews the first option so the panel is not blank; the drawing shows
        all of them. */
     const want = params.wing && this.wings.some((w) => w.slug === params.wing) ? params.wing : null;
-    this._show(this.choosing ? this.offer[0].to
+    this._show((this.choosing || this.entering) ? (want || this.offer[0].to)
       : (want || this.trail[this.trail.length - 1] || this.wings[0].slug));
-    if (want && !this.choosing) this._select(want, true);
+    if (want && !this.choosing && !this.entering) this._select(want, true);
 
     bus.emit('atlas:ready', {
       wings: this.wings.length, surveyed: this.surveyed.size,
-      choosing: this.choosing, offer: this.offer.map((o) => o.to),
+      choosing: this.choosing, entering: this.entering,
+      offer: this.offer.map((o) => o.to),
     });
   }
 
@@ -215,6 +248,11 @@ export class AtlasScene extends Scene {
     return out;
   }
 
+  /** A wing is being PICKED — at the fork on the way on, or on the way in.
+      The two modes differ in what commits (a vote against a run, or a
+      `run:start`) and in nothing the pointer and keyboard care about. */
+  get picking() { return this.choosing || this.entering; }
+
   /* ── chrome ─────────────────────────────────────────────────────────────── */
   _buildHead() {
     const h = el('header', 'at-head');
@@ -227,10 +265,13 @@ export class AtlasScene extends Scene {
        the house is holding a door open; leaving would mean a run with nowhere
        to be. `_leave` refuses too — this only stops it being offered. */
     back.hidden = this.choosing;
+    // `enter` mode CAN be backed out of — it happens before the run exists,
+    // so leaving just returns to Companion Select with nothing spent.
     h.appendChild(back);
 
     const logo = logoLockup({
-      size: 'sm', plaque: this.choosing ? 'The Way On' : 'The Mansion', id: 'mm-logo-atlas',
+      size: 'sm', id: 'mm-logo-atlas',
+      plaque: this.choosing ? 'The Way On' : this.entering ? 'The Way In' : 'The Mansion',
     });
     logo.classList.add('at-logo');
     h.appendChild(logo);
@@ -239,6 +280,8 @@ export class AtlasScene extends Scene {
     if (this.choosing) {
       const run = this.ctx.run;
       tally.innerHTML = `<b>${run.regionIndex + 1}</b> <span>of ${run.wings} wings crossed</span>`;
+    } else if (this.entering) {
+      tally.innerHTML = '<span>Choose where tonight starts</span>';
     } else {
       tally.innerHTML = `<b>${this.surveyed.size}</b> <span>of ${this.wings.length} wings surveyed</span>`;
     }
@@ -299,8 +342,16 @@ export class AtlasScene extends Scene {
       b.style.top = `${w.ny * 100}%`;
       b.style.width = `${w.nw * 100}%`;
       b.style.height = `${w.nh * 100}%`;
-      if (this.offered.has(w.slug)) b.classList.add('is-open');
-      else if (this.choosing) b.classList.add('is-shut');
+      /* AT A FORK the ways on are marked whether or not the cursor is near
+         them — two or three doors, and finding them is the whole screen. On the
+         WAY IN sixteen wings are open, and marking all sixteen drew sixteen
+         boxes and sixteen labels over a drawing that overlaps itself: the
+         labels collided into an unreadable band across the middle. So entry
+         mode leaves the tiles in their ordinary hover-to-reveal state and marks
+         only what is CLOSED — the Heart. Everything legible is choosable, which
+         is the same information without the noise. */
+      if (this.offered.has(w.slug)) { if (this.choosing) b.classList.add('is-open'); }
+      else if (this.choosing || this.entering) b.classList.add('is-shut');
       if (this.trail.includes(w.slug)) b.classList.add('is-walked');
       if (this.trail[this.trail.length - 1] === w.slug) b.classList.add('is-here');
       b.setAttribute('aria-label', this._hotLabel(w));
@@ -333,7 +384,7 @@ export class AtlasScene extends Scene {
   }
 
   _hotLabel(w) {
-    const seen = this.surveyed.has(w.slug);
+    const seen = this.surveyed.has(w.slug) || this.entering;
     const o = this.offer.find((x) => x.to === w.slug);
     const way = o ? ` A way on from here: ${o.why}.` : this.choosing ? ' No way through tonight.' : '';
     if (!seen) return `${w.meta.name}. Unsurveyed.${way}`;
@@ -471,8 +522,8 @@ export class AtlasScene extends Scene {
       /* At a fork, clicking a way on the SECOND time takes it. The first click
          zooms — a wing is a whole act and nobody should commit to one they have
          not looked at — and the dossier's own button is the other way to do it. */
-      if (this.choosing && this.offered.has(slug) && this.sel === slug) return this._choose(slug);
-      if (this.choosing && !this.offered.has(slug)) { this._select(slug); return; }
+      if (this.picking && this.offered.has(slug) && this.sel === slug) return this._choose(slug);
+      if (this.picking && !this.offered.has(slug)) { this._select(slug); return; }
       this._select(slug === this.sel ? null : slug);
     });
 
@@ -480,7 +531,7 @@ export class AtlasScene extends Scene {
       cols: 0, wrap: true,
       onActivate: (b) => {
         const slug = b.dataset.wing;
-        if (this.choosing && this.offered.has(slug) && this.sel === slug) return this._choose(slug);
+        if (this.picking && this.offered.has(slug) && this.sel === slug) return this._choose(slug);
         this._select(slug === this.sel ? null : slug);
       },
     }));
@@ -666,8 +717,11 @@ export class AtlasScene extends Scene {
     d.querySelector('.at-dos__rooms').textContent = '20';
     d.querySelector('.at-dos__state').textContent = seen ? 'Surveyed' : 'Unsurveyed';
 
+    /* WHO IS HELD HERE. Gated on having surveyed the wing everywhere except
+       `enter` mode, where naming them IS the decision the screen exists for.
+       See the header's "ONE DELIBERATE EXCEPTION". */
     const held = d.querySelector('.at-dos__held');
-    const c = seen ? w.companion : null;
+    const c = (seen || this.entering) ? w.companion : null;
     held.hidden = !c;
     try { this._pf?.destroy?.(); } catch {}
     this._pf = null;
@@ -726,12 +780,14 @@ export class AtlasScene extends Scene {
     act$.hidden = !o;
     if (o) {
       const go = act$.querySelector('.at-go');
-      go.textContent = `Go to ${w.meta.name}`;
+      go.textContent = this.entering ? `Start in ${w.meta.name}` : `Go to ${w.meta.name}`;
       go.disabled = this._voting;
     }
 
     d.querySelector('.at-dos__hint').textContent = o
-      ? 'One way on. There is no way back through a wing.'
+      ? (this.entering ? 'Where tonight starts. The Heart is always the way out.'
+                       : 'One way on. There is no way back through a wing.')
+      : this.entering ? 'The Heart is the ending. You cannot begin there.'
       : this.choosing ? 'The house is not opening this one tonight.'
       : !seen ? 'The house drew this wing. Nobody has been in it yet.'
       : this.sel === slug ? 'Escape, or “The whole house”, to pull back out.'
@@ -755,6 +811,21 @@ export class AtlasScene extends Scene {
    * with a room.
    */
   async _choose(slug) {
+    /* THE WAY IN is a different commit from the way on: there is no run yet, so
+       there is nothing to vote on and nobody to hand the sheet to. Fire the
+       payload `scenes/select.js` handed over, with the wing appended, and let
+       the ordinary `run:start` seam build the expedition — `new Run` validates
+       the slug and falls back to the front door, so this cannot strand a run. */
+    if (this.entering) {
+      if (this._voting || !this.offered.has(slug)) return;
+      this._voting = true;
+      const payload = { ...(this.startPayload || {}), startRegion: slug };
+      try { this.ctx.audio?.play?.('ui:begin'); } catch {}
+      bus.emit('run:start', payload);
+      this.root.classList.add('is-leaving');
+      await this.ctx.scenes?.go?.('map', payload);
+      return;
+    }
     const run = this.ctx.run;
     if (!run || !run.pendingWing || this._voting) return;
     if (!this.offered.has(slug)) return;
@@ -880,8 +951,13 @@ export class AtlasScene extends Scene {
        cleared, the map would rebuild the sheet they have finished, and the
        Clubhouse is between expeditions. The choice is the screen. */
     if (this.choosing) return;
+    const opts0 = { transition: reduceMotion() ? 'veil' : 'blueprint' };
+    /* Backing out of the WAY IN returns to Companion Select, which is where the
+       payload came from and the only screen that can re-issue it. Falling
+       through to the Clubhouse here would drop the chosen Kid on the floor. */
+    if (this.entering) return void this.ctx.scenes.go('select', {}, opts0);
     const run = this.ctx.run;
-    const opts = { transition: reduceMotion() ? 'veil' : 'blueprint' };
+    const opts = opts0;
     if (run) this.ctx.scenes.go('map', { region: run.region, seed: run.seed }, opts);
     else this.ctx.scenes.go('clubhouse', { panel: 'board' }, opts);
   }
