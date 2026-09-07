@@ -269,7 +269,10 @@ export class AtlasScene extends Scene {
 
     const logo = logoLockup({
       size: 'sm', id: 'mm-logo-atlas',
-      plaque: this.choosing ? 'The Way On' : this.entering ? 'The Way In' : 'The Mansion',
+      /* `entering` FIRST: a way-in fork is also `choosing`, so asking that
+         first plaqued the way in as "The Way On". Same ordering trap as the
+         tally below. */
+      plaque: this.entering ? 'The Way In' : this.choosing ? 'The Way On' : 'The Mansion',
     });
     logo.classList.add('at-logo');
     h.appendChild(logo);
@@ -386,7 +389,12 @@ export class AtlasScene extends Scene {
   _hotLabel(w) {
     const seen = this.surveyed.has(w.slug) || this.entering;
     const o = this.offer.find((x) => x.to === w.slug);
-    const way = o ? ` A way on from here: ${o.why}.` : this.choosing ? ' No way through tonight.' : '';
+    /* A way-in option carries no `why` — there is no wing to come FROM — so the
+       "way on" phrasing would read "A way on from here: null." to a screen
+       reader. It is a place to BEGIN there. */
+    const way = this.entering ? (o ? ' You can begin here.' : ' You cannot begin here.')
+      : o ? ` A way on from here: ${o.why}.`
+      : this.choosing ? ' No way through tonight.' : '';
     if (!seen) return `${w.meta.name}. Unsurveyed.${way}`;
     const held = w.companion ? ` ${w.companion.name}, ${w.companion.title}, is held here.` : '';
     return `${w.meta.name}. Surveyed.${held} Guarded by ${w.meta.boss}.${way}`;

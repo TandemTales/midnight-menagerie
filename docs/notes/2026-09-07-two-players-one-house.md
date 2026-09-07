@@ -118,11 +118,7 @@ voted for and settles a split with a seeded weighted roulette, so opening the
 route from 2-3 doors to 15 needed no netcode change at all. Rooms, rewards, the
 turn barrier, seat handoff, digest-based desync detection, two-tab lobby.
 
-**Solo only.** The way in (`scenes/select.js` -> atlas `enter` mode): a co-op
-party always starts at the Foyer. The seam is safe now, so wiring it is a lobby
-UI job plus one roster field, not a netcode job. **Who chooses is an open
-design question** — the mid-run fork votes, so a vote is the consistent answer,
-but the lobby has no run and therefore no seats to vote with yet.
+**The way in is a VOTE now, and co-op has it.** Written up below.
 
 **Solo only, by design.** The painted Kid board is the first-run opening; co-op
 picks its Companion and Kid in the lobby.
@@ -146,3 +142,69 @@ save turns four red at once — `0 / 4`, `'' / 'boggle,crumbula,…'`, `15 / 9`,
 `'wisp' / 'brambleboo'`. Dropping the Backpack from the payload turns the
 arrival assertion red while the agreement assertion stays green, which is the
 whole reason both exist.
+
+
+---
+
+# The party votes on the way in
+
+Added the same day, after the above. The open design question — *who chooses
+where a co-op expedition begins* — had an answer sitting in the codebase
+already: **the mid-run fork votes, so the way in is a fork.**
+
+## It is not a new mechanism, it is `ENTRY_STEP = -1`
+
+`Run` opens a fork at a negative step instead of committing to the front door.
+Negative because `regionIndex` is 0 for the first wing, so a choice made BEFORE
+it has to sort before it. Everything else is the existing machinery: `voteWing`,
+`resolveWingVote`, `ACT.WING_CHOOSE`, the atlas's ballot, the seeded weighted
+roulette, the pass-the-sheet handoff. Everybody votes, the host has no special
+authority (STS2-REFERENCE §8.5), and a party of one short-circuits on its own
+first vote and takes no number — so solo stays byte-identical to its seed.
+
+**It deleted more than it added.** `scenes/atlas.js` lost its bespoke `enter`
+mode, its `startPayload` and its `canChooseEntry` import; `scenes/select.js`
+lost the atlas hop and now starts the run and asks `run.openingScene()` where to
+go. Co-op needed one roster field and got the feature for nothing.
+
+`enterRegion` is separate from `advanceRegion` on purpose: crossing increments
+`regionIndex` and heals the party for the wing behind them, and neither is true
+of walking through the front door. **Beginning in the Kennels is still wing one.**
+
+## And the last local-save read left run construction
+
+`entryUnlocked` was falling back to `canChooseEntry()` — this machine's save,
+the same class as the Haunt level and the rescue pool above. Two ways it bites:
+two clients disagree about whether there is a fork at all (one votes, the other
+walks into the Foyer), and any headless driver that clears the Foyer once starts
+getting a fork it never asked for. It is explicit-only now, and the run gate
+asserts that a caller who says nothing gets the front door whatever the save
+holds.
+
+## Three bugs found by running it, not by reading it
+
+- `enterRegion` validated against `pendingWing`, which `resolveWingVote` has
+  already nulled by the time it crosses — **every vote fell back to the Foyer.**
+  It validates against `entryOffer()`, a pure function of the roster.
+- The tally read "1 of 6 wings crossed" on a run that had crossed nothing, and
+  the plaque read "The Way On", both because a way-in fork is also `choosing`.
+  `entering` is asked first in both.
+- The screen-reader line would have said "A way on from here: **null**", because
+  a way-in option carries no `why` — there is no wing to come FROM.
+
+## The measurement trap that looked exactly like a broken feature
+
+Reading the four-seat result 120 ms after the vote reported *everyone is still
+in the Foyer*. That is `VOTE_BEAT`: `_crossAfterVote` holds **3 seconds** when
+the roulette overrode somebody, so the party can SEE the verdict card — and
+`get ctx()` falls back to `window.MM?.ctx`, so the beat really does run in a
+page-hosted harness. Wait past it; do not race it.
+
+## Gated at four seats, with a split
+
+Two for the Kennels and two for the Graveyard, because that forces the roulette
+— and `rolled` is asserted, or the gate would be testing a unanimous vote by
+accident. All four open the fork, all four land in the Graveyard, same route,
+same map, `regionIndex` 0.
+
+    tests/net/run.py    179 -> 190 passed

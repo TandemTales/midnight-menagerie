@@ -111,15 +111,28 @@ most common room in the game.
    closing line ("what changes is what the mansion is willing to let them
    reach"), taken deliberately and recorded in `wingOffer`'s own comment.
 
-   **Where tonight STARTS is a choice once the Foyer has been cleared** —
-   `canChooseEntry()` reads `Save.data.blueprint.cleared`, `new Run` takes and
-   validates `startRegion`, and `scenes/atlas.js` in `enter` mode is the screen.
-   That screen names who is held in each wing whether or not you have surveyed
-   it, which is a deliberate exception to the atlas's own rule and is written
-   down as one in its header: the point of the screen is to go and get the
-   Companion you want first. Verified end to end for all 15 non-Foyer wings —
-   choosing a wing starts you there and clearing its boss frees the Companion
-   the atlas said was held there.
+   **Where tonight STARTS is a VOTE, once the Foyer has been cleared.** It is
+   the same fork as every other crossing, at `ENTRY_STEP = -1`: `Run` opens one
+   instead of committing to the front door, and it goes through `voteWing` /
+   `resolveWingVote` / `ACT.WING_CHOOSE` and the atlas's ballot exactly as a way
+   ON does — so a PARTY votes on it, a split is settled by the same seeded
+   roulette, and a party of one short-circuits and stays byte-identical.
+   `enterRegion` is separate from `advanceRegion` because beginning somewhere is
+   still WING ONE: it consumes no crossing and grants no between-wings breather.
+
+   `canChooseEntry()` reads `Save.data.blueprint.cleared`, but **run construction
+   never calls it** — `entryUnlocked` is explicit-only, passed by the screens
+   (`select.js`) or off seat 0 in the roster (`lobby.js`). A caller that says
+   nothing gets the front door whatever the save holds, which is what stops two
+   co-op clients disagreeing about whether there is a fork at all.
+
+   That fork names who is held in each wing whether or not you have surveyed it
+   — a deliberate exception to the atlas's own rule, written down as one in its
+   header: the point is to go and get the Companion you want first. The boss is
+   still hidden behind the survey gate. Verified end to end for all 15 non-Foyer
+   wings — choosing a wing starts you there and clearing its boss frees the
+   Companion the atlas said was held there — and at four seats with a 2-2 split,
+   where all four land in the same wing with the same map.
 
    `EXPEDITION_WINGS = 6`, and the number is a measurement — the sweep is in
    `docs/notes/2026-08-31-how-long-is-an-expedition.md`.
