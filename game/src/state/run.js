@@ -2712,6 +2712,56 @@ export class Run {
     return wingOffer(this.seed, this.region, this.route, this.regionIndex, this.wings);
   }
 
+  /**
+   * WHAT IS THROUGH THAT DOOR — the fork's decision content.
+   *
+   * A fork that offers three wing NAMES and a sentence about a staircase is not
+   * a decision, it is a coin toss with flavour. StS shows you the map before
+   * you commit; this shows you the wing.
+   *
+   * It is the same call `_buildMap` makes, with the same options, so it CANNOT
+   * lie: `generateRegionMap` builds its own stream from `(region, seed,
+   * hauntLevel)` and takes nothing from the run's, so previewing costs the run
+   * no determinism and what is described is exactly what gets walked.
+   *
+   * WHAT IT REPORTS AND WHY IT IS THESE THREE. Measured across all seventeen
+   * wings at four seeds: every wing has exactly one boss, exactly one Rescue,
+   * five to seven Safe Rooms and two to three Mr. Moth's — printing those would
+   * be a readout that says the same thing everywhere, which this project has
+   * been bitten by before. What actually moves is depth (13-15 rows), Big
+   * Scares (2 to 7 on the same wing at different seeds) and the wing conditions
+   * (two to four of eight, and they are mechanical — see `data/wings.js`).
+   *
+   * Memoised for the life of the wing; `advanceRegion` clears it, because
+   * `rescued` feeds the generator and a Rescue room moves it.
+   */
+  wingPreview(regionId) {
+    if (!this._previews) this._previews = new Map();
+    if (this._previews.has(regionId)) return this._previews.get(regionId);
+    let out = null;
+    try {
+      const m = generateRegionMap(regionId, this.seed, {
+        hauntLevel: this.hauntLevel,
+        companion: this.companion,
+        rescued: this.rescued,
+        companionsFreed: this.companionsFreed.slice(),
+      });
+      out = {
+        rows: m.rows,
+        bigScares: m.nodes.filter(n => n.type === NodeType.BIG_SCARE).length,
+        conditions: (m.hazards || []).map(h => ({
+          id: h.id, kind: h.kind, name: h.name, rule: h.rule, glyph: h.glyph,
+        })),
+      };
+    } catch (e) {
+      // A preview that throws must never take the fork with it — the player
+      // still gets the name, the reason and the door.
+      console.error('[run] wingPreview', regionId, e);
+    }
+    this._previews.set(regionId, out);
+    return out;
+  }
+
   /** Open the fork and put the estate drawing on the screen. */
   openWingFork() {
     const options = wingOffer(this.seed, this.region, this.route, this.regionIndex, this.wings);
@@ -2787,7 +2837,31 @@ export class Run {
     this.pendingWing = null;
     this.lastWingVote = result;
     bus.emit('wing:chosen', { ...result, run: this });
-    return this.advanceRegion(winner);
+    return this._crossAfterVote(result);
+  }
+
+  /**
+   * The beat between the draw and the door — the wing version of
+   * `_walkAfterVote`, and it exists for the same reason.
+   *
+   * A number just overrode what somebody voted for and the party has to be
+   * told (CONTRACTS 45). `scenes/atlas.js` draws the verdict off `wing:chosen`
+   * above — but crossing asks for the map immediately, and `core/scenes.js`
+   * COVERS the screen before it calls `exit()`, so without this the card is
+   * veiled in the same frame it appears in. The map hit exactly this and the
+   * fix measured out at `VOTE_BEAT`; this is the same eighteen words, so it is
+   * the same wait rather than a second number to keep in step.
+   *
+   * Only when the roulette actually overrode somebody, and only when there is
+   * somebody watching: a headless harness, a client absorbing a log after a
+   * rejoin, and `tests/run`'s fifty expeditions all cross without waiting.
+   */
+  async _crossAfterVote(result) {
+    const watched = this.ctx?.scenes && !this.session?.absorbing;
+    if (result.rolled && watched) {
+      try { await clock.wait(VOTE_BEAT); } catch { /* a clock that is gone is not fatal */ }
+    }
+    return this.advanceRegion(result.winner);
   }
 
   /**
@@ -2839,6 +2913,7 @@ export class Run {
     this.route.length = this.regionIndex + 1;
     this.region = to;
     this.pendingWing = null;
+    this._previews = null;          // a new wing, and `rescued` may have moved
     this.markWingMapped(this.region);
     this.encounterHistory = [];
     this._curiosityHealUsed = false;

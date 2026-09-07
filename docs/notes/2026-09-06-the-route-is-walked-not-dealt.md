@@ -143,6 +143,35 @@ Nothing moved. That is what `runDepthDamageScale` reading run depth rather than
 the region's ladder slot was built for, and this is the first change that
 actually tested it.
 
+## 7. Two things the first pass left, fixed the same day
+
+**The verdict had no beat.** `resolveWingVote` crossed immediately, so in co-op
+the "the house chose X · 1 of 2 wanted it" card was veiled in the frame it
+appeared in — `core/scenes.js` covers the screen before it calls `exit()`. This
+is the identical CONTRACTS 45 problem the map already solved, so it gets the
+identical fix: `_crossAfterVote` waits `VOTE_BEAT` when, and only when, the
+roulette actually overrode somebody and there is somebody watching. Same
+eighteen words as the map's verdict, so the same 3.0 s rather than a second
+number to keep in step. Driven end to end through the real UI: seat 0 votes, the
+hand-off veil passes the sheet, seat 1 disagrees, the draw decides, the card is
+on screen and readable, then the party crosses.
+
+**The fork had nothing to decide on.** Three wing names and a sentence about a
+staircase is a coin toss with flavour. `Run#wingPreview` is the same
+`generateRegionMap` call `_buildMap` makes, with the same options, so it cannot
+promise a wing it will not deliver — verified by walking in and comparing.
+
+It reports depth, Big Scares and the wing conditions, and those three because
+they are the three that MOVE. Measured across all seventeen wings at four seeds:
+every wing has exactly one boss, exactly one Rescue, five to seven Safe Rooms
+and two to three Mr. Moth's. Printing those would be a readout that says the
+same thing everywhere — this project's own recurring failure, and the reason the
+blueprint count said ONE for the life of the build. What varies is depth (13-15
+rooms), Big Scares (2 to 7 on the SAME wing at different seeds) and the
+conditions (two to four of eight, and mechanical — `data/wings.js`). A boon is
+coloured as a boon; the rules ride `ui/tooltip.js`'s delegated handler, so they
+are a hover and a Tab away without this screen wiring anything.
+
 ## Gates
 
     tests/run/index.html          50 runs, 1 error (pre-existing `_losePatience`)
