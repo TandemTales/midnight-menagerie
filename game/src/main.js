@@ -131,7 +131,14 @@ ctx.scenes
   .register('event',      (c) => new EventScene(c))
   .register('shop',       (c) => new ShopScene(c))
   .register('rest',       (c) => new RestScene(c))
-  .register('gameover',   (c) => new GameOverScene(c));
+  .register('gameover',   (c) => new GameOverScene(c))
+  /* The atmosphere bench, reachable at #scene=atmostest (add &region=crypt
+     to open on one). Its own header has documented how to register it since
+     it was written and nothing ever did, so the bench could not be reached.
+     `SceneManager.go` awaits the factory, so a lazy import costs nothing at
+     boot: the module is only fetched if someone asks for the scene. */
+  .register('atmostest',  async (c) =>
+    new (await import('./scenes/atmostest.js')).AtmosTestScene(c));
 
 clock.start();
 ctx.atmosphere.init();
