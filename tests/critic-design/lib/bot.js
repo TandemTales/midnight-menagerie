@@ -430,7 +430,44 @@ export async function competentTurn(e, opts = {}) {
   // construction. Without this the beam occasionally talks itself into a
   // long grind against a boss whose Courage pool it cannot actually finish.
   const heur = await naivePlan(e, before, F, seat);
-  if (heur && heur.score > baseline.score) baseline = heur;
+  /* The floor's own number, for the trace only. It is compared with the
+     beam's best by the SAME scorer the floor exists to correct, so how far
+     apart they land is the measurement that says whether the floor is one
+     comparison away from firing or nowhere near it. */
+  if (debug && heur) debug.push({ d: -2, names: ['(naive floor)'],
+                                  score: +heur.score.toFixed(1) });
+  /* AND IT MAY NOT LOSE TO A PASS. The comparison is made by the same scorer
+     the floor exists to correct, and `planTurn` seeds `best` with the EMPTY
+     sequence — so wherever the scorer cannot see a play's payoff, the pass
+     wins, the floor loses to the pass, and the bot sits out the turn holding a
+     full hand. So the promise three lines above — `never worse than the naive
+     one by construction` — was not one the `>` could keep.
+
+     MEASURED, seed 957908, greenhouse `gh-12`, companion `pudding` — the same
+     deck arriving at the same board, with only who plays this fight moving:
+
+       competent  38 turns  swing 5.5   cpt 1.4  cost 37  wall 10.3  abs 40%
+       naive      13 turns  swing 15.8  cpt 3.2  cost 31  wall  9.4  abs 41%
+
+     `wall` is the board's and barely moved; the swing tripled, and the naive
+     line took LESS Courage, so the turtling was not buying survival either.
+     Eleven consecutive turns held 3 Nerve, 7 cards and 7 LEGAL cards and
+     played nothing.
+
+     WHY those turns priced a pass above every play: the Glassvine costs 2
+     Courage per hit (`onDamaged`) and pays out only on `dmgTaken >= 15` in ONE
+     turn, a threshold kept in a `mem()` flag that `residual` does not score.
+     The cost of attacking is visible to the scorer and the payoff is not, so
+     attacking prices as pure loss and the bot correctly declines. Twenty-seven
+     such one-turn thresholds ship across eight regions and six bosses, so this
+     is a class rather than one vine.
+
+     The bounded rule: the beam may still choose to pass, but not while a plain
+     `block the telegraph and swing the rest` turn exists that does not get the
+     seat killed. `-1e5` is the clone-failure sentinel and `-1e6` is death, so
+     the test excludes both. */
+  if (heur && (heur.score > baseline.score
+               || (!baseline.seq.length && heur.score > -1e5))) baseline = heur;
 
   // A Snack is a limited resource: eat one only when it is worth ~12 Courage of
   // board value, or when the snackless plan gets us killed.
