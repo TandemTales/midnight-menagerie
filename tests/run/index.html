@@ -36,7 +36,7 @@
 <script type="module">
 import { RNG, hashSeed } from '../../game/src/core/rng.js';
 import { Save } from '../../game/src/core/save.js';
-import { Run, STARTER_SLUGS, RUN_LENGTH_REGIONS, RUN_REGIONS, EXPEDITION_WINGS, wingOffer, openExitsFor } from '../../game/src/state/run.js';
+import { Run, STARTER_SLUGS, RUN_LENGTH_REGIONS, RUN_REGIONS, EXPEDITION_WINGS, wingOffer, openExitsFor, canChooseEntry } from '../../game/src/state/run.js';
 import { NodeType, REGION_ORDER } from '../../game/src/data/schema.js';
 import { REGION_EXITS } from '../../game/src/state/mapgen.js';
 import { ENCOUNTER_LIST } from '../../game/src/data/encounters.js';
@@ -1845,6 +1845,56 @@ async function main() {
     check(!offerErr, `${offerErr} forks did not offer every unwalked wing — ${offerSample}`);
     check(!heartErr, `${heartErr} forks handled the Heart wrongly `
       + `(it is the last crossing and nothing else)`);
+
+    /* ── THE WAY IN ────────────────────────────────────────────────────────
+       Choosing where an expedition STARTS is earned by clearing the Foyer, and
+       three things have to stay true or the unlock is either unreachable or
+       free:
+
+         it is EARNED, not given      a fresh save cannot choose;
+         CLEARING is not SURVEYING    walking into a wing (which dying also
+                                      does) must not unlock it — `revealed` and
+                                      `cleared` are different facts;
+         the slug is VALIDATED        `startRegion` arrives from a scene and
+                                      from the network seam, so an unknown wing
+                                      or the Heart must fall back to the front
+                                      door rather than strand a run nowhere.  */
+    const HEART_W = RUN_REGIONS[RUN_REGIONS.length - 1];
+    const bp0 = Save.data.blueprint;
+    try {
+      Save.data.blueprint = { revealed: ['foyer'], cleared: [] };
+      check(!canChooseEntry(), 'a fresh save could already choose its way in');
+      const shut = new Run({ companion: 'marmalade', kid: 'maya', seed: 5,
+                             startRegion: 'kennels' });
+      check(shut.region === RUN_REGIONS[0],
+        `a locked save started in ${shut.region}, not the Foyer`);
+
+      // surveying the Foyer is not clearing it
+      new Run({ companion: 'marmalade', kid: 'maya', seed: 5 }).markWingMapped('foyer');
+      check(!canChooseEntry(), 'surveying the Foyer unlocked the way in; only clearing should');
+
+      Save.data.blueprint.cleared = ['foyer'];
+      check(canChooseEntry(), 'clearing the Foyer did not unlock the way in');
+      const open = new Run({ companion: 'marmalade', kid: 'maya', seed: 5,
+                             startRegion: 'kennels' });
+      check(open.region === 'kennels' && open.route.length === 1
+        && open.route[0] === 'kennels',
+        `an unlocked save asked for the Kennels and got ${open.region}`);
+      for (const bad of ['not-a-wing', HEART_W, '', null]) {
+        const r = new Run({ companion: 'marmalade', kid: 'maya', seed: 5, startRegion: bad });
+        check(r.region === RUN_REGIONS[0],
+          `startRegion ${JSON.stringify(bad)} was accepted — run began in ${r.region}`);
+      }
+
+      /* And the record is written by CLEARING a wing, through the real path. */
+      Save.data.blueprint = { revealed: [], cleared: [] };
+      const cleared = new Run({ companion: 'marmalade', kid: 'maya', seed: 6 });
+      cleared.completeRegion();
+      check((Save.data.blueprint.cleared || []).includes(RUN_REGIONS[0]),
+        'completeRegion did not record the wing as cleared');
+    } finally {
+      Save.data.blueprint = bp0;
+    }
 
     /* THE BLUEPRINT ITSELF. `REGION_EDGES` is a transcription of
        `docs/design/01-mansion-structure.md`, and a transcription is exactly the

@@ -173,8 +173,16 @@ export class AtlasScene extends Scene {
        Guarded on `canChooseEntry()` as well as on the parameter, so a deep link
        cannot buy the unlock. Everything but the Heart is on offer — it is the
        ending, and starting there would be starting at the end. */
-    this.entering = !this.choosing && (params.enter === '1' || params.enter === true)
-      && canChooseEntry();
+    /* HONOUR A HAND-OFF, GATE A DEEP LINK. `scenes/select.js` only sends us here
+       when `canChooseEntry()` is true, and both screens read the same in-memory
+       Save, so they cannot disagree inside one page load. But if they ever did,
+       the payload would be dropped on the floor: no run would start, and Back
+       would drop the player at the Clubhouse having lost the Companion and Kid
+       they just chose. A handed-over payload is therefore always honoured. The
+       unlock still gates the bare deep link, so `#scene=atlas&enter=1` cannot
+       buy progress a save has not earned. */
+    const asked = params.enter === '1' || params.enter === true;
+    this.entering = !this.choosing && asked && (canChooseEntry() || !!params.payload);
     this.startPayload = this.entering ? (params.payload || {}) : null;
     if (this.entering) {
       const last = this.wings[this.wings.length - 1].slug;
