@@ -79,3 +79,4 @@ to concurrent whole-file writes, so this is now structural rather than a convent
 | [2026-09-06-the-house-the-opening-and-the-atlas](notes/2026-09-06-the-house-the-opening-and-the-atlas.md) | 9 KB |
 | [2026-09-06-the-route-is-walked-not-dealt](notes/2026-09-06-the-route-is-walked-not-dealt.md) | 8 KB |
 | [2026-09-06-two-bosses-whose-phase-one-never-ran](notes/2026-09-06-two-bosses-whose-phase-one-never-ran.md) | 7 KB |
+| [2026-09-06-the-other-half-of-the-fixture-farm](notes/2026-09-06-the-other-half-of-the-fixture-farm.md) | 5 KB |

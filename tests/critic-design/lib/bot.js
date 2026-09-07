@@ -226,18 +226,24 @@ function canHurt(en) {
 }
 
 function enemyPool(s) {
-  let hp = 0, block = 0, living = 0, haunt = 0, weak = 0, vuln = 0, threats = 0;
+  let hp = 0, block = 0, living = 0, haunt = 0, weak = 0, vuln = 0, threats = 0, threatHp = 0;
   for (const en of s.enemies) {
     if (!en.alive) continue;
     living++;
-    if (canHurt(en)) threats++;
     hp += Math.max(0, en.hp);
+    if (canHurt(en)) { threats++; threatHp += Math.max(0, en.hp); }
     block += en.block;
     haunt += stacksOf(en, 'haunt');
     weak += stacksOf(en, 'weak');
     vuln += stacksOf(en, 'vulnerable');
   }
-  return { hp, block, living, threats, haunt, weak, vuln };
+  /* `hp` and `living` are the WHOLE board and must stay that way: `living` is
+     the win check and `hp` feeds `projectedValue`'s turnsLeft, which is asking
+     "how long until everything is dead", and everything really does have to
+     die. `threatHp` is the other question — what damage is worth paying for —
+     and it is the half of the fixture farm that the kill-bonus fix left behind.
+     See `residual`. */
+  return { hp, block, living, threats, threatHp, haunt, weak, vuln };
 }
 
 /** Board value that does not depend on the projection. */
@@ -261,7 +267,20 @@ function residual(s, before, pool, seat = null) {
      degeneracy. 0.5 also clears it and shortens fights further (past-24 8 vs
      13) at the cost of some survival, so this is a judgement call, not a
      derived constant. */
-  v += 0.15 * Math.max(0, before.enemyHp - pool.hp);
+  /* ON THREAT COURAGE, NOT BOARD COURAGE — the other half of the fixture farm.
+     Paying the KILL bonus on threats only (above) stopped the bot scoring 34
+     for a sleeping 25-Courage Drain, but this term still paid it 0.15 a point
+     for chipping one, and a fixture is strictly better value per point than the
+     boss standing behind it: the Drowned Matron raises 9.1 Guard a turn, which
+     comes off `hp` before Courage does, while her fixtures carry none.
+     MEASURED, seed 572058, competentTurn, three companions:
+       truffle 42t  bath-drain 48% of all damage   marmalade 46t  60%
+       bones   54t  bath-drain 51%                 Matron ends at 71% each time
+     Half of the deck's entire output went into an 18-Courage grate that does
+     nothing and repairs itself. `before.threatHp` falls back to `enemyHp` so a
+     caller that predates the field is unchanged. */
+  const wasThreatHp = (before.threatHp == null) ? before.enemyHp : before.threatHp;
+  v += 0.15 * Math.max(0, wasThreatHp - pool.threatHp);
   v += 0.55 * pool.haunt + 1.2 * pool.weak + 1.5 * pool.vuln;
   v += 1.4 * stacksOf(me, 'ghoststep');
   v += 4.0 * stacksOf(me, 'strength');
@@ -396,7 +415,8 @@ export async function naiveTurn(e, opts = {}) {
 export async function competentTurn(e, opts = {}) {
   const { snacks = null, onSnack = null, beam = 3, depth = 6, cap = 12, fc = null, debug = null, seat = null } = opts;
   const pool0 = enemyPool(e);
-  const before = { living: pool0.living, enemyHp: pool0.hp, threats: pool0.threats };
+  const before = { living: pool0.living, enemyHp: pool0.hp,
+                   threats: pool0.threats, threatHp: pool0.threatHp };
   const F = fc || { dps: 10, threat: 8, guard: 4, peak: 0, turns: 0 };
   const shown = shownIncoming(e, seat);
   F.peak = Math.max(F.peak || 0, shown);
