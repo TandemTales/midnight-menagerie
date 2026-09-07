@@ -45,8 +45,9 @@ import { Save } from '../core/save.js';
 import { clock } from '../core/clock.js';
 import { KIDS } from '../data/schema.js';
 import {
-  ensureCss, fontsReady, el, rovingFocus, kidPortrait, kidImg, heroSrc,
+  ensureCss, fontsReady, el, rovingFocus, kidImg, heroSrc,
   setReduceMotion, reduceMotion, freedCompanions, warmFaces,
+  menuArtSrc, KID_BOARD, kidBoardRect,
 } from '../ui/portrait.js';
 import { KID_CODEX, loadoutFor } from './select.js';
 import { assertLoadout } from '../data/backpack.js';
@@ -227,6 +228,10 @@ export class TutorialScene extends Scene {
     stage.appendChild(this._buildFigure());
     stage.appendChild(this._buildPanel());
     this.root.appendChild(stage);
+    /* The board is a SIBLING of the stage, not a page inside the panel: it is
+       its own full-screen painting and it must not inherit the prose column's
+       width or padding. `_render` shows exactly one of the two. */
+    this.root.appendChild(this._buildBoard());
     this.root.appendChild(this._buildSkip());
 
     this._wire();
@@ -255,30 +260,83 @@ export class TutorialScene extends Scene {
       <h1 class="tut-head"></h1>
       <p class="tut-sub"></p>
       <div class="tut-lines"></div>
-      <div class="tut-pick" role="listbox" aria-label="Choose a Kid" hidden></div>
-      <div class="tut-detail" hidden></div>
       <div class="tut-foot">
         <span class="tut-dots" aria-hidden="true"></span>
         <button class="tut-next" type="button">Go on</button>
       </div>`;
 
-    // the eight kids, built once
-    const pick = p.querySelector('.tut-pick');
-    for (const k of KIDS) {
-      const info = KID_CODEX[k.slug] || {};
-      const b = el('button', 'tut-kid');
-      b.type = 'button';
-      b.dataset.slug = k.slug;
-      b.setAttribute('role', 'option');
-      b.setAttribute('aria-selected', 'false');
-      b.setAttribute('aria-label', `${k.name}, looking for ${k.pet}`);
-      b.appendChild(kidPortrait({ ...k, petKind: info.species || k.petKind },
-        { w: 132, h: 132, variant: 'thumb' }));
-      b.appendChild(el('span', 'tut-kid__n', esc(k.name.split(' ')[0])));
-      b.appendChild(el('span', 'tut-kid__p', `lost ${esc(k.pet)}`));
-      pick.appendChild(b);
-    }
     return p;
+  }
+
+  /**
+   * THE KID BOARD IS `UI/selectKid.png`, the way the Companion board is its own
+   * painting and the Title is `mainMenu.png`.
+   *
+   * It was a grid of eight thumbnails and a paragraph — a screen rebuilt out of
+   * parts while the painting for it sat prepared and wired to nothing since
+   * August (`game/assets/ui/select-kid.jpg`; `portrait.js` said so in a comment
+   * and HANDOFF.md said so again).
+   *
+   * The painting already contains the eight portraits, the oval mirror, the
+   * slotted dossier and both buttons, so nothing here draws a frame: it lays
+   * transparent hotspots over the painted frames, puts the chosen Kid's own art
+   * in the glass, and writes live text into the panel's slots. Geometry is
+   * `KID_BOARD` in ui/portrait.js, measured off the file.
+   *
+   * `contain`, never `cover`: the gold border is the composition and cropping it
+   * reads as a bug. The letterbox is the room the painting is hung in.
+   */
+  _buildBoard() {
+    const b = this._board = el('div', 'tut-board');
+    b.hidden = true;
+
+    const sheet = this._sheet = el('div', 'tut-sheet');
+    sheet.style.backgroundImage = `url("${menuArtSrc('kid')}")`;
+
+    const hots = el('div', 'tut-hots');
+    hots.setAttribute('role', 'listbox');
+    hots.setAttribute('aria-label', 'Choose a Kid');
+    for (const [slug, rect] of Object.entries(KID_BOARD.cells)) {
+      const k = KIDS.find((x) => x.slug === slug);
+      if (!k) continue;
+      const h = el('button', 'tut-hot');
+      h.type = 'button';
+      h.dataset.slug = slug;
+      h.style.cssText = kidBoardRect(rect);
+      h.setAttribute('role', 'option');
+      h.setAttribute('aria-selected', 'false');
+      h.setAttribute('aria-label', `${k.name}, looking for ${k.pet}`);
+      hots.appendChild(h);
+    }
+    sheet.appendChild(hots);
+
+    /* THE GLASS. Empty until somebody is chosen — an oval of painted black is
+       what the picture wants when nobody is picked, and filling it with a
+       placeholder would be worse than leaving it. */
+    const glass = this._glass = el('div', 'tut-glass');
+    glass.style.cssText = kidBoardRect(KID_BOARD.mirror);
+    glass.setAttribute('aria-hidden', 'true');
+    sheet.appendChild(glass);
+
+    const panel = this._dossier = el('div', 'tut-dos');
+    panel.style.cssText = kidBoardRect(KID_BOARD.panel);
+    sheet.appendChild(panel);
+
+    const back = this._back = el('button', 'tut-btn tut-btn--back');
+    back.type = 'button';
+    back.style.cssText = kidBoardRect(KID_BOARD.back);
+    back.setAttribute('aria-label', 'Back to the title screen');
+    sheet.appendChild(back);
+
+    const go = this._go = el('button', 'tut-btn tut-btn--go');
+    go.type = 'button';
+    go.style.cssText = kidBoardRect(KID_BOARD.confirm);
+    go.setAttribute('aria-label', 'Confirm this Kid');
+    go.disabled = true;
+    sheet.appendChild(go);
+
+    b.appendChild(sheet);
+    return b;
   }
 
   _buildSkip() {
@@ -292,22 +350,32 @@ export class TutorialScene extends Scene {
   _wire() {
     const on = (n, ev, fn, o) => { n.addEventListener(ev, fn, o); this._offs.push(() => n.removeEventListener(ev, fn, o)); };
 
-    const pick = this._panel.querySelector('.tut-pick');
-    on(pick, 'click', (e) => {
-      const b = e.target.closest('.tut-kid');
-      if (b) this._chooseKid(b.dataset.slug);
+    /* THE BOARD. Selecting and CONFIRMING are two steps, because the painting
+       has a confirm button on it and a screen with a tick that does nothing is
+       worse than no tick. Clicking a frame picks; the tick commits. Clicking a
+       frame that is already picked commits too, so the mouse never has to cross
+       the board twice. */
+    const hots = this._board.querySelector('.tut-hots');
+    on(hots, 'click', (e) => {
+      const b = e.target.closest('.tut-hot');
+      if (!b) return;
+      if (this.kid === b.dataset.slug) this._chooseKid(b.dataset.slug);
+      else this._pickKid(b.dataset.slug);
     });
-    on(pick, 'pointerover', (e) => {
-      const b = e.target.closest('.tut-kid');
-      if (b && !this.kid) this._previewKid(b.dataset.slug);
-    });
-    on(pick, 'focusin', (e) => {
-      const b = e.target.closest('.tut-kid');
+    on(hots, 'pointerover', (e) => {
+      const b = e.target.closest('.tut-hot');
       if (b) this._previewKid(b.dataset.slug);
     });
-    this._offs.push(rovingFocus(pick, '.tut-kid', {
-      cols: 4, wrap: true, onActivate: (b) => this._chooseKid(b.dataset.slug),
+    on(hots, 'pointerleave', () => this._previewKid(this.kid || this._hover));
+    on(hots, 'focusin', (e) => {
+      const b = e.target.closest('.tut-hot');
+      if (b) this._previewKid(b.dataset.slug);
+    });
+    this._offs.push(rovingFocus(hots, '.tut-hot', {
+      cols: 0, wrap: true, onActivate: (b) => this._pickKid(b.dataset.slug),
     }));
+    on(this._go, 'click', () => { if (this.kid) this._chooseKid(this.kid); });
+    on(this._back, 'click', () => this.ctx.scenes?.go?.('title', {}));
 
     on(this._panel.querySelector('.tut-next'), 'click', () => this._advance());
 
@@ -317,7 +385,13 @@ export class TutorialScene extends Scene {
       /* Enter and Space turn the page, but NOT while the Kid strip has focus —
          there they choose, and `rovingFocus` has already claimed them. */
       if (e.key === 'Enter' || e.key === ' ') {
-        if (document.activeElement && document.activeElement.closest('.tut-pick')) return;
+        if (document.activeElement && document.activeElement.closest('.tut-hots')) return;
+        /* On the board the page does not turn: the tick does. Falling through
+           to `_advance` here let Space skip the pick entirely. */
+        if (this._page().kind === 'pick') {
+          if (this.kid) { e.preventDefault(); this._chooseKid(this.kid); }
+          return;
+        }
         e.preventDefault();
         this._advance();
       }
@@ -346,8 +420,12 @@ export class TutorialScene extends Scene {
     host.hidden = !lines.length;
 
     const picking = p.kind === 'pick';
-    panel.querySelector('.tut-pick').hidden = !picking;
-    panel.querySelector('.tut-detail').hidden = !picking;
+    /* The board REPLACES the prose stage on this page. Both visible at once was
+       the old grid's problem: a heading, a strip and a paragraph competing for
+       the same screen. */
+    this._board.hidden = !picking;
+    this._stage.hidden = picking;
+    if (picking) this._previewKid(this.kid || this._hover || KIDS[0].slug);
 
     const next = panel.querySelector('.tut-next');
     next.textContent = p.cta || 'Go on';
@@ -373,9 +451,9 @@ export class TutorialScene extends Scene {
     panel.classList.add('is-in');
 
     if (picking) {
-      this._previewKid(this.kid || KIDS[0].slug);
       requestAnimationFrame(() => {
-        (panel.querySelector('.tut-kid[aria-selected="true"]') || panel.querySelector('.tut-kid'))?.focus();
+        (this._board.querySelector('.tut-hot[aria-selected="true"]')
+          || this._board.querySelector('.tut-hot'))?.focus();
       });
     }
   }
@@ -415,30 +493,120 @@ export class TutorialScene extends Scene {
   }
 
   /* ── the Kid ────────────────────────────────────────────────────────────── */
+
+  /**
+   * Show a Kid in the glass and the panel WITHOUT committing to them.
+   *
+   * The painting's dossier is four slotted bands with a medallion on each
+   * divider — a star, a shield, a star, a paw — so the text is written into
+   * those bands rather than run as one paragraph. The paw is the pet, which is
+   * what the medallion is a picture of.
+   */
   _previewKid(slug) {
     const k = KIDS.find((x) => x.slug === slug);
     if (!k) return;
+    this._hover = slug;
     const info = KID_CODEX[slug] || {};
-    const d = this._panel.querySelector('.tut-detail');
-    d.innerHTML =
-      `<b class="tut-detail__n">${esc(k.name)}</b>`
-      + `<span class="tut-detail__a">${info.age ? esc(`${info.age}`) : ''}</span>`
-      + `<p class="tut-detail__t">${esc(info.trait || '')}</p>`
-      + `<p class="tut-detail__l"><em>Missing:</em> ${esc(k.pet)} &mdash; ${esc(info.lost || '')}</p>`;
-    for (const b of this._panel.querySelectorAll('.tut-kid')) {
+    const first = k.name.split(' ')[0];
+
+    /* THE GLASS holds the Kid's own full portrait — the same art the story
+       beats put on the stage — cropped to the oval, so the mirror shows a
+       person rather than a thumbnail scaled up. */
+    const g = this._glass;
+    if (g.dataset.slug !== slug) {
+      g.dataset.slug = slug;
+      g.innerHTML = '';
+      // `kidImg` takes a SLUG and its variants are 'portrait' | 'thumb'; the
+      // full portrait is what the glass wants, cropped to the oval by CSS.
+      g.appendChild(kidImg(slug, { variant: 'portrait', className: 'tut-glass__img', alt: '' }));
+    }
+
+    this._dossier.innerHTML =
+      `<div class="tut-dos__band tut-dos__band--name">`
+      + `<b class="tut-dos__n">${esc(k.name)}</b>`
+      + (info.age ? `<span class="tut-dos__a">${esc(String(info.age))}</span>` : '')
+      + `</div>`
+      + `<div class="tut-dos__band tut-dos__band--trait">`
+      + `<p class="tut-dos__t">${esc(info.trait || '')}</p>`
+      + `</div>`
+      + `<div class="tut-dos__band tut-dos__band--perk">`
+      + `<div class="tut-dos__half">`
+      + (info.perk ? `<b class="tut-dos__k">${esc(info.perk[0])}</b>`
+                   + `<p class="tut-dos__p">${esc(info.perk[1] || '')}</p>` : '')
+      + `</div>`
+      + `<div class="tut-dos__half">`
+      + (info.focus ? `<p class="tut-dos__f">${esc(info.focus)}</p>` : '')
+      + `</div>`
+      + `</div>`
+      + `<div class="tut-dos__band tut-dos__band--pet">`
+      + `<b class="tut-dos__pn">${esc(k.pet)}</b>`
+      + `<span class="tut-dos__pk">${esc(info.species || k.petBreed || '')}</span>`
+      + `<p class="tut-dos__pl">${esc(info.lost || '')}</p>`
+      + `</div>`;
+
+    this._fitBands();
+
+    for (const b of this._board.querySelectorAll('.tut-hot')) {
       b.classList.toggle('is-hover', b.dataset.slug === slug);
     }
-    this._setFigure('kid', k);
+    this._go.disabled = !this.kid;
+    this._go.setAttribute('aria-label',
+      this.kid ? `Go into the house as ${first}` : 'Choose a Kid first');
   }
 
-  _chooseKid(slug) {
+  /**
+   * SHRINK A BAND THAT WILL NOT FIT ITS PAINTED BOX.
+   *
+   * The boxes are painted, so their heights are fixed and the codex entries are
+   * not: seven Kids fit at the size the painting was designed around and Samir
+   * does not — his perk ran 5px past the third box at 900x900. Sizing all eight
+   * down to the longest would make the other seven small for no reason, so each
+   * band carries its own `--fit` and only the one that overflows turns it down.
+   *
+   * Measured against the CHILDREN's boxes rather than `scrollHeight`: the bands
+   * are centred flex columns, so content escapes upwards as readily as
+   * downwards and `scrollHeight` does not see the top half of it.
+   */
+  _fitBands() {
+    for (const band of this._dossier.querySelectorAll('.tut-dos__band')) {
+      band.style.setProperty('--fit', '1');
+      const over = () => {
+        const br = band.getBoundingClientRect();
+        if (!br.height) return 0;
+        let d = 0;
+        for (const c of band.querySelectorAll('*')) {
+          const cr = c.getBoundingClientRect();
+          if (!cr.height) continue;
+          d = Math.max(d, cr.bottom - br.bottom, br.top - cr.top);
+        }
+        return d;
+      };
+      // 0.74 is the floor: below it the text is smaller than the painting's own
+      // engraved labels and stops looking like part of the picture.
+      for (let f = 1; f > 0.74 && over() > 1; ) {
+        f -= 0.04;
+        band.style.setProperty('--fit', f.toFixed(2));
+      }
+    }
+  }
+
+  /** Lock the frame in, but do not turn the page — the painted tick does that. */
+  _pickKid(slug) {
     if (!KIDS.some((x) => x.slug === slug)) return;
     this.kid = slug;
     this.ctx.tutorial = { ...(this.ctx.tutorial || {}), kid: slug, seed: this.seed };
-    for (const b of this._panel.querySelectorAll('.tut-kid')) {
+    for (const b of this._board.querySelectorAll('.tut-hot')) {
       b.setAttribute('aria-selected', String(b.dataset.slug === slug));
     }
+    this._previewKid(slug);
     try { this.ctx.audio?.play?.('ui:confirm'); } catch {}
+  }
+
+  /** Commit and turn the page. `_pickKid` has already done the selecting. */
+  _chooseKid(slug) {
+    if (!KIDS.some((x) => x.slug === slug)) return;
+    if (this.kid !== slug) this._pickKid(slug);
+    try { this.ctx.audio?.play?.('ui:begin'); } catch {}
     this._advance();
   }
 

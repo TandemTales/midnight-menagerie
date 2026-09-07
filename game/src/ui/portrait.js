@@ -155,11 +155,80 @@ export function blueprintSrc(name = 'mansion') { return `${ASSETS}blueprint/${na
  *            partial alpha on purpose: the house shows through it, so it reads
  *            as a lit sign hung over the gate rather than a sticker.
  *
- * `select-kid.jpg` is prepared from `UI/selectKid.png` by the same script and
- * is NOT wired to anything yet — the designer has not asked for it.
+ *   'kid'    `UI/selectKid.png` — the CHOOSE YOUR KID board, 1448x1086 (4:3).
+ *            Like the Companion board it IS the screen: the eight portraits,
+ *            the oval mirror, the slotted dossier panel and both buttons are
+ *            painted. Nothing is rebuilt out of parts; the page lays hotspots
+ *            and live text over the painting. See `KID_BOARD`.
  */
 export function menuArtSrc(which = 'menu') {
-  return which === 'title' ? `${ASSETS}ui/title.png` : `${ASSETS}ui/main-menu.jpg`;
+  if (which === 'title') return `${ASSETS}ui/title.png`;
+  if (which === 'kid') return `${ASSETS}ui/select-kid.jpg`;
+  return `${ASSETS}ui/main-menu.jpg`;
+}
+
+/**
+ * The painted Kid board, measured off `UI/selectKid.png` rather than guessed.
+ *
+ * Every rect is `[x, y, w, h]` as a FRACTION of the painting, so the screen can
+ * letterbox it to any size and the hotspots stay on their frames. The painting
+ * is 4:3 and is `contain`-fitted, never cropped — the gold border is part of
+ * the composition and cutting it looks like a mistake rather than a bleed.
+ *
+ * HOW THE NUMBERS WERE FOUND. The gold rails are warm and bright, so the same
+ * scan `tools/prep_board.py` uses on the Companion board finds them here: two
+ * vertical rail pairs at x 74-300 and 1148-1372, and four horizontal rails per
+ * column at y 174 / 366 / 551 / 737. The mirror's opening is the near-black
+ * core inside its oval frame (x 376-624, y 347-808 at the strictest threshold,
+ * opened up here to the visible edge of the glass).
+ *
+ * THE ORDER IS THE PAINTING'S, NOT THE ROSTER'S. `KIDS` runs maya, mateo,
+ * amina, eli, priya, jordan, lena, samir; the painting puts maya, mateo, amina,
+ * samir down the left and jordan, priya, eli, lena down the right. Identified
+ * by matching each painted face to its own portrait art — Eli is the ginger in
+ * glasses, Samir is the one in the hood — so this table is the mapping and
+ * iterating `KIDS` in order would put four kids in the wrong frames.
+ */
+export const KID_BOARD = Object.freeze({
+  w: 1448, h: 1086,
+  cells: Object.freeze({
+    maya:   [0.0525, 0.1602, 0.1540, 0.1676],
+    mateo:  [0.0525, 0.3370, 0.1540, 0.1621],
+    amina:  [0.0525, 0.5074, 0.1540, 0.1611],
+    samir:  [0.0525, 0.6786, 0.1540, 0.1685],
+    jordan: [0.7935, 0.1602, 0.1540, 0.1676],
+    priya:  [0.7935, 0.3370, 0.1540, 0.1621],
+    eli:    [0.7935, 0.5074, 0.1540, 0.1611],
+    lena:   [0.7935, 0.6786, 0.1540, 0.1685],
+  }),
+  /**
+   * The glass inside the oval frame: where the chosen Kid appears.
+   *
+   * The bounding box of the oval's actual OPENING, not of its gold surround —
+   * x 380-619 at the widest, y 344-796 down the centre column. Guessing this
+   * generously put the portrait's hands and map over the frame's lower
+   * ornament, which reads as a picture sitting on top of the mirror rather than
+   * inside it.
+   */
+  mirror: [0.2624, 0.3168, 0.1657, 0.4171],
+  /**
+   * The slotted dossier to its right — the CONTENT area inside its gold frame.
+   *
+   * Its four boxes are not evenly spaced and the dividers carry medallions that
+   * hang into the box below, so the rails were measured rather than guessed:
+   * horizontals at y 253/350, 380/538, 566/721, 750/938, and the vertical split
+   * in the third box at x 882-908. `--dos-r*` in tutorial.css is that table.
+   */
+  panel: [0.4834, 0.2330, 0.2693, 0.6335],
+  /** The two painted buttons in the bottom corners. */
+  back: [0.0414, 0.8794, 0.0691, 0.0875],
+  confirm: [0.8909, 0.8794, 0.0691, 0.0875],
+});
+
+/** `[x,y,w,h]` fractions as an inline `style` for an absolutely-placed child. */
+export function kidBoardRect(r) {
+  return `left:${(r[0] * 100).toFixed(4)}%;top:${(r[1] * 100).toFixed(4)}%;`
+       + `width:${(r[2] * 100).toFixed(4)}%;height:${(r[3] * 100).toFixed(4)}%`;
 }
 
 export const COMPANION_BY_SLUG = Object.fromEntries(COMPANIONS.map((c) => [c.slug, c]));

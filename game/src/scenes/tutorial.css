@@ -126,64 +126,235 @@
   color: var(--flame-200);
 }
 
-/* ── choosing a Kid ───────────────────────────────────────────────────────── */
-.tut-pick {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--s-2);
-}
-.tut-pick[hidden] { display: none; }
+/* ── choosing a Kid: the board IS `UI/selectKid.png` ──────────────────
 
-.tut-kid {
+   The painting carries the eight portraits, the oval mirror, the slotted
+   dossier and both buttons. Nothing below draws a frame, a border or a tile:
+   every rule here either places a transparent hotspot over painted art, or
+   writes live text into a painted slot.
+
+   `contain`, never `cover`. The gold border is the composition — cropping it
+   reads as a bug, so the painting is letterboxed and the room around it is the
+   scene's own dark. Geometry comes from `KID_BOARD` in ui/portrait.js as inline
+   percentages, so it survives any viewport without a media query.            */
+.tut-board {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  padding: clamp(8px, 1.6vmin, 24px);
+  z-index: 2;
+}
+.tut-board[hidden] { display: none; }
+
+.tut-sheet {
+  position: relative;
+  aspect-ratio: 1448 / 1086;
+  width: min(100%, calc((100vh - 2 * clamp(8px, 1.6vmin, 24px)) * 1448 / 1086));
+  max-height: 100%;
+  background: center / contain no-repeat;
+  /* THE TYPE SCALES WITH THE PAINTING, not with the window. `vmin` sized the
+     dossier off the viewport, so a square window letterboxed the sheet small
+     while the text stayed large and band three overflowed its painted box
+     (measured: 900x900, two elements out). `cqw` is a percentage of the SHEET,
+     so 1448 design px maps to 100cqw and every slot keeps its proportions at
+     every size. */
+  container-type: inline-size;
+  /* The painting's own black bleeds into the letterbox, so the edge of the
+     sheet is not a visible seam against the scene behind it. */
+  box-shadow: 0 0 0 40vmax #05040a;
+}
+
+/* ── the eight painted frames ─────────────────────────────────────────────── */
+.tut-hots { position: absolute; inset: 0; }
+.tut-hot {
+  position: absolute;
   appearance: none;
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
-  padding: var(--s-2) 4px var(--s-2);
-  background: color-mix(in srgb, var(--surface-1) 72%, transparent);
-  border: 1px solid var(--surface-line);
-  border-radius: var(--radius-sm);
-  color: var(--text-mid);
-  font: inherit;
+  /* `border-box`, or the 2px border is added OUTSIDE the measured rect and the
+     highlight sits a hair proud of the painted frame on every side. */
+  box-sizing: border-box;
+  margin: 0; padding: 0;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 3px;
   cursor: pointer;
-  transition:
-    border-color var(--t-quick) var(--ease-out),
-    transform var(--t-quick) var(--ease-out),
-    color var(--t-quick) var(--ease-out);
+  transition: box-shadow var(--t-quick) var(--ease-out),
+              border-color var(--t-quick) var(--ease-out);
 }
-.tut-kid .kidpf {
-  width: 100%; height: auto;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: var(--radius-sm);
+/* A hover is a warmer candle on that frame, not a UI outline. */
+.tut-hot:hover, .tut-hot.is-hover, .tut-hot:focus-visible {
+  border-color: color-mix(in srgb, var(--flame-300) 55%, transparent);
+  box-shadow: 0 0 18px 2px color-mix(in srgb, var(--flame-400) 30%, transparent),
+              inset 0 0 22px color-mix(in srgb, var(--flame-400) 14%, transparent);
+  outline: none;
 }
-.tut-kid__n { font-family: var(--font-display); font-size: var(--fs-sm); color: var(--text-hi); }
-.tut-kid__p { font-size: var(--fs-xs); color: var(--text-lo); }
-.tut-kid:hover, .tut-kid.is-hover, .tut-kid:focus-visible {
-  border-color: var(--surface-line-hi);
-  color: var(--text-hi);
-  transform: translateY(-2px);
+.tut-hot[aria-selected="true"] {
+  border-color: var(--flame-300);
+  box-shadow: 0 0 26px 3px color-mix(in srgb, var(--flame-400) 44%, transparent),
+              inset 0 0 26px color-mix(in srgb, var(--flame-400) 18%, transparent);
 }
-.tut-kid[aria-selected="true"] { border-color: var(--flame-400); }
-.mm-reduce-motion .tut-kid { transition: none; }
-.mm-reduce-motion .tut-kid:hover, .mm-reduce-motion .tut-kid.is-hover { transform: none; }
+.mm-reduce-motion .tut-hot { transition: none; }
 
-.tut-detail {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0 var(--s-3);
-  align-items: baseline;
-  min-height: 4.6em;
+/* ── the glass ────────────────────────────────────────────────────────────── */
+.tut-glass {
+  position: absolute;
+  overflow: hidden;
+  border-radius: 50% / 46%;
+  /* Empty until somebody is picked: painted black is what the oval should show
+     when nothing has been chosen, and a placeholder would be worse. */
 }
-.tut-detail[hidden] { display: none; }
-.tut-detail__n { font-family: var(--font-display); font-size: var(--fs-lg); color: var(--flame-200); }
-.tut-detail__a { font-size: var(--fs-sm); color: var(--text-lo); }
-.tut-detail__t, .tut-detail__l {
-  grid-column: 1 / -1;
-  margin: 2px 0 0;
-  font-size: var(--fs-sm);
-  line-height: 1.45;
+.tut-glass__img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: 50% 14%;
+  display: block;
+  animation: tut-glass-in var(--t-slow) var(--ease-out) both;
+  /* The glass is old and the room is candlelit; the portrait is warmed and
+     vignetted into it rather than pasted on top. */
+  filter: saturate(0.92) contrast(1.04) brightness(0.94);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 48%, #000 66%, transparent 99%);
+  mask-image: radial-gradient(ellipse at 50% 48%, #000 66%, transparent 99%);
+}
+@keyframes tut-glass-in { from { opacity: 0; } to { opacity: 1; } }
+.mm-reduce-motion .tut-glass__img { animation: none; }
+
+/* ── the dossier, written into the painting's slotted bands ───────────────── */
+.tut-dos {
+  position: absolute;
+  display: grid;
+  /* THE PAINTED BOXES, MEASURED. The four slots are not evenly spaced — the
+     name box is 93px tall and the pet box is 188 — so these rows are the rails
+     found in the file (y 253/350, 380/538, 566/721, 750/938), expressed as
+     fractions of the panel's own height. The odd rows are the gaps the gold
+     dividers occupy; nothing is placed in them. */
+  grid-template-rows:
+    0.1352fr 0.0436fr 0.2296fr 0.0407fr 0.2253fr 0.0422fr 0.2732fr;
+  text-align: center;
   color: var(--text-mid);
 }
-.tut-detail__l em { color: var(--text-lo); font-style: normal; letter-spacing: .1em; text-transform: uppercase; font-size: .86em; }
+.tut-dos__band--name  { grid-row: 1; }
+.tut-dos__band--trait { grid-row: 3; }
+.tut-dos__band--perk  { grid-row: 5; }
+.tut-dos__band--pet   { grid-row: 7; }
+.tut-dos__band {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.25em;
+  min-height: 0;
+  padding: 0 2%;
+  /* `_fitBands()` in tutorial.js turns this down on a band whose text will not
+     fit its painted box. One knob per band, so a long entry shrinks ITSELF and
+     the other seven Kids keep the size the painting was designed around. */
+  --fit: 1;
+}
+/* The painting splits the third band into TWO boxes with a medallion over each
+   — a shield and a star. One paragraph stretched across both ignored the
+   drawing, so the shield gets the perk and the star gets what the Kid is FOR. */
+/* Each medallion is centred ON its divider and hangs into the box below, so a
+   box under one starts lower than its rail. */
+.tut-dos__band--trait, .tut-dos__band--pet { padding-top: 9%; }
+.tut-dos__band--perk {
+  display: grid;
+  /* The vertical rail sits at x 882-908 of the panel's 700-1090: 46.7% / 53.3%. */
+  grid-template-columns: 46.7% 53.3%;
+  align-items: start;
+  gap: 0;
+  /* Trimmed against the measurement, not by eye: at 0.90cqw and 11% the perk
+     column ran 6-9px past its painted box at every size tested. */
+  padding: 8.5% 0 2%;
+}
+.tut-dos__half { padding: 0 10%; }
+.tut-dos__half {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.2em; min-height: 0;
+}
+.tut-dos__f {
+  margin: 0;
+  font-size: calc(max(8px, 0.86cqw) * var(--fit, 1));
+  line-height: 1.3;
+  color: var(--text-lo);
+  text-wrap: balance;
+}
+.tut-dos__n {
+  font-family: var(--font-display);
+  font-size: calc(max(13px, 2.07cqw) * var(--fit, 1));
+  line-height: 1.05;
+  color: var(--flame-200);
+  letter-spacing: .01em;
+}
+.tut-dos__a {
+  font-size: calc(max(9px, 1.04cqw) * var(--fit, 1));
+  color: color-mix(in srgb, var(--flame-200) 62%, var(--text-lo));
+  letter-spacing: .12em;
+}
+.tut-dos__t {
+  margin: 0;
+  font-size: calc(max(9px, 1.10cqw) * var(--fit, 1));
+  line-height: 1.42;
+  color: var(--text-mid);
+}
+.tut-dos__k {
+  font-family: var(--font-display);
+  font-size: calc(max(9px, 1.16cqw) * var(--fit, 1));
+  line-height: 1.15;
+  color: var(--flame-300);
+}
+.tut-dos__p {
+  margin: 0;
+  font-size: calc(max(8px, 0.86cqw) * var(--fit, 1));
+  line-height: 1.3;
+  color: var(--text-lo);
+  text-wrap: balance;
+}
+.tut-dos__pn {
+  font-family: var(--font-display);
+  font-size: calc(max(11px, 1.52cqw) * var(--fit, 1));
+  color: var(--flame-200);
+}
+.tut-dos__pk {
+  font-size: calc(max(8px, 0.90cqw) * var(--fit, 1));
+  color: var(--text-lo);
+  text-transform: uppercase; letter-spacing: .1em;
+}
+.tut-dos__pl {
+  margin: 0.1em 0 0;
+  font-size: calc(max(9px, 1.04cqw) * var(--fit, 1));
+  line-height: 1.4;
+  font-style: italic;
+  color: var(--text-mid);
+}
+
+/* ── the two painted buttons ──────────────────────────────────────────────── */
+.tut-btn {
+  position: absolute;
+  appearance: none;
+  margin: 0; padding: 0;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: box-shadow var(--t-quick) var(--ease-out),
+              border-color var(--t-quick) var(--ease-out),
+              opacity var(--t-quick) var(--ease-out);
+}
+.tut-btn:hover, .tut-btn:focus-visible {
+  border-color: color-mix(in srgb, var(--flame-300) 60%, transparent);
+  box-shadow: 0 0 20px 3px color-mix(in srgb, var(--flame-400) 34%, transparent);
+  outline: none;
+}
+/* A tick with nobody chosen is not pressable, and says so by going cold rather
+   than by disappearing — the painting has a tick on it either way. */
+.tut-btn--go:disabled { cursor: default; opacity: 0.45; }
+.tut-btn--go:disabled:hover { border-color: transparent; box-shadow: none; }
+.tut-btn--go:not(:disabled) {
+  animation: tut-tick 2.4s var(--ease-soft) infinite;
+}
+@keyframes tut-tick {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--flame-400) 30%, transparent); }
+  50%      { box-shadow: 0 0 22px 4px color-mix(in srgb, var(--flame-400) 26%, transparent); }
+}
+.mm-reduce-motion .tut-btn { transition: none; }
+.mm-reduce-motion .tut-btn--go:not(:disabled) { animation: none; }
+
+/* The prose stage and the board never share the screen. */
+.tut-stage[hidden] { display: none; }
 
 /* ── foot ─────────────────────────────────────────────────────────────────── */
 .tut-foot {
