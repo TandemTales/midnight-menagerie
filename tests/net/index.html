@@ -328,6 +328,99 @@ try {
       'the two boards agree once it has landed');
   }
 
+  /* == 7b. THE TRANSPORT CONTRACT, run against every transport we have ======
+   *
+   * WHY THIS IS A LOOP AND NOT A TEST OF ONE CLASS.
+   *
+   * `net/transport.js` states a contract in prose and says the quiet part out
+   * loud: "Neither is guaranteed by every real transport. Steam's P2P has
+   * reliable and unreliable channels; the session's traffic must go on a
+   * reliable, ordered one." When the App ID exists and `SteamTransport` is
+   * written, "does it satisfy the contract" needs a better answer than "it
+   * seemed to work in a playtest".
+   *
+   * So the contract is executable. Add the new transport to `WIRES` below and
+   * it is held to exactly what `Session` relies on:
+   *
+   *   1. ORDER IS PRESERVED per sender - lockstep replays inputs in issue
+   *      order, so a transport that reorders one peer's messages produces two
+   *      different boards from the same seed.
+   *   2. NOTHING IS DELIVERED TO ITSELF - the sender already applied its own
+   *      input, so an echo is a double-apply the session reads as divergence.
+   *   3. `onMessage` returns a working unsubscribe.
+   *   4. `close()` is idempotent and stops delivery.
+   *   5. A message crosses UNCHANGED.
+   *
+   * Rule 5 is the one a loopback cannot be trusted on and the one Steam is most
+   * likely to break: `LoopbackHub._deliver` hands every peer the SAME OBJECT
+   * REFERENCE - no copy, no serialisation - so anything JSON cannot represent
+   * (a Map, a Set, a class instance, `undefined`) passes every test in this
+   * file today and changes shape the first time it crosses a real wire. The
+   * session's own traffic was measured against a JSON round trip and is clean
+   * - three shapes, hello `k,seat,seed`, input `k,seat,turn,seq`, ack `k,i` -
+   * and this is what keeps it that way.                                     */
+  {
+    const WIRES = [
+      ['LoopbackTransport (sync)',
+        () => { const h = new LoopbackHub(); return [h.peer('A'), h.peer('B')]; }],
+      ['LoopbackTransport (async)',
+        () => { const h = new LoopbackHub({ async: true }); return [h.peer('A'), h.peer('B')]; }],
+    ];
+    if (canChannel()) {
+      WIRES.push(['ChannelTransport', () => {
+        const room = 'mm-conf-' + Math.random().toString(36).slice(2);
+        return [new ChannelTransport(room, 'A'), new ChannelTransport(room, 'B')];
+      }]);
+    }
+    // When SteamTransport lands, add it here. Nothing else has to change.
+
+    const settle = () => new Promise(r => setTimeout(r, 140));
+    const want = (i) => ({ k: 'seq', i, deep: { n: [i, i + 1], s: 'x' + i } });
+
+    for (const [name, make] of WIRES) {
+      const [a, b] = make();
+      try {
+        check(typeof a.id === 'string' && !!a.id && a.id !== b.id,
+          name + ': every peer has its own stable id', a.id + ' / ' + b.id);
+
+        const got = [], mine = [];
+        const offB = b.onMessage((m) => got.push(m));
+        const offA = a.onMessage((m) => mine.push(m));
+
+        for (let i = 0; i < 10; i++) a.send(want(i));
+        await settle();
+
+        check(got.length === 10, name + ': every message arrives', got.length + '/10');
+        check(got.map(m => m.i).join(',') === '0,1,2,3,4,5,6,7,8,9',
+          name + ': ORDER IS PRESERVED per sender - lockstep rule 1',
+          got.map(m => m.i).join(','));
+        check(mine.length === 0,
+          name + ': NOTHING IS DELIVERED TO ITSELF - lockstep rule 2', String(mine.length));
+        check(got.every((m, i) => JSON.stringify(m) === JSON.stringify(want(i))),
+          name + ': a message crosses UNCHANGED, nesting and all');
+
+        offB();
+        a.send({ k: 'after-unsub' });
+        await settle();
+        check(got.length === 10,
+          name + ": onMessage's unsubscribe actually unsubscribes", String(got.length));
+        offA();
+
+        const late = [];
+        b.onMessage((m) => late.push(m));
+        a.close();
+        a.close();
+        a.send({ k: 'after-close' });
+        await settle();
+        check(late.length === 0,
+          name + ': close() stops delivery and is safe twice', String(late.length));
+      } finally {
+        try { a.close(); } catch (e) { /* already closed */ }
+        try { b.close(); } catch (e) { /* already closed */ }
+      }
+    }
+  }
+
   // ══ 8. The two-tab transport exists and obeys the contract ══════════════
   {
     check(canChannel(), 'a BroadcastChannel wire is available in this browser');
