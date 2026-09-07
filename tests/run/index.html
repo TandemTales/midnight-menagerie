@@ -1748,15 +1748,33 @@ async function main() {
     const FLOOR = 0.07;
     const runs = {}, slots = {};
     for (const id of RUN_REGIONS) { runs[id] = 0; slots[id] = new Array(W).fill(0); }
-    let bad = 0, empty = 0, s = 987654321;
-    const rnd = (n) => { s = (s * 1103515245 + 12345) & 0x7fffffff; return s % n; };
+    let bad = 0, empty = 0;
+    /* THE PICKER HAS TO BE UNBIASED OR THIS TABLE MEASURES THE PICKER.
+       It was a hand-rolled LCG sharing one state across every route and step:
+       `s = (s * 1103515245 + 12345) & 0x7fffffff`. Its period is 10466 against
+       the ~20000 draws this sweep takes, and its low bits are correlated across
+       the interleaved moduli the fork uses (15, 14, 13, 12 as wings are spent).
+       In isolation it looks fine — 6000 draws of `rnd(15)` land 375-428 against
+       an expected 400 — so it survived every eyeball it got while offers were
+       only two or three wide.
+
+       Measured against the game's own RNG on the SAME offers, once every wing
+       became reachable and the moduli got large:
+
+         nursery       51.3%  ->  27.4%        bathhouse   15.1%  ->  24.9%
+         pumpkin       14.1%  ->  26.9%        greenhouse  17.1%  ->  26.8%
+
+       Uniform over four middle slots drawn from fifteen candidates is 4/15 =
+       26.7%, which is what the right-hand column is. The left-hand column was
+       this generator, and the floor assertion below plus the distribution
+       quoted in the 2026-09-06 handoff were both read off it. */
     for (let i = 0; i < N; i++) {
       const seed = 5000 + i;
       const route = [RUN_REGIONS[0]];
       for (let step = 0; step < W - 1; step++) {
         const off = wingOffer(seed, route[route.length - 1], route, step, W);
         if (!off.length) { empty++; break; }
-        const to = off[rnd(off.length)].to;
+        const to = off[new RNG(`sweep|${seed}|${step}`).int(off.length)].to;
         if (route.includes(to)) bad++;
         route.push(to);
       }

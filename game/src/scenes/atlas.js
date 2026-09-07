@@ -40,12 +40,15 @@
  * ── AND IT IS WHERE THE EXPEDITION TURNS ───────────────────────────────────
  *
  * A cleared wing does not hand the party the next one. `Run#openWingFork` sends
- * them here with two or three ways on marked, and `docs/design/01-mansion-structure.md`
- * is what decides which: the wing's own architectural neighbours, minus the
- * doors the house has shut tonight, minus everywhere they have already been —
- * and, when that leaves nothing, a door that was never on the plan. The reason
- * for each one is printed beside it in the house's own words, because the doc
- * insists the regions "should not merely touch because the map needs them to".
+ * them here with every wing they have not walked marked as a way on — the Heart
+ * excepted, which is the ending rather than a wing you pick.
+ *
+ * `docs/design/01-mansion-structure.md` no longer decides WHETHER a wing can be
+ * reached; it decides how each one reads. A wing this one architecturally joins,
+ * whose door the house has left open tonight, is printed with the doc's own
+ * reason for the join, because the chapter insists the regions "should not
+ * merely touch because the map needs them to". Everything else is a manifested
+ * way in — a wardrobe that does not end — and is styled as one.
  *
  * This is the right screen for it and the map is not: the choice is about the
  * HOUSE, and this is the only place that shows which wings exist, which you

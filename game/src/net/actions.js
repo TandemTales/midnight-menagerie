@@ -269,7 +269,7 @@ function _room(run, msg, seat) {
 
     case ACT.WING_CHOOSE:
       /* THE WING, not the room — the fork at the end of a cleared wing, where
-         the house has opened two or three ways on and the party picks one.
+         every wing the party has not walked is on offer and they pick one.
          By slug, because every client computes the same offer from the seed,
          the wing being left and how many wings have been walked (see
          `wingOffer` in state/run.js), so `hedge-maze` names the same door on

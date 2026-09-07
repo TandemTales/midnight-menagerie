@@ -70,7 +70,7 @@ import { clock } from '../core/clock.js';
 import { NodeType, REGION_ORDER, TERMS, COMPANIONS, KIDS, depthDamageScale, runDepthDamageScale, regionCourageFix, regionDamageFix } from '../data/schema.js';
 import {
   generateRegionMap, legalNextIds, regionMeta, sceneForNode,
-  exitsFrom, exitReason, wingDistance,
+  exitsFrom, exitReason,
 } from './mapgen.js';
 import {
   cardById, startingDeckFor, poolFor, poolWithCoop, companion as companionDef, allCards,
@@ -167,11 +167,16 @@ export const RUN_LENGTH_REGIONS = RUN_REGIONS.length;
  * the answer to "why do the kids go back in", and a run that walks every wing
  * every time answers it with "they do not need to".
  *
- * So an expedition is SIX WINGS, and the quoted lines above say what decides
- * which six: the Foyer, the Heart, and four the house opens on the way through
- * — see the three-layer note over `openExitsFor` below. Every wing remains in
- * the game and every wing is reachable; which ones the house is willing to let
- * them reach is what changes.
+ * So an expedition is SIX WINGS: the Foyer, the Heart, and four the party
+ * CHOOSES on the way through.
+ *
+ * WHICH four is no longer the house's decision. As of 2026-09-06 every wing the
+ * party has not walked is offered at every fork, by the design owner's call —
+ * so the quoted line above ("what the mansion is WILLING TO LET THEM REACH") is
+ * now describing how a wing READS rather than whether it can be entered. The
+ * three layers survive as flavour and are documented over `openExitsFor` below;
+ * they no longer gate. Six of seventeen is still what makes a run a route
+ * rather than a tour, and that is the part §22 was answering.
  *
  * The NUMBER is a measurement, not a taste. See the sweep in
  * `docs/notes/2026-08-31-how-long-is-an-expedition.md`.
@@ -217,8 +222,6 @@ const HEART = RUN_REGIONS[RUN_REGIONS.length - 1];
 const OPEN_FRACTION = 0.7;
 /** …but never fewer than this, so a wing is never a dead end by itself. */
 const OPEN_MIN = 2;
-/** How many ways on the player is shown at a fork. */
-const OFFER_MIN = 2, OFFER_MAX = 3;
 
 /* ── THERE IS NO DEPTH FLOOR, AND THE MEASUREMENT IS WHY ────────────────────
  *
@@ -252,11 +255,10 @@ const OFFER_MIN = 2, OFFER_MAX = 3;
  * seeded expeditions, dealt route against chosen route, 4 victories each, 19
  * Foyer defeats each, deck / purse / Keepsakes inside noise.
  *
- * So: no floor. The house opens what the architecture and tonight's circulation
- * state say it opens, and the player takes whichever they like.
+ * So: no floor. Every unwalked wing is offered and the player takes whichever
+ * they like — which, since the measurement above says every region is GENTLER
+ * early, is a freedom that cannot hurt them.
  */
-/** How often a fork also opens a door that was never on the plan. Measured. */
-const SHIFT_CHANCE = 0.55;
 
 /**
  * Tonight's usable exits from one wing — layer two, above.
@@ -310,74 +312,46 @@ export function wingOffer(seed, from, visited, step, wings = EXPEDITION_WINGS) {
 
   const rng = new RNG(hashSeed(`mm-offer-v1|${seed}|${step}|${from}`));
 
-  /**
-   * DOES THE HOUSE SHIFT AT THIS FORK?
-   *
-   * Layer three is not only a fallback. The doc calls manifested connections
-   * "excellent procedural route modifiers because they let a familiar region
-   * play differently without turning the underlying architecture into
-   * meaningless randomization" — so some forks offer a door that should not be
-   * there at all, beside the two that should.
-   *
-   * THE NUMBER IS A MEASUREMENT. Architecture alone puts the exterior estate
-   * out of reach: the Foyer's own neighbourhood is dense and the Moon Courtyard
-   * is three doors out through a single bottleneck, so over 4000 expeditions it
-   * appeared in 1.3% of them and the Kennels in 6.8% — content nobody would
-   * ever see, which is the class CONTRACTS trap 42 and the 2026-08-30 sweep are
-   * both about. See the note for the sweep this was tuned against; the goal was
-   * a floor under every wing, not an even distribution, because the Foyer's
-   * neighbours SHOULD be walked more often than the far end of the grounds.
-   */
-  const shifts = rng.chance(SHIFT_CHANCE);
-  const room = OFFER_MAX - (shifts ? 1 : 0);
+  /* EVERY WING IS ON OFFER, and layer two now decides HOW you get in rather
+     than WHETHER you can.
 
-  /** Draw one, weighted, and take it out of the pool. */
-  const draw = (arr, weight) => {
-    if (!arr.length) return null;
-    const to = rng.weighted(arr.map(t => ({ id: t, w: weight ? weight(t) : 1 }))).id;
-    arr.splice(arr.indexOf(to), 1);
-    return to;
-  };
+     This used to hand back two or three doors — a seeded subset of the wing's
+     architectural neighbours, plus sometimes one manifested door — which left
+     most of the house unreachable from any given fork. The design owner's call
+     is that the party should be able to go wherever they like, so the gate is
+     gone and the three layers moved down one:
 
-  const open = openExitsFor(seed, from).filter(t => !seen.has(t));
+       an OPEN architectural neighbour   the ordinary door, in the doc's own
+                                         words (`exitReason`)
+       everything else                   a way in that should not exist, which
+                                         is what layer three has always been
+
+     `openExitsFor` is therefore still load-bearing — it is the thing that
+     separates the two readings, and the atlas styles them differently — but a
+     door it shuts no longer stops you. You arrive through a wardrobe instead
+     of a corridor.
+
+     STATED PLAINLY, because this argues with a design chapter rather than
+     implementing one: `01-mansion-structure.md` closes on "what changes is
+     what the mansion is WILLING TO LET THEM REACH", and offering everything is
+     a decision AGAINST that sentence, taken deliberately by the owner on
+     2026-09-06. The layers still exist and still read differently; what has
+     gone is their power to refuse.
+
+     The Heart is exempt above and stays exempt: it is the ending, not a wing
+     you pick. */
+  const open = new Set(openExitsFor(seed, from));
   const out = [];
-  const pool = open.slice();
-  while (out.length < room && pool.length) {
-    const to = draw(pool);
-    out.push({ to, why: exitReason(from, to) || 'a way through', manifested: false });
-  }
-
-  if (shifts) {
-    /* Weighted by how far the door reaches, because a door that should not
-       exist is only interesting when it goes somewhere the architecture will
-       not take you. Squared, so three doors out is nine times a neighbour. */
-    const taken = new Set(out.map(o => o.to));
-    const far = RUN_REGIONS
-      .filter(t => t !== HEART && !seen.has(t) && !taken.has(t));
-    const to = draw(far, t => Math.pow(Math.min(6, wingDistance(from, t) || 1), 2));
-    if (to) out.push({ to, why: MANIFESTED[rng.int(MANIFESTED.length)], manifested: true });
-  }
-
-  /* Layer three. The house has shut, or you have already been through,
-     everything this wing ordinarily reaches — so it opens something that was
-     never on the plan. A door the house merely CLOSED tonight is preferred
-     over one that never existed: the first is a bolt drawn back, the second is
-     a hole in the architecture, and the fiction is better served by trying the
-     believable one first. */
-  if (out.length < OFFER_MIN) {
-    const taken = new Set(out.map(o => o.to));
-    const shut = exitsFrom(from).map(e => e.to)
-      .filter(t => t !== HEART && !seen.has(t) && !taken.has(t));
-    const elsewhere = RUN_REGIONS
-      .filter(t => t !== HEART && !seen.has(t) && !taken.has(t) && !shut.includes(t));
-    for (const tier of [shut, elsewhere]) {
-      const p = tier.slice();
-      while (out.length < OFFER_MIN && p.length) {
-        const to = draw(p);
-        out.push({ to, why: exitReason(from, to) || MANIFESTED[rng.int(MANIFESTED.length)],
-                   manifested: true });
-      }
-    }
+  for (const to of RUN_REGIONS) {
+    if (to === HEART || to === from || seen.has(to)) continue;
+    const ordinary = open.has(to);
+    /* The manifested phrase is drawn in RUN_REGIONS order from an rng seeded on
+       (seed, step, from), so a fork names the same door every time it is asked
+       — `wingOptions()` recomputes this on demand and the atlas must not
+       reword a door the player is looking at. */
+    const why = ordinary ? (exitReason(from, to) || 'a way through')
+                         : MANIFESTED[rng.int(MANIFESTED.length)];
+    out.push({ to, why, manifested: !ordinary });
   }
   return out.sort((a, b) => REGION_ORDER.indexOf(a.to) - REGION_ORDER.indexOf(b.to));
 }
@@ -2695,9 +2669,11 @@ export class Run {
 
   /* ══ the way on ═════════════════════════════════════════════════════════
    *
-   * A cleared wing does not hand you the next one any more. The house opens
-   * two or three ways out and the party picks — see the three-layer note over
-   * `openExitsFor`.
+   * A cleared wing does not hand you the next one any more. Every wing the
+   * party has not walked is offered — the Heart excepted, which is the ending —
+   * and the party picks. What tonight's circulation state still decides is HOW
+   * each one reads: an open architectural door, or a way in that should not
+   * exist. See the three-layer note over `openExitsFor`.
    * ═══════════════════════════════════════════════════════════════════════ */
 
   /**
