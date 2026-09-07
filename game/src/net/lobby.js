@@ -109,6 +109,10 @@ export class Lobby {
       kid: o.kid || null,
       name: o.name || '',
       ready: false,
+      /* What this machine would bring to a shared run. Announced, and seat 0's
+         is what the party actually plays — see `_announce` and `start()`. */
+      haunt: o.haunt | 0,
+      freed: Array.isArray(o.freed) ? o.freed.slice() : [],
     };
     /** id -> { id, companion, kid, name, ready } */
     this._peers = new Map([[this.me.id, this.me]]);
@@ -159,10 +163,12 @@ export class Lobby {
 
   /* ── my own choices ───────────────────────────────────────────────────── */
 
-  setChoice({ companion, kid, name } = {}) {
+  setChoice({ companion, kid, name, haunt, freed } = {}) {
     if (companion !== undefined) this.me.companion = companion;
     if (kid !== undefined) this.me.kid = kid;
     if (name !== undefined) this.me.name = name;
+    if (haunt !== undefined) this.me.haunt = haunt | 0;
+    if (freed !== undefined) this.me.freed = Array.isArray(freed) ? freed.slice() : [];
     // Changing your Kid un-readies you. Otherwise a player can lock in, swap to
     // somebody else's Kid, and the roster that starts is not the one anybody
     // agreed to.
@@ -201,6 +207,14 @@ export class Lobby {
       // What `ctx.startRun({ party })` wants, in seat order.
       party: players.map(p => ({ companion: p.companion, kid: p.kid })),
       ids: players.map(p => p.id),
+      /* SEAT 0 ANCHORS BOTH, for the same reason it anchors the seat order:
+         somebody has to, and `players` is already sorted identically on every
+         machine, so every client freezes the same two values without anybody
+         publishing an answer. It is the host's ladder the party climbs and the
+         host's house they are in — stated here because it is a design choice
+         and not a derivation. */
+      haunt: (players[0] || {}).haunt | 0,
+      freed: ((players[0] || {}).freed || []).slice(),
     };
     this.started = true;
     this._emit('start', this.roster);
@@ -218,10 +232,28 @@ export class Lobby {
 
   _say(k, body) { this.transport?.send({ k, ...body, id: this.me.id }); }
 
+  /**
+   * WHAT A SHARED RUN IS BUILT FROM HAS TO TRAVEL.
+   *
+   * `haunt` and `freed` used to be read by each client out of its OWN save at
+   * launch, and they are not the same on two machines. Measured, two players in
+   * one room:
+   *
+   *     haunt         4  vs  0     — Haunt scales enemy stats, so the two
+   *                                  machines simulate different enemies from
+   *                                  the first fight
+   *     freed pool    9  vs  15    — and so `rescueTargetFor` frees a different
+   *                                  Companion from the same boss
+   *
+   * The seed never had this problem because it is derived from the room code by
+   * a pure function every client runs. These two are now the same kind of fact:
+   * announced, frozen into the roster at `start()`, and read from there.
+   */
   _announce() {
     this._say(LOBBY.HERE, {
       companion: this.me.companion, kid: this.me.kid,
       name: this.me.name, ready: this.me.ready,
+      haunt: this.me.haunt | 0, freed: this.me.freed || [],
     });
   }
 
@@ -233,6 +265,7 @@ export class Lobby {
         this._peers.set(id, {
           id, companion: m.companion || null, kid: m.kid || null,
           name: m.name || '', ready: !!m.ready,
+          haunt: m.haunt | 0, freed: Array.isArray(m.freed) ? m.freed : [],
         });
         this._emit('change');
         break;

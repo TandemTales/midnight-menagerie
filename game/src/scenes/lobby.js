@@ -219,6 +219,13 @@ export class LobbyScene extends Scene {
       companion: pickable[0] || 'marmalade',
       kid: (Save?.data?.kidsUnlocked || ['maya'])[0] || 'maya',
       name: '',
+      /* This machine's ladder and this machine's roster, ANNOUNCED rather than
+         used: seat 0's are the ones the party plays. Reading them at launch
+         instead is what put two players on different Haunt levels. `MAX_PARTY`
+         and not the current count, because the key must not change as people
+         join and leave the room. */
+      haunt: Save.hauntLevelFor(MAX_PARTY),
+      freed: (Save?.data?.companionsRescued || []).slice(),
     });
 
     this._offs.push(this._lobby.on('change', () => this._paintRoom()));
@@ -283,7 +290,9 @@ export class LobbyScene extends Scene {
       kSel.appendChild(o);
     }
     const onPick = () => {
-      this._lobby.setChoice({ companion: cSel.value, kid: kSel.value, name: l.me.name });
+      this._lobby.setChoice({ companion: cSel.value, kid: kSel.value, name: l.me.name,
+                              haunt: Save.hauntLevelFor(MAX_PARTY),
+                              freed: (Save?.data?.companionsRescued || []).slice() });
     };
     cSel.addEventListener('change', onPick);
     kSel.addEventListener('change', onPick);
@@ -351,9 +360,15 @@ export class LobbyScene extends Scene {
     if (this._launching || !roster) return;
     this._launching = true;
 
+    /* EVERY FIELD COMES OFF THE ROSTER. `haunt` was `Save.hauntLevelFor()` —
+       each client's own ladder — which put two machines on different enemy
+       scaling from the first fight. `freedRoster` is the same class of fact:
+       it decides which Companion a boss frees, and each client's own lifetime
+       set gave a different answer. Both are frozen at `Lobby#start()` now. */
     const payload = {
       seed: roster.seed,
-      haunt: Save.hauntLevelFor(roster.seats),
+      haunt: roster.haunt | 0,
+      freedRoster: (roster.freed || []).slice(),
       kids: roster.party.map(p => ({ companion: p.companion, kid: p.kid })),
     };
 

@@ -51,7 +51,33 @@ SEATS = """() => [...document.querySelectorAll('.lo__seat')]
 RUNSNAP = """() => {
   const r = window.MM.ctx.run;
   return r ? { seed: r.seed, kids: r.kids.length, seat: r.localSeat,
-               remote: !!(r.session && r.session.remote) } : null;
+               remote: !!(r.session && r.session.remote),
+               haunt: r.hauntLevel | 0,
+               freed: (r.freedRoster || []).slice().sort().join(','),
+               missing: r.missingCompanions().length,
+               frees: r.rescueTargetFor('boss:lampworks', 'wisp') } : null;
+}"""
+
+# Make the two machines genuinely different players. Both tabs share one
+# browser context (they must — a BroadcastChannel does not cross contexts), so
+# they share storage; the difference is made in MEMORY and re-announced, which
+# is exactly what the screen does when you change your pick.
+#
+# WHY: `haunt` and the freed roster used to be read out of each client's OWN
+# save at launch. Measured before the fix, two players in one room: Haunt 4 vs
+# 0 (which scales enemy stats, so the machines simulate different enemies from
+# the first fight) and a rescue pool of 9 vs 15 (so the same boss freed a
+# different Companion). The seed never had the bug because it is derived from
+# the room code by a pure function. These are frozen at `Lobby#start()` now.
+BE_A_VETERAN = """() => {
+  const S = window.MM.Save;
+  S.data.companionsRescued = ['mopsy','wisp','crumbula','boggle','hush','drizzle'];
+  S.data[S.hauntKey(4)] = 4;
+  const lob = window.MM.ctx.scenes?.current?._lobby;
+  if (!lob) return 'no lobby';
+  lob.setChoice({ haunt: S.hauntLevelFor(4),
+                  freed: S.data.companionsRescued.slice() });
+  return lob.me.haunt + '/' + lob.me.freed.length;
 }"""
 
 fails = []
@@ -98,6 +124,11 @@ async def main():
               "sorted peer list, not arrival order",
               f"{a_seats!r} vs {b_seats!r}")
 
+        # One veteran, one rookie — see BE_A_VETERAN.
+        vet = await A.evaluate(BE_A_VETERAN)
+        check(vet == "4/6", "tab A announces a Haunt 4 save with six freed", str(vet))
+        await A.wait_for_timeout(400)
+
         for pg in (A, B):
             await pg.click(".lo__ready")
             await pg.wait_for_timeout(700)
@@ -133,6 +164,18 @@ async def main():
             check(snaps["host"]["seed"] == snaps["guest"]["seed"],
                   "both tabs are playing the SAME SEED, derived from the room code",
                   f'{snaps["host"]["seed"]} / {snaps["guest"]["seed"]}')
+            # THE WHOLE POINT, and why this suite exists at this level: two
+            # DIFFERENT players must build the SAME run. Anything a client reads
+            # out of its own save at launch is a divergence vector, and these
+            # four are the ones that shape the shared board.
+            for field, what in (("haunt", "the same Haunt level"),
+                                ("freed", "the same view of who is still in the house"),
+                                ("missing", "the same rescue pool"),
+                                ("frees", "the same Companion freed by the same boss")):
+                check(snaps["host"][field] == snaps["guest"][field],
+                      f"both tabs built a run with {what}",
+                      f'{snaps["host"][field]!r} / {snaps["guest"][field]!r}')
+
             check({snaps["host"]["seat"], snaps["guest"]["seat"]} == {0, 1},
                   "and hold DIFFERENT seats, assigned with no election",
                   f'{snaps["host"]["seat"]} / {snaps["guest"]["seat"]}')

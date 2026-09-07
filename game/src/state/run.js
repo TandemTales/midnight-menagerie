@@ -559,6 +559,24 @@ export class Run {
     /** The last resolved wing ballot, so the atlas can repeat what happened. */
     this.lastWingVote = null;
     this.rescued = (Save.data?.companionsRescued || []).slice();
+    /**
+     * WHO THE HOUSE STILL HOLDS, AS THE WHOLE PARTY SEES IT.
+     *
+     * `rescued` is YOUR lifetime set: it decides what `rescueCompanion` is a
+     * no-op for, and it is what gets merged back into your save at the end. It
+     * is local and must stay local — seeding it from somebody else would hand a
+     * new player another player's whole roster on their next run.
+     *
+     * But WHICH Companion a room or a boss frees is a SHARED decision, and
+     * `rescueTargetFor` was drawing it from `rescued`. Two players with
+     * different progress therefore freed different Companions from the same
+     * boss — measured at 3 of 4 decisions differing. So the decision draws from
+     * this instead: the party's agreed set, frozen in the lobby roster.
+     *
+     * Solo passes nothing and gets `rescued`, so a solo run is unchanged.
+     */
+    this.freedRoster = Array.isArray(cfg.freedRoster)
+      ? cfg.freedRoster.slice() : this.rescued.slice();
     /** Freed on THIS expedition only — see rescueCompanion(). */
     this.companionsFreed = [];
     this.cluesFound = 0;
@@ -2651,8 +2669,10 @@ export class Run {
    * Companion is built - there is no second list to keep in step.
    */
   missingCompanions() {
+    // `freedRoster`, not `rescued` — this feeds a decision the whole party has
+    // to agree on. See the constructor.
     return COMPANIONS.map(c => c.slug).filter(s =>
-      s !== this.companion && !this.rescued.includes(s) && !STARTER_SLUGS.has(s)
+      s !== this.companion && !this.freedRoster.includes(s) && !STARTER_SLUGS.has(s)
       && !!companionDef(s));
   }
 
@@ -2683,6 +2703,10 @@ export class Run {
 
   /** Free a Companion. The point of the whole exercise. */
   rescueCompanion(slug) {
+    /* The party's view moves whether or not YOUR save does, so the next
+       decision in this run cannot pick the same Companion again on one machine
+       and not on another. */
+    if (slug && !this.freedRoster.includes(slug)) this.freedRoster.push(slug);
     if (!slug || this.rescued.includes(slug)) return false;
     this.rescued.push(slug);
     // `rescued` is seeded from the save and is therefore the lifetime set. The expedition-end
@@ -3373,6 +3397,8 @@ export function installRunLayer() {
     const run = new Run({
       companion: p?.companion, kid: p?.kid, seed: p?.seed,
       hauntLevel: p?.haunt ?? p?.hauntLevel, backpack: p?.backpack,
+      // Co-op: the party's agreed view of who is still in the house.
+      freedRoster: p?.freedRoster,
       // Where tonight starts. `new Run` validates it and falls back to the
       // front door, so a stale or hostile slug cannot strand a run.
       startRegion: p?.startRegion,
