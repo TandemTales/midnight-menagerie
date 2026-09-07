@@ -93,8 +93,13 @@ most common room in the game.
    of that option, and an option that risks nothing may not pay the run's best
    resource. 17 of 17 events could pay one → 11; 24 of 54 options → 16.
 
-2. **An expedition is a ROUTE, not the ladder.** The Foyer, the Heart, and four
-   wings drawn from the middle fifteen in ladder order, seeded off the run seed.
+2. **An expedition is a ROUTE, and since 2026-09-06 the party WALKS it.** The
+   Foyer, the Heart, and four wings the party chooses one door at a time off the
+   design doc's own adjacency graph — `REGION_EDGES` in `state/mapgen.js`, the
+   fork in `Run#openWingFork`, the screen in `scenes/atlas.js`. (It used to be
+   six wings dealt up front in ladder order; `expeditionRoute()` is gone.
+   `run.route` is the wings WALKED and grows; `run.wings` is how long tonight
+   is — reading `route.length` for the second prints "Wing 1 of 1".)
    `EXPEDITION_WINGS = 6`, and the number is a measurement — the sweep is in
    `docs/notes/2026-08-31-how-long-is-an-expedition.md`. This is what the design
    has always said: "entire wings disappear", "not all are usable every
