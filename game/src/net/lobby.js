@@ -113,6 +113,9 @@ export class Lobby {
          is what the party actually plays — see `_announce` and `start()`. */
       haunt: o.haunt | 0,
       freed: Array.isArray(o.freed) ? o.freed.slice() : [],
+      /* YOUR OWN Backpack, unlike `haunt` and `freed`: it belongs to the Kid
+         you brought, so every seat's travels rather than only seat 0's. */
+      pack: Array.isArray(o.pack) ? o.pack.slice() : null,
     };
     /** id -> { id, companion, kid, name, ready } */
     this._peers = new Map([[this.me.id, this.me]]);
@@ -163,12 +166,13 @@ export class Lobby {
 
   /* ── my own choices ───────────────────────────────────────────────────── */
 
-  setChoice({ companion, kid, name, haunt, freed } = {}) {
+  setChoice({ companion, kid, name, haunt, freed, pack } = {}) {
     if (companion !== undefined) this.me.companion = companion;
     if (kid !== undefined) this.me.kid = kid;
     if (name !== undefined) this.me.name = name;
     if (haunt !== undefined) this.me.haunt = haunt | 0;
     if (freed !== undefined) this.me.freed = Array.isArray(freed) ? freed.slice() : [];
+    if (pack !== undefined) this.me.pack = Array.isArray(pack) ? pack.slice() : null;
     // Changing your Kid un-readies you. Otherwise a player can lock in, swap to
     // somebody else's Kid, and the roster that starts is not the one anybody
     // agreed to.
@@ -205,7 +209,8 @@ export class Lobby {
       host: players.length > 0 && players[0].id === this.me.id,
       hostId: (players[0] || {}).id || null,
       // What `ctx.startRun({ party })` wants, in seat order.
-      party: players.map(p => ({ companion: p.companion, kid: p.kid })),
+      party: players.map(p => ({ companion: p.companion, kid: p.kid,
+                                 backpack: p.pack || null })),
       ids: players.map(p => p.id),
       /* SEAT 0 ANCHORS BOTH, for the same reason it anchors the seat order:
          somebody has to, and `players` is already sorted identically on every
@@ -254,6 +259,7 @@ export class Lobby {
       companion: this.me.companion, kid: this.me.kid,
       name: this.me.name, ready: this.me.ready,
       haunt: this.me.haunt | 0, freed: this.me.freed || [],
+      pack: this.me.pack || null,
     });
   }
 
@@ -266,6 +272,7 @@ export class Lobby {
           id, companion: m.companion || null, kid: m.kid || null,
           name: m.name || '', ready: !!m.ready,
           haunt: m.haunt | 0, freed: Array.isArray(m.freed) ? m.freed : [],
+          pack: Array.isArray(m.pack) ? m.pack : null,
         });
         this._emit('change');
         break;

@@ -50,6 +50,7 @@ import { clock } from '../core/clock.js';
 import { Save } from '../core/save.js';
 import { KIDS, COMPANIONS } from '../data/schema.js';
 import { MAX_PARTY } from '../combat/engine.js';
+import { loadoutFor } from './select.js';
 import { Lobby, seedFromRoom } from '../net/lobby.js';
 import { Session } from '../net/session.js';
 import { attachSession } from '../net/actions.js';
@@ -226,6 +227,11 @@ export class LobbyScene extends Scene {
          join and leave the room. */
       haunt: Save.hauntLevelFor(MAX_PARTY),
       freed: (Save?.data?.companionsRescued || []).slice(),
+      /* The Clubhouse Backpack editor writes `Save.data.backpacks[kid]`, and a
+         co-op run ignored it entirely: the roster carried only a Companion and
+         a Kid, so every co-op Kid walked in on the default loadout while the
+         same player's SOLO run used what they had packed. */
+      pack: loadoutFor((Save?.data?.kidsUnlocked || ['maya'])[0] || 'maya'),
     });
 
     this._offs.push(this._lobby.on('change', () => this._paintRoom()));
@@ -292,7 +298,8 @@ export class LobbyScene extends Scene {
     const onPick = () => {
       this._lobby.setChoice({ companion: cSel.value, kid: kSel.value, name: l.me.name,
                               haunt: Save.hauntLevelFor(MAX_PARTY),
-                              freed: (Save?.data?.companionsRescued || []).slice() });
+                              freed: (Save?.data?.companionsRescued || []).slice(),
+                              pack: loadoutFor(kSel.value) });
     };
     cSel.addEventListener('change', onPick);
     kSel.addEventListener('change', onPick);
@@ -369,7 +376,8 @@ export class LobbyScene extends Scene {
       seed: roster.seed,
       haunt: roster.haunt | 0,
       freedRoster: (roster.freed || []).slice(),
-      kids: roster.party.map(p => ({ companion: p.companion, kid: p.kid })),
+      kids: roster.party.map(p => ({ companion: p.companion, kid: p.kid,
+                                     backpack: p.backpack || undefined })),
     };
 
     const off = bus.on('run:ready', ({ run }) => {

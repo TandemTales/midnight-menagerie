@@ -545,9 +545,19 @@ export class Run {
      * from the network seam: an unknown slug or the Heart (which is the ending)
      * falls back to the Foyer rather than producing a run standing nowhere.
      */
+    /* THE UNLOCK IS A LOCAL FACT AND THE START IS A SHARED ONE, so they cannot
+       be the same check. `canChooseEntry()` reads THIS machine's save; if a
+       co-op run ever carried a `startRegion`, a player who had cleared the Foyer
+       would accept it and one who had not would fall back to the front door —
+       two machines standing in different wings, which is the worst desync in
+       the game. So a caller that already knows the party's answer passes
+       `entryUnlocked` and it is used verbatim; solo passes nothing and the
+       local unlock decides, exactly as before. Same shape as `freedRoster`. */
     const wanted = cfg.startRegion;
+    const unlocked = cfg.entryUnlocked === undefined
+      ? canChooseEntry() : !!cfg.entryUnlocked;
     const start = (wanted && wanted !== RUN_REGIONS[RUN_REGIONS.length - 1]
-      && RUN_REGIONS.includes(wanted) && canChooseEntry()) ? wanted : RUN_REGIONS[0];
+      && RUN_REGIONS.includes(wanted) && unlocked) ? wanted : RUN_REGIONS[0];
     this.route = [start];
     this.region = this.route[0];
     /**
@@ -3397,8 +3407,9 @@ export function installRunLayer() {
     const run = new Run({
       companion: p?.companion, kid: p?.kid, seed: p?.seed,
       hauntLevel: p?.haunt ?? p?.hauntLevel, backpack: p?.backpack,
-      // Co-op: the party's agreed view of who is still in the house.
-      freedRoster: p?.freedRoster,
+      // Co-op: the party's agreed view of who is still in the house, and
+      // whether the party may choose its way in. Both come off the roster.
+      freedRoster: p?.freedRoster, entryUnlocked: p?.entryUnlocked,
       // Where tonight starts. `new Run` validates it and falls back to the
       // front door, so a stale or hostile slug cannot strand a run.
       startRegion: p?.startRegion,

@@ -55,7 +55,8 @@ RUNSNAP = """() => {
                haunt: r.hauntLevel | 0,
                freed: (r.freedRoster || []).slice().sort().join(','),
                missing: r.missingCompanions().length,
-               frees: r.rescueTargetFor('boss:lampworks', 'wisp') } : null;
+               frees: r.rescueTargetFor('boss:lampworks', 'wisp'),
+               packs: (r.kids || []).map(k => (k.backpack || []).join(',')) } : null;
 }"""
 
 # Make the two machines genuinely different players. Both tabs share one
@@ -69,15 +70,20 @@ RUNSNAP = """() => {
 # the first fight) and a rescue pool of 9 vs 15 (so the same boss freed a
 # different Companion). The seed never had the bug because it is derived from
 # the room code by a pure function. These are frozen at `Lobby#start()` now.
-BE_A_VETERAN = """() => {
+BE_A_VETERAN = """async () => {
   const S = window.MM.Save;
   S.data.companionsRescued = ['mopsy','wisp','crumbula','boggle','hush','drizzle'];
   S.data[S.hauntKey(4)] = 4;
   const lob = window.MM.ctx.scenes?.current?._lobby;
   if (!lob) return 'no lobby';
+  // A Backpack this player packed in the Clubhouse. A co-op run used to ignore
+  // it entirely and hand every Kid the default loadout.
+  const kid = lob.me.kid || 'maya';
+  S.data.backpacks = { [kid]: ['rope', 'chalk'] };
   lob.setChoice({ haunt: S.hauntLevelFor(4),
-                  freed: S.data.companionsRescued.slice() });
-  return lob.me.haunt + '/' + lob.me.freed.length;
+                  freed: S.data.companionsRescued.slice(),
+                  pack: (await import('/game/src/scenes/select.js')).loadoutFor(kid) });
+  return lob.me.haunt + '/' + lob.me.freed.length + '/' + (lob.me.pack || []).join(',');
 }"""
 
 fails = []
@@ -126,7 +132,9 @@ async def main():
 
         # One veteran, one rookie — see BE_A_VETERAN.
         vet = await A.evaluate(BE_A_VETERAN)
-        check(vet == "4/6", "tab A announces a Haunt 4 save with six freed", str(vet))
+        check(vet.startswith("4/6/") and "rope" in vet and "chalk" in vet,
+              "tab A announces a Haunt 4 save, six freed, and its own Backpack",
+              str(vet))
         await A.wait_for_timeout(400)
 
         for pg in (A, B):
@@ -171,10 +179,22 @@ async def main():
             for field, what in (("haunt", "the same Haunt level"),
                                 ("freed", "the same view of who is still in the house"),
                                 ("missing", "the same rescue pool"),
-                                ("frees", "the same Companion freed by the same boss")):
+                                ("frees", "the same Companion freed by the same boss"),
+                                ("packs", "the same Backpack in every seat")):
                 check(snaps["host"][field] == snaps["guest"][field],
                       f"both tabs built a run with {what}",
                       f'{snaps["host"][field]!r} / {snaps["guest"][field]!r}')
+
+            # AGREEING IS NOT ENOUGH. Dropping the Backpack from the payload
+            # hands BOTH machines the default, which the loop above happily
+            # passes — it tests determinism, and this is a feature gap rather
+            # than a desync. So assert the packed loadout actually ARRIVED:
+            # tab A packed rope + chalk in the Clubhouse and a co-op run used to
+            # ignore that entirely.
+            packs = snaps["host"]["packs"]
+            check(any("rope" in p and "chalk" in p for p in packs),
+                  "the Backpack a player packed reached the run they joined",
+                  str(packs))
 
             check({snaps["host"]["seat"], snaps["guest"]["seat"]} == {0, 1},
                   "and hold DIFFERENT seats, assigned with no election",
