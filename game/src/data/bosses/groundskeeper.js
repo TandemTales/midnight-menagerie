@@ -32,8 +32,42 @@ import {
 import { countdown, countdownHit } from '../enemies/graveyard.js';
 
 const REGION = 'graveyard';
+/**
+ * TWO NUMBERS, AND THEY USED TO BE ONE.
+ *
+ * `AUTHORED_MAX` is the Courage the CHAPTER wrote this fight against —
+ * `docs/design/regions/06-graveyard.md` §16: "Boss Courage: 330" — and it is
+ * the denominator every threshold below is a share of ("From 330 through 191
+ * Courage", "At 190 Courage: … Phase two begins"). `SOLO_MAX` is what he
+ * actually HAS, measured down from 330 in the 2026-09-02 boss-ladder pass
+ * (graveyard 77% -> 37% of pool, 75% -> 25% lost).
+ *
+ * (§29's final escalation, "At 70 Courage or less: Nothing Leaves
+ * Unremembered", is NOT implemented — noticed while fixing this and left for
+ * the enemies owner. It would be a third share of AUTHORED_MAX, 21%, so 35 of
+ * the 165 he has.)
+ *
+ * Both were `SOLO_MAX`, and that is the whole bug. `phaseAt(c, at, max)`
+ * returns `at * (self.maxHp / max)`, so it rescales a threshold only when the
+ * denominator is the one the threshold was written against. Halving the
+ * constant halved the denominator too, the ratio stayed 1, and the threshold
+ * stayed at its absolute 190 — ABOVE the 165 he now has.
+ *
+ * So `nextMove` flipped him to phase two on the first `hp <= 190` test, at full
+ * Courage, on turn one, in every fight since. The entire phase one — the
+ * Ledger, Record the Name, Turn the Page, Review the Records, §19 through §22,
+ * the mechanic this boss exists to be — never ran once. Nothing threw and
+ * nothing warned: `tests/graveyard/check.py` said "the Groundskeeper really
+ * writes Entries — entries: 0", and the two phase-two assertions beneath it
+ * passed VACUOUSLY on a Ledger that was empty because it was never written.
+ *
+ * The balance pass's own message predicted this and could not see it: "cutting
+ * her to 130 broke her phase-two test, because `phaseAt` scales the threshold
+ * with the pool." It does — but only against a denominator that did not move.
+ */
+const AUTHORED_MAX = 330;
 const SOLO_MAX = 165;
-const PHASE_TWO_AT = 190;
+const PHASE_TWO_AT = 190;      // §24, as a share of AUTHORED_MAX -> 95 of 165
 
 /**
  * EVERY NAME IT MANAGES TO WRITE DOWN MAKES IT HIT HARDER, and that is the one
@@ -444,7 +478,7 @@ export const groundskeeper = {
 
   nextMove: (c) => {
     const m = mem(c);
-    const two = phaseAt(c, PHASE_TWO_AT, SOLO_MAX);
+    const two = phaseAt(c, PHASE_TWO_AT, AUTHORED_MAX);
     if ((m.phase || 1) === 1 && c.self.hp <= two) return 'names-should-not-be-forgotten';
 
     if (m.phase === 2) {

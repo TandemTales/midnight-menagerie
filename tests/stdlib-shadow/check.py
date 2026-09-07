@@ -48,7 +48,10 @@ for p in bad:
     where = rel.parent if str(rel.parent) != "." else "the repo root"
     print(f"  !! {rel}  shadows the stdlib module `{p.stem}` for every script in {where}")
 
-print(f"{scanned} scripts scanned · {len(bad)} shadowing the standard library")
+# `RESULT:` because every other gate in tests/ prints one, and a suite you can
+# sweep with a single grep is the difference between running all thirty-eight
+# and running the three you remember.
+print(f"RESULT: {scanned} scripts scanned, {len(bad)} shadowing the standard library")
 if bad:
     print("\nRename it. A script is run, not imported, so the name is free — and any"
           "\nname that is not a stdlib module works.")

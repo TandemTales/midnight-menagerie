@@ -51,11 +51,58 @@ ALLOWED = {
 }
 
 
+def blank_comments(src):
+    """Replace comment BODIES with spaces, keeping length and newlines.
+
+    A COMMENT IS NOT CODE, and this gate used to read one as if it were. The
+    note in `bosses/groundskeeper.js` that explains why his phase gate was
+    broken contains the words `hp <= 190`, and describing the bug was enough to
+    be reported as committing it. A gate that fires on its own postmortem is
+    the sort that gets skimmed past on the day it is right — the same argument
+    tests/dup-keys/check.py makes for blanking before it walks braces, and it
+    already had the helper.
+
+    Offsets are preserved so every reported line number is still the real one.
+    """
+    out = list(src)
+    i, n = 0, len(src)
+    while i < n:
+        c = src[i]
+        # Skip string bodies whole. Without this a `//` or `/*` INSIDE a string
+        # would start a comment and blank the real code after it on that line —
+        # a blanker that over-blanks turns a gate into one that cannot see, which
+        # is worse than the false positive it was added to stop. No boss file
+        # has such a string today; this is so none ever has to.
+        if c in "'\"`":
+            j = i + 1
+            while j < n and src[j] != c:
+                j += 2 if src[j] == "\\" else 1
+            i = min(j + 1, n)
+            continue
+        two = src[i:i + 2]
+        if two == "//":
+            j = src.find("\n", i)
+            j = n if j < 0 else j
+            for k in range(i, j):
+                out[k] = " "
+            i = j
+        elif two == "/*":
+            j = src.find("*/", i + 2)
+            j = n if j < 0 else j + 2
+            for k in range(i, j):
+                if out[k] != "\n":
+                    out[k] = " "
+            i = j
+        else:
+            i += 1
+    return "".join(out)
+
+
 def offenders():
     out = []
     for f in sorted(glob.glob(os.path.join(ROOT, "game/src/data/bosses/*.js"))):
         base = os.path.basename(f)
-        s = io.open(f, encoding="utf-8").read()
+        s = blank_comments(io.open(f, encoding="utf-8").read())
         for m in re.finditer(r"[^\n]*\bhp\s*(?:<=|<|>=|>)\s*\d+[^\n]*", s):
             line = m.group(0).strip()
             if "phaseAt" in line or "maxHp" in line:

@@ -45,9 +45,26 @@ import {
 import { correct, TYPES, catalogueType, misfile, unfile } from '../enemies/study-library.js';
 
 const REGION = 'study-library';
+/**
+ * TWO NUMBERS, AND THEY USED TO BE ONE. The same bug the Groundskeeper had —
+ * see the long note in `bosses/groundskeeper.js`, which is the same paragraph.
+ *
+ * `AUTHORED_MAX` is what the chapter wrote the fight against
+ * (`docs/design/regions/07-study-library.md` §: "Boss Courage: 345", "From 345
+ * through 196 Courage", "At 195 Courage: … Phase two begins", "At 75 Courage or
+ * less"). `SOLO_MAX` is what he has, measured down from 345 in the 2026-09-02
+ * boss-ladder pass.
+ *
+ * With one constant doing both jobs, `phaseAt(c, 195, 200)` returned 195 — so
+ * The Archivist turned to phase two after FIVE Courage of a two-hundred pool,
+ * 2.5% in, instead of the 56.5% the chapter asks for. Not dead on arrival like
+ * the Groundskeeper, but near enough that phase one was five damage long.
+ * Final Edition fired at 75 of 200 (37.5%) instead of the authored 21.7%.
+ */
+const AUTHORED_MAX = 345;
 const SOLO_MAX = 200;
-const PHASE_TWO_AT = 195;
-const FINAL_EDITION_AT = 75;
+const PHASE_TWO_AT = 195;         // as a share of AUTHORED_MAX -> 113 of 200
+const FINAL_EDITION_AT = 75;      //                            ->  43 of 200
 
 /* §46: "It processes up to 1 Filed tab with one player, 2 with two players,
    2 with three players, 3 with four players. It always processes the OLDEST
@@ -410,7 +427,7 @@ export const archivist = {
 
   nextMove: (c) => {
     const m = mem(c);
-    const two = phaseAt(c, PHASE_TWO_AT, SOLO_MAX);
+    const two = phaseAt(c, PHASE_TWO_AT, AUTHORED_MAX);
     if ((m.phase || 1) === 1 && c.self.hp <= two) return 'this-collection-is-misclassified';
     if (m.crossPending) return 'cross-reference';
 
@@ -431,7 +448,7 @@ export const archivist = {
   onTurnEnd(c) {
     const m = mem(c);
     if (m.finalEdition) return;
-    if (c.self.hp > phaseAt(c, FINAL_EDITION_AT, SOLO_MAX)) return;
+    if (c.self.hp > phaseAt(c, FINAL_EDITION_AT, AUTHORED_MAX)) return;
     m.finalEdition = true;
     c.announceRule({
       id: `final:${c.self.id}`,
