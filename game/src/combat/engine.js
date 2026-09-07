@@ -2958,10 +2958,35 @@ export class CombatEngine {
    * to end, because a board dealing nothing is not what makes a fight
    * unfinishable. Every boss cycle in this game contains an attack.
    *
-   * `PATIENCE` is deliberately far outside reachable play. Measured 2026-08-31:
-   * the Butler runs 8-12 turns, the longest ordinary boss 15, and the longest
-   * fight any region gate produces is 24. Nothing a player will ever see is
-   * touched by this; it exists to make the tail finite.
+   * `PATIENCE` WAS "deliberately far outside reachable play", and it is not.
+   *
+   * The 2026-08-31 measurement this comment used to state — Butler 8-12 turns,
+   * longest ordinary boss 15, longest fight any region gate produces 24,
+   * "nothing a player will ever see is touched by this" — was true when it was
+   * written and has not been true for some time. `tests/run/index.html` checks
+   * the claim on every run precisely because a safety net that fires during
+   * ordinary content is a difficulty mechanic nobody designed, and it has been
+   * failing.
+   *
+   * Measured 2026-09-06, n=200 expeditions, 2430 fights:
+   *
+   *     past turn 24   32       past turn 30   15       longest   49
+   *
+   * That is 0.6% of fights, and they are not one thing. Two harness defects
+   * accounted for most of the tail and are fixed — `residual()` valuing damage
+   * to a surviving enemy at zero, and then paying for damage to summon-only
+   * fixtures that repair themselves, which had the bot spending half its output
+   * on the Drowned Matron's sleeping Drain (65 turns -> 49, past-30 17 -> 15).
+   * What remains is treadmills the deck is winning and at least one genuine
+   * Guard wall in ORDINARY content: a greenhouse Scuffle at 38 turns, wall 10.3
+   * against land 3.3.
+   *
+   * So this number is a live difficulty mechanic today, not a theoretical tail
+   * stop, and the honest options are to shorten those fights or to decide what
+   * PATIENCE should be now. Left as it is deliberately: the gate is right to
+   * keep failing, and a comment that says "nobody will see this" is the kind of
+   * self-description CONTRACTS trap 54 is about.
+   * See docs/notes/2026-09-06-the-other-half-of-the-fixture-farm.md.
    */
   _losePatience() {
     const PATIENCE = 30;

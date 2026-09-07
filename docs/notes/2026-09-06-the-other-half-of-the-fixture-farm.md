@@ -104,7 +104,14 @@ for fight — and determinism, resume, localStorage and mid-fight resume all pas
 ## It is an improvement, not a cure
 
 **The gate still exits 1.** Fifteen fights of 2430 still pass turn 30 and the
-longest is 49. What is left is not this farm:
+longest is 49.
+
+And the small-sample caveat, which cuts against the headline and belongs next to
+it: at the SHIPPING n=50 the past-30 *count* went **up**, 3 of 625 to 5 of 652,
+while the longest fell 60 to 49. The tail got shorter; the count at fifty is
+noise, and fifty is what the gate runs. Read the n=200 row, not the gate's.
+
+What is left is not this farm:
 
 - `957908 greenhouse/scuffle`, **38 turns, unchanged** — `wall 10.3` against
   `land 3.3` at `abs 40%`. That is a genuine Guard wall, in ORDINARY content
@@ -114,7 +121,17 @@ longest is 49. What is left is not this farm:
   the shape the guard-axis note established as working as designed for the Head
   Gardener, now visible on the Matron and the Warden too.
 
-`engine.js`'s claim that `PATIENCE = 30` is "deliberately far outside reachable
-play … nothing a player will ever see is touched by this" remains **false**, and
-is worth correcting or re-deciding rather than leaving as a comment the gate
-contradicts on every run.
+## The claim in engine.js is gone
+
+`_losePatience`'s comment claimed `PATIENCE = 30` was "deliberately far outside
+reachable play … nothing a player will ever see is touched by this". That was
+true when it was written and has not been for some time, and `tests/run` has
+been saying so on every run — a source comment the repo's own gate contradicts
+daily is CONTRACTS trap 54 wearing a measurement's clothes.
+
+It records the measurement now instead of the promise: 32 past 24, 15 past 30,
+longest 49, of 2430 fights at n=200; what the two fixed harness defects were;
+and that what is left is treadmills plus at least one real Guard wall. The gate
+keeps failing, deliberately — the number is a live difficulty mechanic today and
+the honest options are to shorten those fights or to decide what `PATIENCE`
+should now be. Neither is a comment's job.

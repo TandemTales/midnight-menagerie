@@ -1221,13 +1221,15 @@ async function main() {
   }
 
   /* IS THE SAFETY NET INSIDE REACHABLE PLAY?
-     `combat/engine.js`'s `_losePatience` fires past turn 30 and its comment
-     makes a measured CLAIM: "PATIENCE is deliberately far outside reachable
-     play ... the longest fight any region gate produces is 24. Nothing a player
-     will ever see is touched by this." Nothing checked it. The ledger already
-     records `turns` for every fight, so the check is free — and a safety net
-     that starts firing during ordinary content stops being a safety net and
-     becomes a difficulty mechanic nobody designed. */
+     `combat/engine.js`'s `_losePatience` fires past turn 30. Its comment used
+     to CLAIM "PATIENCE is deliberately far outside reachable play ... nothing a
+     player will ever see is touched by this", nothing checked it, and this
+     check is why the claim is gone: engine.js records the measurement now
+     instead of a promise. The ledger already holds `turns` for every fight, so
+     it costs nothing — and a safety net that starts firing during ordinary
+     content stops being a safety net and becomes a difficulty mechanic nobody
+     designed. Still failing, deliberately: see
+     docs/notes/2026-09-06-the-other-half-of-the-fixture-farm.md. */
   {
     const ALLT = results.flatMap(r => r.ledger || []);
     /* WHO CAN EVEN ANSWER A WALL. `pierce` on the worst rows says whether THAT
@@ -1351,7 +1353,7 @@ async function main() {
       const stalls = over30.filter(f => f.pool && f.left / f.pool > 0.4).length;
       fail(`_losePatience fired in reachable play: ${over30.length} of ${ALLT.length} `
          + `fights ran past turn 30 (longest ${PATIENCE_ROW.longest}, ${PATIENCE_ROW.where}). `
-         + `engine.js claims this is unreachable. ${stalls} of them ended with the board `
+         + `\`PATIENCE\` is meant to be a tail stop, not a difficulty mechanic. ${stalls} of them ended with the board `
          + `over 40% ALIVE, which is the Guard-per-turn stall engine.js ~2918 describes - `
          + `not a Courage pool and not a route-depth problem.`);
     }
@@ -1360,7 +1362,8 @@ async function main() {
       + `(${PATIENCE_ROW.where}). Past 24 turns: ${over24.length}. `
       + `Past 30, where <code>_losePatience</code> fires: ${over30.length}.
 `
-      + `engine.js claims PATIENCE is outside reachable play; this is the check.</pre>`);
+      + `engine.js used to claim PATIENCE was outside reachable play; it records the `
+      + `measurement instead now, and this is what keeps the two honest.</pre>`);
   }
 
   /* HOW MUCH OF THE AUTHORED CONTENT A RUN CAN ACTUALLY REACH.

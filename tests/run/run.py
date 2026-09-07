@@ -145,7 +145,7 @@ async def main(a):
               % (pat["fights"], pat["longest"], pat["where"]))
         print("  Past 24 turns: %d.  Past 30, where `_losePatience` fires: %d."
               % (pat["over24"], pat["over30"]))
-        print("  engine.js claims PATIENCE is outside reachable play. This checks it:")
+        print("  `PATIENCE` is meant to be a tail stop, not a difficulty mechanic:")
         print("  a safety net that fires during ordinary content is a difficulty")
         print("  mechanic nobody designed, so over30 is a hard failure.")
         for w in (pat.get("worst") or [])[:10]:
