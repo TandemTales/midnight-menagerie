@@ -43,7 +43,7 @@ import { ENCOUNTER_LIST } from '../../game/src/data/encounters.js';
 import { cardById, companionSlugs } from '../../game/src/data/cards.js';
 import * as R from '../../game/src/data/relics.js';
 import * as P from '../critic-design/lib/policy.js';
-import { competentTurn } from '../critic-design/lib/bot.js';
+import { competentTurn, naiveTurn } from '../critic-design/lib/bot.js';
 
 const out = document.getElementById('out');
 const sum = document.getElementById('summary');
@@ -217,6 +217,46 @@ function leastValuable(run, cards) {
    mistake CONTRACTS 47 is about, so the numbers stay, the budget covers the
    longest fight that legitimately happens, and the measurement is written down
    instead. THE MEASUREMENT IS THE OPEN ITEM, not the constant below.          */
+/* ── THE DEEP PROBE, opt-in and off in the gate ────────────────────────
+
+   `?probe=<seed index>` runs ONE expedition and records, per fight, what the
+   summary columns above cannot separate.
+
+   WHY IT EXISTS. The summary reports seed 957908's greenhouse Scuffle at
+   `wall 10.3` against `land 3.3` and that ratio reads as a board re-raising
+   three times faster than the deck gets through. Four sessions have now named
+   a cause off a ratio of that shape and been wrong every time, because
+   **`wall` is Guard GRANTED, not Guard that stopped anything.** Guard the deck
+   never tests is wiped at the body's own turn start and adds to `wall`
+   exactly as much as Guard that ate a hit. A board carrying one big idle body
+   therefore reads as a wall whether or not the deck ever swung at it.
+
+   So the discriminator is per BODY, and it is three columns where the summary
+   has one:
+
+     raised    Guard the body was granted across the fight
+     consumed  Guard a hit actually spent — `blocked` on damage aimed AT it
+     landed    damage that reached that body's Courage
+
+   A wall the deck is throwing itself at has `consumed` close to `raised` on
+   the body being hit. Guard on a body nobody attacks has `consumed` near zero
+   and is decoration that the summary is pricing as a wall. The two demand
+   opposite fixes and `wall` alone cannot tell them apart.
+
+   Off unless `?probe=` is passed, so the gate's own numbers are untouched.  */
+const PROBE = (() => {
+  const q = new URLSearchParams(location.search);
+  const i = q.get('probe');
+  /* `?naive=<encounter id>` swaps the bot for the naive heuristic in THAT
+     encounter only. Swapping it everywhere is confounded and the guard-axis
+     note says why: naive dies in the Foyer in 43 of 50 runs, so the long
+     fights vanish because it never reaches them. Held to one encounter, the
+     deck, the route and the board are the competent bot's and the only
+     variable that moves is who plays this fight. */
+  return { on: i !== null && i !== '', index: Number(i) || 0,
+           naive: q.get('naive') || null, fights: [] };
+})();
+
 async function playCombat(engine, budgetTurns = 200, run = null) {
   /* THE GUARD AXIS, the same two listeners `fight()` in
      tests/critic-design/lib/expedition.js has always used. An enemy's Guard
@@ -227,7 +267,13 @@ async function playCombat(engine, budgetTurns = 200, run = null) {
      that LANDED, `blockedByEnemies` is damage Guard ate, `enemyGuard` is Guard
      granted; the caller turns them into per-turn rates. */
   const gx = { dealt: 0, blockedByEnemies: 0, enemyGuard: 0,
-               samples: 0, nerveSum: 0, handSum: 0, playSum: 0, bySource: {} };
+               samples: 0, nerveSum: 0, handSum: 0, playSum: 0, bySource: {},
+               bodies: {}, perTurn: [], plays: {} };
+  /* Per-body rows are created by whichever event mentions the body first,
+     so a summon that never blocks and a blocker that never takes a hit both
+     still get a row. Names are filled in from the board at the end. */
+  const body = (id) => (gx.bodies[id] ||= { id, name: '?', defId: null,
+    raised: 0, consumed: 0, landed: 0, hits: 0 });
   engine.on('damage', (ev) => {
     if (ev.targetId === engine.player.id) {
       /* WHO IS ACTUALLY HURTING YOU. Two bosses resisted every number we moved
@@ -245,9 +291,24 @@ async function playCombat(engine, budgetTurns = 200, run = null) {
     }
     gx.dealt += ev.hpLoss;
     gx.blockedByEnemies += ev.blocked || 0;
+    if (PROBE.on) {
+      const b = body(ev.targetId);
+      b.name = ev.targetName || b.name;
+      b.consumed += ev.blocked || 0;
+      b.landed += ev.hpLoss || 0;
+      b.hits++;
+    }
   });
   engine.on('block', (ev) => {
     if (ev.actorId !== engine.player.id) gx.enemyGuard += ev.amount || 0;
+    if (PROBE.on && ev.actorId !== engine.player.id) body(ev.actorId).raised += ev.amount || 0;
+  });
+  /* WHAT THE DECK PUT OUT, card by card. `swing` says a deck managed 5.5 a
+     turn where a healthy one runs 12-16; it cannot say whether that is a
+     thin hand, cheap cards, or the bot spending its Nerve on defence. */
+  if (PROBE.on) engine.on('card:play', (ev) => {
+    const id = ev.card && ev.card.id;
+    if (id) (gx.plays[id] ||= { id, n: 0, cost: ev.cost || 0 }).n++;
   });
   engine.__guard = gx;
   await engine.startCombat();
@@ -276,9 +337,62 @@ async function playCombat(engine, budgetTurns = 200, run = null) {
       gx.handSum += h.length;
       gx.playSum += h.filter(c => !c.unplayable && engine.canPlay(c.uid, null).ok).length;
     }
-    await competentTurn(engine, { snacks: run ? run.snacks : null, onSnack, fc });
-    if (engine.over) break;
+    /* ONE ROW PER ROUND, closed after the enemy phase so a status tick or a
+       thorn lands in the round that caused it. Guard ON BOARD is sampled
+       before the bot acts: it is what the deck was actually asked to beat,
+       which is not the same number as the Guard the board was granted. */
+    let pt = null;
+    if (PROBE.on) {
+      const seat = engine.player;
+      const h = (seat && seat.piles && seat.piles.hand) || [];
+      const alive = engine.enemies.filter(x => x.alive);
+      pt = { turn: turns, nerve: engine.energy || 0, hand: h.length,
+             legal: h.filter(c => !c.unplayable && engine.canPlay(c.uid, null).ok).length,
+             onBoard: alive.reduce((s, x) => s + (x.block || 0), 0),
+             bodies: alive.length,
+             hp: alive.reduce((s, x) => s + (x.hp || 0), 0),
+             d0: gx.dealt, b0: gx.blockedByEnemies, g0: gx.enemyGuard,
+             p0: engine.stats?.cardsPlayedThisCombat || 0 };
+    }
+    /* WHY A TURN PASSED, in the bot's own numbers. `planTurn` seeds `best`
+       with the EMPTY sequence and only replaces it on `score > best.score`,
+       so a pass is the incumbent and wins every tie. Kept only for turns
+       that played nothing, which is where the question is. */
+    const dbg = PROBE.on ? [] : null;
+    const closeTurn = () => {
+      if (!pt) return;
+      pt.landed = gx.dealt - pt.d0;
+      pt.absorbed = gx.blockedByEnemies - pt.b0;
+      pt.raised = gx.enemyGuard - pt.g0;
+      pt.played = (engine.stats?.cardsPlayedThisCombat || 0) - pt.p0;
+      // After `played` is known, so the filter reads the count and not undefined.
+      if (dbg && pt.played === 0 && dbg.length) {
+        pt.pass = dbg.find(r => r.d === -1) || null;
+        pt.floor = dbg.find(r => r.d === -2) || null;
+        pt.cand = dbg.filter(r => r.d >= 0)
+                     .sort((a, b) => b.score - a.score).slice(0, 6);
+      }
+      delete pt.d0; delete pt.b0; delete pt.g0; delete pt.p0;
+      gx.perTurn.push(pt);
+    };
+    if (PROBE.naive && run && run.combatMeta
+        && run.combatMeta.encounter === PROBE.naive) await naiveTurn(engine, {});
+    else await competentTurn(engine, { snacks: run ? run.snacks : null, onSnack, fc, debug: dbg });
+    if (engine.over) { closeTurn(); break; }
     await engine.endTurn();
+    closeTurn();
+  }
+  /* NAMES LAST. `block` events carry `actorId` and no name, and a body that
+     only ever blocked would otherwise be an anonymous id. Read off the
+     board after the fight so summons are included. */
+  if (PROBE.on) for (const e of engine.enemies) {
+    const b = gx.bodies[e.id];
+    if (!b) continue;
+    b.name = e.name || b.name;
+    b.defId = e.defId || null;
+    b.maxHp = e.maxHp || 0;
+    b.hp = e.alive ? e.hp : 0;
+    b.alive = !!e.alive;
   }
   if (!engine.over) {
     /**
@@ -484,6 +598,10 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
         pierce: pierceCards.length, pierceIds,
         bySource: (engine.__guard || {}).bySource || {},
         purse: run.lostThings,
+        probe: PROBE.on ? { bodies: Object.values((engine.__guard || {}).bodies || {}),
+                            perTurn: (engine.__guard || {}).perTurn || [],
+                            plays: Object.values((engine.__guard || {}).plays || {}),
+                            deck: run.deck.map(c => c.id) } : null,
       });
     }
 
@@ -649,7 +767,13 @@ async function main() {
   const lengths = [];
   const ends = {};
 
-  for (let i = 0; i < N; i++) {
+  /* PROBE MODE runs exactly ONE expedition — the index the caller named —
+     through the same simulate() the gate uses. Reproducing a single fight by
+     rebuilding the run around it would give a different deck and a different
+     RNG stream, which is a different fight wearing the same seed. */
+  const INDICES = PROBE.on ? [PROBE.index]
+                           : Array.from({ length: N }, (_, k) => k);
+  for (const i of INDICES) {
     const seed = 1000 + i * 7717;
     const companion = COMPANIONS[i % COMPANIONS.length];
     const kid = KIDS[i % KIDS.length];
@@ -1769,6 +1893,22 @@ autosaves ${saveCount}</pre>`);
   sum.className = errors.length ? 'fail' : 'pass';
   sum.textContent = `${line}  ·  ${ms} ms`;
   console.log(line);
+  if (PROBE.on) {
+    const r0 = results[0];
+    window.__PROBE_RESULT__ = {
+      index: PROBE.index, seed: 1000 + PROBE.index * 7717,
+      companion: r0 && r0.companion, kid: r0 && r0.kid, haunt: r0 && r0.haunt,
+      shepherd: r0 && r0.shepherd, elitist: r0 && r0.elitist,
+      fights: (r0 && r0.ledger || []).map(f => ({
+        region: f.region, type: f.type, wing: f.wing, encId: f.encId,
+        encTier: f.encTier, turns: f.turns, won: f.won, pool: f.pool,
+        left: f.left, dealt: f.dealt, blocked: f.blocked, guard: f.guard,
+        played: f.played, deckSize: f.deck, met: f.met,
+        cost: f.cost, hpBefore: f.hpBefore, hpAfter: f.hpAfter,
+        pierce: f.pierce, bySource: f.bySource, probe: f.probe,
+      })),
+    };
+  }
   window.__RUN_RESULT__ = {
     runs: results.length, errors: errors.length, errorList: errors.slice(0, 60),
     ms, meanRooms: +avg.toFixed(1), ends,
