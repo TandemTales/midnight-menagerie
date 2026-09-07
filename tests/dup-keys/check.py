@@ -149,6 +149,15 @@ def prev_significant(code, i):
     return (code[j], j) if j >= 0 else ("", -1)
 
 
+def next_significant(code, i):
+    """The first non-whitespace character at or after index i, and its index."""
+    j = i
+    n = len(code)
+    while j < n and code[j] in " \t\r\n":
+        j += 1
+    return (code[j], j) if j < n else ("", -1)
+
+
 def scan(path, verbose=False):
     raw = path.read_text(encoding="utf-8")
     code = blank_code(raw)
@@ -215,6 +224,31 @@ def scan(path, verbose=False):
                 # blanked in `code`, which would make every quoted key in a file
                 # look like the same run of spaces.
                 m = KEY_RE.match(raw, i)
+                # A METHOD SHORTHAND HAS A BODY; A CALL HAS A SEMICOLON.
+                #
+                # `sep` is `:` or `(`, and the `(` form is there to catch
+                # `onTurnEnd(c) { … }` — the shape the Butler bug wore. But a
+                # bare statement call wears it too, so two `addEventListener(…)`
+                # lines in `scenes/clubhouse.js#_wire` were reported as a
+                # duplicate key. They are not keys, they are calls; the frame
+                # they sit in was misread as an object literal by the brace
+                # walker, and this is the cheap half of that — even inside a
+                # frame that has been misclassified, a call is still not a
+                # member. Requiring the matching `)` to be followed by `{`
+                # separates the two exactly.
+                if m and m.group("sep") == "(":
+                    j, depth = m.end() - 1, 0
+                    while j < len(code):
+                        if code[j] == "(":
+                            depth += 1
+                        elif code[j] == ")":
+                            depth -= 1
+                            if depth == 0:
+                                break
+                        j += 1
+                    after, _ = next_significant(code, j + 1)
+                    if after != "{":
+                        m = None
                 if m:
                     name = m.group("name").strip("'\"")
                     acc = m.group("acc") or ""

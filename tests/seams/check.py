@@ -734,17 +734,43 @@ class Checker:
                                  "(reads: %s)" % (api, k, k, ", ".join(sorted(allowed))))
 
     # -- 3. sfx ids ----------------------------------------------------------
+    #
+    # `.play('…')` IS NOT ALWAYS A SOUND. `ui/sprite.js` plays animation CLIPS
+    # through a method of the same name, so a bare `\.play\(` matched
+    # `this.pet?.play('affection')` in scenes/rest.js and reported the clip this
+    # screen was built to give a home to as a missing cue. A gate that is
+    # permanently red about something correct teaches everyone to skim past the
+    # day it is right.
+    #
+    # So the RECEIVER decides, and the set is read off the source rather than
+    # guessed. Every `.play/.stinger/.sfx('…')` call site in game/src:
+    #
+    #     66  audio       ctx.audio?.play?.('ui:click')          sound
+    #      5  this        inside game/src/audio/audio.js         sound
+    #      1  sfx         this.sfx.play('world:heartbeat')       sound
+    #      1  __MM_CLIPS  combat.js's clip debug handle          a CLIP
+    #      1  pet         rest.js's Companion sprite             a CLIP
+    #
+    # Re-run that enumeration before widening this; a new sound surface should
+    # be added here deliberately, not by loosening the pattern until it passes.
+    SFX_RECEIVERS = ("audio", "sfx")
+
     def check_sfx(self, path, src_str):
-        for m in re.finditer(r"\.(play|stinger|sfx)\??\.?\s*\(\s*'([^']+)'", src_str):
+        in_audio = rel(path).startswith("game/src/audio/")
+        for m in re.finditer(r"([A-Za-z_$][\w$]*)\s*\??\.\s*(play|stinger|sfx)"
+                             r"\s*\??\.?\s*\(\s*'([^']+)'", src_str):
+            recv, api, sid = m.group(1), m.group(2), m.group(3)
+            # `this.play(…)` is the bank talking to itself, and only there.
+            if recv not in self.SFX_RECEIVERS and not (recv == "this" and in_audio):
+                continue
             self.sites += 1
-            sid = m.group(2)
-            if m.group(1) == "stinger":
+            if api == "stinger":
                 if (self.s.resolve_sfx(sid) or self.s.resolve_sfx("sting:" + sid)):
                     continue
             elif self.s.resolve_sfx(sid):
                 continue
             self.add("UNKNOWN-SFX", path, line_of(src_str, m.start()),
-                     "%s('%s') — no such cue in the sfx bank" % (m.group(1), sid))
+                     "%s('%s') — no such cue in the sfx bank" % (api, sid))
         # `domain/name` spelling: resolvable, but the bank speaks `domain:name`
         for m in re.finditer(r"\.(?:play|stinger)\??\.?\s*\(\s*'([a-z]+)/([a-z-]+)'", src_str):
             self.add("SFX-SEPARATOR", path, line_of(src_str, m.start()),
