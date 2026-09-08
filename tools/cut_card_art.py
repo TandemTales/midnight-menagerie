@@ -80,6 +80,62 @@ QUALITY = 92       # webp; visually lossless on this material, ~24 KB a card
 # reach for it first and take the front half from the wrong sheet.
 PREFER = {("mopsy", 1): "mopsy_cards1-20b.png"}
 
+# THE SHEET PREFIX IS USUALLY THE SLUG, and once it is not: the art is filed
+# under the Companion's display name. Without this the sheets are found, matched
+# against no Companion in the master list, and silently skipped -- which is
+# exactly how Count Crumbula's ninety cards stayed on procedural art while every
+# other Companion's were cut.
+PREFIX_SLUG = {"countCrumbula": "crumbula"}
+
+# SHEETS WITH NO GUTTERS AT ALL.
+#
+# `sheet_tiles.tiles` finds tiles by looking for uniform gutter lines, which is
+# the right discriminator and finds precisely nothing on a sheet whose tiles butt
+# edge to edge: the whole sheet reads as one tile. Three sheet families are drawn
+# that way and reported 1 to 5 tiles for a 20-card range, so 47 of their cards
+# were being left on procedural art.
+#
+# Detecting the grid from the pixels was tried four ways -- absolute jump at the
+# implied boundaries, the weakest such jump, how PEAKED each is locally, and how
+# each ranks globally -- and all four picked 10x2 for a sheet that is plainly
+# 5x4. They cannot work here: a 10-way split CONTAINS every boundary of a 5-way
+# one, so no score over "are these lines strong" can reject it, and the lines it
+# adds fall mid-tile where busy art is just as noisy as an edge.
+#
+# So the grid is READ OFF THE ART, the same way this file's other two special
+# cases were, and recorded per (companion, sheet size). It is applied ONLY when
+# the range wants exactly rows x cols and only when gutter detection came back
+# short -- a sheet that does not line up still stops the tool rather than being
+# guessed at.
+GUTTERLESS = {
+    ("drizzle", 1536, 1024): (5, 4),
+    ("drizzle", 1402, 1122): (5, 4),
+    ("crinkle", 1402, 1122): (5, 4),
+    ("hush",    1402, 1122): (4, 5),
+}
+
+
+def grid_tiles(path, want):
+    """Tiles of a gutterless sheet, or [] when this one is not in the table."""
+    from PIL import Image as _I
+    comp = os.path.basename(path).split("_cards")[0]
+    comp = PREFIX_SLUG.get(comp, comp)
+    with _I.open(path) as im:
+        w, h = im.size
+    grid = GUTTERLESS.get((comp, w, h))
+    if not grid:
+        return []
+    cols, rows = grid
+    if cols * rows != want:
+        return []
+    cw, ch = w / cols, h / rows
+    out = []
+    for r in range(rows):
+        for c in range(cols):
+            out.append((int(round(c * cw)), int(round(r * ch)),
+                        int(round((c + 1) * cw)), int(round((r + 1) * ch))))
+    return out
+
 TILES = {
     "mopsy_cards81onA.png":  list(range(3, 15)),
     "boggle_cards81onA.png": [1, 2, 3, 4, 5, 6, 8, 9, 10],
@@ -152,14 +208,34 @@ def main(report=False):
     manifest, notes = {}, []
     tcache = {}
 
-    def sheet_tiles(name):
+    def sheet_tiles(name, want=None):
+        """Tiles of one sheet, cached per SHEET and not per (sheet, want).
+
+        The planner asks with a `want`; the cutter asks without one, and keying
+        the cache on both handed the cutter the un-fallen-back list — three tiles
+        for a gutterless sheet the planner had already resolved to twenty, and an
+        IndexError on the fourth card. One sheet has one answer.
+        """
         if name not in tcache:
-            tcache[name] = tiles(os.path.join(ART, name))
+            path = os.path.join(ART, name)
+            t = tiles(path)
+            # Gutter detection came back short on a sheet we have read the grid
+            # for: fall back to it. Never the other way round — a sheet with
+            # real gutters is measured, not assumed.
+            if want and len(t) < want:
+                g = grid_tiles(path, want)
+                if g:
+                    t = g
+            tcache[name] = t
         return tcache[name]
 
-    for comp in comps:
+    for prefix in comps:
+        # The sheet PREFIX names the files; the SLUG names the Companion in the
+        # master list and the output directory. They differ for exactly one
+        # family (`countCrumbula`), and conflating them skipped its ninety cards.
+        comp = PREFIX_SLUG.get(prefix, prefix)
         if comp not in order:
-            notes.append(f"{comp}: sheets exist but the master list has no such Companion; skipped")
+            notes.append(f"{prefix}: sheets exist but the master list has no such Companion; skipped")
             continue
         ids = order[comp]
         n = len(ids)
@@ -168,8 +244,8 @@ def main(report=False):
         print(f"== {comp}: {n} cards")
         for lo, hi in ranges_for(n):
             want = hi - lo + 1
-            opts = [(os.path.basename(f), len(sheet_tiles(os.path.basename(f))))
-                    for f in sheets_for(comp, lo)]
+            opts = [(os.path.basename(f), len(sheet_tiles(os.path.basename(f), want)))
+                    for f in sheets_for(prefix, lo)]
             if not opts:
                 notes.append(f"{comp} {lo}-{hi}: no sheet")
                 continue
@@ -189,7 +265,7 @@ def main(report=False):
             # the rule cannot know: boggle's 81on sheet carries its spare in the
             # MIDDLE, at tile 7, so "first nine" would quietly slide its last
             # three cards onto the wrong art.
-            first = PREFER.get((comp, lo))
+            first = PREFER.get((comp, lo)) or PREFER.get((prefix, lo))
             order_opts = ([o for o in opts if o[0] == first]
                           + [o for o in opts if o[0] != first]) if first else opts
             plan = []
