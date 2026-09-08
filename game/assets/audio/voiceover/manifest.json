@@ -1,0 +1,729 @@
+{
+  "version": 1,
+  "provider": "elevenlabs",
+  "voice_id": "EXAVITQu4vr4xnSDxMaL",
+  "model_id": "eleven_multilingual_v2",
+  "output_format": "mp3_44100_128",
+  "entries": [
+    {
+      "id": "narration-00a31101",
+      "text": "\"He's my cousin,\" it says, before you ask. \"Same family. Better prices.\"",
+      "file": "narration-00a31101.mp3",
+      "sources": [
+        "game/src/data/events.js:672"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-00ca7512",
+      "text": "Behind them the door closes. The corridor they came down is not there any more.",
+      "file": "narration-00ca7512.mp3",
+      "sources": [
+        "game/src/scenes/tutorial.js:134"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-03e0d2c5",
+      "text": "A workbench, a lamp, and a jar of eyes — glass ones, for toys, sorted by colour.",
+      "file": "narration-03e0d2c5.mp3",
+      "sources": [
+        "game/src/data/events.js:872"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-0d0f69d4",
+      "text": "It is, objectively, the best available fort site you have seen all night: a solid roof, one door, and a wall of umbrellas you can arrange into an early-warning system that goes clatter.",
+      "file": "narration-0d0f69d4.mp3",
+      "sources": [
+        "game/src/data/events.js:423"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-0ec291e7",
+      "text": "On the other side of an interior door on the second floor there is a field at about four in the afternoon, in summer, and there are animals in it, a lot of them, asleep in the warm. One of them lifts its head. You are absolutely certain it is looking at you.",
+      "file": "narration-0ec291e7.mp3",
+      "sources": [
+        "game/src/data/events.js:479"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-139e9aa8",
+      "text": "One of them, about two thirds along, is breathing.",
+      "file": "narration-139e9aa8.mp3",
+      "sources": [
+        "game/src/data/events.js:774"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-1400d209",
+      "text": "It is still warm, which does not make sense in a room this cold. The tag has a name on it that you have seen on a lamppost poster four streets from your school. You put the collar in your bag and something in the wall lets out a long breath.",
+      "file": "narration-1400d209.mp3",
+      "sources": [
+        "game/src/data/events.js:164"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-170e2b63",
+      "text": "It is a register of every animal in the house. Name, date arrived, room assigned, condition. The handwriting changes eleven times and never gets less careful.",
+      "file": "narration-170e2b63.mp3",
+      "sources": [
+        "game/src/data/events.js:323"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-1f22135a",
+      "text": "She has been mapping the wall cavities in web. She has done nine rooms. Nine rooms that are not on the blueprint.",
+      "file": "narration-1f22135a.mp3",
+      "sources": [
+        "game/src/scenes/rest.js:78"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-23ae656f",
+      "text": "In the flash, for a fraction of a second, the photograph is different: there are nine animals on the steps instead of one, and the family are not looking at the camera, they are looking at the door. When you lower the camera the picture is just a picture again. But you have it now.",
+      "file": "narration-23ae656f.mp3",
+      "sources": [
+        "game/src/data/events.js:281"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-24c15a26",
+      "text": "Grey, filthy, absolutely furious, and completely normal. It walks over your hands, out into the corridor, and sits down to wash as if it has been waiting for a door its whole life. In the cavity behind the panel: a nest of chewed paper and a small pile of shiny things somebody was saving.",
+      "file": "narration-24c15a26.mp3",
+      "sources": [
+        "game/src/data/events.js:97"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-27f1f53f",
+      "text": "A velvet rope hangs beside a brass plate engraved RING FOR SERVICE.",
+      "file": "narration-27f1f53f.mp3",
+      "sources": [
+        "game/src/data/events.js:373"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-28c11453",
+      "text": "On the bench is a stuffed rabbit that has been repaired so many times that none of the original rabbit is left. New ears, new body, new stuffing, new eyes.",
+      "file": "narration-28c11453.mp3",
+      "sources": [
+        "game/src/data/events.js:873"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-2935c04f",
+      "text": "Beside it is a card that says, in a careful adult hand: STILL THE SAME RABBIT?",
+      "file": "narration-2935c04f.mp3",
+      "sources": [
+        "game/src/data/events.js:874"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-29c1aa10",
+      "text": "It is sitting in the exact centre of the stair, and the stair is not wide, and it has no intention whatsoever of moving.",
+      "file": "narration-29c1aa10.mp3",
+      "sources": [
+        "game/src/data/events.js:826"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-2d3363a9",
+      "text": "It is made of dust and coathangers and it is very glad to meet you. It shakes your hand for slightly too long. Then it climbs back inside and pulls the panel shut, and you hear it settle in the dark like something going back to sleep.",
+      "file": "narration-2d3363a9.mp3",
+      "sources": [
+        "game/src/data/events.js:100"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-3601c53b",
+      "text": "It comes in at a quarter past, carrying a jug bigger than itself, and it does the whole room without hurrying. It is not a person. It has never been a person. When it finishes it looks straight at your hiding place, bows very slightly, and leaves. Your Companion is shaking. So are you.",
+      "file": "narration-3601c53b.mp3",
+      "sources": [
+        "game/src/data/events.js:240"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-37d79534",
+      "text": "It is a cat. You can see the wallpaper through her.",
+      "file": "narration-37d79534.mp3",
+      "sources": [
+        "game/src/scenes/tutorial.js:142"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-390b64c1",
+      "text": "Bowls. Dozens of them, in neat rows across the whole floor, each one exactly a hand-span from the next.",
+      "file": "narration-390b64c1.mp3",
+      "sources": [
+        "game/src/data/events.js:204"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-41d2a7bb",
+      "text": "Eleven family portraits, all extremely serious, and in the corner of every single one there is the same brown-and-white spaniel.",
+      "file": "narration-41d2a7bb.mp3",
+      "sources": [
+        "game/src/data/events.js:624"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-41dcfe60",
+      "text": "It sweeps the cloth off with real theatre. One of the three is genuinely good, and it lets you take that one, and looks quietly pleased with itself the whole time.",
+      "file": "narration-41dcfe60.mp3",
+      "sources": [
+        "game/src/data/events.js:683"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-44876954",
+      "text": "It is there. Arrived, three weeks ago. Room assigned: blank. Condition: \"settling\". Somebody has written, in the margin, in smaller writing, \"asks about the front door\".",
+      "file": "narration-44876954.mp3",
+      "sources": [
+        "game/src/data/events.js:333"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-45542784",
+      "text": "In the first painting it is a puppy. In the eleventh it is old and grey around the muzzle and lying at somebody's feet.",
+      "file": "narration-45542784.mp3",
+      "sources": [
+        "game/src/data/events.js:625"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-4b81d892",
+      "text": "She looks at the photograph for a long time and then at you, politely, the way you look at a stranger's holiday snaps. She has been here long enough that this is not sad to her. It is only sad to you.",
+      "file": "narration-4b81d892.mp3",
+      "sources": [
+        "game/src/data/events.js:307"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-4efb957b",
+      "text": "She blinks slowly at you, one eye at a time, all the way round. Your Companion is telling you she is glad you came.",
+      "file": "narration-4efb957b.mp3",
+      "sources": [
+        "game/src/scenes/rest.js:79"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-502b0d4c",
+      "text": "He brings you a bone that is definitely part of him, and is extremely proud, and will not take it back.",
+      "file": "narration-502b0d4c.mp3",
+      "sources": [
+        "game/src/scenes/rest.js:62"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-54b11435",
+      "text": "No haggling. I do not understand haggling. I understand swapping.",
+      "file": "narration-54b11435.mp3",
+      "sources": [
+        "game/src/scenes/shop.js:40"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-5609f138",
+      "text": "A moment later the wall says your pet's name back, in your voice, slightly wrong. You back away down the corridor and it follows you for eleven feet and then loses interest.",
+      "file": "narration-5609f138.mp3",
+      "sources": [
+        "game/src/data/events.js:116"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-58a66b5a",
+      "text": "\"Everyone carries something they wish they didn't,\" it says, and holds them out handles first. It does not charge you. That is somehow worse.",
+      "file": "narration-58a66b5a.mp3",
+      "sources": [
+        "game/src/data/events.js:696"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-59745349",
+      "text": "Not there. Not yet. You check twice, and the relief goes through you like cold water, and then you understand what \"not yet\" means and you stop feeling relieved.",
+      "file": "narration-59745349.mp3",
+      "sources": [
+        "game/src/data/events.js:336"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-605bcb24",
+      "text": "Bus tickets, a boiled sweet welded to its wrapper, a house key, eleven coins, a folded shopping list from 1961 that ends \"and something for the cat\".",
+      "file": "narration-605bcb24.mp3",
+      "sources": [
+        "game/src/data/events.js:783"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-63195d5d",
+      "text": "Every frame in the hall turns to face you at once. You leave with the photograph. You leave with rather less of your nerve.",
+      "file": "narration-63195d5d.mp3",
+      "sources": [
+        "game/src/data/events.js:294"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-71a46d77",
+      "text": "Everything here was dropped by somebody who is not coming back for it.",
+      "file": "narration-71a46d77.mp3",
+      "sources": [
+        "game/src/scenes/shop.js:39"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-731cbce4",
+      "text": "Four toes, no claw marks, five centimetres across, going out and not coming back. Cat. Big one. Three weeks of mud in this house means nothing but you write down the date anyway, because that is what you do now.",
+      "file": "narration-731cbce4.mp3",
+      "sources": [
+        "game/src/data/events.js:749"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-74d4bcf4",
+      "text": "It comes back chewed. Freshly. There is one long ginger-and-white hair caught in the seam, and it is exactly the right colour, and you sit down on the floor of a haunted house at midnight and put your face in your hands for a minute. Then you get up, because now you know they are upstairs.",
+      "file": "narration-74d4bcf4.mp3",
+      "sources": [
+        "game/src/data/events.js:547"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-755a3cfc",
+      "text": "She hums. The pumpkin resonates. It is genuinely the nicest sound in the building.",
+      "file": "narration-755a3cfc.mp3",
+      "sources": [
+        "game/src/scenes/rest.js:67"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-75b6caa9",
+      "text": "He falls asleep upside down against your leg and twitches like he is chasing something. You hope he catches it.",
+      "file": "narration-75b6caa9.mp3",
+      "sources": [
+        "game/src/scenes/rest.js:64"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-7d40976b",
+      "text": "\"Oh, he has,\" it says, and something in the coat rearranges itself. \"Several. We do not speak.\" It sells you something at cost and would like you to move along now.",
+      "file": "narration-7d40976b.mp3",
+      "sources": [
+        "game/src/data/events.js:709"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-820280e4",
+      "text": "Forty coats on a rail, all facing the same way, all buttoned.",
+      "file": "narration-820280e4.mp3",
+      "sources": [
+        "game/src/data/events.js:773"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-83e8762d",
+      "text": "\"No,\" it admits, after a pause of exactly the right length. It seems relieved. It gives you a marble and its actual name and asks you not to spread it about.",
+      "file": "narration-83e8762d.mp3",
+      "sources": [
+        "game/src/data/events.js:706"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-8538212e",
+      "text": "A lectern, a brass lamp that comes on by itself, and a ledger the size of a paving slab.",
+      "file": "narration-8538212e.mp3",
+      "sources": [
+        "game/src/data/events.js:322"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-865ce8af",
+      "text": "Buttons, keys, marbles, teeth. I take all of it. Look around.",
+      "file": "narration-865ce8af.mp3",
+      "sources": [
+        "game/src/scenes/shop.js:37"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-8cb2463f",
+      "text": "He is trying to learn to whistle. He does not have a mouth. He is undeterred.",
+      "file": "narration-8cb2463f.mp3",
+      "sources": [
+        "game/src/scenes/rest.js:74"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-8e4ec585",
+      "text": "She goes up and sits beside it, and the two of them face the hall together like a pair of bookends, and for a few minutes nothing in this house is frightening at all. Then she comes back, and something in her step is easier.",
+      "file": "narration-8e4ec585.mp3",
+      "sources": [
+        "game/src/data/events.js:858"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-940f3d3b",
+      "text": "She lets you check her ear, which she has never done. There is a notch in it. She says a door did that. She will not say which door.",
+      "file": "narration-940f3d3b.mp3",
+      "sources": [
+        "game/src/scenes/rest.js:58"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-9bb8b076",
+      "text": "Come back with more buttons.",
+      "file": "narration-9bb8b076.mp3",
+      "sources": [
+        "game/src/scenes/shop.js:50"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-a0f115fb",
+      "text": "It comes away easily, and on the back somebody has written a name and a date and, later, in a different pen, a second date with a question mark. Your Companion will not look at it. You put it in the notebook and you do not bring it up again tonight.",
+      "file": "narration-a0f115fb.mp3",
+      "sources": [
+        "game/src/data/events.js:291"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-a89ceda2",
+      "text": "A fine choice. Nobody has wanted that in sixty years.",
+      "file": "narration-a89ceda2.mp3",
+      "sources": [
+        "game/src/scenes/shop.js:43"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-ac84f658",
+      "text": "A card table, a paraffin lamp, and something in a coat approximately the shape of a person who has been described to a moth over the telephone.",
+      "file": "narration-ac84f658.mp3",
+      "sources": [
+        "game/src/data/events.js:671"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-b706bd4d",
+      "text": "In the twelfth frame, which is empty and has been empty for a long time, there is a dog-shaped patch where the varnish has not yellowed.",
+      "file": "narration-b706bd4d.mp3",
+      "sources": [
+        "game/src/data/events.js:626"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-c0cc80df",
+      "text": "Above it, a board of forty little bells, one per room, each labelled in copperplate. Every single bell is trembling very slightly, as if the whole house is being rung constantly and quietly by somebody nobody has answered in ninety years.",
+      "file": "narration-c0cc80df.mp3",
+      "sources": [
+        "game/src/data/events.js:374"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-c31f1b0c",
+      "text": "She has been collecting seeds in her hollow. She shows you all of them. It takes a while.",
+      "file": "narration-c31f1b0c.mp3",
+      "sources": [
+        "game/src/scenes/rest.js:68"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-c324ddeb",
+      "text": "Do not tell the others what you paid.",
+      "file": "narration-c324ddeb.mp3",
+      "sources": [
+        "game/src/scenes/shop.js:46"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-c5f53f43",
+      "text": "It has been waiting. I told it somebody would come.",
+      "file": "narration-c5f53f43.mp3",
+      "sources": [
+        "game/src/scenes/shop.js:45"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-c8a2ac71",
+      "text": "A sash window, open six inches at the bottom, on a wall that does not have an outside.",
+      "file": "narration-c8a2ac71.mp3",
+      "sources": [
+        "game/src/data/events.js:723"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-d06a4e1b",
+      "text": "She is coming with you. That was never in question — she decided it before anybody knew her name.",
+      "file": "narration-d06a4e1b.mp3",
+      "sources": [
+        "game/src/scenes/tutorial.js:169"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-d079f0c4",
+      "text": "He remembers being made. He does not remember being alive before that, and he has decided this is fine, and mostly it is.",
+      "file": "narration-d079f0c4.mp3",
+      "sources": [
+        "game/src/scenes/rest.js:73"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-d63d4382",
+      "text": "Nobody comes. Twenty minutes later, in a completely different room, you find a tray waiting on a side table with two glasses of something warm and a note that says, in copperplate, \"welcome back\".",
+      "file": "narration-d63d4382.mp3",
+      "sources": [
+        "game/src/data/events.js:386"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-d648632d",
+      "text": "He does not remember his name. He remembers the sound of a gate and somebody running, and he is certain the running was towards him.",
+      "file": "narration-d648632d.mp3",
+      "sources": [
+        "game/src/scenes/rest.js:63"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-d6e9ae9b",
+      "text": "She asks, in the way frogs ask, whether outside is still there. You say yes. She sits with that.",
+      "file": "narration-d6e9ae9b.mp3",
+      "sources": [
+        "game/src/scenes/rest.js:69"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-da5d0277",
+      "text": "He very carefully makes himself the exact shape of a mug so you have something to hold.",
+      "file": "narration-da5d0277.mp3",
+      "sources": [
+        "game/src/scenes/rest.js:72"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-e19a1959",
+      "text": "Gloves. Keys. Spectacles. A violin. Ninety-one single shoes. A pigeonhole entirely full of collars.",
+      "file": "narration-e19a1959.mp3",
+      "sources": [
+        "game/src/data/events.js:575"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-e3ab153c",
+      "text": "Chalked on the inside of the box, in a child's handwriting: SEND SOMETHING GOOD.",
+      "file": "narration-e3ab153c.mp3",
+      "sources": [
+        "game/src/data/events.js:522"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-e758af73",
+      "text": "On the table: three things under a cloth, and a pair of scissors.",
+      "file": "narration-e758af73.mp3",
+      "sources": [
+        "game/src/data/events.js:673"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-e7816d23",
+      "text": "Everybody’s grandmother tells the same one. Animals disappear around the old mansion. Some of them remember it happening when THEY were children.",
+      "file": "narration-e7816d23.mp3",
+      "sources": [
+        "game/src/scenes/tutorial.js:121"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-e882adbf",
+      "text": "Seven pets, one neighbourhood, one summer — and when the kids finally sat down on the kerb outside the corner shop and compared dates, not one of the stories was the odd one out.",
+      "file": "narration-e882adbf.mp3",
+      "sources": [
+        "game/src/scenes/tutorial.js:113"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-e98e261a",
+      "text": "A little hatch in the wall with a rope pulley and a wooden box behind it, big enough for a roast, a tea service, or a child who has not thought this through.",
+      "file": "narration-e98e261a.mp3",
+      "sources": [
+        "game/src/data/events.js:521"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-ebc3857a",
+      "text": "In the exact centre of the floor there is a pet collar. Red nylon, worn pale on one side. It has been placed there, squared up, the way you put out something you want found.",
+      "file": "narration-ebc3857a.mp3",
+      "sources": [
+        "game/src/data/events.js:155"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-ed373bca",
+      "text": "On the sill, on the inside, there are muddy paw prints going out.",
+      "file": "narration-ed373bca.mp3",
+      "sources": [
+        "game/src/data/events.js:725"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-f00263a2",
+      "text": "Inside the coat, standing on the shoulders of the coat below, is a rabbit the size of a spaniel wearing the coat as a coat. It regards you with the deep contempt of someone caught doing something perfectly reasonable, and stalks off down the rail.",
+      "file": "narration-f00263a2.mp3",
+      "sources": [
+        "game/src/data/events.js:796"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-f0107d7e",
+      "text": "A counter, a bell, and behind it a wall of pigeonholes going up further than the ceiling should allow, each one stuffed with things people came in with and left without.",
+      "file": "narration-f0107d7e.mp3",
+      "sources": [
+        "game/src/data/events.js:574"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    },
+    {
+      "id": "narration-f13930cb",
+      "text": "Between two enormous oil portraits there is one small photograph in a cheap frame: a family on the front steps, squinting, in clothes from fifty years ago.",
+      "file": "narration-f13930cb.mp3",
+      "sources": [
+        "game/src/data/events.js:268"
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2"
+    }
+  ]
+}

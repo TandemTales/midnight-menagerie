@@ -274,15 +274,17 @@ export function createLimiter(ac, { ceil = 0.94, range = 4, n = 4096 } = {}) {
  * The one and only output chain, shared by the game and by tests/audio so the
  * test measures exactly what a player hears.
  *
- *   sfxIn ─┐
- *          ├─► mix ─► master ─► dcBlock ─► comp ─► limiter ─► analyser ─► out
- *  musicIn ┘
+ *   sfxIn ───┐
+ *   voiceIn ─┼─► mix ─► master ─► dcBlock ─► comp ─► limiter ─► analyser ─► out
+ *  musicIn ──┘
  */
 export function createMasterBus(ac, o = {}) {
   const mix = gain(ac, 1);
   const sfxIn = gain(ac, o.sfx ?? 0.8);
+  const voiceIn = gain(ac, o.voice ?? 1);
   const musicIn = gain(ac, 1);
   sfxIn.connect(mix);
+  voiceIn.connect(mix);
   musicIn.connect(mix);
 
   const master = gain(ac, o.master ?? 0.9);
@@ -306,7 +308,7 @@ export function createMasterBus(ac, o = {}) {
   lim.output.connect(analyser);
   analyser.connect(o.destination || ac.destination);
 
-  return { mix, sfxIn, musicIn, master, dcBlock, comp, limiter: lim, analyser };
+  return { mix, sfxIn, voiceIn, musicIn, master, dcBlock, comp, limiter: lim, analyser };
 }
 
 // ── the plate: a 4x4 feedback delay network, no impulse response needed ─────

@@ -1,5 +1,5 @@
 /**
- * Music + SFX. OWNER: audio agent.
+ * Music + SFX + stored narration. OWNER: audio agent.
  *
  *   await audio.unlock()                     first user gesture; idempotent
  *   audio.play(id, {vol,rate,pan,delay})     one synthesised SFX cue
@@ -9,6 +9,8 @@
  *   audio.duck(amount, ms)                   amount 1 == -6 dB
  *   audio.setVolume('master'|'music'|'sfx', v)
  *   audio.stinger(id)                        musical accent over the music
+ *   audio.narrate(textOrId, opts)            play a stored story voiceover
+ *   audio.stopNarration()                    stop queued/current narration
  *
  * Nothing here throws before a user gesture: the AudioContext is created
  * suspended, `play()` is a no-op until it resumes, and the first pointerdown or
@@ -21,6 +23,7 @@
 import { createMasterBus, clamp } from './dsp.js';
 import { SfxEngine, SFX_IDS, CUES, ALIASES, resolveId } from './sfx.js';
 import { MusicPlayer, MUSIC_IDS, MUSIC_CUES } from './music.js';
+import { NarrationPlayer } from './narration.js';
 
 /** scene name -> music cue */
 const SCENE_MUSIC = {
@@ -30,6 +33,15 @@ const SCENE_MUSIC = {
 };
 
 const HEARTBEAT_AT = 0.72;
+
+// Story surfaces only. Combat text/c.say() is deliberately not included:
+// combat already has its own concise feedback and does not need narration.
+const STORY_NARRATION_SELECTORS = [
+  '.tut-head', '.tut-sub', '.tut-line',
+  '.ev-prose p', '.ev-out__p',
+  '.rs-line', '.sh-line', '.rm-live',
+  '.go-pet__text',
+].join(',');
 
 export class Audio {
   /** @param {object} ctx the shared game ctx (or a BaseAudioContext, for tests) */
@@ -75,9 +87,18 @@ export class Audio {
     this.musicPlayer = new MusicPlayer(this.ac, this.mixer.musicIn, {
       base: this._assetBase(), volume: this.volumes.music,
     });
+    this.narrationPlayer = new NarrationPlayer(this.ac, this.mixer.voiceIn, {
+      base: this._narrationAssetBase(),
+      // Voiceovers share the Effects slider until the settings screen grows a
+      // dedicated narration control. Master volume still applies downstream.
+      volume: this.volumes.sfx,
+      onStart: () => { if (this.ready) this.duck(0.75, 900); },
+    });
+    void this.narrationPlayer.load();
     this.available = true;
 
     this._armGesture();
+    this._armStoryNarration();
     this._wireBus();
     this._tick = this._tick.bind(this);
     if (this.clock?.onFrame) this._offs.push(this.clock.onFrame(this._tick));
@@ -94,6 +115,11 @@ export class Audio {
     catch { return 'assets/audio/'; }
   }
 
+  _narrationAssetBase() {
+    try { return new URL('../../assets/audio/voiceover/', import.meta.url).href; }
+    catch { return 'assets/audio/voiceover/'; }
+  }
+
   _armGesture() {
     if (typeof window === 'undefined') return;
     const go = () => { this.unlock(); };
@@ -101,6 +127,41 @@ export class Audio {
     for (const ev of ['pointerdown', 'keydown', 'touchstart', 'mousedown']) {
       window.addEventListener(ev, go, { capture: true, passive: true });
     }
+  }
+
+  /**
+   * Observe the DOM surfaces owned by tutorial/story scenes. The scenes do
+   * not need to know about audio, and no combat log is part of this selector
+   * set. Text is matched against the build-time manifest by normalized text.
+   */
+  _armStoryNarration() {
+    if (typeof document === 'undefined' || typeof MutationObserver !== 'function') return;
+    const root = document.getElementById('dom-layer') || document.body;
+    if (!root) return;
+    const seen = new WeakMap();
+    const speak = (node) => {
+      if (!node || node.nodeType !== 1 || !node.matches?.(STORY_NARRATION_SELECTORS)) return;
+      if (!node.isConnected || node.closest('[hidden]')) return;
+      const text = String(node.textContent || '').replace(/\s+/g, ' ').trim();
+      if (!text || text === '\u00a0' || seen.get(node) === text) return;
+      seen.set(node, text);
+      this.narrate(text);
+    };
+    const scan = (node) => {
+      if (!node || node.nodeType !== 1) return;
+      speak(node);
+      for (const child of node.querySelectorAll(STORY_NARRATION_SELECTORS)) speak(child);
+    };
+    const observer = new MutationObserver((records) => {
+      for (const record of records) {
+        if (record.type === 'characterData') speak(record.target.parentElement);
+        else for (const node of record.addedNodes) scan(node);
+        if (record.target?.nodeType === 1) speak(record.target);
+      }
+    });
+    observer.observe(root, { childList: true, characterData: true, subtree: true });
+    for (const node of root.querySelectorAll(STORY_NARRATION_SELECTORS)) speak(node);
+    this._offs.push(() => observer.disconnect());
   }
 
   _disarmGesture() {
@@ -127,6 +188,7 @@ export class Audio {
       this.ready = true;
       this._disarmGesture();
       this.musicPlayer.unlock();
+      this.narrationPlayer?.wake?.();
       this.bus?.emit('audio:ready', { sampleRate: this.ac.sampleRate });
     })();
     return this._unlocking;
@@ -152,6 +214,7 @@ export class Audio {
       } else if (this._pausedByHost) {
         this._pausedByHost = false;
         if (this.ac.state === 'suspended') await this.ac.resume();
+        this.narrationPlayer?.wake?.();
       }
     } catch (e) { console.warn('[audio] setPaused', e); }
   }
@@ -162,6 +225,7 @@ export class Audio {
     if (this._iv) clearInterval(this._iv);
     this._disarmGesture();
     try { this.sfx?.stopAll(); } catch {}
+    try { this.narrationPlayer?.dispose(); } catch {}
     try { this.musicPlayer?.dispose(); } catch {}
   }
 
@@ -172,6 +236,14 @@ export class Audio {
     if (!this.available || !this.ready) return null;
     return this.sfx.play(id, opts || {});
   }
+
+  /** Play a locally generated ElevenLabs line, if the build contains it. */
+  narrate(textOrId, opts) {
+    if (!this.available) return null;
+    return this.narrationPlayer?.play(textOrId, opts || {}) || null;
+  }
+
+  stopNarration() { this.narrationPlayer?.stop(); }
 
   music(cue, opts) {
     if (!this.available) return;
@@ -223,6 +295,7 @@ export class Audio {
       const t = this.ac.currentTime;
       if (which === 'master') this.mixer.master.gain.setTargetAtTime(val, t, 0.04);
       else if (which === 'sfx') this.mixer.sfxIn.gain.setTargetAtTime(val, t, 0.04);
+      if (which === 'sfx') this.narrationPlayer?.setVolume(val);
       else if (which === 'music') this.musicPlayer.setVolume(val);
     }
     try { this.Save?.setSetting?.(which, val); } catch {}
@@ -349,6 +422,10 @@ export class Audio {
       if (t === 'power') this.duck(0.5, 320);
     });
     on('map:choose', () => { this.play('ui:confirm'); this.play('world:door-open', { delay: 0.1, vol: 0.7 }); });
+
+    // Do not let queued prose follow the player into the next scene. In
+    // particular, tutorial lines must be gone before a Scuffle begins.
+    this._offs.push(bus.on('scene:leaving', () => this.stopNarration()));
 
     // ── scenes drive the bed
     this._offs.push(bus.on('scene:entered', (p) => {
