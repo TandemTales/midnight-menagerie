@@ -257,6 +257,27 @@ export class CombatEngine {
     this.enemyDamageScale = Number(cfg.enemyDamageScale) > 0 ? Number(cfg.enemyDamageScale) : 1;
     /** Courage multiplier for wings that measure under-priced; 1 elsewhere. */
     this.courageFix = Number(cfg.courageFix) > 0 ? Number(cfg.courageFix) : 1;
+    /**
+     * WHAT A BODY THAT COMES BACK IS WORTH, on top of `courageFix`.
+     *
+     * A treadmill's cost to the player is BODIES TO KILL, not Courage: the
+     * Crypt's whole early roster leaves Remains, collapses into a Pile, or
+     * walks off and returns, and it killed a starting deck 14 times out of 14
+     * at wing one while its fights cost an ordinary 17.5% of the pool. Scaling
+     * the pool cannot reach that, because the pool was never the problem.
+     *
+     * Count is what wants scaling and count is what cannot safely be scaled:
+     * 14 of the 75 `c.summon` sites use the return value, so refusing one would
+     * hand content a null it does not check for. Courage on the RETURNING body
+     * reaches the same place from the other side — a body with less of it dies
+     * in fewer turns, and turns are what a treadmill actually spends.
+     *
+     * Applied ON TOP of `courageFix`, so a summon at an early slot is scaled
+     * twice and a standing body once. Only ever downward: a wing met late
+     * should get its returns at full strength, and `min(1, ...)` at the caller
+     * guarantees it.
+     */
+    this.summonFix = Number(cfg.summonFix) > 0 ? Number(cfg.summonFix) : 1;
     this.choices = new ChoiceBroker(this);
     this._trackerInstaller = cfg.trackerInstaller || null;
 
@@ -401,7 +422,9 @@ export class CombatEngine {
     const party = (typeof def.partyHp === 'function')
       ? (def.partyHp(this.players.length) ?? this.partyHpScale)
       : this.partyHpScale;
-    const f = party * (this.courageFix || 1);
+    // `raw.summoned` is set by `summon()` below; a body that was on the board
+    // when the fight opened is not a return and takes only `courageFix`.
+    const f = party * (this.courageFix || 1) * (raw.summoned ? (this.summonFix || 1) : 1);
     const scaled = f === 1 ? hp : Math.max(1, Math.round(hp * f));
     return new Enemy({
       id: (wrapped && raw.id) || `e${slot}`,
@@ -1763,7 +1786,7 @@ export class CombatEngine {
     const list = side === 'ally' ? this.allies : this.enemies;
     const slot = o.slot ?? list.length;
     const id = o.id || `${side === 'ally' ? 'a' : 's'}${++this._entityUid}`;
-    const e = this._makeEnemy({ def, hp: o.hp, id }, slot);
+    const e = this._makeEnemy({ def, hp: o.hp, id, summoned: true }, slot);
     e.side = side;
     e.summoned = true;
     /**

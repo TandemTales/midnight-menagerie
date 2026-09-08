@@ -1762,6 +1762,16 @@ export class Run {
         * regionDamageFix(region),
       courageFix: Math.min(1, routeContentScale(region, this.regionIndex, this.wings))
         * regionCourageFix(region),
+      /* AND AGAIN FOR ANYTHING THAT COMES BACK. A treadmill's cost is bodies to
+         kill, and the Crypt proved a pool lever cannot reach it: every early
+         Crypt fight leaves Remains, collapses into a Pile or walks off and
+         returns, and it killed a starting deck 14/14 at wing one while its
+         fights cost an ordinary 17.5% of the pool.
+
+         The same ratio a second time, so a returning body at an early slot is
+         scaled twice over. Downward only — a wing met LATE should get its
+         returns at full strength, which is what the `min(1, ...)` is for. */
+      summonFix: Math.min(1, routeContentScale(region, this.regionIndex, this.wings)),
     });
 
     // Haunt counters / behavioural flags the encounter builder produced.
