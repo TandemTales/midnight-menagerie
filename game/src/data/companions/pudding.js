@@ -1337,7 +1337,16 @@ const rares = [
     nums: { b: 13, m0: 8 },
     effect: eff((c) => {
       U.guardOn(c, bf(c), N(c).b);
-      c.giveStatus(bf(c), 'stay-with-me', N(c).m0);
+      /* SET, not add. The stack count IS the cap, so a second cast would
+         otherwise read 8 + 8 = 16 and make the protection WORSE than one cast.
+         Re-casting can only hold the cap or improve it (the upgrade's 6). */
+      const friend = bf(c);
+      const want = N(c).m0;
+      const cur = U.stacks(c, friend, 'stay-with-me');
+      if (!cur || want < cur) {
+        if (cur) c.applyStatus(friend, 'stay-with-me', -cur);
+        c.giveStatus(friend, 'stay-with-me', want);
+      }
     }),
     upgrade: { nums: { b: 18, m0: 6 } },
   },

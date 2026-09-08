@@ -62,6 +62,22 @@ const errors = [];
  * a seed still reproduces the whole expedition. `voteWing` resolves on the
  * first vote for a party of one and crosses.
  */
+/**
+ * Settle the WAY IN, if this expedition gets to choose one.
+ *
+ * `Run` opens a fork at `ENTRY_STEP` when `entryUnlocked` is passed, and it is
+ * the same fork as every crossing — so this is `claimAndCross`'s vote with a
+ * different key. Uniform among the sixteen, from a keyed fork, so the pick
+ * takes nothing from the master stream and a seed still reproduces the run.
+ */
+function chooseEntry(run) {
+  if (!run.pendingWing) return null;
+  const opts = run.pendingWing.options;
+  const to = opts[run.fork('gate:entry').int(opts.length)].to;
+  run.voteWing(to);
+  return to;
+}
+
 function claimAndCross(run) {
   const r = run.claimReward();
   if (run.pendingWing) {
@@ -467,9 +483,18 @@ function pickTarget(engine, card) {
 
 /* ── drive one whole expedition ─────────────────────────────────────────── */
 async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0, trace = null,
-  shepherd = false, elitist = false } = {}) {
+  shepherd = false, elitist = false, entry = false, startRegion = null } = {}) {
   resetMeta();
-  const run = new Run({ companion, kid, seed, hauntLevel: haunt });
+  /* WHERE THIS EXPEDITION BEGINS. Until 2026-09-07 every run in this file
+     walked in the front door, because every run in the GAME did. A player who
+     has cleared the Foyer now chooses, so a share of these do too — otherwise
+     this suite measures a game nobody plays after their first night, and its
+     ledger, its boss-arrival table and its teaching census would all describe
+     the Foyer-first run as if it were the only one. */
+  const run = new Run({ companion, kid, seed, hauntLevel: haunt,
+                        entryUnlocked: entry || !!startRegion,
+                        startRegion: startRegion || undefined });
+  const began = chooseEntry(run) || run.region;
   const pick = run.fork('sim:path');
   const dice = run.fork('sim:choices');
   const t = trace || [];
@@ -725,7 +750,7 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
   }
 
   if (!run.result && steps >= 400) fail(`seed ${seed}: run never terminated (400 steps)`);
-  return { run, trace: t, steps, lastRoom, ledger, purse };
+  return { run, trace: t, steps, lastRoom, ledger, purse, began };
 }
 
 /* ── a stable digest of everything a run ended up being ─────────────────── */
@@ -782,15 +807,24 @@ async function main() {
     // ladder into the Butler and out the other side.
     const shepherd = i % 5 === 0;
     const elitist = i % 4 === 1;
+    /* A THIRD OF THEM CHOOSE THEIR WAY IN. Not all fifty: a player's FIRST
+       expedition is still the front door, the ledger and the boss-arrival
+       tables are worth keeping comparable to every measurement taken before
+       today, and a third is enough to exercise the path and to notice if
+       beginning somewhere else crashes or strands a run. The difficulty
+       question — is a deep wing survivable at wing ONE — needs a denser
+       sample than this and gets one from `?startsweep=`. */
+    const entry = i % 3 === 2;
     let r;
     try {
-      r = await simulate(seed, { companion, kid, haunt, shepherd, elitist });
+      r = await simulate(seed, { companion, kid, haunt, shepherd, elitist, entry });
     } catch (e) {
       fail(`seed ${seed} threw: ${e && e.stack ? e.stack.split('\n').slice(0, 3).join(' | ') : e}`);
       continue;
     }
     const run = r.run;
-    results.push({ seed, companion, kid, haunt, shepherd, elitist, run, steps: r.steps,
+    results.push({ seed, companion, kid, haunt, shepherd, elitist, entry, began: r.began,
+                   run, steps: r.steps,
                    trace: r.trace, lastRoom: r.lastRoom, ledger: r.ledger,
                    purse: r.purse });
 
@@ -816,7 +850,14 @@ async function main() {
            the seed with `wingOffer` and checks the step against it, so a route
            that walked through a wall fails here rather than looking plausible. */
     const rt = run.route || [];
-    check(rt[0] === RUN_REGIONS[0], `seed ${seed}: route starts at ${rt[0]}, not the Foyer`);
+    /* A run begins at the front door OR in a wing the party chose — which is
+       the whole point of the way-in fork, and this assertion used to forbid it.
+       What still has to hold is that it began SOMEWHERE REAL and never in the
+       Heart, which is the ending. */
+    check(RUN_REGIONS.includes(rt[0]) && rt[0] !== RUN_REGIONS[RUN_REGIONS.length - 1],
+      `seed ${seed}: route starts at ${rt[0]}, which is not a wing you can begin in`);
+    check(entry || rt[0] === RUN_REGIONS[0],
+      `seed ${seed}: began in ${rt[0]} without being offered the choice`);
     check(new Set(rt).size === rt.length,
       `seed ${seed}: route repeats a wing — ${rt.join(' > ')}`);
     check(rt.length <= run.wings,
@@ -867,6 +908,10 @@ async function main() {
     const again = await simulate(r0.seed, {
       companion: r0.companion, kid: r0.kid, haunt: r0.haunt, shepherd: r0.shepherd,
       elitist: r0.elitist,
+      /* `entry` TOO, or a replay of a run that chose its way in is a replay of
+         a DIFFERENT expedition and this check reports the harness's own
+         omission as a product divergence. It did, once. */
+      entry: r0.entry,
     });
     const a = digest(r0.run), b = digest(again.run);
     if (a === b) { detOk++; }

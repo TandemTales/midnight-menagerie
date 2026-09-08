@@ -371,6 +371,53 @@ try {
       `it is in ${pileOf(e, k)}`);
     check(e.counter('plots') === 1, 'and the Plot counts it', `plots=${e.counter('plots')}`);
   }
+  /* == 10. Stay With Me actually caps a hit =================================
+   *
+   * It did not, in three separate ways, and the card has been printing a rule
+   * the engine never ran since it was written:
+   *
+   *   1. the `onCourageLoss` hook called `stacks()` on a hand-built
+   *      `{ e, self }` that has no `count`, so it THREW on every hit taken —
+   *      `hooks.js` states the payload contract and `count(id, a)` is on it;
+   *   2. the status was `stacks: false`, so `engine.js:1468` clamped the card's
+   *      authored 8 down to 1 — a one-Courage cap, the strongest defensive
+   *      effect in the game, and not what the card says;
+   *   3. `decay: 'never'` with nothing removing it, so "until your next turn"
+   *      lasted the whole combat.
+   *
+   * A control pair is the only assertion that can see this: the same attack,
+   * with and without. "Did not throw" would pass on a hook that does nothing,
+   * which is precisely what it was.                                          */
+  {
+    const e = await pudding();
+    const me = e.player;
+    const foe = e.livingEnemies()[0];
+    const swing = (n) => { const h0 = me.hp; e.dealDamage({ attacker: foe, defender: me, amount: n, kind: 'attack' }); return h0 - me.hp; };
+
+    const bare = swing(30);
+    check(bare === 30, 'without Stay With Me a 30 lands for 30', String(bare));
+
+    await play(e, 'pudding/stay-with-me');
+    const cap = me.status('stay-with-me');
+    check(cap === 8, 'the card grants its AUTHORED cap, not a clamped 1', String(cap));
+    const capped = swing(30);
+    check(capped === 8, 'and the same 30 now costs the cap', String(capped));
+    check(swing(3) === 3, 'a hit UNDER the cap is untouched', 'small hits pass through');
+
+    /* Casting it again must not make it worse. The stack count IS the cap, so
+       an additive re-apply would read 8 + 8 = 16. */
+    await play(e, 'pudding/stay-with-me');
+    check(me.status('stay-with-me') === 8,
+      'a second cast holds the cap rather than adding to it',
+      String(me.status('stay-with-me')));
+
+    /* "Until your next turn." */
+    await e.endTurn();
+    check(!me.hasStatus('stay-with-me'),
+      'and it is gone by the start of your next turn',
+      `still ${me.status('stay-with-me')}`);
+  }
+
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

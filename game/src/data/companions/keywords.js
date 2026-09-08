@@ -786,11 +786,30 @@ export const COMPANION_STATUSES = [
    * the one place in the pipeline that number exists.
    */
   {
-    id: 'stay-with-me', name: 'Stay With Me', kind: 'buff', icon: 'loyalty', decay: 'never', stacks: false,
+    /* THE CAP IS THE STACK COUNT, so it has to be allowed to hold one.
+        `stacks: false` made `engine.js:1468` clamp the card's authored 8 (6
+        upgraded) down to 1 — a cap of ONE Courage per Attack, which is not the
+        printed rule and would have been the strongest defensive effect in the
+        game if the hook had not been throwing before it could apply.
+
+        And it lasts "until your next turn", which `decay: 'never'` did not do
+        either: nothing anywhere removed it, so it held for the whole combat.
+        `turnStart` + `decayAll` expires it whole at the owner's next turn —
+        decaying by one would tick the CAP down instead of ending it. */
+    id: 'stay-with-me', name: 'Stay With Me', kind: 'buff', icon: 'loyalty',
+    decay: 'turnStart', decayAll: true, stacks: true,
     desc: 'No single Attack can cost more than {n} Courage after Guard.',
     hooks: {
       onCourageLoss: (h) => {
-        const cap = stacks({ e: h.e, self: h.defender }, h.defender, 'stay-with-me');
+        /* `h.count`, NOT `stacks()` on a hand-built `{ e, self }`. That object
+           has no `count`, so this threw `c.count is not a function` on every
+           single hit and the cap has never once applied — a printed rule the
+           player can read and the engine never ran, which is the Watcher's
+           Grounded all over again.
+           `hooks.js` states the payload CONTRACT and `count(id, a)` is on it;
+           its own header says reaching for something not on that list is what
+           made Haunt deal zero damage for a whole build (CONTRACTS rule 8). */
+        const cap = h.count('stay-with-me', h.defender) | 0;
         if (!cap || !h.setAmount) return;
         if (h.amount > cap) h.setAmount(cap);
       },
