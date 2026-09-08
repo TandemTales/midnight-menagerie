@@ -67,7 +67,7 @@ import { RNG, hashSeed } from '../core/rng.js';
 import { Save } from '../core/save.js';
 import { bus } from '../core/bus.js';
 import { clock } from '../core/clock.js';
-import { NodeType, REGION_ORDER, TERMS, COMPANIONS, KIDS, depthDamageScale, runDepthDamageScale, regionCourageFix, regionDamageFix } from '../data/schema.js';
+import { NodeType, REGION_ORDER, TERMS, COMPANIONS, KIDS, depthDamageScale, runDepthDamageScale, routeContentScale, routeScaleSplit, regionCourageFix, regionDamageFix } from '../data/schema.js';
 import {
   generateRegionMap, legalNextIds, regionMeta, sceneForNode,
   exitsFrom, exitReason,
@@ -1707,9 +1707,61 @@ export class Run {
          bodies do not survive a turn (see REGION_CONTENT_FIX). Where the
          fight is authored still prices the fight; how deep the player is
          prices the run. */
-      enemyDamageScale: runDepthDamageScale(this.regionIndex, this.wings)
+      /* BOTH SIDES OF THE RATIO. `runDepthDamageScale` alone multiplied content
+         that already assumed a deep player, so a wing authored for slot
+         sixteen still arrived at slot one far too strong — six wings killed a
+         starting deck 14 times out of 14. `routeScaleSplit` is
+         `sqrt(f(routeSlot) / f(authoredSlot))`, applied to how hard a body hits
+         AND to how long it lives, so the two together come to the ratio.
+
+         Pools matter as much as damage here and used not to move at all: the
+         Greenhouse and the Crypt killed a starting deck at an ordinary ~19% a
+         fight, which is not a damage problem — their bodies simply outlive
+         twelve cards.
+
+         The two `regionFix` terms stay keyed to the REGION. They are not a
+         ladder: they are the measured correction for four wings whose bodies
+         do not survive a turn (REGION_CONTENT_FIX). Where a fight is authored
+         still prices the fight; where the party MET it prices the run. */
+      /* THE RATIO GOES ON THE POOL, NOT ON THE DAMAGE, and that is measured.
+         Splitting it across both (sqrt each) looked symmetrical and made things
+         worse: lowering enemy damage removes the pressure this harness's bot
+         needs to act at all, so fights stopped resolving — past-30 went 3 -> 13
+         and a Dough Blob sat at 47/47 for two hundred turns. That is the
+         turtling degeneracy `docs/notes/2026-09-01-the-guard-axis.md` is about,
+         and a difficulty knob must not reach into it.
+
+         Pool is the right lever anyway, and the same measurement says so: the
+         Greenhouse and the Crypt killed a starting deck at an ORDINARY ~19% a
+         fight. Nothing was hitting too hard. Their bodies simply outlive what
+         twelve cards can put out, and only Courage reaches that.
+
+         So damage keeps the depth curve it has always had, and the route ratio
+         prices how long a body lives. */
+      /* THE TWO DIRECTIONS NEED DIFFERENT LEVERS, and both halves are measured.
+         Putting the whole ratio on one number failed twice:
+
+           on BOTH (sqrt each)   lowering enemy damage removes the pressure this
+                                 harness's bot needs to act, so fights stopped
+                                 resolving — past-30 3 -> 13, and a Dough Blob
+                                 sat at 47/47 for two hundred turns. That is the
+                                 turtling degeneracy the guard-axis note is
+                                 about, and a difficulty knob must not reach it.
+           on POOL alone         the ratio runs to 4.84 on the upside, so the
+                                 Foyer met at wing six got a FIVE TIMES pool —
+                                 a five times longer fight. past-30 stayed at 13.
+
+         So: too hard for this slot (ratio < 1) cuts the POOL, which shortens a
+         grind without touching pressure — and the measurement says pool is the
+         right lever anyway, because the Greenhouse and the Crypt killed a
+         starting deck at an ORDINARY ~19% a fight. Too easy for this slot
+         (ratio > 1) raises DAMAGE, which adds pressure without lengthening
+         anything. Capped at 2.5: past that the front hall one-shots a Kid, and
+         2.0 is the endpoint every earlier balance number was measured against. */
+      enemyDamageScale: Math.min(2.5, Math.max(1, routeContentScale(region, this.regionIndex, this.wings)))
         * regionDamageFix(region),
-      courageFix: regionCourageFix(region),
+      courageFix: Math.min(1, routeContentScale(region, this.regionIndex, this.wings))
+        * regionCourageFix(region),
     });
 
     // Haunt counters / behavioural flags the encounter builder produced.

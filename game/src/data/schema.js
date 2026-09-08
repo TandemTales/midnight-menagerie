@@ -270,6 +270,129 @@ export function runDepthDamageScale(step, steps, scaleAtEnd = 2.0) {
   return 1 + (scaleAtEnd - 1) * (Math.min(i, n - 1) / (n - 1));
 }
 
+/**
+ * WHY THE ROUTE NEEDS A TRANSFORM AT ALL.
+ *
+ * The party chooses its route, so any wing can be wing one and any wing can be
+ * wing six. The content cannot be: every region is authored at one difficulty.
+ * `runDepthDamageScale` prices a fight by how far into the RUN the player is,
+ * which is right, but it multiplies content that already assumes a deep player.
+ * Measured, 14 expeditions begun in each wing with a starting deck:
+ *
+ *     began in            cleared wing 1     first fight, % of pool
+ *     lampworks              7 / 14                12.9%
+ *     foyer                  8 / 14                13.3%
+ *     greenhouse             0 / 14                20.0%
+ *     bathhouse              0 / 14                26.2%
+ *     kennels                0 / 14                32.0%
+ *     secret-passages        0 / 14                34.8%
+ *     pumpkin-grounds        0 / 14                64.4%
+ *
+ * Six wings, 84 runs, no survivors. So a wing met at route slot R is worth
+ * `whatSlotRWants / whatThisWingIs` — a ratio, not a multiplier. What each
+ * wing IS is the table below; what a slot WANTS is `routeTargetWeight`.
+ */
+/**
+ * WHAT EACH WING IS AUTHORED AT, measured as what it COSTS.
+ *
+ * Two cheaper proxies were tried and both failed, which is why this is a
+ * measured table and not a formula:
+ *
+ *   ladder index      wrong shape. The enemies are nearly flat across the
+ *                     house (0.92-1.46 by `hp x damage`) and the Bathhouse,
+ *                     slot fourteen, is the LOWEST of them.
+ *   formation weight  right idea, wrong magnitude. `pool x damage-per-turn`
+ *                     over each region's tiers spreads only 0.97-2.49, and it
+ *                     under-predicts the deep wings by about 1.6x: at that
+ *                     scaling the Pumpkin Grounds still killed a starting deck
+ *                     14 times out of 14 at wing one.
+ *
+ * It under-predicts because deep content is MECHANICALLY harder, not
+ * numerically bigger — Guard per turn, summons that refill the board, statuses
+ * that price out a hand. That is the whole history of this project's balance
+ * work and no static read of hp and damage can see it.
+ *
+ * So the weight is what a fight actually costs a REFERENCE DECK: the Courage
+ * a wing's first fight takes as a share of the pool, measured by
+ * `tests/run/run.py --startsweep` with route scaling neutral, 14 expeditions
+ * begun in each of the sixteen, normalised to the Foyer. Same bot everywhere,
+ * so the comparison holds even though the absolute numbers are the bot's.
+ *
+ * REGENERATE after content changes: `--startsweep 14`, read the '% of pool'
+ * column, divide by the Foyer's. `tests/design-damage/check.py` fails if the
+ * table and the shipped content disagree about the ORDER.
+ */
+/* measured 2026-09-07, tests/run/run.py --startsweep 14 */
+export const REGION_FIGHT_WEIGHT = Object.freeze({
+  'foyer': 1.00, 'nursery': 1.76, 'sleeping-quarters': 1.52, 'kitchens-cellars': 1.35,
+  'greenhouse': 1.50, 'graveyard': 1.30, 'study-library': 1.29, 'attic-observatory': 1.49,
+  'lampworks': 0.97, 'ballroom': 1.35, 'crypt': 1.41, 'hedge-maze': 1.59,
+  'secret-passages': 2.62, 'bathhouse': 1.97, 'kennels': 2.41, 'pumpkin-grounds': 4.84,
+  /* The Heart is never a START, so its weight is only ever the TARGET the last
+     slot aims at. Set to the hardest measurable wing so that the deepest content
+     plays as authored when it is last, and the Foyer at wing six is asked to
+     answer a player with three times the deck it was written for. */
+  'heart': 4.84,
+});
+
+/** What the LAST slot asks for: the hardest thing the house has. */
+const ROUTE_TOP = 4.84;
+
+/**
+ * What a fight at route slot `step` SHOULD be worth.
+ *
+ * A starting deck at wing one wants a Foyer-weight fight; a finished deck at
+ * the last wing wants a Heart-weight one. Linear between, which is the shape
+ * the ladder has always had — only now it is expressed in the same units the
+ * content is measured in, so the two can actually be compared.
+ */
+export function routeTargetWeight(step, steps) {
+  const n = Math.floor(Number(steps) || 0);
+  const i = Math.floor(Number(step) || 0);
+  if (n < 2 || i <= 0) return 1;
+  return 1 + (ROUTE_TOP - 1) * (Math.min(i, n - 1) / (n - 1));
+}
+
+/**
+ * WHAT A WING IS WORTH WHERE THE PARTY ACTUALLY MET IT.
+ *
+ * The party chooses its route, so any wing can be wing one and any wing can be
+ * wing six. The content cannot be: every region is authored at one weight. So
+ * the transform is a RATIO — what this slot wants, over what this wing is:
+ *
+ *     met where it belongs        ~1.00   plays as written
+ *     Pumpkin Grounds at wing 1    0.59   1.00 wanted / 1.69 authored
+ *     the Foyer at wing 6          2.49   the front hall, taken seriously
+ *     the Heart at wing 6          1.00   the ending, exactly as authored
+ *
+ * That last row is the check that the units are right: the Heart at the end of
+ * the run is the one place content and slot agree by construction, and it comes
+ * out at 1.0 without being told to.
+ */
+export function routeContentScale(region, step, steps) {
+  const authored = REGION_FIGHT_WEIGHT[region];
+  if (!(authored > 0)) return 1;
+  return routeTargetWeight(step, steps) / authored;
+}
+
+/**
+ * How that ratio is split between how HARD a body hits and how LONG it lives.
+ *
+ * Difficulty is roughly damage x fight length, and length is roughly pool over
+ * the player's output — so scaling BOTH by the full ratio squares it, and the
+ * Pumpkin Grounds at wing one would land at 0.27x rather than 0.52x. Each side
+ * takes the square root, so the two together come to the ratio itself.
+ *
+ * Splitting it at all (rather than putting it all on damage, which is where
+ * `runDepthDamageScale` used to live alone) is what the measurement above
+ * demands: the Greenhouse and the Crypt kill a starting deck at an ORDINARY
+ * ~19% a fight. Nothing is hitting too hard there. The bodies simply outlive
+ * what twelve cards can put out, and a damage-only knob cannot reach that.
+ */
+export function routeScaleSplit(region, step, steps, order = REGION_ORDER) {
+  return Math.sqrt(routeContentScale(region, step, steps, order));
+}
+
 export const COMPANIONS = [
   { slug: 'marmalade',  name: 'Marmalade',      title: 'the Ghost Cat',            region: 'foyer' },
   { slug: 'wisp',       name: 'Wisp',           title: "the Baby Will-o'-Wisp",    region: 'lampworks' },
