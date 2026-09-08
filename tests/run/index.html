@@ -88,6 +88,7 @@ function claimAndCross(run) {
 }
 
 let ENDS_DETAIL = [], DEPTH_FRAC = 0;
+const START_SWEEP = [];
 /* Which kinds of room the 50 expeditions actually enter. A deliberate router
    is a better player and a WORSE sampler, and the trade is only acceptable if
    it is watched: a harness that quietly stopped entering Big Scares would keep
@@ -897,6 +898,59 @@ async function main() {
     lengths.push(run.visitedIds.length);
     const key = run.result === 'victory' ? 'victory' : `defeat/${run.region}`;
     ends[key] = (ends[key] || 0) + 1;
+  }
+
+  /* ── WHERE YOU BEGIN, and whether you survive it ─────────────────────────
+   *
+   * `?startsweep=N` runs N expeditions begun in EACH of the sixteen. Off by
+   * default because it is a measurement rather than an assertion and it costs
+   * 16xN expeditions; the shipping fifty only need to prove the path works.
+   *
+   * THE QUESTION IT ANSWERS. Until 2026-09-07 wing one was always the Foyer, so
+   * every difficulty number in this project was measured against a starting
+   * deck meeting the gentlest content in the game. A player who has cleared it
+   * can now begin in the Kennels or the Bathhouse with the same twelve cards.
+   * `ladder.py --wing N` prices a region at route slots 2-5 and says every
+   * region is GENTLER early — but slot ONE was never in that table, and
+   * "probably fine" is not a measurement.
+   *
+   * `began` is forced rather than voted so each wing gets an equal sample; the
+   * vote is what a player uses and is exercised by the fifty above.          */
+  const SWEEP_N = Math.max(0, Number(new URLSearchParams(location.search).get('startsweep')) || 0);
+  if (SWEEP_N > 0) {
+    say('<h2>where you begin</h2>');
+    const startable = RUN_REGIONS.filter(r => r !== RUN_REGIONS[RUN_REGIONS.length - 1]);
+    let rows = '<table><tr><th>began in</th><th>runs</th><th>cleared wing 1</th>'
+      + '<th>died in wing 1</th><th>wings crossed</th><th>victories</th>'
+      + '<th>first fight, % of pool</th></tr>';
+    for (const region of startable) {
+      let cleared = 0, diedFirst = 0, wings = 0, wins = 0, pct = 0, pctN = 0;
+      for (let k = 0; k < SWEEP_N; k++) {
+        const seed = 400000 + k * 5171 + startable.indexOf(region) * 97;
+        let r;
+        try {
+          r = await simulate(seed, { companion: COMPANIONS[k % COMPANIONS.length],
+                                     kid: KIDS[k % KIDS.length], haunt: 0,
+                                     startRegion: region });
+        } catch (e) { fail(`startsweep ${region} seed ${seed} threw: ${e && e.message}`); continue; }
+        const run = r.run;
+        if (r.began !== region) fail(`startsweep: asked for ${region}, began in ${r.began}`);
+        const crossed = (run.route || []).length;
+        wings += crossed;
+        if (crossed > 1) cleared++; else diedFirst++;
+        if (run.result === 'victory') wins++;
+        for (const f of r.ledger) {
+          if (f.region === region && f.max) { pct += 100 * f.cost / f.max; pctN++; }
+        }
+      }
+      const row = { region, runs: SWEEP_N, cleared, diedFirst,
+                    wings: +(wings / SWEEP_N).toFixed(2), wins,
+                    pct: pctN ? +(pct / pctN).toFixed(1) : 0 };
+      START_SWEEP.push(row);
+      rows += `<tr><td>${region}</td><td>${SWEEP_N}</td><td>${cleared}</td>`
+        + `<td>${diedFirst}</td><td>${row.wings}</td><td>${wins}</td><td>${row.pct}%</td></tr>`;
+    }
+    say(rows + '</table>');
   }
 
   // ── determinism: the same seed twice, byte-identical ─────────────────────
@@ -2081,7 +2135,7 @@ autosaves ${saveCount}</pre>`);
     depth: DEPTH_TABLE, arrival: ARRIVAL_TABLE,
     teach: TEACH_TABLE, teachCover: TEACH_COVER, reachable: REACHABLE_TABLE,
     tiers: TIER_TABLE, patience: PATIENCE_ROW, pierceCover: PIERCE_ROW,
-    sources: SOURCE_ROWS,
+    sources: SOURCE_ROWS, startSweep: START_SWEEP,
     determinism: detOk, resume: resumeOk, storage: storeOk,
     combatResume: combatResume, combatResumeTried: combatResumeTried, replayed,
   };

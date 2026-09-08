@@ -34,7 +34,12 @@ async def main(a):
                                       errors.append(m.text) if m.type == "error" else None))
         page.on("pageerror", lambda e: errors.append("PAGEERROR " + str(e)))
 
-        url = URL + (("?runs=%d" % a.runs) if a.runs else "")
+        q = []
+        if a.runs:
+            q.append("runs=%d" % a.runs)
+        if a.startsweep:
+            q.append("startsweep=%d" % a.startsweep)
+        url = URL + ("?" + "&".join(q) if q else "")
         await page.goto(url, wait_until="load", timeout=60000)
         try:
             await page.wait_for_function("window.__RUN_RESULT__ !== undefined",
@@ -136,6 +141,25 @@ async def main(a):
                      "%d%%" % r["inPct"], r["lost"]))
         print("  FLAT '%% of pool' down the column means the CONTENT is overpriced;")
         print("  falling means the OPENING DECK is. 'deck' beside it is the control.")
+
+    sw = res.get("startSweep") or []
+    if sw:
+        print("")
+        print("where you begin, and whether you survive it")
+        print("  Until 2026-09-07 wing one was always the Foyer, so every difficulty")
+        print("  number in this project was measured against a starting deck meeting")
+        print("  the gentlest content in the game. This is the same deck beginning")
+        print("  somewhere else.")
+        print("  %-22s %-6s %-9s %-9s %-8s %-6s %s"
+              % ("began in", "runs", "cleared", "died in 1", "wings", "wins", "1st fight % pool"))
+        for r in sw:
+            print("  %-22s %-6d %-9d %-9d %-8s %-6d %s"
+                  % (r["region"], r["runs"], r["cleared"], r["diedFirst"],
+                     r["wings"], r["wins"], "%.1f%%" % r["pct"]))
+        died = sorted(sw, key=lambda x: -x["diedFirst"])[:3]
+        print("  hardest to begin in: "
+              + ", ".join("%s (%d/%d died)" % (d["region"], d["diedFirst"], d["runs"])
+                          for d in died))
 
     pat = res.get("patience")
     if pat:
@@ -369,5 +393,8 @@ if __name__ == "__main__":
     # More expeditions for a MEASUREMENT pass. Deep regions get 1-5 boss
     # fights at the default 50, which is too few to tune against.
     ap.add_argument("--runs", type=int, default=0)
+    ap.add_argument("--startsweep", type=int, default=0, metavar="N",
+                    help="also run N expeditions begun in EACH wing and print "
+                         "how each start fares. A measurement, not an assertion.")
     ap.add_argument("--verbose", action="store_true")
     sys.exit(asyncio.run(main(ap.parse_args())))
