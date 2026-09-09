@@ -97,6 +97,17 @@ export class CardView {
     el.dataset.rarity = def.rarity || 'common';
     el.dataset.uid = this.uid;
     el.dataset.cardId = def.id;
+    /* The rules text is not the whole keyword surface. Some cards carry a
+       keyword in their metadata because the mechanic is implicit (or because
+       the sentence would become noisy if it repeated the name). Keep that
+       declaration on the view so the shared card-hover tooltip can explain
+       every mechanic the card advertises, not only bracketed words. */
+    const keywordIds = new Set(def.keywords || []);
+    if (def.exhaust) keywordIds.add('vanish');
+    if (def.ethereal) keywordIds.add('ethereal');
+    if (def.innate) keywordIds.add('innate');
+    if (def.retain) keywordIds.add('retain');
+    el.dataset.keywords = [...keywordIds].join(',');
     el.setAttribute('role', 'button');
     // Focusable so `view.el.focus()` is not a no-op and the hand can run a
     // roving-focus model. -1: reachable programmatically, never by raw Tab

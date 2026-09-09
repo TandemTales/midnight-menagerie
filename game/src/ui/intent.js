@@ -386,10 +386,11 @@ export class IntentView {
         const d = document.createElement('span');
         d.className = 'cb-intent__pip';
         d.dataset.kind = s.kind || 'debuff';
+        d.dataset.tipStatus = s.id;
+        d.dataset.tipStacks = String(s.stacks);
         d.tabIndex = 0;
         const who = s.to === 'self' ? 'itself' : s.to === 'allEnemies' || s.to === 'allies' ? 'its allies' : 'you';
-        d.dataset.tipTitle = s.name || s.id;
-        d.dataset.tip = `${s.stacks} ${s.name} on ${who} when this resolves.`;
+        d.dataset.tipOwner = who;
         d.setAttribute('aria-label', `${s.stacks} ${s.name} to ${who}`);
         d.innerHTML = statusPipIcon(s) + `<b>${s.stacks}</b>`;
         this.$pips.appendChild(d);

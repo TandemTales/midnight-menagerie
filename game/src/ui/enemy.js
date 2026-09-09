@@ -990,7 +990,7 @@ export class EnemyView {
           <div class="cb-enemy__fill"></div>
           <div class="cb-enemy__hp"><span class="cb-enemy__hpn"></span><span class="cb-enemy__hpm"></span></div>
         </div>
-        <div class="cb-enemy__guard" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 L21 5.5 C21 14 17 20 12 22.5 C7 20 3 14 3 5.5 Z"/></svg><span></span></div>
+        <div class="cb-enemy__guard" data-tip="Guard|Temporary protection. Damage removes Guard before it removes Courage.|All Guard is lost at the start of its turn unless an effect says otherwise." tabindex="0" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 L21 5.5 C21 14 17 20 12 22.5 C7 20 3 14 3 5.5 Z"/></svg><span></span></div>
         <div class="cb-enemy__statuses"></div>
       </div>
       <div class="cb-enemy__preview" hidden></div>`;
@@ -1152,7 +1152,9 @@ export class EnemyView {
       d.className = 'cb-status';
       d.dataset.kind = s.kind || 'buff';
       d.dataset.id = s.id;
-      d.dataset.tip = statusTip(s);
+      d.dataset.tipStatus = s.id;
+      d.dataset.tipStacks = String(s.stacks);
+      d.dataset.tipOwner = this.name;
       d.tabIndex = 0;
       // A real icon, from the 118-glyph set in ui/icons.js. Round 1 emitted an
       // empty `<i data-g="haunt">` that no stylesheet ever drew, so Haunt was a
@@ -1338,7 +1340,7 @@ export class EnemyView {
     if (p.uncertain) bits.push(`<span class="cb-prev__maybe">depends on your pick</span>`);
     if (p.kills) bits.push(`<span class="cb-prev__lethal">LETHAL</span>`);
     for (const s of p.statuses || []) {
-      bits.push(`<span class="cb-prev__st" data-kind="${s.kind}">${s.remove ? '−' : '+'}${s.stacks} ${s.name}</span>`);
+      bits.push(`<span class="cb-prev__st" data-kind="${s.kind}" data-tip-status="${esc(s.id)}" data-tip-stacks="${s.stacks}" data-tip-owner="You" tabindex="0">${s.remove ? '−' : '+'}${s.stacks} ${esc(s.name)}</span>`);
     }
     if (!bits.length) { this.$preview.hidden = true; this.el.classList.add('is-targeted'); return this; }
     this.$preview.innerHTML = bits.join('');

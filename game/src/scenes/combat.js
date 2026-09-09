@@ -692,7 +692,7 @@ export class CombatScene extends Scene {
               <span class="cb-player__title"></span>
             </div>
             <div class="cb-player__vitals">
-              <div class="cb-player__guard" hidden>
+              <div class="cb-player__guard" data-tip="Guard|Temporary protection. Damage removes Guard before it removes Courage.|All Guard is lost at the start of your turn unless a Trick says otherwise." tabindex="0" hidden>
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5 L21.5 5.2 C21.5 14 17.3 20.2 12 22.8 C6.7 20.2 2.5 14 2.5 5.2 Z"/></svg>
                 <b>0</b>
               </div>
@@ -731,7 +731,7 @@ export class CombatScene extends Scene {
             <span class="cb-mate__ready" hidden>ready</span>
           </div>
           <div class="cb-mate__vitals">
-            <div class="cb-mate__guard" hidden>
+            <div class="cb-mate__guard" data-tip="Guard|Temporary protection. Damage removes Guard before it removes Courage.|All Guard is lost at the start of your turn unless a Trick says otherwise." tabindex="0" hidden>
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5 L21.5 5.2 C21.5 14 17.3 20.2 12 22.8 C6.7 20.2 2.5 14 2.5 5.2 Z"/></svg>
               <b>0</b>
             </div>
@@ -2946,6 +2946,11 @@ export class CombatScene extends Scene {
       const chip = document.createElement('span');
       chip.className = 'cb-mate__st';
       chip.setAttribute('role', 'listitem');
+      chip.tabIndex = 0;
+      chip.dataset.tipStatus = id;
+      chip.dataset.tipStacks = String(stacks);
+      chip.dataset.tipOwner = m.name || 'Your friend';
+      chip.setAttribute('aria-label', `${this.engine.statusDef(id)?.name || id} ${stacks}`);
       chip.textContent = `${this.engine.statusDef(id)?.name || id} ${stacks}`;
       el.st.appendChild(chip);
     }
@@ -3114,7 +3119,9 @@ export class CombatScene extends Scene {
       d.dataset.id = s.id;
       d.tabIndex = 0;
       d.setAttribute('role', 'listitem');
-      d.dataset.tip = `${s.name}|${s.desc || ''}|${decayLine(s.decay)}`;
+      d.dataset.tipStatus = s.id;
+      d.dataset.tipStacks = String(s.stacks);
+      d.dataset.tipOwner = 'You';
       d.setAttribute('aria-label', `${s.name} ${s.stacks}. ${s.desc || ''}`);
       d.innerHTML = statusGlyph(s) + (s.showStacks === false ? '' : `<b>${s.stacks}</b>`);
       this.$statuses.appendChild(d);

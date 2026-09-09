@@ -526,6 +526,24 @@ export class RewardScene extends RoomScene {
     const fan = sec.querySelector('.rw-fan');
     this.$fan = fan;
     this._slots = [];
+    let hoverEntry = null;
+    let focusEntry = null;
+    let announcedEntry = null;
+    const syncCardHover = () => {
+      const active = hoverEntry || focusEntry;
+      if (active === announcedEntry) return;
+      if (announcedEntry) {
+        bus.emit('card:unhover', {
+          uid: announcedEntry.c.uid, cardId: announcedEntry.c.id,
+        });
+      }
+      announcedEntry = active;
+      if (active) {
+        bus.emit('card:hover', {
+          uid: active.c.uid, cardId: active.c.id, view: active.view,
+        });
+      }
+    };
 
     r.cards.forEach((c, i) => {
       const def = cardById(c.id);
@@ -553,10 +571,27 @@ export class RewardScene extends RoomScene {
       slot.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this._take(c.id); }
       });
-      slot.addEventListener('pointerenter', () => slot.classList.add('is-hot'));
-      slot.addEventListener('pointerleave', () => slot.classList.remove('is-hot'));
-      slot.addEventListener('focus', () => slot.classList.add('is-hot'));
-      slot.addEventListener('blur', () => slot.classList.remove('is-hot'));
+      const entry = { slot, view, c };
+      slot.addEventListener('pointerenter', () => {
+        hoverEntry = entry;
+        slot.classList.add('is-hot');
+        syncCardHover();
+      });
+      slot.addEventListener('pointerleave', () => {
+        if (hoverEntry === entry) hoverEntry = null;
+        slot.classList.remove('is-hot');
+        syncCardHover();
+      });
+      slot.addEventListener('focus', () => {
+        focusEntry = entry;
+        slot.classList.add('is-hot');
+        setTimeout(syncCardHover, 0);
+      });
+      slot.addEventListener('blur', () => {
+        if (focusEntry === entry) focusEntry = null;
+        slot.classList.remove('is-hot');
+        syncCardHover();
+      });
     });
 
     this._own(rovingFocus(fan, '.rw-slot', { cols: Math.max(1, r.cards.length) }));
@@ -566,7 +601,11 @@ export class RewardScene extends RoomScene {
     this._own(() => window.removeEventListener('resize', onResize));
 
     if (this.resolved) this._markTaken(this.picked, false);
-    else requestAnimationFrame(() => this._slots[0]?.slot.focus());
+    else this._own(bus.on('scene:entered', () => {
+      setTimeout(() => {
+        if (!this._dead && !this.resolved) this._slots[0]?.slot.focus();
+      }, 0);
+    }));
   }
 
   _layout() {
@@ -616,6 +655,7 @@ export class RewardScene extends RoomScene {
 
   _take(cardId) {
     if (this.resolved) return;
+    bus.emit('card:unhover');
     // Before anything can await: a second click while the input is on the wire
     // would take a second Trick.
     this.resolved = true;

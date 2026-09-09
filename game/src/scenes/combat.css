@@ -619,8 +619,9 @@
   font-family: var(--font-num);
 }
 .cb-prev__thru.is-stopped { color: var(--spectre-200); font-style: italic; }
-.cb-prev__st { font-size: var(--fs-xs); color: var(--spectre-200); letter-spacing: .06em; }
+.cb-prev__st { font-size: var(--fs-xs); color: var(--spectre-200); letter-spacing: .06em; cursor: help; }
 .cb-prev__st[data-kind="debuff"] { color: var(--threat-200); }
+.cb-prev__st:hover, .cb-prev__st:focus-visible { color: var(--text-hi); text-decoration: underline; text-underline-offset: 2px; }
 
 /* ── status pills (shared by player + enemies) ──────────────────────────── */
 .cb-status {
@@ -2020,6 +2021,12 @@
   font-size: var(--fs-xs); color: var(--text-mid);
   border: 1px solid color-mix(in srgb, var(--surface-line) 55%, transparent);
   border-radius: var(--radius-lg); padding: 1px 6px;
+  cursor: help;
+}
+.cb-mate__st:hover, .cb-mate__st:focus-visible {
+  color: var(--text-hi);
+  border-color: var(--spectre-300);
+  transform: translateY(-1px);
 }
 .cb-mate__aim {
   margin-top: var(--s-2);

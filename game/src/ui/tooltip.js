@@ -835,8 +835,11 @@ export class Tooltip {
    */
   _showCardKeywords(cardEl) {
     if (!cardEl || !this.enabled) return;
-    const ids = [...new Set([...cardEl.querySelectorAll('.mm-card__kw[data-kw]')]
-      .map(n => n.dataset.kw).filter(Boolean))];
+    const textIds = [...cardEl.querySelectorAll('.mm-card__kw[data-kw]')]
+      .map(n => n.dataset.kw).filter(Boolean);
+    const declaredIds = String(cardEl.dataset.keywords || '')
+      .split(',').map(s => s.trim()).filter(Boolean);
+    const ids = [...new Set([...declaredIds, ...textIds])];
     const items = ids.map(id => this.keyword(id)).filter(Boolean);
     if (!items.length) { if (this._cardMode) this.hide(); return; }
     this._cardMode = true;

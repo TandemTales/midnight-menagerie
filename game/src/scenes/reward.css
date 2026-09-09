@@ -306,6 +306,11 @@
   border-color: var(--flame-300);
   box-shadow: 0 0 26px color-mix(in srgb, var(--flame-glow) 42%, transparent);
 }
+/* Reward cards are selected through their slot, but their highlighted keyword
+   words should still be real tooltip hit targets. The base card intentionally
+   disables pointer events on its children for hand hit-testing; this screen
+   has a normal slot wrapper, so let the keyword itself receive the hover. */
+.scene--reward .mm-card__kw { pointer-events: auto; cursor: help; }
 .rw-slot__rarity {
   position: absolute; left: 50%; bottom: -22px; transform: translateX(-50%);
   font-size: var(--fs-xs); letter-spacing: .2em; text-transform: uppercase;
