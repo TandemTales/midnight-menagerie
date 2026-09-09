@@ -112,11 +112,61 @@ GUTTERLESS = {
     ("drizzle", 1402, 1122): (5, 4),
     ("crinkle", 1402, 1122): (5, 4),
     ("hush",    1402, 1122): (4, 5),
+    # Seven of truffle_cards1-20a's fourteen detected tiles are vertical MERGES,
+    # so the median tile is itself a merge and `grid_from_detection` reads 4x4.
+    # The sheet is plainly 4x5; read off the art like the rest of this table.
+    ("truffle", 1374, 1145): (4, 5),
 }
 
 
+def _lay(w, h, cols, rows):
+    cw, ch = w / cols, h / rows
+    return [(int(round(c * cw)), int(round(r * ch)),
+             int(round((c + 1) * cw)), int(round((r + 1) * ch)))
+            for r in range(rows) for c in range(cols)]
+
+
+def grid_from_detection(path, found, want):
+    """The uniform grid the DETECTED tiles are evidence of.
+
+    Tile COUNT is not the evidence — it is the thing that goes wrong. Detection
+    fails three ways on these sheets and all three leave the cell size intact:
+
+        a whole row missing     wisp_cards41-60a found 3 rows of 5 of a 5x4
+        two tiles merged        truffle_cards1-20a found [1.25, 2.5, 1.25]
+        a whole row as one      mossbit_cards61-80a found [5.0] on its first row
+
+    The first only loses cards. The other two are worse: a merged blob counts as
+    ONE tile, so every card after it shifts by one and gets its neighbour's
+    picture — a mis-mapping that looks entirely right, which this file's own
+    header says is worse than no mapping at all.
+
+    The MEDIAN tile is immune to all three, because a merge is rare and a median
+    is not a mean. So measure the cell, divide the sheet by it, and accept the
+    grid only if it explains the range exactly.
+    """
+    from PIL import Image as _I
+    if not found:
+        return []
+    with _I.open(path) as im:
+        w, h = im.size
+    ws = sorted(x1 - x0 for x0, y0, x1, y1 in found)
+    hs = sorted(y1 - y0 for x0, y0, x1, y1 in found)
+    mw, mh = ws[len(ws) // 2], hs[len(hs) // 2]
+    if mw <= 0 or mh <= 0:
+        return []
+    cols, rows = int(round(w / mw)), int(round(h / mh))
+    if cols < 1 or rows < 1 or cols * rows != want:
+        return []
+    # The cell has to actually divide the sheet — a median that is not a whole
+    # fraction of the width means the sheet is not a uniform grid at all.
+    if abs(w / cols - mw) > 0.12 * mw or abs(h / rows - mh) > 0.12 * mh:
+        return []
+    return _lay(w, h, cols, rows)
+
+
 def grid_tiles(path, want):
-    """Tiles of a gutterless sheet, or [] when this one is not in the table."""
+    """Tiles of a sheet detection could not read, or [] if we cannot say."""
     from PIL import Image as _I
     comp = os.path.basename(path).split("_cards")[0]
     comp = PREFIX_SLUG.get(comp, comp)
@@ -128,13 +178,7 @@ def grid_tiles(path, want):
     cols, rows = grid
     if cols * rows != want:
         return []
-    cw, ch = w / cols, h / rows
-    out = []
-    for r in range(rows):
-        for c in range(cols):
-            out.append((int(round(c * cw)), int(round(r * ch)),
-                        int(round((c + 1) * cw)), int(round((r + 1) * ch))))
-    return out
+    return _lay(w, h, cols, rows)
 
 TILES = {
     "mopsy_cards81onA.png":  list(range(3, 15)),
@@ -219,11 +263,24 @@ def main(report=False):
         if name not in tcache:
             path = os.path.join(ART, name)
             t = tiles(path)
-            # Gutter detection came back short on a sheet we have read the grid
-            # for: fall back to it. Never the other way round — a sheet with
-            # real gutters is measured, not assumed.
+            # FEWER than wanted, never more. A sheet with SPARE tiles is the
+            # normal case here — mopsy_cards1-20a really does carry 22 for a
+            # 20-card range, and `OVERRIDE` names tiles 21 and 22 by hand after
+            # someone read the art. Re-deriving a 20-cell grid over that threw
+            # both away and asked for a tile that no longer existed. Extra
+            # images are the point of these sheets; only a SHORT read is broken.
             if want and len(t) < want:
-                g = grid_tiles(path, want)
+                # FIRST from the detection's own evidence: the median tile is
+                # the cell size even when a row is lost or two tiles merge, and
+                # a merge is the dangerous case because it SHIFTS every card
+                # after it rather than merely losing one.
+                g = grid_from_detection(path, t, want)
+                # Then the hand-read table, for sheets with no gutters at all
+                # where detection returns a single tile and has no evidence to
+                # offer. Never the other way round: a sheet with real gutters is
+                # measured, not assumed.
+                if not g:
+                    g = grid_tiles(path, want)
                 if g:
                     t = g
             tcache[name] = t
@@ -268,6 +325,21 @@ def main(report=False):
             first = PREFER.get((comp, lo)) or PREFER.get((prefix, lo))
             order_opts = ([o for o in opts if o[0] == first]
                           + [o for o in opts if o[0] != first]) if first else opts
+            # A COMPLETE VERSION BEATS A SHORT ONE, which is what the header has
+            # always claimed -- "the version used per range is whichever has
+            # exactly as many tiles as the range has cards" -- and what the code
+            # did not do. The loop below takes the first option holding an index,
+            # and `opts` is in filesystem order, so version `a` won every card it
+            # could and `b` only filled its gaps. When `a` is short because
+            # detection MERGED two tiles, that is not a gap: every card after the
+            # merge takes its neighbour's picture.
+            #
+            # Measured: truffle_cards81onA reads as 3 tiles (two of them merged
+            # pairs) while 81onB reads as exactly the 10 wanted, and cards 81-83
+            # were being cut from the merges. Sorting an exact match to the front
+            # is the whole fix, and it is stable, so a/b/c order still decides
+            # between two equally complete versions.
+            order_opts = sorted(order_opts, key=lambda o: 0 if o[1] == want else 1)
             plan = []
             for i in range(want):
                 chosen = None
@@ -307,7 +379,14 @@ def main(report=False):
                 else:
                     continue
                 src = Image.open(os.path.join(ART, src_name)).convert("RGB")
-                box = sheet_tiles(src_name)[tno - 1]
+                _t = sheet_tiles(src_name)
+                if tno - 1 >= len(_t):
+                    raise SystemExit(
+                        f"[cut] {cid}: wants tile {tno} of {src_name}, which "
+                        f"resolved to {len(_t)} tiles. A plan and a cut that "
+                        f"disagree about a sheet means the cache was warmed "
+                        f"with the wrong range.")
+                box = _t[tno - 1]
                 x0, y0, x1, y1 = box
                 crop = src.crop((x0 + INSET, y0 + INSET, x1 - INSET, y1 - INSET))
                 rel = f"{comp}/{slug}.webp"

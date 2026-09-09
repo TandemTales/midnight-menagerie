@@ -4282,9 +4282,9 @@
   },
   "drizzle/three-days-of-rain": {
    "file": "drizzle/three-days-of-rain.webp",
-   "w": 1250,
-   "h": 1250,
-   "source": "drizzle_cards81onA.png",
+   "w": 412,
+   "h": 413,
+   "source": "drizzle_cards81onB.png",
    "tile": 1,
    "n": 81
   },
@@ -6874,315 +6874,323 @@
   },
   "mossbit/save-it-for-tomorrow": {
    "file": "mossbit/save-it-for-tomorrow.webp",
-   "w": 298,
-   "h": 504,
+   "w": 303,
+   "h": 252,
    "source": "mossbit_cards41-60a.png",
    "tile": 1,
    "n": 41
   },
   "mossbit/shell-rattle": {
    "file": "mossbit/shell-rattle.webp",
-   "w": 298,
-   "h": 504,
+   "w": 303,
+   "h": 252,
    "source": "mossbit_cards41-60a.png",
    "tile": 2,
    "n": 42
   },
   "mossbit/small-headbutt": {
    "file": "mossbit/small-headbutt.webp",
-   "w": 297,
-   "h": 504,
+   "w": 304,
+   "h": 252,
    "source": "mossbit_cards41-60a.png",
    "tile": 3,
    "n": 43
   },
   "mossbit/small-monument": {
    "file": "mossbit/small-monument.webp",
-   "w": 298,
-   "h": 504,
+   "w": 303,
+   "h": 252,
    "source": "mossbit_cards41-60a.png",
    "tile": 4,
    "n": 44
   },
   "mossbit/small-but-permanent": {
    "file": "mossbit/small-but-permanent.webp",
-   "w": 298,
-   "h": 504,
+   "w": 303,
+   "h": 252,
    "source": "mossbit_cards41-60a.png",
    "tile": 5,
    "n": 45
   },
   "mossbit/steady-little-heart": {
    "file": "mossbit/steady-little-heart.webp",
-   "w": 295,
-   "h": 216,
+   "w": 303,
+   "h": 252,
    "source": "mossbit_cards41-60a.png",
    "tile": 6,
    "n": 46
   },
   "mossbit/stone-age-swipe": {
    "file": "mossbit/stone-age-swipe.webp",
-   "w": 297,
-   "h": 216,
+   "w": 303,
+   "h": 252,
    "source": "mossbit_cards41-60a.png",
    "tile": 7,
    "n": 47
   },
   "mossbit/stone-calendar": {
    "file": "mossbit/stone-calendar.webp",
-   "w": 299,
-   "h": 216,
+   "w": 304,
+   "h": 252,
    "source": "mossbit_cards41-60a.png",
    "tile": 8,
    "n": 48
   },
   "mossbit/sun-on-the-shell": {
    "file": "mossbit/sun-on-the-shell.webp",
-   "w": 297,
-   "h": 216,
+   "w": 303,
+   "h": 252,
    "source": "mossbit_cards41-60a.png",
    "tile": 9,
    "n": 49
   },
   "mossbit/this-is-my-spot": {
    "file": "mossbit/this-is-my-spot.webp",
-   "w": 294,
-   "h": 216,
+   "w": 303,
+   "h": 252,
    "source": "mossbit_cards41-60a.png",
    "tile": 10,
    "n": 50
   },
   "mossbit/three-knocks": {
    "file": "mossbit/three-knocks.webp",
-   "w": 293,
-   "h": 278,
+   "w": 303,
+   "h": 252,
    "source": "mossbit_cards41-60a.png",
    "tile": 11,
    "n": 51
   },
   "mossbit/warm-flagstone": {
    "file": "mossbit/warm-flagstone.webp",
-   "w": 296,
-   "h": 278,
+   "w": 303,
+   "h": 252,
    "source": "mossbit_cards41-60a.png",
    "tile": 12,
    "n": 52
   },
   "mossbit/weatherproofing": {
    "file": "mossbit/weatherproofing.webp",
-   "w": 296,
-   "h": 278,
+   "w": 304,
+   "h": 252,
    "source": "mossbit_cards41-60a.png",
    "tile": 13,
    "n": 53
   },
   "mossbit/weight-to-words": {
    "file": "mossbit/weight-to-words.webp",
-   "w": 296,
-   "h": 278,
+   "w": 303,
+   "h": 252,
    "source": "mossbit_cards41-60a.png",
    "tile": 14,
    "n": 54
   },
   "mossbit/windowsill-nap": {
    "file": "mossbit/windowsill-nap.webp",
-   "w": 294,
-   "h": 278,
+   "w": 303,
+   "h": 252,
    "source": "mossbit_cards41-60a.png",
    "tile": 15,
    "n": 55
   },
   "mossbit/write-your-name-here": {
    "file": "mossbit/write-your-name-here.webp",
-   "w": 291,
-   "h": 274,
-   "source": "mossbit_cards41-60b.png",
+   "w": 303,
+   "h": 252,
+   "source": "mossbit_cards41-60a.png",
    "tile": 16,
    "n": 56
   },
   "mossbit/written-in-stone": {
    "file": "mossbit/written-in-stone.webp",
-   "w": 296,
-   "h": 274,
-   "source": "mossbit_cards41-60b.png",
+   "w": 303,
+   "h": 252,
+   "source": "mossbit_cards41-60a.png",
    "tile": 17,
    "n": 57
   },
   "mossbit/already-written": {
    "file": "mossbit/already-written.webp",
-   "w": 294,
-   "h": 274,
-   "source": "mossbit_cards41-60b.png",
+   "w": 304,
+   "h": 252,
+   "source": "mossbit_cards41-60a.png",
    "tile": 18,
    "n": 58
   },
   "mossbit/cemetery-shift": {
    "file": "mossbit/cemetery-shift.webp",
-   "w": 297,
-   "h": 274,
-   "source": "mossbit_cards41-60b.png",
+   "w": 303,
+   "h": 252,
+   "source": "mossbit_cards41-60a.png",
    "tile": 19,
    "n": 59
   },
   "mossbit/centuries-in-a-pocket": {
    "file": "mossbit/centuries-in-a-pocket.webp",
-   "w": 292,
-   "h": 274,
-   "source": "mossbit_cards41-60b.png",
+   "w": 303,
+   "h": 252,
+   "source": "mossbit_cards41-60a.png",
    "tile": 20,
    "n": 60
   },
   "mossbit/deep-inscription": {
    "file": "mossbit/deep-inscription.webp",
-   "w": 1532,
-   "h": 254,
+   "w": 303,
+   "h": 252,
    "source": "mossbit_cards61-80a.png",
    "tile": 1,
    "n": 61
   },
   "mossbit/due-notice": {
    "file": "mossbit/due-notice.webp",
-   "w": 290,
-   "h": 492,
+   "w": 303,
+   "h": 252,
    "source": "mossbit_cards61-80a.png",
    "tile": 2,
    "n": 62
   },
   "mossbit/emergency-burial": {
    "file": "mossbit/emergency-burial.webp",
-   "w": 293,
-   "h": 492,
+   "w": 304,
+   "h": 252,
    "source": "mossbit_cards61-80a.png",
    "tile": 3,
    "n": 63
   },
   "mossbit/eventually-wham": {
    "file": "mossbit/eventually-wham.webp",
-   "w": 301,
-   "h": 492,
+   "w": 303,
+   "h": 252,
    "source": "mossbit_cards61-80a.png",
    "tile": 4,
    "n": 64
   },
   "mossbit/family-plot": {
    "file": "mossbit/family-plot.webp",
-   "w": 612,
-   "h": 492,
+   "w": 303,
+   "h": 252,
    "source": "mossbit_cards61-80a.png",
    "tile": 5,
    "n": 65
   },
   "mossbit/five-little-headstones": {
    "file": "mossbit/five-little-headstones.webp",
-   "w": 290,
-   "h": 260,
+   "w": 303,
+   "h": 252,
    "source": "mossbit_cards61-80a.png",
    "tile": 6,
    "n": 66
   },
   "mossbit/funeral-procession": {
    "file": "mossbit/funeral-procession.webp",
-   "w": 295,
-   "h": 260,
+   "w": 303,
+   "h": 252,
    "source": "mossbit_cards61-80a.png",
    "tile": 7,
    "n": 67
   },
   "mossbit/geologic-headbutt": {
    "file": "mossbit/geologic-headbutt.webp",
-   "w": 301,
-   "h": 260,
+   "w": 304,
+   "h": 252,
    "source": "mossbit_cards61-80a.png",
    "tile": 8,
    "n": 68
   },
   "mossbit/geological-patience": {
    "file": "mossbit/geological-patience.webp",
-   "w": 296,
-   "h": 260,
+   "w": 303,
+   "h": 252,
    "source": "mossbit_cards61-80a.png",
    "tile": 9,
    "n": 69
   },
   "mossbit/become-a-rock": {
    "file": "mossbit/become-a-rock.webp",
-   "w": 302,
-   "h": 260,
+   "w": 303,
+   "h": 252,
    "source": "mossbit_cards61-80a.png",
    "tile": 10,
    "n": 70
   },
   "mossbit/last-word-again": {
    "file": "mossbit/last-word-again.webp",
-   "w": 290,
-   "h": 226,
-   "source": "mossbit_cards61-80b.png",
+   "w": 303,
+   "h": 252,
+   "source": "mossbit_cards61-80a.png",
    "tile": 11,
    "n": 71
   },
   "mossbit/lichen-clock": {
    "file": "mossbit/lichen-clock.webp",
-   "w": 293,
-   "h": 226,
-   "source": "mossbit_cards61-80b.png",
+   "w": 303,
+   "h": 252,
+   "source": "mossbit_cards61-80a.png",
    "tile": 12,
    "n": 72
   },
   "mossbit/monument-to-small-things": {
    "file": "mossbit/monument-to-small-things.webp",
-   "w": 303,
-   "h": 226,
-   "source": "mossbit_cards61-80b.png",
+   "w": 304,
+   "h": 252,
+   "source": "mossbit_cards61-80a.png",
    "tile": 13,
    "n": 73
   },
   "mossbit/rewrite-the-headstone": {
    "file": "mossbit/rewrite-the-headstone.webp",
-   "w": 298,
-   "h": 226,
-   "source": "mossbit_cards61-80b.png",
+   "w": 303,
+   "h": 252,
+   "source": "mossbit_cards61-80a.png",
    "tile": 14,
    "n": 74
   },
   "mossbit/set-in-stone": {
    "file": "mossbit/set-in-stone.webp",
-   "w": 302,
-   "h": 226,
-   "source": "mossbit_cards61-80b.png",
+   "w": 303,
+   "h": 252,
+   "source": "mossbit_cards61-80a.png",
    "tile": 15,
    "n": 75
   },
   "mossbit/take-the-hit-later": {
    "file": "mossbit/take-the-hit-later.webp",
-   "w": 290,
-   "h": 287,
-   "source": "mossbit_cards61-80b.png",
+   "w": 303,
+   "h": 252,
+   "source": "mossbit_cards61-80a.png",
    "tile": 16,
    "n": 76
   },
   "mossbit/the-bell-tolls": {
    "file": "mossbit/the-bell-tolls.webp",
-   "w": 608,
-   "h": 287,
-   "source": "mossbit_cards61-80b.png",
+   "w": 303,
+   "h": 252,
+   "source": "mossbit_cards61-80a.png",
    "tile": 17,
    "n": 77
   },
   "mossbit/the-long-way-around": {
    "file": "mossbit/the-long-way-around.webp",
-   "w": 299,
-   "h": 287,
-   "source": "mossbit_cards61-80b.png",
+   "w": 304,
+   "h": 252,
+   "source": "mossbit_cards61-80a.png",
    "tile": 18,
    "n": 78
   },
   "mossbit/mansion-moves": {
    "file": "mossbit/mansion-moves.webp",
-   "w": 302,
-   "h": 287,
-   "source": "mossbit_cards61-80b.png",
+   "w": 303,
+   "h": 252,
+   "source": "mossbit_cards61-80a.png",
    "tile": 19,
    "n": 79
+  },
+  "mossbit/tombstone-dominoes": {
+   "file": "mossbit/tombstone-dominoes.webp",
+   "w": 303,
+   "h": 252,
+   "source": "mossbit_cards61-80a.png",
+   "tile": 20,
+   "n": 80
   },
   "mossbit/turn-to-stone": {
    "file": "mossbit/turn-to-stone.webp",
@@ -8314,64 +8322,64 @@
   },
   "pudding/never-drop-the-ball": {
    "file": "pudding/never-drop-the-ball.webp",
-   "w": 761,
-   "h": 198,
+   "w": 380,
+   "h": 201,
    "source": "pudding_cards41-60a.png",
    "tile": 1,
    "n": 41
   },
   "pudding/never-off-duty": {
    "file": "pudding/never-off-duty.webp",
-   "w": 374,
-   "h": 198,
+   "w": 380,
+   "h": 201,
    "source": "pudding_cards41-60a.png",
    "tile": 2,
    "n": 42
   },
   "pudding/night-patrol": {
    "file": "pudding/night-patrol.webp",
-   "w": 377,
-   "h": 198,
+   "w": 380,
+   "h": 201,
    "source": "pudding_cards41-60a.png",
    "tile": 3,
    "n": 43
   },
   "pudding/no-one-gets-left-behind": {
    "file": "pudding/no-one-gets-left-behind.webp",
-   "w": 379,
-   "h": 196,
+   "w": 380,
+   "h": 201,
    "source": "pudding_cards41-60a.png",
    "tile": 4,
    "n": 44
   },
   "pudding/pack-walk": {
    "file": "pudding/pack-walk.webp",
-   "w": 374,
-   "h": 196,
+   "w": 380,
+   "h": 201,
    "source": "pudding_cards41-60a.png",
    "tile": 5,
    "n": 45
   },
   "pudding/plot-patrol": {
    "file": "pudding/plot-patrol.webp",
-   "w": 375,
-   "h": 196,
+   "w": 380,
+   "h": 201,
    "source": "pudding_cards41-60a.png",
    "tile": 6,
    "n": 46
   },
   "pudding/protective-nip": {
    "file": "pudding/protective-nip.webp",
-   "w": 377,
-   "h": 196,
+   "w": 380,
+   "h": 201,
    "source": "pudding_cards41-60a.png",
    "tile": 7,
    "n": 47
   },
   "pudding/pug-sized-shield": {
    "file": "pudding/pug-sized-shield.webp",
-   "w": 378,
-   "h": 195,
+   "w": 380,
+   "h": 201,
    "source": "pudding_cards41-60a.png",
    "tile": 8,
    "n": 48
@@ -8379,96 +8387,96 @@
   "pudding/reburial": {
    "file": "pudding/reburial.webp",
    "w": 380,
-   "h": 195,
+   "h": 200,
    "source": "pudding_cards41-60a.png",
    "tile": 9,
    "n": 49
   },
   "pudding/share-the-blanket": {
    "file": "pudding/share-the-blanket.webp",
-   "w": 375,
-   "h": 195,
+   "w": 380,
+   "h": 200,
    "source": "pudding_cards41-60a.png",
    "tile": 10,
    "n": 50
   },
   "pudding/sit-with-me": {
    "file": "pudding/sit-with-me.webp",
-   "w": 377,
-   "h": 195,
+   "w": 380,
+   "h": 200,
    "source": "pudding_cards41-60a.png",
    "tile": 11,
    "n": 51
   },
   "pudding/sniff-around": {
    "file": "pudding/sniff-around.webp",
-   "w": 332,
-   "h": 177,
+   "w": 380,
+   "h": 200,
    "source": "pudding_cards41-60a.png",
    "tile": 12,
    "n": 52
   },
   "pudding/sniff-out-the-good-one": {
    "file": "pudding/sniff-out-the-good-one.webp",
-   "w": 375,
-   "h": 177,
+   "w": 380,
+   "h": 201,
    "source": "pudding_cards41-60a.png",
    "tile": 13,
    "n": 53
   },
   "pudding/stay-back": {
    "file": "pudding/stay-back.webp",
-   "w": 374,
-   "h": 177,
+   "w": 380,
+   "h": 201,
    "source": "pudding_cards41-60a.png",
    "tile": 14,
    "n": 54
   },
   "pudding/stay-close": {
    "file": "pudding/stay-close.webp",
-   "w": 379,
-   "h": 177,
+   "w": 380,
+   "h": 201,
    "source": "pudding_cards41-60a.png",
    "tile": 15,
    "n": 55
   },
   "pudding/tail-on-watch": {
    "file": "pudding/tail-on-watch.webp",
-   "w": 377,
-   "h": 216,
+   "w": 380,
+   "h": 201,
    "source": "pudding_cards41-60a.png",
    "tile": 16,
    "n": 56
   },
   "pudding/take-me-instead": {
    "file": "pudding/take-me-instead.webp",
-   "w": 375,
-   "h": 216,
+   "w": 380,
+   "h": 201,
    "source": "pudding_cards41-60a.png",
    "tile": 17,
    "n": 57
   },
   "pudding/threat-assessment": {
    "file": "pudding/threat-assessment.webp",
-   "w": 374,
-   "h": 216,
+   "w": 380,
+   "h": 201,
    "source": "pudding_cards41-60a.png",
    "tile": 18,
    "n": 58
   },
   "pudding/you-heard-me-bark": {
    "file": "pudding/you-heard-me-bark.webp",
-   "w": 376,
-   "h": 216,
+   "w": 380,
+   "h": 201,
    "source": "pudding_cards41-60a.png",
    "tile": 19,
    "n": 59
   },
   "pudding/all-dogs-go-somewhere": {
    "file": "pudding/all-dogs-go-somewhere.webp",
-   "w": 261,
-   "h": 333,
-   "source": "pudding_cards41-60b.png",
+   "w": 380,
+   "h": 201,
+   "source": "pudding_cards41-60a.png",
    "tile": 20,
    "n": 60
   },
@@ -9418,8 +9426,8 @@
   },
   "truffle/found-it": {
    "file": "truffle/found-it.webp",
-   "w": 339,
-   "h": 434,
+   "w": 340,
+   "h": 225,
    "source": "truffle_cards1-20a.png",
    "tile": 1,
    "n": 1
@@ -9427,39 +9435,39 @@
   "truffle/keep-the-good-bits": {
    "file": "truffle/keep-the-good-bits.webp",
    "w": 339,
-   "h": 434,
+   "h": 225,
    "source": "truffle_cards1-20a.png",
    "tile": 2,
    "n": 2
   },
   "truffle/lower-the-guard": {
    "file": "truffle/lower-the-guard.webp",
-   "w": 338,
-   "h": 434,
+   "w": 339,
+   "h": 225,
    "source": "truffle_cards1-20a.png",
    "tile": 3,
    "n": 3
   },
   "truffle/needle-exchange": {
    "file": "truffle/needle-exchange.webp",
-   "w": 339,
-   "h": 434,
+   "w": 340,
+   "h": 225,
    "source": "truffle_cards1-20a.png",
    "tile": 4,
    "n": 4
   },
   "truffle/pick-it-back-up": {
    "file": "truffle/pick-it-back-up.webp",
-   "w": 339,
-   "h": 209,
+   "w": 340,
+   "h": 225,
    "source": "truffle_cards1-20a.png",
    "tile": 5,
    "n": 5
   },
   "truffle/shake-apart": {
    "file": "truffle/shake-apart.webp",
-   "w": 682,
-   "h": 209,
+   "w": 339,
+   "h": 225,
    "source": "truffle_cards1-20a.png",
    "tile": 6,
    "n": 6
@@ -9467,23 +9475,23 @@
   "truffle/tiny-disaster": {
    "file": "truffle/tiny-disaster.webp",
    "w": 339,
-   "h": 209,
+   "h": 225,
    "source": "truffle_cards1-20a.png",
    "tile": 7,
    "n": 7
   },
   "truffle/tiny-quill-flick": {
    "file": "truffle/tiny-quill-flick.webp",
-   "w": 339,
-   "h": 200,
+   "w": 340,
+   "h": 225,
    "source": "truffle_cards1-20a.png",
    "tile": 8,
    "n": 8
   },
   "truffle/all-spines-no-plan": {
    "file": "truffle/all-spines-no-plan.webp",
-   "w": 682,
-   "h": 200,
+   "w": 340,
+   "h": 225,
    "source": "truffle_cards1-20a.png",
    "tile": 9,
    "n": 9
@@ -9491,7 +9499,7 @@
   "truffle/all-together-now": {
    "file": "truffle/all-together-now.webp",
    "w": 339,
-   "h": 200,
+   "h": 225,
    "source": "truffle_cards1-20a.png",
    "tile": 10,
    "n": 10
@@ -9499,23 +9507,23 @@
   "truffle/back-into-them": {
    "file": "truffle/back-into-them.webp",
    "w": 339,
-   "h": 283,
+   "h": 225,
    "source": "truffle_cards1-20a.png",
    "tile": 11,
    "n": 11
   },
   "truffle/barely-holding-together": {
    "file": "truffle/barely-holding-together.webp",
-   "w": 339,
-   "h": 283,
+   "w": 340,
+   "h": 225,
    "source": "truffle_cards1-20a.png",
    "tile": 12,
    "n": 12
   },
   "truffle/bend-dont-break": {
    "file": "truffle/bend-dont-break.webp",
-   "w": 338,
-   "h": 283,
+   "w": 340,
+   "h": 225,
    "source": "truffle_cards1-20a.png",
    "tile": 13,
    "n": 13
@@ -9523,7 +9531,7 @@
   "truffle/bite-back-first": {
    "file": "truffle/bite-back-first.webp",
    "w": 339,
-   "h": 283,
+   "h": 225,
    "source": "truffle_cards1-20a.png",
    "tile": 14,
    "n": 14
@@ -9531,42 +9539,50 @@
   "truffle/carpet-check": {
    "file": "truffle/carpet-check.webp",
    "w": 339,
-   "h": 199,
-   "source": "truffle_cards1-20b.png",
+   "h": 225,
+   "source": "truffle_cards1-20a.png",
    "tile": 15,
    "n": 15
   },
   "truffle/crossfire": {
    "file": "truffle/crossfire.webp",
-   "w": 338,
-   "h": 284,
-   "source": "truffle_cards1-20b.png",
+   "w": 340,
+   "h": 225,
+   "source": "truffle_cards1-20a.png",
    "tile": 16,
    "n": 16
   },
   "truffle/down-in-front": {
    "file": "truffle/down-in-front.webp",
-   "w": 339,
-   "h": 284,
-   "source": "truffle_cards1-20b.png",
+   "w": 340,
+   "h": 225,
+   "source": "truffle_cards1-20a.png",
    "tile": 17,
    "n": 17
   },
   "truffle/exact-amount-of-terrible": {
    "file": "truffle/exact-amount-of-terrible.webp",
    "w": 339,
-   "h": 284,
-   "source": "truffle_cards1-20b.png",
+   "h": 225,
+   "source": "truffle_cards1-20a.png",
    "tile": 18,
    "n": 18
   },
   "truffle/floor-sweep": {
    "file": "truffle/floor-sweep.webp",
    "w": 339,
-   "h": 284,
-   "source": "truffle_cards1-20b.png",
+   "h": 225,
+   "source": "truffle_cards1-20a.png",
    "tile": 19,
    "n": 19
+  },
+  "truffle/gnaw-through-it": {
+   "file": "truffle/gnaw-through-it.webp",
+   "w": 340,
+   "h": 225,
+   "source": "truffle_cards1-20a.png",
+   "tile": 20,
+   "n": 20
   },
   "truffle/group-huddle": {
    "file": "truffle/group-huddle.webp",
@@ -9730,161 +9746,161 @@
   },
   "truffle/quill-reserve": {
    "file": "truffle/quill-reserve.webp",
-   "w": 378,
-   "h": 198,
+   "w": 380,
+   "h": 201,
    "source": "truffle_cards41-60a.png",
    "tile": 1,
    "n": 41
   },
   "truffle/quill-tax": {
    "file": "truffle/quill-tax.webp",
-   "w": 377,
-   "h": 198,
+   "w": 380,
+   "h": 201,
    "source": "truffle_cards41-60a.png",
    "tile": 2,
    "n": 42
   },
   "truffle/quills-in-reverse": {
    "file": "truffle/quills-in-reverse.webp",
-   "w": 376,
-   "h": 198,
+   "w": 380,
+   "h": 201,
    "source": "truffle_cards41-60a.png",
    "tile": 3,
    "n": 43
   },
   "truffle/ragged-reset": {
    "file": "truffle/ragged-reset.webp",
-   "w": 377,
-   "h": 198,
+   "w": 380,
+   "h": 201,
    "source": "truffle_cards41-60a.png",
    "tile": 4,
    "n": 44
   },
   "truffle/raggedy-breathing": {
    "file": "truffle/raggedy-breathing.webp",
-   "w": 378,
-   "h": 193,
+   "w": 380,
+   "h": 201,
    "source": "truffle_cards41-60a.png",
    "tile": 5,
    "n": 45
   },
   "truffle/rear-end-first": {
    "file": "truffle/rear-end-first.webp",
-   "w": 377,
-   "h": 193,
+   "w": 380,
+   "h": 201,
    "source": "truffle_cards41-60a.png",
    "tile": 6,
    "n": 46
   },
   "truffle/roll-with-it": {
    "file": "truffle/roll-with-it.webp",
-   "w": 377,
-   "h": 193,
+   "w": 380,
+   "h": 201,
    "source": "truffle_cards41-60a.png",
    "tile": 7,
    "n": 47
   },
   "truffle/round-up": {
    "file": "truffle/round-up.webp",
-   "w": 377,
-   "h": 193,
+   "w": 380,
+   "h": 201,
    "source": "truffle_cards41-60a.png",
    "tile": 8,
    "n": 48
   },
   "truffle/scrape-along-the-wall": {
    "file": "truffle/scrape-along-the-wall.webp",
-   "w": 378,
-   "h": 183,
+   "w": 380,
+   "h": 200,
    "source": "truffle_cards41-60a.png",
    "tile": 9,
    "n": 49
   },
   "truffle/scuttle-through": {
    "file": "truffle/scuttle-through.webp",
-   "w": 377,
-   "h": 183,
+   "w": 380,
+   "h": 200,
    "source": "truffle_cards41-60a.png",
    "tile": 10,
    "n": 50
   },
   "truffle/shake-it-loose": {
    "file": "truffle/shake-it-loose.webp",
-   "w": 376,
-   "h": 183,
+   "w": 380,
+   "h": 200,
    "source": "truffle_cards41-60a.png",
    "tile": 11,
    "n": 51
   },
   "truffle/shake-off-the-cobwebs": {
    "file": "truffle/shake-off-the-cobwebs.webp",
-   "w": 377,
-   "h": 183,
+   "w": 380,
+   "h": 200,
    "source": "truffle_cards41-60a.png",
    "tile": 12,
    "n": 52
   },
   "truffle/shake-and-scoot": {
    "file": "truffle/shake-and-scoot.webp",
-   "w": 378,
-   "h": 187,
+   "w": 380,
+   "h": 201,
    "source": "truffle_cards41-60a.png",
    "tile": 13,
    "n": 53
   },
   "truffle/shed-cycle": {
    "file": "truffle/shed-cycle.webp",
-   "w": 761,
-   "h": 187,
+   "w": 380,
+   "h": 201,
    "source": "truffle_cards41-60a.png",
    "tile": 14,
    "n": 54
   },
   "truffle/shed-happens": {
    "file": "truffle/shed-happens.webp",
-   "w": 377,
-   "h": 187,
+   "w": 380,
+   "h": 201,
    "source": "truffle_cards41-60a.png",
    "tile": 15,
    "n": 55
   },
   "truffle/still-good": {
    "file": "truffle/still-good.webp",
-   "w": 378,
-   "h": 227,
+   "w": 380,
+   "h": 201,
    "source": "truffle_cards41-60a.png",
    "tile": 16,
    "n": 56
   },
   "truffle/sweep-their-side-too": {
    "file": "truffle/sweep-their-side-too.webp",
-   "w": 377,
-   "h": 227,
+   "w": 380,
+   "h": 201,
    "source": "truffle_cards41-60a.png",
    "tile": 17,
    "n": 57
   },
   "truffle/sweep-the-floor": {
    "file": "truffle/sweep-the-floor.webp",
-   "w": 376,
-   "h": 227,
+   "w": 380,
+   "h": 201,
    "source": "truffle_cards41-60a.png",
    "tile": 18,
    "n": 58
   },
   "truffle/wretched-little-miracle": {
    "file": "truffle/wretched-little-miracle.webp",
-   "w": 377,
-   "h": 227,
+   "w": 380,
+   "h": 201,
    "source": "truffle_cards41-60a.png",
    "tile": 19,
    "n": 59
   },
   "truffle/zombie-nibble": {
    "file": "truffle/zombie-nibble.webp",
-   "w": 377,
-   "h": 227,
-   "source": "truffle_cards41-60b.png",
+   "w": 380,
+   "h": 201,
+   "source": "truffle_cards41-60a.png",
    "tile": 20,
    "n": 60
   },
@@ -10050,25 +10066,25 @@
   },
   "truffle/rotten-little-cannonball": {
    "file": "truffle/rotten-little-cannonball.webp",
-   "w": 706,
-   "h": 883,
-   "source": "truffle_cards81onA.png",
+   "w": 349,
+   "h": 437,
+   "source": "truffle_cards81onB.png",
    "tile": 1,
    "n": 81
   },
   "truffle/shared-pincushion": {
    "file": "truffle/shared-pincushion.webp",
-   "w": 706,
-   "h": 883,
-   "source": "truffle_cards81onA.png",
+   "w": 351,
+   "h": 437,
+   "source": "truffle_cards81onB.png",
    "tile": 2,
    "n": 82
   },
   "truffle/the-carpet-remembers": {
    "file": "truffle/the-carpet-remembers.webp",
-   "w": 348,
-   "h": 883,
-   "source": "truffle_cards81onA.png",
+   "w": 347,
+   "h": 437,
+   "source": "truffle_cards81onB.png",
    "tile": 3,
    "n": 83
   },
@@ -10130,72 +10146,72 @@
   },
   "wink/back-pocket-web": {
    "file": "wink/back-pocket-web.webp",
-   "w": 375,
-   "h": 197,
+   "w": 380,
+   "h": 201,
    "source": "wink_cards1-20a.png",
    "tile": 1,
    "n": 1
   },
   "wink/blink": {
    "file": "wink/blink.webp",
-   "w": 377,
-   "h": 197,
+   "w": 380,
+   "h": 201,
    "source": "wink_cards1-20a.png",
    "tile": 2,
    "n": 2
   },
   "wink/blink-twice": {
    "file": "wink/blink-twice.webp",
-   "w": 376,
-   "h": 197,
+   "w": 380,
+   "h": 201,
    "source": "wink_cards1-20a.png",
    "tile": 3,
    "n": 3
   },
   "wink/catch-and-release": {
    "file": "wink/catch-and-release.webp",
-   "w": 373,
-   "h": 197,
+   "w": 380,
+   "h": 201,
    "source": "wink_cards1-20a.png",
    "tile": 4,
    "n": 4
   },
   "wink/gotcha": {
    "file": "wink/gotcha.webp",
-   "w": 375,
-   "h": 196,
+   "w": 380,
+   "h": 201,
    "source": "wink_cards1-20a.png",
    "tile": 5,
    "n": 5
   },
   "wink/skitter-skitter-bite": {
    "file": "wink/skitter-skitter-bite.webp",
-   "w": 378,
-   "h": 196,
+   "w": 380,
+   "h": 201,
    "source": "wink_cards1-20a.png",
    "tile": 6,
    "n": 6
   },
   "wink/wrong-on-purpose": {
    "file": "wink/wrong-on-purpose.webp",
-   "w": 378,
-   "h": 196,
+   "w": 380,
+   "h": 201,
    "source": "wink_cards1-20a.png",
    "tile": 7,
    "n": 7
   },
   "wink/back-up-a-little": {
    "file": "wink/back-up-a-little.webp",
-   "w": 373,
-   "h": 196,
+   "w": 380,
+   "h": 201,
    "source": "wink_cards1-20a.png",
    "tile": 8,
    "n": 8
   },
   "wink/blindside-probability": {
    "file": "wink/blindside-probability.webp",
-   "w": 762,
-   "h": 198,
+   "w": 380,
+   "h": 200,
    "source": "wink_cards1-20a.png",
    "tile": 9,
    "n": 9
@@ -10203,88 +10219,88 @@
   "wink/call-it": {
    "file": "wink/call-it.webp",
    "w": 380,
-   "h": 198,
+   "h": 200,
    "source": "wink_cards1-20a.png",
    "tile": 10,
    "n": 10
   },
   "wink/call-it-out": {
    "file": "wink/call-it-out.webp",
-   "w": 373,
-   "h": 198,
+   "w": 380,
+   "h": 200,
    "source": "wink_cards1-20a.png",
    "tile": 11,
    "n": 11
   },
   "wink/ceiling-survey": {
    "file": "wink/ceiling-survey.webp",
-   "w": 763,
-   "h": 177,
+   "w": 380,
+   "h": 200,
    "source": "wink_cards1-20a.png",
    "tile": 12,
    "n": 12
   },
   "wink/closed-loop": {
    "file": "wink/closed-loop.webp",
-   "w": 379,
-   "h": 177,
+   "w": 380,
+   "h": 201,
    "source": "wink_cards1-20a.png",
    "tile": 13,
    "n": 13
   },
   "wink/controlled-panic": {
    "file": "wink/controlled-panic.webp",
-   "w": 373,
-   "h": 177,
+   "w": 380,
+   "h": 201,
    "source": "wink_cards1-20a.png",
    "tile": 14,
    "n": 14
   },
   "wink/corner-to-corner": {
    "file": "wink/corner-to-corner.webp",
-   "w": 374,
-   "h": 220,
+   "w": 380,
+   "h": 201,
    "source": "wink_cards1-20a.png",
    "tile": 15,
    "n": 15
   },
   "wink/cross-examination": {
    "file": "wink/cross-examination.webp",
-   "w": 377,
-   "h": 220,
+   "w": 380,
+   "h": 201,
    "source": "wink_cards1-20a.png",
    "tile": 16,
    "n": 16
   },
   "wink/cut-the-web": {
    "file": "wink/cut-the-web.webp",
-   "w": 378,
-   "h": 220,
+   "w": 380,
+   "h": 201,
    "source": "wink_cards1-20a.png",
    "tile": 17,
    "n": 17
   },
   "wink/doorframe-tripline": {
    "file": "wink/doorframe-tripline.webp",
-   "w": 373,
-   "h": 220,
+   "w": 380,
+   "h": 201,
    "source": "wink_cards1-20a.png",
    "tile": 18,
    "n": 18
   },
   "wink/double-check": {
    "file": "wink/double-check.webp",
-   "w": 267,
-   "h": 313,
-   "source": "wink_cards1-20b.png",
+   "w": 380,
+   "h": 201,
+   "source": "wink_cards1-20a.png",
    "tile": 19,
    "n": 19
   },
   "wink/eyes-shut": {
    "file": "wink/eyes-shut.webp",
-   "w": 267,
-   "h": 313,
-   "source": "wink_cards1-20b.png",
+   "w": 380,
+   "h": 201,
+   "source": "wink_cards1-20a.png",
    "tile": 20,
    "n": 20
   },
@@ -10450,161 +10466,161 @@
   },
   "wink/safe-distance": {
    "file": "wink/safe-distance.webp",
-   "w": 273,
-   "h": 549,
+   "w": 276,
+   "h": 276,
    "source": "wink_cards41-60a.png",
    "tile": 1,
    "n": 41
   },
   "wink/seen-it-before": {
    "file": "wink/seen-it-before.webp",
-   "w": 272,
-   "h": 549,
+   "w": 277,
+   "h": 276,
    "source": "wink_cards41-60a.png",
    "tile": 2,
    "n": 42
   },
   "wink/set-the-table": {
    "file": "wink/set-the-table.webp",
-   "w": 270,
-   "h": 549,
+   "w": 276,
+   "h": 276,
    "source": "wink_cards41-60a.png",
    "tile": 3,
    "n": 43
   },
   "wink/shared-thread": {
    "file": "wink/shared-thread.webp",
-   "w": 272,
-   "h": 549,
+   "w": 277,
+   "h": 276,
    "source": "wink_cards41-60a.png",
    "tile": 4,
    "n": 44
   },
   "wink/silk-lifeline": {
    "file": "wink/silk-lifeline.webp",
-   "w": 272,
-   "h": 549,
+   "w": 276,
+   "h": 276,
    "source": "wink_cards41-60a.png",
    "tile": 5,
    "n": 45
   },
   "wink/silk-saw": {
    "file": "wink/silk-saw.webp",
-   "w": 273,
-   "h": 251,
+   "w": 276,
+   "h": 277,
    "source": "wink_cards41-60a.png",
    "tile": 6,
    "n": 46
   },
   "wink/silk-screen": {
    "file": "wink/silk-screen.webp",
-   "w": 272,
-   "h": 251,
+   "w": 277,
+   "h": 277,
    "source": "wink_cards41-60a.png",
    "tile": 7,
    "n": 47
   },
   "wink/stall-the-bad-part": {
    "file": "wink/stall-the-bad-part.webp",
-   "w": 270,
-   "h": 251,
+   "w": 276,
+   "h": 277,
    "source": "wink_cards41-60a.png",
    "tile": 8,
    "n": 48
   },
   "wink/sticky-situation": {
    "file": "wink/sticky-situation.webp",
-   "w": 274,
-   "h": 251,
+   "w": 277,
+   "h": 277,
    "source": "wink_cards41-60a.png",
    "tile": 9,
    "n": 49
   },
   "wink/telltale-twitch": {
    "file": "wink/telltale-twitch.webp",
-   "w": 272,
-   "h": 251,
+   "w": 276,
+   "h": 277,
    "source": "wink_cards41-60a.png",
    "tile": 10,
    "n": 50
   },
   "wink/thread-count": {
    "file": "wink/thread-count.webp",
-   "w": 273,
-   "h": 305,
+   "w": 276,
+   "h": 277,
    "source": "wink_cards41-60a.png",
    "tile": 11,
    "n": 51
   },
   "wink/thread-map": {
    "file": "wink/thread-map.webp",
-   "w": 272,
-   "h": 305,
+   "w": 277,
+   "h": 277,
    "source": "wink_cards41-60a.png",
    "tile": 12,
    "n": 52
   },
   "wink/tighten-the-silk": {
    "file": "wink/tighten-the-silk.webp",
-   "w": 270,
-   "h": 305,
+   "w": 276,
+   "h": 277,
    "source": "wink_cards41-60a.png",
    "tile": 13,
    "n": 53
   },
   "wink/tripline": {
    "file": "wink/tripline.webp",
-   "w": 272,
-   "h": 305,
+   "w": 277,
+   "h": 277,
    "source": "wink_cards41-60a.png",
    "tile": 14,
    "n": 54
   },
   "wink/watch-this-one": {
    "file": "wink/watch-this-one.webp",
-   "w": 272,
-   "h": 305,
+   "w": 276,
+   "h": 277,
    "source": "wink_cards41-60a.png",
    "tile": 15,
    "n": 55
   },
   "wink/web-patch": {
    "file": "wink/web-patch.webp",
-   "w": 299,
-   "h": 262,
-   "source": "wink_cards41-60b.png",
+   "w": 276,
+   "h": 276,
+   "source": "wink_cards41-60a.png",
    "tile": 16,
    "n": 56
   },
   "wink/wide-eyes": {
    "file": "wink/wide-eyes.webp",
-   "w": 300,
-   "h": 262,
-   "source": "wink_cards41-60b.png",
+   "w": 277,
+   "h": 276,
+   "source": "wink_cards41-60a.png",
    "tile": 17,
    "n": 57
   },
   "wink/wrong-answer": {
    "file": "wink/wrong-answer.webp",
-   "w": 300,
-   "h": 262,
-   "source": "wink_cards41-60b.png",
+   "w": 276,
+   "h": 276,
+   "source": "wink_cards41-60a.png",
    "tile": 18,
    "n": 58
   },
   "wink/across-the-web": {
    "file": "wink/across-the-web.webp",
-   "w": 299,
-   "h": 262,
-   "source": "wink_cards41-60b.png",
+   "w": 277,
+   "h": 276,
+   "source": "wink_cards41-60a.png",
    "tile": 19,
    "n": 59
   },
   "wink/all-eight-at-once": {
    "file": "wink/all-eight-at-once.webp",
-   "w": 300,
-   "h": 262,
-   "source": "wink_cards41-60b.png",
+   "w": 276,
+   "h": 276,
+   "source": "wink_cards41-60a.png",
    "tile": 20,
    "n": 60
   },
@@ -11170,239 +11186,247 @@
   },
   "wisp/orbiting-sparks": {
    "file": "wisp/orbiting-sparks.webp",
-   "w": 297,
-   "h": 248,
+   "w": 303,
+   "h": 252,
    "source": "wisp_cards41-60a.png",
    "tile": 1,
    "n": 41
   },
   "wisp/pass-the-nightlight": {
    "file": "wisp/pass-the-nightlight.webp",
-   "w": 293,
-   "h": 248,
+   "w": 303,
+   "h": 252,
    "source": "wisp_cards41-60a.png",
    "tile": 2,
    "n": 42
   },
   "wisp/pocket-tomorrow": {
    "file": "wisp/pocket-tomorrow.webp",
-   "w": 292,
-   "h": 248,
+   "w": 304,
+   "h": 252,
    "source": "wisp_cards41-60a.png",
    "tile": 3,
    "n": 43
   },
   "wisp/pocket-the-spark": {
    "file": "wisp/pocket-the-spark.webp",
-   "w": 295,
-   "h": 248,
+   "w": 303,
+   "h": 252,
    "source": "wisp_cards41-60a.png",
    "tile": 4,
    "n": 44
   },
   "wisp/pop": {
    "file": "wisp/pop.webp",
-   "w": 299,
-   "h": 248,
+   "w": 303,
+   "h": 252,
    "source": "wisp_cards41-60a.png",
    "tile": 5,
    "n": 45
   },
   "wisp/premature-celebration": {
    "file": "wisp/premature-celebration.webp",
-   "w": 298,
-   "h": 224,
+   "w": 303,
+   "h": 252,
    "source": "wisp_cards41-60a.png",
    "tile": 6,
    "n": 46
   },
   "wisp/push-it-back": {
    "file": "wisp/push-it-back.webp",
-   "w": 293,
-   "h": 224,
+   "w": 303,
+   "h": 252,
    "source": "wisp_cards41-60a.png",
    "tile": 7,
    "n": 47
   },
   "wisp/put-it-somewhere-safe": {
    "file": "wisp/put-it-somewhere-safe.webp",
-   "w": 292,
-   "h": 224,
+   "w": 304,
+   "h": 252,
    "source": "wisp_cards41-60a.png",
    "tile": 8,
    "n": 48
   },
   "wisp/quiet-before-the-pop": {
    "file": "wisp/quiet-before-the-pop.webp",
-   "w": 292,
-   "h": 224,
+   "w": 303,
+   "h": 252,
    "source": "wisp_cards41-60a.png",
    "tile": 9,
    "n": 49
   },
   "wisp/scoot-the-spark": {
    "file": "wisp/scoot-the-spark.webp",
-   "w": 298,
-   "h": 224,
+   "w": 303,
+   "h": 252,
    "source": "wisp_cards41-60a.png",
    "tile": 10,
    "n": 50
   },
   "wisp/shared-spark": {
    "file": "wisp/shared-spark.webp",
-   "w": 298,
-   "h": 527,
+   "w": 303,
+   "h": 252,
    "source": "wisp_cards41-60a.png",
    "tile": 11,
    "n": 51
   },
   "wisp/small-orbit": {
    "file": "wisp/small-orbit.webp",
-   "w": 293,
-   "h": 527,
+   "w": 303,
+   "h": 252,
    "source": "wisp_cards41-60a.png",
    "tile": 12,
    "n": 52
   },
   "wisp/soft-halo": {
    "file": "wisp/soft-halo.webp",
-   "w": 292,
-   "h": 527,
+   "w": 304,
+   "h": 252,
    "source": "wisp_cards41-60a.png",
    "tile": 13,
    "n": 53
   },
   "wisp/stash-the-flash": {
    "file": "wisp/stash-the-flash.webp",
-   "w": 292,
-   "h": 527,
+   "w": 303,
+   "h": 252,
    "source": "wisp_cards41-60a.png",
    "tile": 14,
    "n": 54
   },
   "wisp/static-in-the-wallpaper": {
    "file": "wisp/static-in-the-wallpaper.webp",
-   "w": 298,
-   "h": 527,
+   "w": 303,
+   "h": 252,
    "source": "wisp_cards41-60a.png",
    "tile": 15,
    "n": 55
   },
   "wisp/still-here": {
    "file": "wisp/still-here.webp",
-   "w": 257,
-   "h": 283,
-   "source": "wisp_cards41-60b.png",
+   "w": 303,
+   "h": 252,
+   "source": "wisp_cards41-60a.png",
    "tile": 16,
    "n": 56
   },
   "wisp/stop-the-clocks": {
    "file": "wisp/stop-the-clocks.webp",
-   "w": 276,
-   "h": 283,
-   "source": "wisp_cards41-60b.png",
+   "w": 303,
+   "h": 252,
+   "source": "wisp_cards41-60a.png",
    "tile": 17,
    "n": 57
   },
   "wisp/stretch-the-moment": {
    "file": "wisp/stretch-the-moment.webp",
-   "w": 264,
-   "h": 283,
-   "source": "wisp_cards41-60b.png",
+   "w": 304,
+   "h": 252,
+   "source": "wisp_cards41-60a.png",
    "tile": 18,
    "n": 58
   },
   "wisp/tiny-reservoir": {
    "file": "wisp/tiny-reservoir.webp",
-   "w": 262,
-   "h": 283,
-   "source": "wisp_cards41-60b.png",
+   "w": 303,
+   "h": 252,
+   "source": "wisp_cards41-60a.png",
    "tile": 19,
    "n": 59
   },
+  "wisp/two-rooms-over": {
+   "file": "wisp/two-rooms-over.webp",
+   "w": 303,
+   "h": 252,
+   "source": "wisp_cards41-60a.png",
+   "tile": 20,
+   "n": 60
+  },
   "wisp/wait-wait": {
    "file": "wisp/wait-wait.webp",
-   "w": 300,
-   "h": 251,
+   "w": 303,
+   "h": 252,
    "source": "wisp_cards61-80a.png",
    "tile": 1,
    "n": 61
   },
   "wisp/all-at-once": {
    "file": "wisp/all-at-once.webp",
-   "w": 290,
-   "h": 251,
+   "w": 303,
+   "h": 252,
    "source": "wisp_cards61-80a.png",
    "tile": 2,
    "n": 62
   },
   "wisp/all-the-lamps-at-once": {
    "file": "wisp/all-the-lamps-at-once.webp",
-   "w": 298,
-   "h": 251,
+   "w": 304,
+   "h": 252,
    "source": "wisp_cards61-80a.png",
    "tile": 3,
    "n": 63
   },
   "wisp/bigger-than-a-nightlight": {
    "file": "wisp/bigger-than-a-nightlight.webp",
-   "w": 290,
-   "h": 251,
+   "w": 303,
+   "h": 252,
    "source": "wisp_cards61-80a.png",
    "tile": 4,
    "n": 64
   },
   "wisp/blow-the-fuse": {
    "file": "wisp/blow-the-fuse.webp",
-   "w": 300,
-   "h": 251,
+   "w": 303,
+   "h": 252,
    "source": "wisp_cards61-80a.png",
    "tile": 5,
    "n": 65
   },
   "wisp/bonk-from-later": {
    "file": "wisp/bonk-from-later.webp",
-   "w": 300,
-   "h": 503,
+   "w": 303,
+   "h": 252,
    "source": "wisp_cards61-80a.png",
    "tile": 6,
    "n": 66
   },
   "wisp/darkest-before-dawn": {
    "file": "wisp/darkest-before-dawn.webp",
-   "w": 290,
-   "h": 503,
+   "w": 303,
+   "h": 252,
    "source": "wisp_cards61-80a.png",
    "tile": 7,
    "n": 67
   },
   "wisp/double-exposure": {
    "file": "wisp/double-exposure.webp",
-   "w": 298,
-   "h": 503,
+   "w": 304,
+   "h": 252,
    "source": "wisp_cards61-80a.png",
    "tile": 8,
    "n": 68
   },
   "wisp/encore": {
    "file": "wisp/encore.webp",
-   "w": 290,
-   "h": 503,
+   "w": 303,
+   "h": 252,
    "source": "wisp_cards61-80a.png",
    "tile": 9,
    "n": 69
   },
   "wisp/falling-dominoes": {
    "file": "wisp/falling-dominoes.webp",
-   "w": 300,
-   "h": 503,
+   "w": 303,
+   "h": 252,
    "source": "wisp_cards61-80a.png",
    "tile": 10,
    "n": 70
   },
   "wisp/flicker-feedback": {
    "file": "wisp/flicker-feedback.webp",
-   "w": 300,
+   "w": 303,
    "h": 252,
    "source": "wisp_cards61-80a.png",
    "tile": 11,
@@ -11410,7 +11434,7 @@
   },
   "wisp/follow-my-light": {
    "file": "wisp/follow-my-light.webp",
-   "w": 290,
+   "w": 303,
    "h": 252,
    "source": "wisp_cards61-80a.png",
    "tile": 12,
@@ -11418,7 +11442,7 @@
   },
   "wisp/gloaming-gets-crowded": {
    "file": "wisp/gloaming-gets-crowded.webp",
-   "w": 298,
+   "w": 304,
    "h": 252,
    "source": "wisp_cards61-80a.png",
    "tile": 13,
@@ -11426,7 +11450,7 @@
   },
   "wisp/good-things-come": {
    "file": "wisp/good-things-come.webp",
-   "w": 290,
+   "w": 303,
    "h": 252,
    "source": "wisp_cards61-80a.png",
    "tile": 14,
@@ -11434,7 +11458,7 @@
   },
   "wisp/hallway-aurora": {
    "file": "wisp/hallway-aurora.webp",
-   "w": 300,
+   "w": 303,
    "h": 252,
    "source": "wisp_cards61-80a.png",
    "tile": 15,
@@ -11442,41 +11466,41 @@
   },
   "wisp/make-a-constellation": {
    "file": "wisp/make-a-constellation.webp",
-   "w": 292,
-   "h": 243,
-   "source": "wisp_cards61-80b.png",
+   "w": 303,
+   "h": 252,
+   "source": "wisp_cards61-80a.png",
    "tile": 16,
    "n": 76
   },
   "wisp/never-goes-out": {
    "file": "wisp/never-goes-out.webp",
-   "w": 292,
-   "h": 243,
-   "source": "wisp_cards61-80b.png",
+   "w": 303,
+   "h": 252,
+   "source": "wisp_cards61-80a.png",
    "tile": 17,
    "n": 77
   },
   "wisp/orbital-drop": {
    "file": "wisp/orbital-drop.webp",
-   "w": 291,
-   "h": 243,
-   "source": "wisp_cards61-80b.png",
+   "w": 304,
+   "h": 252,
+   "source": "wisp_cards61-80a.png",
    "tile": 18,
    "n": 78
   },
   "wisp/peekaboo-meteor": {
    "file": "wisp/peekaboo-meteor.webp",
-   "w": 291,
-   "h": 243,
-   "source": "wisp_cards61-80b.png",
+   "w": 303,
+   "h": 252,
+   "source": "wisp_cards61-80a.png",
    "tile": 19,
    "n": 79
   },
   "wisp/same-time-tomorrow": {
    "file": "wisp/same-time-tomorrow.webp",
-   "w": 291,
-   "h": 243,
-   "source": "wisp_cards61-80b.png",
+   "w": 303,
+   "h": 252,
+   "source": "wisp_cards61-80a.png",
    "tile": 20,
    "n": 80
   },
