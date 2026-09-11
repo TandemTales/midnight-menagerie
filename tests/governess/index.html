@@ -59,6 +59,19 @@ function intentFor(e, id) {
   return buildIntent(e, en, governess.moves[id]);
 }
 
+/* Every damage number below is read off the def: `damage x hits`, the same
+   pair the intent prints and the effect deals, which 8621f87 made agree. This
+   suite typed her numbers in, and on 2026-09-02 1c99a98 + 8621f87 cut her from
+   24 / 12x2 / 13 / 17 / 11x3 to 16 / 8x2 / 9 / 11 / 7x3. Seventeen checks went
+   red on rules that all still held - AoE on every seat, through Guard only in a
+   party, a declared splash - and stayed red, because a run.py gate is in no
+   sweep. The rules are the test; the tuning is the def's business. */
+const dealt = (id) => governess.moves[id].damage * (governess.moves[id].hits || 1);
+const said = (id) => {
+  const m = governess.moves[id];
+  return (m.hits || 1) > 1 ? `${m.damage}x${m.hits}` : String(m.damage);
+};
+
 (async () => {
   // ── phase one's AoE ───────────────────────────────────────────────────────
   say('<h2>Mind Your Seams — phase one\'s AoE</h2>');
@@ -68,7 +81,8 @@ function intentFor(e, id) {
     check(targets.length === 3, 'Mind Your Seams aims at every seat', `${targets.length} of 3`);
 
     const r = await useMove(e, 'mind-your-seams');
-    check(r.lost.every(v => v === 24), 'every seat takes the full 12x2', `lost ${r.lost.join(' / ')}`);
+    check(r.lost.every(v => v === dealt('mind-your-seams')), `every seat takes the full ${said('mind-your-seams')}`,
+          `lost ${r.lost.join(' / ')}`);
     check(new Set(r.lost).size === 1, 'and every seat takes the SAME number', `lost ${r.lost.join(' / ')}`);
 
     /**
@@ -85,7 +99,8 @@ function intentFor(e, id) {
   {
     const e = await fight(1);
     const r = await useMove(e, 'mind-your-seams');
-    check(r.lost[0] === 24, 'and a Kid alone takes the same 12x2 she always did', `lost ${r.lost[0]}`);
+    check(r.lost[0] === dealt('mind-your-seams'),
+          `and a Kid alone takes the same ${said('mind-your-seams')} she always did`, `lost ${r.lost[0]}`);
   }
 
   // ── the seat preference ───────────────────────────────────────────────────
@@ -130,7 +145,8 @@ function intentFor(e, id) {
     const r = await useMove(e, 'sharp-correction');
     check(r.lost.filter(v => v > 0).length === 1, 'it really lands on one seat only',
           `lost ${r.lost.join(' / ')}`);
-    check(r.lost[2] === 24, 'on that Kid, for the full 24', `lost ${r.lost.join(' / ')}`);
+    check(r.lost[2] === dealt('sharp-correction'), `on that Kid, for the full ${dealt('sharp-correction')}`,
+          `lost ${r.lost.join(' / ')}`);
   }
 
   // ── Guard does not answer Sharp Correction in a party ─────────────────────
@@ -156,7 +172,8 @@ function intentFor(e, id) {
     const off = e.on('damage', (ev) => { blocked += ev.blocked || 0; });
     const r = await useMove(e, 'sharp-correction');
     off();
-    check(r.lost[2] === 24, 'sixty Guard does not stop it — the full 24 reaches Courage',
+    check(r.lost[2] === dealt('sharp-correction'),
+      `sixty Guard does not stop it — the full ${dealt('sharp-correction')} reaches Courage`,
       `lost ${r.lost.join(' / ')}`);
     check(blocked === 0, 'and NONE of it was blocked, so the Guard was never spent',
       `blocked ${blocked}`);
@@ -185,11 +202,13 @@ function intentFor(e, id) {
     e.gainBlock(e.players[2], 60, { reason: 'test' });
 
     const inc = previewIncoming(e, e.players[2]);
-    check(inc.total === 24, 'the rail counts the whole 24 as incoming', String(inc.total));
-    check(inc.through === 24, 'and knows every point of it ignores Guard', String(inc.through));
+    check(inc.total === dealt('sharp-correction'),
+      `the rail counts the whole ${dealt('sharp-correction')} as incoming`, String(inc.total));
+    check(inc.through === dealt('sharp-correction'), 'and knows every point of it ignores Guard',
+      String(inc.through));
     check(inc.blockable === 0, 'so there is nothing for Guard to be spent on',
       String(inc.blockable));
-    check(inc.unblocked === 24, 'and sixty Guard does not reduce what reaches Courage',
+    check(inc.unblocked === dealt('sharp-correction'), 'and sixty Guard does not reduce what reaches Courage',
       `unblocked ${inc.unblocked} behind ${inc.block} Guard`);
   }
   {
@@ -211,7 +230,8 @@ function intentFor(e, id) {
     off();
     check(r.lost[0] === 0, 'a Kid ALONE blocks it exactly as they always did',
       `lost ${r.lost[0]}`);
-    check(blocked === 24, 'and their Guard really ate all 24 of it', `blocked ${blocked}`);
+    check(blocked === dealt('sharp-correction'),
+      `and their Guard really ate all ${dealt('sharp-correction')} of it`, `blocked ${blocked}`);
     const it = intentFor(e, 'sharp-correction');
     check(!it.pierce, 'and solo is shown no such warning, because there is none',
       String(!!it.pierce));
@@ -228,8 +248,9 @@ function intentFor(e, id) {
     const r = await useMove(e, 'tighten-the-stitch');
     const hit = r.lost.filter(v => v > 0);
     check(hit.length === 3, 'and all three seats really take something', `lost ${r.lost.join(' / ')}`);
-    check(Math.max(...r.lost) === 17 && r.lost.filter(v => v === 10).length === 2,
-          'the aimed Kid takes 17 and the other two take the declared 10',
+    check(Math.max(...r.lost) === dealt('tighten-the-stitch')
+            && r.lost.filter(v => v === (it.splash | 0)).length === 2,
+          `the aimed Kid takes ${dealt('tighten-the-stitch')} and the other two take the declared ${it.splash | 0}`,
           `lost ${r.lost.join(' / ')}`);
   }
   {
@@ -238,7 +259,8 @@ function intentFor(e, id) {
     check(!(it.splash | 0), 'a Kid alone is shown no splash, because there is nobody to splash onto',
           `splash ${it.splash | 0}`);
     const r = await useMove(e, 'tighten-the-stitch');
-    check(r.lost[0] === 17, 'and takes the 17 she always dealt', `lost ${r.lost[0]}`);
+    check(r.lost[0] === dealt('tighten-the-stitch'),
+          `and takes the ${dealt('tighten-the-stitch')} she always dealt`, `lost ${r.lost[0]}`);
   }
 
   // ── two different children ────────────────────────────────────────────────
@@ -253,7 +275,7 @@ function intentFor(e, id) {
     const r = await useMove(e, 'snip-snip');
     check(r.lost.filter(v => v > 0).length === 2, 'two seats really take it, and one does not',
           `lost ${r.lost.join(' / ')}`);
-    check(r.lost.filter(v => v === 33).length === 2, 'each of them for the full 11x3',
+    check(r.lost.filter(v => v === dealt('snip-snip')).length === 2, `each of them for the full ${said('snip-snip')}`,
           `lost ${r.lost.join(' / ')}`);
   }
   {
@@ -262,7 +284,8 @@ function intentFor(e, id) {
     check(targets.length === 1, 'and with one Kid left there is only one seat to cut',
           `${targets.length}`);
     const r = await useMove(e, 'snip-snip');
-    check(r.lost[0] === 33, 'who takes the same 11x3 as ever', `lost ${r.lost[0]}`);
+    check(r.lost[0] === dealt('snip-snip'), `who takes the same ${said('snip-snip')} as ever`,
+          `lost ${r.lost[0]}`);
   }
 
   // ── phase two is the same SHARE of the fight at every party size ──────────
@@ -329,8 +352,8 @@ function intentFor(e, id) {
   say('<h2>Solo is the fight it always was</h2>');
   {
     const e = await fight(1);
-    const want = { 'sharp-correction': 24, 'mind-your-seams': 24, 'needle-point': 13,
-                   'tighten-the-stitch': 17, 'snip-snip': 33 };
+    const want = Object.fromEntries(['sharp-correction', 'mind-your-seams', 'needle-point',
+                                     'tighten-the-stitch', 'snip-snip'].map(id => [id, dealt(id)]));
     for (const [id, n] of Object.entries(want)) {
       const e1 = await fight(1);
       const r = await useMove(e1, id);

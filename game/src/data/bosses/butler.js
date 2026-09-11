@@ -10,9 +10,12 @@
  * That inversion is the whole boss. "Breaking rules is not simply failure. It is a
  * strategic option."
  *
- *   Phase 1  165 → 93    one rule at a time, never the same twice running.
- *   Transition at ≤92    This Is Most Irregular: 16 Guard, dismisses every summon.
- *   Phase 2  92 → 0      harsher Reprimands, but Discomposed at 2 Flustered, not 3.
+ *   Phase 1  86 → 60     one rule at a time, never the same twice running.
+ *   Transition at ≤59    This Is Most Irregular: 16 Guard, dismisses every summon.
+ *   Phase 2  59 → 0      harsher Reprimands, but Discomposed at 2 Flustered, not 3.
+ *
+ * Solo numbers. The turn is `phaseAt(c, PHASE2_AT, BASE_HP)` — the authored 92 of
+ * 134, scaled to the pool he actually has. BALANCE 2026-09-02 says why that is 59.
  */
 
 import { Intent } from '../schema.js';
@@ -120,13 +123,32 @@ import {
  *
  * So the remaining lever is phase two's DAMAGE, not the pool — the same
  * sentence the 2026-08-29 pass ended on, now measured true at 134 as well.
+ *
+ * ── BALANCE 2026-09-02: Courage 134 -> 86, and THIS CUT IS PROPORTIONAL ────
+ *
+ * `720c898` took the pool to 86 for the Foyer's margin (measured at 134, 104
+ * and 86) and changed only `hp`. `BASE_HP` stayed at 134 — and the rule the two
+ * passes above kept could not have survived this one anyway: pinned to the
+ * live 86, an absolute 92 is ABOVE the pool, so he would open every fight
+ * already in phase two. That is the Groundskeeper's bug (c3b1fe4).
+ *
+ * So since that commit the cut comes out of BOTH halves. `phaseAt(c, 92, 134)`
+ * against 86 turns him at 59: phase one is 86 -> 60, phase two 59 -> 0, the same
+ * 69% share he had at 134. Whatever that commit measured, it measured this —
+ * with BASE_HP left alone, an `hp` edit and a `--scales` row both move the
+ * threshold with the pool. Phase one is now 27 Courage, which is about two
+ * turns of an arriving deck.
+ *
+ * `tests/butler` hardcoded the old absolute 92 and went red the same day. It
+ * reads both constants from here now, and asserts that phase one exists.
  */
-const PHASE2_AT = 92;
+export const PHASE2_AT = 92;
 /** The pool the threshold above was authored against. See `phaseAt`.
- *  Pinned to the LIVE pool on purpose: `phaseAt` scales the threshold by
- *  `max / soloMax`, so leaving this at the old 165 would have quietly pulled
- *  phase two down to 83 and undone the point of the change. */
-const BASE_HP = 134;
+ *  NOT THE LIVE POOL ANY MORE. It was pinned to the pool through 165 -> 149 ->
+ *  134 to hold phase two at an absolute 92, and left at 134 when the pool went to
+ *  86 (see 2026-09-02 above), which scales phase two to 59. Moving either
+ *  number moves where he turns: re-pin it to 86 and phase one disappears. */
+export const BASE_HP = 134;
 
 // ── The four House Rules ─────────────────────────────────────────────────────
 /**
@@ -328,9 +350,10 @@ export const butler = {
 
   /**
    * DECLARED, and read by nothing — documentation, not a mechanic. See the
-   * Governess's copy of this note; `phaseThresholds` is the AUTHORED SOLO
-   * number and the fight uses `phaseAt(c, PHASE2_AT, BASE_HP)`, which is the
-   * same SHARE of a bigger pool at every party size.
+   * Governess's copy of this note; `phaseThresholds` is the AUTHORED number —
+   * 92, against BASE_HP's 134 — and the fight uses `phaseAt(c, PHASE2_AT,
+   * BASE_HP)`: 59 of his 86 solo, and the same SHARE of a bigger pool at every
+   * party size.
    */
   phases: 2,
   phaseThresholds: [PHASE2_AT],

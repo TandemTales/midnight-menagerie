@@ -17,7 +17,7 @@
 import { RNG } from '../../game/src/core/rng.js';
 import { makeDummyParty, SCRATCH, CURL_UP } from '../../game/src/combat/dummy.js';
 import { getEnemy } from '../../game/src/data/enemies/index.js';
-import { butler, HOUSE_RULES } from '../../game/src/data/bosses/butler.js';
+import { butler, HOUSE_RULES, PHASE2_AT, BASE_HP } from '../../game/src/data/bosses/butler.js';
 import { buildIntent } from '../../game/src/combat/intents.js';
 
 const passes = [], fails = [];
@@ -304,25 +304,46 @@ function standRule(e, id, p2 = false) {
        not fail when the def moved. When the pool went 165 -> 149 on 2026-08-29
        that check went on passing while the threshold assertion beside it
        broke, which is the shape CONTRACTS 52 is about: a control has to be
-       re-checked whenever the thing under it moves. */
+       re-checked whenever the thing under it moves.
+
+       AND THE THRESHOLD IS READ FROM THE TWO CONSTANTS THE FIGHT ITSELF USES.
+       This block went on typing `AUTHORED_AT = 92` after the paragraph above was
+       written, and on 2026-09-02 the pool went 134 -> 86 with `BASE_HP` left at
+       134, so `phaseAt(c, 92, 134)` began turning him at 59. Five assertions
+       here went red that day and stayed red, because a `run.py` gate is in no
+       sweep. The Butler was right and the test was wrong: an absolute threshold
+       can only ever be right at one pool. `at()` is `phaseAt`'s own arithmetic,
+       rounding included, so the two cannot disagree by a point. */
     const POOL = butler.hp[0];
-    const AUTHORED_AT = 92;
-    const soloShare = (100 * AUTHORED_AT / POOL).toFixed(1);
+    const at = (max) => Math.round(PHASE2_AT * (max / BASE_HP));
+    const SOLO_AT = at(POOL);
+    const soloShare = (100 * SOLO_AT / POOL).toFixed(1);
 
     check((await maxOf(1)) === POOL,
       'a Kid alone faces the pool the DEF declares', String(POOL));
-    check(await turnsAt(1, AUTHORED_AT),
-      'and turns him at exactly 92, as authored');
-    check(!(await turnsAt(1, AUTHORED_AT + 1)), 'and not a point above it');
+    /* The Groundskeeper's bug, asked of this boss through the real fight: a
+       threshold at or above the pool turns him on turn one, and phase one — the
+       House Rules one at a time — never runs. Re-pinning BASE_HP to the live 86
+       would do exactly that, because 92 > 86. */
+    check(!(await turnsAt(1, POOL)),
+      'and at full Courage he is still in PHASE ONE, so phase one exists',
+      `turns at ${SOLO_AT} of ${POOL}`);
+    check(await turnsAt(1, SOLO_AT),
+      `and turns him at exactly ${SOLO_AT}: the authored ${PHASE2_AT} of ${BASE_HP}, at this pool`);
+    check(!(await turnsAt(1, SOLO_AT + 1)), 'and not a point above it');
 
     for (const n of [2, 3, 4]) {
       const max = await maxOf(n);
-      const want = Math.round(AUTHORED_AT * (max / POOL));
+      const want = at(max);
       check(max > POOL, `${n} Kids face a bigger pool`, String(max));
       check(await turnsAt(n, want), `and he turns at the same SHARE of it`,
         `${want} of ${max} = ${(100 * want / max).toFixed(1)}% vs solo ${soloShare}%`);
-      check(await turnsAt(n, 140),
-        'and is ALREADY in phase two at 140, where the absolute 92 left him in phase one',
+      /* What this guards is a threshold compared against a RAW number instead
+         of a scaled one — 92 literal, or the solo 59. Halfway between the solo
+         turn and this party's turn is phase two only if the scaling happened. */
+      const between = Math.floor((SOLO_AT + want) / 2);
+      check(await turnsAt(n, between),
+        `and is ALREADY in phase two at ${between}, where an unscaled threshold leaves him in phase one`,
         `threshold ${want} of ${max}`);
     }
   }

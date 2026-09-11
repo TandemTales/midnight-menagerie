@@ -167,7 +167,7 @@ function resetMeta() { Save.data = JSON.parse(JSON.stringify(PRISTINE_META)); }
    Until 2026-08-30 it then built its DECK with a die: a random one of the three
    offered cards 70% of the time, and three independent coin-flips at the shop.
    So it played a considered game with a random pile — it reached the Butler on
-   about fourteen cards holding a mean of 177 unspent Lost Things, 46 of 50 runs
+   about fourteen cards holding a mean of 177 unspent Buttons, 46 of 50 runs
    died inside the Foyer, and no content past region 1 was exercised by anything.
 
    `tests/critic-design/lib/policy.js` is this project's existing answer to
@@ -594,10 +594,15 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
         .filter(c => c && /ignor(?:e|es|ing)\s+guard/i.test(c.text || ''));
       const pierceIds = [...new Set(pierceCards.map(c => c.id))];
       const ok = await playCombat(engine, 200, run);
-      if (!ok) break;
-      log(`  fight ${engine.victory ? 'won' : 'lost'} hp=${run.courage}`);
+      /* A DRAW STILL GETS ITS ROW. The `break` used to come first, so the one
+         fight that ENDED an expedition at the 200-turn ceiling was missing
+         from every table built from this ledger, and from probe.py - which
+         on seed 371416 reported "0 fights at or past 25 turns (of 10)" for
+         an expedition that died in a 200-turn Archivist draw. `draw` marks
+         it; the break is still taken, after the push. */
+      log(`  fight ${!ok ? 'DRAWN' : engine.victory ? 'won' : 'lost'} hp=${run.courage}`);
       ledger.push({
-        region: regionBefore, type, seed, shepherd, wing: wingBefore,
+        region: regionBefore, type, seed, shepherd, wing: wingBefore, draw: !ok,
         pool: poolBefore,
         left: engine.enemies.reduce((s, x) => s + (x.alive ? x.hp : 0), 0),
         dealt: (engine.__guard || {}).dealt || 0,
@@ -629,6 +634,7 @@ async function simulate(seed, { companion = 'marmalade', kid = 'maya', haunt = 0
                             plays: Object.values((engine.__guard || {}).plays || {}),
                             deck: run.deck.map(c => c.id) } : null,
       });
+      if (!ok) break;
     }
 
     /* WHAT EACH ROOM HANDS OVER. `keepsakes` reaches 11.8 by the third wing and
@@ -885,7 +891,7 @@ async function main() {
       `seed ${seed}: deck size out of range (${run.deck.length})`);
     check(run.deck.every(c => !!cardById(c.id)),
       `seed ${seed}: deck holds an unknown card id`);
-    check(run.lostThings >= 0, `seed ${seed}: negative ${'Lost Things'} (${run.lostThings})`);
+    check(run.lostThings >= 0, `seed ${seed}: negative ${'Buttons'} (${run.lostThings})`);
     check(run.lostThings < 5000, `seed ${seed}: implausible purse (${run.lostThings})`);
     check(run.courage >= 0 && run.courage <= run.maxCourage,
       `seed ${seed}: courage ${run.courage}/${run.maxCourage}`);
@@ -922,9 +928,18 @@ async function main() {
     const startable = RUN_REGIONS.filter(r => r !== RUN_REGIONS[RUN_REGIONS.length - 1]);
     let rows = '<table><tr><th>began in</th><th>runs</th><th>cleared wing 1</th>'
       + '<th>died in wing 1</th><th>wings crossed</th><th>victories</th>'
-      + '<th>first fight, % of pool</th></tr>';
+      + '<th>every wing-one fight, % of pool</th><th>a room</th><th>its boss</th>'
+      + '<th>died at its boss</th></tr>';
     for (const region of startable) {
       let cleared = 0, diedFirst = 0, wings = 0, wins = 0, pct = 0, pctN = 0;
+      /* ROOMS AND THE BOSS, SEPARATELY. `pct` alone was printed as "first fight,
+         % of pool" and it never was: it averages every fight in the starting
+         wing, boss included. The Crypt's 73 rooms cost 2.0% each and its boss
+         91.3%, which averaged to "an ordinary 16.7%" and sent a whole session
+         looking for the killer in the roster. A wing whose cost sits in its
+         boss and a wing whose cost sits in its rooms need opposite fixes, and
+         one number cannot tell them apart. */
+      let room = 0, roomN = 0, boss = 0, bossN = 0, diedAtBoss = 0;
       for (let k = 0; k < SWEEP_N; k++) {
         const seed = 400000 + k * 5171 + startable.indexOf(region) * 97;
         let r;
@@ -940,15 +955,22 @@ async function main() {
         if (crossed > 1) cleared++; else diedFirst++;
         if (run.result === 'victory') wins++;
         for (const f of r.ledger) {
-          if (f.region === region && f.max) { pct += 100 * f.cost / f.max; pctN++; }
+          if (f.region !== region || !f.max) continue;
+          const share = 100 * f.cost / f.max;
+          pct += share; pctN++;
+          if (f.type === 'boss') { boss += share; bossN++; if (!f.won) diedAtBoss++; }
+          else { room += share; roomN++; }
         }
       }
       const row = { region, runs: SWEEP_N, cleared, diedFirst,
                     wings: +(wings / SWEEP_N).toFixed(2), wins,
-                    pct: pctN ? +(pct / pctN).toFixed(1) : 0 };
+                    pct: pctN ? +(pct / pctN).toFixed(1) : 0,
+                    room: roomN ? +(room / roomN).toFixed(1) : 0,
+                    boss: bossN ? +(boss / bossN).toFixed(1) : 0, bossN, diedAtBoss };
       START_SWEEP.push(row);
       rows += `<tr><td>${region}</td><td>${SWEEP_N}</td><td>${cleared}</td>`
-        + `<td>${diedFirst}</td><td>${row.wings}</td><td>${wins}</td><td>${row.pct}%</td></tr>`;
+        + `<td>${diedFirst}</td><td>${row.wings}</td><td>${wins}</td><td>${row.pct}%</td>`
+        + `<td>${row.room}%</td><td>${row.boss}%</td><td>${diedAtBoss} of ${bossN}</td></tr>`;
     }
     say(rows + '</table>');
   }

@@ -336,7 +336,15 @@ async function openFight(kid, backpack, { hpOffset = 0, endTurn = false, seed = 
       [...STARTER_SLUGS].join(', '));
 
     const pip = makeRun('pipkin', defaultLoadout('maya'));   // playing a starter, in the Foyer
+    /* Every case below sets `freedRoster` beside `rescued`. Since c45a4c0 the
+       house's view of who is still missing is `freedRoster` — a party decision
+       must not read one machine's save — and a solo Run COPIES `rescued` into it
+       at construction. So assigning `rescued` after `makeRun` no longer reaches
+       the decision at all: "one Companion left in the house" went red on
+       2026-09-07 with the rule itself intact, because this is a run.py gate and
+       that commit did not run it. Set what a save-seeded solo run holds. */
     pip.rescued = [];
+    pip.freedRoster = [];
     const authored = pip.meta.companion;
     check(STARTER_SLUGS.has(authored),
       `the Foyer's authored Rescue is a starter (${authored}) — the case that was broken`);
@@ -358,11 +366,13 @@ async function openFight(kid, backpack, { hpOffset = 0, endTurn = false, seed = 
     check(!!LAST_IN_HOUSE, 'there is a built non-starter to Rescue', LAST_IN_HOUSE || '(none)');
     const already = makeRun('marmalade', defaultLoadout('maya'));
     already.rescued = COMPANIONS.map(c => c.slug).filter(s => s !== LAST_IN_HOUSE);
+    already.freedRoster = already.rescued.slice();
     check(already.rescueTargetFor('n1', 'marmalade') === LAST_IN_HOUSE,
       'with one Companion left in the house, that is who a Rescue frees');
 
     const wanted = makeRun('marmalade', defaultLoadout('maya'));
     wanted.rescued = [];
+    wanted.freedRoster = [];
     check(wanted.rescueTargetFor('n1', LAST_IN_HOUSE) === LAST_IN_HOUSE,
       'an authored target who IS still missing is left alone');
 

@@ -4,7 +4,7 @@
 
 Drives the run layer with no scenes at all: map -> combat -> reward -> next node
 -> ... -> boss.  Asserts no crashes, that a seed reproduces a run identically,
-that autosave/resume round-trips, and that deck size / Lost Things stay sane.
+that autosave/resume round-trips, and that deck size / Buttons stay sane.
 Prints `RESULT: n runs, m errors` plus the run-length and end-state
 distributions.  Exit code 0 only when m == 0.
 
@@ -150,12 +150,19 @@ async def main(a):
         print("  number in this project was measured against a starting deck meeting")
         print("  the gentlest content in the game. This is the same deck beginning")
         print("  somewhere else.")
-        print("  %-22s %-6s %-9s %-9s %-8s %-6s %s"
-              % ("began in", "runs", "cleared", "died in 1", "wings", "wins", "1st fight % pool"))
+        print("  %-22s %-6s %-9s %-9s %-8s %-6s %-11s %-8s %-9s %s"
+              % ("began in", "runs", "cleared", "died in 1", "wings", "wins",
+                 "all fights", "a room", "its boss", "died at its boss"))
         for r in sw:
-            print("  %-22s %-6d %-9d %-9d %-8s %-6d %s"
+            print("  %-22s %-6d %-9d %-9d %-8s %-6d %-11s %-8s %-9s %s"
                   % (r["region"], r["runs"], r["cleared"], r["diedFirst"],
-                     r["wings"], r["wins"], "%.1f%%" % r["pct"]))
+                     r["wings"], r["wins"], "%.1f%%" % r["pct"],
+                     "%.1f%%" % r.get("room", 0), "%.1f%%" % r.get("boss", 0),
+                     "%d of %d" % (r.get("diedAtBoss", 0), r.get("bossN", 0))))
+        print("  Costs are one fight's Courage as a share of the pool, in the STARTING")
+        print("  wing. 'all fights' includes the boss. Until 2026-09-10 it was labelled")
+        print("  '1st fight' and read that way: the Crypt's 73 near-free rooms and a")
+        print("  91% boss averaged to an 'ordinary' 16.7%, and the killer was the boss.")
         died = sorted(sw, key=lambda x: -x["diedFirst"])[:3]
         print("  hardest to begin in: "
               + ", ".join("%s (%d/%d died)" % (d["region"], d["diedFirst"], d["runs"])
