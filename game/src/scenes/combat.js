@@ -91,20 +91,31 @@ const PLAY_RESOLVE = 0.44;
 /* ─────────────────────────────────────────────────────────────────────────────
  * WHICH ROOM ARE WE IN?
  *
- * `atmosphere.setMood(region)` and nothing else meant the Formal Dining Room,
- * the Music Room, East Landing, the Grand Coatcheck's Big Scare and The Butler
- * all played in one identical warm gallery. The map names 13 rooms per region
- * and promises 13 places.
+ * Round 1 called `setMood(region)` and nothing else, so every room in a wing
+ * was one identical space. Round 2 fixed that with a long regex table that
+ * picked "the authored space a room most honestly is" — and overshot badly,
+ * because it matched the room NAME while ignoring the wing the room is in.
+ * Measured across all 340: only THREE of the Forgotten Foyer's twenty rooms
+ * still rendered in the Foyer. Its Parlor played in the study, its Music Room
+ * in the ballroom, its Formal Dining Room in the kitchens, and six more in the
+ * passages — because "gallery", "landing" and "hall" caught them. The first
+ * region a player sees mostly showed them other regions.
  *
- * The atmosphere layer is data-driven and owns seventeen fully authored rooms
- * (geometry, camera, palette, props, shafts, particles). It does not yet expose
- * a per-ROOM variation hook — see docs/NOTES.md for the precise ask. What it
- * DOES expose is `setMood(name)`, so a room picks the authored space it most
- * honestly is: the Music Room plays in the ballroom, the Formal Dining Room in
- * the kitchens' long service space, East Landing in the passages.
+ * So the default is inverted: A ROOM PLAYS IN ITS OWN WING. That is what the
+ * wing IS — the same architecture, materials and lamps throughout — and the
+ * variation the round-2 table was reaching for is already provided by the
+ * per-room `seed` below, which re-rolls the prop arrangement (see the
+ * LAYOUT_FAMILY table in fx/atmosphere.js).
  *
- * Matched on `node.roomName` (state/mapgen.js authors all 340). First hit wins,
- * and anything unmatched falls back to the region — never worse than before.
+ * ROOM_MOOD is now a short list of rooms that are unmistakably a different KIND
+ * of space from the wing around them — a bath in the bedrooms, the stair down
+ * into the crypt. It moves 7 rooms of 340; the other 333 stay home. Keep it
+ * that way: a word that merely COULD describe another wing ("gallery", "hall",
+ * "court", "maze") does not belong here, and every entry needs a room whose
+ * architecture genuinely changes, not just its name.
+ *
+ * Matched on `node.roomName` (state/mapgen.js authors all 340); first hit wins.
+ * `tests/room-mood/check.py` asserts the whole table.
  */
 /** Run region slugs are not all atmosphere keys. */
 const REGION_KEY = {
@@ -114,44 +125,35 @@ const REGION_KEY = {
   'hedge-maze': 'hedge', 'secret-passages': 'passages', 'pumpkin-grounds': 'pumpkin',
 };
 
+/* Order matters: "Behind the Library" is a cavity inside a wall, not a library,
+   so the passages rule has to be read before anything it could collide with. */
 const ROOM_MOOD = [
-  // the Foyer's own grand spaces must win before the catch-all "…Hall" rule
-  [/vestibule|entry hall|entrance|grand staircase|main stair|front hall/i, 'foyer'],
-  [/ballroom|music|dance|salon|revels|velvet|mask room|supper|drawing room|reception|receiving/i, 'ballroom'],
-  [/dining|breakfast|refreshment|pantry|kitchen|scullery|larder|milk|flour|spice|pastry|bottle|dish|buttery/i, 'kitchens'],
-  [/librar|study|book|read|archive|scribe|map room|writing|portrait|globe|curiosit|reference|newspaper|letter|register|parlou?r/i, 'study'],
-  [/nurser|playroom|toy|doll|cradle|schoolroom|story|rocking|music box|blanket/i, 'nursery'],
-  [/bedroom|bedchamber|sleep|dressing|canopy|box room|underbed|guest suite|guest hall/i, 'sleeping'],
-  [/attic|loft|trunk|observator|telescope|star|moon dome|astronom|weather/i, 'attic'],
-  [/lamp|candle|wax|lantern|sconce|wick|boiler|chimney|gas valve|match safe|reflector|glow|bell/i, 'lampworks'],
-  [/crypt|vault|coffin|burial|ossuar|tomb|marble/i, 'crypt'],
-  [/greenhouse|conservator|potting|moss|cactus|seed|garden|mushroom|compost|leaf/i, 'greenhouse'],
-  [/bath|wash|steam|sauna|shower|cistern|pump|pipe|towel|locker|drying/i, 'bathhouse'],
-  [/kennel|animal|dog|cat room|groom|feed|collar|treat|veterinar|quarantine/i, 'kennels'],
-  [/hedge|maze|terrace|court|grounds|pumpkin|balcony|fountain/i, 'hedge'],
-  [/grave|mausoleum|memorial|headstone/i, 'graveyard'],
-  [/passage|crawlspace|junction|behind the|catwalk|landing|corridor|stair|walk|arcade|gallery|cloak|coat room|hall/i, 'passages'],
+  [/crawlspace|dumbwaiter|ventilation|speaking tube|behind the/i, 'passages'],
+  [/crypt|ossuar|catacomb|burial|sarcophag|coffin/i, 'crypt'],
+  [/\bbath\b|bathing|steam room|sauna|plunge|shower|cistern/i, 'bathhouse'],
+  [/greenhouse|conservator|orangery|palm house|fernery|orchid/i, 'greenhouse'],
+  [/kennel|veterinar|quarantine/i, 'kennels'],
+  [/\bkitchen|scullery/i, 'kitchens'],
+  [/hedge|topiary|briar/i, 'hedge'],
+  [/mausoleum|cemetery|\bgrave/i, 'graveyard'],
 ];
 
 /**
- * A boss gets a room nobody else in its region fights in. Round 1 put The
- * Butler in the same warm gallery as the first Dust Bunny of the run.
+ * The atmosphere region a node should actually play in. Exported so a test can
+ * assert the whole 340-room table without booting a scene.
+ *
+ * A BOSS PLAYS IN ITS OWN WING TOO. There used to be a BOSS_MOOD table here, on
+ * the reasoning that a boss deserves a room no Scuffle in its region shares —
+ * right instinct, wrong lever. It routed eight of the seventeen bosses into the
+ * crypt, so The Butler, The Confectioner, The Lamplighter, The Master of Revels,
+ * The Bone Curator, The Whisper Warden, The Drowned Matron and the Groundskeeper
+ * of Names all fought in one identical stone room, and none of them fought in
+ * the wing the player had just spent a chapter walking through. The boss beat is
+ * carried by `dread` instead (see `_o`), which desaturates, cools and crushes
+ * the edges of the wing you are already standing in.
  */
-const BOSS_MOOD = {
-  // The Butler's Receiving Chamber goes COLD. Every ordinary Foyer room is warm
-  // candlelight; the one room where the house decides whether you belong is
-  // stone and spectral light, and no Scuffle in the region shares it.
-  foyer: 'crypt', nursery: 'attic', sleeping: 'passages', kitchens: 'crypt',
-  greenhouse: 'graveyard', graveyard: 'crypt', study: 'attic', attic: 'lampworks',
-  lampworks: 'crypt', ballroom: 'crypt', hedge: 'graveyard', passages: 'crypt',
-  bathhouse: 'crypt', kennels: 'hedge',
-};
-
-/** The atmosphere region a node should actually play in. Exported so a test
- *  can assert the whole 340-room table without booting a scene. */
-export function moodForRoom(roomName, region, arena) {
+export function moodForRoom(roomName, region /* , arena */) {
   const base = REGION_KEY[region] || region || 'foyer';
-  if (arena === 'boss') return BOSS_MOOD[base] || base;
   const n = String(roomName || '');
   if (n) for (const [re, key] of ROOM_MOOD) if (re.test(n)) return key;
   return base;
@@ -383,7 +385,12 @@ export class CombatScene extends Scene {
       this._addShake(0.9);
       this.ctx.atmosphere?.impact?.(this._viewportPoint(named), { strength: 1.2, color: 0xf26d78, shake: false });
     }
-    this.ctx.atmosphere?.dread?.(boss ? 0.22 : 0.12, 0.8);
+    /* The boss now fights in its OWN wing (see moodForRoom), so this sustained
+       dread is the whole difference between the Receiving Chamber and the Entry
+       Hall two rooms back: same architecture, drained of colour and warmth. It
+       carries what the old BOSS_MOOD table was reaching for, which is why it is
+       held further from the Scuffle value than it used to be. */
+    this.ctx.atmosphere?.dread?.(boss ? 0.40 : 0.10, 0.8);
     this.$cb.classList.remove('is-arena-in');
     this.$cb.classList.add('is-arena');
   }

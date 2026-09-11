@@ -1,0 +1,30 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>room mood table</title>
+<script type="importmap">
+{ "imports": { "three": "/game/vendor/three.module.js", "three/addons/": "/game/vendor/jsm/" } }
+</script>
+<pre id="out">running…</pre>
+<script type="module">
+/* Publishes the whole 340-room routing table for tests/room-mood/check.py.
+   Imports the real modules, so the table is the one the game uses. */
+try {
+  const { ROOMS } = await import('/game/src/state/mapgen.js');
+  const { moodForRoom } = await import('/game/src/scenes/combat.js');
+  const rows = [];
+  for (const [region, rooms] of Object.entries(ROOMS)) {
+    for (const r of rooms) {
+      rows.push({
+        region, name: r.name, tag: r.tag,
+        mood: moodForRoom(r.name, region, r.tag === 'bo' ? 'boss' : 'scuffle'),
+      });
+    }
+  }
+  window.__ROOMMOOD = rows;
+  document.getElementById('out').textContent =
+    rows.length + ' rooms routed — see check.py';
+} catch (e) {
+  window.__ROOMMOOD = [];
+  document.getElementById('out').textContent = 'ERROR ' + (e && e.stack || e);
+}
+</script>
