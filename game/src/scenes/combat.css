@@ -128,9 +128,23 @@
      `.cb-enemy__plate` below cancels the same offset so the Courage bar and
      the name stay nailed down while the body commits. */
   --e-lx: 0px; --e-ly: 0px; --e-lr: 0deg;
+  /* ── THE GROUND LINE ──────────────────────────────────────────────────────
+     The band at the bottom of the column that belongs to the name plate. The
+     plate is absolute inside it (see `.cb-enemy__plate`), so this padding is
+     what every creature's feet stand on — ONE line for the whole row, instead
+     of "however tall my own plate happens to be". Measured before: the
+     Coatrack Crawler's feet at y=486 and the Dust Bunny's at 464, because the
+     Bunny carries a Dust counter and the Crawler does not. Two creatures in
+     the same room standing at two different heights is most of why the board
+     read as pasted-on rather than standing in a place.
+     84px clears the tallest ordinary plate (a name, a bar and one counter row
+     measures 72) and leaves a strip of visible floor above it for the contact
+     shadow, which is the other half of the fix. */
+  --e-band: 84px;
   position: relative;
   z-index: 1;
   display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  padding-bottom: var(--e-band);
   margin-top: auto;
   cursor: pointer;
   outline: none;
@@ -290,7 +304,10 @@
   position: relative;
   --e-aspect: .92;
   --e-wide: 1.25;                 /* never wider than this many of its own heights */
-  --e-h: min(calc(226px * var(--e-sz) * var(--e-tier)), calc(100vh - 460px));
+  /* The band comes out of the height ceiling too, or a boss rig grows by
+     exactly the amount the ground line moved and pushes its intent badge off
+     the top of the arena. */
+  --e-h: min(calc(226px * var(--e-sz) * var(--e-tier)), calc(100vh - 460px - var(--e-band)));
   height: var(--e-h);
   /* a sprawling rig can fit a 2.6:1 bbox — cap the footprint and let the SVG's
      `meet` fit inside it, or one rug eats the whole room */
@@ -300,19 +317,81 @@
   display: flex; align-items: flex-end; justify-content: center;
   transform-origin: 50% 100%;
 }
+/* ── STANDING ON SOMETHING ──────────────────────────────────────────────────
+   "During combat the characters don't stand out from the background enough.
+    Also they should be on the floor instead of floating in air."
+
+   Both halves were one cause. This pool WAS drawn — it is a near-black ellipse
+   at 85% over a floor that is already near-black, measured at rgb(7,6,13)
+   against a floor within a few units of it, so nothing separated the creature
+   from the room and nothing said where the ground was.
+
+   A shadow cannot be darker than a dark floor, so grounding has to come from
+   CONTACT, not from darkness: a small, dense core right under the feet with a
+   hard value break, and a wider, softer skirt for the mass above it. The `lit`
+   ring is the trick that makes it read at all — a faint warm bounce just
+   outside the core, which is what a floor near a lamp actually does, and the
+   only value in the group that is BRIGHTER than the floor. */
+/* Straddles the feet line rather than hiding behind them: the rig is painted
+   after the pool and fills its box down to the baseline (`xMidYMax meet`), so
+   a pool wholly INSIDE the stage is a shadow drawn behind the creature that
+   drew it. Half of it now falls below the stage, onto the floor. */
 .cb-enemy__pool {
-  position: absolute; left: 50%; bottom: 2px;
-  width: 78%; height: 30px;
+  position: absolute; left: 50%; bottom: -13px;
+  width: 86%; height: 34px;
   transform: translateX(-50%);
   border-radius: 50%;
-  background: radial-gradient(50% 50% at 50% 50%,
-    color-mix(in srgb, var(--ink-900) 85%, transparent) 0%,
-    transparent 72%);
-  filter: blur(2px);
+  background:
+    /* the contact core: small, dense, unblurred at its centre */
+    radial-gradient(34% 44% at 50% 52%,
+      rgba(0, 0, 0, .92) 0%,
+      rgba(0, 0, 0, .55) 58%,
+      transparent 78%),
+    /* the mass skirt */
+    radial-gradient(58% 58% at 50% 50%,
+      color-mix(in srgb, var(--ink-900) 78%, transparent) 0%,
+      transparent 76%);
+  filter: blur(1.5px);
 }
+/* The warm bounce. Sits UNDER the pool and a little wider, so the eye reads a
+   lit floor interrupted by a body rather than a dark shape on a dark plane. */
+.cb-enemy__pool::before {
+  content: '';
+  position: absolute; left: 50%; top: 50%;
+  width: 168%; height: 190%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  /* The only value in the group brighter than the floor, and the one doing the
+     work: a dark ellipse on a dark floor is invisible, so what says "ground"
+     is the lit ring the body interrupts. Warm, because every lamp in this
+     house is. Tuned by eye against the Foyer, which is the darkest floor a
+     creature stands on. */
+  background: radial-gradient(50% 50% at 50% 50%,
+    transparent 34%,
+    rgba(255, 186, 106, .16) 52%,
+    rgba(255, 186, 106, .07) 70%,
+    transparent 84%);
+  z-index: -1;
+  pointer-events: none;
+}
+/* ── SEPARATION FROM THE ROOM ───────────────────────────────────────────────
+   The second half of the same note. Every creature in the game is painted from
+   the room's own palette — a brown coatrack against brown panelling, a grey
+   lint ball against a grey-blue wall — so the silhouette had nothing holding
+   it off the backdrop. A contact halo hugging the outline does that regardless
+   of what is behind it, which a rim light cannot: a rim only works when you
+   know which side the lamp is on, and the atmosphere layer moves it per room.
+
+   Two shadows, deliberately: a tight dark one that reads as an EDGE at any
+   size, and a wide soft one that reads as air between the creature and the
+   wall. `drop-shadow` follows the alpha of the rig, so it traces the actual
+   silhouette — spikes, legs, trailing wisps — and not a bounding box. */
 .cb-enemy__rig {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
+  filter:
+    drop-shadow(0 0 2px rgba(0, 0, 0, .95))
+    drop-shadow(0 3px 12px rgba(0, 0, 0, .5));
   overflow: visible;
   /* the tip of a lunge/swing. Kept OFF `.cb-enemy__stage` on purpose: the hit
      reactions (`cb-hitshake`, `cb-clank`) are keyframed on the stage and a CSS
@@ -355,6 +434,17 @@
   transform-origin: 0 0;
 }
 .rg-limbs-back .rg-limb { stroke: color-mix(in srgb, var(--e3) 70%, var(--ink-900)); stroke-width: 6; }
+/* ── A DRESSED FIGURE WEARS TROUSERS ────────────────────────────────────────
+   `grad: 'dark'` is set by exactly three silhouettes and all three are people
+   in clothes: the Faceless Guest's coat, the Butler's tailcoat, the Governess's
+   dress. `.rg-limb` strokes in `--e3`, the palette's LIGHT accent — which on
+   those three is the cream of their own shirt front. The Butler shipped with
+   two cream pipe-cleaner legs hanging out from under a near-black tailcoat,
+   and at 1.5 scale they were the first thing you saw. A dark figure gets dark
+   limbs; everything else keeps the light ones, which is right for a creature
+   whose limbs are meant to be the bright part. */
+.cb-enemy[data-grad="dark"] .rg-limb { stroke: color-mix(in srgb, var(--e2) 62%, var(--ink-900)); }
+.cb-enemy[data-grad="dark"] .rg-limbs-back .rg-limb { stroke: color-mix(in srgb, var(--e2) 38%, var(--ink-900)); }
 .rg-tuft { fill: none; stroke: var(--e2); stroke-width: 4.5; stroke-linecap: round; opacity: .7; }
 .rg-ln { fill: none; stroke: var(--e3); stroke-width: 8; stroke-linecap: round; }
 .rg-ln2 { fill: none; stroke: color-mix(in srgb, var(--e3) 80%, transparent); stroke-width: 3; stroke-linecap: round; }
@@ -371,7 +461,14 @@
 .rg-dress { fill: var(--e2); opacity: .92; }
 /* A butler is read from a white shirt front, a wing collar and a black tie.
    All three now use palette slot 3 (the light one) against the coat. */
-.rg-collar { fill: var(--e3); }
+/* "A butler is READ from three things — a white shirt front, a wing collar and
+   a black tie", says PROPS.butler, "so all three are now full-size and in
+   contrasting fills". Two of the three were the same flat `--e3`, so the
+   collar, the shirt and his own face merged into one cream column and he read
+   as an egg in a bow tie. A step darker separates them — which is also what a
+   starched wing collar does against a shirt in any photograph of one. Only the
+   Butler and the Governess draw a collar. */
+.rg-collar { fill: color-mix(in srgb, var(--e3) 80%, var(--e2)); }
 .rg-shirt { fill: var(--e3); opacity: .96; }
 .rg-bow { fill: color-mix(in srgb, var(--e1) 82%, var(--ink-900)); }
 .rg-claw { fill: var(--e2); }
@@ -465,16 +562,33 @@
 }
 .cb-enemy.is-dying { pointer-events: none; }
 
-/* the plate under an enemy */
+/* the plate under an enemy
+   ── OUT OF THE FLOW, SO THE CREATURE CAN REACH THE FLOOR ────────────────────
+   This was an in-flow row at the bottom of the `.cb-enemy` column, and the
+   column bottoms out on the arena floor, so the PLATE stood on the floor and
+   the creature stood on the plate. Measured at 1600x900: the arena floor is
+   y=540 and the Kid's feet are on it, while the Coatrack Crawler's feet were
+   at 486 and the Dust Bunny's at 464 — up to 76px of nothing underneath, and
+   the two of them not even on the same line as each other, because the gap was
+   whatever their own plate happened to be tall. That is the "floating in air".
+
+   Absolute at `top: 100%` hangs the plate off the floor line instead. Every
+   creature's feet now land on that one line, and the plate keeps its place on
+   screen. `setPlateLimit` is unchanged and still the guard: it measures this
+   plate against the real fan every time the hand moves and lifts it when the
+   cards would reach it, which is the case the round-4 note is about. */
 .cb-enemy__plate {
-  position: relative; z-index: 4;
+  position: absolute; z-index: 4;
+  left: 50%; bottom: 0;
   /* Cancels the attack pose (the creature commits, the numbers hold still),
      and carries `--e-plift`: the measured lift that keeps counters, name, bar
      and statuses clear of the player's hand. See EnemyView#setPlateLimit —
      round 4's Resonance 0/4 chip failed elementFromPoint at 720p, 900p and
-     1080p because the plate hung below the arena floor into the fan. */
+     1080p because the plate hung below the arena floor into the fan.
+     The -50% is the horizontal centring, folded in because a second transform
+     would replace this one rather than compose with it. */
   --e-plift: 0px;
-  transform: translate3d(calc(var(--e-lx, 0px) * -1),
+  transform: translate3d(calc(-50% - var(--e-lx, 0px)),
                          calc(var(--e-ly, 0px) * -1 + var(--e-plift)), 0);
   width: min(230px, 100%);
   display: flex; flex-direction: column; align-items: center; gap: 3px;
