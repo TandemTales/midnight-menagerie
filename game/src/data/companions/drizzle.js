@@ -671,12 +671,12 @@ const basics = [
   },
   {
     id: 'drizzle/damp-spot', name: 'Damp Spot', companion: SLUG, type: SKILL, rarity: BASIC,
-    cost: 1, target: ENEMY, keywords: ['soaked'],
+    cost: 2, target: ENEMY, keywords: ['soaked'],
     text: '[Soak] one enemy. If it was already [Soaked], gain {b} Guard.',
     flavor: 'The ceiling has been thinking about this for a while.',
-    nums: { b: 5 },
+    nums: { b: 9 },
     effect: eff((c) => { if (!soak(c, c.target)) U.guard(c, N(c).b); }),
-    upgrade: { nums: { b: 8 } },
+    upgrade: { nums: { b: 14 } },
   },
   {
     id: 'drizzle/just-a-sprinkle', name: 'Just a Sprinkle', companion: SLUG, type: SKILL, rarity: BASIC,

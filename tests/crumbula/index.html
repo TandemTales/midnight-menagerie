@@ -131,9 +131,14 @@ try {
     e.player.block = 20;
     const hp = e.player.hp;
     await play(e, 'crumbula/bad-idea-delicious', t);
-    check(e.player.hp === hp - 3, 'Indulge goes straight through Guard', `hp ${hp} -> ${e.player.hp}`);
+    /* Both amounts are the card's own. The Bite Marks were a literal 2 and went
+       stale the day the card became the Count's cost-2 opener (n 2 -> 3): a check
+       on a RULE — Indulge is not damage — should not also be a check on a tuning
+       number somebody is allowed to change. */
+    const BID = CARDS.cardById('crumbula/bad-idea-delicious').nums;
+    check(e.player.hp === hp - BID.i, 'Indulge goes straight through Guard', `hp ${hp} -> ${e.player.hp}`);
     check(e.player.block === 20, 'and does not touch the Guard itself', `guard=${e.player.block}`);
-    check(marks(e, t) === 2, 'and it bought the Bite Marks', `marks=${marks(e, t)}`);
+    check(marks(e, t) === BID.n, 'and it bought the Bite Marks', `marks=${marks(e, t)} of ${BID.n}`);
   }
   {
     // it can never take him below 1

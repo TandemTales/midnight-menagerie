@@ -289,12 +289,12 @@ const basics = [
   },
   {
     id: 'crumbula/bad-idea-delicious', name: 'Bad Idea, Delicious', companion: SLUG, type: ATTACK, rarity: BASIC,
-    cost: 1, target: ENEMY, keywords: ['indulge', 'bite-mark'],
+    cost: 2, target: ENEMY, keywords: ['indulge', 'bite-mark'],
     text: 'Deal {d} damage. [Indulge] {i} to apply {n} [Bite Mark]s.',
     flavor: 'He knows. He does it anyway.',
-    nums: { d: 7, i: 3, n: 2 },
+    nums: { d: 11, i: 3, n: 3 },
     effect: eff((c) => { U.hit(c, N(c).d); if (indulge(c, N(c).i)) bite(c, c.target, N(c).n); }),
-    upgrade: { nums: { d: 10, i: 3, n: 3 } },
+    upgrade: { nums: { d: 16, i: 3, n: 4 } },
   },
 ];
 

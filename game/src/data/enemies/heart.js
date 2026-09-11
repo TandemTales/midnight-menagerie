@@ -52,7 +52,7 @@ export const HEART_STATUSES = [
      * (§6), and the player is the other side.
      */
     id: 'calmed', name: 'Calmed', kind: 'debuff', icon: 'calmed',
-    desc: 'Its next damaging action deals 2 less damage. Then Calmed ends.',
+    desc: 'The next damage it deals is 2 less. Then Calmed ends.',
     decay: 'never', stacks: false, max: 1,
     hooks: {
       modifyDamageDealt: (amt) => Math.max(0, amt - 2),

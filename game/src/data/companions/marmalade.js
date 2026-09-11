@@ -40,8 +40,17 @@ function gainGhost(c, n) {
 }
 const ghost = (c) => U.res(c, GHOST);
 const haunt = (c, t, n) => U.apply(c, t || c.target, HAUNT, n);
-/** Does this enemy's current move deal damage? */
-const willAttack = (c, e) => !!(e && (e.intent === 'attack' || e.intent === 'attackBig' || e.intent === 'attackDefend' || e.intent === 'attackBuff' || e.intent === 'attackDebuff'));
+const ATTACK_INTENTS = new Set(['attack', 'attackBig', 'attackDefend', 'attackBuff', 'attackDebuff']);
+/**
+ * Does this enemy's current move deal damage?
+ *
+ * Read `pendingMove.intent` — a plain string — and NOT `enemy.intent`, which
+ * is the *display* intent object built by intents.js (`{ type, family, ... }`).
+ * Comparing that object to a string is false for every enemy that ever lived,
+ * which is how Back-Arched Swipe and Slip Away both shipped with their whole
+ * conditional half dead. Every other Companion reads `pendingMove.intent`.
+ */
+const willAttack = (c, e) => !!(e && e.pendingMove && ATTACK_INTENTS.has(e.pendingMove.intent));
 const anyAttacker = (c) => U.enemies(c).some(e => willAttack(c, e));
 /** Install a Power: apply its marker status, then run its one-time wiring. */
 function power(c, id, n, install) {
@@ -113,9 +122,9 @@ const basics = [
   },
   {
     id: 'marmalade/boo', name: 'Boo!', companion: SLUG, type: SKILL, rarity: BASIC,
-    cost: 1, target: ENEMY, keywords: [HAUNT], text: 'Apply {n} [Haunt].',
+    cost: 2, target: ENEMY, keywords: [HAUNT], text: 'Apply {n} [Haunt].',
     flavor: 'She has been practising this in the hallway mirror.',
-    nums: { n: 2 }, effect: eff(c => haunt(c, c.target, N(c).n)), upgrade: { nums: { n: 3 } },
+    nums: { n: 4 }, effect: eff(c => haunt(c, c.target, N(c).n)), upgrade: { nums: { n: 6 } },
   },
 ];
 
@@ -187,7 +196,9 @@ const commons = [
     cost: 1, target: ENEMY, text: 'Deal {d} damage. Gain {b} Guard if the target intends to attack.',
     flavor: 'Twice her size and none of it real.',
     nums: { d: 6, b: 6 },
-    effect: eff(c => { const t = c.target; U.hit(c, N(c).d); if (willAttack(c, t)) U.guard(c, N(c).b); }),
+    // Read the intent BEFORE the hit: killing the target does not retroactively
+    // mean it never intended to attack, and a corpse's pendingMove is cleared.
+    effect: eff(c => { const t = c.target; const arched = willAttack(c, t); U.hit(c, N(c).d); if (arched) U.guard(c, N(c).b); }),
     upgrade: { nums: { d: 8, b: 8 } },
   },
   {
@@ -1073,7 +1084,7 @@ export default {
       min: 0, max: 9, hooks: ['modifyDamageTaken', 'ghoststepGained', 'ghoststepConsumed'],
     },
     haunt: {
-      name: 'Haunt', kind: 'status', desc: 'When a Haunted enemy takes a damaging action it loses Courage equal to its Haunt, then loses half its Haunt, rounded up.',
+      name: 'Haunt', kind: 'status', desc: 'When a Haunted enemy attacks it loses Courage equal to its Haunt, then loses half its Haunt, rounded up.',
       min: 0, max: 99, hooks: ['onAttack'],
     },
     lives: {

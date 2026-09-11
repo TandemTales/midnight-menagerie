@@ -566,12 +566,12 @@ const basics = [
   },
   {
     id: 'mossbit/written-in-stone', name: 'Written in Stone', companion: SLUG, type: SKILL, rarity: BASIC,
-    cost: 1, target: ENEMY, keywords: ['epitaph'],
+    cost: 2, target: ENEMY, keywords: ['epitaph'],
     text: 'Create [Epitaph] {n} on an enemy: deal {d} damage.',
     flavor: 'It is going to happen. It says so.',
-    nums: { n: 2, d: 10 },
+    nums: { n: 2, d: 16 },
     effect: eff((c) => { const t = c.target; inscribe(c, { turns: N(c).n, target: t, label: 'Written in Stone', run: (x, tm) => hitEpitaph(x, tm, N(c).d) }); }),
-    upgrade: { nums: { n: 2, d: 15 } },
+    upgrade: { nums: { n: 2, d: 24 } },
   },
   {
     id: 'mossbit/not-yet', name: 'Not Yet', companion: SLUG, type: SKILL, rarity: BASIC,

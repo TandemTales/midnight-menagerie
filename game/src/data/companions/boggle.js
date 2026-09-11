@@ -479,12 +479,12 @@ const basics = [
   },
   {
     id: 'boggle/creepy-little-noise', name: 'Creepy Little Noise', companion: SLUG, type: SKILL, rarity: BASIC,
-    cost: 1, target: ENEMY, keywords: ['fright'],
+    cost: 2, target: ENEMY, keywords: ['fright'],
     text: 'Apply {n} [Fright].',
     flavor: 'Not a word. Not quite a scratch. Somewhere in between.',
-    nums: { n: 2 },
+    nums: { n: 4 },
     effect: eff((c) => fright(c, c.target, N(c).n)),
-    upgrade: { nums: { n: 3 } },
+    upgrade: { nums: { n: 6 } },
   },
   {
     id: 'boggle/under-the-bed', name: 'Under the Bed', companion: SLUG, type: SKILL, rarity: BASIC,

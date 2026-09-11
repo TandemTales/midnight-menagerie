@@ -519,12 +519,12 @@ const basics = [
   },
   {
     id: 'pudding/dig-it-up', name: 'Dig It Up!', companion: SLUG, type: SKILL, rarity: BASIC,
-    cost: 1, target: SELF, keywords: ['dig-up', 'unearthed', 'best-friend'],
+    cost: 2, target: SELF, keywords: ['dig-up', 'unearthed', 'best-friend'],
     text: '[Dig Up] one Trick. With no Plot to dig, your [Best Friend] gains {b} Guard instead.',
     flavor: 'He remembers exactly where. He always does.',
-    nums: { b: 5 },
+    nums: { b: 9 },
     effect: eff((c) => { if (!digUp(c)) U.guardOn(c, bf(c), N(c).b); }),
-    upgrade: { nums: { b: 8 } },
+    upgrade: { nums: { b: 14 } },
   },
 ];
 

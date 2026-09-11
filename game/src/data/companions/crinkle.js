@@ -427,16 +427,16 @@ const basics = [
   },
   {
     id: 'crinkle/first-fold', name: 'First Fold', companion: SLUG, type: SKILL, rarity: BASIC,
-    cost: 1, target: SELF, keywords: ['fold', 'crease', 'paper'],
+    cost: 2, target: SELF, keywords: ['fold', 'crease', 'paper'],
     text: '[Fold] a Trick in your hand {n}. Gain {p} [Paper].',
     flavor: 'Corner to corner. Press. That is the whole of it.',
-    nums: { n: 1, p: 1 },
+    nums: { n: 2, p: 2 },
     effect: eff(async (c) => {
       const k = await pickHand(c, { prompt: 'Fold which Trick?', filter: (x) => creases(x) < maxCrease(c) });
       if (k) fold(c, k, N(c).n);
       gainPaper(c, N(c).p);
     }),
-    upgrade: { nums: { n: 1, p: 2 } },
+    upgrade: { nums: { n: 2, p: 4 } },
   },
   {
     id: 'crinkle/trace-it', name: 'Trace It', companion: SLUG, type: SKILL, rarity: BASIC,

@@ -117,7 +117,9 @@ try {
     const p = patchesOf(target);
     check(p.length === 1 && p[0].id === 'guard', 'Beginner’s Patch attaches a Guard Patch',
       JSON.stringify(p));
-    check(p[0] && p[0].stitches === 2, 'with 2 Stitches', `stitches=${p[0] && p[0].stitches}`);
+    /* The card's own number: Beginner's Patch became Mopsy's cost-2 opener (2 -> 4). */
+    const PATCH_N = CARDS.cardById('mopsy/beginners-patch').nums.n;
+    check(p[0] && p[0].stitches === PATCH_N, `with ${PATCH_N} Stitches`, `stitches=${p[0] && p[0].stitches}`);
 
     const guard0 = e.player.block;
     e.player.energy = 9;
@@ -125,7 +127,7 @@ try {
     check(e.player.block > guard0, 'and the Patch fires when the Trick is played',
       `guard ${guard0} -> ${e.player.block}`);
     const after = patchesOf(target);
-    check(after.length === 1 && after[0].stitches === 1, 'spending one Stitch',
+    check(after.length === 1 && after[0].stitches === PATCH_N - 1, 'spending one Stitch',
       `stitches=${after[0] && after[0].stitches}`);
   }
   {

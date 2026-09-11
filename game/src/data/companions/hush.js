@@ -308,12 +308,12 @@ const basics = [
   },
   {
     id: 'hush/from-under-the-sofa', name: 'From Under the Sofa', companion: SLUG, type: ATTACK, rarity: BASIC,
-    cost: 1, target: ENEMY, keywords: ['ambush'],
+    cost: 2, target: ENEMY, keywords: ['ambush'],
     text: 'Deal {d} damage. [Ambush]: deal {m0} more.',
     flavor: 'There was never anything under the sofa. Obviously.',
-    nums: { d: 6, m0: 4 },
+    nums: { d: 10, m0: 6 },
     effect: eff((c) => { const a = ambush(c); U.hit(c, N(c).d + (a ? N(c).m0 : 0)); }),
-    upgrade: { nums: { d: 9, m0: 6 } },
+    upgrade: { nums: { d: 15, m0: 9 } },
   },
 ];
 

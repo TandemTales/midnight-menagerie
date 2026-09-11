@@ -185,12 +185,12 @@ const basics = [
   },
   {
     id: 'bones/put-yourself-back-together', name: 'Put Yourself Back Together', companion: SLUG, type: SKILL, rarity: BASIC,
-    cost: 1, target: SELF, keywords: ['reattach'],
+    cost: 2, target: SELF, keywords: ['reattach'],
     text: '[Reattach] up to {n} Bones. Gain {b} Guard for each. If you have none, gain {m0} Guard instead.',
     flavor: 'Left hip. No — other left hip.',
-    nums: { n: 2, b: 4, m0: 6 },
+    nums: { n: 2, b: 6, m0: 11 },
     effect: eff(c => { const d = reattach(c, Math.min(N(c).n, loose(c))); U.guard(c, d > 0 ? d * N(c).b : N(c).m0); }),
-    upgrade: { nums: { n: 2, b: 6, m0: 8 } },
+    upgrade: { nums: { n: 2, b: 9, m0: 15 } },
   },
   {
     id: 'bones/go-get-it', name: 'Go Get It!', companion: SLUG, type: SKILL, rarity: BASIC,

@@ -292,13 +292,13 @@ const basics = [
   },
   {
     id: 'wisp/wait-wait', name: 'Wait... Wait...', companion: SLUG, type: ATTACK, rarity: BASIC,
-    cost: 1, target: ENEMY, keywords: ['linger', 'afterglow', 'glow'],
+    cost: 2, target: ENEMY, keywords: ['linger', 'afterglow', 'glow'],
     text: 'Deal {d} damage. [Linger] 1. [Afterglow]: deal {m0} damage.',
     flavor: 'Not yet. Not yet. Not — now.',
-    nums: { d: 5, m0: 7 },
+    nums: { d: 9, m0: 11 },
     effect: eff((c) => { U.hit(c, N(c).d); linger(c, 1); }),
     afterglow: (c) => U.hitRandom(c, 7 + brightBonus(c)),
-    upgrade: { nums: { d: 8, m0: 10 } },
+    upgrade: { nums: { d: 14, m0: 16 } },
   },
   {
     id: 'wisp/nightlight-practice', name: 'Nightlight Practice', companion: SLUG, type: SKILL, rarity: BASIC,

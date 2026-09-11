@@ -177,12 +177,12 @@ const basics = [
   },
   {
     id: 'taffy/pinch-off', name: 'Pinch Off', companion: SLUG, type: SKILL, rarity: BASIC,
-    cost: 1, target: SELF, keywords: ['split', 'glob'],
+    cost: 2, target: SELF, keywords: ['split', 'glob'],
     text: '[Split] {n}. Gain {b} Guard.',
     flavor: 'It does not hurt. She checks every time, and it does not hurt.',
-    nums: { n: 1, b: 4 },
+    nums: { n: 2, b: 7 },
     effect: eff(c => { split(c, N(c).n); U.guard(c, N(c).b); }),
-    upgrade: { nums: { n: 1, b: 6 } },
+    upgrade: { nums: { n: 2, b: 11 } },
   },
   {
     id: 'taffy/long-pull', name: 'Long Pull', companion: SLUG, type: SKILL, rarity: BASIC,

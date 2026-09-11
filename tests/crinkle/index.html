@@ -35,6 +35,12 @@ function onlyInHand(e, ...keep) {
   for (const k of e.piles.hand.slice()) if (!keep.includes(k)) e.moveCard(k, 'discard', {});
 }
 const creases = (k) => CARDCOUNTER(k, 'crease');
+/* How many Creases First Fold lays, read off the card. Every check that folds
+   with it assumed ONE, and six went red together when it became Crinkle's
+   cost-2 opener and began laying two. The rules under test — a Crease is
+   permanent, Deckle Edge makes each one worth more, Practised Hands deepens
+   only the first Fold of a turn — do not depend on how many it lays. */
+const FIRST_FOLD_N = CARDS.cardById('crinkle/first-fold').nums.n;
 const scratch = (e) => MM({ e, self: e.player });
 function pileOf(e, card) {
   for (const n of ['draw', 'hand', 'discard', 'exhaust', 'limbo', 'stash']) {
@@ -60,7 +66,8 @@ try {
     const fold = give(e, 'crinkle/first-fold');
     onlyInHand(e, k, fold);
     await playCard(e, fold);
-    check(creases(k) === 1, 'First Fold really puts a Crease on it', `creases=${creases(k)}`);
+    check(creases(k) === FIRST_FOLD_N, 'First Fold really puts its Creases on it',
+      `creases=${creases(k)} of ${FIRST_FOLD_N}`);
     check(e.costOf(k) === 0, 'and a Crease really takes a Nerve off', `cost=${e.costOf(k)}`);
 
     // ...and the damage really goes up. Measured against an unfolded control.
@@ -101,11 +108,11 @@ try {
     const fold = give(e, 'crinkle/first-fold');
     onlyInHand(e, k, fold);
     await playCard(e, fold);
-    check(creases(k) === 1, 'one Crease on it');
+    check(creases(k) === FIRST_FOLD_N, 'its Creases are on it', `creases=${creases(k)}`);
     e.moveCard(k, 'discard', {});
     e.moveCard(k, 'draw', {});
     e.moveCard(k, 'hand', {});
-    check(creases(k) === 1, 'and it is STILL folded after a trip through the piles',
+    check(creases(k) === FIRST_FOLD_N, 'and it is STILL folded after a trip through the piles',
       `creases=${creases(k)}`);
   }
   {
@@ -285,8 +292,22 @@ try {
     await playCard(e, f);
     const dmg = watchDamage(e);
     await playCard(e, k, e.livingEnemies()[0]);
-    check(dmg.total === 10, 'Deckle Edge makes one Crease worth two thirds, not one',
-      `printed 6, dealt ${dmg.total}`);
+    /* RELATIVE to the same fold without the Power. This was a literal 10 — one
+       Crease on a printed 6 — and it went red the day First Fold began laying
+       two. What Deckle Edge promises is that each Crease adds TWICE what it
+       otherwise would, whatever the Crease count or the printed damage. */
+    const e0 = await crinkle();
+    const k0 = give(e0, 'crinkle/paper-cut');
+    const f0 = give(e0, 'crinkle/first-fold');
+    onlyInHand(e0, k0, f0);
+    await playCard(e0, f0);
+    const plain = watchDamage(e0);
+    await playCard(e0, k0, e0.livingEnemies()[0]);
+    const printed = CARDS.cardById('crinkle/paper-cut').nums.d;
+    check(plain.total > printed && dmg.total - printed === 2 * (plain.total - printed),
+      'Deckle Edge makes each Crease worth two thirds of the card, not one third',
+      `printed ${printed}; ${FIRST_FOLD_N} Crease(s) add ${plain.total - printed} plain, `
+      + `${dmg.total - printed} with Deckle Edge`);
   }
   {
     // The Archive recycles instead of losing them, Creases intact.
@@ -308,13 +329,13 @@ try {
     const f = give(e, 'crinkle/first-fold');
     onlyInHand(e, k, f);
     await playCard(e, f);
-    check(creases(k) === 2, 'Practised Hands makes the first Fold of the turn go deeper',
+    check(creases(k) === FIRST_FOLD_N + 1, 'Practised Hands makes the first Fold of the turn go deeper',
       `creases=${creases(k)}`);
     const k2 = give(e, 'crinkle/flatten');
     const f2 = give(e, 'crinkle/first-fold');
     onlyInHand(e, k2, f2);
     await playCard(e, f2);
-    check(creases(k2) === 1, 'and only the first', `creases=${creases(k2)}`);
+    check(creases(k2) === FIRST_FOLD_N, 'and only the first', `creases=${creases(k2)}`);
   }
   {
     // Unfold is the only card that takes Creases off, and it pays for it.

@@ -357,12 +357,12 @@ const basics = [
   },
   {
     id: 'mopsy/beginners-patch', name: 'Beginner’s Patch', companion: SLUG, type: SKILL, rarity: BASIC,
-    cost: 1, target: NONE, keywords: ['patch', 'stitch'],
+    cost: 2, target: NONE, keywords: ['patch', 'stitch'],
     text: '[Patch] a Trick in your hand: "When played, gain 4 Guard." {n} [Stitch]es.',
     flavor: 'Crooked, but it holds.',
-    nums: { n: 2 },
+    nums: { n: 4 },
     effect: eff(async (c) => { const [k] = await U.pickCards(c, { pile: 'hand', count: 1, prompt: 'Patch which Trick?', filter: patchable }); if (k) patch(c, k, 'guard', N(c).n); }),
-    upgrade: { nums: { n: 3 } },
+    upgrade: { nums: { n: 6 } },
   },
   {
     id: 'mopsy/loose-stuffing', name: 'Loose Stuffing', companion: SLUG, type: SKILL, rarity: BASIC,

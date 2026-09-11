@@ -692,17 +692,17 @@ const basics = [
   },
   {
     id: 'brambleboo/cup-of-water', name: 'Cup of Water', companion: SLUG, type: SKILL, rarity: BASIC,
-    cost: 1, target: SELF, keywords: ['garden'],
+    cost: 2, target: SELF, keywords: ['garden'],
     text: 'Give one immature Plant 1 Growth. With no Plant, gain {b} Guard instead.',
     flavor: 'Not much. It is a small cup.',
-    nums: { b: 5 },
+    nums: { b: 9 },
     effect: eff(async (c) => {
       const pool = immature(c);
       if (!pool.length) { U.guard(c, N(c).b); return; }
       const p = await pickPlant(c, { pool, prompt: 'Water which Plant?' });
       if (p) grow(c, p, 1);
     }),
-    upgrade: { nums: { b: 8 } },
+    upgrade: { nums: { b: 14 } },
   },
   {
     id: 'brambleboo/careful-snip', name: 'Careful Snip', companion: SLUG, type: SKILL, rarity: BASIC,

@@ -113,7 +113,9 @@ async function swing(e, id, seat = null) {
 
     const t = e.livingEnemies()[0];
     await play(e, 'marmalade/boo', null, t.id);
-    check(t.status('haunt') === 2, 'Boo! puts 2 Haunt on the enemy it named',
+    /* The card's own number: Boo! became Marmalade's cost-2 opener (2 -> 4). */
+    const BOO = CARDS.cardById('marmalade/boo').nums.n;
+    check(t.status('haunt') === BOO, `Boo! puts its ${BOO} Haunt on the enemy it named`,
           `${t.defId} has ${t.status('haunt')}`);
     const other = e.livingEnemies()[1];
     check(other.status('haunt') === 0,
@@ -170,6 +172,111 @@ async function swing(e, id, seat = null) {
           'and the count resets ONCE at the new player turn, not once per enemy that '
           + 'took one — two enemies acted and the first Trick is still the first',
           String(firstNextTurn));
+  }
+
+  /**
+   * Both of these read the enemy's intent, and both read it through the ONE
+   * property that is a string. `enemy.intent` is the display object built by
+   * intents.js; comparing it to 'attack' is false for every enemy that has
+   * ever existed, so both cards shipped with their conditional half dead and
+   * nothing here could see it.
+   *
+   * Each case runs BOTH ways on the same board — an attacking pendingMove and
+   * a defending one — because a card that always pays out and a card that
+   * reads the intent correctly are the same number until you show the control.
+   */
+  /**
+   * The keyword used to read "when a Haunted enemy takes a DAMAGING ACTION",
+   * and a playtester could not tell whether that meant "attacks" or "deals
+   * damage" — which are different rules the moment Guard is involved. It is
+   * the first one: `damage.js` dispatches `onAttack` on the last hit of an
+   * enemy attack whether or not any Courage was lost, so a fully blocked swing
+   * still pays out. The text now says "attacks", and this is why.
+   */
+  say('<h2>Haunt fires on the ATTACK, not on the Courage lost</h2>');
+  {
+    const both = [];
+    for (const guard of [0, 999]) {
+      const e = await cat();
+      const t = e.firstLivingEnemy();
+      await play(e, 'marmalade/boo', null, t.id);
+      const hauntBefore = t.status('haunt');
+      const courageBefore = t.hp;
+      const who = e.players[0];
+      who.statuses.clear();
+      who.block = guard;
+      const hpBefore = who.hp;
+      await e.endTurn();
+      both.push({
+        guard,
+        tookIt: hpBefore - who.hp,
+        lost: courageBefore - t.hp,
+        haunt: `${hauntBefore} -> ${t.status('haunt')}`,
+      });
+    }
+    const [open, walled] = both;
+    check(open.tookIt > 0 && walled.tookIt === 0,
+          'one run took the phase on the chin and one blocked all of it',
+          `${open.tookIt} vs ${walled.tookIt} Courage`);
+    check(walled.lost === open.lost && walled.lost > 0,
+          'and the Haunted enemy paid the SAME Courage either way — blocking the '
+          + 'swing does not stop Haunt, so the keyword says "attacks"',
+          `${open.lost} vs ${walled.lost}`);
+    check(walled.haunt === open.haunt,
+          'and its Haunt halved either way', `${open.haunt} / ${walled.haunt}`);
+  }
+
+  say('<h2>Intent-reading Tricks read pendingMove, not the display intent</h2>');
+  {
+    const attacker = { id: 'puff', name: 'Puff', intent: 'attack', damage: 6, hits: 1 };
+    const defender = { id: 'settle', name: 'Settle', intent: 'defend', block: 6 };
+
+    // ── Slip Away: 5 Guard, +4 more if ANY enemy intends to attack ──────────
+    const slip = async (moves) => {
+      const e = await cat();
+      e.livingEnemies().forEach((en, i) => { en.pendingMove = moves[i]; });
+      const who = e.players[0];
+      who.block = 0;
+      await play(e, 'marmalade/slip-away');
+      return who.block;
+    };
+    const slipHot  = await slip([attacker, defender]);
+    const slipCold = await slip([defender, defender]);
+    check(slipHot === 9, 'Slip Away pays its bonus when an enemy intends to attack — 5 + 4',
+          String(slipHot));
+    check(slipCold === 5, 'CONTROL: and only the base 5 when nothing on the board does',
+          String(slipCold));
+    check(slipHot !== slipCold, 'so the condition is actually being read',
+          `${slipCold} -> ${slipHot}`);
+
+    // "ANY enemy" is the whole point: the far enemy alone must still trip it.
+    const slipFar = await slip([defender, attacker]);
+    check(slipFar === 9, 'and ANY enemy means any — the second one alone still trips it',
+          String(slipFar));
+
+    // ── Back-Arched Swipe: 6 damage, +6 Guard if the TARGET intends to attack ─
+    const swipe = async (targetMove, otherMove) => {
+      const e = await cat();
+      const [t, other] = e.livingEnemies();
+      t.pendingMove = targetMove;
+      if (other) other.pendingMove = otherMove;
+      const who = e.players[0];
+      who.block = 0;
+      who.statuses.clear();                      // the dummy board applies Weak
+      await play(e, 'marmalade/back-arched-swipe', null, t.id);
+      return who.block;
+    };
+    const swipeHot  = await swipe(attacker, defender);
+    const swipeCold = await swipe(defender, defender);
+    check(swipeHot === 6, 'Back-Arched Swipe guards when its TARGET intends to attack',
+          String(swipeHot));
+    check(swipeCold === 0, 'CONTROL: and not when the target is defending',
+          String(swipeCold));
+    // The target, not the board: an attacker it did NOT name must not pay out.
+    const swipeWrong = await swipe(defender, attacker);
+    check(swipeWrong === 0,
+          'and it reads the TARGET, not the board — another enemy attacking is not enough',
+          String(swipeWrong));
   }
 
   say('<h2>Two Kids, two streaks</h2>');

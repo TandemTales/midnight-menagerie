@@ -209,12 +209,12 @@ const basics = [
   },
   {
     id: 'truffle/oops-a-quill', name: 'Oops, a Quill', companion: SLUG, type: ATTACK, rarity: BASIC,
-    cost: 1, target: ENEMY, keywords: ['shed', 'loose-quill'],
+    cost: 2, target: ENEMY, keywords: ['shed', 'loose-quill'],
     text: 'Deal {d} damage and [Shed] {n}.',
     flavor: 'They come out. They have always come out.',
-    nums: { d: 7, n: 1 },
+    nums: { d: 11, n: 1 },
     effect: eff((c) => { U.hit(c, N(c).d); shed(c, N(c).n); }),
-    upgrade: { nums: { d: 10, n: 1 } },
+    upgrade: { nums: { d: 16, n: 1 } },
   },
   {
     id: 'truffle/found-it', name: 'Found It', companion: SLUG, type: SKILL, rarity: BASIC,

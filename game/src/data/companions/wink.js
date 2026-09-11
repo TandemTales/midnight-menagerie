@@ -384,12 +384,12 @@ const basics = [
   },
   {
     id: 'wink/loose-thread', name: 'Loose Thread', companion: SLUG, type: SKILL, rarity: BASIC,
-    cost: 1, target: ENEMY, keywords: ['web', 'preview'],
+    cost: 2, target: ENEMY, keywords: ['web', 'preview'],
     text: 'Apply {n} [Web]. Apply {m0} more if the target has a [Preview]ed Intent.',
     flavor: 'It goes somewhere. Everything in this house goes somewhere.',
-    nums: { n: 2, m0: 1 },
+    nums: { n: 4, m0: 2 },
     effect: eff(c => web(c, c.target, N(c).n + (previewDepth(c, c.target) > 0 ? N(c).m0 : 0))),
-    upgrade: { nums: { n: 3, m0: 2 } },
+    upgrade: { nums: { n: 6, m0: 3 } },
   },
 ];
 

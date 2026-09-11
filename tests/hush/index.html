@@ -88,6 +88,10 @@ try {
     check(unseen(e) === 0, 'losing Courage to an Attack reveals him', `unseen=${unseen(e)}`);
   }
 
+  /* The printed numbers, not literals: From Under the Sofa became Hush's
+     cost-2 opener (6 + 4 -> 10 + 6) and both checks in this section went red
+     on a rule that still held. */
+  const SOFA = CARDS.cardById('hush/from-under-the-sofa').nums;
   // ── 3. Ambush: from the Pocket, resolve first, THEN be Seen ─────────────
   {
     const e = await hush();
@@ -97,8 +101,8 @@ try {
     const t = e.livingEnemies()[0];
     const hp = t.hp;
     await play(e, atk, t);
-    check(hp - t.hp === 10, 'an Attack from the Pocket while Unseen gets its Ambush bonus',
-      `dealt ${hp - t.hp} (6 + 4 ambush)`);
+    check(hp - t.hp === SOFA.d + SOFA.m0, 'an Attack from the Pocket while Unseen gets its Ambush bonus',
+      `dealt ${hp - t.hp} (${SOFA.d} + ${SOFA.m0} ambush)`);
     check(unseen(e) === 0, 'and reveals him only afterwards', `unseen=${unseen(e)}`);
   }
   {
@@ -110,8 +114,8 @@ try {
     const t = e.livingEnemies()[0];
     const hp = t.hp;
     await play(e, atk, t);
-    check(hp - t.hp === 6, 'the same Attack from the HAND gets no Ambush — he is Seen first',
-      `dealt ${hp - t.hp}`);
+    check(hp - t.hp === SOFA.d, 'the same Attack from the HAND gets no Ambush — he is Seen first',
+      `dealt ${hp - t.hp} of a printed ${SOFA.d}`);
     check(unseen(e) === 0, 'and he is Seen');
   }
 

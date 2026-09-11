@@ -274,12 +274,12 @@ const basics = [
   },
   {
     id: 'pipkin/belly-drop', name: 'Belly Drop', companion: SLUG, type: ATTACK, rarity: BASIC,
-    cost: 1, target: ENEMY, keywords: ['land', 'height'],
+    cost: 2, target: ENEMY, keywords: ['land', 'height'],
     text: 'Deal {d} damage. [Land]: deal {m0} more for each [Height] spent.',
     flavor: 'Gravity does the difficult part.',
-    nums: { d: 5, m0: 4 },
+    nums: { d: 9, m0: 5 },
     effect: eff(c => { U.hit(c, N(c).d); land(c, (s) => U.hit(c, N(c).m0 * s)); }),
-    upgrade: { nums: { d: 7, m0: 5 } },
+    upgrade: { nums: { d: 13, m0: 6 } },
   },
   {
     id: 'pipkin/plant-a-little-one', name: 'Plant a Little One', companion: SLUG, type: SKILL, rarity: BASIC,

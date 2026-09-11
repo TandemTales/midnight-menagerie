@@ -79,7 +79,7 @@ export const COMPANION_KEYWORDS = [
 
   // ── Marmalade ─────────────────────────────────────────────────────────────
   K('ghoststep', 'Ghoststep', 'Each stack prevents the next hit of enemy Attack damage entirely. Unused Ghoststep expires at the end of the enemy turn. It is not Guard — one stack can eat a 30 damage hit, but six small hits eat six stacks.', { companion: 'marmalade' }),
-  K('haunt', 'Haunt', 'When a Haunted enemy takes a damaging action, it loses Courage equal to its Haunt, then loses half its Haunt, rounded up.', { companion: 'marmalade' }),
+  K('haunt', 'Haunt', 'When a Haunted enemy attacks, it loses Courage equal to its Haunt, then loses half its Haunt, rounded up.', { companion: 'marmalade' }),
   K('lives', 'Lives', 'Marmalade begins every combat with 9 Lives. Lives are a combat resource, not Courage. Certain Tricks spend them. They do not return until the next battle.', { companion: 'marmalade' }),
   K('zoomies', 'Zoomies', 'This effect activates if this is the third or later Trick you have played this turn.', { companion: 'marmalade' }),
   K('untouched', 'Untouched', 'Active while you lost no Courage during the previous enemy turn.', { companion: 'marmalade' }),
@@ -332,7 +332,7 @@ export const COMPANION_STATUSES = [
   },
   {
     id: 'haunt', name: 'Haunt', kind: 'debuff', icon: 'haunt', decay: 'never', stacks: true,
-    desc: 'When this enemy takes a damaging action it loses {n} Courage, then loses half its Haunt, rounded up.',
+    desc: 'When this enemy attacks it loses {n} Courage, then loses half its Haunt, rounded up.',
     hooks: {
       // EXTRA: onAttack — fired on the acting enemy just after its damaging move
       // resolves. `ctx.actor` is that enemy (the status owner).
