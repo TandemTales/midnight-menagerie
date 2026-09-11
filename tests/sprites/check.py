@@ -16,9 +16,22 @@ an edit to prep_sprites.py that turns it red, so none of them is decorative:
               without raising it here does the same from the other side.
   halo        set `B = None` in `classify` (never decontaminate) and rebuild.
               Measured on idle frames 10 and 40: the edge lands 3 and 2 units
-              from the background colour against a bar of 80 -- which is the
-              defect stated exactly, the soft edge IS the grey it was cut from.
-              Shipped, the same frames measure 106 and 113.
+              from the background colour, against a body some 220 away -- a
+              ratio near 0.01 where the bar is 0.5, which is the defect stated
+              exactly: the soft edge IS the grey it was cut from. Shipped, the
+              same frames measure 106 and 113.
+  untail      set `tailed = False` in `build_clip` and rebuild boggle: the
+              UNTAIL pairing goes red on all seven of his flattened, ringed
+              clips (lift +54..+80, over UNTAIL_LIFT), and
+              affection's edge falls back to the ring's tail -- 26 from the
+              background against a body 107 away, ratio 0.24, and HALO red.
+  deblack     raise prep_sprites.BLACK_SHARE above 0.58 and rebuild drizzle:
+              attack records black 0.53 with deblack False, the pairing goes
+              red, and its edge is back to the keyed-in black (91 against a
+              body 348 away, ratio 0.26).
+  dewhite     set prep_sprites.SCRAP_BG_LUMA = 255 and rebuild truffle: five of
+              his ten sheets, cut from near-white, dewhite again -- which took
+              his eye reflections and quill light -- and DEWHITE goes red.
   wash        set ALPHA_FLOOR = 0 and rebuild. Measured on the same frames:
               3.85 and 3.84 against a bar of 0.50, where shipped they are 0.056
               and 0.075. `idle` is 43.6% covered in alpha-8 wash in the source.
@@ -29,6 +42,11 @@ an edit to prep_sprites.py that turns it red, so none of them is decorative:
   fade        drop `spectral` from FADE_FLOOR and rebuild: DISSOLVE fails,
               because the clip that the brief says must "dissolve into a
               ghostlike translucent form" would no longer lose any opacity.
+  ping        set prep_sprites.PING_IOU = 0.80 and rebuild mopsy: affection
+              ends at IoU 0.78, is marked ping, and this file's 0.60 says it
+              must not be, so PING goes red. Lowering the bar proves nothing:
+              since the grid fix no built clip ends below 0.78, so there is no
+              clip for a lower bar to catch.
 
 WHAT THIS DELIBERATELY DOES NOT CHECK, and why. An earlier version of this file
 asserted that edge SATURATION stayed high, on the reasoning that contamination
@@ -79,7 +97,22 @@ MAX_ANCHOR_ERR = 6.0          # px
 # itself near-white: `attack` was flattened on white and Marmalade has a white
 # rim, and nothing measured at the edge can separate those two. Those clips are
 # counted and named as unmeasurable rather than passed.
-MIN_BG_DISTANCE = 80.0        # euclidean, 0-255 RGB
+#
+# MEASURED AGAINST THE BODY, NOT AN ABSOLUTE. This used to fail any edge within
+# 80 of the background, which reads a Companion whose body is ITSELF near that
+# background as haloed: Boggle's attack edge was his own navy (t 0.04) and
+# failed at 51, because his body sits only 75 from the grey he was cut from.
+# The question is how far the edge got from the background as a share of how
+# far the body BEHIND IT (the nearest pixel 3px inside) is. A clean edge is its
+# body -- ratio ~1, above 1 under a drawn rim light -- and a contaminated edge
+# is the background, -> 0. Measured on the atlases before the fix: Drizzle's
+# keyed-in black 0.18-0.23 and Boggle's defeat 0.09, against 0.80-0.92 on nine
+# of Pipkin's ten clips, 0.86-0.91 on Boggle's idle and ready, and 1.24-1.28 on
+# Drizzle's clean five. Where the body itself sits within MIN_BODY_BG of the
+# background, no edge measurement can say which is which, and the clip is
+# named as undecidable rather than passed.
+MIN_EDGE_RATIO = 0.5          # edge-to-background over body-to-background
+MIN_BODY_BG = 40.0            # body this close to the background: undecidable
 BG_TOO_PALE = 180.0           # mean channel above which the test is undecidable
 
 # Must match tools/prep_sprites.HALO_LIFT. The rim-minus-core luma of the SOURCE
@@ -94,6 +127,18 @@ BG_TOO_PALE = 180.0           # mean channel above which the test is undecidable
 # the fact survives, and what this gate can still prove is that the pipeline
 # acted on what it measured.
 HALO_LIFT = 25.0
+
+# Must match tools/prep_sprites.PING_IOU. A clip whose first and last frames
+# overlap less than this ends somewhere other than where it began, and the
+# pipeline marks it to play there and back rather than pop to idle.
+PING_IOU = 0.60
+
+# Must match tools/prep_sprites.SCRAP_BG_LUMA, BLACK_SHARE and UNTAIL_LIFT. As with the lift,
+# the index carries the number each step was decided on, and this checks the
+# pipeline did what its own measurement said.
+SCRAP_BG_LUMA = 200.0
+BLACK_SHARE = 0.20
+UNTAIL_LIFT = 35.0
 
 
 def sat(c):
@@ -140,11 +185,35 @@ def check_clip(slug, name, meta, fails, counts):
 
     bg = meta.get("bg")
     pale = bg is not None and (sum(bg) / 3.0) > BG_TOO_PALE
+
+    # ── THE OTHER MATTE STEPS: measured and acted on must agree ─────────────
+    if meta.get("dewhite") and bg is not None and (sum(bg) / 3.0) > SCRAP_BG_LUMA:
+        fails.append(("DEWHITE", "%s/%s" % (slug, name),
+                      "cut from near-white %s yet dewhited -- that strands no grey, only art"
+                      % [round(v) for v in bg]))
+    want_tail = (meta.get("matte") == "CONTAM" and bool(meta.get("dehalo"))
+                 and (meta.get("lift") or 0.0) > UNTAIL_LIFT)
+    if bool(meta.get("untail")) != want_tail:
+        fails.append(("UNTAIL", "%s/%s" % (slug, name),
+                      "matte %s, dehalo=%s, lift %+.1f but untail=%s"
+                      % (meta.get("matte"), bool(meta.get("dehalo")), meta.get("lift") or 0.0,
+                         bool(meta.get("untail")))))
+    if meta.get("matte") == "PREMULT":
+        black = meta.get("black")
+        if black is None:
+            fails.append(("STALE", "%s/%s" % (slug, name),
+                          "no `black` recorded -- built by a prep_sprites older than the black pass"))
+        elif bool(meta.get("deblack")) != (black > BLACK_SHARE):
+            fails.append(("DEBLACK", "%s/%s" % (slug, name),
+                          "band black share %.2f but deblack=%s" % (black, bool(meta.get("deblack")))))
+    elif meta.get("deblack"):
+        fails.append(("DEBLACK", "%s/%s" % (slug, name),
+                      "deblack on a %s sheet" % meta.get("matte")))
     # Sample rather than sweep for the expensive measurements: 81 frames of
     # identical provenance measure the same thing 81 times. Alpha is cheap, so
     # WASH and ANCHOR look at every frame.
     step = max(1, meta["frames"] // 8)
-    wash, bots, edges, empty = [], [], [], 0
+    wash, bots, edges, bodies, empty = [], [], [], [], 0
 
     for i, fr in frames_of(atlas, meta):
         a = fr[:, :, 3].astype(np.float64)
@@ -166,7 +235,13 @@ def check_clip(slug, name, meta, fails, counts):
         lo = near & (an >= 0.05) & (an <= 0.30)
         if lo.sum() < 40:
             continue
-        edges.append(fr[:, :, :3].astype(np.float64)[lo].mean(axis=0))
+        deep = ndi.distance_transform_edt(op) > 3.0
+        if deep.sum() < 40:
+            continue
+        iy, ix = ndi.distance_transform_edt(~deep, return_distances=False, return_indices=True)
+        rgb = fr[:, :, :3].astype(np.float64)
+        edges.append(rgb[lo].mean(axis=0))
+        bodies.append(rgb[iy, ix][lo].mean(axis=0))
         counts["sampled"] += 1
 
     if empty:
@@ -190,12 +265,20 @@ def check_clip(slug, name, meta, fails, counts):
         counts["undecidable"].append("%s/%s (bg %s is near-white)"
                                      % (slug, name, [round(v) for v in bg]))
     elif edges:
-        d = float(np.linalg.norm(np.mean(edges, axis=0) - np.array(bg, float)))
-        counts["halo"]["%s/%s" % (slug, name)] = d
-        if d < MIN_BG_DISTANCE:
-            fails.append(("HALO", "%s/%s" % (slug, name),
-                          "edge sits %.0f from the background it was cut from (bar %.0f) -- "
-                          "decontamination did not take" % (d, MIN_BG_DISTANCE)))
+        bgv = np.array(bg, float)
+        d_edge = float(np.linalg.norm(np.mean(edges, axis=0) - bgv))
+        d_body = float(np.linalg.norm(np.mean(bodies, axis=0) - bgv))
+        if d_body < MIN_BODY_BG:
+            counts["undecidable"].append("%s/%s (its body sits %.0f from bg %s)"
+                                         % (slug, name, d_body, [round(v) for v in bg]))
+        else:
+            ratio = d_edge / d_body
+            counts["halo"]["%s/%s" % (slug, name)] = ratio
+            if ratio < MIN_EDGE_RATIO:
+                fails.append(("HALO", "%s/%s" % (slug, name),
+                              "edge sits %.0f from the background, %.0f%% of the %.0f its body does "
+                              "(bar %.0f%%) -- decontamination did not take"
+                              % (d_edge, 100 * ratio, d_body, 100 * MIN_EDGE_RATIO)))
     elif bg is not None:
         counts["nosample"] += 1
 
@@ -211,6 +294,18 @@ def check_clip(slug, name, meta, fails, counts):
         else:
             counts["dissolves"] += 1
 
+    # ── PING: measured and acted on must agree ──────────────────────────────
+    iou = meta.get("endIoU")
+    if iou is None:
+        counts["pingless"] += 1
+    elif not meta.get("loop") and not meta.get("hold"):
+        want = iou < PING_IOU
+        if bool(meta.get("ping")) != want:
+            fails.append(("PING", "%s/%s" % (slug, name),
+                          "first/last IoU %.2f but ping=%s" % (iou, bool(meta.get("ping")))))
+        elif want:
+            counts["pings"].append("%s/%s %.2f" % (slug, name, iou))
+
 
 def main():
     if not os.path.isdir(SPRITES):
@@ -221,7 +316,8 @@ def main():
     manifest = json.load(open(os.path.join(SPRITES, "index.json")))
     fails = []
     counts = {"clips": 0, "sampled": 0, "dissolves": 0, "nosample": 0, "stills": 0,
-              "wash": {}, "anchor": {}, "halo": {}, "lift": {}, "undecidable": []}
+              "wash": {}, "anchor": {}, "halo": {}, "lift": {}, "undecidable": [],
+              "pings": [], "pingless": 0}
 
     print("built Companion sprites, re-measured")
     for slug, names in sorted(manifest.get("animated", {}).items()):
@@ -249,6 +345,11 @@ def main():
     print("\n  %d clips checked, %d frames sampled for halo, %d stills"
           % (counts["clips"], counts["sampled"], counts["stills"]))
     print("  %d dissolve envelopes verified" % counts["dissolves"])
+    print("  %d clips play there and back%s" % (
+        len(counts["pings"]), (": " + ", ".join(counts["pings"])) if counts["pings"] else ""))
+    if counts["pingless"]:
+        print("  %d clips were built before the end-pose measurement and carry no endIoU"
+              % counts["pingless"])
     if counts["nosample"]:
         print("  %d clips gave NO halo sample (too little soft edge to measure)"
               % counts["nosample"])
@@ -260,16 +361,16 @@ def main():
         print("  anchor error: worst %-22s %.1fpx (bar %.1f)" % (a[0], a[1], MAX_ANCHOR_ERR))
     if counts["halo"]:
         h = min(counts["halo"].items(), key=lambda kv: kv[1])
-        print("  halo margin:  worst %-22s %.0f (bar %.0f)" % (h[0], h[1], MIN_BG_DISTANCE))
+        print("  halo ratio:   worst %-22s %.2f (bar %.2f)" % (h[0], h[1], MIN_EDGE_RATIO))
     if counts["lift"]:
         w = max(counts["lift"].items(), key=lambda kv: kv[1])
         deh = [k for k, v in counts["lift"].items() if v > HALO_LIFT]
         print("  source lift:  worst %-22s %+.1f (bar %+.1f) -- %d dehaloed"
               % (w[0], w[1], HALO_LIFT, len(deh)))
     if counts["undecidable"]:
-        print("  %d clips NOT halo-checked -- the background they were cut from is itself"
+        print("  %d clips NOT halo-checked -- the background they were cut from is near-white"
               % len(counts["undecidable"]))
-        print("     near-white, so no edge measurement can separate it from the rim light:")
+        print("     or near the body itself, so no edge measurement can separate the two:")
         for u in counts["undecidable"]:
             print("       " + u)
 

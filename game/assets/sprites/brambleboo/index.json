@@ -1,0 +1,394 @@
+{
+ "clips": {
+  "affection": {
+   "file": "affection.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 158,
+   "fh": 132,
+   "anchor": [
+    77.92,
+    130.22
+   ],
+   "source": "SS_brambleboo_affection.png",
+   "matte": "CONTAM",
+   "bg": [
+    158.1,
+    133.5,
+    139.4
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 47.6,
+   "dehalo": true,
+   "warm": 104.0,
+   "dewhite": false,
+   "dip": 0.809,
+   "untail": true,
+   "deblack": false,
+   "endIoU": 0.979,
+   "loop": false,
+   "fps": 30,
+   "hold": false
+  },
+  "attack": {
+   "file": "attack.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 165,
+   "fh": 139,
+   "anchor": [
+    79.52,
+    137.12
+   ],
+   "source": "SS_brambleboo_attack.png",
+   "matte": "CONTAM",
+   "bg": [
+    107.2,
+    104.5,
+    134.8
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 56.6,
+   "dehalo": true,
+   "warm": 98.0,
+   "dewhite": false,
+   "dip": 0.614,
+   "untail": true,
+   "deblack": false,
+   "endIoU": 0.98,
+   "loop": false,
+   "fps": 60,
+   "hold": false
+  },
+  "celebrate": {
+   "file": "celebrate.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 166,
+   "fh": 134,
+   "anchor": [
+    81.54,
+    131.88
+   ],
+   "source": "SS_brambleboo_celebrate.png",
+   "matte": "CONTAM",
+   "bg": [
+    193.6,
+    173.5,
+    170.2
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 42.3,
+   "dehalo": true,
+   "warm": 98.0,
+   "dewhite": true,
+   "dip": 0.697,
+   "untail": true,
+   "deblack": false,
+   "endIoU": 0.959,
+   "loop": false,
+   "fps": 30,
+   "hold": false
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 147,
+   "fh": 128,
+   "anchor": [
+    72.9,
+    126.28
+   ],
+   "source": "SS_brambleboo_defeat.png",
+   "matte": "CONTAM",
+   "bg": [
+    171.2,
+    151.3,
+    157.7
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 42.2,
+   "dehalo": true,
+   "warm": 100.0,
+   "dewhite": true,
+   "dip": 0.713,
+   "untail": true,
+   "deblack": false,
+   "endIoU": 0.962,
+   "loop": false,
+   "fps": 24,
+   "hold": true
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 193,
+   "fh": 160,
+   "anchor": [
+    83.37,
+    144.08
+   ],
+   "source": "SS_brambleboo_hurt.png",
+   "matte": "CONTAM",
+   "bg": [
+    132.4,
+    115.4,
+    138.8
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 64.4,
+   "dehalo": true,
+   "warm": 102.0,
+   "dewhite": false,
+   "dip": 0.172,
+   "untail": true,
+   "deblack": false,
+   "endIoU": 0.98,
+   "fade": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.35,
+    0.35,
+    0.35,
+    0.389,
+    0.41,
+    0.597,
+    0.603,
+    0.752,
+    0.8,
+    0.806,
+    0.827,
+    0.877,
+    0.631,
+    0.471,
+    0.35,
+    0.35,
+    0.35,
+    0.533,
+    0.406,
+    0.61,
+    0.963,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.486,
+    0.35,
+    0.35,
+    0.35,
+    0.488,
+    0.727,
+    0.697,
+    0.815,
+    0.841,
+    0.73,
+    0.501,
+    0.384,
+    0.392,
+    0.572,
+    0.35,
+    0.405,
+    0.826,
+    0.945,
+    0.595,
+    0.985,
+    1.0,
+    1.0,
+    0.757,
+    0.821,
+    0.84,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   "loop": false,
+   "fps": 60,
+   "hold": false
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 150,
+   "fh": 128,
+   "anchor": [
+    75.42,
+    126.71
+   ],
+   "source": "SS_brambleboo_idle.png",
+   "matte": "CONTAM",
+   "bg": [
+    149.6,
+    141.1,
+    151.8
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 40.3,
+   "dehalo": true,
+   "warm": 101.0,
+   "dewhite": true,
+   "dip": 0.748,
+   "untail": true,
+   "deblack": false,
+   "endIoU": 0.976,
+   "loop": true,
+   "fps": 20,
+   "hold": false
+  },
+  "overgrow": {
+   "file": "overgrow.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 192,
+   "fh": 150,
+   "anchor": [
+    90.87,
+    142.75
+   ],
+   "source": "SS_brambleboo_overgrow.png",
+   "matte": "CONTAM",
+   "bg": [
+    160.7,
+    143.6,
+    147.4
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 46.5,
+   "dehalo": true,
+   "warm": 100.0,
+   "dewhite": false,
+   "dip": 0.725,
+   "untail": true,
+   "deblack": false,
+   "endIoU": 0.977,
+   "loop": false,
+   "fps": 30,
+   "hold": false
+  },
+  "ready": {
+   "file": "ready.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 161,
+   "fh": 154,
+   "anchor": [
+    81.27,
+    151.41
+   ],
+   "source": "SS_brambleboo_ready.png",
+   "matte": "CONTAM",
+   "bg": [
+    127.4,
+    107.2,
+    118.3
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 46.3,
+   "dehalo": true,
+   "warm": 100.0,
+   "dewhite": false,
+   "dip": 0.721,
+   "untail": true,
+   "deblack": false,
+   "endIoU": 0.985,
+   "loop": false,
+   "fps": 40,
+   "hold": false
+  },
+  "trick": {
+   "file": "trick.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 273,
+   "fh": 273,
+   "anchor": [
+    137.06,
+    219.08
+   ],
+   "source": "SS_brambleboo_trick.png",
+   "matte": "CONTAM",
+   "bg": [
+    126.4,
+    110.4,
+    118.6
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 51.5,
+   "dehalo": true,
+   "warm": 97.0,
+   "dewhite": false,
+   "dip": 0.683,
+   "untail": true,
+   "deblack": false,
+   "endIoU": 0.953,
+   "loop": false,
+   "fps": 48,
+   "hold": false
+  }
+ },
+ "scale": 0.431
+}

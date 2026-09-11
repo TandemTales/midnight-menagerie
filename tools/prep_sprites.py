@@ -154,8 +154,81 @@ WHITE_GROW = 0.85         # ...and still less warm than the body, which is what 
 WHITE_MAX_BLOB = 4000     # source px; above this it is a bone, not a blemish
 WHITE_SEED_SHARE = 0.03   # a real scrap is meaningfully neutral, not one stray pixel
 WHITE_MIN = 0.0005        # under this share of the art, assume there is nothing to remove
+
+# WHAT A SCRAP IS NOT. Everything above was measured on Bones, a sheet keyed by
+# LUMINANCE off white. Run over the thirteen Companions after him it erased their
+# art: the glint out of nearly every eye, the gloss off Pipkin and Taffy (4.3% of
+# one Pipkin frame), the lit rim of every Truffle quill, Crumbula's inner ear.
+# On magenta the clips it touched carried 1-20 small holes a frame, against
+# 0.0-0.6 for the clips it left alone. "Less warm than the body" cannot tell a
+# scrap from any of that -- the bar is a fraction of the body's warmth, so on a
+# +196 Taffy it sits at +88 and cream gloss at +74 falls under it -- and eye
+# glints are neutral white by nature. What does separate them depends on what
+# the sheet was cut from, which `classify` has already measured:
+#
+#   cut from a MEASURED background (B known): a scrap of it is that background,
+#       and on these sheets that is GREY. The only real scraps found on them are
+#       Brambleboo's, stuck between vines, at R-B -47..+6 and luma 182-203. The
+#       gloss taken from Pipkin and Taffy ran R-B +30..+121, Truffle's quill
+#       light +13..+27, and the dimmest eye glint on any of them sits at luma
+#       213 (Mossbit). One false positive survives: a pale spot on a Wink leg,
+#       luma 198 at R-B -4, 30px -- a spot, where the glints were holes.
+#       A sheet cut from NEAR-WHITE (Truffle, B luma 222-240) has no grey to
+#       strand, and everything the mask found on his was art -- quill rims, a
+#       bandage's pale edge, the reflections in his eyes -- so there it takes none.
+#   keyed off WHITE (CLEAN, B unknown): scraps and glints are both white, but
+#       a glint sits IN an eye. Crumbula's glints and inner ear are ringed 0.77-
+#       0.91 by pixels darker than luma 90, and so are Bones' own two glints
+#       (0.91); everything else Bones loses -- the scrap at his neck, the flecks
+#       between ribs, the reflections in his eyes -- is ringed 0.13-0.64, and
+#       Mopsy's one real scrap, a gap between arm and body, 0.25.
+SCRAP_RB = 12.0           # a scrap of a grey background is neutral or cool...
+SCRAP_LUMA = 205.0        # ...and grey, not white
+SCRAP_BG_LUMA = 200.0     # ...on a sheet cut from grey; one cut from near-white strands none
+GLINT_RING = 3            # px of surroundings a white region is judged by
+GLINT_DARK_LUMA = 90.0    # what counts as dark in those surroundings
+GLINT_DARK_SHARE = 0.75   # this much of them dark, and it is a glint in an eye
 HALO_BITE = 1.6           # px of silhouette the ring occupies
 HALO_SOFT = 1.3           # px of new soft edge rebuilt behind it
+
+# THE RING'S TAIL. `dehalo` takes HALO_BITE px and ramps a new edge in behind it,
+# at depth 1.6-2.9 -- and on a sheet that was also FLATTENED against a background
+# (classify: CONTAM) the ring does not stop dead at 1.6. Boggle's reads +76..+80
+# luma over his core at depth 1 and still +22..+32 at depth 2, so the edge the
+# bite rebuilds is coloured by what it was there to remove: measured on the
+# atlas, his soft edge sat 45-135% of the way from his navy to the grey he was
+# cut from. UNTAIL recolours only pixels LIGHTER than the confident interior
+# behind them, and never alpha, so it cannot punch a hole, thin a shape or
+# lighten a dark outline. On Boggle's affection/defeat/hurt it takes that share
+# to 5/13/18%. It runs ONLY where a ring was measured on flattened art: a light
+# rim can be drawn, and Marmalade's, recoloured the same way, went from -1% to
+# +50% -- the wrong direction entirely.
+#
+# AND ONLY ON A RING, NOT A GLOSS. Taffy's sheets clear HALO_LIFT at +26..+32,
+# but that brightness does not stop at 1px -- attack reads +40, +30, +30, +27
+# over depths 1-4, a lit candy edge -- and recoloured as tail, four of his six
+# haloed clips moved TOWARD the grey he was cut from: celebrate's edge went from
+# 55% to 39% of the distance his body sits from it, trick's from 57% to 36%.
+# Brambleboo's rings, at +40..+64, moved the other way (ready 26% -> 65%).
+# UNTAIL_LIFT sits in that gap.
+UNTAIL_RIM = 2.0          # px of opaque rim recoloured along with the soft edge
+UNTAIL_DEPTH = 1.0        # px further in, where the interior colour is taken from
+UNTAIL_MARGIN = 6.0       # luma a pixel must exceed that interior by to be tail
+UNTAIL_LIFT = 35.0        # source lift a ring must clear to be tail, not gloss
+
+# THE BLACK A PREMULT SHEET WAS CUT FROM. Five of Drizzle's ten sheets came back
+# with the black backdrop keyed INTO the art -- a jagged opaque patch round the
+# lightning, a dark line round the cloud -- where the other five are clean. It
+# is measured the way it looks, as the share of the silhouette band darker than
+# half the body behind it: 0.42-0.58 on those five, 0.00-0.02 on the rest. And
+# it is taken out the way black-cut art composites, by brightness. "Outside" is
+# transparency connected to the frame BORDER, and that is load-bearing: a pinhole
+# keyed through a black pupil touches transparency too, and counting it as
+# outside faded both of Drizzle's eyes.
+BLACK_SHARE = 0.20        # band share darker than half its body that means keyed-in black
+BLACK_BAND = 3.0          # px in from the true outside
+BLACK_MAX = 110.0         # max channel under which a region touching outside is backdrop
+BLACK_DECIDE = 60.0       # body luma under which "darker than the body" is not measurable
 
 # WebP at q92 is 2.6x smaller than optimised PNG here (3.06MB -> 1.16MB for one
 # atlas) and `tools/devserver.py` already serves the type. `alpha_quality=100`
@@ -208,6 +281,21 @@ FADE_FLOOR_DEFAULT = 0.35
 STABILISE = 0.75
 SMOOTH_WIN = 5          # frames in the moving average of the centre track
 
+# THE CLIPS THAT DO NOT COME BACK. The brief writes several mechanic clips to
+# END somewhere else and asks for them to be "played in reverse" for the
+# return: Boggle's Hide, Hush's Shadow Phase, Taffy's Split, Crinkle's Fold.
+# Handed straight back to idle, a clip that ends hidden pops back into view on
+# its last frame. So each clip's first and last frames are compared, and one
+# that does not end where it began plays there and back (`ping`), at
+# PING_SPEED so the round trip is not twice the beat.
+#
+# Calibrated on the 22 clips already built for Marmalade and Bones, every one
+# of which the brief says returns to idle: first-against-last silhouette IoU
+# runs 0.92 to 0.99, with one outlier at 0.73 (Marmalade's attack, a lunge that
+# lands a few pixels forward). 0.60 sits below all of them.
+PING_IOU = 0.60
+PING_SPEED = 1.6
+
 # The eight universal clips of `MM animation prompts.docx` plus `caution`,
 # which the sheets carry and the brief does not name. `loop` and `hold` come
 # straight out of the brief rather than from taste:
@@ -241,6 +329,43 @@ CLIPS = {
     "spectral":  {"loop": False, "fps": 60},   # "extremely quick"
     "zoomies":   {"loop": False, "fps": 60},   # "very fast playful sprint"
     "spark":     {"loop": False, "fps": 36},
+
+    # Bones and Pudding (PARTS 6 and 13). Bones' two were built before this
+    # table named them and fell through to the 24 fps default, which made a
+    # dig the brief calls "rapid alternating front paw motions" last 3.4 s.
+    "dig":       {"loop": False, "fps": 48},
+    "fetch":     {"loop": False, "fps": 48},
+
+    # The other thirteen (PARTS 3-17), rated by the brief's own word for each
+    # beat on the scale the universal clips already use: 60 for an attack or
+    # "extremely quick", 48 for "rapid" and "sudden", 36-40 for a deliberate
+    # gesture, 30 for "slow" or "gathering", 24 for "patient".
+    "charge":    {"loop": False, "fps": 36},   # Wisp: gathering, compressing
+    "release":   {"loop": False, "fps": 48},   # Wisp "expand sharply", Mossbit "abrupt"
+    "bite":      {"loop": False, "fps": 60},   # Crumbula: "one quick bite motion"
+    "mesmerize": {"loop": False, "fps": 30},   # Crumbula: "a slow hypnotic flourish"
+    "hide":      {"loop": False, "fps": 48},   # Boggle: "rapidly shrinking"
+    "scare":     {"loop": False, "fps": 48},   # Boggle: "suddenly expanding"
+    "hop":       {"loop": False, "fps": 48},   # Pipkin: "a springy frog jump"
+    "plant":     {"loop": False, "fps": 36},   # Pipkin: "deliberately interacting"
+    "transformation": {"loop": False, "fps": 40},   # Pipkin: "quick magical"
+    "split":     {"loop": False, "fps": 40},   # Taffy
+    "stretch":   {"loop": False, "fps": 60},   # Taffy: "rapidly stretches", an attack
+    "absorb":    {"loop": False, "fps": 36},   # Taffy
+    "flare":     {"loop": False, "fps": 48},   # Truffle: "suddenly bristling"
+    "regenerate": {"loop": False, "fps": 36},  # Truffle
+    "shadow":    {"loop": False, "fps": 48},   # Hush: "quick, fluid, stealthy"
+    "sneak":     {"loop": False, "fps": 60},   # Hush's Snatch: "extremely quick"
+    "sew":       {"loop": False, "fps": 36},   # Mopsy
+    "stuffed":   {"loop": False, "fps": 36},   # Mopsy's Stuffing Change
+    "weather":   {"loop": False, "fps": 30},   # Drizzle: gathering weather
+    "discharge": {"loop": False, "fps": 48},   # Drizzle: "a sudden burst"
+    "focus":     {"loop": False, "fps": 30},   # Wink: "stills its body"
+    "webbing":   {"loop": False, "fps": 48},   # Wink: "rapidly producing"
+    "fold":      {"loop": False, "fps": 40},   # Crinkle: "rapidly folding"
+    "repair":    {"loop": False, "fps": 36},   # Crinkle's Tear and Repair
+    "anchor":    {"loop": False, "fps": 24},   # Mossbit: "slow, confident, patient"
+    "overgrow":  {"loop": False, "fps": 30},   # Brambleboo: strain, grow
 }
 
 
@@ -315,7 +440,7 @@ def body_warmth(rgb, a):
     return float(np.median(rgb[:, :, 0][m] - rgb[:, :, 2][m]))
 
 
-def white_mask(rgb, a, warm):
+def white_mask(rgb, a, warm, B=None):
     """The stranded background scraps: a confident neutral core, grown outward.
 
     A per-pixel colour test alone takes the middle of a scrap and leaves a ring.
@@ -332,6 +457,10 @@ def white_mask(rgb, a, warm):
     that are already less warm than the body (normal bone runs R-B ~55, the
     scrap's fringe ~34), require several seeds and a real share of the region,
     and cap the size so a seed touching a bone can never take the bone.
+
+    `B` is what `classify` measured the sheet was cut from, None when it was
+    keyed off white, and it decides the last test: which of the regions this
+    finds are background and which are art. See WHAT A SCRAP IS NOT.
     """
     lum = rgb.mean(axis=2)
     solid = a > 0.5
@@ -346,14 +475,39 @@ def white_mask(rgb, a, warm):
     sizes = np.bincount(lab.ravel(), minlength=n + 1)
     keep = (seeds >= 3) & (sizes <= WHITE_MAX_BLOB) & (seeds >= WHITE_SEED_SHARE * sizes)
     keep[0] = False
+    if keep.any():
+        keep &= _not_art(rgb, lum, solid, lab, n, keep, B)
     return keep[lab]
 
 
-def dewhite(rgb, a, warm):
+def _not_art(rgb, lum, solid, lab, n, keep, B):
+    """Per candidate region: background after all, or art? WHAT A SCRAP IS NOT."""
+    flat = lab.ravel()
+    area = np.maximum(np.bincount(flat, minlength=n + 1).astype(np.float64), 1.0)
+    if B is not None:
+        if float(np.mean(B)) > SCRAP_BG_LUMA:
+            return np.zeros(n + 1, bool)
+        rb = np.bincount(flat, weights=(rgb[:, :, 0] - rgb[:, :, 2]).ravel(), minlength=n + 1) / area
+        luma = np.bincount(flat, weights=lum.ravel(), minlength=n + 1) / area
+        return (rb <= SCRAP_RB) & (luma <= SCRAP_LUMA)
+    # The ring is measured around the regions still in the running, so a bright
+    # neighbour that is not itself a candidate counts as surroundings.
+    kept = np.where(keep[lab], lab, 0)
+    yy, xx = np.mgrid[-GLINT_RING:GLINT_RING + 1, -GLINT_RING:GLINT_RING + 1]
+    grown = ndi.grey_dilation(kept, footprint=(xx * xx + yy * yy) <= GLINT_RING * GLINT_RING)
+    ring = (kept == 0) & (grown > 0) & solid
+    owner = grown[ring]
+    near = np.bincount(owner, minlength=n + 1).astype(np.float64)
+    dark = np.bincount(owner, weights=(lum[ring] < GLINT_DARK_LUMA).astype(np.float64),
+                       minlength=n + 1)
+    return (dark / np.maximum(near, 1.0)) < GLINT_DARK_SHARE
+
+
+def dewhite(rgb, a, warm, B=None):
     """Delete the stranded background scraps. Runs AFTER the hole fill in
     `dehalo`, never before: that fill treats anything the body encloses as body,
     so erasing first only invites it to put every scrap straight back."""
-    return np.where(white_mask(rgb, a, warm), 0.0, a)
+    return np.where(white_mask(rgb, a, warm, B), 0.0, a)
 
 
 def dehalo(a):
@@ -379,6 +533,78 @@ def dehalo(a):
     a = np.where(ndi.binary_fill_holes(solid) & ~solid, 1.0, a)
     d = ndi.distance_transform_edt(a > 0.5)
     return np.clip((d - HALO_BITE) / HALO_SOFT, 0.0, 1.0)
+
+
+def untail(rgb, a):
+    """Recolour the ring's tail out of a rebuilt edge. See THE RING'S TAIL."""
+    inner = a >= 0.999
+    din = ndi.distance_transform_edt(inner)
+    src = inner & (din > UNTAIL_RIM + UNTAIL_DEPTH)
+    if src.sum() < 50:
+        return rgb
+    iy, ix = ndi.distance_transform_edt(~src, return_distances=False, return_indices=True)
+    body = rgb[iy, ix]
+    tail = (((a > 0) & (a < 0.999)) | (inner & (din <= UNTAIL_RIM))) \
+        & (rgb.mean(axis=2) > body.mean(axis=2) + UNTAIL_MARGIN)
+    return np.where(tail[:, :, None], body, rgb)
+
+
+def _outside(a):
+    """Transparency connected to the frame border -- never a pinhole in a pupil."""
+    lab, n = ndi.label(a <= 0.02)
+    if n == 0:
+        return np.zeros(a.shape, bool)
+    border = np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))
+    return np.isin(lab, border[border > 0])
+
+
+def black_share(rgb, a):
+    """Share of the silhouette band darker than half the body behind it."""
+    dext = ndi.distance_transform_edt(~_outside(a))
+    band = (a > 0.05) & (dext <= BLACK_BAND)
+    deep = (a > 0.5) & (dext > BLACK_BAND + 2.0)
+    if band.sum() < 50 or deep.sum() < 50:
+        return float("nan")
+    iy, ix = ndi.distance_transform_edt(~deep, return_distances=False, return_indices=True)
+    body = rgb[iy, ix].mean(axis=2)[band]
+    w = a[band]
+    dec = body >= BLACK_DECIDE
+    dark = dec & (rgb.mean(axis=2)[band] < 0.5 * body)
+    return float((w * dark).sum() / max(1e-6, (w * dec).sum()))
+
+
+def deblack(rgb, a):
+    """Take keyed-in black back out, by brightness. See THE BLACK A PREMULT SHEET WAS CUT FROM.
+
+    Two moves. A dark region touching the outside is backdrop: its alpha scales
+    with its brightness and its colour is divided back up, which turns the
+    jagged patch round a spark into the glow it was painted as. Then, within
+    BLACK_BAND of the outside, a pixel darker than the body behind it keeps that
+    brightness ratio as its alpha -- the dark line round the cloud -- decided
+    only where the body is bright enough to be darker than.
+    """
+    out = _outside(a)
+    maxch = rgb.max(axis=2)
+    dark = (a > 0) & (maxch < BLACK_MAX)
+    lab, n = ndi.label(dark)
+    if n:
+        keep = np.zeros(n + 1, bool)
+        keep[np.unique(lab[ndi.binary_dilation(out) & dark])] = True
+        keep[0] = False
+        m = keep[lab]
+        f = np.clip(maxch / BLACK_MAX, 0.0, 1.0)
+        a = np.where(m, a * f, a)
+        rgb = np.where(m[:, :, None], np.clip(rgb / np.maximum(f, 1e-3)[:, :, None], 0, 255), rgb)
+    dext = ndi.distance_transform_edt(~_outside(a))
+    deep = (a > 0.5) & (dext > BLACK_BAND + 2.0)
+    if deep.sum() >= 50:
+        iy, ix = ndi.distance_transform_edt(~deep, return_distances=False, return_indices=True)
+        body = rgb[iy, ix].mean(axis=2)
+        k = np.clip(rgb.mean(axis=2) / np.maximum(body, 1.0), 0.0, 1.0)
+        m = (a > 0) & (dext <= BLACK_BAND) & (body >= BLACK_DECIDE) & (k < 0.9)
+        a = np.where(m, a * k, a)
+        rgb = np.where(m[:, :, None], np.clip(rgb / np.maximum(k, 1e-3)[:, :, None], 0, 255), rgb)
+    return rgb, a
 
 
 def classify(rgb, a):
@@ -486,15 +712,26 @@ def _edge_extend(rgb, a, iters=6):
 # ── the grid ────────────────────────────────────────────────────────────────
 
 def detect_rows(a_full):
-    """Rows in the sheet, from the period of the cleaned alpha row profile.
+    """Rows in the sheet, from the period of the SOLID alpha row profile.
 
     Counting bands of non-empty rows does not work: subjects in adjacent rows
     nearly touch, so `attack` reports a single band across its whole height.
     Autocorrelation asks the different question -- what vertical distance does
     this image repeat at -- which the gaps cannot defeat.
+
+    SOLID, NOT MERELY NON-ZERO. `SS_boggle_celebrate` carries a faint wash over
+    the whole canvas, and there the wash is one connected field touching every
+    body, so `clean_alpha`'s component filter keeps all of it. The `> 0`
+    profile went nearly flat -- every candidate boundary cut through about as
+    much "art" as any other -- and the autocorrelation locked onto a false
+    401px period: fourteen rows of shredded frames instead of nine, which the
+    end-pose measurement then read as a clip that never comes back (IoU 0.00).
+    The creatures are solid and the wash is not, so the grid is read off the
+    creatures. Measured against all 152 sheets built before the change: that
+    one moves, 14 -> 9, and no other grid changes.
     """
     H = a_full.shape[0]
-    p = (a_full > 0).astype(np.float64).sum(axis=1)
+    p = (a_full * 255.0 >= SOLID_ALPHA).astype(np.float64).sum(axis=1)
     s = p - p.mean()
     ac = np.correlate(s, s, "full")[len(s) - 1:]
     if ac[0] <= 0:
@@ -549,17 +786,41 @@ def build_clip(path, cols=ATLAS_COLS):
     haloed = lift > HALO_LIFT
     warm = body_warmth(rgb_full, a_full)
     whited = (warm > WHITE_WARM
-              and white_mask(rgb_full, a_full, warm).sum() > WHITE_MIN * (a_full > 0.5).sum())
+              and white_mask(rgb_full, a_full, warm, B).sum() > WHITE_MIN * (a_full > 0.5).sum())
 
     def clean(r, a):
         if haloed:
             a = dehalo(a)
         if whited:
-            a = dewhite(r, a, warm)
+            a = dewhite(r, a, warm, B)
         return a
 
-    frames = [(repair(r, a, B), clean(r, a))
-              for r, a in cells(rgb_full, raw_a, cols, rows)]
+    tailed = haloed and kind == "CONTAM" and lift > UNTAIL_LIFT
+
+    def finish(r, a):
+        ca = clean(r, a)
+        rgb = repair(r, a, B)
+        if tailed:
+            rgb = untail(rgb, ca)
+        return rgb.astype(np.float32), ca.astype(np.float32)
+
+    # float32 once repaired. Every clip of a Companion is held until the shared
+    # scale is known, and at float64 the larger sheets come to ~10 GB of frames
+    # on a 16 GB machine. Nothing downstream needs the extra precision.
+    frames = [finish(r, a) for r, a in cells(rgb_full, raw_a, cols, rows)]
+
+    # Measured over the FRAMES, not the sheet: the band is a property of each
+    # silhouette, and the sheet's border is no frame's outside.
+    black, deblacked = None, False
+    if kind == "PREMULT":
+        shares = [s for s in (black_share(f.astype(np.float64), m.astype(np.float64))
+                              for f, m in frames[::8]) if s == s]
+        black = float(np.median(shares)) if shares else 0.0
+        deblacked = black > BLACK_SHARE
+        if deblacked:
+            frames = [tuple(x.astype(np.float32)
+                            for x in deblack(f.astype(np.float64), m.astype(np.float64)))
+                      for f, m in frames]
 
     boxes = [bbox(a) for _, a in frames]
     keep = [(f, b) for f, b in zip(frames, boxes) if b is not None]
@@ -571,6 +832,7 @@ def build_clip(path, cols=ATLAS_COLS):
     return {
         "path": path, "rows": rows, "kind": kind,
         "lift": lift, "haloed": haloed, "warm": warm, "whited": whited,
+        "tailed": tailed, "black": black, "deblacked": deblacked,
         "B": None if B is None else [round(float(x), 1) for x in B],
         "frames": frames, "boxes": boxes, "centres": centres,
         "median_h": float(np.median(heights)),
@@ -668,6 +930,7 @@ def render_clip(clip, scale, out_noext, name=""):
     arows = (n + acols - 1) // acols
     atlas = Image.new("RGBA", (acols * fw, arows * fh), (0, 0, 0, 0))
     focus = []
+    first_a = last_a = None
 
     for i, (rgb, a) in enumerate(frames):
         rgb = _edge_extend(rgb, a)
@@ -702,6 +965,10 @@ def render_clip(clip, scale, out_noext, name=""):
                         small[:, :, :3] / np.maximum(sa, 1e-6)[:, :, None] * 255.0, 0.0)
         out = np.dstack([np.clip(srgb, 0, 255), sa]).astype(np.uint8)
         focus.append(frame_focus(out))
+        if i == 0:
+            first_a = sa > 128
+        if i == n - 1:
+            last_a = sa > 128
         atlas.paste(Image.fromarray(out, "RGBA"), ((i % acols) * fw, (i // acols) * fh))
 
     fname = save_image(atlas, out_noext)
@@ -728,7 +995,15 @@ def render_clip(clip, scale, out_noext, name=""):
         "lift": round(clip["lift"], 1), "dehalo": bool(clip["haloed"]),
         "warm": round(clip["warm"], 1), "dewhite": bool(clip["whited"]),
         "dip": round(float(focus.min() / max(1e-6, focus.max())), 3),
+        "untail": bool(clip["tailed"]), "deblack": bool(clip["deblacked"]),
     }
+    if clip["black"] is not None:
+        meta["black"] = round(clip["black"], 3)
+    # Measured on the atlas frames themselves, which share one box, so the two
+    # silhouettes need no alignment before they are compared.
+    if first_a is not None and last_a is not None:
+        uni = int(np.logical_or(first_a, last_a).sum())
+        meta["endIoU"] = round(float(np.logical_and(first_a, last_a).sum()) / max(1, uni), 3)
     if fade:
         meta["fade"] = fade
     return meta
@@ -746,8 +1021,8 @@ def build_still(path, out_noext, target_h=256):
     if halo_lift(rgb0, a) > HALO_LIFT:
         a = dehalo(a)
     _w = body_warmth(rgb0, a)
-    if _w > WHITE_WARM and white_mask(rgb0, a, _w).sum() > WHITE_MIN * (a > 0.5).sum():
-        a = dewhite(rgb0, a, _w)
+    if _w > WHITE_WARM and white_mask(rgb0, a, _w, B).sum() > WHITE_MIN * (a > 0.5).sum():
+        a = dewhite(rgb0, a, _w, B)
     box = bbox(a)
     if box is None:
         return None
@@ -777,7 +1052,13 @@ def slug_of_still(fn):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--report", action="store_true", help="measure only, write nothing")
+    ap.add_argument("--only", default="",
+                    help="comma-separated slugs to (re)build; every other built Companion "
+                         "stays in the manifest untouched")
+    ap.add_argument("--stills", action="store_true",
+                    help="with --only, rebuild the stills as well")
     args = ap.parse_args()
+    only = {s.strip() for s in args.only.split(",") if s.strip()}
 
     sheets = sorted(f for f in os.listdir(SRC_SHEETS) if f.startswith("SS_") and f.endswith(".png"))
     by_slug = {}
@@ -789,8 +1070,24 @@ def main():
         by_slug.setdefault(m.group(1), {})[m.group(2)] = os.path.join(SRC_SHEETS, fn)
 
     manifest = {"animated": {}, "stills": {}, "targetContentH": TARGET_CONTENT_H}
+    # `--only` REBUILDS SOME COMPANIONS WITHOUT REWRITING THE REST. Each run
+    # starts from the manifest on disk, so a loop of single-slug runs -- one
+    # process each, which is also what keeps memory bounded -- accumulates
+    # instead of each run forgetting the one before it.
+    if only:
+        for s in sorted(only - set(by_slug)):
+            print("  --only %s: no sheets under %s" % (s, SRC_SHEETS))
+        prev_path = os.path.join(OUT, "index.json")
+        if os.path.exists(prev_path):
+            prev = json.load(open(prev_path))
+            for s, names in (prev.get("animated") or {}).items():
+                if s not in only and os.path.exists(os.path.join(OUT, s, "index.json")):
+                    manifest["animated"][s] = names
+            manifest["stills"] = prev.get("stills") or {}
 
     for slug, clips in sorted(by_slug.items()):
+        if only and slug not in only:
+            continue
         built = {name: build_clip(p) for name, p in sorted(clips.items())}
 
         # ONE scale for every clip of this Companion. See note 3 at the top: the
@@ -811,11 +1108,20 @@ def main():
                 name, ATLAS_COLS, clip["rows"], "%dx%d" % clip["cell"], clip["kind"],
                 100 * clip["washed"], str(clip["B"]), clip["lift"],
                 (" DEHALO" if clip["haloed"] else "       ")
-                + (" DEWHITE" if clip["whited"] else "        "), len(clip["frames"])))
+                + (" DEWHITE" if clip["whited"] else "        ")
+                + (" UNTAIL" if clip["tailed"] else "")
+                + (" DEBLACK %.2f" % clip["black"] if clip["deblacked"] else ""),
+                len(clip["frames"])))
             if args.report:
                 continue
             meta = render_clip(clip, scale, os.path.join(outdir, name), name)
             meta.update(loop=cfg["loop"], fps=cfg["fps"], hold=bool(cfg.get("hold")))
+            if (not cfg["loop"] and not cfg.get("hold")
+                    and meta.get("endIoU") is not None and meta["endIoU"] < PING_IOU):
+                meta["ping"] = True
+                meta["fps"] = int(round(cfg["fps"] * PING_SPEED))
+                print("              ^ ends elsewhere (first/last IoU %.2f): there and back at %d fps"
+                      % (meta["endIoU"], meta["fps"]))
             entry["clips"][name] = meta
             if "fade" in meta:
                 f = meta["fade"]
@@ -828,6 +1134,8 @@ def main():
             manifest["animated"][slug] = sorted(entry["clips"].keys())
 
     stills = sorted(f for f in os.listdir(SRC_STILLS) if f.endswith(".png"))
+    if only and not args.stills:
+        stills = []                  # kept from the manifest on disk, above
     if not args.report:
         os.makedirs(os.path.join(OUT, "stills"), exist_ok=True)
     print("\nstills:")

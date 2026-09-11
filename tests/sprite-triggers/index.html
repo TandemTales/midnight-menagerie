@@ -1,0 +1,81 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>sprite triggers</title>
+<!-- ui/sprite.js reaches core/assets.js, which imports "three" bare; the game
+     resolves that through game/index.html's import map, so this page needs one. -->
+<script type="importmap">
+{ "imports": { "three": "/game/vendor/three.module.js", "three/addons/": "/game/vendor/jsm/" } }
+</script>
+<pre id="out">running…</pre>
+<script type="module">
+/* Publishes what tests/sprite-triggers/check.py holds game/src/ui/clips.js
+   against: the clips that were actually BUILT, the keywords the cards actually
+   CARRY, each Companion's data source, and which clip every card really gets
+   through the same `cardClip` the combat scene calls. Real modules only. */
+const out = document.getElementById('out');
+try {
+  const T = await import('/game/src/ui/clips.js');
+  const C = await import('/game/src/data/cards.js');
+  const fetchJson = async (u) => {
+    const r = await fetch(u, { cache: 'no-store' });
+    return r.ok ? r.json() : null;
+  };
+  const manifest = (await fetchJson('/game/assets/sprites/index.json')) || { animated: {} };
+  const built = {};
+  for (const slug of Object.keys(manifest.animated || {})) {
+    const idx = await fetchJson(`/game/assets/sprites/${slug}/index.json`);
+    built[slug] = Object.keys((idx && idx.clips) || {});
+  }
+  const all = C.allCards ? C.allCards() : (C.ALL_CARDS || []);
+  const cards = {};
+  for (const c of all) {
+    if (!c.companion) continue;
+    (cards[c.companion] ||= []).push({ id: c.id, type: c.type, keywords: c.keywords || [] });
+  }
+  const sources = {};
+  for (const slug of Object.keys(T.MECHANIC_CLIPS)) {
+    const r = await fetch(`/game/src/data/companions/${slug}.js`, { cache: 'no-store' });
+    sources[slug] = r.ok ? await r.text() : '';
+  }
+  const reached = {};
+  for (const [slug, list] of Object.entries(cards)) {
+    for (const card of list) {
+      const m = T.cardClip(slug, card);
+      if (!m) continue;
+      ((reached[slug] ||= {})[m.clip] ||= []).push(card.type === 'attack' && m.strike ? card.id + '*' : card.id);
+    }
+  }
+  /* PLAYBACK. The pipeline writes `ping` and only ui/sprite.js can honour it,
+     so the player is the one place it can silently mean nothing. Driven on a
+     synthetic clip rather than built art: since the grid fix no sheet ends away
+     from its first pose, and a check that waits for art to need it never runs. */
+  const { ClipPlayer } = await import('/game/src/ui/sprite.js');
+  const probe = new ClipPlayer('__playback_probe__');
+  await probe.ready;
+  const cell = { cols: 4, rows: 1, fw: 1, fh: 1, file: 'probe.webp', frames: 4, fps: 4 };
+  probe.clips = { idle: { ...cell, loop: true }, beat: { ...cell }, ping: { ...cell, ping: true } };
+  for (const n of Object.keys(probe.clips)) probe._ready.set(n, true);
+  const trace = (name) => {
+    probe.play(name);
+    const seen = [];
+    for (let k = 0; k < 12; k++) {            // quarter-second steps: exact in binary
+      const f = probe.frame();
+      seen.push(f.clip === name ? f.index : f.clip);
+      probe.advance(0.25);
+    }
+    return seen;
+  };
+  const playback = {
+    beat: trace('beat'), ping: trace('ping'),
+    beatSeconds: probe.duration('beat'), pingSeconds: probe.duration('ping'),
+  };
+  window.__TRIGGERS = {
+    universal: T.UNIVERSAL_CLIPS, sceneDriven: T.SCENE_DRIVEN, table: T.MECHANIC_CLIPS,
+    built, cards, sources, reached, playback,
+  };
+  out.textContent = 'ready';
+} catch (e) {
+  window.__TRIGGERS = { error: String((e && e.stack) || e) };
+  out.textContent = 'ERROR ' + ((e && e.stack) || e);
+}
+</script>

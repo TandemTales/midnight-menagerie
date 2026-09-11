@@ -30,6 +30,7 @@ import { Hand } from '../ui/hand.js';
 import { CardView, ART_W, ART_H, CARD_SS } from '../ui/card.js';
 import { warmArt } from '../ui/cardart.js';
 import { EnemyView, PlayerView, statusGlyph } from '../ui/enemy.js';
+import { cardClip, eventClip } from '../ui/clips.js';
 import { CombatFX } from '../fx/combatfx.js';
 import { HUD } from '../ui/hud.js';
 import { openPile } from '../ui/deckview.js';
@@ -1206,7 +1207,12 @@ export class CombatScene extends Scene {
     const card = this.engine.card(uid);
     // The wind-up runs during the Hand's 0.20s hold, so contact lands on the
     // frame the effect resolves rather than after it.
-    if (card && card.type === 'attack') this._playerWindup();
+    /* WHICH BODY PLAYS IT. The Companion's own mechanic clip when the card
+       carries the mechanic — Crumbula's Feeding Bite on a Bite Mark, Wink's
+       Web Cast on a Web — and the universal clip otherwise. `ui/clips.js`
+       owns the table, and only a STRIKE clip may stand in for the lunge. */
+    const mech = card ? cardClip(this.hero?.slug, card) : null;
+    if (card && card.type === 'attack') this._playerWindup(mech && mech.strike ? mech.clip : null);
     /* Everything that is not an Attack is a Trick activation as far as the
        Companion is concerned. The brief builds exactly one clip for the whole
        category -- "Skills, Powers, buff application, healing... Many Companion
@@ -1219,7 +1225,7 @@ export class CombatScene extends Scene {
        exactly the plays the keyword lights up, rather than on a second and
        parallel idea of what "fast" means. `playClip` returns false for a
        Companion with no `zoomies` built, so the other fifteen fall to `trick`. */
-    else if (card) {
+    else if (card && !(mech && this.hero?.playClip(mech.clip))) {
       const fast = (this.engine.seatStats?.(this.me)?.cardsPlayedThisTurn ?? 0) >= 2;
       if (!fast || !this.hero?.playClip('zoomies')) this.hero?.playClip('trick');
     }
@@ -1976,6 +1982,7 @@ export class CombatScene extends Scene {
       case 'status': {
         this._syncActor(ev.actorId);
         if (ev.delta === 0) return;
+        if (ev.actorId === this.me?.id) this._mechanicEvent('status', ev);
         const c = this._pointOf(ev.actorId);
         if (ev.reason !== 'decay' && Math.abs(ev.delta) > 0) {
           this.fx.word(c.x, c.y - 46, `${ev.delta > 0 ? '+' : ''}${ev.delta} ${ev.name}`,
@@ -2127,6 +2134,9 @@ export class CombatScene extends Scene {
         if (ev.ownerId === this.me.id && ev.id === 'lives' && ev.delta) {
           this.hero?.playClip('spark');
         }
+        /* The same beat for every other Companion's track that has a body in
+           `ui/clips.js`. A play already mid-clip keeps its clip. */
+        if (ev.ownerId === this.me.id && ev.delta) this._mechanicEvent('counter', ev);
         if (ev.ownerId === this.me.id) this._syncPlayer();
         return;
       }
@@ -2494,9 +2504,23 @@ export class CombatScene extends Scene {
    * "the portrait animation is too small" — it was "the player has no body in
    * the scene at all", which no amount of animating a picture frame fixes.
    */
-  _playerWindup() {
+  /**
+   * A Companion mechanic that moved OUTSIDE a play gets its body clip: Mopsy's
+   * Stuffing spent on a Cushion in the enemy phase, Mossbit's Patience paid as
+   * an Epitaph comes due. Never over a clip already mid-beat
+   * (`ClipPlayer#busy`) — which is also why the counter a play just moved
+   * cannot double the clip that play chose.
+   */
+  _mechanicEvent(kind, ev) {
+    const hero = this.hero;
+    if (!hero?.sprite || hero.sprite.busy) return;
+    const clip = eventClip(hero.slug, kind, ev);
+    if (clip) hero.playClip(clip, { keep: true });
+  }
+
+  _playerWindup(clip = null) {
     if (this.reduceMotion) return;
-    this.hero?.windup();
+    this.hero?.windup(clip);
     const el = this.$pl;
     el.classList.remove('is-windup', 'is-striking');
     void el.offsetWidth;
@@ -3624,7 +3648,8 @@ export class CombatScene extends Scene {
     const api = {
       _scene: this,
       list: () => Object.keys(clips()),
-      seconds: (n) => { const c = clips()[n]; return c ? (c.frames || 1) / (c.fps || 24) : 0; },
+      // `duration` counts a there-and-back clip twice, which frames/fps does not.
+      seconds: (n) => this.hero?.sprite?.duration(n) || 0,
       play: (n) => !!this.hero?.playClip(n),
       all: async (gap = 0.35) => {
         const names = Object.keys(clips());

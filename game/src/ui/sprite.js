@@ -23,6 +23,11 @@
  *   fade[]           per-frame opacity for the clips that defocus mid-way
  *                    (`spectral`, `zoomies`). Measured, not authored -- see the
  *                    dissolve section of prep_sprites.py.
+ *   ping             a beat that does NOT end where it began. The brief asks
+ *                    every clip to finish on the idle pose; the pipeline checks
+ *                    (first-vs-last silhouette overlap, prep_sprites.PING_IOU),
+ *                    and one that missed plays forward and then back, so it
+ *                    still lands on idle instead of popping to it.
  *
  * Everything else in this file follows one rule from the brief: every clip but
  * `defeat` "must return precisely to the normal idle position", so a one-shot
@@ -214,6 +219,28 @@ export class ClipPlayer {
   has(name) { return !!this.clips?.[name]; }
 
   /**
+   * Mid-beat: a one-shot is playing, or one is still downloading to play.
+   *
+   * What an AMBIENT trigger asks before starting a clip of its own. A payoff
+   * that lands outside a play -- Cushion spending Stuffing in the enemy phase,
+   * Patience paid at the start of a turn -- should animate, but never by
+   * cutting off the hit reaction or the Trick the Kid just played. Idle, the
+   * loops and a held `defeat` all count as free.
+   */
+  get busy() {
+    if (this._pending) return true;
+    if (!this.name || !this.clips || this.done) return false;
+    const c = this.clips[this.name];
+    return !!c && !c.loop && this.name !== REST_CLIP;
+  }
+
+  /** Seconds one play of a clip lasts; a `ping` runs its frames twice. */
+  duration(name) {
+    const c = this.clips?.[name];
+    return c ? (c.ping ? 2 : 1) * (c.frames || 1) / (c.fps || 24) : 0;
+  }
+
+  /**
    * Start a clip. Restarts it if it is already playing unless `keep` is set,
    * which is what an idle wants -- re-asserting the rest pose every time a beat
    * ends should not jump the loop back to frame zero.
@@ -244,7 +271,7 @@ export class ClipPlayer {
     if (!this.name || this.done) return;
     this.t += Math.max(0, dt);
     const c = this.clips[this.name];
-    const dur = c.frames / (c.fps || 24);
+    const dur = this.duration(this.name);
     if (this.t < dur || c.loop) return;
     // A one-shot has run out. `hold` stays on its last frame; everything else
     // hands back to the rest pose, which the brief guarantees it already
@@ -264,7 +291,12 @@ export class ClipPlayer {
     const fps = c.fps || 24;
     let i = still ? 0 : Math.floor(this.t * fps);
     if (c.loop) i %= c.frames;
-    else i = Math.min(i, c.frames - 1);
+    else if (c.ping) {
+      // There and back -- 0..n-1, then n-1..0 -- so the frame a finished ping
+      // leaves on screen is the one it started from, not the one it reached.
+      i = Math.min(i, 2 * c.frames - 1);
+      if (i >= c.frames) i = 2 * c.frames - 1 - i;
+    } else i = Math.min(i, c.frames - 1);
     return {
       clip: this.name,
       index: i,

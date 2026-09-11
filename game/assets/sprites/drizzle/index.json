@@ -1,0 +1,438 @@
+{
+ "clips": {
+  "affection": {
+   "file": "affection.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 165,
+   "fh": 175,
+   "anchor": [
+    81.23,
+    150.79
+   ],
+   "source": "SS_drizzle_affection.png",
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 29.2,
+   "dehalo": true,
+   "warm": -46.0,
+   "dewhite": false,
+   "dip": 0.424,
+   "untail": false,
+   "deblack": false,
+   "black": 0.001,
+   "endIoU": 0.964,
+   "fade": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.999,
+    0.783,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.409,
+    0.35,
+    0.612,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.986,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.906,
+    0.855,
+    0.939,
+    0.997,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.997,
+    0.959,
+    1.0,
+    0.991,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   "loop": false,
+   "fps": 30,
+   "hold": false
+  },
+  "attack": {
+   "file": "attack.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 150,
+   "fh": 170,
+   "anchor": [
+    74.72,
+    157.25
+   ],
+   "source": "SS_drizzle_attack.png",
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -120.2,
+   "dehalo": false,
+   "warm": -48.0,
+   "dewhite": false,
+   "dip": 0.44,
+   "untail": false,
+   "deblack": true,
+   "black": 0.556,
+   "endIoU": 0.883,
+   "loop": false,
+   "fps": 60,
+   "hold": false
+  },
+  "celebrate": {
+   "file": "celebrate.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 137,
+   "fh": 191,
+   "anchor": [
+    68.49,
+    148.38
+   ],
+   "source": "SS_drizzle_celebrate.png",
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 30.1,
+   "dehalo": true,
+   "warm": -55.0,
+   "dewhite": false,
+   "dip": 0.513,
+   "untail": false,
+   "deblack": false,
+   "black": 0.004,
+   "endIoU": 0.93,
+   "loop": false,
+   "fps": 30,
+   "hold": false
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 142,
+   "fh": 185,
+   "anchor": [
+    71.0,
+    153.2
+   ],
+   "source": "SS_drizzle_defeat.png",
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -113.1,
+   "dehalo": false,
+   "warm": -45.0,
+   "dewhite": false,
+   "dip": 0.609,
+   "untail": false,
+   "deblack": true,
+   "black": 0.417,
+   "endIoU": 0.869,
+   "loop": false,
+   "fps": 24,
+   "hold": true
+  },
+  "discharge": {
+   "file": "discharge.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 228,
+   "fh": 198,
+   "anchor": [
+    115.53,
+    144.65
+   ],
+   "source": "SS_drizzle_discharge.png",
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 40.6,
+   "dehalo": true,
+   "warm": -48.0,
+   "dewhite": false,
+   "dip": 0.453,
+   "untail": false,
+   "deblack": false,
+   "black": 0.001,
+   "endIoU": 0.9,
+   "loop": false,
+   "fps": 48,
+   "hold": false
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 145,
+   "fh": 160,
+   "anchor": [
+    70.4,
+    150.44
+   ],
+   "source": "SS_drizzle_hurt.png",
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -117.0,
+   "dehalo": false,
+   "warm": -45.0,
+   "dewhite": false,
+   "dip": 0.583,
+   "untail": false,
+   "deblack": true,
+   "black": 0.46,
+   "endIoU": 0.916,
+   "loop": false,
+   "fps": 60,
+   "hold": false
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 134,
+   "fh": 156,
+   "anchor": [
+    66.82,
+    132.28
+   ],
+   "source": "SS_drizzle_idle.png",
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 39.0,
+   "dehalo": true,
+   "warm": -50.0,
+   "dewhite": false,
+   "dip": 0.727,
+   "untail": false,
+   "deblack": false,
+   "black": 0.002,
+   "endIoU": 0.931,
+   "loop": true,
+   "fps": 20,
+   "hold": false
+  },
+  "ready": {
+   "file": "ready.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 150,
+   "fh": 156,
+   "anchor": [
+    74.99,
+    145.07
+   ],
+   "source": "SS_drizzle_ready.png",
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -115.3,
+   "dehalo": false,
+   "warm": -45.0,
+   "dewhite": false,
+   "dip": 0.615,
+   "untail": false,
+   "deblack": true,
+   "black": 0.574,
+   "endIoU": 0.93,
+   "loop": false,
+   "fps": 40,
+   "hold": false
+  },
+  "trick": {
+   "file": "trick.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 145,
+   "fh": 179,
+   "anchor": [
+    72.34,
+    155.3
+   ],
+   "source": "SS_drizzle_trick.png",
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -119.9,
+   "dehalo": false,
+   "warm": -50.0,
+   "dewhite": false,
+   "dip": 0.576,
+   "untail": false,
+   "deblack": true,
+   "black": 0.567,
+   "endIoU": 0.942,
+   "loop": false,
+   "fps": 48,
+   "hold": false
+  },
+  "weather": {
+   "file": "weather.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 149,
+   "fh": 161,
+   "anchor": [
+    70.19,
+    130.98
+   ],
+   "source": "SS_drizzle_weather.png",
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 28.2,
+   "dehalo": true,
+   "warm": -58.0,
+   "dewhite": false,
+   "dip": 0.534,
+   "untail": false,
+   "deblack": false,
+   "black": 0.002,
+   "endIoU": 0.913,
+   "loop": false,
+   "fps": 30,
+   "hold": false
+  }
+ },
+ "scale": 0.4176
+}

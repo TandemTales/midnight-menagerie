@@ -1,0 +1,408 @@
+{
+ "clips": {
+  "affection": {
+   "file": "affection.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 243,
+   "fh": 130,
+   "anchor": [
+    113.81,
+    126.9
+   ],
+   "source": "SS_hush_affection.png",
+   "matte": "CONTAM",
+   "bg": [
+    152.7,
+    147.7,
+    155.7
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 17.3,
+   "dehalo": false,
+   "warm": -10.0,
+   "dewhite": false,
+   "dip": 0.676,
+   "endIoU": 0.988,
+   "loop": false,
+   "fps": 30,
+   "hold": false
+  },
+  "attack": {
+   "file": "attack.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 247,
+   "fh": 172,
+   "anchor": [
+    122.55,
+    167.09
+   ],
+   "source": "SS_hush_attack.png",
+   "matte": "CONTAM",
+   "bg": [
+    160.6,
+    154.4,
+    162.1
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 16.3,
+   "dehalo": false,
+   "warm": -3.0,
+   "dewhite": false,
+   "dip": 0.564,
+   "endIoU": 0.984,
+   "loop": false,
+   "fps": 60,
+   "hold": false
+  },
+  "celebrate": {
+   "file": "celebrate.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 244,
+   "fh": 197,
+   "anchor": [
+    126.85,
+    191.91
+   ],
+   "source": "SS_hush_celebrate.png",
+   "matte": "CONTAM",
+   "bg": [
+    152.0,
+    146.2,
+    155.3
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 20.0,
+   "dehalo": false,
+   "warm": -5.0,
+   "dewhite": false,
+   "dip": 0.606,
+   "endIoU": 0.986,
+   "loop": false,
+   "fps": 30,
+   "hold": false
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 252,
+   "fh": 127,
+   "anchor": [
+    128.25,
+    123.3
+   ],
+   "source": "SS_hush_defeat.png",
+   "matte": "CONTAM",
+   "bg": [
+    158.1,
+    152.2,
+    159.1
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 18.8,
+   "dehalo": false,
+   "warm": -7.0,
+   "dewhite": false,
+   "dip": 0.539,
+   "endIoU": 0.987,
+   "loop": false,
+   "fps": 24,
+   "hold": true
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 263,
+   "fh": 189,
+   "anchor": [
+    136.7,
+    184.31
+   ],
+   "source": "SS_hush_hurt.png",
+   "matte": "CONTAM",
+   "bg": [
+    152.7,
+    145.9,
+    155.9
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 17.1,
+   "dehalo": false,
+   "warm": -12.0,
+   "dewhite": false,
+   "dip": 0.463,
+   "endIoU": 0.986,
+   "loop": false,
+   "fps": 60,
+   "hold": false
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 187,
+   "fh": 134,
+   "anchor": [
+    95.12,
+    129.45
+   ],
+   "source": "SS_hush_idle.png",
+   "matte": "CONTAM",
+   "bg": [
+    166.5,
+    159.2,
+    170.6
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 16.2,
+   "dehalo": false,
+   "warm": -17.0,
+   "dewhite": false,
+   "dip": 0.66,
+   "endIoU": 0.979,
+   "loop": true,
+   "fps": 20,
+   "hold": false
+  },
+  "ready": {
+   "file": "ready.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 265,
+   "fh": 187,
+   "anchor": [
+    126.47,
+    183.98
+   ],
+   "source": "SS_hush_ready.png",
+   "matte": "CONTAM",
+   "bg": [
+    150.6,
+    146.0,
+    154.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 18.5,
+   "dehalo": false,
+   "warm": -8.0,
+   "dewhite": false,
+   "dip": 0.566,
+   "endIoU": 0.99,
+   "loop": false,
+   "fps": 40,
+   "hold": false
+  },
+  "shadow": {
+   "file": "shadow.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 279,
+   "fh": 231,
+   "anchor": [
+    140.23,
+    204.6
+   ],
+   "source": "SS_hush_shadow.png",
+   "matte": "CONTAM",
+   "bg": [
+    150.0,
+    143.0,
+    153.6
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 13.0,
+   "dehalo": false,
+   "warm": -13.0,
+   "dewhite": false,
+   "dip": 0.332,
+   "endIoU": 0.896,
+   "fade": [
+    0.955,
+    0.718,
+    0.596,
+    0.389,
+    0.4,
+    0.364,
+    0.395,
+    0.36,
+    0.508,
+    0.46,
+    0.723,
+    0.523,
+    0.5,
+    0.623,
+    0.503,
+    0.51,
+    0.376,
+    0.371,
+    0.415,
+    0.356,
+    0.35,
+    0.35,
+    0.383,
+    0.354,
+    0.351,
+    0.35,
+    0.414,
+    0.414,
+    0.372,
+    0.35,
+    0.35,
+    0.35,
+    0.35,
+    0.35,
+    0.35,
+    0.35,
+    0.35,
+    0.353,
+    0.35,
+    0.35,
+    0.35,
+    0.35,
+    0.35,
+    0.35,
+    0.35,
+    0.35,
+    0.35,
+    0.35,
+    0.35,
+    0.35,
+    0.35,
+    0.35,
+    0.35,
+    0.35,
+    0.351,
+    0.385,
+    0.707,
+    1.0,
+    0.985,
+    0.999,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   "loop": false,
+   "fps": 48,
+   "hold": false
+  },
+  "sneak": {
+   "file": "sneak.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 268,
+   "fh": 133,
+   "anchor": [
+    132.68,
+    128.63
+   ],
+   "source": "SS_hush_sneak.png",
+   "matte": "CONTAM",
+   "bg": [
+    154.2,
+    148.0,
+    156.7
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 11.8,
+   "dehalo": false,
+   "warm": -4.0,
+   "dewhite": false,
+   "dip": 0.483,
+   "endIoU": 0.99,
+   "loop": false,
+   "fps": 60,
+   "hold": false
+  },
+  "trick": {
+   "file": "trick.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 247,
+   "fh": 168,
+   "anchor": [
+    123.05,
+    164.71
+   ],
+   "source": "SS_hush_trick.png",
+   "matte": "CONTAM",
+   "bg": [
+    158.5,
+    153.2,
+    161.7
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 13.7,
+   "dehalo": false,
+   "warm": -9.0,
+   "dewhite": false,
+   "dip": 0.487,
+   "endIoU": 0.957,
+   "loop": false,
+   "fps": 48,
+   "hold": false
+  }
+ },
+ "scale": 0.6305
+}

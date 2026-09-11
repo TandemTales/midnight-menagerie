@@ -215,7 +215,7 @@
    "dewhite": true,
    "dip": 0.718,
    "loop": false,
-   "fps": 24,
+   "fps": 48,
    "hold": false
   },
   "fetch": {
@@ -325,7 +325,7 @@
     1.0
    ],
    "loop": false,
-   "fps": 24,
+   "fps": 48,
    "hold": false
   },
   "hurt": {

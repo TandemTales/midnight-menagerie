@@ -1,0 +1,408 @@
+{
+ "clips": {
+  "affection": {
+   "file": "affection.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 139,
+   "fh": 139,
+   "anchor": [
+    69.64,
+    136.16
+   ],
+   "source": "SS_truffle_affection.png",
+   "matte": "CONTAM",
+   "bg": [
+    234.5,
+    231.7,
+    231.4
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -2.2,
+   "dehalo": false,
+   "warm": 39.0,
+   "dewhite": false,
+   "dip": 0.622,
+   "endIoU": 0.992,
+   "loop": false,
+   "fps": 30,
+   "hold": false
+  },
+  "attack": {
+   "file": "attack.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 183,
+   "fh": 145,
+   "anchor": [
+    91.93,
+    142.22
+   ],
+   "source": "SS_truffle_attack.png",
+   "matte": "CONTAM",
+   "bg": [
+    228.9,
+    222.6,
+    223.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 7.7,
+   "dehalo": false,
+   "warm": 38.0,
+   "dewhite": false,
+   "dip": 0.24,
+   "endIoU": 0.994,
+   "fade": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.831,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.944,
+    0.35,
+    0.35,
+    0.35,
+    0.35,
+    0.356,
+    0.403,
+    0.422,
+    0.35,
+    0.35,
+    0.513,
+    0.777,
+    0.903,
+    0.858,
+    0.954,
+    0.996,
+    0.981,
+    0.95,
+    0.945,
+    0.762,
+    0.62,
+    0.483,
+    0.53,
+    0.471,
+    0.414,
+    0.38,
+    0.574,
+    0.957,
+    0.972,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.904,
+    0.906,
+    0.798,
+    0.774,
+    0.888,
+    0.991,
+    0.998,
+    0.788,
+    0.475,
+    0.519,
+    0.714,
+    0.599,
+    0.988,
+    1.0,
+    1.0,
+    0.776,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   "loop": false,
+   "fps": 60,
+   "hold": false
+  },
+  "celebrate": {
+   "file": "celebrate.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 151,
+   "fh": 157,
+   "anchor": [
+    73.52,
+    154.49
+   ],
+   "source": "SS_truffle_celebrate.png",
+   "matte": "CONTAM",
+   "bg": [
+    226.6,
+    221.8,
+    221.5
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -4.0,
+   "dehalo": false,
+   "warm": 40.0,
+   "dewhite": false,
+   "dip": 0.317,
+   "endIoU": 0.994,
+   "loop": false,
+   "fps": 30,
+   "hold": false
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 147,
+   "fh": 129,
+   "anchor": [
+    72.09,
+    128.0
+   ],
+   "source": "SS_truffle_defeat.png",
+   "matte": "CONTAM",
+   "bg": [
+    236.3,
+    233.5,
+    233.3
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 5.5,
+   "dehalo": false,
+   "warm": 39.0,
+   "dewhite": false,
+   "dip": 0.661,
+   "endIoU": 0.993,
+   "loop": false,
+   "fps": 24,
+   "hold": true
+  },
+  "flare": {
+   "file": "flare.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 160,
+   "fh": 151,
+   "anchor": [
+    85.07,
+    149.82
+   ],
+   "source": "SS_truffle_flare.png",
+   "matte": "CONTAM",
+   "bg": [
+    233.8,
+    228.3,
+    229.4
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 1.5,
+   "dehalo": false,
+   "warm": 41.0,
+   "dewhite": false,
+   "dip": 0.623,
+   "endIoU": 0.993,
+   "loop": false,
+   "fps": 48,
+   "hold": false
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 243,
+   "fh": 146,
+   "anchor": [
+    97.12,
+    144.18
+   ],
+   "source": "SS_truffle_hurt.png",
+   "matte": "CONTAM",
+   "bg": [
+    230.3,
+    226.3,
+    225.6
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 7.8,
+   "dehalo": false,
+   "warm": 39.0,
+   "dewhite": false,
+   "dip": 0.241,
+   "endIoU": 0.993,
+   "loop": false,
+   "fps": 60,
+   "hold": false
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 138,
+   "fh": 130,
+   "anchor": [
+    67.94,
+    127.89
+   ],
+   "source": "SS_truffle_idle.png",
+   "matte": "CONTAM",
+   "bg": [
+    235.0,
+    231.7,
+    230.4
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 4.8,
+   "dehalo": false,
+   "warm": 39.0,
+   "dewhite": false,
+   "dip": 0.659,
+   "endIoU": 0.992,
+   "loop": true,
+   "fps": 20,
+   "hold": false
+  },
+  "ready": {
+   "file": "ready.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 155,
+   "fh": 152,
+   "anchor": [
+    86.95,
+    150.84
+   ],
+   "source": "SS_truffle_ready.png",
+   "matte": "CONTAM",
+   "bg": [
+    230.5,
+    227.2,
+    226.6
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 2.0,
+   "dehalo": false,
+   "warm": 39.0,
+   "dewhite": false,
+   "dip": 0.283,
+   "endIoU": 0.992,
+   "loop": false,
+   "fps": 40,
+   "hold": false
+  },
+  "regenerate": {
+   "file": "regenerate.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 151,
+   "fh": 154,
+   "anchor": [
+    77.8,
+    151.35
+   ],
+   "source": "SS_truffle_regenerate.png",
+   "matte": "CONTAM",
+   "bg": [
+    240.2,
+    237.5,
+    236.8
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -5.4,
+   "dehalo": false,
+   "warm": 38.0,
+   "dewhite": false,
+   "dip": 0.658,
+   "endIoU": 0.991,
+   "loop": false,
+   "fps": 36,
+   "hold": false
+  },
+  "trick": {
+   "file": "trick.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 152,
+   "fh": 151,
+   "anchor": [
+    74.24,
+    148.56
+   ],
+   "source": "SS_truffle_trick.png",
+   "matte": "CONTAM",
+   "bg": [
+    235.2,
+    230.7,
+    231.1
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -2.6,
+   "dehalo": false,
+   "warm": 36.0,
+   "dewhite": false,
+   "dip": 0.446,
+   "endIoU": 0.995,
+   "loop": false,
+   "fps": 48,
+   "hold": false
+  }
+ },
+ "scale": 0.4758
+}

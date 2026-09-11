@@ -2269,14 +2269,18 @@ export class PlayerView {
   }
 
   /** She coils: weight back onto the heel, torch drawn up and behind. */
-  async windup() {
+  async windup(clip = null) {
     if (this._dead) return;
     this.el.classList.add('is-acting');
     /* The Companion's attack clip carries its own anticipation ("a brief
        anticipation movement followed by one decisive forward attack motion"),
        so it starts HERE rather than on contact — starting it in `strike` would
-       play the wind-up after the hit had already landed. */
-    this.playClip('attack');
+       play the wind-up after the hit had already landed.
+
+       `clip` is a mechanic body standing in for the lunge on this one Attack —
+       Crumbula's Feeding Bite, Taffy's Stretch (ui/clips.js decides). A
+       Companion that has not got it lunges exactly as before. */
+    if (!clip || !this.playClip(clip)) this.playClip('attack');
     this.a.leanT = -0.8; this.a.squashT = 0.2; this.a.swingT = -1;
     await this._pose(-16, -5, -5, this._d(0.12), Clock.easeOutCubic);
   }
