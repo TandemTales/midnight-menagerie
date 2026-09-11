@@ -194,6 +194,65 @@ export async function openSettings(ctx = {}) {
   seedFs.appendChild(entry);
   form.appendChild(seedFs);
 
+  // ── the expedition ──────────────────────────────────────────────────────
+  /*
+   * "Need a way to save and a way to quit."  Both existed and neither was
+   * reachable: `Run.save()` fires after every room, every purchase and every
+   * card play, and the title screen offers Continue off the back of it — but
+   * from inside a run the only buttons were Reset (which erases the save and
+   * everything behind it) and the window's close box. A player who wanted to
+   * stop for the night had no way to find out their progress was kept.
+   *
+   * So this row does two jobs: it says the expedition is already saved, and it
+   * gives the deliberate way out. A finished run is not resumable (`save()`
+   * returns early on `result`) and a deep-link mock must never touch storage,
+   * so neither offers it.
+   */
+  const live = ctx.run && !ctx.run.ephemeral && !ctx.run.result;
+  if (live) {
+    const party = !!ctx.run.isParty;
+    const trip = document.createElement('fieldset');
+    trip.className = 'mm-set__group';
+    trip.innerHTML = '<legend class="mm-set__legend">Expedition</legend>';
+    const tRow = document.createElement('div');
+    tRow.className = 'mm-set__row';
+    tRow.innerHTML =
+      `<div class="mm-set__label"><span>Save and quit</span>` +
+      `<span class="mm-set__hint">Your expedition saves itself after every room. ` +
+      `Quitting now keeps it exactly where it is — Continue on the title screen picks it back up.` +
+      `${party ? ' In a party this ends the expedition for everyone.' : ''}</span></div>`;
+    const quit = document.createElement('button');
+    quit.type = 'button';
+    quit.className = 'mm-btn';
+    quit.textContent = 'Save and quit';
+    quit.addEventListener('click', async () => {
+      if (party) {
+        const ok = await confirmModal({
+          title: 'Quit the expedition?',
+          body: 'This is a party expedition. Leaving ends it for everyone in the house, '
+              + 'and it will be waiting on the title screen for whoever started it.',
+          confirm: 'Save and quit', cancel: 'Keep going', host: ctx.dom,
+        });
+        if (!ok) return;
+      }
+      // Save FIRST, then tear down: `session.close()` drops the transport, and
+      // a snapshot written after that would be a snapshot of a run with no
+      // seats left to write it.
+      /* NOT `save?.()` — contract rule 8. `Run.save` is a real method and a
+         missing one is a bug that must be loud, not a quit that silently keeps
+         nothing. The try/catch is for the storage write, which genuinely can
+         fail (a full or blocked localStorage) and is genuinely best-effort. */
+      try { ctx.run.save(); } catch { /* storage is best-effort */ }
+      try { ctx.run.session?.close?.(); } catch { /* already gone is fine */ }
+      ctx.bus?.emit?.('run:quit', { seed: ctx.run.seed });
+      modal.close(null);
+      ctx.scenes?.go?.('title', {}, { instant: true });
+    });
+    tRow.appendChild(quit);
+    trip.appendChild(tRow);
+    form.appendChild(trip);
+  }
+
   // ── danger ──────────────────────────────────────────────────────────────
   const danger = document.createElement('fieldset');
   danger.className = 'mm-set__group mm-set__group--danger';
