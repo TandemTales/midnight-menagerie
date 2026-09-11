@@ -619,6 +619,14 @@ export class Run {
     this.pendingWing = null;
     /** The last resolved wing ballot, so the atlas can repeat what happened. */
     this.lastWingVote = null;
+    /**
+     * WHO THIS WING HOLDS, decided once and kept: `{ region, companion }`.
+     *
+     * The fork names a Companion for every way on (`_assignHeld`), and the
+     * wing the party walks into frees exactly that one — at its Rescue room
+     * or at its boss, whichever comes first, and never a second. See `heldIn`.
+     */
+    this.held = null;
     this.rescued = (Save.data?.companionsRescued || []).slice();
     /**
      * WHO THE HOUSE STILL HOLDS, AS THE WHOLE PARTY SEES IT.
@@ -686,7 +694,12 @@ export class Run {
     /* Only once the way in is settled. Marking here would draw the Foyer on the
        blueprint for a party that is about to walk into the Kennels instead. */
     if (this._entryPending) this.openEntryFork();
-    else this.markWingMapped(this.region);
+    else {
+      this.markWingMapped(this.region);
+      // No fork to promise anyone, so the wing it starts in decides who it
+      // holds by the same rule a fork would have used.
+      this.held = { region: this.region, companion: this.heldIn(this.region) };
+    }
   }
 
   /**
@@ -1226,7 +1239,11 @@ export class Run {
     this.map = generateRegionMap(this.region, this.seed, {
       hauntLevel: this.hauntLevel,
       companion: this.companion,
-      rescued: this.rescued,
+      /* `freedRoster`, NOT `rescued`. Whether this wing has a Rescue room at
+         all is decided from this list, and `rescued` is one machine's
+         lifetime save: two Kids with different saves generated different
+         maps for the same seed. Solo the two lists are identical. */
+      rescued: this.freedRoster,
       companionsFreed: this.companionsFreed.slice(),
     });
     this.currentNodeId = null;
@@ -2623,7 +2640,7 @@ export class Run {
       const authored = node.payload?.companion || this.meta.companion;
       this.pendingEvent = {
         rescue: true, nodeId: node.id, resolved: null, resolvedBy: {}, pendingBy: {},
-        companion: this.rescueTargetFor(node.id, authored),
+        companion: this._heldTarget(node.id, authored),
       };
       this.save();
       return this.pendingEvent;
@@ -2796,9 +2813,12 @@ export class Run {
    */
   missingCompanions() {
     // `freedRoster`, not `rescued` — this feeds a decision the whole party has
-    // to agree on. See the constructor.
+    // to agree on. See the constructor. And EVERY Kid's Companion is walking
+    // beside you, not only seat 0's: a party of two could otherwise be
+    // promised the Companion one of them is playing.
+    const party = new Set([this.companion, ...(this.kids || []).map(k => k.companion)]);
     return COMPANIONS.map(c => c.slug).filter(s =>
-      s !== this.companion && !this.freedRoster.includes(s) && !STARTER_SLUGS.has(s)
+      !party.has(s) && !this.freedRoster.includes(s) && !STARTER_SLUGS.has(s)
       && !!companionDef(s));
   }
 
@@ -2825,6 +2845,66 @@ export class Run {
     const local = pool.filter(s => COMPANIONS.find(c => c.slug === s)?.region === this.region);
     const from = local.length ? local : pool;
     return from[this.fork(`rescue:${nodeId}`).int(from.length)];
+  }
+
+  /**
+   * The Companion a wing holds for THIS run, or null when nobody is left.
+   *
+   * Its own Companion while they are still in the house — the chapter's
+   * table in `regionMeta` — and otherwise a pick from whoever is, seeded by
+   * the wing so it answers the same on every client. Marmalade is the
+   * Foyer's own and starts at home, so the Foyer always holds somebody else.
+   * `taken` keeps two doors at one fork from naming the same Companion.
+   * The Heart holds nobody.
+   */
+  heldIn(regionId, taken = []) {
+    if (!regionId || regionId === HEART) return null;
+    const native = regionMeta(regionId)?.companion || null;
+    const pool = this.missingCompanions().filter(s => !taken.includes(s));
+    if (native && pool.includes(native)) return native;
+    if (!pool.length) return null;
+    return pool[this.fork(`held:${regionId}`).int(pool.length)];
+  }
+
+  /**
+   * Stamp every option at a fork with who that wing holds: `option.held`.
+   *
+   * Wings whose own Companion is still missing claim them first, then the
+   * rest take DISTINCT substitutes in offer order. A pure function of the
+   * offer, the seed and the roster — so every client stamps the same names,
+   * and `advanceRegion` can re-derive the winner's after the vote has
+   * nulled the fork.
+   */
+  _assignHeld(options) {
+    const missing = new Set(this.missingCompanions());
+    const taken = [];
+    for (const o of options) {
+      const native = o.to === HEART ? null : (regionMeta(o.to)?.companion || null);
+      o.held = native && missing.has(native) ? native : undefined;
+      if (o.held) taken.push(o.held);
+    }
+    for (const o of options) {
+      if (o.held !== undefined) continue;
+      o.held = this.heldIn(o.to, taken);
+      if (o.held) taken.push(o.held);
+    }
+    return options;
+  }
+
+  /**
+   * Who a Rescue — the room or the boss — frees in the wing the party is in.
+   *
+   * The Companion `held` promised while they are still missing, and NOBODY
+   * once they are free: a wing gives up one Companion, not one per door.
+   * When the wing holds nobody (everyone is home), or on a run saved before
+   * `held` existed, the old substitution answers as it always did.
+   */
+  _heldTarget(tag, authored) {
+    if (this.held && this.held.region === this.region && this.held.companion) {
+      const h = this.held.companion;
+      return this.freedRoster.includes(h) ? null : h;
+    }
+    return this.rescueTargetFor(tag, authored);
   }
 
   /** Free a Companion. The point of the whole exercise. */
@@ -2856,10 +2936,14 @@ export class Run {
     // Lifetime record, before anything can end the run: clearing the Foyer is
     // what unlocks choosing where the next expedition starts.
     this.markWingCleared(this.region);
-    // Same substitution as a Rescue room: a boss kill must not "free" one of the
-    // four starters, who were never in the house. See rescueTargetFor().
-    const freed = this.rescueTargetFor(`boss:${this.region}`, meta.companion);
-    if (freed && !this.rescued.includes(freed)) this.rescueCompanion(freed);
+    /* ONE Companion per wing: the one the fork promised. This asked for a
+       fresh substitute here, so a wing whose Rescue room had already freed
+       its Companion freed a SECOND, random one at the boss — on seed 42,
+       Mossbit in the Foyer's Rescue room and then Drizzle at the Butler.
+       `rescueCompanion` is called even for a Companion already in YOUR
+       save, because the party's roster has to move on every machine. */
+    const freed = this._heldTarget(`boss:${this.region}`, meta.companion);
+    if (freed) this.rescueCompanion(freed);
     if (this.isLastRegion) return this.end(true, null);
     return this.openWingFork();
   }
@@ -2916,7 +3000,7 @@ export class Run {
       const m = generateRegionMap(regionId, this.seed, {
         hauntLevel: this.hauntLevel,
         companion: this.companion,
-        rescued: this.rescued,
+        rescued: this.freedRoster,       // what `_buildMap` reads, or it previews a different wing
         companionsFreed: this.companionsFreed.slice(),
       });
       out = {
@@ -2942,7 +3026,7 @@ export class Run {
    * the screen that started the run finds out where to go.
    */
   openEntryFork() {
-    this.pendingWing = { from: null, step: ENTRY_STEP, options: entryOffer(), votes: {} };
+    this.pendingWing = { from: null, step: ENTRY_STEP, options: this._assignHeld(entryOffer()), votes: {} };
     return this.pendingWing;
   }
 
@@ -2964,12 +3048,15 @@ export class Run {
        function of the roster, so it answers the same on every client. */
     const ok = entryOffer().some(o => o.to === to);
     const next = ok ? to : RUN_REGIONS[0];
+    // Who it holds, by the same stamping the fork showed.
+    const heldHere = (this._assignHeld(entryOffer()).find(o => o.to === next) || {}).held ?? null;
     this.pendingWing = null;
     this._entryPending = false;
     // Idempotent against a replayed input, the same way `advanceRegion` is.
     this.regionIndex = 0;
     this.route = [next];
     this.region = next;
+    this.held = { region: next, companion: heldHere };
     this._previews = null;
     this.encounterHistory = [];
     this._buildMap();
@@ -2980,7 +3067,7 @@ export class Run {
   }
 
   openWingFork() {
-    const options = wingOffer(this.seed, this.region, this.route, this.regionIndex, this.wings);
+    const options = this._assignHeld(wingOffer(this.seed, this.region, this.route, this.regionIndex, this.wings));
     this.pendingWing = { from: this.region, step: this.regionIndex, options, votes: {} };
     this.save();
     bus.emit('run:wings', { from: this.region, options, run: this });
@@ -3100,7 +3187,10 @@ export class Run {
    *   to the old dealt route.
    */
   advanceRegion(next = null) {
-    const options = this.wingOptions();
+    /* Stamped again rather than read off the fork: `resolveWingVote` has
+       nulled `pendingWing` by now, and nothing a vote does moves the offer
+       or the roster the stamping is a function of. */
+    const options = this._assignHeld(this.wingOptions().map(o => ({ ...o })));
     const to = (next && options.some(o => o.to === next)) ? next
       : (options[0] ? options[0].to : HEART);
     /**
@@ -3130,6 +3220,7 @@ export class Run {
     this.route[this.regionIndex] = to;
     this.route.length = this.regionIndex + 1;
     this.region = to;
+    this.held = { region: to, companion: (options.find(o => o.to === to) || {}).held ?? null };
     this.pendingWing = null;
     this._previews = null;          // a new wing, and `rescued` may have moved
     this.markWingMapped(this.region);
@@ -3236,6 +3327,10 @@ export class Run {
       pathIds: this.pathIds.slice(),
 
       rescued: this.rescued.slice(), companionsFreed: this.companionsFreed.slice(), cluesFound: this.cluesFound,
+      /* The party's roster and the wing's promise. Neither was written, so a
+         resumed run rebuilt `freedRoster` from the lifetime save alone and
+         every Companion freed earlier tonight read as still in the house. */
+      freedRoster: this.freedRoster.slice(), held: this.held ? { ...this.held } : null,
       seenEvents: this.seenEvents.slice(),
       encounterHistory: this.encounterHistory.slice(),
       removalPrice: this.removalPrice, shopsVisited: this.shopsVisited, pity: this.pity,
@@ -3452,6 +3547,20 @@ export class Run {
 
     run.rescued = (saved.rescued || []).slice();
     run.companionsFreed = (saved.companionsFreed || []).slice();
+    run.freedRoster = Array.isArray(saved.freedRoster)
+      ? saved.freedRoster.slice()
+      : [...new Set([...run.freedRoster, ...run.rescued, ...run.companionsFreed])];
+    /* The wing's promise. A save from before it existed is given one now —
+       and if this wing's own Companion was already freed tonight, that IS
+       who it held, so its boss does not go on to free a second. */
+    if (saved.held && saved.held.region === run.region) {
+      run.held = { region: saved.held.region, companion: saved.held.companion ?? null };
+    } else {
+      const native = run.region === HEART ? null : (regionMeta(run.region)?.companion || null);
+      run.held = { region: run.region,
+        companion: native && run.companionsFreed.includes(native) ? native : run.heldIn(run.region) };
+    }
+    if (run.pendingWing) run._assignHeld(run.pendingWing.options);
     run.cluesFound = saved.cluesFound || 0;
     run.seenEvents = (saved.seenEvents || []).slice();
     run.encounterHistory = (saved.encounterHistory || []).slice();

@@ -1,0 +1,106 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>held Companions</title>
+<pre id="out">running…</pre>
+<script type="module">
+/* Every wing holds ONE known Companion (`Run#held`), and the rest of the run
+   keeps that promise. The run layer only, no scenes — tests/held/check.py
+   drives the atlas separately. */
+const out = document.getElementById('out');
+const passes = [], fails = [];
+const check = (ok, what, detail = '') => (ok ? passes : fails).push(what + (detail ? ` - ${detail}` : ''));
+try {
+  const { Run } = await import('/game/src/state/run.js');
+  const { NodeType, COMPANIONS } = await import('/game/src/data/schema.js');
+  const { Save } = await import('/game/src/core/save.js');
+  const lifetime = (list = []) => { Save.data.companionsRescued = list.slice(); };
+  const rescueNode = (run) => run.map.nodes.find(n => n.type === NodeType.RESCUE) || null;
+  const nativeOf = (region) => COMPANIONS.find(c => c.region === region) || null;
+
+  for (const seed of [42, 7, 1234, 20260910]) {
+    lifetime();
+    const run = new Run({ companion: 'boggle', kid: 'maya', seed });
+    const held = run.held && run.held.companion;
+    check(!!held && run.held.region === run.region, `seed ${seed}: the Foyer holds somebody`, String(held));
+    check(held !== 'marmalade', `seed ${seed}: never Marmalade, who starts at home`);
+
+    const node = rescueNode(run);
+    check(!!node, `seed ${seed}: the Foyer has its Rescue room`);
+    if (node) {
+      const room = run._prepareEvent(node, NodeType.RESCUE).companion;
+      check(room === held, `seed ${seed}: the Rescue room frees the held Companion`, `${room} vs ${held}`);
+      run.rescueCompanion(room);
+      run.pendingEvent = null;
+    }
+    run.completeRegion();
+    /* THE DISCRIMINATING CASE. The boss used to ask for a fresh substitute, so
+       a wing whose Rescue room had already freed its Companion freed a SECOND,
+       random one here — Mossbit in the room, then Drizzle at the Butler. */
+    check(run.companionsFreed.length === 1, `seed ${seed}: the wing freed exactly ONE Companion`,
+      run.companionsFreed.join(', '));
+
+    const fork = run.pendingWing;
+    const doors = fork.options.filter(o => o.to !== 'heart');
+    const names = doors.map(o => o.held).filter(Boolean);
+    check(fork.options.every(o => Object.prototype.hasOwnProperty.call(o, 'held')),
+      `seed ${seed}: every way on names who it holds`);
+    check(new Set(names).size === names.length, `seed ${seed}: no two doors promise the same Companion`);
+    check(!names.includes(held), `seed ${seed}: no door promises a Companion freed tonight`);
+    const missing = run.missingCompanions();
+    const empty = doors.filter(o => !o.held).length;
+    check(empty === Math.max(0, doors.length - missing.length),
+      `seed ${seed}: a door holds nobody only when there are more doors than Companions left`,
+      `${empty} empty of ${doors.length}, ${missing.length} missing`);
+    check(doors.every(o => {
+      const own = nativeOf(o.to);
+      return !own || !missing.includes(own.slug) || o.held === own.slug;
+    }), `seed ${seed}: a wing whose own Companion is still missing holds them`);
+
+    const pick = doors.find(o => o.held && o.held !== (nativeOf(o.to) || {}).slug)
+              || doors.find(o => o.held);
+    await run.voteWing(pick.to);
+    check(run.region === pick.to && run.held && run.held.region === pick.to && run.held.companion === pick.held,
+      `seed ${seed}: crossing into ${pick.to} keeps its promise`, `${run.held && run.held.companion} vs ${pick.held}`);
+    run.completeRegion();
+    check(run.companionsFreed.length === 2 && run.companionsFreed[1] === pick.held,
+      `seed ${seed}: that wing's boss frees the promised Companion`, run.companionsFreed.join(', '));
+
+    const snap = JSON.parse(JSON.stringify(run.snapshot()));
+    const back = Run.resume(JSON.parse(JSON.stringify(snap)));
+    check(back.freedRoster.includes(held) && back.freedRoster.includes(pick.held),
+      `seed ${seed}: a resumed run still knows who it freed tonight`, back.freedRoster.join(','));
+    check(!back.missingCompanions().includes(held) && !back.missingCompanions().includes(pick.held),
+      `seed ${seed}: ...and offers neither of them again`);
+    check(!!back.pendingWing && back.pendingWing.options.every(o => !o.held || !back.freedRoster.includes(o.held)),
+      `seed ${seed}: the resumed fork promises nobody already free`);
+
+    const old = JSON.parse(JSON.stringify(snap));
+    delete old.freedRoster; delete old.held;
+    const legacy = Run.resume(old);
+    check(legacy.freedRoster.includes(held) && legacy.freedRoster.includes(pick.held),
+      `seed ${seed}: a save from before the roster was written rebuilds it from tonight`);
+  }
+
+  lifetime();
+  const party = new Run({ seed: 42, freedRoster: [],
+    kids: [{ companion: 'marmalade', kid: 'maya' }, { companion: 'wisp', kid: 'eli' }] });
+  check(party.held.companion !== 'wisp', 'co-op: the Foyer does not hold Wisp, who is in the party');
+  party.completeRegion();
+  check(!party.pendingWing.options.some(o => o.held === 'wisp'),
+    'co-op: no door promises Wisp either');
+
+  const nodesOf = (r) => r.map.nodes.map(n => `${n.id}:${n.type}`).join(' ');
+  const cfg = { seed: 99, freedRoster: [], entryUnlocked: true, startRegion: 'nursery',
+                kids: [{ companion: 'boggle', kid: 'maya' }] };
+  lifetime([]); const a = new Run(cfg);
+  lifetime(['mopsy']); const b = new Run(cfg);
+  lifetime([]);
+  check(a.region === 'nursery' && b.region === 'nursery', 'both clients begin in the Nursery');
+  check(nodesOf(a) === nodesOf(b),
+    "same seed and roster, different lifetime saves: the SAME map (the Rescue room read one machine's save)");
+} catch (e) {
+  fails.push('THREW: ' + ((e && e.stack) || e));
+}
+window.__HELD = { passes, fails };
+out.textContent = `${passes.length} passed, ${fails.length} failed\n` + fails.join('\n');
+</script>

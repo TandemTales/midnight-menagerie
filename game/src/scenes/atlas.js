@@ -42,9 +42,17 @@
  * who is held there, surveyed or not.  The whole point of that fork is "go and
  * get the one you want first", and it cannot be used for that if it will not
  * say who is where.  It is not night one either: the fork does not exist until
- * the Foyer has been cleared (`canChooseEntry`).  Everywhere else the survey
- * gate above still holds, which is why this is a flag on the fork rather than
- * a change to `_surveyed`.
+ * the Foyer has been cleared (`canChooseEntry`).
+ *
+ * WIDENED 2026-09-10, same owner: EVERY fork — the way on as well as the way
+ * in — names who each offered wing holds and who keeps it.  Choosing the next
+ * wing is choosing which Companion to go and get and which boss to face for
+ * them, and a door marked with a wing's name alone is not that choice.  It is
+ * still only the wings ON OFFER: the rest of the house keeps the survey gate,
+ * which is why this reads `pendingWing.options` and never touches
+ * `_surveyed`.  The name is `option.held` — the Companion the run will
+ * actually free in that wing (`Run#_assignHeld`), which is not always the
+ * wing's own: the Foyer's own is Marmalade, who starts at home.
  *
  * ── AND IT IS WHERE THE EXPEDITION TURNS ───────────────────────────────────
  *
@@ -387,8 +395,8 @@ export class AtlasScene extends Scene {
   }
 
   _hotLabel(w) {
-    const seen = this.surveyed.has(w.slug) || this.entering;
     const o = this.offer.find((x) => x.to === w.slug);
+    const seen = this.surveyed.has(w.slug) || this.entering || !!o;
     /* A way-in option carries no `why` — there is no wing to come FROM — so the
        "way on" phrasing would read "A way on from here: null." to a screen
        reader. It is a place to BEGIN there. */
@@ -396,8 +404,11 @@ export class AtlasScene extends Scene {
       : o ? ` A way on from here: ${o.why}.`
       : this.choosing ? ' No way through tonight.' : '';
     if (!seen) return `${w.meta.name}. Unsurveyed.${way}`;
-    const held = w.companion ? ` ${w.companion.name}, ${w.companion.title}, is held here.` : '';
-    return `${w.meta.name}. Surveyed.${held} Guarded by ${w.meta.boss}.${way}`;
+    const hc = o ? (o.held ? COMPANIONS.find((x) => x.slug === o.held) : null) : w.companion;
+    const held = hc ? ` ${hc.name}, ${hc.title}, is held here.`
+      : (o && w.slug !== 'heart') ? ' Nobody is held here any more.' : '';
+    const state = this.surveyed.has(w.slug) ? 'Surveyed' : 'Unsurveyed';
+    return `${w.meta.name}. ${state}.${held} Guarded by ${w.meta.boss}.${way}`;
   }
 
   /* ── the pencil trail ───────────────────────────────────────────────────── */
@@ -716,30 +727,46 @@ export class AtlasScene extends Scene {
     }
 
     const seen = this.surveyed.has(slug);
+    /* A wing on offer at a fork is decision content whether or not anybody
+       has surveyed it: who it holds and who keeps it are what the choice is
+       made on. See the header's DELIBERATE EXCEPTION, as widened. */
+    const offered = this.offer.find((x) => x.to === slug) || null;
+    const known = seen || !!offered;
     const d = this._dossier;
-    d.dataset.seen = seen ? '1' : '0';
+    d.dataset.seen = known ? '1' : '0';
     d.querySelector('.at-dos__n').textContent = w.meta.roman;
     d.querySelector('.at-dos__name').textContent = w.meta.name;
     d.querySelector('.at-dos__form').textContent = w.meta.form;
-    d.querySelector('.at-dos__boss').textContent = seen ? w.meta.boss : 'Not yet known';
+    d.querySelector('.at-dos__boss').textContent = known ? w.meta.boss : 'Not yet known';
     d.querySelector('.at-dos__rooms').textContent = '20';
     d.querySelector('.at-dos__state').textContent = seen ? 'Surveyed' : 'Unsurveyed';
 
-    /* WHO IS HELD HERE. Gated on having surveyed the wing everywhere except
-       `enter` mode, where naming them IS the decision the screen exists for.
-       See the header's "ONE DELIBERATE EXCEPTION". */
+    /* WHO IS HELD HERE. At a fork: the Companion the RUN will free in that
+       wing, the same answer its Rescue room and its boss act on. Away from
+       one, a surveyed wing names its own Companion, as it always has. */
     const held = d.querySelector('.at-dos__held');
-    const c = (seen || this.entering) ? w.companion : null;
-    held.hidden = !c;
+    const heldSlug = offered ? (offered.held || null)
+      : (seen && w.companion ? w.companion.slug : null);
+    const c = heldSlug ? (COMPANIONS.find((x) => x.slug === heldSlug) || null) : null;
+    /* NOBODY IS AN ANSWER TOO. Every wing is on offer at a fork and there are
+       usually fewer Companions left than wings, so some doors hold no one —
+       the Kid's own Companion's wing, for a start. Saying so is the difference
+       between "this wing is empty" and "the screen forgot to say". */
+    const empty = !!offered && !c && slug !== 'heart';
+    held.hidden = !c && !empty;
+    held.classList.toggle('is-empty', empty);
     try { this._pf?.destroy?.(); } catch {}
     this._pf = null;
+    const host = d.querySelector('.at-dos__pf');
+    host.innerHTML = '';
     if (c) {
       d.querySelector('.at-dos__cname').textContent = c.name;
       d.querySelector('.at-dos__ctitle').textContent = c.title;
-      const host = d.querySelector('.at-dos__pf');
-      host.innerHTML = '';
       this._pf = companionPortrait({ slug: c.slug, variant: '@1x', parallax: 0, shimmer: false });
       host.appendChild(this._pf.el);
+    } else if (empty) {
+      d.querySelector('.at-dos__cname').textContent = 'Nobody';
+      d.querySelector('.at-dos__ctitle').textContent = 'everyone this wing could hold is already free';
     }
     /* The Heart holds no Companion — it is what holds the house — so the
        "Held here" block is simply absent there rather than reading empty. */
