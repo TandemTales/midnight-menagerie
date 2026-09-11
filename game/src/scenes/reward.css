@@ -324,6 +324,19 @@
   box-shadow: 0 0 34px color-mix(in srgb, var(--good-300) 40%, transparent);
 }
 .rw-slot.is-gone { opacity: .18; filter: grayscale(1) brightness(.6); pointer-events: none; }
+/* ── chosen, but not yet kept ───────────────────────────────────────────────
+   Taking a Trick is committed by the footer button now, not by the click, so
+   there has to be a state between "hovering it" and "it is in my deck". It
+   lifts less than `is-taken` and, crucially, the others stay lit and clickable:
+   the whole point is that you can still change your mind. */
+.rw-slot.is-picked { transform: translateY(-22px) rotate(0deg) scale(1.04); z-index: 4; }
+.rw-slot.is-picked::after {
+  opacity: 1;
+  box-shadow: 0 0 0 calc(2 * var(--u)) var(--flame-300),
+              0 0 calc(26 * var(--u)) color-mix(in srgb, var(--flame-400) 55%, transparent);
+}
+.rw-slot.is-dimmed { opacity: .62; }
+.rw-slot.is-dimmed:hover, .rw-slot.is-dimmed:focus-visible { opacity: 1; }
 .rw-fan.is-resolved .rw-slot { cursor: default; }
 
 .rw-skip em { display: block; }

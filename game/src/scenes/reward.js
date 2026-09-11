@@ -6,9 +6,9 @@
  *
  *   · three real `CardView`s, full hover and inspect, laid out on an arc
  *   · one pick, or none, and the screen says out loud what "none" buys you —
- *     Lost Things now and a permanent bump to the luck that decides how often
+ *     Buttons now and a permanent bump to the luck that decides how often
  *     a Rare turns up.  Skipping is a play, not a mistake.
- *   · the spoils (Lost Things, a Keepsake after a Big Scare, Clues) are listed
+ *   · the spoils (Buttons, a Keepsake after a Big Scare, Clues) are listed
  *     before you choose, so the choice is made with everything on the table.
  *
  * This file also carries the **shared room chrome** every node scene uses
@@ -47,7 +47,7 @@ export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => (
 
 /**
  * The common shell for the four node scenes: ground, vignette, a header that
- * names the room, a live HUD (Courage / Lost Things / Keepsakes), a body slot
+ * names the room, a live HUD (Courage / Buttons / Keepsakes), a body slot
  * and a footer slot.  Handles CSS loading, accessibility settings, a teardown
  * registry, and the standalone mock run.
  */
@@ -464,6 +464,10 @@ export class RewardScene extends RoomScene {
     this.reward = reward;
     this.picked = reward.taken?.length ? reward.taken[0] : null;
     this.resolved = !!this.picked;
+    /* Chosen but not yet kept. `picked` is what the run knows about; this is
+       what the player has clicked and can still change. A rejoined room that
+       already resolved has neither. */
+    this.selected = null;
 
     const big = reward.kind === 'bigScare' || reward.kind === 'boss';
     this._shell({
@@ -567,9 +571,14 @@ export class RewardScene extends RoomScene {
       this._views.push(view);
       this._slots.push({ slot, view, def });
 
-      slot.addEventListener('click', () => this._take(c.id));
+      /* SELECT, not take. Clicking a Trick used to fire REWARD_TAKE straight
+         onto the wire, which meant a misclick was permanent and the screen
+         then just sat there waiting to be noticed. Now the click is a choice
+         you can change — click the same card again to drop it, or another to
+         swap — and the footer button both commits it and leaves the room. */
+      slot.addEventListener('click', () => this._select(c.id));
       slot.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this._take(c.id); }
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this._select(c.id); }
       });
       const entry = { slot, view, c };
       slot.addEventListener('pointerenter', () => {
@@ -628,16 +637,32 @@ export class RewardScene extends RoomScene {
     this._syncFoot();
   }
 
+  /** The button says what pressing it will DO, including which Trick it keeps. */
+  _footLabel() {
+    if (!this.reward.cards.length) return 'Take it and go';
+    if (this.selected) {
+      const def = cardById(this.selected);
+      return def ? `Take ${def.name} and go` : 'Take it and go';
+    }
+    return 'Leave the room';
+  }
+
   _footHint() {
     if (!this.reward.cards.length) return '';
+    if (this.selected) return 'click it again to change your mind';
     return this.resolved ? '' : 'you have not chosen a Trick';
   }
 
   _syncFoot() {
     if (!this.$go) return;
-    this.$go.classList.toggle('is-ready', this.resolved || !this.reward.cards.length);
+    this.$go.classList.toggle('is-ready',
+      this.resolved || !!this.selected || !this.reward.cards.length);
+    const label = this.$go.querySelector('span');
+    if (label) label.textContent = this._footLabel();
     const hint = this.$go.querySelector('em');
     if (hint) hint.textContent = this._footHint();
+    /* The hint element only exists when the FIRST render had one. It does not,
+       when the room has no Tricks — but then nothing below ever sets one. */
     if (this.$skip) this.$skip.disabled = this.resolved;
   }
 
@@ -653,12 +678,48 @@ export class RewardScene extends RoomScene {
     return (this.reward?.cards || []).findIndex(c => c.id === cardId);
   }
 
+  /**
+   * Pick a Trick — reversibly. Nothing goes on the wire here.
+   *
+   * Clicking the card that is already selected drops it, so "I have changed my
+   * mind and want none of them" needs no extra affordance. Nothing is spent
+   * and nothing is sent until `_finish`, which is why this can be undone at
+   * all: the action stream stays append-only and a co-op run stays a pure
+   * function of the roster and the seed.
+   */
+  _select(cardId) {
+    if (this.resolved) return;
+    this.selected = this.selected === cardId ? null : cardId;
+    this.ctx.audio?.play?.(this.selected ? 'card:pick' : 'ui:back');
+    this._markSelected();
+    this._syncFoot();
+    const def = this.selected ? cardById(this.selected) : null;
+    this._say(def
+      ? `${def.name} chosen. Leave the room to keep it, or choose another.`
+      : 'Nothing chosen.');
+  }
+
+  /** The uncommitted look: one card lifted, the others merely quiet. */
+  _markSelected() {
+    for (const { slot } of this._slots || []) {
+      const mine = slot.dataset.cardId === this.selected;
+      slot.classList.toggle('is-picked', mine);
+      slot.classList.toggle('is-dimmed', !!this.selected && !mine);
+      slot.setAttribute('aria-selected', String(mine));
+    }
+  }
+
+  /**
+   * Commit the selection. One-way, and the only thing that writes REWARD_TAKE.
+   *
+   * `resolved` flips BEFORE the await for the same reason it always did: a
+   * second Enter while the input is on the wire would take a second Trick.
+   */
   _take(cardId) {
     if (this.resolved) return;
     bus.emit('card:unhover');
-    // Before anything can await: a second click while the input is on the wire
-    // would take a second Trick.
     this.resolved = true;
+    this.selected = null;
     const i = this._offerIndex(cardId);
     if (i >= 0) act(this.run, { t: INPUT.ROOM, act: ACT.REWARD_TAKE, index: i });
     this.picked = cardId;
@@ -687,6 +748,7 @@ export class RewardScene extends RoomScene {
   _skip() {
     if (this.resolved) return;
     this.resolved = true;
+    this.selected = null;                   // "take none" outranks a pick
     act(this.run, { t: INPUT.ROOM, act: ACT.REWARD_SKIP });
     this.ctx.audio?.play?.('ui:back');
     for (const { slot, view } of this._slots || []) {
@@ -717,10 +779,14 @@ export class RewardScene extends RoomScene {
    *
    * In a party the room stays open until every Kid has taken theirs — the
    * offers were all rolled when the fight ended, and one Kid leaving with the
-   * Lost Things would strand the other's three Tricks.
+   * Buttons would strand the other's three Tricks.
    */
   async _finish() {
     if (this._leaving) return;
+    /* The selection is committed HERE, on the way out, and nowhere else. This
+       must happen before `_passRoomTo` hands the room to another Kid, or the
+       Trick would be chosen and never taken. */
+    if (this.selected && !this.resolved) this._take(this.selected);
     const run = this.run;
     const next = this._seatStillOwed(k => k !== run.local && !!k.pendingReward);
     if (next >= 0) {
@@ -746,7 +812,9 @@ export class RewardScene extends RoomScene {
     const onKey = (e) => {
       if (e.defaultPrevented || this.root.querySelector('.rm-picker')) return;
       if (e.key === 's' || e.key === 'S') { e.preventDefault(); this._skip(); }
-      else if (e.key === 'Enter' && (this.resolved || !this.reward.cards.length)
+      // Escape drops an uncommitted pick — the keyboard's "change my mind".
+      else if (e.key === 'Escape' && this.selected) { e.preventDefault(); this._select(this.selected); }
+      else if (e.key === 'Enter' && (this.resolved || this.selected || !this.reward.cards.length)
                && document.activeElement !== this.$skip) { e.preventDefault(); this._finish(); }
       else if (e.key >= '1' && e.key <= '9') {
         const i = Number(e.key) - 1;
