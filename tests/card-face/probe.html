@@ -1,0 +1,19 @@
+<!doctype html><meta charset="utf-8"><title>probe</title>
+<link rel="stylesheet" href="../../game/src/ui/tokens.css">
+<link rel="stylesheet" href="../../game/src/ui/base.css">
+<link rel="stylesheet" href="../../game/src/ui/card.css">
+<div id="out"></div>
+<script type="module">
+import { CardView } from '../../game/src/ui/card.js';
+import * as CARDS from '../../game/src/data/cards.js';
+const rows = [];
+for (const id of ['marmalade/fluff-up', 'marmalade/watchful-eyes', 'marmalade/slip-away', 'marmalade/ghoststep']) {
+  const def = CARDS.cardById(id);
+  const v = new CardView(def, { uid: 'p-' + id, upgraded: true });
+  document.getElementById('out').appendChild(v.el);
+  const marks = [...v.el.querySelectorAll('.mm-card__num')]
+    .map(b => `${b.dataset.key}=${b.textContent}${b.classList.contains('is-changed') ? ' GREEN' : ''}`);
+  rows.push({ id, base: def.nums, up: def.upgrade && def.upgrade.nums, marks });
+}
+window.__PROBE = rows; window.__DONE = true;
+</script>

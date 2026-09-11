@@ -252,11 +252,26 @@ export class CardView {
    *   \n                 ->  line break
    *   *italic*           ->  <em>
    */
+  /**
+   * What this card's numbers would read if it were NOT upgraded — the
+   * comparison behind the green. `state.nums` sits on top of the def because a
+   * number a Crease permanently rewrote is the card's own printed value, not
+   * something the Sharpen bought, and must not be highlighted as one.
+   */
+  _unupgradedNums() {
+    return Object.assign({}, this.def.nums || {}, this.state.nums || {});
+  }
+
   _renderRules() {
     const txt = this.text;
     const nums = this.nums;
+    const base = this._unupgradedNums();
     this.$rules.textContent = '';
     this._numEls = new Map();
+    /* The keyword chips are about to be rebuilt, so whatever `setLiveKeywords`
+       painted is gone. Drop the cache or the next call sees no change and
+       leaves the new chips dark. */
+    this._liveKw = null;
 
     const frag = document.createDocumentFragment();
     let plain = 0;
@@ -280,6 +295,15 @@ export class CardView {
           b.className = 'mm-card__num';
           b.dataset.key = m[1];
           const v = nums[m[1]];
+          /* Green means THIS NUMBER GOT BETTER, not "this card is upgraded".
+             The rule used to be a blanket `.is-upgraded .mm-card__num`, so
+             Fluff Up+ printed its unchanged "1" in the same green as the 6
+             that became a 9, and a player reading the card could not tell
+             which half the Sharpen actually bought. Only keys the upgrade
+             genuinely moves are marked. */
+          if (this.state.upgraded && base[m[1]] !== undefined && v !== base[m[1]]) {
+            b.classList.add('is-changed');
+          }
           b.textContent = v === undefined ? '?' : String(v);
           plain += b.textContent.length;
           if (!this._numEls.has(m[1])) this._numEls.set(m[1], []);
@@ -523,6 +547,36 @@ export class CardView {
     // -> "Draw 2 Tricks"), so the nouns follow the numbers.
     this._repairNouns();
     this._updateAria();
+    return this;
+  }
+
+  /**
+   * Light up the conditional keywords whose condition is TRUE RIGHT NOW.
+   *
+   * A keyword like [Zoomies] — "if this is the third or later Trick you have
+   * played this turn" — is a rule that is either armed or it isn't, and the
+   * card face said the same thing either way. The player has to hold the turn's
+   * card count in their head to know whether the Trick in their hand is the
+   * 11-damage version or the 5-damage one. This paints the answer on the card.
+   *
+   *   setLiveKeywords(['zoomies'])   // the chip glows, the card carries a rim
+   *   setLiveKeywords([])            // back to neutral
+   *
+   * Cheap enough for the hand-sync hot path: it early-returns when the live set
+   * has not changed, and touches only the keyword chips it owns.
+   */
+  setLiveKeywords(ids) {
+    const live = new Set(ids || []);
+    const key = [...live].sort().join(',');
+    if (this._liveKw === key) return this;
+    this._liveKw = key;
+    let any = false;
+    for (const s of this.$rules.querySelectorAll('.mm-card__kw')) {
+      const on = live.has(s.dataset.kw);
+      s.classList.toggle('is-live', on);
+      any = any || on;
+    }
+    this.el.classList.toggle('is-kw-live', any);
     return this;
   }
 

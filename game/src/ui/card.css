@@ -295,7 +295,15 @@
 }
 .mm-card__num.is-up   { color: var(--c-good); text-shadow: 0 0 calc(7 * var(--u)) color-mix(in srgb, var(--c-good) 60%, transparent); }
 .mm-card__num.is-down { color: var(--c-bad);  text-shadow: 0 0 calc(7 * var(--u)) color-mix(in srgb, var(--c-bad) 55%, transparent); }
-.mm-card.is-upgraded .mm-card__num { color: var(--c-good); }
+/* Green on an upgraded card marks the numbers the Sharpen ACTUALLY MOVED.
+   This used to green every number on the card, so an upgrade that raised one
+   value and left three alone painted all four the same colour and told the
+   player nothing. `is-changed` is set per key in `_renderRules`. */
+/* Deliberately THREE classes, not four: the live preview recolour near the end
+   of this file is `.mm-card .mm-card__num.is-up` at the same specificity and
+   must keep winning on source order. Adding `.mm-card` here would silently
+   outrank it and freeze a previewed number at its upgrade colour. */
+.is-upgraded .mm-card__num.is-changed { color: var(--c-good); }
 .mm-card.is-upgraded .mm-card__num.is-down { color: var(--c-bad); }
 
 .mm-card__kw {
@@ -306,6 +314,43 @@
   background: color-mix(in srgb, var(--flame-500) 22%, transparent);
   box-shadow: inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb, var(--flame-400) 32%, transparent);
   white-space: nowrap;
+  transition: color var(--t-quick) var(--ease-soft),
+              background var(--t-quick) var(--ease-soft),
+              box-shadow var(--t-quick) var(--ease-soft);
+}
+
+/* ── a conditional keyword that is ARMED RIGHT NOW ──────────────────────────
+   [Zoomies] reads "the third or later Trick this turn", which means the card in
+   your hand is a different card depending on a count you were being asked to
+   keep in your head. When the condition is live the chip goes bright and the
+   card takes a warm rim, so the strong version is visible without arithmetic.
+   Driven by `CardView.setLiveKeywords`, fed from the combat scene's
+   `_liveKeywords()` — the same predicate the keyword itself uses. */
+.mm-card__kw.is-live {
+  color: var(--ink-900);
+  background: var(--pluck-300);
+  box-shadow:
+    inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb, white 45%, transparent),
+    0 0 calc(9 * var(--u)) color-mix(in srgb, var(--pluck-300) 65%, transparent);
+}
+.mm-card.is-kw-live .mm-card__face {
+  box-shadow:
+    inset 0 0 0 calc(2 * var(--u)) color-mix(in srgb, var(--pluck-300) 70%, transparent),
+    0 0 calc(16 * var(--u)) color-mix(in srgb, var(--pluck-300) 30%, transparent);
+}
+/* The pulse is the "it just turned on" tell. Motion-sensitive players get the
+   colour and the rim, which carry the whole meaning on their own. */
+@media (prefers-reduced-motion: no-preference) {
+  .mm-card.is-kw-live .mm-card__kw.is-live { animation: mm-kw-live 1.6s var(--ease-soft) infinite; }
+}
+.mm-reduce .mm-card__kw.is-live { animation: none !important; }
+@keyframes mm-kw-live {
+  0%, 100% { box-shadow:
+    inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb, white 45%, transparent),
+    0 0 calc(9 * var(--u)) color-mix(in srgb, var(--pluck-300) 65%, transparent); }
+  50%      { box-shadow:
+    inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb, white 60%, transparent),
+    0 0 calc(15 * var(--u)) color-mix(in srgb, var(--pluck-300) 90%, transparent); }
 }
 
 /* ── badges (exhaust / ethereal / innate / retain) ──────────────────────── */

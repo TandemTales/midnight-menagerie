@@ -3199,6 +3199,7 @@ export class CombatScene extends Scene {
    */
   _syncCardNumbers() {
     if (!this.hand || !this.mePiles) return;
+    const live = this._liveKeywords();
     for (const c of this.mePiles.hand || []) {
       const v = this.hand.viewOf(c.uid);
       if (!v) continue;
@@ -3207,7 +3208,25 @@ export class CombatScene extends Scene {
       // discount in the game that lands while the card is already in hand.
       const cost = this.engine.costOf(c);
       if (typeof cost === 'number' && v.cost !== cost) v.setState({ cost });
+      v.setLiveKeywords(live);
     }
+  }
+
+  /**
+   * Conditional keywords whose condition is TRUE for THIS seat right now.
+   *
+   * Zoomies is the one that has a clean, cheap, seat-local predicate, and it is
+   * the one a player has to do arithmetic to read: `[Zoomies]: deal 6 more` is
+   * a different card on your third Trick than on your first, and until now the
+   * face looked identical on both. Same predicate as `keywords.js` (the count
+   * BEFORE this card is added) and as the zoomies play-clip above, so the chip,
+   * the animation and the rules all light up on exactly the same plays.
+   */
+  _liveKeywords() {
+    const out = [];
+    const played = this.engine.seatStats?.(this.me)?.cardsPlayedThisTurn ?? 0;
+    if (this.engine.phase === 'player' && !this.engine.over && played >= 2) out.push('zoomies');
+    return out;
   }
 
   /** STS2 §1: End Turn *changes state* when the hand has nothing playable. */
