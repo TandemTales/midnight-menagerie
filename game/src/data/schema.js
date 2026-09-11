@@ -154,7 +154,7 @@ export const NodeType = /** @type {const} */ ({
   BIG_SCARE: 'bigScare',     // elite
   BOSS: 'boss',
   SAFE: 'safe',              // rest site — "Safe Room"
-  SHOP: 'shop',              // "Lost Things"
+  SHOP: 'shop',              // "Buttons"
   CURIOSITY: 'curiosity',    // event
   TREASURE: 'treasure',
   RESCUE: 'rescue',          // Companion rescue
@@ -449,7 +449,7 @@ export const TERMS = {
   deck: 'Tricks',
   relic: 'Keepsake',
   potion: 'Snack',
-  gold: 'Lost Things',
+  gold: 'Buttons',
   combat: 'Scuffle',
   elite: 'Big Scare',
   rest: 'Safe Room',

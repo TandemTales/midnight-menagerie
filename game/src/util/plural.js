@@ -17,8 +17,8 @@
  * through this and every `1 Tricks` in the game becomes `1 Trick` without
  * touching 46 authored strings across five content files.
  *
- * Mass nouns (Courage, Nerve, Guard, Lost Things) are never touched — they have
- * no singular form in this game's vocabulary and "1 Lost Thing" would be wrong.
+ * Mass nouns (Courage, Nerve, Guard) are never touched — they have no singular
+ * form in this game's vocabulary and "1 Courage" is the correct reading.
  */
 
 /** Nouns whose plural is not `+s`. Extend here, not at the call site. */
@@ -28,7 +28,7 @@ const IRREGULAR = new Map([
 
 /**
  * Nouns `fixNumberedNouns` is allowed to singularise.  An allowlist, not a
- * regex over every word: "1 Lost Things" is correct English in this game and
+ * regex over every word: "1 Guard" is correct English in this game and
  * "1 Bones" (the Companion) must never become "1 Bone" outside a Bone count.
  * Keyed by the PLURAL form, lowercased.
  */
@@ -37,6 +37,9 @@ const COUNTABLE = new Map([
   ['keepsakes', 'Keepsake'],
   ['snacks', 'Snack'],
   ['clues', 'Clue'],
+  /* The currency. Unlike the mass nouns above it genuinely has a singular, so
+     a Curiosity that hands back exactly one says "1 Button". */
+  ['buttons', 'Button'],
   ['bones', 'Bone'],
   ['times', 'time'],
   ['turns', 'turn'],

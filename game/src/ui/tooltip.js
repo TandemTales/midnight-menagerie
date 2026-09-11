@@ -80,7 +80,7 @@ import { getKeyword, allKeywords, slug, loadCompanionKeywords, loadContentRegist
 import { getStatus, allStatuses, statusDesc } from '../data/statuses.js';
 import { icon, hasIcon, statusIcon } from './icons.js';
 import { applySettings } from './settings.js';
-
+import { TERMS } from '../data/schema.js';
 /** ms of pointer dwell before a tooltip opens. StS-ish: present, not sticky. */
 const DELAY = 110;
 /** After a tooltip has just been open, the next one opens with no delay. */
@@ -125,7 +125,7 @@ const NODE_TEXT = {
   bigScare: ['Big Scare', 'A harder fight with a Keepsake as the prize.'],
   boss: ['The Boss', 'The end of this region. Multi-phase, and it changes at half Courage.'],
   safe: ['Safe Room', 'Rest to recover Courage, or upgrade one Trick permanently.'],
-  shop: ["Mr. Moth's", 'Spend Lost Things on Tricks, Keepsakes, Snacks, and card removal.'],
+  shop: ["Mr. Moth's", `Spend ${TERMS.gold} on Tricks, Keepsakes, Snacks, and card removal.`],
   curiosity: ['Curiosity', 'Something odd. Usually a choice, occasionally a fight.'],
   treasure: ['Treasure', 'A free Keepsake.'],
   rescue: ['Rescue', 'A trapped Companion. Free them and they join the Menagerie for good.'],

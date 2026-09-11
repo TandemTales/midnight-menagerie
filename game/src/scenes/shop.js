@@ -1,5 +1,5 @@
 /**
- * Mr. Moth's — the Lost Things market.  OWNER: meta-run.
+ * Mr. Moth's — the Buttons market.  OWNER: meta-run.
  *
  * Design source: docs/design/00-core-overview.md §25.  The mansion is full of
  * buttons, coins, keys, marbles and charms dropped by a hundred years of

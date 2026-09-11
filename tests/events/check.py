@@ -41,7 +41,29 @@ Prints `RESULT: n passed, m failed`. Exit 0 only when m == 0.
 import argparse
 import asyncio
 import json
+import os
+import re
 import sys
+
+
+def _gold_noun():
+    """The currency's name, read from the ONE place that defines it.
+
+    This table used to spell "lost things" out, so renaming the currency in
+    `data/schema.js` left the gate looking for a noun no authored line said any
+    more and four perfectly good RISK lines failed for naming their own money.
+    A vocabulary check that does not share the vocabulary is not a check.
+    """
+    here = os.path.dirname(os.path.abspath(__file__))
+    schema = os.path.join(here, "..", "..", "game", "src", "data", "schema.js")
+    with open(schema, encoding="utf-8") as fh:
+        m = re.search(r"^\s*gold:\s*'([^']+)'", fh.read(), re.M)
+    if not m:
+        raise SystemExit("could not read TERMS.gold from data/schema.js")
+    return m.group(1).lower()
+
+
+GOLD_NOUN = _gold_noun()
 
 try:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -89,7 +111,7 @@ NOUNS = [
     ("maximum courage", ("maxHp",)),
     ("a keepsake",      ("relic",)),
     ("keepsake",        ("relic",)),
-    ("lost things",     ("lostThings",)),
+    (GOLD_NOUN,         ("lostThings",)),
     ("a trick",         ("card", "removeCard", "upgradeCard")),
     ("trick",           ("card", "removeCard", "upgradeCard")),
     ("a snack",         ("snacks",)),
@@ -206,8 +228,8 @@ async def main(a):
                 bad.append(f"{r['event']}/{r['option']} says RISK Nothing and an "
                            f"outcome costs something: {r['keys']}")
             continue
-        # A stated Lost Things cost is paid by `cost`, not by an outcome.
-        if r["cost"] and "lost things" in risk:
+        # A stated currency cost is paid by `cost`, not by an outcome.
+        if r["cost"] and GOLD_NOUN in risk:
             continue
         named = nouns_in(r["risk"])
         if not named:

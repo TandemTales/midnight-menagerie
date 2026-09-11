@@ -58,7 +58,7 @@ export const MUSIC_CUES = {
   shop: {
     track: 'track002.mp3', duration: 176.1, loopStart: 0.0, loopEnd: 173.6,
     trimDb: -2.5, tension: 0.2,
-    note: 'Brightest track by a wide margin (centroid 2713 Hz, 45% above 2 kHz) — Lost Things should sparkle.',
+    note: 'Brightest track by a wide margin (centroid 2713 Hz, 45% above 2 kHz) — Buttons should sparkle.',
   },
   rescue: {
     track: 'track005.mp3', duration: 153.76, loopStart: 0.0, loopEnd: 153.6,

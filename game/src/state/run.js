@@ -443,7 +443,7 @@ const REGION_ENTRY_FLOOR = 0.85;
  *  note on `_walkAfterVote`, which is where the arithmetic lives. */
 const VOTE_BEAT = 3.0;
 
-/** Base Lost Things per room type, before Keepsake multipliers. */
+/** Base Buttons per room type, before Keepsake multipliers. */
 const PURSE = {
   [NodeType.SCUFFLE]:   [11, 19],
   [NodeType.BIG_SCARE]: [26, 36],
@@ -516,7 +516,7 @@ export class Run {
      * has a separate single-player path.
      *
      * Shared across the party: the route, the rooms, the enemies, the Haunt
-     * level, the seed. Per Kid: deck, Courage, Lost Things, Keepsakes, Backpack,
+     * level, the seed. Per Kid: deck, Courage, Buttons, Keepsakes, Backpack,
      * Snacks, card rewards, shop prices. That split is Slay the Spire 2's
      * ("shared map and enemies; per-player deck, gold, energy, HP, relics, card
      * rewards, shop inventory") and it is what makes two Kids feel like two

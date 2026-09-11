@@ -348,7 +348,7 @@ export class MapScene extends Scene {
       // the drawing's business. A resumed save from before this still
       // starts with `__in`, so it is only added when it is missing.
       path: _route(run),
-      // Courage / Lost Things / Keepsakes are the shared HUD's business now.
+      // Courage / Buttons / Keepsakes are the shared HUD's business now.
       floor: run?.floor ?? (regionMeta(regionId).index),
       /* How many wings tonight is. Not `RUN_REGIONS.length` — the house does
          not open all of them every expedition — and NOT `route.length` any
@@ -467,7 +467,7 @@ export class MapScene extends Scene {
       hudHost: q('.map-hudhost'), rowNum: q('.bn-row'), banner: q('.map-banner'),
     };
     // One HUD, one position: the shared strip along the top edge. Everything it
-    // used to duplicate here — Courage, Lost Things, Keepsakes, Haunt, the cog
+    // used to duplicate here — Courage, Buttons, Keepsakes, Haunt, the cog
     // that did nothing — is that component's job now.
     this.hud = new HUD(this.ctx, { mount: this.el.hudHost, escape: true, useSnacks: false });
     this.el.sheet.style.width = this.SW + 'px';

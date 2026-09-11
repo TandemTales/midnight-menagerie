@@ -392,7 +392,7 @@ async function main() {
     run.attach({ audio: { play: (id) => played.push(id),
                           stinger: (id) => played.push('sting/' + id) } });
     run.addLostThings(25);
-    check(played.includes('world:coin'), 'gaining Lost Things rings');
+    check(played.includes('world:coin'), 'gaining Buttons rings');
     const n = played.filter(x => x === 'world:coin').length;
     run.addLostThings(-5);
     check(played.filter(x => x === 'world:coin').length === n,

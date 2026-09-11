@@ -2252,7 +2252,7 @@ export async function run() {
   });
 
   // ── the run layer with two Kids ───────────────────────────────────────────
-  // Shared route and rooms; per-Kid deck, Courage, Lost Things, Keepsakes,
+  // Shared route and rooms; per-Kid deck, Courage, Buttons, Keepsakes,
   // Backpack. Same split as Slay the Spire 2, and the reason two Kids feel like
   // two runs played side by side rather than one run with two cursors.
   test('run: two Kids share a route and own everything else', () => {
@@ -2332,7 +2332,7 @@ export async function run() {
     eq(back.localSeat, 1, 'still seat 1');
     eq(back.kids[1].companion, 'pipkin', 'seat 1 kept its Companion');
     eq(back.kids[1].courage, 41, 'and its Courage');
-    eq(back.kids[1].lostThings, 137, 'and its Lost Things');
+    eq(back.kids[1].lostThings, 137, 'and its Buttons');
     eq(back.kids[0].companion, 'marmalade', 'seat 0 kept its Companion too');
     ok(back.kids[0].deck.length > 0 && back.kids[1].deck.length > 0, 'both decks came back');
   });

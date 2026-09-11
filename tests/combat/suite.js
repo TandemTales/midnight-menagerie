@@ -873,10 +873,14 @@ export async function run() {
 
   test('terminology: the engine speaks the design doc\'s words', () => {
     eq(TERMS.energy, 'Nerve', 'energy is Nerve');
-    eq(TERMS.gold, 'Lost Things', 'gold is Lost Things');
+    eq(TERMS.gold, 'Buttons', 'gold is Buttons');
     ok(getKeyword('nerve'), 'the nerve keyword exists');
     ok(!getKeyword('pluck'), 'the old Pluck keyword is gone');
-    ok(getKeyword('lost-things'), 'the Lost Things keyword exists');
+    /* The SLUG stays `lost-things` on purpose: it is the id authored cards
+       reference, and renaming the currency must not invalidate them. Only
+       the LABEL follows TERMS.gold. */
+    ok(getKeyword('lost-things'), 'the currency keyword exists');
+    eq(getKeyword('lost-things').name, TERMS.gold, 'and it is labelled with the current term');
   });
 
   await atest('terminology: player-facing refusal text uses Nerve', async () => {

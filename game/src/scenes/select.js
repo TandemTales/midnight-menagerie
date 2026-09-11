@@ -446,7 +446,7 @@ export const KID_CODEX = {
     lost: 'Slipped his leash near the property fence.',
     note: '"Scout tracks. If I can get him to hear me, he’ll come."',
     trait: 'Loud, brave, improvises constantly, apologises later.',
-    perk: ['Whatever Works', 'Start with one extra Snack and find Lost Things more often.'],
+    perk: ['Whatever Works', `Start with one extra Snack and find ${TERMS.gold} more often.`],
     focus: 'Consumables, temporary resources, Treasure, improvisation',
   },
   lena: {

@@ -21,7 +21,7 @@
 import { Scene } from '../core/scenes.js';
 import { bus } from '../core/bus.js';
 import { Save } from '../core/save.js';
-import { COMPANIONS } from '../data/schema.js';
+import { COMPANIONS, TERMS } from '../data/schema.js';
 import {
   ensureCss, fontsReady, menuArtSrc, bat, parallax,
   el, svg, rovingFocus, setReduceMotion, reduceMotion,
@@ -415,7 +415,7 @@ export class TitleScene extends Scene {
         sixteen transformed pets, and a house that confused protecting someone with keeping them.</p>
         <dl>
           <dt>Design, code &amp; writing</dt><dd>The Midnight Menagerie authors</dd>
-          <dt>Fiction</dt><dd>Courage, Guard, Nerve, Tricks, Keepsakes, Lost Things</dd>
+          <dt>Fiction</dt><dd>Courage, Guard, Nerve, Tricks, Keepsakes, ${TERMS.gold}</dd>
           <dt>Art</dt><dd>Generated with OpenAI's image model, then hand-edited</dd>
           <dt>Soundtrack</dt><dd>Ten tracks generated with Suno</dd>
           <dt>Sound effects</dt><dd>Synthesised in the browser &mdash; no recordings</dd>

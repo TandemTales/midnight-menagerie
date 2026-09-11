@@ -13,7 +13,7 @@
  *   // -> { regionId, seed, rows, lanes, nodes, edges, bossId, startIds, hazards, meta }
  */
 import { RNG, hashSeed } from '../core/rng.js';
-import { NodeType, REGION_ORDER } from '../data/schema.js';
+import { NodeType, REGION_ORDER, TERMS } from '../data/schema.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Room tags, straight from the design doc's room lists.
@@ -163,7 +163,7 @@ export const ROOMS = {
     R('Transformation Gallery','bs'), R('Memory Room','cu'), R('Quiet Kennels','sc'),
     R('Sanctuary Garden','bf'), R('New Arrival Ward','cl'), R('Pet Holding Ward','st'),
     R('Observation Room','cu'), R('House Nursery','sc'), R('Impossible Door','cn'),
-    R('Lost Things Vault','tr'), R('Pulse Passage','sc'), R('Voice Chamber','cu'),
+    R(`${TERMS.gold} Vault`,'tr'), R('Pulse Passage','sc'), R('Voice Chamber','cu'),
     R('Inner Sanctuary','bs'), R('Heart Chamber','bo'),
   ],
 };
@@ -440,14 +440,14 @@ export function blueprintPlan(regionId, aspect = 1.98) {
 // Node vocabulary — the words and one-line promises the player reads on hover.
 // ─────────────────────────────────────────────────────────────────────────────
 export const NODE_INFO = {
-  [NodeType.SCUFFLE]:   { label: 'Scuffle',     blurb: 'Something in this room does not want you here.',            reward: 'Lost Things · a Trick to learn' },
-  [NodeType.BIG_SCARE]: { label: 'Big Scare',   blurb: 'A named horror holds this room. Harder, and worth it.',      reward: 'A Keepsake · more Lost Things' },
+  [NodeType.SCUFFLE]:   { label: 'Scuffle',     blurb: 'Something in this room does not want you here.',            reward: `${TERMS.gold} · a Trick to learn` },
+  [NodeType.BIG_SCARE]: { label: 'Big Scare',   blurb: 'A named horror holds this room. Harder, and worth it.',      reward: `A Keepsake · more ${TERMS.gold}` },
   [NodeType.BOSS]:      { label: 'Boss',        blurb: 'The keeper of this wing. The way onward is behind it.',       reward: 'A Boss Keepsake · the next region' },
   [NodeType.SAFE]:      { label: 'Safe Room',   blurb: 'Barricade the door, drag the table over, hang the blankets.', reward: 'Rest · upgrade a Trick · talk' },
-  // The node is "Mr. Moth's" and the currency is "Lost Things".  The key used to
-  // call the node "Lost Things" too, so the legend, the shop sign and the wallet
+  // The node is "Mr. Moth's" and the currency is "Buttons".  The key used to
+  // call the node after the currency too, so the legend, the shop sign and the wallet
   // were three different things wearing one name.
-  [NodeType.SHOP]:      { label: "Mr. Moth's",  blurb: 'Mr. Moth trades in buttons, keys and things people dropped.', reward: 'Spend Lost Things' },
+  [NodeType.SHOP]:      { label: "Mr. Moth's",  blurb: 'Mr. Moth trades in buttons, keys and things people dropped.', reward: `Spend ${TERMS.gold}` },
   [NodeType.CURIOSITY]: { label: 'Curiosity',   blurb: 'The house is doing something odd in here. Your call.',        reward: 'Unknown · sometimes a Clue' },
   [NodeType.TREASURE]:  { label: 'Treasure',    blurb: 'Something worth carrying out has been left behind.',          reward: 'A Keepsake' },
   [NodeType.RESCUE]:    { label: 'Rescue',      blurb: 'A Companion is trapped in here. It has been a long time.',    reward: 'Free a Menagerie Companion' },

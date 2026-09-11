@@ -6,7 +6,7 @@
  *   hud.refresh();                                    // usually automatic
  *   hud.destroy();                                    // in Scene.exit()
  *
- * Shows, left to right: Companion + region/wing, Courage, Lost Things, Clues,
+ * Shows, left to right: Companion + region/wing, Courage, Buttons, Clues,
  * Luck, Snack slots, the Keepsake bar, the Backpack Gear bar, Haunt Level,
  * seed, the deck button and the settings button. Every chip on it is hoverable and
  * keyboard-focusable, and every tooltip is a plain-language sentence — the HUD
@@ -115,7 +115,7 @@ const GEAR_CSS = `
    NOTE: no backticks in this block. It is a template literal. */
 .mm-hud__where .mm-hud__s { color: var(--text-mid); }
 
-/* Clues and Luck. Same chip as Lost Things — only the icon is tinted, cool for
+/* Clues and Luck. Same chip as Buttons — only the icon is tinted, cool for
    the investigation, green for the odds, so neither competes with Courage. */
 .mm-hud__clue .mm-icon { color: var(--spectre-300); }
 .mm-hud__luck .mm-icon { color: var(--good-300); }
