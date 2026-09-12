@@ -113,6 +113,29 @@ try {
         `${n} -> ${gummies(e).length}`);
     }
   }
+
+  say('<h2>a Stretched Trick is Retained until it is played</h2>');
+  {
+    /* "A Stretched Trick continues to Retain whenever it is in hand" (chapter
+       07). `stretch()` could only grant the one-turn Retain, so a Trick held into
+       its second turn was discarded before it reached 3 Stretch, and Jawbreaker
+       Drop's discount at full Stretch could never be reached. */
+    const { counter } = await import('../../game/src/data/companions/_util.js');
+    const e = await taffy();
+    const drop = CARDS.cardById('taffy/jawbreaker-drop');
+    e.addCard(drop, 'hand', {});
+    const k = e.piles.hand[e.piles.hand.length - 1];
+    e.piles.hand = [k];                       // Long Pull's only legal target
+    await play(e, 'taffy/long-pull');
+    check(counter(k, 'stretch') === 1, 'Long Pull Stretches the held Trick', `stretch=${counter(k, 'stretch')}`);
+    await e.endTurn();
+    await e.endTurn();
+    check(e.piles.hand.includes(k), 'two turn ends later it is still in hand',
+      `hand: ${e.piles.hand.map(c => c.id).join(', ')}`);
+    check(counter(k, 'stretch') === 3, 'at full Stretch', `stretch=${counter(k, 'stretch')}`);
+    check(e.costOf(k) === drop.cost - drop.nums.n, 'where Jawbreaker Drop costs its discount less',
+      `costs ${e.costOf(k)}, printed ${drop.cost}`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

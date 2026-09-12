@@ -87,11 +87,15 @@ export async function run() {
   //   Playtester: enemy 6 HP / Haunt 2 / 4 Guard, player attacks, enemy attacks
   //   back for 2 — enemy HP stayed 6 and Haunt went 2 → 1.
   // ═════════════════════════════════════════════════════════════════════════
+  // Boo!'s Haunt is read off the card: 409d917 repriced it (1 Nerve / Haunt 2 ->
+  // 2 Nerve / Haunt 4) and these literals sat red for it, in a file no sweep runs.
+  const BOO = cardById('marmalade/boo').nums.n;
+
   await atest('Haunt: a Haunted enemy loses Courage when it acts', async () => {
     const e = mk({ cards: ['marmalade/boo'], enemy: 'lost-luggage', hp: 40 });
     const en = e.enemies[0];
     await play(e, 'marmalade/boo');
-    eq(en.status('haunt'), 2, 'Boo! applied Haunt 2');
+    eq(en.status('haunt'), BOO, `Boo! applied Haunt ${BOO}`);
 
     forceMove(e, en, 'baggage-bash');        // 9 damage, a real Attack
     const hpBefore = en.hp;
@@ -99,8 +103,8 @@ export async function run() {
     await e.endTurn();                       // the enemy acts → onAttack fires
 
     ok(e.player.hp < playerBefore, 'the enemy actually attacked (player lost Courage)');
-    eq(en.hp, hpBefore - 2, 'the Haunted enemy lost 2 Courage from Haunt');
-    eq(en.status('haunt'), 1, 'Haunt halved, rounded up: 2 → 1');
+    eq(en.hp, hpBefore - BOO, `the Haunted enemy lost ${BOO} Courage from Haunt`);
+    eq(en.status('haunt'), Math.ceil(BOO / 2), `Haunt halved, rounded up: ${BOO} → ${Math.ceil(BOO / 2)}`);
   });
 
   await atest('Haunt: ignores the enemy\'s own Guard and stacks up', async () => {
@@ -108,13 +112,13 @@ export async function run() {
     const en = e.enemies[0];
     await play(e, 'marmalade/boo');
     await play(e, 'marmalade/boo');
-    eq(en.status('haunt'), 4, 'two Boo! = Haunt 4');
+    eq(en.status('haunt'), 2 * BOO, `two Boo! = Haunt ${2 * BOO}`);
     forceMove(e, en, 'baggage-bash');
     en.block = 20;                            // Haunt is Courage loss, not an attack
     const hpBefore = en.hp;
     await e.endTurn();
-    eq(en.hp, hpBefore - 4, 'Haunt 4 took 4 Courage straight through 20 Guard');
-    eq(en.status('haunt'), 2, 'Haunt 4 → 2');
+    eq(en.hp, hpBefore - 2 * BOO, `Haunt ${2 * BOO} took ${2 * BOO} Courage straight through 20 Guard`);
+    eq(en.status('haunt'), BOO, `Haunt ${2 * BOO} → ${BOO}`);
   });
 
   // ═════════════════════════════════════════════════════════════════════════

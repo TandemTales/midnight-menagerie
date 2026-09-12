@@ -240,11 +240,16 @@ function dpeTable(cards) {
 }
 
 // ── balance heuristics ──────────────────────────────────────────────────────
+/* The top of the range continues each band's own slope -- uncommon +6 floor
+   and +8 ceiling a Nerve, rare +6 and +12 -- so a 4-6 Nerve Attack is judged
+   like every other cost instead of passing unread. Commons stop at 3: a
+   common that costs 4 is a rarity mistake, not a band. X is per-Nerve and is
+   not a flat number, so it has no band here. */
 const BAND = {
   [Rarity.BASIC]:    { 1: [5, 10] },
   [Rarity.COMMON]:   { 0: [3, 6], 1: [5, 11], 2: [11, 16], 3: [16, 24] },
-  [Rarity.UNCOMMON]: { 0: [3, 8], 1: [5, 20], 2: [12, 24], 3: [18, 32] },
-  [Rarity.RARE]:     { 0: [3, 12], 1: [6, 26], 2: [14, 40], 3: [20, 52] },
+  [Rarity.UNCOMMON]: { 0: [3, 8], 1: [5, 20], 2: [12, 24], 3: [18, 32], 4: [24, 40] },
+  [Rarity.RARE]:     { 0: [3, 12], 1: [6, 26], 2: [14, 40], 3: [20, 52], 4: [26, 64], 5: [32, 76], 6: [38, 88] },
 };
 function balanceCheck(card) {
   if (card.type !== CardType.ATTACK) return;

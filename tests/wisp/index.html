@@ -131,12 +131,17 @@ try {
     e.setCounter('glow', 0, 'test');
     const hp0 = t.hp;
     await play(e, 'wisp/firefly-tackle', t);
-    check(hp0 - t.hp === 7, 'with no Glow, Flare simply does not happen', `dealt ${hp0 - t.hp}`);
-    e.setCounter('glow', 3, 'test');
-    const hp1 = e.livingEnemies()[0].hp;
-    await play(e, 'wisp/firefly-tackle', e.livingEnemies()[0]);
-    check(e.counter('glow') === 2, 'with Glow it is spent', `glow=${e.counter('glow')}`);
-    check(hp1 - e.livingEnemies()[0].hp === 11, 'and the Flare bonus lands', `dealt ${hp1 - e.livingEnemies()[0].hp}`);
+    const ft = CARDS.cardById('wisp/firefly-tackle').nums;   // read from the def: the cost pass re-priced it
+    check(hp0 - t.hp === ft.d, 'with no Glow, Flare simply does not happen', `dealt ${hp0 - t.hp}`);
+    // A fresh fight for the Flare: at the re-priced numbers two Tackles outlast
+    // the first enemy, and livingEnemies()[0] would silently become the next one.
+    const e2 = await wisp();
+    const t2 = e2.livingEnemies()[0];
+    e2.setCounter('glow', 3, 'test');
+    const hp1 = t2.hp;
+    await play(e2, 'wisp/firefly-tackle', t2);
+    check(e2.counter('glow') === 2, 'with Glow it is spent', `glow=${e2.counter('glow')}`);
+    check(hp1 - t2.hp === ft.d + ft.m0, 'and the Flare bonus lands', `dealt ${hp1 - t2.hp}`);
   }
   {
     const e = await wisp();
@@ -144,7 +149,8 @@ try {
     e.setCounter('glow', 3, 'test');
     const hp = t.hp;
     await play(e, 'wisp/pop', t);
-    check(hp - t.hp === 11, 'Bright at 3 Glow makes Pop! hit harder', `dealt ${hp - t.hp}`);
+    const pop = CARDS.cardById('wisp/pop').nums;   // read from the def: the cost pass re-priced it
+    check(hp - t.hp === pop.d + pop.m0, 'Bright at 3 Glow makes Pop! hit harder', `dealt ${hp - t.hp}`);
   }
   {
     const e = await wisp();

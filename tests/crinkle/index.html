@@ -352,6 +352,40 @@ try {
     check(e.counter('paper') >= paperBefore + 6, 'and really pays 2 Paper for each',
       `paper ${paperBefore} -> ${e.counter('paper')}`);
   }
+
+  // ══ Overfolded costs nothing, whatever the printed cost ═══════════════════
+  {
+    /* The keyword says "costs nothing". A Crease takes one Nerve, which only
+       reached 0 while nothing he owned cost more than 3; The Long Fold costs 4. */
+    const { setCounter } = await import('../../game/src/data/companions/_util.js');
+    const e = await crinkle();
+    const k = give(e, 'crinkle/the-long-fold');
+    setCounter(k, 'crease', 2);
+    check(e.costOf(k) === 2, 'two Creases take two Nerve off the 4', `cost=${e.costOf(k)}`);
+    setCounter(k, 'crease', 3);
+    check(e.costOf(k) === 0, 'and Overfolded it costs nothing', `cost=${e.costOf(k)}`);
+  }
+  {
+    // An Overfolded X Trick plays free: it counts the Nerve and spends none of it.
+    const { setCounter } = await import('../../game/src/data/companions/_util.js');
+    const run = async (folds) => {
+      const e = await crinkle();
+      for (const x of e.enemies) { x.maxHp = 5000; x.hp = 5000; }
+      const k = give(e, 'crinkle/thousand-cuts');
+      setCounter(k, 'crease', folds);
+      const dmg = watchDamage(e);
+      e.player.energy = 3;
+      await e.playCard(k.uid, e.livingEnemies()[0].id);
+      return { energy: e.player.energy, hits: dmg.hits };
+    };
+    const flat = await run(0);
+    check(flat.energy === 0 && flat.hits === 3, 'CONTROL: flat, 3 Nerve buys 3 hits and spends all 3',
+      `energy ${flat.energy}, hits ${flat.hits}`);
+    const over = await run(3);
+    check(over.hits === 3 + 3, 'Overfolded it still counts the 3 Nerve, plus a hit for each Crease',
+      `hits ${over.hits}`);
+    check(over.energy === 3, 'and spends none of it', `energy ${over.energy}`);
+  }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
 }

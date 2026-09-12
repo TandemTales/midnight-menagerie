@@ -138,6 +138,45 @@ const fromArray = (e, seat = null) => {
     check(!obj(e, a), 'and seat 0 has none of it — the Patch is per Kid');
   }
 
+  say("<h2>Springboard's Land discount reaches the next Land Trick</h2>");
+  {
+    /* Springboard contains Land itself, and the discount used to be spent by
+       the play that granted it -- so the next Land Trick never got it. */
+    const e = await pipkin();
+    const who = e.players[0];
+    await play(e, 'pipkin/springboard');
+    const n = CARDS.cardById('pipkin/springboard').nums.n;
+    check(who.status('land-discount') === n,
+          'Springboard leaves its Land discount for the next Land Trick',
+          `Springboard ${who.status('land-discount')} of ${n}`);
+  }
+
+  say("<h2>Prize Pumpkin's Nerve survives the turn-start refill</h2>");
+  {
+    /* The first ripen each turn pays Nerve at the start of the next. It used to
+       schedule a next-turn timer, and `_dealSeatTurn` SETS Nerve over one
+       (CONTRACTS trap 24); and the upgrade's bigger number never reached the
+       stacks the hook pays out. Measured against a same-seed control. */
+    const def = CARDS.cardById('pipkin/prize-pumpkin');
+    for (const upgraded of [false, true]) {
+      const tag = upgraded ? 'upgraded: ' : '';
+      const a = await pipkin({ seed: 57 });
+      const b = await pipkin({ seed: 57 });
+      const who = a.players[0];
+      a.addCard(def, 'hand', { to: who, upgraded });
+      const power = a.pilesOf(who).hand.slice(-1)[0];
+      who.energy = 9;
+      await a.playCard(power.uid, undefined);
+      for (const e of [a, b]) await play(e, 'pipkin/plant-a-little-one');
+      for (let i = 0; i < 2; i++) { await a.endTurn(); await b.endTurn(); }   // Seed -> Sprout -> Pumpkin
+      const n = upgraded ? def.upgrade.nums.n : def.nums.n;
+      check(arr(a)[0] === 'pumpkin', `${tag}the Pumpkin ripened`, String(arr(a)[0]));
+      check(who.energy === b.players[0].energy + n,
+            `${tag}Prize Pumpkin paid ${n} Nerve at the start of the next turn`,
+            `energy ${who.energy} vs control ${b.players[0].energy}`);
+    }
+  }
+
   for (const line of passes) say('PASS ' + line, 'pass');
   for (const line of fails) say('FAIL ' + line, 'fail');
   say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`);

@@ -146,6 +146,35 @@ try {
     check(e.counter('epitaphs') === 0, 'and the gauge agrees', `n=${e.counter('epitaphs')}`);
   }
 
+  {
+    // An Epitaph's Nerve survives the turn-start refill (CONTRACTS trap 24). A
+    // natural resolution lands BEFORE `_dealSeatTurn` SETS Nerve, and the gain
+    // used to be wiped: Deep Inscription paid its draw and never its Nerve.
+    const def = CARDS.cardById('mossbit/deep-inscription');
+    const a = await mossbit({ seed: 91 });
+    const b = await mossbit({ seed: 91 });
+    calm(a); calm(b);
+    await play(a, 'mossbit/deep-inscription', null);
+    for (let i = 0; i < def.nums.n; i++) { await a.endTurn(); await b.endTurn(); }
+    check(eps(a).length === 0, 'Deep Inscription resolves on its own', `n=${eps(a).length}`);
+    check(a.player.energy === b.player.energy + def.nums.e,
+      'and its Nerve arrives on the turn it resolves', `energy ${a.player.energy} vs control ${b.player.energy}`);
+
+    // ...and hurried to zero mid-turn, after a whole turn start has come and gone, it pays on the spot.
+    const f = await mossbit({ seed: 91 });
+    calm(f);
+    await play(f, 'mossbit/deep-inscription', null);
+    await f.endTurn();
+    for (let i = 0; i < def.nums.n - 2; i++) await play(f, 'mossbit/chip-the-clock', null);
+    const chip = give(f, 'mossbit/chip-the-clock');
+    f.player.energy = 5;
+    const price = f.costOf(chip);
+    await f.playCard(chip.uid);
+    check(eps(f).length === 0, 'hurried to zero mid-turn, it resolves', `n=${eps(f).length}`);
+    check(f.player.energy === 5 - price + def.nums.e, 'and its Nerve arrives on the spot, not a turn late',
+      `energy=${f.player.energy} price=${price}`);
+  }
+
   // ══ 2. Patience caps, and Longer Memory widens the gauge ════════════════
   {
     const e = await mossbit();
@@ -257,7 +286,7 @@ try {
     e.player.block = 0;
     e.player.energy = 9;
     await e.playCard(k.uid);
-    check(e.player.block >= 13, 'a Weathered Old Reliable uses its better half',
+    check(e.player.block >= CARDS.cardById('mossbit/old-reliable').nums.m0, 'a Weathered Old Reliable uses its better half',
       `guard=${e.player.block}`);
   }
   {
@@ -297,7 +326,7 @@ try {
     await play(e, 'mossbit/quiet-monument', null);
     const g = e.player.block;
     await play(e, 'mossbit/written-in-stone', t);
-    check(e.player.block - g >= 5, 'Quiet Monument pays on the first Epitaph of the turn',
+    check(e.player.block - g >= CARDS.cardById('mossbit/quiet-monument').nums.b, 'Quiet Monument pays on the first Epitaph of the turn',
       `gained ${e.player.block - g}`);
     const g2 = e.player.block;
     await play(e, 'mossbit/written-in-stone', t);

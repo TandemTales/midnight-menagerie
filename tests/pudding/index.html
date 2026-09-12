@@ -247,10 +247,12 @@ try {
   }
   {
     const e = await pudding();
+    /* Read off the def, so re-pricing the card moves this check with it. */
+    const printed = CARDS.cardById('pudding/ghost-hound-charge').cost;
     const k = give(e, 'pudding/ghost-hound-charge');
-    check(e.costOf(k) === 3, 'Ghost Hound Charge costs 3 cold', `cost=${e.costOf(k)}`);
+    check(e.costOf(k) === printed, `Ghost Hound Charge costs its printed ${printed} cold`, `cost=${e.costOf(k)}`);
     e.setCounter('loyalty', 5, 'test');
-    check(e.costOf(k) === 2, 'maximum Loyalty takes one off', `cost=${e.costOf(k)}`);
+    check(e.costOf(k) === printed - 1, 'maximum Loyalty takes one off', `cost=${e.costOf(k)}`);
     e.setCounter('plots', 2, 'test');   // the counter is display; graveside reads the row
     const b1 = give(e, 'pudding/little-chomp');
     const b2 = give(e, 'pudding/little-chomp');
@@ -262,7 +264,7 @@ try {
       await e.playCard(bur.uid);
     }
     const k2 = give(e, 'pudding/ghost-hound-charge');
-    check(e.costOf(k2) === 1, 'Graveside AND max Loyalty floors it at 1', `cost=${e.costOf(k2)}`);
+    check(e.costOf(k2) === printed - 2, 'Graveside AND max Loyalty take one off each', `cost=${e.costOf(k2)}`);
   }
 
   // ══ 6. Best Friend is Pudding himself in solo ═══════════════════════════

@@ -201,6 +201,85 @@ async function swing(e, id) {
           `+${withBuried - plain}`);
   }
 
+  say('<h2>Tighten the Collar pays out at the start of the next turn</h2>');
+  {
+    /* It used to grant the Nerve from a next-turn timer, and the turn-start
+       refill SETS Nerve, so the grant was erased before anyone saw it. It banks
+       now. One Bone off, then Heel! puts it back: that is becoming Whole. */
+    const e = await dog();
+    const who = e.players[0];
+    await play(e, 'bones/tighten-the-collar', null);
+    e.setCounter('loose-bones', 1, 'test');
+    await play(e, 'bones/heel', e.firstLivingEnemy().id);
+    const want = CARDS.cardById('bones/tighten-the-collar').nums.n;
+    const banked = (who.flags && who.flags.energyNextTurn) || 0;
+    check(loose(e) === 0 && banked === want,
+          'becoming Whole banks the Collar\'s Nerve for next turn',
+          `loose ${loose(e)}, banked ${banked} of ${want}`);
+    await e.endTurn();
+    check(who.energy === who.energyMax + want,
+          'and the Nerve is really there when the next turn starts',
+          `energy ${who.energy}, max ${who.energyMax}`);
+  }
+  {
+    const e = await dog();
+    const who = e.players[0];
+    // CONTROL: the same reattach with no Collar.
+    e.setCounter('loose-bones', 1, 'test');
+    await play(e, 'bones/heel', e.firstLivingEnemy().id);
+    await e.endTurn();
+    check(who.energy === who.energyMax,
+          'CONTROL: without the Collar the next turn starts at the usual Nerve',
+          `energy ${who.energy}, max ${who.energyMax}`);
+  }
+
+  say('<h2>An X Trick does not spend a discount it cannot use</h2>');
+  {
+    /* `costOf` returns -1 for X before any discount applies, so Take Me Apart
+       never benefits from Loosened -- and it used to spend the stack anyway. */
+    const e = await dog();
+    const who = e.players[0];
+    await play(e, 'bones/shake-it-loose', null);
+    const before = who.status('next-trick-discount');
+    await play(e, 'bones/take-me-apart', e.firstLivingEnemy().id);
+    const after = who.status('next-trick-discount');
+    check(before > 0 && after === before,
+          'Shake It Loose\'s discount survives an X Trick',
+          `Loosened ${before} -> ${after}`);
+    await play(e, 'bones/heel', e.firstLivingEnemy().id);
+    check(who.status('next-trick-discount') === 0,
+          'and the next priced Trick spends it',
+          `Loosened ${who.status('next-trick-discount')}`);
+  }
+
+  say('<h2>An X Trick is never "printed cost 1 or less"</h2>');
+  {
+    /* X prints -1, and `-1 <= 1` put Take Me Apart in reach of every cheap
+       Fetch. Slay the Spire's cost filters pass X over (All For One returns
+       only true 0-cost cards), and so does "printed cost {n} or less". */
+    const e = await dog();
+    for (const k of [...e.piles.discard, ...e.piles.hand]) e.moveCard(k, 'draw', {});
+    e.addCard(CARDS.cardById('bones/take-me-apart'), 'discard', {});
+    const x = e.piles.discard[e.piles.discard.length - 1];
+    await play(e, 'bones/go-get-it', null);
+    check(e.piles.discard.includes(x) && !e.piles.hand.includes(x),
+          'Go Get It! leaves an X Trick in the discard pile',
+          `hand: ${e.piles.hand.map(c => c.id).join(', ')}`);
+  }
+  {
+    // CONTROL: the same Fetch does bring back a Trick printed at 1.
+    const e = await dog();
+    for (const k of [...e.piles.discard, ...e.piles.hand]) e.moveCard(k, 'draw', {});
+    // `startingDeckFor` hands back defs (it feeds `makeDummySetup`), not ids.
+    const one = CARDS.startingDeckFor('bones').map(d => (typeof d === 'string' ? CARDS.cardById(d) : d))
+      .find(d => d && d.cost === 1 && d.id !== 'bones/go-get-it');
+    e.addCard(one, 'discard', {});
+    const k1 = e.piles.discard[e.piles.discard.length - 1];
+    await play(e, 'bones/go-get-it', null);
+    check(e.piles.hand.includes(k1), `CONTROL: Go Get It! fetches ${one.name}, printed at 1`,
+          `hand: ${e.piles.hand.map(c => c.id).join(', ')}`);
+  }
+
   for (const line of passes) say('PASS ' + line, 'pass');
   for (const line of fails) say('FAIL ' + line, 'fail');
   say(`<h2>${passes.length} passed, ${fails.length} failed</h2>`);

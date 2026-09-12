@@ -366,7 +366,9 @@ try {
     const k = CARDS.cardById('drizzle/bolt-from-the-blue');
     e.addCard(k, 'hand', {});
     const card = e.piles.hand[e.piles.hand.length - 1];
-    check(e.costOf(card) === 2, 'Bolt from the Blue normally costs 2', `cost=${e.costOf(card)}`);
+    /* The card's own number: Bolt from the Blue became Drizzle's 4-Nerve Trick (2 -> 4). */
+    const BOLT = CARDS.cardById('drizzle/bolt-from-the-blue').cost;
+    check(BOLT > 0 && e.costOf(card) === BOLT, `Bolt from the Blue normally costs its printed ${BOLT}`, `cost=${e.costOf(card)}`);
     await play(e, 'drizzle/build-a-cloud', null);
     await play(e, 'drizzle/just-a-sprinkle', null);
     check(W(e) === THUNDER && e.costOf(card) === 0,
@@ -382,7 +384,9 @@ try {
     const first = e.player.block - g0;
     const g1 = e.player.block;
     await play(e, 'drizzle/damp-spot', e.livingEnemies()[1]);
-    check(first >= 5, 'Steady Patter pays on the first Soak of the turn', `gained ${first}`);
+    /* The card's own number: Steady Patter became a 2-Nerve Power (5 -> 7 Guard). */
+    const PATTER = CARDS.cardById('drizzle/steady-patter').nums.b;
+    check(first >= PATTER, `Steady Patter pays its ${PATTER} Guard on the first Soak of the turn`, `gained ${first}`);
     check(e.player.block - g1 === 0, 'and only on the first', `gained ${e.player.block - g1}`);
   }
   {
@@ -415,13 +419,30 @@ try {
       `energy=${e.player.energy}`);
   }
   {
+    /* And an X Trick. The refund is what the play took (`ev.cost`), so X comes
+       back in full. Read off the printed cost (-1) it refunded nothing, and
+       the turn's Quiet After was used up anyway. */
+    const e = await drizzle();
+    await play(e, 'drizzle/quiet-after', null);
+    setW(e, THUNDER);
+    await play(e, 'drizzle/open-the-window', null);        // forces the break
+    e.addCard(CARDS.cardById('drizzle/soft-hail'), 'hand', {});
+    const card = e.piles.hand[e.piles.hand.length - 1];
+    e.player.energy = 3;
+    await e.playCard(card.uid, e.livingEnemies()[0].id);
+    check(e.player.energy === 3, 'Quiet After refunds every Nerve an X Trick spent',
+      `energy=${e.player.energy}`);
+  }
+  {
     const e = await drizzle();
     await play(e, 'drizzle/silver-lining', null);
     setW(e, THUNDER);
     await play(e, 'drizzle/open-the-window', null);
     check(e.player.block === 0 || true, 'Silver Lining banks rather than paying now');
     await e.endTurn();
-    check(e.player.block >= 12, 'and pays at the start of the next turn', `guard=${e.player.block}`);
+    /* The card's own number: Silver Lining became a 2-Nerve Power (12 -> 15 Guard). */
+    const LINING = CARDS.cardById('drizzle/silver-lining').nums.b;
+    check(e.player.block >= LINING, `and pays its ${LINING} at the start of the next turn`, `guard=${e.player.block}`);
   }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
