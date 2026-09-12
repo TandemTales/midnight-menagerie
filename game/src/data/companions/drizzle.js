@@ -584,11 +584,14 @@ U.onTracker(SLUG, (e, s, seat) => {
     const st = U.mm(c);
 
     /* Quiet After refunds what the Trick actually cost, so "the first Trick
-       after a Stormbreak costs 0" is true of a 3-Nerve Trick too. `ev.card` is
-       a SNAPSHOT (trap 19) and the cost is on it. */
+       after a Stormbreak costs 0" is true of a 3-Nerve Trick too. That is
+       `ev.cost`, the Nerve the play took -- NOT `ev.card.cost`, the printed
+       cost on the snapshot (trap 19), which is -1 for an X Trick (so Soft Hail
+       refunded nothing and still used the turn's Quiet After up) and the full
+       price of a Trick that was discounted to 0. */
     if (st.quietAfter && st.quietAfterArmed && U.once(c, 'quietAfter')) {
       st.quietAfterArmed = false;
-      const paid = (ev.card && typeof ev.card.cost === 'number') ? ev.card.cost : 0;
+      const paid = typeof ev.cost === 'number' ? ev.cost : 0;
       if (paid > 0) U.energy(c, paid);
     }
 
@@ -695,12 +698,12 @@ const basics = [
 const commons = [
   {
     id: 'drizzle/ceiling-drip', name: 'Ceiling Drip', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['soaked'],
+    cost: 2, target: ENEMY, keywords: ['soaked'],
     text: 'Deal {d} damage. If the target is [Soaked], gain {b} Guard.',
     flavor: 'Plink. Plink. Plink.',
-    nums: { d: 7, b: 5 },
+    nums: { d: 12, b: 8 },
     effect: eff((c) => { const t = c.target; U.hit(c, N(c).d); if (isSoaked(c, t)) U.guard(c, N(c).b); }),
-    upgrade: { nums: { d: 10, b: 7 } },
+    upgrade: { nums: { d: 16, b: 11 } },
   },
   {
     id: 'drizzle/splashdown', name: 'Splashdown', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -713,12 +716,12 @@ const commons = [
   },
   {
     id: 'drizzle/cold-little-drop', name: 'Cold Little Drop', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['soaked', 'weather'],
+    cost: 0, target: ENEMY, keywords: ['soaked', 'weather'],
     text: 'If [Weather] is Clear, [Soak] the target. Deal {d} damage.',
     flavor: 'The first one always goes down the back of the neck.',
-    nums: { d: 8 },
+    nums: { d: 4 },
     effect: eff((c) => { if (weather(c) === CLEAR) soak(c, c.target); U.hit(c, N(c).d); }),
-    upgrade: { nums: { d: 11 } },
+    upgrade: { nums: { d: 6 } },
   },
   {
     id: 'drizzle/window-rattle', name: 'Window Rattle', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -840,21 +843,21 @@ const commons = [
   },
   {
     id: 'drizzle/under-the-eaves', name: 'Under the Eaves', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['weather'],
+    cost: 2, target: SELF, keywords: ['weather'],
     text: 'Gain {b} Guard. You cannot [Advance] [Weather] for the rest of this turn.',
     flavor: 'Dry, and going nowhere.',
-    nums: { b: 12 },
+    nums: { b: 17 },
     effect: eff((c) => { U.guard(c, N(c).b); wf(c).noAdvanceTurn = U.turn(c); }),
-    upgrade: { nums: { b: 17 } },
+    upgrade: { nums: { b: 23 } },
   },
   {
     id: 'drizzle/cloudbank', name: 'Cloudbank', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['weather'],
+    cost: 2, target: SELF, keywords: ['weather'],
     text: 'Gain {b} Guard. Gain {m0} more if [Weather] changed this turn.',
     flavor: 'Piled up along the ceiling like laundry.',
-    nums: { b: 8, m0: 4 },
+    nums: { b: 12, m0: 5 },
     effect: eff((c) => U.guard(c, N(c).b + (changedThisTurn(c) ? N(c).m0 : 0))),
-    upgrade: { nums: { b: 11, m0: 6 } },
+    upgrade: { nums: { b: 16, m0: 7 } },
   },
   {
     id: forecastCard('drizzle/save-a-drop', THUNDER, (c) => { U.energy(c, 1); U.draw(c, 1); }),
@@ -884,12 +887,12 @@ const commons = [
   },
   {
     id: 'drizzle/steady-patter', name: 'Steady Patter', companion: SLUG, type: POWER, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['soaked'],
+    cost: 2, target: SELF, keywords: ['soaked'],
     text: 'The first time each turn you [Soak] an enemy, gain {b} Guard.',
     flavor: 'Reliable. Almost restful.',
-    nums: { b: 5 },
+    nums: { b: 7 },
     effect: eff((c) => power(c, 'drizzle/steady-patter', (x, s) => { s.steadyPatter = N(x).b; })),
-    upgrade: { nums: { b: 8 } },
+    upgrade: { nums: { b: 10 } },
   },
   {
     id: 'drizzle/damp-house', name: 'Damp House', companion: SLUG, type: POWER, rarity: COMMON,
@@ -902,7 +905,7 @@ const commons = [
   },
   {
     id: 'drizzle/barometer', name: 'Barometer', companion: SLUG, type: POWER, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['weather'],
+    cost: 2, target: SELF, keywords: ['weather'],
     text: 'The first time [Weather] changes during each of your turns, draw {n} additional Trick next turn.',
     flavor: 'The little needle has been twitching all evening.',
     nums: { n: 1 },
@@ -1019,27 +1022,27 @@ const uncommons = [
   },
   {
     id: 'drizzle/chain-reaction', name: 'Chain Reaction', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['conduct', 'soaked'],
+    cost: 2, target: ENEMY, keywords: ['conduct', 'soaked'],
     text: 'Deal {d} damage. [Conduct]: Deal {m0} damage. Gain {b} Guard for every enemy the [Conduct] reached.',
     flavor: 'One, then the next, then the next.',
-    nums: { d: 5, m0: 5, b: 3 },
+    nums: { d: 10, m0: 7, b: 5 },
     effect: eff((c) => {
       const t = c.target;
       U.hit(c, N(c).d);
       const r = conduct(c, t, (x) => U.hitAt(c, x, N(c).m0));
       if (r.reached) U.guard(c, N(c).b * r.reached);
     }),
-    upgrade: { nums: { d: 7, m0: 7, b: 4 } },
+    upgrade: { nums: { d: 14, m0: 10, b: 7 } },
   },
   {
     id: 'drizzle/roof-drumming', name: 'Roof Drumming', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['forecast'],
+    cost: 2, target: ENEMY, keywords: ['forecast'],
     text: 'Deal {d} damage once for each occupied [Forecast] slot, at least once.',
     flavor: 'Everything she has been waiting for, arriving as noise.',
-    nums: { d: 5, hits: 3 },
+    nums: { d: 8, hits: 3 },
     balance: { scalesWith: 'occupied Forecast slots' },
     effect: eff((c) => U.hitN(c, N(c).d, Math.max(1, slots(c).length))),
-    upgrade: { nums: { d: 7, hits: 3 } },
+    upgrade: { nums: { d: 11, hits: 3 } },
   },
   {
     id: 'drizzle/indoor-lightning', name: 'Indoor Lightning', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -1060,17 +1063,22 @@ const uncommons = [
   },
   {
     id: 'drizzle/soft-hail', name: 'Soft Hail', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ALL_ENEMIES, keywords: ['soaked'],
-    text: 'Deal {d} damage three times at random. Each hit deals {m0} more against a [Soaked] enemy.',
+    cost: -1, target: ALL_ENEMIES, keywords: ['soaked'],
+    text: 'Spend all your Nerve. For each Nerve spent, deal {d} damage to a random enemy {n} times. Hits against a [Soaked] enemy deal {m0} more.',
     flavor: 'Not quite ice. Not quite rain. Extremely annoying.',
-    nums: { d: 4, m0: 2, hits: 3 },
+    /* X: it keeps coming down for as long as she pays for it. `hits` is the
+       count at three Nerve, as Catastrophe declares it. Quiet After refunds the
+       Nerve the play actually took, so after a Stormbreak this comes back in
+       full. */
+    nums: { d: 4, m0: 2, n: 2, hits: 6 },
     effect: eff((c) => {
-      for (let i = 0; i < 3; i++) {
+      const hits = N(c).n * (c.x || 0);
+      for (let i = 0; i < hits; i++) {
         const t = c.randomEnemy();
         if (t) U.hitAt(c, t, N(c).d + (isSoaked(c, t) ? N(c).m0 : 0));
       }
     }),
-    upgrade: { nums: { d: 6, m0: 3, hits: 3 } },
+    upgrade: { nums: { d: 5, m0: 3, n: 2, hits: 6 } },
   },
 
   // ── Skills ────────────────────────────────────────────────────────────────
@@ -1121,13 +1129,13 @@ const uncommons = [
   },
   {
     id: 'drizzle/hold-the-downpour', name: 'Hold the Downpour', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['weather'],
+    cost: 2, target: SELF, keywords: ['weather'],
     text: 'Playable only during Downpour. Gain {b} Guard. [Weather] cannot change until your next turn.',
     flavor: 'Not one drop harder. Not one drop softer.',
-    nums: { b: 13 },
+    nums: { b: 19 },
     playable: (c) => weather(c) === DOWNPOUR,
     effect: eff((c) => { U.guard(c, N(c).b); wf(c).lockUntilTurn = U.turn(c) + 1; }),
-    upgrade: { nums: { b: 18 } },
+    upgrade: { nums: { b: 26 } },
   },
   {
     id: 'drizzle/slippery-floor', name: 'Slippery Floor', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -1191,7 +1199,7 @@ const uncommons = [
   },
   {
     id: 'drizzle/puddle-map', name: 'Puddle Map', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['conduct', 'soaked'],
+    cost: 0, target: ENEMY, keywords: ['conduct', 'soaked'],
     text: 'Choose a [Soaked] enemy. The next [Conduct] this turn repeats its marked effect against it once more.',
     flavor: 'She has been keeping track of where all of it went.',
     nums: {},
@@ -1290,12 +1298,12 @@ const uncommons = [
   },
   {
     id: 'drizzle/silver-lining', name: 'Silver Lining', companion: SLUG, type: POWER, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['stormbreak'],
+    cost: 2, target: SELF, keywords: ['stormbreak'],
     text: 'Whenever a [Stormbreak] happens, gain {b} Guard at the start of your next turn.',
     flavor: 'There is always one. It is thin and it is cold.',
-    nums: { b: 12 },
+    nums: { b: 15 },
     effect: eff((c) => power(c, 'drizzle/silver-lining', (x, s) => { s.silverLining = N(x).b; })),
-    upgrade: { nums: { b: 17 } },
+    upgrade: { nums: { b: 21 } },
   },
   {
     id: 'drizzle/damp-forever', name: 'Damp Forever', companion: SLUG, type: POWER, rarity: UNCOMMON,
@@ -1364,13 +1372,16 @@ const rares = [
   },
   {
     id: 'drizzle/bolt-from-the-blue', name: 'Bolt from the Blue', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 2, target: ENEMY, keywords: ['weather'],
+    cost: 4, target: ENEMY, keywords: ['weather'],
     text: 'Deal {d} damage. Costs 0 Nerve if [Weather] went from Clear to Thunderstorm this turn.',
     flavor: 'Out of nothing. Out of a perfectly nice evening.',
-    nums: { d: 30 },
+    nums: { d: 40 },
     effect: eff((c) => U.hit(c, N(c).d)),
-    dynamicCost: (c) => (wf(c).turnStart === CLEAR && weather(c) === THUNDER && advancedThisTurn(c) ? 0 : 2),
-    upgrade: { nums: { d: 38 } },
+    /* Her 4-Nerve Trick, and almost never paid in full: the storm-in-one-turn
+       is the price. `dynamicCost` REPLACES the printed cost, so the 4 is
+       repeated here and the two must move together. */
+    dynamicCost: (c) => (wf(c).turnStart === CLEAR && weather(c) === THUNDER && advancedThisTurn(c) ? 0 : 4),
+    upgrade: { nums: { d: 54 } },
   },
   {
     id: forecastCard('drizzle/what-goes-up', SB, (c) => {
@@ -1655,10 +1666,10 @@ const rares = [
 const coopCards = [
   {
     id: 'drizzle/share-the-umbrella', name: 'Share the Umbrella', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, coop: true, keywords: ['weather'],
+    cost: 2, target: SELF, coop: true, keywords: ['weather'],
     text: 'You and one friend each gain {b} Guard. If [Weather] changed since their last turn, they draw a Trick.',
     flavor: 'There is not really room. They manage anyway.',
-    nums: { b: 9 },
+    nums: { b: 12 },
     effect: eff(async (c) => {
       U.guard(c, N(c).b);
       const ally = await c.chooseAlly();
@@ -1666,7 +1677,7 @@ const coopCards = [
       c.giveBlock(ally, N(c).b);
       if (changedThisTurn(c)) c.giveDraw(ally, 1);
     }),
-    upgrade: { nums: { b: 13 } },
+    upgrade: { nums: { b: 17 } },
   },
   {
     id: 'drizzle/pass-the-puddle', name: 'Pass the Puddle', companion: SLUG, type: SKILL, rarity: UNCOMMON,

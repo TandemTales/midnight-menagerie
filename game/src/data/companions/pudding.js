@@ -534,16 +534,16 @@ const basics = [
 const commons = [
   {
     id: 'pudding/protective-nip', name: 'Protective Nip', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['best-friend'],
+    cost: 0, target: ENEMY, keywords: ['best-friend'],
     text: 'Deal {d} damage. If the target is winding up at your [Best Friend], they gain {b} Guard.',
     flavor: 'A warning. Delivered at shin height.',
-    nums: { d: 7, b: 5 },
+    nums: { d: 4, b: 3 },
     effect: eff((c) => {
       const t = c.target;
       U.hit(c, N(c).d);
       if (t && aimsAt(c, t, bf(c))) U.guardOn(c, bf(c), N(c).b);
     }),
-    upgrade: { nums: { d: 10, b: 7 } },
+    upgrade: { nums: { d: 6, b: 4 } },
   },
   {
     id: 'pudding/bark-first', name: 'Bark First, Ask Later', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -568,21 +568,21 @@ const commons = [
   },
   {
     id: 'pudding/muddy-tackle', name: 'Muddy Tackle', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ALL_ENEMIES, keywords: ['unearthed'],
+    cost: 2, target: ALL_ENEMIES, keywords: ['unearthed'],
     text: 'Deal {d} damage to all enemies. [Unearthed]: deal {m0} more.',
     flavor: 'He has been digging. It shows.',
-    nums: { d: 5, m0: 3 },
+    nums: { d: 9, m0: 6 },
     effect: eff((c) => U.hitAll(c, N(c).d + (playedUnearthed(c) ? N(c).m0 : 0))),
-    upgrade: { nums: { d: 7, m0: 4 } },
+    upgrade: { nums: { d: 13, m0: 8 } },
   },
   {
     id: 'pudding/grave-dirt', name: 'Grave Dirt in Your Eyes', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['best-friend'],
+    cost: 2, target: ENEMY, keywords: ['best-friend'],
     text: 'Deal {d} damage and apply {n} Weak.',
     flavor: 'Kicked backwards with great precision.',
-    nums: { d: 6, n: 1 },
+    nums: { d: 12, n: 2 },
     effect: eff((c) => { const t = c.target; U.hit(c, N(c).d); U.apply(c, t, 'weak', N(c).n); }),
-    upgrade: { nums: { d: 9, n: 2 } },
+    upgrade: { nums: { d: 17, n: 3 } },
   },
   {
     id: 'pudding/collar-charge', name: 'Collar Charge', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -614,12 +614,12 @@ const commons = [
   },
   {
     id: 'pudding/stay-close', name: 'Stay Close', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['best-friend'],
+    cost: 2, target: SELF, keywords: ['best-friend'],
     text: 'Your [Best Friend] gains {b} Guard, or {m0} more if anything is winding up at them.',
     flavor: 'Right by the leg. Exactly there.',
-    nums: { b: 8, m0: 4 },
+    nums: { b: 12, m0: 6 },
     effect: eff((c) => U.guardOn(c, bf(c), N(c).b + (threatened(c) ? N(c).m0 : 0))),
-    upgrade: { nums: { b: 11, m0: 6 } },
+    upgrade: { nums: { b: 17, m0: 9 } },
   },
   {
     id: 'pudding/bury-it-better', name: 'Bury It Better', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -665,12 +665,12 @@ const commons = [
   },
   {
     id: 'pudding/plot-patrol', name: 'Plot Patrol', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['plot', 'best-friend'],
+    cost: 2, target: SELF, keywords: ['plot', 'best-friend'],
     text: 'Your [Best Friend] gains {b} Guard, and {m0} more for each occupied [Plot].',
     flavor: 'A full circuit of the grounds, at speed.',
-    nums: { b: 4, m0: 4 },
+    nums: { b: 6, m0: 5 },
     effect: eff((c) => U.guardOn(c, bf(c), N(c).b + N(c).m0 * occupied(c))),
-    upgrade: { nums: { b: 6, m0: 6 } },
+    upgrade: { nums: { b: 9, m0: 7 } },
   },
   {
     id: 'pudding/good-dog-reserve', name: 'Good Dog Reserve', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -721,17 +721,17 @@ const commons = [
   },
   {
     id: 'pudding/sit-with-me', name: 'Sit With Me', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['unearthed', 'best-friend'],
+    cost: 0, target: SELF, keywords: ['unearthed', 'best-friend'],
     text: 'Keep a Trick in hand through this turn. If it is [Unearthed], your [Best Friend] gains {b} Guard.',
     flavor: 'Just sitting. Companionably. For hours.',
-    nums: { b: 5 },
+    nums: { b: 3 },
     effect: eff(async (c) => {
       const [k] = await U.pickCards(c, { pile: 'hand', count: 1, prompt: 'Keep which Trick?' });
       if (!k) return;
       U.retain(c, k, 'turn');
       if (isUnearthed(c, k)) U.guardOn(c, bf(c), N(c).b);
     }),
-    upgrade: { nums: { b: 8 } },
+    upgrade: { nums: { b: 5 } },
   },
   {
     id: 'pudding/haunted-headstones', name: 'Haunted Headstones', companion: SLUG, type: POWER, rarity: COMMON,
@@ -783,12 +783,12 @@ const uncommons = [
   },
   {
     id: 'pudding/dug-up-trouble', name: 'Dug Up Trouble', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['unearthed'],
+    cost: 2, target: ENEMY, keywords: ['unearthed'],
     text: 'Deal {d} damage. [Unearthed]: deal it again.',
     flavor: 'Whatever it was, it is awake now.',
-    nums: { d: 9, hits: 2 },
+    nums: { d: 12, hits: 2 },
     effect: eff((c) => { const t = c.target; U.hit(c, N(c).d); if (playedUnearthed(c)) U.hitAt(c, t, N(c).d); }),
-    upgrade: { nums: { d: 13, hits: 2 } },
+    upgrade: { nums: { d: 17, hits: 2 } },
   },
   {
     id: 'pudding/graveyard-gallop', name: 'Graveyard Gallop', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -865,10 +865,10 @@ const uncommons = [
   },
   {
     id: 'pudding/never-drop-the-ball', name: 'Never Drop the Ball', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['bury', 'plot', 'unearthed'],
+    cost: 2, target: ENEMY, keywords: ['bury', 'plot', 'unearthed'],
     text: 'Deal {d} damage. If this was not [Unearthed], you may [Bury] it instead of discarding it.',
     flavor: 'He has held it for six hours. He will hold it for six more.',
-    nums: { d: 9 },
+    nums: { d: 14 },
     effect: eff((c) => {
       const self = c.card;
       const wasUnearthed = playedUnearthed(c);
@@ -878,28 +878,36 @@ const uncommons = [
          finished on `card:resolved` instead. */
       if (!wasUnearthed && freePlot(c)) U.mm(c).awaitingBury = self;
     }),
-    upgrade: { nums: { d: 13 } },
+    upgrade: { nums: { d: 20 } },
   },
   {
     id: 'pudding/ghost-hound-charge', name: 'Ghost Hound Charge', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 3, target: ENEMY, keywords: ['graveside', 'loyalty'],
+    cost: 4, target: ENEMY, keywords: ['graveside', 'loyalty'],
     text: 'Deal {d} damage. Costs 1 less while [Graveside] and 1 less at maximum [Loyalty].',
     flavor: 'Briefly, and unmistakably, enormous.',
-    nums: { d: 28 },
+    nums: { d: 32 },
     effect: eff((c) => U.hit(c, N(c).d)),
-    dynamicCost: (c) => Math.max(1, 3 - (graveside(c) ? 1 : 0) - (atMaxLoyalty(c) ? 1 : 0)),
-    upgrade: { nums: { d: 36 } },
+    /* The deck's 4, and rarely paid in full. Graveside and a full Loyalty track
+       each take one off, and a Dig Up discount (Dig Here!, Keeper of the Yard,
+       Double Dig, Exhume) composes on top -- though digging it out of a Plot can
+       be exactly what drops him below Graveside. The 4 here IS the printed cost
+       above: re-cost one, re-cost both. */
+    dynamicCost: (c) => 4 - (graveside(c) ? 1 : 0) - (atMaxLoyalty(c) ? 1 : 0),
+    upgrade: { nums: { d: 44 } },
   },
 
   // ── Skills ────────────────────────────────────────────────────────────────
   {
     id: 'pudding/take-me-instead', name: 'Take Me Instead', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['best-friend'],
-    text: 'Gain {b} Guard. In a party, an Attack aimed at your [Best Friend] comes to Pudding instead.',
+    cost: -1, target: SELF, keywords: ['best-friend'],
+    text: 'Spend all your Nerve. Gain {b} Guard for each Nerve spent. In a party, an Attack aimed at your [Best Friend] comes to Pudding instead.',
     flavor: 'He steps in front. He is nine inches tall.',
-    nums: { b: 13 },
+    /* X: however much of himself is left this turn goes in front. `c.x` is the
+       Nerve the play actually took, so Good Dog Reserve or Who's a Good Pug?
+       first makes it bigger; no Dig Up discount can shrink an X. */
+    nums: { b: 9 },
     effect: eff((c) => {
-      U.guard(c, N(c).b);
+      U.guard(c, N(c).b * (c.x || 0));
       const who = bf(c);
       if (who === c.self) return;
       /* Racket is the engine's taunt — `intentTargetFor` prefers a seat wearing
@@ -908,7 +916,7 @@ const uncommons = [
          the players before they act and has to survive a replay. */
       U.applySelf(c, 'racket', 1);
     }),
-    upgrade: { nums: { b: 18 } },
+    upgrade: { nums: { b: 13 } },
   },
   {
     id: 'pudding/good-dog-emergency', name: 'Good Dog Emergency', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -996,12 +1004,12 @@ const uncommons = [
   },
   {
     id: 'pudding/night-patrol', name: 'Night Patrol', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['loyalty', 'graveside', 'best-friend'],
+    cost: 2, target: SELF, keywords: ['loyalty', 'graveside', 'best-friend'],
     text: 'Gain {n} [Loyalty]. While [Graveside], your [Best Friend] also gains {b} Guard.',
     flavor: 'Three circuits, then a long stare at nothing.',
-    nums: { n: 1, b: 9 },
+    nums: { n: 2, b: 13 },
     effect: eff((c) => { gainLoyalty(c, N(c).n); if (graveside(c)) U.guardOn(c, bf(c), N(c).b); }),
-    upgrade: { nums: { n: 2, b: 13 } },
+    upgrade: { nums: { n: 2, b: 19 } },
   },
   {
     id: 'pudding/double-dig', name: 'Double Dig', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -1034,16 +1042,16 @@ const uncommons = [
   },
   {
     id: 'pudding/pug-sized-shield', name: 'Pug Sized Shield', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['best-friend'],
+    cost: 2, target: SELF, keywords: ['best-friend'],
     text: 'Your [Best Friend] gains {b} Guard. If that is somebody else, Pudding gains {m0} too.',
     flavor: 'It is not a large shield. It is a very determined one.',
-    nums: { b: 13, m0: 5 },
+    nums: { b: 20, m0: 8 },
     effect: eff((c) => {
       const who = bf(c);
       U.guardOn(c, who, N(c).b);
       if (who !== c.self) U.guard(c, N(c).m0);
     }),
-    upgrade: { nums: { b: 18, m0: 8 } },
+    upgrade: { nums: { b: 27, m0: 11 } },
   },
   {
     id: 'pudding/treat-for-later', name: 'Treat for Later', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -1137,12 +1145,12 @@ const uncommons = [
   },
   {
     id: 'pudding/never-off-duty', name: 'Never Off Duty', companion: SLUG, type: POWER, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['loyalty', 'best-friend'],
+    cost: 2, target: SELF, keywords: ['loyalty', 'best-friend'],
     text: 'The first time you spend [Loyalty] each turn, your [Best Friend] gains {b} Guard.',
     flavor: 'Asleep. Still on duty. Somehow both.',
-    nums: { b: 6 },
+    nums: { b: 9 },
     effect: eff((c) => power(c, 'pudding/never-off-duty', (x, s) => { s.neverOffDuty = N(x).b; })),
-    upgrade: { nums: { b: 10 } },
+    upgrade: { nums: { b: 13 } },
   },
   {
     id: 'pudding/keeper-of-the-yard', name: 'Keeper of the Yard', companion: SLUG, type: POWER, rarity: UNCOMMON,

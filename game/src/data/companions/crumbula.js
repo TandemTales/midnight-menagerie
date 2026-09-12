@@ -343,15 +343,15 @@ const commons = [
   },
   {
     id: 'crumbula/cape-and-fang', name: 'Cape and Fang', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['hungry', 'sated'],
+    cost: 2, target: ENEMY, keywords: ['hungry', 'sated'],
     text: 'Deal {d} damage and gain {b} Guard. [Hungry]: {m0} more damage. [Sated]: {m1} more Guard.',
     flavor: 'Both halves of the job, at once.',
-    nums: { d: 4, b: 4, m0: 3, m1: 3 },
+    nums: { d: 8, b: 8, m0: 5, m1: 5 },
     effect: eff((c) => {
       U.hit(c, N(c).d + (isHungry(c) ? N(c).m0 : 0));
       U.guard(c, N(c).b + (isSated(c) ? N(c).m1 : 0));
     }),
-    upgrade: { nums: { d: 6, b: 6, m0: 4, m1: 4 } },
+    upgrade: { nums: { d: 11, b: 11, m0: 7, m1: 7 } },
   },
   {
     id: 'crumbula/dainty-claws', name: 'Dainty Claws', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -396,35 +396,35 @@ const commons = [
   },
   {
     id: 'crumbula/just-a-taste', name: 'Just a Taste', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['bite-mark', 'feed'],
+    cost: 2, target: ENEMY, keywords: ['bite-mark', 'feed'],
     text: 'Apply {n} [Bite Mark]s to an enemy, then [Feed] {m} from it.',
     flavor: 'Prepared and consumed in the same motion.',
-    nums: { n: 2, m: 1 },
+    nums: { n: 4, m: 2 },
     effect: eff((c) => { bite(c, c.target, N(c).n); feed(c, c.target, N(c).m); }),
-    upgrade: { nums: { n: 3, m: 1 } },
+    upgrade: { nums: { n: 6, m: 2 } },
   },
   {
     id: 'crumbula/save-room', name: 'Save Room', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['appetite', 'hungry'],
+    cost: 2, target: SELF, keywords: ['appetite', 'hungry'],
     text: 'Reduce [Appetite] by {n} and gain {b} Guard. If that makes you [Hungry], draw {c1}.',
     flavor: 'For dessert. There is always dessert.',
-    nums: { n: 1, b: 6, c1: 1 },
+    nums: { n: 2, b: 12, c1: 1 },
     effect: eff((c) => {
       const was = isHungry(c);
       addAppetite(c, -N(c).n);
       U.guard(c, N(c).b);
       if (!was && isHungry(c)) U.draw(c, N(c).c1);
     }),
-    upgrade: { nums: { n: 1, b: 9, c1: 2 } },
+    upgrade: { nums: { n: 2, b: 16, c1: 2 } },
   },
   {
     id: 'crumbula/seconds', name: 'Seconds?', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['feed', 'sated'],
+    cost: 2, target: ENEMY, keywords: ['feed', 'sated'],
     text: '[Feed] {n}. If [Sated] afterwards, gain {b} Guard.',
     flavor: 'He was going to ask anyway.',
-    nums: { n: 1, b: 6 },
+    nums: { n: 2, b: 12 },
     effect: eff((c) => { feed(c, c.target || markedEnemies(c)[0], N(c).n); if (isSated(c)) U.guard(c, N(c).b); }),
-    upgrade: { nums: { n: 2, b: 9 } },
+    upgrade: { nums: { n: 3, b: 16 } },
   },
   {
     id: 'crumbula/cape-closed', name: 'Cape Closed', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -446,7 +446,7 @@ const commons = [
   },
   {
     id: 'crumbula/pocket-snack', name: 'Pocket Snack', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['bite-mark', 'leftover'],
+    cost: 0, target: ENEMY, keywords: ['bite-mark', 'leftover'],
     text: 'Remove {n} [Bite Mark] without [Feed]ing and make {m} [Leftover].',
     flavor: 'For the walk home.',
     nums: { n: 1, m: 1 },
@@ -545,13 +545,13 @@ const uncommons = [
   },
   {
     id: 'crumbula/bottomless-bite', name: 'Bottomless Bite', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['feed'],
+    cost: 2, target: ENEMY, keywords: ['feed'],
     text: 'Deal {d} damage, plus {m0} for each separate [Feed] earlier this turn, up to {n}.',
     flavor: 'There is no bottom. Nobody has found one.',
-    nums: { d: 7, m0: 4, n: 3 },
+    nums: { d: 12, m0: 5, n: 3 },
     balance: { scalesWith: 'how many separate times you have already Fed this turn' },
     effect: eff((c) => { U.hit(c, N(c).d); const n = Math.min(N(c).n, U.mm(c).feedsThisTurn || 0); for (let i = 0; i < n; i++) U.hitAt(c, c.target, N(c).m0); }),
-    upgrade: { nums: { d: 10, m0: 6, n: 3 } },
+    upgrade: { nums: { d: 16, m0: 7, n: 3 } },
   },
   {
     id: 'crumbula/the-good-silverware', name: 'The Good Silverware', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -564,12 +564,12 @@ const uncommons = [
   },
   {
     id: 'crumbula/velvet-ambush', name: 'Velvet Ambush', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['hungry', 'sated'],
+    cost: 2, target: ENEMY, keywords: ['hungry', 'sated'],
     text: 'Deal {d} damage. [Hungry]: draw {c1}. [Sated]: gain {b} Guard.',
     flavor: 'The cape muffles absolutely everything.',
-    nums: { d: 7, c1: 1, b: 6 },
+    nums: { d: 13, c1: 1, b: 10 },
     effect: eff((c) => { U.hit(c, N(c).d); if (isHungry(c)) U.draw(c, N(c).c1); if (isSated(c)) U.guard(c, N(c).b); }),
-    upgrade: { nums: { d: 10, c1: 2, b: 9 } },
+    upgrade: { nums: { d: 18, c1: 2, b: 14 } },
   },
   {
     id: 'crumbula/taste-of-everyone', name: 'Taste of Everyone', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -602,10 +602,10 @@ const uncommons = [
   },
   {
     id: 'crumbula/table-for-one', name: 'Table for One', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 2, target: ENEMY, keywords: ['bite-mark'],
+    cost: 3, target: ENEMY, keywords: ['bite-mark'],
     text: 'Deal {d} damage plus {m0} for each [Bite Mark] on the target, up to {n}. Then remove one.',
     flavor: 'Candle. Napkin. No second chair.',
-    nums: { d: 14, m0: 4, n: 4 },
+    nums: { d: 20, m0: 5, n: 4 },
     balance: { scalesWith: 'the Bite Marks already on the target — up to four more hits' },
     effect: eff((c) => {
       U.hit(c, N(c).d);
@@ -613,7 +613,7 @@ const uncommons = [
       for (let i = 0; i < n; i++) U.hitAt(c, c.target, N(c).m0);
       unbite(c, c.target, 1);
     }),
-    upgrade: { nums: { d: 19, m0: 6, n: 4 } },
+    upgrade: { nums: { d: 27, m0: 7, n: 4 } },
   },
   {
     id: 'crumbula/too-cute-to-refuse', name: 'Too Cute to Refuse', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -667,17 +667,17 @@ const uncommons = [
   },
   {
     id: 'crumbula/the-count-arrives', name: 'The Count Arrives', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 3, target: ENEMY, keywords: ['bite-mark', 'indulge'],
+    cost: 4, target: ENEMY, keywords: ['bite-mark', 'indulge'],
     text: 'Deal {d} to one enemy and {m0} to the rest. Apply {n} [Bite Mark] to each. Costs 1 less if you [Indulge]d.',
     flavor: 'He does like an entrance.',
-    nums: { d: 14, m0: 5, n: 1 },
+    nums: { d: 28, m0: 8, n: 1 },
     effect: eff((c) => {
       U.hit(c, N(c).d);
       for (const e of U.others(c)) U.hitAt(c, e, N(c).m0);
       for (const e of U.enemies(c)) bite(c, e, N(c).n);
     }),
-    dynamicCost: (c) => (U.mm(c).indulgedThisTurn ? 2 : 3),
-    upgrade: { nums: { d: 19, m0: 7, n: 1 } },
+    dynamicCost: (c) => (U.mm(c).indulgedThisTurn ? 3 : 4),
+    upgrade: { nums: { d: 38, m0: 11, n: 1 } },
   },
 
   // ── Skills (15) ──
@@ -781,12 +781,12 @@ const uncommons = [
   },
   {
     id: 'crumbula/please-i-insist', name: 'Please, I Insist', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['bite-mark'],
+    cost: 2, target: ENEMY, keywords: ['bite-mark'],
     text: 'Apply {n} [Bite Mark]s. Until your next turn its Attacks hurt {m0} more.',
     flavor: 'He is holding the door. He will keep holding it.',
-    nums: { n: 3, m0: 2 },
+    nums: { n: 5, m0: 2 },
     effect: eff((c) => { bite(c, c.target, N(c).n); U.apply(c, c.target, 'empowered', N(c).m0); }),
-    upgrade: { nums: { n: 4, m0: 2 } },
+    upgrade: { nums: { n: 7, m0: 2 } },
   },
   {
     id: 'crumbula/house-guest', name: 'House Guest', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -821,12 +821,12 @@ const uncommons = [
   },
   {
     id: 'crumbula/after-dinner-nap', name: 'After Dinner Nap', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['sated'],
+    cost: 2, target: SELF, keywords: ['sated'],
     text: 'Gain {b} Guard. If [Sated], draw {c1} extra next turn.',
     flavor: 'Upside down, in a drawer.',
-    nums: { b: 10, c1: 2 },
+    nums: { b: 16, c1: 2 },
     effect: eff((c) => { U.guard(c, N(c).b); if (isSated(c)) U.mm(c).nextTurnDraw = (U.mm(c).nextTurnDraw || 0) + N(c).c1; }),
-    upgrade: { nums: { b: 14, c1: 2 } },
+    upgrade: { nums: { b: 22, c1: 2 } },
   },
   {
     id: 'crumbula/secret-pantry', name: 'Secret Pantry', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -926,17 +926,17 @@ const rares = [
   },
   {
     id: 'crumbula/royal-taste-test', name: 'Royal Taste Test', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 1, target: ENEMY, keywords: ['bite-mark', 'feed'],
+    cost: 2, target: ENEMY, keywords: ['bite-mark', 'feed'],
     text: 'Deal {d} once per [Bite Mark] on the target, up to {n}, then [Feed] {m} from it.',
     flavor: 'Somebody has to check.',
-    nums: { d: 5, n: 5, m: 1 },
+    nums: { d: 8, n: 5, m: 1 },
     balance: { scalesWith: 'every Bite Mark on the target, up to five hits' },
     effect: eff((c) => {
       const n = Math.min(N(c).n, marksOn(c, c.target));
       for (let i = 0; i < n; i++) U.hit(c, N(c).d);
       feed(c, c.target, N(c).m);
     }),
-    upgrade: { nums: { d: 7, n: 5, m: 2 } },
+    upgrade: { nums: { d: 11, n: 5, m: 2 } },
   },
   {
     id: 'crumbula/starving-artist', name: 'Starving Artist', companion: SLUG, type: ATTACK, rarity: RARE,
@@ -967,16 +967,17 @@ const rares = [
   },
   {
     id: 'crumbula/the-last-nibble', name: 'The Last Nibble', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 1, target: ENEMY, keywords: ['indulge', 'feed'],
-    text: 'Deal {d} damage. If you have both [Indulge]d and [Feed]ed this turn, play this again free.',
+    cost: -1, target: ENEMY, keywords: ['indulge', 'feed'],
+    text: 'Spend all your Nerve. Deal {d} damage for each Nerve spent. If you have both [Indulge]d and [Feed]ed this turn, deal it all again.',
     flavor: 'The last one. He says this every time.',
-    nums: { d: 7 },
+    nums: { d: 6 },
     effect: eff((c) => {
-      U.hit(c, N(c).d);
+      const x = c.x || 0;
+      U.hitN(c, N(c).d, x);
       const s = U.mm(c);
-      if (s.indulgedThisTurn && (s.feedsThisTurn || 0) > 0 && U.bump(c, 'lastNibble') <= 1) U.hitAt(c, c.target, N(c).d);
+      if (x > 0 && s.indulgedThisTurn && (s.feedsThisTurn || 0) > 0 && U.bump(c, 'lastNibble') <= 1) U.hitN(c, N(c).d, x);
     }),
-    upgrade: { nums: { d: 10 } },
+    upgrade: { nums: { d: 8 } },
   },
   {
     id: 'crumbula/bite-the-hand', name: 'Bite the Hand That Pets Me', companion: SLUG, type: ATTACK, rarity: RARE,
@@ -1213,10 +1214,10 @@ function raiseAppetiteCap(c) {
 const coopCards = [
   {
     id: 'crumbula/table-for-two', name: 'Table for Two', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['feed'],
+    cost: 2, target: SELF, keywords: ['feed'],
     text: 'You and a chosen Kid gain {b} Guard. If you [Feed] later this turn, they recover {h} Courage.',
     flavor: 'He has set two places. Only one of you is eating.',
-    nums: { b: 6, h: 3 },
+    nums: { b: 11, h: 3 },
     effect: eff(async (c) => {
       const ally = await c.chooseAlly();
       U.guard(c, N(c).b);
@@ -1224,7 +1225,7 @@ const coopCards = [
       c.giveBlock(ally, N(c).b);
       U.mm(c).tableForTwo = { seat: ally.seat, heal: N(c).h };
     }),
-    upgrade: { nums: { b: 9, h: 5 } },
+    upgrade: { nums: { b: 15, h: 5 } },
   },
   {
     id: 'crumbula/pass-the-plate', name: 'Pass the Plate', companion: SLUG, type: SKILL, rarity: UNCOMMON,

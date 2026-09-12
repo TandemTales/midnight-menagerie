@@ -148,7 +148,7 @@ Core effect
 1
 Bedframe Bonk
 Attack
-1 Nerve. Deal moderate damage. Ambush: Apply 2 Fright before the target becomes Suspicious.
+2 Nerve. Deal heavy damage. Ambush: Apply 3 Fright before the target becomes Suspicious.
 2
 Toe Nibbler
 Attack
@@ -168,7 +168,7 @@ Attack
 6
 Blanket Snap
 Attack
-1 Nerve. Deal moderate damage. If the target is Suspicious, apply 3 Fright.
+2 Nerve. Deal heavy damage. If the target is Suspicious, apply 4 Fright.
 7
 Tiny Teeth
 Attack
@@ -184,11 +184,11 @@ Skill
 10
 Hold Very Still
 Skill
-1 Nerve. Gain moderate Guard. Gain substantial Guard instead if any enemy is Suspicious.
+2 Nerve. Gain substantial Guard. Gain very substantial Guard instead if any enemy is Suspicious.
 11
 Creak...
 Skill
-1 Nerve. Apply 2 Fright to an enemy, or 3 Fright if it is Unaware. Does not alter Awareness.
+0 Nerve. Apply 1 Fright to an enemy, or 2 Fright if it is Unaware. Does not alter Awareness.
 12
 Wrong Room
 Skill
@@ -196,7 +196,7 @@ Skill
 13
 Blanket Fort
 Skill
-1 Nerve. Gain moderate Guard. Before your next turn, the first time an enemy Searches, gain additional light Guard.
+2 Nerve. Gain substantial Guard. Before your next turn, the first time an enemy Searches, gain additional moderate Guard.
 14
 Did You Hear That?
 Skill
@@ -208,7 +208,7 @@ Skill
 16
 Don't Move
 Skill
-1 Nerve. Choose an Unaware enemy. Apply 2 Fright to it and gain moderate Guard.
+2 Nerve. Choose an Unaware enemy. Apply 3 Fright to it and gain substantial Guard.
 17
 Wait For It
 Skill
@@ -247,7 +247,7 @@ Attack
 22
 Sock Drawer Lunge
 Attack
-1 Nerve. Deal moderate damage. If the target is Suspicious, draw one Trick.
+0 Nerve. Deal light damage. If the target is Suspicious, draw one Trick.
 23
 Big Eyes in the Dark
 Attack
@@ -271,7 +271,7 @@ Attack
 28
 Don't Look Behind You
 Attack
-1 Nerve. Deal moderate damage. Scare 5: After resolving, make a different Aware enemy Unaware. If there is no other enemy, gain light Guard.
+2 Nerve. Deal heavy damage. Scare 5: After resolving, make a different Aware enemy Unaware. If there is no other enemy, gain moderate Guard.
 29
 Long Arms
 Attack
@@ -279,15 +279,15 @@ Attack
 30
 Monster in the Mirror
 Attack
-1 Nerve. Deal light damage. Move up to 3 Fright from the target to another enemy, then apply 1 Fright to both. If no second enemy exists, apply 2 additional Fright to the target instead.
+0 Nerve. Deal light damage. Move up to 3 Fright from the target to another enemy, then apply 1 Fright to both. If no second enemy exists, apply 1 additional Fright to the target instead.
 31
 Wrong Side of Bed
 Attack
-2 Nerve. Deal heavy damage. You may spend up to 2 Lurk. Deal one additional light hit for each Lurk spent. All hits occur before an Unaware target becomes Suspicious.
+3 Nerve. Deal very heavy damage. You may spend up to 2 Lurk. Deal one additional light hit for each Lurk spent. All hits occur before an Unaware target becomes Suspicious.
 32
 BOO!
 Attack
-1 Nerve. Deal light damage. Scare 6: Deal heavy bonus damage. If the target was Unaware when the Scare triggered, gain 1 Lurk before it becomes Suspicious.
+2 Nerve. Deal light damage. Scare 6: Deal very heavy bonus damage. If the target was Unaware when the Scare triggered, gain 1 Lurk before it becomes Suspicious.
 ## Uncommon Skills
 Number
 Trick name
@@ -300,15 +300,15 @@ Skill
 34
 Scuttle Away
 Skill
-1 Nerve. Gain light Guard and make an Aware enemy Unaware. If that enemy currently intends to Attack Boggle, gain additional moderate Guard.
+2 Nerve. Gain moderate Guard and make an Aware enemy Unaware. If that enemy currently intends to Attack Boggle, gain additional moderate Guard.
 35
 Lump Under the Blanket
 Skill
-1 Nerve. Choose an enemy. The next time it becomes Suspicious before your next turn, apply 3 Fright to it.
+0 Nerve. Choose an enemy. The next time it becomes Suspicious before your next turn, apply 2 Fright to it.
 36
 Creaky Floorboard
 Skill
-1 Nerve. Apply 2 Fright to every Aware or Suspicious enemy and 1 Fright to every Unaware enemy.
+X Nerve. Spend all your Nerve. For each Nerve spent, apply 2 Fright to every Aware or Suspicious enemy and 1 Fright to every Unaware enemy.
 37
 No One Here But Dust
 Skill
@@ -324,7 +324,7 @@ Skill
 40
 Hide and Shriek
 Skill
-1 Nerve. Make an Aware enemy Unaware and apply 2 Fright to a different enemy. If there is no other enemy, apply 1 Fright to the hidden from enemy instead.
+2 Nerve. Make an Aware enemy Unaware and apply 4 Fright to a different enemy. If there is no other enemy, apply 2 Fright to the hidden from enemy instead.
 41
 Shiver in the Walls
 Skill
@@ -332,7 +332,7 @@ Skill
 42
 Emergency Pillow
 Skill
-1 Nerve. This Trick remains in your hand at the end of your turn. Gain substantial Guard. It costs 0 Nerve this turn if an enemy became Suspicious during the previous enemy turn.
+2 Nerve. This Trick remains in your hand at the end of your turn. Gain very substantial Guard. It costs 0 Nerve this turn if an enemy became Suspicious during the previous enemy turn.
 43
 Crawlspace Shortcut
 Skill
@@ -352,7 +352,7 @@ Skill
 47
 Bedtime Jitters
 Skill
-1 Nerve. You may spend 1 Lurk. If you do, apply 4 Fright to all enemies. Otherwise apply 1 Fright to all enemies.
+2 Nerve. You may spend 1 Lurk. If you do, apply 6 Fright to all enemies. Otherwise apply 2 Fright to all enemies.
 ## Uncommon Powers
 Number
 Trick name
@@ -365,7 +365,7 @@ Power
 49
 Quiet as Dust
 Power
-1 Nerve. The first Ambush Attack each turn makes its target Aware instead of Suspicious after resolving.
+2 Nerve. The first Ambush Attack each turn makes its target Aware instead of Suspicious after resolving.
 50
 Underbed Kingdom
 Power
@@ -400,7 +400,7 @@ Core effect
 56
 The Big One
 Attack
-3 Nerve. Deal heavy damage. Spend all Lurk. Deal one additional moderate hit for each Lurk spent. Ambush: The final hit deals heavy damage instead.
+4 Nerve. Deal substantial damage. Spend all Lurk. Deal one additional moderate hit for each Lurk spent. Ambush: The final hit deals substantial damage instead.
 57
 Check Under the Bed
 Attack

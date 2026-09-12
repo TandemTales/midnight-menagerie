@@ -151,7 +151,7 @@ Apply a moderate amount of Haunt.
 19
 Knock It Over
 Skill
-Disrupt an enemy's defense and apply Haunt.
+Costs no Nerve. Disrupt an enemy's defense a little and apply a little Haunt.
 20
 Soft Landing
 Skill
@@ -176,7 +176,7 @@ Spectral attack that bypasses enemy Guard.
 23
 Ambush from Nowhere
 Attack
-Strong attack that becomes dramatically cheaper while Ghoststep is active.
+Heavy attack with a steep printed cost that becomes dramatically cheaper for each Ghoststep you have.
 24
 Rattle the Chandelier
 Attack
@@ -233,7 +233,7 @@ Gain Ghoststep. Vanish.
 36
 Nope.
 Skill
-Protect against the next negative condition an enemy would apply this turn.
+Costs no Nerve. Protect against the next negative condition an enemy would apply this turn.
 37
 Curiosity
 Skill
@@ -281,7 +281,7 @@ Vanish another Trick from your hand and draw a replacement. Excellent for deck t
 48
 Midnight Grooming
 Skill
-Remove one negative condition from Marmalade and gain Guard.
+Costs no Nerve. Remove one negative condition from Marmalade and gain a little Guard.
 49
 Nine Lives, Nine Plans
 Skill

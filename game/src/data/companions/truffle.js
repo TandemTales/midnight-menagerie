@@ -233,25 +233,25 @@ const basics = [
 const commons = [
   {
     id: 'truffle/pokey-nibble', name: 'Pokey Nibble', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['shed'],
+    cost: 0, target: ENEMY, keywords: ['shed'],
     text: 'Deal {d} damage, plus {m0} if you have [Shed] this turn.',
     flavor: 'Pokier than it looks.',
-    nums: { d: 5, m0: 3 },
+    nums: { d: 3, m0: 3 },
     effect: eff((c) => U.hit(c, N(c).d + ((U.mm(c).shedThisTurn || 0) > 0 ? N(c).m0 : 0))),
-    upgrade: { nums: { d: 8, m0: 4 } },
+    upgrade: { nums: { d: 4, m0: 4 } },
   },
   {
     id: 'truffle/back-into-them', name: 'Back Into Them', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['bristle'],
+    cost: 2, target: ENEMY, keywords: ['bristle'],
     text: 'Deal {d} damage. If the target intends to Attack, gain {n} [Bristle].',
     flavor: 'Reverse, at speed, without looking.',
-    nums: { d: 5, n: 1 },
+    nums: { d: 12, n: 2 },
     effect: eff((c) => {
       const t = c.target;
       U.hit(c, N(c).d);
       if (t && t.pendingMove && ATTACK_INTENTS.has(t.pendingMove.intent)) bristle(c, N(c).n);
     }),
-    upgrade: { nums: { d: 8, n: 2 } },
+    upgrade: { nums: { d: 16, n: 3 } },
   },
   {
     id: 'truffle/shed-happens', name: 'Shed Happens', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -302,21 +302,21 @@ const commons = [
   },
   {
     id: 'truffle/gnaw-through-it', name: 'Gnaw Through It', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['ragged'],
+    cost: 2, target: ENEMY, keywords: ['ragged'],
     text: 'Deal {d} damage. While [Ragged], follow with {m0} more.',
     flavor: 'Slowly. Extremely slowly. But through.',
-    nums: { d: 7, m0: 5 },
+    nums: { d: 12, m0: 8 },
     effect: eff((c) => { U.hit(c, N(c).d); if (isRagged(c)) U.hitAt(c, c.target, N(c).m0); }),
-    upgrade: { nums: { d: 10, m0: 7 } },
+    upgrade: { nums: { d: 16, m0: 11 } },
   },
   {
     id: 'truffle/hunch-up', name: 'Hunch Up', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['ragged'],
+    cost: 2, target: SELF, keywords: ['ragged'],
     text: 'Gain {b} Guard, or {m0} while [Ragged].',
     flavor: 'The whole animal, folded inwards.',
-    nums: { b: 8, m0: 12 },
+    nums: { b: 13, m0: 19 },
     effect: eff((c) => U.guard(c, isRagged(c) ? N(c).m0 : N(c).b)),
-    upgrade: { nums: { b: 12, m0: 17 } },
+    upgrade: { nums: { b: 18, m0: 26 } },
   },
   {
     id: 'truffle/just-enough', name: 'Just Enough', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -369,12 +369,12 @@ const commons = [
   },
   {
     id: 'truffle/grow-back-weird', name: 'Grow Back Weird', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['regrow'],
+    cost: 0, target: SELF, keywords: ['regrow'],
     text: '[Regrow] {g}.',
     flavor: 'At angles. Always at angles.',
-    nums: { g: 3 },
+    nums: { g: 2 },
     effect: eff((c) => regrow(c, N(c).g)),
-    upgrade: { nums: { g: 5 } },
+    upgrade: { nums: { g: 3 } },
   },
   {
     id: 'truffle/bend-dont-break', name: 'Bend, Don’t Break', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -396,12 +396,12 @@ const commons = [
   },
   {
     id: 'truffle/shake-and-scoot', name: 'Shake and Scoot', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['shed'],
+    cost: 2, target: SELF, keywords: ['shed'],
     text: 'Gain {b} Guard, [Shed] {n}, then draw {c1}.',
     flavor: 'A shake, then a scoot. In that order.',
-    nums: { b: 4, n: 1, c1: 1 },
+    nums: { b: 9, n: 1, c1: 2 },
     effect: eff((c) => { U.guard(c, N(c).b); shed(c, N(c).n); U.draw(c, N(c).c1); }),
-    upgrade: { nums: { b: 7, n: 1, c1: 2 } },
+    upgrade: { nums: { b: 12, n: 1, c1: 3 } },
   },
   {
     id: 'truffle/carpet-check', name: 'Carpet Check', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -455,23 +455,27 @@ const uncommons = [
   },
   {
     id: 'truffle/quillstorm', name: 'Quillstorm', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 2, target: ALL_ENEMIES, keywords: ['shed'],
-    text: '[Shed] up to {n}. Each one throws {d} at a random enemy.',
+    cost: -1, target: ALL_ENEMIES, keywords: ['shed'],
+    text: 'Spend all your Nerve. [Shed] {n} for each Nerve spent. Each one throws {d} at a random enemy.',
     flavor: 'Briefly, the air is entirely quills.',
-    nums: { d: 7, n: 3 },
-    balance: { scalesWith: 'the Quills you are willing to throw away' },
-    effect: eff((c) => { const n = shed(c, N(c).n); for (let i = 0; i < n; i++) U.hitRandom(c, N(c).d); }),
-    upgrade: { nums: { d: 10, n: 4 } },
+    /* His X Trick. One Shed of n per Nerve spent (`c.x`), priced near his
+       1-Nerve Attacks: two throws and two Loose Quills a Nerve. It can only
+       throw what is on his back, so a Bare Truffle pours Nerve into nothing --
+       Regrow first, and banked Nerve (Loose Change, Carpet Check) makes it big. */
+    nums: { d: 4, n: 2 },
+    balance: { scalesWith: 'the Nerve poured in, and the Quills on his back to throw' },
+    effect: eff((c) => { const n = shed(c, N(c).n * (c.x || 0)); for (let i = 0; i < n; i++) U.hitRandom(c, N(c).d); }),
+    upgrade: { nums: { d: 6, n: 2 } },
   },
   {
     id: 'truffle/sweep-the-floor', name: 'Sweep the Floor', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['gather'],
+    cost: 2, target: ENEMY, keywords: ['gather'],
     text: '[Gather] up to {n}, then deal {d} plus {m0} for each one recovered.',
     flavor: 'Tidying, weaponised.',
-    nums: { d: 7, m0: 4, n: 3 },
+    nums: { d: 12, m0: 5, n: 3 },
     balance: { scalesWith: 'how many Loose Quills you manage to pick up first' },
     effect: eff((c) => { const got = gather(c, N(c).n); U.hit(c, N(c).d + got * N(c).m0); }),
-    upgrade: { nums: { d: 10, m0: 5, n: 3 } },
+    upgrade: { nums: { d: 16, m0: 7, n: 3 } },
   },
   {
     id: 'truffle/hedgehog-handshake', name: 'Hedgehog Handshake', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -488,30 +492,35 @@ const uncommons = [
   },
   {
     id: 'truffle/low-profile-high-spines', name: 'Low Profile, High Spines', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['ragged'],
+    cost: 2, target: ENEMY, keywords: ['ragged'],
     text: 'Deal {d} damage twice, or three times while [Ragged].',
     flavor: 'Very close to the floor and extremely unpleasant.',
-    nums: { d: 5, hits: 2 },
+    nums: { d: 8, hits: 2 },
     effect: eff((c) => { U.hitN(c, N(c).d, isRagged(c) ? 3 : 2); }),
-    upgrade: { nums: { d: 7, hits: 2 } },
+    upgrade: { nums: { d: 11, hits: 2 } },
   },
   {
     id: 'truffle/rotten-little-cannonball', name: 'Rotten Little Cannonball', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 2, target: ALL_ENEMIES, keywords: ['ragged'],
-    text: 'Deal {d} to all enemies. Costs 1 while [Ragged].',
+    cost: 4, target: ALL_ENEMIES, keywords: ['ragged'],
+    text: 'Deal {d} to all enemies. Costs 2 while [Ragged].',
     flavor: 'Fired from nowhere, by nobody, at everybody.',
-    nums: { d: 11 },
-    balance: { scalesWith: 'the whole room, and it costs 1 while Ragged' },
+    /* His 4-Nerve Trick, and Ragged is the way in: at half Courage (three
+       quarters under Close Enough to Dead) it costs 2, the same rate per Nerve
+       it always had while Ragged. A healthy Truffle pays the full 4 out of
+       banked Nerve -- Carpet Check, Loose Change, Still Wiggling. */
+    nums: { d: 24 },
+    balance: { scalesWith: 'the whole room, and it costs 2 while Ragged' },
     effect: eff((c) => U.hitAll(c, N(c).d)),
-    dynamicCost: (c) => (isRagged(c) ? 1 : 2),
-    upgrade: { nums: { d: 15 } },
+    // The 4 and the 2 here ARE the printed cost and the text: re-cost one, re-cost both.
+    dynamicCost: (c) => (isRagged(c) ? 2 : 4),
+    upgrade: { nums: { d: 32 } },
   },
   {
     id: 'truffle/crossfire', name: 'Crossfire', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['bristle'],
+    cost: 2, target: ENEMY, keywords: ['bristle'],
     text: 'Deal {d} to one enemy and {m0} to another. {n} [Bristle] per Attacker struck, up to 2.',
     flavor: 'Both of them, and neither of them meant it.',
-    nums: { d: 7, m0: 5, n: 1 },
+    nums: { d: 12, m0: 8, n: 1 },
     effect: eff((c) => {
       const t = c.target;
       U.hit(c, N(c).d);
@@ -523,7 +532,7 @@ const uncommons = [
         if (e2 && e2.pendingMove && ATTACK_INTENTS.has(e2.pendingMove.intent)) { bristle(c, N(c).n); got++; }
       }
     }),
-    upgrade: { nums: { d: 10, m0: 7, n: 1 } },
+    upgrade: { nums: { d: 17, m0: 11, n: 1 } },
   },
   {
     id: 'truffle/rear-end-first', name: 'Rear End First', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -536,12 +545,12 @@ const uncommons = [
   },
   {
     id: 'truffle/scrape-along-the-wall', name: 'Scrape Along the Wall', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['gather'],
+    cost: 2, target: ENEMY, keywords: ['gather'],
     text: 'Deal {d} damage, [Gather] {n}, and gain {b} Guard.',
     flavor: 'Leaves a mark on the wallpaper and a trail of quills.',
-    nums: { d: 7, n: 1, b: 4 },
+    nums: { d: 12, n: 1, b: 7 },
     effect: eff((c) => { U.hit(c, N(c).d); gather(c, N(c).n); U.guard(c, N(c).b); }),
-    upgrade: { nums: { d: 10, n: 2, b: 6 } },
+    upgrade: { nums: { d: 16, n: 2, b: 10 } },
   },
   {
     id: 'truffle/needle-exchange', name: 'Needle Exchange', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -554,26 +563,28 @@ const uncommons = [
   },
   {
     id: 'truffle/quill-tax', name: 'Quill Tax', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['shed'],
+    cost: 2, target: ENEMY, keywords: ['shed'],
     text: 'Deal {d} damage. If the target intends to Attack, weaken it and [Shed] {g}.',
     flavor: 'Everyone pays. Nobody agreed to this.',
-    nums: { d: 7, n: 1, g: 1 },
+    /* Weak stays at n: the text says "weaken it" and never shows the number,
+       so the extra Nerve buys damage the player can read. */
+    nums: { d: 13, n: 1, g: 1 },
     effect: eff((c) => {
       const t = c.target;
       U.hit(c, N(c).d);
       if (t && t.pendingMove && ATTACK_INTENTS.has(t.pendingMove.intent)) { U.apply(c, t, 'weak', N(c).n); shed(c, N(c).g); }
     }),
-    upgrade: { nums: { d: 10, n: 2, g: 1 } },
+    upgrade: { nums: { d: 18, n: 2, g: 1 } },
   },
   {
     id: 'truffle/carpet-skewer', name: 'Carpet Skewer', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 2, target: ENEMY, keywords: ['loose-quill'],
+    cost: 3, target: ENEMY, keywords: ['loose-quill'],
     text: 'Spend up to {n} [Loose Quill]s. Deal {d} plus {m0} for each.',
     flavor: 'Straight up through the pile of the rug.',
-    nums: { d: 11, m0: 4, n: 4 },
+    nums: { d: 18, m0: 5, n: 4 },
     balance: { scalesWith: 'the Loose Quills on the floor, up to four of them' },
     effect: eff((c) => { const spent = spendLoose(c, N(c).n); U.hit(c, N(c).d + spent * N(c).m0); }),
-    upgrade: { nums: { d: 15, m0: 6, n: 4 } },
+    upgrade: { nums: { d: 25, m0: 7, n: 4 } },
   },
   {
     id: 'truffle/no-room-to-back-up', name: 'No Room to Back Up', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -663,21 +674,21 @@ const uncommons = [
   },
   {
     id: 'truffle/down-in-front', name: 'Down in Front', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['bristle'],
+    cost: 2, target: SELF, keywords: ['bristle'],
     text: 'Gain {b} Guard, then lose {n} [Bristle]. With none to lose, gain only {m0}.',
     flavor: 'Everybody down.',
-    nums: { b: 12, m0: 6, n: 1 },
+    nums: { b: 20, m0: 11, n: 1 },
     effect: eff((c) => { if (unbristle(c, N(c).n) > 0) U.guard(c, N(c).b); else U.guard(c, N(c).m0); }),
-    upgrade: { nums: { b: 16, m0: 9, n: 1 } },
+    upgrade: { nums: { b: 27, m0: 15, n: 1 } },
   },
   {
     id: 'truffle/quill-reserve', name: 'Quill Reserve', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['shed'],
+    cost: 2, target: SELF, keywords: ['shed'],
     text: '[Shed] {n} to gain {b} Guard.',
     flavor: 'Kept back for exactly this.',
-    nums: { n: 2, b: 14 },
+    nums: { n: 2, b: 22 },
     effect: eff((c) => { if (shed(c, N(c).n) >= N(c).n) U.guard(c, N(c).b); }),
-    upgrade: { nums: { n: 2, b: 19 } },
+    upgrade: { nums: { n: 2, b: 30 } },
   },
   {
     id: 'truffle/keep-the-good-bits', name: 'Keep the Good Bits', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -718,12 +729,12 @@ const uncommons = [
   },
   {
     id: 'truffle/shake-off-the-cobwebs', name: 'Shake Off the Cobwebs', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['shed', 'regrow'],
+    cost: 0, target: SELF, keywords: ['shed', 'regrow'],
     text: 'Remove a debuff and [Shed] {n}. If one went, [Regrow] {g}.',
     flavor: 'Most of it comes off.',
-    nums: { n: 1, g: 2 },
+    nums: { n: 1, g: 1 },
     effect: eff((c) => { const removed = U.removeOneDebuff(c, c.self); shed(c, N(c).n); if (removed) regrow(c, N(c).g); }),
-    upgrade: { nums: { n: 1, g: 4 } },
+    upgrade: { nums: { n: 1, g: 2 } },
   },
   {
     id: 'truffle/hold-still-almost', name: 'Hold Still, Almost', companion: SLUG, type: SKILL, rarity: UNCOMMON,

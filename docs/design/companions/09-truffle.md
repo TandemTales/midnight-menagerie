@@ -158,11 +158,11 @@ Core effect
 1
 Pokey Nibble
 Attack
-1 Nerve. Deal light damage. If you have Shed a Quill this turn, deal slightly more damage.
+0 Nerve. Deal light damage. If you have Shed a Quill this turn, deal slightly more damage.
 2
 Back Into Them
 Attack
-1 Nerve. Deal light damage. If the target intends to Attack, gain 1 Bristle.
+2 Nerve. Deal heavy damage. If the target intends to Attack, gain 2 Bristle.
 3
 Shed Happens
 Attack
@@ -186,11 +186,11 @@ Attack
 8
 Gnaw Through It
 Attack
-1 Nerve. Deal moderate damage. If Ragged, follow with an additional light hit.
+2 Nerve. Deal heavy damage. If Ragged, follow with an additional moderate hit.
 9
 Hunch Up
 Skill
-1 Nerve. Gain moderate Guard.
+2 Nerve. Gain substantial Guard.
 10
 Just Enough
 Skill
@@ -210,7 +210,7 @@ Skill
 14
 Grow Back Weird
 Skill
-1 Nerve. Regrow 3.
+0 Nerve. Regrow 2.
 15
 Bend, Don’t Break
 Skill
@@ -222,7 +222,7 @@ Skill
 17
 Shake and Scoot
 Skill
-1 Nerve. Gain light Guard, Shed 1, then draw 1 Trick.
+2 Nerve. Gain moderate Guard, Shed 1, then draw 2 Tricks.
 18
 Carpet Check
 Skill
@@ -253,11 +253,11 @@ Attack
 22
 Quillstorm
 Attack
-2 Nerve. Shed up to 3 Quills. For each Quill Shed, deal a moderate light hit to a random enemy.
+X Nerve. Spend all your Nerve. Shed 2 Quills for each Nerve spent. For each Quill Shed, deal a light hit to a random enemy.
 23
 Sweep the Floor
 Attack
-1 Nerve. Gather up to 3 Loose Quills, then deal moderate damage plus additional damage for each Quill successfully Gathered.
+2 Nerve. Gather up to 3 Loose Quills, then deal heavy damage plus additional damage for each Quill successfully Gathered.
 24
 Hedgehog Handshake
 Attack
@@ -265,15 +265,15 @@ Attack
 25
 Low Profile, High Spines
 Attack
-1 Nerve. Deal light damage twice. If Ragged, hit a third time.
+2 Nerve. Deal moderate damage twice. If Ragged, hit a third time.
 26
 Rotten Little Cannonball
 Attack
-2 Nerve. Deal heavy damage to all enemies. While Ragged, costs 1 Nerve.
+4 Nerve. Deal massive damage to all enemies. While Ragged, costs 2 Nerve.
 27
 Crossfire
 Attack
-1 Nerve. Deal moderate damage to one enemy and light damage to another. Gain 1 Bristle for each struck enemy that intends to Attack, maximum 2.
+2 Nerve. Deal heavy damage to one enemy and moderate damage to another. Gain 1 Bristle for each struck enemy that intends to Attack, maximum 2.
 28
 Rear End First
 Attack
@@ -281,7 +281,7 @@ Attack
 29
 Scrape Along the Wall
 Attack
-1 Nerve. Deal moderate damage, Gather 1, and gain light Guard.
+2 Nerve. Deal heavy damage, Gather 1, and gain moderate Guard.
 30
 Needle Exchange
 Attack
@@ -289,11 +289,11 @@ Attack
 31
 Quill Tax
 Attack
-1 Nerve. Deal moderate damage. If the target intends to Attack, slightly reduce that Attack’s damage this turn and Shed 1.
+2 Nerve. Deal heavy damage. If the target intends to Attack, slightly reduce that Attack’s damage this turn and Shed 1.
 32
 Carpet Skewer
 Attack
-2 Nerve. Spend up to 4 Loose Quills. Deal heavy damage with additional damage for each Quill spent.
+3 Nerve. Spend up to 4 Loose Quills. Deal very heavy damage with additional damage for each Quill spent.
 33
 No Room to Back Up
 Attack
@@ -334,11 +334,11 @@ Skill
 41
 Down in Front
 Skill
-1 Nerve. Gain substantial Guard, then lose 1 Bristle. If you have no Bristle to lose, gain only moderate Guard.
+2 Nerve. Gain heavy Guard, then lose 1 Bristle. If you have no Bristle to lose, gain only substantial Guard.
 42
 Quill Reserve
 Skill
-1 Nerve. Shed 2 to gain substantial Guard.
+2 Nerve. Shed 2 to gain heavy Guard.
 43
 Keep the Good Bits
 Skill
@@ -354,7 +354,7 @@ Skill
 46
 Shake Off the Cobwebs
 Skill
-1 Nerve. Remove one removable negative status from Truffle and Shed 1. If a status was removed, Regrow 2 afterward.
+0 Nerve. Remove one removable negative status from Truffle and Shed 1. If a status was removed, Regrow 1 afterward.
 47
 Hold Still, Almost
 Skill

@@ -503,12 +503,12 @@ const basics = [
 const commons = [
   {
     id: 'boggle/bedframe-bonk', name: 'Bedframe Bonk', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['ambush', 'fright'],
+    cost: 2, target: ENEMY, keywords: ['ambush', 'fright'],
     text: 'Deal {d} damage. [Ambush]: apply {n} [Fright] before the target becomes [Suspicious].',
     flavor: 'The frame is his. He knows every slat by name.',
-    nums: { d: 7, n: 2 },
+    nums: { d: 11, n: 3 },
     effect: eff((c) => { const a = ambush(c, c.target); U.hit(c, N(c).d); if (a) fright(c, c.target, N(c).n); }),
-    upgrade: { nums: { d: 10, n: 3 } },
+    upgrade: { nums: { d: 15, n: 4 } },
   },
   {
     id: 'boggle/toe-nibbler', name: 'Toe Nibbler', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -553,12 +553,12 @@ const commons = [
   },
   {
     id: 'boggle/blanket-snap', name: 'Blanket Snap', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['suspicious', 'fright'],
+    cost: 2, target: ENEMY, keywords: ['suspicious', 'fright'],
     text: 'Deal {d} damage. If the target is [Suspicious], apply {n} [Fright].',
     flavor: 'The blanket moves on its own, once, quickly.',
-    nums: { d: 7, n: 3 },
+    nums: { d: 11, n: 4 },
     effect: eff((c) => { const sus = isSuspicious(c, c.target); ambush(c, c.target); U.hit(c, N(c).d); if (sus) fright(c, c.target, N(c).n); }),
-    upgrade: { nums: { d: 10, n: 4 } },
+    upgrade: { nums: { d: 15, n: 5 } },
   },
   {
     id: 'boggle/tiny-teeth', name: 'Tiny Teeth', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -596,21 +596,21 @@ const commons = [
   },
   {
     id: 'boggle/hold-very-still', name: 'Hold Very Still', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['suspicious'],
+    cost: 2, target: SELF, keywords: ['suspicious'],
     text: 'Gain {b} Guard. Gain {b2} instead if any enemy is [Suspicious].',
     flavor: 'Not breathing is a skill. He has had practice.',
-    nums: { b: 6, b2: 10 },
+    nums: { b: 11, b2: 15 },
     effect: eff((c) => U.guard(c, suspiciousEnemies(c).length ? N(c).b2 : N(c).b)),
-    upgrade: { nums: { b: 9, b2: 14 } },
+    upgrade: { nums: { b: 15, b2: 20 } },
   },
   {
     id: 'boggle/creak', name: 'Creak...', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['fright', 'unaware'],
+    cost: 0, target: ENEMY, keywords: ['fright', 'unaware'],
     text: 'Apply {n} [Fright], or {n2} if the target is [Unaware]. Does not change [Awareness].',
     flavor: 'One board. Always the same board.',
-    nums: { n: 2, n2: 3 },
+    nums: { n: 1, n2: 2 },
     effect: eff((c) => fright(c, c.target, isUnaware(c, c.target) ? N(c).n2 : N(c).n)),
-    upgrade: { nums: { n: 3, n2: 5 } },
+    upgrade: { nums: { n: 2, n2: 3 } },
   },
   {
     id: 'boggle/wrong-room', name: 'Wrong Room', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -623,12 +623,12 @@ const commons = [
   },
   {
     id: 'boggle/blanket-fort', name: 'Blanket Fort', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['search'],
+    cost: 2, target: SELF, keywords: ['search'],
     text: 'Gain {b} Guard. Before your next turn, the first time an enemy [Search]es, gain {b2} Guard.',
     flavor: 'Structurally unsound. Emotionally impregnable.',
-    nums: { b: 6, b2: 4 },
+    nums: { b: 11, b2: 6 },
     effect: eff((c) => { U.guard(c, N(c).b); U.mm(c).fortGuard = N(c).b2; }),
-    upgrade: { nums: { b: 9, b2: 7 } },
+    upgrade: { nums: { b: 15, b2: 9 } },
   },
   {
     id: 'boggle/did-you-hear-that', name: 'Did You Hear That?', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -653,12 +653,12 @@ const commons = [
   },
   {
     id: 'boggle/dont-move', name: 'Don’t Move', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['unaware', 'fright'],
+    cost: 2, target: ENEMY, keywords: ['unaware', 'fright'],
     text: 'Choose an [Unaware] enemy. Apply {n} [Fright] to it and gain {b} Guard.',
     flavor: 'Neither of them moves. One of them is enjoying it.',
-    nums: { n: 2, b: 6 },
+    nums: { n: 3, b: 11 },
     effect: eff((c) => { const t = isUnaware(c, c.target) ? c.target : unawareEnemies(c)[0]; if (t) { fright(c, t, N(c).n); U.guard(c, N(c).b); } }),
-    upgrade: { nums: { n: 3, b: 9 } },
+    upgrade: { nums: { n: 5, b: 15 } },
   },
   {
     id: 'boggle/wait-for-it', name: 'Wait For It', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -724,12 +724,12 @@ const uncommons = [
   },
   {
     id: 'boggle/sock-drawer-lunge', name: 'Sock Drawer Lunge', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['suspicious'],
+    cost: 0, target: ENEMY, keywords: ['suspicious'],
     text: 'Deal {d} damage. If the target is [Suspicious], draw {n} Trick.',
     flavor: 'Nobody has ever found the other sock either.',
-    nums: { d: 7, n: 1 },
+    nums: { d: 4, n: 1 },
     effect: eff((c) => { const sus = isSuspicious(c, c.target); ambush(c, c.target); U.hit(c, N(c).d); if (sus) U.draw(c, N(c).n); }),
-    upgrade: { nums: { d: 10, n: 2 } },
+    upgrade: { nums: { d: 6, n: 1 } },
   },
   {
     id: 'boggle/big-eyes-in-the-dark', name: 'Big Eyes in the Dark', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -804,10 +804,10 @@ const uncommons = [
   },
   {
     id: 'boggle/dont-look-behind-you', name: 'Don’t Look Behind You', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['scare', 'unaware'],
+    cost: 2, target: ENEMY, keywords: ['scare', 'unaware'],
     text: 'Deal {d} damage. [Scare] 5: make a different Aware enemy [Unaware]. If there is none, gain {b} Guard.',
     flavor: 'Good advice, universally ignored.',
-    nums: { d: 7, b: 4 },
+    nums: { d: 12, b: 7 },
     effect: eff((c) => {
       ambush(c, c.target);
       U.hit(c, N(c).d);
@@ -816,7 +816,7 @@ const uncommons = [
         if (other) hide(x, other); else U.guard(x, N(x).b);
       });
     }),
-    upgrade: { nums: { d: 10, b: 7 } },
+    upgrade: { nums: { d: 16, b: 10 } },
   },
   {
     id: 'boggle/long-arms', name: 'Long Arms', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -836,10 +836,10 @@ const uncommons = [
   },
   {
     id: 'boggle/monster-in-the-mirror', name: 'Monster in the Mirror', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['fright'],
+    cost: 0, target: ENEMY, keywords: ['fright'],
     text: 'Deal {d} damage. Move up to {n} [Fright] from the target to another enemy, then apply 1 to both. With no second enemy, apply {n2} to the target instead.',
     flavor: 'It is behind you in there too.',
-    nums: { d: 5, n: 3, n2: 2 },
+    nums: { d: 3, n: 3, n2: 1 },
     effect: eff((c) => {
       const t = c.target;
       ambush(c, t);
@@ -850,14 +850,14 @@ const uncommons = [
       if (moved > 0) { U.unapply(c, t, FRIGHT, moved); fright(c, other, moved); }
       fright(c, t, 1); fright(c, other, 1);
     }),
-    upgrade: { nums: { d: 7, n: 5, n2: 4 } },
+    upgrade: { nums: { d: 5, n: 5, n2: 2 } },
   },
   {
     id: 'boggle/wrong-side-of-bed', name: 'Wrong Side of Bed', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 2, target: ENEMY, keywords: ['lurk'],
+    cost: 3, target: ENEMY, keywords: ['lurk'],
     text: 'Deal {d} damage. Spend up to {l} [Lurk]; deal {d2} more for each. All hits land before the target becomes [Suspicious].',
     flavor: 'There is a correct side. This was not it.',
-    nums: { d: 11, d2: 4, l: 2 },
+    nums: { d: 18, d2: 5, l: 2 },
     balance: { scalesWith: 'Lurk — up to two more hits, all of them landing before the target turns Suspicious' },
     effect: eff((c) => {
       const t = c.target;
@@ -866,14 +866,14 @@ const uncommons = [
       const spent = spendLurk(c, N(c).l);
       for (let i = 0; i < spent; i++) U.hitAt(c, t, N(c).d2);
     }),
-    upgrade: { nums: { d: 15, d2: 6, l: 3 } },
+    upgrade: { nums: { d: 24, d2: 7, l: 3 } },
   },
   {
     id: 'boggle/boo', name: 'BOO!', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['scare', 'lurk'],
+    cost: 2, target: ENEMY, keywords: ['scare', 'lurk'],
     text: 'Deal {d} damage. [Scare] 6: deal {m0} more. If the target was [Unaware], gain {l} [Lurk] first.',
     flavor: 'The whole point of him, really.',
-    nums: { d: 4, m0: 11, l: 1 },
+    nums: { d: 6, m0: 17, l: 1 },
     effect: eff((c) => {
       const t = c.target;
       const hidden = isUnaware(c, t);
@@ -881,7 +881,7 @@ const uncommons = [
       U.hit(c, N(c).d);
       scare(c, t, 6, (x) => { if (hidden) gainLurk(x, N(x).l); U.hitAt(x, t, N(x).m0); });
     }),
-    upgrade: { nums: { d: 6, m0: 15, l: 1 } },
+    upgrade: { nums: { d: 8, m0: 23, l: 1 } },
   },
 
   // ── Skills (15) ──
@@ -901,33 +901,36 @@ const uncommons = [
   },
   {
     id: 'boggle/scuttle-away', name: 'Scuttle Away', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['unaware'],
+    cost: 2, target: ENEMY, keywords: ['unaware'],
     text: 'Gain {b} Guard and make an Aware enemy [Unaware]. If it meant to Attack you, gain {b2} more.',
     flavor: 'Low, fast, and entirely under the furniture.',
-    nums: { b: 4, b2: 6 },
+    nums: { b: 6, b2: 8 },
     effect: eff((c) => {
       const wasAimed = aimedAtMe(c, c.target);
       U.guard(c, N(c).b);
       if (hide(c, c.target) && wasAimed) U.guard(c, N(c).b2);
     }),
-    upgrade: { nums: { b: 7, b2: 9 } },
+    upgrade: { nums: { b: 9, b2: 11 } },
   },
   {
     id: 'boggle/lump-under-the-blanket', name: 'Lump Under the Blanket', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['suspicious', 'fright'],
+    cost: 0, target: ENEMY, keywords: ['suspicious', 'fright'],
     text: 'Choose an enemy. The next time it becomes [Suspicious] before your next turn, apply {n} [Fright].',
     flavor: 'That is not a knee.',
-    nums: { n: 3 },
+    nums: { n: 2 },
     effect: eff((c) => { mark(c, c.target, 'lump', N(c).n); }),
-    upgrade: { nums: { n: 5 } },
+    upgrade: { nums: { n: 3 } },
   },
   {
     id: 'boggle/creaky-floorboard', name: 'Creaky Floorboard', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: ALL_ENEMIES, keywords: ['fright', 'awareness'],
-    text: 'Apply {n} [Fright] to every Aware or [Suspicious] enemy and {n2} to every [Unaware] one.',
+    cost: -1, target: ALL_ENEMIES, keywords: ['fright', 'awareness'],
+    text: 'Spend all your Nerve. For each Nerve spent, apply {n} [Fright] to every Aware or [Suspicious] enemy and {n2} to every [Unaware] one.',
     flavor: 'The house helps.',
     nums: { n: 2, n2: 1 },
-    effect: eff((c) => { for (const e of U.enemies(c)) fright(c, e, isUnaware(c, e) ? N(c).n2 : N(c).n); }),
+    effect: eff((c) => {
+      const x = c.x || 0;
+      for (const e of U.enemies(c)) fright(c, e, (isUnaware(c, e) ? N(c).n2 : N(c).n) * x);
+    }),
     upgrade: { nums: { n: 3, n2: 2 } },
   },
   {
@@ -971,10 +974,10 @@ const uncommons = [
   },
   {
     id: 'boggle/hide-and-shriek', name: 'Hide and Shriek', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['unaware', 'fright'],
+    cost: 2, target: ENEMY, keywords: ['unaware', 'fright'],
     text: 'Make an Aware enemy [Unaware] and apply {n} [Fright] to a different enemy. With no other enemy, apply {n2} to that one.',
     flavor: 'The shriek is the fun part.',
-    nums: { n: 2, n2: 1 },
+    nums: { n: 4, n2: 2 },
     effect: eff((c) => {
       const t = c.target;
       const hid = hide(c, t);
@@ -982,7 +985,7 @@ const uncommons = [
       if (other) fright(c, other, N(c).n);
       else if (hid) fright(c, t, N(c).n2);
     }),
-    upgrade: { nums: { n: 4, n2: 2 } },
+    upgrade: { nums: { n: 6, n2: 3 } },
   },
   {
     id: 'boggle/shiver-in-the-walls', name: 'Shiver in the Walls', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -995,14 +998,14 @@ const uncommons = [
   },
   {
     id: 'boggle/emergency-pillow', name: 'Emergency Pillow', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['suspicious'],
+    cost: 2, target: SELF, keywords: ['suspicious'],
     text: 'Retain. Gain {b} Guard. Costs 0 this turn if an enemy became [Suspicious] during the last enemy turn.',
     flavor: 'Kept under the pillow, which is itself under the bed.',
-    nums: { b: 10 },
+    nums: { b: 15 },
     effect: eff((c) => U.guard(c, N(c).b)),
     retain: true,
-    dynamicCost: (c) => (U.mm(c).suspiciousLastEnemyTurn ? 0 : 1),
-    upgrade: { nums: { b: 14 } },
+    dynamicCost: (c) => (U.mm(c).suspiciousLastEnemyTurn ? 0 : 2),
+    upgrade: { nums: { b: 21 } },
   },
   {
     id: 'boggle/crawlspace-shortcut', name: 'Crawlspace Shortcut', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -1061,12 +1064,12 @@ const uncommons = [
   },
   {
     id: 'boggle/bedtime-jitters', name: 'Bedtime Jitters', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: ALL_ENEMIES, keywords: ['lurk', 'fright'],
+    cost: 2, target: ALL_ENEMIES, keywords: ['lurk', 'fright'],
     text: 'You may spend {l} [Lurk]. If you do, apply {n2} [Fright] to all enemies; otherwise apply {n}.',
     flavor: 'It is nearly bedtime. It is always nearly bedtime.',
-    nums: { l: 1, n: 1, n2: 4 },
+    nums: { l: 1, n: 2, n2: 6 },
     effect: eff((c) => { const spent = spendLurk(c, N(c).l); frightAll(c, spent >= N(c).l ? N(c).n2 : N(c).n); }),
-    upgrade: { nums: { l: 1, n: 2, n2: 6 } },
+    upgrade: { nums: { l: 1, n: 3, n2: 9 } },
   },
 
   // ── Powers (8) ──
@@ -1081,12 +1084,12 @@ const uncommons = [
   },
   {
     id: 'boggle/quiet-as-dust', name: 'Quiet as Dust', companion: SLUG, type: POWER, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['ambush', 'suspicious'],
+    cost: 2, target: SELF, keywords: ['ambush', 'suspicious'],
     text: 'The first [Ambush] Attack each turn leaves its target Aware instead of [Suspicious].',
     flavor: 'He has had a very long time to practise being quiet.',
     nums: {},
     effect: eff((c) => power(c, 'boggle/quiet-as-dust', 1, (x) => { U.mm(x).quietAsDust = true; })),
-    upgrade: { cost: 0 },
+    upgrade: { cost: 1 },
   },
   {
     id: 'boggle/underbed-kingdom', name: 'Underbed Kingdom', companion: SLUG, type: POWER, rarity: UNCOMMON,
@@ -1151,11 +1154,11 @@ const rares = [
   // ── Attacks (8) ──
   {
     id: 'boggle/the-big-one', name: 'The Big One', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 3, target: ENEMY, keywords: ['lurk', 'ambush'],
+    cost: 4, target: ENEMY, keywords: ['lurk', 'ambush'],
     text: 'Deal {d} damage. Spend all [Lurk]; deal {d2} more for each. [Ambush]: the last hit deals {d3} instead.',
     flavor: 'Everything he has been saving up, all at once.',
-    nums: { d: 11, d2: 7, d3: 11 },
-    balance: { scalesWith: 'every point of Lurk you have banked — at 5 Lurk this is 11 + five more hits' },
+    nums: { d: 16, d2: 9, d3: 16 },
+    balance: { scalesWith: 'every point of Lurk you have banked — at 5 Lurk this is 16 + five more hits' },
     effect: eff((c) => {
       const t = c.target;
       const a = ambush(c, t);
@@ -1166,7 +1169,7 @@ const rares = [
         U.hitAt(c, t, last && a ? N(c).d3 : N(c).d2);
       }
     }),
-    upgrade: { nums: { d: 15, d2: 10, d3: 15 } },
+    upgrade: { nums: { d: 22, d2: 12, d3: 22 } },
   },
   {
     id: 'boggle/check-under-the-bed', name: 'Check Under the Bed', companion: SLUG, type: ATTACK, rarity: RARE,

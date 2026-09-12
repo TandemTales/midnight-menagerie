@@ -131,11 +131,11 @@ Attack
 2
 Tailbone Thump
 Attack
-1 Nerve. Deal moderate damage. If Whole, gain a little Guard.
+2 Nerve. Deal moderate damage. If Whole, gain moderate Guard.
 3
 Clatter Pounce
 Attack
-1 Nerve. Deal light damage to all enemies. Deal additional damage if Scattered.
+2 Nerve. Deal moderate damage to all enemies. Deal additional damage if Scattered.
 4
 Skull Boop
 Attack
@@ -191,7 +191,7 @@ Skill
 17
 Under the Couch
 Skill
-1 Nerve. Bury another Trick from your hand. Gain substantial Guard. The first time that Trick is played after being Dug Up, it costs 1 less that turn.
+2 Nerve. Bury another Trick from your hand. Gain substantial Guard. The first time that Trick is played after being Dug Up, it costs 1 less that turn.
 18
 Spare Parts
 Skill
@@ -203,7 +203,7 @@ Skill
 20
 Good Dog
 Skill
-1 Nerve. Gain moderate Guard. If you Fetched or Dug Up a Trick this turn, Reattach 1 Bone.
+2 Nerve. Gain substantial Guard. If you Fetched or Dug Up a Trick this turn, Reattach 1 Bone.
 ### Common pool function
 These Commons establish five foundational packages.
 Scatter: Rib Rattle, Shake It Loose, Full Body Tackle.
@@ -226,7 +226,7 @@ Attack
 22
 Dug Up Dinner
 Attack
-1 Nerve. Deal moderate damage. If this Trick has a Dug Up marker, deal additional damage and Reattach 1 Bone.
+2 Nerve. Deal heavy damage. If this Trick has a Dug Up marker, deal additional damage and Reattach 1 Bone.
 23
 Scattershot Skeleton
 Attack
@@ -238,11 +238,11 @@ Attack
 25
 Heel!
 Attack
-1 Nerve. Deal moderate damage and Reattach 1 Bone. If this makes you Whole, repeat the attack.
+2 Nerve. Deal moderate damage and Reattach 1 Bone. If this makes you Whole, repeat the attack.
 26
 Off Leash
 Attack
-1 Nerve. Deal light damage once, plus one additional light hit for each Rattle this turn, up to four additional hits.
+2 Nerve. Deal light damage once, plus one additional light hit for each Rattle this turn, up to four additional hits.
 27
 Missing Piece Missile
 Attack
@@ -250,7 +250,7 @@ Attack
 28
 Jawbone Jamboree
 Attack
-2 Nerve. Deal heavy damage. Shed 2 Bones afterward. If this makes you Scattered, deal light damage to all other enemies.
+3 Nerve. Deal very heavy damage. Shed 2 Bones afterward. If this makes you Scattered, deal moderate damage to all other enemies.
 29
 Excavation Frenzy
 Attack
@@ -258,7 +258,7 @@ Attack
 30
 Toss and Chase
 Attack
-1 Nerve. Deal moderate damage. Choose a non Slobbered Trick in your discard pile and place it on top of your draw pile. This is not Fetching.
+2 Nerve. Deal moderate damage. Choose a non Slobbered Trick in your discard pile and place it on top of your draw pile. This is not Fetching.
 31
 Good as New
 Attack
@@ -266,7 +266,7 @@ Attack
 32
 Take Me Apart
 Attack
-1 Nerve. Deal moderate damage. You may Shed up to 2 Bones. Repeat a light hit once for each Bone actually Shed.
+X Nerve. Spend all your Nerve. For each Nerve spent, deal moderate damage and Shed 1 Bone. Each Bone that actually comes off is a separate Rattle.
 ## Uncommon Skills
 #
 Trick name
@@ -275,7 +275,7 @@ Core effect
 33
 Roll Over
 Skill
-1 Nerve. Set your Loose Bones to exactly 3 by either Shedding or Reattaching the required amount. This counts as one Rattle if your total changes. Gain moderate Guard.
+2 Nerve. Set your Loose Bones to exactly 3 by either Shedding or Reattaching the required amount. This counts as one Rattle if your total changes. Gain substantial Guard.
 34
 Call That Back
 Skill
@@ -291,7 +291,7 @@ Skill
 37
 Dig Like Crazy
 Skill
-1 Nerve. Dig Up up to two Tricks. Then discard 1 Trick.
+2 Nerve. Dig Up up to three Tricks. Then discard 1 Trick.
 38
 Bury the Evidence
 Skill
@@ -303,7 +303,7 @@ Skill
 40
 Pile of Me
 Skill
-1 Nerve. Gain Guard based on your current Loose Bones, then Reattach all Bones.
+2 Nerve. Gain Guard based on your current Loose Bones, then Reattach all Bones.
 41
 Emergency Reassembly
 Skill
@@ -348,7 +348,7 @@ Core effect
 50
 Rattletrap
 Power
-1 Nerve. The first time you Rattle each turn, deal light damage to all enemies.
+2 Nerve. The first time you Rattle each turn, deal light damage to all enemies.
 51
 Scent Memory
 Power
@@ -364,11 +364,11 @@ Power
 54
 Tighten the Collar
 Power
-1 Nerve. The first time each turn you become Whole, gain 1 additional Nerve at the start of your next turn.
+2 Nerve. The first time each turn you become Whole, gain 1 additional Nerve at the start of your next turn.
 55
 Tail Going A Mile A Minute
 Power
-1 Nerve. The first Attack you play after Fetching or Digging Up a Trick each turn deals substantial additional damage.
+2 Nerve. The first Attack you play after Fetching or Digging Up a Trick each turn deals substantial additional damage.
 ### Why the Uncommons matter
 This is where Bones begins specializing.
 Rattle decks receive Jingle Collar, Off Leash, and Rattletrap.
@@ -391,11 +391,11 @@ Core effect
 56
 Every Bone at Once
 Attack
-3 Nerve. Can only be played while Whole. Deal massive damage to all enemies, then Shed 6 Bones.
+4 Nerve. Can only be played while Whole. Deal massive damage to all enemies, then Shed 6 Bones.
 57
 Bone A Fide Missile
 Attack
-1 Nerve. Reattach any number of Bones as an additional cost, minimum 1. Deal moderate damage, plus one light hit for each Bone Reattached. If this makes you Whole, draw 1 Trick.
+2 Nerve. Reattach any number of Bones as an additional cost, minimum 1. Deal heavy damage, plus one moderate hit for each Bone Reattached. If this makes you Whole, draw 1 Trick.
 58
 Fetch the Moon
 Attack
@@ -411,11 +411,11 @@ Attack
 61
 Dogpile of One
 Attack
-2 Nerve. Deal heavy damage. Add one light hit for each Trick you Fetched or Dug Up this turn, up to four additional hits.
+3 Nerve. Deal very heavy damage. Add one moderate hit for each Trick you Fetched or Dug Up this turn, up to four additional hits.
 62
 Headless Rush
 Attack
-1 Nerve. Deal heavy damage and Shed 1 Bone. The first time each turn this Trick causes you to become Scattered, return it to your hand, make it Slobbered, and make it cost 0 for the rest of the turn.
+2 Nerve. Deal very heavy damage and Shed 1 Bone. The first time each turn this Trick causes you to become Scattered, return it to your hand, make it Slobbered, and make it cost 0 for the rest of the turn.
 63
 Dig Up a Fight
 Attack
@@ -509,7 +509,7 @@ Skill
 1 Nerve. Choose another player. They choose a Trick in their discard pile with printed cost 1 or less and return it to their hand. That Trick cannot be retrieved from their discard pile again this combat. If they play it this turn, Bones Reattaches 1 Bone.
 Burial Buddy
 Skill
-1 Nerve. Choose another player. You may each set aside one Trick from your hands. At the start of each owner's next turn, return that Trick to their hand and reduce its cost by 1 for that turn. Bones's Trick counts as having been Buried and Dug Up.
+2 Nerve. Choose another player. You may each set aside one Trick from your hands. At the start of each owner's next turn, return that Trick to their hand and reduce its cost by 2 for that turn. Bones's Trick counts as having been Buried and Dug Up.
 Tug of War
 Skill
 0 Nerve. Choose another player. You and that player may each discard one Trick. If both players do, each draws 2 Tricks. Bones then Sheds 1 Bone and Reattaches 1 Bone, producing two Rattles if both changes occur.

@@ -178,6 +178,20 @@ function fireEpitaph(h, run) {
   U.fire(c, 'epitaph', { natural, timer: t });
 }
 
+/**
+ * Nerve an Epitaph pays. A natural Epitaph resolves on the `playerTurnStart`
+ * tick, and so can one forced to zero from inside that tick (Lichen Clock).
+ * Both land BEFORE `_dealSeatTurn` SETS Nerve, which wiped a plain gain and
+ * left Deep Inscription and Already Written paying their draw and never their
+ * Nerve (CONTRACTS trap 24). Inside that window the Nerve is banked and rides
+ * the refill; mid-turn it arrives on the spot.
+ */
+function epitaphNerve(c, n) {
+  if (!(n > 0)) return;
+  if (U.mm(c).beforeDeal) U.energyNextTurn(c, n);
+  else U.energy(c, n);
+}
+
 /** Advance: forced resolution, and it forfeits the Patience. */
 function advance(c, t, n = 1) {
   if (!t || t.data.fixed) return false;
@@ -351,11 +365,16 @@ const slotTrack = (max, start = 0) => ({
 U.onTracker(SLUG, (e, s, seat) => {
   U.defineCounters(e, [patienceTrack(BASE_PATIENCE), slotTrack(BASE_SLOTS)]);
   const fake = () => U.trackerCtx(e, seat);
+  /* The turn-start window `epitaphNerve` asks about: `turn:start` opens it,
+     `playerReady` closes it once `_dealSeatTurn` has SET this turn's Nerve. */
+  e.on('phase', (ev) => { if (ev && ev.phase === 'playerReady') U.mm(fake()).beforeDeal = false; });
+
 
   U.onPlayerTurn(e, 'start', () => {
     const c = fake();
     const st = U.mm(c);
     st.advancedThisTurn = false;
+    st.beforeDeal = true;
     st.naturalThisTurn = 0;
     st.hereEventuallyUsed = false;
     st.noGuardThisTurn = !!st.noGuardNextTurn;
@@ -750,24 +769,24 @@ const commons = [
   },
   {
     id: weathers('mossbit/old-reliable', 1), name: 'Old Reliable', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['weathering'],
+    cost: 2, target: SELF, keywords: ['weathering'],
     text: '[Weathering] {w}. Gain {b} Guard. Weathered: gain {m0} instead.',
     flavor: 'It has never once let him down.',
-    nums: { w: 1, b: 5, m0: 13 },
+    nums: { w: 1, b: 11, m0: 20 },
     effect: eff((c) => U.guard(c, isWeathered(c, c.card) ? N(c).m0 : N(c).b)),
-    upgrade: { nums: { w: 1, b: 8, m0: 18 } },
+    upgrade: { nums: { w: 1, b: 15, m0: 27 } },
   },
   {
     id: weathers('mossbit/warm-flagstone', 2), name: 'Warm Flagstone', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['weathering', 'patience'],
+    cost: 2, target: SELF, keywords: ['weathering', 'patience'],
     text: '[Weathering] {w}. Gain {b} Guard. Weathered: gain {m0} Guard and {n} [Patience].',
     flavor: 'The one by the door. Obviously.',
-    nums: { w: 2, b: 5, m0: 10, n: 1 },
+    nums: { w: 2, b: 10, m0: 16, n: 1 },
     effect: eff((c) => {
       if (isWeathered(c, c.card)) { U.guard(c, N(c).m0); gainPatience(c, N(c).n); }
       else U.guard(c, N(c).b);
     }),
-    upgrade: { nums: { w: 2, b: 8, m0: 14, n: 1 } },
+    upgrade: { nums: { w: 2, b: 14, m0: 22, n: 1 } },
   },
   {
     id: weathers('mossbit/let-it-settle', 1), name: 'Let It Settle', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -794,34 +813,34 @@ const commons = [
   },
   {
     id: 'mossbit/room-on-the-shell', name: 'Room on the Shell', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['epitaph'],
+    cost: 2, target: SELF, keywords: ['epitaph'],
     text: 'With 2 or fewer [Epitaph]s, gain {b} Guard. Otherwise you may erase one for {m0}.',
     flavor: 'There is only so much shell.',
-    nums: { b: 10, m0: 16 },
+    nums: { b: 13, m0: 22 },
     effect: eff(async (c) => {
       if (epitaphs(c).length <= 2) { U.guard(c, N(c).b); return; }
       const t = await pickEpitaph(c, { optional: true, prompt: 'Erase which inscription?' });
       if (t) { erase(c, t); U.guard(c, N(c).m0); }
     }),
-    upgrade: { nums: { b: 14, m0: 22 } },
+    upgrade: { nums: { b: 18, m0: 30 } },
   },
   {
     id: 'mossbit/quiet-monument', name: 'Quiet Monument', companion: SLUG, type: POWER, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['epitaph'],
+    cost: 2, target: SELF, keywords: ['epitaph'],
     text: 'The first [Epitaph] you create each turn also gives {b} Guard right away.',
     flavor: 'Nobody reads it. It does not mind.',
-    nums: { b: 5 },
+    nums: { b: 8 },
     effect: eff((c) => power(c, 'mossbit/quiet-monument', (x, s) => { s.quietMonument = N(x).b; })),
-    upgrade: { nums: { b: 8 } },
+    upgrade: { nums: { b: 12 } },
   },
   {
     id: 'mossbit/moss-grows-anyway', name: 'Moss Grows Anyway', companion: SLUG, type: POWER, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['epitaph'],
+    cost: 2, target: SELF, keywords: ['epitaph'],
     text: 'The first [Epitaph] that resolves on its own each turn also gives {b} Guard.',
     flavor: 'It does not need permission and it never has.',
-    nums: { b: 6 },
+    nums: { b: 9 },
     effect: eff((c) => power(c, 'mossbit/moss-grows-anyway', (x, s) => { s.mossGrowsAnyway = N(x).b; })),
-    upgrade: { nums: { b: 10 } },
+    upgrade: { nums: { b: 13 } },
   },
 ];
 
@@ -832,10 +851,10 @@ const uncommons = [
   // ── Attacks ───────────────────────────────────────────────────────────────
   {
     id: 'mossbit/pallbearer-pace', name: 'Pallbearer Pace', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['patience', 'epitaph'],
+    cost: 2, target: ENEMY, keywords: ['patience', 'epitaph'],
     text: 'Deal {d} damage. You may spend {n} [Patience] to create [Epitaph] 1 on it: deal {m0}.',
     flavor: 'Slow, even, and absolutely not going to trip.',
-    nums: { d: 10, n: 1, m0: 10 },
+    nums: { d: 14, n: 1, m0: 14 },
     effect: eff((c) => {
       const t = c.target;
       U.hit(c, N(c).d);
@@ -843,7 +862,7 @@ const uncommons = [
         inscribe(c, { turns: 1, exact: true, target: t, label: 'Pallbearer Pace', run: (x, tm) => hitEpitaph(x, tm, N(c).m0) });
       }
     }),
-    upgrade: { nums: { d: 14, n: 1, m0: 14 } },
+    upgrade: { nums: { d: 20, n: 1, m0: 20 } },
   },
   {
     id: 'mossbit/three-knocks', name: 'Three Knocks on Stone', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -884,17 +903,17 @@ const uncommons = [
   },
   {
     id: weathers('mossbit/stone-age-swipe', 2), name: 'Stone Age Swipe', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['weathering', 'epitaph'],
+    cost: 2, target: ENEMY, keywords: ['weathering', 'epitaph'],
     text: '[Weathering] {w}. Deal {d} damage. Weathered: deal {m0} and create [Epitaph] 1 on it for {m1}.',
     flavor: 'The oldest move there is.',
-    nums: { w: 2, d: 6, m0: 12, m1: 6 },
+    nums: { w: 2, d: 12, m0: 18, m1: 9 },
     effect: eff((c) => {
       const t = c.target;
       if (!isWeathered(c, c.card)) { U.hit(c, N(c).d); return; }
       U.hit(c, N(c).m0);
       inscribe(c, { turns: 1, exact: true, target: t, label: 'Stone Age Swipe', run: (x, tm) => hitEpitaph(x, tm, N(c).m1) });
     }),
-    upgrade: { nums: { w: 2, d: 9, m0: 17, m1: 9 } },
+    upgrade: { nums: { w: 2, d: 17, m0: 25, m1: 13 } },
   },
   {
     id: 'mossbit/the-long-way-around', name: 'The Long Way Around', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -912,12 +931,12 @@ const uncommons = [
   },
   {
     id: 'mossbit/carapace-rebound', name: 'Carapace Rebound', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['buried-harm'],
+    cost: 2, target: ENEMY, keywords: ['buried-harm'],
     text: 'Deal {d} damage. With [Buried Harm] on you, gain {b} Guard.',
     flavor: 'It has to go somewhere and it went outward.',
-    nums: { d: 10, b: 9 },
+    nums: { d: 14, b: 13 },
     effect: eff((c) => { U.hit(c, N(c).d); if (harm(c) > 0) U.guard(c, N(c).b); }),
-    upgrade: { nums: { d: 14, b: 13 } },
+    upgrade: { nums: { d: 20, b: 18 } },
   },
   {
     id: 'mossbit/due-notice', name: 'Due Notice', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -999,16 +1018,16 @@ const uncommons = [
     nums: { n: 3, c1: 3, e: 1 },
     effect: eff((c) => inscribe(c, {
       turns: N(c).n, label: 'Deep Inscription',
-      run: (x) => { U.draw(x, N(c).c1); U.energy(x, N(c).e); },
+      run: (x) => { U.draw(x, N(c).c1); epitaphNerve(x, N(c).e); },
     })),
     upgrade: { nums: { n: 3, c1: 4, e: 2 } },
   },
   {
     id: 'mossbit/recut-the-date', name: 'Recut the Date', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['epitaph'],
+    cost: 0, target: SELF, keywords: ['epitaph'],
     text: 'Set an [Epitaph] to 2. Later than it was: draw {c1}. Sooner: gain {b} Guard.',
     flavor: 'The mason got it wrong. Twice.',
-    nums: { c1: 1, b: 9 },
+    nums: { c1: 1, b: 5 },
     effect: eff(async (c) => {
       const t = await pickEpitaph(c, { prompt: 'Recut which inscription?' });
       if (!t) return;
@@ -1016,7 +1035,7 @@ const uncommons = [
       if (before < 2) { delay(c, t, 2 - before); U.draw(c, N(c).c1); }
       else if (before > 2) { advance(c, t, before - 2); U.guard(c, N(c).b); }
     }),
-    upgrade: { nums: { c1: 2, b: 13 } },
+    upgrade: { nums: { c1: 2, b: 8 } },
   },
   {
     id: 'mossbit/make-space', name: 'Make Space', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -1128,17 +1147,17 @@ const uncommons = [
   },
   {
     id: weathers('mossbit/fossil-snack', 1), name: 'Fossil Snack', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['weathering', 'buried-harm', 'patience'],
+    cost: 2, target: SELF, keywords: ['weathering', 'buried-harm', 'patience'],
     text: '[Weathering] {w}. Gain {b} Guard. Weathered: also take {n} off [Buried Harm] and gain {p} [Patience].',
     flavor: 'Older than the house. Crunchier than expected.',
-    nums: { w: 1, b: 9, n: 10, p: 1 },
+    nums: { w: 1, b: 14, n: 15, p: 1 },
     effect: eff((c) => {
       U.guard(c, N(c).b);
       if (!isWeathered(c, c.card)) return;
       reduceHarm(c, N(c).n);
       gainPatience(c, N(c).p);
     }),
-    upgrade: { nums: { w: 1, b: 13, n: 15, p: 1 } },
+    upgrade: { nums: { w: 1, b: 19, n: 21, p: 1 } },
   },
   {
     id: 'mossbit/patient-hands', name: 'Patient Hands', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -1155,10 +1174,10 @@ const uncommons = [
   },
   {
     id: 'mossbit/quiet-grave', name: 'Quiet Grave', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['epitaph'],
+    cost: 2, target: SELF, keywords: ['epitaph'],
     text: 'Create [Epitaph] {n}: gain {b} Guard. Resolving on its own, it also keeps a Trick in hand.',
     flavor: 'Nothing has ever happened here. That is the point.',
-    nums: { n: 2, b: 16 },
+    nums: { n: 2, b: 24 },
     effect: eff((c) => inscribe(c, {
       turns: N(c).n, label: 'Quiet Grave',
       run: (x, tm) => {
@@ -1167,7 +1186,7 @@ const uncommons = [
         if (k) U.retain(x, k, 'turn');
       },
     })),
-    upgrade: { nums: { n: 2, b: 22 } },
+    upgrade: { nums: { n: 2, b: 33 } },
   },
   {
     id: 'mossbit/two-names-one-stone', name: 'Two Names, One Stone', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -1235,12 +1254,12 @@ const uncommons = [
   },
   {
     id: 'mossbit/grave-moss', name: 'Grave Moss', companion: SLUG, type: POWER, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['epitaph', 'buried-harm'],
+    cost: 2, target: SELF, keywords: ['epitaph', 'buried-harm'],
     text: 'Erasing an unresolved [Epitaph] gains {b} Guard and takes a little off [Buried Harm].',
     flavor: 'It grows over the ones nobody visits.',
-    nums: { b: 9 },
+    nums: { b: 13 },
     effect: eff((c) => power(c, 'mossbit/grave-moss', (x, s) => { s.graveMoss = N(x).b; })),
-    upgrade: { nums: { b: 13 } },
+    upgrade: { nums: { b: 18 } },
   },
   {
     id: 'mossbit/cemetery-shift', name: 'Cemetery Shift', companion: SLUG, type: POWER, rarity: UNCOMMON,
@@ -1296,21 +1315,27 @@ const rares = [
   // ── Attacks ───────────────────────────────────────────────────────────────
   {
     id: 'mossbit/the-last-thing-you-hear', name: 'The Last Thing You Hear', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 3, target: ENEMY, keywords: ['epitaph', 'patience'],
-    text: 'Create [Epitaph] {n} on an enemy: deal {d}. Spend up to {p} [Patience] to bring it forward.',
+    cost: -1, target: ENEMY, keywords: ['epitaph', 'patience'],
+    text: 'Spend all your Nerve. Create [Epitaph] {n} on an enemy: deal {d} damage for each Nerve spent. Spend up to {p} [Patience] to bring it forward.',
     flavor: 'Stone. Moving slowly. Very close now.',
-    nums: { n: 3, d: 44, p: 2 },
+    /* X: the whole turn paid into one inscription that lands later. The amount
+       is locked when it is written, and at three Nerve it is the old 3-cost card.
+       Nothing spent writes nothing - a 0-damage Epitaph would still mature for
+       Patience. */
+    nums: { n: 3, d: 15, p: 2 },
     balance: { scalesWith: 'a three-turn wait' },
     effect: eff((c) => {
       const t = c.target;
+      const amount = N(c).d * (c.x || 0);
+      if (amount <= 0) return;
       let early = 0;
       while (early < N(c).p && spendPatience(c, 1)) early++;
       inscribe(c, {
         turns: Math.max(1, N(c).n - early), exact: true, target: t,
-        label: 'The Last Thing You Hear', run: (x, tm) => hitEpitaph(x, tm, N(c).d),
+        label: 'The Last Thing You Hear', run: (x, tm) => hitEpitaph(x, tm, amount),
       });
     }),
-    upgrade: { nums: { n: 3, d: 58, p: 2 } },
+    upgrade: { nums: { n: 3, d: 21, p: 2 } },
   },
   {
     id: 'mossbit/here-eventually', name: 'Here Eventually', companion: SLUG, type: ATTACK, rarity: RARE,
@@ -1345,17 +1370,19 @@ const rares = [
   },
   {
     id: weathers('mossbit/geologic-headbutt', 3), name: 'Geologic Headbutt', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 2, target: ENEMY, keywords: ['weathering', 'vanish'],
+    cost: 4, target: ENEMY, keywords: ['weathering', 'vanish'],
     text: '[Weathering] {w}. Deal {d} damage. Weathered: costs 0, deals {m0}, then [Vanish]es.',
     flavor: 'Three turns of not doing anything, arriving all at once.',
-    nums: { w: 3, d: 18, m0: 22 },
+    nums: { w: 3, d: 28, m0: 32 },
     effect: eff((c) => {
       if (!isWeathered(c, c.card)) { U.hit(c, N(c).d); return; }
       U.hit(c, N(c).m0);
       U.makeVanish(c, c.card);
     }),
-    dynamicCost: (c) => (isWeathered(c, c.card) ? 0 : 2),
-    upgrade: { nums: { w: 3, d: 24, m0: 30 } },
+    /* His 4, and rarely paid: held three turns it is Weathered and costs 0.
+       The 4 here IS the printed cost above - re-cost one, re-cost both. */
+    dynamicCost: (c) => (isWeathered(c, c.card) ? 0 : 4),
+    upgrade: { nums: { w: 3, d: 38, m0: 44 } },
   },
   {
     id: 'mossbit/five-little-headstones', name: 'Five Little Headstones', companion: SLUG, type: ATTACK, rarity: RARE,
@@ -1600,7 +1627,7 @@ const rares = [
       x.defineCounter(slotTrack(MAX_SLOTS, epitaphs(x).length));
       inscribe(x, {
         turns: 3, exact: true, label: 'Already Written',
-        run: (y) => { U.draw(y, N(x).c1); U.energy(y, N(x).e); },
+        run: (y) => { U.draw(y, N(x).c1); epitaphNerve(y, N(x).e); },
       });
     })),
     upgrade: { cost: 1 },

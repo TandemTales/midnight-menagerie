@@ -646,7 +646,10 @@ U.onTracker(SLUG, (e, s, seat) => {
     const c = fake();
     const st = U.mm(c);
     if (!st.mansionWaters) return;
-    const paid = (ev.card && typeof ev.card.cost === 'number') ? ev.card.cost : 0;
+    /* `ev.cost` is the Nerve the play actually took. `ev.card.cost` is the
+       printed cost: -1 for an X Trick, which spends every Nerve and watered
+       nothing, and the full price of a Trick that was discounted to 0. */
+    const paid = typeof ev.cost === 'number' ? ev.cost : 0;
     if (paid <= 0) return;
     st.wateredIds = st.wateredIds || {};
     const target = immature(c).find(o => !st.wateredIds[o.id]);
@@ -744,12 +747,12 @@ const commons = [
   },
   {
     id: 'brambleboo/pot-swing', name: 'Pot Swing', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['garden'],
+    cost: 2, target: ENEMY, keywords: ['garden'],
     text: 'Deal {d} damage, or {m0} more if a Plant left your [Garden] this turn.',
     flavor: 'Terracotta. Held by the stem. Somehow.',
-    nums: { d: 8, m0: 5 },
+    nums: { d: 12, m0: 7 },
     effect: eff((c) => U.hit(c, N(c).d + (U.mm(c).leftThisTurn ? N(c).m0 : 0))),
-    upgrade: { nums: { d: 11, m0: 7 } },
+    upgrade: { nums: { d: 16, m0: 10 } },
   },
   {
     id: 'brambleboo/vine-trip', name: 'Vine Trip', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -777,31 +780,31 @@ const commons = [
   },
   {
     id: 'brambleboo/prickly-welcome', name: 'Prickly Welcome', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['entwine'],
+    cost: 2, target: ENEMY, keywords: ['entwine'],
     text: 'Deal {d} damage. If it attacked since your last turn, [Entwine] {n}.',
     flavor: 'He remembers. Plants are very good at remembering.',
-    nums: { d: 9, n: 1 },
+    nums: { d: 13, n: 2 },
     effect: eff((c) => {
       const t = c.target;
       U.hit(c, N(c).d);
       const seen = (U.mm(c).attackedSinceMyTurn || {})[t && t.id];
       if (seen) entwine(c, t, N(c).n);
     }),
-    upgrade: { nums: { d: 12, n: 2 } },
+    upgrade: { nums: { d: 17, n: 3 } },
   },
   {
     id: 'brambleboo/leaf-cover', name: 'Leaf Cover', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['garden'],
+    cost: 2, target: SELF, keywords: ['garden'],
     text: 'Gain {b} Guard. With no Mature Plants, give an immature one 1 Growth.',
     flavor: 'Enough leaves to hide a small ghost.',
-    nums: { b: 9 },
+    nums: { b: 13 },
     effect: eff(async (c) => {
       U.guard(c, N(c).b);
       if (mature(c).length) return;
       const p = await pickPlant(c, { pool: immature(c), optional: true, prompt: 'Grow which Plant?' });
       if (p) grow(c, p, 1);
     }),
-    upgrade: { nums: { b: 13 } },
+    upgrade: { nums: { b: 18 } },
   },
   {
     id: 'brambleboo/wall-creeper', name: 'Wall Creeper', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -899,12 +902,12 @@ const commons = [
   },
   {
     id: 'brambleboo/curl-around-the-pot', name: 'Curl Around the Pot', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['grave-moss', 'garden'],
+    cost: 2, target: SELF, keywords: ['grave-moss', 'garden'],
     text: 'Gain {b} Guard, and {m0} more with [Grave Moss] in your [Garden].',
     flavor: 'Snug. Faintly damp. Ideal.',
-    nums: { b: 9, m0: 5 },
+    nums: { b: 12, m0: 6 },
     effect: eff((c) => U.guard(c, N(c).b + (ofKind(c, MOSS).length ? N(c).m0 : 0))),
-    upgrade: { nums: { b: 13, m0: 7 } },
+    upgrade: { nums: { b: 17, m0: 8 } },
   },
   {
     id: 'brambleboo/loop-around-the-banister', name: 'Loop Around the Banister', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -997,12 +1000,15 @@ const uncommons = [
   },
   {
     id: 'brambleboo/hallway-tripwire', name: 'Hallway Tripwire', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ALL_ENEMIES, keywords: ['entwine', 'vines'],
-    text: 'Deal {d} damage to all enemies and [Entwine] {n} on each.',
+    cost: -1, target: ALL_ENEMIES, keywords: ['entwine', 'vines'],
+    text: 'Spend all your Nerve. Deal {d} damage to all enemies and [Entwine] {n} on each, once per Nerve spent.',
     flavor: 'Ankle height. The whole corridor.',
-    nums: { d: 6, n: 1 },
-    effect: eff((c) => { U.hitAll(c, N(c).d); for (const en of U.enemies(c)) entwine(c, en, N(c).n); }),
-    upgrade: { nums: { d: 9, n: 2 } },
+    /* X, priced per Nerve just under the old 1-Nerve card (6 AoE + 1 Vine), the way
+       Whirlwind sits under Cleave. The upgrade raises the damage only: 2 Vines a
+       Nerve would put a guaranteed Snare on every enemy for 2 Nerve. */
+    nums: { d: 5, n: 1, hits: 3 },
+    effect: eff((c) => { for (let i = 0; i < (c.x || 0); i++) { U.hitAll(c, N(c).d); for (const en of U.enemies(c)) entwine(c, en, N(c).n); } }),
+    upgrade: { nums: { d: 7, n: 1, hits: 3 } },
   },
   {
     id: 'brambleboo/uprooted-uppercut', name: 'Uprooted Uppercut', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -1068,15 +1074,15 @@ const uncommons = [
   },
   {
     id: 'brambleboo/too-close-to-the-pot', name: 'Too Close to the Pot', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['briar'],
+    cost: 2, target: ENEMY, keywords: ['briar'],
     text: 'Deal {d} damage. Gain {b} Guard for each Mature [Briar], up to {m0}.',
     flavor: 'It leaned in. That was its choice.',
-    nums: { d: 10, b: 5, m0: 15 },
+    nums: { d: 14, b: 6, m0: 18 },
     effect: eff((c) => {
       U.hit(c, N(c).d);
       U.guard(c, Math.min(N(c).m0, N(c).b * matureOf(c, BRIAR).length));
     }),
-    upgrade: { nums: { d: 14, b: 7, m0: 21 } },
+    upgrade: { nums: { d: 19, b: 8, m0: 24 } },
   },
   {
     id: 'brambleboo/compost-catapult', name: 'Compost Catapult', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -1272,10 +1278,10 @@ const uncommons = [
   },
   {
     id: 'brambleboo/pull-the-curtain', name: 'Pull the Curtain', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['entwine'],
+    cost: 2, target: SELF, keywords: ['entwine'],
     text: 'Gain {b} Guard. [Entwine] {n} on every enemy that is winding up to Attack.',
     flavor: 'Whatever was going to happen is now happening behind a curtain.',
-    nums: { b: 9, n: 1 },
+    nums: { b: 14, n: 2 },
     effect: eff((c) => {
       U.guard(c, N(c).b);
       for (const en of U.enemies(c)) {
@@ -1283,7 +1289,7 @@ const uncommons = [
         if (m && String(m.intent || '').startsWith('attack')) entwine(c, en, N(c).n);
       }
     }),
-    upgrade: { nums: { b: 13, n: 2 } },
+    upgrade: { nums: { b: 19, n: 3 } },
   },
   {
     id: 'brambleboo/keep-the-cutting', name: 'Keep the Cutting', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -1316,15 +1322,15 @@ const uncommons = [
   },
   {
     id: 'brambleboo/potbound', name: 'Potbound', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['garden'],
+    cost: 2, target: SELF, keywords: ['garden'],
     text: 'Gain {b} Guard with no empty Plot, otherwise {w}. You cannot [Plant] again this turn.',
     flavor: 'Root against root against root.',
-    nums: { b: 16, w: 9 },
+    nums: { b: 22, w: 13 },
     effect: eff((c) => {
       U.guard(c, plotsFree(c) === 0 ? N(c).b : N(c).w);
       U.mm(c).noPlantTurn = U.turn(c);
     }),
-    upgrade: { nums: { b: 22, w: 13 } },
+    upgrade: { nums: { b: 30, w: 18 } },
   },
   {
     id: 'brambleboo/sweep-the-weeds', name: 'Sweep the Weeds', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -1337,7 +1343,7 @@ const uncommons = [
   },
   {
     id: 'brambleboo/graft', name: 'Graft', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['garden', 'uproot'],
+    cost: 2, target: SELF, keywords: ['garden', 'uproot'],
     text: '[Uproot] a Plant. Another Plant also gains that Cultivar’s Mature effect. One Graft each.',
     flavor: 'Held together with string and considerable optimism.',
     nums: {},
@@ -1352,7 +1358,9 @@ const uncommons = [
       uproot(c, donor);
       if (host) { host.data.graft = cultivar; c.updateObject(host.id, { graft: cultivar }); }
     }),
-    upgrade: { cost: 0 },
+    /* 2, not 1: a Graft is a Power in all but name — a second Mature effect every
+       turn for the rest of the fight. The upgrade stays a cost cut (2 -> 1). */
+    upgrade: { cost: 1 },
   },
   {
     id: 'brambleboo/bloom-schedule', name: 'Bloom Schedule', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -1537,11 +1545,17 @@ const rares = [
   },
   {
     id: 'brambleboo/very-hungry-houseplant', name: 'Very Hungry Houseplant', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 2, target: ENEMY, keywords: ['harvest'],
-    text: 'Deal {d} damage. You may [Harvest] up to {n} Mature Plants, repeating this after each.',
+    cost: 4, target: ENEMY, keywords: ['harvest'],
+    text: 'Deal {d} damage. You may [Harvest] up to {n} Mature Plants, repeating this after each. Costs 1 less per Plant that left your [Garden] this turn.',
     flavor: 'It is still hungry. It is always still hungry.',
-    nums: { d: 10, n: 3, hits: 4 },
+    /* The deck's 4. Brambleboo has no Nerve gain, so a flat 4 would be a dead card:
+       it gets cheaper the way Slay the Spire's Blood for Blood and Eviscerate do,
+       through what its archetype already does. Every Plant pruned first is a Nerve
+       saved AND one fewer Mature Plant left to eat - the character's own tension on
+       one card. A Moonflower Harvest's "costs 1 less" composes on top. */
+    nums: { d: 15, n: 3, hits: 4 },
     balance: { scalesWith: 'Plants Harvested' },
+    dynamicCost: (c) => Math.max(0, 4 - (U.mm(c).leftThisTurn || 0)),
     effect: eff(async (c) => {
       const t = c.target;
       U.hit(c, N(c).d);
@@ -1554,7 +1568,7 @@ const rares = [
         U.hitAt(c, t, N(c).d);
       }
     }),
-    upgrade: { nums: { d: 14, n: 3, hits: 4 } },
+    upgrade: { nums: { d: 20, n: 3, hits: 4 } },
   },
 
   // ── Skills ────────────────────────────────────────────────────────────────

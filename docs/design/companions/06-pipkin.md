@@ -150,7 +150,7 @@ Attack
 3
 Belly Bop
 Attack
-1 Nerve. Deal moderate damage, increased for each Plump.
+2 Nerve. Deal moderate damage, increased for each Plump.
 4
 Pumpkin Pitch
 Attack
@@ -158,7 +158,7 @@ Attack
 5
 Drop In
 Attack
-1 Nerve. Deal light damage to all enemies. Land: deal additional light damage to all enemies for each Height spent.
+2 Nerve. Deal moderate damage to all enemies. Land: deal additional light damage to all enemies for each Height spent.
 6
 Seed Spit
 Attack
@@ -186,11 +186,11 @@ Skill
 12
 Soft Landing
 Skill
-1 Nerve. Gain moderate Guard. Land: gain additional Guard for each Height spent.
+2 Nerve. Gain substantial Guard. Land: gain additional Guard for each Height spent.
 13
 Squat Low
 Skill
-1 Nerve. Gain moderate Guard. Gain additional Guard if you have at least 2 Plump.
+2 Nerve. Gain substantial Guard. Gain additional Guard if you have at least 2 Plump.
 14
 Hopscotch
 Skill
@@ -218,7 +218,7 @@ Skill
 20
 Little Harvest
 Skill
-1 Nerve. Draw 1 Trick. Harvest 1: draw 1 additional Trick.
+0 Nerve. Draw 1 Trick. Harvest 1: draw 1 additional Trick.
 The Commons establish four important ideas.
 Height can produce damage, defense, and draw.
 Pumpkins can be saved or converted.
@@ -246,7 +246,7 @@ Attack
 24
 Seed Slam
 Attack
-1 Nerve. Deal moderate damage. Plant 1 Seed. If the Patch is full, advance one Seed or Sprout by one stage instead.
+X Nerve. Spend all your Nerve. For each Nerve spent, deal moderate damage and Plant 1 Seed. If the Patch is full, advance one Seed or Sprout by one stage instead.
 25
 Lily Pad Lariat
 Attack
@@ -254,15 +254,15 @@ Attack
 26
 Three Hop Combo
 Attack
-1 Nerve. Deal moderate damage. Land: if 3 Height was spent, repeat the attack twice.
+2 Nerve. Deal substantial damage. Land: if 3 Height was spent, repeat the attack twice.
 27
 Gourdquake
 Attack
-2 Nerve. Deal moderate damage to all enemies. Land: deal additional light damage to all enemies for each Height spent. Harvest 1: also gain substantial Guard.
+3 Nerve. Deal substantial damage to all enemies. Land: deal additional moderate damage to all enemies for each Height spent. Harvest 1: also gain substantial Guard.
 28
 Bug Lunch Break
 Attack
-1 Nerve. Deal moderate damage. If this defeats a non boss enemy, Plant 1 Seed and gain 1 Plump.
+0 Nerve. Deal light damage. If this defeats a non boss enemy, Plant 1 Seed and gain 1 Plump.
 29
 Heavy Hopper
 Attack
@@ -274,7 +274,7 @@ Attack
 31
 Ripe for Throwing
 Attack
-1 Nerve. Deal moderate damage. Harvest up to 2. Repeat the attack once for each Pumpkin harvested.
+2 Nerve. Deal substantial damage. Harvest up to 2. Repeat the attack once for each Pumpkin harvested.
 32
 Squash Match
 Attack
@@ -282,7 +282,7 @@ Attack
 33
 Croak Shock
 Attack
-1 Nerve. Deal light damage to all enemies. If you have both Planted and Harvested this turn, deal moderate damage instead and draw 1 Trick.
+2 Nerve. Deal moderate damage to all enemies. If you have both Planted and Harvested this turn, deal substantial damage instead and draw 1 Trick.
 34
 Leapfrog
 Attack
@@ -307,7 +307,7 @@ Skill
 38
 Hang Time
 Skill
-1 Nerve. Your current Height does not disappear at the end of this turn. If you retain at least 2 Height this way, draw 1 additional Trick next turn. Vanish.
+0 Nerve. Your current Height does not disappear at the end of this turn. If you retain at least 2 Height this way, draw 1 additional Trick next turn. Vanish.
 39
 Inflate
 Skill
@@ -319,11 +319,11 @@ Skill
 41
 Mud Jacket
 Skill
-1 Nerve. Gain Guard that increases substantially with Plump. At 3 Plump, retain a portion of this Guard into the next turn.
+2 Nerve. Gain Guard that increases substantially with Plump. At 3 Plump, retain a portion of this Guard into the next turn.
 42
 Choose the Biggest
 Skill
-1 Nerve. Harvest 1: gain substantial Guard and empower your next Attack this turn.
+2 Nerve. Harvest 1: gain substantial Guard and empower your next Attack this turn.
 43
 Pantry Raid
 Skill
@@ -391,7 +391,7 @@ Core Effect
 56
 Crater Maker
 Attack
-3 Nerve. Deal substantial damage to all enemies. Land: deal additional moderate damage to all enemies for each Height spent. If 3 Height was spent, you may Deflate 1 to repeat the Land damage once.
+4 Nerve. Deal heavy damage to all enemies. Land: deal additional moderate damage to all enemies for each Height spent. If 3 Height was spent, you may Deflate 1 to repeat the Land damage once.
 57
 Frogapult
 Attack

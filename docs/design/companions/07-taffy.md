@@ -145,7 +145,7 @@ Deal light damage. For each Stretch on this Trick, increase its reach. At 2 or m
 3
 Snap Back
 Attack
-Deal moderate damage. If this Trick had Stretch, gain light Guard after playing it.
+Deal moderate damage. If this Trick had Stretch, gain moderate Guard after playing it.
 4
 Split Splat
 Attack
@@ -248,11 +248,11 @@ Deal moderate damage. If you played a Gummy copy earlier this turn, create a Gum
 25
 Bellyflop
 Attack
-Deal substantial damage. If your Belly is full, also gain moderate Guard.
+Deal heavy damage. If your Belly is full, also gain substantial Guard.
 26
 Sugar Sling
 Attack
-Deal light damage to all enemies. If you are Runny, deal substantially more damage, then Recombine 1.
+Spend all remaining Nerve. Deal light damage to all enemies once for each Nerve spent. If you are Runny, each hit deals substantially more, then Recombine 1.
 27
 Snapback Special
 Attack
@@ -289,7 +289,7 @@ Absorb up to two Tricks from your hand, respecting Belly capacity. Draw one Tric
 34
 Pocket Taffy
 Skill
-Absorb one Trick from your discard pile. Gain moderate Guard.
+Absorb one Trick from your discard pile. Gain substantial Guard.
 35
 Regurgitate
 Skill
@@ -309,7 +309,7 @@ Choose one Trick in hand and one Trick in your Belly. Swap their current Nerve c
 39
 Pull Apart
 Skill
-Stretch two different Attacks or Skills. Split 1.
+Stretch two different Attacks or Skills. Split 2.
 40
 Overstretch
 Skill
@@ -333,7 +333,7 @@ Count the different Trick types currently in your Belly. Gain a scaling combinat
 45
 Wrapped Up
 Skill
-Absorb one Status or Curse from your hand for the rest of combat without consuming a normal Belly slot. Gain moderate Guard.
+Absorb one Status or Curse from your hand for the rest of combat without consuming a normal Belly slot. Gain substantial Guard.
 46
 Same Again
 Skill
@@ -349,7 +349,7 @@ Choose one Trick. For the rest of combat, effects cannot increase its current Ne
 49
 Half Now, Half Later
 Skill
-Split 1 and draw a Trick. At the start of your next turn, automatically Recombine 1 if possible. If you do, draw another Trick.
+Split 1 and draw two Tricks. At the start of your next turn, automatically Recombine 1 if possible. If you do, draw another Trick.
 ## Uncommon Powers
 Number
 Trick name
@@ -406,7 +406,7 @@ Split until you reach maximum Globs. Deal one light random enemy hit for each Gl
 58
 Jawbreaker Drop
 Attack
-Deal substantial damage. At 2 Stretch, dramatically increase it. At 3 Stretch, deal enormous damage, then Vanish this Trick.
+Deal heavy damage. At 2 Stretch, dramatically increase it. At 3 Stretch it costs 1 less Nerve and deals enormous damage, then Vanish this Trick.
 59
 Three Course Chomp
 Attack
@@ -422,7 +422,7 @@ Deal moderate damage to all enemies. If played at 3 Stretch, return this Trick t
 62
 Sugar Comet
 Attack
-Recombine 3. Deal substantial damage to all enemies. All Gummy copies already in your hand cost 0 this turn.
+Recombine 3. Deal heavy damage to all enemies. All Gummy copies already in your hand cost 0 this turn.
 63
 Last Bite First
 Attack
@@ -439,7 +439,7 @@ Choose up to three non Gummy Tricks in your hand. Rearrange their current Nerve 
 65
 Deep Pocket
 Skill
-Increase Belly capacity by 2 for the rest of combat. Then Absorb up to two Tricks from your hand and draw the same number.
+Increase Belly capacity by 2 for the rest of combat. Then Absorb up to three Tricks from your hand and draw the same number.
 66
 Spit the Whole Bag
 Skill

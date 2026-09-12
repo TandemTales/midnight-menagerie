@@ -160,7 +160,7 @@ Core effect
 1
 Ceiling Drip
 Attack
-1 Nerve. Deal light damage. If the target is Soaked, gain light Guard.
+2 Nerve. Deal moderate damage. If the target is Soaked, gain moderate Guard.
 2
 Splashdown
 Attack
@@ -168,7 +168,7 @@ Attack
 3
 Cold Little Drop
 Attack
-1 Nerve. If Weather is Clear, Soak the target. Deal light damage.
+0 Nerve. If Weather is Clear, Soak the target. Deal light damage.
 4
 Window Rattle
 Attack
@@ -212,11 +212,11 @@ Skill
 14
 Under the Eaves
 Skill
-1 Nerve. Gain substantial Guard. You cannot Advance Weather for the rest of this turn.
+2 Nerve. Gain heavy Guard. You cannot Advance Weather for the rest of this turn.
 15
 Cloudbank
 Skill
-1 Nerve. Gain moderate Guard. Gain additional Guard if Weather changed this turn.
+2 Nerve. Gain substantial Guard. Gain additional Guard if Weather changed this turn.
 16
 Save a Drop
 Skill
@@ -228,7 +228,7 @@ Skill
 18
 Steady Patter
 Power
-1 Nerve. The first time each turn you Soak an enemy, gain light Guard.
+2 Nerve. The first time each turn you Soak an enemy, gain light Guard.
 19
 Damp House
 Power
@@ -236,7 +236,7 @@ Power
 20
 Barometer
 Power
-1 Nerve. The first time Weather changes during each of your turns, draw one additional Trick next turn.
+2 Nerve. The first time Weather changes during each of your turns, draw one additional Trick next turn.
 ## Common pool purpose
 The Commons give Drizzle functional access to every major system without creating complete engines.
 Splashdown establishes Conduct.
@@ -286,11 +286,11 @@ Attack
 29
 Chain Reaction
 Attack
-1 Nerve. Deal light damage. Conduct: Deal light damage. Gain light Guard for every additional enemy reached by Conduct.
+2 Nerve. Deal moderate damage. Conduct: Deal light damage. Gain light Guard for every additional enemy reached by Conduct.
 30
 Roof Drumming
 Attack
-1 Nerve. Deal one light hit for each occupied Forecast slot, with a minimum of one hit.
+2 Nerve. Deal one light hit for each occupied Forecast slot, with a minimum of one hit.
 31
 Indoor Lightning
 Attack
@@ -298,7 +298,7 @@ Attack
 32
 Soft Hail
 Attack
-1 Nerve. Deal three light hits among random enemies. Hits against Soaked enemies deal increased damage.
+X Nerve. Spend all your Nerve. For each Nerve spent, deal two light hits among random enemies. Hits against Soaked enemies deal increased damage.
 ## Uncommon Skills
 Number
 Trick name
@@ -323,7 +323,7 @@ Skill
 37
 Hold the Downpour
 Skill
-1 Nerve. Can only be played during Downpour. Gain substantial Guard. Weather cannot change until the start of your next turn.
+2 Nerve. Can only be played during Downpour. Gain heavy Guard. Weather cannot change until the start of your next turn.
 38
 Slippery Floor
 Skill
@@ -343,7 +343,7 @@ Skill
 42
 Puddle Map
 Skill
-1 Nerve. Choose a Soaked enemy. The next Conduct effect this turn repeats its marked effect against that enemy one additional time.
+0 Nerve. Choose a Soaked enemy. The next Conduct effect this turn repeats its marked effect against that enemy one additional time.
 43
 Weatherproof
 Skill
@@ -384,7 +384,7 @@ Power
 51
 Silver Lining
 Power
-1 Nerve. Whenever a Stormbreak occurs, gain substantial Guard at the start of your next turn.
+2 Nerve. Whenever a Stormbreak occurs, gain substantial Guard at the start of your next turn.
 52
 Damp Forever
 Power
@@ -415,7 +415,7 @@ Attack
 57
 Bolt from the Blue
 Attack
-2 Nerve. Deal massive damage. Costs 0 Nerve if Weather moved from Clear all the way to Thunderstorm during this turn.
+4 Nerve. Deal massive damage. Costs 0 Nerve if Weather moved from Clear all the way to Thunderstorm during this turn.
 58
 What Goes Up
 Attack
@@ -526,7 +526,7 @@ Type
 Core effect
 Share the Umbrella
 Skill
-1 Nerve. Choose an ally. You and that ally each gain moderate Guard. If Weather changed since the end of that ally's previous turn, they also draw one Trick.
+2 Nerve. Choose an ally. You and that ally each gain substantial Guard. If Weather changed since the end of that ally's previous turn, they also draw one Trick.
 Pass the Puddle
 Skill
 1 Nerve. Choose an enemy and an ally. Soak that enemy. The next Attack Trick that ally plays against it before your next turn gains Conduct: Deal light damage.

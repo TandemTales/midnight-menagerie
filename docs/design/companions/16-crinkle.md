@@ -230,23 +230,23 @@ curious one can Trace the folded copy and see where the ceiling is.
 |---|---|---|---|
 | 1 | Sharp Edge | Attack | 1 Nerve. Deal light damage. Deal additional light damage if you have already played a Trick this turn. |
 | 2 | Papercrow Dive | Attack | 1 Nerve. Deal light damage. If this Trick has any Crease, deal additional light damage. |
-| 3 | Fold and Strike | Attack | 1 Nerve. Fold this Trick 1, then deal light damage. |
+| 3 | Fold and Strike | Attack | 2 Nerve. Fold this Trick 1, then deal moderate damage. |
 | 4 | Duplicate Beak | Attack | 1 Nerve. Deal light damage. Trace this Trick. |
 | 5 | Bookmark | Attack | 1 Nerve. Deal moderate damage. Gain 1 Paper. |
-| 6 | Flying Page | Attack | 1 Nerve. Deal light damage to all enemies. |
+| 6 | Flying Page | Attack | 2 Nerve. Deal moderate damage to all enemies. |
 | 7 | Guillotine Cut | Attack | 2 Nerve. Deal heavy damage. Costs 1 less for each Crease on it. |
 | 8 | Read the Room | Skill | 1 Nerve. Draw 1 Trick. Fold it 1. |
 | 9 | Careful Crease | Skill | 1 Nerve. Fold a Trick in your hand 1. Gain 1 Paper. |
 | 10 | Double Crease | Skill | 2 Nerve. Fold a Trick in your hand 2. |
-| 11 | Second Copy | Skill | 1 Nerve. Spend 1 Paper. Trace a Trick in your hand. |
+| 11 | Second Copy | Skill | 0 Nerve. Spend 2 Paper. Trace a Trick in your hand. |
 | 12 | Refold It | Skill | 1 Nerve. Refold a Trick in your hand. |
-| 13 | Paper Screen | Skill | 1 Nerve. Gain light Guard. Gain additional light Guard if you hold any Paper. |
+| 13 | Paper Screen | Skill | 2 Nerve. Gain moderate Guard. Gain additional light Guard if you hold any Paper. |
 | 14 | Concertina | Skill | 1 Nerve. Gain light Guard for each Crease on Tricks in your hand, plus a light amount. |
 | 15 | Loose Leaf | Skill | 0 Nerve. Discard a Trick. Gain 2 Paper and draw 1 Trick. |
 | 16 | Pulp | Skill | 0 Nerve. Vanish a Trick in your hand. Gain Paper equal to its Nerve cost plus 1. |
 | 17 | Filing | Skill | 1 Nerve. Look at the top 3 Tricks. Put one in your hand and Fold it 1. Return the rest. |
 | 18 | Paper Trail | Power | 1 Nerve. The first time a Trick Vanishes each turn, gain 1 additional Paper. |
-| 19 | Practised Hands | Power | 1 Nerve. The first Trick you Fold each turn is Folded 1 more. |
+| 19 | Practised Hands | Power | 2 Nerve. The first Trick you Fold each turn is Folded 1 more. |
 | 20 | Marginalia | Power | 1 Nerve. The first Paper Copy you play each turn draws 1 Trick. |
 
 **Common pool purpose.** Every verb appears at 1 Nerve with no engine attached.
@@ -264,9 +264,9 @@ is deliberately two-thirds of the way to a decision the Commons cannot finish.
 
 | # | Trick | Type | Core effect |
 |---|---|---|---|
-| 21 | Thousand Cuts | Attack | 1 Nerve. Deal light damage once for each Crease on this Trick, at least once. |
+| 21 | Thousand Cuts | Attack | X Nerve. Spend all your Nerve. Deal light damage once for each Nerve spent and once for each Crease on this Trick. Creases cannot discount an X cost, so on this Trick each one is a free hit instead. |
 | 22 | Origami Crow | Attack | 2 Nerve. Deal substantial damage. If this is Overfolded, it hits all enemies. |
-| 23 | Cut and Paste | Attack | 1 Nerve. Deal moderate damage, then Trace this Trick. |
+| 23 | Cut and Paste | Attack | 2 Nerve. Deal heavy damage, then Trace this Trick. |
 | 24 | Bookbinder's Blade | Attack | 1 Nerve. Deal moderate damage. Gain 1 Paper for each Crease on this Trick. |
 | 25 | Errata | Attack | 1 Nerve. Deal moderate damage. Refold a Trick in your hand. |
 | 26 | Folded Flock | Attack | 2 Nerve. Deal light damage to all enemies once for every 2 Paper you hold, at least once. |
@@ -282,15 +282,15 @@ is deliberately two-thirds of the way to a decision the Commons cannot finish.
 | # | Trick | Type | Core effect |
 |---|---|---|---|
 | 33 | Crease Along the Grain | Skill | 1 Nerve. Fold a Trick in your hand 2. Gain 1 Paper if it is now Overfolded. |
-| 34 | Paper Mirror | Skill | 1 Nerve. Trace a Trick in your hand. The copy does not Vanish when played. |
+| 34 | Paper Mirror | Skill | 2 Nerve. Trace a Trick in your hand. The copy does not Vanish when played. |
 | 35 | Rewrite | Skill | 1 Nerve. Refold a Trick. You may look at two results and choose one. |
 | 36 | Reference Copy | Skill | 2 Nerve. Trace every Trick in your hand costing 0 after Creases. |
 | 37 | Sheaf | Skill | 1 Nerve. Draw 2 Tricks. Fold one of them 1. |
-| 38 | Bookplate | Skill | 1 Nerve. Gain substantial Guard. Gain 1 Paper for each Overfolded Trick in your hand. |
+| 38 | Bookplate | Skill | 2 Nerve. Gain substantial Guard. Gain 1 Paper for each Overfolded Trick in your hand. |
 | 39 | Unbound | Skill | 0 Nerve. Spend any Paper. Draw 1 Trick for every 3 spent. Vanish. |
 | 40 | Fold Along the Fold | Skill | 1 Nerve. Choose a Trick with at least 1 Crease. Fold it 1. It cannot be Refolded this turn. |
-| 41 | Index | Skill | 1 Nerve. Search your draw pile for a Trick, put it in your hand, and Fold it 1. Shuffle. |
-| 42 | Watermark | Skill | 1 Nerve. Choose a Trick in your hand. Whenever a copy of it is played this turn, gain 1 Paper. |
+| 41 | Index | Skill | 2 Nerve. Search your draw pile for a Trick, put it in your hand, and Fold it 1. Shuffle. |
+| 42 | Watermark | Skill | 0 Nerve. Choose a Trick in your hand. Whenever a copy of it is played this turn, gain 1 Paper. |
 | 43 | Straighten | Skill | 0 Nerve. Move all Creases from one Trick in your hand onto another. Vanish. |
 | 44 | Foolscap | Skill | 1 Nerve. Gain moderate Guard and 2 Paper. |
 | 45 | Air Between the Pages | Skill | 1 Nerve. Gain light Guard for each Trick that Vanished this turn, plus a moderate amount. |
@@ -328,7 +328,7 @@ in the pool and it does nothing at all on turn one.
 | # | Trick | Type | Core effect |
 |---|---|---|---|
 | 56 | The Whole Library | Attack | 3 Nerve. Deal moderate damage to all enemies once for each Crease across your whole hand, up to six times. |
-| 57 | Perfect Fold | Attack | 2 Nerve. Deal massive damage. If this is Overfolded, deal it twice before it Vanishes. |
+| 57 | Perfect Fold | Attack | 3 Nerve. Deal massive damage. If this is Overfolded, deal it twice before it Vanishes. |
 | 58 | Paper Storm | Attack | 2 Nerve. Trace this Trick twice, then deal moderate damage. |
 | 59 | The Archivist's Knife | Attack | 1 Nerve. Deal damage equal to your Paper. Spend it all. |
 | 60 | Fold Everything | Attack | 3 Nerve. Fold every Trick in your hand 1, then deal heavy damage for each Trick that became Overfolded. |
@@ -349,7 +349,7 @@ in the pool and it does nothing at all on turn one.
 | 70 | Endless Ream | Skill | 0 Nerve. Gain Paper up to your maximum. Vanish. |
 | 71 | Bind | Skill | 2 Nerve. Choose two Tricks in your hand. Each gains the other's Creases. |
 | 72 | Kept Flat | Skill | 1 Nerve. Choose an Overfolded Trick. It does not Vanish the next time it is played. |
-| 73 | The Long Fold | Skill | 3 Nerve. Fold a Trick 3. It becomes Overfolded and is Traced twice. Vanish. |
+| 73 | The Long Fold | Skill | 4 Nerve. Fold a Trick 3. It becomes Overfolded and is Traced twice. Vanish. |
 
 ## Rare Powers
 
@@ -380,7 +380,7 @@ Outside the 80. Three Uncommon, two Rare.
 |---|---|---|
 | Carbon Copy | Skill | 1 Nerve. Uncommon. Choose an ally and a Trick in your hand. Put a Paper Copy of it into their hand. It costs 0 and Vanishes. |
 | Lend a Page | Skill | 1 Nerve. Uncommon. Choose an ally. Fold a Trick in their hand 1. Gain 1 Paper. |
-| Paper Screen for Two | Skill | 1 Nerve. Uncommon. You and one ally each gain moderate Guard, plus a light amount for each Crease in your hand. |
+| Paper Screen for Two | Skill | 2 Nerve. Uncommon. You and one ally each gain moderate Guard, plus a light amount for each Crease in your hand. |
 | Shared Library | Power | 2 Nerve. Rare. Whenever an ally plays a Trick that costs 2 or more, gain 1 Paper. |
 | The Whole House on Paper | Skill | 3 Nerve. Rare. Every ally draws 1 Trick and Folds it 1. Trace one Trick in your own hand for each ally who did. |
 

@@ -143,7 +143,7 @@ Attack
 5
 Cape and Fang
 Attack
-1 Nerve. Deal light damage and gain light Guard. While Hungry, the damage becomes moderate. While Sated, the Guard becomes moderate.
+2 Nerve. Deal moderate damage and gain moderate Guard. While Hungry, the damage becomes heavy. While Sated, the Guard becomes heavy.
 6
 Dainty Claws
 Attack
@@ -163,15 +163,15 @@ Skill
 10
 Just a Taste
 Skill
-1 Nerve. Apply 2 Bite Marks to an enemy, then Feed 1 from that enemy.
+2 Nerve. Apply 4 Bite Marks to an enemy, then Feed 2 from that enemy.
 11
 Save Room
 Skill
-1 Nerve. Reduce Appetite by 1 and gain moderate Guard. If this causes Crumbula to become Hungry, draw 1 Trick.
+2 Nerve. Reduce Appetite by 2 and gain substantial Guard. If this causes Crumbula to become Hungry, draw 1 Trick.
 12
 Seconds?
 Skill
-1 Nerve. Feed 1. If Crumbula is Sated afterward, gain moderate Guard.
+2 Nerve. Feed 2. If Crumbula is Sated afterward, gain substantial Guard.
 13
 Cape Closed
 Skill
@@ -183,7 +183,7 @@ Skill
 15
 Pocket Snack
 Skill
-1 Nerve. Remove 1 Bite Mark from an enemy without Feeding and create 1 Leftover.
+0 Nerve. Remove 1 Bite Mark from an enemy without Feeding and create 1 Leftover.
 16
 Worth It
 Skill
@@ -227,7 +227,7 @@ Attack
 24
 Bottomless Bite
 Attack
-1 Nerve. Deal moderate damage, then deal one additional light hit for each separate Feed effect used earlier this turn, to a maximum of 3 bonus hits.
+2 Nerve. Deal heavy damage, then deal one additional light hit for each separate Feed effect used earlier this turn, to a maximum of 3 bonus hits.
 25
 The Good Silverware
 Attack
@@ -235,7 +235,7 @@ Attack
 26
 Velvet Ambush
 Attack
-1 Nerve. Deal moderate damage. If Hungry, draw 1 Trick. If Sated, gain moderate Guard.
+2 Nerve. Deal heavy damage. If Hungry, draw 1 Trick. If Sated, gain substantial Guard.
 27
 Taste of Everyone
 Attack
@@ -247,7 +247,7 @@ Attack
 29
 Table for One
 Attack
-2 Nerve. Deal substantial damage plus one additional light hit for each Bite Mark already on the target, to a maximum of 4 bonus hits. Then remove 1 Bite Mark without Feeding.
+3 Nerve. Deal very heavy damage plus one additional light hit for each Bite Mark already on the target, to a maximum of 4 bonus hits. Then remove 1 Bite Mark without Feeding.
 30
 Too Cute to Refuse
 Attack
@@ -267,7 +267,7 @@ Attack
 34
 The Count Arrives
 Attack
-3 Nerve. Deal substantial damage to one enemy and light damage to all others. Apply 1 Bite Mark to every enemy hit. Costs 1 less Nerve if you Indulged this turn.
+4 Nerve. Deal enormous damage to one enemy and moderate damage to all others. Apply 1 Bite Mark to every enemy hit. Costs 1 less Nerve if you Indulged this turn.
 ## Uncommon Skills
 Number
 Trick name
@@ -312,7 +312,7 @@ Skill
 44
 Please, I Insist
 Skill
-1 Nerve. Apply 3 Bite Marks to an enemy. Until your next turn, its Attack damage against Crumbula is slightly increased.
+2 Nerve. Apply 5 Bite Marks to an enemy. Until your next turn, its Attack damage against Crumbula is slightly increased.
 45
 House Guest
 Skill
@@ -328,7 +328,7 @@ Skill
 48
 After Dinner Nap
 Skill
-1 Nerve. Gain substantial Guard. If Sated, draw 2 additional Tricks next turn.
+2 Nerve. Gain very substantial Guard. If Sated, draw 2 additional Tricks next turn.
 49
 Secret Pantry
 Skill
@@ -380,7 +380,7 @@ Attack
 58
 Royal Taste Test
 Attack
-1 Nerve. Deal one light hit for each Bite Mark on the target, up to 5 hits, then Feed 1 from it.
+2 Nerve. Deal one moderate hit for each Bite Mark on the target, up to 5 hits, then Feed 1 from it.
 59
 Starving Artist
 Attack
@@ -392,7 +392,7 @@ Attack
 61
 The Last Nibble
 Attack
-1 Nerve. Deal moderate damage. If you have both Indulged and Fed this turn, immediately replay this Trick once for free.
+X Nerve. Spend all your Nerve. Deal moderate damage once for each Nerve spent. If you have both Indulged and Fed this turn, deal all of it again.
 62
 Bite the Hand That Pets Me
 Attack
@@ -487,7 +487,7 @@ Type
 Core effect
 Table for Two
 Skill
-1 Nerve. Choose another player. Gain moderate Guard for both players. If Crumbula Feeds later this turn, that ally also recovers a small amount of Courage.
+2 Nerve. Choose another player. Gain substantial Guard for both players. If Crumbula Feeds later this turn, that ally also recovers a small amount of Courage.
 Pass the Plate
 Skill
 1 Nerve. Convert up to 2 Bite Marks into special Leftovers and place them into another player's hand. For players other than Crumbula, these cost 0, Retain, restore a small amount of Courage, and Vanish.

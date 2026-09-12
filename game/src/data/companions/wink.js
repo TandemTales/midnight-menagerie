@@ -408,12 +408,12 @@ const commons = [
   },
   {
     id: 'wink/sticky-situation', name: 'Sticky Situation', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['preview', 'web'],
+    cost: 2, target: ENEMY, keywords: ['preview', 'web'],
     text: 'Deal {d} damage. If the target has a [Preview]ed future Intent, apply {n} [Web]. Otherwise Preview {m0}.',
     flavor: 'Knowing and sticking are the same verb here.',
-    nums: { d: 6, n: 3, m0: 1 },
+    nums: { d: 11, n: 5, m0: 1 },
     effect: eff(c => { U.hit(c, N(c).d); if (previewDepth(c, c.target) > 0) web(c, c.target, N(c).n); else preview(c, c.target, N(c).m0); }),
-    upgrade: { nums: { d: 9, n: 4, m0: 1 } },
+    upgrade: { nums: { d: 15, n: 7, m0: 1 } },
   },
   {
     id: 'wink/skitter-skitter-bite', name: 'Skitter, Skitter, Bite', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -427,21 +427,21 @@ const commons = [
   },
   {
     id: 'wink/future-tense', name: 'Future Tense', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['preview'],
+    cost: 2, target: ENEMY, keywords: ['preview'],
     text: 'If the target has a [Preview]ed future Intent, deal {d} damage. Otherwise deal {m0} damage and Preview {n}.',
     flavor: 'It is going to have done something. She has already seen it.',
-    nums: { d: 11, m0: 6, n: 1 },
+    nums: { d: 16, m0: 10, n: 1 },
     effect: eff(c => { if (previewDepth(c, c.target) > 0) U.hit(c, N(c).d); else { U.hit(c, N(c).m0); preview(c, c.target, N(c).n); } }),
-    upgrade: { nums: { d: 14, m0: 8, n: 1 } },
+    upgrade: { nums: { d: 22, m0: 14, n: 1 } },
   },
   {
     id: 'wink/look-over-there', name: 'Look Over There', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['preview'],
+    cost: 0, target: ENEMY, keywords: ['preview'],
     text: 'Deal {d} damage to one enemy, then [Preview] {n} on another enemy. If it is alone, Preview the same one.',
     flavor: 'She can look in two directions. She always could.',
-    nums: { d: 7, n: 1 },
+    nums: { d: 4, n: 1 },
     effect: eff(c => { U.hit(c, N(c).d); const o = U.others(c); preview(c, o.length ? o[0] : c.target, N(c).n); }),
-    upgrade: { nums: { d: 10, n: 1 } },
+    upgrade: { nums: { d: 6, n: 1 } },
   },
   {
     id: 'wink/threadbare-pounce', name: 'Threadbare Pounce', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -480,12 +480,12 @@ const commons = [
   },
   {
     id: 'wink/safe-distance', name: 'Safe Distance', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF,
+    cost: 2, target: SELF,
     text: 'Gain {b} Guard. Gain {m0} more if at least one enemy currently intends to Attack.',
     flavor: 'The correct distance is "the other side of the room".',
-    nums: { b: 7, m0: 5 },
+    nums: { b: 12, m0: 6 },
     effect: eff(c => U.guard(c, N(c).b + (anyAttacker(c) ? N(c).m0 : 0))),
-    upgrade: { nums: { b: 9, m0: 7 } },
+    upgrade: { nums: { b: 17, m0: 8 } },
   },
   {
     id: 'wink/wide-eyes', name: 'Wide Eyes', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -517,12 +517,12 @@ const commons = [
   },
   {
     id: 'wink/web-patch', name: 'Web Patch', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['web'],
+    cost: 2, target: SELF, keywords: ['web'],
     text: 'Gain {b} Guard. Apply {n} [Web] to every enemy.',
     flavor: 'She patches the whole corner at once and everybody gets some.',
-    nums: { b: 8, n: 1 },
+    nums: { b: 12, n: 2 },
     effect: eff(c => { U.guard(c, N(c).b); for (const e of U.enemies(c)) web(c, e, N(c).n); }),
-    upgrade: { nums: { b: 11, n: 2 } },
+    upgrade: { nums: { b: 16, n: 3 } },
   },
   {
     id: 'wink/back-up-a-little', name: 'Back Up a Little', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -554,7 +554,7 @@ const commons = [
   },
   {
     id: 'wink/ceiling-survey', name: 'Ceiling Survey', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['preview', 'web'],
+    cost: 0, target: ENEMY, keywords: ['preview', 'web'],
     text: '[Preview] {m0}. If the target has at least {n} [Web], Preview {m0} additional future Intent.',
     flavor: 'From up there the whole plan is a floor plan.',
     nums: { m0: 1, n: 3 },
@@ -588,12 +588,12 @@ const uncommons = [
   // ── Attacks (11) ──────────────────────────────────────────────────────────
   {
     id: 'wink/cross-examination', name: 'Cross Examination', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['read', 'preview', 'web'],
+    cost: 2, target: ENEMY, keywords: ['read', 'preview', 'web'],
     text: 'Deal {d} damage. If the target has an unresolved [Read], [Preview] {m0} additional future Intent and apply {n} [Web].',
     flavor: 'And where exactly were you planning to be next turn?',
-    nums: { d: 8, n: 1, m0: 1 },
+    nums: { d: 13, n: 2, m0: 1 },
     effect: eff(c => { U.hit(c, N(c).d); if (readsOn(c, c.target).length) { preview(c, c.target, N(c).m0); web(c, c.target, N(c).n); } }),
-    upgrade: { nums: { d: 11, n: 2, m0: 1 } },
+    upgrade: { nums: { d: 18, n: 3, m0: 1 } },
   },
   {
     id: 'wink/pulling-strings', name: 'Pulling Strings', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -624,30 +624,30 @@ const uncommons = [
   },
   {
     id: 'wink/blindside-probability', name: 'Blindside Probability', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['blind-read'],
+    cost: 2, target: ENEMY, keywords: ['blind-read'],
     text: 'Deal {d} damage. If the target has an unresolved [Blind Read], deal {m0} instead.',
     flavor: 'Not knowing is worth something, if you commit to it.',
-    nums: { d: 8, m0: 18 },
+    nums: { d: 12, m0: 24 },
     effect: eff(c => U.hit(c, readsOn(c, c.target).some(r => r.blind) ? N(c).m0 : N(c).d)),
-    upgrade: { nums: { d: 11, m0: 23 } },
+    upgrade: { nums: { d: 17, m0: 33 } },
   },
   {
     id: 'wink/silk-saw', name: 'Silk Saw', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['web'],
+    cost: 2, target: ENEMY, keywords: ['web'],
     text: 'Deal {d} damage. You may remove up to {n} [Web] from the target. Deal one more hit for every {m0} Web removed, up to 4 hits in total.',
     flavor: 'Thread, drawn back and forth, until something gives.',
-    nums: { d: 5, n: 6, m0: 2, hits: 3 },
+    nums: { d: 8, n: 6, m0: 2, hits: 3 },
     effect: eff(c => { const have = Math.min(N(c).n, webOn(c, c.target)); const use = have - (have % N(c).m0); if (use > 0) U.unapply(c, c.target, WEB, use); U.hitN(c, N(c).d, Math.min(4, 1 + Math.floor(use / N(c).m0))); }),
-    upgrade: { nums: { d: 7, n: 6, m0: 2, hits: 3 } },
+    upgrade: { nums: { d: 11, n: 6, m0: 2, hits: 3 } },
   },
   {
     id: 'wink/forecast-fang', name: 'Forecast Fang', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['preview'],
+    cost: 2, target: ENEMY, keywords: ['preview'],
     text: 'Deal {d} damage, plus {m0} for each [Preview]ed future Intent on the target, up to {n} extra hits.',
     flavor: 'She bites the version of it she has already seen.',
-    nums: { d: 8, m0: 5, n: 2 },
+    nums: { d: 12, m0: 6, n: 2 },
     effect: eff(c => { U.hit(c, N(c).d); U.hitN(c, N(c).m0, Math.min(N(c).n, previewDepth(c, c.target))); }),
-    upgrade: { nums: { d: 11, m0: 6, n: 2 } },
+    upgrade: { nums: { d: 16, m0: 8, n: 2 } },
   },
   {
     id: 'wink/wrong-answer', name: 'Wrong Answer', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -706,7 +706,7 @@ const uncommons = [
   },
   {
     id: 'wink/long-shot', name: 'Long Shot', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['blind-read', 'eye'],
+    cost: 0, target: ENEMY, keywords: ['blind-read', 'eye'],
     text: 'Playable only if the target’s next Intent is hidden. Place a [Blind Read]. Success Opens {n} additional [Eye]. Failure Closes {m0} additional Eye.',
     flavor: 'No information, maximum confidence.',
     nums: { n: 1, m0: 1 },
@@ -734,11 +734,11 @@ const uncommons = [
   },
   {
     id: 'wink/red-string-theory', name: 'Red String Theory', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: NONE, keywords: ['web', 'preview'],
-    text: 'Apply {n} [Web] to every enemy with at least one [Preview]ed Intent. If only one enemy remains, apply {m0} to it instead.',
+    cost: -1, target: NONE, keywords: ['web', 'preview'],
+    text: 'Spend all your Nerve. Apply {n} [Web] for each Nerve spent to every enemy with a [Preview]ed Intent. If only one enemy remains, apply {m0} per Nerve to it instead.',
     flavor: 'Pins, string, and a genuinely correct conclusion.',
     nums: { n: 2, m0: 3 },
-    effect: eff(c => { const es = U.enemies(c); if (es.length === 1) { web(c, es[0], N(c).m0); return; } for (const e of es) if (previewDepth(c, e) > 0) web(c, e, N(c).n); }),
+    effect: eff(c => { const x = c.x || 0; const es = U.enemies(c); if (es.length === 1) { web(c, es[0], N(c).m0 * x); return; } for (const e of es) if (previewDepth(c, e) > 0) web(c, e, N(c).n * x); }),
     upgrade: { nums: { n: 3, m0: 5 } },
   },
   {
@@ -788,12 +788,12 @@ const uncommons = [
   },
   {
     id: 'wink/doorframe-tripline', name: 'Doorframe Tripline', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['set', 'web', 'eye'],
+    cost: 0, target: ENEMY, keywords: ['set', 'web', 'eye'],
     text: '[Set] on an enemy. When its Intent becomes Defense, apply {n} [Web] and Open {m0} [Eye], then discard this Trick.',
     flavor: 'It will step back eventually. They always step back.',
-    nums: { n: 4, m0: 1 },
+    nums: { n: 2, m0: 1 },
     effect: eff(c => { const t = c.target, n = N(c).n, m = N(c).m0; placeSet(c, (x, ev) => ev.type === 'intent' && ev.enemy === t && ev.family === FAMILY.DEFENSE, (x) => { web(x, t, n); openEye(x, m); }, { enemy: t }); }),
-    upgrade: { nums: { n: 6, m0: 2 } },
+    upgrade: { nums: { n: 3, m0: 2 } },
   },
   {
     id: 'wink/lampshade-lookout', name: 'Lampshade Lookout', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -806,12 +806,12 @@ const uncommons = [
   },
   {
     id: 'wink/false-floor', name: 'False Floor', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['set', 'reorder', 'preview'],
+    cost: 2, target: ENEMY, keywords: ['set', 'reorder', 'preview'],
     text: '[Set] on an enemy. The next time you [Reorder] one of its Intents, deal {d} damage and [Preview] {n}, then discard this Trick.',
     flavor: 'The floorboard was never there.',
-    nums: { d: 14, n: 1 },
+    nums: { d: 22, n: 1 },
     effect: eff(c => { const t = c.target, d = N(c).d, n = N(c).n; placeSet(c, (x) => U.got(x, 'reordered') > 0, (x) => { U.hitAt(x, t, d); preview(x, t, n); }, { enemy: t }); }),
-    upgrade: { nums: { d: 19, n: 1 } },
+    upgrade: { nums: { d: 30, n: 1 } },
   },
   {
     id: 'wink/thread-count', name: 'Thread Count', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -1012,10 +1012,10 @@ const rares = [
   },
   {
     id: 'wink/the-part-where-you-panic', name: 'The Part Where You Panic', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 3, target: ENEMY, keywords: ['eye', 'set'],
-    text: 'Deal {d} damage. You may Close {n} [Eye]s to immediately trigger one [Set] attached to the target, even if its trigger has not occurred. Resolve it fully, then discard it.',
+    cost: 4, target: ENEMY, keywords: ['eye', 'set'],
+    text: 'Deal {d} damage. You may Close {n} [Eye]s to immediately trigger one [Set] attached to the target, even if its trigger has not occurred. Resolve it fully, then discard it. Costs 1 less for each [Set] you have out.',
     flavor: 'She has been waiting for this exact second all fight.',
-    nums: { d: 24, n: 2 },
+    nums: { d: 30, n: 2 },
     effect: eff(c => {
       U.hit(c, N(c).d);
       const t = c.target;
@@ -1026,7 +1026,10 @@ const rares = [
       try { s.fire(c, { type: 'forced', enemy: t }); } catch (_) {}
       U.moveCard(c, s.card, 'discard');
     }),
-    upgrade: { nums: { d: 30, n: 2 } },
+    // The 4 IS the printed cost above: re-cost one, re-cost both. It counts every
+    // Set you have out, so it is 3 or less whenever there is a Set to spring.
+    dynamicCost: (c) => Math.max(0, 4 - activeSets(c).length),
+    upgrade: { nums: { d: 42, n: 2 } },
   },
 
   // ── Skills (11) ───────────────────────────────────────────────────────────

@@ -191,7 +191,7 @@ Attack
 5
 Tail Around the Corner
 Attack
-1 Nerve. Deal light damage to all enemies. Ambush: deal additional light damage to one chosen enemy.
+2 Nerve. Deal moderate damage to all enemies. Ambush: deal additional moderate damage to one chosen enemy.
 6
 Furniture Gap Lunge
 Attack
@@ -203,7 +203,7 @@ Attack
 8
 Underfoot
 Attack
-1 Nerve. Deal light damage. If the target intends a non Attack action, you may Stash 1 Trick afterward.
+2 Nerve. Deal substantial damage. If the target intends a non Attack action, you may Stash 1 Trick afterward.
 9
 Pillowcase Pounce
 Attack
@@ -223,7 +223,7 @@ Skill
 13
 Quiet Paws
 Skill
-1 Nerve. Gain modest Guard. If Unseen, gain substantial Guard instead.
+2 Nerve. Gain substantial Guard. If Unseen, gain heavy Guard instead.
 14
 Laundry Chute
 Skill
@@ -247,7 +247,7 @@ Skill
 19
 Diversion
 Skill
-1 Nerve. Choose an enemy. If it intends to Attack, gain substantial Guard. Otherwise, draw 1 Trick and you may Stash 1.
+2 Nerve. Choose an enemy. If it intends to Attack, gain heavy Guard. Otherwise, draw 2 Tricks and you may Stash 1.
 20
 False Trail
 Skill
@@ -287,7 +287,7 @@ Attack
 25
 No Receipts
 Attack
-1 Nerve. Deal moderate damage. You may remove one Status or Curse from your hand for the rest of combat to deal substantial additional damage.
+2 Nerve. Deal substantial damage. You may remove one Status or Curse from your hand for the rest of combat to deal heavy additional damage.
 26
 One Two Gone
 Attack
@@ -299,7 +299,7 @@ Attack
 28
 Behind You
 Attack
-1 Nerve. Can only be played from the Shadow Pocket. Deal substantial damage. Ambush: the target's next Attack deals moderately less damage.
+3 Nerve. Can only be played from the Shadow Pocket. Deal very heavy damage. Ambush: the target's next Attack deals moderately less damage.
 29
 Ferret Missile
 Attack
@@ -311,7 +311,7 @@ Attack
 31
 Rack Run
 Attack
-1 Nerve. Deal light damage to all enemies. If you have Scurrried at least twice this turn, repeat the damage once.
+X Nerve. Spend all your Nerve. Deal light damage to all enemies once for each Nerve spent. If you have Scurrried at least twice this turn, repeat the damage once more.
 32
 Stolen Momentum
 Attack
@@ -344,7 +344,7 @@ Skill
 38
 Crawlspace
 Skill
-1 Nerve. Gain substantial Guard. If Unseen, return Crawlspace to your Shadow Pocket after it resolves instead of discarding it.
+2 Nerve. Gain heavy Guard. If Unseen, return Crawlspace to your Shadow Pocket after it resolves instead of discarding it.
 39
 Slip the Collar
 Skill
@@ -364,7 +364,7 @@ Skill
 43
 Quick Change
 Skill
-1 Nerve. Return every Trick in your Shadow Pocket to your hand, then Stash the same number of Tricks. Draw 1 Trick.
+2 Nerve. Return every Trick in your Shadow Pocket to your hand, then Stash the same number of Tricks. Draw 2 Tricks.
 44
 Trapdoor Memory
 Skill
@@ -384,7 +384,7 @@ Skill
 48
 Stash and Dash
 Skill
-1 Nerve. Stash up to 2 Tricks. Gain modest Guard for each Trick Stashed. Become Unseen. End your turn.
+2 Nerve. Stash up to 3 Tricks. Gain moderate Guard for each Trick Stashed. Become Unseen. End your turn.
 ## Uncommon Powers
 Number
 Trick name
@@ -393,7 +393,7 @@ Core effect
 49
 Hidey Hole
 Power
-1 Nerve. Increase Shadow Pocket capacity by 1 this combat. The first time you Stash each turn, draw 1 Trick.
+2 Nerve. Increase Shadow Pocket capacity by 1 this combat. The first time you Stash each turn, draw 1 Trick.
 50
 Light Sleeper
 Power
@@ -409,7 +409,7 @@ Power
 53
 No Fixed Address
 Power
-1 Nerve. At the end of your turn, if the Shadow Pocket is full, become Unseen.
+2 Nerve. At the end of your turn, if the Shadow Pocket is full, become Unseen.
 54
 Inside Job
 Power
@@ -443,7 +443,7 @@ Attack
 57
 Whole Ferret, No Warning
 Attack
-3 Nerve. Can only be played from the Shadow Pocket. Deal extreme damage. Ambush: costs 1 less and ignores a substantial portion of enemy Guard. Remove this Trick from combat after play.
+4 Nerve. Can only be played from the Shadow Pocket. Deal extreme damage. Ambush: costs 1 less and ignores a substantial portion of enemy Guard. Remove this Trick from combat after play.
 58
 Swipe the Spotlight
 Attack
@@ -463,7 +463,7 @@ Attack
 62
 Pocket Dimension Pounce
 Attack
-2 Nerve. Deal moderate damage plus additional light damage for each point of printed Nerve cost among your other Shadow Pocket Tricks. Then move all other Shadow Pocket Tricks to the discard pile.
+3 Nerve. Deal heavy damage plus additional light damage for each point of printed Nerve cost among your other Shadow Pocket Tricks. Then move all other Shadow Pocket Tricks to the discard pile.
 63
 Floorboard Express
 Attack
@@ -484,7 +484,7 @@ Core effect
 66
 Clean Getaway
 Skill
-1 Nerve. Gain substantial Guard and become Unseen. If Guard prevents all enemy Attack damage this enemy turn, gain 1 additional Nerve next turn.
+2 Nerve. Gain very heavy Guard and become Unseen. If Guard prevents all enemy Attack damage this enemy turn, gain 1 additional Nerve next turn.
 67
 Empty the Pockets
 Skill

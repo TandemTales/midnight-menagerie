@@ -364,12 +364,12 @@ const commons = [
   },
   {
     id: 'hush/tail-around-the-corner', name: 'Tail Around the Corner', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ALL_ENEMIES, keywords: ['ambush'],
+    cost: 2, target: ALL_ENEMIES, keywords: ['ambush'],
     text: 'Deal {d} to all enemies. [Ambush]: deal {m0} more to one of them.',
     flavor: 'A tail, going round a corner, some distance ahead of the ferret.',
-    nums: { d: 4, m0: 5 },
+    nums: { d: 8, m0: 7 },
     effect: eff((c) => { const a = ambush(c); U.hitAll(c, N(c).d); if (a) U.hitRandom(c, N(c).m0); }),
-    upgrade: { nums: { d: 6, m0: 7 } },
+    upgrade: { nums: { d: 11, m0: 10 } },
   },
   {
     id: 'hush/furniture-gap-lunge', name: 'Furniture Gap Lunge', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -392,17 +392,17 @@ const commons = [
   },
   {
     id: 'hush/underfoot', name: 'Underfoot', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['stash'],
+    cost: 2, target: ENEMY, keywords: ['stash'],
     text: 'Deal {d} damage. If the target does not intend to Attack, [Stash] {n} Trick.',
     flavor: 'Exactly where the foot is going.',
-    nums: { d: 5, n: 1 },
+    nums: { d: 12, n: 1 },
     effect: eff(async (c) => {
       const t = c.target;
       const attacking = t && t.pendingMove && ATTACK_INTENTS.has(t.pendingMove.intent);
       U.hit(c, N(c).d);
       if (!attacking) await stashSome(c, N(c).n);
     }),
-    upgrade: { nums: { d: 8, n: 2 } },
+    upgrade: { nums: { d: 17, n: 2 } },
   },
   {
     id: 'hush/pillowcase-pounce', name: 'Pillowcase Pounce', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -449,12 +449,12 @@ const commons = [
   },
   {
     id: 'hush/quiet-paws', name: 'Quiet Paws', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['unseen'],
+    cost: 2, target: SELF, keywords: ['unseen'],
     text: 'Gain {b} Guard, or {m0} while [Unseen].',
     flavor: 'Four of them, and not one makes a sound.',
-    nums: { b: 5, m0: 10 },
+    nums: { b: 11, m0: 17 },
     effect: eff((c) => U.guard(c, isUnseen(c) ? N(c).m0 : N(c).b)),
-    upgrade: { nums: { b: 8, m0: 14 } },
+    upgrade: { nums: { b: 15, m0: 23 } },
   },
   {
     id: 'hush/laundry-chute', name: 'Laundry Chute', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -516,17 +516,17 @@ const commons = [
   },
   {
     id: 'hush/diversion', name: 'Diversion', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['stash'],
+    cost: 2, target: ENEMY, keywords: ['stash'],
     text: 'If the target intends to Attack, gain {b} Guard. Otherwise draw {c1} and may [Stash] {n}.',
     flavor: 'A noise from the other side of the room, made by nobody.',
-    nums: { b: 10, c1: 1, n: 1 },
+    nums: { b: 15, c1: 2, n: 1 },
     effect: eff(async (c) => {
       const t = c.target;
       if (t && t.pendingMove && ATTACK_INTENTS.has(t.pendingMove.intent)) { U.guard(c, N(c).b); return; }
       U.draw(c, N(c).c1);
       await stashSome(c, N(c).n);
     }),
-    upgrade: { nums: { b: 14, c1: 2, n: 1 } },
+    upgrade: { nums: { b: 20, c1: 3, n: 1 } },
   },
   {
     id: 'hush/false-trail', name: 'False Trail', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -588,10 +588,10 @@ const uncommons = [
   },
   {
     id: 'hush/no-receipts', name: 'No Receipts', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY,
+    cost: 2, target: ENEMY,
     text: 'Deal {d} damage. Remove a Status or Curse from your hand for the fight to deal {m0} more.',
     flavor: 'There is no paperwork. There never was any paperwork.',
-    nums: { d: 7, m0: 14 },
+    nums: { d: 13, m0: 20 },
     effect: eff((c) => {
       U.hit(c, N(c).d);
       const junk = U.cardsIn(c, 'hand').find((k) => {
@@ -601,7 +601,7 @@ const uncommons = [
       });
       if (junk) { U.makeVanish(c, junk); c.exhaust(junk); U.hitAt(c, c.target, N(c).m0); }
     }),
-    upgrade: { nums: { d: 10, m0: 19 } },
+    upgrade: { nums: { d: 18, m0: 27 } },
   },
   {
     id: 'hush/one-two-gone', name: 'One Two Gone', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -629,14 +629,14 @@ const uncommons = [
   },
   {
     id: 'hush/behind-you', name: 'Behind You', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['shadow-pocket', 'ambush'],
+    cost: 3, target: ENEMY, keywords: ['shadow-pocket', 'ambush'],
     text: 'Only from the [Shadow Pocket]. Deal {d} damage. [Ambush]: its next Attack hits for much less.',
     flavor: 'He is not. He is nowhere near. That is worse.',
-    nums: { d: 14, n: 3 },
+    nums: { d: 26, n: 3 },
     effect: eff((c) => { const a = ambush(c); U.hit(c, N(c).d); if (a) U.apply(c, c.target, 'weak', N(c).n); }),
     playable: (c) => (c.card && c.card.pile === POCKET),
     playableReason: 'Behind You can only be played from the Shadow Pocket.',
-    upgrade: { nums: { d: 19, n: 4 } },
+    upgrade: { nums: { d: 36, n: 4 } },
   },
   {
     id: 'hush/ferret-missile', name: 'Ferret Missile', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -671,12 +671,17 @@ const uncommons = [
   },
   {
     id: 'hush/rack-run', name: 'Rack Run', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ALL_ENEMIES, keywords: ['scurry'],
-    text: 'Deal {d} to all enemies. With {n}+ [Scurry]s this turn, do it again.',
+    cost: -1, target: ALL_ENEMIES, keywords: ['scurry'],
+    text: 'Spend all your Nerve. Deal {d} to all enemies once for each Nerve spent, and once more with {n}+ [Scurry]s this turn.',
     flavor: 'Along the top of the coat rack, at speed.',
     nums: { d: 5, n: 2 },
-    effect: eff((c) => { U.hitAll(c, N(c).d); if ((U.mm(c).scurriesThisTurn || 0) >= N(c).n) U.hitAll(c, N(c).d); }),
-    upgrade: { nums: { d: 8, n: 2 } },
+    /* X is paid in full from the Pocket too: Card.rawCost returns -1 before any
+       delta or override, so Shhh and Cut the Lights never shrink `c.x`. */
+    effect: eff((c) => {
+      const times = (c.x || 0) + ((U.mm(c).scurriesThisTurn || 0) >= N(c).n ? 1 : 0);
+      for (let i = 0; i < times; i++) U.hitAll(c, N(c).d);
+    }),
+    upgrade: { nums: { d: 7, n: 2 } },
   },
   {
     id: 'hush/stolen-momentum', name: 'Stolen Momentum', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -765,12 +770,12 @@ const uncommons = [
   },
   {
     id: 'hush/crawlspace', name: 'Crawlspace', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['unseen', 'shadow-pocket'],
+    cost: 2, target: SELF, keywords: ['unseen', 'shadow-pocket'],
     text: 'Gain {b} Guard. If [Unseen], return this to the [Shadow Pocket] instead of discarding it.',
     flavor: 'Under the floor, above the ceiling, both at once.',
-    nums: { b: 10 },
+    nums: { b: 16 },
     effect: eff((c) => { U.guard(c, N(c).b); if (isUnseen(c) && pocketRoom(c)) U.moveCard(c, c.card, POCKET, {}); }),
-    upgrade: { nums: { b: 14 } },
+    upgrade: { nums: { b: 22 } },
   },
   {
     id: 'hush/slip-the-collar', name: 'Slip the Collar', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -824,10 +829,10 @@ const uncommons = [
   },
   {
     id: 'hush/quick-change', name: 'Quick Change', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: NONE, keywords: ['scurry', 'stash'],
+    cost: 2, target: NONE, keywords: ['scurry', 'stash'],
     text: 'Return the whole [Shadow Pocket] to your hand, then [Stash] the same number. Draw {c1}.',
     flavor: 'Everything out, everything back, nothing where it was.',
-    nums: { c1: 1 },
+    nums: { c1: 2 },
     effect: eff(async (c) => {
       const held = pocket(c).filter((k) => !(k.meta && k.meta.contraband));
       let n = 0;
@@ -835,7 +840,7 @@ const uncommons = [
       await stashSome(c, n);
       U.draw(c, N(c).c1);
     }),
-    upgrade: { nums: { c1: 2 } },
+    upgrade: { nums: { c1: 3 } },
   },
   {
     id: 'hush/trapdoor-memory', name: 'Trapdoor Memory', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -888,23 +893,23 @@ const uncommons = [
   },
   {
     id: 'hush/stash-and-dash', name: 'Stash and Dash', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: NONE, keywords: ['stash', 'unseen'],
+    cost: 2, target: NONE, keywords: ['stash', 'unseen'],
     text: '[Stash] up to {n}. Gain {b} Guard each. Become [Unseen]. End your turn.',
     flavor: 'And he is gone, and so is the turn.',
-    nums: { n: 2, b: 5 },
+    nums: { n: 3, b: 6 },
     effect: eff(async (c) => {
       const got = await stashSome(c, N(c).n);
       U.guard(c, got * N(c).b);
       hide(c);
       U.mm(c).endTurnAfter = true;
     }),
-    upgrade: { nums: { n: 3, b: 7 } },
+    upgrade: { nums: { n: 3, b: 9 } },
   },
 
   // ── Powers (7) ──
   {
     id: 'hush/hidey-hole', name: 'Hidey Hole', companion: SLUG, type: POWER, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['shadow-pocket', 'stash'],
+    cost: 2, target: SELF, keywords: ['shadow-pocket', 'stash'],
     text: '[Shadow Pocket] capacity +{n} this combat. The first [Stash] each turn draws {c1}.',
     flavor: 'There is another one behind this one.',
     nums: { n: 1, c1: 1 },
@@ -943,12 +948,12 @@ const uncommons = [
   },
   {
     id: 'hush/no-fixed-address', name: 'No Fixed Address', companion: SLUG, type: POWER, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['shadow-pocket', 'unseen'],
+    cost: 2, target: SELF, keywords: ['shadow-pocket', 'unseen'],
     text: 'At the end of your turn, if the [Shadow Pocket] is full, become [Unseen].',
     flavor: 'He lives in the house. Not in any particular part of it.',
     nums: {},
     effect: eff((c) => power(c, 'hush/no-fixed-address', 1, (x) => { U.mm(x).noFixedAddress = true; })),
-    upgrade: { cost: 0 },
+    upgrade: { cost: 1 },
   },
   {
     id: 'hush/inside-job', name: 'Inside Job', companion: SLUG, type: POWER, rarity: UNCOMMON,
@@ -993,14 +998,17 @@ const rares = [
   },
   {
     id: 'hush/whole-ferret-no-warning', name: 'Whole Ferret, No Warning', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 3, target: ENEMY, exhaust: true, keywords: ['shadow-pocket', 'ambush', 'vanish'],
+    cost: 4, target: ENEMY, exhaust: true, keywords: ['shadow-pocket', 'ambush', 'vanish'],
     text: 'Only from the [Shadow Pocket]. Deal {d} damage. [Ambush]: ignore Guard. [Vanish].',
     flavor: 'All of him. No warning.',
-    nums: { d: 33 },
+    nums: { d: 44 },
+    /* 4 Nerve on purpose. It is only ever paid from the Pocket, which is where
+       every discount he owns lands (Shhh, Soft Footfalls, Cut the Lights), and
+       the Pocket keeps it until a Light Sleeper or Ambush-refund turn. */
     effect: eff((c) => { const a = ambush(c); U.hit(c, N(c).d, a ? { pierce: true } : undefined); }),
     playable: (c) => (c.card && c.card.pile === POCKET),
     playableReason: 'That one only comes out of the Shadow Pocket.',
-    upgrade: { cost: 2 },
+    upgrade: { nums: { d: 60 } },
   },
   {
     id: 'hush/swipe-the-spotlight', name: 'Swipe the Spotlight', companion: SLUG, type: ATTACK, rarity: RARE,
@@ -1062,10 +1070,10 @@ const rares = [
   },
   {
     id: 'hush/pocket-dimension-pounce', name: 'Pocket Dimension Pounce', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 2, target: ENEMY, keywords: ['shadow-pocket'],
+    cost: 3, target: ENEMY, keywords: ['shadow-pocket'],
     text: 'Deal {d} plus {m0} per Nerve of your other [Shadow Pocket] Tricks, then discard them.',
     flavor: 'Everything he was saving, spent at once.',
-    nums: { d: 11, m0: 5 },
+    nums: { d: 15, m0: 5 },
     balance: { scalesWith: 'the printed cost of everything else in the Pocket, which it then empties' },
     effect: eff((c) => {
       const others = pocket(c).filter((k) => k !== c.card);
@@ -1073,7 +1081,7 @@ const rares = [
       U.hit(c, N(c).d + total * N(c).m0);
       for (const k of others) U.moveCard(c, k, 'discard', {});
     }),
-    upgrade: { nums: { d: 15, m0: 7 } },
+    upgrade: { nums: { d: 21, m0: 7 } },
   },
   {
     id: 'hush/floorboard-express', name: 'Floorboard Express', companion: SLUG, type: ATTACK, rarity: RARE,
@@ -1125,12 +1133,12 @@ const rares = [
   // ── Skills (9) ──
   {
     id: 'hush/clean-getaway', name: 'Clean Getaway', companion: SLUG, type: SKILL, rarity: RARE,
-    cost: 1, target: SELF, keywords: ['unseen'],
+    cost: 2, target: SELF, keywords: ['unseen'],
     text: 'Gain {b} Guard and become [Unseen]. If nothing gets through this enemy turn, gain {e} Nerve next turn.',
     flavor: 'No prints, no fur, no witnesses.',
-    nums: { b: 14, e: 1 },
+    nums: { b: 22, e: 1 },
     effect: eff((c) => { U.guard(c, N(c).b); hide(c); U.mm(c).cleanGetaway = N(c).e; }),
-    upgrade: { nums: { b: 19, e: 1 } },
+    upgrade: { nums: { b: 30, e: 1 } },
   },
   {
     id: 'hush/empty-the-pockets', name: 'Empty the Pockets', companion: SLUG, type: SKILL, rarity: RARE,

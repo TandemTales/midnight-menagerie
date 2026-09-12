@@ -141,11 +141,11 @@ Attack
 4
 Firefly Tackle
 Attack
-1 Nerve. Deal moderate damage. Flare 1: follow with an additional light hit.
+2 Nerve. Deal heavy damage. Flare 1: follow with an additional moderate hit.
 5
 Pop!
 Attack
-1 Nerve. Deal moderate damage. If Bright, deal additional light damage.
+2 Nerve. Deal heavy damage. If Bright, deal additional light damage.
 6
 Little Orbit
 Attack
@@ -161,7 +161,7 @@ Skill
 9
 Nightlight
 Skill
-1 Nerve. Gain moderate Guard. Gain additional Guard if Bright.
+2 Nerve. Gain substantial Guard. Gain additional Guard if Bright.
 10
 Put It Somewhere Safe
 Skill
@@ -181,7 +181,7 @@ Skill
 14
 Still Here!
 Skill
-1 Nerve. Gain light Guard for each Lingering Trick, up to three Lingering Tricks.
+2 Nerve. Gain moderate Guard for each Lingering Trick, up to three Lingering Tricks.
 15
 Dim the Room
 Skill
@@ -189,7 +189,7 @@ Skill
 16
 Tiny Reservoir
 Skill
-1 Nerve. Gain 1 Glow. If Bright, draw one Trick, then discard one Trick.
+0 Nerve. Gain 1 Glow. If Bright, draw one Trick, then discard one Trick.
 17
 Home in the Dark
 Power
@@ -224,7 +224,7 @@ Attack
 22
 No, NOW!
 Attack
-1 Nerve. Deal moderate damage. Hasten 1 one Lingering Trick. If this causes an Afterglow to resolve, deal an additional light hit to the target.
+2 Nerve. Deal heavy damage. Hasten 1 one Lingering Trick. If this causes an Afterglow to resolve, deal an additional light hit to the target.
 23
 Spark Parade
 Attack
@@ -232,7 +232,7 @@ Attack
 24
 Backtrack Bolt
 Attack
-1 Nerve. Deal moderate damage. If an Afterglow has already resolved this turn, place Backtrack Bolt on top of the draw pile instead of discarding it.
+2 Nerve. Deal heavy damage. If an Afterglow has already resolved this turn, place Backtrack Bolt on top of the draw pile instead of discarding it.
 25
 Hot Potato
 Attack
@@ -240,7 +240,7 @@ Attack
 26
 Jump Scare Spark
 Attack
-1 Nerve. Deal light damage. If an Afterglow has already resolved this turn, deal heavy damage instead.
+2 Nerve. Deal light damage. If an Afterglow has already resolved this turn, deal very heavy damage instead.
 27
 Bank Shot
 Attack
@@ -248,7 +248,7 @@ Attack
 28
 Tiny Supernova
 Attack
-2 Nerve. Deal moderate damage to all enemies. Flare 2: deal another moderate burst to all enemies.
+X Nerve. Spend all your Nerve. Deal light damage to all enemies once for each Nerve spent. Flare 2: deal one more light burst to all enemies.
 29
 Skip Ahead
 Attack
@@ -256,7 +256,7 @@ Attack
 30
 Orbiting Sparks
 Attack
-1 Nerve. Deal one light hit for each Trick currently in the Gloaming, up to four hits.
+2 Nerve. Deal one moderate hit for each Trick currently in the Gloaming, up to four hits.
 31
 Not Done Yet
 Attack
@@ -268,7 +268,7 @@ Attack
 33
 Blow the Fuse
 Attack
-2 Nerve. Deal heavy damage. You may Flare up to 3 Glow. Add one light hit for each Glow spent. If you were Blazing before spending Glow, Hasten 1 all Lingering Tricks.
+3 Nerve. Deal very heavy damage. You may Flare up to 3 Glow. Add one light hit for each Glow spent. If you were Blazing before spending Glow, Hasten 1 all Lingering Tricks.
 ## Uncommon Skills
 No.
 Trick name
@@ -281,7 +281,7 @@ Skill
 35
 Stretch the Moment
 Skill
-1 Nerve. Delay 1 up to two Lingering Tricks. Gain moderate Guard.
+0 Nerve. Delay 1 up to two Lingering Tricks. Gain very light Guard.
 36
 Cut the Wait
 Skill
@@ -289,11 +289,11 @@ Skill
 37
 Glow Bank
 Skill
-1 Nerve. Gain 2 Glow, then Delay 1 a random Lingering Trick. If there are no Lingering Tricks, gain only 1 Glow.
+2 Nerve. Gain 4 Glow, then Delay 1 a random Lingering Trick. If there are no Lingering Tricks, gain only 3 Glow.
 38
 Emergency Lantern
 Skill
-1 Nerve. Gain moderate Guard. Flare 2: instead gain substantial Guard and draw one Trick.
+2 Nerve. Gain substantial Guard. Flare 2: instead gain heavy Guard and draw one Trick.
 39
 Room for More
 Skill
@@ -301,7 +301,7 @@ Skill
 40
 Quiet Before the Pop
 Skill
-1 Nerve. If no Afterglow has resolved this turn, gain substantial Guard. Otherwise gain moderate Guard and 1 Glow.
+2 Nerve. If no Afterglow has resolved this turn, gain heavy Guard. Otherwise gain substantial Guard and 1 Glow.
 41
 Borrowed Tomorrow
 Skill
@@ -309,7 +309,7 @@ Skill
 42
 Push It Back
 Skill
-1 Nerve. Delay 2 one Lingering Trick. Gain substantial Guard.
+2 Nerve. Delay 2 one Lingering Trick. Gain heavy Guard.
 43
 Shared Spark
 Skill
@@ -333,7 +333,7 @@ Skill
 48
 Stash the Flash
 Skill
-1 Nerve. Spend up to 3 Glow. Gain light Guard for each Glow spent. If exactly 3 Glow were spent, draw two Tricks.
+2 Nerve. Spend up to 3 Glow. Gain moderate Guard for each Glow spent. If exactly 3 Glow were spent, draw two Tricks.
 49
 Split Second
 Skill
@@ -377,7 +377,7 @@ Core effect
 56
 Tiny Sun, Big Feelings
 Attack
-3 Nerve. Deal heavy damage to all enemies. If Blazing, you may Flare 6 to repeat the attack.
+4 Nerve. Deal heavy damage to all enemies. If Blazing, you may Flare 6 to repeat the attack. Costs 1 less Nerve for each Afterglow that has resolved this turn.
 57
 This One’s Been Cooking
 Attack

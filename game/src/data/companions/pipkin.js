@@ -227,7 +227,7 @@ U.onHook('harvest', 'pipkin/community-garden', (c) => {
   if (friend) c.giveBlock(friend, 7);
 });
 U.onHook('land', 'pipkin/fertile-footprints', (c) => { if (U.once(c, 'fertileFootprints')) plant(c, U.stacks(c, c.self, 'pipkin/fertile-footprints')); });
-U.onHook('ripen', 'pipkin/prize-pumpkin', (c) => { if (U.once(c, 'prizePumpkin')) { const n = U.stacks(c, c.self, 'pipkin/prize-pumpkin'); U.nextTurn(c, (x) => U.energy(x, n)); } });
+U.onHook('ripen', 'pipkin/prize-pumpkin', (c) => { if (U.once(c, 'prizePumpkin')) { const n = U.stacks(c, c.self, 'pipkin/prize-pumpkin'); U.energyNextTurn(c, n); } });   // banked: a next-turn timer is wiped by the refill (CONTRACTS trap 24)
 U.onHook('plump', 'pipkin/big-frog-energy', (c) => U.guard(c, 5 + (U.stacks(c, c.self, 'pipkin/big-frog-energy') - 1) * 2));
 U.onHook('deflate', 'pipkin/big-frog-energy', (c) => { if (U.once(c, 'bigFrogDeflate')) U.empower(c, 8 + (U.stacks(c, c.self, 'pipkin/big-frog-energy') - 1) * 2); });
 U.onHook('harvest', 'pipkin/garden-in-motion', (c) => { if (U.once(c, 'gardenInMotion')) { if (!advance(c, SEED)) plant(c, 1); } });
@@ -324,12 +324,12 @@ const commons = [
   },
   {
     id: 'pipkin/belly-bop', name: 'Belly Bop', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['plump'],
+    cost: 2, target: ENEMY, keywords: ['plump'],
     text: 'Deal {d} damage, plus {m0} for each [Plump].',
     flavor: 'Mass times enthusiasm.',
-    nums: { d: 6, m0: 3 },
+    nums: { d: 8, m0: 5 },
     effect: eff(c => U.hit(c, N(c).d + N(c).m0 * plump(c))),
-    upgrade: { nums: { d: 8, m0: 4 } },
+    upgrade: { nums: { d: 11, m0: 7 } },
   },
   {
     id: 'pipkin/pumpkin-pitch', name: 'Pumpkin Pitch', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -342,12 +342,12 @@ const commons = [
   },
   {
     id: 'pipkin/drop-in', name: 'Drop In', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ALL_ENEMIES, keywords: ['land', 'height'],
+    cost: 2, target: ALL_ENEMIES, keywords: ['land', 'height'],
     text: 'Deal {d} damage to all enemies. [Land]: deal {m0} more to all enemies for each [Height] spent.',
     flavor: 'Uninvited, from above, into the middle of everyone.',
-    nums: { d: 5, m0: 3 },
+    nums: { d: 7, m0: 5 },
     effect: eff(c => { U.hitAll(c, N(c).d); land(c, (s) => U.hitAll(c, N(c).m0 * s)); }),
-    upgrade: { nums: { d: 7, m0: 4 } },
+    upgrade: { nums: { d: 10, m0: 7 } },
   },
   {
     id: 'pipkin/seed-spit', name: 'Seed Spit', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -403,21 +403,21 @@ const commons = [
   },
   {
     id: 'pipkin/soft-landing', name: 'Soft Landing', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['land', 'height'],
+    cost: 2, target: SELF, keywords: ['land', 'height'],
     text: 'Gain {b} Guard. [Land]: gain {m0} more Guard for each [Height] spent.',
     flavor: 'He tucks. It helps more than it should.',
-    nums: { b: 6, m0: 5 },
+    nums: { b: 11, m0: 6 },
     effect: eff(c => { U.guard(c, N(c).b); land(c, (s) => U.guard(c, N(c).m0 * s)); }),
-    upgrade: { nums: { b: 8, m0: 6 } },
+    upgrade: { nums: { b: 15, m0: 8 } },
   },
   {
     id: 'pipkin/squat-low', name: 'Squat Low', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['plump'],
+    cost: 2, target: SELF, keywords: ['plump'],
     text: 'Gain {b} Guard. Gain {m0} more if you have at least {n} [Plump].',
     flavor: 'Wide, low, and very hard to move.',
-    nums: { b: 7, m0: 6, n: 2 },
+    nums: { b: 12, m0: 9, n: 2 },
     effect: eff(c => U.guard(c, N(c).b + (plump(c) >= N(c).n ? N(c).m0 : 0))),
-    upgrade: { nums: { b: 9, m0: 8, n: 2 } },
+    upgrade: { nums: { b: 16, m0: 12, n: 2 } },
   },
   {
     id: 'pipkin/hopscotch', name: 'Hopscotch', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -476,12 +476,12 @@ const commons = [
   },
   {
     id: 'pipkin/little-harvest', name: 'Little Harvest', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: NONE, keywords: ['harvest'],
+    cost: 0, target: NONE, keywords: ['harvest'],
     text: 'Draw {n} Trick. [Harvest] {m0}: draw {m1} additional Trick.',
     flavor: 'A modest yield, taken personally.',
     nums: { n: 1, m0: 1, m1: 1 },
     effect: eff(c => { U.draw(c, N(c).n); if (harvest(c, N(c).m0)) U.draw(c, N(c).m1); }),
-    upgrade: { nums: { n: 2, m0: 1, m1: 1 } },
+    upgrade: { nums: { n: 1, m0: 1, m1: 2 } },
   },
 ];
 
@@ -519,12 +519,17 @@ const uncommons = [
   },
   {
     id: 'pipkin/seed-slam', name: 'Seed Slam', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['plant', 'patch', 'seed'],
-    text: 'Deal {d} damage. [Plant] {n} [Seed]. If the [Patch] is full, advance one object instead.',
+    cost: -1, target: ENEMY, keywords: ['plant', 'patch', 'seed'],
+    text: 'Spend all your Nerve. For each Nerve spent, deal {d} damage and [Plant] {n} [Seed]. If the [Patch] is full, advance one object instead.',
     flavor: 'Pressed into the floorboards with real force.',
-    nums: { d: 8, n: 1 },
-    effect: eff(c => { U.hit(c, N(c).d); if (plant(c, N(c).n) === 0) advance(c); }),
-    upgrade: { nums: { d: 11, n: 1 } },
+    /* X: one hit and one Plant per Nerve spent (`c.x`), and a Plant with no
+       room becomes an advance, so no Nerve is wasted on a full Patch. Priced
+       per Nerve just under the old 1-Nerve card (8 and a Seed). X takes no
+       discount (`rawCost` settles X first) and has no Hop, so Heavy Feet and
+       Elastic Legs never touch it. */
+    nums: { d: 7, n: 1 },
+    effect: eff(c => { const x = c.x || 0; for (let i = 0; i < x; i++) { U.hit(c, N(c).d); if (plant(c, N(c).n) === 0) advance(c); } }),
+    upgrade: { nums: { d: 10, n: 1 } },
   },
   {
     id: 'pipkin/lily-pad-lariat', name: 'Lily Pad Lariat', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -537,30 +542,30 @@ const uncommons = [
   },
   {
     id: 'pipkin/three-hop-combo', name: 'Three Hop Combo', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['land', 'height'],
+    cost: 2, target: ENEMY, keywords: ['land', 'height'],
     text: 'Deal {d} damage. [Land]: if {n} [Height] was spent, repeat the attack twice.',
     flavor: 'One, two, three, and then the ceiling.',
-    nums: { d: 8, n: 3, hits: 1 },
+    nums: { d: 12, n: 3, hits: 1 },
     effect: eff(c => { U.hit(c, N(c).d); land(c, (s) => { if (s >= N(c).n) U.hitN(c, N(c).d, 2); }); }),
-    upgrade: { nums: { d: 11, n: 3, hits: 1 } },
+    upgrade: { nums: { d: 17, n: 3, hits: 1 } },
   },
   {
     id: 'pipkin/gourdquake', name: 'Gourdquake', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 2, target: ALL_ENEMIES, keywords: ['land', 'height', 'harvest'],
+    cost: 3, target: ALL_ENEMIES, keywords: ['land', 'height', 'harvest'],
     text: 'Deal {d} damage to all enemies. [Land]: deal {m0} more to all for each [Height] spent. [Harvest] {n}: also gain {b} Guard.',
     flavor: 'The floorboards remember this one.',
-    nums: { d: 9, m0: 4, n: 1, b: 12 },
+    nums: { d: 13, m0: 6, n: 1, b: 15 },
     effect: eff(c => { U.hitAll(c, N(c).d); land(c, (s) => U.hitAll(c, N(c).m0 * s)); if (harvest(c, N(c).n)) U.guard(c, N(c).b); }),
-    upgrade: { nums: { d: 12, m0: 5, n: 1, b: 15 } },
+    upgrade: { nums: { d: 18, m0: 8, n: 1, b: 20 } },
   },
   {
     id: 'pipkin/bug-lunch-break', name: 'Bug Lunch Break', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['plant', 'plump', 'seed'],
+    cost: 0, target: ENEMY, keywords: ['plant', 'plump', 'seed'],
     text: 'Deal {d} damage. If this defeats a non-boss enemy, [Plant] {n} [Seed] and gain {m0} [Plump].',
     flavor: 'Work is work, but lunch is lunch.',
-    nums: { d: 9, n: 1, m0: 1 },
+    nums: { d: 5, n: 1, m0: 1 },
     effect: eff(c => { const t = c.target; U.hit(c, N(c).d); if (t && t.tier !== 'boss' && (t.hp <= 0 || t.dead)) { plant(c, N(c).n); gainPlump(c, N(c).m0); } }),
-    upgrade: { nums: { d: 12, n: 1, m0: 1 } },
+    upgrade: { nums: { d: 7, n: 1, m0: 1 } },
   },
   {
     id: 'pipkin/heavy-hopper', name: 'Heavy Hopper', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -584,12 +589,12 @@ const uncommons = [
   },
   {
     id: 'pipkin/ripe-for-throwing', name: 'Ripe for Throwing', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['harvest'],
+    cost: 2, target: ENEMY, keywords: ['harvest'],
     text: 'Deal {d} damage. [Harvest] up to {n}: repeat the attack once for each Pumpkin harvested.',
     flavor: 'They were going to go soft anyway.',
-    nums: { d: 8, n: 2, hits: 2 },
+    nums: { d: 11, n: 2, hits: 2 },
     effect: eff(c => { U.hit(c, N(c).d); U.hitN(c, N(c).d, harvest(c, N(c).n)); }),
-    upgrade: { nums: { d: 11, n: 2, hits: 2 } },
+    upgrade: { nums: { d: 15, n: 2, hits: 2 } },
   },
   {
     id: 'pipkin/squash-match', name: 'Squash Match', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -602,12 +607,12 @@ const uncommons = [
   },
   {
     id: 'pipkin/croak-shock', name: 'Croak Shock', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ALL_ENEMIES, keywords: ['plant', 'harvest'],
+    cost: 2, target: ALL_ENEMIES, keywords: ['plant', 'harvest'],
     text: 'Deal {d} damage to all enemies. If you have both [Plant]ed and [Harvest]ed this turn, deal {m0} instead and draw {n} Trick.',
     flavor: 'A frog this size should not be able to make that sound.',
-    nums: { d: 5, m0: 9, n: 1 },
+    nums: { d: 8, m0: 14, n: 1 },
     effect: eff(c => { const on = U.got(c, 'harvested') > 0 && U.got(c, 'plantedThisTurn') > 0; U.hitAll(c, on ? N(c).m0 : N(c).d); if (on) U.draw(c, N(c).n); }),
-    upgrade: { nums: { d: 7, m0: 12, n: 1 } },
+    upgrade: { nums: { d: 11, m0: 19, n: 1 } },
   },
   {
     id: 'pipkin/leapfrog', name: 'Leapfrog', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -651,7 +656,7 @@ const uncommons = [
   },
   {
     id: 'pipkin/hang-time', name: 'Hang Time', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, exhaust: true, keywords: ['height', 'vanish'],
+    cost: 0, target: SELF, exhaust: true, keywords: ['height', 'vanish'],
     text: 'Your [Height] does not disappear at the end of this turn. If you keep at least {n}, draw {m0} additional Trick next turn. [Vanish].',
     flavor: 'He simply declines to come down this turn.',
     nums: { n: 2, m0: 1 },
@@ -679,21 +684,21 @@ const uncommons = [
   },
   {
     id: 'pipkin/mud-jacket', name: 'Mud Jacket', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['plump'],
+    cost: 2, target: SELF, keywords: ['plump'],
     text: 'Gain {b} Guard, plus {m0} for each [Plump]. At 3 Plump, keep {m1} of it into your next turn.',
     flavor: 'Cracks when it dries. Works while it does not.',
-    nums: { b: 5, m0: 6, m1: 8 },
+    nums: { b: 8, m0: 7, m1: 10 },
     effect: eff(c => { U.guard(c, N(c).b + N(c).m0 * plump(c)); if (plump(c) >= 3) { const k = N(c).m1; U.nextTurn(c, (x) => U.guard(x, k)); } }),
-    upgrade: { nums: { b: 7, m0: 8, m1: 10 } },
+    upgrade: { nums: { b: 11, m0: 9, m1: 14 } },
   },
   {
     id: 'pipkin/choose-the-biggest', name: 'Choose the Biggest', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['harvest', 'empowered'],
+    cost: 2, target: SELF, keywords: ['harvest', 'empowered'],
     text: '[Harvest] {m0}: gain {b} Guard and your next Attack this turn is [Empowered] {n}.',
     flavor: 'He has been watching that one for three turns.',
-    nums: { m0: 1, b: 14, n: 8 },
+    nums: { m0: 1, b: 19, n: 12 },
     effect: eff(c => { if (harvest(c, N(c).m0)) { U.guard(c, N(c).b); U.empower(c, N(c).n); } }),
-    upgrade: { nums: { m0: 1, b: 18, n: 10 } },
+    upgrade: { nums: { m0: 1, b: 25, n: 16 } },
   },
   {
     id: 'pipkin/pantry-raid', name: 'Pantry Raid', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -804,7 +809,7 @@ const uncommons = [
     text: 'The first time at least one [Pumpkin] ripens each turn, gain {n} Nerve at the start of your next turn.',
     flavor: 'Blue ribbon. Slightly menacing.',
     nums: { n: 1 },
-    effect: eff(c => power(c, 'pipkin/prize-pumpkin', 1)),
+    effect: eff(c => power(c, 'pipkin/prize-pumpkin', N(c).n)),   // stacks ARE the Nerve the ripen hook pays, so the upgrade's 2 has to land here
     upgrade: { nums: { n: 2 } },
   },
   {
@@ -834,12 +839,16 @@ const rares = [
   // ── Attacks (8) ───────────────────────────────────────────────────────────
   {
     id: 'pipkin/crater-maker', name: 'Crater Maker', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 3, target: ALL_ENEMIES, keywords: ['land', 'height', 'deflate'],
+    cost: 4, target: ALL_ENEMIES, keywords: ['land', 'height', 'deflate'],
+    /* His 4-Nerve Trick, and meant to be paid 3 or less: it contains Land, so
+       Springboard's discount reaches it; Hold Your Croak retains it a turn for
+       1-2 less; Pffft, Pick One and Emergency Deflation buy the rest -- though
+       Deflating for Nerve spends the Plump its repeat wants. */
     text: 'Deal {d} damage to all enemies. [Land]: deal {m0} more to all for each [Height] spent. If 3 Height was spent, you may [Deflate] {n} to repeat the Land damage.',
     flavor: 'The hole is frog-shaped. Everyone agrees not to mention it.',
-    nums: { d: 20, m0: 8, n: 1 },
+    nums: { d: 22, m0: 9, n: 1 },
     effect: eff(c => { U.hitAll(c, N(c).d); land(c, (s) => { U.hitAll(c, N(c).m0 * s); if (s >= 3 && deflate(c, N(c).n)) U.hitAll(c, N(c).m0 * s); }); }),
-    upgrade: { nums: { d: 25, m0: 10, n: 1 } },
+    upgrade: { nums: { d: 30, m0: 12, n: 1 } },
   },
   {
     id: 'pipkin/frogapult', name: 'Frogapult', companion: SLUG, type: ATTACK, rarity: RARE,
@@ -977,7 +986,7 @@ const rares = [
         p[i] = SEED; done++;
         await U.chooseOne(c, [
           { label: 'Draw now', fn: (x) => U.draw(x, N(x).m0) },
-          { label: 'Nerve next turn', fn: (x) => { const m = N(x).m1; U.nextTurn(x, (y) => U.energy(y, m)); } },
+          { label: 'Nerve next turn', fn: (x) => { const m = N(x).m1; U.energyNextTurn(x, m); } },
         ]);
       }
     }),
@@ -994,7 +1003,7 @@ const rares = [
       for (let i = 0; i < took; i++) {
         await U.chooseOne(c, [
           { label: 'Draw next turn', fn: (x) => { const m = N(x).m0; U.nextTurn(x, (y) => U.draw(y, m)); } },
-          { label: 'Nerve next turn', fn: (x) => { const m = N(x).m1; U.nextTurn(x, (y) => U.energy(y, m)); } },
+          { label: 'Nerve next turn', fn: (x) => { const m = N(x).m1; U.energyNextTurn(x, m); } },
         ]);
       }
     }),

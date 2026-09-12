@@ -41,6 +41,10 @@ function reattach(c, n) {
   return d;
 }
 const canFetch = (k) => k && !U.flag(k, 'slobbered');
+/** "Printed cost {n} or less". An X Trick prints no number, so it is never in
+ *  reach: Slay the Spire's cost filters pass X over the same way (All For One
+ *  returns only true 0-cost cards; Madness and Snecko Eye skip X). */
+const pricedAtMost = (k, n) => { const p = U.printedCost(k); return p >= 0 && p <= n; };
 /** Fetch: pull a Trick out of the discard pile. It becomes Slobbered. */
 async function fetch(c, filter, prompt = 'Fetch a Trick') {
   const [k] = await U.pickCards(c, { pile: 'discard', count: 1, prompt, filter: (x) => canFetch(x) && (!filter || filter(x)) });
@@ -148,7 +152,9 @@ U.onHook('becameScattered', 'bones/spare-parts-everywhere', (c) => { if (U.once(
 U.onHook('becameWhole', 'bones/tighten-the-collar', (c) => {
   if (!U.once(c, 'tightenCollar')) return;
   const n = U.stacks(c, c.self, 'bones/tighten-the-collar');
-  U.nextTurn(c, (x) => U.energy(x, n));
+  /* Banked, not granted from a next-turn timer: the turn-start refill SETS
+     Nerve, so a timer's grant was erased and the Collar never paid out. */
+  U.energyNextTurn(c, n);
 });
 U.onHook('digUp', 'bones/treasure-yard', (c) => {
   const cap = 1 + U.stacks(c, c.self, 'bones/treasure-yard');
@@ -198,7 +204,7 @@ const basics = [
     text: '[Fetch] a non-[Slobbered] Trick with printed cost {n} or less.',
     flavor: 'He has already gone. He went before you finished saying it.',
     nums: { n: 1 },
-    effect: eff(c => fetch(c, (k) => U.printedCost(k) <= N(c).n)),
+    effect: eff(c => fetch(c, (k) => pricedAtMost(k, N(c).n))),
     upgrade: { cost: 0, nums: { n: 1 } },
   },
 ];
@@ -218,21 +224,21 @@ const commons = [
   },
   {
     id: 'bones/tailbone-thump', name: 'Tailbone Thump', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['whole'],
+    cost: 2, target: ENEMY, keywords: ['whole'],
     text: 'Deal {d} damage. If [Whole], gain {b} Guard.',
     flavor: 'The tail is nine small bones and one enormous mood.',
-    nums: { d: 7, b: 5 },
+    nums: { d: 12, b: 8 },
     effect: eff(c => { U.hit(c, N(c).d); if (isWhole(c)) U.guard(c, N(c).b); }),
-    upgrade: { nums: { d: 10, b: 6 } },
+    upgrade: { nums: { d: 16, b: 11 } },
   },
   {
     id: 'bones/clatter-pounce', name: 'Clatter Pounce', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ALL_ENEMIES, keywords: ['scattered'],
+    cost: 2, target: ALL_ENEMIES, keywords: ['scattered'],
     text: 'Deal {d} damage to all enemies. Deal {m0} more while [Scattered].',
     flavor: 'Arrives as several separate sounds.',
-    nums: { d: 5, m0: 4 },
+    nums: { d: 10, m0: 6 },
     effect: eff(c => U.hitAll(c, N(c).d + (isScattered(c) ? N(c).m0 : 0))),
-    upgrade: { nums: { d: 7, m0: 5 } },
+    upgrade: { nums: { d: 14, m0: 8 } },
   },
   {
     id: 'bones/skull-boop', name: 'Skull Boop', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -313,7 +319,7 @@ const commons = [
     text: '[Shed] {m0} Bone, then [Fetch] a non-[Slobbered] Trick with printed cost {n} or less.',
     flavor: 'The single greatest word in the language. He leaves a rib behind on the way out.',
     nums: { n: 1, m0: 1 },
-    effect: eff(async c => { shed(c, N(c).m0); await fetch(c, (k) => U.printedCost(k) <= N(c).n); }),
+    effect: eff(async c => { shed(c, N(c).m0); await fetch(c, (k) => pricedAtMost(k, N(c).n)); }),
     upgrade: { nums: { n: 2, m0: 1 } },
   },
   {
@@ -361,12 +367,12 @@ const commons = [
   },
   {
     id: 'bones/under-the-couch', name: 'Under the Couch', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['bury', 'dug-up'],
+    cost: 2, target: SELF, keywords: ['bury', 'dug-up'],
     text: '[Bury] another Trick from your hand. Gain {b} Guard. The first time that Trick is played after being [Dug Up], it costs {n} less.',
     flavor: 'Along with two socks, a spoon, and something that was once a biscuit.',
-    nums: { b: 10, n: 1 },
+    nums: { b: 14, n: 1 },
     effect: eff(async c => { const [k] = await U.pickCards(c, { pile: 'hand', count: 1, prompt: 'Bury a Trick' }); if (k) { bury(c, k); U.setFlag(k, 'digDiscount', N(c).n); } U.guard(c, N(c).b); }),
-    upgrade: { nums: { b: 14, n: 1 } },
+    upgrade: { nums: { b: 19, n: 1 } },
   },
   {
     id: 'bones/spare-parts', name: 'Spare Parts', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -385,12 +391,12 @@ const commons = [
   },
   {
     id: 'bones/good-dog', name: 'Good Dog', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['fetch', 'dig-up', 'reattach'],
+    cost: 2, target: SELF, keywords: ['fetch', 'dig-up', 'reattach'],
     text: 'Gain {b} Guard. If you [Fetch]ed or [Dug Up] a Trick this turn, [Reattach] {n} Bone.',
     flavor: 'He knows. He absolutely knows.',
-    nums: { b: 7, n: 1 },
+    nums: { b: 12, n: 1 },
     effect: eff(c => { U.guard(c, N(c).b); if (U.got(c, 'retrieved') > 0) reattach(c, N(c).n); }),
-    upgrade: { nums: { b: 10, n: 1 } },
+    upgrade: { nums: { b: 16, n: 1 } },
   },
 ];
 
@@ -410,12 +416,12 @@ const uncommons = [
   },
   {
     id: 'bones/dug-up-dinner', name: 'Dug Up Dinner', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['dug-up', 'reattach'],
+    cost: 2, target: ENEMY, keywords: ['dug-up', 'reattach'],
     text: 'Deal {d} damage. If this Trick is [Dug Up], deal {m0} more and [Reattach] {n} Bone.',
     flavor: 'Vintage. Aged. Absolutely still good.',
-    nums: { d: 8, m0: 6, n: 1 },
+    nums: { d: 14, m0: 8, n: 1 },
     effect: eff(c => { const dug = U.flag(c.card, 'dugUp'); U.hit(c, N(c).d + (dug ? N(c).m0 : 0)); if (dug) { reattach(c, N(c).n); U.clearFlag(c.card, 'dugUp'); } }),
-    upgrade: { nums: { d: 11, m0: 8, n: 1 } },
+    upgrade: { nums: { d: 19, m0: 11, n: 1 } },
   },
   {
     id: 'bones/scattershot-skeleton', name: 'Scattershot Skeleton', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -437,21 +443,21 @@ const uncommons = [
   },
   {
     id: 'bones/heel', name: 'Heel!', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['reattach', 'whole'],
+    cost: 2, target: ENEMY, keywords: ['reattach', 'whole'],
     text: 'Deal {d} damage and [Reattach] {n} Bone. If this makes you [Whole], repeat the attack.',
     flavor: 'He does come back. Eventually. Mostly.',
-    nums: { d: 8, n: 1, hits: 1 },
+    nums: { d: 12, n: 1, hits: 1 },
     effect: eff(c => { U.hit(c, N(c).d); const had = loose(c); reattach(c, N(c).n); if (had > 0 && isWhole(c)) U.hit(c, N(c).d); }),
-    upgrade: { nums: { d: 11, n: 1, hits: 1 } },
+    upgrade: { nums: { d: 17, n: 1, hits: 1 } },
   },
   {
     id: 'bones/off-leash', name: 'Off Leash', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['rattle'],
+    cost: 2, target: ENEMY, keywords: ['rattle'],
     text: 'Deal {d} damage, plus one more hit for each [Rattle] this turn, up to {n} extra hits.',
     flavor: 'The lead is on the floor. The dog is on the ceiling.',
-    nums: { d: 4, n: 4, hits: 3 },
+    nums: { d: 6, n: 4, hits: 3 },
     effect: eff(c => U.hitN(c, N(c).d, 1 + Math.min(N(c).n, U.got(c, 'rattles')))),
-    upgrade: { nums: { d: 6, n: 4, hits: 3 } },
+    upgrade: { nums: { d: 8, n: 4, hits: 3 } },
   },
   {
     id: 'bones/missing-piece-missile', name: 'Missing Piece Missile', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -465,12 +471,12 @@ const uncommons = [
   },
   {
     id: 'bones/jawbone-jamboree', name: 'Jawbone Jamboree', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 2, target: ENEMY, keywords: ['shed', 'scattered'],
+    cost: 3, target: ENEMY, keywords: ['shed', 'scattered'],
     text: 'Deal {d} damage, then [Shed] {n} Bones. If this makes you [Scattered], deal {m0} damage to all other enemies.',
     flavor: 'The jaw keeps going after the rest of him stops.',
-    nums: { d: 18, n: 2, m0: 7 },
+    nums: { d: 24, n: 2, m0: 10 },
     effect: eff(c => { U.hit(c, N(c).d); const was = isScattered(c); shed(c, N(c).n); if (!was && isScattered(c)) for (const t of U.others(c)) U.hitAt(c, t, N(c).m0); }),
-    upgrade: { nums: { d: 23, n: 2, m0: 9 } },
+    upgrade: { nums: { d: 32, n: 2, m0: 13 } },
   },
   {
     id: 'bones/excavation-frenzy', name: 'Excavation Frenzy', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -483,12 +489,12 @@ const uncommons = [
   },
   {
     id: 'bones/toss-and-chase', name: 'Toss and Chase', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['slobbered', 'fetch'],
+    cost: 2, target: ENEMY, keywords: ['slobbered', 'fetch'],
     text: 'Deal {d} damage. Put a non-[Slobbered] Trick from your discard pile on top of your draw pile. This is not [Fetch]ing.',
     flavor: 'He is both the thrower and the retriever and he is losing at both.',
-    nums: { d: 8 },
+    nums: { d: 13 },
     effect: eff(async c => { U.hit(c, N(c).d); const [k] = await U.pickCards(c, { pile: 'discard', count: 1, prompt: 'Put on top of draw', filter: canFetch }); U.toDrawTop(c, k); }),
-    upgrade: { nums: { d: 11 } },
+    upgrade: { nums: { d: 18 } },
   },
   {
     id: 'bones/good-as-new', name: 'Good as New', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -501,23 +507,25 @@ const uncommons = [
   },
   {
     id: 'bones/take-me-apart', name: 'Take Me Apart', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['shed'],
-    text: 'Deal {d} damage. You may [Shed] up to {n} Bones. Deal {m0} more for each Bone actually Shed.',
+    cost: -1, target: ENEMY, keywords: ['shed'],
+    text: 'Spend all your Nerve. For each Nerve spent, deal {d} damage and [Shed] {n} Bone.',
     flavor: 'He volunteers. Every time, he volunteers.',
-    nums: { d: 7, n: 2, m0: 5 },
-    effect: eff(c => { U.hit(c, N(c).d); const s = shed(c, N(c).n); U.hitN(c, N(c).m0, s); }),
-    upgrade: { nums: { d: 10, n: 2, m0: 6 } },
+    nums: { d: 7, n: 1 },
+    // X. One hit and one SEPARATE Shed per Nerve spent (`c.x`), so every Bone
+    // that actually comes off is its own Rattle, until the track tops out at 6.
+    effect: eff(c => { for (let i = 0; i < (c.x || 0); i++) { U.hit(c, N(c).d); shed(c, N(c).n); } }),
+    upgrade: { nums: { d: 10, n: 1 } },
   },
 
   // ── Skills (17) ───────────────────────────────────────────────────────────
   {
     id: 'bones/roll-over', name: 'Roll Over', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['loose-bones', 'rattle'],
+    cost: 2, target: SELF, keywords: ['loose-bones', 'rattle'],
     text: 'Set your [Loose Bones] to exactly {n}, [Shed]ing or [Reattach]ing as needed. Gain {b} Guard.',
     flavor: 'Whatever state he was in, he is now in the middle of it.',
-    nums: { n: 3, b: 8 },
+    nums: { n: 3, b: 13 },
     effect: eff(c => { const cur = loose(c); if (cur < N(c).n) shed(c, N(c).n - cur); else if (cur > N(c).n) reattach(c, cur - N(c).n); U.guard(c, N(c).b); }),
-    upgrade: { nums: { n: 3, b: 11 } },
+    upgrade: { nums: { n: 3, b: 18 } },
   },
   {
     id: 'bones/call-that-back', name: 'Call That Back', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -548,12 +556,12 @@ const uncommons = [
   },
   {
     id: 'bones/dig-like-crazy', name: 'Dig Like Crazy', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: NONE, keywords: ['dig-up'],
+    cost: 2, target: NONE, keywords: ['dig-up'],
     text: '[Dig Up] up to {n} Tricks, then discard {m0} Trick.',
     flavor: 'Soil everywhere. Regret nowhere.',
-    nums: { n: 2, m0: 1 },
+    nums: { n: 3, m0: 1 },
     effect: eff(async c => { const ks = await U.pickCards(c, { pile: 'stash', count: N(c).n, prompt: 'Dig Up', filter: (x) => U.counter(x, 'buried') > 0, optional: true }); for (const k of ks) digUp(c, k); c.discard(N(c).m0, { choose: true }); }),
-    upgrade: { nums: { n: 3, m0: 1 } },
+    upgrade: { nums: { n: 4, m0: 1 } },
   },
   {
     id: 'bones/bury-the-evidence', name: 'Bury the Evidence', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -575,12 +583,12 @@ const uncommons = [
   },
   {
     id: 'bones/pile-of-me', name: 'Pile of Me', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['loose-bones', 'reattach'],
+    cost: 2, target: SELF, keywords: ['loose-bones', 'reattach'],
     text: 'Gain {b} Guard for each [Loose Bones], then [Reattach] all of them.',
     flavor: 'A heap of dog. Briefly.',
-    nums: { b: 6 },
+    nums: { b: 7 },
     effect: eff(c => { const n = loose(c); U.guard(c, n * N(c).b); reattach(c, n); }),
-    upgrade: { nums: { b: 8 } },
+    upgrade: { nums: { b: 10 } },
   },
   {
     id: 'bones/emergency-reassembly', name: 'Emergency Reassembly', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -679,7 +687,7 @@ const uncommons = [
   // ── Powers (6) ────────────────────────────────────────────────────────────
   {
     id: 'bones/rattletrap', name: 'Rattletrap', companion: SLUG, type: POWER, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['rattle'],
+    cost: 2, target: SELF, keywords: ['rattle'],
     text: 'The first time you [Rattle] each turn, deal {d} damage to all enemies.',
     flavor: 'The noise is the weapon. The dog is the delivery mechanism.',
     nums: { d: 5 },
@@ -715,7 +723,7 @@ const uncommons = [
   },
   {
     id: 'bones/tighten-the-collar', name: 'Tighten the Collar', companion: SLUG, type: POWER, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['whole'],
+    cost: 2, target: SELF, keywords: ['whole'],
     text: 'The first time each turn you become [Whole], gain {n} Nerve at the start of your next turn.',
     flavor: 'One notch. Everything stays where it belongs.',
     nums: { n: 1 },
@@ -724,7 +732,7 @@ const uncommons = [
   },
   {
     id: 'bones/tail-a-mile-a-minute', name: 'Tail Going A Mile A Minute', companion: SLUG, type: POWER, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['fetch', 'dig-up', 'empowered'],
+    cost: 2, target: SELF, keywords: ['fetch', 'dig-up', 'empowered'],
     text: 'The first Attack you play after [Fetch]ing or [Dig Up]ping each turn is [Empowered] {n}.',
     flavor: 'Nine tail bones at approximately forty hertz.',
     nums: { n: 7 },
@@ -745,23 +753,26 @@ const rares = [
   // ── Attacks (8) ───────────────────────────────────────────────────────────
   {
     id: 'bones/every-bone-at-once', name: 'Every Bone at Once', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 3, target: ALL_ENEMIES, keywords: ['whole', 'shed'],
+    // The deck's one 4: a Whole-only cash-out. One More Throw sets it to 0 and
+    // Call That Back / Perfect Fetch / Dig to the Basement take 1 off. (Tighten
+    // the Collar's +1 Nerve is erased at turn start today, so it is no route.)
+    cost: 4, target: ALL_ENEMIES, keywords: ['whole', 'shed'],
     text: 'Playable only while [Whole]. Deal {d} damage to all enemies, then [Shed] {n} Bones.',
     flavor: 'Two hundred and six projectiles, one dog, no plan for afterwards.',
-    nums: { d: 30, n: 6 },
+    nums: { d: 40, n: 6 },
     effect: eff(c => { U.hitAll(c, N(c).d); shed(c, N(c).n); }),
     playable: (c) => isWhole(c),
-    upgrade: { nums: { d: 38, n: 6 } },
+    upgrade: { nums: { d: 54, n: 6 } },
   },
   {
     id: 'bones/bone-a-fide-missile', name: 'Bone A Fide Missile', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 1, target: ENEMY, keywords: ['reattach', 'whole'],
+    cost: 2, target: ENEMY, keywords: ['reattach', 'whole'],
     text: '[Reattach] any number of Bones as an additional cost, minimum {n}. Deal {d} damage, plus {m0} for each Bone Reattached. If this makes you [Whole], draw {m1} Trick.',
     flavor: 'Reassembly, weaponised.',
-    nums: { d: 8, m0: 6, n: 1, m1: 1 },
+    nums: { d: 14, m0: 7, n: 1, m1: 1 },
     effect: eff(c => { const r = reattach(c, loose(c)); if (r < N(c).n) return; U.hit(c, N(c).d); U.hitN(c, N(c).m0, r); if (isWhole(c)) U.draw(c, N(c).m1); }),
     playable: (c) => loose(c) >= 1,
-    upgrade: { nums: { d: 11, m0: 7, n: 1, m1: 1 } },
+    upgrade: { nums: { d: 19, m0: 10, n: 1, m1: 1 } },
   },
   {
     id: 'bones/fetch-the-moon', name: 'Fetch the Moon', companion: SLUG, type: ATTACK, rarity: RARE,
@@ -792,25 +803,25 @@ const rares = [
   },
   {
     id: 'bones/dogpile-of-one', name: 'Dogpile of One', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 2, target: ENEMY, keywords: ['fetch', 'dig-up'],
+    cost: 3, target: ENEMY, keywords: ['fetch', 'dig-up'],
     text: 'Deal {d} damage, plus {m0} for each Trick you [Fetch]ed or [Dug Up] this turn, up to {n} extra hits.',
     flavor: 'One dog. Many dogs. It depends how you count.',
-    nums: { d: 18, m0: 6, n: 4 },
+    nums: { d: 24, m0: 8, n: 4 },
     effect: eff(c => { U.hit(c, N(c).d); U.hitN(c, N(c).m0, Math.min(N(c).n, U.got(c, 'retrieved'))); }),
-    upgrade: { nums: { d: 23, m0: 7, n: 4 } },
+    upgrade: { nums: { d: 32, m0: 11, n: 4 } },
   },
   {
     id: 'bones/headless-rush', name: 'Headless Rush', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 1, target: ENEMY, keywords: ['shed', 'scattered', 'slobbered'],
+    cost: 2, target: ENEMY, keywords: ['shed', 'scattered', 'slobbered'],
     text: 'Deal {d} damage and [Shed] {n} Bone. The first time each turn this makes you [Scattered], return it to your hand, make it [Slobbered], and it costs {m0} for the rest of the turn.',
     flavor: 'He does not need it for this part.',
-    nums: { d: 14, n: 1, m0: 0 },
+    nums: { d: 20, n: 1, m0: 0 },
     effect: eff(c => {
       U.hit(c, N(c).d);
       const was = isScattered(c); shed(c, N(c).n);
       if (!was && isScattered(c) && U.once(c, 'headlessRush')) { U.setFlag(c.card, 'slobbered', true); U.costSet(c, c.card, N(c).m0, 'turn'); U.returnSelf(c); }
     }),
-    upgrade: { nums: { d: 18, n: 1, m0: 0 } },
+    upgrade: { nums: { d: 27, n: 1, m0: 0 } },
   },
   {
     id: 'bones/dig-up-a-fight', name: 'Dig Up a Fight', companion: SLUG, type: ATTACK, rarity: RARE,
@@ -1026,10 +1037,10 @@ const rares = [
     effect: eff(c => power(c, 'bones/best-dog-in-the-house', 1, (x) => {
       x.e?.on?.('turn:start', async () => {
         const buried = buriedCards(x);
-        const fetchable = U.cardsIn(x, 'discard').filter(k => canFetch(k) && U.printedCost(k) <= 1);
+        const fetchable = U.cardsIn(x, 'discard').filter(k => canFetch(k) && pricedAtMost(k, 1));
         if (!buried.length && !fetchable.length) { spawnSpare(x, 1); return; }
         await U.chooseOne(x, [
-          { label: 'Fetch', when: () => fetchable.length > 0, fn: (y) => fetch(y, (k) => U.printedCost(k) <= 1) },
+          { label: 'Fetch', when: () => fetchable.length > 0, fn: (y) => fetch(y, (k) => pricedAtMost(k, 1)) },
           { label: 'Dig Up', when: () => buried.length > 0, fn: (y) => digUp(y, buried[0]) },
         ]);
       });
@@ -1086,10 +1097,10 @@ const coopCards = [
   },
   {
     id: 'bones/burial-buddy', name: 'Burial Buddy', companion: SLUG,
-    type: SKILL, rarity: UNCOMMON, cost: 1, target: NONE, coop: true,
+    type: SKILL, rarity: UNCOMMON, cost: 2, target: NONE, coop: true,
     text: 'Choose a friend. You each set aside a Trick. At the start of your next turns they return costing {n} less. Yours counts as Buried and Dug Up.',
     flavor: 'Two dogs, one hole, entirely different plans for it.',
-    nums: { n: 1 },
+    nums: { n: 2 },
     effect: eff(async (c) => {
       const ally = await c.chooseAlly({ prompt: 'Who is burying with you?' });
       if (!ally) return;
@@ -1116,7 +1127,7 @@ const coopCards = [
       stash(ally, theirs);
       if (mine) { U.fire(c, 'buried', { card: mine }); U.fire(c, 'digUp', { card: mine }); }
     }),
-    upgrade: { nums: { n: 2 } },
+    upgrade: { nums: { n: 3 } },
   },
   {
     id: 'bones/tug-of-war', name: 'Tug of War', companion: SLUG,

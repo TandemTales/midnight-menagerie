@@ -158,7 +158,7 @@ Attack
 2
 Button Bonk
 Attack
-1 Nerve. Deal light damage twice. While Plump, the second hit deals increased damage.
+2 Nerve. Deal light damage twice. While Plump, the second hit deals increased damage.
 3
 Running Stitch
 Attack
@@ -166,7 +166,7 @@ Attack
 4
 Loose Ear Lariat
 Attack
-1 Nerve. Deal moderate damage. If Hollow, add a Scrap to your discard pile.
+2 Nerve. Deal heavy damage. If Hollow, add a Scrap to your discard pile.
 5
 Hopscotch Hem
 Attack
@@ -174,7 +174,7 @@ Attack
 6
 Stuffing Toss
 Attack
-1 Nerve. Deal moderate damage to one enemy. You may spend 1 Stuffing to also deal light damage to all other enemies.
+2 Nerve. Deal heavy damage to one enemy. You may spend 1 Stuffing to also deal light damage to all other enemies.
 7
 Quick Patch
 Skill
@@ -206,7 +206,7 @@ Skill
 14
 Emergency Sewing
 Skill
-1 Nerve. Gain moderate Guard. You may spend 1 Stuffing to gain additional moderate Guard.
+2 Nerve. Gain substantial Guard. You may spend 1 Stuffing to gain additional moderate Guard.
 15
 Cross Stitch
 Skill
@@ -226,7 +226,7 @@ Skill
 19
 Cushion Check
 Skill
-1 Nerve. Gain light Guard. During the next enemy turn, Cushion may be used against one additional hit. Each use still costs 1 Stuffing.
+2 Nerve. Gain moderate Guard. During the next enemy turn, Cushion may be used against two additional hits. Each use still costs 1 Stuffing.
 20
 Temporary Fix
 Skill
@@ -250,19 +250,19 @@ Core effect
 21
 Needle Nose Dive
 Attack
-1 Nerve. Deal moderate damage. If you Reinforced a Patch earlier this turn, deal an additional light hit.
+2 Nerve. Deal heavy damage. If you Reinforced a Patch earlier this turn, deal an additional moderate hit.
 22
 Seam Ripper
 Attack
-1 Nerve. Deal moderate damage. You may Tear another Trick from your hand. If you do, deal one additional light hit for each Nerve that Trick costs, to a maximum of 3 additional hits.
+2 Nerve. Deal heavy damage. You may Tear another Trick from your hand. If you do, deal one additional light hit for each Nerve that Trick costs, to a maximum of 3 additional hits.
 23
 Patchwork Pummel
 Attack
-2 Nerve. Deal heavy damage. Deal an additional light hit for each differently worded Patch currently attached among your Tricks, to a maximum of 3 additional hits.
+3 Nerve. Deal heavy damage. Deal an additional light hit for each differently worded Patch currently attached among your Tricks, to a maximum of 3 additional hits.
 24
 Stuffing Cannon
 Attack
-1 Nerve. Deal moderate damage. You may spend up to 3 Stuffing. Deal one additional light hit for each Stuffing spent.
+2 Nerve. Deal heavy damage. You may spend up to 3 Stuffing. Deal one additional light hit for each Stuffing spent.
 25
 Hop Until It Holds
 Attack
@@ -274,7 +274,7 @@ Attack
 27
 Pattern Match
 Attack
-1 Nerve. Deal moderate damage. If another Trick in your hand carries a Patch with identical text to a Patch on this Trick, deal the damage again.
+2 Nerve. Deal heavy damage. If another Trick in your hand carries a Patch with identical text to a Patch on this Trick, deal the damage again.
 28
 Flop With Confidence
 Attack
@@ -286,7 +286,7 @@ Attack
 30
 Loose Thread Whip
 Attack
-1 Nerve. Deal moderate damage to all enemies. If a Patch broke earlier this turn, deal an additional light hit to all enemies.
+X Nerve. Spend all your Nerve. For each Nerve spent, deal light damage to all enemies. If a Patch broke earlier this turn, each of those hits deals additional light damage.
 ## Uncommon Skills
 No.
 Trick name
@@ -295,7 +295,7 @@ Core effect
 31
 Quilted Lining
 Skill
-1 Nerve. Patch a Trick in your hand with “When played, gain moderate Guard.” 2 Stitches.
+2 Nerve. Patch a Trick in your hand with “When played, gain moderate Guard.” 3 Stitches.
 32
 Lucky Button
 Skill
@@ -307,7 +307,7 @@ Skill
 34
 Weighted Hem
 Skill
-1 Nerve. Patch a Trick in your hand. When played, an Attack deals additional moderate damage. A Skill or Power instead grants light Guard. 2 Stitches.
+2 Nerve. Patch a Trick in your hand. When played, an Attack deals additional moderate damage. A Skill or Power instead grants light Guard. 3 Stitches.
 35
 Double Stitch
 Skill
@@ -339,11 +339,11 @@ Skill
 42
 Inside Out
 Skill
-1 Nerve. Set your Stuffing to 6 minus its current amount. If this causes you to become Plump, draw 2 Tricks. If it causes you to become Hollow, gain substantial Guard.
+2 Nerve. Set your Stuffing to 6 minus its current amount. If this causes you to become Plump, draw 3 Tricks. If it causes you to become Hollow, gain substantial Guard.
 43
 Pin Cushion
 Skill
-1 Nerve. Retain up to 2 other Tricks this turn. Gain light Guard for each patched Trick retained this way.
+2 Nerve. Retain up to 3 other Tricks this turn. Gain moderate Guard for each patched Trick retained this way.
 44
 No Loose Ends
 Skill
@@ -376,7 +376,7 @@ Power
 50
 Rag Bag
 Power
-1 Nerve. The first Trick you Tear each turn gives you 1 Stuffing.
+2 Nerve. The first Trick you Tear each turn gives you 2 Stuffing.
 51
 Memory Foam
 Power
@@ -407,7 +407,7 @@ Core effect
 56
 The Big Flop
 Attack
-3 Nerve. Deal immense damage. You may spend any amount of Stuffing. Deal one additional light hit for each Stuffing spent.
+4 Nerve. Deal immense damage. You may spend any amount of Stuffing. Deal one additional light hit for each Stuffing spent. Costs 1 less Nerve while Plump.
 57
 Patchwork Meteor
 Attack

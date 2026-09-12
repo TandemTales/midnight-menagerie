@@ -203,11 +203,11 @@ Skill
 14
 Old Reliable
 Skill
-1 Nerve. Weather 1. Gain light Guard. Weathered: gain substantial Guard instead.
+2 Nerve. Weather 1. Gain moderate Guard. Weathered: gain substantial Guard instead.
 15
 Warm Flagstone
 Skill
-1 Nerve. Weather 2. Gain light Guard. Weathered: gain moderate Guard and 1 Patience.
+2 Nerve. Weather 2. Gain moderate Guard. Weathered: gain substantial Guard and 1 Patience.
 16
 Let It Settle
 Skill
@@ -219,15 +219,15 @@ Skill
 18
 Room on the Shell
 Skill
-1 Nerve. If you have 2 or fewer Epitaphs, gain moderate Guard. Otherwise you may erase an Epitaph to gain substantial Guard.
+2 Nerve. If you have 2 or fewer Epitaphs, gain moderate Guard. Otherwise you may erase an Epitaph to gain substantial Guard.
 19
 Quiet Monument
 Power
-1 Nerve. The first Epitaph you create each turn also grants light Guard immediately.
+2 Nerve. The first Epitaph you create each turn also grants light Guard immediately.
 20
 Moss Grows Anyway
 Power
-1 Nerve. The first Epitaph that resolves naturally each turn grants light Guard in addition to its normal effect.
+2 Nerve. The first Epitaph that resolves naturally each turn grants moderate Guard in addition to its normal effect.
 ### Common design role
 The Common pool establishes the entire gameplay language.
 A player can already discover several important decisions:
@@ -245,7 +245,7 @@ Core effect
 21
 Pallbearer Pace
 Attack
-1 Nerve. Deal moderate damage. You may spend 1 Patience to create Epitaph 1 targeting that enemy: deal moderate damage.
+2 Nerve. Deal moderate damage. You may spend 1 Patience to create Epitaph 1 targeting that enemy: deal moderate damage.
 22
 Three Knocks on Stone
 Attack
@@ -261,7 +261,7 @@ Attack
 25
 Stone Age Swipe
 Attack
-1 Nerve. Weather 2. Deal light damage. Weathered: deal moderate damage and create Epitaph 1 on that enemy: deal light damage.
+2 Nerve. Weather 2. Deal moderate damage. Weathered: deal heavy damage and create Epitaph 1 on that enemy: deal moderate damage.
 26
 The Long Way Around
 Attack
@@ -269,7 +269,7 @@ Attack
 27
 Carapace Rebound
 Attack
-1 Nerve. Deal moderate damage. If you have Buried Harm, also gain moderate Guard.
+2 Nerve. Deal moderate damage. If you have Buried Harm, also gain moderate Guard.
 28
 Due Notice
 Attack
@@ -302,7 +302,7 @@ Skill
 34
 Recut the Date
 Skill
-1 Nerve. Choose an Epitaph and set its Countdown to 2. If this made it later, draw 1 Trick. If this made it sooner, gain moderate Guard.
+0 Nerve. Choose an Epitaph and set its Countdown to 2. If this made it later, draw 1 Trick. If this made it sooner, gain light Guard.
 35
 Make Space
 Skill
@@ -334,7 +334,7 @@ Skill
 42
 Fossil Snack
 Skill
-1 Nerve. Weather 1. Gain moderate Guard. Weathered: also reduce Buried Harm by a moderate amount and gain 1 Patience.
+2 Nerve. Weather 1. Gain moderate Guard. Weathered: also reduce Buried Harm by a moderate amount and gain 1 Patience.
 43
 Patient Hands
 Skill
@@ -342,7 +342,7 @@ Skill
 44
 Quiet Grave
 Skill
-1 Nerve. Create Epitaph 2: gain substantial Guard. If it resolves naturally, you may Retain one additional Trick that turn.
+2 Nerve. Create Epitaph 2: gain substantial Guard. If it resolves naturally, you may Retain one additional Trick that turn.
 45
 Two Names, One Stone
 Skill
@@ -371,7 +371,7 @@ Power
 50
 Grave Moss
 Power
-1 Nerve. Whenever you erase an unresolved Epitaph, gain moderate Guard and reduce Buried Harm by a light amount.
+2 Nerve. Whenever you erase an unresolved Epitaph, gain moderate Guard and reduce Buried Harm by a light amount.
 51
 Cemetery Shift
 Power
@@ -410,7 +410,7 @@ Core effect
 56
 The Last Thing You Hear
 Attack
-3 Nerve. Create Epitaph 3 targeting an enemy: deal colossal damage. You may spend up to 2 Patience when creating it, reducing its initial Countdown by 1 for each Patience spent.
+X Nerve. Spend all your Nerve. Create Epitaph 3 targeting an enemy: deal moderate damage for each Nerve spent. You may spend up to 2 Patience when creating it, reducing its initial Countdown by 1 for each Patience spent.
 57
 Here Eventually
 Attack
@@ -426,7 +426,7 @@ Attack
 60
 Geologic Headbutt
 Attack
-2 Nerve. Weather 3. Deal heavy damage. Weathered: cost 0, deal colossal damage, then remove this Trick from combat.
+4 Nerve. Weather 3. Deal heavy damage. Weathered: cost 0, deal colossal damage, then remove this Trick from combat.
 61
 Five Little Headstones
 Attack

@@ -132,7 +132,7 @@ Core effect
 1
 Protective Nip
 Attack
-Cost: 1 Nerve. Deal light damage. If the target intends to Attack your Best Friend, your Best Friend gains light Guard.
+Cost: 0 Nerve. Deal light damage. If the target intends to Attack your Best Friend, your Best Friend gains light Guard.
 2
 Bark First, Ask Later
 Attack
@@ -144,11 +144,11 @@ Cost: 1 Nerve. Deal moderate damage. If Graveside, gain light Guard.
 4
 Muddy Tackle
 Attack
-Cost: 1 Nerve. Deal light damage to all enemies. Unearthed: increase this to moderate damage.
+Cost: 2 Nerve. Deal moderate damage to all enemies. Unearthed: increase this to heavy damage.
 5
 Grave Dirt in Your Eyes
 Attack
-Cost: 1 Nerve. Deal light damage. The next Attack this enemy makes against your Best Friend this turn deals less damage.
+Cost: 2 Nerve. Deal moderate damage. The next Attack this enemy makes against your Best Friend this turn deals less damage.
 6
 Collar Charge
 Attack
@@ -164,7 +164,7 @@ Cost: 1 Nerve. Deal moderate damage. You may spend 1 Loyalty to give your Best F
 9
 Stay Close
 Skill
-Cost: 1 Nerve. Best Friend gains moderate Guard. If at least one enemy intends to Attack them, increase the Guard.
+Cost: 2 Nerve. Best Friend gains substantial Guard. If at least one enemy intends to Attack them, increase the Guard.
 10
 Bury It Better
 Skill
@@ -180,7 +180,7 @@ Cost: 1 Nerve. Dig Up one Trick. It costs 1 less Nerve this turn, minimum 0.
 13
 Plot Patrol
 Skill
-Cost: 1 Nerve. Best Friend gains light Guard, plus another light amount for each occupied Plot.
+Cost: 2 Nerve. Best Friend gains light Guard, plus another light amount for each occupied Plot.
 14
 Good Dog Reserve
 Skill
@@ -200,7 +200,7 @@ Cost: 1 Nerve. Dig Up a Trick from one Plot. If another unused empty Plot exists
 18
 Sit With Me
 Skill
-Cost: 1 Nerve. Choose a Trick in your hand to Retain this turn. If it is currently Unearthed, Best Friend also gains light Guard.
+Cost: 0 Nerve. Choose a Trick in your hand to Retain this turn. If it is currently Unearthed, Best Friend also gains light Guard.
 19
 Haunted Headstones
 Power
@@ -235,7 +235,7 @@ Cost: 1 Nerve. Deal light damage to all enemies, then deal an additional light h
 23
 Dug Up Trouble
 Attack
-Cost: 1 Nerve. Deal moderate damage. Unearthed: repeat the damage once.
+Cost: 2 Nerve. Deal moderate damage. Unearthed: repeat the damage once.
 24
 Graveyard Gallop
 Attack
@@ -267,11 +267,11 @@ Cost: 2 Nerve. Deal heavy damage. If Graveside, Best Friend also gains moderate 
 31
 Never Drop the Ball
 Attack
-Cost: 1 Nerve. Deal moderate damage. If this was not Unearthed and an unused empty Plot exists, you may Bury this Trick there after resolving instead of discarding it.
+Cost: 2 Nerve. Deal moderate damage. If this was not Unearthed and an unused empty Plot exists, you may Bury this Trick there after resolving instead of discarding it.
 32
 Ghost Hound Charge
 Attack
-Cost: 3 Nerve. Deal massive damage. Costs 1 less while Graveside and 1 less while at maximum Loyalty, minimum cost 1.
+Cost: 4 Nerve. Deal massive damage. Costs 1 less while Graveside and 1 less while at maximum Loyalty.
 ## Uncommon Skills
 Number
 Trick name
@@ -280,7 +280,7 @@ Core effect
 33
 Take Me Instead
 Skill
-Cost: 1 Nerve. If Best Friend is another player, choose an enemy Attack currently targeting them. It targets Pudding instead, and Pudding gains substantial Guard. If Pudding is his own Best Friend, simply gain substantial Guard.
+Cost: X Nerve. Spend all your Nerve. If Best Friend is another player, choose an enemy Attack currently targeting them. It targets Pudding instead, and Pudding gains moderate Guard for each Nerve spent. If Pudding is his own Best Friend, simply gain moderate Guard for each Nerve spent.
 34
 Good Dog Emergency
 Skill
@@ -308,7 +308,7 @@ Cost: 1 Nerve. Exchange one Trick in your hand with one Buried Trick. This does 
 40
 Night Patrol
 Skill
-Cost: 1 Nerve. Gain 1 Loyalty. If Graveside, Best Friend also gains moderate Guard.
+Cost: 2 Nerve. Gain 2 Loyalty. If Graveside, Best Friend also gains substantial Guard.
 41
 Double Dig
 Skill
@@ -320,7 +320,7 @@ Cost: 1 Nerve. Requires Graveside. Draw 2 Tricks, then Bury one Trick from your 
 43
 Pug Sized Shield
 Skill
-Cost: 1 Nerve. Best Friend gains substantial Guard. If another player is your Best Friend, Pudding also gains light Guard.
+Cost: 2 Nerve. Best Friend gains heavy Guard. If another player is your Best Friend, Pudding also gains moderate Guard.
 44
 Treat for Later
 Skill
@@ -357,7 +357,7 @@ Cost: 1 Nerve. The first Unearthed Trick you play each turn draws 1 Trick after 
 51
 Never Off Duty
 Power
-Cost: 1 Nerve. The first time you spend Loyalty each turn, Best Friend gains light Guard.
+Cost: 2 Nerve. The first time you spend Loyalty each turn, Best Friend gains moderate Guard.
 52
 Keeper of the Yard
 Power

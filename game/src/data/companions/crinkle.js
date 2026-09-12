@@ -296,8 +296,15 @@ U.onTracker(SLUG, (e, s, seat) => {
     if (!k) return cost;
     const cr = creases(k);
     if (!cr) return cost;
+    /* Overfolded "costs nothing" (the keyword's own words), whatever the
+       printed cost. A Nerve a Crease only reached 0 while nothing he owned
+       cost more than 3, and The Long Fold costs 4. */
+    if (cr >= OVERFOLD) return 0;
     return Math.max(0, cost - cr);
   }, { owner: seat });
+  /* ...and an Overfolded X Trick plays free as well: it still counts your Nerve
+     and spends none of it (the engine's `playsFree`, Slay the Spire's free X). */
+  e.hooks.add('playsFree', (h) => !!(h && h.card && creases(h.card) >= OVERFOLD), { owner: seat });
 
   /* Paper from every Vanish. `onCardExhausted` is the engine's word for it. */
   e.hooks.add('onCardExhausted', (h) => {
@@ -388,7 +395,10 @@ U.onTracker(SLUG, (e, s, seat) => {
     const c = fake();
     const st = U.mm(c);
     if (!st.sharedLibrary) return;
-    const cost = (ev.card && typeof ev.card.cost === 'number') ? ev.card.cost : 0;
+    /* "Costing 2 or more" is what the play took (`ev.cost`), not the printed
+       cost on the snapshot: -1 for an X Trick however much it spent, and the
+       full price of a Trick that was discounted to 0. */
+    const cost = typeof ev.cost === 'number' ? ev.cost : 0;
     if (cost >= 2) gainPaper(c, st.sharedLibrary);
   });
 
@@ -490,12 +500,15 @@ const commons = [
   },
   {
     id: 'crinkle/fold-and-strike', name: 'Fold and Strike', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['fold', 'crease'],
+    cost: 2, target: ENEMY, keywords: ['fold', 'crease'],
+    /* Cost 2, so the Crease it lays on itself is visible as a price: 2, then 1,
+       then free and gone. At 1 it was free after one play and the arc was
+       invisible. */
     text: '[Fold] this Trick {n}, then deal {d} damage.',
     flavor: 'A crease, and then the consequences of a crease.',
-    nums: { d: 6, n: 1 },
+    nums: { d: 11, n: 1 },
     effect: eff((c) => { fold(c, c.card, N(c).n); U.hit(c, NC(c).d); }),
-    upgrade: { nums: { d: 9, n: 1 } },
+    upgrade: { nums: { d: 15, n: 1 } },
   },
   {
     id: 'crinkle/duplicate-beak', name: 'Duplicate Beak', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -517,12 +530,12 @@ const commons = [
   },
   {
     id: 'crinkle/flying-page', name: 'Flying Page', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ALL_ENEMIES,
+    cost: 2, target: ALL_ENEMIES,
     text: 'Deal {d} damage to all enemies.',
     flavor: 'One sheet, and then the whole chapter.',
-    nums: { d: 6 },
+    nums: { d: 11 },
     effect: eff((c) => U.hitAll(c, NC(c).d)),
-    upgrade: { nums: { d: 9 } },
+    upgrade: { nums: { d: 15 } },
   },
   {
     id: 'crinkle/guillotine-cut', name: 'Guillotine Cut', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -574,16 +587,22 @@ const commons = [
   },
   {
     id: 'crinkle/second-copy', name: 'Second Copy', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['trace', 'paper'],
+    cost: 0, target: SELF, keywords: ['trace', 'paper'],
+    /* The Copyist's Trace, paid in Paper instead of Nerve. At 1 Nerve AND 1
+       Paper it was Trace It with a surcharge. A price that Cheap Reproduction
+       takes to nothing is a free copy, not a refused one: `spendPaper(c, 0)`
+       returns 0, which used to read as "could not pay" and made the upgrade
+       (then 0 Paper) do nothing at all. */
     text: 'Spend {p} [Paper]. [Trace] a Trick in your hand.',
     flavor: 'For the file. There is always a file.',
-    nums: { p: 1 },
+    nums: { p: 2 },
     effect: eff(async (c) => {
-      if (!spendPaper(c, Math.max(0, N(c).p - (U.mm(c).cheapCopies ? 1 : 0)))) return;
+      const price = Math.max(0, N(c).p - (U.mm(c).cheapCopies ? 1 : 0));
+      if (price > 0 && !spendPaper(c, price)) return;
       const k = await pickHand(c, { prompt: 'Trace which Trick?', filter: (x) => !(x.meta && x.meta.noTrace) });
       if (k) trace(c, k);
     }),
-    upgrade: { nums: { p: 0 } },
+    upgrade: { nums: { p: 1 } },
   },
   {
     id: 'crinkle/refold-it', name: 'Refold It', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -599,14 +618,16 @@ const commons = [
   },
   {
     id: 'crinkle/paper-screen', name: 'Paper Screen', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['paper'],
+    cost: 2, target: SELF, keywords: ['paper'],
     /* Same correction as Sharp Edge: printed as a plain Guard Skill, which is
-       Flatten again. Reading [Paper] is the cheapest way to make it his. */
+       Flatten again. Reading [Paper] is the cheapest way to make it his.
+       11 with Paper for 1 Nerve was a 2-Nerve Guard at a 1-Nerve price, so it
+       costs 2 and is sized as one. */
     text: 'Gain {b} Guard, and {m0} more if you hold any [Paper].',
     flavor: 'It would not stop anything. It stops things.',
-    nums: { b: 7, m0: 4 },
+    nums: { b: 11, m0: 4 },
     effect: eff((c) => U.guard(c, NC(c).b + (paper(c) > 0 ? NC(c).m0 : 0))),
-    upgrade: { nums: { b: 10, m0: 6 } },
+    upgrade: { nums: { b: 15, m0: 6 } },
   },
   {
     id: 'crinkle/concertina', name: 'Concertina', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -668,12 +689,14 @@ const commons = [
   },
   {
     id: 'crinkle/practised-hands', name: 'Practised Hands', companion: SLUG, type: POWER, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['fold', 'crease'],
+    cost: 2, target: SELF, keywords: ['fold', 'crease'],
+    /* A free Crease every turn is permanent Nerve off his deck; at 1 it was the
+       best common Power by a distance. */
     text: 'The first Trick you [Fold] each turn gets {n} more [Crease].',
     flavor: 'He has done this eleven thousand times.',
     nums: { n: 1 },
     effect: eff((c) => power(c, 'crinkle/practised-hands', (x, s) => { s.practisedHands = N(x).n; })),
-    upgrade: { cost: 0 },
+    upgrade: { cost: 1 },
   },
   {
     id: 'crinkle/marginalia', name: 'Marginalia', companion: SLUG, type: POWER, rarity: COMMON,
@@ -693,13 +716,19 @@ const uncommons = [
   // ── Attacks ───────────────────────────────────────────────────────────────
   {
     id: 'crinkle/thousand-cuts', name: 'Thousand Cuts', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['crease'],
-    text: 'Deal {d} damage once for each [Crease] on this Trick, at least once.',
+    cost: -1, target: ENEMY, keywords: ['crease'],
+    /* His X Trick. The engine settles an X cost before any discount (`rawCost`
+       returns -1 first), so a Crease can never make this cheaper; instead each
+       Crease is a hit the Nerve did not have to buy, on top of the third it
+       adds to every hit. Overfolded it is free the way a free X is: it still
+       counts your Nerve and spends none (`playsFree`). A Paper Copy of it is
+       still X. */
+    text: 'Spend all your Nerve. Deal {d} damage once for each Nerve spent and once for each [Crease] on this Trick.',
     flavor: 'None of them is the one that does it.',
-    nums: { d: 5, hits: 4 },
-    balance: { scalesWith: 'its own Creases' },
-    effect: eff((c) => U.hitN(c, NC(c).d, Math.max(1, creases(c.card)))),
-    upgrade: { nums: { d: 7, hits: 4 } },
+    nums: { d: 6, hits: 4 },
+    balance: { scalesWith: 'Nerve spent and its own Creases' },
+    effect: eff((c) => U.hitN(c, NC(c).d, (c.x || 0) + creases(c.card))),
+    upgrade: { nums: { d: 8, hits: 4 } },
   },
   {
     id: 'crinkle/origami-crow', name: 'Origami Crow', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -712,12 +741,15 @@ const uncommons = [
   },
   {
     id: 'crinkle/cut-and-paste', name: 'Cut and Paste', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['trace'],
+    cost: 2, target: ENEMY, keywords: ['trace'],
+    /* Two hits for one card's Nerve, since the copy is free: 9 twice for 1 was
+       Duplicate Beak's exact shape at an outlier rate. The Common stays the
+       cheap one. */
     text: 'Deal {d} damage, then [Trace] this Trick.',
     flavor: 'Scissors. Glue. A certain lack of scruple.',
-    nums: { d: 9 },
+    nums: { d: 13 },
     effect: eff((c) => { const k = c.card; U.hit(c, NC(c).d); trace(c, k); }),
-    upgrade: { nums: { d: 13 } },
+    upgrade: { nums: { d: 18 } },
   },
   {
     id: 'crinkle/bookbinders-blade', name: "Bookbinder's Blade", companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -842,7 +874,9 @@ const uncommons = [
   },
   {
     id: 'crinkle/paper-mirror', name: 'Paper Mirror', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['trace'],
+    cost: 2, target: SELF, keywords: ['trace'],
+    /* The copy costs 0 for the whole Scuffle and never leaves: a permanent free
+       duplicate of the best card in hand. That is a 2-Nerve effect. */
     text: '[Trace] a Trick. The copy does NOT [Vanish] when played.',
     flavor: 'The same, but the wrong way round, and it stays.',
     nums: {},
@@ -850,7 +884,7 @@ const uncommons = [
       const k = await pickHand(c, { prompt: 'Trace which Trick?', filter: (x) => !(x.meta && x.meta.noTrace) });
       if (k) trace(c, k, { permanent: true });
     }),
-    upgrade: { cost: 0 },
+    upgrade: { cost: 1 },
   },
   {
     id: 'crinkle/rewrite', name: 'Rewrite', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -893,12 +927,12 @@ const uncommons = [
   },
   {
     id: 'crinkle/bookplate', name: 'Bookplate', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['overfolded', 'paper'],
+    cost: 2, target: SELF, keywords: ['overfolded', 'paper'],
     text: 'Gain {b} Guard. Gain {p} [Paper] for each [Overfolded] Trick in your hand.',
     flavor: 'EX LIBRIS. Nobody knows whose.',
-    nums: { b: 13, p: 1 },
+    nums: { b: 17, p: 1 },
     effect: eff((c) => { U.guard(c, NC(c).b); gainPaper(c, N(c).p * handOverfolded(c).length); }),
-    upgrade: { nums: { b: 18, p: 2 } },
+    upgrade: { nums: { b: 24, p: 2 } },
   },
   {
     id: 'crinkle/unbound', name: 'Unbound', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -929,7 +963,9 @@ const uncommons = [
   },
   {
     id: 'crinkle/index', name: 'Index', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['fold', 'crease'],
+    cost: 2, target: SELF, keywords: ['fold', 'crease'],
+    /* Any Trick in the deck, every time it is drawn, with a Crease on it. The
+       Rare Floor Plan does this once and Vanishes; this one does not. */
     text: 'Search your draw pile. Put that Trick in your hand and [Fold] it {n}.',
     flavor: 'See also: everything.',
     nums: { n: 1 },
@@ -944,7 +980,7 @@ const uncommons = [
   },
   {
     id: 'crinkle/watermark', name: 'Watermark', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['trace', 'paper'],
+    cost: 0, target: SELF, keywords: ['trace', 'paper'],
     text: 'Choose a Trick. Copies of it played this turn each give {p} [Paper].',
     flavor: 'Hold it up to the candle and there he is.',
     nums: { p: 1 },
@@ -1104,16 +1140,20 @@ const rares = [
   },
   {
     id: 'crinkle/perfect-fold', name: 'Perfect Fold', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 2, target: ENEMY, keywords: ['overfolded'],
+    cost: 3, target: ENEMY, keywords: ['overfolded'],
+    /* The Deep Folds card. At 2 Nerve it was FREE at two Creases, a 33-damage
+       attack every shuffle, and the third Crease was not a question. At 3 two
+       Creases still leave it at 1 Nerve for 45, and only the third makes it
+       free, for 54 twice and gone. */
     text: 'Deal {d} damage. [Overfolded]: deal it twice before it [Vanish]es.',
     flavor: 'Every edge true. Every plane a flat facet.',
-    nums: { d: 20 },
+    nums: { d: 27 },
     effect: eff((c) => {
       const t = c.target;
       U.hit(c, NC(c).d);
       if (isOverfolded(c, c.card)) U.hitAt(c, t, NC(c).d);
     }),
-    upgrade: { nums: { d: 27 } },
+    upgrade: { nums: { d: 39 } },
   },
   {
     id: 'crinkle/paper-storm', name: 'Paper Storm', companion: SLUG, type: ATTACK, rarity: RARE,
@@ -1315,7 +1355,13 @@ const rares = [
   },
   {
     id: 'crinkle/the-long-fold', name: 'The Long Fold', companion: SLUG, type: SKILL, rarity: RARE,
-    cost: 3, target: SELF, exhaust: true, keywords: ['fold', 'crease', 'overfolded', 'trace', 'vanish'],
+    cost: 4, target: SELF, exhaust: true, keywords: ['fold', 'crease', 'overfolded', 'trace', 'vanish'],
+    /* His 4: three free, doubled plays of the best card in hand, and the
+       copies Vanish into Paper. Nobody casts it flat on 3 Nerve. One Crease
+       makes it 3, and a Paper Copy of it (Trace It, or Second Copy for no
+       Nerve at all) is free and does the whole thing while the original waits
+       for the next Trace. Overfolded it costs nothing, like every Trick he
+       owns (the keyword promises that), and it Vanishes either way. */
     text: '[Fold] a Trick to [Overfolded] and [Trace] it {n} times. [Vanish].',
     flavor: 'The last one. Hold your breath.',
     nums: { n: 2 },
@@ -1325,7 +1371,7 @@ const rares = [
       fold(c, k, Math.max(0, OVERFOLD - creases(k)));
       for (let i = 0; i < N(c).n; i++) trace(c, k);
     }),
-    upgrade: { cost: 2 },
+    upgrade: { nums: { n: 3 } },
   },
 
   // ── Powers ────────────────────────────────────────────────────────────────
@@ -1435,17 +1481,19 @@ const coopCards = [
   },
   {
     id: 'crinkle/paper-screen-for-two', name: 'Paper Screen for Two', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, coop: true, keywords: ['crease'],
+    cost: 2, target: SELF, coop: true, keywords: ['crease'],
+    /* Every number lands twice, once on each of you, so it is priced as a
+       2-Nerve Guard rather than a 1-Nerve one that happens to split. */
     text: 'You and a friend each gain {b} Guard, and {m0} more for each [Crease] in your hand.',
     flavor: 'It is a big screen. There are birds on it.',
-    nums: { b: 8, m0: 2 },
+    nums: { b: 12, m0: 3 },
     effect: eff(async (c) => {
       const bonus = NC(c).b + NC(c).m0 * totalCreases(c);
       U.guard(c, bonus);
       const ally = await c.chooseAlly();
       if (ally) c.giveBlock(ally, bonus);
     }),
-    upgrade: { nums: { b: 12, m0: 3 } },
+    upgrade: { nums: { b: 16, m0: 4 } },
   },
   {
     id: 'crinkle/shared-library', name: 'Shared Library', companion: SLUG, type: POWER, rarity: RARE,

@@ -307,7 +307,7 @@ U.onTracker(SLUG, (e, s, seat) => {
     st.doubleTrigger = 0;
     st.threadBonus = 0;
     st.freeTriggerFor = null;
-    if (st.wholePatternBonus) { U.energy(c, 1); U.draw(c, 1); st.wholePatternBonus = false; }
+    if (st.wholePatternBonus) { U.draw(c, 1); st.wholePatternBonus = false; }
     if (st.heldTogetherDraw) { U.draw(c, st.heldTogetherDraw); st.heldTogetherDraw = 0; }
     if (st.fortRefund) { gainStuffing(c, Math.min(2, st.fortRefund)); st.fortRefund = 0; }
   }, seat);
@@ -328,7 +328,10 @@ U.onTracker(SLUG, (e, s, seat) => {
       setPatches(k, copy);
     }
     if (st.safetyPins) { const k = patchedInHand(c)[0]; if (k) reinforce(c, k, 1); }
-    if (st.wholePattern && distinctPatchKinds(c).size >= 3) st.wholePatternBonus = true;
+    /* The Whole Pattern's Nerve is BANKED here, not gained at turn start: the
+       refill in `_dealSeatTurn` SETS Nerve, so the old turn-start U.energy was
+       wiped and the Power never paid its Nerve. Its card still comes at turn start. */
+    if (st.wholePattern && distinctPatchKinds(c).size >= 3) { st.wholePatternBonus = true; U.energyNextTurn(c, 1); }
   }, seat);
 });
 
@@ -412,12 +415,12 @@ const commons = [
   },
   {
     id: 'mopsy/button-bonk', name: 'Button Bonk', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['plump'],
+    cost: 2, target: ENEMY, keywords: ['plump'],
     text: 'Deal {d} damage twice. While [Plump], the second hit deals {m0} more.',
     flavor: 'Both eyes are buttons. Only one of them is for looking.',
-    nums: { d: 4, m0: 3, hits: 2 },
+    nums: { d: 6, m0: 4, hits: 2 },
     effect: eff((c) => { U.hit(c, N(c).d); U.hit(c, N(c).d + (isPlump(c) ? N(c).m0 : 0)); }),
-    upgrade: { nums: { d: 6, m0: 4, hits: 2 } },
+    upgrade: { nums: { d: 8, m0: 6, hits: 2 } },
   },
   {
     id: 'mopsy/running-stitch', name: 'Running Stitch', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -430,12 +433,12 @@ const commons = [
   },
   {
     id: 'mopsy/loose-ear-lariat', name: 'Loose Ear Lariat', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['hollow', 'scrap'],
+    cost: 2, target: ENEMY, keywords: ['hollow', 'scrap'],
     text: 'Deal {d} damage. If [Hollow], add a [Scrap] to your discard pile.',
     flavor: 'The ear has been loose since the beginning. It is load-bearing now.',
-    nums: { d: 7 },
+    nums: { d: 13 },
     effect: eff((c) => { U.hit(c, N(c).d); if (isHollow(c)) spawnScrap(c, 1, 'discard'); }),
-    upgrade: { nums: { d: 10 } },
+    upgrade: { nums: { d: 18 } },
   },
   {
     id: 'mopsy/hopscotch-hem', name: 'Hopscotch Hem', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -448,17 +451,17 @@ const commons = [
   },
   {
     id: 'mopsy/stuffing-toss', name: 'Stuffing Toss', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['stuffing'],
+    cost: 2, target: ENEMY, keywords: ['stuffing'],
     text: 'Deal {d} damage. You may spend {n} [Stuffing] to deal {m0} to every other enemy.',
     flavor: 'She can spare a handful. Probably.',
-    nums: { d: 7, m0: 4, n: 1 },
+    nums: { d: 12, m0: 6, n: 1 },
     effect: eff((c) => {
       U.hit(c, N(c).d);
       if (stuffing(c) >= N(c).n && spendStuffing(c, N(c).n)) {
         for (const en of U.others(c)) U.hitAt(c, en, N(c).m0);
       }
     }),
-    upgrade: { nums: { d: 10, m0: 6, n: 1 } },
+    upgrade: { nums: { d: 17, m0: 9, n: 1 } },
   },
   {
     id: 'mopsy/quick-patch', name: 'Quick Patch', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -551,12 +554,12 @@ const commons = [
   },
   {
     id: 'mopsy/emergency-sewing', name: 'Emergency Sewing', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['stuffing'],
+    cost: 2, target: SELF, keywords: ['stuffing'],
     text: 'Gain {b} Guard. You may spend {n} [Stuffing] to gain {b2} more.',
     flavor: 'Needle in her teeth, thread in her paw, monster in the doorway.',
-    nums: { b: 6, b2: 6, n: 1 },
+    nums: { b: 11, b2: 7, n: 1 },
     effect: eff((c) => { U.guard(c, N(c).b); if (spendStuffing(c, N(c).n) > 0) U.guard(c, N(c).b2); }),
-    upgrade: { nums: { b: 9, b2: 9, n: 1 } },
+    upgrade: { nums: { b: 16, b2: 10, n: 1 } },
   },
   {
     id: 'mopsy/cross-stitch', name: 'Cross Stitch', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -616,12 +619,12 @@ const commons = [
   },
   {
     id: 'mopsy/cushion-check', name: 'Cushion Check', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['cushion', 'stuffing'],
+    cost: 2, target: SELF, keywords: ['cushion', 'stuffing'],
     text: 'Gain {b} Guard. Next enemy turn, [Cushion] may be used against {n} more hits. Each still costs 1 [Stuffing].',
     flavor: 'She checks her own seams before the lights go out.',
-    nums: { b: 4, n: 1 },
+    nums: { b: 9, n: 2 },
     effect: eff((c) => { U.guard(c, N(c).b); U.applySelf(c, 'cushion-extra', N(c).n); }),
-    upgrade: { nums: { b: 7, n: 2 } },
+    upgrade: { nums: { b: 13, n: 3 } },
   },
   {
     id: 'mopsy/temporary-fix', name: 'Temporary Fix', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -641,19 +644,19 @@ const uncommons = [
   // ── Attacks (10) ──
   {
     id: 'mopsy/needle-nose-dive', name: 'Needle Nose Dive', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['reinforce'],
+    cost: 2, target: ENEMY, keywords: ['reinforce'],
     text: 'Deal {d} damage. If you [Reinforce]d a [Patch] this turn, deal {m0} more.',
     flavor: 'Nose first, as always.',
-    nums: { d: 7, m0: 5 },
+    nums: { d: 12, m0: 8 },
     effect: eff((c) => U.hit(c, N(c).d + (U.mm(c).reinforcedThisTurn ? N(c).m0 : 0))),
-    upgrade: { nums: { d: 10, m0: 7 } },
+    upgrade: { nums: { d: 17, m0: 11 } },
   },
   {
     id: 'mopsy/seam-ripper', name: 'Seam Ripper', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['tear'],
+    cost: 2, target: ENEMY, keywords: ['tear'],
     text: 'Deal {d} damage. You may [Tear] another Trick; deal {m0} more for each Nerve it cost, up to 3 hits.',
     flavor: 'It only rips along the seam. That is the whole trick of it.',
-    nums: { d: 7, m0: 4 },
+    nums: { d: 12, m0: 5 },
     balance: { scalesWith: 'the cost of whatever you Tear -- up to three more hits' },
     effect: eff(async (c) => {
       U.hit(c, N(c).d);
@@ -663,26 +666,26 @@ const uncommons = [
       tear(c, k);
       for (let i = 0; i < n; i++) U.hitAt(c, c.target, N(c).m0);
     }),
-    upgrade: { nums: { d: 10, m0: 6 } },
+    upgrade: { nums: { d: 17, m0: 7 } },
   },
   {
     id: 'mopsy/patchwork-pummel', name: 'Patchwork Pummel', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 2, target: ENEMY, keywords: ['patch'],
+    cost: 3, target: ENEMY, keywords: ['patch'],
     text: 'Deal {d} damage, plus {m0} for each differently worded [Patch] you have attached, up to 3.',
     flavor: 'Every patch is somebody’s idea of a repair.',
-    nums: { d: 12, m0: 4 },
+    nums: { d: 18, m0: 6 },
     effect: eff((c) => { U.hit(c, N(c).d); const n = Math.min(3, distinctPatchKinds(c).size); for (let i = 0; i < n; i++) U.hitAt(c, c.target, N(c).m0); }),
-    upgrade: { nums: { d: 16, m0: 6 } },
+    upgrade: { nums: { d: 25, m0: 8 } },
   },
   {
     id: 'mopsy/stuffing-cannon', name: 'Stuffing Cannon', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['stuffing'],
+    cost: 2, target: ENEMY, keywords: ['stuffing'],
     text: 'Deal {d} damage. Spend up to {n} [Stuffing]; deal {m0} more for each.',
     flavor: 'Fired out of the hole in her side, which she insists is a feature.',
-    nums: { d: 7, m0: 4, n: 3 },
+    nums: { d: 12, m0: 5, n: 3 },
     balance: { scalesWith: 'the Stuffing you are willing to give up -- up to three more hits' },
     effect: eff((c) => { U.hit(c, N(c).d); const spent = spendStuffing(c, Math.min(N(c).n, stuffing(c))); for (let i = 0; i < spent; i++) U.hitAt(c, c.target, N(c).m0); }),
-    upgrade: { nums: { d: 10, m0: 6, n: 3 } },
+    upgrade: { nums: { d: 17, m0: 7, n: 3 } },
   },
   {
     id: 'mopsy/hop-until-it-holds', name: 'Hop Until It Holds', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -708,10 +711,10 @@ const uncommons = [
   },
   {
     id: 'mopsy/pattern-match', name: 'Pattern Match', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['patch'],
+    cost: 2, target: ENEMY, keywords: ['patch'],
     text: 'Deal {d} damage. If another Trick in hand carries a [Patch] worded like one on this Trick, deal it again.',
     flavor: 'Two of the same patch is a pattern, and patterns are powerful.',
-    nums: { d: 7 },
+    nums: { d: 13 },
     effect: eff((c) => {
       U.hit(c, N(c).d);
       const mine = new Set(patchesOn(c.card).map((x) => x.id));
@@ -719,7 +722,7 @@ const uncommons = [
       const twin = U.handOthers(c).some((k) => patchesOn(k).some((x) => mine.has(x.id)));
       if (twin) U.hitAt(c, c.target, N(c).d);
     }),
-    upgrade: { nums: { d: 10 } },
+    upgrade: { nums: { d: 18 } },
   },
   {
     id: 'mopsy/flop-with-confidence', name: 'Flop With Confidence', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -747,23 +750,30 @@ const uncommons = [
   },
   {
     id: 'mopsy/loose-thread-whip', name: 'Loose Thread Whip', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ALL_ENEMIES, keywords: ['patch', 'stitch'],
-    text: 'Deal {d} to all enemies. If a [Patch] broke this turn, deal {m0} to all again.',
+    cost: -1, target: ALL_ENEMIES, keywords: ['patch', 'stitch'],
+    text: 'Spend all your Nerve. For each Nerve spent, deal {d} damage to all enemies. If a [Patch] broke this turn, each of those hits deals {m0} more.',
     flavor: 'Pull the thread. Keep pulling.',
-    nums: { d: 7, m0: 4 },
-    effect: eff((c) => { U.hitAll(c, N(c).d); if ((U.mm(c).brokeThisTurn || []).length) U.hitAll(c, N(c).m0); }),
-    upgrade: { nums: { d: 10, m0: 6 } },
+    /* X: it keeps pulling for as long as she pays. Priced per Nerve just under
+       the old 1-Nerve Whip (7 to all, 4 more after a break), the way Whirlwind
+       sits under Cleave; `hits` is the count at three Nerve. A Patch breaking on
+       this Trick's own play counts: Patches fire on `card:play`, before this. */
+    nums: { d: 6, m0: 3, hits: 3 },
+    effect: eff((c) => {
+      const broke = (U.mm(c).brokeThisTurn || []).length > 0;
+      U.hitAllN(c, N(c).d + (broke ? N(c).m0 : 0), c.x || 0);
+    }),
+    upgrade: { nums: { d: 8, m0: 4, hits: 3 } },
   },
 
   // ── Skills (18) ──
   {
     id: 'mopsy/quilted-lining', name: 'Quilted Lining', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: NONE, keywords: ['patch', 'stitch'],
+    cost: 2, target: NONE, keywords: ['patch', 'stitch'],
     text: '[Patch] a Trick: "When played, gain 7 Guard." {n} [Stitch]es.',
     flavor: 'Warm, and surprisingly good at stopping things.',
-    nums: { n: 2 },
+    nums: { n: 3 },
     effect: eff(async (c) => { const [k] = await U.pickCards(c, { pile: 'hand', count: 1, prompt: 'Patch which Trick?', filter: patchable }); if (k) patch(c, k, 'guardBig', N(c).n); }),
-    upgrade: { nums: { n: 3 } },
+    upgrade: { nums: { n: 4 } },
   },
   {
     id: 'mopsy/lucky-button', name: 'Lucky Button', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -785,12 +795,12 @@ const uncommons = [
   },
   {
     id: 'mopsy/weighted-hem', name: 'Weighted Hem', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: NONE, keywords: ['patch'],
+    cost: 2, target: NONE, keywords: ['patch'],
     text: '[Patch] a Trick: an Attack deals 7 more damage, anything else gains 4 Guard. {n} [Stitch]es.',
     flavor: 'Pennies in the hem. An old trick, and a good one.',
-    nums: { n: 2 },
+    nums: { n: 3 },
     effect: eff(async (c) => { const [k] = await U.pickCards(c, { pile: 'hand', count: 1, prompt: 'Patch which Trick?', filter: patchable }); if (k) patch(c, k, 'weighted', N(c).n); }),
-    upgrade: { nums: { n: 3 } },
+    upgrade: { nums: { n: 4 } },
   },
   {
     id: 'mopsy/double-stitch', name: 'Double Stitch', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -886,28 +896,28 @@ const uncommons = [
   },
   {
     id: 'mopsy/inside-out', name: 'Inside Out', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['stuffing', 'plump', 'hollow'],
+    cost: 2, target: SELF, keywords: ['stuffing', 'plump', 'hollow'],
     text: 'Set [Stuffing] to 6 minus itself. Becoming [Plump] draws {c1}; becoming [Hollow] gains {b} Guard.',
     flavor: 'All the seams are on the outside now.',
-    nums: { c1: 2, b: 10 },
+    nums: { c1: 3, b: 16 },
     effect: eff((c) => {
       setStuffing(c, MAX_STUFFING - stuffing(c));
       if (isPlump(c)) U.draw(c, N(c).c1);
       else if (isHollow(c)) U.guard(c, N(c).b);
     }),
-    upgrade: { nums: { c1: 3, b: 14 } },
+    upgrade: { nums: { c1: 4, b: 22 } },
   },
   {
     id: 'mopsy/pin-cushion', name: 'Pin Cushion', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: NONE, keywords: ['patch'],
+    cost: 2, target: NONE, keywords: ['patch'],
     text: 'Retain up to {n} other Tricks this turn. Gain {b} Guard for each patched one.',
     flavor: 'She is, technically, one.',
-    nums: { n: 2, b: 4 },
+    nums: { n: 3, b: 6 },
     effect: eff(async (c) => {
       const picks = await U.pickCards(c, { pile: 'hand', count: N(c).n, optional: true, prompt: 'Retain which Tricks?' });
       for (const k of picks) { U.retain(c, k, 'turn'); if (patchesOn(k).length) U.guard(c, N(c).b); }
     }),
-    upgrade: { nums: { n: 3, b: 6 } },
+    upgrade: { nums: { n: 3, b: 9 } },
   },
   {
     id: 'mopsy/no-loose-ends', name: 'No Loose Ends', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -983,12 +993,12 @@ const uncommons = [
   },
   {
     id: 'mopsy/rag-bag', name: 'Rag Bag', companion: SLUG, type: POWER, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['tear', 'stuffing'],
+    cost: 2, target: SELF, keywords: ['tear', 'stuffing'],
     text: 'The first Trick you [Tear] each turn gives you {n} [Stuffing].',
     flavor: 'Everything goes in the bag. Nothing leaves the bag.',
-    nums: { n: 1 },
+    nums: { n: 2 },
     effect: eff((c) => power(c, 'mopsy/rag-bag', N(c).n, (x) => { U.mm(x).ragBag = true; })),
-    upgrade: { nums: { n: 2 } },
+    upgrade: { nums: { n: 3 } },
   },
   {
     id: 'mopsy/memory-foam', name: 'Memory Foam', companion: SLUG, type: POWER, rarity: UNCOMMON,
@@ -1044,13 +1054,18 @@ const rares = [
   // ── Attacks (7) ──
   {
     id: 'mopsy/the-big-flop', name: 'The Big Flop', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 3, target: ENEMY, keywords: ['stuffing'],
-    text: 'Deal {d} damage. Spend any amount of [Stuffing]; deal {m0} more for each.',
+    cost: 4, target: ENEMY, keywords: ['stuffing', 'plump'],
+    text: 'Deal {d} damage. Spend any amount of [Stuffing]; deal {m0} more for each. Costs 1 less while [Plump].',
     flavor: 'Her whole body, all at once, from a height.',
-    nums: { d: 20, m0: 4 },
+    nums: { d: 26, m0: 5 },
     balance: { scalesWith: 'every point of Stuffing you are willing to empty out' },
+    /* The deck's 4. Plump is when this wants casting anyway -- the most Stuffing
+       to empty -- so on a good turn it is a 3, and a 4 when tried half-full.
+       Mend With Love / Mend and Maul, a Temporary Fix and Ship of Mopsy's free
+       copy compose on top. The 4 here IS the printed cost above: re-cost both. */
+    dynamicCost: (c) => (isPlump(c) ? 3 : 4),
     effect: eff((c) => { U.hit(c, N(c).d); const spent = spendStuffing(c, stuffing(c)); for (let i = 0; i < spent; i++) U.hitAt(c, c.target, N(c).m0); }),
-    upgrade: { nums: { d: 26, m0: 6 } },
+    upgrade: { nums: { d: 36, m0: 7 } },
   },
   {
     id: 'mopsy/patchwork-meteor', name: 'Patchwork Meteor', companion: SLUG, type: ATTACK, rarity: RARE,

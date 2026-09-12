@@ -199,7 +199,7 @@ Attack
 2
 Sticky Situation
 Attack
-1 Nerve. Deal light damage. If the target has a Previewed future Intent, apply 2 Web. Otherwise, Preview 1.
+2 Nerve. Deal moderate damage. If the target has a Previewed future Intent, apply 2 Web. Otherwise, Preview 1.
 3
 Skitter, Skitter, Bite
 Attack
@@ -207,11 +207,11 @@ Attack
 4
 Future Tense
 Attack
-1 Nerve. If the target has a Previewed future Intent, deal moderate damage. Otherwise deal light damage and Preview 1.
+2 Nerve. If the target has a Previewed future Intent, deal heavy damage. Otherwise deal moderate damage and Preview 1.
 5
 Look Over There
 Attack
-1 Nerve. Deal light damage to one enemy, then Preview 1 on another enemy. If only one enemy remains, Preview that enemy instead.
+0 Nerve. Deal light damage to one enemy, then Preview 1 on another enemy. If only one enemy remains, Preview that enemy instead.
 6
 Threadbare Pounce
 Attack
@@ -231,7 +231,7 @@ Skill
 10
 Safe Distance
 Skill
-1 Nerve. Gain moderate Guard. Gain additional light Guard if at least one enemy currently intends to Attack.
+2 Nerve. Gain substantial Guard. Gain additional light Guard if at least one enemy currently intends to Attack.
 11
 Wide Eyes
 Skill
@@ -247,7 +247,7 @@ Skill
 14
 Web Patch
 Skill
-1 Nerve. Gain moderate Guard. Apply 1 Web to an enemy currently intending to Attack Wink, if one exists.
+2 Nerve. Gain substantial Guard. Apply 2 Web to an enemy currently intending to Attack Wink, if one exists.
 15
 Back Up a Little
 Skill
@@ -263,7 +263,7 @@ Skill
 18
 Ceiling Survey
 Skill
-1 Nerve. Preview 1. If the target has at least 3 Web, Preview 1 additional future Intent.
+0 Nerve. Preview 1. If the target has at least 3 Web, Preview 1 additional future Intent.
 19
 Telltale Twitch
 Power
@@ -285,7 +285,7 @@ Core effect
 21
 Cross Examination
 Attack
-1 Nerve. Deal moderate damage. If the target has an unresolved Read, Preview 1 additional future Intent and apply 1 Web.
+2 Nerve. Deal moderate damage. If the target has an unresolved Read, Preview 1 additional future Intent and apply 2 Web.
 22
 Pulling Strings
 Attack
@@ -301,15 +301,15 @@ Attack
 25
 Blindside Probability
 Attack
-1 Nerve. Deal moderate damage. If the target currently has an unresolved Blind Read, deal heavy damage instead.
+2 Nerve. Deal moderate damage. If the target currently has an unresolved Blind Read, deal heavy damage instead.
 26
 Silk Saw
 Attack
-1 Nerve. Deal a light hit. You may remove up to 6 Web from the target. Deal one additional light hit for every 2 Web removed, up to four total hits.
+2 Nerve. Deal a light hit. You may remove up to 6 Web from the target. Deal one additional light hit for every 2 Web removed, up to four total hits.
 27
 Forecast Fang
 Attack
-1 Nerve. Deal moderate damage, plus one light hit for each Previewed future Intent on the target, up to two additional hits.
+2 Nerve. Deal moderate damage, plus one light hit for each Previewed future Intent on the target, up to two additional hits.
 28
 Wrong Answer
 Attack
@@ -338,7 +338,7 @@ Skill
 33
 Long Shot
 Skill
-1 Nerve. Only playable if the target's next Intent is hidden. Place a Blind Read. Success Opens 1 additional Eye. Failure Closes 1 additional Eye.
+0 Nerve. Only playable if the target's next Intent is hidden. Place a Blind Read. Success Opens 1 additional Eye. Failure Closes 1 additional Eye.
 34
 Safe Bet
 Skill
@@ -350,7 +350,7 @@ Skill
 36
 Red String Theory
 Skill
-1 Nerve. Apply 2 Web to every enemy with at least one Previewed Intent. If only one enemy remains, apply 3 Web to it instead.
+X Nerve. Apply 2 Web for each Nerve spent to every enemy with at least one Previewed Intent. If only one enemy remains, apply 3 Web per Nerve to it instead.
 37
 Tug the Thread
 Skill
@@ -374,7 +374,7 @@ Skill
 42
 Doorframe Tripline
 Skill
-1 Nerve. Set on an enemy. When its Intent becomes Defense, apply 4 Web and Open 1 Eye, then discard this Trick.
+0 Nerve. Set on an enemy. When its Intent becomes Defense, apply 2 Web and Open 1 Eye, then discard this Trick.
 43
 Lampshade Lookout
 Skill
@@ -382,7 +382,7 @@ Skill
 44
 False Floor
 Skill
-1 Nerve. Set on an enemy. The next time you reorder one of its Intents, deal moderate damage and Preview 1, then discard this Trick.
+2 Nerve. Set on an enemy. The next time you reorder one of its Intents, deal heavy damage and Preview 1, then discard this Trick.
 45
 Thread Count
 Skill
@@ -470,7 +470,7 @@ Attack
 63
 The Part Where You Panic
 Attack
-3 Nerve. Deal heavy damage. You may Close 2 Eyes to immediately trigger one Set attached to the target even if its normal trigger has not occurred. Resolve it fully, then discard it.
+4 Nerve. Costs 1 less for each active Set. Deal heavy damage. You may Close 2 Eyes to immediately trigger one Set attached to the target even if its normal trigger has not occurred. Resolve it fully, then discard it.
 ## Skills
 Number
 Trick name

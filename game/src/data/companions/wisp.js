@@ -353,21 +353,21 @@ const commons = [
   },
   {
     id: 'wisp/firefly-tackle', name: 'Firefly Tackle', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['flare', 'glow'],
+    cost: 2, target: ENEMY, keywords: ['flare', 'glow'],
     text: 'Deal {d} damage. [Flare] {f}: follow with {m0} more.',
     flavor: 'All of her, at speed, at ankle height.',
-    nums: { d: 7, m0: 4, f: 1 },
+    nums: { d: 12, m0: 7, f: 1 },
     effect: eff((c) => { U.hit(c, N(c).d); if (flare(c, N(c).f)) U.hitAt(c, c.target, N(c).m0); }),
-    upgrade: { nums: { d: 10, m0: 6, f: 1 } },
+    upgrade: { nums: { d: 17, m0: 9, f: 1 } },
   },
   {
     id: 'wisp/pop', name: 'Pop!', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['bright'],
+    cost: 2, target: ENEMY, keywords: ['bright'],
     text: 'Deal {d} damage. If [Bright], deal {m0} more.',
     flavor: 'Pop.',
-    nums: { d: 7, m0: 4 },
+    nums: { d: 13, m0: 6 },
     effect: eff((c) => U.hit(c, N(c).d + (isBright(c) ? N(c).m0 : 0))),
-    upgrade: { nums: { d: 10, m0: 6 } },
+    upgrade: { nums: { d: 18, m0: 8 } },
   },
   {
     id: 'wisp/little-orbit', name: 'Little Orbit', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -401,12 +401,12 @@ const commons = [
   },
   {
     id: 'wisp/nightlight', name: 'Nightlight', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['bright'],
+    cost: 2, target: SELF, keywords: ['bright'],
     text: 'Gain {b} Guard, and {m0} more if [Bright].',
     flavor: 'Left on for somebody who is not scared, obviously.',
-    nums: { b: 6, m0: 4 },
+    nums: { b: 12, m0: 5 },
     effect: eff((c) => U.guard(c, N(c).b + (isBright(c) ? N(c).m0 : 0))),
-    upgrade: { nums: { b: 9, m0: 6 } },
+    upgrade: { nums: { b: 17, m0: 7 } },
   },
   {
     id: 'wisp/put-it-somewhere-safe', name: 'Put It Somewhere Safe', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -454,12 +454,12 @@ const commons = [
   },
   {
     id: 'wisp/still-here', name: 'Still Here!', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['linger', 'gloaming'],
+    cost: 2, target: SELF, keywords: ['linger', 'gloaming'],
     text: 'Gain {b} Guard for each [Linger]ing Trick, up to three.',
     flavor: 'All of her, in several places, all still here.',
-    nums: { b: 4 },
+    nums: { b: 6 },
     effect: eff((c) => U.guard(c, N(c).b * Math.min(3, gloamingSize(c)))),
-    upgrade: { nums: { b: 6 } },
+    upgrade: { nums: { b: 8 } },
   },
   {
     id: 'wisp/dim-the-room', name: 'Dim the Room', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -472,12 +472,12 @@ const commons = [
   },
   {
     id: 'wisp/tiny-reservoir', name: 'Tiny Reservoir', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['glow', 'bright'],
+    cost: 0, target: SELF, keywords: ['glow', 'bright'],
     text: 'Gain {g} [Glow]. If [Bright], draw {c1} then discard 1.',
     flavor: 'Kept somewhere behind her eyes.',
     nums: { g: 1, c1: 1 },
     effect: eff((c) => { gainGlow(c, N(c).g); if (isBright(c)) { U.draw(c, N(c).c1); U.discardRandom(c, 1); } }),
-    upgrade: { nums: { g: 2, c1: 2 } },
+    upgrade: { nums: { g: 1, c1: 2 } },   // at 0 the upgrade digs deeper rather than handing out free Glow
   },
   {
     id: 'wisp/home-in-the-dark', name: 'Home in the Dark', companion: SLUG, type: POWER, rarity: COMMON,
@@ -535,12 +535,12 @@ const uncommons = [
   },
   {
     id: 'wisp/no-now', name: 'No, NOW!', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['hasten', 'afterglow'],
+    cost: 2, target: ENEMY, keywords: ['hasten', 'afterglow'],
     text: 'Deal {d} damage. [Hasten] 1 a [Linger]ing Trick; if it resolves, deal {m0} more.',
     flavor: 'She has run out of patience with her own plan.',
-    nums: { d: 7, m0: 4 },
+    nums: { d: 14, m0: 6 },
     effect: eff((c) => { U.hit(c, N(c).d); const g = gloaming(c)[0]; if (g && hasten(c, g, 1)) U.hitAt(c, c.target, N(c).m0); }),
-    upgrade: { nums: { d: 10, m0: 6 } },
+    upgrade: { nums: { d: 19, m0: 8 } },
   },
   {
     id: 'wisp/spark-parade', name: 'Spark Parade', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -556,12 +556,12 @@ const uncommons = [
   },
   {
     id: 'wisp/backtrack-bolt', name: 'Backtrack Bolt', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['afterglow'],
+    cost: 2, target: ENEMY, keywords: ['afterglow'],
     text: 'Deal {d} damage. If an [Afterglow] has resolved this turn, put this on top of your draw pile.',
     flavor: 'It goes back to where it came from and waits to be used again.',
-    nums: { d: 7 },
+    nums: { d: 15 },
     effect: eff((c) => { U.hit(c, N(c).d); if ((U.mm(c).afterglowsThisTurn || 0) > 0) U.toDrawTop(c, c.card); }),
-    upgrade: { nums: { d: 10 } },
+    upgrade: { nums: { d: 21 } },
   },
   {
     id: 'wisp/hot-potato', name: 'Hot Potato', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -574,12 +574,12 @@ const uncommons = [
   },
   {
     id: 'wisp/jump-scare-spark', name: 'Jump Scare Spark', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['afterglow'],
+    cost: 2, target: ENEMY, keywords: ['afterglow'],
     text: 'Deal {d} damage, plus {m0} more if an [Afterglow] has already resolved this turn.',
     flavor: 'Timed badly on purpose.',
-    nums: { d: 4, m0: 11 },
+    nums: { d: 6, m0: 16 },
     effect: eff((c) => U.hit(c, N(c).d + ((U.mm(c).afterglowsThisTurn || 0) > 0 ? N(c).m0 : 0))),
-    upgrade: { nums: { d: 6, m0: 16 } },
+    upgrade: { nums: { d: 8, m0: 22 } },
   },
   {
     id: 'wisp/bank-shot', name: 'Bank Shot', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -599,13 +599,21 @@ const uncommons = [
   },
   {
     id: 'wisp/tiny-supernova', name: 'Tiny Supernova', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 2, target: ALL_ENEMIES, keywords: ['flare', 'glow'],
-    text: 'Deal {d} to all enemies. [Flare] {f}: deal {d} to all again.',
+    cost: -1, target: ALL_ENEMIES, keywords: ['flare', 'glow'],
+    text: 'Spend all your Nerve. Deal {d} to all enemies for each Nerve spent. [Flare] {f}: once more.',
     flavor: 'Very small. Very bright. Very briefly.',
-    nums: { d: 7, f: 2 },
-    balance: { scalesWith: 'the Glow you cash in — it hits the whole room a second time' },
-    effect: eff((c) => { U.hitAll(c, N(c).d); if (flare(c, N(c).f)) U.hitAll(c, N(c).d); }),
-    upgrade: { nums: { d: 10, f: 2 } },
+    /* Wisp's X: one burst of the whole room per Nerve spent (`hits` is the
+       count at three Nerve, as Catastrophe declares it), priced per Nerve the
+       way Whirlwind is. The Flare buys one burst more than the Nerve paid for,
+       so with no Nerve left it still turns 2 Glow into a burst. */
+    nums: { d: 5, f: 2, hits: 3 },
+    balance: { scalesWith: 'the Nerve you pour in, and one burst more for the Glow you cash in' },
+    effect: eff((c) => {
+      const x = c.x || 0;
+      for (let i = 0; i < x; i++) U.hitAll(c, N(c).d);
+      if (flare(c, N(c).f)) U.hitAll(c, N(c).d);
+    }),
+    upgrade: { nums: { d: 7, f: 2, hits: 3 } },
   },
   {
     id: 'wisp/skip-ahead', name: 'Skip Ahead', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -618,13 +626,13 @@ const uncommons = [
   },
   {
     id: 'wisp/orbiting-sparks', name: 'Orbiting Sparks', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['gloaming', 'linger'],
+    cost: 2, target: ENEMY, keywords: ['gloaming', 'linger'],
     text: 'Deal {d} damage once for each Trick in the [Gloaming], up to four.',
     flavor: 'Everything she has put off, circling.',
-    nums: { d: 5 },
+    nums: { d: 7 },
     balance: { scalesWith: 'how full the Gloaming is — up to four hits' },
     effect: eff((c) => { const n = Math.min(4, gloamingSize(c)); for (let i = 0; i < n; i++) U.hit(c, N(c).d); }),
-    upgrade: { nums: { d: 7 } },
+    upgrade: { nums: { d: 10 } },
   },
   {
     id: 'wisp/not-done-yet', name: 'Not Done Yet', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -649,10 +657,10 @@ const uncommons = [
   },
   {
     id: 'wisp/blow-the-fuse', name: 'Blow the Fuse', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 2, target: ENEMY, keywords: ['flare', 'blazing', 'hasten'],
+    cost: 3, target: ENEMY, keywords: ['flare', 'blazing', 'hasten'],
     text: 'Deal {d} damage. [Flare] up to {f}: {m0} more each. If you were [Blazing] first, [Hasten] 1 everything.',
     flavor: 'Every light on the landing goes at once.',
-    nums: { d: 11, m0: 4, f: 3 },
+    nums: { d: 20, m0: 5, f: 3 },
     balance: { scalesWith: 'the Glow you cash in, and everything Lingering if you were Blazing' },
     effect: eff((c) => {
       const wasBlazing = isBlazing(c);
@@ -661,7 +669,7 @@ const uncommons = [
       for (let i = 0; i < spent; i++) U.hitAt(c, c.target, N(c).m0);
       if (wasBlazing) { const due = []; for (const g of gloaming(c).slice()) { g.count = Math.max(0, g.count - 1); if (g.count === 0) due.push(g); } if (due.length) resolveBatch(c, due); }
     }),
-    upgrade: { nums: { d: 15, m0: 6, f: 3 } },
+    upgrade: { nums: { d: 27, m0: 7, f: 3 } },
   },
 
   // ── Skills (16) ──
@@ -676,12 +684,12 @@ const uncommons = [
   },
   {
     id: 'wisp/stretch-the-moment', name: 'Stretch the Moment', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['delay'],
+    cost: 0, target: SELF, keywords: ['delay'],
     text: '[Delay] 1 up to {n} [Linger]ing Tricks. Gain {b} Guard.',
     flavor: 'She holds the second open with both hands.',
-    nums: { n: 2, b: 6 },
+    nums: { n: 2, b: 3 },
     effect: eff((c) => { for (const g of gloaming(c).slice(0, N(c).n)) delay(c, g, 1); U.guard(c, N(c).b); }),
-    upgrade: { nums: { n: 3, b: 9 } },
+    upgrade: { nums: { n: 3, b: 4 } },
   },
   {
     id: 'wisp/cut-the-wait', name: 'Cut the Wait', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -700,26 +708,26 @@ const uncommons = [
   },
   {
     id: 'wisp/glow-bank', name: 'Glow Bank', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['glow', 'delay'],
+    cost: 2, target: SELF, keywords: ['glow', 'delay'],
     text: 'Gain {g} [Glow], then [Delay] 1 a random [Linger]ing Trick. With none, gain {m0} instead.',
     flavor: 'Put it away where the dark cannot get at it.',
-    nums: { g: 2, m0: 1 },
+    nums: { g: 4, m0: 3 },
     effect: eff((c) => {
       const list = gloaming(c);
       if (!list.length) { gainGlow(c, N(c).m0); return; }
       gainGlow(c, N(c).g);
       delay(c, U.rpick(c, list), 1);
     }),
-    upgrade: { nums: { g: 3, m0: 2 } },
+    upgrade: { nums: { g: 5, m0: 4 } },
   },
   {
     id: 'wisp/emergency-lantern', name: 'Emergency Lantern', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['flare', 'glow'],
+    cost: 2, target: SELF, keywords: ['flare', 'glow'],
     text: 'Gain {b} Guard. [Flare] {f}: gain {m0} and draw {c1} instead.',
     flavor: 'Glass, a handle, and a very worried expression.',
-    nums: { b: 6, m0: 10, c1: 1, f: 2 },
+    nums: { b: 12, m0: 17, c1: 1, f: 2 },
     effect: eff((c) => { if (flare(c, N(c).f)) { U.guard(c, N(c).m0); U.draw(c, N(c).c1); } else U.guard(c, N(c).b); }),
-    upgrade: { nums: { b: 9, m0: 14, c1: 2, f: 2 } },
+    upgrade: { nums: { b: 17, m0: 23, c1: 2, f: 2 } },
   },
   {
     id: 'wisp/room-for-more', name: 'Room for More', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -732,15 +740,15 @@ const uncommons = [
   },
   {
     id: 'wisp/quiet-before-the-pop', name: 'Quiet Before the Pop', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['afterglow', 'glow'],
+    cost: 2, target: SELF, keywords: ['afterglow', 'glow'],
     text: 'With no [Afterglow] yet this turn, gain {b} Guard. Otherwise {m0} Guard and {g} [Glow].',
     flavor: 'The bit before, which is the frightening bit.',
-    nums: { b: 10, m0: 6, g: 1 },
+    nums: { b: 16, m0: 11, g: 1 },
     effect: eff((c) => {
       if ((U.mm(c).afterglowsThisTurn || 0) === 0) U.guard(c, N(c).b);
       else { U.guard(c, N(c).m0); gainGlow(c, N(c).g); }
     }),
-    upgrade: { nums: { b: 14, m0: 9, g: 1 } },
+    upgrade: { nums: { b: 22, m0: 15, g: 2 } },
   },
   {
     id: 'wisp/borrowed-tomorrow', name: 'Borrowed Tomorrow', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -753,12 +761,12 @@ const uncommons = [
   },
   {
     id: 'wisp/push-it-back', name: 'Push It Back', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['delay'],
+    cost: 2, target: SELF, keywords: ['delay'],
     text: '[Delay] {n} one [Linger]ing Trick. Gain {b} Guard.',
     flavor: 'Later. Definitely later.',
-    nums: { n: 2, b: 10 },
+    nums: { n: 2, b: 15 },
     effect: eff((c) => { const g = gloaming(c)[0]; if (g) delay(c, g, N(c).n); U.guard(c, N(c).b); }),
-    upgrade: { nums: { n: 2, b: 14 } },
+    upgrade: { nums: { n: 2, b: 21 } },
   },
   {
     id: 'wisp/shared-spark', name: 'Shared Spark', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -821,16 +829,16 @@ const uncommons = [
   },
   {
     id: 'wisp/stash-the-flash', name: 'Stash the Flash', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['glow'],
+    cost: 2, target: SELF, keywords: ['glow'],
     text: 'Spend up to {n} [Glow]. Gain {b} Guard each. At exactly {n}, draw {c1}.',
     flavor: 'Tucked away in the lining, for later.',
-    nums: { n: 3, b: 4, c1: 2 },
+    nums: { n: 3, b: 6, c1: 2 },
     effect: eff((c) => {
       const spent = spendGlow(c, Math.min(N(c).n, glow(c)));
       U.guard(c, spent * N(c).b);
       if (spent === N(c).n) U.draw(c, N(c).c1);
     }),
-    upgrade: { nums: { n: 3, b: 6, c1: 3 } },
+    upgrade: { nums: { n: 3, b: 8, c1: 3 } },
   },
   {
     id: 'wisp/split-second', name: 'Split Second', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -911,13 +919,19 @@ const rares = [
   // ── Attacks (8) ──
   {
     id: 'wisp/tiny-sun-big-feelings', name: 'Tiny Sun, Big Feelings', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 3, target: ALL_ENEMIES, keywords: ['blazing', 'flare'],
-    text: 'Deal {d} to all enemies. If [Blazing], you may [Flare] {f} to do it again.',
+    cost: 4, target: ALL_ENEMIES, keywords: ['blazing', 'flare', 'afterglow'],
+    text: 'Deal {d} to all enemies. If [Blazing], you may [Flare] {f} to do it again. Costs 1 less for each [Afterglow] resolved this turn.',
     flavor: 'She has had a very big day.',
-    nums: { d: 15, f: 6 },
+    nums: { d: 18, f: 6 },
     balance: { scalesWith: 'the whole room, and the whole room again if you are Blazing' },
     effect: eff((c) => { const blaz = isBlazing(c); U.hitAll(c, N(c).d); if (blaz && flare(c, N(c).f)) U.hitAll(c, N(c).d); }),
-    upgrade: { nums: { d: 20, f: 6 } },
+    /* The deck's 4, and rarely paid in full. Every Afterglow that has landed
+       this turn takes a Nerve off, the turn-start batch included, so the
+       Convergence turn that refills her Glow is the turn it comes back cheap.
+       Too Bright for Bedtime, Small Orbit and Pocket Tomorrow discount it on
+       top. The 4 here IS the printed cost above: re-cost one, re-cost both. */
+    dynamicCost: (c) => Math.max(0, 4 - (U.mm(c).afterglowsThisTurn || 0)),
+    upgrade: { nums: { d: 25, f: 6 } },
   },
   {
     id: 'wisp/this-ones-been-cooking', name: 'This One’s Been Cooking', companion: SLUG, type: ATTACK, rarity: RARE,
@@ -1150,7 +1164,7 @@ const rares = [
     nums: { b: 10, c1: 2, e: 1 },
     effect: eff((c) => { U.guard(c, N(c).b); linger(c, 2); }),
     afterglow: (c) => { U.guard(c, 10 + blazingGuard(c)); U.draw(c, 2); },
-    converge: (c) => U.nextTurn(c, (x) => U.energy(x, 1)),
+    converge: (c) => U.energyNextTurn(c, 1),   // banked: a next-turn timer's Nerve is erased by the refill
     upgrade: { nums: { b: 14, c1: 3, e: 1 } },
   },
 

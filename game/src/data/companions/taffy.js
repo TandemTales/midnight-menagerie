@@ -70,7 +70,10 @@ const typeOf = (k) => (k?.def?.type || k?.type);
 function gummyDef(src, costDelta = 0, forcedCost) {
   const d = src?.def || src;
   if (!d) return null;
-  const base = forcedCost != null ? forcedCost : Math.max(0, (src.cost != null ? src.cost : d.cost) + costDelta);
+  /* A copy of an X Trick is X too. X has no number to discount or force, and a
+     0-cost copy would read `c.x` as 0 and do nothing at all. */
+  const base = d.cost === -1 ? -1
+    : forcedCost != null ? forcedCost : Math.max(0, (src.cost != null ? src.cost : d.cost) + costDelta);
   return {
     ...d,
     name: d.name,
@@ -85,8 +88,9 @@ function gummyDef(src, costDelta = 0, forcedCost) {
 function gummy(c, src, pile = 'hand', costDelta = 0, forcedCost) {
   if (!src || U.flag(src, 'gummy')) return null;
   let delta = costDelta;
-  if (U.stacks(c, c.self, 'taffy/multipack') > 0 && U.once(c, 'multipack')) delta -= U.stacks(c, c.self, 'taffy/multipack');
-  if (U.got(c, 'wrapperDiscount') > 0) { delta -= 1; U.bump(c, 'wrapperDiscount', -1); }
+  const isX = (src.def || src).cost === -1;   // X ignores discounts, so never spend one on its copy
+  if (!isX && U.stacks(c, c.self, 'taffy/multipack') > 0 && U.once(c, 'multipack')) delta -= U.stacks(c, c.self, 'taffy/multipack');
+  if (!isX && U.got(c, 'wrapperDiscount') > 0) { delta -= 1; U.bump(c, 'wrapperDiscount', -1); }
   const def = gummyDef(src, delta, forcedCost);
   if (!def) return null;
   U.spawn(c, def, pile, { gummy: true, exhaust: true, cost: def.cost, meta: { gummy: true } });
@@ -95,6 +99,9 @@ function gummy(c, src, pile = 'hand', costDelta = 0, forcedCost) {
   return def;
 }
 const copyable = (k) => k && !U.flag(k, 'gummy') && (typeOf(k) === ATTACK || typeOf(k) === SKILL);
+/** A cost a swap may move. X (-1) and unplayable (-2) are not numbers: set on
+ *  another Trick as an override they clamp to 0, which made that Trick free. */
+const priced = (k) => U.nowCost(k) >= 0;
 
 function power(c, id, n, install) {
   U.applySelf(c, id, n);
@@ -134,7 +141,15 @@ U.onTracker(SLUG, (e, s, seat) => {
   U.onPlayerTurn(e, 'end', () => {
     const c = fake();
     const extra = U.stacks(c, c.self, 'taffy/slow-pull') > 0 ? 2 : 1;
-    for (const k of U.cardsIn(c, 'hand')) if (U.counter(k, 'stretch') > 0) U.setCounter(k, 'stretch', Math.min(3, U.counter(k, 'stretch') + extra));
+    for (const k of U.cardsIn(c, 'hand')) {
+      if (U.counter(k, 'stretch') <= 0) continue;
+      U.setCounter(k, 'stretch', Math.min(3, U.counter(k, 'stretch') + extra));
+      /* "A Stretched Trick Retains." `stretch()` could only grant the one-turn
+         kind (retainThisTurn), which the engine spends at THIS turn end, so a
+         Trick held into its second turn was discarded at 3 Stretch and never
+         paid out. turn:end fires before the hand is discarded: renew it here. */
+      k.retainThisTurn = true;
+    }
   });
   // Runny costs Courage once at the end of each enemy turn, not once per Glob.
   const runnyTick = () => {
@@ -219,12 +234,12 @@ const commons = [
   },
   {
     id: 'taffy/snap-back', name: 'Snap Back', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['stretch'],
+    cost: 2, target: ENEMY, keywords: ['stretch'],
     text: 'Deal {d} damage. If this Trick had [Stretch], gain {b} Guard.',
     flavor: 'The recoil is the useful half.',
-    nums: { d: 8, b: 6 },
+    nums: { d: 12, b: 8 },
     effect: eff(c => { const s = stretchOf(c.card); U.hit(c, N(c).d); if (s > 0) { U.guard(c, N(c).b); clearStretch(c, c.card); } }),
-    upgrade: { nums: { d: 11, b: 8 } },
+    upgrade: { nums: { d: 17, b: 11 } },
   },
   {
     id: 'taffy/split-splat', name: 'Split Splat', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -237,30 +252,30 @@ const commons = [
   },
   {
     id: 'taffy/gumball-volley', name: 'Gumball Volley', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['glob'],
+    cost: 2, target: ENEMY, keywords: ['glob'],
     text: 'Deal {d} damage {n} times. Deal one more hit if you have at least {m0} [Glob]s.',
     flavor: 'Rapid, spherical, and faintly fruit-flavoured.',
-    nums: { d: 4, n: 2, hits: 2, m0: 3 },
+    nums: { d: 6, n: 2, hits: 2, m0: 3 },
     effect: eff(c => U.hitN(c, N(c).d, N(c).n + (globs(c) >= N(c).m0 ? 1 : 0))),
-    upgrade: { nums: { d: 6, n: 2, hits: 2, m0: 3 } },
+    upgrade: { nums: { d: 9, n: 2, hits: 2, m0: 3 } },
   },
   {
     id: 'taffy/big-chew', name: 'Big Chew', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['recombine'],
+    cost: 2, target: ENEMY, keywords: ['recombine'],
     text: 'Deal {d} damage. You may [Recombine] {n} to deal {m0} more.',
     flavor: 'She puts a piece of herself back in and bites down.',
-    nums: { d: 8, n: 1, m0: 7 },
+    nums: { d: 11, n: 1, m0: 9 },
     effect: eff(c => U.hit(c, N(c).d + (recombine(c, N(c).n) ? N(c).m0 : 0))),
-    upgrade: { nums: { d: 11, n: 1, m0: 9 } },
+    upgrade: { nums: { d: 16, n: 1, m0: 12 } },
   },
   {
     id: 'taffy/stretch-punch', name: 'Stretch Punch', companion: SLUG, type: ATTACK, rarity: COMMON,
-    cost: 1, target: ENEMY, keywords: ['stretch'],
+    cost: 2, target: ENEMY, keywords: ['stretch'],
     text: 'Deal {d} damage, plus {m0} for each [Stretch]. At 3 Stretch, deal {m1} more on top.',
     flavor: 'The wind-up starts two rooms away.',
-    nums: { d: 6, m0: 4, m1: 8 },
+    nums: { d: 9, m0: 5, m1: 10 },
     effect: eff(c => { const s = stretchOf(c.card); U.hit(c, N(c).d + N(c).m0 * s + (s >= 3 ? N(c).m1 : 0)); clearStretch(c, c.card); }),
-    upgrade: { nums: { d: 8, m0: 5, m1: 10 } },
+    upgrade: { nums: { d: 13, m0: 7, m1: 14 } },
   },
   {
     id: 'taffy/rebound-bite', name: 'Rebound Bite', companion: SLUG, type: ATTACK, rarity: COMMON,
@@ -282,12 +297,12 @@ const commons = [
   },
   {
     id: 'taffy/squish-flat', name: 'Squish Flat', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['glob'],
+    cost: 2, target: SELF, keywords: ['glob'],
     text: 'Gain {b} Guard. If you have 0 [Glob]s, gain {m0} instead.',
     flavor: 'One continuous puddle is a much better shield than several small ones.',
-    nums: { b: 8, m0: 13 },
+    nums: { b: 11, m0: 17 },
     effect: eff(c => U.guard(c, globs(c) === 0 ? N(c).m0 : N(c).b)),
-    upgrade: { nums: { b: 10, m0: 16 } },
+    upgrade: { nums: { b: 15, m0: 23 } },
   },
   {
     id: 'taffy/pull-it-long', name: 'Pull It Long', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -331,17 +346,17 @@ const commons = [
     text: 'Choose two other Tricks in your hand. Swap their current Nerve costs until the end of the turn.',
     flavor: 'Price tags are only stuck on.',
     nums: {},
-    effect: eff(async c => { const ks = await U.pickCards(c, { pile: 'hand', count: 2, prompt: 'Swap two costs' }); if (ks.length < 2) return; const a = U.nowCost(ks[0]), b = U.nowCost(ks[1]); U.costSet(c, ks[0], b, 'turn'); U.costSet(c, ks[1], a, 'turn'); }),
+    effect: eff(async c => { const ks = await U.pickCards(c, { pile: 'hand', count: 2, prompt: 'Swap two costs', filter: priced }); if (ks.length < 2) return; const a = U.nowCost(ks[0]), b = U.nowCost(ks[1]); U.costSet(c, ks[0], b, 'turn'); U.costSet(c, ks[1], a, 'turn'); }),
     upgrade: { text: 'Choose two other Tricks in your hand. Swap their current Nerve costs for the rest of combat.' },
   },
   {
     id: 'taffy/little-recombine', name: 'Little Recombine', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['recombine', 'glob'],
+    cost: 2, target: SELF, keywords: ['recombine', 'glob'],
     text: '[Recombine] up to {n}. Gain {b} Guard for each [Glob] spent.',
     flavor: 'Reabsorbed with a faint, satisfying schlup.',
-    nums: { n: 2, b: 8 },
+    nums: { n: 2, b: 11 },
     effect: eff(c => U.guard(c, recombine(c, N(c).n) * N(c).b)),
-    upgrade: { nums: { n: 2, b: 11 } },
+    upgrade: { nums: { n: 2, b: 15 } },
   },
   {
     id: 'taffy/sample-size', name: 'Sample Size', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -354,12 +369,12 @@ const commons = [
   },
   {
     id: 'taffy/candy-wrapper', name: 'Candy Wrapper', companion: SLUG, type: SKILL, rarity: COMMON,
-    cost: 1, target: SELF, keywords: ['gummy'],
+    cost: 2, target: SELF, keywords: ['gummy'],
     text: 'Gain {b} Guard. The next [Gummy] copy you create this turn costs {n} less.',
     flavor: 'Crinkly. Load-bearing.',
-    nums: { b: 8, n: 1 },
+    nums: { b: 12, n: 1 },
     effect: eff(c => { U.guard(c, N(c).b); U.bump(c, 'wrapperDiscount', N(c).n); }),
-    upgrade: { nums: { b: 11, n: 1 } },
+    upgrade: { nums: { b: 16, n: 1 } },
   },
   {
     id: 'taffy/wobble-room', name: 'Wobble Room', companion: SLUG, type: SKILL, rarity: COMMON,
@@ -388,66 +403,70 @@ const uncommons = [
   // ── Attacks (12) ──────────────────────────────────────────────────────────
   {
     id: 'taffy/elastic-reversal', name: 'Elastic Reversal', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['stretch'],
+    cost: 2, target: ENEMY, keywords: ['stretch'],
     text: 'Deal {d} damage. At {n} or more [Stretch], repeat the damage once.',
     flavor: 'Out, then back, then out again before anyone reacts.',
-    nums: { d: 9, n: 2, hits: 1 },
+    nums: { d: 13, n: 2, hits: 1 },
     effect: eff(c => { const s = stretchOf(c.card); U.hit(c, N(c).d); if (s >= N(c).n) U.hit(c, N(c).d); clearStretch(c, c.card); }),
-    upgrade: { nums: { d: 12, n: 2, hits: 1 } },
+    upgrade: { nums: { d: 18, n: 2, hits: 1 } },
   },
   {
     id: 'taffy/blob-barrage', name: 'Blob Barrage', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['glob'],
+    cost: 2, target: ENEMY, keywords: ['glob'],
     text: 'Deal {d} damage once for each [Glob] you have, up to {n} hits. This does not spend Globs.',
     flavor: 'Every piece of her arrives separately and on time.',
-    nums: { d: 4, n: 6, hits: 4 },
+    nums: { d: 6, n: 6, hits: 4 },
     effect: eff(c => U.hitN(c, N(c).d, Math.min(N(c).n, globs(c)))),
-    upgrade: { nums: { d: 6, n: 6, hits: 4 } },
+    upgrade: { nums: { d: 8, n: 6, hits: 4 } },
   },
   {
     id: 'taffy/recombination-slam', name: 'Recombination Slam', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['recombine', 'glob'],
+    cost: 2, target: ENEMY, keywords: ['recombine', 'glob'],
     text: '[Recombine] any number of [Glob]s. Deal {d} damage plus {m0} for each spent.',
     flavor: 'All of her, in one place, briefly, extremely hard.',
-    nums: { d: 5, m0: 6 },
+    nums: { d: 6, m0: 8 },
     effect: eff(c => U.hit(c, N(c).d + N(c).m0 * recombine(c, globs(c)))),
-    upgrade: { nums: { d: 7, m0: 7 } },
+    upgrade: { nums: { d: 8, m0: 11 } },
   },
   {
     id: 'taffy/second-serving', name: 'Second Serving', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['gummy'],
+    cost: 2, target: ENEMY, keywords: ['gummy'],
     text: 'Deal {d} damage. If you played a [Gummy] copy earlier this turn, create a Gummy copy of this Trick in your discard pile.',
     flavor: 'There is always more. That is the trouble with her.',
-    nums: { d: 8 },
+    nums: { d: 13 },
     effect: eff(c => { U.hit(c, N(c).d); if (U.got(c, 'gummyPlayed') > 0) gummy(c, c.card, 'discard'); }),
-    upgrade: { nums: { d: 11 } },
+    upgrade: { nums: { d: 18 } },
   },
   {
     id: 'taffy/bellyflop', name: 'Bellyflop', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 2, target: ENEMY, keywords: ['belly'],
+    cost: 3, target: ENEMY, keywords: ['belly'],
     text: 'Deal {d} damage. If your [Belly] is full, gain {b} Guard.',
     flavor: 'Everything she has eaten arrives at the same moment as she does.',
-    nums: { d: 16, b: 12 },
+    nums: { d: 22, b: 16 },
     effect: eff(c => { U.hit(c, N(c).d); if (bellyFull(c)) U.guard(c, N(c).b); }),
-    upgrade: { nums: { d: 20, b: 15 } },
+    upgrade: { nums: { d: 30, b: 22 } },
   },
   {
     id: 'taffy/sugar-sling', name: 'Sugar Sling', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ALL_ENEMIES, keywords: ['runny', 'recombine'],
-    text: 'Deal {d} damage to all enemies. If [Runny], deal {m0} instead, then [Recombine] {n}.',
+    cost: -1, target: ALL_ENEMIES, keywords: ['runny', 'recombine'],
+    text: 'Spend all your Nerve. Deal {d} damage to all enemies for each Nerve spent. If [Runny], deal {m0} each time instead, then [Recombine] {n}.',
     flavor: 'At this consistency she can be thrown in several directions at once.',
-    nums: { d: 6, m0: 13, n: 1 },
-    effect: eff(c => { if (isRunny(c)) { U.hitAll(c, N(c).m0); recombine(c, N(c).n); } else U.hitAll(c, N(c).d); }),
-    upgrade: { nums: { d: 8, m0: 17, n: 1 } },
+    nums: { d: 5, m0: 10, n: 1 },
+    /* X, the Whirlwind shape: one throw at every enemy per Nerve. Card.rawCost
+       returns -1 before any discount, so Taffy's shaping never shrinks `c.x`, a
+       Gummy copy stays X, and the swaps refuse it (`priced`). 0 Nerve does
+       nothing at all, not even the Recombine. */
+    effect: eff(c => { const x = c.x || 0; if (x <= 0) return; if (isRunny(c)) { U.hitAllN(c, N(c).m0, x); recombine(c, N(c).n); } else U.hitAllN(c, N(c).d, x); }),
+    upgrade: { nums: { d: 7, m0: 14, n: 1 } },
   },
   {
     id: 'taffy/snapback-special', name: 'Snapback Special', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['stretch', 'gummy'],
+    cost: 2, target: ENEMY, keywords: ['stretch', 'gummy'],
     text: 'Deal {d} damage. If this Trick was played with [Stretch], create a [Gummy] copy of it in your discard pile.',
     flavor: 'The tension has to go somewhere.',
-    nums: { d: 9 },
+    nums: { d: 14 },
     effect: eff(c => { const s = stretchOf(c.card); U.hit(c, N(c).d); if (s > 0) { gummy(c, c.card, 'discard'); clearStretch(c, c.card); } }),
-    upgrade: { nums: { d: 12 } },
+    upgrade: { nums: { d: 19 } },
   },
   {
     id: 'taffy/hard-candy-haymaker', name: 'Hard Candy Haymaker', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
@@ -461,39 +480,39 @@ const uncommons = [
   },
   {
     id: 'taffy/taffy-hook', name: 'Taffy Hook', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['spit-out', 'absorb'],
+    cost: 2, target: ENEMY, keywords: ['spit-out', 'absorb'],
     text: 'Deal {d} damage. [Spit Out] one [Absorb]ed Attack.',
     flavor: 'She reaches in past her own teeth and pulls out a fist.',
-    nums: { d: 8 },
+    nums: { d: 12 },
     effect: eff(async c => { U.hit(c, N(c).d); const [k] = await U.pickCards(c, { pile: 'stash', count: 1, prompt: 'Spit Out an Attack', filter: (x) => U.flag(x, 'belly') && typeOf(x) === ATTACK }); spitOut(c, k); }),
-    upgrade: { nums: { d: 11 } },
+    upgrade: { nums: { d: 17 } },
   },
   {
     id: 'taffy/feed-the-blob', name: 'Feed the Blob', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['belly'],
+    cost: 2, target: ENEMY, keywords: ['belly'],
     text: 'Deal {d} damage, plus {m0} for each Trick in your [Belly].',
     flavor: 'Whatever is in there is helping.',
-    nums: { d: 7, m0: 6 },
+    nums: { d: 10, m0: 7 },
     effect: eff(c => { U.hit(c, N(c).d); U.hitN(c, N(c).m0, belly(c).length); }),
-    upgrade: { nums: { d: 10, m0: 7 } },
+    upgrade: { nums: { d: 14, m0: 10 } },
   },
   {
     id: 'taffy/long-distance-smack', name: 'Long Distance Smack', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['stretch'],
+    cost: 2, target: ENEMY, keywords: ['stretch'],
     text: 'Deal {d} damage. Each [Stretch] adds a {m0} hit against another enemy where possible.',
     flavor: 'One arm, three rooms, four enemies.',
-    nums: { d: 9, m0: 5 },
+    nums: { d: 12, m0: 7 },
     effect: eff(c => { const s = stretchOf(c.card); U.hit(c, N(c).d); const o = U.others(c); for (let i = 0; i < s; i++) U.hitAt(c, o.length ? o[i % o.length] : c.target, N(c).m0); clearStretch(c, c.card); }),
-    upgrade: { nums: { d: 12, m0: 6 } },
+    upgrade: { nums: { d: 17, m0: 10 } },
   },
   {
     id: 'taffy/bite-sized-brigade', name: 'Bite Sized Brigade', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
-    cost: 1, target: ENEMY, keywords: ['gummy'],
+    cost: 2, target: ENEMY, keywords: ['gummy'],
     text: 'Deal {d} damage, plus {m0} for each [Gummy] copy you have played this turn, up to {n} extra hits.',
     flavor: 'A small army of slightly wrong duplicates.',
-    nums: { d: 5, m0: 5, n: 4 },
+    nums: { d: 7, m0: 7, n: 4 },
     effect: eff(c => { U.hit(c, N(c).d); U.hitN(c, N(c).m0, Math.min(N(c).n, U.got(c, 'gummyPlayed'))); }),
-    upgrade: { nums: { d: 7, m0: 7, n: 4 } },
+    upgrade: { nums: { d: 10, m0: 10, n: 4 } },
   },
 
   // ── Skills (17) ───────────────────────────────────────────────────────────
@@ -508,12 +527,12 @@ const uncommons = [
   },
   {
     id: 'taffy/pocket-taffy', name: 'Pocket Taffy', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['absorb', 'belly'],
+    cost: 2, target: SELF, keywords: ['absorb', 'belly'],
     text: '[Absorb] one Trick from your discard pile. Gain {b} Guard.',
     flavor: 'She goes back for the one she regrets.',
-    nums: { b: 10 },
+    nums: { b: 14 },
     effect: eff(async c => { const [k] = await U.pickCards(c, { pile: 'discard', count: 1, prompt: 'Absorb from discard' }); absorb(c, k); U.guard(c, N(c).b); }),
-    upgrade: { nums: { b: 14 } },
+    upgrade: { nums: { b: 20 } },
   },
   {
     id: 'taffy/regurgitate', name: 'Regurgitate', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -549,8 +568,8 @@ const uncommons = [
     flavor: 'The expensive one goes in the tummy and comes out cheap.',
     nums: {},
     effect: eff(async c => {
-      const [a] = await U.pickCards(c, { pile: 'hand', count: 1, prompt: 'Trick in hand' });
-      const [b] = await U.pickCards(c, { pile: 'stash', count: 1, prompt: 'Trick in Belly', filter: (x) => U.flag(x, 'belly') });
+      const [a] = await U.pickCards(c, { pile: 'hand', count: 1, prompt: 'Trick in hand', filter: priced });
+      const [b] = await U.pickCards(c, { pile: 'stash', count: 1, prompt: 'Trick in Belly', filter: (x) => U.flag(x, 'belly') && priced(x) });
       if (!a || !b) return;
       const ca = U.nowCost(a), cb = U.nowCost(b);
       U.costSet(c, a, cb, 'untilPlayed'); U.costSet(c, b, ca, 'untilPlayed');
@@ -559,12 +578,12 @@ const uncommons = [
   },
   {
     id: 'taffy/pull-apart', name: 'Pull Apart', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['stretch', 'split'],
+    cost: 2, target: SELF, keywords: ['stretch', 'split'],
     text: '[Stretch] {n} different Attacks or Skills. [Split] {m0}.',
     flavor: 'Both hands. Opposite directions. Considerable commitment.',
-    nums: { n: 2, m0: 1 },
+    nums: { n: 2, m0: 2 },
     effect: eff(async c => { const ks = await U.pickCards(c, { pile: 'hand', count: N(c).n, prompt: 'Stretch two Tricks', filter: copyable }); for (const k of ks) stretch(c, k); split(c, N(c).m0); }),
-    upgrade: { cost: 0, nums: { n: 2, m0: 1 } },
+    upgrade: { cost: 1, nums: { n: 2, m0: 2 } },
   },
   {
     id: 'taffy/overstretch', name: 'Overstretch', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -604,21 +623,21 @@ const uncommons = [
   },
   {
     id: 'taffy/mouthfeel', name: 'Mouthfeel', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['belly'],
+    cost: 2, target: SELF, keywords: ['belly'],
     text: 'Gain {b} Guard and draw {n} Trick for each different Trick type in your [Belly].',
     flavor: 'Attack, Skill and Power have completely different textures.',
-    nums: { b: 5, n: 1 },
+    nums: { b: 8, n: 1 },
     effect: eff(c => { const t = new Set(belly(c).map(typeOf)).size; U.guard(c, t * N(c).b); U.draw(c, t >= 2 ? N(c).n * (t - 1) : 0); }),
-    upgrade: { nums: { b: 7, n: 1 } },
+    upgrade: { nums: { b: 11, n: 1 } },
   },
   {
     id: 'taffy/wrapped-up', name: 'Wrapped Up', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['absorb', 'belly'],
+    cost: 2, target: SELF, keywords: ['absorb', 'belly'],
     text: '[Absorb] one Status or Curse from your hand for the rest of combat without using a [Belly] slot. Gain {b} Guard.',
     flavor: 'She will deal with it later. She will not deal with it later.',
-    nums: { b: 10 },
+    nums: { b: 13 },
     effect: eff(async c => { const [k] = await U.pickCards(c, { pile: 'hand', count: 1, prompt: 'Absorb a Status or Curse', filter: (x) => typeOf(x) === CardType.STATUS || typeOf(x) === CardType.CURSE }); absorb(c, k, true); U.guard(c, N(c).b); }),
-    upgrade: { nums: { b: 14 } },
+    upgrade: { nums: { b: 18 } },
   },
   {
     id: 'taffy/same-again', name: 'Same Again', companion: SLUG, type: SKILL, rarity: UNCOMMON,
@@ -656,12 +675,12 @@ const uncommons = [
   },
   {
     id: 'taffy/half-now-half-later', name: 'Half Now, Half Later', companion: SLUG, type: SKILL, rarity: UNCOMMON,
-    cost: 1, target: SELF, keywords: ['split', 'recombine'],
+    cost: 2, target: SELF, keywords: ['split', 'recombine'],
     text: '[Split] {m0} and draw {n} Trick. At the start of your next turn, [Recombine] {m0} if possible; if you do, draw {m1} Trick.',
     flavor: 'A plan in two instalments.',
-    nums: { m0: 1, n: 1, m1: 1 },
+    nums: { m0: 1, n: 2, m1: 1 },
     effect: eff(c => { split(c, N(c).m0); U.draw(c, N(c).n); const a = N(c).m0, b = N(c).m1; U.nextTurn(c, (x) => { if (recombine(x, a)) U.draw(x, b); }); }),
-    upgrade: { nums: { m0: 1, n: 2, m1: 1 } },
+    upgrade: { nums: { m0: 1, n: 3, m1: 1 } },
   },
 
   // ── Powers (6) ────────────────────────────────────────────────────────────
@@ -730,12 +749,12 @@ const rares = [
   // ── Attacks (8) ───────────────────────────────────────────────────────────
   {
     id: 'taffy/whole-body-slam', name: 'Whole Body Slam', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 2, target: ENEMY, keywords: ['recombine', 'glob'],
+    cost: 3, target: ENEMY, keywords: ['recombine', 'glob'],
     text: '[Recombine] all [Glob]s. Deal {d} damage plus {m0} for each one spent.',
     flavor: 'Every last piece of her, arriving as one object.',
-    nums: { d: 8, m0: 11 },
+    nums: { d: 10, m0: 11 },
     effect: eff(c => U.hit(c, N(c).d + N(c).m0 * recombine(c, globs(c)))),
-    upgrade: { nums: { d: 10, m0: 14 } },
+    upgrade: { nums: { d: 14, m0: 15 } },
   },
   {
     id: 'taffy/splattershot', name: 'Splattershot', companion: SLUG, type: ATTACK, rarity: RARE,
@@ -748,12 +767,17 @@ const rares = [
   },
   {
     id: 'taffy/jawbreaker-drop', name: 'Jawbreaker Drop', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 2, target: ENEMY, keywords: ['stretch', 'vanish'],
-    text: 'Deal {d} damage. At 2 [Stretch] deal {m0} instead. At 3 Stretch deal {m1} instead, then [Vanish] this Trick.',
+    cost: 4, target: ENEMY, keywords: ['stretch', 'vanish'],
+    text: 'Deal {d} damage. At 2 [Stretch] deal {m0} instead. At 3 Stretch it costs {n} less and deals {m1} instead, then [Vanish] this Trick.',
     flavor: 'Four turns of patience compressed into one sphere.',
-    nums: { d: 18, m0: 32, m1: 52 },
+    nums: { d: 22, m0: 40, m1: 60, n: 1 },
     effect: eff(c => { const s = stretchOf(c.card); U.hit(c, s >= 3 ? N(c).m1 : s >= 2 ? N(c).m0 : N(c).d); if (s >= 3) { U.makeVanish(c, c.card); c.exhaust(c.card); } clearStretch(c, c.card); }),
-    upgrade: { nums: { d: 23, m0: 40, m1: 64 } },
+    /* Her 4, and the Trick her shaping exists for. `dynamicCost` REPLACES the
+       printed cost, so the 4 is repeated here and the two must move together.
+       Held to 3 Stretch it pays for itself at 3; Let It Sag (1 less a Stretch),
+       Regurgitate (0), Mix the Costs and Mix Everything take it lower. */
+    dynamicCost: (c) => 4 - (stretchOf(c.card) >= 3 ? N(c).n : 0),
+    upgrade: { nums: { d: 30, m0: 54, m1: 80, n: 1 } },
   },
   {
     id: 'taffy/three-course-chomp', name: 'Three Course Chomp', companion: SLUG, type: ATTACK, rarity: RARE,
@@ -796,12 +820,12 @@ const rares = [
   },
   {
     id: 'taffy/sugar-comet', name: 'Sugar Comet', companion: SLUG, type: ATTACK, rarity: RARE,
-    cost: 2, target: ALL_ENEMIES, keywords: ['recombine', 'gummy'],
+    cost: 3, target: ALL_ENEMIES, keywords: ['recombine', 'gummy'],
     text: '[Recombine] {n}. Deal {d} damage to all enemies. Every [Gummy] copy in your hand costs {m0} this turn.',
     flavor: 'Bright, fast, and stickier than any comet has a right to be.',
-    nums: { d: 22, n: 3, m0: 0 },
+    nums: { d: 28, n: 3, m0: 0 },
     effect: eff(c => { recombine(c, N(c).n); U.hitAll(c, N(c).d); for (const k of U.cardsIn(c, 'hand')) if (U.flag(k, 'gummy')) U.costSet(c, k, N(c).m0, 'turn'); }),
-    upgrade: { nums: { d: 28, n: 3, m0: 0 } },
+    upgrade: { nums: { d: 38, n: 3, m0: 0 } },
   },
   {
     id: 'taffy/last-bite-first', name: 'Last Bite First', companion: SLUG, type: ATTACK, rarity: RARE,
@@ -821,7 +845,7 @@ const rares = [
     flavor: 'The economics of the hand, redrawn by a slime.',
     nums: { n: 3 },
     effect: eff(async c => {
-      const ks = await U.pickCards(c, { pile: 'hand', count: N(c).n, prompt: 'Rearrange costs', filter: (x) => !U.flag(x, 'gummy'), optional: true });
+      const ks = await U.pickCards(c, { pile: 'hand', count: N(c).n, prompt: 'Rearrange costs', filter: (x) => !U.flag(x, 'gummy') && priced(x), optional: true });
       if (ks.length < 2) return;
       const costs = ks.map(U.nowCost).sort((a, b) => a - b);
       const order = ks.slice().sort((a, b) => (U.printedCost(b) - U.printedCost(a)));
@@ -831,12 +855,12 @@ const rares = [
   },
   {
     id: 'taffy/deep-pocket', name: 'Deep Pocket', companion: SLUG, type: SKILL, rarity: RARE,
-    cost: 1, target: NONE, keywords: ['belly', 'absorb'],
+    cost: 2, target: NONE, keywords: ['belly', 'absorb'],
     text: 'Increase [Belly] capacity by {n} for the rest of combat, then [Absorb] up to {m0} Tricks from your hand and draw the same number.',
     flavor: 'There was always more room. She was being polite.',
-    nums: { n: 2, m0: 2 },
+    nums: { n: 2, m0: 3 },
     effect: eff(async c => { U.mm(c).bellyCap += N(c).n; const ks = await U.pickCards(c, { pile: 'hand', count: N(c).m0, prompt: 'Absorb Tricks', optional: true }); let got = 0; for (const k of ks) if (absorb(c, k)) got++; U.draw(c, got); }),
-    upgrade: { cost: 0, nums: { n: 2, m0: 2 } },
+    upgrade: { cost: 1, nums: { n: 2, m0: 3 } },
   },
   {
     id: 'taffy/spit-the-whole-bag', name: 'Spit the Whole Bag', companion: SLUG, type: SKILL, rarity: RARE,
@@ -858,12 +882,12 @@ const rares = [
   },
   {
     id: 'taffy/unsplit', name: 'Unsplit', companion: SLUG, type: SKILL, rarity: RARE,
-    cost: 1, target: SELF, keywords: ['recombine', 'glob'],
+    cost: 2, target: SELF, keywords: ['recombine', 'glob'],
     text: '[Recombine] all [Glob]s. Gain {b} Guard for each, and recover {n} Courage for every 2.',
     flavor: 'Whole again, and rather pleased about it.',
-    nums: { b: 8, n: 3 },
+    nums: { b: 9, n: 3 },
     effect: eff(c => { const g = recombine(c, globs(c)); U.guard(c, g * N(c).b); U.mend(c, Math.floor(g / 2) * N(c).n); }),
-    upgrade: { nums: { b: 10, n: 4 } },
+    upgrade: { nums: { b: 12, n: 4 } },
   },
   {
     id: 'taffy/perfect-replica', name: 'Perfect Replica', companion: SLUG, type: SKILL, rarity: RARE,
@@ -900,7 +924,7 @@ const rares = [
       if (ks.length < 2) return;
       const [a, b] = ks;
       await U.chooseOne(c, [
-        { label: 'Swap costs', fn: (x) => { const ca = U.nowCost(a), cb = U.nowCost(b); U.costSet(x, a, cb, 'combat'); U.costSet(x, b, ca, 'combat'); } },
+        { label: 'Swap costs', fn: (x) => { if (!priced(a) || !priced(b)) return; const ca = U.nowCost(a), cb = U.nowCost(b); U.costSet(x, a, cb, 'combat'); U.costSet(x, b, ca, 'combat'); } },
         { label: 'Swap Retain', fn: (x) => { const ra = U.flag(a, 'retain'), rb = U.flag(b, 'retain'); U.setFlag(a, 'retain', rb); U.setFlag(b, 'retain', ra); if (rb) U.retain(x, a, 'combat'); if (ra) U.retain(x, b, 'combat'); } },
         { label: 'Swap Stretch', fn: (x) => { const sa = stretchOf(a), sb = stretchOf(b); clearStretch(x, a); clearStretch(x, b); if (sb) stretch(x, a, sb); if (sa) stretch(x, b, sa); } },
       ], 3);
@@ -918,7 +942,7 @@ const rares = [
   },
   {
     id: 'taffy/melt-and-remake', name: 'Melt and Remake', companion: SLUG, type: SKILL, rarity: RARE,
-    cost: 1, target: NONE, keywords: ['gummy', 'vanish'],
+    cost: 2, target: NONE, keywords: ['gummy', 'vanish'],
     text: '[Vanish] one non-[Gummy] Trick from your hand for this combat. Create Gummy copies of {n} other non-Gummy Attacks or Skills in your hand.',
     flavor: 'One goes in the pot. Two come out.',
     nums: { n: 2 },
@@ -1067,10 +1091,10 @@ const coopCards = [
   },
   {
     id: 'taffy/pass-the-piece', name: 'Pass the Piece', companion: SLUG,
-    type: SKILL, rarity: UNCOMMON, cost: 1, target: NONE, coop: true,
+    type: SKILL, rarity: UNCOMMON, cost: 2, target: NONE, coop: true,
     text: 'Recombine up to 2 Globs. A friend gains {b} Guard per Glob spent, and draws {n} if you spent two.',
     flavor: 'A piece of her, handed over, still slightly warm.',
-    nums: { b: 7, n: 1 },
+    nums: { b: 10, n: 1 },
     effect: eff(async (c) => {
       const ally = await c.chooseAlly({ prompt: 'Who are you passing to?' });
       const spent = recombine(c, Math.min(2, globs(c)));
@@ -1078,7 +1102,7 @@ const coopCards = [
       c.giveBlock(ally, N(c).b * spent);
       if (spent >= 2) c.giveDraw(ally, N(c).n);
     }),
-    upgrade: { nums: { b: 10, n: 1 } },
+    upgrade: { nums: { b: 14, n: 1 } },
   },
   {
     id: 'taffy/family-pack', name: 'Family Pack', companion: SLUG,
