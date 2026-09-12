@@ -112,8 +112,10 @@ export class EventScene extends RoomScene {
   /* ── the page ─────────────────────────────────────────────────────────── */
   _buildPage() {
     const d = this.def;
-    const page = el('article', 'ev-page');
+    this._buildHall();
+    const page = el('article', 'ev-page kit-panel');
     page.dataset.mood = d.mood || 'curious';
+    page.dataset.medal = 'moon';
     /* No illustration. The Curiosities are the best writing in the build and the
        parametric line-art beside them — an arch and two rectangles in cyan —
        was actively cheapening it; a wireframe of a room is worse than no room.
@@ -164,6 +166,27 @@ export class EventScene extends RoomScene {
     }
     this._own(rovingFocus(this.$options, '.ev-opt', { cols: 0 }));
     requestAnimationFrame(() => this.$options.querySelector('.ev-opt:not(:disabled)')?.focus());
+  }
+
+  /**
+   * The room the page is read in: a portrait hall, staged the way the select
+   * boards are — empty gilt frames hung dim on the side walls, a candle on the
+   * floor at each side and a skull on a stack of books. All of it decoration,
+   * all of it at the edges, none of it over the words. When `event.png` is
+   * painted it replaces the wall behind these (see ui/kit.css .kit-ground).
+   */
+  _buildHall() {
+    const board = this.root.querySelector('.rm');
+    if (!board) return;
+    const hall = el('div', 'ev-hall');
+    hall.setAttribute('aria-hidden', 'true');
+    hall.innerHTML = `
+      <i class="ev-hall__frame ev-hall__frame--l1"></i><i class="ev-hall__frame ev-hall__frame--l2"></i>
+      <i class="ev-hall__frame ev-hall__frame--r1"></i><i class="ev-hall__frame ev-hall__frame--r2"></i>
+      <i class="kit-prop kit-prop--skull ev-hall__skull"></i>
+      <i class="kit-prop kit-prop--candle ev-hall__candle ev-hall__candle--l"></i>
+      <i class="kit-prop kit-prop--candle ev-hall__candle ev-hall__candle--r"></i>`;
+    board.insertBefore(hall, board.querySelector('.rm-hudhost'));
   }
 
   /**

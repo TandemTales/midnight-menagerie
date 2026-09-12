@@ -1,0 +1,606 @@
+"""Prepare the shared UI kit from Josh's sample boards.
+
+The Title and the two select screens ARE Josh's paintings. Every other screen is
+built out of the same paintings, cut into pieces: the empty info panels, the
+Kid portrait frames, the cartouche nameplates, the round enamel buttons, the
+medallions, the candles, the cobwebs and the purple scrollwork in
+`UI/selectKid.png` and `UI/selectCompanion.png` are exactly the kit every room
+needs. This script cuts them out once and writes them to `game/assets/ui/kit/`.
+The output is committed (CONTRACTS non-negotiable #1: no runtime build step).
+
+What comes out, and how `game/src/ui/kit.css` uses it:
+
+  corner-l / corner-r   the candle + cobweb + scrollwork bands from the top of
+                        selectCompanion.png — the top corners of every board
+  vine-l / vine-r       the purple scroll vines that run down selectKid's sides
+  panel                 an EMPTY info panel re-assembled from selectKid's panels:
+                        its four painted corners and a clean length of rail, so
+                        `border-image` can draw that exact frame at any size
+  frame                 the ornate Kid portrait frame, interior removed (9-slice)
+  plate                 the dark cartouche nameplate from a Companion tile,
+                        lettering removed (9-slice)
+  ribbon                the gold ribbon banner, lettering removed (3-slice)
+  medal-*               the star / shield / paw / moon medallions
+  button                the round purple enamel button, glyph painted out
+  candle, skull         set dressing from the bottom of selectKid.png
+  tex-panel             a seamless tile of the panels' own dark grain
+  tex-ground            a seamless aubergine plaster/damask ground
+  marble                the marbled lavender inside the MENAGERIE letters
+
+Everything with an alpha edge is keyed on LUMINANCE against the painting's own
+near-black ground and then *unmixed* from that ground, so a piece composited
+back onto a dark board reproduces the painting instead of going muddy.
+
+    python tools/prep_ui_kit.py            # write everything
+    python tools/prep_ui_kit.py --sheet    # also write shots/kit-sheet.png, a contact sheet
+"""
+import argparse
+import os
+
+import numpy as np
+from PIL import Image, ImageDraw, ImageFilter
+from scipy import ndimage
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+UI = os.path.join(ROOT, "UI")
+OUT = os.path.join(ROOT, "game", "assets", "ui", "kit")
+
+SK = "selectKid.png"
+SC = "selectCompanion.png"
+TT = "title.png"
+
+_cache = {}
+
+
+def src(name):
+    if name not in _cache:
+        _cache[name] = np.asarray(Image.open(os.path.join(UI, name)).convert("RGB")).astype(np.float32)
+    return _cache[name]
+
+
+def crop(name, box):
+    x0, y0, x1, y1 = box
+    return src(name)[y0:y1, x0:x1].copy()
+
+
+def lum(rgb):
+    return rgb[..., 0] * 0.2126 + rgb[..., 1] * 0.7152 + rgb[..., 2] * 0.0722
+
+
+def ramp(v, lo, hi):
+    return np.clip((v - lo) / max(1e-6, hi - lo), 0.0, 1.0)
+
+
+def unmix(rgb, alpha, bg):
+    """Colour that composites over `bg` at `alpha` back to `rgb`."""
+    a = np.clip(alpha, 1e-3, 1.0)[..., None]
+    out = (rgb - (1.0 - a) * np.asarray(bg, np.float32)) / a
+    return np.clip(out, 0, 255)
+
+
+def rgba(rgb, alpha):
+    return np.dstack([np.clip(rgb, 0, 255), np.clip(alpha * 255.0, 0, 255)]).astype(np.uint8)
+
+
+def feather(alpha, left=0, right=0, top=0, bottom=0):
+    h, w = alpha.shape
+    m = np.ones_like(alpha)
+    if left:
+        m[:, :left] *= np.linspace(0, 1, left)[None, :] ** 1.4
+    if right:
+        m[:, w - right:] *= np.linspace(1, 0, right)[None, :] ** 1.4
+    if top:
+        m[:top, :] *= np.linspace(0, 1, top)[:, None] ** 1.4
+    if bottom:
+        m[h - bottom:, :] *= np.linspace(1, 0, bottom)[:, None] ** 1.4
+    return alpha * m
+
+
+def blur(a, r):
+    return ndimage.gaussian_filter(a, r) if r else a
+
+
+def save(arr, name, quality=90, lossless=False):
+    os.makedirs(OUT, exist_ok=True)
+    path = os.path.join(OUT, name)
+    im = Image.fromarray(arr)
+    if name.endswith(".webp"):
+        im.save(path, "WEBP", quality=quality, method=6, lossless=lossless, exact=False)
+    else:
+        im.save(path, optimize=True)
+    print(f"  {name:24s} {im.width:4d}x{im.height:<4d} {os.path.getsize(path) / 1024:7.1f} KB")
+    return path
+
+
+# ── keyed pieces ────────────────────────────────────────────────────────────
+def keyed(name, box, lo, hi, bg, gamma=1.0, soft=0.6, **fe):
+    rgb = crop(name, box)
+    l = blur(lum(rgb), soft)
+    a = ramp(l, lo, hi) ** gamma
+    a = feather(a, **fe)
+    return rgba(unmix(rgb, a, bg), a)
+
+
+def corners():
+    # selectCompanion's top band: cobweb, a lit candle on a brass stick, purple
+    # scrollwork. The band ends where the cartouche rim and the tile rails start.
+    left = keyed(SC, (0, 0, 292, 178), lo=9, hi=46, bg=(7, 5, 7), right=70, bottom=26)
+    right = keyed(SC, (962, 0, 1254, 178), lo=9, hi=46, bg=(7, 5, 7), left=70, bottom=26)
+    save(left, "corner-l.webp", 88)
+    save(right, "corner-r.webp", 88)
+
+
+def vines():
+    # The scroll vines inside selectKid's outer rule, below the cobwebs and above
+    # the round buttons. The outer rule itself is drawn by CSS.
+    l = keyed(SK, (15, 150, 76, 930), lo=10, hi=42, bg=(9, 6, 11), top=40, bottom=60, right=6)
+    r = keyed(SK, (1372, 150, 1433, 930), lo=10, hi=42, bg=(9, 6, 11), top=40, bottom=60, left=6)
+    save(l, "vine-l.webp", 88)
+    save(r, "vine-r.webp", 88)
+
+
+def warm(rgb):
+    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    return (r > 62) & (r > b * 1.22) & (g > b * 1.02)
+
+
+def violet(rgb):
+    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    return (lum(rgb) > 26) & (b > g * 1.12) & (r > g * 1.02)
+
+
+def panel():
+    """selectKid's big bottom info panel, emptied.
+
+    Rails (measured): left x 683-687, right 1103-1106, top y 747-750, bottom
+    938-941. The paw medallion sits on the top rail; it is replaced by the
+    clean length of rail beside it, so a `border-image` slice never smears it.
+    """
+    M = 14                                         # dark margin kept outside the rails
+    ox0, oy0, ox1, oy1 = 683 - M, 747 - M, 1106 + M + 1, 941 + M + 1
+    rgb = crop(SK, (ox0, oy0, ox1, oy1))
+    h, w = rgb.shape[:2]
+
+    # the medallion: x 838..952 on the top rail rows -> clean rail from x 724..838
+    my0, my1 = 733 - oy0, 792 - oy0
+    rgb[my0:my1, 838 - ox0:952 - ox0] = crop(SK, (724, 733, 838, 792))
+
+    yy, xx = np.mgrid[0:h, 0:w]
+    L, R, T, B = 683 - ox0, 1106 - ox0, 747 - oy0, 941 - oy0      # outer rail edges
+    inner = (xx > L + 4) & (xx < R - 4) & (yy > T + 4) & (yy < B - 4)
+    outside = (xx < L - 1) | (xx > R + 1) | (yy < T - 1) | (yy > B + 1)
+
+    # ornaments only live in the corners; everything else inside is panel ground
+    corner = (np.minimum(xx - L, R - xx) < 34) & (np.minimum(yy - T, B - yy) < 34)
+    orn = (warm(rgb) | violet(rgb)) & corner
+    orn = ndimage.binary_dilation(orn, iterations=2)
+
+    a = np.ones((h, w), np.float32)
+    # interior: fade out a few px in from the rail so its dark inner lip survives
+    d_in = np.minimum.reduce([xx - (L + 4), (R - 4) - xx, yy - (T + 4), (B - 4) - yy]).astype(np.float32)
+    a = np.where(inner, np.clip(1.0 - d_in / 4.0, 0, 1), a)
+    # outside: keyed on luminance against the painting's near-black ground
+    k = ramp(blur(lum(rgb), 0.5), 9, 40)
+    a = np.where(outside, k, a)
+    a = np.where(orn, np.maximum(a, ramp(blur(lum(rgb), 0.5), 6, 26)), a)
+    a = blur(a, 0.35)
+    out = rgba(unmix(rgb, a, (6, 4, 7)), a)
+    save(out, "panel.webp", 92)
+    print(f"      panel slice: 44  image {w}x{h}  rail-from-edge {M}")
+
+
+def medal(name, box, out, bg=(6, 4, 7), lo=24, hi=52, rail_rows=None, clear_cols=None, hole=30):
+    """A medallion off a panel rail or the mirror. Keyed hard (the panel ground
+    beside it is lum ~18, the room ground ~5) with its enclosed enamel filled
+    back in, so the black inside the rim stays black instead of going clear."""
+    rgb = crop(name, box)
+    l = blur(lum(rgb), 0.5)
+    core = ndimage.binary_closing(l > hole, iterations=2)
+    core = ndimage.binary_fill_holes(core)
+    core = ndimage.binary_dilation(core, iterations=1)
+    a = np.maximum(ramp(l, lo, hi), blur(core.astype(np.float32), 0.6))
+    if rail_rows is not None and clear_cols is not None:
+        # take the stubs of panel rail back out: they are drawn by the panel
+        y0, y1 = rail_rows
+        for c0, c1 in clear_cols:
+            a[y0:y1, c0:c1] = 0
+    a = blur(a, 0.4)
+    save(rgba(unmix(rgb, a, bg), a), out, 92)
+
+
+def medals():
+    medal(SK, (842, 735, 948, 790), "medal-paw.webp", rail_rows=(10, 20), clear_cols=[(0, 6), (100, 106)])
+    medal(SK, (861, 360, 932, 413), "medal-star.webp")
+    medal(SK, (757, 548, 807, 604), "medal-shield.webp")
+    medal(SK, (975, 548, 1030, 604), "medal-star2.webp")
+    medal(SK, (428, 238, 584, 336), "medal-moon.webp")
+    medal(SK, (436, 822, 620, 945), "medal-pawring.webp")
+
+
+def frame():
+    """The ornate Kid portrait frame (selectKid, left column, second frame).
+
+    Rails measured at x 74-76 / 297-300, y 365-366 / 542-545. The portrait is
+    removed: inside the rails only the corner scrollwork survives, so the frame
+    can hold a card, a ware or a dim empty recess at any size.
+    """
+    M = 12
+    ox0, oy0, ox1, oy1 = 74 - M, 365 - M, 300 + M + 1, 545 + M + 1
+    rgb = crop(SK, (ox0, oy0, ox1, oy1))
+    h, w = rgb.shape[:2]
+    yy, xx = np.mgrid[0:h, 0:w]
+    L, R, T, B = 74 - ox0, 300 - ox0, 365 - oy0, 545 - oy0
+    inner = (xx > L + 4) & (xx < R - 4) & (yy > T + 3) & (yy < B - 4)
+    outside = (xx < L - 1) | (xx > R + 1) | (yy < T - 1) | (yy > B + 1)
+    corner = (np.minimum(xx - L, R - xx) < 44) & (np.minimum(yy - T, B - yy) < 44)
+    # the scrollwork: warm metal, plus its own dark outline one px around it
+    orn = warm(rgb) & corner
+    orn = ndimage.binary_opening(orn, iterations=1) | (warm(rgb) & corner & (lum(rgb) > 90))
+    orn = ndimage.binary_dilation(orn, iterations=2)
+    a = np.ones((h, w), np.float32)
+    d_in = np.minimum.reduce([xx - (L + 4), (R - 4) - xx, yy - (T + 3), (B - 4) - yy]).astype(np.float32)
+    a = np.where(inner, np.clip(1.0 - d_in / 3.0, 0, 1), a)
+    a = np.where(outside, ramp(blur(lum(rgb), 0.5), 10, 42), a)
+    a = np.where(orn, 1.0, a)
+    # the vine behind the frame's top-left corner is not part of the frame
+    vine = violet(rgb) & ~ndimage.binary_dilation(warm(rgb), iterations=3)
+    a = np.where(vine & outside, 0, a)
+    # the neighbouring frames' rails sit 6-8 px above and below this one
+    a[: T - 5] = 0
+    a[B + 7:] = 0
+    a = blur(a, 0.4)
+    save(rgba(unmix(rgb, a, (7, 5, 8)), a), "frame.webp", 92)
+    print(f"      frame slice: {M + 40}  image {w}x{h}  rail-from-edge {M}")
+
+
+def plate():
+    """The dark cartouche nameplate from a Companion tile, lettering removed.
+
+    Marmalade's plate: rim x 55..262, y 382..445. Lettering occupies x 97..216;
+    columns 76..95 are clean plate, so the middle of the plate is rebuilt from
+    them. Outside the rim is tile art, not ground, so the plate is cut out by
+    its own rim (closed and hole-filled) rather than keyed.
+    """
+    box = (50, 378, 270, 450)
+    rgb = crop(SC, box)
+    h, w = rgb.shape[:2]
+    # The plate's outline, measured off the painting: straight rails at y 388
+    # and 444, a round bulge at each end reaching x 55 and x 262.
+    Z = 4
+    m = Image.new("L", (w * Z, h * Z), 0)
+    dr = ImageDraw.Draw(m)
+    P = lambda x, y: ((x - box[0]) * Z, (y - box[1]) * Z)
+    dr.rectangle([*P(74, 387), *P(243, 445)], fill=255)
+    dr.ellipse([*P(54.5, 387.5), *P(104, 444.5)], fill=255)
+    dr.ellipse([*P(213, 387.5), *P(262.5, 444.5)], fill=255)
+    body = np.asarray(m.resize((w, h), Image.LANCZOS), np.float32) / 255.0
+    a = body
+
+    # rebuild: [left end 0..46] [middle from clean columns] [right end 166..220]
+    left_rgb, left_a = rgb[:, 0:46], a[:, 0:46]
+    right_rgb, right_a = rgb[:, 167:220], a[:, 167:220]
+    clean_rgb, clean_a = rgb[:, 27:45], a[:, 27:45]              # x 77..95
+    reps = 6
+    mid_rgb = np.concatenate([clean_rgb] * reps, axis=1)
+    mid_a = np.concatenate([clean_a] * reps, axis=1)
+    # A rail is a horizontal line: averaging along x keeps it exactly and
+    # removes the 18 px repeat of whatever speck the clean columns carried.
+    mean_rgb = mid_rgb.mean(axis=1, keepdims=True)
+    mid_rgb = np.repeat(mean_rgb, mid_rgb.shape[1], axis=1)
+    mid_a = np.repeat(mid_a.mean(axis=1, keepdims=True), mid_a.shape[1], axis=1)
+    rng = np.random.default_rng(11)
+    mid_rgb = mid_rgb + rng.normal(0, 1.2, mid_rgb.shape).astype(np.float32)
+    out_rgb = np.concatenate([left_rgb, mid_rgb, right_rgb], axis=1)
+    out_a = np.concatenate([left_a, mid_a, right_a], axis=1)
+    save(rgba(unmix(out_rgb, out_a, (10, 9, 10)), out_a), "plate.webp", 92)
+    print(f"      plate: {out_rgb.shape[1]}x{h} ends 46 / 53")
+
+
+def ribbon():
+    """The gold ribbon banner with its two painted stars, lettering removed.
+
+    selectKid 'CHOOSE YOUR KID': x 545..915, y 186..246. The letters are dark
+    on tan and cover the whole body; clean body columns exist only at 597-607,
+    717-723 and 855-867. The middle is rebuilt as a shuffled run of those.
+    """
+    box = (545, 186, 915, 247)
+    rgb = crop(SK, box)
+    h, w = rgb.shape[:2]
+    l = blur(lum(rgb), 0.5)
+    tan = ((l > 34) | warm(rgb))
+    tan[:192 - box[1]] = False          # the wordmark's serifs hang into the top rows
+    body = ndimage.binary_closing(tan, iterations=2)
+    body = ndimage.binary_fill_holes(body)
+    body = ndimage.binary_opening(body, iterations=1)
+    lab, n = ndimage.label(body)
+    if n > 1:                                            # the ribbon, not the flecks round it
+        sizes = ndimage.sum(body, lab, range(1, n + 1))
+        body = lab == (1 + int(np.argmax(sizes)))
+    body = ndimage.binary_dilation(body, iterations=1)   # keep the painted dark edge
+    a = blur(body.astype(np.float32), 0.6)
+
+    x = lambda v: v - box[0]
+    left = (slice(None), slice(0, x(597)))
+    right = (slice(None), slice(x(868), w))
+    pools = [(x(597), x(608)), (x(717), x(724)), (x(855), x(868))]
+
+    def top_edge(c):
+        col = l[:, c]
+        idx = np.nonzero((col > 45) & (np.arange(h) >= 192 - box[1]))[0]
+        return int(idx[0]) if len(idx) else 0
+    target = round((top_edge(x(597)) + top_edge(x(867))) / 2)
+    rng = np.random.default_rng(7)
+    cols_rgb, cols_a = [], []
+    total = 0
+    while total < 240:
+        p0, p1 = pools[rng.integers(0, len(pools))]
+        n = int(rng.integers(3, p1 - p0 + 1))
+        s = int(rng.integers(p0, p1 - n + 1))
+        # the ribbon arcs (its top is 4 px higher mid-span): drop each run so its
+        # top edge sits on the line the two painted ends agree on
+        shift = target - top_edge(s + n // 2)
+        cols_rgb.append(np.roll(rgb[:, s:s + n], shift, axis=0))
+        cols_a.append(np.roll(a[:, s:s + n], shift, axis=0))
+        total += n
+    mid_rgb = np.concatenate(cols_rgb, axis=1)
+    mid_a = np.concatenate(cols_a, axis=1)
+    # One silhouette for the whole middle (the median column), and the paint
+    # smoothed along the ribbon so the runs do not read as vertical bands.
+    prof = np.median(mid_a, axis=1, keepdims=True)
+    mid_a = np.repeat(prof, mid_a.shape[1], axis=1)
+    sm = np.stack([ndimage.uniform_filter1d(mid_rgb[..., c], 17, axis=1, mode="wrap") for c in range(3)], -1)
+    mid_rgb = sm * 0.8 + mid_rgb * 0.2
+    out_rgb = np.concatenate([rgb[left], mid_rgb, rgb[right]], axis=1)
+    out_a = np.concatenate([a[left], mid_a, a[right]], axis=1)
+    out_a = np.minimum(out_a, 1.0)
+    rows = np.nonzero(out_a.max(axis=1) > 0.02)[0]            # trim to the ribbon itself
+    r0, r1 = int(rows[0]), int(rows[-1]) + 1
+    out_rgb, out_a = out_rgb[r0:r1], out_a[r0:r1]
+    save(rgba(unmix(out_rgb, out_a, (4, 3, 5)), out_a), "ribbon.webp", 92)
+    print(f"      ribbon: {out_rgb.shape[1]}x{r1 - r0} ends {x(597)} / {w - x(868)}")
+
+
+def bat():
+    """The little purple bat from inside selectKid's cartouche."""
+    rgb = crop(SK, (383, 116, 468, 182))
+    l = blur(lum(rgb), 0.5)
+    body = l > 16
+    lab, n = ndimage.label(body)
+    sizes = ndimage.sum(body, lab, range(1, n + 1))
+    body = lab == (1 + int(np.argmax(sizes)))
+    body = ndimage.binary_dilation(body, iterations=1)
+    a = blur(body.astype(np.float32), 0.6) * np.maximum(ramp(l, 4, 22), body)
+    out = rgba(unmix(rgb, a, (3, 2, 4)), a)
+    save(out, "bat.webp", 92)
+    save(np.ascontiguousarray(out[:, ::-1]), "bat-r.webp", 92)
+
+
+def button():
+    """The round purple enamel button with its brass rim, glyph painted out.
+
+    Two buttons in selectKid: back (arrow) centred ~(104, 986) and confirm
+    (check) centred ~(1342.5, 985.5), rim radius ~51, enamel radius ~40. Every
+    enamel pixel is rebuilt from whichever of the four candidates (each button,
+    each mirrored left-right) is not glyph there.
+    """
+    R = 56
+    S = 2 * R
+    def patch(cx, cy):
+        # resample so a fractional centre lands on the patch centre
+        im = Image.fromarray(src(SK).astype(np.uint8))
+        return np.asarray(im.transform((S, S), Image.AFFINE, (1, 0, cx - R + .5, 0, 1, cy - R + .5),
+                                       resample=Image.BICUBIC), np.float32)
+    ok = patch(1342.5, 985.5)
+    bk = patch(104.0, 986.0)
+    yy, xx = np.mgrid[0:S, 0:S].astype(np.float32)
+    d = np.hypot(xx - R + .5, yy - R + .5)
+
+    def glyph(p):
+        g = warm(p) & (lum(p) > 60)
+        g = ndimage.binary_dilation(g, iterations=5)
+        g |= ndimage.binary_dilation((lum(p) < 17) & (d < 34), iterations=2)   # its ink outline
+        return g & (d < 39)
+    cands = [(ok, glyph(ok)), (ok[:, ::-1], glyph(ok)[:, ::-1]), (bk, glyph(bk)), (bk[:, ::-1], glyph(bk)[:, ::-1])]
+    stack = np.stack([c for c, _ in cands], 0)
+    bad = np.stack([g for _, g in cands], 0)
+    w = (~bad).astype(np.float32)
+    enamel = (stack * w[..., None]).sum(0) / np.maximum(w.sum(0), 1e-3)[..., None]
+    # where every candidate was glyph, fall back to the row mean of clean enamel
+    none = w.sum(0) < .5
+    if none.any():
+        for y in np.unique(np.nonzero(none)[0]):
+            row = (d[y] < 38) & ~none[y]
+            if row.any():
+                enamel[y, none[y]] = enamel[y, row].mean(0)
+    enamel = np.where((d < 38)[..., None], ndimage.gaussian_filter(enamel, (1.3, 1.3, 0)), enamel)
+    rng = np.random.default_rng(3)
+    enamel += rng.normal(0, 1.6, enamel.shape).astype(np.float32) * (d < 38)[..., None]
+    out = np.where((d < 39.5)[..., None], enamel, ok)
+    a = np.clip((R - 3.5 - d) / 1.6, 0, 1)
+    save(rgba(out, a), "button.webp", 92)
+
+
+def shape_cut(name, box, shapes, out, soft=1.2, keep_lum=None):
+    """Cut a prop out of the painting with hand-placed shapes (sample px)."""
+    x0, y0, x1, y1 = box
+    rgb = crop(name, box)
+    h, w = rgb.shape[:2]
+    Z = 4
+    m = Image.new("L", (w * Z, h * Z), 0)
+    dr = ImageDraw.Draw(m)
+    for kind, pts in shapes:
+        P = [((px - x0) * Z, (py - y0) * Z) for px, py in pts]
+        if kind == "poly":
+            dr.polygon(P, fill=255)
+        elif kind == "ellipse":
+            (cx, cy), (rx, ry) = P[0], (pts[1][0] * Z, pts[1][1] * Z)
+            dr.ellipse([cx - rx, cy - ry, cx + rx, cy + ry], fill=255)
+    m = np.asarray(m.resize((w, h), Image.LANCZOS), np.float32) / 255.0
+    a = blur(m, soft)
+    if keep_lum:
+        cx, cy, r, lo, hi = keep_lum                   # a glow halo keyed on luminance
+        yy, xx = np.mgrid[0:h, 0:w]
+        near = np.clip(1 - np.hypot(xx - (cx - x0), yy - (cy - y0)) / r, 0, 1)
+        a = np.maximum(a, ramp(lum(rgb), lo, hi) * near)
+    save(rgba(unmix(rgb, a, (8, 6, 9)), a), out, 92)
+
+
+def props():
+    shape_cut(SK, (588, 818, 694, 982), [
+        ("ellipse", [(637, 858), (8.5, 21)]),
+        ("poly", [(613, 880), (626, 874), (650, 874), (662, 880), (663, 962), (614, 962)]),
+        ("ellipse", [(638, 966), (46, 12.5)]),
+    ], "candle.webp", soft=0.8, keep_lum=(637, 858, 40, 20, 70))
+    shape_cut(SK, (298, 815, 428, 968), [
+        ("ellipse", [(352, 855), (33.5, 35)]),
+        ("poly", [(307, 887), (408, 882), (421, 900), (422, 966), (302, 966), (305, 900)]),
+    ], "skull.webp", soft=0.8)
+
+
+def periodic_noise(n, rng, beta=2.0, lo_cut=1.0):
+    """Seamless 1/f^beta noise on an n x n torus, normalised to [-1, 1]."""
+    f = np.fft.fftfreq(n)
+    fx, fy = np.meshgrid(f, f)
+    rad = np.hypot(fx, fy) * n
+    amp = np.where(rad < lo_cut, 0, 1.0 / np.maximum(rad, 1e-6) ** (beta / 2))
+    ph = rng.uniform(0, 2 * np.pi, (n, n))
+    spec = amp * np.exp(1j * ph)
+    img = np.real(np.fft.ifft2(spec))
+    img -= img.mean()
+    return img / (np.abs(img).max() + 1e-6)
+
+
+def grain():
+    """The panels' own grain as a seamless NEUTRAL tile (128 = no change).
+
+    Used with `background-blend-mode: overlay`, so any panel colour keeps the
+    painting's texture without the texture deciding the colour.
+    """
+    patch = crop(SK, (706, 770, 1090, 926))                  # panel 5's empty interior
+    g = lum(patch)
+    g = g - ndimage.gaussian_filter(g, 6)                     # high-pass: keep the grain only
+    n = 256
+    tile = np.zeros((n, n), np.float32)
+    # quilt: random patches with soft cross-faded edges, wrapped on a torus
+    rng = np.random.default_rng(5)
+    acc = np.zeros((n, n), np.float32)
+    wsum = np.zeros((n, n), np.float32)
+    P = 96
+    yy, xx = np.mgrid[0:P, 0:P]
+    win = (np.sin(np.pi * (xx + .5) / P) * np.sin(np.pi * (yy + .5) / P)) ** 2
+    for oy in range(0, n, P // 2):
+        for ox in range(0, n, P // 2):
+            sy = int(rng.integers(0, g.shape[0] - P))
+            sx = int(rng.integers(0, g.shape[1] - P))
+            p = g[sy:sy + P, sx:sx + P]
+            ys = (np.arange(P) + oy) % n
+            xs = (np.arange(P) + ox) % n
+            acc[np.ix_(ys, xs)] += p * win
+            wsum[np.ix_(ys, xs)] += win
+    tile = acc / np.maximum(wsum, 1e-3)
+    tile += periodic_noise(n, rng, beta=1.2, lo_cut=6) * 1.2
+    tile = 128 + tile * 7.0
+    img = np.clip(tile, 0, 255).astype(np.uint8)
+    save(np.dstack([img] * 3), "grain.webp", 90)
+
+
+def damask():
+    """A faint half-drop damask made of the painting's own scrollwork.
+
+    One curl of selectCompanion's purple scrollwork, keyed, mirrored into a
+    symmetric motif and laid on a half-drop lattice. It is drawn at a few
+    percent over the board ground: it should be felt, not read.
+    """
+    rgb = crop(SC, (188, 6, 296, 170))                       # a run of curls beside the candle
+    l = blur(lum(rgb), 0.6)
+    a = ramp(l, 22, 80)
+    motif_a = np.concatenate([a, a[:, ::-1]], axis=1)       # mirror into a symmetric motif
+    motif_l = np.concatenate([l, l[:, ::-1]], axis=1)
+    mh, mw = motif_a.shape
+    yy, xx = np.mgrid[0:mh, 0:mw]
+    oval = np.clip(1.25 - np.hypot((xx - mw / 2) / (mw / 2), (yy - mh / 2) / (mh / 2)), 0, 1) ** 1.2
+    motif_a = motif_a * np.clip(oval * 1.6, 0, 1)
+    th, tw = int(mh * 1.62), int(mw * 1.08)
+    A = np.zeros((th, tw), np.float32)
+    V = np.zeros((th, tw), np.float32)
+    for cy, cx in [(th * 0.25, tw * 0.5), (th * 0.75, 0), (th * 0.75, tw)]:
+        for dy in (-th, 0, th):
+            y0 = int(cy + dy - mh / 2)
+            x0 = int(cx - mw / 2)
+            ys = np.arange(mh) + y0
+            xs = np.arange(mw) + x0
+            yv = (ys >= 0) & (ys < th)
+            xv = (xs >= 0) & (xs < tw)
+            if not yv.any() or not xv.any():
+                continue
+            sub_a = motif_a[np.ix_(yv, xv)]
+            sub_l = motif_l[np.ix_(yv, xv)]
+            A[np.ix_(ys[yv], xs[xv])] = np.maximum(A[np.ix_(ys[yv], xs[xv])], sub_a)
+            V[np.ix_(ys[yv], xs[xv])] = np.maximum(V[np.ix_(ys[yv], xs[xv])], sub_l)
+    A = blur(A, 0.6)
+    col = np.dstack([np.full_like(V, 190), np.full_like(V, 150), np.full_like(V, 220)])
+    save(rgba(col, A), "damask.webp", 86)
+
+
+def marble():
+    """Marbled lavender for display type, after the MENAGERIE letters."""
+    n = 256
+    rng = np.random.default_rng(21)
+    t = periodic_noise(n, rng, beta=3.2, lo_cut=1)           # broad, slow turbulence
+    t2 = periodic_noise(n, rng, beta=2.2, lo_cut=2)          # cloudy body
+    t3 = periodic_noise(n, rng, beta=1.0, lo_cut=20)         # fine grain
+    yy, xx = np.mgrid[0:n, 0:n].astype(np.float32)
+    # veins: two periodic diagonal sine fields bent by the turbulence
+    v1 = np.sin((xx / n * 1 + yy / n * 2) * 2 * np.pi + t * 7.0)
+    v2 = np.sin((xx / n * 3 - yy / n * 1) * 2 * np.pi + t * 5.0 + t2 * 2.0)
+    vein = np.clip(1 - np.abs(v1) * 9, 0, 1) ** 1.6 * .85 + np.clip(1 - np.abs(v2) * 14, 0, 1) ** 2 * .45
+    base = np.clip(0.5 + 0.55 * t2, 0, 1)
+    c_lo = np.array([118, 86, 168], np.float32)
+    c_mid = np.array([166, 136, 214], np.float32)
+    c_hi = np.array([226, 208, 246], np.float32)
+    col = c_lo * (1 - base[..., None]) + c_mid * base[..., None]
+    k = np.clip(vein, 0, 1)[..., None] * .75
+    col = col * (1 - k) + c_hi * k
+    col += t3[..., None] * 6
+    speck = (rng.random((n, n)) > 0.9994).astype(np.float32)
+    speck = np.clip(ndimage.gaussian_filter(speck, 0.6) * 5, 0, 1)
+    col = col + speck[..., None] * (np.array([245, 228, 200], np.float32) - col)
+    save(np.clip(col, 0, 255).astype(np.uint8), "marble.webp", 88)
+
+
+def hall_paintings():
+    """Four small paintings for the walls of a room: details of the mansion
+    itself, cut from UI/mainMenu.png, to hang in the kit's gilt frames."""
+    MM = "mainMenu.png"
+    for name, box, size in [
+        ("hall-gable.webp",  (640, 150, 1030, 618), (250, 300)),
+        ("hall-tree.webp",   (0, 40, 340, 380),     (220, 220)),
+        ("hall-towers.webp", (1062, 140, 1422, 572), (250, 300)),
+        ("hall-roses.webp",  (1330, 641, 1630, 941), (220, 220)),
+    ]:
+        im = Image.open(os.path.join(UI, MM)).convert("RGB").crop(box).resize(size, Image.LANCZOS)
+        save(np.asarray(im), name, 86)
+
+
+def main(sheet=False):
+    print("kit ->", os.path.relpath(OUT, ROOT))
+    hall_paintings()
+    grain()
+    damask()
+    marble()
+    corners()
+    vines()
+    panel()
+    medals()
+    frame()
+    plate()
+    ribbon()
+    bat()
+    button()
+    props()
+
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--sheet", action="store_true")
+    main(**vars(ap.parse_args()))

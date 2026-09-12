@@ -125,10 +125,10 @@ export class ShopScene extends RoomScene {
     wrap.innerHTML = `
       <div class="sh-left">
         <section class="sh-counter sh-counter--cards" aria-label="${esc(TERMS.card)}s for sale">
-          <h2 class="sh-h">${esc(TERMS.deck)} <em>on the table</em></h2>
-          <div class="sh-cards" role="list"></div>
+          <h2 class="sh-h kit-heading">${esc(TERMS.deck)} <em>on the table</em></h2>
+          <div class="sh-cards kit-cards" data-tip-avoid=".sh-card, .rm-where, .sh-counter--moth, .sh-side .sh-counter" role="list"></div>
         </section>
-        <section class="sh-counter sh-counter--moth">
+        <section class="sh-counter sh-counter--moth kit-panel" data-medal="moon">
           ${MOTH_SVG}
           <div class="sh-moth__say">
             <p class="sh-moth__name">Mr. Moth</p>
@@ -148,18 +148,18 @@ export class ShopScene extends RoomScene {
             </dl>
           </div>
           <div class="sh-service" aria-label="Removal service">
-            <h3 class="sh-h">Forgetting <em>a service</em></h3>
+            <h3 class="sh-h kit-heading">Forgetting <em>a service</em></h3>
             <div class="sh-remove"></div>
           </div>
         </section>
       </div>
       <div class="sh-side">
-        <section class="sh-counter" aria-label="${esc(TERMS.relic)}s for sale">
-          <h2 class="sh-h">${esc(TERMS.relic)}s <em>under the glass</em></h2>
+        <section class="sh-counter kit-panel" data-medal="star" aria-label="${esc(TERMS.relic)}s for sale">
+          <h2 class="sh-h kit-heading">${esc(TERMS.relic)}s <em>under the glass</em></h2>
           <div class="sh-list sh-list--keeps" role="list"></div>
         </section>
-        <section class="sh-counter" aria-label="${esc(TERMS.potion)}s for sale">
-          <h2 class="sh-h">${esc(TERMS.potion)}s <em>in the jar</em></h2>
+        <section class="sh-counter kit-panel" data-medal="paw" aria-label="${esc(TERMS.potion)}s for sale">
+          <h2 class="sh-h kit-heading">${esc(TERMS.potion)}s <em>in the jar</em></h2>
           <div class="sh-list sh-list--snacks" role="list"></div>
         </section>
       </div>`;
@@ -295,7 +295,7 @@ export class ShopScene extends RoomScene {
    * Everything about affordability is expressed here so it is consistent.
    */
   _priceTag(price, key, label, onBuy, blockedReason = '', { repeatable = false } = {}) {
-    const b = el('button', 'sh-buy');
+    const b = el('button', 'sh-buy kit-plate');
     b.type = 'button';
     b.dataset.key = key;
     b.dataset.price = String(price);

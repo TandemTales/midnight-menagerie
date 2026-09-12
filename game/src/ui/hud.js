@@ -78,34 +78,35 @@ const GEAR_CSS = `
   display: flex; align-items: center; gap: var(--s-1);
   padding-left: var(--s-2);
   margin-left: var(--s-1);
-  border-left: 1px solid color-mix(in srgb, var(--surface-line) 70%, transparent);
+  border-left: 1px solid color-mix(in srgb, var(--kit-gold-lo) 90%, transparent);
 }
 .mm-hud__gear[hidden] { display: none; }
 .mm-hud__gearlbl {
-  font-size: var(--fs-xs); letter-spacing: .14em; text-transform: uppercase;
-  color: color-mix(in srgb, var(--spectre-200) 78%, var(--text-lo));
+  font-family: var(--font-display); font-weight: 700;
+  font-size: var(--fs-xs); letter-spacing: .16em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--kit-moon) 70%, var(--kit-text));
 }
 /* Round and cool, where a Keepsake is square and warm. Shape and temperature
-   are the two things a player reads before they read anything. */
+   are the two things a player reads before they read anything. In the kit
+   (ui/kit.css) that is one of the boards' round enamel buttons with a
+   moonlight glyph, against the Keepsake's candle-lit brass square. */
 .mm-hud__gearchip {
   position: relative;
   display: grid; place-items: center;
-  width: var(--hud-chip-h); height: var(--hud-chip-h);
-  color: var(--spectre-100);
-  background:
-    radial-gradient(70% 70% at 50% 30%, color-mix(in srgb, var(--spectre-500) 30%, transparent), transparent 70%),
-    var(--chip-bg);
-  border: 1px solid color-mix(in srgb, var(--spectre-300) 72%, transparent);
+  width: calc(var(--hud-chip-h) * 1.08); height: calc(var(--hud-chip-h) * 1.08);
+  color: color-mix(in srgb, var(--kit-moon) 85%, white);
+  background: url("assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
   border-radius: 999px;
-  transition: transform var(--t-quick) var(--ease-out), border-color var(--t-quick) var(--ease-out);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .8));
+  transition: transform var(--t-quick) var(--ease-out), filter var(--t-quick) var(--ease-out);
 }
-.mm-hud__gearchip:hover { transform: translateY(-2px); border-color: var(--spectre-200); }
-.mm-hud__gearchip .mm-icon { width: 1.1em; height: 1.1em; }
+.mm-hud__gearchip:hover { transform: translateY(-2px); filter: brightness(1.2) drop-shadow(0 0 6px color-mix(in srgb, var(--kit-moon) 55%, transparent)); }
+.mm-hud__gearchip .mm-icon { width: 1.05em; height: 1.05em; }
 .mm-hud__gearchip .mm-icon svg {
-  fill: none; stroke: currentColor; stroke-width: 1.6;
+  fill: none; stroke: currentColor; stroke-width: 1.7;
   stroke-linecap: round; stroke-linejoin: round;
 }
-.mm-hud__gearchip .mm-hud__relicn { background: var(--spectre-200); }
+.mm-hud__gearchip .mm-hud__relicn { background: var(--kit-moon); }
 
 /* The wing sub-label. At --text-lo the chip measures 4.38:1 against the room
    behind it (tests/chrome/run.py measures real pixels, and the shorter "Wing 1"

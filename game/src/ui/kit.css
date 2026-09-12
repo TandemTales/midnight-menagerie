@@ -1,0 +1,578 @@
+/* ===========================================================================
+   Midnight Menagerie — the shared UI kit.  "Staged boards."
+
+   Every screen is composed the way Josh's two select boards are painted
+   (UI/selectKid.png, UI/selectCompanion.png): a lavender title in a dark
+   cartouche with a gold ribbon under it, symmetric columns of gold-railed
+   panels, portrait frames for the things you choose between, round enamel
+   buttons, and candles, cobwebs and purple scrollwork at the edges.
+
+   The pieces are the paintings themselves, cut out by tools/prep_ui_kit.py
+   into game/assets/ui/kit/. Colours are tokens (ui/tokens.css, --kit-*).
+
+   PRIMITIVES (use these in any scene)
+     .kit-board            a full-bleed painted board: ground, damask, light
+       .kit-dress          its set dressing layer (corners, vines, rule)
+     .kit-cartouche        the title plaque          (.kit-titleblock wraps one)
+     .kit-ribbon           gold ribbon banner with its two painted stars
+     .kit-panel            dark panel in a painted gold rail (9-slice)
+       [data-medal]        + a medallion seated on its top rail
+     .kit-frame            ornate gold portrait frame (9-slice)
+     .kit-plate            dark nameplate cartouche: .kit-plate__name / __epithet
+     .kit-heading          spaced small caps between gold rules
+     .kit-btn              primary action: a gold-rimmed cartouche
+       .kit-btn--quiet     secondary action: the same, unlit
+     .kit-medallion        round purple enamel icon button with a brass rim
+     .kit-tag              an engraved label chip (risk / gain / cost)
+     .kit-candle           a painted candle with a live glow
+     .kit-cards            container: re-dresses .mm-card in brass
+
+   SPECIFICITY: scene sheets load after this file (ensureCss), so a scene
+   that wants the kit look ADDS the kit class and drops its own visuals rather
+   than fighting it. Skins of shared components are scoped under .kit-board.
+   =========================================================================== */
+
+/* ── the board ─────────────────────────────────────────────────────────────── */
+.kit-board {
+  --kit-edge: clamp(8px, .7vw, 12px);          /* where the outer gold rule sits */
+  --kit-vine-w: clamp(30px, 2.9vw, 46px);
+  background: var(--kit-ground-0);
+  isolation: isolate;
+}
+/* The ground: aubergine plaster lit by two candles from above and a cold wash
+   from below, the painting's grain over all of it, and the purple damask of the
+   select boards pressed faintly into the wall. */
+.kit-ground {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(38% 30% at 12% 6%, color-mix(in srgb, var(--kit-candle) 13%, transparent) 0%, transparent 70%),
+    radial-gradient(38% 30% at 88% 6%, color-mix(in srgb, var(--kit-candle) 13%, transparent) 0%, transparent 70%),
+    radial-gradient(60% 46% at 50% 44%, color-mix(in srgb, var(--kit-violet) 16%, transparent) 0%, transparent 72%),
+    radial-gradient(80% 50% at 50% 108%, color-mix(in srgb, var(--kit-moon) 7%, transparent) 0%, transparent 70%),
+    url("../../assets/ui/kit/grain.webp"),
+    linear-gradient(180deg, var(--kit-ground-0) 0%, var(--kit-ground-1) 38%, color-mix(in oklab, var(--kit-ground-1) 70%, var(--kit-ground-0)) 72%, var(--kit-ground-0) 100%);
+  background-blend-mode: normal, normal, normal, normal, overlay, normal;
+  background-size: auto, auto, auto, auto, 256px 256px, auto;
+}
+.kit-ground::before {
+  content: ''; position: absolute; inset: 0;
+  background: url("../../assets/ui/kit/damask.webp") 50% 0 / 176px auto repeat;
+  opacity: .085;
+  -webkit-mask-image: radial-gradient(120% 90% at 50% 40%, black 30%, transparent 85%);
+          mask-image: radial-gradient(120% 90% at 50% 40%, black 30%, transparent 85%);
+}
+/* A painted background slots in here when it exists: see kit.js / --kit-backdrop. */
+.kit-ground::after {
+  content: ''; position: absolute; inset: 0;
+  background: var(--kit-backdrop, none) 50% 50% / cover no-repeat;
+  opacity: var(--kit-backdrop-o, 0);
+}
+.kit-board .rm-vig {
+  background:
+    radial-gradient(120% 96% at 50% 42%, transparent 46%, color-mix(in srgb, var(--kit-void) 82%, transparent) 100%),
+    linear-gradient(to bottom, transparent 70%, color-mix(in srgb, var(--kit-void) 70%, transparent) 100%);
+}
+
+/* ── set dressing ─────────────────────────────────────────────────────────── */
+.kit-dress { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.kit-dress > * { position: absolute; display: block; }
+
+/* the outer gold double rule of the board, under the HUD band */
+.kit-dress__rule {
+  left: var(--kit-edge); right: var(--kit-edge);
+  top: calc(var(--hud-h) + var(--kit-edge) * .5); bottom: var(--kit-edge);
+  border: 1px solid color-mix(in srgb, var(--kit-gold) 78%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--kit-void) 90%, transparent),
+    inset 0 0 0 2px color-mix(in srgb, var(--kit-void) 88%, transparent),
+    inset 0 0 0 3px color-mix(in srgb, var(--kit-gold-lo) 80%, transparent),
+    inset 0 0 40px color-mix(in srgb, var(--kit-void) 60%, transparent);
+}
+/* little brass studs where the rule turns a corner */
+.kit-dress__rule::before, .kit-dress__rule::after {
+  content: ''; position: absolute; width: 9px; height: 9px; bottom: -5px;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 45%, var(--kit-gold-lo));
+  box-shadow: 0 0 0 1px var(--kit-void);
+}
+.kit-dress__rule::before { left: -5px; }
+.kit-dress__rule::after { right: -5px; }
+
+.kit-dress__corner {
+  top: calc(var(--hud-h) + 2px);
+  width: clamp(190px, 17.5vw, 290px); aspect-ratio: 292 / 178;
+  background: 50% 0 / 100% 100% no-repeat;
+  filter: brightness(1.12) saturate(1.05);
+}
+.kit-dress__corner--l { left: calc(var(--kit-edge) + 2px); background-image: url("../../assets/ui/kit/corner-l.webp"); }
+.kit-dress__corner--r { right: calc(var(--kit-edge) + 2px); background-image: url("../../assets/ui/kit/corner-r.webp"); }
+
+.kit-dress__vine {
+  top: calc(var(--hud-h) + clamp(120px, 17vh, 170px));
+  bottom: clamp(60px, 9vh, 96px);
+  width: var(--kit-vine-w);
+  background: 50% 50% / 100% 100% no-repeat;
+  filter: brightness(1.55) saturate(1.2);
+  opacity: .9;
+}
+.kit-dress__vine--l { left: calc(var(--kit-edge) + 3px); background-image: url("../../assets/ui/kit/vine-l.webp"); }
+.kit-dress__vine--r { right: calc(var(--kit-edge) + 3px); background-image: url("../../assets/ui/kit/vine-r.webp"); }
+
+/* The candle flames in the corner paintings breathe. One soft warm bloom per
+   flame, screened over the painting, flickering on transform + opacity only. */
+.kit-dress__flame {
+  top: calc(var(--hud-h) + 2px);
+  width: clamp(120px, 11vw, 190px); aspect-ratio: 1;
+  margin-top: calc(clamp(190px, 17.5vw, 290px) * -.13);
+  border-radius: 50%;
+  background: radial-gradient(closest-side,
+    color-mix(in srgb, var(--kit-candle) 34%, transparent) 0%,
+    color-mix(in srgb, var(--kit-candle) 12%, transparent) 38%,
+    transparent 100%);
+  mix-blend-mode: screen;
+  animation: kit-flicker 3.8s ease-in-out infinite;
+}
+.kit-dress__flame--l { left: calc(var(--kit-edge) + clamp(190px, 17.5vw, 290px) * .56 - clamp(120px, 11vw, 190px) / 2); }
+.kit-dress__flame--r { right: calc(var(--kit-edge) + clamp(190px, 17.5vw, 290px) * .56 - clamp(120px, 11vw, 190px) / 2); animation-delay: -1.7s; }
+@keyframes kit-flicker {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  23%      { opacity: .82; transform: scale(.97); }
+  41%      { opacity: .96; transform: scale(1.02); }
+  67%      { opacity: .86; transform: scale(.985); }
+}
+.rm.is-still .kit-dress__flame, .kit-still .kit-dress__flame { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-reduce-motion="0"]) .kit-dress__flame { animation: none; }
+}
+
+/* ── the title block: cartouche + ribbon ─────────────────────────────────────
+   Markup (any order):  .kit-titleblock > .kit-ribbon, .kit-cartouche__title,
+   .kit-cartouche__sub, .kit-titleblock__note. The plaque itself is drawn by the
+   block's own ::before (brass rim) and ::after (the dark plate with its stars),
+   as grid items spanning the title and sub rows.                           */
+.kit-titleblock {
+  --cart-pad-x: clamp(84px, 7vw, 120px);
+  --cart-pad-t: clamp(14px, 2vh, 20px);
+  --cart-pad-b: clamp(22px, 3vh, 28px);
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: auto auto auto auto;
+  justify-items: center;
+  text-align: center;
+  position: relative;
+}
+.kit-titleblock::before,
+.kit-titleblock::after {
+  content: '';
+  grid-column: 1; grid-row: 1 / 3;
+  justify-self: stretch; align-self: stretch;
+  border-radius: var(--cart-pad-x) / 50%;
+  pointer-events: none;
+}
+/* brass rim: lit from above, dark at the underside, a hairline of highlight */
+.kit-titleblock::before {
+  z-index: 0;
+  background:
+    linear-gradient(180deg, var(--kit-gold-hi) 0%, var(--kit-gold) 22%, var(--kit-gold-lo) 52%, var(--kit-gold) 78%, color-mix(in oklab, var(--kit-gold-hi) 70%, var(--kit-gold)) 100%);
+  box-shadow:
+    0 0 0 1px var(--kit-void),
+    0 10px 30px -6px color-mix(in srgb, var(--kit-void) 90%, transparent),
+    0 0 46px color-mix(in srgb, var(--kit-violet) 22%, transparent);
+}
+.kit-titleblock::after {
+  z-index: 1;
+  margin: 3px;
+  background:
+    url("../../assets/ui/kit/bat.webp") calc(var(--cart-pad-x) * .30) 60% / 34px auto no-repeat,
+    url("../../assets/ui/kit/bat-r.webp") calc(100% - var(--cart-pad-x) * .30) 60% / 34px auto no-repeat,
+    url("../../assets/ui/kit/star4.svg") calc(var(--cart-pad-x) * .42) 22% / 13px 13px no-repeat,
+    url("../../assets/ui/kit/star4.svg") calc(100% - var(--cart-pad-x) * .42) 22% / 13px 13px no-repeat,
+    url("../../assets/ui/kit/star4.svg") calc(var(--cart-pad-x) * .74) 78% / 8px 8px no-repeat,
+    url("../../assets/ui/kit/star4.svg") calc(100% - var(--cart-pad-x) * .74) 80% / 8px 8px no-repeat,
+    url("../../assets/ui/kit/star4.svg") calc(var(--cart-pad-x) * .16) 40% / 6px 6px no-repeat,
+    url("../../assets/ui/kit/star4.svg") calc(100% - var(--cart-pad-x) * .16) 42% / 6px 6px no-repeat,
+    radial-gradient(60% 80% at 50% 10%, color-mix(in srgb, var(--kit-violet) 30%, transparent), transparent 72%),
+    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
+    linear-gradient(180deg, #19111f 0%, #0c0911 100%);
+  background-blend-mode: normal, normal, normal, normal, normal, normal, normal, normal, normal, overlay, normal;
+  box-shadow:
+    inset 0 0 0 2px var(--kit-void),
+    inset 0 0 0 3px color-mix(in srgb, var(--kit-gold) 50%, transparent),
+    inset 0 0 0 4px var(--kit-void),
+    inset 0 0 26px color-mix(in srgb, var(--kit-void) 90%, transparent);
+}
+.kit-cartouche__title {
+  grid-column: 1; grid-row: 1; z-index: 2;
+  margin: 0;
+  padding: var(--cart-pad-t) var(--cart-pad-x) 0;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(26px, 2.5vw, 42px);
+  line-height: 1.04;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--kit-lav);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--kit-lav-hi) 70%, transparent) 0%, transparent 46%, color-mix(in srgb, var(--kit-violet-lo) 55%, transparent) 100%),
+    url("../../assets/ui/kit/marble.webp") 0 0 / 180px 180px;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: .5px color-mix(in srgb, var(--kit-lav-hi) 60%, transparent);
+  filter:
+    drop-shadow(0 -1px 0 color-mix(in srgb, var(--kit-gold-hi) 55%, transparent))
+    drop-shadow(1px 0 0 var(--kit-gold-lo)) drop-shadow(-1px 0 0 var(--kit-gold-lo))
+    drop-shadow(0 2px 0 #1c1029)
+    drop-shadow(0 4px 8px rgba(0, 0, 0, .8));
+}
+.kit-cartouche__sub {
+  grid-column: 1; grid-row: 2; z-index: 2;
+  margin: 3px 0 0;
+  padding: 0 var(--cart-pad-x) var(--cart-pad-b);
+  font-family: var(--font-body); font-style: italic;
+  font-size: var(--fs-md); line-height: 1.25;
+  color: var(--kit-text-mid);
+}
+/* no sub: the plaque still needs its bottom margin under the title */
+.kit-titleblock:not(:has(.kit-cartouche__sub)) .kit-cartouche__title { padding-bottom: var(--cart-pad-b); }
+.kit-titleblock > .kit-ribbon {
+  grid-column: 1; grid-row: 3; z-index: 3;
+  margin-top: calc(var(--rib-h) * -.5);
+}
+.kit-titleblock__note {
+  grid-column: 1; grid-row: 4;
+  margin: 6px 0 0;
+  font-family: var(--font-display); font-size: var(--fs-xs);
+  letter-spacing: .22em; text-transform: uppercase;
+  color: var(--kit-text-lo);
+}
+
+/* ── ribbon ──────────────────────────────────────────────────────────────── */
+.kit-ribbon, .kit-titleblock { --rib-h: clamp(30px, 3.7vh, 36px); }
+.kit-ribbon {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: var(--rib-h);
+  min-width: calc(var(--rib-h) * 6);
+  padding: 0 calc(var(--rib-h) * 1.32) 1px;
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/ribbon.webp");
+  border-image-slice: 0 47 0 52 fill;
+  border-image-width: 0 calc(var(--rib-h) * 47 / 49) 0 calc(var(--rib-h) * 52 / 49);
+  border-image-repeat: stretch;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: calc(var(--rib-h) * .44);
+  letter-spacing: .14em; text-transform: uppercase; white-space: nowrap;
+  color: var(--kit-gold-ink);
+  text-shadow: 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 45%, transparent);
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .7));
+}
+
+/* ── panel: the painted gold rail, emptied ──────────────────────────────────
+   panel.webp is 452x223 with 44px corners and its rail 14px in from the edge.
+   --pk scales the painting; the border-box edge sits ON the rail.          */
+.kit-panel {
+  --pk: .78;
+  position: relative;
+  border: 1px solid transparent;
+  border-image-source: url("../../assets/ui/kit/panel.webp");
+  border-image-slice: 44;
+  border-image-width: calc(44px * var(--pk));
+  border-image-outset: calc(14px * var(--pk));
+  border-image-repeat: stretch;
+  background:
+    radial-gradient(90% 60% at 50% 0%, color-mix(in srgb, var(--kit-violet) 9%, transparent), transparent 70%),
+    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
+    linear-gradient(180deg, var(--kit-panel-hi) 0%, var(--kit-panel) 40%, color-mix(in oklab, var(--kit-panel) 80%, var(--kit-void)) 100%);
+  background-blend-mode: normal, overlay, normal;
+  background-clip: padding-box;
+  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, .9), inset 0 0 30px rgba(0, 0, 0, .35);
+  padding: clamp(14px, 1.6vw, 22px);
+}
+/* a medallion seated on the top rail, the way selectKid's info panels wear one */
+.kit-panel[data-medal]::before {
+  content: '';
+  position: absolute; left: 50%; top: 0; z-index: 2;
+  width: calc(var(--medal-w, 106px) * var(--pk) * var(--medal-k, 1)); aspect-ratio: var(--medal-ar, 106 / 55);
+  transform: translate(-50%, calc(-1 * var(--medal-rail, 15px) * var(--pk) * var(--medal-k, 1) - 1px));
+  background: var(--medal-img) 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .75));
+  pointer-events: none;
+}
+.kit-panel[data-medal="paw"]    { --medal-img: url("../../assets/ui/kit/medal-paw.webp");    --medal-w: 106px; --medal-ar: 106 / 55; --medal-rail: 15px; }
+.kit-panel[data-medal="star"]   { --medal-img: url("../../assets/ui/kit/medal-star.webp");   --medal-w: 71px;  --medal-ar: 71 / 53;  --medal-rail: 19px; }
+.kit-panel[data-medal="shield"] { --medal-img: url("../../assets/ui/kit/medal-shield.webp"); --medal-w: 50px;  --medal-ar: 50 / 56;  --medal-rail: 17px; }
+.kit-panel[data-medal="star2"]  { --medal-img: url("../../assets/ui/kit/medal-star2.webp");  --medal-w: 55px;  --medal-ar: 55 / 56;  --medal-rail: 17px; }
+.kit-panel[data-medal="moon"]   { --medal-img: url("../../assets/ui/kit/medal-moon.webp");   --medal-w: 156px; --medal-ar: 156 / 98; --medal-rail: 49px; }
+
+/* ── portrait frame ──────────────────────────────────────────────────────── */
+.kit-frame {
+  --fk: .8;
+  position: relative;
+  border: 1px solid transparent;
+  border-image-source: url("../../assets/ui/kit/frame.webp");
+  border-image-slice: 52;
+  border-image-width: calc(52px * var(--fk));
+  border-image-outset: calc(12px * var(--fk));
+  border-image-repeat: stretch;
+  background:
+    radial-gradient(80% 70% at 50% 110%, color-mix(in srgb, var(--kit-candle) 10%, transparent), transparent 70%),
+    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
+    linear-gradient(180deg, #120d17, #0a080d);
+  background-blend-mode: normal, overlay, normal;
+  background-clip: padding-box;
+  box-shadow: inset 0 0 26px rgba(0, 0, 0, .85), 0 16px 34px -14px rgba(0, 0, 0, .9);
+}
+
+/* ── nameplate ───────────────────────────────────────────────────────────── */
+.kit-plate {
+  --plate-h: 48px;
+  display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: var(--plate-h);
+  padding: 4px calc(var(--plate-h) * .62);
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/plate.webp");
+  border-image-slice: 12 53 12 46 fill;
+  border-image-width: calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72);
+  border-image-repeat: stretch;
+  text-align: center;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .75));
+}
+.kit-plate__name {
+  font-family: var(--font-body); font-weight: 600;
+  font-size: calc(var(--plate-h) * .36); line-height: 1.05;
+  color: var(--kit-name);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .8);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.kit-plate__epithet {
+  font-family: var(--font-body); font-style: italic;
+  font-size: calc(var(--plate-h) * .25); line-height: 1.1;
+  color: color-mix(in oklab, var(--kit-name) 76%, var(--kit-text-mid));
+}
+
+/* ── headings ────────────────────────────────────────────────────────────── */
+.kit-heading {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  margin: 0;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: var(--fs-sm); letter-spacing: .26em; text-transform: uppercase;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 16px color-mix(in srgb, var(--kit-candle) 18%, transparent);
+}
+.kit-heading::before, .kit-heading::after {
+  content: ''; flex: 1 1 auto; min-width: 18px; height: 7px;
+  background:
+    url("../../assets/ui/kit/star4.svg") var(--star-x, 100%) 50% / 7px 7px no-repeat,
+    linear-gradient(var(--kit-gold), var(--kit-gold)) 0 1px / calc(100% - 11px) 1px no-repeat,
+    linear-gradient(color-mix(in srgb, var(--kit-gold-lo) 90%, transparent), color-mix(in srgb, var(--kit-gold-lo) 90%, transparent)) 0 4px / calc(100% - 11px) 1px no-repeat;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 60%);
+          mask-image: linear-gradient(90deg, transparent 0%, black 60%);
+}
+.kit-heading::after {
+  transform: scaleX(-1);
+}
+
+/* ── buttons ─────────────────────────────────────────────────────────────── */
+.kit-btn {
+  --plate-h: clamp(46px, 5.6vh, 54px);
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+  min-height: var(--plate-h);
+  padding: 2px calc(var(--plate-h) * .78) 3px;
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/plate.webp");
+  border-image-slice: 12 53 12 46 fill;
+  border-image-width: calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72);
+  border-image-repeat: stretch;
+  background: none;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: var(--fs-md); letter-spacing: .14em; text-transform: uppercase;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 14px color-mix(in srgb, var(--kit-candle) 22%, transparent);
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8));
+  transition: filter var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out), color var(--t-quick) var(--ease-out);
+  cursor: pointer;
+}
+.kit-btn:hover:not(:disabled), .kit-btn:focus-visible {
+  transform: translateY(-1px);
+  color: #fff1d2;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) drop-shadow(0 0 12px color-mix(in srgb, var(--kit-candle) 40%, transparent)) brightness(1.12);
+}
+.kit-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 4px; border-radius: 999px; }
+.kit-btn:disabled { opacity: .45; cursor: not-allowed; }
+.kit-btn--quiet {
+  --plate-h: clamp(42px, 5.1vh, 48px);
+  font-size: var(--fs-sm);
+  color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .7)) saturate(.55) brightness(.86);
+}
+.kit-btn--quiet:hover:not(:disabled), .kit-btn--quiet:focus-visible {
+  color: var(--kit-text);
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .7)) saturate(.9) brightness(1.02);
+}
+.kit-btn kbd {
+  font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: .06em;
+  min-width: 1.9em; padding: 1px 6px 0; border-radius: 3px;
+  color: var(--kit-gold-hi);
+  background: linear-gradient(180deg, #1d1624, #0b080e);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--kit-gold) 70%, transparent), 0 1px 0 rgba(0, 0, 0, .8);
+  text-shadow: none;
+}
+.kit-btn em {
+  font-family: var(--font-body); font-style: italic; font-weight: 400;
+  letter-spacing: 0; text-transform: none;
+  font-size: var(--fs-xs);
+  color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+
+.kit-medallion {
+  --md: 52px;
+  position: relative; flex: none;
+  display: inline-grid; place-items: center;
+  width: var(--md); height: var(--md);
+  border-radius: 50%;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  color: var(--kit-gold-hi);
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
+  transition: filter var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out);
+}
+/* the glyph: flat antique gold with an ink outline, like the painted arrow */
+.kit-medallion svg { width: 48%; height: 48%; overflow: visible; filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .6)); }
+.kit-medallion svg * {
+  fill: color-mix(in oklab, var(--kit-gold-hi) 72%, var(--kit-gold));
+  stroke: #24170a; stroke-width: 1.2; stroke-linejoin: round;
+  paint-order: stroke fill;
+}
+button.kit-medallion:hover, button.kit-medallion:focus-visible,
+.kit-btn:hover .kit-medallion {
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-lav) 45%, transparent)) brightness(1.15);
+}
+/* a medallion seated on the end of a cartouche button */
+.kit-btn__medal {
+  position: absolute; top: 50%;
+  --md: calc(var(--plate-h) * 1.16);
+  transform: translateY(-50%);
+  font-style: normal;
+}
+
+/* ── tags ────────────────────────────────────────────────────────────────── */
+.kit-tag {
+  display: inline-flex; align-items: baseline; gap: 6px;
+  font-family: var(--font-body); font-size: var(--fs-xs); color: var(--kit-text-mid);
+}
+.kit-tag > i {
+  font-style: normal; font-family: var(--font-display); font-weight: 700;
+  font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase;
+  padding: 2px 6px 1px;
+  border-radius: 2px;
+  color: var(--kit-gold-hi);
+  background: linear-gradient(180deg, #211a28, #0e0b12);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--kit-gold) 60%, transparent);
+}
+
+/* ── painted props ───────────────────────────────────────────────────────── */
+.kit-prop { position: absolute; pointer-events: none; background: 50% 100% / contain no-repeat; }
+/* every prop stands on the floor: a soft contact shadow under its base */
+.kit-prop::before {
+  content: ''; position: absolute; left: 50%; bottom: -4%; z-index: -1;
+  width: 130%; height: 16%; transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, .75), transparent);
+}
+.kit-prop--candle { aspect-ratio: 106 / 164; background-image: url("../../assets/ui/kit/candle.webp"); }
+.kit-prop--skull  { aspect-ratio: 130 / 153; background-image: url("../../assets/ui/kit/skull.webp"); }
+.kit-prop--candle::after {
+  content: ''; position: absolute; left: 50%; top: 8%;
+  width: 260%; aspect-ratio: 1; transform: translate(-50%, -38%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 30%, transparent), color-mix(in srgb, var(--kit-candle) 9%, transparent) 45%, transparent);
+  mix-blend-mode: screen;
+  animation: kit-flicker 3.4s ease-in-out infinite;
+}
+.rm.is-still .kit-prop--candle::after { animation: none; }
+
+/* ── cards, re-dressed in brass ─────────────────────────────────────────────
+   `.kit-cards` on any container hangs its CardViews in the kit's metal: an
+   antique brass frame for every rarity, the face in the panels' aubergine, the
+   cost as a gold coin. Rarity is still read at a glance — the crest and a thin
+   inlay inside the frame keep the rarity colour, and the rivets / set gem /
+   corner flourishes that distinguish the rarities by shape are untouched.
+   Selectors carry [data-rarity] so they outrank card.css's own (0,3,0) rules,
+   which load after this sheet.                                              */
+.kit-cards .mm-card[data-rarity] {
+  --rarity-c: var(--rarity-common);
+  --frame: var(--kit-gold);
+  --frame-hi: var(--kit-gold-hi);
+  --frame-lo: var(--kit-gold-lo);
+  --frame-deep: color-mix(in oklab, var(--kit-gold-lo) 55%, black);
+}
+.kit-cards .mm-card[data-rarity="basic"]    { --rarity-c: var(--rarity-basic); --frame: color-mix(in oklab, var(--kit-gold) 70%, #6d6a70); }
+.kit-cards .mm-card[data-rarity="uncommon"] { --rarity-c: var(--rarity-uncommon); }
+.kit-cards .mm-card[data-rarity="rare"]     { --rarity-c: var(--rarity-rare); }
+.kit-cards .mm-card[data-rarity="curse"]    { --rarity-c: var(--rarity-curse); }
+
+.kit-cards .mm-card[data-rarity] .mm-card__frame {
+  background:
+    url("../../assets/ui/kit/grain.webp") 0 0 / 180px 180px,
+    linear-gradient(160deg, var(--frame-hi) 0%, var(--frame) 16%, var(--frame-lo) 42%, var(--frame) 64%, color-mix(in oklab, var(--frame-hi) 80%, var(--frame)) 86%, var(--frame-lo) 100%);
+  background-blend-mode: overlay, normal;
+  box-shadow:
+    inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb, var(--frame-deep) 90%, transparent),
+    inset 0 0 0 calc(3 * var(--u)) color-mix(in srgb, var(--frame-hi) 26%, transparent),
+    0 calc(4 * var(--u)) calc(12 * var(--u)) rgba(0, 0, 0, .7);
+}
+.kit-cards .mm-card[data-rarity] .mm-card__face {
+  background:
+    radial-gradient(130% 46% at 50% 100%, color-mix(in srgb, var(--type-color) 16%, transparent), transparent 70%),
+    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
+    linear-gradient(180deg, #1f1827 0%, #151019 46%, #1a1420 78%, #211a28 100%);
+  background-blend-mode: normal, overlay, normal;
+  box-shadow:
+    inset 0 0 0 calc(1 * var(--u)) rgba(0, 0, 0, .8),
+    inset 0 0 0 calc(2.5 * var(--u)) color-mix(in srgb, var(--rarity-c) 55%, transparent),
+    inset 0 0 0 calc(3.5 * var(--u)) rgba(0, 0, 0, .55);
+}
+.kit-cards .mm-card[data-rarity] .mm-card__banner {
+  background:
+    linear-gradient(180deg, #0c090f 0%, #16111b 40%, #0c090f 100%);
+  box-shadow:
+    inset 0 calc(1.5 * var(--u)) 0 color-mix(in srgb, var(--kit-gold) 70%, transparent),
+    inset 0 calc(3 * var(--u)) 0 rgba(0, 0, 0, .6),
+    inset 0 calc(-1.5 * var(--u)) 0 color-mix(in srgb, var(--kit-gold-lo) 90%, transparent);
+}
+.kit-cards .mm-card[data-rarity] .mm-card__name { color: var(--kit-name); }
+.kit-cards .mm-card[data-rarity] .mm-card__artline { opacity: 0; }
+.kit-cards .mm-card[data-rarity] .mm-card__crest i {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .5) 0%, rgba(255, 255, 255, .1) 30%, rgba(0, 0, 0, 0) 52%, rgba(0, 0, 0, .38) 100%),
+    linear-gradient(180deg, color-mix(in oklab, var(--rarity-c) 60%, white) 0%, var(--rarity-c) 44%, color-mix(in oklab, var(--rarity-c) 40%, black) 100%);
+}
+.kit-cards .mm-card[data-rarity] .mm-card__crest { background: var(--kit-gold-lo); }
+.kit-cards .mm-card[data-rarity="uncommon"] .mm-card__setgem { background: linear-gradient(135deg, color-mix(in oklab, var(--rarity-c) 60%, white), color-mix(in oklab, var(--rarity-c) 60%, black)); }
+/* the cost, struck as an antique gold coin */
+.kit-cards .mm-card[data-rarity] .mm-card__cost {
+  color: #20140a;
+  text-shadow: 0 calc(1 * var(--u)) 0 color-mix(in srgb, var(--kit-gold-hi) 70%, white);
+  background:
+    radial-gradient(60% 60% at 36% 30%, color-mix(in oklab, var(--kit-gold-hi) 80%, white), transparent 62%),
+    radial-gradient(100% 100% at 50% 60%, var(--kit-gold-hi) 0%, var(--kit-gold) 55%, var(--kit-gold-lo) 100%);
+  box-shadow:
+    inset 0 0 0 calc(2.5 * var(--u)) color-mix(in oklab, var(--kit-gold-lo) 80%, black),
+    inset 0 0 0 calc(4 * var(--u)) color-mix(in srgb, var(--kit-gold-hi) 45%, transparent),
+    0 0 0 calc(1.5 * var(--u)) rgba(0, 0, 0, .7),
+    0 calc(3 * var(--u)) calc(8 * var(--u)) rgba(0, 0, 0, .65);
+}
+.kit-cards .mm-card[data-rarity] .mm-card__kw {
+  color: var(--kit-gold-hi);
+  background: color-mix(in srgb, var(--kit-gold-lo) 34%, transparent);
+  box-shadow: inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb, var(--kit-gold) 45%, transparent);
+}
+.kit-cards .mm-card[data-rarity="uncommon"] .mm-card__frame,
+.kit-cards .mm-card[data-rarity="rare"] .mm-card__frame {
+  box-shadow:
+    inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb, var(--frame-deep) 90%, transparent),
+    inset 0 0 0 calc(4 * var(--u)) color-mix(in srgb, var(--frame-hi) 34%, transparent),
+    0 calc(4 * var(--u)) calc(12 * var(--u)) rgba(0, 0, 0, .7),
+    0 0 calc(22 * var(--u)) color-mix(in srgb, var(--rarity-c) 16%, transparent);
+}

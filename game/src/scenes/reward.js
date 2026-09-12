@@ -41,6 +41,16 @@ const CSS_ROOM = new URL('./reward.css', import.meta.url).href;
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => (
   { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
+/**
+ * The glyphs that sit in the kit's round enamel buttons — drawn the way the
+ * arrow and the tick in UI/selectKid.png are: flat antique gold with an ink
+ * outline. Decorative (the button beside one always carries the words).
+ */
+export const KIT_GLYPH = {
+  onward: `<svg viewBox="0 0 24 24"><path d="M3.5 9.6h9.2V5.2L21 12l-8.3 6.8v-4.4H3.5z"/></svg>`,
+  none: `<svg viewBox="0 0 24 24"><path d="M6.3 3.9 12 9.6l5.7-5.7 2.4 2.4-5.7 5.7 5.7 5.7-2.4 2.4-5.7-5.7-5.7 5.7-2.4-2.4 5.7-5.7-5.7-5.7z"/></svg>`,
+};
+
 // ═══════════════════════════════════════════════════════════════════════════
 //  Shared room chrome
 // ═══════════════════════════════════════════════════════════════════════════
@@ -114,24 +124,39 @@ export class RoomScene extends Scene {
     }));
   }
 
-  /** Ground + vignette + the room header + HUD + body + footer. */
+  /**
+   * Ground + vignette + the room header + HUD + body + footer.
+   *
+   * The room is a staged board in the kit's language (ui/kit.css): a painted
+   * ground with a backdrop slot, the select boards' candles, cobwebs and vines
+   * at the edges, and the room's name in a cartouche over a gold ribbon.
+   */
   _shell({ eyebrow, title, sub }) {
     const region = regionMeta(this.run.region);
     const node = this.run.currentNode;
     this.root.innerHTML = `
-      <div class="rm rm--${this.kind}">
-        <div class="rm-ground" aria-hidden="true"></div>
+      <div class="rm rm--${this.kind} kit-board">
+        <div class="rm-ground kit-ground" aria-hidden="true"></div>
         <div class="rm-vig" aria-hidden="true"></div>
         <div class="rm-motes" aria-hidden="true"></div>
+        <div class="kit-dress" aria-hidden="true">
+          <i class="kit-dress__rule"></i>
+          <i class="kit-dress__vine kit-dress__vine--l"></i>
+          <i class="kit-dress__vine kit-dress__vine--r"></i>
+          <i class="kit-dress__corner kit-dress__corner--l"></i>
+          <i class="kit-dress__corner kit-dress__corner--r"></i>
+          <i class="kit-dress__flame kit-dress__flame--l"></i>
+          <i class="kit-dress__flame kit-dress__flame--r"></i>
+        </div>
 
         <div class="rm-hudhost" data-hud></div>
 
         <header class="rm-head">
-          <div class="rm-where">
-            <span class="rm-eyebrow">${esc(eyebrow || region.name)}</span>
-            <h1 class="rm-title">${esc(title)}</h1>
-            ${sub ? `<p class="rm-sub">${esc(sub)}</p>` : ''}
-            ${node?.roomName ? `<p class="rm-room">${esc(node.roomName)} &middot; ${esc(region.name)}</p>` : ''}
+          <div class="rm-where kit-titleblock">
+            <span class="rm-eyebrow kit-ribbon">${esc(eyebrow || region.name)}</span>
+            <h1 class="rm-title kit-cartouche__title">${esc(title)}</h1>
+            ${sub ? `<p class="rm-sub kit-cartouche__sub">${esc(sub)}</p>` : ''}
+            ${node?.roomName ? `<p class="rm-room kit-titleblock__note">${esc(node.roomName)} &middot; ${esc(region.name)}</p>` : ''}
           </div>
         </header>
 
@@ -207,11 +232,13 @@ export class RoomScene extends Scene {
     this.$luck.hidden = luck <= 0;
   }
 
-  /** The one large action at the bottom right. */
+  /** The one large action at the bottom right: the kit's gold cartouche, with
+   *  the select boards' round enamel button seated on its end. */
   _primary(label, onGo, { hint = '', key = 'Enter' } = {}) {
-    const b = el('button', 'rm-go');
+    const b = el('button', 'rm-go kit-btn');
     b.type = 'button';
-    b.innerHTML = `<span>${esc(label)}</span>${hint ? `<em>${esc(hint)}</em>` : ''}<kbd>${esc(key)}</kbd>`;
+    b.innerHTML = `<span>${esc(label)}</span>${hint ? `<em>${esc(hint)}</em>` : ''}<kbd>${esc(key)}</kbd>`
+      + `<i class="kit-medallion kit-btn__medal" aria-hidden="true">${KIT_GLYPH.onward}</i>`;
     b.addEventListener('click', () => { this.ctx.audio?.play?.('ui:confirm'); onGo(); });
     this.$foot.appendChild(b);
     this.$go = b;
@@ -437,10 +464,11 @@ export class RoomScene extends Scene {
   }
 }
 
-/** Small labelled chip used for spoils, prices and outcome deltas. */
+/** Small labelled chip used for spoils, prices and outcome deltas — a kit
+ *  nameplate: the number where a tile's name goes, the word as its epithet. */
 export function chip(kind, label, value, title = '') {
-  return `<span class="rm-spoil rm-spoil--${kind}"${title ? ` title="${esc(title)}"` : ''}>
-    <b>${esc(value)}</b><span>${esc(label)}</span></span>`;
+  return `<span class="rm-spoil rm-spoil--${kind} kit-plate"${title ? ` title="${esc(title)}"` : ''}>
+    <b class="kit-plate__name">${esc(value)}</b><span class="kit-plate__epithet">${esc(label)}</span></span>`;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -522,10 +550,10 @@ export class RewardScene extends RoomScene {
     const sec = el('section', 'rw-cards');
     sec.innerHTML = `
       <div class="rw-cards__head">
-        <h2>Choose one ${esc(TERMS.card)}</h2>
+        <h2 class="kit-heading">Choose one ${esc(TERMS.card)}</h2>
         <p>Or take none — and be luckier next time.</p>
       </div>
-      <div class="rw-fan" role="listbox" aria-label="Three ${esc(TERMS.card)}s. Choose one, or skip."></div>`;
+      <div class="rw-fan kit-cards" data-tip-avoid=".rw-slot, .rm-where, .rw-spoils" role="listbox" aria-label="Three ${esc(TERMS.card)}s. Choose one, or skip."></div>`;
     this.$body.appendChild(sec);
     const fan = sec.querySelector('.rw-fan');
     this.$fan = fan;
@@ -564,7 +592,7 @@ export class RewardScene extends RoomScene {
         uid: `rw-${c.id}`, largeText: this.largeText, reduceMotion: this.reduceMotion,
       });
       slot.appendChild(view.el);
-      const tag = el('span', 'rw-slot__rarity', esc(def.rarity));
+      const tag = el('span', 'rw-slot__rarity kit-plate', esc(def.rarity));
       tag.dataset.rarity = def.rarity;
       slot.appendChild(tag);
       fan.appendChild(slot);
@@ -625,9 +653,10 @@ export class RewardScene extends RoomScene {
   _buildFoot() {
     const r = this.reward;
     if (r.cards.length) {
-      const skip = el('button', 'rm-btn rm-btn--ghost rw-skip');
+      const skip = el('button', 'rm-btn rm-btn--ghost rw-skip kit-btn kit-btn--quiet');
       skip.type = 'button';
-      skip.innerHTML = `<span>Take none</span><em>+12 ${esc(TERMS.gold)} &middot; Luck +2</em><kbd>S</kbd>`;
+      skip.innerHTML = `<i class="kit-medallion kit-btn__medal" aria-hidden="true">${KIT_GLYPH.none}</i>`
+        + `<span>Take none</span><em>+12 ${esc(TERMS.gold)} &middot; Luck +2</em><kbd>S</kbd>`;
       skip.addEventListener('click', () => this._skip());
       this.$foot.appendChild(skip);
       this.$skip = skip;

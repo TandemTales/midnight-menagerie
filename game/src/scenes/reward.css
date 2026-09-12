@@ -22,13 +22,10 @@
 .rm--event { --rm-key: var(--spectre-300); --rm-key-lo: var(--spectre-500);
              --rm-warm: color-mix(in srgb, var(--spectre-400) 12%, transparent); }
 
-.rm-ground {
-  position: absolute; inset: 0; z-index: 0;
-  background:
-    radial-gradient(52% 46% at 50% 6%, var(--rm-warm) 0%, transparent 70%),
-    radial-gradient(90% 70% at 50% 100%, color-mix(in oklab, var(--arcane-700) 46%, var(--ink-900)) 0%, transparent 74%),
-    linear-gradient(180deg, var(--ink-900) 0%, color-mix(in oklab, var(--ink-800) 88%, var(--arcane-700)) 52%, var(--ink-900) 100%);
-}
+/* The ground itself is the kit's painted board (.kit-ground); a room only
+   tints the light in it through --rm-warm, laid over the top. */
+.rm-ground { position: absolute; inset: 0; z-index: 0; }
+.rm-ground > .rm-warm { position: absolute; inset: 0; }
 .rm-vig {
   position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background:
@@ -56,29 +53,16 @@
 }
 .rm.is-still .rm-motes { display: none; }
 
-/* ── header ───────────────────────────────────────────────────────────────── */
+/* ── header ─────────────────────────────────────────────────────────────────
+   The room's name is a kit title block (ui/kit.css .kit-titleblock): the
+   cartouche, the ribbon and the note are drawn there. This only places it:
+   centred at the top of the board, between the two painted corners.        */
 .rm-head {
   position: relative; z-index: 3;
-  display: flex; align-items: flex-start; justify-content: space-between;
+  display: flex; align-items: flex-start; justify-content: center;
   gap: var(--s-5);
-  padding: clamp(14px, 1.8vh, 26px) var(--rm-pad) var(--s-3);
+  padding: clamp(10px, 1.4vh, 18px) var(--rm-pad) var(--s-2);
 }
-.rm-eyebrow {
-  display: block;
-  font-family: var(--font-display);
-  font-size: var(--fs-xs); letter-spacing: .3em; text-transform: uppercase;
-  color: var(--rm-key);
-}
-.rm-title {
-  margin: 2px 0 0;
-  font-family: var(--font-display); font-weight: 700;
-  font-size: var(--fs-xl); line-height: 1.06; color: var(--text-hi);
-  text-shadow: 0 2px 0 color-mix(in srgb, var(--ink-900) 78%, transparent),
-               0 0 34px color-mix(in srgb, var(--rm-key) 22%, transparent);
-}
-.rm-sub  { margin: 4px 0 0; font-size: var(--fs-md); color: var(--text-mid); font-style: italic; }
-.rm-room { margin: 3px 0 0; font-size: var(--fs-xs); letter-spacing: .12em;
-           text-transform: uppercase; color: var(--text-lo); }
 
 /* ── HUD ──────────────────────────────────────────────────────────────────
    The four node rooms show the shared run HUD (`ui/hud.js`), pinned to the top
@@ -101,78 +85,66 @@
 }
 .rm-live { margin: 0; font-size: var(--fs-sm); color: var(--text-mid); min-height: 1.2em; }
 
+/* Buttons are the kit's (ui/kit.css .kit-btn / .kit-btn--quiet): a gold-rimmed
+   cartouche for the way out, the same plate unlit for everything quieter. The
+   picker's own buttons still carry only .rm-btn, so they get the plate here. */
 .rm-btn {
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 10px 18px;
-  border: 1px solid var(--ink-400); border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--ink-700) 88%, transparent);
-  color: var(--text-hi); font-family: var(--font-display); font-size: var(--fs-sm);
-  letter-spacing: .1em; text-transform: uppercase;
-  transition: border-color var(--t-quick) var(--ease-out),
-              background-color var(--t-quick) var(--ease-out),
-              transform var(--t-quick) var(--ease-out);
+  --plate-h: clamp(40px, 5vh, 46px);
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: var(--plate-h);
+  padding: 2px calc(var(--plate-h) * .72) 3px;
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/plate.webp");
+  border-image-slice: 12 53 12 46 fill;
+  border-image-width: calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72);
+  background: none;
+  color: var(--kit-text-mid); font-family: var(--font-display); font-weight: 700; font-size: var(--fs-sm);
+  letter-spacing: .12em; text-transform: uppercase;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .7)) saturate(.6) brightness(.9);
+  transition: filter var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out);
 }
-.rm-btn em { font-style: normal; text-transform: none; letter-spacing: 0;
-             font-family: var(--font-body); font-size: var(--fs-xs); color: var(--text-lo); }
-.rm-btn kbd {
-  font-family: var(--font-num); font-size: 10px; letter-spacing: .08em;
-  padding: 2px 6px; border-radius: 4px; color: var(--text-lo);
-  border: 1px solid var(--ink-400); background: var(--ink-900);
-}
-.rm-btn:hover:not(:disabled) { border-color: var(--rm-key); background: var(--ink-600); transform: translateY(-1px); }
+.rm-btn em { font-style: italic; text-transform: none; letter-spacing: 0;
+             font-family: var(--font-body); font-weight: 400; font-size: var(--fs-xs); color: var(--kit-text-lo); }
+.rm-btn:hover:not(:disabled) { transform: translateY(-1px); color: var(--kit-text);
+                               filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .7)) saturate(.9) brightness(1.04); }
 .rm-btn:disabled { opacity: .4; cursor: not-allowed; }
-.rm-btn--go { border-color: var(--brass-400); background: color-mix(in srgb, var(--brass-500) 34%, var(--ink-700)); }
-.rm-btn--go:hover:not(:disabled) { border-color: var(--brass-200); }
+.rm-btn--go { color: var(--kit-gold-hi); filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)); }
+.rm-btn--go:hover:not(:disabled) { filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) drop-shadow(0 0 12px color-mix(in srgb, var(--kit-candle) 38%, transparent)) brightness(1.1); }
 .rm-btn--ghost { background: none; }
 
-.rm-go {
-  display: inline-flex; align-items: center; gap: 12px;
-  padding: 13px 26px;
-  border: 1px solid var(--brass-400); border-radius: var(--radius-md);
-  background: linear-gradient(180deg,
-    color-mix(in srgb, var(--brass-500) 40%, var(--ink-700)),
-    color-mix(in srgb, var(--brass-600) 70%, var(--ink-800)));
-  font-family: var(--font-display); font-size: var(--fs-md); letter-spacing: .12em;
-  text-transform: uppercase; color: var(--flame-100);
-  box-shadow: var(--shadow-2);
-  transition: box-shadow var(--t-base) var(--ease-out), transform var(--t-quick) var(--ease-out),
-              border-color var(--t-quick) var(--ease-out);
+/* the way out: a kit cartouche whose enamel button sits on its right end */
+.rm-go { padding-right: calc(var(--plate-h) * 1.25); }
+.rm-go .kit-btn__medal { right: calc(var(--plate-h) * -.34); }
+.rw-skip { padding-left: calc(var(--plate-h) * 1.25); }
+.rw-skip .kit-btn__medal { left: calc(var(--plate-h) * -.34); }
+.rm-go::before {
+  /* the candle-light the ready button breathes; opacity only, so it is cheap */
+  content: ''; position: absolute; inset: -30% -8%; z-index: -1; pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 26%, transparent), transparent);
+  opacity: 0;
+  transition: opacity var(--t-base) var(--ease-out);
 }
-.rm-go em { font-style: italic; text-transform: none; letter-spacing: 0;
-            font-family: var(--font-body); font-size: var(--fs-xs); color: var(--flame-200); opacity: .8; }
-.rm-go kbd { font-family: var(--font-num); font-size: 10px; padding: 2px 7px; border-radius: 4px;
-             border: 1px solid var(--brass-400); color: var(--flame-200); background: color-mix(in srgb, var(--ink-900) 60%, transparent); }
-.rm-go:hover { transform: translateY(-1px); border-color: var(--brass-100); }
-.rm-go.is-ready {
-  box-shadow: var(--shadow-3), 0 0 0 1px color-mix(in srgb, var(--flame-300) 40%, transparent),
-              0 0 30px color-mix(in srgb, var(--flame-glow) 26%, transparent);
-  animation: rm-ready 2.6s var(--ease-soft) infinite;
-}
-@keyframes rm-ready {
-  0%, 100% { box-shadow: var(--shadow-3), 0 0 0 1px color-mix(in srgb, var(--flame-300) 34%, transparent),
-                          0 0 22px color-mix(in srgb, var(--flame-glow) 18%, transparent); }
-  50%      { box-shadow: var(--shadow-3), 0 0 0 1px color-mix(in srgb, var(--flame-300) 62%, transparent),
-                          0 0 38px color-mix(in srgb, var(--flame-glow) 34%, transparent); }
-}
-.rm.is-still .rm-go.is-ready { animation: none; }
+.rm-go.is-ready::before { opacity: 1; animation: rm-ready 2.6s var(--ease-soft) infinite; }
+@keyframes rm-ready { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+.rm.is-still .rm-go.is-ready::before { animation: none; }
 
 .rm-mockflag {
-  position: absolute; left: var(--rm-pad); bottom: 10px;
-  z-index: 6; padding: 3px 12px; border-radius: 999px;
-  border: 1px dashed var(--ink-400); background: color-mix(in srgb, var(--ink-900) 70%, transparent);
-  font-size: var(--fs-xs); letter-spacing: .14em; text-transform: uppercase; color: var(--text-lo);
+  position: absolute; left: 50%; bottom: calc(var(--kit-edge, 10px) + 3px); transform: translateX(-50%);
+  z-index: 6; padding: 2px 12px; white-space: nowrap;
+  font-family: var(--font-display); font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--kit-text-lo);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-void) 88%, transparent) 16%, color-mix(in srgb, var(--kit-void) 88%, transparent) 84%, transparent);
 }
 
-/* ── spoil chips ──────────────────────────────────────────────────────────── */
-.rm-spoil {
-  display: inline-flex; align-items: baseline; gap: 7px;
-  padding: 6px 14px; border-radius: 999px;
-  border: 1px solid var(--ink-500);
-  background: color-mix(in srgb, var(--ink-800) 76%, transparent);
-}
-.rm-spoil b { font-family: var(--font-num); font-size: var(--fs-md); color: var(--brass-200); }
-.rm-spoil span { font-size: var(--fs-xs); letter-spacing: .14em; text-transform: uppercase; color: var(--text-lo); }
-.rm-spoil--clue b { color: var(--spectre-300); }
+/* ── spoil chips ─────────────────────────────────────────────────────────────
+   Each one is a kit nameplate (.kit-plate): the number is the name, the word
+   is the epithet. Only the number's colour says what kind it is.            */
+.rm-spoil { --plate-h: clamp(46px, 5.6vh, 54px); min-width: calc(var(--plate-h) * 2.9); }
+.rm-spoil b { font-size: calc(var(--plate-h) * .4); color: var(--kit-gold-hi); }
+.rm-spoil span { letter-spacing: .02em; }
+.rm-spoil--clue b { color: var(--spectre-200); }
 .rm-spoil--luck b { color: var(--good-300); }
 .rm-spoil--cost b { color: var(--threat-200); }
 .rm-spoil--hp b { color: var(--courage-300); }
@@ -230,115 +202,142 @@
    title is set in, and 74ch was narrow enough to wrap "You Were Not Ready For
    That" onto two lines. */
 .scene--reward .rm-head .rm-where { max-width: 1100px; }
-.scene--reward .rm-body { gap: clamp(14px, 2.4vh, 34px); }
+.scene--reward .rm-body { gap: clamp(8px, 1.5vh, 22px); justify-content: flex-start; padding-top: clamp(4px, 1vh, 14px); }
 
 .rw-spoils { display: flex; flex-direction: column; align-items: center; gap: var(--s-3); }
-.rw-spoils__row { display: flex; gap: var(--s-3); flex-wrap: wrap; justify-content: center; }
+.rw-spoils__row { display: flex; gap: clamp(10px, 1.2vw, 20px); flex-wrap: wrap; justify-content: center; }
 
+/* A Keepsake in the spoils is a kit panel with the star medallion on its rail. */
 .rw-keepsake {
   display: flex; align-items: center; gap: var(--s-4);
   max-width: min(720px, 88vw);
-  padding: var(--s-3) var(--s-4);
-  border: 1px solid var(--brass-500); border-radius: var(--radius-md);
-  background: linear-gradient(100deg,
-    color-mix(in srgb, var(--brass-600) 40%, var(--ink-800)), var(--ink-800));
-  box-shadow: var(--shadow-2);
+  padding: 18px 26px 14px;
 }
-.rw-keepsake[data-rarity="boss"] { border-color: var(--threat-300); }
-.rw-keepsake[data-rarity="rare"] { border-color: var(--rarity-rare); }
+.rw-keepsake[data-rarity="boss"] { --pk: .8; }
 .rw-keepsake__sig {
   flex: 0 0 auto; display: grid; place-items: center;
-  width: 52px; height: 52px; border-radius: 50%;
-  border: 1px solid var(--brass-300);
-  background: radial-gradient(circle at 34% 28%, color-mix(in srgb, var(--brass-300) 30%, var(--ink-700)), var(--ink-900));
+  width: 58px; height: 58px; border-radius: 50%;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
 }
-.rw-keepsake__sig svg { width: 30px; height: 30px; fill: none; stroke: var(--flame-100);
-                        stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-.rw-keepsake__k { display: block; font-size: var(--fs-xs); letter-spacing: .18em;
-                  text-transform: uppercase; color: var(--brass-200); }
-.rw-keepsake b { display: block; font-family: var(--font-display); font-size: var(--fs-lg); color: var(--text-hi); }
-.rw-keepsake em { display: block; font-style: normal; font-size: var(--fs-sm); color: var(--text-mid); }
-.rw-keepsake i  { display: block; font-size: var(--fs-xs); color: var(--text-lo); margin-top: 2px; }
+.rw-keepsake__sig svg { width: 28px; height: 28px; fill: none; stroke: var(--kit-gold-hi);
+                        stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.rw-keepsake__k { display: block; font-family: var(--font-display); font-size: var(--fs-xs); letter-spacing: .2em;
+                  text-transform: uppercase; color: var(--kit-gold); }
+.rw-keepsake b { display: block; font-family: var(--font-display); font-size: var(--fs-lg); color: var(--kit-lav-hi); }
+.rw-keepsake em { display: block; font-style: normal; font-size: var(--fs-sm); color: var(--kit-text); }
+.rw-keepsake i  { display: block; font-size: var(--fs-xs); color: var(--kit-text-lo); margin-top: 2px; }
 
-.rw-cards { display: flex; flex-direction: column; align-items: center; gap: var(--s-2); width: 100%; }
+.rw-cards { display: flex; flex-direction: column; align-items: center; gap: clamp(2px, .6vh, 8px); width: 100%; }
 .rw-cards__head { text-align: center; }
-.rw-cards__head h2 {
-  margin: 0; font-family: var(--font-display); font-size: var(--fs-lg);
-  letter-spacing: .1em; text-transform: uppercase; color: var(--text-hi);
-}
-.rw-cards__head p { margin: 2px 0 0; font-size: var(--fs-sm); color: var(--text-lo); font-style: italic; }
+.rw-cards__head h2 { width: clamp(380px, 34vw, 560px); font-size: var(--fs-md); }
+.rw-cards__head p { margin: 3px 0 0; font-size: var(--fs-sm); color: var(--kit-text-mid); font-style: italic; }
 
+/* ── the three Tricks, each hung in a painted portrait frame ──────────────── */
 .rw-fan {
+  --frame-pad: clamp(16px, 1.5vw, 24px);
   position: relative;
   display: flex; align-items: flex-end; justify-content: center;
-  gap: clamp(12px, 2vw, 40px);
-  padding-top: clamp(8px, 1.4vh, 20px);
+  gap: calc(var(--frame-pad) * 2 + clamp(22px, 3vw, 56px));
+  padding-top: calc(var(--frame-pad) + clamp(8px, 1.4vh, 18px));
+  padding-bottom: calc(var(--frame-pad) + 20px);
 }
-/* a pool of candlelight so the three Tricks sit on something */
+/* a pool of candlelight on the wall behind the frames */
 .rw-fan::before {
-  content: ''; position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%);
-  width: 118%; height: 150%; pointer-events: none; z-index: -1;
-  background: radial-gradient(48% 44% at 50% 50%,
-    color-mix(in srgb, var(--flame-glow) 13%, transparent) 0%, transparent 72%);
+  content: ''; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: 130%; height: 150%; pointer-events: none; z-index: -1;
+  background: radial-gradient(46% 42% at 50% 54%,
+    color-mix(in srgb, var(--kit-candle) 12%, transparent) 0%, transparent 72%);
 }
 .rw-slot {
   position: relative;
-  /* the three Tricks ARE the screen — let them take the room the header used
-     to leave empty */
-  width: clamp(164px, 16.6vw, 280px);
-  height: clamp(228px, 23.1vw, 390px);
-  transform: translateY(calc(var(--ia, 0) * 8px)) rotate(calc(var(--i, 0) * 3deg));
+  width: clamp(150px, 15.2vw, 262px);
+  height: clamp(209px, 21.2vw, 365px);
+  transform: translateY(calc(var(--ia, 0) * 6px));
   transition: transform var(--t-quick) var(--ease-out), opacity var(--t-base) var(--ease-out),
               filter var(--t-base) var(--ease-out);
   cursor: pointer;
 }
+/* the frame: selectKid's Kid portrait frame, emptied, with a dark recess the
+   card stands in. It lives on the slot so it lifts with the card. */
+.rw-slot::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  inset: calc(var(--frame-pad) * -1);
+  border: 9px solid transparent;          /* the frame's margin outside its rail */
+  border-image-source: url("../../assets/ui/kit/frame.webp");
+  border-image-slice: 52;
+  border-image-width: 40px;
+  border-image-repeat: stretch;
+  background:
+    radial-gradient(90% 60% at 50% 100%, color-mix(in srgb, var(--kit-candle) 12%, transparent), transparent 70%),
+    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
+    linear-gradient(180deg, #110c16, #09070c);
+  background-blend-mode: normal, overlay, normal;
+  background-clip: padding-box;
+  box-shadow: 0 22px 40px -16px rgba(0, 0, 0, .95);
+  /* the rail is 9px in from the image edge at this size; the recess stops there */
+  -webkit-mask: none;
+}
 .rw-slot.is-hot {
-  transform: translateY(-22px) rotate(0deg) scale(1.055);
+  transform: translateY(-14px) scale(1.03);
   z-index: 4;
 }
 .rw-slot::after {
-  content: ''; position: absolute; inset: -8px; border-radius: var(--radius-lg);
-  border: 2px solid transparent; pointer-events: none;
-  transition: border-color var(--t-quick) var(--ease-out), box-shadow var(--t-quick) var(--ease-out);
+  content: ''; position: absolute; inset: calc(var(--frame-pad) * -1 + 7px); pointer-events: none;
+  border-radius: 6px;
+  box-shadow: 0 0 0 0 transparent;
+  transition: box-shadow var(--t-quick) var(--ease-out);
 }
 .rw-slot:focus-visible { outline: none; }
 .rw-slot:focus-visible::after {
-  border-color: var(--flame-300);
-  box-shadow: 0 0 26px color-mix(in srgb, var(--flame-glow) 42%, transparent);
+  box-shadow: 0 0 0 2px var(--focus-ring),
+              0 0 30px color-mix(in srgb, var(--kit-candle) 45%, transparent);
 }
 /* Reward cards are selected through their slot, but their highlighted keyword
    words should still be real tooltip hit targets. The base card intentionally
    disables pointer events on its children for hand hit-testing; this screen
    has a normal slot wrapper, so let the keyword itself receive the hover. */
 .scene--reward .mm-card__kw { pointer-events: auto; cursor: help; }
+/* the rarity, on a nameplate across the bottom rail of the frame */
 .rw-slot__rarity {
-  position: absolute; left: 50%; bottom: -22px; transform: translateX(-50%);
-  font-size: var(--fs-xs); letter-spacing: .2em; text-transform: uppercase;
-  color: var(--rarity-common);
+  --plate-h: 36px;
+  position: absolute; left: 50%; bottom: calc(var(--frame-pad) * -1 - var(--plate-h) * .5);
+  transform: translateX(-50%);
+  min-width: 124px;
+  font-family: var(--font-body); font-weight: 600; font-size: 15px;
+  letter-spacing: .06em; text-transform: capitalize;
+  color: color-mix(in oklab, var(--rarity-common) 50%, var(--kit-name));
+  z-index: 2;
 }
-.rw-slot__rarity[data-rarity="uncommon"] { color: var(--rarity-uncommon); }
-.rw-slot__rarity[data-rarity="rare"] { color: var(--rarity-rare); }
-.rw-slot.is-taken { transform: translateY(-30px) rotate(0deg) scale(1.06); z-index: 5; }
+.rw-slot__rarity[data-rarity="uncommon"] { color: color-mix(in oklab, var(--rarity-uncommon) 72%, var(--kit-name)); }
+.rw-slot__rarity[data-rarity="rare"] { color: color-mix(in oklab, var(--rarity-rare) 80%, var(--kit-name)); }
+.rw-slot.is-taken { transform: translateY(-18px) scale(1.04); z-index: 5; }
 .rw-slot.is-taken::after {
-  border-color: var(--good-300);
-  box-shadow: 0 0 34px color-mix(in srgb, var(--good-300) 40%, transparent);
+  box-shadow: 0 0 0 2px var(--good-300),
+              0 0 36px color-mix(in srgb, var(--good-300) 40%, transparent);
 }
-.rw-slot.is-gone { opacity: .18; filter: grayscale(1) brightness(.6); pointer-events: none; }
+.rw-slot.is-gone { opacity: .22; filter: grayscale(1) brightness(.6); pointer-events: none; }
 /* ── chosen, but not yet kept ───────────────────────────────────────────────
    Taking a Trick is committed by the footer button now, not by the click, so
    there has to be a state between "hovering it" and "it is in my deck". It
    lifts less than `is-taken` and, crucially, the others stay lit and clickable:
    the whole point is that you can still change your mind. */
-.rw-slot.is-picked { transform: translateY(-22px) rotate(0deg) scale(1.04); z-index: 4; }
+.rw-slot.is-picked { transform: translateY(-14px) scale(1.03); z-index: 4; }
 .rw-slot.is-picked::after {
   opacity: 1;
-  box-shadow: 0 0 0 calc(2 * var(--u)) var(--flame-300),
-              0 0 calc(26 * var(--u)) color-mix(in srgb, var(--flame-400) 55%, transparent);
+  box-shadow: 0 0 0 2px var(--kit-gold-hi),
+              0 0 34px color-mix(in srgb, var(--kit-candle) 55%, transparent);
 }
 .rw-slot.is-dimmed { opacity: .62; }
 .rw-slot.is-dimmed:hover, .rw-slot.is-dimmed:focus-visible { opacity: 1; }
 .rw-fan.is-resolved .rw-slot { cursor: default; }
 
+/* the footer: Take none on the left, the way out on the right, like the two
+   round buttons at the foot of the Kid board */
+.scene--reward .rm-foot { justify-content: space-between; padding-inline: calc(var(--rm-pad) + 40px); }
+.scene--reward .rm-foot .rm-live { order: 2; flex: 1; text-align: center; }
+.scene--reward .rw-skip { order: 1; }
+.scene--reward .rm-go { order: 3; }
 .rw-skip em { display: block; }
 
 /* ── large text ───────────────────────────────────────────────────────────── */
