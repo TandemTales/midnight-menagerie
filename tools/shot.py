@@ -4,6 +4,7 @@ This is how every critic agent SEES the real game. Never trust a builder's summa
 
     python tools/shot.py <name> [--scene combat] [--seed 42] [--companion marmalade]
                                 [--wait 2.5] [--w 1600] [--h 900] [--script "..."]
+                                [--port 8777]   (or MM_PORT; a worktree serves itself)
                                 [--steps "click:#end-turn|wait:0.8|hover:.card"]
                                 [--full] [--strip N]
 
@@ -50,7 +51,7 @@ async def run(a):
             frag.append(f"{k}={v}")
     if a.hash:
         frag.append(a.hash)
-    url = BASE + ("#" + "&".join(frag) if frag else "")
+    url = BASE.replace(":8777/", ":%d/" % a.port) + ("#" + "&".join(frag) if frag else "")
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(args=[
@@ -206,6 +207,8 @@ if __name__ == "__main__":
     ap.add_argument("--scene"); ap.add_argument("--seed"); ap.add_argument("--companion")
     ap.add_argument("--kid"); ap.add_argument("--encounter"); ap.add_argument("--region")
     ap.add_argument("--node"); ap.add_argument("--hash")
+    ap.add_argument("--port", type=int, default=int(os.environ.get("MM_PORT") or 8777),
+                    help="dev server port: a build in its own worktree runs its own server")
     ap.add_argument("--wait", type=float, default=2.2,
                     help="settle time AFTER the 3D stage has finished warming")
     ap.add_argument("--warm-timeout", type=float, default=40,
