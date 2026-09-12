@@ -1,0 +1,260 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Upgrades that change nothing in play</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, monospace; background: #14121a; color: #d8d4e0; padding: 20px; }
+  .pass { color: #7fd08a; } .fail { color: #ff8080; } .dim { color: #8a839c; }
+  h2 { color: #c9a9ff; margin: 18px 0 6px; }
+  .dead { color: #ffcf7f; }
+</style>
+<h1>Upgrade effects</h1>
+<div class="dim">every playable Trick played base and upgraded in a real fight, and the two boards compared</div>
+<div id="out"></div>
+<script type="module">
+/**
+ * AN UPGRADE THAT CHANGES A NUMBER NOBODY READS.
+ *
+ * tests/cards already errors when an upgrade changes nothing in the DEF. The
+ * common defect is one layer down: the def changes nums, and no code reads
+ * them. A Power hook hardcodes its value, an Afterglow or an Epitaph resolves
+ * with no card attached so N(c) is empty, or the upgrade only rewrote the text.
+ * The 2026-09-11 card cost pass catalogued roughly forty of these across the
+ * sixteen decks by reading the code, and no gate could see one of them.
+ *
+ * So this plays the thing. Each Trick is played twice from the SAME seed onto
+ * the same seeded board, once base and once upgraded, each play followed by two
+ * whole turns so Powers, hooks, timers and next-turn effects land. Then the two
+ * boards are compared: enemy Courage, Guard and statuses, the Kid's Courage,
+ * Guard, Nerve, statuses and counters, every pile size, the timers and the
+ * objects on the table. Identical boards AND an identical cost means the
+ * upgrade did nothing anybody could see.
+ *
+ * REPORT-ONLY on purpose. The list is long today, so the exit code is about the
+ * gate's own health: a card it cannot instantiate, or a WAIVED entry that has
+ * started to differ. Wire it to fail on the list itself once the list is empty.
+ *
+ * A dummy board cannot reach every condition, so an upgrade can be alive and
+ * still land here: a threshold this fight never crosses, a pile it never fills.
+ * Those go in WAIVED with a reason, and a waiver that starts showing a
+ * difference FAILS, because a control that cannot fail is not a control.
+ */
+import { RNG } from '../../game/src/core/rng.js';
+import { CombatEngine } from '../../game/src/combat/engine.js';
+import { makeDummySetup } from '../../game/src/combat/dummy.js';
+import { installTrackers } from '../../game/src/data/companions/_util.js';
+import * as CARDS from '../../game/src/data/cards.js';
+
+const SEED = 20260911;
+const TURNS_AFTER = 2;
+const SEED_COUNTERS = [['lives', 9], ['loose-bones', 3], ['height', 2], ['plump', 2],
+  ['globs', 3], ['open-eyes', 3], ['patience', 2], ['stretch', 2], ['forecast', 2]];
+const SEED_ENEMY_STATUS = [['haunt', 6], ['web', 6], ['weak', 1]];
+
+/** id -> why a dummy fight cannot show this upgrade. Checked in BOTH directions. */
+const WAIVED = new Map([]);
+
+const out = document.getElementById('out');
+const say = (html, cls) => { const d = document.createElement('div'); if (cls) d.className = cls; d.innerHTML = html; out.appendChild(d); };
+
+function buildEngine(slug) {
+  const deck = CARDS.companion(slug) ? CARDS.startingDeckFor(slug) : CARDS.sharedPool().slice(0, 8);
+  return new CombatEngine(makeDummySetup(new RNG(SEED), { companion: slug, deck: deck.length ? deck : CARDS.sharedPool() }));
+}
+
+/** Everything one play can move, flattened. Same seed on both sides, so a
+ *  difference is the card and SAMENESS is the finding. */
+function snapshot(e) {
+  const st = (a) => [...a.statuses].map(([k, v]) => k + ':' + v).sort().join(' ');
+  const bodies = [...e.enemies, ...(e.allies || [])]
+    .map(x => [x.id, x.hp, x.block, x.alive ? 1 : 0, st(x)].join('/')).join(' | ');
+  const counters = [...e.counters.values()].map(c => c.id + ':' + e.counter(c.id)).sort().join(' ');
+  const piles = ['hand', 'draw', 'discard', 'exhaust', 'stash', 'limbo']
+    .map(n => n + '=' + ((e.piles && e.piles[n]) || []).length).join(' ');
+  const p = e.player;
+  return [bodies, 'hp' + p.hp, 'guard' + p.block, 'nerve' + p.energy, st(p), counters, piles,
+    'timers' + ((e.timers || []).length), 'objects' + ((e.objects || []).length)].join(' # ');
+}
+
+async function playOnce(def, upgraded) {
+  const e = buildEngine(def.companion);
+  await e.startCombat();
+  installTrackers(e, def.companion);
+  // Bodies that cannot die: a kill ends the fight and truncates the comparison,
+  // and the DIFFERENCE in damage is exactly what has to stay visible.
+  for (const x of e.enemies) { x.maxHp = 9999; x.hp = 9999; }
+  /* EVERY declared counter, not a hand-written six: a Companion's upgrade
+     usually pays off through their own track (Quills, Glow, Creases, Paper,
+     Lurk, Loyalty, Patience), and a track sitting at 0 hides the difference. */
+  for (const c of e.counters.values()) {
+    const want = Math.min(c.max === undefined ? 3 : c.max, 3);
+    if (want > (c.min || 0)) e.setCounter(c.id, want, 'test');
+  }
+  for (const [id, v] of SEED_COUNTERS) if (e.counters.has(id)) e.setCounter(id, v, 'test');
+  const t = e.livingEnemies()[0];
+  if (t) for (const [id, v] of SEED_ENEMY_STATUS) e.applyStatus(t, id, v);
+
+  /* A turn that has already started. "Gain {b} Guard for each Trick you
+     discarded this turn" is 5x0 and 7x0 on an untouched board, and "the first
+     Trick each turn" never fires if this is the first. One ordinary play and
+     one discard first -- identical on both sides -- give those a foothold. */
+  const warm = e.piles.hand[0];
+  if (warm) {
+    e.player.energy = 9;
+    const chk = e.canPlay(warm.uid, t && t.id);
+    if (!chk || chk.ok !== false) {
+      try { await e.playCard(warm.uid, warm.target === 'enemy' ? (t && t.id) : undefined); } catch (_) { /* affordability */ }
+    }
+  }
+  const spare = e.piles.hand[0];
+  if (spare) { try { e.moveCard(spare, 'discard', { reason: 'test' }); } catch (_) { /* pile guard */ } }
+
+  const made = e.addCard(def, 'hand', { upgraded });
+  const card = Array.isArray(made) ? made[0] : made;
+  if (!card) return null;
+
+  /* THREE readings, not one. Guard is wiped at the start of the next turn and
+     the hand is re-dealt, so a board read only at the end cannot see Curl Up's
+     extra Guard or an extra card drawn: the first draft of this gate called 600
+     upgrades dead on exactly that. So: the board the moment the play resolves,
+     a running tally of what the fight EMITTED (damage, Guard, healing, status
+     stacks - which survives the wipe), and the board two turns later for
+     anything delayed. */
+  const tally = { dmg: 0, hits: 0, block: 0, heal: 0, status: 0 };
+  const amt = (ev) => ((ev && ev.amount) || 0);
+  e.on('damage', (ev) => { tally.dmg += amt(ev); tally.hits += 1; });
+  e.on('block', (ev) => { tally.block += amt(ev); });
+  e.on('heal', (ev) => { tally.heal += amt(ev); });
+  e.on('status', (ev) => { tally.status += Math.abs((ev && ev.delta) || 0); });
+
+  e.player.energy = 9;
+  const cost = e.costOf(card);
+  let threw = '';
+  try {
+    await e.playCard(card.uid, def.target === 'enemy' ? (t && t.id) : undefined);
+  } catch (err) { threw = String((err && err.message) || err); }
+  /* `canPlay` refuses a Trick this board cannot play at all -- Ambush from a
+     Pocket that is empty, a Buried Trick, a Paper Copy with no Paper -- and
+     `playCard` then does nothing, which makes base and upgraded identical for
+     a reason that has nothing to do with the upgrade. Those are counted apart. */
+  const played = !((e.piles.hand || []).includes(card));
+  const onPlay = snapshot(e);
+  /* A Power buffs what you play NEXT. Playing nothing after it means "your
+     Attacks deal 2 more" and "your Attacks deal 3 more" end the fight on
+     identical boards, so two ordinary Tricks are played each turn afterwards -
+     same hand, same order, both sides - and the Power shows up in the damage. */
+  for (let i = 0; i < TURNS_AFTER && !e.over; i++) {
+    e.player.energy = 9;
+    for (const k of e.piles.hand.slice(0, 2)) {
+      const chk = e.canPlay(k.uid, t && t.id);
+      if (chk && chk.ok === false) continue;
+      try { await e.playCard(k.uid, k.target === 'enemy' ? (t && t.id) : undefined); }
+      catch (err) { if (!threw) threw = String((err && err.message) || err); }
+      if (e.over) break;
+    }
+    e.player.energy = 9;
+    try { await e.endTurn(); } catch (err) { if (!threw) threw = String((err && err.message) || err); }
+  }
+  const emitted = ['dmg' + tally.dmg, 'hits' + tally.hits, 'guard' + tally.block,
+    'heal' + tally.heal, 'status' + tally.status].join(' ');
+  return { cost, played, snap: onPlay + ' || ' + emitted + ' || ' + snapshot(e), threw };
+}
+
+/* A card's own source text, so the report can tell "dead" from "this board
+   could not ask the question". `def.effect` is wrapped in `eff()`, so reading
+   the function back gives the wrapper; the module text gives the card. */
+const SRC = new Map();
+async function sourceFor(slug) {
+  // Neutral Tricks live in data/neutral.js, not companions/: asking for
+  // companions/neutral.js is a 404 in the console and a red gate.
+  if (!slug || !CARDS.companion(slug)) return '';
+  if (!SRC.has(slug)) {
+    try {
+      const r = await fetch('/game/src/data/companions/' + slug + '.js');
+      SRC.set(slug, r.ok ? await r.text() : '');
+    } catch (_) { SRC.set(slug, ''); }
+  }
+  return SRC.get(slug);
+}
+function literalOf(text, id) {
+  const at = text.indexOf("id: '" + id + "'");
+  if (at < 0) return '';
+  const next = text.indexOf("id: '", at + 5);
+  return text.slice(at, next < 0 ? text.length : next);
+}
+
+/** What the upgrade SAYS it changes, for the report. */
+function claim(def) {
+  const u = def.upgrade || {};
+  const nums = def.nums || {};
+  const bits = [];
+  for (const k of Object.keys(u.nums || {})) if (u.nums[k] !== nums[k]) bits.push(k + ' ' + nums[k] + '->' + u.nums[k]);
+  if ('cost' in u && u.cost !== def.cost) bits.push('cost ' + def.cost + '->' + u.cost);
+  if (u.text && u.text !== def.text) bits.push('new text');
+  for (const k of ['exhaust', 'retain', 'innate', 'ethereal', 'target', 'type']) {
+    if (k in u && u[k] !== def[k]) bits.push(k + ' ' + def[k] + '->' + u[k]);
+  }
+  return bits.join(', ') || 'nothing in the def';
+}
+
+(async () => {
+  const all = CARDS.allCards().filter(c =>
+    !['status', 'curse'].includes(c.type) && !['curse', 'special'].includes(c.rarity) && c.upgrade);
+  const dead = [], broken = [], staleWaivers = [], unplayed = [], needsParty = [], choices = [];
+  let checked = 0;
+  /* This board is one Kid. A Trick that pays a FRIEND cannot show a difference
+     here however big its upgrade is, so those are counted apart rather than
+     called dead - a gate that lists cards it cannot judge is trap 54 waiting. */
+  const PARTY = /friend|teammate|\bally\b|another Kid|other Kid|each Kid|every Kid|party/i;
+  const CHOICE = /chooseOne|pickCards|pickEpitaph|pickHand|askRead/;
+
+  for (const def of all) {
+    const a = await playOnce(def, false);
+    const b = await playOnce(def, true);
+    if (!a || !b) { broken.push(def.id + ': the engine could not instantiate it'); continue; }
+    if (!a.played || !b.played) { unplayed.push(def.id); continue; }
+    const identical = a.snap === b.snap && a.cost === b.cost;
+    if (identical && PARTY.test(def.text || '')) { needsParty.push(def.id); continue; }
+    /* A chooser takes the FIRST option here, so an upgrade that only improves
+       the third branch cannot show. Spend a Life is the shape: its upgrade
+       moves draw, Ghoststep and Guard, and the resolver always takes Nerve. */
+    if (identical && CHOICE.test(literalOf(await sourceFor(def.companion), def.id))) {
+      choices.push(def.id);
+      continue;
+    }
+    checked++;
+    const same = a.snap === b.snap && a.cost === b.cost;
+    const waived = WAIVED.get(def.id);
+    if (same && !waived) dead.push({ id: def.id, comp: def.companion || 'neutral', claim: claim(def), threw: a.threw || b.threw });
+    if (!same && waived) staleWaivers.push(def.id + ' waived as "' + waived + '", but it DOES differ now');
+  }
+
+  const byComp = new Map();
+  for (const d of dead) { if (!byComp.has(d.comp)) byComp.set(d.comp, []); byComp.get(d.comp).push(d); }
+  say('<h2>' + dead.length + ' of ' + checked + ' upgrades moved nothing a dummy fight can see</h2>', dead.length ? 'dead' : 'pass');
+  for (const [comp, list] of [...byComp].sort()) {
+    say('<b>' + comp + '</b> (' + list.length + ')', 'dead');
+    for (const d of list) say('&nbsp;&nbsp;' + d.id + ' - upgrade says: ' + d.claim + (d.threw ? ' - THREW: ' + d.threw : ''), 'dim');
+  }
+  for (const line of staleWaivers) say('STALE WAIVER ' + line, 'fail');
+  for (const line of broken) say('BROKEN ' + line, 'fail');
+
+  say('<h2>' + unplayed.length + ' Tricks this board cannot play at all</h2>', 'dim');
+  say('&nbsp;&nbsp;' + unplayed.join(', '), 'dim');
+  say('<h2>' + needsParty.length + ' need a friend on the board to show anything</h2>', 'dim');
+  say('&nbsp;&nbsp;' + needsParty.join(', '), 'dim');
+  say('<h2>' + choices.length + ' hinge on a choice, and the resolver always takes the first branch</h2>', 'dim');
+  say('&nbsp;&nbsp;' + choices.join(', '), 'dim');
+
+  window.__RESULT = {
+    checked,
+    dead: dead.map(d => d.comp + ' ' + d.id + ' [' + d.claim + ']'),
+    byCompanion: [...byComp].map(([c, l]) => c + ':' + l.length).sort(),
+    unplayed, needsParty, choices, staleWaivers, broken,
+  };
+  window.__DONE = true;
+})().catch(err => {
+  say('CRASHED: ' + ((err && err.stack) || err), 'fail');
+  window.__RESULT = { checked: 0, dead: [], byCompanion: [], staleWaivers: [], broken: ['CRASHED ' + err] };
+  window.__DONE = true;
+});
+</script>

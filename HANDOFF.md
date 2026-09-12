@@ -1276,6 +1276,7 @@ python tools/devserver.py 8777
 | `python tools/prep_menu_art.py` | Keys the title wordmark's black to alpha, sizes the mansion plate |
 | `python tools/blueprint_trace.py` | Traces blueprint sections to vectors (`sectionNN.plan.json`) |
 | `python game/src/ui/make_thumbs.py` | Companion portrait thumbnail variants |
+| `python tools/gates.py [--only check|run|extra] [--filter s] [--list]` | EVERY gate in the tree, one at a time: 43 `check.py`, 43 `run.py`, and 11 entry points named neither, which no list reached before (that is how `tests/seams/proof.py` sat red for a day). It also SCANS for RESULT-printing scripts missing from its own list, so the list cannot rot -- add them to `EXTRAS`, or to `NOT_GATES` with a reason. |
 
 All prep scripts are **one-off and commit their output** — there is no runtime build step.
 
@@ -1291,6 +1292,7 @@ the current reading. If they disagree, the prompt is right and this is stale.
 | `tests/coop/run.py` | 645 assertions |
 | `tests/net/run.py` | 128, and **exit 0 since 2026-08-29** — it had always exited 1 on the console errors its own checks provoke, while printing "128 passed, 0 failed". The page declares those three now; an undeclared error fails, and so does a declaration that never fires. The lockstep session; every room and combat through the REAL applier against two real `Run`s; the lobby's seats/host/seed including two tabs over `BroadcastChannel`; and a choice reaching the seat it belongs to, mid-input, without deadlocking |
 | `tests/cards/run.py` | 1470 cards, 0 errors, 0 warnings |
+| `tests/upgrade-effects/check.py` | every Trick played base AND upgraded in a real fight, and the two boards compared: the count of upgrades that moved NOTHING. Report-only -- it goes red on its own health (a card it cannot instantiate, a stale waiver), not on the list |
 | `tests/enemies/run.py` | 124 enemies, 0 errors (148 encounters, 43 statuses) |
 | `tests/enemies/audit.py` | 8783 turns, intent === delivered. ITS BATCH LIST IS HARDCODED — add your region |
 | `tests/run/run.py` | 50 runs, 0 errors, 2 named boss DRAWS, and the regions-reached table |
