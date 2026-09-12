@@ -62,7 +62,17 @@ function discountHooks(applies) {
   return {
     modifyCardCost: (cost, h) => (h.card && applies(h.card, h.e, h)
       ? Math.max(0, cost - (h.stacks || 0)) : cost),
-    onCardPlayed: (h) => { if (h.card && applies(h.card, h.e, h)) h.remove(); },
+    /* Spent only by a Trick that was PRICED with the discount on the Kid:
+       - never by an X Trick: `costOf` returns -1 for X before the discount
+         step, so X takes no discount and must not throw it away;
+       - never by the play that granted it: this fires after the effect, so
+         Shake It Loose and Springboard spent their own discount the moment
+         they gave it. `pricedWith` is what the engine priced the play with. */
+    onCardPlayed: (h) => {
+      if (!h.card || h.card.isX) return;
+      if (h.pricedWith && !h.pricedWith.has(h.hookId)) return;
+      if (applies(h.card, h.e, h)) h.remove();
+    },
   };
 }
 

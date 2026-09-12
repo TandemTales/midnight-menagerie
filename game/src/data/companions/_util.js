@@ -386,7 +386,14 @@ export function guardNextTurn(c, n) { if (n > 0) nextTurn(c, (x) => guard(x, n))
  * has to ride the refill itself, which is what `ctx.bankEnergy` does. Trap 21
  * pointing the other way.
  */
-export function energyNextTurn(c, n) { if (n > 0) c.bankEnergy(n); }
+export function energyNextTurn(c, n) {
+  if (!(n > 0)) return;
+  if (typeof c.bankEnergy === 'function') { c.bankEnergy(n); return; }
+  /* A tracker or hook ctx is not a card ctx and has no `bankEnergy`. Bank on
+     the seat directly, which is all `bankEnergy` does (engine.ctxFor). */
+  const who = c.self || c.player;
+  if (who && who.flags) who.flags.energyNextTurn = (who.flags.energyNextTurn || 0) + n;
+}
 
 /** Run `fn` at the end of the current player turn. */
 export function atTurnEnd(c, fn) {

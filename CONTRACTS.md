@@ -233,6 +233,16 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    the refill itself — a timer is not enough). And if you need the moment the
    turn has ACTUALLY opened, with the hand dealt, listen for
    `phase: 'playerReady'`.
+   **Found again on 2026-09-11, six more times,** by the card-cost pass:
+   Bones' Tighten the Collar, both of Pipkin's "Nerve next turn" choices and
+   Prize Pumpkin, Wisp's converge and Mopsy's The Whole Pattern all granted
+   Nerve from a turn-start timer or listener, and every one paid nothing. And
+   once in a shape this trap did not name: an effect that can resolve ON the
+   `playerTurnStart` tick OR in the middle of a turn. Mossbit's Epitaphs are
+   both (a countdown runs out, or a Trick hurries one to zero), so a plain gain
+   is wiped in the first case and a bank arrives a turn late in the second.
+   `mossbit.js` `epitaphNerve` asks whether the turn has opened yet (between
+   `turn:start` and `playerReady`) and banks only inside that window.
 
 25. **`costMod` on a CardDef is read by nothing.** Two Drizzle cards were written
    with it and would have been silently uncosted. The engine's one
@@ -947,6 +957,33 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    purpose" and "broken since March". And **anything derived by hand from a list
    that grows needs a checker in the same commit**, not in the comment.
 
+61. **`ev.card.cost` IS THE PRINTED COST. THE NERVE A PLAY TOOK IS `ev.cost`.**
+   `card:play` carries both, and they differ exactly where a card rule gets
+   interesting: the snapshot's `cost` is `-1` for an X Trick and blind to every
+   discount, Paper Copy and `costSet`, while `ev.cost` is what `playCard` actually
+   took from the pool. Three hooks that mean "the Nerve that was spent" read the
+   printed one: Brambleboo's The Mansion Waters Back never watered for an X Trick,
+   Drizzle's Quiet After refunded nothing for one (and was still used up), and
+   Crinkle's Shared Library ("a friend plays a Trick costing 2 or more") never
+   counted one, while a Trick discounted to 0 paid all three out at full price.
+   Every suite was green, because until the 2026-09-11 cost pass the game had one
+   X card. Read `ev.cost` when the rule is about Nerve spent; read `ev.card.cost`
+   only when it is about the number printed on the card, and say so in a comment.
+
+62. **A ONE-SHOT DISCOUNT MAY ONLY BE SPENT BY A TRICK IT PRICED.** `discountHooks`
+   in `keywords.js` removes a "the next Trick costs less" status from
+   `onCardPlayed`, and `onCardPlayed` is dispatched AFTER the effect resolves. So
+   the Trick that GRANTS a discount was the first matching Trick to finish with
+   that discount on the board, and it spent it: Bones' Shake It Loose and Pipkin's
+   Springboard handed out Loosened and Springloaded and deleted them in the same
+   play, every time, with nothing red. An X Trick spent one too, for nothing,
+   because X returns from `costOf` before the modifiers run. The engine now passes
+   `pricedWith`, the status ids the owner held when the play was PRICED, on the
+   `onCardPlayed` payload, and `discountHooks` spends a stack only when its own id
+   is in that set and the Trick is not X. A new "next Trick costs less" status
+   goes through `discountHooks`; a hand-rolled `onCardPlayed` remover walks
+   straight back into this.
+
 
 
 15. **The integrator must not `git add -A` while agents are editing.** Four separate agents have
@@ -1051,6 +1088,7 @@ you are about to add another, check the card genuinely cannot be expressed first
 |---|---|
 | `defineCounter({ shared: true })` | A counter that belongs to the TABLE, not a seat: `_ckey` does not prefix it and every seat's HUD shows it. Drizzle's Weather is one global state acting on the shared enemies, so a per-seat counter gave two Drizzles two Weathers. `_clone` copies the shared-id set or a preview engine loses the counter entirely. |
 | `ctx.bankEnergy(n, seat)` | Nerve at the start of a LATER turn. `_dealSeatTurn` SETS Nerve, so a gain from a listener, a hook or a timer is all wiped. Twin of `StatusDef.energyDelta`, pointing the other way. See trap 24. |
+| `hooks.any('playsFree', { card })` | Asked of an X Trick only. Truthy means it plays FREE: X still counts the owner's Nerve and spends none, Slay the Spire's rule for a free X (Havoc into Whirlwind). An X has no number for `modifyCardCost` to take to 0. Crinkle's Overfolded ("costs nothing") registers it. |
 | timer `run({ reason })` | Whether a countdown ran out on its own (`'tick'`) or was forced to zero. `TIMER_FIRE` always carried it and the handler never received it, which made "resolved naturally" unaskable — and that is the whole of Mossbit's Patience. |
 | `phase: 'playerReady'` | Emitted after the turn-start deal: the only moment at which the turn has ACTUALLY opened. `turn:start` is before the Guard wipe and before the hand exists. A new PHASE value rather than a new event, because every existing listener tests for `'player'` or `'enemy'` and falls through it. |
 | `ctx.allyMoveCard(pl, card, pile, opts)` | Move a card a TEAMMATE already owns between their own piles. `moveCard` acts on the acting seat's piles and silently moves nothing; `giveCard` is no help because the card exists already. |

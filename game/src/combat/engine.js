@@ -3204,7 +3204,12 @@ export class CombatEngine {
     const events = this._capture(() => this._asSeat(owner, () => {
       const cost = this.costOf(card);
       const x = cost === -1 ? owner.energy : 0;
-      const spend = cost === -1 ? owner.energy : cost;
+      /* An X Trick that a rule makes FREE still counts the Nerve you have and
+         spends none of it -- Slay the Spire's rule for a free X play (Havoc into
+         Whirlwind). `modifyCardCost` cannot say it, because X has no number to
+         take to 0, so `playsFree` does: Crinkle's Overfolded "costs nothing". */
+      const freeX = cost === -1 && this.hooks.any('playsFree', { card }, this.hooks.actorHooks(owner, 'playsFree'));
+      const spend = cost === -1 ? (freeX ? 0 : owner.energy) : cost;
       const energyBefore = owner.energy;
 
       // 1. leave the hand immediately so effects that look at the hand are right.
@@ -3214,6 +3219,12 @@ export class CombatEngine {
       //    and STASH, so this is HAND or STASH in practice.
       card._playedFrom = this.current.piles._pull(card) || Pile.HAND;
       this.current.piles._push(card, Pile.LIMBO, 'bottom');
+
+      /* The statuses on the Kid when this play was PRICED. A "next Trick costs
+         less" status that this very play grants (Shake It Loose, Springboard)
+         is not among them -- and `onCardPlayed` fires after the effect, so
+         without this the card spent its own discount the moment it gave it. */
+      const pricedWith = new Set([...owner.statuses].filter(([, n]) => n).map(([id]) => id));
 
       // 2. pay
       if (spend > 0) this.gainEnergy(-spend, 'play');
@@ -3260,7 +3271,7 @@ export class CombatEngine {
       }
 
       const finish = () => {
-        this.hooks.dispatch('onCardPlayed', { card, target, index: this.stats.cardsPlayedThisTurn });
+        this.hooks.dispatch('onCardPlayed', { card, target, index: this.stats.cardsPlayedThisTurn, pricedWith });
         if (card.type === CardType.ATTACK) {
           this.hooks.dispatch('onAttackDealt', { card, target }, this.hooks.actorHooks(owner, 'onAttackDealt'));
         }
