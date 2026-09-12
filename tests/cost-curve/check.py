@@ -1,7 +1,7 @@
 """The Nerve cost curve: what it is, and what it is supposed to be.
 
-    python tests/cost-curve/check.py            # assert what already holds
-    python tests/cost-curve/check.py --strict   # assert the whole TARGET too
+    python tests/cost-curve/check.py            # the whole contract, TARGET included
+    python tests/cost-curve/check.py --strict   # the same; kept for old invocations
 
 Needs the dev server on :8777 (python tools/devserver.py 8777).
 
@@ -31,20 +31,34 @@ WHY THIS EXISTS
     "play three of your five" and the Nerve pip is not a resource, it is a
     counter. That is the complaint.
 
-WHAT IS ASSERTED BY DEFAULT
-    The rules that hold today and must not regress:
+WHAT IS ASSERTED
+    The whole contract, by default, since the 2026-09-11 card cost pass made it
+    hold. Until then the TARGET sat behind --strict because the pool did not
+    meet it; --strict is still accepted and changes nothing.
       1. every starting deck offers a cost decision - at least two distinct
          costs, and at least one card above the deck's cheapest;
       2. every cost is a legal one (0..6, or X);
-      3. no companion's whole pool is a single cost.
+      3. no companion's whole pool is a single cost;
+      4. the TARGET below in every rarity band across the pool, and the pool
+         reaches the top of the range: at least 12 Tricks at 4+ and 8 at X;
+      5. the same TARGET for EVERY Companion's own pool, with a Trick costing
+         4+ and an X Trick in each. The spread was asked for across all decks,
+         and a pool-wide share can be met by a few decks overshooting while
+         the rest stay flat.
 
-WHAT --strict ADDS
-    The TARGET below, which is the definition of done for the rework. It does
-    NOT hold yet and it is not supposed to yet: the owner's call is that the
-    range has to reach 4, X, and 5-6 where a card earns it, and that is a
-    design pass over ~1400 cards, not a script. Run --strict to see exactly how
-    far each band still is. Do not wire --strict into the green sweep until it
-    is green.
+AFTER THE PASS (2026-09-11), the same 1442 playable Tricks:
+
+        cost 0    167   11.6%
+        cost 1    591   41.0%
+        cost 2    566   39.3%
+        cost 3     86    6.0%
+        cost 4     16    1.1%
+        cost X     16    1.1%
+
+    common 54% at cost 1 (27% at 2+), uncommon 44% (44%), rare 23% (72%).
+    Almost every deck sits EXACTLY at its common and uncommon quota, so a
+    Trick added later at cost 1 turns this red - which is the point. The
+    per-deck record is docs/notes/2026-09-11-card-cost-pass.md.
 
 Prints `RESULT: n passed, m failed`. Exit 0 only when m == 0.
 """
@@ -144,7 +158,7 @@ def report(cards):
 async def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--strict", action="store_true",
-                    help="also assert the TARGET curve (fails today, by design)")
+                    help="no-op: the TARGET is asserted by default since the 2026-09-11 cost pass")
     a = ap.parse_args()
 
     from playwright.async_api import async_playwright
@@ -195,27 +209,49 @@ async def main():
     check(not thin, "every companion's pool spans at least three costs",
           ", ".join(thin))
 
-    # ── 4. the TARGET, only under --strict ─────────────────────────────────
-    if a.strict:
-        for r, want in TARGET.items():
-            d = rar[r]
-            s = sum(d.values()) or 1
+    # ── 4. the TARGET, every band ─────────────────────────────────
+    for r, want in TARGET.items():
+        d = rar[r]
+        s = sum(d.values()) or 1
+        one = d.get(1, 0) / s
+        high = sum(v for k, v in d.items() if k >= 2 or k == -1) / s
+        check(one <= want["max1"],
+              "%s puts at most %.0f%% of its cards on cost 1" % (r, want["max1"] * 100),
+              "%.1f%%" % (one * 100))
+        check(high >= want["minHigh"],
+              "%s puts at least %.0f%% at cost 2 or above" % (r, want["minHigh"] * 100),
+              "%.1f%%" % (high * 100))
+    n4 = sum(1 for c in cards if c["cost"] >= 4)
+    nx = sum(1 for c in cards if c["cost"] == -1)
+    check(n4 >= TARGET_MIN_AT_4_PLUS,
+          "the pool reaches the top of the range - at least %d cards cost 4+" % TARGET_MIN_AT_4_PLUS,
+          "%d" % n4)
+    check(nx >= TARGET_MIN_X,
+          "and X is a real cost, not a curiosity - at least %d X cards" % TARGET_MIN_X,
+          "%d" % nx)
+
+    # ── 5. every deck, not just the average ────────────────────────────
+    per = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
+    for c in cards:
+        if c["companion"] != "neutral":
+            per[c["companion"]][c["rarity"]][c["cost"]] += 1
+    short = []
+    for slug in sorted(per):
+        for r in ("common", "uncommon", "rare"):
+            d = per[slug][r]
+            s = sum(d.values())
+            if not s:
+                continue
             one = d.get(1, 0) / s
             high = sum(v for k, v in d.items() if k >= 2 or k == -1) / s
-            check(one <= want["max1"],
-                  "%s puts at most %.0f%% of its cards on cost 1" % (r, want["max1"] * 100),
-                  "%.1f%%" % (one * 100))
-            check(high >= want["minHigh"],
-                  "%s puts at least %.0f%% at cost 2 or above" % (r, want["minHigh"] * 100),
-                  "%.1f%%" % (high * 100))
-        n4 = sum(1 for c in cards if c["cost"] >= 4)
-        nx = sum(1 for c in cards if c["cost"] == -1)
-        check(n4 >= TARGET_MIN_AT_4_PLUS,
-              "the pool reaches the top of the range - at least %d cards cost 4+" % TARGET_MIN_AT_4_PLUS,
-              "%d" % n4)
-        check(nx >= TARGET_MIN_X,
-              "and X is a real cost, not a curiosity - at least %d X cards" % TARGET_MIN_X,
-              "%d" % nx)
+            if one > TARGET[r]["max1"] + 1e-9 or high < TARGET[r]["minHigh"] - 1e-9:
+                short.append("%s %s %.0f%% at 1 / %.0f%% at 2+" % (slug, r, one * 100, high * 100))
+    check(not short, "every Companion's own pool meets the TARGET in every band",
+          "; ".join(short[:8]) + (" ... and %d more" % (len(short) - 8) if len(short) > 8 else ""))
+    no4 = [s for s in sorted(per) if not any(k >= 4 for r in per[s] for k in per[s][r])]
+    nox = [s for s in sorted(per) if not any(k == -1 for r in per[s] for k in per[s][r])]
+    check(not no4, "every Companion has a Trick costing 4 or more", ", ".join(no4))
+    check(not nox, "every Companion has an X Trick", ", ".join(nox))
 
     print()
     for line in passes:

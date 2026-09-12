@@ -42,7 +42,7 @@ function coreSets(slug) {
  */
 export function cardValue(def, policy, ctx) {
   if (!def) return -999;
-  const eff = Math.max(0.6, costOf(def));
+  const eff = def.cost === -1 ? 1 : Math.max(0.6, costOf(def));   // an X card's numbers are per Nerve spent
   const dmg = damageOf(def), blk = blockOf(def);
   let v = RARITY_BONUS[def.rarity] ?? 0;
   v += dmg / eff * 1.0;
