@@ -32,8 +32,9 @@
  * `scenes/combat.js`, because each keys off a predicate rather than a keyword —
  * the third Trick of a turn, a prevented hit, a Life, a card crossing into the
  * stash.  SCENE_DRIVEN names them so the gate does not report them as dead.
- * Pudding has no sheets yet; his brief (Protective Brace, Fetch, Dig) gets a row
- * when they arrive.
+ * Pudding's Dig and Fetch are scene-driven for the same reason Bones' are: a
+ * Trick crossing into the stash is a burial and one coming back out of the
+ * discard is a fetch, whoever is holding the leash.
  */
 
 /** Built for every Companion and driven by the scene without this table. */
@@ -43,6 +44,7 @@ export const UNIVERSAL_CLIPS = ['idle', 'ready', 'attack', 'trick', 'hurt', 'cel
 export const SCENE_DRIVEN = {
   marmalade: ['caution', 'spectral', 'zoomies', 'spark'],
   bones: ['dig', 'fetch'],
+  pudding: ['dig', 'fetch'],
 };
 
 /** A rule's third field: this clip may replace the lunge on an Attack. */
@@ -181,6 +183,18 @@ export const MECHANIC_CLIPS = {
     /* "One Patience is paid whenever an Epitaph reaches zero from its own
        scheduled tick" — the start of his turn, which is the Release exactly. */
     counters: [{ id: 'patience', dir: -1, clip: 'release' }],
+  },
+
+  /* Protective Brace — "protect teammate, guard teammate, Loyalty reaction,
+     intercept attack, cooperative defense". His other two, Dig and Fetch, are
+     scene-driven off the pile a Trick crosses, so they need no keyword here. */
+  pudding: {
+    cards: [
+      ['best-friend', 'brace'], ['loyalty', 'brace'], ['graveside', 'brace'],
+    ],
+    /* Loyalty is paid when his Best Friend is threatened or hit, which lands in
+       the enemy phase rather than on a play — the brace nobody asked for. */
+    counters: [{ id: 'loyalty', dir: 1, clip: 'brace' }],
   },
 
   /* Root and Overgrow — "root, grow vines, propagation, overgrowth, battlefield
