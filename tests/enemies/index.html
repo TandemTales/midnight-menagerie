@@ -203,6 +203,8 @@ class MockCombat {
       },
       removeStatus: (a, id) => { if (a) delete a.statuses[id]; },
       removeWorstStatus: (a) => { const k = Object.keys(a.statuses)[0]; if (k) delete a.statuses[k]; },
+      // Mirrors the engine's `cleanse`: every debuff goes and every buff stays.
+      cleanse: (a) => { const t = a || actor; for (const k of Object.keys(t.statuses)) if (STATUS_BY_ID[k]?.kind === 'debuff') delete t.statuses[k]; },
       count: (id, a) => ((a || actor).statuses[id] || 0),
       has: (id, a) => !!((a || actor).statuses[id]),
       addCard: (cardId, pile) => {

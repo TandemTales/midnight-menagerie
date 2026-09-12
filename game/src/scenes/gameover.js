@@ -56,7 +56,7 @@ const KILLERS = {
   'nursery': 'the Governess',
   'sleeping-quarters': 'the Bedframe Beast',
   'kitchens-cellars': 'the Confectioner',
-  'greenhouse': 'the Head Gardener',
+  'greenhouse': 'the Carnivorous Conservatory',
   'graveyard': 'the Groundskeeper of Names',
   'study-library': 'the Archivist',
   'attic-observatory': 'the Watcher in the Rafters',

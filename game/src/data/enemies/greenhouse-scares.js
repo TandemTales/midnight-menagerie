@@ -1,12 +1,15 @@
 /**
- * The Impossible Greenhouse — the three Big Scares. OWNER: enemies.
- * Source of truth: docs/design/regions/05-greenhouse.md §13–§15.
+ * The Impossible Greenhouse — two of its three Big Scares. OWNER: enemies.
+ * Source of truth: docs/design/regions/05-greenhouse.md §13 and §15.
+ *
+ * The third is the Head Gardener, in `greenhouse-gardener.js`: he was the
+ * boss until 2026-09-12, when the Carnivorous Conservatory — §14, and the Big
+ * Scare that used to live in this file — became the boss instead
+ * (`bosses/carnivorous-conservatory.js`).
  *
  *   The Compost Colossus        a body that regrows unless you take its Nodes,
  *                               and Nodes that stop coming back once it is
  *                               below half.
- *   The Carnivorous Conservatory a pressure gauge. Ignore the room and the room
- *                               becomes the fight.
  *   The Ancient Topiary          four forms, and the player picks the branch
  *                               every single turn with their first Trick.
  *
@@ -156,150 +159,6 @@ function announceNodes(c) {
   });
 }
 
-/* ══ Big Scare 2 — the Carnivorous Conservatory (§14) ════════════════════════ */
-export const growthPatch = {
-  id: 'growth-patch',
-  name: 'Growth Patch',
-  region: REGION,
-  tier: 'elite',
-  role: 'bossPart',
-  hp: [12, 12],
-  silhouette: 'patch',
-  palette: ['#4a7c3a', '#86c46c', '#20351a'],
-  shape: { body: 'sprawling', limbs: 0, eyes: 0 },
-  scale: 0.4,
-  summonOnly: true,
-  remnant: true,
-  patch: true,
-  lore: 'A patch of floor that has given up being floor. Things are coming through it.',
-
-  onDeath(c) {
-    const room = allies(c).find(a => isAlive(a) && a.defId === 'carnivorous-conservatory');
-    if (!room) return;
-    const rm = (room.mem ||= {});
-    rm.overgrowth = Math.max(0, (rm.overgrowth || 0) - 1);
-    if (room.counters) room.counters.overgrowth = rm.overgrowth;
-    rm.patchBack = 2;                        // regrows after two enemy turns
-  },
-
-  moves: {
-    spread: {
-      id: 'spread', name: 'Spread', intent: Intent.DEFEND, block: 2,
-      tell: 'It creeps another few inches across the tiles.',
-      effect(c) { c.block(c.self, 2); },
-    },
-  },
-  nextMove: () => 'spread',
-  hauntScaling: (level) => hauntBase(level, 'elite'),
-};
-
-export const carnivorousConservatory = {
-  id: 'carnivorous-conservatory',
-  name: 'The Carnivorous Conservatory',
-  region: REGION,
-  tier: 'elite',
-  role: 'bigscare',
-  hp: [145, 145],
-  silhouette: 'conservatory',
-  palette: ['#2f6b3d', '#6fb37a', '#152a19'],
-  shape: { body: 'sprawling', limbs: 0, eyes: 2 },
-  scale: 1.6,
-  lore: 'An entire greenhouse room that has decided to be predatory. The vines seal the doors behind you.',
-
-  onCombatStart(c) {
-    mem(c).overgrowth = 0;
-    setCnt(c, 'overgrowth', 0);
-    for (let i = 0; i < 2; i++) c.summon('growth-patch', { hp: 12 });
-    announceRoom(c);
-  },
-
-  onTurnStart(c) { if (over(c) >= 2) c.block(c.self, 4); },
-
-  onTurnEnd(c) {
-    const m = mem(c);
-    if (typeof m.patchBack === 'number' && m.patchBack > 0) {
-      m.patchBack -= 1;
-      if (m.patchBack === 0 && patches(c).length < maxPatches(c)) {
-        c.summon('growth-patch', { hp: 12 });
-        c.say('The floor opens again.', 'warn');
-      }
-    }
-    announceRoom(c);
-  },
-
-  moves: {
-    'vine-across-the-door': {
-      id: 'vine-across-the-door', name: 'Vine Across the Door', intent: Intent.DEFEND_BUFF, block: 8,
-      tell: 'Something thick grows across the way you came in.',
-      effect(c) { grow(c, 1); c.block(c.self, 8); },
-    },
-    'hungry-flowers': {
-      id: 'hungry-flowers', name: 'Hungry Flowers', intent: Intent.ATTACK, damage: 5, hits: 2,
-      damageFn: (c) => 5 + (over(c) >= 4 ? 3 : 0),
-      tell: 'Every flower in the room turns to face you at once.',
-      effect(c) { hitPlayer(c, 5 + (over(c) >= 4 ? 3 : 0), 2); },
-    },
-    'root-burst': {
-      id: 'root-burst', name: 'Root Burst', intent: Intent.ATTACK, damage: 10, hits: 1,
-      damageFn: (c) => 10 + (over(c) >= 4 ? 3 : 0),
-      tell: 'The floor bulges, and then it does not hold.',
-      effect(c) { hitPlayer(c, 10 + (over(c) >= 4 ? 3 : 0)); grow(c, 1); },
-    },
-    'seed-everywhere': {
-      id: 'seed-everywhere', name: 'Seed Everywhere', intent: Intent.SUMMON,
-      tell: 'It scatters, indiscriminately.',
-      effect(c) {
-        if (patches(c).length < maxPatches(c)) c.summon('growth-patch', { hp: 12 });
-        else grow(c, 1);
-      },
-    },
-    'room-consumed': {
-      id: 'room-consumed', name: 'Room Consumed', intent: Intent.ATTACK_BIG, damage: 24, hits: 1,
-      tell: 'The room closes.',
-      effect(c) {
-        hitPlayer(c, 24);
-        mem(c).overgrowth = 3;
-        setCnt(c, 'overgrowth', 3);
-        for (const p of patches(c)) c.despawn(p);
-        mem(c).patchBack = 2;
-        announceRoom(c);
-      },
-    },
-  },
-
-  /** Room Consumed replaces the next action whenever Overgrowth reaches 6. */
-  nextMove: (c) => {
-    if (over(c) >= 6) return 'room-consumed';
-    return cyc(['vine-across-the-door', 'hungry-flowers', 'root-burst', 'seed-everywhere'],
-      (c.history || []).filter(x => x !== 'room-consumed').length);
-  },
-
-  hauntScaling(level) {
-    const h = hauntBase(level, 'elite');
-    if (level >= 1) h.notes.push('Courage +6%.');
-    if (level >= 9) { h.flags.patches = 3; h.notes.push('Haunt 9: three Growth Patches rather than two.'); }
-    return h;
-  },
-};
-function over(c) { return mem(c).overgrowth || 0; }
-function grow(c, n) {
-  const m = mem(c);
-  m.overgrowth = Math.min(6, (m.overgrowth || 0) + n);
-  setCnt(c, 'overgrowth', m.overgrowth);
-  announceRoom(c);
-}
-function patches(c) { return allies(c).filter(a => isAlive(a) && a.def?.patch); }
-function maxPatches(c) { return flag(c, 'patches', 2); }
-function announceRoom(c) {
-  const o = over(c);
-  c.announceRule({
-    id: `room:${c.self.id}`,
-    name: `Overgrowth ${o} / 6`,
-    text: '2: it gains 4 Guard every turn. 4: its attacks deal 3 more. 6: the room closes for 24. '
-      + 'Break a Growth Patch to take one Overgrowth back off it.',
-  });
-}
-
 /* ══ Big Scare 3 — the Ancient Topiary (§15) ═════════════════════════════════
  *
  * "This means the player always controls the branch." Two forms are announced
@@ -408,6 +267,5 @@ function announceBranch(c) {
 
 export const GREENHOUSE_SCARES = [
   compostColossus, regrowthNode,
-  carnivorousConservatory, growthPatch,
   ancientTopiary,
 ];

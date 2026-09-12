@@ -598,18 +598,19 @@ const GH = [
   { id: 'gh-scare-compost', region: 'greenhouse', tier: 'elite', name: 'The Compost Colossus',
     members: [m('compost-colossus')],
     teaches: 'Take the Nodes, race the body, or push it under half and then take the Nodes.' },
-  { id: 'gh-scare-conservatory', region: 'greenhouse', tier: 'elite',
-    name: 'The Carnivorous Conservatory',
-    members: [m('carnivorous-conservatory')],
-    teaches: 'A pressure gauge. Ignore the room and the room becomes the fight.' },
+  /* The Head Gardener was the boss until 2026-09-12; the Conservatory, which
+     was this Big Scare, is the boss now (Josh). */
+  { id: 'gh-scare-gardener', region: 'greenhouse', tier: 'elite', name: 'The Head Gardener',
+    members: [m('head-gardener')],
+    teaches: 'Which plant hurts YOUR deck? And it will eat its own garden for damage if you leave one too long.' },
   { id: 'gh-scare-topiary', region: 'greenhouse', tier: 'elite', name: 'The Ancient Topiary',
     members: [m('ancient-topiary')],
     teaches: 'Four forms, and your first Trick each turn picks which one arrives.' },
 
   // ── Boss ──────────────────────────────────────────────────────────────────
-  { id: 'gh-boss', region: 'greenhouse', tier: 'boss', name: 'The Head Gardener',
-    members: [m('head-gardener')],
-    teaches: 'Which plant hurts YOUR deck? And it will eat its own garden for damage if you leave one too long.' },
+  { id: 'gh-boss', region: 'greenhouse', tier: 'boss', name: 'The Carnivorous Conservatory',
+    members: [m('carnivorous-conservatory')],
+    teaches: 'A pressure gauge: ignore the room and the room becomes the fight. At half, it stops waiting to be told.' },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────

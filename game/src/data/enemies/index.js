@@ -33,13 +33,14 @@ import { KENNEL_SCARES, SCARE_STATUSES as KENNEL_SCARE_STATUSES } from './kennel
 import { PUMPKIN_ENEMIES, PUMPKIN_STATUSES } from './pumpkin-grounds.js';
 import { PUMPKIN_SCARES } from './pumpkin-grounds-scares.js';
 import { GREENHOUSE_SCARES } from './greenhouse-scares.js';
+import { GREENHOUSE_GARDENER } from './greenhouse-gardener.js';
 import { HEART_ENEMIES, HEART_STATUSES } from './heart.js';
 import { HEART_SCARES } from './heart-scares.js';
 import { FOYER_BOSSES } from '../bosses/butler.js';
 import { NURSERY_BOSSES } from '../bosses/governess.js';
 import { SLEEPING_QUARTERS_BOSSES } from '../bosses/bedframe-beast.js';
 import { KITCHENS_CELLARS_BOSSES } from '../bosses/confectioner.js';
-import { GREENHOUSE_BOSSES } from '../bosses/head-gardener.js';
+import { GREENHOUSE_BOSSES } from '../bosses/carnivorous-conservatory.js';
 import { GRAVEYARD_BOSSES } from '../bosses/groundskeeper.js';
 import { STUDY_LIBRARY_BOSSES } from '../bosses/archivist.js';
 import { ATTIC_BOSSES } from '../bosses/watcher.js';
@@ -100,6 +101,7 @@ const ALL = [
   ...KITCHENS_CELLARS_BOSSES,
   ...GREENHOUSE_ENEMIES,
   ...GREENHOUSE_SCARES,
+  ...GREENHOUSE_GARDENER,
   ...GREENHOUSE_BOSSES,
   ...GRAVEYARD_ENEMIES,
   ...GRAVEYARD_SCARES,

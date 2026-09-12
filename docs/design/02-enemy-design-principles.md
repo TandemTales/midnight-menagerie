@@ -126,7 +126,7 @@ Animates multiple kitchen objects at once and continuously changes the compositi
 ### Boss: The Confectioner
 Creates edible supernatural minions, melts them back together, divides them again, and feeds failed creations into stronger ones.
 Very appropriate to Taffy's transformation identity.
-6. The Impossible GreenhouseCompanion: Brambleboo Boss: The Head Gardener
+6. The Impossible GreenhouseCompanion: Brambleboo Boss: The Carnivorous Conservatory
 ### Combat identity
 Growth, battlefield accumulation, roots, spreading effects, and escalating enemies.
 ### Scuffle enemies
@@ -145,18 +145,13 @@ Fragile but dangerous plant that retaliates when attacked.
 ### Big Scares
 The Compost Colossus
 Regenerates unless particular growths are removed.
-The Carnivorous Conservatory
-A stationary mass of plants that steadily takes over the battlefield.
+The Head Gardener
+Treats combat as gardening: plants, prunes, and loses control of the garden at the end. The region boss until 2026-09-12.
 The Ancient Topiary
 Cycles between several animal shaped combat forms.
-### Boss: The Head Gardener
-Treats combat as gardening.
-Plants enemies.
-Prunes enemies.
-Transplants buffs.
-Roots the player.
-Accelerates growth.
-At later stages, his carefully controlled garden begins growing beyond even his control.
+### Boss: The Carnivorous Conservatory
+A stationary mass of plants that steadily takes over the battlefield.
+At half its Courage the glass gives way, and from then on the room grows by itself.
 7. The Mansion GraveyardCompanion: Mossbit Boss: The Groundskeeper of Names
 ### Combat identity
 Patience, countdowns, delayed retaliation, inevitability, memory, and enemies that become threatening if rushed or ignored.

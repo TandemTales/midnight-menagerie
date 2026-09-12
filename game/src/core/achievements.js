@@ -69,7 +69,7 @@ export const BUILT_REGIONS = [
   'pumpkin-grounds', 'heart',
 ];
 export const BUILT_BOSSES = [
-  'butler', 'governess', 'bedframe-beast', 'confectioner', 'head-gardener',
+  'butler', 'governess', 'bedframe-beast', 'confectioner', 'carnivorous-conservatory',
   'groundskeeper', 'the-archivist', 'the-watcher', 'the-lamplighter',
   'master-of-revels', 'bone-curator', 'gardener-of-rot', 'whisper-warden',
   'drowned-matron', 'kennelmaster', 'harvest-king', 'keeper',

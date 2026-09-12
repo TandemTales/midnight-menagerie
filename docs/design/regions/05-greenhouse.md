@@ -3,7 +3,7 @@
 _Source: Midnight Menagerie Design.docx, lines 15720-16609_
 
 # The Impossible Greenhouse
-Companion: Brambleboo Boss: The Head Gardener Region identity: Roots, vines, seeds, propagation, battlefield growth, delayed hazards, territorial control, and escalating ecosystems
+Companion: Brambleboo Boss: The Carnivorous Conservatory Region identity: Roots, vines, seeds, propagation, battlefield growth, delayed hazards, territorial control, and escalating ecosystems
 The Impossible Greenhouse should feel like the first mansion region where the player is not merely fighting individual creatures.
 They are fighting an ecosystem.
 The greenhouse is impossibly large inside. Entire groves grow beneath glass ceilings. Vines pass through walls and emerge several rooms away. Plants grow in seconds. Flower beds migrate. Roots buckle stone floors.
@@ -20,10 +20,11 @@ Topiary Beast
 Glassvine
 The three Big Scares are:
 The Compost Colossus
-The Carnivorous Conservatory
+The Head Gardener
 The Ancient Topiary
 Boss:
-The Head Gardener
+The Carnivorous Conservatory
+Until 2026-09-12 The Head Gardener was the boss and The Carnivorous Conservatory a Big Scare. Josh swapped them; §14a and §16 carry what changed.
 # 2. Regional mechanic: Growth
 Several Greenhouse enemies use Growth.
 Growth represents a plant becoming larger, more established, or more dangerous.
@@ -344,10 +345,10 @@ Race the main body.
 Push below half Courage before investing in Node removal.
 Use wide damage to pressure everything.
 The fight supports multiple approaches.
-# 14. Big Scare: The Carnivorous Conservatory
-Courage: 145**
-The extra asterisk above is not part of a new mechanic. Its Courage target is simply 145.
-Role: Battlefield takeover
+# 14. The Carnivorous Conservatory
+Boss Courage: 300
+Until 2026-09-12 this was a Big Scare at 145. It is the region boss now. Everything in this section is still true of it and is its phase one; §14a is what it became.
+Role: Battlefield takeover, and the region boss
 This Big Scare is not one plant.
 It is an entire greenhouse room that has become predatory.
 Vines seal the doors.
@@ -398,6 +399,25 @@ Room Consumed replaces the next action if Overgrowth reaches 6.
 ### Combat identity
 The battle is a pressure gauge.
 Ignoring the environment makes the room itself increasingly dangerous.
+# 14a. The Carnivorous Conservatory as the boss
+Phase one is §14 exactly, at 300 Courage.
+### Why it has a second phase
+At boss Courage the §14 loop only repeats: Room Consumed on a timer until one side runs out.
+Slay the Spire 2's convention for a multi-phase boss is a phase transition below 50% HP that clears the boss's debuffs and hits everyone (docs/STS2-REFERENCE.md).
+### Phase transition
+At half its Courage (150 of 300) it uses:
+The Glass Gives Way
+Remove all of its debuffs.
+Deal 12 damage to every player.
+Every Growth Patch it has lost regrows at once.
+### Phase two
+At the end of each of its turns, gain 1 Overgrowth.
+A destroyed Growth Patch regrows after one enemy turn instead of two.
+The pattern, the Overgrowth thresholds and Room Consumed are unchanged.
+### Multiplayer
+Room Consumed and The Glass Gives Way hit every player, at the §38 shares: 17, 15 and 14 of Room Consumed's 24 for two, three and four players, and the same shares of 12.
+### Combat identity
+The same pressure gauge on a faster clock. Break the Patches, or the room closes more often than you can survive.
 # 15. Big Scare: The Ancient Topiary
 Courage: 138
 Role: Multi form mastery fight
@@ -440,8 +460,9 @@ Other first: Stag
 The player can decide whether they want to face immediate damage or allow long term Growth.
 ### Design purpose
 This Big Scare tests the player's ability to manipulate future enemy states.
-# 16. The Head Gardener
-Boss Courage: 320
+# 16. Big Scare: The Head Gardener
+Courage: 150
+Until 2026-09-12 this was the region boss at 320. It is a Big Scare now, and every threshold below is the same share of 150 that it was of 320: 180 becomes 84, and 70 becomes 33.
 The Head Gardener is enormous but still recognizably humanoid.
 Its clothes are stitched from old gardening aprons.
 Its face is hidden behind a cracked porcelain gardening mask.
@@ -556,7 +577,7 @@ The boss can consume its own garden for power.
 The player cannot simply assume every enemy planted object should remain alive because the boss wants it alive.
 Sometimes the player may destroy a plant before The Head Gardener can convert it into Growth.
 # 23. Phase transition
-At 180 Courage:
+At 84 Courage (180 when it was the boss at 320):
 The Head Gardener uses:
 Let Nature Take Its Course
 Destroy all Seeds.
@@ -614,7 +635,7 @@ Root Sweep.
 Repeat.
 The Greenhouse Takes You interrupts this sequence whenever Overgrown reaches 3.
 # 27. Garden collapse at low Courage
-At 70 Courage or less:
+At 33 Courage or less (70 when it was the boss at 320):
 The Head Gardener gains:
 Desperate Cultivation
 Whenever the player destroys a mature plant:

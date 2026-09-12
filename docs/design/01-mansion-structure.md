@@ -219,7 +219,7 @@ Breakfast Room fireplace to formal mansion rooms.
 Sugar Store floor hatch to Confectioner’s Kitchen.
 # 5. The Impossible Greenhouse
 Companion: Brambleboo, the Haunted Houseplant
-Boss: The Head Gardener
+Boss: The Carnivorous Conservatory (The Head Gardener until 2026-09-12)
 Architectural form: Vast branching glass complex expanding far beyond the exterior dimensions of the mansion.
 Although every region contains 20 rooms, this should remain one of the physically largest.
 Individual conservatories can be enormous.
@@ -227,7 +227,7 @@ Individual conservatories can be enormous.
 The Glass Hall divides into dry, tropical, and overgrown routes.
 Several paths cross through elevated bridges.
 The Root Nursery and Compost House provide lower connections beneath the greenhouse floor.
-The final routes converge on the Head Gardener’s Rotunda.
+The final routes converge on the Great Conservatory.
 ## Rooms
 Glass Hall: Scuffle.
 Palm House: Scuffle.
@@ -248,7 +248,7 @@ Compost House: Curiosity.
 Orangery: Blanket Fort.
 Winter Garden: Scuffle.
 Overgrown Conservatory: Big Scare.
-Head Gardener’s Rotunda: Boss.
+The Great Conservatory: Boss.
 ## Manifested connection possibilities
 Roots create temporary tunnels between distant conservatories.
 Glass doors open onto exterior regions that should be hundreds of feet away.

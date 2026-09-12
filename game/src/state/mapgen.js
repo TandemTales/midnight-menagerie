@@ -63,7 +63,7 @@ export const ROOMS = {
     R('Tool Shed','se'), R('Rain House','sc'), R('Moon Pool','cu'), R('Ivy Bridge','cn'),
     R('Root Nursery','cl'), R('Topiary Court','sc'), R('Herbarium','cl'), R('Compost House','cu'),
     R('Orangery','bf'), R('Winter Garden','sc'), R('Overgrown Conservatory','bs'),
-    R("Head Gardener's Rotunda",'bo'),
+    R('The Great Conservatory','bo'),
   ],
   'graveyard': [
     R('Front Cemetery Gate','sc'), R('Gravel Walk','cn'), R('Angel Row','cu'), R('Family Plot','sc'),
@@ -185,7 +185,7 @@ export const REGIONS = Object.fromEntries([
   M('nursery','The Forgotten Nursery','The Governess','mopsy',2,6,13,'Compact suite around two communal play spaces'),
   M('sleeping-quarters','The Sleeping Quarters','The Bedframe Beast','boggle',3,5,14,'Long residential corridor · bedrooms both sides'),
   M('kitchens-cellars','The Kitchens and Cellars','The Confectioner','taffy',4,6,14,'Service complex above · older cellars below'),
-  M('greenhouse','The Impossible Greenhouse','The Head Gardener','brambleboo',5,6,13,'Branching glass complex beyond the exterior wall'),
+  M('greenhouse','The Impossible Greenhouse','The Carnivorous Conservatory','brambleboo',5,6,13,'Branching glass complex beyond the exterior wall'),
   M('graveyard','The Mansion Graveyard','The Groundskeeper of Names','pudding',6,6,14,'Irregular ring of burial paths'),
   M('study-library','The Grand Study and Library','The Archivist','crinkle',7,6,14,'Asymmetrical library wing · several expansions'),
   M('attic-observatory','The Moonlit Attic and Observatory','The Watcher in the Rafters','wink',8,6,14,'Attic chambers climbing to a tower'),

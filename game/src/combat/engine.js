@@ -2082,6 +2082,10 @@ export class CombatEngine {
       // through — Blanket Blob's Cover sends `{ by, amount }` this way.
       applyStatus: (a, id, n, opts) => e.applyStatus(a || e.player, id, n, { sourceId: enemy.id, ...(opts || {}) }),
       removeStatus: (a, id, opts) => e.removeStatus(a || enemy, id, (opts && opts.reason) || 'enemy'),
+      /** Every debuff off an actor: the first half of StS2's boss phase transition
+          (the Carnivorous Conservatory's The Glass Gives Way). The engine has had
+          `cleanse` for exactly this; the enemy ctx never handed it over. */
+      cleanse: (a) => e.cleanse(a || enemy, 'enemy'),
       buff: (id, n, opts) => e.applyStatus(enemy, id, n, { sourceId: enemy.id, ...(opts || {}) }),
       debuff: (id, n, opts) => e.applyStatus(target(), id, n, { sourceId: enemy.id, ...(opts || {}) }),
       statusMeta: (a, id) => e.statusMeta(a || enemy, id),

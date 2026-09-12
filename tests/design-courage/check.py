@@ -71,12 +71,14 @@ ALLOWED = {
                        "an outlier and the cause is not its boss's Courage."),
 }
 
-# NOT TUNED, and deliberately so: the Head Gardener stays at his chapter's 320.
-# Lowering him was tried twice on 2026-09-02 (to 225 and to 230) and the
-# Greenhouse got HARDER both times - 68% of pool -> 81% and -> 79%. His fight is
-# a treadmill whose length is set by the three Beds, not by him, so cutting his
-# Courage shortens nothing and only moves his phase thresholds. Whatever fixes
-# the Greenhouse, it is not this number.
+# THE GREENHOUSE CHANGED BOSSES on 2026-09-12 (Josh): the Carnivorous
+# Conservatory is the boss at 300 with a phase two (chapter §14a) and the Head
+# Gardener is a Big Scare at 150, both written into the chapter, so neither is a
+# divergence. What stays true from before: lowering the Gardener as a boss was
+# tried twice on 2026-09-02 (to 225 and to 230) and the Greenhouse got HARDER
+# both times - 68% of pool -> 81% and -> 79% - because his fight was a treadmill
+# whose length the three Beds set, not his Courage. Measure the new boss before
+# believing its 300 is right.
 
 
 def norm(s):

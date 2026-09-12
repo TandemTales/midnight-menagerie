@@ -230,6 +230,41 @@ async () => {
 }
 """
 
+# ── the Conservatory is the boss now: at half, the glass gives way (§14a) ────
+# Its phase change is StS2's ("Phase transition below 50% HP: debuff clear +
+# AoE", docs/STS2-REFERENCE.md), and after it the room grows on its own. Every
+# half of that is a claim a green suite could make about dead code, so each is
+# read off a real engine, and the control is the same board above half.
+GLASS = r"""
+async ([halve]) => {
+  const e = make(['carnivorous-conservatory'], { seed: 31, hp: 900 });
+  await e.startCombat();
+  const room = e.enemies.find(x => x.defId === 'carnivorous-conservatory');
+  const patches = () => e.enemies.filter(x => x.def && x.def.patch && x.alive);
+  let hit = 0, glassTurn = -1, overBefore = null, overAfter = null, hitOnGlass = null;
+  e.on('damage', (ev) => { if (ev.targetId === e.player.id) hit += (ev.hpLoss || 0) + (ev.blocked || 0); });
+  e.applyStatus(room, 'vulnerable', 5, {});
+  if (halve) room.hp = Math.floor(room.maxHp / 2);
+  // Enemy turns until it turns: the intent it telegraphed at full Courage runs
+  // first, and the glass is the next thing it plans.
+  for (let t = 0; t < 3 && !e.over; t++) {
+    const o = (room.mem || {}).overgrowth || 0;
+    const h = hit;
+    await e.endTurn();
+    if (room.lastMove === 'the-glass-gives-way') {
+      glassTurn = t; overBefore = o; overAfter = (room.mem || {}).overgrowth || 0; hitOnGlass = hit - h;
+      break;
+    }
+  }
+  const vulnerable = room.status('vulnerable');
+  const p = patches()[0];
+  if (p) e.loseHp(p, p.hp + 5, 'test');
+  return { halve, glassTurn, phase: (room.mem || {}).phase || 1, vulnerable,
+           overBefore, overAfter, hitOnGlass,
+           patchBack: (room.mem || {}).patchBack ?? null, history: room.history.slice(-4) };
+}
+"""
+
 FIGHT = r"""
 async ([encId, seed, turns, hp]) => {
   const { C, enc, en, cards, RNG } = window.__G;
@@ -379,17 +414,38 @@ async def main(a):
         check(g["plants"] >= 1, "and the Seeds really become plants", json.dumps(g)[:140])
         check(g["uprooted"] is True,
               "destroying a plant really Uproots its Bed (§21)", f"bed {g['bed']}")
-        check(not g["warns"], "the engine logged no warnings during the boss fight",
+        check(not g["warns"], "the engine logged no warnings during the Head Gardener's fight",
               "; ".join(g["warns"][:2]) or "clean")
 
-        # ══ the Big Scares, on a real board ═════════════════════════════════
+        # ══ the boss: the Conservatory's glass gives way at half ════════════
+        glass = await page.evaluate(GLASS, [True])
+        calm = await page.evaluate(GLASS, [False])
+        check(glass["glassTurn"] >= 0 and glass["phase"] == 2,
+              "at half Courage the Conservatory plays The Glass Gives Way (§14a)",
+              json.dumps(glass)[:180])
+        check(calm["glassTurn"] < 0 and calm["phase"] == 1,
+              "CONTROL: above half it never does", json.dumps(calm)[:180])
+        check(glass["vulnerable"] == 0 and calm["vulnerable"] > 0,
+              "the glass clears its own debuffs (CONTROL: they stay)",
+              f"{glass['vulnerable']} vs {calm['vulnerable']}")
+        check(glass["hitOnGlass"] == 12, "and it hits the Kid for 12", str(glass["hitOnGlass"]))
+        check(glass["overAfter"] == min(6, glass["overBefore"] + 1),
+              "then the room grows on its own: +1 Overgrowth on a turn whose move grew none",
+              f"{glass['overBefore']} -> {glass['overAfter']}")
+        check(glass["patchBack"] == 1 and calm["patchBack"] == 2,
+              "a broken Patch is back after one turn once the glass is gone (CONTROL: two)",
+              f"{glass['patchBack']} vs {calm['patchBack']}")
+
+        # ══ the Big Scares and the boss, on a real board ════════════════════
         for enc_id, seed, turns, hp, want, label in [
             ("gh-scare-compost", 3, 40, 800, ["regrowth-node"],
              "the Compost Colossus really puts Nodes on the board"),
-            ("gh-scare-conservatory", 4, 40, 800, ["growth-patch"],
-             "the Conservatory really puts Growth Patches on the board"),
+            ("gh-scare-gardener", 4, 40, 800, ["head-gardener"],
+             "the Head Gardener, a Big Scare now, resolves a whole fight"),
             ("gh-scare-topiary", 5, 40, 800, ["ancient-topiary"],
              "the Ancient Topiary resolves a whole fight"),
+            ("gh-boss", 6, 40, 800, ["growth-patch"],
+             "the Conservatory, the boss now, really puts Growth Patches on the board"),
         ]:
             r = await page.evaluate(FIGHT, [enc_id, seed, turns, hp])
             missing = [w for w in want if w not in r["appeared"]]

@@ -1,6 +1,14 @@
 /**
- * The Head Gardener — the Impossible Greenhouse boss. OWNER: enemies.
+ * The Head Gardener — a Big Scare of the Impossible Greenhouse. OWNER: enemies.
  * Source of truth: docs/design/regions/05-greenhouse.md §16–§27.
+ *
+ * HE WAS THE BOSS until 2026-09-12, when Josh made the Carnivorous Conservatory
+ * the boss "instead of the head gardener (who would now just be a big scare)" —
+ * `bosses/carnivorous-conservatory.js`. Nothing about the garden changed: it is
+ * the same fight at Big Scare size, 150 Courage against the 132-145 of the
+ * Greenhouse's other Big Scares. Both thresholds are scaled with it, because
+ * `phaseAt` reads them as a share of SOLO_MAX: phase two still arrives with
+ * 56% of him left, and the garden is still wired to him for the last 22%.
  *
  * "The Head Gardener believes every living thing has a correct place and
  * correct shape. Its philosophy is: anything can thrive if properly cultivated.
@@ -30,12 +38,13 @@
 import { Intent } from '../schema.js';
 import {
   mem, cnt, setCnt, addCnt, allies, cyc, hitPlayer, hauntBase, bossDmg, flag, isAlive, phaseAt,
-} from '../enemies/_lib.js';
+} from './_lib.js';
 
 const REGION = 'greenhouse';
-const SOLO_MAX = 320;
-const PHASE_TWO_AT = 180;
-const COLLAPSE_AT = 70;
+const SOLO_MAX = 150;
+// The boss's 180 and 70 of 320, as the same shares of 150.
+const PHASE_TWO_AT = 84;
+const COLLAPSE_AT = 33;
 
 /** Each Seed, what it becomes, and the one thing that plant does. */
 const SEEDS = {
@@ -54,7 +63,7 @@ function punch(c) { return 2 * cnt(c, 'cultivated') + 2 * cnt(c, 'overgrown') + 
  */
 function seedDef({ id, name, hp, becomes, palette, lore }) {
   return {
-    id, name, region: REGION, tier: 'boss', role: 'bossPart',
+    id, name, region: REGION, tier: 'elite', role: 'bossPart',
     hp: [hp, hp],
     silhouette: 'seed',
     palette,
@@ -90,7 +99,7 @@ function seedDef({ id, name, hp, becomes, palette, lore }) {
       },
     },
     nextMove: () => 'sprout',
-    hauntScaling: (level) => hauntBase(level, 'boss'),
+    hauntScaling: (level) => hauntBase(level, 'elite'),
   };
 }
 
@@ -113,7 +122,7 @@ export const bloomSeed = seedDef({
 /* ══ Mature plants ══════════════════════════════════════════════════════════ */
 function plantDef({ id, name, palette, lore, hooks }) {
   return {
-    id, name, region: REGION, tier: 'boss', role: 'bossPart',
+    id, name, region: REGION, tier: 'elite', role: 'bossPart',
     hp: [16, 16],
     silhouette: 'plant',
     palette,
@@ -136,7 +145,7 @@ function plantDef({ id, name, palette, lore, hooks }) {
     onDeath(c) {
       try { hooks && hooks.onDeath && hooks.onDeath(c); } catch (err) { console.error(err); }
       uproot(c, mem(c).bed);
-      // §27: below 70 Courage the garden is wired to the gardener.
+      // §27: in his last 22% (the boss's 70 of 320) the garden is wired to him.
       const boss = gardener(c);
       if (boss && boss.hp <= phaseAt({ self: boss }, COLLAPSE_AT, SOLO_MAX)) {
         c.loseHp(boss, 4);
@@ -151,7 +160,7 @@ function plantDef({ id, name, palette, lore, hooks }) {
       },
     },
     nextMove: () => 'stand',
-    hauntScaling: (level) => hauntBase(level, 'boss'),
+    hauntScaling: (level) => hauntBase(level, 'elite'),
   };
 }
 
@@ -233,8 +242,8 @@ export const headGardener = {
   id: 'head-gardener',
   name: 'The Head Gardener',
   region: REGION,
-  tier: 'boss',
-  role: 'boss',
+  tier: 'elite',
+  role: 'bigscare',
   hp: [SOLO_MAX, SOLO_MAX],
   silhouette: 'gardener',
   palette: ['#6d6f4a', '#b9ba86', '#2b2c1c'],
@@ -404,7 +413,7 @@ export const headGardener = {
   },
 
   hauntScaling(level) {
-    const h = hauntBase(level, 'boss');
+    const h = hauntBase(level, 'elite');
     if (level >= 1) h.notes.push('Courage +6%.');
     if (level >= 5) { h.flags.wildTriples = 1; h.notes.push('Haunt 5: Wild Growth may fill all three Beds with the same plant.'); }
     return h;
@@ -452,7 +461,7 @@ function announceGarden(c) {
   });
 }
 
-export const GREENHOUSE_BOSSES = [
+export const GREENHOUSE_GARDENER = [
   headGardener,
   thornSeed, vineSeed, bloomSeed,
   thornBush, bindingVine, moonBloom,

@@ -242,7 +242,7 @@ export function field(c) { return (c.field ||= {}); }
  * moment an enemy can read the hand the player is about to play with". It
  * fires at step 6c — AFTER the deal and BEFORE intents are drawn — which is
  * also why anything armed there is already inside the number the player reads.
- * `bosses/head-gardener.js` and `enemies/heart.js` both mark from it correctly.
+ * `enemies/greenhouse-gardener.js` and `enemies/heart.js` both mark from it correctly.
  *
  * So a move that wants to touch the hand does not touch it. It QUEUES the work
  * with `whenHandArrives`, and the def's `onPlayerReady` calls `runHandOps`.

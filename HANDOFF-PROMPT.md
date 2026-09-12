@@ -105,11 +105,25 @@ of it — including a delivered source nobody built, and one rebuilt from old ar
   Hydra and Wardrobe paintings include their parts, so those fights show them
   twice until part art exists.
 
+## DONE SINCE: THE GREENHOUSE HAS A NEW BOSS (2026-09-12)
+
+**The Carnivorous Conservatory is the Greenhouse boss and the Head Gardener is a
+Big Scare** — Josh's call. `bosses/carnivorous-conservatory.js` is the old §14 kit
+as phase one at 300 Courage, plus a phase two from StS2's own boss shape (below
+half: The Glass Gives Way clears its debuffs and hits every Kid, then the room
+grows 1 Overgrowth a turn by itself). The Gardener moved to
+`enemies/greenhouse-gardener.js` at 150 with his thresholds scaled. The chapter
+(§14a, §16) carries both, so `tests/design-courage` needs no divergence. The
+enemy ctx gained `cleanse` (and so did `tests/enemies/index.html`'s mock).
+
+- **Measured on the SAME decks at a 4th-wing boss door, 24 fights each:** the
+  Conservatory wins 42% at 118% of pool; the Head Gardener it replaced wins 21%;
+  the Confectioner 83%, the Bedframe Beast 88%. Easier than before, still the
+  hardest of the three. `sweep.py` cannot measure a mid-house boss any more: its
+  expeditions never reach the wing. `tests/run/run.py` saw it 3 times — noise.
+
 ## ASKED FOR, NOT STARTED WHEN THIS WAS WRITTEN
 
-- **"i need the carnivorous conservatory the boss of that level instead of the
-  head gardener (who would now just be a big scare)"** — the Greenhouse. Both
-  enemies exist today, as `elite/bigscare` and `boss/boss`.
 - **"create a loop to perfect the UI of the game to look like the included
   samples in midnight menagerie/UI, as well as the backgrounds looking at the
   same level, critiqued by blind judges ... fan out agents to triplicate and
