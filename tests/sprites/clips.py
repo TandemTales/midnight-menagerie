@@ -170,13 +170,20 @@ KIDRIG = """() => {
   const S = window.MM.ctx.scenes.current;
   const t = document.querySelector('.pr-palset').getAttribute('transform');
   const n = t.match(/-?[\d.]+/g).map(Number);
-  const kb = document.querySelector('.pr-kid').getBBox();
+  /* HER VISIBLE WIDTH, NOT HER ELEMENT'S. `getBBox()` is geometric and ignores
+     the clip, so once the Kids animated it returned the whole 9x9 atlas -- 1196
+     px against a still's ~150 -- and read a correctly placed Companion as
+     standing inside her. The clip rect is the cell, and `.pr-kidfit`'s scale is
+     what puts it on screen; a still goes through the same two nodes. */
+  const fit = document.querySelector('.pr-kidfit').getAttribute('transform') || '';
+  const sc = Number((fit.match(/scale\(([-\d.]+)\)/) || [])[1] || 1);
+  const cell = Number(document.querySelector('.pr-kidrect').getAttribute('width') || 0);
   return {
     shown: (document.querySelector('.pr-kid') || {}).style.display === '',
     rigHidden: [...document.querySelectorAll('.pr-body, .pr-head, .pr-legf')]
                  .every(g => g.style.display === 'none'),
     palX: n[0], palY: n[1],
-    kidHalf: Math.round(kb.width / 2),
+    kidHalf: Math.round(cell * sc / 2),
     kid: S.hero.kid,
   };
 }"""
