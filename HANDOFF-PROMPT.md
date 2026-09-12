@@ -13,8 +13,8 @@ disk waiting for someone to wire it.
 
 ## FIRST, BEFORE ANYTHING: `python tools/gates.py`
 
-That is new, and it replaces "run the whole sweep". It runs **98 gates one at a
-time** — 44 `check.py`, 43 `run.py`, and 11 entry points named neither, which no
+That is new, and it replaces "run the whole sweep". It runs **99 gates one at a
+time** — 45 `check.py`, 43 `run.py`, and 11 entry points named neither, which no
 list reached before. `--only check|run|extra`, `--filter <substring>`, `--list`.
 It also scans `tests/*/*.py` for anything printing a `RESULT:` line that no list
 runs, so `EXTRAS` cannot rot; add a new one there, or to `NOT_GATES` with a
@@ -26,7 +26,7 @@ It needs the dev server: `python tools/devserver.py 8777`.
 
 | gate | reads | why |
 |---|---|---|
-| `tests/sprites/check.py` | 195 clips, 24 stills, 6 failures | Taffy's five HALO clips (open since 09-11) plus `maya/defeat` |
+| `tests/sprites/check.py` | 195 clips, 24 stills, 51 enemy stills, 6 failures | Taffy's five HALO clips (open since 09-11) plus `maya/defeat` |
 | `tests/run/run.py` | 50 runs, 2 errors | the Archivist draw on seed 371416, and `_losePatience` past turn 30 |
 | `tests/steam-deck/run.py` | 5 passed, 1 failed | the Map fits its panel after the gate measures; red on origin/dev too |
 
@@ -82,19 +82,40 @@ falls with her Companion. Pudding's Protective Brace, Dig and Fetch have rules.
   need a friend, and 72 that hinge on a choice are counted APART. Read its
   docstring before "fixing" the number.
 
-## THE NEXT THING TO PULL
+## DONE SINCE: THE ENEMIES ARE PAINTED (2026-09-12)
 
-**Thirty enemy stills are sitting in `animations/sprites/enemies/`, untracked,
-and every enemy on the board is still a silhouette.** The machinery all exists —
-`ClipPlayer`, the still path through `spriteManifest().stills`, `EnemyView` with
-the same pose contract `PlayerView` has — and `tools/prep_sprites.py` already
-builds stills with `--stills`. The work is: decide the slug mapping (the files
-are camelCase like `bedframeBeast.png`, the enemy ids are not), build them, give
-`EnemyView` the same treatment `PlayerView` got, and gate it the way
-`tests/kid-clips/check.py` gates the Kid.
+**51 enemies stand on the board as their paintings** — the Foyer, the Nursery,
+the Sleeping Quarters, the Kitchens and the Greenhouse, delivered while it was
+being built. `python tools/prep_sprites.py --enemies` builds them into
+`game/assets/sprites/enemies/<EnemyDef id>.webp`, `ENEMY_ALIAS` covers the four
+files whose names do not convert, `EnemyView` hides its rig in its CONSTRUCTOR
+when the manifest names a painting, and `tests/enemy-stills/check.py` gates all
+of it — including a delivered source nobody built, and one rebuilt from old art.
 
-Ask Josh before committing the sources: the same "keep the art out of git" call
-may apply, and 7.4MB of PNG is not covered by any ignore rule today.
+- **The sources stay untracked** (`animations/sprites/enemies/`): Josh's call,
+  2026-09-12. The gate skips its source checks on a machine without them.
+- **No matte repair runs on an enemy**, and each was measured before it was left
+  out — `dewhite` erased brass highlights on 22 of the first 31. Read the
+  enemy-stills comment in `prep_sprites.py` before turning one on.
+- **A painted stage takes its painting's shape** (`combat.css`,
+  `data-art="still"`): wide Big Scares were drawing at 41% of their stage height
+  with their intent 235px above them.
+- **Parts with no art keep their drawn rigs**: the Hydra's Heads, the Wardrobe's
+  Doors, the Favorite Doll, the Head Gardener's seeds, the Growth Patches. The
+  Hydra and Wardrobe paintings include their parts, so those fights show them
+  twice until part art exists.
+
+## ASKED FOR, NOT STARTED WHEN THIS WAS WRITTEN
+
+- **"i need the carnivorous conservatory the boss of that level instead of the
+  head gardener (who would now just be a big scare)"** — the Greenhouse. Both
+  enemies exist today, as `elite/bigscare` and `boss/boss`.
+- **"create a loop to perfect the UI of the game to look like the included
+  samples in midnight menagerie/UI, as well as the backgrounds looking at the
+  same level, critiqued by blind judges ... fan out agents to triplicate and
+  duplicate builds and critique runs. dont stop until its perfected."** Title,
+  Companion Select and Kid Select already ARE the painted samples; everything
+  else is not. Josh will paint the backgrounds from a prompt pack.
 
 ## OPEN, NAMED, NOT STARTED
 
@@ -157,7 +178,8 @@ Every number below was re-run at `e29ddc2` unless noted.
 | `tests/upgrade-effects/check.py` | 1288 played, 218 moved nothing, 28 unplayable, 54 need a friend, 72 a choice |
 | `tests/sprite-triggers/check.py` | 292 passed — no dead clip, no dead keyword |
 | `tests/kid-clips/check.py` | 10 passed — she swings, flinches (not when blocked) and falls |
-| `tests/sprites/check.py` | 195 clips, 24 stills, **6 failures** (known) |
+| `tests/sprites/check.py` | 195 clips, 24 stills, 51 enemy stills, **6 failures** (known) |
+| `tests/enemy-stills/check.py` | 433 passed — 51 painted enemies on 35 boards, 6 drawn controls |
 | `tests/turn-events/check.py` | 152 files, 4 raw turn listeners, 0 unguarded, 46 through the helper |
 | `tests/hook-names/check.py` | 41 engine hooks, 84 companion hooks, 0 unknown |
 | `tests/seams/proof.py` · `tests/seams/check.py` | 52 passed · 8343 call sites, 0 problems |

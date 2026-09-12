@@ -31,6 +31,7 @@ import { CardView, ART_W, ART_H, CARD_SS } from '../ui/card.js';
 import { warmArt } from '../ui/cardart.js';
 import { EnemyView, PlayerView, statusGlyph } from '../ui/enemy.js';
 import { cardClip, eventClip } from '../ui/clips.js';
+import { spriteManifest } from '../ui/sprite.js';
 import { CombatFX } from '../fx/combatfx.js';
 import { HUD } from '../ui/hud.js';
 import { openPile } from '../ui/deckview.js';
@@ -179,7 +180,12 @@ export class CombatScene extends Scene {
   /* ══ boot ═══════════════════════════════════════════════════════════════ */
   async enter(params = {}) {
     const ctx = this.ctx;
-    await Promise.all([ensureCss(CSS), ensureCss(CARD_CSS), ensureCss(HAND_CSS)]);
+    /* The sprite manifest with the stylesheets, because `EnemyView` decides in
+       its constructor whether a creature is painted or drawn: asked before the
+       manifest has arrived, every creature would stand its rig up and then
+       swap -- a visible flash of a different body. One small request, made
+       once a session and shared with the Companion's own ClipPlayer. */
+    await Promise.all([ensureCss(CSS), ensureCss(CARD_CSS), ensureCss(HAND_CSS), spriteManifest()]);
     this._readSettings();
 
     this.root.classList.add('cb-root');
@@ -220,6 +226,16 @@ export class CombatScene extends Scene {
     this._ro.observe(this.root);
 
     this._syncAll();
+
+    /* THE VEIL LIFTS ON PAINTED CREATURES. Each painted EnemyView has already
+       hidden its rig and sized its stage; this waits for the paintings to
+       decode, so the first frame the player sees is not an empty stage filling
+       in. Capped: a slow disk or a cold web build must never hold the veil
+       down, and a painting that lands after it simply appears. */
+    await Promise.race([
+      Promise.all([...this.views.values()].map(v => v.art)),
+      new Promise(r => setTimeout(r, 900)),
+    ]);
 
     /* ── THE OPENING WALKTHROUGH ────────────────────────────────────────────
        `scenes/tutorial.js` deep-links this scene with `tutorial=1` and lets the

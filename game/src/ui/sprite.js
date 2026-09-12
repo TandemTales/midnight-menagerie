@@ -68,6 +68,8 @@ const STILL_ALIAS = {
 };
 
 let _manifest = null;
+/** The same manifest once it has arrived, for a caller that has to decide now. */
+let _manifestNow = null;
 
 /** The manifest of everything prep_sprites.py built. Never rejects. */
 export function spriteManifest() {
@@ -75,10 +77,26 @@ export function spriteManifest() {
     _manifest = fetch(`${SPRITES}index.json`)
       .then(r => (r.ok ? r.json() : null))
       .catch(() => null)
-      .then(m => m || { animated: {}, stills: {} });
+      .then(m => (_manifestNow = m || { animated: {}, stills: {} }));
   }
   return _manifest;
 }
+
+/**
+ * An enemy's built still by EnemyDef id -- `{ file, w, h }` -- or null.
+ *
+ * SYNCHRONOUS, because `EnemyView` has to decide in its constructor whether to
+ * stand its drawn rig up at all: showing the rig for a frame and then swapping
+ * in the painting is a visible flash of a different creature. Null means "no
+ * still" only once `manifestReady()` is true; before that it means "not known
+ * yet", which is why the combat scene awaits the manifest before it builds.
+ */
+export function enemyStill(id) {
+  return _manifestNow?.enemies?.[id] || null;
+}
+
+/** Has the manifest arrived, so that `enemyStill` returning null is an answer? */
+export function manifestReady() { return !!_manifestNow; }
 
 /** Does this Companion have animation built for it? */
 export async function hasAnimation(slug) {
@@ -127,10 +145,12 @@ export class ClipPlayer {
    * sees inside a blanket fort, and `attack`/`hurt` are two atlases downloaded
    * for a screen that cannot play either.
    */
-  constructor(slug, { opening = 'ready', warm = WARM } = {}) {
+  constructor(slug, { opening = 'ready', warm = WARM, enemy = false } = {}) {
     this.slug = String(slug);
     this._opening = opening;
     this._warm = warm;
+    /** An enemy, keyed by EnemyDef id: its art is in its own manifest section. */
+    this._enemy = !!enemy;
     this.clips = null;
     this.scale = 1;
     this.name = null;
@@ -149,6 +169,10 @@ export class ClipPlayer {
   }
 
   async _load() {
+    /* AN ENEMY HAS A STILL AND NO CLIPS, and it never asks `animated`: enemy ids
+       and Companion slugs are two namespaces, and a lookup that crossed them
+       would one day hand a creature a Companion's atlases. */
+    if (this._enemy) return this._loadStill();
     const idx = await clipIndex(this.slug);
     if (!idx || !idx.clips) return this._loadStill();
     this.clips = idx.clips;
@@ -183,12 +207,13 @@ export class ClipPlayer {
    */
   async _loadStill() {
     const m = await spriteManifest();
-    const key = STILL_ALIAS[this.slug] || this.slug;
-    const e = m.stills?.[key];
+    const e = this._enemy
+      ? m.enemies?.[this.slug]
+      : m.stills?.[STILL_ALIAS[this.slug] || this.slug];
     if (!e) return false;
     this.clips = {
       idle: {
-        url: `stills/${e.file}`, frames: 1, cols: 1, rows: 1,
+        url: `${this._enemy ? 'enemies' : 'stills'}/${e.file}`, frames: 1, cols: 1, rows: 1,
         fw: e.w, fh: e.h, anchor: [e.w / 2, e.h], loop: true, fps: 1,
       },
     };

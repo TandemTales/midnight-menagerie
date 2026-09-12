@@ -478,6 +478,314 @@
    "bg": null
   }
  },
+ "enemies": {
+  "ancient-topiary": {
+   "file": "ancient-topiary.webp",
+   "w": 471,
+   "h": 398,
+   "source": "ancientTopiary.png"
+  },
+  "bedframe-beast": {
+   "file": "bedframe-beast.webp",
+   "w": 491,
+   "h": 346,
+   "source": "bedframeBeast.png"
+  },
+  "blanket-blob": {
+   "file": "blanket-blob.webp",
+   "w": 241,
+   "h": 184,
+   "source": "blanketBlob.png"
+  },
+  "blanket-creeper": {
+   "file": "blanket-creeper.webp",
+   "w": 247,
+   "h": 156,
+   "source": "blanketCreeper.png"
+  },
+  "blanket-hydra": {
+   "file": "blanket-hydra.webp",
+   "w": 491,
+   "h": 330,
+   "source": "blanketHydra.png"
+  },
+  "butler": {
+   "file": "butler.webp",
+   "w": 876,
+   "h": 1004,
+   "source": "butler.png"
+  },
+  "button-baby": {
+   "file": "button-baby.webp",
+   "w": 205,
+   "h": 214,
+   "source": "buttonBaby.png"
+  },
+  "calling-bell": {
+   "file": "calling-bell.webp",
+   "w": 234,
+   "h": 225,
+   "source": "callingBell.png"
+  },
+  "candy-clump": {
+   "file": "candy-clump.webp",
+   "w": 233,
+   "h": 227,
+   "source": "candyClump.png"
+  },
+  "carnivorous-conservatory": {
+   "file": "carnivorous-conservatory.webp",
+   "w": 996,
+   "h": 781,
+   "source": "carnivorousConservatory.png"
+  },
+  "coatrack-crawler": {
+   "file": "coatrack-crawler.webp",
+   "w": 327,
+   "h": 506,
+   "source": "coatrackCrawler.png"
+  },
+  "compost-colossus": {
+   "file": "compost-colossus.webp",
+   "w": 481,
+   "h": 379,
+   "source": "compostColossus.png"
+  },
+  "confectioner": {
+   "file": "confectioner.webp",
+   "w": 747,
+   "h": 995,
+   "source": "confectioner.png"
+  },
+  "creeping-ivy": {
+   "file": "creeping-ivy.webp",
+   "w": 232,
+   "h": 187,
+   "source": "creepingIvy.png"
+  },
+  "door-greeter": {
+   "file": "door-greeter.webp",
+   "w": 281,
+   "h": 504,
+   "source": "doorGreeter.png"
+  },
+  "dough-blob": {
+   "file": "dough-blob.webp",
+   "w": 245,
+   "h": 189,
+   "source": "doughBlob.png"
+  },
+  "dust-bunny": {
+   "file": "dust-bunny.webp",
+   "w": 224,
+   "h": 216,
+   "source": "dustBunny.png"
+  },
+  "glassvine": {
+   "file": "glassvine.webp",
+   "w": 220,
+   "h": 251,
+   "source": "glassvine.png"
+  },
+  "governess": {
+   "file": "governess.webp",
+   "w": 727,
+   "h": 987,
+   "source": "governess.png"
+  },
+  "grand-coatcheck": {
+   "file": "grand-coatcheck.webp",
+   "w": 487,
+   "h": 416,
+   "source": "grandCoatcheck.png"
+  },
+  "head-gardener": {
+   "file": "head-gardener.webp",
+   "w": 458,
+   "h": 402,
+   "source": "headGardener.png"
+  },
+  "house-bell": {
+   "file": "house-bell.webp",
+   "w": 448,
+   "h": 369,
+   "source": "houseBell.png"
+  },
+  "jack-in-the-box": {
+   "file": "jack-in-the-box.webp",
+   "w": 181,
+   "h": 245,
+   "source": "jackInTheBox.png"
+  },
+  "jam-jar": {
+   "file": "jam-jar.webp",
+   "w": 223,
+   "h": 236,
+   "source": "jamJar.png"
+  },
+  "kitchen-imp": {
+   "file": "kitchen-imp.webp",
+   "w": 232,
+   "h": 224,
+   "source": "kitchenImp.png"
+  },
+  "lost-luggage": {
+   "file": "lost-luggage.webp",
+   "w": 224,
+   "h": 216,
+   "source": "lostLuggage.png"
+  },
+  "night-terror": {
+   "file": "night-terror.webp",
+   "w": 491,
+   "h": 343,
+   "source": "nightTerror.png"
+  },
+  "nightlight-snuffer": {
+   "file": "nightlight-snuffer.webp",
+   "w": 209,
+   "h": 239,
+   "source": "nightlightSnuffer.png"
+  },
+  "oven-maw": {
+   "file": "oven-maw.webp",
+   "w": 460,
+   "h": 393,
+   "source": "ovenMaw.png"
+  },
+  "pantry-mimic": {
+   "file": "pantry-mimic.webp",
+   "w": 204,
+   "h": 238,
+   "source": "pantryMimic.png"
+  },
+  "pantry-poltergeist": {
+   "file": "pantry-poltergeist.webp",
+   "w": 457,
+   "h": 383,
+   "source": "pantryPoltergeist.png"
+  },
+  "patchwork-giant": {
+   "file": "patchwork-giant.webp",
+   "w": 457,
+   "h": 446,
+   "source": "patchworkGiant.png"
+  },
+  "patchwork-soldier": {
+   "file": "patchwork-soldier.webp",
+   "w": 169,
+   "h": 246,
+   "source": "patchworkSoldier.png"
+  },
+  "pillow-puff": {
+   "file": "pillow-puff.webp",
+   "w": 217,
+   "h": 217,
+   "source": "pillowPuff.png"
+  },
+  "porcelain-doll": {
+   "file": "porcelain-doll.webp",
+   "w": 189,
+   "h": 241,
+   "source": "porcelainDoll.png"
+  },
+  "porcelain-twin-prim": {
+   "file": "porcelain-twin-prim.webp",
+   "w": 151,
+   "h": 249,
+   "source": "prim.png"
+  },
+  "porcelain-twin-proper": {
+   "file": "porcelain-twin-proper.webp",
+   "w": 148,
+   "h": 250,
+   "source": "proper.png"
+  },
+  "potling": {
+   "file": "potling.webp",
+   "w": 182,
+   "h": 224,
+   "source": "potling.png"
+  },
+  "red-carpet-runner": {
+   "file": "red-carpet-runner.webp",
+   "w": 228,
+   "h": 210,
+   "source": "redCarpetRunner.png"
+  },
+  "rising-batter": {
+   "file": "rising-batter.webp",
+   "w": 242,
+   "h": 237,
+   "source": "risingBatter.png"
+  },
+  "rocking-horse": {
+   "file": "rocking-horse.webp",
+   "w": 236,
+   "h": 236,
+   "source": "rockingHorse.png"
+  },
+  "slipper-skitter": {
+   "file": "slipper-skitter.webp",
+   "w": 235,
+   "h": 143,
+   "source": "slipperSkitter.png"
+  },
+  "snapping-blossom": {
+   "file": "snapping-blossom.webp",
+   "w": 473,
+   "h": 498,
+   "source": "snappingBlossom.png"
+  },
+  "spore-puff": {
+   "file": "spore-puff.webp",
+   "w": 237,
+   "h": 243,
+   "source": "sporepuff.png"
+  },
+  "sugar-golem": {
+   "file": "sugar-golem.webp",
+   "w": 460,
+   "h": 386,
+   "source": "sugarGolem.png"
+  },
+  "the-wardrobe": {
+   "file": "the-wardrobe.webp",
+   "w": 492,
+   "h": 441,
+   "source": "wardrobe.png"
+  },
+  "thing-beneath": {
+   "file": "thing-beneath.webp",
+   "w": 512,
+   "h": 408,
+   "source": "thingBeneath.png"
+  },
+  "topiary-beast": {
+   "file": "topiary-beast.webp",
+   "w": 488,
+   "h": 435,
+   "source": "topiaryBeast.png"
+  },
+  "toy-chest": {
+   "file": "toy-chest.webp",
+   "w": 467,
+   "h": 397,
+   "source": "toyChest.png"
+  },
+  "unwelcome-guest": {
+   "file": "unwelcome-guest.webp",
+   "w": 426,
+   "h": 499,
+   "source": "unwelcomeGuest.png"
+  },
+  "wardrobe-guest": {
+   "file": "wardrobe-guest.webp",
+   "w": 297,
+   "h": 481,
+   "source": "wardrobeGuest.png"
+  }
+ },
  "targetContentH": 128,
  "kids": [
   "amina",

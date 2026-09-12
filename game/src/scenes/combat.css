@@ -317,6 +317,20 @@
   display: flex; align-items: flex-end; justify-content: center;
   transform-origin: 50% 100%;
 }
+/* A PAINTED CREATURE'S STAGE IS AS TALL AS ITS PAINTING. The width caps
+   below hold a wide body to its tier's width, and a rig filled that box with
+   limbs and props where a painting cannot: The Blanket Hydra measured 234x163
+   inside a 320x400 stage, its intent 235px above the blanket and its three
+   Heads towering over it. The stage keeps every cap and takes the painting's
+   own shape, so an upright painting stands exactly as tall as before and a
+   wide one stops carrying a column of empty air under its intent. The row is
+   bottom-aligned, so its feet stay on the ground line. `--e-aspect` is the
+   fitted viewBox, from `EnemyView#_fitTo`. */
+.cb-enemy[data-art="still"] .cb-enemy__stage {
+  height: auto;
+  max-height: var(--e-h);
+  aspect-ratio: var(--e-aspect);
+}
 /* ── STANDING ON SOMETHING ──────────────────────────────────────────────────
    "During combat the characters don't stand out from the background enough.
     Also they should be on the floor instead of floating in air."
@@ -525,6 +539,8 @@
 .cb-enemy[data-tier="boss"] .rg-sclera { fill: var(--spectre-100); }
 .cb-enemy.is-lightsout .rg-sclera { fill: var(--ink-700); transition: fill var(--t-quick) linear; }
 .cb-enemy.is-lightsout .rg-glint { opacity: 0; }
+/* a painting has no eyes to put out, so the whole creature dims before it comes apart */
+.cb-enemy.is-lightsout .rg-stillimg { filter: brightness(.45) saturate(.5); transition: filter var(--t-quick) linear; }
 
 /* hit reactions */
 @keyframes cb-hitshake {
@@ -540,7 +556,8 @@
 }
 .cb-enemy.is-hit .cb-enemy__stage { animation: cb-hitshake .22s var(--ease-out); }
 .cb-enemy.is-hit .rg-trunk,
-.cb-enemy.is-hit .rg-trunk-lit { animation: cb-hitflash .26s var(--ease-out); }
+.cb-enemy.is-hit .rg-trunk-lit,
+.cb-enemy.is-hit .rg-stillimg { animation: cb-hitflash .26s var(--ease-out); }
 @keyframes cb-clank {
   0% { transform: translate3d(0,0,0) scale(1); }
   40% { transform: translate3d(-3px,0,0) scale(1.03, .97); }

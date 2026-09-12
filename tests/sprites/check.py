@@ -342,8 +342,23 @@ def main():
             continue
         counts["stills"] += 1
 
-    print("\n  %d clips checked, %d frames sampled for halo, %d stills"
-          % (counts["clips"], counts["sampled"], counts["stills"]))
+    # The enemy stills get the same two checks as a Companion's. Their wiring,
+    # their sources and how they stand on the board are `tests/enemy-stills`.
+    counts["enemies"] = 0
+    for name, meta in sorted(manifest.get("enemies", {}).items()):
+        p = os.path.join(SPRITES, "enemies", meta["file"])
+        if not os.path.exists(p):
+            fails.append(("MISSING", "enemies/" + name, meta["file"]))
+            continue
+        im = Image.open(p).convert("RGBA")
+        if (im.width, im.height) != (meta["w"], meta["h"]):
+            fails.append(("GEOMETRY", "enemies/" + name,
+                          "%s on disk, index says %s" % (im.size, (meta["w"], meta["h"]))))
+            continue
+        counts["enemies"] += 1
+
+    print("\n  %d clips checked, %d frames sampled for halo, %d stills, %d enemy stills"
+          % (counts["clips"], counts["sampled"], counts["stills"], counts["enemies"]))
     print("  %d dissolve envelopes verified" % counts["dissolves"])
     print("  %d clips play there and back%s" % (
         len(counts["pings"]), (": " + ", ".join(counts["pings"])) if counts["pings"] else ""))
@@ -384,8 +399,8 @@ def main():
   of that file: each failure above names the step that was supposed to prevent
   it.""")
 
-    print("\nRESULT: %d clips, %d stills, %d failures"
-          % (counts["clips"], counts["stills"], len(fails)))
+    print("\nRESULT: %d clips, %d stills, %d enemy stills, %d failures"
+          % (counts["clips"], counts["stills"], counts["enemies"], len(fails)))
     return 1 if fails else 0
 
 

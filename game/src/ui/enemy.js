@@ -40,7 +40,7 @@
 import { Clock } from '../core/clock.js';
 import { IntentView, statusIconId } from './intent.js';
 import { iconSvg } from './icons.js';
-import { ClipPlayer } from './sprite.js';
+import { ClipPlayer, enemyStill, manifestReady } from './sprite.js';
 
 /* ── THE ANIMATED COMPANION ────────────────────────────────────────────────
    Where a Companion has real animation built (`tools/prep_sprites.py`), it
@@ -83,6 +83,21 @@ const SPRITE_RIG_DY = 30;
    Companion silhouette gets, so a missing or slow still leaves a drawn Kid on
    the board rather than a hole where one should be. */
 const KID_RIG_H = 230;
+
+/* THE CREATURE'S OWN ART, where it has been painted -- 31 of the 275 today, the
+   Foyer, the Nursery and the Sleeping Quarters. The same swap the Companion and
+   the Kid get: the procedural rig is still built underneath and comes back if
+   the painting does not arrive, and nothing about acting changes, because every
+   beat below moves `rg-root`, `rg-body` and the stage rather than the rig's parts.
+
+   ENEMY_STILL_H is how tall a painted creature stands in RIG UNITS, not its
+   pixel height. On-screen size comes from the stage either way (tier, role,
+   `--e-scale`; the viewBox is fitted to whatever is drawn), but the idle and
+   attack numbers in `update()` are rig units -- a 26-unit lean, a 40-unit spawn
+   drop -- and The Butler drawn 1:1 at 1005 would have shrunk every one of them
+   to a quarter of what they were tuned against. 200 is the rig's own scale:
+   trunks run 46-98 with props reaching ~300 (`BODY`, the authored viewBox). */
+const ENEMY_STILL_H = 200;
 
 const NS = 'http://www.w3.org/2000/svg';
 const TAU = Math.PI * 2;
@@ -882,6 +897,8 @@ export class EnemyView {
 
     const b = BODY[bodyKind](this.rnd);
     this.body = b;
+    /** How far a boss entrance sinks it below its own floor line, in rig units. */
+    this._sink = b.h * 3.4;
     const props = (PROPS[sil] || (() => ({})))(b, this.rnd) || {};
     this.props = props;
 
@@ -959,6 +976,10 @@ export class EnemyView {
           <g class="rg-root">
             <g class="rg-limbs-back">${this._limbs(b, limbs, true)}</g>
             <g class="rg-body">
+              <!-- The painting, when there is one. Inside rg-body so it breathes,
+                   squashes and goes to silhouette for an entrance exactly as the
+                   rig does; the rig's own parts are hidden while it is up. -->
+              <g class="rg-still" style="display:none"><image class="rg-stillimg" preserveAspectRatio="none"/></g>
               <g class="rg-back">${props.back || ''}</g>
               <path class="rg-trunk" d="${trunk}" fill="url(#${gid}b)"/>
               <path class="rg-trunk-lit" d="${trunk}" fill="url(#${gid}r)"/>
@@ -1023,6 +1044,13 @@ export class EnemyView {
     this.$pupils = Array.from(el.querySelectorAll('.rg-pupil'));
     this.$lids = Array.from(el.querySelectorAll('.rg-lid'));
     this.$limbs = Array.from(el.querySelectorAll('.rg-limb-a'));
+    this.$still = el.querySelector('.rg-still');
+    this.$stillImg = el.querySelector('.rg-stillimg');
+    /* Everything the drawn creature is made of, hidden as one when its painting
+       is up and shown as one if the painting never arrives. */
+    this.$rigArt = Array.from(el.querySelectorAll(
+      '.rg-limbs-back, .rg-limbs-front, .rg-body > :not(.rg-still)'));
+    this._mountStill(def.id || snap.defId);
 
     this.intentView = new IntentView({ clock: this.clock, reduceMotion: this.reduceMotion });
     el.querySelector('.cb-enemy__intent').appendChild(this.intentView.el);
@@ -1560,14 +1588,104 @@ export class EnemyView {
     let b;
     try { b = this.$root.getBBox(); } catch { return; }
     if (!b || !b.width || !b.height) return;
+    this._fitTo(b);
+  }
+
+  /** Fit the viewBox and the stage's footprint to box `b`, in rig units. */
+  _fitTo(b, painted = false) {
     this._fitted = true;
-    const padX = b.width * 0.14 + 10;
-    const padT = b.height * 0.12 + 8;
+    /* A rig's box is mostly air between thin limbs and props, which is what the
+       generous margin is for. A painting fills its box solid, and the rig's
+       margin cost every wide one a quarter of its width inside the tier's cap. */
+    const padX = painted ? b.width * 0.05 + 4 : b.width * 0.14 + 10;
+    const padT = painted ? b.height * 0.08 + 6 : b.height * 0.12 + 8;
     this.$rig.setAttribute('viewBox',
       `${f(b.x - padX)} ${f(b.y - padT)} ${f(b.width + padX * 2)} ${f(b.height + padT + 6)}`);
     // keep the on-screen footprint proportional to the rig's real aspect
     const aspect = (b.width + padX * 2) / (b.height + padT + 6);
     this.$stage.style.setProperty('--e-aspect', aspect.toFixed(3));
+  }
+
+  /* ── the painted creature ───────────────────────────────────────────────── */
+  /**
+   * Stand the creature's painting on the board, if it has one.
+   *
+   * DON'T SHOW THE RIG JUST TO TAKE IT AWAY AGAIN -- the rule `PlayerView`'s Kid
+   * already paid for. When the manifest says a still exists, the rig is hidden
+   * from the first frame and the stage is sized from the painting's known w/h,
+   * so nothing reflows when it decodes; the rig comes back only if the still
+   * does not. The combat scene awaits the manifest before it builds, so "not
+   * known yet" is a summon racing a cold start and not a normal fight, and there
+   * the rig stands and swaps on decode.
+   *
+   * An enemy with no painting gets no ClipPlayer at all: no request, no 404.
+   */
+  _mountStill(id) {
+    this.art = null;
+    if (!id || (manifestReady() && !enemyStill(id))) return;
+    const known = enemyStill(id);
+    if (known) {
+      this._fitStill(known.w, known.h);
+      this._showRig(false);
+      // the stage takes the painting's shape now, not when it decodes (combat.css)
+      this.el.dataset.art = 'still';
+    }
+    this.sprite = new ClipPlayer(id, { enemy: true, opening: 'idle', warm: ['idle'] });
+    const fallback = () => { if (!this._stillUp && !this._dead) this._showRig(true); };
+    /* ASK, DO NOT TIME -- `ready` resolves false only when there is genuinely
+       nothing to draw, and true only once the image has decoded. The timer is a
+       backstop for a promise that never settles, long enough that no real load
+       races it. */
+    this.art = this.sprite.ready
+      .then((ok) => { if (ok) this._raiseStill(); else fallback(); return !!ok; })
+      .catch(() => { fallback(); return false; });
+    this._rigT = setTimeout(fallback, 4000);
+  }
+
+  /**
+   * Draw the decoded painting. Once, not per frame: a still is one frame, and
+   * this view allocates nothing per frame -- `ClipPlayer.frame()` returns a new
+   * object on every call. An enemy that animates one day needs a tick shaped
+   * like `PlayerView#_tickSprite` instead.
+   */
+  _raiseStill() {
+    const fr = this.sprite?.frame({ still: true });
+    if (!fr || this._dead) return;
+    const s = ENEMY_STILL_H / Math.max(1, fr.unit);
+    const img = this.$stillImg;
+    img.setAttribute('href', fr.src);
+    img.setAttribute('width', f2(fr.fw * s));
+    img.setAttribute('height', f2(fr.fh * s));
+    // anchored at its feet, like every sprite: bottom-centre on the rig's origin
+    img.setAttribute('x', f2(-fr.anchor[0] * s));
+    img.setAttribute('y', f2(-fr.anchor[1] * s));
+    if (!this._stillFitted) this._fitStill(fr.fw, fr.fh);
+    this._showRig(false);
+    this.$still.style.display = '';
+    this._stillUp = true;
+    clearTimeout(this._rigT);
+    this.el.dataset.art = 'still';
+  }
+
+  /** Size the stage to the painting, the way `_fitViewBox` sizes it to the rig. */
+  _fitStill(w, h) {
+    const H = ENEMY_STILL_H;
+    const W = H * w / Math.max(1, h);
+    this._fitTo({ x: -W / 2, y: -H, width: W, height: H }, true);
+    this._stillFitted = true;
+    // an entrance sinks it fully below its floor line, as the rig's does
+    this._sink = H * 1.15;
+  }
+
+  _showRig(on) {
+    for (const g of this.$rigArt) g.style.display = on ? '' : 'none';
+    if (!on) return;
+    this.$still.style.display = 'none';
+    delete this.el.dataset.art;
+    // back to measuring the rig itself
+    this._fitted = false;
+    this._stillFitted = false;
+    this._sink = this.body.h * 3.4;
   }
 
   update(dt, t) {
@@ -1623,7 +1741,7 @@ export class EnemyView {
     const ent = a.entrance;
     const dx = sway * 3.4 + lean * -26 + a.shove * -1 + tw * 3;
     // `entrance` sinks the whole rig below its own floor line and lets it rise.
-    const dy = -a.rise * 16 + Math.abs(lean) * -4 + a.spawn * 40 + ent * this.body.h * 3.4;
+    const dy = -a.rise * 16 + Math.abs(lean) * -4 + a.spawn * 40 + ent * this._sink;
     const rot = sway * 1.25 + lean * -4.5 + tw * 2.4;
     this.$root.setAttribute('transform',
       `translate(${f(dx)} ${f(dy)}) rotate(${f(rot)} 0 0)`);
@@ -1634,19 +1752,20 @@ export class EnemyView {
     const sx = 1 - breath * 0.026 + sq * 0.2;
     this.$body.setAttribute('transform', `scale(${f2(sx)} ${f2(sy)})`);
 
-    // eyes
+    // eyes -- the rig's own, so none of this is written while a painting is up
     // a real blink: open -> shut -> open, over the life of `a.blink`
+    const drawn = !this._stillUp;
     const lidK = a.blink > 0 ? Math.sin(Math.min(1, a.blink) * Math.PI) : 0;
-    for (let i = 0; i < this.$pupils.length; i++) {
+    for (let i = 0; drawn && i < this.$pupils.length; i++) {
       const p = this.$pupils[i];
       p.setAttribute('transform', `translate(${f(a.lookX * 5.2)} ${f(a.lookY * 4.4)})`);
     }
-    for (let i = 0; i < this.$lids.length; i++) {
+    for (let i = 0; drawn && i < this.$lids.length; i++) {
       this.$lids[i].setAttribute('transform', `scale(1 ${f2(lidK)})`);
     }
 
     // limbs ripple
-    if (!rm && this.$limbs.length) {
+    if (drawn && !rm && this.$limbs.length) {
       for (let i = 0; i < this.$limbs.length; i++) {
         const ph = Math.sin(a.swayPh * TAU * 0.5 + i * 1.3) * (2.6 + lean * 3);
         this.$limbs[i].setAttribute('transform', `rotate(${f(ph)} 0 0)`);
@@ -1693,6 +1812,9 @@ export class EnemyView {
   }
 
   destroy() {
+    this._dead = true;
+    clearTimeout(this._rigT);
+    this.sprite?.destroy();
     this.intentView.destroy();
     this._altViews?.forEach(v => v.destroy());
     this._altViews = null;

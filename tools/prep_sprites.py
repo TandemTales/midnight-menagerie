@@ -2,15 +2,18 @@
 
     python tools/prep_sprites.py            # everything
     python tools/prep_sprites.py --report   # measure only, write nothing
+    python tools/prep_sprites.py --enemies  # the enemy stills only
 
 Source (authored, never edited by this tool):
     animations/SS_<slug>_<clip>.png   a grid of animation frames
     animations/sprites/sprite_<name>.png   one still per Companion and Kid
+    animations/sprites/enemies/<name>.png  one still per enemy, camelCase
 
 Output:
     game/assets/sprites/<slug>/<clip>.webp  one atlas per clip
     game/assets/sprites/<slug>/index.json   clips, frame rects, anchor, fps, fade
     game/assets/sprites/stills/<name>.webp  repaired stills
+    game/assets/sprites/enemies/<id>.webp   enemy stills, keyed by EnemyDef id
     game/assets/sprites/index.json          the manifest the runtime discovers
 
 ─────────────────────────────────────────────────────────────────────────────
@@ -82,6 +85,7 @@ Image.MAX_IMAGE_PIXELS = None
 SRC_SHEETS = "animations"
 SRC_KIDS = "animations/kids"
 SRC_STILLS = "animations/sprites"
+SRC_ENEMY_STILLS = "animations/sprites/enemies"
 OUT = "game/assets/sprites"
 
 # The creature's height in output pixels. Source medians sit at ~330px, so this
@@ -101,6 +105,29 @@ KID_TARGET_CONTENT_H = 256
 # Priya's sheets arrived under the art pass's spelling and the game has keyed
 # her as `priya` since data/schema.js was written.
 SLUG_ALIAS = {"prya": "priya"}
+
+# AN ENEMY STILL IS KEYED BY ITS EnemyDef ID. The files arrived camelCase --
+# `bedframeBeast.png` -- and `EnemyView` asks for `def.id`, which is kebab-case
+# (`bedframe-beast`), so the name converts mechanically for nearly all of them.
+# These do not: the Wardrobe's id carries its article, the Porcelain Twins
+# arrived under their display names, and Spore Puff's file is one lowercase
+# word. `tests/enemy-stills/check.py` fails on a file that resolves to no
+# EnemyDef, so a new file with a surprising name is a red gate rather than a
+# silhouette nobody notices is still a silhouette.
+ENEMY_ALIAS = {
+    "wardrobe": "the-wardrobe",
+    "prim": "porcelain-twin-prim",
+    "proper": "porcelain-twin-proper",
+    "sporepuff": "spore-puff",
+}
+
+# AN ENEMY IS DRAWN FAR BIGGER THAN A COMPANION, so its still keeps the
+# resolution it was delivered at. The boss stage is up to 430 CSS px tall
+# (`scenes/combat.css`, the boss arena) -- ~860 device px on a 2x display -- and
+# the art came in at the size its tier is drawn: 256 for ordinary creatures, 512
+# for the Big Scares, 1024 for two bosses. A CEILING, the way `build_still`'s
+# 256 is, and today it binds nothing: the tallest content is The Butler, 1005px.
+ENEMY_STILL_MAX_H = 1024
 
 # THE BACKGROUND IS NOT TRANSPARENT. The production brief asks every clip for
 # "a truly transparent alpha background" and the sheets do not have one: `idle`
@@ -1056,11 +1083,77 @@ def build_still(path, out_noext, target_h=256):
     return {"file": fname, "w": fw, "h": fh, "matte": kind, "bg": None if B is None else [round(float(v), 1) for v in B]}
 
 
+# ── enemy stills ────────────────────────────────────────────────────────────
+#
+# NONE OF THE MATTE REPAIRS RUN ON AN ENEMY, and each one was measured over all
+# 31 stills before it was left out. These are painted cutouts with a real alpha
+# channel, not generator output flattened against a backdrop and cut back out,
+# and every repair above exists for the second kind:
+#
+#   clean_alpha  KEPT. It takes at most 0.31% of a still's alpha mass (the Night
+#                Terror's faintest wisps, under the floor) and 29 detached pixels
+#                (the Dust Bunny's motes), and it is what would stop a future
+#                still that does arrive with a wash.
+#   dehalo       nothing to take: rim-minus-core lift is <= 0 on all 31.
+#   dewhite      ERASES ART on 22 of the 31. Its premise is a scrap of the white
+#                an image was keyed off, and these have none; what it finds is
+#                brass specular (the House Bell loses 5.5% of its body, the
+#                Calling Bell 3.7%), the white fur of the Toy Chest's bunny, and
+#                the Porcelain Doll's legs.
+#   PREMULT      `classify` reads three as premultiplied. Prim and Proper are --
+#                edge brightness tracks alpha in every band -- but Thing Beneath
+#                is dark where it is painted dark, and dividing its edge by alpha
+#                turned the mist under the bed into a light streak (23% of its
+#                edge brighter by 20+ luma). No single number separates the two:
+#                dark painted outlines read as premultiplied too (Door Greeter
+#                sits further toward it than Thing Beneath). The error only shows
+#                one way on this board: the twins' uncorrected edge is a sub-pixel
+#                darkening under the stage's own 2px black outline, on a near-black
+#                room, while the Thing's streak is plainly visible. So nothing is
+#                divided.
+#
+# Re-measure before turning any of them on for a new batch: a repair that was
+# right for one population of art has already been wrong for the next twice.
+
+def build_enemy_still(path, out_noext, max_h=ENEMY_STILL_MAX_H):
+    """One enemy still: floor the alpha, trim to content, keep the paint as delivered."""
+    arr = np.array(Image.open(path).convert("RGBA"))
+    rgb = arr[:, :, :3].astype(np.float64)
+    a = clean_alpha(arr[:, :, 3].astype(np.float64) / 255.0)
+    box = bbox(a)
+    if box is None:
+        return None
+    rgb = _edge_extend(rgb, a)
+    x0, y0, x1, y1 = box
+    rgb, a = rgb[y0:y1, x0:x1], a[y0:y1, x0:x1]
+    h, w = a.shape
+    s = min(1.0, max_h / float(h))
+    if s < 1.0:
+        # In premultiplied space, like `build_still`, or the colour under the
+        # transparent pixels is averaged into the edge.
+        w, h = max(1, int(round(w * s))), max(1, int(round(h * s)))
+        pm = np.dstack([rgb * a[:, :, None], a * 255.0]).astype(np.uint8)
+        small = np.array(Image.fromarray(pm, "RGBA").resize((w, h), Image.LANCZOS)).astype(np.float64)
+        sa = np.clip(small[:, :, 3], 0, 255)
+        rgb = np.where(sa[:, :, None] > 0.5,
+                       small[:, :, :3] / np.maximum(sa, 1e-6)[:, :, None] * 255.0, 0.0)
+        a = sa / 255.0
+    img = Image.fromarray(np.dstack([np.clip(rgb, 0, 255), a * 255.0]).round().astype(np.uint8), "RGBA")
+    return {"file": save_image(img, out_noext), "w": w, "h": h,
+            "source": os.path.basename(path)}
+
+
 # ── driver ──────────────────────────────────────────────────────────────────
 
 def slug_of_still(fn):
     """`sprite_countCrumbula.png` -> `countCrumbula`."""
     return re.sub(r"^sprite_", "", os.path.splitext(os.path.basename(fn))[0])
+
+
+def enemy_id_of_still(fn):
+    """`bedframeBeast.png` -> `bedframe-beast`, and `prim.png` -> `porcelain-twin-prim`."""
+    stem = os.path.splitext(os.path.basename(fn))[0]
+    return ENEMY_ALIAS.get(stem, re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "-", stem).lower())
 
 
 def main():
@@ -1071,8 +1164,34 @@ def main():
                          "stays in the manifest untouched")
     ap.add_argument("--stills", action="store_true",
                     help="with --only, rebuild the stills as well")
+    ap.add_argument("--enemies", action="store_true",
+                    help="rebuild the enemy stills; alone, touches nothing else in the manifest")
     args = ap.parse_args()
     only = {s.strip() for s in args.only.split(",") if s.strip()}
+    # `--enemies` alone is a partial build exactly the way `--only` is: it starts
+    # from the manifest on disk and builds no Companion, no Kid and no still.
+    partial = bool(only) or args.enemies
+
+    # Resolved BEFORE anything is built: two files landing on one id is an
+    # authoring error, and finding it after a full rebuild of the atlases would
+    # leave every one of them on disk under a manifest that was never written.
+    #
+    # The sources are not in git, so a machine without them KEEPS the enemy
+    # stills as built. Rebuilding "everything" there would otherwise rebuild the
+    # section to nothing and every enemy would go back to a silhouette.
+    enemies_wanted = not only or args.enemies
+    if enemies_wanted and not os.path.isdir(SRC_ENEMY_STILLS):
+        print("  no %s here: the enemy stills stay as built" % SRC_ENEMY_STILLS)
+        enemies_wanted = False
+    enemy_files = {}
+    if enemies_wanted:
+        for fn in sorted(f for f in os.listdir(SRC_ENEMY_STILLS) if f.endswith(".png")):
+            enemy_files.setdefault(enemy_id_of_still(fn), []).append(fn)
+        clash = {k: v for k, v in enemy_files.items() if len(v) > 1}
+        for k, v in sorted(clash.items()):
+            print("  TWO FILES FOR ONE ENEMY: %s <- %s" % (k, ", ".join(v)))
+        if clash:
+            return 1
 
     # Two source folders: the Companions at the top and the Kids in their own,
     # which is how they were delivered. A Kid builds exactly like a Companion
@@ -1091,25 +1210,32 @@ def main():
             if is_kid:
                 kid_slugs.add(slug)
 
-    manifest = {"animated": {}, "stills": {}, "targetContentH": TARGET_CONTENT_H,
-                "kids": sorted(kid_slugs)}
+    prev_path = os.path.join(OUT, "index.json")
+    prev = json.load(open(prev_path)) if os.path.exists(prev_path) else {}
+    # The enemy section is carried unless it is rebuilt below, in every mode.
+    manifest = {"animated": {}, "stills": {}, "enemies": prev.get("enemies") or {},
+                "targetContentH": TARGET_CONTENT_H, "kids": sorted(kid_slugs)}
+    prev_kids = set()
     # `--only` REBUILDS SOME COMPANIONS WITHOUT REWRITING THE REST. Each run
     # starts from the manifest on disk, so a loop of single-slug runs -- one
     # process each, which is also what keeps memory bounded -- accumulates
     # instead of each run forgetting the one before it.
-    if only:
+    if partial:
         for s in sorted(only - set(by_slug)):
             print("  --only %s: no sheets under %s" % (s, SRC_SHEETS))
-        prev_path = os.path.join(OUT, "index.json")
-        if os.path.exists(prev_path):
-            prev = json.load(open(prev_path))
+        if prev:
             for s, names in (prev.get("animated") or {}).items():
                 if s not in only and os.path.exists(os.path.join(OUT, s, "index.json")):
                     manifest["animated"][s] = names
             manifest["stills"] = prev.get("stills") or {}
+            # A Kid whose atlas is kept is still a Kid, whether or not her sheets
+            # are on this machine to be scanned.
+            prev_kids = set(prev.get("kids") or [])
 
     for slug, clips in sorted(by_slug.items()):
         if only and slug not in only:
+            continue
+        if args.enemies and not only:
             continue
         built = {name: build_clip(p) for name, p in sorted(clips.items())}
 
@@ -1162,7 +1288,7 @@ def main():
             manifest["animated"][slug] = sorted(entry["clips"].keys())
 
     stills = sorted(f for f in os.listdir(SRC_STILLS) if f.endswith(".png"))
-    if only and not args.stills:
+    if partial and not args.stills:
         stills = []                  # kept from the manifest on disk, above
     if not args.report:
         os.makedirs(os.path.join(OUT, "stills"), exist_ok=True)
@@ -1185,11 +1311,37 @@ def main():
             print("   %-18s %-7s %dx%d" % (name, meta["matte"], meta["w"], meta["h"]))
 
     print("\nmatte classes:", ", ".join("%s=%d" % kv for kv in sorted(counts.items())))
+
+    # THE ENEMIES, rebuilt as a SET whenever they are rebuilt at all: a source
+    # that was renamed or replaced (the Porcelain Twins arrived as one file and
+    # were redelivered as two) must drop out of the manifest and off the disk,
+    # or the game keeps drawing the old one under an id nothing builds any more.
+    if enemies_wanted:
+        print("\nenemy stills:")
+        outdir = os.path.join(OUT, "enemies")
+        built = {}
+        for eid, (fn,) in sorted(enemy_files.items()):
+            if args.report:
+                print("   %-22s <- %s" % (eid, fn))
+                continue
+            os.makedirs(outdir, exist_ok=True)
+            meta = build_enemy_still(os.path.join(SRC_ENEMY_STILLS, fn), os.path.join(outdir, eid))
+            if meta:
+                built[eid] = meta
+                print("   %-22s %4dx%-4d <- %s" % (eid, meta["w"], meta["h"], fn))
+        if not args.report:
+            manifest["enemies"] = built
+            keep = {m["file"] for m in built.values()}
+            for stale in sorted(os.listdir(outdir) if os.path.isdir(outdir) else []):
+                if stale not in keep:
+                    os.remove(os.path.join(outdir, stale))
+                    print("   removed stale", stale)
+
     if not args.report:
         # Only the Kids that are actually BUILT. Listing one whose sheets exist
         # but whose atlas does not is the same lie `animated` is careful not to
         # tell -- and `--only` means a half-built roster is the normal state.
-        manifest["kids"] = sorted(s for s in kid_slugs if s in manifest["animated"])
+        manifest["kids"] = sorted(s for s in kid_slugs | prev_kids if s in manifest["animated"])
         json.dump(manifest, open(os.path.join(OUT, "index.json"), "w"), indent=1)
         print("wrote", OUT)
     return 0
