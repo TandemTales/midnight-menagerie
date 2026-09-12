@@ -2,6 +2,12 @@
 
     python tests/coop/playthrough.py [steps]
 
+NOTHING RUNS THIS. It is named neither `check.py` nor `run.py`, so the sweep
+(`tests/*/check.py`) and a run.py census both miss it, and it sat red from
+2026-08-29 to 2026-09-11 on nothing but stale expectations: a named Companion
+slug that this save had not rescued, and a room foot whose label changes with
+what you did in the room. Both are derived now. Run it by hand.
+
 Starts a real co-op run from the select screen, then plays: takes map nodes,
 fights with BOTH Kids' hands, clicks through every pass-it-over veil, answers
 every room, and keeps going until the run ends or the step budget runs out.
@@ -179,9 +185,20 @@ async def main():
             await page.click('[data-act="tokid"]'); await page.wait_for_timeout(900)
             await page.click('.kid-tile[data-slug="%s"]' % kid); await page.wait_for_timeout(900)
 
-        await pick("marmalade", "maya")
+        # Companions are DISCOVERED: only rescued ones are selectable, so naming
+        # a slug times out on any save that has not rescued it -- which is what
+        # `bones` did here (CONTRACTS trap 23). Take what the board offers and
+        # let the checks below name each seat's Companion by its own slug.
+        avail = await page.eval_on_selector_all(
+            ".companion-tile:not(.is-locked):not([disabled])",
+            "els => els.map(e => e.dataset.slug).filter(Boolean)")
+        assert avail, "no Companion is selectable on this save"
+        COMP0, COMP1 = avail[0], avail[1 % len(avail)]
+        print(f"      party: {COMP0}/maya, {COMP1}/eli", flush=True)
+
+        await pick(COMP0, "maya")
         await page.click(".btn--go"); await page.wait_for_timeout(1200)
-        await pick("bones", "eli")
+        await pick(COMP1, "eli")
         await page.click(".btn--go"); await page.wait_for_timeout(6500)
 
         for step in range(STEPS):

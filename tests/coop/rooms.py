@@ -2,6 +2,12 @@
 
     python tests/coop/rooms.py
 
+NOTHING RUNS THIS. It is named neither `check.py` nor `run.py`, so the sweep
+(`tests/*/check.py`) and a run.py census both miss it, and it sat red from
+2026-08-29 to 2026-09-11 on nothing but stale expectations: a named Companion
+slug that this save had not rescued, and a room foot whose label changes with
+what you did in the room. Both are derived now. Run it by hand.
+
 The reward screen, Mr. Moth's and the Safe Room are each per Kid — their own
 offer, their own shelf, their own night — and each one has to hand the screen
 over rather than one Kid walking out with the room.
@@ -120,6 +126,31 @@ async def press(page, *starts):
     return hit
 
 
+async def leave_room(page):
+    """Press the one big action at the bottom right of a per-Kid room.
+
+    Reward, Shop and Rest all build it with `RoomScene._primary`, so it is
+    always `.rm-go` — but its LABEL says what pressing it will DO and changes
+    with what you did in the room: "Take Hairball and go", "Leave the room",
+    "Pack up and go on", "Back to the blueprint". Matching the label is what
+    left this file red for weeks — the reward foot stops saying "back to the
+    blueprint" the moment a Trick is selected — so press the button by class
+    and report what it said.
+    """
+    hit = await page.evaluate("""() => {
+      const b = document.querySelector('.rm-go');
+      if (!b) return null;
+      b.click();
+      return (b.textContent || '').trim().replace(/\\s+/g, ' ').slice(0, 60);
+    }""")
+    if hit is None:
+        on = await page.evaluate(
+            "() => [...document.querySelectorAll('button, .btn, .rm-go')]"
+            ".map(e => (e.textContent||'').trim().replace(/\\s+/g, ' ').slice(0, 40))")
+        raise AssertionError("no room primary button (.rm-go) on screen: %r" % on)
+    return hit
+
+
 async def open_curiosity(page, ev_id):
     """Stand the party in a Curiosity room running a NAMED Curiosity, seat 0 first.
 
@@ -172,9 +203,20 @@ async def main():
             await page.click('[data-act="tokid"]'); await page.wait_for_timeout(900)
             await page.click('.kid-tile[data-slug="%s"]' % kid); await page.wait_for_timeout(900)
 
-        await pick("marmalade", "maya")
+        # Companions are DISCOVERED: only rescued ones are selectable, so naming
+        # a slug times out on any save that has not rescued it -- which is what
+        # `bones` did here (CONTRACTS trap 23). Take what the board offers and
+        # let the checks below name each seat's Companion by its own slug.
+        avail = await page.eval_on_selector_all(
+            ".companion-tile:not(.is-locked):not([disabled])",
+            "els => els.map(e => e.dataset.slug).filter(Boolean)")
+        assert avail, "no Companion is selectable on this save"
+        COMP0, COMP1 = avail[0], avail[1 % len(avail)]
+        print(f"      party: {COMP0}/maya, {COMP1}/eli", flush=True)
+
+        await pick(COMP0, "maya")
         await page.click(".btn--go"); await page.wait_for_timeout(1200)
-        await pick("bones", "eli")
+        await pick(COMP1, "eli")
         await page.click(".btn--go"); await page.wait_for_timeout(6500)
 
         # ── the reward screen ────────────────────────────────────────────────
@@ -195,7 +237,7 @@ async def main():
 
         await page.click('.rw-fan [role="option"]')
         await page.wait_for_timeout(900)
-        await press(page, "back to the blueprint", "leave")
+        await leave_room(page)
         await settle(page)
         v = await page.evaluate(WHO)
         check(v["veil"], "the screen is covered before the next Kid sees it")
@@ -209,15 +251,15 @@ async def main():
         check(bool(c["offer"]), "with THEIR offer waiting")
         check(c["offer"]["keepsake"] != k0, "a different Keepsake from seat 0's",
               f"{c['offer']['keepsake']} vs {k0}")
-        check(all(x.startswith("bones/") for x in c["offer"]["cards"]),
-              "and Bones Tricks", ", ".join(c["offer"]["cards"]))
+        check(all(x.startswith(COMP1 + "/") for x in c["offer"]["cards"]),
+              f"and {COMP1} Tricks", ", ".join(c["offer"]["cards"]))
         check(c["keeps"][0] == keeps0[0] + 1, "seat 0 already banked theirs",
               f"{keeps0[0]} -> {c['keeps'][0]}")
         await page.screenshot(path=os.path.join(SHOTS, "rooms-reward-seat1.png"))
 
         await page.click('.rw-fan [role="option"]')
         await page.wait_for_timeout(900)
-        await press(page, "back to the blueprint", "leave")
+        await leave_room(page)
         await settle(page)
         d = await page.evaluate(WHO)
         check(d["scene"] == "map", "the last Kid out closes the room", d["scene"])
@@ -240,7 +282,7 @@ async def main():
         check(e["scene"] == "rest", "the Safe Room is up", e["scene"])
         check(e["seat"] == 0, "seat 0 first", str(e["seat"]))
 
-        await press(page, "pack up")
+        await leave_room(page)
         await settle(page)
         f = await page.evaluate(WHO)
         check(f["veil"], "a Kid leaving hands it over rather than closing it")
@@ -249,10 +291,10 @@ async def main():
         g = await page.evaluate(WHO)
         check(g["scene"] == "rest", "the Safe Room opens again", g["scene"])
         check(g["seat"] == 1, "as seat 1", str(g["seat"]))
-        check(g["comp"] == "bones", "with their Companion", g["comp"])
+        check(g["comp"] == COMP1, "with their Companion", g["comp"])
         await page.screenshot(path=os.path.join(SHOTS, "rooms-rest-seat1.png"))
 
-        await press(page, "pack up")
+        await leave_room(page)
         await settle(page)
         h = await page.evaluate(WHO)
         check(h["scene"] == "map", "and the second one out closes it", h["scene"])
@@ -276,10 +318,10 @@ async def main():
             "() => [...document.querySelectorAll('[data-card-id]')].map(e => e.dataset.cardId)")
         check(s0["scene"] == "shop", "the shop is up", s0["scene"])
         check(s0["seat"] == 0, "seat 0 first", str(s0["seat"]))
-        check(any(x.startswith("marmalade/") for x in shelf0),
-              "showing Marmalade Tricks", ", ".join(shelf0[:3]))
+        check(any(x.startswith(COMP0 + "/") for x in shelf0),
+              f"showing {COMP0} Tricks", ", ".join(shelf0[:3]))
 
-        await press(page, "back to the blueprint")
+        await leave_room(page)
         await settle(page)
         sv = await page.evaluate(WHO)
         check(sv["veil"], "leaving hands the shop over rather than shutting it")
@@ -291,12 +333,12 @@ async def main():
             "() => [...document.querySelectorAll('[data-card-id]')].map(e => e.dataset.cardId)")
         check(s1["scene"] == "shop", "the shop opens again", s1["scene"])
         check(s1["seat"] == 1, "as seat 1", str(s1["seat"]))
-        check(any(x.startswith("bones/") for x in shelf1),
+        check(any(x.startswith(COMP1 + "/") for x in shelf1),
               "showing THEIR Companion's Tricks", ", ".join(shelf1[:3]))
         check(sorted(shelf0) != sorted(shelf1), "a different shelf entirely")
         await page.screenshot(path=os.path.join(SHOTS, "rooms-shop-seat1.png"))
 
-        await press(page, "back to the blueprint")
+        await leave_room(page)
         await settle(page)
         s2 = await page.evaluate(WHO)
         check(s2["scene"] == "map", "and the second one out closes it", s2["scene"])
