@@ -80,6 +80,7 @@ from scipy import ndimage as ndi
 Image.MAX_IMAGE_PIXELS = None
 
 SRC_SHEETS = "animations"
+SRC_KIDS = "animations/kids"
 SRC_STILLS = "animations/sprites"
 OUT = "game/assets/sprites"
 
@@ -87,6 +88,19 @@ OUT = "game/assets/sprites"
 # is a ~2.6x downscale: enough for a Companion drawn at 60-80 CSS px on a 2x
 # display, which is the size of the slot in `ui/enemy.js`'s hero rig.
 TARGET_CONTENT_H = 128
+
+# A KID IS DRAWN MUCH BIGGER THAN A COMPANION and must not lose pixels by
+# becoming animated. `ui/enemy.js` draws the Kid rig at `KID_RIG_H = 230` CSS px
+# and their stills are built at 256, so 128 would hand an animated Kid half the
+# resolution of the still it replaces. Each slug publishes its own `unit` in its
+# index.json, which is what `ClipPlayer` scales by.
+KID_TARGET_CONTENT_H = 256
+
+# Where a sheet's name and the GAME's slug disagree. `ClipPlayer.clipIndex`
+# looks an atlas up by the slug the game uses, so the build has to land there:
+# Priya's sheets arrived under the art pass's spelling and the game has keyed
+# her as `priya` since data/schema.js was written.
+SLUG_ALIAS = {"prya": "priya"}
 
 # THE BACKGROUND IS NOT TRANSPARENT. The production brief asks every clip for
 # "a truly transparent alpha background" and the sheets do not have one: `idle`
@@ -1060,16 +1074,25 @@ def main():
     args = ap.parse_args()
     only = {s.strip() for s in args.only.split(",") if s.strip()}
 
-    sheets = sorted(f for f in os.listdir(SRC_SHEETS) if f.startswith("SS_") and f.endswith(".png"))
-    by_slug = {}
-    for fn in sheets:
-        m = re.match(r"SS_([A-Za-z0-9]+)_([A-Za-z0-9]+)\.png$", fn)
-        if not m:
-            print("  skip (unparsed name):", fn)
+    # Two source folders: the Companions at the top and the Kids in their own,
+    # which is how they were delivered. A Kid builds exactly like a Companion
+    # apart from its height, so the only thing carried through is the slug set.
+    by_slug, kid_slugs = {}, set()
+    for src, is_kid in ((SRC_SHEETS, False), (SRC_KIDS, True)):
+        if not os.path.isdir(src):
             continue
-        by_slug.setdefault(m.group(1), {})[m.group(2)] = os.path.join(SRC_SHEETS, fn)
+        for fn in sorted(f for f in os.listdir(src) if f.startswith("SS_") and f.endswith(".png")):
+            m = re.match(r"SS_([A-Za-z0-9]+)_([A-Za-z0-9]+)\.png$", fn)
+            if not m:
+                print("  skip (unparsed name):", fn)
+                continue
+            slug = SLUG_ALIAS.get(m.group(1), m.group(1))
+            by_slug.setdefault(slug, {})[m.group(2)] = os.path.join(src, fn)
+            if is_kid:
+                kid_slugs.add(slug)
 
-    manifest = {"animated": {}, "stills": {}, "targetContentH": TARGET_CONTENT_H}
+    manifest = {"animated": {}, "stills": {}, "targetContentH": TARGET_CONTENT_H,
+                "kids": sorted(kid_slugs)}
     # `--only` REBUILDS SOME COMPANIONS WITHOUT REWRITING THE REST. Each run
     # starts from the manifest on disk, so a loop of single-slug runs -- one
     # process each, which is also what keeps memory bounded -- accumulates
@@ -1094,14 +1117,19 @@ def main():
         # subject is a constant size in pixels, so the reference is the median
         # content height across all clips, not anything per-cell.
         ref = float(np.median([c["median_h"] for c in built.values()]))
-        scale = TARGET_CONTENT_H / ref
+        target = KID_TARGET_CONTENT_H if slug in kid_slugs else TARGET_CONTENT_H
+        scale = target / ref
 
-        print("\n%s: %d clips, median content %.0fpx -> scale %.3f" % (slug, len(built), ref, scale))
+        print("\n%s: %d clips, median content %.0fpx -> scale %.3f (unit %d%s)" % (
+            slug, len(built), ref, scale, target, ", kid" if slug in kid_slugs else ""))
         outdir = os.path.join(OUT, slug)
         if not args.report:
             os.makedirs(outdir, exist_ok=True)
 
-        entry = {"clips": {}, "scale": round(scale, 4)}
+        # `unit` is the figure's height in these atlases. It used to be one
+        # global number in the manifest, which stopped being true the moment the
+        # Kids built at their own size, so each slug carries its own.
+        entry = {"clips": {}, "scale": round(scale, 4), "unit": target}
         for name, clip in built.items():
             cfg = CLIPS.get(name, {"loop": False, "fps": 24})
             print("   %-10s %dx%-2d cell %-9s %-7s wash %5.1f%%  bg=%-20s lift %+5.1f%s frames %d" % (
@@ -1158,6 +1186,10 @@ def main():
 
     print("\nmatte classes:", ", ".join("%s=%d" % kv for kv in sorted(counts.items())))
     if not args.report:
+        # Only the Kids that are actually BUILT. Listing one whose sheets exist
+        # but whose atlas does not is the same lie `animated` is careful not to
+        # tell -- and `--only` means a half-built roster is the normal state.
+        manifest["kids"] = sorted(s for s in kid_slugs if s in manifest["animated"])
         json.dump(manifest, open(os.path.join(OUT, "index.json"), "w"), indent=1)
         print("wrote", OUT)
     return 0

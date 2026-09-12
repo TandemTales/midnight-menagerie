@@ -181,6 +181,67 @@
    "split",
    "stretch",
    "trick"
+  ],
+  "pudding": [
+   "affection",
+   "attack",
+   "brace",
+   "celebrate",
+   "defeat",
+   "dig",
+   "fetch",
+   "hurt",
+   "idle",
+   "ready",
+   "trick"
+  ],
+  "priya": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "amina": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "eli": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "jordan": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "lena": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "mateo": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "maya": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
+  ],
+  "samir": [
+   "attack",
+   "defeat",
+   "hurt",
+   "idle"
   ]
  },
  "stills": {
@@ -417,5 +478,15 @@
    "bg": null
   }
  },
- "targetContentH": 128
+ "targetContentH": 128,
+ "kids": [
+  "amina",
+  "eli",
+  "jordan",
+  "lena",
+  "mateo",
+  "maya",
+  "priya",
+  "samir"
+ ]
 }

@@ -1,0 +1,463 @@
+{
+ "clips": {
+  "affection": {
+   "file": "affection.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 211,
+   "fh": 154,
+   "anchor": [
+    103.85,
+    151.74
+   ],
+   "source": "SS_pudding_affection.png",
+   "matte": "CONTAM",
+   "bg": [
+    149.6,
+    159.9,
+    181.8
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 36.3,
+   "dehalo": true,
+   "warm": -122.0,
+   "dewhite": false,
+   "dip": 0.673,
+   "untail": true,
+   "deblack": false,
+   "endIoU": 0.994,
+   "loop": false,
+   "fps": 30,
+   "hold": false
+  },
+  "attack": {
+   "file": "attack.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 162,
+   "fh": 137,
+   "anchor": [
+    78.22,
+    134.02
+   ],
+   "source": "SS_pudding_attack.png",
+   "matte": "CONTAM",
+   "bg": [
+    121.3,
+    121.3,
+    130.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 35.7,
+   "dehalo": true,
+   "warm": -102.0,
+   "dewhite": false,
+   "dip": 0.721,
+   "untail": true,
+   "deblack": false,
+   "endIoU": 0.991,
+   "loop": false,
+   "fps": 60,
+   "hold": false
+  },
+  "brace": {
+   "file": "brace.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 193,
+   "fh": 146,
+   "anchor": [
+    93.13,
+    143.71
+   ],
+   "source": "SS_pudding_brace.png",
+   "matte": "CONTAM",
+   "bg": [
+    141.6,
+    157.0,
+    181.5
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 37.2,
+   "dehalo": true,
+   "warm": -123.0,
+   "dewhite": false,
+   "dip": 0.712,
+   "untail": true,
+   "deblack": false,
+   "endIoU": 0.995,
+   "loop": false,
+   "fps": 24,
+   "hold": false
+  },
+  "celebrate": {
+   "file": "celebrate.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 180,
+   "fh": 161,
+   "anchor": [
+    86.95,
+    156.31
+   ],
+   "source": "SS_pudding_celebrate.png",
+   "matte": "CONTAM",
+   "bg": [
+    120.3,
+    121.4,
+    130.1
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 34.6,
+   "dehalo": true,
+   "warm": -107.0,
+   "dewhite": false,
+   "dip": 0.787,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.945,
+   "loop": false,
+   "fps": 30,
+   "hold": false
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 187,
+   "fh": 132,
+   "anchor": [
+    91.24,
+    129.83
+   ],
+   "source": "SS_pudding_defeat.png",
+   "matte": "CONTAM",
+   "bg": [
+    123.8,
+    120.4,
+    130.3
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 37.5,
+   "dehalo": true,
+   "warm": -101.0,
+   "dewhite": false,
+   "dip": 0.669,
+   "untail": true,
+   "deblack": false,
+   "endIoU": 0.967,
+   "loop": false,
+   "fps": 24,
+   "hold": true
+  },
+  "dig": {
+   "file": "dig.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 226,
+   "fh": 178,
+   "anchor": [
+    107.11,
+    169.1
+   ],
+   "source": "SS_pudding_dig.png",
+   "matte": "CONTAM",
+   "bg": [
+    140.0,
+    150.2,
+    171.1
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 24.7,
+   "dehalo": false,
+   "warm": -121.0,
+   "dewhite": false,
+   "dip": 0.435,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.994,
+   "fade": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.653,
+    0.513,
+    0.702,
+    0.973,
+    0.974,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.884,
+    0.745,
+    0.407,
+    0.686,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.437,
+    0.35,
+    0.35,
+    0.486,
+    0.793,
+    0.999,
+    1.0,
+    0.963,
+    0.974,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.511,
+    0.35,
+    0.521,
+    0.895,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.421,
+    0.35,
+    0.35,
+    0.35,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.387,
+    0.487,
+    0.798,
+    0.658,
+    0.995,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   "loop": false,
+   "fps": 48,
+   "hold": false
+  },
+  "fetch": {
+   "file": "fetch.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 234,
+   "fh": 172,
+   "anchor": [
+    112.63,
+    169.9
+   ],
+   "source": "SS_pudding_fetch.png",
+   "matte": "CONTAM",
+   "bg": [
+    132.5,
+    129.4,
+    143.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 30.5,
+   "dehalo": true,
+   "warm": -118.0,
+   "dewhite": false,
+   "dip": 0.546,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.994,
+   "loop": false,
+   "fps": 48,
+   "hold": false
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 185,
+   "fh": 161,
+   "anchor": [
+    81.11,
+    156.3
+   ],
+   "source": "SS_pudding_hurt.png",
+   "matte": "CONTAM",
+   "bg": [
+    125.9,
+    126.6,
+    136.6
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 33.9,
+   "dehalo": true,
+   "warm": -105.0,
+   "dewhite": false,
+   "dip": 0.416,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.973,
+   "loop": false,
+   "fps": 60,
+   "hold": false
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 165,
+   "fh": 146,
+   "anchor": [
+    81.68,
+    144.29
+   ],
+   "source": "SS_pudding_idle.png",
+   "matte": "CONTAM",
+   "bg": [
+    152.7,
+    162.3,
+    183.6
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 37.2,
+   "dehalo": true,
+   "warm": -124.0,
+   "dewhite": false,
+   "dip": 0.701,
+   "untail": true,
+   "deblack": false,
+   "endIoU": 0.982,
+   "loop": true,
+   "fps": 20,
+   "hold": false
+  },
+  "ready": {
+   "file": "ready.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 175,
+   "fh": 170,
+   "anchor": [
+    81.12,
+    168.35
+   ],
+   "source": "SS_pudding_ready.png",
+   "matte": "CONTAM",
+   "bg": [
+    125.0,
+    123.2,
+    134.7
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 35.8,
+   "dehalo": true,
+   "warm": -109.0,
+   "dewhite": false,
+   "dip": 0.748,
+   "untail": true,
+   "deblack": false,
+   "endIoU": 0.958,
+   "loop": false,
+   "fps": 40,
+   "hold": false
+  },
+  "trick": {
+   "file": "trick.webp",
+   "frames": 81,
+   "cols": 9,
+   "rows": 9,
+   "fw": 197,
+   "fh": 155,
+   "anchor": [
+    92.74,
+    152.2
+   ],
+   "source": "SS_pudding_trick.png",
+   "matte": "CONTAM",
+   "bg": [
+    127.3,
+    126.5,
+    135.2
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 36.5,
+   "dehalo": true,
+   "warm": -103.0,
+   "dewhite": false,
+   "dip": 0.538,
+   "untail": true,
+   "deblack": false,
+   "endIoU": 0.992,
+   "loop": false,
+   "fps": 48,
+   "hold": false
+  }
+ },
+ "scale": 0.4655,
+ "unit": 128
+}
