@@ -76,12 +76,12 @@ function spendGlow(c, n) {
   if (have <= 0) return 0;
   U.addRes(c, GLOW, -have, 0, glowCap(c));
   const s = U.mm(c);
-  if (s.neverGoesOut && U.once(c, 'neverGoesOut')) U.atTurnEnd(c, (x) => gainGlow(x, have >= 3 ? 2 : 1));
+  if (s.neverGoesOut && U.once(c, 'neverGoesOut')) U.atTurnEnd(c, (x) => gainGlow(x, have >= 3 ? s.neverGoesOut.m0 : s.neverGoesOut.g));
   if (s.flickerFeedback && U.once(c, 'flickerFeedback')) {
     const list = gloaming(c);
     if (list.length) hasten(c, U.rpick(c, list), 1);
   }
-  if (s.staticWallpaper && U.once(c, 'staticWallpaper')) U.hitRandom(c, 4);
+  if (s.staticWallpaper && U.once(c, 'staticWallpaper')) U.hitRandom(c, s.staticWallpaper.d);
   U.fire(c, 'flared', { amount: have });
   return have;
 }
@@ -100,7 +100,18 @@ const gloamingSize = (c) => gloaming(c).length;
  * a question still lands in the right order.
  */
 function linger(c, count) {
-  U.mm(c).pendingLinger = { card: c.card, count, def: c.card && c.card.def };
+  /* The playing card's RESOLVED nums, captured here, with the upgrade already
+     folded in. An Afterglow runs LATER from a tracker ctx that has no card on
+     it, so `N(c)` inside one is `{}` — which is why every Afterglow in this
+     file used to carry a hardcoded literal and every upgrade of those fourteen
+     Tricks was dead. Same shape as Mossbit's `inscribe(c, { run })`, which
+     closes over the ctx of the play rather than reaching for it afterwards.
+     The aimed enemy comes along for Bonk From Later's "the same enemy". */
+  U.mm(c).pendingLinger = {
+    card: c.card, count, def: c.card && c.card.def,
+    nums: { ...N(c) },
+    targetId: c.target ? c.target.id : null,
+  };
 }
 
 function settleLinger(c) {
@@ -116,8 +127,11 @@ function settleLinger(c) {
      physical card is pulled out of the discard pile on `card:resolved`, which
      is emitted after that placement. */
   s.awaitingLinger = p.card;
-  gloaming(c).push({ card: p.card, def: p.def, count: Math.max(0, p.count), delayed: 0, hastened: 0, stored: 0 });
-  if (s.brighterEveryMinute && U.once(c, 'brighterEveryMinute')) U.guard(c, 4);
+  gloaming(c).push({
+    card: p.card, def: p.def, nums: p.nums || {}, targetId: p.targetId || null,
+    count: Math.max(0, p.count), delayed: 0, hastened: 0, stored: 0,
+  });
+  if (s.brighterEveryMinute && U.once(c, 'brighterEveryMinute')) U.guard(c, s.brighterEveryMinute.b);
   U.fire(c, 'lingered', { card: p.card });
   if (s.gloamingCrowded && gloamingSize(c) >= 4 && U.once(c, 'gloamingCrowded')) { U.draw(c, 2); U.energy(c, 1); }
 }
@@ -128,7 +142,7 @@ function hasten(c, entry, n) {
   entry.hastened += n;
   const s = U.mm(c);
   if (entry.count === 0) {
-    if (s.cantWait && U.once(c, 'cantWait')) U.hitRandom(c, 4);
+    if (s.cantWait && U.once(c, 'cantWait')) U.hitRandom(c, s.cantWait.d);
     resolveBatch(c, [entry]);
     return true;
   }
@@ -141,9 +155,74 @@ function delay(c, entry, n) {
   entry.delayed += n;
   const s = U.mm(c);
   if (s.thisOneCooking && entry.def && entry.def.id === 'wisp/this-ones-been-cooking') entry.stored += 1;
-  if (s.iCanWait && U.once(c, 'iCanWait')) U.guard(c, 6);
+  if (s.iCanWait && U.once(c, 'iCanWait')) U.guard(c, s.iCanWait.b);
   U.fire(c, 'delayed', { entry });
   return true;
+}
+
+/** The numbers the Trick was printed with, captured by `linger()`. */
+const AN = (o) => (o && o.nums) || {};
+
+/**
+ * A Trick's PRINTED countdown, read off its own rules text.
+ *
+ * Encore! puts Tricks straight into the Gloaming "at their printed countdowns"
+ * and asked `def.linger` for it — a field no card in the game has ever carried,
+ * so every Encored Trick came back at 1 whatever it printed. Derived from the
+ * text rather than duplicated beside it (trap 59).
+ */
+function printedLinger(def) {
+  const m = def && def.text && /\[Linger\]\s*(\d+)/i.exec(def.text);
+  return m ? Math.max(1, parseInt(m[1], 10)) : 1;
+}
+
+/** The enemy this Trick was aimed at, if it is still standing. */
+function remembered(c, o) {
+  const id = o && o.entry && o.entry.targetId;
+  const t = id && c.e && c.e.actor ? c.e.actor(id) : null;
+  return (t && t.alive && t.side !== 'player') ? t : c.randomEnemy();
+}
+
+/**
+ * Hot Potato's Flare: "the next [Afterglow] to damage this enemy deals {m0}
+ * more". It set the number and nothing ever read it, so a Flare of real Glow
+ * bought nothing. Every damaging Afterglow goes through the `aHit*` helpers
+ * below, and the first hit that lands on the marked enemy spends the rider.
+ */
+function potatoBonus(c, t) {
+  const s = U.mm(c);
+  if (!s.hotPotato || !t || t.id !== s.hotPotatoId) return 0;
+  const n = s.hotPotato;
+  s.hotPotato = 0;
+  s.hotPotatoId = null;
+  return n;
+}
+const aHitAt = (c, t, amt) => { if (t) U.hitAt(c, t, amt + potatoBonus(c, t)); };
+const aHitRandom = (c, amt) => { const t = c.randomEnemy(); if (t) aHitAt(c, t, amt); };
+const aHitRandomN = (c, amt, n) => { for (let i = 0; i < n; i++) aHitRandom(c, amt); };
+const aHitAll = (c, amt) => {
+  // The room hit stays one `damageAll`; the rider follows it as its own hit.
+  const marked = U.enemies(c).find((t) => t.id === U.mm(c).hotPotatoId) || null;
+  U.hitAll(c, amt);
+  const bonus = potatoBonus(c, marked);
+  if (bonus > 0 && marked && marked.alive) U.hitAt(c, marked, bonus);
+};
+
+/**
+ * Count With Me and Make a Constellation: a friend is waiting on one Lingering
+ * Trick. Both wrote a watcher onto the Gloaming entry and nothing ever read it,
+ * so both did nothing beyond their immediate effect.
+ */
+function payWatcher(c, entry, converged) {
+  const w = entry && entry.watcher;
+  if (!w) return;
+  entry.watcher = null;
+  const ally = c.e && c.e.actor ? c.e.actor(w.id) : null;
+  if (!ally || !ally.alive) return;
+  if (w.draw > 0) c.giveDraw(ally, w.draw);
+  if (w.guard > 0) c.giveBlock(ally, w.guard);
+  // §MULTIPLAYER: "If it resolves as part of a Convergence, they also gain 1 Nerve."
+  if (converged) c.giveEnergy(ally, 1);
 }
 
 /**
@@ -154,7 +233,13 @@ function resolveBatch(c, entries, opts = {}) {
   const list = entries.filter(Boolean);
   if (!list.length) return;
   const s = U.mm(c);
-  const converged = list.length >= 2;
+  /* Small Orbit's return rides the Gloaming but is NOT an Afterglow — §46 is
+     explicit ("This does not count as an Afterglow"). So it cannot make a
+     Convergence, it does not feed `afterglowsThisTurn` (which is what discounts
+     Tiny Sun, Big Feelings) and it pays out none of the Afterglow Powers. */
+  const isGlow = (e) => !(e.def && e.def.notAfterglow);
+  const real = list.filter(isGlow);
+  const converged = real.length >= 2;
   const all = gloaming(c);
   for (const e of list) {
     const i = all.indexOf(e);
@@ -163,17 +248,33 @@ function resolveBatch(c, entries, opts = {}) {
   for (const e of list) {
     const def = e.def;
     const fn = def && def.afterglow;
+    // Double Exposure's copy carries its own no-Glow flag; Borrowed Tomorrow
+    // and Skip to the Good Part put it on the whole batch.
+    const o = {
+      entry: e, nums: e.nums || (def && def.nums) || {},
+      noGlow: !!opts.noGlow || !!e.noGlow, converged: converged && isGlow(e),
+    };
     if (fn) {
-      try { fn(c, { entry: e, noGlow: !!opts.noGlow, converged }); }
+      try { fn(c, o); }
       catch (err) { console.error('[wisp] afterglow ' + (def && def.id) + ' threw', err); }
+      /* Good Things Come to Tiny Ghosts (§76): once a turn, a Trick that was
+         deliberately Delayed resolves its Afterglow a second time, no Glow. */
+      if (s.goodThings && (e.delayed || 0) > 0 && isGlow(e) && U.once(c, 'goodThings')) {
+        try { fn(c, { ...o, noGlow: true }); }
+        catch (err) { console.error('[wisp] afterglow ' + (def && def.id) + ' threw', err); }
+      }
     }
-    if (converged && def && def.converge) {
-      try { def.converge(c, { entry: e }); } catch (err) { console.error('[wisp] converge threw', err); }
+    if (o.converged && def && def.converge) {
+      try { def.converge(c, o); } catch (err) { console.error('[wisp] converge threw', err); }
     }
-    if (s.homeInTheDark && U.once(c, 'homeInTheDark')) U.guard(c, 4);
-    if (s.gentleLanding > 0) { U.guard(c, 4); s.gentleLanding--; }
-    s.afterglowsThisTurn = (s.afterglowsThisTurn || 0) + 1;
-    U.fire(c, 'afterglow', { entry: e });
+    if (isGlow(e)) {
+      if (s.homeInTheDark && U.once(c, 'homeInTheDark')) U.guard(c, s.homeInTheDark.b);
+      if (s.gentleLanding && s.gentleLanding.left > 0) { U.guard(c, s.gentleLanding.b); s.gentleLanding.left--; }
+      s.afterglowsThisTurn = (s.afterglowsThisTurn || 0) + 1;
+      U.fire(c, 'afterglow', { entry: e });
+      payWatcher(c, e, converged);
+      followMyLight(c);
+    }
     if (e.card) {
       if (e.vanish) { U.makeVanish(c, e.card); c.exhaust(e.card); }
       else U.moveCard(c, e.card, 'discard', {});
@@ -181,8 +282,26 @@ function resolveBatch(c, entries, opts = {}) {
   }
   if (converged) {
     s.convergedThisTurn = (s.convergedThisTurn || 0) + 1;
-    if (s.gettingExcited && U.once(c, 'gettingExcited')) gainGlow(c, 1);
-    if (s.constellation && U.once(c, 'constellation')) { U.draw(c, 1); gainGlow(c, 1); }
+    if (s.gettingExcited && U.once(c, 'gettingExcited')) gainGlow(c, s.gettingExcited.g);
+    if (s.constellation && U.once(c, 'constellation')) { U.draw(c, s.constellation.c1); gainGlow(c, s.constellation.g); }
+    /* Tiny Star, Long Shadow (§80): once a turn, one Afterglow in the
+       Convergence resolves again with no Glow.
+       §80 says the player CHOOSES which one. `resolveBatch` is synchronous —
+       it runs inside `hasten()`, inside the turn-start phase listener and
+       inside other Tricks' effects — so a prompt here would have to make the
+       whole Afterglow chain async, and a chain that awaits cannot resolve "as
+       one batch" any more. Picked with the run RNG instead, the way Slay the
+       Spire resolves a repeat it will not stop to ask about (Havoc plays the
+       top card of your draw pile; Mayhem plays it at the start of your turn).
+       The printed text says "one of the [Afterglow]s involved", not "choose
+       one", so the card the player reads is honest. */
+    if (s.longShadow && U.once(c, 'longShadow')) {
+      const pick = U.rpick(c, real.filter((e) => e.def && e.def.afterglow));
+      if (pick) {
+        try { pick.def.afterglow(c, { entry: pick, nums: pick.nums || pick.def.nums || {}, noGlow: true, converged: true }); }
+        catch (err) { console.error('[wisp] afterglow ' + pick.def.id + ' threw', err); }
+      }
+    }
     U.fire(c, 'converge', { entries: list });
   }
   // Falling Dominoes: the first Afterglow each turn Hastens everything else,
@@ -202,6 +321,39 @@ const power = (c, id, n, install) => {
   const s = U.mm(c);
   if (install && !s['pw:' + id]) { s['pw:' + id] = true; install(c); }
 };
+
+/**
+ * A Power's PRINTED numbers, remembered in tracker state.
+ *
+ * Nine of Wisp's Power hooks fire long after the Trick that installed them,
+ * from a ctx with no card on it, and every one of them used to hardcode its
+ * number — so nine upgrades were dead. The install closure only runs once, so
+ * the numbers are recorded on EVERY play and a second (upgraded) copy raises
+ * them rather than being silently ignored. `s[key]` stays truthy, which is what
+ * each hook site tests.
+ */
+function pnums(c, key, vals) {
+  const s = U.mm(c);
+  const cur = s[key] || {};
+  const next = {};
+  for (const k of Object.keys(vals)) next[k] = Math.max(vals[k] | 0, cur[k] | 0);
+  s[key] = next;
+  return next;
+}
+
+/**
+ * Follow My Light!'s second half: "your [Afterglow]s make their next Trick
+ * cheaper" — once a round, for the friend who last helped. Solo it does
+ * nothing, which is what a multiplayer-only Trick should do.
+ */
+function followMyLight(c) {
+  const s = U.mm(c);
+  if (!s.followMyLight) return;
+  const mates = c.teammates ? c.teammates() : [];
+  if (!mates.length || !U.once(c, 'followMyLightCheap')) return;
+  const ally = (s.followLast && c.e.actor(s.followLast)) || mates[0];
+  if (ally && ally.alive) c.giveStatus(ally, 'next-trick-discount', 1);
+}
 
 // ── per-combat bookkeeping ──────────────────────────────────────────────────
 U.onTracker(SLUG, (e, s, seat) => {
@@ -223,12 +375,19 @@ U.onTracker(SLUG, (e, s, seat) => {
     U.moveCard(c, want, 'limbo', { gloaming: true });
   });
 
-  U.onPlayerTurn(e, 'start', () => {
+  /* The countdown tick waits for `playerReady`, NOT `turn:start`.
+     CONTRACTS trap 24: `turn:start` fires BEFORE `_openSeatTurn` wipes Guard,
+     so every defensive Afterglow landing on the natural tick was deleted a few
+     lines later — measured, not argued: Nightlight Practice's Afterglow left
+     the player on 0 Guard, and Home in the Dark, Gentle Landing, Put It
+     Somewhere Safe, Long Fuse and Darkest Before Dawn all rode the same path.
+     `playerReady` is emitted after the wipe AND after `_dealSeatTurn` sets
+     Nerve, which is also what lets a Convergence hand a friend Nerve that
+     survives. Brambleboo's Mature Plants moved here for exactly this reason. */
+  e.on('phase', (ev) => {
+    if (!ev || ev.phase !== 'playerReady') return;
     const c = fake();
     const st = U.mm(c);
-    st.afterglowsThisTurn = 0;
-    st.convergedThisTurn = 0;
-    st.gentleLanding = 0;
     /* Every countdown ticks at once and everything that lands resolves as ONE
        batch — one Convergence at most, however many are involved. Ticking in a
        loop and resolving each on its own would fire Converge once per card. */
@@ -244,6 +403,21 @@ U.onTracker(SLUG, (e, s, seat) => {
       }
       if (due.length) resolveBatch(c, due);
     }
+    /* Hot Potato is worded "before your next turn", and this batch is the
+       first chance any Afterglow gets — Slay the Spire's "until your next
+       turn" buffs (Blur, Wraith Form) are likewise still up while the
+       start-of-turn step runs. Spent or not, it expires here. */
+    st.hotPotato = 0;
+    st.hotPotatoId = null;
+    st.everybodyBoo = null;
+  });
+
+  U.onPlayerTurn(e, 'start', () => {
+    const c = fake();
+    const st = U.mm(c);
+    st.afterglowsThisTurn = 0;
+    st.convergedThisTurn = 0;
+    st.gentleLanding = null;
     if (st.bottled != null) { gainGlow(c, st.bottled + 1); st.bottled = null; }
     if (st.pocketTomorrow && st.pocketTomorrow.length) {
       for (const k of st.pocketTomorrow) { U.toHand(c, k); U.costSet(c, k, 0, 'turn'); }
@@ -261,6 +435,45 @@ U.onTracker(SLUG, (e, s, seat) => {
     const st = U.mm(c);
     if (st.threeLittleLights && gloamingSize(c) === 3) { gainGlow(c, 1); st.threeLightsDraw = 1; }
   }, seat);
+
+  /* Everybody Say Boo (multiplayer): "the first time each other Kid damages
+     that enemy, [Hasten] 1", and "each Lingering Trick can be Hastened by this
+     effect only once". It marked the enemy and nothing read the mark.
+     The `damage` event carries `sourceId` / `targetId` — trap 26. */
+  e.on('damage', (ev) => {
+    if (!ev || !ev.sourceId || !ev.targetId) return;
+    const c = fake();
+    const st = U.mm(c);
+    const boo = st.everybodyBoo;
+    if (!boo || ev.targetId !== boo.enemyId) return;
+    if (ev.sourceId === seat.id) return;             // her own hits are not "each other Kid"
+    const from = e.actor(ev.sourceId);
+    if (!from || from.side !== 'player') return;
+    if (boo.used.includes(from.id)) return;
+    boo.used.push(from.id);
+    const pick = gloaming(c).find((g) => !g.booed);
+    if (!pick) return;
+    pick.booed = true;
+    hasten(c, pick, 1);
+  });
+
+  /* Follow My Light! (multiplayer), first half: "once per round, when another
+     Kid plays their THIRD Trick during their turn, [Hasten] 1 one of yours".
+     `seatPlayed` is that Kid's own list — `engine.playedThisTurn` is the whole
+     table's, and would fire on the third Trick anybody played. */
+  e.on('card:play', (ev) => {
+    if (!ev || !ev.actorId || ev.actorId === seat.id) return;
+    const c = fake();
+    const st = U.mm(c);
+    if (!st.followMyLight) return;
+    const who = e.actor(ev.actorId);
+    if (!who || who.side !== 'player') return;
+    if ((e.seatPlayed(who) || []).length !== 3) return;
+    st.followLast = who.id;
+    if (!U.once(c, 'followMyLightHasten')) return;
+    const g = gloaming(c)[0];
+    if (g) hasten(c, g, 1);
+  });
 });
 
 // ── Power hooks ─────────────────────────────────────────────────────────────
@@ -297,7 +510,10 @@ const basics = [
     flavor: 'Not yet. Not yet. Not — now.',
     nums: { d: 9, m0: 11 },
     effect: eff((c) => { U.hit(c, N(c).d); linger(c, 1); }),
-    afterglow: (c) => U.hitRandom(c, 7 + brightBonus(c)),
+    /* Printed {m0} is 11 (16 upgraded) and this used to deal a flat 7. The
+       PRINTED number wins: it is what the card promises, and it is the only
+       reading under which the upgrade does anything at all. */
+    afterglow: (c, o) => aHitRandom(c, AN(o).m0 + brightBonus(c)),
     upgrade: { nums: { d: 14, m0: 16 } },
   },
   {
@@ -307,7 +523,7 @@ const basics = [
     flavor: 'She practises every night. She is getting better.',
     nums: { b: 4, m0: 7 },
     effect: eff((c) => { U.guard(c, N(c).b); linger(c, 1); }),
-    afterglow: (c) => U.guard(c, 7 + blazingGuard(c) + highGlowGuard(c)),
+    afterglow: (c, o) => U.guard(c, AN(o).m0 + blazingGuard(c) + highGlowGuard(c)),
     upgrade: { nums: { b: 7, m0: 10 } },
   },
 ];
@@ -332,7 +548,7 @@ const commons = [
     flavor: 'The boo is coming. It is simply not here yet.',
     nums: { d: 5, g: 1 },
     effect: eff((c) => { U.hit(c, N(c).d); linger(c, 1); }),
-    afterglow: (c, o) => { U.hitRandom(c, 5 + brightBonus(c)); glowFrom(c, 1, o); U.guard(c, highGlowGuard(c)); },
+    afterglow: (c, o) => { aHitRandom(c, AN(o).d + brightBonus(c)); glowFrom(c, AN(o).g, o); U.guard(c, highGlowGuard(c)); },
     upgrade: { nums: { d: 8, g: 2 } },
   },
   {
@@ -345,8 +561,8 @@ const commons = [
     effect: eff((c) => { U.hit(c, N(c).d); linger(c, 2); }),
     afterglow: (c, o) => {
       const worst = U.enemies(c).slice().sort((a, b) => b.hp - a.hp)[0];
-      if (worst) U.hitAt(c, worst, 7 + brightBonus(c));
-      glowFrom(c, 1, o);
+      if (worst) aHitAt(c, worst, AN(o).m0 + brightBonus(c));
+      glowFrom(c, AN(o).g, o);
       U.guard(c, highGlowGuard(c));
     },
     upgrade: { nums: { d: 5, m0: 10, g: 1 } },
@@ -376,7 +592,8 @@ const commons = [
     flavor: 'Round and round the room, twice.',
     nums: { d: 5, g: 1 },
     effect: eff((c) => { U.hitAll(c, N(c).d); linger(c, 1); }),
-    afterglow: (c, o) => { U.hitAll(c, 4 + brightBonus(c)); glowFrom(c, 1, o); U.guard(c, highGlowGuard(c)); },
+    // Printed "{d} to all" both times; this used to deal a flat 4 the second time.
+    afterglow: (c, o) => { aHitAll(c, AN(o).d + brightBonus(c)); glowFrom(c, AN(o).g, o); U.guard(c, highGlowGuard(c)); },
     upgrade: { nums: { d: 7, g: 1 } },
   },
   {
@@ -386,8 +603,9 @@ const commons = [
     flavor: 'It arrives on schedule. Somebody else’s schedule.',
     nums: { d: 7, m0: 4 },
     effect: eff((c) => { U.hit(c, N(c).d); linger(c, 1); }),
-    afterglow: (c) => U.hitRandom(c, 7 + brightBonus(c)),
-    converge: (c) => U.hitRandom(c, 4),
+    // "to the same enemy": the aimed enemy is remembered by `linger()`.
+    afterglow: (c, o) => aHitAt(c, remembered(c, o), AN(o).d + brightBonus(c)),
+    converge: (c, o) => aHitAt(c, remembered(c, o), AN(o).m0),
     upgrade: { nums: { d: 10, m0: 6 } },
   },
   {
@@ -415,7 +633,7 @@ const commons = [
     flavor: 'Somewhere safe, and then immediately forgotten about.',
     nums: { b: 4, m0: 7, g: 1 },
     effect: eff((c) => { U.guard(c, N(c).b); linger(c, 1); }),
-    afterglow: (c, o) => { U.guard(c, 7 + blazingGuard(c) + highGlowGuard(c)); glowFrom(c, 1, o); },
+    afterglow: (c, o) => { U.guard(c, AN(o).m0 + blazingGuard(c) + highGlowGuard(c)); glowFrom(c, AN(o).g, o); },
     upgrade: { nums: { b: 7, m0: 10, g: 1 } },
   },
   {
@@ -485,7 +703,7 @@ const commons = [
     text: 'The first [Afterglow] each turn gains you {b} Guard.',
     flavor: 'She grew up in it. It is not frightening from the inside.',
     nums: { b: 4 },
-    effect: eff((c) => power(c, 'wisp/home-in-the-dark', N(c).b, (x) => { U.mm(x).homeInTheDark = true; })),
+    effect: eff((c) => { power(c, 'wisp/home-in-the-dark', N(c).b); pnums(c, 'homeInTheDark', { b: N(c).b }); }),
     upgrade: { nums: { b: 7 } },
   },
   {
@@ -494,7 +712,7 @@ const commons = [
     text: 'The first time you [Flare] each turn, deal {d} to a random enemy.',
     flavor: 'The whole wall hums for a second afterwards.',
     nums: { d: 4 },
-    effect: eff((c) => power(c, 'wisp/static-in-the-wallpaper', N(c).d, (x) => { U.mm(x).staticWallpaper = true; })),
+    effect: eff((c) => { power(c, 'wisp/static-in-the-wallpaper', N(c).d); pnums(c, 'staticWallpaper', { d: N(c).d }); }),
     upgrade: { nums: { d: 7 } },
   },
   {
@@ -503,7 +721,7 @@ const commons = [
     text: 'The first [Converge]nce each turn gains {g} [Glow].',
     flavor: 'She cannot help it. Everything lines up and she lights up.',
     nums: { g: 1 },
-    effect: eff((c) => power(c, 'wisp/getting-excited', N(c).g, (x) => { U.mm(x).gettingExcited = true; })),
+    effect: eff((c) => { power(c, 'wisp/getting-excited', N(c).g); pnums(c, 'gettingExcited', { g: N(c).g }); }),
     upgrade: { nums: { g: 2 } },
   },
   {
@@ -512,7 +730,7 @@ const commons = [
     text: 'The first Trick you put in the [Gloaming] each turn gains {b} Guard.',
     flavor: 'A little more every night, whether anyone is watching or not.',
     nums: { b: 4 },
-    effect: eff((c) => power(c, 'wisp/brighter-every-minute', N(c).b, (x) => { U.mm(x).brighterEveryMinute = true; })),
+    effect: eff((c) => { power(c, 'wisp/brighter-every-minute', N(c).b); pnums(c, 'brighterEveryMinute', { b: N(c).b }); }),
     upgrade: { nums: { b: 7 } },
   },
 ];
@@ -530,7 +748,7 @@ const uncommons = [
     nums: { d: 3, m0: 16, g: 2, b: 6 },
     balance: { scalesWith: 'three turns of waiting — almost all of it lands at the end' },
     effect: eff((c) => { U.hit(c, N(c).d); linger(c, 3); }),
-    afterglow: (c, o) => { U.hitRandom(c, 16 + brightBonus(c)); U.guard(c, 6 + blazingGuard(c)); glowFrom(c, 2, o); },
+    afterglow: (c, o) => { aHitRandom(c, AN(o).m0 + brightBonus(c)); U.guard(c, AN(o).b + blazingGuard(c)); glowFrom(c, AN(o).g, o); },
     upgrade: { nums: { d: 5, m0: 21, g: 2, b: 9 } },
   },
   {
@@ -550,8 +768,8 @@ const uncommons = [
     nums: { d: 4, m0: 7, g: 1 },
     balance: { scalesWith: 'the whole room twice over, two turns apart, and again on a Convergence' },
     effect: eff((c) => { U.hitAll(c, N(c).d); linger(c, 2); }),
-    afterglow: (c, o) => { U.hitAll(c, 7 + brightBonus(c)); glowFrom(c, 1, o); },
-    converge: (c) => U.hitAll(c, 4),
+    afterglow: (c, o) => { aHitAll(c, AN(o).m0 + brightBonus(c)); glowFrom(c, AN(o).g, o); },
+    converge: (c, o) => U.hitAll(c, AN(o).d),
     upgrade: { nums: { d: 6, m0: 10, g: 1 } },
   },
   {
@@ -569,7 +787,16 @@ const uncommons = [
     text: 'Deal {d} damage. [Flare] {f}: the next [Afterglow] to damage this enemy deals {m0} more.',
     flavor: 'Passed along quickly, by everybody, to somebody else.',
     nums: { d: 7, m0: 7, f: 1 },
-    effect: eff((c) => { U.hit(c, N(c).d); if (flare(c, N(c).f)) U.mm(c).hotPotato = N(c).m0; }),
+    effect: eff((c) => {
+      U.hit(c, N(c).d);
+      // The rider needs the ENEMY as well as the number; without the id nothing
+      // could ever match it, so the Flare spent real Glow for nothing.
+      if (flare(c, N(c).f)) {
+        const s = U.mm(c);
+        s.hotPotato = N(c).m0;
+        s.hotPotatoId = c.target ? c.target.id : null;
+      }
+    }),
     upgrade: { nums: { d: 10, m0: 10, f: 1 } },
   },
   {
@@ -592,8 +819,8 @@ const uncommons = [
       const list = U.enemies(c).slice().sort((a, b) => a.hp - b.hp);
       const t = list[0];
       if (!t) return;
-      U.hitAt(c, t, 7 + brightBonus(c));
-      if (!t.alive) glowFrom(c, 2, o);
+      aHitAt(c, t, AN(o).m0 + brightBonus(c));
+      if (!t.alive) glowFrom(c, AN(o).g, o);
     },
     upgrade: { nums: { m0: 10, g: 2 } },
   },
@@ -641,8 +868,8 @@ const uncommons = [
     flavor: 'She is not. She really is not.',
     nums: { d: 7, m0: 4, m1: 7 },
     effect: eff((c) => { U.hit(c, N(c).d); linger(c, 1); }),
-    afterglow: (c, o) => { if (!o.converged) U.hitRandom(c, 4 + brightBonus(c)); },
-    converge: (c) => U.hitRandom(c, 7),
+    afterglow: (c, o) => { if (!o.converged) aHitRandom(c, AN(o).m0 + brightBonus(c)); },
+    converge: (c, o) => aHitRandom(c, AN(o).m1),
     upgrade: { nums: { d: 10, m0: 6, m1: 10 } },
   },
   {
@@ -803,7 +1030,7 @@ const uncommons = [
   {
     id: 'wisp/small-orbit', name: 'Small Orbit', companion: SLUG, type: SKILL, rarity: UNCOMMON,
     cost: 1, target: NONE, keywords: ['gloaming', 'linger'],
-    text: 'Put the top Trick of your draw pile in the [Gloaming] at 1. It returns to hand costing {m} less.',
+    text: 'Put the top Trick of your draw pile in the [Gloaming] at 1. It returns to hand costing {m} less. This is not an [Afterglow].',
     flavor: 'Held just above her head, going round.',
     nums: { m: 1 },
     effect: eff((c) => {
@@ -813,7 +1040,14 @@ const uncommons = [
       const disc = N(c).m;
       gloaming(c).push({
         card: top, count: 1, delayed: 0, hastened: 0, stored: 0,
-        def: { id: 'wisp/small-orbit-return', afterglow: (x) => { U.toHand(x, top); U.costMod(x, top, -disc, 'turn'); } },
+        /* §46: "This does not count as an Afterglow." The return used to be one,
+           so a Small Orbit landing beside a real Afterglow made a Convergence
+           and took a Nerve off Tiny Sun, Big Feelings. `notAfterglow` keeps it
+           out of the count, out of Converge and out of the Afterglow Powers. */
+        def: {
+          id: 'wisp/small-orbit-return', notAfterglow: true,
+          afterglow: (x) => { U.toHand(x, top); U.costMod(x, top, -disc, 'turn'); },
+        },
       });
     }),
     upgrade: { nums: { m: 2 } },
@@ -824,7 +1058,8 @@ const uncommons = [
     text: 'Until your next turn, each [Afterglow] gains you {b} Guard, up to {n} times.',
     flavor: 'Everything comes down softly if you plan it.',
     nums: { b: 4, n: 3 },
-    effect: eff((c) => { U.mm(c).gentleLanding = N(c).n; }),
+    // The count was stored and the Guard was a literal 4, so the upgrade to 6 did nothing.
+    effect: eff((c) => { U.mm(c).gentleLanding = { left: N(c).n, b: N(c).b }; }),
     upgrade: { nums: { b: 6, n: 3 } },
   },
   {
@@ -862,7 +1097,7 @@ const uncommons = [
     text: 'The first [Converge]nce each turn draws {c1} and gains {g} [Glow].',
     flavor: 'She is learning the shapes.',
     nums: { c1: 1, g: 1 },
-    effect: eff((c) => power(c, 'wisp/constellation-practice', 1, (x) => { U.mm(x).constellation = true; })),
+    effect: eff((c) => { power(c, 'wisp/constellation-practice', 1); pnums(c, 'constellation', { c1: N(c).c1, g: N(c).g }); }),
     upgrade: { nums: { c1: 2, g: 1 } },
   },
   {
@@ -880,7 +1115,7 @@ const uncommons = [
     text: 'The first time each turn you deliberately [Delay], gain {b} Guard.',
     flavor: 'She has waited longer than the house has stood.',
     nums: { b: 6 },
-    effect: eff((c) => power(c, 'wisp/i-can-wait', N(c).b, (x) => { U.mm(x).iCanWait = true; })),
+    effect: eff((c) => { power(c, 'wisp/i-can-wait', N(c).b); pnums(c, 'iCanWait', { b: N(c).b }); }),
     upgrade: { nums: { b: 9 } },
   },
   {
@@ -889,7 +1124,7 @@ const uncommons = [
     text: 'The first time each turn you [Hasten] something to 0, deal {d} to a random enemy.',
     flavor: 'She really cannot.',
     nums: { d: 4 },
-    effect: eff((c) => power(c, 'wisp/cant-wait', N(c).d, (x) => { U.mm(x).cantWait = true; })),
+    effect: eff((c) => { power(c, 'wisp/cant-wait', N(c).d); pnums(c, 'cantWait', { d: N(c).d }); }),
     upgrade: { nums: { d: 7 } },
   },
   {
@@ -943,9 +1178,9 @@ const rares = [
     effect: eff((c) => { U.mm(c).thisOneCooking = true; U.hit(c, N(c).d); linger(c, 3); }),
     afterglow: (c, o) => {
       const e = o && o.entry;
-      U.hitRandom(c, 15 + brightBonus(c));
-      for (let i = 0; i < ((e && e.stored) || 0); i++) U.hitRandom(c, 7);
-      glowFrom(c, 2, o);
+      aHitRandom(c, AN(o).m1 + brightBonus(c));
+      for (let i = 0; i < ((e && e.stored) || 0); i++) aHitRandom(c, AN(o).m0);
+      glowFrom(c, AN(o).g, o);
     },
     upgrade: { nums: { d: 5, m0: 10, m1: 20, g: 2 } },
   },
@@ -962,7 +1197,10 @@ const rares = [
   {
     id: 'wisp/premature-celebration', name: 'Premature Celebration', companion: SLUG, type: ATTACK, rarity: RARE,
     cost: 1, target: ALL_ENEMIES, keywords: ['converge', 'linger', 'afterglow'],
-    text: 'After a [Converge]nce this turn, deal {m1} to all. Otherwise {d} to all and [Linger] 1.',
+    /* The Afterglow clause was missing from the printed text while `m0` sat in
+       `nums` doing nothing — §59 of the chapter has it, so the text gained the
+       line the code was already half-carrying. */
+    text: 'After a [Converge]nce this turn, deal {m1} to all. Otherwise {d} to all and [Linger] 1. [Afterglow]: {m0} to all.',
     flavor: 'She celebrates first and checks afterwards.',
     nums: { d: 4, m1: 15, m0: 7 },
     effect: eff((c) => {
@@ -970,7 +1208,7 @@ const rares = [
       U.hitAll(c, N(c).d);
       linger(c, 1);
     }),
-    afterglow: (c) => U.hitAll(c, 7 + brightBonus(c)),
+    afterglow: (c, o) => aHitAll(c, AN(o).m0 + brightBonus(c)),
     upgrade: { nums: { d: 6, m1: 20, m0: 10 } },
   },
   {
@@ -980,8 +1218,8 @@ const rares = [
     flavor: 'From somewhere above the roof.',
     nums: { m0: 11, g: 1 },
     effect: eff((c) => linger(c, 1)),
-    afterglow: (c, o) => { U.hitRandomN(c, 11 + brightBonus(c), 3); glowFrom(c, 1, o); },
-    converge: (c) => U.hitRandom(c, 11),
+    afterglow: (c, o) => { aHitRandomN(c, AN(o).m0 + brightBonus(c), 3); glowFrom(c, AN(o).g, o); },
+    converge: (c, o) => aHitRandom(c, AN(o).m0),
     upgrade: { nums: { m0: 15, g: 2 } },
   },
   {
@@ -1008,8 +1246,8 @@ const rares = [
     effect: eff((c) => { U.hit(c, N(c).d); linger(c, 2); }),
     afterglow: (c, o) => {
       const e = o && o.entry;
-      U.hitRandom(c, 15 + brightBonus(c));
-      if (e && e.hastened > 0) U.hitRandom(c, 7);
+      aHitRandom(c, AN(o).m1 + brightBonus(c));
+      if (e && e.hastened > 0) aHitRandom(c, AN(o).m0);
     },
     upgrade: { nums: { d: 10, m1: 20, m0: 10 } },
   },
@@ -1138,7 +1376,13 @@ const rares = [
       });
       for (const k of picks) {
         U.moveCard(c, k, 'limbo', { gloaming: true });
-        gloaming(c).push({ card: k, def: k.def, count: Math.max(1, (k.def && k.def.linger) || 1), delayed: 0, hastened: 0, stored: 0, vanish: true });
+        gloaming(c).push({
+          card: k, def: k.def, nums: { ...(k.nums || {}) },
+          // §71: "at their printed countdowns". `def.linger` is a field no def
+          // has ever carried, so every Encore came back at 1.
+          count: printedLinger(k.def),
+          delayed: 0, hastened: 0, stored: 0, vanish: true,
+        });
       }
     }),
     upgrade: { nums: { n: 3 } },
@@ -1152,7 +1396,14 @@ const rares = [
     effect: eff((c) => {
       const g = gloaming(c)[0];
       if (!g) return;
-      gloaming(c).push({ card: null, def: g.def, count: g.count, delayed: 0, hastened: 0, stored: g.stored, noGlow: true, vanish: true });
+      /* The copy carries the original's captured numbers, and `noGlow` is now
+         read where the Afterglow runs. `resolveBatch` only looked at the
+         BATCH's flag, so the copy still handed out Glow. */
+      gloaming(c).push({
+        card: null, def: g.def, nums: { ...(g.nums || {}) }, targetId: g.targetId || null,
+        count: g.count, delayed: g.delayed, hastened: g.hastened, stored: g.stored,
+        noGlow: true, vanish: true,
+      });
     }),
     upgrade: { cost: 1 },
   },
@@ -1163,8 +1414,8 @@ const rares = [
     flavor: 'It is. It really is.',
     nums: { b: 10, c1: 2, e: 1 },
     effect: eff((c) => { U.guard(c, N(c).b); linger(c, 2); }),
-    afterglow: (c) => { U.guard(c, 10 + blazingGuard(c)); U.draw(c, 2); },
-    converge: (c) => U.energyNextTurn(c, 1),   // banked: a next-turn timer's Nerve is erased by the refill
+    afterglow: (c, o) => { U.guard(c, AN(o).b + blazingGuard(c)); U.draw(c, AN(o).c1); },
+    converge: (c, o) => U.energyNextTurn(c, AN(o).e),   // banked: a next-turn timer's Nerve is erased by the refill
     upgrade: { nums: { b: 14, c1: 3, e: 1 } },
   },
 
@@ -1202,7 +1453,7 @@ const rares = [
     text: 'The first time each turn you spend [Glow], regain {g} after, or {m0} if you spent 3 or more.',
     flavor: 'Not once, in all the years anyone has been counting.',
     nums: { g: 1, m0: 2 },
-    effect: eff((c) => power(c, 'wisp/never-goes-out', 1, (x) => { U.mm(x).neverGoesOut = true; })),
+    effect: eff((c) => { power(c, 'wisp/never-goes-out', 1); pnums(c, 'neverGoesOut', { g: N(c).g, m0: N(c).m0 }); }),
     upgrade: { nums: { g: 2, m0: 3 } },
   },
   {
@@ -1268,15 +1519,15 @@ const coopCards = [
   {
     id: 'wisp/count-with-me', name: 'Count With Me', companion: SLUG, type: SKILL, rarity: UNCOMMON,
     cost: 1, target: SELF, keywords: ['linger', 'afterglow', 'converge'],
-    text: 'When a chosen [Linger]ing Trick resolves, a chosen Kid draws {c1} and gains {b} Guard.',
+    text: 'When a chosen [Linger]ing Trick resolves, a chosen Kid draws {c1} and gains {b} Guard. On a [Converge]nce they also gain 1 Nerve.',
     flavor: 'Three, two, one, together.',
     nums: { c1: 1, b: 6 },
     effect: eff(async (c) => {
       const ally = await c.chooseAlly();
       const g = gloaming(c)[0];
       if (!ally || !g) return;
-      g.watcher = { seat: ally.seat, draw: N(c).c1, guard: N(c).b };
-      U.mm(c).countWithMe = g.watcher;
+      // Keyed by ACTOR id, not seat number — `payWatcher` looks the Kid back up.
+      g.watcher = { id: ally.id, draw: N(c).c1, guard: N(c).b };
     }),
     upgrade: { nums: { c1: 2, b: 9 } },
   },
@@ -1286,19 +1537,20 @@ const coopCards = [
     text: 'Deal {d}. Until your next turn, the first time each other Kid damages that enemy, [Hasten] 1.',
     flavor: 'On three. One, two —',
     nums: { d: 7 },
-    effect: eff((c) => { U.hit(c, N(c).d); U.mm(c).everybodyBoo = { enemyId: c.target && c.target.id, used: [] }; }),
+    // The tracker's `damage` listener is what reads this; it used to be written and never read.
+    effect: eff((c) => { U.hit(c, N(c).d); U.mm(c).everybodyBoo = { enemyId: c.target ? c.target.id : null, used: [] }; }),
     upgrade: { nums: { d: 10 } },
   },
   {
     id: 'wisp/make-a-constellation', name: 'Make a Constellation', companion: SLUG, type: SKILL, rarity: RARE,
     cost: 2, target: SELF, keywords: ['linger', 'converge'],
-    text: 'Pick a Kid per [Linger]ing Trick, up to 3. When one resolves they gain {b} Guard and draw {c1}.',
+    text: 'Pick a Kid per [Linger]ing Trick, up to 3. When one resolves they gain {b} Guard and draw {c1}. If two land together, 1 Nerve each.',
     flavor: 'Everyone stand where I put you.',
     nums: { b: 10, c1: 1 },
     effect: eff((c) => {
       const mates = c.teammates().slice(0, Math.min(3, gloamingSize(c)));
       const list = gloaming(c);
-      mates.forEach((m, i) => { if (list[i]) list[i].watcher = { seat: m.seat, draw: N(c).c1, guard: N(c).b }; });
+      mates.forEach((m, i) => { if (list[i]) list[i].watcher = { id: m.id, draw: N(c).c1, guard: N(c).b }; });
     }),
     upgrade: { nums: { b: 14, c1: 2 } },
   },

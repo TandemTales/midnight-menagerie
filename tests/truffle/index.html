@@ -10,7 +10,7 @@
 <script type="module">
 import { RNG } from '../../game/src/core/rng.js';
 import { CombatEngine } from '../../game/src/combat/engine.js';
-import { makeDummySetup } from '../../game/src/combat/dummy.js';
+import { makeDummySetup, makeDummyParty, makeDummyDeck } from '../../game/src/combat/dummy.js';
 import { installTrackers } from '../../game/src/data/companions/_util.js';
 import * as CARDS from '../../game/src/data/cards.js';
 
@@ -28,14 +28,59 @@ async function truffle() {
   installTrackers(e, 'truffle');
   return e;
 }
-async function play(e, id, target) {
-  e.addCard(CARDS.cardById(id), 'hand', {});
+async function play(e, id, target, up) {
+  e.addCard(CARDS.cardById(id), 'hand', { upgraded: !!up });
   const k = e.piles.hand[e.piles.hand.length - 1];
   e.player.energy = 9;
   await e.playCard(k.uid, target ? target.id : undefined);
   return k;
 }
 const stacks = (a, id) => ((a && a.statuses && a.statuses.get(id)) || 0);
+
+/**
+ * A card's resolved numbers, upgrade folded in. Every assertion below reads its
+ * expected value through this, so re-costing or re-numbering a card cannot
+ * leave a check quietly asserting last month's figure.
+ */
+const NUMS = (id, up) => {
+  const d = CARDS.cardById(id);
+  return { ...(d.nums || {}), ...(up ? ((d.upgrade && d.upgrade.nums) || {}) : {}) };
+};
+
+/**
+ * A real Attack landing during the enemy phase.
+ *
+ * Staging, not a mock (trap 5): `dealDamage`, the hook pipeline, the `bristle`
+ * status and Truffle's own listener are all the shipped ones — the only thing
+ * arranged is WHEN it happens, because half his card pool is worded "during the
+ * enemy turn" and a suite that hits him on his own turn proves nothing about it.
+ */
+function enemyHits(e, from, defender, amount, opts) {
+  const was = e.phase;
+  e.phase = 'enemy';
+  try { return e.dealDamage({ attacker: from, defender, amount, kind: 'attack', ...(opts || {}) }); }
+  finally { e.phase = was; }
+}
+const totalEnemyHp = (e) => e.enemies.reduce((n, x) => n + x.hp, 0);
+
+/** Two seats, one hedgehog: seat 0 is Truffle, seat 1 is an ordinary Kid. */
+async function truffleParty(seed = 4242) {
+  const e = makeDummyParty(new RNG(seed), 2, {
+    companion: 'truffle', maxHp: 78,
+    decks: [CARDS.startingDeckFor('truffle'), makeDummyDeck()],
+  });
+  e.players[1].companion = 'neutral';
+  await e.startCombat();
+  installTrackers(e, 'truffle', e.players[0]);
+  return e;
+}
+async function playAs(e, seat, id, target, up) {
+  e.addCard(CARDS.cardById(id), 'hand', { upgraded: !!up, to: seat });
+  const k = seat.piles.hand[seat.piles.hand.length - 1];
+  seat.energy = 9;
+  await e.playCard(k.uid, target ? target.id : undefined);
+  return k;
+}
 
 try {
   // ── 1. Quills, Shed, Gather, Regrow ─────────────────────────────────────
@@ -179,6 +224,498 @@ try {
     check(e.player.energy === e.player.energyMax + 1,
       'and the banked Nerve survives the start-of-turn refill',
       `energy=${e.player.energy} max=${e.player.energyMax}`);
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  //  THE DEAD-EFFECT ROUND, 2026-09-11
+  //
+  //  Twenty-two Truffle cards did nothing, or less than their text said, and
+  //  every one of them resolved without throwing — which is exactly what
+  //  CONTRACTS trap 12 says proves nothing. Each check below asserts the
+  //  EFFECT against a same-seed control, and takes its numbers off the card
+  //  through `NUMS` (upgrade folded in) rather than typing one out.
+  // ════════════════════════════════════════════════════════════════════════
+
+  // ── "last enemy turn": the two flags nothing ever set ────────────────────
+  {
+    // Still Good reads `lostCourageLastEnemyTurn`. The control is the same
+    // seed and the same enemy turn, survived behind Guard.
+    async function stillGood(guard, up) {
+      const e = await truffle();
+      e.player.block = guard;
+      await e.endTurn();                       // a real enemy turn
+      await play(e, 'truffle/still-good', null, up);
+      return e.player.block;
+    }
+    const n = NUMS('truffle/still-good');
+    const nu = NUMS('truffle/still-good', true);
+    const safe = await stillGood(200, false);
+    const hurt = await stillGood(0, false);
+    check(safe === n.b, 'Still Good gives its ordinary Guard after a clean enemy turn', `${safe} vs ${n.b}`);
+    check(hurt === n.m0, 'and the bigger Guard after one that cost Courage', `${hurt} vs ${n.m0}`);
+    check(await stillGood(0, true) === nu.m0, 'upgraded, the bigger Guard is the upgraded one', `want ${nu.m0}`);
+  }
+  {
+    // No Big Deal: draw {c1}, or draw 1 and Guard.
+    async function noBigDeal(guard, up) {
+      const e = await truffle();
+      e.player.block = guard;
+      await e.endTurn();
+      const h = e.piles.hand.length, b = e.player.block;
+      await play(e, 'truffle/no-big-deal', null, up);
+      return { drew: e.piles.hand.length - h, guard: e.player.block - b };
+    }
+    const n = NUMS('truffle/no-big-deal');
+    const nu = NUMS('truffle/no-big-deal', true);
+    const safe = await noBigDeal(200, false);
+    const hurt = await noBigDeal(0, false);
+    check(safe.drew === 1 && safe.guard === n.b, 'No Big Deal draws 1 and Guards after a clean enemy turn',
+      `drew ${safe.drew}, guard ${safe.guard}`);
+    check(hurt.drew === n.c1 && hurt.guard === 0, 'and draws its full count after one that hurt',
+      `drew ${hurt.drew} want ${n.c1}, guard ${hurt.guard}`);
+    check((await noBigDeal(0, true)).drew === nu.c1, 'upgraded, it draws the upgraded count', `want ${nu.c1}`);
+  }
+  {
+    // Keep Coming returns itself to hand, once.
+    async function keepComing(guard) {
+      const e = await truffle();
+      e.player.block = guard;
+      await e.endTurn();
+      const k = await play(e, 'truffle/keep-coming', e.livingEnemies()[0]);
+      return e.piles.hand.includes(k);
+    }
+    check(await keepComing(0) === true, 'Keep Coming comes back after an enemy turn that cost Courage');
+    check(await keepComing(200) === false, 'and stays in the discard after one that did not');
+  }
+  {
+    // Wrong End First's discount reads `bristledLastEnemyTurn`.
+    async function wrongEnd(bristled) {
+      const e = await truffle();
+      if (bristled) await play(e, 'truffle/prickle-up', null);
+      e.player.block = bristled ? 0 : 200;     // Bristle only fires on real Courage loss
+      await e.endTurn();
+      e.addCard(CARDS.cardById('truffle/wrong-end-first'), 'hand', {});
+      return e.costOf(e.piles.hand[e.piles.hand.length - 1]);
+    }
+    const full = await wrongEnd(false);
+    const cut = await wrongEnd(true);
+    check(cut === full - 1, 'Wrong End First really costs 1 less after a Bristle turn', `${full} -> ${cut}`);
+  }
+
+  // ── riders parked for the enemy turn that nothing ever spent ─────────────
+  {
+    // Bend, Don't Break: an Attack that still costs Courage pays the Bristle.
+    async function bend(guard, up) {
+      const e = await truffle();
+      await play(e, 'truffle/bend-dont-break', null, up);
+      e.player.block = guard;
+      enemyHits(e, e.livingEnemies()[0], e.player, 9);
+      return stacks(e.player, 'bristle');
+    }
+    const n = NUMS('truffle/bend-dont-break');
+    const nu = NUMS('truffle/bend-dont-break', true);
+    check(await bend(0, false) === n.n, 'Bend, Don’t Break pays its Bristle when the Attack gets through', `want ${n.n}`);
+    check(await bend(40, false) === 0, 'and nothing when the Guard holds');
+    check(await bend(0, true) === nu.n, 'and the upgraded count when upgraded', `want ${nu.n}`);
+  }
+  {
+    // Roll With It needs the Attack to have REMOVED the Guard first.
+    async function roll(guard, up) {
+      const e = await truffle();
+      await play(e, 'truffle/roll-with-it', null, up);
+      e.player.block = guard;
+      enemyHits(e, e.livingEnemies()[0], e.player, 9);
+      return stacks(e.player, 'bristle');
+    }
+    const n = NUMS('truffle/roll-with-it');
+    const nu = NUMS('truffle/roll-with-it', true);
+    check(await roll(5, false) === n.n, 'Roll With It pays when the Attack breaks the Guard and gets through', `want ${n.n}`);
+    check(await roll(0, false) === 0, 'and NOT when there was no Guard for it to break — the discriminator');
+    check(await roll(40, false) === 0, 'and not when the Guard holds');
+    check(await roll(5, true) === nu.n, 'upgraded, the upgraded count', `want ${nu.n}`);
+  }
+  {
+    // Hold Still, Almost banks Guard for next turn — through a timer, never a
+    // turn-start listener, which is what trap 24 deleted five times over.
+    async function holdStill(guard, up) {
+      const e = await truffle();
+      await play(e, 'truffle/hold-still-almost', null, up);
+      e.player.block = guard;
+      enemyHits(e, e.livingEnemies()[0], e.player, 9);
+      e.player.block = guard;                  // survive the real enemy turn below
+      await e.endTurn();
+      return e.player.block;
+    }
+    const n = NUMS('truffle/hold-still-almost');
+    const nu = NUMS('truffle/hold-still-almost', true);
+    check(await holdStill(0, false) === n.m0, 'Hold Still, Almost really pays its Guard next turn', `want ${n.m0}`);
+    check(await holdStill(200, false) === 0, 'and pays nothing if nothing got through');
+    check(await holdStill(0, true) === nu.m0, 'upgraded, the upgraded Guard', `want ${nu.m0}`);
+  }
+  {
+    // Built Wrong: the FIRST Attack each enemy turn that costs Courage.
+    async function builtWrong(guard, hits, up) {
+      const e = await truffle();
+      await play(e, 'truffle/built-wrong', null, up);
+      e.setCounter('quills', 2, 'test');
+      const before = e.counter('quills');
+      for (let i = 0; i < hits; i++) {
+        e.player.block = guard;
+        enemyHits(e, e.livingEnemies()[i % 2], e.player, 9);
+      }
+      return e.counter('quills') - before;
+    }
+    const n = NUMS('truffle/built-wrong');
+    const nu = NUMS('truffle/built-wrong', true);
+    check(await builtWrong(0, 1, false) === n.g, 'Built Wrong Regrows when an Attack costs Courage', `want ${n.g}`);
+    check(await builtWrong(0, 2, false) === n.g, 'and only for the first Attack of the enemy turn');
+    check(await builtWrong(40, 1, false) === 0, 'and not at all behind Guard');
+    check(await builtWrong(0, 1, true) === nu.g, 'upgraded, the upgraded Regrow', `want ${nu.g}`);
+  }
+  {
+    // Dead Hedgehog Theory: Regrow now, Nerve and a card next turn.
+    async function deadTheory(guard) {
+      const e = await truffle();
+      await play(e, 'truffle/dead-hedgehog-theory', null);
+      e.setCounter('quills', 2, 'test');
+      const q = e.counter('quills');
+      e.player.block = guard;
+      enemyHits(e, e.livingEnemies()[0], e.player, 9);
+      const grew = e.counter('quills') - q;
+      e.player.block = guard;
+      await e.endTurn();
+      return { grew, energy: e.player.energy, hand: e.piles.hand.length };
+    }
+    const n = NUMS('truffle/dead-hedgehog-theory');
+    const hurt = await deadTheory(0);
+    const safe = await deadTheory(200);
+    check(hurt.grew === n.g, 'Dead Hedgehog Theory Regrows off the first Attack that hurt', `${hurt.grew} vs ${n.g}`);
+    check(safe.grew === 0, 'and does nothing behind Guard');
+    check(hurt.energy === safe.energy + n.e, 'and the Nerve survives the start-of-turn refill',
+      `${safe.energy} -> ${hurt.energy}`);
+    check(hurt.hand === safe.hand + n.c1, 'and the extra card really arrives', `${safe.hand} -> ${hurt.hand}`);
+  }
+  {
+    // Bite Back First repeats against the enemy that hurt him — that one only.
+    async function biteBack(which, guard, up) {
+      const e = await truffle();
+      const t = e.livingEnemies()[0];
+      await play(e, 'truffle/bite-back-first', t, up);
+      const hp = t.hp;
+      e.player.block = guard;
+      enemyHits(e, e.livingEnemies()[which], e.player, 9);
+      return hp - t.hp;
+    }
+    const n = NUMS('truffle/bite-back-first');
+    const nu = NUMS('truffle/bite-back-first', true);
+    check(await biteBack(0, 0, false) === n.d, 'Bite Back First repeats when its target draws Courage', `want ${n.d}`);
+    check(await biteBack(1, 0, false) === 0, 'and not when somebody else does the hitting');
+    check(await biteBack(0, 40, false) === 0, 'and not when the Guard eats it');
+    check(await biteBack(0, 0, true) === nu.d, 'upgraded, it repeats for the upgraded damage', `want ${nu.d}`);
+  }
+
+  // ── Powers whose hooks used to hardcode their numbers ────────────────────
+  {
+    // All Spines, No Plan — the first Shed each turn.
+    async function allSpines(up) {
+      const e = await truffle();
+      await play(e, 'truffle/all-spines-no-plan', null, up);
+      const b = e.player.block;
+      await play(e, 'truffle/oops-a-quill', e.livingEnemies()[0]);
+      return e.player.block - b;
+    }
+    check(await allSpines(false) === NUMS('truffle/all-spines-no-plan').b, 'All Spines, No Plan Guards on the first Shed');
+    check(await allSpines(true) === NUMS('truffle/all-spines-no-plan', true).b,
+      'and its upgrade is no longer a hardcoded 4', `want ${NUMS('truffle/all-spines-no-plan', true).b}`);
+  }
+  {
+    // Shed Cycle — Regrow at the start of the next turn.
+    async function shedCycle(up) {
+      const e = await truffle();
+      await play(e, 'truffle/shed-cycle', null, up);
+      await play(e, 'truffle/oops-a-quill', e.livingEnemies()[0]);
+      const q = e.counter('quills');
+      e.player.block = 200;                    // no Bristle, no Courage loss, no noise
+      await e.endTurn();
+      return e.counter('quills') - q;
+    }
+    check(await shedCycle(false) === NUMS('truffle/shed-cycle').g, 'Shed Cycle Regrows next turn');
+    check(await shedCycle(true) === NUMS('truffle/shed-cycle', true).g,
+      'and the upgrade Regrows more', `want ${NUMS('truffle/shed-cycle', true).g}`);
+  }
+  {
+    // Quill Carpet — end of turn, with enough on the floor.
+    async function quillCarpet(loose, up) {
+      const e = await truffle();
+      await play(e, 'truffle/quill-carpet', null, up);
+      e.setCounter('loose-quills', loose, 'test');
+      const hp = totalEnemyHp(e);
+      e.player.block = 200;
+      await e.endTurn();
+      return hp - totalEnemyHp(e);
+    }
+    const n = NUMS('truffle/quill-carpet');
+    const nu = NUMS('truffle/quill-carpet', true);
+    check(await quillCarpet(n.n, false) === n.d * 2, 'Quill Carpet sweeps the room at end of turn', `want ${n.d} to each of 2`);
+    check(await quillCarpet(n.n - 1, false) === 0, 'and needs its threshold on the floor');
+    check(await quillCarpet(nu.n, true) === nu.d * 2, 'and the upgrade really hits harder', `want ${nu.d} each`);
+  }
+  {
+    // Wretched Little Miracle — Bristle for ending a turn Ragged and bare. The
+    // enemy turn that follows spends it, so the grant is read off the event.
+    async function wretched(up) {
+      const e = await truffle();
+      await play(e, 'truffle/wretched-little-miracle', null, up);
+      e.player.hp = 30;                        // Ragged
+      let peak = 0;
+      e.on('status', (ev) => { if (ev.actorId === e.player.id && ev.id === 'bristle') peak = Math.max(peak, ev.after); });
+      await e.endTurn();
+      return peak;
+    }
+    check(await wretched(false) === NUMS('truffle/wretched-little-miracle').n, 'Wretched Little Miracle gives its Bristle');
+    check(await wretched(true) === NUMS('truffle/wretched-little-miracle', true).n,
+      'and the upgraded amount', `want ${NUMS('truffle/wretched-little-miracle', true).n}`);
+  }
+  {
+    // Hard to Finish — the base is already pinned above; this is the upgrade.
+    const up = NUMS('truffle/hard-to-finish', true);
+    const e = await truffle();
+    await play(e, 'truffle/hard-to-finish', null, true);
+    await play(e, 'truffle/prickle-up', null);
+    e.player.block = 0;
+    e.dealDamage({ attacker: e.livingEnemies()[0], defender: e.player, amount: 12, kind: 'attack' });
+    e.player.block = 200;
+    await e.endTurn();
+    check(e.player.block === up.b, 'an upgraded Hard to Finish pays the upgraded Guard', `${e.player.block} vs ${up.b}`);
+  }
+  {
+    // More Where That Came From — a Gather of n+ at once.
+    async function moreWhere(up) {
+      const e = await truffle();
+      await play(e, 'truffle/more-where-that-came-from', null, up);
+      e.setCounter('quills', 0, 'test');
+      e.setCounter('loose-quills', 4, 'test');
+      await play(e, 'truffle/pick-yourself-up', null);
+      return stacks(e.player, 'bristle');
+    }
+    check(await moreWhere(false) === NUMS('truffle/more-where-that-came-from').m0, 'More Where That Came From pays its Bristle');
+    check(await moreWhere(true) === NUMS('truffle/more-where-that-came-from', true).m0,
+      'and the upgrade pays more', `want ${NUMS('truffle/more-where-that-came-from', true).m0}`);
+  }
+  {
+    // Unpleasant Geometry — the first n Gathered EACH TURN, at the printed d.
+    async function geometry(up) {
+      const e = await truffle();
+      await play(e, 'truffle/unpleasant-geometry', null, up);
+      e.setCounter('quills', 0, 'test');
+      e.setCounter('loose-quills', 9, 'test');
+      const hp0 = totalEnemyHp(e);
+      await play(e, 'truffle/pick-yourself-up', null);
+      const first = hp0 - totalEnemyHp(e);
+      const hp1 = totalEnemyHp(e);
+      await play(e, 'truffle/pick-yourself-up', null);
+      return { first, second: hp1 - totalEnemyHp(e) };
+    }
+    const n = NUMS('truffle/unpleasant-geometry');
+    const nu = NUMS('truffle/unpleasant-geometry', true);
+    const base = await geometry(false);
+    check(base.first === n.n * n.d, 'Unpleasant Geometry throws its printed number', `${base.first} vs ${n.n * n.d}`);
+    check(base.second === 0, 'and the budget is per TURN, not per Gather');
+    check((await geometry(true)).first === nu.n * nu.d, 'and the upgrade really throws harder', `want ${nu.n * nu.d}`);
+  }
+  {
+    // The Floor Is Mine — the first spend or Gather each turn.
+    async function floorIsMine(up) {
+      const e = await truffle();
+      await play(e, 'truffle/the-floor-is-mine', null, up);
+      e.setCounter('loose-quills', 4, 'test');
+      const t = e.livingEnemies()[1];
+      t.hp = 200; t.maxHp = 200;               // the draw is the point, not the kill
+      const h = e.piles.hand.length;
+      await play(e, 'truffle/carpet-skewer', t);
+      return e.piles.hand.length - h;
+    }
+    check(await floorIsMine(false) === NUMS('truffle/the-floor-is-mine').c1, 'The Floor Is Mine draws on a Loose Quill spend');
+    check(await floorIsMine(true) === NUMS('truffle/the-floor-is-mine', true).c1,
+      'and the upgrade draws its printed count', `want ${NUMS('truffle/the-floor-is-mine', true).c1}`);
+  }
+  {
+    // Comfortable in Pieces — less Guard from a Trick while Ragged, plus Bristle.
+    async function comfortable(hp, up) {
+      const e = await truffle();
+      await play(e, 'truffle/comfortable-in-pieces', null, up);
+      e.player.hp = hp;
+      e.player.block = 0;
+      const b = stacks(e.player, 'bristle');
+      await play(e, 'truffle/round-up', null);
+      return { guard: e.player.block, bristle: stacks(e.player, 'bristle') - b };
+    }
+    const roundUp = NUMS('truffle/round-up').b;
+    const n = NUMS('truffle/comfortable-in-pieces');
+    const nu = NUMS('truffle/comfortable-in-pieces', true);
+    const healthy = await comfortable(78, false);
+    const ragged = await comfortable(30, false);
+    check(healthy.guard === roundUp && healthy.bristle === 0, 'Comfortable in Pieces does nothing while healthy',
+      `guard ${healthy.guard}, bristle ${healthy.bristle}`);
+    check(ragged.guard > 0 && ragged.guard < roundUp, 'while Ragged a Guard Trick gives less',
+      `${ragged.guard} vs ${roundUp}`);
+    check(ragged.bristle === n.n, 'and the Trick also gives its Bristle', `want ${n.n}`);
+    check((await comfortable(30, true)).bristle === nu.n, 'upgraded, it gives more Bristle', `want ${nu.n}`);
+  }
+  {
+    // Double Barbed — the same one stack, more Quills out.
+    async function doubleBarbed(on, up) {
+      const e = await truffle();
+      if (on) await play(e, 'truffle/double-barbed', null, up);
+      await play(e, 'truffle/prickle-up', null);
+      const t = e.livingEnemies()[0];
+      const hp = t.hp, q = e.counter('quills');
+      e.player.block = 0;
+      enemyHits(e, t, e.player, 9);
+      return { dealt: hp - t.hp, shed: q - e.counter('quills'), left: stacks(e.player, 'bristle') };
+    }
+    const n = NUMS('truffle/double-barbed');
+    const nu = NUMS('truffle/double-barbed', true);
+    const plain = await doubleBarbed(false);
+    const armed = await doubleBarbed(true, false);
+    check(plain.shed === 1, 'plain Bristle Sheds one', `shed ${plain.shed}`);
+    check(armed.shed === n.n, 'Double Barbed Sheds its printed number', `${armed.shed} vs ${n.n}`);
+    check(armed.dealt === plain.dealt * n.n, 'and retaliates once per Quill', `${plain.dealt} -> ${armed.dealt}`);
+    check(armed.left === 0 && plain.left === 0, 'while consuming only the one Bristle');
+    check((await doubleBarbed(true, true)).shed === nu.n, 'upgraded, one more Quill still', `want ${nu.n}`);
+  }
+
+  // ── the two borrowed statuses that did not fit ───────────────────────────
+  {
+    // Play Dead-ish CAPS a huge hit; Bones' Play Dead halved it and the printed
+    // `cap` was never read at all.
+    async function playDead(on, amount, up) {
+      const e = await truffle();
+      if (on) await play(e, 'truffle/play-dead-ish', null, up);
+      e.player.block = 0;
+      const hp = e.player.hp;
+      enemyHits(e, e.livingEnemies()[0], e.player, amount);
+      return hp - e.player.hp;
+    }
+    const n = NUMS('truffle/play-dead-ish');
+    const nu = NUMS('truffle/play-dead-ish', true);
+    check(await playDead(false, 40) === 40, 'a huge Attack costs the whole 40 with no Play Dead-ish');
+    check(await playDead(true, 40, false) === n.cap, 'Play Dead-ish caps it at the printed cap', `want ${n.cap}`);
+    check(await playDead(true, 40, true) === nu.cap, 'and the upgrade really moves the cap', `want ${nu.cap}`);
+    check(await playDead(true, n.cap - 4, false) === n.cap - 4, 'a small Attack is left alone');
+  }
+  {
+    // ...and it is spent by the first big one only.
+    const n = NUMS('truffle/play-dead-ish');
+    const e = await truffle();
+    await play(e, 'truffle/play-dead-ish', null);
+    e.player.block = 0;
+    enemyHits(e, e.livingEnemies()[0], e.player, 40);
+    const hp = e.player.hp;
+    enemyHits(e, e.livingEnemies()[1], e.player, 40);
+    check(hp - e.player.hp === 40, 'the cap covers ONE Attack, not the whole turn', `second hit cost ${hp - e.player.hp}`);
+    check(n.cap > 0, 'and the cap is a printed number');
+  }
+  {
+    // Refuse to Stay Down: 1 Courage, Regrown, bristling. Marmalade's
+    // `not-dead-yet` spends 3 Lives, which Truffle has never had.
+    async function refuse(on, up) {
+      const e = await truffle();
+      if (on) await play(e, 'truffle/refuse-to-stay-down', null, up);
+      e.player.hp = 10;
+      e.setCounter('quills', 2, 'test');
+      e.player.block = 0;
+      enemyHits(e, e.livingEnemies()[0], e.player, 40);
+      return { hp: e.player.hp, quills: e.counter('quills'), cap: e.counterMax('quills'),
+               bristle: stacks(e.player, 'bristle') };
+    }
+    const n = NUMS('truffle/refuse-to-stay-down');
+    const nu = NUMS('truffle/refuse-to-stay-down', true);
+    const without = await refuse(false);
+    const with_ = await refuse(true, false);
+    check(without.hp === 0, 'a lethal hit is lethal without it', `hp ${without.hp}`);
+    check(with_.hp === 1, 'Refuse to Stay Down leaves him at 1 Courage', `hp ${with_.hp}`);
+    check(with_.quills === with_.cap, 'Regrown to maximum', `quills ${with_.quills}/${with_.cap}`);
+    check(with_.bristle === n.n, 'and bristling', `want ${n.n}`);
+    check((await refuse(true, true)).bristle === nu.n, 'upgraded, with more Bristle', `want ${nu.n}`);
+  }
+
+  // ── Quill Tax says the number out loud ───────────────────────────────────
+  {
+    const def = CARDS.cardById('truffle/quill-tax');
+    check(/\{n\}/.test(def.text), 'Quill Tax prints its Weak count', def.text);
+    const nu = NUMS('truffle/quill-tax', true);
+    const e = await truffle();
+    const t = e.livingEnemies()[0];
+    t.hp = 60; t.maxHp = 60;                   // survive the upgraded Attack
+    await play(e, 'truffle/quill-tax', t, true);
+    check(t.status('weak') === nu.n, 'and an upgraded one really applies the upgraded Weak',
+      `weak ${t.status('weak')} want ${nu.n}`);
+  }
+
+  // ── the three party Tricks ───────────────────────────────────────────────
+  {
+    // Lend Them the Spiky Side: their wound, his Quill, his retaliation.
+    async function lend(on) {
+      const e = await truffleParty();
+      const [a, b] = e.players;
+      if (on) await playAs(e, a, 'truffle/lend-them-the-spiky-side');
+      const t = e.livingEnemies()[0];
+      const hp = t.hp, q = e.counter('quills', a.id);
+      b.block = 0;
+      enemyHits(e, t, b, 9);
+      return { dealt: hp - t.hp, shed: q - e.counter('quills', a.id), lent: b.status('bristle') };
+    }
+    const n = NUMS('truffle/lend-them-the-spiky-side');
+    const off = await lend(false);
+    const on = await lend(true);
+    check(off.dealt === 0 && off.shed === 0, 'a teammate taking a hit does nothing on its own');
+    check(on.shed === 1, 'Lend Them the Spiky Side makes Truffle Shed for their wound', `shed ${on.shed}`);
+    check(on.dealt > 0, 'and retaliate against the attacker', `dealt ${on.dealt}`);
+    check(n.n >= 1, 'and the Borrowed Bristle is a printed count', `n=${n.n}`);
+  }
+  {
+    // Everybody Behind the Hedgehog: a share of their Courage becomes his.
+    async function behind(on) {
+      const e = await truffleParty();
+      const [a, b] = e.players;
+      if (on) await playAs(e, a, 'truffle/everybody-behind-the-hedgehog');
+      a.block = 0; b.block = 0;
+      const ahp = a.hp, bhp = b.hp;
+      enemyHits(e, e.livingEnemies()[0], b, 10);
+      return { mine: ahp - a.hp, theirs: bhp - b.hp };
+    }
+    const n = NUMS('truffle/everybody-behind-the-hedgehog');
+    const off = await behind(false);
+    const on = await behind(true);
+    check(off.mine === 0 && off.theirs === 10, 'without it the whole hit is theirs', `${off.theirs}/${off.mine}`);
+    check(on.mine === n.n,'Everybody Behind the Hedgehog takes its printed share', `${on.mine} want ${n.n}`);
+    check(on.theirs === 10 - n.n, 'and that much stays on the Kid', `${on.theirs}`);
+  }
+  {
+    // Shared Pincushion: a Quill for their wound, and Guard for them next turn.
+    async function pincushion(on) {
+      const e = await truffleParty();
+      const [a, b] = e.players;
+      if (on) await playAs(e, a, 'truffle/shared-pincushion');
+      const t = e.livingEnemies()[0];
+      const hp = t.hp, q = e.counter('quills', a.id);
+      b.block = 0;
+      enemyHits(e, t, b, 9);
+      const shed = q - e.counter('quills', a.id);
+      const dealt = hp - t.hp;
+      a.block = 200; b.block = 200;
+      await e.endTurn();
+      return { shed, dealt, guard: b.block };
+    }
+    const n = NUMS('truffle/shared-pincushion');
+    const off = await pincushion(false);
+    const on = await pincushion(true);
+    check(off.shed === 0 && off.dealt === 0 && off.guard === 0, 'nothing happens without the Power',
+      `shed ${off.shed} dealt ${off.dealt} guard ${off.guard}`);
+    check(on.shed === 1 && on.dealt > 0, 'Shared Pincushion Sheds one and hits back for a teammate',
+      `shed ${on.shed} dealt ${on.dealt}`);
+    check(on.guard === n.b, 'and the Kid wakes up with its printed Guard', `${on.guard} want ${n.b}`);
   }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));

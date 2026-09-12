@@ -1204,7 +1204,7 @@ Wisp plays half of every turn now and the other half later. A Lingering Trick le
 | 23 | Shared Spark | 1 | skill | Draw 2 Tricks. [Flare] 1: keep both. Otherwise discard one. | c1 2 → 3 |
 | 24 | All at Once | 2 | skill | [Hasten] 1 every [Linger]ing Trick at once. If two or more land, regain 1 Nerve. | e 1 → 2 |
 | 25 | Glow in the Dark | 1 | skill | Gain 6 Guard. Gain 2 [Glow] if you have none, otherwise 1. | b 6 → 9, g 1 → 2, m0 2 → 3 |
-| 26 | Small Orbit | 1 | skill | Put the top Trick of your draw pile in the [Gloaming] at 1. It returns to hand costing 1 less. | m 1 → 2 |
+| 26 | Small Orbit | 1 | skill | Put the top Trick of your draw pile in the [Gloaming] at 1. It returns to hand costing 1 less. This is not an [Afterglow]. | m 1 → 2 |
 | 27 | Gentle Landing | 1 | skill | Until your next turn, each [Afterglow] gains you 4 Guard, up to 3 times. | b 4 → 6 |
 | 28 | Stash the Flash | 2 | skill | Spend up to 3 [Glow]. Gain 6 Guard each. At exactly 3, draw 2. | b 6 → 8, c1 2 → 3 |
 | 29 | Split Second | 0 | skill | One [Linger]ing Trick does not tick next turn; another ticks twice. Draw 1. [Vanish]. | c1 1 → 2 |
@@ -1222,7 +1222,7 @@ Wisp plays half of every turn now and the other half later. A Lingering Trick le
 | 1 | Tiny Sun, Big Feelings | 4 | attack | Deal 18 to all enemies. If [Blazing], you may [Flare] 6 to do it again. Costs 1 less for each [Afterglow] resolved this turn. | d 18 → 25 |
 | 2 | This One’s Been Cooking | 2 | attack | Deal 3. [Linger] 3. Each [Delay] adds 7 to it. [Afterglow]: 15, plus everything stored, and 2 [Glow]. | d 3 → 5, m0 7 → 10, m1 15 → 20 |
 | 3 | Chain Reaction | 1 | attack | Deal 7, plus 4 for each [Afterglow] resolved this turn, up to 5. | d 7 → 10, m0 4 → 6 |
-| 4 | Premature Celebration | 1 | attack | After a [Converge]nce this turn, deal 15 to all. Otherwise 4 to all and [Linger] 1. | d 4 → 6, m1 15 → 20, m0 7 → 10 |
+| 4 | Premature Celebration | 1 | attack | After a [Converge]nce this turn, deal 15 to all. Otherwise 4 to all and [Linger] 1. [Afterglow]: 7 to all. | d 4 → 6, m1 15 → 20, m0 7 → 10 |
 | 5 | Orbital Drop | 2 | attack | [Linger] 1. [Afterglow]: three hits of 11 spread among enemies and 1 [Glow]. [Converge]: a fourth. | m0 11 → 15, g 1 → 2 |
 | 6 | All the Lamps at Once | 2 | attack | Deal 7 to all. Spend any [Glow]; 4 to a random enemy each. At 3+ spent, draw 1. | d 7 → 10, m0 4 → 6, c1 1 → 2 |
 | 7 | Peekaboo Meteor | 2 | attack | Deal 7. [Linger] 2. [Afterglow]: 15; if it was ever [Hasten]ed, 7 more. | d 7 → 10, m1 15 → 20, m0 7 → 10 |
@@ -1673,7 +1673,7 @@ Truffle has the same resource in two places at once: the Quills attached to him 
 | 8 | Rear End First | 1 | attack | Deal 7 damage. Spend 2 [Loose Quill]s to do it again. | d 7 → 10 |
 | 9 | Scrape Along the Wall | 2 | attack | Deal 12 damage, [Gather] 1, and gain 7 Guard. | d 12 → 16, n 1 → 2, b 7 → 10 |
 | 10 | Needle Exchange | 0 | attack | Consume 1 [Bristle] to deal 7 damage and [Regrow] 1. [Vanish]. | d 7 → 10, g 1 → 2 |
-| 11 | Quill Tax | 2 | attack | Deal 13 damage. If the target intends to Attack, weaken it and [Shed] 1. | d 13 → 18, n 1 → 2 |
+| 11 | Quill Tax | 2 | attack | Deal 13 damage. If the target intends to Attack, apply 1 [Weak] and [Shed] 1. | d 13 → 18, n 1 → 2 |
 | 12 | Carpet Skewer | 3 | attack | Spend up to 4 [Loose Quill]s. Deal 18 plus 5 for each. | d 18 → 25, m0 5 → 7 |
 | 13 | No Room to Back Up | 1 | attack | Deal 7 damage. With 0 Guard, gain 1 [Bristle] and draw 1. | d 7 → 10, n 1 → 2 |
 | 14 | Down But Pointy | 2 | attack | Deal 15 damage. While [Ragged], refund 1 Nerve. | d 15 → 20 |

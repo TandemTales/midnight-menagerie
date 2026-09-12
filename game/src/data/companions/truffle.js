@@ -39,6 +39,14 @@ const START_QUILLS = 6;
 
 const ATTACK_INTENTS = new Set(['attack', 'attackBig', 'attackDefend', 'attackBuff', 'attackDebuff']);
 
+/**
+ * The punch Bristle throws back. The literal lives in the `bristle` status in
+ * `keywords.js`, which this file does not own — and Double Barbed, Lend Them
+ * the Spiky Side and Shared Pincushion all throw the SAME one, so it is named
+ * once here rather than written out three more times.
+ */
+const BRISTLE_HIT = 7;
+
 const eff = (fn) => (c) => { U.ensure(c, SLUG); return fn(c); };
 
 // ── Quills, Loose Quills ────────────────────────────────────────────────────
@@ -70,8 +78,11 @@ function shed(c, n) {
   addLoose(c, have);
   const s = U.mm(c);
   s.shedThisTurn = (s.shedThisTurn || 0) + have;
-  if (s.allSpines && U.once(c, 'allSpines')) U.guard(c, 4);
-  if (s.shedCycle && U.once(c, 'shedCycle')) s.regrowNextTurn = (s.regrowNextTurn || 0) + 1;
+  // Both of these pay the number PRINTED on the Power that installed them (see
+  // `power`), not the 4 and the 1 that used to be written here — which is what
+  // made "gain 7 Guard" and "Regrow 2" upgrade into exactly nothing.
+  if (s.allSpines > 0 && U.once(c, 'allSpines')) U.guard(c, s.allSpines);
+  if (s.shedCycle > 0 && U.once(c, 'shedCycle')) s.regrowNextTurn = (s.regrowNextTurn || 0) + s.shedCycle;
   U.fire(c, 'shed', { amount: have });
   return have;
 }
@@ -85,9 +96,17 @@ function gather(c, n) {
   U.addRes(c, LOOSE, -got, 0, 99);
   U.addRes(c, QUILLS, got, 0, quillCap(c));
   const s = U.mm(c);
-  if (s.unpleasantGeometry) { for (let i = 0; i < Math.min(3, got); i++) U.hitRandom(c, 4); }
-  if (s.moreWhereThat && got >= 2 && U.once(c, 'moreWhere')) bristle(c, 2);
-  if (s.floorIsMine && U.once(c, 'floorIsMine')) U.draw(c, 1);
+  /* Unpleasant Geometry is "the first {n} you Gather EACH TURN", so the budget
+     is per turn and not per Gather: `Math.min(3, got)` threw three more for
+     every separate Gather in the same turn, and read neither the Power's `n`
+     nor its upgraded `d`. */
+  if (s.unpleasantGeometry) {
+    const g = s.unpleasantGeometry;
+    const throws = Math.max(0, Math.min(got, g.n - U.got(c, 'geometry')));
+    if (throws > 0) { U.bump(c, 'geometry', throws); for (let i = 0; i < throws; i++) U.hitRandom(c, g.d); }
+  }
+  if (s.moreWhereThat && got >= s.moreWhereThat.n && U.once(c, 'moreWhere')) bristle(c, s.moreWhereThat.m0);
+  floorIsMine(c, s);
   U.fire(c, 'gather', { amount: got });
   return got;
 }
@@ -100,26 +119,137 @@ function spendLoose(c, n) {
   const have = Math.min(n, loose(c));
   if (have <= 0) return 0;
   const s = U.mm(c);
-  if (s.carpetRemembers && U.once(c, 'carpetRemembers')) return have;   // full benefit, none removed
-  U.addRes(c, LOOSE, -have, 0, 99);
-  if (s.floorIsMine && U.once(c, 'floorIsMine')) U.draw(c, 1);
+  // The Carpet Remembers refunds them; they were still SPENT, so The Floor Is
+  // Mine still draws. This used to `return` above that line and skip it.
+  if (!(s.carpetRemembers && U.once(c, 'carpetRemembers'))) U.addRes(c, LOOSE, -have, 0, 99);
+  floorIsMine(c, s);
   return have;
+}
+
+/** The Floor Is Mine: the first spend OR Gather each turn draws its printed number. */
+function floorIsMine(c, s) {
+  if (s.floorIsMine > 0 && U.once(c, 'floorIsMine')) U.draw(c, s.floorIsMine);
 }
 
 // ── Bristle ─────────────────────────────────────────────────────────────────
 const bristleOn = (c) => U.stacks(c, c.self, BRISTLE);
 function bristle(c, n) { if (n > 0) U.applySelf(c, BRISTLE, n); }
+
 function unbristle(c, n) {
   const have = Math.min(n, bristleOn(c));
   if (have > 0) U.unapply(c, c.self, BRISTLE, have);
   return have;
 }
 
-const power = (c, id, n, install) => {
+// ── Guard ───────────────────────────────────────────────────────────────────
+/**
+ * Guard from one of Truffle's own Tricks. Every Trick below gains Guard through
+ * this and nothing else does, because Comfortable in Pieces is worded about
+ * TRICKS: "While Ragged, Guard Tricks give a little less but each also gives
+ * {n} Bristle." One `gd` call is one Trick — no Trick he owns gains Guard twice
+ * — so the Bristle is per Trick and not per point.
+ *
+ * "A little less" is unquantified in the chapter and unprinted on the card, so
+ * the rate is settled against Slay the Spire, which has exactly one "you gain
+ * less Block" effect: Frail, at -25% rounded down (`floor(block * 0.75)`).
+ * Same rate here.
+ */
+function gd(c, n) {
+  if (!(n > 0)) return 0;
+  const s = U.mm(c);
+  if (!(s.comfortablePieces > 0) || !isRagged(c)) { U.guard(c, n); return n; }
+  const give = Math.floor(n * 0.75);
+  U.guard(c, give);
+  bristle(c, s.comfortablePieces);
+  return give;
+}
+
+/**
+ * Apply a Power's own status, then record the numbers its hooks will read.
+ *
+ * `set` runs for EVERY copy played, `install` only for the first. That split is
+ * the whole reason eight of his Powers had dead upgrades: their behaviour fires
+ * from a tracker, a keyword hook or one of the Quill helpers, and in every one
+ * of those places the ctx carries NO CARD — `N(c)` is `{}` — so each of them had
+ * its number written out as a literal. The numbers are stashed here, at the one
+ * moment a card really is in play, and a second, upgraded copy raises them.
+ */
+const power = (c, id, n, set, install) => {
   U.applySelf(c, id, n);
   const s = U.mm(c);
+  if (set) set(c, s);
   if (install && !s['pw:' + id]) { s['pw:' + id] = true; install(c); }
 };
+
+// ── Truffle's own two defensive statuses ────────────────────────────────────
+/**
+ * Both of these BORROWED somebody else's status, and neither borrowed one fits:
+ *
+ *  - Refuse to Stay Down applied Marmalade's `not-dead-yet`, whose `onLethal`
+ *    spends 3 Lives. Truffle has no Lives, so `res(c,'lives') < 3` returned on
+ *    the hook's first line and the card did nothing whatsoever.
+ *  - Play Dead-ish applied Bones' `play-dead`, which HALVES a hit and hands the
+ *    defender a Loose Bone. Truffle's card says "capped" and prints a `cap` that
+ *    nothing ever read — and its upgrade only moves that cap, so it was dead too.
+ *
+ * They are declared here rather than in `keywords.js` because they belong to
+ * Truffle and to nobody else. `registerStatuses` through `data/statuses.js` is
+ * the documented content-agent seam, and the keyword entry beside it is what
+ * keeps the chip on his portrait from being an unlabelled square
+ * (`tests/teaching`: every status the player can see has a tooltip to hover).
+ */
+const PLAYING_DEAD = 'truffle/playing-dead';
+const REFUSES_TO_STAY_DOWN = 'truffle/refuses-to-stay-down';
+
+const OWN_STATUSES = [
+  {
+    id: PLAYING_DEAD, name: 'Playing Dead', kind: 'buff', icon: 'play-dead',
+    decay: 'turnStart', decayAll: true, stacks: true, companion: SLUG,
+    desc: 'The next Attack that would cost more than {n} Courage costs {n} instead.',
+    hooks: {
+      // EXTRA: onCourageLoss — after Guard, before onLethal, and mutable. A CAP,
+      // not Bones' halving: a 40 becomes the printed number and a 6 is left
+      // alone, which is also why a small hit must not spend it.
+      onCourageLoss: (h) => {
+        if (h.kind !== 'attack') return;
+        const cap = h.stacks | 0;
+        if (cap <= 0 || h.amount <= cap) return;
+        h.setAmount(cap);
+        h.remove();
+      },
+    },
+  },
+  {
+    id: REFUSES_TO_STAY_DOWN, name: 'Refuses to Stay Down', kind: 'buff', icon: 'quills',
+    decay: 'turnStart', decayAll: true, stacks: true, companion: SLUG,
+    desc: 'Lethal damage leaves you at 1 Courage: you lose your Guard, Regrow to full and gain {n} Bristle.',
+    hooks: {
+      // EXTRA: onLethal — the one place a Companion can refuse to die. `setHp`
+      // is the survival control; the chapter's "remove all Guard" is a formality
+      // (a hit only reaches Courage once Guard is gone) and is honoured anyway.
+      onLethal: (h) => {
+        const c = U.trackerCtx(h.e, h.defender);
+        if (!c) return false;
+        h.setHp(1);
+        if (c.self.block > 0) U.stripGuard(c, c.self, c.self.block);
+        regrow(c, quillCap(c));
+        bristle(c, h.stacks | 0);
+        h.remove();
+        return true;
+      },
+    },
+  },
+];
+
+try {
+  const S = await import('../statuses.js');
+  S.registerStatuses(OWN_STATUSES);
+  const K = await import('../keywords.js');
+  K.registerKeywords(OWN_STATUSES.map((s) => ({
+    id: s.id, name: s.name, desc: String(s.desc).replace(/\{n\}/g, 'X'),
+    category: 'buff', status: true, icon: s.icon, companion: SLUG,
+  })));
+} catch (_) { /* headless tooling with no combat folder still loads the cards */ }
 
 // ── per-combat bookkeeping ──────────────────────────────────────────────────
 U.onTracker(SLUG, (e, s, seat) => {
@@ -140,6 +270,23 @@ U.onTracker(SLUG, (e, s, seat) => {
     st.lostCourageThisEnemyTurn = false;
     st.bristledLastEnemyTurn = st.bristledThisEnemyTurn || false;
     st.bristledThisEnemyTurn = false;
+    /* The rest of what the enemy turn accumulated. Every one of these is a
+       promise made on the player's turn and kept — or not kept — during the
+       enemy turn: an unclaimed rider expires here rather than paying out a
+       round late. */
+    st.hurtThisEnemyTurn = false;
+    st.guardBrokenThisEnemyTurn = false;
+    st.pincushionSeen = [];
+    st.bendDontBreak = 0;
+    st.rollWithIt = 0;
+    st.holdStill = 0;
+    st.biteBack = null;                       // "until your next turn"
+    st.behindTheHedgehog = null;              // ditto
+    if (st.lentBristle) {                     // and the Borrowed Bristle goes home
+      const mate = (e.players || []).find((p) => p && p.seat === st.lentBristle.seat);
+      if (mate) { const n = U.stacks(c, mate, BRISTLE); if (n > 0) U.unapply(c, mate, BRISTLE, Math.min(n, st.lentBristle.left)); }
+      st.lentBristle = null;
+    }
     // Bristle expires unless Permanent Bad Hair Day says otherwise.
     if (!st.permanentBristle) { const n = bristleOn(c); if (n > 0) unbristle(c, n); }
     if (st.regrowNextTurn) { regrow(c, st.regrowNextTurn); st.regrowNextTurn = 0; }
@@ -156,11 +303,13 @@ U.onTracker(SLUG, (e, s, seat) => {
   U.onPlayerTurn(e, 'end', () => {
     const c = fake();
     const st = U.mm(c);
-    if (st.quillCarpet && loose(c) >= 4) U.hitAll(c, 4);
-    if (st.wretchedMiracle && isRagged(c) && c.self.block === 0) bristle(c, 1);
+    // Printed numbers, from the Power that installed each of these. The 4, the
+    // 4, the 1 and the two 1s that were written here read no card at all.
+    if (st.quillCarpet && loose(c) >= st.quillCarpet.n) U.hitAll(c, st.quillCarpet.d);
+    if (st.wretchedMiracle > 0 && isRagged(c) && c.self.block === 0) bristle(c, st.wretchedMiracle);
     if (st.stillWiggling && isRagged(c) && c.self.block === 0 && bristleOn(c) >= 1) {
-      U.energyNextTurn(c, 1);
-      st.drawNextTurn = (st.drawNextTurn || 0) + 1;
+      U.energyNextTurn(c, st.stillWiggling.e);
+      st.drawNextTurn = (st.drawNextTurn || 0) + st.stillWiggling.c1;
     }
     // Grows Back Wrong: anything above the normal cap falls off overnight.
     if (st.growsWrong) {
@@ -173,13 +322,133 @@ U.onTracker(SLUG, (e, s, seat) => {
   e.on('phase', (ev) => {
     if (ev && ev.phase === 'enemyPhaseEnd') U.mm(fake()).bristledBy = null;
   });
+
+  /* ── what the enemy turn actually did to him ─────────────────────────────
+     Half of Truffle is worded "when an Attack costs you Courage", and nothing
+     in this file was watching for it. `lostCourageThisEnemyTurn` and
+     `bristledThisEnemyTurn` were READ by four Tricks and written by nobody, and
+     nine more cards parked a number in the scratch that no listener ever spent.
+     One `damage` listener answers all of them.
+
+     The payload names its actors `sourceId` / `targetId`; `attacker` /
+     `defender` belong to the onCourageLoss / onIncomingHit HOOK payloads and
+     reading them here is CONTRACTS trap 26. `hpLoss` is Courage actually
+     removed, which is exactly Bristle's own definition of being hurt: a swing
+     the Guard ate is not one. */
+  const enemyTurn = () => e.phase === 'enemy' || e.phase === 'enemyPhaseEnd';
+  const enemyById = (id) => (id ? (e.enemies || []).find((a) => a && a.id === id) || null : null);
+
+  /** Shed one and hit back, exactly as his own Bristle would. */
+  function retaliate(c, from) {
+    if (!from || !from.alive) return false;
+    if (shed(c, 1) <= 0) return false;              // nothing on his back to throw
+    U.hitAt(c, from, BRISTLE_HIT);
+    U.fire(c, 'bristled', { enemy: from });
+    U.mm(c).bristledThisEnemyTurn = true;
+    return true;
+  }
+
+  /** An Attack has just taken Courage off Truffle. */
+  function hurt(c, st, ev) {
+    st.lostCourageThisEnemyTurn = true;
+    // Hold Still, Almost: "if you lose Courage this enemy turn" — any source.
+    // Its Guard goes through `guardNextTurn`, never a turn-start gain (trap 24).
+    if (st.holdStill > 0) { U.guardNextTurn(c, st.holdStill); st.holdStill = 0; }
+    if (ev.kind !== 'attack') return;
+    const from = enemyById(ev.sourceId);
+    // Roll With It wants the Attack to have gone THROUGH the Guard, and a
+    // multi-hit move can break it on one hit and draw Courage on the next.
+    if (ev.blockBefore > 0 && ev.blockAfter === 0) st.guardBrokenThisEnemyTurn = true;
+    if (st.bendDontBreak > 0) { bristle(c, st.bendDontBreak); st.bendDontBreak = 0; }
+    if (st.rollWithIt > 0 && st.guardBrokenThisEnemyTurn) { bristle(c, st.rollWithIt); st.rollWithIt = 0; }
+    // Built Wrong and Dead Hedgehog Theory: "the FIRST Attack each enemy turn".
+    if (!st.hurtThisEnemyTurn) {
+      st.hurtThisEnemyTurn = true;
+      if (st.builtWrong > 0) regrow(c, st.builtWrong);
+      const th = st.deadTheory;
+      if (th) {
+        regrow(c, th.g);
+        U.energyNextTurn(c, th.e);              // banked: the refill SETS Nerve
+        st.drawNextTurn = (st.drawNextTurn || 0) + th.c1;
+      }
+    }
+    const bb = st.biteBack;
+    if (bb && from && from.id === bb.id) { st.biteBack = null; U.hitAt(c, from, bb.d); }
+  }
+
+  /** A teammate has just lost Courage. His three party Tricks all live here. */
+  function teammateHurt(c, st, ev) {
+    if (ev.kind !== 'attack') return;
+    const mate = (e.players || []).find((p) => p && p.id === ev.targetId);
+    if (!mate || mate === seat || !mate.alive) return;
+    const from = enemyById(ev.sourceId);
+    if (!from) return;
+
+    // Lend Them the Spiky Side — the first n Attacks that hurt them, then spent.
+    const lent = st.lentBristle;
+    if (lent && lent.left > 0 && mate.seat === lent.seat) { lent.left--; retaliate(c, from); }
+
+    // Shared Pincushion — once per Kid per enemy turn, and they wake up Guarded.
+    const b = st.sharedPincushion || 0;
+    if (b > 0) {
+      const seen = st.pincushionSeen || (st.pincushionSeen = []);
+      if (!seen.includes(mate.id)) {
+        seen.push(mate.id);
+        if (retaliate(c, from)) {
+          c.schedule({ turns: 1, when: 'playerTurnStart', label: 'Shared Pincushion',
+            run: () => { try { c.giveBlock(mate, b); } catch (_) { /* they may have fallen */ } } });
+        }
+      }
+    }
+
+    // Everybody Behind the Hedgehog — "the first time each other player would
+    // lose Courage, redirect a small portion to Truffle AFTER their Guard
+    // resolves". After, so it is taken off the wound rather than intercepted,
+    // and it arrives at him as a real Attack from the same enemy — which is the
+    // whole point: "that redirected damage can activate Truffle's Bristle".
+    const bh = st.behindTheHedgehog;
+    if (bh && !bh.used.includes(mate.id)) {
+      bh.used.push(mate.id);
+      const share = Math.min(bh.share, ev.hpLoss);
+      if (share > 0) {
+        c.giveHeal(mate, share);
+        e.dealDamage({ attacker: from, defender: seat, amount: share, kind: 'attack', cause: 'behind-the-hedgehog' });
+      }
+    }
+  }
+
+  e.on('damage', (ev) => {
+    if (!ev || !enemyTurn()) return;
+    const c = fake();
+    if (!c) return;
+    const st = U.mm(c);
+    /* His own retaliation going out. "Bristle triggered" means a Quill was
+       really thrown, which is the same event Hard to Finish pays out on. */
+    if (ev.cause === 'bristle' && ev.sourceId === seat.id) { st.bristledThisEnemyTurn = true; return; }
+    if (!(ev.hpLoss > 0)) return;
+    if (ev.targetId === seat.id) hurt(c, st, ev);
+    else teammateHurt(c, st, ev);
+  });
 });
 
 // ── Power hooks ─────────────────────────────────────────────────────────────
 U.onHook('shed', 'truffle/shed-cycle', () => {});
 U.onHook('gather', 'truffle/more-where-that-came-from', () => {});
 U.onHook('bristled', 'truffle/hard-to-finish', (c) => {
-  U.guardNextTurn(c, 4);
+  // The printed number, not a 4: the hook runs on a tracker ctx with no card on
+  // it, so `N(c)` is empty and the upgrade to 7 could never have been read.
+  U.guardNextTurn(c, U.mm(c).hardToFinish || 0);
+});
+U.onHook('bristled', 'truffle/double-barbed', (c, p) => {
+  /* Bristle itself Sheds one Quill and throws it (that pair lives in the
+     `bristle` status in `keywords.js`, which this file does not own). Double
+     Barbed buys the SECOND and third Quill for the same single stack —
+     "Shed up to {n} instead of 1 and retaliate once for each Quill Shed". */
+  const extra = (U.mm(c).doubleBarbed || 1) - 1;
+  for (let i = 0; i < extra; i++) {
+    if (shed(c, 1) <= 0) break;
+    U.hitAt(c, p.enemy, BRISTLE_HIT);
+  }
 });
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -196,7 +465,7 @@ const basics = [
     id: 'truffle/round-up', name: 'Round Up', companion: SLUG, type: SKILL, rarity: BASIC,
     cost: 1, target: SELF, text: 'Gain {b} Guard.',
     flavor: 'A ball, more or less. Mostly less.',
-    nums: { b: 5 }, effect: eff((c) => U.guard(c, N(c).b)), upgrade: { nums: { b: 8 } },
+    nums: { b: 5 }, effect: eff((c) => gd(c, N(c).b)), upgrade: { nums: { b: 8 } },
   },
   {
     id: 'truffle/prickle-up', name: 'Prickle Up', companion: SLUG, type: SKILL, rarity: BASIC,
@@ -222,7 +491,7 @@ const basics = [
     text: '[Gather] {n}. If a Quill came back, gain {b} Guard.',
     flavor: 'Under the rug, where he left it.',
     nums: { n: 1, b: 4 },
-    effect: eff((c) => { if (gather(c, N(c).n) > 0) U.guard(c, N(c).b); }),
+    effect: eff((c) => { if (gather(c, N(c).n) > 0) gd(c, N(c).b); }),
     upgrade: { nums: { n: 2, b: 6 } },
   },
 ];
@@ -315,7 +584,7 @@ const commons = [
     text: 'Gain {b} Guard, or {m0} while [Ragged].',
     flavor: 'The whole animal, folded inwards.',
     nums: { b: 13, m0: 19 },
-    effect: eff((c) => U.guard(c, isRagged(c) ? N(c).m0 : N(c).b)),
+    effect: eff((c) => gd(c, isRagged(c) ? N(c).m0 : N(c).b)),
     upgrade: { nums: { b: 18, m0: 26 } },
   },
   {
@@ -325,7 +594,7 @@ const commons = [
     flavor: 'Just enough, and not one bit more.',
     nums: { b: 5, n: 1 },
     effect: eff((c) => {
-      U.guard(c, N(c).b);
+      gd(c, N(c).b);
       const through = U.enemies(c).some((e2) => {
         const m = e2.pendingMove;
         return m && ATTACK_INTENTS.has(m.intent) && (m.damage || 0) > c.self.block;
@@ -382,7 +651,9 @@ const commons = [
     text: 'Gain {b} Guard. If an Attack still costs you Courage this turn, gain {n} [Bristle].',
     flavor: 'He has bent a very long way.',
     nums: { b: 5, n: 1 },
-    effect: eff((c) => { U.guard(c, N(c).b); U.mm(c).bendDontBreak = N(c).n; }),
+    // The rider is READ now, by the tracker's `damage` listener: an Attack that
+    // costs him Courage this enemy turn pays the Bristle out. Two copies stack.
+    effect: eff((c) => { gd(c, N(c).b); U.mm(c).bendDontBreak = (U.mm(c).bendDontBreak || 0) + N(c).n; }),
     upgrade: { nums: { b: 8, n: 2 } },
   },
   {
@@ -391,7 +662,7 @@ const commons = [
     text: 'Gain {b} Guard, or {m0} if you lost Courage during the last enemy turn.',
     flavor: 'Debatable, but he is committed to the position.',
     nums: { b: 6, m0: 10 },
-    effect: eff((c) => U.guard(c, U.mm(c).lostCourageLastEnemyTurn ? N(c).m0 : N(c).b)),
+    effect: eff((c) => gd(c, U.mm(c).lostCourageLastEnemyTurn ? N(c).m0 : N(c).b)),
     upgrade: { nums: { b: 9, m0: 14 } },
   },
   {
@@ -400,7 +671,7 @@ const commons = [
     text: 'Gain {b} Guard, [Shed] {n}, then draw {c1}.',
     flavor: 'A shake, then a scoot. In that order.',
     nums: { b: 9, n: 1, c1: 2 },
-    effect: eff((c) => { U.guard(c, N(c).b); shed(c, N(c).n); U.draw(c, N(c).c1); }),
+    effect: eff((c) => { gd(c, N(c).b); shed(c, N(c).n); U.draw(c, N(c).c1); }),
     upgrade: { nums: { b: 12, n: 1, c1: 3 } },
   },
   {
@@ -411,7 +682,7 @@ const commons = [
     nums: { n: 3, c1: 1, e: 1, b: 4 },
     effect: eff((c) => {
       if (loose(c) >= N(c).n) { U.draw(c, N(c).c1); U.energyNextTurn(c, N(c).e); }
-      else { shed(c, 1); U.guard(c, N(c).b); }
+      else { shed(c, 1); gd(c, N(c).b); }
     }),
     upgrade: { nums: { n: 3, c1: 2, e: 1, b: 7 } },
   },
@@ -421,7 +692,7 @@ const commons = [
     text: 'The first time you become [Ragged] this combat, draw {c1}. Triggers now if already [Ragged].',
     flavor: 'He is. He genuinely is.',
     nums: { c1: 2 },
-    effect: eff((c) => power(c, 'truffle/barely-holding-together', 1, (x) => {
+    effect: eff((c) => power(c, 'truffle/barely-holding-together', 1, null, (x) => {
       U.mm(x).barelyHolding = true;
       if (isRagged(x)) { U.mm(x).raggedSeen = true; U.draw(x, N(x).c1); }
     })),
@@ -433,7 +704,7 @@ const commons = [
     text: 'The first time you [Shed] each turn, gain {b} Guard.',
     flavor: 'There has never been a plan.',
     nums: { b: 4 },
-    effect: eff((c) => power(c, 'truffle/all-spines-no-plan', N(c).b, (x) => { U.mm(x).allSpines = true; })),
+    effect: eff((c) => power(c, 'truffle/all-spines-no-plan', N(c).b, (x, st) => { st.allSpines = N(x).b; })),
     upgrade: { nums: { b: 7 } },
   },
 ];
@@ -549,7 +820,7 @@ const uncommons = [
     text: 'Deal {d} damage, [Gather] {n}, and gain {b} Guard.',
     flavor: 'Leaves a mark on the wallpaper and a trail of quills.',
     nums: { d: 12, n: 1, b: 7 },
-    effect: eff((c) => { U.hit(c, N(c).d); gather(c, N(c).n); U.guard(c, N(c).b); }),
+    effect: eff((c) => { U.hit(c, N(c).d); gather(c, N(c).n); gd(c, N(c).b); }),
     upgrade: { nums: { d: 16, n: 2, b: 10 } },
   },
   {
@@ -564,10 +835,11 @@ const uncommons = [
   {
     id: 'truffle/quill-tax', name: 'Quill Tax', companion: SLUG, type: ATTACK, rarity: UNCOMMON,
     cost: 2, target: ENEMY, keywords: ['shed'],
-    text: 'Deal {d} damage. If the target intends to Attack, weaken it and [Shed] {g}.',
+    text: 'Deal {d} damage. If the target intends to Attack, apply {n} [Weak] and [Shed] {g}.',
     flavor: 'Everyone pays. Nobody agreed to this.',
-    /* Weak stays at n: the text says "weaken it" and never shows the number,
-       so the extra Nerve buys damage the player can read. */
+    /* The count is PRINTED. "Weaken it" hid a number the card really applies,
+       and hid the upgrade with it — n goes 1 -> 2 and nothing on the face moved.
+       Tactical clarity: the player can see exactly what will happen. */
     nums: { d: 13, n: 1, g: 1 },
     effect: eff((c) => {
       const t = c.target;
@@ -612,7 +884,10 @@ const uncommons = [
     text: 'Gain {b} Guard. If an Attack breaks it and costs you Courage this enemy turn, gain {n} [Bristle].',
     flavor: 'Rolling is most of his strategy.',
     nums: { b: 5, n: 2 },
-    effect: eff((c) => { U.guard(c, N(c).b); U.mm(c).bendDontBreak = N(c).n; }),
+    // Its own key, not Bend, Don't Break's: the chapter is explicit that this one
+    // needs the Attack to have REMOVED the Guard first ("if an enemy Attack
+    // removes all of that Guard and then damages your Courage").
+    effect: eff((c) => { gd(c, N(c).b); U.mm(c).rollWithIt = (U.mm(c).rollWithIt || 0) + N(c).n; }),
     upgrade: { nums: { b: 8, n: 3 } },
   },
   {
@@ -648,7 +923,7 @@ const uncommons = [
     text: '[Gather] up to {n}. While [Ragged], also gain {b} Guard.',
     flavor: 'Nobody else is going to.',
     nums: { n: 3, b: 6 },
-    effect: eff((c) => { gather(c, N(c).n); if (isRagged(c)) U.guard(c, N(c).b); }),
+    effect: eff((c) => { gather(c, N(c).n); if (isRagged(c)) gd(c, N(c).b); }),
     upgrade: { nums: { n: 4, b: 9 } },
   },
   {
@@ -668,7 +943,7 @@ const uncommons = [
     nums: { c1: 2, b: 4 },
     effect: eff((c) => {
       if (U.mm(c).lostCourageLastEnemyTurn) U.draw(c, N(c).c1);
-      else { U.draw(c, 1); U.guard(c, N(c).b); }
+      else { U.draw(c, 1); gd(c, N(c).b); }
     }),
     upgrade: { nums: { c1: 3, b: 7 } },
   },
@@ -678,7 +953,7 @@ const uncommons = [
     text: 'Gain {b} Guard, then lose {n} [Bristle]. With none to lose, gain only {m0}.',
     flavor: 'Everybody down.',
     nums: { b: 20, m0: 11, n: 1 },
-    effect: eff((c) => { if (unbristle(c, N(c).n) > 0) U.guard(c, N(c).b); else U.guard(c, N(c).m0); }),
+    effect: eff((c) => { if (unbristle(c, N(c).n) > 0) gd(c, N(c).b); else gd(c, N(c).m0); }),
     upgrade: { nums: { b: 27, m0: 15, n: 1 } },
   },
   {
@@ -687,7 +962,7 @@ const uncommons = [
     text: '[Shed] {n} to gain {b} Guard.',
     flavor: 'Kept back for exactly this.',
     nums: { n: 2, b: 22 },
-    effect: eff((c) => { if (shed(c, N(c).n) >= N(c).n) U.guard(c, N(c).b); }),
+    effect: eff((c) => { if (shed(c, N(c).n) >= N(c).n) gd(c, N(c).b); }),
     upgrade: { nums: { n: 2, b: 30 } },
   },
   {
@@ -742,7 +1017,7 @@ const uncommons = [
     text: 'Gain {b} Guard. If you lose Courage this enemy turn, gain {m0} Guard next turn.',
     flavor: 'Almost. Nearly. Not quite.',
     nums: { b: 4, m0: 12 },
-    effect: eff((c) => { U.guard(c, N(c).b); U.mm(c).holdStill = N(c).m0; }),
+    effect: eff((c) => { gd(c, N(c).b); U.mm(c).holdStill = (U.mm(c).holdStill || 0) + N(c).m0; }),
     upgrade: { nums: { b: 7, m0: 16 } },
   },
 
@@ -753,7 +1028,7 @@ const uncommons = [
     text: 'The first time you [Shed] each turn, [Regrow] {g} at the start of your next.',
     flavor: 'Off, then on, then off again.',
     nums: { g: 1 },
-    effect: eff((c) => power(c, 'truffle/shed-cycle', N(c).g, (x) => { U.mm(x).shedCycle = true; })),
+    effect: eff((c) => power(c, 'truffle/shed-cycle', N(c).g, (x, st) => { st.shedCycle = N(x).g; })),
     upgrade: { nums: { g: 2 } },
   },
   {
@@ -762,7 +1037,7 @@ const uncommons = [
     text: 'At end of turn, with {n}+ [Loose Quill]s down, deal {d} to all enemies. They are not consumed.',
     flavor: 'The floor itself is now a hazard.',
     nums: { n: 4, d: 4 },
-    effect: eff((c) => power(c, 'truffle/quill-carpet', 1, (x) => { U.mm(x).quillCarpet = true; })),
+    effect: eff((c) => power(c, 'truffle/quill-carpet', 1, (x, st) => { st.quillCarpet = { n: N(x).n, d: N(x).d }; })),
     upgrade: { nums: { n: 4, d: 7 } },
   },
   {
@@ -771,7 +1046,7 @@ const uncommons = [
     text: 'Whenever you end a turn [Ragged] with 0 Guard, gain {n} [Bristle].',
     flavor: 'By every reasonable measure he should not be here.',
     nums: { n: 1 },
-    effect: eff((c) => power(c, 'truffle/wretched-little-miracle', N(c).n, (x) => { U.mm(x).wretchedMiracle = true; })),
+    effect: eff((c) => power(c, 'truffle/wretched-little-miracle', N(c).n, (x, st) => { st.wretchedMiracle = N(x).n; })),
     upgrade: { nums: { n: 2 } },
   },
   {
@@ -780,7 +1055,7 @@ const uncommons = [
     text: 'The first Attack each enemy turn that costs you Courage makes you [Regrow] {g} after.',
     flavor: 'Structurally. Comprehensively.',
     nums: { g: 2 },
-    effect: eff((c) => power(c, 'truffle/built-wrong', N(c).g, (x) => { U.mm(x).builtWrong = N(x).g; })),
+    effect: eff((c) => power(c, 'truffle/built-wrong', N(c).g, (x, st) => { st.builtWrong = N(x).g; })),
     upgrade: { nums: { g: 3 } },
   },
   {
@@ -789,7 +1064,7 @@ const uncommons = [
     text: 'Whenever [Bristle] triggers, gain {b} Guard at the start of your next turn.',
     flavor: 'People have tried.',
     nums: { b: 4 },
-    effect: eff((c) => power(c, 'truffle/hard-to-finish', N(c).b)),
+    effect: eff((c) => power(c, 'truffle/hard-to-finish', N(c).b, (x, st) => { st.hardToFinish = N(x).b; })),
     upgrade: { nums: { b: 7 } },
   },
   {
@@ -798,7 +1073,7 @@ const uncommons = [
     text: 'The first time each turn you [Gather] {n}+ at once, gain {m0} [Bristle].',
     flavor: 'There is. There is a great deal more.',
     nums: { n: 2, m0: 2 },
-    effect: eff((c) => power(c, 'truffle/more-where-that-came-from', 1, (x) => { U.mm(x).moreWhereThat = true; })),
+    effect: eff((c) => power(c, 'truffle/more-where-that-came-from', 1, (x, st) => { st.moreWhereThat = { n: N(x).n, m0: N(x).m0 }; })),
     upgrade: { nums: { n: 2, m0: 3 } },
   },
   {
@@ -807,7 +1082,7 @@ const uncommons = [
     text: 'While [Ragged], Guard Tricks give a little less but each also gives {n} [Bristle].',
     flavor: 'He has been in pieces before. It is fine.',
     nums: { n: 1 },
-    effect: eff((c) => power(c, 'truffle/comfortable-in-pieces', N(c).n, (x) => { U.mm(x).comfortablePieces = true; })),
+    effect: eff((c) => power(c, 'truffle/comfortable-in-pieces', N(c).n, (x, st) => { st.comfortablePieces = N(x).n; })),
     upgrade: { nums: { n: 2 } },
   },
   {
@@ -816,7 +1091,7 @@ const uncommons = [
     text: 'The first time each turn you spend or [Gather] [Loose Quill]s, draw {c1}.',
     flavor: 'He has claimed it. Nobody contested it.',
     nums: { c1: 1 },
-    effect: eff((c) => power(c, 'truffle/the-floor-is-mine', N(c).c1, (x) => { U.mm(x).floorIsMine = true; })),
+    effect: eff((c) => power(c, 'truffle/the-floor-is-mine', N(c).c1, (x, st) => { st.floorIsMine = N(x).c1; })),
     upgrade: { nums: { c1: 2 } },
   },
 ];
@@ -959,7 +1234,12 @@ const rares = [
     effect: eff((c) => {
       if (c.self.block > 0) U.stripGuard(c, c.self, c.self.block);
       bristle(c, N(c).n);
-      U.applySelf(c, 'play-dead', 1);
+      /* His own status. Bones' `play-dead` HALVES the hit and hands the
+         defender a Loose Bone, so `cap` was never read and the upgrade — which
+         does nothing but lower the cap — was dead. A second copy REPLACES
+         rather than stacks, because the stack count is the cap itself. */
+      if (U.stacks(c, c.self, PLAYING_DEAD) > 0) c.removeStatus(c.self, PLAYING_DEAD);
+      U.applySelf(c, PLAYING_DEAD, N(c).cap);
     }),
     upgrade: { nums: { n: 5, cap: 10 } },
   },
@@ -1006,7 +1286,13 @@ const rares = [
     text: 'Until your next turn, lethal damage leaves you at 1 Courage, [Regrow]n and with {n} [Bristle]. [Vanish].',
     flavor: 'He has refused before. Repeatedly.',
     nums: { n: 4 },
-    effect: eff((c) => { U.applySelf(c, 'not-dead-yet', 1); U.mm(c).refuseDown = N(c).n; }),
+    /* `not-dead-yet` is Marmalade's and spends 3 Lives; Truffle has none, so it
+       returned on its first line every time and this Rare did nothing at all.
+       His own status carries the Bristle as its stack count. */
+    effect: eff((c) => {
+      if (U.stacks(c, c.self, REFUSES_TO_STAY_DOWN) > 0) c.removeStatus(c.self, REFUSES_TO_STAY_DOWN);
+      U.applySelf(c, REFUSES_TO_STAY_DOWN, N(c).n);
+    }),
     upgrade: { nums: { n: 5 } },
   },
   {
@@ -1016,11 +1302,15 @@ const rares = [
     flavor: 'Measured. Deliberate. Horrible.',
     nums: { n: 2, b: 24 },
     balance: { scalesWith: 'whatever the enemy is actually about to swing — it engineers the Bristle turn' },
+    /* This goes through `gd` like every other Guard Trick, so Comfortable in
+       Pieces taxes it too and a little more than {n} gets through. Deliberate:
+       that Power's rule is blanket and prints no exception list, and this card
+       already says "almost exactly". */
     effect: eff((c) => {
       const t = c.target;
       const dmg = (t && t.pendingMove && t.pendingMove.damage) || 0;
       const want = Math.max(0, Math.min(N(c).b, dmg - N(c).n - c.self.block));
-      U.guard(c, want);
+      gd(c, want);
     }),
     upgrade: { nums: { n: 2, b: 32 } },
   },
@@ -1046,7 +1336,7 @@ const rares = [
     text: 'The first {n} [Loose Quill]s you [Gather] each turn each throw {d} at a random enemy.',
     flavor: 'The angles are wrong and they hurt to look at.',
     nums: { n: 3, d: 4 },
-    effect: eff((c) => power(c, 'truffle/unpleasant-geometry', 1, (x) => { U.mm(x).unpleasantGeometry = true; })),
+    effect: eff((c) => power(c, 'truffle/unpleasant-geometry', 1, (x, st) => { st.unpleasantGeometry = { n: N(x).n, d: N(x).d }; })),
     upgrade: { nums: { n: 3, d: 7 } },
   },
   {
@@ -1055,7 +1345,7 @@ const rares = [
     text: 'The first effect each turn that spends [Loose Quill]s gets the full benefit without spending them.',
     flavor: 'It has been collecting for years.',
     nums: {},
-    effect: eff((c) => power(c, 'truffle/the-carpet-remembers', 1, (x) => { U.mm(x).carpetRemembers = true; })),
+    effect: eff((c) => power(c, 'truffle/the-carpet-remembers', 1, (x, st) => { st.carpetRemembers = true; })),
     upgrade: { cost: 1 },
   },
   {
@@ -1064,7 +1354,7 @@ const rares = [
     text: '[Bristle] may [Shed] {n} instead of 1 and retaliate once per Quill, still consuming only 1 [Bristle].',
     flavor: 'Twice the spines, same amount of spite.',
     nums: { n: 2 },
-    effect: eff((c) => power(c, 'truffle/double-barbed', N(c).n, (x) => { U.mm(x).doubleBarbed = N(x).n; })),
+    effect: eff((c) => power(c, 'truffle/double-barbed', N(c).n, (x, st) => { st.doubleBarbed = N(x).n; })),
     upgrade: { nums: { n: 3 } },
   },
   {
@@ -1073,7 +1363,7 @@ const rares = [
     text: 'You count as [Ragged] at 75% Courage or below instead of 50%.',
     flavor: 'The distinction was always academic.',
     nums: {},
-    effect: eff((c) => power(c, 'truffle/close-enough-to-dead', 1, (x) => { U.mm(x).closeEnough = true; })),
+    effect: eff((c) => power(c, 'truffle/close-enough-to-dead', 1, (x, st) => { st.closeEnough = true; })),
     upgrade: { cost: 1 },
   },
   {
@@ -1082,7 +1372,7 @@ const rares = [
     text: 'The first Attack each enemy turn that costs you Courage: [Regrow] {g}, and next turn {e} Nerve and {c1} card.',
     flavor: 'A theory he is testing personally.',
     nums: { g: 1, e: 1, c1: 1 },
-    effect: eff((c) => power(c, 'truffle/dead-hedgehog-theory', 1, (x) => { U.mm(x).deadTheory = { g: N(x).g, e: N(x).e, c1: N(x).c1 }; })),
+    effect: eff((c) => power(c, 'truffle/dead-hedgehog-theory', 1, (x, st) => { st.deadTheory = { g: N(x).g, e: N(x).e, c1: N(x).c1 }; })),
     upgrade: { cost: 2 },
   },
   {
@@ -1091,7 +1381,7 @@ const rares = [
     text: '[Regrow] may take you {n} above maximum. At end of turn the excess falls off as [Loose Quill]s.',
     flavor: 'Wrong, but more.',
     nums: { n: 6 },
-    effect: eff((c) => power(c, 'truffle/grows-back-wrong', 1, (x) => { U.mm(x).growsWrong = true; })),
+    effect: eff((c) => power(c, 'truffle/grows-back-wrong', 1, (x, st) => { st.growsWrong = true; })),
     upgrade: { cost: 1 },
   },
   {
@@ -1100,7 +1390,7 @@ const rares = [
     text: '[Bristle] no longer expires. It stays until something consumes it.',
     flavor: 'Every day, in perpetuity.',
     nums: {},
-    effect: eff((c) => power(c, 'truffle/permanent-bad-hair-day', 1, (x) => { U.mm(x).permanentBristle = true; })),
+    effect: eff((c) => power(c, 'truffle/permanent-bad-hair-day', 1, (x, st) => { st.permanentBristle = true; })),
     upgrade: { cost: 1 },
   },
   {
@@ -1109,7 +1399,7 @@ const rares = [
     text: 'End a turn [Ragged], with 0 Guard and [Bristle] left: gain {e} Nerve and {c1} card next turn.',
     flavor: 'Against all advice, and all evidence.',
     nums: { e: 1, c1: 1 },
-    effect: eff((c) => power(c, 'truffle/still-wiggling', 1, (x) => { U.mm(x).stillWiggling = true; })),
+    effect: eff((c) => power(c, 'truffle/still-wiggling', 1, (x, st) => { st.stillWiggling = { e: N(x).e, c1: N(x).c1 }; })),
     upgrade: { cost: 2 },
   },
 ];
@@ -1139,7 +1429,7 @@ const coopCards = [
     flavor: 'Spines outward. Everybody else inward.',
     nums: { b: 5, n: 1 },
     effect: eff((c) => {
-      U.guard(c, N(c).b);
+      gd(c, N(c).b);
       for (const mate of c.teammates()) {
         c.giveBlock(mate, N(c).b);
         const aimed = U.enemies(c).some((e2) => e2.pendingMove && ATTACK_INTENTS.has(e2.pendingMove.intent));
@@ -1178,7 +1468,7 @@ const coopCards = [
     text: 'Once each enemy turn per Kid, when they lose Courage you may [Shed] 1 to retaliate. They gain {b} Guard next turn.',
     flavor: 'Everybody gets to be the pincushion.',
     nums: { b: 4 },
-    effect: eff((c) => power(c, 'truffle/shared-pincushion', N(c).b, (x) => { U.mm(x).sharedPincushion = N(x).b; })),
+    effect: eff((c) => power(c, 'truffle/shared-pincushion', N(c).b, (x, st) => { st.sharedPincushion = N(x).b; })),
     upgrade: { nums: { b: 7 } },
   },
 ];

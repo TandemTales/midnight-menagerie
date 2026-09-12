@@ -35,6 +35,52 @@ const ATTACKER = {
   },
   nextMove: () => 'swing',
 };
+const SWING = { id: 'swing', name: 'Swing', intent: 'attack', damage: 3, hits: 1, effect: (c) => c.damage(3) };
+const BRACE = { id: 'brace', name: 'Brace', intent: 'defend', block: 5, effect: (c) => c.block(c.self, 5) };
+/** Only ever Defends: the family half of every Intent Family test. */
+const DEFENDER = {
+  id: 'wink/test-defender', name: 'Defender', region: 'foyer', tier: 'normal',
+  hp: [400, 400], silhouette: 'blob', moves: { brace: BRACE }, nextMove: () => 'brace',
+};
+/**
+ * Attack, Defense, Attack, Defense. Its plan therefore holds BOTH families at
+ * once, which is what a Read on position 1 needs in order to be wrong — and
+ * what Probability Collapse needs in order to have something legal to bring
+ * forward.
+ */
+const ALTERNATOR = {
+  id: 'wink/test-alternator', name: 'Alternator', region: 'foyer', tier: 'normal',
+  hp: [400, 400], silhouette: 'blob', moves: { swing: SWING, brace: BRACE },
+  nextMove: (c) => (((c.history || []).length % 2) ? 'brace' : 'swing'),
+};
+/**
+ * It changes its mind when conditions change — the ONE thing The House Has
+ * Tells is written about, and the thing that has to be told apart from an
+ * ordinary turn rolling over.
+ */
+const MOODY = {
+  id: 'wink/test-moody', name: 'Moody', region: 'foyer', tier: 'normal',
+  hp: [400, 400], silhouette: 'blob', moves: { swing: SWING, brace: BRACE },
+  nextMove: (c) => ((c.self.status('web') || 0) > 0 ? 'brace' : 'swing'),
+};
+
+/* Numbers come off the card, never out of the test. A repair that quietly
+   changed a printed number would otherwise still be green. */
+const NUMS = (id) => ({ ...(CARDS.cardById(id).nums || {}) });
+const UPNUMS = (id) => {
+  const d = CARDS.cardById(id);
+  return { ...(d.nums || {}), ...((d.upgrade && d.upgrade.nums) || {}) };
+};
+const COST = (id) => CARDS.cardById(id).cost;
+const eyesOf = (e) => e.counter('open-eyes', e.player.id) | 0;
+const webOf = (t) => t.statuses.get('web') || 0;
+const addTo = (e, id, pile, opts) => e.addCard(CARDS.cardById(id), pile, opts || {});
+/** Force every family prompt to one answer, so "the player chose" is provable. */
+const chooseFamily = (e, label) => e.setChoiceResolver(async (req) => {
+  if (req.kind !== 'option') return [0];
+  const i = req.pool.findIndex(o => (o.label || o) === label);
+  return [i >= 0 ? i : 0];
+});
 
 async function wink() {
   const setup = makeDummySetup(new RNG(77), { companion: 'wink', deck: CARDS.startingDeckFor('wink'), maxHp: 66 });
@@ -66,6 +112,37 @@ async function play(e, id, target) {
   e.player.energy = 9;
   await e.playCard(card.uid, target ? target.id : undefined);
   return card;
+}
+/** The same, upgraded — the half that proves an upgrade is not dead. */
+async function playUp(e, id, target) {
+  const card = e.addCard(CARDS.cardById(id), 'hand', { upgraded: true });
+  e.player.energy = 9;
+  await e.playCard(card.uid, target ? target.id : undefined);
+  return card;
+}
+const playAt = (up) => (up ? playUp : play);
+async function winkVsAll(list) {
+  const setup = makeDummySetup(new RNG(77), {
+    companion: 'wink', deck: CARDS.startingDeckFor('wink'), maxHp: 66, enemies: list,
+  });
+  const e = new CombatEngine(setup);
+  await e.startCombat();
+  installTrackers(e, 'wink');
+  return e;
+}
+const reads = (e) => mm(trackerCtx(e, null)).reads || [];
+const sets = (e) => mm(trackerCtx(e, null)).sets || [];
+/**
+ * Make a Read resolve INSIDE the player's turn.
+ *
+ * Snip Here deletes the current action, so position 1 becomes current — a real
+ * advance of the queue, and the only one a test can trigger without ending the
+ * turn. It hands back exactly the Web it was given, so whatever Web is on the
+ * enemy afterwards came from the Read resolving.
+ */
+async function snipToResolve(e, t) {
+  e.applyStatus(t, 'web', NUMS('wink/snip-here').n);
+  await play(e, 'wink/snip-here', t);
 }
 
 try {
@@ -211,6 +288,441 @@ try {
     const after = e.piles.hand[e.piles.hand.length - 1];
     check(e.costOf(after) === before, 'and only the NEXT one — the discount is spent',
       `${e.costOf(after)} vs ${before}`);
+  }
+
+  // ══ the 2026-09-11 dead-effect repairs ═════════════════════════════════════
+
+  /**
+   * THREADBARE POUNCE'S DISCOUNT COULD NEVER APPLY, AND IT ATE THE WEB ANYWAY.
+   * `dynamicCost` is priced with no target, so the old test read WINK's Web —
+   * always none — and the card charged full price while still removing 3.
+   */
+  {
+    const id = 'wink/threadbare-pounce';
+    const n = NUMS(id).n, floor = NUMS(id).m0, printed = COST(id);
+    const e = await winkVs(ATTACKER);
+    const t = e.livingEnemies()[0];
+    e.applyStatus(t, 'web', n);
+    await play(e, id, t);
+    check(e.player.energy === 9 - floor, 'Threadbare Pounce really costs its reduced price when the Web is there',
+      `9 -> ${e.player.energy}, want ${9 - floor}`);
+    check(webOf(t) === 0, 'and the Web it spent is the Web the card names', `web=${webOf(t)}`);
+
+    const c2 = await winkVs(ATTACKER);           // same seed, one Web short
+    const t2 = c2.livingEnemies()[0];
+    c2.applyStatus(t2, 'web', n - 1);
+    await play(c2, id, t2);
+    check(c2.player.energy === 9 - printed, 'and full price with too little Web', `9 -> ${c2.player.energy}`);
+    check(webOf(t2) === n - 1, 'which it no longer quietly eats', `web=${webOf(t2)}`);
+  }
+
+  /**
+   * TRAP 24. Tripline's Guard arrives when the enemy PICKS its Attack, at the
+   * end of its phase — and `_openSeatTurn` wipes Guard a moment later, so the
+   * whole 14 was deleted before the attack it was for ever landed.
+   */
+  {
+    const id = 'wink/tripline';
+    const e = await winkVs(ATTACKER);
+    await play(e, id, e.livingEnemies()[0]);
+    await e.endTurn();
+    check(e.player.block === NUMS(id).b, "Tripline's Guard is on the board for the turn the attack lands",
+      `block=${e.player.block} want ${NUMS(id).b}`);
+    const u = await winkVs(ATTACKER);
+    await playUp(u, id, u.livingEnemies()[0]);
+    await u.endTurn();
+    check(u.player.block === UPNUMS(id).b && UPNUMS(id).b !== NUMS(id).b,
+      'and the upgraded Tripline really banks its bigger number', `${e.player.block} -> ${u.player.block}`);
+  }
+
+  /**
+   * OBSERVE AND INTERFERE: "whenever a PREVIEWED Intent becomes current",
+   * hardcoded 6 and 2, and its Guard on the same wiped path as Tripline.
+   */
+  {
+    const id = 'wink/observe-and-interfere';
+    const e = await winkVs(ATTACKER);
+    await play(e, id);
+    e.previewIntent(e.livingEnemies()[0], 1);
+    await e.endTurn();
+    check(e.player.block === NUMS(id).b, 'Observe and Interfere Guards for a Previewed Attack, in the turn it lands',
+      `block=${e.player.block} want ${NUMS(id).b}`);
+
+    const u = await winkVs(ATTACKER);
+    await playUp(u, id);
+    u.previewIntent(u.livingEnemies()[0], 1);
+    await u.endTurn();
+    check(u.player.block === UPNUMS(id).b && UPNUMS(id).b !== NUMS(id).b,
+      'and its upgrade really moves that number', `${e.player.block} -> ${u.player.block}`);
+
+    const none = await winkVs(ATTACKER);          // same seed, nothing Previewed
+    await play(none, id);
+    await none.endTurn();
+    check(none.player.block === 0, 'while an Intent that was never Previewed does nothing at all',
+      `block=${none.player.block}`);
+
+    const d = await winkVs(DEFENDER);
+    const dt = d.livingEnemies()[0];
+    await play(d, id);
+    d.previewIntent(dt, 1);
+    await d.endTurn();
+    check(webOf(dt) === NUMS(id).n, 'and a Previewed non-Attack is Webbed by its printed number instead',
+      `web=${webOf(dt)} want ${NUMS(id).n}`);
+  }
+
+  /**
+   * A READ RESOLVED ON ANY INTENT UPDATE — so the next Preview scored it,
+   * against position ZERO, before it could ever be right.
+   */
+  {
+    const peek = NUMS('wink/peek-around-the-corner').m0;
+    const e = await winkVs(ATTACKER);
+    const t = e.livingEnemies()[0];
+    const eye0 = eyesOf(e);
+    await play(e, 'wink/call-it', t);
+    check(reads(e).length === 1 && !reads(e)[0].resolved, 'Call It leaves a Read waiting on its position',
+      `reads=${reads(e).length}`);
+    await play(e, 'wink/peek-around-the-corner', t);
+    check(!reads(e)[0].resolved, 'a Preview does NOT resolve it against what the enemy is already showing');
+    check(eyesOf(e) === eye0 + peek, 'and Opens only the Eye the Preview itself promised',
+      `${eye0} -> ${eyesOf(e)}, want ${eye0 + peek}`);
+    await e.endTurn();
+    check(reads(e)[0].resolved, 'the enemy actually taking its action is what resolves it');
+    check(eyesOf(e) === eye0 + peek + 1, 'and THEN the Eye for calling it right arrives',
+      `${eyesOf(e)} want ${eye0 + peek + 1}`);
+  }
+
+  /** SEEN IT BEFORE read `lastFamily`, a field nothing anywhere ever wrote. */
+  {
+    const id = 'wink/seen-it-before';
+    const e = await winkVs(ATTACKER);
+    const t = e.livingEnemies()[0];
+    await play(e, id, t);
+    check(webOf(t) === 0, 'Seen It Before Webs nothing before the enemy has done anything', `web=${webOf(t)}`);
+    await e.endTurn();                                  // it swings: "last time" is Attack now
+    const w0 = webOf(t);
+    await play(e, id, t);
+    check(webOf(t) - w0 === NUMS(id).n, 'and really Webs a repeat, by its printed number',
+      `+${webOf(t) - w0} want ${NUMS(id).n}`);
+  }
+
+  /** "Once each turn" existed on neither card. Both are 0 Nerve. */
+  {
+    const e = await wink();
+    const t = e.livingEnemies()[0];
+    await play(e, 'wink/skitter-skitter-bite', t);
+    const again = addTo(e, 'wink/skitter-skitter-bite', 'hand');
+    check(e.canPlay(again.uid, t.id).ok === false, 'Skitter, Skitter, Bite really is once each turn',
+      e.canPlay(again.uid, t.id).reason);
+    await e.endTurn();
+    const third = addTo(e, 'wink/skitter-skitter-bite', 'hand');
+    check(e.canPlay(third.uid, t.id).ok === true, 'and the limit lifts on the next turn',
+      e.canPlay(third.uid, t.id).reason);
+  }
+  {
+    const e = await winkVs(ATTACKER);
+    const t = e.livingEnemies()[0];
+    await play(e, 'wink/call-it', t);
+    await snipToResolve(e, t);
+    const g1 = addTo(e, 'wink/gotcha', 'hand');
+    check(e.canPlay(g1.uid, t.id).ok === true,
+      'a DELETED Intent advances the queue too, so the Read resolved inside the turn',
+      e.canPlay(g1.uid, t.id).reason);
+    e.player.energy = 9;
+    await e.playCard(g1.uid, t.id);
+    const g2 = addTo(e, 'wink/gotcha', 'hand');
+    check(e.canPlay(g2.uid, t.id).ok === false, 'Gotcha! really is once each turn',
+      e.canPlay(g2.uid, t.id).reason);
+  }
+
+  /** Powers whose numbers were literals: the upgrade has to move them. */
+  {
+    const id = 'wink/telltale-twitch';
+    const run = async (up) => {
+      const e = await winkVs(ATTACKER);
+      const t = e.livingEnemies()[0];
+      await playAt(up)(e, id);
+      await play(e, 'wink/call-it', t);
+      await snipToResolve(e, t);
+      return webOf(t);
+    };
+    const b = await run(false), u = await run(true);
+    check(b === NUMS(id).n, 'Telltale Twitch applies the Web its card prints', `${b} want ${NUMS(id).n}`);
+    check(u === UPNUMS(id).n && u !== b, 'and its upgrade really moves that number', `${b} -> ${u}`);
+  }
+  {
+    const id = 'wink/pattern-library';
+    const run = async (up) => {
+      const e = await winkVs(ATTACKER);
+      const t = e.livingEnemies()[0];
+      await playAt(up)(e, id);
+      await play(e, 'wink/call-it', t);
+      e.applyStatus(t, 'web', NUMS('wink/snip-here').n);
+      const before = e.piles.hand.length;
+      await play(e, 'wink/snip-here', t);
+      return e.piles.hand.length - before;
+    };
+    const b = await run(false), u = await run(true);
+    check(b === NUMS(id).n, 'Pattern Library draws the number its card prints', `${b} want ${NUMS(id).n}`);
+    check(u === UPNUMS(id).n && u !== b, 'and its upgrade really moves that number', `${b} -> ${u}`);
+  }
+  {
+    const id = 'wink/house-odds';
+    const run = async (up) => {
+      const e = await winkVs(DEFENDER);
+      const t = e.livingEnemies()[0];
+      await playAt(up)(e, id);
+      await play(e, 'wink/call-it', t);          // calls Attack at a thing that only Defends
+      await snipToResolve(e, t);
+      return webOf(t);
+    };
+    const b = await run(false), u = await run(true);
+    check(b === NUMS(id).m0, 'House Odds pays its printed Web for a failed Blind Read', `${b} want ${NUMS(id).m0}`);
+    check(u === UPNUMS(id).m0 && u !== b, 'and its upgrade really moves that number', `${b} -> ${u}`);
+  }
+  {
+    const id = 'wink/house-pattern';
+    const run = async (up, enemy) => {
+      const e = await winkVs(enemy);
+      await playAt(up)(e, id);
+      const before = eyesOf(e);
+      await play(e, 'wink/read-the-room');
+      return eyesOf(e) - before;
+    };
+    const same = await run(false, ATTACKER);
+    check(same === 0, 'House Pattern ignores a Preview whose family MATCHES the current one', `+${same}`);
+    const diff = await run(false, ALTERNATOR);
+    check(diff === NUMS(id).n, 'and Opens its printed Eyes when the family differs', `+${diff}`);
+    const diffUp = await run(true, ALTERNATOR);
+    check(diffUp === UPNUMS(id).n && diffUp !== diff, 'and its upgrade really moves that number',
+      `${diff} -> ${diffUp}`);
+  }
+  {
+    const id = 'wink/loom-logic';
+    const run = async (up) => {
+      const e = await winkVsAll([ATTACKER, ATTACKER]);
+      const [a, b] = e.livingEnemies();
+      await playAt(up)(e, id);
+      e.applyStatus(a, 'web', NUMS('wink/snip-here').n);
+      await play(e, 'wink/snip-here', a);
+      return webOf(b);
+    };
+    const b = await run(false), u = await run(true);
+    check(b === NUMS(id).n, 'Loom Logic Webs every other enemy by its printed number', `${b} want ${NUMS(id).n}`);
+    check(u === UPNUMS(id).n && u !== b, 'and its upgrade really moves that number', `${b} -> ${u}`);
+  }
+  {
+    const id = 'wink/reflexive-blink';
+    const run = async (up) => {
+      const e = await winkVs(ATTACKER);
+      await playAt(up)(e, id);
+      await play(e, 'wink/blink');
+      const mid = eyesOf(e);
+      await e.endTurn();
+      return eyesOf(e) - mid;
+    };
+    const b = await run(false), u = await run(true);
+    check(b === NUMS(id).n, 'Reflexive Blink re-Opens the Eyes its card prints', `+${b} want ${NUMS(id).n}`);
+    check(u === UPNUMS(id).n && u !== b, 'and its upgrade really moves that number', `${b} -> ${u}`);
+  }
+  {
+    const id = 'wink/extra-corner';
+    const e = await winkVs(ATTACKER);
+    const t = e.livingEnemies()[0];
+    await play(e, id);
+    await play(e, 'wink/tripline', t);
+    await e.endTurn();
+    const want = NUMS('wink/tripline').n + NUMS(id).m0;
+    check(webOf(t) === want, "Extra Corner adds its printed Web to the turn's first Set trigger",
+      `${webOf(t)} want ${want}`);
+  }
+  {
+    const id = 'wink/three-steps-ahead';
+    const run = async (up) => {
+      const e = await winkVs(ATTACKER);
+      const t = e.livingEnemies()[0];
+      await playAt(up)(e, id);
+      await e.endTurn();
+      return e.previewDepth(t);
+    };
+    const b = await run(false), u = await run(true);
+    check(b === NUMS(id).n, 'Three Steps Ahead Previews the number its card prints', `${b} want ${NUMS(id).n}`);
+    check(u === UPNUMS(id).n && u !== b, 'and its upgrade really moves that number', `${b} -> ${u}`);
+  }
+  {
+    const id = 'wink/all-eyes-open';
+    const e = await winkVs(ATTACKER);
+    const t = e.livingEnemies()[0];
+    await play(e, id);
+    e.setCounter('open-eyes', 8, 'test', e.player.id);
+    await e.endTurn();
+    check(e.previewDepth(t) === NUMS(id).n, 'All Eyes Open Previews to the depth its card prints',
+      `${e.previewDepth(t)} want ${NUMS(id).n}`);
+    const low = await winkVs(ATTACKER);
+    await play(low, id);
+    await low.endTurn();
+    check(low.previewDepth(low.livingEnemies()[0]) === 0, 'and nothing whatsoever below Full Gaze',
+      `depth=${low.previewDepth(low.livingEnemies()[0])}`);
+  }
+  {
+    const id = 'wink/the-house-has-tells';
+    const run = async (up) => {
+      const e = await winkVs(MOODY);
+      const t = e.livingEnemies()[0];
+      await playAt(up)(e, id);
+      const before = eyesOf(e);
+      e.applyStatus(t, 'web', 1);              // conditions change; the AI re-derives
+      return eyesOf(e) - before;
+    };
+    const b = await run(false), u = await run(true);
+    check(b === NUMS(id).n, 'The House Has Tells Opens the Eyes its card prints when the AI changes its mind',
+      `+${b} want ${NUMS(id).n}`);
+    check(u === UPNUMS(id).n && u !== b, 'and its upgrade really moves that number', `${b} -> ${u}`);
+    const quiet = await winkVs(ATTACKER);      // an ordinary turn is not "changing its mind"
+    await play(quiet, id);
+    const before = eyesOf(quiet);
+    await quiet.endTurn();
+    check(eyesOf(quiet) === before, 'and an ordinary turn rolling over is not a tell', `${before} -> ${eyesOf(quiet)}`);
+  }
+
+  /**
+   * PROBABILITY COLLAPSE called `forceIntentFamily`, which exists nowhere, so
+   * a 3-Nerve Rare resolved cleanly every turn and did nothing.
+   */
+  {
+    const id = 'wink/probability-collapse';
+    const run = async (withPower) => {
+      const e = await winkVs(ALTERNATOR);
+      const t = e.livingEnemies()[0];
+      if (withPower) await play(e, id);
+      await play(e, 'wink/call-it', t);            // calls Attack; position 1 is a Defense
+      const eye0 = eyesOf(e);
+      await e.endTurn();
+      return { fam: e.intentFamilyOf(t, 0), eyes: eyesOf(e) - eye0 };
+    };
+    const off = await run(false), on = await run(true);
+    check(off.fam !== 'Attack', 'setup: this enemy would have Defended next', `family=${off.fam}`);
+    check(on.fam === 'Attack', 'Probability Collapse really files the future into the called family',
+      `family=${on.fam}`);
+    check(on.eyes > off.eyes, 'so the Read that called it comes in right', `${off.eyes} vs ${on.eyes}`);
+  }
+
+  /** I MEANT THAT ONE wrote `closeOnResolve` and nothing read it. */
+  {
+    const id = 'wink/i-meant-that-one';
+    const run = async (mode, family) => {
+      const e = await winkVs(DEFENDER);
+      const t = e.livingEnemies()[0];
+      chooseFamily(e, family || 'Attack');          // Attack at a thing that only Defends
+      await play(e, 'wink/call-it', t);
+      if (mode) await playAt(mode === 'up')(e, id, t);
+      const eye0 = eyesOf(e);
+      await snipToResolve(e, t);
+      const g = addTo(e, 'wink/gotcha', 'hand');
+      return { delta: eyesOf(e) - eye0, ok: e.canPlay(g.uid, t.id).ok };
+    };
+    const none = await run(null), base = await run('base'), up = await run('up');
+    const right = await run(null, 'Defense');       // the same Read, called correctly
+    const spare = await run('base', 'Defense');     // rescues nothing, so it should cost nothing
+    check(none.ok === false, 'setup: a Read on the wrong family fails on its own', `ok=${none.ok}`);
+    check(right.ok === true && right.delta > none.delta, 'setup: called right, the same Read succeeds',
+      `${none.delta} vs ${right.delta}`);
+    check(base.ok === true, 'I Meant That One really turns a losing Read into a success');
+    check(right.delta - base.delta === NUMS(id).n, 'and Closes exactly the Eyes its card prints for the rescue',
+      `${right.delta} - ${base.delta}, want ${NUMS(id).n}`);
+    check(spare.delta === right.delta, 'while a Read that was going to be right anyway pays nothing',
+      `${spare.delta} vs ${right.delta}`);
+    check(up.delta - base.delta === NUMS(id).n - UPNUMS(id).n && UPNUMS(id).n !== NUMS(id).n,
+      'and its upgrade really moves that price', `${base.delta} -> ${up.delta}`);
+  }
+
+  /** EYES SHUT only closed Eyes: both of its other sentences were dead. */
+  {
+    const id = 'wink/eyes-shut';
+    const e = await winkVs(ATTACKER);
+    const t = e.livingEnemies()[0];
+    e.previewIntent(t, 1);                          // the position is REVEALED
+    await play(e, id);
+    await play(e, 'wink/call-it', t);
+    check(reads(e)[0] && reads(e)[0].blind === true,
+      'Eyes Shut really makes a Read on a revealed position Blind', `blind=${reads(e)[0] && reads(e)[0].blind}`);
+
+    const ctrl = await winkVs(ATTACKER);
+    const ct = ctrl.livingEnemies()[0];
+    ctrl.previewIntent(ct, 1);
+    await play(ctrl, 'wink/call-it', ct);
+    check(reads(ctrl)[0] && reads(ctrl)[0].blind === false, 'and without it the same Read is not Blind');
+
+    await e.endTurn();
+    await ctrl.endTurn();
+    check(e.piles.hand.length - ctrl.piles.hand.length === NUMS(id).n,
+      'and each successful one really draws its printed Trick next turn',
+      `${ctrl.piles.hand.length} -> ${e.piles.hand.length}`);
+  }
+
+  /** SAFE BET named two rolled families and never read `{n}`. */
+  {
+    const id = 'wink/safe-bet';
+    const e = await winkVs(ATTACKER);
+    const t = e.livingEnemies()[0];
+    const eye0 = eyesOf(e);
+    await play(e, id, t);
+    const r = reads(e)[0];
+    check(r && r.families.length === NUMS(id).n, 'Safe Bet names the number of families its card prints',
+      `${r && r.families.length} want ${NUMS(id).n}`);
+    check(r && new Set(r.families).size === NUMS(id).n, 'and they are distinct', (r && r.families.join('/')) || '');
+    await e.endTurn();
+    check(r.resolved && eyesOf(e) === eye0, 'and it resolves while Opening and Closing nothing',
+      `${eye0} -> ${eyesOf(e)}`);
+  }
+
+  /** Four Tricks ROLLED the family the chapter says the player chooses. */
+  {
+    const e = await winkVs(ATTACKER);
+    const t = e.livingEnemies()[0];
+    chooseFamily(e, 'Scheme');
+    await play(e, 'wink/make-a-guess', t);
+    check(reads(e)[0] && reads(e)[0].family === 'Scheme', 'Make a Guess places the family the PLAYER named',
+      `family=${reads(e)[0] && reads(e)[0].family}`);
+
+    const l = await winkVs(ATTACKER);
+    chooseFamily(l, 'Special');
+    await play(l, 'wink/long-shot', l.livingEnemies()[0]);
+    check(reads(l)[0] && reads(l)[0].family === 'Special', 'Long Shot does too',
+      `family=${reads(l)[0] && reads(l)[0].family}`);
+    check(reads(l)[0] && reads(l)[0].blind === true, 'and it is still a Blind Read');
+
+    const id = 'wink/triple-prediction';
+    const p = await winkVs(ATTACKER);
+    chooseFamily(p, 'Defense');
+    await play(p, id, p.livingEnemies()[0]);
+    const rs = reads(p);
+    check(rs.length === NUMS(id).n, 'Triple Prediction places the number of Reads its card prints',
+      `${rs.length} want ${NUMS(id).n}`);
+    check(rs.every(x => x.family === 'Defense'), 'each one on the family the player chose',
+      rs.map(x => x.family).join(','));
+    check(rs.map(x => x.pos).join(',') === Array.from({ length: NUMS(id).n }, (_, i) => i + 1).join(','),
+      'on consecutive future positions', rs.map(x => x.pos).join(','));
+  }
+
+  /** HOUSE SPIDER's re-Sets could never fire and just blocked slots. */
+  {
+    const e = await winkVs(ATTACKER);
+    const t = e.livingEnemies()[0];
+    const trip = addTo(e, 'wink/tripline', 'discard');
+    addTo(e, 'wink/set-the-table', 'discard');       // carries the `set` keyword, places nothing
+    await play(e, 'wink/house-spider');
+    check(sets(e).length === 1, 'House Spider re-Sets only the Tricks that really place a Set',
+      `sets=${sets(e).length}`);
+    check(sets(e)[0] && sets(e)[0].card === trip, 'and the slot holds the Tripline it chose');
+    check(e.piles.limbo.includes(trip) && !e.piles.discard.includes(trip),
+      'which has left circulation the way a Set must');
+    await e.endTurn();
+    check(sets(e).length === 0, 'the re-Set really FIRES', `sets left=${sets(e).length}`);
+    check(webOf(t) === NUMS('wink/tripline').n, "with Tripline's own printed Web", `web=${webOf(t)}`);
+    check(e.player.block === NUMS('wink/tripline').b, 'and its Guard, in the turn the attack lands',
+      `block=${e.player.block}`);
+    check(e.piles.exhaust.includes(trip), 'and then it Vanishes, exactly as the card says');
   }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));

@@ -215,7 +215,7 @@ Attack
 6
 Threadbare Pounce
 Attack
-2 Nerve. Deal heavy damage. You may remove 3 Web from the target to reduce this Trick's cost to 1 Nerve for this play.
+2 Nerve. Deal heavy damage. You may remove 3 Web from the target to reduce this Trick's cost to 1 Nerve for this play. You must still HAVE the 2 Nerve: the reduction is taken as the Trick resolves, once the Web has actually been spent, because a cost is priced before a target is chosen and so cannot depend on one. Slay the Spire prices every discount off global state for the same reason.
 7
 Seen It Before
 Attack
@@ -544,7 +544,7 @@ Power
 79
 Probability Collapse
 Power
-3 Nerve. At the end of your turn, if every living enemy has an unresolved Read, choose one enemy. If its predicted Intent Family is legal for its next action, force its next Intent to be a legal action from that family. Cannot affect Anchored actions. Once per turn.
+3 Nerve. At the end of your turn, if every living enemy has an unresolved Read, choose one enemy. If its predicted Intent Family is legal for its next action, force its next Intent to be a legal action from that family. Cannot affect Anchored actions. Once per turn. "Legal" means an action of that family is already somewhere in that enemy's plan: the Power brings it forward into the position the Read is predicting rather than inventing a move, which keeps it inside Wink's own rule that reordering changes WHEN an action happens and never erases it. Nothing is forced if the enemy has no such action queued.
 80
 Every Angle Covered
 Power

@@ -984,6 +984,22 @@ Each of these cost a round to diagnose. They are written down so they cost nobod
    goes through `discountHooks`; a hand-rolled `onCardPlayed` remover walks
    straight back into this.
 
+63. **A DELAYED EFFECT RUNS WITH NO CARD ATTACHED, so `N(c)` is empty and every
+   number inside it is a literal.** Wisp is the extreme case: all sixteen of his
+   Linger Tricks resolved their Afterglow from a tracker ctx, so all sixteen
+   upgrades were dead, two cards printed numbers the code never used, and one
+   "to the same enemy" hit a random one. Mossbit's Epitaphs have the same shape,
+   which is why `inscribe()` there takes a `run` closure built at play time.
+   Capture what the effect needs when you SCHEDULE it -- the resolved nums with
+   the upgrade folded in, and the aimed enemy -- and hand them to the callback.
+   Do not read them back at resolve time: there is no card to read them from.
+   And put the tick on `phase: 'playerReady'`, not `turn:start`, or trap 24 eats
+   every point of Guard it grants.
+
+   `tests/upgrade-effects/check.py` is the gate that can see this whole class:
+   it plays every Trick base and upgraded onto the same seeded board and
+   compares what the two fights actually did.
+
 
 
 15. **The integrator must not `git add -A` while agents are editing.** Four separate agents have

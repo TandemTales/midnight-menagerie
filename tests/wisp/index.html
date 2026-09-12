@@ -11,7 +11,7 @@
 <script type="module">
 import { RNG } from '../../game/src/core/rng.js';
 import { CombatEngine } from '../../game/src/combat/engine.js';
-import { makeDummySetup } from '../../game/src/combat/dummy.js';
+import { makeDummySetup, makeDummyParty, makeDummyDeck, DUST_BUNNY, SCRATCH } from '../../game/src/combat/dummy.js';
 import { installTrackers, trackerCtx, mm } from '../../game/src/data/companions/_util.js';
 import * as CARDS from '../../game/src/data/cards.js';
 
@@ -30,10 +30,10 @@ async function wisp() {
   return e;
 }
 
-async function play(e, id, target) {
+async function play(e, id, target, up = false) {
   const def = CARDS.cardById(id);
   if (!def) throw new Error('no such card ' + id);
-  e.addCard(def, 'hand', {});
+  e.addCard(def, 'hand', up ? { upgraded: true } : {});
   const card = e.piles.hand[e.piles.hand.length - 1];
   e.player.energy = 9;
   await e.playCard(card.uid, target ? target.id : undefined);
@@ -42,6 +42,40 @@ async function play(e, id, target) {
 
 const gloaming = (e) => (mm(trackerCtx(e, null)).gloaming || []);
 const st = (e) => mm(trackerCtx(e, null));
+
+/* ── the measuring rig for the Afterglow repairs ───────────────────────────
+   Two padded Dust Bunnies, not the default pair. The Bunny is the real enemy
+   def, moves and Guard and all; only its Courage is raised so nothing dies
+   half way through a three-turn countdown. The Coatrack is left out on
+   purpose: its opening Drape puts Weak on the player, which would shave every
+   Afterglow measured on turn 2 or later and make each number look like a
+   different bug. Damage is read off the `damage` event's `amount` — what the
+   Afterglow actually swung — so an enemy's Guard cannot hide a wrong number. */
+const BUNNY = (tag) => ({ ...DUST_BUNNY, id: 'dummy/bunny-' + tag, hp: [200, 200] });
+
+async function arena(seed = 77, enemies = 2) {
+  const setup = makeDummySetup(new RNG(seed), {
+    companion: 'wisp', deck: CARDS.startingDeckFor('wisp'), maxHp: 400,
+    enemies: enemies === 1 ? [BUNNY('a')] : [BUNNY('a'), BUNNY('b')],
+  });
+  const e = new CombatEngine(setup);
+  const log = [];
+  e.on('damage', (ev) => log.push(ev));
+  await e.startCombat();
+  installTrackers(e, 'wisp');
+  e.__dmg = log;
+  return e;
+}
+const mark = (e) => e.__dmg.length;
+const dealt = (e, at, who) => e.__dmg.slice(at)
+  .filter((ev) => ev.sourceId === e.players[0].id && (!who || ev.targetId === who.id))
+  .reduce((n, ev) => n + (ev.amount || 0), 0);
+
+/** Printed numbers, never a typed literal. `nums(id, true)` folds the upgrade in. */
+const nums = (id, up = false) => {
+  const def = CARDS.cardById(id);
+  return up ? { ...def.nums, ...((def.upgrade || {}).nums || {}) } : { ...def.nums };
+};
 
 try {
   // ── 1. Linger puts the Trick in the Gloaming, not the discard ────────────
@@ -174,6 +208,510 @@ try {
     check(e.stats.cardsPlayedThisTurn <= before,
       'an Afterglow does not count as playing a Trick',
       `cardsPlayedThisTurn ${before} -> ${e.stats.cardsPlayedThisTurn}`);
+  }
+
+  // ── 7. An Afterglow's Guard survives the start-of-turn wipe ─────────────
+  /* CONTRACTS trap 24. The countdown used to tick inside a `turn:start`
+     listener, which runs BEFORE `_openSeatTurn` wipes Guard — so every
+     defensive Afterglow arriving on the natural tick was deleted. Measured:
+     Nightlight Practice's Afterglow left the player on 0. */
+  {
+    const e = await arena();
+    await play(e, 'wisp/nightlight-practice', null);
+    await e.endTurn();
+    const n = nums('wisp/nightlight-practice');
+    check(e.players[0].block === n.m0,
+      'a defensive Afterglow on the natural tick is not wiped by the turn-start Guard wipe',
+      `block=${e.players[0].block}, printed m0=${n.m0}`);
+    const e2 = await arena();
+    await play(e2, 'wisp/nightlight-practice', null, true);
+    await e2.endTurn();
+    check(e2.players[0].block === nums('wisp/nightlight-practice', true).m0
+       && e2.players[0].block !== e.players[0].block,
+      'and the upgrade moves it', `${e.players[0].block} -> ${e2.players[0].block}`);
+  }
+
+  // ── 8. Every Afterglow deals its PRINTED number, and the upgrade moves it ─
+  /* Each of these ran from a tracker ctx with no card on it, so `N(c)` was `{}`
+     and the number was a literal. Wait... Wait... printed 11 and dealt 7;
+     Little Orbit printed 5 and dealt 4. Both now read the card. */
+  {
+    const table = [
+      { id: 'wisp/wait-wait',              key: 'm0', turns: 1, aim: true,  hits: 1 },
+      { id: 'wisp/boo-eventually',         key: 'd',  turns: 1, aim: true,  hits: 1 },
+      { id: 'wisp/two-rooms-over',         key: 'm0', turns: 2, aim: true,  hits: 1 },
+      { id: 'wisp/little-orbit',           key: 'd',  turns: 1, aim: false, hits: 2 },
+      { id: 'wisp/bonk-from-later',        key: 'd',  turns: 1, aim: true,  hits: 1 },
+      { id: 'wisp/long-fuse',              key: 'm0', turns: 3, aim: true,  hits: 1 },
+      { id: 'wisp/spark-parade',           key: 'm0', turns: 2, aim: false, hits: 2 },
+      { id: 'wisp/bank-shot',              key: 'm0', turns: 1, aim: false, hits: 1 },
+      { id: 'wisp/not-done-yet',           key: 'm0', turns: 1, aim: true,  hits: 1 },
+      { id: 'wisp/this-ones-been-cooking', key: 'm1', turns: 3, aim: true,  hits: 1 },
+      { id: 'wisp/premature-celebration',  key: 'm0', turns: 1, aim: false, hits: 2 },
+      { id: 'wisp/orbital-drop',           key: 'm0', turns: 1, aim: false, hits: 3 },
+      { id: 'wisp/peekaboo-meteor',        key: 'm1', turns: 2, aim: true,  hits: 1 },
+    ];
+    for (const row of table) {
+      const got = [];
+      for (const up of [false, true]) {
+        const e = await arena(404);            // same seed for both halves
+        const t = row.aim ? e.livingEnemies()[0] : null;
+        await play(e, row.id, t, up);
+        const at = mark(e);
+        for (let i = 0; i < row.turns; i++) await e.endTurn();
+        got.push(dealt(e, at));
+      }
+      const want = [nums(row.id)[row.key] * row.hits, nums(row.id, true)[row.key] * row.hits];
+      check(got[0] === want[0], `${row.id}: the Afterglow deals its printed {${row.key}}`,
+        `dealt ${got[0]}, printed ${want[0]}`);
+      check(got[1] === want[1] && got[1] !== got[0],
+        `${row.id}+: and the upgrade is not dead`, `${got[0]} -> ${got[1]}`);
+    }
+  }
+
+  // ── 9. Afterglow Guard, Glow and draw read the card too ─────────────────
+  {
+    for (const up of [false, true]) {
+      const e = await arena();
+      await play(e, 'wisp/put-it-somewhere-safe', null, up);
+      await e.endTurn();
+      const n = nums('wisp/put-it-somewhere-safe', up);
+      check(e.players[0].block === n.m0 && e.counter('glow') === n.g,
+        `Put It Somewhere Safe${up ? '+' : ''}: {m0} Guard and {g} Glow from the Afterglow`,
+        `block=${e.players[0].block}/${n.m0}, glow=${e.counter('glow')}/${n.g}`);
+    }
+  }
+  {
+    for (const up of [false, true]) {
+      const e = await arena(909);
+      await play(e, 'wisp/long-fuse', e.livingEnemies()[0], up);
+      await e.endTurn(); await e.endTurn(); await e.endTurn();
+      const n = nums('wisp/long-fuse', up);
+      check(e.players[0].block === n.b && e.counter('glow') === n.g,
+        `Long Fuse${up ? '+' : ''}: the Afterglow's {b} Guard and {g} Glow`,
+        `block=${e.players[0].block}/${n.b}, glow=${e.counter('glow')}/${n.g}`);
+    }
+  }
+  {
+    for (const up of [false, true]) {
+      const e = await arena(211);
+      const before = e.piles.hand.length;
+      await play(e, 'wisp/darkest-before-dawn', null, up);
+      await e.endTurn(); await e.endTurn();
+      const n = nums('wisp/darkest-before-dawn', up);
+      check(e.players[0].block === n.b,
+        `Darkest Before Dawn${up ? '+' : ''}: the Afterglow's {b} Guard`,
+        `block=${e.players[0].block}/${n.b}`);
+      check(e.piles.hand.length === before + n.c1,
+        `Darkest Before Dawn${up ? '+' : ''}: and it draws {c1}`,
+        `hand ${before} -> ${e.piles.hand.length}, {c1}=${n.c1}`);
+    }
+  }
+  {
+    for (const up of [false, true]) {
+      const e = await arena();
+      await play(e, 'wisp/boo-eventually', e.livingEnemies()[0], up);
+      await e.endTurn();
+      const n = nums('wisp/boo-eventually', up);
+      check(e.counter('glow') === n.g, `Boo! Eventually${up ? '+' : ''}: the Afterglow gains {g} Glow`,
+        `glow=${e.counter('glow')}, printed {g}=${n.g}`);
+    }
+  }
+
+  // ── 10. Bonk From Later hits "the same enemy" ───────────────────────────
+  {
+    const e = await arena();
+    const aimed = e.livingEnemies()[1];
+    const other = e.livingEnemies()[0];
+    await play(e, 'wisp/bonk-from-later', aimed);
+    const at = mark(e);
+    await e.endTurn();
+    check(dealt(e, at, aimed) === nums('wisp/bonk-from-later').d && dealt(e, at, other) === 0,
+      'Bonk From Later\'s Afterglow really goes back to the SAME enemy',
+      `aimed took ${dealt(e, at, aimed)}, the other took ${dealt(e, at, other)}`);
+  }
+
+  // ── 11. Converge effects read the card as well ──────────────────────────
+  {
+    /* Two copies land in one batch: one Convergence, and each copy's Converge
+       half fires. `total` is what BOTH copies should add up to, printed
+       numbers only — Not Done Yet's Afterglow is suppressed on a Convergence,
+       so a "converged minus solo" subtraction would be wrong for it. */
+    const rows = [
+      { id: 'wisp/bonk-from-later', key: 'm0', turns: 1, aim: true,  total: (n) => 2 * (n.d + n.m0) },
+      { id: 'wisp/not-done-yet',    key: 'm1', turns: 1, aim: true,  total: (n) => 2 * n.m1 },
+      { id: 'wisp/spark-parade',    key: 'd',  turns: 2, aim: false, total: (n) => 2 * 2 * (n.m0 + n.d) },
+      { id: 'wisp/orbital-drop',    key: 'm0', turns: 1, aim: false, total: (n) => 2 * 4 * n.m0 },
+    ];
+    for (const row of rows) {
+      const got = [];
+      for (const up of [false, true]) {
+        const e = await arena(515);
+        const t = row.aim ? e.livingEnemies()[0] : null;
+        await play(e, row.id, t, up);
+        await play(e, row.id, t, up);
+        const at = mark(e);
+        for (let i = 0; i < row.turns; i++) await e.endTurn();
+        check((st(e).convergedThisTurn || 0) === 1, `setup: ${row.id} Converged`);
+        got.push(dealt(e, at));
+      }
+      const want = [row.total(nums(row.id)), row.total(nums(row.id, true))];
+      check(got[0] === want[0], `${row.id}: [Converge] adds its printed {${row.key}}`,
+        `batch dealt ${got[0]}, printed total ${want[0]}`);
+      check(got[1] === want[1] && got[1] !== got[0],
+        `${row.id}+: and the Converge upgrade is not dead`, `${got[0]} -> ${got[1]}`);
+    }
+  }
+  {
+    // Darkest Before Dawn's Converge banks Nerve for the turn after. Both
+    // copies Converge, so both pay: one Convergence, two {e}.
+    const e = await arena(616);
+    await play(e, 'wisp/darkest-before-dawn', null);
+    await play(e, 'wisp/darkest-before-dawn', null);
+    await e.endTurn(); await e.endTurn();
+    check((st(e).convergedThisTurn || 0) === 1, 'setup: the two Darkest Before Dawns Converged');
+    const max = e.players[0].energyMax;
+    await e.endTurn();
+    check(e.players[0].energy === max + nums('wisp/darkest-before-dawn').e * 2,
+      'Darkest Before Dawn\'s [Converge] really banks {e} Nerve for next turn',
+      `Nerve ${e.players[0].energy}, max ${max}`);
+  }
+
+  // ── 12. Hot Potato's Flare buys something ───────────────────────────────
+  {
+    const got = [];
+    for (const up of [false, true]) {
+      const e = await arena(303);
+      const t = e.livingEnemies()[0];
+      await play(e, 'wisp/bonk-from-later', t);
+      e.setCounter('glow', 6, 'test');
+      await play(e, 'wisp/hot-potato', t, up);
+      const at = mark(e);
+      await e.endTurn();
+      got.push(dealt(e, at));
+    }
+    const bonk = nums('wisp/bonk-from-later').d;
+    check(got[0] === bonk + nums('wisp/hot-potato').m0,
+      'Hot Potato: the next Afterglow to hit that enemy really deals {m0} more',
+      `Afterglow dealt ${got[0]}, Bonk alone is ${bonk}`);
+    check(got[1] === bonk + nums('wisp/hot-potato', true).m0 && got[1] !== got[0],
+      'Hot Potato+: and the upgrade is not dead', `${got[0]} -> ${got[1]}`);
+    const e3 = await arena(303);
+    const t3 = e3.livingEnemies()[0];
+    await play(e3, 'wisp/bonk-from-later', t3);
+    e3.setCounter('glow', 0, 'test');
+    await play(e3, 'wisp/hot-potato', t3);
+    const at3 = mark(e3);
+    await e3.endTurn();
+    check(dealt(e3, at3) === bonk, 'and with no Glow to Flare there is no rider',
+      `Afterglow dealt ${dealt(e3, at3)}`);
+  }
+
+  // ── 13. Power hooks read their own printed numbers ──────────────────────
+  {
+    for (const up of [false, true]) {
+      const e = await arena();
+      await play(e, 'wisp/home-in-the-dark', null, up);
+      await play(e, 'wisp/wait-wait', e.livingEnemies()[0]);
+      await e.endTurn();
+      check(e.players[0].block === nums('wisp/home-in-the-dark', up).b,
+        `Home in the Dark${up ? '+' : ''}: the first Afterglow gains {b} Guard`,
+        `block=${e.players[0].block}, printed {b}=${nums('wisp/home-in-the-dark', up).b}`);
+    }
+  }
+  {
+    for (const up of [false, true]) {
+      const e = await arena(818);
+      await play(e, 'wisp/static-in-the-wallpaper', null, up);
+      e.setCounter('glow', 6, 'test');
+      const at = mark(e);
+      await play(e, 'wisp/dim-the-room', null);        // Flare 1
+      const flare = dealt(e, at);
+      check(flare === nums('wisp/static-in-the-wallpaper', up).d,
+        `Static in the Wallpaper${up ? '+' : ''}: the first Flare deals {d}`,
+        `dealt ${flare}, printed {d}=${nums('wisp/static-in-the-wallpaper', up).d}`);
+    }
+  }
+  {
+    for (const up of [false, true]) {
+      const e = await arena();
+      await play(e, 'wisp/getting-excited', null, up);
+      await play(e, 'wisp/nightlight-practice', null);
+      await play(e, 'wisp/nightlight-practice', null);
+      await e.endTurn();                                 // both land: one Convergence
+      check((st(e).convergedThisTurn || 0) === 1, 'setup: a Convergence happened');
+      check(e.counter('glow') === nums('wisp/getting-excited', up).g,
+        `Getting Excited${up ? '+' : ''}: the Convergence gains {g} Glow`,
+        `glow=${e.counter('glow')}, printed {g}=${nums('wisp/getting-excited', up).g}`);
+    }
+  }
+  {
+    for (const up of [false, true]) {
+      const e = await arena();
+      await play(e, 'wisp/brighter-every-minute', null, up);
+      const before = e.players[0].block;
+      await play(e, 'wisp/bank-shot', null);             // Linger with no Guard of its own
+      check(e.players[0].block - before === nums('wisp/brighter-every-minute', up).b,
+        `Brighter Every Minute${up ? '+' : ''}: the first Trick into the Gloaming gains {b} Guard`,
+        `gained ${e.players[0].block - before}`);
+    }
+  }
+  {
+    for (const up of [false, true]) {
+      const e = await arena(717);
+      await play(e, 'wisp/constellation-practice', null, up);
+      await play(e, 'wisp/bank-shot', null);
+      await play(e, 'wisp/bank-shot', null);
+      const hand = e.piles.hand.length;
+      await e.endTurn();
+      const n = nums('wisp/constellation-practice', up);
+      // The old hand is discarded at turn end; the new one is the normal deal
+      // plus whatever the Convergence drew on top of it.
+      check(e.piles.hand.length === e.players[0].drawPerTurn + n.c1,
+        `Constellation Practice${up ? '+' : ''}: the Convergence draws {c1}`,
+        `hand ${hand} -> ${e.piles.hand.length}, deal ${e.players[0].drawPerTurn} + {c1}=${n.c1}`);
+      check(e.counter('glow') === n.g,
+        `Constellation Practice${up ? '+' : ''}: and gains {g} Glow`,
+        `glow=${e.counter('glow')}, {g}=${n.g}`);
+    }
+  }
+  {
+    for (const up of [false, true]) {
+      const e = await arena();
+      await play(e, 'wisp/i-can-wait', null, up);
+      await play(e, 'wisp/bank-shot', null);
+      const before = e.players[0].block;
+      await play(e, 'wisp/one-more-second', null);       // a deliberate Delay
+      check(e.players[0].block - before === nums('wisp/i-can-wait', up).b,
+        `I Can Wait${up ? '+' : ''}: the first Delay gains {b} Guard`,
+        `gained ${e.players[0].block - before}`);
+    }
+  }
+  {
+    for (const up of [false, true]) {
+      const e = await arena();
+      await play(e, 'wisp/cant-wait', null, up);
+      await play(e, 'wisp/bank-shot', null);             // Linger 1, no immediate damage
+      const at = mark(e);
+      await play(e, 'wisp/skip-ahead', e.livingEnemies()[0]);  // Hasten it to 0
+      const total = dealt(e, at);
+      const rest = nums('wisp/skip-ahead').d + nums('wisp/bank-shot').m0;
+      check(total - rest === nums('wisp/cant-wait', up).d,
+        `Can't Wait!${up ? '+' : ''}: Hastening to 0 deals {d}`,
+        `total ${total}, Skip Ahead + Bank Shot ${rest}`);
+    }
+  }
+  {
+    for (const up of [false, true]) {
+      const e = await arena();
+      await play(e, 'wisp/never-goes-out', null, up);
+      e.setCounter('glow', 6, 'test');
+      await play(e, 'wisp/stash-the-flash', null);       // spends exactly 3
+      await e.endTurn();
+      const n = nums('wisp/never-goes-out', up);
+      check(e.counter('glow') === 3 + n.m0,
+        `Never Goes Out${up ? '+' : ''}: spending 3+ regains {m0}`,
+        `glow=${e.counter('glow')}, expected ${3 + n.m0}`);
+    }
+  }
+  {
+    for (const up of [false, true]) {
+      const e = await arena();
+      await play(e, 'wisp/bank-shot', null);
+      await play(e, 'wisp/gentle-landing', null, up);
+      const before = e.players[0].block;
+      await play(e, 'wisp/skip-ahead', e.livingEnemies()[0]);   // Hasten it home
+      const n = nums('wisp/gentle-landing', up);
+      check(e.players[0].block - before === n.b,
+        `Gentle Landing${up ? '+' : ''}: each Afterglow gains {b} Guard`,
+        `gained ${e.players[0].block - before}, printed {b}=${n.b}`);
+    }
+  }
+
+  // ── 14. Small Orbit's return is not an Afterglow ────────────────────────
+  {
+    const e = await arena();
+    await play(e, 'wisp/small-orbit', null);
+    await play(e, 'wisp/wait-wait', e.livingEnemies()[0]);
+    await e.endTurn();
+    check((st(e).afterglowsThisTurn || 0) === 1,
+      'Small Orbit\'s return does not count as an Afterglow (§46)',
+      `afterglowsThisTurn=${st(e).afterglowsThisTurn}`);
+    check((st(e).convergedThisTurn || 0) === 0,
+      'so it cannot make a Convergence beside a real one',
+      `convergences=${st(e).convergedThisTurn}`);
+  }
+  {
+    // and it therefore does not discount Tiny Sun, Big Feelings.
+    const e = await arena();
+    await play(e, 'wisp/small-orbit', null);
+    await e.endTurn();
+    const sun = CARDS.cardById('wisp/tiny-sun-big-feelings');
+    e.addCard(sun, 'hand', {});
+    const k = e.piles.hand[e.piles.hand.length - 1];
+    check(e.costOf(k) === sun.cost,
+      'Tiny Sun, Big Feelings is still full price after a Small Orbit return',
+      `cost ${e.costOf(k)}, printed ${sun.cost}`);
+  }
+
+  // ── 15. Double Exposure's copy really gains no Glow ─────────────────────
+  {
+    const e = await arena();
+    await play(e, 'wisp/boo-eventually', e.livingEnemies()[0]);
+    await play(e, 'wisp/double-exposure', null);
+    check(gloaming(e).length === 2, 'setup: the copy is beside the original');
+    const at = mark(e);
+    await e.endTurn();
+    const n = nums('wisp/boo-eventually');
+    check(e.counter('glow') === n.g,
+      'Double Exposure: only the original Afterglow gains Glow',
+      `glow=${e.counter('glow')}, one Afterglow is {g}=${n.g}`);
+    check(dealt(e, at) === n.d * 2,
+      'but the copy really deals its damage', `dealt ${dealt(e, at)}`);
+  }
+
+  // ── 16. Encore! uses each Trick's PRINTED countdown ─────────────────────
+  {
+    const e = await arena();
+    e.addCard(CARDS.cardById('wisp/long-fuse'), 'discard', {});
+    await play(e, 'wisp/encore', null);
+    const want = /\[Linger\]\s*(\d+)/.exec(CARDS.cardById('wisp/long-fuse').text)[1] | 0;
+    check(gloaming(e).length === 1 && gloaming(e)[0].count === want,
+      'Encore! puts a Trick back at its printed countdown, not always 1',
+      `count=${gloaming(e).length ? gloaming(e)[0].count : '-'}, printed ${want}`);
+  }
+  {
+    // and an upgraded Encored Trick keeps its upgraded Afterglow numbers.
+    const got = [];
+    for (const up of [false, true]) {
+      const e = await arena(123);
+      e.addCard(CARDS.cardById('wisp/wait-wait'), 'discard', up ? { upgraded: true } : {});
+      await play(e, 'wisp/encore', null);
+      const at = mark(e);
+      await e.endTurn();
+      got.push(dealt(e, at));
+    }
+    check(got[0] === nums('wisp/wait-wait').m0 && got[1] === nums('wisp/wait-wait', true).m0,
+      'an Encored Trick keeps its own numbers, upgrade included', `${got[0]} -> ${got[1]}`);
+  }
+
+  // ── 17. Good Things Come to Tiny Ghosts, and Tiny Star, Long Shadow ─────
+  {
+    const e = await arena(424);
+    await play(e, 'wisp/good-things-come', null);
+    await play(e, 'wisp/wait-wait', e.livingEnemies()[0]);
+    await play(e, 'wisp/one-more-second', null);        // a deliberate Delay
+    const at = mark(e);
+    await e.endTurn(); await e.endTurn();
+    const n = nums('wisp/wait-wait');
+    check(dealt(e, at) === n.m0 * 2,
+      'Good Things Come to Tiny Ghosts: a Delayed Trick resolves its Afterglow twice',
+      `dealt ${dealt(e, at)}, one Afterglow is ${n.m0}`);
+    const plain = await arena(424);
+    await play(plain, 'wisp/wait-wait', plain.livingEnemies()[0]);
+    await play(plain, 'wisp/one-more-second', null);
+    const at2 = mark(plain);
+    await plain.endTurn(); await plain.endTurn();
+    check(dealt(plain, at2) === n.m0, 'and the same Trick without the Power resolves once',
+      `dealt ${dealt(plain, at2)}`);
+  }
+  {
+    const e = await arena(424);
+    await play(e, 'wisp/good-things-come', null);
+    await play(e, 'wisp/boo-eventually', e.livingEnemies()[0]);
+    await play(e, 'wisp/one-more-second', null);
+    await e.endTurn(); await e.endTurn();
+    check(e.counter('glow') === nums('wisp/boo-eventually').g,
+      'and the second resolution gains no Glow', `glow=${e.counter('glow')}`);
+  }
+  {
+    const e = await arena(626);
+    await play(e, 'wisp/tiny-star-long-shadow', null);
+    await play(e, 'wisp/wait-wait', e.livingEnemies()[0]);
+    await play(e, 'wisp/wait-wait', e.livingEnemies()[0]);
+    const at = mark(e);
+    await e.endTurn();
+    const n = nums('wisp/wait-wait').m0;
+    check(dealt(e, at) === n * 3,
+      'Tiny Star, Long Shadow: one Afterglow in the Convergence resolves again',
+      `dealt ${dealt(e, at)}, two Afterglows would be ${n * 2}`);
+  }
+
+  // ── 18. The multiplayer Tricks that only wrote state ────────────────────
+  async function party(seed = 51) {
+    const e = makeDummyParty(new RNG(seed), 2, {
+      decks: [makeDummyDeck(), CARDS.startingDeckFor('wisp')],
+      maxHp: 300, enemies: [BUNNY('a'), BUNNY('b')],
+    });
+    e.players[1].companion = 'wisp';
+    await e.startCombat();
+    installTrackers(e, 'wisp', e.players[1]);
+    return e;
+  }
+  async function playAs(e, pl, def, target, up = false) {
+    e.addCard(def, 'hand', { to: pl, ...(up ? { upgraded: true } : {}) });
+    const card = pl.piles.hand[pl.piles.hand.length - 1];
+    pl.energy = 9;
+    await e.playCard(card.uid, target ? target.id : undefined);
+    return card;
+  }
+  // Her Gloaming lives on HER seat's scratch, and seat 0 is somebody else.
+  const herGloaming = (e) => (mm(trackerCtx(e, e.players[1])).gloaming || []);
+  {
+    for (const up of [false, true]) {
+      const e = await party();
+      const [mate, w] = e.players;
+      await playAs(e, w, CARDS.cardById('wisp/bank-shot'), null);
+      await playAs(e, w, CARDS.cardById('wisp/count-with-me'), null, up);
+      const hand = mate.piles.hand.length, block = mate.block;
+      await playAs(e, w, CARDS.cardById('wisp/skip-ahead'), e.livingEnemies()[0]);
+      const n = nums('wisp/count-with-me', up);
+      check(mate.piles.hand.length === hand + n.c1 && mate.block === block + n.b,
+        `Count With Me${up ? '+' : ''}: the friend really draws {c1} and gains {b} Guard`,
+        `hand +${mate.piles.hand.length - hand}/{c1}=${n.c1}, block +${mate.block - block}/{b}=${n.b}`);
+    }
+  }
+  {
+    const e = await party(52);
+    const [mate, w] = e.players;
+    await playAs(e, w, CARDS.cardById('wisp/bank-shot'), null);
+    await playAs(e, w, CARDS.cardById('wisp/make-a-constellation'), null);
+    const hand = mate.piles.hand.length, block = mate.block;
+    await playAs(e, w, CARDS.cardById('wisp/skip-ahead'), e.livingEnemies()[0]);
+    const n = nums('wisp/make-a-constellation');
+    check(mate.piles.hand.length === hand + n.c1 && mate.block === block + n.b,
+      'Make a Constellation: the chosen Kid is paid when the Trick lands',
+      `hand +${mate.piles.hand.length - hand}, block +${mate.block - block}`);
+  }
+  {
+    const e = await party(53);
+    const [mate, w] = e.players;
+    await playAs(e, w, CARDS.cardById('wisp/bank-shot'), null);
+    const target = e.livingEnemies()[0];
+    await playAs(e, w, CARDS.cardById('wisp/everybody-say-boo'), target);
+    check(herGloaming(e).length === 1 && herGloaming(e)[0].count === 1, 'setup: one Trick Lingering at 1');
+    await playAs(e, mate, SCRATCH, target);
+    check(herGloaming(e).length === 0,
+      'Everybody Say Boo: a friend hitting that enemy really Hastens one of hers',
+      `gloaming=${herGloaming(e).length}`);
+  }
+  {
+    const e = await party(54);
+    const [mate, w] = e.players;
+    await playAs(e, w, CARDS.cardById('wisp/follow-my-light'), null);
+    await playAs(e, w, CARDS.cardById('wisp/two-rooms-over'), e.livingEnemies()[0]);  // Linger 2
+    check(herGloaming(e)[0].count === 2, 'setup: Lingering at 2');
+    await playAs(e, mate, SCRATCH, e.livingEnemies()[0]);
+    await playAs(e, mate, SCRATCH, e.livingEnemies()[0]);
+    check(herGloaming(e)[0].count === 2, 'two Tricks from a friend is not yet the third');
+    await playAs(e, mate, SCRATCH, e.livingEnemies()[0]);
+    check(herGloaming(e)[0].count === 1,
+      'Follow My Light!: a friend\'s THIRD Trick Hastens one of hers',
+      `count=${herGloaming(e)[0].count}`);
+    await e.endTurn();
+    check(mate.status('next-trick-discount') > 0,
+      'and her Afterglow makes their next Trick cheaper',
+      `stacks=${mate.status('next-trick-discount')}`);
   }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
