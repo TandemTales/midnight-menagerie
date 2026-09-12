@@ -154,11 +154,12 @@ export class ClipPlayer {
     this.clips = idx.clips;
     this.scale = idx.scale || 1;
     /* The subject's height in frame pixels, so the mount can size a Companion
-       without knowing which pipeline produced it. Animated clips are all built
-       to the same figure (prep_sprites.TARGET_CONTENT_H, republished in the
-       manifest so it is never duplicated as a constant over here); a still is
-       trimmed to its content, so its own height IS the figure. */
-    this.unit = (await spriteManifest()).targetContentH || 128;
+       without knowing which pipeline produced it. Each slug publishes its own
+       `unit`, because a Kid is drawn at `KID_RIG_H` and builds far bigger than
+       a Companion; the manifest's single number is the fallback for atlases
+       built before that existed. A still is trimmed to its content, so its own
+       height IS the figure. */
+    this.unit = idx.unit || (await spriteManifest()).targetContentH || 128;
     await Promise.all(this._warm.filter(n => this.clips[n]).map(n => this._atlas(n)));
     /* MOUNTING INTO A FIGHT IS ENTERING COMBAT. The brief's `ready` clip begins
        "in a relaxed neutral pose and ending in the Companion's standard combat

@@ -1292,6 +1292,7 @@ the current reading. If they disagree, the prompt is right and this is stale.
 | `tests/coop/run.py` | 645 assertions |
 | `tests/net/run.py` | 128, and **exit 0 since 2026-08-29** — it had always exited 1 on the console errors its own checks provoke, while printing "128 passed, 0 failed". The page declares those three now; an undeclared error fails, and so does a declaration that never fires. The lockstep session; every room and combat through the REAL applier against two real `Run`s; the lobby's seats/host/seed including two tabs over `BroadcastChannel`; and a choice reaching the seat it belongs to, mid-input, without deadlocking |
 | `tests/cards/run.py` | 1470 cards, 0 errors, 0 warnings |
+| `tests/kid-clips/check.py` | the Kid on the board swings, flinches and falls: `windup` plays her `attack`, an unblocked `flinch` her `hurt` (a blocked one does NOT), and the Companion's `defeat` takes her down inside the 1.1s banner. Also that she animates at all and is built at her own figure height, compared against the manifest rather than a typed number |
 | `tests/upgrade-effects/check.py` | every Trick played base AND upgraded in a real fight, and the two boards compared: the count of upgrades that moved NOTHING. Report-only -- it goes red on its own health (a card it cannot instantiate, a stale waiver), not on the list |
 | `tests/enemies/run.py` | 124 enemies, 0 errors (148 encounters, 43 statuses) |
 | `tests/enemies/audit.py` | 8783 turns, intent === delivered. ITS BATCH LIST IS HARDCODED — add your region |

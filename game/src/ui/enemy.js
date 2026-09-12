@@ -2213,10 +2213,14 @@ export class PlayerView {
       '.pr-legb, .pr-armb, .pr-pack, .pr-legf, .pr-body, .pr-swing, .pr-head'));
     this._kidSrc = null;
     this._kidClip = null;
-    /* Only when we know who she is. `ClipPlayer` resolves a Kid slug through
-       STILL_ALIAS to her still today, and to her clips the day they are built. */
+    /* Only when we know who she is. A Kid has four clips -- idle, attack, hurt
+       and defeat -- and no `ready`, so she mounts on idle. `attack` and `hurt`
+       are warmed because the rig plays them on the same beats the Companion's
+       are played on, and a one-shot that waits for a download has missed its
+       beat. A Kid whose clips are not built still resolves to her still through
+       STILL_ALIAS, which is the same code path. */
     this.kidSprite = this.kid
-      ? new ClipPlayer(this.kid, { opening: 'idle', warm: ['idle'] })
+      ? new ClipPlayer(this.kid, { opening: 'idle', warm: ['idle', 'attack', 'hurt'] })
       : null;
 
     /* DON'T SHOW THE DRAWN KID JUST TO TAKE HER AWAY AGAIN. The swap used to run
@@ -2281,6 +2285,10 @@ export class PlayerView {
        Crumbula's Feeding Bite, Taffy's Stretch (ui/clips.js decides). A
        Companion that has not got it lunges exactly as before. */
     if (!clip || !this.playClip(clip)) this.playClip('attack');
+    /* The Kid swings on the same beat, whatever body clip the Companion chose:
+       a mechanic clip standing in for the lunge is still an Attack, and her
+       `attack` is the only clip she has for one. */
+    this.kidSprite?.play('attack');
     this.a.leanT = -0.8; this.a.squashT = 0.2; this.a.swingT = -1;
     await this._pose(-16, -5, -5, this._d(0.12), Clock.easeOutCubic);
   }
@@ -2309,7 +2317,7 @@ export class PlayerView {
   flinch(mag = 4, blocked = false) {
     // A blocked hit is a clank, not a recoil, and the brief's hit reaction is a
     // recoil — so only real Courage loss moves the Companion.
-    if (!blocked) this.playClip('hurt');
+    if (!blocked) { this.playClip('hurt'); this.kidSprite?.play('hurt'); }
     const k = Math.min(1.3, 0.35 + mag / 22);
     this.a.shove = Math.max(this.a.shove, (blocked ? 7 : 20) * k);
     this.a.squashT = blocked ? 0.12 : 0.3;
@@ -2336,7 +2344,14 @@ export class PlayerView {
    * no such clip, so a caller can ask for `spectral` on all sixteen and get the
    * dodge only from the one that owns it.
    */
-  playClip(name, opts) { return !!this.sprite && this.sprite.play(name, opts); }
+  playClip(name, opts) {
+    /* The Kid falls with her Companion. `defeat` is the one clip she shares
+       that has no rig beat of its own -- `attack` and `hurt` are played from
+       `windup` and `flinch` -- and it holds on its last frame instead of
+       handing back to idle, which is what a defeat is for. */
+    if (name === 'defeat') this.kidSprite?.play('defeat');
+    return !!this.sprite && this.sprite.play(name, opts);
+  }
 
   /**
    * Advance the Companion sprite and blit the current atlas cell.
