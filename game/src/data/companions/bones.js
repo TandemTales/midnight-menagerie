@@ -996,8 +996,8 @@ const rares = [
     flavor: 'They come back on their own. It is unnerving and very convenient.',
     nums: { n: 1, m0: 1 },
     effect: eff(c => power(c, 'bones/every-bone-knows-the-way-home', 1, (x) => {
-      x.e?.on?.('turn:end', () => reattach(x, U.stacks(x, x.self, 'bones/every-bone-knows-the-way-home')));
-      x.e?.on?.('turn:start', () => { if (isWhole(x)) U.draw(x, 1); });
+      U.onPlayerTurn(x.e, 'end', () => reattach(x, U.stacks(x, x.self, 'bones/every-bone-knows-the-way-home')), x.self);
+      U.onPlayerTurn(x.e, 'start', () => { if (isWhole(x)) U.draw(x, 1); }, x.self);
     })),
     upgrade: { nums: { n: 1, m0: 2 } },
   },
@@ -1035,7 +1035,7 @@ const rares = [
     flavor: 'Unanimous. Every year. There are no other candidates.',
     nums: { n: 1 },
     effect: eff(c => power(c, 'bones/best-dog-in-the-house', 1, (x) => {
-      x.e?.on?.('turn:start', async () => {
+      U.onPlayerTurn(x.e, 'start', async () => {
         const buried = buriedCards(x);
         const fetchable = U.cardsIn(x, 'discard').filter(k => canFetch(k) && pricedAtMost(k, 1));
         if (!buried.length && !fetchable.length) { spawnSpare(x, 1); return; }
@@ -1043,7 +1043,7 @@ const rares = [
           { label: 'Fetch', when: () => fetchable.length > 0, fn: (y) => fetch(y, (k) => pricedAtMost(k, 1)) },
           { label: 'Dig Up', when: () => buried.length > 0, fn: (y) => digUp(y, buried[0]) },
         ]);
-      });
+      }, x.self);
     })),
     upgrade: { cost: 2, nums: { n: 1 } },
   },

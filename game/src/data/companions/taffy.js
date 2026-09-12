@@ -718,7 +718,7 @@ const uncommons = [
     flavor: 'Held together by nothing but the outside of herself.',
     nums: { b: 10, n: 1 },
     effect: eff(c => power(c, 'taffy/surface-tension', 1, (x) => {
-      x.e?.on?.('turn:start', () => { const g = globs(x); if (g >= 5) U.draw(x, 1); else if (g >= 3) U.guard(x, 10); });
+      U.onPlayerTurn(x.e, 'start', () => { const g = globs(x); if (g >= 5) U.draw(x, 1); else if (g >= 3) U.guard(x, 10); }, x.self);
     })),
     upgrade: { nums: { b: 14, n: 1 } },
   },

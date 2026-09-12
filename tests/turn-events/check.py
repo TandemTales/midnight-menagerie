@@ -49,7 +49,11 @@ SRC = os.path.join(ROOT, "game", "src")
 # The engine itself is allowed to listen raw — it is the thing doing the emitting.
 SKIP_DIRS = {os.path.join(SRC, "combat")}
 
-LISTEN = re.compile(r"""\.on\(\s*['"]turn:(start|end)['"]""")
+# `.on(` AND `?.on?.(`. `tests/snapshot-cards/check.py` learned this spelling
+# the hard way and this scan still had the hole: three unguarded listeners in
+# `wink.js` were written `x.e?.on?.('turn:start', ...)`, fired once per ENEMY,
+# and were invisible here while this gate printed a confident zero (trap 54).
+LISTEN = re.compile(r"""[.?]\s*on\s*\??\.?\s*\(\s*['"]turn:(start|end)['"]""")
 # A guard counts if it inspects `side` in the handler body that follows.
 # Either literal counts. The rule is that a listener must SAY which side it
 # means, and an `ev.side !== 'enemy'` guard says it exactly as clearly as the
@@ -70,24 +74,25 @@ COMMENT = re.compile(r"^\s*(//|\*|/\*)")
 def scan(path):
     with open(path, encoding="utf-8") as f:
         lines = f.read().split("\n")
-    bad = []
+    bad, seen = [], 0
     for i, line in enumerate(lines):
         if not LISTEN.search(line):
             continue
         # A doc comment explaining this very trap is not an instance of it.
         if COMMENT.match(line):
             continue
+        seen += 1
         if HELPER.search(line):
             continue
         window = "\n".join(lines[max(0, i - BEHIND):i + AHEAD])
         if GUARD.search(window):
             continue
         bad.append((i + 1, line.strip()))
-    return bad
+    return bad, seen, sum(1 for ln in lines if HELPER.search(ln))
 
 
 def main():
-    problems, checked = [], 0
+    problems, checked, seen, helped = [], 0, 0, 0
     for base, dirs, files in os.walk(SRC):
         if any(base == d or base.startswith(d + os.sep) for d in SKIP_DIRS):
             continue
@@ -96,7 +101,10 @@ def main():
                 continue
             path = os.path.join(base, fn)
             checked += 1
-            for ln, text in scan(path):
+            found, n, h = scan(path)
+            seen += n
+            helped += h
+            for ln, text in found:
                 problems.append((os.path.relpath(path, ROOT).replace("\\", "/"), ln, text))
 
     for rel, ln, text in problems:
@@ -105,7 +113,10 @@ def main():
         print("      -> use U.onPlayerTurn(e, 'start'|'end', fn, seat), or check ev.side yourself.")
         print("         The raw event also fires once per ENEMY.")
 
-    print(f"RESULT: {checked} files scanned, {len(problems)} unguarded turn listeners")
+    # The counts are printed so a zero can be believed: a scan that suddenly
+    # SEES nothing is a broken pattern, not a clean tree (trap 54).
+    print(f"RESULT: {checked} files scanned, {seen} raw turn listeners "
+          f"({len(problems)} unguarded), {helped} through U.onPlayerTurn")
     return 1 if problems else 0
 
 

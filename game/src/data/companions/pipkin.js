@@ -799,7 +799,7 @@ const uncommons = [
     flavor: 'All the spring is in the back half.',
     nums: { n: 1 },
     effect: eff(c => power(c, 'pipkin/elastic-legs', 1, (x) => {
-      x.e?.on?.('turn:start', () => U.applySelf(x, 'elastic-legs', 1));
+      U.onPlayerTurn(x.e, 'start', () => U.applySelf(x, 'elastic-legs', 1), x.self);
     })),
     upgrade: { cost: 0, nums: { n: 1 } },
   },

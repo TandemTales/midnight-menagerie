@@ -596,11 +596,11 @@ const uncommons = [
     flavor: 'She sleeps up there. She has opinions up there.',
     nums: { n: 1 },
     effect: eff(c => power(c, 'marmalade/ghost-in-the-rafters', N(c).n, (x) => {
-      x.e?.on?.('turn:end', () => {
+      U.onPlayerTurn(x.e, 'end', () => {
         if (!U.isUntouched(x)) return;
         const n = U.stacks(x, x.self, 'marmalade/ghost-in-the-rafters');
         U.cardsIn(x, 'hand').slice(0, n).forEach(k => U.retain(x, k));
-      });
+      }, x.self);
     })),
     upgrade: { nums: { n: 2 } },
   },
@@ -638,7 +638,7 @@ const uncommons = [
     flavor: 'Forty minutes of stillness. Then the shelf.',
     nums: { n: 2 },
     effect: eff(c => power(c, 'marmalade/predators-patience', N(c).n, (x) => {
-      x.e?.on?.('turn:start', () => { if (U.isUntouched(x)) U.applySelf(x, 'predators-patience', U.stacks(x, x.self, 'marmalade/predators-patience')); });
+      U.onPlayerTurn(x.e, 'start', () => { if (U.isUntouched(x)) U.applySelf(x, 'predators-patience', U.stacks(x, x.self, 'marmalade/predators-patience')); }, x.self);
     })),
     upgrade: { nums: { n: 3 } },
   },
@@ -658,7 +658,7 @@ const uncommons = [
     flavor: '2:14 a.m. Every night. No known cause.',
     nums: { n: 1 },
     effect: eff(c => power(c, 'marmalade/zoomies-at-midnight', N(c).n, (x) => {
-      x.e?.on?.('turn:start', () => { U.applySelf(x, 'zoomies-discount', U.stacks(x, x.self, 'marmalade/zoomies-at-midnight')); });
+      U.onPlayerTurn(x.e, 'start', () => { U.applySelf(x, 'zoomies-discount', U.stacks(x, x.self, 'marmalade/zoomies-at-midnight')); }, x.self);
     })),
     upgrade: { nums: { n: 2 } },
   },
@@ -896,13 +896,13 @@ const rares = [
     effect: eff(c => {
       const dmg = N(c).n, blk = N(c).b;
       power(c, 'marmalade/untouchable', 1, (x) => {
-        x.e?.on?.('turn:start', () => {
+        U.onPlayerTurn(x.e, 'start', () => {
           if (!U.isUntouched(x)) { U.setRes(x, 'untouched-streak', 0); return; }
           U.addRes(x, 'untouched-streak', 1, 0, 99);
           const s = U.res(x, 'untouched-streak');
           U.applySelf(x, 'predators-patience', dmg);
           U.guard(x, blk * s);
-        });
+        }, x.self);
       });
     }),
     upgrade: { nums: { n: 3, b: 4 } },
@@ -914,10 +914,10 @@ const rares = [
     flavor: 'She has claimed the beam over the stairwell. It is hers now.',
     nums: { n: 1 },
     effect: eff(c => power(c, 'marmalade/queen-of-the-rafters', N(c).n, (x) => {
-      x.e?.on?.('turn:end', async () => {
+      U.onPlayerTurn(x.e, 'end', async () => {
         const [k] = await U.pickCards(x, { pile: 'hand', count: 1, prompt: 'Retain a Trick' });
         if (k) { U.retain(x, k); U.costMod(x, k, -U.stacks(x, x.self, 'marmalade/queen-of-the-rafters'), 'turn'); }
-      });
+      }, x.self);
     })),
     upgrade: { nums: { n: 2 } },
   },
