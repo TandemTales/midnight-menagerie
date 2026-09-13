@@ -62,7 +62,9 @@ def plank_albedo(h, w, rng, base, light, dark, scale=1.0):
     fine = aniso(0.7 * scale, 36 * scale, 1.0)           # the grain lines
     rings = 0.5 + 0.5 * np.sin((xx + figure * 26 * scale) / (2.1 * scale))
     saw = 0.5 + 0.5 * np.sin(yy / (5.5 * scale) + aniso(20, 4, 1.0) * 2.0)   # faint saw marks
-    t = 0.5 + figure * 0.28 + fine * 0.2 + (rings - 0.5) * 0.1 + (saw - 0.5) * 0.035
+    # dark grain lines that wander down the board, the way a brush draws them
+    streak = np.clip((aniso(0.9 * scale, 60 * scale, 1.0) - 0.35) * 3.2, 0, 1)
+    t = 0.5 + figure * 0.3 + fine * 0.24 + (rings - 0.5) * 0.1 + (saw - 0.5) * 0.03 - streak * 0.22
     return ramp(np.clip(t, 0, 1), [(0.0, dark), (0.5, base), (1.0, light)])
 
 
@@ -94,15 +96,15 @@ def treehouse_layers():
         sel = (xx >= x0) & (xx < x1)
         o = int(rng.uniform(0, H))
         wood = woods[k % 4][o:o + H]
-        tone = 1 + rng.uniform(-0.1, 0.12)
+        tone = 1 + rng.uniform(-0.17, 0.14)
         # some boards are two lengths butted together: another cut of grain, a
         # shade different, a dark joint where they meet
-        if rng.random() < 0.45:
+        if rng.random() < 0.24:
             jy = rng.uniform(Y_BEAM[1] + 90, Y_RAIL[0] - 60) if rng.random() < 0.6 else rng.uniform(Y_RAIL[1] + 60, Y_FLOOR - 70)
             o2 = int(rng.uniform(0, H))
             wood2 = woods[(k + 2) % 4][o2:o2 + H] * (1 + rng.uniform(-0.12, 0.1))
             wood = np.where((yy > jy)[..., None], wood2, wood)
-            joint = np.where(sel, np.maximum(joint, np.exp(-((yy - jy) / 1.3) ** 2)), joint)
+            joint = np.where(sel, np.maximum(joint, np.exp(-((yy - jy + (xx - x0) * rng.uniform(-.02, .02)) / 1.9) ** 2)), joint)
         alb = np.where(sel[..., None], wood * tone, alb)
         # each board catches the light a little differently along its length
         grad = 1 + rng.uniform(-0.1, 0.1) * (yy / H - 0.5) * 2
@@ -114,7 +116,7 @@ def treehouse_layers():
         gap_d = np.where(sel, d, gap_d)
         k += 1
         x = x1 + rng.uniform(3, 6)                      # the gap
-    alb = alb * (1 - joint[..., None] * 0.8)
+    alb = alb * (1 - joint[..., None] * 0.62)
     in_board = gap_d < 90
     # cupped boards: edges a little lower, a soft bevel into the gap
     cup = 7 + 1.6 * np.sin(np.pi * board_u)
@@ -124,8 +126,14 @@ def treehouse_layers():
     # weathering: water stains running down, a paler sun-bleached patch
     stain = noise((H, W), rng, (60, 8)) * 0.16 + noise((H, W), rng, 140) * 0.12
     alb = alb * (1 + stain[..., None])
+    # nail holes and old nails left from whatever the boards were before
+    for _ in range(46):
+        hx, hy = rng.uniform(0, W), rng.uniform(120, Y_FLOOR - 20)
+        hd = np.hypot(xx - hx, yy - hy)
+        hole = np.clip(1 - hd / rng.uniform(1.6, 2.6), 0, 1)
+        alb = alb * (1 - hole[..., None] * 0.7)
     # knots on some boards
-    for _ in range(11):
+    for _ in range(19):
         kx, ky = rng.uniform(0, W), rng.uniform(140, Y_FLOOR - 40)
         rx, ry = rng.uniform(7, 13), rng.uniform(14, 26)
         d = np.sqrt(((xx - kx) / rx) ** 2 + ((yy - ky) / ry) ** 2)
@@ -233,9 +241,15 @@ def planks():
     moon = light_planks(alb, hgt, gloss, Lm, (0.55, 0.68, 1.0), 0.55, 1.45,
                         spec_col=(60, 80, 120), floor_light=np.array([0, -0.25, 0.97], np.float32))
     moon = moon * ink
+    # the shadows go to aubergine, as every sample's do, before the paint pass
+    def aubergine(img, k):
+        lum = img.mean(axis=2, keepdims=True)
+        shadow = np.clip(1 - lum / 70.0, 0, 1)
+        return img * (1 - shadow * k) + shadow * k * np.array([30, 18, 38], np.float32) * (lum / 40.0 + 0.2)
+    dark, warm, moon = aubergine(dark, .55), aubergine(warm, .25), aubergine(moon, .35)
     out = []
     for img in (dark, warm, moon):
-        out.append(M.painterly(img, np.random.default_rng(81)))
+        out.append(M.painterly(img, np.random.default_rng(81), strength=1.35))
     save(out[0], "planks.webp", 86)
     save(out[1], "planks-warm.webp", 84)
     save(out[2], "planks-moon.webp", 84)

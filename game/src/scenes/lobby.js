@@ -290,7 +290,29 @@ export class LobbyScene extends Scene {
     });
 
     stage.appendChild(form);
+    /* The lettering is sized for the plate, and the longest pair of words the
+       game can coin ("whispering-torchlight") is wider than the plate at that
+       size — it clipped its first letter. So the words shrink to fit whatever
+       is in the field, as it is typed and whenever the screen is resized. */
+    const fit = () => this._fitCode(input);
+    input.addEventListener('input', fit);
+    roll.addEventListener('click', fit);
+    const onResize = () => requestAnimationFrame(fit);
+    addEventListener('resize', onResize, { passive: true });
+    this._offs.push(() => removeEventListener('resize', onResize));
+    fit();
     try { input.focus(); input.select(); } catch { /* focus is best-effort */ }
+  }
+
+  /** Shrink the password's lettering until every character is on its plate. */
+  _fitCode(input) {
+    if (!input || !input.isConnected) return;
+    input.style.fontSize = '';
+    let size = parseFloat(getComputedStyle(input).fontSize) || 30;
+    for (let i = 0; i < 40 && size > 15 && input.scrollWidth > input.clientWidth + 1; i++) {
+      size -= 1;
+      input.style.fontSize = `${size}px`;
+    }
   }
 
   /* ── the room ─────────────────────────────────────────────────────────── */
