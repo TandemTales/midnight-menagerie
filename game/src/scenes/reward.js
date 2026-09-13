@@ -608,12 +608,8 @@ export class RewardScene extends RoomScene {
       </div>
       <div class="rw-fan kit-cards" data-tip-avoid=".rw-slot, .rm-where, .rw-spoils, .rw-candle" data-tip-bounds=".rw-cards" role="listbox" aria-label="Three ${esc(TERMS.card)}s. Choose one, or skip."></div>`;
     // Two candles stand either side of the three frames, the way the Kid board
-    // keeps one beside its mirror, and a window looks out on the grounds on
-    // the wall above each. Decoration only.
+    // keeps one beside its mirror. Decoration only.
     for (const side of ['l', 'r']) {
-      const w = el('i', `kit-window${side === 'r' ? ' kit-window--r' : ''} rw-window rw-window--${side}`);
-      w.setAttribute('aria-hidden', 'true');
-      sec.appendChild(w);
       const c = el('i', `kit-prop kit-prop--candle rw-candle rw-candle--${side}`);
       c.setAttribute('aria-hidden', 'true');
       sec.appendChild(c);
