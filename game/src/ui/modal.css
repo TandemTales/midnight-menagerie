@@ -224,11 +224,9 @@
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) drop-shadow(0 0 2px var(--kit-gold-hi)) drop-shadow(0 0 12px color-mix(in srgb, var(--kit-candle) 60%, transparent)) brightness(1.18);
 }
 
-/* a medallion seated on one end of a nameplate button (kitButton's `medal`) */
-.mm-dlg-btn--medal-r { padding-right: calc(var(--plate-h) * 1.24) !important; }
-.mm-dlg-btn--medal-l { padding-left: calc(var(--plate-h) * 1.24) !important; }
-.mm-dlg-btn--medal-r > .kit-btn__medal { right: calc(var(--plate-h) * -.5); }
-.mm-dlg-btn--medal-l > .kit-btn__medal { left: calc(var(--plate-h) * -.5); }
+/* a medallion seated on the end of a nameplate button (kitButton's `medal`) */
+.mm-btn.kit-btn.mm-dlg-btn--medal { padding-right: calc(var(--plate-h) * 1.24); }
+.mm-dlg-btn--medal > .kit-btn__medal { right: calc(var(--plate-h) * -.5); }
 .mm-dlg-medal { --md: calc(var(--plate-h) * 1.08); }
 
 /* largeText: the dialog is already sized in rem/ch, but tighten the padding so

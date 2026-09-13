@@ -34,25 +34,25 @@ import { icon } from './icons.js';
 export const DIALOG_GLYPH = {
   close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.3 3.9 12 9.6l5.7-5.7 2.4 2.4-5.7 5.7 5.7 5.7-2.4 2.4-5.7-5.7-5.7 5.7-2.4-2.4 5.7-5.7-5.7-5.7z"/></svg>',
   done: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.6 12.6 5.5 9.7l4.3 4.3 8.7-9.6 2.9 2.7-11.5 12.6z"/></svg>',
-  back: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 9.6h-9.2V5.2L3 12l8.3 6.8v-4.4h9.2z"/></svg>',
 };
 
 /**
  * Dress a button in the kit's nameplate. It KEEPS its own classes (`.mm-btn`
  * and its modifiers are what tests and callers find it by); modal.css holds
  * the few lines that stop base.css's chrome button painting over the plate.
+ * `medal` seats a round enamel medallion with that glyph on the plate's end.
  * @param {HTMLButtonElement} b
- * @param {{quiet?:boolean, medal?:'done'|'back'|'close', end?:'left'|'right', ornate?:boolean}} [o]
+ * @param {{quiet?:boolean, medal?:'done'|'close'}} [o]
  */
-export function kitButton(b, { quiet = false, medal = '', end = 'right', ornate = false } = {}) {
+export function kitButton(b, { quiet = false, medal = '' } = {}) {
   b.classList.add('kit-btn');
   if (quiet) b.classList.add('kit-btn--quiet');
   if (medal && DIALOG_GLYPH[medal]) {
     const i = document.createElement('i');
-    i.className = 'kit-medallion kit-btn__medal mm-dlg-medal' + (ornate ? ' kit-medallion--ornate' : '');
+    i.className = 'kit-medallion kit-btn__medal mm-dlg-medal';
     i.setAttribute('aria-hidden', 'true');
     i.innerHTML = DIALOG_GLYPH[medal];
-    b.classList.add(end === 'left' ? 'mm-dlg-btn--medal-l' : 'mm-dlg-btn--medal-r');
+    b.classList.add('mm-dlg-btn--medal');
     b.appendChild(i);
   }
   return b;
