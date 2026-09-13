@@ -13,7 +13,7 @@
    PRIMITIVES (use these in any scene)
      .kit-board            a full-bleed painted board: ground, damask, light
        .kit-dress          its set dressing layer (corners, vines, rule)
-     .kit-cartouche        the title plaque          (.kit-titleblock wraps one)
+     .kit-titleblock       the title plaque: title.png's cartouche + ribbon
      .kit-ribbon           gold ribbon banner with its two painted stars
      .kit-panel            dark panel in a painted gold rail (9-slice)
        [data-medal]        + a medallion seated on its top rail
@@ -169,18 +169,27 @@
   :root:not([data-reduce-motion="0"]) .kit-dress__flame { animation: none; }
 }
 
-/* ── the title block: cartouche + ribbon ─────────────────────────────────────
+/* ── the title block: the wordmark's cartouche + ribbon ─────────────────────
    Markup (any order):  .kit-titleblock > .kit-ribbon, .kit-cartouche__title,
-   .kit-cartouche__sub, .kit-titleblock__note. The plaque itself is drawn by the
-   block's own ::before (brass rim) and ::after (the dark plate with its stars),
-   as grid items spanning the title and sub rows.                           */
+   .kit-cartouche__sub, .kit-titleblock__note.
+
+   The plaque is UI/title.png's own cartouche, rebuilt by tools/prep_ui_kit.py
+   into two painted scrolled ends, a straight band and the fleur-de-lis finial,
+   all on one 600-row frame. The block draws them on its own ::before (the ends
+   and the bats that ride inside them) and ::after (band + finial, inset by the
+   width of an end), as grid items spanning the title and sub rows.
+
+   The plaque has a fixed painted height, --cart-h, because an end's width is
+   tied to its height: 372/600 of it. Its rails put the plate between 19% and
+   87% of that height, and the rows below are sized to keep title and sub in
+   there.                                                                    */
 .kit-titleblock {
-  --cart-pad-x: clamp(84px, 7vw, 120px);
-  --cart-pad-t: clamp(14px, 2vh, 20px);
-  --cart-pad-b: clamp(22px, 3vh, 28px);
+  --cart-h: clamp(120px, 15.6vh, 146px);
+  --cart-cap: calc(var(--cart-h) * 430 / 600);
+  --cart-pad-x: calc(var(--cart-cap) * .9);
   display: grid;
   grid-template-columns: auto;
-  grid-template-rows: auto auto auto auto;
+  grid-template-rows: calc(var(--cart-h) * .575) calc(var(--cart-h) * .425) auto auto;
   justify-items: center;
   text-align: center;
   position: relative;
@@ -190,47 +199,37 @@
   content: '';
   grid-column: 1; grid-row: 1 / 3;
   justify-self: stretch; align-self: stretch;
-  border-radius: var(--cart-pad-x) / 50%;
   pointer-events: none;
 }
-/* brass rim: lit from above, dark at the underside, a hairline of highlight */
+/* Only the ends cast a filter shadow: a shadow filter on the band would spill
+   sideways over the ends' plate and show the seam. The band paints its own. */
 .kit-titleblock::before {
-  z-index: 0;
+  z-index: 1;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, .7));
+  min-width: calc(var(--cart-cap) * 2);
   background:
-    linear-gradient(180deg, var(--kit-gold-hi) 0%, var(--kit-gold) 22%, var(--kit-gold-lo) 52%, var(--kit-gold) 78%, color-mix(in oklab, var(--kit-gold-hi) 70%, var(--kit-gold)) 100%);
-  box-shadow:
-    0 0 0 1px var(--kit-void),
-    0 10px 30px -6px color-mix(in srgb, var(--kit-void) 90%, transparent),
-    0 0 46px color-mix(in srgb, var(--kit-violet) 22%, transparent);
+    url("../../assets/ui/kit/cart-bat.webp") calc(var(--cart-cap) * .46) 62% / calc(var(--cart-h) * 94 / 600) auto no-repeat,
+    url("../../assets/ui/kit/cart-bat-r.webp") calc(100% - var(--cart-cap) * .46) 62% / calc(var(--cart-h) * 94 / 600) auto no-repeat,
+    url("../../assets/ui/kit/cart-star.webp") calc(var(--cart-cap) * .56) 30% / calc(var(--cart-h) * 72 / 600) auto no-repeat,
+    url("../../assets/ui/kit/cart-star.webp") calc(100% - var(--cart-cap) * .56) 30% / calc(var(--cart-h) * 72 / 600) auto no-repeat,
+    url("../../assets/ui/kit/cart-cap-l.webp") 0 0 / auto 100% no-repeat,
+    url("../../assets/ui/kit/cart-cap-r.webp") 100% 0 / auto 100% no-repeat;
 }
 .kit-titleblock::after {
   z-index: 1;
-  margin: 3px;
+  margin-inline: calc(var(--cart-cap) - 1px);
   background:
-    url("../../assets/ui/kit/bat.webp") calc(var(--cart-pad-x) * .30) 60% / 34px auto no-repeat,
-    url("../../assets/ui/kit/bat-r.webp") calc(100% - var(--cart-pad-x) * .30) 60% / 34px auto no-repeat,
-    url("../../assets/ui/kit/star4.svg") calc(var(--cart-pad-x) * .42) 22% / 13px 13px no-repeat,
-    url("../../assets/ui/kit/star4.svg") calc(100% - var(--cart-pad-x) * .42) 22% / 13px 13px no-repeat,
-    url("../../assets/ui/kit/star4.svg") calc(var(--cart-pad-x) * .74) 78% / 8px 8px no-repeat,
-    url("../../assets/ui/kit/star4.svg") calc(100% - var(--cart-pad-x) * .74) 80% / 8px 8px no-repeat,
-    url("../../assets/ui/kit/star4.svg") calc(var(--cart-pad-x) * .16) 40% / 6px 6px no-repeat,
-    url("../../assets/ui/kit/star4.svg") calc(100% - var(--cart-pad-x) * .16) 42% / 6px 6px no-repeat,
-    radial-gradient(60% 80% at 50% 10%, color-mix(in srgb, var(--kit-violet) 30%, transparent), transparent 72%),
-    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
-    linear-gradient(180deg, #19111f 0%, #0c0911 100%);
-  background-blend-mode: normal, normal, normal, normal, normal, normal, normal, normal, normal, overlay, normal;
-  box-shadow:
-    inset 0 0 0 2px var(--kit-void),
-    inset 0 0 0 3px color-mix(in srgb, var(--kit-gold) 50%, transparent),
-    inset 0 0 0 4px var(--kit-void),
-    inset 0 0 26px color-mix(in srgb, var(--kit-void) 90%, transparent);
+    url("../../assets/ui/kit/cart-crest.webp") 50% 0 / auto calc(var(--cart-h) * 120 / 600) no-repeat,
+    url("../../assets/ui/kit/cart-band.webp") 0 0 / auto 100% repeat-x,
+    linear-gradient(to bottom, rgba(0, 0, 0, .55), rgba(0, 0, 0, 0)) 0 calc(var(--cart-h) * .9) / 100% calc(var(--cart-h) * .1) no-repeat;
 }
 .kit-cartouche__title {
   grid-column: 1; grid-row: 1; z-index: 2;
-  margin: 0;
-  padding: var(--cart-pad-t) var(--cart-pad-x) 0;
+  align-self: end;
+  margin: 0 0 1px;
+  padding: 0 var(--cart-pad-x);
   font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(26px, 2.5vw, 42px);
+  font-size: clamp(26px, 2.45vw, 40px);
   line-height: 1.04;
   letter-spacing: .045em;
   text-transform: uppercase;
@@ -250,37 +249,28 @@
 }
 .kit-cartouche__sub {
   grid-column: 1; grid-row: 2; z-index: 2;
-  margin: 3px 0 0;
-  padding: 0 var(--cart-pad-x) var(--cart-pad-b);
+  align-self: start;
+  margin: 2px 0 0;
+  padding: 0 var(--cart-pad-x);
   font-family: var(--font-body); font-style: italic;
   font-size: var(--fs-md); line-height: 1.25;
   color: var(--kit-text-mid);
+  white-space: nowrap;
 }
-/* no sub: the plaque still needs its bottom margin under the title */
-.kit-titleblock:not(:has(.kit-cartouche__sub)) .kit-cartouche__title { padding-bottom: var(--cart-pad-b); }
+/* no sub: the title sits in the middle of the plate */
+.kit-titleblock:not(:has(.kit-cartouche__sub)) .kit-cartouche__title {
+  grid-row: 1 / 3; align-self: center;
+  margin: calc(var(--cart-h) * .05) 0 0;
+}
+/* the ribbon hangs from the bottom rail, its top edge on the rail's inner lip */
 .kit-titleblock > .kit-ribbon {
   grid-column: 1; grid-row: 3; z-index: 3;
-  margin-top: calc(var(--rib-h) * -.5);
+  margin-top: calc(var(--cart-h) * -.15);
 }
-/* the purple acanthus scrolls that hold the plaque at each end (selectKid) */
-.kit-titleblock__flank {
-  grid-column: 1; grid-row: 1 / 3; z-index: 0;
-  align-self: center;
-  height: calc(100% + 58px); aspect-ratio: 122 / 204;
-  margin-top: -6px;
-  background: 50% 50% / 100% 100% no-repeat;
-  filter: brightness(1.45) saturate(1.15);
-  pointer-events: none;
-}
-.kit-titleblock__flank--l { justify-self: start; margin-left: calc(var(--cart-pad-x) * -.66); background-image: url("../../assets/ui/kit/flank-l.webp"); }
-.kit-titleblock__flank--r { justify-self: end; margin-right: calc(var(--cart-pad-x) * -.66); background-image: url("../../assets/ui/kit/flank-r.webp"); }
 
 /* compact: for boards that need the height for what is on them */
-.kit-titleblock--compact {
-  --cart-pad-t: clamp(8px, 1.2vh, 12px);
-  --cart-pad-b: clamp(18px, 2.4vh, 22px);
-}
-.kit-titleblock--compact .kit-cartouche__title { font-size: clamp(24px, 2.25vw, 38px); }
+.kit-titleblock--compact { --cart-h: clamp(108px, 13.6vh, 128px); }
+.kit-titleblock--compact .kit-cartouche__title { font-size: clamp(24px, 2.2vw, 36px); }
 .kit-titleblock--compact .kit-cartouche__sub { font-size: var(--fs-sm); }
 
 .kit-titleblock__note {

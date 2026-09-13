@@ -171,8 +171,6 @@ export class RoomScene extends Scene {
 
         <header class="rm-head">
           <div class="rm-where kit-titleblock">
-            <i class="kit-titleblock__flank kit-titleblock__flank--l" aria-hidden="true"></i>
-            <i class="kit-titleblock__flank kit-titleblock__flank--r" aria-hidden="true"></i>
             <span class="rm-eyebrow kit-ribbon">${esc(eyebrow || region.name)}</span>
             <h1 class="rm-title kit-cartouche__title">${esc(title)}</h1>
             ${sub ? `<p class="rm-sub kit-cartouche__sub">${esc(sub)}</p>` : ''}

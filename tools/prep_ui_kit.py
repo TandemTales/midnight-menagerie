@@ -373,34 +373,6 @@ def ribbon():
     print(f"      ribbon: {out_rgb.shape[1]}x{r1 - r0} ends {x(597)} / {w - x(868)}")
 
 
-def flanks():
-    """The purple acanthus scrolls that hold selectKid's cartouche at each end.
-
-    Left: x 250-372, right: x 1078-1200, y 18-222. Gold is removed (a candle
-    stick and a Kid frame's corner reach into both boxes), and so is anything
-    right against the cartouche rim."""
-    for name, box, fe in [("flank-l.webp", (250, 18, 372, 222), dict(left=20, bottom=30, top=6)),
-                          ("flank-r.webp", (1078, 18, 1200, 222), dict(right=20, bottom=30, top=6))]:
-        rgb = crop(SK, box)
-        l = blur(lum(rgb), 0.5)
-        purple = (l > 14) & ~ndimage.binary_dilation(warm(rgb) & (lum(rgb) > 40), iterations=3)
-        lab, n = ndimage.label(purple)
-        if n:
-            sizes = ndimage.sum(purple, lab, range(1, n + 1))
-            keep = np.isin(lab, 1 + np.nonzero(sizes >= 40)[0])   # drop specks
-            purple = keep
-        a = blur(ndimage.binary_dilation(purple, iterations=1).astype(np.float32), 0.6) * ramp(l, 6, 30)
-        # grey blobs of cobweb and frame reach into the box: keep only the violet
-        lab, n = ndimage.label(a > 0.15)
-        if n:
-            chroma = rgb[..., 2] - rgb[..., 1]
-            mean_c = ndimage.mean(chroma, lab, range(1, n + 1))
-            grey = np.isin(lab, 1 + np.nonzero(np.asarray(mean_c) < 7)[0])
-            a = np.where(ndimage.binary_dilation(grey, iterations=2), 0, a)
-        a = feather(a, **fe)
-        save(rgba(unmix(rgb, a, (7, 5, 9)), a), name, 90)
-
-
 def bat():
     """The little purple bat from inside selectKid's cartouche."""
     rgb = crop(SK, (383, 116, 468, 182))
@@ -746,6 +718,174 @@ def hall_paintings():
         save(np.asarray(im), name, 86)
 
 
+def cartouche():
+    """The wordmark's cartouche from UI/title.png, rebuilt to hold any title.
+
+    The painted plaque is a baroque lens: its rails bulge and dip, so it cannot
+    simply be stretched. It is cut into parts that can:
+
+      cart-cap-l / cart-cap-r   the scrolled end: painting x 0..430, rows
+                                100..700. The curled rail, the gold C-scroll,
+                                the purple acanthus. Its interior (star, bats,
+                                the M) is flood-filled from a seed inside the
+                                rail and repainted as plate. x 430 is where both
+                                rails run level, so the band continues them
+                                without a kink; ornament outside the rails fades
+                                out over the last 40 px. Right = left, mirrored.
+      cart-band                 a level length of the same rails: the cap's
+                                last 40 source columns, each aligned on the
+                                seam column by correlation, then averaged. The
+                                plate between them tiles every 256 px and
+                                continues the cap's plate across the seam.
+      cart-crest                the fleur-de-lis finial from the top of the arch.
+      cart-bat / cart-star      the wordmark's own bat and eight-point star, to
+                                ride inside the ends.
+
+    Every part but the last two shares one vertical frame (painting rows
+    100..700), so CSS lays them side by side at one height and the rails meet.
+    """
+    XC, Y0, Y1 = 430, 100, 700
+    H = Y1 - Y0
+    src_all = src(TT)
+    rgb = crop(TT, (0, Y0, XC, Y1))
+    l = blur(lum(rgb), 0.5)
+    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    gold = (r > 52) & (r > b * 1.18) & (g > b * .95)
+
+    # rail rows at the seam column (frame rows)
+    col = gold[:, XC - 1]
+    rows = np.nonzero(col)[0]
+    T_top = int(rows[(rows > 85) & (rows < 125)].min())           # outer edge, top rail
+    T_in = int(rows[(rows > 85) & (rows < 135)].max())            # inner edge, top rail
+    B_top = int(rows[(rows > 480) & (rows < 560)].min())          # inner edge, bottom rail
+    print(f"      cartouche seam rails: top {T_top}-{T_in}, bottom from {B_top}")
+
+    # ── the interior: flood from inside the rail ──────────────────────────
+    barrier = ndimage.binary_dilation(gold, iterations=2)
+    lab, n = ndimage.label(~barrier)
+    seed = lab[400 - Y0, 300]
+    assert seed, "seed landed on the rail"
+    flood = lab == seed
+    wall = np.zeros_like(flood)
+    wall[T_in + 3:B_top - 2, XC - 1] = True
+    interior = ndimage.binary_fill_holes(flood | wall)
+    for y in range(T_in + 3, B_top - 2):
+        xs = np.nonzero(flood[y])[0]
+        if len(xs):
+            interior[y, max(int(xs[0]), 250):] = True
+
+    # the plate: dark aubergine, mottled, darker against the rail; periodic in x
+    rng = np.random.default_rng(4242)
+    P = 256
+    mott = periodic_noise(P, rng, beta=2.2, lo_cut=2)
+    fine = periodic_noise(P, rng, beta=0.6, lo_cut=24)
+    yy, xx = np.mgrid[0:H, 0:XC + P]
+    mottle = mott[yy % P, xx % P]
+    grain_ = fine[(yy * 2) % P, xx % P]
+    base = np.array([17, 11, 21], np.float32)
+    plate_full = base[None, None] * (1 + .32 * mottle[..., None]) + grain_[..., None] * 3.2
+    vy = np.clip(1 - np.abs((yy - H * .52) / (H * .34)), 0, 1) ** 1.5
+    plate_full += (vy * 7)[..., None] * np.array([0.9, 0.45, 1.25], np.float32)
+
+    def shade_from_rails(dist):
+        return 0.35 + 0.65 * np.clip(dist / 14.0, 0, 1) ** 0.8
+
+    d = ndimage.distance_transform_edt(interior)
+    plate = plate_full[:, :XC] * shade_from_rails(d)[..., None]
+
+    a = np.maximum(ramp(l, 8, 40), ndimage.binary_dilation(gold, iterations=1).astype(np.float32))
+    a = np.where(ndimage.binary_dilation(interior, iterations=3), 1.0, a)
+    # ornament outside the rails fades out towards the seam
+    keep_rows = np.zeros(H, bool)
+    keep_rows[T_top - 9:T_in + 3] = True
+    keep_rows[B_top - 3:B_top + 22] = True
+    fade = np.clip((XC - 1 - np.arange(XC)) / 40.0, 0, 1)
+    outside = ~ndimage.binary_dilation(interior, iterations=3)
+    a = np.where(outside & ~keep_rows[:, None], a * fade[None, :], a)
+    cap = unmix(rgb, np.maximum(a, 1e-3), (1, 1, 5))
+    soft = blur(interior.astype(np.float32), 0.7)
+    cap = cap * (1 - soft[..., None]) + plate * soft[..., None]
+    a = np.maximum(a, soft)
+    cap_rgba = rgba(cap, a)
+    save(cap_rgba, "cart-cap-l.webp", 92)
+    save(np.ascontiguousarray(cap_rgba[:, ::-1]), "cart-cap-r.webp", 92)
+
+    # ── the band ─────────────────────────────────────────────────────────
+    capf = cap_rgba.astype(np.float32)
+
+    def aligned_strip(r0, r1):
+        """Rows r0..r1 of the last 40 cap columns, each shifted onto the seam
+        column by the lag that best correlates their luminance, averaged."""
+        ref = lum(rgb[r0 - 12:r1 + 12, XC - 1])
+        acc, wsum = 0, 0
+        for x in range(XC - 40, XC):
+            best, lag = -1e9, 0
+            for s in range(-6, 7):
+                prof = lum(rgb[r0 - 12 + s:r1 + 12 + s, x])
+                c = float(np.dot(prof - prof.mean(), ref - ref.mean()))
+                if c > best:
+                    best, lag = c, s
+            acc = acc + capf[r0 + lag:r1 + lag, x]
+            wsum += 1
+        return acc / wsum
+
+    top_r0, top_r1 = T_top - 9, T_in + 3
+    bot_r0, bot_r1 = B_top - 3, B_top + 22
+    strip_t = aligned_strip(top_r0, top_r1)
+    strip_b = aligned_strip(bot_r0, bot_r1)
+
+    band = np.zeros((H, P, 4), np.float32)
+    rows_ = np.arange(H, dtype=np.float32)
+    dmin = np.minimum(rows_ - (T_in + 1), (B_top - 1) - rows_)
+    pl = plate_full[:, XC:XC + P] * shade_from_rails(dmin)[:, None, None]
+    inside = (rows_ > T_in) & (rows_ < B_top)
+    band[inside, :, :3] = pl[inside]
+    band[inside, :, 3] = 255
+    wob = periodic_noise(P, rng, beta=1.4, lo_cut=3)[0] * 0.07 + 1.0
+    for strip, row0 in ((strip_t, top_r0), (strip_b, bot_r0)):
+        for k in range(strip.shape[0]):
+            y = row0 + k
+            if not (0 <= y < H):
+                continue
+            px = strip[k]
+            aa = px[3] / 255.0
+            if inside[y] and aa > 0.98 and lum(px[None, :3])[0] < 26:
+                continue                      # plate under the rail: keep the band's own
+            over = px[:3][None, :] * wob[:, None]
+            under = band[y, :, :3]
+            ua = band[y, :, 3] / 255.0
+            out_a = aa + ua * (1 - aa)
+            band[y, :, :3] = np.where(out_a[:, None] > 0,
+                                      (over * aa + under * ua[:, None] * (1 - aa)) / np.maximum(out_a[:, None], 1e-3), 0)
+            band[y, :, 3] = out_a * 255
+    save(np.clip(band, 0, 255).astype(np.uint8), "cart-band.webp", 92)
+
+    # ── the finial, the bat and the star ──────────────────────────────────
+    cx0, cy0, cx1, cy1 = 1016, 6, 1156, 126
+    crgb = crop(TT, (cx0, cy0, cx1, cy1))
+    cl = blur(lum(crgb), 0.5)
+    cr, cg, cb = crgb[..., 0], crgb[..., 1], crgb[..., 2]
+    cgold = (cr > 45) & (cr > cb * 1.15) & (cg > cb * .9)
+    ca = np.maximum(ramp(cl, 10, 44), ndimage.binary_dilation(cgold, iterations=1) * ramp(cl, 5, 20))
+    ca = feather(ca, left=34, right=34, bottom=6)
+    save(rgba(unmix(crgb, ca, (1, 1, 5)), ca), "cart-crest.webp", 92)
+
+    for name, box in (("cart-bat.webp", (262, 478, 356, 558)), ("cart-star.webp", (256, 292, 328, 374))):
+        prgb = crop(TT, box)
+        pl_ = blur(lum(prgb), 0.5)
+        core = ndimage.binary_fill_holes(ndimage.binary_closing(pl_ > 24, iterations=2))
+        lab2, n2 = ndimage.label(core)
+        if n2:
+            sizes = ndimage.sum(core, lab2, range(1, n2 + 1))
+            core = lab2 == (1 + int(np.argmax(sizes)))
+        pa = np.maximum(blur(ndimage.binary_dilation(core, iterations=1).astype(np.float32), 0.6) * ramp(pl_, 6, 22),
+                        blur(core.astype(np.float32), 0.5))
+        out = rgba(unmix(prgb, np.maximum(pa, 1e-3), (8, 5, 12)), pa)
+        save(out, name, 92)
+        if name == "cart-bat.webp":
+            save(np.ascontiguousarray(out[:, ::-1]), "cart-bat-r.webp", 92)
+
+
 def main(sheet=False):
     print("kit ->", os.path.relpath(OUT, ROOT))
     hall_paintings()
@@ -760,7 +900,7 @@ def main(sheet=False):
     frame()
     plate()
     ribbon()
-    flanks()
+    cartouche()
     bat()
     button()
     button_ornate()
