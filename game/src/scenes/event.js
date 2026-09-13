@@ -186,6 +186,8 @@ export class EventScene extends RoomScene {
     hall.innerHTML = `
       <i class="kit-window ev-hall__window ev-hall__window--l"></i>
       <i class="kit-window kit-window--r ev-hall__window ev-hall__window--r"></i>
+      <i class="kit-web ev-hall__web ev-hall__web--l"></i>
+      <i class="kit-web kit-web--r ev-hall__web ev-hall__web--r"></i>
       <i class="kit-sconce ev-hall__sconce ev-hall__sconce--l"></i>
       <i class="kit-sconce ev-hall__sconce ev-hall__sconce--r"></i>
       <i class="kit-prop kit-prop--skull ev-hall__skull"></i>

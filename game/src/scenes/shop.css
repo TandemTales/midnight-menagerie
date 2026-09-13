@@ -30,7 +30,7 @@
   flex: 1 1 auto; min-height: 0;
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, .96fr) minmax(0, 1.15fr);
-  grid-template-rows: minmax(clamp(250px, 36vh, 400px), 1fr) auto;
+  grid-template-rows: minmax(clamp(250px, 34.5vh, 400px), 1fr) auto;
   column-gap: clamp(20px, 2vw, 36px);
   row-gap: clamp(20px, 2.6vh, 26px);
   width: min(1560px, 100%); margin: clamp(10px, 1.2vh, 12px) auto 0;
@@ -88,7 +88,7 @@
   position: relative;
   flex: 1 1 auto; min-height: 0;
   display: flex; justify-content: center; align-items: stretch;
-  gap: calc(var(--frame-pad) * 2 + clamp(14px, 1.8vw, 34px));
+  gap: calc(var(--frame-pad) * 2 + clamp(20px, 3.2vw, 58px));
   padding: var(--frame-pad) var(--frame-pad) 4px;
   width: calc(100% + 2 * clamp(16px, 1.6vw, 28px));
   margin-inline: calc(-1 * clamp(16px, 1.6vw, 28px));
@@ -178,7 +178,7 @@
   --pk: .74;
   --medal-k: 1.05;
   --rib-h: clamp(26px, 3.2vh, 30px);
-  padding: calc(var(--rib-h) * .5 + clamp(6px, 1vh, 10px)) clamp(14px, 1.3vw, 22px) clamp(6px, 1vh, 10px);
+  padding: calc(var(--rib-h) * .5 + clamp(4px, .6vh, 6px)) clamp(14px, 1.3vw, 22px) clamp(6px, 1vh, 10px);
   align-self: stretch;
 }
 /* Keepsakes and Snacks wear their names on a ribbon along the rail, clasped
@@ -324,16 +324,16 @@
    the Kid board's round button set in gold filigree (button-ornate.webp). */
 .sh-moth__frame, .sh-moth { grid-column: 1; grid-row: 1 / 3; align-self: center; justify-self: center; }
 .sh-moth__frame {
-  width: clamp(100px, 7.4vw, 122px); aspect-ratio: 180 / 172;
+  width: clamp(96px, 6.6vw, 110px); aspect-ratio: 180 / 172;
   background: url("../../assets/ui/kit/button-ornate.webp") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 5px 7px rgba(0, 0, 0, .8));
   position: relative; z-index: 0;
 }
 .sh-moth {
   position: relative; z-index: 1;
-  width: calc(clamp(100px, 7.4vw, 122px) * 98 / 180); height: auto; aspect-ratio: 1;
+  width: calc(clamp(96px, 6.6vw, 110px) * 98 / 180); height: auto; aspect-ratio: 1;
   display: block;
-  margin-top: calc(clamp(100px, 7.4vw, 122px) * -.012);
+  margin-top: calc(clamp(96px, 6.6vw, 110px) * -.012);
   padding: 4% 4% 0;
   border-radius: 50%;
   /* lit by his own lamp: warm from the lower right, the enamel deep behind him */
@@ -422,7 +422,7 @@
 .sh-deck:hover { color: #fff1d2; }
 
 /* the shop gives its height to the shelf: its plaque and its way out are drawn a step smaller */
-.scene--shop .kit-titleblock--compact { --cart-h: clamp(98px, 12.2vh, 112px); }
+.scene--shop .kit-titleblock--compact { --cart-h: clamp(98px, 11.2vh, 112px); }
 .scene--shop .kit-titleblock--compact .kit-cartouche__title { font-size: clamp(25px, 2.1vw, 34px); }
 .scene--shop .rm-go { --plate-h: clamp(44px, 5.1vh, 48px); }
 
@@ -486,10 +486,10 @@
   .scene--shop .sh-moth__frame { width: 92px; }
   .scene--shop .sh-moth { width: calc(92px * 98 / 180); }
   .scene--shop .sh-remove__blurb { line-height: 1.2; font-size: 12px; }
-  .scene--shop .sh-counter.sh-counter--moth { padding-top: 18px; padding-bottom: 6px; }
+  .scene--shop .sh-counter.sh-counter--moth { padding-top: 16px; padding-bottom: 6px; }
   .scene--shop .sh-row__txt b { font-size: var(--fs-md); }
   .scene--shop .sh-row__txt em { font-size: 12px; line-height: 1.18; }
-  .scene--shop .sh-moth__line { font-size: var(--fs-xs); }
+  .scene--shop .sh-moth__line { font-size: 11.5px; line-height: 1.25; }
   .scene--shop .sh-row .sh-buy, .scene--shop .sh-remove .sh-buy { --h: 27px; }
   .scene--shop .sh-side > .sh-counter { padding: 20px 12px 5px; }
   .scene--shop .sh-row { padding-block: 3px; }

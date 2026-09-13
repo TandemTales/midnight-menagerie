@@ -31,6 +31,7 @@ What comes out, and how `game/src/ui/kit.css` uses it:
   button                the round purple enamel button, glyph painted out
   button-ornate         the same, seated in its gold filigree
   candle, skull         set dressing (.kit-prop)
+  web-l / web-r         cobweb threads from the board corners (.kit-web)
   grain                 the panels' own grain as a neutral overlay tile
   from UI/mainMenu.png
   hall-*                four details of the mansion, hung as portraits
@@ -511,6 +512,31 @@ def props():
     ], "skull.webp", soft=0.8)
 
 
+def webs():
+    """Cobwebs, threads only, from the board corners (after ui/r0-a's cut).
+
+    A thread is a fine line a little brighter than what is behind it and not
+    saturated: high-pass the luminance, keep the low-saturation strokes, drop
+    the violet scrollwork and the gold under them. The web hangs from its
+    corner, so everything past the far diagonal fades out.
+    """
+    for name, sheet, box, corner in (("web-l.webp", SC, (0, 0, 138, 196), "tl"),
+                                     ("web-r.webp", SK, (1240, 12, 1432, 172), "tr")):
+        rgb = crop(sheet, box)
+        L = lum(rgb)
+        mx, mn = rgb.max(axis=2), rgb.min(axis=2)
+        sat = (mx - mn) / (mx + 1)
+        t = np.clip((L - ndimage.gaussian_filter(L, 6) - 6) / 40.0, 0, 1)
+        t = t * (sat < 0.42) * ~violet(rgb) * ~(warm(rgb) & (sat > 0.45))
+        a = np.clip(t * 1.25, 0, 1)
+        h, w = a.shape
+        yy, xx = np.mgrid[0:h, 0:w]
+        u = xx / w if corner == "tl" else 1 - xx / w
+        a = a * np.clip((1.05 - (u + yy / h)) / 0.25, 0, 1)
+        col = np.array([196, 180, 158], np.float32) * 0.55 + rgb * 0.45
+        save(rgba(col, a), name, 90)
+
+
 def periodic_noise(n, rng, beta=2.0, lo_cut=1.0):
     """Seamless 1/f^beta noise on an n x n torus, normalised to [-1, 1]."""
     f = np.fft.fftfreq(n)
@@ -913,6 +939,7 @@ def main():
     button()
     button_ornate()
     props()
+    webs()
 
 
 if __name__ == "__main__":

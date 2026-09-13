@@ -237,15 +237,22 @@
   padding: 0 .4em;
 }
 
-/* the "no run yet" state is labelled, never silently fake */
-.mm-hud.is-mock { box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--warn-500) 80%, transparent); }
+/* the "no run yet" state is labelled, never silently fake: an engraved
+   amber word on a small dark cartouche at the head of the rail */
 .mm-hud.is-mock::before {
   content: 'preview';
-  font-size: var(--fs-xs); letter-spacing: .14em; text-transform: uppercase;
+  display: inline-flex; align-items: center;
+  height: calc(var(--hud-chip-h) * .92);
+  padding: 0 1.1em;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: var(--fs-xs); letter-spacing: .18em; text-transform: uppercase;
   color: var(--warn-300);
-  border: 1px dashed var(--warn-500);
-  border-radius: var(--radius-sm);
-  padding: 0 .4em;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/cartouche-dark.webp");
+  border-image-slice: 18 34 18 34 fill;
+  border-image-width: calc(var(--hud-chip-h) * .92 * 18 / 64) calc(var(--hud-chip-h) * .92 * 34 / 64);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .7));
 }
 
 /* ── the combat variant ───────────────────────────────────────────────────

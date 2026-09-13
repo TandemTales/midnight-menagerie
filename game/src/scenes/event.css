@@ -216,7 +216,7 @@
   --wl3-w: clamp(300px, 29vw, 470px);            --wl3-h: calc(var(--wl3-w) * 1.4);
   --wl4-x: calc(100vw - var(--sconce-cx));       --wl4-y: var(--flame-y);
   --wl4-w: var(--wl3-w);                         --wl4-h: var(--wl3-h);
-  --wl5-x: calc(var(--page-edge) - clamp(96px, 8vw, 130px)); --wl5-y: calc(var(--floor-y) - 40px);
+  --wl5-x: max(calc(var(--win-cx) + 58px), calc(var(--page-edge) - clamp(96px, 8vw, 130px))); --wl5-y: calc(var(--floor-y) - 40px);
   --wl5-w: clamp(260px, 24vw, 400px);            --wl5-h: calc(var(--wl5-w) * .9);
   --wl6-x: calc(100vw - var(--wl5-x));           --wl6-y: var(--wl5-y);
   --wl6-w: var(--wl5-w);                         --wl6-h: var(--wl5-h);
@@ -235,13 +235,17 @@
 .ev-hall__window { top: var(--win-top); }
 .ev-hall__window--l { left: calc(var(--win-cx) - var(--win-w) / 2); }
 .ev-hall__window--r { right: calc(var(--win-cx) - var(--win-w) / 2); }
+/* a web strung from the wall's outer border to the window's arch */
+.ev-hall__web { top: calc(var(--win-top) - var(--win-h) * .04); }
+.ev-hall__web--l { --web-w: calc(var(--win-w) * .95); left: calc(var(--win-cx) - var(--win-w) * 1.02); }
+.ev-hall__web--r { --web-w: calc(var(--win-w) * 1.25); right: calc(var(--win-cx) - var(--win-w) * 1.1); }
 .ev-hall__sconce { top: var(--sconce-top); }
 .ev-hall__sconce--l { left: calc(var(--sconce-cx) - var(--sconce-w) / 2); }
 .ev-hall__sconce--r { right: calc(var(--sconce-cx) - var(--sconce-w) / 2); }
 .ev-hall__candle { bottom: clamp(70px, 10vh, 96px); width: clamp(48px, 4vw, 68px); filter: brightness(.95); }
 .ev-hall__candle--l { left: calc(var(--wl5-x) - clamp(48px, 4vw, 68px) / 2); }
 .ev-hall__candle--r { right: calc(var(--wl5-x) - clamp(48px, 4vw, 68px) / 2); }
-.ev-hall__skull { bottom: clamp(66px, 9.6vh, 92px); left: calc(var(--win-cx) - clamp(58px, 5vw, 86px) / 2); width: clamp(58px, 5vw, 86px); filter: brightness(.8); }
+.ev-hall__skull { bottom: clamp(66px, 9.6vh, 92px); left: calc(var(--win-cx) - clamp(58px, 5vw, 86px) * .62); width: clamp(58px, 5vw, 86px); filter: brightness(.8); }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    THE RESCUE

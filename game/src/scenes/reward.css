@@ -210,20 +210,39 @@
    Reward
    =========================================================================== */
 
-/* The room's light: the two candles in the frame's lower corners light the
-   alcove's panelling and floor round them (the ground's light slots, see
-   ui/kit.css .kit-ground), and a little moonlight falls on the wall over the
-   title from a window out of frame. */
+/* The board's geometry, in viewport units so the room's light can be pointed
+   at the things standing in it: the stage, the three frames, and the alcove
+   either side of them where a window looks out on the grounds. */
 .rm--reward {
-  --stage-half: min(720px, (100vw - 2 * var(--rm-pad) - 2 * var(--kit-vine-w) - 30px) / 2);
+  --stage-w: min(1440px, 100vw - 2 * var(--rm-pad) - 2 * var(--kit-vine-w) - 30px);
+  --stage-half: calc(var(--stage-w) / 2);
+  --slot-h: min(21.6vw, 38vh);
+  --slot-w: calc(var(--slot-h) * var(--card-aspect));
+  --frame-pad: clamp(16px, 1.5vw, 24px);
+  --fan-gap: calc(var(--frame-pad) * 2 + clamp(18px, 2vw, 34px));
+  --fan-half: calc(var(--slot-w) * 1.5 + var(--fan-gap) + var(--frame-pad));
+  --win-w: clamp(88px, 7vw, 118px);
+  --win-h: calc(var(--win-w) * 680 / 300);
+  --win-cx: calc(50vw - var(--stage-w) / 4 - var(--fan-half) / 2);
   --candle-cx: calc(50vw - var(--stage-half) + clamp(34px, 3.4vw, 60px) + clamp(50px, 4.2vw, 72px) / 2);
+  /* candle light: the two candles in the frame's lower corners light the
+     alcove's panelling and floor round them (ui/kit.css .kit-ground) */
   --wl3-x: var(--candle-cx);                 --wl3-y: calc(100vh - clamp(150px, 20vh, 190px));
   --wl3-w: clamp(360px, 34vw, 560px);        --wl3-h: calc(var(--wl3-w) * 1.05);
   --wl4-x: calc(100vw - var(--candle-cx));   --wl4-y: var(--wl3-y);
   --wl4-w: var(--wl3-w);                     --wl4-h: var(--wl3-h);
-  --ml1-x: 50vw;                             --ml1-y: calc(var(--hud-h) + 6vh);
-  --ml1-w: 70vw;                             --ml1-h: 44vh;
+  /* moonlight: a glow round each window and a shaft falling from it */
+  --ml1-x: var(--win-cx);                    --ml1-y: calc(var(--win-top-vp) + var(--win-h) * .42);
+  --ml1-w: calc(var(--win-w) * 3.2);         --ml1-h: calc(var(--win-h) * 1.6);
+  --ml2-x: calc(100vw - var(--win-cx));      --ml2-y: var(--ml1-y);
+  --ml2-w: var(--ml1-w);                     --ml2-h: var(--ml1-h);
+  --mb1-x: calc(var(--win-cx) + var(--win-w) * .5); --mb1-y: calc(var(--win-top-vp) + var(--win-h) * .35);
+  --mb1-w: calc(var(--win-w) * 2.4);         --mb1-h: calc(100vh - var(--mb1-y));
+  --mb2-x: calc(100vw - var(--mb1-x));       --mb2-y: var(--mb1-y);
+  --mb2-w: var(--mb1-w);                     --mb2-h: var(--mb1-h);
+  --win-top-vp: calc(var(--hud-h) + 39vh);
 }
+.rm--reward:has(.rw-keepsake) { --slot-h: min(18vw, 29vh); }
 
 /* One axis. The room title sat hard against the top-left corner while the
    spoils, the heading and the three Tricks were all centred, which left an
@@ -241,8 +260,8 @@
   overflow-y: auto; scrollbar-color: var(--kit-gold-lo) transparent;
 }
 .scene--reward .rm-body > .rw-stage { margin-block: auto; flex: none; }
-/* a Big Scare also hands over a Keepsake: the frames give it the room */
-.rw-stage:has(.rw-keepsake) .rw-cards { --slot-h: min(18vw, 29vh); }
+/* a Big Scare also hands over a Keepsake: the frames give it the room
+   (.rm--reward:has(.rw-keepsake) above) */
 
 /* the stage: the kit's filigree frame, its top rule running through the
    middle of the spoils' cartouches with the crest medallion between them,
@@ -252,7 +271,7 @@
   --stage-medal-w: clamp(100px, 7.8vw, 128px);
   display: flex; flex-direction: column; align-items: center;
   gap: clamp(2px, .6vh, 8px);
-  width: min(1440px, 100% - 2 * var(--kit-vine-w, 40px) - 30px);
+  width: var(--stage-w);
   padding: 0 0 clamp(16px, 2.2vh, 26px);
 }
 .rw-stage::before { top: calc(var(--spoil-h) / 2); }
@@ -290,8 +309,6 @@
 .rw-keepsake i  { display: block; font-size: var(--fs-xs); color: var(--kit-text-lo); margin-top: 2px; }
 
 .rw-cards {
-  --slot-h: min(21.6vw, 38vh);
-  --slot-w: calc(var(--slot-h) * var(--card-aspect));
   position: relative;
   display: flex; flex-direction: column; align-items: center; gap: clamp(2px, .5vh, 6px); width: 100%;
 }
@@ -303,6 +320,10 @@
 }
 .rw-candle--l { left: clamp(34px, 3.4vw, 60px); }
 .rw-candle--r { right: clamp(34px, 3.4vw, 60px); }
+/* a gothic window on the alcove's back wall either side of the frames */
+.rw-window { z-index: 0; top: calc(var(--slot-h) * .3); }
+.rw-window--l { left: calc(var(--stage-w) / 4 - var(--fan-half) / 2 - var(--win-w) / 2); }
+.rw-window--r { right: calc(var(--stage-w) / 4 - var(--fan-half) / 2 - var(--win-w) / 2); }
 /* the heading hangs below the crest's lower tip (49/98 of the medallion is
    below the rule) */
 .rw-cards__head { text-align: center; position: relative; z-index: 2; margin-top: calc(var(--stage-medal-w) * 49 / 156 - var(--spoil-h) / 2 + 8px); }
@@ -310,8 +331,6 @@
 
 /* ── the three Tricks, each hung in a painted portrait frame ──────────────── */
 .rw-fan {
-  --frame-pad: clamp(16px, 1.5vw, 24px);
-  --fan-gap: calc(var(--frame-pad) * 2 + clamp(18px, 2vw, 34px));
   position: relative;
   display: flex; align-items: flex-end; justify-content: center;
   gap: var(--fan-gap);
@@ -429,7 +448,7 @@
 .is-large .rm-sub, .is-large .rm-live { font-size: var(--fs-md); }
 
 @media (max-width: 1200px) {
-  .rw-cards { --slot-h: min(21vw, 38vh); }
+  .rm--reward { --slot-h: min(21vw, 38vh); }
 }
 
 /* ── Clues and Luck in the room HUD ────────────────────────────────────────

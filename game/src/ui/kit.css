@@ -819,6 +819,16 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 }
 .kit-board.has-backdrop .kit-window { display: none; }
 
+/* a cobweb hung in a corner, threads only (web-l / web-r, prep_ui_kit.py);
+   --l hangs from its top-left, --r from its top-right; size with --web-w */
+.kit-web {
+  position: absolute; pointer-events: none;
+  width: var(--web-w, 130px); aspect-ratio: 138 / 196;
+  background: url("../../assets/ui/kit/web-l.webp") 0 0 / 100% 100% no-repeat;
+  opacity: .8;
+}
+.kit-web--r { aspect-ratio: 192 / 160; background-image: url("../../assets/ui/kit/web-r.webp"); }
+
 .kit-sconce {
   position: absolute; pointer-events: none;
   width: var(--sconce-w, 64px); aspect-ratio: 150 / 330;
