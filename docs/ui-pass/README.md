@@ -40,6 +40,10 @@ decision rule (`refine`: one winner; `expand`: per screen) and three builders
 with their slot, code, port and angle. The worktrees and the baselines must
 exist before it starts; its header says where each goes. It returns every
 build, every verdict, the means, the winner and the screen winners per track.
+`maxBuilders` caps how many builders run at once across every track, and a
+queued builder starts the moment any builder returns. Each builder runs a dev
+server and a Chromium, and one capture peaks near 0.9 GB on Josh's 16 GB laptop,
+so round 2 runs six at once, as round 1 did.
 
 ## Traps this pass has already paid for
 

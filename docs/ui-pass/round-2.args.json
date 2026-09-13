@@ -1,5 +1,6 @@
 {
   "round": "r2",
+  "maxBuilders": 6,
   "briefs": ["docs/ui-pass/BRIEF-r0.md", "docs/ui-pass/BRIEF-r1.md", "docs/ui-pass/BRIEF-r2.md"],
   "rubrics": ["docs/ui-pass/RUBRIC.md", "docs/ui-pass/RUBRIC-r1.md", "docs/ui-pass/RUBRIC-r2.md"],
   "samples": ["UI/title.png", "UI/mainMenu.png", "UI/selectCompanion.png", "UI/selectKid.png"],

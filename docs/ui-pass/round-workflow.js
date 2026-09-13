@@ -18,7 +18,8 @@ export const meta = {
 // worktree ${uiloop}/wt/<round>-<track key>-<slot> on branch
 // ui/<round>-<track key>-<slot>, and every baseline capture
 // ${uiloop}/judging/<round>/<track key>/<baseline code>/<screen>(-1280).png,
-// must exist before launch. Pass a subset of tracks to run fewer at once.
+// must exist before launch. Pass a subset of tracks to run fewer at once, or
+// maxBuilders to queue builders across every track (see buildSlot).
 
 const A = args
 const at = p => `${A.repo}/${p}`
@@ -173,9 +174,31 @@ function disagree(T, verdicts) {
   return T.screens.some(s => (a.screen_winners.find(w => w.screen === s) || {}).code !== (b.screen_winners.find(w => w.screen === s) || {}).code)
 }
 
+// Every builder runs a dev server and a Chromium, and one capture peaks near
+// 0.9 GB on Josh's 16 GB laptop, so nine at once is more than it holds (round 1
+// ran six). maxBuilders caps them across all tracks: a queued builder starts the
+// moment any builder returns. Judges read images only and never queue.
+const MAX_BUILDERS = A.maxBuilders || Infinity
+let building = 0
+const waiting = []
+async function buildSlot(label, run) {
+  if (building < MAX_BUILDERS) building++
+  else {
+    log(`${label} queued: ${MAX_BUILDERS} builders already running`)
+    await new Promise(resolve => waiting.push(resolve))
+  }
+  try { return await run() }
+  finally {
+    const next = waiting.shift()
+    if (next) next()  // the slot passes straight to the next builder
+    else building--
+  }
+}
+
 async function track(T) {
   const built = await parallel(T.builders.map(b => () =>
-    agent(builderPrompt(T, b), { label: `${T.name} build ${b.code}`, phase: 'Build', schema: BUILD })))
+    buildSlot(`${T.name} build ${b.code}`, () =>
+      agent(builderPrompt(T, b), { label: `${T.name} build ${b.code}`, phase: 'Build', schema: BUILD }))))
   const builds = built.filter(Boolean)
   log(`${T.name}: ${builds.length}/${T.builders.length} builders returned: ` + builds.map(b => `${b.code} self ${b.self_score ?? '?'}, endings ${b.endings_ok ? 'ok' : 'NOT OK'}, ${b.console_errors} console errors`).join('; '))
   if (!builds.length) return { track: T.name, rule: T.rule, builds, verdicts: [], winner: null, screenWinners: {}, summary: [] }
