@@ -137,7 +137,7 @@
 .rm-mockflag {
   position: absolute; left: 50%; bottom: calc(var(--kit-edge, 10px) + 3px); transform: translateX(-50%);
   z-index: 6; padding: 2px 12px; white-space: nowrap;
-  font-family: var(--font-display); font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase;
+  font-family: var(--font-display); font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
   color: var(--kit-text-lo);
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-void) 88%, transparent) 16%, color-mix(in srgb, var(--kit-void) 88%, transparent) 84%, transparent);
 }

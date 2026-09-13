@@ -124,10 +124,23 @@ def keyed(name, box, lo, hi, bg, gamma=1.0, soft=0.6, **fe):
 def corners():
     # selectCompanion's top band: cobweb, a lit candle on a brass stick, purple
     # scrollwork. The band ends where the cartouche rim and the tile rails start.
-    left = keyed(SC, (0, 0, 292, 178), lo=9, hi=46, bg=(7, 5, 7), right=70, bottom=26)
-    right = keyed(SC, (962, 0, 1254, 178), lo=9, hi=46, bg=(7, 5, 7), left=70, bottom=26)
-    save(left, "corner-l.webp", 88)
-    save(right, "corner-r.webp", 88)
+    # Keyed from lum 17, not 9: the painting's own ground sits at lum 8-16 and,
+    # kept at partial alpha, it laid a faint dark rectangle over the board's wall.
+    for name, box, fe in [("corner-l.webp", (0, 0, 292, 178), dict(right=80, bottom=34)),
+                          ("corner-r.webp", (962, 0, 1254, 178), dict(left=80, bottom=34))]:
+        rgb = crop(SC, box)
+        l = blur(lum(rgb), 0.6)
+        # Two keys. Far from anything lit, only real ornament survives (lum 17+).
+        # Close to a lit edge the painting's darks are the object's own shadow
+        # side (the candlestick's stem, the scroll's undercut) and are kept.
+        far = ramp(l, 17, 58)
+        near = ramp(l, 7, 30)
+        lit = l > 34
+        d = ndimage.distance_transform_edt(~lit)
+        w = np.clip(1.0 - (d - 3.0) / 5.0, 0, 1)
+        a = far * (1 - w) + near * w
+        a = feather(a, **fe)
+        save(rgba(unmix(rgb, a, (7, 5, 7)), a), name, 88)
 
 
 def vines():
@@ -377,6 +390,13 @@ def flanks():
             keep = np.isin(lab, 1 + np.nonzero(sizes >= 40)[0])   # drop specks
             purple = keep
         a = blur(ndimage.binary_dilation(purple, iterations=1).astype(np.float32), 0.6) * ramp(l, 6, 30)
+        # grey blobs of cobweb and frame reach into the box: keep only the violet
+        lab, n = ndimage.label(a > 0.15)
+        if n:
+            chroma = rgb[..., 2] - rgb[..., 1]
+            mean_c = ndimage.mean(chroma, lab, range(1, n + 1))
+            grey = np.isin(lab, 1 + np.nonzero(np.asarray(mean_c) < 7)[0])
+            a = np.where(ndimage.binary_dilation(grey, iterations=2), 0, a)
         a = feather(a, **fe)
         save(rgba(unmix(rgb, a, (7, 5, 9)), a), name, 90)
 
