@@ -170,7 +170,7 @@
 }
 .lo__back { --plate-h: clamp(46px, 5.8vh, 52px); font-size: clamp(13px, 1vw, 15.5px); }
 .lo__enter:disabled, .lo__go:disabled { opacity: .5; }
-.lo-btn kbd { margin-left: 2px; }
+.lo-btn kbd { margin-left: 2px; font-size: 12px; }
 
 /* the lit primary breathes a little candlelight, as the Shop's way on does */
 .lo__enter::before, .lo__go:not(:disabled)::before {

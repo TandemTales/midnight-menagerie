@@ -1353,7 +1353,8 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 }
 .kit-tab:focus-visible {
   outline: none;
-  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) drop-shadow(0 0 2px var(--kit-gold-hi)) drop-shadow(0 0 12px color-mix(in srgb, var(--kit-candle) 60%, transparent)) brightness(1.12);
+  color: #fff1d2;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 14px color-mix(in srgb, var(--kit-candle) 70%, transparent)) brightness(1.18);
 }
 
 /* ── ledger ─────────────────────────────────────────────────────────────────

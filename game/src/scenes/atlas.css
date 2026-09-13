@@ -102,7 +102,7 @@
   gap: .55em;
 }
 .at-tally .kit-enamel__value { font-size: calc(var(--h) * .56); }
-.at-tally .kit-enamel__label { font-size: clamp(11px, .82vw, 12.5px); color: var(--kit-text); }
+.at-tally .kit-enamel__label { font-size: clamp(12px, .84vw, 13px); color: var(--kit-text); letter-spacing: .16em; }
 
 /* ── body ─────────────────────────────────────────────────────────────────── */
 .at-body {
@@ -291,8 +291,8 @@
     calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
   white-space: nowrap;
   font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(11px, .82vw, 13px);
-  letter-spacing: .1em; text-transform: uppercase;
+  font-size: clamp(12px, .84vw, 13.5px);
+  letter-spacing: .08em; text-transform: uppercase;
   color: var(--kit-gold-hi);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
   filter: drop-shadow(0 3px 4px rgba(20, 10, 4, .55));
@@ -321,9 +321,9 @@
   gap: var(--s-5);
   align-items: center;
   font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(10.5px, .78vw, 12px);
+  font-size: clamp(12px, .8vw, 13px);
   color: color-mix(in srgb, var(--graphite) 94%, black);
-  letter-spacing: .16em;
+  letter-spacing: .14em;
   text-transform: uppercase;
   pointer-events: none;
 }
@@ -379,7 +379,7 @@
 .at-dos__rule { display: none; }
 
 /* "✦ SECTION I ✦" */
-.at-dos__no { font-size: clamp(11px, .8vw, 12.5px); }
+.at-dos__no { font-size: clamp(12px, .84vw, 13px); }
 .at-dos__no b { font-family: var(--font-num); font-size: 1.25em; color: var(--kit-lav); letter-spacing: .06em; }
 
 /* the wing's nameplate: the Companion board's dark notched plate, the name in
@@ -429,7 +429,7 @@
 .at-dos__heldlbl {
   margin-bottom: 7px;
   font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(10.5px, .78vw, 12px); letter-spacing: .22em;
+  font-size: clamp(12px, .8vw, 12.5px); letter-spacing: .2em;
   color: var(--kit-gold);
 }
 /* `.pf`'s art is absolutely positioned, so the plate has no intrinsic height —
@@ -456,7 +456,7 @@
 
 .at-dos__lbl {
   font-family: var(--font-display); font-weight: 700;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: .18em;
   text-transform: uppercase;
   color: var(--kit-text-lo);
@@ -464,7 +464,7 @@
 
 /* who keeps it, how deep, how far surveyed: one engraved strip */
 .at-dos__facts { margin: 0; padding-block: 10px 9px; }
-.at-dos__facts dt { font-size: 10.5px; }
+.at-dos__facts dt { font-size: 12px; letter-spacing: .12em; }
 .at-dos__facts dd { margin: 0; font-size: clamp(16px, 1.2vw, 19px); white-space: nowrap; }
 .at-dossier[data-seen="0"] .at-dos__boss { font-style: italic; font-size: clamp(14px, 1vw, 16px); color: var(--kit-text-mid); }
 .at-dossier[data-seen="0"] .at-dos__state { color: var(--kit-text-mid); font-style: italic; }
