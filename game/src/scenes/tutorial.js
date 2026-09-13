@@ -43,7 +43,7 @@ import { Scene } from '../core/scenes.js';
 import { bus } from '../core/bus.js';
 import { Save } from '../core/save.js';
 import { clock } from '../core/clock.js';
-import { KIDS } from '../data/schema.js';
+import { KIDS, COMPANIONS } from '../data/schema.js';
 import {
   ensureCss, fontsReady, el, rovingFocus, kidImg, heroSrc,
   setReduceMotion, reduceMotion, freedCompanions, warmFaces,
@@ -184,6 +184,13 @@ const PAGES = [
 ];
 
 const FIRST_AFTER = PAGES.findIndex((p) => p.after);
+/** The page on which the story names her: her nameplate is blank before it. */
+const NAMED_AT = PAGES.findIndex((p) => p.id === 'name');
+
+/** The glyphs the story sets in enamel, drawn like the boards' (reward.js KIT_GLYPH). */
+const TUT_GLYPH = {
+  onward: '<svg viewBox="0 0 24 24"><path d="M3.5 9.6h9.2V5.2L21 12l-8.3 6.8v-4.4H3.5z"/></svg>',
+};
 
 export class TutorialScene extends Scene {
   constructor(ctx) {
@@ -223,6 +230,8 @@ export class TutorialScene extends Scene {
     this.root.classList.add('tut-root');
     this.root.innerHTML = '';
     this.root.appendChild(el('div', 'tut-veil'));
+    this.root.appendChild(this._buildDress());
+    this.root.appendChild(this._buildPlaque());
 
     const stage = this._stage = el('div', 'tut-stage');
     stage.appendChild(this._buildFigure());
@@ -248,6 +257,42 @@ export class TutorialScene extends Scene {
   }
 
   /* ── the stage ──────────────────────────────────────────────────────────── */
+  /**
+   * THE STORY IS TOLD ON THE BOARDS' OWN PIECES (ui/kit.css), over the lit room:
+   * the kit's gilt rule round the screen with the Kid board's corner candles,
+   * cobwebs and vines (`.kit-dress`, as a fight wears it); the page a
+   * `.kit-panel` with its moon medallion, like a Curiosity's; the figure in
+   * the Kid board's portrait frame (`.kit-frame--over`) over a nameplate
+   * (`.kit-plate`); the beats a `.kit-ladder` of enamel medallions; Go on and
+   * Skip nameplate buttons (`.kit-btn`). None of it is a ground: the room shows
+   * through everywhere the dressing is not.
+   */
+  _buildDress() {
+    const d = el('div', 'kit-dress tut-dress');
+    d.setAttribute('aria-hidden', 'true');
+    d.innerHTML =
+      '<div class="kit-dress__rule"></div>'
+      + '<div class="kit-dress__vine kit-dress__vine--l tut-dress__vine"></div>'
+      + '<div class="kit-dress__vine kit-dress__vine--r tut-dress__vine"></div>'
+      + '<div class="kit-dress__corner kit-dress__corner--l"></div>'
+      + '<div class="kit-dress__corner kit-dress__corner--r"></div>'
+      + '<div class="kit-dress__flame kit-dress__flame--l"></div>'
+      + '<div class="kit-dress__flame kit-dress__flame--r"></div>'
+      + '<div class="kit-dress__footscroll"></div>'
+      /* the page is the lit thing in the room: a candle's pool on the floor and
+         wall behind the story, breathing (.kit-light, still under reduced motion) */
+      + '<div class="kit-light kit-light--candle tut-light"></div>';
+    return d;
+  }
+
+  /* Every board names itself on title.png's cartouche between its corner
+     candles; the story's board is the first night. */
+  _buildPlaque() {
+    const p = el('div', 'tut-plaque kit-titleblock kit-titleblock--compact');
+    p.innerHTML = '<p class="kit-cartouche__title tut-plaque__title">The First Night</p>';
+    return p;
+  }
+
   _buildFigure() {
     const f = this._fig = el('div', 'tut-fig');
     f.setAttribute('aria-hidden', 'true');
@@ -255,14 +300,15 @@ export class TutorialScene extends Scene {
   }
 
   _buildPanel() {
-    const p = this._panel = el('section', 'tut-panel');
+    const p = this._panel = el('section', 'tut-panel kit-panel kit-panel--damask');
+    p.dataset.medal = 'moon';
     p.innerHTML = `
       <h1 class="tut-head"></h1>
       <p class="tut-sub"></p>
       <div class="tut-lines"></div>
       <div class="tut-foot">
-        <span class="tut-dots" aria-hidden="true"></span>
-        <button class="tut-next" type="button">Go on</button>
+        <span class="tut-dots kit-ladder" aria-hidden="true"></span>
+        <button class="tut-next kit-btn" type="button"><span class="tut-next__words">Go on</span><i class="kit-medallion kit-medallion--ornate kit-btn__medal tut-next__medal" aria-hidden="true">${TUT_GLYPH.onward}</i></button>
       </div>`;
 
     return p;
@@ -340,7 +386,7 @@ export class TutorialScene extends Scene {
   }
 
   _buildSkip() {
-    const s = el('button', 'tut-skip');
+    const s = el('button', 'tut-skip kit-btn kit-btn--quiet');
     s.type = 'button';
     s.innerHTML = 'Skip &mdash; I know the house';
     s.addEventListener('click', () => this._skip());
@@ -428,7 +474,8 @@ export class TutorialScene extends Scene {
     if (picking) this._previewKid(this.kid || this._hover || KIDS[0].slug);
 
     const next = panel.querySelector('.tut-next');
-    next.textContent = p.cta || 'Go on';
+    /* the words only: the enamel medallion seated on the plate's end stays */
+    next.querySelector('.tut-next__words').textContent = p.cta || 'Go on';
     /* Nothing to press until somebody has been chosen. The strip is the page. */
     next.hidden = picking;
 
@@ -458,12 +505,15 @@ export class TutorialScene extends Scene {
     }
   }
 
+  /* the beats as the kit's ladder: a round enamel medallion for each page on a
+     brass rod, the page you are on set in the round button's gold filigree */
   _dots() {
     const host = this._panel.querySelector('.tut-dots');
     const total = PAGES.length;
     host.innerHTML = '';
     for (let n = 0; n < total; n++) {
-      const d = el('i', 'tut-dot' + (n === this.i ? ' is-on' : n < this.i ? ' is-past' : ''));
+      const d = el('i', 'tut-dot kit-ladder__rung' + (n === this.i ? ' is-on' : n < this.i ? ' is-past' : ''));
+      if (n === this.i) d.setAttribute('aria-checked', 'true');
       host.appendChild(d);
     }
   }
@@ -476,11 +526,20 @@ export class TutorialScene extends Scene {
   _setFigure(which, k) {
     const f = this._fig;
     if (!which || (which === 'kid' && !k)) { f.innerHTML = ''; f.dataset.who = ''; return; }
-    if (f.dataset.who === which + (which === 'kid' ? ':' + k.slug : '')) return;
-    f.dataset.who = which + (which === 'kid' ? ':' + k.slug : '');
+    /* She has no name until the story finds her collar tag, so until then her
+       nameplate is not hung; from that page on it reads as her tile does. */
+    const named = which !== 'kid' && this.i >= NAMED_AT;
+    const who = which + (which === 'kid' ? ':' + k.slug : named ? ':named' : '');
+    if (f.dataset.who === who) return;
+    f.dataset.who = who;
     f.innerHTML = '';
+    /* the Kid board's portrait frame, its rail and corner scrolls lying ON the
+       picture, and the Companion tiles' nameplate over the foot of it */
+    const frame = el('div', 'tut-frame kit-frame kit-frame--over' + (which === 'kid' ? '' : ' tut-frame--ghost'));
+    let plate = null;
     if (which === 'kid') {
-      f.appendChild(kidImg(k.slug, { className: 'tut-fig__img kidpf' }));
+      frame.appendChild(kidImg(k.slug, { className: 'tut-fig__img kidpf' }));
+      plate = [k.name, `looking for ${k.pet}`];
     } else {
       const img = document.createElement('img');
       img.className = 'tut-fig__img tut-fig__img--ghost';
@@ -488,8 +547,24 @@ export class TutorialScene extends Scene {
       img.alt = '';
       img.decoding = 'async';
       img.draggable = false;
-      f.appendChild(img);
+      frame.appendChild(img);
+      const c = COMPANIONS.find((x) => x.slug === 'marmalade');
+      if (named && c) plate = [c.name, c.title];
     }
+    /* one box holds the frame and everything hung on it, so the box is exactly
+       the frame's height (the page beside it matches that) and the nameplate
+       and props stay on the frame however tall the page grows */
+    const box = el('div', 'tut-figbox');
+    box.appendChild(frame);
+    if (plate) {
+      box.appendChild(el('div', 'tut-plate kit-plate',
+        `<span class="kit-plate__name">${esc(plate[0])}</span><span class="kit-plate__epithet">${esc(plate[1])}</span>`));
+    }
+    /* stood on the floor the way the Kid board's mirror is: a skull on its
+       books at one foot of the frame, a lit candle at the other (.kit-prop) */
+    box.appendChild(el('i', 'kit-prop kit-prop--skull tut-prop tut-prop--skull'));
+    box.appendChild(el('i', 'kit-prop kit-prop--candle tut-prop tut-prop--candle'));
+    f.appendChild(box);
   }
 
   /* ── the Kid ────────────────────────────────────────────────────────────── */

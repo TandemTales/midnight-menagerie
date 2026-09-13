@@ -1,151 +1,273 @@
-/* Settings panel. OWNER: ui-chrome agent. Paired with ui/settings.js. */
+/* Settings panel. OWNER: ui-chrome agent. Paired with ui/settings.js.
 
-.mm-set { display: flex; flex-direction: column; gap: var(--s-4); }
+   Inside the kit panel (ui/modal.css), and built from the kit's own pieces,
+   which settings.js puts on as classes:
+     a group             .kit-panel             one of the Kid board's railed
+                                                panels, laid out as its dossier is
+     a group's heading   .kit-heading--ribbon   the gold ribbon banner across the
+                                                panel's top rail ("✦ SOUND ✦")
+     a slider / switch   .kit-tube--warm        the Courage bar's brass tube, its
+                                                amber enamel filled to the value,
+                                                the round enamel button its knob
+     a value, a state    .kit-enamel--dark      the Companion tiles' cartouche
+     a choice            .kit-btn / --quiet     nameplates, the chosen one lit
+     the next seed       .kit-field             lettered onto a nameplate
+     save / reset        .kit-btn               nameplates
+   Every control is still the real element — a range input, a switch button, a
+   text input — so the keyboard, the pad and assistive tech drive it as one.
+   This sheet lays the dossier out and seats those pieces; it paints no frame. */
 
-.mm-set__group {
-  margin: 0; padding: var(--s-3) var(--s-4) var(--s-4);
-  border: 1px solid color-mix(in srgb, var(--surface-line) 65%, transparent);
-  border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--ink-900) 30%, transparent);
+/* the dossier: the dialog opens wide enough for two columns of panels */
+.mm-settings-modal .mm-modal__dialog { width: min(100%, 68rem); }
+
+.mm-set {
+  --rib-h: clamp(28px, 3.6vh, 34px);
+  --row-pad: 7px;                       /* above a row, a pixel more below */
+  --hint-fs: max(12.5px, var(--fs-xs));
+  --slot-h: 32px;  --knob: 28px;         /* a slider */
+  --sw-w: 64px;    --sw-h: 30px;         /* a switch */
+  --read-h: 32px;                       /* a reading's cartouche */
+  --choice-h: 38px;
+  --panel-top: 10px;                    /* under a panel's ribbon */
+  --cell-top: 12px;                     /* over a cell's first ribbon */
+  --stack: clamp(16px, 2.4vh, 22px);    /* between two panels in a column */
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: clamp(6px, 1vh, 10px) clamp(26px, 2.6vw, 40px);
+  padding: 0 4px 16px;
 }
-.mm-set__group--danger { border-color: color-mix(in srgb, var(--threat-500) 70%, transparent); }
-.mm-set__legend {
-  padding: 0 .5em;
-  font-family: var(--font-display);
-  font-size: var(--fs-sm);
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--flame-300);
+/* The Deck's 800 px: the same dossier a notch tighter, so both columns' first
+   two panels stand whole above the buttons. */
+@media (max-height: 860px) {
+  .mm-set {
+    --row-pad: 5px; --hint-fs: 12px;
+    --slot-h: 28px; --knob: 24px;
+    --sw-w: 58px;   --sw-h: 26px;
+    --read-h: 28px; --choice-h: 34px;
+    --panel-top: 6px; --cell-top: 10px; --stack: 14px;
+  }
 }
-.mm-set__group--danger .mm-set__legend { color: var(--threat-200); }
 
+/* A cell of the dossier: its panels stacked. The two cells of a row are as
+   tall as each other, the shorter one's panels spread apart, so a row's two
+   columns end on the same line and the next row starts level. */
+.mm-set__col {
+  display: flex; flex-direction: column; justify-content: space-between;
+  gap: calc(var(--rib-h) * .5 + var(--stack));
+  min-width: 0;
+  padding-top: calc(var(--rib-h) * .5 + var(--cell-top));   /* the first ribbon's upper half */
+}
+/* what scrolls under the plaque or the buttons fades into the damask rather
+   than being cut off by the edge of the scroll */
+.mm-modal__body:has(> .mm-set) {
+  --fade: clamp(30px, 5vh, 44px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 10px, black calc(100% - var(--fade)), transparent 100%);
+          mask-image: linear-gradient(to bottom, transparent 0, black 10px, black calc(100% - var(--fade)), transparent 100%);
+}
+
+/* a group: one of the Kid board's railed panels */
+.mm-set__group.kit-panel {
+  --pk: .7;
+  margin: 0; min-width: 0;
+  padding: calc(var(--rib-h) * .5 + var(--panel-top)) clamp(16px, 1.5vw, 24px) calc(var(--row-pad) + 1px);
+}
+
+/* its ribbon across the top rail (an absolutely placed legend) */
+.mm-set__legend.kit-heading--ribbon {
+  --rib-h: clamp(28px, 3.6vh, 34px);
+  position: absolute; left: 50%; top: 0; z-index: 3;
+  translate: -50% calc(-50% - 1px);
+  float: none;
+  margin: 0;
+}
+
+/* a row: the name and its control on one line, the note under both */
 .mm-set__row {
   display: grid;
-  grid-template-columns: minmax(12ch, 1fr) minmax(9rem, auto);
-  align-items: start;
-  gap: var(--s-2) var(--s-4);
-  padding: var(--s-2) 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "name ctrl" "hint hint";
+  align-items: center;
+  gap: 1px 14px;
+  padding: var(--row-pad) 2px calc(var(--row-pad) + 1px);
 }
+.mm-set__row > .mm-set__label { display: contents; }
+.mm-set__row > .mm-set__label > span:first-child { grid-area: name; }
+.mm-set__row > .mm-set__label > .mm-set__hint { grid-area: hint; }
+.mm-set__row > :not(.mm-set__label) { grid-area: ctrl; }
+/* rows parted by a gilt hairline that fades before the panel's rule */
 .mm-set__row + .mm-set__row {
-  border-top: 1px solid color-mix(in srgb, var(--surface-line) 40%, transparent);
+  border-top: 0;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 34%, transparent) 12%, color-mix(in srgb, var(--kit-gold) 34%, transparent) 88%, transparent) 0 0 / 100% 1px no-repeat;
 }
-.mm-set__label { display: flex; flex-direction: column; gap: 2px; cursor: pointer; }
-.mm-set__label > span:first-child { font-size: var(--fs-md); color: var(--text-hi); }
+/* a name over its note, lettered like the Shop's wares */
+.mm-set__label { display: flex; flex-direction: column; gap: 3px; min-width: 0; cursor: pointer; }
+.mm-set__label > span:first-child {
+  font-family: var(--font-body); font-weight: 600;
+  font-size: calc(var(--fs-md) * 1.06); line-height: 1.2;
+  color: var(--kit-name);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
 .mm-set__hint {
-  font-size: var(--fs-xs); line-height: 1.4; color: var(--text-lo);
-  max-width: 52ch;
+  font-size: var(--hint-fs); line-height: 1.34; font-style: italic;
+  color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  text-wrap: pretty;
 }
 
-/* ── range ────────────────────────────────────────────────────────────────── */
-.mm-set__rangewrap { display: flex; align-items: center; gap: var(--s-3); }
+/* ── range: the brass tube, the enamel knob, the value on its cartouche ───── */
+.mm-set__rangewrap { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+.mm-set__slot {
+  --v: 0;
+  position: relative;
+  width: clamp(120px, 10vw, 158px); height: var(--slot-h);
+}
+.mm-set__slot > .mm-set__tube {
+  --tube-h: calc(var(--slot-h) * .46);
+  position: absolute; left: 0; right: 0; top: 50%;
+  translate: 0 -50%;
+  pointer-events: none;
+}
+/* a setting's amber is the enamel in the brass, a step deeper than a Courage
+   bar's, so the knob and the figure lead and the fill never reads as a meter */
+.mm-set__tube.kit-tube { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.86) brightness(.88) hue-rotate(-4deg); }
+/* the amber runs to the middle of the knob, wherever the knob is */
+.mm-set__slot > .mm-set__tube > .kit-tube__fill {
+  right: auto;
+  width: calc(var(--knob) / 2 + (100% - var(--knob)) * var(--v) - var(--tube-h) * .2);
+}
 .mm-set__rangewrap input[type="range"] {
-  flex: 1 1 8rem; min-width: 6rem;
-  appearance: none; height: 1.4em; background: none; cursor: pointer;
+  position: relative; z-index: 1;
+  display: block;
+  width: 100%; height: 100%;
+  margin: 0;
+  -webkit-appearance: none; appearance: none;
+  background: transparent;
+  cursor: pointer;
 }
 .mm-set__rangewrap input[type="range"]::-webkit-slider-runnable-track {
-  height: 6px; border-radius: 3px;
-  background: linear-gradient(90deg, var(--flame-400), var(--flame-300));
-  border: 1px solid var(--ink-900);
+  height: 100%;
+  background: transparent; border: 0; box-shadow: none;
 }
-.mm-set__rangewrap input[type="range"]::-moz-range-track {
-  height: 6px; border-radius: 3px;
-  background: linear-gradient(90deg, var(--flame-400), var(--flame-300));
-  border: 1px solid var(--ink-900);
-}
+.mm-set__rangewrap input[type="range"]::-moz-range-track { height: 100%; background: transparent; border: 0; }
 .mm-set__rangewrap input[type="range"]::-webkit-slider-thumb {
-  appearance: none; margin-top: -6px;
-  width: 18px; height: 18px; border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, var(--flame-100), var(--flame-400));
-  border: 1px solid var(--ink-900);
-  box-shadow: var(--shadow-1);
+  -webkit-appearance: none; appearance: none;
+  width: var(--knob); height: var(--knob);
+  margin-top: calc((var(--slot-h) - var(--knob)) / 2);
+  border: 0; border-radius: 50%;
+  /* the round enamel button, a brass boss in its middle */
+  background:
+    radial-gradient(circle at 50% 46%, var(--kit-gold-hi) 0 1.5px, var(--kit-gold) 2.6px, var(--kit-gold-lo) 3.6px, transparent 4.4px),
+    url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  box-shadow: 0 3px 4px rgba(0, 0, 0, .75);
+  transition: box-shadow var(--t-quick) var(--ease-out);
 }
 .mm-set__rangewrap input[type="range"]::-moz-range-thumb {
-  width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--ink-900);
-  background: radial-gradient(circle at 35% 30%, var(--flame-100), var(--flame-400));
+  width: var(--knob); height: var(--knob);
+  border: 0; border-radius: 50%;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
 }
-.mm-set__out {
-  min-width: 4ch; text-align: right;
-  font-family: var(--font-num); font-size: var(--fs-sm);
-  color: var(--flame-200);
-  font-variant-numeric: tabular-nums;
+.mm-set__rangewrap input[type="range"]:hover::-webkit-slider-thumb {
+  box-shadow: 0 3px 4px rgba(0, 0, 0, .75), 0 0 10px color-mix(in srgb, var(--kit-lav) 40%, transparent);
 }
+.mm-set__rangewrap input[type="range"]:focus-visible { outline: none; }
+.mm-set__rangewrap input[type="range"]:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 3px 4px rgba(0, 0, 0, .75), 0 0 0 2px var(--kit-gold-hi), 0 0 14px 2px color-mix(in srgb, var(--kit-candle) 65%, transparent);
+}
+.mm-set__out.kit-enamel,
+.mm-set__state.kit-enamel {
+  --h: var(--read-h);
+  min-width: 80px;
+  padding: 0 calc(var(--h) * .56);
+}
+.mm-set__out .kit-enamel__value { font-size: 15px; letter-spacing: .02em; }
 
-/* ── toggle ───────────────────────────────────────────────────────────────── */
+/* ── toggle: the same tube as a switch ───────────────────────────────────── */
 .mm-set__toggle {
-  display: inline-flex; align-items: center; gap: var(--s-2);
-  justify-self: start;
-  padding: .3em .8em .3em .35em;
-  font-size: var(--fs-sm);
-  color: var(--text-mid);
-  background: var(--chip-bg);
-  border: 1px solid var(--surface-line);
-  border-radius: 999px;
-  transition: color var(--t-quick) var(--ease-out), border-color var(--t-quick) var(--ease-out);
+  display: inline-flex; align-items: center; gap: 12px;
+  justify-self: end;
+  margin: 0; padding: 2px 0;
+  background: none; border: 0; border-radius: 0;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 12px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  transition: color var(--t-quick) var(--ease-out), filter var(--t-quick) var(--ease-out);
 }
-.mm-set__toggle i {
-  position: relative;
-  width: 2.4em; height: 1.3em;
-  border-radius: 999px;
-  background: var(--ink-700);
-  border: 1px solid var(--surface-line);
-  transition: background var(--t-quick) var(--ease-out);
+/* the word sits on the cartouche a slider's value wears, so the column of
+   readings runs straight down the panel */
+.mm-set__state .kit-enamel__label { font-size: 12px; color: inherit; }
+.mm-set__toggle[data-on="1"] .mm-set__state .kit-enamel__label { text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 0 10px color-mix(in srgb, var(--kit-candle) 45%, transparent); }
+.mm-set__switch {
+  position: relative; flex: none; display: block;
+  width: var(--sw-w); height: var(--sw-h);
 }
-.mm-set__toggle i::after {
-  content: ''; position: absolute; top: 50%; left: 2px;
-  width: 1em; height: 1em; margin-top: -.5em;
+.mm-set__switch > .mm-set__tube {
+  --tube-h: calc(var(--sw-h) - 8px);
+  position: absolute; left: 0; right: 0; top: 50%;
+  translate: 0 -50%;
+}
+.mm-set__switch > .mm-set__tube > .kit-tube__fill {
+  transform: scaleX(0);
+  transition: transform var(--t-base) var(--ease-out);
+}
+.mm-set__knob {
+  position: absolute; left: -2px; top: 50%;
+  width: var(--sw-h); height: var(--sw-h);
+  translate: 0 -50%;
   border-radius: 50%;
-  background: var(--text-lo);
-  transition: transform var(--t-quick) var(--ease-snap), background var(--t-quick) var(--ease-out);
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.55) brightness(.8);
+  transition: transform var(--t-base) var(--ease-snap), filter var(--t-quick) var(--ease-out);
 }
-.mm-set__toggle[data-on="1"] { color: var(--flame-100); border-color: var(--flame-400); }
-.mm-set__toggle[data-on="1"] i { background: var(--flame-500); }
-.mm-set__toggle[data-on="1"] i::after {
-  transform: translateX(1.1em);
-  background: var(--flame-100);
+.mm-set__toggle:hover { color: var(--kit-text); }
+.mm-set__toggle:hover .mm-set__knob { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.8) brightness(.95); }
+.mm-set__toggle[data-on="1"] { color: var(--kit-gold-hi); }
+.mm-set__toggle[data-on="1"] .kit-tube__fill { transform: scaleX(1); }
+.mm-set__toggle[data-on="1"] .mm-set__knob {
+  transform: translateX(calc(var(--sw-w) - var(--sw-h) + 2px));
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) drop-shadow(0 0 6px color-mix(in srgb, var(--kit-candle) 55%, transparent)) brightness(1.15);
+}
+.mm-set__toggle:focus-visible {
+  outline: none;
+  filter: drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 55%, transparent));
 }
 /* the state is also spelled out in words next to the switch — never colour alone */
 
-/* ── choice ───────────────────────────────────────────────────────────────── */
-.mm-set__choices { display: flex; flex-wrap: wrap; gap: var(--s-1); justify-self: start; }
-.mm-set__choice {
-  padding: .3em .7em;
-  font-size: var(--fs-sm);
-  color: var(--text-mid);
-  background: var(--chip-bg);
-  border: 1px solid var(--surface-line);
-  border-radius: var(--radius-sm);
-}
-.mm-set__choice[data-on="1"] {
-  color: var(--text-ink);
-  background: var(--flame-300);
-  border-color: var(--flame-200);
-  font-weight: 600;
+/* ── choice: nameplates, the chosen one lit ──────────────────────────────── */
+.mm-set__row:has(> .mm-set__choices) { grid-template-columns: minmax(0, 1fr); grid-template-areas: "name" "ctrl" "hint"; }
+.mm-set__choices { display: flex; flex-wrap: wrap; gap: 8px 10px; justify-self: start; padding: 5px 0 4px; }
+.mm-set__choice.kit-btn {
+  --plate-h: var(--choice-h);
+  font-size: 12px; letter-spacing: .12em;
 }
 
 /* ── seed ─────────────────────────────────────────────────────────────────── */
-.mm-set__seed {
-  justify-self: start;
-  font-family: var(--font-num); font-size: var(--fs-md);
-  color: var(--flame-200);
-  padding: .2em .6em;
-  background: var(--chip-bg);
-  border: 1px dashed var(--surface-line);
-  border-radius: var(--radius-sm);
+.mm-set__seed.kit-enamel {
+  --h: calc(var(--read-h) + 6px);
+  justify-self: end;
   user-select: text;
 }
-.mm-set__text {
-  justify-self: start;
-  width: 14ch;
-  font: inherit; font-family: var(--font-num); font-size: var(--fs-sm);
-  color: var(--text-hi);
-  background: var(--ink-900);
-  border: 1px solid var(--surface-line);
-  border-radius: var(--radius-sm);
-  padding: .3em .5em;
+.mm-set__seed .kit-enamel__value { letter-spacing: .08em; }
+.mm-set__text.kit-field {
+  --field-h: calc(var(--read-h) + 10px);
+  justify-self: end;
+  width: 17ch;
   user-select: text;
 }
-.mm-set__text:focus-visible { border-color: var(--flame-300); outline: 2px solid var(--focus-ring); outline-offset: 1px; }
 
-/* largeText: stack label above control so neither is squeezed */
-:root[data-large-text="1"] .mm-set__row { grid-template-columns: 1fr; }
-:root[data-large-text="1"] .mm-set__rangewrap { width: 100%; }
+/* ── the expedition and the danger rows ──────────────────────────────────── */
+.mm-set__row > .kit-btn { justify-self: end; --plate-h: calc(var(--read-h) + 10px); }
+.mm-set__row > .kit-btn .mm-icon { width: 1.05em; height: 1.05em; }
+
+/* largeText: one column of panels, and each label above its control, so
+   neither is squeezed */
+:root[data-large-text="1"] .mm-settings-modal .mm-modal__dialog { width: min(100%, 48rem); }
+:root[data-large-text="1"] .mm-set { grid-template-columns: minmax(0, 1fr); }
+:root[data-large-text="1"] .mm-set__row { grid-template-columns: 1fr; grid-template-areas: "name" "hint" "ctrl"; }
+:root[data-large-text="1"] .mm-set__row > .mm-set__label { display: flex; grid-area: name; }
+:root[data-large-text="1"] .mm-set__rangewrap { width: 100%; justify-content: flex-start; }
+:root[data-large-text="1"] .mm-set__slot { flex: 1 1 auto; }
+:root[data-large-text="1"] .mm-set__toggle,
+:root[data-large-text="1"] .mm-set__seed,
+:root[data-large-text="1"] .mm-set__text,
+:root[data-large-text="1"] .mm-set__row > .kit-btn { justify-self: start; }

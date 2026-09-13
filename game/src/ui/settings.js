@@ -25,7 +25,7 @@
  * needing a single line.
  */
 
-import { Modal, confirmModal } from './modal.js';
+import { Modal, confirmModal, kitButton } from './modal.js';
 import { formatSeed } from './portrait.js';
 import { icon } from './icons.js';
 
@@ -137,40 +137,53 @@ export async function openSettings(ctx = {}) {
     className: 'mm-settings-modal',
   });
 
+  /* The panel is laid out like the Kid board's dossier: the boards' railed
+     panels in two columns, each group one panel with the gold ribbon banner
+     ("✦ SOUND ✦") across its top rail. How the house sounds and moves on the
+     left, how you read and play it on the right; under both, on one line, the
+     seed it is built from and the ways out of it. The cells are DOM order, so
+     Tab walks each one down before the next. */
   const form = document.createElement('div');
   form.className = 'mm-set';
+  const cell = () => { const c = document.createElement('div'); c.className = 'mm-set__col'; return c; };
+  const colA = cell(), colB = cell(), colC = cell(), colD = cell();
+  form.append(colA, colB, colC, colD);
   modal.body.appendChild(form);
 
   const rerender = [];
 
-  for (const section of SETTINGS_SPEC) {
+  const GROUP = 'mm-set__group kit-panel';
+  const LEGEND = 'mm-set__legend kit-heading kit-heading--ribbon';
+
+  for (const [n, section] of SETTINGS_SPEC.entries()) {
     const fs = document.createElement('fieldset');
-    fs.className = 'mm-set__group';
+    fs.className = GROUP;
     const lg = document.createElement('legend');
-    lg.className = 'mm-set__legend';
+    lg.className = LEGEND;
     lg.textContent = section.group;
     fs.appendChild(lg);
 
     for (const item of section.items) {
       fs.appendChild(buildRow(ctx, Save, item, rerender));
     }
-    form.appendChild(fs);
+    (n < 2 ? colA : colB).appendChild(fs);
   }
 
   // ── seed ────────────────────────────────────────────────────────────────
   const seedFs = document.createElement('fieldset');
-  seedFs.className = 'mm-set__group';
-  seedFs.innerHTML = '<legend class="mm-set__legend">Seed</legend>';
+  seedFs.className = GROUP;
+  seedFs.innerHTML = `<legend class="${LEGEND}">Seed</legend>`;
 
   const cur = document.createElement('div');
   cur.className = 'mm-set__row';
   // Same notation as Select, the HUD and Game Over — see formatSeed() in ui/portrait.js.
   const rawSeed = ctx.run ? ctx.run.seed : (Save?.data?.nextSeed ?? null);
   const curSeed = (rawSeed === undefined || rawSeed === null) ? '—' : formatSeed(rawSeed);
+  // the seed struck on the Companion tiles' dark enamel cartouche
   cur.innerHTML =
     `<div class="mm-set__label"><span>Current expedition</span>` +
     `<span class="mm-set__hint">A seed reproduces a run exactly: the same rooms, rewards and shop stock.</span></div>` +
-    `<output class="mm-set__seed">${escape_(curSeed)}</output>`;
+    `<output class="mm-set__seed kit-enamel kit-enamel--dark"><b class="kit-enamel__value">${escape_(curSeed)}</b></output>`;
   seedFs.appendChild(cur);
 
   const entry = document.createElement('div');
@@ -180,7 +193,7 @@ export async function openSettings(ctx = {}) {
     `<span class="mm-set__hint">Leave blank for a random one.</span></div>`;
   const seedIn = document.createElement('input');
   seedIn.type = 'text';
-  seedIn.className = 'mm-set__text';
+  seedIn.className = 'mm-set__text kit-field';
   seedIn.placeholder = 'random';
   seedIn.maxLength = 24;
   seedIn.value = Save?.data?.nextSeed ?? '';
@@ -192,7 +205,7 @@ export async function openSettings(ctx = {}) {
   });
   entry.appendChild(seedIn);
   seedFs.appendChild(entry);
-  form.appendChild(seedFs);
+  colC.appendChild(seedFs);
 
   // ── the expedition ──────────────────────────────────────────────────────
   /*
@@ -212,8 +225,8 @@ export async function openSettings(ctx = {}) {
   if (live) {
     const party = !!ctx.run.isParty;
     const trip = document.createElement('fieldset');
-    trip.className = 'mm-set__group';
-    trip.innerHTML = '<legend class="mm-set__legend">Expedition</legend>';
+    trip.className = GROUP;
+    trip.innerHTML = `<legend class="${LEGEND}">Expedition</legend>`;
     const tRow = document.createElement('div');
     tRow.className = 'mm-set__row';
     tRow.innerHTML =
@@ -225,6 +238,7 @@ export async function openSettings(ctx = {}) {
     quit.type = 'button';
     quit.className = 'mm-btn';
     quit.textContent = 'Save and quit';
+    kitButton(quit, { quiet: true });
     quit.addEventListener('click', async () => {
       if (party) {
         const ok = await confirmModal({
@@ -250,13 +264,13 @@ export async function openSettings(ctx = {}) {
     });
     tRow.appendChild(quit);
     trip.appendChild(tRow);
-    form.appendChild(trip);
+    colD.appendChild(trip);
   }
 
   // ── danger ──────────────────────────────────────────────────────────────
   const danger = document.createElement('fieldset');
-  danger.className = 'mm-set__group mm-set__group--danger';
-  danger.innerHTML = '<legend class="mm-set__legend">Danger</legend>';
+  danger.className = GROUP + ' mm-set__group--danger';
+  danger.innerHTML = `<legend class="${LEGEND}">Danger</legend>`;
   const dRow = document.createElement('div');
   dRow.className = 'mm-set__row';
   dRow.innerHTML =
@@ -267,6 +281,7 @@ export async function openSettings(ctx = {}) {
   reset.className = 'mm-btn mm-btn--danger';
   reset.textContent = 'Reset…';
   reset.appendChild(icon('ui.warn'));
+  kitButton(reset);
   reset.addEventListener('click', async () => {
     const ok = await confirmModal({
       title: 'Reset all progress?',
@@ -282,7 +297,7 @@ export async function openSettings(ctx = {}) {
   });
   dRow.appendChild(reset);
   danger.appendChild(dRow);
-  form.appendChild(danger);
+  colD.appendChild(danger);
 
   // ── footer ──────────────────────────────────────────────────────────────
   const restore = document.createElement('button');
@@ -301,6 +316,8 @@ export async function openSettings(ctx = {}) {
   done.setAttribute('data-autofocus', '');
   done.addEventListener('click', () => modal.close(null));
 
+  kitButton(restore, { quiet: true });
+  kitButton(done, { medal: 'done' });
   modal.footer.append(restore, done);
 
   return modal.open();
@@ -320,25 +337,46 @@ function buildRow(ctx, Save, item, rerender) {
   row.appendChild(label);
 
   if (item.type === 'range') {
+    /* A REAL range input, so the keyboard, the pad and the tests drive it as
+       one. Behind its bare track lies the Courage bar's brass tube
+       (.kit-tube--warm), its amber enamel filled as far as the value; the thumb
+       is the boards' round enamel button; the value is struck on the tiles'
+       dark cartouche. `--v` (0..1) is the only thing the picture needs. */
     const wrap = document.createElement('div');
     wrap.className = 'mm-set__rangewrap';
+    const slot = document.createElement('div');
+    slot.className = 'mm-set__slot';
+    const tube = document.createElement('span');
+    tube.className = 'mm-set__tube kit-tube kit-tube--warm';
+    tube.setAttribute('aria-hidden', 'true');
+    tube.innerHTML = '<span class="kit-tube__fill"></span>';
     const input = document.createElement('input');
     input.type = 'range'; input.id = id;
     input.min = String(item.min); input.max = String(item.max); input.step = String(item.step);
     input.value = String(get(Save, item.key));
     const out = document.createElement('output');
-    out.className = 'mm-set__out';
-    out.textContent = item.fmt ? item.fmt(input.value) : input.value;
+    out.className = 'mm-set__out kit-enamel kit-enamel--dark';
+    out.htmlFor = id;
+    const show = () => {
+      const span = Number(item.max) - Number(item.min);
+      const v = span ? (Number(input.value) - Number(item.min)) / span : 0;
+      slot.style.setProperty('--v', String(Math.max(0, Math.min(1, v))));
+      out.innerHTML = `<b class="kit-enamel__value">${escape_(item.fmt ? item.fmt(input.value) : input.value)}</b>`;
+    };
+    show();
     const commit = () => {
-      out.textContent = item.fmt ? item.fmt(input.value) : input.value;
+      show();
       setSetting(ctx, item.key, Number(input.value));
     };
     input.addEventListener('input', commit);
-    wrap.append(input, out);
+    slot.append(tube, input);
+    wrap.append(slot, out);
     row.appendChild(wrap);
-    rerender.push(() => { input.value = String(get(Save, item.key)); out.textContent = item.fmt ? item.fmt(input.value) : input.value; });
+    rerender.push(() => { input.value = String(get(Save, item.key)); show(); });
 
   } else if (item.type === 'toggle') {
+    /* The same brass tube as a switch: its amber enamel lit when it is on, the
+       enamel button riding to that end, and the state spelled out beside it. */
     const btn = document.createElement('button');
     btn.type = 'button'; btn.id = id;
     btn.className = 'mm-set__toggle';
@@ -347,7 +385,13 @@ function buildRow(ctx, Save, item, rerender) {
       const on = !!get(Save, item.key);
       btn.setAttribute('aria-checked', String(on));
       btn.dataset.on = on ? '1' : '0';
-      btn.innerHTML = `<i></i><span>${on ? 'On' : 'Off'}</span>`;
+      /* the word struck on the same dark cartouche a slider's value wears, so
+         the column of readings runs straight down the panel */
+      btn.innerHTML =
+        `<i class="mm-set__switch" aria-hidden="true">`
+        + `<i class="mm-set__tube kit-tube kit-tube--warm"><i class="kit-tube__fill"></i></i>`
+        + `<i class="mm-set__knob"></i></i>`
+        + `<span class="mm-set__state kit-enamel kit-enamel--dark"><b class="kit-enamel__label">${on ? 'On' : 'Off'}</b></span>`;
     };
     btn.addEventListener('click', () => { setSetting(ctx, item.key, !get(Save, item.key)); paint(); });
     paint();
@@ -360,6 +404,8 @@ function buildRow(ctx, Save, item, rerender) {
     grp.setAttribute('role', 'radiogroup');
     grp.setAttribute('aria-label', item.label);
     const btns = [];
+    /* a row of the boards' nameplates: the chosen one lit gold, the rest the
+       quiet plate — the kit's own two states, nothing drawn for it here */
     const paint = () => {
       const v = get(Save, item.key);
       for (const b of btns) {
@@ -367,11 +413,12 @@ function buildRow(ctx, Save, item, rerender) {
         b.setAttribute('aria-checked', String(on));
         b.tabIndex = on ? 0 : -1;
         b.dataset.on = on ? '1' : '0';
+        b.classList.toggle('kit-btn--quiet', !on);
       }
     };
     for (const [value, text] of item.options) {
       const b = document.createElement('button');
-      b.type = 'button'; b.className = 'mm-set__choice';
+      b.type = 'button'; b.className = 'mm-set__choice kit-btn';
       b.setAttribute('role', 'radio');
       b.dataset.value = value;
       b.textContent = text;

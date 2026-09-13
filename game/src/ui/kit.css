@@ -1633,9 +1633,12 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 .kit-field::selection { background: transparent; color: #fffaf0; text-shadow: 0 0 9px color-mix(in srgb, var(--kit-candle) 90%, transparent), 0 0 2px color-mix(in srgb, var(--kit-candle) 80%, transparent); }
 .kit-field::placeholder { color: var(--kit-text-lo); font-style: italic; font-weight: 400; letter-spacing: .01em; }
 .kit-field:hover { filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) brightness(1.1); }
+/* A field takes focus the moment its dialog opens (a text input always shows
+   :focus-visible), so its lit edge is a candle catching the gilt, not a glow
+   that competes with what the dialog is for. */
 .kit-field:focus-visible {
   outline: none;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) drop-shadow(0 0 2px var(--kit-gold-hi)) drop-shadow(0 0 14px color-mix(in srgb, var(--kit-candle) 50%, transparent)) brightness(1.12);
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 32%, transparent)) brightness(1.08);
 }
 
 /* ── select ─────────────────────────────────────────────────────────────────
