@@ -300,7 +300,7 @@ export class TutorialScene extends Scene {
   }
 
   _buildPanel() {
-    const p = this._panel = el('section', 'tut-panel kit-panel');
+    const p = this._panel = el('section', 'tut-panel kit-panel kit-panel--damask');
     p.dataset.medal = 'moon';
     p.innerHTML = `
       <h1 class="tut-head"></h1>
@@ -551,15 +551,20 @@ export class TutorialScene extends Scene {
       const c = COMPANIONS.find((x) => x.slug === 'marmalade');
       if (named && c) plate = [c.name, c.title];
     }
-    f.appendChild(frame);
+    /* one box holds the frame and everything hung on it, so the box is exactly
+       the frame's height (the page beside it matches that) and the nameplate
+       and props stay on the frame however tall the page grows */
+    const box = el('div', 'tut-figbox');
+    box.appendChild(frame);
     if (plate) {
-      f.appendChild(el('div', 'tut-plate kit-plate',
+      box.appendChild(el('div', 'tut-plate kit-plate',
         `<span class="kit-plate__name">${esc(plate[0])}</span><span class="kit-plate__epithet">${esc(plate[1])}</span>`));
     }
     /* stood on the floor the way the Kid board's mirror is: a skull on its
        books at one foot of the frame, a lit candle at the other (.kit-prop) */
-    f.appendChild(el('i', 'kit-prop kit-prop--skull tut-prop tut-prop--skull'));
-    f.appendChild(el('i', 'kit-prop kit-prop--candle tut-prop tut-prop--candle'));
+    box.appendChild(el('i', 'kit-prop kit-prop--skull tut-prop tut-prop--skull'));
+    box.appendChild(el('i', 'kit-prop kit-prop--candle tut-prop tut-prop--candle'));
+    f.appendChild(box);
   }
 
   /* ── the Kid ────────────────────────────────────────────────────────────── */

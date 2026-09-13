@@ -55,11 +55,14 @@
   pointer-events: none;
 }
 
+/* Beside a figure the page is exactly as tall as the portrait's frame, the way
+   the Kid board's dossier stands as tall as its mirror: the two read as one
+   board, and the page keeps its size from beat to beat. */
 .tut-stage {
   position: relative; z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0, 21rem) minmax(0, 46rem);
-  align-items: center;
+  grid-template-columns: minmax(0, clamp(18rem, 21vw, 21rem)) minmax(0, 46rem);
+  align-items: stretch;
   gap: clamp(44px, 4.6vw, 76px);
   /* under the plaque, over the Skip plate */
   padding: clamp(150px, 19vh, 176px) clamp(72px, 7vw, 120px) clamp(78px, 10vh, 96px);
@@ -68,18 +71,23 @@
 .tut-root[data-wide="1"] .tut-stage {
   grid-template-columns: minmax(0, 52rem);
   justify-items: center;
+  align-items: center;
 }
+/* the text sits in the middle of a tall page and the way on stands at its foot */
+.tut-root[data-wide="0"] .tut-lines { margin-block: auto; }
+.tut-root[data-wide="0"] .tut-foot { margin-top: 0; }
 
 /* ── who is on screen ─────────────────────────────────────────────────────── */
 .tut-fig {
   position: relative;
   justify-self: end;
   width: 100%;
-  display: grid; justify-items: center;
+  display: grid; justify-items: center; align-content: center;
   min-height: 1px;
   animation: tut-fig-in var(--t-scene) var(--ease-out) both;
 }
 .tut-fig:empty { display: none; }
+.tut-figbox { position: relative; width: 100%; }
 /* the Kid board's portrait frame, its rail and corner scrolls over the picture */
 .tut-frame.kit-frame {
   --fk: .82;
@@ -105,10 +113,11 @@
 /* the nameplate over the foot of the frame, as every tile on the select boards wears one */
 .tut-plate.kit-plate {
   --plate-h: clamp(54px, 6.6vh, 62px);
-  position: relative; z-index: 4;
-  margin-top: calc(var(--plate-h) * -.62);
+  position: absolute; z-index: 4; left: 50%; bottom: calc(var(--plate-h) * -.38);
+  translate: -50% 0;
   min-width: 62%;
   padding-inline: calc(var(--plate-h) * .8);
+  white-space: nowrap;
 }
 /* the skull on its books and the candle at the frame's two feet, as on the Kid
    board: in front of the frame's corners, clear of the nameplate between them */
@@ -157,8 +166,8 @@
 .tut-lines { display: flex; flex-direction: column; gap: clamp(10px, 1.5vh, 14px); }
 .tut-line {
   margin: 0;
-  font-size: calc(var(--fs-md) * 1.2);
-  line-height: 1.55;
+  font-size: var(--fs-lg);
+  line-height: 1.52;
   color: var(--kit-text);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
   text-wrap: pretty;
