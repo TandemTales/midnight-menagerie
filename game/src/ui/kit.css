@@ -438,13 +438,13 @@
 /* Inside the painted rail, a second, finer frame: an engraved double rule set
    in from the rail, a brass fleuron over each of its corners (fleuron-*.webp).
    It stands clear of the rail's own corner fleurs and of everything the panel
-   holds: decoration, never over a word. --rule-in moves it; `--rule: none`
-   (on a panel that has no room for it) takes it away. */
+   holds: decoration, never over a word. `--rule: none` (on a panel that has
+   no room for it) takes it away. */
 .kit-panel { isolation: isolate; }
 .kit-panel::after {
   content: var(--rule, '');
   position: absolute; z-index: -1; pointer-events: none;
-  inset: var(--rule-in, calc(7px + 9px * var(--pk)));
+  inset: calc(7px + 9px * var(--pk));
   border: 3px double color-mix(in srgb, var(--kit-gold) 46%, transparent);
   --fl: calc(12px + 16px * var(--pk));
   background:
@@ -1359,11 +1359,11 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 /* ── hatch ──────────────────────────────────────────────────────────────────
    A square treehouse window: a rough plank frame and a cross bar round old
    glass, and through it the grounds of UI/mainMenu.png at night with the house
-   in the middle distance. Decoration; size it with --hatch-w. Point one of
-   the ground's moon slots at it for its light on the wall.                   */
+   in the middle distance. Decoration; size it with width. Point one of the
+   ground's moon slots at it for its light on the wall.                       */
 .kit-hatch {
   position: absolute; pointer-events: none;
-  width: var(--hatch-w, 220px); aspect-ratio: 420 / 470;
+  width: 220px; aspect-ratio: 420 / 470;
   background: url("../../assets/ui/kit/hatch.webp") 50% 0 / 100% 100% no-repeat;
   filter: drop-shadow(0 12px 14px rgba(0, 0, 0, .62));
 }
