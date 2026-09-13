@@ -105,7 +105,7 @@
   transition: filter var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out);
 }
 .rm-btn em { font-style: italic; text-transform: none; letter-spacing: 0;
-             font-family: var(--font-body); font-weight: 400; font-size: var(--fs-xs); color: var(--kit-text-lo); }
+             font-family: var(--font-body); font-weight: 400; font-size: max(12px, var(--fs-xs)); color: var(--kit-text-lo); }
 .rm-btn:hover:not(:disabled) { transform: translateY(-1px); color: var(--kit-text);
                                filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .7)) saturate(.9) brightness(1.04); }
 .rm-btn:disabled { opacity: .4; cursor: not-allowed; }
