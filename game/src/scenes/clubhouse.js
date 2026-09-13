@@ -108,15 +108,16 @@ export class ClubhouseScene extends Scene {
     root.appendChild(this._buildHeader());
 
     const main = el('main', 'cl__main');
+    /* The section tabs stand on the board's top edge — the tabs switch the
+       thing they stand on, so that is where they are — and come FIRST in the
+       board, so the keyboard still reaches them before what they switch. The
+       board's gilt rail goes over whichever section is showing. */
+    main.appendChild(this._tabs);
     main.appendChild(this._buildBoard());
     main.appendChild(this._buildMenagerie());
     main.appendChild(this._buildPets());
     main.appendChild(this._buildBackpack());
-    /* The board's own gilt rail, over whatever section is showing, and the
-       section tabs standing on its top edge: the tabs switch the thing they
-       stand on, so that is where they are. */
     main.appendChild(el('div', 'cl-frame kit-railframe kit-railframe--ornate'));
-    main.appendChild(this._tabs);
     root.appendChild(main);
 
     root.appendChild(this._buildSide());
