@@ -1044,9 +1044,17 @@ export class MapScene extends Scene {
     for (const n of m.map.nodes) {
       const el = this._nodeEls.get(n.id);
       const lab = el.querySelector('.mn-label');
-      this._labels.push({ n, el, lab, box: n.type === NodeType.BOSS ? BOSS_BOX : NODE_BOX, w: 0 });
+      this._labels.push({ n, el, lab, box: n.type === NodeType.BOSS ? BOSS_BOX : NODE_BOX, w: 0, h: LABEL_H });
     }
-    for (const L of this._labels) L.w = L.lab.offsetWidth || 120;
+    // Heights too, not just widths: the boss is named on a nameplate with its
+    // ribbon hanging under it, twice the height of a pencil chip, and a pass
+    // that thought it was 23 px tall could set it down on the rooms below.
+    for (const L of this._labels) {
+      L.w = L.lab.offsetWidth || 120;
+      const tag = L.el.querySelector('.mn-boss-tag');
+      const bottom = tag ? (tag.offsetTop + tag.offsetHeight - L.lab.offsetTop) : L.lab.offsetHeight;
+      L.h = Math.max(LABEL_H, bottom || 0);
+    }
   }
 
   /**
@@ -1114,7 +1122,7 @@ export class MapScene extends Scene {
      */
     const boxOf = (L, dx, dy) => {
       const cx = L.n.x * this.SW, cy = L.n.y * this.SH;
-      const hw = (L.w / 2 + 4) * k, hh = LABEL_H * k;
+      const hw = (L.w / 2 + 4) * k, hh = (L.h || LABEL_H) * k;
       const lo = WIN.x + 10 + hw, hi = WIN.x + WIN.w - 10 - hw;
       const c = hi > lo ? clampN(cx + dx * k, lo, hi) : cx;
       const top = cy + (L.box / 2 + 3 + dy) * k;
@@ -1157,7 +1165,8 @@ export class MapScene extends Scene {
       // clear paper is on a plan whose depth runs west to east.
       const side = L.w / 2 + 34;
       const cands = [];
-      for (const dy of [0, 26, -(L.box + 26), 54, -(L.box + 54), 82, -(L.box + 82)]) {
+      const tall = Math.max(0, (L.h || LABEL_H) - LABEL_H);
+      for (const dy of [0, 26, -(L.box + 26 + tall), 54, -(L.box + 54 + tall), 82, -(L.box + 82 + tall)]) {
         cands.push([0, dy]);
         if (Math.abs(dy) <= 56) { cands.push([side, dy], [-side, dy]); }
       }
@@ -1200,7 +1209,7 @@ export class MapScene extends Scene {
     if (!path) return;
     const far = Math.abs(L.dy) > 20 || Math.abs(L.dx) > 12;
     if (!far || L.off) { path.setAttribute('d', ''); return; }
-    const b = L.box, hw = L.w / 2 + 4, hh = LABEL_H / 2;
+    const b = L.box, hw = L.w / 2 + 4, hh = (L.lab.offsetHeight || LABEL_H) / 2;
     const ox = b / 2, oy = b / 2;                       // the mark's centre
     const tx = b / 2 + L.dx, ty = b + 3 + L.dy + hh;    // the chip's centre
     const vx = tx - ox, vy = ty - oy, len = Math.hypot(vx, vy) || 1;

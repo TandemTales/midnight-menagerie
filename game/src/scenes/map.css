@@ -125,7 +125,7 @@
   background:
     radial-gradient(ellipse 72% 70% at 46% 46%,
       transparent 0%, transparent 34%, rgba(70, 40, 20, .34) 70%, rgba(40, 22, 12, .72) 100%),
-    linear-gradient(color-mix(in srgb, var(--kit-gold-lo) 20%, transparent), color-mix(in srgb, var(--kit-gold-lo) 20%, transparent));
+    linear-gradient(color-mix(in srgb, var(--kit-gold-lo) 24%, transparent), color-mix(in srgb, var(--kit-gold-lo) 24%, transparent));
   mix-blend-mode: multiply;
 }
 /* The frame: the Kid board's portrait frame (ui/kit.css .kit-frame--over),
@@ -520,10 +520,10 @@
   transform: translateX(calc(-50% + var(--mn-dx, 0px)));
   display: inline-flex; align-items: center; justify-content: center;
   height: 30px; min-width: 150px; padding: 0 38px 1px;
-  font-family: var(--font-display); font-size: 14px; font-weight: 700;
-  letter-spacing: .34em; text-indent: .34em; white-space: nowrap;
-  color: var(--kit-gold-ink);
-  text-shadow: 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 45%, transparent);
+  font-family: var(--font-display); font-size: 15px; font-weight: 700;
+  letter-spacing: .3em; text-indent: .3em; white-space: nowrap;
+  color: #1a1006;
+  text-shadow: 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 70%, transparent);
   border: 0 solid transparent;
   border-image-source: url("../../assets/ui/kit/ribbon.webp");
   border-image-slice: 0 47 0 52 fill;
