@@ -280,8 +280,8 @@
 .go-bp__wash {
   position: absolute; inset: 0;
   background:
-    radial-gradient(52% 130% at 50% 50%, transparent 22%, color-mix(in srgb, var(--kit-void) 66%, transparent) 100%),
-    linear-gradient(180deg, color-mix(in srgb, var(--kit-void) 30%, transparent), color-mix(in srgb, var(--kit-void) 50%, transparent));
+    radial-gradient(56% 140% at 50% 50%, transparent 30%, color-mix(in srgb, var(--kit-void) 52%, transparent) 100%),
+    linear-gradient(180deg, color-mix(in srgb, var(--kit-gold-lo) 26%, transparent), color-mix(in srgb, var(--kit-gold-lo) 34%, transparent));
   mix-blend-mode: multiply;
 }
 .go-bp__mark {

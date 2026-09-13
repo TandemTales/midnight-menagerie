@@ -123,9 +123,9 @@
   position: absolute; z-index: 3; pointer-events: none;
   left: var(--mv-x); top: var(--mv-y); width: var(--mv-w); height: var(--mv-h);
   background:
-    radial-gradient(ellipse 80% 76% at 50% 46%,
-      transparent 0%, transparent 44%, rgba(58, 34, 18, .30) 80%, rgba(34, 20, 12, .62) 100%),
-    linear-gradient(color-mix(in srgb, var(--kit-gold-lo) 16%, transparent), color-mix(in srgb, var(--kit-gold-lo) 16%, transparent));
+    radial-gradient(ellipse 72% 70% at 46% 46%,
+      transparent 0%, transparent 34%, rgba(70, 40, 20, .34) 70%, rgba(40, 22, 12, .72) 100%),
+    linear-gradient(color-mix(in srgb, var(--kit-gold-lo) 20%, transparent), color-mix(in srgb, var(--kit-gold-lo) 20%, transparent));
   mix-blend-mode: multiply;
 }
 /* The frame: the Kid board's portrait frame (ui/kit.css .kit-frame--over),
