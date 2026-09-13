@@ -138,8 +138,8 @@ export class ClubhouseScene extends Scene {
     room.innerHTML = `
       <div class="cl-wall kit-ground kit-ground--planks"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>
       <div class="cl-lamp"><span class="cl-lamp__glow"></span></div>
-      <div class="cl-lights">${Array.from({ length: 14 }, (_, i) =>
-        `<i style="--i:${i};--d:-${(i * 0.42).toFixed(2)}s"></i>`).join('')}</div>
+      <div class="cl-lights kit-bulbs">${Array.from({ length: 14 }, (_, i) =>
+        `<i style="--i:${i}"></i>`).join('')}</div>
       <div class="cl-floor"></div>
       <div class="cl-dust">${Array.from({ length: 18 }, (_, i) =>
         `<i style="left:${(i * 5.6 + 3) % 100}%;--dur:${(16 + (i % 7) * 3)}s;--del:-${i * 1.7}s;--sz:${1 + (i % 3) * .8}px"></i>`).join('')}</div>

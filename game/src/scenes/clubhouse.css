@@ -63,32 +63,16 @@
 @keyframes cl-breathe { 0%,100% { opacity: .82; transform: scale(1); } 50% { opacity: 1; transform: scale(1.04); } }
 
 /* a string of bulbs pinned along the roof beam, sagging between the pins */
-.cl-lights { position: absolute; left: -2%; right: -2%; top: 0; height: 90px; pointer-events: none; z-index: 2; }
-.cl-lights::before {
-  content: ''; position: absolute; left: 0; right: 0; top: 4px; height: 58px;
-  border-bottom: 2px solid rgba(12, 8, 6, .85);
-  border-radius: 0 0 50% 50% / 0 0 100% 100%;
-  filter: drop-shadow(0 2px 1px rgba(0, 0, 0, .5));
-}
-.cl-lights i {
-  position: absolute; top: calc(12px + 44px * (1 - pow((var(--i) - 6.5) / 6.5, 2)));
-  left: calc(2% + var(--i) * 7.1%);
-  width: 10px; height: 15px; border-radius: 45% 45% 55% 55% / 40% 40% 60% 60%;
-  background: radial-gradient(circle at 40% 30%, #fff8e6 0 18%, var(--flame-200) 38%, var(--flame-400) 70%, var(--flame-500));
-  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--lamp) 55%, transparent), 0 0 34px 10px color-mix(in srgb, var(--lamp) 18%, transparent);
-  animation: cl-bulb 3.4s var(--ease-soft) infinite var(--d);
-}
-/* each bulb hangs from a little brass cap on the wire */
-.cl-lights i::before {
-  content: ''; position: absolute; left: 50%; top: -5px; width: 6px; height: 6px; translate: -50% 0;
-  border-radius: 2px 2px 1px 1px;
-  background: linear-gradient(90deg, var(--kit-gold-lo), var(--kit-gold-hi) 45%, var(--kit-gold-lo));
-  box-shadow: 0 1px 0 rgba(0, 0, 0, .6);
-}
-.cl-lights i:nth-child(3n)   { background: radial-gradient(circle at 40% 30%, #fff0ee 0 18%, var(--threat-200) 40%, var(--threat-400) 74%, var(--threat-500)); box-shadow: 0 0 10px 2px color-mix(in srgb, var(--threat-300) 50%, transparent), 0 0 30px 8px color-mix(in srgb, var(--threat-300) 14%, transparent); }
-.cl-lights i:nth-child(3n+1) { background: radial-gradient(circle at 40% 30%, #f0fdff 0 18%, var(--spectre-200) 40%, var(--spectre-400) 74%, var(--spectre-500)); box-shadow: 0 0 10px 2px color-mix(in srgb, var(--spectre-300) 46%, transparent), 0 0 30px 8px color-mix(in srgb, var(--spectre-300) 12%, transparent); }
-@keyframes cl-bulb { 0%,100% { opacity: .8; } 50% { opacity: 1; } }
+.cl-lights { left: -2%; right: -2%; top: 0; z-index: 2; }
 
+/* night outside the lamp's reach: the wall's far edges fall into the same
+   aubergine dark every board in the house stands in */
+.cl-room::after {
+  content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    radial-gradient(120% 96% at 36% 30%, transparent 46%, color-mix(in srgb, #140a1c 62%, transparent) 100%),
+    linear-gradient(to bottom, color-mix(in srgb, #120818 30%, transparent), transparent 30%);
+}
 /* the floor, and the dark gathering at the foot of the wall */
 .cl-floor {
   position: absolute; left: 0; right: 0; bottom: 0; height: 22%; z-index: 1; pointer-events: none;
@@ -109,7 +93,6 @@
   100% { transform: translate3d(28px,-72vh,0); opacity: 0; }
 }
 .scene--clubhouse.kit-still .cl-lamp__glow,
-.scene--clubhouse.kit-still .cl-lights i,
 .scene--clubhouse.kit-still .cl-dust i { animation: none; }
 .scene--clubhouse.kit-still .cl-dust { display: none; }
 
@@ -636,8 +619,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   :root:not([data-reduce-motion="0"]) .cl-go::before,
-  :root:not([data-reduce-motion="0"]) .cl-lamp__glow,
-  :root:not([data-reduce-motion="0"]) .cl-lights i { animation: none; }
+  :root:not([data-reduce-motion="0"]) .cl-lamp__glow { animation: none; }
 }
 
 @media (max-width: 1150px) {

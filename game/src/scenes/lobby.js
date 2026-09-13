@@ -195,6 +195,7 @@ export class LobbyScene extends Scene {
         <i class="kit-dress__flame kit-dress__flame--r"></i>
       </div>
       <div class="lo-props" aria-hidden="true">
+        <div class="lo-lights kit-bulbs">${Array.from({ length: 16 }, (_, i) => `<i style="--i:${i}"></i>`).join('')}</div>
         <i class="kit-hatch lo-hatch lo-hatch--l"></i>
         <i class="kit-hatch lo-hatch lo-hatch--r"></i>
       </div>
@@ -339,7 +340,7 @@ export class LobbyScene extends Scene {
     stage.innerHTML = '';
     this._$board.dataset.state = 'room';
     const wrap = el('div', 'lo__room kit-panel');
-    wrap.dataset.medal = 'moon';
+    wrap.dataset.medal = 'star';
 
     const head = el('header', 'lo__head');
     head.appendChild(el('p', 'lo__code-out',
@@ -398,7 +399,7 @@ export class LobbyScene extends Scene {
     cSel.addEventListener('change', onPick);
     kSel.addEventListener('change', onPick);
     const pick = (lbl, sel) => {
-      const lab = el('label', 'lo__pickwrap');
+      const lab = el('label', 'lo__pickwrap kit-select-wrap');
       lab.appendChild(el('span', 'lo__picklbl', lbl));
       lab.appendChild(sel);
       return lab;

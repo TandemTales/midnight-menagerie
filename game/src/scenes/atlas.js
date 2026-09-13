@@ -200,6 +200,12 @@ export class AtlasScene extends Scene {
        ordinary hover-reveal and dims only what is closed. */
     this.root.dataset.choose = (this.choosing && !this.entering) ? '1' : '0';
     this.root.dataset.enter = this.entering ? '1' : '0';
+    /* MANY DOORS. A way on used to offer two or three wings; since every wing
+       not yet walked is a way on, it usually offers fifteen, and fifteen names
+       lit at once over a plan that overlaps itself is the unreadable band the
+       way in already learned to avoid. Past four, a way on reads the way the
+       way in does: every name a hover away, only what is shut marked. */
+    this.root.dataset.many = (this.choosing && this.offer.length > 4) ? '1' : '0';
 
     this.root.classList.add('at-root');
     this.root.classList.toggle('kit-still', reduceMotion());

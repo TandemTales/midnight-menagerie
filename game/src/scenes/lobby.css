@@ -56,7 +56,12 @@
   --hatch-w: clamp(140px, min(calc(33vw - 290px), 27vh), 250px);
   top: calc(57.2vh - var(--hatch-w) * 470 / 420 * .93);
 }
-.lo-hatch--l { left: calc(var(--lo-side) + clamp(-18px, calc(4.6vw - 70px), 40px)); }
+.lo-hatch--l { left: calc(var(--lo-side) + clamp(-18px, calc(4.6vw - 70px), 40px)); transform: scaleX(-1); }
+/* the string of bulbs the kids ran along the roof beam, between the candles */
+.lo-lights {
+  --n: 16; --sag: clamp(40px, 6vh, 58px);
+  left: clamp(150px, 15vw, 250px); right: clamp(150px, 15vw, 250px); top: 2px;
+}
 .lo-hatch--r { right: calc(var(--lo-side) + clamp(-18px, calc(4.6vw - 70px), 40px)); }
 
 /* ── the title ────────────────────────────────────────────────────────────── */
@@ -176,15 +181,15 @@
 @keyframes lo-glow { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
 
 /* ── the room: the password, who is up here, what you are bringing ───────── */
-.lo__room { gap: clamp(10px, 1.6vh, 16px); padding-top: clamp(40px, 6vh, 56px); }
+.lo__room { gap: clamp(8px, 1.4vh, 14px); padding-top: clamp(34px, 5vh, 46px); margin-top: clamp(14px, 2.6vh, 26px); }
 .lo__head { display: grid; justify-items: center; gap: 6px; }
 .lo__code-out {
   --plate-h: clamp(56px, 7vh, 64px);
   position: relative;
   display: inline-grid; grid-template-columns: auto; justify-items: center;
   margin: 0;
-  min-width: 300px;
-  padding: 7px calc(var(--plate-h) * .8) 8px;
+  min-width: 320px;
+  padding: 12px calc(var(--plate-h) * .8) 11px;
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/plate.webp") 12 53 12 46 fill /
     calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72) stretch;
