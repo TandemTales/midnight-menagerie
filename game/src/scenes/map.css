@@ -411,9 +411,10 @@
   letter-spacing: .01em; white-space: nowrap; line-height: 1.15;
   max-width: 244px; overflow: hidden; text-overflow: ellipsis;
   color: color-mix(in srgb, var(--ink) 88%, var(--ink-900));
-  background: color-mix(in srgb, var(--parchment) 95%, #fff);
-  padding: 1px 10px 3px; border-radius: 3px;
-  box-shadow: 0 0 6px 3px color-mix(in srgb, var(--parchment) 70%, transparent);
+  /* lettered onto a patch of rubbed-clean paper, not stuck on as a label: the
+     clearing is as wide as the name and fades out at its ends */
+  background: radial-gradient(farthest-side, color-mix(in srgb, var(--parchment) 97%, #fff) 64%, color-mix(in srgb, var(--parchment) 70%, transparent) 86%, transparent 100%);
+  padding: 2px 16px 4px; border-radius: 50%;
   opacity: 0; pointer-events: none;
   transition: opacity var(--t-quick) var(--ease-out);
   text-shadow: 0 1px 0 rgba(255,255,255,.45);

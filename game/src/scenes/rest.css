@@ -296,6 +296,13 @@
    disabled, and the one you chose must not read as refused */
 .rs-door:disabled:not(.is-spent) .rs-door__note { color: var(--threat-200); font-style: italic; }
 
+/* The shell's preview flag is centred on the bottom rule, and on a narrow
+   board the way out reaches across it; the footer stands a little higher
+   whenever the flag is there, rather than the two sharing a line. */
+@media (max-width: 1500px) {
+  .scene--rest .rm:has(> .rm-mockflag) .rm-foot { padding-bottom: calc(clamp(14px, 2vh, 28px) + 16px); }
+}
+
 .rs-line {
   flex: 1; margin: 0; min-height: 1.3em;
   padding-left: calc(var(--kit-vine-w, 36px) * .6);
