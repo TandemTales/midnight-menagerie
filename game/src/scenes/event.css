@@ -91,20 +91,25 @@
 }
 .ev-prose p:last-child { margin-bottom: 0; color: var(--kit-text-mid); }
 
-/* ── options: three doors, each a nameplate with its numeral on an enamel boss ─ */
+/* ── options: three doors ──────────────────────────────────────────────────
+   Each door is a nameplate (the Companion tiles' own, plate.webp), and its
+   number — the 1-9 keys pick one — is set apart from it on a round purple
+   enamel medallion with a brass rim, the Kid board's round buttons. The
+   medallion is the button's own ::before, so it is part of the hit target. */
 .ev-options {
-  grid-area: options; display: flex; flex-direction: column; gap: clamp(6px, 1vh, 10px);
+  grid-area: options; display: flex; flex-direction: column; gap: clamp(8px, 1.2vh, 12px);
   width: 100%; max-width: none;
   counter-reset: ev-door;
-  padding-top: clamp(4px, .8vh, 8px);
+  padding-top: clamp(6px, 1vh, 10px);
 }
 .ev-opt {
-  --plate-h: 58px;
+  --md: clamp(46px, 5.6vh, 52px);
   counter-increment: ev-door;
   position: relative;
   display: grid; gap: 2px; text-align: left;
   min-height: 56px;
-  padding: 11px 46px 11px 74px;
+  margin-left: calc(var(--md) + 12px);
+  padding: 10px 44px 11px 30px;
   border: 0 solid transparent;
   border-image-source: url("../../assets/ui/kit/plate.webp");
   border-image-slice: 12 53 12 46 fill;
@@ -115,27 +120,33 @@
   transition: filter var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out),
               opacity var(--t-base) var(--ease-out);
 }
-/* the door's number (the 1-9 keys pick one): an enamel boss with a brass rim */
 .ev-opt::before {
   content: counter(ev-door, upper-roman);
-  position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
-  width: 38px; height: 38px;
+  position: absolute; left: calc(-1 * var(--md) - 12px); top: 50%; transform: translateY(-50%);
+  width: var(--md); height: var(--md);
   display: grid; place-items: center;
   border-radius: 50%;
   background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
-  font-family: var(--font-display); font-weight: 700; font-size: 14px; line-height: 1;
+  font-family: var(--font-display); font-weight: 700; font-size: calc(var(--md) * .34); line-height: 1;
   color: var(--kit-gold-hi);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 8px color-mix(in srgb, var(--kit-candle) 30%, transparent);
+  padding-bottom: 1px;
 }
+/* a short brass stem joins the medallion to its plate */
+.ev-opt::after {
+  content: ''; position: absolute; pointer-events: none;
+  left: -13px; top: 50%; width: 14px; height: 3px; transform: translateY(-50%);
+  background: linear-gradient(180deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
+  box-shadow: 0 1px 0 rgba(0, 0, 0, .7);
+}
+/* Hover and keyboard focus light the plate and its medallion from within —
+   the gilt itself glows, the way the frames on the reward do — rather than
+   drawing a ring round them. */
 .ev-opt:hover:not(:disabled), .ev-opt:focus-visible {
   transform: translateX(3px); outline: none;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .7)) drop-shadow(0 0 12px color-mix(in srgb, var(--kit-candle) 38%, transparent)) brightness(1.12);
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .7)) drop-shadow(0 0 2px color-mix(in srgb, var(--kit-gold-hi) 90%, transparent)) drop-shadow(0 0 14px color-mix(in srgb, var(--kit-candle) 55%, transparent)) brightness(1.14);
 }
-.ev-opt:focus-visible::after {
-  content: ''; position: absolute; inset: 2px 6px; pointer-events: none;
-  border-radius: 999px;
-  box-shadow: 0 0 0 2px var(--focus-ring);
-}
+.ev-opt:focus-visible::before { color: #fff1d2; }
 .ev-opt:disabled { cursor: not-allowed; filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .6)) saturate(.3) brightness(.7); }
 .ev-opt.is-chosen {
   opacity: 1;

@@ -126,11 +126,12 @@ export class ShopScene extends RoomScene {
     const wrap = el('div', 'sh-floor');
     wrap.innerHTML = `
       <div class="sh-left">
-        <section class="sh-counter sh-counter--cards" aria-label="${esc(TERMS.card)}s for sale">
-          <h2 class="sh-h kit-heading kit-heading--inline">${esc(TERMS.deck)} <em>on the table</em></h2>
+        <section class="sh-counter sh-counter--cards kit-panel" data-medal="star2" aria-label="${esc(TERMS.card)}s for sale">
+          <h2 class="sh-h kit-heading kit-heading--ribbon kit-heading--inline kit-heading--clasp">${esc(TERMS.deck)} <em>on the table</em></h2>
           <div class="sh-cards kit-cards" data-tip-avoid=".sh-card, .rm-where, .sh-counter--moth, .sh-side .sh-counter" role="list"></div>
         </section>
         <section class="sh-counter sh-counter--moth kit-panel" data-medal="moon">
+          <span class="sh-moth__frame" aria-hidden="true"></span>
           ${MOTH_SVG}
           <div class="sh-moth__say">
             <p class="sh-moth__name">Mr. Moth</p>
@@ -156,12 +157,12 @@ export class ShopScene extends RoomScene {
         </section>
       </div>
       <div class="sh-side">
-        <section class="sh-counter kit-panel" data-medal="star" aria-label="${esc(TERMS.relic)}s for sale">
-          <h2 class="sh-h kit-heading kit-heading--inline">${esc(TERMS.relic)}s <em>under the glass</em></h2>
+        <section class="sh-counter kit-panel" data-medal="shield" aria-label="${esc(TERMS.relic)}s for sale">
+          <h2 class="sh-h kit-heading kit-heading--ribbon kit-heading--inline kit-heading--clasp">${esc(TERMS.relic)}s <em>under the glass</em></h2>
           <div class="sh-list sh-list--keeps" role="list"></div>
         </section>
         <section class="sh-counter kit-panel" data-medal="paw" aria-label="${esc(TERMS.potion)}s for sale">
-          <h2 class="sh-h kit-heading kit-heading--inline">${esc(TERMS.potion)}s <em>in the jar</em></h2>
+          <h2 class="sh-h kit-heading kit-heading--ribbon kit-heading--inline kit-heading--clasp">${esc(TERMS.potion)}s <em>in the jar</em></h2>
           <div class="sh-list sh-list--snacks" role="list"></div>
         </section>
       </div>`;
@@ -319,14 +320,16 @@ export class ShopScene extends RoomScene {
    * Everything about affordability is expressed here so it is consistent.
    */
   _priceTag(price, key, label, onBuy, blockedReason = '', { repeatable = false } = {}) {
-    const b = el('button', 'sh-buy kit-plate');
+    // An enamel cartouche (ui/kit.css .kit-enamel): the price in gold over the
+    // word BUY engraved in spaced small caps.
+    const b = el('button', 'sh-buy kit-enamel kit-enamel--tall');
     b.type = 'button';
     b.dataset.key = key;
     b.dataset.price = String(price);
     if (blockedReason) b.dataset.blocked = blockedReason;
     b.setAttribute('aria-label', `${label}, ${price} ${TERMS.gold}`);
     b.innerHTML = `
-      <span class="sh-buy__price"><b>${price}</b><i>${esc(TERMS.gold)}</i></span>
+      <span class="sh-buy__price"><b class="kit-enamel__value">${price}</b><i class="kit-enamel__label">${esc(TERMS.gold)}</i></span>
       <span class="sh-buy__state"></span>`;
     b.addEventListener('click', async () => {
       if (b.disabled) return;
@@ -410,8 +413,10 @@ export class ShopScene extends RoomScene {
   }
 
   _layout() {
+    // The shelf is read, not glanced at: rules type never prints smaller than
+    // a full-size card's (see _cardfit.js).
     for (const { slot, view } of this._cardSlots || []) {
-      fitCardToSlot(view, slot.querySelector('.sh-card__face'));
+      fitCardToSlot(view, slot.querySelector('.sh-card__face'), { legibleAt: 224 });
     }
   }
 

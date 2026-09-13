@@ -904,6 +904,72 @@ def socket():
     save(np.dstack([col, small * 255]), "socket.webp", 92)
 
 
+# ── the Tricks shelf ─────────────────────────────────────────────────────────
+def shelf():
+    """A walnut shelf seen from just above: its top face catching the light,
+    a brass nosing along its edge, a moulded front with a bead, and the shadow
+    it casts on the cloth below. Tiles left to right every 512 px (2x)."""
+    rng = np.random.default_rng(1212)
+    W, H, ss = 512, 100, 2
+    SW, SH = W * ss, H * ss
+    yy = np.arange(SH, dtype=np.float32)[:, None] / ss * np.ones((1, SW), np.float32)
+    wood = wood_albedo(SH, SW, rng, base="#4a3021", light="#6b4a33", dark="#24170f", scale=2.2)
+    # make it tile: cross-fade the ends
+    k = np.clip((np.arange(SW) - (SW - 80)) / 80, 0, 1)[None, :, None]
+    wood = wood * (1 - k) + wood[:, :SW][:, ::-1] * 0 + np.roll(wood, SW // 2, axis=1) * 0 + wood * k
+    TOP0, TOP1 = 8.0, 30.0            # the top face
+    NOSE0, NOSE1 = 30.0, 37.0         # brass nosing
+    FR0, FR1 = 37.0, 72.0             # the moulded front
+    hgt = np.zeros((SH, SW), np.float32)
+    col = np.zeros((SH, SW, 3), np.float32)
+    alpha = np.zeros((SH, SW), np.float32)
+    top = (yy >= TOP0) & (yy < TOP1)
+    t_top = np.clip((yy - TOP0) / (TOP1 - TOP0), 0, 1)
+    col = np.where(top[..., None], wood * (0.8 + 0.45 * t_top[..., None]), col)
+    nose = (yy >= NOSE0) & (yy < NOSE1)
+    front = (yy >= FR0) & (yy < FR1)
+    prof = moulding(yy - FR0, [(0, 9, "bead", 5), (9, 12, "fillet", 2), (12, 30, "ogee", 6), (30, 35, "fillet", 1)])
+    hgt = np.where(front, prof, hgt)
+    tn = np.clip((yy - NOSE0) / (NOSE1 - NOSE0), 0, 1)
+    hgt = np.where(nose, np.sqrt(np.clip(1 - (2 * tn - 1) ** 2, 0, 1)) * 4 + 6, hgt)
+    n = normals(ndimage.gaussian_filter(hgt * ss, ss * 0.5), 0.9)
+    lam = lambert(n)
+    col = np.where(front[..., None], wood * 0.62 * (0.45 + 0.9 * lam[..., None]), col)
+    metal = brass(n, wear=noise((SH, SW), rng, ss * 2))
+    col = np.where(nose[..., None], metal, col)
+    alpha = np.where(top | nose | front, 1.0, alpha)
+    # ink lines at the breaks
+    for ey in (TOP0 + 0.3, NOSE0, NOSE1, FR1 - 0.4):
+        m = np.abs(yy - ey) < 0.8
+        col = np.where(m[..., None], np.array([12, 7, 5], np.float32), col)
+    # the shadow it throws on the cloth
+    sh = (yy >= FR1)
+    ts = np.clip((yy - FR1) / (H - FR1), 0, 1)
+    alpha = np.where(sh, (1 - ts) ** 1.8 * 0.85, alpha)
+    col = np.where(sh[..., None], np.array([4, 2, 5], np.float32), col)
+    # a faint lip of light on the top face's back edge
+    alpha = np.where(yy < TOP0, smooth(TOP0 - 6, TOP0, yy) * 0.6, alpha)
+    col = np.where((yy < TOP0)[..., None], np.array([6, 4, 6], np.float32), col)
+    col = down(col, ss)
+    alpha = down(alpha, ss)
+    save(np.dstack([col, alpha * 255]), "shelf.webp", 88)
+
+
+def velvet():
+    """The cabinet's back cloth: aubergine velvet with soft vertical folds and
+    the nap catching the light unevenly. Tileable 256x256."""
+    rng = np.random.default_rng(1313)
+    S = 256
+    folds = periodic_noise(S, rng, beta=2.8, lo_cut=1, shape=(S, S))
+    folds = np.asarray(Image.fromarray(((folds + 1) * 127.5).astype(np.uint8)).resize((S, S), Image.BICUBIC), np.float32) / 127.5 - 1
+    xx = np.arange(S, dtype=np.float32)[None, :]
+    pleat = 0.5 + 0.5 * np.sin(xx / S * 2 * np.pi * 4 + folds * 1.5)
+    nap = periodic_noise(S, rng, beta=0.9, lo_cut=8)
+    t = np.clip(0.42 + 0.22 * pleat + 0.1 * folds + 0.08 * nap, 0, 1)
+    col = ramp(t, [(0, "#0d0712"), (0.5, "#1f1229"), (1, "#3a2447")])
+    save(col, "velvet.webp", 86)
+
+
 PIECES = {
     "cartouche": cartouches,
     "room": room,
@@ -913,6 +979,8 @@ PIECES = {
     "rail": rail,
     "tube": tube,
     "socket": socket,
+    "shelf": shelf,
+    "velvet": velvet,
 }
 
 

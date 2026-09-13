@@ -212,6 +212,15 @@ def panel():
     k = ramp(blur(lum(rgb), 0.5), 9, 40)
     a = np.where(outside, k, a)
     a = np.where(orn, np.maximum(a, ramp(blur(lum(rgb), 0.5), 6, 26)), a)
+    # Specks of the neighbouring painting that the luminance key let through
+    # OUTSIDE the rail (a curl of the Kid board's vine sat 10 px off the top-left
+    # corner and rode every panel as a stray bracket): keep only what is joined
+    # to the rail itself.
+    lab, n = ndimage.label(a > 0.06)
+    if n > 1:
+        main = lab[T, (L + R) // 2]
+        stray = (lab > 0) & (lab != main) & outside
+        a = np.where(stray, 0, a)
     a = blur(a, 0.35)
     out = rgba(unmix(rgb, a, (6, 4, 7)), a)
     save(out, "panel.webp", 92)

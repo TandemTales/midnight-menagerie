@@ -81,7 +81,7 @@
 .rm-foot {
   position: relative; z-index: 3;
   display: flex; align-items: center; justify-content: flex-end; gap: var(--s-4);
-  padding: var(--s-3) var(--rm-pad) clamp(14px, 2vh, 28px);
+  padding: 6px var(--rm-pad) clamp(12px, 1.8vh, 22px);
 }
 .rm-live { margin: 0; font-size: var(--fs-sm); color: var(--text-mid); min-height: 1.2em; }
 

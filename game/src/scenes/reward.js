@@ -705,7 +705,7 @@ export class RewardScene extends RoomScene {
   }
 
   _layout() {
-    for (const { slot, view } of this._slots || []) fitCardToSlot(view, slot);
+    for (const { slot, view } of this._slots || []) fitCardToSlot(view, slot, { legibleAt: 224 });
   }
 
   /* ── footer: skip, and the way out ────────────────────────────────────── */
