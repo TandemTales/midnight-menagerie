@@ -55,7 +55,7 @@
   position: relative; isolation: isolate;
   display: inline-flex; align-items: center; gap: .42em;
   height: var(--hud-chip-h);
-  padding: 0 1.05em 0 0;
+  padding: 0 1.05em;
   color: var(--kit-text);
   background: none;
   border: 0;
@@ -63,9 +63,12 @@
   font-variant-numeric: tabular-nums;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
+/* a chip that leads with its icon seats the icon's medallion on the plate's
+   left end; a chip without one (combat's Turn) is the plate alone */
+.mm-hud__chip:has(> .mm-icon:first-child) { padding-left: 0; }
 .mm-hud__chip::before {
   content: ''; position: absolute; z-index: -1; pointer-events: none;
-  top: 0; bottom: 0; right: 0; left: calc(var(--hud-chip-h) * .5);
+  top: 0; bottom: 0; right: 0; left: 0;
   border: 0 solid transparent;
   border-image-source: url("../../assets/ui/kit/cartouche-hud.webp");
   border-image-slice: 14 26 14 26 fill;
@@ -73,6 +76,7 @@
   border-image-repeat: stretch;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .7));
 }
+.mm-hud__chip:has(> .mm-icon:first-child)::before { left: calc(var(--hud-chip-h) * .5); }
 .mm-hud__chip > .mm-icon:first-child {
   display: grid; place-items: center;
   width: calc(var(--hud-chip-h) * 1.12); height: calc(var(--hud-chip-h) * 1.12);

@@ -253,7 +253,7 @@
 .sh-buy__state {
   margin-top: 1px;
   font-family: var(--font-display); font-weight: 700;
-  font-size: max(10px, calc(var(--h) * .27)); line-height: 1.05; letter-spacing: .3em;
+  font-size: max(10.5px, calc(var(--h) * .28)); line-height: 1.05; letter-spacing: .3em;
   padding-left: .3em;
   text-transform: uppercase;
   color: var(--kit-name);
@@ -266,10 +266,10 @@
   padding: 0 calc(var(--h) * .72) 1px;
 }
 .sh-row .sh-buy__price .kit-enamel__value, .sh-remove .sh-buy__price .kit-enamel__value { font-size: calc(var(--h) * .56); }
-.sh-row .sh-buy__price .kit-enamel__label, .sh-remove .sh-buy__price .kit-enamel__label { font-size: max(9.5px, calc(var(--h) * .3)); }
+.sh-row .sh-buy__price .kit-enamel__label, .sh-remove .sh-buy__price .kit-enamel__label { font-size: max(10px, calc(var(--h) * .3)); }
 .sh-row .sh-buy__state, .sh-remove .sh-buy__state {
   display: inline-flex; align-items: center; margin: 0 0 0 .55em;
-  font-size: max(10px, calc(var(--h) * .34));
+  font-size: max(11px, calc(var(--h) * .36));
 }
 .sh-row .sh-buy__state::before, .sh-remove .sh-buy__state::before {
   content: ''; flex: none; width: 5px; height: 5px; margin-right: .6em;
@@ -500,5 +500,8 @@
   .scene--shop .sh-side > .sh-counter { padding: 20px 12px 5px; }
   .scene--shop .sh-row { padding-block: 3px; }
   .scene--shop .sh-moth__you { min-height: 27px; margin-block: 2px 1px; }
-  .scene--shop .sh-service { row-gap: 1px; padding-top: 1px; }
+  .scene--shop .sh-service { row-gap: 1px; padding-top: 1px; column-gap: 6px; }
+  .scene--shop .sh-service .sh-h { letter-spacing: .1em; }
+  .scene--shop .sh-service .sh-h > em { margin-left: 5px; }
+  .scene--shop .sh-remove .sh-buy { padding-inline: 14px; }
 }

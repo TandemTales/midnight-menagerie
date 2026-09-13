@@ -469,11 +469,14 @@
   border-image-width: calc(44px * var(--stage-pk));
   border-image-outset: calc(14px * var(--stage-pk));
   border-image-repeat: stretch;
+  /* the alcove is a recess: its top in the shadow of the rail over it, its
+     floor catching what light there is, its sides falling away */
   background:
-    radial-gradient(70% 55% at 50% 0%, rgba(4, 3, 6, .5), transparent 70%),
-    linear-gradient(180deg, rgba(6, 4, 9, .58) 0%, rgba(6, 4, 9, .34) 45%, rgba(6, 4, 9, .2) 78%, rgba(6, 4, 9, .42) 100%);
+    radial-gradient(70% 40% at 50% 0%, rgba(4, 3, 6, .42), transparent 70%),
+    linear-gradient(90deg, rgba(4, 3, 6, .35), transparent 12%, transparent 88%, rgba(4, 3, 6, .35)),
+    linear-gradient(180deg, rgba(6, 4, 9, .46) 0%, rgba(6, 4, 9, .2) 45%, rgba(6, 4, 9, .1) 78%, rgba(6, 4, 9, .34) 100%);
   background-clip: padding-box;
-  box-shadow: inset 0 0 70px rgba(0, 0, 0, .7), 0 26px 60px -24px rgba(0, 0, 0, .95);
+  box-shadow: inset 0 0 70px rgba(0, 0, 0, .66), inset 0 14px 22px -10px rgba(0, 0, 0, .8), 0 26px 60px -24px rgba(0, 0, 0, .95);
 }
 .kit-stage::after {
   content: ''; position: absolute; z-index: 3; pointer-events: none;
