@@ -545,6 +545,23 @@
 @keyframes go-in-up    { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 @keyframes go-in-right { from { opacity: 0; transform: translateX(26px); } to { opacity: 1; transform: none; } }
 
+/* ═══ reduced motion ══════════════════════════════════════════════════════
+   The game's own setting is `.mm-reduce-motion` on the root (ui/portrait.css
+   stops everything under it). The OS preference stops the loops here too:
+   the candle keeps its light and the way home keeps its glow, but nothing
+   breathes, drifts or sweeps. The snuff itself still happens — instantly. */
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-reduce-motion="0"]) .scene--gameover .go-halo,
+  :root:not([data-reduce-motion="0"]) .scene--gameover .go-candle__prop::after,
+  :root:not([data-reduce-motion="0"]) .scene--gameover .go-btn--primary::before,
+  :root:not([data-reduce-motion="0"]) .scene--gameover .go-motes i,
+  :root:not([data-reduce-motion="0"]) .scene--gameover .go-smoke path,
+  :root:not([data-reduce-motion="0"]) .scene--gameover .go-vignette::before,
+  :root:not([data-reduce-motion="0"]) .scene--gameover .go-bp__mark { animation: none; }
+  :root:not([data-reduce-motion="0"]) .scene--gameover .go-smoke path { stroke-dashoffset: 0; }
+  :root:not([data-reduce-motion="0"]) .scene--gameover .go-motes { display: none; }
+}
+
 /* ═══ readability ═════════════════════════════════════════════════════════ */
 .mm-large-text .go-pet__text,
 .mm-large-text .go-mvp__note { font-size: calc(var(--fs-md) * 1.1); }
