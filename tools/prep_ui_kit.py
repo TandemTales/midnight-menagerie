@@ -32,6 +32,8 @@ What comes out, and how `game/src/ui/kit.css` uses it:
   button-ornate         the same, seated in its gold filigree
   candle, skull         set dressing (.kit-prop)
   web-l / web-r         cobweb threads from the board corners (.kit-web)
+  footscroll            the purple acanthus along the Kid board's foot, mirrored
+                        (.kit-dress__footscroll)
   grain                 the panels' own grain as a neutral overlay tile
   from UI/mainMenu.png
   hall-*                four details of the mansion, hung as portraits
@@ -42,6 +44,9 @@ What comes out, and how `game/src/ui/kit.css` uses it:
 Everything with an alpha edge is keyed on LUMINANCE against the painting's own
 near-black ground and then *unmixed* from that ground, so a piece composited
 back onto a dark board reproduces the painting instead of going muddy.
+
+Run tools/prep_ui_materials.py after this one: its room, sconce and floor
+read pieces this script writes (damask, floor, candle).
 
     python tools/prep_ui_kit.py            # write everything
 """
@@ -512,6 +517,31 @@ def props():
     ], "skull.webp", soft=0.8)
 
 
+def footscroll():
+    """The purple acanthus that trails along the foot of the Kid board from its
+    round confirm button (selectKid x 1085..1255, y 965..1062), keyed on its
+    own violet against the dark floor, then set beside its mirror image: one
+    symmetric ornament to lie along the middle of a board's bottom rule."""
+    rgb = crop(SK, (1085, 966, 1256, 1064))
+    l = blur(lum(rgb), 0.5)
+    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    vio = (b > g * 1.12) & (r > g * 1.02)
+    a = ramp(l, 18, 46) * vio
+    # nothing of the button's gold filigree or the frame above
+    a = np.where(ndimage.binary_dilation(warm(rgb), iterations=2), 0, a)
+    # only the scroll itself: drop the specks the key lets through
+    lab, n = ndimage.label(a > .12)
+    if n:
+        sizes = ndimage.sum(a > .12, lab, range(1, n + 1))
+        keep = np.isin(lab, 1 + np.nonzero(sizes >= 40)[0])
+        a = np.where(ndimage.binary_dilation(keep, iterations=2), a, 0)
+    a = feather(blur(a, 0.5), left=0, right=10, top=3, bottom=3)
+    piece = rgba(unmix(rgb, np.maximum(a, 1e-3), (10, 7, 12)), a)
+    # the curls meet in the middle, the tails trail away to either side
+    both = np.concatenate([piece, piece[:, ::-1]], axis=1)
+    save(np.ascontiguousarray(both), "footscroll.webp", 90)
+
+
 def webs():
     """Cobwebs, threads only, from the board corners (after ui/r0-a's cut).
 
@@ -940,6 +970,7 @@ def main():
     button_ornate()
     props()
     webs()
+    footscroll()
 
 
 if __name__ == "__main__":

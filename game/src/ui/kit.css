@@ -13,28 +13,44 @@
    PRIMITIVES (use these in any scene; RoomScene._shell in scenes/reward.js
    is the worked example of a whole board)
      .kit-board            a full-bleed painted board
-       .kit-ground         its wall: aubergine, grain, damask, candle + moon light,
+       .kit-ground         its room: a rendered wall, panelling and floor in the
+                           dark, with __warm and __moon children revealing the
+                           same room lit, through light-shaped masks a board
+                           points with --wl1..6-* / --ml1..2-* / --mb1..2-*;
                            and the slot a painted background drops into
                            (--kit-backdrop + .has-backdrop, set from JS)
-       .kit-dress          its dressing: __floor __rule __vine--l/r
+       .kit-dress          its dressing: __floor __rule __footscroll __vine--l/r
                            __corner--l/r __flame--l/r (all decoration)
+     .kit-window (--r)     a gothic lancet on the room's wall, moonlit
+     .kit-sconce           a brass wall sconce with the Kid board's candle
+     .kit-web (--r)        cobweb threads for a corner
      .kit-titleblock       the title plaque: title.png's cartouche, holding
                            .kit-cartouche__title / __sub, a .kit-ribbon
                            and a .kit-titleblock__note  (--compact: shorter)
      .kit-ribbon           gold ribbon banner with its two painted stars
-     .kit-stage            the big rounded gold rail a choice is made inside
+     .kit-stage            the alcove a choice is made in: the panels' painted
+                           rail round a deeper stretch of the room, a crest
+                           medallion on its top rule (--stage-medal)
      .kit-panel            dark panel in a painted gold rail (9-slice)
        [data-medal]        + paw | star | star2 | shield | moon on its top rail
      .kit-frame            ornate gold portrait frame (9-slice)
      .kit-plate            dark nameplate: .kit-plate__name over __epithet
-     .kit-heading          spaced gold small caps between star-tipped rules;
+     .kit-heading          spaced gold small caps between star-tipped strokes;
                            an <em> inside is the epithet  (--inline: same line)
+       --ribbon            the same on the gold ribbon banner ("✦ TRICKS ✦")
+       --clasp             a ribbon along a .kit-panel's top rail, parted by
+                           the panel's medallion
+     .kit-enamel           an enamel cartouche in a bevelled brass rim: a price,
+                           a rarity, a spoil (__value, __label; --tall, --dark)
      .kit-btn              primary action: a gold-lettered nameplate
        .kit-btn--quiet     secondary action: the same, unlit
        .kit-btn__medal     a .kit-medallion seated on one end of it
      .kit-medallion        round purple enamel button with a brass rim
        --ornate            the same in its gold filigree
      .kit-tag              an engraved label and its value (risk / gain / cost)
+     #kit-engrave, #kit-relief   SVG filters in index.html: the wordmark's
+                           bevelled, gold-edged lettering; relief for small
+                           drawings set in enamel
      .kit-prop--candle     a painted candle with a live glow  (--skull too)
      .kit-cards            container: re-dresses every .mm-card inside in brass
 
@@ -187,6 +203,20 @@
   border-image-repeat: stretch;
   box-shadow: inset 0 0 44px color-mix(in srgb, var(--kit-void) 62%, transparent);
 }
+
+/* the Kid board's purple acanthus, lying along the middle of the bottom rule */
+.kit-dress__footscroll {
+  left: 50%; bottom: calc(var(--kit-edge) + 1px);
+  width: clamp(330px, 26vw, 420px); height: clamp(52px, 7vh, 66px);
+  transform: translateX(-50%);
+  /* drawn to the element's width and cropped from the top, so the scroll's
+     tall middle curls never climb over whatever stands above the footer */
+  background: url("../../assets/ui/kit/footscroll.webp") 50% 88% / 100% auto no-repeat;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 30%);
+          mask-image: linear-gradient(to bottom, transparent 0, black 30%);
+  filter: brightness(1.7) saturate(1.1);
+}
+.kit-board.has-backdrop .kit-dress__footscroll { filter: brightness(1.2); }
 
 .kit-dress__corner {
   top: calc(var(--hud-h) + 2px);

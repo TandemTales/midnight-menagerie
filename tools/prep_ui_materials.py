@@ -20,17 +20,24 @@ them in the paintings' manner instead of drawing them with CSS:
 Outputs (game/assets/ui/kit/):
 
   cartouche.webp      enamel cartouche with a bevelled brass rim (9-slice):
-                      price tags, rarity tags, spoils, the preview flag
+                      price tags, rarity tags, spoils (.kit-enamel)
   cartouche-hud.webp  the same, cut shorter for the HUD's value plates
+  cartouche-dark.webp the Companion tiles' near-black plate: card names, notes
   rail.webp           the HUD's gilded rail: lacquer body, brass rod, studs
-  shelf.webp          the Tricks shelf: a moulded walnut lip with a brass nosing
-  velvet.webp         the shelf's back cloth, a tileable aubergine velvet
+  tube.webp           the Courage bar's brass capsule; the Moth's stat strip
+  socket.webp         a Keepsake's clipped-corner brass socket in the HUD
+  shelf.webp          the Tricks shelf: planked top, bullnose, inlaid apron
+  velvet.webp         the shelf cabinet's back cloth, tileable
   room.webp           the placeholder room in the dark (wall, panelling, floor)
   room-warm.webp      the same room under candle light
   room-moon.webp      the same room under moonlight
-  window.webp         a gothic lancet window onto the grounds (UI/mainMenu.png)
-  sconce.webp         a brass wall sconce holding the boards' own candle
-  beam.webp           a shaft of moonlight with dust in it (a luminance mask)
+  pool.webp           a candle's light on a wall, as a mask (.kit-ground__warm)
+  beam.webp / -r      a shaft of moonlight from a window, as a mask
+  window.webp / -r    a gothic lancet onto the grounds (UI/mainMenu.png), moon in it
+  sconce.webp         a brass wall sconce holding the Kid board's own candle
+
+Run after tools/prep_ui_kit.py: the room is papered with its damask.webp and
+floored with its floor.webp, and the sconce holds its candle.webp.
 
     python tools/prep_ui_materials.py              # everything
     python tools/prep_ui_materials.py --only room  # one piece while tuning

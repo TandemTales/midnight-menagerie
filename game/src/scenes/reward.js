@@ -159,6 +159,7 @@ export class RoomScene extends Scene {
         <div class="kit-dress" aria-hidden="true">
           <i class="kit-dress__floor"></i>
           <i class="kit-dress__rule"></i>
+          <i class="kit-dress__footscroll"></i>
           <i class="kit-dress__vine kit-dress__vine--l"></i>
           <i class="kit-dress__vine kit-dress__vine--r"></i>
           <i class="kit-dress__corner kit-dress__corner--l"></i>

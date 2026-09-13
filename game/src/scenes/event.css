@@ -473,6 +473,7 @@
   .ev-rsplate { display: block; max-height: 38vh; justify-self: center; }
 }
 
-/* When event.png is painted it brings its own portraits: the hall's placeholder
-   frames step aside and only the props on the floor stay. */
-.kit-board.has-backdrop .ev-hall__frame { display: none; }
+/* When event.png is painted it brings its own walls: the placeholder windows
+   (ui/kit.css) and the webs strung from them step aside; the sconces and the
+   props on the floor stay, lit as before. */
+.kit-board.has-backdrop .ev-hall__web { display: none; }
