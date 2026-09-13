@@ -122,11 +122,12 @@ export class EventScene extends RoomScene {
        So this is a printed page instead: one measure, a drop cap, a rule, and
        the room's own name as its slug. The mood still colours the ground, so a
        Curiosity still arrives with a temperature. */
-    // The first paragraph is the page's lede: set a size up, so the
-    // illuminated initial always has two lines of it to drop into.
+    // The first paragraph is the page's lede, in the body's own size: an
+    // illuminated initial dropped three lines into it, and the words beside
+    // the initial in engraved small caps (event.css).
     page.innerHTML = `
       <div class="ev-prose">
-        ${d.text.map((p, i) => `<p${i === 0 ? ' class="ev-lede"' : ''}>${esc(p)}</p>`).join('')}
+        ${this._proseParagraphs(d.text).map((p, i) => `<p${i === 0 ? ' class="ev-lede"' : ''}>${esc(p)}</p>`).join('')}
       </div>
       <div class="ev-options" role="group" aria-label="What do you do?"></div>
       <div class="ev-outcome" hidden aria-live="polite"></div>`;
@@ -168,6 +169,27 @@ export class EventScene extends RoomScene {
     }
     this._own(rovingFocus(this.$options, '.ev-opt', { cols: 0 }));
     requestAnimationFrame(() => this.$options.querySelector('.ev-opt:not(:disabled)')?.focus());
+  }
+
+  /**
+   * The paragraphs as the page sets them (PEARL's, round 3).
+   *
+   * The first paragraph opens on an illuminated initial dropped three lines
+   * deep (event.css), and most Curiosities open on a single short sentence —
+   * "A lectern, a brass lamp that comes on by itself…" — which a three-line
+   * initial would leave standing beside a hole. So a short opening runs on
+   * into the paragraph after it, the way a printed page sets a short opening
+   * line, until the first paragraph is long enough to wrap the initial; every
+   * later paragraph starts flush as written. Every word stays, in order.
+   */
+  _proseParagraphs(text) {
+    const paras = (Array.isArray(text) ? text : [text]).map(p => String(p ?? '')).filter(Boolean);
+    const RUN_ON = 210;           // characters: about two and a half lines of the page's measure
+    const out = paras.slice();
+    while (out.length > 1 && out[0].length < RUN_ON) {
+      out.splice(0, 2, `${out[0]} ${out[1]}`);
+    }
+    return out;
   }
 
   /**

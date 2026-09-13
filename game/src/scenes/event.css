@@ -77,35 +77,54 @@
     linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--kit-gold) 75%, transparent) 30%, color-mix(in srgb, var(--kit-gold) 75%, transparent) 46.5%, transparent 46.5%, transparent 53.5%, color-mix(in srgb, var(--kit-gold) 75%, transparent) 53.5%, color-mix(in srgb, var(--kit-gold) 75%, transparent) 70%, transparent 100%) 0 5px / 100% 1px no-repeat;
 }
 .ev-prose p {
+  --lh: 1.62;
+  --p-fs: calc(var(--fs-md) * 1.1);
+  --drop: calc(var(--p-fs) * var(--lh) * 3 - 6px);     /* three lines, less a hair */
   margin: 0 0 .66em;
-  font-size: calc(var(--fs-md) * 1.1); line-height: 1.62; color: var(--kit-text);
+  font-size: var(--p-fs); line-height: var(--lh); color: var(--kit-text);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
 }
-/* the lede: the opening paragraph a size up, the way a printed story opens,
-   so the illuminated initial has two full lines of it to drop into. `flow-root`
-   makes it its own block formatting context: the initial cannot reach down and
-   indent the paragraph after it, which starts flush. */
+/* The opening paragraph is set in the body's own size, never a bigger lede
+   beside smaller body text. `flow-root` makes it its own block formatting
+   context, so the initial cannot bleed down and indent the paragraph after it:
+   every later paragraph starts flush. (event.js runs a short opening on into
+   the next paragraph, so the first is always long enough to wrap the initial.) */
 .ev-prose p.ev-lede, .ev-prose p:first-child {
   display: flow-root;
-  --lede-lh: 1.46;
-  font-size: max(21px, calc(var(--fs-md) * 1.36)); line-height: var(--lede-lh);
-  color: var(--kit-text);
-  margin-bottom: .5em;
+  margin-bottom: .66em;
 }
-/* the illuminated initial, dropped two lines into the lede: the letter in the
-   wordmark's engraved gold, set in its own ornamented box (initial.webp: a
-   bevelled gilt frame with a scroll in each corner round violet enamel). The
-   box is exactly two of the lede's lines tall, less the gap under it. */
+/* The illuminated initial, a true drop cap three lines deep with the
+   paragraph wrapping round it (PEARL's): the letter in the wordmark's engraved
+   gilt, set in its own ornamented box, a bevelled gilt frame with a scroll in
+   each corner round violet enamel (initial.webp). The box is exactly three
+   lines tall less a hair, so the fourth line runs back out under it to the
+   full measure. (::first-letter takes no width or height: its line box sets
+   the height and the padding squares it round the glyph's own advance.) */
 .ev-prose p.ev-lede::first-letter, .ev-prose p:first-child::first-letter {
   float: left;
-  margin: .05em .2em 0 -.02em;
-  padding: .15em .24em .05em;
+  margin: 6px 14px 0 0;
   font-family: var(--font-display); font-weight: 700;
-  font-size: 2.12em;
-  line-height: 1;
+  font-size: calc(var(--p-fs) * 3.1);
+  line-height: calc(var(--drop) + 2px);
+  padding: 0 calc((var(--drop) - .76em) / 2) 0;
+  /* the float ends a hair above the third line's foot, never level with it:
+     level, the fourth line's box would round in beside it and stay indented */
+  margin-bottom: -4px;
+  letter-spacing: 0;
   color: var(--kit-gold-hi);
   background: url("../../assets/ui/kit/initial.webp") 50% 50% / 100% 100% no-repeat;
-  text-shadow: 0 1px 0 var(--kit-gold-lo), 0 2px 0 #1c1029, 0 0 14px color-mix(in srgb, var(--kit-candle) 45%, transparent);
+  text-shadow: 0 1px 0 var(--kit-gold-lo), 0 2px 0 #1c1029, 0 0 16px color-mix(in srgb, var(--kit-candle) 45%, transparent);
+}
+/* The words after the initial, the line beside it, in spaced engraved small
+   caps (MINT's), in the body's size: the display face's small capitals, cut
+   into the page (a dark lip over each stroke, the candle catching the one
+   under it) and warmed toward the gilt of the initial they follow. */
+.ev-prose p.ev-lede::first-line, .ev-prose p:first-child::first-line {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: calc(var(--p-fs) * .92);
+  letter-spacing: .09em;
+  color: color-mix(in oklab, var(--kit-name) 70%, var(--kit-text));
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .75), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 70%, transparent);
 }
 .ev-prose p:last-child:not(:first-child) { margin-bottom: 0; color: var(--kit-text-mid); }
 
@@ -524,9 +543,14 @@
   /* the moon medallion hangs 38px into the page: the lede starts clear of it,
      and the divider has a line's air either side */
   .ev-page.kit-panel { padding: 48px 40px 18px; }
+  /* the page keeps the same measure in ems it has at 1600x900 (about 35 of
+     the body's ems): the page's px width does not shrink with its type, and
+     at 740px the opening ran out beside the initial in three lines, with
+     nothing left to wrap round under it */
+  .ev-page:not(.ev-page--rescue) { width: min(664px, 100%); }
   .ev-prose { padding-bottom: 16px; }
-  .ev-prose p { line-height: 1.46; margin-bottom: .44em; }
-  .ev-prose p.ev-lede { --lede-lh: 1.38; margin-bottom: .36em; }
+  .ev-prose p { --lh: 1.46; --p-fs: 16px; margin-bottom: .44em; }
+  .ev-prose p.ev-lede { margin-bottom: .44em; }
   .ev-options { gap: 8px; padding-top: 4px; }
   .ev-opt { min-height: 52px; padding-block: 8px 9px; }
   .scene--event .rm-body { padding-top: 26px; }
