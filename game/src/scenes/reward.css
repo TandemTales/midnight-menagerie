@@ -105,7 +105,7 @@
   transition: filter var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out);
 }
 .rm-btn em { font-style: italic; text-transform: none; letter-spacing: 0;
-             font-family: var(--font-body); font-weight: 400; font-size: var(--fs-xs); color: var(--kit-text-lo); }
+             font-family: var(--font-body); font-weight: 400; font-size: max(12px, var(--fs-xs)); color: var(--kit-text-lo); }
 .rm-btn:hover:not(:disabled) { transform: translateY(-1px); color: var(--kit-text);
                                filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .7)) saturate(.9) brightness(1.04); }
 .rm-btn:disabled { opacity: .4; cursor: not-allowed; }
@@ -134,24 +134,39 @@
 @keyframes rm-ready { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
 .rm.is-still .rm-go.is-ready::before { animation: none; }
 
-/* The preview flag: its own small dark plate, set in the middle of the footer
-   between the ways out, inside the board's frame. It is a note, not a
-   control: it takes no pointer and no space from the buttons either side. */
+/* The preview flag is an inscription, not a plate: a line of engraved small
+   caps cut into the board's bottom rule where it passes under the footer's
+   scrollwork, the rule parted round it and a painted star at each end. It is a
+   note, not a control: it takes no pointer and no space from the buttons. */
 .rm-mockflag {
-  --h: 40px;
-  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  position: absolute; left: 50%; bottom: calc(var(--kit-edge) - 5px);
+  transform: translateX(-50%);
   z-index: 0; pointer-events: none;
-  padding: 2px calc(var(--h) * .78) 3px;
+  display: inline-flex; align-items: baseline; gap: .5em;
+  padding: 1px 26px 2px;
+  white-space: nowrap;
+  /* the rule parts round the words: the board's dark, soft at both ends */
+  background: radial-gradient(closest-side, rgba(8, 6, 11, .96) 72%, rgba(8, 6, 11, 0));
+  background-size: 100% 150%; background-position: 50% 50%;
 }
-.rm-mockflag .kit-enamel__label {
-  font-size: 9.5px; letter-spacing: .18em;
-  color: color-mix(in oklab, var(--kit-text-lo) 80%, white);
+.rm-mockflag::before, .rm-mockflag::after {
+  content: ''; position: absolute; top: 50%; width: 8px; height: 8px;
+  translate: 0 -50%;
+  background: url("../../assets/ui/kit/star4.svg") 50% 50% / contain no-repeat;
+  opacity: .75;
 }
-/* name over epithet; the separator is kept for anything reading the text */
-.rm-mockflag__dot { display: none; }
+.rm-mockflag::before { left: 8px; }
+.rm-mockflag::after { right: 8px; }
+.rm-mockflag__label {
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: 11px; line-height: 14px; letter-spacing: .22em; text-transform: uppercase;
+  color: color-mix(in oklab, var(--kit-gold) 55%, var(--kit-text-lo));
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 16%, transparent);
+}
+.rm-mockflag__dot { color: var(--kit-gold-lo); font-size: 11px; }
 .rm-mockflag__sub {
-  font-family: var(--font-body); font-style: italic; font-size: 11.5px; line-height: 1.1;
-  color: var(--kit-text-mid);
+  font-family: var(--font-body); font-style: italic; font-size: 12px; line-height: 14px;
+  color: var(--kit-text-lo);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 
@@ -260,26 +275,45 @@
 /* a Big Scare also hands over a Keepsake: the frames give it the room
    (.rm--reward:has(.rw-keepsake) above) */
 
-/* the stage: the kit's filigree frame, its top rule running through the
-   middle of the spoils' cartouches with the crest medallion between them,
-   the way selectKid's info panels wear their medallions */
+/* the stage: the kit's filigree frame. ON its top rail, in one line: the
+   spoils either side, and between them CHOOSE ONE TRICK on the gold ribbon,
+   clasped to the rail by a star medallion riding on top of it — the way
+   selectKid's info panels wear their medallions. */
 .rw-stage {
   --spoil-h: clamp(34px, 4.3vh, 40px);
-  --stage-medal-w: clamp(100px, 7.8vw, 128px);
+  --rib-h: clamp(30px, 3.8vh, 36px);
+  --stage-medal: url("../../assets/ui/kit/medal-star.webp");
+  --stage-medal-w: clamp(66px, 5.2vw, 84px);
   display: flex; flex-direction: column; align-items: center;
   gap: clamp(2px, .6vh, 8px);
   width: var(--stage-w);
-  padding: 0 0 clamp(16px, 2.2vh, 26px);
+  margin-top: clamp(26px, 3.6vh, 40px);
+  padding: 0 0 clamp(20px, 2.8vh, 32px);
 }
 .rw-stage::before { top: calc(var(--spoil-h) / 2); }
-.rw-stage::after { top: calc(var(--spoil-h) / 2); }
+/* the star: its foot tucked behind the ribbon's upper edge */
+.rw-stage::after {
+  top: calc(var(--spoil-h) / 2 - var(--rib-h) / 2 + 7px);
+  aspect-ratio: 71 / 53;
+  transform: translate(-50%, -100%);
+  z-index: 3;
+}
 
 .rw-spoils { display: flex; flex-direction: column; align-items: center; gap: var(--s-3); position: relative; z-index: 4; }
 .rw-spoils__row { display: flex; align-items: center; justify-content: center; gap: 0; }
 .rw-spoils__side { display: flex; gap: clamp(8px, 1vw, 16px); align-items: center; }
 .rw-spoils__side--l { justify-content: flex-end; }
-/* the crest rides the rule here: the spoils keep clear of it */
-.rw-spoils__crest { flex: none; width: calc(var(--stage-medal-w) + clamp(18px, 2vw, 34px)); height: var(--spoil-h); }
+/* the clasp between the spoils: the ribbon on the rail */
+.rw-spoils__crest {
+  flex: none; display: flex; align-items: center; justify-content: center;
+  min-height: var(--spoil-h);
+  padding-inline: clamp(12px, 1.2vw, 22px);
+}
+.rw-spoils__crest > .kit-heading--ribbon {
+  --rib-h: inherit;
+  margin: 0;
+  font-size: max(14px, calc(var(--rib-h) * .47));
+}
 
 /* A Keepsake in the spoils is a kit panel with the star medallion on its rail. */
 .rw-keepsake {
@@ -309,19 +343,46 @@
   position: relative;
   display: flex; flex-direction: column; align-items: center; gap: clamp(2px, .5vh, 6px); width: 100%;
 }
-/* the candles stand in the frame's two lower corners, on the alcove's floor */
+/* the candles stand in the frame's two lower corners, on the table */
 .rw-candle {
-  bottom: clamp(-10px, -.6vh, -4px);
-  width: clamp(50px, 4.2vw, 72px);
+  bottom: calc(var(--cloth-h) * .58 - 14px);
+  width: clamp(46px, 3.8vw, 66px);
   z-index: 0;
+}
+/* The table the three are shown on: a velvet runner laid over it, a gold braid
+   along its front edge and a bullion fringe hanging off it (cloth.webp,
+   prep_ui_polish.py). Its braid runs level with the frames' bottom rails, so
+   each rarity plate sits on it; the candles' light pools on the cloth. */
+.rw-cards {
+  --cloth-h: clamp(92px, 12.6vh, 124px);
+}
+.rw-cards::after {
+  content: ''; position: absolute; z-index: -2; pointer-events: none;
+  left: clamp(4px, .4vw, 8px); right: clamp(4px, .4vw, 8px);
+  bottom: calc(22px - var(--cloth-h) * .37 - var(--frame-pad) * .15);
+  height: var(--cloth-h);
+  background: url("../../assets/ui/kit/cloth.webp") 50% 0 / auto 100% repeat-x;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .6));
+  /* the runner's ends are lost in the alcove's shadow, where the candles stand */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, .85) 9%, black 18%, black 82%, rgba(0, 0, 0, .85) 91%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, .85) 9%, black 18%, black 82%, rgba(0, 0, 0, .85) 91%, transparent 100%);
+}
+.rw-cards::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  left: 50%; bottom: calc(22px - var(--cloth-h) * .1);
+  width: min(100%, calc(var(--fan-half) * 2.3)); height: calc(var(--cloth-h) * 1.5);
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 20%, transparent), color-mix(in srgb, var(--kit-candle) 6%, transparent) 55%, transparent);
+  mix-blend-mode: screen;
 }
 .rw-candle--l { left: clamp(34px, 3.4vw, 60px); }
 .rw-candle--r { right: clamp(34px, 3.4vw, 60px); }
 
 /* the heading hangs below the crest's lower tip (49/98 of the medallion is
    below the rule) */
-.rw-cards__head { text-align: center; position: relative; z-index: 2; margin-top: calc(var(--stage-medal-w) * 49 / 156 - var(--spoil-h) / 2 + 8px); }
-.rw-cards__head p { margin: 4px 0 0; font-size: var(--fs-sm); color: var(--kit-text-mid); font-style: italic; text-shadow: 0 1px 0 rgba(0, 0, 0, .9); }
+.rw-cards__head { text-align: center; position: relative; z-index: 2; margin-top: calc(var(--rib-h) / 2 - var(--spoil-h) / 2 + 4px); }
+.rw-cards__head p { margin: 0; font-size: max(13px, var(--fs-sm)); color: var(--kit-text-mid); font-style: italic; text-shadow: 0 1px 0 rgba(0, 0, 0, .9); }
 
 /* ── the three Tricks, each hung in a painted portrait frame ──────────────── */
 .rw-fan {
@@ -368,7 +429,7 @@
   -webkit-mask: none;
 }
 .rw-slot.is-hot {
-  transform: translateY(-14px) scale(1.03);
+  transform: translateY(-8px) scale(1.015);
   z-index: 4;
 }
 .rw-slot::after {
@@ -398,7 +459,7 @@
   z-index: 2;
 }
 .rw-slot__rarity .kit-enamel__label {
-  font-size: max(11px, calc(var(--h) * .34)); letter-spacing: .22em;
+  font-size: max(12px, calc(var(--h) * .36)); letter-spacing: .2em;
   color: color-mix(in oklab, var(--rarity-common) 58%, var(--kit-name));
 }
 .rw-slot__rarity[data-rarity="uncommon"] .kit-enamel__label { color: color-mix(in oklab, var(--rarity-uncommon) 70%, var(--kit-name)); }
@@ -441,6 +502,11 @@
 .is-large .rm-spoil span { font-size: var(--fs-sm); }
 .is-large .rm-sub, .is-large .rm-live { font-size: var(--fs-md); }
 
+@media (max-width: 1400px) {
+  /* the frames close up a little so the keyword plaque keeps the margin
+     beside the first Trick for itself, clear of the candle under it */
+  .rm--reward { --fan-gap: calc(var(--frame-pad) * 2 + 10px); }
+}
 @media (max-width: 1200px) {
   .rm--reward { --slot-h: min(21vw, 38vh); }
 }

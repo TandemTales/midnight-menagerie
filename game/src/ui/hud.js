@@ -83,7 +83,7 @@ const GEAR_CSS = `
 .mm-hud__gear[hidden] { display: none; }
 .mm-hud__gearlbl {
   font-family: var(--font-display); font-weight: 700;
-  font-size: var(--fs-xs); letter-spacing: .16em; text-transform: uppercase;
+  font-size: max(11.5px, .8em); letter-spacing: .12em; text-transform: uppercase;
   color: color-mix(in srgb, var(--kit-moon) 70%, var(--kit-text));
 }
 /* Round and cool, where a Keepsake is square and warm. Shape and temperature

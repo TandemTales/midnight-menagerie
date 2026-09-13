@@ -376,12 +376,15 @@
 .kit-titleblock--compact .kit-cartouche__title { font-size: clamp(24px, 2.2vw, 36px); }
 .kit-titleblock--compact .kit-cartouche__sub { font-size: var(--fs-sm); }
 
+/* where the room is: engraved small caps in the lavender-grey of the plaque's
+   sub, big enough to read at a glance on a 1280x800 panel */
 .kit-titleblock__note {
   grid-column: 1; grid-row: 4;
   margin: 6px 0 0;
-  font-family: var(--font-display); font-size: var(--fs-xs);
-  letter-spacing: .22em; text-transform: uppercase;
-  color: var(--kit-text-lo);
+  font-family: var(--font-display); font-weight: 600; font-size: max(11.5px, var(--fs-xs));
+  letter-spacing: .2em; text-transform: uppercase;
+  color: color-mix(in oklab, var(--kit-lav) 45%, var(--kit-text-mid));
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 12px rgba(0, 0, 0, .8);
 }
 
 /* ── ribbon ──────────────────────────────────────────────────────────────── */
@@ -420,14 +423,40 @@
   border-image-width: calc(44px * var(--pk));
   border-image-outset: calc(14px * var(--pk));
   border-image-repeat: stretch;
+  /* The ground is cloth, not a gradient: selectKid's empty panels are a
+     near-black crinkled nap (felt.webp, prep_ui_polish.py), lit from above the
+     way the board is and falling into shadow at the corners. */
   background:
-    radial-gradient(90% 60% at 50% 0%, color-mix(in srgb, var(--kit-violet) 9%, transparent), transparent 70%),
-    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
-    linear-gradient(180deg, var(--kit-panel-hi) 0%, var(--kit-panel) 40%, color-mix(in oklab, var(--kit-panel) 80%, var(--kit-void)) 100%);
-  background-blend-mode: normal, overlay, normal;
+    radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(4, 3, 6, .5) 100%),
+    radial-gradient(80% 55% at 50% -5%, color-mix(in srgb, var(--kit-candle) 5%, transparent), transparent 70%),
+    url("../../assets/ui/kit/felt.webp") 0 0 / 256px 256px,
+    var(--kit-panel);
   background-clip: padding-box;
-  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, .9), inset 0 0 30px rgba(0, 0, 0, .35);
+  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, .9), inset 0 0 26px rgba(0, 0, 0, .4);
   padding: clamp(14px, 1.6vw, 22px);
+}
+/* Inside the painted rail, a second, finer frame: an engraved double rule set
+   in from the rail, a brass fleuron over each of its corners (fleuron-*.webp).
+   It stands clear of the rail's own corner fleurs and of everything the panel
+   holds: decoration, never over a word. --rule-in moves it; `--rule: none`
+   (on a panel that has no room for it) takes it away. */
+.kit-panel { isolation: isolate; }
+.kit-panel::after {
+  content: var(--rule, '');
+  position: absolute; z-index: -1; pointer-events: none;
+  inset: var(--rule-in, calc(7px + 9px * var(--pk)));
+  border: 3px double color-mix(in srgb, var(--kit-gold) 46%, transparent);
+  --fl: calc(12px + 16px * var(--pk));
+  background:
+    url("../../assets/ui/kit/fleuron-tl.webp") 0 0 / var(--fl) var(--fl) no-repeat,
+    url("../../assets/ui/kit/fleuron-tr.webp") 100% 0 / var(--fl) var(--fl) no-repeat,
+    url("../../assets/ui/kit/fleuron-bl.webp") 0 100% / var(--fl) var(--fl) no-repeat,
+    url("../../assets/ui/kit/fleuron-br.webp") 100% 100% / var(--fl) var(--fl) no-repeat;
+  background-origin: border-box;
+  background-clip: border-box;
+  margin: -1px;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .7));
+  opacity: .9;
 }
 /* a medallion seated on the top rail, the way selectKid's info panels wear one */
 .kit-panel[data-medal]::before {
@@ -525,9 +554,9 @@
 /* engraved small caps: cut into the enamel, the light on the lower lip */
 .kit-enamel__label {
   font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: max(10.5px, calc(var(--h) * .3)); line-height: 1.05;
-  letter-spacing: .2em; text-transform: uppercase;
-  padding-left: .2em;                   /* the tracking hangs off the last letter */
+  font-size: max(11.5px, calc(var(--h) * .3)); line-height: 1.05;
+  letter-spacing: .18em; text-transform: uppercase;
+  padding-left: .18em;                  /* the tracking hangs off the last letter */
   color: var(--kit-text-mid);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-lav-hi) 22%, transparent);
 }
@@ -609,7 +638,7 @@
   grid-column: 1 / -1; grid-row: 2; justify-self: center;
   margin-top: -1px;
   font-family: var(--font-body); font-style: italic; font-weight: 400;
-  font-size: var(--fs-xs); letter-spacing: .02em; text-transform: none;
+  font-size: max(12px, var(--fs-xs)); letter-spacing: .02em; text-transform: none;
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
@@ -735,7 +764,7 @@
 .kit-btn em {
   font-family: var(--font-body); font-style: italic; font-weight: 400;
   letter-spacing: 0; text-transform: none;
-  font-size: var(--fs-xs);
+  font-size: max(12px, var(--fs-xs));
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
@@ -792,7 +821,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 .kit-tag > i {
   display: inline-flex; align-items: center;
   font-style: normal; font-family: var(--font-display); font-weight: 700;
-  font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase;
+  font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase;
   color: inherit;
 }
 .kit-tag > i::after {
@@ -908,16 +937,33 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
     inset 0 0 0 calc(3 * var(--u)) color-mix(in srgb, var(--frame-hi) 26%, transparent),
     0 calc(4 * var(--u)) calc(12 * var(--u)) rgba(0, 0, 0, .7);
 }
+/* The face under the art is a lined rules panel, not a gradient: the samples'
+   damask flocked into dark cloth (felt-damask.webp), lit warm from the foot by
+   the card's type colour, with a fine engraved double rule standing in from its
+   edges and a brass fleuron at each of the rule's lower corners (::after). */
 .kit-cards .mm-card[data-rarity] .mm-card__face {
   background:
-    radial-gradient(130% 46% at 50% 100%, color-mix(in srgb, var(--type-color) 16%, transparent), transparent 70%),
-    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
-    linear-gradient(180deg, #1f1827 0%, #151019 46%, #1a1420 78%, #211a28 100%);
-  background-blend-mode: normal, overlay, normal;
+    radial-gradient(130% 46% at 50% 100%, color-mix(in srgb, var(--type-color) 18%, transparent), transparent 70%),
+    radial-gradient(90% 40% at 50% 46%, color-mix(in srgb, var(--kit-candle) 6%, transparent), transparent 70%),
+    url("../../assets/ui/kit/felt-damask.webp") 50% 0 / calc(104 * var(--u)) calc(118 * var(--u)),
+    #120e16;
   box-shadow:
     inset 0 0 0 calc(1 * var(--u)) rgba(0, 0, 0, .8),
     inset 0 0 0 calc(2.5 * var(--u)) color-mix(in srgb, color-mix(in oklab, var(--rarity-c) 60%, var(--kit-gold)) 50%, transparent),
     inset 0 0 0 calc(3.5 * var(--u)) rgba(0, 0, 0, .55);
+}
+.kit-cards .mm-card[data-rarity] .mm-card__face::after {
+  content: ''; position: absolute; pointer-events: none;
+  left: calc(7 * var(--u)); right: calc(7 * var(--u));
+  top: calc(147 * var(--u)); bottom: calc(7 * var(--u));
+  border: calc(3.4 * var(--u)) double color-mix(in srgb, var(--kit-gold) 52%, transparent);
+  border-top-color: transparent;
+  --fl: calc(15 * var(--u));
+  background:
+    url("../../assets/ui/kit/fleuron-bl.webp") 0 100% / var(--fl) var(--fl) no-repeat,
+    url("../../assets/ui/kit/fleuron-br.webp") 100% 100% / var(--fl) var(--fl) no-repeat;
+  background-origin: border-box;
+  opacity: .9;
 }
 /* The name on a dark cartouche nameplate laid over the foot of the art, the
    way every Companion tile on UI/selectCompanion.png wears its name
@@ -936,11 +982,22 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   box-shadow: none;
   filter: drop-shadow(0 calc(2 * var(--u)) calc(3 * var(--u)) rgba(0, 0, 0, .85));
 }
+/* the name, a size up, in the wordmark's lavender display caps: cut into the
+   plate (a dark lip above each stroke), a gilt edge catching the light below */
 .kit-cards .mm-card[data-rarity] .mm-card__name {
-  color: var(--kit-name);
-  padding: 0 calc(15 * var(--u)) calc(1 * var(--u));
-  text-shadow: 0 calc(1 * var(--u)) 0 rgba(0, 0, 0, .95);
+  font-family: var(--font-display); font-weight: 700;
+  font-size: calc(18.5 * var(--u));
+  letter-spacing: .02em;
+  color: var(--kit-lav-hi);
+  padding: 0 calc(12 * var(--u)) calc(1 * var(--u));
+  text-shadow:
+    0 calc(-1 * var(--u)) 0 rgba(12, 5, 20, .95),
+    0 calc(1 * var(--u)) 0 color-mix(in srgb, var(--kit-gold) 75%, transparent),
+    0 calc(2 * var(--u)) calc(3 * var(--u)) rgba(0, 0, 0, .9),
+    0 0 calc(8 * var(--u)) color-mix(in srgb, var(--kit-violet) 55%, transparent);
 }
+.kit-cards .mm-card[data-rarity].is-name-long .mm-card__name { font-size: calc(14.5 * var(--u)); letter-spacing: 0; }
+.kit-cards .mm-card[data-rarity].is-name-xlong .mm-card__name { font-size: calc(12 * var(--u)); letter-spacing: 0; }
 .kit-cards .mm-card[data-rarity] .mm-card__type { top: calc(145 * var(--u)); font-size: calc(10.5 * var(--u) * min(var(--rules-k, 1), 1.25)); }
 .kit-cards .mm-card[data-rarity] .mm-card__rules { top: calc(168 * var(--u)); }
 /* a board that shows Tricks to be read lifts a small card's rules type
@@ -970,10 +1027,14 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
     0 0 0 calc(1.5 * var(--u)) rgba(0, 0, 0, .7),
     0 calc(3 * var(--u)) calc(8 * var(--u)) rgba(0, 0, 0, .65);
 }
+/* a keyword is lettered in the rules, not boxed: gold, a touch heavier, with
+   a fine gilt underline cut beneath it (a box read as a web pill) */
 .kit-cards .mm-card[data-rarity] .mm-card__kw {
   color: var(--kit-gold-hi);
-  background: color-mix(in srgb, var(--kit-gold-lo) 34%, transparent);
-  box-shadow: inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb, var(--kit-gold) 45%, transparent);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 70%, transparent) 15%, color-mix(in srgb, var(--kit-gold) 70%, transparent) 85%, transparent) 0 100% / 100% calc(1 * var(--u)) no-repeat;
+  box-shadow: none;
+  padding: 0 calc(1 * var(--u)) calc(1 * var(--u));
+  text-shadow: 0 calc(1 * var(--u)) 0 rgba(0, 0, 0, .95), 0 0 calc(6 * var(--u)) color-mix(in srgb, var(--kit-candle) 30%, transparent);
 }
 .kit-cards .mm-card[data-rarity="uncommon"] .mm-card__frame,
 .kit-cards .mm-card[data-rarity="rare"] .mm-card__frame {
@@ -1042,7 +1103,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 }
 .kit-stats__label {
   font-family: var(--font-display); font-weight: 700;
-  font-size: 10.5px; line-height: 1.2; letter-spacing: .14em; text-transform: uppercase;
+  font-size: 11.5px; line-height: 1.2; letter-spacing: .12em; text-transform: uppercase;
   color: var(--kit-text-lo);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
   text-wrap: balance;

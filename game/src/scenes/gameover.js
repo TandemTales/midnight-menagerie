@@ -8,14 +8,19 @@
  * out as a memorial board in the kit's language (ui/kit.css) — the same staged
  * board the select screens are painted as:
  *
- *   top   — the headline in the wordmark's cartouche, the ribbon under it.
- *   left  — the beat. The Kid and the Companion in the Kid board's portrait
- *           frames with a candle between them (snuffed or burning), and three
- *           gold-railed panels: what you found, what you lost, and the pet you
- *           did not reach. This column is the reason anyone remembers the run.
- *   right — the ledger, one panel with the moon on its rail. Rooms deep and
- *           wing reached, the numbers on an engraved strip, the Tricks, the
- *           Keepsakes, the seed. Everything a player wants to screenshot.
+ *   top    — the headline in the wordmark's cartouche, the ribbon under it.
+ *   centre — the beat, directly under the title: the Kid and the Companion in
+ *            the Kid board's portrait frames side by side on one shelf, the
+ *            candle between them (snuffed or burning). Gold-railed panels flank
+ *            it: what you found and the pet you did not reach on one side, what
+ *            you lost and how far the survey got on the other. This is the
+ *            reason anyone remembers the run.
+ *   below  — the ledger, one panel the width of the board with the moon on its
+ *            rail: HOW FAR in lavender display type, flanked by the wing it
+ *            reached and the seed on matching cartouches, every number on one
+ *            engraved strip, and the
+ *            Trick the run leaned on standing on a gilt plinth beside the
+ *            Tricks and the Keepsakes. Everything a player wants to screenshot.
  *
  * Reads `ctx.run` when meta-run has built one; otherwise fabricates a fully
  * plausible, *deterministic* summary from the seed so the deep link is
@@ -35,7 +40,8 @@ import {
   el, rovingFocus, setReduceMotion, reduceMotion, formatSeed,
   REGION_NAMES, COMPANION_BY_SLUG, KID_BY_SLUG,
 } from '../ui/portrait.js';
-import { paintBackdrop, kitDressMarkup } from '../ui/kitboard.js';
+import { kitDressMarkup } from '../ui/kitboard.js';
+import { paintBackdrop } from '../ui/backdrop.js';
 import { pauseStageFor } from './_stage.js';
 import { fitCardToSlot } from './_cardfit.js';
 import { plural, word } from '../util/plural.js';
@@ -102,6 +108,10 @@ function resolveCard(entry, cardById) {
  *  outline, as the arrow and tick on the Kid board are. Decorative. */
 const GO_GLYPH = {
   home: `<svg viewBox="0 0 24 24"><path d="M12 3.2 2.6 11h2.9v9.6h5.1v-6h2.8v6h5.1V11h2.9z"/></svg>`,
+  // the title: the crescent from the Kid board's mirror
+  title: `<svg viewBox="0 0 24 24"><path d="M15.6 2.8a9.4 9.4 0 1 0 5.6 15.9A8 8 0 0 1 15.6 2.8z"/></svg>`,
+  // straight back in: an arrow turning back on itself, towards the house
+  again: `<svg viewBox="0 0 24 24"><path d="M12.4 4.2a7.8 7.8 0 1 1-7.4 10.4l2.7-1a4.9 4.9 0 1 0 4.7-6.5V10L6.8 5.7 12.4 1.4z"/></svg>`,
 };
 
 export class GameOverScene extends Scene {
@@ -412,7 +422,11 @@ export class GameOverScene extends Scene {
           `<b class="go-num">${s.gold}</b> ${TERMS.gold}, scattered behind you`,
           `Every ${TERMS.potion} and every piece of Gear`,
         ];
-    stanzas.appendChild(this._stanza('lost', this.won ? 'What it cost' : 'What you lost', lost, 'shield'));
+    const lostPanel = this._stanza('lost', this.won ? 'What it cost' : 'What you lost', lost, 'shield');
+    // ...and how far the survey got before it did: the blueprint band is drawn
+    // along the foot of this panel.
+    lostPanel.appendChild(this._buildBlueprint());
+    stanzas.appendChild(lostPanel);
 
     const petLine = s.petHome
       ? `<b>${esc(k.pet)}</b> came home. ${esc(first)} has not put ${esc(k.pet)} down since.`
@@ -437,7 +451,8 @@ export class GameOverScene extends Scene {
     stanzas.appendChild(pet);
 
     beat.appendChild(stanzas);
-    beat.appendChild(this._buildBlueprint());
+    // The blueprint band is how far "8 rooms deep" is: it is drawn under that
+    // number in the ledger (_buildLedger), not in this column.
     return beat;
   }
 
@@ -493,17 +508,21 @@ export class GameOverScene extends Scene {
     led.dataset.medal = 'moon';
     led.setAttribute('aria-label', 'Expedition record');
 
-    /* --- header: how far, and the seed that would run it again ------------ */
+    /* --- header: HOW FAR, the ledger's one focal number, in the middle; the
+           wing it reached and the seed that would run it again on matching
+           cartouches in its two corners ------------------------------------- */
     const who = el('div', 'go-who', `
-      <div class="go-who__reach">
+      <div class="go-who__reach go-corner">
         <span class="go-lbl">Reached</span>
-        <b>${plural(s.floor, 'room')} deep</b>
         <span class="go-who__wing">${esc(region)} &middot; Wing ${s.wing}</span>
       </div>
-      <div class="go-seed">
+      <div class="go-who__focal">
+        <b class="go-who__deep">${plural(s.floor, 'room')} deep</b>
+      </div>
+      <div class="go-seed go-corner">
         <span class="go-lbl">Seed</span>
-        <code class="go-seed__val">${formatSeed(s.seed)}</code>
-        <button type="button" class="go-seed__copy kit-plate">Copy</button>
+        <span class="go-seed__row"><code class="go-seed__val">${formatSeed(s.seed)}</code>
+        <button type="button" class="go-seed__copy kit-plate">Copy</button></span>
         <span class="go-seed__hint">Run this house again, exactly as it was.</span>
       </div>`);
     led.appendChild(who);
@@ -532,7 +551,7 @@ export class GameOverScene extends Scene {
       `<div class="go-courage__track"><i style="width:${Math.max(0, Math.min(100, (s.hp / s.maxHp) * 100)).toFixed(1)}%"></i></div>` +
       `<span class="go-courage__n">${s.hp} / ${s.maxHp}</span>` +
       `<em class="go-courage__note">${this.won ? 'walked out with it' : 'the candle ran out'}</em>`;
-    who.insertBefore(bar, who.querySelector('.go-seed'));
+    who.querySelector('.go-who__focal').appendChild(bar);
 
     /* --- final deck ------------------------------------------------------- */
     const deck = el('div', 'go-block go-block--deck');
@@ -795,18 +814,21 @@ export class GameOverScene extends Scene {
     const f = el('footer', 'go-foot');
     const nav = el('nav', 'go-acts');
     nav.setAttribute('aria-label', 'What now');
-    const mk = (act, cls, label, hint) => {
+    // Every way out is a cartouche with the Kid board's round enamel button
+    // seated on its end: the two quiet ones on their left ends, the way home on
+    // its right, as the board's back and confirm buttons sit.
+    const mk = (act, cls, label, hint, glyph) => {
       const b = el('button', `go-btn ${cls}`);
       b.type = 'button';
       b.dataset.act = act;
-      b.innerHTML = `<b>${label}</b><em>${hint}</em>`;
+      b.innerHTML = `<b>${label}</b><em>${hint}</em>`
+        + `<i class="kit-medallion kit-medallion--ornate kit-btn__medal" aria-hidden="true">${glyph}</i>`;
       return b;
     };
     const home = mk('clubhouse', 'go-btn--primary kit-btn', 'Return to the Clubhouse',
-      this.won ? 'pin the photograph to the board' : 'work out what to bring next time');
-    home.insertAdjacentHTML('beforeend', `<i class="kit-medallion kit-medallion--ornate kit-btn__medal" aria-hidden="true">${GO_GLYPH.home}</i>`);
-    nav.appendChild(mk('title', 'go-btn--ghost kit-btn kit-btn--quiet', 'Title', 'put the house down for now'));
-    nav.appendChild(mk('again', 'go-btn--ghost kit-btn kit-btn--quiet', 'Go straight back in', 'choose a Kid and a Companion'));
+      this.won ? 'pin the photograph to the board' : 'work out what to bring next time', GO_GLYPH.home);
+    nav.appendChild(mk('title', 'go-btn--ghost go-btn--title kit-btn kit-btn--quiet', 'Title', 'put the house down for now', GO_GLYPH.title));
+    nav.appendChild(mk('again', 'go-btn--ghost go-btn--again kit-btn kit-btn--quiet', 'Go straight back in', 'choose a Kid and a Companion', GO_GLYPH.again));
     nav.appendChild(home);
     f.appendChild(nav);
     this._acts = nav;

@@ -230,6 +230,7 @@ const FORT_PAINT = `
   <path class="rs-mullion" d="M380 19v87M357 60h46"/>
   <path class="rs-winsill" d="M344 108h72v7h-72Z"/>
   <path d="M362 40 404 40 322 257 190 257Z" fill="url(#rsShaft)" filter="url(#rsBlur8)"/>
+  <path class="rs-moonbeam" d="M370 46 398 46 300 257 226 257Z" filter="url(#rsBlur4)"/>
 
   <!-- the door they wedged: panelled, boarded across, still shut -->
   <path class="rs-doorframe" d="M4 58h80v199H4Z"/>
@@ -258,6 +259,8 @@ const FORT_PAINT = `
   </g>
   <ellipse class="rs-shadow" cx="230" cy="258" rx="178" ry="7" filter="url(#rsBlur4)"/>
   <ellipse class="rs-spill" cx="212" cy="266" rx="120" ry="15" filter="url(#rsBlur8)"/>
+  <!-- where the moonbeam lands: a cold patch on the rug's far side -->
+  <ellipse class="rs-moonpool" cx="266" cy="263" rx="62" ry="9" filter="url(#rsBlur4)"/>
 
   <!-- the chair the second blanket hangs off -->
   <g class="rs-chair">
@@ -376,9 +379,11 @@ const FORT_SVG = `
     <clipPath id="rsClipPet"><rect x="0" y="0" width="1" height="1"/></clipPath>
   </defs>
 
-  <!-- the lamp's light on the rug in front of the way in -->
-  <ellipse class="rs-pool" cx="210" cy="254" rx="132" ry="20" fill="url(#rsGlow)"/>
-  <circle class="rs-halo" cx="210" cy="222" r="46" fill="url(#rsInside)"/>
+  <!-- the lamp's light: filling the fort, spilling out of the way in and
+       across the rug in front of it -->
+  <ellipse class="rs-pool" cx="210" cy="257" rx="168" ry="26" fill="url(#rsGlow)"/>
+  <ellipse class="rs-pool rs-pool--in" cx="210" cy="232" rx="74" ry="40" fill="url(#rsGlow)"/>
+  <circle class="rs-halo" cx="210" cy="222" r="62" fill="url(#rsInside)"/>
 
   <!-- the lamp between them -->
   <path class="rs-torchbody" d="M203 238h14v3h-14ZM201 241h18v7h-18Z"/>
@@ -545,14 +550,16 @@ export class RestScene extends RoomScene {
       },
     ];
 
-    for (const o of this._options) {
+    for (const [i, o] of this._options.entries()) {
       const b = el('button', 'rs-door kit-panel');
       b.type = 'button';
       b.dataset.opt = o.id;
       b.dataset.medal = DOOR_MEDAL[o.id] || 'star2';
       b.disabled = !o.can;
       b.setAttribute('aria-label', `${o.name}. ${String(o.readout).replace(/<[^>]+>/g, ' ')}`);
-      b.innerHTML = `
+      // The 1-4 keys choose the first four (_bindKeys): each of those wears its
+      // key on a small enamel badge at the corner of its rail.
+      b.innerHTML = `${i < 4 ? `<span class="rs-door__key" aria-hidden="true">${i + 1}</span>` : ''}
         <span class="rs-door__glyph" aria-hidden="true">${DOOR_GLYPH[o.id]}</span>
         <span class="rs-door__txt">
           <b>${esc(o.name)}</b>
