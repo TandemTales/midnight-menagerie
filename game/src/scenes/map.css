@@ -127,7 +127,7 @@
   background:
     radial-gradient(56% 54% at 50% 48%, transparent 0%, transparent 36%, rgba(38, 22, 12, .26) 66%, rgba(20, 11, 8, .56) 90%, rgba(12, 7, 6, .76) 100%),
     linear-gradient(to bottom, rgba(10, 7, 12, .22) 0%, rgba(10, 7, 12, .06) 14%, transparent 26%),
-    linear-gradient(to top, rgba(10, 7, 12, .6) 0%, rgba(10, 7, 12, .22) 12%, transparent 26%);
+    linear-gradient(to top, rgba(10, 7, 12, .4) 0%, rgba(10, 7, 12, .1) 10%, transparent 22%);
 }
 .map-lamp {
   position: absolute; top: -640px; left: -640px; z-index: 3;

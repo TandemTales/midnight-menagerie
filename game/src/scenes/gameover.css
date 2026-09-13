@@ -449,7 +449,7 @@
 .go-bp__count { flex: none; margin-left: auto; }
 .go-bp__label, .go-bp__count {
   font-family: var(--font-display); font-weight: 700; font-size: 11.5px;
-  letter-spacing: .05em; text-transform: uppercase; color: var(--kit-text-lo);
+  letter-spacing: .02em; text-transform: uppercase; color: var(--kit-text-lo);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .go-bp__count b { font-family: var(--font-num); font-size: 1.3em; color: var(--kit-gold-hi); }
@@ -505,8 +505,8 @@
 
 /* --- the card that did the work: on a gilt plinth, under its own light ----- */
 .go-mvp { display: grid; grid-template-columns: auto minmax(0, 17ch); gap: clamp(12px, 1.2vw, 20px); align-items: center; }
-.go-mvp__slot { position: relative; flex: none; margin: 12px 12px calc(12px + var(--plinth-h, 22px)); }
-.go-board { --go-mvp-s: .56; }
+.go-mvp__slot { position: relative; flex: none; margin: 12px 14px calc(10px + var(--plinth-h, 22px)); }
+.go-board { --go-mvp-s: .5; }
 .go-block--mvp { --plinth-h: clamp(24px, 3vh, 28px); }
 /* the card hangs in the Kid board's frame, as the reward's three do */
 .go-mvp__slot::before {
@@ -528,7 +528,7 @@
 /* the gilt plinth it stands on (plinth.webp), and the candle's light on it */
 .go-mvp__slot::after {
   content: ''; position: absolute; z-index: -2; pointer-events: none;
-  left: -24px; right: -24px; top: calc(100% + 9px); height: var(--plinth-h);
+  left: -26px; right: -26px; top: calc(100% + 7px); height: var(--plinth-h);
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/plinth.webp") 0 36 fill / 0 calc(var(--plinth-h) * 36 / 56) stretch;
   filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .8));
@@ -681,7 +681,7 @@
   .go-tricks { gap: 3px 4px; }
   .go-keep { padding-block: 2px; }
   .go-keep em { font-size: 12px; line-height: 1.2; }
-  .go-mvp__slot { margin: 10px 10px calc(10px + var(--plinth-h)); }
+  .go-mvp__slot { margin: 10px 12px calc(8px + var(--plinth-h)); }
   .go-block--mvp { --plinth-h: 20px; }
   .go-foot { padding-top: 6px; padding-bottom: 12px; }
 }
