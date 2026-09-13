@@ -101,6 +101,11 @@
   padding-left: clamp(0px, 11vw, 200px);
 }
 .cb-enemies[data-n="4"] .cb-enemy { --e-crowd: 0.88; }
+/* a crowded board sets its readings a size down, so four medallions and four
+   nameplates still stand apart: the figures stay the largest thing on them */
+.cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-intent { --iv: clamp(52px, 3.8vw, 62px); --ph: clamp(24px, 1.75vw, 28px); }
+.cb-enemies:is([data-n="5"], [data-n="6"]) .cb-enemy:not([data-tier="boss"]) .cb-enemy__name { --np-h: 24px; font-size: 10.5px; letter-spacing: .06em; padding-inline: 13px; }
+.cb-enemies:is([data-n="5"], [data-n="6"]) .cb-enemy:not([data-tier="boss"]) .cb-enemy__vitals { --tube-h: 18px; }
 /* FIVE BODIES — the Keeper plus its four Sanctuary Locks, the widest board in
    the game. The row is centred and carries up to 132px of left padding to stay
    clear of the Kid, so a fifth body pushed the FIRST one off the left edge: a
@@ -232,11 +237,11 @@
    the creature keeps a marker saying it is the one holding the rule. */
 .cb-rules {
   position: absolute;
-  left: clamp(16px, 2vw, 34px);
+  left: clamp(12px, 1.6vw, 30px);
   /* under the HUD (48px) and under the room caption (52px + line) */
-  top: 78px;
+  top: 70px;
   z-index: 300;
-  width: min(320px, 26vw);
+  width: min(340px, 25vw);
   max-height: 42vh; overflow-y: auto;
   /* the painted rail stands 9px outside each panel's box, and a scroller clips
      whatever leaves it: the padding is the room for the gilt */
@@ -304,6 +309,8 @@
   filter: url("#kit-engrave");
   padding: 2px 4px 3px;
 }
+.cb-rule.is-long b { font-size: clamp(13px, .95vw, 15px); }
+.cb-rule.is-long span { font-size: var(--fs-xs); line-height: 1.28; }
 .cb-rule span {
   display: block; margin-top: 4px;
   font-size: var(--fs-sm); line-height: 1.3;
@@ -684,8 +691,9 @@
   --e-plift: 0px;
   transform: translate3d(calc(-50% - var(--e-lx, 0px)),
                          calc(var(--e-ly, 0px) * -1 + var(--e-plift)), 0);
-  /* never narrower than a name on its plate, never wider than a boss's bar */
-  width: clamp(156px, 100%, 212px);
+  /* as wide as the creature's own column (a five-body board leaves each Lock
+     about 150px, and a plate wider than that lies on its neighbour's) */
+  width: min(212px, 100%);
   display: flex; flex-direction: column; align-items: center; gap: 3px;
   margin-top: 4px;
   padding: 0 0 2px;
@@ -706,8 +714,10 @@
 .cb-enemy__name {
   --np-h: clamp(26px, 1.85vw, 30px);
   display: inline-flex; align-items: center; justify-content: center;
-  min-height: var(--np-h); max-width: 118%;
-  padding: 0 calc(var(--np-h) * .7) 1px;
+  min-height: var(--np-h); max-width: 100%;
+  /* the block padding clears the plate's rails when a long name takes two lines */
+  padding: calc(var(--np-h) * .2) calc(var(--np-h) * .7) calc(var(--np-h) * .22);
+  text-align: center; line-height: 1.02;
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / calc(var(--np-h) * 18 / 64) calc(var(--np-h) * 34 / 64) stretch;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .85));
@@ -716,7 +726,9 @@
   letter-spacing: .12em; text-transform: uppercase;
   color: var(--kit-name);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
-  white-space: nowrap;
+  /* a long name on a narrow column takes a second line on its plate rather
+     than running under the next creature's */
+  white-space: normal; text-wrap: balance;
 }
 /* Courage in the brass tube (.kit-tube), Guard on a shield seated on its end */
 .cb-enemy__vitals {
@@ -1334,7 +1346,7 @@
 .cb-player__figure {
   --fk: .6;
   position: relative;
-  width: 100%; aspect-ratio: 1.62 / 1;
+  width: 100%; aspect-ratio: 1.78 / 1;
   border-radius: 0;
   overflow: visible;                /* the frame's painting stands outside the box */
   box-shadow: inset 0 0 30px rgba(0, 0, 0, .75), 0 16px 30px -12px rgba(0, 0, 0, .9);
@@ -1543,9 +1555,15 @@
 
 /* the incoming-damage readout — the single most useful number on the screen.
    A dark cartouche with the figures big: INCOMING 14 − 5 Guard → 9, the last
-   figure the largest, because it is the one that reaches your Courage. */
+   figure the largest, because it is the one that reaches your Courage.
+   It HANGS BESIDE THE KID, off the portrait's top right, over the empty floor
+   between her and the first creature and above the hand. Stacked under the
+   tube it grew the panel upward every turn something attacked, and the
+   portrait climbed over the Companion standing at her feet. */
 .cb-incoming[hidden] { display: none; }
 .cb-incoming {
+  position: absolute; left: calc(100% + 8px); top: 6px;
+  width: max-content; max-width: clamp(186px, 13.8vw, 224px);
   display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0 7px;
   min-height: 34px;
   padding: 4px 20px 5px;
@@ -1948,20 +1966,31 @@
 .cb-root.is-large { font-size: 118%; }
 .cb-root.is-large .cb-enemy__name,
 .cb-root.is-large .cb-inc__k { font-size: var(--fs-sm); }
-.cb-root.is-large .cb-intent__chip b { font-size: var(--fs-lg); }
+.cb-root.is-large .cb-intent { --ph: clamp(30px, 2.2vw, 35px); }
+.cb-root.is-large .cb-count i, .cb-root.is-large .cb-badge { font-size: 12px; }
 
-.cb-enemy:focus-visible, .cb-status:focus-visible, .cb-intent:focus-visible,
-.cb-count:focus-visible, .cb-badge:focus-visible, .cb-qslot:focus-visible,
-.cb-pile:focus-visible, .cb-endturn:focus-visible {
+/* Keyboard focus stays unmissable, and on the metal it is drawn the kit's way:
+   the gilt lights round its own silhouette (a web ring round a painted
+   medallion reads as a browser, not a house). Things without a painted edge
+   keep the flame ring. */
+.cb-enemy:focus-visible, .cb-intent:focus-visible, .cb-badge:focus-visible {
+  outline: 2px solid var(--flame-300); outline-offset: 3px;
+}
+.cb-status:focus-visible, .cb-count:focus-visible, .cb-qslot:focus-visible,
+.cb-pile:focus-visible, .cb-intent__pip:focus-visible, .cb-nerve:focus-visible {
+  outline: none;
+  filter: drop-shadow(0 0 2px var(--kit-gold-hi)) drop-shadow(0 0 9px color-mix(in srgb, var(--kit-candle) 75%, transparent)) brightness(1.15);
+}
+.cb-player__bar:focus-visible, .cb-player__guard:focus-visible, .cb-enemy__guard:focus-visible, .cb-rule:focus-visible {
   outline: 2px solid var(--flame-300); outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cb-intent.is-lethal, .cb-endturn.is-ready, .cb-player.is-low .cb-player__figure,
+  .cb-intent.is-lethal .cb-intent__halo, .cb-endturn.is-ready .cb-endturn__glow, .cb-player.is-low .cb-player__figure,
   .cb-player.is-snacking .cb-player__figure, .cb-player__glow,
   .cb-player.is-windup .cb-player__figure, .cb-player.is-striking .cb-player__figure,
   .cb-player.is-striking .cb-player__glow, .cb-rule,
-  .cb-handhost .mm-card.is-recovered { animation: none; }
+  .cb-handhost .mm-card.is-recovered, .cb-dress__flame { animation: none; }
 }
 
 /* ── a Trick recovered from a pile is not a Trick drawn ────────────────────
@@ -1986,33 +2015,42 @@
 }
 .cb-enemy.is-aimed { filter: brightness(1.14) saturate(1.08); }
 
-/* ── the intent queue: what it plans to do after this ───────────────────── */
-.cb-enemy__queue { display: flex; gap: 3px; margin-top: 2px; }
+/* ── the intent queue: what it plans to do after this ─────────────────────
+   Each later turn in a small brass socket: the turn's number engraved small at
+   its shoulder, the figure in the family's light. Hidden turns sit unlit. */
+.cb-enemy__queue { display: flex; gap: 6px; margin-top: 4px; }
 .cb-qslot {
-  display: inline-flex; align-items: baseline; gap: 3px;
-  padding: 1px 6px;
-  border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--ink-900) 82%, transparent);
-  border: 1px solid var(--ink-500);
+  --socket: 28px;
+  position: relative;
+  display: inline-grid; place-items: center;
+  width: auto; min-width: var(--socket); height: var(--socket);
+  padding: 0 5px;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/socket.webp") 14 fill / calc(var(--socket) * 14 / 56) stretch;
+  border-radius: 0;
+  background: none;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
   cursor: help;
-  opacity: .78;
+  opacity: .9;
   transition: transform var(--t-quick) var(--ease-snap), opacity var(--t-quick);
 }
 .cb-qslot:hover, .cb-qslot:focus-visible { transform: translateY(-2px); opacity: 1; }
-.cb-qslot i { font-style: normal; font-size: 8px; color: var(--text-lo); }
-.cb-qslot b { font-family: var(--font-num); font-size: 11px; color: var(--text-mid); }
-.cb-qslot[data-family="attack"]  { border-color: color-mix(in srgb, var(--threat-400) 60%, transparent); }
+.cb-qslot i {
+  position: absolute; left: -3px; top: -5px;
+  font-style: normal; font-family: var(--font-display); font-weight: 700; font-size: 9px;
+  color: var(--kit-gold-hi); text-shadow: 0 1px 0 #000, 0 0 3px #000;
+}
+.cb-qslot b { font-family: var(--font-num); font-weight: 700; font-size: 13px; color: var(--kit-text); text-shadow: 0 1px 0 #000; }
 .cb-qslot[data-family="attack"] b { color: var(--threat-200); }
-.cb-qslot[data-family="defense"] { border-color: color-mix(in srgb, var(--guard-500) 75%, transparent); }
 .cb-qslot[data-family="defense"] b { color: var(--guard-300); }
-.cb-qslot[data-family="scheme"]  { border-color: color-mix(in srgb, var(--rarity-curse) 70%, transparent); }
-.cb-qslot[data-revealed="0"] { border-style: dashed; opacity: .5; }
-.cb-qslot[data-anchored="1"] { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--flame-400) 55%, transparent); }
+.cb-qslot[data-family="scheme"] b { color: var(--kit-lav); }
+.cb-qslot[data-revealed="0"] { opacity: .55; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.3); }
+.cb-qslot[data-anchored="1"] { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) drop-shadow(0 0 4px color-mix(in srgb, var(--kit-candle) 70%, transparent)); }
 
 .cb-prev__maybe {
   font-size: var(--fs-xs); font-style: italic; color: var(--flame-200);
 }
-.cb-enemy__preview.is-uncertain { border-style: dashed; }
+.cb-enemy__preview.is-uncertain { filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .85)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-lav) 35%, transparent)); }
 
 /* an enemy the engine is asking you to pick */
 .cb-enemy.is-choosable { cursor: crosshair; }
@@ -2023,80 +2061,83 @@
 @keyframes cb-rulebreak { 0%,100% { filter: none; } 50% { filter: brightness(1.6) saturate(1.4); } }
 .cb-enemy.rule-broken .cb-enemy__stage { animation: cb-rulebreak .34s var(--ease-out) 2; }
 
-/* ── the chooser: "choose a Trick" is 70 cards' worth of agency ─────────── */
+/* ── the chooser: "choose a Trick" is 70 cards' worth of agency ───────────
+   A kit panel (.kit-panel, a star medallion on its top rail) laid over the
+   board, which falls into shadow behind it; the question in the lavender
+   engraved caps, the Tricks in the kit's brass, Confirm and Skip as the kit's
+   nameplates. The board is darkened, never blurred: glass is not this house. */
 .cb-chooser {
   position: absolute; inset: 0; z-index: 520;
   display: grid; place-items: center;
-  background: color-mix(in srgb, var(--ink-900) 78%, transparent);
-  backdrop-filter: blur(5px);
+  background:
+    radial-gradient(80% 70% at 50% 50%, rgba(8, 6, 11, .62), rgba(8, 6, 11, .9));
 }
 .cb-chooser__panel {
+  --pk: .8;
   width: min(1080px, 88vw); max-height: 84vh;
   display: flex; flex-direction: column; align-items: center; gap: var(--s-3);
-  padding: var(--s-5) var(--s-5) var(--s-4);
-  border-radius: var(--radius-lg);
-  background: linear-gradient(180deg, var(--ink-700), var(--ink-900));
-  border: 1px solid var(--flame-500);
-  box-shadow: var(--shadow-4), 0 0 60px color-mix(in srgb, var(--flame-glow) 18%, transparent);
+  padding: var(--s-6) var(--s-6) var(--s-5);
 }
 .cb-chooser__prompt {
-  margin: 0; font-family: var(--font-display); font-size: var(--fs-xl);
-  letter-spacing: .1em; color: var(--flame-200); font-weight: 600; text-align: center;
+  margin: 0;
+  font-family: var(--font-display); font-weight: 700; font-size: var(--fs-xl);
+  letter-spacing: .06em; text-transform: uppercase; text-align: center;
+  color: var(--kit-lav);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--kit-lav-hi) 55%, transparent) 0%, transparent 45%, color-mix(in srgb, var(--kit-violet-lo) 45%, transparent) 100%),
+    url("../../assets/ui/kit/marble.webp") 0 0 / 180px 180px;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: url("#kit-engrave");
+  padding: 2px 8px 4px;
 }
-.cb-chooser__sub { margin: 0; color: var(--text-lo); font-size: var(--fs-sm); }
+.cb-chooser__sub { margin: 0; color: var(--kit-text-mid); font-size: var(--fs-sm); font-style: italic; }
 .cb-chooser__pool {
   display: flex; flex-wrap: wrap; justify-content: center;
   gap: var(--s-4);
-  overflow-y: auto; padding: var(--s-3) var(--s-2);
+  overflow-y: auto; padding: var(--s-4) var(--s-2) var(--s-3);
   max-height: 56vh;
 }
 .cb-choice {
   position: relative;
-  border-radius: var(--radius-md);
+  border: 0; background: none;
   transition: transform var(--t-quick) var(--ease-snap), filter var(--t-quick);
   padding: 0;
 }
 .cb-choice--card { filter: brightness(.86) saturate(.9); }
-.cb-choice--card:hover, .cb-choice--card:focus-visible { transform: translateY(-10px); filter: none; }
+.cb-choice--card:hover, .cb-choice--card:focus-visible { transform: translateY(-10px); filter: none; outline: none; }
 .cb-choice--card.is-picked {
-  transform: translateY(-14px); filter: none;
-  box-shadow: 0 0 0 3px var(--flame-200), 0 0 30px color-mix(in srgb, var(--flame-glow) 60%, transparent);
+  transform: translateY(-14px);
+  filter: drop-shadow(0 0 3px var(--kit-gold-hi)) drop-shadow(0 0 18px color-mix(in srgb, var(--kit-candle) 70%, transparent));
 }
+/* a creature or an option is a named nameplate, the one you point at lit */
 .cb-choice--enemy, .cb-choice--option {
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
-  min-width: 170px;
-  padding: var(--s-3) var(--s-5);
-  border-radius: var(--radius-md);
-  background: linear-gradient(180deg, var(--ink-600), var(--ink-800));
-  border: 1px solid var(--ink-400);
-  color: var(--text-hi);
+  --plate-h: 54px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  min-width: 190px; min-height: var(--plate-h);
+  padding: 4px calc(var(--plate-h) * .7) 5px;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/plate.webp") 12 53 12 46 fill / calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72) stretch;
+  color: var(--kit-name);
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8));
 }
 .cb-choice--enemy b, .cb-choice--option b {
-  font-family: var(--font-display); font-size: var(--fs-md); letter-spacing: .08em;
+  font-family: var(--font-display); font-weight: 700; font-size: var(--fs-md); letter-spacing: .1em; text-transform: uppercase;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
-.cb-choice--enemy span { font-size: var(--fs-xs); color: var(--courage-300); font-family: var(--font-num); }
+.cb-choice--enemy span { font-size: var(--fs-sm); color: var(--courage-300); font-family: var(--font-num); font-weight: 600; }
 .cb-choice--enemy:hover, .cb-choice--option:hover,
 .cb-choice--enemy:focus-visible, .cb-choice--option:focus-visible {
-  transform: translateY(-3px); border-color: var(--flame-300); color: var(--flame-100);
+  transform: translateY(-3px); color: #fff1d2; outline: none;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) drop-shadow(0 0 12px color-mix(in srgb, var(--kit-candle) 45%, transparent)) brightness(1.12);
 }
 .cb-choice--enemy.is-picked, .cb-choice--option.is-picked {
-  border-color: var(--flame-200);
-  box-shadow: 0 0 22px color-mix(in srgb, var(--flame-glow) 50%, transparent);
+  color: #fff1d2;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) drop-shadow(0 0 2px var(--kit-gold-hi)) drop-shadow(0 0 16px color-mix(in srgb, var(--kit-candle) 70%, transparent)) brightness(1.18);
 }
 .cb-choice:disabled { opacity: .35; pointer-events: none; }
-.cb-chooser__bar { display: flex; gap: var(--s-3); }
-.cb-chooser__ok, .cb-chooser__skip {
-  padding: var(--s-2) var(--s-6);
-  border-radius: var(--radius-md);
-  font-family: var(--font-display); letter-spacing: .14em; text-transform: uppercase;
-  font-size: var(--fs-sm);
-  border: 1px solid var(--ink-400);
-  background: var(--ink-700); color: var(--text-mid);
-}
-.cb-chooser__ok { background: linear-gradient(180deg, var(--flame-400), var(--flame-500)); color: var(--ink-900); border-color: var(--flame-200); }
+.cb-chooser__bar { display: flex; gap: var(--s-6); margin-top: var(--s-2); }
 .cb-chooser__ok:disabled { opacity: .4; }
-.cb-chooser__skip:hover, .cb-chooser__ok:hover { filter: brightness(1.12); }
-
 
 /* ═══════════════════════════════════════════ the room, and the arena ══════
    FINDING: every room in the region — the Formal Dining Room, the Music Room,
@@ -2222,7 +2263,7 @@
 /* a boss's plate is the board's largest: a taller nameplate, larger caps and a
    heavier tube, and a deeper pool of shadow under it so it is never read
    through its own legs */
-.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"] .cb-enemy__plate { width: clamp(220px, 100%, 280px); }
+.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"] .cb-enemy__plate { width: min(280px, 100%); }
 .cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"] .cb-enemy__name {
   --np-h: clamp(32px, 2.3vw, 38px);
   font-size: clamp(14px, 1.05vw, 17px); letter-spacing: .16em;
@@ -2323,21 +2364,33 @@
    Companion's own plate. At three or more the panels lose their padding and
    their Companion sub-label — the name and the Courage bar are what a
    teammate panel is actually for. */
-.cb-mates.is-crowded { gap: var(--s-1); }
-.cb-mates.is-crowded .cb-mate { padding: var(--s-2); width: 214px; }
+.cb-mates { gap: 16px; padding-top: 8px; }
+.cb-mates.is-crowded { gap: 12px; }
+.cb-mates.is-crowded .cb-mate { padding: 8px 12px 8px; width: 214px; }
 .cb-mates.is-crowded .cb-mate__comp { display: none; }
-.cb-mates.is-crowded .cb-mate__art { width: 26px; height: 26px; flex: 0 0 26px; }
+.cb-mates.is-crowded .cb-mate__art { width: 28px; height: 28px; flex: 0 0 28px; }
 
-
+/* A FRIEND ON A SMALL PANEL: the kit's painted rail round a dark board, their
+   face in a round brass setting, their name in the tiles' warm name colour,
+   their Courage in the same amber tube as yours. */
 .cb-mate {
+  --pk: .5;
   position: relative;
   width: 244px;
-  padding: var(--s-3);
-  border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--ink-900) 76%, transparent);
-  border: 1px solid color-mix(in srgb, var(--surface-line) 70%, transparent);
-  box-shadow: var(--shadow-3);
-  backdrop-filter: blur(6px);
+  padding: 10px 14px 10px;
+  border: 1px solid transparent;
+  border-image-source: url("../../assets/ui/kit/panel.webp");
+  border-image-slice: 44;
+  border-image-width: calc(44px * var(--pk));
+  border-image-outset: calc(14px * var(--pk));
+  border-image-repeat: stretch;
+  border-radius: 0;
+  background:
+    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
+    linear-gradient(180deg, color-mix(in srgb, var(--kit-panel-hi) 94%, transparent), color-mix(in srgb, var(--kit-panel) 94%, transparent));
+  background-blend-mode: overlay, normal;
+  background-clip: padding-box;
+  box-shadow: 0 14px 26px -12px rgba(0, 0, 0, .9);
   font-family: var(--font-body);
   pointer-events: auto;
 }
@@ -2345,76 +2398,90 @@
 
 .cb-mate__top { display: flex; align-items: center; gap: var(--s-2); }
 .cb-mate__art {
-  width: 34px; height: 34px; flex: 0 0 34px;
-  border-radius: var(--radius-sm);
+  width: 36px; height: 36px; flex: 0 0 36px;
+  border-radius: 50%;
   object-fit: cover;
-  background: color-mix(in srgb, var(--ink-700) 80%, transparent);
+  background: var(--kit-panel);
+  box-shadow: 0 0 0 2px var(--kit-gold-lo), 0 0 0 3px var(--kit-gold), 0 0 0 4px #120a05, 0 2px 4px 4px rgba(0, 0, 0, .5);
 }
 .cb-mate__id { display: flex; flex-direction: column; min-width: 0; flex: 1 1 auto; }
 .cb-mate__name {
-  font-size: var(--fs-sm); color: var(--parchment);
-  letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-weight: 600; font-size: var(--fs-md); line-height: 1.05; color: var(--kit-name);
+  letter-spacing: .01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .cb-mate__comp {
-  font-size: var(--fs-xs); color: var(--ink-300);
-  text-transform: capitalize; letter-spacing: .06em;
+  font-size: var(--fs-xs); font-style: italic; color: var(--kit-text-lo);
+  text-transform: capitalize; letter-spacing: .02em;
 }
 .cb-mate__ready {
-  font-size: var(--fs-xs); letter-spacing: .12em; text-transform: uppercase;
+  --h: 20px;
+  display: inline-flex; align-items: center;
+  min-height: var(--h); padding: 0 11px 1px;
+  font-family: var(--font-display); font-weight: 700; font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase;
   color: var(--spectre-200);
-  border: 1px solid color-mix(in srgb, var(--spectre-400) 55%, transparent);
-  border-radius: var(--radius-lg); padding: 1px 7px;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
+  border-radius: 0;
 }
 .cb-mate__ready[hidden] { display: none; }
 
-.cb-mate__vitals { display: flex; align-items: center; gap: var(--s-2); margin-top: var(--s-2); }
+.cb-mate__vitals {
+  --tube-h: 18px;
+  position: relative;
+  display: flex; align-items: center; gap: 0;
+  margin-top: var(--s-2);
+  padding-left: 12px;
+}
 .cb-mate__guard {
-  position: relative; width: 22px; height: 22px; flex: 0 0 22px;
-  display: grid; place-items: center; color: var(--guard-300);
+  --gs: 30px;
+  position: absolute; left: 0; top: 50%; z-index: 2;
+  width: calc(var(--gs) * .9); height: var(--gs); flex: none;
+  transform: translate(-30%, -52%);
+  display: grid; place-items: center;
+  background: url("../../assets/ui/kit/guard-shield.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .85));
 }
 .cb-mate__guard[hidden] { display: none; }
-.cb-mate__guard svg { position: absolute; inset: 0; width: 100%; height: 100%; fill: color-mix(in srgb, var(--guard-500) 34%, transparent); stroke: var(--guard-300); stroke-width: 1.4; }
-.cb-mate__guard b { position: relative; font-size: var(--fs-xs); color: var(--parchment); }
+.cb-mate__guard svg { display: none; }
+.cb-mate__guard b {
+  position: relative; margin-top: -8%;
+  font-family: var(--font-num); font-weight: 700; font-size: 13px; line-height: 1;
+  color: #f1f6ff; -webkit-text-stroke: 2.5px #08101c; paint-order: stroke fill;
+}
 
-.cb-mate__bar {
-  position: relative; flex: 1 1 auto; height: 14px;
-  border-radius: var(--radius-lg); overflow: hidden;
-  background: color-mix(in srgb, var(--ink-700) 85%, transparent);
-  border: 1px solid color-mix(in srgb, var(--surface-line) 60%, transparent);
+.cb-mate__bar { --tube-h: inherit; flex: 1 1 auto; }
+.cb-mate__fill { transition: transform var(--t-base) var(--ease-out); }
+.cb-mate.is-low .cb-mate__fill {
+  background:
+    linear-gradient(180deg, rgba(255, 236, 236, .42) 0%, rgba(255, 255, 255, .08) 30%, rgba(0, 0, 0, 0) 52%, rgba(0, 0, 0, .36) 100%),
+    linear-gradient(90deg, var(--threat-500), var(--threat-300));
 }
-.cb-mate__fill {
-  position: absolute; inset: 0; transform-origin: left center;
-  /* The same gradient as your OWN Courage bar, not the HUD pill's red. Two
-     Kids' Courage should read as the same kind of thing at a glance. */
-  background: linear-gradient(180deg, var(--pluck-300), var(--flame-400) 58%, var(--flame-500));
-  transition: transform var(--t-base) var(--ease-out);
-}
-.cb-mate__hp {
-  position: absolute; inset: 0; display: grid; place-items: center;
-  font-size: var(--fs-xs); color: var(--parchment);
-  text-shadow: 0 1px 2px color-mix(in srgb, var(--ink-900) 80%, transparent);
-}
-.cb-mate.is-low .cb-mate__fill { background: linear-gradient(90deg, var(--threat-500), var(--threat-300)); }
 .cb-mate.is-fallen { opacity: .58; }
 .cb-mate.is-fallen .cb-mate__fill { background: var(--ink-500); transform: scaleX(0) !important; }
 
 .cb-mate__statuses { display: flex; flex-wrap: wrap; gap: 4px; margin-top: var(--s-2); }
 .cb-mate__statuses:empty { display: none; }
 .cb-mate__st {
-  font-size: var(--fs-xs); color: var(--text-mid);
-  border: 1px solid color-mix(in srgb, var(--surface-line) 55%, transparent);
-  border-radius: var(--radius-lg); padding: 1px 6px;
+  --h: 20px;
+  display: inline-flex; align-items: center;
+  min-height: var(--h); padding: 0 10px 1px;
+  font-size: var(--fs-xs); color: var(--kit-text);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
+  border-radius: 0;
   cursor: help;
 }
 .cb-mate__st:hover, .cb-mate__st:focus-visible {
-  color: var(--text-hi);
-  border-color: var(--spectre-300);
+  color: #fff1d2;
   transform: translateY(-1px);
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--kit-candle) 55%, transparent));
 }
 .cb-mate__aim {
   margin-top: var(--s-2);
-  font-size: var(--fs-xs); color: var(--threat-300);
+  font-size: var(--fs-xs); color: var(--threat-200);
   letter-spacing: .02em;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .cb-mate__aim[hidden] { display: none; }
 
@@ -2428,5 +2495,5 @@
    keyboard because it carries role=button and a tabindex. */
 .cb-mate.is-openable { cursor: pointer; }
 .cb-mate.is-openable:hover,
-.cb-mate.is-openable:focus-visible { border-color: var(--flame-400); }
-.cb-mate.is-openable:focus-visible { outline: var(--focus-ring); }
+.cb-mate.is-openable:focus-visible { filter: drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 45%, transparent)) brightness(1.08); }
+.cb-mate.is-openable:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 6px; }

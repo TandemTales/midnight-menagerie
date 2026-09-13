@@ -3185,7 +3185,10 @@ export class CombatScene extends Scene {
     for (const r of list) {
       const who = r.sourceId ? (this.views.get(r.sourceId)?.name || '') : '';
       const d = document.createElement('div');
-      d.className = 'cb-rule';
+      /* A rule that reads as a paragraph (the Keeper's Sanctuary Locks run to
+         seven lines) takes the rail's compact type, so it stops above the Kid's
+         head instead of hanging over her. */
+      d.className = 'cb-rule' + ((r.text || '').length > 150 || (r.name || '').length > 26 ? ' is-long' : '');
       d.setAttribute('role', 'listitem');
       d.tabIndex = 0;
       d.dataset.tip = `${r.name}|${r.text}|`
