@@ -1062,7 +1062,13 @@ export class EnemyView {
     this.intentView = new IntentView({ clock: this.clock, reduceMotion: this.reduceMotion });
     el.querySelector('.cb-enemy__intent').appendChild(this.intentView.el);
 
-    this.$name.textContent = this.name;
+    /* The name in its own span, so a boss's can be lettered in the wordmark's
+       engraving (a filter) without the filter taking the nameplate with it.
+       `.cb-enemy__name`'s text is unchanged. */
+    const lettering = document.createElement('span');
+    lettering.className = 'cb-enemy__lettering';
+    lettering.textContent = this.name;
+    this.$name.appendChild(lettering);
     this._statusKey = '';
     this.setState(snap);
     this.a.spawn = 1;

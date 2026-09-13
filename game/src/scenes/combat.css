@@ -104,6 +104,7 @@
 /* a crowded board sets its readings a size down, so four medallions and four
    nameplates still stand apart: the figures stay the largest thing on them */
 .cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-intent { --iv: clamp(52px, 3.8vw, 62px); --ph: clamp(24px, 1.75vw, 28px); }
+.cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-enemy__name { --name-spill: 0px; }
 .cb-enemies:is([data-n="5"], [data-n="6"]) .cb-enemy:not([data-tier="boss"]) .cb-enemy__name { --np-h: 24px; font-size: 10.5px; letter-spacing: .06em; padding-inline: 13px; }
 .cb-enemies:is([data-n="5"], [data-n="6"]) .cb-enemy:not([data-tier="boss"]) .cb-enemy__vitals { --tube-h: 18px; }
 /* FIVE BODIES — the Keeper plus its four Sanctuary Locks, the widest board in
@@ -714,7 +715,11 @@
 .cb-enemy__name {
   --np-h: clamp(26px, 1.85vw, 30px);
   display: inline-flex; align-items: center; justify-content: center;
-  min-height: var(--np-h); max-width: 100%;
+  /* A tall, narrow creature (the Door Greeter stands in a 162px column) may let
+     its plate spill a little past its column rather than break a two-word
+     name; a crowded board takes the spill away (below). */
+  width: max-content;
+  min-height: var(--np-h); max-width: calc(100% + var(--name-spill, 48px));
   /* the block padding clears the plate's rails when a long name takes two lines */
   padding: calc(var(--np-h) * .2) calc(var(--np-h) * .7) calc(var(--np-h) * .22);
   text-align: center; line-height: 1.02;
@@ -830,7 +835,9 @@
 .cb-enemy__preview {
   /* upper-right of the creature: the aim arrow terminates at the stage centre
      coming from below, so this corner is the one place it never covers */
-  position: absolute; right: -4%; top: 2%; left: auto;
+  /* a fifth of the way down: clear of the second line an intent hangs over the
+     creature's head (a House Rule, the Clutter it deals) */
+  position: absolute; right: -8%; top: 19%; left: auto;
   transform: none;
   z-index: 8;
   display: flex; flex-direction: column; align-items: center; gap: 1px;
@@ -1451,7 +1458,7 @@
 .cb-count--mine b { font-size: 16px; }
 .cb-count--mine em {
   font-style: normal;
-  font-family: var(--font-display); font-weight: 700; font-size: 9.5px;
+  font-family: var(--font-display); font-weight: 700; font-size: 10px;
   letter-spacing: .14em; text-transform: uppercase;
   color: var(--flame-200);
   padding-left: 6px; margin-left: 1px;
@@ -1612,6 +1619,33 @@
   --rules-k: 1.08;
 }
 @media (max-width: 1440px) { .cb-handhost { --rules-k: 1.16; } }
+/* THE HAND'S FACES ARE RULED PANELS. Under the name, the rules sit in a panel
+   the way the Kid board's info panels hold their text: a gold double rule
+   inset from the brass, the room's damask ghosted into the aubergine, and the
+   type's own colour pooling at its foot. The name cartouche rides the panel's
+   top rail. Painted UNDER the rules text (::before is the face's first child),
+   so no line of a Trick is ever read through it. Scoped to the hand: when the
+   Shop and the Reward rule their card bodies in .kit-cards, this is the rule
+   to fold into that one. */
+.cb-handhost.kit-cards .mm-card[data-rarity] .mm-card__face::before {
+  content: ''; position: absolute; pointer-events: none;
+  left: calc(7 * var(--u)); right: calc(7 * var(--u));
+  top: calc(123 * var(--u)); bottom: calc(7 * var(--u));
+  border: calc(1.2 * var(--u)) solid color-mix(in srgb, var(--kit-gold) 52%, transparent);
+  border-radius: calc(3 * var(--u));
+  box-shadow:
+    inset 0 0 0 calc(2.6 * var(--u)) rgba(9, 6, 12, .7),
+    inset 0 0 0 calc(3.6 * var(--u)) color-mix(in srgb, var(--kit-gold-lo) 60%, transparent),
+    inset 0 calc(10 * var(--u)) calc(16 * var(--u)) rgba(0, 0, 0, .35);
+  background:
+    radial-gradient(120% 42% at 50% 100%, color-mix(in srgb, var(--type-color) 15%, transparent), transparent 72%),
+    /* the type line stands on plain ground; the damask comes up under the rules */
+    linear-gradient(to bottom,
+      var(--kit-panel) 0%, var(--kit-panel) 21%,
+      color-mix(in srgb, var(--kit-panel) 86%, transparent) 38%,
+      color-mix(in srgb, var(--kit-panel) 84%, transparent) 100%),
+    url("../../assets/ui/kit/damask.webp") 50% calc(40 * var(--u)) / calc(118 * var(--u)) auto repeat;
+}
 /* ── the hand never hides the hit ──────────────────────────────────────────
    The played card is presented at 0.62 of the board height (ui/hand.js TUNE
    .playY) which puts a 226x314 card straight across the creature band; at the
@@ -2230,14 +2264,16 @@
     transparent 74%);
 }
 .cb-root[data-arena="boss"] .cb-field {
-  top: 48px; bottom: 33%;
+  /* 31%, not 33%: the boss's intent medallion is a setting now, not a glyph,
+     and at 33% it rode up into the HUD's rail and the stage's top rule */
+  top: 48px; bottom: 31%;
 }
 /* THE size change. A 1.5-scale boss was capped to the same ~340px as a trash
    mob because the cap was written for a four-up formation. A boss is alone. */
 /* Sized so the stage AND the name plate fit inside the field: the field is
    (100vh - 48 - 33%) tall, less the intent stack's 96px and the plate's ~44. */
 .cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__stage {
-  --e-h: min(calc(430px * var(--e-sz)), calc(100vh - 480px));
+  --e-h: min(calc(430px * var(--e-sz)), calc(90vh - 425px));
   --e-wide: 1.15;
   width: clamp(calc(150px * var(--e-sz)),
                calc(var(--e-h) * var(--e-aspect)),
@@ -2264,9 +2300,26 @@
    heavier tube, and a deeper pool of shadow under it so it is never read
    through its own legs */
 .cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"] .cb-enemy__plate { width: min(280px, 100%); }
+/* the master of the wing is named in the wordmark's own lettering: the
+   lavender marbled caps, bevelled and gold-edged (#kit-engrave), on a taller
+   nameplate — the one name on the board lettered like the title */
 .cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"] .cb-enemy__name {
-  --np-h: clamp(32px, 2.3vw, 38px);
-  font-size: clamp(14px, 1.05vw, 17px); letter-spacing: .16em;
+  --np-h: clamp(36px, 2.6vw, 44px);
+  padding-inline: calc(var(--np-h) * .78);
+  font-size: clamp(16px, 1.25vw, 20px); letter-spacing: .1em;
+  color: var(--kit-lav);
+}
+.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"] .cb-enemy__name > .cb-enemy__lettering {
+  display: inline-block;
+  padding: 1px 3px 3px;
+  color: var(--kit-lav);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--kit-lav-hi) 58%, transparent) 0%, transparent 45%, color-mix(in srgb, var(--kit-violet-lo) 45%, transparent) 100%),
+    url("../../assets/ui/kit/marble.webp") 0 0 / 120px 120px;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  filter: url("#kit-engrave");
 }
 .cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"] .cb-enemy__vitals { --tube-h: clamp(22px, 1.65vw, 26px); }
 .cb-root[data-arena="boss"] .cb-enemy__plate::after,
