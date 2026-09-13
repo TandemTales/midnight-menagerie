@@ -1301,7 +1301,7 @@ export class CombatScene extends Scene {
     if (!host.width) return;
     const GAP = Math.round(Math.max(10, host.width * 0.008));
     let left = 0, right = host.width;
-    for (const el of [this.$pl, this.root.querySelector('.cb-bl')]) {
+    for (const el of [this.$pl, this.$statuses, this.root.querySelector('.cb-bl')]) {
       const b = el && el.getBoundingClientRect();
       if (b && b.width) left = Math.max(left, b.right - host.left + GAP);
     }
@@ -3283,6 +3283,8 @@ export class CombatScene extends Scene {
       d.innerHTML = statusGlyph(s) + (s.showStacks === false ? '' : `<b class="kit-coin">${s.stacks}</b>`);
       this.$statuses.appendChild(d);
     }
+    // a row longer than the column moves the hand's band (see the CSS note)
+    if (list.length !== this._plStatusN) { this._plStatusN = list.length; this._syncHandBounds(); }
   }
 
   _syncPiles() {

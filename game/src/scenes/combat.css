@@ -454,7 +454,12 @@
   /* The band comes out of the height ceiling too, or a boss rig grows by
      exactly the amount the ground line moved and pushes its intent badge off
      the top of the arena. */
-  --e-h: min(calc(226px * var(--e-sz) * var(--e-tier)), calc(100vh - 460px - var(--e-band)));
+  /* …and never taller than the row itself holds: the field (62px to 40% from
+     the bottom) less the intent stack's 104px and the ground band. At 1280x800
+     the Door Greeter's 256px stage overflowed that by 26px, and because the
+     column's auto margin gives way on overflow its feet, name and Courage all
+     sank below the other two creatures' ground line. */
+  --e-h: min(calc(226px * var(--e-sz) * var(--e-tier)), calc(100vh - 460px - var(--e-band)), calc(60vh - 166px - var(--e-band)));
   height: var(--e-h);
   /* a sprawling rig can fit a 2.6:1 bbox — cap the footprint and let the SVG's
      `meet` fit inside it, or one rug eats the whole room */
@@ -1626,7 +1631,14 @@
 /* your conditions hang just under the tube, the sockets' tops tucked to its
    lower lip, so a row of them does not push the portrait up over the Companion
    standing above it */
-.cb-player .cb-statuses { justify-content: flex-start; padding-left: 6px; margin-top: -3px; }
+.cb-player .cb-statuses {
+  justify-content: flex-start; padding-left: 6px; margin-top: -3px;
+  /* ONE ROW, however many. A second row would lift the whole column (the
+     frame's counter plate into the Kid's boots); a long row runs out past the
+     column instead, and the hand's band is measured to the row's end
+     (CombatScene#_syncHandBounds), so the fan steps aside for it. */
+  flex-wrap: nowrap; width: max-content; min-width: 100%;
+}
 .cb-player .cb-status { --socket: clamp(25px, 1.8vw, 28px); }
 /* The low-Courage tell on the portrait stays: it is a mood cue, and now it
    agrees with a bar that is six pixels away instead of 850. */
@@ -1742,6 +1754,27 @@
 }
 .cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity].is-name-xlong:not(.is-fan-last):not(.is-hover) .mm-card__name {
   font-size: calc(13.4 * var(--u)); padding-left: calc(17 * var(--u));
+}
+/* THE CREST ON THE TOP RAIL IS CAST, NOT MOULDED. A common Trick's crest was
+   the rarity's pale steel lifted toward white, and across a fan of nine it
+   read as a row of grey plastic tabs. In the hand it is the frame's own brass
+   with the rarity worked into the metal, so common, uncommon and rare still
+   part by colour, bevelled and grained like the rail it sits in. */
+.cb-handhost.kit-cards .mm-card[data-rarity] .mm-card__crest i,
+.cb-chooser__pool.kit-cards .mm-card[data-rarity] .mm-card__crest i {
+  --crest-mix: 46%;
+  background:
+    linear-gradient(180deg, rgba(255, 236, 196, .26) 0%, rgba(255, 255, 255, .03) 30%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, .5) 100%),
+    url("../../assets/ui/kit/grain.webp") 0 0 / 64px 64px,
+    linear-gradient(180deg, color-mix(in oklab, var(--rarity-c) var(--crest-mix), var(--kit-gold)) 0%, color-mix(in oklab, var(--rarity-c) var(--crest-mix), var(--kit-gold-lo)) 52%, color-mix(in oklab, var(--rarity-c) calc(var(--crest-mix) * .6), #160d06) 100%);
+  background-blend-mode: normal, overlay, normal;
+}
+/* the plain Tricks wear the frame's brass; uncommon and rare keep their colour */
+.cb-handhost.kit-cards .mm-card:is([data-rarity="basic"], [data-rarity="common"]) .mm-card__crest i,
+.cb-chooser__pool.kit-cards .mm-card:is([data-rarity="basic"], [data-rarity="common"]) .mm-card__crest i { --crest-mix: 0%; }
+/* the type line too: SKILL reads whole in the strip, never "SKI" */
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity]:not(.is-fan-last):not(.is-hover) .mm-card__type {
+  justify-content: flex-start; padding-left: calc(20 * var(--u));
 }
 /* THE HAND'S STATES, IN THE KIT'S METAL. `.kit-cards` dresses a card's frame
    and face with selectors that outrank card.css's own state rules, which is
@@ -2003,7 +2036,7 @@
   position: absolute; right: calc(var(--pm) * .16); top: calc(var(--pm) * .12); z-index: 3;
   --coin: max(20px, calc(var(--pm) * .46));
 }
-.cb-pile__lbl { --h: 19px; font-size: 10.5px; letter-spacing: .14em; padding: 0 11px 1px; color: var(--kit-text-mid); }
+.cb-pile__lbl { --h: 19px; font-size: 11px; letter-spacing: .13em; padding: 0 11px 1px; color: var(--kit-text-mid); }
 @keyframes cb-shuffle { 0% { transform: rotate(0) } 25% { transform: rotate(-7deg) scale(1.06) } 60% { transform: rotate(5deg) } 100% { transform: rotate(0) } }
 .cb-pile.is-shuffle svg { animation: cb-shuffle .34s var(--ease-out); }
 
@@ -2585,6 +2618,20 @@
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .75), 0 1px 0 rgba(0, 0, 0, .95), 0 0 12px color-mix(in srgb, var(--kit-candle) 22%, transparent);
   white-space: nowrap;
 }
+/* THE MASTER OF THE WING STANDS IN THE LIGHT. The arena's spot falls from the
+   top of the frame; this is where it lands: a pool of cold stage light on the
+   boards under the boss, wider and brighter than any creature's contact
+   shadow, and the air behind him catching a little of his own ghost-light.
+   Both screen-blended and still: the boss's own motion is what moves. */
+.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__stage::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  left: -30%; right: -30%; top: 4%; bottom: -8%;
+  background:
+    radial-gradient(46% 16% at 50% 97%, color-mix(in srgb, var(--kit-moon) 30%, transparent), color-mix(in srgb, var(--kit-moon) 9%, transparent) 60%, transparent 100%),
+    radial-gradient(40% 46% at 50% 44%, color-mix(in srgb, var(--spectre-400) 13%, transparent), transparent 100%);
+  mix-blend-mode: screen;
+}
+.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__pool { width: 104%; height: 40px; bottom: -15px; }
 /* the plate's painted rails stop short of its box: the tube tucks up under it */
 .cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals { margin-top: -5px; }
 /* the trailing letter-space would sit the name left of centre on its plate */
