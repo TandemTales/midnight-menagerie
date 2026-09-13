@@ -154,10 +154,10 @@ export class EventScene extends RoomScene {
         <span class="ev-opt__label">${esc(o.label)}</span>
         <span class="ev-opt__meta">
           ${o.risk && !(certain && nothing)
-    ? `<span class="ev-tag ev-tag--risk"><i>${certain ? 'costs' : 'risk'}</i>${esc(o.risk)}</span>` : ''}
-          ${o.reward ? `<span class="ev-tag ev-tag--gain"><i>${certain ? 'always' : 'gain'}</i>${esc(o.reward)}</span>` : ''}
-          ${cost != null ? `<span class="ev-tag ev-tag--cost"><i>cost</i>${cost} ${esc(TERMS.gold)}</span>` : ''}
-          ${held ? `<span class="ev-tag ev-tag--gear"><i>gear</i>${esc(held.name)}</span>` : ''}
+    ? `<span class="ev-tag kit-tag ev-tag--risk"><i>${certain ? 'costs' : 'risk'}</i>${esc(o.risk)}</span>` : ''}
+          ${o.reward ? `<span class="ev-tag kit-tag ev-tag--gain"><i>${certain ? 'always' : 'gain'}</i>${esc(o.reward)}</span>` : ''}
+          ${cost != null ? `<span class="ev-tag kit-tag ev-tag--cost"><i>cost</i>${cost} ${esc(TERMS.gold)}</span>` : ''}
+          ${held ? `<span class="ev-tag kit-tag ev-tag--gear"><i>gear</i>${esc(held.name)}</span>` : ''}
         </span>
         ${gate ? `<span class="ev-opt__gate">${esc(gate)}</span>` : ''}
         ${poor ? `<span class="ev-opt__gate">You are ${cost - this.run.lostThings} ${esc(TERMS.gold)} short.</span>` : ''}`;

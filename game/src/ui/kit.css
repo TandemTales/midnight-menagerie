@@ -10,26 +10,37 @@
    The pieces are the paintings themselves, cut out by tools/prep_ui_kit.py
    into game/assets/ui/kit/. Colours are tokens (ui/tokens.css, --kit-*).
 
-   PRIMITIVES (use these in any scene)
-     .kit-board            a full-bleed painted board: ground, damask, light
-       .kit-dress          its set dressing layer (corners, vines, rule)
-     .kit-titleblock       the title plaque: title.png's cartouche + ribbon
+   PRIMITIVES (use these in any scene; RoomScene._shell in scenes/reward.js
+   is the worked example of a whole board)
+     .kit-board            a full-bleed painted board
+       .kit-ground         its wall: aubergine, grain, damask, candle + moon light,
+                           and the slot a painted background drops into
+                           (--kit-backdrop + .has-backdrop, set from JS)
+       .kit-dress          its dressing: __floor __rule __vine--l/r
+                           __corner--l/r __flame--l/r (all decoration)
+     .kit-titleblock       the title plaque: title.png's cartouche, holding
+                           .kit-cartouche__title / __sub, a .kit-ribbon
+                           and a .kit-titleblock__note  (--compact: shorter)
      .kit-ribbon           gold ribbon banner with its two painted stars
+     .kit-stage            the big rounded gold rail a choice is made inside
      .kit-panel            dark panel in a painted gold rail (9-slice)
-       [data-medal]        + a medallion seated on its top rail
+       [data-medal]        + paw | star | star2 | shield | moon on its top rail
      .kit-frame            ornate gold portrait frame (9-slice)
-     .kit-plate            dark nameplate cartouche: .kit-plate__name / __epithet
-     .kit-heading          spaced small caps between gold rules
-     .kit-btn              primary action: a gold-rimmed cartouche
+     .kit-plate            dark nameplate: .kit-plate__name over __epithet
+     .kit-heading          spaced gold small caps between star-tipped rules;
+                           an <em> inside is the epithet  (--inline: same line)
+     .kit-btn              primary action: a gold-lettered nameplate
        .kit-btn--quiet     secondary action: the same, unlit
-     .kit-medallion        round purple enamel icon button with a brass rim
-     .kit-tag              an engraved label chip (risk / gain / cost)
-     .kit-candle           a painted candle with a live glow
-     .kit-cards            container: re-dresses .mm-card in brass
+       .kit-btn__medal     a .kit-medallion seated on one end of it
+     .kit-medallion        round purple enamel button with a brass rim
+       --ornate            the same in its gold filigree
+     .kit-tag              an engraved label and its value (risk / gain / cost)
+     .kit-prop--candle     a painted candle with a live glow  (--skull too)
+     .kit-cards            container: re-dresses every .mm-card inside in brass
 
    SPECIFICITY: scene sheets load after this file (ensureCss), so a scene
    that wants the kit look ADDS the kit class and drops its own visuals rather
-   than fighting it. Skins of shared components are scoped under .kit-board.
+   than fighting it.
    =========================================================================== */
 
 /* ── the board ─────────────────────────────────────────────────────────────── */
@@ -551,19 +562,27 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   font-style: normal;
 }
 
-/* ── tags ────────────────────────────────────────────────────────────────── */
+/* ── tags ──────────────────────────────────────────────────────────────────
+   <span class="kit-tag"><i>risk</i>Courage</span>: the label in engraved
+   small caps, a brass lozenge, then the value. No box: boxes read as web UI.
+   Colour the whole tag to colour both (a risk red, a gain green).          */
 .kit-tag {
-  display: inline-flex; align-items: baseline; gap: 6px;
-  font-family: var(--font-body); font-size: var(--fs-xs); color: var(--kit-text-mid);
+  display: inline-flex; align-items: baseline; gap: 0;
+  font-family: var(--font-body); font-size: var(--fs-sm); color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .kit-tag > i {
+  display: inline-flex; align-items: center;
   font-style: normal; font-family: var(--font-display); font-weight: 700;
-  font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase;
-  padding: 2px 6px 1px;
-  border-radius: 2px;
-  color: var(--kit-gold-hi);
-  background: linear-gradient(180deg, #211a28, #0e0b12);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--kit-gold) 60%, transparent);
+  font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase;
+  color: inherit;
+}
+.kit-tag > i::after {
+  content: ''; flex: none;
+  width: 5px; height: 5px; margin: 0 7px 1px 5px;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .7);
 }
 
 /* ── painted props ───────────────────────────────────────────────────────── */

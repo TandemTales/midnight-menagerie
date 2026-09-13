@@ -150,32 +150,11 @@
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .ev-opt__meta { display: flex; flex-wrap: wrap; gap: 4px 16px; }
-.ev-tag {
-  display: inline-flex; align-items: baseline; gap: 0;
-  font-size: var(--fs-sm); color: var(--kit-text-mid);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
-}
-/* the stake's label: engraved small caps and a brass lozenge, no box */
-.ev-tag i {
-  display: inline-flex; align-items: center;
-  font-style: normal; font-family: var(--font-display); font-weight: 700;
-  font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase;
-  color: var(--kit-gold-hi);
-}
-.ev-tag i::after {
-  content: ''; flex: none;
-  width: 5px; height: 5px; margin: 0 7px 1px 5px;
-  transform: rotate(45deg);
-  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, .7);
-}
+/* the stakes are kit tags (ui/kit.css .kit-tag); only their colour is here */
 .ev-tag--risk { color: var(--threat-200); }
-.ev-tag--risk i { color: var(--threat-200); }
 .ev-tag--gain { color: var(--good-300); }
-.ev-tag--gain i { color: var(--good-300); }
 .ev-tag--cost { color: var(--kit-gold-hi); }
 .ev-tag--gear { color: var(--kit-moon); }
-.ev-tag--gear i { color: var(--kit-moon); }
 .ev-opt__gate { font-size: var(--fs-xs); font-style: italic; color: var(--kit-text-mid); }
 
 /* ── outcome ──────────────────────────────────────────────────────────────── */
