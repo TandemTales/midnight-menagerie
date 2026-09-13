@@ -33,6 +33,10 @@ themselves where the samples already painted it:
   boss-beam.webp    the LIGHT the boss stands in: a shaft of moonlight from a
                     high window, streaked and hung with motes, and the pool it
                     makes on the floor where his feet are.
+  boss-alcove.webp  the FRAME OF HIS STAGE: UI/selectKid.png's own centre mirror,
+                    cut out of the board, the moon in its top medallion painted
+                    out (his intent is set there), its foot faded where his
+                    plate stands. A vertical 3-slice.
   card-flock.webp   the kit's damask at a fifth of its strength, for the flock
                     worked into a Trick's rules panel in the hand.
   iron-bracket.webp a WROUGHT-IRON wall bracket: a shelf plate on a scrolled
@@ -551,6 +555,81 @@ def boss_beam():
     save(rgba(down(col, ss), down(A, ss)), "boss-beam.webp", 88)
 
 
+# ── the alcove: the Kid board's mirror frame, for the master of the wing ────
+ALC_BOX = (318, 228, 682, 850)     # selectKid.png: the mirror, down to its lower scrolls
+ALC_MOON = (183, 62, 41)           # the top medallion in the crop: centre x, y and radius
+ALC_STRETCH = 1.2                  # a little wider than the Kid's, for a boss in a greatcoat
+ALC_TOP, ALC_BOT = 205, 150        # the 3-slice: the crown's rows, the foot's rows (after stretch)
+
+
+def boss_alcove():
+    """UI/selectKid.png's centre mirror, cut out of the board: its gilt double
+    rails, the crown of scrollwork and the lower scrolls, keyed off the dark
+    panel it hangs on, the glass made clear so the room shows through. The moon
+    in the top medallion is painted out to plain enamel (the boss's intent is
+    set into that medallion), and the foot fades out under the lower scrolls,
+    where the paw medallion, the skull and the candle were (the boss's plate
+    stands there). Widened a fifth; a vertical 3-slice (ALC_TOP / ALC_BOT)."""
+    src = np.asarray(Image.open(os.path.join(UI, "selectKid.png")).convert("RGB")).astype(np.float32)
+    x0, y0, x1, y1 = ALC_BOX
+    rgb = src[y0:y1, x0:x1].copy()
+    h, w = rgb.shape[:2]
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    lum = rgb.mean(axis=2)
+    # the gilt, lit side and shadow side alike: the right-hand rails sit in the
+    # board's shadow and are only just warmer than the panel behind them
+    gold = (r > 22) & (r > b * 1.08) & (g > b * .86) & (lum > 13)
+    gold = ndimage.binary_opening(gold, iterations=1)
+    body = ndimage.binary_closing(gold, iterations=2)
+    # the straight rails run in shadow on the right: bridge them along their length
+    body = body | ndimage.binary_closing(gold, structure=np.ones((9, 3), bool))
+    keep = ndimage.binary_dilation(body, iterations=1)
+    a = np.clip((lum - 10) / 22, 0, 1) * keep
+    a = np.maximum(a, ndimage.gaussian_filter(body.astype(np.float32), 0.6) * 0.95)
+    # the medallion: the moon and its star painted out with the Kid board's own
+    # empty enamel (button.webp's glass, the round buttons' purple), laid in
+    # under the medallion's ring
+    mx, my, mr = ALC_MOON
+    dmed = np.hypot(xx - mx, yy - my)
+    btn = np.asarray(Image.open(os.path.join(OUT, "button.webp")).convert("RGBA")).astype(np.float32)
+    ER = 34.0                                   # the enamel's radius here
+    k = 38.0 / ER                               # button.webp's enamel is r 38 of its 112
+    bh, bw = btn.shape[:2]
+    sx = np.clip(((xx - mx) * k + bw / 2), 0, bw - 1)
+    sy = np.clip(((yy - my) * k + bh / 2), 0, bh - 1)
+    glass = ndimage.map_coordinates(btn[..., 0], [sy, sx], order=1), ndimage.map_coordinates(btn[..., 1], [sy, sx], order=1),         ndimage.map_coordinates(btn[..., 2], [sy, sx], order=1)
+    glass = np.dstack(glass)
+    disc = dmed < ER + 0.5
+    edge_d = smooth(ER - 2.5, ER + 0.5, dmed)
+    rgb = np.where(disc[..., None], glass * (1 - edge_d[..., None]) + rgb * edge_d[..., None], rgb)
+    a = np.where(disc, np.maximum(a, 1 - edge_d), a)
+    # the glass inside the mirror: an old mirror's shadow along the inside of its
+    # rails, so the frame sits back into the wall instead of lying on the room
+    inner = ~ndimage.binary_dilation(body, iterations=2)
+    lab_in, _ = ndimage.label(inner)
+    seed = lab_in[int(h * 0.55), int(w / 2)]
+    glassreg = (lab_in == seed) if seed else np.zeros_like(inner)
+    d_in = ndimage.distance_transform_edt(glassreg)
+    shade = glassreg * (0.42 * (1 - smooth(0, 34, d_in)) ** 1.5 + 0.06)
+    rgb = np.where(glassreg[..., None], np.array([10, 6, 14], np.float32), rgb)
+    a = np.where(glassreg, shade, a)
+    # the board's own rails at the crop's edges, its panel's corner, the skull
+    # and the candle standing beside the mirror's foot
+    a = np.where((xx < 13) | (yy < 6) | ((yy < 18) & (np.abs(xx - mx) > 13)) | ((xx < 62) & (yy < 62)), 0, a)
+    a = a * (1 - smooth(-6, 6, np.minimum(78 - xx, yy - 584))) * (1 - smooth(-6, 6, np.minimum(xx - 282, yy - 596)))
+    # unmix against the panel with the KEYED alpha, then fade the foot: fading
+    # first would divide the panel's dark by a tiny alpha and light it up
+    au = np.clip(a, 1e-3, 1)[..., None]
+    col = np.clip((rgb - (1 - au) * np.array([8, 6, 11], np.float32)) / au, 0, 255)
+    col = np.where((a < 0.35)[..., None], np.minimum(col, rgb * 1.6), col)
+    a = a * np.clip((h - 8 - yy) / 64, 0, 1) ** 1.2
+    im = Image.fromarray(np.clip(rgba(col, a), 0, 255).astype(np.uint8), "RGBA")
+    im = im.resize((int(round(w * ALC_STRETCH)), h), Image.LANCZOS)
+    save(np.asarray(im).astype(np.float32), "boss-alcove.webp", 90)
+    print(f"      boss-alcove: {im.width}x{im.height}, medallion centre ({mx * ALC_STRETCH:.1f}, {my}), slices {ALC_TOP}/{ALC_BOT}")
+
+
 # ── the rules panel's flock ─────────────────────────────────────────────────
 def card_flock():
     """The kit's damask (damask.webp, lavender through an alpha pattern) at a
@@ -564,7 +643,7 @@ def card_flock():
 
 PIECES = {
     "plate": boss_plate, "crest": boss_crest, "roundel": roundel, "coin": nerve_coin,
-    "backs": card_backs, "bracket": iron_bracket, "flock": card_flock, "beam": boss_beam,
+    "backs": card_backs, "bracket": iron_bracket, "flock": card_flock, "beam": boss_beam, "alcove": boss_alcove,
 }
 SHEET = ["boss-plate.webp", "boss-crest.webp", "roundel.webp", "nerve-coin.webp", "card-backs.webp", "iron-bracket.webp"]
 

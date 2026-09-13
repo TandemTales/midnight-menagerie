@@ -2848,19 +2848,47 @@
   transform: translateX(-50%);
   background: url("../../assets/ui/kit/boss-beam.webp") 50% 0 / 100% 100% no-repeat;
 }
-/* …AND THE STAGE IS SET FOR HIM. A boss alone on its board is flanked by a
-   pair of the house's brass wall sconces (sconce.webp, the Kid board's own
-   candle in each), hung on the wall behind him a little above his shoulders,
+/* …IN THE FRAME OF HIS OWN STAGE. A boss alone on its board stands in the Kid
+   board's centre mirror (boss-alcove.webp, cut from UI/selectKid.png by
+   tools/prep_combat_regalia.py): its gilt double rails arched over him, its
+   crown of scrollwork holding his intent where the mirror holds its moon, its
+   foot fading behind his plate. The glass is clear, so the room and his light
+   show through; he stands in front of the frame, and his coat may cross it.
+   It is a vertical 3-slice, so its rails run to whatever height he stands.
+   --al-w is set on the column so the sconces beside it can read it; its
+   height reference is the boss stage's own cap (--e-h, below). The crown's
+   medallion (row 62 of the painting) is hung on his intent's centre, which
+   sits 40px - --ph - --iv/2 from the top of his column (.cb-enemy__above and
+   .cb-intent). */
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) {
+  --al-w: clamp(290px, calc(min(calc(430px * var(--e-sz)), calc(69vh - var(--e-band) - 127px - var(--e-rise, 0px))) * 1.2), 480px);
+}
+.cb-enemy__alcove { display: none; }
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__alcove {
+  --al-iv: clamp(62px, 4.6vw, 74px);
+  --al-ph: clamp(27px, 2vw, 32px);
+  display: block; position: absolute; z-index: -2; pointer-events: none;
+  left: 50%; width: var(--al-w);
+  top: calc(40px - var(--al-ph) - var(--al-iv) / 2 - var(--al-w) * 62 / 437);
+  bottom: calc(var(--al-w) * -.16);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/boss-alcove.webp") 205 0 150 0 fill / calc(var(--al-w) * 205 / 437) 0 calc(var(--al-w) * 150 / 437) 0 stretch;
+  /* still while he lunges, like his plate */
+  transform: translate3d(calc(-50% - var(--e-lx, 0px)), calc(var(--e-ly, 0px) * -1), 0);
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .7)) brightness(1.08);
+}
+/* A pair of the house's brass wall sconces (sconce.webp, the Kid board's own
+   candle in each) hang on the wall either side of the frame at his shoulders,
    each throwing its warm pool on the plaster: the warm candle against the cold
    shaft he stands in, and the symmetry of a room laid out to receive someone.
-   They hold still while he lunges (the plate's own counter-offset), sit behind
-   everything he is, and take no pointer. */
+   They hold still while he lunges, sit behind everything he is, and take no
+   pointer. */
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"])::before,
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"])::after {
-  --sc-w: clamp(52px, 4.5vw, 74px);
+  --sc-w: clamp(50px, 4.3vw, 70px);
   --sc-h: calc(var(--sc-w) * 330 / 150);
   content: ''; position: absolute; z-index: -1; pointer-events: none;
-  top: calc(var(--sc-w) * .1);
+  top: calc(var(--sc-w) * .5);
   width: calc(var(--sc-w) * 4.6); height: calc(var(--sc-h) * 1.5);
   background:
     url("../../assets/ui/kit/sconce.webp") 50% calc(var(--sc-w) * .7) / var(--sc-w) var(--sc-h) no-repeat,
@@ -2868,8 +2896,8 @@
   transform: translate3d(calc(-50% - var(--e-lx, 0px)), calc(var(--e-ly, 0px) * -1), 0);
   filter: drop-shadow(0 10px 12px rgba(0, 0, 0, .6));
 }
-.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"])::before { left: max(-40%, -120px); }
-.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"])::after { left: min(140%, calc(100% + 120px)); }
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"])::before { left: calc(50% - var(--al-w) / 2 - var(--sc-w) * .95); }
+.cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"])::after { left: calc(50% + var(--al-w) / 2 + var(--sc-w) * .95); }
 .cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__pool { width: 104%; height: 40px; bottom: -15px; }
 /* the plate's painted rails stop short of its box: the tube tucks up under it */
 .cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals { margin-top: -4px; }

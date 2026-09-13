@@ -1056,11 +1056,17 @@ export class CombatScene extends Scene {
   _scheduleFit() {
     clearTimeout(this._fitT);
     clearTimeout(this._fitT2);
+    clearTimeout(this._fitT3);
     // Two passes: the fan is still easing at 360ms, so the first measurement
     // can read a hand that has not finished arriving. The second is the one
     // that holds. Both are cheap and both are idempotent.
     this._fitT = setTimeout(() => this._fitPlates(), 360);
     this._fitT2 = setTimeout(() => this._fitPlates(), 1000);
+    /* …and a third once the opening hand has certainly landed: the first
+       turn's draw runs at the opening's slower weight, and a pass that reads
+       a Trick still in flight lifts a boss's ground line too far (a boss
+       stands 20px shorter than his hand needs, and his frame with him). */
+    this._fitT3 = setTimeout(() => this._fitPlates(), 2200);
   }
 
   _fitPlates() {
@@ -3954,7 +3960,7 @@ export class CombatScene extends Scene {
   /* ══ teardown ═══════════════════════════════════════════════════════════ */
   async exit() {
     clearTimeout(this._veilT);
-    clearTimeout(this._fitT); clearTimeout(this._fitT2);
+    clearTimeout(this._fitT); clearTimeout(this._fitT2); clearTimeout(this._fitT3);
     if (this._incRaf) { cancelAnimationFrame(this._incRaf); this._incRaf = 0; }
     this._tutorial = false;                    // stops a pending _mountCoach
     this.coach?.destroy();

@@ -966,6 +966,9 @@ export class EnemyView {
         <div class="cb-enemy__queue" hidden></div>
       </div>
       <div class="cb-enemy__stage">
+        <!-- The frame of a boss's stage (combat.css): the Kid board's mirror,
+             his intent set in its crown. Drawn only for a boss in its arena. -->
+        <div class="cb-enemy__alcove" aria-hidden="true"></div>
         <div class="cb-enemy__pool"></div>
         <svg class="cb-enemy__rig" viewBox="-140 -300 280 320" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
           <defs>
