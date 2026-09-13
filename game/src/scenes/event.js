@@ -122,9 +122,11 @@ export class EventScene extends RoomScene {
        So this is a printed page instead: one measure, a drop cap, a rule, and
        the room's own name as its slug. The mood still colours the ground, so a
        Curiosity still arrives with a temperature. */
+    // The first paragraph is the page's lede: set a size up, so the
+    // illuminated initial always has two lines of it to drop into.
     page.innerHTML = `
       <div class="ev-prose">
-        ${d.text.map(p => `<p>${esc(p)}</p>`).join('')}
+        ${d.text.map((p, i) => `<p${i === 0 ? ' class="ev-lede"' : ''}>${esc(p)}</p>`).join('')}
       </div>
       <div class="ev-options" role="group" aria-label="What do you do?"></div>
       <div class="ev-outcome" hidden aria-live="polite"></div>`;
@@ -135,7 +137,7 @@ export class EventScene extends RoomScene {
 
     for (const o of d.options) {
       const open = this.run.optionOpen(o);
-      const b = el('button', 'ev-opt');
+      const b = el('button', 'ev-opt kit-plaque');
       b.type = 'button';
       b.dataset.opt = o.id;
       b.disabled = !open;
@@ -410,7 +412,7 @@ export class EventScene extends RoomScene {
     // underneath the moment it has decoded.
     if (!already) this._own(upgradeToFullArt(page.querySelector('.ev-rsart'), slug));
 
-    const b = el('button', 'ev-opt ev-opt--door');
+    const b = el('button', 'ev-opt ev-opt--door kit-plaque');
     b.type = 'button';
     b.dataset.opt = 'free';
     b.innerHTML = `<span class="ev-opt__label">${already ? 'Take what they left.' : 'Open the door.'}</span>

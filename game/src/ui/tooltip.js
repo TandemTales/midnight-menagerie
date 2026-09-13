@@ -91,6 +91,10 @@ const WARM_MS = 420;
 const GAP = 16;
 /** Keep this far from the viewport edge. */
 const EDGE = 16;
+/** Keep this far inside a frame the caller names (`bounds`): a frame on these
+ *  boards is a painted rail drawn across its own edge, and the panel's rail
+ *  must not run into it. */
+const FRAME_EDGE = 30;
 /** Names shorter than this are never auto-linked inside a description. */
 const MIN_KW_LEN = 3;
 
@@ -391,6 +395,7 @@ export class Tooltip {
       placement: opts.placement || anchorEl.dataset?.tipPlacement || 'auto',
       avoid: opts.avoid ?? anchorEl.dataset?.tipAvoid,
       bounds: opts.bounds || null,
+      gap: opts.gap || 0,
     });
     anchorEl.setAttribute('aria-describedby', 'mm-tip-panel');
     this.live.textContent = this._plain(desc);
@@ -856,7 +861,10 @@ export class Tooltip {
     const boundsSel = cardEl.closest('[data-tip-bounds]')?.dataset.tipBounds || '';
     let bounds = null;
     if (boundsSel) { try { bounds = cardEl.closest(boundsSel); } catch { bounds = null; } }
-    this.show(cardEl, { kind: 'keywords', items }, { placement: 'right', avoid, bounds });
+    // `data-tip-gap`: the cards on that screen hang in painted frames drawn
+    // outside their own box, so the panel keeps that much more clear of them.
+    const gap = Number(cardEl.closest('[data-tip-gap]')?.dataset.tipGap) || 0;
+    this.show(cardEl, { kind: 'keywords', items }, { placement: 'right', avoid, bounds, gap });
   }
 
   _showSub(chip) {
@@ -883,14 +891,19 @@ export class Tooltip {
    *   −(px²) area of `avoid` elements it would cover
    *   +bias  for the caller's preferred side
    */
-  _place(panel, anchor, { placement = 'auto', avoid = null, alignTo = null, bounds = null } = {}) {
+  _place(panel, anchor, { placement = 'auto', avoid = null, alignTo = null, bounds = null, gap = 0 } = {}) {
     if (this._raf) cancelAnimationFrame(this._raf);
     this._raf = requestAnimationFrame(() => {
       this._raf = 0;
       if (panel.hidden || !anchor.isConnected) return;
 
-      // one read pass
-      const a = anchor.getBoundingClientRect();
+      // one read pass. `gap` grows the anchor and everything it avoids by the
+      // width of a frame painted round them, so the panel clears the frame.
+      const grow = (r) => (gap ? {
+        left: r.left - gap, top: r.top - gap, right: r.right + gap, bottom: r.bottom + gap,
+        width: r.width + 2 * gap, height: r.height + 2 * gap,
+      } : r);
+      const a = grow(anchor.getBoundingClientRect());
       // Cross-axis alignment can track a different element than the one the
       // panel is placed against (a chip inside the panel it belongs to).
       const c = alignTo?.isConnected ? alignTo.getBoundingClientRect() : a;
@@ -898,7 +911,7 @@ export class Tooltip {
       panel.style.maxWidth = '';
       let p = panel.getBoundingClientRect();
       const vw = window.innerWidth, vh = window.innerHeight;
-      const avoidRects = this._avoidRects(avoid, anchor);
+      const avoidRects = this._avoidRects(avoid, anchor).map(grow);
       const b = bounds?.isConnected ? bounds.getBoundingClientRect() : null;
       let framed = null;
       /* Inside a frame the panel may narrow (down to a readable 150px) so that
@@ -908,12 +921,12 @@ export class Tooltip {
          covers nothing it was asked to avoid is the side it takes. */
       if (b) {
         const room = {
-          left: Math.floor(a.left - GAP - (b.left + EDGE)),
-          right: Math.floor((b.right - EDGE) - (a.right + GAP)),
+          left: Math.floor(a.left - GAP - (b.left + FRAME_EDGE)),
+          right: Math.floor((b.right - FRAME_EDGE) - (a.right + GAP)),
         };
         const anchorRect = avoidRects[avoidRects.length - 1];
         const order = placement === 'left' ? ['left', 'right'] : ['right', 'left'];
-        const clampTop = (t, hh) => Math.max(b.top + EDGE, Math.min(t, b.bottom - EDGE - hh));
+        const clampTop = (t, hh) => Math.max(b.top + FRAME_EDGE, Math.min(t, b.bottom - FRAME_EDGE - hh));
         for (const side of order) {
           if (room[side] < 150) continue;
           panel.style.maxWidth = p.width > room[side] ? `${room[side]}px` : '';
@@ -921,7 +934,7 @@ export class Tooltip {
           const x0 = side === 'left' ? a.left - GAP - q.width : a.right + GAP;
           // centred on the anchor, or level with its top edge, or as high in
           // the frame as it goes
-          for (const t of [c.top + c.height / 2 - q.height / 2, c.top, b.top + EDGE]) {
+          for (const t of [c.top + c.height / 2 - q.height / 2, c.top, b.top + FRAME_EDGE]) {
             const top = clampTop(t, q.height);
             const r = { left: x0, top, right: x0 + q.width, bottom: top + q.height };
             const hit = avoidRects.some(ar => ar !== anchorRect && overlapArea(r, ar) > 0);
@@ -972,8 +985,8 @@ export class Tooltip {
       let best = framed;
       if (b && !best) {
         const inFrame = {
-          left: Math.max(view.left, b.left + EDGE), top: Math.max(view.top, b.top + EDGE),
-          right: Math.min(view.right, b.right - EDGE), bottom: Math.min(view.bottom, b.bottom - EDGE),
+          left: Math.max(view.left, b.left + FRAME_EDGE), top: Math.max(view.top, b.top + FRAME_EDGE),
+          right: Math.min(view.right, b.right - FRAME_EDGE), bottom: Math.min(view.bottom, b.bottom - FRAME_EDGE),
         };
         best = pick(inFrame);
         if (!best.fits) best = null;

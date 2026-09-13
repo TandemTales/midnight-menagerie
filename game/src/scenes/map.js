@@ -988,16 +988,15 @@ export class MapScene extends Scene {
       // a short leader from the roundel back to the nearest point on the boundary
       const ax = best.px + KEY / 2, ay = best.py + KEY / 2;
       const bx = clampN(ax, x, x + w), by = clampN(ay, y, y + h);
-      /* An inked wash, laid on with a brush: a pale bloom of pigment that
-         pooled darker as it dried at its deckled edge, the hatch the survey
-         keys it with showing faintly through. */
-      const deck = deckledRect(s, x, y, w, h, 24);
+      /* A surveyor's boundary, the way the plan keys an area (6cfaef5's): the
+         wing hatched across in the zone's ink, a dashed line run round it by
+         hand, and a fine solid line just inside that one, so the zone reads as
+         drawn onto the plan and never as a coloured box laid over it. */
       parts.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
-        <path class="mi-zone-wash" d="${deck}"/>
-        <path class="mi-zone-bloom" d="${deckledRect(s ^ 0x3c1, x + 14, y + 12, w - 28, h - 24, 18)}"/>
-        <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="22"
+        <rect class="mi-zone-hatch" x="${x}" y="${y}" width="${w}" height="${h}" rx="22"
               fill="url(#${hz.kind === 'boon' ? 'mm-dots' : 'mm-hatch'})"/>
-        <path class="mi-zone-edge" d="${deck}"/>
+        <path class="mi-zone-edge" d="${roundedWobbleRect(s, x, y, w, h, 22)}"/>
+        <path class="mi-zone-edge mi-zone-edge--in" d="${roundedWobbleRect(s ^ 0x3c1, x + 8, y + 8, w - 16, h - 16, 16)}"/>
         <g class="mi-zone-key">
           <path class="mi-zone-lead" d="M${ax.toFixed(1)} ${ay.toFixed(1)} L${bx.toFixed(1)} ${by.toFixed(1)}"/>
           <path class="mi-seal-melt" d="${sealMelt(s, ax, ay, KEY / 2 + 4)}"/>
@@ -1246,9 +1245,14 @@ export class MapScene extends Scene {
       const hw = (L.w / 2 + 4) * k, hh = (L.h || LABEL_H) * k;
       const lo = WIN.x + 10 + hw, hi = WIN.x + WIN.w - 10 - hw;
       const c = hi > lo ? clampN(cx + dx * k, lo, hi) : cx;
-      const top = cy + (L.box / 2 + 3 + dy) * k;
+      /* ...and vertically. A name over the first row used to hang above the
+         plan window, off the top of the paper and under the gilt rail
+         ("East Reception Hall" on every seed): it stays on the sheet now, and
+         a chip that cannot is scored where it really lands. */
+      const want = cy + (L.box / 2 + 3 + dy) * k;
+      const top = clampN(want, WIN.y + 10, WIN.y + WIN.h - 10 - hh);
       return { left: c - hw, right: c + hw, top, bottom: top + hh,
-               dx: (c - cx) / k, dy };
+               dx: (c - cx) / k, dy: dy + (top - want) / k };
     };
     // Overlap and travel are scored separately on purpose.  Travel is only a
     // tie-break — "all else equal, stay near your own mark" — and must never
@@ -1294,11 +1298,19 @@ export class MapScene extends Scene {
       const h = L.h || LABEL_H, bx = L.box;
       const cands = [];
       if (rank(L) === 2 || rank(L) === 0) {
-        const side = bx / 2 + L.w / 2 + 8;
+        const side = bx / 2 + L.w / 2 + 16;
         const mid = -(bx / 2 + 3 + h / 2);
         const sh = L.w / 2 + bx * .3;
-        cands.push([0, -4], [0, -(bx + h + 8)], [side, mid], [-side, mid],
+        cands.push([0, 6], [0, -(bx + h + 14)], [side, mid], [-side, mid],
                    [sh, -bx * .3], [-sh, -bx * .3], [sh, -(bx * .7 + h)], [-sh, -(bx * .7 + h)]);
+        /* When a lane is packed (the entrance column on a 1280 panel, where
+           the rooms' rings touch), the name goes out on its own plate a little
+           way to the side, stepping up or down into the gap between rows, and
+           a brass leader ties it back to its room (_drawLeader). A name never
+           sits on a room to be close to its own. */
+        for (const out of [side + 26, side + 58, side + 96]) {
+          for (const d of [0, -26, 26, -52, 52, -80, 80]) cands.push([out, mid + d], [-out, mid + d]);
+        }
       } else {
         const side = L.w / 2 + 34;
         for (const dy of [0, 26, -(L.box + 26), 54, -(L.box + 54), 82, -(L.box + 82)]) {
@@ -1314,7 +1326,8 @@ export class MapScene extends Scene {
         const b = boxOf(L, dx, dy);
         const hit = clash(L, b);
         const legs = legCost(b) * 90 * k * k;
-        const score = hit + legs + travel(b);
+        // a name on a room, or on another name, outweighs any length of route
+        const score = hit * 12 + legs + travel(b);
         if (!best || score < best.score) best = { score, hit, b };
         if (hit === 0 && legs === 0) break;
       }
@@ -1336,6 +1349,14 @@ export class MapScene extends Scene {
         ? ((L.dx || 0) > 0 ? 'right' : 'left')
         : (midY < 0 ? 'above' : 'below');
       L.el.dataset.lab = side;
+      /* the plate's brass pointer sits on the point of its facing edge nearest
+         the room, so a plate the frame has pushed sideways still points
+         straight at its own room (map.css reads --lab-px / --lab-py) */
+      const vertical = side === 'above' || side === 'below';
+      L.px = vertical ? clampN(-(L.dx || 0), -(L.w / 2 - 16), L.w / 2 - 16) : 0;
+      L.py = vertical ? 0 : clampN(-midY, -(h / 2 - 6), h / 2 - 6);
+      L.el.style.setProperty('--lab-px', L.px.toFixed(1) + 'px');
+      L.el.style.setProperty('--lab-py', L.py.toFixed(1) + 'px');
       this._drawLeader(L);
     }
   }
@@ -1352,20 +1373,28 @@ export class MapScene extends Scene {
   _drawLeader(L) {
     const path = L.lead || (L.lead = L.el.querySelector('.mn-lead'));
     if (!path) return;
+    const boss = L.n.type === NodeType.BOSS;
     const far = Math.abs(L.dy) > 20 || Math.abs(L.dx) > 12;
-    if (!far || L.off) { path.setAttribute('d', ''); return; }
-    const b = L.box, hw = L.w / 2 + 4, hh = (L.h || LABEL_H) / 2;
+    // a room you may enter wears its plate on a leader whenever there is paper
+    // between the two; any other name only once it has been moved off its mark
+    const lit = L.n.id === this.model.currentId || (this._legalIds || []).includes(L.n.id);
+    if ((!far && !lit) || L.off) { path.setAttribute('d', ''); return; }
+    const b = L.box, hw = L.w / 2, hh = (L.h || LABEL_H) / 2;
     const ox = b / 2, oy = b / 2;                       // the mark's centre
     const tx = b / 2 + L.dx, ty = b + 3 + L.dy + hh;    // the chip's centre
-    const vx = tx - ox, vy = ty - oy, len = Math.hypot(vx, vy) || 1;
+    /* The rod ends at the tip of the brass lozenge on the plate's edge that
+       faces the room (map.css .mn-label::after), so the pointer and the rod
+       read as one fitting. */
+    const side = L.el.dataset.lab || 'below';
+    const ex = side === 'right' ? tx - hw - 4 : side === 'left' ? tx + hw + 4 : tx + (L.px || 0);
+    const ey = side === 'below' ? ty - hh - 4 : side === 'above' ? ty + hh + 4 : ty + (L.py || 0);
+    const vx = ex - ox, vy = ey - oy, len = Math.hypot(vx, vy) || 1;
     const ux = vx / len, uy = vy / len;
-    const r0 = (L.n.type === NodeType.BOSS ? 0.44 : 0.34) * b;
-    // stop on the chip's edge, not inside it
-    const tin = Math.min(Math.abs(hw / (ux || 1e-6)), Math.abs(hh / (uy || 1e-6))) + 2;
-    const l1 = Math.max(r0 + 3, len - tin);
-    if (l1 <= r0 + 3) { path.setAttribute('d', ''); return; }
+    // from just outside the room's pencil rings (ui/mapnode.js: r 41 of 86)
+    const r0 = boss ? 0.44 * b : (lit ? 0.5 * b : 0.34 * b);
+    if (len <= r0 + 3) { path.setAttribute('d', ''); return; }
     path.setAttribute('d', `M${(ox + ux * r0).toFixed(1)} ${(oy + uy * r0).toFixed(1)}`
-                         + `L${(ox + ux * l1).toFixed(1)} ${(oy + uy * l1).toFixed(1)}`);
+                         + `L${ex.toFixed(1)} ${ey.toFixed(1)}`);
   }
 
   _buildMarginalia() {

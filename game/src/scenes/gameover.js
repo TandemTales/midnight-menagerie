@@ -499,10 +499,15 @@ export class GameOverScene extends Scene {
     return n;
   }
 
-  /* ═══ right: the ledger ══════════════════════════════════════════════════ */
+  /* ═══ right: the ledger ══════════════════════════════════════════════════
+     Returns three pieces for the board's grid: the ledger panel (how far, the
+     seed, the final Tricks and the Keepsakes), the Trick that worked hardest —
+     which stands on its plinth in the middle of the board, under the two who
+     went in — and the numbers, on one framed strip the width of the board. */
   _buildLedger() {
     const s = this.summary;
     const { region } = this._cast();
+    const out = document.createDocumentFragment();
 
     const led = el('section', 'go-ledger kit-panel');
     led.dataset.medal = 'moon';
@@ -527,8 +532,10 @@ export class GameOverScene extends Scene {
       </div>`);
     led.appendChild(who);
 
-    /* --- the numbers, on an engraved strip -------------------------------- */
-    const grid = el('div', 'go-stats kit-stats');
+    /* --- the numbers, on one engraved strip framed on its own plaque ------ */
+    const grid = el('div', 'go-stats kit-stats kit-stats--framed');
+    grid.setAttribute('role', 'group');
+    grid.setAttribute('aria-label', 'The numbers');
     const stat = (label, value, sub) =>
       `<div class="go-stat"><span class="go-lbl kit-stats__label">${esc(label)}</span>` +
       `<b class="kit-stats__value">${esc(value)}</b>${sub ? `<em>${esc(sub)}</em>` : ''}</div>`;
@@ -541,14 +548,15 @@ export class GameOverScene extends Scene {
       stat('Damage dealt', s.damage) +
       stat(TERMS.gold, s.gold) +
       stat('Turns taken', s.turns);
-    led.appendChild(grid);
 
     /* --- Courage bar: the shape of the ending, in the header between the
            two — how far you got, and how much of you was left ------------- */
     const bar = el('div', 'go-courage');
+    // the Kid's own gauge from the fights: amber enamel in its brass tube
+    const hpK = Math.max(0, Math.min(1, s.hp / s.maxHp));
     bar.innerHTML =
       `<span class="go-lbl">${TERMS.hp}</span>` +
-      `<div class="go-courage__track"><i style="width:${Math.max(0, Math.min(100, (s.hp / s.maxHp) * 100)).toFixed(1)}%"></i></div>` +
+      `<div class="go-courage__track kit-tube kit-tube--warm"><i class="kit-tube__fill" style="transform:scaleX(${hpK.toFixed(3)})"></i></div>` +
       `<span class="go-courage__n">${s.hp} / ${s.maxHp}</span>` +
       `<em class="go-courage__note">${this.won ? 'walked out with it' : 'the candle ran out'}</em>`;
     who.querySelector('.go-who__focal').appendChild(bar);
@@ -562,30 +570,30 @@ export class GameOverScene extends Scene {
     this._deckHost = deck.querySelector('.go-tricks');
     this._deckTotal = deck.querySelector('[data-deck-total]');
 
-    /* --- the card that did the work, beside what came out with you -------- */
-    const pair = el('div', 'go-pair');
+    /* --- the card that did the work: on its gilt plinth, mid-board -------- */
     const mvp = el('div', 'go-block go-block--mvp');
-    mvp.innerHTML = `<h2 class="go-h kit-heading kit-heading--inline">Worked hardest <em class="go-h__n" data-mvp-n></em></h2>
+    mvp.innerHTML = `<h2 class="go-h kit-heading kit-heading--ribbon kit-heading--inline">Worked hardest <em class="go-h__n" data-mvp-n></em></h2>
       <div class="go-mvp"><div class="go-mvp__slot kit-cards"></div>
       <p class="go-mvp__note"></p></div>`;
-    pair.appendChild(mvp);
     this._mvpSlot = mvp.querySelector('.go-mvp__slot');
     this._mvpNote = mvp.querySelector('.go-mvp__note');
     this._mvpN = mvp.querySelector('[data-mvp-n]');
     this._mvpBlock = mvp;
     mvp.hidden = true;
 
-    /* --- keepsakes -------------------------------------------------------- */
+    /* --- keepsakes: what came out with you ------------------------------- */
     const keep = el('div', 'go-block go-block--keep');
     keep.innerHTML =
       `<h2 class="go-h kit-heading kit-heading--inline">${TERMS.relic}s <em class="go-h__n" data-keep-total></em></h2>` +
       `<div class="go-keeps" role="list"></div>`;
-    pair.appendChild(keep);
-    led.appendChild(pair);
+    led.appendChild(keep);
     this._keepHost = keep.querySelector('.go-keeps');
     this._keepTotal = keep.querySelector('[data-keep-total]');
 
-    return led;
+    out.appendChild(led);
+    out.appendChild(mvp);
+    out.appendChild(grid);
+    return out;
   }
 
   /* ═══ real card + relic data ═════════════════════════════════════════════
@@ -712,7 +720,17 @@ export class GameOverScene extends Scene {
       this._mvpSlot.style.width  = `calc(var(--card-w) * ${S})`;
       this._mvpSlot.style.height = `calc(var(--card-w) / var(--card-aspect) * ${S})`;
       this._mvpSlot.appendChild(view.el);
-      fitCardToSlot(view, this._mvpSlot);
+      // It is shown to be READ, at the reward's scale: the rules never print
+      // smaller than a full-size card prints them. Re-fitted whenever the slot
+      // changes size, since a stylesheet landing late restyles the board.
+      const slot = this._mvpSlot;
+      const fit = () => fitCardToSlot(view, slot, { legibleAt: 224 });
+      fit();
+      if (typeof ResizeObserver === 'function') {
+        const ro = new ResizeObserver(() => { if (!this._dead) fit(); });
+        ro.observe(slot);
+        this._offs.push(() => ro.disconnect());
+      }
 
       /* This used to read "played 21×" off `new RNG(seed).int(38)` — a number
          invented on the spot and printed as a statistic on the screen a player

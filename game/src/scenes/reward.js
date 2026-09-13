@@ -165,7 +165,7 @@ export class RoomScene extends Scene {
 
         <main class="rm-body" data-body></main>
         <footer class="rm-foot" data-foot>${this.mock
-    ? '<div class="rm-mockflag" role="note"><i class="rm-mockflag__label">Standalone preview</i><span class="rm-mockflag__dot"> &middot; </span><em class="rm-mockflag__sub">no expedition in progress</em></div>'
+    ? '<div class="rm-mockflag kit-flag" role="note"><i class="rm-mockflag__label">Standalone preview</i><span class="rm-mockflag__dot"> &middot; </span><em class="rm-mockflag__sub">no expedition in progress</em></div>'
     : ''}</footer>
       </div>`;
     this.$body = this.root.querySelector('[data-body]');
@@ -540,7 +540,9 @@ export class RewardScene extends RoomScene {
     this.$body.appendChild(this.$stage);
     const wrap = el('section', 'rw-spoils');
     wrap.setAttribute('aria-label', 'What this room gave you');
-    // The spoils hang on the frame's top rule either side of its crest.
+    // The spoils hang on the frame's top rule either side of its crest: the
+    // Kid board's moon medallion, seated on the rule between them (the stage
+    // draws it; `.rw-spoils__crest` keeps its place in the row).
     const spoils = [
       chip('gold', TERMS.gold, `+${r.lostThings}`),
       r.clues ? chip('clue', word(r.clues, 'Clue'), `+${r.clues}`) : '',
@@ -580,20 +582,19 @@ export class RewardScene extends RoomScene {
         <h2 class="kit-heading kit-heading--ribbon">Choose one ${esc(TERMS.card)}</h2>
         <p>Or take none — and be luckier next time.</p>
       </div>
-      <div class="rw-fan kit-cards" data-tip-avoid=".rw-slot, .rm-where, .rw-spoils, .rw-candle" data-tip-bounds=".rw-cards" role="listbox" aria-label="Three ${esc(TERMS.card)}s. Choose one, or skip."></div>`;
-    // Two candles stand either side of the three frames, the way the Kid board
-    // keeps one beside its mirror. Decoration only.
+      <div class="rw-fan kit-cards" data-tip-avoid=".rw-slot, .rm-where, .rw-spoils, .rw-candle" data-tip-bounds=".rw-cards" data-tip-gap="18" role="listbox" aria-label="Three ${esc(TERMS.card)}s. Choose one, or skip."></div>
+      <i class="rw-ledge kit-ledge" aria-hidden="true"></i>`;
+    // Two candles stand either side of the three frames on the ledge, the way
+    // the Kid board keeps one beside its mirror. Decoration only.
     for (const side of ['l', 'r']) {
       const c = el('i', `kit-prop kit-prop--candle rw-candle rw-candle--${side}`);
       c.setAttribute('aria-hidden', 'true');
       sec.appendChild(c);
     }
     (this.$stage || this.$body).appendChild(sec);
-    // CHOOSE ONE TRICK hangs on the frame's top rail itself, under its star
-    // medallion and between the spoils — the clasp the crest slot keeps for it.
-    const ribbon = sec.querySelector('.rw-cards__head > .kit-heading');
-    const clasp = this.$stage?.querySelector('.rw-spoils__crest');
-    if (ribbon && clasp) clasp.appendChild(ribbon);
+    // CHOOSE ONE TRICK has a row of its own under the crest: a ribbon laid on
+    // the rail beside the medallion half-buried it (round 2), so the rail holds
+    // the spoils and the moon, and the ribbon hangs beneath them.
     const fan = sec.querySelector('.rw-fan');
     this.$fan = fan;
     this._slots = [];
@@ -699,7 +700,12 @@ export class RewardScene extends RoomScene {
   }
 
   _layout() {
-    for (const { slot, view } of this._slots || []) fitCardToSlot(view, slot, { legibleAt: 224 });
+    // Rules type is lifted to read like a full-size card, but never by more
+    // than a fifth on a small frame (a Big Scare's three stand smaller), where
+    // a bigger lift would push the words off the face.
+    for (const { slot, view } of this._slots || []) {
+      fitCardToSlot(view, slot, { legibleAt: Math.min(224, (slot.clientWidth || 224) * 1.2) });
+    }
   }
 
   /* ── footer: skip, and the way out ────────────────────────────────────── */
