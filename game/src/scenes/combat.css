@@ -8,11 +8,12 @@
   position: absolute; inset: 0;
   /* The hand is scaled to leave the field room to breathe: with 10 cards the
      StS2 arc must not reach the enemies. Token override, not a new colour.
-     The width is unchanged at the Deck's 1280 (the fan has to clear the Kid's
-     portrait and END TURN), so it is the TYPE that grows there: see the
-     hand's --rules-k below, which sets a Trick's rules text at 11px where it
-     used to print at 9.7. */
-  --card-w: clamp(140px, 10.4vw, 172px);
+     The Deck's 1280 used to hold the width at its 140px floor because the
+     fan had to clear the Kid's portrait and END TURN by luck; the hand now
+     measures that furniture and keeps to the table between (ui/hand.js
+     setBounds), so the card itself grows there: 156px at 1280, 168 at 1600,
+     with every name and cost a size larger for it. */
+  --card-w: clamp(150px, calc(3.9vw + 106px), 176px);
   --card-h: calc(var(--card-w) / var(--card-aspect));
 }
 .cb-root [hidden] { display: none !important; }
@@ -2547,8 +2548,13 @@
 /* Sized so the stage AND the name plate fit inside the field: the field is
    (100vh - 48 - 33%) tall, less the intent stack's 96px and the plate's ~44. */
 .cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__stage {
-  /* less `--e-rise`: the height the ground line gave up to its plate (below) */
-  --e-h: min(calc(430px * var(--e-sz)), calc(90vh - 400px - var(--e-rise, 0px)));
+  /* less `--e-rise`: the height the ground line gave up to its plate (below).
+     The rest is the field's own height (69vh, from the top of the screen to
+     its bottom at 31%) less the ground band and a fixed 127px for the HUD and
+     the intent medallion, so the boss's head sits the same distance under the
+     HUD at every height instead of a vh-scaled one (90vh - 400px left 40px of
+     empty air over the medallion at 1280x800). */
+  --e-h: min(calc(430px * var(--e-sz)), calc(69vh - var(--e-band) - 127px - var(--e-rise, 0px)));
   --e-wide: 1.15;
   width: clamp(calc(150px * var(--e-sz)),
                calc(var(--e-h) * var(--e-aspect)),
