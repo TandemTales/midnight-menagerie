@@ -986,18 +986,18 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
    plate (a dark lip above each stroke), a gilt edge catching the light below */
 .kit-cards .mm-card[data-rarity] .mm-card__name {
   font-family: var(--font-display); font-weight: 700;
-  font-size: calc(19 * var(--u));
-  letter-spacing: .03em;
+  font-size: calc(18.5 * var(--u));
+  letter-spacing: .02em;
   color: var(--kit-lav-hi);
-  padding: 0 calc(14 * var(--u)) calc(1 * var(--u));
+  padding: 0 calc(12 * var(--u)) calc(1 * var(--u));
   text-shadow:
     0 calc(-1 * var(--u)) 0 rgba(12, 5, 20, .95),
     0 calc(1 * var(--u)) 0 color-mix(in srgb, var(--kit-gold) 75%, transparent),
     0 calc(2 * var(--u)) calc(3 * var(--u)) rgba(0, 0, 0, .9),
     0 0 calc(8 * var(--u)) color-mix(in srgb, var(--kit-violet) 55%, transparent);
 }
-.kit-cards .mm-card[data-rarity].is-name-long .mm-card__name { font-size: calc(16 * var(--u)); }
-.kit-cards .mm-card[data-rarity].is-name-xlong .mm-card__name { font-size: calc(13 * var(--u)); letter-spacing: 0; }
+.kit-cards .mm-card[data-rarity].is-name-long .mm-card__name { font-size: calc(14.5 * var(--u)); letter-spacing: 0; }
+.kit-cards .mm-card[data-rarity].is-name-xlong .mm-card__name { font-size: calc(12 * var(--u)); letter-spacing: 0; }
 .kit-cards .mm-card[data-rarity] .mm-card__type { top: calc(145 * var(--u)); font-size: calc(10.5 * var(--u) * min(var(--rules-k, 1), 1.25)); }
 .kit-cards .mm-card[data-rarity] .mm-card__rules { top: calc(168 * var(--u)); }
 /* a board that shows Tricks to be read lifts a small card's rules type
@@ -1027,10 +1027,14 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
     0 0 0 calc(1.5 * var(--u)) rgba(0, 0, 0, .7),
     0 calc(3 * var(--u)) calc(8 * var(--u)) rgba(0, 0, 0, .65);
 }
+/* a keyword is lettered in the rules, not boxed: gold, a touch heavier, with
+   a fine gilt underline cut beneath it (a box read as a web pill) */
 .kit-cards .mm-card[data-rarity] .mm-card__kw {
   color: var(--kit-gold-hi);
-  background: color-mix(in srgb, var(--kit-gold-lo) 34%, transparent);
-  box-shadow: inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb, var(--kit-gold) 45%, transparent);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 70%, transparent) 15%, color-mix(in srgb, var(--kit-gold) 70%, transparent) 85%, transparent) 0 100% / 100% calc(1 * var(--u)) no-repeat;
+  box-shadow: none;
+  padding: 0 calc(1 * var(--u)) calc(1 * var(--u));
+  text-shadow: 0 calc(1 * var(--u)) 0 rgba(0, 0, 0, .95), 0 0 calc(6 * var(--u)) color-mix(in srgb, var(--kit-candle) 30%, transparent);
 }
 .kit-cards .mm-card[data-rarity="uncommon"] .mm-card__frame,
 .kit-cards .mm-card[data-rarity="rare"] .mm-card__frame {
