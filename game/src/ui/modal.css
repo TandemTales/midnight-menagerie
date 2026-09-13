@@ -98,7 +98,8 @@
     0 0 120px -10px color-mix(in srgb, var(--kit-candle) 9%, transparent),
     inset 0 0 40px rgba(0, 0, 0, .45);
 }
-.mm-modal--kit[data-size="sm"] .mm-modal__dialog { width: min(100%, 38rem); }
+/* a question: wide enough that its two answers each keep to one line */
+.mm-modal--kit[data-size="sm"] .mm-modal__dialog { width: min(100%, 46rem); }
 
 /* the plaque across the top rail: the cartouche's middle ON the rail */
 .mm-modal--kit .mm-modal__head {
@@ -151,7 +152,7 @@
   margin: 2px 0 calc(var(--btn-h) * -.5);
   padding: 0 clamp(28px, 3vw, 44px);
 }
-.mm-modal--kit .mm-modal__foot .kit-btn { --plate-h: var(--btn-h); }
+.mm-modal--kit .mm-modal__foot .kit-btn { --plate-h: var(--btn-h); flex: none; white-space: nowrap; }
 
 /* the close: the round enamel button on the rail's top-right corner */
 .mm-modal--kit .mm-modal__close {

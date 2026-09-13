@@ -433,7 +433,7 @@
   padding: 8px 8px;
 }
 .tut-dot.kit-ladder__rung { cursor: default; pointer-events: none; }
-.tut-dot.kit-ladder__rung:not(.is-on):not(.is-past) { filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8)) saturate(.35) brightness(.58); }
+.tut-dot.kit-ladder__rung:not(.is-on):not(.is-past) { filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8)) saturate(.45) brightness(.78); }
 .tut-dot.kit-ladder__rung.is-past { filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8)) brightness(1.05); }
 
 /* Go on: the boards' lit nameplate, an ornate enamel medallion seated on its

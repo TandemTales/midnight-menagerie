@@ -137,19 +137,27 @@ export async function openSettings(ctx = {}) {
     className: 'mm-settings-modal',
   });
 
+  /* The panel is laid out like the Kid board's dossier: the boards' railed
+     panels in two columns, each group one panel with the gold ribbon banner
+     ("✦ SOUND ✦") across its top rail. How the house sounds and moves on the
+     left, how you read and play it on the right; under both, on one line, the
+     seed it is built from and the ways out of it. The cells are DOM order, so
+     Tab walks each one down before the next. */
   const form = document.createElement('div');
   form.className = 'mm-set';
+  const cell = () => { const c = document.createElement('div'); c.className = 'mm-set__col'; return c; };
+  const colA = cell(), colB = cell(), colC = cell(), colD = cell();
+  form.append(colA, colB, colC, colD);
   modal.body.appendChild(form);
 
   const rerender = [];
 
-  /* Each group is headed by the boards' gold ribbon banner with its painted
-     stars ("✦ SOUND ✦"), the way the Shop heads its counters. */
+  const GROUP = 'mm-set__group kit-panel';
   const LEGEND = 'mm-set__legend kit-heading kit-heading--ribbon';
 
-  for (const section of SETTINGS_SPEC) {
+  for (const [n, section] of SETTINGS_SPEC.entries()) {
     const fs = document.createElement('fieldset');
-    fs.className = 'mm-set__group';
+    fs.className = GROUP;
     const lg = document.createElement('legend');
     lg.className = LEGEND;
     lg.textContent = section.group;
@@ -158,12 +166,12 @@ export async function openSettings(ctx = {}) {
     for (const item of section.items) {
       fs.appendChild(buildRow(ctx, Save, item, rerender));
     }
-    form.appendChild(fs);
+    (n < 2 ? colA : colB).appendChild(fs);
   }
 
   // ── seed ────────────────────────────────────────────────────────────────
   const seedFs = document.createElement('fieldset');
-  seedFs.className = 'mm-set__group';
+  seedFs.className = GROUP;
   seedFs.innerHTML = `<legend class="${LEGEND}">Seed</legend>`;
 
   const cur = document.createElement('div');
@@ -197,7 +205,7 @@ export async function openSettings(ctx = {}) {
   });
   entry.appendChild(seedIn);
   seedFs.appendChild(entry);
-  form.appendChild(seedFs);
+  colC.appendChild(seedFs);
 
   // ── the expedition ──────────────────────────────────────────────────────
   /*
@@ -217,7 +225,7 @@ export async function openSettings(ctx = {}) {
   if (live) {
     const party = !!ctx.run.isParty;
     const trip = document.createElement('fieldset');
-    trip.className = 'mm-set__group';
+    trip.className = GROUP;
     trip.innerHTML = `<legend class="${LEGEND}">Expedition</legend>`;
     const tRow = document.createElement('div');
     tRow.className = 'mm-set__row';
@@ -256,12 +264,12 @@ export async function openSettings(ctx = {}) {
     });
     tRow.appendChild(quit);
     trip.appendChild(tRow);
-    form.appendChild(trip);
+    colD.appendChild(trip);
   }
 
   // ── danger ──────────────────────────────────────────────────────────────
   const danger = document.createElement('fieldset');
-  danger.className = 'mm-set__group mm-set__group--danger';
+  danger.className = GROUP + ' mm-set__group--danger';
   danger.innerHTML = `<legend class="${LEGEND}">Danger</legend>`;
   const dRow = document.createElement('div');
   dRow.className = 'mm-set__row';
@@ -289,7 +297,7 @@ export async function openSettings(ctx = {}) {
   });
   dRow.appendChild(reset);
   danger.appendChild(dRow);
-  form.appendChild(danger);
+  colD.appendChild(danger);
 
   // ── footer ──────────────────────────────────────────────────────────────
   const restore = document.createElement('button');
