@@ -198,6 +198,8 @@ export class LobbyScene extends Scene {
         <div class="lo-lights kit-bulbs">${Array.from({ length: 16 }, (_, i) => `<i style="--i:${i}"></i>`).join('')}</div>
         <i class="kit-hatch lo-hatch lo-hatch--l"></i>
         <i class="kit-hatch lo-hatch lo-hatch--r"></i>
+        <i class="kit-prop kit-prop--candle lo-sill lo-sill--l"></i>
+        <i class="kit-prop kit-prop--candle lo-sill lo-sill--r"></i>
       </div>
       <header class="lo-head kit-titleblock">
         <span class="lo-head__ribbon kit-ribbon">Play together</span>

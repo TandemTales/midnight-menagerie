@@ -53,17 +53,29 @@
 
 /* the two windows onto the house, their sills on the nailer rail */
 .lo-props { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
-.lo-hatch {
+.lo-board {
   --hatch-w: clamp(140px, min(calc(33vw - 290px), 27vh), 250px);
-  top: calc(57.2vh - var(--hatch-w) * 470 / 420 * .93);
+  --hatch-x: calc(var(--lo-side) + clamp(-18px, calc(4.6vw - 70px), 40px));
+  --hatch-top: calc(57.2vh - var(--hatch-w) * 470 / 420 * .93);
+  --sill-y: calc(var(--hatch-top) + var(--hatch-w) * 470 / 420 * .9);
 }
-.lo-hatch--l { left: calc(var(--lo-side) + clamp(-18px, calc(4.6vw - 70px), 40px)); transform: scaleX(-1); }
+.lo-hatch { top: var(--hatch-top); }
+.lo-hatch--l { left: var(--hatch-x); transform: scaleX(-1); }
+/* a candle on each sill: warm light against the moon in the glass */
+.lo-sill {
+  --c-w: calc(var(--hatch-w) * .2);
+  width: var(--c-w);
+  top: calc(var(--sill-y) - var(--c-w) * 164 / 106 + 2px);
+  z-index: 1;
+}
+.lo-sill--l { left: calc(var(--hatch-x) + var(--hatch-w) * .08); }
+.lo-sill--r { right: calc(var(--hatch-x) + var(--hatch-w) * .08); }
 /* the string of bulbs the kids ran along the roof beam, between the candles */
 .lo-lights {
   --n: 16; --sag: clamp(40px, 6vh, 58px);
   left: clamp(150px, 15vw, 250px); right: clamp(150px, 15vw, 250px); top: 2px;
 }
-.lo-hatch--r { right: calc(var(--lo-side) + clamp(-18px, calc(4.6vw - 70px), 40px)); }
+.lo-hatch--r { right: var(--hatch-x); }
 
 /* ── the title ────────────────────────────────────────────────────────────── */
 .lo-head {
@@ -297,6 +309,6 @@
   .lo__code { flex-basis: 100%; max-width: none; }
 }
 @media (max-width: 1100px) {
-  .lo-hatch { display: none; }
+  .lo-hatch, .lo-sill { display: none; }
   .lo__door, .lo__room { width: min(760px, calc(100vw - 2 * var(--lo-side))); }
 }
