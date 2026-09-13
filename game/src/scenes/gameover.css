@@ -2,11 +2,18 @@
    Expedition Over — a memorial board. OWNER: frontend agent.
    Two flavours off one layout: [data-result="defeat"] and ="victory".
 
-   Built from the kit (ui/kit.css) the way the select boards are painted: the
-   headline in the wordmark's cartouche, the Kid and the Companion in the Kid
-   board's frames with a candle between them on a shelf, gold-railed panels
-   wearing medallions, the numbers engraved on a strip, the Tricks on
-   nameplates, and the kit's buttons for the three ways out.
+   Built from the kit (ui/kit.css) the way the select boards are painted, and
+   read in one order:
+     1. the headline in the wordmark's cartouche;
+     2. directly under it, the memorial — the Kid and the Companion side by side
+        in the Kid board's frames on one shelf, the smoking candle between
+        them, the pet you did not reach under the shelf — flanked by what you
+        found and what you lost in gold-railed panels;
+     3. the ledger, the width of the board: HOW FAR in lavender display type
+        with the wing and the seed on matching corner cartouches, every number
+        on one engraved strip, and the Trick the run leaned on standing on a
+        gilt plinth beside the Tricks and the Keepsakes;
+     4. the three ways out, each a cartouche with its enamel button.
    =========================================================================== */
 
 .scene--gameover {
@@ -47,7 +54,7 @@
 .go-vignette::after {
   content: ''; position: absolute; inset: 0;
   background:
-    radial-gradient(96% 80% at 30% 40%, transparent 22%, color-mix(in srgb, var(--kit-void) 62%, transparent) 100%);
+    radial-gradient(70% 60% at 50% 34%, transparent 30%, color-mix(in srgb, var(--kit-void) 58%, transparent) 100%);
   opacity: 0;
   transition: opacity 1.6s var(--ease-out);
   will-change: opacity;
@@ -86,55 +93,65 @@
 .scene--gameover.is-dark .go-motes { opacity: .45; transition: opacity 2s var(--ease-out); }
 
 /* ── the headline, in the cartouche ───────────────────────────────────────── */
-.go-head { justify-self: center; margin-top: clamp(6px, 1.3vh, 14px); }
+.go-head { justify-self: center; margin-top: clamp(4px, 1vh, 12px); }
+.go-head.kit-titleblock--compact { --cart-h: clamp(90px, 11vh, 104px); }
+.go-head .kit-titleblock__note { margin-top: 3px; }
 /* one sentence pair: on one line it sits inside the plate, clear of the ribbon */
-.go-head .go-lede { max-width: none; white-space: nowrap; }
+.go-head .go-lede { max-width: none; white-space: nowrap; font-size: max(13px, var(--fs-sm)); }
 /* the Heart's three sentences get the full plaque and may wrap inside it */
 .go-head.is-long { --cart-h: clamp(140px, 17.4vh, 158px); }
 .go-head.is-long .go-lede {
   white-space: normal; max-width: calc(78ch + 2 * var(--cart-pad-x));
-  font-size: var(--fs-xs); line-height: 1.24;
+  font-size: max(12px, var(--fs-xs)); line-height: 1.24;
 }
 
-/* ── the two columns ──────────────────────────────────────────────────────── */
+/* ── the board's three bands: the memorial, the ledger, the ways out ─────── */
 .go-wrap {
+  --gutter: clamp(18px, 2vw, 36px);
   display: grid;
-  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
-  column-gap: clamp(22px, 2.4vw, 42px);
-  align-items: stretch;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.34fr) minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-areas:
+    "found  stage  lost"
+    "pet    stage  lost"
+    "ledger ledger ledger";
+  column-gap: var(--gutter);
+  row-gap: 0;
   min-height: 0;
-  padding: clamp(14px, 2.4vh, 24px) calc(var(--kit-vine-w) + clamp(8px, 1vw, 20px)) 0;
+  padding: clamp(4px, 1vh, 12px) calc(var(--kit-vine-w) + clamp(8px, 1vw, 20px)) 0;
 }
+.go-beat, .go-stanzas { display: contents; }
 .go-beat, .go-ledger { min-height: 0; }
 
-/* ═══ left: the beat ══════════════════════════════════════════════════════ */
-.go-beat {
-  display: flex; flex-direction: column; justify-content: space-between;
-  gap: clamp(8px, 1.4vh, 16px);
-}
-
-/* --- the memorial: two portraits on a shelf, a candle between ------------ */
+/* ═══ the memorial ═══════════════════════════════════════════════════════ */
 .go-stage {
-  --go-plate-h: clamp(40px, 5vh, 46px);
+  grid-area: stage;
+  --go-plate-h: clamp(38px, 4.8vh, 46px);
+  --go-pic-w: clamp(160px, 12.4vw, 206px);
   position: relative;
-  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  align-items: end;
-  column-gap: clamp(8px, 1vw, 18px);
-  padding: 8px clamp(8px, 1vw, 16px) calc(var(--go-plate-h) * .5 + 4px);
+  display: grid; grid-template-columns: var(--go-pic-w) auto var(--go-pic-w);
+  justify-content: center; align-items: end;
+  column-gap: clamp(10px, 1.2vw, 22px);
+  padding: 6px clamp(8px, 1vw, 16px) calc(var(--go-plate-h) * .5 + 6px);
 }
 /* the shelf they stand on: a dark plank with a brass nosing, Mr. Moth's */
 .go-stage::after {
   content: ''; position: absolute; z-index: -1; pointer-events: none;
-  left: 0; right: 0; bottom: calc(var(--go-plate-h) * .5 - 4px); height: 18px;
-  background:
-    linear-gradient(180deg,
-      #2a1f26 0px, #3a2b2c 4px,
-      var(--kit-gold-hi) 5px, var(--kit-gold) 6px, var(--kit-gold-lo) 7px,
-      #1a1216 8px, #120c10 100%);
-  box-shadow: 0 10px 18px -4px rgba(0, 0, 0, .85);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
-          mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+  left: 4%; right: 4%; bottom: calc(var(--go-plate-h) * .5 - 6px); height: 22px;
+  background: url("../../assets/ui/kit/shelf.webp") 0 0 / auto 100% repeat-x;
+  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, .8));
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);
 }
+/* the candle's light on the wall behind the two of them */
+.go-stage::before {
+  content: ''; position: absolute; z-index: -2; pointer-events: none;
+  left: 50%; top: 45%; width: 150%; aspect-ratio: 2 / 1; translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--go-warm), transparent 72%);
+  transition: opacity 1.6s var(--ease-out);
+}
+.scene--gameover.is-dark .go-stage::before { opacity: .45; }
 
 .go-portrait { position: relative; margin: 0; display: grid; justify-items: center; min-width: 0; }
 .go-portrait__pic {
@@ -150,9 +167,10 @@
   --plate-h: var(--go-plate-h);
   position: relative; z-index: 4;
   margin-top: calc(var(--plate-h) * -.5);
-  min-width: 82%; max-width: 110%;
+  min-width: 82%; max-width: 116%;
 }
-.go-portrait__plate .kit-plate__epithet { white-space: nowrap; font-size: max(11px, calc(var(--plate-h) * .25)); }
+.go-portrait__plate .kit-plate__name { font-size: max(14px, calc(var(--plate-h) * .38)); }
+.go-portrait__plate .kit-plate__epithet { white-space: nowrap; font-size: max(12px, calc(var(--plate-h) * .27)); }
 
 /* defeat: she came back out with you, but neither of you is glowing */
 .go-plate.is-spent .pf__img { filter: saturate(.55) brightness(.8) contrast(1.05); }
@@ -163,7 +181,7 @@
 /* --- the candle ------------------------------------------------------------ */
 .go-candle {
   position: relative; z-index: 2;
-  width: clamp(46px, 3.9vw, 64px);
+  width: clamp(44px, 3.6vw, 62px);
   align-self: end;
   margin-bottom: 2px;
 }
@@ -192,7 +210,7 @@
    empty, it is just unlit. */
 .go-smoke {
   position: absolute; left: 50%; bottom: 68%;
-  width: 240%; height: 150%;
+  width: 240%; height: 170%;
   transform: translateX(-50%);
   pointer-events: none;
   opacity: 0;
@@ -202,12 +220,12 @@
 }
 .go-smoke path {
   fill: none;
-  stroke: color-mix(in srgb, var(--kit-lav-hi) 34%, transparent);
+  stroke: color-mix(in srgb, var(--kit-lav-hi) 38%, transparent);
   stroke-width: 6; stroke-linecap: round;
   filter: blur(2.6px);
   stroke-dasharray: 100; stroke-dashoffset: 100;
 }
-.scene--gameover.is-dark .go-smoke { opacity: .85; }
+.scene--gameover.is-dark .go-smoke { opacity: .9; }
 .scene--gameover.is-dark .go-smoke path {
   animation: go-smoke-draw 2.6s var(--ease-out) forwards, go-smoke-drift 9s var(--ease-soft) 2.6s infinite;
 }
@@ -219,26 +237,19 @@
   72%      { opacity: .78; }
 }
 
-/* --- the three stanzas: gold-railed panels --------------------------------- */
-.go-stanzas {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  column-gap: clamp(12px, 1.2vw, 20px);
-  row-gap: clamp(20px, 2.8vh, 26px);
-  align-items: stretch;
-  padding-top: 6px;
-}
+/* --- what you found, what you lost: the panels either side ----------------- */
 .go-stanza {
   --pk: .66;
   --medal-k: .72;
-  padding: clamp(14px, 1.9vh, 18px) clamp(12px, 1.1vw, 18px) clamp(8px, 1.1vh, 12px);
+  padding: clamp(15px, 1.9vh, 19px) clamp(14px, 1.2vw, 20px) clamp(7px, 1vh, 10px);
 }
-.go-stanza--pet { grid-column: 1 / -1; }
-.go-sh { margin: 0 0 clamp(4px, .7vh, 7px); font-size: var(--fs-xs); letter-spacing: .22em; }
-.go-stanza ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+.go-stanza--found { grid-area: found; align-self: end; }
+.go-stanza--lost  { grid-area: lost;  align-self: center; }
+.go-sh { margin: 0 0 clamp(5px, .8vh, 8px); font-size: max(11.5px, var(--fs-xs)); letter-spacing: .2em; }
+.go-stanza ul { list-style: none; margin: 0; padding: 0 0 0 4px; display: grid; gap: 2px; }
 .go-stanza li {
-  position: relative; padding-left: 15px;
-  font-size: var(--fs-sm); line-height: 1.42; color: var(--kit-text);
+  position: relative; padding-left: 16px;
+  font-size: max(13.5px, var(--fs-sm)); line-height: 1.4; color: var(--kit-text);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .go-stanza li::before {
@@ -249,30 +260,159 @@
 }
 .go-num { font-family: var(--font-num); font-variant-numeric: var(--num-feat); color: var(--kit-gold-hi); }
 
-.go-pet { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: clamp(14px, 1.3vw, 22px); align-items: center; }
+/* --- the pet you did not reach: under what you found ---------------------- */
+.go-stanza--pet {
+  grid-area: pet; align-self: start;
+  margin-top: clamp(14px, 1.6vh, 16px);
+  padding-block: clamp(13px, 1.6vh, 16px) clamp(4px, .7vh, 7px);
+}
+.go-stanza--pet .go-sh { margin-bottom: 2px; }
+.go-pet { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: clamp(12px, 1.1vw, 20px); align-items: center; }
 /* the photograph, in the same gold frame as the two who went in */
 .go-pet__snap {
   --fk: .46;
   display: block; flex: none;
-  width: clamp(76px, 5.8vw, 94px);
+  width: clamp(58px, 4.4vw, 74px);
   aspect-ratio: 4 / 3;
   margin: 5px 4px 3px 5px;
 }
 .go-stanza--pet:not(.is-home) .go-pet__snap .petpic { filter: saturate(.72) brightness(1.06) contrast(1.05); }
 .go-pet__text {
-  margin: 0; font-size: var(--fs-md); line-height: 1.45; font-style: italic;
+  margin: 0; font-size: max(13.5px, var(--fs-sm)); line-height: 1.4; font-style: italic;
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .go-pet__text b { font-style: normal; font-weight: 600; color: var(--kit-name); }
 .go-stanza--pet.is-home .go-pet__text b { color: var(--spectre-200); }
 
-/* --- the blueprint band, under glass in a gold frame ----------------------- */
-.go-bp { display: grid; gap: 5px; }
-.go-bp__frame { --fk: .5; margin: 5px 5px 0; }
+/* ═══ the ledger — the width of the board, the moon on its rail ═══════════ */
+.go-ledger {
+  grid-area: ledger;
+  --pk: .84;
+  --medal-k: .5;
+  align-self: stretch;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.12fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-areas:
+    "who  who  who"
+    "stats stats stats"
+    "mvp  deck keep";
+  column-gap: clamp(20px, 2vw, 36px);
+  row-gap: clamp(6px, 1vh, 12px);
+  margin-top: clamp(14px, 1.7vh, 16px);
+  padding: clamp(16px, 2.1vh, 22px) clamp(22px, 2vw, 34px) clamp(8px, 1.1vh, 12px);
+}
+.go-ledger:has(.go-block--mvp[hidden]) { grid-template-areas: "who who who" "stats stats stats" "deck deck keep"; }
+
+.go-lbl {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: max(11px, var(--fs-xs)); letter-spacing: .2em; text-transform: uppercase;
+  color: var(--kit-text-lo);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+
+/* --- the header: the focal number, flanked by its two cartouches ----------- */
+.go-who {
+  grid-area: who;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: start; column-gap: var(--s-4);
+}
+.go-who__focal {
+  grid-column: 2;
+  display: grid; justify-items: center; gap: clamp(3px, .5vh, 6px);
+  padding-top: clamp(6px, 1vh, 10px);                         /* clear of the moon on the rail */
+}
+/* HOW FAR, in the wordmark's lavender, engraved like it (#kit-engrave) */
+.go-who__deep {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(27px, 2.25vw, 38px); line-height: 1.02; letter-spacing: .07em; text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--kit-lav);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--kit-lav-hi) 55%, transparent) 0%, transparent 42%, color-mix(in srgb, var(--kit-violet-lo) 50%, transparent) 100%),
+    url("../../assets/ui/kit/marble.webp") 0 0 / 160px 160px;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: url("#kit-engrave") drop-shadow(0 0 10px color-mix(in srgb, var(--kit-violet) 30%, transparent));
+  padding: 2px 8px 4px;
+}
+/* the wing it reached and the seed: matching near-black cartouches with gilt
+   rims, one in each top corner of the ledger */
+.go-corner {
+  --h: clamp(56px, 6.8vh, 64px);
+  display: grid; justify-items: center; align-content: center; gap: 1px;
+  min-height: var(--h);
+  padding: 4px calc(var(--h) * .55) 5px;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill /
+    calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .8));
+  text-align: center;
+}
+.go-who__reach { grid-column: 1; justify-self: start; }
+.go-seed { grid-column: 3; justify-self: end; position: relative; }
+.go-who__wing {
+  font-family: var(--font-body); font-weight: 600; font-size: max(15px, var(--fs-md)); line-height: 1.1;
+  color: var(--kit-name); white-space: nowrap;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+.go-seed__row { display: inline-flex; align-items: center; gap: 8px; }
+.go-seed__val {
+  font-family: var(--font-num); font-variant-numeric: var(--num-feat);
+  font-size: max(15px, var(--fs-md)); font-weight: 600; letter-spacing: .1em;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+.go-seed__copy {
+  --plate-h: 26px;
+  min-width: 58px;
+  padding-inline: 12px;
+  font-family: var(--font-display); font-weight: 700; font-size: 10.5px;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--kit-text-mid);
+  cursor: pointer;
+  transition: filter var(--t-quick) var(--ease-out), color var(--t-quick) var(--ease-out);
+}
+.go-seed__copy:hover, .go-seed__copy:focus-visible {
+  color: #fff1d2;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .75)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 40%, transparent)) brightness(1.12);
+}
+.go-seed__copy:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 999px; }
+.go-seed__hint {
+  position: absolute; top: calc(100% + 3px); right: 0; left: 0;
+  font-size: max(12px, var(--fs-xs)); font-style: italic; color: var(--kit-text-lo);
+  white-space: nowrap; text-align: center;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+
+/* --- Courage: an engraved gauge under the focal number --------------------- */
+.go-courage {
+  display: grid; grid-template-columns: auto clamp(90px, 9vw, 160px) auto auto;
+  column-gap: var(--s-3); align-items: center;
+}
+.go-courage__track {
+  height: 9px; border-radius: 5px; overflow: hidden;
+  background: linear-gradient(180deg, #07050a, #150f18);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .9), 0 0 0 1px color-mix(in srgb, var(--kit-gold-lo) 90%, transparent),
+              0 0 0 2px rgba(0, 0, 0, .7), 0 1px 0 2px color-mix(in srgb, var(--kit-gold) 30%, transparent);
+}
+.go-courage__track i {
+  display: block; height: 100%;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--courage-300) 80%, white), var(--courage-500));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--courage-300) 60%, transparent);
+  transition: width 1.2s var(--ease-out);
+}
+.go-courage__n { font-family: var(--font-num); font-variant-numeric: var(--num-feat); font-size: max(14px, var(--fs-md)); font-weight: 600; color: var(--courage-300); }
+.go-courage__note { font-size: max(12.5px, var(--fs-xs)); font-style: italic; color: var(--kit-text-lo); }
+
+/* --- the blueprint band: how far the survey got, along the foot of what you
+       found, under glass in a gold frame ----------------------------------- */
+.go-bp { display: grid; gap: 2px; margin-top: clamp(6px, 1vh, 10px); min-width: 0; }
+.go-bp__frame { --fk: .44; margin: 5px 5px 0; }
 .go-bp__paper {
   position: relative;
-  aspect-ratio: 11 / 1;
+  aspect-ratio: 13 / 1;
   overflow: hidden;
   background: var(--parchment);
 }
@@ -286,7 +426,7 @@
 }
 .go-bp__mark {
   position: absolute; left: 50%; top: 50%;
-  width: 7%; aspect-ratio: 1;
+  width: 6%; aspect-ratio: 1;
   transform: translate(-50%, -50%) rotate(-8deg);
   border: 2.5px solid color-mix(in srgb, var(--threat-400) 88%, transparent);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--threat-400) 14%, transparent);
@@ -304,113 +444,40 @@
 .scene--gameover[data-result="victory"] .go-bp__wash {
   background: radial-gradient(42% 100% at 50% 50%, transparent 20%, color-mix(in srgb, var(--kit-void) 34%, transparent) 100%);
 }
-.go-bp__meta { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-4); padding: 0 4px; white-space: nowrap; }
-.go-bp__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-.go-bp__count { flex: none; }
+.go-bp__meta { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0 var(--s-3); padding: 0 6px; white-space: nowrap; min-width: 0; }
+.go-bp__label { min-width: 0; }
+.go-bp__count { flex: none; margin-left: auto; }
 .go-bp__label, .go-bp__count {
   font-family: var(--font-display); font-weight: 700; font-size: 10.5px;
-  letter-spacing: .16em; text-transform: uppercase; color: var(--kit-text-lo);
+  letter-spacing: .05em; text-transform: uppercase; color: var(--kit-text-lo);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .go-bp__count b { font-family: var(--font-num); font-size: 1.3em; color: var(--kit-gold-hi); }
 
-/* ═══ right: the ledger — one panel, the moon on its rail ═════════════════ */
-.go-ledger {
-  --pk: .84;
-  --medal-k: .5;
-  display: flex; flex-direction: column; justify-content: space-between;
-  gap: clamp(6px, 1.1vh, 12px);
-  margin-top: 8px;
-  padding: clamp(18px, 2.6vh, 26px) clamp(16px, 1.6vw, 26px) clamp(10px, 1.4vh, 16px);
+/* --- the numbers: ONE engraved strip, every label on one line -------------- */
+.go-stats.kit-stats { grid-area: stats; margin-top: clamp(6px, 1vh, 10px); padding-block: 6px 5px; }
+.go-stats .kit-stats__label {
+  white-space: nowrap; text-wrap: nowrap;
+  font-size: max(11px, calc(var(--fs-xs) * 1.02)); letter-spacing: .12em;
 }
-
-.go-lbl {
-  font-family: var(--font-display); font-weight: 700;
-  font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase;
-  color: var(--kit-text-lo);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
-}
-
-.go-who { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--s-4); }
-.go-who__reach { display: grid; gap: 0; min-width: 0; }
-.go-who__reach b {
-  font-family: var(--font-display); font-weight: 700;
-  font-size: var(--fs-lg); line-height: 1.1; letter-spacing: .08em; text-transform: uppercase;
-  color: var(--kit-name);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 16px color-mix(in srgb, var(--kit-candle) 16%, transparent);
-}
-.go-who__wing { font-size: var(--fs-sm); font-style: italic; color: var(--kit-text-mid); text-shadow: 0 1px 0 rgba(0, 0, 0, .9); }
-
-/* the seed, set into the header's right-hand side */
-.go-seed {
-  display: grid;
-  grid-template-columns: auto auto auto;
-  align-items: center; justify-items: end;
-  column-gap: 10px; row-gap: 0;
-}
-.go-seed__val {
-  font-family: var(--font-num); font-variant-numeric: var(--num-feat);
-  font-size: var(--fs-md); font-weight: 600; letter-spacing: .12em;
-  color: var(--kit-gold-hi);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
-}
-.go-seed__copy {
-  --plate-h: 32px;
-  min-width: 72px;
-  font-family: var(--font-display); font-weight: 700; font-size: 10.5px;
-  letter-spacing: .16em; text-transform: uppercase;
-  color: var(--kit-text-mid);
-  cursor: pointer;
-  transition: filter var(--t-quick) var(--ease-out), color var(--t-quick) var(--ease-out);
-}
-.go-seed__copy:hover, .go-seed__copy:focus-visible {
-  color: #fff1d2;
-  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .75)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 40%, transparent)) brightness(1.12);
-}
-.go-seed__copy:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 999px; }
-.go-seed__hint {
-  grid-column: 1 / -1;
-  font-size: var(--fs-xs); font-style: italic; color: var(--kit-text-lo);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
-}
-
-/* the numbers: the engraved strip (ui/kit.css .kit-stats) */
-.go-stat em { font-size: 10px; font-style: italic; color: var(--kit-text-lo); }
-
-/* --- Courage: an engraved gauge, between the reach and the seed ------------ */
-.go-courage {
-  flex: 1 1 auto; align-self: center; min-width: 0;
-  display: grid; grid-template-columns: auto minmax(40px, 1fr) auto; grid-template-rows: auto auto;
-  column-gap: var(--s-3); row-gap: 0; align-items: center;
-  margin: 0 clamp(6px, 1.4vw, 26px);
-}
-.go-courage__note { grid-column: 2 / -1; justify-self: end; }
-.go-courage__track {
-  height: 10px; border-radius: 5px; overflow: hidden;
-  background: linear-gradient(180deg, #07050a, #150f18);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .9), 0 0 0 1px color-mix(in srgb, var(--kit-gold-lo) 90%, transparent),
-              0 0 0 2px rgba(0, 0, 0, .7), 0 1px 0 2px color-mix(in srgb, var(--kit-gold) 30%, transparent);
-}
-.go-courage__track i {
-  display: block; height: 100%;
-  background: linear-gradient(180deg, color-mix(in oklab, var(--courage-300) 80%, white), var(--courage-500));
-  box-shadow: 0 0 12px color-mix(in srgb, var(--courage-300) 60%, transparent);
-  transition: width 1.2s var(--ease-out);
-}
-.go-courage__n { font-family: var(--font-num); font-variant-numeric: var(--num-feat); font-size: var(--fs-md); font-weight: 600; color: var(--courage-300); }
-.go-courage__note { font-size: max(11px, var(--fs-xs)); font-style: italic; color: var(--kit-text-lo); }
+.go-stats .kit-stats__value { font-size: clamp(19px, 1.5vw, 25px); }
+.go-stat em { font-size: 11px; font-style: italic; color: var(--kit-text-lo); }
 
 /* --- blocks and their headings --------------------------------------------- */
-.go-block { display: grid; gap: clamp(4px, .7vh, 8px); min-width: 0; align-content: start; }
-.go-h { margin: 0; font-size: var(--fs-xs); }
-.go-h__n { letter-spacing: .02em; font-size: max(11px, var(--fs-xs)); }
+.go-block { display: grid; gap: clamp(5px, .8vh, 9px); min-width: 0; align-content: start; }
+.go-h { margin: 0; font-size: max(11.5px, var(--fs-xs)); }
+.go-h__n { letter-spacing: .02em; font-size: max(12px, var(--fs-xs)); }
+.go-block--deck { grid-area: deck; }
+.go-pair { display: contents; }
+.go-block--mvp { grid-area: mvp; }
+.go-block--keep { grid-area: keep; }
 
 /* --- the final deck: every Trick on a nameplate ---------------------------- */
-.go-tricks { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px 4px; }
+.go-tricks { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 5px; }
 .go-trick {
   --plate-h: 31px;
   flex-direction: row; gap: 6px;
-  padding: 0 calc(var(--plate-h) * .52);
+  padding: 0 calc(var(--plate-h) * .5);
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .7));
 }
 .go-trick__cost {
@@ -426,7 +493,7 @@
   box-shadow: inset 0 0 0 1.5px color-mix(in oklab, var(--kit-gold-lo) 80%, black), 0 0 0 1px rgba(0, 0, 0, .7);
 }
 .go-trick__name {
-  font-family: var(--font-body); font-size: 13px; font-weight: 600; line-height: 1;
+  font-family: var(--font-body); font-size: 13.5px; font-weight: 600; line-height: 1;
   color: var(--kit-name); white-space: nowrap;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
@@ -434,19 +501,13 @@
 .go-trick[data-rarity="rare"] .go-trick__name { color: color-mix(in oklab, var(--rarity-rare) 70%, var(--kit-name)); }
 /* the sharpened mark, in the same green the card face uses for an upgrade */
 .go-trick__name u { text-decoration: none; color: var(--good-300); font-weight: 700; }
-.go-trick__n { font-family: var(--font-num); font-variant-numeric: var(--num-feat); font-size: 12px; font-style: normal; color: var(--kit-gold-hi); }
+.go-trick__n { font-family: var(--font-num); font-variant-numeric: var(--num-feat); font-size: 12.5px; font-style: normal; color: var(--kit-gold-hi); }
 
-/* --- the card that did the work, beside what came out with you ------------- */
-.go-pair {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  column-gap: clamp(16px, 1.6vw, 28px);
-  align-items: start;
-  min-height: 0;
-}
-.go-pair:has(> .go-block--mvp[hidden]) { grid-template-columns: minmax(0, 1fr); }
-.go-mvp { display: grid; grid-template-columns: auto minmax(0, 15ch); gap: clamp(10px, 1vw, 16px); align-items: center; }
-.go-mvp__slot { position: relative; flex: none; margin: 12px; }
+/* --- the card that did the work: on a gilt plinth, under its own light ----- */
+.go-mvp { display: grid; grid-template-columns: auto minmax(0, 17ch); gap: clamp(12px, 1.2vw, 20px); align-items: center; }
+.go-mvp__slot { position: relative; flex: none; margin: 12px 12px calc(12px + var(--plinth-h, 22px)); }
+.go-board { --go-mvp-s: .56; }
+.go-block--mvp { --plinth-h: clamp(24px, 3vh, 28px); }
 /* the card hangs in the Kid board's frame, as the reward's three do */
 .go-mvp__slot::before {
   content: ''; position: absolute; z-index: -1; pointer-events: none;
@@ -457,41 +518,57 @@
   border-image-width: 28px;
   border-image-repeat: stretch;
   background:
-    radial-gradient(90% 55% at 50% 100%, color-mix(in srgb, var(--kit-candle) 13%, transparent), transparent 70%),
+    radial-gradient(90% 55% at 50% 100%, color-mix(in srgb, var(--kit-candle) 16%, transparent), transparent 70%),
     url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
     linear-gradient(180deg, #110c16, #09070c);
   background-blend-mode: normal, overlay, normal;
   background-clip: padding-box;
-  box-shadow: 0 16px 30px -12px rgba(0, 0, 0, .95);
+  box-shadow: 0 0 40px color-mix(in srgb, var(--kit-candle) 16%, transparent), 0 16px 30px -12px rgba(0, 0, 0, .95);
+}
+/* the gilt plinth it stands on (plinth.webp), and the candle's light on it */
+.go-mvp__slot::after {
+  content: ''; position: absolute; z-index: -2; pointer-events: none;
+  left: -24px; right: -24px; top: calc(100% + 9px); height: var(--plinth-h);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/plinth.webp") 0 36 fill / 0 calc(var(--plinth-h) * 36 / 56) stretch;
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .8));
+}
+.go-mvp { position: relative; }
+.go-mvp::before {
+  content: ''; position: absolute; z-index: -3; pointer-events: none;
+  left: calc(var(--card-w) * var(--go-mvp-s) * .5 + 12px); top: 45%;
+  width: calc(var(--card-w) * var(--go-mvp-s) * 2.6); aspect-ratio: 1; translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 16%, transparent), transparent 72%);
 }
 .go-mvp__note {
-  margin: 0; font-size: var(--fs-sm); line-height: 1.42; font-style: italic;
+  margin: 0; font-size: max(13px, var(--fs-sm)); line-height: 1.4; font-style: italic;
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .go-mvp__note b { font-style: normal; font-weight: 600; color: var(--kit-name); }
 
 /* --- keepsakes: the Shop's ledger rows ------------------------------------- */
-.go-keeps { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(12px, 1.2vw, 20px); }
+.go-keeps { display: grid; grid-template-columns: minmax(0, 1fr); column-gap: clamp(12px, 1.2vw, 20px); }
 /* A run that kept nothing says so. It spans the whole grid so the sentence
    reads as a sentence and not as a chip that lost its label. */
 .go-keeps__none {
   grid-column: 1 / -1;
   margin: 0; padding: 5px var(--s-3);
-  font-size: var(--fs-sm); font-style: italic; line-height: 1.35; color: var(--kit-text-mid);
+  font-size: max(13px, var(--fs-sm)); font-style: italic; line-height: 1.35; color: var(--kit-text-mid);
 }
 .go-keep {
   display: grid; grid-template-areas: 'i b' 'i e'; grid-template-columns: auto minmax(0, 1fr);
   column-gap: 10px; align-items: center;
-  padding: clamp(3px, .5vh, 5px) 0;
+  padding: clamp(2px, .4vh, 4px) 0;
   border-top: 1px solid transparent;
   border-image: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 50%, transparent) 18%, color-mix(in srgb, var(--kit-gold) 50%, transparent) 82%, transparent) 1;
 }
-.go-keep:nth-child(-n+2) { border-top-color: transparent; border-image: none; }
+.go-keep:first-child { border-top-color: transparent; border-image: none; }
 .go-keep__sigil {
   grid-area: i;
   display: grid; place-items: center;
-  width: clamp(30px, 2.3vw, 36px); aspect-ratio: 1; border-radius: 50%;
+  width: clamp(28px, 2.2vw, 34px); aspect-ratio: 1; border-radius: 50%;
   background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8));
 }
@@ -501,13 +578,13 @@
 .go-keep[data-rarity="uncommon"] .go-keep__sigil svg { stroke: color-mix(in oklab, var(--rarity-uncommon) 70%, white); }
 .go-keep b {
   grid-area: b; align-self: end;
-  font-family: var(--font-body); font-weight: 600; font-size: var(--fs-sm); line-height: 1.15;
+  font-family: var(--font-body); font-weight: 600; font-size: max(14px, var(--fs-sm)); line-height: 1.15;
   color: var(--kit-name);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .go-keep em {
   grid-area: e; align-self: start;
-  font-size: 12px; font-style: italic; line-height: 1.28;
+  font-size: 13px; font-style: italic; line-height: 1.24;
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
@@ -516,13 +593,24 @@
 /* ═══ footer: the three ways out ══════════════════════════════════════════ */
 .go-foot {
   display: flex; align-items: center; justify-content: center;
-  padding: clamp(6px, 1vh, 12px) calc(var(--kit-vine-w) + 40px) clamp(14px, 2.2vh, 24px);
+  padding: clamp(6px, 1vh, 10px) calc(var(--kit-vine-w) + 30px) clamp(12px, 1.8vh, 18px);
 }
-.go-acts { display: flex; align-items: center; gap: clamp(20px, 2.4vw, 44px); }
-.go-btn b { font: inherit; letter-spacing: inherit; }
-/* the way home: its enamel button seated on the cartouche's right end */
+.go-foot .kit-btn { --plate-h: clamp(46px, 5.8vh, 54px); }
+.go-foot .kit-btn--quiet { --plate-h: clamp(44px, 5.4vh, 50px); }
+/* each hint under its words, as the nameplates set an epithet under a name */
+.go-foot .go-btn { flex-direction: column; gap: 0; line-height: 1.12; }
+.go-foot .go-btn em { font-size: max(11.5px, var(--fs-xs)); }
+.go-foot { min-width: 0; }
+.go-acts { display: flex; align-items: center; gap: clamp(34px, 3.6vw, 60px); }
+.go-btn b { font: inherit; letter-spacing: inherit; white-space: nowrap; }
+.go-btn em { white-space: nowrap; }
+/* each way out carries its enamel button: the quiet two on their left ends,
+   the way home on its right */
+.go-btn .kit-btn__medal { --md: calc(var(--plate-h) * 1.08); }
+.go-btn--ghost { padding-left: calc(var(--plate-h) * 1.24); margin-left: calc(var(--plate-h) * .76); }
+.go-btn--ghost .kit-btn__medal { left: calc(var(--plate-h) * -.8); }
 .go-btn--primary { padding-right: calc(var(--plate-h) * 1.3); margin-right: calc(var(--plate-h) * .9); }
-.go-btn--primary .kit-btn__medal { right: calc(var(--plate-h) * -.84); }
+.go-btn--primary .kit-btn__medal { right: calc(var(--plate-h) * -.84); --md: calc(var(--plate-h) * 1.16); }
 .go-btn--primary::before {
   /* the candle-light the way home breathes; opacity only, so it is cheap */
   content: ''; position: absolute; inset: -30% -8%; z-index: -1; pointer-events: none;
@@ -539,8 +627,7 @@
 .scene--gameover.is-entering .go-stanza:nth-child(1) { animation-delay: .62s; }
 .scene--gameover.is-entering .go-stanza:nth-child(2) { animation-delay: .76s; }
 .scene--gameover.is-entering .go-stanza:nth-child(3) { animation-delay: .90s; }
-.scene--gameover.is-entering .go-bp       { animation: go-in-up .7s var(--ease-out) 1.04s both; }
-.scene--gameover.is-entering .go-ledger   { animation: go-in-right .9s var(--ease-out) .5s both; }
+.scene--gameover.is-entering .go-ledger   { animation: go-in-up .9s var(--ease-out) .5s both; }
 .scene--gameover.is-entering .go-foot     { animation: go-in-up .7s var(--ease-out) 1.2s both; }
 @keyframes go-in-up    { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 @keyframes go-in-right { from { opacity: 0; transform: translateX(26px); } to { opacity: 1; transform: none; } }
@@ -573,36 +660,47 @@
 
 /* ── the Steam Deck and every short laptop panel ──────────────────────────── */
 @media (max-height: 860px) {
-  .go-board { --go-mvp-s: .5; }
-  .go-stage { --go-plate-h: 38px; padding-top: 4px; }
-  .go-stanzas { row-gap: 22px; }
-  .go-stanza { padding-block: 12px 7px; }
-  .go-stanza li { line-height: 1.34; }
-  .go-pet__text { font-size: var(--fs-sm); }
-  .go-ledger { padding-block: 16px 10px; }
-  .go-trick { --plate-h: 28px; }
-  .go-keep em { font-size: 11px; }
+  .go-board { --go-mvp-s: .58; }
+  .go-head.kit-titleblock--compact { --cart-h: 86px; }
+  .go-head .kit-cartouche__title { font-size: 25px; }
+  .go-head .kit-titleblock__note { margin-top: 2px; }
+  .go-stage { --go-plate-h: 34px; --go-pic-w: 150px; padding-top: 0; }
+  .go-stanza { padding-block: 14px 8px; }
+  .go-stanza li { line-height: 1.32; font-size: 13px; }
+  .go-stanza--pet { margin-top: 16px; padding-block: 12px 5px; }
+  .go-pet__snap { width: 62px; }
+  .go-pet__text { font-size: 13px; line-height: 1.3; }
+  .go-ledger { margin-top: 12px; padding-block: 14px 6px; row-gap: 5px; }
+  .go-who__focal { padding-top: 6px; gap: 2px; }
+  .go-corner { --h: 50px; }
+  .go-stats.kit-stats { margin-top: 12px; padding-block: 6px 5px; }
+  .go-stats .kit-stats__value { font-size: 18px; }
+  .go-trick { --plate-h: 26px; }
+  .go-tricks { gap: 3px 4px; }
+  .go-keep { padding-block: 2px; }
+  .go-keep em { font-size: 12px; line-height: 1.2; }
+  .go-mvp__slot { margin: 10px 10px calc(10px + var(--plinth-h)); }
+  .go-block--mvp { --plinth-h: 20px; }
+  .go-foot { padding-top: 6px; padding-bottom: 12px; }
 }
 @media (max-width: 1400px) {
-  .go-wrap { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); column-gap: 20px; }
-  .go-mvp { grid-template-columns: auto minmax(0, 12ch); gap: 8px; }
-  .go-mvp__slot { margin: 10px; }
-  .go-mvp__note { font-size: 12px; line-height: 1.34; }
-  .go-stats .kit-stats__label { font-size: 10px; letter-spacing: .05em; }
-  .go-bp__label, .go-bp__count { letter-spacing: .1em; }
-  .go-trick { --plate-h: 27px; gap: 5px; }
-  .go-trick__name { font-size: 12px; }
+  .go-wrap { --gutter: 16px; }
+  .go-mvp { grid-template-columns: auto minmax(0, 13ch); gap: 10px; }
+  .go-mvp__note { font-size: 12.5px; line-height: 1.32; }
+  .go-stats .kit-stats__label { font-size: 10.5px; letter-spacing: .08em; }
+  .go-bp__label, .go-bp__count { letter-spacing: .08em; }
+  .go-trick__name { font-size: 12.5px; }
   .go-trick__cost { width: 16px; height: 16px; font-size: 10px; }
   .go-keep { column-gap: 8px; }
-  .go-keep__sigil { width: 28px; }
-  .go-keep em { font-size: 11.5px; line-height: 1.22; }
-  .go-who__reach b { font-size: var(--fs-md); }
-  .go-seed__hint { font-size: 11px; }
-  /* the three ways out: each hint under its words, so the row fits the panel */
-  .go-btn { flex-direction: column; gap: 0; --plate-h: 50px; font-size: var(--fs-sm); line-height: 1.1; }
-  .go-btn em { font-size: 11px; }
-  .go-btn.kit-btn--quiet { --plate-h: 46px; }
+  .go-keep__sigil { width: 26px; }
+  .go-seed__hint { font-size: 11.5px; }
+  /* the three ways out: each hint under its words, so the row fits the board */
+  .go-foot .go-btn { --plate-h: 48px; font-size: var(--fs-sm); }
+  .go-foot .go-btn.kit-btn--quiet { --plate-h: 46px; }
+  .go-acts { gap: 46px; }
+  .go-bp__label, .go-bp__count { font-size: 10px; letter-spacing: .02em; }
+  .go-ledger { grid-template-columns: auto minmax(0, 1.28fr) minmax(0, 1fr); }
 }
 @media (max-width: 1100px) {
-  .go-wrap { grid-template-columns: minmax(0, 1fr); overflow-y: auto; }
+  .go-wrap { grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage" "pet" "found" "lost" "ledger"; overflow-y: auto; }
 }

@@ -1,28 +1,32 @@
 /* Run HUD. OWNER: ui-chrome agent. Paired with ui/hud.js. */
 
 .mm-hud {
-  --hud-chip-h: 1.95em;
+  /* one type size for everything on the rail, and it does not shrink with the
+     window: the HUD is read at a glance on a 1280x800 panel too */
+  --hud-fs: calc(clamp(13px, .9vw, 14.5px) * var(--type-scale, 1));
+  --hud-chip-h: 1.76em;
   position: relative;
   display: flex; align-items: center; gap: var(--s-3);
   flex-wrap: wrap;
-  padding: var(--s-2) var(--s-4) calc(var(--s-2) + 3px);
+  padding: 6px var(--s-4) 9px;
   min-height: var(--hud-h);
   font-family: var(--font-body);
-  font-size: var(--fs-sm);
+  font-size: var(--hud-fs);
   color: var(--kit-text);
-  /* A gilded rail (tools/prep_ui_materials.py rail.webp): black lacquer over
-     dark wood with a sheen off its top edge, and along its foot a brass rod
-     moulded bead-and-reel, studded where its lengths meet (::after). */
+  /* An engraved gilded rail (tools/prep_ui_polish.py rail-engraved.webp):
+     black lacquer over dark wood, a fine gilt line cut along its face with a
+     running scroll of pricked dots, and along its foot a brass rod moulded
+     bead-and-reel, studded where its lengths meet (::after). */
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--kit-violet) 9%, transparent) 0%, transparent 60%),
-    url("../../assets/ui/kit/rail.webp") 0 0 / 256px 62px repeat-x,
+    url("../../assets/ui/kit/rail-engraved.webp") 0 0 / 256px 62px repeat-x,
     #110b10;
   box-shadow: 0 10px 20px -6px rgba(0, 0, 0, .85);
 }
 .mm-hud::after {
   content: ''; position: absolute; left: 0; right: 0; bottom: -7px; height: 14px;
   pointer-events: none; z-index: 1;
-  background: url("../../assets/ui/kit/rail.webp") 0 100% / 256px 46px repeat-x;
+  background: url("../../assets/ui/kit/rail-engraved.webp") 0 100% / 256px 46px repeat-x;
   filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .7));
 }
 /* ONE position: the top edge of the viewport, full width, on every run screen.
@@ -45,18 +49,20 @@
 }
 .mm-hud__group--extra:empty + .mm-hud__group::before { display: none; }
 
-/* ── chips: a value on an enamel nameplate, its icon in an enamel medallion ──
-   The plate is cartouche-hud.webp (notched ends, a bevelled brass rim, violet
-   enamel), drawn on ::before so it starts under the medallion's middle; the
-   medallion is the chip's own icon, seated on the plate's left end the way
-   the Kid board seats its round buttons on the ends of its cartouches.
-   Nothing hangs outside the chip's box, so nothing can be clipped by it. */
+/* ── chips: a value on a gilt cartouche nameplate, its icon in a medallion ──
+   The plate is plate-hud.webp (tools/prep_ui_polish.py): the Companion tiles'
+   near-black nameplate in a bevelled gilt rim with notched, beaded corners,
+   drawn on ::before so it starts under the medallion's middle; the medallion
+   is the chip's own icon, seated on the plate's left end the way the Kid
+   board seats its round buttons on the ends of its cartouches. The value is
+   lettered in gold. Nothing hangs outside the chip's box, so nothing can be
+   clipped by it. */
 .mm-hud__chip {
   position: relative; isolation: isolate;
   display: inline-flex; align-items: center; gap: .42em;
   height: var(--hud-chip-h);
-  padding: 0 1.05em;
-  color: var(--kit-text);
+  padding: 0 1.1em;
+  color: var(--kit-name);
   background: none;
   border: 0;
   white-space: nowrap;
@@ -70,11 +76,11 @@
   content: ''; position: absolute; z-index: -1; pointer-events: none;
   top: 0; bottom: 0; right: 0; left: 0;
   border: 0 solid transparent;
-  border-image-source: url("../../assets/ui/kit/cartouche-hud.webp");
-  border-image-slice: 14 26 14 26 fill;
-  border-image-width: calc(var(--hud-chip-h) * 14 / 44) calc(var(--hud-chip-h) * 26 / 44);
+  border-image-source: url("../../assets/ui/kit/plate-hud.webp");
+  border-image-slice: 16 30 16 30 fill;
+  border-image-width: calc(var(--hud-chip-h) * 16 / 56) calc(var(--hud-chip-h) * 30 / 56);
   border-image-repeat: stretch;
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .7));
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .75));
 }
 .mm-hud__chip:has(> .mm-icon:first-child)::before { left: calc(var(--hud-chip-h) * .5); }
 .mm-hud__chip > .mm-icon:first-child {
@@ -90,10 +96,21 @@
 .mm-hud__chip .mm-icon { opacity: 1; }
 .mm-hud__btn { transition: filter var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out); }
 .mm-hud__btn:hover { filter: brightness(1.22) drop-shadow(0 0 6px color-mix(in srgb, var(--kit-candle) 40%, transparent)); }
-.mm-hud__t { font-weight: 600; }
+.mm-hud__t { font-weight: 600; letter-spacing: .01em; }
+/* a sub-value (the wing, the Trick count): engraved small caps after a brass
+   lozenge, a step under the value and never under 11.5px */
 .mm-hud__s {
-  font-size: var(--fs-xs); color: var(--kit-text-mid);
-  padding-left: .45em; border-left: 1px solid color-mix(in srgb, var(--kit-gold) 55%, transparent);
+  display: inline-flex; align-items: center; gap: .45em;
+  font-family: var(--font-num); font-weight: 600;
+  font-variant-numeric: lining-nums tabular-nums;
+  font-size: max(12px, .9em); letter-spacing: .02em;
+  color: var(--kit-text-mid);
+  padding-left: .1em;
+}
+.mm-hud__s::before {
+  content: ''; flex: none; width: 5px; height: 5px; transform: rotate(45deg);
+  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .7);
 }
 
 .mm-hud__where { max-width: 26ch; overflow: hidden; }
@@ -142,7 +159,7 @@
   position: absolute; inset: 0;
   display: grid; place-items: center;
   font-family: var(--font-num);
-  font-size: var(--fs-xs);
+  font-size: max(12px, .86em);
   font-weight: 700;
   color: var(--text-hi);
   /* a real ink stroke so the number survives the bar sliding under it */
@@ -173,10 +190,15 @@
   transition: transform var(--t-quick) var(--ease-out), filter var(--t-quick) var(--ease-out);
 }
 .mm-hud__snack .mm-icon { width: 1.02em; height: 1.02em; }
+/* an empty slot is a real socket, not a dimmed button: a brass ring on four
+   scrolled lobes round a black hollow (socket-round.webp), nothing in it */
 .mm-hud__snack.is-empty {
-  color: color-mix(in srgb, var(--kit-lav) 55%, transparent);
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .8)) saturate(.4) brightness(.66);
+  color: transparent;
+  background-image: url("../../assets/ui/kit/socket-round.webp");
+  background-size: 118% 118%;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .8));
 }
+.mm-hud__snack.is-empty .mm-icon { opacity: 0; }
 /* carried, but this is not a Scuffle — readable, deliberately not clickable */
 .mm-hud__snack.is-idle { color: var(--flame-200); cursor: default; }
 /* eatable right now: lit rim, shortcut badge, lifts under the pointer */
@@ -191,7 +213,7 @@
 .mm-hud__snackk {
   position: absolute; right: -4px; bottom: -5px;
   padding: 0 .25em;
-  font-family: var(--font-num); font-size: var(--fs-xs); font-weight: 700; line-height: 1.35;
+  font-family: var(--font-num); font-size: max(11px, .78em); font-weight: 700; line-height: 1.35;
   color: var(--text-ink); background: var(--kit-gold-hi);
   border-radius: 999px;
 }
@@ -231,12 +253,12 @@
 .mm-hud__relicn {
   position: absolute; right: -3px; bottom: -4px;
   min-width: 1.35em; padding: 0 .2em;
-  font-family: var(--font-num); font-size: var(--fs-xs); font-weight: 700;
+  font-family: var(--font-num); font-size: max(11px, .78em); font-weight: 700;
   color: var(--text-ink); background: var(--kit-gold-hi);
   border-radius: 999px; text-align: center;
 }
 .mm-hud__norelics {
-  font-size: var(--fs-xs); letter-spacing: .04em;
+  font-size: max(12px, .88em); letter-spacing: .02em;
   color: var(--kit-text-mid); font-style: italic;
   padding: 0 .4em;
 }
@@ -249,7 +271,7 @@
   height: calc(var(--hud-chip-h) * .92);
   padding: 0 1.1em;
   font-family: var(--font-display); font-weight: 700;
-  font-size: var(--fs-xs); letter-spacing: .18em; text-transform: uppercase;
+  font-size: max(11px, .8em); letter-spacing: .18em; text-transform: uppercase;
   color: var(--warn-300);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
   border: 0 solid transparent;
@@ -281,3 +303,17 @@
 /* largeText: wrap into two rows rather than squeezing chips off the edge */
 :root[data-large-text="1"] .mm-hud { gap: var(--s-2) var(--s-3); padding: var(--s-2); }
 :root[data-large-text="1"] .mm-hud__group--meta { margin-left: 0; }
+
+/* ── the rail on a 1280-wide panel ──────────────────────────────────────────
+   The type stays the size it is; the rail gives up air instead — tighter
+   gaps between groups and chips, and a shorter plate either side of a value —
+   so everything a run carries still fits on ONE rail at the Steam Deck size. */
+@media (max-width: 1400px) {
+  .mm-hud { gap: 7px; padding-inline: 10px; }
+  .mm-hud__group { gap: 5px; }
+  .mm-hud__chip { padding: 0 .8em; }
+  .mm-hud__chip:has(> .mm-icon:first-child) { padding-left: 0; }
+  .mm-hud__settings { padding: 0; }
+  .mm-hud__bar { width: 11ch; }
+  .mm-hud__relics { gap: 3px; }
+}

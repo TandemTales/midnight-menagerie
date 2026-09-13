@@ -184,6 +184,8 @@ export class EventScene extends RoomScene {
     const hall = el('div', 'ev-hall');
     hall.setAttribute('aria-hidden', 'true');
     hall.innerHTML = `
+      <i class="ev-hall__beam ev-hall__beam--l"></i>
+      <i class="ev-hall__beam ev-hall__beam--r"></i>
       <i class="kit-window ev-hall__window ev-hall__window--l"></i>
       <i class="kit-window kit-window--r ev-hall__window ev-hall__window--r"></i>
       <i class="kit-web ev-hall__web ev-hall__web--l"></i>

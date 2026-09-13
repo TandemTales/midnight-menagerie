@@ -31,29 +31,13 @@ import { regionMeta } from '../state/mapgen.js';
 import { el, ensureCss, rovingFocus, reduceMotion as prefersReduced } from '../ui/portrait.js';
 import { plural, word } from '../util/plural.js';
 import { HUD } from '../ui/hud.js';
+import { paintBackdrop } from '../ui/backdrop.js';
 import { pauseStageFor } from './_stage.js';
 import { fitCardToSlot } from './_cardfit.js';
 
 const CSS_KIT  = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_CARD = new URL('../ui/card.css', import.meta.url).href;
 const CSS_ROOM = new URL('./reward.css', import.meta.url).href;
-const BACKDROPS = new URL('../../assets/backgrounds/', import.meta.url).href;
-
-/**
- * Which painted backgrounds exist (tools/prep_backgrounds.py writes the list).
- * Asked once per session; a room only requests its painting when it is listed,
- * so a screen whose painting has not been made yet never 404s.
- */
-let backdropList = null;
-function paintedBackdrops() {
-  if (!backdropList) {
-    backdropList = fetch(`${BACKDROPS}index.json`)
-      .then(r => (r.ok ? r.json() : { available: [] }))
-      .then(j => new Set(Array.isArray(j.available) ? j.available : []))
-      .catch(() => new Set());
-  }
-  return backdropList;
-}
 
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => (
   { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -181,7 +165,7 @@ export class RoomScene extends Scene {
 
         <main class="rm-body" data-body></main>
         <footer class="rm-foot" data-foot>${this.mock
-    ? '<div class="rm-mockflag kit-enamel kit-enamel--dark kit-enamel--tall" role="note"><i class="kit-enamel__label">Standalone preview</i><span class="rm-mockflag__dot"> &middot; </span><em class="rm-mockflag__sub">no expedition in progress</em></div>'
+    ? '<div class="rm-mockflag" role="note"><i class="rm-mockflag__label">Standalone preview</i><span class="rm-mockflag__dot"> &middot; </span><em class="rm-mockflag__sub">no expedition in progress</em></div>'
     : ''}</footer>
       </div>`;
     this.$body = this.root.querySelector('[data-body]');
@@ -193,24 +177,14 @@ export class RoomScene extends Scene {
 
   /**
    * Hang this room's painting behind the board when Josh has made it
-   * (`game/assets/backgrounds/<kind>.webp`). The board's placeholder ground
-   * stays underneath and the kit's vignette and candle light go over it, so a
-   * painting arriving changes the wall, not the composition.
+   * (`game/assets/backgrounds/<kind>.webp`), through the one painting slot
+   * every board uses (ui/backdrop.js). The placeholder ground stays underneath
+   * and the kit's vignette and candle light go over it, so a painting arriving
+   * changes the wall, not the composition.
    */
-  async _paintBackdrop() {
+  _paintBackdrop() {
     const board = this.root.querySelector('.kit-board');
-    if (!board) return;
-    const have = await paintedBackdrops();
-    if (this._dead || !board.isConnected || !have.has(this.kind)) return;
-    const url = `${BACKDROPS}${this.kind}.webp`;
-    const img = new Image();
-    img.decoding = 'async';
-    img.addEventListener('load', () => {
-      if (this._dead || !board.isConnected) return;
-      board.style.setProperty('--kit-backdrop', `url("${url}")`);
-      board.classList.add('has-backdrop');
-    }, { once: true });
-    img.src = url;
+    return paintBackdrop(board, this.kind, () => !this._dead);
   }
 
   /**
@@ -577,7 +551,7 @@ export class RewardScene extends RoomScene {
     wrap.innerHTML = `
       <div class="rw-spoils__row">
         <span class="rw-spoils__side rw-spoils__side--l">${spoils.slice(0, half).join('')}</span>
-        <span class="rw-spoils__crest" aria-hidden="true"></span>
+        <span class="rw-spoils__crest"></span>
         <span class="rw-spoils__side rw-spoils__side--r">${spoils.slice(half).join('')}</span>
       </div>
       ${k ? `
@@ -615,6 +589,11 @@ export class RewardScene extends RoomScene {
       sec.appendChild(c);
     }
     (this.$stage || this.$body).appendChild(sec);
+    // CHOOSE ONE TRICK hangs on the frame's top rail itself, under its star
+    // medallion and between the spoils — the clasp the crest slot keeps for it.
+    const ribbon = sec.querySelector('.rw-cards__head > .kit-heading');
+    const clasp = this.$stage?.querySelector('.rw-spoils__crest');
+    if (ribbon && clasp) clasp.appendChild(ribbon);
     const fan = sec.querySelector('.rw-fan');
     this.$fan = fan;
     this._slots = [];

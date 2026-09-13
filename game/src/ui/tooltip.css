@@ -56,13 +56,13 @@
   border-radius: 3px;
 }
 
-/* the little pointer back to the anchor */
+/* the little pointer back to the anchor: a brass lozenge riding the rail */
 .mm-tip__beak {
   position: absolute;
   width: 9px; height: 9px;
   margin: -5px 0 0 -5px;
-  background: var(--kit-panel);
-  border: 1px solid color-mix(in srgb, var(--kit-gold) 85%, transparent);
+  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
+  border: 1px solid rgba(0, 0, 0, .7);
   transform: rotate(45deg);
   pointer-events: none;
 }
@@ -148,7 +148,51 @@
 }
 
 /* ── every keyword on a hovered card, stacked ─────────────────────────────── */
-.mm-tip[data-kind="keywords"] { max-width: 36ch; }
+/* A plaque, not a box: dark vellum (vellum.webp) inside the rail, a brass
+   fleuron standing in each corner, and each keyword's name lettered on the
+   Companion tiles' dark nameplate as the block's header, its kind under it. */
+.mm-tip[data-kind="keywords"] {
+  max-width: 36ch;
+  padding: 16px 18px 14px;
+  --fl: 18px;
+  background:
+    url("../../assets/ui/kit/fleuron-tl.webp") 6px 6px / var(--fl) var(--fl) no-repeat,
+    url("../../assets/ui/kit/fleuron-tr.webp") calc(100% - 6px) 6px / var(--fl) var(--fl) no-repeat,
+    url("../../assets/ui/kit/fleuron-bl.webp") 6px calc(100% - 6px) / var(--fl) var(--fl) no-repeat,
+    url("../../assets/ui/kit/fleuron-br.webp") calc(100% - 6px) calc(100% - 6px) / var(--fl) var(--fl) no-repeat,
+    radial-gradient(90% 50% at 50% 0%, color-mix(in srgb, var(--kit-candle) 7%, transparent), transparent 70%),
+    url("../../assets/ui/kit/vellum.webp") 0 0 / 256px 256px,
+    #171115;
+  background-clip: padding-box;
+}
+.mm-tip[data-kind="keywords"] .mm-tip__head {
+  justify-content: center; text-align: center;
+  gap: 0 6px; margin-bottom: 6px;
+}
+.mm-tip[data-kind="keywords"] .mm-tip__title {
+  display: inline-block;
+  padding: 3px 20px 4px;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 9px 17px stretch;
+  font-size: max(14px, var(--fs-md)); letter-spacing: .06em;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .7));
+}
+.mm-tip[data-kind="keywords"] .mm-tip__sub {
+  flex-basis: 100%; margin: 2px 0 0;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: max(10.5px, var(--fs-xs)); letter-spacing: .16em;
+}
+.mm-tip[data-kind="keywords"] .mm-tip__body { text-align: center; font-size: max(13px, var(--fs-sm)); }
+.mm-tip[data-kind="keywords"] .mm-tip__block + .mm-tip__block { margin-top: 10px; padding-top: 10px; }
+/* a 1280-wide board has less margin beside its cards: the plaque tightens its
+   own padding and plate, never its type */
+@media (max-width: 1400px) {
+  .mm-tip[data-kind="keywords"] { padding: 12px 11px 11px; --fl: 15px; }
+  .mm-tip[data-kind="keywords"] .mm-tip__title { padding: 2px 14px 3px; border-image-width: 8px 14px; font-size: 13.5px; }
+  .mm-tip[data-kind="keywords"] .mm-tip__sub { font-size: 10px; letter-spacing: .1em; }
+  .mm-tip[data-kind="keywords"] .mm-tip__head { margin-bottom: 3px; }
+  .mm-tip[data-kind="keywords"] .mm-tip__body { font-size: 13px; line-height: 1.32; }
+}
 .mm-tip__block + .mm-tip__block {
   margin-top: var(--s-3);
   padding-top: var(--s-3);

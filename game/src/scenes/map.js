@@ -26,7 +26,7 @@ import { mapNodeMarkup, nodeSymbol, hazardSymbol, hazardGlyphMarkup, pencilStrok
    this sheet FRAMES a wing, which is a composition decision, not a drawing one. */
 import { loadPlanTrace, inkTrace, solvePen, traceBox, lru } from '../ui/plan.js';
 import { HUD } from '../ui/hud.js';
-import { hangBackdrop } from '../ui/backdrop.js';
+import { paintBackdrop } from '../ui/backdrop.js';
 import { pauseStageFor } from './_stage.js';
 import { act, ACT } from '../net/actions.js';
 /* How many wings an expedition is, for the run-less preview only. `reward.js`
@@ -509,7 +509,7 @@ export class MapScene extends Scene {
     this.lamp.x = this.lamp.tx = innerWidth / 2;
     this.lamp.y = this.lamp.ty = innerHeight * 0.52;
     // Josh's painted desk, when it exists (game/assets/backgrounds/map.webp).
-    hangBackdrop(this.el.screen, 'map', () => !!this.el);
+    paintBackdrop(this.el.screen, 'map', () => !!this.el);
   }
 
   // ───────────────────────────────────────────────────────── paper + ink ────
@@ -566,15 +566,18 @@ export class MapScene extends Scene {
     }
     g.restore();
 
-    // 4. foxing — little rust-brown age spots, denser near the edges
-    for (let i = 0; i < 130; i++) {
-      const edge = rng.chance(0.72);
+    // 4. foxing — rust-brown age spots, denser near the edges, a few of them
+    //    grown into the soft blotches old paper gets where it was handled
+    for (let i = 0; i < 230; i++) {
+      const edge = rng.chance(0.74);
       const x = edge ? (rng.chance(0.5) ? rng.next() * w * 0.2 : w - rng.next() * w * 0.2) : rng.next() * w;
       const y = edge ? (rng.chance(0.5) ? rng.next() * h * 0.22 : h - rng.next() * h * 0.22) : rng.next() * h;
-      const r = 2 + rng.next() * 11;
+      const big = rng.chance(0.08);
+      const r = big ? 18 + rng.next() * 30 : 2 + rng.next() * 11;
       const gr = g.createRadialGradient(x, y, 0, x, y, r);
-      gr.addColorStop(0, hexA('#9c7443', 0.10 + rng.next() * 0.13));
-      gr.addColorStop(0.7, hexA('#9c7443', 0.05));
+      const a = big ? 0.06 + rng.next() * 0.06 : 0.14 + rng.next() * 0.18;
+      gr.addColorStop(0, hexA('#8f6636', a));
+      gr.addColorStop(0.65, hexA('#9c7443', a * 0.45));
       gr.addColorStop(1, hexA('#9c7443', 0));
       g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 6.2832); g.fill();
     }
@@ -589,21 +592,22 @@ export class MapScene extends Scene {
       g.beginPath(); g.arc(x, y, r - 5, 0.4, 5.2); g.stroke(); g.restore();
     }
 
-    // 6. folds — this sheet has been in a backpack
+    // 6. folds — this sheet has been in a backpack: each crease a shadowed
+    //    valley with its lit ridge beside it, and the paper worn thin along it
     g.save();
-    for (const fx of [w * 0.5]) {
-      const lg = g.createLinearGradient(fx - 26, 0, fx + 26, 0);
-      lg.addColorStop(0, hexA(shade, 0)); lg.addColorStop(0.42, hexA(shade, 0.13));
-      lg.addColorStop(0.5, hexA('#fdf6e6', 0.16)); lg.addColorStop(0.58, hexA(shade, 0.13));
-      lg.addColorStop(1, hexA(shade, 0));
-      g.fillStyle = lg; g.fillRect(fx - 26, 0, 52, h);
-    }
-    for (const fy of [h * 0.34, h * 0.71]) {
-      const lg = g.createLinearGradient(0, fy - 22, 0, fy + 22);
-      lg.addColorStop(0, hexA(shade, 0)); lg.addColorStop(0.45, hexA(shade, 0.10));
-      lg.addColorStop(0.52, hexA('#fdf6e6', 0.12)); lg.addColorStop(1, hexA(shade, 0));
-      g.fillStyle = lg; g.fillRect(0, fy - 22, w, 44);
-    }
+    const crease = (horizontal, at, span) => {
+      const lg = horizontal
+        ? g.createLinearGradient(0, at - span, 0, at + span)
+        : g.createLinearGradient(at - span, 0, at + span, 0);
+      lg.addColorStop(0, hexA(shade, 0)); lg.addColorStop(0.4, hexA('#7d6440', 0.16));
+      lg.addColorStop(0.49, hexA('#5f4a2e', 0.22)); lg.addColorStop(0.53, hexA('#fdf6e6', 0.24));
+      lg.addColorStop(0.64, hexA(shade, 0.08)); lg.addColorStop(1, hexA(shade, 0));
+      g.fillStyle = lg;
+      if (horizontal) g.fillRect(0, at - span, w, span * 2); else g.fillRect(at - span, 0, span * 2, h);
+    };
+    crease(false, w * 0.5, 30);
+    crease(true, h * 0.34, 24);
+    crease(true, h * 0.71, 24);
     g.restore();
 
     // 7. edge burn
@@ -616,6 +620,23 @@ export class MapScene extends Scene {
         Math.abs(x1 - x0) || w, Math.abs(y1 - y0) || h);
     };
     edge(0, 0, 120, 0); edge(w, 0, w - 130, 0); edge(0, 0, 0, 100); edge(0, h, 0, h - 110);
+
+    // 7b. the room's light on it: the candles warm the corners nearest them and
+    //     the paper falls off to a cool, moonlit grey along its middle edges
+    g.save();
+    g.globalCompositeOperation = 'soft-light';
+    for (const [cx, cy, r, a] of [[0, 0, 900, 0.5], [w, 0, 900, 0.5], [w, h, 760, 0.42], [0, h, 640, 0.26]]) {
+      const gr = g.createRadialGradient(cx, cy, 0, cx, cy, r);
+      gr.addColorStop(0, hexA('#ffb35c', a)); gr.addColorStop(0.55, hexA('#ffb35c', a * 0.3)); gr.addColorStop(1, hexA('#ffb35c', 0));
+      g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    }
+    g.globalCompositeOperation = 'multiply';
+    for (const [x0, y0, x1, y1] of [[w / 2, 0, w / 2, 170], [w / 2, h, w / 2, h - 190], [0, h / 2, 220, h / 2], [w, h / 2, w - 220, h / 2]]) {
+      const lg = g.createLinearGradient(x0, y0, x1, y1);
+      lg.addColorStop(0, hexA('#8e9bb0', 0.34)); lg.addColorStop(1, hexA('#8e9bb0', 0));
+      g.fillStyle = lg; g.fillRect(0, 0, w, h);
+    }
+    g.restore();
 
     // 8. the ink — this wing's own section drawing, re-inked
     this._layPlan(g, ink);
@@ -777,7 +798,7 @@ export class MapScene extends Scene {
     // ── title block, the full width of the sheet, like a real drawing: an
     //    engraved double-ruled box, the wing's name and its form in the wide
     //    cell, the record in small caps over the value in the rest.
-    const tx = WIN.x, ty = WIN.y + WIN.h + 36, tw = WIN.w, th = 76;
+    const tx = WIN.x, ty = WIN.y + WIN.h + 32, tw = WIN.w, th = 86;
     g.fillStyle = hexA('#f6eeda', 0.16); g.fillRect(tx, ty, tw, th);
     g.strokeStyle = hexA(ink, 0.78); g.lineWidth = 2.2; g.strokeRect(tx, ty, tw, th);
     g.strokeStyle = hexA(ink, 0.4); g.lineWidth = 0.9; g.strokeRect(tx + 5, ty + 5, tw - 10, th - 10);
@@ -800,22 +821,25 @@ export class MapScene extends Scene {
     g.textBaseline = 'alphabetic';
     const spaced = (px) => { try { g.letterSpacing = px; } catch { /* older canvas */ } };
     // the wing, and what shape of building it is
-    g.fillStyle = hexA(ink, 0.94);
-    g.font = '700 29px Cinzel, Georgia, serif'; spaced('2px');
-    g.fillText(meta.name.toUpperCase(), tx + 22, ty + 38);
-    g.fillStyle = hexA(ink, 0.72);
-    g.font = 'italic 400 17px Grenze, Georgia, serif'; spaced('0px');
-    g.fillText(meta.form, tx + 23, ty + 62);
+    // Printed to be READ from the fitted sheet, which is drawn at 0.57x on a
+    // 1280x800 panel: every line here is sized for that, and set in the plan's
+    // own ink at nearly full strength rather than greyed back into the paper.
+    g.fillStyle = hexA(ink, 0.97);
+    g.font = '700 32px Cinzel, Georgia, serif'; spaced('2px');
+    g.fillText(meta.name.toUpperCase(), tx + 22, ty + 42);
+    g.fillStyle = hexA(ink, 0.88);
+    g.font = 'italic 600 21px Grenze, Georgia, serif'; spaced('0px');
+    g.fillText(meta.form, tx + 23, ty + 70);
     const cell = (i, head, val) => {
       const x0 = tx + tw * cells[i - 1], x1 = i < cells.length ? tx + tw * cells[i] : tx + tw;
       const cx = (x0 + x1) / 2;
       g.textAlign = 'center';
-      g.fillStyle = hexA(ink, 0.62);
-      g.font = '600 12px Cinzel, Georgia, serif'; spaced('3px');
-      g.fillText(head, cx, ty + 29);
-      g.fillStyle = hexA(ink, 0.92);
-      g.font = '700 20px Cinzel, Georgia, serif'; spaced('1.5px');
-      g.fillText(val, cx, ty + 57);
+      g.fillStyle = hexA(ink, 0.9);
+      g.font = '700 18px Cinzel, Georgia, serif'; spaced('2.5px');
+      g.fillText(head, cx, ty + 33);
+      g.fillStyle = hexA(ink, 0.98);
+      g.font = '700 26px Cinzel, Georgia, serif'; spaced('1.5px');
+      g.fillText(val, cx, ty + 67);
       g.textAlign = 'left';
     };
     cell(1, 'BOSS OF RECORD', meta.boss.toUpperCase());
@@ -964,10 +988,16 @@ export class MapScene extends Scene {
       // a short leader from the roundel back to the nearest point on the boundary
       const ax = best.px + KEY / 2, ay = best.py + KEY / 2;
       const bx = clampN(ax, x, x + w), by = clampN(ay, y, y + h);
+      /* An inked wash, laid on with a brush: a pale bloom of pigment that
+         pooled darker as it dried at its deckled edge, the hatch the survey
+         keys it with showing faintly through. */
+      const deck = deckledRect(s, x, y, w, h, 24);
       parts.push(`<g class="mi-zone mi-zone--${hz.kind}" data-hz="${hz.id}">
+        <path class="mi-zone-wash" d="${deck}"/>
+        <path class="mi-zone-bloom" d="${deckledRect(s ^ 0x3c1, x + 14, y + 12, w - 28, h - 24, 18)}"/>
         <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="22"
               fill="url(#${hz.kind === 'boon' ? 'mm-dots' : 'mm-hatch'})"/>
-        <path class="mi-zone-edge" d="${roundedWobbleRect(s, x, y, w, h, 22)}"/>
+        <path class="mi-zone-edge" d="${deck}"/>
         <g class="mi-zone-key">
           <path class="mi-zone-lead" d="M${ax.toFixed(1)} ${ay.toFixed(1)} L${bx.toFixed(1)} ${by.toFixed(1)}"/>
           <path class="mi-seal-melt" d="${sealMelt(s, ax, ay, KEY / 2 + 4)}"/>
@@ -1035,8 +1065,10 @@ export class MapScene extends Scene {
       const [x1, y1, x2, y2] = trim(a.x * this.SW, a.y * this.SH, b.x * this.SW, b.y * this.SH, t1, t2);
       const long = b.row - a.row > 1;
       put(e.from, e.to,
+        // inked by hand, not ruled: a little more tremble and a shorter step
+        // than a straightedge would leave
         pencilStroke(seedOf(e.from + e.to), x1, y1, x2, y2,
-          { bow: long ? 15 : 9, tremble: 1.5, step: long ? 34 : 26 }),
+          { bow: long ? 15 : 9, tremble: 2.1, step: long ? 28 : 21 }),
         long ? ' mi-edge--long' : '');
     }
 
@@ -1172,6 +1204,33 @@ export class MapScene extends Scene {
       };
     });
 
+    // Route legs as segments, in sheet px. A name laid across a leg hides the
+    // one thing the sheet is for, so a chip pays for every length of leg it
+    // covers — that is what moves names into clear parchment.
+    if (!this._legSegs) {
+      this._legSegs = [];
+      for (const e of m.map.edges) {
+        const a = m.byId.get(e.from), b = m.byId.get(e.to);
+        if (a && b) this._legSegs.push([a.x * this.SW, a.y * this.SH, b.x * this.SW, b.y * this.SH]);
+      }
+      for (const id of m.map.startIds) {
+        const n = m.byId.get(id);
+        if (n) this._legSegs.push([WIN.x + 16, n.y * this.SH + 14, n.x * this.SW, n.y * this.SH]);
+      }
+    }
+    const legCost = (b) => {
+      let c = 0;
+      for (const [x1, y1, x2, y2] of this._legSegs) {
+        if (Math.max(x1, x2) < b.left || Math.min(x1, x2) > b.right
+            || Math.max(y1, y2) < b.top || Math.min(y1, y2) > b.bottom) continue;
+        for (let i = 1; i < 16; i++) {
+          const t = i / 16, px = x1 + (x2 - x1) * t, py = y1 + (y2 - y1) * t;
+          if (px > b.left && px < b.right && py > b.top && py < b.bottom) c++;
+        }
+      }
+      return c;
+    };
+
     const placed = [];
     /**
      * The chip's box in sheet coordinates for a candidate offset — and the
@@ -1209,6 +1268,9 @@ export class MapScene extends Scene {
       for (const p of placed) c += rectOverlap(g, p) * 4;
       for (let i = 0; i < discs.length; i++) {
         if (this._labels[i] !== L) c += discOverlap(b, discs[i]);
+        // its OWN mark's glyph is an obstacle too: a name may overlap the
+        // room's pencil ring, never the drawing that says what the room is
+        else c += discOverlap(b, { cx: discs[i].cx, cy: discs[i].cy, r: (L.n.type === NodeType.BOSS ? 50 : 24) * k }) * 3;
       }
       return c;
     };
@@ -1219,17 +1281,31 @@ export class MapScene extends Scene {
     // anything and the next person to read it is misled.
     for (const L of this._labels) { L.dx = 0; L.dy = 0; L.off = false; }
     for (const L of shown.sort((a, b) => rank(a) - rank(b))) {
-      // The old ladder was vertical only, and vertical-only is why the
-      // playtester saw "Formal Dining Room" and "East Reception Hall" stacked
-      // against each other: two rooms one lane apart have nowhere to go up or
-      // down that is not the other one's mark, and a chip that cannot move
-      // sideways has to settle for the least-bad pile.  Sideways is where the
-      // clear paper is on a plan whose depth runs west to east.
-      const side = L.w / 2 + 34;
+      /* A room you may enter wears its name ATTACHED: on its nameplate right
+         under the mark, right over it, level with it on either side, or tucked
+         against one of its lower or upper shoulders — and nowhere else. The
+         old ladder let a name drift up to two rows away with a pencil leader
+         back, and on a 1280 panel, where the first row's rooms are 58 px apart,
+         "Formal Dining Room" landed beside Entry Hall and "Entry Hall" under
+         the Parlor: every name legible, half of them on the wrong room. A name
+         that has to sit on a leg of the route now does, rather than on the
+         wrong room. The boss and the rooms you cannot enter keep the wider
+         ladder: their names are landmarks, not choices. */
+      const h = L.h || LABEL_H, bx = L.box;
       const cands = [];
-      for (const dy of [0, 26, -(L.box + 26), 54, -(L.box + 54), 82, -(L.box + 82)]) {
-        cands.push([0, dy]);
-        if (Math.abs(dy) <= 56) { cands.push([side, dy], [-side, dy]); }
+      if (rank(L) === 2 || rank(L) === 0) {
+        const side = bx / 2 + L.w / 2 + 8;
+        const mid = -(bx / 2 + 3 + h / 2);
+        const sh = L.w / 2 + bx * .3;
+        cands.push([0, -4], [0, -(bx + h + 8)], [side, mid], [-side, mid],
+                   [sh, -bx * .3], [-sh, -bx * .3], [sh, -(bx * .7 + h)], [-sh, -(bx * .7 + h)]);
+      } else {
+        const side = L.w / 2 + 34;
+        for (const dy of [0, 26, -(L.box + 26), 54, -(L.box + 54), 82, -(L.box + 82)]) {
+          cands.push([0, dy]);
+          if (Math.abs(dy) <= 56) { cands.push([side, dy], [-side, dy]); }
+        }
+        if (rank(L) === 1) cands.push([-(L.w / 2 + bx * .2), 0], [-(L.w / 2 + bx * .2), 40], [-(L.w / 2 + bx * .3), -(bx + h)]);
       }
       // nearest first, so the first slot that clears is also the closest one
       cands.sort((p, q) => (Math.abs(p[0]) + Math.abs(p[1])) - (Math.abs(q[0]) + Math.abs(q[1])));
@@ -1237,9 +1313,10 @@ export class MapScene extends Scene {
       for (const [dx, dy] of cands) {
         const b = boxOf(L, dx, dy);
         const hit = clash(L, b);
-        const score = hit + travel(b);
+        const legs = legCost(b) * 90 * k * k;
+        const score = hit + legs + travel(b);
         if (!best || score < best.score) best = { score, hit, b };
-        if (hit === 0) break;
+        if (hit === 0 && legs === 0) break;
       }
       // A chip may only be dropped when nothing clears AND it is one of the
       // rooms you cannot enter this turn: an unreadable name is worse than no
@@ -1252,6 +1329,13 @@ export class MapScene extends Scene {
       L.el.style.setProperty('--mn-dx', L.dx ? L.dx.toFixed(1) + 'px' : '0px');
       L.el.style.setProperty('--mn-dy', L.dy ? L.dy.toFixed(1) + 'px' : '0px');
       L.el.classList.toggle('lab-off', !!L.off);
+      // which side of its room the nameplate hangs on: its brass pointer faces
+      // the room from that side (map.css .mn-label::after)
+      const h = L.h || LABEL_H, midY = L.box / 2 + 3 + (L.dy || 0) + h / 2;   // chip centre, from the mark's
+      const side = Math.abs(midY) < h * .6 && Math.abs(L.dx || 0) > L.w / 2
+        ? ((L.dx || 0) > 0 ? 'right' : 'left')
+        : (midY < 0 ? 'above' : 'below');
+      L.el.dataset.lab = side;
       this._drawLeader(L);
     }
   }
@@ -2150,6 +2234,39 @@ function sealMelt(seed, cx, cy, r) {
     const rr = r * (0.9 + n() * 0.22);
     pts.push([cx + Math.cos(a) * rr, cy + Math.sin(a) * rr]);
   }
+  let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+  for (let i = 0; i < pts.length; i++) {
+    const p = pts[(i + 1) % pts.length], q = pts[i];
+    d += ` Q${q[0].toFixed(1)} ${q[1].toFixed(1)} ${((q[0] + p[0]) / 2).toFixed(1)} ${((q[1] + p[1]) / 2).toFixed(1)}`;
+  }
+  return d + 'Z';
+}
+/** A rounded rect's outline as a wash leaves it: the brush's edge wandering in
+ *  and out, feathered with small deckles, closed and smooth. */
+function deckledRect(seed, x, y, w, h, r) {
+  let s = (seed ^ 0x6d2b) || 1;
+  const n = () => { s ^= s << 13; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296 - 0.5; };
+  // walk the rounded rect's perimeter at a fixed step
+  const per = [];
+  const seg = (x0, y0, x1, y1) => {
+    const L = Math.hypot(x1 - x0, y1 - y0), k = Math.max(2, Math.round(L / 16));
+    for (let i = 0; i < k; i++) per.push([x0 + (x1 - x0) * i / k, y0 + (y1 - y0) * i / k]);
+  };
+  const arc = (cx, cy, a0) => {
+    for (let i = 0; i < 4; i++) { const a = a0 + i / 4 * Math.PI / 2; per.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]); }
+  };
+  seg(x + r, y, x + w - r, y); arc(x + w - r, y + r, -Math.PI / 2);
+  seg(x + w, y + r, x + w, y + h - r); arc(x + w - r, y + h - r, 0);
+  seg(x + w - r, y + h, x + r, y + h); arc(x + r, y + h - r, Math.PI / 2);
+  seg(x, y + h - r, x, y + r); arc(x + r, y + r, Math.PI);
+  const cx = x + w / 2, cy = y + h / 2;
+  let slow = 0;
+  const pts = per.map(([px, py]) => {
+    slow = slow * 0.7 + n() * 5;                 // the brush drifts, then deckles
+    const dx = px - cx, dy = py - cy, L = Math.hypot(dx, dy) || 1;
+    const off = slow + n() * 4.5;
+    return [px + dx / L * off, py + dy / L * off];
+  });
   let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
   for (let i = 0; i < pts.length; i++) {
     const p = pts[(i + 1) % pts.length], q = pts[i];
