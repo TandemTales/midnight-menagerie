@@ -1,244 +1,272 @@
 /* The Treehouse — scenes/lobby.js. OWNER: frontend.
  *
- * Every class here is `lo__*` or `lo`, which no other sheet declares. Scene
- * stylesheets are global and `ensureCss()` never unloads one, so a shared class
- * name is a permanent, silent reformat of somebody else's screen — see
+ * Every class here is `lo__*`, `lo-*` or `lo`, which no other sheet declares.
+ * Scene stylesheets are global and `ensureCss()` never unloads one, so a shared
+ * class name is a permanent, silent reformat of somebody else's screen — see
  * tests/scene-css/check.py, which exists because `.rs-door` meant two different
- * things and deleted every Safe Room in the game.
+ * things and deleted every Safe Room in the game. For the same reason the kit's
+ * own classes are never named in a selector here that sets layout: every kit
+ * piece on this board also wears an `lo-` class, and that is what is placed.
  *
- * A torch in a treehouse at night: one warm panel with everything on it, the
- * dark left dark around the edges, and the title's flame palette for anything
- * that is lit — ready, yours, or open. */
+ * A staged board in the kit's language (ui/kit.css), read in one pass: the
+ * title in the wordmark's cartouche, ONE panel in the middle holding the thing
+ * you do here — the password, on an engraved plate you can write on, with New
+ * password seated beside it — and the two ways out in the corners where every
+ * board keeps them, Back down on the left and Climb up, lit, on the right. The
+ * board stands in the treehouse (.kit-ground--planks) with a window onto the
+ * house on either side and the lamp lit low. */
 
 .lo {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
-  padding: clamp(16px, 4vw, 48px);
-  overflow-y: auto;
+  overflow: hidden;
   z-index: var(--z-scene);
   font-family: var(--font-body);
-  color: var(--text-mid);
+  color: var(--kit-text);
 }
 
-/* NIGHT. The 3D stage behind this screen is the inside of the mansion and this
-   screen is outside it, so the room is put out: a near-opaque cool wash with a
-   little warmth low and centre, where a torch would be. What survives is
-   silhouette and a suggestion of depth, which is what "outdoors, dark" looks
-   like. `pointer-events: none` so the whole panel above it stays clickable. */
-.lo::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
+/* ── the board ────────────────────────────────────────────────────────────── */
+.lo-board {
+  position: absolute; inset: 0;
+  --hud-h: 0px;                              /* no run HUD: rule and corners start at the top */
+  --lo-side: calc(var(--kit-vine-w) + clamp(26px, 3vw, 56px));
+  --lo-foot-h: clamp(92px, 12.5vh, 118px);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  justify-items: center;
+  /* the treehouse's lights: the lamp low in the middle, where the panel is,
+     and a wash of moonlight in from each window and down across the boards */
+  --wl3-x: 50vw;   --wl3-y: 58vh;   --wl3-w: 96vw;   --wl3-h: 96vh;
+  --wl4-x: 50vw;   --wl4-y: 100vh;  --wl4-w: 84vw;   --wl4-h: 40vh;
+  --ml1-x: 17vw;   --ml1-y: 38vh;   --ml1-w: 30vw;   --ml1-h: 58vh;
+  --ml2-x: 83vw;   --ml2-y: 38vh;   --ml2-w: 30vw;   --ml2-h: 58vh;
+  --mb1-x: 21vw;   --mb1-y: 50vh;   --mb1-w: 24vw;   --mb1-h: 56vh;
+  --mb2-x: 79vw;   --mb2-y: 50vh;   --mb2-w: 24vw;   --mb2-h: 56vh;
+}
+.lo-vig {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background:
-    radial-gradient(120% 80% at 50% 108%,
-      color-mix(in srgb, var(--flame-500) 20%, transparent) 0%,
-      transparent 58%),
-    linear-gradient(180deg,
-      rgb(6 7 14 / 0.94) 0%,
-      rgb(8 9 18 / 0.90) 45%,
-      rgb(5 6 12 / 0.95) 100%);
+    radial-gradient(80% 70% at 50% 54%, transparent 44%, color-mix(in srgb, var(--kit-void) 52%, transparent) 100%),
+    linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 36%, transparent) 0%, transparent 20%, transparent 82%, color-mix(in srgb, var(--kit-void) 38%, transparent) 100%);
 }
 
-.lo__door,
-.lo__room { position: relative; }
+/* the two windows onto the house, their sills on the nailer rail */
+.lo-props { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.lo-hatch {
+  --hatch-w: clamp(140px, min(calc(33vw - 290px), 27vh), 250px);
+  top: calc(57.2vh - var(--hatch-w) * 470 / 420 * .93);
+}
+.lo-hatch--l { left: calc(var(--lo-side) + clamp(-18px, calc(4.6vw - 70px), 40px)); }
+.lo-hatch--r { right: calc(var(--lo-side) + clamp(-18px, calc(4.6vw - 70px), 40px)); }
 
-.lo__door,
-.lo__room {
-  width: min(720px, 100%);
-  background: var(--surface-2);
-  border: 1px solid var(--surface-line);
-  border-radius: 14px;
-  padding: clamp(20px, 3vw, 34px);
-  box-shadow: 0 24px 60px rgb(0 0 0 / 0.45);
+/* ── the title ────────────────────────────────────────────────────────────── */
+.lo-head {
+  position: relative; z-index: 3;
+  margin-top: clamp(8px, 1.6vh, 18px);
 }
 
-.lo__title {
-  margin: 0 0 6px;
-  font-family: var(--font-display);
-  font-size: var(--fs-2xl);
-  color: var(--text-hi);
-  letter-spacing: 0.01em;
+/* ── what stands on the board ─────────────────────────────────────────────── */
+.lo-stage {
+  position: relative; z-index: 3;
+  width: 100%; min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) var(--lo-foot-h);
+  overflow-y: auto;
+}
+.lo__form { display: contents; }
+
+/* ── the door: one panel, the password on its plate ───────────────────────── */
+.lo__door, .lo__room {
+  align-self: center; justify-self: center;
+  box-sizing: border-box;
+  /* between the two windows, with a hand's width of wall either side */
+  width: min(880px, calc(100vw - 2 * var(--lo-side) - 2 * clamp(-18px, calc(4.6vw - 70px), 40px) - 2 * clamp(140px, min(calc(33vw - 290px), 27vh), 250px) - 44px));
+  min-width: min(600px, calc(100vw - 2 * var(--lo-side)));
+  margin-top: clamp(4px, 1vh, 12px);
+  --pk: .9;
+  padding: clamp(40px, 6vh, 58px) clamp(30px, 3.6vw, 60px) clamp(30px, 4.6vh, 44px);
+  display: grid; justify-items: center; gap: clamp(14px, 2.3vh, 22px);
+  text-align: center;
+}
+/* the lamp is lit behind the panel: warm light round its rail, falling off
+   into the boards, so the one thing to do here is the brightest thing on them */
+.lo__door::after, .lo__room::after {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  left: -26%; right: -26%; top: -38%; bottom: -44%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 17%, transparent) 0%, color-mix(in srgb, var(--kit-candle) 7%, transparent) 46%, transparent 100%);
+  mix-blend-mode: screen;
+}
+.lo__door { container: lo-door / inline-size; }
+/* the section's name on the gold ribbon, hung from the panel's star */
+.lo-door__h {
+  --rib-h: clamp(32px, 4.1vh, 38px);
+  margin-top: clamp(-6px, -.4vh, -2px);
 }
 
 .lo__sub {
-  margin: 0 0 18px;
-  font-size: var(--fs-sm);
-  color: var(--text-lo);
+  margin: 0;
+  max-width: 52ch;
+  font-size: clamp(16px, 1.2vw, 19px);
   line-height: 1.5;
+  color: var(--kit-text-mid);
+  text-wrap: pretty;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .8);
 }
 
 .lo__warn {
-  margin: 0 0 16px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--warn-500) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--warn-500) 40%, transparent);
+  margin: 0;
+  max-width: 54ch;
+  font-size: var(--fs-sm);
+  font-style: italic;
   color: var(--warn-300);
-  font-size: var(--fs-sm);
 }
 
-/* ── the door ─────────────────────────────────────────────────────────────── */
-
-.lo__form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 18px;
+/* the field and the die beside it, on one line */
+.lo-door__row {
+  display: flex; align-items: center; justify-content: center;
+  gap: clamp(26px, 2.6vw, 40px);
+  width: 100%;
+  margin-top: clamp(2px, .6vh, 8px);
 }
-
 .lo__code {
-  flex: 1 1 260px;
-  min-width: 0;
-  padding: 12px 14px;
-  border-radius: 9px;
-  border: 1px solid var(--surface-line-hi);
-  background: var(--surface-1);
-  color: var(--text-hi);
-  font-family: var(--font-num);
-  font-size: var(--fs-lg);
-  letter-spacing: 0.04em;
+  --field-h: clamp(68px, 9vh, 82px);
+  flex: 1 1 auto;
+  width: 0; max-width: 460px;
+  font-size: clamp(27px, 2.25vw, 36px);
+  letter-spacing: .06em;
 }
 
-.lo__code:focus-visible { outline: var(--focus-ring); }
+/* ── buttons: the kit's plates, a medallion seated on one end ─────────────── */
+.lo-btn { flex: none; }
+.lo-btn .lo-btn__words { white-space: nowrap; }
+.lo-btn--medal-left  { padding-left: calc(var(--plate-h) * 1.28); }
+.lo-btn--medal-right { padding-right: calc(var(--plate-h) * 1.3); }
+.lo-btn--medal-left  .lo-btn__medal { left: calc(var(--plate-h) * -.3); }
+.lo-btn--medal-right .lo-btn__medal { right: calc(var(--plate-h) * -.84); }
+/* the quiet plates carry a plain medallion, sized to sit inside the plate's end */
+.lo-btn.kit-btn--quiet .lo-btn__medal { --md: calc(var(--plate-h) * 1.08); }
+.lo-btn--medal-left.kit-btn--quiet .lo-btn__medal { left: calc(var(--plate-h) * -.34); }
+.lo-arrow { display: none; }
+.lo__roll { --plate-h: clamp(48px, 6vh, 54px); font-size: clamp(12.5px, .95vw, 15px); }
 
-.lo__roll,
-.lo__enter,
-.lo__ready,
-.lo__go,
-.lo__back {
-  padding: 12px 18px;
-  border-radius: 9px;
-  border: 1px solid var(--surface-line-hi);
-  background: var(--surface-3);
-  color: var(--text-hi);
-  font-family: var(--font-body);
-  font-size: var(--fs-md);
-  cursor: pointer;
-  transition: background var(--t-quick) var(--ease-out),
-              border-color var(--t-quick) var(--ease-out);
+/* the two ways out, in the corners every board keeps them in */
+.lo-foot {
+  grid-row: 2;
+  align-self: center;
+  display: flex; align-items: center; justify-content: space-between; gap: 18px;
+  padding: 0 calc(var(--lo-side) + 28px) clamp(6px, 1.2vh, 14px) calc(var(--lo-side) + 18px);
 }
+.lo__enter, .lo__go {
+  --plate-h: clamp(52px, 6.6vh, 60px);
+  font-size: clamp(16px, 1.3vw, 20px);
+  margin-right: calc(var(--plate-h) * .9);
+}
+.lo__back { --plate-h: clamp(46px, 5.8vh, 52px); font-size: clamp(13px, 1vw, 15.5px); }
+.lo__enter:disabled, .lo__go:disabled { opacity: .5; }
+.lo-btn kbd { margin-left: 2px; }
 
-.lo__roll:hover,
-.lo__enter:hover:not(:disabled),
-.lo__ready:hover,
-.lo__go:hover:not(:disabled),
-.lo__back:hover { border-color: var(--flame-400); }
+/* the lit primary breathes a little candlelight, as the Shop's way on does */
+.lo__enter::before, .lo__go:not(:disabled)::before {
+  content: ''; position: absolute; inset: -30% -8% -30% -4%; z-index: -1; pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 22%, transparent), transparent 72%);
+  animation: lo-glow 3.2s var(--ease-soft) infinite;
+}
+@keyframes lo-glow { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
 
-.lo__enter:disabled,
-.lo__go:disabled { opacity: 0.45; cursor: not-allowed; }
-
-.lo__roll:focus-visible,
-.lo__enter:focus-visible,
-.lo__ready:focus-visible,
-.lo__go:focus-visible,
-.lo__back:focus-visible { outline: var(--focus-ring); }
-
-/* ── the room ─────────────────────────────────────────────────────────────── */
-
-.lo__head { margin-bottom: 16px; }
-
+/* ── the room: the password, who is up here, what you are bringing ───────── */
+.lo__room { gap: clamp(10px, 1.6vh, 16px); padding-top: clamp(40px, 6vh, 56px); }
+.lo__head { display: grid; justify-items: center; gap: 6px; }
 .lo__code-out {
-  margin: 0 0 8px;
-  font-family: var(--font-num);
-  font-size: var(--fs-sm);
-  color: var(--text-lo);
+  --plate-h: clamp(56px, 7vh, 64px);
+  position: relative;
+  display: inline-grid; grid-template-columns: auto; justify-items: center;
+  margin: 0;
+  min-width: 300px;
+  padding: 7px calc(var(--plate-h) * .8) 8px;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/plate.webp") 12 53 12 46 fill /
+    calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72) stretch;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8));
 }
-
 .lo__code-out span {
-  color: var(--flame-300);
-  font-size: var(--fs-lg);
-  letter-spacing: 0.05em;
+  font-family: var(--font-body); font-weight: 600;
+  font-size: clamp(22px, 1.8vw, 28px); line-height: 1.1; letter-spacing: .05em;
+  color: var(--kit-name);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
+.lo__code-lbl, .lo__seed, .lo__picklbl {
+  font-family: var(--font-display); font-style: normal; font-weight: 700;
+  font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--kit-text-lo);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+.lo__seed { font-family: var(--font-num); font-weight: 600; letter-spacing: .1em; font-variant-numeric: lining-nums tabular-nums; }
 
 .lo__roster {
   list-style: none;
-  margin: 0 0 18px;
-  padding: 0;
-  display: grid;
-  gap: 8px;
+  margin: 0; padding: 0;
+  width: 100%;
+  display: grid; gap: 8px;
 }
-
 .lo__seat {
-  display: grid;
-  grid-template-columns: 34px 1fr auto;
-  align-items: center;
-  gap: 12px;
-  padding: 11px 14px;
-  border-radius: 9px;
-  background: var(--surface-1);
-  border: 1px solid var(--surface-line);
-  font-size: var(--fs-md);
+  --plate-h: 48px;
+  position: relative;
+  display: grid; grid-template-columns: 40px minmax(0, 1fr) auto;
+  align-items: center; gap: 14px;
+  min-height: var(--plate-h);
+  padding: 0 calc(var(--plate-h) * .7) 0 calc(var(--plate-h) * .5);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/plate.webp") 12 53 12 46 fill /
+    calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72) stretch;
+  text-align: left;
+  font-size: clamp(15px, 1.12vw, 17px);
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75));
 }
-
-.lo__seat.is-me { border-color: var(--flame-400); }
-.lo__seat.is-ready .lo__state { color: var(--good-300); }
-.lo__seat.is-empty { opacity: 0.4; font-style: italic; }
-
+.lo__seat.is-me { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 26%, transparent)) brightness(1.1); }
+.lo__seat.is-empty { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) saturate(.5) brightness(.72); }
+/* the seat's number in a round enamel medallion */
 .lo__n {
-  font-family: var(--font-num);
-  font-size: var(--fs-lg);
-  color: var(--text-lo);
-  text-align: center;
+  display: grid; place-items: center;
+  width: 34px; height: 34px;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  font-family: var(--font-num); font-weight: 600; font-size: 16px;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
-
-.lo__who { color: var(--text-hi); }
-.lo__who i { color: var(--text-lo); font-style: normal; }
-.lo__who b { color: var(--flame-300); font-weight: normal; }
-
+.lo__who { color: var(--kit-name); font-weight: 600; text-shadow: 0 1px 0 rgba(0, 0, 0, .9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lo__who i { color: var(--kit-gold); font-style: italic; font-weight: 400; }
+.lo__who b { color: var(--kit-lav); font-weight: 400; font-style: italic; }
+.lo__seat.is-empty .lo__who { color: var(--kit-text-mid); font-style: italic; font-weight: 400; }
 .lo__state {
-  font-size: var(--fs-sm);
-  color: var(--text-lo);
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--kit-text-lo);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
+.lo__seat.is-ready .lo__state { color: var(--good-300); }
 
 .lo__mine {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 18px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px;
+  width: 100%;
 }
+.lo__pickwrap { display: grid; gap: 4px; justify-items: stretch; text-align: left; }
+.lo__picklbl { padding-left: 16px; }
+.lo__pick { width: 100%; }
 
-.lo__pick {
-  flex: 1 1 200px;
-  min-width: 0;
-  padding: 10px 12px;
-  border-radius: 9px;
-  border: 1px solid var(--surface-line-hi);
-  background: var(--surface-1);
-  color: var(--text-hi);
-  font-family: var(--font-body);
-  font-size: var(--fs-md);
-}
-
-.lo__pick:focus-visible { outline: var(--focus-ring); }
-
-.lo__foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-}
-
-.lo__ready.is-on {
-  background: color-mix(in srgb, var(--good-500) 22%, var(--surface-3));
-  border-color: var(--good-500);
-}
-
-.lo__go {
-  background: color-mix(in srgb, var(--flame-500) 26%, var(--surface-3));
-  border-color: var(--flame-400);
-}
-
+.lo__foot .lo__ready { --plate-h: clamp(46px, 5.8vh, 52px); font-size: clamp(13px, 1vw, 15.5px); margin-left: auto; margin-right: 18px; }
+.lo__ready.is-on { color: var(--good-300); }
 .lo__wait {
-  margin: 0;
-  flex: 1 1 auto;
+  margin: 0 0 0 auto;
+  max-width: 30ch;
   font-size: var(--fs-sm);
-  color: var(--text-lo);
+  font-style: italic;
+  color: var(--kit-text-mid);
+  text-align: right;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
-
-.lo__back { margin-left: auto; }
 
 /* Matches the select screen's exit so the two doors feel like one game. */
 .lo.is-leaving {
@@ -248,5 +276,21 @@
 
 @media (prefers-reduced-motion: reduce) {
   .lo.is-leaving { transition: none; }
-  .lo__roll, .lo__enter, .lo__ready, .lo__go, .lo__back { transition: none; }
+  :root:not([data-reduce-motion="0"]) .lo__enter::before,
+  :root:not([data-reduce-motion="0"]) .lo__go::before { animation: none; }
+}
+.kit-still .lo__enter::before, .kit-still .lo__go::before { animation: none; }
+
+/* ── a short screen ───────────────────────────────────────────────────────── */
+@media (max-height: 700px) {
+  .lo-board { --lo-foot-h: 84px; }
+  .lo__door, .lo__room { margin-top: 10px; gap: 10px; }
+}
+@container lo-door (max-width: 700px) {
+  .lo-door__row { flex-wrap: wrap; row-gap: 14px; }
+  .lo__code { flex-basis: 100%; max-width: none; }
+}
+@media (max-width: 1100px) {
+  .lo-hatch { display: none; }
+  .lo__door, .lo__room { width: min(760px, calc(100vw - 2 * var(--lo-side))); }
 }
