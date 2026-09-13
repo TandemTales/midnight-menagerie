@@ -256,7 +256,8 @@
   font-family: var(--font-body); font-style: italic;
   font-size: var(--fs-md); line-height: 1.25;
   color: var(--kit-text-mid);
-  white-space: nowrap;
+  max-width: calc(58ch + 2 * var(--cart-pad-x));
+  text-wrap: balance;
 }
 /* no sub: the title sits in the middle of the plate */
 .kit-titleblock:not(:has(.kit-cartouche__sub)) .kit-cartouche__title {
