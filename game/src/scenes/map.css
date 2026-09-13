@@ -995,3 +995,8 @@
 @media (max-width: 1280px) {
   .map-legend .lg-i:nth-child(n+7) { display: none; }
 }
+/* the frame is sized to the sheet: on a smaller board its corners would reach
+   over the rooms on the first row */
+@media (max-width: 1440px), (max-height: 860px) {
+  .map-frame { --fk: 1.1; }
+}
