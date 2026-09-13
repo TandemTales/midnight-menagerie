@@ -554,7 +554,7 @@
   transition: transform var(--t-quick) var(--ease-out), box-shadow var(--t-quick) var(--ease-out);
 }
 .gear:hover:not(:disabled) { box-shadow: inset 0 0 0 1px var(--kit-gold), inset 0 0 0 2px rgba(0, 0, 0, .6), 0 0 12px color-mix(in srgb, var(--kit-candle) 20%, transparent); transform: translateX(3px); }
-.gear .slots { grid-area: p; align-self: center; color: var(--kit-gold); letter-spacing: 2px; font-size: 9px; }
+.gear .slots { grid-area: p; align-self: center; color: var(--kit-gold); letter-spacing: 2px; font-size: 11px; text-shadow: 0 1px 0 rgba(0, 0, 0, .9); }
 .gear b { grid-area: n; font-family: var(--font-display); font-weight: 700; font-size: var(--fs-sm); color: var(--kit-name); }
 .gear em { grid-area: d; font-size: var(--fs-sm); font-style: italic; color: var(--kit-text-mid); line-height: 1.35; }
 .gear__x { grid-area: x; color: var(--threat-200); font-size: var(--fs-lg); line-height: 1; align-self: center; }
