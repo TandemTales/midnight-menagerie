@@ -665,6 +665,39 @@ export class CombatScene extends Scene {
     const T = TERMS;
     this.root.innerHTML = `
       <div class="cb">
+        <!-- THE KIT'S RELIEF, sized for the Scuffle's small drawings: an intent's
+             glyph, a pile's cards. index.html's kit-relief is tuned for a
+             portrait-sized drawing and would melt a 30px claw into a blob.
+             Referenced from combat.css only, so nothing outside this scene
+             can point at a filter that is not in the document. -->
+        <svg class="cb-defs" width="0" height="0" aria-hidden="true" focusable="false">
+          <filter id="cb-relief" x="-12%" y="-12%" width="124%" height="124%" color-interpolation-filters="sRGB">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="bump"/>
+            <feDiffuseLighting in="bump" surfaceScale="2.4" diffuseConstant="1.15" lighting-color="#ffffff" result="diffuse">
+              <feDistantLight azimuth="235" elevation="46"/>
+            </feDiffuseLighting>
+            <feComposite in="SourceGraphic" in2="diffuse" operator="arithmetic" k1="1.18" k2="0" k3="0" k4="0" result="shaded"/>
+            <feSpecularLighting in="bump" surfaceScale="2.4" specularConstant=".7" specularExponent="16" lighting-color="#fff1d0" result="spec">
+              <feDistantLight azimuth="235" elevation="38"/>
+            </feSpecularLighting>
+            <feComposite in="spec" in2="SourceAlpha" operator="in" result="specIn"/>
+            <feComposite in="shaded" in2="specIn" operator="arithmetic" k1="0" k2="1" k3=".55" k4="0" result="lit"/>
+            <feComposite in="lit" in2="SourceAlpha" operator="in"/>
+          </filter>
+        </svg>
+        <!-- THE STAGE'S FRAME. The room behind is the WebGL atmosphere until Josh's
+             combat paintings arrive; this is the board's own gilt rule round it,
+             the Kid board's corner candles and cobwebs, and the dark the edges fall
+             into. All of it sits UNDER the creatures, the hand and every reading,
+             and none of it takes a pointer event. -->
+        <div class="kit-dress cb-dress" aria-hidden="true">
+          <div class="cb-dress__vignette"></div>
+          <div class="kit-dress__rule cb-dress__rule"></div>
+          <div class="kit-dress__corner kit-dress__corner--l cb-dress__corner"></div>
+          <div class="kit-dress__corner kit-dress__corner--r cb-dress__corner"></div>
+          <div class="kit-dress__flame kit-dress__flame--l cb-dress__flame"></div>
+          <div class="kit-dress__flame kit-dress__flame--r cb-dress__flame"></div>
+        </div>
         <header class="cb-top"></header>
 
         <div class="cb-field">
@@ -696,7 +729,7 @@ export class CombatScene extends Scene {
              decide every turn were never in the same glance. They are one
              block now; ui/hud.js keeps its pill as the run-level echo. -->
         <section class="cb-player" aria-label="You">
-          <div class="cb-player__figure">
+          <div class="cb-player__figure kit-frame kit-frame--over">
             <div class="cb-player__glow"></div>
             <img class="cb-player__art" alt="" draggable="false">
             <div class="cb-player__flash"></div>
@@ -720,10 +753,10 @@ export class CombatScene extends Scene {
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5 L21.5 5.2 C21.5 14 17.3 20.2 12 22.8 C6.7 20.2 2.5 14 2.5 5.2 Z"/></svg>
                 <b>0</b>
               </div>
-              <div class="cb-player__bar" tabindex="0">
-                <div class="cb-player__ghost"></div>
-                <div class="cb-player__fill"></div>
-                <div class="cb-player__hp"><span class="cb-player__hpn"></span><span class="cb-player__hpm"></span></div>
+              <div class="cb-player__bar kit-tube kit-tube--warm" tabindex="0">
+                <div class="cb-player__ghost kit-tube__ghost"></div>
+                <div class="cb-player__fill kit-tube__fill"></div>
+                <div class="cb-player__hp kit-tube__label"><span class="cb-player__hpn"></span><span class="cb-player__hpm"></span></div>
               </div>
             </div>
             <div class="cb-statuses" role="list" aria-label="Your conditions"></div>
@@ -759,9 +792,9 @@ export class CombatScene extends Scene {
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5 L21.5 5.2 C21.5 14 17.3 20.2 12 22.8 C6.7 20.2 2.5 14 2.5 5.2 Z"/></svg>
               <b>0</b>
             </div>
-            <div class="cb-mate__bar" tabindex="0">
-              <div class="cb-mate__fill"></div>
-              <div class="cb-mate__hp"></div>
+            <div class="cb-mate__bar kit-tube kit-tube--warm" tabindex="0">
+              <div class="cb-mate__fill kit-tube__fill"></div>
+              <div class="cb-mate__hp kit-tube__label"></div>
             </div>
           </div>
           <div class="cb-mate__statuses" role="list" aria-label="Your friend's conditions"></div>
@@ -769,7 +802,10 @@ export class CombatScene extends Scene {
         </section>
         </div>
 
-        <div class="cb-handhost"></div>
+        <!-- The hand wears the kit's brass (.kit-cards): the same Tricks the Shop
+             sells and the Reward offers, with the cost struck on the Nerve orb's
+             enamel so the number you pay reads as the number you have. -->
+        <div class="cb-handhost kit-cards kit-cards--nerve"></div>
 
         <div class="cb-bl">
           <div class="cb-nerve" data-tip="${T.energy}|You spend it to play Tricks.|It refills to full at the start of every turn." tabindex="0">
@@ -784,24 +820,25 @@ export class CombatScene extends Scene {
           <button class="cb-pile cb-pile--draw" id="draw-pile" type="button"
                   data-tip="Draw pile|The Tricks still to come. Order is hidden.|Click to look through them.">
             <svg viewBox="0 0 34 44" aria-hidden="true"><rect x="1" y="1" width="24" height="34" rx="3"/><rect x="6" y="5" width="24" height="34" rx="3"/><rect x="9" y="9" width="24" height="34" rx="3" class="top"/></svg>
-            <b>0</b><span class="cb-pile__lbl">Draw</span>
+            <b class="kit-coin">0</b><span class="cb-pile__lbl">Draw</span>
           </button>
         </div>
 
         <div class="cb-br">
-          <button class="cb-endturn" id="end-turn" type="button">
+          <button class="cb-endturn kit-btn" id="end-turn" type="button">
             <span class="cb-endturn__glow"></span>
             <span class="cb-endturn__k">End Turn</span>
             <span class="cb-endturn__hint">E</span>
+            <i class="kit-medallion kit-medallion--ornate kit-btn__medal cb-endturn__medal" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 2h14v2.4h-1.6c0 3.1-2 5.3-4.3 7.6 2.3 2.3 4.3 4.5 4.3 7.6H19V22H5v-2.4h1.6c0-3.1 2-5.3 4.3-7.6C8.6 9.7 6.6 7.5 6.6 4.4H5z"/></svg></i>
           </button>
           <button class="cb-pile cb-pile--discard" id="discard-pile" type="button"
                   data-tip="Discard pile|Tricks already used this Scuffle.|Reshuffled into the draw pile when it runs out.">
             <svg viewBox="0 0 34 44" aria-hidden="true"><rect x="1" y="1" width="24" height="34" rx="3"/><rect x="6" y="5" width="24" height="34" rx="3"/><rect x="9" y="9" width="24" height="34" rx="3" class="top"/></svg>
-            <b>0</b><span class="cb-pile__lbl">Discard</span>
+            <b class="kit-coin">0</b><span class="cb-pile__lbl">Discard</span>
           </button>
           <button class="cb-pile cb-pile--torn" id="torn-pile" type="button" hidden>
             <svg viewBox="0 0 34 44" aria-hidden="true"><rect x="1" y="1" width="24" height="34" rx="3"/><rect x="9" y="9" width="24" height="34" rx="3" class="top"/></svg>
-            <b>0</b><span class="cb-pile__lbl">Torn</span>
+            <b class="kit-coin">0</b><span class="cb-pile__lbl">Torn</span>
           </button>
           <!-- The Vanished pile. ui/deckview.js has had a mode for it since it
                was written - title "Vanished", note "Out of this Scuffle. A few
@@ -812,20 +849,24 @@ export class CombatScene extends Scene {
           <button class="cb-pile cb-pile--vanished" id="vanished-pile" type="button" hidden
                   data-tip="Vanished|Tricks that have left this Scuffle for good.|A few Tricks can reach in and pull one back. Shortcut: T">
             <svg viewBox="0 0 34 44" aria-hidden="true"><rect x="1" y="1" width="24" height="34" rx="3"/><rect x="9" y="9" width="24" height="34" rx="3" class="top gone"/></svg>
-            <b>0</b><span class="cb-pile__lbl">Vanished</span>
+            <b class="kit-coin">0</b><span class="cb-pile__lbl">Vanished</span>
           </button>
         </div>
 
-        <div class="cb-banner" aria-live="polite"></div>
+        <!-- Turn, boss and House Rule banners are lettered on the wordmark's own
+             cartouche (.kit-titleblock), in its lavender engraved caps. The words
+             go in __t so the plaque's painted pieces survive a new banner; the
+             ribbon under a boss or a rule is named by data-kind in combat.css. -->
+        <div class="cb-banner kit-titleblock kit-titleblock--compact" aria-live="polite"><span class="cb-banner__t kit-cartouche__title"></span><span class="cb-banner__rib kit-ribbon" aria-hidden="true"></span></div>
         <div class="cb-deny" aria-live="assertive"></div>
         <div class="cb-chooser" hidden>
-          <div class="cb-chooser__panel" role="dialog" aria-modal="true">
+          <div class="cb-chooser__panel kit-panel" data-medal="star2" role="dialog" aria-modal="true">
             <h2 class="cb-chooser__prompt"></h2>
             <p class="cb-chooser__sub"></p>
-            <div class="cb-chooser__pool"></div>
+            <div class="cb-chooser__pool kit-cards"></div>
             <div class="cb-chooser__bar">
-              <button class="cb-chooser__skip" type="button">Skip</button>
-              <button class="cb-chooser__ok" type="button">Confirm</button>
+              <button class="cb-chooser__skip kit-btn kit-btn--quiet" type="button">Skip</button>
+              <button class="cb-chooser__ok kit-btn" type="button">Confirm</button>
             </div>
           </div>
         </div>
@@ -869,6 +910,7 @@ export class CombatScene extends Scene {
     this.$vanishedPile = $('#vanished-pile');
     this.$endTurn = $('#end-turn');
     this.$banner = $('.cb-banner');
+    this.$bannerT = $('.cb-banner__t');
     this.$deny = $('.cb-deny');
     this.$chooser = $('.cb-chooser');
     this.$chPrompt = $('.cb-chooser__prompt');
@@ -3161,7 +3203,7 @@ export class CombatScene extends Scene {
     this.$statuses.textContent = '';
     for (const s of list) {
       const d = document.createElement('span');
-      d.className = 'cb-status';
+      d.className = 'cb-status kit-socket';
       d.dataset.kind = s.kind || 'buff';
       d.dataset.id = s.id;
       d.tabIndex = 0;
@@ -3170,7 +3212,7 @@ export class CombatScene extends Scene {
       d.dataset.tipStacks = String(s.stacks);
       d.dataset.tipOwner = 'You';
       d.setAttribute('aria-label', `${s.name} ${s.stacks}. ${s.desc || ''}`);
-      d.innerHTML = statusGlyph(s) + (s.showStacks === false ? '' : `<b>${s.stacks}</b>`);
+      d.innerHTML = statusGlyph(s) + (s.showStacks === false ? '' : `<b class="kit-coin">${s.stacks}</b>`);
       this.$statuses.appendChild(d);
     }
   }
@@ -3583,7 +3625,9 @@ export class CombatScene extends Scene {
 
   _banner(text, kind, hold = 1.05) {
     const b = this.$banner;
-    b.textContent = text;
+    /* The words go on the cartouche's title line; writing the banner's own
+       textContent would strip the plaque and its ribbon out of it. */
+    (this.$bannerT || b).textContent = text;
     b.dataset.kind = kind || '';
     b.classList.remove('is-on');
     void b.offsetWidth;

@@ -40,16 +40,39 @@ import { iconSvg, hasIcon } from './icons.js';
 
 const NS = 'http://www.w3.org/2000/svg';
 
-/** Frame outline per family, on a 100x100 box. Drawn as a filled + stroked path. */
+/**
+ * THE SETTING, per family: the silhouette of a painted brass medallion, on the
+ * 100x100 box. `tools/prep_combat_kit.py` renders the brass rim and the enamel's
+ * glaze for each of these from the SAME geometry (intent-<family>.webp), and
+ * `.cb-intent__frame` fills this path with the family's enamel underneath it —
+ * so the colour is still a token the colour-blind palettes reach, and the
+ * silhouette is still the redundant family channel it always was:
+ *   attack   a ring drawn down to a drop — it hangs toward you
+ *   defense  a heater shield
+ *   scheme   a gothic quatrefoil, the house's own window tracery
+ *   special  a plain riveted ring
+ * Keep these in step with the script's attack_pts / defense_pts / scheme_shape.
+ */
 const FRAMES = {
-  // a downward shard — reads as "something is coming at you"
-  attack: 'M50 4 L92 26 L88 62 L50 96 L12 62 L8 26 Z',
-  // a shield
-  defense: 'M50 5 C68 12 82 14 92 14 C92 52 80 80 50 96 C20 80 8 52 8 14 C18 14 32 12 50 5 Z',
-  // a hexagon, flat top
-  scheme: 'M24 8 L76 8 L96 50 L76 92 L24 92 L4 50 Z',
-  // a circle
-  special: 'M50 4 A46 46 0 1 1 49.9 4 Z',
+  attack: 'M76.75 65.09 A36 36 0 1 0 23.25 65.09 C29.27 71.78 45 84 50 97 C55 84 70.73 71.78 76.75 65.09 Z',
+  defense: 'M50 5 C63 11 77 13 90 13 C90 52 78 80 50 96 C22 80 10 52 10 13 C23 13 37 11 50 5 Z',
+  scheme: 'M25 25 A25 25 0 0 1 75 25 A25 25 0 0 1 75 75 A25 25 0 0 1 25 75 A25 25 0 0 1 25 25 Z',
+  special: 'M50 5 A45 45 0 1 1 49.99 5 Z',
+};
+
+/** The painted brass for each setting (see FRAMES). */
+const KIT = new URL('../../assets/ui/kit/', import.meta.url).href;
+const RIMS = {
+  attack: `${KIT}intent-attack.webp`, defense: `${KIT}intent-defense.webp`,
+  scheme: `${KIT}intent-scheme.webp`, special: `${KIT}intent-special.webp`,
+};
+
+/** Where the glyph sits in each setting: the middle of its enamel, not of its box. */
+const GLYPH_AT = {
+  attack: 'translate(50 41) scale(0.5) translate(-50 -50)',
+  defense: 'translate(50 46) scale(0.5) translate(-50 -50)',
+  scheme: 'translate(50 50) scale(0.5) translate(-50 -50)',
+  special: 'translate(50 50) scale(0.54) translate(-50 -50)',
 };
 
 const FAMILY_WORD = {
@@ -234,12 +257,19 @@ export class IntentView {
     // The intent is THE read of the genre, so it is a real tab stop, not a
     // decoration. Its tooltip is reachable with the keyboard for free.
     el.tabIndex = 0;
+    /* Paint order inside the medallion: the enamel (`__frame`, the family's
+       token colour), the painted brass and glaze over it (`__rim`), then the
+       glyph in gold relief (`__relief` carries the bevel filter, so the
+       glyph's own transform does not scale the bevel with it). */
     el.innerHTML = `
       <div class="cb-intent__halo"></div>
       <svg class="cb-intent__art" viewBox="0 0 100 100" aria-hidden="true">
         <path class="cb-intent__frame" d=""></path>
         <path class="cb-intent__frameline" d=""></path>
-        <g class="cb-intent__glyph" transform="translate(50 50) scale(0.56) translate(-50 -50)"></g>
+        <image class="cb-intent__rim" x="0" y="0" width="100" height="100" preserveAspectRatio="none"></image>
+        <g class="cb-intent__relief">
+          <g class="cb-intent__glyph" transform="translate(50 50) scale(0.56) translate(-50 -50)"></g>
+        </g>
       </svg>
       <div class="cb-intent__vals"></div>
       <div class="cb-intent__extras"></div>
@@ -247,6 +277,7 @@ export class IntentView {
     this.el = el;
     this.$frame = el.querySelector('.cb-intent__frame');
     this.$frameline = el.querySelector('.cb-intent__frameline');
+    this.$rim = el.querySelector('.cb-intent__rim');
     this.$glyph = el.querySelector('.cb-intent__glyph');
     this.$vals = el.querySelector('.cb-intent__vals');
     this.$extras = el.querySelector('.cb-intent__extras');
@@ -280,6 +311,8 @@ export class IntentView {
       this.el.dataset.type = type;
       this.$frame.setAttribute('d', FRAMES[fam] || FRAMES.special);
       this.$frameline.setAttribute('d', FRAMES[fam] || FRAMES.special);
+      this.$rim.setAttribute('href', RIMS[fam] || RIMS.special);
+      this.$glyph.setAttribute('transform', GLYPH_AT[fam] || GLYPH_AT.special);
       // rebuild the glyph
       while (this.$glyph.firstChild) this.$glyph.removeChild(this.$glyph.firstChild);
       for (const g of glyph(type)) {
@@ -384,7 +417,7 @@ export class IntentView {
       this.$pips.textContent = '';
       for (const s of pips.slice(0, 4)) {
         const d = document.createElement('span');
-        d.className = 'cb-intent__pip';
+        d.className = 'cb-intent__pip kit-socket';
         d.dataset.kind = s.kind || 'debuff';
         d.dataset.tipStatus = s.id;
         d.dataset.tipStacks = String(s.stacks);
@@ -392,7 +425,7 @@ export class IntentView {
         const who = s.to === 'self' ? 'itself' : s.to === 'allEnemies' || s.to === 'allies' ? 'its allies' : 'you';
         d.dataset.tipOwner = who;
         d.setAttribute('aria-label', `${s.stacks} ${s.name} to ${who}`);
-        d.innerHTML = statusPipIcon(s) + `<b>${s.stacks}</b>`;
+        d.innerHTML = statusPipIcon(s) + `<b class="kit-coin">${s.stacks}</b>`;
         this.$pips.appendChild(d);
       }
       this.el.classList.toggle('has-pips', pips.length > 0);
