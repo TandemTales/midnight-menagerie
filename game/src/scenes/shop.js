@@ -109,6 +109,8 @@ export class ShopScene extends RoomScene {
       title: 'The Midnight Market',
       sub: 'Buttons, keys, marbles, teeth. He considers them incredibly valuable.',
     });
+    // The market needs its height for the shelf: the plaque is drawn tighter.
+    this.root.querySelector('.kit-titleblock')?.classList.add('kit-titleblock--compact');
 
     await this._buildCounters();
     this._buildFoot();
@@ -125,7 +127,7 @@ export class ShopScene extends RoomScene {
     wrap.innerHTML = `
       <div class="sh-left">
         <section class="sh-counter sh-counter--cards" aria-label="${esc(TERMS.card)}s for sale">
-          <h2 class="sh-h kit-heading">${esc(TERMS.deck)} <em>on the table</em></h2>
+          <h2 class="sh-h kit-heading kit-heading--inline">${esc(TERMS.deck)} <em>on the table</em></h2>
           <div class="sh-cards kit-cards" data-tip-avoid=".sh-card, .rm-where, .sh-counter--moth, .sh-side .sh-counter" role="list"></div>
         </section>
         <section class="sh-counter sh-counter--moth kit-panel" data-medal="moon">
@@ -148,18 +150,18 @@ export class ShopScene extends RoomScene {
             </dl>
           </div>
           <div class="sh-service" aria-label="Removal service">
-            <h3 class="sh-h kit-heading">Forgetting <em>a service</em></h3>
+            <h3 class="sh-h kit-heading kit-heading--inline">Forgetting <em>a service</em></h3>
             <div class="sh-remove"></div>
           </div>
         </section>
       </div>
       <div class="sh-side">
         <section class="sh-counter kit-panel" data-medal="star" aria-label="${esc(TERMS.relic)}s for sale">
-          <h2 class="sh-h kit-heading">${esc(TERMS.relic)}s <em>under the glass</em></h2>
+          <h2 class="sh-h kit-heading kit-heading--inline">${esc(TERMS.relic)}s <em>under the glass</em></h2>
           <div class="sh-list sh-list--keeps" role="list"></div>
         </section>
         <section class="sh-counter kit-panel" data-medal="paw" aria-label="${esc(TERMS.potion)}s for sale">
-          <h2 class="sh-h kit-heading">${esc(TERMS.potion)}s <em>in the jar</em></h2>
+          <h2 class="sh-h kit-heading kit-heading--inline">${esc(TERMS.potion)}s <em>in the jar</em></h2>
           <div class="sh-list sh-list--snacks" role="list"></div>
         </section>
       </div>`;
@@ -172,6 +174,14 @@ export class ShopScene extends RoomScene {
     this._cardSlots = [];
 
     // ── Tricks ──────────────────────────────────────────────────────────────
+    // Dressing at the two ends of the row of frames, standing on the shelf the
+    // way the skull and the candle stand on the Kid board. Decoration only.
+    const prop = (cls) => {
+      const p = el('i', `kit-prop ${cls}`);
+      p.setAttribute('aria-hidden', 'true');
+      return p;
+    };
+    this.$cards.appendChild(prop('kit-prop--skull sh-prop sh-prop--l'));
     for (const item of this.stock.cards) {
       const def = cardById(item.id);
       if (!def) continue;
@@ -196,6 +206,7 @@ export class ShopScene extends RoomScene {
       this._views.push(view);
       this._cardSlots.push({ slot, view });
     }
+    this.$cards.appendChild(prop('kit-prop--candle sh-prop sh-prop--r'));
 
     // ── Keepsakes ───────────────────────────────────────────────────────────
     for (const item of this.stock.keepsakes) {
@@ -254,6 +265,19 @@ export class ShopScene extends RoomScene {
     const onResize = () => this._layout();
     window.addEventListener('resize', onResize);
     this._own(() => window.removeEventListener('resize', onResize));
+    // The frames take the height the counter below them leaves, and that is
+    // only known once the counter's text has laid out (fonts, Mr. Moth's line),
+    // which can be after this runs — so re-fit whenever a frame changes size,
+    // not only when the window does.
+    if (typeof ResizeObserver === 'function') {
+      let raf = 0;
+      const ro = new ResizeObserver(() => {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => { if (!this._dead) this._layout(); });
+      });
+      for (const { slot } of this._cardSlots) ro.observe(slot.querySelector('.sh-card__face'));
+      this._own(() => { cancelAnimationFrame(raf); ro.disconnect(); });
+    }
     this._syncAffordable();
   }
 

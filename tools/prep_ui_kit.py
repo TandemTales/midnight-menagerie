@@ -360,6 +360,27 @@ def ribbon():
     print(f"      ribbon: {out_rgb.shape[1]}x{r1 - r0} ends {x(597)} / {w - x(868)}")
 
 
+def flanks():
+    """The purple acanthus scrolls that hold selectKid's cartouche at each end.
+
+    Left: x 250-372, right: x 1078-1200, y 18-222. Gold is removed (a candle
+    stick and a Kid frame's corner reach into both boxes), and so is anything
+    right against the cartouche rim."""
+    for name, box, fe in [("flank-l.webp", (250, 18, 372, 222), dict(left=20, bottom=30, top=6)),
+                          ("flank-r.webp", (1078, 18, 1200, 222), dict(right=20, bottom=30, top=6))]:
+        rgb = crop(SK, box)
+        l = blur(lum(rgb), 0.5)
+        purple = (l > 14) & ~ndimage.binary_dilation(warm(rgb) & (lum(rgb) > 40), iterations=3)
+        lab, n = ndimage.label(purple)
+        if n:
+            sizes = ndimage.sum(purple, lab, range(1, n + 1))
+            keep = np.isin(lab, 1 + np.nonzero(sizes >= 40)[0])   # drop specks
+            purple = keep
+        a = blur(ndimage.binary_dilation(purple, iterations=1).astype(np.float32), 0.6) * ramp(l, 6, 30)
+        a = feather(a, **fe)
+        save(rgba(unmix(rgb, a, (7, 5, 9)), a), name, 90)
+
+
 def bat():
     """The little purple bat from inside selectKid's cartouche."""
     rgb = crop(SK, (383, 116, 468, 182))
@@ -418,6 +439,38 @@ def button():
     out = np.where((d < 39.5)[..., None], enamel, ok)
     a = np.clip((R - 3.5 - d) / 1.6, 0, 1)
     save(rgba(out, a), "button.webp", 92)
+
+
+def button_ornate():
+    """The round button in its gold filigree, as it sits in selectKid's corners.
+
+    The back button's left half is clean (the Kid frame and the vine overlap
+    its right half), so the left half is mirrored into a symmetric setting and
+    the emptied enamel button from `button()` is laid into its middle.
+    """
+    cx, cy = 104, 986
+    HW, HH = 90, 86
+    rgb = crop(SK, (cx - HW, cy - HH, cx + HW, cy + HH))
+    h, w = rgb.shape[:2]
+    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    # bronze in shadow is dark but still clearly warm; the vine behind is violet
+    gold = (r > 30) & (r > b * 1.12) & (g > b * .92) & (lum(rgb) > 20)
+    gold = ndimage.binary_closing(gold, iterations=1)
+    gold = ndimage.binary_opening(gold, iterations=1)
+    near = ndimage.binary_dilation(gold, iterations=1)          # keep the ink outline
+    a = blur(near.astype(np.float32), 0.6) * np.maximum(ramp(lum(rgb), 4, 24), gold)
+    # symmetric: mirror the clean left half onto the right
+    half = w // 2
+    rgb[:, half:] = rgb[:, :half][:, ::-1][:, :w - half]
+    a[:, half:] = a[:, :half][:, ::-1][:, :w - half]
+    out = rgba(unmix(rgb, a, (6, 4, 8)), a)
+    # the emptied button in the middle
+    btn = Image.open(os.path.join(OUT, "button.webp")).convert("RGBA")
+    base = Image.fromarray(out, "RGBA")
+    bx, by = HW - btn.width // 2, HH - btn.height // 2 + 1
+    base.alpha_composite(btn, (bx, by))
+    save(np.asarray(base), "button-ornate.webp", 92)
+    print(f"      button-ornate: {w}x{h}, button {btn.width}px at ({bx},{by})")
 
 
 def shape_cut(name, box, shapes, out, soft=1.2, keep_lum=None):
@@ -542,6 +595,97 @@ def damask():
     save(rgba(col, A), "damask.webp", 86)
 
 
+def floor():
+    """A cobbled floor in the painting's manner, tileable left to right.
+
+    selectKid stands its mirror, its candle and its skull on dark cobbles; no
+    clean run of them is wide enough to cut out, so they are laid again here:
+    irregular stones (a relaxed Voronoi on a cylinder, so the strip wraps), laid
+    on a ground plane that flattens towards the back, with dark mortar, a
+    thread of warm light along each stone's upper edge and a shadowed lower lip.
+    """
+    from scipy.spatial import cKDTree
+    W, H = 1024, 200
+    V = 330.0                      # ground depth units covered by the strip
+    GAMMA = 1.7                    # how hard the back rows flatten
+    rng = np.random.default_rng(1719)
+
+    # seeds in ground space, relaxed twice so the stones are even but not a grid
+    n = int(W * V / (40 * 31))
+    seeds = np.column_stack([rng.uniform(0, W, n), rng.uniform(0, V, n)])
+    gx, gy = np.meshgrid(np.arange(0, W, 3.0), np.arange(0, V, 3.0))
+    grid = np.column_stack([gx.ravel(), gy.ravel()])
+    for _ in range(2):
+        wrapped = np.vstack([seeds, seeds + [W, 0], seeds - [W, 0]])
+        _, idx = cKDTree(wrapped).query(grid)
+        idx = idx % n
+        sx = np.zeros(n); sy = np.zeros(n); cnt = np.zeros(n)
+        # circular mean in x so a stone straddling the seam stays whole
+        ang = grid[:, 0] / W * 2 * np.pi
+        cs = np.zeros(n); sn = np.zeros(n)
+        np.add.at(cs, idx, np.cos(ang)); np.add.at(sn, idx, np.sin(ang))
+        np.add.at(sy, idx, grid[:, 1]); np.add.at(cnt, idx, 1)
+        ok = cnt > 0
+        seeds[ok, 0] = (np.arctan2(sn[ok], cs[ok]) / (2 * np.pi) * W) % W
+        seeds[ok, 1] = sy[ok] / cnt[ok]
+
+    # screen pixel -> ground point: v = V * (y/H)^(1/GAMMA), with a little wobble
+    yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
+    t = (yy + 0.5) / H
+    v = V * t ** (1.0 / GAMMA)
+    wob = periodic_noise(256, rng, beta=2.6, lo_cut=2)
+    wob = np.asarray(Image.fromarray(((wob + 1) * 127.5).astype(np.uint8)).resize((W, H), Image.BICUBIC), np.float32) / 127.5 - 1
+    u = (xx + wob * 3.0) % W
+    v = v + wob * 2.0
+    pts = np.column_stack([u.ravel(), v.ravel()])
+    wrapped = np.vstack([seeds, seeds + [W, 0], seeds - [W, 0]])
+    d, idx = cKDTree(wrapped).query(pts, k=2)
+    i1 = idx[:, 0] % n
+    d1 = d[:, 0].reshape(H, W); d2 = d[:, 1].reshape(H, W)
+    i1 = i1.reshape(H, W)
+    near = wrapped[idx[:, 0]].reshape(H, W, 2)
+    edge = (d2 - d1) * 0.5                               # ground units to the joint
+    dy = (v - near[..., 1])                              # + below the stone's centre
+    dxg = (u - near[..., 0])
+    dist = np.maximum(d1, 1e-3)
+
+    # ground units -> screen px, vertically, at this row
+    px_per_v = (H / V) * GAMMA * np.maximum(t, 1e-3) ** (GAMMA - 1)
+
+    stone_val = rng.normal(0, 1, n)
+    stone_warm = rng.uniform(0, 1, n)
+    cold = np.array([36, 30, 40], np.float32)
+    warmc = np.array([50, 39, 38], np.float32)
+    w_ = stone_warm[i1][..., None] * .75
+    col = cold * (1 - w_) + warmc * w_
+    col = col * (1 + stone_val[i1][..., None] * .09)
+    # each stone domed: lighter towards its middle and its upper side
+    r_est = 17.0
+    dome = np.clip(1 - dist / (r_est * 1.25), 0, 1)
+    col = col * (0.78 + 0.34 * dome[..., None]) * (1 - np.clip(dy / r_est, -1, 1)[..., None] * .10)
+
+    # grain
+    fine = rng.normal(0, 1, (H, W)).astype(np.float32)
+    blot = periodic_noise(256, rng, beta=1.9, lo_cut=3)
+    blot = np.asarray(Image.fromarray(((blot + 1) * 127.5).astype(np.uint8)).resize((W, H), Image.BICUBIC), np.float32) / 127.5 - 1
+    col = col * (1 + blot[..., None] * .10) + fine[..., None] * 2.0
+
+    # the joint, measured on screen so it thins towards the back
+    e_px = edge * np.sqrt(np.clip((dy / dist) ** 2 * px_per_v ** 2 + (dxg / dist) ** 2, 0.05, 4))
+    up = np.clip(-dy / dist, 0, 1)                      # upper side of a stone
+    dn = np.clip(dy / dist, 0, 1)
+    lit = np.clip(1 - (e_px - 1.2) / 2.4, 0, 1) * up
+    lip = np.clip(1 - (e_px - 1.0) / 3.2, 0, 1) * dn
+    col = col + lit[..., None] * np.array([40, 29, 18], np.float32) * (0.35 + 0.65 * t)[..., None]
+    col = col * (1 - lip[..., None] * .5)
+    mortar = np.clip(1.5 - e_px, 0, 1)
+    col = col * (1 - mortar[..., None]) + np.array([8, 6, 10], np.float32) * mortar[..., None]
+
+    # the back sinks into the dark
+    col = col * (0.30 + 0.70 * t ** 0.85)[..., None]
+    save(np.clip(col, 0, 255).astype(np.uint8), "floor.webp", 90)
+
+
 def marble():
     """Marbled lavender for display type, after the MENAGERIE letters."""
     n = 256
@@ -585,6 +729,7 @@ def hall_paintings():
 def main(sheet=False):
     print("kit ->", os.path.relpath(OUT, ROOT))
     hall_paintings()
+    floor()
     grain()
     damask()
     marble()
@@ -595,8 +740,10 @@ def main(sheet=False):
     frame()
     plate()
     ribbon()
+    flanks()
     bat()
     button()
+    button_ornate()
     props()
 
 

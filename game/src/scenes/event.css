@@ -23,7 +23,7 @@
   grid-template-areas: 'prose' 'options' 'outcome';
   align-content: center; justify-items: center;
   gap: clamp(10px, 1.8vh, 22px);
-  width: min(880px, 100%);
+  width: min(740px, 100%);
 }
 .ev-page.kit-panel {
   --pk: .8;
@@ -54,7 +54,7 @@
 
 /* ── prose ────────────────────────────────────────────────────────────────── */
 .ev-prose {
-  grid-area: prose; max-width: 66ch; width: 100%;
+  grid-area: prose; max-width: none; width: 100%;
   padding-bottom: clamp(12px, 1.8vh, 20px);
   position: relative;
 }
@@ -84,7 +84,7 @@
 /* ── options: three doors, each a nameplate with its numeral on an enamel boss ─ */
 .ev-options {
   grid-area: options; display: flex; flex-direction: column; gap: clamp(6px, 1vh, 10px);
-  width: 100%; max-width: 66ch;
+  width: 100%; max-width: none;
   counter-reset: ev-door;
   padding-top: clamp(4px, .8vh, 8px);
 }
@@ -164,7 +164,7 @@
 
 /* ── outcome ──────────────────────────────────────────────────────────────── */
 .ev-outcome {
-  grid-area: outcome; width: 100%; max-width: 66ch;
+  grid-area: outcome; width: 100%; max-width: none;
   position: relative;
   padding: var(--s-3) var(--s-2) var(--s-1);
   text-align: center;

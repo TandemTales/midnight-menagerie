@@ -27,10 +27,10 @@
 .sh-floor {
   flex: 1 1 auto; min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.14fr) minmax(0, .86fr) minmax(0, 1.14fr);
   grid-template-rows: minmax(clamp(236px, 34vh, 380px), 1fr) auto;
   column-gap: clamp(22px, 2.2vw, 40px);
-  row-gap: clamp(26px, 3.6vh, 36px);
+  row-gap: clamp(20px, 2.8vh, 26px);
   width: min(1560px, 100%); margin: 0 auto;
 }
 /* The markup groups the counters as a left column and a side column; the board
@@ -38,32 +38,43 @@
 .sh-left, .sh-side { display: contents; }
 .sh-counter--cards { grid-column: 1 / -1; grid-row: 1; }
 .sh-side > .sh-counter:first-child { grid-column: 1; grid-row: 2; }
-.sh-counter--moth { grid-column: 2; grid-row: 2; --medal-k: .62; }
+.sh-counter--moth { grid-column: 2; grid-row: 2; }
 .sh-side > .sh-counter:last-child { grid-column: 3; grid-row: 2; }
 
 /* ── headings ─────────────────────────────────────────────────────────────── */
 .sh-h {
-  margin: 0 0 clamp(6px, 1vh, 10px);
+  margin: 0 0 clamp(4px, .8vh, 8px);
   font-size: var(--fs-sm);
-  flex-wrap: wrap; row-gap: 0;
-}
-.sh-h em {
-  order: 1;
-  margin-left: -2px;
-  font-family: var(--font-body); font-style: italic; font-weight: 400;
-  font-size: var(--fs-xs); letter-spacing: .02em; text-transform: none;
-  color: var(--kit-text-mid); text-align: center;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 
 /* ── the Tricks: a row of portrait frames on the wall ─────────────────────── */
 .sh-counter--cards {
+  position: relative;
   display: flex; flex-direction: column; align-items: center;
   min-height: 0;
 }
-.sh-counter--cards > .sh-h { width: clamp(300px, 30vw, 520px); }
+/* the shelf the frames stand on: a dark plank with a brass nosing */
+.sh-cards::after {
+  content: ''; position: absolute; z-index: -2; pointer-events: none;
+  left: 2%; right: 2%; bottom: 2px; height: 18px;
+  background:
+    linear-gradient(180deg,
+      #2a1f26 0px, #3a2b2c 4px,                                  /* the top face, lit */
+      var(--kit-gold-hi) 5px, var(--kit-gold) 6px, var(--kit-gold-lo) 7px,   /* brass nosing */
+      #1a1216 8px, #120c10 100%);                                /* the front edge */
+  box-shadow: 0 10px 18px -4px rgba(0, 0, 0, .85);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 7%, black 93%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0%, black 7%, black 93%, transparent 100%);
+}
+/* dressing at the two ends of the row of frames (flex items of .sh-cards) */
+.sh-cards > .sh-prop { position: relative; align-self: flex-end; flex: none; margin-bottom: 16px; }
+.sh-prop--l { width: clamp(64px, 5.4vw, 92px); filter: brightness(.9); }
+.sh-prop--r { width: clamp(50px, 4.2vw, 72px); }
+@media (max-width: 1440px) { .sh-cards > .sh-prop { display: none; } }
+.sh-counter--cards > .sh-h { width: clamp(340px, 34vw, 580px); margin-bottom: 0; }
 .sh-cards {
   --frame-pad: clamp(12px, 1vw, 16px);
+  position: relative;
   flex: 1 1 auto; min-height: 0;
   display: flex; justify-content: center; align-items: stretch;
   gap: calc(var(--frame-pad) * 2 + clamp(14px, 1.8vw, 34px));
@@ -122,7 +133,7 @@
 /* the price, on a nameplate across the frame's bottom rail */
 .sh-card .sh-buy {
   grid-row: 2;
-  margin-top: calc(var(--frame-pad) - var(--plate-h) * .5);
+  margin-top: calc(-1 * (var(--frame-pad) + 6px));
   z-index: 2;
 }
 
@@ -130,14 +141,15 @@
 .sh-side > .sh-counter,
 .sh-counter--moth {
   --pk: .74;
-  padding: clamp(16px, 2.2vh, 24px) clamp(14px, 1.3vw, 22px) clamp(10px, 1.4vh, 16px);
+  --medal-k: .82;
+  padding: clamp(14px, 2vh, 20px) clamp(14px, 1.3vw, 22px) clamp(6px, 1vh, 10px);
   align-self: stretch;
 }
 .sh-list { display: flex; flex-direction: column; gap: 0; }
 .sh-row {
   display: grid; grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center; gap: clamp(8px, .8vw, 12px);
-  padding: clamp(4px, .7vh, 7px) 2px;
+  padding: clamp(3px, .5vh, 5px) 2px;
   transition: filter var(--t-quick) var(--ease-out);
 }
 /* a gold hairline between entries, fading at both ends like the boards' rules */
@@ -166,20 +178,20 @@
 .sh-row__txt { min-width: 0; }
 .sh-row__txt b {
   display: block;
-  font-family: var(--font-body); font-weight: 600; font-size: calc(var(--fs-md) * 1.04);
-  line-height: 1.15; color: var(--kit-name);
+  font-family: var(--font-body); font-weight: 600; font-size: var(--fs-md);
+  line-height: 1.12; color: var(--kit-name);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .sh-row__txt em {
   display: block; font-style: normal;
-  font-size: var(--fs-xs); color: var(--kit-text-mid); line-height: 1.32;
+  font-size: var(--fs-xs); color: var(--kit-text-mid); line-height: 1.26;
 }
 
 /* ── the buy button: a nameplate, affordability unmistakable ─────────────── */
 .sh-buy {
   --plate-h: clamp(40px, 5vh, 46px);
-  min-width: calc(var(--plate-h) * 2.35);
-  padding-inline: calc(var(--plate-h) * .5);
+  min-width: calc(var(--plate-h) * 2.2);
+  padding-inline: calc(var(--plate-h) * .42);
   gap: 0;
   cursor: pointer;
   transition: filter var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out);
@@ -192,7 +204,7 @@
 }
 .sh-buy__price i {
   font-style: normal; font-family: var(--font-display); font-weight: 700;
-  font-size: 9px; letter-spacing: .16em;
+  font-size: 9px; letter-spacing: .1em;
   text-transform: uppercase; color: var(--kit-text-mid);
 }
 .sh-buy__state {
@@ -226,22 +238,27 @@
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   grid-template-rows: auto auto;
-  column-gap: clamp(10px, 1vw, 18px); row-gap: clamp(4px, .8vh, 10px);
-  align-items: center;
+  column-gap: clamp(10px, 1vw, 16px); row-gap: clamp(2px, .5vh, 6px);
+  align-items: start;
   background:
     radial-gradient(60% 70% at 18% 40%, color-mix(in srgb, var(--kit-candle) 12%, transparent), transparent 70%),
     radial-gradient(90% 60% at 50% 0%, color-mix(in srgb, var(--kit-violet) 9%, transparent), transparent 70%),
     url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
     linear-gradient(180deg, var(--kit-panel-hi) 0%, var(--kit-panel) 40%, color-mix(in oklab, var(--kit-panel) 80%, var(--kit-void)) 100%);
   background-blend-mode: normal, normal, overlay, normal;
-  padding-top: clamp(26px, 3.6vh, 36px);
+}
+/* the moon rides smaller on his rail than the star and the paw do on theirs,
+   and his name starts below it */
+.sh-side > .sh-counter.sh-counter--moth, .sh-counter.sh-counter--moth {
+  --medal-k: .56;
+  padding-top: clamp(24px, 3.4vh, 32px);
 }
 /* He is engraved, not cartooned: brass line-work on enamel inside a round
    medallion, the same metal as every other ornament on the board. */
 .sh-moth {
   grid-column: 1; grid-row: 1;
-  width: clamp(84px, 7.4vw, 124px); height: auto; aspect-ratio: 1;
-  display: block; align-self: start;
+  width: clamp(70px, 5.6vw, 96px); height: auto; aspect-ratio: 1;
+  display: block; align-self: center;
   padding: 7%;
   border-radius: 50%;
   background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
@@ -272,24 +289,34 @@
 .rm:not(.is-still) .sh-moth__glow { animation: sh-flicker 5.5s var(--ease-soft) infinite; }
 @keyframes sh-flicker { 0%,100% { opacity: .95; } 43% { opacity: .6; } 66% { opacity: 1; } }
 
-.sh-moth__say { grid-column: 2; grid-row: 1; min-width: 0; }
+/* his words beside him; what you carry runs across the panel under both */
+.sh-moth__say { display: contents; }
+.sh-moth__name, .sh-moth__line { grid-column: 2; }
+.sh-moth__name { grid-row: 1; align-self: end; }
+.sh-moth__line { grid-row: 2; align-self: start; }
+.sh-moth { grid-row: 1 / 3; }
+.sh-moth__you { grid-column: 1 / -1; grid-row: 3; }
+.sh-service { grid-row: 4; }
 .sh-moth__name {
   margin: 0; font-family: var(--font-display); font-weight: 700; font-size: var(--fs-sm);
   letter-spacing: .24em; text-transform: uppercase; color: var(--kit-lav);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .sh-moth__line {
-  margin: 3px 0 clamp(4px, .8vh, 8px);
-  font-size: var(--fs-sm); font-style: italic; color: var(--kit-text); line-height: 1.38;
+  margin: 1px 0 clamp(2px, .5vh, 5px);
+  font-size: var(--fs-sm); font-style: italic; color: var(--kit-text); line-height: 1.3;
 }
-.sh-moth__you { display: flex; gap: clamp(10px, 1.1vw, 20px); margin: 0; flex-wrap: wrap; }
-.sh-moth__you div { display: flex; flex-direction: column; gap: 0; }
+.sh-moth__you {
+  display: flex; justify-content: space-between; gap: 2px 10px; margin: 3px 0 0; flex-wrap: wrap;
+  padding: 3px 2px 0;
+}
+.sh-moth__you div { display: flex; flex-direction: row; align-items: baseline; gap: 5px; }
 .sh-moth__you dt {
-  font-family: var(--font-display); font-weight: 700; font-size: 10px;
-  letter-spacing: .16em; text-transform: uppercase; color: var(--kit-text-lo);
+  font-family: var(--font-display); font-weight: 700; font-size: 9.5px;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--kit-text-lo);
 }
 .sh-moth__you dd {
-  margin: 0; font-family: var(--font-num); font-weight: 600; font-size: var(--fs-lg); line-height: 1.1;
+  margin: 0; font-family: var(--font-num); font-weight: 600; font-size: var(--fs-md); line-height: 1.1;
   color: var(--kit-gold-hi); text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .sh-deck { color: inherit; font: inherit; padding: 0 2px; border-bottom: 1px dotted color-mix(in srgb, var(--kit-gold) 70%, transparent); }
@@ -297,16 +324,13 @@
 
 /* the removal service, across the foot of his panel */
 .sh-service {
-  grid-column: 1 / -1; grid-row: 2;
-  padding-top: clamp(6px, 1vh, 10px);
+  grid-column: 1 / -1;
+  padding-top: clamp(3px, .6vh, 6px);
   border-top: 1px solid transparent;
   border-image: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 60%, transparent) 16%, color-mix(in srgb, var(--kit-gold) 60%, transparent) 84%, transparent) 1;
   display: flex; flex-direction: column;
 }
-.sh-service .sh-h { font-size: var(--fs-xs); margin-bottom: 4px; }
-.sh-service .sh-h em { display: none; }
-.sh-service .sh-h::after { content: none; }
-.sh-service .sh-h::before { content: none; }
+.sh-service .sh-h { font-size: var(--fs-xs); margin-bottom: 0; }
 .sh-remove { display: flex; align-items: center; gap: var(--s-3); }
 .sh-remove__blurb { flex: 1; margin: 0; font-size: var(--fs-xs); color: var(--kit-text-mid); line-height: 1.36; }
 .sh-remove__blurb b { color: var(--kit-gold-hi); font-weight: 400; }
@@ -322,6 +346,10 @@
 .sh-line.is-good { color: var(--good-300); }
 .sh-line.is-bad  { color: var(--threat-200); }
 
+@media (max-width: 1400px) {
+  .sh-floor { grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr) minmax(0, 1.04fr); }
+}
+
 /* ── narrow: the counter stacks under the frames and the board scrolls ───── */
 @media (max-width: 1100px) {
   .sh-floor { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(260px, auto) auto auto; }
@@ -332,6 +360,10 @@
    The frames give up height before anything else does; the panels tighten
    their padding and type a step. */
 @media (max-height: 860px) {
+  .scene--shop .sh-moth { width: 62px; }
+  .scene--shop .sh-moth__you { justify-content: space-around; row-gap: 0; }
+  .scene--shop .sh-remove__blurb { line-height: 1.24; }
+  .scene--shop .sh-counter.sh-counter--moth { padding-top: 22px; padding-bottom: 6px; }
   .scene--shop .sh-row__txt b { font-size: var(--fs-sm); }
   .scene--shop .sh-row__txt em { font-size: 11px; line-height: 1.28; }
   .scene--shop .sh-moth__line { font-size: var(--fs-xs); }

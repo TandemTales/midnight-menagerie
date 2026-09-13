@@ -140,6 +140,7 @@ export class RoomScene extends Scene {
         <div class="rm-vig" aria-hidden="true"></div>
         <div class="rm-motes" aria-hidden="true"></div>
         <div class="kit-dress" aria-hidden="true">
+          <i class="kit-dress__floor"></i>
           <i class="kit-dress__rule"></i>
           <i class="kit-dress__vine kit-dress__vine--l"></i>
           <i class="kit-dress__vine kit-dress__vine--r"></i>
@@ -153,6 +154,8 @@ export class RoomScene extends Scene {
 
         <header class="rm-head">
           <div class="rm-where kit-titleblock">
+            <i class="kit-titleblock__flank kit-titleblock__flank--l" aria-hidden="true"></i>
+            <i class="kit-titleblock__flank kit-titleblock__flank--r" aria-hidden="true"></i>
             <span class="rm-eyebrow kit-ribbon">${esc(eyebrow || region.name)}</span>
             <h1 class="rm-title kit-cartouche__title">${esc(title)}</h1>
             ${sub ? `<p class="rm-sub kit-cartouche__sub">${esc(sub)}</p>` : ''}
@@ -238,7 +241,7 @@ export class RoomScene extends Scene {
     const b = el('button', 'rm-go kit-btn');
     b.type = 'button';
     b.innerHTML = `<span>${esc(label)}</span>${hint ? `<em>${esc(hint)}</em>` : ''}<kbd>${esc(key)}</kbd>`
-      + `<i class="kit-medallion kit-btn__medal" aria-hidden="true">${KIT_GLYPH.onward}</i>`;
+      + `<i class="kit-medallion kit-medallion--ornate kit-btn__medal" aria-hidden="true">${KIT_GLYPH.onward}</i>`;
     b.addEventListener('click', () => { this.ctx.audio?.play?.('ui:confirm'); onGo(); });
     this.$foot.appendChild(b);
     this.$go = b;
@@ -554,6 +557,13 @@ export class RewardScene extends RoomScene {
         <p>Or take none — and be luckier next time.</p>
       </div>
       <div class="rw-fan kit-cards" data-tip-avoid=".rw-slot, .rm-where, .rw-spoils" role="listbox" aria-label="Three ${esc(TERMS.card)}s. Choose one, or skip."></div>`;
+    // Two candles stand either side of the three frames, the way the Kid board
+    // keeps one beside its mirror. Decoration only.
+    for (const side of ['l', 'r']) {
+      const c = el('i', `kit-prop kit-prop--candle rw-candle rw-candle--${side}`);
+      c.setAttribute('aria-hidden', 'true');
+      sec.appendChild(c);
+    }
     this.$body.appendChild(sec);
     const fan = sec.querySelector('.rw-fan');
     this.$fan = fan;
@@ -655,7 +665,7 @@ export class RewardScene extends RoomScene {
     if (r.cards.length) {
       const skip = el('button', 'rm-btn rm-btn--ghost rw-skip kit-btn kit-btn--quiet');
       skip.type = 'button';
-      skip.innerHTML = `<i class="kit-medallion kit-btn__medal" aria-hidden="true">${KIT_GLYPH.none}</i>`
+      skip.innerHTML = `<i class="kit-medallion kit-medallion--ornate kit-btn__medal" aria-hidden="true">${KIT_GLYPH.none}</i>`
         + `<span>Take none</span><em>+12 ${esc(TERMS.gold)} &middot; Luck +2</em><kbd>S</kbd>`;
       skip.addEventListener('click', () => this._skip());
       this.$foot.appendChild(skip);
