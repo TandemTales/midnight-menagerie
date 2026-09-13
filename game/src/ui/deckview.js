@@ -177,7 +177,14 @@ export class DeckView {
     empty.className = 'mm-deck__empty';
     empty.hidden = true;
 
-    root.append(bar, filt, note, empty, grid);
+    /* the table the Tricks are laid out on: the Shop's alcove (.kit-stage), the
+       panels' rail round a deeper stretch with the moon on its top rule, the
+       note engraved under the moon and the cards below it */
+    const table = document.createElement('div');
+    table.className = 'mm-deck__table kit-stage';
+    table.append(note, empty, grid);
+
+    root.append(bar, filt, table);
     this.el = root; this.grid = grid; this.emptyEl = empty;
 
     const onResize = () => this._schedulePlace();
