@@ -414,9 +414,9 @@ export class ShopScene extends RoomScene {
 
   _layout() {
     // The shelf is read, not glanced at: rules type never prints smaller than
-    // a full-size card's (see _cardfit.js).
+    // the pre-kit shop printed it at 1280x800, on a 228 px card (_cardfit.js).
     for (const { slot, view } of this._cardSlots || []) {
-      fitCardToSlot(view, slot.querySelector('.sh-card__face'), { legibleAt: 224 });
+      fitCardToSlot(view, slot.querySelector('.sh-card__face'), { legibleAt: 232 });
     }
   }
 

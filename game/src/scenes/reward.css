@@ -320,8 +320,12 @@
 }
 .rw-candle--l { left: clamp(34px, 3.4vw, 60px); }
 .rw-candle--r { right: clamp(34px, 3.4vw, 60px); }
-/* a gothic window on the alcove's back wall either side of the frames */
-.rw-window { z-index: 0; top: calc(var(--slot-h) * .3); }
+/* a gothic window on the alcove's back wall either side of the frames; a
+   keyword panel opened beside the first or last frame is hung over it, so
+   that window steps back into the dark rather than peek out round the panel */
+.rw-window { z-index: 0; top: calc(var(--slot-h) * .3); transition: opacity var(--t-base) var(--ease-out); }
+body:has(.mm-tip.is-in[data-kind="keywords"][data-side="left"]) .rw-window--l,
+body:has(.mm-tip.is-in[data-kind="keywords"][data-side="right"]) .rw-window--r { opacity: 0; }
 .rw-window--l { left: calc(var(--stage-w) / 4 - var(--fan-half) / 2 - var(--win-w) / 2); }
 .rw-window--r { right: calc(var(--stage-w) / 4 - var(--fan-half) / 2 - var(--win-w) / 2); }
 /* the heading hangs below the crest's lower tip (49/98 of the medallion is
