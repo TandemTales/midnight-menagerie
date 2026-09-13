@@ -100,14 +100,16 @@
     linear-gradient(118deg, transparent 60%, rgba(255, 244, 226, .025) 65%, transparent 70%);
 }
 /* candle light pooling in the two lower corners of the frame: from the candle
-   on END TURN's stack, and off Nerve's lit coin */
+   on END TURN's stack, and off Nerve's lit coin. Only the lower band, and
+   plain alpha rather than a blend: a full-frame blended layer is a full-frame
+   pass on every frame the stage draws. */
 .cb-dress__warmth {
   left: calc(var(--kit-edge) + 2px); right: calc(var(--kit-edge) + 2px);
-  top: calc(var(--hud-h) + var(--kit-edge) * .5 + 4px); bottom: calc(var(--kit-edge) + 2px);
+  top: auto; height: 40%; bottom: calc(var(--kit-edge) + 2px);
   background:
-    radial-gradient(26% 34% at 97% 96%, color-mix(in srgb, var(--kit-candle) 22%, transparent), color-mix(in srgb, var(--kit-candle) 7%, transparent) 55%, transparent 100%),
-    radial-gradient(22% 28% at 3% 98%, color-mix(in srgb, var(--kit-candle) 14%, transparent), transparent 100%);
-  mix-blend-mode: screen;
+    radial-gradient(18% 62% at 91% 64%, color-mix(in srgb, var(--kit-candle) 20%, transparent), color-mix(in srgb, var(--kit-candle) 6%, transparent) 55%, transparent 100%),
+    radial-gradient(30% 90% at 95% 100%, color-mix(in srgb, var(--kit-candle) 10%, transparent), transparent 100%),
+    radial-gradient(20% 64% at 7% 92%, color-mix(in srgb, var(--kit-candle) 12%, transparent), transparent 100%);
 }
 /* cobwebs in the lower corners too, as the Kid board hangs them in all four */
 .cb-dress__web { --web-w: clamp(84px, 7vw, 116px); opacity: .5; bottom: calc(var(--kit-edge) + 6px); }
@@ -2642,14 +2644,15 @@
    top of the frame; this is where it lands: a pool of cold stage light on the
    boards under the boss, wider and brighter than any creature's contact
    shadow, and the air behind him catching a little of his own ghost-light.
-   Both screen-blended and still: the boss's own motion is what moves. */
+   Still: the boss's own motion is what moves. */
 .cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__stage::before {
   content: ''; position: absolute; z-index: -1; pointer-events: none;
   left: -30%; right: -30%; top: 4%; bottom: -8%;
+  /* plain alpha: a blend inside the creature's own stacking context only ever
+     reached the creature, and cost a render surface for it */
   background:
-    radial-gradient(46% 16% at 50% 97%, color-mix(in srgb, var(--kit-moon) 30%, transparent), color-mix(in srgb, var(--kit-moon) 9%, transparent) 60%, transparent 100%),
-    radial-gradient(40% 46% at 50% 44%, color-mix(in srgb, var(--spectre-400) 13%, transparent), transparent 100%);
-  mix-blend-mode: screen;
+    radial-gradient(46% 16% at 50% 97%, color-mix(in srgb, var(--kit-moon) 24%, transparent), color-mix(in srgb, var(--kit-moon) 7%, transparent) 60%, transparent 100%),
+    radial-gradient(40% 46% at 50% 44%, color-mix(in srgb, var(--spectre-400) 10%, transparent), transparent 100%);
 }
 .cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__pool { width: 104%; height: 40px; bottom: -15px; }
 /* the plate's painted rails stop short of its box: the tube tucks up under it */
