@@ -445,6 +445,9 @@
    disables pointer events on its children for hand hit-testing; this screen
    has a normal slot wrapper, so let the keyword itself receive the hover. */
 .scene--reward .mm-card__kw { pointer-events: auto; cursor: help; }
+/* a card shown to be read (a reward, a shelf) never letters its VANISH / KEEP
+   badge under 11px: card.css sizes it off the viewport, not the slot */
+.scene--reward .mm-card__badges, .scene--shop .mm-card__badges { font-size: max(11px, calc(9 * var(--u))); }
 /* the rarity, engraved on an enamel cartouche hung across the ledge's carved
    front under its frame, the way the Shop hangs its prices */
 .rw-slot__rarity {

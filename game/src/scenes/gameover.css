@@ -589,6 +589,8 @@
   border-radius: 50%;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 20%, transparent), transparent 72%);
 }
+/* the card is read here: its VANISH / KEEP badge never letters under 11px */
+.go-mvp__slot .mm-card__badges { font-size: max(11px, calc(9 * var(--u))); }
 .go-mvp__note {
   margin: 0; font-size: max(13.5px, var(--fs-sm)); line-height: 1.45; font-style: italic;
   color: var(--kit-text-mid);
