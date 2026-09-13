@@ -217,39 +217,50 @@
    =========================================================================== */
 
 /* The board's geometry, in viewport units so the room's light can be pointed
-   at the things standing in it: the stage, the three frames and the candles.
-   (A window is not hung here: the first Trick's keyword panel opens over the
-   alcove's left wall, and a board with one window reads lopsided. The moon
-   comes in from high windows out of frame instead.) */
+   at the things standing in it: the stage, the three frames, the two moonlit
+   windows in the stage's flanks and the candles under them. */
 .rm--reward {
   --stage-w: min(1440px, 100vw - 2 * var(--rm-pad) - 2 * var(--kit-vine-w) - 30px);
   --stage-half: calc(var(--stage-w) / 2);
-  --slot-h: min(21.6vw, 36.4vh);
-  --slot-w: calc(var(--slot-h) * var(--card-aspect));
   --frame-pad: clamp(16px, 1.5vw, 24px);
   --fan-gap: calc(var(--frame-pad) * 2 + clamp(18px, 2vw, 34px));
+  /* either flank of the stage: a moonlit lancet over a candle */
+  --flank-w: clamp(136px, 10.6vw, 190px);
+  /* The three frames: as wide as the stage between its flanks allows, as tall
+     as the board under the top rule allows (the fixed rows above and below
+     them are the clamp), whichever is smaller. With CHOOSE ONE TRICK on the
+     rule instead of on a row of its own, that height is the frames'. */
+  --slot-h: min((var(--stage-w) - 2 * var(--flank-w) - 2 * var(--fan-gap) - 2 * var(--frame-pad)) / 3 / var(--card-aspect),
+                44vh - 23px);
+  --slot-w: calc(var(--slot-h) * var(--card-aspect));
   --fan-half: calc(var(--slot-w) * 1.5 + var(--fan-gap) + var(--frame-pad));
-  --candle-cx: calc(50vw - var(--stage-half) + clamp(34px, 3.4vw, 60px) + clamp(50px, 4.2vw, 72px) / 2);
-  /* candle light: the two candles in the frame's lower corners light the
-     alcove's panelling and floor round them (ui/kit.css .kit-ground) */
-  --wl3-x: var(--candle-cx);                 --wl3-y: calc(100vh - clamp(150px, 20vh, 190px));
-  --wl3-w: clamp(360px, 34vw, 560px);        --wl3-h: calc(var(--wl3-w) * 1.05);
-  --wl4-x: calc(100vw - var(--candle-cx));   --wl4-y: var(--wl3-y);
+  --flank-cx: calc(50vw - var(--stage-half) + var(--flank-w) / 2 + 6px);
+  /* the moon medallion riding on the ribbon, and how far it rises above the
+     row on the rule (its foot a sixth behind the ribbon's upper edge) */
+  --crest-w: clamp(72px, 5.4vw, 92px);
+  --crest-h: calc(var(--crest-w) * 98 / 156);
+  --crest-rise: calc(var(--crest-h) * .84 - clamp(30px, 3.8vh, 36px) / 2 + clamp(34px, 4.3vh, 40px) / 2 + 3px);
+  /* candle light: the two candles on the rail's ends light the alcove's
+     panelling round them (ui/kit.css .kit-ground) */
+  --wl3-x: var(--flank-cx);                  --wl3-y: calc(100vh - clamp(150px, 20vh, 190px));
+  --wl3-w: clamp(320px, 30vw, 500px);        --wl3-h: calc(var(--wl3-w) * 1.05);
+  --wl4-x: calc(100vw - var(--flank-cx));    --wl4-y: var(--wl3-y);
   --wl4-w: var(--wl3-w);                     --wl4-h: var(--wl3-h);
   /* moonlight: a wash over the plaque, and a shaft slanting down through the
-     alcove either side of the frames from high windows out of frame */
+     alcove from each window in its flanks */
   --ml1-x: 50vw;                             --ml1-y: calc(var(--hud-h) + 6vh);
   --ml1-w: 70vw;                             --ml1-h: 44vh;
-  --mb1-x: calc(50vw - var(--fan-half) - var(--stage-w) * .08); --mb1-y: calc(var(--hud-h) + 26vh);
-  --mb1-w: calc(var(--stage-w) * .2);        --mb1-h: calc(100vh - var(--mb1-y));
+  --mb1-x: calc(var(--flank-cx) + var(--flank-w) * .28); --mb1-y: calc(var(--hud-h) + 30vh);
+  --mb1-w: calc(var(--flank-w) * 1.5);       --mb1-h: calc(100vh - var(--mb1-y));
   --mb2-x: calc(100vw - var(--mb1-x));       --mb2-y: var(--mb1-y);
   --mb2-w: var(--mb1-w);                     --mb2-h: var(--mb1-h);
 }
-/* a Big Scare also hands over a Keepsake: its panel hangs under the crest, so
-   the crest is drawn a size smaller to clear the panel's own medallion, the
-   ribbon sits closer, and the three stand a size smaller on the ledge */
-.rm--reward:has(.rw-keepsake) { --slot-h: min(15vw, 22vh); }
-.rm--reward:has(.rw-keepsake) .rw-stage { --stage-medal-w: clamp(86px, 6vw, 100px); }
+/* a Big Scare also hands over a Keepsake: its panel hangs under the row on the
+   rule, and the three stand in the height it leaves */
+.rm--reward:has(.rw-keepsake) {
+  --slot-h: min((var(--stage-w) - 2 * var(--flank-w) - 2 * var(--fan-gap) - 2 * var(--frame-pad)) / 3 / var(--card-aspect),
+                44vh - 23px - clamp(130px, 15.6vh, 160px));
+}
 .rm--reward:has(.rw-keepsake) .rw-cards__head { margin-top: 8px; }
 
 /* One axis. The room title sat hard against the top-left corner while the
@@ -264,42 +275,49 @@
 /* auto margins centre the stage without ever pushing an overflowing stage's
    top rail (and the spoils on it) up under the title */
 .scene--reward .rm-body {
-  gap: clamp(8px, 1.5vh, 22px); justify-content: flex-start; padding-top: 0;
+  gap: clamp(8px, 1.5vh, 22px); justify-content: flex-start; padding-top: var(--crest-rise);
   overflow-y: auto; scrollbar-color: var(--kit-gold-lo) transparent;
 }
 .scene--reward .rm-body > .rw-stage { margin-block: auto; flex: none; }
-/* a Big Scare also hands over a Keepsake: the frames give it the room
-   (.rm--reward:has(.rw-keepsake) above) */
 
-/* the stage: the kit's filigree frame. ON its top rail, in one line: the
-   spoils either side of the Kid board's moon medallion, seated on the rail the
-   way selectKid's mirror wears it. Under the medallion, on a row of its own,
-   CHOOSE ONE TRICK on the gold ribbon, so nothing is ever half-buried. */
+/* the stage: the kit's filigree frame. ON its top rule, one row of plates:
+   the spoils either side and CHOOSE ONE TRICK on the gold ribbon between
+   them (662d874's), the Kid board's moon medallion riding on the ribbon with
+   its foot tucked behind the ribbon's upper edge. */
 .rw-stage {
   --spoil-h: clamp(34px, 4.3vh, 40px);
   --rib-h: clamp(30px, 3.8vh, 36px);
   --stage-medal: url("../../assets/ui/kit/medal-moon.webp");
-  --stage-medal-w: clamp(104px, 7.6vw, 128px);
+  --stage-medal-w: var(--crest-w);
   display: flex; flex-direction: column; align-items: center;
   gap: 0;
   width: var(--stage-w);
-  margin-top: clamp(22px, 3vh, 34px);
-  /* room under the three for the ledge's front and the shadow it casts */
-  padding: 0 0 clamp(40px, 5.6vh, 54px);
+  /* room under the three for the rail's apron, its bottom rule clear of
+     the rail's solid wood and under the last of its shadow */
+  padding: 0 0 clamp(26px, 3.4vh, 32px);
 }
 .rw-stage::before { top: calc(var(--spoil-h) / 2); }
-/* the moon: centred on the rail line */
-.rw-stage::after { top: calc(var(--spoil-h) / 2); z-index: 3; }
+/* the moon: on top of the ribbon, its foot behind the ribbon's upper edge */
+.rw-stage::after {
+  top: calc(var(--spoil-h) / 2 - var(--rib-h) / 2 + var(--crest-h) * .16);
+  transform: translate(-50%, -100%);
+  z-index: 3;
+}
 
 .rw-spoils { display: flex; flex-direction: column; align-items: center; gap: var(--s-3); position: relative; z-index: 4; }
 .rw-spoils__row { display: flex; align-items: center; justify-content: center; gap: 0; }
 .rw-spoils__side { display: flex; gap: clamp(8px, 1vw, 16px); align-items: center; }
 .rw-spoils__side--l { justify-content: flex-end; }
-/* the medallion's place in the row: the spoils stand clear of it */
+/* CHOOSE ONE TRICK's place in the row, with air either side of it */
 .rw-spoils__crest {
-  flex: none;
-  width: calc(var(--stage-medal-w) + clamp(20px, 2vw, 34px));
+  flex: none; display: flex; align-items: center; justify-content: center;
   min-height: var(--spoil-h);
+  padding-inline: clamp(10px, 1vw, 18px);
+}
+.rw-spoils__crest > .kit-heading--ribbon {
+  --rib-h: inherit;
+  margin: 0;
+  font-size: max(14px, calc(var(--rib-h) * .47));
 }
 
 /* A Keepsake in the spoils is a kit panel with the star medallion on its rail. */
@@ -328,58 +346,67 @@
 
 .rw-cards {
   position: relative;
-  display: flex; flex-direction: column; align-items: center; gap: clamp(2px, .5vh, 6px); width: 100%;
+  display: flex; flex-direction: column; align-items: center; gap: 0; width: 100%;
 }
-/* The ledge the three stand on: carved walnut with an egg-and-dart front
-   picked out in gilt and a gilt bead along its lit lip (.kit-ledge,
-   ledge.webp). The frames' bottom rails stand on its top, a little back from
-   the lip, each rarity plate hangs on its front, the two candles stand at its
-   ends, and it throws its own shadow down the alcove wall. Its ends are lost
-   in the alcove's dark. */
+/* The rail the three stand on: PEARL's star-capped shelf rail (.kit-shelf-rail,
+   rail-panels.webp): a walnut top lit along its front lip, a gilt bead, an
+   apron of recessed panels in beaded gilt mouldings, a gilt star rosette on
+   each end block. The frames' bottom rails stand on its top face, each rarity
+   plate stands on its apron under its frame, the two candles stand on its
+   ends, and it throws its own shadow down the alcove wall. */
 .rw-cards {
-  --rw-ledge-h: clamp(50px, 6.6vh, 62px);
-  --stand: 20px;              /* the frames' feet, above the section's foot (.rw-fan's padding) */
+  --rw-rail-h: clamp(54px, 7vh, 66px);
+  --stand: 12px;              /* the frames' feet, above the section's foot (.rw-fan's padding) */
 }
 .rw-ledge {
-  --ledge-h: var(--rw-ledge-h);
+  --rail-h: var(--rw-rail-h);
   position: absolute; z-index: -1;
-  left: clamp(6px, .6vw, 10px); right: clamp(6px, .6vw, 10px);
-  /* the frames' feet land toward the back of the top face */
-  bottom: calc(var(--stand) + var(--ledge-h) * .18 - var(--ledge-h) * 152 / 116);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 7%, black 93%, transparent 100%);
-          mask-image: linear-gradient(90deg, transparent 0%, black 7%, black 93%, transparent 100%);
+  left: clamp(8px, .8vw, 14px); right: clamp(8px, .8vw, 14px);
+  /* the frames' feet land on the middle of its top face */
+  bottom: calc(var(--stand) + var(--rail-h) * 14 / 96 - var(--rail-h));
+  /* its cast shadow thins out before the stage's bottom rule */
+  -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 96%);
+          mask-image: linear-gradient(to bottom, black 70%, transparent 96%);
 }
-/* a pool of candlelight on the wall and the ledge under the three */
+/* a pool of candlelight on the wall and the rail under the three */
 .rw-cards::before {
   content: ''; position: absolute; z-index: -1; pointer-events: none;
-  left: 50%; bottom: calc(var(--stand) - var(--rw-ledge-h) * .6);
+  left: 50%; bottom: calc(var(--stand) - var(--rw-rail-h) * .6);
   width: min(100%, calc(var(--fan-half) * 2.2)); height: calc(var(--slot-h) * .72);
   translate: -50% 0;
   border-radius: 50%;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 24%, transparent), color-mix(in srgb, var(--kit-candle) 8%, transparent) 52%, transparent);
   mix-blend-mode: screen;
 }
-/* the candles stand on the ledge at its two ends */
+/* the flanks: a candle on each end of the rail, just inside its star block,
+   and over each a moonlit lancet on the alcove's wall (.kit-window) */
 .rw-candle {
-  bottom: calc(var(--stand) - var(--rw-ledge-h) * .02);
-  width: clamp(46px, 3.8vw, 66px);
+  bottom: calc(var(--stand) - var(--rw-rail-h) * .02);
+  width: clamp(40px, 3.4vw, 58px);
   z-index: 0;
+  translate: -50% 0;
 }
-.rw-candle--l { left: clamp(30px, 3vw, 54px); }
-.rw-candle--r { right: clamp(30px, 3vw, 54px); }
+.rw-candle--l { left: calc(var(--flank-w) / 2 + 6px); }
+.rw-candle--r { left: calc(100% - var(--flank-w) / 2 - 6px); }
+.rw-window {
+  --win-w: min(calc(var(--flank-w) * .64), calc(var(--slot-h) * .34));
+  top: calc(var(--frame-pad) + clamp(4px, .8vh, 10px));
+  z-index: -1;
+  translate: -50% 0;
+}
+.rw-window--l { left: calc(var(--flank-w) / 2 + 6px); }
+.rw-window--r { left: calc(100% - var(--flank-w) / 2 - 6px); }
 
-/* the heading has its own row under the medallion: 49/98 of the moon hangs
-   below the rail, and the ribbon starts clear of its lower point */
-.rw-cards__head { text-align: center; position: relative; z-index: 2; margin-top: calc(var(--stage-medal-w) * 49 / 156 - var(--spoil-h) / 2 + 4px); }
-.rw-cards__head > .kit-heading--ribbon { --rib-h: inherit; font-size: max(14px, calc(var(--rib-h) * .47)); }
-.rw-cards__head p { margin: 4px 0 0; font-size: max(13px, var(--fs-sm)); color: var(--kit-text-mid); font-style: italic; text-shadow: 0 1px 0 rgba(0, 0, 0, .9); }
+/* the note under the row on the rule, clear of the ribbon's lower edge */
+.rw-cards__head { text-align: center; position: relative; z-index: 2; margin-top: clamp(3px, .5vh, 5px); }
+.rw-cards__head p { margin: 0; font-size: max(13px, var(--fs-sm)); color: var(--kit-text-mid); font-style: italic; text-shadow: 0 1px 0 rgba(0, 0, 0, .9); }
 
 /* ── the three Tricks, each hung in a painted portrait frame ──────────────── */
 .rw-fan {
   position: relative;
   display: flex; align-items: flex-end; justify-content: center;
   gap: var(--fan-gap);
-  padding-top: calc(var(--frame-pad) + clamp(8px, 1.4vh, 18px));
+  padding-top: calc(var(--frame-pad) + clamp(4px, .6vh, 8px));
   padding-bottom: calc(var(--frame-pad) + var(--stand, 20px));
 }
 /* a pool of candlelight on the wall behind the frames (kept inside the fan's
@@ -448,11 +475,12 @@
 /* a card shown to be read (a reward, a shelf) never letters its VANISH / KEEP
    badge under 11px: card.css sizes it off the viewport, not the slot */
 .scene--reward .mm-card__badges, .scene--shop .mm-card__badges { font-size: max(11px, calc(9 * var(--u))); }
-/* the rarity, engraved on an enamel cartouche hung across the ledge's carved
-   front under its frame, the way the Shop hangs its prices */
+/* the rarity, engraved on an enamel cartouche standing on the rail's apron
+   of inset panels under its frame (43/96 of the rail down; the frame's feet
+   are at 14/96) */
 .rw-slot__rarity {
   --h: clamp(30px, 3.6vh, 34px);
-  position: absolute; left: 50%; bottom: calc(var(--frame-pad) * -1 - var(--h) * .5 - var(--rw-ledge-h, 60px) * .44);
+  position: absolute; left: 50%; bottom: calc(var(--frame-pad) * -1 - var(--rw-rail-h, 60px) * 29 / 96 - var(--h) * .5);
   transform: translateX(-50%);
   min-width: calc(var(--h) * 4.2);
   z-index: 2;
@@ -508,17 +536,10 @@
 .is-large .rm-sub, .is-large .rm-live { font-size: var(--fs-md); }
 
 @media (max-width: 1400px) {
-  /* the frames close up a little, and stand a size smaller, so the keyword
-     plaque keeps the margin beside the first Trick for itself: clear of the
-     stage's rail on one side and the frame on the other */
-  .rm--reward { --fan-gap: calc(var(--frame-pad) * 2 + 10px); --slot-h: min(20.4vw, 36.4vh); }
+  /* the frames close up a little, so the stage's flanks keep their windows */
+  .rm--reward { --fan-gap: calc(var(--frame-pad) * 2 + 12px); }
 }
-@media (max-width: 1200px) {
-  .rm--reward { --slot-h: min(21vw, 38vh); }
-}
-@media (max-height: 860px) {
-  .rm--reward:has(.rw-keepsake) { --slot-h: min(15vw, 20.4vh); }
-}
+
 
 /* ── Clues and Luck in the room HUD ────────────────────────────────────────
    Added through ui/hud.js's public `addChip()`, so they inherit the shared

@@ -1945,3 +1945,24 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   background-blend-mode: normal, normal, normal, soft-light, overlay, normal;
   background-clip: padding-box;
 }
+
+/* ── shelf rail ─────────────────────────────────────────────────────────────
+   Round 4, POLISH: the rail the Reward's rarity plates stand on (PEARL's,
+   ui/r3-polish-c). rail-panels.webp (tools/prep_ui_rail.py) is a carved and
+   gilded rail seen from just above, 640x96, a 3-slice with 64 px ends: a
+   walnut top lit along its front lip (to row 21), a round gilt bead (to 29),
+   an apron of recessed panels in beaded gilt mouldings with a gilt boss where
+   two meet (30-55), a square dark block at each end capped with a gilt star
+   rosette, a cove into the dark (to 60) and the shadow it throws (to 96).
+   --rail-h is the element's height. Stand a thing on it with its foot 14/96 of
+   --rail-h below the element's top; hang a plate on its apron centred 43/96
+   down. Decoration: it never takes pointer events.                          */
+.kit-shelf-rail {
+  --rail-h: 64px;
+  display: block;
+  height: var(--rail-h);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/rail-panels.webp") 0 64 fill / 0 calc(var(--rail-h) * 64 / 96) round;
+  filter: drop-shadow(0 10px 12px rgba(0, 0, 0, .55));
+  pointer-events: none;
+}

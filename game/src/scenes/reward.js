@@ -540,9 +540,9 @@ export class RewardScene extends RoomScene {
     this.$body.appendChild(this.$stage);
     const wrap = el('section', 'rw-spoils');
     wrap.setAttribute('aria-label', 'What this room gave you');
-    // The spoils hang on the frame's top rule either side of its crest: the
-    // Kid board's moon medallion, seated on the rule between them (the stage
-    // draws it; `.rw-spoils__crest` keeps its place in the row).
+    // The spoils hang on the frame's top rule either side of CHOOSE ONE TRICK,
+    // one row of plates (662d874's): `.rw-spoils__crest` is the ribbon's place
+    // in the row, and the stage's moon medallion rides on top of the ribbon.
     const spoils = [
       chip('gold', TERMS.gold, `+${r.lostThings}`),
       r.clues ? chip('clue', word(r.clues, 'Clue'), `+${r.clues}`) : '',
@@ -583,18 +583,26 @@ export class RewardScene extends RoomScene {
         <p>Or take none — and be luckier next time.</p>
       </div>
       <div class="rw-fan kit-cards" data-tip-avoid=".rw-slot, .rm-where, .rw-spoils, .rw-candle" data-tip-bounds=".rw-cards" data-tip-gap="18" role="listbox" aria-label="Three ${esc(TERMS.card)}s. Choose one, or skip."></div>
-      <i class="rw-ledge kit-ledge" aria-hidden="true"></i>`;
-    // Two candles stand either side of the three frames on the ledge, the way
-    // the Kid board keeps one beside its mirror. Decoration only.
+      <i class="rw-ledge kit-shelf-rail" aria-hidden="true"></i>`;
+    // Two candles stand either side of the three frames on the rail, the way
+    // the Kid board keeps one beside its mirror, and over each a moonlit
+    // lancet on the alcove's wall, so both flanks of the stage are a wall
+    // with a window in it and neither is empty. Decoration only.
     for (const side of ['l', 'r']) {
+      const w = el('i', `kit-window${side === 'r' ? ' kit-window--r' : ''} rw-window rw-window--${side}`);
+      w.setAttribute('aria-hidden', 'true');
+      sec.appendChild(w);
       const c = el('i', `kit-prop kit-prop--candle rw-candle rw-candle--${side}`);
       c.setAttribute('aria-hidden', 'true');
       sec.appendChild(c);
     }
     (this.$stage || this.$body).appendChild(sec);
-    // CHOOSE ONE TRICK has a row of its own under the crest: a ribbon laid on
-    // the rail beside the medallion half-buried it (round 2), so the rail holds
-    // the spoils and the moon, and the ribbon hangs beneath them.
+    // CHOOSE ONE TRICK hangs on the frame's top rule itself, between the
+    // spoils (662d874's row of plates), so the frames below get the height a
+    // row of its own used to take; the moon medallion rides on the ribbon.
+    const ribbon = sec.querySelector('.rw-cards__head > .kit-heading');
+    const clasp = this.$stage?.querySelector('.rw-spoils__crest');
+    if (ribbon && clasp) clasp.appendChild(ribbon);
     const fan = sec.querySelector('.rw-fan');
     this.$fan = fan;
     this._slots = [];
@@ -660,6 +668,11 @@ export class RewardScene extends RoomScene {
         syncCardHover();
       });
       slot.addEventListener('focus', () => {
+        /* The focus the room itself puts on the first Trick when it opens is
+           where the keyboard starts, not a reading: it neither lifts that
+           card nor opens its glossary tablet over the stage's flank, so the
+           three stand level and centred until the player moves or points. */
+        if (this._quietFocus) return;
         focusEntry = entry;
         slot.classList.add('is-hot');
         setTimeout(syncCardHover, 0);
@@ -694,7 +707,10 @@ export class RewardScene extends RoomScene {
     if (this.resolved) this._markTaken(this.picked, false);
     else this._own(bus.on('scene:entered', () => {
       setTimeout(() => {
-        if (!this._dead && !this.resolved) this._slots[0]?.slot.focus();
+        if (this._dead || this.resolved) return;
+        // focus fires synchronously inside focus(), so the flag covers exactly it
+        this._quietFocus = true;
+        try { this._slots[0]?.slot.focus(); } finally { this._quietFocus = false; }
       }, 0);
     }));
   }
@@ -706,6 +722,43 @@ export class RewardScene extends RoomScene {
     for (const { slot, view } of this._slots || []) {
       fitCardToSlot(view, slot, { legibleAt: Math.min(224, (slot.clientWidth || 224) * 1.2) });
     }
+    this._fillRules();
+  }
+
+  /**
+   * No card body with an empty lower half: the three Tricks' rules type grows
+   * into its panel, all three at one size, as far as the longest of them
+   * allows. It stops when any card's words would take more than 88% of its
+   * rules panel, and at 1.3 times the card's own size, where the rules would
+   * start to outweigh the card's name on its nameplate; it never shrinks
+   * below the lift `fitCardToSlot` gave it.
+   */
+  _fillRules() {
+    const cards = (this._slots || [])
+      .map(({ view }) => ({ el: view.el, rules: view.el?.querySelector('.mm-card__rules') }))
+      .filter(c => c.el && c.rules);
+    if (!cards.length) return;
+    const base = Math.max(1, ...cards.map(c => Number(c.el.style.getPropertyValue('--rules-k')) || 1));
+    const set = (k) => { for (const c of cards) c.el.style.setProperty('--rules-k', k.toFixed(3)); };
+    const fits = () => cards.every(({ rules }) => {
+      const box = rules.getBoundingClientRect();
+      const kids = rules.children;
+      if (!kids.length || !box.height) return true;
+      let top = Infinity, bottom = -Infinity;
+      for (const k of kids) {
+        const r = k.getBoundingClientRect();
+        if (!r.height) continue;
+        top = Math.min(top, r.top); bottom = Math.max(bottom, r.bottom);
+      }
+      return bottom - top <= box.height * 0.88;
+    });
+    let k = base;
+    for (let next = base + 0.05; next <= 1.3 + 1e-6; next += 0.05) {
+      set(next);
+      if (!fits()) break;
+      k = next;
+    }
+    set(k);
   }
 
   /* ── footer: skip, and the way out ────────────────────────────────────── */
