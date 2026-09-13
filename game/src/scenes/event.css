@@ -1,18 +1,28 @@
 /* ===========================================================================
    A Curiosity.  OWNER: meta-run.
-   Shared chrome lives in reward.css (.rm-*).  Tokens only.
+   Shared chrome lives in reward.css (.rm-*); the look is the kit (ui/kit.css).
    =========================================================================== */
 
+/* Centred with auto margins, not `justify-content: center`: once a Curiosity
+   is answered the page can be taller than the body, and centring an
+   overflowing flex item pushes its top (the rail, the moon, the first line of
+   the story) above the scroll origin where nothing can reach it. */
 .scene--event .rm-body {
-  justify-content: center; align-items: center;
-  overflow-y: auto; scrollbar-color: var(--brass-400) var(--ink-800);
-  padding-top: var(--s-2); padding-bottom: var(--s-3);
+  justify-content: flex-start; align-items: center;
+  overflow-y: auto; scrollbar-color: var(--kit-gold-lo) transparent;
+  padding-top: clamp(26px, 4.4vh, 44px); padding-bottom: var(--s-2);
+}
+.scene--event .rm-body > .ev-page { margin-block: auto; flex: none; }
+/* a long answered page scrolls under the title: let it fade there, not cut */
+.scene--event .rm-body {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 22px);
+          mask-image: linear-gradient(to bottom, transparent 0, black 22px);
 }
 
-/* ── the Curiosity, as a printed page ─────────────────────────────────────
-   One centred measure. No illustration: see the note at the top of event.js.
-   The type does the work, which is the only honest response to writing this
-   good sitting next to line-art this cheap.                                 */
+/* ── the Curiosity, as a page hung in a portrait hall ────────────────────────
+   One centred measure in a gold-railed panel with the moon on its rail. No
+   illustration: see the note at the top of event.js. The type does the work;
+   the hall around it is set dressing at the edges.                          */
 .scene--event .rm-head { justify-content: center; text-align: center; }
 .scene--event .rm-head .rm-where { max-width: 980px; }   /* px: see reward.css */
 
@@ -22,27 +32,25 @@
   grid-template-columns: minmax(0, 1fr);
   grid-template-areas: 'prose' 'options' 'outcome';
   align-content: center; justify-items: center;
-  gap: clamp(14px, 2.2vh, 32px);
-  width: min(860px, 100%);
-  padding: clamp(20px, 3vh, 44px) clamp(24px, 3vw, 56px);
+  gap: clamp(10px, 1.8vh, 22px);
+  width: min(740px, 100%);
 }
-/* The sheet the page is printed on. Without it a centred measure on a big
-   screen reads as a hole in the middle of the frame rather than a margin. */
-.ev-page::before {
-  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  border-left: 1px solid color-mix(in srgb, var(--ev-a) 16%, transparent);
-  border-right: 1px solid color-mix(in srgb, var(--ev-a) 16%, transparent);
+.ev-page.kit-panel {
+  --pk: .8;
+  --medal-k: .78;
+  padding: clamp(34px, 5vh, 46px) clamp(30px, 3.4vw, 56px) clamp(20px, 3vh, 30px);
   background:
-    radial-gradient(72% 54% at 50% 0%, color-mix(in srgb, var(--ev-a) 9%, transparent) 0%, transparent 72%),
-    linear-gradient(180deg, color-mix(in srgb, var(--ink-800) 62%, transparent) 0%,
-                    color-mix(in srgb, var(--ink-900) 46%, transparent) 100%);
-  -webkit-mask-image: linear-gradient(180deg, transparent 0%, black 9%, black 91%, transparent 100%);
-          mask-image: linear-gradient(180deg, transparent 0%, black 9%, black 91%, transparent 100%);
+    radial-gradient(70% 46% at 50% 0%, color-mix(in srgb, var(--ev-a) 10%, transparent) 0%, transparent 72%),
+    radial-gradient(90% 60% at 50% 110%, color-mix(in srgb, var(--kit-candle) 7%, transparent), transparent 70%),
+    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
+    linear-gradient(180deg, var(--kit-panel-hi) 0%, var(--kit-panel) 40%, color-mix(in oklab, var(--kit-panel) 80%, var(--kit-void)) 100%);
+  background-blend-mode: normal, normal, overlay, normal;
+  background-clip: padding-box;
 }
 
-/* mood: the ground temperature of the page, not a picture of a room.
+/* mood: the temperature of the light on the page, not a picture of a room.
    The default is declared first so a named mood always wins. */
-.ev-page                            { --ev-a: var(--spectre-200); }
+.ev-page                            { --ev-a: var(--kit-moon); }
 .ev-page[data-mood="sad"]           { --ev-a: var(--courage-300); }
 .ev-page[data-mood="warm"]          { --ev-a: var(--flame-200); }
 .ev-page[data-mood="trade"]         { --ev-a: var(--arcane-200); }
@@ -56,76 +64,162 @@
 
 /* ── prose ────────────────────────────────────────────────────────────────── */
 .ev-prose {
-  grid-area: prose; max-width: 64ch; width: 100%;
-  padding-bottom: clamp(10px, 1.6vh, 20px);
-  border-bottom: 1px solid color-mix(in srgb, var(--ev-a) 22%, transparent);
+  grid-area: prose; max-width: none; width: 100%;
+  padding-bottom: clamp(12px, 1.8vh, 20px);
+  position: relative;
+}
+/* a gold rule with a star at its middle, between the story and the doors */
+.ev-prose::after {
+  content: ''; position: absolute; left: 6%; right: 6%; bottom: -5px; height: 11px;
+  background:
+    url("../../assets/ui/kit/star4.svg") 50% 50% / 11px 11px no-repeat,
+    linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--kit-gold) 75%, transparent) 30%, color-mix(in srgb, var(--kit-gold) 75%, transparent) 46.5%, transparent 46.5%, transparent 53.5%, color-mix(in srgb, var(--kit-gold) 75%, transparent) 53.5%, color-mix(in srgb, var(--kit-gold) 75%, transparent) 70%, transparent 100%) 0 5px / 100% 1px no-repeat;
 }
 .ev-prose p {
-  margin: 0 0 .72em;
-  font-size: calc(var(--fs-md) * 1.1); line-height: 1.68; color: var(--text-hi);
+  margin: 0 0 .66em;
+  font-size: calc(var(--fs-md) * 1.1); line-height: 1.62; color: var(--kit-text);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
 }
 /* `flow-root` makes the first paragraph its own block formatting context, so the
    drop cap cannot bleed down and indent the paragraph after it. */
 .ev-prose p:first-child { display: flow-root; }
 .ev-prose p:first-child::first-letter {
-  float: left; line-height: .8; padding: 6px 10px 0 0;
-  font-family: var(--font-display); font-size: 2.5em; color: var(--flame-300);
+  float: left; line-height: .78; padding: 7px 12px 0 0;
+  font-family: var(--font-display); font-weight: 700; font-size: 3em;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 var(--kit-gold-lo), 0 2px 0 #1c1029, 0 0 18px color-mix(in srgb, var(--kit-candle) 35%, transparent);
 }
-.ev-prose p:last-child { margin-bottom: 0; color: var(--text-mid); }
+.ev-prose p:last-child { margin-bottom: 0; color: var(--kit-text-mid); }
 
-/* ── options ──────────────────────────────────────────────────────────────── */
-/* one measure for the whole page: prose, doors and outcome share both edges */
-.ev-options { grid-area: options; display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 64ch; }
+/* ── options: three doors, each a nameplate with its numeral on an enamel boss ─ */
+.ev-options {
+  grid-area: options; display: flex; flex-direction: column; gap: clamp(6px, 1vh, 10px);
+  width: 100%; max-width: none;
+  counter-reset: ev-door;
+  padding-top: clamp(4px, .8vh, 8px);
+}
 .ev-opt {
-  display: grid; gap: 4px; text-align: left;
-  padding: 10px var(--s-4);
-  border: 1px solid var(--ink-500); border-radius: var(--radius-md);
-  background: linear-gradient(100deg, color-mix(in srgb, var(--ink-700) 80%, transparent),
-              color-mix(in srgb, var(--ink-800) 90%, transparent));
-  transition: border-color var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out),
-              background-color var(--t-quick) var(--ease-out), opacity var(--t-base) var(--ease-out);
+  --plate-h: 58px;
+  counter-increment: ev-door;
+  position: relative;
+  display: grid; gap: 2px; text-align: left;
+  min-height: 56px;
+  padding: 11px 46px 11px 74px;
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/plate.webp");
+  border-image-slice: 12 53 12 46 fill;
+  border-image-width: 10px 40px 10px 35px;
+  border-image-repeat: stretch;
+  background: none;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .7));
+  transition: filter var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out),
+              opacity var(--t-base) var(--ease-out);
+}
+/* the door's number (the 1-9 keys pick one): an enamel boss with a brass rim */
+.ev-opt::before {
+  content: counter(ev-door, upper-roman);
+  position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
+  width: 38px; height: 38px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  font-family: var(--font-display); font-weight: 700; font-size: 14px; line-height: 1;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .ev-opt:hover:not(:disabled), .ev-opt:focus-visible {
-  border-color: var(--spectre-300); transform: translateX(4px); outline: none;
-  background: linear-gradient(100deg, color-mix(in srgb, var(--spectre-500) 22%, var(--ink-700)),
-              color-mix(in srgb, var(--ink-700) 88%, transparent));
+  transform: translateX(3px); outline: none;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .7)) drop-shadow(0 0 12px color-mix(in srgb, var(--kit-candle) 38%, transparent)) brightness(1.12);
 }
-.ev-opt:focus-visible { box-shadow: 0 0 0 2px color-mix(in srgb, var(--spectre-300) 62%, transparent); }
-.ev-opt:disabled { cursor: not-allowed; opacity: .5; border-style: dashed; }
-.ev-opt.is-chosen { opacity: 1; border-color: var(--good-300); border-style: solid;
-                    background: linear-gradient(100deg, color-mix(in srgb, var(--good-500) 24%, var(--ink-700)), var(--ink-800)); }
-.ev-opt.is-faded { opacity: .26; }
+.ev-opt:focus-visible::after {
+  content: ''; position: absolute; inset: 2px 6px; pointer-events: none;
+  border-radius: 999px;
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+.ev-opt:disabled { cursor: not-allowed; filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .6)) saturate(.3) brightness(.7); }
+.ev-opt.is-chosen {
+  opacity: 1;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .7)) drop-shadow(0 0 14px color-mix(in srgb, var(--good-300) 45%, transparent));
+}
+.ev-opt.is-chosen::before { color: var(--good-300); }
+.ev-opt.is-faded { opacity: .3; }
 
-.ev-opt__label { font-family: var(--font-display); font-size: var(--fs-md); color: var(--text-hi); letter-spacing: .02em; }
-.ev-opt__meta { display: flex; flex-wrap: wrap; gap: 6px 14px; }
-.ev-tag { display: inline-flex; align-items: baseline; gap: 6px; font-size: var(--fs-xs); color: var(--text-mid); }
-.ev-tag i {
-  font-style: normal; font-size: 9px; letter-spacing: .18em; text-transform: uppercase;
-  padding: 1px 5px; border-radius: 3px; border: 1px solid currentColor; opacity: .8;
+.ev-opt__label {
+  font-family: var(--font-display); font-weight: 700; font-size: var(--fs-md);
+  color: var(--kit-name); letter-spacing: .03em;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
+.ev-opt__meta { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+/* the stakes are kit tags (ui/kit.css .kit-tag); only their colour is here */
 .ev-tag--risk { color: var(--threat-200); }
 .ev-tag--gain { color: var(--good-300); }
-.ev-tag--cost { color: var(--brass-200); }
-.ev-tag--gear { color: var(--spectre-200); }
-.ev-opt__gate { font-size: var(--fs-xs); font-style: italic; color: var(--text-lo); }
+.ev-tag--cost { color: var(--kit-gold-hi); }
+.ev-tag--gear { color: var(--kit-moon); }
+.ev-opt__gate { font-size: var(--fs-xs); font-style: italic; color: var(--kit-text-mid); }
 
 /* ── outcome ──────────────────────────────────────────────────────────────── */
 .ev-outcome {
-  grid-area: outcome; width: 100%; max-width: 64ch;
-  border-left: 2px solid var(--good-300);
-  padding: var(--s-2) 0 var(--s-2) var(--s-4);
+  grid-area: outcome; width: 100%; max-width: none;
+  position: relative;
+  padding: var(--s-3) var(--s-2) var(--s-1);
+  text-align: center;
+}
+.ev-outcome::before {
+  content: ''; position: absolute; left: 10%; right: 10%; top: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 75%, transparent) 25%, color-mix(in srgb, var(--kit-gold) 75%, transparent) 75%, transparent);
 }
 .ev-outcome.is-in { animation: ev-rise 420ms var(--ease-out) both; }
 @keyframes ev-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 .ev-out__t {
-  margin: 0 0 4px; font-family: var(--font-display); font-size: var(--fs-lg);
-  letter-spacing: .03em; color: var(--good-300);
+  margin: 0 0 4px; font-family: var(--font-display); font-weight: 700; font-size: var(--fs-lg);
+  letter-spacing: .04em; color: var(--kit-lav-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 18px color-mix(in srgb, var(--kit-violet) 50%, transparent);
 }
-.ev-out__p { margin: 0; font-size: var(--fs-md); line-height: 1.6; color: var(--text-hi); max-width: 78ch; }
-.ev-out__chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: var(--s-3); }
-.ev-out__next { margin: var(--s-3) 0 0; font-size: var(--fs-sm); font-style: italic; color: var(--flame-200); }
+.ev-out__p { margin: 0 auto; font-size: var(--fs-md); line-height: 1.55; color: var(--kit-text); max-width: 78ch; }
+.ev-out__chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: var(--s-3); }
+.ev-out__next { margin: var(--s-3) 0 0; font-size: var(--fs-sm); font-style: italic; color: var(--kit-name); }
 
 .ev-page.is-answered .ev-options { pointer-events: none; }
+
+/* ── the hall around the page ───────────────────────────────────────────────
+   Empty gilt frames hung on the side walls, dim with distance; a candle at the
+   foot of each wall; a skull on its books. `.ev-hall` sits under the page. */
+.ev-hall { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.ev-hall > * { position: absolute; display: block; }
+.ev-hall__frame {
+  --hall-side: max(calc(var(--kit-edge, 10px) + var(--kit-vine-w, 36px) + 1vw), calc((100vw - 880px) / 2 - 250px));
+  /* the transparent border is the painting's margin outside its gold rail, so
+     the canvas starts exactly under the rail and never shows past it */
+  border: 7px solid transparent;
+  border-image-source: url("../../assets/ui/kit/frame.webp");
+  border-image-slice: 52;
+  border-image-width: 30px;
+  background-color: #0a080d;
+  background-position: 50% 50%, 50% 50%;
+  background-size: 100% 100%, cover;
+  background-repeat: no-repeat;
+  background-clip: padding-box;
+  box-shadow: 0 16px 30px -12px rgba(0, 0, 0, .9);
+  filter: brightness(.96) saturate(.95);
+}
+/* old varnish: darker at the edges, a faint sheen of moonlight across the top */
+.ev-hall__frame--l1 { background-image: radial-gradient(90% 80% at 40% 30%, color-mix(in srgb, var(--kit-moon) 10%, transparent), rgba(6, 4, 9, .55) 100%), url("../../assets/ui/kit/hall-gable.webp"); }
+.ev-hall__frame--l2 { background-image: radial-gradient(90% 80% at 40% 30%, color-mix(in srgb, var(--kit-moon) 8%, transparent), rgba(6, 4, 9, .6) 100%), url("../../assets/ui/kit/hall-tree.webp"); }
+.ev-hall__frame--r1 { background-image: radial-gradient(90% 80% at 60% 30%, color-mix(in srgb, var(--kit-moon) 10%, transparent), rgba(6, 4, 9, .55) 100%), url("../../assets/ui/kit/hall-towers.webp"); }
+.ev-hall__frame--r2 { background-image: radial-gradient(90% 80% at 60% 30%, color-mix(in srgb, var(--kit-moon) 8%, transparent), rgba(6, 4, 9, .6) 100%), url("../../assets/ui/kit/hall-roses.webp"); }
+.ev-hall__frame--l1 { left: calc(var(--hall-side) + 14px); top: 30%; width: clamp(128px, 12vw, 196px); aspect-ratio: 5 / 6; }
+.ev-hall__frame--l2 { left: calc(var(--hall-side) + 40px); top: 60%; width: clamp(98px, 8.6vw, 142px); aspect-ratio: 1; }
+.ev-hall__frame--r1 { right: calc(var(--hall-side) + 14px); top: 30%; width: clamp(128px, 12vw, 196px); aspect-ratio: 5 / 6; }
+.ev-hall__frame--r2 { right: calc(var(--hall-side) + 40px); top: 60%; width: clamp(98px, 8.6vw, 142px); aspect-ratio: 1; }
+.ev-hall__candle { bottom: clamp(70px, 10vh, 96px); width: clamp(52px, 4.4vw, 74px); filter: brightness(.95); }
+.ev-hall__candle--l { left: calc(50% - min(440px, 50vw) - clamp(84px, 7vw, 120px)); }
+.ev-hall__candle--r { right: calc(50% - min(440px, 50vw) - clamp(84px, 7vw, 120px)); }
+.ev-hall__skull { bottom: clamp(70px, 10vh, 96px); left: calc(50% - min(440px, 50vw) - clamp(160px, 14vw, 230px)); width: clamp(62px, 5.4vw, 92px); filter: brightness(.8); }
+
+@media (max-width: 1400px) {
+  .ev-hall__frame--l1, .ev-hall__frame--r1 { top: 34%; width: clamp(96px, 9vw, 130px); }
+  .ev-hall__frame--l2, .ev-hall__frame--r2 { top: 60%; width: clamp(76px, 7vw, 100px); }
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    THE RESCUE
@@ -352,3 +446,7 @@
   }
   .ev-rsplate { display: block; max-height: 38vh; justify-self: center; }
 }
+
+/* When event.png is painted it brings its own portraits: the hall's placeholder
+   frames step aside and only the props on the floor stay. */
+.kit-board.has-backdrop .ev-hall__frame { display: none; }

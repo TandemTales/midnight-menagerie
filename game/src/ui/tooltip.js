@@ -843,7 +843,11 @@ export class Tooltip {
     const items = ids.map(id => this.keyword(id)).filter(Boolean);
     if (!items.length) { if (this._cardMode) this.hide(); return; }
     this._cardMode = true;
-    this.show(cardEl, { kind: 'keywords', items }, { placement: 'right' });
+    // A screen that lays several cards side by side (a reward, a shelf) names
+    // them in `data-tip-avoid` on their container, so the panel prefers the
+    // side where it hides none of the others.
+    const avoid = cardEl.closest('[data-tip-avoid]')?.dataset.tipAvoid || null;
+    this.show(cardEl, { kind: 'keywords', items }, { placement: 'right', avoid });
   }
 
   _showSub(chip) {

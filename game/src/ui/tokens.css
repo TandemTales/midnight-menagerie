@@ -161,6 +161,37 @@
   /* --- Z-index scale ----------------------------------------------------- */
   --z-scene: 10; --z-hud: 100; --z-hand: 200; --z-drag: 300;
   --z-overlay: 400; --z-modal: 500; --z-tooltip: 900; --z-transition: 1000;
+
+  /* --- The kit: Josh's painted boards (ui/kit.css) ------------------------
+     Measured off UI/selectKid.png and UI/selectCompanion.png, not invented.
+     Grounds are near-black aubergine, never flat black; gold is antique brass
+     (shadow / body / highlight), never yellow; display type is lavender.     */
+  --kit-void:      #08060b;   /* the gutters between painted frames */
+  --kit-ground-0:  #0d0911;   /* board ground, deepest */
+  --kit-ground-1:  #1a1022;   /* board ground, where the light reaches */
+  --kit-panel:     #15111a;   /* inside a gold-railed panel (sampled 17,15,20) */
+  --kit-panel-hi:  #1f1826;
+  --kit-plate:     #0e0d0f;   /* inside a nameplate cartouche */
+
+  --kit-gold-lo:   #6b4c24;
+  --kit-gold:      #b08a4a;
+  --kit-gold-hi:   #e6c98a;
+  --kit-gold-ink:  #2e1f0e;   /* engraved lettering on the gold ribbon */
+  --kit-ribbon:    #9c7d4c;
+
+  --kit-lav-hi:    #e6d9f6;
+  --kit-lav:       #b99be0;
+  --kit-violet:    #6f45a8;
+  --kit-violet-lo: #3b2560;
+  --kit-enamel:    #35264f;   /* the round buttons (sampled 47,32,55 lit) */
+
+  --kit-candle:    #ffb35c;
+  --kit-moon:      #a9c1ec;
+
+  --kit-text:      #efe5d2;   /* parchment: body copy on a dark panel */
+  --kit-text-mid:  #cdbfd8;
+  --kit-text-lo:   #a99db6;   /* 4.6:1 on --kit-panel */
+  --kit-name:      #e9d3a6;   /* a name on a nameplate, as on the tiles */
 }
 
 /* ===========================================================================

@@ -112,8 +112,10 @@ export class EventScene extends RoomScene {
   /* ── the page ─────────────────────────────────────────────────────────── */
   _buildPage() {
     const d = this.def;
-    const page = el('article', 'ev-page');
+    this._buildHall();
+    const page = el('article', 'ev-page kit-panel');
     page.dataset.mood = d.mood || 'curious';
+    page.dataset.medal = 'moon';
     /* No illustration. The Curiosities are the best writing in the build and the
        parametric line-art beside them — an arch and two rectangles in cyan —
        was actively cheapening it; a wireframe of a room is worse than no room.
@@ -152,10 +154,10 @@ export class EventScene extends RoomScene {
         <span class="ev-opt__label">${esc(o.label)}</span>
         <span class="ev-opt__meta">
           ${o.risk && !(certain && nothing)
-    ? `<span class="ev-tag ev-tag--risk"><i>${certain ? 'costs' : 'risk'}</i>${esc(o.risk)}</span>` : ''}
-          ${o.reward ? `<span class="ev-tag ev-tag--gain"><i>${certain ? 'always' : 'gain'}</i>${esc(o.reward)}</span>` : ''}
-          ${cost != null ? `<span class="ev-tag ev-tag--cost"><i>cost</i>${cost} ${esc(TERMS.gold)}</span>` : ''}
-          ${held ? `<span class="ev-tag ev-tag--gear"><i>gear</i>${esc(held.name)}</span>` : ''}
+    ? `<span class="ev-tag kit-tag ev-tag--risk"><i>${certain ? 'costs' : 'risk'}</i>${esc(o.risk)}</span>` : ''}
+          ${o.reward ? `<span class="ev-tag kit-tag ev-tag--gain"><i>${certain ? 'always' : 'gain'}</i>${esc(o.reward)}</span>` : ''}
+          ${cost != null ? `<span class="ev-tag kit-tag ev-tag--cost"><i>cost</i>${cost} ${esc(TERMS.gold)}</span>` : ''}
+          ${held ? `<span class="ev-tag kit-tag ev-tag--gear"><i>gear</i>${esc(held.name)}</span>` : ''}
         </span>
         ${gate ? `<span class="ev-opt__gate">${esc(gate)}</span>` : ''}
         ${poor ? `<span class="ev-opt__gate">You are ${cost - this.run.lostThings} ${esc(TERMS.gold)} short.</span>` : ''}`;
@@ -164,6 +166,27 @@ export class EventScene extends RoomScene {
     }
     this._own(rovingFocus(this.$options, '.ev-opt', { cols: 0 }));
     requestAnimationFrame(() => this.$options.querySelector('.ev-opt:not(:disabled)')?.focus());
+  }
+
+  /**
+   * The room the page is read in: a portrait hall, staged the way the select
+   * boards are — empty gilt frames hung dim on the side walls, a candle on the
+   * floor at each side and a skull on a stack of books. All of it decoration,
+   * all of it at the edges, none of it over the words. When `event.png` is
+   * painted it replaces the wall behind these (see ui/kit.css .kit-ground).
+   */
+  _buildHall() {
+    const board = this.root.querySelector('.rm');
+    if (!board) return;
+    const hall = el('div', 'ev-hall');
+    hall.setAttribute('aria-hidden', 'true');
+    hall.innerHTML = `
+      <i class="ev-hall__frame ev-hall__frame--l1"></i><i class="ev-hall__frame ev-hall__frame--l2"></i>
+      <i class="ev-hall__frame ev-hall__frame--r1"></i><i class="ev-hall__frame ev-hall__frame--r2"></i>
+      <i class="kit-prop kit-prop--skull ev-hall__skull"></i>
+      <i class="kit-prop kit-prop--candle ev-hall__candle ev-hall__candle--l"></i>
+      <i class="kit-prop kit-prop--candle ev-hall__candle ev-hall__candle--r"></i>`;
+    board.insertBefore(hall, board.querySelector('.rm-hudhost'));
   }
 
   /**
@@ -216,7 +239,13 @@ export class EventScene extends RoomScene {
     }
     this.$page.classList.add('is-answered');
     this._syncFoot();
-    this.$go?.focus();
+    this.$go?.focus({ preventScroll: true });
+    // The answer can land below the fold of a long page: bring it up to be read.
+    if (animate) {
+      requestAnimationFrame(() => this.$outcome?.scrollIntoView?.({
+        block: 'nearest', behavior: this.reduceMotion ? 'auto' : 'smooth',
+      }));
+    }
   }
 
   _pendingLine() {

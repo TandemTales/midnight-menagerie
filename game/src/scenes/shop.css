@@ -1,209 +1,231 @@
 /* ===========================================================================
    Mr. Moth's — the Lost Things market.  OWNER: meta-run.
-   Shared chrome lives in reward.css (.rm-*).  Tokens only.
+   Shared chrome lives in reward.css (.rm-*); the look is the kit (ui/kit.css).
+
+   A staged board, composed like the select screens: the five Tricks hang in a
+   row of painted portrait frames across the wall, each with its price on a
+   nameplate, and under them the counter — Keepsakes and Snacks in two gold-
+   railed panels either side of Mr. Moth himself, whose panel wears the moon.
    =========================================================================== */
 
-/* The shelf is one scrolling column. `padding-bottom` is deliberately generous:
-   the last row must always be able to clear the "Back to the Blueprint" footer.
-   At 1600x900 the third Snack's BUY button used to sit at y 824-844 while
-   `.rm-foot` starts at 828, so `document.elementFromPoint` at the button's
-   centre returned the footer — visible, and unclickable. See the short-viewport
-   block at the bottom of this file, which is the other half of the fix. */
+/* The shelf is one board that fits the screen: the frames take whatever height
+   the counter below them leaves, so nothing on it has to be found by scrolling.
+   `padding-bottom` stays generous for the short-viewport case (see the block at
+   the end): the last row must always clear the "Back to the Blueprint" footer.
+   At 1600x900 the third Snack's BUY button once sat at y 824-844 while
+   `.rm-foot` started at 828, so `document.elementFromPoint` at the button's
+   centre returned the footer — visible, and unclickable. */
 .scene--shop .rm-body {
   justify-content: flex-start; align-items: stretch;
-  padding-top: var(--s-2); padding-bottom: clamp(18px, 3vh, 40px);
+  padding-top: clamp(2px, .6vh, 8px); padding-bottom: clamp(6px, 1.2vh, 14px);
+  padding-inline: calc(var(--rm-pad) + var(--kit-vine-w, 36px) * .55);
   overflow-y: auto; scroll-padding-block-end: clamp(18px, 3vh, 40px);
-  scrollbar-color: var(--brass-400) var(--ink-800);
+  scrollbar-color: var(--kit-gold-lo) transparent;
 }
+.scene--shop .rm-head { padding-bottom: 0; }
 
 .sh-floor {
+  flex: 1 1 auto; min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(300px, 26vw, 420px);
-  gap: clamp(14px, 1.8vw, 34px);
-  width: min(1720px, 100%); margin: 0 auto;
-  align-items: start;
+  grid-template-columns: minmax(0, 1.14fr) minmax(0, .86fr) minmax(0, 1.14fr);
+  grid-template-rows: minmax(clamp(236px, 34vh, 380px), 1fr) auto;
+  column-gap: clamp(22px, 2.2vw, 40px);
+  row-gap: clamp(20px, 2.8vh, 26px);
+  width: min(1560px, 100%); margin: 0 auto;
 }
-.sh-left { display: flex; flex-direction: column; gap: clamp(10px, 1.2vh, 18px); min-width: 0; }
+/* The markup groups the counters as a left column and a side column; the board
+   lays all four out on one grid instead. */
+.sh-left, .sh-side { display: contents; }
+.sh-counter--cards { grid-column: 1 / -1; grid-row: 1; }
+.sh-side > .sh-counter:first-child { grid-column: 1; grid-row: 2; }
+.sh-counter--moth { grid-column: 2; grid-row: 2; }
+.sh-side > .sh-counter:last-child { grid-column: 3; grid-row: 2; }
 
-/* ── Mr. Moth ─────────────────────────────────────────────────────────────── */
-.sh-counter--moth {
-  display: grid;
-  grid-template-columns: clamp(132px, 11vw, 190px) minmax(0, 1fr) clamp(230px, 20vw, 320px);
-  gap: var(--s-4); align-items: end; padding-bottom: 0; overflow: hidden;
-  background:
-    radial-gradient(46% 90% at 16% 78%, color-mix(in srgb, var(--flame-glow) 12%, transparent) 0%, transparent 70%),
-    linear-gradient(180deg, color-mix(in srgb, var(--ink-700) 74%, transparent), color-mix(in srgb, var(--ink-800) 92%, transparent));
-}
-.sh-moth { width: 100%; height: auto; display: block; align-self: end; }
-.sh-lamp-a { stop-color: var(--flame-glow); stop-opacity: .5; }
-.sh-lamp-b { stop-color: var(--flame-glow); stop-opacity: 0; }
-/* NOTE: no blanket `fill: none` here — `.sh-moth path` (0,1,1) would outrank
-   every `.sh-moth__coat` (0,1,0) below it and the whole figure would render as
-   a wireframe. Stroke-only shapes declare their own `fill: none`. */
-.sh-moth path, .sh-moth ellipse { stroke-linecap: round; stroke-linejoin: round; }
-.sh-moth__wingline, .sh-moth__btn, .sh-moth__ant, .sh-moth__fluff,
-.sh-moth__arm, .sh-moth__counterline { fill: none; }
-.sh-moth__wing {
-  fill: color-mix(in srgb, var(--arcane-500) 46%, var(--ink-700));
-  stroke: var(--arcane-300); stroke-width: 2.2;
-}
-.sh-moth__wingline { stroke: color-mix(in srgb, var(--arcane-100) 46%, transparent); stroke-width: 1.8; }
-.sh-moth__coat {
-  fill: color-mix(in srgb, var(--ink-500) 76%, var(--arcane-600));
-  stroke: var(--brass-400); stroke-width: 2.2;
-}
-.sh-moth__lapel { fill: color-mix(in srgb, var(--ink-400) 64%, var(--arcane-500)); stroke: var(--brass-400); stroke-width: 1.6; }
-.sh-moth__btn { stroke: var(--brass-200); stroke-width: 4; }
-.sh-moth__head { fill: color-mix(in srgb, var(--parchment-shade) 62%, var(--ink-600)); stroke: var(--brass-300); stroke-width: 2.2; }
-.sh-moth__ant { stroke: var(--brass-200); stroke-width: 2.6; }
-.sh-moth__eye { fill: var(--ink-900); stroke: none; }
-.sh-moth__fluff { stroke: var(--brass-300); stroke-width: 2.2; }
-.sh-moth__arm { stroke: color-mix(in srgb, var(--ink-400) 70%, var(--arcane-500)); stroke-width: 6; }
-.sh-moth__lamp { fill: color-mix(in srgb, var(--flame-300) 44%, var(--ink-700)); stroke: var(--flame-200); stroke-width: 2.2; }
-.sh-moth__counter { fill: color-mix(in srgb, var(--brass-500) 68%, var(--ink-800)); stroke: var(--brass-200); stroke-width: 2.2; }
-.sh-moth__counterline { stroke: color-mix(in srgb, var(--brass-100) 40%, transparent); stroke-width: 1.6; }
-.rm:not(.is-still) .sh-moth__glow { animation: sh-flicker 5.5s var(--ease-soft) infinite; }
-@keyframes sh-flicker { 0%,100% { opacity: .95; } 43% { opacity: .6; } 66% { opacity: 1; } }
-
-.sh-moth__say { padding-bottom: var(--s-4); }
-
-/* the removal service, tucked in beside him */
-.sh-service {
-  border-left: 1px solid color-mix(in srgb, var(--brass-500) 60%, transparent);
-  padding: var(--s-3) 0 var(--s-4) var(--s-4);
-  align-self: stretch; display: flex; flex-direction: column; justify-content: center;
-}
-.sh-service .sh-h { font-size: var(--fs-xs); }
-.sh-moth__name {
-  margin: 0; font-family: var(--font-display); font-size: var(--fs-sm);
-  letter-spacing: .22em; text-transform: uppercase; color: var(--arcane-200);
-}
-.sh-moth__line {
-  margin: 4px 0 var(--s-3);
-  font-size: var(--fs-md); font-style: italic; color: var(--text-hi); line-height: 1.45;
-  max-width: 48ch;
-}
-.sh-moth__you { display: flex; gap: var(--s-5); margin: 0; flex-wrap: wrap; }
-.sh-moth__you div { display: flex; flex-direction: column; gap: 1px; }
-.sh-moth__you dt { font-size: var(--fs-xs); letter-spacing: .14em; text-transform: uppercase; color: var(--text-lo); }
-.sh-moth__you dd { margin: 0; font-family: var(--font-num); font-size: var(--fs-lg); color: var(--brass-200); }
-
-.sh-card__own {
-  grid-row: 2;
-  font-size: var(--fs-xs); font-style: italic; color: var(--text-lo);
-}
-.sh-card .sh-buy { grid-row: 3; }
-
-.sh-counter {
-  border: 1px solid var(--ink-500);
-  border-radius: var(--radius-lg);
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--ink-700) 74%, transparent), color-mix(in srgb, var(--ink-800) 90%, transparent));
-  box-shadow: var(--shadow-2), inset 0 1px 0 color-mix(in srgb, var(--brass-300) 12%, transparent);
-  padding: var(--s-3) var(--s-4) var(--s-4);
-}
-.sh-side { display: flex; flex-direction: column; gap: clamp(10px, 1.2vh, 18px); }
-
+/* ── headings ─────────────────────────────────────────────────────────────── */
 .sh-h {
-  margin: 0 0 var(--s-3);
-  font-family: var(--font-display); font-size: var(--fs-sm);
-  letter-spacing: .22em; text-transform: uppercase; color: var(--brass-200);
-  display: flex; align-items: baseline; gap: 10px;
-}
-.sh-h::after {
-  content: ''; flex: 1; height: 1px;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--brass-400) 60%, transparent), transparent);
-}
-.sh-h em {
-  order: 3; font-style: italic; letter-spacing: 0; text-transform: none;
-  font-family: var(--font-body); font-size: var(--fs-xs); color: var(--text-lo);
+  margin: 0 0 clamp(4px, .8vh, 8px);
+  font-size: var(--fs-sm);
 }
 
-/* ── Tricks counter ───────────────────────────────────────────────────────── */
+/* ── the Tricks: a row of portrait frames on the wall ─────────────────────── */
+.sh-counter--cards {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center;
+  min-height: 0;
+}
+/* the shelf the frames stand on: a dark plank with a brass nosing */
+.sh-cards::after {
+  content: ''; position: absolute; z-index: -2; pointer-events: none;
+  left: 2%; right: 2%; bottom: 2px; height: 18px;
+  background:
+    linear-gradient(180deg,
+      #2a1f26 0px, #3a2b2c 4px,                                  /* the top face, lit */
+      var(--kit-gold-hi) 5px, var(--kit-gold) 6px, var(--kit-gold-lo) 7px,   /* brass nosing */
+      #1a1216 8px, #120c10 100%);                                /* the front edge */
+  box-shadow: 0 10px 18px -4px rgba(0, 0, 0, .85);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 7%, black 93%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0%, black 7%, black 93%, transparent 100%);
+}
+/* dressing at the two ends of the row of frames (flex items of .sh-cards) */
+.sh-cards > .sh-prop { position: relative; align-self: flex-end; flex: none; margin-bottom: 16px; }
+.sh-prop--l { width: clamp(64px, 5.4vw, 92px); filter: brightness(.9); }
+.sh-prop--r { width: clamp(50px, 4.2vw, 72px); }
+@media (max-width: 1440px) { .sh-cards > .sh-prop { display: none; } }
+.sh-counter--cards > .sh-h { width: clamp(340px, 34vw, 580px); margin-bottom: 0; }
 .sh-cards {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: clamp(8px, 1vw, 20px);
+  --frame-pad: clamp(12px, 1vw, 16px);
+  position: relative;
+  flex: 1 1 auto; min-height: 0;
+  display: flex; justify-content: center; align-items: stretch;
+  gap: calc(var(--frame-pad) * 2 + clamp(14px, 1.8vw, 34px));
+  padding: var(--frame-pad) var(--frame-pad) 0;
+  width: 100%;
 }
 .sh-card {
-  display: grid; grid-template-rows: auto 1.15em auto;
-  justify-items: center; align-content: start; gap: 6px;
+  position: relative;
+  display: grid; grid-template-rows: minmax(0, 1fr) auto;
+  justify-items: center; align-content: stretch;
+  height: 100%; min-height: 0;
 }
 .sh-card__face {
   position: relative;
-  width: 100%; aspect-ratio: var(--card-aspect);
+  grid-row: 1;
+  height: calc(100% - var(--frame-pad) - 10px); max-height: 100%;
+  aspect-ratio: var(--card-aspect);
   transition: transform var(--t-quick) var(--ease-out), filter var(--t-base) var(--ease-out);
 }
-.sh-card:hover .sh-card__face { transform: translateY(-7px); }
-.sh-card.is-poor .sh-card__face { filter: grayscale(.85) brightness(.62); }
+/* the frame and its recess, drawn behind the card and lifting with it */
+.sh-card__face::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  inset: calc(var(--frame-pad) * -1);
+  border: 8px solid transparent;          /* the frame's margin outside its rail */
+  border-image-source: url("../../assets/ui/kit/frame.webp");
+  border-image-slice: 52;
+  border-image-width: 34px;
+  border-image-repeat: stretch;
+  background:
+    radial-gradient(90% 55% at 50% 100%, color-mix(in srgb, var(--kit-candle) 13%, transparent), transparent 70%),
+    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
+    linear-gradient(180deg, #110c16, #09070c);
+  background-blend-mode: normal, overlay, normal;
+  background-clip: padding-box;
+  box-shadow: 0 18px 34px -14px rgba(0, 0, 0, .95);
+}
+.sh-card:hover .sh-card__face { transform: translateY(-6px); }
+.sh-card.is-poor .sh-card__face { filter: grayscale(.8) brightness(.62); }
 .sh-card.is-sold .sh-card__face { filter: grayscale(1) brightness(.4); opacity: .5; }
 .sh-card.is-sold::after {
-  content: 'Taken'; position: absolute;
+  content: 'Taken'; position: absolute; left: 50%; top: 38%;
+  transform: translateX(-50%) rotate(-11deg);
   font-family: var(--font-display); font-size: var(--fs-lg); letter-spacing: .3em;
-  text-transform: uppercase; color: var(--brass-200);
-  transform: rotate(-11deg); pointer-events: none;
-  margin-top: 24%;
-  text-shadow: 0 2px 0 var(--ink-900);
+  text-transform: uppercase; color: var(--kit-gold-hi);
+  pointer-events: none;
+  text-shadow: 0 2px 0 var(--kit-void);
 }
-.sh-card { position: relative; }
+/* owning one already is a note, pinned to the top rail of its frame */
+.sh-card__own {
+  position: absolute; left: 50%; top: calc(var(--frame-pad) * -1 - 9px); z-index: 3;
+  transform: translateX(-50%);
+  padding: 1px 10px; white-space: nowrap;
+  font-size: var(--fs-xs); font-style: italic; color: var(--kit-text);
+  background: linear-gradient(90deg, transparent, var(--kit-void) 18%, var(--kit-void) 82%, transparent);
+}
+/* the price, on a nameplate across the frame's bottom rail */
+.sh-card .sh-buy {
+  grid-row: 2;
+  margin-top: calc(-1 * (var(--frame-pad) + 6px));
+  z-index: 2;
+}
 
-/* ── list rows (Keepsakes + Snacks) ───────────────────────────────────────── */
-.sh-list { display: flex; flex-direction: column; gap: 8px; }
+/* ── Keepsakes and Snacks: ledger rows in a gold-railed panel ─────────────── */
+.sh-side > .sh-counter,
+.sh-counter--moth {
+  --pk: .74;
+  --medal-k: .82;
+  padding: clamp(14px, 2vh, 20px) clamp(14px, 1.3vw, 22px) clamp(6px, 1vh, 10px);
+  align-self: stretch;
+}
+.sh-list { display: flex; flex-direction: column; gap: 0; }
 .sh-row {
   display: grid; grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center; gap: var(--s-3);
-  padding: 8px 10px;
-  border: 1px solid var(--ink-500); border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--ink-800) 66%, transparent);
-  transition: border-color var(--t-quick) var(--ease-out), background-color var(--t-quick) var(--ease-out);
+  align-items: center; gap: clamp(8px, .8vw, 12px);
+  padding: clamp(3px, .5vh, 5px) 2px;
+  transition: filter var(--t-quick) var(--ease-out);
 }
-.sh-row:hover { border-color: var(--brass-400); background: color-mix(in srgb, var(--ink-600) 60%, transparent); }
+/* a gold hairline between entries, fading at both ends like the boards' rules */
+.sh-row + .sh-row {
+  border-top: 1px solid transparent;
+  border-image: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 55%, transparent) 18%, color-mix(in srgb, var(--kit-gold) 55%, transparent) 82%, transparent) 1;
+}
+.sh-row:hover { filter: brightness(1.12); }
 .sh-row.is-poor { filter: grayscale(.8) brightness(.72); }
 .sh-row.is-sold { opacity: .45; }
 .sh-row__sig {
-  display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%;
-  border: 1px solid var(--brass-500);
-  background: radial-gradient(circle at 34% 28%, color-mix(in srgb, var(--brass-300) 24%, var(--ink-700)), var(--ink-900));
+  display: grid; place-items: center;
+  width: clamp(34px, 2.6vw, 42px); height: clamp(34px, 2.6vw, 42px);
+  border-radius: 50%;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8));
 }
-.sh-row__sig svg { width: 22px; height: 22px; fill: none; stroke: var(--brass-100);
-                   stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-.sh-row__sig[data-rarity="rare"] { border-color: var(--rarity-rare); }
-.sh-row__sig[data-rarity="uncommon"] { border-color: var(--rarity-uncommon); }
-.sh-row__sig[data-rarity="shop"] { border-color: var(--arcane-300); }
+.sh-row__sig svg { width: 52%; height: 52%; fill: none; stroke: var(--kit-gold-hi);
+                   stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+/* rarity reads as the colour of the sigil, the enamel and brass stay the kit's */
+.sh-row__sig[data-rarity="rare"] svg { stroke: color-mix(in oklab, var(--rarity-rare) 80%, white); }
+.sh-row__sig[data-rarity="uncommon"] svg { stroke: color-mix(in oklab, var(--rarity-uncommon) 70%, white); }
+.sh-row__sig[data-rarity="shop"] svg { stroke: var(--kit-lav-hi); }
 /* res.snack is a filled drawing (see ui/icons.js), not a stroked one. */
 .sh-row__sig--snack svg { fill: var(--flame-200); stroke: none; }
 .sh-row__txt { min-width: 0; }
-.sh-row__txt b { display: block; font-family: var(--font-display); font-size: var(--fs-sm); color: var(--text-hi); }
-.sh-row__txt em { display: block; font-style: normal; font-size: var(--fs-xs); color: var(--text-mid); line-height: 1.35; }
+.sh-row__txt b {
+  display: block;
+  font-family: var(--font-body); font-weight: 600; font-size: var(--fs-md);
+  line-height: 1.12; color: var(--kit-name);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+.sh-row__txt em {
+  display: block; font-style: normal;
+  font-size: var(--fs-xs); color: var(--kit-text-mid); line-height: 1.26;
+}
 
-/* ── the buy button: affordability, unmistakably ──────────────────────────── */
+/* ── the buy button: a nameplate, affordability unmistakable ─────────────── */
 .sh-buy {
-  display: inline-flex; flex-direction: column; align-items: center; gap: 1px;
-  min-width: 88px; padding: 6px 12px;
-  border: 1px solid var(--brass-500); border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--brass-600) 46%, var(--ink-800));
-  transition: border-color var(--t-quick) var(--ease-out), background-color var(--t-quick) var(--ease-out),
-              transform var(--t-quick) var(--ease-out);
+  --plate-h: clamp(40px, 5vh, 46px);
+  min-width: calc(var(--plate-h) * 2.2);
+  padding-inline: calc(var(--plate-h) * .42);
+  gap: 0;
+  cursor: pointer;
+  transition: filter var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out);
 }
-.sh-buy__price { display: flex; align-items: baseline; gap: 4px; }
-.sh-buy__price b { font-family: var(--font-num); font-size: var(--fs-md); color: var(--brass-100); }
-.sh-buy__price i { font-style: normal; font-size: 9px; letter-spacing: .14em;
-                   text-transform: uppercase; color: var(--text-lo); }
-.sh-buy__state { font-size: var(--fs-xs); letter-spacing: .1em; text-transform: uppercase; color: var(--flame-200); }
-.sh-buy:hover:not(:disabled) { border-color: var(--brass-100); transform: translateY(-1px);
-                               background: color-mix(in srgb, var(--brass-500) 52%, var(--ink-700)); }
-.sh-buy.is-poor {
-  border-color: color-mix(in srgb, var(--threat-400) 70%, var(--ink-600));
-  background: color-mix(in srgb, var(--threat-500) 22%, var(--ink-800));
+.sh-buy__price { display: flex; align-items: baseline; gap: 4px; line-height: 1.05; }
+.sh-buy__price b {
+  font-family: var(--font-num); font-weight: 600;
+  font-size: calc(var(--plate-h) * .38); color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
+.sh-buy__price i {
+  font-style: normal; font-family: var(--font-display); font-weight: 700;
+  font-size: 10px; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--kit-text-mid);
+}
+.sh-buy__state {
+  font-family: var(--font-body); font-style: italic;
+  font-size: calc(var(--plate-h) * .27); line-height: 1.1; letter-spacing: .02em;
+  color: var(--kit-name);
+}
+.sh-buy:hover:not(:disabled), .sh-buy:focus-visible {
+  transform: translateY(-1px);
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .75)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 45%, transparent)) brightness(1.15);
+}
+.sh-buy:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 999px; }
+.sh-buy.is-poor { filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .75)) saturate(.6); }
 .sh-buy.is-poor .sh-buy__price b { color: var(--threat-200); text-decoration: line-through;
                                    text-decoration-color: var(--threat-300); }
 .sh-buy.is-poor .sh-buy__state { color: var(--threat-200); }
-.sh-buy.is-sold { border-style: dashed; border-color: var(--ink-400); background: none; }
-.sh-buy.is-sold .sh-buy__price { opacity: .35; }
-.sh-buy.is-sold .sh-buy__state { color: var(--text-lo); }
-.sh-buy.is-blocked { border-color: var(--ink-400); background: none; }
-.sh-buy.is-blocked .sh-buy__state { color: var(--text-lo); text-transform: none; letter-spacing: 0; font-style: italic; }
+.sh-buy.is-sold { filter: grayscale(1) brightness(.6); }
+.sh-buy.is-sold .sh-buy__price { opacity: .5; }
+.sh-buy.is-sold .sh-buy__state { color: var(--kit-text-lo); }
+.sh-buy.is-blocked { filter: saturate(.3) brightness(.8); }
+.sh-buy.is-blocked .sh-buy__state { color: var(--kit-text-mid); text-transform: none; letter-spacing: 0; font-style: italic; }
 .sh-buy.is-refused { animation: sh-refuse 260ms var(--ease-out); }
 @keyframes sh-refuse {
   0%, 100% { transform: translateX(0); }
@@ -211,43 +233,148 @@
 }
 .rm.is-still .sh-buy.is-refused { animation: none; }
 
-/* ── removal service ──────────────────────────────────────────────────────── */
-.sh-counter--rm { border-color: var(--arcane-600); }
-.sh-remove { display: flex; align-items: center; gap: var(--s-3); }
-.sh-remove__blurb { flex: 1; margin: 0; font-size: var(--fs-xs); color: var(--text-mid); line-height: 1.4; }
-.sh-remove__blurb b { color: var(--brass-200); font-weight: 400; }
+/* ── Mr. Moth, behind his counter ────────────────────────────────────────── */
+.sh-counter--moth {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: clamp(10px, 1vw, 16px); row-gap: clamp(2px, .5vh, 6px);
+  align-items: start;
+  background:
+    radial-gradient(60% 70% at 18% 40%, color-mix(in srgb, var(--kit-candle) 12%, transparent), transparent 70%),
+    radial-gradient(90% 60% at 50% 0%, color-mix(in srgb, var(--kit-violet) 9%, transparent), transparent 70%),
+    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
+    linear-gradient(180deg, var(--kit-panel-hi) 0%, var(--kit-panel) 40%, color-mix(in oklab, var(--kit-panel) 80%, var(--kit-void)) 100%);
+  background-blend-mode: normal, normal, overlay, normal;
+}
+/* the moon rides smaller on his rail than the star and the paw do on theirs,
+   and his name starts below it */
+.sh-side > .sh-counter.sh-counter--moth, .sh-counter.sh-counter--moth {
+  --medal-k: .56;
+  padding-top: clamp(24px, 3.4vh, 32px);
+}
+/* He is engraved, not cartooned: brass line-work on enamel inside a round
+   medallion, the same metal as every other ornament on the board. */
+.sh-moth {
+  grid-column: 1; grid-row: 1;
+  width: clamp(70px, 5.6vw, 96px); height: auto; aspect-ratio: 1;
+  display: block; align-self: center;
+  padding: 12%;
+  border-radius: 50%;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8));
+  overflow: hidden;
+}
+.sh-lamp-a { stop-color: var(--kit-candle); stop-opacity: .55; }
+.sh-lamp-b { stop-color: var(--kit-candle); stop-opacity: 0; }
+/* NOTE: no blanket `fill: none` here — `.sh-moth path` (0,1,1) would outrank
+   every `.sh-moth__coat` (0,1,0) below it and the whole figure would render as
+   a wireframe. Stroke-only shapes declare their own `fill: none`. */
+.sh-moth path, .sh-moth ellipse { stroke-linecap: round; stroke-linejoin: round; }
+.sh-moth__wingline, .sh-moth__btn, .sh-moth__ant, .sh-moth__fluff,
+.sh-moth__arm, .sh-moth__counterline { fill: none; }
+.sh-moth__wing { fill: color-mix(in srgb, var(--kit-violet) 38%, #140e1c); stroke: var(--kit-gold); stroke-width: 3.2; }
+.sh-moth__wingline { stroke: color-mix(in srgb, var(--kit-gold-hi) 60%, transparent); stroke-width: 2.4; }
+.sh-moth__coat { fill: #181120; stroke: var(--kit-gold); stroke-width: 3.2; }
+.sh-moth__lapel { fill: color-mix(in srgb, var(--kit-violet) 30%, #120c18); stroke: var(--kit-gold); stroke-width: 2.4; }
+.sh-moth__btn { stroke: var(--kit-gold-hi); stroke-width: 5; }
+.sh-moth__head { fill: #1d1526; stroke: var(--kit-gold-hi); stroke-width: 3.2; }
+.sh-moth__ant { stroke: var(--kit-gold-hi); stroke-width: 3.2; }
+.sh-moth__eye { fill: var(--kit-gold-hi); stroke: none; }
+.sh-moth__fluff { stroke: var(--kit-gold); stroke-width: 3; }
+.sh-moth__arm { stroke: var(--kit-gold); stroke-width: 6; }
+.sh-moth__lamp { fill: color-mix(in srgb, var(--kit-candle) 55%, #2a1a0c); stroke: var(--kit-gold-hi); stroke-width: 2.6; }
+.sh-moth__counter { fill: #120d15; stroke: var(--kit-gold); stroke-width: 3; }
+.sh-moth__counterline { stroke: color-mix(in srgb, var(--kit-gold) 60%, transparent); stroke-width: 2; }
+.rm:not(.is-still) .sh-moth__glow { animation: sh-flicker 5.5s var(--ease-soft) infinite; }
+@keyframes sh-flicker { 0%,100% { opacity: .95; } 43% { opacity: .6; } 66% { opacity: 1; } }
 
-/* ── his line ─────────────────────────────────────────────────────────────── */
+/* his words beside him; what you carry runs across the panel under both */
+.sh-moth__say { display: contents; }
+.sh-moth__name, .sh-moth__line { grid-column: 2; }
+.sh-moth__name { grid-row: 1; align-self: end; }
+.sh-moth__line { grid-row: 2; align-self: start; }
+.sh-moth { grid-row: 1 / 3; }
+.sh-moth__you { grid-column: 1 / -1; grid-row: 3; }
+.sh-service { grid-row: 4; }
+.sh-moth__name {
+  margin: 0; font-family: var(--font-display); font-weight: 700; font-size: var(--fs-sm);
+  letter-spacing: .24em; text-transform: uppercase; color: var(--kit-lav);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+.sh-moth__line {
+  margin: 1px 0 clamp(2px, .5vh, 5px);
+  font-size: var(--fs-sm); font-style: italic; color: var(--kit-text); line-height: 1.3;
+}
+.sh-moth__you {
+  display: flex; justify-content: space-between; gap: 2px 10px; margin: 3px 0 0; flex-wrap: wrap;
+  padding: 3px 2px 0;
+}
+.sh-moth__you div { display: flex; flex-direction: row; align-items: baseline; gap: 5px; }
+.sh-moth__you dt {
+  font-family: var(--font-display); font-weight: 700; font-size: 10px;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--kit-text-lo);
+}
+.sh-moth__you dd {
+  margin: 0; font-family: var(--font-num); font-weight: 600; font-size: var(--fs-md); line-height: 1.1;
+  color: var(--kit-gold-hi); text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+.sh-deck {
+  color: inherit; font: inherit; line-height: 22px;
+  min-width: 30px; min-height: 22px; padding: 0 5px;
+  border-bottom: 1px dotted color-mix(in srgb, var(--kit-gold) 70%, transparent);
+}
+.sh-deck:hover { color: #fff1d2; }
+
+/* the removal service, across the foot of his panel */
+.sh-service {
+  grid-column: 1 / -1;
+  padding-top: clamp(3px, .6vh, 6px);
+  border-top: 1px solid transparent;
+  border-image: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 60%, transparent) 16%, color-mix(in srgb, var(--kit-gold) 60%, transparent) 84%, transparent) 1;
+  display: flex; flex-direction: column;
+}
+.sh-service .sh-h { font-size: var(--fs-xs); margin-bottom: 0; }
+.sh-remove { display: flex; align-items: center; gap: var(--s-3); }
+.sh-remove__blurb { flex: 1; margin: 0; font-size: var(--fs-xs); color: var(--kit-text-mid); line-height: 1.36; }
+.sh-remove__blurb b { color: var(--kit-gold-hi); font-weight: 400; }
+
+/* ── his line, in the footer ─────────────────────────────────────────────── */
 .sh-line {
   flex: 1; margin: 0; min-height: 1.3em;
-  font-size: var(--fs-sm); color: var(--text-mid);
+  padding-left: calc(var(--kit-vine-w, 36px) * .6);
+  font-size: var(--fs-sm); color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
-.sh-line i { color: var(--arcane-200); font-style: italic; }
+.sh-line i { color: var(--kit-lav); font-style: italic; }
 .sh-line.is-good { color: var(--good-300); }
 .sh-line.is-bad  { color: var(--threat-200); }
 
-@media (max-width: 1320px) {
-  .sh-floor { grid-template-columns: minmax(0, 1fr); }
-  .sh-side { flex-direction: row; flex-wrap: wrap; }
-  .sh-side > .sh-counter { flex: 1 1 300px; }
+@media (max-width: 1400px) {
+  .sh-floor { grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr) minmax(0, 1.04fr); }
 }
 
-/* ── Short viewports: 1600x900, and every laptop ─────────────────────────────
-   Padding alone only makes the bottom row reachable by scrolling, and a shop
-   whose third Snack has to be discovered by scrolling is still a shop that
-   hides a third of its stock. At 900px the shelf overran its scroll box by
-   ~40px, so the counters give that back: a little less padding, a slightly
-   narrower Mr. Moth, tighter gaps. Nothing here changes the layout above
-   960px, where there was never a problem. */
-@media (max-height: 960px) {
-  .scene--shop .sh-counter { padding: var(--s-2) var(--s-3) var(--s-3); }
-  .scene--shop .sh-counter--moth {
-    grid-template-columns: clamp(104px, 8.5vw, 152px) minmax(0, 1fr) clamp(210px, 18vw, 300px);
-  }
-  .scene--shop .sh-moth__line { font-size: var(--fs-sm); margin-bottom: var(--s-2); }
-  .scene--shop .sh-moth__say { padding-bottom: var(--s-2); }
-  .scene--shop .sh-h { margin-bottom: var(--s-2); }
-  .scene--shop .sh-left { gap: clamp(8px, 1vh, 14px); }
-  .scene--shop .sh-side { gap: clamp(8px, 1vh, 14px); }
-  .scene--shop .sh-service { padding: var(--s-2) 0 var(--s-2) var(--s-3); }
+/* ── narrow: the counter stacks under the frames and the board scrolls ───── */
+@media (max-width: 1100px) {
+  .sh-floor { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(260px, auto) auto auto; }
+  .sh-counter--moth { grid-column: 1 / -1; grid-row: 3; }
+}
+
+/* ── Short viewports: 1280x800, and every laptop ─────────────────────────────
+   The frames give up height before anything else does; the panels tighten
+   their padding and type a step. */
+@media (max-height: 860px) {
+  .scene--shop .sh-moth { width: 62px; }
+  .scene--shop .sh-moth__you { justify-content: space-around; row-gap: 0; }
+  .scene--shop .sh-remove__blurb { line-height: 1.24; }
+  .scene--shop .sh-counter.sh-counter--moth { padding-top: 22px; padding-bottom: 6px; }
+  .scene--shop .sh-row__txt b { font-size: var(--fs-sm); }
+  .scene--shop .sh-row__txt em { font-size: 11px; line-height: 1.28; }
+  .scene--shop .sh-moth__line { font-size: var(--fs-xs); }
+  .scene--shop .sh-moth__you dd { font-size: var(--fs-md); }
+  .scene--shop .sh-buy { --plate-h: 38px; }
+  .scene--shop .sh-side > .sh-counter,
+  .scene--shop .sh-counter--moth { padding: 16px 12px 8px; }
+  .scene--shop .sh-counter--moth { padding-top: 24px; }
+  .scene--shop .sh-row { padding-block: 3px; }
 }

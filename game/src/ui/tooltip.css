@@ -11,18 +11,25 @@
   font-family: var(--font-body);
   font-size: var(--fs-sm);
   line-height: 1.42;
-  color: var(--text-hi);
+  color: var(--kit-text);
+  /* A kit panel in miniature: the select boards' dark plate, their grain, a
+     gold double rule, and a brass star in each corner of the rule. */
   background:
-    linear-gradient(180deg,
-      color-mix(in oklab, var(--surface-2) 96%, var(--flame-400)) 0%,
-      var(--surface-1) 62%,
-      color-mix(in oklab, var(--surface-1) 92%, var(--ink-900)) 100%);
-  border: 1px solid var(--surface-line);
-  border-radius: var(--radius-md);
+    url("../../assets/ui/kit/star4.svg") 3px 3px / 8px 8px no-repeat,
+    url("../../assets/ui/kit/star4.svg") calc(100% - 3px) 3px / 8px 8px no-repeat,
+    url("../../assets/ui/kit/star4.svg") 3px calc(100% - 3px) / 8px 8px no-repeat,
+    url("../../assets/ui/kit/star4.svg") calc(100% - 3px) calc(100% - 3px) / 8px 8px no-repeat,
+    radial-gradient(90% 60% at 50% 0%, color-mix(in srgb, var(--kit-violet) 14%, transparent), transparent 70%),
+    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
+    linear-gradient(180deg, var(--kit-panel-hi) 0%, var(--kit-panel) 55%, color-mix(in oklab, var(--kit-panel) 80%, var(--kit-void)) 100%);
+  background-blend-mode: normal, normal, normal, normal, normal, overlay, normal;
+  border: 1px solid color-mix(in srgb, var(--kit-gold) 85%, transparent);
+  border-radius: 3px;
   box-shadow:
-    var(--shadow-3),
-    0 0 0 1px color-mix(in srgb, var(--ink-900) 70%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--flame-100) 7%, transparent);
+    inset 0 0 0 2px var(--kit-void),
+    inset 0 0 0 3px color-mix(in srgb, var(--kit-gold-lo) 90%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--kit-void) 80%, transparent),
+    var(--shadow-3);
   pointer-events: none;            /* the panel never eats the pointer … */
   opacity: 0;
   transform-origin: center;
@@ -30,7 +37,7 @@
   overflow: hidden auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
-  scrollbar-color: var(--surface-line-hi) transparent;
+  scrollbar-color: var(--kit-gold-lo) transparent;
 }
 .mm-tip.is-in { opacity: 1; }
 .mm-tip[hidden] { display: none; }
@@ -38,8 +45,8 @@
 /* … except the nested keyword chips, which must be hoverable for level two. */
 .mm-tip__kw {
   pointer-events: auto;
-  color: var(--flame-200);
-  border-bottom: 1px dotted color-mix(in srgb, var(--flame-200) 55%, transparent);
+  color: var(--kit-gold-hi);
+  border-bottom: 1px dotted color-mix(in srgb, var(--kit-gold) 70%, transparent);
   cursor: help;
 }
 .mm-tip__kw:hover, .mm-tip__kw:focus-visible {
@@ -53,14 +60,14 @@
   position: absolute;
   width: 9px; height: 9px;
   margin: -5px 0 0 -5px;
-  background: var(--surface-1);
-  border: 1px solid var(--surface-line);
+  background: var(--kit-panel);
+  border: 1px solid color-mix(in srgb, var(--kit-gold) 85%, transparent);
   transform: rotate(45deg);
   pointer-events: none;
 }
 .mm-tip[data-side="top"]    .mm-tip__beak { border-width: 0 1px 1px 0; }
 .mm-tip[data-side="bottom"] .mm-tip__beak { border-width: 1px 0 0 1px;
-  background: color-mix(in oklab, var(--surface-2) 96%, var(--flame-400)); }
+  background: var(--kit-panel-hi); }
 .mm-tip[data-side="left"]   .mm-tip__beak { border-width: 0 0 1px 1px; }
 .mm-tip[data-side="right"]  .mm-tip__beak { border-width: 1px 1px 0 0; }
 
@@ -80,8 +87,9 @@
   font-family: var(--font-display);
   font-size: var(--fs-md);
   font-weight: 700;
-  letter-spacing: .02em;
-  color: var(--flame-200);
+  letter-spacing: .04em;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .mm-tip__stacks {
   font-family: var(--font-num);
@@ -116,7 +124,7 @@
   gap: 2px var(--s-3);
   margin: 0 0 var(--s-2);
   padding-top: var(--s-2);
-  border-top: 1px solid color-mix(in srgb, var(--surface-line) 60%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--kit-gold-lo) 80%, transparent);
 }
 .mm-tip__rows dt { color: var(--text-lo); font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: .06em; }
 .mm-tip__rows dd { margin: 0; font-family: var(--font-num); color: var(--text-hi); }
@@ -133,7 +141,7 @@
 .mm-tip__footer {
   margin: var(--s-2) 0 0;
   padding-top: var(--s-2);
-  border-top: 1px solid color-mix(in srgb, var(--surface-line) 60%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--kit-gold-lo) 80%, transparent);
   font-style: italic;
   color: var(--text-mid);
 }
@@ -143,7 +151,8 @@
 .mm-tip__block + .mm-tip__block {
   margin-top: var(--s-3);
   padding-top: var(--s-3);
-  border-top: 1px solid color-mix(in srgb, var(--surface-line) 60%, transparent);
+  border-top: 1px solid transparent;
+  border-image: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 80%, transparent) 20%, color-mix(in srgb, var(--kit-gold) 80%, transparent) 80%, transparent) 1;
 }
 .mm-tip__block .mm-tip__body:last-child { margin-bottom: 0; }
 
