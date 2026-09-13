@@ -1151,9 +1151,10 @@ def slug_of_still(fn):
 
 
 def enemy_id_of_still(fn):
-    """`bedframeBeast.png` -> `bedframe-beast`, and `prim.png` -> `porcelain-twin-prim`."""
+    """`bedframeBeast.png` -> `bedframe-beast`, `briarRing1.png` -> `briar-ring-1`,
+    and `prim.png` -> `porcelain-twin-prim`."""
     stem = os.path.splitext(os.path.basename(fn))[0]
-    return ENEMY_ALIAS.get(stem, re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "-", stem).lower())
+    return ENEMY_ALIAS.get(stem, re.sub(r"(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Za-z])(?=[0-9])", "-", stem).lower())
 
 
 def main():
