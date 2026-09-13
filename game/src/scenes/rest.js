@@ -182,6 +182,16 @@ const FORT_PAINT = `
       <feBlend in="d" in2="g" mode="multiply" result="b"/>
       <feComposite in="b" in2="d" operator="in"/>
     </filter>
+    <!-- the whole picture, as if brushed: edges that wander, and the tooth of
+         the canvas multiplied into everything -->
+    <filter id="rsPaint" filterUnits="userSpaceOnUse" x="-24" y="-24" width="468" height="328" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency=".024" numOctaves="3" seed="8" result="w"/>
+      <feDisplacementMap in="SourceGraphic" in2="w" scale="3.4" xChannelSelector="R" yChannelSelector="B" result="d"/>
+      <feTurbulence type="fractalNoise" baseFrequency=".55 .75" numOctaves="3" seed="3" result="c"/>
+      <feColorMatrix in="c" type="matrix"
+        values="0 0 0 .34 .68  0 0 0 .34 .68  0 0 0 .34 .68  0 0 0 0 1" result="cg"/>
+      <feBlend in="d" in2="cg" mode="multiply"/>
+    </filter>
     <filter id="rsBlur2" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2"/></filter>
     <filter id="rsBlur4" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="4"/></filter>
     <filter id="rsBlur8" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="8"/></filter>
@@ -194,15 +204,17 @@ const FORT_PAINT = `
     </clipPath>
   </defs>
 
+  <g filter="url(#rsPaint)">
   <!-- the room: damask plaster, a dado rail, and moonlight coming in from the right -->
   <g filter="url(#rsPlaster)">
-    <rect width="420" height="257" fill="url(#rsWall)"/>
-    <path class="rs-wains" d="M0 178h420v79H0Z"/>
+    <rect x="-24" y="-24" width="468" height="281" fill="url(#rsWall)"/>
+    <path class="rs-wains" d="M-24 178h468v79H-24Z"/>
   </g>
   <rect width="420" height="178" fill="url(#rsDamask)" class="rs-damask"/>
   <path class="rs-rail" d="M0 178h420"/>
   <path class="rs-rail rs-rail--lo" d="M0 181.5h420"/>
   <rect width="420" height="257" fill="url(#rsMoonWash)"/>
+  <ellipse class="rs-wallglow" cx="206" cy="170" rx="150" ry="74" filter="url(#rsBlur8)"/>
 
   <!-- a portrait of the house, hung where the kids could not reach to take it down -->
   <rect class="rs-picframe" x="186" y="22" width="48" height="58" rx="2" fill="url(#rsGilt)"/>
@@ -237,7 +249,7 @@ const FORT_PAINT = `
   </g>
 
   <!-- floorboards, and the rug the fort was built on -->
-  <path d="M0 257h420v23H0Z" fill="url(#rsFloorG)"/>
+  <path d="M-24 257h468v47H-24Z" fill="url(#rsFloorG)"/>
   <path class="rs-floor" d="M0 266h420M0 274h420"/>
   <g filter="url(#rsCloth)">
     <ellipse cx="218" cy="265" rx="194" ry="13" fill="url(#rsRugG)"/>
@@ -312,6 +324,11 @@ const FORT_PAINT = `
   <!-- the way in: a flap tied back, lamplight on everything inside -->
   <path d="M146 257v-47c0-31 27-46 64-46s64 15 64 46v47Z" fill="url(#rsInner)"/>
   <path class="rs-archshade" d="M154 220c0-28 22-46 56-46s56 18 56 46" filter="url(#rsBlur4)"/>
+  <g class="rs-inside">
+    <path class="rs-inpillow" d="M150 257c-2-14 4-26 16-28 12-2 24 4 28 16 2 6 0 12-2 12Z"/>
+    <path class="rs-inpillow rs-inpillow--b" d="M268 257c3-16-3-28-17-30-13-2-24 6-27 18-1 6 1 12 3 12Z"/>
+    <path class="rs-inblanket" d="M186 257c4-8 12-12 24-12s22 4 26 12Z"/>
+  </g>
   <path class="rs-flap" d="M146 257c-5-22-6-50 4-72 6-12 14-18 22-18-8 28-10 62 4 90Z"/>
   <path class="rs-flaplit" d="M172 167c-8 28-10 62 4 90"/>
   <path class="rs-tie" d="M147 213c6 4 14 4 20 0"/><circle class="rs-knot" cx="168" cy="213" r="2.4"/>
@@ -329,6 +346,9 @@ const FORT_PAINT = `
     <path d="M350 250l5 6M126 251l4 6"/><circle cx="356" cy="257" r="1.8"/><circle cx="131" cy="258" r="1.8"/>
   </g>
 
+  <path class="rs-bloom" d="M146 257v-47c0-31 27-46 64-46s64 15 64 46v47" filter="url(#rsBlur4)"/>
+  </g>
+
   <!-- set dressing from the Kid board itself: the skull on its books and a
        candle, down at the front where the Kid board keeps them -->
   <ellipse class="rs-propshadow" cx="30" cy="272" rx="26" ry="4" filter="url(#rsBlur2)"/>
@@ -337,7 +357,7 @@ const FORT_PAINT = `
   <circle class="rs-candleglow" cx="400" cy="232" r="30" filter="url(#rsBlur8)"/>
   <image href="${KIT_ART}candle.webp" x="386" y="229" width="28" height="44" class="rs-prop"/>
 
-  <rect width="420" height="280" fill="url(#rsVig)"/>
+  <rect x="-24" y="-24" width="468" height="328" fill="url(#rsVig)"/>
 </svg>`;
 
 const FORT_SVG = `

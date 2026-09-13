@@ -48,7 +48,9 @@
   background: url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px;
   mix-blend-mode: overlay; opacity: .55;
 }
-.rs-fort__paint { transition: opacity var(--t-slow) var(--ease-out); }
+/* its own layer: the figures change every frame and must never make the
+   painted room behind them run its filters again */
+.rs-fort__paint { transition: opacity var(--t-slow) var(--ease-out); will-change: transform; }
 .rs-fort path { stroke-linecap: round; stroke-linejoin: round; }
 
 /* the room */
@@ -115,6 +117,11 @@
 .rs-rugrim--in { stroke: color-mix(in srgb, var(--kit-void) 70%, transparent); stroke-width: 1; }
 .rs-shadow  { fill: rgba(0, 0, 0, .7); }
 .rs-spill   { fill: var(--kit-candle); opacity: .34; }
+.rs-wallglow { fill: var(--kit-candle); opacity: .1; }
+.rs-bloom   { fill: none; stroke: var(--kit-candle); stroke-width: 9; opacity: .32; }
+.rs-inpillow { fill: color-mix(in oklab, var(--courage-500) 60%, var(--kit-gold-lo)); opacity: .9; }
+.rs-inpillow--b { fill: color-mix(in oklab, var(--kit-violet) 50%, var(--kit-gold-lo)); }
+.rs-inblanket { fill: color-mix(in oklab, var(--kit-gold) 55%, var(--courage-500)); opacity: .75; }
 .rs-tuft    { fill: var(--kit-gold); }
 .rs-prop    { filter: brightness(.9); }
 .rs-propshadow { fill: rgba(0, 0, 0, .8); }
@@ -285,7 +292,9 @@
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .rs-door__note b { font-family: var(--font-num); font-weight: 400; color: var(--kit-text-mid); }
-.rs-door:disabled .rs-door__note { color: var(--threat-200); font-style: italic; }
+/* red only says "you cannot take this"; once the night is spent every door is
+   disabled, and the one you chose must not read as refused */
+.rs-door:disabled:not(.is-spent) .rs-door__note { color: var(--threat-200); font-style: italic; }
 
 .rs-line {
   flex: 1; margin: 0; min-height: 1.3em;
@@ -340,12 +349,37 @@
   .rs-door__read { --plate-h: 40px; }
   .rs-choices { gap: 24px; }
 }
-/* six choices in two columns: the plate goes under the words */
+/* ── a party's night: six choices, two columns of three ─────────────────────
+   The fort gives up width, the panels tighten, and each readout plate goes
+   under its words; the whole grid has to sit between the plaque's note and
+   the footer on a 1280x800 panel. */
+.rs-room:has(.rs-door:nth-child(5)) {
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  gap: clamp(22px, 2.4vw, 40px);
+  padding-top: clamp(16px, 2.4vh, 26px);
+}
+.rs-choices:has(> .rs-door:nth-child(5)) { row-gap: clamp(20px, 2.8vh, 26px); padding-top: 4px; }
 .rs-choices:has(> .rs-door:nth-child(5)) .rs-door {
+  --pk: .62;
+  --medal-k: .6;
   grid-template-columns: auto minmax(0, 1fr);
   grid-template-areas: "glyph name" "glyph blurb" "glyph read" "glyph note";
+  column-gap: 12px;
+  padding: clamp(10px, 1.4vh, 14px) clamp(12px, 1vw, 16px) clamp(7px, 1vh, 10px);
 }
-.rs-choices:has(> .rs-door:nth-child(5)) .rs-door__read { justify-self: start; margin-top: 4px; }
+.rs-choices:has(> .rs-door:nth-child(5)) .rs-door[data-medal="moon"] { --medal-k: .4; }
+.rs-choices:has(> .rs-door:nth-child(5)) .rs-door__glyph { width: clamp(36px, 2.8vw, 46px); }
+.rs-choices:has(> .rs-door:nth-child(5)) .rs-door__txt > b { font-size: var(--fs-md); }
+.rs-choices:has(> .rs-door:nth-child(5)) .rs-door__txt > em { line-height: 1.25; }
+.rs-choices:has(> .rs-door:nth-child(5)) .rs-door__read {
+  --plate-h: clamp(36px, 4.4vh, 42px);
+  justify-self: start; margin-top: 3px; min-width: 0;
+}
+.rs-choices:has(> .rs-door:nth-child(5)) .rs-door__note { margin-top: 1px; }
+@media (max-height: 860px) {
+  .rs-choices:has(> .rs-door:nth-child(5)) .rs-door__txt > em,
+  .rs-choices:has(> .rs-door:nth-child(5)) .rs-door__note { font-size: max(11px, var(--fs-xs)); }
+}
 @media (max-width: 1180px) {
   .rs-room { grid-template-columns: minmax(0, 1fr); }
   .rs-art { display: none; }
