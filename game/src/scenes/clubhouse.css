@@ -277,7 +277,13 @@
 }
 /* the print itself: a little faded and warm, as a photograph pinned up for a
    summer is */
-.polaroid__photo .petpic { mix-blend-mode: normal; }
+.polaroid__photo { position: relative; }
+.polaroid__photo::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  background:
+    linear-gradient(128deg, rgba(255, 250, 235, .16) 0%, rgba(255, 250, 235, .05) 34%, transparent 46%),
+    radial-gradient(120% 100% at 50% 40%, transparent 55%, rgba(30, 18, 8, .35) 100%);
+}
 /* The kid whose animal this is, tucked into the top-left of the snapshot the
    way a second photo gets tucked into the frame of the first. Top-LEFT because
    the pin owns the top centre and the HOME stamp owns the bottom band. */
@@ -310,12 +316,22 @@
 .polaroid:not(.is-found) .polaroid__photo .petpic { filter: saturate(.62) brightness(.86) contrast(1.04) sepia(.12); }
 .polaroid.is-found .polaroid__photo .petpic { filter: saturate(1.06); }
 
-/* the clue cards: index cards, taped up */
+/* the clue cards: index cards, taped up — a red rule under the heading and
+   faint blue lines under the words, printed into the card, not over it */
 .ch-note {
   width: clamp(138px, 12vw, 184px);
   padding: 13px 13px 14px;
   --paper: #efe4c6;
   transition: transform var(--t-base) var(--ease-out);
+}
+.ch-note:not(.is-unknown) b {
+  padding-bottom: 4px;
+  background: linear-gradient(rgba(178, 64, 52, .5), rgba(178, 64, 52, .5)) 0 100% / 100% 1px no-repeat;
+}
+/* one faint blue rule under every line of writing, whatever its size */
+.ch-note:not(.is-unknown) p {
+  margin-top: 5px;
+  background: repeating-linear-gradient(to bottom, transparent 0, transparent calc(1lh - 1px), rgba(70, 104, 150, .26) calc(1lh - 1px), rgba(70, 104, 150, .26) 1lh);
 }
 .ch-note:hover { transform: rotate(0deg) scale(1.04); z-index: 5; }
 .ch-note b {
