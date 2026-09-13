@@ -2108,6 +2108,10 @@
 .cb-endturn .cb-endturn__medal.kit-btn__medal {
   --md: var(--corner-md);
   grid-row: 1;
+}
+/* Placed through the scene's own classes: a layout rule that names
+   .kit-btn__medal reads, to tests/scene-css, as combat moving every board's. */
+.cb .cb-endturn .cb-endturn__medal {
   position: relative; top: auto; right: auto; left: auto;
   transform: none;
 }

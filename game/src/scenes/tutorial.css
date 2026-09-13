@@ -132,9 +132,11 @@
 .mm-reduce-motion .tut-fig { animation: none; }
 
 /* ── the page: a kit panel, its moon medallion on the top rail ────────────── */
+/* Laid out through the scene's own classes: a layout rule that names .kit-panel
+   reads, to tests/scene-css, as the opening reformatting every board's panels. */
+.tut-root .tut-panel { display: flex; flex-direction: column; }
 .tut-panel.kit-panel {
   --pk: .9;
-  display: flex; flex-direction: column;
   gap: clamp(14px, 2vh, 20px);
   min-width: 0;
   padding: clamp(50px, 6.6vh, 60px) clamp(36px, 3.6vw, 56px) clamp(24px, 3.2vh, 32px);
