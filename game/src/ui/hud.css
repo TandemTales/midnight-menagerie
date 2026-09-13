@@ -1,26 +1,29 @@
 /* Run HUD. OWNER: ui-chrome agent. Paired with ui/hud.js. */
 
 .mm-hud {
-  --hud-chip-h: 2em;
+  --hud-chip-h: 1.95em;
+  position: relative;
   display: flex; align-items: center; gap: var(--s-3);
   flex-wrap: wrap;
-  padding: var(--s-2) var(--s-4) calc(var(--s-2) + 2px);
+  padding: var(--s-2) var(--s-4) calc(var(--s-2) + 3px);
   min-height: var(--hud-h);
   font-family: var(--font-body);
   font-size: var(--fs-sm);
   color: var(--kit-text);
-  /* The kit's rail (ui/kit.css): the select boards' dark plate and grain, a
-     violet sheen off the top edge, and a gold double rule along the bottom. */
+  /* A gilded rail (tools/prep_ui_materials.py rail.webp): black lacquer over
+     dark wood with a sheen off its top edge, and along its foot a brass rod
+     moulded bead-and-reel, studded where its lengths meet (::after). */
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--kit-violet) 12%, transparent) 0%, transparent 55%),
-    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
-    linear-gradient(180deg, #19121f 0%, #110c16 62%, #0c0910 100%);
-  background-blend-mode: normal, overlay, normal;
-  box-shadow:
-    inset 0 -1px 0 color-mix(in srgb, var(--kit-gold) 90%, transparent),
-    inset 0 -2px 0 var(--kit-void),
-    inset 0 -3px 0 color-mix(in srgb, var(--kit-gold-lo) 85%, transparent),
-    0 8px 18px -6px rgba(0, 0, 0, .85);
+    linear-gradient(180deg, color-mix(in srgb, var(--kit-violet) 9%, transparent) 0%, transparent 60%),
+    url("../../assets/ui/kit/rail.webp") 0 0 / 256px 62px repeat-x,
+    #110b10;
+  box-shadow: 0 10px 20px -6px rgba(0, 0, 0, .85);
+}
+.mm-hud::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: -7px; height: 14px;
+  pointer-events: none; z-index: 1;
+  background: url("../../assets/ui/kit/rail.webp") 0 100% / 256px 46px repeat-x;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .7));
 }
 /* ONE position: the top edge of the viewport, full width, on every run screen.
    Scenes mount it into their own root; this pins it there without the scene
@@ -42,28 +45,51 @@
 }
 .mm-hud__group--extra:empty + .mm-hud__group::before { display: none; }
 
-/* ── chips: little nameplates ─────────────────────────────────────────────── */
+/* ── chips: a value on an enamel nameplate, its icon in an enamel medallion ──
+   The plate is cartouche-hud.webp (notched ends, a bevelled brass rim, violet
+   enamel), drawn on ::before so it starts under the medallion's middle; the
+   medallion is the chip's own icon, seated on the plate's left end the way
+   the Kid board seats its round buttons on the ends of its cartouches.
+   Nothing hangs outside the chip's box, so nothing can be clipped by it. */
 .mm-hud__chip {
-  display: inline-flex; align-items: center; gap: .45em;
+  position: relative; isolation: isolate;
+  display: inline-flex; align-items: center; gap: .42em;
   height: var(--hud-chip-h);
-  padding: 0 .95em;
+  padding: 0 1.05em 0 0;
   color: var(--kit-text);
   background: none;
-  border: 0 solid transparent;
-  border-image-source: url("../../assets/ui/kit/plate.webp");
-  border-image-slice: 12 53 12 46 fill;
-  border-image-width: calc(var(--hud-chip-h) * 12 / 72) calc(var(--hud-chip-h) * 53 / 72) calc(var(--hud-chip-h) * 12 / 72) calc(var(--hud-chip-h) * 46 / 72);
+  border: 0;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
-.mm-hud__chip .mm-icon { width: 1.15em; height: 1.15em; opacity: 1; color: var(--kit-gold-hi); }
+.mm-hud__chip::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  top: 0; bottom: 0; right: 0; left: calc(var(--hud-chip-h) * .5);
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/cartouche-hud.webp");
+  border-image-slice: 14 26 14 26 fill;
+  border-image-width: calc(var(--hud-chip-h) * 14 / 44) calc(var(--hud-chip-h) * 26 / 44);
+  border-image-repeat: stretch;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .7));
+}
+.mm-hud__chip > .mm-icon:first-child {
+  display: grid; place-items: center;
+  width: calc(var(--hud-chip-h) * 1.12); height: calc(var(--hud-chip-h) * 1.12);
+  margin: 0 .05em 0 0;
+  border-radius: 50%;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .75));
+  color: var(--kit-gold-hi);
+}
+.mm-hud__chip > .mm-icon:first-child svg { width: 50%; height: 50%; filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .7)); }
+.mm-hud__chip .mm-icon { opacity: 1; }
 .mm-hud__btn { transition: filter var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out); }
-.mm-hud__btn:hover { filter: brightness(1.25) drop-shadow(0 0 6px color-mix(in srgb, var(--kit-candle) 40%, transparent)); }
+.mm-hud__btn:hover { filter: brightness(1.22) drop-shadow(0 0 6px color-mix(in srgb, var(--kit-candle) 40%, transparent)); }
 .mm-hud__t { font-weight: 600; }
 .mm-hud__s {
   font-size: var(--fs-xs); color: var(--kit-text-mid);
-  padding-left: .4em; border-left: 1px solid color-mix(in srgb, var(--kit-gold-lo) 90%, transparent);
+  padding-left: .45em; border-left: 1px solid color-mix(in srgb, var(--kit-gold) 55%, transparent);
 }
 
 .mm-hud__where { max-width: 26ch; overflow: hidden; }
@@ -74,38 +100,38 @@
 .mm-hud__seed { color: var(--kit-text-mid); font-family: var(--font-num); }
 /* Settings is an icon action, so it is one of the boards' round enamel buttons */
 .mm-hud__settings {
-  width: calc(var(--hud-chip-h) * 1.2); height: calc(var(--hud-chip-h) * 1.2);
+  width: calc(var(--hud-chip-h) * 1.24); height: calc(var(--hud-chip-h) * 1.24);
   padding: 0; justify-content: center;
-  border-image: none; border-radius: 50%;
+  border-radius: 50%;
   background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
 }
-.mm-hud__settings .mm-icon { width: 1.05em; height: 1.05em; }
+.mm-hud__settings::before { content: none; }
+.mm-hud__settings > .mm-icon:first-child { background: none; filter: none; width: 1.05em; height: 1.05em; }
+.mm-hud__settings > .mm-icon:first-child svg { width: 100%; height: 100%; }
 
 /* ── Courage bar: crimson enamel in a brass tube ──────────────────────────── */
 .mm-hud__courage { display: flex; align-items: center; min-width: 11ch; }
 .mm-hud__bar {
   position: relative;
-  width: 12ch; height: 1.5em;
-  background:
-    url("../../assets/ui/kit/grain.webp") 0 0 / 128px 128px,
-    linear-gradient(180deg, #0b0709, #1a1014);
-  background-blend-mode: overlay, normal;
-  border: 1px solid color-mix(in srgb, var(--kit-gold) 90%, transparent);
+  width: 12.5ch; height: 1.62em;
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/tube.webp");
+  border-image-slice: 19 fill;
+  border-image-width: calc(1.62em * 19 / 40);
+  border-image-repeat: stretch;
   border-radius: 999px;
-  box-shadow:
-    inset 0 0 0 1px var(--kit-void),
-    0 0 0 1px rgba(0, 0, 0, .7),
-    inset 0 2px 4px rgba(0, 0, 0, .8);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .75));
   overflow: hidden;
 }
 .mm-hud__bar > i {
-  position: absolute; inset: 1px;
+  position: absolute; inset: 3px 4px;
   border-radius: 999px;
   transform-origin: left center;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, .28) 0%, rgba(255, 255, 255, .06) 38%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, .3) 100%),
+    linear-gradient(180deg, rgba(255, 236, 236, .42) 0%, rgba(255, 255, 255, .08) 34%, rgba(0, 0, 0, 0) 52%, rgba(0, 0, 0, .34) 100%),
     linear-gradient(90deg, var(--courage-500), var(--courage-300));
+  box-shadow: inset 0 0 0 1px rgba(40, 6, 12, .6);
   transition: transform var(--t-slow) var(--ease-out);
 }
 .mm-hud__barlabel {
@@ -121,7 +147,7 @@
     1px 0 0 var(--ink-900), -1px 0 0 var(--ink-900);
   font-variant-numeric: tabular-nums;
 }
-.mm-hud__courage[data-low="1"] .mm-hud__bar { border-color: var(--threat-300); }
+.mm-hud__courage[data-low="1"] .mm-hud__bar { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .75)) drop-shadow(0 0 4px color-mix(in srgb, var(--threat-300) 70%, transparent)); }
 .mm-hud__courage[data-low="1"] .mm-hud__bar::after {
   content: ''; position: absolute; inset: 0;
   box-shadow: inset 0 0 10px color-mix(in srgb, var(--threat-300) 60%, transparent);
@@ -172,18 +198,22 @@
   --rar: var(--rarity-common);
   position: relative;
   display: grid; place-items: center;
-  width: var(--hud-chip-h); height: var(--hud-chip-h);
+  width: calc(var(--hud-chip-h) * 1.06); height: calc(var(--hud-chip-h) * 1.06);
   color: var(--kit-gold-hi);
-  background:
-    radial-gradient(70% 70% at 50% 30%, color-mix(in srgb, var(--kit-candle) 20%, transparent), transparent 70%),
-    linear-gradient(180deg, #1f1726, #0d0a11);
-  border: 1px solid color-mix(in srgb, var(--kit-gold) 90%, transparent);
-  border-radius: 2px;
-  box-shadow:
-    inset 0 0 0 1px var(--kit-void),
-    inset 0 0 0 2px color-mix(in srgb, var(--rar) 70%, transparent),
-    0 1px 2px rgba(0, 0, 0, .8);
+  /* a brass socket with clipped corners round black enamel (socket.webp) */
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/socket.webp");
+  border-image-slice: 14 fill;
+  border-image-width: calc(var(--hud-chip-h) * 1.06 * 14 / 56);
+  background: radial-gradient(70% 60% at 50% 34%, color-mix(in srgb, var(--kit-candle) 16%, transparent), transparent 72%);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .75));
   transition: transform var(--t-quick) var(--ease-out), filter var(--t-quick) var(--ease-out);
+}
+/* the rarity, as an inlay just inside the brass */
+.mm-hud__relic::before {
+  content: ''; position: absolute; inset: 17%; pointer-events: none;
+  border: 1px solid color-mix(in srgb, var(--rar) 55%, transparent);
+  clip-path: polygon(18% 0, 82% 0, 100% 18%, 100% 82%, 82% 100%, 18% 100%, 0 82%, 0 18%);
 }
 /* Keepsake sigils (data/relics.js) are drawn as strokes, not fills — the same
    way the shop and the reward room draw them. */
@@ -231,6 +261,7 @@
   pointer-events: none;
 }
 .mm-hud[data-variant="combat"] > .mm-hud__group { pointer-events: auto; }
+.mm-hud[data-variant="combat"]::after { content: none; }
 
 .mm-hud[data-compact="1"] { gap: var(--s-3); padding: var(--s-1) var(--s-3); }
 .mm-hud[data-compact="1"] .mm-hud__seed,

@@ -24,6 +24,44 @@
     <div id="fx-layer" aria-hidden="true"></div>
     <div id="tooltip-layer"></div>
   </div>
+  <!-- The kit's engraving (ui/kit.css). Display type is lettered the way the
+       wordmark in UI/title.png is: its strokes bevelled and lit from the top
+       left, a gold edge round them, a dark extrusion under them. -->
+  <svg class="kit-defs" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+    <filter id="kit-engrave" x="-6%" y="-30%" width="112%" height="170%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.3" result="bump"/>
+      <feDiffuseLighting in="bump" surfaceScale="2.6" diffuseConstant="1.18" lighting-color="#ffffff" result="diffuse">
+        <feDistantLight azimuth="235" elevation="48"/>
+      </feDiffuseLighting>
+      <feComposite in="SourceGraphic" in2="diffuse" operator="arithmetic" k1="1.12" k2="0" k3="0" k4="0" result="shaded"/>
+      <feSpecularLighting in="bump" surfaceScale="2.6" specularConstant=".95" specularExponent="16" lighting-color="#f6ecff" result="spec">
+        <feDistantLight azimuth="235" elevation="40"/>
+      </feSpecularLighting>
+      <feComposite in="spec" in2="SourceAlpha" operator="in" result="specIn"/>
+      <feComposite in="shaded" in2="specIn" operator="arithmetic" k1="0" k2="1" k3=".8" k4="0" result="lit"/>
+      <feComposite in="lit" in2="SourceAlpha" operator="in" result="face"/>
+      <feMorphology in="SourceAlpha" operator="dilate" radius="1.35" result="rim"/>
+      <feFlood flood-color="#c29a55"/>
+      <feComposite in2="rim" operator="in" result="gold"/>
+      <feOffset in="rim" dy="-0.8" result="rimUp"/>
+      <feFlood flood-color="#f1dca4"/>
+      <feComposite in2="rimUp" operator="in" result="goldHi"/>
+      <feOffset in="rim" dy="2.4" result="rimDown"/>
+      <feFlood flood-color="#1b0f27"/>
+      <feComposite in2="rimDown" operator="in" result="extrude"/>
+      <feGaussianBlur in="rim" stdDeviation="3.2" result="soft"/>
+      <feOffset in="soft" dy="4" result="softDown"/>
+      <feFlood flood-color="#000000" flood-opacity=".78"/>
+      <feComposite in2="softDown" operator="in" result="shadow"/>
+      <feMerge>
+        <feMergeNode in="shadow"/>
+        <feMergeNode in="extrude"/>
+        <feMergeNode in="goldHi"/>
+        <feMergeNode in="gold"/>
+        <feMergeNode in="face"/>
+      </feMerge>
+    </filter>
+  </svg>
   <noscript>Midnight Menagerie requires JavaScript.</noscript>
   <script type="module" src="src/main.js"></script>
 </body>

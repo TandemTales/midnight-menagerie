@@ -51,29 +51,86 @@
   background: var(--kit-ground-0);
   isolation: isolate;
 }
-/* The ground: aubergine plaster lit by two candles from above and a cold wash
-   from below, the painting's grain over all of it, and the purple damask of the
-   select boards pressed faintly into the wall. */
+/* The ground is a ROOM, rendered by tools/prep_ui_materials.py: flocked damask
+   on the wall, a walnut chair rail and fielded panelling, a skirting board and
+   worn flagstones, all in the dark. It is rendered twice more under candle
+   light and moonlight, and those renders are revealed only where the board's
+   lights are — through pool.webp (a candle's light on a wall) and beam.webp (a
+   shaft from a window) — so a light pool shows the damask and the panelling it
+   falls on instead of a gradient laid over them.
+
+   A board places its lights with custom properties, centre and size, all
+   lengths (vw / vh / px, never %: a % in mask-position aligns, it does not
+   offset):   --wl1-x --wl1-y --wl1-w --wl1-h   up to --wl6-*   (candle light)
+              --ml1-x ... --ml2-*                               (moon glow)
+              --mb1-x --mb1-y --mb1-w --mb1-h, --mb2-*          (moon beams)
+   The two corner candles every board wears are lit here by default. */
+.kit-board {
+  /* the corner candles (.kit-dress__corner): their flame sits .56 of the way
+     across the painting and a fifth of the way down it */
+  --corner-w: clamp(190px, 17.5vw, 290px);
+  --wl1-x: calc(var(--kit-edge) + var(--corner-w) * .56);
+  --wl1-y: calc(var(--hud-h) + var(--corner-w) * .2);
+  --wl1-w: calc(var(--corner-w) * 1.9);
+  --wl1-h: calc(var(--corner-w) * 2.3);
+  --wl2-x: calc(100vw - var(--kit-edge) - var(--corner-w) * .56);
+  --wl2-y: var(--wl1-y);
+  --wl2-w: var(--wl1-w);
+  --wl2-h: var(--wl1-h);
+}
 .kit-ground {
   position: absolute; inset: 0; z-index: 0; pointer-events: none;
-  background:
-    radial-gradient(34% 28% at 11% 7%, color-mix(in srgb, var(--kit-candle) 14%, transparent) 0%, transparent 70%),
-    radial-gradient(34% 28% at 89% 7%, color-mix(in srgb, var(--kit-candle) 14%, transparent) 0%, transparent 70%),
-    radial-gradient(56% 44% at 50% 46%, color-mix(in srgb, var(--kit-violet) 9%, transparent) 0%, transparent 72%),
-    radial-gradient(30% 26% at 50% 10%, color-mix(in srgb, var(--kit-moon) 9%, transparent) 0%, transparent 75%),
-    radial-gradient(80% 50% at 50% 108%, color-mix(in srgb, var(--kit-moon) 5%, transparent) 0%, transparent 70%),
-    url("../../assets/ui/kit/grain.webp"),
-    linear-gradient(180deg, var(--kit-ground-0) 0%, color-mix(in oklab, var(--kit-ground-1) 55%, var(--kit-ground-0)) 40%, color-mix(in oklab, var(--kit-ground-1) 38%, var(--kit-ground-0)) 72%, var(--kit-void) 100%);
-  background-blend-mode: normal, normal, normal, normal, normal, overlay, normal;
-  background-size: auto, auto, auto, auto, auto, 256px 256px, auto;
+  background: url("../../assets/ui/kit/room.webp") 50% 100% / cover no-repeat, var(--kit-ground-0);
 }
-.kit-ground::before {
-  content: ''; position: absolute; inset: 0;
-  background: url("../../assets/ui/kit/damask.webp") 50% 0 / 176px auto repeat;
-  opacity: .075;
-  -webkit-mask-image: radial-gradient(120% 90% at 50% 40%, black 30%, transparent 85%);
-          mask-image: radial-gradient(120% 90% at 50% 40%, black 30%, transparent 85%);
+.kit-ground__warm, .kit-ground__moon {
+  position: absolute; inset: 0;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-mode: alpha; mask-mode: alpha;
 }
+.kit-ground__warm {
+  background: url("../../assets/ui/kit/room-warm.webp") 50% 100% / cover no-repeat;
+  -webkit-mask-image: url("../../assets/ui/kit/pool.webp"), url("../../assets/ui/kit/pool.webp"), url("../../assets/ui/kit/pool.webp"),
+                      url("../../assets/ui/kit/pool.webp"), url("../../assets/ui/kit/pool.webp"), url("../../assets/ui/kit/pool.webp");
+          mask-image: url("../../assets/ui/kit/pool.webp"), url("../../assets/ui/kit/pool.webp"), url("../../assets/ui/kit/pool.webp"),
+                      url("../../assets/ui/kit/pool.webp"), url("../../assets/ui/kit/pool.webp"), url("../../assets/ui/kit/pool.webp");
+  -webkit-mask-size: var(--wl1-w, 1px) var(--wl1-h, 1px), var(--wl2-w, 1px) var(--wl2-h, 1px), var(--wl3-w, 1px) var(--wl3-h, 1px),
+                     var(--wl4-w, 1px) var(--wl4-h, 1px), var(--wl5-w, 1px) var(--wl5-h, 1px), var(--wl6-w, 1px) var(--wl6-h, 1px);
+          mask-size: var(--wl1-w, 1px) var(--wl1-h, 1px), var(--wl2-w, 1px) var(--wl2-h, 1px), var(--wl3-w, 1px) var(--wl3-h, 1px),
+                     var(--wl4-w, 1px) var(--wl4-h, 1px), var(--wl5-w, 1px) var(--wl5-h, 1px), var(--wl6-w, 1px) var(--wl6-h, 1px);
+  -webkit-mask-position:
+    calc(var(--wl1-x, -999px) - var(--wl1-w, 1px) / 2) calc(var(--wl1-y, 0px) - var(--wl1-h, 1px) * .44),
+    calc(var(--wl2-x, -999px) - var(--wl2-w, 1px) / 2) calc(var(--wl2-y, 0px) - var(--wl2-h, 1px) * .44),
+    calc(var(--wl3-x, -999px) - var(--wl3-w, 1px) / 2) calc(var(--wl3-y, 0px) - var(--wl3-h, 1px) * .44),
+    calc(var(--wl4-x, -999px) - var(--wl4-w, 1px) / 2) calc(var(--wl4-y, 0px) - var(--wl4-h, 1px) * .44),
+    calc(var(--wl5-x, -999px) - var(--wl5-w, 1px) / 2) calc(var(--wl5-y, 0px) - var(--wl5-h, 1px) * .44),
+    calc(var(--wl6-x, -999px) - var(--wl6-w, 1px) / 2) calc(var(--wl6-y, 0px) - var(--wl6-h, 1px) * .44);
+          mask-position:
+    calc(var(--wl1-x, -999px) - var(--wl1-w, 1px) / 2) calc(var(--wl1-y, 0px) - var(--wl1-h, 1px) * .44),
+    calc(var(--wl2-x, -999px) - var(--wl2-w, 1px) / 2) calc(var(--wl2-y, 0px) - var(--wl2-h, 1px) * .44),
+    calc(var(--wl3-x, -999px) - var(--wl3-w, 1px) / 2) calc(var(--wl3-y, 0px) - var(--wl3-h, 1px) * .44),
+    calc(var(--wl4-x, -999px) - var(--wl4-w, 1px) / 2) calc(var(--wl4-y, 0px) - var(--wl4-h, 1px) * .44),
+    calc(var(--wl5-x, -999px) - var(--wl5-w, 1px) / 2) calc(var(--wl5-y, 0px) - var(--wl5-h, 1px) * .44),
+    calc(var(--wl6-x, -999px) - var(--wl6-w, 1px) / 2) calc(var(--wl6-y, 0px) - var(--wl6-h, 1px) * .44);
+}
+.kit-ground__moon {
+  background: url("../../assets/ui/kit/room-moon.webp") 50% 100% / cover no-repeat;
+  -webkit-mask-image: url("../../assets/ui/kit/pool.webp"), url("../../assets/ui/kit/pool.webp"), url("../../assets/ui/kit/beam.webp"), url("../../assets/ui/kit/beam-r.webp");
+          mask-image: url("../../assets/ui/kit/pool.webp"), url("../../assets/ui/kit/pool.webp"), url("../../assets/ui/kit/beam.webp"), url("../../assets/ui/kit/beam-r.webp");
+  -webkit-mask-size: var(--ml1-w, 1px) var(--ml1-h, 1px), var(--ml2-w, 1px) var(--ml2-h, 1px), var(--mb1-w, 1px) var(--mb1-h, 1px), var(--mb2-w, 1px) var(--mb2-h, 1px);
+          mask-size: var(--ml1-w, 1px) var(--ml1-h, 1px), var(--ml2-w, 1px) var(--ml2-h, 1px), var(--mb1-w, 1px) var(--mb1-h, 1px), var(--mb2-w, 1px) var(--mb2-h, 1px);
+  -webkit-mask-position:
+    calc(var(--ml1-x, -999px) - var(--ml1-w, 1px) / 2) calc(var(--ml1-y, 0px) - var(--ml1-h, 1px) * .44),
+    calc(var(--ml2-x, -999px) - var(--ml2-w, 1px) / 2) calc(var(--ml2-y, 0px) - var(--ml2-h, 1px) * .44),
+    calc(var(--mb1-x, -999px) - var(--mb1-w, 1px) / 2) var(--mb1-y, 0px),
+    calc(var(--mb2-x, -999px) - var(--mb2-w, 1px) / 2) var(--mb2-y, 0px);
+          mask-position:
+    calc(var(--ml1-x, -999px) - var(--ml1-w, 1px) / 2) calc(var(--ml1-y, 0px) - var(--ml1-h, 1px) * .44),
+    calc(var(--ml2-x, -999px) - var(--ml2-w, 1px) / 2) calc(var(--ml2-y, 0px) - var(--ml2-h, 1px) * .44),
+    calc(var(--mb1-x, -999px) - var(--mb1-w, 1px) / 2) var(--mb1-y, 0px),
+    calc(var(--mb2-x, -999px) - var(--mb2-w, 1px) / 2) var(--mb2-y, 0px);
+}
+.kit-board.has-backdrop .kit-ground__warm,
+.kit-board.has-backdrop .kit-ground__moon { display: none; }
 /* The room's painting, when it exists (RoomScene._paintBackdrop sets
    --kit-backdrop and .has-backdrop). It is laid over the placeholder wall and
    under the same candle light and vignette, pushed back into the dark so the
@@ -100,18 +157,19 @@
 .kit-dress { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 .kit-dress > * { position: absolute; display: block; }
 
-/* The floor the board stands on: cobbles that sink into the dark towards the
-   back, a pool of candlelight in the middle, the sides lost in shadow. */
+/* The floor is the room's own (the cobbles in room.webp). This is the air
+   over it: the corners of the floor lost in shadow, a breath of warm light
+   off the middle of the board, and the contact shadow along the skirting. */
 .kit-dress__floor {
   left: var(--kit-edge); right: var(--kit-edge); bottom: var(--kit-edge);
   height: clamp(120px, 18vh, 176px);
   background:
-    radial-gradient(38% 70% at 50% 100%, color-mix(in srgb, var(--kit-candle) 12%, transparent), transparent 75%),
-    linear-gradient(90deg, rgba(8, 6, 11, .85) 0%, transparent 18%, transparent 82%, rgba(8, 6, 11, .85) 100%),
-    url("../../assets/ui/kit/floor.webp") 50% 100% / auto 100% repeat-x;
+    radial-gradient(38% 70% at 50% 100%, color-mix(in srgb, var(--kit-candle) 9%, transparent), transparent 75%),
+    linear-gradient(90deg, rgba(8, 6, 11, .75) 0%, transparent 16%, transparent 84%, rgba(8, 6, 11, .75) 100%);
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, .55) 28%, black 62%);
           mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, .55) 28%, black 62%);
 }
+.kit-board.has-backdrop .kit-dress__floor { display: none; }
 
 /* the outer gold double rule of the board, under the HUD band */
 .kit-dress__rule {
@@ -249,16 +307,21 @@
   white-space: nowrap;
   color: var(--kit-lav);
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--kit-lav-hi) 70%, transparent) 0%, transparent 46%, color-mix(in srgb, var(--kit-violet-lo) 55%, transparent) 100%),
+    linear-gradient(180deg, color-mix(in srgb, var(--kit-lav-hi) 55%, transparent) 0%, transparent 42%, color-mix(in srgb, var(--kit-violet-lo) 50%, transparent) 100%),
     url("../../assets/ui/kit/marble.webp") 0 0 / 180px 180px;
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent;
-  -webkit-text-stroke: .5px color-mix(in srgb, var(--kit-lav-hi) 60%, transparent);
-  filter:
-    drop-shadow(0 -1px 0 color-mix(in srgb, var(--kit-gold-hi) 55%, transparent))
-    drop-shadow(1px 0 0 var(--kit-gold-lo)) drop-shadow(-1px 0 0 var(--kit-gold-lo))
-    drop-shadow(0 2px 0 #1c1029)
-    drop-shadow(0 4px 8px rgba(0, 0, 0, .8));
+  /* engraved like the wordmark: the SVG filter in index.html bevels each
+     stroke, lights it from the top left, rims it in gold and drops it onto
+     the plate. Without the filter (a board outside index.html) the plain
+     drop shadows below still letter it. */
+  filter: url("#kit-engrave") drop-shadow(0 0 10px color-mix(in srgb, var(--kit-violet) 30%, transparent));
+}
+@supports not (filter: url("#kit-engrave")) {
+  .kit-cartouche__title {
+    filter: drop-shadow(1px 0 0 var(--kit-gold-lo)) drop-shadow(-1px 0 0 var(--kit-gold-lo))
+            drop-shadow(0 2px 0 #1c1029) drop-shadow(0 4px 8px rgba(0, 0, 0, .8));
+  }
 }
 .kit-cartouche__sub {
   grid-column: 1; grid-row: 2; z-index: 2;
@@ -308,11 +371,15 @@
   border-image-width: 0 calc(var(--rib-h) * 47 / 49) 0 calc(var(--rib-h) * 52 / 49);
   border-image-repeat: stretch;
   font-family: var(--font-display); font-weight: 700;
-  font-size: calc(var(--rib-h) * .48);
+  font-size: calc(var(--rib-h) * .5);
   letter-spacing: .1em; text-transform: uppercase; white-space: nowrap;
-  color: var(--kit-gold-ink);
-  text-shadow: 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 45%, transparent);
-  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .7));
+  /* cut into the gilt the way "CHOOSE YOUR KID" is: near-black letters with
+     the light catching the lower lip of each cut, on a ribbon lifted to the
+     painting's own tan (the cut piece reads darker than the board does) */
+  color: #140b04;
+  -webkit-text-stroke: .35px #140b04;
+  text-shadow: 0 1px 0 rgba(255, 232, 178, .38);
+  filter: brightness(1.22) saturate(.92) drop-shadow(0 3px 4px rgba(0, 0, 0, .7));
 }
 
 /* ── panel: the painted gold rail, emptied ──────────────────────────────────
@@ -353,30 +420,87 @@
 .kit-panel[data-medal="moon"]   { --medal-img: url("../../assets/ui/kit/medal-moon.webp");   --medal-w: 156px; --medal-ar: 156 / 98; --medal-rail: 49px; }
 
 /* ── stage ───────────────────────────────────────────────────────────────────
-   The big rounded gold rail selectKid draws round its mirror and panels: the
-   part of a board where the choice is made. A recess a shade darker than the
-   wall, with its own floor, so what stands in it has somewhere to stand.
-   Put it on a positioned container; it draws itself on ::before and never
-   takes pointer events.                                                     */
-.kit-stage { --stage-inset: 0px; --stage-r: 34px; --stage-floor: 150px; position: relative; isolation: isolate; }
+   The part of a board where the choice is made: the Kid board's filigree
+   panel rail (panel.webp, the frame every .kit-panel wears) opened up into an
+   alcove of the room. Inside it the room carries on, a shade deeper — its
+   panelling and its floor — so what stands in it has somewhere to stand, and
+   a candle set in it lights the wall behind. A crest medallion rides the top
+   rule (the moon, as on the Kid board's mirror; --stage-medal to change it).
+   Put it on a positioned container; it draws itself on ::before / ::after and
+   never takes pointer events.                                               */
+.kit-stage {
+  --stage-inset: 0px; --stage-pk: .92;
+  --stage-medal: url("../../assets/ui/kit/medal-moon.webp");
+  --stage-medal-w: clamp(118px, 9.6vw, 156px);
+  position: relative; isolation: isolate;
+}
 .kit-stage::before {
   content: ''; position: absolute; z-index: -3; pointer-events: none;
   inset: var(--stage-inset);
-  border-radius: var(--stage-r);
-  border: 1px solid color-mix(in srgb, var(--kit-gold-hi) 70%, var(--kit-gold));
+  border: 1px solid transparent;
+  border-image-source: url("../../assets/ui/kit/panel.webp");
+  border-image-slice: 44;
+  border-image-width: calc(44px * var(--stage-pk));
+  border-image-outset: calc(14px * var(--stage-pk));
+  border-image-repeat: stretch;
   background:
-    radial-gradient(60% 40% at 50% 100%, color-mix(in srgb, var(--kit-candle) 10%, transparent), transparent 72%),
-    url("../../assets/ui/kit/floor.webp") 50% 100% / auto var(--stage-floor) repeat-x,
-    linear-gradient(180deg, rgba(7, 5, 10, .5) 0%, rgba(7, 5, 10, .28) 40%, rgba(7, 5, 10, .42) 100%);
-  box-shadow:
-    0 0 0 1px var(--kit-void),
-    0 0 0 3px color-mix(in srgb, var(--kit-gold) 80%, transparent),
-    0 0 0 4px color-mix(in srgb, var(--kit-gold-lo) 90%, transparent),
-    0 0 0 5px rgba(7, 5, 10, .85),
-    inset 0 0 0 1px var(--kit-void),
-    inset 0 0 40px rgba(0, 0, 0, .55),
-    0 20px 50px -20px rgba(0, 0, 0, .9);
-  -webkit-mask-image: none;
+    radial-gradient(70% 55% at 50% 0%, rgba(4, 3, 6, .5), transparent 70%),
+    linear-gradient(180deg, rgba(6, 4, 9, .58) 0%, rgba(6, 4, 9, .34) 45%, rgba(6, 4, 9, .2) 78%, rgba(6, 4, 9, .42) 100%);
+  background-clip: padding-box;
+  box-shadow: inset 0 0 70px rgba(0, 0, 0, .7), 0 26px 60px -24px rgba(0, 0, 0, .95);
+}
+.kit-stage::after {
+  content: ''; position: absolute; z-index: 3; pointer-events: none;
+  left: 50%; top: var(--stage-inset);
+  width: var(--stage-medal-w); aspect-ratio: 156 / 98;
+  transform: translate(-50%, calc(-49 / 98 * 100%));
+  background: var(--stage-medal) 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 4px 5px rgba(0, 0, 0, .8));
+}
+.kit-board.has-backdrop .kit-stage::before { background: linear-gradient(180deg, rgba(6, 4, 9, .55), rgba(6, 4, 9, .3)); background-clip: padding-box; }
+
+/* ── enamel cartouche ──────────────────────────────────────────────────────
+   A tag, a price, a spoil: a violet enamel field in a bevelled brass rim with
+   notched, bowed ends (cartouche.webp, tools/prep_ui_materials.py), lettered
+   the way the Kid board letters its plates.
+     <span class="kit-enamel">
+       <b class="kit-enamel__value">62</b>
+       <i class="kit-enamel__label">Buttons</i>
+     </span>
+   __value is the name (a number, a word), __label the engraved small caps.
+   --row puts them on one line; --tall stacks them; --dark is the Companion
+   tiles' near-black plate; --h sizes it.                                    */
+.kit-enamel {
+  --h: 36px;
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center; gap: .38em;
+  min-height: var(--h);
+  padding: 0 calc(var(--h) * .62);
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/cartouche.webp");
+  border-image-slice: 18 34 18 34 fill;
+  border-image-width: calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64);
+  border-image-repeat: stretch;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75));
+  text-align: center; white-space: nowrap;
+}
+.kit-enamel--tall { flex-direction: column; gap: 0; padding-block: calc(var(--h) * .1); }
+.kit-enamel--dark { border-image-source: url("../../assets/ui/kit/cartouche-dark.webp"); }
+.kit-enamel__value {
+  font-family: var(--font-num); font-weight: 600; font-style: normal;
+  font-size: calc(var(--h) * .5); line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 -1px 0 rgba(0, 0, 0, .35);
+}
+/* engraved small caps: cut into the enamel, the light on the lower lip */
+.kit-enamel__label {
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: max(10.5px, calc(var(--h) * .3)); line-height: 1.05;
+  letter-spacing: .2em; text-transform: uppercase;
+  padding-left: .2em;                   /* the tracking hangs off the last letter */
+  color: var(--kit-text-mid);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-lav-hi) 22%, transparent);
 }
 
 /* ── portrait frame ──────────────────────────────────────────────────────── */
@@ -463,6 +587,39 @@
 .kit-heading--inline::before, .kit-heading--inline::after { align-self: center; }
 .kit-heading--inline::after { grid-column: 4; }
 .kit-heading--inline > em { grid-column: 3; grid-row: 1; justify-self: start; margin: 0 0 0 10px; }
+
+/* ribbon: a section header on the gold ribbon banner, its painted stars at
+   either end ("✦ CHOOSE ONE TRICK ✦"), the epithet hung under it */
+.kit-heading--ribbon {
+  --rib-h: clamp(30px, 3.7vh, 36px);
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  width: fit-content; min-width: calc(var(--rib-h) * 6.5);
+  height: var(--rib-h);
+  margin-inline: auto;
+  padding: 0 calc(var(--rib-h) * 1.36) 1px;
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/ribbon.webp");
+  border-image-slice: 0 47 0 52 fill;
+  border-image-width: 0 calc(var(--rib-h) * 47 / 49) 0 calc(var(--rib-h) * 52 / 49);
+  border-image-repeat: stretch;
+  font-size: calc(var(--rib-h) * .47);
+  letter-spacing: .16em;
+  white-space: nowrap;
+  color: #140b04;
+  -webkit-text-stroke: .3px #140b04;
+  text-shadow: 0 1px 0 rgba(255, 232, 178, .38);
+  filter: brightness(1.22) saturate(.92) drop-shadow(0 3px 4px rgba(0, 0, 0, .7));
+}
+.kit-heading--ribbon::before, .kit-heading--ribbon::after { content: none; }
+.kit-heading--ribbon > em {
+  position: absolute; left: 50%; top: calc(100% + 2px); transform: translateX(-50%);
+  margin: 0; white-space: nowrap;
+  -webkit-text-stroke: 0;
+  font-size: var(--fs-sm);
+  /* the ribbon's brightness filter lifts this too: set it a step darker */
+  color: color-mix(in oklab, var(--kit-text-mid) 82%, black);
+}
 
 /* ── buttons ─────────────────────────────────────────────────────────────── */
 .kit-btn {
@@ -606,6 +763,50 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 }
 .rm.is-still .kit-prop--candle::after { animation: none; }
 
+/* ── the room's fixtures: windows and sconces ───────────────────────────────
+   Painted by tools/prep_ui_materials.py and hung on the room's wall. They are
+   where the ground's light comes from: a board that hangs one also points one
+   of the ground's light slots at it (see .kit-ground). Decoration only.
+     .kit-window (--r)   a gothic lancet onto the grounds, moonlight blooming off
+                         its glass; size it with --win-w
+     .kit-sconce         a brass wall sconce holding the Kid board's candle, its
+                         flame breathing; size it with --sconce-w            */
+.kit-window {
+  position: absolute; pointer-events: none;
+  width: var(--win-w, 150px); aspect-ratio: 300 / 680;
+  background: url("../../assets/ui/kit/window.webp") 50% 0 / 100% 100% no-repeat;
+  filter: drop-shadow(0 12px 16px rgba(0, 0, 0, .65));
+}
+.kit-window--r { background-image: url("../../assets/ui/kit/window-r.webp"); }
+.kit-window::before {
+  content: ''; position: absolute; z-index: -1;
+  left: -45%; right: -45%; top: 4%; bottom: 14%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-moon) 20%, transparent), color-mix(in srgb, var(--kit-moon) 6%, transparent) 55%, transparent);
+  mix-blend-mode: screen;
+}
+.kit-board.has-backdrop .kit-window { display: none; }
+
+.kit-sconce {
+  position: absolute; pointer-events: none;
+  width: var(--sconce-w, 64px); aspect-ratio: 150 / 330;
+  background: url("../../assets/ui/kit/sconce.webp") 50% 0 / 100% 100% no-repeat;
+  filter: drop-shadow(0 8px 8px rgba(0, 0, 0, .7));
+}
+.kit-sconce::after {
+  content: ''; position: absolute; left: 50%; top: 16%;
+  width: 360%; aspect-ratio: 1; transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 34%, transparent), color-mix(in srgb, var(--kit-candle) 10%, transparent) 42%, transparent);
+  mix-blend-mode: screen;
+  animation: kit-flicker 3.6s ease-in-out infinite;
+}
+.rm.is-still .kit-sconce::after { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-reduce-motion="0"]) .kit-sconce::after,
+  :root:not([data-reduce-motion="0"]) .kit-prop--candle::after { animation: none; }
+}
+
 /* ── cards, re-dressed in brass ─────────────────────────────────────────────
    `.kit-cards` on any container hangs its CardViews in the kit's metal: an
    antique brass frame for every rarity, the face in the panels' aubergine, the
@@ -647,15 +848,30 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
     inset 0 0 0 calc(2.5 * var(--u)) color-mix(in srgb, color-mix(in oklab, var(--rarity-c) 60%, var(--kit-gold)) 50%, transparent),
     inset 0 0 0 calc(3.5 * var(--u)) rgba(0, 0, 0, .55);
 }
+/* The name on a dark cartouche nameplate laid over the foot of the art, the
+   way every Companion tile on UI/selectCompanion.png wears its name
+   (cartouche-dark.webp). The type line and the rules move up into the room
+   the plate no longer takes below the art. */
 .kit-cards .mm-card[data-rarity] .mm-card__banner {
-  background:
-    linear-gradient(180deg, #0c090f 0%, #16111b 40%, #0c090f 100%);
-  box-shadow:
-    inset 0 calc(1.5 * var(--u)) 0 color-mix(in srgb, var(--kit-gold) 70%, transparent),
-    inset 0 calc(3 * var(--u)) 0 rgba(0, 0, 0, .6),
-    inset 0 calc(-1.5 * var(--u)) 0 color-mix(in srgb, var(--kit-gold-lo) 90%, transparent);
+  left: calc(8 * var(--u)); right: calc(8 * var(--u));
+  top: calc(104 * var(--u)); height: calc(38 * var(--u));
+  z-index: 1;
+  background: none;
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/cartouche-dark.webp");
+  border-image-slice: 18 34 18 34 fill;
+  border-image-width: calc(38 * var(--u) * 18 / 64) calc(38 * var(--u) * 34 / 64);
+  border-image-repeat: stretch;
+  box-shadow: none;
+  filter: drop-shadow(0 calc(2 * var(--u)) calc(3 * var(--u)) rgba(0, 0, 0, .85));
 }
-.kit-cards .mm-card[data-rarity] .mm-card__name { color: var(--kit-name); }
+.kit-cards .mm-card[data-rarity] .mm-card__name {
+  color: var(--kit-name);
+  padding: 0 calc(15 * var(--u)) calc(1 * var(--u));
+  text-shadow: 0 calc(1 * var(--u)) 0 rgba(0, 0, 0, .95);
+}
+.kit-cards .mm-card[data-rarity] .mm-card__type { top: calc(145 * var(--u)); }
+.kit-cards .mm-card[data-rarity] .mm-card__rules { top: calc(168 * var(--u)); }
 .kit-cards .mm-card[data-rarity] .mm-card__artline { opacity: 0; }
 .kit-cards .mm-card[data-rarity] .mm-card__crest i {
   background:

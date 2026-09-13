@@ -182,44 +182,55 @@
 .ev-page.is-answered .ev-options { pointer-events: none; }
 
 /* ── the hall around the page ───────────────────────────────────────────────
-   Empty gilt frames hung on the side walls, dim with distance; a candle at the
-   foot of each wall; a skull on its books. `.ev-hall` sits under the page. */
+   Each side wall is staged the same way, mirrored: a gothic window onto the
+   grounds, a brass sconce between it and the page, and on the floor a candle
+   (and on the left the skull on its books). The positions are custom
+   properties because the ground's light slots are pointed at the same places:
+   the sconces light the wall round them, the windows spill moonlight down the
+   panelling and across the floor. `.ev-hall` sits under the page. */
+.rm--event {
+  --page-edge: calc(50vw - min(370px, 50vw));             /* where the page starts */
+  --win-w: clamp(100px, 9.6vw, 158px);
+  --win-h: calc(var(--win-w) * 680 / 300);
+  --win-cx: calc(var(--page-edge) * .46 + var(--kit-vine-w, 40px) * .3);
+  --win-top: calc(var(--hud-h) + 25vh);
+  --sconce-w: clamp(58px, 5.2vw, 84px);
+  --sconce-h: calc(var(--sconce-w) * 330 / 150);
+  --sconce-cx: calc(var(--page-edge) - var(--sconce-w) * .95);
+  --sconce-top: calc(var(--hud-h) + 34vh);
+  --flame-y: calc(var(--sconce-top) + var(--sconce-h) * .16);
+  --floor-y: calc(100vh - clamp(70px, 10vh, 96px));
+  /* candle light: the two sconces and the two floor candles */
+  --wl3-x: var(--sconce-cx);                     --wl3-y: var(--flame-y);
+  --wl3-w: clamp(300px, 29vw, 470px);            --wl3-h: calc(var(--wl3-w) * 1.4);
+  --wl4-x: calc(100vw - var(--sconce-cx));       --wl4-y: var(--flame-y);
+  --wl4-w: var(--wl3-w);                         --wl4-h: var(--wl3-h);
+  --wl5-x: calc(var(--page-edge) - clamp(96px, 8vw, 130px)); --wl5-y: calc(var(--floor-y) - 40px);
+  --wl5-w: clamp(260px, 24vw, 400px);            --wl5-h: calc(var(--wl5-w) * .9);
+  --wl6-x: calc(100vw - var(--wl5-x));           --wl6-y: var(--wl5-y);
+  --wl6-w: var(--wl5-w);                         --wl6-h: var(--wl5-h);
+  /* moonlight: a glow round each window and a beam down onto the floor */
+  --ml1-x: var(--win-cx);                        --ml1-y: calc(var(--win-top) + var(--win-h) * .42);
+  --ml1-w: calc(var(--win-w) * 2.9);             --ml1-h: calc(var(--win-h) * 1.55);
+  --ml2-x: calc(100vw - var(--win-cx));          --ml2-y: var(--ml1-y);
+  --ml2-w: var(--ml1-w);                         --ml2-h: var(--ml1-h);
+  --mb1-x: calc(var(--win-cx) + var(--win-w) * .55); --mb1-y: calc(var(--win-top) + var(--win-h) * .3);
+  --mb1-w: calc(var(--win-w) * 2.2);             --mb1-h: calc(100vh - var(--mb1-y));
+  --mb2-x: calc(100vw - var(--mb1-x));           --mb2-y: var(--mb1-y);
+  --mb2-w: var(--mb1-w);                         --mb2-h: var(--mb1-h);
+}
 .ev-hall { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 .ev-hall > * { position: absolute; display: block; }
-.ev-hall__frame {
-  --hall-side: max(calc(var(--kit-edge, 10px) + var(--kit-vine-w, 36px) + 1vw), calc((100vw - 880px) / 2 - 250px));
-  /* the transparent border is the painting's margin outside its gold rail, so
-     the canvas starts exactly under the rail and never shows past it */
-  border: 7px solid transparent;
-  border-image-source: url("../../assets/ui/kit/frame.webp");
-  border-image-slice: 52;
-  border-image-width: 30px;
-  background-color: #0a080d;
-  background-position: 50% 50%, 50% 50%;
-  background-size: 100% 100%, cover;
-  background-repeat: no-repeat;
-  background-clip: padding-box;
-  box-shadow: 0 16px 30px -12px rgba(0, 0, 0, .9);
-  filter: brightness(.96) saturate(.95);
-}
-/* old varnish: darker at the edges, a faint sheen of moonlight across the top */
-.ev-hall__frame--l1 { background-image: radial-gradient(90% 80% at 40% 30%, color-mix(in srgb, var(--kit-moon) 10%, transparent), rgba(6, 4, 9, .55) 100%), url("../../assets/ui/kit/hall-gable.webp"); }
-.ev-hall__frame--l2 { background-image: radial-gradient(90% 80% at 40% 30%, color-mix(in srgb, var(--kit-moon) 8%, transparent), rgba(6, 4, 9, .6) 100%), url("../../assets/ui/kit/hall-tree.webp"); }
-.ev-hall__frame--r1 { background-image: radial-gradient(90% 80% at 60% 30%, color-mix(in srgb, var(--kit-moon) 10%, transparent), rgba(6, 4, 9, .55) 100%), url("../../assets/ui/kit/hall-towers.webp"); }
-.ev-hall__frame--r2 { background-image: radial-gradient(90% 80% at 60% 30%, color-mix(in srgb, var(--kit-moon) 8%, transparent), rgba(6, 4, 9, .6) 100%), url("../../assets/ui/kit/hall-roses.webp"); }
-.ev-hall__frame--l1 { left: calc(var(--hall-side) + 14px); top: 30%; width: clamp(128px, 12vw, 196px); aspect-ratio: 5 / 6; }
-.ev-hall__frame--l2 { left: calc(var(--hall-side) + 40px); top: 60%; width: clamp(98px, 8.6vw, 142px); aspect-ratio: 1; }
-.ev-hall__frame--r1 { right: calc(var(--hall-side) + 14px); top: 30%; width: clamp(128px, 12vw, 196px); aspect-ratio: 5 / 6; }
-.ev-hall__frame--r2 { right: calc(var(--hall-side) + 40px); top: 60%; width: clamp(98px, 8.6vw, 142px); aspect-ratio: 1; }
-.ev-hall__candle { bottom: clamp(70px, 10vh, 96px); width: clamp(52px, 4.4vw, 74px); filter: brightness(.95); }
-.ev-hall__candle--l { left: calc(50% - min(440px, 50vw) - clamp(84px, 7vw, 120px)); }
-.ev-hall__candle--r { right: calc(50% - min(440px, 50vw) - clamp(84px, 7vw, 120px)); }
-.ev-hall__skull { bottom: clamp(70px, 10vh, 96px); left: calc(50% - min(440px, 50vw) - clamp(160px, 14vw, 230px)); width: clamp(62px, 5.4vw, 92px); filter: brightness(.8); }
-
-@media (max-width: 1400px) {
-  .ev-hall__frame--l1, .ev-hall__frame--r1 { top: 34%; width: clamp(96px, 9vw, 130px); }
-  .ev-hall__frame--l2, .ev-hall__frame--r2 { top: 60%; width: clamp(76px, 7vw, 100px); }
-}
+.ev-hall__window { top: var(--win-top); }
+.ev-hall__window--l { left: calc(var(--win-cx) - var(--win-w) / 2); }
+.ev-hall__window--r { right: calc(var(--win-cx) - var(--win-w) / 2); }
+.ev-hall__sconce { top: var(--sconce-top); }
+.ev-hall__sconce--l { left: calc(var(--sconce-cx) - var(--sconce-w) / 2); }
+.ev-hall__sconce--r { right: calc(var(--sconce-cx) - var(--sconce-w) / 2); }
+.ev-hall__candle { bottom: clamp(70px, 10vh, 96px); width: clamp(48px, 4vw, 68px); filter: brightness(.95); }
+.ev-hall__candle--l { left: calc(var(--wl5-x) - clamp(48px, 4vw, 68px) / 2); }
+.ev-hall__candle--r { right: calc(var(--wl5-x) - clamp(48px, 4vw, 68px) / 2); }
+.ev-hall__skull { bottom: clamp(66px, 9.6vh, 92px); left: calc(var(--win-cx) - clamp(58px, 5vw, 86px) / 2); width: clamp(58px, 5vw, 86px); filter: brightness(.8); }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    THE RESCUE

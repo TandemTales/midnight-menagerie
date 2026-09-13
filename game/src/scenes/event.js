@@ -169,11 +169,14 @@ export class EventScene extends RoomScene {
   }
 
   /**
-   * The room the page is read in: a portrait hall, staged the way the select
-   * boards are — empty gilt frames hung dim on the side walls, a candle on the
-   * floor at each side and a skull on a stack of books. All of it decoration,
-   * all of it at the edges, none of it over the words. When `event.png` is
-   * painted it replaces the wall behind these (see ui/kit.css .kit-ground).
+   * The room the page is read in, staged symmetrically on its two side walls:
+   * a gothic window onto the grounds with the moon in it, a brass sconce
+   * between the window and the page, and on the floor below a candle — with a
+   * skull on its books on the left. The window's moonlight and the sconce's
+   * candle light are the ground's own light slots (event.css points them), so
+   * the panelling and the damask are lit where these hang. All of it
+   * decoration, all of it at the edges, none of it over the words. When
+   * `event.png` is painted it brings its own walls and the windows step aside.
    */
   _buildHall() {
     const board = this.root.querySelector('.rm');
@@ -181,8 +184,10 @@ export class EventScene extends RoomScene {
     const hall = el('div', 'ev-hall');
     hall.setAttribute('aria-hidden', 'true');
     hall.innerHTML = `
-      <i class="ev-hall__frame ev-hall__frame--l1"></i><i class="ev-hall__frame ev-hall__frame--l2"></i>
-      <i class="ev-hall__frame ev-hall__frame--r1"></i><i class="ev-hall__frame ev-hall__frame--r2"></i>
+      <i class="kit-window ev-hall__window ev-hall__window--l"></i>
+      <i class="kit-window kit-window--r ev-hall__window ev-hall__window--r"></i>
+      <i class="kit-sconce ev-hall__sconce ev-hall__sconce--l"></i>
+      <i class="kit-sconce ev-hall__sconce ev-hall__sconce--r"></i>
       <i class="kit-prop kit-prop--skull ev-hall__skull"></i>
       <i class="kit-prop kit-prop--candle ev-hall__candle ev-hall__candle--l"></i>
       <i class="kit-prop kit-prop--candle ev-hall__candle ev-hall__candle--r"></i>`;
