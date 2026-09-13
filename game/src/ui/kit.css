@@ -583,7 +583,8 @@
   min-height: var(--plate-h);
   padding: 4px calc(var(--plate-h) * .62);
   border: 0 solid transparent;
-  border-image-source: url("../../assets/ui/kit/plate.webp");
+  /* the Companion tiles' dark plate, its field a deep enamel (plate-lit.webp) */
+  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
   border-image-slice: 12 53 12 46 fill;
   border-image-width: calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72);
   border-image-repeat: stretch;

@@ -129,6 +129,16 @@
   bottom: calc(var(--tag-h) + 6px + var(--ledge-h) * .18 - var(--ledge-h) * 152 / 116);
 }
 
+/* the ledge's two ends, dressed: they stand on its top face in the curtain's
+   shadow, each candle lighting the velvet round it */
+.sh-prop {
+  z-index: 1;
+  bottom: calc(var(--tag-h) + 6px - var(--sh-ledge-h, 52px) * .06);
+}
+.sh-prop--skull { left: clamp(22px, 2.2vw, 38px); width: clamp(62px, 5.2vw, 86px); filter: brightness(.9); }
+.sh-prop--l { left: calc(clamp(22px, 2.2vw, 38px) + clamp(62px, 5.2vw, 86px) * .84); width: clamp(40px, 3.3vw, 54px); }
+.sh-prop--r { right: clamp(34px, 3vw, 52px); width: clamp(40px, 3.3vw, 54px); }
+
 .sh-card {
   position: relative; z-index: 2;
   display: flex; flex-direction: column; align-items: center;
@@ -148,11 +158,13 @@
   border-image-slice: 52;
   border-image-width: 32px;
   border-image-repeat: stretch;
+  /* flocked velvet behind the card (flock.webp), warm from the lantern */
   background:
-    radial-gradient(90% 55% at 50% 100%, color-mix(in srgb, var(--kit-candle) 13%, transparent), transparent 70%),
-    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
-    linear-gradient(180deg, #110c16, #09070c);
-  background-blend-mode: normal, overlay, normal;
+    radial-gradient(90% 55% at 50% 100%, color-mix(in srgb, #ffcf94 40%, transparent), transparent 72%),
+    radial-gradient(130% 110% at 50% 45%, transparent 50%, rgb(4 2 6 / .6) 100%),
+    url("../../assets/ui/kit/flock.webp") 50% 0 / 233px 265px,
+    #150c1b;
+  background-blend-mode: overlay, normal, normal, normal;
   background-clip: padding-box;
   box-shadow: 0 14px 22px -10px rgba(0, 0, 0, .95);
 }

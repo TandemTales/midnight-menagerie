@@ -523,7 +523,7 @@
 @media (max-height: 860px) {
   /* the moon medallion hangs 38px into the page: the lede starts clear of it,
      and the divider has a line's air either side */
-  .ev-page.kit-panel { padding: 40px 40px 16px; }
+  .ev-page.kit-panel { padding: 48px 40px 18px; }
   .ev-prose { padding-bottom: 16px; }
   .ev-prose p { line-height: 1.46; margin-bottom: .44em; }
   .ev-prose p.ev-lede { --lede-lh: 1.38; margin-bottom: .36em; }

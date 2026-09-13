@@ -552,9 +552,11 @@ export class GameOverScene extends Scene {
     /* --- Courage bar: the shape of the ending, in the header between the
            two — how far you got, and how much of you was left ------------- */
     const bar = el('div', 'go-courage');
+    // the Kid's own gauge from the fights: amber enamel in its brass tube
+    const hpK = Math.max(0, Math.min(1, s.hp / s.maxHp));
     bar.innerHTML =
       `<span class="go-lbl">${TERMS.hp}</span>` +
-      `<div class="go-courage__track"><i style="width:${Math.max(0, Math.min(100, (s.hp / s.maxHp) * 100)).toFixed(1)}%"></i></div>` +
+      `<div class="go-courage__track kit-tube kit-tube--warm"><i class="kit-tube__fill" style="transform:scaleX(${hpK.toFixed(3)})"></i></div>` +
       `<span class="go-courage__n">${s.hp} / ${s.maxHp}</span>` +
       `<em class="go-courage__note">${this.won ? 'walked out with it' : 'the candle ran out'}</em>`;
     who.querySelector('.go-who__focal').appendChild(bar);

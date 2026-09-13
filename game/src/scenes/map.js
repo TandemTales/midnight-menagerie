@@ -1349,6 +1349,14 @@ export class MapScene extends Scene {
         ? ((L.dx || 0) > 0 ? 'right' : 'left')
         : (midY < 0 ? 'above' : 'below');
       L.el.dataset.lab = side;
+      /* the plate's brass pointer sits on the point of its facing edge nearest
+         the room, so a plate the frame has pushed sideways still points
+         straight at its own room (map.css reads --lab-px / --lab-py) */
+      const vertical = side === 'above' || side === 'below';
+      L.px = vertical ? clampN(-(L.dx || 0), -(L.w / 2 - 16), L.w / 2 - 16) : 0;
+      L.py = vertical ? 0 : clampN(-midY, -(h / 2 - 6), h / 2 - 6);
+      L.el.style.setProperty('--lab-px', L.px.toFixed(1) + 'px');
+      L.el.style.setProperty('--lab-py', L.py.toFixed(1) + 'px');
       this._drawLeader(L);
     }
   }
@@ -1378,8 +1386,8 @@ export class MapScene extends Scene {
        faces the room (map.css .mn-label::after), so the pointer and the rod
        read as one fitting. */
     const side = L.el.dataset.lab || 'below';
-    const ex = side === 'right' ? tx - hw - 4 : side === 'left' ? tx + hw + 4 : tx;
-    const ey = side === 'below' ? ty - hh - 4 : side === 'above' ? ty + hh + 4 : ty;
+    const ex = side === 'right' ? tx - hw - 4 : side === 'left' ? tx + hw + 4 : tx + (L.px || 0);
+    const ey = side === 'below' ? ty - hh - 4 : side === 'above' ? ty + hh + 4 : ty + (L.py || 0);
     const vx = ex - ox, vy = ey - oy, len = Math.hypot(vx, vy) || 1;
     const ux = vx / len, uy = vy / len;
     // from just outside the room's pencil rings (ui/mapnode.js: r 41 of 86)

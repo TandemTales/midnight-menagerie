@@ -138,6 +138,11 @@ export class ShopScene extends RoomScene {
           <h2 class="sh-h sh-h--cards kit-heading kit-heading--ribbon kit-heading--inline kit-heading--clasp">${esc(TERMS.deck)} <em>on the table</em></h2>
           <div class="sh-cards kit-cards" data-tip-avoid=".sh-card, .rm-where, .sh-counter--moth, .sh-side .sh-counter, .sh-keeper, .sh-service" data-tip-gap="12" role="list"></div>
           <i class="sh-ledge kit-ledge" aria-hidden="true"></i>
+          <!-- on the ends of the ledge, in the curtain's shadow: the Kid board's
+               skull on its books and a candle at one end, a candle at the other -->
+          <i class="sh-prop sh-prop--skull kit-prop kit-prop--skull" aria-hidden="true"></i>
+          <i class="sh-prop sh-prop--l kit-prop kit-prop--candle" aria-hidden="true"></i>
+          <i class="sh-prop sh-prop--r kit-prop kit-prop--candle" aria-hidden="true"></i>
         </section>
       </div>
       <div class="sh-side">

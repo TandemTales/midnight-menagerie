@@ -435,12 +435,14 @@
   content: ''; position: absolute; width: 7px; height: 7px;
   background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
   box-shadow: 0 0 0 1px rgba(0, 0, 0, .75);
-  left: 50%; top: -4px; transform: translateX(-50%) rotate(45deg);
+  left: calc(50% + var(--lab-px, 0px)); top: -4px; transform: translateX(-50%) rotate(45deg);
 }
 .map-node[data-lab="above"] .mn-label::after { top: auto; bottom: -4px; }
-.map-node[data-lab="left"] .mn-label::after { left: auto; right: -4px; top: 50%; transform: translateY(-50%) rotate(45deg); }
-.map-node[data-lab="right"] .mn-label::after { left: -4px; top: 50%; transform: translateY(-50%) rotate(45deg); }
-.map-node--boss .mn-label::after { content: none; }
+.map-node[data-lab="left"] .mn-label::after { left: auto; right: -4px; top: calc(50% + var(--lab-py, 0px)); transform: translateY(-50%) rotate(45deg); }
+.map-node[data-lab="right"] .mn-label::after { left: -4px; top: calc(50% + var(--lab-py, 0px)); transform: translateY(-50%) rotate(45deg); }
+/* the boss's plate is larger: so is its pointer */
+.map-node--boss .mn-label::after { width: 10px; height: 10px; top: -6px; }
+.map-node--boss[data-lab="above"] .mn-label::after { top: auto; bottom: -6px; }
 /* the stem a nameplate hangs from, back to its own room: a brass rod with an
    ink edge, never the pencil the route is drawn in */
 .mn-lead {

@@ -700,7 +700,12 @@ export class RewardScene extends RoomScene {
   }
 
   _layout() {
-    for (const { slot, view } of this._slots || []) fitCardToSlot(view, slot, { legibleAt: 224 });
+    // Rules type is lifted to read like a full-size card, but never by more
+    // than a fifth on a small frame (a Big Scare's three stand smaller), where
+    // a bigger lift would push the words off the face.
+    for (const { slot, view } of this._slots || []) {
+      fitCardToSlot(view, slot, { legibleAt: Math.min(224, (slot.clientWidth || 224) * 1.2) });
+    }
   }
 
   /* ── footer: skip, and the way out ────────────────────────────────────── */
