@@ -1744,21 +1744,22 @@
    its left part past its neighbour (ui/hand.js `boundVisible`, published as
    --fan-vis), so a name centred on its plate lost its last letters under the
    next card ("SIT PRET") and a rule lost both ends of every line ("Deal 6
-   dama"). While the hand is crowded every card, the last and the lifted one
-   included (so nothing jumps under the pointer), sets its name and type line
-   flush left inside the plate, and wraps its rules into the strip that shows:
-   "Deal 6 damage." reads whole on a card two-fifths covered. */
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity] .mm-card__banner {
+   dama"). While the hand is crowded every card IN THE FAN (the last one
+   included, so the row reads as one system) sets its name and type line flush
+   left inside the plate and wraps its rules into the strip that shows: "Deal
+   6 damage." reads whole on a card two-fifths covered. A card lifted out of
+   the fan (hovered, selected, held, played) is whole, and lays out whole. */
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity]:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__banner {
   justify-items: start;
 }
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity] .mm-card__name {
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity]:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__name {
   padding-left: calc(19 * var(--u)); padding-right: calc(8 * var(--u));
   text-align: left;
 }
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity].is-name-xlong .mm-card__name {
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity].is-name-xlong:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__name {
   font-size: calc(13.4 * var(--u)); padding-left: calc(17 * var(--u));
 }
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity] .mm-card__rules {
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity]:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__rules {
   right: calc((224 * (1 - var(--fan-vis, .6)) + 6) * var(--u));
   left: calc(13 * var(--u));
   align-items: flex-start; text-align: left;
@@ -1781,7 +1782,7 @@
 .cb-handhost.kit-cards .mm-card:is([data-rarity="basic"], [data-rarity="common"]) .mm-card__crest i,
 .cb-chooser__pool.kit-cards .mm-card:is([data-rarity="basic"], [data-rarity="common"]) .mm-card__crest i { --crest-mix: 0%; }
 /* the type line too: SKILL reads whole in the strip, never "SKI" */
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity] .mm-card__type {
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity]:not(.is-hover):not(.is-selected):not(.is-dragging):not(.is-aiming):not(.is-hero) .mm-card__type {
   justify-content: flex-start; padding-left: calc(20 * var(--u));
 }
 /* THE HAND'S STATES, IN THE KIT'S METAL. `.kit-cards` dresses a card's frame
