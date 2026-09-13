@@ -76,7 +76,7 @@
   /* the shelf's measures, shared by the cards, their prices and the ledge */
   --frame-pad: clamp(8px, .72vw, 13px);
   --shelf-price-h: clamp(30px, 3.9vh, 36px);
-  --tag-h: calc(var(--shelf-price-h) * 1.24);
+  --tag-h: max(38px, calc(var(--shelf-price-h) * 1.24));
   --sh-ledge-h: clamp(46px, 6.2vh, 58px);
   --rule: none;                                  /* the shelf is its own frame */
   /* the curtain behind the counter, lit by the lantern over the crest: the
@@ -189,7 +189,7 @@
    that, what you carry on an engraved strip, and the Forgetting service with
    its price along the foot of the panel. */
 .sh-keeper {
-  --keeper-w: clamp(84px, 6.4vw, 108px);
+  --keeper-w: clamp(72px, 5.3vw, 86px);
   position: relative; z-index: 1;
   flex: none; width: var(--keeper-w);
   margin: 0;
@@ -275,7 +275,8 @@
   --rib-h: clamp(25px, 3.1vh, 30px);
   /* lit from the lantern over the cabinet: warm along the top, falling off */
   --lit-y: -12%; --lit-w: 110%; --lit-h: 95%; --lit-a: 46%;
-  padding: calc(var(--rib-h) * .5 + clamp(8px, 1vh, 12px)) clamp(18px, 1.5vw, 26px) clamp(10px, 1.2vh, 14px);
+  /* the words keep a finger's width inside the inner rule, top and bottom */
+  padding: calc(var(--rib-h) * .5 + clamp(8px, 1vh, 12px)) clamp(18px, 1.5vw, 26px) clamp(20px, 2.4vh, 24px);
   align-self: stretch;
 }
 /* the side panels are lit from the middle of the board, where his lamp is */
@@ -292,7 +293,7 @@
 .sh-row {
   --row-price-h: clamp(28px, 3.5vh, 32px);
   display: grid; grid-template-columns: auto minmax(0, 1fr) auto;
-  grid-template-rows: calc(var(--row-price-h) * 1.24) auto;
+  grid-template-rows: max(38px, calc(var(--row-price-h) * 1.24)) auto;
   grid-template-areas: "sig name buy" "sig desc desc";
   align-items: center; column-gap: clamp(10px, .9vw, 14px); row-gap: 0;
   padding: clamp(4px, .6vh, 7px) 2px clamp(5px, .7vh, 8px);
@@ -394,13 +395,13 @@
 .sh-counter--moth.kit-panel {
   --medal-k: .56;
   --lit-x: 50%; --lit-y: 30%; --lit-w: 120%; --lit-h: 110%; --lit-a: 40%;
-  display: grid; grid-template-rows: auto auto; align-content: space-between; row-gap: clamp(6px, 1vh, 10px);
+  display: grid; grid-template-rows: auto auto; align-content: space-between; row-gap: clamp(6px, 1vh, 9px);
   padding-top: clamp(22px, 2.8vh, 30px);
 }
 .sh-moth__say {
   display: grid; grid-template-columns: auto minmax(0, 1fr);
   grid-template-areas: "keeper words" "you you";
-  column-gap: clamp(10px, 1vw, 16px); row-gap: clamp(6px, 1vh, 10px);
+  column-gap: clamp(10px, 1vw, 16px); row-gap: clamp(5px, .8vh, 8px);
   align-items: center;
 }
 .sh-moth__say > .sh-keeper { grid-area: keeper; }
@@ -419,7 +420,7 @@
 .sh-moth__you {
   position: relative;
   display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
-  margin: 0; padding: 6px 0 5px;
+  margin: 0; padding: 5px 0 4px;
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-void) 55%, transparent) 12%, color-mix(in srgb, var(--kit-void) 55%, transparent) 88%, transparent);
 }
 .sh-moth__you::before, .sh-moth__you::after {
@@ -434,7 +435,7 @@
 .sh-moth__you::after { bottom: 0; transform: scaleY(-1); }
 .sh-moth__you div {
   position: relative;
-  display: grid; grid-template-rows: 1.3em 1.45em; justify-items: center; align-items: end; gap: 0;
+  display: grid; grid-template-rows: 15px 22px; justify-items: center; align-items: end; gap: 0;
   min-width: 0;
 }
 .sh-moth__you div + div::before {
@@ -450,7 +451,7 @@
   white-space: nowrap;
 }
 .sh-moth__you dd {
-  margin: 0; font-family: var(--font-num); font-weight: 600; font-size: clamp(17px, 1.3vw, 21px); line-height: 1.1;
+  margin: 0; font-family: var(--font-num); font-weight: 600; font-size: clamp(16px, 1.15vw, 19px); line-height: 1.1;
   font-variant-numeric: lining-nums tabular-nums;
   color: var(--kit-gold-hi); text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 12px color-mix(in srgb, var(--kit-candle) 20%, transparent);
 }
@@ -516,6 +517,9 @@
   .sh-floor { grid-template-columns: minmax(0, 1.12fr) minmax(0, .92fr) minmax(0, 1.12fr); column-gap: 18px; }
   .sh-moth__you dt { letter-spacing: 0; font-size: 11px; }
   .sh-moth__line { font-size: 14px; }
+  /* the service's price joins its name's line, and what it does runs the
+     width of the counter under both */
+  .sh-service { grid-template-areas: "head buy" "blurb blurb"; row-gap: 3px; }
 }
 
 /* ── narrow: the counter stacks under the frames and the board scrolls ───── */
@@ -530,15 +534,18 @@
    kit (see shop.js _layout, which also lifts their type a step). */
 @media (max-height: 860px) {
   .scene--shop .rm-head { padding-top: 2px; }
-  .scene--shop .kit-titleblock--compact { --cart-h: 86px; }
-  .scene--shop .kit-titleblock--compact .kit-cartouche__title { font-size: 24px; }
-  .scene--shop .kit-titleblock__note { margin-top: 1px; font-size: 11.5px; }
-  .scene--shop .kit-titleblock > .kit-ribbon { margin-top: calc(var(--cart-h) * -.19); }
+  .scene--shop .kit-titleblock--compact { --cart-h: 80px; }
+  .scene--shop .kit-titleblock--compact .kit-cartouche__title { font-size: 23px; }
+  .scene--shop .kit-titleblock__note { margin-top: -2px; font-size: 11.5px; }
+  .scene--shop .kit-titleblock > .kit-ribbon { margin-top: calc(var(--cart-h) * -.22); }
   .scene--shop .rm-body { padding-top: 2px; }
-  .scene--shop .sh-floor { margin-top: 8px; row-gap: 17px; grid-template-rows: minmax(280px, 1fr) auto; }
+  /* the cabinet's rail ribbon keeps clear of the plaque's note above it, and
+     the counters' bottom rails of the footer's plates below them */
+  .scene--shop .sh-floor { margin-top: 14px; row-gap: 16px; grid-template-rows: minmax(280px, 1fr) auto; }
+  .scene--shop .rm-body { padding-bottom: 8px; }
   .sh-counter--cards.kit-panel { --rib-h: 24px; --medal-k: .84; --frame-pad: 8px; --shelf-price-h: 28px; }
   .sh-counter--keeps.kit-panel, .sh-counter--snacks.kit-panel, .sh-counter--moth.kit-panel {
-    padding: 20px 18px 8px 14px;
+    padding: 20px 18px 18px 16px;
   }
   .scene--shop .sh-row { --row-price-h: 26px; padding-block: 4px 5px; }
   .scene--shop .sh-row__txt b { font-size: 15px; }

@@ -707,7 +707,9 @@
   min-height: var(--plate-h);
   padding: 2px calc(var(--plate-h) * .78) 3px;
   border: 0 solid transparent;
-  border-image-source: url("../../assets/ui/kit/plate.webp");
+  /* the plate's field is the enamel, sunk under its gilt rim and catching the
+     light along its top (plate-lit.webp, tools/prep_ui_surfaces.py) */
+  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
   border-image-slice: 12 53 12 46 fill;
   border-image-width: calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72);
   border-image-repeat: stretch;
@@ -1279,7 +1281,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   --price-h: 36px;
   position: relative;
   display: inline-flex; align-items: center;
-  height: calc(var(--price-h) * 1.24);
+  height: max(38px, calc(var(--price-h) * 1.24));
 }
 .kit-price__plate {
   display: inline-flex; align-items: center; gap: calc(var(--price-h) * .16);
@@ -1306,11 +1308,12 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 90%, transparent), 0 0 10px color-mix(in srgb, var(--kit-candle) 25%, transparent);
 }
 .kit-price__buy {
+  --buy-d: max(38px, calc(var(--price-h) * 1.24));   /* BUY must sit inside the enamel, not on the rim */
   position: relative; z-index: 1;
   flex: none;
   display: grid; place-items: center;
-  width: calc(var(--price-h) * 1.24); height: calc(var(--price-h) * 1.24);
-  margin-left: calc(var(--price-h) * -.62);
+  width: var(--buy-d); height: var(--buy-d);
+  margin-left: calc(var(--buy-d) * -.5);
   border-radius: 50%;
   background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
   font-family: var(--font-display); font-weight: 700; font-style: normal;

@@ -22,8 +22,8 @@ paints those materials so a board can be built OF them:
                      fillet, the cove in shadow and the shadow it casts (repeat-x)
   curtain.webp       a velvet drape hanging in deep folds (repeat-x)
   plate-lit.webp     the kit's nameplate (plate.webp) with its flat black centre
-                     repainted as the suede, sunk under the rim, a wet highlight
-                     along its top (the same 9-slice)
+                     repainted in a darkened enamel, sunk under the rim, a wet
+                     highlight along its top (the same 9-slice)
   cartouche-lit.webp the dark cartouche (cartouche-dark.webp) repainted in the
                      enamel the same way: a price, a value, a card's name
 
@@ -343,11 +343,16 @@ def ledge(W=1080, H=152, seed=41, ss=2):
     alpha = np.zeros((Hs, Ws), np.float32)
     wv = walnut_field(Hs, Ws, rng, rings=5, figure=0.7)
 
-    # the top face: foreshortened grain, dark at the back, lit toward the lip
+    # the top face: foreshortened grain (the rings squeezed by the angle), in
+    # the wall's shadow at the back and waxed and candlelit toward the lip
     top = y < 28
     depth = np.clip(y / 28.0, 0, 1)
-    top_col = ramp(np.clip(wv * (0.55 + 0.75 * depth), 0, 1), WALNUT)
-    top_col += (smooth01(depth, 0.35, 1.0) * 62.0 * (0.75 + 0.25 * wv))[..., None] * np.array([1.0, 0.7, 0.4], np.float32)
+    wv_top = walnut_field(Hs, Ws, rng, rings=11, figure=0.5)
+    top_col = ramp(np.clip(wv_top * (0.7 + 0.7 * depth) + 0.06, 0, 1), WALNUT)
+    top_col += (smooth01(depth, 0.2, 1.0) * 84.0 * (0.7 + 0.3 * wv_top))[..., None] * np.array([1.0, 0.68, 0.38], np.float32)
+    # a long soft sheen where the wax catches the light, broken by the grain
+    sheen = np.exp(-((y - 20.0) ** 2) / 18.0) * (0.55 + 0.45 * wv_top)
+    top_col += (sheen * 40.0)[..., None] * np.array([1.0, 0.8, 0.55], np.float32)
     col = np.where(top[..., None], top_col, col)
     alpha = np.where(top, np.clip(y / 2.0, 0, 1), alpha)
 
@@ -490,7 +495,140 @@ def fill_tile(name):
     return np.asarray(Image.open(os.path.join(OUT, name)).convert("RGB"), np.float32)
 
 
+# ── the pedestal ────────────────────────────────────────────────────────────
+def pedestal(E=56, mid=288, H=120, seed=83, ss=3):
+    """A carved, parcel-gilt pedestal for one thing to stand on, in the ledge's
+    own walnut and gilt, seen from a little above. Cut for a 3-slice: two ends
+    E px wide and a middle `mid` px wide that repeats (the egg-and-dart's 32px
+    period divides it), so `border-image-repeat: round` keeps the carving whole.
+      4-22    the top slab, lit toward its front edge
+      22-30   a gilt bead, overhanging
+      30-34   a dark quirk
+      34-70   the frieze: egg-and-dart carved in the walnut, the shells gilt
+      70-76   a gilt fillet
+      76-100  the die: dark walnut, a gilt fielded panel line inset in it
+      100-108 a gilt ogee foot, overhanging
+      108-114 the base
+      114-120 its shadow on the floor (alpha)
+    Every band returns at its ends: lit on the left, in shadow on the right."""
+    rng = np.random.default_rng(seed)
+    W = E * 2 + mid
+    Ws, Hs = W * ss, H * ss
+    yy, xx = (np.mgrid[0:Hs, 0:Ws].astype(np.float32) + 0.5) / ss
+    col = np.zeros((Hs, Ws, 3), np.float32)
+    alpha = np.zeros((Hs, Ws), np.float32)
+    wv = walnut_field(Hs, Ws, rng, rings=4, figure=0.6)
+    flat = float(lambert(np.array([[[0, 0, 1.0]]], np.float32))[0, 0])
+
+    def band(y0, y1, inset):
+        return (yy >= y0) & (yy < y1) & (xx >= inset) & (xx < W - inset)
+
+    def ends(inset, width=7.0):
+        """-1 at the left return, +1 at the right, 0 along the run."""
+        dl = np.clip(1 - (xx - inset) / width, 0, 1)
+        dr = np.clip(1 - (W - inset - xx) / width, 0, 1)
+        return dr - dl
+
+    def rod(y0, y1, inset, spec=0.85, lift=0.0):
+        b = band(y0, y1, inset)
+        t = np.clip((yy - y0) / (y1 - y0), 0, 1)
+        prof = np.sqrt(np.clip(1 - (2 * t - 1) ** 2, 0, 1))
+        wear = M_noise((Hs, Ws), rng, 2.5 * ss, 0.5)
+        hgt = prof * (y1 - y0) * ss * 0.5 + wear * 0.6
+        c = M.brass(normals(hgt, 1.0), wear=wear, spec_amt=spec, lift=lift)
+        e = ends(inset)
+        c = c * (1 - 0.45 * np.clip(e, 0, 1))[..., None] * (1 + 0.25 * np.clip(-e, 0, 1))[..., None]
+        return b, c
+
+    # top slab
+    b = band(4, 22, 12)
+    depth = np.clip((yy - 4) / 18.0, 0, 1)
+    top = ramp(np.clip(wv * (0.7 + 0.7 * depth) + 0.05, 0, 1), WALNUT)
+    top += (smooth01(depth, 0.25, 1.0) * 80.0)[..., None] * np.array([1.0, 0.68, 0.38], np.float32)
+    e = ends(12)
+    top *= (1 - 0.5 * np.clip(e, 0, 1))[..., None]
+    col = np.where(b[..., None], top, col); alpha = np.where(b, 1.0, alpha)
+
+    b, c = rod(22, 30, 6, lift=0.04)
+    col = np.where(b[..., None], c, col); alpha = np.where(b, 1.0, alpha)
+
+    b = band(30, 34, 10)
+    col = np.where(b[..., None], np.array([9, 5, 4], np.float32), col); alpha = np.where(b, 1.0, alpha)
+
+    # frieze: egg and dart, 32px a pair, measured from the middle's left edge
+    b = band(34, 70, 14)
+    per = 32.0
+    cx = ((xx - E) % per) - per / 2
+    cy = yy - 52.0
+    ex, ey = 9.0, 13.0
+    egg_r = np.hypot(cx / ex, cy / ey)
+    egg = np.sqrt(np.clip(1 - egg_r ** 2, 0, 1))
+    shell_r = np.hypot(cx / (ex + 3.8), (cy + 2.0) / (ey + 4.0))
+    shell = np.clip(1 - np.abs(shell_r - 1.0) / 0.1, 0, 1) * (egg_r > 1.0) * (cy < 13)
+    dxd = np.abs(np.abs(cx) - per / 2)
+    dart = np.clip(1 - dxd / (0.7 + np.clip((13 - cy) / 28, 0, 1) * 2.4), 0, 1) * (cy > -16) * (cy < 16)
+    hgt = (egg * 12.0 + shell * 4.5 + dart * 6.0) * ss + wv * 1.2
+    n = normals(hgt, 1.0)
+    base = ramp(np.clip(0.4 + 0.3 * wv, 0, 1), WALNUT)
+    fr = base * (0.34 + 1.0 * (lambert(n) / flat))[..., None]
+    fr += (specular(n, power=14.0) * 60.0)[..., None] * np.array([1.0, 0.76, 0.48], np.float32)
+    recess = (egg_r > 1.0) & (shell < 0.05) & (dart < 0.05)
+    fr = np.where(recess[..., None], fr * 0.42, fr)
+    gilt = np.clip(np.maximum(shell * 1.6, dart * (cy < -9) * 1.2), 0, 1)[..., None]
+    fr = fr * (1 - gilt) + M.brass(n, spec_amt=0.9) * gilt
+    # the frieze ends in a plain block at each return
+    blockm = (xx < E - 2) | (xx > W - E + 2)
+    blk = ramp(np.clip(0.36 + 0.3 * wv, 0, 1), WALNUT) * 0.9
+    fr = np.where(blockm[..., None], blk, fr)
+    e = ends(14)
+    fr *= (1 - 0.5 * np.clip(e, 0, 1))[..., None] * (1 + 0.3 * np.clip(-e, 0, 1))[..., None]
+    col = np.where(b[..., None], fr, col); alpha = np.where(b, 1.0, alpha)
+
+    b, c = rod(70, 76, 12, spec=0.7)
+    col = np.where(b[..., None], c, col); alpha = np.where(b, 1.0, alpha)
+
+    # die: dark walnut with a gilt fielded-panel line
+    b = band(76, 100, 18)
+    die = ramp(np.clip(0.26 + 0.3 * wv, 0, 1), WALNUT)
+    t = np.clip((yy - 76) / 24.0, 0, 1)
+    die *= (0.8 + 0.3 * (1 - t))[..., None]
+    inset_x = np.minimum(xx - 30, W - 30 - xx)
+    line = ((np.abs(yy - 81) < .7) | (np.abs(yy - 95) < .7)) & (inset_x >= 0)
+    line |= (np.abs(inset_x) < .7) & (yy > 81) & (yy < 95)
+    die = np.where(line[..., None], M.brass(normals(np.zeros((Hs, Ws), np.float32), 1.0)) * 0.85, die)
+    e = ends(18)
+    die *= (1 - 0.5 * np.clip(e, 0, 1))[..., None] * (1 + 0.25 * np.clip(-e, 0, 1))[..., None]
+    col = np.where(b[..., None], die, col); alpha = np.where(b, 1.0, alpha)
+
+    b, c = rod(100, 108, 8, spec=0.8)
+    col = np.where(b[..., None], c, col); alpha = np.where(b, 1.0, alpha)
+
+    b = band(108, 114, 4)
+    col = np.where(b[..., None], ramp(np.clip(0.2 + 0.2 * wv, 0, 1), WALNUT) * 0.7, col); alpha = np.where(b, 1.0, alpha)
+
+    sh = yy >= 114
+    fade = (1 - np.clip((yy - 114) / 6.0, 0, 1)) * np.clip(np.minimum(xx, W - xx) / 20.0, 0, 1)
+    col = np.where(sh[..., None], np.zeros(3, np.float32), col)
+    alpha = np.where(sh, 0.7 * fade, alpha)
+
+    # an ink line round every band, as the samples outline their forms
+    solid = alpha > 0.99
+    edge = solid & ~ndimage.binary_erosion(solid, iterations=max(1, ss // 2))
+    for yl in (22, 30, 34, 70, 76, 100, 108):
+        edge |= (np.abs(yy - yl) < 0.5) & solid
+    col = np.where(edge[..., None], col * 0.2, col)
+
+    col = M.down(col, ss)
+    alpha = M.down(alpha, ss)
+    save(np.dstack([col, alpha * 255]), "pedestal.webp", 92)
+
+
+def M_noise(shape, rng, sigma, amp):
+    return M.noise(shape, rng, sigma, amp)
+
+
 PIECES = {
+    "pedestal": pedestal,
     "enamel": enamel,
     "suede": suede,
     "flock": flock,

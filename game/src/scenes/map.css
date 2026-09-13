@@ -446,6 +446,10 @@
 .mn-lead {
   fill: none; stroke: var(--kit-gold);
   stroke-width: 3.2; stroke-linecap: round;
+}
+/* its ink edge and its shadow on the paper, only where a rod is drawn (a
+   filter on all sixty-odd empty leads would be paid for on every mark) */
+.map-node.is-legal .mn-lead, .map-node--boss .mn-lead, .map-node.is-current .mn-lead {
   filter: drop-shadow(0 0 .6px #1a0f06) drop-shadow(0 0 .6px #1a0f06) drop-shadow(1px 1.5px 1px rgba(40, 22, 8, .45));
 }
 .map-node.is-cold .mn-lead { opacity: .4; }

@@ -332,7 +332,7 @@
    ends, and it throws its own shadow down the alcove wall. Its ends are lost
    in the alcove's dark. */
 .rw-cards {
-  --rw-ledge-h: clamp(54px, 7.4vh, 70px);
+  --rw-ledge-h: clamp(50px, 6.6vh, 62px);
   --stand: 20px;              /* the frames' feet, above the section's foot (.rw-fan's padding) */
 }
 .rw-ledge {
@@ -377,11 +377,12 @@
   padding-top: calc(var(--frame-pad) + clamp(8px, 1.4vh, 18px));
   padding-bottom: calc(var(--frame-pad) + var(--stand, 20px));
 }
-/* a pool of candlelight on the wall behind the frames */
+/* a pool of candlelight on the wall behind the frames (kept inside the fan's
+   own box, so it never makes the room scroll) */
 .rw-fan::before {
-  content: ''; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-  width: 130%; height: 150%; pointer-events: none; z-index: -1;
-  background: radial-gradient(46% 42% at 50% 54%,
+  content: ''; position: absolute; left: -15%; right: -15%; top: 0; bottom: 0;
+  pointer-events: none; z-index: -1;
+  background: radial-gradient(46% 62% at 50% 56%,
     color-mix(in srgb, var(--kit-candle) 12%, transparent) 0%, transparent 72%);
 }
 .rw-slot {
@@ -436,10 +437,11 @@
    disables pointer events on its children for hand hit-testing; this screen
    has a normal slot wrapper, so let the keyword itself receive the hover. */
 .scene--reward .mm-card__kw { pointer-events: auto; cursor: help; }
-/* the rarity, engraved on an enamel cartouche across the frame's bottom rail */
+/* the rarity, engraved on an enamel cartouche hung across the ledge's carved
+   front under its frame, the way the Shop hangs its prices */
 .rw-slot__rarity {
   --h: clamp(30px, 3.6vh, 34px);
-  position: absolute; left: 50%; bottom: calc(var(--frame-pad) * -1 - var(--h) * .5);
+  position: absolute; left: 50%; bottom: calc(var(--frame-pad) * -1 - var(--h) * .5 - var(--rw-ledge-h, 60px) * .44);
   transform: translateX(-50%);
   min-width: calc(var(--h) * 4.2);
   z-index: 2;
@@ -450,6 +452,12 @@
 }
 .rw-slot__rarity[data-rarity="uncommon"] .kit-enamel__label { color: color-mix(in oklab, var(--rarity-uncommon) 70%, var(--kit-name)); }
 .rw-slot__rarity[data-rarity="rare"] .kit-enamel__label { color: color-mix(in oklab, var(--rarity-rare) 82%, var(--kit-name)); }
+/* the plate is screwed to the ledge: when its Trick lifts, the plate stays
+   (each offset undoes that state's lift and the scale about the slot) */
+.rw-slot.is-hot .rw-slot__rarity { translate: 0 5px; }
+.rw-slot.is-picked .rw-slot__rarity { translate: 0 8px; }
+.rw-slot.is-taken .rw-slot__rarity { translate: 0 9px; }
+.rw-slot__rarity { transition: translate var(--t-quick) var(--ease-out); }
 .rw-slot.is-taken { transform: translateY(-18px) scale(1.04); z-index: 5; }
 .rw-slot.is-taken::after {
   box-shadow: 0 0 0 2px var(--good-300),
@@ -489,9 +497,10 @@
 .is-large .rm-sub, .is-large .rm-live { font-size: var(--fs-md); }
 
 @media (max-width: 1400px) {
-  /* the frames close up a little so the keyword plaque keeps the margin
-     beside the first Trick for itself, clear of the candle under it */
-  .rm--reward { --fan-gap: calc(var(--frame-pad) * 2 + 10px); }
+  /* the frames close up a little, and stand a size smaller, so the keyword
+     plaque keeps the margin beside the first Trick for itself: clear of the
+     stage's rail on one side and the frame on the other */
+  .rm--reward { --fan-gap: calc(var(--frame-pad) * 2 + 10px); --slot-h: min(20.4vw, 36.4vh); }
 }
 @media (max-width: 1200px) {
   .rm--reward { --slot-h: min(21vw, 38vh); }

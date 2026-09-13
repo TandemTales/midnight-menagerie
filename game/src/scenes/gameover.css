@@ -352,10 +352,10 @@
 }
 /* the wing it reached and the seed: matching enamel cartouches with gilt rims */
 .go-corner {
-  --h: clamp(48px, 5.8vh, 52px);
+  --h: clamp(54px, 6.6vh, 60px);
   display: grid; justify-items: center; align-content: center; gap: 0;
   min-height: var(--h);
-  padding: 3px calc(var(--h) * .62) 4px;
+  padding: calc(var(--h) * .14) calc(var(--h) * .62) calc(var(--h) * .12);
   line-height: 1.1;
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/cartouche-lit.webp") 18 34 18 34 fill /
@@ -532,10 +532,10 @@
    beside it says why it is there. */
 .go-block--mvp {
   grid-area: mvp;
-  --plinth-h: clamp(26px, 3.3vh, 32px);
+  --plinth-h: clamp(46px, 5.6vh, 52px);
   align-self: stretch; align-content: start; justify-items: center;
-  gap: clamp(12px, 1.8vh, 18px);
-  margin-top: clamp(20px, 2.8vh, 28px);
+  gap: clamp(6px, 1vh, 10px);
+  margin-top: clamp(10px, 1.4vh, 14px);
 }
 .go-block--mvp > .kit-heading--ribbon { --rib-h: clamp(28px, 3.4vh, 32px); }
 .go-mvp {
@@ -543,8 +543,8 @@
   display: grid; grid-template-columns: auto minmax(0, 15ch); gap: clamp(14px, 1.4vw, 22px);
   align-items: center;
 }
-.go-mvp__slot { position: relative; flex: none; margin: 16px 18px calc(12px + var(--plinth-h)); }
-.go-board { --go-mvp-s: .96; }
+.go-mvp__slot { position: relative; flex: none; margin: 16px 18px calc(19px + var(--plinth-h) * .9); }
+.go-board { --go-mvp-s: .9; }
 /* the card hangs in the Kid board's frame, as the reward's three do */
 .go-mvp__slot::before {
   content: ''; position: absolute; z-index: -1; pointer-events: none;
@@ -562,13 +562,15 @@
   background-clip: padding-box;
   box-shadow: 0 0 50px color-mix(in srgb, var(--kit-candle) 18%, transparent), 0 18px 32px -12px rgba(0, 0, 0, .95);
 }
-/* the gilt plinth it stands on (plinth.webp) */
+/* the pedestal it stands on: the ledge's walnut and parcel gilt, carved
+   egg-and-dart on its frieze (pedestal.webp, tools/prep_ui_surfaces.py); the
+   frame's foot stands on its lit top slab */
 .go-mvp__slot::after {
   content: ''; position: absolute; z-index: -2; pointer-events: none;
-  left: -34px; right: -34px; top: calc(100% + 9px); height: var(--plinth-h);
+  left: -40px; right: -40px; top: calc(100% + 15px - var(--plinth-h) * .1); height: var(--plinth-h);
   border: 0 solid transparent;
-  border-image: url("../../assets/ui/kit/plinth.webp") 0 36 fill / 0 calc(var(--plinth-h) * 36 / 56) stretch;
-  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, .85));
+  border-image: url("../../assets/ui/kit/pedestal.webp") 0 56 fill / 0 calc(var(--plinth-h) * 56 / 120) round;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, .7));
 }
 /* the candle's light on the wall behind it */
 .go-mvp::before {
@@ -736,10 +738,10 @@
   .go-ledger { margin-top: 6px; padding: 20px 18px 16px; row-gap: 8px; }
   .go-who { row-gap: 6px; padding-bottom: 15px; }
   .go-who__deep { font-size: 24px; }
-  .go-corner { --h: 44px; }
-  .go-block--mvp { margin-top: 18px; gap: 10px; --plinth-h: 24px; }
+  .go-corner { --h: 52px; }
+  .go-block--mvp { margin-top: 18px; gap: 10px; --plinth-h: 46px; }
   .go-block--mvp > .kit-heading--ribbon { --rib-h: 26px; }
-  .go-mvp__slot { margin: 12px 14px calc(10px + var(--plinth-h)); }
+  .go-mvp__slot { margin: 12px 14px calc(17px + var(--plinth-h) * .9); }
   .go-stats.kit-stats { margin-top: 8px; padding-block: 5px 4px; }
   .go-stats .kit-stats__value { font-size: 17px; line-height: 1.05; }
   .go-trick { --plate-h: 25px; }

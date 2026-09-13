@@ -1371,19 +1371,22 @@ export class MapScene extends Scene {
     // between the two; any other name only once it has been moved off its mark
     const lit = L.n.id === this.model.currentId || (this._legalIds || []).includes(L.n.id);
     if ((!far && !lit) || L.off) { path.setAttribute('d', ''); return; }
-    const b = L.box, hw = L.w / 2 + 4, hh = (L.h || LABEL_H) / 2;
+    const b = L.box, hw = L.w / 2, hh = (L.h || LABEL_H) / 2;
     const ox = b / 2, oy = b / 2;                       // the mark's centre
     const tx = b / 2 + L.dx, ty = b + 3 + L.dy + hh;    // the chip's centre
-    const vx = tx - ox, vy = ty - oy, len = Math.hypot(vx, vy) || 1;
+    /* The rod ends at the tip of the brass lozenge on the plate's edge that
+       faces the room (map.css .mn-label::after), so the pointer and the rod
+       read as one fitting. */
+    const side = L.el.dataset.lab || 'below';
+    const ex = side === 'right' ? tx - hw - 4 : side === 'left' ? tx + hw + 4 : tx;
+    const ey = side === 'below' ? ty - hh - 4 : side === 'above' ? ty + hh + 4 : ty;
+    const vx = ex - ox, vy = ey - oy, len = Math.hypot(vx, vy) || 1;
     const ux = vx / len, uy = vy / len;
     // from just outside the room's pencil rings (ui/mapnode.js: r 41 of 86)
     const r0 = boss ? 0.44 * b : (lit ? 0.5 * b : 0.34 * b);
-    // stop on the chip's edge, not inside it
-    const tin = Math.min(Math.abs(hw / (ux || 1e-6)), Math.abs(hh / (uy || 1e-6))) + 2;
-    const l1 = Math.max(r0 + 3, len - tin);
-    if (l1 <= r0 + 3) { path.setAttribute('d', ''); return; }
+    if (len <= r0 + 3) { path.setAttribute('d', ''); return; }
     path.setAttribute('d', `M${(ox + ux * r0).toFixed(1)} ${(oy + uy * r0).toFixed(1)}`
-                         + `L${(ox + ux * l1).toFixed(1)} ${(oy + uy * l1).toFixed(1)}`);
+                         + `L${ex.toFixed(1)} ${ey.toFixed(1)}`);
   }
 
   _buildMarginalia() {
