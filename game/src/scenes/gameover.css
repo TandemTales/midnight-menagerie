@@ -740,7 +740,7 @@
   .go-stanzas { gap: 22px; padding-top: 6px; }
   .go-sh { letter-spacing: .14em; }
   .go-sh::before, .go-sh::after { width: 16px; }
-  .go-stanza { padding-block: 17px 16px; }
+  .go-stanza { padding-block: 17px 21px; }
   .go-stanza li { line-height: 1.3; font-size: 13px; }
   .go-pet__snap { width: 60px; }
   .go-pet__text { font-size: 13px; line-height: 1.34; }

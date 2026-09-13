@@ -104,18 +104,24 @@
 .sh-counter--cards > .sh-h--cards { --rib-h: clamp(26px, 3.2vh, 30px); z-index: 4; }
 
 .sh-cards {
-  --gap: calc(var(--frame-pad) * 2 + clamp(14px, 1.9vw, 34px));
+  /* the least room between two frames: the spread is space-evenly's */
+  --gap: calc(var(--frame-pad) * 2 + clamp(14px, 1.4vw, 24px));
+  --shelf-ends: clamp(120px, 9.5vw, 160px);
   /* the Trick frames: as tall as the cabinet allows, as wide as five slots
      sharing the shelf allow, whichever is smaller */
+  /* (container units measure the content box: the shelf's dressed ends are
+     already out of 100cqw) */
   --face-h: min(100cqh - var(--frame-pad) - var(--tag-h) - var(--frame-pad) - 6px,
-                (100cqw - 4 * var(--gap) - 2 * var(--frame-pad)) / 5 / var(--card-aspect));
+                (100cqw - 4 * var(--gap)) / 5 / var(--card-aspect));
   --face-w: calc(var(--face-h) * var(--card-aspect));
   container-type: size;
   position: relative; z-index: 1;
   flex: 1 1 auto; min-height: 0;
-  display: flex; justify-content: center; align-items: flex-end;
-  gap: var(--gap);
-  padding: var(--frame-pad) var(--frame-pad) 4px;
+  /* the five stand spread along the whole ledge between the dressed ends, the
+     way stock is set out on a shelf, the curtain showing between them */
+  display: flex; justify-content: space-evenly; align-items: flex-end;
+  gap: 0;
+  padding: var(--frame-pad) var(--shelf-ends) 4px;
   width: calc(100% + 2 * clamp(14px, 1.4vw, 26px));
   margin-inline: calc(-1 * clamp(14px, 1.4vw, 26px));
 }
@@ -563,9 +569,12 @@
   .scene--shop .sh-row__txt b { font-size: 15px; }
   .scene--shop .sh-row__txt em { font-size: 13px; line-height: 1.18; }
   .scene--shop .sh-row__sig { width: 34px; height: 34px; }
-  .scene--shop .sh-keeper { --keeper-w: 80px; }
-  .scene--shop .sh-moth__name.kit-plate { --plate-h: 36px; }
-  .scene--shop .sh-moth__say { row-gap: 5px; }
+  .scene--shop .sh-keeper { --keeper-w: 76px; }
+  .scene--shop .sh-moth__name.kit-plate { --plate-h: 34px; }
+  .scene--shop .sh-moth__say { row-gap: 3px; }
+  .scene--shop .sh-counter--moth.kit-panel { row-gap: 4px; padding-bottom: 22px; }
+  .scene--shop .sh-service { padding-top: 5px; }
+  .scene--shop .sh-moth__line { line-height: 1.2; }
   .scene--shop .rm-foot { padding-top: 3px; padding-bottom: 10px; }
   .scene--shop .rm-go { --plate-h: 40px; }
 }
