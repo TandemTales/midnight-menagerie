@@ -22,6 +22,7 @@ itself. A player never sees this: the warm-up finishes while they read the title
 menu, and walking into combat from there is lit in four seconds.
 
 --script  runs arbitrary JS in the page BEFORE the screenshot (after --wait).
+          `--script @tools/shot-scripts/x.js` reads it from a file, repo-relative.
 --steps   pipe-separated actions: click:SEL | hover:SEL | key:KEY | wait:SEC |
           drag:SELA>SELB | js:EXPR | jsawait:EXPR | shot:NAME
           js:      fire-and-forget — a returned promise is deliberately NOT awaited, so
@@ -223,4 +224,9 @@ if __name__ == "__main__":
     ap.add_argument("--script"); ap.add_argument("--steps")
     ap.add_argument("--strip", type=int, default=0)
     ap.add_argument("--interval", type=float, default=0.12)
-    sys.exit(asyncio.run(run(ap.parse_args())))
+    args = ap.parse_args()
+    if args.script and args.script.startswith("@"):
+        # A multi-line setup is a file, not a shell-quoting exercise.
+        with open(os.path.join(ROOT, args.script[1:]), encoding="utf-8") as f:
+            args.script = f.read()
+    sys.exit(asyncio.run(run(args)))

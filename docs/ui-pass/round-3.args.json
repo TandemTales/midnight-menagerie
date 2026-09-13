@@ -1,0 +1,90 @@
+{
+  "round": "r3",
+  "maxBuilders": 6,
+  "briefs": ["docs/ui-pass/BRIEF-r0.md", "docs/ui-pass/BRIEF-r1.md", "docs/ui-pass/BRIEF-r3.md"],
+  "rubrics": ["docs/ui-pass/RUBRIC.md", "docs/ui-pass/RUBRIC-r1.md", "docs/ui-pass/RUBRIC-r3.md"],
+  "samples": ["UI/title.png", "UI/mainMenu.png", "UI/selectCompanion.png", "UI/selectKid.png"],
+  "tracks": [
+    {
+      "key": "polish",
+      "name": "POLISH",
+      "rule": "refine",
+      "screens": ["shop", "reward", "event", "map", "rest", "gameover"],
+      "baseline": "NACRE",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "MINT",
+          "port": 8831,
+          "angle": "LITERAL. Work down the POLISH fix list, 1 to 20, in order and exactly as written, reading the branches it names before you copy an idea from them. Every fix visibly done on screen at both sizes, and nothing else changed."
+        },
+        {
+          "slot": "b",
+          "code": "ONYX",
+          "port": 8832,
+          "angle": "MATERIAL. Do every fix, and put your extra effort into the one complaint every round-2 judge made on every board: flat dark fills. Every row, plaque, shelf, list and panel interior becomes a painted material (enamel, vellum, damask, felt, carved wood, brass) lit by the room's own candles and moonlight, with every painting slot kept for Josh's backgrounds."
+        },
+        {
+          "slot": "c",
+          "code": "PEARL",
+          "port": 8833,
+          "angle": "AIR AND ORDER. Do every fix, and put your extra effort into composition at 1280x800 and 1600x900: nothing crowds, clips, floats loose or pokes out of its frame, every label sits on what it names, and each board has one focal point, then a second, then everything else, without losing any ornament."
+        }
+      ]
+    },
+    {
+      "key": "combat",
+      "name": "COMBAT",
+      "rule": "refine",
+      "screens": ["combat", "combat-boss", "combat-crowd"],
+      "baseline": "ROSIN",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "QUILL",
+          "port": 8834,
+          "angle": "LITERAL. Work down the COMBAT fix list, 1 to 10, in order and exactly as written, reading the branches it names before you copy an idea from them. Every fix visibly done on all three boards at both sizes, and nothing else changed."
+        },
+        {
+          "slot": "b",
+          "code": "SLATE",
+          "port": 8835,
+          "angle": "PAINTED INSTRUMENTS. Do every fix, and put your extra effort into making every instrument of the fight a made object: Courage gauges, nameplates, condition sockets, piles, Nerve, END TURN and the card bodies as brass, enamel, vellum and glass lit by the stage's candles, never a CSS bar, pill or gradient."
+        },
+        {
+          "slot": "c",
+          "code": "TOPAZ",
+          "port": 8836,
+          "angle": "THE FULL BOARD. Do every fix, and put your extra effort into the crowded board reading as clearly as the Scuffle: a hand of nine or ten that never covers the Kid's panel, the piles or END TURN, conditions that stack without collision, the boss's presence, and every cost, name, number and intent readable at a glance at 1280x800."
+        }
+      ]
+    },
+    {
+      "key": "dialogs",
+      "name": "DIALOGS",
+      "rule": "refine",
+      "screens": ["opening", "settings", "piles"],
+      "baseline": "VELVET",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "UMBER",
+          "port": 8837,
+          "angle": "KIT-FAITHFUL. Build all three from the kit's existing components plus the fewest new appended ones (start from GROVE's unjudged dialogs on ui/r2-expand2-a and IVORY's .kit-field and .kit-select), so every dialog looks like it came off the same boards as the Shop and the Safe Room."
+        },
+        {
+          "slot": "b",
+          "code": "WILLOW",
+          "port": 8838,
+          "angle": "OBJECTS IN THE HOUSE. Make each dialog a thing that exists in this mansion: the opening's beats as pages of a journal or a letter lit by a candle over the room, Settings as a brass-bound ledger of engraved dials and switches, the pile viewer as a trick case or a card box laid open. Every control still behaves as a real control, keyboard and gamepad included."
+        },
+        {
+          "slot": "c",
+          "code": "YARROW",
+          "port": 8839,
+          "angle": "LEGIBLE DIALOGS. Information first: the story's prose, every Settings label, value and control, and the pile viewer's search, filters and cards must read at a glance at 1280x800, dressed in the kit's frames, plates, ribbons and medallions. Ornament serves the hierarchy, never competes with it."
+        }
+      ]
+    }
+  ]
+}
