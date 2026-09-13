@@ -178,7 +178,7 @@
 }
 /* the three paper sections are pinned to the same board, under a dark felt */
 .cl-panel--menagerie, .cl-panel--pets, .cl-panel--backpack {
-  padding: clamp(34px, 5vh, 46px) clamp(26px, 2.4vw, 40px) clamp(22px, 3vh, 30px);
+  padding: clamp(30px, 4.2vh, 38px) clamp(24px, 2.2vw, 38px) clamp(18px, 2.6vh, 26px);
   background:
     radial-gradient(90% 70% at 30% 10%, color-mix(in srgb, var(--kit-candle) 10%, transparent), transparent 70%),
     radial-gradient(130% 120% at 50% 40%, transparent 50%, rgba(0, 0, 0, .55) 100%),
@@ -199,7 +199,7 @@
   color: var(--kit-lav);
   filter: url("#kit-engrave");
 }
-.cl-panel__head p { margin: 0; max-width: 64ch; font-size: var(--fs-md); font-style: italic; color: var(--kit-text-mid); text-shadow: 0 1px 0 rgba(0, 0, 0, .9); }
+.cl-panel__head p { margin: 0; max-width: min(80ch, calc(100% - 200px)); font-size: var(--fs-md); font-style: italic; color: var(--kit-text-mid); text-shadow: 0 1px 0 rgba(0, 0, 0, .9); }
 .tally {
   position: absolute; right: 0; top: 0;
   font-family: var(--font-display); font-weight: 700; font-size: var(--fs-sm);
@@ -420,16 +420,20 @@
 
 /* ── menagerie roster ─────────────────────────────────────────────────────── */
 /* All sixteen plates on screen at once — the roster is the point of the panel,
-   and a scrapbook you have to scroll stops reading as a wall. */
+   and a scrapbook you have to scroll stops reading as a wall. Six to a row, the
+   last row centred, is what fits all sixteen on the board at 1600x900 and at
+   1280x800 alike; four to a row put the last row below the fold at both. */
 .scrapgrid {
-  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(9px, 1vw, 16px);
-  width: min(100%, 860px); margin-inline: auto;
+  --cols: 6; --gap: clamp(10px, 1vw, 16px);
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: calc(var(--gap) * 1.2) var(--gap);
+  width: 100%; margin-inline: auto;
 }
+.scrapgrid > .scrapcell { width: calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols)); box-sizing: border-box; }
 .scrapcell {
   position: relative;
   display: grid; grid-template-rows: auto auto;
-  padding: 7px 7px 6px;
+  padding: 6px 6px 5px;
   transform: rotate(calc((var(--r, 0)) * 1deg));
 }
 .scrapgrid > :nth-child(4n+1) { --r: -1.2; } .scrapgrid > :nth-child(4n+2) { --r: .8; }
@@ -454,7 +458,7 @@
    inset over its corner. Each card is a portrait in the Kid board's frame. */
 .petgrid {
   display: grid; grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: minmax(0, 1fr); gap: clamp(16px, 1.6vw, 26px);
+  grid-auto-rows: minmax(0, 1fr); gap: clamp(14px, 1.4vw, 24px);
   flex: 1; min-height: 0;
   padding: 8px;
 }
@@ -462,7 +466,7 @@
 .cl-panel--pets { display: flex; flex-direction: column; gap: var(--s-4); overflow: hidden; }
 .petcard {
   position: relative;
-  display: grid; grid-template-rows: minmax(0, 1fr) auto;
+  display: grid; grid-template-rows: minmax(56px, 1fr) auto;
   padding: 0; min-height: 0;
   --fk: .62;
   border: 1px solid transparent;
@@ -478,8 +482,8 @@
   pointer-events: none;
 }
 .petcard__kid {
-  position: absolute; left: 8px; bottom: 8px; z-index: 2;
-  width: 54px; height: 54px; border-radius: 50%; overflow: hidden;
+  position: absolute; left: 7px; top: 6px; z-index: 2;
+  width: clamp(42px, 3vw, 50px); aspect-ratio: 1; height: auto; border-radius: 50%; overflow: hidden;
   box-shadow: 0 0 0 2px var(--kit-gold), 0 0 0 3px rgba(0, 0, 0, .8), var(--shadow-1);
 }
 /* Dead centre. The 46%/28% bias existed to hunt a face out of a generated
@@ -487,19 +491,19 @@
 .petcard__kid .kidpf { object-position: 50% 50%; }
 .petcard:not(.is-home) .petcard__pet .petpic { filter: saturate(.7) brightness(.9); }
 .petcard.is-home .petcard__pet .petpic { filter: saturate(1.05); }
-.petcard__body { padding: var(--s-3); display: flex; flex-direction: column; gap: 2px; }
-.petcard__body h3 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: var(--fs-lg); color: var(--kit-name); }
-.petcard__sp { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--kit-gold); }
-.petcard__lost { margin: var(--s-2) 0 0; font-size: var(--fs-sm); font-style: italic; color: var(--kit-text-mid); }
+.petcard__body { padding: 8px 11px 9px; display: flex; flex-direction: column; gap: 1px; }
+.petcard__body h3 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: clamp(16px, 1.3vw, 21px); line-height: 1.1; color: var(--kit-name); }
+.petcard__sp { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 11px; line-height: 1.25; letter-spacing: .06em; text-transform: uppercase; color: var(--kit-gold); }
+.petcard__lost { margin: 5px 0 0; font-size: var(--fs-sm); line-height: 1.3; font-style: italic; color: var(--kit-text-mid); }
 .petcard__who { margin: 2px 0 0; font-size: var(--fs-sm); color: var(--kit-text-lo); }
-.stagebar { display: flex; align-items: center; gap: 4px; margin-top: var(--s-2); }
+.stagebar { display: flex; align-items: center; gap: 4px; margin-top: 6px; }
 .stagebar i {
   width: 9px; height: 9px; transform: rotate(45deg);
   background: #2a2231;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--kit-gold) 55%, transparent);
 }
 .stagebar i.is-on { background: linear-gradient(135deg, var(--spectre-200), var(--spectre-400)); box-shadow: 0 0 0 1px rgba(0, 0, 0, .7), 0 0 8px color-mix(in srgb, var(--spectre-300) 60%, transparent); }
-.stagebar span { margin-left: var(--s-2); font-size: var(--fs-xs); font-style: italic; color: var(--kit-text-lo); }
+.stagebar span { margin-left: 6px; font-size: 11px; line-height: 1.2; font-style: italic; color: var(--kit-text-lo); }
 
 /* ── backpack ─────────────────────────────────────────────────────────────── */
 .packwho { display: flex; flex-wrap: wrap; gap: 10px 14px; margin-bottom: var(--s-4); }
@@ -655,5 +659,5 @@
 
 @media (max-width: 1150px) {
   .packcols { grid-template-columns: 1fr; }
-  .scrapgrid { grid-template-columns: repeat(3, 1fr); }
+  .scrapgrid { --cols: 4; }
 }
