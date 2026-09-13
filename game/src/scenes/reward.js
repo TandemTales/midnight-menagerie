@@ -37,6 +37,23 @@ import { fitCardToSlot } from './_cardfit.js';
 const CSS_KIT  = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_CARD = new URL('../ui/card.css', import.meta.url).href;
 const CSS_ROOM = new URL('./reward.css', import.meta.url).href;
+const BACKDROPS = new URL('../../assets/backgrounds/', import.meta.url).href;
+
+/**
+ * Which painted backgrounds exist (tools/prep_backgrounds.py writes the list).
+ * Asked once per session; a room only requests its painting when it is listed,
+ * so a screen whose painting has not been made yet never 404s.
+ */
+let backdropList = null;
+function paintedBackdrops() {
+  if (!backdropList) {
+    backdropList = fetch(`${BACKDROPS}index.json`)
+      .then(r => (r.ok ? r.json() : { available: [] }))
+      .then(j => new Set(Array.isArray(j.available) ? j.available : []))
+      .catch(() => new Set());
+  }
+  return backdropList;
+}
 
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => (
   { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -171,6 +188,29 @@ export class RoomScene extends Scene {
     this.$foot = this.root.querySelector('[data-foot]');
     this.$hud = this.root.querySelector('[data-hud]');
     this._syncHud();
+    this._paintBackdrop();
+  }
+
+  /**
+   * Hang this room's painting behind the board when Josh has made it
+   * (`game/assets/backgrounds/<kind>.webp`). The board's placeholder ground
+   * stays underneath and the kit's vignette and candle light go over it, so a
+   * painting arriving changes the wall, not the composition.
+   */
+  async _paintBackdrop() {
+    const board = this.root.querySelector('.kit-board');
+    if (!board) return;
+    const have = await paintedBackdrops();
+    if (this._dead || !board.isConnected || !have.has(this.kind)) return;
+    const url = `${BACKDROPS}${this.kind}.webp`;
+    const img = new Image();
+    img.decoding = 'async';
+    img.addEventListener('load', () => {
+      if (this._dead || !board.isConnected) return;
+      board.style.setProperty('--kit-backdrop', `url("${url}")`);
+      board.classList.add('has-backdrop');
+    }, { once: true });
+    img.src = url;
   }
 
   /**
@@ -341,7 +381,7 @@ export class RoomScene extends Scene {
       ov.setAttribute('aria-label', o.title || 'Choose');
       ov.innerHTML = `
         <div class="rm-picker__scrim"></div>
-        <div class="rm-picker__panel">
+        <div class="rm-picker__panel kit-panel" data-medal="paw">
           <h2>${esc(o.title || 'Choose')}</h2>
           ${o.sub ? `<p class="rm-picker__sub">${esc(o.sub)}</p>` : ''}
           <div class="rm-picker__grid" role="listbox" aria-label="${esc(o.title || 'Choose')}"></div>
@@ -521,6 +561,9 @@ export class RewardScene extends RoomScene {
   _buildSpoils() {
     const r = this.reward;
     const k = r.keepsake ? relicById(r.keepsake) : null;
+    // The spoils, the choice and the frames stand together on one stage.
+    this.$stage = el('div', 'rw-stage kit-stage');
+    this.$body.appendChild(this.$stage);
     const wrap = el('section', 'rw-spoils');
     wrap.setAttribute('aria-label', 'What this room gave you');
     wrap.innerHTML = `
@@ -531,7 +574,7 @@ export class RewardScene extends RoomScene {
     'Raises the chance a Rare Trick appears in a reward. Skipping a reward raises it further.')}
       </div>
       ${k ? `
-      <div class="rw-keepsake" data-rarity="${esc(k.rarity)}">
+      <div class="rw-keepsake kit-panel" data-medal="star" data-rarity="${esc(k.rarity)}">
         <span class="rw-keepsake__sig"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${relicSigil(k.id)}"/></svg></span>
         <div>
           <span class="rw-keepsake__k">${esc(TERMS.relic)} &middot; ${esc(k.rarity)}</span>
@@ -540,7 +583,7 @@ export class RewardScene extends RoomScene {
           ${k.flavor ? `<i>${esc(k.flavor)}</i>` : ''}
         </div>
       </div>` : ''}`;
-    this.$body.appendChild(wrap);
+    this.$stage.appendChild(wrap);
   }
 
   /* ── three Tricks, take one or skip ───────────────────────────────────── */
@@ -564,7 +607,7 @@ export class RewardScene extends RoomScene {
       c.setAttribute('aria-hidden', 'true');
       sec.appendChild(c);
     }
-    this.$body.appendChild(sec);
+    (this.$stage || this.$body).appendChild(sec);
     const fan = sec.querySelector('.rw-fan');
     this.$fan = fan;
     this._slots = [];

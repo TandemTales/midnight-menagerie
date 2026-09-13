@@ -3,10 +3,20 @@
    Shared chrome lives in reward.css (.rm-*); the look is the kit (ui/kit.css).
    =========================================================================== */
 
+/* Centred with auto margins, not `justify-content: center`: once a Curiosity
+   is answered the page can be taller than the body, and centring an
+   overflowing flex item pushes its top (the rail, the moon, the first line of
+   the story) above the scroll origin where nothing can reach it. */
 .scene--event .rm-body {
-  justify-content: center; align-items: center;
+  justify-content: flex-start; align-items: center;
   overflow-y: auto; scrollbar-color: var(--kit-gold-lo) transparent;
   padding-top: clamp(26px, 4.4vh, 44px); padding-bottom: var(--s-2);
+}
+.scene--event .rm-body > .ev-page { margin-block: auto; flex: none; }
+/* a long answered page scrolls under the title: let it fade there, not cut */
+.scene--event .rm-body {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 22px);
+          mask-image: linear-gradient(to bottom, transparent 0, black 22px);
 }
 
 /* ── the Curiosity, as a page hung in a portrait hall ────────────────────────
@@ -147,7 +157,7 @@
 /* the stake's label: an engraved brass tag */
 .ev-tag i {
   font-style: normal; font-family: var(--font-display); font-weight: 700;
-  font-size: 9px; letter-spacing: .2em; text-transform: uppercase;
+  font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
   padding: 2px 6px 1px; border-radius: 2px;
   color: var(--kit-gold-hi);
   background: linear-gradient(180deg, #241b2b, #0f0b13);
@@ -205,7 +215,7 @@
   background-repeat: no-repeat;
   background-clip: padding-box;
   box-shadow: 0 16px 30px -12px rgba(0, 0, 0, .9);
-  filter: brightness(.62) saturate(.85);
+  filter: brightness(.8) saturate(.9);
 }
 /* old varnish: darker at the edges, a faint sheen of moonlight across the top */
 .ev-hall__frame--l1 { background-image: radial-gradient(90% 80% at 40% 30%, color-mix(in srgb, var(--kit-moon) 10%, transparent), rgba(6, 4, 9, .55) 100%), url("../../assets/ui/kit/hall-gable.webp"); }
@@ -451,3 +461,7 @@
   }
   .ev-rsplate { display: block; max-height: 38vh; justify-self: center; }
 }
+
+/* When event.png is painted it brings its own portraits: the hall's placeholder
+   frames step aside and only the props on the floor stay. */
+.kit-board.has-backdrop .ev-hall__frame { display: none; }

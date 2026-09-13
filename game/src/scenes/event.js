@@ -239,7 +239,13 @@ export class EventScene extends RoomScene {
     }
     this.$page.classList.add('is-answered');
     this._syncFoot();
-    this.$go?.focus();
+    this.$go?.focus({ preventScroll: true });
+    // The answer can land below the fold of a long page: bring it up to be read.
+    if (animate) {
+      requestAnimationFrame(() => this.$outcome?.scrollIntoView?.({
+        block: 'nearest', behavior: this.reduceMotion ? 'auto' : 'smooth',
+      }));
+    }
   }
 
   _pendingLine() {

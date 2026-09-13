@@ -36,6 +36,7 @@
 .kit-board {
   --kit-edge: clamp(8px, .7vw, 12px);          /* where the outer gold rule sits */
   --kit-vine-w: clamp(30px, 2.9vw, 46px);
+  --kit-backdrop: none;                        /* set by RoomScene when a painting exists */
   background: var(--kit-ground-0);
   isolation: isolate;
 }
@@ -45,28 +46,38 @@
 .kit-ground {
   position: absolute; inset: 0; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(38% 30% at 12% 6%, color-mix(in srgb, var(--kit-candle) 13%, transparent) 0%, transparent 70%),
-    radial-gradient(38% 30% at 88% 6%, color-mix(in srgb, var(--kit-candle) 13%, transparent) 0%, transparent 70%),
-    radial-gradient(60% 46% at 50% 44%, color-mix(in srgb, var(--kit-violet) 16%, transparent) 0%, transparent 72%),
-    radial-gradient(80% 50% at 50% 108%, color-mix(in srgb, var(--kit-moon) 7%, transparent) 0%, transparent 70%),
+    radial-gradient(34% 28% at 11% 7%, color-mix(in srgb, var(--kit-candle) 14%, transparent) 0%, transparent 70%),
+    radial-gradient(34% 28% at 89% 7%, color-mix(in srgb, var(--kit-candle) 14%, transparent) 0%, transparent 70%),
+    radial-gradient(56% 44% at 50% 46%, color-mix(in srgb, var(--kit-violet) 11%, transparent) 0%, transparent 72%),
+    radial-gradient(80% 50% at 50% 108%, color-mix(in srgb, var(--kit-moon) 5%, transparent) 0%, transparent 70%),
     url("../../assets/ui/kit/grain.webp"),
-    linear-gradient(180deg, var(--kit-ground-0) 0%, var(--kit-ground-1) 38%, color-mix(in oklab, var(--kit-ground-1) 70%, var(--kit-ground-0)) 72%, var(--kit-ground-0) 100%);
+    linear-gradient(180deg, var(--kit-ground-0) 0%, color-mix(in oklab, var(--kit-ground-1) 72%, var(--kit-ground-0)) 40%, color-mix(in oklab, var(--kit-ground-1) 50%, var(--kit-ground-0)) 72%, var(--kit-void) 100%);
   background-blend-mode: normal, normal, normal, normal, overlay, normal;
   background-size: auto, auto, auto, auto, 256px 256px, auto;
 }
 .kit-ground::before {
   content: ''; position: absolute; inset: 0;
   background: url("../../assets/ui/kit/damask.webp") 50% 0 / 176px auto repeat;
-  opacity: .085;
+  opacity: .075;
   -webkit-mask-image: radial-gradient(120% 90% at 50% 40%, black 30%, transparent 85%);
           mask-image: radial-gradient(120% 90% at 50% 40%, black 30%, transparent 85%);
 }
-/* A painted background slots in here when it exists: see kit.js / --kit-backdrop. */
+/* The room's painting, when it exists (RoomScene._paintBackdrop sets
+   --kit-backdrop and .has-backdrop). It is laid over the placeholder wall and
+   under the same candle light and vignette, pushed back into the dark so the
+   board in front of it stays the brightest thing on screen. */
 .kit-ground::after {
   content: ''; position: absolute; inset: 0;
-  background: var(--kit-backdrop, none) 50% 50% / cover no-repeat;
-  opacity: var(--kit-backdrop-o, 0);
+  background:
+    radial-gradient(38% 30% at 12% 6%, color-mix(in srgb, var(--kit-candle) 12%, transparent) 0%, transparent 70%),
+    radial-gradient(38% 30% at 88% 6%, color-mix(in srgb, var(--kit-candle) 12%, transparent) 0%, transparent 70%),
+    linear-gradient(180deg, rgba(8, 6, 11, .55), rgba(8, 6, 11, .25) 40%, rgba(8, 6, 11, .6)),
+    var(--kit-backdrop) 50% 50% / cover no-repeat;
+  opacity: 0;
+  transition: opacity var(--t-slow) var(--ease-out);
 }
+.kit-board.has-backdrop .kit-ground::after { opacity: 1; }
+.kit-board.has-backdrop .kit-ground::before { opacity: 0; }
 .kit-board .rm-vig {
   background:
     radial-gradient(120% 96% at 50% 42%, transparent 46%, color-mix(in srgb, var(--kit-void) 82%, transparent) 100%),
@@ -336,6 +347,33 @@
 .kit-panel[data-medal="shield"] { --medal-img: url("../../assets/ui/kit/medal-shield.webp"); --medal-w: 50px;  --medal-ar: 50 / 56;  --medal-rail: 17px; }
 .kit-panel[data-medal="star2"]  { --medal-img: url("../../assets/ui/kit/medal-star2.webp");  --medal-w: 55px;  --medal-ar: 55 / 56;  --medal-rail: 17px; }
 .kit-panel[data-medal="moon"]   { --medal-img: url("../../assets/ui/kit/medal-moon.webp");   --medal-w: 156px; --medal-ar: 156 / 98; --medal-rail: 49px; }
+
+/* ── stage ───────────────────────────────────────────────────────────────────
+   The big rounded gold rail selectKid draws round its mirror and panels: the
+   part of a board where the choice is made. A recess a shade darker than the
+   wall, with its own floor, so what stands in it has somewhere to stand.
+   Put it on a positioned container; it draws itself on ::before and never
+   takes pointer events.                                                     */
+.kit-stage { position: relative; isolation: isolate; }
+.kit-stage::before {
+  content: ''; position: absolute; z-index: -3; pointer-events: none;
+  inset: var(--stage-inset, 0);
+  border-radius: var(--stage-r, 34px);
+  border: 1px solid color-mix(in srgb, var(--kit-gold-hi) 70%, var(--kit-gold));
+  background:
+    radial-gradient(60% 40% at 50% 100%, color-mix(in srgb, var(--kit-candle) 10%, transparent), transparent 72%),
+    url("../../assets/ui/kit/floor.webp") 50% 100% / auto var(--stage-floor, 150px) repeat-x,
+    linear-gradient(180deg, rgba(7, 5, 10, .5) 0%, rgba(7, 5, 10, .28) 40%, rgba(7, 5, 10, .42) 100%);
+  box-shadow:
+    0 0 0 1px var(--kit-void),
+    0 0 0 3px color-mix(in srgb, var(--kit-gold) 80%, transparent),
+    0 0 0 4px color-mix(in srgb, var(--kit-gold-lo) 90%, transparent),
+    0 0 0 5px rgba(7, 5, 10, .85),
+    inset 0 0 0 1px var(--kit-void),
+    inset 0 0 40px rgba(0, 0, 0, .55),
+    0 20px 50px -20px rgba(0, 0, 0, .9);
+  -webkit-mask-image: none;
+}
 
 /* ── portrait frame ──────────────────────────────────────────────────────── */
 .kit-frame {

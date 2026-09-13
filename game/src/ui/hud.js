@@ -118,7 +118,7 @@ const GEAR_CSS = `
 
 /* Clues and Luck. Same chip as Buttons — only the icon is tinted, cool for
    the investigation, green for the odds, so neither competes with Courage. */
-.mm-hud__clue .mm-icon { color: var(--spectre-300); }
+.mm-hud__clue .mm-icon { color: var(--kit-moon); }
 .mm-hud__luck .mm-icon { color: var(--good-300); }
 .mm-hud__clue[hidden], .mm-hud__luck[hidden] { display: none; }
 `;

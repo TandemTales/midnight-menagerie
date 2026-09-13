@@ -156,20 +156,22 @@
 /* ── card picker overlay ──────────────────────────────────────────────────── */
 .rm-picker { position: absolute; inset: 0; z-index: var(--z-modal); display: grid; place-items: center; }
 .rm-picker__scrim { position: absolute; inset: 0; background: var(--veil); }
+/* a kit panel (ui/kit.css) with the paw on its rail; only its size lives here */
 .rm-picker__panel {
+  --pk: .9;
   position: relative;
   width: min(1180px, 92vw); max-height: 88vh;
   display: flex; flex-direction: column; gap: var(--s-3);
-  padding: var(--s-5);
-  border: 1px solid var(--brass-500); border-radius: var(--radius-lg);
-  background: linear-gradient(180deg, var(--ink-800), var(--ink-900));
-  box-shadow: var(--shadow-4);
+  padding: calc(var(--s-5) + 8px) var(--s-5) var(--s-5);
+  box-shadow: var(--shadow-4), 0 0 0 100vmax rgba(5, 3, 8, .2);
 }
 .rm-picker__panel h2 {
-  margin: 0; font-family: var(--font-display); font-size: var(--fs-lg);
-  letter-spacing: .06em; color: var(--text-hi);
+  margin: 0; text-align: center;
+  font-family: var(--font-display); font-weight: 700; font-size: var(--fs-xl);
+  letter-spacing: .04em; color: var(--kit-lav);
+  text-shadow: 0 1px 0 var(--kit-gold-lo), 0 2px 0 #1c1029, 0 0 24px color-mix(in srgb, var(--kit-violet) 45%, transparent);
 }
-.rm-picker__sub { margin: 0; font-size: var(--fs-sm); color: var(--text-mid); }
+.rm-picker__sub { margin: 0; text-align: center; font-size: var(--fs-sm); font-style: italic; color: var(--kit-text-mid); }
 .rm-picker__grid {
   display: grid; gap: var(--s-3);
   grid-template-columns: repeat(auto-fit, minmax(clamp(112px, 9vw, 150px), 1fr));
@@ -186,12 +188,12 @@
 .rm-slot:focus-visible::after,
 .rm-slot.is-chosen::after {
   content: ''; position: absolute; inset: -6px; border-radius: var(--radius-lg);
-  border: 2px solid var(--flame-300);
-  box-shadow: 0 0 22px color-mix(in srgb, var(--flame-glow) 40%, transparent);
+  border: 2px solid var(--kit-gold-hi);
+  box-shadow: 0 0 22px color-mix(in srgb, var(--kit-candle) 45%, transparent);
   pointer-events: none;
 }
 .rm-picker__foot { display: flex; align-items: center; gap: var(--s-3); }
-.rm-picker__read { flex: 1; margin: 0; font-size: var(--fs-sm); color: var(--text-mid); font-style: italic; }
+.rm-picker__read { flex: 1; margin: 0; font-size: var(--fs-sm); color: var(--kit-text-mid); font-style: italic; }
 
 /* ===========================================================================
    Reward
@@ -206,16 +208,38 @@
    title is set in, and 74ch was narrow enough to wrap "You Were Not Ready For
    That" onto two lines. */
 .scene--reward .rm-head .rm-where { max-width: 1100px; }
-.scene--reward .rm-body { gap: clamp(8px, 1.5vh, 22px); justify-content: center; padding-top: 0; }
+/* auto margins centre the stage without ever pushing an overflowing stage's
+   top rail (and the spoils on it) up under the title */
+.scene--reward .rm-body {
+  gap: clamp(8px, 1.5vh, 22px); justify-content: flex-start; padding-top: 0;
+  overflow-y: auto; scrollbar-color: var(--kit-gold-lo) transparent;
+}
+.scene--reward .rm-body > .rw-stage { margin-block: auto; flex: none; }
+/* a Big Scare also hands over a Keepsake: the frames give it the room */
+.rw-stage:has(.rw-keepsake) .rw-cards { --slot-h: min(18vw, 29vh); }
+
+/* the stage: its top rail runs through the middle of the spoils' nameplates,
+   the way selectKid's info panels wear their medallions */
+.rw-stage {
+  --stage-floor: clamp(110px, 16vh, 150px);
+  display: flex; flex-direction: column; align-items: center;
+  gap: clamp(4px, 1vh, 12px);
+  width: min(1380px, 100% - 2 * var(--kit-vine-w, 40px));
+  padding: 0 0 clamp(22px, 3vh, 30px);
+}
+.rw-stage::before { top: calc(clamp(46px, 5.6vh, 54px) / 2); }
 
 .rw-spoils { display: flex; flex-direction: column; align-items: center; gap: var(--s-3); }
 .rw-spoils__row { display: flex; gap: clamp(10px, 1.2vw, 20px); flex-wrap: wrap; justify-content: center; }
 
 /* A Keepsake in the spoils is a kit panel with the star medallion on its rail. */
 .rw-keepsake {
+  --pk: .72;
+  --medal-k: .8;
   display: flex; align-items: center; gap: var(--s-4);
-  max-width: min(720px, 88vw);
-  padding: 18px 26px 14px;
+  max-width: min(760px, 88vw);
+  margin-top: 14px;
+  padding: 16px 24px 10px;
 }
 .rw-keepsake[data-rarity="boss"] { --pk: .8; }
 .rw-keepsake__sig {
