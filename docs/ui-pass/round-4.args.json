@@ -1,0 +1,117 @@
+{
+  "round": "r4",
+  "maxBuilders": 6,
+  "briefs": ["docs/ui-pass/BRIEF-r0.md", "docs/ui-pass/BRIEF-r1.md", "docs/ui-pass/BRIEF-r4.md"],
+  "rubrics": ["docs/ui-pass/RUBRIC.md", "docs/ui-pass/RUBRIC-r1.md", "docs/ui-pass/RUBRIC-r4.md"],
+  "samples": ["UI/title.png", "UI/mainMenu.png", "UI/selectCompanion.png", "UI/selectKid.png"],
+  "tracks": [
+    {
+      "key": "polish",
+      "name": "POLISH",
+      "rule": "refine",
+      "screens": ["shop", "reward", "event", "map", "rest", "gameover"],
+      "baseline": "DAMSON",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "ACORN",
+          "port": 8831,
+          "angle": "LITERAL. Work down the POLISH fix list, 1 to 16, in order and exactly as written, reading the branches it names before you copy an idea from them. Every fix visibly done on screen at both sizes, and nothing else changed."
+        },
+        {
+          "slot": "b",
+          "code": "BASALT",
+          "port": 8832,
+          "angle": "A FULL STAGE. Do every fix, and put your extra effort into what every round-3 judge named on nearly every board: empty flanks, an empty right third, a void under the centrepiece, a dead band beside the painting. Every board is composed edge to edge, with one focal point, a second, and nothing left floating, at 1280x800 and 1600x900."
+        },
+        {
+          "slot": "c",
+          "code": "CEDAR",
+          "port": 8833,
+          "angle": "ENGRAVED AND INKED. Do every fix, and put your extra effort into the lettering and the line work: the drop cap and its lead-in set like a printed book, the map's rooms and routes inked on candlelit paper, prices, plates, labels and the stat rail engraved and struck, so nothing reads as a vector diagram or a web font on a pill."
+        }
+      ]
+    },
+    {
+      "key": "combat",
+      "name": "COMBAT",
+      "rule": "refine",
+      "screens": ["combat", "combat-boss", "combat-crowd"],
+      "baseline": "HEATH",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "EBONY",
+          "port": 8834,
+          "angle": "LITERAL. Work down the COMBAT fix list, 1 to 6, in order and exactly as written, reading the branches it names before you copy an idea from them. Every fix visibly done on all three boards at both sizes, and nothing else changed."
+        },
+        {
+          "slot": "b",
+          "code": "FLINT",
+          "port": 8835,
+          "angle": "THE BOSS. Do every fix, and put your extra effort into a boss fight that reads as one at a glance: the Butler's plate, crest and finial, his conditions, the light that falls on him and the frame of the stage around him, while the Scuffle stays a Scuffle and the full hand stays clear."
+        },
+        {
+          "slot": "c",
+          "code": "GARNET",
+          "port": 8836,
+          "angle": "OBJECTS ON THE TABLE. Do every fix, and put your extra effort into every counter and pile as a made, lit object: Nerve a struck coin with weight, DRAW and DISCARD painted card backs in their sockets and on their bracket, conditions as enamel medallions, the hand's rules panels as painted card bodies, none of them a flat glyph, tile or rectangle."
+        }
+      ]
+    },
+    {
+      "key": "dialogs",
+      "name": "DIALOGS",
+      "rule": "refine",
+      "screens": ["opening", "settings", "piles"],
+      "baseline": "LINEN",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "INDIGO",
+          "port": 8837,
+          "angle": "LITERAL. Work down the DIALOGS fix list, 1 to 6, in order and exactly as written, reading the branches it names before you copy an idea from them. Every fix visibly done on all three screens at both sizes, and nothing else changed."
+        },
+        {
+          "slot": "b",
+          "code": "JASPER",
+          "port": 8838,
+          "angle": "FITS AND FINISH. Do every fix, and put your extra effort into every dialog fitting its own frame at 1280x800 and 1600x900, including large text, with nothing clipped, straddling or faint, every control reading as a control in every state, in UMBER's frame language: title cartouche, moon medallions, rosette buttons."
+        },
+        {
+          "slot": "c",
+          "code": "KESTREL",
+          "port": 8839,
+          "angle": "OBJECTS IN THE HOUSE, IN AUBERGINE. Do every fix, and put your extra effort into making the dialogs things that stand in this mansion (brackets, candles, a ribbon bookmark, a velvet band, ledger leaders) without leaving the samples' aubergine, lavender and antique gold palette, and without covering the lit room behind the opening."
+        }
+      ]
+    },
+    {
+      "key": "kids",
+      "name": "KIDS' PLACES",
+      "rule": "expand",
+      "screens": ["lobby", "clubhouse", "atlas"],
+      "baseline": "PUMICE",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "MARL",
+          "port": 8840,
+          "angle": "LITERAL. Work down the KIDS' PLACES fix list, 1 to 11, in order and exactly as written, reading the branches it names before you copy an idea from them. Every fix visibly done on all three screens at both sizes, and nothing else changed."
+        },
+        {
+          "slot": "b",
+          "code": "NUTMEG",
+          "port": 8841,
+          "angle": "PAINTED ROOMS. Do every fix, and put your extra effort into the rooms reading painted and lit in the samples' palette: the treehouse wall, the clubhouse's damask and cork board under its lamp, the atlas's candlelit parchment, with every painting slot kept for Josh's lobby.png and clubhouse.png."
+        },
+        {
+          "slot": "c",
+          "code": "OCHRE",
+          "port": 8842,
+          "angle": "LEGIBLE BOARDS. Do every fix, and put your extra effort into each screen reading in the right order at 1280x800: the password first on the lobby, the investigation board then the log and Haunt Level on the clubhouse, the plan then the panel on the atlas, with no debug text, no label crowding a medallion or a prop, and no dead gaps."
+        }
+      ]
+    }
+  ]
+}

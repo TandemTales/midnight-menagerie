@@ -67,18 +67,29 @@ so round 2 runs six at once, as round 1 did.
 | 2 | POLISH Shop / Reward / Curiosity / Map / Safe Room / Game Over | BRAID 6.78 · AMBER 6.75 · CHALK 6.72 · the screens before 6.22 | CHALK: three judges named three winners; CHALK beats each rival 10-8 head to head over the 18 rankings, Borda 34 / 30 / 30 | `a4b2ecc` |
 | 2 | COMBAT, a Scuffle and a boss | FROST 7.25 · DUSK 6.75 · EMBER 6.25 · the screen before 3.50 | FROST, both judges | `04af2bc` |
 | 2 | EXPAND-2 Lobby / Clubhouse / Atlas | GROVE 6.61 · IVORY 6.56 · HAZE 6.11 · the screens before 2.56 | per screen, 3 judges: Lobby GROVE, Clubhouse and Atlas IVORY | `31b6d8f` |
-| 3 | POLISH the six; COMBAT with a full hand; DIALOGS the opening's story / Settings / the pile viewer | briefed (`BRIEF-r3.md`, `RUBRIC-r3.md`, `round-3.args.json`) | | |
+| 3 | POLISH the six boards | ONYX 6.56 · PEARL 6.28 · MINT 6.28 · the screens before 5.50 | ONYX, 2 of 3 judges | `1d9f09d` |
+| 3 | COMBAT, a Scuffle, a boss and a boss with a full hand | TOPAZ 7.00 · QUILL 6.50 · SLATE 6.33 · the screen before 5.17 | TOPAZ, both judges | `f025e59` |
+| 3 | DIALOGS the opening's story / Settings / the pile viewer | YARROW 6.61 · UMBER 6.56 · WILLOW 6.50 · the screens before 2.72 | UMBER: three judges named three winners; UMBER wins the rankings (3 head-to-head, Borda 20 / 17 / 17) | `6806123` |
+| 4 | POLISH; COMBAT; DIALOGS; KIDS' PLACES Lobby / Clubhouse / Atlas | briefed (`BRIEF-r4.md`, `RUBRIC-r4.md`, `round-4.args.json`) | | |
 
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
 improved. Compare a winner with the baseline IN ITS OWN ROUND (round 1 REFINE:
 +1.25), never across rounds.
 
-Round 2 against its own baselines: POLISH +0.50, COMBAT +3.75, EXPAND-2 +4.05.
-Converting a screen moves it about four points; refining a converted one moves it
-about half a point, and less each round (+1.25, then +0.50). The background
-dimension is what stalls: every judge scores it near 6 on every candidate, winner
-or not, because the grounds are still renders.
+Against their own baselines:
+
+| round | refining a converted screen | converting a screen |
+|---|---|---|
+| 1 | REFINE +1.25 | EXPAND +3.61 |
+| 2 | POLISH +0.50 | COMBAT +3.75, EXPAND-2 +4.05 |
+| 3 | POLISH +1.06, COMBAT +1.83 | DIALOGS +3.84 |
+
+Converting a screen moves it about four points. Refining one moves it half a point
+to two points, more when the brief names concrete defects the judges can see
+(round 3's COMBAT gained most on the crowded board, 7.0 against 4.0). The
+background dimension is what stalls: every judge scores it between 5 and 6 on
+every candidate, winner or not, because the grounds are still renders.
 
 **When the judges split with no majority**, `round-workflow.js` decides on their
 rankings: the candidate that beats each other one head to head across every
