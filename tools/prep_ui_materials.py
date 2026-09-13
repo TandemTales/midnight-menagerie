@@ -905,54 +905,96 @@ def socket():
 
 
 # ── the Tricks shelf ─────────────────────────────────────────────────────────
+def walnut(h, w, rng, base="#4a3021", light="#6e4b31", dark="#231610", period=None):
+    """Crisp walnut for close-up wood: long grain lines (thin, dark, slightly
+    wavy), a slow figure of lighter and darker streaks, and pores. Periodic in
+    x when `period` is given, so a strip tiles."""
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    P = period or w
+    ph = xx / P * 2 * np.pi
+    # slow waves that bend the grain, periodic in x
+    bend = (np.sin(ph + rng.uniform(0, 6)) * 2.2 + np.sin(2 * ph + rng.uniform(0, 6)) * 1.1
+            + np.sin(5 * ph + rng.uniform(0, 6)) * .45)
+    v = yy + bend
+    # grain lines: several sine families of different spacing, sharpened
+    g = np.zeros((h, w), np.float32)
+    for spacing, amp in ((3.1, .55), (7.3, .8), (13.0, .5)):
+        s = 0.5 + 0.5 * np.sin(v / spacing * 2 * np.pi + np.sin(ph * 3 + rng.uniform(0, 6)) * 1.3)
+        g += amp * s ** 6
+    figure = np.sin(v / 23.0 + np.sin(ph * 2 + 1.3) * 2.0) * .5 + .5
+    pores = (rng.random((h, w)) > .985).astype(np.float32) * .5
+    t = np.clip(0.55 + (figure - .5) * .35 - g * .22 - pores * .3, 0, 1)
+    return ramp(t, [(0.0, dark), (0.55, base), (1.0, light)])
+
+
 def shelf():
-    """A walnut shelf seen from just above: its top face catching the light,
-    a brass nosing along its edge, a moulded front with a bead, and the shadow
-    it casts on the cloth below. Tiles left to right every 512 px (2x)."""
+    """A walnut shelf seen from just above, 512x100 (drawn 3x), tiling every
+    256 px of its 512: a planked top face lit at its front edge and lost in
+    shadow at the back, a rounded bullnose, a brass inlay strip set into a
+    moulded apron with studs, and the shadow it throws on the cloth."""
     rng = np.random.default_rng(1212)
-    W, H, ss = 512, 100, 2
+    W, H, ss = 512, 100, 3
     SW, SH = W * ss, H * ss
-    yy = np.arange(SH, dtype=np.float32)[:, None] / ss * np.ones((1, SW), np.float32)
-    wood = wood_albedo(SH, SW, rng, base="#4a3021", light="#6b4a33", dark="#24170f", scale=2.2)
-    # make it tile: cross-fade the ends
-    k = np.clip((np.arange(SW) - (SW - 80)) / 80, 0, 1)[None, :, None]
-    wood = wood * (1 - k) + wood[:, :SW][:, ::-1] * 0 + np.roll(wood, SW // 2, axis=1) * 0 + wood * k
-    TOP0, TOP1 = 8.0, 30.0            # the top face
-    NOSE0, NOSE1 = 30.0, 37.0         # brass nosing
-    FR0, FR1 = 37.0, 72.0             # the moulded front
-    hgt = np.zeros((SH, SW), np.float32)
+    yy = (np.arange(SH, dtype=np.float32)[:, None] + .5) / ss * np.ones((1, SW), np.float32)
+    xx = (np.arange(SW, dtype=np.float32)[None, :] + .5) / ss * np.ones((SH, 1), np.float32)
+    TOP0, TOP1 = 6.0, 30.0            # the top face (its back edge .. its front edge)
+    NOSE1 = 36.0                      # the bullnose
+    INL0, INL1 = 42.0, 47.0           # brass inlay in the apron
+    FR1 = 72.0                        # the apron's foot
     col = np.zeros((SH, SW, 3), np.float32)
     alpha = np.zeros((SH, SW), np.float32)
+    hgt = np.zeros((SH, SW), np.float32)
+    wood_top = walnut(SH, SW, rng, period=256 * ss)
+    wood_front = walnut(SH, SW, rng, base="#3a2519", light="#58392a", dark="#1a100b", period=256 * ss)
+    # top face: planks 256 px long with a joint, brighter towards the viewer
     top = (yy >= TOP0) & (yy < TOP1)
-    t_top = np.clip((yy - TOP0) / (TOP1 - TOP0), 0, 1)
-    col = np.where(top[..., None], wood * (0.8 + 0.45 * t_top[..., None]), col)
-    nose = (yy >= NOSE0) & (yy < NOSE1)
-    front = (yy >= FR0) & (yy < FR1)
-    prof = moulding(yy - FR0, [(0, 9, "bead", 5), (9, 12, "fillet", 2), (12, 30, "ogee", 6), (30, 35, "fillet", 1)])
-    hgt = np.where(front, prof, hgt)
-    tn = np.clip((yy - NOSE0) / (NOSE1 - NOSE0), 0, 1)
-    hgt = np.where(nose, np.sqrt(np.clip(1 - (2 * tn - 1) ** 2, 0, 1)) * 4 + 6, hgt)
-    n = normals(ndimage.gaussian_filter(hgt * ss, ss * 0.5), 0.9)
+    t = np.clip((yy - TOP0) / (TOP1 - TOP0), 0, 1)
+    joint = (np.abs(((xx + 64) % 256) - 128) > 127.2) & top
+    shade = 0.5 + 0.62 * t ** 1.4
+    col = np.where(top[..., None], wood_top * shade[..., None], col)
+    col = np.where(joint[..., None], col * 0.45, col)
+    sheen = np.exp(-((yy - (TOP1 - 3.5)) / 2.2) ** 2) * top
+    col = col + sheen[..., None] * np.array([70, 48, 26], np.float32)
+    # the bullnose: a half-round edge, lit on top, dark underneath
+    nose = (yy >= TOP1) & (yy < NOSE1)
+    tn = np.clip((yy - TOP1) / (NOSE1 - TOP1), 0, 1)
+    hgt = np.where(nose, np.sqrt(np.clip(1 - tn ** 2, 0, 1)) * 5, hgt)
+    # the apron: a bead under the nose, a flat field with the brass inlay, a cove at its foot
+    apron = (yy >= NOSE1) & (yy < FR1)
+    prof = moulding(yy - NOSE1, [(0, 4, "bead", 3), (4, 6, "fillet", 1.5), (6, 11, "fillet", 1.8),
+                                 (11, 30, "fillet", 1.8), (30, 36, "cove", 2)])
+    hgt = np.where(apron, prof, hgt)
+    inlay = (yy >= INL0) & (yy < INL1)
+    ti = np.clip((yy - INL0) / (INL1 - INL0), 0, 1)
+    hgt = np.where(inlay, 2.2 + np.sqrt(np.clip(1 - (2 * ti - 1) ** 2, 0, 1)) * 1.2, hgt)
+    # brass studs on the apron every 128 px
+    sd = np.hypot(((xx + 0) % 128) - 64, yy - 58.5)
+    stud = (sd < 3.4) & apron
+    hgt = np.where(stud, 2 + np.sqrt(np.clip(1 - (sd / 3.4) ** 2, 0, 1)) * 2.4, hgt)
+    n = normals(ndimage.gaussian_filter(hgt * ss, ss * 0.4), 1.0)
     lam = lambert(n)
-    col = np.where(front[..., None], wood * 0.62 * (0.45 + 0.9 * lam[..., None]), col)
-    metal = brass(n, wear=noise((SH, SW), rng, ss * 2))
-    col = np.where(nose[..., None], metal, col)
-    alpha = np.where(top | nose | front, 1.0, alpha)
-    # ink lines at the breaks
-    for ey in (TOP0 + 0.3, NOSE0, NOSE1, FR1 - 0.4):
-        m = np.abs(yy - ey) < 0.8
-        col = np.where(m[..., None], np.array([12, 7, 5], np.float32), col)
-    # the shadow it throws on the cloth
-    sh = (yy >= FR1)
+    nose_col = wood_front * (0.35 + 1.05 * lam[..., None])
+    col = np.where(nose[..., None], nose_col, col)
+    col = np.where(apron[..., None], wood_front * (0.3 + 0.75 * lam[..., None]), col)
+    metal = brass(n, wear=noise((SH, SW), rng, ss * 1.5))
+    col = np.where((inlay | stud)[..., None], metal, col)
+    alpha = np.where(top | nose | apron, 1.0, alpha)
+    # ink at the breaks between the parts
+    for ey, wdt in ((TOP0 + .4, .9), (TOP1 + .2, .5), (INL0, .5), (INL1, .6), (FR1 - .5, .9)):
+        m = (np.abs(yy - ey) < wdt) & (alpha > 0)
+        col = np.where(m[..., None], col * 0.25, col)
+    # the shadow on the cloth under it, and a breath of shadow behind the top face
+    sh = yy >= FR1
     ts = np.clip((yy - FR1) / (H - FR1), 0, 1)
-    alpha = np.where(sh, (1 - ts) ** 1.8 * 0.85, alpha)
+    alpha = np.where(sh, (1 - ts) ** 1.6 * 0.9, alpha)
     col = np.where(sh[..., None], np.array([4, 2, 5], np.float32), col)
-    # a faint lip of light on the top face's back edge
-    alpha = np.where(yy < TOP0, smooth(TOP0 - 6, TOP0, yy) * 0.6, alpha)
-    col = np.where((yy < TOP0)[..., None], np.array([6, 4, 6], np.float32), col)
+    back = yy < TOP0
+    alpha = np.where(back, smooth(TOP0 - 5, TOP0, yy) * 0.55, alpha)
+    col = np.where(back[..., None], np.array([5, 3, 6], np.float32), col)
+    col = col + noise((SH, SW), rng, 0.7)[..., None] * 3
     col = down(col, ss)
     alpha = down(alpha, ss)
-    save(np.dstack([col, alpha * 255]), "shelf.webp", 88)
+    save(np.dstack([col, alpha * 255]), "shelf.webp", 90)
 
 
 def velvet():

@@ -61,6 +61,21 @@
         <feMergeNode in="face"/>
       </feMerge>
     </filter>
+    <!-- Relief for small drawings set in enamel (Mr. Moth): each shape domed
+         and lit from the top left, with a glint on its crown. -->
+    <filter id="kit-relief" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="bump"/>
+      <feDiffuseLighting in="bump" surfaceScale="4" diffuseConstant="1.25" lighting-color="#ffffff" result="diffuse">
+        <feDistantLight azimuth="235" elevation="42"/>
+      </feDiffuseLighting>
+      <feComposite in="SourceGraphic" in2="diffuse" operator="arithmetic" k1="1.15" k2="0" k3="0" k4="0" result="shaded"/>
+      <feSpecularLighting in="bump" surfaceScale="4" specularConstant=".7" specularExponent="18" lighting-color="#fff2d6" result="spec">
+        <feDistantLight azimuth="235" elevation="38"/>
+      </feSpecularLighting>
+      <feComposite in="spec" in2="SourceAlpha" operator="in" result="specIn"/>
+      <feComposite in="shaded" in2="specIn" operator="arithmetic" k1="0" k2="1" k3=".55" k4="0" result="lit"/>
+      <feComposite in="lit" in2="SourceAlpha" operator="in"/>
+    </filter>
   </svg>
   <noscript>Midnight Menagerie requires JavaScript.</noscript>
   <script type="module" src="src/main.js"></script>

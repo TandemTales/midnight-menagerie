@@ -171,26 +171,22 @@
 }
 .kit-board.has-backdrop .kit-dress__floor { display: none; }
 
-/* the outer gold double rule of the board, under the HUD band */
+/* The board's own frame, under the HUD band: the Kid board's painted rail
+   (panel.webp, the frame every .kit-panel wears) run round the whole screen,
+   its scrolled, star-set corners at the four corners of the board, and the
+   room's darkness gathering just inside it. */
 .kit-dress__rule {
-  left: var(--kit-edge); right: var(--kit-edge);
-  top: calc(var(--hud-h) + var(--kit-edge) * .5); bottom: var(--kit-edge);
-  border: 1px solid color-mix(in srgb, var(--kit-gold) 78%, transparent);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--kit-void) 90%, transparent),
-    inset 0 0 0 2px color-mix(in srgb, var(--kit-void) 88%, transparent),
-    inset 0 0 0 3px color-mix(in srgb, var(--kit-gold-lo) 80%, transparent),
-    inset 0 0 40px color-mix(in srgb, var(--kit-void) 60%, transparent);
+  --pk: .8;
+  left: calc(var(--kit-edge) + 2px); right: calc(var(--kit-edge) + 2px);
+  top: calc(var(--hud-h) + var(--kit-edge) * .5 + 4px); bottom: calc(var(--kit-edge) + 2px);
+  border: 1px solid transparent;
+  border-image-source: url("../../assets/ui/kit/panel.webp");
+  border-image-slice: 44;
+  border-image-width: calc(44px * var(--pk));
+  border-image-outset: calc(14px * var(--pk));
+  border-image-repeat: stretch;
+  box-shadow: inset 0 0 44px color-mix(in srgb, var(--kit-void) 62%, transparent);
 }
-/* little brass studs where the rule turns a corner */
-.kit-dress__rule::before, .kit-dress__rule::after {
-  content: ''; position: absolute; width: 9px; height: 9px; bottom: -5px;
-  transform: rotate(45deg);
-  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 45%, var(--kit-gold-lo));
-  box-shadow: 0 0 0 1px var(--kit-void);
-}
-.kit-dress__rule::before { left: -5px; }
-.kit-dress__rule::after { right: -5px; }
 
 .kit-dress__corner {
   top: calc(var(--hud-h) + 2px);

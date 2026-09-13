@@ -122,7 +122,7 @@
   grid-row: 1;
   /* the frame's bottom rail stands on the shelf's top face, which starts
      above the price tag by the depth of the face and the nosing */
-  height: calc(100% - var(--frame-pad) - var(--shelf-h) * .5 + var(--tag-h) * .5); max-height: 100%;
+  height: calc(100% - var(--frame-pad) - var(--shelf-h) * .5 + var(--tag-h) * .5 + var(--frame-pad) * .8); max-height: 100%;
   align-self: start;
   aspect-ratio: var(--card-aspect);
   transition: transform var(--t-quick) var(--ease-out), filter var(--t-base) var(--ease-out);
@@ -326,16 +326,16 @@
    the Kid board's round button set in gold filigree (button-ornate.webp). */
 .sh-moth__frame, .sh-moth { grid-column: 1; grid-row: 1 / 3; align-self: center; justify-self: center; }
 .sh-moth__frame {
-  width: clamp(84px, 5.6vw, 110px); aspect-ratio: 180 / 172;
+  width: clamp(88px, 6vw, 112px); aspect-ratio: 180 / 172;
   background: url("../../assets/ui/kit/button-ornate.webp") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 5px 7px rgba(0, 0, 0, .8));
   position: relative; z-index: 0;
 }
 .sh-moth {
   position: relative; z-index: 1;
-  width: calc(clamp(84px, 5.6vw, 110px) * 98 / 180); height: auto; aspect-ratio: 1;
+  width: calc(clamp(88px, 6vw, 112px) * 98 / 180); height: auto; aspect-ratio: 1;
   display: block;
-  margin-top: calc(clamp(84px, 5.6vw, 110px) * -.012);
+  margin-top: calc(clamp(88px, 6vw, 112px) * -.012);
   padding: 4% 4% 0;
   border-radius: 50%;
   /* lit by his own lamp: warm from the lower right, the enamel deep behind him */
@@ -345,6 +345,9 @@
   box-shadow: inset 0 0 12px rgba(0, 0, 0, .9), inset 0 -6px 14px color-mix(in srgb, var(--kit-candle) 18%, transparent);
   overflow: hidden;
 }
+/* his figure is domed and lit like the boards' enamel (the #kit-relief SVG
+   filter in index.html); the lamp's glow stays a flat light over him */
+.sh-moth > path, .sh-moth > ellipse:not(.sh-moth__glow) { filter: url("#kit-relief"); }
 .sh-lamp-a { stop-color: var(--kit-candle); stop-opacity: .55; }
 .sh-lamp-b { stop-color: var(--kit-candle); stop-opacity: 0; }
 /* NOTE: no blanket `fill: none` here — `.sh-moth path` (0,1,1) would outrank
