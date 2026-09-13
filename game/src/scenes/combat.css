@@ -336,12 +336,12 @@
    to the top of its own name plate */
 .cb-enemy.has-rule .cb-enemy__plate::before {
   content: 'House Rule';
-  --h: 18px;
+  --h: 20px;
   position: absolute; left: 50%; top: 0; transform: translate(-50%, -88%);
   display: inline-flex; align-items: center;
   min-height: var(--h); padding: 0 12px 1px;
-  font-family: var(--font-display); font-weight: 700; font-size: 9.5px;
-  letter-spacing: .16em; text-transform: uppercase; white-space: nowrap;
+  font-family: var(--font-display); font-weight: 700; font-size: 10.5px;
+  letter-spacing: .14em; text-transform: uppercase; white-space: nowrap;
   color: var(--kit-lav);
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
@@ -813,7 +813,7 @@
 .cb-count:hover, .cb-count:focus-visible { transform: translateY(-2px) scale(1.06); }
 .cb-count i {
   font-style: normal; font-family: var(--font-display); font-weight: 700;
-  font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+  font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
   color: var(--kit-text-mid);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .9);
 }
@@ -1091,14 +1091,14 @@
   color: var(--kit-gold-hi);
 }
 .cb-intent__chip[data-role="cards"] span {
-  font-family: var(--font-display); font-weight: 700; font-size: 10px;
+  font-family: var(--font-display); font-weight: 700; font-size: 11px;
   letter-spacing: .1em; text-transform: uppercase;
   color: var(--kit-text);
   -webkit-text-stroke: 0; text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .cb-intent__chip[data-role="rule"] { height: calc(var(--ph) * .84); }
 .cb-intent__chip[data-role="rule"] b {
-  font-family: var(--font-display); font-weight: 700; font-size: 10.5px;
+  font-family: var(--font-display); font-weight: 700; font-size: 11px;
   letter-spacing: .16em; text-transform: uppercase;
   color: var(--kit-lav);
   -webkit-text-stroke: 0; text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
@@ -1108,7 +1108,7 @@
    family's own light, never a second grammar */
 .cb-intent__chip[data-role="word"] { height: calc(var(--ph) * .86); }
 .cb-intent__chip[data-role="word"] b {
-  font-family: var(--font-display); font-weight: 700; font-size: 10.5px;
+  font-family: var(--font-display); font-weight: 700; font-size: 11px;
   letter-spacing: .16em; text-transform: uppercase;
   color: color-mix(in srgb, var(--frame-c) 70%, white);
   -webkit-text-stroke: 0; text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
@@ -1468,7 +1468,7 @@
 .cb-count--mine b { font-size: 16px; }
 .cb-count--mine em {
   font-style: normal;
-  font-family: var(--font-display); font-weight: 700; font-size: 10px;
+  font-family: var(--font-display); font-weight: 700; font-size: 11px;
   letter-spacing: .14em; text-transform: uppercase;
   color: var(--flame-200);
   padding-left: 6px; margin-left: 1px;
@@ -1629,6 +1629,23 @@
   --rules-k: 1.08;
 }
 @media (max-width: 1440px) { .cb-handhost { --rules-k: 1.16; } }
+/* NAMES AND TYPE LINES THAT HOLD AT HAND SIZE. card.css sizes a name for a
+   224px card and shrinks a long one to 11.5u, which a hand card on the Deck's
+   panel prints at 7px ("Put Yourself Back Together"). In the hand a name is set
+   a size up, and a very long one takes two lines on its cartouche instead of
+   shrinking; the type line is lifted to match. */
+.cb-handhost.kit-cards .mm-card[data-rarity] .mm-card__name,
+.cb-chooser__pool.kit-cards .mm-card[data-rarity] .mm-card__name { font-size: calc(18.5 * var(--u)); }
+.cb-handhost.kit-cards .mm-card[data-rarity].is-name-long .mm-card__name,
+.cb-chooser__pool.kit-cards .mm-card[data-rarity].is-name-long .mm-card__name { font-size: calc(15 * var(--u)); }
+.cb-handhost.kit-cards .mm-card[data-rarity].is-name-xlong .mm-card__name,
+.cb-chooser__pool.kit-cards .mm-card[data-rarity].is-name-xlong .mm-card__name {
+  font-size: calc(14 * var(--u)); line-height: .98; letter-spacing: 0;
+  white-space: normal; text-wrap: balance; text-align: center;
+  padding: 0 calc(17 * var(--u)) calc(1 * var(--u));
+}
+.cb-handhost.kit-cards .mm-card[data-rarity] .mm-card__type,
+.cb-chooser__pool.kit-cards .mm-card[data-rarity] .mm-card__type { font-size: calc(12 * var(--u) * min(var(--rules-k, 1), 1.2)); }
 /* THE HAND'S FACES ARE RULED PANELS. Under the name, the rules sit in a panel
    the way the Kid board's info panels hold their text: a gold double rule
    inset from the brass, the room's damask ghosted into the aubergine, and the
@@ -1757,8 +1774,8 @@
   min-height: var(--h); padding: 0 13px 1px;
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
-  font-family: var(--font-display); font-weight: 700; font-size: 10.5px;
-  letter-spacing: .22em; text-transform: uppercase; color: var(--kit-gold-hi);
+  font-family: var(--font-display); font-weight: 700; font-size: 11px;
+  letter-spacing: .2em; text-transform: uppercase; color: var(--kit-gold-hi);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
 }
@@ -1809,7 +1826,7 @@
   --coin: 22px;
 }
 .cb-pile__lbl {
-  font-family: var(--font-display); font-weight: 700; font-size: 10px;
+  font-family: var(--font-display); font-weight: 700; font-size: 11px;
   letter-spacing: .18em; text-transform: uppercase; color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 6px rgba(0, 0, 0, .9);
 }
@@ -2205,27 +2222,36 @@
 /* Top-LEFT, under the HUD: the centre column belongs to the intent stack, and
    a boss's intent sits high enough to collide with anything put up there. */
 .cb-room {
-  position: absolute; left: clamp(16px, 2vw, 34px); top: 52px;
+  /* ON A NAMEPLATE SEATED ON THE STAGE'S TOP RULE, just inboard of the corner
+     candle: the way the boards hang a room's name on their rails. Loose caps
+     there ran straight along the gilt line and read as a scratch on it. */
+  --h: 26px;
+  position: absolute;
+  left: calc(clamp(8px, .7vw, 12px) + clamp(190px, 17.5vw, 290px) + 10px);
+  top: calc(var(--hud-h) + clamp(8px, .7vw, 12px) * .5 + 4px - var(--h) / 2);
   z-index: 40;
+  display: inline-flex; align-items: center;
+  min-height: var(--h); padding: 0 20px 1px;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
   pointer-events: none;
-  font-family: var(--font-display);
-  font-size: var(--fs-sm);
-  letter-spacing: .34em; text-transform: uppercase;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 11.5px;
+  letter-spacing: .24em; text-transform: uppercase;
   /* Round 3 settled this at 60% of --text-hi and then faded the whole element
      to opacity .3 — an effective 18% alpha over black, measured as
      near-invisible dark grey. It is the only thing on screen that says which
-     of thirteen rooms you are in. */
-  color: var(--flame-200);
-  text-shadow: 0 2px 10px var(--ink-900), 0 0 20px var(--ink-900), 0 0 4px var(--ink-900);
+     of thirteen rooms you are in: it stays at full strength on its plate. */
+  color: var(--kit-name);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8));
   white-space: nowrap;
-  animation: cb-roomin 3.4s var(--ease-soft) forwards;
+  animation: cb-roomin 1.2s var(--ease-soft) both;
 }
 .cb-room[hidden] { display: none; }
 @keyframes cb-roomin {
-  0% { opacity: 0; letter-spacing: .62em; }
-  14% { opacity: 1; letter-spacing: .34em; }
-  70% { opacity: 1; }
-  100% { opacity: .68; letter-spacing: .34em; }
+  0% { opacity: 0; translate: 0 -6px; }
+  100% { opacity: 1; translate: 0 0; }
 }
 
 /* the stage the fight happens on */
@@ -2394,7 +2420,7 @@
 .cb-banner[data-kind="elite"] .cb-banner__t { font-size: clamp(28px, 2.7vw, 44px); }
 
 @media (prefers-reduced-motion: reduce) {
-  .cb-room { animation: none; opacity: .55; }
+  .cb-room { animation: none; opacity: 1; }
   .cb-enemy.has-entered .cb-enemy__above,
   .cb-enemy.has-entered .cb-enemy__plate { animation: none; }
 }
