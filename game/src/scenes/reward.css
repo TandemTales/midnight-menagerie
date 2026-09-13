@@ -382,7 +382,7 @@
 .scene--reward .rm-foot .rm-live { order: 2; flex: 1; text-align: center; }
 .scene--reward .rw-skip { order: 1; }
 .scene--reward .rm-go { order: 3; }
-.rw-skip em { display: block; }
+.rw-skip em { display: block; color: var(--kit-text); }
 
 /* ── large text ───────────────────────────────────────────────────────────── */
 .scene--reward.is-large .rm-btn,

@@ -49,11 +49,12 @@
     radial-gradient(34% 28% at 11% 7%, color-mix(in srgb, var(--kit-candle) 14%, transparent) 0%, transparent 70%),
     radial-gradient(34% 28% at 89% 7%, color-mix(in srgb, var(--kit-candle) 14%, transparent) 0%, transparent 70%),
     radial-gradient(56% 44% at 50% 46%, color-mix(in srgb, var(--kit-violet) 9%, transparent) 0%, transparent 72%),
+    radial-gradient(30% 26% at 50% 10%, color-mix(in srgb, var(--kit-moon) 9%, transparent) 0%, transparent 75%),
     radial-gradient(80% 50% at 50% 108%, color-mix(in srgb, var(--kit-moon) 5%, transparent) 0%, transparent 70%),
     url("../../assets/ui/kit/grain.webp"),
     linear-gradient(180deg, var(--kit-ground-0) 0%, color-mix(in oklab, var(--kit-ground-1) 55%, var(--kit-ground-0)) 40%, color-mix(in oklab, var(--kit-ground-1) 38%, var(--kit-ground-0)) 72%, var(--kit-void) 100%);
-  background-blend-mode: normal, normal, normal, normal, overlay, normal;
-  background-size: auto, auto, auto, auto, 256px 256px, auto;
+  background-blend-mode: normal, normal, normal, normal, normal, overlay, normal;
+  background-size: auto, auto, auto, auto, auto, 256px 256px, auto;
 }
 .kit-ground::before {
   content: ''; position: absolute; inset: 0;
@@ -487,6 +488,9 @@
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
   filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .7)) saturate(.55) brightness(.86);
 }
+/* the quiet plate is filtered darker, so its small print is lifted a step
+   to stay over 4.5:1 measured on the rendered pixels */
+.kit-btn--quiet em { color: var(--kit-text); }
 .kit-btn--quiet:hover:not(:disabled), .kit-btn--quiet:focus-visible {
   color: var(--kit-text);
   filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .7)) saturate(.9) brightness(1.02);
