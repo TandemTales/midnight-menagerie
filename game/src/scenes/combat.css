@@ -1649,6 +1649,24 @@
 }
 .cb-handhost.kit-cards .mm-card[data-rarity] .mm-card__type,
 .cb-chooser__pool.kit-cards .mm-card[data-rarity] .mm-card__type { font-size: calc(12 * var(--u) * min(var(--rules-k, 1), 1.2)); }
+/* VANISH, RETAIN and the rest: a small dark plate seated on the ruled panel's
+   foot, lettered in the boards' engraved caps (card.css draws a 9u pill, which
+   a hand card prints at under 6px) */
+.cb-handhost.kit-cards .mm-card[data-rarity] .mm-card__badges,
+.cb-chooser__pool.kit-cards .mm-card[data-rarity] .mm-card__badges { bottom: calc(-1 * var(--u)); gap: calc(4 * var(--u)); }
+.cb-handhost.kit-cards .mm-card[data-rarity] .mm-card__badge,
+.cb-chooser__pool.kit-cards .mm-card[data-rarity] .mm-card__badge {
+  padding: calc(2 * var(--u)) calc(11 * var(--u)) calc(2.5 * var(--u));
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / calc(6 * var(--u)) calc(11 * var(--u)) stretch;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  font-weight: 700;
+  font-size: calc(11 * var(--u));
+  letter-spacing: .12em;
+  text-shadow: 0 calc(1 * var(--u)) 0 rgba(0, 0, 0, .9);
+}
 /* THE HAND'S FACES ARE RULED PANELS. Under the name, the rules sit in a panel
    the way the Kid board's info panels hold their text: a gold double rule
    inset from the brass, the room's damask ghosted into the aubergine, and the
@@ -2005,11 +2023,17 @@
 .cb-num[data-kind="buff"]   { color: var(--spectre-200); font-size: 17px; letter-spacing: .04em; }
 .cb-num[data-kind="debuff"] { color: var(--threat-200); font-size: 17px; letter-spacing: .04em; }
 .cb-num[data-kind="counter"]{ color: var(--pluck-300); font-size: 16px; }
+/* Guard breaking is called out on a dark nameplate in steel engraved caps, the
+   same plate every name on the board wears, rather than a light pill */
 .cb-num[data-kind="shatter"]{
   -webkit-text-stroke: 0;
-  color: var(--ink-900); background: var(--guard-300);
-  font-family: var(--font-display); font-size: 13px; letter-spacing: .18em;
-  padding: 2px 8px; border-radius: var(--radius-sm); text-shadow: none;
+  color: color-mix(in srgb, var(--guard-300) 55%, white);
+  font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: .18em;
+  padding: 6px 18px 7px;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 10px 19px stretch;
+  background: none;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .cb-num[data-kind="status"] { color: var(--text-hi); font-size: 16px; }
 .cb-num.is-big { -webkit-text-stroke: 4.5px var(--ink-900); }
