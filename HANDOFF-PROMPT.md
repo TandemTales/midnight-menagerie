@@ -1,4 +1,4 @@
-# Handoff — the UI pass is in round 3, and round 2's winners are merged
+# Handoff — the UI pass is in round 4, and round 3's winners are merged
 
 You are picking up Midnight Menagerie on `dev`. Everything below is pushed.
 
@@ -12,15 +12,15 @@ from every judge.
 
 ## FIRST, BEFORE ANYTHING
 
-**1. Is round 3 still building?** It was launched on 2026-09-13 from `662d874`,
-as workflow `wf_9874879c-a74` in session `5714ff4c`. A workflow lives and dies
+**1. Is round 4 still building?** It was launched on 2026-09-13 from `c7d31db`,
+as workflow `wf_180be12f-091` in session `5714ff4c`. A workflow lives and dies
 with its session, and no other session can resume it.
-- **The branches:** `git log --oneline 662d874..ui/r3-<track>-<slot>` for each of
-  the nine (`<track>` is `polish`, `combat` or `dialogs`; `<slot>` is `a`, `b`
-  or `c`).
+- **The branches:** `git log --oneline c7d31db..ui/r4-<track>-<slot>` for each of
+  the twelve (`<track>` is `polish`, `combat`, `dialogs` or `kids`; `<slot>` is
+  `a`, `b` or `c`).
 - **The captures:** a builder that finished has put its screenshots in
-  `$UILOOP/judging/r3/<track>/<CODE>/`. That is twelve for POLISH and six for
-  COMBAT or DIALOGS.
+  `$UILOOP/judging/r4/<track>/<CODE>/`. That is twelve for POLISH and six for any
+  other track.
 - **If that session is gone and the round is not done,** relaunch it with `args.tracks`
   cut to the unfinished tracks. A relaunched builder starts from whatever its
   worktree already holds.
@@ -35,10 +35,9 @@ with its session, and no other session can resume it.
   paintings are the one thing that can lift every screen's background score.
 
 **3. The battery:** `python tools/devserver.py 8777`, then `python tools/gates.py`
-(99 gates, about 28 minutes). On the round 2 merge it read red only on the known
-`tests/sprites/check.py` and `tests/run/run.py`, once `e14011b` fixed the
-`css-tokens` red the merge left. `tests/steam-deck` passed that run; its Map row
-is still load-sensitive.
+(99 gates, about 30 minutes). On the round 3 merge (`8de2362`) it read red only
+on the known `tests/sprites/check.py` and `tests/run/run.py`, and on
+`tests/steam-deck`'s load-sensitive Map row, which passed 6/0 run alone.
 
 ## THE UI PASS
 
@@ -58,20 +57,22 @@ Keep it outside OneDrive, always.
 | 2 | POLISH the six boards | BRAID 6.78 · AMBER 6.75 · CHALK 6.72 · before 6.22 | CHALK, decided on the rankings `a4b2ecc` |
 | 2 | COMBAT, a Scuffle and a boss | FROST 7.25 · DUSK 6.75 · EMBER 6.25 · before 3.50 | FROST `04af2bc` |
 | 2 | EXPAND-2 Lobby / Clubhouse / Atlas | GROVE 6.61 · IVORY 6.56 · HAZE 6.11 · before 2.56 | Lobby GROVE, the other two IVORY `31b6d8f` |
-| 3 | POLISH · COMBAT with a full hand · DIALOGS | building | |
+| 3 | POLISH the six boards | ONYX 6.56 · PEARL 6.28 · MINT 6.28 · before 5.50 | ONYX, 2 of 3 `1d9f09d` |
+| 3 | COMBAT, with a full-hand board | TOPAZ 7.00 · QUILL 6.50 · SLATE 6.33 · before 5.17 | TOPAZ `f025e59` |
+| 3 | DIALOGS opening / Settings / pile viewer | YARROW 6.61 · UMBER 6.56 · WILLOW 6.50 · before 2.72 | UMBER, decided on the rankings `6806123` |
+| 4 | POLISH · COMBAT · DIALOGS · KIDS' PLACES | building | |
 
 **Where the game is.**
 - **Paintings:** Title, Companion Select, Kid Select and the opening's Kid picker
   ARE Josh's paintings.
-- **Kit screens:** the six boards, combat, the lobby, the clubhouse and the atlas,
-  scoring 6.2 to 7.3.
-- **Still web chrome:** the opening's story beats, Settings, the pile viewer, the
-  confirm dialog, the coach, the handoff veil and the toasts. Round 3's DIALOGS
-  track takes the first three.
+- **Kit screens:** the six boards, combat, the lobby, the clubhouse, the atlas, and
+  every Modal (the opening's story, Settings, the pile viewer, the confirm dialog),
+  scoring between 5.7 and 7.3 in their last rounds.
+- **Still web chrome:** the coach, the handoff veil and the toasts.
 
 **The ceiling is the backgrounds.** Converting a screen has been worth about four
-points. Refining a converted one is worth about half a point, and less each
-round. Every judge scores background near 6 on every candidate, because the
+points. Refining a converted one is worth 0.5 to 1.8 points, most when the brief
+names defects the judges can see. Every judge scores background near 6 on every candidate, because the
 grounds are renders. Until Josh's paintings land, the loop plateaus around 7.
 
 ### A round, step by step
@@ -118,18 +119,20 @@ grounds are renders. Until Josh's paintings land, the loop plateaus around 7.
 8. **Log** the scores in the README, update this file and the memory, and brief
    the next round.
 
-### Round 3, when it lands
+### Round 4, when it lands
 
-- **Merges:** all three tracks are REFINE, so three whole-branch merges.
+- **Merges:** POLISH, COMBAT and DIALOGS are REFINE, so three whole-branch merges.
+  KIDS' PLACES is EXPAND: take one winner's branch whole, then lay the other
+  winners' screen files on top with only the kit pieces those screens use
+  (`31b6d8f`).
 - **Seams to check after merging:**
-  - DIALOGS' `ui/modal.css` restyles every Modal, including the ones combat opens.
-  - COMBAT and DIALOGS both append to `kit.css`.
-  - POLISH owns `.kit-cards`, which the hand and the pile viewer both show.
-- **Owed to round 4:** the Lobby, Clubhouse and Atlas fixes the round-2 judges
-  named, plus the coach, the handoff veil and the toasts. The named fixes:
-  - the lobby's password board shows a raw seed number;
-  - the clubhouse has brown planks and primary-coloured bulbs;
-  - the atlas has a flat parchment and a pill-shaped nameplate.
+  - DIALOGS and KIDS' PLACES both append to `kit.css`, so rebuild the end of the
+    file from the blobs.
+  - POLISH's shared components reach every other track's screens.
+  - Photograph all fifteen screens beside their judged captures, and run
+    `tests/scene-css` and `tests/css-tokens` before the battery (`c53376a` and
+    `e14011b` are what each has caught).
+- **Still unconverted:** the coach, the handoff veil and the toasts.
 
 ## DONE 2026-09-13
 
@@ -143,7 +146,10 @@ grounds are renders. Until Josh's paintings land, the loop plateaus around 7.
     and `tools/shot-scripts/combat-crowd.js` (`662d874`); `tools/ui_pass_probe.py`.
 - **Round 2 built, judged and merged** (`a4b2ecc`, `04af2bc`, `31b6d8f`). The
   battery then turned up two undefined tokens (`e14011b`).
-- **Round 3 briefed** (`662d874`) and launched.
+- **Round 3 briefed** (`662d874`), built, judged and merged (`1d9f09d`, `f025e59`,
+  `6806123`). `c53376a` moved two layout rules off shared kit classes for
+  `scene-css`, and `8de2362` rebuilt the Butler from Josh's second redraw.
+- **Round 4 briefed** (`c7d31db`) and launched with four tracks.
 
 ## DONE 2026-09-12
 
@@ -328,31 +334,30 @@ Big Scare** (`3a12203`).
 
 ## GATES
 
-Every number below is from the battery on the round 2 merge (`31b6d8f`),
-2026-09-13. `e14011b` then fixed its one new red (css-tokens now reads 0
-undefined); the commits since touch the loop's docs and tools only.
+Every number below is from the battery on the round 3 merge (`8de2362`),
+2026-09-13. The commits since touch the loop's docs only.
 
 | gate | reads |
 |---|---|
-| `tools/gates.py` | 99 gates in 1670s, 3 red: css-tokens (fixed in `e14011b`), sprites and run.py (known) |
+| `tools/gates.py` | 99 gates in 1770s, 3 red: sprites and run.py (known), steam-deck (the Map race; 6/0 run alone) |
 | `tests/cards/run.py` | 1470 cards, 0 errors, 0 warnings |
 | `tests/combat/run.py` · `tests/coop/run.py` | 695 · 645 |
-| `tests/cost-curve/check.py` | 17 passed |
-| `tests/upgrade-effects/check.py` | 1288 played, 218 moved nothing, 28 unplayable, 54 need a friend, 72 a choice |
+| `tests/cost-curve/check.py` | 17 passed, 0 failed |
+| `tests/upgrade-effects/check.py` | 1288 upgrades played, 218 moved nothing, 28 unplayable on this board, 54 need a friend, 72 hinge on a choice, 0 stale waivers, 0 broken, 0 console errors |
 | `tests/sprite-triggers/check.py` · `tests/kid-clips/check.py` | 292 · 10 |
-| `tests/sprites/check.py` | 195 clips, 24 stills, 51 enemy stills, **6 failures** (known: Taffy's five HALO clips and `maya/defeat`) |
-| `tests/sprites/clips.py` | 28 passed |
-| `tests/enemy-stills/check.py` | 433 passed, 0 failed |
+| `tests/sprites/check.py` | 195 clips, 24 stills, 51 enemy stills, 6 failures (known: Taffy's five HALO clips and `maya/defeat`) |
+| `tests/sprites/clips.py` | 28 passed, 0 failed |
+| `tests/enemy-stills/check.py` | 433 passed, 0 failed, 0 console errors |
 | `tests/greenhouse/check.py` · `tests/design-courage/check.py` | 45 · 129 checked, 0 failures |
-| `tests/turn-events/check.py` | 155 files, 4 raw turn listeners, 0 unguarded, 46 through the helper |
-| `tests/hook-names/check.py` | 41 engine hooks, 84 companion hooks, 0 unknown |
-| `tests/seams/proof.py` · `tests/seams/check.py` | 52 · 8445 call sites, 0 problems |
-| `tests/css-tokens/check.py` · `tests/scene-css/check.py` | 0 undefined tokens (after `e14011b`) · 13 sheets, 1236 classes, 0 conflicts |
+| `tests/turn-events/check.py` | 155 files scanned, 4 raw turn listeners (0 unguarded), 46 through U.onPlayerTurn |
+| `tests/hook-names/check.py` | 167 files, 41 engine hooks, 84 companion hooks, 97 listeners, 201 declared, 0 unknown |
+| `tests/seams/proof.py` · `tests/seams/check.py` | 52 · 8473 call sites checked, 0 problems |
+| `tests/css-tokens/check.py` · `tests/scene-css/check.py` | 0 undefined tokens · 13 scene sheets, 1265 classes, 0 conflicts |
 | `tests/net/run.py` · `tests/map/run.py` · `tests/chrome/run.py` | 190 · 30 · 27 |
 | `card-face` · `piles-reachable` · `settings-play` · `gamepad` · `gameover-keeps` | 14 · 24 · 19 · 23 · 16 |
 | `tests/combat-scene/seam.py` · `tests/coop/lobby.py` · `tests/coop/matedeck.py` | 22 · 27 · 11 |
-| `tests/enemies/run.py` · `audit.py` | 275 enemies · 20104 turns, 0 errors |
-| `tests/backpack/run.py` · `tests/critic-design/run.py` | 80 checks · 695 |
+| `tests/enemies/run.py` · `audit.py` | 275 enemies, 0 errors · 20104 enemy turns audited, 0 errors |
+| `tests/backpack/run.py` · `tests/critic-design/run.py` | 80 checks, 0 failures · {"passed": 695, "failed": 0} |
 | companion suites | boggle 31, bones 30, brambleboo 52, crinkle 49, crumbula 25, drizzle 71, hush 17, marmalade 29, mopsy 28, mossbit 59, pipkin 23, pudding 52, taffy 12, truffle 107, wink 86, wisp 128 — all 0 failed |
-| `tests/run/run.py` | 50 runs, **2 errors** (known: the Archivist on seed 371416, `_losePatience` past turn 30); victories 5/40 unaided |
-| `tests/steam-deck/run.py` | 6 passed, 0 failed (its Map row is load-sensitive; it has failed on correct code) |
+| `tests/run/run.py` | 50 runs, 2 errors  (115871 ms) (known: the Archivist on seed 371416, `_losePatience` past turn 30) |
+| `tests/steam-deck/run.py` | 5 passed, 1 failed in the battery (the Map boss node, load-sensitive); 6 passed, 0 failed alone |
