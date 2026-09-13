@@ -533,7 +533,7 @@ export class AtlasScene extends Scene {
        (the Companion in the Kid board's frame with their nameplate on it, as
        on the Companion board), who keeps it and how far it is surveyed (one
        engraved strip), and what to do next. */
-    const d = this._dossier = el('aside', 'at-dossier kit-panel');
+    const d = this._dossier = el('aside', 'at-dossier kit-panel kit-panel--damask');
     d.dataset.medal = 'moon';
     d.setAttribute('aria-live', 'polite');
     d.innerHTML = `

@@ -36,18 +36,19 @@
   justify-items: center;
   /* the treehouse's lights: the lamp low in the middle, where the panel is,
      and a wash of moonlight in from each window and down across the boards */
-  --wl3-x: 50vw;   --wl3-y: 58vh;   --wl3-w: 96vw;   --wl3-h: 96vh;
-  --wl4-x: 50vw;   --wl4-y: 100vh;  --wl4-w: 84vw;   --wl4-h: 40vh;
-  --ml1-x: 17vw;   --ml1-y: 38vh;   --ml1-w: 30vw;   --ml1-h: 58vh;
-  --ml2-x: 83vw;   --ml2-y: 38vh;   --ml2-w: 30vw;   --ml2-h: 58vh;
-  --mb1-x: 21vw;   --mb1-y: 50vh;   --mb1-w: 24vw;   --mb1-h: 56vh;
-  --mb2-x: 79vw;   --mb2-y: 50vh;   --mb2-w: 24vw;   --mb2-h: 56vh;
+  --wl3-x: 50vw;   --wl3-y: 56vh;   --wl3-w: 104vw;  --wl3-h: 104vh;
+  --wl4-x: 50vw;   --wl4-y: 98vh;   --wl4-w: 90vw;   --wl4-h: 44vh;
+  --wl5-x: 50vw;   --wl5-y: 4vh;    --wl5-w: 80vw;   --wl5-h: 34vh;
+  --ml1-x: 15vw;   --ml1-y: 40vh;   --ml1-w: 40vw;   --ml1-h: 76vh;
+  --ml2-x: 85vw;   --ml2-y: 40vh;   --ml2-w: 40vw;   --ml2-h: 76vh;
+  --mb1-x: 22vw;   --mb1-y: 52vh;   --mb1-w: 30vw;   --mb1-h: 58vh;
+  --mb2-x: 78vw;   --mb2-y: 52vh;   --mb2-w: 30vw;   --mb2-h: 58vh;
 }
 .lo-vig {
   position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background:
-    radial-gradient(80% 70% at 50% 54%, transparent 44%, color-mix(in srgb, var(--kit-void) 52%, transparent) 100%),
-    linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 36%, transparent) 0%, transparent 20%, transparent 82%, color-mix(in srgb, var(--kit-void) 38%, transparent) 100%);
+    radial-gradient(86% 76% at 50% 52%, transparent 50%, color-mix(in srgb, var(--kit-void) 50%, transparent) 100%),
+    linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 22%, transparent) 0%, transparent 16%, transparent 84%, color-mix(in srgb, var(--kit-void) 34%, transparent) 100%);
 }
 
 /* the two windows onto the house, their sills on the nailer rail */

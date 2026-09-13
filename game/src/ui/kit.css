@@ -1132,6 +1132,8 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
      .kit-paper            a sheet of paper in lamplight: fibre, foxing, curl
      .kit-pin (--blue)     a push pin; .kit-tape a strip of masking tape
      .kit-bulbs            a string of coloured bulbs sagging across a board
+     .kit-panel--damask    a .kit-panel whose ground is the boards' flocked
+                           damask, faint under the words, not a flat fill
    =========================================================================== */
 
 /* ── the kids' ground ───────────────────────────────────────────────────────
@@ -1197,7 +1199,8 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8));
   transition: filter var(--t-quick) var(--ease-out);
 }
-.kit-field::selection { background: color-mix(in srgb, var(--kit-violet) 42%, transparent); color: #fff0cf; }
+/* words ready to be written over: lit by the candle, not boxed in blue */
+.kit-field::selection { background: color-mix(in srgb, var(--kit-candle) 16%, transparent); color: #fff4d8; }
 .kit-field::placeholder { color: var(--kit-text-lo); font-style: italic; font-weight: 400; letter-spacing: .01em; }
 .kit-field:hover { filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) brightness(1.1); }
 .kit-field:focus-visible {
@@ -1469,4 +1472,22 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 .kit-still .kit-bulbs > i, .rm.is-still .kit-bulbs > i { animation: none; }
 @media (prefers-reduced-motion: reduce) {
   :root:not([data-reduce-motion="0"]) .kit-bulbs > i { animation: none; }
+}
+
+/* ── panel, damask ──────────────────────────────────────────────────────────
+   A modifier for .kit-panel: the Kid board's panels are not a flat fill, they
+   are a dark cloth with a pattern in it that only shows where the light is. The
+   kit's damask (the samples' own scrollwork) is laid in soft-light under a dark
+   glaze, lit a little from the top rail and lost towards the corners, so words
+   set on it keep their contrast.                                            */
+.kit-panel.kit-panel--damask {
+  background:
+    radial-gradient(90% 60% at 50% 0%, color-mix(in srgb, var(--kit-violet) 12%, transparent), transparent 70%),
+    radial-gradient(120% 110% at 50% 50%, transparent 50%, rgba(0, 0, 0, .42) 100%),
+    linear-gradient(rgba(19, 14, 24, .55), rgba(15, 11, 19, .55)),
+    url("../../assets/ui/kit/damask.webp") 50% 0 / 150px auto,
+    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
+    linear-gradient(180deg, #1c1523 0%, #140f19 60%, #0f0b13 100%);
+  background-blend-mode: normal, normal, normal, soft-light, overlay, normal;
+  background-clip: padding-box;
 }

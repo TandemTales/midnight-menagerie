@@ -236,7 +236,7 @@ export class LobbyScene extends Scene {
     const form = el('form', 'lo__form');
     form.setAttribute('aria-label', 'The password');
 
-    const wrap = el('section', 'lo__door kit-panel');
+    const wrap = el('section', 'lo__door kit-panel kit-panel--damask');
     wrap.dataset.medal = 'star';
     wrap.appendChild(el('h2', 'lo-door__h kit-heading kit-heading--ribbon', 'The password'));
 
@@ -339,7 +339,7 @@ export class LobbyScene extends Scene {
     const stage = this._board();
     stage.innerHTML = '';
     this._$board.dataset.state = 'room';
-    const wrap = el('div', 'lo__room kit-panel');
+    const wrap = el('div', 'lo__room kit-panel kit-panel--damask');
     wrap.dataset.medal = 'star';
 
     const head = el('header', 'lo__head');

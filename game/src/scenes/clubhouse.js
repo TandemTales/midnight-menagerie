@@ -187,6 +187,16 @@ export class ClubhouseScene extends Scene {
     }
     /* Not appended here: `enter()` stands the tabs on the board's top rail. */
     this._tabs = tabs;
+
+    /* The two numbers this whole screen is about, on one enamel plate opposite
+       Title: how many of the Menagerie are out, and how many pets are home. */
+    const tally = el('p', 'cl-count kit-enamel kit-enamel--dark');
+    tally.innerHTML = `<b class="kit-enamel__value">${this.rescued.size}</b>`
+      + `<span class="kit-enamel__label">of ${COMPANIONS.length} freed</span>`
+      + `<i class="cl-count__dot" aria-hidden="true"></i>`
+      + `<b class="kit-enamel__value">${this.petsRescued.size}</b>`
+      + `<span class="kit-enamel__label">of ${KIDS.length} home</span>`;
+    h.appendChild(tally);
     return h;
   }
 
@@ -490,7 +500,7 @@ export class ClubhouseScene extends Scene {
 
     /* The log and the ladder are the kit's panels, each with its crest on the
        top rail; the counts are a ledger that reads down in one glance. */
-    const board = el('div', 'chalk kit-panel');
+    const board = el('div', 'chalk kit-panel kit-panel--damask');
     board.dataset.medal = 'star';
     board.innerHTML = `
       <h3 class="chalk__h kit-heading">Expedition log</h3>
@@ -503,9 +513,9 @@ export class ClubhouseScene extends Scene {
       </dl>`;
     side.appendChild(board);
 
-    const haunt = el('div', 'cl-haunt kit-panel');
+    const haunt = el('div', 'cl-haunt kit-panel kit-panel--damask');
     haunt.dataset.medal = 'shield';
-    haunt.innerHTML = `<h3 class="cl-h cl-haunt__h kit-heading">${TERMS.ascension}</h3>`;
+    haunt.innerHTML = `<h3 class="cl-haunt__h kit-heading">${TERMS.ascension}</h3>`;
     const row = el('div', 'haunt__row kit-ladder');
     row.setAttribute('role', 'radiogroup');
     row.setAttribute('aria-label', TERMS.ascension);

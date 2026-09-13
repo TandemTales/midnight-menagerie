@@ -114,6 +114,22 @@
 .cl-back__medal { --md: calc(var(--plate-h) * 1.1); left: calc(var(--plate-h) * -.34); }
 
 .cl-sign { justify-self: center; margin-top: clamp(4px, .8vh, 10px); }
+/* freed and home, opposite Title */
+.cl-count {
+  justify-self: end;
+  --h: clamp(44px, 5.6vh, 50px);
+  margin: clamp(-10px, -1vh, -4px) 0 0;
+  padding-inline: calc(var(--h) * .74);
+  gap: .5em;
+}
+.cl-count .kit-enamel__value { font-size: calc(var(--h) * .52); }
+.cl-count .kit-enamel__label { font-size: clamp(10.5px, .78vw, 12px); color: var(--kit-text); letter-spacing: .16em; }
+.cl-count__dot {
+  width: 5px; height: 5px; margin: 0 .5em 1px .2em; flex: none;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .7);
+}
 /* NEIGHBOURHOOD over HEADQUARTERS, the way MIDNIGHT sits over MENAGERIE */
 .cl-sign__board { display: grid; justify-items: center; line-height: 1; }
 .cl-sign__line1 {
@@ -550,7 +566,6 @@
   padding: clamp(24px, 3.4vh, 30px) clamp(12px, 1.2vw, 20px) clamp(14px, 2vh, 20px);
 }
 .cl-haunt__h { margin: 0 0 clamp(4px, .8vh, 8px); font-size: clamp(12px, .88vw, 13.5px); }
-.cl-haunt__h::after { content: ''; }
 /* The select screen styles a `.haunt__pip` of its own and its sheet can load
    after this one, so the kit's medallion is re-seated here with a selector
    that outranks it (and names no class the select screen does). */
@@ -587,15 +602,15 @@
   --plate-h: clamp(58px, 7.6vh, 66px);
   flex-direction: column; gap: 3px;
   align-self: stretch;
-  margin-right: calc(var(--plate-h) * .62);
+  margin-right: calc(var(--plate-h) * .5);
   min-height: calc(var(--plate-h) * 1.5);
-  padding: 13px calc(var(--plate-h) * 1.08) 14px calc(var(--plate-h) * .66);
+  padding: 13px calc(var(--plate-h) * .98) 14px calc(var(--plate-h) * .56);
   line-height: 1.08;
   text-align: center;
 }
 .cl-go b { font: inherit; font-size: clamp(15.5px, 1.25vw, 20px); letter-spacing: .1em; text-wrap: balance; }
-.cl-go em { font-size: clamp(12px, .88vw, 13.5px); color: var(--kit-text); }
-.cl-go__medal { right: calc(var(--plate-h) * -.78); }
+.cl-go em { font-size: clamp(11.5px, .86vw, 13.5px); color: var(--kit-text); white-space: nowrap; letter-spacing: 0; }
+.cl-go__medal { right: calc(var(--plate-h) * -.7); }
 .cl-go::before {
   content: ''; position: absolute; inset: -40% -10% -40% -6%; z-index: -1; pointer-events: none;
   border-radius: 50%;
