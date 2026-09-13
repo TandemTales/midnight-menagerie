@@ -1351,8 +1351,10 @@
   position: absolute; left: clamp(18px, 1.9vw, 38px);
   /* clear of the Nerve medallion and its label below */
   bottom: clamp(136px, 17vh, 170px);
-  /* and clear of the hand: the fan's first card starts at x=218 on the Deck */
-  width: clamp(184px, 14.6vw, 246px);
+  /* and clear of the hand: the fan's first card starts at x=240 on the Deck,
+     and 200px is what the widest counter plate (LOOSE BONES 0/6 · WHOLE) needs
+     to sit on the frame's rail without running onto the board's edge */
+  width: clamp(200px, 14.6vw, 246px);
   z-index: 250;
   pointer-events: none;
   display: flex; flex-direction: column; gap: 0;
@@ -1464,14 +1466,16 @@
   width: max-content; max-width: 124%;
   pointer-events: auto;
 }
-.cb-count--mine { --h: 26px; }
+.cb-count--mine { --h: 26px; padding-inline: 13px; gap: 4px; }
+.cb-count--mine i { letter-spacing: .1em; }
 .cb-count--mine b { font-size: 16px; }
 .cb-count--mine em {
   font-style: normal;
   font-family: var(--font-display); font-weight: 700; font-size: 11px;
   letter-spacing: .14em; text-transform: uppercase;
   color: var(--flame-200);
-  padding-left: 6px; margin-left: 1px;
+  letter-spacing: .1em;
+  padding-left: 5px; margin-left: 1px;
   border-left: 1px solid color-mix(in srgb, var(--kit-gold) 55%, transparent);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
@@ -1624,11 +1628,10 @@
 .cb-handhost {
   position: absolute; inset: 0; z-index: 200;
   /* the rules type, lifted inside the card's own box (ui/kit.css .kit-cards):
-     1.08 of card.css's sizes on a full-width card, 1.16 where the Deck's panel
-     holds the card at its 140px floor */
-  --rules-k: 1.08;
+     1.16 of card.css's sizes. The box is measured in the card's own units, so
+     the longest Trick in the Bones deck still sets in four lines of it. */
+  --rules-k: 1.16;
 }
-@media (max-width: 1440px) { .cb-handhost { --rules-k: 1.16; } }
 /* NAMES AND TYPE LINES THAT HOLD AT HAND SIZE. card.css sizes a name for a
    224px card and shrinks a long one to 11.5u, which a hand card on the Deck's
    panel prints at 7px ("Put Yourself Back Together"). In the hand a name is set
@@ -1711,7 +1714,7 @@
   column-gap: var(--s-3); row-gap: 4px;
 }
 .cb-br > .cb-endturn { grid-row: 2; grid-column: 1 / -1; justify-self: end; }
-.cb-br > .cb-pile--discard { grid-row: 1; grid-column: 3; margin: 0 calc(clamp(50px, 3.9vw, 60px) * .32) 8px 0; }
+.cb-br > .cb-pile--discard { grid-row: 1; grid-column: 3; margin: 0 calc(clamp(50px, 3.9vw, 60px) * .32) 16px 0; }
 .cb-br > .cb-pile--torn { grid-row: 1; grid-column: 2; }
 .cb-br > .cb-pile--vanished { grid-row: 1; grid-column: 1; }
 
