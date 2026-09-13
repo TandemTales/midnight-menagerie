@@ -49,7 +49,14 @@ ARE those paintings; this pass is everything else.
 | round | track | candidates (mean overall, both judges) | winner | merged |
 |---|---|---|---|---|
 | 0 | kit on Shop / Reward / Curiosity | LOCK 7.0 · WICK 6.3 · MOTH 6.2 · the game before 2.2 | LOCK, "staged boards", both judges | `1641055` |
-| 1 | REFINE Shop / Reward / Curiosity; EXPAND Map / Safe Room / Game Over | running | | |
+| 1 | REFINE Shop / Reward / Curiosity | OPAL 6.83 · RUNE 6.50 · IRIS 6.08 · round 0's screens 5.58 | OPAL, both judges | `ef3f7e8` |
+| 1 | EXPAND Map / Safe Room / Game Over | HUSK 6.67 · FERN 6.44 · VANE 6.06 · the screens before 3.06 | per screen, 3 judges: Map HUSK, Safe Room and Game Over FERN | `d30ab6d` |
+| 2 | POLISH the six; COMBAT; EXPAND-2 Lobby / Clubhouse / Atlas | running | | |
+
+**Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
+round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
+improved. Compare a winner with the baseline IN ITS OWN ROUND (round 1 REFINE:
++1.25), never across rounds.
 
 Round 0's losing kits stay on `ui/r0-a` (painted pieces) and `ui/r0-b` (vector
 system) because the judges asked for pieces of them: WICK's star-glyph ribbon
