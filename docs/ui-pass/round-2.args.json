@@ -1,0 +1,89 @@
+{
+  "round": "r2",
+  "briefs": ["docs/ui-pass/BRIEF-r0.md", "docs/ui-pass/BRIEF-r1.md", "docs/ui-pass/BRIEF-r2.md"],
+  "rubrics": ["docs/ui-pass/RUBRIC.md", "docs/ui-pass/RUBRIC-r1.md", "docs/ui-pass/RUBRIC-r2.md"],
+  "samples": ["UI/title.png", "UI/mainMenu.png", "UI/selectCompanion.png", "UI/selectKid.png"],
+  "tracks": [
+    {
+      "key": "polish",
+      "name": "POLISH",
+      "rule": "refine",
+      "screens": ["shop", "reward", "event", "map", "rest", "gameover"],
+      "baseline": "JADE",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "AMBER",
+          "port": 8831,
+          "angle": "LITERAL. Work down the POLISH fix list, 1 to 21, in order and exactly as written. Precision over invention: every fix visibly done on screen at both sizes, and nothing else changed."
+        },
+        {
+          "slot": "b",
+          "code": "BRAID",
+          "port": 8832,
+          "angle": "MATERIAL AND LIGHT. Do every fix, and put your extra effort into two of the three things every round 1 judge named: grounds that read as painted rather than rendered (keeping every painting slot for Josh's backgrounds), and panels, pills and plates that read as brass, enamel, wood, vellum and damask, never as CSS."
+        },
+        {
+          "slot": "c",
+          "code": "CHALK",
+          "port": 8833,
+          "angle": "LEGIBILITY AT 1280. Do every fix, and put your extra effort into the third thing every round 1 judge named: at 1280x800 nothing drifts, crowds, truncates or drops, every board has one clear focal order, and small text reads at a glance, without losing any ornament."
+        }
+      ]
+    },
+    {
+      "key": "combat",
+      "name": "COMBAT",
+      "rule": "refine",
+      "screens": ["combat", "combat-boss"],
+      "baseline": "KELP",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "DUSK",
+          "port": 8834,
+          "angle": "KIT-FAITHFUL. Dress the fight strictly from the kit's existing primitives plus the fewest new appended components, so the hand, the Kid's panel, the piles, END TURN and the enemy plates look like they came off the same boards as the Shop and the Reward."
+        },
+        {
+          "slot": "b",
+          "code": "EMBER",
+          "port": 8835,
+          "angle": "STAGED ARENA. Compose the fight as a lit stage: the creatures on a floor the candlelight and moonlight fall across, the hand on a dark wooden rail at the front of the stage, the Kid's panel and the piles as pieces of the room's furniture. Make the light do the staging, and never cover a creature, an intent or a card."
+        },
+        {
+          "slot": "c",
+          "code": "FROST",
+          "port": 8836,
+          "angle": "READABILITY FIRST. Intents, Courage, Guard, statuses, Nerve, card costs and rules text must read instantly at 1280x800 and in a boss fight with a full board, dressed in the kit's frames, plates and medallions. Ornament serves the reading order, never competes with it."
+        }
+      ]
+    },
+    {
+      "key": "expand2",
+      "name": "EXPAND-2",
+      "rule": "expand",
+      "screens": ["lobby", "clubhouse", "atlas"],
+      "baseline": "LOAM",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "GROVE",
+          "port": 8837,
+          "angle": "KIT-FAITHFUL. Build the three screens strictly from the existing kit primitives plus the fewest new appended components, so they look like they came off the same boards as the Shop, the Map and the Safe Room."
+        },
+        {
+          "slot": "b",
+          "code": "HAZE",
+          "port": 8838,
+          "angle": "STAGED SCENES. Compose each screen as a scene with one focal subject: the treehouse door and its password plate, the clubhouse cork board under a warm lamp, the house plan on a candlelit table. Use sample crops and kit pieces for the props, and make the light do the staging."
+        },
+        {
+          "slot": "c",
+          "code": "IVORY",
+          "port": 8839,
+          "angle": "LEGIBLE BOARDS. Information first: the lobby's field and its three choices, the clubhouse's tabs, Expedition Log and Haunt Level, and the atlas's plan and side panel must read instantly at 1280x800, dressed in the kit's frames, plates and medallions. Ornament serves the hierarchy, never competes with it."
+        }
+      ]
+    }
+  ]
+}

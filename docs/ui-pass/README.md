@@ -32,6 +32,15 @@ ARE those paintings; this pass is everything else.
 5. **Stop** when every screen's winner scores 9 from every judge with
    `fits_between_samples` true, and nothing in the battery went red.
 
+Steps 2 and 3 are one workflow: `round-workflow.js`, given a round's
+`round-<n>.args.json` plus `repo` (the main checkout), `uiloop` (the folder
+outside OneDrive that holds `wt/` and `judging/`) and `base` (the commit the
+worktrees were cut from). The args name each track's screens, baseline code,
+decision rule (`refine`: one winner; `expand`: per screen) and three builders
+with their slot, code, port and angle. The worktrees and the baselines must
+exist before it starts; its header says where each goes. It returns every
+build, every verdict, the means, the winner and the screen winners per track.
+
 ## Traps this pass has already paid for
 
 - **Mixed line endings.** The edit tools normalise a MIXED file on write, and the
@@ -51,7 +60,7 @@ ARE those paintings; this pass is everything else.
 | 0 | kit on Shop / Reward / Curiosity | LOCK 7.0 · WICK 6.3 · MOTH 6.2 · the game before 2.2 | LOCK, "staged boards", both judges | `1641055` |
 | 1 | REFINE Shop / Reward / Curiosity | OPAL 6.83 · RUNE 6.50 · IRIS 6.08 · round 0's screens 5.58 | OPAL, both judges | `ef3f7e8` |
 | 1 | EXPAND Map / Safe Room / Game Over | HUSK 6.67 · FERN 6.44 · VANE 6.06 · the screens before 3.06 | per screen, 3 judges: Map HUSK, Safe Room and Game Over FERN | `d30ab6d` |
-| 2 | POLISH the six; COMBAT; EXPAND-2 Lobby / Clubhouse / Atlas | running | | |
+| 2 | POLISH the six; COMBAT; EXPAND-2 Lobby / Clubhouse / Atlas | briefed (`BRIEF-r2.md`, `round-2.args.json`), not built | | |
 
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
