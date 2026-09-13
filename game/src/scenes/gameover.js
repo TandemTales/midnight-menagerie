@@ -4,13 +4,18 @@
  *   #scene=gameover&result=defeat    the candle goes out
  *   #scene=gameover&result=victory   a Companion walks out of the house
  *
- * Both flavours are the same screen with a different emotional argument:
+ * Both flavours are the same screen with a different emotional argument, laid
+ * out as a memorial board in the kit's language (ui/kit.css) — the same staged
+ * board the select screens are painted as:
  *
- *   left  — the beat. A candle (snuffed or burning), the Companion's plate, and
- *           three short stanzas: what you found, what you lost, and the pet you
+ *   top   — the headline in the wordmark's cartouche, the ribbon under it.
+ *   left  — the beat. The Kid and the Companion in the Kid board's portrait
+ *           frames with a candle between them (snuffed or burning), and three
+ *           gold-railed panels: what you found, what you lost, and the pet you
  *           did not reach. This column is the reason anyone remembers the run.
- *   right — the ledger. Rooms deep and wing reached, Scuffles won, the Tricks,
- *           the Keepsakes, the seed. Everything a player wants to screenshot.
+ *   right — the ledger, one panel with the moon on its rail. Rooms deep and
+ *           wing reached, the numbers on an engraved strip, the Tricks, the
+ *           Keepsakes, the seed. Everything a player wants to screenshot.
  *
  * Reads `ctx.run` when meta-run has built one; otherwise fabricates a fully
  * plausible, *deterministic* summary from the seed so the deep link is
@@ -26,10 +31,11 @@ import { RNG, hashSeed } from '../core/rng.js';
 import { COMPANIONS, KIDS, TERMS, REGION_ORDER } from '../data/schema.js';
 import { regionMeta, blueprintPlan, MASTER } from '../state/mapgen.js';
 import {
-  ensureCss, fontsReady, companionPortrait, kidPortrait, petPortrait, candle, cobweb,
-  el, svg, rovingFocus, setReduceMotion, reduceMotion, formatSeed,
-  REGION_NAMES, COMPANION_BY_SLUG, KID_BY_SLUG, blueprintSrc,
+  ensureCss, fontsReady, companionPortrait, kidPortrait, petPortrait,
+  el, rovingFocus, setReduceMotion, reduceMotion, formatSeed,
+  REGION_NAMES, COMPANION_BY_SLUG, KID_BY_SLUG,
 } from '../ui/portrait.js';
+import { paintBackdrop, kitDressMarkup } from '../ui/kitboard.js';
 import { pauseStageFor } from './_stage.js';
 import { fitCardToSlot } from './_cardfit.js';
 import { plural, word } from '../util/plural.js';
@@ -92,6 +98,12 @@ function resolveCard(entry, cardById) {
   return def ? { def, upgraded: !!entry.upgraded } : null;
 }
 
+/** The glyphs in the round enamel buttons: flat antique gold with an ink
+ *  outline, as the arrow and tick on the Kid board are. Decorative. */
+const GO_GLYPH = {
+  home: `<svg viewBox="0 0 24 24"><path d="M12 3.2 2.6 11h2.9v9.6h5.1v-6h2.8v6h5.1V11h2.9z"/></svg>`,
+};
+
 export class GameOverScene extends Scene {
   constructor(ctx) {
     super(ctx);
@@ -126,18 +138,25 @@ export class GameOverScene extends Scene {
     root.innerHTML = '';
     root.dataset.result = s.result;
 
-    root.appendChild(el('div', 'go-ground'));
-    root.appendChild(svg(`<div class="go-web go-web--l">${cobweb()}</div>`));
-    root.appendChild(svg(`<div class="go-web go-web--r">${cobweb()}</div>`));
-    root.appendChild(this._buildMotes());
-    root.appendChild(el('div', 'go-vignette'));
+    // The board: its painted ground (and the slot Josh's `gameover.png` drops
+    // into), the dust, the dark closing in, and the select boards' candles,
+    // cobwebs, vines and rule at its edges.
+    const board = el('div', 'go-board kit-board');
+    board.appendChild(el('div', 'go-ground kit-ground'));
+    board.appendChild(this._buildMotes());
+    board.appendChild(el('div', 'go-vignette'));
+    board.insertAdjacentHTML('beforeend', kitDressMarkup());
+    board.appendChild(this._buildHead());
 
     const wrap = el('div', 'go-wrap');
     wrap.appendChild(this._buildBeat());
     wrap.appendChild(this._buildLedger());
-    root.appendChild(wrap);
+    board.appendChild(wrap);
 
-    root.appendChild(this._buildFoot());
+    board.appendChild(this._buildFoot());
+    root.appendChild(board);
+    this._board = board;
+    paintBackdrop(board, 'gameover', () => !this._dead);
 
     this._wire();
     await fontsReady();
@@ -157,6 +176,7 @@ export class GameOverScene extends Scene {
 
     bus.emit('gameover:ready', { result: s.result, seed: s.seed });
   }
+
 
   /* ═══ the summary ════════════════════════════════════════════════════════
      Everything downstream reads this one normalised object, so a real run and
@@ -254,8 +274,8 @@ export class GameOverScene extends Scene {
     return motes;
   }
 
-  /* ═══ left: the beat ═════════════════════════════════════════════════════ */
-  _buildBeat() {
+  /** The people in it: who went in, with whom, and how to say their name. */
+  _cast() {
     const s = this.summary;
     const c = COMPANION_BY_SLUG[s.companion] ?? COMPANIONS[0];
     const k = KID_BY_SLUG[s.kid] ?? KIDS[0];
@@ -264,36 +284,14 @@ export class GameOverScene extends Scene {
     // name. This line used to hardcode "She" and printed it for every Kid.
     const pr = k.pronouns || { s: 'they', o: 'them', p: 'their', r: 'themselves', plural: true };
     const region = REGION_NAMES[s.regionId] ?? s.meta.name;
+    return { c, k, first, pr, region };
+  }
 
-    const beat = el('section', 'go-beat');
-    beat.setAttribute('aria-label', this.won ? 'Expedition succeeded' : 'Expedition failed');
+  /* ═══ top: the headline, in the cartouche ════════════════════════════════ */
+  _buildHead() {
+    const s = this.summary;
+    const { c, first, region } = this._cast();
 
-    /* --- the candle ------------------------------------------------------- */
-    const stage = el('div', 'go-stage');
-    // smoke lives inside the candle so it always starts exactly at the wick
-    stage.appendChild(svg(`<div class="go-candle">${candle()}
-      <svg class="go-smoke" viewBox="0 0 60 220" aria-hidden="true">
-        <path d="M30 214c-9-24 9-32 0-56s8-32 1-54 6-28 1-48" pathLength="100"/>
-        <path d="M30 212c8-22-7-30 1-52s-6-30 0-50" pathLength="100"/>
-      </svg></div>`));
-    stage.appendChild(el('div', 'go-halo'));
-
-    // the Companion's plate: lit and shimmering on a win, tired and cold on a loss
-    const plate = el('div', 'go-plate' + (this.won ? '' : ' is-spent'));
-    const pf = companionPortrait({
-      slug: c.slug, variant: '-card', locked: false, parallax: 0.6, shimmer: this.won,
-    });
-    this._portraits.push(pf);
-    plate.appendChild(pf.el);
-    plate.appendChild(el('div', 'go-plate__cap',
-      this.won
-        ? `<b>${esc(c.name)}</b><span>${esc(c.title)} &mdash; out</span>`
-        : `<b>${esc(c.name)}</b><span>went back in with you</span>`));
-    stage.appendChild(plate);
-    beat.appendChild(stage);
-
-    /* --- headline --------------------------------------------------------- */
-    const head = el('div', 'go-head');
     /**
      * THE HEART IS THE ENDING, and this screen used to print the same headline
      * for it as for any other cleared wing.
@@ -306,25 +304,88 @@ export class GameOverScene extends Scene {
      * blankets, keys and soft blue light, and the last exit unlocks.
      */
     const endedTheHouse = this.won && s.regionId === 'heart';
-    head.innerHTML = endedTheHouse
-      ? `<p class="go-kicker">The Heart of the House</p>
-         <h1 class="go-title">The door opens outward.</h1>
-         <p class="go-lede">The Keeper does not fall over. It comes apart &mdash; doors, blankets,
+    const [kicker, title, lede] = endedTheHouse
+      ? ['The Heart of the House',
+         'The door opens outward.',
+         `The Keeper does not fall over. It comes apart &mdash; doors, blankets,
             brass keys, picture frames, and a lot of soft blue light going out slowly.
             ${esc(first)} and ${esc(c.name)} walk through a door the house spent a very long time
-            making sure nobody could open, and the house lets them.</p>`
+            making sure nobody could open, and the house lets them.`]
       : this.won
-      ? `<p class="go-kicker">Wing ${s.wing} &middot; ${esc(region)}</p>
-         <h1 class="go-title">You got one out.</h1>
-         <p class="go-lede">${esc(c.name)} walked through the front door on ${esc(first)}&rsquo;s shoulder
-            and did not look back at the house once.</p>`
-      : `<p class="go-kicker">Wing ${s.wing} &middot; ${esc(region)}</p>
-         <h1 class="go-title">The candle goes out.</h1>
-         <p class="go-lede">${esc(first)} gets out. ${esc(s.killedBy.replace(/^the /, 'The '))} keeps the room,
-            and everything still in the backpack stays where it fell.</p>`;
-    beat.appendChild(head);
+      ? [`Wing ${s.wing} &middot; ${esc(region)}`,
+         'You got one out.',
+         `${esc(c.name)} walked through the front door on ${esc(first)}&rsquo;s shoulder
+            and did not look back at the house once.`]
+      : [`Wing ${s.wing} &middot; ${esc(region)}`,
+         'The candle goes out.',
+         `${esc(first)} gets out. ${esc(s.killedBy.replace(/^the /, 'The '))} keeps the room,
+            and everything still in the backpack stays where it fell.`];
 
-    /* --- three stanzas ---------------------------------------------------- */
+    const head = el('header', 'go-head kit-titleblock kit-titleblock--compact');
+    // The Heart's lede is three sentences; it gets the full-height plaque and
+    // is allowed to wrap inside it.
+    if (endedTheHouse) head.classList.add('is-long');
+    head.innerHTML = `
+      <span class="go-ribbon kit-ribbon">${this.won ? 'Out of the house' : 'Expedition over'}</span>
+      <h1 class="go-title kit-cartouche__title">${title}</h1>
+      <p class="go-lede kit-cartouche__sub">${lede}</p>
+      <p class="go-kicker kit-titleblock__note">${kicker}</p>`;
+    return head;
+  }
+
+  /* ═══ left: the beat ═════════════════════════════════════════════════════ */
+  _buildBeat() {
+    const s = this.summary;
+    const { c, k, first, pr } = this._cast();
+
+    const beat = el('section', 'go-beat');
+    beat.setAttribute('aria-label', this.won ? 'Expedition succeeded' : 'Expedition failed');
+
+    /* --- the memorial: the two of them framed, the candle between -------- */
+    const stage = el('div', 'go-stage');
+
+    const kid = el('figure', 'go-portrait go-portrait--kid');
+    const kidPic = el('div', 'go-portrait__pic kit-frame kit-frame--over');
+    const kidArt = el('div', 'go-portrait__art');
+    kidArt.appendChild(kidPortrait({ ...k, petKind: k.petKind }, { w: 360, h: 480 }));
+    kidPic.appendChild(kidArt);
+    kid.appendChild(kidPic);
+    kid.appendChild(el('figcaption', 'go-portrait__plate go-who__txt kit-plate',
+      `<b class="kit-plate__name">${esc(k.name)}</b>`
+      + `<span class="kit-plate__epithet">with ${esc(c.name)} &middot; ${TERMS.ascension} ${s.haunt}</span>`));
+    stage.appendChild(kid);
+
+    // The candle: the board's own painted one. It burns just long enough to be
+    // noticed and then goes out (`_snuff`); the smoke starts at its wick.
+    const flame = el('div', 'go-candle');
+    flame.innerHTML = `
+      <span class="go-halo" aria-hidden="true"></span>
+      <i class="go-candle__prop kit-prop kit-prop--candle" aria-hidden="true"></i>
+      <svg class="go-smoke" viewBox="0 0 60 220" aria-hidden="true">
+        <path d="M30 214c-15-22 13-34 0-58s16-30 2-54 12-26-4-48" pathLength="100"/>
+        <path d="M30 212c13-20-11-30 2-52s-12-28 3-50" pathLength="100"/>
+      </svg>`;
+    stage.appendChild(flame);
+
+    // the Companion: lit and shimmering on a win, tired and cold on a loss
+    const plate = el('figure', 'go-portrait go-portrait--pet go-plate' + (this.won ? '' : ' is-spent'));
+    const pic = el('div', 'go-portrait__pic kit-frame kit-frame--over');
+    const pf = companionPortrait({
+      slug: c.slug, variant: '-card', locked: false, parallax: 0.6, shimmer: this.won,
+    });
+    this._portraits.push(pf);
+    const art = el('div', 'go-portrait__art');
+    art.appendChild(pf.el);
+    pic.appendChild(art);
+    plate.appendChild(pic);
+    plate.appendChild(el('figcaption', 'go-plate__cap go-portrait__plate kit-plate',
+      this.won
+        ? `<b class="kit-plate__name">${esc(c.name)}</b><span class="kit-plate__epithet">${esc(c.title)} &mdash; out</span>`
+        : `<b class="kit-plate__name">${esc(c.name)}</b><span class="kit-plate__epithet">went back in with you</span>`));
+    stage.appendChild(plate);
+    beat.appendChild(stage);
+
+    /* --- three stanzas, each a gold-railed panel ------------------------- */
     const stanzas = el('div', 'go-stanzas');
 
     const found = [];
@@ -335,7 +396,7 @@ export class GameOverScene extends Scene {
     found.push(`${plural(s.wingsThisRun, 'wing')} of the house crossed`);
     if (s.cluesFound) found.push(`${plural(s.cluesFound, 'clue')} for the board`);
     if (s.bigScares) found.push(`${plural(s.bigScares, 'Big Scare')} survived`);
-    stanzas.appendChild(this._stanza('found', 'What you found', found));
+    stanzas.appendChild(this._stanza('found', 'What you found', found, 'star'));
 
     const lost = this.won
       ? [
@@ -351,7 +412,7 @@ export class GameOverScene extends Scene {
           `<b class="go-num">${s.gold}</b> ${TERMS.gold}, scattered behind you`,
           `Every ${TERMS.potion} and every piece of Gear`,
         ];
-    stanzas.appendChild(this._stanza('lost', this.won ? 'What it cost' : 'What you lost', lost));
+    stanzas.appendChild(this._stanza('lost', this.won ? 'What it cost' : 'What you lost', lost, 'shield'));
 
     const petLine = s.petHome
       ? `<b>${esc(k.pet)}</b> came home. ${esc(first)} has not put ${esc(k.pet)} down since.`
@@ -360,16 +421,18 @@ export class GameOverScene extends Scene {
            and ${esc(first)} is already re-packing the backpack.`
         : `<b>${esc(k.pet)}</b> is still in there. ${esc(first)} does not say anything on the walk back.
            ${esc(cap(pr.s))} ${pr.plural ? 'are' : 'is'} working out what to bring next time.`;
-    const pet = el('div', `go-stanza go-stanza--pet${s.petHome ? ' is-home' : ''}`);
+    const pet = el('div', `go-stanza go-stanza--pet kit-panel${s.petHome ? ' is-home' : ''}`);
+    pet.dataset.medal = 'paw';
     pet.innerHTML =
-      `<h2 class="go-sh">${s.petHome ? 'The pet you reached' : 'The pet you did not reach'}</h2>` +
+      `<h2 class="go-sh kit-heading">${s.petHome ? 'The pet you reached' : 'The pet you did not reach'}</h2>` +
       `<div class="go-pet">
-         <span class="go-pet__snap"></span>
+         <span class="go-pet__snap kit-frame kit-frame--over"></span>
          <p class="go-pet__text">${petLine}</p>
        </div>`;
     /* The brass collar tag with a species glyph on it was a symbol standing in
        for a picture. On the one beat in the whole game that is about this
-       animal specifically, the photograph goes here instead. */
+       animal specifically, the photograph goes here instead — hung in the same
+       gold frame as the two who went in. */
     pet.querySelector('.go-pet__snap').appendChild(petPortrait(k.slug));
     stanzas.appendChild(pet);
 
@@ -395,14 +458,16 @@ export class GameOverScene extends Scene {
       : `As far as we got &mdash; ${esc(REGION_NAMES[s.regionId] ?? s.meta.name)}`;
 
     band.innerHTML = `
-      <div class="go-bp__paper">
-        ${plan ? `<img class="go-bp__img" src="${esc(new URL('../../' + plan.url, import.meta.url).href)}"
-             alt="" decoding="async" width="${MASTER.w}" height="${MASTER.h}"
-             style="width:${(MASTER.w / plan.sw * 100).toFixed(3)}%;
-                    transform:translate(${(-plan.sx / MASTER.w * 100).toFixed(3)}%,
-                                        ${(-plan.sy / MASTER.h * 100).toFixed(3)}%)">` : ''}
-        <span class="go-bp__wash"></span>
-        <span class="go-bp__mark" aria-hidden="true"></span>
+      <div class="go-bp__frame kit-frame kit-frame--over">
+        <div class="go-bp__paper">
+          ${plan ? `<img class="go-bp__img" src="${esc(new URL('../../' + plan.url, import.meta.url).href)}"
+               alt="" decoding="async" width="${MASTER.w}" height="${MASTER.h}"
+               style="width:${(MASTER.w / plan.sw * 100).toFixed(3)}%;
+                      transform:translate(${(-plan.sx / MASTER.w * 100).toFixed(3)}%,
+                                          ${(-plan.sy / MASTER.h * 100).toFixed(3)}%)">` : ''}
+          <span class="go-bp__wash"></span>
+          <span class="go-bp__mark" aria-hidden="true"></span>
+        </div>
       </div>
       <div class="go-bp__meta">
         <span class="go-bp__label">${label}</span>
@@ -411,9 +476,10 @@ export class GameOverScene extends Scene {
     return band;
   }
 
-  _stanza(kind, title, lines) {
-    const n = el('div', `go-stanza go-stanza--${kind}`);
-    n.innerHTML = `<h2 class="go-sh">${esc(title)}</h2><ul>${
+  _stanza(kind, title, lines, medal) {
+    const n = el('div', `go-stanza go-stanza--${kind} kit-panel`);
+    if (medal) n.dataset.medal = medal;
+    n.innerHTML = `<h2 class="go-sh kit-heading">${esc(title)}</h2><ul>${
       lines.map((l) => `<li>${l}</li>`).join('')}</ul>`;
     return n;
   }
@@ -421,35 +487,32 @@ export class GameOverScene extends Scene {
   /* ═══ right: the ledger ══════════════════════════════════════════════════ */
   _buildLedger() {
     const s = this.summary;
-    const k = KID_BY_SLUG[s.kid] ?? KIDS[0];
-    const region = REGION_NAMES[s.regionId] ?? s.meta.name;
+    const { region } = this._cast();
 
-    const led = el('section', 'go-ledger');
+    const led = el('section', 'go-ledger kit-panel');
+    led.dataset.medal = 'moon';
     led.setAttribute('aria-label', 'Expedition record');
 
-    /* --- header strip: who went in ---------------------------------------- */
+    /* --- header: how far, and the seed that would run it again ------------ */
     const who = el('div', 'go-who', `
-      <div class="go-who__kid"></div>
-      <div class="go-who__txt">
-        <b>${esc(k.name)}</b>
-        <span>with ${esc(COMPANION_BY_SLUG[s.companion]?.name ?? s.companion)}
-              &middot; ${TERMS.ascension} ${s.haunt}</span>
-      </div>
       <div class="go-who__reach">
         <span class="go-lbl">Reached</span>
         <b>${plural(s.floor, 'room')} deep</b>
         <span class="go-who__wing">${esc(region)} &middot; Wing ${s.wing}</span>
+      </div>
+      <div class="go-seed">
+        <span class="go-lbl">Seed</span>
+        <code class="go-seed__val">${formatSeed(s.seed)}</code>
+        <button type="button" class="go-seed__copy kit-plate">Copy</button>
+        <span class="go-seed__hint">Run this house again, exactly as it was.</span>
       </div>`);
-    who.querySelector('.go-who__kid')
-      .appendChild(kidPortrait({ ...k, petKind: k.petKind },
-        { w: 192, h: 192, variant: 'thumb' }));
     led.appendChild(who);
 
-    /* --- the numbers ------------------------------------------------------ */
-    const grid = el('div', 'go-stats');
+    /* --- the numbers, on an engraved strip -------------------------------- */
+    const grid = el('div', 'go-stats kit-stats');
     const stat = (label, value, sub) =>
-      `<div class="go-stat"><span class="go-lbl">${esc(label)}</span>` +
-      `<b>${esc(value)}</b>${sub ? `<em>${esc(sub)}</em>` : ''}</div>`;
+      `<div class="go-stat"><span class="go-lbl kit-stats__label">${esc(label)}</span>` +
+      `<b class="kit-stats__value">${esc(value)}</b>${sub ? `<em>${esc(sub)}</em>` : ''}</div>`;
     grid.innerHTML =
       stat(`${TERMS.combat}s won`, s.scuffles) +
       stat(`${TERMS.elite}s`, s.bigScares) +
@@ -461,30 +524,32 @@ export class GameOverScene extends Scene {
       stat('Turns taken', s.turns);
     led.appendChild(grid);
 
-    /* --- Courage bar: the shape of the ending ----------------------------- */
+    /* --- Courage bar: the shape of the ending, in the header between the
+           two — how far you got, and how much of you was left ------------- */
     const bar = el('div', 'go-courage');
     bar.innerHTML =
       `<span class="go-lbl">${TERMS.hp}</span>` +
       `<div class="go-courage__track"><i style="width:${Math.max(0, Math.min(100, (s.hp / s.maxHp) * 100)).toFixed(1)}%"></i></div>` +
       `<span class="go-courage__n">${s.hp} / ${s.maxHp}</span>` +
       `<em class="go-courage__note">${this.won ? 'walked out with it' : 'the candle ran out'}</em>`;
-    led.appendChild(bar);
+    who.insertBefore(bar, who.querySelector('.go-seed'));
 
     /* --- final deck ------------------------------------------------------- */
     const deck = el('div', 'go-block go-block--deck');
     deck.innerHTML =
-      `<h2 class="go-h">Final ${TERMS.deck} <em class="go-h__n" data-deck-total></em></h2>` +
+      `<h2 class="go-h kit-heading kit-heading--inline">Final ${TERMS.deck} <em class="go-h__n" data-deck-total></em></h2>` +
       `<div class="go-tricks" role="list"></div>`;
     led.appendChild(deck);
     this._deckHost = deck.querySelector('.go-tricks');
     this._deckTotal = deck.querySelector('[data-deck-total]');
 
-    /* --- the card that did the work --------------------------------------- */
+    /* --- the card that did the work, beside what came out with you -------- */
+    const pair = el('div', 'go-pair');
     const mvp = el('div', 'go-block go-block--mvp');
-    mvp.innerHTML = `<h2 class="go-h">Worked hardest <em class="go-h__n" data-mvp-n></em></h2>
-      <div class="go-mvp"><div class="go-mvp__slot"></div>
+    mvp.innerHTML = `<h2 class="go-h kit-heading kit-heading--inline">Worked hardest <em class="go-h__n" data-mvp-n></em></h2>
+      <div class="go-mvp"><div class="go-mvp__slot kit-cards"></div>
       <p class="go-mvp__note"></p></div>`;
-    led.appendChild(mvp);
+    pair.appendChild(mvp);
     this._mvpSlot = mvp.querySelector('.go-mvp__slot');
     this._mvpNote = mvp.querySelector('.go-mvp__note');
     this._mvpN = mvp.querySelector('[data-mvp-n]');
@@ -494,20 +559,12 @@ export class GameOverScene extends Scene {
     /* --- keepsakes -------------------------------------------------------- */
     const keep = el('div', 'go-block go-block--keep');
     keep.innerHTML =
-      `<h2 class="go-h">${TERMS.relic}s <em class="go-h__n" data-keep-total></em></h2>` +
+      `<h2 class="go-h kit-heading kit-heading--inline">${TERMS.relic}s <em class="go-h__n" data-keep-total></em></h2>` +
       `<div class="go-keeps" role="list"></div>`;
-    led.appendChild(keep);
+    pair.appendChild(keep);
+    led.appendChild(pair);
     this._keepHost = keep.querySelector('.go-keeps');
     this._keepTotal = keep.querySelector('[data-keep-total]');
-
-    /* --- the seed --------------------------------------------------------- */
-    const seed = el('div', 'go-seed');
-    seed.innerHTML =
-      `<span class="go-lbl">Seed</span>` +
-      `<code class="go-seed__val">${formatSeed(s.seed)}</code>` +
-      `<button type="button" class="go-seed__copy">Copy</button>` +
-      `<span class="go-seed__hint">Run this house again, exactly as it was.</span>`;
-    led.appendChild(seed);
 
     return led;
   }
@@ -572,8 +629,9 @@ export class GameOverScene extends Scene {
     const rows = [...counts.values()].sort((a, b) =>
       (b.n - a.n) || String(a.def.name).localeCompare(String(b.def.name)));
 
+    // Each Trick on a nameplate, its cost struck as a gold coin.
     host.innerHTML = rows.map(({ n, def, upgraded }) => `
-      <span class="go-trick" role="listitem"${upgraded ? ' data-up="1"' : ''}
+      <span class="go-trick kit-plate" role="listitem"${upgraded ? ' data-up="1"' : ''}
             data-type="${esc(def.type || 'skill')}" data-rarity="${esc(def.rarity || 'common')}">
         <i class="go-trick__cost">${def.cost < 0 ? 'X' : (def.cost ?? 1)}</i>
         <b class="go-trick__name">${esc(def.name)}${upgraded ? '<u>+</u>' : ''}</b>
@@ -598,7 +656,7 @@ export class GameOverScene extends Scene {
       { n: 1, def: { name: 'Boo!', type: 'skill', rarity: 'special', cost: 1 } },
     ];
     host.innerHTML = rows.map(({ n, def }) => `
-      <span class="go-trick" role="listitem" data-type="${def.type}" data-rarity="${def.rarity}">
+      <span class="go-trick kit-plate" role="listitem" data-type="${def.type}" data-rarity="${def.rarity}">
         <i class="go-trick__cost">${def.cost}</i><b class="go-trick__name">${def.name}</b>
         ${n > 1 ? `<em class="go-trick__n">&#215;${n}</em>` : ''}</span>`).join('');
     const total = rows.reduce((t, r) => t + r.n, 0);
@@ -629,7 +687,9 @@ export class GameOverScene extends Scene {
          144px-tall card and the MVP sat in a hole. `--card-aspect` is the
          authored ratio, so deriving the height from the width keeps the box on
          the card at every viewport. */
-      const S = 0.6;
+      // The scale is the board's to choose (gameover.css `--go-mvp-s`), so a
+      // short panel can hang a smaller card instead of pushing the shelf off it.
+      const S = 'var(--go-mvp-s, 0.6)';
       this._mvpSlot.style.width  = `calc(var(--card-w) * ${S})`;
       this._mvpSlot.style.height = `calc(var(--card-w) / var(--card-aspect) * ${S})`;
       this._mvpSlot.appendChild(view.el);
@@ -675,6 +735,10 @@ export class GameOverScene extends Scene {
     const s = this.summary;
     let list = Array.isArray(s.relics) ? s.relics : null;
     if (!list) list = s.mocked ? await this._mockKeepsakes() : [];
+    // Each Keepsake wears its own sigil on the board's round enamel, as it does
+    // under Mr. Moth's glass. The table is optional; a blank roundel is not.
+    let sigil = null;
+    try { sigil = (await import('../data/relics.js')).relicSigil || null; } catch { sigil = null; }
     if (this._dead || !this._keepHost) return;
 
     if (!list.length) {
@@ -687,7 +751,8 @@ export class GameOverScene extends Scene {
       this._keepHost.setAttribute('role', 'list');
       this._keepHost.innerHTML = list.map((r) => `
         <span class="go-keep" role="listitem" data-rarity="${esc(r.rarity || 'common')}">
-          <i class="go-keep__sigil" aria-hidden="true"></i>
+          <i class="go-keep__sigil" aria-hidden="true">${sigil && r.id
+            ? `<svg viewBox="0 0 24 24"><path d="${sigil(r.id)}"/></svg>` : ''}</i>
           <b>${esc(r.name ?? r.id)}</b>
           <em>${esc(r.desc ?? r.text ?? '')}</em>
         </span>`).join('');
@@ -723,6 +788,9 @@ export class GameOverScene extends Scene {
   }
 
   /* ═══ footer ═════════════════════════════════════════════════════════════ */
+  /** The three ways out, as the kit's buttons: the way home is the lit
+   *  cartouche with the Kid board's round button on its end, the other two
+   *  the same plate unlit. */
   _buildFoot() {
     const f = el('footer', 'go-foot');
     const nav = el('nav', 'go-acts');
@@ -734,10 +802,12 @@ export class GameOverScene extends Scene {
       b.innerHTML = `<b>${label}</b><em>${hint}</em>`;
       return b;
     };
-    nav.appendChild(mk('clubhouse', 'go-btn--primary', 'Return to the Clubhouse',
-      this.won ? 'pin the photograph to the board' : 'work out what to bring next time'));
-    nav.appendChild(mk('again', 'go-btn--ghost', 'Go straight back in', 'choose a Kid and a Companion'));
-    nav.appendChild(mk('title', 'go-btn--ghost', 'Title', 'put the house down for now'));
+    const home = mk('clubhouse', 'go-btn--primary kit-btn', 'Return to the Clubhouse',
+      this.won ? 'pin the photograph to the board' : 'work out what to bring next time');
+    home.insertAdjacentHTML('beforeend', `<i class="kit-medallion kit-medallion--ornate kit-btn__medal" aria-hidden="true">${GO_GLYPH.home}</i>`);
+    nav.appendChild(mk('title', 'go-btn--ghost kit-btn kit-btn--quiet', 'Title', 'put the house down for now'));
+    nav.appendChild(mk('again', 'go-btn--ghost kit-btn kit-btn--quiet', 'Go straight back in', 'choose a Kid and a Companion'));
+    nav.appendChild(home);
     f.appendChild(nav);
     this._acts = nav;
     return f;
@@ -824,7 +894,7 @@ export class GameOverScene extends Scene {
     for (const c of this._cards) { try { c.destroy(); } catch {} }
     this._cards.length = 0;
     try { this.ctx.atmosphere?.dread?.(0, 0.4); } catch {}
-    this._acts = this._deckHost = this._keepHost = null;
+    this._acts = this._deckHost = this._keepHost = this._board = null;
     this._mvpSlot = this._mvpNote = this._mvpN = this._mvpBlock = null;
     this._deckTotal = this._keepTotal = null;
     this.root.innerHTML = '';

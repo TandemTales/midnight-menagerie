@@ -1,36 +1,60 @@
 /* ===========================================================================
-   Expedition Over. OWNER: frontend agent.
+   Expedition Over — a memorial board. OWNER: frontend agent.
    Two flavours off one layout: [data-result="defeat"] and ="victory".
-   Every colour is a token from ui/tokens.css or a derived ramp in portrait.css.
+
+   Built from the kit (ui/kit.css) the way the select boards are painted: the
+   headline in the wordmark's cartouche, the Kid and the Companion in the Kid
+   board's frames with a candle between them on a shelf, gold-railed panels
+   wearing medallions, the numbers engraved on a strip, the Tricks on
+   nameplates, and the kit's buttons for the three ways out.
    =========================================================================== */
 
 .scene--gameover {
   position: absolute; inset: 0;
   overflow: hidden;
-  --go-foot-h: clamp(74px, 9.4vh, 100px);
-  --go-cw: clamp(36px, 3.3vw, 54px);   /* candle width; height is 3.167x */
   /* the accent that separates the two endings */
   --go-key: var(--spectre-400);
   --go-key-hi: var(--spectre-200);
-  --go-warm: color-mix(in srgb, var(--flame-glow) 12%, transparent);
+  --go-warm: color-mix(in srgb, var(--kit-candle) 16%, transparent);
 }
 .scene--gameover[data-result="victory"] {
   --go-key: var(--flame-400);
   --go-key-hi: var(--flame-200);
-  --go-warm: color-mix(in srgb, var(--flame-glow) 30%, transparent);
+  --go-warm: color-mix(in srgb, var(--kit-candle) 30%, transparent);
 }
 
-/* ── ground ───────────────────────────────────────────────────────────────── */
-.go-ground {
+/* ── the board ────────────────────────────────────────────────────────────── */
+.go-board {
   position: absolute; inset: 0;
-  background:
-    radial-gradient(46% 52% at 17% 30%, var(--go-warm) 0%, transparent 68%),
-    radial-gradient(80% 62% at 50% 0%, color-mix(in oklab, var(--arcane-700) 52%, var(--ink-900)) 0%, transparent 72%),
-    linear-gradient(180deg, var(--ink-900) 0%, color-mix(in oklab, var(--ink-800) 82%, var(--arcane-700)) 54%, var(--ink-900) 100%);
-  transition: opacity var(--t-slow) var(--ease-out), filter 1.6s var(--ease-out);
+  --hud-h: 0px;                  /* no run HUD here: rule and corners start at the top */
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
 }
-.scene--gameover[data-result="victory"] .go-ground::after {
-  /* a slow spectral sweep: the house letting go of something */
+.go-motes, .go-vignette { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.go-head, .go-wrap, .go-foot { position: relative; z-index: 3; }
+
+.go-ground { transition: filter 1.6s var(--ease-out); }
+.scene--gameover.is-dark .go-ground { filter: saturate(.8) brightness(.9); }
+
+.go-vignette {
+  background:
+    radial-gradient(118% 96% at 50% 44%, transparent 42%, color-mix(in srgb, var(--kit-void) 84%, transparent) 100%),
+    linear-gradient(to bottom, transparent 70%, color-mix(in srgb, var(--kit-void) 60%, transparent) 100%);
+}
+/* The dark closes in the moment the candle dies. Two painted layers cross-fade
+   on opacity — transitioning the gradient itself would repaint the whole
+   viewport every frame for 1.4s. */
+.go-vignette::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(96% 80% at 30% 40%, transparent 22%, color-mix(in srgb, var(--kit-void) 62%, transparent) 100%);
+  opacity: 0;
+  transition: opacity 1.6s var(--ease-out);
+  will-change: opacity;
+}
+.scene--gameover.is-dark .go-vignette::after { opacity: 1; }
+/* a slow spectral sweep on a win: the house letting go of something */
+.scene--gameover[data-result="victory"] .go-vignette::before {
   content: ''; position: absolute; inset: -20%;
   background: linear-gradient(102deg, transparent 40%,
     color-mix(in srgb, var(--spectre-200) 7%, transparent) 50%, transparent 60%);
@@ -43,35 +67,7 @@
   70%      { transform: translate3d(14%, 0, 0); opacity: 0; }
 }
 
-.go-vignette {
-  position: absolute; inset: 0; pointer-events: none;
-  background:
-    radial-gradient(132% 104% at 24% 34%, transparent 30%, color-mix(in srgb, var(--ink-900) 74%, transparent) 100%),
-    linear-gradient(to bottom, color-mix(in srgb, var(--ink-900) 56%, transparent) 0%, transparent 18%,
-                    transparent 62%, color-mix(in srgb, var(--ink-900) 84%, transparent) 100%);
-}
-/* The dark closes in the moment the candle dies. Two painted layers cross-fade
-   on opacity — transitioning the gradient itself would repaint the whole
-   viewport every frame for 1.4s. */
-.go-vignette::after {
-  content: ''; position: absolute; inset: 0;
-  background:
-    radial-gradient(104% 84% at 24% 34%, transparent 8%, color-mix(in srgb, var(--ink-900) 92%, transparent) 92%),
-    linear-gradient(to bottom, color-mix(in srgb, var(--ink-900) 70%, transparent) 0%, transparent 20%,
-                    transparent 58%, color-mix(in srgb, var(--ink-900) 94%, transparent) 100%);
-  opacity: 0;
-  transition: opacity 1.6s var(--ease-out);
-  will-change: opacity;
-}
-.scene--gameover.is-dark .go-vignette::after { opacity: 1; }
-.scene--gameover.is-dark .go-ground { filter: saturate(.62) brightness(.82); }
-
-.go-web { position: absolute; width: clamp(130px, 13vw, 230px); aspect-ratio: 1; opacity: .34; pointer-events: none; }
-.go-web--l { left: 0; top: 0; }
-.go-web--r { right: 0; top: 0; transform: scaleX(-1); }
-.go-web svg { width: 100%; height: 100%; }
-
-.go-motes { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.go-motes { overflow: hidden; }
 .go-motes i {
   position: absolute; bottom: -10px;
   width: var(--sz); height: var(--sz); border-radius: 50%;
@@ -87,54 +83,116 @@
   78%  { opacity: var(--op); }
   100% { transform: translate3d(var(--dx), calc(-1 * var(--y0)), 0) scale(1); opacity: 0; }
 }
-.scene--gameover.is-dark .go-motes { opacity: .35; transition: opacity 2s var(--ease-out); }
+.scene--gameover.is-dark .go-motes { opacity: .45; transition: opacity 2s var(--ease-out); }
 
-/* ── frame ────────────────────────────────────────────────────────────────── */
+/* ── the headline, in the cartouche ───────────────────────────────────────── */
+.go-head { justify-self: center; margin-top: clamp(6px, 1.3vh, 14px); }
+/* one sentence pair: on one line it sits inside the plate, clear of the ribbon */
+.go-head .go-lede { max-width: none; white-space: nowrap; }
+/* the Heart's three sentences get the full plaque and may wrap inside it */
+.go-head.is-long { --cart-h: clamp(140px, 17.4vh, 158px); }
+.go-head.is-long .go-lede {
+  white-space: normal; max-width: calc(78ch + 2 * var(--cart-pad-x));
+  font-size: var(--fs-xs); line-height: 1.24;
+}
+
+/* ── the two columns ──────────────────────────────────────────────────────── */
 .go-wrap {
-  position: absolute; inset: 0;
-  bottom: var(--go-foot-h);
   display: grid;
-  grid-template-columns: minmax(420px, 44%) 1fr;
-  gap: clamp(14px, 1.8vw, 36px);
-  padding: clamp(10px, 1.6vh, 22px) clamp(18px, 2.6vw, 48px) 0;
-  align-items: start;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  column-gap: clamp(22px, 2.4vw, 42px);
+  align-items: stretch;
   min-height: 0;
+  padding: clamp(14px, 2.4vh, 24px) calc(var(--kit-vine-w) + clamp(8px, 1vw, 20px)) 0;
 }
-.go-beat, .go-ledger { min-height: 0; max-height: 100%; overflow: auto; padding-right: 6px; }
-.go-beat::-webkit-scrollbar, .go-ledger::-webkit-scrollbar { width: 6px; }
-.go-beat::-webkit-scrollbar-thumb, .go-ledger::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--brass-400) 32%, transparent); border-radius: 3px;
-}
+.go-beat, .go-ledger { min-height: 0; }
 
 /* ═══ left: the beat ══════════════════════════════════════════════════════ */
-.go-beat { display: flex; flex-direction: column; gap: clamp(8px, 1.3vh, 17px); }
+.go-beat {
+  display: flex; flex-direction: column; justify-content: space-between;
+  gap: clamp(8px, 1.4vh, 16px);
+}
 
-/* --- candle + companion plate -------------------------------------------- */
+/* --- the memorial: two portraits on a shelf, a candle between ------------ */
 .go-stage {
+  --go-plate-h: clamp(40px, 5vh, 46px);
   position: relative;
-  display: grid; grid-template-columns: auto 1fr; align-items: end;
-  gap: clamp(12px, 1.8vw, 30px);
-  padding-top: clamp(18px, 3.2vh, 40px);
+  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: end;
+  column-gap: clamp(8px, 1vw, 18px);
+  padding: 8px clamp(8px, 1vw, 16px) calc(var(--go-plate-h) * .5 + 4px);
 }
-.go-candle { position: relative; width: var(--go-cw); z-index: 2; }
-.go-candle .orn-candle { width: 100%; height: auto; aspect-ratio: 60/190; }
-.go-candle .orn-candle__flame,
-.go-candle .orn-candle__halo { transition: opacity 1.1s var(--ease-out), transform 1.1s var(--ease-in); }
+/* the shelf they stand on: a dark plank with a brass nosing, Mr. Moth's */
+.go-stage::after {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  left: 0; right: 0; bottom: calc(var(--go-plate-h) * .5 - 4px); height: 18px;
+  background:
+    linear-gradient(180deg,
+      #2a1f26 0px, #3a2b2c 4px,
+      var(--kit-gold-hi) 5px, var(--kit-gold) 6px, var(--kit-gold-lo) 7px,
+      #1a1216 8px, #120c10 100%);
+  box-shadow: 0 10px 18px -4px rgba(0, 0, 0, .85);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+}
 
-/* the snuff: the flame ducks, shrinks, and is gone */
-.go-candle.is-out .orn-candle__flame {
-  opacity: 0;
-  transform: translateY(6px) scaleY(.12) scaleX(.5);
-  animation: none;
+.go-portrait { position: relative; margin: 0; display: grid; justify-items: center; min-width: 0; }
+.go-portrait__pic {
+  --fk: .72;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  box-shadow: 0 16px 28px -12px rgba(0, 0, 0, .95);
 }
-.go-candle.is-out .orn-candle__halo { opacity: 0; transform: scale(.4); animation: none; }
+.go-portrait__art { position: absolute; inset: 1px; overflow: hidden; display: grid; }
+.go-portrait__art > * { width: 100%; height: 100%; border-radius: 0; }
+.go-portrait__art .pf__vig { box-shadow: none; }
+.go-portrait__plate {
+  --plate-h: var(--go-plate-h);
+  position: relative; z-index: 4;
+  margin-top: calc(var(--plate-h) * -.5);
+  min-width: 82%; max-width: 110%;
+}
+.go-portrait__plate .kit-plate__epithet { white-space: nowrap; font-size: max(11px, calc(var(--plate-h) * .25)); }
+
+/* defeat: she came back out with you, but neither of you is glowing */
+.go-plate.is-spent .pf__img { filter: saturate(.55) brightness(.8) contrast(1.05); }
+.scene--gameover[data-result="victory"] .go-portrait__pic {
+  box-shadow: 0 0 44px color-mix(in srgb, var(--kit-candle) 26%, transparent), 0 16px 28px -12px rgba(0, 0, 0, .95);
+}
+
+/* --- the candle ------------------------------------------------------------ */
+.go-candle {
+  position: relative; z-index: 2;
+  width: clamp(46px, 3.9vw, 64px);
+  align-self: end;
+  margin-bottom: 2px;
+}
+.go-candle__prop { position: relative; display: block; width: 100%; }
+.go-candle__prop::after { transition: opacity 1.1s var(--ease-out); }
+/* the snuff: the flame is gone, its light goes after it */
+.go-candle.is-out .go-candle__prop {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 27%, black 35%);
+          mask-image: linear-gradient(to bottom, transparent 0%, transparent 27%, black 35%);
+}
+.go-candle.is-out .go-candle__prop::after { opacity: 0; animation: none; }
+
+.go-halo {
+  position: absolute; left: 50%; bottom: 24%;
+  width: 520%; aspect-ratio: 1;
+  transform: translateX(-50%);
+  pointer-events: none;
+  background: radial-gradient(closest-side, var(--go-warm), transparent 72%);
+  animation: go-breathe 4.2s var(--ease-soft) infinite;
+  transition: opacity 1.6s var(--ease-out);
+}
+.scene--gameover.is-dark .go-halo { opacity: 0; }
+@keyframes go-breathe { 0%,100% { opacity: .85; } 45% { opacity: 1; } }
 
 /* the wisp that is left. Starts at the wick, keeps drifting — the room is not
    empty, it is just unlit. */
 .go-smoke {
-  position: absolute; left: 50%; bottom: 100%;
-  width: 220%; height: calc(var(--go-cw) * 2.6);
-  margin-bottom: calc(var(--go-cw) * 0.14);
+  position: absolute; left: 50%; bottom: 68%;
+  width: 240%; height: 150%;
   transform: translateX(-50%);
   pointer-events: none;
   opacity: 0;
@@ -144,12 +202,12 @@
 }
 .go-smoke path {
   fill: none;
-  stroke: color-mix(in srgb, var(--spectre-100) 46%, transparent);
-  stroke-width: 4; stroke-linecap: round;
-  filter: blur(1.7px);
+  stroke: color-mix(in srgb, var(--kit-lav-hi) 34%, transparent);
+  stroke-width: 6; stroke-linecap: round;
+  filter: blur(2.6px);
   stroke-dasharray: 100; stroke-dashoffset: 100;
 }
-.scene--gameover.is-dark .go-smoke { opacity: .8; }
+.scene--gameover.is-dark .go-smoke { opacity: .85; }
 .scene--gameover.is-dark .go-smoke path {
   animation: go-smoke-draw 2.6s var(--ease-out) forwards, go-smoke-drift 9s var(--ease-soft) 2.6s infinite;
 }
@@ -161,165 +219,74 @@
   72%      { opacity: .78; }
 }
 
-.go-halo {
-  position: absolute; left: 0; bottom: -12%;
-  width: clamp(210px, 22vw, 400px); aspect-ratio: 1;
-  transform: translateX(-38%);
-  pointer-events: none;
-  background: radial-gradient(closest-side, var(--go-warm), transparent 70%);
-  animation: go-breathe 4.2s var(--ease-soft) infinite;
-  transition: opacity 1.6s var(--ease-out);
-}
-.scene--gameover.is-dark .go-halo { opacity: 0; }
-@keyframes go-breathe { 0%,100% { opacity: .9; transform: translateX(-38%) scale(1); } 45% { opacity: 1; transform: translateX(-38%) scale(1.06); } }
-
-.go-plate {
-  position: relative;
-  justify-self: end; align-self: end;
-  width: min(248px, 19.5vw);
-  border-radius: var(--radius-md);
-  background: linear-gradient(180deg, color-mix(in oklab, var(--ink-700) 78%, var(--arcane-700)), var(--ink-900));
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--brass-400) 38%, transparent), var(--shadow-3);
-  overflow: hidden;
-}
-.go-plate .pf { aspect-ratio: 828 / 516; }
-.go-plate__cap {
-  display: grid; gap: 1px; padding: 6px 8px 8px; text-align: center;
-  background: linear-gradient(180deg, color-mix(in oklab, var(--ink-700) 66%, var(--brass-600)), var(--ink-900));
-  border-top: 1px solid color-mix(in srgb, var(--brass-400) 34%, transparent);
-}
-.go-plate__cap b { font-family: var(--font-display); font-size: var(--fs-md); color: var(--brass-100); }
-.go-plate__cap span { font-size: var(--fs-xs); font-style: italic; color: var(--text-lo); }
-.scene--gameover[data-result="victory"] .go-plate {
-  box-shadow:
-    0 0 0 1px var(--brass-200),
-    0 0 46px color-mix(in srgb, var(--flame-glow) 34%, transparent),
-    var(--shadow-4);
-}
-.scene--gameover[data-result="victory"] .go-plate__cap b { color: var(--flame-100); }
-/* defeat: she came back out with you, but neither of you is glowing */
-.go-plate.is-spent .pf__img { filter: saturate(.4) brightness(.62) contrast(1.06); }
-.go-plate.is-spent .go-plate__cap b { color: var(--text-mid); }
-
-/* --- headline ------------------------------------------------------------- */
-.go-kicker {
-  margin: 0 0 var(--s-2);
-  font-size: var(--fs-xs); letter-spacing: .22em; text-transform: uppercase;
-  color: var(--text-lo);
-}
-.go-title {
-  margin: 0;
-  font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(30px, 3.1vw, 56px);
-  line-height: 1.02;
-  letter-spacing: .01em;
-  background-image: linear-gradient(178deg,
-    color-mix(in oklab, var(--arcane-100) 94%, white) 0%,
-    var(--arcane-200) 24%,
-    var(--arcane-300) 56%,
-    var(--arcane-400) 100%);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 2px 0 color-mix(in srgb, var(--ink-900) 92%, transparent))
-          drop-shadow(0 0 24px color-mix(in srgb, var(--arcane-400) 42%, transparent));
-}
-.scene--gameover[data-result="victory"] .go-title {
-  background-image: linear-gradient(178deg,
-    color-mix(in oklab, var(--flame-100) 96%, white) 0%,
-    var(--flame-200) 30%, var(--flame-300) 62%, var(--flame-400) 100%);
-  filter: drop-shadow(0 2px 0 color-mix(in srgb, var(--ink-900) 92%, transparent))
-          drop-shadow(0 0 28px color-mix(in srgb, var(--flame-glow) 46%, transparent));
-}
-.go-lede {
-  margin: var(--s-2) 0 0;
-  max-width: 44ch;
-  font-family: var(--font-body);
-  font-size: var(--fs-md); font-style: italic; line-height: 1.55;
-  color: var(--text-mid);
-  text-shadow: 0 2px 10px color-mix(in srgb, var(--ink-900) 88%, transparent);
-}
-
-/* --- stanzas -------------------------------------------------------------- */
+/* --- the three stanzas: gold-railed panels --------------------------------- */
 .go-stanzas {
-  display: grid; gap: clamp(7px, 1vh, 12px);
-  grid-template-columns: 1fr 1fr;
-  align-items: start;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: clamp(12px, 1.2vw, 20px);
+  row-gap: clamp(20px, 2.8vh, 26px);
+  align-items: stretch;
+  padding-top: 6px;
+}
+.go-stanza {
+  --pk: .66;
+  --medal-k: .72;
+  padding: clamp(14px, 1.9vh, 18px) clamp(12px, 1.1vw, 18px) clamp(8px, 1.1vh, 12px);
 }
 .go-stanza--pet { grid-column: 1 / -1; }
-.go-stanza {
-  padding: clamp(7px, .95vh, 12px) var(--s-4);
-  border-radius: var(--radius-md);
-  border-left: 2px solid color-mix(in srgb, var(--brass-400) 46%, transparent);
-  background: linear-gradient(90deg, color-mix(in srgb, var(--ink-800) 72%, transparent), transparent 88%);
-}
-.go-stanza--lost  { border-left-color: color-mix(in srgb, var(--threat-300) 52%, transparent); }
-.go-stanza--found { border-left-color: color-mix(in srgb, var(--spectre-300) 54%, transparent); }
-.go-stanza--pet   { border-left-color: color-mix(in srgb, var(--flame-300) 58%, transparent); }
-.go-sh {
-  margin: 0 0 var(--s-2);
-  font-family: var(--font-display); font-size: var(--fs-xs); font-weight: 600;
-  letter-spacing: .2em; text-transform: uppercase;
-  color: var(--brass-200);
-  display: flex; align-items: center; gap: var(--s-3);
-}
-.go-sh::after {
-  content: ''; flex: 1; height: 1px;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--brass-400) 36%, transparent), transparent);
-}
-.go-stanza ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
+.go-sh { margin: 0 0 clamp(4px, .7vh, 7px); font-size: var(--fs-xs); letter-spacing: .22em; }
+.go-stanza ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
 .go-stanza li {
   position: relative; padding-left: 15px;
-  font-size: var(--fs-sm); line-height: 1.5; color: var(--text-mid);
+  font-size: var(--fs-sm); line-height: 1.42; color: var(--kit-text);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .go-stanza li::before {
-  content: ''; position: absolute; left: 2px; top: .62em;
-  width: 5px; height: 5px; border-radius: 50%;
-  background: color-mix(in srgb, var(--brass-300) 60%, transparent);
+  content: ''; position: absolute; left: 3px; top: .62em;
+  width: 5px; height: 5px; transform: rotate(45deg);
+  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .7);
 }
-.go-stanza--lost li::before { background: color-mix(in srgb, var(--threat-300) 70%, transparent); }
-.go-stanza--found li::before { background: color-mix(in srgb, var(--spectre-300) 70%, transparent); }
-.go-num { font-family: var(--font-num); color: var(--flame-200); }
+.go-num { font-family: var(--font-num); font-variant-numeric: var(--num-feat); color: var(--kit-gold-hi); }
 
-.go-pet { display: grid; grid-template-columns: auto 1fr; gap: var(--s-4); align-items: center; }
-/* The photograph of the pet, pinned to the run-end page like a polaroid the
-   kids carry: white border, a small tilt, a real shadow. */
+.go-pet { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: clamp(14px, 1.3vw, 22px); align-items: center; }
+/* the photograph, in the same gold frame as the two who went in */
 .go-pet__snap {
-  display: block; width: 132px;
-  padding: 6px 6px 5px;
-  background: linear-gradient(180deg, var(--paper), color-mix(in oklab, var(--paper) 88%, var(--parchment-shade)));
-  box-shadow: var(--shadow-2);
-  transform: rotate(-2.6deg);
-  animation: go-tag-swing 5.4s var(--ease-soft) infinite;
-  transform-origin: 50% 0;
+  --fk: .46;
+  display: block; flex: none;
+  width: clamp(76px, 5.8vw, 94px);
+  aspect-ratio: 4 / 3;
+  margin: 5px 4px 3px 5px;
 }
-/* Cold, not dark: the photograph still has to be readable of a black cat in
-   an unlit hallway at 116 px. */
 .go-stanza--pet:not(.is-home) .go-pet__snap .petpic { filter: saturate(.72) brightness(1.06) contrast(1.05); }
-@keyframes go-tag-swing { 0%,100% { transform: rotate(-3.4deg); } 50% { transform: rotate(1.6deg); } }
-.go-pet__text { margin: 0; font-size: var(--fs-md); line-height: 1.5; color: var(--text-mid); font-style: italic; }
-.go-pet__text b { font-style: normal; color: var(--flame-200); }
+.go-pet__text {
+  margin: 0; font-size: var(--fs-md); line-height: 1.45; font-style: italic;
+  color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+.go-pet__text b { font-style: normal; font-weight: 600; color: var(--kit-name); }
 .go-stanza--pet.is-home .go-pet__text b { color: var(--spectre-200); }
 
-/* --- blueprint band ------------------------------------------------------- */
-.go-bp { display: grid; gap: var(--s-2); }
+/* --- the blueprint band, under glass in a gold frame ----------------------- */
+.go-bp { display: grid; gap: 5px; }
+.go-bp__frame { --fk: .5; margin: 5px 5px 0; }
 .go-bp__paper {
   position: relative;
-  aspect-ratio: 5 / 1;
+  aspect-ratio: 11 / 1;
   overflow: hidden;
-  border-radius: var(--radius-sm);
   background: var(--parchment);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--brass-400) 34%, transparent), var(--shadow-2);
 }
 .go-bp__img { position: absolute; left: 0; top: 0; height: auto; display: block; }
 .go-bp__wash {
   position: absolute; inset: 0;
   background:
-    radial-gradient(52% 130% at 50% 50%, transparent 22%, color-mix(in srgb, var(--ink-900) 62%, transparent) 100%),
-    linear-gradient(180deg, color-mix(in srgb, var(--ink-900) 22%, transparent), color-mix(in srgb, var(--ink-900) 44%, transparent));
+    radial-gradient(56% 140% at 50% 50%, transparent 30%, color-mix(in srgb, var(--kit-void) 52%, transparent) 100%),
+    linear-gradient(180deg, color-mix(in srgb, var(--kit-gold-lo) 26%, transparent), color-mix(in srgb, var(--kit-gold-lo) 34%, transparent));
   mix-blend-mode: multiply;
 }
 .go-bp__mark {
   position: absolute; left: 50%; top: 50%;
-  width: 9.5%; aspect-ratio: 1;
+  width: 7%; aspect-ratio: 1;
   transform: translate(-50%, -50%) rotate(-8deg);
   border: 2.5px solid color-mix(in srgb, var(--threat-400) 88%, transparent);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--threat-400) 14%, transparent);
@@ -335,228 +302,239 @@
 }
 @keyframes go-mark { 0%,100% { opacity: .8; } 50% { opacity: 1; } }
 .scene--gameover[data-result="victory"] .go-bp__wash {
-  background: radial-gradient(42% 100% at 50% 50%, transparent 20%, color-mix(in srgb, var(--ink-900) 34%, transparent) 100%);
+  background: radial-gradient(42% 100% at 50% 50%, transparent 20%, color-mix(in srgb, var(--kit-void) 34%, transparent) 100%);
 }
-.go-bp__meta { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-4); }
-.go-bp__label { font-size: var(--fs-xs); letter-spacing: .16em; text-transform: uppercase; color: var(--text-lo); }
-.go-bp__count { font-size: var(--fs-xs); letter-spacing: .14em; text-transform: uppercase; color: var(--text-lo); }
-.go-bp__count b { font-family: var(--font-num); font-size: 1.2em; color: var(--brass-200); }
+.go-bp__meta { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-4); padding: 0 4px; white-space: nowrap; }
+.go-bp__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.go-bp__count { flex: none; }
+.go-bp__label, .go-bp__count {
+  font-family: var(--font-display); font-weight: 700; font-size: 10.5px;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--kit-text-lo);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+.go-bp__count b { font-family: var(--font-num); font-size: 1.3em; color: var(--kit-gold-hi); }
 
-/* ═══ right: the ledger ═══════════════════════════════════════════════════ */
+/* ═══ right: the ledger — one panel, the moon on its rail ═════════════════ */
 .go-ledger {
-  display: flex; flex-direction: column; gap: clamp(9px, 1.3vh, 16px);
-  padding: clamp(12px, 1.7vh, 22px);
-  border-radius: var(--radius-lg);
-  background: linear-gradient(180deg,
-    color-mix(in oklab, var(--ink-700) 86%, var(--arcane-700)),
-    color-mix(in oklab, var(--ink-900) 92%, var(--arcane-700)));
-  border: 1px solid color-mix(in srgb, var(--brass-400) 30%, transparent);
-  box-shadow: var(--shadow-4), inset 0 1px 0 color-mix(in srgb, var(--brass-200) 12%, transparent);
+  --pk: .84;
+  --medal-k: .5;
+  display: flex; flex-direction: column; justify-content: space-between;
+  gap: clamp(6px, 1.1vh, 12px);
+  margin-top: 8px;
+  padding: clamp(18px, 2.6vh, 26px) clamp(16px, 1.6vw, 26px) clamp(10px, 1.4vh, 16px);
 }
 
-.go-lbl { font-size: var(--fs-xs); letter-spacing: .18em; text-transform: uppercase; color: var(--text-lo); }
-
-.go-who {
-  display: grid; grid-template-columns: auto 1fr auto; gap: var(--s-4); align-items: center;
-  padding-bottom: var(--s-3);
-  border-bottom: 1px solid color-mix(in srgb, var(--brass-400) 24%, transparent);
+.go-lbl {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--kit-text-lo);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
-.go-who__kid { width: 62px; border-radius: var(--radius-sm); overflow: hidden; box-shadow: var(--shadow-1); }
-.go-who__txt { display: grid; gap: 2px; min-width: 0; }
-.go-who__txt b { font-family: var(--font-display); font-size: var(--fs-lg); color: var(--text-hi); }
-.go-who__txt span { font-size: var(--fs-sm); font-style: italic; color: var(--text-lo); }
-.go-who__reach { display: grid; gap: 1px; justify-items: end; text-align: right; }
-.go-who__reach b { font-family: var(--font-display); font-size: var(--fs-lg); color: var(--flame-200); }
-.go-who__wing { font-size: var(--fs-xs); font-style: italic; color: var(--spectre-200); }
 
-.go-stats {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+.go-who { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--s-4); }
+.go-who__reach { display: grid; gap: 0; min-width: 0; }
+.go-who__reach b {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: var(--fs-lg); line-height: 1.1; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--kit-name);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 16px color-mix(in srgb, var(--kit-candle) 16%, transparent);
 }
-.go-stat {
-  display: grid; gap: 1px; align-content: start;
-  padding: var(--s-2) var(--s-3);
-  border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--ink-900) 54%, transparent);
-  border: 1px solid color-mix(in srgb, var(--brass-400) 16%, transparent);
-}
-.go-stat b { font-family: var(--font-num); font-size: var(--fs-lg); color: var(--brass-100); line-height: 1.1; }
-.go-stat em { font-size: 10px; font-style: italic; color: var(--text-lo); }
+.go-who__wing { font-size: var(--fs-sm); font-style: italic; color: var(--kit-text-mid); text-shadow: 0 1px 0 rgba(0, 0, 0, .9); }
 
-.go-courage { display: grid; grid-template-columns: auto 1fr auto auto; gap: var(--s-3); align-items: center; }
-.go-courage__note { font-size: var(--fs-xs); font-style: italic; color: var(--text-lo); }
+/* the seed, set into the header's right-hand side */
+.go-seed {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: center; justify-items: end;
+  column-gap: 10px; row-gap: 0;
+}
+.go-seed__val {
+  font-family: var(--font-num); font-variant-numeric: var(--num-feat);
+  font-size: var(--fs-md); font-weight: 600; letter-spacing: .12em;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+.go-seed__copy {
+  --plate-h: 32px;
+  min-width: 72px;
+  font-family: var(--font-display); font-weight: 700; font-size: 10.5px;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: var(--kit-text-mid);
+  cursor: pointer;
+  transition: filter var(--t-quick) var(--ease-out), color var(--t-quick) var(--ease-out);
+}
+.go-seed__copy:hover, .go-seed__copy:focus-visible {
+  color: #fff1d2;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .75)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 40%, transparent)) brightness(1.12);
+}
+.go-seed__copy:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 999px; }
+.go-seed__hint {
+  grid-column: 1 / -1;
+  font-size: var(--fs-xs); font-style: italic; color: var(--kit-text-lo);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+
+/* the numbers: the engraved strip (ui/kit.css .kit-stats) */
+.go-stat em { font-size: 10px; font-style: italic; color: var(--kit-text-lo); }
+
+/* --- Courage: an engraved gauge, between the reach and the seed ------------ */
+.go-courage {
+  flex: 1 1 auto; align-self: center; min-width: 0;
+  display: grid; grid-template-columns: auto minmax(40px, 1fr) auto; grid-template-rows: auto auto;
+  column-gap: var(--s-3); row-gap: 0; align-items: center;
+  margin: 0 clamp(6px, 1.4vw, 26px);
+}
+.go-courage__note { grid-column: 2 / -1; justify-self: end; }
 .go-courage__track {
-  height: 9px; border-radius: 5px; overflow: hidden;
-  background: color-mix(in srgb, var(--ink-900) 82%, transparent);
-  border: 1px solid color-mix(in srgb, var(--courage-500) 60%, transparent);
+  height: 10px; border-radius: 5px; overflow: hidden;
+  background: linear-gradient(180deg, #07050a, #150f18);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .9), 0 0 0 1px color-mix(in srgb, var(--kit-gold-lo) 90%, transparent),
+              0 0 0 2px rgba(0, 0, 0, .7), 0 1px 0 2px color-mix(in srgb, var(--kit-gold) 30%, transparent);
 }
 .go-courage__track i {
   display: block; height: 100%;
-  background: linear-gradient(90deg, var(--courage-500), var(--courage-300));
+  background: linear-gradient(180deg, color-mix(in oklab, var(--courage-300) 80%, white), var(--courage-500));
   box-shadow: 0 0 12px color-mix(in srgb, var(--courage-300) 60%, transparent);
   transition: width 1.2s var(--ease-out);
 }
-.go-courage__n { font-family: var(--font-num); font-size: var(--fs-sm); color: var(--courage-300); }
-.scene--gameover[data-result="defeat"] .go-courage__track { border-color: color-mix(in srgb, var(--ink-400) 90%, transparent); }
+.go-courage__n { font-family: var(--font-num); font-variant-numeric: var(--num-feat); font-size: var(--fs-md); font-weight: 600; color: var(--courage-300); }
+.go-courage__note { font-size: max(11px, var(--fs-xs)); font-style: italic; color: var(--kit-text-lo); }
 
-.go-block { display: grid; gap: var(--s-2); min-width: 0; }
-.go-h {
-  margin: 0;
-  font-family: var(--font-display); font-size: var(--fs-xs); font-weight: 600;
-  letter-spacing: .19em; text-transform: uppercase;
-  color: var(--brass-200);
-  display: flex; align-items: center; gap: var(--s-3);
-}
-.go-h::after {
-  content: ''; flex: 1; height: 1px;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--brass-400) 36%, transparent), transparent);
-}
-.go-h__n { font-style: normal; letter-spacing: .12em; color: var(--text-lo); }
+/* --- blocks and their headings --------------------------------------------- */
+.go-block { display: grid; gap: clamp(4px, .7vh, 8px); min-width: 0; align-content: start; }
+.go-h { margin: 0; font-size: var(--fs-xs); }
+.go-h__n { letter-spacing: .02em; font-size: max(11px, var(--fs-xs)); }
 
-/* --- the final deck ------------------------------------------------------- */
-.go-tricks { display: flex; flex-wrap: wrap; gap: 5px; }
+/* --- the final deck: every Trick on a nameplate ---------------------------- */
+.go-tricks { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px 4px; }
 .go-trick {
-  --tint: var(--rarity-common);
-  display: inline-grid; grid-template-columns: auto auto auto; align-items: center; gap: 6px;
-  padding: 3px 9px 3px 4px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, color-mix(in oklab, var(--ink-600) 74%, var(--tint)), var(--ink-800));
-  border: 1px solid color-mix(in srgb, var(--tint) 46%, transparent);
+  --plate-h: 31px;
+  flex-direction: row; gap: 6px;
+  padding: 0 calc(var(--plate-h) * .52);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .7));
 }
-.go-trick[data-type="attack"] { --tint: var(--type-attack); }
-.go-trick[data-type="skill"]  { --tint: var(--type-skill); }
-.go-trick[data-type="power"]  { --tint: var(--type-power); }
-.go-trick[data-type="curse"]  { --tint: var(--rarity-curse); }
-.go-trick[data-type="status"] { --tint: var(--rarity-status); }
-.go-trick[data-rarity="rare"]     { box-shadow: 0 0 0 1px color-mix(in srgb, var(--rarity-rare) 52%, transparent); }
-.go-trick[data-rarity="uncommon"] { box-shadow: 0 0 0 1px color-mix(in srgb, var(--rarity-uncommon) 40%, transparent); }
 .go-trick__cost {
-  display: grid; place-items: center;
-  width: 17px; height: 17px; border-radius: 50%;
-  font-family: var(--font-num); font-size: 10px; font-weight: 700; font-style: normal;
-  color: var(--ink-900);
-  background: radial-gradient(circle at 34% 30%, var(--pluck-300), var(--pluck-500));
+  display: grid; place-items: center; flex: none;
+  width: 18px; height: 18px; border-radius: 50%;
+  font-family: var(--font-num); font-variant-numeric: var(--num-feat);
+  font-size: 11px; font-weight: 700; font-style: normal; line-height: 1;
+  color: #20140a;
+  text-shadow: 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 70%, white);
+  background:
+    radial-gradient(60% 60% at 36% 30%, color-mix(in oklab, var(--kit-gold-hi) 80%, white), transparent 62%),
+    radial-gradient(100% 100% at 50% 60%, var(--kit-gold-hi) 0%, var(--kit-gold) 55%, var(--kit-gold-lo) 100%);
+  box-shadow: inset 0 0 0 1.5px color-mix(in oklab, var(--kit-gold-lo) 80%, black), 0 0 0 1px rgba(0, 0, 0, .7);
 }
-.go-trick__name { font-family: var(--font-body); font-size: var(--fs-sm); font-weight: 600; color: var(--text-hi); white-space: nowrap; }
+.go-trick__name {
+  font-family: var(--font-body); font-size: 13px; font-weight: 600; line-height: 1;
+  color: var(--kit-name); white-space: nowrap;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+.go-trick[data-rarity="uncommon"] .go-trick__name { color: color-mix(in oklab, var(--rarity-uncommon) 55%, var(--kit-name)); }
+.go-trick[data-rarity="rare"] .go-trick__name { color: color-mix(in oklab, var(--rarity-rare) 70%, var(--kit-name)); }
 /* the sharpened mark, in the same green the card face uses for an upgrade */
 .go-trick__name u { text-decoration: none; color: var(--good-300); font-weight: 700; }
-.go-trick[data-up] { border-color: color-mix(in srgb, var(--good-300) 52%, transparent); }
-.go-trick__n { font-family: var(--font-num); font-size: var(--fs-xs); font-style: normal; color: var(--brass-200); }
+.go-trick__n { font-family: var(--font-num); font-variant-numeric: var(--num-feat); font-size: 12px; font-style: normal; color: var(--kit-gold-hi); }
 
-/* --- the card that did the work ------------------------------------------ */
-.go-mvp { display: grid; grid-template-columns: auto 1fr; gap: var(--s-5); align-items: center; }
-.go-mvp__slot { position: relative; flex: none; }
-.go-mvp__note { margin: 0; font-size: var(--fs-sm); line-height: 1.55; font-style: italic; color: var(--text-mid); }
-.go-mvp__note b { font-style: normal; color: var(--flame-200); }
+/* --- the card that did the work, beside what came out with you ------------- */
+.go-pair {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: clamp(16px, 1.6vw, 28px);
+  align-items: start;
+  min-height: 0;
+}
+.go-pair:has(> .go-block--mvp[hidden]) { grid-template-columns: minmax(0, 1fr); }
+.go-mvp { display: grid; grid-template-columns: auto minmax(0, 15ch); gap: clamp(10px, 1vw, 16px); align-items: center; }
+.go-mvp__slot { position: relative; flex: none; margin: 12px; }
+/* the card hangs in the Kid board's frame, as the reward's three do */
+.go-mvp__slot::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  inset: -12px;
+  border: 7px solid transparent;
+  border-image-source: url("../../assets/ui/kit/frame.webp");
+  border-image-slice: 52;
+  border-image-width: 28px;
+  border-image-repeat: stretch;
+  background:
+    radial-gradient(90% 55% at 50% 100%, color-mix(in srgb, var(--kit-candle) 13%, transparent), transparent 70%),
+    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
+    linear-gradient(180deg, #110c16, #09070c);
+  background-blend-mode: normal, overlay, normal;
+  background-clip: padding-box;
+  box-shadow: 0 16px 30px -12px rgba(0, 0, 0, .95);
+}
+.go-mvp__note {
+  margin: 0; font-size: var(--fs-sm); line-height: 1.42; font-style: italic;
+  color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+.go-mvp__note b { font-style: normal; font-weight: 600; color: var(--kit-name); }
 
-/* --- keepsakes ------------------------------------------------------------ */
-.go-keeps { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 5px; }
+/* --- keepsakes: the Shop's ledger rows ------------------------------------- */
+.go-keeps { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(12px, 1.2vw, 20px); }
 /* A run that kept nothing says so. It spans the whole grid so the sentence
    reads as a sentence and not as a chip that lost its label. */
 .go-keeps__none {
   grid-column: 1 / -1;
   margin: 0; padding: 5px var(--s-3);
-  font-size: var(--fs-xs); font-style: italic; line-height: 1.35; color: var(--text-lo);
+  font-size: var(--fs-sm); font-style: italic; line-height: 1.35; color: var(--kit-text-mid);
 }
 .go-keep {
-  display: grid; grid-template-areas: 'i b' 'i e'; grid-template-columns: auto 1fr;
-  gap: 0 var(--s-3); align-items: center;
-  padding: 5px var(--s-3);
-  border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--ink-600) 52%, transparent);
-  border: 1px solid color-mix(in srgb, var(--brass-400) 22%, transparent);
+  display: grid; grid-template-areas: 'i b' 'i e'; grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 10px; align-items: center;
+  padding: clamp(3px, .5vh, 5px) 0;
+  border-top: 1px solid transparent;
+  border-image: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 50%, transparent) 18%, color-mix(in srgb, var(--kit-gold) 50%, transparent) 82%, transparent) 1;
 }
+.go-keep:nth-child(-n+2) { border-top-color: transparent; border-image: none; }
 .go-keep__sigil {
   grid-area: i;
-  width: 18px; height: 18px; border-radius: 50%;
-  background: radial-gradient(circle at 34% 30%, var(--brass-100), var(--brass-400));
-  box-shadow: 0 0 10px color-mix(in srgb, var(--flame-glow) 42%, transparent);
-}
-.go-keep b { grid-area: b; font-family: var(--font-display); font-size: var(--fs-sm); color: var(--brass-100); }
-.go-keep em { grid-area: e; font-size: var(--fs-xs); font-style: italic; line-height: 1.35; color: var(--text-lo); }
-.scene--gameover[data-result="defeat"] .go-keep { opacity: .74; }
-.scene--gameover[data-result="defeat"] .go-keep__sigil { filter: grayscale(.5) brightness(.8); box-shadow: none; }
-
-/* --- seed ---------------------------------------------------------------- */
-.go-seed {
-  display: flex; align-items: center; gap: var(--s-3); flex-wrap: wrap;
-  margin-top: auto; padding-top: var(--s-3);
-  border-top: 1px solid color-mix(in srgb, var(--brass-400) 22%, transparent);
-}
-.go-seed__val {
-  font-family: var(--font-num); font-size: var(--fs-sm); letter-spacing: .14em;
-  color: var(--spectre-200);
-  padding: 4px var(--s-3);
-  border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--ink-900) 70%, transparent);
-  border: 1px solid color-mix(in srgb, var(--spectre-500) 40%, transparent);
-}
-.go-seed__copy {
-  padding: 4px var(--s-3);
-  font-size: var(--fs-xs); letter-spacing: .14em; text-transform: uppercase;
-  color: var(--text-mid);
-  border: 1px solid color-mix(in srgb, var(--brass-400) 26%, transparent);
-  border-radius: var(--radius-sm);
-  transition: color var(--t-quick) var(--ease-out), border-color var(--t-quick) var(--ease-out);
-}
-.go-seed__copy:hover { color: var(--flame-100); border-color: var(--brass-300); }
-.go-seed__copy:focus-visible { outline: 2px solid var(--flame-300); outline-offset: 2px; }
-.go-seed__hint { font-size: var(--fs-xs); font-style: italic; color: var(--text-lo); }
-
-/* ═══ footer ══════════════════════════════════════════════════════════════ */
-.go-foot {
-  position: absolute; left: 0; right: 0; bottom: 0; height: var(--go-foot-h);
   display: grid; place-items: center;
-  padding: 0 clamp(20px, 3vw, 56px);
-  background: linear-gradient(0deg, color-mix(in srgb, var(--ink-900) 96%, transparent) 46%, transparent);
-  border-top: 1px solid color-mix(in srgb, var(--brass-400) 18%, transparent);
-  z-index: 5;
+  width: clamp(30px, 2.3vw, 36px); aspect-ratio: 1; border-radius: 50%;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8));
 }
-.go-acts { display: flex; gap: clamp(8px, 1.2vw, 20px); align-items: stretch; }
-.go-btn {
-  display: grid; gap: 1px; text-align: left;
-  padding: var(--s-3) clamp(var(--s-4), 1.8vw, var(--s-7));
-  border-radius: var(--radius-sm);
-  border: 1px solid color-mix(in srgb, var(--brass-400) 36%, transparent);
-  background: color-mix(in srgb, var(--ink-600) 62%, transparent);
-  transition: transform var(--t-quick) var(--ease-out), background var(--t-quick) var(--ease-out),
-              border-color var(--t-quick) var(--ease-out), box-shadow var(--t-base) var(--ease-out);
-  will-change: transform;
+.go-keep__sigil svg { width: 54%; height: 54%; fill: none; stroke: var(--kit-gold-hi);
+                      stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.go-keep[data-rarity="rare"] .go-keep__sigil svg { stroke: color-mix(in oklab, var(--rarity-rare) 80%, white); }
+.go-keep[data-rarity="uncommon"] .go-keep__sigil svg { stroke: color-mix(in oklab, var(--rarity-uncommon) 70%, white); }
+.go-keep b {
+  grid-area: b; align-self: end;
+  font-family: var(--font-body); font-weight: 600; font-size: var(--fs-sm); line-height: 1.15;
+  color: var(--kit-name);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
-.go-btn b {
-  font-family: var(--font-display); font-size: var(--fs-md); font-weight: 600;
-  letter-spacing: .11em; text-transform: uppercase;
-  color: var(--text-hi);
+.go-keep em {
+  grid-area: e; align-self: start;
+  font-size: 12px; font-style: italic; line-height: 1.28;
+  color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
-.go-btn em { font-size: var(--fs-xs); font-style: italic; color: var(--text-lo); }
-.go-btn:hover, .go-btn:focus-visible {
-  outline: none; transform: translateY(-3px);
-  border-color: var(--brass-300);
-  background: color-mix(in srgb, var(--ink-500) 70%, transparent);
+.scene--gameover[data-result="defeat"] .go-keep__sigil { filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8)) saturate(.6); }
+
+/* ═══ footer: the three ways out ══════════════════════════════════════════ */
+.go-foot {
+  display: flex; align-items: center; justify-content: center;
+  padding: clamp(6px, 1vh, 12px) calc(var(--kit-vine-w) + 40px) clamp(14px, 2.2vh, 24px);
 }
-.go-btn:focus-visible { box-shadow: 0 0 0 2px var(--flame-300), var(--shadow-3); }
-.go-btn:active { transform: translateY(-1px) scale(.99); }
-.go-btn--primary {
-  border-color: var(--brass-200);
-  background: linear-gradient(180deg, var(--flame-200), var(--flame-400));
-  box-shadow: 0 0 26px color-mix(in srgb, var(--flame-glow) 30%, transparent);
+.go-acts { display: flex; align-items: center; gap: clamp(20px, 2.4vw, 44px); }
+.go-btn b { font: inherit; letter-spacing: inherit; }
+/* the way home: its enamel button seated on the cartouche's right end */
+.go-btn--primary { padding-right: calc(var(--plate-h) * 1.3); margin-right: calc(var(--plate-h) * .9); }
+.go-btn--primary .kit-btn__medal { right: calc(var(--plate-h) * -.84); }
+.go-btn--primary::before {
+  /* the candle-light the way home breathes; opacity only, so it is cheap */
+  content: ''; position: absolute; inset: -30% -8%; z-index: -1; pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 26%, transparent), transparent);
+  animation: go-ready 2.6s var(--ease-soft) infinite;
 }
-.go-btn--primary b { color: var(--ink-900); }
-.go-btn--primary em { color: color-mix(in oklab, var(--ink-900) 74%, var(--flame-500)); }
-.go-btn--primary:hover,
-.go-btn--primary:focus-visible {
-  background: linear-gradient(180deg, var(--flame-100), var(--flame-300));
-  border-color: var(--brass-100);
-  box-shadow: 0 0 40px color-mix(in srgb, var(--flame-glow) 56%, transparent);
-}
-.go-btn--primary:focus-visible {
-  box-shadow: 0 0 0 2px var(--ink-900), 0 0 0 4px var(--flame-200),
-              0 0 40px color-mix(in srgb, var(--flame-glow) 56%, transparent);
-}
+@keyframes go-ready { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
 
 /* ═══ entrance ════════════════════════════════════════════════════════════ */
-.scene--gameover.is-entering .go-stage    { animation: go-in-up .9s var(--ease-out) .05s both; }
-.scene--gameover.is-entering .go-head     { animation: go-in-up .8s var(--ease-out) .34s both; }
+.scene--gameover.is-entering .go-head     { animation: go-in-up .8s var(--ease-out) .05s both; }
+.scene--gameover.is-entering .go-stage    { animation: go-in-up .9s var(--ease-out) .2s both; }
 .scene--gameover.is-entering .go-stanza   { animation: go-in-up .7s var(--ease-out) both; }
 .scene--gameover.is-entering .go-stanza:nth-child(1) { animation-delay: .62s; }
 .scene--gameover.is-entering .go-stanza:nth-child(2) { animation-delay: .76s; }
@@ -567,22 +545,64 @@
 @keyframes go-in-up    { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 @keyframes go-in-right { from { opacity: 0; transform: translateX(26px); } to { opacity: 1; transform: none; } }
 
+/* ═══ reduced motion ══════════════════════════════════════════════════════
+   The game's own setting is `.mm-reduce-motion` on the root (ui/portrait.css
+   stops everything under it). The OS preference stops the loops here too:
+   the candle keeps its light and the way home keeps its glow, but nothing
+   breathes, drifts or sweeps. The snuff itself still happens — instantly. */
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-reduce-motion="0"]) .scene--gameover .go-halo,
+  :root:not([data-reduce-motion="0"]) .scene--gameover .go-candle__prop::after,
+  :root:not([data-reduce-motion="0"]) .scene--gameover .go-btn--primary::before,
+  :root:not([data-reduce-motion="0"]) .scene--gameover .go-motes i,
+  :root:not([data-reduce-motion="0"]) .scene--gameover .go-smoke path,
+  :root:not([data-reduce-motion="0"]) .scene--gameover .go-vignette::before,
+  :root:not([data-reduce-motion="0"]) .scene--gameover .go-bp__mark { animation: none; }
+  :root:not([data-reduce-motion="0"]) .scene--gameover .go-smoke path { stroke-dashoffset: 0; }
+  :root:not([data-reduce-motion="0"]) .scene--gameover .go-motes { display: none; }
+}
+
 /* ═══ readability ═════════════════════════════════════════════════════════ */
-.mm-large-text .go-lede,
 .mm-large-text .go-pet__text,
-.mm-large-text .go-mvp__note { font-size: calc(var(--fs-md) * 1.14); }
+.mm-large-text .go-mvp__note { font-size: calc(var(--fs-md) * 1.1); }
 .mm-large-text .go-stanza li,
 .mm-large-text .go-trick__name,
 .mm-large-text .go-keep em,
 .mm-large-text .go-keeps__none { font-size: var(--fs-sm); }
+.mm-large-text .go-wrap { overflow-y: auto; }
 
-@media (max-width: 1280px) {
-  .go-wrap { grid-template-columns: 1fr; overflow: auto; }
-  .go-beat, .go-ledger { max-height: none; overflow: visible; }
-  .go-stats { grid-template-columns: repeat(2, 1fr); }
-  .go-web { display: none; }
+/* ── the Steam Deck and every short laptop panel ──────────────────────────── */
+@media (max-height: 860px) {
+  .go-board { --go-mvp-s: .5; }
+  .go-stage { --go-plate-h: 38px; padding-top: 4px; }
+  .go-stanzas { row-gap: 22px; }
+  .go-stanza { padding-block: 12px 7px; }
+  .go-stanza li { line-height: 1.34; }
+  .go-pet__text { font-size: var(--fs-sm); }
+  .go-ledger { padding-block: 16px 10px; }
+  .go-trick { --plate-h: 28px; }
+  .go-keep em { font-size: 11px; }
 }
-@media (max-height: 780px) {
-  .go-title { font-size: clamp(28px, 3vw, 46px); }
-  .go-plate { width: min(230px, 20vw); }
+@media (max-width: 1400px) {
+  .go-wrap { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); column-gap: 20px; }
+  .go-mvp { grid-template-columns: auto minmax(0, 12ch); gap: 8px; }
+  .go-mvp__slot { margin: 10px; }
+  .go-mvp__note { font-size: 12px; line-height: 1.34; }
+  .go-stats .kit-stats__label { font-size: 10px; letter-spacing: .05em; }
+  .go-bp__label, .go-bp__count { letter-spacing: .1em; }
+  .go-trick { --plate-h: 27px; gap: 5px; }
+  .go-trick__name { font-size: 12px; }
+  .go-trick__cost { width: 16px; height: 16px; font-size: 10px; }
+  .go-keep { column-gap: 8px; }
+  .go-keep__sigil { width: 28px; }
+  .go-keep em { font-size: 11.5px; line-height: 1.22; }
+  .go-who__reach b { font-size: var(--fs-md); }
+  .go-seed__hint { font-size: 11px; }
+  /* the three ways out: each hint under its words, so the row fits the panel */
+  .go-btn { flex-direction: column; gap: 0; --plate-h: 50px; font-size: var(--fs-sm); line-height: 1.1; }
+  .go-btn em { font-size: 11px; }
+  .go-btn.kit-btn--quiet { --plate-h: 46px; }
+}
+@media (max-width: 1100px) {
+  .go-wrap { grid-template-columns: minmax(0, 1fr); overflow-y: auto; }
 }

@@ -85,46 +85,307 @@ const GENERIC_TALK = [
   'They fall asleep. You keep watch. It is the first time all night that somebody else has been the one resting.',
 ];
 
+/* THE FORT, IN TWO LAYERS, both on the same 420x280 grid.
+ *
+ * `.rs-fort__paint` is the room and the fort: wall, barricaded door, moonlit
+ * window, rug, the quilts with their patches and folds, the lamplit way in.
+ * Painted with gradients and one woven-cloth texture filter, and NOTHING in it
+ * moves — a turbulence filter re-rasters every time anything inside the same
+ * SVG changes, and the two figures change every frame.
+ *
+ * `.rs-fort` is what lives: the lamp's flame and its pool of light, the flat
+ * stand-ins and the real Kid and Companion. Its classes, ids and coordinates
+ * are the ones `_mountFort` and tests/sprites/clips.py read, unchanged.
+ *
+ * When Josh's painting arrives (`rest.png`, the fort left of centre) the board
+ * shows it behind this panel; rest.css then lifts the painted layer away and
+ * leaves the frame, the lamp and the two of them standing in front of it. */
+const KIT_ART = new URL('../../assets/ui/kit/', import.meta.url).href;
+
+const FORT_PAINT = `
+<svg class="rs-fort__paint" viewBox="0 0 420 280" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="rsWall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" class="rs-wall-a"/><stop offset=".6" class="rs-wall-b"/><stop offset="1" class="rs-wall-c"/>
+    </linearGradient>
+    <radialGradient id="rsMoonWash" cx="90%" cy="16%" r="64%">
+      <stop offset="0" class="rs-moon-a"/><stop offset="1" class="rs-moon-z"/>
+    </radialGradient>
+    <radialGradient id="rsWarmWash" cx="50%" cy="80%" r="50%">
+      <stop offset="0" class="rs-warm-a"/><stop offset="1" class="rs-warm-z"/>
+    </radialGradient>
+    <linearGradient id="rsGlass" x1="0" y1="0" x2=".3" y2="1">
+      <stop offset="0" class="rs-glass-a"/><stop offset="1" class="rs-glass-b"/>
+    </linearGradient>
+    <linearGradient id="rsShaft" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0" class="rs-shaft-a"/><stop offset="1" class="rs-shaft-z"/>
+    </linearGradient>
+    <linearGradient id="rsWood" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" class="rs-wood-a"/><stop offset=".55" class="rs-wood-b"/><stop offset="1" class="rs-wood-a"/>
+    </linearGradient>
+    <linearGradient id="rsPlank" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" class="rs-plank-a"/><stop offset=".5" class="rs-plank-b"/><stop offset="1" class="rs-plank-c"/>
+    </linearGradient>
+    <linearGradient id="rsFloorG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" class="rs-floor-a"/><stop offset="1" class="rs-floor-b"/>
+    </linearGradient>
+    <radialGradient id="rsRugG" cx="50%" cy="35%" r="70%">
+      <stop offset="0" class="rs-rug-a"/><stop offset="1" class="rs-rug-b"/>
+    </radialGradient>
+    <linearGradient id="rsQuilt" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" class="rs-quilt-a"/><stop offset=".45" class="rs-quilt-b"/><stop offset="1" class="rs-quilt-c"/>
+    </linearGradient>
+    <linearGradient id="rsThrow" x1="0" y1=".3" x2="1" y2="0">
+      <stop offset="0" class="rs-throw-a"/><stop offset=".5" class="rs-throw-b"/><stop offset="1" class="rs-throw-c"/>
+    </linearGradient>
+    <linearGradient id="rsDrapeG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" class="rs-drape-a"/><stop offset="1" class="rs-drape-b"/>
+    </linearGradient>
+    <linearGradient id="rsSide" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" class="rs-side-a"/><stop offset=".3" class="rs-side-z"/>
+      <stop offset=".8" class="rs-side-z"/><stop offset="1" class="rs-side-b"/>
+    </linearGradient>
+    <linearGradient id="rsFoot" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" class="rs-foot-z"/><stop offset="1" class="rs-foot-a"/>
+    </linearGradient>
+    <radialGradient id="rsInner" cx="50%" cy="100%" r="100%">
+      <stop offset="0" class="rs-in-a"/><stop offset=".42" class="rs-in-m"/><stop offset="1" class="rs-in-b"/>
+    </radialGradient>
+    <radialGradient id="rsVelvet" cx="36%" cy="26%" r="84%">
+      <stop offset="0" class="rs-vel-a"/><stop offset="1" class="rs-vel-b"/>
+    </radialGradient>
+    <linearGradient id="rsGilt" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" class="rs-gilt-a"/><stop offset=".5" class="rs-gilt-b"/><stop offset="1" class="rs-gilt-c"/>
+    </linearGradient>
+    <radialGradient id="rsVig" cx="50%" cy="58%" r="76%">
+      <stop offset=".5" class="rs-vig-a"/><stop offset="1" class="rs-vig-b"/>
+    </radialGradient>
+    <pattern id="rsDamask" width="46" height="52" patternUnits="userSpaceOnUse">
+      <image href="${KIT_ART}damask.webp" width="46" height="52" preserveAspectRatio="none"/>
+    </pattern>
+
+    <!-- old plaster: slow fractal noise multiplied into the wall -->
+    <filter id="rsPlaster" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency=".04 .055" numOctaves="4" seed="5" result="n"/>
+      <feColorMatrix in="n" type="matrix"
+        values="0 0 0 .75 .38  0 0 0 .75 .38  0 0 0 .75 .38  0 0 0 0 1" result="g"/>
+      <feBlend in="SourceGraphic" in2="g" mode="multiply" result="b"/>
+      <feComposite in="b" in2="SourceGraphic" operator="in"/>
+    </filter>
+    <!-- cloth: edges that wander the way a brush does, then a weave along the weft -->
+    <filter id="rsCloth" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="2" seed="4" result="w"/>
+      <feDisplacementMap in="SourceGraphic" in2="w" scale="3.2" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feTurbulence type="fractalNoise" baseFrequency="1.1 .3" numOctaves="2" seed="11" result="n"/>
+      <feColorMatrix in="n" type="matrix"
+        values="0 0 0 .5 .5  0 0 0 .5 .5  0 0 0 .5 .5  0 0 0 0 1" result="g"/>
+      <feBlend in="d" in2="g" mode="multiply" result="b"/>
+      <feComposite in="b" in2="d" operator="in"/>
+    </filter>
+    <!-- the whole picture, as if brushed: edges that wander, and the tooth of
+         the canvas multiplied into everything -->
+    <filter id="rsPaint" filterUnits="userSpaceOnUse" x="-24" y="-24" width="468" height="328" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency=".024" numOctaves="3" seed="8" result="w"/>
+      <feDisplacementMap in="SourceGraphic" in2="w" scale="3.4" xChannelSelector="R" yChannelSelector="B" result="d"/>
+      <feTurbulence type="fractalNoise" baseFrequency=".55 .75" numOctaves="3" seed="3" result="c"/>
+      <feColorMatrix in="c" type="matrix"
+        values="0 0 0 .34 .68  0 0 0 .34 .68  0 0 0 .34 .68  0 0 0 0 1" result="cg"/>
+      <feBlend in="d" in2="cg" mode="multiply"/>
+    </filter>
+    <filter id="rsBlur2" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2"/></filter>
+    <filter id="rsBlur4" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="4"/></filter>
+    <filter id="rsBlur8" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="8"/></filter>
+
+    <clipPath id="rsClipFront">
+      <path d="M58 257C66 214 84 168 102 128c68-6 148-6 218-2 6 44 10 88 14 131-7 4-18-3-26 1s-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-14-3-18-1Z"/>
+    </clipPath>
+    <clipPath id="rsClipThrow">
+      <path d="M290 134c16-16 38-32 66-38 14-2 22 8 25 24 6 44 14 88 22 137-10 5-22-5-32 1s-20-4-30 0-20-4-30 0c-4-42-6-84-21-124Z"/>
+    </clipPath>
+  </defs>
+
+  <g filter="url(#rsPaint)">
+  <!-- the room: damask plaster, a dado rail, and moonlight coming in from the right -->
+  <g filter="url(#rsPlaster)">
+    <rect x="-24" y="-24" width="468" height="281" fill="url(#rsWall)"/>
+    <path class="rs-wains" d="M-24 178h468v79H-24Z"/>
+  </g>
+  <rect width="420" height="178" fill="url(#rsDamask)" class="rs-damask"/>
+  <path class="rs-rail" d="M0 178h420"/>
+  <path class="rs-rail rs-rail--lo" d="M0 181.5h420"/>
+  <rect width="420" height="257" fill="url(#rsMoonWash)"/>
+  <ellipse class="rs-wallglow" cx="206" cy="170" rx="150" ry="74" filter="url(#rsBlur8)"/>
+
+  <!-- a portrait of the house, hung where the kids could not reach to take it down -->
+  <rect class="rs-picframe" x="186" y="22" width="48" height="58" rx="2" fill="url(#rsGilt)"/>
+  <image href="${KIT_ART}hall-towers.webp" x="192" y="28" width="36" height="46" preserveAspectRatio="xMidYMid slice" class="rs-pic"/>
+  <rect class="rs-picedge" x="192" y="28" width="36" height="46"/>
+
+  <!-- the window the moon comes through, and what it lays across the room -->
+  <path class="rs-winframe" d="M350 110V46c0-23 13-35 30-35s30 12 30 35v64Z"/>
+  <path d="M357 106V48c0-18 10-29 23-29s23 11 23 29v58Z" fill="url(#rsGlass)"/>
+  <circle class="rs-moonglow" cx="391" cy="40" r="15" filter="url(#rsBlur4)"/>
+  <circle class="rs-moondisc" cx="391" cy="40" r="7"/>
+  <g class="rs-stars"><circle cx="365" cy="36" r=".9"/><circle cx="371" cy="74" r=".7"/><circle cx="395" cy="84" r=".8"/><circle cx="362" cy="94" r=".6"/><circle cx="386" cy="60" r=".6"/></g>
+  <path class="rs-mullion" d="M380 19v87M357 60h46"/>
+  <path class="rs-winsill" d="M344 108h72v7h-72Z"/>
+  <path d="M362 40 404 40 322 257 190 257Z" fill="url(#rsShaft)" filter="url(#rsBlur8)"/>
+
+  <!-- the door they wedged: panelled, boarded across, still shut -->
+  <path class="rs-doorframe" d="M4 58h80v199H4Z"/>
+  <path d="M10 64h68v193H10Z" fill="url(#rsWood)"/>
+  <path class="rs-doorpanel" d="M17 74h23v74H17ZM47 74h23v74H47ZM17 160h23v88H17ZM47 160h23v88H47Z"/>
+  <circle class="rs-doorknob" cx="72" cy="166" r="3.2"/>
+  <g class="rs-plank">
+    <rect x="2" y="98" width="84" height="10" rx="1.5" fill="url(#rsPlank)" transform="rotate(-9 44 103)"/>
+    <rect x="3" y="142" width="82" height="10" rx="1.5" fill="url(#rsPlank)" transform="rotate(6 44 147)"/>
+    <rect x="1" y="192" width="84" height="10" rx="1.5" fill="url(#rsPlank)" transform="rotate(-5 43 197)"/>
+  </g>
+  <path class="rs-grain" d="M6 104c24-3 50-7 78-11M8 146c26 2 50 5 76 9M4 196c26-1 52-3 80-6"/>
+  <g class="rs-nail">
+    <circle cx="9" cy="109" r="1.3"/><circle cx="79" cy="98" r="1.3"/>
+    <circle cx="9" cy="143" r="1.3"/><circle cx="79" cy="150" r="1.3"/>
+    <circle cx="7" cy="200" r="1.3"/><circle cx="79" cy="194" r="1.3"/>
+  </g>
+
+  <!-- floorboards, and the rug the fort was built on -->
+  <path d="M-24 257h468v47H-24Z" fill="url(#rsFloorG)"/>
+  <path class="rs-floor" d="M0 266h420M0 274h420"/>
+  <g filter="url(#rsCloth)">
+    <ellipse cx="218" cy="265" rx="194" ry="13" fill="url(#rsRugG)"/>
+    <ellipse class="rs-rugrim" cx="218" cy="265" rx="184" ry="10"/>
+    <ellipse class="rs-rugrim rs-rugrim--in" cx="218" cy="265" rx="176" ry="8"/>
+  </g>
+  <ellipse class="rs-shadow" cx="230" cy="258" rx="178" ry="7" filter="url(#rsBlur4)"/>
+  <ellipse class="rs-spill" cx="212" cy="266" rx="120" ry="15" filter="url(#rsBlur8)"/>
+
+  <!-- the chair the second blanket hangs off -->
+  <g class="rs-chair">
+    <path d="M324 96h6v40h-6ZM352 96h6v30h-6Z"/>
+    <path d="M320 98h42v6h-42Z"/>
+    <circle cx="327" cy="94" r="3.4"/><circle cx="355" cy="94" r="3.4"/>
+  </g>
+
+  <!-- the fort's flag, and the bunting strung from it to the chair -->
+  <path class="rs-pole" d="M104 132 91 34"/>
+  <circle class="rs-polecap" cx="91" cy="32" r="2.6"/>
+  <path class="rs-pennant" d="M93 38 138 49 95 62Z"/>
+  <path class="rs-pennant-star" d="M108 46l1.4 2.9 3.1.4-2.3 2.1.6 3.1-2.8-1.5-2.8 1.5.6-3.1-2.3-2.1 3.1-.4Z"/>
+  <path class="rs-string" d="M94 44C170 98 282 108 354 98"/>
+  <g class="rs-bunting">
+    <path class="rs-bunt rs-bunt--gold"   d="M125 64h11l-5.5 12Z"/>
+    <path class="rs-bunt rs-bunt--violet" d="M165 79h11l-5.5 12Z"/>
+    <path class="rs-bunt rs-bunt--rose"   d="M206 89h11l-5.5 12Z"/>
+    <path class="rs-bunt rs-bunt--gold"   d="M247 95h11l-5.5 12Z"/>
+    <path class="rs-bunt rs-bunt--violet" d="M287 98h11l-5.5 12Z"/>
+    <path class="rs-bunt rs-bunt--rose"   d="M320 99h11l-5.5 12Z"/>
+  </g>
+
+  <!-- THE FORT: the quilt over the front, the throw off the chair, the drape
+       over the table top; patchwork, folds and stitching, all in one cloth -->
+  <g filter="url(#rsCloth)">
+    <path d="M58 257C66 214 84 168 102 128c68-6 148-6 218-2 6 44 10 88 14 131-7 4-18-3-26 1s-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-14-3-18-1Z" fill="url(#rsQuilt)"/>
+    <g clip-path="url(#rsClipFront)">
+      <path class="rs-patch rs-patch--rose"   d="M108 170l30-3 3 36-32 3Z"/>
+      <path class="rs-patch rs-patch--ochre"  d="M78 214l34 1-1 44-38-1Z"/>
+      <path class="rs-patch rs-patch--indigo" d="M280 168l30 2-1 40-30-2Z"/>
+      <path class="rs-patch rs-patch--rose"   d="M284 222l34 1 4 36-36-1Z"/>
+      <path class="rs-stitchbox" d="M108 170l30-3 3 36-32 3ZM78 214l34 1-1 44-38-1ZM280 168l30 2-1 40-30-2ZM284 222l34 1 4 36-36-1Z"/>
+      <path class="rs-stitch" d="M70 196c40-8 220-10 262-4M64 236c46-6 226-8 272-2"/>
+      <path class="rs-fold" d="M118 158c-2 36-4 68-8 100M288 160c1 34 2 66 4 98M102 132c-6 44-12 86-16 126" filter="url(#rsBlur2)"/>
+      <path class="rs-foldlit" d="M128 158c-1 36-2 68-4 100M296 160c1 34 3 66 6 98M100 134c-12 42-24 82-34 122" filter="url(#rsBlur2)"/>
+      <rect x="50" y="120" width="290" height="140" fill="url(#rsSide)"/>
+      <rect x="50" y="228" width="290" height="32" fill="url(#rsFoot)"/>
+    </g>
+
+    <path d="M290 134c16-16 38-32 66-38 14-2 22 8 25 24 6 44 14 88 22 137-10 5-22-5-32 1s-20-4-30 0-20-4-30 0c-4-42-6-84-21-124Z" fill="url(#rsThrow)"/>
+    <g clip-path="url(#rsClipThrow)">
+      <path class="rs-fold" d="M362 104c4 52 10 104 16 154M334 112c2 48 4 96 8 146" filter="url(#rsBlur2)"/>
+      <path class="rs-foldlit" d="M378 110c6 50 12 98 20 148M348 108c3 50 6 100 10 150" filter="url(#rsBlur2)"/>
+      <path class="rs-throwstripe" d="M296 238c34-3 74-3 110 2M296 245c34-3 74-3 110 2"/>
+      <rect x="280" y="228" width="140" height="32" fill="url(#rsFoot)"/>
+    </g>
+    <path class="rs-moonrim" d="M300 128c14-14 34-28 56-32 12-2 20 8 24 22 6 44 12 88 20 136" filter="url(#rsBlur2)"/>
+
+    <path d="M94 132c56-14 156-16 212-4-4 10-8 22-14 30-6-10-16-10-24 2-8-12-18-12-26 0-8-12-18-12-26 0-8-12-18-12-26 0-8-12-18-12-26 0-8-12-18-12-26 0-8-12-18-12-26 0-8-12-18-12-26 2-8-8-14-16-18-26Z" fill="url(#rsDrapeG)"/>
+    <path class="rs-drapehem" d="M94 132c4 10 10 18 18 26 8-14 18-14 26 2 8-12 18-12 26 0 8-12 18-12 26 0 8-12 18-12 26 0 8-12 18-12 26 0 8-12 18-12 26 0 8-12 18-12 24-2 6-8 10-20 14-30"/>
+    <path class="rs-drapelit" d="M100 130c56-12 150-14 204-4" filter="url(#rsBlur2)"/>
+  </g>
+  <g class="rs-tassel">
+    <path d="M112 158v6M138 160v6M164 160v6M190 160v6M216 160v6M242 160v6M268 160v6M292 158v6"/>
+    <circle cx="112" cy="165" r="1.6"/><circle cx="138" cy="167" r="1.6"/><circle cx="164" cy="167" r="1.6"/>
+    <circle cx="190" cy="167" r="1.6"/><circle cx="216" cy="167" r="1.6"/><circle cx="242" cy="167" r="1.6"/>
+    <circle cx="268" cy="167" r="1.6"/><circle cx="292" cy="165" r="1.6"/>
+  </g>
+
+  <!-- the lamp's warmth on the cloth round the way in -->
+  <path d="M50 120h360v140H50Z" fill="url(#rsWarmWash)" clip-path="url(#rsClipFront)"/>
+
+  <!-- the way in: a flap tied back, lamplight on everything inside -->
+  <path d="M146 257v-47c0-31 27-46 64-46s64 15 64 46v47Z" fill="url(#rsInner)"/>
+  <path class="rs-archshade" d="M154 220c0-28 22-46 56-46s56 18 56 46" filter="url(#rsBlur4)"/>
+  <g class="rs-inside">
+    <path class="rs-inpillow" d="M150 257c-2-14 4-26 16-28 12-2 24 4 28 16 2 6 0 12-2 12Z"/>
+    <path class="rs-inpillow rs-inpillow--b" d="M268 257c3-16-3-28-17-30-13-2-24 6-27 18-1 6 1 12 3 12Z"/>
+    <path class="rs-inblanket" d="M186 257c4-8 12-12 24-12s22 4 26 12Z"/>
+  </g>
+  <path class="rs-flap" d="M146 257c-5-22-6-50 4-72 6-12 14-18 22-18-8 28-10 62 4 90Z"/>
+  <path class="rs-flaplit" d="M172 167c-8 28-10 62 4 90"/>
+  <path class="rs-tie" d="M147 213c6 4 14 4 20 0"/><circle class="rs-knot" cx="168" cy="213" r="2.4"/>
+  <path class="rs-archline" d="M184 165c8-1 17-1 26-1 37 0 64 15 64 46v47"/>
+
+  <!-- floor cushions either side of the way in -->
+  <g class="rs-cushions" filter="url(#rsCloth)">
+    <path d="M292 259c-3-6-2-15 3-20 4-3 9 0 14-1 8-1 18-1 26 0 5 1 10-2 14 1 5 5 6 14 3 20-4 2-8-1-13 0-10 1-24 1-34 0-5-1-9 2-13 0Z" fill="url(#rsVelvet)"/>
+    <path d="M74 259c-3-6-2-13 3-17 4-3 8 0 12-1 7-1 16-1 23 0 5 1 9-2 12 1 5 4 6 11 3 17-4 2-7-1-11 0-9 1-21 1-30 0-4-1-8 2-12 0Z" fill="url(#rsVelvet)"/>
+    <path class="rs-piping" d="M292 259c-3-6-2-15 3-20 4-3 9 0 14-1 8-1 18-1 26 0 5 1 10-2 14 1 5 5 6 14 3 20M74 259c-3-6-2-13 3-17 4-3 8 0 12-1 7-1 16-1 23 0 5 1 9-2 12 1 5 4 6 11 3 17"/>
+    <path class="rs-sheen" d="M300 244c10-2 26-2 38 0M82 246c9-2 22-2 32 0"/>
+    <circle class="rs-tuft" cx="321" cy="249" r="1.6"/><circle class="rs-tuft" cx="100" cy="250" r="1.4"/>
+  </g>
+  <g class="rs-tassel">
+    <path d="M350 250l5 6M126 251l4 6"/><circle cx="356" cy="257" r="1.8"/><circle cx="131" cy="258" r="1.8"/>
+  </g>
+
+  <path class="rs-bloom" d="M146 257v-47c0-31 27-46 64-46s64 15 64 46v47" filter="url(#rsBlur4)"/>
+  </g>
+
+  <!-- set dressing from the Kid board itself: the skull on its books and a
+       candle, down at the front where the Kid board keeps them -->
+  <ellipse class="rs-propshadow" cx="30" cy="272" rx="26" ry="4" filter="url(#rsBlur2)"/>
+  <image href="${KIT_ART}skull.webp" x="4" y="220" width="48" height="56" class="rs-prop"/>
+  <ellipse class="rs-propshadow" cx="400" cy="273" rx="16" ry="3" filter="url(#rsBlur2)"/>
+  <circle class="rs-candleglow" cx="400" cy="232" r="30" filter="url(#rsBlur8)"/>
+  <image href="${KIT_ART}candle.webp" x="386" y="229" width="28" height="44" class="rs-prop"/>
+
+  <rect x="-24" y="-24" width="468" height="328" fill="url(#rsVig)"/>
+</svg>`;
+
 const FORT_SVG = `
 <svg class="rs-fort" viewBox="0 0 420 280" role="img"
      aria-label="A blanket fort: a table with blankets over it, a torch burning inside,
                  a kid and a small animal sitting in the warm.">
   <defs>
-    <radialGradient id="rsGlow" cx="50%" cy="58%">
+    <radialGradient id="rsGlow" cx="50%" cy="50%">
       <stop offset="0%" class="rs-glow-a"/><stop offset="100%" class="rs-glow-b"/>
     </radialGradient>
-    <radialGradient id="rsInside" cx="50%" cy="86%">
-      <stop offset="0%" class="rs-in-a"/><stop offset="100%" class="rs-in-b"/>
+    <radialGradient id="rsInside" cx="50%" cy="50%">
+      <stop offset="0%" class="rs-halo-a"/><stop offset="100%" class="rs-halo-b"/>
     </radialGradient>
     <!-- One window per figure onto its atlas cell, sized per clip in _tickFigure. -->
     <clipPath id="rsClipKid"><rect x="0" y="0" width="1" height="1"/></clipPath>
     <clipPath id="rsClipPet"><rect x="0" y="0" width="1" height="1"/></clipPath>
   </defs>
 
-  <ellipse class="rs-pool" cx="210" cy="240" rx="192" ry="42" fill="url(#rsGlow)"/>
+  <!-- the lamp's light on the rug in front of the way in -->
+  <ellipse class="rs-pool" cx="210" cy="254" rx="132" ry="20" fill="url(#rsGlow)"/>
+  <circle class="rs-halo" cx="210" cy="222" r="46" fill="url(#rsInside)"/>
 
-  <!-- the barricaded door, back left -->
-  <path class="rs-dark" d="M18 92h58v158H18Z"/>
-  <path class="rs-doorknob" d="M64 172a4 4 0 1 1 0-.01"/>
-  <path class="rs-plank" d="M6 128h84M10 162h82M4 196h88"/>
+  <!-- the lamp between them -->
+  <path class="rs-torchbody" d="M203 238h14v3h-14ZM201 241h18v7h-18Z"/>
+  <path class="rs-lampcage" d="M204 238v-24M216 238v-24M202 214h16M206 210h8"/>
+  <path class="rs-flame" d="M210 213c6 7 5 12 3 15-3 5-9 4-10-1-1-6 3-8 7-14Z"/>
 
-  <!-- the table underneath -->
-  <path class="rs-table" d="M96 148h228v12H96Z"/>
-  <path class="rs-leg" d="M114 160v88M306 160v88"/>
-
-  <!-- the blanket over the top, hem sagging between the corners -->
-  <path class="rs-blanketA" d="M74 248 86 168c6-30 44-46 124-46s118 16 124 46l12 80
-    c-28 8-50-8-74 0s-46-8-62 0-38-8-62 0-50-8-74 0Z"/>
-  <path class="rs-stitch" d="M92 182c48-14 188-14 236 0M86 210c52-12 196-12 248 0"/>
-  <path class="rs-patch" d="M108 132h34v30h-34ZM278 138h32v28h-32Z"/>
-
-  <!-- the way in -->
-  <path class="rs-inside" d="M148 250v-40c0-30 26-44 62-44s62 14 62 44v40Z" fill="url(#rsInside)"/>
-  <path class="rs-archline" d="M148 250v-40c0-30 26-44 62-44s62 14 62 44v40"/>
-
-  <!-- torch, and two shapes sitting in the warm -->
-  <path class="rs-torchbody" d="M205 230h10v18h-10Z"/>
-  <path class="rs-flame" d="M210 200c9 11 7 17 4 22-4 7-13 5-14-2-1-8 5-11 10-20Z"/>
+  <!-- two shapes sitting in the warm -->
   <path class="rs-kid" d="M160 248c0-22 9-34 20-34s20 12 20 34Z"/>
   <path class="rs-kid" d="M180 212a10 10 0 1 1 0-.02"/>
   <path class="rs-pet" d="M228 248c0-13 8-22 18-22s18 9 18 22Z"/>
@@ -144,11 +405,12 @@ const FORT_SVG = `
       <image class="rs-fig__img" preserveAspectRatio="none"/>
     </g></g>
   </g>
-
-  <!-- cushions and floorboards -->
-  <path class="rs-cushion" d="M300 248c0-9 9-15 20-15s20 6 20 15ZM72 248c0-8 8-13 18-13s18 5 18 13Z"/>
-  <path class="rs-floor" d="M4 250h412M4 262h412"/>
 </svg>`;
+
+/** Which of the board's painted medallions each night's choice wears on its
+ *  rail: the moon for sleep, the star for sharpening, the shield for the
+ *  forge, the paw for your Companion. The co-op two share the small star. */
+const DOOR_MEDAL = { rest: 'moon', upgrade: 'star', forge: 'shield', sit: 'paw', mend: 'star2', clone: 'star2' };
 
 export class RestScene extends RoomScene {
   constructor(ctx) { super(ctx, { kind: 'rest' }); }
@@ -165,6 +427,9 @@ export class RestScene extends RoomScene {
       title: 'You Build the Fort',
       sub: 'Door wedged. Table dragged over. Blankets down. Nothing gets in here without knocking things over first.',
     });
+    // The fort and its four panels need the board's height more than the
+    // plaque does — the same trade Mr. Moth's makes.
+    this.root.querySelector('.kit-titleblock')?.classList.add('kit-titleblock--compact');
 
     this._buildBody();
     this._buildFoot();
@@ -189,8 +454,12 @@ export class RestScene extends RoomScene {
     const mateDeck = mate ? r.deckViewsOf(mate) : [];
 
     const wrap = el('div', 'rs-room');
+    // The fort is staged in a gold-railed panel with the moon on its rail, the
+    // way the Kid board seats its mirror; the choices are panels beside it.
     wrap.innerHTML = `
-      <div class="rs-art">${FORT_SVG}</div>
+      <div class="rs-art kit-panel" data-medal="moon">
+        <div class="rs-scene">${FORT_PAINT}${FORT_SVG}</div>
+      </div>
       <div class="rs-choices" role="group" aria-label="Choose one thing to do here"></div>`;
     this.$body.appendChild(wrap);
     this._mountFort(wrap);
@@ -277,9 +546,10 @@ export class RestScene extends RoomScene {
     ];
 
     for (const o of this._options) {
-      const b = el('button', 'rs-door');
+      const b = el('button', 'rs-door kit-panel');
       b.type = 'button';
       b.dataset.opt = o.id;
+      b.dataset.medal = DOOR_MEDAL[o.id] || 'star2';
       b.disabled = !o.can;
       b.setAttribute('aria-label', `${o.name}. ${String(o.readout).replace(/<[^>]+>/g, ' ')}`);
       b.innerHTML = `
@@ -287,7 +557,7 @@ export class RestScene extends RoomScene {
         <span class="rs-door__txt">
           <b>${esc(o.name)}</b>
           <em>${esc(o.blurb)}</em>
-          <span class="rs-door__read">${o.readout}</span>
+          <span class="rs-door__read kit-plate">${o.readout}</span>
           <span class="rs-door__note">${o.can ? o.note : esc(o.why)}</span>
         </span>`;
       b.addEventListener('click', () => this._choose(o));
@@ -496,7 +766,7 @@ export class RestScene extends RoomScene {
       ov.setAttribute('aria-label', 'Forge a Keepsake');
       ov.innerHTML = `
         <div class="rm-picker__scrim"></div>
-        <div class="rm-picker__panel">
+        <div class="rm-picker__panel kit-panel" data-medal="shield">
           <h2>Which Keepsake goes in the flame?</h2>
           <p class="rm-picker__sub">Costs ${this.run.forgeCost()} maximum ${esc(TERMS.hp)}.
              A forged Keepsake does its opening trick twice.</p>

@@ -26,25 +26,54 @@
   --mark-hot: var(--flame-400);
 }
 
-/* ── the desk the sheet is lying on ─────────────────────────────────────── */
-.map-desk {
-  position: absolute; inset: 0; pointer-events: none;
-  background:
-    radial-gradient(120% 90% at 50% 30%,
-      color-mix(in srgb, var(--ink-700) 88%, var(--flame-500)) 0%,
-      var(--ink-900) 78%),
-    var(--ink-900);
+/* ── the board: a survey laid on a candlelit desk ───────────────────────────
+   The sheet lies inside the kit's painted gilt rail (.kit-railframe) on the
+   board's ground, which is the desk and the slot Josh's map.png hangs in.
+   One set of numbers places everything that has to agree about the rail:
+     --map-side   desk between the screen edge and the rail
+     --map-cart   the painted height of the title plaque
+     --map-top    the rail's top edge (the plaque's lower third rides on it)
+     --map-foot   desk below the rail; the plates sit astride the rail
+   The viewport IS the inside of the rail, and _fitView keeps FIT_PAD of desk
+   between it and the paper. At 1600x900 that fits the sheet at 0.70x, which
+   tests/map requires.                                                      */
+.map-screen {
+  --map-side: clamp(46px, calc(8.9vw - 69px), 74px);
+  --map-cart: clamp(96px, 11.4vh, 106px);
+  --map-top: calc(var(--hud-h) + var(--map-cart) - 40px);
+  --map-foot: clamp(50px, 6vh, 56px);
+  --map-corner: clamp(150px, 11.8vw, 196px);
+  --kit-edge: clamp(6px, .5vw, 9px);
+  /* the survey as the candles leave it: warmer and a shade down from the
+     white card it was, so it sits in the room instead of glowing */
+  --parchment: var(--kit-parchment);
+  --parchment-shade: var(--kit-parchment-shade);
 }
-.map-desk::after {                       /* felt weave */
-  content: ''; position: absolute; inset: 0; opacity: .5;
+
+.map-desk { z-index: 0; }
+/* the warm light the two candles and the sheet itself throw on the desk */
+.map-pool {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
   background:
-    repeating-linear-gradient(94deg, rgba(255,255,255,.014) 0 2px, transparent 2px 5px),
-    repeating-linear-gradient(4deg,  rgba(0,0,0,.05) 0 3px, transparent 3px 7px);
+    radial-gradient(64% 58% at 50% 55%, color-mix(in srgb, var(--kit-candle) 9%, transparent) 0%, transparent 72%),
+    radial-gradient(26% 34% at 3% 97%, color-mix(in srgb, var(--kit-candle) 20%, transparent) 0%, transparent 72%),
+    radial-gradient(26% 34% at 97% 97%, color-mix(in srgb, var(--kit-candle) 20%, transparent) 0%, transparent 72%);
 }
+.map-dress { z-index: 1; }
+/* the vines climb the desk margin, clear of the plaque and the candles */
+.map-vine {
+  top: calc(var(--map-top) + 40px);
+  bottom: calc(var(--map-foot) + 96px);
+  width: calc(var(--map-side) - 18px);
+}
+.map-vine--l { left: 8px; }
+.map-vine--r { right: 8px; }
 
 /* ── viewport + sheet ───────────────────────────────────────────────────── */
 .map-viewport {
-  position: absolute; inset: 56px 0 48px 0;
+  position: absolute; z-index: 2;
+  top: var(--map-top); bottom: var(--map-foot);
+  left: var(--map-side); right: var(--map-side);
   overflow: hidden;
   cursor: grab;
   touch-action: none;
@@ -58,9 +87,9 @@
   background: var(--parchment);
   box-shadow:
     0 2px 0 rgba(255,255,255,.10) inset,
-    0 40px 90px rgba(0,0,0,.66),
-    0 8px 26px rgba(0,0,0,.5),
-    0 0 0 1px color-mix(in srgb, var(--parchment-shade) 70%, transparent);
+    0 0 0 1px color-mix(in srgb, var(--kit-gold-lo) 60%, transparent),
+    0 30px 60px rgba(0,0,0,.72),
+    0 8px 20px rgba(0,0,0,.55);
 }
 .map-paper { display: block; }
 .map-ink   { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
@@ -92,33 +121,81 @@
   opacity: .85;
 }
 
-/* ── overlays ───────────────────────────────────────────────────────────── */
+/* ── the light on the sheet ─────────────────────────────────────────────────
+   Screen-fixed, because it is the ROOM's light, and it is what stages the
+   board: the two corner candles and the lamp pool warm the middle of the
+   sheet, its far edges fall into a warm brown shadow, the top sits in the
+   rail's shade and the bottom sinks away towards the viewer.               */
 .map-shade {
-  position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(ellipse 74% 66% at 50% 46%,
-    transparent 0%, transparent 38%, rgba(6,5,12,.55) 82%, rgba(4,3,9,.86) 100%);
+  position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background:
+    radial-gradient(56% 54% at 50% 48%, transparent 0%, transparent 36%, rgba(38, 22, 12, .3) 66%, rgba(20, 11, 8, .62) 90%, rgba(12, 7, 6, .8) 100%),
+    linear-gradient(to bottom, rgba(10, 7, 12, .5) 0%, rgba(10, 7, 12, .18) 16%, transparent 30%),
+    linear-gradient(to top, rgba(10, 7, 12, .6) 0%, rgba(10, 7, 12, .22) 12%, transparent 26%);
 }
 .map-lamp {
-  position: absolute; top: -640px; left: -640px;
+  position: absolute; top: -640px; left: -640px; z-index: 3;
   width: 1280px; height: 1280px; pointer-events: none;
   mix-blend-mode: screen;
   background: radial-gradient(circle closest-side,
-    color-mix(in srgb, var(--flame-glow) 22%, transparent) 0%,
-    color-mix(in srgb, var(--flame-500) 9%, transparent) 42%,
+    color-mix(in srgb, var(--flame-glow) 13%, transparent) 0%,
+    color-mix(in srgb, var(--flame-500) 6%, transparent) 42%,
     transparent 70%);
 }
 .map-lamp--warm {
   mix-blend-mode: overlay;
   background: radial-gradient(circle closest-side,
-    color-mix(in srgb, var(--flame-100) 46%, transparent) 0%,
-    color-mix(in srgb, var(--flame-200) 12%, transparent) 34%,
+    color-mix(in srgb, var(--flame-100) 30%, transparent) 0%,
+    color-mix(in srgb, var(--flame-200) 8%, transparent) 34%,
     transparent 60%);
 }
 .map-grain {
-  position: absolute; inset: 0; pointer-events: none;
+  position: absolute; inset: 0; z-index: 3; pointer-events: none;
   mix-blend-mode: overlay; opacity: .075;
   background-repeat: repeat;
 }
+
+/* ── the gilt rail, and what stands in front of it ───────────────────────── */
+.map-frame {
+  position: absolute; z-index: 4;
+  top: var(--map-top); bottom: var(--map-foot);
+  left: var(--map-side); right: var(--map-side);
+  --fk: 1.15;
+  filter: drop-shadow(0 5px 8px rgba(0, 0, 0, .75));
+}
+.map-props { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.map-props > i { position: absolute; display: block; }
+/* the board's two corner candles, as on every other board, drawn small
+   enough to stand on the desk above the rail and clear of the first rooms */
+.map-props__corner { width: var(--map-corner); top: calc(var(--hud-h) + 1px); }
+.map-props__corner--l { left: calc(var(--kit-edge) + 1px); }
+.map-props__corner--r { right: calc(var(--kit-edge) + 1px); }
+.map-props__flame {
+  width: calc(var(--map-corner) * .62);
+  top: calc(var(--hud-h) + 1px); margin-top: calc(var(--map-corner) * -.13);
+}
+.map-props__flame--l { left: calc(var(--kit-edge) + var(--map-corner) * .56 - var(--map-corner) * .31); }
+.map-props__flame--r { right: calc(var(--kit-edge) + var(--map-corner) * .56 - var(--map-corner) * .31); }
+/* the desk props at the sheet's front corners, standing below the plates row */
+.map-props__skull {
+  width: clamp(64px, 5.4vw, 92px);
+  left: calc(var(--kit-edge) + 4px); bottom: calc(var(--kit-edge) + 2px);
+}
+.map-props__candle {
+  width: clamp(52px, 4.2vw, 70px);
+  right: calc(var(--kit-edge) + 14px); bottom: calc(var(--kit-edge) + 2px);
+}
+.map-props__light--desk {
+  --light-a: 26%;
+  width: clamp(360px, 32vw, 520px);
+  left: calc(100% - var(--kit-edge) - 14px - clamp(52px, 4.2vw, 70px) * .54);
+  top: calc(100% - var(--kit-edge) - 2px - clamp(52px, 4.2vw, 70px) * 1.2);
+  animation-delay: -.8s;
+}
+/* and the light they throw down across the sheet */
+.map-props__light { --light-a: 17%; width: clamp(620px, 58vw, 980px); top: calc(var(--hud-h) + var(--map-corner) * .18); }
+.map-props__light--l { left: calc(var(--kit-edge) + var(--map-corner) * .56); }
+.map-props__light--r { left: calc(100% - var(--kit-edge) - var(--map-corner) * .56); animation-delay: -1.9s; }
 
 /* ── the route: GRAPHITE OVER INK ────────────────────────────────────────────
    THE ROUTE GRAPH IS THE MAP, and it took four rounds to draw because the first
@@ -254,10 +331,13 @@
 }
 /* The wing's keyed symbol.  Same mark as the bar's note wears, so the plan and
    the margin legend read as one thing. */
-.mi-zone-key circle {
-  fill: currentColor; opacity: .92;
-  stroke: var(--parchment); stroke-width: 2.4; paint-order: stroke;
-}
+/* the key is a wax seal pressed onto the sheet: a ragged melted rim, the
+   domed seal, and a ring stamped into it round the wing's mark */
+.mi-seal-melt { fill: #5c1520; opacity: .85; }
+.mi-zone--boon .mi-seal-melt { fill: #123745; }
+.mi-seal { fill: url(#mm-wax); filter: drop-shadow(1px 2px 1.5px rgba(40, 20, 10, .45)); }
+.mi-zone--boon .mi-seal { fill: url(#mm-wax-boon); }
+.mi-seal-ring { fill: none; stroke: rgba(0, 0, 0, .28); stroke-width: 1.6; }
 .mi-zone-lead { stroke: currentColor; stroke-width: 3; stroke-dasharray: 7 5; opacity: .7; }
 .mi-zone-glyph .s {
   fill: none; stroke: var(--parchment); stroke-width: 1.9;
@@ -415,8 +495,9 @@
 
 .map-node.is-legal {
   opacity: 1;
-  filter: drop-shadow(0 0 18px color-mix(in srgb, var(--flame-glow) 55%, transparent))
-          drop-shadow(0 0 42px color-mix(in srgb, var(--flame-500) 40%, transparent));
+  /* candlelight on the paper round a room you may enter, not a neon halo */
+  filter: drop-shadow(0 0 14px color-mix(in srgb, var(--flame-glow) 38%, transparent))
+          drop-shadow(0 0 34px color-mix(in srgb, var(--flame-500) 24%, transparent));
 }
 .map-node.is-legal .mn-ring  { opacity: .95; }
 .map-node.is-legal .mn-ring2 { opacity: .5; }
@@ -451,28 +532,53 @@
     color-mix(in srgb, var(--parchment) 70%, transparent) 60%, transparent 80%);
 }
 .map-node--boss { z-index: 3; }
+/* The boss's name on a kit nameplate — the select boards' dark cartouche with
+   its gold rim, lettered in engraved caps — with BOSS struck under it as the
+   plate's epithet. It is the one label on the sheet that is not pencil: it is
+   the brass plate somebody screwed to the door you are walking towards. */
 .map-node--boss .mn-label {
-  font-family: var(--font-display); font-size: 25px; letter-spacing: .09em;
+  --plate-h: 62px;
+  font-family: var(--font-display); font-size: 21px; font-weight: 700; letter-spacing: .08em;
   text-transform: uppercase;
+  color: var(--kit-name);
   /* "RECEIVIN…".  The boss's name is 341px of Cinzel and the shared 244px cap
      ellipsised it on every seed whose boss has more than one word — the one
      label on the sheet that names the thing you are walking towards.  It gets
      the room it needs; `_layoutLabels` keeps it inside the frame rule. */
-  max-width: 520px;
+  max-width: 560px;
+  min-width: 250px;
+  height: var(--plate-h);
+  padding: 7px calc(var(--plate-h) * .62) 0;
+  line-height: 1.15;
+  text-align: center;
+  background: none;
+  box-shadow: none;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 12px color-mix(in srgb, var(--kit-candle) 20%, transparent);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/plate.webp") 12 53 12 46 fill /
+    calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72) stretch;
+  border-radius: 0;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .55));
 }
 /* The boss is announced from the moment the sheet opens, the way an act's boss
    is in Slay the Spire.  Never dimmed out of existence, always labelled. */
 .mn-boss-tag {
-  position: absolute; top: calc(100% + 35px + var(--mn-dy, 0px)); left: 50%;
-  transform: translateX(-50%);
-  font-family: var(--font-display); font-size: 13px; font-weight: 700;
+  position: absolute; top: calc(100% + 3px + 36px + var(--mn-dy, 0px)); left: 50%;
+  transform: translateX(calc(-50% + var(--mn-dx, 0px)));
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-display); font-size: 11px; font-weight: 700;
   letter-spacing: .34em; text-indent: .34em; white-space: nowrap;
-  color: var(--parchment);
-  background: color-mix(in srgb, var(--threat-500) 92%, var(--ink-900));
-  padding: 3px 11px 4px; border-radius: 2px;
-  box-shadow: 0 3px 10px rgba(0,0,0,.4);
+  color: color-mix(in oklab, var(--threat-200) 70%, var(--kit-gold-hi));
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
   pointer-events: none;
+  z-index: 1;
 }
+.mn-boss-tag::before, .mn-boss-tag::after {
+  content: ''; width: 5px; height: 5px; transform: rotate(45deg);
+  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .7);
+}
+.mn-boss-tag::after { margin-left: -.34em; }
 .map-node.is-refused { animation: mm-refuse .3s var(--ease-out); }
 .map-node.is-stamping .mn-tick { animation: mm-tick .34s var(--ease-out) backwards; }
 
@@ -482,150 +588,172 @@
    by hand — heart, pink bar, amber spheres, a dead cog — is gone. */
 .map-hudhost { position: absolute; top: 0; left: 0; right: 0; z-index: 6; }
 
-/* ── region banner ──────────────────────────────────────────────────────── */
+/* ── the title plaque ───────────────────────────────────────────────────────
+   The wing's name in the wordmark's cartouche (.kit-titleblock), mounted on
+   the rail's top edge the way selectKid's medallions ride its panel rails.
+   It stops above the plan window, so unlike the taped card it replaces it
+   never covers a room, and so it never needs tucking away.                 */
 .map-banner {
-  position: absolute; top: 66px; left: 20px; z-index: 5;
-  /* This card sits ON the sheet, over the top-left corner where the first row
-     of rooms lives.  It is a label, not a control, so it must never eat a
-     click: with pointer events on, the entry rooms underneath it are simply
-     not clickable and the map cannot be started with a mouse at all. */
+  position: absolute; z-index: 5;
+  left: 50%; top: calc(var(--hud-h) + 1px);
+  translate: -50% 0;
+  --cart-h: var(--map-cart);
+  --cart-pad-x: calc(var(--cart-cap) * .82);
+  grid-template-rows: calc(var(--cart-h) * .565) calc(var(--cart-h) * .435);
   pointer-events: none;
-  display: flex; gap: var(--s-4); align-items: center;
-  max-width: 440px; padding: 10px 18px 11px 14px;
-  background:
-    linear-gradient(174deg, color-mix(in srgb, var(--parchment) 97%, #fff), var(--parchment) 62%, var(--parchment-shade));
-  color: var(--text-ink);
-  transform: rotate(-.7deg);
-  box-shadow: 0 18px 40px rgba(0,0,0,.55), 0 2px 0 rgba(255,255,255,.3) inset;
-  border-radius: 2px;
-  /* IT INTRODUCES THE WING, THEN IT GETS OFF THE DRAWING. `pointer-events: none`
-     kept it from eating clicks, but the rooms underneath were still invisible --
-     measured, three marks covered and one of them a legal move. The wing name
-     and its boss are already printed in the sheet's own title block along the
-     bottom edge, so nothing here is lost by tucking it away once it has been
-     read. See `_wire` in map.js for when. */
-  transition: opacity .45s ease, transform .45s ease;
 }
-.map-banner.is-tucked {
-  opacity: 0;
-  transform: rotate(-.7deg) translateY(-16px);
-}
-@media (prefers-reduced-motion: reduce) {
-  .map-banner { transition: none; }
-}
-
-.map-banner .tape {
-  position: absolute; top: -11px; width: 66px; height: 22px;
-  background: color-mix(in srgb, var(--flame-100) 62%, transparent);
-  box-shadow: 0 1px 3px rgba(0,0,0,.35);
-}
-.tape-l { left: 14px; transform: rotate(-6deg); }
-.tape-r { right: 20px; transform: rotate(5deg); }
-.bn-roman {
-  font-family: var(--font-display); font-size: 34px; font-weight: 700; line-height: 1;
-  color: color-mix(in srgb, var(--blueprint-ink) 80%, var(--ink-900));
-  padding-right: 14px;
-  border-right: 2px solid color-mix(in srgb, var(--blueprint-ink) 40%, transparent);
-}
-.map-banner h1 {
-  margin: 0; font-family: var(--font-display); font-size: 21px; font-weight: 700;
-  letter-spacing: .03em; color: color-mix(in srgb, var(--blueprint-ink) 88%, var(--ink-900));
+.map-banner.is-tucked { opacity: 1; }
+.map-banner .kit-cartouche__title { font-size: clamp(22px, 1.95vw, 30px); letter-spacing: .06em; }
+.bn-body {
+  display: grid; justify-items: center;
+  margin-top: 1px;
+  font-size: var(--fs-sm);
+  max-width: none;
+  white-space: nowrap;
 }
 .bn-form {
-  margin: 3px 0 0; font-size: 13px; font-style: italic;
-  color: color-mix(in srgb, var(--text-ink) 68%, transparent);
+  /* the wing's form is printed on the sheet's own title block (_drawFurniture);
+     kept here for screen readers, where the cartouche is read as a heading */
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
 }
-.bn-meta {
-  margin: 6px 0 0; font-size: 12px; letter-spacing: .04em;
-  color: color-mix(in srgb, var(--text-ink) 74%, transparent);
-}
-.bn-meta b { font-weight: 700; }
-.bn-meta .dot { opacity: .45; margin: 0 5px; }
+.bn-meta { margin: 0; color: var(--kit-text-mid); font-style: italic; }
+.bn-meta b { font-style: normal; font-weight: 600; color: var(--kit-name); }
+.bn-meta .dot { margin: 0 .5em; color: var(--kit-gold); font-style: normal; }
 
-/* ── the bar: key, wing conditions, controls. Nothing else may cover the sheet,
-      because the boss has to stay visible from the moment the map opens. ───── */
+/* ── the plates on the bottom rail: key, wing conditions, the whole house ──
+   Nothing here may cover the sheet: the row rides the rail's bottom edge,
+   half on the rail and half on the desk under it.                          */
 .map-bar {
-  position: absolute; left: 0; right: 0; bottom: 0; height: 48px; z-index: 6;
-  display: flex; align-items: center; gap: var(--s-5);
-  padding: 0 var(--s-4) 0 var(--s-5);
-  background: linear-gradient(0deg,
-    color-mix(in srgb, var(--ink-900) 96%, transparent),
-    color-mix(in srgb, var(--ink-800) 82%, transparent) 72%, transparent);
-  border-top: 1px solid color-mix(in srgb, var(--ink-500) 70%, transparent);
-  backdrop-filter: blur(7px);
+  position: absolute; z-index: 6;
+  left: calc(var(--kit-edge) + clamp(64px, 5.4vw, 92px) + 8px); right: calc(var(--kit-edge) + clamp(52px, 4.2vw, 70px) + 12px);
+  bottom: calc(var(--map-foot) - 29px);
+  height: 58px;
+  display: flex; align-items: center; justify-content: center; gap: clamp(8px, 1vw, 16px);
   transition: opacity var(--t-base);
 }
 .map-screen.no-bar .map-bar { opacity: 0; pointer-events: none; }
 
-.map-legend { display: flex; align-items: center; gap: 13px; flex: none; }
+/* the key: one nameplate, KEY engraved on its left end and the marks in two
+   rows, so three wing conditions and the whole house still fit beside it */
+.map-legend {
+  --plate-h: 58px;
+  display: grid; flex: none;
+  grid-template-rows: auto auto; grid-auto-flow: row;
+  grid-template-columns: auto repeat(5, auto);
+  align-items: center; column-gap: clamp(9px, .8vw, 12px); row-gap: 1px;
+  height: var(--plate-h);
+  padding: 4px calc(var(--plate-h) * .7) 5px calc(var(--plate-h) * .6);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/plate.webp") 12 53 12 46 fill /
+    calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72) stretch;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8));
+}
+.map-legend .lg-h { grid-row: 1 / 3; grid-column: 1; margin-right: 2px; }
 .lg-h, .notes-h {
-  font-family: var(--font-display); font-size: 10px; letter-spacing: .24em;
-  text-transform: uppercase; color: var(--text-lo); flex: none;
+  font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: .24em;
+  text-transform: uppercase; color: var(--kit-gold); flex: none;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .lg-i {
   display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
-  font-size: 11.5px; color: var(--text-mid);
+  font-family: var(--font-body); font-size: 13px; font-weight: 600;
+  color: var(--kit-text);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
-.lg-ico { color: var(--spectre-200); display: grid; place-items: center; width: 19px; }
-.lg-ico .s { fill: none; stroke: currentColor; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
-.lg-ico .w1 { stroke-width: 2.2; }
+/* each glyph set in a small round enamel medallion, gold on violet */
+.lg-ico {
+  display: grid; place-items: center; flex: none;
+  width: 24px; height: 24px;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  color: var(--kit-gold-hi);
+}
+.lg-ico svg { width: 15px; height: 15px; }
+.lg-ico .s { fill: none; stroke: currentColor; stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
+.lg-ico .w1 { stroke-width: 2.4; }
 .lg-ico .f { fill: currentColor; }
-.lg-ico .pl, .lg-ico .pw { fill: var(--ink-800); }
+.lg-ico .pl, .lg-ico .pw { fill: var(--kit-enamel); }
 
-/* Out to the estate drawing — `scenes/atlas.js`. Sits between the wing
-   conditions and the control hint, in the bar rather than the banner because
-   the banner tucks itself away and takes no pointer events. */
+/* Out to the estate drawing — `scenes/atlas.js`: a quiet plate with the round
+   enamel button seated on its left end. In the bar rather than on the plaque
+   because the plaque takes no pointer events. */
 .map-atlas {
-  appearance: none; flex: none;
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 5px 11px;
-  border: 1px solid color-mix(in srgb, var(--ink-400) 78%, transparent);
-  border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--ink-700) 74%, transparent);
-  color: var(--text-mid);
-  font-family: var(--font-display);
-  font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+  --plate-h: 42px;
+  appearance: none; flex: none; position: relative;
+  display: inline-flex; align-items: center; gap: 8px;
+  height: var(--plate-h);
+  padding: 0 calc(var(--plate-h) * .6) 1px calc(var(--plate-h) * 1.02);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/plate.webp") 12 53 12 46 fill /
+    calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72) stretch;
+  background: none;
+  color: var(--kit-text-mid);
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8));
   cursor: pointer;
-  transition: color var(--t-quick) var(--ease-out), border-color var(--t-quick) var(--ease-out);
+  transition: color var(--t-quick) var(--ease-out), filter var(--t-quick) var(--ease-out);
 }
-.map-atlas span { color: var(--spectre-200); font-size: 13px; }
+.map-atlas__medal { --md: 44px; position: absolute; left: -10px; top: 50%; translate: 0 -50%; }
 .map-atlas:hover, .map-atlas:focus-visible {
-  color: var(--text-hi);
-  border-color: color-mix(in srgb, var(--spectre-400) 60%, var(--ink-400));
+  color: var(--kit-gold-hi);
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 35%, transparent));
 }
+.map-atlas:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; border-radius: 999px; }
 
-.map-notes { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+/* the wing conditions: each one its own plate, its symbol in enamel */
+.map-notes { display: flex; align-items: center; gap: clamp(8px, .9vw, 14px); flex: none; }
+.notes-h { display: none; }
 .note {
+  --plate-h: 42px;
   position: relative;
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 10px 5px; border-radius: 2px;
-  font-size: 11.5px; white-space: nowrap; cursor: help;
+  display: inline-flex; align-items: center; gap: 8px;
+  height: var(--plate-h);
+  padding: 0 calc(var(--plate-h) * .62) 1px calc(var(--plate-h) * .5);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/plate.webp") 12 53 12 46 fill /
+    calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72) stretch;
+  background: none;
+  font-size: 13px; white-space: nowrap; cursor: help;
   color: var(--threat-100);
-  background: color-mix(in srgb, var(--threat-500) 34%, transparent);
-  border: 1px solid color-mix(in srgb, var(--threat-400) 62%, transparent);
-  border-left-width: 3px;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8));
 }
-.note--boon {
-  color: var(--spectre-100);
-  background: color-mix(in srgb, var(--spectre-500) 30%, transparent);
-  border-color: color-mix(in srgb, var(--spectre-400) 62%, transparent);
+.note--boon { color: var(--spectre-100); }
+.note b {
+  font-family: var(--font-display); font-weight: 700; font-size: 11px;
+  letter-spacing: .14em; text-transform: uppercase;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
-.note b { font-family: var(--font-display); font-weight: 600; letter-spacing: .05em; }
+.note-ico {
+  display: grid; place-items: center; flex: none;
+  width: 26px; height: 26px;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+}
+.note-ico svg { width: 15px; height: 15px; }
 .note-ico svg .s { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .note-ico svg .f { fill: currentColor; }
+.note:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; border-radius: 999px; }
+/* the rule, one hover away: a small kit panel above the plate */
 .note-pop {
-  position: absolute; bottom: calc(100% + 9px); right: 0; width: 268px;
-  padding: 9px 11px; text-align: left; white-space: normal;
-  background: linear-gradient(168deg, color-mix(in srgb, var(--parchment) 97%, #fff), var(--parchment) 70%, var(--parchment-shade));
-  color: var(--text-ink);
-  box-shadow: 0 16px 34px rgba(0,0,0,.6);
+  position: absolute; bottom: calc(100% + 14px); right: 0; width: 280px;
+  padding: 12px 14px; text-align: left; white-space: normal;
+  border: 1px solid transparent;
+  border-image: url("../../assets/ui/kit/panel.webp") 44 / 30px / 10px stretch;
+  background:
+    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
+    linear-gradient(180deg, var(--kit-panel-hi), var(--kit-panel));
+  background-blend-mode: overlay, normal;
+  background-clip: padding-box;
+  color: var(--kit-text);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, .7);
   opacity: 0; transform: translateY(5px); pointer-events: none;
   transition: opacity var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out);
 }
 .note:hover .note-pop, .note:focus-visible .note-pop { opacity: 1; transform: none; }
-.note-pop i { font-style: normal; font-size: 12.5px; line-height: 1.38; display: block; }
+.note-pop i { font-style: normal; font-size: 13.5px; line-height: 1.4; display: block; }
 .note-pop em {
-  display: block; margin-top: 5px; font-size: 10.5px; opacity: .6; letter-spacing: .05em;
+  display: block; margin-top: 6px; font-size: 12px; font-style: italic; color: var(--kit-text-lo);
 }
 
 /* ── the ballot ──────────────────────────────────────────────────────────
@@ -689,61 +817,80 @@
 .map-node.is-voted { z-index: 4; }
 .map-node.is-voted .mn-ring { opacity: .95; }
 
-.map-hint {
-  flex: none; font-size: 11px; letter-spacing: .05em; color: var(--text-lo);
-  padding-left: var(--s-3);
-  border-left: 1px solid color-mix(in srgb, var(--ink-500) 60%, transparent);
-}
-.map-hint b { color: var(--text-mid); font-weight: 600; }
+/* How to drive the sheet is pencilled up the paper's right-hand margin now
+   (_drawFurniture), where there is room for it; the strip's copy stays for
+   anything that reads the DOM. */
+.map-hint { display: none; }
 
-/* ── hover card ─────────────────────────────────────────────────────────── */
+/* ── hover card ─────────────────────────────────────────────────────────────
+   A small kit panel in its painted rail, the room's mark on an enamel
+   medallion: the same card the rest of the game's tooltips are. */
 .map-tip {
   position: fixed; top: 0; left: 0; z-index: 40;
-  width: 320px; padding: 12px 14px 11px;
-  background: linear-gradient(168deg, color-mix(in srgb, var(--parchment) 97%, #fff), var(--parchment) 66%, var(--parchment-shade));
-  color: var(--text-ink);
-  box-shadow: 0 20px 46px rgba(0,0,0,.6), 0 0 0 1px color-mix(in srgb, var(--parchment-shade) 80%, transparent);
-  border-radius: 2px;
+  width: 320px; padding: 13px 16px 12px;
+  border: 1px solid transparent;
+  border-image: url("../../assets/ui/kit/panel.webp") 44 / 30px / 10px stretch;
+  background:
+    radial-gradient(90% 60% at 50% 0%, color-mix(in srgb, var(--kit-violet) 10%, transparent), transparent 70%),
+    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
+    linear-gradient(180deg, var(--kit-panel-hi), var(--kit-panel) 45%, color-mix(in oklab, var(--kit-panel) 80%, var(--kit-void)));
+  background-blend-mode: normal, overlay, normal;
+  background-clip: padding-box;
+  color: var(--kit-text);
+  box-shadow: 0 20px 46px rgba(0,0,0,.7);
   opacity: 0; pointer-events: none;
   transition: opacity var(--t-quick) var(--ease-out);
 }
 .map-tip.is-on { opacity: 1; }
-.tip-head { display: flex; gap: 10px; align-items: center; }
-.tip-ico { color: var(--blueprint-ink); flex: none; }
+.tip-head { display: flex; gap: 11px; align-items: center; }
+.tip-ico {
+  display: grid; place-items: center; flex: none;
+  width: 44px; height: 44px;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  color: var(--kit-gold-hi);
+}
+.tip-ico svg { width: 26px; height: 26px; }
 .tip-ico .s { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 .tip-ico .w1 { stroke-width: 2; }
 .tip-ico .f { fill: currentColor; }
-.tip-ico .pl, .tip-ico .pw { fill: var(--parchment); }
+.tip-ico .pl, .tip-ico .pw { fill: var(--kit-enamel); }
 .tip-room {
-  display: block; font-family: var(--font-display); font-size: 16px; line-height: 1.15;
-  color: color-mix(in srgb, var(--blueprint-ink) 88%, var(--ink-900));
+  display: block; font-family: var(--font-display); font-weight: 700; font-size: 16px; line-height: 1.15;
+  color: var(--kit-name);
+  text-shadow: 0 1px 0 rgba(0,0,0,.9);
 }
 .tip-type {
-  font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
-  color: color-mix(in srgb, var(--text-ink) 60%, transparent);
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--kit-gold);
 }
-.tip-blurb { margin: 9px 0 0; font-size: 13.5px; line-height: 1.4; }
-.tip-reward { margin: 6px 0 0; font-size: 12.5px; }
-.tip-reward i { font-style: normal; letter-spacing: .14em; text-transform: uppercase; font-size: 10.5px; opacity: .6; margin-right: 6px; }
+.tip-blurb { margin: 9px 0 0; font-size: 13.5px; line-height: 1.4; font-style: italic; color: var(--kit-text-mid); }
+.tip-reward { margin: 6px 0 0; font-size: 12.5px; color: var(--kit-text); }
+.tip-reward i {
+  font-style: normal; font-family: var(--font-display); font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase; font-size: 10.5px; color: var(--kit-gold); margin-right: 6px;
+}
 .tip-hz {
   display: flex; gap: 7px; align-items: flex-start;
   margin: 9px 0 0; padding: 7px 8px; font-size: 12.5px; line-height: 1.35;
-  background: color-mix(in srgb, var(--threat-400) 16%, transparent);
-  border-left: 3px solid var(--threat-400);
+  color: var(--threat-100);
+  background: color-mix(in srgb, var(--threat-500) 26%, transparent);
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--threat-300) 70%, transparent);
 }
 .tip-hz--boon {
-  background: color-mix(in srgb, var(--spectre-500) 17%, transparent);
-  border-left-color: var(--spectre-500);
+  color: var(--spectre-100);
+  background: color-mix(in srgb, var(--spectre-500) 24%, transparent);
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--spectre-300) 70%, transparent);
 }
-.tip-hz span { color: var(--blueprint-ink); flex: none; }
+.tip-hz span { color: currentColor; flex: none; }
 .tip-hz svg .s { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
 .tip-hz svg .f { fill: currentColor; }
 .tip-foot {
-  margin: 9px 0 0; padding-top: 7px; font-size: 11.5px; letter-spacing: .05em;
-  border-top: 1px solid color-mix(in srgb, var(--parchment-shade) 90%, transparent);
-  color: color-mix(in srgb, var(--text-ink) 66%, transparent);
+  margin: 9px 0 0; padding-top: 8px; font-size: 11.5px; letter-spacing: .04em;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold-lo) 90%, transparent) 20%, color-mix(in srgb, var(--kit-gold-lo) 90%, transparent) 80%, transparent) 0 0 / 100% 1px no-repeat;
+  color: var(--kit-text-lo);
 }
-.tip-foot b { color: var(--flame-500); }
+.tip-foot b { color: var(--kit-gold-hi); }
 
 
 /* ── the ink drawing itself on ──────────────────────────────────────────── */
@@ -859,12 +1006,24 @@
   .map-lamp, .map-lamp--warm { transition: none; }
 }
 
-@media (max-width: 1500px) {
-  .map-hint { display: none; }
-  .lg-i { font-size: 11px; }
-  .map-legend { gap: 10px; }
+/* A wing with three conditions needs the width of the words on the way out
+   to the whole house: under 1700px that button is its medallion alone. */
+@media (max-width: 1700px) {
+  .map-bar:has(.note ~ .note ~ .note) .map-atlas { width: 46px; padding: 0; font-size: 0; letter-spacing: 0; border-image: none; filter: none; }
+  .map-bar:has(.note ~ .note ~ .note) .map-atlas__medal { --md: 46px; left: 0; }
 }
-@media (max-width: 1280px) {
-  .map-legend .lg-i:nth-child(n+7) { display: none; }
-  .map-banner { max-width: 380px; }
+/* Narrower boards keep the whole key and every condition. The row tightens,
+   and below 1500px "The whole house" becomes what the kit says an icon action
+   is, its round enamel medallion alone (the words stay its accessible name
+   and its tooltip). */
+@media (max-width: 1500px) {
+  .lg-i { font-size: 12px; gap: 4px; }
+  .lg-ico { width: 21px; height: 21px; }
+  .lg-ico svg { width: 13px; height: 13px; }
+  .map-legend { column-gap: 8px; }
+  .lg-h { letter-spacing: .16em; }
+  .map-atlas { width: 46px; padding: 0; font-size: 0; letter-spacing: 0; border-image: none; filter: none; }
+  .map-atlas__medal { --md: 46px; left: 0; }
+  .note { padding: 0 18px 1px 12px; gap: 6px; }
+  .note b { font-size: 10.5px; letter-spacing: .08em; }
 }

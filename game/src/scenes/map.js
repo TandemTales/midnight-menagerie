@@ -26,6 +26,7 @@ import { mapNodeMarkup, nodeSymbol, hazardSymbol, hazardGlyphMarkup, pencilStrok
    this sheet FRAMES a wing, which is a composition decision, not a drawing one. */
 import { loadPlanTrace, inkTrace, solvePen, traceBox, lru } from '../ui/plan.js';
 import { HUD } from '../ui/hud.js';
+import { hangBackdrop } from '../ui/backdrop.js';
 import { pauseStageFor } from './_stage.js';
 import { act, ACT } from '../net/actions.js';
 /* How many wings an expedition is, for the run-less preview only. `reward.js`
@@ -92,6 +93,9 @@ function _route(run) {
 }
 /** Node icons stop shrinking with the sheet below this effective scale. */
 const MIN_ICON_SCALE = 0.86;
+/** Screen px of desk kept between the fitted sheet and the gilt rail, in total
+ *  across each axis (the viewport IS the inside of the rail). */
+const FIT_PAD = 22;
 
 /* ── The wing's own plan, re-inked ──────────────────────────────────────────
    The section drawings are small (165x470 up to 713x237) and the plan window is
@@ -379,9 +383,22 @@ export class MapScene extends Scene {
   _buildDom() {
     const m = this.model, meta = m.map.meta;
     const wings = m.wings || EXPEDITION_WINGS;
+    /* A STAGED BOARD. The survey is laid on a candlelit desk inside the kit's
+       painted gold rail: the desk is the board's ground (and the slot Josh's
+       map.png hangs in), the rail frames the sheet without covering it, the
+       wing's name sits in the wordmark's cartouche on the rail's top edge and
+       the key and the wing conditions are plates along its bottom edge. Two
+       candles stand at the front corners and light the paper; everything past
+       the rail falls into the dark. None of it takes a pointer event. */
     this.root.innerHTML = `
-      <div class="map-screen${this.still ? ' is-still' : ''}">
-        <div class="map-desk"></div>
+      <div class="map-screen kit-board${this.still ? ' is-still kit-still' : ''}">
+        <div class="map-desk kit-ground" aria-hidden="true"></div>
+        <div class="map-pool" aria-hidden="true"></div>
+        <div class="kit-dress map-dress" aria-hidden="true">
+          <i class="kit-dress__rule"></i>
+          <i class="kit-dress__vine kit-dress__vine--l map-vine map-vine--l"></i>
+          <i class="kit-dress__vine kit-dress__vine--r map-vine map-vine--r"></i>
+        </div>
 
         <div class="map-viewport" role="application"
              aria-label="Blueprint of ${escapeHtml(meta.name)}. Choose the next room.">
@@ -400,16 +417,29 @@ export class MapScene extends Scene {
         <div class="map-lamp map-lamp--warm" aria-hidden="true"></div>
         <div class="map-grain" aria-hidden="true"></div>
 
+        <!-- the gilt rail round the sheet, and what stands in front of it -->
+        <div class="map-frame kit-railframe kit-railframe--ornate" aria-hidden="true"></div>
+        <div class="map-props" aria-hidden="true">
+          <i class="kit-light kit-light--candle map-props__light map-props__light--l"></i>
+          <i class="kit-light kit-light--candle map-props__light map-props__light--r"></i>
+          <i class="kit-dress__corner kit-dress__corner--l map-props__corner map-props__corner--l"></i>
+          <i class="kit-dress__corner kit-dress__corner--r map-props__corner map-props__corner--r"></i>
+          <i class="kit-dress__flame kit-dress__flame--l map-props__flame map-props__flame--l"></i>
+          <i class="kit-dress__flame kit-dress__flame--r map-props__flame map-props__flame--r"></i>
+          <!-- on the desk at the sheet's front corners: the Kid board's own skull on its
+               books, and its candle, keeping the paper flat -->
+          <i class="kit-light kit-light--candle map-props__light map-props__light--desk"></i>
+          <i class="kit-prop kit-prop--skull map-props__skull"></i>
+          <i class="kit-prop kit-prop--candle map-props__candle"></i>
+        </div>
+
         <!-- the shared run HUD (ui/hud.js) mounts here -->
         <div class="map-hudhost"></div>
 
-        <header class="map-banner">
-          <span class="tape tape-l" aria-hidden="true"></span>
-          <span class="tape tape-r" aria-hidden="true"></span>
-          <div class="bn-roman">${ROMAN[meta.index] || meta.index}</div>
-          <div class="bn-body">
-            <h1>${escapeHtml(meta.name)}</h1>
-            <p class="bn-form">${escapeHtml(meta.form)}</p>
+        <header class="map-banner kit-titleblock">
+          <h1 class="kit-cartouche__title">${escapeHtml(meta.name)}</h1>
+          <div class="kit-cartouche__sub bn-body">
+            <p class="bn-form"><span class="bn-roman">Sheet ${ROMAN[meta.index] || meta.index}</span> &middot; ${escapeHtml(meta.form)}</p>
             <!-- Two halves of ONE address, written the same way on purpose:
                  which wing of the house you are in, and how far into it you
                  have walked.  A playtester read "Wing 1 of 17" and "row 2 of
@@ -448,7 +478,7 @@ export class MapScene extends Scene {
                backtick ends it -- CONTRACTS trap 1, for the third time. -->
           <button class="map-atlas" type="button"
                   title="The recovered plan of the whole estate — every wing, and which of the Menagerie is held where. Press H.">
-            <span aria-hidden="true">&#9974;</span> The whole house
+            <span class="kit-medallion map-atlas__medal" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2.6 22 10.4h-2.6V21h-5.2v-6.2H9.8V21H4.6V10.4H2Z"/></svg></span> The whole house
           </button>
           <div class="map-hint" aria-hidden="true">
             <b>drag</b> pan · <b>scroll</b> zoom · <b>↑↓</b> choose · <b>⏎</b> go
@@ -474,12 +504,20 @@ export class MapScene extends Scene {
     this.el.sheet.style.height = this.SH + 'px';
     this.el.sheet.style.setProperty('--sw', this.SW + 'px');   // the wet edge's run
     this._paintGrain();
+    // The lamp waits over the middle of the desk until a pointer moves it; it
+    // used to sit in the top-left corner and light the wrong end of the sheet.
+    this.lamp.x = this.lamp.tx = innerWidth / 2;
+    this.lamp.y = this.lamp.ty = innerHeight * 0.52;
+    // Josh's painted desk, when it exists (game/assets/backgrounds/map.webp).
+    hangBackdrop(this.el.screen, 'map', () => !!this.el);
   }
 
   // ───────────────────────────────────────────────────────── paper + ink ────
   _tok(name, fallback) {
-    // One style resolve for the whole paint, not one per token.
-    this._cs = this._cs || getComputedStyle(document.documentElement);
+    // One style resolve for the whole paint, not one per token. Resolved on the
+    // screen, not the document: the board re-points --parchment at the paper
+    // as candlelight leaves it (map.css), and the canvas must paint that paper.
+    this._cs = this._cs || getComputedStyle(this.el?.screen || document.documentElement);
     const v = this._cs.getPropertyValue(name).trim();
     return v || fallback;
   }
@@ -736,31 +774,67 @@ export class MapScene extends Scene {
     corner(40, 40, 1, 1); corner(w - 40, 40, -1, 1);
     corner(40, h - 40, 1, -1); corner(w - 40, h - 40, -1, -1);
 
-    // ── title bar, the full width of the sheet, like a real drawing
-    const tx = WIN.x, ty = WIN.y + WIN.h + 34, tw = WIN.w, th = 72;
-    g.fillStyle = hexA('#f6eeda', 0.42); g.fillRect(tx, ty, tw, th);
-    g.strokeStyle = hexA(ink, 0.74); g.lineWidth = 2; g.strokeRect(tx, ty, tw, th);
-    const cells = [0.30, 0.48, 0.61, 0.77];
-    g.lineWidth = 1; g.strokeStyle = hexA(ink, 0.45);
+    // ── title block, the full width of the sheet, like a real drawing: an
+    //    engraved double-ruled box, the wing's name and its form in the wide
+    //    cell, the record in small caps over the value in the rest.
+    const tx = WIN.x, ty = WIN.y + WIN.h + 36, tw = WIN.w, th = 76;
+    g.fillStyle = hexA('#f6eeda', 0.16); g.fillRect(tx, ty, tw, th);
+    g.strokeStyle = hexA(ink, 0.78); g.lineWidth = 2.2; g.strokeRect(tx, ty, tw, th);
+    g.strokeStyle = hexA(ink, 0.4); g.lineWidth = 0.9; g.strokeRect(tx + 5, ty + 5, tw - 10, th - 10);
+    const cells = [0.40, 0.58, 0.70, 0.83];
     g.beginPath();
-    for (const c of cells) { g.moveTo(tx + tw * c, ty); g.lineTo(tx + tw * c, ty + th); }
+    for (const c of cells) {
+      const x = tx + tw * c;
+      g.moveTo(x - 2, ty + 5); g.lineTo(x - 2, ty + th - 5);
+      g.moveTo(x + 2, ty + 5); g.lineTo(x + 2, ty + th - 5);
+    }
     g.stroke();
-
-    g.textBaseline = 'middle';
-    const cell = (i, head, val, big) => {
-      const x0 = tx + tw * (i === 0 ? 0 : cells[i - 1]) + 16;
-      g.fillStyle = hexA(ink, 0.58);
-      g.font = '400 10px Grenze, Georgia, serif';
-      g.fillText(head, x0, ty + 21);
+    // a small lozenge where each divider meets the rules
+    g.fillStyle = hexA(ink, 0.72);
+    for (const c of cells) {
+      for (const yy of [ty + 5, ty + th - 5]) {
+        const x = tx + tw * c;
+        g.beginPath(); g.moveTo(x, yy - 4.5); g.lineTo(x + 4.5, yy); g.lineTo(x, yy + 4.5); g.lineTo(x - 4.5, yy); g.closePath(); g.fill();
+      }
+    }
+    g.textBaseline = 'alphabetic';
+    const spaced = (px) => { try { g.letterSpacing = px; } catch { /* older canvas */ } };
+    // the wing, and what shape of building it is
+    g.fillStyle = hexA(ink, 0.94);
+    g.font = '700 29px Cinzel, Georgia, serif'; spaced('2px');
+    g.fillText(meta.name.toUpperCase(), tx + 22, ty + 38);
+    g.fillStyle = hexA(ink, 0.72);
+    g.font = 'italic 400 17px Grenze, Georgia, serif'; spaced('0px');
+    g.fillText(meta.form, tx + 23, ty + 62);
+    const cell = (i, head, val) => {
+      const x0 = tx + tw * cells[i - 1], x1 = i < cells.length ? tx + tw * cells[i] : tx + tw;
+      const cx = (x0 + x1) / 2;
+      g.textAlign = 'center';
+      g.fillStyle = hexA(ink, 0.62);
+      g.font = '600 12px Cinzel, Georgia, serif'; spaced('3px');
+      g.fillText(head, cx, ty + 29);
       g.fillStyle = hexA(ink, 0.92);
-      g.font = big ? '700 26px Cinzel, Georgia, serif' : '600 15px Cinzel, Georgia, serif';
-      g.fillText(val, x0, ty + 49);
+      g.font = '700 20px Cinzel, Georgia, serif'; spaced('1.5px');
+      g.fillText(val, cx, ty + 57);
+      g.textAlign = 'left';
     };
-    cell(0, 'REGION OF THE ESTATE', meta.name.toUpperCase(), true);
     cell(1, 'BOSS OF RECORD', meta.boss.toUpperCase());
     cell(2, 'SHEET', (ROMAN[meta.index] || meta.index) + ' OF XVII');
     cell(3, 'SCALE', '1 : 96');
     cell(4, 'SURVEY REF.', 'MM-' + String(this.model.seed).toUpperCase());
+    spaced('0px');
+
+    // how to drive it, pencilled up the right-hand margin the way THE WAY IN
+    // is printed up the left
+    g.save();
+    g.translate(w - 58, WIN.y + WIN.h / 2);
+    g.rotate(Math.PI / 2);
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillStyle = hexA('#3d3833', 0.62);
+    g.font = '600 14px Cinzel, Georgia, serif'; spaced('3px');
+    g.fillText('DRAG TO PAN  \u00b7  SCROLL TO ZOOM  \u00b7  ARROWS CHOOSE  \u00b7  ENTER GOES', 0, 0);
+    spaced('0px');
+    g.restore();
 
     // ── compass rose, top right of the plan
     //
@@ -834,6 +908,13 @@ export class MapScene extends Scene {
            colour.  currentColor inside a marker resolves against the marker's
            own inherited colour, which on this layer is the blueprint's blue —
            so the one mark that had to be flame was quietly navy. -->
+      <!-- the wing conditions are sealed onto the plan in wax -->
+      <radialGradient id="mm-wax" cx="38%" cy="32%" r="72%">
+        <stop offset="0" stop-color="#e87a6a"/><stop offset=".45" stop-color="#b0343a"/><stop offset="1" stop-color="#5c1520"/>
+      </radialGradient>
+      <radialGradient id="mm-wax-boon" cx="38%" cy="32%" r="72%">
+        <stop offset="0" stop-color="#8fd3df"/><stop offset=".45" stop-color="#2f7f96"/><stop offset="1" stop-color="#123745"/>
+      </radialGradient>
       <marker id="mm-arrow" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="7" markerHeight="7"
               orient="auto-start-reverse">
         <path class="mi-arrowhead" d="M1 1 L11 6 L1 11 L3.6 6 Z"/>
@@ -889,7 +970,9 @@ export class MapScene extends Scene {
         <path class="mi-zone-edge" d="${roundedWobbleRect(s, x, y, w, h, 22)}"/>
         <g class="mi-zone-key">
           <path class="mi-zone-lead" d="M${ax.toFixed(1)} ${ay.toFixed(1)} L${bx.toFixed(1)} ${by.toFixed(1)}"/>
-          <circle cx="${ax.toFixed(1)}" cy="${ay.toFixed(1)}" r="${KEY / 2}"/>
+          <path class="mi-seal-melt" d="${sealMelt(s, ax, ay, KEY / 2 + 4)}"/>
+          <circle class="mi-seal" cx="${ax.toFixed(1)}" cy="${ay.toFixed(1)}" r="${KEY / 2}"/>
+          <circle class="mi-seal-ring" cx="${ax.toFixed(1)}" cy="${ay.toFixed(1)}" r="${KEY / 2 - 5}"/>
           <g class="mi-zone-glyph"
              transform="translate(${(best.px + 8).toFixed(1)} ${(best.py + 8).toFixed(1)}) scale(1.5)">
             ${hazardGlyphMarkup(hz.glyph)}
@@ -1029,7 +1112,11 @@ export class MapScene extends Scene {
       const lab = el.querySelector('.mn-label');
       this._labels.push({ n, el, lab, box: n.type === NodeType.BOSS ? BOSS_BOX : NODE_BOX, w: 0 });
     }
-    for (const L of this._labels) L.w = L.lab.offsetWidth || 120;
+    for (const L of this._labels) {
+      L.w = L.lab.offsetWidth || 120;
+      // the boss's name is a nameplate, taller than a pencil chip
+      L.h = Math.max(LABEL_H, L.lab.offsetHeight || 0);
+    }
   }
 
   /**
@@ -1097,7 +1184,7 @@ export class MapScene extends Scene {
      */
     const boxOf = (L, dx, dy) => {
       const cx = L.n.x * this.SW, cy = L.n.y * this.SH;
-      const hw = (L.w / 2 + 4) * k, hh = LABEL_H * k;
+      const hw = (L.w / 2 + 4) * k, hh = (L.h || LABEL_H) * k;
       const lo = WIN.x + 10 + hw, hi = WIN.x + WIN.w - 10 - hw;
       const c = hi > lo ? clampN(cx + dx * k, lo, hi) : cx;
       const top = cy + (L.box / 2 + 3 + dy) * k;
@@ -1183,7 +1270,7 @@ export class MapScene extends Scene {
     if (!path) return;
     const far = Math.abs(L.dy) > 20 || Math.abs(L.dx) > 12;
     if (!far || L.off) { path.setAttribute('d', ''); return; }
-    const b = L.box, hw = L.w / 2 + 4, hh = LABEL_H / 2;
+    const b = L.box, hw = L.w / 2 + 4, hh = (L.h || LABEL_H) / 2;
     const ox = b / 2, oy = b / 2;                       // the mark's centre
     const tx = b / 2 + L.dx, ty = b + 3 + L.dy + hh;    // the chip's centre
     const vx = tx - ox, vy = ty - oy, len = Math.hypot(vx, vy) || 1;
@@ -1407,7 +1494,9 @@ export class MapScene extends Scene {
   _fitView() {
     this._vp = null;
     const vp = this._vpRect();
-    const fit = Math.min((vp.width - 44) / this.SW, (vp.height - 30) / this.SH);
+    // The viewport is the inside of the gilt rail (map.css), so the fit keeps
+    // the sheet FIT_PAD clear of it: a margin of desk between paper and gold.
+    const fit = Math.min((vp.width - FIT_PAD) / this.SW, (vp.height - FIT_PAD) / this.SH);
     this.view.minZ = Math.max(0.28, fit * 0.85);
     this.view.maxZ = 2.4;
     const z = clampN(fit, this.view.minZ, this.view.maxZ);
@@ -2050,6 +2139,23 @@ function hexA(hex, a) {
   if (hex.startsWith('rgb')) return hex;
   const [r, g, b] = hexToRgb(hex);
   return `rgba(${r},${g},${b},${a})`;
+}
+/** The ragged rim of a blob of sealing wax, pressed out round its seal. */
+function sealMelt(seed, cx, cy, r) {
+  let s = (seed ^ 0x2f6b) || 1;
+  const n = () => { s ^= s << 13; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; };
+  const pts = [];
+  for (let i = 0; i < 14; i++) {
+    const a = i / 14 * Math.PI * 2;
+    const rr = r * (0.9 + n() * 0.22);
+    pts.push([cx + Math.cos(a) * rr, cy + Math.sin(a) * rr]);
+  }
+  let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+  for (let i = 0; i < pts.length; i++) {
+    const p = pts[(i + 1) % pts.length], q = pts[i];
+    d += ` Q${q[0].toFixed(1)} ${q[1].toFixed(1)} ${((q[0] + p[0]) / 2).toFixed(1)} ${((q[1] + p[1]) / 2).toFixed(1)}`;
+  }
+  return d + 'Z';
 }
 /** A rounded rect drawn as if with a straightedge and a shaky hand. */
 function roundedWobbleRect(seed, x, y, w, h, r) {

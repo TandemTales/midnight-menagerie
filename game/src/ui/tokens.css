@@ -192,6 +192,11 @@
   --kit-text-mid:  #cdbfd8;
   --kit-text-lo:   #a99db6;   /* 4.6:1 on --kit-panel */
   --kit-name:      #e9d3a6;   /* a name on a nameplate, as on the tiles */
+  /* staged scenes: paper and light as a candle actually leaves them */
+  --kit-parchment:       #cdb994;   /* a survey sheet on a candlelit desk */
+  --kit-parchment-shade: #a88f69;
+  --kit-moon-lo:         #3a4f78;   /* moonlight where it falls off into the room */
+  --kit-ember:           #d9703a;   /* a wick still glowing after it is snuffed */
 }
 
 /* ===========================================================================

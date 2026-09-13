@@ -982,3 +982,135 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
     inset 0 0 0 calc(4 * var(--u)) color-mix(in srgb, var(--frame-hi) 34%, transparent),
     0 calc(4 * var(--u)) calc(12 * var(--u)) rgba(0, 0, 0, .7);
 }
+
+/* ── portrait frame, over its picture ─────────────────────────────────────
+   `.kit-frame` paints the Kid board's frame as the element's own border, so a
+   picture that fills the frame covers the rail's inner lip and the corner
+   flourishes — on the board they lie ON the portrait. `--over` lifts the same
+   painting onto ::after, above whatever the frame holds. Give the frame
+   `overflow: hidden` only through a child: the painting sits outside the box. */
+.kit-frame--over { border-image-source: none; }
+.kit-frame--over::after {
+  content: ''; position: absolute; z-index: 3; pointer-events: none;
+  inset: calc(-12px * var(--fk) - 1px);
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/frame.webp");
+  border-image-slice: 52;
+  border-image-width: calc(52px * var(--fk));
+  border-image-repeat: stretch;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .65));
+}
+
+/* ── stat strip ───────────────────────────────────────────────────────────
+   Numbers engraved on a band: spaced small-caps labels over lining numerals,
+   between the gold double rules the headings use, each figure parted from the
+   next by a brass stud. For a ledger of counts, never for controls.
+     <div class="kit-stats">
+       <div><span class="kit-stats__label">Turns taken</span>
+            <b class="kit-stats__value">89</b></div> …                          */
+.kit-stats {
+  position: relative;
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
+  align-items: stretch;
+  padding: 9px 0 8px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-void) 55%, transparent) 12%, color-mix(in srgb, var(--kit-void) 55%, transparent) 88%, transparent);
+}
+.kit-stats::before, .kit-stats::after {
+  content: ''; position: absolute; left: 0; right: 0; height: 4px; pointer-events: none;
+  background:
+    linear-gradient(var(--kit-gold), var(--kit-gold)) 0 0 / 100% 1px no-repeat,
+    linear-gradient(var(--kit-gold-lo), var(--kit-gold-lo)) 0 3px / 100% 1px no-repeat;
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+          mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+}
+.kit-stats::before { top: 0; }
+.kit-stats::after { bottom: 0; transform: scaleY(-1); }
+/* a label that wraps to two lines pushes nothing: every figure sits on the
+   same line along the bottom of the strip */
+.kit-stats > * {
+  position: relative;
+  display: grid; grid-template-rows: 1fr auto; justify-items: center; gap: 2px;
+  min-width: 0; padding: 0 6px;
+  text-align: center;
+}
+.kit-stats > * > :first-child { align-self: end; }
+.kit-stats > * + *::before {
+  content: ''; position: absolute; left: 0; top: 50%;
+  width: 5px; height: 5px; transform: translate(-50%, -50%) rotate(45deg);
+  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .7);
+}
+.kit-stats__label {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 10.5px; line-height: 1.2; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--kit-text-lo);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  text-wrap: balance;
+}
+.kit-stats__value {
+  font-family: var(--font-num); font-variant-numeric: var(--num-feat);
+  font-weight: 600; font-size: var(--fs-lg); line-height: 1.1;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 12px color-mix(in srgb, var(--kit-candle) 20%, transparent);
+}
+
+/* ===========================================================================
+   RAIL FRAME AND LIGHT — from round 1's EXPAND winner for the Map (HUSK).
+   Only these two of its staged-scene components were merged: the Map is
+   the screen that won, and the Safe Room and Expedition Over merged from
+   FERN, whose own .kit-stats and .kit-frame--over are above.
+
+     .kit-railframe        the panel's painted rail and nothing else, framing
+                           a live surface (the map sheet) no ground may cover
+       --ornate            the Kid portrait frame's rail and corner scrolls
+     .kit-light            a screen-blended pool of light
+       --candle / --moon   warm and breathing / cold and still
+   =========================================================================== */
+
+/* ── rail frame ─────────────────────────────────────────────────────────────
+   panel.webp's rail, 9-sliced exactly as .kit-panel draws it, with no fill and
+   no ground: whatever the element sits over shows through. The border-box
+   edge sits ON the rail; --pk scales the painting.                          */
+.kit-railframe {
+  --pk: .78;
+  position: relative;
+  border: 1px solid transparent;
+  border-image-source: url("../../assets/ui/kit/panel.webp");
+  border-image-slice: 44;
+  border-image-width: calc(44px * var(--pk));
+  border-image-outset: calc(14px * var(--pk));
+  border-image-repeat: stretch;
+  background: none;
+  pointer-events: none;
+}
+.kit-railframe--ornate {
+  --fk: 1;
+  border-image-source: url("../../assets/ui/kit/frame.webp");
+  border-image-slice: 52;
+  border-image-width: calc(52px * var(--fk));
+  border-image-outset: calc(12px * var(--fk));
+}
+
+/* ── light ──────────────────────────────────────────────────────────────────
+   Light is what stages a board: the thing that matters stands in the warm
+   pool, the edges fall away. A pool is a positioned, screen-blended radial
+   bloom; size it with width (it is always round) and place it with
+   left/top. It only ever animates opacity and transform.                    */
+.kit-light {
+  --light: var(--kit-candle);
+  --light-a: 30%;
+  position: absolute; pointer-events: none;
+  aspect-ratio: 1; border-radius: 50%;
+  translate: -50% -50%;
+  background: radial-gradient(closest-side,
+    color-mix(in srgb, var(--light) var(--light-a), transparent) 0%,
+    color-mix(in srgb, var(--light) calc(var(--light-a) * .38), transparent) 42%,
+    transparent 100%);
+  mix-blend-mode: screen;
+}
+.kit-light--candle { animation: kit-flicker 3.6s ease-in-out infinite; }
+.kit-light--moon { --light: var(--kit-moon); --light-a: 16%; }
+.kit-still .kit-light, .rm.is-still .kit-light { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-reduce-motion="0"]) .kit-light { animation: none; }
+}
