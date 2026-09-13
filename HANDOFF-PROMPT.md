@@ -1,141 +1,151 @@
-# Handoff — the enemies are painted, the Greenhouse has its boss, and the UI pass is between rounds
+# Handoff — the UI pass is in round 3, and round 2's winners are merged
 
-You are picking up Midnight Menagerie on `dev`, at the commit that added this
-file (on top of `45d1875`). Everything below is pushed. No branch holds
-unmerged work: the nine `ui/r2-*` branches are cut and empty.
+You are picking up Midnight Menagerie on `dev`. Everything below is pushed.
 
-**Josh's standing order is the UI pass, and it is paused between round 1 and
-round 2.** Rounds 0 and 1 were built, judged blind and merged. Round 2 is
-briefed and written down as a workflow you can launch, and none of it has been
-built. His words, 2026-09-12: "create a loop to perfect the UI of the game to
-look like the included samples in midnight menagerie/UI, as well as the
-backgrounds looking at the same level, critiqued by blind judges ... fan out
-agents to triplicate and duplicate builds and critique runs. dont stop until
-its perfected." The loop runs until every screen scores 9 from every judge.
+**Josh's standing order is the UI pass, and it is running.** His words,
+2026-09-12: "create a loop to perfect the UI of the game to look like the
+included samples in midnight menagerie/UI, as well as the backgrounds looking at
+the same level, critiqued by blind judges ... fan out agents to triplicate and
+duplicate builds and critique runs. dont stop until its perfected." On 09-13 he
+said "continue loop until perfected". The loop runs until every screen scores 9
+from every judge.
 
 ## FIRST, BEFORE ANYTHING
 
-**1. `python tools/devserver.py 8777`, then `python tools/gates.py`.** 99 gates,
-about 30 minutes (`--only check|run|extra`, `--filter`, `--list`). The last full
-run was on `d30ab6d`; the commits since touch docs only. **Four reds:**
+**1. Is round 3 still building?** It was launched on 2026-09-13 from `662d874`,
+as workflow `wf_9874879c-a74` in session `5714ff4c`. A workflow lives and dies
+with its session, and no other session can resume it.
+- **The branches:** `git log --oneline 662d874..ui/r3-<track>-<slot>` for each of
+  the nine (`<track>` is `polish`, `combat` or `dialogs`; `<slot>` is `a`, `b`
+  or `c`).
+- **The captures:** a builder that finished has put its screenshots in
+  `$UILOOP/judging/r3/<track>/<CODE>/`. That is twelve for POLISH and six for
+  COMBAT or DIALOGS.
+- **If that session is gone and the round is not done,** relaunch it with `args.tracks`
+  cut to the unfinished tracks. A relaunched builder starts from whatever its
+  worktree already holds.
 
-| gate | reads | why |
-|---|---|---|
-| `tests/enemy-stills/check.py` | 432 passed, **1 failed** | **new art, not a regression.** Josh redrew `butler.png` at 21:52 on 09-12, after the 16:25 build (IoU 0.592). Step 2 fixes it |
-| `tests/sprites/check.py` | 195 clips, 24 stills, 51 enemy stills, 6 failures | known: Taffy's five HALO clips plus `maya/defeat` |
-| `tests/run/run.py` | 50 runs, 2 errors | known: the Archivist draw on seed 371416, and `_losePatience` past turn 30 |
-| `tests/steam-deck/run.py` | 5 passed, 1 failed | known: the Map fits its panel after the gate measures; red before the kit too (A/B 09-11 and 09-12) |
+**2. Josh drops art in while you work.**
+- **Enemies:** `ls -t animations/sprites/enemies | head` shows the newest
+  delivery. A new file or a redraw turns `tests/enemy-stills` red until
+  `python tools/prep_sprites.py --enemies` rebuilds it. Commit the built still,
+  never the source.
+- **Backgrounds:** `animations/backgrounds/` does not exist yet. When it appears,
+  run `python tools/prep_backgrounds.py` before the next round's baselines. His
+  paintings are the one thing that can lift every screen's background score.
 
-Anything else red is new. **Look before you debug: Josh drops art in while you
-work.** `ls -t animations/sprites/enemies | head` shows the newest delivery;
-`animations/backgrounds/` does not exist yet, which means no background has
-arrived.
-
-**2. Rebuild the Butler before anything photographs combat.** He is
-`foyer-boss`, which is exactly the fight round 2's COMBAT track photographs.
-
-```
-python tools/prep_sprites.py --enemies
-python tests/enemy-stills/check.py
-git status --short game/assets/sprites
-```
-
-Expect 433 passed, and `butler.webp` to have moved (`index.json` too, if his
-size changed). If all 51 moved, compare them before committing. Commit the
-built still, never the source, and push. That commit is round 2's base.
+**3. The battery:** `python tools/devserver.py 8777`, then `python tools/gates.py`
+(99 gates, about 28 minutes). On the round 2 merge it read red only on the known
+`tests/sprites/check.py` and `tests/run/run.py`, once `e14011b` fixed the
+`css-tokens` red the merge left. `tests/steam-deck` passed that run; its Map row
+is still load-sensitive.
 
 ## THE UI PASS
 
-`docs/ui-pass/README.md` is the loop's home: how a round runs, the traps it has
-already paid for, and the score log. Read it before anything below.
+`docs/ui-pass/README.md` is the loop's home: how a round runs, the traps, the
+score log.
+
+`UILOOP` holds the worktrees (`wt/`) and every capture a judge has seen
+(`judging/r0` to `r3`). It is
+`C:\Users\Josh\AppData\Local\Temp\claude\C--Users-Josh-OneDrive-Desktop-Tandem-Tales-Midnight-Menagerie\5714ff4c-0809-4a83-8794-4dabc7cc6f3a\scratchpad\ui-loop`.
+Keep it outside OneDrive, always.
 
 | round | track | mean overall, in its round | merged |
 |---|---|---|---|
-| 0 | the kit, on Shop / Reward / Curiosity | LOCK 7.0 · WICK 6.3 · MOTH 6.2 · the game before 2.2 | LOCK, `ui/r0-c`, `1641055` |
-| 1 | REFINE Shop / Reward / Curiosity | OPAL 6.83 · RUNE 6.50 · IRIS 6.08 · round 0's screens 5.58 | OPAL, `ui/r1-refine-b`, `ef3f7e8` |
-| 1 | EXPAND Map / Safe Room / Game Over | HUSK 6.67 · FERN 6.44 · VANE 6.06 · the screens before 3.06 | per screen, three judges: Map HUSK, Safe Room and Game Over FERN, `d30ab6d` |
-| 2 | POLISH the six · COMBAT · EXPAND-2 Lobby / Clubhouse / Atlas | briefed, not built | |
+| 0 | the kit, on Shop / Reward / Curiosity | LOCK 7.0 · WICK 6.3 · MOTH 6.2 · the game before 2.2 | LOCK `1641055` |
+| 1 | REFINE Shop / Reward / Curiosity | OPAL 6.83 · RUNE 6.50 · IRIS 6.08 · before 5.58 | OPAL `ef3f7e8` |
+| 1 | EXPAND Map / Safe Room / Game Over | HUSK 6.67 · FERN 6.44 · VANE 6.06 · before 3.06 | Map HUSK, the other two FERN `d30ab6d` |
+| 2 | POLISH the six boards | BRAID 6.78 · AMBER 6.75 · CHALK 6.72 · before 6.22 | CHALK, decided on the rankings `a4b2ecc` |
+| 2 | COMBAT, a Scuffle and a boss | FROST 7.25 · DUSK 6.75 · EMBER 6.25 · before 3.50 | FROST `04af2bc` |
+| 2 | EXPAND-2 Lobby / Clubhouse / Atlas | GROVE 6.61 · IVORY 6.56 · HAZE 6.11 · before 2.56 | Lobby GROVE, the other two IVORY `31b6d8f` |
+| 3 | POLISH · COMBAT with a full hand · DIALOGS | building | |
 
-**Where the game is.** Title, Companion Select and Kid Select ARE Josh's
-paintings. Shop, Reward, Curiosity, Map, Safe Room and Game Over are kit boards.
-Combat, the Lobby, the Clubhouse, the Atlas, settings and the modals are still
-the old navy web chrome.
+**Where the game is.**
+- **Paintings:** Title, Companion Select, Kid Select and the opening's Kid picker
+  ARE Josh's paintings.
+- **Kit screens:** the six boards, combat, the lobby, the clubhouse and the atlas,
+  scoring 6.2 to 7.3.
+- **Still web chrome:** the opening's story beats, Settings, the pile viewer, the
+  confirm dialog, the coach, the handoff veil and the toasts. Round 3's DIALOGS
+  track takes the first three.
 
-**What holds the converted screens under 9.** Every round-1 judge named the
-same three things. The grounds are renders rather than paintings: every
-placeholder is held at about 5 until Josh's backgrounds land. Flat dark gradient
-panels and pills still read as web UI. Small text drifts and crowds at 1280x800.
+**The ceiling is the backgrounds.** Converting a screen has been worth about four
+points. Refining a converted one is worth about half a point, and less each
+round. Every judge scores background near 6 on every candidate, because the
+grounds are renders. Until Josh's paintings land, the loop plateaus around 7.
 
-### Launching round 2
+### A round, step by step
 
-1. **The Butler first** (step 2 above). Round 2's base is that commit.
-2. **The worktrees.** This session's loop folder, `UILOOP`, is
-   `C:\Users\Josh\AppData\Local\Temp\claude\C--Users-Josh-OneDrive-Desktop-Tandem-Tales-Midnight-Menagerie\45f54fe4-aa2f-4720-9112-605f08bb04ac\scratchpad\ui-loop`.
-   - It holds `wt/r2-{polish,combat,expand2}-{a,b,c}`: registered with git, on
-     `ui/r2-*`, at `45d1875`, with nothing committed.
-   - It also holds `judging/r0/` and `judging/r1/` (every capture a judge saw),
-     and empty `judging/r2/<track>/<CODE>/` folders for all twelve codes.
-   - **To reuse it**, run `git -C "$UILOOP/wt/<name>" merge --ff-only dev` in
-     each worktree.
-   - **To cut a fresh set** in your own scratchpad (outside OneDrive, always):
-     `git worktree remove --force` the nine and `git branch -D` the nine. Then,
-     per builder,
-     `GIT_LFS_SKIP_SMUDGE=1 git worktree add -b ui/r2-<track>-<slot> "$UILOOP/wt/r2-<track>-<slot>" <base>`.
-     `<track>` is `polish`, `combat` or `expand2`; `<slot>` is `a`, `b` or `c`.
-     Finally `mkdir -p` the twelve judging folders.
-3. **The baselines.** Take them from the main checkout on 8777, under the neutral
-   codes (never "BASE", or a judge can tell which candidate is today's game):
+1. **Art first** (FIRST, item 2).
+2. **Brief.**
+   - Write `BRIEF-r<n>.md` self-contained: builders read EVERY brief the args list,
+     in full, so never list an old round's brief, with its fix lists.
+   - Write `RUBRIC-r<n>.md`, and `round-<n>.args.json`: per track its screens, a
+     neutral baseline code, and three builders with slot, code, port 8831–8839 and
+     angle; plus `maxBuilders: 6`.
+   - Fix lists come from each judge's `worst_problem` for the winning screens, plus
+     `grafts`. A judge's `winner_fixes` aim at THAT judge's winner.
+   - Dry-run first: `python tools/ui_pass_probe.py docs/ui-pass/round-<n>.args.json`
+     prints the agents, the queue, and a builder's and a judge's full prompt.
+3. **Worktrees.**
+   - `git worktree remove --force` last round's nine, keeping their branches for
+     grafts. A running devserver locks a worktree: `Stop-Process` it first.
+   - Then, per builder:
+     `GIT_LFS_SKIP_SMUDGE=1 git worktree add -b ui/r<n>-<track>-<slot> "$UILOOP/wt/r<n>-<track>-<slot>" <base>`.
+   - Make the twelve `judging/r<n>/<track>/<CODE>/` folders.
+4. **Baselines.**
+   - Photograph from the main checkout on 8777 with the brief's Deliverables
+     commands, without `--port`.
+   - Take each screen at the default size and again with `--w 1280 --h 800`, saved
+     as `<screen>-1280.png`.
+   - File them under the neutral codes, never "BASE".
+5. **Launch:**
+   `Workflow({ scriptPath: "docs/ui-pass/round-workflow.js", args: { ...round-<n>.args.json, repo, uiloop, base } })`.
+   Nine builders took about five hours in round 2.
+6. **Merge.**
+   - **REFINE:** `git merge --no-ff` the winner's branch whole. Put the message in
+     a file, because `git merge -F -` does not read stdin.
+   - **EXPAND:** take one winner's branch whole, then lay the other winner's
+     screen files on top with only the kit pieces those screens use (`31b6d8f`).
+   - The result's `winnerHow` says whether a majority or the rankings decided.
+   - Two appended `kit.css` sections conflict at the end of the file, and git
+     aligns their shared `/* ===` opener and final `}`. Rebuild that file from the
+     blobs (base plus each append); never just delete the markers.
+7. **Check.**
+   - `python tools/endings_guard.py --base <base>`.
+   - Photograph every merged screen beside its judged capture.
+   - Run the battery, then push.
+8. **Log** the scores in the README, update this file and the memory, and brief
+   the next round.
 
-   | code | track | screens |
-   |---|---|---|
-   | `JADE` | POLISH | shop, reward, event, map, rest, gameover |
-   | `KELP` | COMBAT | combat, combat-boss |
-   | `LOAM` | EXPAND-2 | lobby, clubhouse, atlas |
+### Round 3, when it lands
 
-   Capture each screen twice: at the default size as `<screen>.png`, and with
-   `--w 1280 --h 800` as `<screen>-1280.png`. Use exactly the shot commands in
-   `BRIEF-r2.md`'s Deliverables, without `--port`. `tools/shot.py` writes
-   `shots/<name>.png`; copy from there into `$UILOOP/judging/r2/<track>/<CODE>/`.
-4. **Launch.**
-   ```
-   Workflow({ scriptPath: "docs/ui-pass/round-workflow.js",
-              args: { ...contents of docs/ui-pass/round-2.args.json,
-                      repo: "C:/Users/Josh/OneDrive/Desktop/Tandem Tales/Midnight Menagerie",
-                      uiloop: "<UILOOP, forward slashes>",
-                      base: "<the Butler commit>" } })
-   ```
-   - It runs up to 18 agents: nine builders on ports 8831–8839, two judges per
-     track, and a third wherever those two split.
-   - The builders' angles are in the args file:
-     - POLISH: AMBER literal, BRAID material and light, CHALK legibility at 1280.
-     - COMBAT: DUSK kit-faithful, EMBER a staged arena, FROST readability first.
-     - EXPAND-2: GROVE kit-faithful, HAZE staged scenes, IVORY legible boards.
-   - It was dry-run with mocked agents on 09-13. Prompts, paths, orders and
-     tiebreaks came out right.
-   - Round 1 ran six builders at once on this machine. Nine is new: each runs a
-     devserver and a Chromium. If the machine struggles, pass `tracks` one or two
-     at a time.
-5. **Merge.**
-   - **POLISH and COMBAT:** take the one winner's branch whole with
-     `git merge --no-ff`, as `1641055` and `ef3f7e8` did.
-   - **EXPAND-2:** merge screen by screen, as `d30ab6d` did. Take one winner's
-     branch whole. Lay the other winner's screen files on top, with ONLY the
-     appended kit components and `--kit-*` tokens those screens use. That
-     commit's message says exactly what was taken and what was left.
-   - **Conflicts:** the tracks own disjoint files (`BRIEF-r2.md`, "Who owns
-     what"). The one overlap is that COMBAT and EXPAND-2 both append sections to
-     the end of `kit.css`: keep both.
-   - **Every merge:** `python tools/endings_guard.py --base <base>`, then the
-     battery.
-6. **The next round.**
-   - Record the scores in the README table.
-   - Write `BRIEF-r3.md` from the judges' `winner_fixes` and `grafts`.
-   - Write `RUBRIC-r3.md` only if a decision rule changes.
-   - Write `round-3.args.json`.
-   - Josh's paintings change what a round can reach: when `animations/backgrounds/`
-     appears, run `python tools/prep_backgrounds.py` before the baselines.
+- **Merges:** all three tracks are REFINE, so three whole-branch merges.
+- **Seams to check after merging:**
+  - DIALOGS' `ui/modal.css` restyles every Modal, including the ones combat opens.
+  - COMBAT and DIALOGS both append to `kit.css`.
+  - POLISH owns `.kit-cards`, which the hand and the pile viewer both show.
+- **Owed to round 4:** the Lobby, Clubhouse and Atlas fixes the round-2 judges
+  named, plus the coach, the handoff veil and the toasts. The named fixes:
+  - the lobby's password board shows a raw seed number;
+  - the clubhouse has brown planks and primary-coloured bulbs;
+  - the atlas has a flat parchment and a pill-shaped nameplate.
 
-## DONE THIS SESSION (2026-09-12)
+## DONE 2026-09-13
+
+- **The Butler** rebuilt from Josh's redraw (`e32e1ab`; enemy-stills 433 passed).
+- **The loop's tooling:**
+  - `maxBuilders` in the workflow (`d5935f6`): one capture peaks near 0.9 GB, so
+    six builders at once, not nine.
+  - `tools/on_port.py` (`6cfaef5`): every test hard-codes :8777, so a worktree
+    ran its tests against `dev`.
+  - Split decisions on the rankings (`d805f17`); `tools/shot.py --script @file`
+    and `tools/shot-scripts/combat-crowd.js` (`662d874`); `tools/ui_pass_probe.py`.
+- **Round 2 built, judged and merged** (`a4b2ecc`, `04af2bc`, `31b6d8f`). The
+  battery then turned up two undefined tokens (`e14011b`).
+- **Round 3 briefed** (`662d874`) and launched.
+
+## DONE 2026-09-12
 
 **The enemies are painted** (`9ddf7cd`). 51 enemies stand on the board as their
 paintings: the Foyer, the Nursery, the Sleeping Quarters, the Kitchens and the
@@ -220,6 +230,11 @@ Big Scare** (`3a12203`).
 
 ## DO NOT RE-DERIVE THESE
 
+- **A test run from a worktree tests `dev`.** All 102 test scripts hard-code
+  `:8777`, the main checkout's server. `python tools/on_port.py PORT <test>` runs
+  one against a worktree's own server.
+- **A judge's `winner_fixes` aim at that judge's own winner.** To brief the next
+  round on a winner, read every judge's `worst_problem` for it.
 - **Judge scores anchor to the candidates beside them.** Round 0's winner scored
   7.0 in round 0 and 5.58 as round 1's baseline. Compare a winner with the
   baseline in its own round, never across rounds.
@@ -249,6 +264,11 @@ Big Scare** (`3a12203`).
 
 ## OPEN, NAMED, NOT STARTED
 
+- **The co-op lobby loses keyboard focus on every wire message.** GROVE's
+  `_paintRoom` rebuilds the board; IVORY's lost lobby had kept focus
+  (`ui/r2-expand2-c`). The game did the same before round 2.
+- **`.kit-field`, `.kit-select`, `.kit-select-wrap` and `.kit-hatch` are unused**
+  since IVORY's lobby lost. Round 3's DIALOGS may take the first three.
 - **Part art.** The Hydra's Heads, the Wardrobe's Doors, the Favorite Doll, the
   Gardener's seeds and the Growth Patches are still drawn rigs. The Hydra and
   Wardrobe paintings include their parts, so those two fights show the parts
@@ -274,8 +294,15 @@ Big Scare** (`3a12203`).
 - **Wink's `readSuccess` cannot survive the enemy phase.** It lives in
   `turnFlags`.
 
-## TRAPS THIS SESSION HIT
+## TRAPS
 
+- **`var(--x, fallback)` still needs `--x` defined somewhere,** or `css-tokens`
+  goes red. A merge that drops the only file setting a knob does exactly that
+  (`e14011b`).
+- **When three judges named three winners,** the old vote count returned the
+  first judge's pick. Rankings decide now (`d805f17`); read `winnerHow`.
+- **Nine builders at once is more than this 16 GB laptop holds.** One Playwright
+  capture peaks near 0.9 GB. Keep `maxBuilders` at 6.
 - **The working tree can hold CRLF where git holds LF, and `git status` won't
   say.** `git ls-files --eol` shows `i/lf w/crlf`. A census, `grep` or `sed` of
   the working tree then lies about the committed file. Patch from the blob.
@@ -301,30 +328,31 @@ Big Scare** (`3a12203`).
 
 ## GATES
 
-Every number below is from the battery on `d30ab6d`, 2026-09-12. The commits
-since touch docs only.
+Every number below is from the battery on the round 2 merge (`31b6d8f`),
+2026-09-13. `e14011b` then fixed its one new red (css-tokens now reads 0
+undefined); the commits since touch the loop's docs and tools only.
 
 | gate | reads |
 |---|---|
-| `tools/gates.py` | 99 gates in 1750s, 4 red (above) |
+| `tools/gates.py` | 99 gates in 1670s, 3 red: css-tokens (fixed in `e14011b`), sprites and run.py (known) |
 | `tests/cards/run.py` | 1470 cards, 0 errors, 0 warnings |
 | `tests/combat/run.py` · `tests/coop/run.py` | 695 · 645 |
 | `tests/cost-curve/check.py` | 17 passed |
 | `tests/upgrade-effects/check.py` | 1288 played, 218 moved nothing, 28 unplayable, 54 need a friend, 72 a choice |
 | `tests/sprite-triggers/check.py` · `tests/kid-clips/check.py` | 292 · 10 |
-| `tests/sprites/check.py` | 195 clips, 24 stills, 51 enemy stills, **6 failures** (known) |
+| `tests/sprites/check.py` | 195 clips, 24 stills, 51 enemy stills, **6 failures** (known: Taffy's five HALO clips and `maya/defeat`) |
 | `tests/sprites/clips.py` | 28 passed |
-| `tests/enemy-stills/check.py` | 432 passed, **1 failed** (the Butler's redraw); 433 once rebuilt |
+| `tests/enemy-stills/check.py` | 433 passed, 0 failed |
 | `tests/greenhouse/check.py` · `tests/design-courage/check.py` | 45 · 129 checked, 0 failures |
 | `tests/turn-events/check.py` | 155 files, 4 raw turn listeners, 0 unguarded, 46 through the helper |
 | `tests/hook-names/check.py` | 41 engine hooks, 84 companion hooks, 0 unknown |
-| `tests/seams/proof.py` · `tests/seams/check.py` | 52 · 8400 call sites, 0 problems |
-| `tests/css-tokens/check.py` · `tests/scene-css/check.py` | 0 undefined tokens · 13 sheets, 1141 classes, 0 conflicts |
+| `tests/seams/proof.py` · `tests/seams/check.py` | 52 · 8445 call sites, 0 problems |
+| `tests/css-tokens/check.py` · `tests/scene-css/check.py` | 0 undefined tokens (after `e14011b`) · 13 sheets, 1236 classes, 0 conflicts |
 | `tests/net/run.py` · `tests/map/run.py` · `tests/chrome/run.py` | 190 · 30 · 27 |
 | `card-face` · `piles-reachable` · `settings-play` · `gamepad` · `gameover-keeps` | 14 · 24 · 19 · 23 · 16 |
 | `tests/combat-scene/seam.py` · `tests/coop/lobby.py` · `tests/coop/matedeck.py` | 22 · 27 · 11 |
 | `tests/enemies/run.py` · `audit.py` | 275 enemies · 20104 turns, 0 errors |
 | `tests/backpack/run.py` · `tests/critic-design/run.py` | 80 checks · 695 |
 | companion suites | boggle 31, bones 30, brambleboo 52, crinkle 49, crumbula 25, drizzle 71, hush 17, marmalade 29, mopsy 28, mossbit 59, pipkin 23, pudding 52, taffy 12, truffle 107, wink 86, wisp 128 — all 0 failed |
-| `tests/run/run.py` | 50 runs, **2 errors** (known); victories 5/40, mean run 12.0 rooms |
-| `tests/steam-deck/run.py` | 5 passed, **1 failed** (known) |
+| `tests/run/run.py` | 50 runs, **2 errors** (known: the Archivist on seed 371416, `_losePatience` past turn 30); victories 5/40 unaided |
+| `tests/steam-deck/run.py` | 6 passed, 0 failed (its Map row is load-sensitive; it has failed on correct code) |
