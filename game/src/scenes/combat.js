@@ -43,7 +43,7 @@ const HAND_CSS = new URL('../ui/hand.css', import.meta.url).href;
 const PORTRAITS = new URL('../../assets/portraits/', import.meta.url).href;
 
 /** Clearance kept between the bottom of a creature's plate and the hand. */
-const PLATE_GAP = 24;
+const PLATE_GAP = 12;
 
 /**
  * HOUSE RULE TEXTS, so an intent can say what the rule DOES before it lands.
@@ -222,7 +222,7 @@ export class CombatScene extends Scene {
     this._warmDeck();
 
     this._offFrame = ctx.clock.onFrame((dt, t) => this._frame(dt, t));
-    this._ro = new ResizeObserver(() => { this.fx?.resize(); this._layoutEnemies(); });
+    this._ro = new ResizeObserver(() => { this.fx?.resize(); this._syncHandBounds(); this._layoutEnemies(); });
     this._ro.observe(this.root);
 
     this._syncAll();
@@ -692,6 +692,11 @@ export class CombatScene extends Scene {
              and none of it takes a pointer event. -->
         <div class="kit-dress cb-dress" aria-hidden="true">
           <div class="cb-dress__vignette"></div>
+          <div class="cb-dress__mat"></div>
+          <div class="cb-dress__glass"></div>
+          <div class="cb-dress__warmth"></div>
+          <div class="kit-web cb-dress__web cb-dress__web--bl"></div>
+          <div class="kit-web kit-web--r cb-dress__web cb-dress__web--br"></div>
           <div class="kit-dress__rule cb-dress__rule"></div>
           <div class="kit-dress__vine kit-dress__vine--l cb-dress__vine"></div>
           <div class="kit-dress__vine kit-dress__vine--r cb-dress__vine"></div>
@@ -833,6 +838,11 @@ export class CombatScene extends Scene {
             <span class="cb-endturn__hint">E</span>
             <i class="kit-medallion kit-medallion--ornate kit-btn__medal cb-endturn__medal" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 2h14v2.4h-1.6c0 3.1-2 5.3-4.3 7.6 2.3 2.3 4.3 4.5 4.3 7.6H19V22H5v-2.4h1.6c0-3.1 2-5.3 4.3-7.6C8.6 9.7 6.6 7.5 6.6 4.4H5z"/></svg></i>
           </button>
+          <!-- THE PILES OVER END TURN, in a row centred on its medallion. DOM
+               order is unchanged (discard, torn, vanished: the keyboard's
+               order); the row is laid out right to left so the discard pile
+               stands nearest the corner. The candle is decoration. -->
+          <div class="cb-br__piles">
           <button class="cb-pile cb-pile--discard" id="discard-pile" type="button"
                   data-tip="Discard pile|Tricks already used this Scuffle.|Reshuffled into the draw pile when it runs out.">
             <svg viewBox="0 0 34 44" aria-hidden="true"><rect x="1" y="1" width="24" height="34" rx="3"/><rect x="6" y="5" width="24" height="34" rx="3"/><rect x="9" y="9" width="24" height="34" rx="3" class="top"/></svg>
@@ -853,6 +863,8 @@ export class CombatScene extends Scene {
             <svg viewBox="0 0 34 44" aria-hidden="true"><rect x="1" y="1" width="24" height="34" rx="3"/><rect x="9" y="9" width="24" height="34" rx="3" class="top gone"/></svg>
             <b class="kit-coin">0</b><span class="cb-pile__lbl">Vanished</span>
           </button>
+          <i class="kit-prop kit-prop--candle cb-br__candle" aria-hidden="true"></i>
+          </div>
         </div>
 
         <!-- Turn, boss and House Rule banners are lettered on the wordmark's own
@@ -1066,8 +1078,17 @@ export class CombatScene extends Scene {
       if (r.height > 0 && r.top > 0) top = Math.min(top, r.top);
     }
     if (top >= window.innerHeight) top = window.innerHeight * 0.78;   // no hand yet
+    /* …and never lower than a full opening hand would stand, so a plate is
+       placed once for five Tricks rather than sinking and climbing again as
+       they are played (a boss's stage resizes to keep its plate clear). */
+    if (this.hand && this.hand.restTop) {
+      const host = this.$handHost.getBoundingClientRect();
+      const rest = host.top + this.hand.restTop(Math.max(5, this.hand.slots.length));
+      if (Number.isFinite(rest)) top = Math.min(top, rest);
+    }
     const limit = top - PLATE_GAP;
     for (const v of this.views.values()) v.setPlateLimit(limit);
+    this._placeIncomingSoon();
   }
 
   /**
@@ -1251,6 +1272,49 @@ export class CombatScene extends Scene {
       draw: { x: d.left - r.left + d.width / 2, y: d.top - r.top + d.height / 2 },
       discard: { x: x.left - r.left + x.width / 2, y: x.top - r.top + x.height / 2 },
     });
+    this._syncHandBounds();
+    // the plates and END TURN are lettered in the display face: measure again
+    // once it has loaded, or the band is the fallback font's width
+    if (!this._fontsSynced && document.fonts?.ready) {
+      this._fontsSynced = true;
+      document.fonts.ready.then(() => { if (this.hand) { this._syncHandBounds(); this._scheduleFit(); } });
+    }
+  }
+
+  /**
+   * THE HAND KEEPS TO THE TABLE BETWEEN THE FURNITURE.
+   *
+   * Nine Tricks at 1280x800 laid the fan from x=150 to x=1130: its first card
+   * over the Kid's Courage tube and conditions and the draw pile's coin, its
+   * last over END TURN's plate. The Hand's own gutters are a symmetric guess;
+   * the furniture is not symmetric (the Kid's column is taller than it is wide,
+   * END TURN is wider than the draw pile), so the scene measures what actually
+   * stands beside the fan and hands over the band between. `Hand#setBounds`
+   * centres the fan in it and shrinks the cards before it lets them cross it.
+   *
+   * Only what stands in the fan's own height counts: the left column (the Kid's
+   * panel, Nerve, the draw pile) and the right one (END TURN and the piles over
+   * it). Cheap, and a no-op when nothing moved: resize, a pile appearing, fonts.
+   */
+  _syncHandBounds() {
+    if (!this.hand || !this.$handHost) return;
+    const host = this.$handHost.getBoundingClientRect();
+    if (!host.width) return;
+    const GAP = Math.round(Math.max(10, host.width * 0.008));
+    let left = 0, right = host.width;
+    for (const el of [this.$pl, this.$statuses, this.root.querySelector('.cb-bl')]) {
+      const b = el && el.getBoundingClientRect();
+      if (b && b.width) left = Math.max(left, b.right - host.left + GAP);
+    }
+    const br = this.root.querySelector('.cb-br');
+    if (br) {
+      for (const el of br.querySelectorAll('.cb-endturn, .cb-pile, .cb-br__candle')) {
+        if (el.hidden) continue;
+        const b = el.getBoundingClientRect();
+        if (b.width) right = Math.min(right, b.left - host.left - GAP);
+      }
+    }
+    this.hand.setBounds({ left, right });
   }
 
   /** Hand asked to commit a card. Returning false rejects it with a shake. */
@@ -1801,6 +1865,52 @@ export class CombatScene extends Scene {
         : `Your ${block} Guard stops all of it.`);
     this.$inc.tabIndex = 0;
     this.$pl.classList.toggle('is-lethal', lethal);
+    this._placeIncomingSoon();
+  }
+
+  /** Coalesced to the next frame: this readout re-renders on every card hover. */
+  _placeIncomingSoon() {
+    if (this._incRaf) return;
+    this._incRaf = requestAnimationFrame(() => { this._incRaf = 0; this._placeIncoming(); });
+  }
+
+  /**
+   * WHERE THE INCOMING READOUT HANGS, measured. Beside the Kid's column there
+   * are two places for it and a crowded board can take either: hung off the
+   * frame's top corner it can meet the first creature's plate (the Keeper's
+   * five-body row at 1280 put his Courage under it), and level with the
+   * portrait it can meet a full fan's first card, cost and all. It takes the
+   * high place unless that covers more of the board than the low one would.
+   * Runs when the readout changes and when the plates or the fan move, never
+   * per frame; toggles one class.
+   */
+  _placeIncoming() {
+    const inc = this.$inc;
+    if (!inc || inc.hidden || !this.views || !this.engine || !inc.isConnected) return;
+    const others = [];
+    for (const v of this.views.values()) {
+      if (!v.alive || v.dying || !v.$plate) continue;
+      others.push(v.$plate.getBoundingClientRect());
+      if (v.intentView?.el) others.push(v.intentView.el.getBoundingClientRect());
+    }
+    for (const c of this.$handHost.querySelectorAll('.mm-hand__cards .mm-card:not(.is-flying)')) {
+      others.push(c.getBoundingClientRect());
+    }
+    const cover = () => {
+      const r = inc.getBoundingClientRect();
+      let a = 0;
+      for (const o of others) {
+        const w = Math.min(r.right, o.right) - Math.max(r.left, o.left);
+        const h = Math.min(r.bottom, o.bottom) - Math.max(r.top, o.top);
+        if (w > 0 && h > 0) a += w * h;
+      }
+      return a;
+    };
+    inc.classList.remove('is-low');
+    const high = cover();
+    if (!high) return;
+    inc.classList.add('is-low');
+    if (cover() >= high) inc.classList.remove('is-low');
   }
 
   /* ══ engine wiring ══════════════════════════════════════════════════════ */
@@ -3220,6 +3330,8 @@ export class CombatScene extends Scene {
       d.innerHTML = statusGlyph(s) + (s.showStacks === false ? '' : `<b class="kit-coin">${s.stacks}</b>`);
       this.$statuses.appendChild(d);
     }
+    // a row longer than the column moves the hand's band (see the CSS note)
+    if (list.length !== this._plStatusN) { this._plStatusN = list.length; this._syncHandBounds(); }
   }
 
   _syncPiles() {
@@ -3245,6 +3357,9 @@ export class CombatScene extends Scene {
     const gone = pl?.exhaust?.length ?? 0;
     this.$vanishedPile.hidden = gone === 0;
     this.$vanishedPile.querySelector('b').textContent = String(gone);
+    // a pile that just appeared stands in the right-hand column: the band moves
+    const shown = (torn > 0 ? 1 : 0) + (gone > 0 ? 2 : 0);
+    if (shown !== this._pilesShown) { this._pilesShown = shown; this._syncHandBounds(); }
   }
 
   _syncNerve(cur, max) {
@@ -3840,6 +3955,7 @@ export class CombatScene extends Scene {
   async exit() {
     clearTimeout(this._veilT);
     clearTimeout(this._fitT); clearTimeout(this._fitT2);
+    if (this._incRaf) { cancelAnimationFrame(this._incRaf); this._incRaf = 0; }
     this._tutorial = false;                    // stops a pending _mountCoach
     this.coach?.destroy();
     this.coach = null;

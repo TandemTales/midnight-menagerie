@@ -220,7 +220,136 @@ def guard():
             enamel=("#4d7aa6", "#1c3450"), glaze_dark=0.5, sheen=1.1)
 
 
-PIECES = {"intents": intents, "guard": guard}
+# ── round 3: the full board ─────────────────────────────────────────────────
+def _rod(d, w):
+    """A half-round rod `w` wide in section, as a height, over distance `d` into it."""
+    t = np.clip(d / w, 0, 1)
+    return np.where((d >= 0) & (d < w), np.sqrt(np.clip(1 - (2 * t - 1) ** 2, 0, 1)), 0)
+
+
+def gauge():
+    """A Courage gauge's housing: a brass tube with an open channel, closed at
+    each end by a collared cap and a domed knob — the brass the enamel is SET
+    IN, painted to lie over the fill (`.kit-tube::after`), so the lips overlap
+    the enamel's edge the way a bezel holds a glass.
+
+    240x56, a 9-slice: 40 px ends carry the caps; the middle is a plain run of
+    lip over channel over lip. The channel is transparent.
+      caps     x 0..34: a dome knob, a collar with two turned grooves and a bead
+      lips     y 10..17 and 39..46, x 24..216: round rods either side of the
+               channel (y 17..39), which is where the fill shows"""
+    rng = np.random.default_rng(1203)
+    W, H, ss = 240, 56, 4
+    SW, SH = W * ss, H * ss
+    yy, xx = np.mgrid[0:SH, 0:SW].astype(np.float32) / ss
+    xm = np.minimum(xx, W - xx)                      # distance from the nearer end: both caps at once
+    hgt = np.zeros((SH, SW), np.float32)
+    solid = np.zeros((SH, SW), bool)
+
+    # lips: two rods along the channel
+    lipT = (yy >= 10) & (yy < 17) & (xx >= 24) & (xx <= W - 24)
+    lipB = (yy >= 39) & (yy < 46) & (xx >= 24) & (xx <= W - 24)
+    hgt = np.where(lipT, _rod(yy - 10, 7) * 4.8, hgt)
+    hgt = np.where(lipB, _rod(yy - 39, 7) * 4.8, hgt)
+    solid |= lipT | lipB
+
+    # the collar: a cylinder round the tube's end, taller than the tube
+    cy, ry = 28.0, 23.0
+    col_m = (xm >= 9) & (xm <= 33) & (np.abs(yy - cy) <= ry)
+    # rounded corners on the collar's silhouette
+    corner = 5.0
+    dxc = np.clip(np.maximum(9 + corner - xm, xm - (33 - corner)), 0, None)
+    dyc = np.clip(np.abs(yy - cy) - (ry - corner), 0, None)
+    col_m &= np.hypot(dxc, dyc) <= corner
+    cyl = np.sqrt(np.clip(1 - ((yy - cy) / (ry + .5)) ** 2, 0, 1))
+    collar = cyl * 7.5
+    # two turned grooves and a bead at the inboard lip
+    for gx in (15.5, 23.5):
+        collar = collar - np.exp(-((xm - gx) / 0.7) ** 2) * 1.6
+    collar = collar + np.exp(-((xm - 31.0) / 1.1) ** 2) * 1.2
+    # the collar's ends are chamfered so light catches them
+    collar = collar * (0.78 + 0.22 * smooth(9, 11.5, xm)) * (0.86 + 0.14 * (1 - smooth(31, 33, xm)))
+    hgt = np.where(col_m, np.maximum(hgt, collar), hgt)
+    solid |= col_m
+
+    # the knob: a dome on the collar's outer face
+    kx, ky, krx, kry = 6.0, 28.0, 5.5, 10.5
+    kn = ((xm - kx) / krx) ** 2 + ((yy - ky) / kry) ** 2
+    knob_m = kn <= 1
+    dome = np.sqrt(np.clip(1 - kn, 0, 1)) * 5.5
+    hgt = np.where(knob_m, np.maximum(hgt, dome), hgt)
+    solid |= knob_m
+
+    hgt = ndimage.gaussian_filter(hgt * ss, ss * 0.5)
+    n = normals(hgt, 1.0)
+    metal = brass(n, wear=noise((SH, SW), rng, ss * 2.2), spec_amt=0.4, lift=-0.1) * ANTIQUE
+    metal = metal * np.array([1.0, 0.94, 0.86], np.float32)
+
+    # ink round every solid, and in the grooves
+    dist_in = ndimage.distance_transform_edt(solid) / ss
+    ink = np.array([12, 7, 4], np.float32)
+    edge = smooth(0.0, 0.7, dist_in)
+    col = metal * edge[..., None] + ink * (1 - edge[..., None])
+    alpha = smooth(0.0, 0.35, dist_in)
+    # the channel side of each lip darkens into the recess: a lip shades what it holds
+    shade = np.clip(((yy - 15) / 2.0) * (yy < 17) + ((41 - yy) / 2.0) * (yy >= 39), 0, 1)
+    col = np.where((lipT | lipB)[..., None], col * (1 - 0.35 * shade[..., None]), col)
+
+    col = down(col, ss)
+    alpha = down(alpha, ss)
+    save(np.dstack([np.clip(col, 0, 255), np.clip(alpha, 0, 1) * 255]), "gauge.webp", 94)
+
+
+def coin_face():
+    """Nerve's coin, and the cost struck on every Trick in the hand: a gold
+    piece with a raised rim, a ring of beads inside it and a gently domed
+    field for the figure. Brighter than the antique settings round it (it is
+    the thing you spend), and plain in the field so a numeral reads on it.
+
+    128x128, transparent outside the rim."""
+    rng = np.random.default_rng(1207)
+    S, ss = 128, 4
+    W = S * ss
+    yy, xx = np.mgrid[0:W, 0:W].astype(np.float32) / ss
+    c = S / 2 - 0.5
+    r = np.hypot(xx - c, yy - c)
+    R = S / 2 - 3.0
+    inside = r <= R
+    d = np.clip(R - r, 0, None)                      # distance in from the edge
+    rim_w = 9.0
+    rim = _rod(d, rim_w) * 5.5 * (0.85 + 0.15 * (1 - np.clip(d / rim_w, 0, 1)))
+    # a step down from the rim to the field, and a dome across the field
+    field = (d >= rim_w)
+    dome = np.where(field, 1.6 + 2.4 * np.sqrt(np.clip(1 - (r / (R - rim_w)) ** 2, 0, 1)), 0)
+    hgt = np.where(d < rim_w, rim, dome)
+    # the beads: a ring of small domes just inside the rim
+    br = R - rim_w - 3.6
+    nb = 40
+    ang = np.arctan2(yy - c, xx - c)
+    k = np.round(ang / (2 * np.pi / nb)) * (2 * np.pi / nb)
+    bx, by = c + br * np.cos(k), c + br * np.sin(k)
+    bd = np.hypot(xx - bx, yy - by)
+    bead = np.sqrt(np.clip(1 - (bd / 2.1) ** 2, 0, 1)) * 2.0
+    hgt = np.where((bd < 2.1) & field, np.maximum(hgt, dome + bead), hgt)
+    hgt = np.where(inside, hgt, 0)
+    hgt = ndimage.gaussian_filter(hgt * ss, ss * 0.5)
+    n = normals(hgt, 1.0)
+    metal = brass(n, wear=noise((W, W), rng, ss * 3), spec_amt=0.55, lift=0.06) * 0.94
+    metal = metal * np.array([1.0, 0.95, 0.84], np.float32)
+    # the field is burnished: a touch lighter and smoother than the rim's cast gold
+    metal = np.where(field[..., None], metal * 1.04 + 6, metal)
+    ink = np.array([22, 13, 5], np.float32)
+    edge = smooth(0.0, 0.8, d)
+    col = metal * edge[..., None] + ink * (1 - edge[..., None])
+    step = np.abs(d - rim_w) < 0.45
+    col = np.where(step[..., None], col * 0.55 + ink * 0.45, col)
+    alpha = np.clip((R + 0.5 - r) / 1.0, 0, 1)
+    col = down(col, ss)
+    alpha = down(alpha, ss)
+    save(np.dstack([np.clip(col, 0, 255), alpha * 255]), "coin-face.webp", 92)
+
+
+PIECES = {"intents": intents, "guard": guard, "gauge": gauge, "coin": coin_face}
 
 
 def contact_sheet():
