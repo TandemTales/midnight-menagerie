@@ -430,12 +430,12 @@
 .sh-buy__state {
   flex: none;
   display: grid; place-items: center;
-  width: calc(var(--tag-h) * 1.14); height: calc(var(--tag-h) * 1.14);
-  margin-left: -3px;
+  width: max(33px, calc(var(--tag-h) * 1.18)); height: max(33px, calc(var(--tag-h) * 1.18));
+  margin-left: -4px;
   border-radius: 50%;
   background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
   font-family: var(--font-display); font-weight: 700;
-  font-size: max(11px, calc(var(--tag-h) * .33)); line-height: 1; letter-spacing: .02em;
+  font-size: max(11.5px, calc(var(--tag-h) * .35)); line-height: 1; letter-spacing: -.01em;
   padding: 1px 0 0 .06em;
   text-transform: uppercase;
   color: var(--kit-gold-hi);
