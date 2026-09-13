@@ -26,6 +26,7 @@ import { mapNodeMarkup, nodeSymbol, hazardSymbol, hazardGlyphMarkup, pencilStrok
    this sheet FRAMES a wing, which is a composition decision, not a drawing one. */
 import { loadPlanTrace, inkTrace, solvePen, traceBox, lru } from '../ui/plan.js';
 import { HUD } from '../ui/hud.js';
+import { paintBackdrop, kitDressMarkup } from '../ui/kitboard.js';
 import { pauseStageFor } from './_stage.js';
 import { act, ACT } from '../net/actions.js';
 /* How many wings an expedition is, for the run-less preview only. `reward.js`
@@ -379,9 +380,17 @@ export class MapScene extends Scene {
   _buildDom() {
     const m = this.model, meta = m.map.meta;
     const wings = m.wings || EXPEDITION_WINGS;
+    /* THE BOARD. The blueprint is a document laid on a candlelit desk and hung
+       in the Kid board's gold frame: the desk is the kit's painted ground (and
+       the slot Josh's `map.png` drops into), the frame is drawn OVER the
+       sheet's edge so the paper sits under its lip, and the key along the
+       bottom is a gold-railed panel of enamel medallions and nameplates. The
+       board's candles stay out of it — their corners are where the way in
+       and the compass are drawn. */
     this.root.innerHTML = `
-      <div class="map-screen${this.still ? ' is-still' : ''}">
-        <div class="map-desk"></div>
+      <div class="map-screen kit-board${this.still ? ' is-still' : ''}">
+        <div class="map-desk kit-ground"></div>
+        ${kitDressMarkup({ floor: false, corners: false })}
 
         <div class="map-viewport" role="application"
              aria-label="Blueprint of ${escapeHtml(meta.name)}. Choose the next room.">
@@ -396,6 +405,7 @@ export class MapScene extends Scene {
         </div>
 
         <div class="map-shade" aria-hidden="true"></div>
+        <div class="map-frame kit-frame kit-frame--over" aria-hidden="true"></div>
         <div class="map-lamp" aria-hidden="true"></div>
         <div class="map-lamp map-lamp--warm" aria-hidden="true"></div>
         <div class="map-grain" aria-hidden="true"></div>
@@ -403,12 +413,12 @@ export class MapScene extends Scene {
         <!-- the shared run HUD (ui/hud.js) mounts here -->
         <div class="map-hudhost"></div>
 
-        <header class="map-banner">
-          <span class="tape tape-l" aria-hidden="true"></span>
-          <span class="tape tape-r" aria-hidden="true"></span>
-          <div class="bn-roman">${ROMAN[meta.index] || meta.index}</div>
+        <!-- The wing's nameplate, seated on the frame's top rail with its sheet
+             number on the board's round enamel. -->
+        <header class="map-banner kit-plate">
+          <div class="bn-roman kit-medallion">${ROMAN[meta.index] || meta.index}</div>
           <div class="bn-body">
-            <h1>${escapeHtml(meta.name)}</h1>
+            <h1 class="kit-plate__name">${escapeHtml(meta.name)}</h1>
             <p class="bn-form">${escapeHtml(meta.form)}</p>
             <!-- Two halves of ONE address, written the same way on purpose:
                  which wing of the house you are in, and how far into it you
@@ -436,7 +446,7 @@ export class MapScene extends Scene {
           </div>
         </header>
 
-        <div class="map-bar">
+        <div class="map-bar kit-panel">
           <div class="map-legend" aria-label="Blueprint key"></div>
           <div class="map-notes" aria-label="Wing conditions"></div>
           <div class="map-ballot" aria-live="polite" hidden></div>
@@ -446,9 +456,9 @@ export class MapScene extends Scene {
                life, and it takes no pointer events besides.
                NO BACKTICKS IN HERE. This is inside a template literal and one
                backtick ends it -- CONTRACTS trap 1, for the third time. -->
-          <button class="map-atlas" type="button"
+          <button class="map-atlas kit-plate" type="button"
                   title="The recovered plan of the whole estate — every wing, and which of the Menagerie is held where. Press H.">
-            <span aria-hidden="true">&#9974;</span> The whole house
+            <span class="kit-medallion" aria-hidden="true">&#9974;</span> The whole house
           </button>
           <div class="map-hint" aria-hidden="true">
             <b>drag</b> pan · <b>scroll</b> zoom · <b>↑↓</b> choose · <b>⏎</b> go
@@ -474,6 +484,8 @@ export class MapScene extends Scene {
     this.el.sheet.style.height = this.SH + 'px';
     this.el.sheet.style.setProperty('--sw', this.SW + 'px');   // the wet edge's run
     this._paintGrain();
+    // Josh's desk, when he has painted it (`map.png`): the board's ground.
+    paintBackdrop(this.el.screen, 'map', () => !!this.el);
   }
 
   // ───────────────────────────────────────────────────────── paper + ink ────
@@ -1204,7 +1216,7 @@ export class MapScene extends Scene {
     this.el.notes.innerHTML = map.hazards.length ? `
       <span class="notes-h">Wings</span>
       ${map.hazards.map(h => `
-        <button type="button" class="note note--${h.kind}" data-hz="${h.id}">
+        <button type="button" class="note note--${h.kind} kit-plate" data-hz="${h.id}">
           <span class="note-ico">${hazardSymbol(h.glyph, 17)}</span>
           <b>${escapeHtml(h.name)}</b>
           <span class="note-pop">
@@ -1407,7 +1419,10 @@ export class MapScene extends Scene {
   _fitView() {
     this._vp = null;
     const vp = this._vpRect();
-    const fit = Math.min((vp.width - 44) / this.SW, (vp.height - 30) / this.SH);
+    // The viewport is the frame's window and is already the sheet's shape
+    // (map.css), so the sheet fills it: the paper's edge goes under the frame's
+    // lip instead of floating in a band of desk inside the frame.
+    const fit = Math.min((vp.width - 6) / this.SW, (vp.height - 4) / this.SH);
     this.view.minZ = Math.max(0.28, fit * 0.85);
     this.view.maxZ = 2.4;
     const z = clampN(fit, this.view.minZ, this.view.maxZ);
@@ -1444,6 +1459,9 @@ export class MapScene extends Scene {
       this.el.nodes.style.setProperty('--mn-k', k.toFixed(2));
       relayout = true;
     }
+    // Off the fitted view the frame's nameplate is lying over the drawing
+    // rather than over the sheet's margin, so it steps back (map.css).
+    this.el.screen.classList.toggle('is-zoomed', v.z > (this._fitZoom || 1) * 1.02);
     const close = v.z > (this._fitZoom || 1) * 1.22;
     if (close !== this._isClose) {
       this._isClose = close;

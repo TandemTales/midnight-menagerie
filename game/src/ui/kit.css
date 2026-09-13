@@ -689,3 +689,71 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
     inset 0 0 0 calc(4 * var(--u)) color-mix(in srgb, var(--frame-hi) 34%, transparent),
     0 calc(4 * var(--u)) calc(12 * var(--u)) rgba(0, 0, 0, .7);
 }
+
+/* ── portrait frame, over its picture ─────────────────────────────────────
+   `.kit-frame` paints the Kid board's frame as the element's own border, so a
+   picture that fills the frame covers the rail's inner lip and the corner
+   flourishes — on the board they lie ON the portrait. `--over` lifts the same
+   painting onto ::after, above whatever the frame holds. Give the frame
+   `overflow: hidden` only through a child: the painting sits outside the box. */
+.kit-frame--over { border-image-source: none; }
+.kit-frame--over::after {
+  content: ''; position: absolute; z-index: 3; pointer-events: none;
+  inset: calc(-12px * var(--fk) - 1px);
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/frame.webp");
+  border-image-slice: 52;
+  border-image-width: calc(52px * var(--fk));
+  border-image-repeat: stretch;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .65));
+}
+
+/* ── stat strip ───────────────────────────────────────────────────────────
+   Numbers engraved on a band: spaced small-caps labels over lining numerals,
+   between the gold double rules the headings use, each figure parted from the
+   next by a brass stud. For a ledger of counts, never for controls.
+     <div class="kit-stats">
+       <div><span class="kit-stats__label">Turns taken</span>
+            <b class="kit-stats__value">89</b></div> …                          */
+.kit-stats {
+  position: relative;
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
+  align-items: start;
+  padding: 9px 0 8px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-void) 55%, transparent) 12%, color-mix(in srgb, var(--kit-void) 55%, transparent) 88%, transparent);
+}
+.kit-stats::before, .kit-stats::after {
+  content: ''; position: absolute; left: 0; right: 0; height: 4px; pointer-events: none;
+  background:
+    linear-gradient(var(--kit-gold), var(--kit-gold)) 0 0 / 100% 1px no-repeat,
+    linear-gradient(var(--kit-gold-lo), var(--kit-gold-lo)) 0 3px / 100% 1px no-repeat;
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+          mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+}
+.kit-stats::before { top: 0; }
+.kit-stats::after { bottom: 0; transform: scaleY(-1); }
+.kit-stats > * {
+  position: relative;
+  display: grid; justify-items: center; align-content: start; gap: 2px;
+  min-width: 0; padding: 0 6px;
+  text-align: center;
+}
+.kit-stats > * + *::before {
+  content: ''; position: absolute; left: 0; top: 50%;
+  width: 5px; height: 5px; transform: translate(-50%, -50%) rotate(45deg);
+  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .7);
+}
+.kit-stats__label {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 10.5px; line-height: 1.2; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--kit-text-lo);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  text-wrap: balance;
+}
+.kit-stats__value {
+  font-family: var(--font-num); font-variant-numeric: var(--num-feat);
+  font-weight: 600; font-size: var(--fs-lg); line-height: 1.1;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 12px color-mix(in srgb, var(--kit-candle) 20%, transparent);
+}

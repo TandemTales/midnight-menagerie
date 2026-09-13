@@ -26,28 +26,39 @@
   --mark-hot: var(--flame-400);
 }
 
-/* ── the desk the sheet is lying on ─────────────────────────────────────── */
-.map-desk {
-  position: absolute; inset: 0; pointer-events: none;
-  background:
-    radial-gradient(120% 90% at 50% 30%,
-      color-mix(in srgb, var(--ink-700) 88%, var(--flame-500)) 0%,
-      var(--ink-900) 78%),
-    var(--ink-900);
+/* ── the board: a document laid on a candlelit desk, hung in a gold frame ───
+   The desk is the kit's painted ground (.kit-ground on .map-desk) and the slot
+   Josh's `map.png` drops into; the board's rule and vines are .kit-dress.
+
+   The frame's window is sized to the sheet's own shape, so the fitted sheet
+   fills it and its paper edge sits under the frame's lip at every viewport.
+   Everything that has to line up with that window — the viewport, the shade
+   over the paper, the frame, the wing's nameplate on the top rail, the key
+   rail under it — reads the same --mv-* box. */
+.map-screen {
+  --mv-top: calc(var(--hud-h) + clamp(30px, 3.6vh, 36px));  /* the nameplate on the top rail */
+  --mv-bot: clamp(74px, 9vh, 82px);                         /* the key rail */
+  --mv-side: clamp(40px, 3.6vw, 60px);                      /* the vines */
+  --mv-ar: 2.0099;                                          /* the sheet: 2030 x 1010 */
+  --mv-w: min(100vw - 2 * var(--mv-side), (100vh - var(--mv-top) - var(--mv-bot)) * var(--mv-ar));
+  --mv-h: calc(var(--mv-w) / var(--mv-ar));
+  --mv-x: calc(50vw - var(--mv-w) / 2);
+  --mv-y: calc(var(--mv-top) + (100vh - var(--mv-top) - var(--mv-bot) - var(--mv-h)) / 2);
+  --kit-vine-w: clamp(32px, 2.8vw, 46px);
 }
-.map-desk::after {                       /* felt weave */
-  content: ''; position: absolute; inset: 0; opacity: .5;
-  background:
-    repeating-linear-gradient(94deg, rgba(255,255,255,.014) 0 2px, transparent 2px 5px),
-    repeating-linear-gradient(4deg,  rgba(0,0,0,.05) 0 3px, transparent 3px 7px);
-}
+/* the desk's candles: two warm pools on the ground either side of the sheet */
+.map-desk { z-index: 0; }
+.map-screen .kit-dress { z-index: 1; }
+.map-screen .kit-dress__vine { top: calc(var(--hud-h) + 40px); bottom: 96px; }
 
 /* ── viewport + sheet ───────────────────────────────────────────────────── */
 .map-viewport {
-  position: absolute; inset: 56px 0 48px 0;
+  position: absolute; z-index: 3;
+  left: var(--mv-x); top: var(--mv-y); width: var(--mv-w); height: var(--mv-h);
   overflow: hidden;
   cursor: grab;
   touch-action: none;
+  background: color-mix(in oklab, var(--kit-void) 70%, var(--kit-gold-lo));
 }
 .map-screen.is-grabbing .map-viewport { cursor: grabbing; }
 
@@ -93,13 +104,25 @@
 }
 
 /* ── overlays ───────────────────────────────────────────────────────────── */
+/* the room's dark settling on the paper toward the frame, never over the board */
 .map-shade {
-  position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(ellipse 74% 66% at 50% 46%,
-    transparent 0%, transparent 38%, rgba(6,5,12,.55) 82%, rgba(4,3,9,.86) 100%);
+  position: absolute; z-index: 3; pointer-events: none;
+  left: var(--mv-x); top: var(--mv-y); width: var(--mv-w); height: var(--mv-h);
+  background: radial-gradient(ellipse 78% 74% at 50% 48%,
+    transparent 0%, transparent 52%, rgba(10,7,14,.28) 84%, rgba(8,6,11,.55) 100%);
+}
+/* The frame: the Kid board's portrait frame (ui/kit.css .kit-frame--over),
+   painted over the sheet's edge. Nothing of .kit-frame's own recess shows: the
+   sheet is what is framed. */
+.map-frame {
+  position: absolute; z-index: 4; pointer-events: none;
+  left: var(--mv-x); top: var(--mv-y); width: var(--mv-w); height: var(--mv-h);
+  --fk: 1.15;
+  background: none;
+  box-shadow: inset 0 0 26px rgba(8, 6, 11, .45), 0 26px 60px -18px rgba(0, 0, 0, .95);
 }
 .map-lamp {
-  position: absolute; top: -640px; left: -640px;
+  position: absolute; top: -640px; left: -640px; z-index: 5;
   width: 1280px; height: 1280px; pointer-events: none;
   mix-blend-mode: screen;
   background: radial-gradient(circle closest-side,
@@ -115,7 +138,7 @@
     transparent 60%);
 }
 .map-grain {
-  position: absolute; inset: 0; pointer-events: none;
+  position: absolute; inset: 0; pointer-events: none; z-index: 5;
   mix-blend-mode: overlay; opacity: .075;
   background-repeat: repeat;
 }
@@ -451,26 +474,45 @@
     color-mix(in srgb, var(--parchment) 70%, transparent) 60%, transparent 80%);
 }
 .map-node--boss { z-index: 3; }
+/* The boss is named on the board's nameplate, the one label on the sheet that
+   is not a pencil note: a dark cartouche with a gold rim, and the gold ribbon
+   under it saying what waits there. */
 .map-node--boss .mn-label {
-  font-family: var(--font-display); font-size: 25px; letter-spacing: .09em;
-  text-transform: uppercase;
+  font-family: var(--font-display); font-weight: 700; font-size: 23px; letter-spacing: .1em;
+  text-transform: uppercase; line-height: 1;
   /* "RECEIVIN…".  The boss's name is 341px of Cinzel and the shared 244px cap
      ellipsised it on every seed whose boss has more than one word — the one
      label on the sheet that names the thing you are walking towards.  It gets
      the room it needs; `_layoutLabels` keeps it inside the frame rule. */
-  max-width: 520px;
+  max-width: 600px;
+  padding: 11px 42px 12px;
+  color: var(--kit-name);
+  background: none; border-radius: 0; box-shadow: none;
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/plate.webp");
+  border-image-slice: 12 53 12 46 fill;
+  border-image-width: 8px 34px 8px 30px;
+  border-image-repeat: stretch;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 14px color-mix(in srgb, var(--kit-candle) 22%, transparent);
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .55));
 }
 /* The boss is announced from the moment the sheet opens, the way an act's boss
    is in Slay the Spire.  Never dimmed out of existence, always labelled. */
 .mn-boss-tag {
-  position: absolute; top: calc(100% + 35px + var(--mn-dy, 0px)); left: 50%;
-  transform: translateX(-50%);
-  font-family: var(--font-display); font-size: 13px; font-weight: 700;
+  position: absolute; top: calc(100% + 45px + var(--mn-dy, 0px)); left: 50%;
+  transform: translateX(calc(-50% + var(--mn-dx, 0px)));
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 30px; min-width: 150px; padding: 0 38px 1px;
+  font-family: var(--font-display); font-size: 14px; font-weight: 700;
   letter-spacing: .34em; text-indent: .34em; white-space: nowrap;
-  color: var(--parchment);
-  background: color-mix(in srgb, var(--threat-500) 92%, var(--ink-900));
-  padding: 3px 11px 4px; border-radius: 2px;
-  box-shadow: 0 3px 10px rgba(0,0,0,.4);
+  color: var(--kit-gold-ink);
+  text-shadow: 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 45%, transparent);
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/ribbon.webp");
+  border-image-slice: 0 47 0 52 fill;
+  border-image-width: 0 29px 0 32px;
+  border-image-repeat: stretch;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .55));
   pointer-events: none;
 }
 .map-node.is-refused { animation: mm-refuse .3s var(--ease-out); }
@@ -482,150 +524,178 @@
    by hand — heart, pink bar, amber spheres, a dead cog — is gone. */
 .map-hudhost { position: absolute; top: 0; left: 0; right: 0; z-index: 6; }
 
-/* ── region banner ──────────────────────────────────────────────────────── */
+/* ── the wing's nameplate ────────────────────────────────────────────────────
+   A kit nameplate (.kit-plate) seated on the frame's top rail, over the sheet's
+   own margin and never over a room, with the sheet number on the board's
+   round enamel at its left end. It opens with the wing's form on a second
+   line, then tucks that away once the plan has been read (see `_bindEvents`),
+   and steps back whenever the view is off the fitted sheet. */
 .map-banner {
-  position: absolute; top: 66px; left: 20px; z-index: 5;
-  /* This card sits ON the sheet, over the top-left corner where the first row
-     of rooms lives.  It is a label, not a control, so it must never eat a
-     click: with pointer events on, the entry rooms underneath it are simply
-     not clickable and the map cannot be started with a mouse at all. */
+  --plate-h: clamp(48px, 6vh, 54px);
+  position: absolute; z-index: 7;
+  left: 50%; top: calc(var(--mv-y) - var(--plate-h) * .5 - 2px);
+  transform: translateX(-50%);
+  /* It is a label, not a control, so it must never eat a click. */
   pointer-events: none;
-  display: flex; gap: var(--s-4); align-items: center;
-  max-width: 440px; padding: 10px 18px 11px 14px;
-  background:
-    linear-gradient(174deg, color-mix(in srgb, var(--parchment) 97%, #fff), var(--parchment) 62%, var(--parchment-shade));
-  color: var(--text-ink);
-  transform: rotate(-.7deg);
-  box-shadow: 0 18px 40px rgba(0,0,0,.55), 0 2px 0 rgba(255,255,255,.3) inset;
-  border-radius: 2px;
-  /* IT INTRODUCES THE WING, THEN IT GETS OFF THE DRAWING. `pointer-events: none`
-     kept it from eating clicks, but the rooms underneath were still invisible --
-     measured, three marks covered and one of them a legal move. The wing name
-     and its boss are already printed in the sheet's own title block along the
-     bottom edge, so nothing here is lost by tucking it away once it has been
-     read. See `_wire` in map.js for when. */
+  flex-direction: row; align-items: center; gap: 0;
+  max-width: calc(var(--mv-w) - 240px);
+  padding: 4px calc(var(--plate-h) * .85) 5px calc(var(--plate-h) * 1.18);
   transition: opacity .45s ease, transform .45s ease;
 }
-.map-banner.is-tucked {
-  opacity: 0;
-  transform: rotate(-.7deg) translateY(-16px);
-}
+.map-screen.is-zoomed .map-banner { opacity: 0; transform: translateX(-50%) translateY(-10px); }
 @media (prefers-reduced-motion: reduce) {
   .map-banner { transition: none; }
 }
-
-.map-banner .tape {
-  position: absolute; top: -11px; width: 66px; height: 22px;
-  background: color-mix(in srgb, var(--flame-100) 62%, transparent);
-  box-shadow: 0 1px 3px rgba(0,0,0,.35);
-}
-.tape-l { left: 14px; transform: rotate(-6deg); }
-.tape-r { right: 20px; transform: rotate(5deg); }
 .bn-roman {
-  font-family: var(--font-display); font-size: 34px; font-weight: 700; line-height: 1;
-  color: color-mix(in srgb, var(--blueprint-ink) 80%, var(--ink-900));
-  padding-right: 14px;
-  border-right: 2px solid color-mix(in srgb, var(--blueprint-ink) 40%, transparent);
+  --md: calc(var(--plate-h) * 1.08);
+  position: absolute; left: calc(var(--plate-h) * -.46); top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-display); font-weight: 700; font-size: calc(var(--plate-h) * .34); line-height: 1;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 #24170a, 0 0 8px color-mix(in srgb, var(--kit-candle) 30%, transparent);
 }
+.bn-body { display: grid; justify-items: center; gap: 0; min-width: 0; }
 .map-banner h1 {
-  margin: 0; font-family: var(--font-display); font-size: 21px; font-weight: 700;
-  letter-spacing: .03em; color: color-mix(in srgb, var(--blueprint-ink) 88%, var(--ink-900));
+  margin: 0;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: calc(var(--plate-h) * .34); line-height: 1.12;
+  letter-spacing: .12em; text-transform: uppercase; white-space: nowrap;
 }
 .bn-form {
-  margin: 3px 0 0; font-size: 13px; font-style: italic;
-  color: color-mix(in srgb, var(--text-ink) 68%, transparent);
+  margin: 0; max-height: 1.4em; overflow: hidden;
+  font-family: var(--font-body); font-size: 12px; font-style: italic; line-height: 1.3;
+  color: var(--kit-text-mid); white-space: nowrap;
+  transition: max-height .45s ease, opacity .45s ease;
 }
+.map-banner.is-tucked .bn-form { max-height: 0; opacity: 0; }
 .bn-meta {
-  margin: 6px 0 0; font-size: 12px; letter-spacing: .04em;
-  color: color-mix(in srgb, var(--text-ink) 74%, transparent);
+  margin: 1px 0 0;
+  font-family: var(--font-body); font-size: 12px; line-height: 1.25; white-space: nowrap;
+  color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
-.bn-meta b { font-weight: 700; }
-.bn-meta .dot { opacity: .45; margin: 0 5px; }
+.bn-meta b { font-weight: 600; color: var(--kit-gold-hi); }
+.bn-meta .dot { color: var(--kit-gold); opacity: .8; margin: 0 6px; }
 
-/* ── the bar: key, wing conditions, controls. Nothing else may cover the sheet,
-      because the boss has to stay visible from the moment the map opens. ───── */
+/* ── the key rail: key, wing conditions, controls. Nothing else may cover the
+      sheet, because the boss has to stay visible from the moment the map
+      opens. A long gold-railed kit panel (.kit-panel) under the frame. ──────── */
 .map-bar {
-  position: absolute; left: 0; right: 0; bottom: 0; height: 48px; z-index: 6;
-  display: flex; align-items: center; gap: var(--s-5);
-  padding: 0 var(--s-4) 0 var(--s-5);
-  background: linear-gradient(0deg,
-    color-mix(in srgb, var(--ink-900) 96%, transparent),
-    color-mix(in srgb, var(--ink-800) 82%, transparent) 72%, transparent);
-  border-top: 1px solid color-mix(in srgb, var(--ink-500) 70%, transparent);
-  backdrop-filter: blur(7px);
+  --pk: .56;
+  position: absolute; z-index: 6;
+  left: var(--mv-x); width: var(--mv-w);
+  bottom: clamp(14px, 1.9vh, 18px);
+  height: clamp(46px, 5.4vh, 50px);
+  display: flex; align-items: center; gap: clamp(12px, 1.3vw, 22px);
+  padding: 0 clamp(16px, 1.5vw, 24px);
   transition: opacity var(--t-base);
 }
 .map-screen.no-bar .map-bar { opacity: 0; pointer-events: none; }
 
-.map-legend { display: flex; align-items: center; gap: 13px; flex: none; }
+.map-legend { display: flex; align-items: center; gap: clamp(7px, .75vw, 13px); flex: none; }
 .lg-h, .notes-h {
-  font-family: var(--font-display); font-size: 10px; letter-spacing: .24em;
-  text-transform: uppercase; color: var(--text-lo); flex: none;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-display); font-weight: 700; font-size: 10.5px; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--kit-gold); flex: none;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+.lg-h::after, .notes-h::after {
+  content: ''; width: 5px; height: 5px; transform: rotate(45deg);
+  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .7);
 }
 .lg-i {
   display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
-  font-size: 11.5px; color: var(--text-mid);
+  font-family: var(--font-body); font-size: 12.5px; font-weight: 600; color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
-.lg-ico { color: var(--spectre-200); display: grid; place-items: center; width: 19px; }
-.lg-ico .s { fill: none; stroke: currentColor; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
-.lg-ico .w1 { stroke-width: 2.2; }
+/* each mark on the board's round enamel, in its gold */
+.lg-ico {
+  display: grid; place-items: center; flex: none;
+  width: 27px; height: 27px; border-radius: 50%;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  color: var(--kit-gold-hi);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .75));
+}
+.lg-ico svg { width: 16px; height: 16px; }
+.lg-ico .s { fill: none; stroke: currentColor; stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
+.lg-ico .w1 { stroke-width: 2.4; }
 .lg-ico .f { fill: currentColor; }
-.lg-ico .pl, .lg-ico .pw { fill: var(--ink-800); }
+.lg-ico .pl, .lg-ico .pw { fill: var(--kit-enamel); }
 
 /* Out to the estate drawing — `scenes/atlas.js`. Sits between the wing
    conditions and the control hint, in the bar rather than the banner because
-   the banner tucks itself away and takes no pointer events. */
+   the banner takes no pointer events. A quiet nameplate with its glyph on the
+   board's enamel. */
 .map-atlas {
+  --plate-h: 36px;
   appearance: none; flex: none;
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 5px 11px;
-  border: 1px solid color-mix(in srgb, var(--ink-400) 78%, transparent);
-  border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--ink-700) 74%, transparent);
-  color: var(--text-mid);
-  font-family: var(--font-display);
-  font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+  flex-direction: row; gap: 8px;
+  padding: 0 calc(var(--plate-h) * .66) 0 calc(var(--plate-h) * .34);
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
   cursor: pointer;
-  transition: color var(--t-quick) var(--ease-out), border-color var(--t-quick) var(--ease-out);
+  transition: color var(--t-quick) var(--ease-out), filter var(--t-quick) var(--ease-out);
 }
-.map-atlas span { color: var(--spectre-200); font-size: 13px; }
+.map-atlas .kit-medallion { --md: 26px; font-size: 13px; line-height: 1; font-style: normal; }
 .map-atlas:hover, .map-atlas:focus-visible {
-  color: var(--text-hi);
-  border-color: color-mix(in srgb, var(--spectre-400) 60%, var(--ink-400));
+  color: #fff1d2;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .75)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 40%, transparent)) brightness(1.12);
 }
+.map-atlas:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; border-radius: 999px; }
 
 .map-notes { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+/* a wing condition on a nameplate: its mark on enamel, its name in its colour */
 .note {
+  --plate-h: 36px;
   position: relative;
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 10px 5px; border-radius: 2px;
-  font-size: 11.5px; white-space: nowrap; cursor: help;
-  color: var(--threat-100);
-  background: color-mix(in srgb, var(--threat-500) 34%, transparent);
-  border: 1px solid color-mix(in srgb, var(--threat-400) 62%, transparent);
-  border-left-width: 3px;
+  flex-direction: row; gap: 7px;
+  padding: 0 calc(var(--plate-h) * .6) 0 calc(var(--plate-h) * .3);
+  white-space: nowrap; cursor: help;
+  color: var(--threat-200);
+  font: inherit;
 }
-.note--boon {
-  color: var(--spectre-100);
-  background: color-mix(in srgb, var(--spectre-500) 30%, transparent);
-  border-color: color-mix(in srgb, var(--spectre-400) 62%, transparent);
+.note--boon { color: var(--spectre-200); }
+.note b {
+  font-family: var(--font-display); font-weight: 700; font-size: 10.5px;
+  letter-spacing: .12em; text-transform: uppercase;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
-.note b { font-family: var(--font-display); font-weight: 600; letter-spacing: .05em; }
+.note-ico {
+  display: grid; place-items: center; flex: none;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+}
 .note-ico svg .s { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .note-ico svg .f { fill: currentColor; }
+.note:hover, .note:focus-visible {
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .75)) drop-shadow(0 0 10px color-mix(in srgb, currentColor 30%, transparent)) brightness(1.12);
+}
+.note:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; border-radius: 999px; }
+/* the rule, on a gold-railed panel over the rail */
 .note-pop {
-  position: absolute; bottom: calc(100% + 9px); right: 0; width: 268px;
-  padding: 9px 11px; text-align: left; white-space: normal;
-  background: linear-gradient(168deg, color-mix(in srgb, var(--parchment) 97%, #fff), var(--parchment) 70%, var(--parchment-shade));
-  color: var(--text-ink);
-  box-shadow: 0 16px 34px rgba(0,0,0,.6);
+  position: absolute; bottom: calc(100% + 16px); right: 0; width: 280px;
+  padding: 12px 14px; text-align: left; white-space: normal;
+  color: var(--kit-text);
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/panel.webp");
+  border-image-slice: 44;
+  border-image-width: 26px;
+  border-image-outset: 8px;
+  border-image-repeat: stretch;
+  background: linear-gradient(180deg, var(--kit-panel-hi), var(--kit-panel));
+  background-clip: padding-box;
+  filter: drop-shadow(0 16px 24px rgba(0, 0, 0, .7));
   opacity: 0; transform: translateY(5px); pointer-events: none;
   transition: opacity var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out);
 }
 .note:hover .note-pop, .note:focus-visible .note-pop { opacity: 1; transform: none; }
-.note-pop i { font-style: normal; font-size: 12.5px; line-height: 1.38; display: block; }
+.note-pop i { font-style: normal; font-family: var(--font-body); font-size: 13px; line-height: 1.38; display: block; color: var(--kit-text); letter-spacing: 0; text-transform: none; }
 .note-pop em {
-  display: block; margin-top: 5px; font-size: 10.5px; opacity: .6; letter-spacing: .05em;
+  display: block; margin-top: 6px; font-family: var(--font-body); font-size: 11.5px; font-style: italic;
+  color: var(--kit-text-lo); letter-spacing: .02em; text-transform: none;
 }
 
 /* ── the ballot ──────────────────────────────────────────────────────────
@@ -635,12 +705,10 @@
    initials sitting on one of them is the whole reason to vote rather than
    pass the pencil round. */
 .map-ballot {
-  flex: none; font-size: 11.5px; white-space: nowrap;
-  padding: 4px 10px 5px; border-radius: 2px;
-  color: var(--spectre-100);
-  background: color-mix(in srgb, var(--spectre-500) 30%, transparent);
-  border: 1px solid color-mix(in srgb, var(--spectre-400) 62%, transparent);
-  border-left-width: 3px;
+  flex: none; white-space: nowrap;
+  font-family: var(--font-body); font-size: 12.5px; font-style: italic;
+  color: var(--spectre-200);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .map-ballot[hidden] { display: none; }
 
@@ -648,23 +716,31 @@
    agreed is told nothing, because there is nothing to tell them. It rides the
    scene transition out, which is why the same sentence is repeated in the
    ballot strip on the sheet they come back to. */
+/* on a gold-railed panel, like every announcement on a board */
 .map-verdict {
   position: absolute; left: 50%; top: 34%; z-index: 9;
   transform: translate(-50%, -50%);
   display: grid; gap: 4px; justify-items: center; text-align: center;
-  padding: 14px 26px 16px;
-  background: linear-gradient(168deg,
-    color-mix(in srgb, var(--parchment) 97%, #fff), var(--parchment) 70%, var(--parchment-shade));
-  color: var(--text-ink);
-  box-shadow: 0 22px 48px rgba(0,0,0,.66);
+  padding: 18px 32px 16px;
+  color: var(--kit-text);
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/panel.webp");
+  border-image-slice: 44;
+  border-image-width: 34px;
+  border-image-outset: 11px;
+  border-image-repeat: stretch;
+  background: linear-gradient(180deg, var(--kit-panel-hi), var(--kit-panel));
+  background-clip: padding-box;
+  filter: drop-shadow(0 22px 40px rgba(0, 0, 0, .7));
   animation: mapVerdictIn var(--t-base) var(--ease-out) both;
 }
 .map-verdict b {
-  font-family: var(--font-display); font-size: 20px; font-weight: 600;
-  letter-spacing: .02em;
+  font-family: var(--font-display); font-size: 20px; font-weight: 700;
+  letter-spacing: .04em; color: var(--kit-lav);
+  text-shadow: 0 1px 0 var(--kit-gold-lo), 0 2px 0 #1c1029;
 }
 .map-verdict i {
-  font-style: normal; font-size: 12px; letter-spacing: .06em; opacity: .72;
+  font-style: italic; font-size: 13px; color: var(--kit-text-mid);
 }
 @keyframes mapVerdictIn {
   from { opacity: 0; transform: translate(-50%, calc(-50% + 8px)) scale(.97); }
@@ -675,13 +751,16 @@
 .mn-votes {
   position: absolute; left: 50%; top: -2px;
   transform: translate(-50%, -100%);
-  display: inline-flex; gap: 3px;
-  padding: 2px 6px 3px; border-radius: 2px;
-  font-family: var(--font-display); font-size: 11px; letter-spacing: .12em;
-  color: var(--text-ink);
-  background: linear-gradient(168deg,
-    color-mix(in srgb, var(--parchment) 97%, #fff), var(--parchment) 70%);
-  box-shadow: 0 4px 12px rgba(0,0,0,.5);
+  display: inline-flex; align-items: center; gap: 3px;
+  min-height: 28px; padding: 0 18px 1px;
+  font-family: var(--font-display); font-weight: 700; font-size: 12px; letter-spacing: .12em;
+  color: var(--kit-gold-hi);
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/plate.webp");
+  border-image-slice: 12 53 12 46 fill;
+  border-image-width: 5px 20px 5px 17px;
+  border-image-repeat: stretch;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .6));
   pointer-events: none;
 }
 /* A voted-for room is lit like a legal one even while the sheet is dimmed
@@ -690,60 +769,81 @@
 .map-node.is-voted .mn-ring { opacity: .95; }
 
 .map-hint {
-  flex: none; font-size: 11px; letter-spacing: .05em; color: var(--text-lo);
-  padding-left: var(--s-3);
-  border-left: 1px solid color-mix(in srgb, var(--ink-500) 60%, transparent);
+  flex: none; font-family: var(--font-body); font-size: 12px; font-style: italic; color: var(--kit-text-lo);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
-.map-hint b { color: var(--text-mid); font-weight: 600; }
+.map-hint b { font-style: normal; color: var(--kit-text-mid); font-weight: 600; }
 
-/* ── hover card ─────────────────────────────────────────────────────────── */
+/* ── hover card: a gold-railed kit panel ───────────────────────────────────── */
 .map-tip {
   position: fixed; top: 0; left: 0; z-index: 40;
-  width: 320px; padding: 12px 14px 11px;
-  background: linear-gradient(168deg, color-mix(in srgb, var(--parchment) 97%, #fff), var(--parchment) 66%, var(--parchment-shade));
-  color: var(--text-ink);
-  box-shadow: 0 20px 46px rgba(0,0,0,.6), 0 0 0 1px color-mix(in srgb, var(--parchment-shade) 80%, transparent);
-  border-radius: 2px;
+  width: 320px; padding: 14px 16px 12px;
+  color: var(--kit-text);
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/panel.webp");
+  border-image-slice: 44;
+  border-image-width: 32px;
+  border-image-outset: 10px;
+  border-image-repeat: stretch;
+  background:
+    radial-gradient(90% 60% at 50% 0%, color-mix(in srgb, var(--kit-violet) 10%, transparent), transparent 70%),
+    linear-gradient(180deg, var(--kit-panel-hi), var(--kit-panel) 50%, color-mix(in oklab, var(--kit-panel) 80%, var(--kit-void)));
+  background-clip: padding-box;
+  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, .7));
   opacity: 0; pointer-events: none;
   transition: opacity var(--t-quick) var(--ease-out);
 }
 .map-tip.is-on { opacity: 1; }
 .tip-head { display: flex; gap: 10px; align-items: center; }
-.tip-ico { color: var(--blueprint-ink); flex: none; }
+.tip-ico {
+  display: grid; place-items: center; flex: none;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  color: var(--kit-gold-hi);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8));
+}
+.tip-ico svg { width: 28px; height: 28px; }
 .tip-ico .s { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 .tip-ico .w1 { stroke-width: 2; }
 .tip-ico .f { fill: currentColor; }
-.tip-ico .pl, .tip-ico .pw { fill: var(--parchment); }
+.tip-ico .pl, .tip-ico .pw { fill: var(--kit-enamel); }
 .tip-room {
-  display: block; font-family: var(--font-display); font-size: 16px; line-height: 1.15;
-  color: color-mix(in srgb, var(--blueprint-ink) 88%, var(--ink-900));
+  display: block; font-family: var(--font-body); font-weight: 600; font-size: 17px; line-height: 1.15;
+  color: var(--kit-name);
 }
 .tip-type {
-  font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
-  color: color-mix(in srgb, var(--text-ink) 60%, transparent);
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--kit-text-lo);
 }
-.tip-blurb { margin: 9px 0 0; font-size: 13.5px; line-height: 1.4; }
-.tip-reward { margin: 6px 0 0; font-size: 12.5px; }
-.tip-reward i { font-style: normal; letter-spacing: .14em; text-transform: uppercase; font-size: 10.5px; opacity: .6; margin-right: 6px; }
+.tip-blurb { margin: 9px 0 0; font-size: 13.5px; line-height: 1.4; color: var(--kit-text); }
+.tip-reward { margin: 6px 0 0; font-size: 13px; color: var(--kit-text-mid); }
+.tip-reward i {
+  font-style: normal; font-family: var(--font-display); font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase; font-size: 10.5px; color: var(--kit-gold); margin-right: 6px;
+}
 .tip-hz {
   display: flex; gap: 7px; align-items: flex-start;
-  margin: 9px 0 0; padding: 7px 8px; font-size: 12.5px; line-height: 1.35;
-  background: color-mix(in srgb, var(--threat-400) 16%, transparent);
-  border-left: 3px solid var(--threat-400);
+  margin: 9px 0 0; padding: 7px 8px; font-size: 13px; line-height: 1.35;
+  color: var(--threat-100);
+  background: color-mix(in srgb, var(--threat-500) 26%, transparent);
+  border-left: 2px solid var(--threat-300);
 }
 .tip-hz--boon {
-  background: color-mix(in srgb, var(--spectre-500) 17%, transparent);
-  border-left-color: var(--spectre-500);
+  color: var(--spectre-100);
+  background: color-mix(in srgb, var(--spectre-500) 22%, transparent);
+  border-left-color: var(--spectre-300);
 }
-.tip-hz span { color: var(--blueprint-ink); flex: none; }
+.tip-hz span { color: currentColor; flex: none; }
 .tip-hz svg .s { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
 .tip-hz svg .f { fill: currentColor; }
 .tip-foot {
-  margin: 9px 0 0; padding-top: 7px; font-size: 11.5px; letter-spacing: .05em;
-  border-top: 1px solid color-mix(in srgb, var(--parchment-shade) 90%, transparent);
-  color: color-mix(in srgb, var(--text-ink) 66%, transparent);
+  margin: 9px 0 0; padding-top: 7px; font-size: 12px; letter-spacing: .03em;
+  border-top: 1px solid transparent;
+  border-image: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 55%, transparent) 18%, color-mix(in srgb, var(--kit-gold) 55%, transparent) 82%, transparent) 1;
+  color: var(--kit-text-lo);
 }
-.tip-foot b { color: var(--flame-500); }
+.tip-foot b { color: var(--kit-gold-hi); }
 
 
 /* ── the ink drawing itself on ──────────────────────────────────────────── */
@@ -816,10 +916,15 @@
   transform: translateZ(0);
 }
 .map-screen.is-drawing .map-wet   { animation: mm-wet  .70s var(--ease-soft) .10s backwards; }
-.map-screen.is-drawing .map-banner,
 .map-screen.is-drawing .map-bar,
 .map-screen.is-drawing .map-hudhost {
   animation: mm-rise .42s var(--ease-out) .18s backwards;
+}
+/* the nameplate is centred by its transform, so it rises with that kept */
+.map-screen.is-drawing .map-banner { animation: mm-rise-plate .42s var(--ease-out) .18s backwards; }
+@keyframes mm-rise-plate {
+  from { opacity: 0; transform: translateX(-50%) translateY(14px); }
+  to   { opacity: 1; transform: translateX(-50%); }
 }
 
 /* ── reduced motion ─────────────────────────────────────────────────────── */
@@ -859,12 +964,15 @@
   .map-lamp, .map-lamp--warm { transition: none; }
 }
 
-@media (max-width: 1500px) {
+@media (max-width: 1700px) {
   .map-hint { display: none; }
-  .lg-i { font-size: 11px; }
-  .map-legend { gap: 10px; }
+}
+@media (max-width: 1500px) {
+  .lg-i { font-size: 11.5px; }
+  .map-legend { gap: 8px; }
+  .lg-ico { width: 24px; height: 24px; }
+  .lg-ico svg { width: 14px; height: 14px; }
 }
 @media (max-width: 1280px) {
   .map-legend .lg-i:nth-child(n+7) { display: none; }
-  .map-banner { max-width: 380px; }
 }
