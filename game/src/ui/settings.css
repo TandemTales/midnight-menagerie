@@ -122,11 +122,14 @@
   width: clamp(120px, 10vw, 158px); height: var(--slot-h);
 }
 .mm-set__slot > .mm-set__tube {
-  --tube-h: calc(var(--slot-h) * .56);
+  --tube-h: calc(var(--slot-h) * .46);
   position: absolute; left: 0; right: 0; top: 50%;
   translate: 0 -50%;
   pointer-events: none;
 }
+/* a setting's amber is the enamel in the brass, a step deeper than a Courage
+   bar's, so the knob and the figure lead and the fill never reads as a meter */
+.mm-set__tube.kit-tube { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8)) saturate(.86) brightness(.88) hue-rotate(-4deg); }
 /* the amber runs to the middle of the knob, wherever the knob is */
 .mm-set__slot > .mm-set__tube > .kit-tube__fill {
   right: auto;

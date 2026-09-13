@@ -100,6 +100,15 @@
 }
 /* a question: wide enough that its two answers each keep to one line */
 .mm-modal--kit[data-size="sm"] .mm-modal__dialog { width: min(100%, 46rem); }
+/* the panel in the room's light, not an even fill: a candle's warmth falling
+   from under the plaque, the damask sinking into shadow towards the corners.
+   (A dialog wears no medallion, so the panel's ::before is free.) */
+.mm-modal--kit .mm-modal__dialog::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(56% 34% at 50% 0%, color-mix(in srgb, var(--kit-candle) 10%, transparent), transparent 72%),
+    radial-gradient(130% 118% at 50% 42%, transparent 46%, rgba(5, 3, 8, .5) 100%);
+}
 
 /* the plaque across the top rail: the cartouche's middle ON the rail */
 .mm-modal--kit .mm-modal__head {
