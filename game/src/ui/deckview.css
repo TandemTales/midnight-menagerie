@@ -172,12 +172,16 @@
   pointer-events: none;
 }
 .mm-deck__cell:hover { transform: translateY(-4px); z-index: 2; filter: drop-shadow(0 0 12px color-mix(in srgb, var(--kit-candle) 28%, transparent)); }
-/* keyboard focus: the candle catching the card's gilt, never a ring */
-.mm-deck__cell.is-focus {
+/* keyboard focus: the candle catching the card's gilt, never a ring. base.css's
+   global :focus-visible ring loads after this sheet, so it is taken off here by
+   specificity; the grid keeps it only while it has no card to hand focus to. */
+.mm-deck__grid:focus-within .mm-deck__cell.is-focus {
   transform: translateY(-6px);
   z-index: 3;
   filter: drop-shadow(0 0 2px var(--kit-gold-hi)) drop-shadow(0 0 14px color-mix(in srgb, var(--kit-candle) 60%, transparent));
 }
+.mm-deck__cell.mm-deck__cell:focus-visible,
+.mm-deck__grid:has(> .mm-deck__cell):focus-visible { outline: none; }
 .mm-deck__cell .mm-card { pointer-events: none; }
 
 /* reward mode: the cards are the choice, so make picking obvious */

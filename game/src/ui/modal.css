@@ -124,6 +124,13 @@
 .mm-modal--kit .mm-modal__head[hidden] { display: none; }
 .mm-modal--kit .mm-modal__title,
 .mm-modal--kit .mm-modal__subtitle { grid-column: 1; }
+/* no subtitle: the title in the middle of the plate, as the boards' plaques do
+   (the subtitle element is always there, only hidden, so the kit's own
+   `:not(:has(.kit-cartouche__sub))` never fires for a dialog) */
+.mm-modal--kit .mm-modal__head:has(> .mm-modal__subtitle[hidden]) > .mm-modal__title {
+  grid-row: 1 / 3; align-self: center;
+  margin: calc(var(--cart-h) * .05) 0 0;
+}
 /* a long question steps its lettering down instead of stretching the plaque */
 .mm-modal--kit .mm-modal__title[data-len="mid"]  { font-size: clamp(21px, 1.85vw, 29px); }
 .mm-modal--kit .mm-modal__title[data-len="long"] { font-size: clamp(17px, 1.4vw, 22px); letter-spacing: .03em; }
