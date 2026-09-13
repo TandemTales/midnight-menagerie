@@ -89,7 +89,7 @@ import { COMPANIONS, REGION_ORDER } from '../data/schema.js';
 import { regionMeta, blueprintTraceUrl, MASTER, exitReason } from '../state/mapgen.js';
 import { loadPlanTrace, solvePen, inkTrace } from '../ui/plan.js';
 import {
-  ensureCss, fontsReady, el, svg, rovingFocus, logoLockup, filigree,
+  ensureCss, fontsReady, el, svg, rovingFocus,
   companionPortrait, COMPANION_BY_SLUG, setReduceMotion, reduceMotion,
   freedCompanions, warmFaces,
 } from '../ui/portrait.js';
@@ -97,6 +97,14 @@ import { pauseStageFor } from './_stage.js';
 import { act, ACT } from '../net/actions.js';
 import { INPUT } from '../net/session.js';
 import { passTo, shouldHandOff } from '../ui/handoff.js';
+import { paintBackdrop } from '../ui/kitboard.js';
+
+/** The glyphs in the round enamel buttons: flat antique gold, ink outline. */
+const GLYPH = {
+  back: '<svg viewBox="0 0 24 24"><path d="M20.5 9.6h-9.2V5.2L3 12l8.3 6.8v-4.4h9.2z"/></svg>',
+  onward: '<svg viewBox="0 0 24 24"><path d="M3.5 9.6h9.2V5.2L21 12l-8.3 6.8v-4.4H3.5z"/></svg>',
+  house: '<svg viewBox="0 0 24 24"><path d="M12 2.6 22 10.4h-2.6V21h-5.2v-6.2H9.8V21H4.6V10.4H2Z"/></svg>',
+};
 
 const CSS_KIT = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_ATL = new URL('./atlas.css', import.meta.url).href;
@@ -192,10 +200,39 @@ export class AtlasScene extends Scene {
        ordinary hover-reveal and dims only what is closed. */
     this.root.dataset.choose = (this.choosing && !this.entering) ? '1' : '0';
     this.root.dataset.enter = this.entering ? '1' : '0';
+    /* MANY DOORS. A way on used to offer two or three wings; since every wing
+       not yet walked is a way on, it usually offers fifteen, and fifteen names
+       lit at once over a plan that overlaps itself is the unreadable band the
+       way in already learned to avoid. Past four, a way on reads the way the
+       way in does: every name a hover away, only what is shut marked. */
+    this.root.dataset.many = (this.choosing && this.offer.length > 4) ? '1' : '0';
 
     this.root.classList.add('at-root');
+    this.root.classList.toggle('kit-still', reduceMotion());
     this.root.innerHTML = '';
-    this.root.appendChild(el('div', 'at-bg'));
+    /* A staged board: the recovered drawing laid on the candlelit desk (the
+       board's ground, and the slot the Map's painted desk hangs in) inside the
+       kit's gilt rail, the select boards' candles, cobwebs and vines at the
+       edges, and the reading of it on a kit panel beside it. */
+    const board = el('div', 'at-board kit-board');
+    /* The dressing is laid out here rather than by kitDressMarkup() so each
+       piece can wear an `at-` class: this board's corners are drawn smaller,
+       to stand clear of Back and the tally on either side of the plaque. */
+    board.innerHTML = `<div class="at-ground kit-ground" aria-hidden="true"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>`
+      + '<div class="at-bg" aria-hidden="true"></div>'
+      + `<div class="kit-dress at-dress" aria-hidden="true">
+          <i class="kit-dress__floor"></i>
+          <i class="kit-dress__rule"></i>
+          <i class="kit-dress__vine kit-dress__vine--l at-vine at-vine--l"></i>
+          <i class="kit-dress__vine kit-dress__vine--r at-vine at-vine--r"></i>
+          <i class="kit-dress__corner kit-dress__corner--l at-corner at-corner--l"></i>
+          <i class="kit-dress__corner kit-dress__corner--r at-corner at-corner--r"></i>
+          <i class="kit-dress__flame kit-dress__flame--l at-flame at-flame--l"></i>
+          <i class="kit-dress__flame kit-dress__flame--r at-flame at-flame--r"></i>
+        </div>`;
+    this.root.appendChild(board);
+    this._board = board;
+    paintBackdrop(board, 'map', () => !!this._dossier && board.isConnected);
     this.root.appendChild(this._buildHead());
 
     const body = el('div', 'at-body');
@@ -262,9 +299,10 @@ export class AtlasScene extends Scene {
   _buildHead() {
     const h = el('header', 'at-head');
 
-    const back = el('button', 'at-back');
+    const back = el('button', 'at-back kit-btn kit-btn--quiet');
     back.type = 'button';
-    back.innerHTML = '<span aria-hidden="true">&#8592;</span> Back';
+    back.innerHTML = '<span class="at-back__arrow" aria-hidden="true">&#8592;</span> Back'
+      + `<i class="kit-medallion kit-btn__medal at-back__medal" aria-hidden="true">${GLYPH.back}</i>`;
     back.addEventListener('click', () => this._leave());
     /* No way out of a fork except through it. The party has cleared a wing and
        the house is holding a door open; leaving would mean a run with nowhere
@@ -275,26 +313,27 @@ export class AtlasScene extends Scene {
     back.hidden = this.choosing && !this.entering;
     h.appendChild(back);
 
-    const logo = logoLockup({
-      size: 'sm', id: 'mm-logo-atlas',
-      /* `entering` FIRST: a way-in fork is also `choosing`, so asking that
-         first plaqued the way in as "The Way On". Same ordering trap as the
-         tally below. */
-      plaque: this.entering ? 'The Way In' : this.choosing ? 'The Way On' : 'The Mansion',
-    });
-    logo.classList.add('at-logo');
+    /* The plaque, in the wordmark's cartouche rather than the logo: the screen
+       says which sheet this is, and the ribbon under it says what the sheet is
+       of. `entering` FIRST: a way-in fork is also `choosing`, so asking that
+       first plaqued the way in as "The Way On". Same ordering trap as the
+       tally below. */
+    const plaque = this.entering ? 'The Way In' : this.choosing ? 'The Way On' : 'The Mansion';
+    const logo = el('div', 'at-logo kit-titleblock kit-titleblock--compact');
+    logo.innerHTML = `<span class="at-logo__ribbon kit-ribbon">The whole house</span>`
+      + `<h1 class="at-logo__title kit-cartouche__title">${esc(plaque)}</h1>`;
     h.appendChild(logo);
 
-    const tally = this._tally = el('p', 'at-tally');
+    const tally = this._tally = el('p', 'at-tally kit-enamel kit-enamel--dark');
     if (this.entering) {
       // Checked FIRST: a way-in fork is also `choosing`, and "1 of 6 wings
       // crossed" is a lie on a run that has not crossed anything.
-      tally.innerHTML = '<span>Choose where tonight starts</span>';
+      tally.innerHTML = '<span class="kit-enamel__label">Choose where tonight starts</span>';
     } else if (this.choosing) {
       const run = this.ctx.run;
-      tally.innerHTML = `<b>${run.regionIndex + 1}</b> <span>of ${run.wings} wings crossed</span>`;
+      tally.innerHTML = `<b class="kit-enamel__value">${run.regionIndex + 1}</b> <span class="kit-enamel__label">of ${run.wings} wings crossed</span>`;
     } else {
-      tally.innerHTML = `<b>${this.surveyed.size}</b> <span>of ${this.wings.length} wings surveyed</span>`;
+      tally.innerHTML = `<b class="kit-enamel__value">${this.surveyed.size}</b> <span class="kit-enamel__label">of ${this.wings.length} wings surveyed</span>`;
     }
     h.appendChild(tally);
     return h;
@@ -384,10 +423,17 @@ export class AtlasScene extends Scene {
       + `<span class="at-foot__d">Hand-copied. Scale approximate.</span>`;
     sheet.appendChild(foot);
 
-    const back = this._wide = el('button', 'at-wide');
+    /* The room's light on the paper — warm where the candles are, falling off
+       to its edges — and the kit's gilt rail round the sheet. Both lie over the
+       drawing and take no pointer events; the rail covers only the margin. */
+    sheet.appendChild(el('div', 'at-light'));
+    sheet.appendChild(el('div', 'at-frame kit-railframe kit-railframe--ornate'));
+
+    const back = this._wide = el('button', 'at-wide kit-btn kit-btn--quiet');
     back.type = 'button';
     back.hidden = true;
-    back.innerHTML = '<span aria-hidden="true">&#8598;</span> The whole house';
+    back.innerHTML = '<span class="at-wide__arrow" aria-hidden="true">&#8598;</span> The whole house'
+      + `<i class="kit-medallion kit-btn__medal at-wide__medal" aria-hidden="true">${GLYPH.house}</i>`;
     back.addEventListener('click', () => this._select(null));
     sheet.appendChild(back);
 
@@ -482,25 +528,33 @@ export class AtlasScene extends Scene {
 
   /* ── the dossier ────────────────────────────────────────────────────────── */
   _buildDossier() {
-    const d = this._dossier = el('aside', 'at-dossier');
+    /* A kit panel, read top to bottom in the order a player asks: which wing
+       (its name on a nameplate, its section number over it), who is held there
+       (the Companion in the Kid board's frame with their nameplate on it, as
+       on the Companion board), who keeps it and how far it is surveyed (one
+       engraved strip), and what to do next. */
+    const d = this._dossier = el('aside', 'at-dossier kit-panel kit-panel--damask');
+    d.dataset.medal = 'moon';
     d.setAttribute('aria-live', 'polite');
     d.innerHTML = `
       <div class="at-dos__rule" aria-hidden="true"></div>
-      <p class="at-dos__no">Section <b class="at-dos__n">I</b></p>
-      <h2 class="at-dos__name">&nbsp;</h2>
-      <p class="at-dos__form">&nbsp;</p>
+      <p class="at-dos__no kit-heading"><span>Section <b class="at-dos__n">I</b></span></p>
+      <div class="at-dos__plate">
+        <h2 class="at-dos__name">&nbsp;</h2>
+        <p class="at-dos__form">&nbsp;</p>
+      </div>
       <div class="at-dos__held">
-        <div class="at-dos__pf"></div>
-        <div class="at-dos__who">
-          <span class="at-dos__lbl">Held here</span>
-          <b class="at-dos__cname">&nbsp;</b>
-          <span class="at-dos__ctitle">&nbsp;</span>
+        <span class="at-dos__lbl at-dos__heldlbl">Held here</span>
+        <div class="at-dos__pf kit-frame kit-frame--over"></div>
+        <div class="at-dos__who kit-plate">
+          <b class="at-dos__cname kit-plate__name">&nbsp;</b>
+          <span class="at-dos__ctitle kit-plate__epithet">&nbsp;</span>
         </div>
       </div>
-      <dl class="at-dos__facts">
-        <div><dt>Kept by</dt><dd class="at-dos__boss">&mdash;</dd></div>
-        <div><dt>Rooms</dt><dd class="at-dos__rooms">20</dd></div>
-        <div><dt>Survey</dt><dd class="at-dos__state">&mdash;</dd></div>
+      <dl class="at-dos__facts kit-stats">
+        <div><dt class="kit-stats__label">Kept by</dt><dd class="at-dos__boss kit-stats__value">&mdash;</dd></div>
+        <div><dt class="kit-stats__label">Rooms</dt><dd class="at-dos__rooms kit-stats__value">20</dd></div>
+        <div><dt class="kit-stats__label">Survey</dt><dd class="at-dos__state kit-stats__value">&mdash;</dd></div>
       </dl>
       <p class="at-dos__why" hidden></p>
       <div class="at-dos__inside" hidden>
@@ -510,11 +564,9 @@ export class AtlasScene extends Scene {
       </div>
       <p class="at-dos__hint"></p>
       <div class="at-dos__act" hidden>
-        <button class="at-go" type="button">Go this way</button>
+        <button class="at-go kit-btn" type="button"><span class="at-go__words">Go this way</span><i class="kit-medallion kit-medallion--ornate kit-btn__medal at-go__medal" aria-hidden="true">${GLYPH.onward}</i></button>
         <p class="at-ballot" aria-live="polite" hidden></p>
       </div>`;
-    d.appendChild(svg(`<div class="at-dos__fil" aria-hidden="true">
-      <svg viewBox="0 0 320 80">${filigree()}</svg></div>`));
     return d;
   }
 
@@ -596,8 +648,9 @@ export class AtlasScene extends Scene {
     const sheet = this._vp.parentElement;
     const b = sheet.getBoundingClientRect();
     if (!b.width || !b.height) return false;
-    const pad = Math.max(8, Math.min(22, b.width * 0.014));
-    const foot = 30;                                    // the title block's strip
+    /* clear of the gilt rail laid over the paper's edge (atlas.css .at-frame) */
+    const pad = Math.max(20, Math.min(34, b.width * 0.028));
+    const foot = 34;                                    // the title block's strip
     const aw = Math.max(1, b.width - pad * 2);
     const ah = Math.max(1, b.height - pad * 2 - foot);
     const k = Math.min(aw / MASTER.w, ah / MASTER.h);
@@ -762,7 +815,8 @@ export class AtlasScene extends Scene {
     if (c) {
       d.querySelector('.at-dos__cname').textContent = c.name;
       d.querySelector('.at-dos__ctitle').textContent = c.title;
-      this._pf = companionPortrait({ slug: c.slug, variant: '@1x', parallax: 0, shimmer: false });
+      /* @2x: the portrait is a framed picture on this panel now, not a thumb */
+      this._pf = companionPortrait({ slug: c.slug, variant: '@2x', parallax: 0, shimmer: false });
       host.appendChild(this._pf.el);
     } else if (empty) {
       d.querySelector('.at-dos__cname').textContent = 'Nobody';
@@ -819,7 +873,8 @@ export class AtlasScene extends Scene {
     act$.hidden = !o;
     if (o) {
       const go = act$.querySelector('.at-go');
-      go.textContent = this.entering ? `Begin in ${w.meta.name}` : `Go to ${w.meta.name}`;
+      /* The words only: the medallion seated on the button's end stays. */
+      go.querySelector('.at-go__words').textContent = this.entering ? `Begin in ${w.meta.name}` : `Go to ${w.meta.name}`;
       go.disabled = this._voting;
     }
 
@@ -1000,7 +1055,7 @@ export class AtlasScene extends Scene {
     this._pf = null;
     this._inkToken = (this._inkToken || 0) + 1;
     this._vp = this._plate = this._estate = this._ink = this._hots = null;
-    this._dossier = this._wide = this._trail = this._tally = null;
+    this._dossier = this._wide = this._trail = this._tally = this._board = null;
     this.offer = [];
     this.offered = new Set();
     this.root.innerHTML = '';

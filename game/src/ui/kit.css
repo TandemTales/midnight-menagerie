@@ -1323,3 +1323,384 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
     0 0 0 1px rgba(0, 0, 0, .7),
     0 2px 3px rgba(0, 0, 0, .7);
 }
+
+/* ===========================================================================
+   CONTROLS AND THE KIDS' PLACES — round 2, EXPAND-2 (the Treehouse lobby,
+   Neighbourhood Headquarters, the Atlas). Appended; nothing above is changed.
+
+     .kit-ground--planks   the treehouse instead of the mansion: the same slots
+                           and lights, a plank wall (tools/prep_treehouse_art.py)
+     .kit-hatch            a treehouse window onto the grounds, moon in it
+     .kit-field            a text input as an engraved nameplate
+     .kit-select           a <select>, closed, as the quiet nameplate
+     .kit-ladder           numbered enamel medallions on a brass rod, one chosen
+       __rung              (a Haunt Level; role=radio + aria-checked)
+     .kit-tabs / .kit-tab  a board's sections as nameplates, the chosen one lit
+     .kit-ledger           a <dl> of counts: small caps, a dotted brass leader,
+                           gold figures
+     .kit-paper            a sheet of paper in lamplight: fibre, foxing, curl
+     .kit-pin (--blue)     a push pin; .kit-tape a strip of masking tape
+     .kit-bulbs            a string of coloured bulbs sagging across a board
+     .kit-panel--damask    a .kit-panel whose ground is the boards' flocked
+                           damask, faint under the words, not a flat fill
+   =========================================================================== */
+
+/* ── the kids' ground ───────────────────────────────────────────────────────
+   Every other board stands in the mansion. The Treehouse and Headquarters are
+   the one place the Kids are not inside it, so their ground is a rough plank
+   wall with a roof beam, a nailer rail and floorboards — rendered in the dark,
+   under lamplight and under moonlight by the same hand as room.webp, and lit by
+   the same masks and light slots (see .kit-ground). A painting still drops in
+   over it through --kit-backdrop.                                            */
+.kit-ground--planks { background-image: url("../../assets/ui/kit/planks.webp"); }
+.kit-ground--planks .kit-ground__warm { background-image: url("../../assets/ui/kit/planks-warm.webp"); }
+.kit-ground--planks .kit-ground__moon { background-image: url("../../assets/ui/kit/planks-moon.webp"); }
+
+/* ── hatch ──────────────────────────────────────────────────────────────────
+   A square treehouse window: a rough plank frame and a cross bar round old
+   glass, and through it the grounds of UI/mainMenu.png at night with the house
+   in the middle distance. Decoration; size it with --hatch-w. Point one of
+   the ground's moon slots at it for its light on the wall.                   */
+.kit-hatch {
+  position: absolute; pointer-events: none;
+  width: var(--hatch-w, 220px); aspect-ratio: 420 / 470;
+  background: url("../../assets/ui/kit/hatch.webp") 50% 0 / 100% 100% no-repeat;
+  filter: drop-shadow(0 12px 14px rgba(0, 0, 0, .62));
+}
+.kit-hatch::before {
+  content: ''; position: absolute; z-index: -1;
+  left: -40%; right: -40%; top: -18%; bottom: 0;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-moon) 16%, transparent), color-mix(in srgb, var(--kit-moon) 5%, transparent) 55%, transparent);
+  mix-blend-mode: screen;
+}
+.kit-board.has-backdrop .kit-hatch { display: none; }
+
+/* ── field ──────────────────────────────────────────────────────────────────
+   Somewhere to write. The dark nameplate (plate.webp) with the words lettered
+   on it in the plates' warm gold, a gold caret, and a selection in the kit's
+   violet rather than the browser's blue. It lights round its silhouette when
+   it has focus, as the buttons do. On the <input> itself; --field-h sizes it. */
+.kit-field {
+  --field-h: 56px;
+  box-sizing: border-box;
+  min-width: 0;
+  height: var(--field-h);
+  margin: 0;
+  padding: 0 calc(var(--field-h) * .78);
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/plate.webp");
+  border-image-slice: 12 53 12 46 fill;
+  border-image-width: calc(var(--field-h) * 12 / 72) calc(var(--field-h) * 53 / 72) calc(var(--field-h) * 12 / 72) calc(var(--field-h) * 46 / 72);
+  border-image-repeat: stretch;
+  border-radius: 0;
+  background: none;
+  -webkit-appearance: none; appearance: none;
+  outline: none;
+  font-family: var(--font-body); font-weight: 600;
+  font-size: calc(var(--field-h) * .42);
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: .05em;
+  text-align: center;
+  color: var(--kit-name);
+  caret-color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8));
+  transition: filter var(--t-quick) var(--ease-out);
+}
+/* words ready to be written over glow as if the candle had caught them — never
+   boxed in the browser's blue, or in any box at all */
+.kit-field::selection { background: transparent; color: #fffaf0; text-shadow: 0 0 9px color-mix(in srgb, var(--kit-candle) 90%, transparent), 0 0 2px color-mix(in srgb, var(--kit-candle) 80%, transparent); }
+.kit-field::placeholder { color: var(--kit-text-lo); font-style: italic; font-weight: 400; letter-spacing: .01em; }
+.kit-field:hover { filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) brightness(1.1); }
+.kit-field:focus-visible {
+  outline: none;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) drop-shadow(0 0 2px var(--kit-gold-hi)) drop-shadow(0 0 14px color-mix(in srgb, var(--kit-candle) 50%, transparent)) brightness(1.12);
+}
+
+/* ── select ─────────────────────────────────────────────────────────────────
+   A choice from a list, closed: the quiet nameplate with its value lettered on
+   it. The list it opens is the platform's own and is only coloured. On the
+   <select> itself; --field-h sizes it. The plate's fill covers the element's
+   own background, so the gold chevron is drawn by a wrapper: put the select in
+   a `.kit-select-wrap` (any element) and it gets one in the plate's right end. */
+.kit-select {
+  --field-h: 46px;
+  box-sizing: border-box;
+  min-width: 0;
+  height: var(--field-h);
+  margin: 0;
+  padding: 0 calc(var(--field-h) * 1.15) 0 calc(var(--field-h) * .75);
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/plate.webp");
+  border-image-slice: 12 53 12 46 fill;
+  border-image-width: calc(var(--field-h) * 12 / 72) calc(var(--field-h) * 53 / 72) calc(var(--field-h) * 12 / 72) calc(var(--field-h) * 46 / 72);
+  border-image-repeat: stretch;
+  border-radius: 0;
+  -webkit-appearance: none; appearance: none;
+  background: none;
+  outline: none;
+  font-family: var(--font-body); font-weight: 600; font-size: calc(var(--field-h) * .36);
+  color: var(--kit-name);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .75));
+  cursor: pointer;
+  transition: filter var(--t-quick) var(--ease-out);
+}
+.kit-select:hover { filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .75)) brightness(1.12); }
+.kit-select:focus-visible { outline: none; filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .75)) drop-shadow(0 0 2px var(--kit-gold-hi)) drop-shadow(0 0 12px color-mix(in srgb, var(--kit-candle) 50%, transparent)); }
+.kit-select option { background: #17111c; color: var(--kit-text); }
+.kit-select-wrap { position: relative; }
+.kit-select-wrap::after {
+  content: ''; position: absolute; right: 22px; bottom: calc(var(--field-h, 46px) / 2); z-index: 1;
+  width: 13px; height: 9px; translate: 0 50%;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 9'%3E%3Cpath d='M1.2 1.4h11.6L7 7.8z' fill='%23e6c98a' stroke='%232e1f0e' stroke-width='1.1' stroke-linejoin='round'/%3E%3C/svg%3E") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .8));
+}
+
+/* ── ladder ─────────────────────────────────────────────────────────────────
+   A row of numbered round enamel medallions threaded on a brass rod, one of
+   them chosen — a level, a step. The chosen one sits in the round button's
+   gold filigree (button-ornate.webp) with its figure lit; a rung that cannot
+   be chosen yet is dimmed and never hidden, because how far the ladder goes is
+   part of what it says.
+     <div class="kit-ladder" role="radiogroup">
+       <button class="kit-ladder__rung" role="radio" aria-checked="true">0</button> …
+   --md sizes a rung; the filigree overhangs it and takes no room.            */
+.kit-ladder {
+  --md: 34px;
+  position: relative;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 2px;
+  padding: calc(var(--md) * .3) calc(var(--md) * .28);
+}
+.kit-ladder::before {
+  content: ''; position: absolute; z-index: 0; pointer-events: none;
+  left: calc(var(--md) * .5); right: calc(var(--md) * .5); top: 50%; height: 4px;
+  translate: 0 -50%;
+  background: linear-gradient(180deg, var(--kit-gold-hi) 0%, var(--kit-gold) 45%, var(--kit-gold-lo) 100%);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, .85), 0 -1px 0 rgba(0, 0, 0, .55);
+}
+.kit-ladder__rung {
+  position: relative; z-index: 1; flex: none;
+  width: var(--md); height: var(--md);
+  display: grid; place-items: center;
+  margin: 0; padding: 0 0 1px;
+  border: 0; border-radius: 50%;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  font-family: var(--font-num); font-weight: 600; font-style: normal;
+  font-size: calc(var(--md) * .46); line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--kit-text);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8));
+  cursor: pointer;
+  transition: filter var(--t-quick) var(--ease-out), color var(--t-quick) var(--ease-out);
+}
+.kit-ladder__rung::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  left: 50%; top: 50%;
+  width: calc(100% * 180 / 105); height: calc(100% * 172 / 105);
+  translate: -50% -50%;
+  background: url("../../assets/ui/kit/button-ornate.webp") 50% 50% / 100% 100% no-repeat;
+  opacity: 0; scale: .8;
+  transition: opacity var(--t-quick) var(--ease-out), scale var(--t-base) var(--ease-out);
+}
+.kit-ladder__rung:hover:not(:disabled) { color: var(--kit-gold-hi); filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8)) brightness(1.18); }
+.kit-ladder__rung[aria-checked="true"] {
+  color: var(--kit-gold-hi);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8)) drop-shadow(0 0 9px color-mix(in srgb, var(--kit-candle) 45%, transparent)) brightness(1.15);
+}
+.kit-ladder__rung[aria-checked="true"]::before { opacity: 1; scale: 1; }
+.kit-ladder__rung:disabled { cursor: not-allowed; color: var(--kit-text-lo); filter: grayscale(.7) brightness(.62); }
+.kit-ladder__rung:focus-visible {
+  outline: none;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8)) drop-shadow(0 0 2px var(--kit-gold-hi)) drop-shadow(0 0 12px color-mix(in srgb, var(--kit-candle) 65%, transparent)) brightness(1.2);
+}
+
+/* ── tabs ───────────────────────────────────────────────────────────────────
+   One board's sections as a row of nameplates. The chosen one is lit — gold
+   lettering, candlelight in its plate, the Kid board's star medallion seated on
+   its top edge — the others are the quiet plate. A row of tabs is meant to
+   stand on the top rail of the thing it switches.
+     <nav class="kit-tabs" role="tablist">
+       <button class="kit-tab" role="tab" aria-selected="true">Board</button> …  */
+.kit-tabs { display: flex; flex-wrap: nowrap; align-items: flex-end; justify-content: center; gap: clamp(4px, .5vw, 8px); }
+.kit-tab {
+  --plate-h: 42px;
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: var(--plate-h);
+  margin: 0;
+  padding: 1px calc(var(--plate-h) * .74) 2px;
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/plate.webp");
+  border-image-slice: 12 53 12 46 fill;
+  border-image-width: calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72);
+  border-image-repeat: stretch;
+  background: none;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; white-space: nowrap;
+  color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) saturate(.6) brightness(.84);
+  cursor: pointer;
+  transition: filter var(--t-quick) var(--ease-out), color var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out);
+}
+.kit-tab:hover { color: var(--kit-text); filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) saturate(.9) brightness(1.02); }
+.kit-tab[aria-selected="true"] {
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 12px color-mix(in srgb, var(--kit-candle) 30%, transparent);
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 28%, transparent)) brightness(1.16);
+}
+.kit-tab[aria-selected="true"]::before {
+  content: ''; position: absolute; left: 50%; top: 0; z-index: 1; pointer-events: none;
+  width: 26px; aspect-ratio: 55 / 56;
+  translate: -50% -58%;
+  background: url("../../assets/ui/kit/medal-star2.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .75));
+}
+.kit-tab:focus-visible {
+  outline: none;
+  color: #fff1d2;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 1.5px var(--kit-gold-hi)) drop-shadow(0 0 14px color-mix(in srgb, var(--kit-candle) 70%, transparent)) brightness(1.18);
+}
+
+/* ── ledger ─────────────────────────────────────────────────────────────────
+   A column of counts that reads at a glance: each label in engraved small
+   caps, a dotted brass leader running to the figure, the figure in gold lining
+   numerals. For a <dl> of dt/dd pairs (a <div> round each pair is fine).     */
+.kit-ledger {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline; row-gap: 5px; column-gap: 0;
+  margin: 0;
+}
+.kit-ledger > div { display: contents; }
+.kit-ledger dt {
+  grid-column: 1;
+  display: flex; align-items: baseline; min-width: 0;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 11.5px; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  white-space: nowrap;
+}
+.kit-ledger dt::after {
+  content: ''; flex: 1 1 auto; min-width: 12px;
+  margin: 0 8px 0 8px; height: 2px; align-self: flex-end; translate: 0 -.3em;
+  background: radial-gradient(circle, var(--kit-gold) 0 42%, transparent 48%) 0 50% / 5px 2px repeat-x;
+  opacity: .8;
+}
+.kit-ledger dd {
+  grid-column: 2;
+  margin: 0;
+  font-family: var(--font-num); font-weight: 600;
+  font-size: 19px; line-height: 1.15;
+  font-variant-numeric: lining-nums tabular-nums;
+  text-align: right;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 12px color-mix(in srgb, var(--kit-candle) 18%, transparent);
+}
+
+/* ── paper, pins and tape ───────────────────────────────────────────────────
+   What a kid pins to a board, in the same lamplight as everything else: paper
+   with fibre in it (paper.webp), yellowed and foxed towards its edges, lifting
+   off the board at one corner; a push pin; a strip of masking tape. Colour a
+   sheet with --paper; its shadow is the board's, not a box shadow.           */
+.kit-paper {
+  --paper: var(--kit-paper);
+  position: relative;
+  color: var(--kit-paper-ink);
+  background:
+    radial-gradient(120% 90% at 30% 18%, rgba(255, 248, 228, .28), transparent 62%),
+    radial-gradient(150% 130% at 50% 45%, transparent 58%, color-mix(in srgb, var(--kit-paper-shade) 70%, transparent) 100%),
+    url("../../assets/ui/kit/paper.webp") 0 0 / 256px 256px,
+    var(--paper);
+  background-blend-mode: normal, multiply, overlay, normal;
+  box-shadow:
+    0 1px 1px rgba(40, 20, 8, .35),
+    2px 5px 6px -2px rgba(30, 14, 6, .45),
+    6px 16px 22px -10px rgba(20, 8, 4, .6);
+}
+.kit-pin {
+  position: absolute; pointer-events: none;
+  width: var(--pin-w, 18px); aspect-ratio: 1;
+  background: url("../../assets/ui/kit/pin.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(2px 4px 2px rgba(20, 8, 4, .5));
+}
+.kit-pin--blue { background-image: url("../../assets/ui/kit/pin-blue.webp"); }
+.kit-tape {
+  position: absolute; pointer-events: none;
+  width: var(--tape-w, 64px); aspect-ratio: 200 / 56;
+  background: url("../../assets/ui/kit/tape.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 1px 1px rgba(30, 14, 6, .3));
+}
+
+/* ── string lights ──────────────────────────────────────────────────────────
+   The kids' own light: a dark wire sagging in one long curve across the top of
+   a board, a bulb on a brass cap every few hands, warm, then red, then cold
+   blue, each breathing on its own beat. Markup is the bulbs:
+     <div class="kit-bulbs"><i style="--i:0"></i> … <i style="--i:13"></i></div>
+   Fourteen by default (--n); size the box and the wire sags inside it.     */
+.kit-bulbs {
+  --n: 14;
+  --sag: 44px;
+  position: absolute; pointer-events: none;
+  height: calc(var(--sag) + 34px);
+}
+.kit-bulbs::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 4px; height: calc(var(--sag) + 14px);
+  border-bottom: 2px solid rgba(12, 8, 6, .85);
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+  filter: drop-shadow(0 2px 1px rgba(0, 0, 0, .5));
+}
+.kit-bulbs > i {
+  position: absolute;
+  top: calc(12px + var(--sag) * (1 - pow((var(--i) - (var(--n) - 1) / 2) / ((var(--n) - 1) / 2), 2)));
+  left: calc((var(--i) + .5) / var(--n) * 100% - 5px);
+  width: 10px; height: 15px; border-radius: 45% 45% 55% 55% / 40% 40% 60% 60%;
+  background: radial-gradient(circle at 40% 30%, #fff8e6 0 18%, var(--flame-200) 38%, var(--flame-400) 70%, var(--flame-500));
+  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--flame-glow) 55%, transparent), 0 0 34px 10px color-mix(in srgb, var(--flame-glow) 18%, transparent);
+  animation: kit-bulb 3.4s var(--ease-soft) infinite;
+  animation-delay: calc(var(--i) * -.42s);
+}
+.kit-bulbs > i::before {
+  content: ''; position: absolute; left: 50%; top: -5px; width: 6px; height: 6px; translate: -50% 0;
+  border-radius: 2px 2px 1px 1px;
+  background: linear-gradient(90deg, var(--kit-gold-lo), var(--kit-gold-hi) 45%, var(--kit-gold-lo));
+  box-shadow: 0 1px 0 rgba(0, 0, 0, .6);
+}
+.kit-bulbs > i:nth-child(3n) {
+  background: radial-gradient(circle at 40% 30%, #fff0ee 0 18%, var(--threat-200) 40%, var(--threat-400) 74%, var(--threat-500));
+  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--threat-300) 50%, transparent), 0 0 30px 8px color-mix(in srgb, var(--threat-300) 14%, transparent);
+}
+.kit-bulbs > i:nth-child(3n+1) {
+  background: radial-gradient(circle at 40% 30%, #f0fdff 0 18%, var(--spectre-200) 40%, var(--spectre-400) 74%, var(--spectre-500));
+  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--spectre-300) 46%, transparent), 0 0 30px 8px color-mix(in srgb, var(--spectre-300) 12%, transparent);
+}
+@keyframes kit-bulb { 0%, 100% { opacity: .8; } 50% { opacity: 1; } }
+/* a painted room brings its own lights */
+.kit-board.has-backdrop .kit-bulbs { display: none; }
+.kit-still .kit-bulbs > i, .rm.is-still .kit-bulbs > i { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-reduce-motion="0"]) .kit-bulbs > i { animation: none; }
+}
+
+/* ── panel, damask ──────────────────────────────────────────────────────────
+   A modifier for .kit-panel: the Kid board's panels are not a flat fill, they
+   are a dark cloth with a pattern in it that only shows where the light is. The
+   kit's damask (the samples' own scrollwork) is laid in soft-light under a dark
+   glaze, lit a little from the top rail and lost towards the corners, so words
+   set on it keep their contrast.                                            */
+.kit-panel.kit-panel--damask {
+  background:
+    radial-gradient(90% 60% at 50% 0%, color-mix(in srgb, var(--kit-violet) 12%, transparent), transparent 70%),
+    radial-gradient(120% 110% at 50% 50%, transparent 50%, rgba(0, 0, 0, .42) 100%),
+    linear-gradient(rgba(19, 14, 24, .55), rgba(15, 11, 19, .55)),
+    url("../../assets/ui/kit/damask.webp") 50% 0 / 150px auto,
+    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
+    linear-gradient(180deg, #1c1523 0%, #140f19 60%, #0f0b13 100%);
+  background-blend-mode: normal, normal, normal, soft-light, overlay, normal;
+  background-clip: padding-box;
+}

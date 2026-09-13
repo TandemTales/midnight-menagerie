@@ -28,9 +28,17 @@ import {
   BACKPACK_ITEMS, itemById, loadoutSize, assertLoadout, SLOTS_BASE,
 } from '../data/backpack.js';
 import { HAUNTS } from '../data/haunts.js';
+import { paintBackdrop } from '../ui/kitboard.js';
 
 const CSS_KIT  = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_CLUB = new URL('./clubhouse.css', import.meta.url).href;
+
+/** Glyphs for the round enamel buttons: flat antique gold, ink outline. */
+const GLYPH = {
+  back: '<svg viewBox="0 0 24 24"><path d="M20.5 9.6h-9.2V5.2L3 12l8.3 6.8v-4.4h9.2z"/></svg>',
+  /* the way on, as every board's lit button draws it */
+  onward: '<svg viewBox="0 0 24 24"><path d="M3.5 9.6h9.2V5.2L21 12l-8.3 6.8v-4.4H3.5z"/></svg>',
+};
 
 /* Backpack Gear.  There is ONE item table and it is `data/backpack.js` — this
    screen used to carry a third hard-coded copy (names and slot counts that
@@ -93,18 +101,28 @@ export class ClubhouseScene extends Scene {
     const root = this.root;
     root.innerHTML = '';
     root.dataset.panel = this.panel;
+    root.classList.toggle('kit-still', reduceMotion());
 
-    root.appendChild(this._buildRoom());
+    const room = this._buildRoom();
+    root.appendChild(room);
     root.appendChild(this._buildHeader());
 
     const main = el('main', 'cl__main');
+    /* The section tabs stand on the board's top edge — the tabs switch the
+       thing they stand on, so that is where they are — and come FIRST in the
+       board, so the keyboard still reaches them before what they switch. The
+       board's gilt rail goes over whichever section is showing. */
+    main.appendChild(this._tabs);
     main.appendChild(this._buildBoard());
     main.appendChild(this._buildMenagerie());
     main.appendChild(this._buildPets());
     main.appendChild(this._buildBackpack());
+    main.appendChild(el('div', 'cl-frame kit-railframe kit-railframe--ornate'));
     root.appendChild(main);
 
     root.appendChild(this._buildSide());
+    /* Josh's `clubhouse.png`, when it exists, hangs on the treehouse wall. */
+    paintBackdrop(room, 'clubhouse', () => !!this._tabs && room.isConnected);
 
     this._wire();
     await fontsReady();
@@ -114,15 +132,19 @@ export class ClubhouseScene extends Scene {
 
   /* ── the room itself ────────────────────────────────────────────────────── */
   _buildRoom() {
-    const room = el('div', 'cl-room');
+    /* The treehouse wall the whole board hangs on (ui/kit.css .kit-ground--planks,
+       the slot Josh's clubhouse.png drops into), lamplit: a string of bulbs
+       across the top, the lamp's pool over the board, dust in the light. */
+    const room = el('div', 'cl-room kit-board');
     room.innerHTML = `
-      <div class="cl-wall"></div>
-      <div class="cl-lamp"><span class="cl-lamp__shade"></span><span class="cl-lamp__glow"></span></div>
-      <div class="cl-lights">${Array.from({ length: 14 }, (_, i) =>
-        `<i style="--i:${i};--d:-${(i * 0.42).toFixed(2)}s"></i>`).join('')}</div>
+      <div class="cl-wall kit-ground kit-ground--planks"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>
+      <div class="cl-lamp"><span class="cl-lamp__glow"></span></div>
+      <div class="cl-lights kit-bulbs">${Array.from({ length: 14 }, (_, i) =>
+        `<i style="--i:${i}"></i>`).join('')}</div>
       <div class="cl-floor"></div>
       <div class="cl-dust">${Array.from({ length: 18 }, (_, i) =>
-        `<i style="left:${(i * 5.6 + 3) % 100}%;--dur:${(16 + (i % 7) * 3)}s;--del:-${i * 1.7}s;--sz:${1 + (i % 3) * .8}px"></i>`).join('')}</div>`;
+        `<i style="left:${(i * 5.6 + 3) % 100}%;--dur:${(16 + (i % 7) * 3)}s;--del:-${i * 1.7}s;--sz:${1 + (i % 3) * .8}px"></i>`).join('')}</div>
+      <div class="kit-dress" aria-hidden="true"><i class="kit-dress__rule"></i></div>`;
     return room;
   }
 
@@ -130,31 +152,33 @@ export class ClubhouseScene extends Scene {
   _buildHeader() {
     const h = el('header', 'cl__head');
 
-    const back = el('button', 'cl-back');
+    const back = el('button', 'cl-back kit-btn kit-btn--quiet');
     back.type = 'button';
-    back.innerHTML = '<span aria-hidden="true">&#8592;</span> Title';
+    back.innerHTML = '<span class="cl-back__arrow" aria-hidden="true">&#8592;</span> Title'
+      + `<i class="kit-medallion kit-btn__medal cl-back__medal" aria-hidden="true">${GLYPH.back}</i>`;
     back.addEventListener('click', () => this.ctx.scenes?.go?.('title', {}));
     h.appendChild(back);
 
-    const sign = el('div', 'cl-sign');
+    /* The sign, lettered the way the wordmark is: the small word over the big
+       one in the cartouche, as MIDNIGHT sits over MENAGERIE, and the house
+       rules on the ribbon under it. */
+    const sign = el('div', 'cl-sign kit-titleblock kit-titleblock--compact');
     sign.innerHTML = `
-      <span class="cl-sign__board">
+      <span class="cl-sign__sub kit-ribbon">members only &middot; bring snacks</span>
+      <h1 class="cl-sign__board kit-cartouche__title">
         <span class="cl-sign__line1">Neighbourhood</span>
         <span class="cl-sign__line2">Headquarters</span>
-        <span class="cl-sign__sub">members only &middot; bring snacks</span>
-      </span>
-      <span class="cl-sign__nail cl-sign__nail--l" aria-hidden="true"></span>
-      <span class="cl-sign__nail cl-sign__nail--r" aria-hidden="true"></span>`;
+      </h1>`;
     h.appendChild(sign);
 
-    const tabs = el('nav', 'cl-tabs');
+    const tabs = el('nav', 'cl-tabs kit-tabs');
     tabs.setAttribute('role', 'tablist');
     tabs.setAttribute('aria-label', 'Clubhouse sections');
     for (const [id, label] of [
       ['board', 'Investigation Board'], ['menagerie', 'The Menagerie'],
       ['pets', 'Missing Pets'], ['backpack', 'Backpack'],
     ]) {
-      const b = el('button', 'cl-tab');
+      const b = el('button', 'cl-tab kit-tab');
       b.type = 'button';
       b.dataset.panel = id;
       b.setAttribute('role', 'tab');
@@ -162,8 +186,18 @@ export class ClubhouseScene extends Scene {
       b.textContent = label;
       tabs.appendChild(b);
     }
-    h.appendChild(tabs);
+    /* Not appended here: `enter()` stands the tabs on the board's top rail. */
     this._tabs = tabs;
+
+    /* The two numbers this whole screen is about, on one enamel plate opposite
+       Title: how many of the Menagerie are out, and how many pets are home. */
+    const tally = el('p', 'cl-count kit-enamel kit-enamel--dark');
+    tally.innerHTML = `<b class="kit-enamel__value">${this.rescued.size}</b>`
+      + `<span class="kit-enamel__label">of ${COMPANIONS.length} freed</span>`
+      + `<i class="cl-count__dot" aria-hidden="true"></i>`
+      + `<b class="kit-enamel__value">${this.petsRescued.size}</b>`
+      + `<span class="kit-enamel__label">of ${KIDS.length} home</span>`;
+    h.appendChild(tally);
     return h;
   }
 
@@ -190,11 +224,11 @@ export class ClubhouseScene extends Scene {
     KIDS.forEach((k, i) => {
       const info = KID_CODEX[k.slug] ?? {};
       const found = this.petsRescued.has(k.slug);
-      const card = el('div', 'polaroid' + (found ? ' is-found' : ''));
+      const card = el('div', 'polaroid kit-paper' + (found ? ' is-found' : ''));
       card.style.cssText = `left:${pos[i][0]}%;top:${pos[i][1]}%;--rot:${rot[i]}deg`;
       card.dataset.anchor = k.slug;
       card.innerHTML = `
-        <span class="pin" aria-hidden="true"></span>
+        <span class="pin kit-pin" aria-hidden="true"></span>
         <span class="polaroid__photo"></span>
         <span class="polaroid__who" aria-hidden="true"></span>
         <span class="polaroid__cap">${k.pet}</span>
@@ -218,13 +252,13 @@ export class ClubhouseScene extends Scene {
        same count, pinned to the same board. A player who wants a closer look at
        the house has exactly one instinct about a floor plan on a corkboard, and
        until the atlas existed there was nothing for that instinct to reach. */
-    const bp = el('button', 'bpfrag');
+    const bp = el('button', 'bpfrag kit-paper');
     bp.type = 'button';
     bp.style.cssText = 'right:2.5%;top:5%;--rot:1.6deg';
     bp.setAttribute('aria-label',
       `Open the atlas — the house, ${this.revealed.size} of ${REGION_ORDER.length} wings mapped`);
     bp.innerHTML = `
-      <span class="pin pin--blue" aria-hidden="true"></span>
+      <span class="pin pin--blue kit-pin kit-pin--blue" aria-hidden="true"></span>
       <span class="bpfrag__label">The house, as far as we have mapped it</span>
       <span class="bpfrag__img"><img src="${blueprintSrc('mansion')}" alt="" width="1448" height="1086" decoding="async"></span>
       <span class="bpfrag__count"><b>${this.revealed.size}</b> / ${REGION_ORDER.length} wings</span>
@@ -244,11 +278,11 @@ export class ClubhouseScene extends Scene {
          lost `position:absolute` and the five of them stacked in the top-left
          corner underneath the polaroids. Exactly the failure the scene-css gate
          exists for, one level down: same name, different file. */
-      const note = el('div', 'ch-note' + (known ? '' : ' is-unknown'));
+      const note = el('div', 'ch-note kit-paper' + (known ? '' : ' is-unknown'));
       note.style.cssText = `left:${cluePos[i][0]}%;top:${cluePos[i][1]}%;--rot:${(i % 2 ? 1.8 : -2.2)}deg`;
       note.innerHTML = known
-        ? `<span class="ch-tape" aria-hidden="true"></span><b>${title}</b><p>${text}</p>`
-        : `<span class="ch-tape" aria-hidden="true"></span><b>?</b><p>Not found yet.</p>`;
+        ? `<span class="ch-tape kit-tape" aria-hidden="true"></span><b>${title}</b><p>${text}</p>`
+        : `<span class="ch-tape kit-tape" aria-hidden="true"></span><b>?</b><p>Not found yet.</p>`;
       cork.appendChild(note);
     });
 
@@ -309,7 +343,7 @@ export class ClubhouseScene extends Scene {
          claim them. */
       const here = this.available.has(c.slug);
       const got = this.rescued.has(c.slug);
-      const cell = el('div', 'scrapcell' + (here ? '' : ' is-empty') + (here && !got ? ' is-starter' : ''));
+      const cell = el('div', 'scrapcell kit-paper' + (here ? '' : ' is-empty') + (here && !got ? ' is-starter' : ''));
       const pf = companionPortrait({ slug: c.slug, variant: '@1x', locked: !here, parallax: 0, shimmer: false });
       this._portraits.push(pf);
       cell.appendChild(pf.el);
@@ -465,10 +499,13 @@ export class ClubhouseScene extends Scene {
     const side = el('aside', 'cl__side');
     const st = Save?.data?.stats ?? {};
 
-    const board = el('div', 'chalk');
+    /* The log and the ladder are the kit's panels, each with its crest on the
+       top rail; the counts are a ledger that reads down in one glance. */
+    const board = el('div', 'chalk kit-panel kit-panel--damask');
+    board.dataset.medal = 'star';
     board.innerHTML = `
-      <h3 class="chalk__h">Expedition log</h3>
-      <dl class="chalk__dl">
+      <h3 class="chalk__h kit-heading">Expedition log</h3>
+      <dl class="chalk__dl kit-ledger">
         <dt>Expeditions</dt><dd>${st.runs ?? 0}</dd>
         <dt>Made it out</dt><dd>${st.wins ?? 0}</dd>
         <dt>Deepest room</dt><dd>${st.bestFloor ?? 0}</dd>
@@ -477,9 +514,10 @@ export class ClubhouseScene extends Scene {
       </dl>`;
     side.appendChild(board);
 
-    const haunt = el('div', 'cl-haunt');
-    haunt.innerHTML = `<h3 class="cl-h">${TERMS.ascension}</h3>`;
-    const row = el('div', 'haunt__row');
+    const haunt = el('div', 'cl-haunt kit-panel kit-panel--damask');
+    haunt.dataset.medal = 'shield';
+    haunt.innerHTML = `<h3 class="cl-haunt__h kit-heading">${TERMS.ascension}</h3>`;
+    const row = el('div', 'haunt__row kit-ladder');
     row.setAttribute('role', 'radiogroup');
     row.setAttribute('aria-label', TERMS.ascension);
     /* The SOLO ladder. The Clubhouse is the single-player meta screen — a
@@ -488,7 +526,7 @@ export class ClubhouseScene extends Scene {
        about which field a ladder lives in. */
     const maxH = Save.hauntLevelFor(1);
     for (const [lvl, name, desc] of HAUNTS) {
-      const b = el('button', 'haunt__pip');
+      const b = el('button', 'haunt__pip kit-ladder__rung');
       b.type = 'button';
       b.dataset.haunt = String(lvl);
       b.setAttribute('role', 'radio');
@@ -503,9 +541,10 @@ export class ClubhouseScene extends Scene {
     haunt.appendChild(el('p', 'cl-haunt__desc', `<b>${HAUNTS[this.haunt][1]}</b> ${HAUNTS[this.haunt][2]}`));
     side.appendChild(haunt);
 
-    const go = el('button', 'cl-go');
+    const go = el('button', 'cl-go kit-btn');
     go.type = 'button';
-    go.innerHTML = `<b>Plan the Expedition</b><em>choose a Kid and a Companion</em>`;
+    go.innerHTML = `<b>Plan the Expedition</b><em>choose a Kid and a Companion</em>`
+      + `<i class="kit-medallion kit-medallion--ornate kit-btn__medal cl-go__medal" aria-hidden="true">${GLYPH.onward}</i>`;
     side.appendChild(go);
     this._goBtn = go;
 

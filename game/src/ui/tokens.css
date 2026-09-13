@@ -197,6 +197,11 @@
   --kit-parchment-shade: #a88f69;
   --kit-moon-lo:         #3a4f78;   /* moonlight where it falls off into the room */
   --kit-ember:           #d9703a;   /* a wick still glowing after it is snuffed */
+  /* the kids' places: paper, pencil and thread as the lamp leaves them */
+  --kit-paper:           #eadcbc;   /* a photograph's border, an index card */
+  --kit-paper-shade:     #c9b48d;   /* the same paper where it curls away from the light */
+  --kit-paper-ink:       #2b1e15;   /* pencil and biro on it (12:1 on --kit-paper) */
+  --kit-thread:          #9e2a1e;   /* the red string between the photographs */
 }
 
 /* ===========================================================================

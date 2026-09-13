@@ -1,87 +1,86 @@
 /* ===========================================================================
    The Clubhouse. OWNER: frontend agent.
-   Warm, handmade, lamplit — the deliberate opposite of the mansion.
-   Every colour still derives from ui/tokens.css.
+   Warm, handmade, lamplit — the deliberate opposite of the mansion, and still
+   a board in the game's own language (ui/kit.css).
+
+   What is the Kids' stays the Kids': the treehouse wall (.kit-ground--planks),
+   the string of bulbs, the cork, the photographs, the red thread and the
+   masking tape — painted now, never flat CSS. What you READ and PRESS is the
+   kit's, exactly as on every other board, so it reads the same way here:
+     the sign            the wordmark's cartouche, NEIGHBOURHOOD over HEADQUARTERS
+     the sections        nameplate tabs standing on the board's gilt top rail
+     the Expedition Log  a kit panel with its crest, the counts as a ledger
+     Haunt Level         a kit panel, the levels as numbered enamel medallions
+     Plan the Expedition the lit nameplate with its ornate medallion
+     Title               the quiet nameplate with its round enamel arrow
+
+   The kit's classes are never named here in a selector that sets layout (see
+   tests/scene-css/check.py): each kit piece also wears a `cl-` class, and that
+   is what is placed. Every colour still derives from ui/tokens.css.
    =========================================================================== */
 
 .scene--clubhouse {
   position: absolute; inset: 0;
   overflow: hidden;
-  --head-h: clamp(78px, 9.4vh, 104px);
-  --side-w: clamp(230px, 20vw, 320px);
+  --cl-pad: clamp(16px, 1.5vw, 26px);
+  --head-h: clamp(118px, 15.2vh, 140px);
+  --side-w: clamp(252px, 21vw, 336px);
+  --cl-top: calc(var(--head-h) + clamp(20px, 2.8vh, 28px));
+  --cl-bot: clamp(20px, 2.8vh, 30px);
 
   /* --- the warm palette, all derived --------------------------------------- */
   --wood-1: color-mix(in oklab, var(--flame-500) 46%, var(--ink-800));
   --wood-2: color-mix(in oklab, var(--flame-500) 30%, var(--ink-900));
   --wood-3: color-mix(in oklab, var(--flame-500) 62%, var(--ink-700));
-  --cork-1: color-mix(in oklab, var(--flame-300) 54%, var(--parchment-shade));
-  --cork-2: color-mix(in oklab, var(--flame-400) 46%, var(--parchment-shade));
-  --cork-3: color-mix(in oklab, var(--flame-500) 60%, var(--parchment-shade));
-  --paper:  color-mix(in oklab, var(--flame-100) 68%, var(--parchment));
+  --paper:  var(--kit-paper);
   --tape:   color-mix(in srgb, var(--flame-100) 46%, transparent);
-  --thread: var(--threat-400);
+  --thread: var(--kit-thread);
   --lamp:   var(--flame-glow);
-  --chalkbg: color-mix(in oklab, var(--ink-800) 78%, var(--guard-500));
 }
 
 /* ── the room ─────────────────────────────────────────────────────────────── */
-.cl-room { position: absolute; inset: 0; }
-.cl-wall {
+.cl-room {
   position: absolute; inset: 0;
-  background:
-    radial-gradient(58% 44% at 16% 4%, color-mix(in srgb, var(--lamp) 26%, transparent), transparent 74%),
-    repeating-linear-gradient(90deg,
-      var(--wood-1) 0 78px,
-      var(--wood-2) 78px 82px),
-    linear-gradient(180deg, color-mix(in oklab, var(--wood-1) 88%, var(--flame-400)) 0%, var(--wood-2) 76%, var(--ink-900) 100%);
+  --hud-h: 0px;
+  /* the lamp high on the left, the bulbs' warmth across the top, and the board
+     and the sidebar standing in the pool they make together */
+  --wl1-x: 9vw;   --wl1-y: 6vh;   --wl1-w: 62vw;  --wl1-h: 96vh;
+  --wl2-x: 90vw;  --wl2-y: 8vh;   --wl2-w: 50vw;  --wl2-h: 80vh;
+  --wl3-x: 40vw;  --wl3-y: 46vh;  --wl3-w: 100vw; --wl3-h: 110vh;
+  --wl4-x: 86vw;  --wl4-y: 58vh;  --wl4-w: 46vw;  --wl4-h: 96vh;
+  --wl5-x: 50vw;  --wl5-y: 2vh;   --wl5-w: 110vw; --wl5-h: 40vh;
 }
-.cl-wall::after {                 /* grain */
-  content: ''; position: absolute; inset: 0;
-  background-image: repeating-linear-gradient(89.4deg,
-    transparent 0 3px, color-mix(in srgb, var(--ink-900) 12%, transparent) 3px 4px);
-  opacity: .55;
-}
-.cl-floor {
-  position: absolute; left: 0; right: 0; bottom: 0; height: 16%;
-  background:
-    repeating-linear-gradient(74deg, var(--wood-3) 0 54px, color-mix(in oklab, var(--wood-3) 78%, var(--ink-900)) 54px 58px),
-    linear-gradient(180deg, color-mix(in oklab, var(--wood-1) 70%, var(--ink-900)), var(--ink-900));
-  box-shadow: inset 0 10px 24px color-mix(in srgb, var(--ink-900) 60%, transparent);
-}
-.cl-lamp { position: absolute; left: 7%; top: -2%; width: clamp(120px, 12vw, 200px); pointer-events: none; }
-.cl-lamp__shade {
-  display: block; height: clamp(52px, 5vw, 84px);
-  clip-path: polygon(28% 0, 72% 0, 100% 100%, 0 100%);
-  background: linear-gradient(180deg, color-mix(in oklab, var(--flame-400) 70%, var(--ink-700)), color-mix(in oklab, var(--flame-300) 82%, var(--flame-500)));
-  box-shadow: 0 6px 18px color-mix(in srgb, var(--ink-900) 50%, transparent);
-}
+.cl-wall { z-index: 0; }
+.cl-lamp { position: absolute; left: 7%; top: -2%; width: clamp(120px, 12vw, 200px); pointer-events: none; z-index: 1; }
 .cl-lamp__glow {
   position: absolute; left: 50%; top: 60%;
   width: 620px; height: 620px; margin-left: -310px;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--lamp) 30%, transparent), transparent 72%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--lamp) 20%, transparent), transparent 72%);
+  mix-blend-mode: screen;
   animation: cl-breathe 5.6s var(--ease-soft) infinite;
 }
 @keyframes cl-breathe { 0%,100% { opacity: .82; transform: scale(1); } 50% { opacity: 1; transform: scale(1.04); } }
 
-.cl-lights { position: absolute; left: -2%; right: -2%; top: 0; height: 90px; pointer-events: none; }
-.cl-lights::before {
-  content: ''; position: absolute; left: 0; right: 0; top: 6px; height: 60px;
-  border-bottom: 2px solid color-mix(in srgb, var(--ink-900) 62%, transparent);
-  border-radius: 0 0 50% 50% / 0 0 100% 100%;
-}
-.cl-lights i {
-  position: absolute; top: calc(14px + 44px * (1 - pow((var(--i) - 6.5) / 6.5, 2)));
-  left: calc(2% + var(--i) * 7.1%);
-  width: 11px; height: 15px; border-radius: 50% 50% 60% 60%;
-  background: radial-gradient(circle at 40% 32%, color-mix(in oklab, var(--flame-100) 92%, white), var(--flame-300) 62%, var(--flame-500));
-  box-shadow: 0 0 14px 3px color-mix(in srgb, var(--lamp) 46%, transparent);
-  animation: cl-bulb 3.4s var(--ease-soft) infinite var(--d);
-}
-.cl-lights i:nth-child(3n)   { background: radial-gradient(circle at 40% 32%, var(--threat-100), var(--threat-200) 62%, var(--threat-400)); box-shadow: 0 0 14px 3px color-mix(in srgb, var(--threat-300) 40%, transparent); }
-.cl-lights i:nth-child(3n+1) { background: radial-gradient(circle at 40% 32%, var(--spectre-100), var(--spectre-300) 62%, var(--spectre-500)); box-shadow: 0 0 14px 3px color-mix(in srgb, var(--spectre-300) 36%, transparent); }
-@keyframes cl-bulb { 0%,100% { opacity: .78; } 50% { opacity: 1; } }
+/* a string of bulbs pinned along the roof beam, sagging between the pins */
+.cl-lights { left: -2%; right: -2%; top: 0; z-index: 2; }
 
-.cl-dust { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+/* night outside the lamp's reach: the wall's far edges fall into the same
+   aubergine dark every board in the house stands in */
+.cl-room::after {
+  content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    radial-gradient(120% 96% at 36% 30%, transparent 46%, color-mix(in srgb, #140a1c 62%, transparent) 100%),
+    linear-gradient(to bottom, color-mix(in srgb, #120818 30%, transparent), transparent 30%);
+}
+/* the floor, and the dark gathering at the foot of the wall */
+.cl-floor {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 22%; z-index: 1; pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(8, 5, 4, .5) 70%, rgba(6, 4, 3, .78));
+}
+.cl-room .kit-dress { z-index: 1; }
+
+.cl-dust { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 2; }
 .cl-dust i {
   position: absolute; bottom: -10px; width: var(--sz); height: var(--sz);
   border-radius: 50%; background: var(--flame-100); opacity: 0;
@@ -93,85 +92,79 @@
   15% { opacity: .5; } 85% { opacity: .4; }
   100% { transform: translate3d(28px,-72vh,0); opacity: 0; }
 }
+.scene--clubhouse.kit-still .cl-lamp__glow,
+.scene--clubhouse.kit-still .cl-dust i { animation: none; }
+.scene--clubhouse.kit-still .cl-dust { display: none; }
 
-/* ── header ───────────────────────────────────────────────────────────────── */
+/* ── header: Title, and the sign ──────────────────────────────────────────── */
 .cl__head {
   position: absolute; top: 0; left: 0; right: 0; height: var(--head-h);
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
-  padding: 0 var(--s-5);
-  z-index: 4;
+  padding: 0 calc(var(--cl-pad) + 10px);
+  z-index: 8;
 }
 .cl-back {
   justify-self: start;
-  display: inline-flex; align-items: center; gap: var(--s-2);
-  padding: var(--s-2) var(--s-4);
-  font-family: var(--font-display); font-size: var(--fs-sm);
-  letter-spacing: .14em; text-transform: uppercase;
-  color: var(--flame-100);
-  background: color-mix(in srgb, var(--ink-900) 46%, transparent);
-  border: 1px solid color-mix(in srgb, var(--flame-200) 34%, transparent);
-  border-radius: var(--radius-sm);
-  transition: background var(--t-quick) var(--ease-out), border-color var(--t-quick) var(--ease-out);
+  --plate-h: clamp(44px, 5.6vh, 50px);
+  padding-left: calc(var(--plate-h) * 1.24);
+  font-size: clamp(13px, 1vw, 15px);
+  margin-top: clamp(-10px, -1vh, -4px);
 }
-.cl-back:hover { background: color-mix(in srgb, var(--ink-900) 66%, transparent); border-color: var(--flame-200); }
+.cl-back__arrow { display: none; }
+.cl-back__medal { --md: calc(var(--plate-h) * 1.1); left: calc(var(--plate-h) * -.34); }
 
-.cl-sign { position: relative; justify-self: center; }
-.cl-sign__board {
-  display: grid; justify-items: center; gap: 0;
-  padding: 6px clamp(var(--s-5), 3vw, var(--s-8)) 8px;
-  border-radius: 3px;
-  transform: rotate(-.8deg);
-  background: linear-gradient(180deg, color-mix(in oklab, var(--wood-3) 82%, var(--flame-300)), var(--wood-1));
-  border: 2px solid color-mix(in oklab, var(--wood-2) 70%, var(--ink-900));
-  box-shadow: var(--shadow-3), inset 0 1px 0 color-mix(in srgb, var(--flame-200) 22%, transparent);
+.cl-sign { justify-self: center; margin-top: clamp(4px, .8vh, 10px); }
+/* freed and home, opposite Title */
+.cl-count {
+  justify-self: end;
+  --h: clamp(44px, 5.6vh, 50px);
+  margin: clamp(-10px, -1vh, -4px) 0 0;
+  padding-inline: calc(var(--h) * .74);
+  gap: .5em;
 }
+.cl-count .kit-enamel__value { font-size: calc(var(--h) * .52); }
+.cl-count .kit-enamel__label { font-size: clamp(11.5px, .8vw, 12.5px); color: var(--kit-text); letter-spacing: .14em; }
+.cl-count__dot {
+  width: 5px; height: 5px; margin: 0 .5em 1px .2em; flex: none;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .7);
+}
+/* NEIGHBOURHOOD over HEADQUARTERS, the way MIDNIGHT sits over MENAGERIE */
+.cl-sign__board { display: grid; justify-items: center; line-height: 1; }
 .cl-sign__line1 {
-  font-family: 'Rye', var(--font-display), serif;
-  font-size: clamp(11px, 1.05vw, 16px);
-  letter-spacing: .24em; text-transform: uppercase;
-  color: color-mix(in oklab, var(--flame-100) 76%, var(--flame-300));
+  display: block;
+  font-size: .44em; letter-spacing: .34em;
+  padding-left: .34em;
+  margin-bottom: .12em;
 }
-.cl-sign__line2 {
-  font-family: 'Rye', var(--font-display), serif;
-  font-size: clamp(20px, 2.1vw, 34px);
-  letter-spacing: .06em; text-transform: uppercase;
-  line-height: 1.05;
-  color: var(--flame-100);
-  text-shadow: 0 2px 0 color-mix(in srgb, var(--ink-900) 62%, transparent);
-}
-.cl-sign__sub { font-size: var(--fs-xs); font-style: italic; color: color-mix(in oklab, var(--flame-200) 60%, var(--parchment-shade)); }
-.cl-sign__nail { position: absolute; top: 7px; width: 7px; height: 7px; border-radius: 50%;
-  background: radial-gradient(circle at 34% 30%, var(--brass-100), var(--brass-500)); }
-.cl-sign__nail--l { left: 12px; } .cl-sign__nail--r { right: 12px; }
+.cl-sign__line2 { display: block; font-size: 1em; letter-spacing: .06em; }
+.cl-sign .cl-sign__board { font-size: clamp(27px, 2.5vw, 40px); }
 
-.cl-tabs { justify-self: end; display: flex; gap: 4px; }
-.cl-tab {
-  padding: var(--s-2) var(--s-4);
-  font-family: var(--font-display); font-size: var(--fs-xs);
-  letter-spacing: .13em; text-transform: uppercase;
-  color: color-mix(in oklab, var(--parchment) 72%, var(--flame-300));
-  background: color-mix(in srgb, var(--ink-900) 40%, transparent);
-  border: 1px solid color-mix(in srgb, var(--flame-300) 22%, transparent);
-  border-bottom: none;
-  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-  transition: background var(--t-quick) var(--ease-out), color var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out);
-}
-.cl-tab:hover { color: var(--flame-100); background: color-mix(in srgb, var(--ink-900) 60%, transparent); transform: translateY(-2px); }
-.cl-tab[aria-selected="true"] {
-  color: var(--ink-900);
-  background: linear-gradient(180deg, var(--flame-200), var(--flame-400));
-  border-color: var(--flame-200);
-  box-shadow: 0 -2px 14px color-mix(in srgb, var(--lamp) 40%, transparent);
-}
-
-/* ── main ─────────────────────────────────────────────────────────────────── */
+/* ── the board ────────────────────────────────────────────────────────────── */
 .cl__main {
   position: absolute;
-  top: var(--head-h); bottom: clamp(10px, 1.6vh, 22px);
-  left: clamp(14px, 1.8vw, 30px); right: calc(var(--side-w) + clamp(20px, 2vw, 34px));
+  top: var(--cl-top); bottom: var(--cl-bot);
+  left: calc(var(--cl-pad) + 12px);
+  right: calc(var(--side-w) + var(--cl-pad) + clamp(30px, 2.6vw, 44px));
+  z-index: 4;
 }
+/* the gilt rail round the board, over every section */
+.cl-frame {
+  position: absolute; inset: 0; z-index: 6;
+  --fk: .86;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .7));
+}
+/* the section tabs, standing on the rail's top edge */
+.cl-tabs {
+  position: absolute; z-index: 7;
+  left: 50%; top: 0;
+  translate: -50% -56%;
+}
+.cl-tab { --plate-h: clamp(38px, 4.9vh, 44px); font-size: clamp(12px, .86vw, 13.5px); }
+
 .cl-panel {
-  position: absolute; inset: 0;
+  position: absolute; inset: 6px;
   opacity: 0; pointer-events: none;
   transform: translateY(10px);
   transition: opacity var(--t-base) var(--ease-out), transform var(--t-slow) var(--ease-out);
@@ -183,118 +176,132 @@
 .scene--clubhouse[data-panel="backpack"]  .cl-panel--backpack {
   opacity: 1; pointer-events: auto; transform: none;
 }
+/* the three paper sections are pinned to the same board, under a dark felt */
 .cl-panel--menagerie, .cl-panel--pets, .cl-panel--backpack {
-  padding: clamp(12px, 1.6vh, 22px) clamp(14px, 1.6vw, 26px);
-  border-radius: var(--radius-lg);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--ink-900) 62%, transparent), color-mix(in srgb, var(--ink-900) 80%, transparent));
-  border: 1px solid color-mix(in srgb, var(--flame-300) 20%, transparent);
-  box-shadow: var(--shadow-3);
+  padding: clamp(30px, 4.2vh, 38px) clamp(24px, 2.2vw, 38px) clamp(18px, 2.6vh, 26px);
+  background:
+    radial-gradient(90% 70% at 30% 10%, color-mix(in srgb, var(--kit-candle) 10%, transparent), transparent 70%),
+    radial-gradient(130% 120% at 50% 40%, transparent 50%, rgba(0, 0, 0, .55) 100%),
+    url("../../assets/ui/kit/velvet.webp") 0 0 / 256px 256px,
+    #1b1220;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, .7);
   overflow: auto;
 }
 .cl-panel::-webkit-scrollbar { width: 8px; }
 .cl-panel::-webkit-scrollbar-track { background: transparent; }
-.cl-panel::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--flame-400) 42%, transparent);
-  border-radius: 4px;
-}
+.cl-panel::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--kit-gold) 50%, transparent); border-radius: 4px; }
+
 .cl-panel__head { display: grid; gap: 3px; margin-bottom: var(--s-4); position: relative; }
 .cl-panel__head h2 {
   margin: 0;
-  font-family: 'Rye', var(--font-display), serif;
-  font-size: clamp(20px, 1.9vw, 32px);
-  color: var(--flame-100);
-  letter-spacing: .02em;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(22px, 1.9vw, 32px); letter-spacing: .05em; text-transform: uppercase;
+  color: var(--kit-lav);
+  filter: url("#kit-engrave");
 }
-.cl-panel__head p { margin: 0; max-width: 68ch; font-size: var(--fs-sm); font-style: italic; color: color-mix(in oklab, var(--parchment) 70%, var(--flame-200)); }
+.cl-panel__head p { margin: 0; max-width: min(80ch, calc(100% - 200px)); font-size: var(--fs-md); font-style: italic; color: var(--kit-text-mid); text-shadow: 0 1px 0 rgba(0, 0, 0, .9); }
 .tally {
   position: absolute; right: 0; top: 0;
-  font-family: var(--font-display); font-size: var(--fs-sm);
-  letter-spacing: .14em; text-transform: uppercase;
-  color: color-mix(in oklab, var(--parchment) 66%, var(--flame-300));
+  font-family: var(--font-display); font-weight: 700; font-size: var(--fs-sm);
+  letter-spacing: .14em; text-transform: uppercase; text-align: right;
+  color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
-.tally b { font-size: 1.5em; color: var(--flame-200); }
+.tally b { font-family: var(--font-num); font-size: 1.7em; color: var(--kit-gold-hi); font-variant-numeric: lining-nums tabular-nums; }
 /* "already with us" — the four who live here and were never in the house, so
    the headline number can be an honest count of rescues. */
 .tally em {
   display: block; margin-top: 1px;
   font-family: var(--font-body); font-style: italic; text-transform: none;
-  letter-spacing: .02em; font-size: var(--fs-xs);
-  color: color-mix(in oklab, var(--parchment) 52%, var(--flame-500));
+  letter-spacing: .02em; font-size: var(--fs-sm); font-weight: 400;
+  color: var(--kit-text-lo);
 }
 .cl-h {
   margin: 0 0 var(--s-2);
-  font-family: var(--font-display); font-size: var(--fs-xs);
+  font-family: var(--font-display); font-weight: 700; font-size: 12px;
   letter-spacing: .19em; text-transform: uppercase;
-  color: color-mix(in oklab, var(--flame-200) 78%, var(--parchment));
+  color: var(--kit-gold-hi);
   display: flex; align-items: center; gap: var(--s-2);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
-.cl-h::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, color-mix(in srgb, var(--flame-300) 36%, transparent), transparent); }
-.cl-h em { font-style: normal; letter-spacing: .1em; color: color-mix(in oklab, var(--parchment) 60%, var(--flame-400)); }
+.cl-h::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, color-mix(in srgb, var(--kit-gold) 60%, transparent), transparent); }
+.cl-h em { font-style: normal; letter-spacing: .1em; color: var(--kit-text-mid); }
 
 /* ── the corkboard ────────────────────────────────────────────────────────── */
 .cork {
   position: absolute; inset: 0;
-  border-radius: 6px;
+  /* the lamp's pool on the cork, its far corners falling into shadow */
   background:
-    radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--cork-3) 34%, transparent) 0 2px, transparent 3px),
-    radial-gradient(circle at 70% 60%, color-mix(in srgb, var(--cork-3) 26%, transparent) 0 3px, transparent 4px),
-    radial-gradient(circle at 45% 80%, color-mix(in srgb, var(--cork-3) 30%, transparent) 0 2px, transparent 3px),
-    radial-gradient(120% 90% at 22% 6%, color-mix(in srgb, var(--lamp) 22%, transparent), transparent 66%),
-    linear-gradient(160deg, var(--cork-1), var(--cork-2) 60%, color-mix(in oklab, var(--cork-2) 76%, var(--ink-900)));
-  background-size: 34px 34px, 51px 51px, 27px 27px, 100% 100%, 100% 100%;
-  border: clamp(9px, 1vw, 16px) solid var(--wood-3);
-  box-shadow:
-    var(--shadow-4),
-    inset 0 0 60px color-mix(in srgb, var(--ink-900) 34%, transparent),
-    0 0 0 2px color-mix(in oklab, var(--wood-2) 80%, var(--ink-900));
+    radial-gradient(70% 62% at 26% 16%, rgba(255, 196, 120, .2), transparent 70%),
+    radial-gradient(120% 110% at 44% 40%, transparent 42%, rgba(30, 14, 4, .55) 88%, rgba(18, 8, 2, .75) 100%),
+    linear-gradient(rgba(122, 84, 44, .38), rgba(122, 84, 44, .38)),
+    url("../../assets/ui/kit/cork.webp") 0 0 / 200px 200px,
+    #8d6337;
+  background-blend-mode: screen, normal, normal, normal, normal;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .5), inset 0 10px 26px rgba(0, 0, 0, .45), inset 0 -8px 20px rgba(0, 0, 0, .35);
 }
 .cork__string { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
+/* red wool, not a vector line: a darker core, a light twist along its top, and
+   the shadow it throws on the cork a little below it */
 .cork__thread {
   fill: none;
   stroke: var(--thread);
-  stroke-width: 2;
-  filter: drop-shadow(0 2px 2px color-mix(in srgb, var(--ink-900) 46%, transparent));
-  opacity: .9;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  filter: drop-shadow(0 3px 1.5px rgba(30, 10, 4, .55));
+  opacity: .96;
 }
 
 .pin {
-  position: absolute; left: 50%; top: -7px; transform: translateX(-50%);
-  width: 15px; height: 15px; border-radius: 50%; z-index: 3;
-  background: radial-gradient(circle at 34% 28%, color-mix(in oklab, var(--threat-100) 90%, white), var(--threat-300) 55%, var(--threat-500));
-  box-shadow: 0 3px 5px color-mix(in srgb, var(--ink-900) 55%, transparent);
+  position: absolute; left: 50%; top: -9px; transform: translateX(-50%);
+  z-index: 4;
 }
-.pin--blue { background: radial-gradient(circle at 34% 28%, var(--spectre-100), var(--spectre-300) 55%, var(--spectre-500)); }
+.pin.kit-pin { --pin-w: clamp(17px, 1.3vw, 21px); }
 
 .polaroid, .ch-note, .bpfrag, .scrawl { position: absolute; transform: rotate(var(--rot, 0deg)); z-index: 2; }
 
 .polaroid {
-  width: clamp(96px, 9.4vw, 138px);
-  display: grid; gap: 2px;
-  padding: 8px 8px 7px;
-  background: linear-gradient(180deg, var(--paper), color-mix(in oklab, var(--paper) 88%, var(--parchment-shade)));
-  box-shadow: var(--shadow-2);
-  color: var(--text-ink);
+  width: clamp(104px, 9.4vw, 142px);
+  display: grid; gap: 1px;
+  padding: 7px 7px 8px;
   text-align: center;
   transition: transform var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out);
 }
-.polaroid:hover { transform: rotate(0deg) scale(1.05); box-shadow: var(--shadow-3); z-index: 5; }
+.polaroid:hover { transform: rotate(0deg) scale(1.05); z-index: 5; }
 .polaroid__photo {
   display: grid; place-items: center;
   aspect-ratio: 1;
-  background: linear-gradient(160deg, color-mix(in oklab, var(--ink-700) 82%, var(--flame-500)), var(--ink-900));
-  border: 1px solid color-mix(in srgb, var(--text-ink) 22%, transparent);
+  overflow: hidden;
+  background: #1a1410;
+  box-shadow: inset 0 0 0 1px rgba(40, 24, 12, .5), inset 0 0 14px rgba(0, 0, 0, .55);
 }
-.polaroid__photo { overflow: hidden; }
+/* the print itself: a little faded and warm, as a photograph pinned up for a
+   summer is */
+.polaroid__photo { position: relative; }
+.polaroid__photo::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  background:
+    linear-gradient(128deg, rgba(255, 250, 235, .16) 0%, rgba(255, 250, 235, .05) 34%, transparent 46%),
+    radial-gradient(120% 100% at 50% 40%, transparent 55%, rgba(30, 18, 8, .35) 100%);
+}
 /* The kid whose animal this is, tucked into the top-left of the snapshot the
    way a second photo gets tucked into the frame of the first. Top-LEFT because
    the pin owns the top centre and the HOME stamp owns the bottom band. */
 .polaroid__who {
-  position: absolute; left: 12px; top: 12px; z-index: 3;
-  width: 30%; aspect-ratio: 1; border-radius: 50%; overflow: hidden;
-  box-shadow: 0 0 0 2px var(--paper), var(--shadow-1);
+  position: absolute; left: 11px; top: 11px; z-index: 3;
+  width: 31%; aspect-ratio: 1; border-radius: 50%; overflow: hidden;
+  box-shadow: 0 0 0 2px var(--kit-paper), 0 2px 3px rgba(0, 0, 0, .5);
 }
-.polaroid__cap { font-family: var(--font-body); font-style: italic; font-size: var(--fs-md); color: var(--text-ink); line-height: 1.1; }
-.polaroid__sub { font-size: var(--fs-xs); color: color-mix(in oklab, var(--text-ink) 62%, var(--parchment-shade)); letter-spacing: .06em; text-transform: uppercase; }
+.polaroid__cap {
+  margin-top: 3px;
+  font-family: var(--font-body); font-style: italic; font-weight: 600;
+  font-size: clamp(14.5px, 1.1vw, 17px); color: var(--kit-paper-ink); line-height: 1.05;
+}
+.polaroid__sub {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(11px, .76vw, 12px); letter-spacing: .1em; text-transform: uppercase;
+  color: color-mix(in oklab, var(--kit-paper-ink) 72%, var(--kit-paper));
+}
 .polaroid__stamp {
   position: absolute; inset: auto 4px 26px 4px;
   font-family: var(--font-display); font-size: var(--fs-md);
@@ -306,56 +313,80 @@
 /* A pet still in the house: the photograph is the only thing they have of them,
    so it stays sharp — but it goes cold and slightly faded, the way a picture
    you have looked at nine hundred times does. Home again, it is warm. */
-.polaroid:not(.is-found) .polaroid__photo .petpic { filter: saturate(.62) brightness(.86) contrast(1.04); }
+.polaroid:not(.is-found) .polaroid__photo .petpic { filter: saturate(.62) brightness(.86) contrast(1.04) sepia(.12); }
 .polaroid.is-found .polaroid__photo .petpic { filter: saturate(1.06); }
 
+/* the clue cards: index cards, taped up — a red rule under the heading and
+   faint blue lines under the words, printed into the card, not over it */
 .ch-note {
-  width: clamp(120px, 12vw, 176px);
-  padding: 10px 11px 12px;
-  background: linear-gradient(180deg, color-mix(in oklab, var(--flame-100) 82%, var(--parchment)), color-mix(in oklab, var(--parchment) 90%, var(--flame-300)));
-  box-shadow: var(--shadow-2);
-  color: var(--text-ink);
+  width: clamp(138px, 12vw, 184px);
+  padding: 13px 13px 14px;
+  --paper: #efe4c6;
   transition: transform var(--t-base) var(--ease-out);
 }
+.ch-note:not(.is-unknown) b {
+  padding-bottom: 4px;
+  background: linear-gradient(rgba(178, 64, 52, .5), rgba(178, 64, 52, .5)) 0 100% / 100% 1px no-repeat;
+}
+/* one faint blue rule under every line of writing, whatever its size */
+.ch-note:not(.is-unknown) p {
+  margin-top: 5px;
+  background: repeating-linear-gradient(to bottom, transparent 0, transparent calc(1lh - 1px), rgba(70, 104, 150, .26) calc(1lh - 1px), rgba(70, 104, 150, .26) 1lh);
+}
 .ch-note:hover { transform: rotate(0deg) scale(1.04); z-index: 5; }
-.ch-note b { display: block; font-family: var(--font-display); font-size: var(--fs-sm); letter-spacing: .04em; }
-.ch-note p { margin: 3px 0 0; font-size: var(--fs-xs); line-height: 1.4; font-style: italic; color: color-mix(in oklab, var(--text-ink) 82%, var(--parchment-shade)); }
-.ch-note.is-unknown { background: color-mix(in oklab, var(--parchment-shade) 74%, var(--ink-700)); opacity: .62; }
-.ch-note.is-unknown b { font-size: var(--fs-lg); text-align: center; }
+.ch-note b {
+  display: block;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(12.5px, .92vw, 14.5px); letter-spacing: .06em; line-height: 1.15;
+  color: var(--kit-paper-ink);
+}
+.ch-note p {
+  margin: 4px 0 0;
+  font-size: clamp(12px, .86vw, 14px); line-height: 1.32; font-style: italic;
+  color: color-mix(in oklab, var(--kit-paper-ink) 88%, var(--kit-paper));
+}
+/* a card still face down: grey card, the question mark still legible */
+.ch-note.is-unknown { --paper: #cdbd9a; }
+.ch-note.is-unknown b { font-family: var(--font-body); font-size: clamp(20px, 1.6vw, 26px); text-align: center; color: var(--kit-paper-ink); }
+.ch-note.is-unknown p { text-align: center; color: color-mix(in oklab, var(--kit-paper-ink) 90%, #cdbd9a); }
 .ch-tape {
-  position: absolute; top: -9px; left: 50%; width: 54px; height: 18px;
+  position: absolute; top: -11px; left: 50%;
   transform: translateX(-50%) rotate(-4deg);
-  background: var(--tape);
-  box-shadow: 0 1px 3px color-mix(in srgb, var(--ink-900) 34%, transparent);
+  --tape-w: clamp(56px, 4.6vw, 72px);
 }
 
 /* A BUTTON since the atlas exists — it opens the full drawing. The reset is
    here rather than a shared one because `.bpfrag` is pinned to the corkboard by
    `.polaroid, .ch-note, .bpfrag, .scrawl` above and must keep that geometry. */
 .bpfrag {
-  width: clamp(170px, 17vw, 250px);
-  padding: 9px;
-  background: linear-gradient(180deg, var(--paper), color-mix(in oklab, var(--paper) 84%, var(--parchment-shade)));
-  box-shadow: var(--shadow-3);
-  color: var(--text-ink);
-  display: grid; gap: 4px;
+  width: clamp(178px, 17vw, 256px);
+  padding: 10px 10px 9px;
+  --paper: #efe6cf;
+  display: grid; gap: 5px;
   appearance: none;
   border: 0;
   font: inherit;
   text-align: inherit;
   cursor: pointer;
-  transition: transform var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out);
+  transition: transform var(--t-base) var(--ease-out), filter var(--t-base) var(--ease-out);
 }
 .bpfrag:hover, .bpfrag:focus-visible {
   transform: rotate(var(--rot, 0deg)) scale(1.035);
-  box-shadow: var(--shadow-4, var(--shadow-3));
+  filter: brightness(1.05);
 }
+.bpfrag:focus-visible { outline: 2px solid var(--kit-gold-hi); outline-offset: 4px; }
 .bpfrag__go {
-  text-align: center;
-  font-size: var(--fs-xs);
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: color-mix(in oklab, var(--blueprint-ink) 76%, var(--text-ink));
+  justify-self: center;
+  --plate-h: 30px;
+  display: inline-flex; align-items: center;
+  min-height: var(--plate-h);
+  padding: 0 calc(var(--plate-h) * .78);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/plate.webp") 12 53 12 46 fill /
+    calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72) stretch;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--kit-gold-hi);
   opacity: 0;
   transition: opacity var(--t-quick) var(--ease-out);
 }
@@ -363,221 +394,270 @@
 .mm-reduce-motion .bpfrag { transition: none; }
 .mm-reduce-motion .bpfrag:hover, .mm-reduce-motion .bpfrag:focus-visible { transform: rotate(var(--rot, 0deg)); }
 .mm-reduce-motion .bpfrag__go { opacity: 1; }
-.bpfrag__label { font-size: var(--fs-xs); font-style: italic; text-align: center; color: color-mix(in oklab, var(--text-ink) 70%, var(--parchment-shade)); }
-.bpfrag__img { display: block; overflow: hidden; border: 1px solid color-mix(in srgb, var(--text-ink) 22%, transparent); }
-.bpfrag__img img { width: 100%; height: auto; display: block; filter: sepia(.3) contrast(1.05); }
-.bpfrag__count { text-align: center; font-family: var(--font-display); font-size: var(--fs-xs); letter-spacing: .16em; text-transform: uppercase; }
-.bpfrag__count b { color: color-mix(in oklab, var(--blueprint-ink) 88%, var(--text-ink)); font-size: 1.3em; }
+.bpfrag__label {
+  font-size: clamp(12.5px, .9vw, 14px); font-style: italic; text-align: center;
+  color: color-mix(in oklab, var(--kit-paper-ink) 84%, var(--kit-paper));
+}
+.bpfrag__img { display: block; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(40, 24, 12, .45); }
+.bpfrag__img img { width: 100%; height: auto; display: block; filter: sepia(.38) contrast(1.06) brightness(.97); mix-blend-mode: multiply; }
+.bpfrag__count {
+  text-align: center;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(12px, .8vw, 13px); letter-spacing: .14em; text-transform: uppercase;
+  color: color-mix(in oklab, var(--kit-paper-ink) 84%, var(--kit-paper));
+}
+.bpfrag__count b { font-family: var(--font-num); color: color-mix(in oklab, var(--blueprint-ink) 88%, var(--text-ink)); font-size: 1.4em; }
 
+/* the thesis, in a kid's red biro */
 .scrawl {
-  font-family: var(--font-body); font-style: italic;
-  font-size: clamp(14px, 1.5vw, 24px);
-  color: color-mix(in oklab, var(--threat-500) 74%, var(--ink-900));
-  text-shadow: 0 1px 0 color-mix(in srgb, var(--flame-100) 30%, transparent);
+  font-family: var(--font-body); font-style: italic; font-weight: 600;
+  font-size: clamp(17px, 1.6vw, 26px);
+  color: #5e140c;
+  text-shadow: 0 1px 0 rgba(255, 220, 170, .28);
   max-width: 34ch;
 }
 .scrawl u { text-decoration-thickness: 2px; text-underline-offset: 3px; }
 
 /* ── menagerie roster ─────────────────────────────────────────────────────── */
 /* All sixteen plates on screen at once — the roster is the point of the panel,
-   and a scrapbook you have to scroll stops reading as a wall. */
+   and a scrapbook you have to scroll stops reading as a wall. Six to a row, the
+   last row centred, is what fits all sixteen on the board at 1600x900 and at
+   1280x800 alike; four to a row put the last row below the fold at both. */
 .scrapgrid {
-  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(7px, .8vw, 13px);
-  width: min(100%, 830px); margin-inline: auto;
+  --cols: 6; --gap: clamp(10px, 1vw, 16px);
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: calc(var(--gap) * 1.2) var(--gap);
+  width: 100%; margin-inline: auto;
 }
+.scrapgrid > .scrapcell { width: calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols)); box-sizing: border-box; }
 .scrapcell {
   position: relative;
   display: grid; grid-template-rows: auto auto;
-  padding: 7px 7px 6px;
-  background: linear-gradient(180deg, var(--paper), color-mix(in oklab, var(--paper) 86%, var(--parchment-shade)));
-  box-shadow: var(--shadow-2);
+  padding: 6px 6px 5px;
   transform: rotate(calc((var(--r, 0)) * 1deg));
 }
 .scrapgrid > :nth-child(4n+1) { --r: -1.2; } .scrapgrid > :nth-child(4n+2) { --r: .8; }
 .scrapgrid > :nth-child(4n+3) { --r: -.6; }  .scrapgrid > :nth-child(4n) { --r: 1.4; }
-.scrapcell .pf { aspect-ratio: 828/516; border-radius: 2px; }
-.scrapcell__cap { display: grid; gap: 0; padding-top: 5px; text-align: center; color: var(--text-ink); }
-.scrapcell__cap b { font-family: var(--font-display); font-size: var(--fs-sm); line-height: 1.15; }
-.scrapcell__cap span { font-size: var(--fs-xs); font-style: italic; color: color-mix(in oklab, var(--text-ink) 62%, var(--parchment-shade)); }
+.scrapcell .pf { aspect-ratio: 828/516; border-radius: 1px; }
+.scrapcell__cap { display: grid; gap: 0; padding-top: 5px; text-align: center; color: var(--kit-paper-ink); }
+.scrapcell__cap b { font-family: var(--font-display); font-weight: 700; font-size: var(--fs-sm); line-height: 1.15; }
+.scrapcell__cap span { font-size: var(--fs-sm); font-style: italic; color: color-mix(in oklab, var(--kit-paper-ink) 72%, var(--kit-paper)); }
 /* A starter is here and pickable but is not one you freed, and the board has to
    say so or the roster and the tally read as contradicting each other. */
-.scrapcell.is-starter .scrapcell__cap span { color: color-mix(in oklab, var(--text-ink) 46%, var(--flame-500)); }
-.scrapcell.is-empty { background: color-mix(in oklab, var(--parchment-shade) 62%, var(--ink-700)); opacity: .72; }
+.scrapcell.is-starter .scrapcell__cap span { color: color-mix(in oklab, var(--kit-paper-ink) 60%, var(--flame-500)); }
+.scrapcell.is-empty { --paper: #a8987a; }
 .scrapcell__tape {
-  position: absolute; top: -8px; left: 50%; width: 46px; height: 16px;
+  position: absolute; top: -9px; left: 50%; width: 52px; aspect-ratio: 200 / 56;
   transform: translateX(-50%) rotate(-5deg);
-  background: var(--tape);
+  background: url("../../assets/ui/kit/tape.webp") 50% 50% / 100% 100% no-repeat;
 }
 
 /* ── missing pets ─────────────────────────────────────────────────────────── */
 /* Four across, two rows, and the rows SHARE THE HEIGHT of the panel. The
-   previous layout was a row of small horizontal cards with ~440 px of empty
-   board under them — the same half-empty-screen fault the reviewer called out
-   elsewhere — and it also wasted the one thing this round exists to add. The
-   photograph now leads the card at full width and the kid looking for them is
-   an inset over its corner. */
+   photograph leads the card at full width and the kid looking for them is an
+   inset over its corner. Each card is a portrait in the Kid board's frame. */
 .petgrid {
   display: grid; grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: minmax(0, 1fr); gap: clamp(10px, 1.1vw, 18px);
+  grid-auto-rows: minmax(0, 1fr); gap: clamp(14px, 1.4vw, 24px);
   flex: 1; min-height: 0;
+  padding: 8px;
 }
 /* the panel is the flex parent the grid stretches inside */
 .cl-panel--pets { display: flex; flex-direction: column; gap: var(--s-4); overflow: hidden; }
 .petcard {
   position: relative;
-  display: grid; grid-template-rows: minmax(0, 1fr) auto;
-  padding: 0; overflow: hidden; min-height: 0;
-  border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--ink-800) 72%, transparent);
-  border: 1px solid color-mix(in srgb, var(--flame-300) 18%, transparent);
+  display: grid; grid-template-rows: minmax(56px, 1fr) auto;
+  padding: 0; min-height: 0;
+  --fk: .62;
+  border: 1px solid transparent;
+  border-image: url("../../assets/ui/kit/frame.webp") 52 / calc(52px * var(--fk)) / calc(12px * var(--fk)) stretch;
+  background: linear-gradient(180deg, #16111b, #0c090f);
+  box-shadow: 0 14px 28px -12px rgba(0, 0, 0, .9);
 }
-.petcard.is-home { border-color: color-mix(in srgb, var(--spectre-300) 46%, transparent); }
-/* The photograph of the pet leads, full width, because the pet is what is
-   missing. The kid looking for them sits over its bottom-left corner. */
+.petcard.is-home { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--spectre-300) 30%, transparent)); }
 .petcard__pet { position: relative; min-height: 0; overflow: hidden; }
 .petcard__pet::after {
   content: ''; position: absolute; inset: auto 0 0 0; height: 42%;
-  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--ink-900) 88%, transparent));
+  background: linear-gradient(180deg, transparent, rgba(8, 6, 11, .9));
   pointer-events: none;
 }
 .petcard__kid {
-  position: absolute; left: 8px; bottom: 8px; z-index: 2;
-  width: 54px; height: 54px; border-radius: 50%; overflow: hidden;
-  box-shadow: 0 0 0 2px color-mix(in oklab, var(--flame-300) 60%, var(--ink-900)), var(--shadow-1);
+  position: absolute; left: 7px; top: 6px; z-index: 2;
+  width: clamp(42px, 3vw, 50px); aspect-ratio: 1; height: auto; border-radius: 50%; overflow: hidden;
+  box-shadow: 0 0 0 2px var(--kit-gold), 0 0 0 3px rgba(0, 0, 0, .8), var(--shadow-1);
 }
 /* Dead centre. The 46%/28% bias existed to hunt a face out of a generated
    full-body silhouette; the thumbnail IS the face, already framed. */
 .petcard__kid .kidpf { object-position: 50% 50%; }
 .petcard:not(.is-home) .petcard__pet .petpic { filter: saturate(.7) brightness(.9); }
 .petcard.is-home .petcard__pet .petpic { filter: saturate(1.05); }
-.petcard__body { padding: var(--s-3); display: flex; flex-direction: column; gap: 2px; }
-.petcard__body h3 { margin: 0; font-family: var(--font-display); font-size: var(--fs-lg); color: var(--flame-100); }
-.petcard__sp { margin: 0; font-size: var(--fs-xs); letter-spacing: .1em; text-transform: uppercase; color: color-mix(in oklab, var(--parchment) 60%, var(--flame-400)); }
-.petcard__lost { margin: var(--s-2) 0 0; font-size: var(--fs-sm); font-style: italic; color: var(--text-mid); }
-.petcard__who { margin: 2px 0 0; font-size: var(--fs-xs); color: var(--text-lo); }
-.stagebar { display: flex; align-items: center; gap: 3px; margin-top: var(--s-2); }
-.stagebar i { width: 16px; height: 5px; border-radius: 3px; background: color-mix(in srgb, var(--ink-500) 90%, transparent); }
-.stagebar i.is-on { background: var(--spectre-300); box-shadow: 0 0 8px color-mix(in srgb, var(--spectre-300) 60%, transparent); }
-.stagebar span { margin-left: var(--s-2); font-size: var(--fs-xs); font-style: italic; color: var(--text-lo); }
+.petcard__body { padding: 8px 11px 9px; display: flex; flex-direction: column; gap: 1px; }
+.petcard__body h3 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: clamp(16px, 1.3vw, 21px); line-height: 1.1; color: var(--kit-name); }
+.petcard__sp { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 11px; line-height: 1.25; letter-spacing: .06em; text-transform: uppercase; color: var(--kit-gold); }
+.petcard__lost { margin: 5px 0 0; font-size: var(--fs-sm); line-height: 1.3; font-style: italic; color: var(--kit-text-mid); }
+.petcard__who { margin: 2px 0 0; font-size: var(--fs-sm); color: var(--kit-text-lo); }
+.stagebar { display: flex; align-items: center; gap: 4px; margin-top: 6px; }
+.stagebar i {
+  width: 9px; height: 9px; transform: rotate(45deg);
+  background: #2a2231;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--kit-gold) 55%, transparent);
+}
+.stagebar i.is-on { background: linear-gradient(135deg, var(--spectre-200), var(--spectre-400)); box-shadow: 0 0 0 1px rgba(0, 0, 0, .7), 0 0 8px color-mix(in srgb, var(--spectre-300) 60%, transparent); }
+.stagebar span { margin-left: 6px; font-size: 11px; line-height: 1.2; font-style: italic; color: var(--kit-text-lo); }
 
 /* ── backpack ─────────────────────────────────────────────────────────────── */
-.packwho { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: var(--s-4); }
+.packwho { display: flex; flex-wrap: wrap; gap: 10px 14px; margin-bottom: var(--s-4); }
+/* whose bag: a nameplate with the Kid's face in a gold-rimmed roundel */
 .packwho__b {
+  --plate-h: 40px;
+  position: relative;
   display: flex; align-items: center; gap: var(--s-2);
-  padding: 3px var(--s-4) 3px 3px;
-  font-family: var(--font-display); font-size: var(--fs-xs);
-  letter-spacing: .1em; text-transform: uppercase;
-  color: color-mix(in oklab, var(--parchment) 70%, var(--flame-300));
-  border: 1px solid color-mix(in srgb, var(--flame-300) 22%, transparent);
-  border-radius: 999px;
-  transition: all var(--t-quick) var(--ease-out);
+  min-height: var(--plate-h);
+  padding: 0 calc(var(--plate-h) * .7) 0 5px;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/plate.webp") 12 53 12 46 fill /
+    calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72) stretch;
+  font-family: var(--font-display); font-weight: 700; font-size: 12px;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--kit-text-mid);
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .7)) saturate(.7) brightness(.86);
+  transition: filter var(--t-quick) var(--ease-out), color var(--t-quick) var(--ease-out);
 }
 .packwho__pf {
-  flex: none; width: 26px; height: 26px;
+  flex: none; width: 30px; height: 30px;
   border-radius: 50%; overflow: hidden;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--flame-300) 34%, transparent);
+  box-shadow: 0 0 0 2px var(--kit-gold), 0 0 0 3px rgba(0, 0, 0, .8);
 }
-.packwho__b:hover { color: var(--flame-100); border-color: var(--flame-300); }
-.packwho__b[aria-checked="true"] { color: var(--ink-900); background: linear-gradient(180deg, var(--flame-200), var(--flame-400)); border-color: var(--flame-200); }
+.packwho__b:hover { color: var(--kit-text); filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .7)) brightness(1.05); }
+.packwho__b[aria-checked="true"] { color: var(--kit-gold-hi); filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .7)) drop-shadow(0 0 9px color-mix(in srgb, var(--kit-candle) 32%, transparent)) brightness(1.15); }
 
-.packcols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 1.6vw, 28px); align-items: start; }
-.packbag__list, .packshelf__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
+.packcols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(14px, 1.8vw, 30px); align-items: start; }
+.packbag__list, .packshelf__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
 .packshelf__list { grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); align-content: start; }
 .packcols { min-height: 0; }
 .packbag { position: sticky; top: 0; }
-.packbag__hint, .packbag__empty { font-size: var(--fs-xs); font-style: italic; color: var(--text-lo); margin: var(--s-2) 0 0; }
+.packbag__hint, .packbag__empty { font-size: var(--fs-sm); font-style: italic; color: var(--kit-text-lo); margin: var(--s-2) 0 0; }
+/* an item: a dark plate in a thin brass rule, its size as brass studs */
 .gear {
   position: relative;
   display: grid; grid-template-areas: 'p n x' 'p d d'; grid-template-columns: auto 1fr auto;
   gap: 0 var(--s-3); width: 100%;
-  padding: 6px var(--s-3);
+  padding: 8px var(--s-3);
   text-align: left;
-  border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--ink-700) 62%, transparent);
-  border: 1px solid color-mix(in srgb, var(--flame-300) 16%, transparent);
-  transition: all var(--t-quick) var(--ease-out);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .03), transparent 40%),
+    linear-gradient(180deg, #1c1622, #120e16);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--kit-gold-lo) 90%, transparent),
+    inset 0 0 0 2px rgba(0, 0, 0, .6),
+    0 4px 8px -4px rgba(0, 0, 0, .8);
+  transition: transform var(--t-quick) var(--ease-out), box-shadow var(--t-quick) var(--ease-out);
 }
-.gear:hover:not(:disabled) { background: color-mix(in srgb, var(--ink-600) 80%, transparent); border-color: color-mix(in srgb, var(--flame-300) 46%, transparent); transform: translateX(3px); }
-.gear .slots { grid-area: p; align-self: center; color: var(--flame-300); letter-spacing: 2px; font-size: 9px; }
-.gear b { grid-area: n; font-family: var(--font-display); font-size: var(--fs-sm); color: var(--text-hi); }
-.gear em { grid-area: d; font-size: var(--fs-xs); font-style: italic; color: var(--text-lo); line-height: 1.35; }
+.gear:hover:not(:disabled) { box-shadow: inset 0 0 0 1px var(--kit-gold), inset 0 0 0 2px rgba(0, 0, 0, .6), 0 0 12px color-mix(in srgb, var(--kit-candle) 20%, transparent); transform: translateX(3px); }
+.gear .slots { grid-area: p; align-self: center; color: var(--kit-gold); letter-spacing: 2px; font-size: 11px; text-shadow: 0 1px 0 rgba(0, 0, 0, .9); }
+.gear b { grid-area: n; font-family: var(--font-display); font-weight: 700; font-size: var(--fs-sm); color: var(--kit-name); }
+.gear em { grid-area: d; font-size: var(--fs-sm); font-style: italic; color: var(--kit-text-mid); line-height: 1.35; }
 .gear__x { grid-area: x; color: var(--threat-200); font-size: var(--fs-lg); line-height: 1; align-self: center; }
-.gear--in { background: color-mix(in oklab, var(--flame-500) 22%, var(--ink-700)); border-color: color-mix(in srgb, var(--flame-300) 40%, transparent); }
-.gear.is-toobig { opacity: .38; cursor: not-allowed; }
+.gear--in { background: linear-gradient(180deg, #2a1f1a, #1a1311); box-shadow: inset 0 0 0 1px var(--kit-gold), inset 0 0 0 2px rgba(0, 0, 0, .6), 0 4px 8px -4px rgba(0, 0, 0, .8); }
+.gear.is-toobig { opacity: .42; cursor: not-allowed; }
 
-/* ── sidebar ──────────────────────────────────────────────────────────────── */
+/* ── sidebar: the log, the ladder, the way in ─────────────────────────────── */
 .cl__side {
   position: absolute;
-  top: var(--head-h); bottom: clamp(10px, 1.6vh, 22px);
-  right: clamp(14px, 1.8vw, 30px); width: var(--side-w);
-  display: flex; flex-direction: column; gap: clamp(8px, 1.3vh, 16px);
-  z-index: 3;
+  top: calc(var(--cl-top) + 4px); bottom: var(--cl-bot);
+  right: calc(var(--cl-pad) + 10px); width: var(--side-w);
+  display: flex; flex-direction: column; gap: clamp(22px, 3vh, 32px);
+  z-index: 5;
 }
+
+/* the Expedition Log */
 .chalk {
-  padding: var(--s-4);
-  border-radius: var(--radius-sm);
-  background:
-    radial-gradient(70% 60% at 30% 20%, color-mix(in srgb, var(--text-hi) 5%, transparent), transparent 70%),
-    var(--chalkbg);
-  border: 8px solid var(--wood-3);
-  box-shadow: var(--shadow-3), inset 0 0 30px color-mix(in srgb, var(--ink-900) 46%, transparent);
-  color: color-mix(in oklab, var(--text-hi) 82%, var(--guard-300));
+  --pk: .72;
+  padding: clamp(24px, 3.4vh, 30px) clamp(18px, 1.5vw, 24px) clamp(14px, 2vh, 20px);
 }
-.chalk__h {
-  margin: 0 0 var(--s-3);
-  font-family: 'Rye', var(--font-display), serif;
-  font-size: var(--fs-md);
-  text-align: center;
-  color: color-mix(in oklab, var(--text-hi) 88%, var(--spectre-200));
-}
-.chalk__dl { display: grid; grid-template-columns: 1fr auto; gap: 4px var(--s-3); margin: 0; font-size: var(--fs-sm); }
-.chalk__dl dt { color: color-mix(in oklab, var(--text-hi) 62%, var(--guard-300)); }
-.chalk__dl dd { margin: 0; font-family: var(--font-num); color: var(--text-hi); text-align: right; }
+.chalk__h { margin: 0 0 clamp(10px, 1.4vh, 14px); font-size: clamp(12px, .88vw, 13.5px); }
+.chalk__dl { row-gap: clamp(6px, 1vh, 9px); }
+.chalk__dl dt { font-size: clamp(12px, .82vw, 13px); letter-spacing: .12em; }
+.chalk__dl dd { font-size: clamp(18px, 1.3vw, 21px); }
 
+/* Haunt Level */
 .cl-haunt {
-  padding: var(--s-3) var(--s-4) var(--s-4);
-  border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--ink-900) 62%, transparent);
-  border: 1px solid color-mix(in srgb, var(--flame-300) 18%, transparent);
+  --pk: .72;
+  padding: clamp(24px, 3.4vh, 30px) clamp(12px, 1.2vw, 20px) clamp(14px, 2vh, 20px);
 }
-.cl-haunt .haunt__row { display: flex; gap: 4px; }
-.cl-haunt .haunt__pip {
-  flex: 1; height: 28px; border-radius: var(--radius-sm);
-  font-family: var(--font-num); font-size: var(--fs-xs);
-  color: color-mix(in oklab, var(--parchment) 70%, var(--flame-400));
-  border: 1px solid color-mix(in srgb, var(--flame-300) 22%, transparent);
-  transition: all var(--t-quick) var(--ease-out);
+.cl-haunt__h { margin: 0 0 clamp(4px, .8vh, 8px); font-size: clamp(12px, .88vw, 13.5px); }
+/* The select screen styles a `.haunt__pip` of its own and its sheet can load
+   after this one, so the kit's medallion is re-seated here with a selector
+   that outranks it (and names no class the select screen does). */
+.cl-haunt [role="radiogroup"].kit-ladder { --md: clamp(32px, 2.5vw, 38px); }
+.cl-haunt [role="radiogroup"] .kit-ladder__rung {
+  width: var(--md); height: var(--md);
+  border: 0; border-radius: 50%; opacity: 1;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  font-family: var(--font-num); font-size: calc(var(--md) * .46);
+  color: var(--kit-text);
 }
-.cl-haunt .haunt__pip:hover:not(:disabled) { color: var(--flame-100); border-color: var(--flame-300); }
-.cl-haunt .haunt__pip[aria-checked="true"] { color: var(--ink-900); background: linear-gradient(180deg, var(--threat-200), var(--threat-400)); border-color: var(--threat-200); }
-.cl-haunt .haunt__pip.is-locked { opacity: .3; cursor: not-allowed; }
-.cl-haunt__desc { margin: var(--s-3) 0 0; font-size: var(--fs-xs); line-height: 1.45; color: var(--text-mid); }
-.cl-haunt__desc b { color: var(--threat-200); font-family: var(--font-display); letter-spacing: .1em; text-transform: uppercase; }
+.cl-haunt [role="radiogroup"] .kit-ladder__rung[aria-checked="true"] {
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  color: var(--kit-gold-hi);
+}
+.cl-haunt [role="radiogroup"] .kit-ladder__rung:disabled { color: var(--kit-text-lo); }
+.cl-haunt__desc {
+  margin: clamp(6px, 1vh, 10px) 0 0;
+  text-align: center;
+  font-size: clamp(13px, .95vw, 15px); line-height: 1.4; font-style: italic;
+  color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+.cl-haunt__desc b {
+  display: block;
+  font-family: var(--font-display); font-style: normal; font-weight: 700;
+  font-size: clamp(13px, 1vw, 15.5px); letter-spacing: .18em; text-transform: uppercase;
+  color: var(--kit-lav);
+}
 
+/* Plan the Expedition: the lit nameplate, the way on in its ornate medallion */
 .cl-go {
   margin-top: auto;
-  display: grid; gap: 2px;
-  padding: var(--s-4) var(--s-5);
-  border-radius: var(--radius-md);
-  color: var(--ink-900);
-  background: linear-gradient(180deg, var(--flame-200), var(--flame-400));
-  border: 1px solid var(--flame-100);
-  box-shadow: 0 0 26px color-mix(in srgb, var(--lamp) 34%, transparent), var(--shadow-3);
-  transition: transform var(--t-quick) var(--ease-out), box-shadow var(--t-base) var(--ease-out);
+  --plate-h: clamp(58px, 7.6vh, 66px);
+  flex-direction: column; gap: 3px;
+  align-self: stretch;
+  margin-right: calc(var(--plate-h) * .5);
+  min-height: calc(var(--plate-h) * 1.5);
+  padding: 13px calc(var(--plate-h) * .98) 14px calc(var(--plate-h) * .56);
+  line-height: 1.08;
+  text-align: center;
 }
-.cl-go b { font-family: var(--font-display); font-size: var(--fs-lg); letter-spacing: .07em; text-transform: uppercase; }
-.cl-go em { font-size: var(--fs-xs); font-style: italic; color: color-mix(in oklab, var(--ink-900) 74%, var(--flame-500)); }
-.cl-go:hover { transform: translateY(-3px); box-shadow: 0 0 40px color-mix(in srgb, var(--lamp) 60%, transparent), var(--shadow-4); }
-.cl-go:active { transform: translateY(0) scale(.99); }
+.cl-go b { font: inherit; font-size: clamp(15.5px, 1.25vw, 20px); letter-spacing: .1em; text-wrap: balance; }
+.cl-go em { font-size: clamp(12px, .86vw, 13.5px); color: var(--kit-text); white-space: nowrap; letter-spacing: 0; }
+.cl-go__medal { right: calc(var(--plate-h) * -.7); }
+.cl-go::before {
+  content: ''; position: absolute; inset: -40% -10% -40% -6%; z-index: -1; pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 24%, transparent), transparent 72%);
+  animation: cl-go-glow 3.2s var(--ease-soft) infinite;
+}
+@keyframes cl-go-glow { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+.scene--clubhouse.kit-still .cl-go::before { animation: none; }
 
-.cl-quote { margin: 0; text-align: center; font-size: var(--fs-sm); font-style: italic; color: color-mix(in oklab, var(--parchment) 60%, var(--flame-400)); }
+.cl-quote {
+  margin: 0;
+  text-align: center;
+  font-size: clamp(13.5px, 1vw, 15.5px); font-style: italic;
+  color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
 
 /* ── readability ──────────────────────────────────────────────────────────── */
-.mm-large-text .ch-note p, .mm-large-text .gear em, .mm-large-text .petcard__lost { font-size: var(--fs-sm); }
-.mm-large-text .cl-panel__head p { font-size: var(--fs-md); }
+.mm-large-text .ch-note p, .mm-large-text .gear em, .mm-large-text .petcard__lost { font-size: var(--fs-md); }
+.mm-large-text .cl-panel__head p { font-size: var(--fs-lg); }
+
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-reduce-motion="0"]) .cl-go::before,
+  :root:not([data-reduce-motion="0"]) .cl-lamp__glow { animation: none; }
+}
 
 @media (max-width: 1150px) {
   .packcols { grid-template-columns: 1fr; }
-  .scrapgrid { grid-template-columns: repeat(3, 1fr); }
+  .scrapgrid { --cols: 4; }
 }

@@ -59,11 +59,59 @@ import { ChannelTransport, canChannel } from '../net/transport.js';
 import {
   ensureCss, el, rovingFocus, reduceMotion,
   availableCompanions, isStarter, warmFaces,
+  companionPortrait, kidPortrait, menuArtSrc,
 } from '../ui/portrait.js';
+import { paintBackdrop, kitDressMarkup } from '../ui/kitboard.js';
 import { pauseStageFor } from './_stage.js';
 
 const CSS_KIT   = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_LOBBY = new URL('./lobby.css', import.meta.url).href;
+
+/**
+ * The glyphs set in the board's round enamel buttons (ui/kit.css .kit-medallion):
+ * flat antique gold with an ink outline, the painted arrow and tick of the Kid
+ * board's two corner buttons, and a die for rolling a new password.
+ */
+const GLYPH = {
+  back: '<svg viewBox="0 0 24 24"><path d="M20.5 9.6h-9.2V5.2L3 12l8.3 6.8v-4.4h9.2z"/></svg>',
+  onward: '<svg viewBox="0 0 24 24"><path d="M3.5 9.6h9.2V5.2L21 12l-8.3 6.8v-4.4H3.5z"/></svg>',
+  ready: '<svg viewBox="0 0 24 24"><path d="M2.8 12.6 6 9.4l4.2 4.2L18 5.8l3.2 3.2-11 11z"/></svg>',
+  roll: '<svg viewBox="0 0 24 24"><path fill-rule="evenodd" d="M6 3h12a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3zm2 3.4a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2zm8 0a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2zM12 10.4a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2zm-4 4a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2zm8 0a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2z"/></svg>',
+};
+
+/**
+ * The board both states of this screen stand on, as every kit board is laid
+ * (ui/kit.css; `RoomScene._shell` in scenes/reward.js is the worked example):
+ * the painted room in the dark with its candle and moon light, the vignette,
+ * and the select boards' rule, vines, candles and cobwebs at its edges. The
+ * room's painting, `lobby.png`, drops into the ground when Josh has made it.
+ */
+function boardMarkup() {
+  return '<div class="kit-ground lo-ground" aria-hidden="true"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>'
+    + '<div class="lo-vig" aria-hidden="true"></div>'
+    /* a brass sconce on the wall either side of the stage, lighting the
+       panelling round it, as the Curiosity's hall is staged */
+    + '<div class="lo-hall" aria-hidden="true"><i class="kit-sconce lo-hall__sconce lo-hall__sconce--l"></i><i class="kit-sconce lo-hall__sconce lo-hall__sconce--r"></i></div>'
+    + kitDressMarkup().replace('<i class="kit-dress__rule"></i>',
+      '<i class="kit-dress__rule"></i><i class="kit-dress__footscroll"></i>');
+}
+
+/**
+ * The house, out there in the dark: Josh's own painting of it (UI/mainMenu.png)
+ * hung in the Kid board's gold frame, the moon medallion on its top rail the
+ * way the mirror wears one, a nameplate on its bottom rail. It is the window
+ * of the treehouse the prompt for `lobby.png` asks for — the one thing every
+ * Kid up here is looking at.
+ */
+function viewMarkup() {
+  return `<figure class="lo-view" aria-hidden="true">
+      <div class="lo-view__pic kit-frame kit-frame--over"><span class="lo-view__art" style="background-image:url('${menuArtSrc('menu')}')"></span></div>
+      <i class="lo-view__medal"></i>
+      <figcaption class="lo-view__plate kit-plate"><b class="kit-plate__name">The House</b><span class="kit-plate__epithet">somewhere out there in the dark</span></figcaption>
+      <i class="kit-prop kit-prop--skull lo-view__skull"></i>
+      <i class="kit-prop kit-prop--candle lo-view__candle"></i>
+    </figure>`;
+}
 
 /**
  * The password is WORDS, not hex.
@@ -118,6 +166,33 @@ export class LobbyScene extends Scene {
      *  out from under the Session that has just taken it over. */
     this._launching = false;
     this._room = '';
+    /** The Companion portraits on the roster, destroyed on every repaint. */
+    this._portraits = [];
+    this._dead = false;
+  }
+
+  _dropPortraits() {
+    for (const p of this._portraits) { try { p.destroy(); } catch { /* gone */ } }
+    this._portraits.length = 0;
+  }
+
+  /** Lay the kit board on the root and hand back the element to build on. */
+  _board(cls) {
+    this._dropPortraits();
+    this.root.innerHTML = '';
+    const board = el('div', `${cls} lo-board kit-board`);
+    board.innerHTML = boardMarkup();
+    this.root.appendChild(board);
+    paintBackdrop(board, 'lobby', () => !this._dead);
+    return board;
+  }
+
+  /** The title plaque both states share: the wordmark's cartouche and ribbon. */
+  _head(cls = '') {
+    const head = el('header', `lo-head kit-titleblock${cls ? ` ${cls}` : ''}`);
+    head.appendChild(el('span', 'lo-ribbon kit-ribbon', 'Play Together'));
+    head.appendChild(el('h1', 'lo__title kit-cartouche__title', 'The Treehouse'));
+    return head;
   }
 
   async enter(params = {}) {
@@ -152,24 +227,43 @@ export class LobbyScene extends Scene {
 
   _renderDoor() {
     const suggested = coinRoom();
-    this.root.innerHTML = '';
-    const wrap = el('div', 'lo__door');
+    /* A kit board: the title in the cartouche, the house in its frame on the
+       left, the password on an engraved plate in a gold-railed panel on the
+       right, and the board's two ways out along the foot — back down on the
+       left, up the ladder on the right, each with its enamel button. */
+    const wrap = this._board('lo__door');
 
-    wrap.appendChild(el('h1', 'lo__title', 'The Treehouse'));
-    wrap.appendChild(el('p', 'lo__sub',
-      'Climb up and wait for your friends. Everyone who knows the password ends '
-      + 'up in the same treehouse — and the password is the map, so the same '
-      + 'words always draw the same house.'));
+    const head = this._head();
+    head.appendChild(el('p', 'lo__sub kit-cartouche__sub', 'Climb up and wait for your friends.'));
+    wrap.appendChild(head);
+
+    /* The form is the body AND the foot, so "Climb up" can stand where every
+       board keeps its way on (bottom right) and still submit the password. */
+    const form = el('form', 'lo__form lo-body');
+    const stage = el('div', 'lo-stage');
+    stage.insertAdjacentHTML('beforeend', viewMarkup());
+
+    const card = el('section', 'lo-card kit-panel');
+    card.dataset.medal = 'star';
+    card.setAttribute('aria-label', 'The password');
+    card.appendChild(el('h2', 'lo-card__h kit-heading kit-heading--ribbon kit-heading--inline kit-heading--clasp',
+      'The password <em>is the map</em>'));
+    card.appendChild(el('p', 'lo__sub lo-card__lede',
+      'Everyone who knows the password ends up in the same treehouse — and the '
+      + 'password is the map, so the same words always draw the same house.'));
 
     if (!canChannel()) {
       /* Said plainly rather than left as a dead button. A browser without
          BroadcastChannel cannot reach the only wire that exists yet. */
-      wrap.appendChild(el('p', 'lo__warn',
+      card.appendChild(el('p', 'lo__warn',
         'This browser has no BroadcastChannel, so nobody else can climb up. '
         + 'Two Kids on one screen still works from New Expedition.'));
     }
 
-    const form = el('form', 'lo__form');
+    /* The field is an engraved nameplate: the word PASSWORD cut into its top
+       edge and the two words lettered across it. */
+    const plate = el('label', 'lo-plate');
+    plate.appendChild(el('span', 'lo-plate__k', 'Password'));
     const input = el('input', 'lo__code');
     input.type = 'text';
     input.value = suggested;
@@ -177,18 +271,49 @@ export class LobbyScene extends Scene {
     input.autocomplete = 'off';
     input.setAttribute('aria-label', 'Password');
     input.maxLength = 40;
+    plate.appendChild(input);
+    card.appendChild(plate);
 
-    const go = el('button', 'lo__enter', 'Climb up');
+    /* The map those words draw, read back as they are typed: the same seed the
+       room will print once everybody is up (`seedFromRoom`, a pure hash). */
+    const seed = el('p', 'lo-seed kit-enamel kit-enamel--dark');
+    seed.setAttribute('aria-live', 'polite');
+    const paintSeed = () => {
+      const room = tidyRoom(input.value);
+      seed.innerHTML = room
+        ? `<i class="kit-enamel__label">draws the house</i><b class="kit-enamel__value">${seedFromRoom(room)}</b>`
+        : '<i class="kit-enamel__label">say two words</i>';
+    };
+    paintSeed();
+    input.addEventListener('input', paintSeed);
+
+    const actions = el('div', 'lo-card__actions');
+    actions.appendChild(seed);
+    const roll = el('button', 'lo__roll kit-btn kit-btn--quiet');
+    roll.type = 'button';
+    roll.innerHTML = `<i class="kit-medallion kit-btn__medal lo-knob" aria-hidden="true">${GLYPH.roll}</i><span>New password</span>`;
+    roll.addEventListener('click', () => { input.value = coinRoom(); paintSeed(); input.focus(); });
+    actions.appendChild(roll);
+    card.appendChild(actions);
+
+    stage.appendChild(card);
+    form.appendChild(stage);
+
+    const foot = el('div', 'lo-foot');
+    const back = el('button', 'lo__back kit-btn kit-btn--quiet');
+    back.type = 'button';
+    back.innerHTML = `<i class="kit-medallion kit-medallion--ornate kit-btn__medal" aria-hidden="true">${GLYPH.back}</i><span>Back down</span>`;
+    back.addEventListener('click', () => this.ctx.scenes?.go?.('title', {}));
+    foot.appendChild(back);
+
+    const go = el('button', 'lo__enter kit-btn');
     go.type = 'submit';
     go.disabled = !canChannel();
+    go.innerHTML = `<span>Climb up</span><em>up the rope ladder</em><kbd>Enter</kbd>`
+      + `<i class="kit-medallion kit-medallion--ornate kit-btn__medal" aria-hidden="true">${GLYPH.onward}</i>`;
+    foot.appendChild(go);
+    form.appendChild(foot);
 
-    const roll = el('button', 'lo__roll', 'New password');
-    roll.type = 'button';
-    roll.addEventListener('click', () => { input.value = coinRoom(); input.focus(); });
-
-    form.appendChild(input);
-    form.appendChild(roll);
-    form.appendChild(go);
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const room = tidyRoom(input.value);
@@ -197,13 +322,6 @@ export class LobbyScene extends Scene {
     });
 
     wrap.appendChild(form);
-
-    const back = el('button', 'lo__back', '← Back down');
-    back.type = 'button';
-    back.addEventListener('click', () => this.ctx.scenes?.go?.('title', {}));
-    wrap.appendChild(back);
-
-    this.root.appendChild(wrap);
     try { input.focus(); input.select(); } catch { /* focus is best-effort */ }
   }
 
@@ -246,38 +364,64 @@ export class LobbyScene extends Scene {
     const l = this._lobby;
     const players = l.players;
 
-    this.root.innerHTML = '';
-    const wrap = el('div', 'lo__room');
+    const wrap = this._board('lo__room');
 
-    const head = el('header', 'lo__head');
-    head.appendChild(el('h1', 'lo__title', 'The Treehouse'));
-    head.appendChild(el('p', 'lo__code-out',
+    const head = this._head('lo__head kit-titleblock--compact');
+    head.appendChild(el('p', 'lo__code-out kit-cartouche__sub',
       `<span>${this._room}</span> · seed ${seedFromRoom(this._room)}`));
-    head.appendChild(el('p', 'lo__sub',
+    head.appendChild(el('p', 'lo__sub kit-titleblock__note',
       `You are ${l.seat + 1} of ${players.length} up here. `
       + 'Everybody sees the same order, and it is not the order you arrived in.'));
     wrap.appendChild(head);
 
-    /* ── the roster ─────────────────────────────────────────────────────── */
+    const body = el('main', 'lo-body lo-body--room');
+
+    /* ── the roster ─────────────────────────────────────────────────────────
+       Four seats, as four of the Companion board's portrait tiles: the pair
+       in the Kid board's gold frame, their names on the dark nameplate under
+       it, the seat's number in enamel on its top rail. An empty seat is the
+       same frame with nobody in it. */
     const list = el('ul', 'lo__roster');
     for (const p of players) {
       const mine = p.id === l.me.id;
       const row = el('li', `lo__seat${mine ? ' is-me' : ''}${p.ready ? ' is-ready' : ''}`);
-      row.appendChild(el('span', 'lo__n', String(players.indexOf(p) + 1)));
-      row.appendChild(el('span', 'lo__who',
+      row.appendChild(el('span', 'lo__n kit-medallion', String(players.indexOf(p) + 1)));
+      const pic = el('div', 'lo-seat__pic kit-frame kit-frame--over');
+      const art = el('div', 'lo-seat__art');
+      const pf = companionPortrait({ slug: p.companion || 'marmalade', variant: '@2x', parallax: 0, shimmer: false });
+      this._portraits.push(pf);
+      art.appendChild(pf.el);
+      const face = el('span', 'lo-seat__kid');
+      const kid = KIDS.find(k => k.slug === p.kid);
+      if (kid) {
+        const img = kidPortrait(kid, { w: 192, h: 192, variant: 'thumb' });
+        img.alt = '';
+        face.appendChild(img);
+      }
+      art.appendChild(face);
+      pic.appendChild(art);
+      row.appendChild(pic);
+      const plate = el('div', 'lo-seat__plate kit-plate');
+      plate.appendChild(el('span', 'lo__who kit-plate__name',
         `${companionName(p.companion)} <i>&amp;</i> ${kidName(p.kid)}`
         + (mine ? ' <b>(you)</b>' : '')));
-      row.appendChild(el('span', 'lo__state', p.ready ? 'ready' : 'choosing…'));
+      plate.appendChild(el('span', 'lo__state kit-plate__epithet', p.ready ? 'ready' : 'choosing…'));
+      row.appendChild(plate);
       list.appendChild(row);
     }
     for (let i = players.length; i < MAX_PARTY; i++) {
       list.appendChild(el('li', 'lo__seat is-empty',
-        `<span class="lo__n">${i + 1}</span><span class="lo__who">nobody up here yet</span>`));
+        `<span class="lo__n kit-medallion">${i + 1}</span>`
+        + '<div class="lo-seat__pic kit-frame kit-frame--over"><div class="lo-seat__art"></div></div>'
+        + '<div class="lo-seat__plate kit-plate"><span class="lo__who kit-plate__name">nobody up here yet</span></div>'));
     }
-    wrap.appendChild(list);
+    body.appendChild(list);
 
     /* ── your choice ────────────────────────────────────────────────────── */
-    const mineRow = el('div', 'lo__mine');
+    const mineRow = el('div', 'lo__mine kit-panel');
+    mineRow.dataset.medal = 'paw';
+    mineRow.appendChild(el('h2', 'lo-mine__h kit-heading kit-heading--ribbon kit-heading--inline kit-heading--clasp',
+      'Who you bring <em>up the ladder</em>'));
 
     const cSel = el('select', 'lo__pick');
     cSel.setAttribute('aria-label', 'Your Companion');
@@ -306,22 +450,39 @@ export class LobbyScene extends Scene {
     };
     cSel.addEventListener('change', onPick);
     kSel.addEventListener('change', onPick);
-    mineRow.appendChild(cSel);
-    mineRow.appendChild(kSel);
-    wrap.appendChild(mineRow);
+    /* Each picker is a nameplate with its label engraved on its top edge, the
+       same plate the password is lettered on at the door. */
+    const pickPlate = (label, sel) => {
+      const pl = el('label', 'lo-plate lo-plate--pick');
+      pl.appendChild(el('span', 'lo-plate__k', label));
+      pl.appendChild(sel);
+      return pl;
+    };
+    mineRow.appendChild(pickPlate('Companion', cSel));
+    mineRow.appendChild(pickPlate('Kid', kSel));
 
-    /* ── ready, and go ──────────────────────────────────────────────────── */
-    const foot = el('div', 'lo__foot');
-
-    const ready = el('button', `lo__ready${l.me.ready ? ' is-on' : ''}`,
-      l.me.ready ? 'Ready' : `I'm ready`);
+    /* ── ready ──────────────────────────────────────────────────────────── */
+    const ready = el('button', `lo__ready kit-btn${l.me.ready ? ' is-on' : ' kit-btn--quiet'}`);
+    ready.innerHTML = `<i class="kit-medallion kit-btn__medal lo-knob" aria-hidden="true">${GLYPH.ready}</i>`
+      + `<span>${l.me.ready ? 'Ready' : `I'm ready`}</span>`;
     ready.type = 'button';
     ready.setAttribute('aria-pressed', String(!!l.me.ready));
     ready.addEventListener('click', () => {
       this._lobby.setReady(!l.me.ready);
       try { this.ctx.audio?.play?.('ui:confirm'); } catch { /* audio is best-effort */ }
     });
-    foot.appendChild(ready);
+    mineRow.appendChild(ready);
+    body.appendChild(mineRow);
+    wrap.appendChild(body);
+
+    /* ── the ways out: back down, and in together ───────────────────────── */
+    const foot = el('div', 'lo__foot lo-foot');
+
+    const leave = el('button', 'lo__back kit-btn kit-btn--quiet');
+    leave.type = 'button';
+    leave.innerHTML = `<i class="kit-medallion kit-medallion--ornate kit-btn__medal" aria-hidden="true">${GLYPH.back}</i><span>Back down</span>`;
+    leave.addEventListener('click', () => this.ctx.scenes?.go?.('title', {}));
+    foot.appendChild(leave);
 
     /**
      * ONLY THE HOST HAS THIS BUTTON, and that is not the same as the host
@@ -332,9 +493,13 @@ export class LobbyScene extends Scene {
      */
     if (l.isHost) {
       const enough = players.length >= 2;
-      const start = el('button', 'lo__go', 'Go in together');
+      const start = el('button', 'lo__go kit-btn');
+      start.innerHTML = `<span>Go in together</span><em>${!enough ? 'waiting for somebody else'
+        : !l.allReady ? 'waiting for everyone to be ready' : 'down the ladder and in'}</em>`
+        + `<i class="kit-medallion kit-medallion--ornate kit-btn__medal" aria-hidden="true">${GLYPH.onward}</i>`;
       start.type = 'button';
       start.disabled = !(enough && l.allReady);
+      start.classList.toggle('is-ready', !start.disabled);
       start.title = !enough ? 'Waiting for somebody else to climb up'
         : !l.allReady ? 'Waiting for everyone to be ready'
         : 'Down the ladder and into the house';
@@ -344,17 +509,11 @@ export class LobbyScene extends Scene {
       });
       foot.appendChild(start);
     } else {
-      foot.appendChild(el('p', 'lo__wait',
-        'Whoever is first on the list says when to go.'));
+      foot.appendChild(el('p', 'lo__wait kit-enamel kit-enamel--dark',
+        '<i class="kit-enamel__label">Whoever is first on the list says when to go.</i>'));
     }
 
-    const leave = el('button', 'lo__back', '← Back down');
-    leave.type = 'button';
-    leave.addEventListener('click', () => this.ctx.scenes?.go?.('title', {}));
-    foot.appendChild(leave);
-
     wrap.appendChild(foot);
-    this.root.appendChild(wrap);
     try { rovingFocus?.(wrap); } catch { /* keyboard nav is an enhancement */ }
   }
 
@@ -417,6 +576,8 @@ export class LobbyScene extends Scene {
   update() { /* every animation here is CSS-composited */ }
 
   async exit() {
+    this._dead = true;
+    this._dropPortraits();
     this._unpauseStage?.();
     this._unpauseStage = null;
     for (const off of this._offs) { try { off(); } catch { /* already gone */ } }
