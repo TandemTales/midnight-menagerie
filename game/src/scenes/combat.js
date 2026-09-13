@@ -865,7 +865,7 @@ export class CombatScene extends Scene {
           <div class="cb-chooser__panel kit-panel" data-medal="star2" role="dialog" aria-modal="true">
             <h2 class="cb-chooser__prompt"></h2>
             <p class="cb-chooser__sub"></p>
-            <div class="cb-chooser__pool kit-cards"></div>
+            <div class="cb-chooser__pool kit-cards kit-cards--nerve"></div>
             <div class="cb-chooser__bar">
               <button class="cb-chooser__skip kit-btn kit-btn--quiet" type="button">Skip</button>
               <button class="cb-chooser__ok kit-btn" type="button">Confirm</button>

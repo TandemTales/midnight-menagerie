@@ -842,9 +842,12 @@
 .cb-enemy__preview {
   /* upper-right of the creature: the aim arrow terminates at the stage centre
      coming from below, so this corner is the one place it never covers */
-  /* a fifth of the way down: clear of the second line an intent hangs over the
-     creature's head (a House Rule, the Clutter it deals) */
-  position: absolute; right: -8%; top: 19%; left: auto;
+  /* High on the stage and pushed out past its right edge. High, because the aim
+     arrow always arrives from ABOVE and stops on the reticle 46px from the
+     stage centre (hand.js _drawArrow), so any lower and its head lands on the
+     forecast; out, because an intent's second line (a House Rule, the Clutter
+     it deals) hangs over the creature's head right where this corner used to be. */
+  position: absolute; right: -22%; top: 2%; left: auto;
   transform: none;
   z-index: 8;
   display: flex; flex-direction: column; align-items: center; gap: 1px;
@@ -1634,7 +1637,8 @@
    so no line of a Trick is ever read through it. Scoped to the hand: when the
    Shop and the Reward rule their card bodies in .kit-cards, this is the rule
    to fold into that one. */
-.cb-handhost.kit-cards .mm-card[data-rarity] .mm-card__face::before {
+.cb-handhost.kit-cards .mm-card[data-rarity] .mm-card__face::before,
+.cb-chooser__pool.kit-cards .mm-card[data-rarity] .mm-card__face::before {
   content: ''; position: absolute; pointer-events: none;
   left: calc(7 * var(--u)); right: calc(7 * var(--u));
   top: calc(123 * var(--u)); bottom: calc(7 * var(--u));
