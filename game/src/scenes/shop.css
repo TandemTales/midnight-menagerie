@@ -259,7 +259,7 @@
   grid-column: 1; grid-row: 1;
   width: clamp(70px, 5.6vw, 96px); height: auto; aspect-ratio: 1;
   display: block; align-self: center;
-  padding: 7%;
+  padding: 12%;
   border-radius: 50%;
   background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8));

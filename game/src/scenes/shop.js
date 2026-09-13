@@ -56,7 +56,7 @@ const ON_BROKE = [
  * Pure SVG, every colour a token, so it costs nothing and never 404s.
  */
 const MOTH_SVG = `
-<svg class="sh-moth" viewBox="0 0 260 300" role="img" aria-label="Mr. Moth, behind his counter">
+<svg class="sh-moth" viewBox="14 10 232 232" role="img" aria-label="Mr. Moth, behind his counter">
   <defs>
     <radialGradient id="shLamp" cx="50%" cy="50%">
       <stop offset="0%"  class="sh-lamp-a"/><stop offset="100%" class="sh-lamp-b"/>
