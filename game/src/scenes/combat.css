@@ -1890,6 +1890,10 @@
   100% { opacity: 0; transform: translate(-50%, -14px) scale(1.02); }
 }
 .cb-banner.is-on { animation: cb-bannerin 1.15s var(--ease-out) forwards; }
+/* `hold` only takes the class off; the animation is what the eye gets, so the
+   moments that deserve a longer look get a longer run (the keyframes scale) */
+.cb-banner.is-on:is([data-kind="rule"], [data-kind="rulebreak"], [data-kind="elite"]) { animation-duration: 1.7s; }
+.cb-banner.is-on[data-kind="boss"] { animation-duration: 2.3s; }
 /* their turn: the same plaque, its lettering glowing ember instead of violet */
 .cb-banner[data-kind="enemy"] .cb-banner__t {
   filter: url("#kit-engrave") drop-shadow(0 0 14px color-mix(in srgb, var(--threat-400) 55%, transparent));
