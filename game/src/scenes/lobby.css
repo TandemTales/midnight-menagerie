@@ -103,7 +103,8 @@
   min-width: min(600px, calc(100vw - 2 * var(--lo-side)));
   margin-top: clamp(4px, 1vh, 12px);
   --pk: .9;
-  padding: clamp(40px, 6vh, 58px) clamp(30px, 3.6vw, 60px) clamp(30px, 4.6vh, 44px);
+  --medal-k: 1.1;
+  padding: clamp(46px, 6.6vh, 62px) clamp(30px, 3.6vw, 60px) clamp(32px, 4.8vh, 46px);
   display: grid; justify-items: center; gap: clamp(14px, 2.3vh, 22px);
   text-align: center;
 }
@@ -117,11 +118,10 @@
   mix-blend-mode: screen;
 }
 .lo__door { container: lo-door / inline-size; }
-/* the section's name on the gold ribbon, hung from the panel's star */
-.lo-door__h {
-  --rib-h: clamp(32px, 4.1vh, 38px);
-  margin-top: clamp(-6px, -.4vh, -2px);
-}
+/* the section's name on the gold ribbon along the panel's top rail, clasped
+   by its star (ui/kit.css .kit-heading--clasp) */
+.lo-door__h, .lo-room__h { --rib-h: clamp(32px, 4.1vh, 38px); }
+.lo__door.kit-panel::before, .lo__room.kit-panel::before { z-index: 3; }
 
 .lo__sub {
   margin: 0;
@@ -301,6 +301,17 @@
 .kit-still .lo__enter::before, .kit-still .lo__go::before { animation: none; }
 
 /* ── a short screen ───────────────────────────────────────────────────────── */
+/* The room carries four seats, two picks and the password: at the Deck's 800
+   rows it gives up a little of each row's height so its ribbon clears the
+   title's ribbon above it. */
+@media (max-height: 840px) {
+  .lo__room { margin-top: 30px; padding-top: 34px; padding-bottom: 22px; gap: 7px; }
+  .lo__roster { gap: 6px; }
+  .lo__seat { --plate-h: 42px; }
+  .lo__n { width: 30px; height: 30px; font-size: 15px; }
+  .lo__code-out { --plate-h: 50px; padding-block: 8px 7px; }
+  .lo__mine { gap: 10px 22px; }
+}
 @media (max-height: 700px) {
   .lo-board { --lo-foot-h: 84px; }
   .lo__door, .lo__room { margin-top: 10px; gap: 10px; }

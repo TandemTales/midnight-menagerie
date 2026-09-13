@@ -240,7 +240,10 @@ export class LobbyScene extends Scene {
 
     const wrap = el('section', 'lo__door kit-panel kit-panel--damask');
     wrap.dataset.medal = 'star';
-    wrap.appendChild(el('h2', 'lo-door__h kit-heading kit-heading--ribbon', 'The password'));
+    /* The section's name on a ribbon laid along the panel's top rail and
+       clasped by its star, as the Shop's panels wear theirs. */
+    wrap.appendChild(el('h2', 'lo-door__h kit-heading kit-heading--ribbon kit-heading--inline kit-heading--clasp',
+      'The password <em>say it out loud</em>'));
 
     wrap.appendChild(el('p', 'lo__sub',
       'Climb up and wait for your friends. Everyone who knows the password ends '
@@ -365,6 +368,8 @@ export class LobbyScene extends Scene {
     this._$board.dataset.state = 'room';
     const wrap = el('div', 'lo__room kit-panel kit-panel--damask');
     wrap.dataset.medal = 'star';
+    wrap.appendChild(el('h2', 'lo-room__h kit-heading kit-heading--ribbon kit-heading--inline kit-heading--clasp',
+      `Up here <em>room for ${MAX_PARTY}</em>`));
 
     const head = el('header', 'lo__head');
     head.appendChild(el('p', 'lo__code-out',
