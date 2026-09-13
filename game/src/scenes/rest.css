@@ -303,11 +303,22 @@
   .scene--rest .rm:has(> .rm-mockflag) .rm-foot { padding-bottom: calc(clamp(14px, 2vh, 28px) + 16px); }
 }
 
+/* what the night did, said the way the boards letter their small print: warm
+   italic after a brass lozenge */
 .rs-line {
   flex: 1; margin: 0; min-height: 1.3em;
   padding-left: calc(var(--kit-vine-w, 36px) * .6);
-  font-size: var(--fs-sm); color: var(--good-300);
+  font-size: var(--fs-md); font-style: italic; line-height: 1.35;
+  color: var(--kit-text);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  text-wrap: balance;
+}
+.rs-line:not(:empty)::before {
+  content: ''; display: inline-block; vertical-align: middle;
+  width: 6px; height: 6px; margin: 0 10px 3px 0;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .7);
 }
 
 /* ── the Forge picker: the Shop's ledger rows, in the shield's panel ──────── */
