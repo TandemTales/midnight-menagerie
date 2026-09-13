@@ -212,6 +212,9 @@ const FORT_PAINT = `
   <!-- the window the moon comes through, and what it lays across the room -->
   <path class="rs-winframe" d="M350 110V46c0-23 13-35 30-35s30 12 30 35v64Z"/>
   <path d="M357 106V48c0-18 10-29 23-29s23 11 23 29v58Z" fill="url(#rsGlass)"/>
+  <circle class="rs-moonglow" cx="391" cy="40" r="15" filter="url(#rsBlur4)"/>
+  <circle class="rs-moondisc" cx="391" cy="40" r="7"/>
+  <g class="rs-stars"><circle cx="365" cy="36" r=".9"/><circle cx="371" cy="74" r=".7"/><circle cx="395" cy="84" r=".8"/><circle cx="362" cy="94" r=".6"/><circle cx="386" cy="60" r=".6"/></g>
   <path class="rs-mullion" d="M380 19v87M357 60h46"/>
   <path class="rs-winsill" d="M344 108h72v7h-72Z"/>
   <path d="M362 40 404 40 322 257 190 257Z" fill="url(#rsShaft)" filter="url(#rsBlur8)"/>
@@ -226,6 +229,7 @@ const FORT_PAINT = `
     <rect x="3" y="142" width="82" height="10" rx="1.5" fill="url(#rsPlank)" transform="rotate(6 44 147)"/>
     <rect x="1" y="192" width="84" height="10" rx="1.5" fill="url(#rsPlank)" transform="rotate(-5 43 197)"/>
   </g>
+  <path class="rs-grain" d="M6 104c24-3 50-7 78-11M8 146c26 2 50 5 76 9M4 196c26-1 52-3 80-6"/>
   <g class="rs-nail">
     <circle cx="9" cy="109" r="1.3"/><circle cx="79" cy="98" r="1.3"/>
     <circle cx="9" cy="143" r="1.3"/><circle cx="79" cy="150" r="1.3"/>
@@ -241,6 +245,7 @@ const FORT_PAINT = `
     <ellipse class="rs-rugrim rs-rugrim--in" cx="218" cy="265" rx="176" ry="8"/>
   </g>
   <ellipse class="rs-shadow" cx="230" cy="258" rx="178" ry="7" filter="url(#rsBlur4)"/>
+  <ellipse class="rs-spill" cx="212" cy="266" rx="120" ry="15" filter="url(#rsBlur8)"/>
 
   <!-- the chair the second blanket hangs off -->
   <g class="rs-chair">
@@ -314,14 +319,23 @@ const FORT_PAINT = `
 
   <!-- floor cushions either side of the way in -->
   <g class="rs-cushions" filter="url(#rsCloth)">
-    <path d="M294 258c-2-8 2-17 10-20 10-4 26-4 36 0 8 3 12 12 10 20-12 3-44 3-56 0Z" fill="url(#rsVelvet)"/>
-    <path d="M76 258c-2-7 2-15 9-18 9-3 23-3 32 0 7 3 11 11 9 18-11 3-39 3-50 0Z" fill="url(#rsVelvet)"/>
-    <path class="rs-piping" d="M294 258c-2-8 2-17 10-20 10-4 26-4 36 0 8 3 12 12 10 20M76 258c-2-7 2-15 9-18 9-3 23-3 32 0 7 3 11 11 9 18"/>
-    <path class="rs-sheen" d="M304 244c8-3 20-3 30-1M85 246c7-2 17-2 25-1"/>
+    <path d="M292 259c-3-6-2-15 3-20 4-3 9 0 14-1 8-1 18-1 26 0 5 1 10-2 14 1 5 5 6 14 3 20-4 2-8-1-13 0-10 1-24 1-34 0-5-1-9 2-13 0Z" fill="url(#rsVelvet)"/>
+    <path d="M74 259c-3-6-2-13 3-17 4-3 8 0 12-1 7-1 16-1 23 0 5 1 9-2 12 1 5 4 6 11 3 17-4 2-7-1-11 0-9 1-21 1-30 0-4-1-8 2-12 0Z" fill="url(#rsVelvet)"/>
+    <path class="rs-piping" d="M292 259c-3-6-2-15 3-20 4-3 9 0 14-1 8-1 18-1 26 0 5 1 10-2 14 1 5 5 6 14 3 20M74 259c-3-6-2-13 3-17 4-3 8 0 12-1 7-1 16-1 23 0 5 1 9-2 12 1 5 4 6 11 3 17"/>
+    <path class="rs-sheen" d="M300 244c10-2 26-2 38 0M82 246c9-2 22-2 32 0"/>
+    <circle class="rs-tuft" cx="321" cy="249" r="1.6"/><circle class="rs-tuft" cx="100" cy="250" r="1.4"/>
   </g>
   <g class="rs-tassel">
     <path d="M350 250l5 6M126 251l4 6"/><circle cx="356" cy="257" r="1.8"/><circle cx="131" cy="258" r="1.8"/>
   </g>
+
+  <!-- set dressing from the Kid board itself: the skull on its books and a
+       candle, down at the front where the Kid board keeps them -->
+  <ellipse class="rs-propshadow" cx="30" cy="272" rx="26" ry="4" filter="url(#rsBlur2)"/>
+  <image href="${KIT_ART}skull.webp" x="4" y="220" width="48" height="56" class="rs-prop"/>
+  <ellipse class="rs-propshadow" cx="400" cy="273" rx="16" ry="3" filter="url(#rsBlur2)"/>
+  <circle class="rs-candleglow" cx="400" cy="232" r="30" filter="url(#rsBlur8)"/>
+  <image href="${KIT_ART}candle.webp" x="386" y="229" width="28" height="44" class="rs-prop"/>
 
   <rect width="420" height="280" fill="url(#rsVig)"/>
 </svg>`;

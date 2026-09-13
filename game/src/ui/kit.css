@@ -718,7 +718,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 .kit-stats {
   position: relative;
   display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
-  align-items: start;
+  align-items: stretch;
   padding: 9px 0 8px;
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-void) 55%, transparent) 12%, color-mix(in srgb, var(--kit-void) 55%, transparent) 88%, transparent);
 }
@@ -732,12 +732,15 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 }
 .kit-stats::before { top: 0; }
 .kit-stats::after { bottom: 0; transform: scaleY(-1); }
+/* a label that wraps to two lines pushes nothing: every figure sits on the
+   same line along the bottom of the strip */
 .kit-stats > * {
   position: relative;
-  display: grid; justify-items: center; align-content: start; gap: 2px;
+  display: grid; grid-template-rows: 1fr auto; justify-items: center; gap: 2px;
   min-width: 0; padding: 0 6px;
   text-align: center;
 }
+.kit-stats > * > :first-child { align-self: end; }
 .kit-stats > * + *::before {
   content: ''; position: absolute; left: 0; top: 50%;
   width: 5px; height: 5px; transform: translate(-50%, -50%) rotate(45deg);

@@ -362,8 +362,8 @@ export class GameOverScene extends Scene {
       <span class="go-halo" aria-hidden="true"></span>
       <i class="go-candle__prop kit-prop kit-prop--candle" aria-hidden="true"></i>
       <svg class="go-smoke" viewBox="0 0 60 220" aria-hidden="true">
-        <path d="M30 214c-9-24 9-32 0-56s8-32 1-54 6-28 1-48" pathLength="100"/>
-        <path d="M30 212c8-22-7-30 1-52s-6-30 0-50" pathLength="100"/>
+        <path d="M30 214c-15-22 13-34 0-58s16-30 2-54 12-26-4-48" pathLength="100"/>
+        <path d="M30 212c13-20-11-30 2-52s-12-28 3-50" pathLength="100"/>
       </svg>`;
     stage.appendChild(flame);
 

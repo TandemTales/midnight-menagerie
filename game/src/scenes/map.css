@@ -46,6 +46,18 @@
   --mv-y: calc(var(--mv-top) + (100vh - var(--mv-top) - var(--mv-bot) - var(--mv-h)) / 2);
   --kit-vine-w: clamp(32px, 2.8vw, 46px);
 }
+/* the candle and the skull, standing on the desk at the frame's bottom corners */
+.map-prop { z-index: 5; bottom: calc(100vh - var(--mv-y) - var(--mv-h) - 10px); }
+.map-prop--l { left: calc(var(--mv-x) - clamp(30px, 2.6vw, 42px)); width: clamp(64px, 5vw, 84px); filter: brightness(.95); }
+.map-prop--r { right: calc(var(--mv-x) - clamp(22px, 2vw, 32px)); width: clamp(44px, 3.4vw, 58px); }
+.map-screen.is-still .map-prop::after { animation: none; }
+/* the corner candle's light, falling on the sheet it stands beside */
+.map-frame::before {
+  content: ''; position: absolute; pointer-events: none;
+  right: -8%; bottom: -30%; width: 46%; aspect-ratio: 1;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 16%, transparent), transparent 72%);
+  mix-blend-mode: screen;
+}
 /* the desk's candles: two warm pools on the ground either side of the sheet */
 .map-desk { z-index: 0; }
 .map-screen .kit-dress { z-index: 1; }
@@ -104,12 +116,17 @@
 }
 
 /* ── overlays ───────────────────────────────────────────────────────────── */
-/* the room's dark settling on the paper toward the frame, never over the board */
+/* The paper lying in the room's light: candle-warm all over, and the dark of
+   the room settling into it toward the frame. Multiplied, so the pencil and
+   the ink darken with the paper and keep their contrast with it. */
 .map-shade {
   position: absolute; z-index: 3; pointer-events: none;
   left: var(--mv-x); top: var(--mv-y); width: var(--mv-w); height: var(--mv-h);
-  background: radial-gradient(ellipse 78% 74% at 50% 48%,
-    transparent 0%, transparent 52%, rgba(10,7,14,.28) 84%, rgba(8,6,11,.55) 100%);
+  background:
+    radial-gradient(ellipse 80% 76% at 50% 46%,
+      transparent 0%, transparent 44%, rgba(58, 34, 18, .30) 80%, rgba(34, 20, 12, .62) 100%),
+    linear-gradient(color-mix(in srgb, var(--kit-gold-lo) 16%, transparent), color-mix(in srgb, var(--kit-gold-lo) 16%, transparent));
+  mix-blend-mode: multiply;
 }
 /* The frame: the Kid board's portrait frame (ui/kit.css .kit-frame--over),
    painted over the sheet's edge. Nothing of .kit-frame's own recess shows: the
@@ -117,7 +134,7 @@
 .map-frame {
   position: absolute; z-index: 4; pointer-events: none;
   left: var(--mv-x); top: var(--mv-y); width: var(--mv-w); height: var(--mv-h);
-  --fk: 1.15;
+  --fk: 1.5;
   background: none;
   box-shadow: inset 0 0 26px rgba(8, 6, 11, .45), 0 26px 60px -18px rgba(0, 0, 0, .95);
 }
@@ -531,7 +548,7 @@
    line, then tucks that away once the plan has been read (see `_bindEvents`),
    and steps back whenever the view is off the fitted sheet. */
 .map-banner {
-  --plate-h: clamp(48px, 6vh, 54px);
+  --plate-h: clamp(52px, 6.6vh, 60px);
   position: absolute; z-index: 7;
   left: 50%; top: calc(var(--mv-y) - var(--plate-h) * .5 - 2px);
   transform: translateX(-50%);
@@ -558,19 +575,20 @@
 .map-banner h1 {
   margin: 0;
   font-family: var(--font-display); font-weight: 700;
-  font-size: calc(var(--plate-h) * .34); line-height: 1.12;
+  font-size: calc(var(--plate-h) * .36); line-height: 1.12;
   letter-spacing: .12em; text-transform: uppercase; white-space: nowrap;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 14px color-mix(in srgb, var(--kit-candle) 22%, transparent);
 }
 .bn-form {
   margin: 0; max-height: 1.4em; overflow: hidden;
-  font-family: var(--font-body); font-size: 12px; font-style: italic; line-height: 1.3;
+  font-family: var(--font-body); font-size: 13px; font-style: italic; line-height: 1.3;
   color: var(--kit-text-mid); white-space: nowrap;
   transition: max-height .45s ease, opacity .45s ease;
 }
 .map-banner.is-tucked .bn-form { max-height: 0; opacity: 0; }
 .bn-meta {
   margin: 1px 0 0;
-  font-family: var(--font-body); font-size: 12px; line-height: 1.25; white-space: nowrap;
+  font-family: var(--font-body); font-size: 13px; line-height: 1.25; white-space: nowrap;
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }

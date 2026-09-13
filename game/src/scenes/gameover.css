@@ -152,7 +152,7 @@
   margin-top: calc(var(--plate-h) * -.5);
   min-width: 82%; max-width: 110%;
 }
-.go-portrait__plate .kit-plate__epithet { white-space: nowrap; }
+.go-portrait__plate .kit-plate__epithet { white-space: nowrap; font-size: max(11px, calc(var(--plate-h) * .25)); }
 
 /* defeat: she came back out with you, but neither of you is glowing */
 .go-plate.is-spent .pf__img { filter: saturate(.55) brightness(.8) contrast(1.05); }
@@ -192,7 +192,7 @@
    empty, it is just unlit. */
 .go-smoke {
   position: absolute; left: 50%; bottom: 68%;
-  width: 150%; height: 190%;
+  width: 240%; height: 150%;
   transform: translateX(-50%);
   pointer-events: none;
   opacity: 0;
@@ -202,9 +202,9 @@
 }
 .go-smoke path {
   fill: none;
-  stroke: color-mix(in srgb, var(--kit-moon) 50%, transparent);
-  stroke-width: 4; stroke-linecap: round;
-  filter: blur(1.7px);
+  stroke: color-mix(in srgb, var(--kit-lav-hi) 34%, transparent);
+  stroke-width: 6; stroke-linecap: round;
+  filter: blur(2.6px);
   stroke-dasharray: 100; stroke-dashoffset: 100;
 }
 .scene--gameover.is-dark .go-smoke { opacity: .85; }
@@ -304,7 +304,9 @@
 .scene--gameover[data-result="victory"] .go-bp__wash {
   background: radial-gradient(42% 100% at 50% 50%, transparent 20%, color-mix(in srgb, var(--kit-void) 34%, transparent) 100%);
 }
-.go-bp__meta { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-4); padding: 0 4px; }
+.go-bp__meta { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-4); padding: 0 4px; white-space: nowrap; }
+.go-bp__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.go-bp__count { flex: none; }
 .go-bp__label, .go-bp__count {
   font-family: var(--font-display); font-weight: 700; font-size: 10.5px;
   letter-spacing: .16em; text-transform: uppercase; color: var(--kit-text-lo);
@@ -396,12 +398,12 @@
   transition: width 1.2s var(--ease-out);
 }
 .go-courage__n { font-family: var(--font-num); font-variant-numeric: var(--num-feat); font-size: var(--fs-md); font-weight: 600; color: var(--courage-300); }
-.go-courage__note { font-size: var(--fs-xs); font-style: italic; color: var(--kit-text-lo); }
+.go-courage__note { font-size: max(11px, var(--fs-xs)); font-style: italic; color: var(--kit-text-lo); }
 
 /* --- blocks and their headings --------------------------------------------- */
 .go-block { display: grid; gap: clamp(4px, .7vh, 8px); min-width: 0; align-content: start; }
 .go-h { margin: 0; font-size: var(--fs-xs); }
-.go-h__n { letter-spacing: .02em; }
+.go-h__n { letter-spacing: .02em; font-size: max(11px, var(--fs-xs)); }
 
 /* --- the final deck: every Trick on a nameplate ---------------------------- */
 .go-tricks { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px 4px; }
@@ -569,13 +571,14 @@
   .go-mvp { grid-template-columns: auto minmax(0, 12ch); gap: 8px; }
   .go-mvp__slot { margin: 10px; }
   .go-mvp__note { font-size: 12px; line-height: 1.34; }
-  .go-stats .kit-stats__label { letter-spacing: .08em; }
+  .go-stats .kit-stats__label { font-size: 10px; letter-spacing: .05em; }
+  .go-bp__label, .go-bp__count { letter-spacing: .1em; }
   .go-trick { --plate-h: 27px; gap: 5px; }
   .go-trick__name { font-size: 12px; }
   .go-trick__cost { width: 16px; height: 16px; font-size: 10px; }
   .go-keep { column-gap: 8px; }
   .go-keep__sigil { width: 28px; }
-  .go-keep em { font-size: 11px; line-height: 1.22; }
+  .go-keep em { font-size: 11.5px; line-height: 1.22; }
   .go-who__reach b { font-size: var(--fs-md); }
   .go-seed__hint { font-size: 11px; }
   /* the three ways out: each hint under its words, so the row fits the panel */

@@ -406,6 +406,11 @@ export class MapScene extends Scene {
 
         <div class="map-shade" aria-hidden="true"></div>
         <div class="map-frame kit-frame kit-frame--over" aria-hidden="true"></div>
+        <!-- On the desk in front of the frame's two bottom corners, where the
+             sheet has only its margin: the Kid board's skull on its books, and
+             a candle. Decoration only. -->
+        <i class="map-prop map-prop--l kit-prop kit-prop--skull" aria-hidden="true"></i>
+        <i class="map-prop map-prop--r kit-prop kit-prop--candle" aria-hidden="true"></i>
         <div class="map-lamp" aria-hidden="true"></div>
         <div class="map-lamp map-lamp--warm" aria-hidden="true"></div>
         <div class="map-grain" aria-hidden="true"></div>
@@ -1307,6 +1312,7 @@ export class MapScene extends Scene {
     }
 
     this.el.screen.classList.toggle('is-underway', !!m.currentId);
+    this._restLamp();
 
     // you-are-here ring
     const hereRing = this.el.ink.querySelector('.mi-here');
@@ -1431,6 +1437,33 @@ export class MapScene extends Scene {
     this.view.y = (vp.height - this.SH * z) / 2;
     this._fitZoom = z;
     this._applyView();
+    this._restLamp();
+  }
+
+  /**
+   * Where the candle rests before anyone has moved a pointer: over the rooms
+   * you may walk into next. It used to wait at the window's top-left corner,
+   * off the sheet, so a player on a pad — and every still of this screen —
+   * never saw the desk lit at all. The first pointer move takes it over.
+   */
+  _restLamp() {
+    if (this._lampHeld || !this.el) return;
+    const vp = this._vpRect();
+    const ids = this._legalIds || [];
+    let x = vp.left + vp.width * 0.3, y = vp.top + vp.height * 0.45;
+    if (ids.length) {
+      const ns = ids.map((id) => this.model.byId.get(id)).filter(Boolean);
+      if (ns.length) {
+        const v = this.view;
+        x = vp.left + v.x + (ns.reduce((a, n) => a + n.x, 0) / ns.length) * this.SW * v.z;
+        y = vp.top + v.y + (ns.reduce((a, n) => a + n.y, 0) / ns.length) * this.SH * v.z;
+      }
+    }
+    // Held a little back from the marks, the way you would hold a candle over
+    // a drawing: its brightest light on the paper beside them, not on the pencil.
+    x -= Math.min(260, vp.width * 0.16);
+    this.lamp.tx = this.lamp.x = x;
+    this.lamp.ty = this.lamp.y = y;
   }
 
   _clampPan() {
@@ -1558,6 +1591,7 @@ export class MapScene extends Scene {
       el.screen.classList.add('is-grabbing');
     });
     on(window, 'pointermove', (e) => {
+      this._lampHeld = true;
       this.lamp.tx = e.clientX; this.lamp.ty = e.clientY;
       if (!this._drag) return;
       const dx = e.clientX - this._drag.x, dy = e.clientY - this._drag.y;
