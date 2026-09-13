@@ -40,6 +40,20 @@
   --hud-h: 0px;                  /* no run HUD here: rule and corners start at the top */
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
+  /* the memorial room's light (BRAID's slots, round 2; ui/kit.css
+     .kit-ground): the candle between the two of them warms the wall behind
+     the memorial, the floor catches it, and moonlight falls from high windows
+     either side of the board */
+  --wl3-x: 41vw;                         --wl3-y: 30vh;
+  --wl3-w: clamp(520px, 46vw, 760px);    --wl3-h: 78vh;
+  --wl4-x: 50vw;                         --wl4-y: 96vh;
+  --wl4-w: 70vw;                         --wl4-h: 36vh;
+  --ml1-x: 50vw;                         --ml1-y: 4vh;
+  --ml1-w: 64vw;                         --ml1-h: 40vh;
+  --mb1-x: 24vw;                         --mb1-y: 10vh;
+  --mb1-w: 18vw;                         --mb1-h: 88vh;
+  --mb2-x: 76vw;                         --mb2-y: 10vh;
+  --mb2-w: 18vw;                         --mb2-h: 88vh;
 }
 .go-motes, .go-vignette { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
 .go-head, .go-wrap, .go-foot { position: relative; z-index: 3; }
@@ -372,6 +386,7 @@
 }
 .go-seed__row { display: inline-flex; align-items: center; gap: 8px; }
 .go-seed__val {
+  white-space: nowrap;
   font-family: var(--font-num); font-variant-numeric: var(--num-feat);
   font-size: max(15px, var(--fs-md)); font-weight: 600; letter-spacing: .1em;
   color: var(--kit-gold-hi);
@@ -732,7 +747,7 @@
   .go-ledger { margin-top: 6px; padding: 20px 18px 16px; row-gap: 8px; }
   .go-who { row-gap: 6px; padding-bottom: 15px; }
   .go-who__deep { font-size: 24px; }
-  .go-corner { --h: 52px; }
+  .go-corner { --h: 52px; padding-inline: 24px; }
   .go-block--mvp { margin-top: 18px; gap: 10px; --plinth-h: 46px; }
   .go-block--mvp > .kit-heading--ribbon { --rib-h: 26px; }
   .go-mvp__slot { margin: 12px 14px calc(17px + var(--plinth-h) * .9); }

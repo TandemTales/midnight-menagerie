@@ -8,6 +8,22 @@
    of the board's painted medallions. Nothing here draws a box of its own.
    =========================================================================== */
 
+/* The room the fort is built in, lit the way the fort is (BRAID's slots, round
+   2; ui/kit.css .kit-ground): the lamp inside the fort throws a warm pool up
+   the wall behind its panel and out across the floor, a lower candle warms
+   the choices, and the moon comes in high on the right with a shaft falling
+   across the room. */
+.rm--rest {
+  --wl3-x: 28vw;                         --wl3-y: 58vh;
+  --wl3-w: clamp(620px, 58vw, 980px);    --wl3-h: 92vh;
+  --wl4-x: 70vw;                         --wl4-y: 96vh;
+  --wl4-w: 56vw;                         --wl4-h: 40vh;
+  --ml1-x: 76vw;                         --ml1-y: 18vh;
+  --ml1-w: 46vw;                         --ml1-h: 40vh;
+  --mb1-x: 62vw;                         --mb1-y: 16vh;
+  --mb1-w: 22vw;                         --mb1-h: 84vh;
+}
+
 /* The room starts right under the plaque's note, clear only of the medallions
    riding the columns' top rails, and the four choices share out whatever
    height is left as air inside their panels: no empty band under the ribbon. */

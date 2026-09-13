@@ -201,7 +201,7 @@
    that, what you carry on an engraved strip, and the Forgetting service with
    its price along the foot of the panel. */
 .sh-keeper {
-  --keeper-w: clamp(72px, 5.3vw, 86px);
+  --keeper-w: clamp(80px, 6.25vw, 100px);
   position: relative; z-index: 1;
   flex: none; width: var(--keeper-w);
   margin: 0;
@@ -469,7 +469,7 @@
 }
 .sh-deck {
   color: inherit; font: inherit; line-height: 1.1;
-  min-width: 30px; min-height: 0; padding: 0 5px;
+  min-width: 30px; min-height: 22px; padding: 0 5px;
   border-bottom: 1px dotted color-mix(in srgb, var(--kit-gold) 70%, transparent);
 }
 .sh-deck:hover { color: #fff1d2; }
@@ -563,7 +563,7 @@
   .scene--shop .sh-row__txt b { font-size: 15px; }
   .scene--shop .sh-row__txt em { font-size: 13px; line-height: 1.18; }
   .scene--shop .sh-row__sig { width: 34px; height: 34px; }
-  .scene--shop .sh-keeper { --keeper-w: 72px; }
+  .scene--shop .sh-keeper { --keeper-w: 80px; }
   .scene--shop .sh-moth__name.kit-plate { --plate-h: 36px; }
   .scene--shop .sh-moth__say { row-gap: 5px; }
   .scene--shop .rm-foot { padding-top: 3px; padding-bottom: 10px; }

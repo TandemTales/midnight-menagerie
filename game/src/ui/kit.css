@@ -67,13 +67,15 @@
   background: var(--kit-ground-0);
   isolation: isolate;
 }
-/* The ground is a ROOM, rendered by tools/prep_ui_materials.py: flocked damask
-   on the wall, a walnut chair rail and fielded panelling, a skirting board and
-   worn flagstones, all in the dark. It is rendered twice more under candle
-   light and moonlight, and those renders are revealed only where the board's
-   lights are — through pool.webp (a candle's light on a wall) and beam.webp (a
-   shaft from a window) — so a light pool shows the damask and the panelling it
-   falls on instead of a gradient laid over them.
+/* The ground is a ROOM, painted by tools/prep_ui_paint.py (round 2's BRAID,
+   grafted in round 3) over tools/prep_ui_materials.py's geometry: flocked
+   damask on the wall, a walnut chair rail and fielded panelling, a skirting
+   board and the Kid board's big inked flagstones, all in the dark, every line
+   drawn by hand and fused like paint. It is painted twice more under candle
+   light and moonlight, and those are revealed only where the board's lights
+   are — through pool.webp (a candle's light on a wall, brushed) and beam.webp
+   (a shaft from a window, streaked) — so a light pool shows the damask and the
+   panelling it falls on instead of a gradient laid over them.
 
    A board places its lights with custom properties, centre and size, all
    lengths (vw / vh / px, never %: a % in mask-position aligns, it does not
