@@ -143,26 +143,55 @@ function table(verdicts) {
   }).sort((x, y) => y.mean - x.mean)
 }
 
-function majority(list) {
+// Head-to-head wins and Borda points over the judges' rankings, restricted to
+// the named screens. A candidate "beats" another when more rankings put it
+// above than below.
+function rankTally(verdicts, codes, screens) {
+  const above = {}, borda = {}
+  for (const c of codes) { above[c] = {}; borda[c] = 0 }
+  for (const v of verdicts) for (const s of v.screens) {
+    if (!screens.includes(s.screen)) continue
+    const r = s.ranking.filter(c => codes.includes(c))
+    r.forEach((c, i) => {
+      borda[c] += r.length - 1 - i
+      for (const d of r.slice(i + 1)) above[c][d] = (above[c][d] || 0) + 1
+    })
+  }
+  const wins = c => codes.filter(d => d !== c && (above[c][d] || 0) > (above[d][c] || 0)).length
+  return { wins, borda }
+}
+
+// A strict majority of the judges' picks decides. Without one, the rankings do:
+// head-to-head wins, then Borda, then the mean. Round 2's POLISH judges named
+// three different winners, and a plain vote count quietly returned the first
+// judge's.
+function decide(votes, codes, tally, mean) {
   const n = {}
-  for (const x of list) if (x) n[x] = (n[x] || 0) + 1
-  const best = Object.entries(n).sort((a, b) => b[1] - a[1])
-  return best.length ? best[0][0] : null
+  for (const x of votes) if (x) n[x] = (n[x] || 0) + 1
+  const top = Object.entries(n).sort((a, b) => b[1] - a[1])
+  if (top.length && top[0][1] > votes.length / 2) return { code: top[0][0], how: `${top[0][1]} of ${votes.length} judges` }
+  const order = codes.slice().sort((a, b) => tally.wins(b) - tally.wins(a) || tally.borda[b] - tally.borda[a] || mean(b) - mean(a))
+  return {
+    code: order[0] || null,
+    how: `no majority (${top.map(([c, k]) => `${c} ${k}`).join(', ') || 'no votes'}); head-to-head wins ${order.map(c => `${c} ${tally.wins(c)}`).join(', ')}; Borda ${order.map(c => `${c} ${tally.borda[c]}`).join(', ')}`,
+  }
+}
+
+function trackWinner(T, verdicts, summary) {
+  const codes = summary.map(r => r.code)
+  return decide(verdicts.map(v => v.winner), codes, rankTally(verdicts, codes, T.screens), c => (summary.find(r => r.code === c) || {}).mean ?? -1)
 }
 
 function screenWinners(T, verdicts, summary) {
-  const out = {}
+  const codes = summary.map(r => r.code)
+  const out = {}, how = {}
   for (const s of T.screens) {
     const votes = verdicts.map(v => (v.screen_winners.find(w => w.screen === s) || {}).code)
-    const n = {}
-    for (const c of votes) if (c) n[c] = (n[c] || 0) + 1
-    const top = Object.entries(n).sort((a, b) => b[1] - a[1])
-    if (top.length && (top.length === 1 || top[0][1] > top[1][1])) { out[s] = top[0][0]; continue }
-    // tie: the higher mean on that screen
-    const scored = summary.map(r => ({ code: r.code, m: (r.per.find(p => p.screen === s) || {}).mean ?? -1 })).sort((a, b) => b.m - a.m)
-    out[s] = scored[0] ? scored[0].code : null
+    const mean = c => ((summary.find(r => r.code === c) || { per: [] }).per.find(p => p.screen === s) || {}).mean ?? -1
+    const d = decide(votes, codes, rankTally(verdicts, codes, [s]), mean)
+    out[s] = d.code; how[s] = d.how
   }
-  return out
+  return { out, how }
 }
 
 // 'refine': one winner replaces the screens, so the judges disagree when their
@@ -212,10 +241,10 @@ async function track(T) {
     if (v3) verdicts.push(v3)
   }
   const summary = table(verdicts)
-  const winner = majority(verdicts.map(v => v.winner))
-  const sw = screenWinners(T, verdicts, summary)
-  log(`${T.name}: winner ${winner}; screens ${JSON.stringify(sw)}; means ` + summary.map(s => `${s.code} ${s.mean.toFixed(1)}`).join(', '))
-  return { track: T.name, rule: T.rule, winner, screenWinners: sw, summary, verdicts, builds }
+  const { code: winner, how: winnerHow } = trackWinner(T, verdicts, summary)
+  const { out: sw, how: screenHow } = screenWinners(T, verdicts, summary)
+  log(`${T.name}: winner ${winner} (${winnerHow}); screens ${JSON.stringify(sw)}; means ` + summary.map(s => `${s.code} ${s.mean.toFixed(1)}`).join(', '))
+  return { track: T.name, rule: T.rule, winner, winnerHow, screenWinners: sw, screenHow, summary, verdicts, builds }
 }
 
 const results = await parallel(A.tracks.map(T => () => track(T)))

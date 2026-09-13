@@ -64,12 +64,27 @@ so round 2 runs six at once, as round 1 did.
 | 0 | kit on Shop / Reward / Curiosity | LOCK 7.0 · WICK 6.3 · MOTH 6.2 · the game before 2.2 | LOCK, "staged boards", both judges | `1641055` |
 | 1 | REFINE Shop / Reward / Curiosity | OPAL 6.83 · RUNE 6.50 · IRIS 6.08 · round 0's screens 5.58 | OPAL, both judges | `ef3f7e8` |
 | 1 | EXPAND Map / Safe Room / Game Over | HUSK 6.67 · FERN 6.44 · VANE 6.06 · the screens before 3.06 | per screen, 3 judges: Map HUSK, Safe Room and Game Over FERN | `d30ab6d` |
-| 2 | POLISH the six; COMBAT; EXPAND-2 Lobby / Clubhouse / Atlas | briefed (`BRIEF-r2.md`, `round-2.args.json`), not built | | |
+| 2 | POLISH Shop / Reward / Curiosity / Map / Safe Room / Game Over | BRAID 6.78 · AMBER 6.75 · CHALK 6.72 · the screens before 6.22 | CHALK: three judges named three winners; CHALK beats each rival 10-8 head to head over the 18 rankings, Borda 34 / 30 / 30 | `a4b2ecc` |
+| 2 | COMBAT, a Scuffle and a boss | FROST 7.25 · DUSK 6.75 · EMBER 6.25 · the screen before 3.50 | FROST, both judges | `04af2bc` |
+| 2 | EXPAND-2 Lobby / Clubhouse / Atlas | GROVE 6.61 · IVORY 6.56 · HAZE 6.11 · the screens before 2.56 | per screen, 3 judges: Lobby GROVE, Clubhouse and Atlas IVORY | `31b6d8f` |
 
 **Scores anchor to the candidates beside them.** Round 0's winner scored 7.0 in
 round 0 and 5.58 as round 1's baseline: the judges grew stricter as the field
 improved. Compare a winner with the baseline IN ITS OWN ROUND (round 1 REFINE:
 +1.25), never across rounds.
+
+Round 2 against its own baselines: POLISH +0.50, COMBAT +3.75, EXPAND-2 +4.05.
+Converting a screen moves it about four points; refining a converted one moves it
+about half a point, and less each round (+1.25, then +0.50). The background
+dimension is what stalls: every judge scores it near 6 on every candidate, winner
+or not, because the grounds are still renders.
+
+**When the judges split with no majority**, `round-workflow.js` decides on their
+rankings: the candidate that beats each other one head to head across every
+judge's ranking of every screen, then Borda points, then the mean. Round 2's
+POLISH needed it: three judges named three winners, and a plain vote count had
+returned the first judge's pick. A tied screen is decided the same way on that
+screen's rankings alone.
 
 Round 0's losing kits stay on `ui/r0-a` (painted pieces) and `ui/r0-b` (vector
 system) because the judges asked for pieces of them: WICK's star-glyph ribbon
