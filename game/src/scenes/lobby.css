@@ -69,6 +69,7 @@
   z-index: 1;
 }
 .lo-sill--l { left: calc(var(--hatch-x) + var(--hatch-w) * .08); }
+.lo-board.has-backdrop .lo-sill { display: none; }
 .lo-sill--r { right: calc(var(--hatch-x) + var(--hatch-w) * .08); }
 /* the string of bulbs the kids ran along the roof beam, between the candles */
 .lo-lights {
