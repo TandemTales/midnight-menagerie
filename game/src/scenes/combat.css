@@ -1649,6 +1649,60 @@
 }
 .cb-handhost.kit-cards .mm-card[data-rarity] .mm-card__type,
 .cb-chooser__pool.kit-cards .mm-card[data-rarity] .mm-card__type { font-size: calc(12 * var(--u) * min(var(--rules-k, 1), 1.2)); }
+/* THE HAND'S STATES, IN THE KIT'S METAL. `.kit-cards` dresses a card's frame
+   and face with selectors that outrank card.css's own state rules, which is
+   right on a shop shelf and wrong in a hand: the keyboard's selected card, a
+   focused card, the card resolving and an armed [Zoomies] all lost their light
+   the moment the hand put on the brass. They are restated here, candle-gold on
+   the brass, at a specificity that wins. */
+.cb-handhost.kit-cards .mm-card[data-rarity].is-selected .mm-card__frame,
+.cb-handhost.kit-cards .mm-card[data-rarity]:focus-visible .mm-card__frame {
+  box-shadow:
+    inset 0 0 0 calc(2 * var(--u)) var(--kit-gold-hi),
+    inset 0 0 0 calc(4 * var(--u)) color-mix(in srgb, var(--kit-candle) 45%, transparent),
+    0 0 calc(26 * var(--u)) color-mix(in srgb, var(--kit-candle) 62%, transparent),
+    0 calc(6 * var(--u)) calc(16 * var(--u)) rgba(0, 0, 0, .6);
+}
+.cb-handhost.kit-cards .mm-card[data-rarity].is-hero .mm-card__frame {
+  box-shadow:
+    inset 0 0 0 calc(1.5 * var(--u)) var(--flame-100),
+    inset 0 0 0 calc(4 * var(--u)) color-mix(in srgb, var(--kit-gold-hi) 60%, transparent),
+    0 calc(14 * var(--u)) calc(34 * var(--u)) rgba(0, 0, 0, .7),
+    0 0 calc(52 * var(--u)) color-mix(in srgb, var(--flame-glow) 70%, transparent);
+}
+.cb-handhost.kit-cards .mm-card[data-rarity].is-kw-live .mm-card__face {
+  box-shadow:
+    inset 0 0 0 calc(2.5 * var(--u)) color-mix(in srgb, var(--pluck-300) 75%, transparent),
+    inset 0 0 calc(18 * var(--u)) color-mix(in srgb, var(--pluck-300) 24%, transparent),
+    0 0 calc(16 * var(--u)) color-mix(in srgb, var(--pluck-300) 30%, transparent);
+}
+.cb-handhost.kit-cards .mm-card[data-rarity].is-aiming.is-over-target .mm-card__frame { box-shadow: none; }
+/* the armed keyword chip itself: kit.css recolours every chip to brass, which
+   put out the one chip that is meant to be lit */
+.cb-handhost.kit-cards .mm-card[data-rarity] .mm-card__kw.is-live {
+  color: var(--ink-900);
+  background: var(--pluck-300);
+  box-shadow:
+    inset 0 0 0 calc(1 * var(--u)) color-mix(in srgb, white 45%, transparent),
+    0 0 calc(9 * var(--u)) color-mix(in srgb, var(--pluck-300) 65%, transparent);
+}
+/* a card you cannot pay for keeps its dark ground but loses the type's wash, so
+   it never reads as active (card.css's intent, restated over the kit's face) */
+.cb-handhost.kit-cards .mm-card[data-rarity].is-unplayable .mm-card__face {
+  background:
+    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
+    linear-gradient(180deg, #17121c 0%, #0f0c13 58%, #151019 100%);
+  background-blend-mode: overlay, normal;
+}
+.cb-handhost.kit-cards .mm-card[data-rarity].is-unplayable .mm-card__face::before {
+  background:
+    linear-gradient(to bottom,
+      var(--kit-panel) 0%, var(--kit-panel) 21%,
+      color-mix(in srgb, var(--kit-panel) 88%, transparent) 38%,
+      color-mix(in srgb, var(--kit-panel) 88%, transparent) 100%),
+    url("../../assets/ui/kit/damask.webp") 50% calc(40 * var(--u)) / calc(118 * var(--u)) auto repeat;
+}
+
 /* VANISH, RETAIN and the rest: a small dark plate seated on the ruled panel's
    foot, lettered in the boards' engraved caps (card.css draws a 9u pill, which
    a hand card prints at under 6px) */
