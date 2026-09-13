@@ -44,11 +44,22 @@
   --mb1-x: 22vw;   --mb1-y: 52vh;   --mb1-w: 30vw;   --mb1-h: 58vh;
   --mb2-x: 78vw;   --mb2-y: 52vh;   --mb2-w: 30vw;   --mb2-h: 58vh;
 }
+/* It is night up here: the boards go down into the same aubergine dark every
+   board in the house stands in, and the lamp, the windows and the panel are
+   what is left lit. A multiply of the samples' shadow violet, under the props
+   and the dressing, so those keep their own colour. */
+.lo-night {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: rgb(120, 92, 150);
+  mix-blend-mode: multiply;
+  opacity: .5;
+}
+.kit-board.has-backdrop .lo-night { opacity: .18; }
 .lo-vig {
   position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background:
-    radial-gradient(86% 76% at 50% 52%, transparent 50%, color-mix(in srgb, var(--kit-void) 50%, transparent) 100%),
-    linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 22%, transparent) 0%, transparent 16%, transparent 84%, color-mix(in srgb, var(--kit-void) 34%, transparent) 100%);
+    radial-gradient(74% 66% at 50% 54%, transparent 30%, color-mix(in srgb, var(--kit-void) 72%, transparent) 100%),
+    linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 35%, transparent) 0%, transparent 18%, transparent 80%, color-mix(in srgb, var(--kit-void) 40%, transparent) 100%);
 }
 
 /* the two windows onto the house, their sills on the nailer rail */

@@ -182,6 +182,7 @@ export class LobbyScene extends Scene {
     const board = el('div', `lo-board kit-board${still ? ' kit-still' : ''}`);
     board.innerHTML = `
       <div class="lo-ground kit-ground kit-ground--planks" aria-hidden="true"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>
+      <div class="lo-night" aria-hidden="true"></div>
       <div class="lo-vig" aria-hidden="true"></div>
       <div class="kit-dress" aria-hidden="true">
         <i class="kit-dress__floor"></i>
