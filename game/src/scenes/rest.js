@@ -463,7 +463,12 @@ export class RestScene extends RoomScene {
     // way the Kid board seats its mirror; the choices are panels beside it.
     wrap.innerHTML = `
       <div class="rs-art kit-panel" data-medal="moon">
-        <div class="rs-scene">${FORT_PAINT}${FORT_SVG}</div>
+        <div class="rs-scene">${FORT_PAINT}
+          <i class="rs-glow rs-glow--moon" aria-hidden="true"></i>
+          <i class="rs-glow rs-glow--rug" aria-hidden="true"></i>
+          ${FORT_SVG}
+          <i class="rs-glow rs-glow--lamp" aria-hidden="true"></i>
+        </div>
       </div>
       <div class="rs-choices" role="group" aria-label="Choose one thing to do here"></div>`;
     this.$body.appendChild(wrap);
@@ -559,7 +564,7 @@ export class RestScene extends RoomScene {
       b.setAttribute('aria-label', `${o.name}. ${String(o.readout).replace(/<[^>]+>/g, ' ')}`);
       // The 1-4 keys choose the first four (_bindKeys): each of those wears its
       // key on a small enamel badge at the corner of its rail.
-      b.innerHTML = `${i < 4 ? `<span class="rs-door__key" aria-hidden="true">${i + 1}</span>` : ''}
+      b.innerHTML = `${i < 4 ? `<span class="rs-door__key kit-num" aria-hidden="true">${i + 1}</span>` : ''}
         <span class="rs-door__glyph" aria-hidden="true">${DOOR_GLYPH[o.id]}</span>
         <span class="rs-door__txt">
           <b>${esc(o.name)}</b>

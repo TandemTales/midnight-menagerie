@@ -391,6 +391,7 @@ export class Tooltip {
       placement: opts.placement || anchorEl.dataset?.tipPlacement || 'auto',
       avoid: opts.avoid ?? anchorEl.dataset?.tipAvoid,
       bounds: opts.bounds || null,
+      gap: opts.gap || 0,
     });
     anchorEl.setAttribute('aria-describedby', 'mm-tip-panel');
     this.live.textContent = this._plain(desc);
@@ -856,7 +857,10 @@ export class Tooltip {
     const boundsSel = cardEl.closest('[data-tip-bounds]')?.dataset.tipBounds || '';
     let bounds = null;
     if (boundsSel) { try { bounds = cardEl.closest(boundsSel); } catch { bounds = null; } }
-    this.show(cardEl, { kind: 'keywords', items }, { placement: 'right', avoid, bounds });
+    // `data-tip-gap`: the cards on that screen hang in painted frames drawn
+    // outside their own box, so the panel keeps that much more clear of them.
+    const gap = Number(cardEl.closest('[data-tip-gap]')?.dataset.tipGap) || 0;
+    this.show(cardEl, { kind: 'keywords', items }, { placement: 'right', avoid, bounds, gap });
   }
 
   _showSub(chip) {
@@ -883,14 +887,19 @@ export class Tooltip {
    *   −(px²) area of `avoid` elements it would cover
    *   +bias  for the caller's preferred side
    */
-  _place(panel, anchor, { placement = 'auto', avoid = null, alignTo = null, bounds = null } = {}) {
+  _place(panel, anchor, { placement = 'auto', avoid = null, alignTo = null, bounds = null, gap = 0 } = {}) {
     if (this._raf) cancelAnimationFrame(this._raf);
     this._raf = requestAnimationFrame(() => {
       this._raf = 0;
       if (panel.hidden || !anchor.isConnected) return;
 
-      // one read pass
-      const a = anchor.getBoundingClientRect();
+      // one read pass. `gap` grows the anchor and everything it avoids by the
+      // width of a frame painted round them, so the panel clears the frame.
+      const grow = (r) => (gap ? {
+        left: r.left - gap, top: r.top - gap, right: r.right + gap, bottom: r.bottom + gap,
+        width: r.width + 2 * gap, height: r.height + 2 * gap,
+      } : r);
+      const a = grow(anchor.getBoundingClientRect());
       // Cross-axis alignment can track a different element than the one the
       // panel is placed against (a chip inside the panel it belongs to).
       const c = alignTo?.isConnected ? alignTo.getBoundingClientRect() : a;
@@ -898,7 +907,7 @@ export class Tooltip {
       panel.style.maxWidth = '';
       let p = panel.getBoundingClientRect();
       const vw = window.innerWidth, vh = window.innerHeight;
-      const avoidRects = this._avoidRects(avoid, anchor);
+      const avoidRects = this._avoidRects(avoid, anchor).map(grow);
       const b = bounds?.isConnected ? bounds.getBoundingClientRect() : null;
       let framed = null;
       /* Inside a frame the panel may narrow (down to a readable 150px) so that

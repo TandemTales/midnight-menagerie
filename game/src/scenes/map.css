@@ -177,8 +177,11 @@
   width: clamp(64px, 5.4vw, 92px);
   left: calc(var(--kit-edge) + 4px); bottom: calc(var(--kit-edge) + 2px);
 }
-/* the key bar's own candle finial stands at the sheet's right front corner */
-.map-props__candle { display: none; }
+/* the desk candle at the sheet's right front corner, balancing the skull */
+.map-props__candle {
+  width: clamp(38px, 3vw, 50px);
+  right: calc(var(--kit-edge) + 8px); bottom: calc(var(--kit-edge) + 4px);
+}
 .map-props__light--desk {
   --light-a: 26%;
   width: clamp(360px, 32vw, 520px);
@@ -315,18 +318,18 @@
 }
 .mi-here-b { stroke-width: 1.6; opacity: .45; stroke-dasharray: 2 10; }
 
-/* ── hazard wings ───────────────────────────────────────────────────────── */
-.mi-zone { color: #9b2f2a; transition: opacity var(--t-base); }
-.mi-zone--boon { color: #2f6680; }
-/* an inked wash: the pale bloom of pigment, darker where it pooled as it dried
-   at its deckled edge, the survey's hatch faint through it */
-.mi-zone-wash { fill: currentColor; opacity: .13; }
-.mi-zone-bloom { fill: color-mix(in srgb, currentColor 60%, var(--parchment)); opacity: .07; }
-.mi-zone rect { opacity: .16; }
+/* ── hazard wings ───────────────────────────────────────────────────────────
+   A surveyor's boundary (6cfaef5's): the wing hatched across in its own ink,
+   a dashed line run round it by hand and a fine solid one just inside it. It
+   is drawn onto the plan, under the route, and never a box of colour. */
+.mi-zone { color: #8e2c27; transition: opacity var(--t-base); }
+.mi-zone--boon { color: #265d78; }
+.mi-zone-hatch { opacity: .42; }
 .mi-zone-edge {
-  fill: none; stroke: currentColor; stroke-width: 5; stroke-linejoin: round;
-  opacity: .32;
+  fill: none; stroke: currentColor; stroke-width: 3.6; stroke-linejoin: round; stroke-linecap: round;
+  stroke-dasharray: 20 11; opacity: .78;
 }
+.mi-zone-edge--in { stroke-width: 1.4; stroke-dasharray: none; opacity: .5; }
 /* The wing's keyed symbol.  Same mark as the bar's note wears, so the plan and
    the margin legend read as one thing. */
 /* the key is a wax seal pressed onto the sheet: a ragged melted rim, the
@@ -438,11 +441,12 @@
 .map-node[data-lab="left"] .mn-label::after { left: auto; right: -4px; top: 50%; transform: translateY(-50%) rotate(45deg); }
 .map-node[data-lab="right"] .mn-label::after { left: -4px; top: 50%; transform: translateY(-50%) rotate(45deg); }
 .map-node--boss .mn-label::after { content: none; }
-/* the stem a moved nameplate hangs from, back to its own room: brass */
+/* the stem a nameplate hangs from, back to its own room: a brass rod with an
+   ink edge, never the pencil the route is drawn in */
 .mn-lead {
-  fill: none; stroke: color-mix(in srgb, var(--kit-gold-lo) 85%, var(--ink-900));
-  stroke-width: 2.6; stroke-linecap: round;
-  opacity: .9;
+  fill: none; stroke: var(--kit-gold);
+  stroke-width: 3.2; stroke-linecap: round;
+  filter: drop-shadow(0 0 .6px #1a0f06) drop-shadow(0 0 .6px #1a0f06) drop-shadow(1px 1.5px 1px rgba(40, 22, 8, .45));
 }
 .map-node.is-cold .mn-lead { opacity: .4; }
 
@@ -638,49 +642,29 @@
 .bn-meta b { font-style: normal; font-weight: 600; color: var(--kit-name); }
 .bn-meta .dot { margin: 0 .5em; color: var(--kit-gold); font-style: normal; }
 
-/* ── the bar on the bottom rail: key, wing conditions, the whole house ─────
-   ONE nameplate the width of the sheet, a candle standing at each end of it
-   as a finial, holding everything the sheet is keyed by in one line. Nothing
-   here may cover the sheet: the bar rides the rail's bottom edge, half on the
-   rail and half on the desk under it, and at 1280 it drops nothing. */
+/* ── the plates on the bottom rail: the key, each wing condition, the house ─
+   Each is a plate of its own, screwed to the rail's bottom edge half on the
+   rail and half on the desk under it: the key on the dark nameplate with KEY
+   engraved on its left end, every condition on its own cartouche with its
+   symbol in enamel, and THE WHOLE HOUSE a full gilt plaque with the house
+   medallion seated on its end. Nothing here may cover the sheet, and at 1280
+   nothing drops or stacks. */
 .map-bar {
   --bar-h: 58px;
-  --finial-w: clamp(34px, 2.8vw, 44px);
   position: absolute; z-index: 6;
-  left: calc(var(--kit-edge) + clamp(64px, 5.4vw, 92px) + var(--finial-w) + 4px);
-  right: calc(var(--kit-edge) + var(--finial-w) + 18px);
+  left: calc(var(--kit-edge) + clamp(64px, 5.4vw, 92px) + 14px);
+  right: calc(var(--kit-edge) + clamp(38px, 3vw, 50px) + 22px);
   bottom: calc(var(--map-foot) - var(--bar-h) / 2);
   height: var(--bar-h);
-  display: flex; align-items: center; justify-content: space-between; gap: clamp(6px, .8vw, 14px);
-  padding: 0 calc(var(--bar-h) * .62);
-  border: 0 solid transparent;
-  border-image: url("../../assets/ui/kit/plate.webp") 12 53 12 46 fill /
-    calc(var(--bar-h) * 12 / 72) calc(var(--bar-h) * 53 / 72) calc(var(--bar-h) * 12 / 72) calc(var(--bar-h) * 46 / 72) stretch;
-  filter: drop-shadow(0 5px 8px rgba(0, 0, 0, .8));
+  display: flex; align-items: center; justify-content: space-between; gap: clamp(8px, 1vw, 18px);
+  padding: 0;
   transition: opacity var(--t-base);
 }
-/* the two finials: the Kid board's candle, standing on the bar's ends */
-.map-bar::before, .map-bar::after {
-  content: ''; position: absolute; bottom: calc(var(--bar-h) * .28); pointer-events: none;
-  width: var(--finial-w); aspect-ratio: 106 / 164;
-  background: url("../../assets/ui/kit/candle.webp") 50% 100% / contain no-repeat;
-  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .8));
-}
-.map-bar::before { left: calc(var(--finial-w) * -.92); }
-.map-bar::after { right: calc(var(--finial-w) * -.92); }
-/* the plates inside the bar are its sections, not plates of their own */
-.map-bar .map-legend, .map-bar .note { border-image: none; filter: none; }
 .map-bar .map-notes, .map-bar .note { position: relative; }
-.map-bar .map-notes::before, .map-bar .map-atlas::before {
-  content: ''; position: absolute; left: calc(clamp(6px, .8vw, 14px) * -.5 - 3px); top: 50%;
-  width: 6px; height: 6px; transform: translate(-50%, -50%) rotate(45deg);
-  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, .7);
-}
 .map-screen.no-bar .map-bar { opacity: 0; pointer-events: none; }
 
-/* the key: one nameplate, KEY engraved on its left end and the marks in two
-   rows, so three wing conditions and the whole house still fit beside it */
+/* the key: its own nameplate, KEY engraved on its left end and the marks in
+   two rows beside it */
 .map-legend {
   --plate-h: 58px;
   display: grid; flex: none;
@@ -688,9 +672,9 @@
   grid-template-columns: auto repeat(5, auto);
   align-items: center; column-gap: clamp(9px, .8vw, 12px); row-gap: 1px;
   height: var(--plate-h);
-  padding: 4px 0 5px;
+  padding: 4px calc(var(--plate-h) * .62) 5px calc(var(--plate-h) * .5);
   border: 0 solid transparent;
-  border-image: url("../../assets/ui/kit/plate.webp") 12 53 12 46 fill /
+  border-image: url("../../assets/ui/kit/plate-lit.webp") 12 53 12 46 fill /
     calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72) stretch;
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8));
 }
@@ -719,47 +703,51 @@
 .lg-ico .f { fill: currentColor; }
 .lg-ico .pl, .lg-ico .pw { fill: var(--kit-enamel); }
 
-/* Out to the estate drawing — `scenes/atlas.js`: a quiet plate with the round
-   enamel button seated on its left end. In the bar rather than on the plaque
-   because the plaque takes no pointer events. */
-/* THE WHOLE HOUSE: a labelled cartouche that always keeps its caption, the
-   round enamel button seated on its left end */
+/* Out to the estate drawing — `scenes/atlas.js`. In the bar rather than on the
+   plaque because the plaque takes no pointer events. THE WHOLE HOUSE is a full
+   plaque: the kit's gilt-lettered nameplate, the round enamel button with the
+   house on it seated over its left end, as the boards' primary buttons wear
+   theirs. */
 .map-atlas {
-  --plate-h: 40px;
+  --plate-h: 50px;
   appearance: none; flex: none; position: relative;
   display: inline-flex; align-items: center; gap: 8px;
   height: var(--plate-h);
-  padding: 0 calc(var(--plate-h) * .62) 1px calc(var(--plate-h) * 1.12);
+  margin-left: calc(var(--plate-h) * .5);
+  padding: 1px calc(var(--plate-h) * .7) 2px calc(var(--plate-h) * 1.02);
   border: 0 solid transparent;
-  border-image: url("../../assets/ui/kit/cartouche.webp") 18 34 18 34 fill /
-    calc(var(--plate-h) * 18 / 64) calc(var(--plate-h) * 34 / 64) stretch;
+  border-image: url("../../assets/ui/kit/plate.webp") 12 53 12 46 fill /
+    calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72) stretch;
   background: none;
   color: var(--kit-gold-hi);
   font-family: var(--font-display); font-weight: 700;
-  font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; white-space: nowrap;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  font-size: 13px; letter-spacing: .14em; text-transform: uppercase; white-space: nowrap;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 12px color-mix(in srgb, var(--kit-candle) 22%, transparent);
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8));
   cursor: pointer;
   transition: color var(--t-quick) var(--ease-out), filter var(--t-quick) var(--ease-out);
 }
-.map-atlas__medal { --md: 46px; position: absolute; left: -14px; top: 50%; translate: 0 -50%; }
+.map-atlas__medal { --md: calc(var(--plate-h) * 1.08); position: absolute; left: calc(var(--plate-h) * -.5); top: 50%; translate: 0 -50%; }
 .map-atlas:hover, .map-atlas:focus-visible {
-  color: var(--kit-gold-hi);
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 35%, transparent));
+  color: #fff1d2;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) drop-shadow(0 0 12px color-mix(in srgb, var(--kit-candle) 40%, transparent)) brightness(1.1);
 }
-.map-atlas:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; border-radius: 999px; }
+.map-atlas:focus-visible {
+  outline: none;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) drop-shadow(0 0 2px var(--kit-gold-hi)) drop-shadow(0 0 16px color-mix(in srgb, var(--kit-candle) 70%, transparent)) brightness(1.16);
+}
 
 /* the wing conditions: each one its own plate, its symbol in enamel */
-.map-notes { display: flex; align-items: center; gap: clamp(8px, .9vw, 14px); flex: none; }
+.map-notes { display: flex; align-items: center; gap: clamp(8px, 1vw, 16px); flex: none; }
 .notes-h { display: none; }
 .note {
-  --plate-h: 42px;
+  --plate-h: 46px;
   position: relative;
   display: inline-flex; align-items: center; gap: 8px;
   height: var(--plate-h);
-  padding: 0 4px 1px 2px;
+  padding: 0 calc(var(--plate-h) * .66) 1px calc(var(--plate-h) * .34);
   border: 0 solid transparent;
-  border-image: url("../../assets/ui/kit/plate.webp") 12 53 12 46 fill /
+  border-image: url("../../assets/ui/kit/plate-lit.webp") 12 53 12 46 fill /
     calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72) stretch;
   background: none;
   font-size: 13px; white-space: nowrap; cursor: help;
@@ -780,7 +768,7 @@
 .note-ico svg { width: 15px; height: 15px; }
 .note-ico svg .s { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .note-ico svg .f { fill: currentColor; }
-.note:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; border-radius: 999px; }
+.note:focus-visible { outline: none; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) drop-shadow(0 0 2px var(--kit-gold-hi)) drop-shadow(0 0 12px color-mix(in srgb, var(--kit-candle) 60%, transparent)); }
 /* the rule, one hover away: a small kit panel above the plate */
 .note-pop {
   position: absolute; bottom: calc(100% + 14px); right: 0; width: 280px;
@@ -810,12 +798,16 @@
    initials sitting on one of them is the whole reason to vote rather than
    pass the pencil round. */
 .map-ballot {
-  flex: none; font-size: 11.5px; white-space: nowrap;
-  padding: 4px 10px 5px; border-radius: 2px;
+  --plate-h: 40px;
+  flex: none; font-size: 12px; white-space: nowrap;
+  display: inline-flex; align-items: center; height: var(--plate-h);
+  padding: 0 calc(var(--plate-h) * .6);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-lit.webp") 18 34 18 34 fill /
+    calc(var(--plate-h) * 18 / 64) calc(var(--plate-h) * 34 / 64) stretch;
   color: var(--spectre-100);
-  background: color-mix(in srgb, var(--spectre-500) 30%, transparent);
-  border: 1px solid color-mix(in srgb, var(--spectre-400) 62%, transparent);
-  border-left-width: 3px;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .8));
 }
 .map-ballot[hidden] { display: none; }
 
@@ -1059,12 +1051,12 @@
   .lg-i { font-size: 12.5px; gap: 4px; }
   .lg-ico { width: 21px; height: 21px; }
   .lg-ico svg { width: 13px; height: 13px; }
-  .map-legend { column-gap: 7px; }
+  .map-legend { column-gap: 7px; --plate-h: 54px; }
   .lg-h { letter-spacing: .12em; font-size: 11.5px; }
-  .map-bar { gap: 6px; padding-inline: 30px 24px; }
-  .note { gap: 5px; }
+  .map-bar { gap: 8px; --bar-h: 54px; }
+  .note { gap: 5px; --plate-h: 42px; }
   .note b { font-size: 11.5px; letter-spacing: .05em; }
-  .map-atlas { font-size: 11.5px; letter-spacing: .05em; padding-right: 20px; }
+  .map-atlas { --plate-h: 44px; font-size: 11.5px; letter-spacing: .08em; }
 }
 /* a wing with three conditions: the conditions give up their icons' air */
 .map-bar:has(.note ~ .note ~ .note) .note b { letter-spacing: .02em; }

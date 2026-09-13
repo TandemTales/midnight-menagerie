@@ -124,24 +124,20 @@ export class ShopScene extends RoomScene {
     if (this._dead) return;
 
     /* The board, composed like the Kid board. One shelf of Tricks across the
-       whole cabinet — its TRICKS ribbon hung under the crest, Mr. Moth himself
-       in his lit portrait medallion at its LEFT end, and his Forgetting service
-       as a sixth slot at its right end with its own price — and under it the
-       counter: Keepsakes and Snacks either side, and between them the one
-       thing he says to you, over what you are already carrying. */
+       whole cabinet, five real cards standing on a carved ledge in front of
+       the curtain he hangs behind it, their prices hung on the ledge's front —
+       and under it the counter: Keepsakes and Snacks either side, and between
+       them Mr. Moth himself, in his lit portrait medallion with his name on a
+       cartouche, the one thing he says to you, what you are already carrying,
+       and his Forgetting service with its own price (6cfaef5's arrangement:
+       the service stops being a narrow slab on the end of the shelf). */
     const wrap = el('div', 'sh-floor');
     wrap.innerHTML = `
       <div class="sh-left">
-        <section class="sh-counter sh-counter--cards kit-panel" data-medal="star2" aria-label="${esc(TERMS.card)}s for sale">
-          <h2 class="sh-h sh-h--cards kit-heading kit-heading--ribbon">${esc(TERMS.deck)} <em>on the table</em></h2>
-          <div class="sh-cards kit-cards" data-tip-avoid=".sh-card, .rm-where, .sh-counter--moth, .sh-side .sh-counter, .sh-keeper, .sh-service" role="list">
-            <figure class="sh-keeper">
-              <span class="sh-keeper__light" aria-hidden="true"></span>
-              <span class="sh-moth__frame" aria-hidden="true"></span>
-              ${MOTH_SVG}
-              <figcaption class="sh-moth__name kit-plate"><b class="kit-plate__name">Mr. Moth</b></figcaption>
-            </figure>
-          </div>
+        <section class="sh-counter sh-counter--cards kit-panel kit-mat--curtain" data-medal="star2" aria-label="${esc(TERMS.card)}s for sale">
+          <h2 class="sh-h sh-h--cards kit-heading kit-heading--ribbon kit-heading--inline kit-heading--clasp">${esc(TERMS.deck)} <em>on the table</em></h2>
+          <div class="sh-cards kit-cards" data-tip-avoid=".sh-card, .rm-where, .sh-counter--moth, .sh-side .sh-counter, .sh-keeper, .sh-service" data-tip-gap="12" role="list"></div>
+          <i class="sh-ledge kit-ledge" aria-hidden="true"></i>
         </section>
       </div>
       <div class="sh-side">
@@ -151,7 +147,15 @@ export class ShopScene extends RoomScene {
         </section>
         <section class="sh-counter sh-counter--moth kit-panel" data-medal="moon">
           <div class="sh-moth__say">
-            <p class="sh-moth__line">&ldquo;${esc(this._greeting)}&rdquo;</p>
+            <figure class="sh-keeper">
+              <span class="sh-keeper__light" aria-hidden="true"></span>
+              <span class="sh-moth__frame" aria-hidden="true"></span>
+              ${MOTH_SVG}
+            </figure>
+            <div class="sh-moth__words">
+              <p class="sh-moth__name kit-plate"><b class="kit-plate__name">Mr. Moth</b><span class="kit-plate__epithet">keeper of lost things</span></p>
+              <p class="sh-moth__line">&ldquo;${esc(this._greeting)}&rdquo;</p>
+            </div>
             <!-- Live, not a snapshot: this panel is the only place in the shop
                  that says what you already have, and it used to be written once
                  at build time — so after buying two Snacks the HUD read 2 and
@@ -165,6 +169,10 @@ export class ShopScene extends RoomScene {
               <div><dt>${esc(TERMS.potion)}s</dt><dd data-inv="snacks"></dd></div>
               <div><dt data-invlabel="clues"></dt><dd data-inv="clues"></dd></div>
             </dl>
+          </div>
+          <div class="sh-service" role="group" aria-label="Removal service">
+            <h3 class="sh-h sh-service__h kit-heading kit-heading--inline">Forgetting <em>a service</em></h3>
+            <div class="sh-remove"></div>
           </div>
         </section>
         <section class="sh-counter sh-counter--snacks kit-panel" data-medal="paw" aria-label="${esc(TERMS.potion)}s for sale">
@@ -180,8 +188,8 @@ export class ShopScene extends RoomScene {
     this._cardSlots = [];
 
     // ── Tricks ──────────────────────────────────────────────────────────────
-    // Mr. Moth stands at the left end of the shelf (in the markup above); the
-    // five Tricks follow him, and his Forgetting service closes the row.
+    // Five Tricks on the ledge; Mr. Moth and his Forgetting service keep the
+    // counter below (in the markup above).
     for (const item of this.stock.cards) {
       const def = cardById(item.id);
       if (!def) continue;
@@ -206,17 +214,8 @@ export class ShopScene extends RoomScene {
       this._views.push(view);
       this._cardSlots.push({ slot, view });
     }
-    // The sixth slot: the Forgetting service, a crescent medallion in a frame
-    // like the Tricks' own, its price on the shelf beneath it.
-    const service = el('div', 'sh-service');
-    service.setAttribute('role', 'listitem');
-    service.setAttribute('aria-label', 'Removal service');
-    service.innerHTML = `
-      <span class="sh-service__medal" aria-hidden="true"></span>
-      <h3 class="sh-h sh-service__h kit-heading">Forgetting <em>a service</em></h3>
-      <div class="sh-remove"></div>`;
-    this.$cards.appendChild(service);
-    this.$remove = service.querySelector('.sh-remove');
+    // The Forgetting service lives on Mr. Moth's counter, its price beside it.
+    this.$remove = wrap.querySelector('.sh-remove');
 
     // ── Keepsakes ───────────────────────────────────────────────────────────
     for (const item of this.stock.keepsakes) {
@@ -330,19 +329,20 @@ export class ShopScene extends RoomScene {
    * Everything about affordability is expressed here so it is consistent.
    */
   _priceTag(price, key, label, onBuy, blockedReason = '', { repeatable = false } = {}) {
-    // Two pieces, one control: the price on a compact engraved cartouche led
-    // by one of the house's Buttons (coin.webp stands for the word, which stays
-    // in the DOM for anything that reads it), and BUY on the Kid board's round
-    // purple enamel button with its gold rim beside it.
-    const b = el('button', 'sh-buy');
+    // One counter plaque (.kit-price): the price struck on a small enamel
+    // cartouche led by one of the house's Buttons (coin.webp stands for the
+    // word, which stays in the DOM for anything that reads it), and BUY on the
+    // Kid board's round purple enamel button in its gold rim, seated over the
+    // cartouche's end so the two read as one piece.
+    const b = el('button', 'sh-buy kit-price');
     b.type = 'button';
     b.dataset.key = key;
     b.dataset.price = String(price);
     if (blockedReason) b.dataset.blocked = blockedReason;
     b.setAttribute('aria-label', `${label}, ${price} ${TERMS.gold}`);
     b.innerHTML = `
-      <span class="sh-buy__price kit-enamel kit-enamel--dark"><i class="sh-coin" aria-hidden="true"></i><b class="kit-enamel__value">${price}</b><i class="kit-enamel__label">${esc(TERMS.gold)}</i></span>
-      <span class="sh-buy__state"></span>`;
+      <span class="sh-buy__price kit-price__plate"><i class="sh-coin kit-price__coin" aria-hidden="true"></i><b class="kit-enamel__value kit-price__value">${price}</b><i class="kit-enamel__label">${esc(TERMS.gold)}</i></span>
+      <span class="sh-buy__state kit-price__buy"></span>`;
     b.addEventListener('click', async () => {
       if (b.disabled) return;
       if (this.sold.has(key) && !repeatable) return;

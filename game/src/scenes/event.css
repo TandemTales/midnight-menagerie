@@ -35,20 +35,18 @@
   gap: clamp(10px, 1.8vh, 22px);
   width: min(740px, 100%);
 }
-/* the page is vellum: the hide's warm tides and long faint fibres
-   (vellum.webp, prep_ui_polish.py) under the mood's light from the top and
-   the room's candle from below, dark where it meets the rail */
+/* the page is the panels' suede (.kit-mat, suede.webp), lit the way the hall
+   is: the brass lamp over the ledger warms the upper page, where the words
+   are, and the mood's own light comes down on it from the moon medallion,
+   cold or warm by what the room is; it falls into the dark at its rail */
 .ev-page.kit-panel {
   --pk: .8;
   --medal-k: .78;
-  padding: clamp(34px, 5vh, 46px) clamp(30px, 3.4vw, 56px) clamp(20px, 3vh, 30px);
-  background:
-    radial-gradient(70% 46% at 50% 0%, color-mix(in srgb, var(--ev-a) 10%, transparent) 0%, transparent 72%),
-    radial-gradient(90% 60% at 50% 110%, color-mix(in srgb, var(--kit-candle) 8%, transparent), transparent 70%),
-    radial-gradient(125% 95% at 50% 45%, transparent 55%, rgba(5, 3, 6, .5) 100%),
-    url("../../assets/ui/kit/vellum.webp") 0 0 / 256px 256px,
-    #1a1418;
-  background-clip: padding-box;
+  --lit-x: 50%; --lit-y: 18%; --lit-w: 115%; --lit-h: 80%; --lit-a: 40%;
+  --moon: var(--ev-a);
+  --moon-x: 50%; --moon-y: -12%; --moon-w: 70%; --moon-h: 60%; --moon-a: 34%;
+  --mat-edge: .6;
+  padding: clamp(38px, 5.4vh, 50px) clamp(30px, 3.4vw, 56px) clamp(20px, 3vh, 30px);
 }
 
 /* mood: the temperature of the light on the page, not a picture of a room.
@@ -83,24 +81,33 @@
   font-size: calc(var(--fs-md) * 1.1); line-height: 1.62; color: var(--kit-text);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
 }
-/* `flow-root` makes the first paragraph its own block formatting context, so the
-   drop cap cannot bleed down and indent the paragraph after it. */
-.ev-prose p:first-child { display: flow-root; }
-/* the drop cap, set in its own ornamented initial box: a bevelled gilt frame
-   with a scroll in each corner round dark violet enamel (initial.webp) */
-.ev-prose p:first-child::first-letter {
+/* the lede: the opening paragraph a size up, the way a printed story opens,
+   so the illuminated initial has two full lines of it to drop into. `flow-root`
+   makes it its own block formatting context: the initial cannot reach down and
+   indent the paragraph after it, which starts flush. */
+.ev-prose p.ev-lede, .ev-prose p:first-child {
+  display: flow-root;
+  --lede-lh: 1.46;
+  font-size: max(21px, calc(var(--fs-md) * 1.36)); line-height: var(--lede-lh);
+  color: var(--kit-text);
+  margin-bottom: .5em;
+}
+/* the illuminated initial, dropped two lines into the lede: the letter in the
+   wordmark's engraved gold, set in its own ornamented box (initial.webp: a
+   bevelled gilt frame with a scroll in each corner round violet enamel). The
+   box is exactly two of the lede's lines tall, less the gap under it. */
+.ev-prose p.ev-lede::first-letter, .ev-prose p:first-child::first-letter {
   float: left;
-  /* a box about a line and a half tall: it sits beside a one-line opening
-     without leaving a hole under it, and still drops into a longer one */
-  margin: 1px 12px 0 0;
-  padding: .17em .27em .1em;
-  line-height: .8;
-  font-family: var(--font-display); font-weight: 700; font-size: 2.1em;
+  margin: .05em .2em 0 -.02em;
+  padding: .15em .24em .05em;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 2.12em;
+  line-height: 1;
   color: var(--kit-gold-hi);
   background: url("../../assets/ui/kit/initial.webp") 50% 50% / 100% 100% no-repeat;
-  text-shadow: 0 1px 0 var(--kit-gold-lo), 0 2px 0 #1c1029, 0 0 14px color-mix(in srgb, var(--kit-candle) 40%, transparent);
+  text-shadow: 0 1px 0 var(--kit-gold-lo), 0 2px 0 #1c1029, 0 0 14px color-mix(in srgb, var(--kit-candle) 45%, transparent);
 }
-.ev-prose p:last-child { margin-bottom: 0; color: var(--kit-text-mid); }
+.ev-prose p:last-child:not(:first-child) { margin-bottom: 0; color: var(--kit-text-mid); }
 
 /* ── options: three doors ──────────────────────────────────────────────────
    Each door is a rectangular aubergine plate in a gilt double rule, a brass
@@ -118,29 +125,22 @@
 }
 .ev-opt {
   --md: clamp(46px, 5.6vh, 52px);
-  --glow: 0%;
   counter-increment: ev-door;
   position: relative;
   display: grid; gap: 3px; text-align: left;
   min-height: 58px;
   margin-left: calc(var(--md) + 12px);
   padding: 11px 26px 12px 24px;
-  border: 1px solid transparent;
-  border-image-source: url("../../assets/ui/kit/plate-rect.webp");
-  border-image-slice: 34;
-  border-image-width: 25px;
-  border-image-repeat: stretch;
-  background:
-    radial-gradient(70% 120% at 28% 50%, color-mix(in srgb, var(--kit-candle) var(--glow), transparent), transparent 75%),
-    radial-gradient(120% 140% at 50% 0%, color-mix(in srgb, var(--kit-violet) 16%, transparent), transparent 70%),
-    url("../../assets/ui/kit/felt.webp") 0 0 / 256px 256px,
-    linear-gradient(180deg, #2a1a35 0%, #1c1225 55%, #140d1a 100%);
-  background-clip: padding-box;
-  box-shadow: inset 0 0 18px rgba(0, 0, 0, .55), 0 6px 14px -6px rgba(0, 0, 0, .8);
+  /* one painted plaque for every door (.kit-plaque): plate-rect's gilt double
+     rule and brackets round aubergine enamel, the candle on it from the side
+     its medallion is on. A door you point at, or have chosen, is the same
+     enamel under more of that light — never a different material. */
+  --lit-x: 8%; --lit-y: 40%; --lit-w: 90%; --lit-h: 170%; --lit-a: 30%;
+  --moon-x: 70%; --moon-y: -40%; --moon-w: 90%; --moon-h: 150%; --moon-a: 14%;
+  --mat-edge: .45;
   transition: transform var(--t-quick) var(--ease-out), opacity var(--t-base) var(--ease-out),
-              --glow var(--t-base) var(--ease-out);
+              filter var(--t-base) var(--ease-out);
 }
-@property --glow { syntax: '<percentage>'; inherits: false; initial-value: 0%; }
 .ev-opt::before {
   content: counter(ev-door, upper-roman);
   position: absolute; left: calc(-1 * var(--md) - 12px); top: 50%; transform: translateY(-50%);
@@ -152,6 +152,7 @@
   color: var(--kit-gold-hi);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 8px color-mix(in srgb, var(--kit-candle) 30%, transparent);
   padding-bottom: 1px;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
 }
 /* a short brass stem joins the medallion to its plate */
 .ev-opt::after {
@@ -160,20 +161,20 @@
   background: linear-gradient(180deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
   box-shadow: 0 1px 0 rgba(0, 0, 0, .7);
 }
-/* Hover and keyboard focus light the plate from within — a candle's warmth
-   pooling inside the rule, the medallion's number brightening — never a ring
-   drawn round it. */
+/* Hover and keyboard focus bring the candle closer: the same enamel, lit
+   warmer and further across, the medallion's number brightening — never a
+   ring drawn round it. */
 .ev-opt:hover:not(:disabled), .ev-opt:focus-visible {
-  --glow: 24%;
+  --lit-a: 58%; --lit-w: 130%;
   transform: translateX(3px); outline: none;
-  box-shadow: inset 0 0 18px rgba(0, 0, 0, .4), inset 0 0 34px color-mix(in srgb, var(--kit-candle) 16%, transparent), 0 6px 14px -6px rgba(0, 0, 0, .8);
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 22%, transparent));
 }
-.ev-opt:hover:not(:disabled)::before, .ev-opt:focus-visible::before { color: #fff1d2; filter: brightness(1.18); }
+.ev-opt:hover:not(:disabled)::before, .ev-opt:focus-visible::before { color: #fff1d2; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) brightness(1.18); }
 .ev-opt:disabled { cursor: not-allowed; filter: saturate(.3) brightness(.7); }
 .ev-opt.is-chosen {
   opacity: 1;
-  --glow: 30%;
-  box-shadow: inset 0 0 18px rgba(0, 0, 0, .4), inset 0 0 40px color-mix(in srgb, var(--kit-candle) 20%, transparent), 0 6px 14px -6px rgba(0, 0, 0, .8);
+  --lit-a: 66%; --lit-w: 140%;
+  filter: drop-shadow(0 0 14px color-mix(in srgb, var(--kit-candle) 28%, transparent));
 }
 .ev-opt.is-chosen::before { color: var(--good-300); }
 .ev-opt.is-faded { opacity: .3; }
@@ -520,12 +521,15 @@
 
 /* a 1280x800 panel: the page gives up air, never type */
 @media (max-height: 860px) {
-  .ev-page.kit-panel { padding: 30px 40px 16px; }
-  .ev-prose { padding-bottom: 10px; }
-  .ev-prose p { line-height: 1.5; margin-bottom: .5em; }
+  /* the moon medallion hangs 38px into the page: the lede starts clear of it,
+     and the divider has a line's air either side */
+  .ev-page.kit-panel { padding: 40px 40px 16px; }
+  .ev-prose { padding-bottom: 16px; }
+  .ev-prose p { line-height: 1.46; margin-bottom: .44em; }
+  .ev-prose p.ev-lede { --lede-lh: 1.38; margin-bottom: .36em; }
   .ev-options { gap: 8px; padding-top: 4px; }
-  .ev-opt { min-height: 54px; padding-block: 9px 10px; }
-  .scene--event .rm-body { padding-top: 22px; }
+  .ev-opt { min-height: 52px; padding-block: 8px 9px; }
+  .scene--event .rm-body { padding-top: 26px; }
 }
 
 /* When event.png is painted it brings its own walls: the placeholder windows

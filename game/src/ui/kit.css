@@ -423,15 +423,11 @@
   border-image-width: calc(44px * var(--pk));
   border-image-outset: calc(14px * var(--pk));
   border-image-repeat: stretch;
-  /* The ground is cloth, not a gradient: selectKid's empty panels are a
-     near-black crinkled nap (felt.webp, prep_ui_polish.py), lit from above the
-     way the board is and falling into shadow at the corners. */
-  background:
-    radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(4, 3, 6, .5) 100%),
-    radial-gradient(80% 55% at 50% -5%, color-mix(in srgb, var(--kit-candle) 5%, transparent), transparent 70%),
-    url("../../assets/ui/kit/felt.webp") 0 0 / 256px 256px,
-    var(--kit-panel);
-  background-clip: padding-box;
+  /* The ground is a material, not a gradient: selectKid's empty panels are a
+     crinkled suede (suede.webp, tools/prep_ui_surfaces.py), lit from above the
+     way the board is and falling into shadow at the corners. The stack is the
+     kit's lit material (.kit-mat, PAINTED SURFACES below); a board moves the
+     light with --lit-* or changes the material with a .kit-mat--* modifier. */
   box-shadow: 0 18px 40px -18px rgba(0, 0, 0, .9), inset 0 0 26px rgba(0, 0, 0, .4);
   padding: clamp(14px, 1.6vw, 22px);
 }
@@ -937,16 +933,21 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
     inset 0 0 0 calc(3 * var(--u)) color-mix(in srgb, var(--frame-hi) 26%, transparent),
     0 calc(4 * var(--u)) calc(12 * var(--u)) rgba(0, 0, 0, .7);
 }
-/* The face under the art is a lined rules panel, not a gradient: the samples'
-   damask flocked into dark cloth (felt-damask.webp), lit warm from the foot by
-   the card's type colour, with a fine engraved double rule standing in from its
-   edges and a brass fleuron at each of the rule's lower corners (::after). */
+/* The face under the art is a rules panel of aubergine enamel, not a
+   gradient: the Kid board's round buttons' own mottled, scratched glaze
+   (enamel.webp, tools/prep_ui_surfaces.py), a candle's light on its upper
+   half where the words are and the card's type colour warming its foot, with
+   a fine engraved double rule standing in from its edges and a brass fleuron
+   at each of the rule's lower corners (::after). The glaze is laid in overlay
+   under the light, so the light brings its grain up instead of washing it. */
 .kit-cards .mm-card[data-rarity] .mm-card__face {
   background:
-    radial-gradient(130% 46% at 50% 100%, color-mix(in srgb, var(--type-color) 18%, transparent), transparent 70%),
-    radial-gradient(90% 40% at 50% 46%, color-mix(in srgb, var(--kit-candle) 6%, transparent), transparent 70%),
-    url("../../assets/ui/kit/felt-damask.webp") 50% 0 / calc(104 * var(--u)) calc(118 * var(--u)),
-    #120e16;
+    radial-gradient(120% 34% at 50% 102%, color-mix(in srgb, var(--type-color) 30%, transparent), transparent 72%),
+    radial-gradient(110% 44% at 50% 62%, color-mix(in srgb, #ffcf94 34%, transparent), transparent 76%),
+    radial-gradient(150% 120% at 50% 55%, transparent 50%, rgb(6 4 9 / .55) 100%),
+    url("../../assets/ui/kit/enamel.webp") 50% 0 / calc(220 * var(--u)) calc(220 * var(--u)),
+    #2a1b3b;
+  background-blend-mode: overlay, overlay, normal, normal, normal;
   box-shadow:
     inset 0 0 0 calc(1 * var(--u)) rgba(0, 0, 0, .8),
     inset 0 0 0 calc(2.5 * var(--u)) color-mix(in srgb, color-mix(in oklab, var(--rarity-c) 60%, var(--kit-gold)) 50%, transparent),
@@ -1175,6 +1176,194 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 @media (prefers-reduced-motion: reduce) {
   :root:not([data-reduce-motion="0"]) .kit-light { animation: none; }
 }
+
+/* ===========================================================================
+   PAINTED SURFACES — round 3, POLISH.
+   In Josh's samples nothing is a fill. The Kid board's empty panels are a
+   crinkled suede, its round buttons a mottled and scratched violet enamel,
+   the Companion board's ground scrollwork carved in relief, its floor worn
+   stone. Round 2's judges named the one thing every board still had that the
+   samples never do: rows, plaques, shelves and panel interiors that were a
+   flat dark gradient. These are the materials a board is built OF instead,
+   painted by tools/prep_ui_surfaces.py, and the light that falls on them.
+
+     .kit-mat              any box whose fill is a painted material, lit by the
+                           board. The light is not in the paint: a board places
+                           its candle with --lit-x / --lit-y (in the box, % or
+                           px), its size --lit-w / --lit-h, its strength --lit-a,
+                           and a cold light the same way with --moon-*. The light
+                           is laid in overlay, so it brightens the material it
+                           falls on and brings its grain up with it, and the
+                           box's edges fall into the dark (--mat-edge).
+       --enamel --suede --flock --walnut --curtain    which material
+       --mat-veil          pushes a busy material back under words (0-1)
+     .kit-panel            is a .kit-mat already: suede, candle from above
+     .kit-ledge            a carved, parcel-gilt ledge to stand things on, with
+                           the shadow it casts (--ledge-h)
+     .kit-plaque           a bracketed painted plaque: plate-rect's gilt double
+                           rule and corner brackets round a .kit-mat material
+     .kit-price            a counter plaque: a Button coin and an engraved price
+                           on enamel, a round enamel BUY seated on its end
+                           (__plate __coin __value __buy; --price-h)
+     .kit-num              a numbered enamel medallion to seat on a border
+     .kit-flag             a small ribbon plaque for a note on a board's foot
+     .kit-stats--framed    the engraved stat strip, framed on its own plaque
+   =========================================================================== */
+
+/* ── material ─────────────────────────────────────────────────────────────── */
+.kit-mat, .kit-panel, .kit-plaque, .kit-stats--framed {
+  --mat: url("../../assets/ui/kit/suede.webp");
+  --mat-pos: 0 0;
+  --mat-size: 300px 300px;
+  --mat-base: #150f1c;
+  --mat-veil: 0;
+  --mat-edge: .55;
+  --lit: #ffcf94;
+  --lit-x: 50%; --lit-y: -8%;
+  --lit-w: 95%; --lit-h: 80%;
+  --lit-a: 42%;
+  --moon: var(--kit-moon);
+  --moon-x: 50%; --moon-y: -20%;
+  --moon-w: 80%; --moon-h: 90%;
+  --moon-a: 0%;
+  background:
+    radial-gradient(125% 115% at 50% 42%, transparent 46%, rgb(5 3 7 / var(--mat-edge)) 100%),
+    radial-gradient(var(--lit-w) var(--lit-h) at var(--lit-x) var(--lit-y),
+      color-mix(in srgb, var(--lit) var(--lit-a), transparent) 0%,
+      color-mix(in srgb, var(--lit) calc(var(--lit-a) * .5), transparent) 42%,
+      transparent 80%),
+    radial-gradient(var(--moon-w) var(--moon-h) at var(--moon-x) var(--moon-y),
+      color-mix(in srgb, var(--moon) var(--moon-a), transparent) 0%,
+      transparent 72%),
+    linear-gradient(rgb(9 6 13 / var(--mat-veil)), rgb(9 6 13 / var(--mat-veil))),
+    var(--mat) var(--mat-pos) / var(--mat-size),
+    var(--mat-base);
+  background-blend-mode: normal, overlay, overlay, normal, normal, normal;
+  background-clip: padding-box;
+}
+.kit-mat--enamel  { --mat: url("../../assets/ui/kit/enamel.webp"); --mat-size: 360px 360px; --mat-base: #221630; }
+.kit-mat--suede   { --mat: url("../../assets/ui/kit/suede.webp");  --mat-size: 300px 300px; --mat-base: #150f1c; }
+.kit-mat--flock   { --mat: url("../../assets/ui/kit/flock.webp");  --mat-size: 233px 265px; --mat-base: #150c1b; }
+.kit-mat--walnut  { --mat: url("../../assets/ui/kit/walnut.webp"); --mat-size: 384px 192px; --mat-base: #1e120b; }
+.kit-mat--curtain { --mat: url("../../assets/ui/kit/curtain.webp"); --mat-pos: 50% 0; --mat-size: auto 100%; --mat-base: #12071a; }
+
+/* ── ledge ──────────────────────────────────────────────────────────────────
+   ledge.webp is 152 rows: a lit walnut top (0-28), a gilt bead, an
+   egg-and-dart front picked out in gilt (44-100), a fillet and a cove (to
+   116), then the shadow it throws on the wall (116-152). --ledge-h is the
+   height of the ledge itself; the element is taller by its shadow. Stand a
+   thing on it by putting its foot 0.18 of --ledge-h below the element's top. */
+.kit-ledge {
+  --ledge-h: 44px;
+  display: block;
+  height: calc(var(--ledge-h) * 152 / 116);
+  background: url("../../assets/ui/kit/ledge.webp") 50% 0 / auto 100% repeat-x;
+  pointer-events: none;
+}
+
+/* ── plaque ─────────────────────────────────────────────────────────────── */
+.kit-plaque {
+  border: 1px solid transparent;
+  border-image: url("../../assets/ui/kit/plate-rect.webp") 34 / 25px stretch;
+  --mat: url("../../assets/ui/kit/enamel.webp"); --mat-size: 360px 360px; --mat-base: #221630;
+  --mat-edge: .5;
+  box-shadow: inset 0 0 18px rgba(0, 0, 0, .5), 0 8px 16px -8px rgba(0, 0, 0, .85);
+}
+
+/* ── price ──────────────────────────────────────────────────────────────────
+   Two pieces, one control, sized for a counter: the price on a small enamel
+   cartouche led by one of the house's Buttons, and BUY on the Kid board's
+   round purple enamel button in its gold rim, seated over the plate's right
+   end so the two read as one plaque.                                        */
+.kit-price {
+  --price-h: 36px;
+  position: relative;
+  display: inline-flex; align-items: center;
+  height: calc(var(--price-h) * 1.24);
+}
+.kit-price__plate {
+  display: inline-flex; align-items: center; gap: calc(var(--price-h) * .16);
+  height: var(--price-h);
+  padding: 0 calc(var(--price-h) * .92) 0 calc(var(--price-h) * .46);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-lit.webp") 18 34 18 34 fill /
+    calc(var(--price-h) * 18 / 64) calc(var(--price-h) * 34 / 64) stretch;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75));
+}
+.kit-price__coin {
+  flex: none; display: block;
+  width: calc(var(--price-h) * .6); aspect-ratio: 1;
+  background: url("../../assets/ui/kit/coin.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .85));
+}
+.kit-price__value {
+  font-family: var(--font-num); font-weight: 700; font-style: normal;
+  font-size: calc(var(--price-h) * .58); line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums;
+  padding-top: 2px;
+  color: var(--kit-gold-hi);
+  /* struck into the enamel: a dark lip above, the light on the lower edge */
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 90%, transparent), 0 0 10px color-mix(in srgb, var(--kit-candle) 25%, transparent);
+}
+.kit-price__buy {
+  position: relative; z-index: 1;
+  flex: none;
+  display: grid; place-items: center;
+  width: calc(var(--price-h) * 1.24); height: calc(var(--price-h) * 1.24);
+  margin-left: calc(var(--price-h) * -.62);
+  border-radius: 50%;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: max(11.5px, calc(var(--price-h) * .33)); line-height: 1; letter-spacing: .02em;
+  padding: 1px 0 0 .04em;
+  text-transform: uppercase; white-space: nowrap;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 80%, transparent), 0 0 8px color-mix(in srgb, var(--kit-candle) 35%, transparent);
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
+}
+
+/* ── numbered medallion ─────────────────────────────────────────────────── */
+.kit-num {
+  --num: 30px;
+  display: inline-grid; place-items: center;
+  width: var(--num); height: var(--num);
+  border-radius: 50%;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  font-family: var(--font-display); font-weight: 700; font-style: normal;
+  font-size: calc(var(--num) * .42); line-height: 1;
+  padding-top: 1px;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 80%, transparent);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .85));
+}
+
+/* ── flag: a note on the board's foot ───────────────────────────────────── */
+.kit-flag {
+  --rib-h: 26px;
+  display: inline-flex; align-items: center; justify-content: center; gap: .55em;
+  height: var(--rib-h);
+  padding: 0 calc(var(--rib-h) * 1.25) 1px;
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/ribbon.webp");
+  border-image-slice: 0 47 0 52 fill;
+  border-image-width: 0 calc(var(--rib-h) * 47 / 49) 0 calc(var(--rib-h) * 52 / 49);
+  border-image-repeat: stretch;
+  white-space: nowrap;
+  color: #140b04;
+  filter: brightness(1.08) saturate(.9) drop-shadow(0 3px 4px rgba(0, 0, 0, .75));
+}
+
+/* ── the stat strip on a plaque of its own ──────────────────────────────── */
+.kit-stats.kit-stats--framed {
+  padding: 10px 14px 9px;
+  border: 1px solid transparent;
+  border-image: url("../../assets/ui/kit/plate-rect.webp") 34 / 25px stretch;
+  --mat: url("../../assets/ui/kit/walnut.webp"); --mat-size: 384px 192px; --mat-base: #1e120b;
+  --mat-veil: .5; --mat-edge: .45;
+  --lit-y: 120%; --lit-a: 36%;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, .55), 0 10px 20px -10px rgba(0, 0, 0, .9);
+}
+.kit-stats.kit-stats--framed::before, .kit-stats.kit-stats--framed::after { content: none; }
 
 /* ===========================================================================
    READINGS IN METAL — round 2, from the COMBAT track.

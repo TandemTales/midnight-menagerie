@@ -4,16 +4,20 @@
 
    Built from the kit (ui/kit.css) the way the select boards are painted, and
    read in one order:
-     1. the headline in the wordmark's cartouche;
-     2. directly under it, the memorial — the Kid and the Companion side by side
-        in the Kid board's frames on one shelf, the smoking candle between
-        them, the pet you did not reach under the shelf — flanked by what you
-        found and what you lost in gold-railed panels;
-     3. the ledger, the width of the board: HOW FAR in lavender display type
-        with the wing and the seed on matching corner cartouches, every number
-        on one engraved strip, and the Trick the run leaned on standing on a
-        gilt plinth beside the Tricks and the Keepsakes;
-     4. the three ways out, each a cartouche with its enamel button.
+     1. the headline in the wordmark's cartouche, a little way down the board;
+     2. the middle of the board, top to bottom, is the memorial — the Kid and
+        the Companion side by side in the Kid board's frames on one shelf, the
+        smoking candle between them — and under them the Trick the run leaned
+        on, read at the reward's own scale, standing on a gilt plinth: the
+        board's second focus;
+     3. flanking it, gold-railed panels on the Kid board's suede: what you
+        found, what you lost and how far the survey got, the pet you did not
+        reach on the left; the ledger on the right — HOW FAR in lavender
+        display type with the wing and the seed on cartouches, the final
+        Tricks on nameplates and the Keepsakes on ledger rows;
+     4. every number on one engraved strip framed on its own plaque, the width
+        of the board;
+     5. the three ways out, each a cartouche with its enamel button.
    =========================================================================== */
 
 .scene--gameover {
@@ -92,8 +96,8 @@
 }
 .scene--gameover.is-dark .go-motes { opacity: .45; transition: opacity 2s var(--ease-out); }
 
-/* ── the headline, in the cartouche ───────────────────────────────────────── */
-.go-head { justify-self: center; margin-top: clamp(4px, 1vh, 12px); }
+/* ── the headline, in the cartouche, off the board's top rule ─────────────── */
+.go-head { justify-self: center; margin-top: clamp(14px, 1.8vh, 18px); }
 .go-head.kit-titleblock--compact { --cart-h: clamp(90px, 11vh, 104px); }
 .go-head .kit-titleblock__note { margin-top: 3px; }
 /* one sentence pair: on one line it sits inside the plate, clear of the ribbon */
@@ -105,43 +109,47 @@
   font-size: max(12px, var(--fs-xs)); line-height: 1.24;
 }
 
-/* ── the board's three bands: the memorial, the ledger, the ways out ─────── */
+/* ── the board's grid: left panels, the memorial, the ledger; the strip ───── */
 .go-wrap {
-  --gutter: clamp(18px, 2vw, 36px);
+  --gutter: clamp(18px, 2vw, 34px);
+  --go-light-x: 50vw;            /* where the candle stands, for the panels' light */
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.34fr) minmax(0, 1fr);
-  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, .74fr) auto minmax(0, 1.3fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
   grid-template-areas:
-    "found  stage  lost"
-    "pet    stage  lost"
-    "ledger ledger ledger";
+    "left  stage ledger"
+    "left  mvp   ledger"
+    "stats stats stats";
   column-gap: var(--gutter);
   row-gap: 0;
   min-height: 0;
-  padding: clamp(4px, 1vh, 12px) calc(var(--kit-vine-w) + clamp(8px, 1vw, 20px)) 0;
+  padding: clamp(18px, 2.6vh, 26px) calc(var(--kit-vine-w) + clamp(6px, .8vw, 16px)) 0;
 }
-.go-beat, .go-stanzas { display: contents; }
+.go-beat { display: contents; }
 .go-beat, .go-ledger { min-height: 0; }
 
 /* ═══ the memorial ═══════════════════════════════════════════════════════ */
 .go-stage {
   grid-area: stage;
   --go-plate-h: clamp(38px, 4.8vh, 46px);
-  --go-pic-w: clamp(160px, 12.4vw, 206px);
+  --go-pic-w: clamp(138px, 10.2vw, 168px);
   position: relative;
   display: grid; grid-template-columns: var(--go-pic-w) auto var(--go-pic-w);
   justify-content: center; align-items: end;
-  column-gap: clamp(10px, 1.2vw, 22px);
-  padding: 6px clamp(8px, 1vw, 16px) calc(var(--go-plate-h) * .5 + 6px);
+  column-gap: clamp(10px, 1.1vw, 20px);
+  padding: 6px clamp(8px, 1vw, 16px) calc(var(--go-plate-h) * .5 + 8px);
 }
-/* the shelf they stand on: a dark plank with a brass nosing, Mr. Moth's */
+/* the shelf they stand on: the carved, parcel-gilt ledge (.kit-ledge's
+   painting), its ends lost in the dark */
 .go-stage::after {
   content: ''; position: absolute; z-index: -1; pointer-events: none;
-  left: 4%; right: 4%; bottom: calc(var(--go-plate-h) * .5 - 6px); height: 22px;
-  background: url("../../assets/ui/kit/shelf.webp") 0 0 / auto 100% repeat-x;
-  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, .8));
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);
-          mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);
+  left: -2%; right: -2%;
+  --ledge-h: 34px;
+  bottom: calc(var(--go-plate-h) * .5 - var(--ledge-h) * .7);
+  height: calc(var(--ledge-h) * 152 / 116);
+  background: url("../../assets/ui/kit/ledge.webp") 50% 0 / auto 100% repeat-x;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%);
 }
 /* the candle's light on the wall behind the two of them */
 .go-stage::before {
@@ -168,6 +176,7 @@
   position: relative; z-index: 4;
   margin-top: calc(var(--plate-h) * -.5);
   min-width: 82%; max-width: 116%;
+  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
 }
 .go-portrait__plate .kit-plate__name { font-size: max(14px, calc(var(--plate-h) * .38)); }
 .go-portrait__plate .kit-plate__epithet { white-space: nowrap; font-size: max(12px, calc(var(--plate-h) * .27)); }
@@ -181,7 +190,7 @@
 /* --- the candle ------------------------------------------------------------ */
 .go-candle {
   position: relative; z-index: 2;
-  width: clamp(44px, 3.6vw, 62px);
+  width: clamp(44px, 3.4vw, 58px);
   align-self: end;
   margin-bottom: 2px;
 }
@@ -237,21 +246,28 @@
   72%      { opacity: .78; }
 }
 
-/* --- what you found, what you lost: the panels either side ----------------- */
+/* --- the left column: what you found, what you lost, the pet --------------- */
+.go-stanzas {
+  grid-area: left;
+  display: flex; flex-direction: column; justify-content: space-between;
+  gap: clamp(24px, 3.2vh, 30px);            /* each panel's medallion rides in here */
+  padding-top: 10px;
+  min-height: 0;
+}
 .go-stanza {
   --pk: .66;
   --medal-k: .72;
-  padding: clamp(15px, 1.9vh, 19px) clamp(14px, 1.2vw, 20px) clamp(7px, 1vh, 10px);
+  /* the candle is to the right, in the middle of the board: its light falls
+     across each panel from that side, the far corner in the dark */
+  --lit-x: 104%; --lit-y: 40%; --lit-w: 80%; --lit-h: 170%; --lit-a: 40%;
+  --mat-edge: .5;
+  padding: clamp(18px, 2.3vh, 22px) clamp(16px, 1.3vw, 22px) clamp(18px, 2.2vh, 22px);
 }
-.go-stanza--found { grid-area: found; align-self: end; }
-.go-stanza--lost  { grid-area: lost;  align-self: center; }
-/* the panels' inner rule runs 13px in from the rail: their last line keeps clear of it */
-.go-stanza--found, .go-stanza--lost { padding-bottom: clamp(14px, 1.8vh, 17px); }
-.go-sh { margin: 0 0 clamp(5px, .8vh, 8px); font-size: max(11.5px, var(--fs-xs)); letter-spacing: .2em; }
-.go-stanza ul { list-style: none; margin: 0; padding: 0 0 0 4px; display: grid; gap: 2px; }
+.go-sh { margin: 0 0 clamp(6px, .9vh, 9px); font-size: max(11.5px, var(--fs-xs)); letter-spacing: .2em; }
+.go-stanza ul { list-style: none; margin: 0; padding: 0 0 0 4px; display: grid; gap: 3px; }
 .go-stanza li {
   position: relative; padding-left: 16px;
-  font-size: max(13.5px, var(--fs-sm)); line-height: 1.4; color: var(--kit-text);
+  font-size: max(13.5px, var(--fs-sm)); line-height: 1.38; color: var(--kit-text);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .go-stanza li::before {
@@ -262,50 +278,42 @@
 }
 .go-num { font-family: var(--font-num); font-variant-numeric: var(--num-feat); color: var(--kit-gold-hi); }
 
-/* --- the pet you did not reach: under what you found ---------------------- */
-.go-stanza--pet {
-  grid-area: pet; align-self: start;
-  margin-top: clamp(14px, 1.6vh, 16px);
-  padding-block: clamp(13px, 1.6vh, 16px) clamp(4px, .7vh, 7px);
-}
-.go-stanza--pet .go-sh { margin-bottom: 2px; }
-.go-pet { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: clamp(12px, 1.1vw, 20px); align-items: center; }
+/* --- the pet you did not reach --------------------------------------------- */
+.go-stanza--pet .go-sh { margin-bottom: 6px; }
+.go-pet { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: clamp(14px, 1.2vw, 20px); align-items: center; }
 /* the photograph, in the same gold frame as the two who went in */
 .go-pet__snap {
   --fk: .46;
   display: block; flex: none;
-  width: clamp(58px, 4.4vw, 74px);
+  width: clamp(64px, 4.8vw, 80px);
   aspect-ratio: 4 / 3;
-  margin: 5px 4px 3px 5px;
+  margin: 6px 4px 6px 6px;
 }
 .go-stanza--pet:not(.is-home) .go-pet__snap .petpic { filter: saturate(.72) brightness(1.06) contrast(1.05); }
 .go-pet__text {
-  margin: 0; font-size: max(13.5px, var(--fs-sm)); line-height: 1.4; font-style: italic;
+  margin: 0; font-size: max(13.5px, var(--fs-sm)); line-height: 1.42; font-style: italic;
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .go-pet__text b { font-style: normal; font-weight: 600; color: var(--kit-name); }
 .go-stanza--pet.is-home .go-pet__text b { color: var(--spectre-200); }
 
-/* ═══ the ledger — the width of the board, the moon on its rail ═══════════ */
+/* ═══ the ledger — the right of the board, the moon on its rail ═══════════ */
 .go-ledger {
   grid-area: ledger;
-  --pk: .84;
+  --pk: .8;
   --medal-k: .5;
+  --lit-x: -4%; --lit-y: 30%; --lit-w: 90%; --lit-h: 150%; --lit-a: 40%;
+  --mat-edge: .5;
   align-self: stretch;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.12fr);
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto auto minmax(0, 1fr);
-  grid-template-areas:
-    "who  who  who"
-    "stats stats stats"
-    "mvp  deck keep";
-  column-gap: clamp(20px, 2vw, 36px);
-  row-gap: clamp(6px, 1vh, 12px);
-  margin-top: clamp(14px, 1.7vh, 16px);
-  padding: clamp(16px, 2.1vh, 22px) clamp(22px, 2vw, 34px) clamp(8px, 1.1vh, 12px);
+  grid-template-areas: "who" "deck" "keep";
+  row-gap: clamp(10px, 1.3vh, 12px);
+  margin-top: 10px;
+  padding: clamp(22px, 2.7vh, 26px) clamp(20px, 1.8vw, 30px) clamp(18px, 2.2vh, 20px);
 }
-.go-ledger:has(.go-block--mvp[hidden]) { grid-template-areas: "who who who" "stats stats stats" "deck deck keep"; }
 
 .go-lbl {
   font-family: var(--font-display); font-weight: 700;
@@ -314,21 +322,24 @@
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 
-/* --- the header: the focal number, flanked by its two cartouches ----------- */
+/* --- the header: HOW FAR on top, the wing and the seed on its cartouches ---- */
 .go-who {
   grid-area: who;
-  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  align-items: start; column-gap: var(--s-4);
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas: "focal focal" "reach seed";
+  align-items: stretch; column-gap: var(--s-4); row-gap: clamp(8px, 1.2vh, 12px);
+  padding-bottom: 17px;                      /* the seed's hint hangs in here */
 }
+/* HOW FAR and the Courage gauge share one line, the gauge's note under it */
 .go-who__focal {
-  grid-column: 2;
-  display: grid; justify-items: center; gap: clamp(3px, .5vh, 6px);
-  padding-top: clamp(6px, 1vh, 10px);                         /* clear of the moon on the rail */
+  grid-area: focal;
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: 4px clamp(12px, 1vw, 16px);
 }
 /* HOW FAR, in the wordmark's lavender, engraved like it (#kit-engrave) */
 .go-who__deep {
   font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(27px, 2.25vw, 38px); line-height: 1.02; letter-spacing: .07em; text-transform: uppercase;
+  font-size: clamp(24px, 2vw, 32px); line-height: 1.02; letter-spacing: .07em; text-transform: uppercase;
   white-space: nowrap;
   color: var(--kit-lav);
   background:
@@ -337,23 +348,23 @@
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent;
   filter: url("#kit-engrave") drop-shadow(0 0 10px color-mix(in srgb, var(--kit-violet) 30%, transparent));
-  padding: 2px 8px 4px;
+  padding: 2px 4px 4px;
 }
-/* the wing it reached and the seed: matching near-black cartouches with gilt
-   rims, one in each top corner of the ledger */
+/* the wing it reached and the seed: matching enamel cartouches with gilt rims */
 .go-corner {
-  --h: clamp(56px, 6.8vh, 64px);
-  display: grid; justify-items: center; align-content: center; gap: 1px;
+  --h: clamp(48px, 5.8vh, 52px);
+  display: grid; justify-items: center; align-content: center; gap: 0;
   min-height: var(--h);
-  padding: 4px calc(var(--h) * .55) 5px;
+  padding: 3px calc(var(--h) * .62) 4px;
+  line-height: 1.1;
   border: 0 solid transparent;
-  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill /
+  border-image: url("../../assets/ui/kit/cartouche-lit.webp") 18 34 18 34 fill /
     calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
   filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .8));
   text-align: center;
 }
-.go-who__reach { grid-column: 1; justify-self: start; }
-.go-seed { grid-column: 3; justify-self: end; position: relative; }
+.go-who__reach { grid-area: reach; justify-self: stretch; }
+.go-seed { grid-area: seed; justify-self: stretch; position: relative; }
 .go-who__wing {
   font-family: var(--font-body); font-weight: 600; font-size: max(15px, var(--fs-md)); line-height: 1.1;
   color: var(--kit-name); white-space: nowrap;
@@ -380,21 +391,27 @@
   color: #fff1d2;
   filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .75)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 40%, transparent)) brightness(1.12);
 }
-.go-seed__copy:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 999px; }
+.go-seed__copy:focus-visible { outline: none; filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .75)) drop-shadow(0 0 2px var(--kit-gold-hi)) drop-shadow(0 0 12px color-mix(in srgb, var(--kit-candle) 60%, transparent)) brightness(1.15); }
+/* the hint hangs under the seed's plate, as its caption */
 .go-seed__hint {
-  position: absolute; top: calc(100% + 3px); right: 0; left: 0;
-  font-size: max(12px, var(--fs-xs)); font-style: italic; color: var(--kit-text-lo);
-  white-space: nowrap; text-align: center;
+  position: absolute; top: calc(100% + 3px); left: -20px; right: -20px;
+  font-size: max(12px, var(--fs-xs)); font-style: italic; color: var(--kit-text-mid);
+  white-space: nowrap; text-align: center; line-height: 1.1;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 
 /* --- Courage: an engraved gauge under the focal number --------------------- */
 .go-courage {
-  display: grid; grid-template-columns: auto clamp(90px, 9vw, 160px) auto auto;
-  column-gap: var(--s-3); align-items: center;
+  display: grid; grid-template-columns: auto clamp(70px, 5vw, 90px) auto;
+  grid-template-areas: "lbl track n" "note note note";
+  column-gap: 10px; row-gap: 1px; align-items: center; justify-items: start;
 }
+.go-courage > .go-lbl { grid-area: lbl; }
+.go-courage__track { grid-area: track; justify-self: stretch; }
+.go-courage__n { grid-area: n; }
+.go-courage__note { grid-area: note; justify-self: center; }
 .go-courage__track {
-  height: 9px; border-radius: 5px; overflow: hidden;
+  height: 9px; border-radius: 5px; overflow: hidden; width: 100%;
   background: linear-gradient(180deg, #07050a, #150f18);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, .9), 0 0 0 1px color-mix(in srgb, var(--kit-gold-lo) 90%, transparent),
               0 0 0 2px rgba(0, 0, 0, .7), 0 1px 0 2px color-mix(in srgb, var(--kit-gold) 30%, transparent);
@@ -409,12 +426,12 @@
 .go-courage__note { font-size: max(12.5px, var(--fs-xs)); font-style: italic; color: var(--kit-text-lo); }
 
 /* --- the blueprint band: how far the survey got, along the foot of what you
-       found, under glass in a gold frame ----------------------------------- */
-.go-bp { display: grid; gap: 2px; margin-top: clamp(6px, 1vh, 10px); min-width: 0; }
+       lost, under glass in a gold frame, its caption kept inside the panel -- */
+.go-bp { display: grid; gap: 4px; margin-top: clamp(8px, 1.2vh, 12px); min-width: 0; }
 .go-bp__frame { --fk: .44; margin: 5px 5px 0; }
 .go-bp__paper {
   position: relative;
-  aspect-ratio: 13 / 1;
+  aspect-ratio: 11 / 1;
   overflow: hidden;
   background: var(--parchment);
 }
@@ -446,40 +463,44 @@
 .scene--gameover[data-result="victory"] .go-bp__wash {
   background: radial-gradient(42% 100% at 50% 50%, transparent 20%, color-mix(in srgb, var(--kit-void) 34%, transparent) 100%);
 }
-.go-bp__meta { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0 var(--s-3); padding: 0 6px; white-space: nowrap; min-width: 0; }
+.go-bp__meta { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0 var(--s-3); padding: 0 6px; min-width: 0; }
 .go-bp__label { min-width: 0; }
-.go-bp__count { flex: none; margin-left: auto; }
+.go-bp__count { flex: none; margin-left: auto; white-space: nowrap; }
 .go-bp__label, .go-bp__count {
   font-family: var(--font-display); font-weight: 700; font-size: 11.5px;
-  letter-spacing: .02em; text-transform: uppercase; color: var(--kit-text-lo);
+  letter-spacing: .04em; text-transform: uppercase; color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .go-bp__count b { font-family: var(--font-num); font-size: 1.3em; color: var(--kit-gold-hi); }
 
-/* --- the numbers: ONE engraved strip, every label on one line -------------- */
-.go-stats.kit-stats { grid-area: stats; margin-top: clamp(6px, 1vh, 10px); padding-block: 6px 5px; }
+/* --- the numbers: ONE engraved strip on its own framed plaque -------------- */
+.go-stats.kit-stats {
+  grid-area: stats;
+  margin: clamp(10px, 1.4vh, 14px) 0 0;
+  padding: 7px clamp(14px, 1.4vw, 24px) 6px;
+}
 .go-stats .kit-stats__label {
   white-space: nowrap; text-wrap: nowrap;
   font-size: max(11px, calc(var(--fs-xs) * 1.02)); letter-spacing: .12em;
+  color: var(--kit-text-mid);
 }
-.go-stats .kit-stats__value { font-size: clamp(19px, 1.5vw, 25px); }
+.go-stats .kit-stats__value { font-size: clamp(18px, 1.3vw, 21px); }
 .go-stat em { font-size: 11px; font-style: italic; color: var(--kit-text-lo); }
 
 /* --- blocks and their headings --------------------------------------------- */
-.go-block { display: grid; gap: clamp(5px, .8vh, 9px); min-width: 0; align-content: start; }
+.go-block { display: grid; gap: clamp(6px, .9vh, 10px); min-width: 0; align-content: start; }
 .go-h { margin: 0; font-size: max(11.5px, var(--fs-xs)); }
 .go-h .go-h__n { letter-spacing: .02em; font-size: max(12.5px, var(--fs-xs)); }
 .go-block--deck { grid-area: deck; }
-.go-pair { display: contents; }
-.go-block--mvp { grid-area: mvp; }
 .go-block--keep { grid-area: keep; }
 
 /* --- the final deck: every Trick on a nameplate ---------------------------- */
-.go-tricks { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 5px; }
+.go-tricks { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 4px; }
 .go-trick {
-  --plate-h: 31px;
-  flex-direction: row; gap: 6px;
-  padding: 0 calc(var(--plate-h) * .5);
+  --plate-h: 28px;
+  flex-direction: row; gap: 5px;
+  padding: 0 calc(var(--plate-h) * .44);
+  border-image-source: url("../../assets/ui/kit/plate-lit.webp");
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .7));
 }
 .go-trick__cost {
@@ -495,7 +516,7 @@
   box-shadow: inset 0 0 0 1.5px color-mix(in oklab, var(--kit-gold-lo) 80%, black), 0 0 0 1px rgba(0, 0, 0, .7);
 }
 .go-trick__name {
-  font-family: var(--font-body); font-size: 13.5px; font-weight: 600; line-height: 1;
+  font-family: var(--font-body); font-size: 13px; font-weight: 600; line-height: 1;
   color: var(--kit-name); white-space: nowrap;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
@@ -505,19 +526,33 @@
 .go-trick__name u { text-decoration: none; color: var(--good-300); font-weight: 700; }
 .go-trick__n { font-family: var(--font-num); font-variant-numeric: var(--num-feat); font-size: 12.5px; font-style: normal; color: var(--kit-gold-hi); }
 
-/* --- the card that did the work: on a gilt plinth, under its own light ----- */
-.go-mvp { display: grid; grid-template-columns: auto minmax(0, 17ch); gap: clamp(12px, 1.2vw, 20px); align-items: center; }
-.go-mvp__slot { position: relative; flex: none; margin: 12px 14px calc(10px + var(--plinth-h, 22px)); }
-.go-board { --go-mvp-s: .5; }
-.go-block--mvp { --plinth-h: clamp(24px, 3vh, 28px); }
+/* --- the card that did the work: on a gilt plinth, under its own light -----
+   Read at the reward's scale (--go-mvp-s on --card-w), on the plinth AMBER
+   stood it on, the candle's light pooled on the wall behind it; the note
+   beside it says why it is there. */
+.go-block--mvp {
+  grid-area: mvp;
+  --plinth-h: clamp(26px, 3.3vh, 32px);
+  align-self: stretch; align-content: start; justify-items: center;
+  gap: clamp(12px, 1.8vh, 18px);
+  margin-top: clamp(20px, 2.8vh, 28px);
+}
+.go-block--mvp > .kit-heading--ribbon { --rib-h: clamp(28px, 3.4vh, 32px); }
+.go-mvp {
+  position: relative;
+  display: grid; grid-template-columns: auto minmax(0, 15ch); gap: clamp(14px, 1.4vw, 22px);
+  align-items: center;
+}
+.go-mvp__slot { position: relative; flex: none; margin: 16px 18px calc(12px + var(--plinth-h)); }
+.go-board { --go-mvp-s: .96; }
 /* the card hangs in the Kid board's frame, as the reward's three do */
 .go-mvp__slot::before {
   content: ''; position: absolute; z-index: -1; pointer-events: none;
-  inset: -12px;
-  border: 7px solid transparent;
+  inset: -15px;
+  border: 8px solid transparent;
   border-image-source: url("../../assets/ui/kit/frame.webp");
   border-image-slice: 52;
-  border-image-width: 28px;
+  border-image-width: 36px;
   border-image-repeat: stretch;
   background:
     radial-gradient(90% 55% at 50% 100%, color-mix(in srgb, var(--kit-candle) 16%, transparent), transparent 70%),
@@ -525,32 +560,32 @@
     linear-gradient(180deg, #110c16, #09070c);
   background-blend-mode: normal, overlay, normal;
   background-clip: padding-box;
-  box-shadow: 0 0 40px color-mix(in srgb, var(--kit-candle) 16%, transparent), 0 16px 30px -12px rgba(0, 0, 0, .95);
+  box-shadow: 0 0 50px color-mix(in srgb, var(--kit-candle) 18%, transparent), 0 18px 32px -12px rgba(0, 0, 0, .95);
 }
-/* the gilt plinth it stands on (plinth.webp), and the candle's light on it */
+/* the gilt plinth it stands on (plinth.webp) */
 .go-mvp__slot::after {
   content: ''; position: absolute; z-index: -2; pointer-events: none;
-  left: -26px; right: -26px; top: calc(100% + 7px); height: var(--plinth-h);
+  left: -34px; right: -34px; top: calc(100% + 9px); height: var(--plinth-h);
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/plinth.webp") 0 36 fill / 0 calc(var(--plinth-h) * 36 / 56) stretch;
-  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .8));
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, .85));
 }
-.go-mvp { position: relative; }
+/* the candle's light on the wall behind it */
 .go-mvp::before {
   content: ''; position: absolute; z-index: -3; pointer-events: none;
-  left: calc(var(--card-w) * var(--go-mvp-s) * .5 + 12px); top: 45%;
-  width: calc(var(--card-w) * var(--go-mvp-s) * 2.6); aspect-ratio: 1; translate: -50% -50%;
+  left: calc(var(--card-w) * var(--go-mvp-s) * .5 + 18px); top: 46%;
+  width: calc(var(--card-w) * var(--go-mvp-s) * 2.4); aspect-ratio: 1; translate: -50% -50%;
   border-radius: 50%;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 16%, transparent), transparent 72%);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 20%, transparent), transparent 72%);
 }
 .go-mvp__note {
-  margin: 0; font-size: max(13px, var(--fs-sm)); line-height: 1.4; font-style: italic;
+  margin: 0; font-size: max(13.5px, var(--fs-sm)); line-height: 1.45; font-style: italic;
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .go-mvp__note b { font-style: normal; font-weight: 600; color: var(--kit-name); }
 
-/* --- keepsakes: the Shop's ledger rows ------------------------------------- */
+/* --- keepsakes: ledger rows ------------------------------------------------ */
 .go-keeps { display: grid; grid-template-columns: minmax(0, 1fr); column-gap: clamp(12px, 1.2vw, 20px); }
 /* A run that kept nothing says so. It spans the whole grid so the sentence
    reads as a sentence and not as a chip that lost its label. */
@@ -562,7 +597,7 @@
 .go-keep {
   display: grid; grid-template-areas: 'i b' 'i e'; grid-template-columns: auto minmax(0, 1fr);
   column-gap: 10px; align-items: center;
-  padding: 2px 0;
+  padding: 2px 0 3px;
   border-top: 1px solid transparent;
   border-image: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 50%, transparent) 18%, color-mix(in srgb, var(--kit-gold) 50%, transparent) 82%, transparent) 1;
 }
@@ -570,7 +605,7 @@
 .go-keep__sigil {
   grid-area: i;
   display: grid; place-items: center;
-  width: clamp(26px, 1.9vw, 30px); aspect-ratio: 1; border-radius: 50%;
+  width: clamp(28px, 2vw, 32px); aspect-ratio: 1; border-radius: 50%;
   background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8));
 }
@@ -586,7 +621,7 @@
 }
 .go-keep em {
   grid-area: e; align-self: start;
-  font-size: 13px; font-style: italic; line-height: 1.24;
+  font-size: 12.5px; font-style: italic; line-height: 1.2;
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
@@ -595,10 +630,10 @@
 /* ═══ footer: the three ways out ══════════════════════════════════════════ */
 .go-foot {
   display: flex; align-items: center; justify-content: center;
-  padding: clamp(6px, 1vh, 10px) calc(var(--kit-vine-w) + 30px) clamp(12px, 1.8vh, 18px);
+  padding: clamp(8px, 1.1vh, 10px) calc(var(--kit-vine-w) + 30px) clamp(10px, 1.4vh, 14px);
 }
-.go-foot .kit-btn { --plate-h: clamp(46px, 5.8vh, 54px); }
-.go-foot .kit-btn--quiet { --plate-h: clamp(44px, 5.4vh, 50px); }
+.go-foot .kit-btn { --plate-h: clamp(46px, 5.6vh, 52px); }
+.go-foot .kit-btn--quiet { --plate-h: clamp(44px, 5.2vh, 48px); }
 /* each hint under its words, as the nameplates set an epithet under a name */
 .go-foot .go-btn { flex-direction: column; gap: 0; line-height: 1.12; }
 .go-foot .go-btn em { font-size: max(11.5px, var(--fs-xs)); }
@@ -630,6 +665,8 @@
 .scene--gameover.is-entering .go-stanza:nth-child(2) { animation-delay: .76s; }
 .scene--gameover.is-entering .go-stanza:nth-child(3) { animation-delay: .90s; }
 .scene--gameover.is-entering .go-ledger   { animation: go-in-up .9s var(--ease-out) .5s both; }
+.scene--gameover.is-entering .go-block--mvp { animation: go-in-up .9s var(--ease-out) .7s both; }
+.scene--gameover.is-entering .go-stats    { animation: go-in-up .8s var(--ease-out) .9s both; }
 .scene--gameover.is-entering .go-foot     { animation: go-in-up .7s var(--ease-out) 1.2s both; }
 @keyframes go-in-up    { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 @keyframes go-in-right { from { opacity: 0; transform: translateX(26px); } to { opacity: 1; transform: none; } }
@@ -660,61 +697,60 @@
 .mm-large-text .go-keeps__none { font-size: var(--fs-sm); }
 .mm-large-text .go-wrap { overflow-y: auto; }
 
-/* ── the Steam Deck and every short laptop panel ──────────────────────────── */
-@media (max-height: 860px) {
-  .go-board { --go-mvp-s: .58; }
-  .go-head.kit-titleblock--compact { --cart-h: 86px; }
-  .go-head .kit-cartouche__title { font-size: 25px; }
-  .go-head .kit-titleblock__note { margin-top: 2px; }
-  .go-stage { --go-plate-h: 38px; --go-pic-w: 150px; padding-top: 0; }
-  .go-portrait__plate .kit-plate__name { line-height: 1; }
-  .go-portrait__plate .kit-plate__epithet { line-height: 1.05; }
-  .go-stanza { padding-block: 14px 8px; }
-  .go-stanza li { line-height: 1.32; font-size: 13px; }
-  .go-stanza--pet { margin-top: 16px; padding-block: 12px 5px; }
-  .go-pet__snap { width: 62px; }
-  .go-pet__text { font-size: 13px; line-height: 1.3; }
-  .go-ledger { margin-top: 12px; padding-block: 14px 6px; row-gap: 5px; }
-  .go-who__focal { padding-top: 6px; gap: 2px; }
-  .go-corner { --h: 50px; }
-  .go-stats.kit-stats { margin-top: 12px; padding-block: 6px 5px; }
-  .go-stats .kit-stats__value { font-size: 18px; }
-  .go-trick { --plate-h: 26px; }
-  .go-tricks { gap: 3px 4px; }
-  .go-keep { padding-block: 2px; }
-  .go-keep em { font-size: 12px; line-height: 1.2; }
-  .go-mvp__slot { margin: 10px 12px calc(8px + var(--plinth-h)); }
-  .go-block--mvp { --plinth-h: 20px; }
-  .go-foot { padding-top: 6px; padding-bottom: 12px; }
-  /* the ledger's header on one line: HOW FAR, and the Courage gauge beside it */
-  .go-who__focal { grid-auto-flow: column; align-items: center; column-gap: 18px; padding-top: 4px; }
-  .go-who__deep { font-size: 26px; }
-  .go-corner { --h: 46px; }
-  .go-seed__hint { top: calc(100% + 1px); }
-  .go-stats.kit-stats { margin-top: 16px; }
-  .go-stats .kit-stats__value { font-size: 17px; }
-  .go-keep b { font-size: 13.5px; }
-  .go-keep em { font-size: 12px; line-height: 1.16; }
-}
+/* ── narrower boards ──────────────────────────────────────────────────────── */
 @media (max-width: 1400px) {
-  .go-wrap { --gutter: 16px; }
-  .go-mvp { grid-template-columns: auto minmax(0, 12ch); gap: 8px; }
-  .go-mvp__note { font-size: 12.5px; line-height: 1.32; }
+  .go-wrap { --gutter: 16px; grid-template-columns: minmax(0, .8fr) auto minmax(0, 1.24fr); }
+  .go-courage > .go-lbl { letter-spacing: .1em; }
+  .go-mvp { grid-template-columns: auto minmax(0, 12.5ch); gap: 10px; }
+  .go-mvp__note { font-size: 13px; line-height: 1.36; }
   .go-stats .kit-stats__label { font-size: 11.5px; letter-spacing: .06em; }
-  .go-bp__label, .go-bp__count { letter-spacing: .08em; }
   .go-trick__name { font-size: 12.5px; }
   .go-trick__cost { width: 16px; height: 16px; font-size: 10px; }
   .go-keep { column-gap: 8px; }
-  .go-keep__sigil { width: 26px; }
   .go-seed__hint { font-size: 11.5px; }
   /* the three ways out: each hint under its words, so the row fits the board */
   .go-foot .go-btn { --plate-h: 48px; font-size: var(--fs-sm); }
   .go-foot .go-btn.kit-btn--quiet { --plate-h: 46px; }
   .go-acts { gap: 46px; }
   .go-bp__label, .go-bp__count { font-size: 11px; letter-spacing: .02em; }
-  /* the Keepsakes get the width their sentences need to stay on one line */
-  .go-ledger { grid-template-columns: auto minmax(0, .92fr) minmax(0, 1fr); column-gap: 18px; }
+}
+
+/* ── the Steam Deck and every short laptop panel ──────────────────────────── */
+@media (max-height: 860px) {
+  .go-board { --go-mvp-s: 1.1; }
+  .go-head { margin-top: 12px; }
+  .go-head.kit-titleblock--compact { --cart-h: 82px; }
+  .go-head .kit-cartouche__title { font-size: 25px; }
+  .go-head .kit-titleblock__note { margin-top: 1px; }
+  .go-wrap { padding-top: 14px; }
+  .go-stage { --go-plate-h: 36px; --go-pic-w: 132px; padding-top: 0; }
+  .go-portrait__plate .kit-plate__name { line-height: 1; }
+  .go-portrait__plate .kit-plate__epithet { line-height: 1.05; }
+  .go-stanzas { gap: 22px; padding-top: 6px; }
+  .go-sh { letter-spacing: .14em; }
+  .go-sh::before, .go-sh::after { width: 16px; }
+  .go-stanza { padding-block: 17px 16px; }
+  .go-stanza li { line-height: 1.3; font-size: 13px; }
+  .go-pet__snap { width: 60px; }
+  .go-pet__text { font-size: 13px; line-height: 1.34; }
+  .go-ledger { margin-top: 6px; padding: 20px 18px 16px; row-gap: 8px; }
+  .go-who { row-gap: 6px; padding-bottom: 15px; }
+  .go-who__deep { font-size: 24px; }
+  .go-corner { --h: 44px; }
+  .go-block--mvp { margin-top: 18px; gap: 10px; --plinth-h: 24px; }
+  .go-block--mvp > .kit-heading--ribbon { --rib-h: 26px; }
+  .go-mvp__slot { margin: 12px 14px calc(10px + var(--plinth-h)); }
+  .go-stats.kit-stats { margin-top: 8px; padding-block: 5px 4px; }
+  .go-stats .kit-stats__value { font-size: 17px; line-height: 1.05; }
+  .go-trick { --plate-h: 25px; }
+  .go-trick__name { font-size: 12.5px; }
+  .go-tricks { gap: 3px 3px; }
+  .go-keep { padding-block: 1px 2px; }
+  .go-keep b { font-size: 13px; line-height: 1.1; }
+  .go-keep em { font-size: 12px; line-height: 1.14; }
+  .go-keep__sigil { width: 26px; }
+  .go-foot { padding-top: 8px; padding-bottom: 10px; }
 }
 @media (max-width: 1100px) {
-  .go-wrap { grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage" "pet" "found" "lost" "ledger"; overflow-y: auto; }
+  .go-wrap { grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage" "mvp" "left" "ledger" "stats"; overflow-y: auto; }
 }

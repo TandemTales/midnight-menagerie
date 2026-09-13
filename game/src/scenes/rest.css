@@ -8,7 +8,10 @@
    of the board's painted medallions. Nothing here draws a box of its own.
    =========================================================================== */
 
-.scene--rest .rm-body { justify-content: center; }
+/* The room starts right under the plaque's note, clear only of the medallions
+   riding the columns' top rails, and the four choices share out whatever
+   height is left as air inside their panels: no empty band under the ribbon. */
+.scene--rest .rm-body { justify-content: stretch; }
 
 /* The plaque's sub is two short sentences. Wrapped, its second line sat on the
    cartouche's bottom rail and the SAFE ROOM ribbon hung straight across it;
@@ -17,12 +20,14 @@
 .scene--rest .rm-where .rm-sub { max-width: none; white-space: nowrap; }
 
 .rs-room {
+  flex: 1 1 auto; min-height: 0;
   display: grid;
   grid-template-columns: minmax(0, 1.06fr) minmax(0, 1fr);
   gap: clamp(30px, 3.4vw, 64px);
   align-items: center;
   width: min(1460px, 100% - 2 * var(--kit-vine-w, 40px));
-  padding-top: clamp(22px, 3.4vh, 34px);   /* the moon on the fort's rail */
+  margin-inline: auto;
+  padding: clamp(24px, 3vh, 30px) 0 clamp(6px, 1vh, 12px);   /* the medallions on the top rails */
 }
 
 /* ── the fort ─────────────────────────────────────────────────────────────── */
@@ -42,6 +47,36 @@
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .85), inset 0 0 24px rgba(0, 0, 0, .7);
 }
 .rs-scene > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* The fort's light, painted over the picture and screened into it (BRAID's,
+   round 2): the lamp's warm pool inside the way in, the same warmth spilling
+   out across the rug, and the moon's cold shaft falling from the window across
+   the quilts to the floor. Positions are the drawing's own (420 x 280 viewBox,
+   in percent). The moon and the rug sit under the Kid and the Companion, the
+   lamp over them. */
+.rs-glow { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen; }
+.rs-glow--lamp {
+  z-index: 2;
+  background:
+    radial-gradient(15% 22% at 50% 80%, color-mix(in srgb, var(--kit-candle) 58%, transparent) 0%, color-mix(in srgb, var(--kit-candle) 22%, transparent) 45%, transparent 100%),
+    radial-gradient(34% 30% at 50% 76%, color-mix(in srgb, var(--kit-candle) 18%, transparent) 0%, transparent 100%);
+}
+.rs-glow--rug {
+  background: radial-gradient(38% 9% at 51% 94%, color-mix(in srgb, var(--kit-candle) 40%, transparent) 0%, color-mix(in srgb, var(--kit-candle) 12%, transparent) 55%, transparent 100%);
+}
+.rs-glow--moon { filter: blur(3.5px); }
+/* the shaft itself, cut to the window's shape and softened by the blur, so its
+   edges are light spilling and not a drawn cone, streaked the way dust in it is */
+.rs-glow--moon::before {
+  content: ''; position: absolute; inset: 0;
+  clip-path: polygon(85.4% 12%, 96.6% 12%, 79% 93%, 42% 93%);
+  background:
+    repeating-linear-gradient(104deg, transparent 0 7px, color-mix(in srgb, var(--kit-moon) 9%, transparent) 7px 11px, transparent 11px 19px),
+    linear-gradient(200deg, color-mix(in srgb, var(--kit-moon) 42%, transparent) 0%, color-mix(in srgb, var(--kit-moon) 28%, transparent) 50%, color-mix(in srgb, var(--kit-moon-lo) 22%, transparent) 100%);
+  -webkit-mask-image: linear-gradient(180deg, black 0%, black 78%, transparent 100%);
+          mask-image: linear-gradient(180deg, black 0%, black 78%, transparent 100%);
+}
+.rm:not(.is-still) .rs-glow--lamp { animation: kit-flicker 3.8s ease-in-out infinite; }
+.kit-board.has-backdrop .rs-glow--moon, .kit-board.has-backdrop .rs-glow--rug { display: none; }
 /* the panels' own grain, laid over the whole picture so it reads as painted */
 .rs-scene::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
@@ -209,10 +244,11 @@
 
 /* ── the night's choices: a gold-railed panel each ────────────────────────── */
 .rs-choices {
-  display: flex; flex-direction: column;
-  gap: clamp(24px, 3.4vh, 34px);            /* the next panel's medallion sits in here */
-  padding-top: clamp(8px, 1.4vh, 14px);
+  align-self: stretch;
+  display: flex; flex-direction: column; justify-content: space-between;
+  gap: clamp(24px, 3.2vh, 32px);            /* the next panel's medallion sits in here */
 }
+.rs-choices > .rs-door { flex: 1 1 auto; }
 /* a party's night has six; two columns keep them on the board */
 .rs-choices:has(> .rs-door:nth-child(5)) {
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -222,11 +258,18 @@
 .rs-door {
   --pk: .7;
   --medal-k: .84;
+  /* the fort's lamp is to the left of every choice and the window's moon high
+     to the right: the suede is warm at its left end and cold at its far corner */
+  --lit-x: -4%; --lit-y: 55%; --lit-w: 70%; --lit-h: 170%; --lit-a: 44%;
+  --moon-x: 104%; --moon-y: -30%; --moon-w: 60%; --moon-h: 130%; --moon-a: 22%;
+  --mat-edge: .5;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
-  grid-template-areas: "glyph name read" "glyph blurb read" "glyph note read";
+  grid-template-rows: 1fr auto auto auto 1fr;
+  grid-template-areas: "glyph . read" "glyph name read" "glyph blurb read" "glyph note read" "glyph . read";
   align-items: center; column-gap: clamp(12px, 1.1vw, 18px); row-gap: 1px;
-  padding: clamp(17px, 2.9vh, 27px) clamp(16px, 1.5vw, 26px) clamp(10px, 1.4vh, 15px);
+  /* the inner rule stands 13px in from the rail: the words keep 8px off it */
+  padding: clamp(24px, 3vh, 28px) clamp(18px, 1.6vw, 28px) clamp(20px, 2.4vh, 24px);
   text-align: left;
   color: inherit; font: inherit;
   cursor: pointer;
@@ -281,39 +324,34 @@
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
-/* the number the choice is about, on a gilt-rimmed cartouche: notched and
-   beaded ends, the Companion tiles' near-black enamel (cartouche-dark.webp) —
-   never a capsule — a step quieter than the name above it */
+/* the number the choice is about, on the Shop's counter plate: the enamel
+   cartouche with its gilt, notched and beaded ends (cartouche-lit.webp),
+   struck in gold — never a capsule — a step quieter than the name above it */
 .rs-door__read.kit-plate {
-  --plate-h: clamp(38px, 4.6vh, 44px);
+  --plate-h: clamp(40px, 4.8vh, 46px);
   grid-area: read; justify-self: end;
   flex-direction: row; gap: 5px;
   min-width: calc(var(--plate-h) * 3.6); max-width: 16em;
-  padding: 0 calc(var(--plate-h) * .6);
+  padding: 0 calc(var(--plate-h) * .62);
   white-space: nowrap;
-  border-image-source: url("../../assets/ui/kit/cartouche-dark.webp");
+  border-image-source: url("../../assets/ui/kit/cartouche-lit.webp");
   border-image-slice: 18 34 18 34 fill;
   border-image-width: calc(var(--plate-h) * 18 / 64) calc(var(--plate-h) * 34 / 64);
   font-family: var(--font-num); font-variant-numeric: var(--num-feat);
-  font-size: max(14px, calc(var(--plate-h) * .36)); font-weight: 600; line-height: 1.1;
-  color: var(--kit-name);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
-}
-/* its key, 1 to 4, on a small enamel badge seated on the rail's top-left corner */
-.rs-door__key {
-  position: absolute; z-index: 3;
-  left: calc(34px * var(--pk) - 6px); top: 0;
-  translate: -50% -50%;
-  display: grid; place-items: center;
-  width: clamp(24px, 1.8vw, 28px); aspect-ratio: 1;
-  border-radius: 50%;
-  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
-  font-family: var(--font-num); font-weight: 700; font-size: clamp(13px, .95vw, 15px); line-height: 1;
-  font-variant-numeric: lining-nums;
-  padding-top: 1px;
+  font-size: max(14.5px, calc(var(--plate-h) * .37)); font-weight: 600; line-height: 1.1;
   color: var(--kit-gold-hi);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 80%, transparent);
+}
+/* its key, 1 to 4, on a numbered enamel medallion (.kit-num) seated on the
+   top rail over the choice's own glyph */
+.rs-door__key.kit-num {
+  --num: clamp(28px, 2.2vw, 34px);
+  position: absolute; z-index: 3;
+  left: calc(clamp(18px, 1.6vw, 28px) + clamp(44px, 3.4vw, 56px) / 2); top: 0;
+  translate: -50% -52%;
+  font-family: var(--font-num); font-weight: 700;
+  font-size: calc(var(--num) * .5);
+  font-variant-numeric: lining-nums;
 }
 .rs-door__read b { font-weight: 400; color: var(--good-300); }
 .rs-door__note {
@@ -393,16 +431,19 @@
 
 /* ── short and narrow boards ──────────────────────────────────────────────── */
 @media (max-height: 860px) {
-  .rs-door { padding-block: 15px 8px; --medal-k: .66; }
+  .rs-door { padding-block: 21px 19px; --medal-k: .66; }
   .rs-door[data-medal="moon"] { --medal-k: .44; }
   .rs-door__txt > b { font-size: 15px; letter-spacing: .08em; }
-  .rs-door__read.kit-plate { --plate-h: 36px; }
-  .rs-choices { gap: 24px; }
+  .rs-door__read.kit-plate { --plate-h: 38px; }
+  .rs-choices { gap: 20px; }
+  .rs-room { padding: 20px 0 12px; }
+  .rs-door__txt > em, .rs-door__note { line-height: 1.16; }
+  .rs-door { row-gap: 0; }
   /* the plaque's sub is one long line: the plate grows a little to hold it
      clear of the SAFE ROOM ribbon, and the ribbon hangs lower */
-  .scene--rest .kit-titleblock--compact { --cart-h: 116px; }
-  .scene--rest .kit-titleblock--compact .kit-cartouche__title { font-size: 26px; }
-  .scene--rest .kit-titleblock--compact .kit-cartouche__sub { font-size: 12.5px; }
+  .scene--rest .kit-titleblock--compact { --cart-h: 102px; }
+  .scene--rest .kit-titleblock--compact .kit-cartouche__title { font-size: 24px; }
+  .scene--rest .kit-titleblock--compact .kit-cartouche__sub { font-size: 12px; }
   .scene--rest .kit-titleblock > .kit-ribbon { margin-top: calc(var(--cart-h) * -.1); }
 }
 /* ── a party's night: six choices, two columns of three ─────────────────────
@@ -419,6 +460,7 @@
   --pk: .62;
   --medal-k: .6;
   grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: none;
   grid-template-areas: "glyph name" "glyph blurb" "glyph read" "glyph note";
   column-gap: 12px;
   padding: clamp(10px, 1.4vh, 14px) clamp(12px, 1vw, 16px) clamp(7px, 1vh, 10px);

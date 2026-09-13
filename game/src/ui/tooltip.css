@@ -17,11 +17,13 @@
      ground and grain. The rail is drawn just outside the box, so the box is
      inset from the viewport edge by the rail's width (see tooltip.js EDGE). */
   --pk: .6;
+  /* the panels' own suede (suede.webp), lit from its top edge */
   background:
-    radial-gradient(90% 60% at 50% 0%, color-mix(in srgb, var(--kit-violet) 14%, transparent), transparent 70%),
-    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
-    linear-gradient(180deg, var(--kit-panel-hi) 0%, var(--kit-panel) 55%, color-mix(in oklab, var(--kit-panel) 80%, var(--kit-void)) 100%);
-  background-blend-mode: normal, overlay, normal;
+    radial-gradient(125% 115% at 50% 40%, transparent 50%, rgb(5 3 7 / .5) 100%),
+    radial-gradient(100% 70% at 50% -6%, color-mix(in srgb, #ffcf94 34%, transparent), transparent 78%),
+    url("../../assets/ui/kit/suede.webp") 0 0 / 300px 300px,
+    #150f1c;
+  background-blend-mode: normal, overlay, normal, normal;
   background-clip: padding-box;
   border: 1px solid transparent;
   border-image-source: url("../../assets/ui/kit/panel.webp");
@@ -148,9 +150,11 @@
 }
 
 /* ── every keyword on a hovered card, stacked ─────────────────────────────── */
-/* A plaque, not a box: dark vellum (vellum.webp) inside the rail, a brass
-   fleuron standing in each corner, and each keyword's name lettered on the
-   Companion tiles' dark nameplate as the block's header, its kind under it. */
+/* A plaque, not a box: aubergine enamel with its grain (enamel.webp) inside
+   the rail, the candle's light on its upper half and the dark gathering at its
+   edges, a brass fleuron standing in each corner, and each keyword's name
+   lettered on the Companion tiles' dark nameplate as the block's header, its
+   kind under it. */
 .mm-tip[data-kind="keywords"] {
   max-width: 36ch;
   padding: 16px 18px 14px;
@@ -160,9 +164,11 @@
     url("../../assets/ui/kit/fleuron-tr.webp") calc(100% - 6px) 6px / var(--fl) var(--fl) no-repeat,
     url("../../assets/ui/kit/fleuron-bl.webp") 6px calc(100% - 6px) / var(--fl) var(--fl) no-repeat,
     url("../../assets/ui/kit/fleuron-br.webp") calc(100% - 6px) calc(100% - 6px) / var(--fl) var(--fl) no-repeat,
-    radial-gradient(90% 50% at 50% 0%, color-mix(in srgb, var(--kit-candle) 7%, transparent), transparent 70%),
-    url("../../assets/ui/kit/vellum.webp") 0 0 / 256px 256px,
-    #171115;
+    radial-gradient(130% 120% at 50% 45%, transparent 48%, rgb(6 4 9 / .6) 100%),
+    radial-gradient(110% 70% at 50% 8%, color-mix(in srgb, #ffcf94 38%, transparent), transparent 80%),
+    url("../../assets/ui/kit/enamel.webp") 0 0 / 320px 320px,
+    #241733;
+  background-blend-mode: normal, normal, normal, normal, normal, overlay, normal, normal;
   background-clip: padding-box;
 }
 .mm-tip[data-kind="keywords"] .mm-tip__head {
