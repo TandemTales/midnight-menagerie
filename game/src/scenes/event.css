@@ -215,17 +215,17 @@
   background-repeat: no-repeat;
   background-clip: padding-box;
   box-shadow: 0 16px 30px -12px rgba(0, 0, 0, .9);
-  filter: brightness(.8) saturate(.9);
+  filter: brightness(.96) saturate(.95);
 }
 /* old varnish: darker at the edges, a faint sheen of moonlight across the top */
 .ev-hall__frame--l1 { background-image: radial-gradient(90% 80% at 40% 30%, color-mix(in srgb, var(--kit-moon) 10%, transparent), rgba(6, 4, 9, .55) 100%), url("../../assets/ui/kit/hall-gable.webp"); }
 .ev-hall__frame--l2 { background-image: radial-gradient(90% 80% at 40% 30%, color-mix(in srgb, var(--kit-moon) 8%, transparent), rgba(6, 4, 9, .6) 100%), url("../../assets/ui/kit/hall-tree.webp"); }
 .ev-hall__frame--r1 { background-image: radial-gradient(90% 80% at 60% 30%, color-mix(in srgb, var(--kit-moon) 10%, transparent), rgba(6, 4, 9, .55) 100%), url("../../assets/ui/kit/hall-towers.webp"); }
 .ev-hall__frame--r2 { background-image: radial-gradient(90% 80% at 60% 30%, color-mix(in srgb, var(--kit-moon) 8%, transparent), rgba(6, 4, 9, .6) 100%), url("../../assets/ui/kit/hall-roses.webp"); }
-.ev-hall__frame--l1 { left: calc(var(--hall-side) + 22px); top: 31%; width: clamp(120px, 11vw, 176px); aspect-ratio: 5 / 6; }
-.ev-hall__frame--l2 { left: calc(var(--hall-side) + 44px); top: 59%; width: clamp(92px, 8vw, 130px); aspect-ratio: 1; }
-.ev-hall__frame--r1 { right: calc(var(--hall-side) + 22px); top: 31%; width: clamp(120px, 11vw, 176px); aspect-ratio: 5 / 6; }
-.ev-hall__frame--r2 { right: calc(var(--hall-side) + 44px); top: 59%; width: clamp(92px, 8vw, 130px); aspect-ratio: 1; }
+.ev-hall__frame--l1 { left: calc(var(--hall-side) + 14px); top: 30%; width: clamp(128px, 12vw, 196px); aspect-ratio: 5 / 6; }
+.ev-hall__frame--l2 { left: calc(var(--hall-side) + 40px); top: 60%; width: clamp(98px, 8.6vw, 142px); aspect-ratio: 1; }
+.ev-hall__frame--r1 { right: calc(var(--hall-side) + 14px); top: 30%; width: clamp(128px, 12vw, 196px); aspect-ratio: 5 / 6; }
+.ev-hall__frame--r2 { right: calc(var(--hall-side) + 40px); top: 60%; width: clamp(98px, 8.6vw, 142px); aspect-ratio: 1; }
 .ev-hall__candle { bottom: clamp(70px, 10vh, 96px); width: clamp(52px, 4.4vw, 74px); filter: brightness(.95); }
 .ev-hall__candle--l { left: calc(50% - min(440px, 50vw) - clamp(84px, 7vw, 120px)); }
 .ev-hall__candle--r { right: calc(50% - min(440px, 50vw) - clamp(84px, 7vw, 120px)); }

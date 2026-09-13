@@ -146,10 +146,16 @@ def corners():
 def vines():
     # The scroll vines inside selectKid's outer rule, below the cobwebs and above
     # the round buttons. The outer rule itself is drawn by CSS.
-    l = keyed(SK, (15, 150, 76, 930), lo=10, hi=42, bg=(9, 6, 11), top=40, bottom=60, right=6)
-    r = keyed(SK, (1372, 150, 1433, 930), lo=10, hi=42, bg=(9, 6, 11), top=40, bottom=60, left=6)
-    save(l, "vine-l.webp", 88)
-    save(r, "vine-r.webp", 88)
+    # Measured: the board's outer rule is at x 9-13 / 1435-1438 and the Kid
+    # frames' gold rails at 73-76 / 1369-1373; the vines live between.
+    for name, box, fe in (("vine-l.webp", (17, 150, 68, 930), dict(top=40, bottom=60, right=4)),
+                          ("vine-r.webp", (1377, 150, 1428, 930), dict(top=40, bottom=60, left=4))):
+        rgb = crop(SK, box)
+        a = feather(ramp(blur(lum(rgb), 0.6), 10, 42), **fe)
+        # the vines are violet: any gold here is a neighbouring frame's scroll
+        foreign = ndimage.binary_dilation(warm(rgb) | ((rgb[..., 0] > 40) & (rgb[..., 0] > rgb[..., 2] * 1.15)), iterations=2)
+        a = np.where(foreign, 0, a)
+        save(rgba(unmix(rgb, np.maximum(a, 1e-3), (9, 6, 11)), a), name, 88)
 
 
 def warm(rgb):

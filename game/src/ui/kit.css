@@ -35,7 +35,7 @@
 /* ── the board ─────────────────────────────────────────────────────────────── */
 .kit-board {
   --kit-edge: clamp(8px, .7vw, 12px);          /* where the outer gold rule sits */
-  --kit-vine-w: clamp(30px, 2.9vw, 46px);
+  --kit-vine-w: clamp(38px, 3.5vw, 60px);
   --kit-backdrop: none;                        /* set by RoomScene when a painting exists */
   background: var(--kit-ground-0);
   isolation: isolate;
@@ -131,13 +131,14 @@
 .kit-dress__corner--l { left: calc(var(--kit-edge) + 2px); background-image: url("../../assets/ui/kit/corner-l.webp"); }
 .kit-dress__corner--r { right: calc(var(--kit-edge) + 2px); background-image: url("../../assets/ui/kit/corner-r.webp"); }
 
+/* the purple scroll vines down both sides, as on the Kid board: from under
+   the corner candles to above the footer's round buttons */
 .kit-dress__vine {
-  top: calc(var(--hud-h) + clamp(120px, 17vh, 170px));
-  bottom: clamp(60px, 9vh, 96px);
+  top: calc(var(--hud-h) + clamp(100px, 14vh, 140px));
+  bottom: clamp(84px, 11vh, 110px);
   width: var(--kit-vine-w);
   background: 50% 50% / 100% 100% no-repeat;
-  filter: brightness(1.55) saturate(1.2);
-  opacity: .9;
+  filter: brightness(1.8) saturate(1.25);
 }
 .kit-dress__vine--l { left: calc(var(--kit-edge) + 3px); background-image: url("../../assets/ui/kit/vine-l.webp"); }
 .kit-dress__vine--r { right: calc(var(--kit-edge) + 3px); background-image: url("../../assets/ui/kit/vine-r.webp"); }
