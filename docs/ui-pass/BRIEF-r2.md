@@ -146,7 +146,8 @@ navy web chrome. Bring all of it into the kit:
 Tests drive this screen hard: `tests/combat-scene`, `card-face`, `cards-feel`,
 `piles-reachable`, `gamepad`, `settings-play`, `playthrough3`, `coop`,
 `kid-clips`, `enemy-stills`, `sprites`, `steam-deck`, `chrome`. Before changing a
-selector, grep `tests/`. Keep 60 fps.
+selector, grep `tests/`, and run the tests you touched against YOUR server
+(**Testing your branch**, below). Keep 60 fps.
 
 ## EXPAND-2 — the Lobby, the Clubhouse, the Atlas
 
@@ -163,6 +164,17 @@ selector, grep `tests/`. Keep 60 fps.
 - **The Atlas** (`#scene=atlas`): the whole-house floor plan and a side panel. Frame
   the plan like the Map does (`.kit-railframe`), the side panel a kit panel with a
   nameplate, the held Companion in a portrait frame, Back a kit medallion.
+
+## Testing your branch
+
+Every test under `tests/` hard-codes `:8777`, and `:8777` is the MAIN checkout's
+server. A test run from `WT` as its docstring says drives `dev`, not your branch,
+and passes whatever you changed. With your own server up, run it through the
+wrapper, which swaps the port in memory and changes nothing on disk:
+```
+cd "WT" && python tools/on_port.py PORT tests/combat-scene/seam.py
+```
+A test run any other way has tested nothing of yours.
 
 ## Deliverables
 
