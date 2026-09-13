@@ -36,7 +36,7 @@
    over the paper, the frame, the wing's nameplate on the top rail, the key
    rail under it — reads the same --mv-* box. */
 .map-screen {
-  --mv-top: calc(var(--hud-h) + clamp(30px, 3.6vh, 36px));  /* the nameplate on the top rail */
+  --mv-top: calc(var(--hud-h) + clamp(34px, 4.4vh, 42px));  /* the nameplate on the top rail */
   --mv-bot: clamp(74px, 9vh, 82px);                         /* the key rail */
   --mv-side: clamp(40px, 3.6vw, 60px);                      /* the vines */
   --mv-ar: 2.0099;                                          /* the sheet: 2030 x 1010 */
