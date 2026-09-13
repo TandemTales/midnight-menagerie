@@ -1016,6 +1016,9 @@ export class Hand {
       this._crowded = F.crowded;
       this.el.classList.toggle('is-crowded', !!F.crowded);
     }
+    // how much of each card its right-hand neighbour leaves showing, 0..1
+    const vis = n > 1 ? Math.min(1, F.step / F.cw).toFixed(3) : '1';
+    if (this._vis !== vis) { this._vis = vis; this.el.style.setProperty('--fan-vis', vis); }
     const last = this.slots[n - 1];
     if (this._lastSlot !== last) {
       if (this._lastSlot) this._lastSlot.view.el.classList.remove('is-fan-last');

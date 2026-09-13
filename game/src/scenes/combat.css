@@ -1740,21 +1740,28 @@
 }
 .cb-handhost.kit-cards .mm-card[data-rarity] .mm-card__type,
 .cb-chooser__pool.kit-cards .mm-card[data-rarity] .mm-card__type { font-size: calc(12 * var(--u) * min(var(--rules-k, 1), 1.2)); }
-/* A CROWDED HAND READS FROM THE LEFT. Past eight Tricks each card shows its
-   neighbour only its left two-thirds (ui/hand.js `boundVisible`), so a name
-   centred on its plate lost its last letters under the next card ("SIT PRET").
-   Set flush left, inside the plate's notched cap, every name sits in the strip
-   that shows. The rightmost card and the one you are holding up are whole, so
-   they keep the centred name. */
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity]:not(.is-fan-last):not(.is-hover) .mm-card__banner {
+/* A CROWDED HAND READS FROM THE LEFT. Past eight Tricks each card shows only
+   its left part past its neighbour (ui/hand.js `boundVisible`, published as
+   --fan-vis), so a name centred on its plate lost its last letters under the
+   next card ("SIT PRET") and a rule lost both ends of every line ("Deal 6
+   dama"). While the hand is crowded every card, the last and the lifted one
+   included (so nothing jumps under the pointer), sets its name and type line
+   flush left inside the plate, and wraps its rules into the strip that shows:
+   "Deal 6 damage." reads whole on a card two-fifths covered. */
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity] .mm-card__banner {
   justify-items: start;
 }
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity]:not(.is-fan-last):not(.is-hover) .mm-card__name {
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity] .mm-card__name {
   padding-left: calc(19 * var(--u)); padding-right: calc(8 * var(--u));
   text-align: left;
 }
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity].is-name-xlong:not(.is-fan-last):not(.is-hover) .mm-card__name {
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity].is-name-xlong .mm-card__name {
   font-size: calc(13.4 * var(--u)); padding-left: calc(17 * var(--u));
+}
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity] .mm-card__rules {
+  right: calc((224 * (1 - var(--fan-vis, .6)) + 6) * var(--u));
+  left: calc(13 * var(--u));
+  align-items: flex-start; text-align: left;
 }
 /* THE CREST ON THE TOP RAIL IS CAST, NOT MOULDED. A common Trick's crest was
    the rarity's pale steel lifted toward white, and across a fan of nine it
@@ -1774,7 +1781,7 @@
 .cb-handhost.kit-cards .mm-card:is([data-rarity="basic"], [data-rarity="common"]) .mm-card__crest i,
 .cb-chooser__pool.kit-cards .mm-card:is([data-rarity="basic"], [data-rarity="common"]) .mm-card__crest i { --crest-mix: 0%; }
 /* the type line too: SKILL reads whole in the strip, never "SKI" */
-.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity]:not(.is-fan-last):not(.is-hover) .mm-card__type {
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity] .mm-card__type {
   justify-content: flex-start; padding-left: calc(20 * var(--u));
 }
 /* THE HAND'S STATES, IN THE KIT'S METAL. `.kit-cards` dresses a card's frame
@@ -1900,7 +1907,7 @@
 }
 /* inboard of the frame's corner scrollwork at every size */
 .cb-bl {
-  left: clamp(16px, 1.6vw, 28px);
+  left: clamp(22px, 2.1vw, 34px);
   display: flex; align-items: flex-end; gap: 0;
 }
 /* the draw pile's filigree tucks behind Nerve's, as the two settings would
@@ -1909,7 +1916,7 @@
 /* END TURN first in the DOM (the keyboard's order), drawn at the bottom; the
    row of piles over it is centred on the same line as its medallion */
 .cb-br {
-  right: clamp(18px, 1.7vw, 30px);
+  right: clamp(26px, 2.35vw, 38px);
   display: flex; flex-direction: column-reverse; align-items: center;
 }
 .cb-br__piles {
@@ -2650,9 +2657,11 @@
   background: radial-gradient(closest-side, rgba(6, 4, 9, .82), rgba(6, 4, 9, .5) 62%, transparent);
 }
 /* THE KID STANDS WHERE SHE STANDS IN EVERY OTHER ROOM. The boss arena drops
-   the field's floor 7% lower to give the boss the frame, and she dropped with
-   it: her Companion ended up standing behind her own portrait. */
-.cb-root[data-arena="boss"] .cb-hero { bottom: 7vh; }
+   the field's floor 9% lower (40% to 31%) to give the boss the frame, and she
+   dropped with it: her Companion ended up standing behind her own portrait.
+   9vh puts her boots back on the Scuffle's line exactly (7vh left them 18px
+   low, standing on the portrait's counter plate). */
+.cb-root[data-arena="boss"] .cb-hero { bottom: 9vh; }
 
 /* the edges close in while a boss arrives, then relax to a held vignette */
 .cb.is-arena-in::before, .cb.is-arena::before {
