@@ -153,12 +153,13 @@ export class RoomScene extends Scene {
     const node = this.run.currentNode;
     this.root.innerHTML = `
       <div class="rm rm--${this.kind} kit-board">
-        <div class="rm-ground kit-ground" aria-hidden="true"></div>
+        <div class="rm-ground kit-ground" aria-hidden="true"><i class="kit-ground__warm"></i><i class="kit-ground__moon"></i></div>
         <div class="rm-vig" aria-hidden="true"></div>
         <div class="rm-motes" aria-hidden="true"></div>
         <div class="kit-dress" aria-hidden="true">
           <i class="kit-dress__floor"></i>
           <i class="kit-dress__rule"></i>
+          <i class="kit-dress__footscroll"></i>
           <i class="kit-dress__vine kit-dress__vine--l"></i>
           <i class="kit-dress__vine kit-dress__vine--r"></i>
           <i class="kit-dress__corner kit-dress__corner--l"></i>
@@ -179,8 +180,9 @@ export class RoomScene extends Scene {
         </header>
 
         <main class="rm-body" data-body></main>
-        <footer class="rm-foot" data-foot></footer>
-        ${this.mock ? '<div class="rm-mockflag" role="note">Standalone preview &middot; no expedition in progress</div>' : ''}
+        <footer class="rm-foot" data-foot>${this.mock
+    ? '<div class="rm-mockflag kit-enamel kit-enamel--dark kit-enamel--tall" role="note"><i class="kit-enamel__label">Standalone preview</i><span class="rm-mockflag__dot"> &middot; </span><em class="rm-mockflag__sub">no expedition in progress</em></div>'
+    : ''}</footer>
       </div>`;
     this.$body = this.root.querySelector('[data-body]');
     this.$foot = this.root.querySelector('[data-foot]');
@@ -506,10 +508,10 @@ export class RoomScene extends Scene {
 }
 
 /** Small labelled chip used for spoils, prices and outcome deltas — a kit
- *  nameplate: the number where a tile's name goes, the word as its epithet. */
+ *  enamel cartouche: the number in gold, the word engraved beside it. */
 export function chip(kind, label, value, title = '') {
-  return `<span class="rm-spoil rm-spoil--${kind} kit-plate"${title ? ` title="${esc(title)}"` : ''}>
-    <b class="kit-plate__name">${esc(value)}</b><span class="kit-plate__epithet">${esc(label)}</span></span>`;
+  return `<span class="rm-spoil rm-spoil--${kind} kit-enamel"${title ? ` title="${esc(title)}"` : ''}>
+    <b class="kit-enamel__value">${esc(value)}</b><i class="kit-enamel__label">${esc(label)}</i></span>`;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -564,12 +566,19 @@ export class RewardScene extends RoomScene {
     this.$body.appendChild(this.$stage);
     const wrap = el('section', 'rw-spoils');
     wrap.setAttribute('aria-label', 'What this room gave you');
+    // The spoils hang on the frame's top rule either side of its crest.
+    const spoils = [
+      chip('gold', TERMS.gold, `+${r.lostThings}`),
+      r.clues ? chip('clue', word(r.clues, 'Clue'), `+${r.clues}`) : '',
+      chip('luck', 'Luck', `+${this.run.flags.luck}`,
+        'Raises the chance a Rare Trick appears in a reward. Skipping a reward raises it further.'),
+    ].filter(Boolean);
+    const half = Math.ceil(spoils.length / 2);
     wrap.innerHTML = `
       <div class="rw-spoils__row">
-        ${chip('gold', TERMS.gold, `+${r.lostThings}`)}
-        ${r.clues ? chip('clue', word(r.clues, 'Clue'), `+${r.clues}`) : ''}
-        ${chip('luck', 'Luck', `+${this.run.flags.luck}`,
-    'Raises the chance a Rare Trick appears in a reward. Skipping a reward raises it further.')}
+        <span class="rw-spoils__side rw-spoils__side--l">${spoils.slice(0, half).join('')}</span>
+        <span class="rw-spoils__crest" aria-hidden="true"></span>
+        <span class="rw-spoils__side rw-spoils__side--r">${spoils.slice(half).join('')}</span>
       </div>
       ${k ? `
       <div class="rw-keepsake kit-panel" data-medal="star" data-rarity="${esc(k.rarity)}">
@@ -594,10 +603,10 @@ export class RewardScene extends RoomScene {
     const sec = el('section', 'rw-cards');
     sec.innerHTML = `
       <div class="rw-cards__head">
-        <h2 class="kit-heading">Choose one ${esc(TERMS.card)}</h2>
+        <h2 class="kit-heading kit-heading--ribbon">Choose one ${esc(TERMS.card)}</h2>
         <p>Or take none — and be luckier next time.</p>
       </div>
-      <div class="rw-fan kit-cards" data-tip-avoid=".rw-slot, .rm-where, .rw-spoils" role="listbox" aria-label="Three ${esc(TERMS.card)}s. Choose one, or skip."></div>`;
+      <div class="rw-fan kit-cards" data-tip-avoid=".rw-slot, .rm-where, .rw-spoils, .rw-candle" data-tip-bounds=".rw-cards" role="listbox" aria-label="Three ${esc(TERMS.card)}s. Choose one, or skip."></div>`;
     // Two candles stand either side of the three frames, the way the Kid board
     // keeps one beside its mirror. Decoration only.
     for (const side of ['l', 'r']) {
@@ -643,7 +652,7 @@ export class RewardScene extends RoomScene {
         uid: `rw-${c.id}`, largeText: this.largeText, reduceMotion: this.reduceMotion,
       });
       slot.appendChild(view.el);
-      const tag = el('span', 'rw-slot__rarity kit-plate', esc(def.rarity));
+      const tag = el('span', 'rw-slot__rarity kit-enamel', `<i class="kit-enamel__label">${esc(def.rarity)}</i>`);
       tag.dataset.rarity = def.rarity;
       slot.appendChild(tag);
       fan.appendChild(slot);
@@ -697,7 +706,7 @@ export class RewardScene extends RoomScene {
   }
 
   _layout() {
-    for (const { slot, view } of this._slots || []) fitCardToSlot(view, slot);
+    for (const { slot, view } of this._slots || []) fitCardToSlot(view, slot, { legibleAt: 224 });
   }
 
   /* ── footer: skip, and the way out ────────────────────────────────────── */

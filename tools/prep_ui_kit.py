@@ -31,6 +31,9 @@ What comes out, and how `game/src/ui/kit.css` uses it:
   button                the round purple enamel button, glyph painted out
   button-ornate         the same, seated in its gold filigree
   candle, skull         set dressing (.kit-prop)
+  web-l / web-r         cobweb threads from the board corners (.kit-web)
+  footscroll            the purple acanthus along the Kid board's foot, mirrored
+                        (.kit-dress__footscroll)
   grain                 the panels' own grain as a neutral overlay tile
   from UI/mainMenu.png
   hall-*                four details of the mansion, hung as portraits
@@ -41,6 +44,9 @@ What comes out, and how `game/src/ui/kit.css` uses it:
 Everything with an alpha edge is keyed on LUMINANCE against the painting's own
 near-black ground and then *unmixed* from that ground, so a piece composited
 back onto a dark board reproduces the painting instead of going muddy.
+
+Run tools/prep_ui_materials.py after this one: its room, sconce and floor
+read pieces this script writes (damask, floor, candle).
 
     python tools/prep_ui_kit.py            # write everything
 """
@@ -212,6 +218,15 @@ def panel():
     k = ramp(blur(lum(rgb), 0.5), 9, 40)
     a = np.where(outside, k, a)
     a = np.where(orn, np.maximum(a, ramp(blur(lum(rgb), 0.5), 6, 26)), a)
+    # Specks of the neighbouring painting that the luminance key let through
+    # OUTSIDE the rail (a curl of the Kid board's vine sat 10 px off the top-left
+    # corner and rode every panel as a stray bracket): keep only what is joined
+    # to the rail itself.
+    lab, n = ndimage.label(a > 0.06)
+    if n > 1:
+        main = lab[T, (L + R) // 2]
+        stray = (lab > 0) & (lab != main) & outside
+        a = np.where(stray, 0, a)
     a = blur(a, 0.35)
     out = rgba(unmix(rgb, a, (6, 4, 7)), a)
     save(out, "panel.webp", 92)
@@ -500,6 +515,56 @@ def props():
         ("ellipse", [(352, 855), (33.5, 35)]),
         ("poly", [(307, 887), (408, 882), (421, 900), (422, 966), (302, 966), (305, 900)]),
     ], "skull.webp", soft=0.8)
+
+
+def footscroll():
+    """The purple acanthus that trails along the foot of the Kid board from its
+    round confirm button (selectKid x 1085..1255, y 965..1062), keyed on its
+    own violet against the dark floor, then set beside its mirror image: one
+    symmetric ornament to lie along the middle of a board's bottom rule."""
+    rgb = crop(SK, (1085, 966, 1256, 1064))
+    l = blur(lum(rgb), 0.5)
+    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    vio = (b > g * 1.12) & (r > g * 1.02)
+    a = ramp(l, 18, 46) * vio
+    # nothing of the button's gold filigree or the frame above
+    a = np.where(ndimage.binary_dilation(warm(rgb), iterations=2), 0, a)
+    # only the scroll itself: drop the specks the key lets through
+    lab, n = ndimage.label(a > .12)
+    if n:
+        sizes = ndimage.sum(a > .12, lab, range(1, n + 1))
+        keep = np.isin(lab, 1 + np.nonzero(sizes >= 40)[0])
+        a = np.where(ndimage.binary_dilation(keep, iterations=2), a, 0)
+    a = feather(blur(a, 0.5), left=0, right=10, top=3, bottom=3)
+    piece = rgba(unmix(rgb, np.maximum(a, 1e-3), (10, 7, 12)), a)
+    # the curls meet in the middle, the tails trail away to either side
+    both = np.concatenate([piece, piece[:, ::-1]], axis=1)
+    save(np.ascontiguousarray(both), "footscroll.webp", 90)
+
+
+def webs():
+    """Cobwebs, threads only, from the board corners (after ui/r0-a's cut).
+
+    A thread is a fine line a little brighter than what is behind it and not
+    saturated: high-pass the luminance, keep the low-saturation strokes, drop
+    the violet scrollwork and the gold under them. The web hangs from its
+    corner, so everything past the far diagonal fades out.
+    """
+    for name, sheet, box, corner in (("web-l.webp", SC, (0, 0, 138, 196), "tl"),
+                                     ("web-r.webp", SK, (1240, 12, 1432, 172), "tr")):
+        rgb = crop(sheet, box)
+        L = lum(rgb)
+        mx, mn = rgb.max(axis=2), rgb.min(axis=2)
+        sat = (mx - mn) / (mx + 1)
+        t = np.clip((L - ndimage.gaussian_filter(L, 6) - 6) / 40.0, 0, 1)
+        t = t * (sat < 0.42) * ~violet(rgb) * ~(warm(rgb) & (sat > 0.45))
+        a = np.clip(t * 1.25, 0, 1)
+        h, w = a.shape
+        yy, xx = np.mgrid[0:h, 0:w]
+        u = xx / w if corner == "tl" else 1 - xx / w
+        a = a * np.clip((1.05 - (u + yy / h)) / 0.25, 0, 1)
+        col = np.array([196, 180, 158], np.float32) * 0.55 + rgb * 0.45
+        save(rgba(col, a), name, 90)
 
 
 def periodic_noise(n, rng, beta=2.0, lo_cut=1.0):
@@ -904,6 +969,8 @@ def main():
     button()
     button_ornate()
     props()
+    webs()
+    footscroll()
 
 
 if __name__ == "__main__":

@@ -2,10 +2,12 @@
    Mr. Moth's — the Lost Things market.  OWNER: meta-run.
    Shared chrome lives in reward.css (.rm-*); the look is the kit (ui/kit.css).
 
-   A staged board, composed like the select screens: the five Tricks hang in a
-   row of painted portrait frames across the wall, each with its price on a
-   nameplate, and under them the counter — Keepsakes and Snacks in two gold-
-   railed panels either side of Mr. Moth himself, whose panel wears the moon.
+   A staged board, composed like the select screens. The five Tricks stand in
+   their portrait frames on a walnut shelf inside a velvet-backed cabinet: the
+   kit's filigree panel rail round it, a crest on its top rule with the TRICKS
+   ribbon hanging from it, and each price on an enamel cartouche fixed to the
+   shelf's brass-nosed front. Under it the counter — Keepsakes and Snacks in
+   two railed panels either side of Mr. Moth, lit in his own medallion.
    =========================================================================== */
 
 /* The shelf is one board that fits the screen: the frames take whatever height
@@ -17,21 +19,21 @@
    centre returned the footer — visible, and unclickable. */
 .scene--shop .rm-body {
   justify-content: flex-start; align-items: stretch;
-  padding-top: clamp(2px, .6vh, 8px); padding-bottom: clamp(6px, 1.2vh, 14px);
-  padding-inline: calc(var(--rm-pad) + var(--kit-vine-w, 36px) * .55);
+  padding-top: clamp(6px, 1vh, 14px); padding-bottom: clamp(6px, 1.2vh, 14px);
+  padding-inline: calc(var(--rm-pad) + var(--kit-vine-w, 36px) * .45);
   overflow-y: auto; scroll-padding-block-end: clamp(18px, 3vh, 40px);
   scrollbar-color: var(--kit-gold-lo) transparent;
 }
-.scene--shop .rm-head { padding-bottom: 0; }
+.scene--shop .rm-head { padding-top: clamp(4px, .6vh, 10px); padding-bottom: 0; }
 
 .sh-floor {
   flex: 1 1 auto; min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1.14fr) minmax(0, .86fr) minmax(0, 1.14fr);
-  grid-template-rows: minmax(clamp(236px, 34vh, 380px), 1fr) auto;
-  column-gap: clamp(22px, 2.2vw, 40px);
-  row-gap: clamp(20px, 2.8vh, 26px);
-  width: min(1560px, 100%); margin: 0 auto;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, .96fr) minmax(0, 1.15fr);
+  grid-template-rows: minmax(clamp(250px, 34.5vh, 400px), 1fr) auto;
+  column-gap: clamp(20px, 2vw, 36px);
+  row-gap: clamp(16px, 2vh, 26px);
+  width: min(1560px, 100%); margin: clamp(14px, 1.6vh, 18px) auto 0;
 }
 /* The markup groups the counters as a left column and a side column; the board
    lays all four out on one grid instead. */
@@ -41,48 +43,76 @@
 .sh-counter--moth { grid-column: 2; grid-row: 2; }
 .sh-side > .sh-counter:last-child { grid-column: 3; grid-row: 2; }
 
+/* the shop's light: the lantern over the cabinet, and the candle at the end
+   of the shelf (the ground's light slots, ui/kit.css .kit-ground) */
+.rm--shop {
+  --wl3-x: 50vw;                          --wl3-y: calc(var(--hud-h) + 30vh);
+  --wl3-w: 86vw;                          --wl3-h: 60vh;
+  --ml1-x: 50vw;                          --ml1-y: calc(var(--hud-h) + 4vh);
+  --ml1-w: 60vw;                          --ml1-h: 34vh;
+}
+
 /* ── headings ─────────────────────────────────────────────────────────────── */
 .sh-h {
   margin: 0 0 clamp(4px, .8vh, 8px);
   font-size: var(--fs-sm);
 }
 
-/* ── the Tricks: a row of portrait frames on the wall ─────────────────────── */
-.sh-counter--cards {
+/* ── the Tricks cabinet ───────────────────────────────────────────────────── */
+.sh-counter--cards.kit-panel {
+  --pk: .82;
+  --medal-k: 1.36;
+  --rib-h: clamp(28px, 3.5vh, 34px);
   position: relative;
   display: flex; flex-direction: column; align-items: center;
   min-height: 0;
-}
-/* the shelf the frames stand on: a dark plank with a brass nosing */
-.sh-cards::after {
-  content: ''; position: absolute; z-index: -2; pointer-events: none;
-  left: 2%; right: 2%; bottom: 2px; height: 18px;
+  padding: calc(var(--rib-h) * .5 + 2px) clamp(16px, 1.6vw, 28px) 2px;
+  /* velvet on the cabinet's back, the lantern's light spilling down it from
+     the crest, the corners in shadow */
   background:
-    linear-gradient(180deg,
-      #2a1f26 0px, #3a2b2c 4px,                                  /* the top face, lit */
-      var(--kit-gold-hi) 5px, var(--kit-gold) 6px, var(--kit-gold-lo) 7px,   /* brass nosing */
-      #1a1216 8px, #120c10 100%);                                /* the front edge */
-  box-shadow: 0 10px 18px -4px rgba(0, 0, 0, .85);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 7%, black 93%, transparent 100%);
-          mask-image: linear-gradient(90deg, transparent 0%, black 7%, black 93%, transparent 100%);
+    radial-gradient(46% 64% at 50% 0%, color-mix(in srgb, var(--kit-candle) 16%, transparent), transparent 72%),
+    radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(4, 2, 6, .72) 100%),
+    url("../../assets/ui/kit/velvet.webp") 0 0 / 256px 256px,
+    #140b18;
+  background-clip: padding-box;
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, .75), 0 20px 44px -18px rgba(0, 0, 0, .95);
 }
-/* dressing at the two ends of the row of frames (flex items of .sh-cards) */
-.sh-cards > .sh-prop { position: relative; align-self: flex-end; flex: none; margin-bottom: 16px; }
-.sh-prop--l { width: clamp(64px, 5.4vw, 92px); filter: brightness(.9); }
-.sh-prop--r { width: clamp(50px, 4.2vw, 72px); }
-@media (max-width: 1440px) { .sh-cards > .sh-prop { display: none; } }
-.sh-counter--cards > .sh-h { width: clamp(340px, 34vw, 580px); margin-bottom: 0; }
+/* The TRICKS ribbon lies along the cabinet's top rule and the crest is its
+   clasp (ui/kit.css .kit-heading--clasp). */
+.sh-counter--cards.kit-panel::before { z-index: 3; }
+
 .sh-cards {
-  --frame-pad: clamp(12px, 1vw, 16px);
+  --frame-pad: clamp(11px, .95vw, 16px);
+  --tag-h: clamp(34px, 4.2vh, 40px);
+  --shelf-h: clamp(46px, 5.6vh, 54px);
   position: relative;
   flex: 1 1 auto; min-height: 0;
-  display: flex; justify-content: center; align-items: stretch;
-  gap: calc(var(--frame-pad) * 2 + clamp(14px, 1.8vw, 34px));
-  padding: var(--frame-pad) var(--frame-pad) 0;
-  width: 100%;
+  /* the frames (and the props at the two ends) share the shelf out evenly:
+     never closer than their frames allow */
+  display: flex; justify-content: space-evenly; align-items: stretch;
+  gap: calc(var(--frame-pad) * 2 + 10px);
+  padding: var(--frame-pad) var(--frame-pad) 4px;
+  width: calc(100% + 2 * clamp(16px, 1.6vw, 28px));
+  margin-inline: calc(-1 * clamp(16px, 1.6vw, 28px));
 }
+/* the shelf: a walnut plank with a brass nosing, across the whole cabinet.
+   shelf.webp's top face is its first 30%, the nosing 30-37%, the front to
+   72%: the frames stand on the top face, the prices hang on the front. */
+.sh-cards::after {
+  content: ''; position: absolute; z-index: 0; pointer-events: none;
+  left: 0; right: 0;
+  bottom: calc(4px + var(--tag-h) * .5 - var(--shelf-h) * .46);
+  height: var(--shelf-h);
+  background: url("../../assets/ui/kit/shelf.webp") 0 0 / auto 100% repeat-x;
+}
+/* dressing at the two ends of the shelf (flex items of .sh-cards) */
+.sh-cards > .sh-prop { position: relative; align-self: flex-end; flex: none; z-index: 1; margin-bottom: calc(4px + var(--tag-h) * .5 + var(--shelf-h) * .32); }
+.sh-prop--l { width: clamp(64px, 5.4vw, 92px); filter: brightness(.9); }
+.sh-prop--r { width: clamp(48px, 4vw, 68px); }
+@media (max-width: 1440px) { .sh-cards > .sh-prop { display: none; } }
+
 .sh-card {
-  position: relative;
+  position: relative; z-index: 1;
   display: grid; grid-template-rows: minmax(0, 1fr) auto;
   justify-items: center; align-content: stretch;
   height: 100%; min-height: 0;
@@ -90,7 +120,10 @@
 .sh-card__face {
   position: relative;
   grid-row: 1;
-  height: calc(100% - var(--frame-pad) - 10px); max-height: 100%;
+  /* the frame's bottom rail stands on the shelf's top face, which starts
+     above the price tag by the depth of the face and the nosing */
+  height: calc(100% - var(--frame-pad) - var(--shelf-h) * .5 + var(--tag-h) * .5 + var(--frame-pad) * .8); max-height: 100%;
+  align-self: start;
   aspect-ratio: var(--card-aspect);
   transition: transform var(--t-quick) var(--ease-out), filter var(--t-base) var(--ease-out);
 }
@@ -109,7 +142,7 @@
     linear-gradient(180deg, #110c16, #09070c);
   background-blend-mode: normal, overlay, normal;
   background-clip: padding-box;
-  box-shadow: 0 18px 34px -14px rgba(0, 0, 0, .95);
+  box-shadow: 0 14px 22px -10px rgba(0, 0, 0, .95);
 }
 .sh-card:hover .sh-card__face { transform: translateY(-6px); }
 .sh-card.is-poor .sh-card__face { filter: grayscale(.8) brightness(.62); }
@@ -122,18 +155,22 @@
   pointer-events: none;
   text-shadow: 0 2px 0 var(--kit-void);
 }
-/* owning one already is a note, pinned to the top rail of its frame */
+/* owning one already is a note, on a small dark plate on the top rail of its frame */
 .sh-card__own {
-  position: absolute; left: 50%; top: calc(var(--frame-pad) * -1 - 9px); z-index: 3;
+  position: absolute; left: 50%; top: calc(var(--frame-pad) * -1 - 11px); z-index: 3;
   transform: translateX(-50%);
-  padding: 1px 10px; white-space: nowrap;
+  padding: 2px 16px 3px; white-space: nowrap;
   font-size: var(--fs-xs); font-style: italic; color: var(--kit-text);
-  background: linear-gradient(90deg, transparent, var(--kit-void) 18%, var(--kit-void) 82%, transparent);
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/cartouche-dark.webp");
+  border-image-slice: 18 34 18 34 fill;
+  border-image-width: 6px 12px;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
 }
-/* the price, on a nameplate across the frame's bottom rail */
+/* the price, on an enamel cartouche fixed to the shelf's front */
 .sh-card .sh-buy {
   grid-row: 2;
-  margin-top: calc(-1 * (var(--frame-pad) + 6px));
+  margin-top: 0;
   z-index: 2;
 }
 
@@ -141,28 +178,40 @@
 .sh-side > .sh-counter,
 .sh-counter--moth {
   --pk: .74;
-  --medal-k: .82;
-  padding: clamp(14px, 2vh, 20px) clamp(14px, 1.3vw, 22px) clamp(6px, 1vh, 10px);
+  --medal-k: 1.05;
+  --rib-h: clamp(26px, 3.2vh, 30px);
+  padding: calc(var(--rib-h) * .5 + clamp(4px, .6vh, 6px)) clamp(14px, 1.3vw, 22px) clamp(6px, 1vh, 10px);
   align-self: stretch;
 }
+/* Keepsakes and Snacks wear their names on a ribbon along the rail, clasped
+   by the panel's medallion (ui/kit.css .kit-heading--clasp) */
+.sh-side > .sh-counter > .sh-h { --rib-h: clamp(26px, 3.2vh, 30px); }
 .sh-list { display: flex; flex-direction: column; gap: 0; }
+/* sigil | name ........ price
+   sigil | the description, running under the price */
 .sh-row {
   display: grid; grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center; gap: clamp(8px, .8vw, 12px);
-  padding: clamp(3px, .5vh, 5px) 2px;
+  grid-template-areas: "sig name buy" "sig desc desc";
+  align-items: center; column-gap: clamp(8px, .8vw, 12px); row-gap: 1px;
+  padding: clamp(3px, .4vh, 6px) 2px;
   transition: filter var(--t-quick) var(--ease-out);
 }
+.sh-row__sig { grid-area: sig; align-self: start; margin-top: 1px; }
+.sh-row__txt { display: contents; }
+.sh-row__txt b { grid-area: name; }
+.sh-row__txt em { grid-area: desc; }
+.sh-row > .sh-buy { grid-area: buy; }
 /* a gold hairline between entries, fading at both ends like the boards' rules */
 .sh-row + .sh-row {
   border-top: 1px solid transparent;
-  border-image: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 55%, transparent) 18%, color-mix(in srgb, var(--kit-gold) 55%, transparent) 82%, transparent) 1;
+  border-image: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 45%, transparent) 18%, color-mix(in srgb, var(--kit-gold) 45%, transparent) 82%, transparent) 1;
 }
 .sh-row:hover { filter: brightness(1.12); }
 .sh-row.is-poor { filter: grayscale(.8) brightness(.72); }
 .sh-row.is-sold { opacity: .45; }
 .sh-row__sig {
   display: grid; place-items: center;
-  width: clamp(34px, 2.6vw, 42px); height: clamp(34px, 2.6vw, 42px);
+  width: clamp(36px, 2.8vw, 44px); height: clamp(36px, 2.8vw, 44px);
   border-radius: 50%;
   background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8));
@@ -178,45 +227,65 @@
 .sh-row__txt { min-width: 0; }
 .sh-row__txt b {
   display: block;
-  font-family: var(--font-body); font-weight: 600; font-size: var(--fs-md);
+  font-family: var(--font-body); font-weight: 600; font-size: calc(var(--fs-md) * 1.04);
   line-height: 1.12; color: var(--kit-name);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .sh-row__txt em {
   display: block; font-style: normal;
-  font-size: var(--fs-xs); color: var(--kit-text-mid); line-height: 1.26;
+  font-size: clamp(12px, .82vw, 13.5px); color: var(--kit-text); line-height: 1.2;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 
-/* ── the buy button: a nameplate, affordability unmistakable ─────────────── */
+/* ── the buy button: an enamel cartouche, affordability unmistakable ──────── */
 .sh-buy {
-  --plate-h: clamp(40px, 5vh, 46px);
-  min-width: calc(var(--plate-h) * 2.2);
-  padding-inline: calc(var(--plate-h) * .42);
+  --h: var(--tag-h, clamp(36px, 4.4vh, 42px));
+  min-width: calc(var(--h) * 2.75);
+  padding: 1px calc(var(--h) * .6) 2px;
   gap: 0;
   cursor: pointer;
   transition: filter var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out);
 }
-.sh-buy__price { display: flex; align-items: baseline; gap: 4px; line-height: 1.05; }
-.sh-buy__price b {
-  font-family: var(--font-num); font-weight: 600;
-  font-size: calc(var(--plate-h) * .38); color: var(--kit-gold-hi);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
-}
-.sh-buy__price i {
-  font-style: normal; font-family: var(--font-display); font-weight: 700;
-  font-size: 10px; letter-spacing: .08em;
-  text-transform: uppercase; color: var(--kit-text-mid);
-}
+.sh-buy__price { display: flex; align-items: baseline; justify-content: center; gap: 5px; line-height: 1; }
+.sh-buy__price .kit-enamel__value { font-size: calc(var(--h) * .44); }
+.sh-buy__price .kit-enamel__label { font-size: max(9.5px, calc(var(--h) * .25)); letter-spacing: .14em; color: var(--kit-text-mid); }
+/* BUY: engraved spaced small caps under the price */
 .sh-buy__state {
-  font-family: var(--font-body); font-style: italic;
-  font-size: calc(var(--plate-h) * .27); line-height: 1.1; letter-spacing: .02em;
+  margin-top: 1px;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: max(10.5px, calc(var(--h) * .28)); line-height: 1.05; letter-spacing: .3em;
+  padding-left: .3em;
+  text-transform: uppercase;
   color: var(--kit-name);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 20%, transparent);
 }
+/* in a ledger row the price and BUY share one line, a brass lozenge between */
+.sh-row .sh-buy, .sh-remove .sh-buy {
+  --h: clamp(28px, 3.3vh, 32px);
+  flex-direction: row; gap: 0; min-width: 0;
+  padding: 0 calc(var(--h) * .72) 1px;
+}
+.sh-row .sh-buy__price .kit-enamel__value, .sh-remove .sh-buy__price .kit-enamel__value { font-size: calc(var(--h) * .56); }
+.sh-row .sh-buy__price .kit-enamel__label, .sh-remove .sh-buy__price .kit-enamel__label { font-size: max(10px, calc(var(--h) * .3)); }
+.sh-row .sh-buy__state, .sh-remove .sh-buy__state {
+  display: inline-flex; align-items: center; margin: 0 0 0 .55em;
+  font-size: max(11px, calc(var(--h) * .36));
+}
+.sh-row .sh-buy__state::before, .sh-remove .sh-buy__state::before {
+  content: ''; flex: none; width: 5px; height: 5px; margin-right: .6em;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .7);
+}
+.sh-row .sh-buy.is-blocked .sh-buy__state::before { content: none; }
 .sh-buy:hover:not(:disabled), .sh-buy:focus-visible {
   transform: translateY(-1px);
   filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .75)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 45%, transparent)) brightness(1.15);
 }
-.sh-buy:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 999px; }
+.sh-buy:focus-visible {
+  outline: none;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .75)) drop-shadow(0 0 2px var(--kit-gold-hi)) drop-shadow(0 0 14px color-mix(in srgb, var(--kit-candle) 70%, transparent)) brightness(1.2);
+}
 .sh-buy.is-poor { filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .75)) saturate(.6); }
 .sh-buy.is-poor .sh-buy__price b { color: var(--threat-200); text-decoration: line-through;
                                    text-decoration-color: var(--threat-300); }
@@ -225,7 +294,7 @@
 .sh-buy.is-sold .sh-buy__price { opacity: .5; }
 .sh-buy.is-sold .sh-buy__state { color: var(--kit-text-lo); }
 .sh-buy.is-blocked { filter: saturate(.3) brightness(.8); }
-.sh-buy.is-blocked .sh-buy__state { color: var(--kit-text-mid); text-transform: none; letter-spacing: 0; font-style: italic; }
+.sh-buy.is-blocked .sh-buy__state { color: var(--kit-text-mid); text-transform: none; letter-spacing: 0; font-style: italic; font-family: var(--font-body); font-weight: 400; }
 .sh-buy.is-refused { animation: sh-refuse 260ms var(--ease-out); }
 @keyframes sh-refuse {
   0%, 100% { transform: translateX(0); }
@@ -238,10 +307,10 @@
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   grid-template-rows: auto auto;
-  column-gap: clamp(10px, 1vw, 16px); row-gap: clamp(2px, .5vh, 6px);
+  column-gap: clamp(12px, 1.1vw, 18px); row-gap: clamp(2px, .5vh, 6px);
   align-items: start;
   background:
-    radial-gradient(60% 70% at 18% 40%, color-mix(in srgb, var(--kit-candle) 12%, transparent), transparent 70%),
+    radial-gradient(50% 70% at 16% 36%, color-mix(in srgb, var(--kit-candle) 14%, transparent), transparent 70%),
     radial-gradient(90% 60% at 50% 0%, color-mix(in srgb, var(--kit-violet) 9%, transparent), transparent 70%),
     url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
     linear-gradient(180deg, var(--kit-panel-hi) 0%, var(--kit-panel) 40%, color-mix(in oklab, var(--kit-panel) 80%, var(--kit-void)) 100%);
@@ -251,20 +320,34 @@
    and his name starts below it */
 .sh-side > .sh-counter.sh-counter--moth, .sh-counter.sh-counter--moth {
   --medal-k: .56;
-  padding-top: clamp(24px, 3.4vh, 32px);
+  padding-top: clamp(22px, 3.2vh, 30px);
 }
-/* He is engraved, not cartooned: brass line-work on enamel inside a round
-   medallion, the same metal as every other ornament on the board. */
+/* His portrait: engraved brass line-work on enamel, lit by his own lamp, in
+   the Kid board's round button set in gold filigree (button-ornate.webp). */
+.sh-moth__frame, .sh-moth { grid-column: 1; grid-row: 1 / 3; align-self: center; justify-self: center; }
+.sh-moth__frame {
+  width: clamp(88px, 6vw, 112px); aspect-ratio: 180 / 172;
+  background: url("../../assets/ui/kit/button-ornate.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 5px 7px rgba(0, 0, 0, .8));
+  position: relative; z-index: 0;
+}
 .sh-moth {
-  grid-column: 1; grid-row: 1;
-  width: clamp(70px, 5.6vw, 96px); height: auto; aspect-ratio: 1;
-  display: block; align-self: center;
-  padding: 12%;
+  position: relative; z-index: 1;
+  width: calc(clamp(88px, 6vw, 112px) * 98 / 180); height: auto; aspect-ratio: 1;
+  display: block;
+  margin-top: calc(clamp(88px, 6vw, 112px) * -.012);
+  padding: 4% 4% 0;
   border-radius: 50%;
-  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8));
+  /* lit by his own lamp: warm from the lower right, the enamel deep behind him */
+  background:
+    radial-gradient(55% 55% at 74% 70%, color-mix(in srgb, var(--kit-candle) 55%, transparent), transparent 70%),
+    radial-gradient(90% 90% at 40% 30%, #3d2a58, #150d20 75%);
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, .9), inset 0 -6px 14px color-mix(in srgb, var(--kit-candle) 18%, transparent);
   overflow: hidden;
 }
+/* his figure is domed and lit like the boards' enamel (the #kit-relief SVG
+   filter in index.html); the lamp's glow stays a flat light over him */
+.sh-moth > path, .sh-moth > ellipse:not(.sh-moth__glow) { filter: url("#kit-relief"); }
 .sh-lamp-a { stop-color: var(--kit-candle); stop-opacity: .55; }
 .sh-lamp-b { stop-color: var(--kit-candle); stop-opacity: 0; }
 /* NOTE: no blanket `fill: none` here — `.sh-moth path` (0,1,1) would outrank
@@ -273,19 +356,19 @@
 .sh-moth path, .sh-moth ellipse { stroke-linecap: round; stroke-linejoin: round; }
 .sh-moth__wingline, .sh-moth__btn, .sh-moth__ant, .sh-moth__fluff,
 .sh-moth__arm, .sh-moth__counterline { fill: none; }
-.sh-moth__wing { fill: color-mix(in srgb, var(--kit-violet) 38%, #140e1c); stroke: var(--kit-gold); stroke-width: 3.2; }
-.sh-moth__wingline { stroke: color-mix(in srgb, var(--kit-gold-hi) 60%, transparent); stroke-width: 2.4; }
-.sh-moth__coat { fill: #181120; stroke: var(--kit-gold); stroke-width: 3.2; }
-.sh-moth__lapel { fill: color-mix(in srgb, var(--kit-violet) 30%, #120c18); stroke: var(--kit-gold); stroke-width: 2.4; }
-.sh-moth__btn { stroke: var(--kit-gold-hi); stroke-width: 5; }
-.sh-moth__head { fill: #1d1526; stroke: var(--kit-gold-hi); stroke-width: 3.2; }
-.sh-moth__ant { stroke: var(--kit-gold-hi); stroke-width: 3.2; }
-.sh-moth__eye { fill: var(--kit-gold-hi); stroke: none; }
-.sh-moth__fluff { stroke: var(--kit-gold); stroke-width: 3; }
-.sh-moth__arm { stroke: var(--kit-gold); stroke-width: 6; }
-.sh-moth__lamp { fill: color-mix(in srgb, var(--kit-candle) 55%, #2a1a0c); stroke: var(--kit-gold-hi); stroke-width: 2.6; }
-.sh-moth__counter { fill: #120d15; stroke: var(--kit-gold); stroke-width: 3; }
-.sh-moth__counterline { stroke: color-mix(in srgb, var(--kit-gold) 60%, transparent); stroke-width: 2; }
+.sh-moth__wing { fill: color-mix(in srgb, var(--kit-violet) 70%, #2a1a3c); stroke: var(--kit-gold-hi); stroke-width: 6; }
+.sh-moth__wingline { stroke: color-mix(in srgb, var(--kit-lav-hi) 70%, transparent); stroke-width: 4.5; }
+.sh-moth__coat { fill: #2a1d36; stroke: var(--kit-gold-hi); stroke-width: 6; }
+.sh-moth__lapel { fill: color-mix(in srgb, var(--kit-violet) 55%, #1e1428); stroke: var(--kit-gold); stroke-width: 4.5; }
+.sh-moth__btn { stroke: var(--kit-gold-hi); stroke-width: 9; }
+.sh-moth__head { fill: #3a2a4a; stroke: var(--kit-gold-hi); stroke-width: 6; }
+.sh-moth__ant { stroke: var(--kit-gold-hi); stroke-width: 6; }
+.sh-moth__eye { fill: #fff0c8; stroke: none; }
+.sh-moth__fluff { stroke: var(--kit-lav-hi); stroke-width: 5.5; }
+.sh-moth__arm { stroke: var(--kit-gold); stroke-width: 9; }
+.sh-moth__lamp { fill: color-mix(in srgb, var(--kit-candle) 85%, #6a4318); stroke: var(--kit-gold-hi); stroke-width: 5; }
+.sh-moth__counter { fill: #1e1622; stroke: var(--kit-gold); stroke-width: 5; }
+.sh-moth__counterline { stroke: color-mix(in srgb, var(--kit-gold) 60%, transparent); stroke-width: 3.5; }
 .rm:not(.is-still) .sh-moth__glow { animation: sh-flicker 5.5s var(--ease-soft) infinite; }
 @keyframes sh-flicker { 0%,100% { opacity: .95; } 43% { opacity: .6; } 66% { opacity: 1; } }
 
@@ -294,29 +377,46 @@
 .sh-moth__name, .sh-moth__line { grid-column: 2; }
 .sh-moth__name { grid-row: 1; align-self: end; }
 .sh-moth__line { grid-row: 2; align-self: start; }
-.sh-moth { grid-row: 1 / 3; }
 .sh-moth__you { grid-column: 1 / -1; grid-row: 3; }
 .sh-service { grid-row: 4; }
 .sh-moth__name {
-  margin: 0; font-family: var(--font-display); font-weight: 700; font-size: var(--fs-sm);
+  margin: 0; font-family: var(--font-display); font-weight: 700; font-size: var(--fs-md);
   letter-spacing: .24em; text-transform: uppercase; color: var(--kit-lav);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 14px color-mix(in srgb, var(--kit-violet) 45%, transparent);
 }
 .sh-moth__line {
   margin: 1px 0 clamp(2px, .5vh, 5px);
   font-size: var(--fs-sm); font-style: italic; color: var(--kit-text); line-height: 1.3;
 }
+/* What you carry, on an engraved strip: a recess in a bevelled brass tube
+   (tube.webp), the four counts separated by brass lozenges. */
 .sh-moth__you {
-  display: flex; justify-content: space-between; gap: 2px 10px; margin: 3px 0 0; flex-wrap: wrap;
-  padding: 3px 2px 0;
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 2px clamp(4px, .5vw, 8px); margin: clamp(2px, .4vh, 8px) 0 clamp(1px, .2vh, 4px); flex-wrap: nowrap;
+  min-height: clamp(28px, 3.3vh, 36px);
+  padding: 2px clamp(12px, 1.1vw, 16px);
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/tube.webp");
+  border-image-slice: 19 fill;
+  border-image-width: clamp(12px, 1.6vh, 16px);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .7));
 }
-.sh-moth__you div { display: flex; flex-direction: row; align-items: baseline; gap: 5px; }
+.sh-moth__you div { display: flex; flex-direction: row; align-items: baseline; gap: 5px; position: relative; }
+.sh-moth__you div + div::before {
+  content: ''; flex: none; align-self: center;
+  width: 5px; height: 5px; margin-right: clamp(3px, .5vw, 8px);
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .7);
+}
 .sh-moth__you dt {
-  font-family: var(--font-display); font-weight: 700; font-size: 10px;
-  letter-spacing: .1em; text-transform: uppercase; color: var(--kit-text-lo);
+  font-family: var(--font-display); font-weight: 700; font-size: 9.5px;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--kit-text-mid);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .9);
 }
 .sh-moth__you dd {
-  margin: 0; font-family: var(--font-num); font-weight: 600; font-size: var(--fs-md); line-height: 1.1;
+  margin: 0; font-family: var(--font-num); font-weight: 600; font-size: clamp(14px, 1vw, 16px); line-height: 1.1;
+  font-variant-numeric: lining-nums tabular-nums;
   color: var(--kit-gold-hi); text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .sh-deck {
@@ -326,22 +426,32 @@
 }
 .sh-deck:hover { color: #fff1d2; }
 
-/* the removal service, across the foot of his panel */
+/* the shop gives its height to the shelf: its plaque and its way out are drawn a step smaller */
+.scene--shop .kit-titleblock--compact { --cart-h: clamp(98px, 11.2vh, 112px); }
+.scene--shop .kit-titleblock--compact .kit-cartouche__title { font-size: clamp(25px, 2.1vw, 34px); }
+.scene--shop .rm-go { --plate-h: clamp(44px, 5.1vh, 48px); }
+
+/* the removal service, across the foot of his panel: its heading and its
+   price on one line, what it does running under both */
 .sh-service {
   grid-column: 1 / -1;
-  padding-top: clamp(3px, .6vh, 6px);
-  border-top: 1px solid transparent;
-  border-image: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 60%, transparent) 16%, color-mix(in srgb, var(--kit-gold) 60%, transparent) 84%, transparent) 1;
-  display: flex; flex-direction: column;
+  padding-top: clamp(1px, .2vh, 4px);
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "head buy" "blurb blurb";
+  align-items: center; column-gap: 10px; row-gap: 1px;
 }
-.sh-service .sh-h { font-size: var(--fs-xs); margin-bottom: 0; }
-.sh-remove { display: flex; align-items: center; gap: var(--s-3); }
-.sh-remove__blurb { flex: 1; margin: 0; font-size: var(--fs-xs); color: var(--kit-text-mid); line-height: 1.36; }
+.sh-service .sh-h { grid-area: head; font-size: var(--fs-xs); margin: 0; letter-spacing: .18em; justify-content: start; grid-template-columns: auto auto minmax(0, 1fr); }
+.sh-service .sh-h::before, .sh-service .sh-h::after { content: none; }
+.sh-service .sh-h > em { grid-column: 2; margin-left: 8px; white-space: nowrap; }
+.sh-remove { display: contents; }
+.sh-remove > .sh-buy { grid-area: buy; }
+.sh-remove__blurb { grid-area: blurb; margin: 0; font-size: clamp(12px, .8vw, 13px); color: var(--kit-text); line-height: 1.26; }
 .sh-remove__blurb b { color: var(--kit-gold-hi); font-weight: 400; }
 
 /* ── his line, in the footer ─────────────────────────────────────────────── */
 .sh-line {
   flex: 1; margin: 0; min-height: 1.3em;
+  max-width: calc(50% - 130px);
   padding-left: calc(var(--kit-vine-w, 36px) * .6);
   font-size: var(--fs-sm); color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
@@ -349,9 +459,10 @@
 .sh-line i { color: var(--kit-lav); font-style: italic; }
 .sh-line.is-good { color: var(--good-300); }
 .sh-line.is-bad  { color: var(--threat-200); }
+.scene--shop .rm-foot .rm-go { margin-left: auto; }
 
 @media (max-width: 1400px) {
-  .sh-floor { grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr) minmax(0, 1.04fr); }
+  .sh-floor { grid-template-columns: minmax(0, 1.08fr) minmax(0, .96fr) minmax(0, 1.08fr); }
 }
 
 /* ── narrow: the counter stacks under the frames and the board scrolls ───── */
@@ -361,20 +472,36 @@
 }
 
 /* ── Short viewports: 1280x800, and every laptop ─────────────────────────────
-   The frames give up height before anything else does; the panels tighten
-   their padding and type a step. */
+   The plaque, the counters and their padding give up height before the
+   Tricks do: the cards' rules must stay as legible as they were before the
+   kit (see shop.js _layout, which also lifts their type a step). */
 @media (max-height: 860px) {
-  .scene--shop .sh-moth { width: 62px; }
-  .scene--shop .sh-moth__you { justify-content: space-around; row-gap: 0; }
-  .scene--shop .sh-remove__blurb { line-height: 1.24; }
-  .scene--shop .sh-counter.sh-counter--moth { padding-top: 22px; padding-bottom: 6px; }
-  .scene--shop .sh-row__txt b { font-size: var(--fs-sm); }
-  .scene--shop .sh-row__txt em { font-size: 11px; line-height: 1.28; }
-  .scene--shop .sh-moth__line { font-size: var(--fs-xs); }
-  .scene--shop .sh-moth__you dd { font-size: var(--fs-md); }
-  .scene--shop .sh-buy { --plate-h: 38px; }
-  .scene--shop .sh-side > .sh-counter,
-  .scene--shop .sh-counter--moth { padding: 16px 12px 8px; }
-  .scene--shop .sh-counter--moth { padding-top: 24px; }
+  .scene--shop .rm-head { padding-top: 4px; }
+  .scene--shop .kit-titleblock--compact { --cart-h: 94px; }
+  .scene--shop .kit-titleblock--compact .kit-cartouche__title { font-size: 25px; }
+  .scene--shop .kit-titleblock--compact .kit-cartouche__sub { font-size: 12px; }
+  .scene--shop .kit-titleblock__note { margin-top: 0; }
+  .scene--shop .kit-titleblock > .kit-ribbon { margin-top: calc(var(--cart-h) * -.2); }
+  .scene--shop .rm-body { padding-top: 4px; }
+  .scene--shop .sh-floor { margin-top: 17px; row-gap: 16px; grid-template-rows: minmax(250px, 1fr) auto; }
+  .scene--shop .sh-moth__you { margin-inline: -6px; padding-inline: 10px; gap: 2px 3px; }
+  .scene--shop .sh-moth__you dt { font-size: 9px; letter-spacing: .04em; }
+  .scene--shop .sh-moth__you dd { font-size: 13.5px; }
+  .scene--shop .sh-moth__you div + div::before { margin-right: 4px; }
+  .scene--shop .sh-cards { --tag-h: 34px; --shelf-h: 42px; --frame-pad: 10px; }
+  .scene--shop .sh-moth__frame { width: 84px; }
+  .scene--shop .sh-moth { width: calc(84px * 98 / 180); }
+  .scene--shop .sh-remove__blurb { line-height: 1.2; font-size: 12px; }
+  .scene--shop .sh-counter.sh-counter--moth { padding-top: 16px; padding-bottom: 6px; }
+  .scene--shop .sh-row__txt b { font-size: var(--fs-md); }
+  .scene--shop .sh-row__txt em { font-size: 12px; line-height: 1.18; }
+  .scene--shop .sh-moth__line { font-size: 11.5px; line-height: 1.25; }
+  .scene--shop .sh-row .sh-buy, .scene--shop .sh-remove .sh-buy { --h: 26px; }
+  .scene--shop .sh-side > .sh-counter { padding: 20px 12px 5px; }
   .scene--shop .sh-row { padding-block: 3px; }
+  .scene--shop .sh-moth__you { min-height: 27px; margin-block: 2px 1px; }
+  .scene--shop .sh-service { row-gap: 1px; padding-top: 1px; column-gap: 6px; }
+  .scene--shop .sh-service .sh-h { letter-spacing: .1em; }
+  .scene--shop .sh-service .sh-h > em { margin-left: 5px; }
+  .scene--shop .sh-remove .sh-buy { padding-inline: 14px; }
 }

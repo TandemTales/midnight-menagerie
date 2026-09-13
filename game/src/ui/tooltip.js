@@ -85,10 +85,12 @@ import { TERMS } from '../data/schema.js';
 const DELAY = 110;
 /** After a tooltip has just been open, the next one opens with no delay. */
 const WARM_MS = 420;
-/** Clearance between the panel and the thing it describes. */
-const GAP = 12;
+/** Clearance between the panel and the thing it describes. The panel's
+ *  painted rail is drawn ~8px outside its box (tooltip.css), so both of these
+ *  are measured to the box and leave room for the rail. */
+const GAP = 16;
 /** Keep this far from the viewport edge. */
-const EDGE = 10;
+const EDGE = 16;
 /** Names shorter than this are never auto-linked inside a description. */
 const MIN_KW_LEN = 3;
 
@@ -388,6 +390,7 @@ export class Tooltip {
     this._place(this.el, anchorEl, {
       placement: opts.placement || anchorEl.dataset?.tipPlacement || 'auto',
       avoid: opts.avoid ?? anchorEl.dataset?.tipAvoid,
+      bounds: opts.bounds || null,
     });
     anchorEl.setAttribute('aria-describedby', 'mm-tip-panel');
     this.live.textContent = this._plain(desc);
@@ -845,9 +848,15 @@ export class Tooltip {
     this._cardMode = true;
     // A screen that lays several cards side by side (a reward, a shelf) names
     // them in `data-tip-avoid` on their container, so the panel prefers the
-    // side where it hides none of the others.
+    // side where it hides none of the others. It can also name, in
+    // `data-tip-bounds`, the frame the panel should stay inside — a reward's
+    // keywords belong inside its gilded frame, not out over the candles and
+    // the board's edge.
     const avoid = cardEl.closest('[data-tip-avoid]')?.dataset.tipAvoid || null;
-    this.show(cardEl, { kind: 'keywords', items }, { placement: 'right', avoid });
+    const boundsSel = cardEl.closest('[data-tip-bounds]')?.dataset.tipBounds || '';
+    let bounds = null;
+    if (boundsSel) { try { bounds = cardEl.closest(boundsSel); } catch { bounds = null; } }
+    this.show(cardEl, { kind: 'keywords', items }, { placement: 'right', avoid, bounds });
   }
 
   _showSub(chip) {
@@ -874,7 +883,7 @@ export class Tooltip {
    *   −(px²) area of `avoid` elements it would cover
    *   +bias  for the caller's preferred side
    */
-  _place(panel, anchor, { placement = 'auto', avoid = null, alignTo = null } = {}) {
+  _place(panel, anchor, { placement = 'auto', avoid = null, alignTo = null, bounds = null } = {}) {
     if (this._raf) cancelAnimationFrame(this._raf);
     this._raf = requestAnimationFrame(() => {
       this._raf = 0;
@@ -886,47 +895,98 @@ export class Tooltip {
       // panel is placed against (a chip inside the panel it belongs to).
       const c = alignTo?.isConnected ? alignTo.getBoundingClientRect() : a;
       panel.style.maxHeight = '';
-      const p = panel.getBoundingClientRect();
+      panel.style.maxWidth = '';
+      let p = panel.getBoundingClientRect();
       const vw = window.innerWidth, vh = window.innerHeight;
       const avoidRects = this._avoidRects(avoid, anchor);
+      const b = bounds?.isConnected ? bounds.getBoundingClientRect() : null;
+      let framed = null;
+      /* Inside a frame the panel may narrow (down to a readable 150px) so that
+         it fits beside its anchor without covering the neighbours — a reward's
+         keyword panel sits in the margin of the frame, not over the next card.
+         Each side is tried at the width it has; the first one whose panel
+         covers nothing it was asked to avoid is the side it takes. */
+      if (b) {
+        const room = {
+          left: Math.floor(a.left - GAP - (b.left + EDGE)),
+          right: Math.floor((b.right - EDGE) - (a.right + GAP)),
+        };
+        const anchorRect = avoidRects[avoidRects.length - 1];
+        const order = placement === 'left' ? ['left', 'right'] : ['right', 'left'];
+        const clampTop = (t, hh) => Math.max(b.top + EDGE, Math.min(t, b.bottom - EDGE - hh));
+        for (const side of order) {
+          if (room[side] < 150) continue;
+          panel.style.maxWidth = p.width > room[side] ? `${room[side]}px` : '';
+          const q = panel.getBoundingClientRect();
+          const x0 = side === 'left' ? a.left - GAP - q.width : a.right + GAP;
+          // centred on the anchor, or level with its top edge, or as high in
+          // the frame as it goes
+          for (const t of [c.top + c.height / 2 - q.height / 2, c.top, b.top + EDGE]) {
+            const top = clampTop(t, q.height);
+            const r = { left: x0, top, right: x0 + q.width, bottom: top + q.height };
+            const hit = avoidRects.some(ar => ar !== anchorRect && overlapArea(r, ar) > 0);
+            if (!hit) { framed = { side, x: x0, y: top, fits: true, score: 1000 }; p = q; break; }
+          }
+          if (framed) break;
+        }
+        if (!framed) { panel.style.maxWidth = ''; p = panel.getBoundingClientRect(); }
+      }
 
       const w = p.width, h = p.height;
-      const cands = [];
-      const clampX = (x) => Math.max(EDGE, Math.min(x, vw - w - EDGE));
-      const clampY = (y) => Math.max(EDGE, Math.min(y, vh - h - EDGE));
-
-      cands.push({ side: 'top',    x: clampX(c.left + c.width / 2 - w / 2), y: a.top - h - GAP });
-      cands.push({ side: 'bottom', x: clampX(c.left + c.width / 2 - w / 2), y: a.bottom + GAP });
-      cands.push({ side: 'right',  x: a.right + GAP,     y: clampY(c.top + c.height / 2 - h / 2) });
-      cands.push({ side: 'left',   x: a.left - w - GAP,  y: clampY(c.top + c.height / 2 - h / 2) });
-
-      let best = null;
-      for (const c of cands) {
-        const fits = c.x >= EDGE && c.y >= EDGE && c.x + w <= vw - EDGE && c.y + h <= vh - EDGE;
-        let score = fits ? 1000 : 0;
-        if (!fits) {
-          // how much of it would hang off — least-bad wins
-          const over = Math.max(0, EDGE - c.x) + Math.max(0, EDGE - c.y)
-                     + Math.max(0, c.x + w - (vw - EDGE)) + Math.max(0, c.y + h - (vh - EDGE));
-          score -= over;
+      /* Score the four sides inside a set of limits: the viewport, or — when the
+         caller names a frame — that frame, inset so the painted rail stays
+         clear of it. A frame that fits nothing falls back to the viewport. */
+      const pick = (L) => {
+        const clampX = (x) => Math.max(L.left, Math.min(x, L.right - w));
+        const clampY = (y) => Math.max(L.top, Math.min(y, L.bottom - h));
+        const cands = [
+          { side: 'top',    x: clampX(c.left + c.width / 2 - w / 2), y: a.top - h - GAP },
+          { side: 'bottom', x: clampX(c.left + c.width / 2 - w / 2), y: a.bottom + GAP },
+          { side: 'right',  x: a.right + GAP,     y: clampY(c.top + c.height / 2 - h / 2) },
+          { side: 'left',   x: a.left - w - GAP,  y: clampY(c.top + c.height / 2 - h / 2) },
+        ];
+        let best = null;
+        for (const c of cands) {
+          const fits = c.x >= L.left && c.y >= L.top && c.x + w <= L.right && c.y + h <= L.bottom;
+          let score = fits ? 1000 : 0;
+          if (!fits) {
+            // how much of it would hang off — least-bad wins
+            const over = Math.max(0, L.left - c.x) + Math.max(0, L.top - c.y)
+                       + Math.max(0, c.x + w - L.right) + Math.max(0, c.y + h - L.bottom);
+            score -= over;
+          }
+          // Occlusion is weighted heavily enough to CHOOSE between two sides that
+          // both fit — that is the whole point of `avoid`. It is capped below the
+          // fits/doesn't-fit gap so a fitting side always beats a clipped one.
+          const r = { left: c.x, top: c.y, right: c.x + w, bottom: c.y + h };
+          let occl = 0;
+          for (const ar of avoidRects) occl += overlapArea(r, ar);
+          score -= Math.min(900, occl / 30);
+          if (c.side === placement) score += 300;
+          else if (placement === 'auto' && c.side === 'top') score += 20;  // gentle default
+          if (!best || score > best.score) best = { ...c, score, fits };
         }
-        // Occlusion is weighted heavily enough to CHOOSE between two sides that
-        // both fit — that is the whole point of `avoid`. It is capped below the
-        // fits/doesn't-fit gap so a fitting side always beats a clipped one.
-        const r = { left: c.x, top: c.y, right: c.x + w, bottom: c.y + h };
-        let occl = 0;
-        for (const ar of avoidRects) occl += overlapArea(r, ar);
-        score -= Math.min(900, occl / 30);
-        if (c.side === placement) score += 300;
-        else if (placement === 'auto' && c.side === 'top') score += 20;  // gentle default
-        if (!best || score > best.score) best = { ...c, score, fits };
+        return best;
+      };
+      const view = { left: EDGE, top: EDGE, right: vw - EDGE, bottom: vh - EDGE };
+      let best = framed;
+      if (b && !best) {
+        const inFrame = {
+          left: Math.max(view.left, b.left + EDGE), top: Math.max(view.top, b.top + EDGE),
+          right: Math.min(view.right, b.right - EDGE), bottom: Math.min(view.bottom, b.bottom - EDGE),
+        };
+        best = pick(inFrame);
+        if (!best.fits) best = null;
       }
+      if (!best) best = pick(view);
 
       // Last resort: it fits nowhere (huge panel / tiny window). Clamp it into
       // the viewport on the side with the most room and let it scroll, rather
       // than let it run off screen.
       let { x, y, side } = best;
       if (!best.fits) {
+        const clampX = (v) => Math.max(EDGE, Math.min(v, vw - w - EDGE));
+        const clampY = (v) => Math.max(EDGE, Math.min(v, vh - h - EDGE));
         const room = { top: a.top, bottom: vh - a.bottom, left: a.left, right: vw - a.right };
         side = Object.keys(room).reduce((m, k) => room[k] > room[m] ? k : m, 'bottom');
         const maxH = Math.max(120, room[side] - GAP - EDGE);

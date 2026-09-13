@@ -81,7 +81,7 @@
 .rm-foot {
   position: relative; z-index: 3;
   display: flex; align-items: center; justify-content: flex-end; gap: var(--s-4);
-  padding: var(--s-3) var(--rm-pad) clamp(14px, 2vh, 28px);
+  padding: 6px var(--rm-pad) clamp(12px, 1.8vh, 22px);
 }
 .rm-live { margin: 0; font-size: var(--fs-sm); color: var(--text-mid); min-height: 1.2em; }
 
@@ -134,24 +134,35 @@
 @keyframes rm-ready { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
 .rm.is-still .rm-go.is-ready::before { animation: none; }
 
+/* The preview flag: its own small dark plate, set in the middle of the footer
+   between the ways out, inside the board's frame. It is a note, not a
+   control: it takes no pointer and no space from the buttons either side. */
 .rm-mockflag {
-  position: absolute; left: 50%; bottom: calc(var(--kit-edge, 10px) + 3px); transform: translateX(-50%);
-  z-index: 6; padding: 2px 12px; white-space: nowrap;
-  font-family: var(--font-display); font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--kit-text-lo);
-  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-void) 88%, transparent) 16%, color-mix(in srgb, var(--kit-void) 88%, transparent) 84%, transparent);
+  --h: 40px;
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  z-index: 0; pointer-events: none;
+  padding: 2px calc(var(--h) * .78) 3px;
+}
+.rm-mockflag .kit-enamel__label {
+  font-size: 9.5px; letter-spacing: .18em;
+  color: color-mix(in oklab, var(--kit-text-lo) 80%, white);
+}
+/* name over epithet; the separator is kept for anything reading the text */
+.rm-mockflag__dot { display: none; }
+.rm-mockflag__sub {
+  font-family: var(--font-body); font-style: italic; font-size: 11.5px; line-height: 1.1;
+  color: var(--kit-text-mid);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 
 /* ── spoil chips ─────────────────────────────────────────────────────────────
-   Each one is a kit nameplate (.kit-plate): the number is the name, the word
-   is the epithet. Only the number's colour says what kind it is.            */
-.rm-spoil { --plate-h: clamp(46px, 5.6vh, 54px); min-width: calc(var(--plate-h) * 2.9); }
-.rm-spoil b { font-size: calc(var(--plate-h) * .4); color: var(--kit-gold-hi); }
-.rm-spoil span { letter-spacing: .02em; }
-.rm-spoil--clue b { color: var(--spectre-200); }
-.rm-spoil--luck b { color: var(--good-300); }
-.rm-spoil--cost b { color: var(--threat-200); }
-.rm-spoil--hp b { color: var(--courage-300); }
+   Each one is a kit enamel cartouche (.kit-enamel): the number in gold, the
+   word engraved beside it. Only the number's colour says what kind it is.  */
+.rm-spoil { --h: clamp(34px, 4.3vh, 40px); padding-inline: calc(var(--h) * .72); }
+.rm-spoil--clue .kit-enamel__value { color: var(--spectre-200); }
+.rm-spoil--luck .kit-enamel__value { color: var(--good-300); }
+.rm-spoil--cost .kit-enamel__value { color: var(--threat-200); }
+.rm-spoil--hp .kit-enamel__value { color: var(--courage-300); }
 
 /* ── card picker overlay ──────────────────────────────────────────────────── */
 .rm-picker { position: absolute; inset: 0; z-index: var(--z-modal); display: grid; place-items: center; }
@@ -199,6 +210,37 @@
    Reward
    =========================================================================== */
 
+/* The board's geometry, in viewport units so the room's light can be pointed
+   at the things standing in it: the stage, the three frames and the candles.
+   (A window is not hung here: the first Trick's keyword panel opens over the
+   alcove's left wall, and a board with one window reads lopsided. The moon
+   comes in from high windows out of frame instead.) */
+.rm--reward {
+  --stage-w: min(1440px, 100vw - 2 * var(--rm-pad) - 2 * var(--kit-vine-w) - 30px);
+  --stage-half: calc(var(--stage-w) / 2);
+  --slot-h: min(21.6vw, 38vh);
+  --slot-w: calc(var(--slot-h) * var(--card-aspect));
+  --frame-pad: clamp(16px, 1.5vw, 24px);
+  --fan-gap: calc(var(--frame-pad) * 2 + clamp(18px, 2vw, 34px));
+  --fan-half: calc(var(--slot-w) * 1.5 + var(--fan-gap) + var(--frame-pad));
+  --candle-cx: calc(50vw - var(--stage-half) + clamp(34px, 3.4vw, 60px) + clamp(50px, 4.2vw, 72px) / 2);
+  /* candle light: the two candles in the frame's lower corners light the
+     alcove's panelling and floor round them (ui/kit.css .kit-ground) */
+  --wl3-x: var(--candle-cx);                 --wl3-y: calc(100vh - clamp(150px, 20vh, 190px));
+  --wl3-w: clamp(360px, 34vw, 560px);        --wl3-h: calc(var(--wl3-w) * 1.05);
+  --wl4-x: calc(100vw - var(--candle-cx));   --wl4-y: var(--wl3-y);
+  --wl4-w: var(--wl3-w);                     --wl4-h: var(--wl3-h);
+  /* moonlight: a wash over the plaque, and a shaft slanting down through the
+     alcove either side of the frames from high windows out of frame */
+  --ml1-x: 50vw;                             --ml1-y: calc(var(--hud-h) + 6vh);
+  --ml1-w: 70vw;                             --ml1-h: 44vh;
+  --mb1-x: calc(50vw - var(--fan-half) - var(--stage-w) * .08); --mb1-y: calc(var(--hud-h) + 26vh);
+  --mb1-w: calc(var(--stage-w) * .2);        --mb1-h: calc(100vh - var(--mb1-y));
+  --mb2-x: calc(100vw - var(--mb1-x));       --mb2-y: var(--mb1-y);
+  --mb2-w: var(--mb1-w);                     --mb2-h: var(--mb1-h);
+}
+.rm--reward:has(.rw-keepsake) { --slot-h: min(18vw, 29vh); }
+
 /* One axis. The room title sat hard against the top-left corner while the
    spoils, the heading and the three Tricks were all centred, which left an
    L-shaped hole across half the frame. Everything on this screen is about the
@@ -215,22 +257,29 @@
   overflow-y: auto; scrollbar-color: var(--kit-gold-lo) transparent;
 }
 .scene--reward .rm-body > .rw-stage { margin-block: auto; flex: none; }
-/* a Big Scare also hands over a Keepsake: the frames give it the room */
-.rw-stage:has(.rw-keepsake) .rw-cards { --slot-h: min(18vw, 29vh); }
+/* a Big Scare also hands over a Keepsake: the frames give it the room
+   (.rm--reward:has(.rw-keepsake) above) */
 
-/* the stage: its top rail runs through the middle of the spoils' nameplates,
+/* the stage: the kit's filigree frame, its top rule running through the
+   middle of the spoils' cartouches with the crest medallion between them,
    the way selectKid's info panels wear their medallions */
 .rw-stage {
-  --stage-floor: clamp(110px, 16vh, 150px);
+  --spoil-h: clamp(34px, 4.3vh, 40px);
+  --stage-medal-w: clamp(100px, 7.8vw, 128px);
   display: flex; flex-direction: column; align-items: center;
-  gap: clamp(4px, 1vh, 12px);
-  width: min(1380px, 100% - 2 * var(--kit-vine-w, 40px));
-  padding: 0 0 clamp(22px, 3vh, 30px);
+  gap: clamp(2px, .6vh, 8px);
+  width: var(--stage-w);
+  padding: 0 0 clamp(16px, 2.2vh, 26px);
 }
-.rw-stage::before { top: calc(clamp(46px, 5.6vh, 54px) / 2); }
+.rw-stage::before { top: calc(var(--spoil-h) / 2); }
+.rw-stage::after { top: calc(var(--spoil-h) / 2); }
 
-.rw-spoils { display: flex; flex-direction: column; align-items: center; gap: var(--s-3); }
-.rw-spoils__row { display: flex; gap: clamp(10px, 1.2vw, 20px); flex-wrap: wrap; justify-content: center; }
+.rw-spoils { display: flex; flex-direction: column; align-items: center; gap: var(--s-3); position: relative; z-index: 4; }
+.rw-spoils__row { display: flex; align-items: center; justify-content: center; gap: 0; }
+.rw-spoils__side { display: flex; gap: clamp(8px, 1vw, 16px); align-items: center; }
+.rw-spoils__side--l { justify-content: flex-end; }
+/* the crest rides the rule here: the spoils keep clear of it */
+.rw-spoils__crest { flex: none; width: calc(var(--stage-medal-w) + clamp(18px, 2vw, 34px)); height: var(--spoil-h); }
 
 /* A Keepsake in the spoils is a kit panel with the star medallion on its rail. */
 .rw-keepsake {
@@ -257,27 +306,25 @@
 .rw-keepsake i  { display: block; font-size: var(--fs-xs); color: var(--kit-text-lo); margin-top: 2px; }
 
 .rw-cards {
-  --slot-h: min(23vw, 41vh);
-  --slot-w: calc(var(--slot-h) * var(--card-aspect));
   position: relative;
-  display: flex; flex-direction: column; align-items: center; gap: clamp(2px, .6vh, 8px); width: 100%;
+  display: flex; flex-direction: column; align-items: center; gap: clamp(2px, .5vh, 6px); width: 100%;
 }
-/* the candles either side of the frames, standing on the same floor line */
+/* the candles stand in the frame's two lower corners, on the alcove's floor */
 .rw-candle {
-  bottom: clamp(26px, 3.4vh, 38px);
-  width: clamp(54px, 4.4vw, 78px);
+  bottom: clamp(-10px, -.6vh, -4px);
+  width: clamp(50px, 4.2vw, 72px);
   z-index: 0;
 }
-.rw-candle--l { left: calc(50% - var(--slot-w) * 1.5 - var(--fan-gap, 80px) - clamp(110px, 10vw, 170px)); }
-.rw-candle--r { right: calc(50% - var(--slot-w) * 1.5 - var(--fan-gap, 80px) - clamp(110px, 10vw, 170px)); }
-.rw-cards__head { text-align: center; }
-.rw-cards__head h2 { width: clamp(380px, 34vw, 560px); font-size: var(--fs-md); }
-.rw-cards__head p { margin: 3px 0 0; font-size: var(--fs-sm); color: var(--kit-text-mid); font-style: italic; }
+.rw-candle--l { left: clamp(34px, 3.4vw, 60px); }
+.rw-candle--r { right: clamp(34px, 3.4vw, 60px); }
+
+/* the heading hangs below the crest's lower tip (49/98 of the medallion is
+   below the rule) */
+.rw-cards__head { text-align: center; position: relative; z-index: 2; margin-top: calc(var(--stage-medal-w) * 49 / 156 - var(--spoil-h) / 2 + 8px); }
+.rw-cards__head p { margin: 4px 0 0; font-size: var(--fs-sm); color: var(--kit-text-mid); font-style: italic; text-shadow: 0 1px 0 rgba(0, 0, 0, .9); }
 
 /* ── the three Tricks, each hung in a painted portrait frame ──────────────── */
 .rw-fan {
-  --frame-pad: clamp(16px, 1.5vw, 24px);
-  --fan-gap: calc(var(--frame-pad) * 2 + clamp(22px, 3vw, 56px));
   position: relative;
   display: flex; align-items: flex-end; justify-content: center;
   gap: var(--fan-gap);
@@ -342,19 +389,20 @@
    disables pointer events on its children for hand hit-testing; this screen
    has a normal slot wrapper, so let the keyword itself receive the hover. */
 .scene--reward .mm-card__kw { pointer-events: auto; cursor: help; }
-/* the rarity, on a nameplate across the bottom rail of the frame */
+/* the rarity, engraved on an enamel cartouche across the frame's bottom rail */
 .rw-slot__rarity {
-  --plate-h: 36px;
-  position: absolute; left: 50%; bottom: calc(var(--frame-pad) * -1 - var(--plate-h) * .5);
+  --h: clamp(30px, 3.6vh, 34px);
+  position: absolute; left: 50%; bottom: calc(var(--frame-pad) * -1 - var(--h) * .5);
   transform: translateX(-50%);
-  min-width: 124px;
-  font-family: var(--font-body); font-weight: 600; font-size: 15px;
-  letter-spacing: .06em; text-transform: capitalize;
-  color: color-mix(in oklab, var(--rarity-common) 50%, var(--kit-name));
+  min-width: calc(var(--h) * 4.2);
   z-index: 2;
 }
-.rw-slot__rarity[data-rarity="uncommon"] { color: color-mix(in oklab, var(--rarity-uncommon) 72%, var(--kit-name)); }
-.rw-slot__rarity[data-rarity="rare"] { color: color-mix(in oklab, var(--rarity-rare) 80%, var(--kit-name)); }
+.rw-slot__rarity .kit-enamel__label {
+  font-size: max(11px, calc(var(--h) * .34)); letter-spacing: .22em;
+  color: color-mix(in oklab, var(--rarity-common) 58%, var(--kit-name));
+}
+.rw-slot__rarity[data-rarity="uncommon"] .kit-enamel__label { color: color-mix(in oklab, var(--rarity-uncommon) 70%, var(--kit-name)); }
+.rw-slot__rarity[data-rarity="rare"] .kit-enamel__label { color: color-mix(in oklab, var(--rarity-rare) 82%, var(--kit-name)); }
 .rw-slot.is-taken { transform: translateY(-18px) scale(1.04); z-index: 5; }
 .rw-slot.is-taken::after {
   box-shadow: 0 0 0 2px var(--good-300),
@@ -394,7 +442,7 @@
 .is-large .rm-sub, .is-large .rm-live { font-size: var(--fs-md); }
 
 @media (max-width: 1200px) {
-  .rw-cards { --slot-h: min(21vw, 38vh); }
+  .rm--reward { --slot-h: min(21vw, 38vh); }
 }
 
 /* ── Clues and Luck in the room HUD ────────────────────────────────────────

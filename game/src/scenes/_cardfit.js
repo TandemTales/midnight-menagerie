@@ -23,8 +23,14 @@ import { CARD_SS } from '../ui/card.js';
  * Scale `view` to fill `slot`, bottom-centre anchored (CardView's own origin).
  * Returns false when either box has no layout yet, so callers can skip and
  * re-run on the next resize.
+ *
+ * `legibleAt` (px): a board that shows Tricks to be READ — a shop shelf, a
+ * reward — can ask for the rules text never to print smaller than the card
+ * printed it at a full 224 px. A smaller card then lifts its rules type by
+ * `--rules-k` (ui/kit.css .kit-cards), up to 1.4x, instead of shrinking it:
+ * the Steam Deck size used to set a shop Trick's rules at under 11 px.
  */
-export function fitCardToSlot(view, slot) {
+export function fitCardToSlot(view, slot, { legibleAt = 0 } = {}) {
   const w = slot?.clientWidth || 0;
   const h = slot?.clientHeight || 0;
   if (!w || !h) return false;
@@ -32,5 +38,9 @@ export function fitCardToSlot(view, slot) {
   const natural = (view?.el?.offsetWidth || 0) / CARD_SS;
   if (!natural) return false;
   try { view.setTransform({ x: w / 2, y: h, scale: w / natural }); } catch { return false; }
+  if (legibleAt && view.el?.style) {
+    const k = Math.max(1, Math.min(1.4, legibleAt / w));
+    view.el.style.setProperty('--rules-k', k.toFixed(3));
+  }
   return true;
 }
