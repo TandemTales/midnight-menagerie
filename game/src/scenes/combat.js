@@ -1088,6 +1088,7 @@ export class CombatScene extends Scene {
     }
     const limit = top - PLATE_GAP;
     for (const v of this.views.values()) v.setPlateLimit(limit);
+    this._placeIncomingSoon();
   }
 
   /**
@@ -1864,6 +1865,52 @@ export class CombatScene extends Scene {
         : `Your ${block} Guard stops all of it.`);
     this.$inc.tabIndex = 0;
     this.$pl.classList.toggle('is-lethal', lethal);
+    this._placeIncomingSoon();
+  }
+
+  /** Coalesced to the next frame: this readout re-renders on every card hover. */
+  _placeIncomingSoon() {
+    if (this._incRaf) return;
+    this._incRaf = requestAnimationFrame(() => { this._incRaf = 0; this._placeIncoming(); });
+  }
+
+  /**
+   * WHERE THE INCOMING READOUT HANGS, measured. Beside the Kid's column there
+   * are two places for it and a crowded board can take either: hung off the
+   * frame's top corner it can meet the first creature's plate (the Keeper's
+   * five-body row at 1280 put his Courage under it), and level with the
+   * portrait it can meet a full fan's first card, cost and all. It takes the
+   * high place unless that covers more of the board than the low one would.
+   * Runs when the readout changes and when the plates or the fan move, never
+   * per frame; toggles one class.
+   */
+  _placeIncoming() {
+    const inc = this.$inc;
+    if (!inc || inc.hidden || !this.views || !this.engine || !inc.isConnected) return;
+    const others = [];
+    for (const v of this.views.values()) {
+      if (!v.alive || v.dying || !v.$plate) continue;
+      others.push(v.$plate.getBoundingClientRect());
+      if (v.intentView?.el) others.push(v.intentView.el.getBoundingClientRect());
+    }
+    for (const c of this.$handHost.querySelectorAll('.mm-hand__cards .mm-card:not(.is-flying)')) {
+      others.push(c.getBoundingClientRect());
+    }
+    const cover = () => {
+      const r = inc.getBoundingClientRect();
+      let a = 0;
+      for (const o of others) {
+        const w = Math.min(r.right, o.right) - Math.max(r.left, o.left);
+        const h = Math.min(r.bottom, o.bottom) - Math.max(r.top, o.top);
+        if (w > 0 && h > 0) a += w * h;
+      }
+      return a;
+    };
+    inc.classList.remove('is-low');
+    const high = cover();
+    if (!high) return;
+    inc.classList.add('is-low');
+    if (cover() >= high) inc.classList.remove('is-low');
   }
 
   /* ══ engine wiring ══════════════════════════════════════════════════════ */
@@ -3908,6 +3955,7 @@ export class CombatScene extends Scene {
   async exit() {
     clearTimeout(this._veilT);
     clearTimeout(this._fitT); clearTimeout(this._fitT2);
+    if (this._incRaf) { cancelAnimationFrame(this._incRaf); this._incRaf = 0; }
     this._tutorial = false;                    // stops a pending _mountCoach
     this.coach?.destroy();
     this.coach = null;

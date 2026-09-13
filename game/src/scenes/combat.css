@@ -165,6 +165,27 @@
 .cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-enemy__name { --name-spill: 0px; }
 .cb-enemies:is([data-n="5"], [data-n="6"]) .cb-enemy:not([data-tier="boss"]) .cb-enemy__name { --np-h: 24px; font-size: 10.5px; letter-spacing: .06em; padding-inline: 13px; }
 .cb-enemies:is([data-n="5"], [data-n="6"]) .cb-enemy:not([data-tier="boss"]) .cb-enemy__vitals { --tube-h: 21px; }
+/* A ROW OF FIVE OR SIX IS TOO NARROW FOR A RIBBON EACH. Five Lamps' ASLEEP on the
+   gold star ribbon ran into one another; on a crowded row a word goes back on
+   the compact dark plate, and a House Rule keeps a slimmer ribbon. */
+.cb-enemies:is([data-n="5"], [data-n="6"]) .cb-intent__chip[data-role="word"] {
+  height: calc(var(--ph) * .86); min-width: 0;
+  padding: 0 calc(var(--ph) * .45) 1px;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / calc(var(--ph) * .86 * 18 / 64) calc(var(--ph) * .86 * 34 / 64) stretch;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .85));
+}
+.cb-enemies:is([data-n="5"], [data-n="6"]) .cb-intent__chip[data-role="word"] b {
+  font-size: 10px; letter-spacing: .08em;
+  color: color-mix(in srgb, var(--frame-c) 70%, white); text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
+}
+.cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-intent__chip[data-role="rule"] { --rib-h: 20px; min-width: 0; padding-inline: 21px; }
+.cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-intent__chip[data-role="rule"] b { font-size: 10px; letter-spacing: .1em; }
+/* the master of the wing among five or six: the same plate, sized to its column */
+.cb-root[data-arena="boss"] .cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__plate { width: min(300px, 100%); }
+.cb-root[data-arena="boss"] .cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__name {
+  --np-h: 36px;
+  font-size: 12px; letter-spacing: .14em;
+}
 /* FIVE BODIES — the Keeper plus its four Sanctuary Locks, the widest board in
    the game. The row is centred and carries up to 132px of left padding to stay
    clear of the Kid, so a fifth body pushed the FIRST one off the left edge: a
@@ -1666,8 +1687,12 @@
    tube it grew the panel upward every turn something attacked, and the
    portrait climbed over the Companion standing at her feet. */
 .cb-incoming[hidden] { display: none; }
+/* …and it hangs from the column's TOP, rising off the frame's top-right corner
+   beside the counter plate: hung level with the portrait it reached down into
+   the hand, which now keeps to the table right beside the column, and a
+   crowded fan's first card wore it across its name and cost. */
 .cb-incoming {
-  position: absolute; left: calc(100% + 8px); top: 6px;
+  position: absolute; left: calc(100% + 12px); top: auto; bottom: calc(100% - 8px);
   width: max-content; max-width: clamp(186px, 13.8vw, 224px);
   display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0 7px;
   min-height: 34px;
@@ -1682,6 +1707,9 @@
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
   cursor: help;
 }
+/* …or level with the portrait's top, where a board that has a creature's plate
+   in the high place has room (CombatScene#_placeIncoming measures both) */
+.cb-incoming.is-low { top: 6px; bottom: auto; }
 .cb-incoming[data-state="lethal"] { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .85)) drop-shadow(0 0 8px color-mix(in srgb, var(--threat-300) 80%, transparent)); }
 .cb-incoming[data-state="safe"] { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .85)) drop-shadow(0 0 5px color-mix(in srgb, var(--guard-300) 60%, transparent)); }
 .cb-inc__k {
