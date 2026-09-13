@@ -261,25 +261,21 @@
    panelling and over the flagstones towards the page, the way the warm light
    pools at the sconces beside it. Screen-blended, soft-edged, still. */
 .ev-hall__beam {
-  top: calc(var(--win-top) + var(--win-h) * .12);
-  width: calc(var(--win-w) * 3.2);
-  height: calc(100vh - var(--win-top) - var(--win-h) * .12 - clamp(20px, 3vh, 36px));
-  background: linear-gradient(to bottom,
-    color-mix(in srgb, var(--kit-moon) 26%, transparent) 0%,
-    color-mix(in srgb, var(--kit-moon) 14%, transparent) 45%,
-    color-mix(in srgb, var(--kit-moon) 7%, transparent) 80%,
-    transparent 100%);
+  top: calc(var(--win-top) + var(--win-h) * .16);
+  width: calc(var(--win-w) * 1.2);
+  height: calc(100vh - var(--win-top) - var(--win-h) * .16 - clamp(24px, 3.4vh, 40px));
+  /* soft on every side: a shaft of light has no edge to cut */
+  background: linear-gradient(90deg, transparent 0%,
+    color-mix(in srgb, var(--kit-moon) 34%, transparent) 28%,
+    color-mix(in srgb, var(--kit-moon) 44%, transparent) 52%,
+    color-mix(in srgb, var(--kit-moon) 22%, transparent) 78%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 12%, rgba(0, 0, 0, .75) 55%, rgba(0, 0, 0, .35) 85%, transparent 100%);
+          mask-image: linear-gradient(to bottom, transparent 0%, black 12%, rgba(0, 0, 0, .75) 55%, rgba(0, 0, 0, .35) 85%, transparent 100%);
   mix-blend-mode: screen;
-  filter: blur(7px);
+  transform-origin: 50% 0;
 }
-.ev-hall__beam--l {
-  left: calc(var(--win-cx) - var(--win-w) * .34);
-  clip-path: polygon(0 0, 21% 0, 100% 100%, 42% 100%);
-}
-.ev-hall__beam--r {
-  right: calc(var(--win-cx) - var(--win-w) * .34);
-  clip-path: polygon(79% 0, 100% 0, 58% 100%, 0 100%);
-}
+.ev-hall__beam--l { left: calc(var(--win-cx) - var(--win-w) * .52); transform: skewX(24deg); }
+.ev-hall__beam--r { right: calc(var(--win-cx) - var(--win-w) * .52); transform: skewX(-24deg); }
 .kit-board.has-backdrop .ev-hall__beam { opacity: .6; }
 .ev-hall__window { top: var(--win-top); }
 .ev-hall__window--l { left: calc(var(--win-cx) - var(--win-w) / 2); }
