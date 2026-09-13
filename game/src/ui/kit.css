@@ -1175,3 +1175,151 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 @media (prefers-reduced-motion: reduce) {
   :root:not([data-reduce-motion="0"]) .kit-light { animation: none; }
 }
+
+/* ===========================================================================
+   READINGS IN METAL — round 2, from the COMBAT track.
+   The kit frames things to LOOK at. A fight is things to READ, fast: a cost,
+   a Courage, a stack of Weak. These set a figure in play in the same brass
+   and enamel as everything else on the boards, and each is built so the
+   ornament sits round the figure and never between it and the eye.
+
+     .kit-cards--nerve   on a .kit-cards host: a Trick's cost struck on the round
+                         enamel button (button.webp) — the Nerve orb's own
+                         material, so the number you pay reads as the number
+                         you hold
+     .kit-tube           a Courage bar: tube.webp's brass round a glazed enamel
+                         fill. Children __ghost (the drain that trails a hit),
+                         __fill, __label; --warm for your own side; --tube-h
+     .kit-socket         a condition in its setting: socket.webp round black
+                         enamel, the glyph lit in --socket-c, a .kit-coin
+                         child for its stacks; --socket sizes it
+     .kit-coin           a count struck on a small brass coin; --coin sizes it
+   =========================================================================== */
+
+/* ── cards: the cost on the Nerve enamel ── */
+.kit-cards--nerve .mm-card[data-rarity] .mm-card__cost {
+  left: calc(1 * var(--u)); top: calc(1 * var(--u));
+  width: calc(50 * var(--u)); height: calc(50 * var(--u));
+  padding-bottom: calc(2 * var(--u));            /* lining figures sit high */
+  border-radius: 50%;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  box-shadow: none;
+  font-size: calc(29 * var(--u));
+  color: var(--kit-gold-hi);
+  -webkit-text-stroke: calc(3.4 * var(--u)) #140b05;
+  paint-order: stroke fill;
+  text-shadow: 0 calc(2 * var(--u)) calc(3 * var(--u)) rgba(0, 0, 0, .8);
+  filter: drop-shadow(0 calc(2 * var(--u)) calc(3 * var(--u)) rgba(0, 0, 0, .85));
+}
+/* cheaper or dearer than printed: the figure changes colour, the enamel stays */
+.kit-cards--nerve .mm-card[data-rarity].is-cost-reduced .mm-card__cost {
+  color: var(--good-300);
+  filter: drop-shadow(0 calc(2 * var(--u)) calc(3 * var(--u)) rgba(0, 0, 0, .85))
+          drop-shadow(0 0 calc(7 * var(--u)) color-mix(in srgb, var(--good-300) 55%, transparent));
+}
+.kit-cards--nerve .mm-card[data-rarity].is-cost-raised .mm-card__cost { color: var(--threat-200); }
+/* the drop shadow above replaces card.css's dimming filter, so dim it here */
+.kit-cards--nerve .mm-card[data-rarity].is-unplayable .mm-card__cost {
+  filter: drop-shadow(0 calc(2 * var(--u)) calc(3 * var(--u)) rgba(0, 0, 0, .85)) saturate(.3) brightness(.62);
+}
+
+/* ── tube ── */
+.kit-tube {
+  --tube-h: 20px;
+  position: relative;
+  height: var(--tube-h);
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/tube.webp");
+  border-image-slice: 19 fill;
+  border-image-width: calc(var(--tube-h) * 19 / 40);
+  border-image-repeat: stretch;
+  border-radius: 999px;
+  background: none;
+  box-shadow: none;
+  overflow: hidden;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
+}
+.kit-tube > .kit-tube__ghost,
+.kit-tube > .kit-tube__fill {
+  position: absolute;
+  inset: calc(var(--tube-h) * .16) calc(var(--tube-h) * .2);
+  border-radius: 999px;
+  transform-origin: left center;
+}
+/* crimson enamel, glazed: the HUD's Courage */
+.kit-tube > .kit-tube__fill {
+  background:
+    linear-gradient(180deg, rgba(255, 236, 236, .46) 0%, rgba(255, 255, 255, .1) 30%, rgba(0, 0, 0, 0) 52%, rgba(0, 0, 0, .36) 100%),
+    linear-gradient(90deg, var(--courage-500), var(--courage-300));
+  box-shadow: inset 0 0 0 1px rgba(40, 6, 12, .6);
+}
+/* your own side: the candle's amber, so two sides of one exchange never read alike */
+.kit-tube--warm > .kit-tube__fill {
+  background:
+    linear-gradient(180deg, rgba(255, 246, 222, .5) 0%, rgba(255, 255, 255, .12) 30%, rgba(0, 0, 0, 0) 52%, rgba(0, 0, 0, .34) 100%),
+    linear-gradient(90deg, var(--pluck-500), var(--pluck-300));
+  box-shadow: inset 0 0 0 1px rgba(46, 26, 4, .6);
+}
+.kit-tube > .kit-tube__ghost { background: color-mix(in srgb, var(--threat-100) 58%, transparent); }
+.kit-tube > .kit-tube__label {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center; gap: 1px;
+  padding-bottom: 1px;
+  font-family: var(--font-num); font-weight: 700;
+  font-size: max(11px, calc(var(--tube-h) * .64)); line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: .02em;
+  color: #fff8ee;
+  -webkit-text-stroke: max(2.5px, calc(var(--tube-h) * .14)) #0c0605;
+  paint-order: stroke fill;
+}
+
+/* ── socket ── */
+.kit-socket {
+  --socket: 26px;
+  --socket-c: var(--kit-gold-hi);
+  position: relative;
+  display: inline-grid; place-items: center;
+  width: var(--socket); height: var(--socket);
+  padding: 0;
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/socket.webp");
+  border-image-slice: 14 fill;
+  border-image-width: calc(var(--socket) * 14 / 56);
+  border-image-repeat: stretch;
+  border-radius: 0;
+  background: radial-gradient(60% 55% at 50% 40%, color-mix(in srgb, var(--socket-c) 18%, transparent), transparent 75%);
+  background-clip: content-box;
+  color: var(--socket-c);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
+}
+.kit-socket > svg {
+  width: 58%; height: 58%;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .9)) drop-shadow(0 0 3px color-mix(in srgb, var(--socket-c) 45%, transparent));
+}
+.kit-socket > .kit-coin {
+  position: absolute; right: calc(var(--socket) * -.26); bottom: calc(var(--socket) * -.24);
+  --coin: max(15px, calc(var(--socket) * .6));
+}
+
+/* ── coin ── */
+.kit-coin {
+  --coin: 18px;
+  display: inline-grid; place-items: center;
+  min-width: var(--coin); height: var(--coin);
+  padding: 0 calc(var(--coin) * .2) 0;
+  border-radius: 999px;
+  font-family: var(--font-num); font-weight: 700; font-style: normal;
+  font-size: calc(var(--coin) * .72); line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: #1d1208;
+  text-shadow: 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 55%, white);
+  background:
+    radial-gradient(58% 52% at 38% 30%, color-mix(in oklab, var(--kit-gold-hi) 82%, white), transparent 64%),
+    radial-gradient(100% 100% at 50% 62%, var(--kit-gold-hi) 0%, var(--kit-gold) 58%, var(--kit-gold-lo) 100%);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--kit-gold-lo) 78%, black),
+    inset 0 -2px 2px rgba(60, 36, 10, .45),
+    0 0 0 1px rgba(0, 0, 0, .7),
+    0 2px 3px rgba(0, 0, 0, .7);
+}

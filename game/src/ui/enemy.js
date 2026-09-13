@@ -1006,12 +1006,19 @@ export class EnemyView {
              the whole plate clear of the fan (see setPlateLimit below). -->
         <div class="cb-enemy__counters"></div>
         <div class="cb-enemy__name"></div>
-        <div class="cb-enemy__bar">
-          <div class="cb-enemy__ghost"></div>
-          <div class="cb-enemy__fill"></div>
-          <div class="cb-enemy__hp"><span class="cb-enemy__hpn"></span><span class="cb-enemy__hpm"></span></div>
+        <!-- THE TWO NUMBERS YOU HIT AGAINST, IN ONE ROW. The Guard badge used to
+             float at a fixed offset from the plate's corner, so how far it sat
+             from the Courage bar depended on whether a counter row was above
+             it. It is seated on the end of the bar now, the way a block icon
+             sits on a health bar, whatever else the plate carries. -->
+        <div class="cb-enemy__vitals">
+          <div class="cb-enemy__guard" data-tip="Guard|Temporary protection. Damage removes Guard before it removes Courage.|All Guard is lost at the start of its turn unless an effect says otherwise." tabindex="0" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 L21 5.5 C21 14 17 20 12 22.5 C7 20 3 14 3 5.5 Z"/></svg><span></span></div>
+          <div class="cb-enemy__bar kit-tube">
+            <div class="cb-enemy__ghost kit-tube__ghost"></div>
+            <div class="cb-enemy__fill kit-tube__fill"></div>
+            <div class="cb-enemy__hp kit-tube__label"><span class="cb-enemy__hpn"></span><span class="cb-enemy__hpm"></span></div>
+          </div>
         </div>
-        <div class="cb-enemy__guard" data-tip="Guard|Temporary protection. Damage removes Guard before it removes Courage.|All Guard is lost at the start of its turn unless an effect says otherwise." tabindex="0" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 L21 5.5 C21 14 17 20 12 22.5 C7 20 3 14 3 5.5 Z"/></svg><span></span></div>
         <div class="cb-enemy__statuses"></div>
       </div>
       <div class="cb-enemy__preview" hidden></div>`;
@@ -1055,7 +1062,13 @@ export class EnemyView {
     this.intentView = new IntentView({ clock: this.clock, reduceMotion: this.reduceMotion });
     el.querySelector('.cb-enemy__intent').appendChild(this.intentView.el);
 
-    this.$name.textContent = this.name;
+    /* The name in its own span, so a boss's can be lettered in the wordmark's
+       engraving (a filter) without the filter taking the nameplate with it.
+       `.cb-enemy__name`'s text is unchanged. */
+    const lettering = document.createElement('span');
+    lettering.className = 'cb-enemy__lettering';
+    lettering.textContent = this.name;
+    this.$name.appendChild(lettering);
     this._statusKey = '';
     this.setState(snap);
     this.a.spawn = 1;
@@ -1177,7 +1190,7 @@ export class EnemyView {
     this.statusData = list;
     for (const s of list) {
       const d = document.createElement('span');
-      d.className = 'cb-status';
+      d.className = 'cb-status kit-socket';
       d.dataset.kind = s.kind || 'buff';
       d.dataset.id = s.id;
       d.dataset.tipStatus = s.id;
@@ -1188,7 +1201,7 @@ export class EnemyView {
       // empty `<i data-g="haunt">` that no stylesheet ever drew, so Haunt was a
       // bare `2` in a dark box.
       d.innerHTML = statusGlyph(s)
-        + (s.showStacks === false ? '' : `<b>${s.stacks}</b>`);
+        + (s.showStacks === false ? '' : `<b class="kit-coin">${s.stacks}</b>`);
       if (prev && !prev.includes(s.id + ':')) d.classList.add('is-new');
       this.$statuses.appendChild(d);
     }
