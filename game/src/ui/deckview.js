@@ -28,11 +28,13 @@
  * sort/filter controls are ordinary form controls in the tab order.
  */
 
-import { Modal } from './modal.js';
+import { Modal, kitButton } from './modal.js';
 import { icon } from './icons.js';
 import { plural, word } from '../util/plural.js';
 
 const TYPES = ['attack', 'skill', 'power', 'status', 'curse'];
+/** The card width, in px, whose printed rules size every card here reads at. */
+const LEGIBLE_AT = 210;
 const RARITIES = ['basic', 'common', 'uncommon', 'rare'];
 
 const MODES = {
@@ -89,10 +91,16 @@ export class DeckView {
     const bar = document.createElement('div');
     bar.className = 'mm-deck__bar';
 
+    /* THE LOOK IS THE KIT'S (ui/kit.css), as on the boards: the count struck on
+       the enamel cartouche a price wears, the search lettered onto a nameplate
+       (.kit-field), each filter the quiet nameplate (.kit-select), Clear a
+       nameplate button, and the Tricks in the hand's own brass
+       (.kit-cards--nerve). deckview.css only lays them out. */
+
     // count
     const count = document.createElement('div');
-    count.className = 'mm-deck__count';
-    count.innerHTML = '<b></b> <span></span>';
+    count.className = 'mm-deck__count kit-enamel';
+    count.innerHTML = '<b class="kit-enamel__value"></b> <span class="kit-enamel__label"></span>';
     this.countN = count.querySelector('b');
     this.countL = count.querySelector('span');
 
@@ -100,9 +108,10 @@ export class DeckView {
     const search = document.createElement('label');
     search.className = 'mm-deck__search';
     search.innerHTML = '<span class="sr-only">Search Tricks</span>';
-    search.prepend(icon('ui.search'));
+    search.prepend(icon('ui.search', { cls: 'mm-deck__glass' }));
     const input = document.createElement('input');
     input.type = 'search'; input.placeholder = 'Search…'; input.autocomplete = 'off';
+    input.className = 'kit-field';
     input.addEventListener('input', () => { this.filters.q = input.value.trim().toLowerCase(); this._apply(); });
     search.appendChild(input);
 
@@ -119,10 +128,10 @@ export class DeckView {
     );
 
     const sortWrap = document.createElement('label');
-    sortWrap.className = 'mm-deck__sortwrap';
+    sortWrap.className = 'mm-deck__sortwrap kit-select-wrap';
     sortWrap.innerHTML = '<span class="mm-deck__label">Sort</span>';
     const sortSel = document.createElement('select');
-    sortSel.className = 'mm-deck__select';
+    sortSel.className = 'mm-deck__select kit-select';
     for (const [v, l] of [['name', 'Name'], ['cost', 'Nerve cost'], ['type', 'Type'], ['rarity', 'Rarity']]) {
       const op = document.createElement('option'); op.value = v; op.textContent = l; sortSel.appendChild(op);
     }
@@ -138,7 +147,14 @@ export class DeckView {
     const clear = document.createElement('button');
     clear.type = 'button'; clear.className = 'mm-btn mm-btn--ghost mm-deck__clear';
     clear.textContent = 'Clear';
-    clear.addEventListener('click', () => this._clearFilters());
+    clear.addEventListener('click', () => {
+      /* it goes out once there is nothing left to clear, so keyboard focus
+         moves on to the search rather than falling out of the dialog */
+      const had = document.activeElement === clear;
+      this._clearFilters();
+      if (had) input.focus({ preventScroll: true });
+    });
+    kitButton(clear, { quiet: true });
     filt.appendChild(clear);
     this.clearBtn = clear;
 
@@ -150,7 +166,7 @@ export class DeckView {
 
     // grid
     const grid = document.createElement('div');
-    grid.className = 'mm-deck__grid';
+    grid.className = 'mm-deck__grid kit-cards kit-cards--nerve';
     grid.setAttribute('role', 'listbox');
     grid.setAttribute('aria-label', this.o.title || m.title);
     grid.tabIndex = 0;
@@ -173,10 +189,10 @@ export class DeckView {
 
   _select(label, key, options) {
     const wrap = document.createElement('label');
-    wrap.className = 'mm-deck__sortwrap';
+    wrap.className = 'mm-deck__sortwrap kit-select-wrap';
     wrap.innerHTML = `<span class="mm-deck__label">${label}</span>`;
     const sel = document.createElement('select');
-    sel.className = 'mm-deck__select';
+    sel.className = 'mm-deck__select kit-select';
     for (const [v, l] of options) {
       const op = document.createElement('option'); op.value = v; op.textContent = l; sel.appendChild(op);
     }
@@ -230,7 +246,13 @@ export class DeckView {
     this.countL.textContent = list.length === total
       ? word(total, 'Trick')
       : `of ${plural(total, 'Trick')}`;
-    this.clearBtn.hidden = list.length === total && !this.filters.q;
+    /* Unlit, not removed, when nothing is filtered. `hidden` was the intent, but
+       `.mm-btn`'s display always overrode it, so Clear has in practice stood at
+       the end of the row; a plate that appears and vanishes would shift the row
+       under the pointer, so it stays and says there is nothing to clear. */
+    const nothing = list.length === total && !this.filters.q;
+    this.clearBtn.disabled = nothing;
+    this.clearBtn.setAttribute('aria-disabled', String(nothing));
 
     this.emptyEl.hidden = list.length > 0;
     this.emptyEl.textContent = total === 0
@@ -307,7 +329,13 @@ export class DeckView {
       for (let i = 0; i < this.cells.length; i++) {                          // write
         const uid = this.cells[i].dataset.uid;
         const v = this.views.get(uid);
-        if (v) v.setTransform({ x: sizes[i][0] / 2, y: sizes[i][1], rot: 0, scale: 1, z: 0 });
+        if (v) {
+          v.setTransform({ x: sizes[i][0] / 2, y: sizes[i][1], rot: 0, scale: 1, z: 0 });
+          /* Tricks here are for READING: a card smaller than the Shop's lifts its
+             rules type instead of shrinking it (ui/kit.css .kit-cards, the same
+             `legibleAt` scenes/_cardfit.js gives the shelf) */
+          if (sizes[i][0]) v.el.style.setProperty('--rules-k', Math.max(1, Math.min(1.4, LEGIBLE_AT / sizes[i][0])).toFixed(3));
+        }
       }
     });
   }
@@ -399,13 +427,13 @@ export async function openPile(o = {}) {
     skip.type = 'button'; skip.className = 'mm-btn';
     skip.textContent = o.skipLabel || 'Skip';
     skip.addEventListener('click', () => modal.close(null));
-    modal.footer.appendChild(skip);
+    modal.footer.appendChild(kitButton(skip, { quiet: true }));
   } else {
     const done = document.createElement('button');
     done.type = 'button'; done.className = 'mm-btn mm-btn--primary';
     done.textContent = 'Close';
     done.addEventListener('click', () => modal.close(null));
-    modal.footer.appendChild(done);
+    modal.footer.appendChild(kitButton(done, { medal: 'done' }));
   }
 
   const result = await modal.open();

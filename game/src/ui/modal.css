@@ -1,4 +1,25 @@
-/* Modal primitive. OWNER: ui-chrome agent. Paired with ui/modal.js. */
+/* Modal primitive. OWNER: ui-chrome agent. Paired with ui/modal.js.
+
+   A DIALOG IS A PIECE OF THE BOARDS. Everything that covers the game — the pile
+   viewer, Settings, the confirm dialogs — is assembled from the kit's own
+   components (ui/kit.css), which modal.js puts on as classes:
+
+     .mm-modal__dialog   .kit-panel.kit-panel--damask   the Kid board's gold rail
+                         round dark damask, its inner double rule and fleurons
+     .mm-modal__head     .kit-titleblock--compact       title.png's cartouche,
+                         seated across the panel's top rail
+     .mm-modal__close    .kit-medallion                 the round enamel button,
+                         on the rail's top-right corner
+     buttons             .kit-btn / .kit-btn--quiet     the boards' nameplates,
+                         standing across the panel's bottom rail
+
+   This sheet only places those pieces and dims the room. It draws no frame of
+   its own. `.mm-modal--kit` marks a framed modal; the full-screen veil (the
+   hot-seat handoff) is not one, and keeps the plain defaults at the top.
+
+   base.css @imports this sheet BEFORE its own `.mm-btn` rules, so a button that
+   wears both `.mm-btn` (tests and callers find it by that) and `.kit-btn` needs
+   the short compatibility block below, or base.css repaints it as a web button. */
 
 .mm-modal {
   position: fixed; inset: 0;
@@ -8,10 +29,19 @@
 }
 .mm-modal[hidden] { display: none; }
 
+/* the room going dim: its light drawn down and pulled in towards the dialog,
+   the edges falling into the boards' aubergine dark, and deepest along the top,
+   where a board hangs its own title plaque and the HUD runs — so the dialog's
+   plaque is the only one left to read. No blur and no grey sheet: the room
+   stays a room, only a darker one. */
 .mm-modal__scrim {
   position: absolute; inset: 0;
-  background: var(--scrim);
-  backdrop-filter: blur(3px) saturate(.7);
+  background:
+    linear-gradient(to bottom, color-mix(in srgb, var(--kit-void) 72%, transparent) 0, color-mix(in srgb, var(--kit-void) 58%, transparent) 12%, transparent 26%),
+    radial-gradient(70% 64% at 50% 50%, color-mix(in srgb, var(--kit-void) 46%, transparent) 0%, color-mix(in srgb, var(--kit-void) 66%, transparent) 60%, color-mix(in srgb, var(--kit-void) 90%, transparent) 100%),
+    linear-gradient(color-mix(in srgb, var(--kit-violet-lo) 12%, transparent), color-mix(in srgb, var(--kit-violet-lo) 12%, transparent));
+  -webkit-backdrop-filter: brightness(.56) saturate(.62);
+          backdrop-filter: brightness(.56) saturate(.62);
   opacity: 0;
   transition: opacity var(--t-base) var(--ease-out);
 }
@@ -22,13 +52,7 @@
   display: flex; flex-direction: column;
   width: min(100%, 44rem);
   max-height: min(88vh, 60rem);
-  background:
-    radial-gradient(120% 90% at 50% -10%,
-      color-mix(in oklab, var(--flame-500) 12%, transparent), transparent 60%),
-    linear-gradient(180deg, var(--surface-2), var(--surface-1) 45%, var(--ink-900));
-  border: 1px solid var(--surface-line);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-4), inset 0 1px 0 color-mix(in srgb, var(--flame-100) 8%, transparent);
+  background: linear-gradient(180deg, var(--surface-2), var(--ink-900));
   opacity: 0;
   transform: translateY(10px) scale(.985);
   transition: opacity var(--t-base) var(--ease-out), transform var(--t-base) var(--ease-out);
@@ -40,61 +64,159 @@
 .mm-modal[data-size="wide"] .mm-modal__dialog { width: min(100%, 74rem); }
 .mm-modal[data-size="full"] .mm-modal__dialog { width: 100%; max-height: 94vh; }
 
-/* a candlelit rule across the top so it reads as part of the mansion */
-.mm-modal__dialog::before {
-  content: ''; position: absolute; inset: 0 0 auto; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--flame-400) 22%, var(--flame-200) 50%, var(--flame-400) 78%, transparent);
-  opacity: .7;
-}
+.mm-modal__head { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--s-1) var(--s-3); padding: var(--s-4) var(--s-5) var(--s-3); }
+.mm-modal__title { grid-column: 1; margin: 0; font-family: var(--font-display); font-size: var(--fs-lg); font-weight: 700; color: var(--kit-gold-hi); }
+.mm-modal__subtitle { grid-column: 1; margin: 0; font-size: var(--fs-sm); color: var(--kit-text-mid); }
+.mm-modal__close { grid-column: 2; grid-row: 1 / span 2; width: 2.2em; height: 2.2em; min-height: 0; padding: 0; font-size: var(--fs-md); }
+.mm-modal__body { flex: 1 1 auto; min-height: 0; padding: var(--s-4) var(--s-5); }
+.mm-modal__foot { display: flex; justify-content: flex-end; gap: var(--s-3); flex-wrap: wrap; padding: var(--s-3) var(--s-5) var(--s-4); }
+.mm-modal__foot:empty { display: none; }
 
-.mm-modal__head {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: var(--s-1) var(--s-3);
-  padding: var(--s-4) var(--s-5) var(--s-3);
-  border-bottom: 1px solid color-mix(in srgb, var(--surface-line) 70%, transparent);
-}
-.mm-modal__title {
-  grid-column: 1;
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: var(--fs-lg);
-  font-weight: 700;
-  letter-spacing: .04em;
-  color: var(--flame-200);
-}
-.mm-modal__subtitle {
-  grid-column: 1; margin: 0;
-  font-size: var(--fs-sm); color: var(--text-lo);
-}
-.mm-modal__close {
-  grid-column: 2; grid-row: 1 / span 2;
-  width: 2.2em; height: 2.2em; min-height: 0; padding: 0;
-  font-size: var(--fs-md);
-}
-
-.mm-modal__body {
-  flex: 1 1 auto;
-  min-height: 0;
-  padding: var(--s-4) var(--s-5);
-}
 /* The pile viewer owns its own scrolling: its count, filters and note must stay
    put while the card grid scrolls under them. */
 .mm-modal__body:has(> .mm-deck) { overflow: hidden; display: flex; }
 .mm-modal__body:has(> .mm-deck) > .mm-deck { flex: 1 1 auto; min-height: 0; }
-.mm-modal__text { margin: 0; font-size: var(--fs-md); line-height: 1.5; color: var(--text-mid); }
 
-.mm-modal__foot {
-  display: flex; justify-content: flex-end; gap: var(--s-3);
-  flex-wrap: wrap;
-  padding: var(--s-3) var(--s-5) var(--s-4);
-  border-top: 1px solid color-mix(in srgb, var(--surface-line) 70%, transparent);
-  background: var(--ink-900);
+/* ══ the kit panel ═════════════════════════════════════════════════════════ */
+.mm-modal--kit {
+  /* room above for the plaque's upper half, clear of the HUD's rail; room
+     below for the buttons' lower half */
+  --dlg-top: calc(var(--hud-h, 46px) + 6px + clamp(54px, 6.8vh, 64px));
+  --dlg-bottom: clamp(30px, 4.4vh, 40px);
+  padding: var(--dlg-top) var(--s-5) var(--dlg-bottom);
 }
-.mm-modal__foot:empty { display: none; }
+.mm-modal--kit .mm-modal__dialog {
+  --pk: .9;
+  --btn-h: clamp(44px, 5.4vh, 52px);
+  padding: 0;
+  overflow: visible;                /* the plaque, the close and the buttons sit ON the rail */
+  max-height: calc(100vh - var(--dlg-top) - var(--dlg-bottom));
+  /* it stands in the dimmed room: a long cast shadow, and the candle's warmth
+     on the wall behind it, the brightest thing left on screen */
+  box-shadow:
+    0 30px 80px -20px rgba(0, 0, 0, .95),
+    0 0 120px -10px color-mix(in srgb, var(--kit-candle) 9%, transparent),
+    inset 0 0 40px rgba(0, 0, 0, .45);
+}
+.mm-modal--kit[data-size="sm"] .mm-modal__dialog { width: min(100%, 38rem); }
+
+/* the plaque across the top rail: the cartouche's middle ON the rail */
+.mm-modal--kit .mm-modal__head {
+  flex: none;
+  align-self: center;
+  max-width: calc(100% + 48px);
+  margin: calc(var(--cart-h) * -.5 - 2px) 0 0;
+  padding: 0;
+  grid-template-columns: auto;      /* the plain head's two columns would split the plaque */
+  gap: 0;
+  z-index: 3;
+}
+.mm-modal--kit .mm-modal__head[hidden] { display: none; }
+.mm-modal--kit .mm-modal__title,
+.mm-modal--kit .mm-modal__subtitle { grid-column: 1; }
+/* a long question steps its lettering down instead of stretching the plaque */
+.mm-modal--kit .mm-modal__title[data-len="mid"]  { font-size: clamp(21px, 1.85vw, 29px); }
+.mm-modal--kit .mm-modal__title[data-len="long"] { font-size: clamp(17px, 1.4vw, 22px); letter-spacing: .03em; }
+.mm-modal--kit .mm-modal__subtitle { max-width: min(58ch, 38rem); }
+
+/* the body sits inside the panel's inner double rule, its gilt scrollbar too */
+.mm-modal--kit .mm-modal__body {
+  margin: 12px clamp(24px, 2.2vw, 30px) 0;
+  padding: 6px clamp(10px, 1.2vw, 18px) 18px;
+}
+.mm-modal--kit .mm-scroll { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--kit-gold) 62%, transparent) color-mix(in srgb, var(--kit-void) 55%, transparent); }
+.mm-modal--kit .mm-scroll::-webkit-scrollbar { width: 9px; }
+.mm-modal--kit .mm-scroll::-webkit-scrollbar-track { background: color-mix(in srgb, var(--kit-void) 60%, transparent); border-radius: 5px; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--kit-gold-lo) 45%, transparent); }
+.mm-modal--kit .mm-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, var(--kit-gold-lo), var(--kit-gold-hi) 45%, var(--kit-gold) 70%, var(--kit-gold-lo));
+  border-radius: 5px; border: 2px solid transparent; background-clip: padding-box;
+}
+
+.mm-modal__text {
+  margin: 0;
+  font-size: var(--fs-md); line-height: 1.55;
+  color: var(--kit-text);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+}
+.mm-modal--kit .mm-modal__text { text-align: center; text-wrap: balance; padding: 6px 4px 2px; }
+
+/* the ways out stand across the bottom rail, the way the Kid board's round
+   buttons stand on its corners: a quiet plate, then the lit one */
+.mm-modal--kit .mm-modal__foot {
+  flex: none;
+  position: relative; z-index: 3;
+  justify-content: center; align-items: center;
+  gap: clamp(18px, 2vw, 30px);
+  flex-wrap: nowrap;
+  margin: 2px 0 calc(var(--btn-h) * -.5);
+  padding: 0 clamp(28px, 3vw, 44px);
+}
+.mm-modal--kit .mm-modal__foot .kit-btn { --plate-h: var(--btn-h); }
+
+/* the close: the round enamel button on the rail's top-right corner */
+.mm-modal--kit .mm-modal__close {
+  --md: clamp(40px, 5vh, 46px);
+  position: absolute; z-index: 4;
+  top: calc(var(--md) * -.5 + 2px); right: calc(var(--md) * -.5 + 2px);
+  font-size: 0;
+}
+
+/* ── compatibility: a kit piece that is also an .mm-btn ─────────────────────
+   base.css's `.mm-btn` loads after the kit and repaints a button as web chrome
+   (a gradient, a 1px border that also clears border-image, a radius, a ring).
+   These put back what it takes; everything else is the kit's own rule. */
+.mm-btn.kit-btn {
+  gap: 12px;
+  min-height: var(--plate-h);
+  padding: 2px calc(var(--plate-h) * .78) 3px;
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/plate.webp");
+  border-image-slice: 12 53 12 46 fill;
+  border-image-width: calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72);
+  border-image-repeat: stretch;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  font-weight: 700; font-size: var(--fs-md); letter-spacing: .14em;
+  color: var(--kit-gold-hi);
+  transition: filter var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out), color var(--t-quick) var(--ease-out);
+}
+.mm-btn.kit-btn--quiet { font-size: var(--fs-sm); color: var(--kit-text-mid); }
+.mm-btn.kit-btn:hover { background: none; }
+.mm-btn.kit-btn:focus-visible { outline: none; box-shadow: none; }
+/* danger: the same plate, lettered in the Courage bar's red */
+.mm-btn--danger.kit-btn { color: var(--threat-200); }
+.mm-btn--danger.kit-btn:hover:not(:disabled), .mm-btn--danger.kit-btn:focus-visible { color: var(--threat-100); }
+
+.mm-btn.kit-medallion {
+  width: var(--md); height: var(--md); min-height: 0;
+  padding: 0;
+  border: 0; border-radius: 50%;
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  box-shadow: none;
+  color: var(--kit-gold-hi);
+  transition: filter var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out);
+}
+.mm-btn.kit-medallion:hover,
+.mm-btn.kit-medallion:focus-visible {
+  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  transform: translateY(-1px);
+}
+.mm-btn.kit-medallion:focus-visible {
+  outline: none; box-shadow: none;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) drop-shadow(0 0 2px var(--kit-gold-hi)) drop-shadow(0 0 12px color-mix(in srgb, var(--kit-candle) 60%, transparent)) brightness(1.18);
+}
+
+/* a medallion seated on one end of a nameplate button (kitButton's `medal`) */
+.mm-dlg-btn--medal-r { padding-right: calc(var(--plate-h) * 1.24) !important; }
+.mm-dlg-btn--medal-l { padding-left: calc(var(--plate-h) * 1.24) !important; }
+.mm-dlg-btn--medal-r > .kit-btn__medal { right: calc(var(--plate-h) * -.5); }
+.mm-dlg-btn--medal-l > .kit-btn__medal { left: calc(var(--plate-h) * -.5); }
+.mm-dlg-medal { --md: calc(var(--plate-h) * 1.08); }
 
 /* largeText: the dialog is already sized in rem/ch, but tighten the padding so
    the extra type has somewhere to go instead of pushing content off-screen. */
 :root[data-large-text="1"] .mm-modal__head { padding: var(--s-3) var(--s-4) var(--s-2); }
 :root[data-large-text="1"] .mm-modal__body { padding: var(--s-3) var(--s-4); }
+:root[data-large-text="1"] .mm-modal--kit .mm-modal__head { padding: 0; }
+:root[data-large-text="1"] .mm-modal--kit .mm-modal__body { padding: 4px 10px 14px; }
