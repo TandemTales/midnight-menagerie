@@ -10,29 +10,39 @@ The output is committed (CONTRACTS non-negotiable #1: no runtime build step).
 
 What comes out, and how `game/src/ui/kit.css` uses it:
 
-  corner-l / corner-r   the candle + cobweb + scrollwork bands from the top of
-                        selectCompanion.png — the top corners of every board
-  vine-l / vine-r       the purple scroll vines that run down selectKid's sides
-  panel                 an EMPTY info panel re-assembled from selectKid's panels:
-                        its four painted corners and a clean length of rail, so
-                        `border-image` can draw that exact frame at any size
-  frame                 the ornate Kid portrait frame, interior removed (9-slice)
-  plate                 the dark cartouche nameplate from a Companion tile,
-                        lettering removed (9-slice)
-  ribbon                the gold ribbon banner, lettering removed (3-slice)
-  medal-*               the star / shield / paw / moon medallions
+  from UI/title.png
+  cart-cap-l / -r, cart-band, cart-crest
+                        the wordmark's cartouche, rebuilt to hold any title:
+                        scrolled ends + a level band + the finial (.kit-titleblock)
+  cart-bat(-r), cart-star   the wordmark's bat and star, riding inside the ends
+  from UI/selectCompanion.png
+  corner-l / corner-r   candle + cobweb + scrollwork: the top corners of a board
+  plate                 a tile's dark nameplate, lettering removed (9-slice:
+                        .kit-plate, .kit-btn, HUD chips, prices)
+  damask                a half-drop damask made of the sheet's own scrollwork
+  from UI/selectKid.png
+  vine-l / vine-r       the purple scroll vines down both sides of a board
+  panel                 the big info panel, emptied (9-slice: .kit-panel)
+  frame                 the Kid portrait frame, emptied (9-slice: .kit-frame,
+                        the frames the Tricks hang in)
+  ribbon                the gold ribbon, lettering removed (3-slice: .kit-ribbon)
+  medal-paw / -star / -star2 / -shield / -moon
+                        the medallions the panels wear on their top rail
   button                the round purple enamel button, glyph painted out
-  candle, skull         set dressing from the bottom of selectKid.png
-  tex-panel             a seamless tile of the panels' own dark grain
-  tex-ground            a seamless aubergine plaster/damask ground
-  marble                the marbled lavender inside the MENAGERIE letters
+  button-ornate         the same, seated in its gold filigree
+  candle, skull         set dressing (.kit-prop)
+  grain                 the panels' own grain as a neutral overlay tile
+  from UI/mainMenu.png
+  hall-*                four details of the mansion, hung as portraits
+  generated in the painting's manner
+  floor                 cobbles that flatten into the dark (.kit-dress__floor)
+  marble                marbled lavender for display type (.kit-cartouche__title)
 
 Everything with an alpha edge is keyed on LUMINANCE against the painting's own
 near-black ground and then *unmixed* from that ground, so a piece composited
 back onto a dark board reproduces the painting instead of going muddy.
 
     python tools/prep_ui_kit.py            # write everything
-    python tools/prep_ui_kit.py --sheet    # also write shots/kit-sheet.png, a contact sheet
 """
 import argparse
 import os
@@ -233,7 +243,6 @@ def medals():
     medal(SK, (757, 548, 807, 604), "medal-shield.webp")
     medal(SK, (975, 548, 1030, 604), "medal-star2.webp")
     medal(SK, (428, 238, 584, 336), "medal-moon.webp")
-    medal(SK, (436, 822, 620, 945), "medal-pawring.webp")
 
 
 def frame():
@@ -377,21 +386,6 @@ def ribbon():
     out_rgb, out_a = out_rgb[r0:r1], out_a[r0:r1]
     save(rgba(unmix(out_rgb, out_a, (4, 3, 5)), out_a), "ribbon.webp", 92)
     print(f"      ribbon: {out_rgb.shape[1]}x{r1 - r0} ends {x(597)} / {w - x(868)}")
-
-
-def bat():
-    """The little purple bat from inside selectKid's cartouche."""
-    rgb = crop(SK, (383, 116, 468, 182))
-    l = blur(lum(rgb), 0.5)
-    body = l > 16
-    lab, n = ndimage.label(body)
-    sizes = ndimage.sum(body, lab, range(1, n + 1))
-    body = lab == (1 + int(np.argmax(sizes)))
-    body = ndimage.binary_dilation(body, iterations=1)
-    a = blur(body.astype(np.float32), 0.6) * np.maximum(ramp(l, 4, 22), body)
-    out = rgba(unmix(rgb, a, (3, 2, 4)), a)
-    save(out, "bat.webp", 92)
-    save(np.ascontiguousarray(out[:, ::-1]), "bat-r.webp", 92)
 
 
 def button():
@@ -892,7 +886,7 @@ def cartouche():
             save(np.ascontiguousarray(out[:, ::-1]), "cart-bat-r.webp", 92)
 
 
-def main(sheet=False):
+def main():
     print("kit ->", os.path.relpath(OUT, ROOT))
     hall_paintings()
     floor()
@@ -907,13 +901,11 @@ def main(sheet=False):
     plate()
     ribbon()
     cartouche()
-    bat()
     button()
     button_ornate()
     props()
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--sheet", action="store_true")
-    main(**vars(ap.parse_args()))
+    argparse.ArgumentParser(description="Prepare the shared UI kit from the sample boards.").parse_args()
+    main()
