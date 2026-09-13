@@ -693,6 +693,8 @@ export class CombatScene extends Scene {
         <div class="kit-dress cb-dress" aria-hidden="true">
           <div class="cb-dress__vignette"></div>
           <div class="kit-dress__rule cb-dress__rule"></div>
+          <div class="kit-dress__vine kit-dress__vine--l cb-dress__vine"></div>
+          <div class="kit-dress__vine kit-dress__vine--r cb-dress__vine"></div>
           <div class="kit-dress__corner kit-dress__corner--l cb-dress__corner"></div>
           <div class="kit-dress__corner kit-dress__corner--r cb-dress__corner"></div>
           <div class="kit-dress__flame kit-dress__flame--l cb-dress__flame"></div>
