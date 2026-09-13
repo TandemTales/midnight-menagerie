@@ -323,6 +323,9 @@ const BODY_MOTIF = { squat: 'pounce', 'tall-thin': 'stoop', sprawling: 'ripple',
 
 /** How far `setPlateLimit` may lift a plate before it starts hiding the body. */
 const PLATE_LIFT_MAX = 92;
+/** How far a boss's ground line may rise (its stage shrinking by as much) to
+ *  keep its plate, hung from its feet, clear of the hand. */
+const BOSS_RISE_MAX = 140;
 
 /* ── silhouette props ──────────────────────────────────────────────────────── */
 /**
@@ -1090,6 +1093,29 @@ export class EnemyView {
    */
   setPlateLimit(limitY) {
     if (!this.$plate || !Number.isFinite(limitY)) return 0;
+    /* THE BOSS KEEPS HIS FEET. A lifted plate climbs over whatever stands
+       above it, and on the boss that was The Butler's legs: his nameplate lay
+       across his shoes on every board and across his knees on a full hand. A
+       boss in its arena hangs its plate FROM ITS FEET instead
+       (combat.css `--e-rise`), and when the plate would reach the hand the
+       creature's ground line rises by the overlap and its stage gives up the
+       same height from the top: the feet, the plate and the hand all stay
+       where they can be seen, and he stands a little smaller. */
+    if (this._risesForPlate()) {
+      if (this._rise) this.el.style.setProperty('--e-rise', '0px');
+      /* A row of conditions is RESERVED under the plate while it has none, so
+         the first Weak that lands does not push the row into the hand, and
+         the boss never changes size mid-fight: its sockets and their stack
+         coins (combat.css .cb-status, --socket) measure about 1.17 sockets. */
+      const socket = Math.min(30, Math.max(26, window.innerWidth * 0.019));
+      const reserve = this.$statuses.childElementCount ? 0 : Math.round(socket * 1.17);
+      const over = this.$plate.getBoundingClientRect().bottom + reserve - limitY;
+      const rise = over > 0 ? Math.min(Math.round(over), BOSS_RISE_MAX) : 0;
+      this._rise = rise;
+      this.el.style.setProperty('--e-rise', rise + 'px');
+      this._plift = 0;
+      return -rise;
+    }
     const prev = this._plift || 0;
     if (prev) this.$plate.style.setProperty('--e-plift', '0px');
     const bottom = this.$plate.getBoundingClientRect().bottom;
@@ -1100,6 +1126,12 @@ export class EnemyView {
     this._plift = lift;
     this.$plate.style.setProperty('--e-plift', lift + 'px');
     return lift;
+  }
+
+  /** A boss in its own arena (not a part of one): its plate hangs from its feet. */
+  _risesForPlate() {
+    return this.tier === 'boss' && this.role !== 'bossPart'
+      && !!this.el.closest('.cb-root[data-arena="boss"]');
   }
 
   _limbs(b, n, back) {

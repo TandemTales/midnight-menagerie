@@ -107,6 +107,33 @@ export const TUNE = {
   minFit: 0.625,        // never shrink past this fraction of the CSS card size
   fitSteps: 8,          // fit is quantised to 1/8ths — see Hand#_fit
 
+  /* ── the table's furniture ──────────────────────────────────────────────
+     The two gutters above are a guess at what stands beside the fan. A scene
+     that KNOWS — the Scuffle seats the Kid's column on the left and END TURN
+     and the discard pile on the right — measures them and hands the free band
+     to `setBounds`, and then three things change, all of them for the
+     crowded hand (nine Tricks at the Deck's 1280x800 ran the fan's first card
+     over the Kid's Courage and its last one over END TURN):
+       * the fan centres in THAT band and never leaves it, rotated corners and
+         all, instead of centring on the viewport and spilling into the
+         furniture;
+       * a neighbour may cover at most `1 - boundVisible` of a card, so every
+         cost medallion and the start of every name still show — past that the
+         cards get smaller (quantised, as below) rather than hiding each other;
+       * the arc's half-angle stops at `boundFanDeg`: a rotated card reaches
+         ch·sinθ past its own edge, and at twelve degrees that is 42 px of band
+         per side spent on tilt instead of on the cards.
+     Without bounds (tests/cards-feel, any other host) nothing here applies. */
+  boundVisible: 0.6,
+  boundFanDeg: 8,
+  boundDipMax: 32,
+  boundBottomPad: 13,
+  boundHitPadTop: 6,    // the backstop's slack above a bounded fan, px      // …and the arc's drop at the ends follows the flatter bend
+  /* A card covered past this share of its width is CROWDED: `.mm-hand` takes
+     `is-crowded`, and a scene can set the names flush left on their plates so
+     they sit in the strip a neighbour leaves showing. */
+  crowdAt: 0.8,
+
   // draw / add / discard / exhaust — four different signatures
   drawIn: 0.34, drawStagger: 0.055, drawFlick: 18,
   // `add` (a card moved INTO hand from the discard pile — Hand#add). It must
@@ -354,7 +381,11 @@ export class Hand {
     const left = Math.max(0, Math.round(fan.cx - half));
     const right = Math.min(this.w, Math.round(fan.cx + half));
     // + the unplayable drop, which pushes individual cards below `baseY`.
-    const top = Math.max(0, Math.round(fan.baseY - fan.ch - pad));
+    // Above the fan there is no gap to catch (a lifted card is its own hit
+    // target), so a table with furniture keeps the backstop's top tight: the
+    // board above it keeps its tooltips (see TUNE.boundHitPadTop).
+    const padTop = this._bounded() ? TUNE.boundHitPadTop : pad;
+    const top = Math.max(0, Math.round(fan.baseY - fan.ch - padTop));
     const key = left + ':' + right + ':' + top;
     if (this._hitBox === key) return;      // `_layout` runs on every hover
     this._hitBox = key;
@@ -396,6 +427,36 @@ export class Hand {
   _sideMargin() { return Math.max(TUNE.sideMarginMin, this.w * TUNE.sideMarginFrac); }
 
   /**
+   * The free band between the furniture beside the fan, in host px: what the
+   * scene measured (`left` is the right edge of whatever stands on the left,
+   * `right` the left edge of whatever stands on the right). Null clears it and
+   * the symmetric gutters apply again. Re-lays the fan only when it moved.
+   * @param {{left:number,right:number}|null} b
+   */
+  setBounds(b) {
+    const l = b && Number.isFinite(b.left) ? Math.round(b.left) : null;
+    const r = b && Number.isFinite(b.right) ? Math.round(b.right) : null;
+    if (l === this._bL && r === this._bR) return this;
+    this._bL = l; this._bR = r;
+    this._fanKey = null;
+    this._hitBox = null;
+    this._layout();
+    return this;
+  }
+
+  /** True while a usable band is set: wide enough to hold one card. */
+  _bounded() {
+    return this._bL != null && this._bR != null && this._bR - this._bL >= this.cw * 1.2;
+  }
+
+  /** [left, right] of the band the fan lives in, in host px. */
+  _band() {
+    if (this._bounded()) return [Math.max(0, this._bL), Math.min(this.w, this._bR)];
+    const m = this._sideMargin();
+    return [m, this.w - m];
+  }
+
+  /**
    * The per-hand size multiplier. Driven by BOTH the viewport and the hand
    * size, exactly as StS does it: a big hand of small cards beats a small hand
    * of clipped ones.
@@ -408,12 +469,15 @@ export class Hand {
     const ch = this.chh, cw = this.cw;
     let s = Math.min(1, (this.h * TUNE.maxCardHFrac) / (ch || 1));
     if (n > 1) {
-      const band = Math.max(cw * 0.8, this.w - this._sideMargin() * 2);
+      const [bl, br] = this._band();
+      const band = Math.max(cw * 0.8, br - bl);
       // The outer card is ROTATED about its bottom centre, so it reaches
       // cw·cosθ/2 + ch·sinθ past its anchor — far more than half a card width.
       // Budgeting only cw/2 is what let the fan run to x = -9 at n=12.
       const A = this._overhang(n, 1);
-      const need = s * ((n - 1) * cw * (1 - TUNE.maxOverlap) + 2 * A);
+      // a table with furniture keeps more of each card showing (see TUNE)
+      const vis = this._bounded() ? TUNE.boundVisible : 1 - TUNE.maxOverlap;
+      const need = s * ((n - 1) * cw * vis + 2 * A);
       if (need > band) s *= band / need;
     }
     // QUANTISED, and this matters more than it looks. The compositor rasters a
@@ -448,7 +512,8 @@ export class Hand {
   _fanTh(n) {
     if (n <= 1) return 0;
     const c = (n - 1) / 2;
-    return Math.min(TUNE.rotPerCard * this._flat(n) * c, TUNE.maxFanDeg) * Math.PI / 180;
+    const cap = this._bounded() ? TUNE.boundFanDeg : TUNE.maxFanDeg;
+    return Math.min(TUNE.rotPerCard * this._flat(n) * c, cap) * Math.PI / 180;
   }
 
   /** Horizontal reach of a card tilted `th` past its anchor. */
@@ -846,13 +911,14 @@ export class Hand {
     // `_baseGeo` calls this once per card on every hit test, and the spread
     // solver below runs a bisection, so memoise on everything it depends on.
     const key = n + '|' + this.w + '|' + this.h + '|' + this.cw + '|' + this.chh
-              + '|' + (this._anyUnplayable ? 1 : 0);
+              + '|' + (this._anyUnplayable ? 1 : 0) + '|' + this._bL + '|' + this._bR;
     if (this._fanKey === key && this._fanTmp) { this.fit = this._fanTmp.fit; return this._fanTmp; }
 
     const c = (n - 1) / 2;
     const fit = this._fit(n);
     const cw = this.cw * fit, ch = this.chh * fit;
-    const band = Math.max(cw, this.w - this._sideMargin() * 2);
+    const [bandL, bandR] = this._band();
+    const band = Math.max(cw, bandR - bandL);
 
     const f = this._fanTmp || (this._fanTmp = {});
     f.fit = fit; f.cw = cw; f.ch = ch; f.c = c;
@@ -887,14 +953,18 @@ export class Hand {
       f.step = Math.max(8, Math.min(Math.max(want, cw * T.stepRatio), roomFor(th)));
     } else f.step = 0;
 
-    f.dip = Math.min(T.arcDipMax, 6 + n * T.arcDip) * fit * this._flat(n);
+    // a bounded fan bends less (see TUNE.boundFanDeg), so it dips less too
+    f.dip = Math.min(this._bounded() ? T.boundDipMax : T.arcDipMax, 6 + n * T.arcDip) * fit * this._flat(n);
     // A rotated card's bounding box hangs (w/2)·sin(rot) below its anchor, and
     // an unaffordable one drops another 24px. Both are reserved here, so
     // max(card.bottom) == h - bottomPad for EVERY n. Nothing is ever clipped.
     f.sag = Math.abs(Math.sin(th)) * cw / 2;
     f.drop = this._anyUnplayable ? T.unplayableDrop * fit : 0;
-    f.baseY = this.h - T.bottomPad - f.dip - f.sag - f.drop;
-    f.cx = this.w / 2;
+    // a table with its own furniture seats the fan a little lower, on its front rail
+    f.baseY = this.h - (this._bounded() ? T.boundBottomPad : T.bottomPad) - f.dip - f.sag - f.drop;
+    // the middle of the free band: the viewport's, unless a scene measured one
+    f.cx = this._bounded() ? (bandL + bandR) / 2 : this.w / 2;
+    f.crowded = n > 1 && f.step < cw * T.crowdAt;
     f.lift = T.hoverLift * fit;
     // Hover growth is centred on the card, not on its bottom edge: see the
     // GEOMETRY note in TUNE. `_layout` pushes the anchor back down by this so
@@ -904,6 +974,21 @@ export class Hand {
     this.fit = fit;
     this._fanKey = key;
     return f;
+  }
+
+  /**
+   * The top edge of the resting fan for a hand of `n`, in host px: the middle
+   * card's, which the arc lifts highest. What the board above the hand has to
+   * stay clear of whatever is actually in hand right now, so a creature's
+   * plate is sized once for a full hand instead of breathing as cards are
+   * played.
+   */
+  restTop(n) {
+    const k = Math.max(1, n | 0);
+    const F = this._fan(k);
+    const top = F.baseY - F.ch;
+    this._fan(this.slots.length || 1);          // leave the memo on the real hand
+    return top;
   }
 
   /** What the critic's assertion measures: the lowest pixel any card reaches. */
@@ -926,6 +1011,17 @@ export class Hand {
     this.baseY = F.baseY;
     this._syncThreshold(F);
     this._syncHitBox(F);
+    // Only on a change: `_layout` runs on every hover.
+    if (this._crowded !== F.crowded) {
+      this._crowded = F.crowded;
+      this.el.classList.toggle('is-crowded', !!F.crowded);
+    }
+    const last = this.slots[n - 1];
+    if (this._lastSlot !== last) {
+      if (this._lastSlot) this._lastSlot.view.el.classList.remove('is-fan-last');
+      this._lastSlot = last;
+      last.view.el.classList.add('is-fan-last');
+    }
 
     const hover = this.hoverSlot;
     const hoverIdx = hover ? this.slots.indexOf(hover) : -1;

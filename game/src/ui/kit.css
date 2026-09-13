@@ -1183,12 +1183,14 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
    and enamel as everything else on the boards, and each is built so the
    ornament sits round the figure and never between it and the eye.
 
-     .kit-cards--nerve   on a .kit-cards host: a Trick's cost struck on the round
-                         enamel button (button.webp) — the Nerve orb's own
-                         material, so the number you pay reads as the number
-                         you hold
-     .kit-tube           a Courage bar: tube.webp's brass round a glazed enamel
-                         fill. Children __ghost (the drain that trails a hit),
+     .kit-cards--nerve   on a .kit-cards host: a Trick's cost struck on a gold
+                         coin (coin-face.webp) — the face the Nerve medallion
+                         holds, so the number you pay reads as the number you
+                         hold (round 3; it was the purple enamel button)
+     .kit-tube           a Courage gauge: deep enamel run in a channel of
+                         gauge.webp's brass housing, its caps and lips painted
+                         OVER the enamel (::after) so the bezel holds the fill.
+                         Children __ghost (the drain that trails a hit),
                          __fill, __label; --warm for your own side; --tube-h
      .kit-socket         a condition in its setting: socket.webp round black
                          enamel, the glyph lit in --socket-c, a .kit-coin
@@ -1196,81 +1198,104 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
      .kit-coin           a count struck on a small brass coin; --coin sizes it
    =========================================================================== */
 
-/* ── cards: the cost on the Nerve enamel ── */
+/* ── cards: the cost struck on Nerve's coin ── */
 .kit-cards--nerve .mm-card[data-rarity] .mm-card__cost {
   left: calc(1 * var(--u)); top: calc(1 * var(--u));
   width: calc(50 * var(--u)); height: calc(50 * var(--u));
   padding-bottom: calc(2 * var(--u));            /* lining figures sit high */
   border-radius: 50%;
-  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  background: url("../../assets/ui/kit/coin-face.webp") 50% 50% / 100% 100% no-repeat;
   box-shadow: none;
   font-size: calc(29 * var(--u));
-  color: var(--kit-gold-hi);
-  -webkit-text-stroke: calc(3.4 * var(--u)) #140b05;
-  paint-order: stroke fill;
-  text-shadow: 0 calc(2 * var(--u)) calc(3 * var(--u)) rgba(0, 0, 0, .8);
+  /* struck into the gold: dark figures, a lit lower lip where the die cut */
+  color: #241406;
+  -webkit-text-stroke: 0;
+  text-shadow: 0 calc(1.2 * var(--u)) 0 rgba(255, 238, 190, .55), 0 calc(-.8 * var(--u)) 0 rgba(40, 22, 6, .5);
   filter: drop-shadow(0 calc(2 * var(--u)) calc(3 * var(--u)) rgba(0, 0, 0, .85));
 }
-/* cheaper or dearer than printed: the figure changes colour, the enamel stays */
+/* cheaper or dearer than printed: the figure changes colour, the gold stays.
+   A green or red cut into gold needs its own dark edge to read. */
 .kit-cards--nerve .mm-card[data-rarity].is-cost-reduced .mm-card__cost {
-  color: var(--good-300);
+  color: #0f5a2c;
+  text-shadow: 0 calc(1.2 * var(--u)) 0 rgba(215, 255, 220, .6);
   filter: drop-shadow(0 calc(2 * var(--u)) calc(3 * var(--u)) rgba(0, 0, 0, .85))
           drop-shadow(0 0 calc(7 * var(--u)) color-mix(in srgb, var(--good-300) 55%, transparent));
 }
-.kit-cards--nerve .mm-card[data-rarity].is-cost-raised .mm-card__cost { color: var(--threat-200); }
+.kit-cards--nerve .mm-card[data-rarity].is-cost-raised .mm-card__cost { color: #7a1208; text-shadow: 0 calc(1.2 * var(--u)) 0 rgba(255, 220, 200, .55); }
 /* the drop shadow above replaces card.css's dimming filter, so dim it here */
 .kit-cards--nerve .mm-card[data-rarity].is-unplayable .mm-card__cost {
   filter: drop-shadow(0 calc(2 * var(--u)) calc(3 * var(--u)) rgba(0, 0, 0, .85)) saturate(.3) brightness(.62);
 }
 
-/* ── tube ── */
+/* ── tube ──
+   gauge.webp is 240x56: a collared cap and a domed knob at each end (40 px),
+   and between them two brass lips (y 10..17 and 39..46) round an open channel.
+   The housing is painted OVER the enamel, so its lips and collars hold the
+   fill's edges the way a bezel holds a glass; the bed and the enamel sit in
+   the channel under it. --tube-h is the height of the whole housing. */
 .kit-tube {
   --tube-h: 20px;
+  --tube-cap: calc(var(--tube-h) * 30 / 56);     /* the fill starts under the collar */
+  --tube-lip: calc(var(--tube-h) * 15 / 56);     /* …and runs under both lips */
+  /* deep crimson enamel: their Courage. Mixed from the tokens, so the
+     colour-blind palettes still reach it; dark, never candy. */
+  --tube-lo: color-mix(in oklab, var(--courage-500) 52%, #12030a);
+  --tube-hi: color-mix(in oklab, var(--courage-500) 82%, #2a0510);
   position: relative;
   height: var(--tube-h);
-  border: 0 solid transparent;
-  border-image-source: url("../../assets/ui/kit/tube.webp");
-  border-image-slice: 19 fill;
-  border-image-width: calc(var(--tube-h) * 19 / 40);
-  border-image-repeat: stretch;
-  border-radius: 999px;
+  border: 0;
+  border-radius: 0;
   background: none;
   box-shadow: none;
-  overflow: hidden;
+  overflow: visible;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
+}
+/* the bed: the dark of the channel where the enamel has drained */
+.kit-tube::before {
+  content: ''; position: absolute; z-index: 0; pointer-events: none;
+  left: var(--tube-cap); right: var(--tube-cap); top: var(--tube-lip); bottom: var(--tube-lip);
+  background: linear-gradient(180deg, #030203 0%, #0d0709 55%, #1c1012 100%);
+  box-shadow: inset 0 2px 3px rgba(0, 0, 0, .9);
+}
+/* the housing, over everything but the figures */
+.kit-tube::after {
+  content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/gauge.webp") 0 40 0 40 fill / 0 calc(var(--tube-h) * 40 / 56) 0 calc(var(--tube-h) * 40 / 56) stretch;
 }
 .kit-tube > .kit-tube__ghost,
 .kit-tube > .kit-tube__fill {
-  position: absolute;
-  inset: calc(var(--tube-h) * .16) calc(var(--tube-h) * .2);
-  border-radius: 999px;
+  position: absolute; z-index: 1;
+  left: var(--tube-cap); right: var(--tube-cap); top: var(--tube-lip); bottom: var(--tube-lip);
+  border-radius: 0;
   transform-origin: left center;
 }
-/* crimson enamel, glazed: the HUD's Courage */
+/* fired enamel: a soft glaze near the top, the colour pooling dark toward the
+   foot, the grain of the glass through it */
 .kit-tube > .kit-tube__fill {
   background:
-    linear-gradient(180deg, rgba(255, 236, 236, .46) 0%, rgba(255, 255, 255, .1) 30%, rgba(0, 0, 0, 0) 52%, rgba(0, 0, 0, .36) 100%),
-    linear-gradient(90deg, var(--courage-500), var(--courage-300));
-  box-shadow: inset 0 0 0 1px rgba(40, 6, 12, .6);
+    linear-gradient(180deg, rgba(255, 216, 184, .02) 0%, rgba(255, 216, 184, .12) 24%, rgba(255, 236, 214, .02) 44%, rgba(0, 0, 0, 0) 56%, rgba(0, 0, 0, .44) 100%),
+    url("../../assets/ui/kit/grain.webp") 0 0 / 96px 96px,
+    linear-gradient(90deg, var(--tube-lo), var(--tube-hi));
+  background-blend-mode: normal, overlay, normal;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .6), inset -2px 0 3px rgba(0, 0, 0, .35);
 }
-/* your own side: the candle's amber, so two sides of one exchange never read alike */
-.kit-tube--warm > .kit-tube__fill {
-  background:
-    linear-gradient(180deg, rgba(255, 246, 222, .5) 0%, rgba(255, 255, 255, .12) 30%, rgba(0, 0, 0, 0) 52%, rgba(0, 0, 0, .34) 100%),
-    linear-gradient(90deg, var(--pluck-500), var(--pluck-300));
-  box-shadow: inset 0 0 0 1px rgba(46, 26, 4, .6);
+/* your own side: deep amber, the candle's colour, so two sides of one exchange never read alike */
+.kit-tube--warm {
+  --tube-lo: color-mix(in oklab, var(--pluck-500) 62%, #2a1300);
+  --tube-hi: color-mix(in oklab, var(--pluck-500) 82%, var(--pluck-300));
 }
-.kit-tube > .kit-tube__ghost { background: color-mix(in srgb, var(--threat-100) 58%, transparent); }
+.kit-tube > .kit-tube__ghost { background: color-mix(in srgb, var(--threat-100) 46%, transparent); }
 .kit-tube > .kit-tube__label {
-  position: absolute; inset: 0;
+  position: absolute; inset: 0; z-index: 3;
   display: flex; align-items: center; justify-content: center; gap: 1px;
   padding-bottom: 1px;
   font-family: var(--font-num); font-weight: 700;
-  font-size: max(11px, calc(var(--tube-h) * .64)); line-height: 1;
+  font-size: max(11px, calc(var(--tube-h) * .56)); line-height: 1;
   font-variant-numeric: lining-nums tabular-nums;
   letter-spacing: .02em;
   color: #fff8ee;
-  -webkit-text-stroke: max(2.5px, calc(var(--tube-h) * .14)) #0c0605;
+  -webkit-text-stroke: max(2.5px, calc(var(--tube-h) * .13)) #0c0605;
   paint-order: stroke fill;
 }
 

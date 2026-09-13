@@ -64,6 +64,54 @@
 /* the corners are dressing, never a place for a reading: they sit under the
    House Rules rail and a teammate's panel, which both paint over them */
 .cb-dress__corner { opacity: .92; }
+/* THE ROOM BEHIND GLASS. The rendered room ran on past the frame's rule to the
+   edge of the screen (a lamp in it showed outside the gilt at 1600x900), so
+   the room read as cropped by the frame rather than seen through it. Outside
+   the rule is now the board's own margin, the aubergine ground with its
+   damask; inside it the room falls into a deep lip of shadow the way a picture
+   sits back in a gilt frame, warmed where the corner candles hang, and a
+   breath of reflected light crosses the glass from the top left. */
+.cb-dress__mat {
+  inset: 0;
+  background:
+    linear-gradient(rgba(13, 9, 17, .86), rgba(13, 9, 17, .86)),
+    url("../../assets/ui/kit/damask.webp") 0 0 / 150px auto,
+    #0d0911;
+  clip-path: polygon(evenodd,
+    0 0, 100% 0, 100% 100%, 0 100%, 0 0,
+    calc(var(--kit-edge) + 3px) calc(var(--hud-h) + var(--kit-edge) * .5 + 5px),
+    calc(var(--kit-edge) + 3px) calc(100% - var(--kit-edge) - 3px),
+    calc(100% - var(--kit-edge) - 3px) calc(100% - var(--kit-edge) - 3px),
+    calc(100% - var(--kit-edge) - 3px) calc(var(--hud-h) + var(--kit-edge) * .5 + 5px),
+    calc(var(--kit-edge) + 3px) calc(var(--hud-h) + var(--kit-edge) * .5 + 5px));
+}
+.cb-dress__glass {
+  left: calc(var(--kit-edge) + 2px); right: calc(var(--kit-edge) + 2px);
+  top: calc(var(--hud-h) + var(--kit-edge) * .5 + 4px); bottom: calc(var(--kit-edge) + 2px);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, .6),
+    inset 0 0 14px 5px rgba(5, 2, 8, .85),
+    inset 0 0 90px 26px rgba(12, 5, 14, .6);
+  background:
+    radial-gradient(18% 26% at 9% 12%, color-mix(in srgb, var(--kit-candle) 10%, transparent), transparent 100%),
+    radial-gradient(18% 26% at 91% 12%, color-mix(in srgb, var(--kit-candle) 10%, transparent), transparent 100%),
+    linear-gradient(118deg, rgba(255, 244, 226, .06) 0%, rgba(255, 244, 226, .022) 15%, transparent 28%),
+    linear-gradient(118deg, transparent 60%, rgba(255, 244, 226, .025) 65%, transparent 70%);
+}
+/* candle light pooling in the two lower corners of the frame: from the candle
+   on END TURN's stack, and off Nerve's lit coin */
+.cb-dress__warmth {
+  left: calc(var(--kit-edge) + 2px); right: calc(var(--kit-edge) + 2px);
+  top: calc(var(--hud-h) + var(--kit-edge) * .5 + 4px); bottom: calc(var(--kit-edge) + 2px);
+  background:
+    radial-gradient(26% 34% at 97% 96%, color-mix(in srgb, var(--kit-candle) 22%, transparent), color-mix(in srgb, var(--kit-candle) 7%, transparent) 55%, transparent 100%),
+    radial-gradient(22% 28% at 3% 98%, color-mix(in srgb, var(--kit-candle) 14%, transparent), transparent 100%);
+  mix-blend-mode: screen;
+}
+/* cobwebs in the lower corners too, as the Kid board hangs them in all four */
+.cb-dress__web { --web-w: clamp(84px, 7vw, 116px); opacity: .5; bottom: calc(var(--kit-edge) + 6px); }
+.cb-dress__web--bl { left: calc(var(--kit-edge) + 6px); transform: scaleY(-1); }
+.cb-dress__web--br { right: calc(var(--kit-edge) + 6px); --web-w: clamp(100px, 8.4vw, 140px); transform: scaleY(-1); }
 
 /* ───────────────────────────────────────────── top bar ─────────────────── */
 /* The shared run HUD (`ui/hud.js`, `variant:"combat"`) mounts here. Relics
@@ -113,7 +161,7 @@
 .cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-intent { --iv: clamp(52px, 3.8vw, 62px); --ph: clamp(24px, 1.75vw, 28px); }
 .cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-enemy__name { --name-spill: 0px; }
 .cb-enemies:is([data-n="5"], [data-n="6"]) .cb-enemy:not([data-tier="boss"]) .cb-enemy__name { --np-h: 24px; font-size: 10.5px; letter-spacing: .06em; padding-inline: 13px; }
-.cb-enemies:is([data-n="5"], [data-n="6"]) .cb-enemy:not([data-tier="boss"]) .cb-enemy__vitals { --tube-h: 18px; }
+.cb-enemies:is([data-n="5"], [data-n="6"]) .cb-enemy:not([data-tier="boss"]) .cb-enemy__vitals { --tube-h: 21px; }
 /* FIVE BODIES — the Keeper plus its four Sanctuary Locks, the widest board in
    the game. The row is centred and carries up to 132px of left padding to stay
    clear of the Kid, so a fifth body pushed the FIRST one off the left edge: a
@@ -259,6 +307,12 @@
   scrollbar-width: none;
 }
 .cb-rules > * { pointer-events: auto; }
+/* IN A PARTY THE RULES HANG IN THE OTHER CORNER. The friends' column and the
+   House Rules rail both lived under the HUD at top left, and a rule announced
+   in a party fight lay straight over a teammate's panel. Stacked under the
+   column instead, three friends would push the rule down onto the Kid, so the
+   rail crosses to the top right, where no reading lives in a party fight. */
+.cb:has(.cb-mates:not([hidden])) .cb-rules { left: auto; right: clamp(12px, 1.6vw, 30px); }
 /* A HOUSE RULE IS A NOTICE HUNG IN THE HOUSE: the kit's painted panel rail
    round a dark board, the words HOUSE RULE on the gold ribbon along its top
    rail, the rule's name in the wordmark's lavender engraved caps, and the
@@ -336,16 +390,17 @@
    to the top of its own name plate */
 .cb-enemy.has-rule .cb-enemy__plate::before {
   content: 'House Rule';
-  --h: 20px;
+  --h: 22px;
   position: absolute; left: 50%; top: 0; transform: translate(-50%, -88%);
   display: inline-flex; align-items: center;
-  min-height: var(--h); padding: 0 12px 1px;
+  min-height: var(--h); padding: 0 calc(var(--h) * 1.08) 1px;
   font-family: var(--font-display); font-weight: 700; font-size: 10.5px;
   letter-spacing: .14em; text-transform: uppercase; white-space: nowrap;
-  color: var(--kit-lav);
+  color: #140b04;
+  text-shadow: 0 1px 0 rgba(255, 232, 178, .42);
   border: 0 solid transparent;
-  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
+  border-image: url("../../assets/ui/kit/ribbon.webp") 0 47 0 52 fill / 0 calc(var(--h) * 47 / 49) 0 calc(var(--h) * 52 / 49) stretch;
+  filter: brightness(1.2) saturate(.9) drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
   z-index: 2;
 }
 
@@ -744,7 +799,7 @@
 }
 /* Courage in the brass tube (.kit-tube), Guard on a shield seated on its end */
 .cb-enemy__vitals {
-  --tube-h: clamp(19px, 1.4vw, 22px);
+  --tube-h: clamp(23px, 1.75vw, 28px);
   position: relative;
   display: flex; align-items: center;
   width: 100%;
@@ -757,10 +812,9 @@
 .cb-enemy__fill { transition: transform var(--t-quick) var(--ease-out); }
 /* under a third: the enamel darkens toward the dregs, so a nearly-done creature
    is told apart from a healthy one without reading the figure */
-.cb-enemy.is-hurt .cb-enemy__fill {
-  background:
-    linear-gradient(180deg, rgba(255, 236, 236, .34) 0%, rgba(255, 255, 255, .06) 30%, rgba(0, 0, 0, 0) 52%, rgba(0, 0, 0, .42) 100%),
-    linear-gradient(90deg, color-mix(in oklab, var(--courage-500) 70%, black), var(--courage-500));
+.cb-enemy.is-hurt .cb-enemy__bar {
+  --tube-lo: color-mix(in oklab, var(--courage-500) 40%, #0c0206);
+  --tube-hi: color-mix(in oklab, var(--courage-500) 66%, #1a0409);
 }
 .cb-enemy__hpm { color: color-mix(in srgb, #fff8ee 70%, transparent); font-size: .86em; }
 /* Guard up: the tube's rim goes cold too, so "this hit meets Guard first"
@@ -831,9 +885,15 @@
 .cb-count.is-bumped { animation: cb-countbump .42s var(--ease-snap); }
 .cb-count.is-bumped b { color: #fff3d6; }
 
+/* CONDITIONS STACK WITHOUT COLLIDING. Each socket's stack count is a coin
+   hung off its lower right corner, a third of it outside the socket, so the
+   row is spaced by the coin's overhang as well as a gap: three, four, six
+   conditions read as a row of sockets, never as a heap of coins. A row that
+   runs out of room wraps to a second, the same distance down. */
 .cb-enemy__statuses, .cb-statuses {
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 9px 13px;
   margin-top: 3px;
+  padding-right: 6px;
 }
 
 /* target preview on an enemy */
@@ -1096,22 +1156,24 @@
   color: var(--kit-text);
   -webkit-text-stroke: 0; text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
-.cb-intent__chip[data-role="rule"] { height: calc(var(--ph) * .84); }
-.cb-intent__chip[data-role="rule"] b {
-  font-family: var(--font-display); font-weight: 700; font-size: 11px;
-  letter-spacing: .16em; text-transform: uppercase;
-  color: var(--kit-lav);
-  -webkit-text-stroke: 0; text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
+/* A WORD IS ANNOUNCED ON THE GOLD RIBBON. HOUSE RULE, BUFF, GUARD, SUMMON: when
+   a move has a word instead of a number, it is lettered the way the Kid board
+   letters CHOOSE YOUR KID, cut dark into the kit's gold ribbon with its two
+   painted stars at the ends ("✦ HOUSE RULE ✦"). A number stays on the dark
+   plate; a word is a proclamation. */
+.cb-intent__chip:is([data-role="rule"], [data-role="word"]) {
+  --rib-h: max(22px, calc(var(--ph) * .84));
+  height: var(--rib-h);
+  min-width: calc(var(--rib-h) * 4);
+  padding: 0 calc(var(--rib-h) * 1.08) 1px;
+  border-image: url("../../assets/ui/kit/ribbon.webp") 0 47 0 52 fill / 0 calc(var(--rib-h) * 47 / 49) 0 calc(var(--rib-h) * 52 / 49) stretch;
+  filter: brightness(1.2) saturate(.9) drop-shadow(0 2px 3px rgba(0, 0, 0, .85));
 }
-
-/* the word chip is the same chip — engraved caps instead of a numeral, in the
-   family's own light, never a second grammar */
-.cb-intent__chip[data-role="word"] { height: calc(var(--ph) * .86); }
-.cb-intent__chip[data-role="word"] b {
+.cb-intent__chip:is([data-role="rule"], [data-role="word"]) b {
   font-family: var(--font-display); font-weight: 700; font-size: 11px;
-  letter-spacing: .16em; text-transform: uppercase;
-  color: color-mix(in srgb, var(--frame-c) 70%, white);
-  -webkit-text-stroke: 0; text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
+  letter-spacing: .15em; text-transform: uppercase;
+  color: #140b04;
+  -webkit-text-stroke: 0; text-shadow: 0 1px 0 rgba(255, 232, 178, .42);
 }
 .cb-intent.is-heavy .cb-intent__chip[data-role="damage"] { --ph: clamp(30px, 2.25vw, 36px); }
 .cb-intent.is-heavy .cb-intent__chip[data-role="damage"] b { color: var(--threat-100); }
@@ -1135,11 +1197,11 @@
 }
 /* status pips: an ICON in its socket and a stack count. A name is never truncated. */
 .cb-intent__pips {
-  position: absolute; left: 50%; top: calc(100% + 4px);
+  position: absolute; left: 50%; top: calc(100% + 9px);
   transform: translateX(-50%);
-  display: flex; gap: 7px;
+  display: flex; gap: 13px;
 }
-.cb-intent.has-extras .cb-intent__pips { top: calc(100% + var(--ph) + 6px); }
+.cb-intent.has-extras .cb-intent__pips { top: calc(100% + var(--ph) + 11px); }
 .cb-intent__pip {
   --socket: 26px;
   --socket-c: var(--threat-200);
@@ -1350,11 +1412,11 @@
 .cb-player {
   position: absolute; left: clamp(18px, 1.9vw, 38px);
   /* clear of the Nerve medallion and its label below */
-  bottom: clamp(136px, 17vh, 170px);
+  bottom: clamp(132px, 16.2vh, 164px);
   /* and clear of the hand: the fan's first card starts at x=240 on the Deck,
      and 200px is what the widest counter plate (LOOSE BONES 0/6 · WHOLE) needs
      to sit on the frame's rail without running onto the board's edge */
-  width: clamp(200px, 14.6vw, 246px);
+  width: clamp(176px, 13.4vw, 228px);
   z-index: 250;
   pointer-events: none;
   display: flex; flex-direction: column; gap: 0;
@@ -1365,7 +1427,10 @@
 .cb-player__figure {
   --fk: .6;
   position: relative;
-  width: 100%; aspect-ratio: 1.78 / 1;
+  /* a wide cameo: tall enough for the Companion's face, short enough that a row
+     of conditions under the tube does not lift the frame's counter plate into
+     the Kid and Companion standing above it */
+  width: 100%; aspect-ratio: 2.05 / 1;
   border-radius: 0;
   overflow: visible;                /* the frame's painting stands outside the box */
   box-shadow: inset 0 0 30px rgba(0, 0, 0, .75), 0 16px 30px -12px rgba(0, 0, 0, .9);
@@ -1399,7 +1464,7 @@
    apart, and the block-versus-Courage decision is made every single turn.
    The tube starts a shield's width in, so Guard arriving never moves it. */
 .cb-player__vitals {
-  --tube-h: clamp(22px, 1.65vw, 26px);
+  --tube-h: clamp(25px, 1.9vw, 30px);
   position: relative;
   display: flex; align-items: center;
   width: 100%;
@@ -1413,10 +1478,10 @@
 }
 .cb-player__ghost, .cb-player__fill { will-change: transform; }
 .cb-player__fill { transition: transform var(--t-quick) var(--ease-out); }
-.cb-player.is-low .cb-player__fill {
-  background:
-    linear-gradient(180deg, rgba(255, 236, 236, .42) 0%, rgba(255, 255, 255, .08) 30%, rgba(0, 0, 0, 0) 52%, rgba(0, 0, 0, .36) 100%),
-    linear-gradient(90deg, var(--threat-500), var(--threat-300));
+/* low: the amber gives way to the ember of a guttering candle */
+.cb-player.is-low .cb-player__bar {
+  --tube-lo: color-mix(in oklab, var(--threat-500) 70%, #140404);
+  --tube-hi: color-mix(in oklab, var(--threat-400) 80%, var(--threat-300));
 }
 .cb-player__hpm { color: color-mix(in srgb, #fff8ee 70%, transparent); font-size: .86em; }
 
@@ -1529,7 +1594,7 @@
    Guard, your Courage, your conditions and what is about to hit you — in that
    order, top to bottom, per STS2-REFERENCE §1. */
 .cb-player__plate {
-  display: flex; flex-direction: column; align-items: stretch; gap: 8px;
+  display: flex; flex-direction: column; align-items: stretch; gap: 10px;
   padding: 0;
 }
 /* the tile's nameplate, laid across the frame's foot */
@@ -1558,7 +1623,11 @@
   color: color-mix(in oklab, var(--kit-name) 78%, var(--kit-text-mid));
   text-shadow: 0 1px 0 rgba(0, 0, 0, .85);
 }
-.cb-player .cb-statuses { justify-content: flex-start; padding-left: 4px; margin-top: 0; }
+/* your conditions hang just under the tube, the sockets' tops tucked to its
+   lower lip, so a row of them does not push the portrait up over the Companion
+   standing above it */
+.cb-player .cb-statuses { justify-content: flex-start; padding-left: 6px; margin-top: -3px; }
+.cb-player .cb-status { --socket: clamp(25px, 1.8vw, 28px); }
 /* The low-Courage tell on the portrait stays: it is a mood cue, and now it
    agrees with a bar that is six pixels away instead of 850. */
 .cb-player.is-low .cb-player__figure {
@@ -1643,12 +1712,37 @@
 .cb-chooser__pool.kit-cards .mm-card[data-rarity].is-name-long .mm-card__name { font-size: calc(15 * var(--u)); }
 .cb-handhost.kit-cards .mm-card[data-rarity].is-name-xlong .mm-card__name,
 .cb-chooser__pool.kit-cards .mm-card[data-rarity].is-name-xlong .mm-card__name {
-  font-size: calc(14 * var(--u)); line-height: .98; letter-spacing: 0;
+  font-size: calc(14 * var(--u)); line-height: 1; letter-spacing: 0;
   white-space: normal; text-wrap: balance; text-align: center;
-  padding: 0 calc(17 * var(--u)) calc(1 * var(--u));
+  padding: 0 calc(15 * var(--u)) calc(1 * var(--u));
+}
+/* A TWO-LINE NAME SITS INSIDE ITS PLATE. On the card's 38u cartouche the rails
+   take 10u each, and "Put Yourself / Back Together" ran both lines across
+   them. The plate grows to 46u, starts 8u higher over the art, and its rails
+   are drawn thinner, so both lines stand in the dark between them. */
+.cb-handhost.kit-cards .mm-card[data-rarity].is-name-xlong .mm-card__banner,
+.cb-chooser__pool.kit-cards .mm-card[data-rarity].is-name-xlong .mm-card__banner {
+  top: calc(97 * var(--u)); height: calc(47 * var(--u));
+  border-image-width: calc(9 * var(--u)) calc(22 * var(--u));
 }
 .cb-handhost.kit-cards .mm-card[data-rarity] .mm-card__type,
 .cb-chooser__pool.kit-cards .mm-card[data-rarity] .mm-card__type { font-size: calc(12 * var(--u) * min(var(--rules-k, 1), 1.2)); }
+/* A CROWDED HAND READS FROM THE LEFT. Past eight Tricks each card shows its
+   neighbour only its left two-thirds (ui/hand.js `boundVisible`), so a name
+   centred on its plate lost its last letters under the next card ("SIT PRET").
+   Set flush left, inside the plate's notched cap, every name sits in the strip
+   that shows. The rightmost card and the one you are holding up are whole, so
+   they keep the centred name. */
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity]:not(.is-fan-last):not(.is-hover) .mm-card__banner {
+  justify-items: start;
+}
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity]:not(.is-fan-last):not(.is-hover) .mm-card__name {
+  padding-left: calc(19 * var(--u)); padding-right: calc(8 * var(--u));
+  text-align: left;
+}
+.cb-handhost.kit-cards .mm-hand.is-crowded .mm-card[data-rarity].is-name-xlong:not(.is-fan-last):not(.is-hover) .mm-card__name {
+  font-size: calc(13.4 * var(--u)); padding-left: calc(17 * var(--u));
+}
 /* THE HAND'S STATES, IN THE KIT'S METAL. `.kit-cards` dresses a card's frame
    and face with selectors that outrank card.css's own state rules, which is
    right on a shop shelf and wrong in a hand: the keyboard's selected card, a
@@ -1690,18 +1784,11 @@
    it never reads as active (card.css's intent, restated over the kit's face) */
 .cb-handhost.kit-cards .mm-card[data-rarity].is-unplayable .mm-card__face {
   background:
-    url("../../assets/ui/kit/grain.webp") 0 0 / 256px 256px,
-    linear-gradient(180deg, #17121c 0%, #0f0c13 58%, #151019 100%);
-  background-blend-mode: overlay, normal;
+    linear-gradient(rgba(8, 6, 11, .38), rgba(8, 6, 11, .38)),
+    url("../../assets/ui/kit/felt-damask.webp") 50% 0 / calc(104 * var(--u)) calc(118 * var(--u)),
+    #110d14;
 }
-.cb-handhost.kit-cards .mm-card[data-rarity].is-unplayable .mm-card__face::before {
-  background:
-    linear-gradient(to bottom,
-      var(--kit-panel) 0%, var(--kit-panel) 21%,
-      color-mix(in srgb, var(--kit-panel) 88%, transparent) 38%,
-      color-mix(in srgb, var(--kit-panel) 88%, transparent) 100%),
-    url("../../assets/ui/kit/damask.webp") 50% calc(40 * var(--u)) / calc(118 * var(--u)) auto repeat;
-}
+.cb-handhost.kit-cards .mm-card[data-rarity].is-unplayable .mm-card__face::before { opacity: 0; }
 
 /* VANISH, RETAIN and the rest: a small dark plate seated on the ruled panel's
    foot, lettered in the boards' engraved caps (card.css draws a 9u pill, which
@@ -1721,33 +1808,22 @@
   letter-spacing: .12em;
   text-shadow: 0 calc(1 * var(--u)) 0 rgba(0, 0, 0, .9);
 }
-/* THE HAND'S FACES ARE RULED PANELS. Under the name, the rules sit in a panel
-   the way the Kid board's info panels hold their text: a gold double rule
-   inset from the brass, the room's damask ghosted into the aubergine, and the
-   type's own colour pooling at its foot. The name cartouche rides the panel's
-   top rail. Painted UNDER the rules text (::before is the face's first child),
-   so no line of a Trick is ever read through it. Scoped to the hand: when the
-   Shop and the Reward rule their card bodies in .kit-cards, this is the rule
-   to fold into that one. */
+/* THE HAND'S FACES ARE THE BOARDS' FACES, LIT FROM WITHIN. The Shop's and the
+   Reward's cards (.kit-cards) already rule their rules panel with a double
+   gilt line and brass fleurons over flocked damask; the hand used to draw a
+   second, rounded rule inside that one, and every Trick in hand wore two. It
+   wears the one now, and this adds only light: a candle-warm edge along the
+   inside of the panel's top, where the name plate's shadow ends, and the
+   panel's corners falling a shade darker, so the face reads as cloth in a
+   frame rather than a flat fill. Painted under the rules text. */
 .cb-handhost.kit-cards .mm-card[data-rarity] .mm-card__face::before,
 .cb-chooser__pool.kit-cards .mm-card[data-rarity] .mm-card__face::before {
   content: ''; position: absolute; pointer-events: none;
-  left: calc(7 * var(--u)); right: calc(7 * var(--u));
-  top: calc(123 * var(--u)); bottom: calc(7 * var(--u));
-  border: calc(1.2 * var(--u)) solid color-mix(in srgb, var(--kit-gold) 52%, transparent);
-  border-radius: calc(3 * var(--u));
-  box-shadow:
-    inset 0 0 0 calc(2.6 * var(--u)) rgba(9, 6, 12, .7),
-    inset 0 0 0 calc(3.6 * var(--u)) color-mix(in srgb, var(--kit-gold-lo) 60%, transparent),
-    inset 0 calc(10 * var(--u)) calc(16 * var(--u)) rgba(0, 0, 0, .35);
+  left: calc(9 * var(--u)); right: calc(9 * var(--u));
+  top: calc(148 * var(--u)); bottom: calc(9 * var(--u));
   background:
-    radial-gradient(120% 42% at 50% 100%, color-mix(in srgb, var(--type-color) 15%, transparent), transparent 72%),
-    /* the type line stands on plain ground; the damask comes up under the rules */
-    linear-gradient(to bottom,
-      var(--kit-panel) 0%, var(--kit-panel) 21%,
-      color-mix(in srgb, var(--kit-panel) 86%, transparent) 38%,
-      color-mix(in srgb, var(--kit-panel) 84%, transparent) 100%),
-    url("../../assets/ui/kit/damask.webp") 50% calc(40 * var(--u)) / calc(118 * var(--u)) auto repeat;
+    linear-gradient(to bottom, color-mix(in srgb, var(--kit-candle) 17%, transparent) 0, color-mix(in srgb, var(--kit-candle) 6%, transparent) calc(5 * var(--u)), transparent calc(22 * var(--u))),
+    radial-gradient(90% 70% at 50% 42%, transparent 55%, rgba(4, 2, 6, .34) 100%);
 }
 /* ── the hand never hides the hit ──────────────────────────────────────────
    The played card is presented at 0.62 of the board height (ui/hand.js TUNE
@@ -1766,37 +1842,64 @@
 }
 
 /* ───────────────────────────────────────────── bottom corners ──────────── */
-.cb-bl, .cb-br {
-  position: absolute; bottom: clamp(10px, 1.5vh, 20px);
-  z-index: 320;
-  display: flex; align-items: flex-end; gap: var(--s-3);
-}
-.cb-bl { left: clamp(10px, 1.2vw, 22px); gap: 2px; }
-/* THE PILES STAND ON A ROW ABOVE END TURN, the way StS stacks its end-turn
-   button over the discard pile. Side by side, END TURN's nameplate and its
-   medallion plus a pile came to 410px of a 1600px screen, and a five-card fan
-   leaves 325: the discard pile's coin sat on the last card's rules text. The
-   grid keeps the DOM order (END TURN first, for the keyboard) and places the
-   discard pile over END TURN's medallion end, Torn and Vanished inboard of it. */
-.cb-br {
-  right: clamp(12px, 1.4vw, 26px);
-  display: grid;
-  grid-template-columns: auto auto auto;
-  justify-content: end; justify-items: center; align-items: end;
-  column-gap: var(--s-3); row-gap: 4px;
-}
-.cb-br > .cb-endturn { grid-row: 2; grid-column: 1 / -1; justify-self: end; }
-.cb-br > .cb-pile--discard { grid-row: 1; grid-column: 3; margin: 0 calc(clamp(50px, 3.9vw, 60px) * .32) 16px 0; }
-.cb-br > .cb-pile--torn { grid-row: 1; grid-column: 2; }
-.cb-br > .cb-pile--vanished { grid-row: 1; grid-column: 1; }
+/* THE TABLE'S TWO CORNERS ARE THE KID BOARD'S TWO CORNERS. UI/selectKid.png
+   seats one round purple enamel button in its gold filigree in each bottom
+   corner (back, confirm). Here the left one holds your Nerve and the right one
+   END TURN, and each has a pile in a smaller setting of the same filigree
+   beside it: the draw pile beside the Nerve you draw with, the discard pile
+   over the button that discards your hand. Four settings, one grammar.
 
-/* NERVE, IN THE KID BOARD'S CORNER MEDALLION: the round purple enamel button
-   in its gold filigree (button-ornate.webp) that UI/selectKid.png sets in its
-   corners, with the figure in gold relief on the enamel and a candle-gold arc
-   inlaid round its inside telling how much of the turn's Nerve is left. The
-   cost on every card in the hand is struck on the same enamel. */
+   AND BOTH CORNERS ARE NARROW, which is the point. END TURN used to be a
+   nameplate running 230px in from the corner with its medallion on the end,
+   and the discard pile beside that; nine Tricks at 1280x800 could not fit
+   between it and the Kid's column without covering one or the other. Stacked
+   (the pile, the medallion, END TURN's plate across the medallion's foot) the
+   right corner is as narrow as its plate, and `Hand#setBounds` gives the fan
+   the table in between. */
+.cb-root {
+  --corner-md: clamp(58px, 4.6vw, 76px);        /* Nerve's ring and END TURN's */
+  --pile-md: clamp(38px, 2.9vw, 48px);          /* a pile's ring */
+}
+.cb-bl, .cb-br {
+  position: absolute; bottom: clamp(16px, 2.2vh, 26px);
+  z-index: 320;
+}
+/* inboard of the frame's corner scrollwork at every size */
+.cb-bl {
+  left: clamp(16px, 1.6vw, 28px);
+  display: flex; align-items: flex-end; gap: 0;
+}
+/* the draw pile's filigree tucks behind Nerve's, as the two settings would
+   if they had been cast on one plate */
+.cb-bl > .cb-pile--draw { margin-left: calc(var(--pile-md) * -.2); margin-bottom: calc(var(--corner-md) * .06); }
+/* END TURN first in the DOM (the keyboard's order), drawn at the bottom; the
+   row of piles over it is centred on the same line as its medallion */
+.cb-br {
+  right: clamp(18px, 1.7vw, 30px);
+  display: flex; flex-direction: column-reverse; align-items: center;
+}
+.cb-br__piles {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: row-reverse; align-items: flex-end; justify-content: center;
+  /* the discard pile's filigree stands on END TURN's upper scrollwork */
+  margin-bottom: calc(var(--corner-md) * -.22);
+}
+/* a candle on the corner stack, just past the discard pile toward the corner:
+   the warm light END TURN and the pile are read by */
+.cb-br__candle.kit-prop--candle {
+  position: absolute; left: calc(100% - var(--pile-md) * .1); bottom: calc(var(--pile-md) * .18);
+  width: calc(var(--pile-md) * .8);
+  z-index: 2;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .8)) brightness(1.06);
+}
+.cb-br__candle.kit-prop--candle::after { width: 380%; top: 2%; }
+
+/* NERVE: a gold coin in the Kid board's corner medallion. The figure is struck
+   into the coin (the cost on every Trick in the hand is struck on the same
+   face), and a candle-gold arc inlaid in the enamel round it tells how much of
+   the turn's Nerve is left. */
 .cb-nerve {
-  --md: clamp(64px, 5vw, 80px);                 /* the enamel ring itself */
+  --md: var(--corner-md);                       /* the enamel ring itself */
   position: relative;
   width: calc(var(--md) * 180 / 105); height: calc(var(--md) * 172 / 105);
   display: flex; align-items: center; justify-content: center;
@@ -1805,71 +1908,73 @@
   cursor: help;
 }
 .cb-nerve__ring {
-  position: absolute; left: 50%; top: 50%;
+  position: absolute; left: 50%; top: 50.6%; z-index: 2;
   width: calc(var(--md) * .8); height: calc(var(--md) * .8);
   margin: calc(var(--md) * -.4) 0 0 calc(var(--md) * -.4);
   transform: rotate(-90deg); overflow: visible;
+  pointer-events: none;
 }
-.cb-nerve__track { fill: none; stroke: rgba(8, 4, 12, .55); stroke-width: 7; }
+.cb-nerve__track { fill: none; stroke: rgba(8, 4, 12, .5); stroke-width: 4.5; }
 .cb-nerve__arc {
-  fill: none; stroke: color-mix(in srgb, var(--kit-candle) 80%, var(--kit-gold-hi)); stroke-width: 6; stroke-linecap: round;
-  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--kit-candle) 80%, transparent));
+  fill: none; stroke: color-mix(in srgb, var(--kit-candle) 78%, var(--kit-gold-hi)); stroke-width: 4; stroke-linecap: round;
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--kit-candle) 85%, transparent));
   transition: stroke-dashoffset var(--t-base) var(--ease-out);
 }
-/* the enamel lit from inside while there is Nerve to spend */
+/* the coin, laid into the enamel */
 .cb-nerve__core {
-  position: absolute; left: 50%; top: 50%;
-  width: calc(var(--md) * .74); height: calc(var(--md) * .74);
-  margin: calc(var(--md) * -.37) 0 0 calc(var(--md) * -.37);
+  position: absolute; left: 50%; top: 50.6%; z-index: 1;
+  width: calc(var(--md) * .62); height: calc(var(--md) * .62);
+  margin: calc(var(--md) * -.31) 0 0 calc(var(--md) * -.31);
   border-radius: 50%;
-  background: radial-gradient(closest-side,
-    color-mix(in srgb, var(--kit-candle) 44%, transparent) 0%,
-    color-mix(in srgb, var(--kit-candle) 14%, transparent) 55%, transparent 100%);
-  mix-blend-mode: screen;
+  background:
+    radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 26%, transparent), transparent 80%),
+    url("../../assets/ui/kit/coin-face.webp") 50% 50% / 100% 100% no-repeat;
+  background-blend-mode: screen, normal;
+  box-shadow: 0 0 calc(var(--md) * .12) color-mix(in srgb, var(--kit-candle) 38%, transparent);
 }
 .cb-nerve__n {
-  position: relative; z-index: 2;
+  position: relative; z-index: 3;
   display: flex; align-items: baseline;
-  margin-top: -2px;
+  margin-top: 1px;
   font-family: var(--font-num); font-weight: 700;
   font-variant-numeric: lining-nums tabular-nums;
-  color: var(--kit-gold-hi);
-  -webkit-text-stroke: 4px #140a05;
-  paint-order: stroke fill;
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
+  color: #231305;
+  -webkit-text-stroke: 0;
+  text-shadow: 0 1px 0 rgba(255, 238, 190, .6), 0 -1px 0 rgba(40, 22, 6, .45);
 }
-.cb-nerve__n b { font-size: calc(var(--md) * .5); line-height: 1; }
-.cb-nerve__n span { font-size: calc(var(--md) * .24); color: var(--kit-gold); -webkit-text-stroke-width: 3px; }
+.cb-nerve__n b { font-size: calc(var(--md) * .38); line-height: 1; }
+.cb-nerve__n span { font-size: calc(var(--md) * .19); color: #4a300f; }
 /* NERVE on a small dark nameplate hung from the medallion's foot */
-.cb-nerve__lbl {
+.cb-nerve__lbl, .cb-pile__lbl {
   --h: 20px;
-  position: absolute; left: 50%; bottom: calc(var(--md) * .02);
+  position: absolute; left: 50%; bottom: 0; z-index: 4;
   transform: translateX(-50%);
   display: inline-flex; align-items: center;
   min-height: var(--h); padding: 0 13px 1px;
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
   font-family: var(--font-display); font-weight: 700; font-size: 11px;
-  letter-spacing: .2em; text-transform: uppercase; color: var(--kit-gold-hi);
+  letter-spacing: .18em; text-transform: uppercase; color: var(--kit-gold-hi);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
+  white-space: nowrap;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
 }
-.cb-nerve.is-empty .cb-nerve__core { opacity: 0; }
-.cb-nerve.is-empty { filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8)) saturate(.55) brightness(.8); }
-.cb-nerve.is-empty .cb-nerve__n { color: var(--kit-text-lo); }
+.cb-nerve.is-empty .cb-nerve__core { filter: saturate(.35) brightness(.62); box-shadow: none; }
+.cb-nerve.is-empty .cb-nerve__n { color: #3b2a1a; }
 @keyframes cb-spend { 0% { transform: scale(1.14); } 100% { transform: scale(1); } }
 @keyframes cb-gain { 0% { transform: scale(.82); } 60% { transform: scale(1.1); } 100% { transform: scale(1); } }
 .cb-nerve.is-spend .cb-nerve__core { animation: cb-spend .26s var(--ease-out); }
 .cb-nerve.is-gain .cb-nerve__core { animation: cb-gain .38s var(--ease-snap); }
 
-/* PILES, AS ENAMEL BUTTONS: each the boards' round purple enamel in its brass
-   rim, the stack of cards drawn on it in gold relief, the count struck on a
-   brass coin at its shoulder, its name engraved underneath. */
+/* PILES, IN THE SAME SETTING: the round enamel button in its filigree, the
+   stack of cards in gold relief on the enamel, the count on a brass coin at
+   the ring's shoulder, the pile's name on a nameplate hung from its foot. */
 .cb-pile {
-  --pm: clamp(48px, 3.7vw, 58px);
+  --pm: var(--pile-md);
   position: relative;
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
-  min-width: calc(var(--pm) + 14px);
+  display: block;
+  width: calc(var(--pm) * 180 / 105); height: calc(var(--pm) * 172 / 105);
+  min-width: 0;
   padding: 0;
   border: 0; border-radius: 0;
   background: none; box-shadow: none;
@@ -1877,17 +1982,15 @@
   transition: transform var(--t-quick) var(--ease-snap), filter var(--t-quick);
 }
 .cb-pile::before {
-  content: ''; display: block;
-  width: var(--pm); height: var(--pm);
-  border-radius: 50%;
-  background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  content: ''; position: absolute; inset: 0;
+  background: url("../../assets/ui/kit/button-ornate.webp") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
 }
 .cb-pile:hover, .cb-pile:focus-visible { transform: translateY(-3px); filter: brightness(1.15) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-lav) 40%, transparent)); }
 .cb-pile svg {
-  position: absolute; left: 50%; top: calc(var(--pm) * .5);
-  width: calc(var(--pm) * .44); height: calc(var(--pm) * .56);
-  margin: calc(var(--pm) * -.3) 0 0 calc(var(--pm) * -.24);
+  position: absolute; left: 50%; top: 50.6%;
+  width: calc(var(--pm) * .42); height: calc(var(--pm) * .54);
+  margin: calc(var(--pm) * -.3) 0 0 calc(var(--pm) * -.23);
   overflow: visible;
   filter: url("#cb-relief") drop-shadow(0 1px 1px rgba(0, 0, 0, .8));
 }
@@ -1897,51 +2000,67 @@
    Must follow `.top` above - it overrides that rule's fill. */
 .cb-pile--vanished svg rect.gone { fill: none; stroke: var(--kit-gold-hi); stroke-dasharray: 3 2.5; }
 .cb-pile b {
-  position: absolute; right: 0; top: -4px;
-  --coin: 22px;
+  position: absolute; right: calc(var(--pm) * .16); top: calc(var(--pm) * .12); z-index: 3;
+  --coin: max(20px, calc(var(--pm) * .46));
 }
-.cb-pile__lbl {
-  font-family: var(--font-display); font-weight: 700; font-size: 11px;
-  letter-spacing: .18em; text-transform: uppercase; color: var(--kit-text-mid);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 6px rgba(0, 0, 0, .9);
-}
+.cb-pile__lbl { --h: 19px; font-size: 10.5px; letter-spacing: .14em; padding: 0 11px 1px; color: var(--kit-text-mid); }
 @keyframes cb-shuffle { 0% { transform: rotate(0) } 25% { transform: rotate(-7deg) scale(1.06) } 60% { transform: rotate(5deg) } 100% { transform: rotate(0) } }
 .cb-pile.is-shuffle svg { animation: cb-shuffle .34s var(--ease-out); }
 
-/* END TURN: the kit's primary action — the gold-lettered nameplate with the
-   select boards' ornate enamel button seated on its end (.kit-btn,
-   .kit-btn__medal), an hourglass in the button. When nothing in the hand can
-   be played it breathes candle-light (STS2 §1: it CHANGES STATE). */
-.cb-endturn {
-  --plate-h: clamp(50px, 3.9vw, 60px);
-  min-width: 0;
-  margin-right: calc(var(--plate-h) * .72);
-  padding: 2px calc(var(--plate-h) * 1.18) 3px calc(var(--plate-h) * .56);
+/* END TURN: the right corner's medallion, an hourglass in the enamel, and its
+   name on the kit's gold-lettered plate laid across the medallion's foot, with
+   the keyboard's E set INTO the plate at its end. When nothing in the hand can
+   be played it breathes candle-light (STS2 §1: it CHANGES STATE). The plate
+   is the button's label, not the button's frame: the whole stack is the
+   button, so the medallion is as clickable as the words. */
+.cb-endturn.kit-btn {
+  --md: var(--corner-md);
+  --plate-h: clamp(36px, 2.75vw, 44px);
+  display: grid; grid-template-rows: auto auto; justify-items: center; align-items: start;
+  min-width: calc(var(--md) * 180 / 105); min-height: 0;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  border: 0; border-image: none;
+  background: none;
   overflow: visible;
-  font-size: clamp(15px, 1.18vw, 19px);
-  letter-spacing: .14em;
+  font-size: clamp(14px, 1.08vw, 17px);
+  letter-spacing: .12em;
 }
+.cb-endturn .cb-endturn__medal.kit-btn__medal {
+  --md: var(--corner-md);
+  grid-row: 1;
+  position: relative; top: auto; right: auto; left: auto;
+  transform: none;
+}
+.cb-endturn .cb-endturn__medal svg { width: calc(46% * 105 / 180); height: calc(46% * 105 / 172); }
 .cb-endturn__k {
+  grid-row: 2;
   position: relative; z-index: 2;
-  display: block;
+  margin-top: calc(var(--md) * -.5);
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: var(--plate-h);
+  padding: 1px calc(var(--plate-h) * .58 + 24px) 2px calc(var(--plate-h) * .62);
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/plate.webp") 12 53 12 46 fill / calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72) stretch;
   font: inherit; letter-spacing: inherit;
+  white-space: nowrap;
 }
-/* the keyboard's key, a small enamel keycap on the plate's shoulder: out of the
-   plate's width, so the nameplate stays clear of the fan's last card */
+/* the keyboard's key, an enamel keycap set into the plate's right end */
 .cb-endturn__hint {
   position: absolute; z-index: 3;
-  right: calc(var(--plate-h) * 1.02); top: -7px;
+  right: calc(var(--plate-h) * .5); bottom: calc(var(--plate-h) * .5);
+  transform: translateY(50%);
   display: inline-grid; place-items: center;
   font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: .04em;
-  min-width: 1.9em; height: 1.55em; padding: 1px 5px 0; border-radius: 3px;
+  min-width: 1.75em; height: 1.6em; padding: 1px 4px 0; border-radius: 3px;
   color: var(--kit-gold-hi);
-  background: linear-gradient(180deg, #1d1624, #0b080e);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--kit-gold) 70%, transparent), 0 1px 0 rgba(0, 0, 0, .8);
+  background: linear-gradient(180deg, #2a2031, #0d0a10);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--kit-gold) 75%, transparent), inset 0 -2px 0 rgba(0, 0, 0, .55), 0 1px 0 rgba(0, 0, 0, .8);
   text-shadow: none;
 }
-.cb-endturn__medal { right: calc(var(--plate-h) * -.84); }
 .cb-endturn__glow {
-  position: absolute; inset: -40% -12%; z-index: -1;
+  position: absolute; inset: -18% -16%; z-index: -1;
   border-radius: 50%;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 34%, transparent), transparent);
   opacity: 0; transition: opacity var(--t-base) var(--ease-soft);
@@ -2395,7 +2514,8 @@
 /* Sized so the stage AND the name plate fit inside the field: the field is
    (100vh - 48 - 33%) tall, less the intent stack's 96px and the plate's ~44. */
 .cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__stage {
-  --e-h: min(calc(430px * var(--e-sz)), calc(90vh - 425px));
+  /* less `--e-rise`: the height the ground line gave up to its plate (below) */
+  --e-h: min(calc(430px * var(--e-sz)), calc(90vh - 400px - var(--e-rise, 0px)));
   --e-wide: 1.15;
   width: clamp(calc(150px * var(--e-sz)),
                calc(var(--e-h) * var(--e-aspect)),
@@ -2421,29 +2541,57 @@
 /* a boss's plate is the board's largest: a taller nameplate, larger caps and a
    heavier tube, and a deeper pool of shadow under it so it is never read
    through its own legs */
-.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"] .cb-enemy__plate { width: min(280px, 100%); }
-/* the master of the wing is named in the wordmark's own lettering: the
-   lavender marbled caps, bevelled and gold-edged (#kit-engrave), on a taller
-   nameplate — the one name on the board lettered like the title */
-.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"] .cb-enemy__name {
-  --np-h: clamp(36px, 2.6vw, 44px);
-  padding-inline: calc(var(--np-h) * .78);
-  font-size: clamp(16px, 1.25vw, 20px); letter-spacing: .1em;
-  color: var(--kit-lav);
+/* THE BOSS HANGS ITS PLATE FROM ITS FEET. Every other creature's plate sits
+   at the foot of its column and is lifted clear of the hand, over whatever
+   stands above it; on The Butler that was his shoes on every board and his
+   knees on a full hand. Here the plate hangs from the ground line, and when
+   it would reach the hand EnemyView#setPlateLimit raises the ground line by
+   the overlap (`--e-rise`) and the stage above gives up the same height, so
+   his feet, his plate and the cards all show. */
+.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) {
+  padding-bottom: calc(var(--e-band) + var(--e-rise, 0px));
 }
-.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"] .cb-enemy__name > .cb-enemy__lettering {
-  display: inline-block;
-  padding: 1px 3px 3px;
-  color: var(--kit-lav);
+/* …and the head of the stage the boss does not fill holds its intent: the
+   medallion comes 30px down into it, which is what lets the boss stand 25px
+   taller under the same HUD */
+.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) > .cb-enemy__above { bottom: calc(100% - 30px); }
+.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"] .cb-enemy__plate { width: min(300px, 100%); }
+.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__plate {
+  top: calc(100% - var(--e-band) - var(--e-rise, 0px) - 6px); bottom: auto;
+  width: max(min(300px, 100%), 250px);
+  transform: translate3d(calc(-50% - var(--e-lx, 0px)), calc(var(--e-ly, 0px) * -1), 0);
+}
+/* THE MASTER OF THE WING IS NAMED ON THE WORDMARK'S OWN CARTOUCHE: UI/title.png's
+   scrolled ends and band (the plaque the boss banner is lettered on), cut down
+   to a nameplate, a painted star in each end. It is the one plate on any board
+   with scrollwork, which is the mark a Scuffle's never has. The name is set the
+   way the Kid board letters CHOOSE YOUR KID: wide-spaced engraved caps, warm
+   gold on the dark plate, cut in rather than bevelled up. */
+.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__name {
+  --np-h: clamp(42px, 3.1vw, 50px);
+  --cap: calc(var(--np-h) * 430 / 600);
+  min-height: var(--np-h); max-width: none;
+  padding: calc(var(--np-h) * .1) calc(var(--cap) * .9) calc(var(--np-h) * .03);
+  border: 0; border-image: none;
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--kit-lav-hi) 58%, transparent) 0%, transparent 45%, color-mix(in srgb, var(--kit-violet-lo) 45%, transparent) 100%),
-    url("../../assets/ui/kit/marble.webp") 0 0 / 120px 120px;
-  -webkit-background-clip: text; background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: none;
-  filter: url("#kit-engrave");
+    url("../../assets/ui/kit/cart-star.webp") calc(var(--cap) * .58) 53% / auto calc(var(--np-h) * .22) no-repeat,
+    url("../../assets/ui/kit/cart-star.webp") calc(100% - var(--cap) * .58) 53% / auto calc(var(--np-h) * .22) no-repeat,
+    url("../../assets/ui/kit/cart-cap-l.webp") 0 0 / auto 100% no-repeat,
+    url("../../assets/ui/kit/cart-cap-r.webp") 100% 0 / auto 100% no-repeat,
+    url("../../assets/ui/kit/cart-band.webp") var(--cap) 0 / calc(100% - var(--cap) * 2 + 1px) 100% no-repeat;
+  filter: drop-shadow(0 5px 7px rgba(0, 0, 0, .85));
+  font-size: clamp(15px, 1.12vw, 18px); letter-spacing: .26em;
+  color: #edd7a4;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .75), 0 1px 0 rgba(0, 0, 0, .95), 0 0 12px color-mix(in srgb, var(--kit-candle) 22%, transparent);
+  white-space: nowrap;
 }
-.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"] .cb-enemy__vitals { --tube-h: clamp(22px, 1.65vw, 26px); }
+/* the plate's painted rails stop short of its box: the tube tucks up under it */
+.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals { margin-top: -5px; }
+/* the trailing letter-space would sit the name left of centre on its plate */
+.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__name > .cb-enemy__lettering {
+  display: inline-block; margin-right: -.26em;
+}
+.cb-root[data-arena="boss"] .cb-enemy[data-tier="boss"] .cb-enemy__vitals { --tube-h: clamp(25px, 1.9vw, 30px); }
 .cb-root[data-arena="boss"] .cb-enemy__plate::after,
 .cb-root[data-arena="elite"] .cb-enemy__plate::after {
   background: radial-gradient(closest-side, rgba(6, 4, 9, .82), rgba(6, 4, 9, .5) 62%, transparent);
@@ -2602,7 +2750,7 @@
 .cb-mate__ready[hidden] { display: none; }
 
 .cb-mate__vitals {
-  --tube-h: 18px;
+  --tube-h: 22px;
   position: relative;
   display: flex; align-items: center; gap: 0;
   margin-top: var(--s-2);
@@ -2627,10 +2775,9 @@
 
 .cb-mate__bar { --tube-h: inherit; flex: 1 1 auto; }
 .cb-mate__fill { transition: transform var(--t-base) var(--ease-out); }
-.cb-mate.is-low .cb-mate__fill {
-  background:
-    linear-gradient(180deg, rgba(255, 236, 236, .42) 0%, rgba(255, 255, 255, .08) 30%, rgba(0, 0, 0, 0) 52%, rgba(0, 0, 0, .36) 100%),
-    linear-gradient(90deg, var(--threat-500), var(--threat-300));
+.cb-mate.is-low .cb-mate__bar {
+  --tube-lo: color-mix(in oklab, var(--threat-500) 70%, #140404);
+  --tube-hi: color-mix(in oklab, var(--threat-400) 80%, var(--threat-300));
 }
 .cb-mate.is-fallen { opacity: .58; }
 .cb-mate.is-fallen .cb-mate__fill { background: var(--ink-500); transform: scaleX(0) !important; }
